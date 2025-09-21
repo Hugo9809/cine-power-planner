@@ -314,6 +314,28 @@ describe('setup storage', () => {
     expect(JSON.parse(localStorage.getItem(SETUP_KEY))).toEqual({ A: { foo: 1 } });
   });
 
+  test('saveSetups removes older duplicate auto backups before trimming unique entries', () => {
+    const setups = {};
+    for (let index = 0; index < 49; index += 1) {
+      const minute = String(index).padStart(2, '0');
+      const key = `auto-backup-2024-01-01-00-${minute}`;
+      setups[key] = { camera: `Camera ${index}` };
+    }
+    const duplicateValue = { camera: 'Shared Camera', lens: 'Shared Lens' };
+    const oldDuplicateKey = 'auto-backup-2024-01-01-01-00';
+    const newDuplicateKey = 'auto-backup-2024-01-02-00-00';
+    setups[oldDuplicateKey] = duplicateValue;
+    setups[newDuplicateKey] = duplicateValue;
+
+    saveSetups(setups);
+
+    const stored = JSON.parse(localStorage.getItem(SETUP_KEY));
+    expect(stored[oldDuplicateKey]).toBeUndefined();
+    expect(stored[newDuplicateKey]).toEqual(duplicateValue);
+    const autoBackupCount = Object.keys(stored).filter(name => name.startsWith('auto-backup-')).length;
+    expect(autoBackupCount).toBeLessThanOrEqual(50);
+  });
+
   test('saveSetup adds and persists single setup', () => {
     const initial = {A: {foo: 1}};
     localStorage.setItem(SETUP_KEY, JSON.stringify(initial));
@@ -498,6 +520,29 @@ describe('project storage', () => {
   test('saveProject strips non-object projectInfo values', () => {
     saveProject('InfoProj', { gearList: '<ul>Info</ul>', projectInfo: 'bad' });
     expect(loadProject('InfoProj')).toEqual({ gearList: '<ul>Info</ul>', projectInfo: null });
+  });
+
+  test('saveProject removes older duplicate auto backups before trimming unique entries', () => {
+    const projects = {};
+    for (let index = 0; index < 49; index += 1) {
+      const minute = String(index).padStart(2, '0');
+      const key = `auto-backup-2024-01-01-00-${minute}`;
+      projects[key] = { gearList: `<ul>${index}</ul>`, projectInfo: null };
+    }
+    const duplicateValue = { gearList: '<ul>duplicate</ul>', projectInfo: null };
+    const oldDuplicateKey = 'auto-backup-2024-01-01-01-00';
+    const newDuplicateKey = 'auto-backup-2024-01-02-00-00';
+    projects[oldDuplicateKey] = duplicateValue;
+    projects[newDuplicateKey] = duplicateValue;
+    localStorage.setItem(PROJECT_KEY, JSON.stringify(projects));
+
+    saveProject(newDuplicateKey, { gearList: '<ul>duplicate</ul>', projectInfo: null });
+
+    const stored = JSON.parse(localStorage.getItem(PROJECT_KEY));
+    expect(stored[oldDuplicateKey]).toBeUndefined();
+    expect(stored[newDuplicateKey]).toEqual(duplicateValue);
+    const autoBackupCount = Object.keys(stored).filter(name => name.startsWith('auto-backup-')).length;
+    expect(autoBackupCount).toBeLessThanOrEqual(50);
   });
 
   test('saveProject ignores non-object payloads entirely', () => {
