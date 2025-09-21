@@ -338,6 +338,7 @@ const texts = {
     supportLinkHelp:
       "Open support documentation in a new tab.",
     restoreSuccess: "Settings restored. Reload to apply all changes.",
+    restoreFailed: "Restore failed. Check the backup file and try again.",
     restoreVersionWarning: "Backup created with a different version. Some features might not transfer.",
     saveSettings: "Save",
     saveSettingsHelp:
@@ -1545,6 +1546,7 @@ const texts = {
     supportLinkHelp:
       "Apri la documentazione di supporto in una nuova scheda.",
     restoreSuccess: "Impostazioni ripristinate. Ricarica per applicare tutte le modifiche.",
+    restoreFailed: "Ripristino non riuscito. Controlla il file di backup e riprova.",
     restoreVersionWarning: "Il backup è stato creato con una versione diversa. Alcune funzioni potrebbero non essere trasferite.",
     saveSettings: "Salva",
     saveSettingsHelp:
@@ -2351,6 +2353,7 @@ const texts = {
     supportLinkHelp:
       "Abre la documentación de soporte en una nueva pestaña.",
     restoreSuccess: "Ajustes restaurados. Recarga para aplicar todos los cambios.",
+    restoreFailed: "La restauración falló. Comprueba el archivo de copia de seguridad y vuelve a intentarlo.",
     restoreVersionWarning: "La copia se creó con otra versión. Algunas funciones podrían no transferirse.",
     saveSettings: "Guardar",
     saveSettingsHelp:
@@ -3160,6 +3163,7 @@ const texts = {
     supportLinkHelp:
       "Ouvrez la documentation d’assistance dans un nouvel onglet.",
     restoreSuccess: "Paramètres restaurés. Rechargez pour appliquer tous les changements.",
+    restoreFailed: "La restauration a échoué. Vérifiez le fichier de sauvegarde et réessayez.",
     restoreVersionWarning: "La sauvegarde a été créée avec une autre version. Certaines fonctions peuvent ne pas être transférées.",
     saveSettings: "Enregistrer",
     saveSettingsHelp:
@@ -3972,6 +3976,7 @@ const texts = {
     supportLinkHelp:
       "Öffnet die Support-Dokumentation in einem neuen Tab.",
     restoreSuccess: "Einstellungen wiederhergestellt. Zum Anwenden Seite neu laden.",
+    restoreFailed: "Wiederherstellung fehlgeschlagen. Prüfe die Sicherungsdatei und versuche es erneut.",
     restoreVersionWarning: "Die Sicherung stammt aus einer anderen Version. Manche Funktionen werden eventuell nicht übernommen.",
     saveSettings: "Speichern",
     saveSettingsHelp:
