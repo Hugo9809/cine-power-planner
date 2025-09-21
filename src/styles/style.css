@@ -28,6 +28,8 @@
   --gap-size: 10px;
   --button-size: 24px;
   --button-icon-size: var(--icon-size-md);
+  --icon-gap: 0.3em;
+  --button-icon-gap: 0.55em;
   --form-control-font-size: var(--font-size-relative-base);
   --form-label-width: 150px;
   --form-label-min-width: 120px;
@@ -1973,10 +1975,6 @@ body.dark-mode .help-callout {
   --icon-size: var(--button-icon-size);
 }
 
-#setup-manager button .btn-icon {
-  margin-right: 0.5em;
-}
-
 .help-icon,
 .btn-icon,
 .legend-icon,
@@ -1985,11 +1983,16 @@ body.dark-mode .help-callout {
 .category-icon,
 .scenario-icon,
 .icon-box .icon {
-  margin-right: 0.3em;
+  margin-right: var(--icon-gap);
 }
 
 button .btn-icon:only-child {
   margin-right: 0;
+}
+
+button .btn-icon:not(:only-child),
+.button-link .btn-icon:not(:only-child) {
+  margin-right: var(--button-icon-gap);
 }
 
 .favorite-icon.icon-glyph {
