@@ -2872,6 +2872,11 @@ function clearAllData() {
       preferences.language = language;
     }
 
+    const iosPwaHelpShown = parseStoredBoolean(readLocalStorageValue('iosPwaHelpShown'));
+    if (iosPwaHelpShown !== null) {
+      preferences.iosPwaHelpShown = iosPwaHelpShown;
+    }
+
     return preferences;
   }
 
