@@ -10794,6 +10794,65 @@ async function loadStoredCustomFonts() {
   }
 }
 
+function resetCustomFontsForFactoryReset() {
+  const hadEntries = customFontEntries && typeof customFontEntries.size === 'number'
+    ? customFontEntries.size > 0
+    : false;
+
+  if (customFontEntries && typeof customFontEntries.clear === 'function') {
+    customFontEntries.clear();
+  }
+
+  let removedUploadedOption = false;
+
+  if (settingsFontFamily && settingsFontFamily.options) {
+    const options = Array.from(settingsFontFamily.options || []);
+    options.forEach(option => {
+      if (!option || !option.dataset || option.dataset.source !== 'uploaded') {
+        return;
+      }
+      removedUploadedOption = true;
+      const fontId = option.dataset.fontId || '';
+      if (option.parentNode && typeof option.parentNode.removeChild === 'function') {
+        option.parentNode.removeChild(option);
+      } else if (typeof settingsFontFamily.removeChild === 'function') {
+        settingsFontFamily.removeChild(option);
+      }
+      if (fontId && typeof document !== 'undefined') {
+        const styleId = `customFontStyle-${fontId}`;
+        const styleNode = document.getElementById(styleId);
+        if (styleNode && styleNode.parentNode) {
+          styleNode.parentNode.removeChild(styleNode);
+        }
+      }
+    });
+
+    const hasCurrentSelection = options.some(
+      option => option && option.value === settingsFontFamily.value,
+    );
+    if (!hasCurrentSelection) {
+      if (settingsFontFamily.options.length) {
+        settingsFontFamily.selectedIndex = 0;
+      } else {
+        settingsFontFamily.value = '';
+      }
+    }
+  }
+
+  if (typeof document !== 'undefined' && document.querySelectorAll) {
+    const inlineStyles = document.querySelectorAll('style[id^="customFontStyle-"]');
+    inlineStyles.forEach(styleNode => {
+      if (styleNode && styleNode.parentNode) {
+        styleNode.parentNode.removeChild(styleNode);
+      }
+    });
+  }
+
+  if (typeof setLocalFontsStatus === 'function' && (hadEntries || removedUploadedOption)) {
+    setLocalFontsStatus(null);
+  }
+}
+
 function isSupportedFontFile(file) {
   if (!file) return false;
   const type = typeof file.type === 'string' ? file.type.toLowerCase() : '';
@@ -22624,6 +22683,12 @@ function resetPlannerStateAfterFactoryReset() {
   }
 
   try {
+    resetCustomFontsForFactoryReset();
+  } catch (error) {
+    console.warn('Failed to reset custom fonts during factory reset', error);
+  }
+
+  try {
     updateStorageSummary();
   } catch (error) {
     console.warn('Failed to update storage summary during factory reset', error);
@@ -25021,6 +25086,10 @@ if (typeof module !== "undefined" && module.exports) {
       featureListElement: featureList,
       restoreFeatureSearchDefaults,
       updateFeatureSearchSuggestions,
+    },
+    __customFontInternals: {
+      addFromData: (name, dataUrl, options) => addCustomFontFromData(name, dataUrl, options),
+      getEntries: () => Array.from(customFontEntries.values()),
     },
     collectAutoGearCatalogNames,
     applyAutoGearRulesToTableHtml,
