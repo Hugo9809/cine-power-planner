@@ -4515,94 +4515,6 @@ const FEEDBACK_ICON_SVG = `
   </svg>
 `.trim();
 
-const LOAD_ICON_SVG = `
-  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-    <path
-      d="M12 3v9.75"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="1.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    />
-    <polyline
-      points="8.75 9.75 12 12.75 15.25 9.75"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="1.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    />
-    <path
-      d="M4.75 11.5H8.6L10.4 9h8.85L21 11.5"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="1.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    />
-    <rect
-      x="4.75"
-      y="12.5"
-      width="14.5"
-      height="7.25"
-      rx="1.75"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="1.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    />
-  </svg>
-`.trim();
-
-const PLUS_ICON_SVG = `
-  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-    <path
-      d="M12 5v14"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="1.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    />
-    <path
-      d="M5 12h14"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="1.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    />
-  </svg>
-`.trim();
-
-const MINUS_ICON_SVG = `
-  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-    <path
-      d="M5 12h14"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="1.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    />
-  </svg>
-`.trim();
-
-const CHECK_ICON_SVG = `
-  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-    <path
-      d="M5 12.5 9.5 17 19 7.5"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="1.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    />
-  </svg>
-`.trim();
-
 const PRODUCTION_COMPANY_ICON = iconGlyph('\uE2D5', ICON_FONT_KEYS.UICONS);
 const RENTAL_HOUSE_ICON = iconGlyph('\uEA09', ICON_FONT_KEYS.UICONS);
 const ASPECT_RATIO_ICON = iconGlyph('\uE86E', ICON_FONT_KEYS.UICONS);
@@ -4637,10 +4549,10 @@ const ICON_GLYPHS = Object.freeze({
   camera: iconGlyph('\uE333', ICON_FONT_KEYS.UICONS),
   trash: iconGlyph('\uF254', ICON_FONT_KEYS.ESSENTIAL),
   reload: iconGlyph('\uF202', ICON_FONT_KEYS.ESSENTIAL),
-  load: Object.freeze({ markup: LOAD_ICON_SVG, className: 'icon-svg' }),
-  add: Object.freeze({ markup: PLUS_ICON_SVG, className: 'icon-svg' }),
-  minus: Object.freeze({ markup: MINUS_ICON_SVG, className: 'icon-svg' }),
-  check: Object.freeze({ markup: CHECK_ICON_SVG, className: 'icon-svg' }),
+  load: iconGlyph('\uE0E0', ICON_FONT_KEYS.UICONS),
+  add: iconGlyph('\uE02E', ICON_FONT_KEYS.UICONS),
+  minus: iconGlyph('\uE9E0', ICON_FONT_KEYS.UICONS),
+  check: iconGlyph('\uE3D8', ICON_FONT_KEYS.UICONS),
   fileExport: iconGlyph('\uE7AB', ICON_FONT_KEYS.UICONS),
   fileImport: iconGlyph('\uE7C7', ICON_FONT_KEYS.UICONS),
   save: iconGlyph('\uF207', ICON_FONT_KEYS.ESSENTIAL),
