@@ -19133,7 +19133,9 @@ function generateConnectorSummary(device) {
     const formatted = uniqueList(values);
     if (!formatted.length) return html;
     const iconHtml = iconMarkup(icon);
-    return `${html}<span class="info-box ${cls}">${iconHtml}${label}: ${formatted.join(', ')}</span>`;
+    const labelHtml = `<span class="info-box-label">${label}:</span>`;
+    const valuesHtml = `<span class="info-box-values">${formatted.join(', ')}</span>`;
+    return `${html}<span class="info-box ${cls} info-box-list">${iconHtml}${labelHtml}${valuesHtml}</span>`;
   };
 
   let recordingHtml = '';

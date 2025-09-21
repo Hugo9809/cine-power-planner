@@ -3165,6 +3165,24 @@ body.pink-mode #topBar #logo .logo-center {
   font-size: calc(var(--font-size-relative-base) * var(--font-scale-xxs));
 }
 
+.info-box-list {
+  gap: 4px;
+  flex-wrap: nowrap;
+}
+
+.info-box-list .info-box-label {
+  flex: 0 0 auto;
+  font-weight: var(--font-weight-medium);
+  margin-right: 2px;
+}
+
+.info-box-list .info-box-values {
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
 .scenario-box,
 .icon-box {
   display: flex;
