@@ -11665,6 +11665,119 @@ function describeRequirement(field, value) {
   return parts.join(' ');
 }
 
+const GEAR_TABLE_CATEGORY_META = Object.freeze({
+  Camera: {
+    summary: 'Primary camera body chosen for the current setup.',
+    logic: 'Always included so the crew preps the selected camera package.'
+  },
+  'Camera Support': {
+    summary: 'Baseplates, cages and handle accessories for mounting the camera.',
+    logic: 'Matched to your camera body, selected handles and any scenario add-ons.'
+  },
+  Media: {
+    summary: 'Recording media that works with the selected camera.',
+    logic: 'Picks capacities that cover the camera codecs without running out of space.'
+  },
+  Lens: {
+    summary: 'Optics selected in the project requirements.',
+    logic: 'Pulled directly from your lens choices so they travel with the kit.'
+  },
+  'Lens Support': {
+    summary: 'Lens support brackets, rails and rings sized for your glass.',
+    logic: 'Added automatically when lenses or matte box setups require additional support.'
+  },
+  'Matte box + filter': {
+    summary: 'Matte boxes, trays and filter packs.',
+    logic: 'Generated from your matte box preference and filter selections, including required adapters.'
+  },
+  'LDS (FIZ)': {
+    summary: 'Focus, iris and zoom control hardware.',
+    logic: 'Reflects the motors and controllers picked in the wireless FIZ section.'
+  },
+  'Camera Batteries': {
+    summary: 'Batteries dedicated to powering the camera body.',
+    logic: 'Sized from the camera power draw, runtime targets and hot-swap rules.'
+  },
+  'Monitoring Batteries': {
+    summary: 'Power for handheld and field monitors.',
+    logic: 'Ensures each monitor package includes enough charged batteries for the day.'
+  },
+  Chargers: {
+    summary: 'Charging stations for included battery systems.',
+    logic: 'Adds compatible chargers so battery rotations stay balanced during the shoot.'
+  },
+  Monitoring: {
+    summary: 'On-set monitoring packages for the crew.',
+    logic: 'Derived from monitoring configuration and distribution preferences in project details.'
+  },
+  'Monitoring support': {
+    summary: 'Stands, brackets, straps and cages supporting monitors.',
+    logic: 'Auto-matched to monitor sizes and usage (handheld, stand or cart setups).'
+  },
+  Rigging: {
+    summary: 'Arms, clamps and mounting hardware for accessories.',
+    logic: 'Includes core rigging plus extras triggered by scenarios like Steadicam or gimbal use.'
+  },
+  Power: {
+    summary: 'Power distribution cables and adapters.',
+    logic: 'Covers how accessories receive power from the main battery ecosystem.'
+  },
+  Grip: {
+    summary: 'Support gear like sliders, stabilisers and Easyrig options.',
+    logic: 'Reflects stabilisation preferences and active shooting scenarios.'
+  },
+  'Carts and Transportation': {
+    summary: 'Carts, cases and transport aids for the camera department.',
+    logic: 'Included so the crew can move, stage and secure the package efficiently.'
+  },
+  Miscellaneous: {
+    summary: 'Utility items that keep the crew efficient and comfortable.',
+    logic: 'Adds weather protection and helpful tools based on scenarios and best practices.'
+  },
+  Consumables: {
+    summary: 'Expendables such as tapes, wipes and covers.',
+    logic: 'Scaled to shoot length and weather needs so consumables never run short.'
+  }
+});
+
+const DEFAULT_GEAR_TABLE_CATEGORY_META = Object.freeze({
+  summary: 'Automatically generated grouping of related equipment.',
+  logic: 'Filled using your project requirements, selections and saved auto gear rules.'
+});
+
+const getGearTableCategoryMeta = category => {
+  if (!category) return DEFAULT_GEAR_TABLE_CATEGORY_META;
+  return GEAR_TABLE_CATEGORY_META[category] || DEFAULT_GEAR_TABLE_CATEGORY_META;
+};
+
+const buildGearTableCategoryHelp = category => {
+  const meta = getGearTableCategoryMeta(category);
+  const parts = [];
+  if (category) parts.push(`${category} – ${meta.summary}`);
+  else parts.push(meta.summary);
+  if (meta.logic) parts.push(`Logic: ${meta.logic}`);
+  return parts.join(' ');
+};
+
+const formatDeviceCategoryLabel = category => {
+  if (typeof category !== 'string' || !category.trim()) return '';
+  return category
+    .replace(/[_-]+/g, ' ')
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .split(/\s+/)
+    .filter(Boolean)
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};
+
+const formatDeviceCategoryPath = path => {
+  if (!Array.isArray(path) || !path.length) return '';
+  return path
+    .map(part => formatDeviceCategoryLabel(part))
+    .filter(Boolean)
+    .join(' › ');
+};
+
 function displayGearAndRequirements(html) {
   const { projectHtml, gearHtml } = splitGearListHtml(html);
   if (projectRequirementsOutput) {
@@ -11698,34 +11811,96 @@ function displayGearAndRequirements(html) {
       applyFilterSelectionsToGearList();
       renderFilterDetails();
       const findDevice = name => {
-        for (const [catName, cat] of Object.entries(devices)) {
-          if (cat && typeof cat === 'object') {
-            if (cat[name]) return { info: cat[name], category: catName };
-            for (const sub of Object.values(cat)) {
-              if (sub && sub[name]) return { info: sub[name], category: catName };
-            }
-          }
+        if (typeof name !== 'string' || !name.trim()) {
+          return { info: null, category: '', categoryPath: [] };
         }
-        return { info: null, category: '' };
+        const visited = new Set();
+        const search = (node, path) => {
+          if (!isPlainObjectValue(node) || visited.has(node)) return null;
+          visited.add(node);
+          if (
+            Object.prototype.hasOwnProperty.call(node, name) &&
+            isPlainObjectValue(node[name])
+          ) {
+            return { info: node[name], categoryPath: path };
+          }
+          for (const [key, value] of Object.entries(node)) {
+            if (!isPlainObjectValue(value)) continue;
+            const result = search(value, path.concat(key));
+            if (result) return result;
+          }
+          return null;
+        };
+        const result = search(devices, []);
+        if (result) {
+          return {
+            info: result.info,
+            category: formatDeviceCategoryPath(result.categoryPath),
+            categoryPath: result.categoryPath
+          };
+        }
+        return { info: null, category: '', categoryPath: [] };
       };
-      gearListOutput.querySelectorAll('.gear-item').forEach(span => {
-        const name = span.getAttribute('data-gear-name');
-        const { info, category } = findDevice(name);
-        const countMatch = span.textContent.trim().match(/^(\d+)x\s+/);
-        const count = countMatch ? `${countMatch[1]}x ` : '';
+
+      const buildGearItemHelp = ({
+        name,
+        countText,
+        deviceInfo,
+        libraryCategory,
+        tableCategory
+      }) => {
         const parts = [];
-        parts.push(`${count}${name}`.trim());
-        if (category) parts.push(`Category: ${category}`);
-        if (info) {
-          let summary = generateConnectorSummary(info);
+        const label = `${countText || ''}${name}`.trim();
+        if (label) parts.push(label);
+        const meta = getGearTableCategoryMeta(tableCategory);
+        const categoryParts = [];
+        if (tableCategory) categoryParts.push(`Gear list section: ${tableCategory}`);
+        if (meta.summary) categoryParts.push(meta.summary);
+        if (meta.logic) categoryParts.push(`Logic: ${meta.logic}`);
+        if (!tableCategory && !categoryParts.length) {
+          const fallback = getGearTableCategoryMeta('');
+          if (fallback.summary) categoryParts.push(fallback.summary);
+          if (fallback.logic) categoryParts.push(`Logic: ${fallback.logic}`);
+        }
+        if (categoryParts.length) parts.push(categoryParts.join(' – '));
+        if (libraryCategory) parts.push(`Device library category: ${libraryCategory}`);
+        if (deviceInfo) {
+          let summary = generateConnectorSummary(deviceInfo);
           summary = summary
             ? summary.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim()
             : '';
-          if (info.notes)
-            summary = summary ? `${summary}; Notes: ${info.notes}` : info.notes;
+          if (deviceInfo.notes)
+            summary = summary ? `${summary}; Notes: ${deviceInfo.notes}` : deviceInfo.notes;
           if (summary) parts.push(summary);
         }
-        const desc = parts.join(' – ');
+        return parts.join(' – ');
+      };
+
+      gearListOutput.querySelectorAll('tbody.category-group').forEach(group => {
+        const headingCell = group.querySelector('.category-row td');
+        if (!headingCell) return;
+        const tableCategory = headingCell.textContent.trim();
+        group.setAttribute('data-gear-table-category', tableCategory);
+        const helpText = buildGearTableCategoryHelp(tableCategory);
+        headingCell.setAttribute('title', helpText);
+        headingCell.setAttribute('data-help', helpText);
+      });
+
+      gearListOutput.querySelectorAll('.gear-item').forEach(span => {
+        const name = span.getAttribute('data-gear-name') || span.textContent.trim();
+        const { info, category } = findDevice(name);
+        const countMatch = span.textContent.trim().match(/^(\d+)x\s+/);
+        const count = countMatch ? `${countMatch[1]}x ` : '';
+        const tableCategory = span
+          .closest('tbody.category-group')
+          ?.getAttribute('data-gear-table-category');
+        const desc = buildGearItemHelp({
+          name,
+          countText: count,
+          deviceInfo: info,
+          libraryCategory: category,
+          tableCategory: tableCategory || ''
+        });
         span.setAttribute('title', desc);
         span.setAttribute('data-help', desc);
         span.querySelectorAll('select').forEach(sel => {
@@ -11734,25 +11909,23 @@ function displayGearAndRequirements(html) {
           initFavoritableSelect(sel);
         });
       });
+
       // Standalone selects (not wrapped in .gear-item) still need descriptive help
       gearListOutput.querySelectorAll('select').forEach(sel => {
         if (sel.getAttribute('data-help')) return;
         const selected = sel.selectedOptions && sel.selectedOptions[0];
         const name = selected ? selected.textContent.trim() : sel.value;
         const { info, category } = findDevice(name);
-        const parts = [];
-        parts.push(`1x ${name}`.trim());
-        if (category) parts.push(`Category: ${category}`);
-        if (info) {
-          let summary = generateConnectorSummary(info);
-          summary = summary
-            ? summary.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim()
-            : '';
-          if (info.notes)
-            summary = summary ? `${summary}; Notes: ${info.notes}` : info.notes;
-          if (summary) parts.push(summary);
-        }
-        const desc = parts.join(' – ');
+        const tableCategory = sel
+          .closest('tbody.category-group')
+          ?.getAttribute('data-gear-table-category');
+        const desc = buildGearItemHelp({
+          name,
+          countText: '1x ',
+          deviceInfo: info,
+          libraryCategory: category,
+          tableCategory: tableCategory || ''
+        });
         sel.setAttribute('title', desc);
         sel.setAttribute('data-help', desc);
         initFavoritableSelect(sel);
