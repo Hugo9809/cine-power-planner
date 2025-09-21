@@ -3046,8 +3046,10 @@ body.pink-mode #topBar #logo .logo-center {
 }
 
 #diagramArea {
-  margin-top: 0.5em;
+  margin: 0.5em auto 0;
   position: relative;
+  display: inline-block;
+  text-align: left;
 }
 
 #diagramArea.grid-snap {
