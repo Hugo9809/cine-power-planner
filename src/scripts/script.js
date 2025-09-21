@@ -27533,14 +27533,52 @@ function resolveFilterDisplayInfo(type, size = DEFAULT_FILTER_SIZE) {
 }
 
 function buildFilterGearEntries(filters = []) {
-  const entries = [];
+  const order = [];
+  const entryMap = new Map();
+  const shouldUseIncomingEntry = (existingRecord, incomingRecord) => {
+    if (incomingRecord.meta.hasType && !existingRecord.meta.hasType) {
+      return true;
+    }
+    if (!incomingRecord.meta.hasType && existingRecord.meta.hasType) {
+      return false;
+    }
+    if (incomingRecord.meta.hasExplicitValues && !existingRecord.meta.hasExplicitValues) {
+      return true;
+    }
+    if (!incomingRecord.meta.hasExplicitValues && existingRecord.meta.hasExplicitValues) {
+      return false;
+    }
+    return true;
+  };
+  const addEntry = (entry, metaOverrides = {}) => {
+    if (!entry || !entry.id) return;
+    const meta = {
+      hasType: Boolean(entry.type),
+      hasExplicitValues: Boolean(
+        metaOverrides.hasExplicitValues
+          && entry.type
+          && filterTypeNeedsValueSelect(entry.type)
+      )
+    };
+    const incomingRecord = { entry, meta };
+    const existingRecord = entryMap.get(entry.id);
+    if (!existingRecord) {
+      order.push(entry.id);
+      entryMap.set(entry.id, incomingRecord);
+      return;
+    }
+    if (shouldUseIncomingEntry(existingRecord, incomingRecord)) {
+      entryMap.set(entry.id, incomingRecord);
+    }
+  };
   filters.forEach(({ type, size = DEFAULT_FILTER_SIZE, values }) => {
     if (!type) return;
     const sizeValue = size || DEFAULT_FILTER_SIZE;
     const idBase = `filter-${filterId(type)}`;
+    const valuesProvided = values !== undefined;
     switch (type) {
       case 'Diopter': {
-        entries.push({
+        addEntry({
           id: `${idBase}-frame`,
           gearName: 'ARRI Diopter Frame 138mm',
           label: 'ARRI Diopter Frame 138mm',
@@ -27551,19 +27589,19 @@ function buildFilterGearEntries(filters = []) {
         const diopterValues = values == null
           ? (getFilterValueConfig(type).defaults || []).slice()
           : (Array.isArray(values) ? values.slice() : []);
-        entries.push({
+        addEntry({
           id: `${idBase}-set`,
           gearName: 'Schneider CF DIOPTER FULL GEN2',
           label: 'Schneider CF DIOPTER FULL GEN2',
           type,
           size: '',
           values: diopterValues
-        });
+        }, { hasExplicitValues: valuesProvided });
         break;
       }
       case 'Clear': {
         const { label, gearName } = resolveFilterDisplayInfo(type, sizeValue);
-        entries.push({
+        addEntry({
           id: idBase,
           gearName,
           label,
@@ -27575,7 +27613,7 @@ function buildFilterGearEntries(filters = []) {
       }
       case 'Pol': {
         const { label, gearName } = resolveFilterDisplayInfo(type, sizeValue);
-        entries.push({
+        addEntry({
           id: idBase,
           gearName,
           label,
@@ -27588,7 +27626,7 @@ function buildFilterGearEntries(filters = []) {
       case 'Rota-Pol': {
         const { label, gearName } = resolveFilterDisplayInfo(type, sizeValue);
         const displaySize = label.includes(sizeValue) ? '' : sizeValue;
-        entries.push({
+        addEntry({
           id: idBase,
           gearName,
           label,
@@ -27604,14 +27642,14 @@ function buildFilterGearEntries(filters = []) {
         const gradValues = values == null
           ? (getFilterValueConfig(type).defaults || []).slice()
           : (Array.isArray(values) ? values.slice() : []);
-        entries.push({
+        addEntry({
           id: idBase,
           gearName,
           label,
           type,
           size: sizeValue,
           values: gradValues
-        });
+        }, { hasExplicitValues: valuesProvided });
         break;
       }
       default: {
@@ -27619,18 +27657,21 @@ function buildFilterGearEntries(filters = []) {
         const filterValues = values == null
           ? (getFilterValueConfig(type).defaults || []).slice()
           : (Array.isArray(values) ? values.slice() : []);
-        entries.push({
+        addEntry({
           id: idBase,
           gearName,
           label,
           type,
           size: sizeValue,
           values: filterValues
-        });
+        }, { hasExplicitValues: valuesProvided });
       }
     }
   });
-  return entries;
+  return order
+    .map((id) => entryMap.get(id))
+    .map((record) => (record ? record.entry : null))
+    .filter(Boolean);
 }
 
 function formatFilterEntryText(entry) {
@@ -27951,9 +27992,20 @@ function normalizeGearNameForComparison(name) {
 }
 
 function buildFilterSelectHtml(filters = [], precomputedEntries) {
-  const entries = Array.isArray(precomputedEntries)
+  const rawEntries = Array.isArray(precomputedEntries)
     ? precomputedEntries
     : buildFilterGearEntries(filters);
+  const seenIds = new Set();
+  const entries = rawEntries.filter(entry => {
+    if (!entry || !entry.id) {
+      return false;
+    }
+    if (seenIds.has(entry.id)) {
+      return false;
+    }
+    seenIds.add(entry.id);
+    return true;
+  });
   const summaryHtml = entries.map(entry => {
     const attrs = [
       'class="gear-item"',
