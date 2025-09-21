@@ -4615,6 +4615,11 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .settings-content.modal-surface
   border-bottom: 1px solid var(--accent-color);
 }
 
+body:not(.dark-mode) #gearListOutput h2,
+#gearListOutput:not(.dark-mode) h2 {
+  font-weight: var(--font-weight-medium);
+}
+
 .dark-mode #gearListOutput h1,
 .dark-mode #gearListOutput h2,
 .dark-mode #gearListOutput h3,
