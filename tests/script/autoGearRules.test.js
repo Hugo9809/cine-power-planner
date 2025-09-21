@@ -497,6 +497,35 @@ describe('applyAutoGearRulesToTableHtml', () => {
     expect(entries).toHaveLength(1);
   });
 
+  test('buildDefaultVideoDistributionAutoGearRules covers each selector option', () => {
+    env = setupScriptEnvironment();
+
+    const {
+      buildDefaultVideoDistributionAutoGearRules,
+      collectProjectFormData,
+    } = env.utils;
+
+    const baseInfo = typeof collectProjectFormData === 'function'
+      ? collectProjectFormData()
+      : {};
+
+    const select = document.getElementById('videoDistribution');
+    const optionValues = Array.from(select?.options || [])
+      .map(option => (option && typeof option.value === 'string' ? option.value.trim() : ''))
+      .filter(value => value && value.toLowerCase() !== 'none');
+    const expectedValues = Array.from(new Set(optionValues));
+
+    const rules = buildDefaultVideoDistributionAutoGearRules(baseInfo);
+
+    expectedValues.forEach(value => {
+      const match = rules.find(rule => Array.isArray(rule.videoDistribution)
+        && rule.videoDistribution.includes(value)
+        && Array.isArray(rule.add)
+        && rule.add.length > 0);
+      expect(match).toBeDefined();
+    });
+  });
+
   test('seeds default mattebox rules when they are missing', () => {
     localStorage.setItem(
       STORAGE_KEY,
@@ -535,6 +564,39 @@ describe('applyAutoGearRulesToTableHtml', () => {
       'Rod based',
       'Clamp On',
     ]));
+  });
+
+  test('seeding factory defaults includes video distribution rules', () => {
+    env = setupScriptEnvironment();
+
+    const {
+      getAutoGearRules,
+      syncAutoGearRulesFromStorage,
+      __autoGearInternals,
+    } = env.utils;
+
+    syncAutoGearRulesFromStorage([]);
+    if (__autoGearInternals?.clearAutoGearDefaultsSeeded) {
+      __autoGearInternals.clearAutoGearDefaultsSeeded();
+    }
+    if (__autoGearInternals?.seedAutoGearRulesFromCurrentProject) {
+      __autoGearInternals.seedAutoGearRulesFromCurrentProject();
+    }
+
+    const rules = getAutoGearRules();
+    const select = document.getElementById('videoDistribution');
+    const expectedValues = Array.from(select?.options || [])
+      .map(option => (option && typeof option.value === 'string' ? option.value.trim() : ''))
+      .filter(value => value && value.toLowerCase() !== 'none');
+    const uniqueExpected = Array.from(new Set(expectedValues));
+
+    uniqueExpected.forEach(value => {
+      const exists = rules.some(rule => Array.isArray(rule.videoDistribution)
+        && rule.videoDistribution.includes(value)
+        && Array.isArray(rule.add)
+        && rule.add.length > 0);
+      expect(exists).toBe(true);
+    });
   });
 
   test('saving a rule shows a confirmation notification', () => {
