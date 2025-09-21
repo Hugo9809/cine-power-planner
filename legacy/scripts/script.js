@@ -17071,28 +17071,51 @@ function downloadSharedProject(shareFileName, includeAutoGear) {
   if (includeAutoGear && hasAutoGearRules) {
     currentSetup.autoGearRules = rulesForShare;
   }
-  var json = JSON.stringify(currentSetup, null, 2);
-  var blob = new Blob([json], {
-    type: 'application/json'
-  });
-  var url = URL.createObjectURL(blob);
-  var a = document.createElement('a');
-  a.href = url;
-  a.download = shareFileName;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  function notifyShareFailure(error) {
+    if (error) {
+      console.warn('Project export failed', error);
+    } else {
+      console.warn('Project export failed');
+    }
+    var failureMessage = getLocalizedText('shareExportFailed') || 'Project export failed.';
+    if (shareLinkMessage) {
+      shareLinkMessage.textContent = failureMessage;
+      setStatusLevel(shareLinkMessage, 'danger');
+      shareLinkMessage.classList.remove('hidden');
+      if (typeof setTimeout === 'function') {
+        setTimeout(function () {
+          shareLinkMessage.classList.add('hidden');
+        }, 6000);
+      }
+    } else if (typeof alert === 'function') {
+      alert(failureMessage);
+    }
+  }
+  var json;
+  try {
+    json = JSON.stringify(currentSetup, null, 2);
+  } catch (serializationError) {
+    console.error('Failed to serialize shared project', serializationError);
+    notifyShareFailure(serializationError);
+    return;
+  }
+  var downloaded = downloadBackupPayload(json, shareFileName);
   if (shareIncludeAutoGearCheckbox) {
     shareIncludeAutoGearCheckbox.checked = includeAutoGear && hasAutoGearRules;
+  }
+  if (!downloaded) {
+    notifyShareFailure();
+    return;
   }
   if (shareLinkMessage) {
     shareLinkMessage.textContent = texts[currentLang].shareLinkCopied;
     setStatusLevel(shareLinkMessage, 'success');
     shareLinkMessage.classList.remove('hidden');
-    setTimeout(function () {
-      return shareLinkMessage.classList.add('hidden');
-    }, 4000);
+    if (typeof setTimeout === 'function') {
+      setTimeout(function () {
+        shareLinkMessage.classList.add('hidden');
+      }, 4000);
+    }
   }
 }
 shareSetupBtn.addEventListener('click', function () {
@@ -24560,6 +24583,7 @@ if (typeof module !== "undefined" && module.exports) {
     ensureJsonExtension: ensureJsonExtension,
     getDefaultShareFilename: getDefaultShareFilename,
     promptForSharedFilename: promptForSharedFilename,
+    downloadSharedProject: downloadSharedProject,
     confirmAutoGearSelection: confirmAutoGearSelection,
     configureSharedImportOptions: configureSharedImportOptions,
     resolveSharedImportMode: resolveSharedImportMode,

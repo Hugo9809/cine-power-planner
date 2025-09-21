@@ -166,4 +166,68 @@ describe('project sharing helpers', () => {
 
     expect(resolveSharedImportMode([])).toBe('none');
   });
+
+  test('downloadSharedProject falls back to a data URL when object URLs fail', () => {
+    env = setupScriptEnvironment();
+    const { downloadSharedProject } = env.utils;
+
+    const wasCreateDefined = typeof window.URL.createObjectURL === 'function';
+    const originalCreateObjectURL = window.URL.createObjectURL;
+    if (!wasCreateDefined) {
+      window.URL.createObjectURL = () => 'blob:placeholder';
+    }
+    const createSpy = jest
+      .spyOn(window.URL, 'createObjectURL')
+      .mockImplementation(() => { throw new Error('object URL unavailable'); });
+
+    let clickedHref = null;
+    const clickSpy = jest
+      .spyOn(window.HTMLAnchorElement.prototype, 'click')
+      .mockImplementation(function () {
+        clickedHref = this.href;
+      });
+    downloadSharedProject('shared.json', false);
+
+    expect(createSpy).toHaveBeenCalled();
+    expect(clickedHref).toMatch(/^data:application\/json;charset=utf-8,/);
+
+    const shareLinkMessage = document.getElementById('shareLinkMessage');
+    expect(shareLinkMessage.textContent).toBe('Project file downloaded.');
+    expect(shareLinkMessage.classList.contains('hidden')).toBe(false);
+    expect(shareLinkMessage.dataset.statusLevel).toBe('success');
+
+    clickSpy.mockRestore();
+    createSpy.mockRestore();
+    if (!wasCreateDefined) {
+      delete window.URL.createObjectURL;
+    } else {
+      window.URL.createObjectURL = originalCreateObjectURL;
+    }
+  });
+
+  test('downloadSharedProject reports errors when no download method is available', () => {
+    env = setupScriptEnvironment();
+    const { downloadSharedProject } = env.utils;
+
+    const originalCreateElement = document.createElement;
+    const createElementSpy = jest.spyOn(document, 'createElement').mockImplementation(function (tagName, options) {
+      if (tagName === 'a') {
+        throw new Error('anchor creation blocked');
+      }
+      return originalCreateElement.call(this, tagName, options);
+    });
+
+    const alertSpy = jest.spyOn(window, 'alert').mockImplementation(() => {});
+
+    downloadSharedProject('shared.json', false);
+
+    const shareLinkMessage = document.getElementById('shareLinkMessage');
+    expect(shareLinkMessage.textContent).toBe('Project export failed.');
+    expect(shareLinkMessage.classList.contains('hidden')).toBe(false);
+    expect(shareLinkMessage.dataset.statusLevel).toBe('danger');
+    expect(alertSpy).not.toHaveBeenCalled();
+
+    createElementSpy.mockRestore();
+    alertSpy.mockRestore();
+  });
 });
