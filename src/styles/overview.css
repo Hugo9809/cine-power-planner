@@ -152,6 +152,9 @@ th { background-color: var(--control-bg); font-weight: var(--font-weight-bold); 
 .device-block-grid.two-column {
   grid-template-columns: repeat(2, 1fr);
 }
+.device-block-grid.fiz-single-column {
+  grid-template-columns: 1fr;
+}
 .device-block {
   background: rgba(255,255,255,0.95);
   border: 1px solid var(--control-text);
