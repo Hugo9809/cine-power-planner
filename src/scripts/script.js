@@ -16239,7 +16239,7 @@ updateBatteryPlateVisibility();
 updateBatteryOptions();
 
 // Enable search inside dropdowns
-[cameraSelect, monitorSelect, videoSelect, distanceSelect, batterySelect, hotswapSelect, lensSelect]
+[cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, hotswapSelect, lensSelect]
   .forEach(sel => attachSelectSearch(sel));
 motorSelects.forEach(sel => attachSelectSearch(sel));
 controllerSelects.forEach(sel => attachSelectSearch(sel));
