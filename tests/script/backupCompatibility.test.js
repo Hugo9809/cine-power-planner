@@ -61,5 +61,23 @@ describe('backup compatibility utilities', () => {
     );
     expect(sections.sessionStorage).toEqual({ activeSetup: 'Main' });
   });
+
+  test('extractBackupSections preserves legacy top-level backup data keys', () => {
+    const { extractBackupSections } = loadApp();
+
+    const legacyBackup = {
+      fullBackupHistory: [{ createdAt: '2024-01-01T00:00:00.000Z', fileName: 'snapshot.json' }],
+      fullBackups: [{ createdAt: '2023-12-31T00:00:00.000Z' }],
+      schemaCache: '{"checksum":"abc123"}',
+    };
+
+    const sections = extractBackupSections(legacyBackup);
+
+    expect(sections.data.fullBackupHistory).toEqual([
+      { createdAt: '2024-01-01T00:00:00.000Z', fileName: 'snapshot.json' },
+    ]);
+    expect(sections.data.fullBackups).toEqual([{ createdAt: '2023-12-31T00:00:00.000Z' }]);
+    expect(sections.data.schemaCache).toBe('{"checksum":"abc123"}');
+  });
 });
 

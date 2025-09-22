@@ -1510,6 +1510,9 @@ const BACKUP_DATA_KEYS = [
   'customLogo',
   'customFonts',
   'preferences',
+  'schemaCache',
+  'fullBackupHistory',
+  'fullBackups',
 ];
 
 function isPlainObject(value) {

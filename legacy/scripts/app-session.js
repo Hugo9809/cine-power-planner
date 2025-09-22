@@ -1449,7 +1449,7 @@ function sanitizeBackupPayload(raw) {
 var BACKUP_STORAGE_KEY_PREFIXES = ['cameraPowerPlanner_'];
 var BACKUP_STORAGE_KNOWN_KEYS = new Set(['darkMode', 'pinkMode', 'highContrast', 'showAutoBackups', 'accentColor', 'fontSize', 'fontFamily', 'customLogo', 'language', IOS_PWA_HELP_STORAGE_KEY]);
 var BACKUP_METADATA_BASE_KEYS = new Set(['settings', 'storage', 'localStorage', 'values', 'entries', 'sessionStorage', 'sessionState', 'sessionEntries', 'payload', 'plannerData', 'allData', 'generatedAt', 'version', 'appVersion', 'applicationVersion']);
-var BACKUP_DATA_KEYS = ['devices', 'setups', 'session', 'feedback', 'project', 'projects', 'gearList', 'favorites', 'autoGearRules', 'autoGearSeeded', 'autoGearBackups', 'autoGearPresets', 'autoGearActivePresetId', 'autoGearAutoPresetId', 'autoGearShowBackups', 'customLogo', 'customFonts', 'preferences'];
+var BACKUP_DATA_KEYS = ['devices', 'setups', 'session', 'feedback', 'project', 'projects', 'gearList', 'favorites', 'autoGearRules', 'autoGearSeeded', 'autoGearBackups', 'autoGearPresets', 'autoGearActivePresetId', 'autoGearAutoPresetId', 'autoGearShowBackups', 'customLogo', 'customFonts', 'preferences', 'schemaCache', 'fullBackupHistory', 'fullBackups'];
 function isPlainObject(value) {
   return value !== null && _typeof(value) === 'object' && !Array.isArray(value);
 }
