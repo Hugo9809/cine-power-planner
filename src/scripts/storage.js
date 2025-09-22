@@ -105,10 +105,12 @@ const AUTO_GEAR_PRESETS_STORAGE_KEY = 'cameraPowerPlanner_autoGearPresets';
 const AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY = 'cameraPowerPlanner_autoGearActivePreset';
 const AUTO_GEAR_AUTO_PRESET_STORAGE_KEY = 'cameraPowerPlanner_autoGearAutoPreset';
 const AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY = 'cameraPowerPlanner_autoGearShowBackups';
+const FULL_BACKUP_HISTORY_STORAGE_KEY = 'cameraPowerPlanner_fullBackups';
 const AUTO_BACKUP_NAME_PREFIX = 'auto-backup-';
 const AUTO_BACKUP_DELETION_PREFIX = 'auto-backup-before-delete-';
 const MAX_AUTO_BACKUPS = 50;
 const MAX_DELETION_BACKUPS = 20;
+const MAX_FULL_BACKUP_HISTORY_ENTRIES = 200;
 
 const STORAGE_BACKUP_SUFFIX = '__backup';
 const MAX_SAVE_ATTEMPTS = 3;
@@ -2696,6 +2698,135 @@ function saveFeedback(feedback) {
   );
 }
 
+function normalizeFullBackupHistoryEntry(entry) {
+  if (!entry) {
+    return null;
+  }
+
+  if (typeof entry === 'string') {
+    const trimmed = entry.trim();
+    return trimmed ? { createdAt: trimmed } : null;
+  }
+
+  if (typeof entry === 'object') {
+    const createdAt = typeof entry.createdAt === 'string' && entry.createdAt.trim()
+      ? entry.createdAt.trim()
+      : typeof entry.iso === 'string' && entry.iso.trim()
+        ? entry.iso.trim()
+        : typeof entry.timestamp === 'string' && entry.timestamp.trim()
+          ? entry.timestamp.trim()
+          : null;
+    if (!createdAt) {
+      return null;
+    }
+    const normalized = { createdAt };
+    if (typeof entry.fileName === 'string' && entry.fileName.trim()) {
+      normalized.fileName = entry.fileName.trim();
+    } else if (typeof entry.name === 'string' && entry.name.trim()) {
+      normalized.fileName = entry.name.trim();
+    }
+    return normalized;
+  }
+
+  return null;
+}
+
+function loadFullBackupHistory() {
+  applyLegacyStorageMigrations();
+  const safeStorage = getSafeLocalStorage();
+  const parsed = loadJSONFromStorage(
+    safeStorage,
+    FULL_BACKUP_HISTORY_STORAGE_KEY,
+    "Error loading full backup history from localStorage:",
+    [],
+    { validate: (value) => value === null || Array.isArray(value) },
+  );
+  if (!Array.isArray(parsed)) {
+    return [];
+  }
+  return parsed
+    .map(normalizeFullBackupHistoryEntry)
+    .filter(Boolean);
+}
+
+function saveFullBackupHistory(entries) {
+  const safeEntries = Array.isArray(entries)
+    ? entries
+        .map(normalizeFullBackupHistoryEntry)
+        .filter(Boolean)
+    : [];
+  const safeStorage = getSafeLocalStorage();
+  if (!safeEntries.length) {
+    deleteFromStorage(
+      safeStorage,
+      FULL_BACKUP_HISTORY_STORAGE_KEY,
+      "Error deleting full backup history from localStorage:",
+    );
+    return;
+  }
+  saveJSONToStorage(
+    safeStorage,
+    FULL_BACKUP_HISTORY_STORAGE_KEY,
+    safeEntries,
+    "Error saving full backup history to localStorage:",
+  );
+}
+
+function recordFullBackupHistoryEntry(entry) {
+  const normalized = normalizeFullBackupHistoryEntry(entry);
+  if (!normalized) {
+    return loadFullBackupHistory();
+  }
+  const history = loadFullBackupHistory();
+  history.push(normalized);
+  const trimmed = history.slice(-MAX_FULL_BACKUP_HISTORY_ENTRIES);
+  saveFullBackupHistory(trimmed);
+  return trimmed;
+}
+
+function normalizeImportedFullBackupHistory(value) {
+  if (value === null || value === undefined) {
+    return [];
+  }
+
+  if (typeof value === 'string') {
+    const parsed = tryParseJSONLike(value);
+    if (parsed.success) {
+      return normalizeImportedFullBackupHistory(parsed.parsed);
+    }
+    const entry = normalizeFullBackupHistoryEntry(value);
+    return entry ? [entry] : [];
+  }
+
+  if (Array.isArray(value)) {
+    return value
+      .map(normalizeFullBackupHistoryEntry)
+      .filter(Boolean);
+  }
+
+  if (isPlainObject(value)) {
+    if (Array.isArray(value.history)) {
+      return normalizeImportedFullBackupHistory(value.history);
+    }
+    if (Array.isArray(value.entries)) {
+      return normalizeImportedFullBackupHistory(value.entries);
+    }
+    if (Array.isArray(value.list)) {
+      return normalizeImportedFullBackupHistory(value.list);
+    }
+    const entry = normalizeFullBackupHistoryEntry(value);
+    if (entry) {
+      return [entry];
+    }
+    const nestedValues = Object.values(value);
+    if (nestedValues.length) {
+      return normalizeImportedFullBackupHistory(nestedValues);
+    }
+  }
+
+  return [];
+}
+
 // --- Automatic Gear Rules Storage ---
 function loadAutoGearRules() {
   applyLegacyStorageMigrations();
@@ -3230,6 +3361,7 @@ function clearAllData() {
       autoGearActivePresetId: loadAutoGearActivePresetId(),
       autoGearAutoPresetId: loadAutoGearAutoPresetId(),
       autoGearShowBackups: loadAutoGearBackupVisibility(),
+      fullBackupHistory: loadFullBackupHistory(),
     };
 
     const preferences = collectPreferenceSnapshot();
@@ -3863,6 +3995,14 @@ function importAllData(allData, options = {}) {
     }
   }
 
+  if (Object.prototype.hasOwnProperty.call(allData, 'fullBackupHistory')) {
+    const history = normalizeImportedFullBackupHistory(allData.fullBackupHistory);
+    saveFullBackupHistory(history);
+  } else if (Object.prototype.hasOwnProperty.call(allData, 'fullBackups')) {
+    const history = normalizeImportedFullBackupHistory(allData.fullBackups);
+    saveFullBackupHistory(history);
+  }
+
   let importProjectEntry = null;
   const ensureProjectImporter = () => {
     if (!importProjectEntry) {
@@ -3919,6 +4059,22 @@ if (typeof module !== "undefined" && module.exports) {
     saveAutoGearAutoPresetId,
     loadAutoGearBackupVisibility,
     saveAutoGearBackupVisibility,
+    loadFullBackupHistory,
+    saveFullBackupHistory,
+    recordFullBackupHistoryEntry,
     requestPersistentStorage,
   };
+}
+
+if (GLOBAL_SCOPE) {
+  try {
+    if (typeof GLOBAL_SCOPE.recordFullBackupHistoryEntry !== 'function') {
+      GLOBAL_SCOPE.recordFullBackupHistoryEntry = recordFullBackupHistoryEntry;
+    }
+    if (typeof GLOBAL_SCOPE.loadFullBackupHistory !== 'function') {
+      GLOBAL_SCOPE.loadFullBackupHistory = loadFullBackupHistory;
+    }
+  } catch (ex) {
+    void ex;
+  }
 }
