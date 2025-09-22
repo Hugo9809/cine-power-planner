@@ -834,6 +834,7 @@ describe('export/import all data', () => {
       localStorage.setItem('highContrast', 'true');
       localStorage.setItem('reduceMotion', 'true');
       localStorage.setItem('relaxedSpacing', 'true');
+      localStorage.setItem('screenReader', 'true');
       localStorage.setItem('showAutoBackups', 'true');
       localStorage.setItem('accentColor', '#ff00ff');
       localStorage.setItem('fontSize', '18');
@@ -886,6 +887,7 @@ describe('export/import all data', () => {
           highContrast: true,
           reduceMotion: true,
           relaxedSpacing: true,
+          screenReader: true,
           showAutoBackups: true,
           accentColor: '#ff00ff',
           fontSize: '18',
@@ -966,6 +968,7 @@ describe('export/import all data', () => {
           highContrast: true,
           reduceMotion: false,
           relaxedSpacing: true,
+          screenReader: true,
           showAutoBackups: true,
           accentColor: '#00ff00',
           fontSize: '20',
@@ -998,6 +1001,7 @@ describe('export/import all data', () => {
       expect(localStorage.getItem('highContrast')).toBe('true');
       expect(localStorage.getItem('reduceMotion')).toBe('false');
       expect(localStorage.getItem('relaxedSpacing')).toBe('true');
+      expect(localStorage.getItem('screenReader')).toBe('true');
       expect(localStorage.getItem('showAutoBackups')).toBe('true');
       expect(localStorage.getItem('accentColor')).toBe('#00ff00');
       expect(localStorage.getItem('fontSize')).toBe('20');
@@ -1047,6 +1051,7 @@ describe('export/import all data', () => {
       ]),
       [`darkMode${BACKUP_SUFFIX}`]: 'true',
       highContrast: 'false',
+      screenReader: '1',
       language: 'es',
       iosPwaHelpShown: '1',
     };
@@ -1087,6 +1092,7 @@ describe('export/import all data', () => {
     ]);
     expect(localStorage.getItem('darkMode')).toBe('true');
     expect(localStorage.getItem('highContrast')).toBe('false');
+    expect(localStorage.getItem('screenReader')).toBe('true');
     expect(localStorage.getItem('language')).toBe('es');
     expect(localStorage.getItem('iosPwaHelpShown')).toBe('true');
   });

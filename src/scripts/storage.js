@@ -152,6 +152,7 @@ const SIMPLE_STORAGE_KEYS = [
   'highContrast',
   'reduceMotion',
   'relaxedSpacing',
+  'screenReader',
   'showAutoBackups',
   'accentColor',
   'fontSize',
@@ -2768,6 +2769,7 @@ function clearAllData() {
     'highContrast',
     'reduceMotion',
     'relaxedSpacing',
+    'screenReader',
     'showAutoBackups',
     'accentColor',
     'fontSize',
@@ -2928,6 +2930,11 @@ function clearAllData() {
     const relaxedSpacing = parseStoredBoolean(readLocalStorageValue('relaxedSpacing'));
     if (relaxedSpacing !== null) {
       preferences.relaxedSpacing = relaxedSpacing;
+    }
+
+    const screenReader = parseStoredBoolean(readLocalStorageValue('screenReader'));
+    if (screenReader !== null) {
+      preferences.screenReader = screenReader;
     }
 
     const showAutoBackups = parseStoredBoolean(readLocalStorageValue('showAutoBackups'));
@@ -3424,6 +3431,7 @@ function convertStorageSnapshotToData(snapshot) {
     'highContrast',
     'reduceMotion',
     'relaxedSpacing',
+    'screenReader',
     'showAutoBackups',
     'accentColor',
     'fontSize',
@@ -3437,6 +3445,7 @@ function convertStorageSnapshotToData(snapshot) {
     'highContrast',
     'reduceMotion',
     'relaxedSpacing',
+    'screenReader',
     'showAutoBackups',
     'iosPwaHelpShown',
   ]);
@@ -3515,6 +3524,7 @@ function importAllData(allData, options = {}) {
       'highContrast',
       'reduceMotion',
       'relaxedSpacing',
+      'screenReader',
       'showAutoBackups',
       'iosPwaHelpShown',
     ];

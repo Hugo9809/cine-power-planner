@@ -313,6 +313,17 @@ const texts = {
     relaxedSpacingSetting: "Relaxed spacing",
     relaxedSpacingSettingHelp:
       "Increase line spacing and control padding to make text easier to scan and tap.",
+    screenReaderSetting: "Screen reader narration",
+    screenReaderSettingHelp:
+      "Hear spoken descriptions for focused controls and important updates directly in the browser. Works offline.",
+    screenReaderActivated: "Screen reader narration enabled. Move focus to hear guidance.",
+    screenReaderDeactivated: "Screen reader narration disabled.",
+    screenReaderUnsupported: "Browser speech synthesis is unavailable, so narration may be limited.",
+    screenReaderStateChecked: "Checked",
+    screenReaderStateUnchecked: "Not checked",
+    screenReaderStateSelected: "Selected",
+    screenReaderStateValue: "Value: %s",
+    screenReaderStateEmpty: "Empty",
     backupHeading: "Backup & Restore",
     backupHeadingHelp:
       "Manage full backups of settings, saved projects, custom devices and runtime feedback.",
@@ -1572,6 +1583,17 @@ const texts = {
     relaxedSpacingSetting: "Spaziatura ampia",
     relaxedSpacingSettingHelp:
       "Aumenta l'interlinea e l'imbottitura dei controlli per facilitare la lettura e l'uso con il tocco.",
+    screenReaderSetting: "Sintesi vocale assistita",
+    screenReaderSettingHelp:
+      "Ascolta descrizioni vocali per i controlli attivi e gli aggiornamenti importanti direttamente nel browser. Funziona offline.",
+    screenReaderActivated: "Sintesi vocale assistita attivata. Sposta il focus per ascoltare le istruzioni.",
+    screenReaderDeactivated: "Sintesi vocale assistita disattivata.",
+    screenReaderUnsupported: "La sintesi vocale del browser non è disponibile, quindi la narrazione potrebbe essere limitata.",
+    screenReaderStateChecked: "Selezionato",
+    screenReaderStateUnchecked: "Non selezionato",
+    screenReaderStateSelected: "Selezionato",
+    screenReaderStateValue: "Valore: %s",
+    screenReaderStateEmpty: "Vuoto",
     backupHeading: "Backup e ripristino",
     backupHeadingHelp:
       "Gestisci backup completi di impostazioni, progetti salvati, dispositivi personalizzati e feedback.",
@@ -2432,6 +2454,17 @@ const texts = {
     relaxedSpacingSetting: "Espaciado amplio",
     relaxedSpacingSettingHelp:
       "Aumenta el interlineado y el acolchado de los controles para facilitar la lectura y ampliar las zonas táctiles.",
+    screenReaderSetting: "Narración con lector de pantalla",
+    screenReaderSettingHelp:
+      "Escucha descripciones habladas de los controles enfocados y de las actualizaciones importantes directamente en el navegador. Funciona sin conexión.",
+    screenReaderActivated: "Narración con lector de pantalla activada. Mueve el foco para escuchar las indicaciones.",
+    screenReaderDeactivated: "Narración con lector de pantalla desactivada.",
+    screenReaderUnsupported: "La síntesis de voz del navegador no está disponible, por lo que la narración puede ser limitada.",
+    screenReaderStateChecked: "Marcado",
+    screenReaderStateUnchecked: "No marcado",
+    screenReaderStateSelected: "Seleccionado",
+    screenReaderStateValue: "Valor: %s",
+    screenReaderStateEmpty: "Vacío",
     backupHeading: "Copia de seguridad y restaurar",
     backupHeadingHelp:
       "Gestiona copias de seguridad completas de ajustes, proyectos guardados, dispositivos personalizados y comentarios.",
@@ -3294,6 +3327,17 @@ const texts = {
     relaxedSpacingSetting: "Espacement élargi",
     relaxedSpacingSettingHelp:
       "Augmente l'interligne et le rembourrage des contrôles afin de faciliter la lecture et d'agrandir les zones d'action.",
+    screenReaderSetting: "Lecture vocale",
+    screenReaderSettingHelp:
+      "Écoutez des descriptions orales des contrôles ciblés et des mises à jour importantes directement dans le navigateur. Fonctionne hors ligne.",
+    screenReaderActivated: "Lecture vocale activée. Déplacez le focus pour entendre les indications.",
+    screenReaderDeactivated: "Lecture vocale désactivée.",
+    screenReaderUnsupported: "La synthèse vocale du navigateur est indisponible, la narration peut donc être limitée.",
+    screenReaderStateChecked: "Activé",
+    screenReaderStateUnchecked: "Désactivé",
+    screenReaderStateSelected: "Sélectionné",
+    screenReaderStateValue: "Valeur : %s",
+    screenReaderStateEmpty: "Vide",
     backupHeading: "Sauvegarde et restauration",
     backupHeadingHelp:
       "Gérez des sauvegardes complètes des réglages, projets enregistrés, appareils personnalisés et retours.",
@@ -4159,6 +4203,17 @@ const texts = {
     relaxedSpacingSetting: "Großzügige Abstände",
     relaxedSpacingSettingHelp:
       "Vergrößert Zeilenabstand und Elementabstand, damit Text besser lesbar ist und Klickflächen leichter zu treffen sind.",
+    screenReaderSetting: "Sprachunterstützung",
+    screenReaderSettingHelp:
+      "Höre gesprochene Beschreibungen für fokussierte Bedienelemente und wichtige Aktualisierungen direkt im Browser. Funktioniert offline.",
+    screenReaderActivated: "Sprachunterstützung aktiviert. Bewege den Fokus, um Hinweise zu hören.",
+    screenReaderDeactivated: "Sprachunterstützung deaktiviert.",
+    screenReaderUnsupported: "Die Sprachausgabe des Browsers ist nicht verfügbar, daher kann die Narration eingeschränkt sein.",
+    screenReaderStateChecked: "Aktiviert",
+    screenReaderStateUnchecked: "Nicht aktiviert",
+    screenReaderStateSelected: "Ausgewählt",
+    screenReaderStateValue: "Wert: %s",
+    screenReaderStateEmpty: "Leer",
     backupHeading: "Sichern & Wiederherstellen",
     backupHeadingHelp:
       "Verwalte vollständige Sicherungen von Einstellungen, Projekten, eigenen Geräten und Feedback.",

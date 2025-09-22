@@ -164,6 +164,20 @@ body.reduce-motion *::after {
   transition-delay: 0ms !important;
 }
 
+html.screen-reader,
+body.screen-reader {
+  scroll-behavior: auto;
+}
+
+body.screen-reader *:focus-visible {
+  outline: 3px solid var(--accent-color);
+  outline-offset: 4px;
+}
+
+body.screen-reader.high-contrast *:focus-visible {
+  outline-color: var(--inverse-text-color);
+}
+
 body.relaxed-spacing {
   --line-height-base: 1.75;
   --line-height-supporting: 1.7;
