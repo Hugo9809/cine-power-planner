@@ -3348,7 +3348,7 @@ body.pink-mode #topBar #logo .logo-center {
   margin: 2px;
   border-radius: 3px;
   border: 1px solid;
-  background-color: rgba(0,0,0,0.03);
+  background-color: transparent;
   font-size: calc(var(--font-size-relative-base) * var(--font-scale-xxs));
 }
 
@@ -3378,7 +3378,7 @@ body.pink-mode #topBar #logo .logo-center {
   margin: 2px;
   border-radius: 3px;
   border: 1px solid;
-  background-color: rgba(0,0,0,0.03);
+  background-color: transparent;
   font-size: calc(var(--font-size-relative-base) * var(--font-scale-xxs));
 }
 
@@ -3391,7 +3391,7 @@ body.pink-mode #topBar #logo .logo-center {
   margin-top: 4px;
   padding: 4px;
   border-radius: 3px;
-  background: rgba(0,0,0,0.05);
+  background: transparent;
   font-size: calc(var(--font-size-relative-base) * var(--font-scale-xxs));
 }
 
@@ -3439,19 +3439,19 @@ body.pink-mode #topBar #logo .logo-center {
 
 .power-conn {
   border-color: var(--danger-color);
-  background-color: var(--power-conn-bg);
+  --icon-color: var(--danger-color);
 }
 .fiz-conn {
   border-color: var(--success-color);
-  background-color: var(--fiz-conn-bg);
+  --icon-color: var(--success-color);
 }
 .video-conn {
   border-color: var(--info-color);
-  background-color: var(--video-conn-bg);
+  --icon-color: var(--info-color);
 }
 .neutral-conn {
   border-color: var(--neutral-color);
-  background-color: var(--neutral-conn-bg);
+  --icon-color: var(--neutral-color);
 }
 
 
@@ -3840,9 +3840,9 @@ body.dark-mode.pink-mode {
 .dark-mode .barContainer { background-color: var(--panel-bg); }
 .dark-mode .device-category h4 { color: var(--inverse-text-color); border-bottom: 1px solid var(--inverse-text-color); }
 .dark-mode .connector-block,
-.dark-mode .info-box { background-color: rgba(255,255,255,0.1); }
-.dark-mode .scenario-box { background-color: rgba(255,255,255,0.1); }
-.dark-mode .tray-box { background-color: rgba(255,255,255,0.1); }
+.dark-mode .info-box { background-color: transparent; }
+.dark-mode .scenario-box { background-color: transparent; }
+.dark-mode .tray-box { background-color: transparent; }
 .dark-mode #setupDiagram .first-fiz-highlight { stroke: url(#firstFizGrad); }
 .dark-mode #setupDiagram text { fill: var(--inverse-text-color); }
 .dark-mode #setupDiagram line { stroke: var(--inverse-text-color); }
@@ -3940,9 +3940,9 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .settings-content.modal-surface
   body:not(.light-mode) .barContainer { background-color: var(--panel-bg); }
   body:not(.light-mode) .device-category h4 { color: var(--inverse-text-color); border-bottom: 1px solid var(--inverse-text-color); }
   body:not(.light-mode) .connector-block,
-  body:not(.light-mode) .info-box { background-color: rgba(255,255,255,0.1); }
-  body:not(.light-mode) .scenario-box { background-color: rgba(255,255,255,0.1); }
-  body:not(.light-mode) .tray-box { background-color: rgba(255,255,255,0.1); }
+  body:not(.light-mode) .info-box { background-color: transparent; }
+  body:not(.light-mode) .scenario-box { background-color: transparent; }
+  body:not(.light-mode) .tray-box { background-color: transparent; }
   body:not(.light-mode) #setupDiagram .first-fiz-highlight { stroke: url(#firstFizGrad); }
   body:not(.light-mode) #setupDiagram text { fill: var(--inverse-text-color); }
   body:not(.light-mode) #setupDiagram line { stroke: var(--inverse-text-color); }
