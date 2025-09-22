@@ -29,6 +29,21 @@ try {
   // overview generation not needed in test environments without module support
 }
 
+function safeGenerateConnectorSummary(device) {
+  if (!device || typeof generateConnectorSummary !== 'function') {
+    return '';
+  }
+  try {
+    const summary = generateConnectorSummary(device);
+    return summary || '';
+  } catch (error) {
+    if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+      console.warn('Unable to generate connector summary', error);
+    }
+    return '';
+  }
+}
+
 if (typeof window !== 'undefined') {
   const lottie = window.lottie;
   if (lottie && typeof lottie.useWebWorker === 'function') {
@@ -14106,7 +14121,7 @@ function displayGearAndRequirements(html) {
         if (categoryParts.length) parts.push(categoryParts.join(' – '));
         if (libraryCategory) parts.push(`Device library category: ${libraryCategory}`);
         if (deviceInfo) {
-          let summary = generateConnectorSummary(deviceInfo);
+          let summary = safeGenerateConnectorSummary(deviceInfo);
           summary = summary
             ? summary.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim()
             : '';
@@ -18322,7 +18337,7 @@ function attachDiagramPopups(map) {
     } else {
       deviceData = devices[info.category]?.[info.name];
     }
-    const connectors = deviceData ? generateConnectorSummary(deviceData) : '';
+    const connectors = safeGenerateConnectorSummary(deviceData);
     const infoHtml =
       (deviceData && deviceData.latencyMs ?
         `<div class="info-box video-conn"><strong>Latency:</strong> ${escapeHtml(String(deviceData.latencyMs))}</div>` : '') +
@@ -18641,7 +18656,7 @@ function renderDeviceList(categoryKey, ulElement) {
 
     const nameSpan = document.createElement("span");
     nameSpan.textContent = name;
-    let summary = generateConnectorSummary(deviceData);
+    let summary = safeGenerateConnectorSummary(deviceData);
     summary = summary ? summary.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim() : '';
     if (deviceData.notes) {
       summary = summary ? `${summary}; Notes: ${deviceData.notes}` : deviceData.notes;
