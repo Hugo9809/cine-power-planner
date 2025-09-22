@@ -260,6 +260,60 @@ describe('global feature search helpers', () => {
     expect(resolutionMatch?.value.label).toBe('3840×2160 (UHD)');
   });
 
+  test('searchKey treats spelled-out numbers the same as digits', () => {
+    expect(searchKey('Mark Two')).toBe(searchKey('Mark 2'));
+    expect(searchKey('Mark Twenty One')).toBe(searchKey('Mark 21'));
+    expect(searchKey('Third Battery Slot')).toBe(searchKey('3 Battery Slot'));
+  });
+
+  test('searchTokens expose numeric tokens for spelled numbers and ordinals', () => {
+    const spelledTokens = searchTokens('Mark Twenty-One Upgrade');
+    expect(spelledTokens).toEqual(expect.arrayContaining(['21']));
+    expect(spelledTokens).toEqual(expect.arrayContaining(['twenty', 'one']));
+
+    const ordinalTokens = searchTokens('Third Battery Slot');
+    expect(ordinalTokens).toEqual(expect.arrayContaining(['3']));
+    expect(ordinalTokens).toEqual(expect.arrayContaining(['third']));
+  });
+
+  test('findBestSearchMatch pairs spelled-out queries with numeric entries', () => {
+    const entries = new Map();
+    entries.set(
+      searchKey('Mark 21 Upgrade'),
+      {
+        label: 'Mark 21 Upgrade',
+        tokens: searchTokens('Mark 21 Upgrade'),
+      }
+    );
+
+    const result = findBestSearchMatch(
+      entries,
+      searchKey('mark twenty one upgrade'),
+      searchTokens('mark twenty one upgrade')
+    );
+
+    expect(result?.value.label).toBe('Mark 21 Upgrade');
+  });
+
+  test('findBestSearchMatch links ordinal words with numeric suffix entries', () => {
+    const entries = new Map();
+    entries.set(
+      searchKey('3rd Battery Slot'),
+      {
+        label: '3rd Battery Slot',
+        tokens: searchTokens('3rd Battery Slot'),
+      }
+    );
+
+    const result = findBestSearchMatch(
+      entries,
+      searchKey('third battery slot'),
+      searchTokens('third battery slot')
+    );
+
+    expect(result?.value.label).toBe('3rd Battery Slot');
+  });
+
   test('searchKey treats mark and mk numbering the same', () => {
     expect(searchKey('Canon C500 Mark II')).toBe(
       searchKey('Canon C500 Mk2')
