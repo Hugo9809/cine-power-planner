@@ -113,11 +113,11 @@
   --line-height-supporting: 1.5;
   --line-height-relaxed: 1.65;
   --status-error-bg: #ff8a80;
-  --status-warning-bg: #ffd24d;
+  --status-warning-bg: #ff6b6b;
   --status-success-bg: #dfd;
   --status-border-color: #ccc;
   --status-error-text-color: #000;
-  --status-warning-text-color: #000;
+  --status-warning-text-color: #ffffff;
   --status-success-text-color: #000;
   --camera-color: #4caf50;
   --monitor-color: #2196f3;
@@ -3848,11 +3848,11 @@ html.dark-mode,
   --info-color: #7ec8ff;
   --neutral-color: #bbbbbb;
   --status-error-bg: rgba(255, 120, 120, 0.45);
-  --status-warning-bg: rgba(255, 210, 77, 0.65);
+  --status-warning-bg: rgba(255, 107, 107, 0.65);
   --status-success-bg: rgba(102, 187, 106, 0.2);
   --status-border-color: #444;
   --status-error-text-color: #ffffff;
-  --status-warning-text-color: #1c1c1e;
+  --status-warning-text-color: #ffffff;
   --status-success-text-color: #f0f0f0;
   --diagram-node-fill: #444;
   --power-color: #ff6666;
@@ -4013,11 +4013,11 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .settings-content.modal-surface
     --info-color: #7ec8ff;
     --neutral-color: #bbbbbb;
     --status-error-bg: rgba(255, 120, 120, 0.45);
-    --status-warning-bg: rgba(255, 210, 77, 0.65);
+    --status-warning-bg: rgba(255, 107, 107, 0.65);
     --status-success-bg: rgba(102, 187, 106, 0.2);
     --status-border-color: #444;
     --status-error-text-color: #ffffff;
-    --status-warning-text-color: #1c1c1e;
+    --status-warning-text-color: #ffffff;
     --status-success-text-color: #f0f0f0;
     --favorite-inactive-color: var(--control-text);
     --diagram-node-fill: #444;
@@ -5246,11 +5246,14 @@ body.light-mode #sideMenu button[data-sidebar-action]:focus-visible {
   html,
   body,
   #overviewDialogContent {
-    --status-warning-text-color: #000 !important;
+    --status-warning-text-color: #ffffff !important;
     --status-error-text-color: #000 !important;
   }
 
-  .status-message--warning,
+  .status-message--warning {
+    color: #ffffff !important;
+  }
+
   .status-message--danger {
     color: #000 !important;
   }
