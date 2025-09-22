@@ -1201,7 +1201,7 @@ main.legal-content {
 }
 
 .modal-surface-scrollable {
-  max-height: 80vh;
+  max-height: min(92vh, 960px);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
@@ -1264,7 +1264,7 @@ main.legal-content {
 
 .help-content {
   padding: 20px;
-  width: min(90vw, 700px);
+  width: min(95vw, 900px);
 }
 
 .help-content h3 {
@@ -1335,7 +1335,7 @@ main.legal-content {
 
 .settings-content {
   padding: 20px;
-  width: min(90vw, 700px);
+  width: min(95vw, 960px);
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -4380,8 +4380,8 @@ body:not(.dark-mode) .requirement-box,
 
 /* Overview dialog */
 #overviewDialog {
-  width: 90%;
-  max-width: 900px;
+  width: min(96vw, 1100px);
+  max-width: none;
   padding: 0;
   border: none;
 }
@@ -4390,7 +4390,7 @@ body:not(.dark-mode) .requirement-box,
 }
 #overviewDialogContent {
   padding: 20px;
-  max-height: 80vh;
+  max-height: min(92vh, 1100px);
   overflow-y: auto;
   background: var(--surface-color);
   color: var(--control-text);
