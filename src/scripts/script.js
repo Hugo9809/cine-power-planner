@@ -50,3 +50,17 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     combinedSource
   );
   factory(module.exports, require, module, __filename, __dirname);
+
+  const combinedAppVersion = module.exports && module.exports.APP_VERSION;
+  const APP_VERSION = "1.0.5"; // Version marker for consistency checks
+
+  if (combinedAppVersion && combinedAppVersion !== APP_VERSION) {
+    throw new Error(
+      `Combined app version (${combinedAppVersion}) does not match script marker (${APP_VERSION}).`
+    );
+  }
+
+  if (module.exports && !module.exports.APP_VERSION) {
+    module.exports.APP_VERSION = APP_VERSION;
+  }
+}
