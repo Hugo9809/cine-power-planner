@@ -339,6 +339,27 @@ const texts = {
       "Automatic backup saved. Restore it anytime from Saved Projects.",
     preDeleteBackupFailed: "Automatic backup failed. The action was cancelled.",
     restoreBackupFailed: "Backup failed. Restore cancelled.",
+    backupFallbackStored: "Backup saved to this browser because downloads are not available.",
+    backupFallbackHeading: "Browser-stored backups",
+    backupFallbackHeadingHelp:
+      "Download or copy the backups saved locally when downloads fail.",
+    backupFallbackDescription:
+      "The planner keeps up to three recent backups in this browser when saving to a file is blocked. Download them to external storage or copy the data, then remove entries you no longer need.",
+    backupFallbackEmpty: "No browser-stored backups.",
+    backupFallbackDownload: "Download backup",
+    backupFallbackDownloadSuccess: "Backup download started.",
+    backupFallbackDownloadFailed:
+      "Could not download the browser-stored backup. Copy the data instead.",
+    backupFallbackCopy: "Copy backup data",
+    backupFallbackCopySuccess: "Backup copied to clipboard.",
+    backupFallbackRemove: "Remove",
+    backupFallbackRemoveConfirm:
+      "Remove this browser-stored backup? You will lose the local copy.",
+    backupFallbackRemoveSuccess: "Browser-stored backup removed.",
+    backupFallbackRemoveFailed:
+      "Could not remove the browser-stored backup.",
+    backupFallbackSavedAt: "Saved %s",
+    backupFallbackSize: "Approx. %s",
     dataHeading: "Data & Storage",
     dataHeadingHelp:
       "Review what the planner stores locally and how much space backups take.",
@@ -1598,6 +1619,27 @@ const texts = {
       "Backup automatico salvato. Puoi ripristinarlo da Progetti salvati.",
     preDeleteBackupFailed: "Backup automatico non riuscito. L'operazione è stata annullata.",
     restoreBackupFailed: "Backup non riuscito. Ripristino annullato.",
+    backupFallbackStored: "Il backup è stato salvato in questo browser perché il download non è disponibile.",
+    backupFallbackHeading: "Backup salvati nel browser",
+    backupFallbackHeadingHelp:
+      "Scarica o copia i backup salvati localmente quando il download non è disponibile.",
+    backupFallbackDescription:
+      "Il planner conserva fino a tre backup recenti in questo browser quando il salvataggio su file non è possibile. Scaricali su un archivio esterno oppure copia i dati, quindi rimuovi le voci che non ti servono più.",
+    backupFallbackEmpty: "Nessun backup salvato nel browser.",
+    backupFallbackDownload: "Scarica backup",
+    backupFallbackDownloadSuccess: "Download del backup avviato.",
+    backupFallbackDownloadFailed:
+      "Impossibile scaricare il backup salvato nel browser. Prova a copiare i dati.",
+    backupFallbackCopy: "Copia dati backup",
+    backupFallbackCopySuccess: "Backup copiato negli appunti.",
+    backupFallbackRemove: "Rimuovi",
+    backupFallbackRemoveConfirm:
+      "Rimuovere questo backup salvato nel browser? Perderai la copia locale.",
+    backupFallbackRemoveSuccess: "Backup salvato nel browser rimosso.",
+    backupFallbackRemoveFailed:
+      "Impossibile rimuovere il backup salvato nel browser.",
+    backupFallbackSavedAt: "Salvato %s",
+    backupFallbackSize: "Circa %s",
     dataHeading: "Dati e archiviazione",
     dataHeadingHelp:
       "Controlla quali dati vengono salvati localmente e quanto spazio occupano i backup.",
@@ -2458,6 +2500,27 @@ const texts = {
       "Copia de seguridad automática guardada. Puedes restaurarla desde Proyectos guardados.",
     preDeleteBackupFailed: "La copia de seguridad automática falló. La acción se canceló.",
     restoreBackupFailed: "La copia de seguridad falló. Restauración cancelada.",
+    backupFallbackStored: "La copia de seguridad se guardó en este navegador porque las descargas no están disponibles.",
+    backupFallbackHeading: "Copias guardadas en el navegador",
+    backupFallbackHeadingHelp:
+      "Descarga o copia las copias de seguridad guardadas localmente cuando no se puede descargar.",
+    backupFallbackDescription:
+      "El planificador guarda hasta tres copias recientes en este navegador cuando no se puede guardar en un archivo. Descárgalas en un almacenamiento externo o copia los datos y después elimina las entradas que ya no necesites.",
+    backupFallbackEmpty: "No hay copias guardadas en el navegador.",
+    backupFallbackDownload: "Descargar copia",
+    backupFallbackDownloadSuccess: "Descarga de la copia iniciada.",
+    backupFallbackDownloadFailed:
+      "No se pudo descargar la copia guardada en el navegador. Prueba a copiar los datos.",
+    backupFallbackCopy: "Copiar datos de la copia",
+    backupFallbackCopySuccess: "Copia de seguridad copiada al portapapeles.",
+    backupFallbackRemove: "Quitar",
+    backupFallbackRemoveConfirm:
+      "¿Quitar esta copia guardada en el navegador? Perderás la copia local.",
+    backupFallbackRemoveSuccess: "Copia guardada en el navegador eliminada.",
+    backupFallbackRemoveFailed:
+      "No se pudo quitar la copia guardada en el navegador.",
+    backupFallbackSavedAt: "Guardada %s",
+    backupFallbackSize: "Aprox. %s",
     dataHeading: "Datos y almacenamiento",
     dataHeadingHelp:
       "Revisa qué guarda el planificador en este navegador y cuánto ocupan las copias de seguridad.",
@@ -3320,6 +3383,27 @@ const texts = {
       "Sauvegarde automatique enregistrée. Vous pouvez la restaurer depuis Projets enregistrés.",
     preDeleteBackupFailed: "La sauvegarde automatique a échoué. L’action a été annulée.",
     restoreBackupFailed: "Échec de la sauvegarde. Restauration annulée.",
+    backupFallbackStored: "La sauvegarde a été enregistrée dans ce navigateur car le téléchargement n’est pas disponible.",
+    backupFallbackHeading: "Sauvegardes enregistrées dans ce navigateur",
+    backupFallbackHeadingHelp:
+      "Téléchargez ou copiez les sauvegardes conservées localement quand le téléchargement est impossible.",
+    backupFallbackDescription:
+      "Le planificateur conserve jusqu'à trois sauvegardes récentes dans ce navigateur lorsque l’enregistrement de fichier est bloqué. Téléchargez-les vers un autre support ou copiez les données, puis supprimez les entrées dont vous n’avez plus besoin.",
+    backupFallbackEmpty: "Aucune sauvegarde enregistrée dans le navigateur.",
+    backupFallbackDownload: "Télécharger la sauvegarde",
+    backupFallbackDownloadSuccess: "Téléchargement de la sauvegarde lancé.",
+    backupFallbackDownloadFailed:
+      "Impossible de télécharger la sauvegarde enregistrée dans le navigateur. Copiez les données à la place.",
+    backupFallbackCopy: "Copier les données de la sauvegarde",
+    backupFallbackCopySuccess: "Sauvegarde copiée dans le presse-papiers.",
+    backupFallbackRemove: "Supprimer",
+    backupFallbackRemoveConfirm:
+      "Supprimer cette sauvegarde enregistrée dans le navigateur ? Vous perdrez la copie locale.",
+    backupFallbackRemoveSuccess: "Sauvegarde enregistrée dans le navigateur supprimée.",
+    backupFallbackRemoveFailed:
+      "Impossible de supprimer la sauvegarde enregistrée dans le navigateur.",
+    backupFallbackSavedAt: "Enregistrée %s",
+    backupFallbackSize: "Env. %s",
     dataHeading: "Données et stockage",
     dataHeadingHelp:
       "Consultez ce que le planificateur conserve localement et la taille des sauvegardes.",
@@ -4185,6 +4269,27 @@ const texts = {
       "Automatische Sicherung gespeichert. Du kannst sie in Gespeicherte Projekte wiederherstellen.",
     preDeleteBackupFailed: "Automatische Sicherung fehlgeschlagen. Die Aktion wurde abgebrochen.",
     restoreBackupFailed: "Backup fehlgeschlagen. Wiederherstellung abgebrochen.",
+    backupFallbackStored: "Das Backup wurde in diesem Browser gespeichert, da kein Download verfügbar ist.",
+    backupFallbackHeading: "Im Browser gespeicherte Backups",
+    backupFallbackHeadingHelp:
+      "Lade oder kopiere lokal gespeicherte Backups, wenn kein Download möglich ist.",
+    backupFallbackDescription:
+      "Der Planner behält bis zu drei aktuelle Backups in diesem Browser, wenn das Speichern als Datei blockiert ist. Lade sie auf ein externes Medium oder kopiere die Daten und entferne anschließend nicht mehr benötigte Einträge.",
+    backupFallbackEmpty: "Keine im Browser gespeicherten Backups.",
+    backupFallbackDownload: "Backup herunterladen",
+    backupFallbackDownloadSuccess: "Backup-Download gestartet.",
+    backupFallbackDownloadFailed:
+      "Das im Browser gespeicherte Backup konnte nicht heruntergeladen werden. Kopiere stattdessen die Daten.",
+    backupFallbackCopy: "Backup-Daten kopieren",
+    backupFallbackCopySuccess: "Backup in die Zwischenablage kopiert.",
+    backupFallbackRemove: "Entfernen",
+    backupFallbackRemoveConfirm:
+      "Dieses im Browser gespeicherte Backup entfernen? Die lokale Kopie geht verloren.",
+    backupFallbackRemoveSuccess: "Im Browser gespeichertes Backup entfernt.",
+    backupFallbackRemoveFailed:
+      "Das im Browser gespeicherte Backup konnte nicht entfernt werden.",
+    backupFallbackSavedAt: "Gespeichert %s",
+    backupFallbackSize: "Ca. %s",
     dataHeading: "Daten & Speicherung",
     dataHeadingHelp:
       "Zeigt, welche Planer-Daten lokal gespeichert sind und wie groß Sicherungen werden.",

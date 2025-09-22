@@ -1604,6 +1604,71 @@ body.high-contrast .settings-tab-icon {
   margin: 0;
 }
 
+.backup-fallbacks {
+  border: 1px solid var(--panel-border);
+  border-radius: var(--border-radius);
+  background: var(--panel-bg);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.backup-fallback-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.backup-fallback-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.backup-fallback-item {
+  border: 1px solid var(--panel-border);
+  border-radius: var(--border-radius);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--panel-bg);
+}
+
+.backup-fallback-name {
+  font-weight: 600;
+  word-break: break-word;
+}
+
+.backup-fallback-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 0.9rem;
+  color: var(--muted-text-color, #666);
+}
+
+.backup-fallback-meta span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.backup-fallback-actions {
+  gap: 8px;
+}
+
+.backup-fallback-empty {
+  font-style: italic;
+  color: var(--muted-text-color, #666);
+  margin: 0;
+}
+
 .auto-gear-rule {
   display: flex;
   justify-content: space-between;

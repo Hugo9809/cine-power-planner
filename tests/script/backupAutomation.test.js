@@ -332,6 +332,172 @@ describe('automated backups', () => {
     URL.createObjectURL = originalCreateObjectURL;
   });
 
+  test('createSettingsBackup stores a fallback copy when downloads are unavailable', () => {
+    const { createSettingsBackup, setLanguage } = loadApp();
+
+    setLanguage('en');
+
+    const fallbackKey = 'cameraPowerPlanner_backupFallbacks';
+    expect(localStorage.getItem(fallbackKey)).toBeNull();
+
+    const fallbackEmpty = document.getElementById('backupFallbackEmpty');
+    expect(fallbackEmpty).not.toBeNull();
+    expect(fallbackEmpty.hasAttribute('hidden')).toBe(false);
+
+    localStorage.setItem('cameraPowerPlanner_devices', '{"audio":{}}');
+
+    const originalCreateObjectURL = URL.createObjectURL;
+    const createObjectURLSpy = jest
+      .spyOn(URL, 'createObjectURL')
+      .mockImplementation(() => {
+        throw new Error('createObjectURL failed');
+      });
+
+    const originalCreateElement = document.createElement.bind(document);
+    const createElementSpy = jest
+      .spyOn(document, 'createElement')
+      .mockImplementation((tagName) => {
+        if (String(tagName).toLowerCase() === 'a') {
+          return { style: {}, click: jest.fn() };
+        }
+        return originalCreateElement(tagName);
+      });
+
+    try {
+      const result = createSettingsBackup(false, new Date('2024-05-06T12:30:00Z'));
+
+      expect(result).toBeNull();
+
+      const storedRaw = localStorage.getItem(fallbackKey);
+      expect(storedRaw).not.toBeNull();
+
+      const stored = JSON.parse(storedRaw);
+      expect(Array.isArray(stored)).toBe(true);
+      expect(stored.length).toBeGreaterThan(0);
+
+      const latest = stored[0];
+      expect(latest.fileName).toBe('2024-05-06T12-30-00Z full app backup.json');
+      expect(latest.savedAt).toBe('2024-05-06T12:30:00Z');
+      expect(typeof latest.payload).toBe('string');
+      expect(latest.payload).toContain('"generatedAt":"2024-05-06T12:30:00Z"');
+      expect(latest.payload).toContain('"cameraPowerPlanner_devices"');
+
+      const list = document.getElementById('backupFallbackList');
+      expect(list).not.toBeNull();
+      expect(list.children).toHaveLength(1);
+      const item = list.querySelector('.backup-fallback-item');
+      expect(item).not.toBeNull();
+      const buttonLabels = Array.from(item.querySelectorAll('button')).map((btn) => btn.textContent.trim());
+      expect(buttonLabels[0]).toContain(global.texts.en.backupFallbackDownload);
+      expect(buttonLabels[1]).toContain(global.texts.en.backupFallbackCopy);
+      expect(buttonLabels[2]).toContain(global.texts.en.backupFallbackRemove);
+      expect(fallbackEmpty.hasAttribute('hidden')).toBe(true);
+    } finally {
+      createObjectURLSpy.mockRestore();
+      createElementSpy.mockRestore();
+      URL.createObjectURL = originalCreateObjectURL;
+    }
+  });
+
+  test('browser-stored backups support download, copy and removal', () => {
+    const { createSettingsBackup, setLanguage } = loadApp();
+
+    setLanguage('en');
+
+    const fallbackKey = 'cameraPowerPlanner_backupFallbacks';
+    localStorage.setItem('cameraPowerPlanner_devices', '{"audio":{}}');
+
+    const originalCreateObjectURL = URL.createObjectURL;
+    const failCreateObjectURLSpy = jest
+      .spyOn(URL, 'createObjectURL')
+      .mockImplementation(() => {
+        throw new Error('createObjectURL failed');
+      });
+
+    const originalCreateElement = document.createElement.bind(document);
+    const failCreateElementSpy = jest
+      .spyOn(document, 'createElement')
+      .mockImplementation((tagName) => {
+        if (String(tagName).toLowerCase() === 'a') {
+          return { style: {}, click: jest.fn() };
+        }
+        return originalCreateElement(tagName);
+      });
+
+    try {
+      createSettingsBackup(false, new Date('2024-05-06T12:30:00Z'));
+    } finally {
+      failCreateObjectURLSpy.mockRestore();
+      failCreateElementSpy.mockRestore();
+      URL.createObjectURL = originalCreateObjectURL;
+    }
+
+    const list = document.getElementById('backupFallbackList');
+    const item = list.querySelector('.backup-fallback-item');
+    expect(item).not.toBeNull();
+    const [downloadButton, copyButton, removeButton] = item.querySelectorAll('button');
+
+    const triggeredAnchors = [];
+    const originalExecCommand = document.execCommand;
+    const confirmSpy = jest.spyOn(window, 'confirm').mockReturnValue(true);
+    let downloadCreateElementSpy;
+    let downloadCreateObjectURLSpy;
+    let revokeSpy;
+
+    try {
+      downloadCreateElementSpy = jest
+        .spyOn(document, 'createElement')
+        .mockImplementation((tagName) => {
+          const element = originalCreateElement(tagName);
+          if (String(tagName).toLowerCase() === 'a') {
+            element.click = jest.fn(() => triggeredAnchors.push(element));
+          }
+          return element;
+        });
+      downloadCreateObjectURLSpy = jest
+        .spyOn(URL, 'createObjectURL')
+        .mockImplementation(() => 'blob:fallback-download');
+      revokeSpy = jest
+        .spyOn(URL, 'revokeObjectURL')
+        .mockImplementation(() => {});
+      document.execCommand = jest.fn(() => true);
+
+      downloadButton.click();
+
+      expect(downloadCreateObjectURLSpy).toHaveBeenCalled();
+      expect(triggeredAnchors).toHaveLength(1);
+      expect(triggeredAnchors[0].download).toBe('2024-05-06T12-30-00Z full app backup.json');
+      expect(triggeredAnchors[0].click).toHaveBeenCalledTimes(1);
+      const notificationContainer = document.getElementById('backupNotificationContainer');
+      expect(notificationContainer).not.toBeNull();
+      const downloadNotification = notificationContainer.lastElementChild;
+      expect(downloadNotification).not.toBeNull();
+      expect(downloadNotification.textContent).toBe(global.texts.en.backupFallbackDownloadSuccess);
+
+      copyButton.click();
+      expect(document.execCommand).toHaveBeenCalledWith('copy');
+      const copyNotification = notificationContainer.lastElementChild;
+      expect(copyNotification).not.toBeNull();
+      expect(copyNotification.textContent).toBe(global.texts.en.backupFallbackCopySuccess);
+
+      removeButton.click();
+
+      expect(confirmSpy).toHaveBeenCalled();
+      const removeNotification = notificationContainer.lastElementChild;
+      expect(removeNotification).not.toBeNull();
+      expect(removeNotification.textContent).toBe(global.texts.en.backupFallbackRemoveSuccess);
+      expect(localStorage.getItem(fallbackKey)).toBeNull();
+      const fallbackEmpty = document.getElementById('backupFallbackEmpty');
+      expect(fallbackEmpty.hasAttribute('hidden')).toBe(false);
+    } finally {
+      if (downloadCreateElementSpy) downloadCreateElementSpy.mockRestore();
+      if (downloadCreateObjectURLSpy) downloadCreateObjectURLSpy.mockRestore();
+      if (revokeSpy) revokeSpy.mockRestore();
+      document.execCommand = originalExecCommand;
+      confirmSpy.mockRestore();
+    }
+  });
+
   test('restore surfaces errors when the backup payload cannot be parsed', () => {
     loadApp();
 

@@ -1269,6 +1269,16 @@
           <button id="restoreSettings">Restore</button>
           <button id="factoryResetButton">Factory reset</button>
         </div>
+        <div id="backupFallbackContainer" class="backup-fallbacks">
+          <div class="backup-fallback-header">
+            <h4 id="backupFallbackHeading">Browser-stored backups</h4>
+          </div>
+          <p id="backupFallbackDescription" class="settings-hint">
+            The planner keeps up to three recent backups in this browser when saving to a file is blocked. Download them to external storage or copy the data, then remove entries you no longer need.
+          </p>
+          <ul id="backupFallbackList" class="backup-fallback-list" aria-live="polite"></ul>
+          <p id="backupFallbackEmpty" class="settings-hint backup-fallback-empty">No browser-stored backups.</p>
+        </div>
       </section>
       <section
         id="settingsPanel-data"
