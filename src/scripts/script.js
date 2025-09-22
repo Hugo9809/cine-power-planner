@@ -50,3 +50,4 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     combinedSource
   );
   factory(module.exports, require, module, __filename, __dirname);
+}

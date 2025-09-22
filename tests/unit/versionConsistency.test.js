@@ -19,15 +19,15 @@ describe('application version consistency', () => {
 
     const appScriptVersion = extractVersion(
       /const APP_VERSION = "([^"]+)";/,
-      read('src/scripts/script.js'),
-      'src/scripts/script.js',
+      read('src/scripts/app-core.js'),
+      'src/scripts/app-core.js',
     );
     expect(appScriptVersion).toBe(version);
 
     const legacyScriptVersion = extractVersion(
       /var APP_VERSION = "([^"]+)";/,
-      read('legacy/scripts/script.js'),
-      'legacy/scripts/script.js',
+      read('legacy/scripts/app-core.js'),
+      'legacy/scripts/app-core.js',
     );
     expect(legacyScriptVersion).toBe(version);
 

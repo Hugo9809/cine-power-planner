@@ -42,6 +42,7 @@ if (typeof window !== 'undefined') {
 
 const APP_VERSION = "1.0.5";
 const IOS_PWA_HELP_STORAGE_KEY = 'iosPwaHelpShown';
+const INSTALL_PROMPT_DISMISSED_STORAGE_KEY = 'cameraPowerPlanner_installPromptDismissed';
 
 const DEVICE_SCHEMA_PATH = 'src/data/schema.json';
 const DEVICE_SCHEMA_STORAGE_KEY = 'cameraPowerPlanner_schemaCache';
@@ -115,6 +116,7 @@ let monitorWattInput;
 let monitorVoltageInput;
 let monitorPortTypeInput;
 let monitorVideoInputsContainer;
+let installPromptDismissed = false;
 
 try {
   if (typeof localStorage !== 'undefined') {
@@ -7967,7 +7969,8 @@ const helpQuickLinksNav = document.getElementById("helpQuickLinks");
 const helpQuickLinksHeading = document.getElementById("helpQuickLinksHeading");
 const helpQuickLinksList = document.getElementById("helpQuickLinksList");
 const installPromptBanner = document.getElementById("installPromptBanner");
-const installPromptBannerText = document.getElementById("installPromptBannerText");
+const installPromptBannerAction = document.getElementById("installPromptBannerAction");
+const installPromptBannerDismiss = document.getElementById("installPromptBannerDismiss");
 const installGuideDialog = document.getElementById("installGuideDialog");
 const installGuideTitle = document.getElementById("installGuideTitle");
 const installGuideIntro = document.getElementById("installGuideIntro");
@@ -10560,9 +10563,76 @@ function markIosPwaHelpDismissed() {
   }
 }
 
+function hasDismissedInstallPrompt() {
+  if (installPromptDismissed) return true;
+  try {
+    if (localStorage.getItem(INSTALL_PROMPT_DISMISSED_STORAGE_KEY) === '1') {
+      installPromptDismissed = true;
+      return true;
+    }
+  } catch (error) {
+    console.warn('Could not read install prompt dismissal flag', error);
+  }
+  return installPromptDismissed;
+}
+
+function markInstallPromptDismissed() {
+  installPromptDismissed = true;
+  try {
+    localStorage.setItem(INSTALL_PROMPT_DISMISSED_STORAGE_KEY, '1');
+  } catch (error) {
+    console.warn('Could not store install prompt dismissal', error);
+  }
+}
+
+let installBannerColorObserver = null;
+let installBannerColorUpdateFrame = 0;
+
+function updateInstallBannerColors() {
+  if (!installPromptBanner) return;
+  const accentColor = getCssVariableValue('--accent-color', '#001589') || '#001589';
+  const inverseFallback = getCssVariableValue('--inverse-text-color', '#ffffff') || '#ffffff';
+  let textColor = inverseFallback;
+  const rgb = parseColorToRgb(accentColor);
+  if (rgb) {
+    const luminance = computeRelativeLuminance(rgb);
+    textColor = luminance > 0.6 ? '#000000' : '#ffffff';
+  }
+  const current = installPromptBanner.style.getPropertyValue('--install-banner-text-color').trim();
+  if (current !== textColor) {
+    installPromptBanner.style.setProperty('--install-banner-text-color', textColor);
+  }
+}
+
+function scheduleInstallBannerColorUpdate() {
+  if (!installPromptBanner) return;
+  if (typeof window !== 'undefined' && typeof window.requestAnimationFrame === 'function') {
+    if (installBannerColorUpdateFrame) return;
+    installBannerColorUpdateFrame = window.requestAnimationFrame(() => {
+      installBannerColorUpdateFrame = 0;
+      updateInstallBannerColors();
+    });
+  } else {
+    updateInstallBannerColors();
+  }
+}
+
+function observeInstallBannerAccentChanges() {
+  if (installBannerColorObserver) return;
+  if (typeof MutationObserver !== 'function') return;
+  if (typeof document === 'undefined') return;
+  const targets = [document.documentElement, document.body].filter(Boolean);
+  if (!targets.length) return;
+  const observer = new MutationObserver(() => scheduleInstallBannerColorUpdate());
+  const options = { attributes: true, attributeFilter: ['class', 'style'] };
+  targets.forEach(target => observer.observe(target, options));
+  installBannerColorObserver = observer;
+}
+
 function shouldShowInstallBanner() {
   if (!installPromptBanner) return false;
   if (isStandaloneDisplayMode()) return false;
+  if (hasDismissedInstallPrompt()) return false;
   return isIosDevice() || isAndroidDevice();
 }
 
@@ -10570,6 +10640,7 @@ function updateInstallBannerVisibility() {
   if (!installPromptBanner) return;
   if (shouldShowInstallBanner()) {
     installPromptBanner.removeAttribute('hidden');
+    scheduleInstallBannerColorUpdate();
     updateInstallBannerPosition();
   } else {
     installPromptBanner.setAttribute('hidden', '');
@@ -10676,10 +10747,23 @@ function closeInstallGuide() {
 function setupInstallBanner() {
   if (!installPromptBanner) return;
 
-  installPromptBanner.addEventListener('click', () => {
-    const platform = isIosDevice() ? 'ios' : 'android';
-    openInstallGuide(platform);
-  });
+  observeInstallBannerAccentChanges();
+
+  if (installPromptBannerAction) {
+    installPromptBannerAction.addEventListener('click', () => {
+      const platform = isIosDevice() ? 'ios' : 'android';
+      openInstallGuide(platform);
+    });
+  }
+
+  if (installPromptBannerDismiss) {
+    installPromptBannerDismiss.addEventListener('click', event => {
+      event.stopPropagation();
+      markInstallPromptDismissed();
+      updateInstallBannerVisibility();
+      updateInstallBannerPosition();
+    });
+  }
 
   if (installGuideClose) {
     installGuideClose.addEventListener('click', closeInstallGuide);
@@ -10694,12 +10778,16 @@ function setupInstallBanner() {
   }
 
   applyInstallTexts(currentLang);
+  scheduleInstallBannerColorUpdate();
   updateInstallBannerVisibility();
   updateInstallBannerPosition();
 
   if (typeof window !== 'undefined') {
     window.addEventListener('resize', updateInstallBannerPosition);
-    window.addEventListener('appinstalled', updateInstallBannerVisibility);
+    window.addEventListener('appinstalled', () => {
+      markInstallPromptDismissed();
+      updateInstallBannerVisibility();
+    });
     if (typeof window.matchMedia === 'function') {
       try {
         const media = window.matchMedia('(display-mode: standalone)');
@@ -10720,11 +10808,23 @@ function applyInstallTexts(lang) {
   const fallbackTexts = texts.en || {};
   const langTexts = texts[lang] || fallbackTexts;
   const bannerText = langTexts.installBannerText || fallbackTexts.installBannerText;
-  if (installPromptBannerText && bannerText) {
-    installPromptBannerText.textContent = bannerText;
+  if (installPromptBannerAction) {
+    if (bannerText) {
+      setButtonLabelWithIcon(installPromptBannerAction, bannerText, ICON_GLYPHS.load);
+      installPromptBannerAction.setAttribute('aria-label', bannerText);
+      installPromptBannerAction.setAttribute('title', bannerText);
+    } else {
+      installPromptBannerAction.textContent = '';
+      installPromptBannerAction.removeAttribute('aria-label');
+      installPromptBannerAction.removeAttribute('title');
+    }
   }
-  if (installPromptBanner && bannerText) {
-    installPromptBanner.setAttribute('aria-label', bannerText);
+  if (installPromptBanner) {
+    if (bannerText) {
+      installPromptBanner.setAttribute('aria-label', bannerText);
+    } else {
+      installPromptBanner.removeAttribute('aria-label');
+    }
   }
   const closeLabel = langTexts.installHelpClose || fallbackTexts.installHelpClose;
   if (installGuideClose && closeLabel) {
@@ -10732,9 +10832,17 @@ function applyInstallTexts(lang) {
     installGuideClose.setAttribute('aria-label', closeLabel);
     installGuideClose.setAttribute('title', closeLabel);
   }
+  if (installPromptBannerDismiss) {
+    const dismissLabel = closeLabel || 'Close';
+    const hiddenText = `<span class="visually-hidden">${escapeHtml(dismissLabel)}</span>`;
+    installPromptBannerDismiss.innerHTML = `${iconMarkup(ICON_GLYPHS.circleX, 'btn-icon')}${hiddenText}`;
+    installPromptBannerDismiss.setAttribute('aria-label', dismissLabel);
+    installPromptBannerDismiss.setAttribute('title', dismissLabel);
+  }
   if (installGuideDialog && !installGuideDialog.hasAttribute('hidden') && currentInstallGuidePlatform) {
     renderInstallGuideContent(currentInstallGuidePlatform, lang);
   }
+  scheduleInstallBannerColorUpdate();
 }
 
 function shouldShowIosPwaHelp() {
@@ -12573,6 +12681,7 @@ const applyAccentColor = (color) => {
     }
   }
   refreshDarkModeAccentBoost({ color: accentValue, highContrast });
+  scheduleInstallBannerColorUpdate();
 };
 
 const clearAccentColorOverrides = () => {
@@ -12588,6 +12697,7 @@ const clearAccentColorOverrides = () => {
     bodyStyle.removeProperty('--link-color');
   }
   refreshDarkModeAccentBoost({ color: null, highContrast: isHighContrastActive() });
+  scheduleInstallBannerColorUpdate();
 };
 
 try {

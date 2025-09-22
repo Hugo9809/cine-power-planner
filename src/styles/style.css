@@ -279,27 +279,75 @@ textarea {
   top: 0;
   left: 0;
   right: 0;
-  background: var(--info-color);
-  color: var(--inverse-text-color);
-  text-align: center;
-  padding: 10px 16px;
-  z-index: 999;
-  border: none;
-  border-radius: 0;
-  font: inherit;
-  cursor: pointer;
-  line-height: 1.4;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
   display: none;
+  align-items: stretch;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-xl);
+  background: var(--accent-color);
+  color: var(--install-banner-text-color, var(--inverse-text-color));
+  z-index: 999;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  border-bottom: 1px solid color-mix(in srgb, var(--install-banner-text-color, #fff) 28%, transparent);
+  flex-wrap: wrap;
 }
 
 #installPromptBanner:not([hidden]) {
-  display: block;
+  display: flex;
 }
 
-#installPromptBanner:focus-visible {
-  outline: 2px solid var(--inverse-text-color);
-  outline-offset: -2px;
+#installPromptBanner button {
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  line-height: 1.4;
+  cursor: pointer;
+}
+
+#installPromptBannerAction {
+  flex: 1 1 0;
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-sm) var(--spacing-xl);
+  border-radius: var(--border-radius);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-size: calc(var(--font-size-base) * var(--font-scale-xs));
+  font-weight: var(--font-weight-medium);
+  background-color: color-mix(in srgb, var(--install-banner-text-color, #fff) 12%, transparent);
+  transition: background-color 0.2s ease, color 0.2s ease;
+  min-height: calc(var(--button-size) + var(--spacing-sm));
+}
+
+#installPromptBannerAction:hover,
+#installPromptBannerAction:focus-visible {
+  background-color: color-mix(in srgb, var(--install-banner-text-color, #fff) 20%, transparent);
+  outline: 2px solid var(--install-banner-text-color, var(--inverse-text-color));
+  outline-offset: 2px;
+}
+
+#installPromptBannerDismiss {
+  flex: 0 0 auto;
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xs);
+  border-radius: var(--border-radius);
+  min-width: calc(var(--button-size) + var(--spacing-xs));
+  min-height: calc(var(--button-size) + var(--spacing-xs));
+  opacity: 0.85;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+
+#installPromptBannerDismiss:hover,
+#installPromptBannerDismiss:focus-visible {
+  background-color: color-mix(in srgb, var(--install-banner-text-color, #fff) 16%, transparent);
+  opacity: 1;
+  outline: 2px solid var(--install-banner-text-color, var(--inverse-text-color));
+  outline-offset: 2px;
 }
 
 .visually-hidden {
