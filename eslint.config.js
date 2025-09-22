@@ -24,9 +24,9 @@ const appScriptConfigs = Object.entries(appScriptGlobals).map(([key, names]) => 
 }));
 
 module.exports = [
-  { ignores: ['vendor/**', 'src/vendor/**', 'legacy/**'] },
-  js.configs.recommended,
+  { ignores: ['vendor/**', 'src/vendor/**'] },
   {
+    ...js.configs.recommended,
     files: ['**/*.js'],
     ignores: ['node_modules/**', 'vendor/**', 'src/vendor/**', 'legacy/**'],
     languageOptions: {
@@ -59,6 +59,21 @@ module.exports = [
     },
   },
   ...appScriptConfigs,
+  {
+    files: ['legacy/**/*.js'],
+    languageOptions: {
+      ecmaVersion: 2021,
+      sourceType: 'module',
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+      },
+    },
+    rules: {
+      'no-undef': 'off',
+      'no-unused-vars': 'off',
+    },
+  },
   {
     files: ['tests/**'],
     languageOptions: {

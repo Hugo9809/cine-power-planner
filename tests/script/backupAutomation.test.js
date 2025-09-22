@@ -61,7 +61,8 @@ const loadApp = () => {
   global.clearAllData = jest.fn();
   global.showNotification = jest.fn();
 
-  return require('../../src/scripts/script.js');
+  const { loadRuntime } = require('../helpers/runtimeLoader');
+  return loadRuntime();
 };
 
 let fakeTimersActive = false;

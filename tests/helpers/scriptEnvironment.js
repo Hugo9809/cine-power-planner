@@ -143,7 +143,8 @@ function setupScriptEnvironment(options = {}) {
 
   let utils;
   jest.isolateModules(() => {
-    utils = require('../../src/scripts/script.js');
+    const { loadRuntime } = require('./runtimeLoader');
+    utils = loadRuntime();
   });
 
   restoreReadyState(readyStateDescriptor);
