@@ -315,6 +315,36 @@ describe('global feature search helpers', () => {
     expect(markResult?.value.label).toBe('Canon EOS R5 Mark II');
   });
 
+  test('searchKey and searchTokens treat P-Tap variants as D-Tap', () => {
+    expect(searchKey('P-Tap Output')).toBe(searchKey('D-Tap Output'));
+    expect(searchTokens('P-Tap Output')).toEqual(
+      expect.arrayContaining(['ptap', 'dtap'])
+    );
+    expect(searchTokens('Power Tap Accessory')).toEqual(
+      expect.arrayContaining(['powertap', 'dtap'])
+    );
+  });
+
+  test('search normalizes USB Type-C connectors', () => {
+    expect(searchKey('Type C Port')).toBe(searchKey('USB-C Port'));
+    expect(searchTokens('USB-C Power')).toEqual(
+      expect.arrayContaining(['usbc', 'typec'])
+    );
+    expect(searchTokens('Type C Power')).toEqual(
+      expect.arrayContaining(['usbc', 'typec'])
+    );
+  });
+
+  test('search normalizes USB Type-A connectors', () => {
+    expect(searchKey('USB Type A Port')).toBe(searchKey('USB-A Port'));
+    expect(searchTokens('USB-A Adapter')).toEqual(
+      expect.arrayContaining(['usba', 'typea'])
+    );
+    expect(searchTokens('Type A Adapter')).toEqual(
+      expect.arrayContaining(['usba', 'typea'])
+    );
+  });
+
   test('runFeatureSearch prefers exact feature matches over device ties', () => {
     const { featureMap, deviceMap, helpMap, featureSearchInput } = featureSearchInternals;
     featureMap.clear();
