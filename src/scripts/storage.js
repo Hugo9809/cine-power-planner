@@ -61,6 +61,7 @@ function getCustomFontStorageKeyName() {
 ensureCustomFontStorageKeyName();
 
 const CUSTOM_LOGO_STORAGE_KEY = 'customLogo';
+const FULL_BACKUP_HISTORY_STORAGE_KEY = 'cameraPowerPlanner_fullBackupHistory';
 const AUTO_GEAR_RULES_STORAGE_KEY = 'cameraPowerPlanner_autoGearRules';
 const AUTO_GEAR_SEEDED_STORAGE_KEY = 'cameraPowerPlanner_autoGearSeeded';
 const AUTO_GEAR_BACKUPS_STORAGE_KEY = 'cameraPowerPlanner_autoGearBackups';
@@ -146,6 +147,7 @@ const PRIMARY_STORAGE_KEYS = [
 
 const SIMPLE_STORAGE_KEYS = [
   CUSTOM_LOGO_STORAGE_KEY,
+  FULL_BACKUP_HISTORY_STORAGE_KEY,
   getCustomFontStorageKeyName(),
   'darkMode',
   'pinkMode',
