@@ -823,39 +823,39 @@ describe('export/import all data', () => {
   });
 
   test('exportAllData collects all planner data', () => {
-      saveDeviceData(validDeviceData);
-      saveSetups({ A: { foo: 1 } });
-      saveSessionState({ camera: 'CamA' });
-      saveFeedback({ note: 'hi' });
-      saveProject('Proj', { gearList: '<ul></ul>' });
-      saveFavorites({ cat: ['A'] });
-      localStorage.setItem('darkMode', 'true');
-      localStorage.setItem('pinkMode', 'true');
-      localStorage.setItem('highContrast', 'true');
-      localStorage.setItem('reduceMotion', 'true');
-      localStorage.setItem('relaxedSpacing', 'true');
-      localStorage.setItem('showAutoBackups', 'true');
-      localStorage.setItem('accentColor', '#ff00ff');
-      localStorage.setItem('fontSize', '18');
-      localStorage.setItem('fontFamily', "'My Font', sans-serif");
-      localStorage.setItem('language', 'de');
-      localStorage.setItem('iosPwaHelpShown', 'true');
-      localStorage.setItem('customLogo', 'data:image/svg+xml;base64,PHN2Zw==');
-      localStorage.setItem(
-        'cameraPowerPlanner_customFonts',
-        JSON.stringify([
-          { id: 'font-1', name: 'My Font', data: 'data:font/woff;base64,AAAA' }
-        ]),
-      );
-      const rules = [{ id: 'rule-outdoor', label: 'Outdoor', scenarios: ['Outdoor'], add: [], remove: [] }];
-      saveAutoGearRules(rules);
-      const backups = [
-        {
-          id: 'backup-1',
+    saveDeviceData(validDeviceData);
+    saveSetups({ A: { foo: 1 } });
+    saveSessionState({ camera: 'CamA' });
+    saveFeedback({ note: 'hi' });
+    saveProject('Proj', { gearList: '<ul></ul>' });
+    saveFavorites({ cat: ['A'] });
+    localStorage.setItem('darkMode', 'true');
+    localStorage.setItem('pinkMode', 'true');
+    localStorage.setItem('highContrast', 'true');
+    localStorage.setItem('reduceMotion', 'true');
+    localStorage.setItem('relaxedSpacing', 'true');
+    localStorage.setItem('showAutoBackups', 'true');
+    localStorage.setItem('accentColor', '#ff00ff');
+    localStorage.setItem('fontSize', '18');
+    localStorage.setItem('fontFamily', "'My Font', sans-serif");
+    localStorage.setItem('language', 'de');
+    localStorage.setItem('iosPwaHelpShown', 'true');
+    localStorage.setItem('customLogo', 'data:image/svg+xml;base64,PHN2Zw==');
+    localStorage.setItem(
+      'cameraPowerPlanner_customFonts',
+      JSON.stringify([
+        { id: 'font-1', name: 'My Font', data: 'data:font/woff;base64,AAAA' }
+      ]),
+    );
+    const rules = [{ id: 'rule-outdoor', label: 'Outdoor', scenarios: ['Outdoor'], add: [], remove: [] }];
+    saveAutoGearRules(rules);
+    const backups = [
+      {
+        id: 'backup-1',
         label: 'Snapshot',
         createdAt: 1720646400000,
         rules,
-      }
+      },
     ];
     saveAutoGearBackups(backups);
     saveAutoGearSeedFlag(true);
@@ -866,7 +866,10 @@ describe('export/import all data', () => {
     saveAutoGearActivePresetId('preset-1');
     saveAutoGearAutoPresetId('preset-auto');
     saveAutoGearBackupVisibility(true);
-    expect(exportAllData()).toEqual({
+
+    const exported = exportAllData();
+
+    expect(exported).toMatchObject({
       devices: validDeviceData,
       setups: { A: { foo: 1 } },
       session: { camera: 'CamA' },
@@ -875,30 +878,38 @@ describe('export/import all data', () => {
       favorites: { cat: ['A'] },
       autoGearRules: rules,
       autoGearBackups: backups,
-        autoGearSeeded: true,
-        autoGearPresets: presets,
-        autoGearActivePresetId: 'preset-1',
-        autoGearAutoPresetId: 'preset-auto',
-        autoGearShowBackups: true,
-        preferences: {
-          darkMode: true,
-          pinkMode: true,
-          highContrast: true,
-          reduceMotion: true,
-          relaxedSpacing: true,
-          showAutoBackups: true,
-          accentColor: '#ff00ff',
-          fontSize: '18',
-          fontFamily: "'My Font', sans-serif",
-          language: 'de',
-          iosPwaHelpShown: true,
-        },
-        customLogo: 'data:image/svg+xml;base64,PHN2Zw==',
-        customFonts: [
-          { id: 'font-1', name: 'My Font', data: 'data:font/woff;base64,AAAA' }
-        ],
-      });
+      autoGearSeeded: true,
+      autoGearPresets: presets,
+      autoGearActivePresetId: 'preset-1',
+      autoGearAutoPresetId: 'preset-auto',
+      autoGearShowBackups: true,
+      preferences: {
+        darkMode: true,
+        pinkMode: true,
+        highContrast: true,
+        reduceMotion: true,
+        relaxedSpacing: true,
+        showAutoBackups: true,
+        accentColor: '#ff00ff',
+        fontSize: '18',
+        fontFamily: "'My Font', sans-serif",
+        language: 'de',
+        iosPwaHelpShown: true,
+      },
+      customLogo: 'data:image/svg+xml;base64,PHN2Zw==',
+      customFonts: [
+        { id: 'font-1', name: 'My Font', data: 'data:font/woff;base64,AAAA' }
+      ],
     });
+
+    expect(exported.metadata).toEqual(
+      expect.objectContaining({
+        appVersion: expect.any(String),
+        generatedAt: expect.any(String),
+      }),
+    );
+    expect(new Date(exported.metadata.generatedAt).toString()).not.toBe('Invalid Date');
+  });
 
   test('exportAllData filters invalid custom font entries', () => {
     const invalidEntries = [
@@ -1007,6 +1018,32 @@ describe('export/import all data', () => {
     expect(JSON.parse(localStorage.getItem('cameraPowerPlanner_customFonts'))).toEqual([
       { id: 'font-restore', name: 'Restore Font', data: 'data:font/woff;base64,BBBB' }
     ]);
+  });
+
+  test('importAllData parses JSON string payload', () => {
+    const payload = {
+      devices: validDeviceData,
+      favorites: { rig: ['Cam'] },
+    };
+
+    importAllData(JSON.stringify(payload));
+
+    expect(loadDeviceData()).toEqual(validDeviceData);
+    expect(loadFavorites()).toEqual({ rig: ['Cam'] });
+  });
+
+  test('importAllData ignores metadata payload', () => {
+    const favorites = { cart: ['Light'] };
+
+    importAllData({
+      metadata: {
+        generatedAt: '2024-01-01T00:00:00.000Z',
+        appVersion: 'test-version',
+      },
+      favorites,
+    });
+
+    expect(loadFavorites()).toEqual(favorites);
   });
 
   test('importAllData converts legacy storage snapshots with prefixed keys', () => {

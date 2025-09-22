@@ -3007,6 +3007,54 @@ function clearAllData() {
     return null;
   }
 
+  function resolveAppVersion() {
+    if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.APP_VERSION === 'string') {
+      const scopedVersion = GLOBAL_SCOPE.APP_VERSION.trim();
+      if (scopedVersion) {
+        return scopedVersion;
+      }
+    }
+
+    if (typeof process !== 'undefined' && process && process.env) {
+      const envKeys = [
+        'CAMERA_POWER_PLANNER_VERSION',
+        'APP_VERSION',
+        'npm_package_version',
+      ];
+      for (let index = 0; index < envKeys.length; index += 1) {
+        const value = process.env[envKeys[index]];
+        if (typeof value === 'string' && value.trim()) {
+          return value.trim();
+        }
+      }
+    }
+
+    return null;
+  }
+
+  function buildExportMetadata(referenceDate) {
+    let timestamp = referenceDate instanceof Date ? referenceDate : null;
+    if (!timestamp || Number.isNaN(timestamp.valueOf())) {
+      timestamp = new Date();
+    }
+
+    let generatedAt;
+    try {
+      generatedAt = timestamp.toISOString();
+    } catch (error) {
+      console.warn('Failed to serialize export timestamp', error);
+      generatedAt = new Date().toISOString();
+    }
+
+    const metadata = { generatedAt };
+    const version = resolveAppVersion();
+    if (version) {
+      metadata.appVersion = version;
+    }
+
+    return metadata;
+  }
+
   function collectPreferenceSnapshot() {
     const preferences = {};
 
@@ -3127,6 +3175,8 @@ function clearAllData() {
     if (customFonts.length) {
       payload.customFonts = customFonts;
     }
+
+    payload.metadata = buildExportMetadata(new Date());
 
     return payload;
   }
@@ -3581,6 +3631,14 @@ function convertStorageSnapshotToData(snapshot) {
 }
 
 function importAllData(allData, options = {}) {
+  if (typeof allData === 'string') {
+    const parsed = tryParseJSONLike(allData);
+    if (parsed.success && isPlainObject(parsed.parsed)) {
+      importAllData(parsed.parsed, options);
+    }
+    return;
+  }
+
   if (!isPlainObject(allData)) {
     return;
   }
