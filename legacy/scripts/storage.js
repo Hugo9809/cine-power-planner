@@ -103,7 +103,6 @@ function createStorageMigrationBackup(storage, key, originalValue) {
   }
   try {
     storage.setItem(backupKey, serialized);
-    console.log("Stored migration backup for ".concat(key, "."));
   } catch (writeError) {
     console.warn("Unable to create migration backup for ".concat(key), writeError);
   }
@@ -1068,8 +1067,8 @@ function loadJSONFromStorage(storage, key, errorMessage) {
   }
   return defaultValue;
 }
-function saveJSONToStorage(storage, key, value, errorMessage, successMessage) {
-  var options = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : {};
+function saveJSONToStorage(storage, key, value, errorMessage) {
+  var options = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
   if (!storage) return;
   var _ref4 = options || {},
     _ref4$disableBackup = _ref4.disableBackup,
@@ -1085,11 +1084,6 @@ function saveJSONToStorage(storage, key, value, errorMessage, successMessage) {
       console.error(errorMessage, serializationError);
       alertStorageError();
       return null;
-    }
-  };
-  var logSuccess = function logSuccess() {
-    if (successMessage) {
-      console.log(successMessage);
     }
   };
   var preservedBackupValue;
@@ -1158,7 +1152,6 @@ function saveJSONToStorage(storage, key, value, errorMessage, successMessage) {
         hasPreservedBackup = true;
       }
       if (skipPrimaryWrite && (!useBackup || hasExistingBackup && existingBackupValue === serialized)) {
-        logSuccess();
         return {
           v: void 0
         };
@@ -1184,7 +1177,6 @@ function saveJSONToStorage(storage, key, value, errorMessage, successMessage) {
         }
       }
       if (!useBackup) {
-        logSuccess();
         return {
           v: void 0
         };
@@ -1241,7 +1233,6 @@ function saveJSONToStorage(storage, key, value, errorMessage, successMessage) {
       };
       var backupResult = attemptBackupWrite();
       if (backupResult === 'success') {
-        logSuccess();
         return {
           v: void 0
         };
@@ -1574,21 +1565,19 @@ function loadDeviceData() {
     createStorageMigrationBackup(safeStorage, DEVICE_STORAGE_KEY, parsedData);
     saveJSONToStorage(safeStorage, DEVICE_STORAGE_KEY, data, "Error updating device data in localStorage during normalization:");
   }
-  console.log("Device data loaded from localStorage.");
   return data;
 }
 function saveDeviceData(deviceData) {
   var safeStorage = getSafeLocalStorage();
   if (deviceData === null || deviceData === undefined) {
     deleteFromStorage(safeStorage, DEVICE_STORAGE_KEY, "Error deleting device data from localStorage:");
-    console.log("Device data cleared from localStorage.");
     return;
   }
   if (!isPlainObject(deviceData)) {
     console.warn('Ignoring invalid device data payload. Expected a plain object.');
     return;
   }
-  saveJSONToStorage(safeStorage, DEVICE_STORAGE_KEY, deviceData, "Error saving device data to localStorage:", "Device data saved to localStorage.");
+  saveJSONToStorage(safeStorage, DEVICE_STORAGE_KEY, deviceData, "Error saving device data to localStorage:");
 }
 function normalizeSetups(rawData) {
   if (!rawData) {
@@ -1664,7 +1653,7 @@ function saveSetups(setups) {
     normalizedSetups = _normalizeSetups2.data;
   enforceAutoBackupLimits(normalizedSetups);
   var safeStorage = getSafeLocalStorage();
-  saveJSONToStorage(safeStorage, SETUP_STORAGE_KEY, normalizedSetups, "Error saving setups to localStorage:", "Setups saved to localStorage.", {
+  saveJSONToStorage(safeStorage, SETUP_STORAGE_KEY, normalizedSetups, "Error saving setups to localStorage:", {
     onQuotaExceeded: function onQuotaExceeded() {
       var removedKey = removeOldestAutoBackupEntry(normalizedSetups);
       if (!removedKey) {
@@ -1932,10 +1921,10 @@ function readAllProjectsFromStorage() {
     originalValue: originalValue
   };
 }
-function persistAllProjects(projects, successMessage) {
+function persistAllProjects(projects) {
   var safeStorage = getSafeLocalStorage();
   enforceAutoBackupLimits(projects);
-  saveJSONToStorage(safeStorage, PROJECT_STORAGE_KEY, projects, "Error saving project to localStorage:", successMessage, {
+  saveJSONToStorage(safeStorage, PROJECT_STORAGE_KEY, projects, "Error saving project to localStorage:", {
     onQuotaExceeded: function onQuotaExceeded() {
       var removedKey = removeOldestAutoBackupEntry(projects);
       if (!removedKey) {
@@ -2071,7 +2060,7 @@ function saveProject(name, project) {
     }
   }
   projects[name || ""] = normalized;
-  persistAllProjects(projects, "Project saved to localStorage.");
+  persistAllProjects(projects);
 }
 function deleteProject(name) {
   if (name === undefined) {
@@ -2103,9 +2092,6 @@ function deleteProject(name) {
     deleteFromStorage(getSafeLocalStorage(), PROJECT_STORAGE_KEY, "Error deleting project from localStorage:");
   } else {
     persistAllProjects(projects);
-    if (backupOutcome.status === 'created' && backupOutcome.backupName) {
-      console.log("Stored automatic backup \"".concat(backupOutcome.backupName, "\" before deleting project \"").concat(key, "\"."));
-    }
   }
 }
 function createProjectImporter() {
@@ -2274,7 +2260,7 @@ function saveFeedback(feedback) {
     console.warn('Ignoring invalid feedback payload. Expected a plain object.');
     return;
   }
-  saveJSONToStorage(safeStorage, FEEDBACK_STORAGE_KEY, feedback, "Error saving feedback to localStorage:", "Feedback saved to localStorage.");
+  saveJSONToStorage(safeStorage, FEEDBACK_STORAGE_KEY, feedback, "Error saving feedback to localStorage:");
 }
 function loadAutoGearRules() {
   applyLegacyStorageMigrations();
@@ -2561,7 +2547,6 @@ function clearAllData() {
   };
   deletePrefixedKeys(storageCandidates);
   deletePrefixedKeys(sessionCandidates);
-  console.log("All planner data cleared from storage.");
 }
 function readLocalStorageValue(key) {
   var storage = getSafeLocalStorage();
