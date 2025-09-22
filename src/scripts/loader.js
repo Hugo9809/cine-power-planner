@@ -360,7 +360,6 @@
   }
 
   var modernScripts = [
-    'src/scripts/globalthis-polyfill.js',
     'src/data/devices/index.js',
     'src/data/devices/cameras.js',
     'src/data/devices/monitors.js',
@@ -389,7 +388,6 @@
   var legacyScripts = [
     'legacy/polyfills/core-js-bundle.min.js',
     'legacy/polyfills/regenerator-runtime.js',
-    'legacy/scripts/globalthis-polyfill.js',
     'legacy/data/devices/index.js',
     'legacy/data/devices/cameras.js',
     'legacy/data/devices/monitors.js',

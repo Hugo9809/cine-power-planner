@@ -353,10 +353,14 @@ function rollbackMigratedKeys(target, keys) {
   });
 }
 function snapshotStorageEntries(storage) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
   var snapshot = Object.create(null);
   if (!storage) {
     return snapshot;
   }
+  var _ref = options || {},
+    _ref$suppressAlerts = _ref.suppressAlerts,
+    suppressAlerts = _ref$suppressAlerts === void 0 ? false : _ref$suppressAlerts;
   var captureKey = function captureKey(key) {
     if (typeof key !== 'string' || !key) {
       return;
@@ -370,7 +374,9 @@ function snapshotStorageEntries(storage) {
       }
     } catch (error) {
       console.warn('Unable to read storage key during snapshot', key, error);
-      alertStorageError('migration-read');
+      if (!suppressAlerts) {
+        alertStorageError('migration-read');
+      }
       return;
     }
     if (value === null || value === undefined) {
@@ -392,7 +398,9 @@ function snapshotStorageEntries(storage) {
       }
     } catch (error) {
       console.warn('Unable to enumerate storage keys during snapshot', error);
-      alertStorageError('migration-read');
+      if (!suppressAlerts) {
+        alertStorageError('migration-read');
+      }
     }
     return snapshot;
   }
@@ -409,12 +417,66 @@ function snapshotStorageEntries(storage) {
       });
     } catch (error) {
       console.warn('Unable to iterate storage entries during snapshot', error);
-      alertStorageError('migration-read');
+      if (!suppressAlerts) {
+        alertStorageError('migration-read');
+      }
     }
     return snapshot;
   }
   Object.keys(storage).forEach(captureKey);
   return snapshot;
+}
+function updateGlobalSafeLocalStorageReference() {
+  if (!GLOBAL_SCOPE || _typeof(GLOBAL_SCOPE) !== 'object') {
+    return;
+  }
+  try {
+    Object.defineProperty(GLOBAL_SCOPE, 'SAFE_LOCAL_STORAGE', {
+      configurable: true,
+      get: getSafeLocalStorage
+    });
+    return;
+  } catch (defineError) {
+    void defineError;
+    try {
+      GLOBAL_SCOPE.SAFE_LOCAL_STORAGE = getSafeLocalStorage();
+      return;
+    } catch (assignError) {
+      console.warn('Unable to refresh SAFE_LOCAL_STORAGE global reference', assignError);
+    }
+  }
+}
+function downgradeSafeLocalStorageToMemory(reason, error, failingStorage) {
+  if (!safeLocalStorageInfo || safeLocalStorageInfo.type === 'memory') {
+    return;
+  }
+  var activeStorage = safeLocalStorageInfo.storage;
+  if (!activeStorage || failingStorage && failingStorage !== activeStorage) {
+    return;
+  }
+  var snapshot = Object.create(null);
+  try {
+    snapshot = snapshotStorageEntries(activeStorage, {
+      suppressAlerts: true
+    });
+  } catch (snapshotError) {
+    console.warn('Unable to capture storage snapshot during downgrade', snapshotError);
+  }
+  var memoryStorage = createMemoryStorage();
+  Object.keys(snapshot).forEach(function (key) {
+    try {
+      memoryStorage.setItem(key, snapshot[key]);
+    } catch (copyError) {
+      console.warn('Unable to copy storage entry to memory during downgrade', key, copyError);
+    }
+  });
+  safeLocalStorageInfo = {
+    storage: memoryStorage,
+    type: 'memory'
+  };
+  lastFailedUpgradeCandidate = null;
+  console.warn(reason ? "Downgraded planner storage to in-memory fallback after ".concat(reason, " errors.") : 'Downgraded planner storage to in-memory fallback after storage errors.', error);
+  updateGlobalSafeLocalStorageReference();
 }
 function attemptLocalStorageUpgrade() {
   if (!safeLocalStorageInfo || safeLocalStorageInfo.type === 'local') {
@@ -481,16 +543,7 @@ function getSafeLocalStorage() {
   }
   return safeLocalStorageInfo.storage;
 }
-if (GLOBAL_SCOPE && _typeof(GLOBAL_SCOPE) === 'object') {
-  try {
-    Object.defineProperty(GLOBAL_SCOPE, 'SAFE_LOCAL_STORAGE', {
-      configurable: true,
-      get: getSafeLocalStorage
-    });
-  } catch (_unused) {
-    GLOBAL_SCOPE.SAFE_LOCAL_STORAGE = getSafeLocalStorage();
-  }
-}
+updateGlobalSafeLocalStorageReference();
 var persistentStorageRequestPromise = null;
 function requestPersistentStorage() {
   if (persistentStorageRequestPromise) {
@@ -954,13 +1007,13 @@ function migrateLegacyStorageKeys() {
     modern: CUSTOM_FONT_STORAGE_KEY_DEFAULT,
     updateFontKey: true
   }];
-  mappings.forEach(function (_ref2) {
-    var legacy = _ref2.legacy,
-      modern = _ref2.modern,
-      _ref2$includeSession = _ref2.includeSession,
-      includeSession = _ref2$includeSession === void 0 ? false : _ref2$includeSession,
-      _ref2$updateFontKey = _ref2.updateFontKey,
-      updateFontKey = _ref2$updateFontKey === void 0 ? false : _ref2$updateFontKey;
+  mappings.forEach(function (_ref3) {
+    var legacy = _ref3.legacy,
+      modern = _ref3.modern,
+      _ref3$includeSession = _ref3.includeSession,
+      includeSession = _ref3$includeSession === void 0 ? false : _ref3$includeSession,
+      _ref3$updateFontKey = _ref3.updateFontKey,
+      updateFontKey = _ref3$updateFontKey === void 0 ? false : _ref3$updateFontKey;
     var migratedLocal = migrateKeyInStorages(localStorages, safeStorage, legacy, modern);
     migrateKeyInStorages(localStorages, safeStorage, "".concat(legacy).concat(STORAGE_BACKUP_SUFFIX), "".concat(modern).concat(STORAGE_BACKUP_SUFFIX));
     if (includeSession) {
@@ -984,15 +1037,15 @@ function loadJSONFromStorage(storage, key, errorMessage) {
   var defaultValue = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
   var options = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
   if (!storage) return defaultValue;
-  var _ref3 = options || {},
-    _ref3$disableBackup = _ref3.disableBackup,
-    disableBackup = _ref3$disableBackup === void 0 ? false : _ref3$disableBackup,
-    backupKey = _ref3.backupKey,
-    validate = _ref3.validate,
-    _ref3$restoreIfMissin = _ref3.restoreIfMissing,
-    restoreIfMissing = _ref3$restoreIfMissin === void 0 ? false : _ref3$restoreIfMissin,
-    _ref3$alertOnFailure = _ref3.alertOnFailure,
-    alertOnFailure = _ref3$alertOnFailure === void 0 ? null : _ref3$alertOnFailure;
+  var _ref4 = options || {},
+    _ref4$disableBackup = _ref4.disableBackup,
+    disableBackup = _ref4$disableBackup === void 0 ? false : _ref4$disableBackup,
+    backupKey = _ref4.backupKey,
+    validate = _ref4.validate,
+    _ref4$restoreIfMissin = _ref4.restoreIfMissing,
+    restoreIfMissing = _ref4$restoreIfMissin === void 0 ? false : _ref4$restoreIfMissin,
+    _ref4$alertOnFailure = _ref4.alertOnFailure,
+    alertOnFailure = _ref4$alertOnFailure === void 0 ? null : _ref4$alertOnFailure;
   var fallbackKey = typeof backupKey === 'string' && backupKey ? backupKey : "".concat(key).concat(STORAGE_BACKUP_SUFFIX);
   var useBackup = !disableBackup && fallbackKey && fallbackKey !== key;
   var shouldAlert = false;
@@ -1032,6 +1085,7 @@ function loadJSONFromStorage(storage, key, errorMessage) {
     primaryRaw = storage.getItem(key);
   } catch (err) {
     console.error("".concat(errorMessage, " (read)"), err);
+    downgradeSafeLocalStorageToMemory('read access', err, storage);
     shouldAlert = true;
   }
   var primary = parseRawValue(primaryRaw, '');
@@ -1046,6 +1100,7 @@ function loadJSONFromStorage(storage, key, errorMessage) {
       backupRaw = storage.getItem(fallbackKey);
     } catch (err) {
       console.error("".concat(errorMessage, " (backup read)"), err);
+      downgradeSafeLocalStorageToMemory('read access', err, storage);
       shouldAlert = true;
     }
     var backup = parseRawValue(backupRaw, 'backup');
@@ -1071,11 +1126,11 @@ function loadJSONFromStorage(storage, key, errorMessage) {
 function saveJSONToStorage(storage, key, value, errorMessage, successMessage) {
   var options = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : {};
   if (!storage) return;
-  var _ref4 = options || {},
-    _ref4$disableBackup = _ref4.disableBackup,
-    disableBackup = _ref4$disableBackup === void 0 ? false : _ref4$disableBackup,
-    backupKey = _ref4.backupKey,
-    onQuotaExceeded = _ref4.onQuotaExceeded;
+  var _ref5 = options || {},
+    _ref5$disableBackup = _ref5.disableBackup,
+    disableBackup = _ref5$disableBackup === void 0 ? false : _ref5$disableBackup,
+    backupKey = _ref5.backupKey,
+    onQuotaExceeded = _ref5.onQuotaExceeded;
   var fallbackKey = typeof backupKey === 'string' && backupKey ? backupKey : "".concat(key).concat(STORAGE_BACKUP_SUFFIX);
   var useBackup = !disableBackup && fallbackKey && fallbackKey !== key;
   var serializeValue = function serializeValue() {
@@ -1177,6 +1232,7 @@ function saveJSONToStorage(storage, key, value, errorMessage, successMessage) {
             return 1;
           }
           console.error(errorMessage, error);
+          downgradeSafeLocalStorageToMemory('write access', error, storage);
           alertStorageError();
           return {
             v: void 0
@@ -1279,16 +1335,17 @@ function saveJSONToStorage(storage, key, value, errorMessage, successMessage) {
 function deleteFromStorage(storage, key, errorMessage) {
   var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
   if (!storage) return;
-  var _ref5 = options || {},
-    _ref5$disableBackup = _ref5.disableBackup,
-    disableBackup = _ref5$disableBackup === void 0 ? false : _ref5$disableBackup,
-    backupKey = _ref5.backupKey;
+  var _ref6 = options || {},
+    _ref6$disableBackup = _ref6.disableBackup,
+    disableBackup = _ref6$disableBackup === void 0 ? false : _ref6$disableBackup,
+    backupKey = _ref6.backupKey;
   var fallbackKey = typeof backupKey === 'string' && backupKey ? backupKey : "".concat(key).concat(STORAGE_BACKUP_SUFFIX);
   var useBackup = !disableBackup && fallbackKey && fallbackKey !== key;
   try {
     storage.removeItem(key);
   } catch (e) {
     console.error(errorMessage, e);
+    downgradeSafeLocalStorageToMemory('deletion', e, storage);
     alertStorageError();
   }
   if (useBackup) {
@@ -1296,6 +1353,7 @@ function deleteFromStorage(storage, key, errorMessage) {
       storage.removeItem(fallbackKey);
     } catch (backupError) {
       console.error("".concat(errorMessage, " (backup)"), backupError);
+      downgradeSafeLocalStorageToMemory('deletion', backupError, storage);
       alertStorageError();
     }
   }
@@ -1312,6 +1370,7 @@ function loadFlagFromStorage(storage, key, errorMessage) {
     return storage.getItem(key) === '1';
   } catch (e) {
     console.error(errorMessage, e);
+    downgradeSafeLocalStorageToMemory('read access', e, storage);
     alertStorageError();
     return false;
   }
@@ -1326,6 +1385,7 @@ function saveFlagToStorage(storage, key, value, errorMessage) {
     }
   } catch (e) {
     console.error(errorMessage, e);
+    downgradeSafeLocalStorageToMemory('write access', e, storage);
     alertStorageError();
   }
 }
@@ -1677,10 +1737,10 @@ function saveSetups(setups) {
 }
 function updateSetups(callback) {
   var setups = loadSetups();
-  var _ref6 = callback(setups) || {},
-    result = _ref6.result,
-    _ref6$changed = _ref6.changed,
-    changed = _ref6$changed === void 0 ? true : _ref6$changed;
+  var _ref7 = callback(setups) || {},
+    result = _ref7.result,
+    _ref7$changed = _ref7.changed,
+    changed = _ref7$changed === void 0 ? true : _ref7$changed;
   if (changed) {
     saveSetups(setups);
   }
@@ -2219,10 +2279,10 @@ function importProjectCollection(collection, ensureImporter) {
   }
   if (isPlainObject(collection)) {
     var _importProject = ensureImporter();
-    Object.entries(collection).forEach(function (_ref7) {
-      var _ref8 = _slicedToArray(_ref7, 2),
-        name = _ref8[0],
-        proj = _ref8[1];
+    Object.entries(collection).forEach(function (_ref8) {
+      var _ref9 = _slicedToArray(_ref8, 2),
+        name = _ref9[0],
+        proj = _ref9[1];
       _importProject(name, proj);
     });
     return true;
@@ -2343,6 +2403,7 @@ function removeAutoGearPresetFromStorage(presetId, storage) {
     rawPresets = safeStorage.getItem(AUTO_GEAR_PRESETS_STORAGE_KEY);
   } catch (error) {
     console.error('Error loading automatic gear presets while removing autosaved preset from localStorage:', error);
+    downgradeSafeLocalStorageToMemory('read access', error, safeStorage);
     alertStorageError();
     return;
   }
@@ -2381,6 +2442,7 @@ function loadAutoGearActivePresetId() {
     return typeof value === 'string' ? value : '';
   } catch (error) {
     console.error('Error loading automatic gear active preset from localStorage:', error);
+    downgradeSafeLocalStorageToMemory('read access', error, safeStorage);
     alertStorageError();
     return '';
   }
@@ -2398,6 +2460,7 @@ function saveAutoGearActivePresetId(presetId) {
     }
   } catch (error) {
     console.error('Error saving automatic gear active preset to localStorage:', error);
+    downgradeSafeLocalStorageToMemory('write access', error, safeStorage);
     alertStorageError();
   }
 }
@@ -2412,6 +2475,7 @@ function loadAutoGearAutoPresetId() {
     return typeof value === 'string' ? value : '';
   } catch (error) {
     console.error('Error loading automatic gear auto preset from localStorage:', error);
+    downgradeSafeLocalStorageToMemory('read access', error, safeStorage);
     alertStorageError();
     return '';
   }
@@ -2429,6 +2493,7 @@ function saveAutoGearAutoPresetId(presetId) {
     }
   } catch (inspectionError) {
     console.error('Error inspecting automatic gear auto preset in localStorage:', inspectionError);
+    downgradeSafeLocalStorageToMemory('read access', inspectionError, safeStorage);
   }
   try {
     if (presetId) {
@@ -2444,6 +2509,7 @@ function saveAutoGearAutoPresetId(presetId) {
     }
   } catch (error) {
     console.error('Error saving automatic gear auto preset to localStorage:', error);
+    downgradeSafeLocalStorageToMemory('write access', error, safeStorage);
     alertStorageError();
   }
 }
@@ -2577,6 +2643,7 @@ function readLocalStorageValue(key) {
           }
         } catch (backupError) {
           console.warn('Unable to read backup key for export', key, backupError);
+          downgradeSafeLocalStorageToMemory('read access', backupError, storage);
         }
       }
       return null;
@@ -2584,6 +2651,7 @@ function readLocalStorageValue(key) {
     return String(value);
   } catch (error) {
     console.warn('Unable to read storage key for backup', key, error);
+    downgradeSafeLocalStorageToMemory('read access', error, storage);
     return null;
   }
 }
@@ -2719,6 +2787,7 @@ function safeSetLocalStorage(key, value) {
           storage.removeItem(backupKey);
         } catch (backupError) {
           console.warn('Unable to remove backup key during import', backupKey, backupError);
+          downgradeSafeLocalStorageToMemory('deletion', backupError, storage);
         }
       }
     } else {
@@ -2729,12 +2798,14 @@ function safeSetLocalStorage(key, value) {
           storage.setItem(backupKey, storedValue);
         } catch (backupError) {
           console.warn('Unable to update backup key during import', backupKey, backupError);
+          downgradeSafeLocalStorageToMemory('write access', backupError, storage);
           alertStorageError();
         }
       }
     }
   } catch (error) {
     console.warn('Unable to persist storage key during import', key, error);
+    downgradeSafeLocalStorageToMemory('write access', error, storage);
     if (useBackup) {
       alertStorageError();
     }
@@ -2948,7 +3019,7 @@ function parseSnapshotJSONValue(entry) {
     }
     try {
       return JSON.parse(trimmed);
-    } catch (_unused2) {
+    } catch (_unused) {
       return raw;
     }
   }
@@ -3115,9 +3186,9 @@ function importAllData(allData) {
   if (!isPlainObject(allData)) {
     return;
   }
-  var _ref9 = options || {},
-    _ref9$skipSnapshotCon = _ref9.skipSnapshotConversion,
-    skipSnapshotConversion = _ref9$skipSnapshotCon === void 0 ? false : _ref9$skipSnapshotCon;
+  var _ref0 = options || {},
+    _ref0$skipSnapshotCon = _ref0.skipSnapshotConversion,
+    skipSnapshotConversion = _ref0$skipSnapshotCon === void 0 ? false : _ref0$skipSnapshotCon;
   if (!skipSnapshotConversion) {
     var converted = convertStorageSnapshotToData(allData);
     if (converted) {

@@ -76,7 +76,20 @@ var AUTO_GEAR_BACKUP_INTERVAL_MS = 10 * 60 * 1000;
 var AUTO_GEAR_BACKUP_LIMIT = 12;
 var AUTO_GEAR_MULTI_SELECT_MIN_ROWS = 8;
 var AUTO_GEAR_MULTI_SELECT_MAX_ROWS = 12;
-var TEMPERATURE_UNIT_STORAGE_KEY = 'cameraPowerPlanner_temperatureUnit';
+function resolveTemperatureStorageKey() {
+  var scope = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : undefined;
+  var fallback = 'cameraPowerPlanner_temperatureUnit';
+  var existing = scope && typeof scope.TEMPERATURE_UNIT_STORAGE_KEY === 'string' ? scope.TEMPERATURE_UNIT_STORAGE_KEY : fallback;
+  if (scope && typeof scope.TEMPERATURE_UNIT_STORAGE_KEY !== 'string') {
+    try {
+      scope.TEMPERATURE_UNIT_STORAGE_KEY = existing;
+    } catch (error) {
+      void error;
+    }
+  }
+  return existing;
+}
+var TEMPERATURE_STORAGE_KEY = resolveTemperatureStorageKey();
 var TEMPERATURE_UNITS = {
   celsius: 'celsius',
   fahrenheit: 'fahrenheit'
@@ -129,7 +142,7 @@ var monitorPortTypeInput;
 var monitorVideoInputsContainer;
 try {
   if (typeof localStorage !== 'undefined') {
-    var storedTemperatureUnit = localStorage.getItem(TEMPERATURE_UNIT_STORAGE_KEY);
+    var storedTemperatureUnit = localStorage.getItem(TEMPERATURE_STORAGE_KEY);
     if (storedTemperatureUnit) {
       temperatureUnit = normalizeTemperatureUnit(storedTemperatureUnit);
     }
@@ -15675,7 +15688,7 @@ function getSelectWidthMeasureElement() {
   return span;
 }
 function measureSelectTextWidth(selectElem, text, styles) {
-  var content = text && text.length ? text : '\u00a0';
+  var content = text && text.length ? text : "\xA0";
   var computedStyles = styles || window.getComputedStyle(selectElem);
   if (!computedStyles) {
     return content.length * 8;
@@ -16126,7 +16139,7 @@ function applyTemperatureUnitPreference(unit) {
   temperatureUnit = normalized;
   if (persist && typeof localStorage !== 'undefined') {
     try {
-      localStorage.setItem(TEMPERATURE_UNIT_STORAGE_KEY, temperatureUnit);
+      localStorage.setItem(TEMPERATURE_STORAGE_KEY, temperatureUnit);
     } catch (error) {
       console.warn('Could not save temperature unit preference', error);
     }

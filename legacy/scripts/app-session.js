@@ -19,6 +19,7 @@ function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t =
 function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+var temperatureStorageKey = typeof TEMPERATURE_STORAGE_KEY === 'string' && TEMPERATURE_STORAGE_KEY ? TEMPERATURE_STORAGE_KEY : typeof resolveTemperatureStorageKey === 'function' ? resolveTemperatureStorageKey() : 'cameraPowerPlanner_temperatureUnit';
 function saveCurrentSession() {
   var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   if (restoringSession || factoryResetInProgress) return;
@@ -1461,13 +1462,27 @@ function normalizeStoredValue(value) {
 }
 function convertEntriesToSnapshot(section) {
   if (!section) return null;
+  var source = section;
+  if (typeof source === 'string') {
+    var parsed = null;
+    try {
+      parsed = JSON.parse(source);
+    } catch (error) {
+      parsed = null;
+    }
+    if (parsed && (Array.isArray(parsed) || isPlainObject(parsed))) {
+      source = parsed;
+    } else {
+      return null;
+    }
+  }
   var snapshot = Object.create(null);
   var assignEntry = function assignEntry(key, value) {
     if (typeof key !== 'string' || !key) return;
     snapshot[key] = normalizeStoredValue(value);
   };
-  if (Array.isArray(section)) {
-    section.forEach(function (entry) {
+  if (Array.isArray(source)) {
+    source.forEach(function (entry) {
       if (!entry) return;
       if (Array.isArray(entry)) {
         assignEntry(entry[0], entry[1]);
@@ -1489,8 +1504,8 @@ function convertEntriesToSnapshot(section) {
         }
       }
     });
-  } else if (isPlainObject(section)) {
-    Object.entries(section).forEach(function (_ref10) {
+  } else if (isPlainObject(source)) {
+    Object.entries(source).forEach(function (_ref10) {
       var _ref11 = _slicedToArray(_ref10, 2),
         key = _ref11[0],
         value = _ref11[1];
@@ -1702,9 +1717,130 @@ function encodeBackupDataUrl(payload) {
     return null;
   }
 }
-function downloadBackupPayload(payload, fileName) {
-  if (typeof payload !== 'string') {
+function getManualDownloadFallbackMessage() {
+  if ((typeof texts === "undefined" ? "undefined" : _typeof(texts)) === 'object' && texts) {
+    var _texts$en;
+    var lang = typeof currentLang === 'string' && texts[currentLang] ? currentLang : 'en';
+    var langTexts = texts[lang] || texts.en || {};
+    var fallback = langTexts.manualDownloadFallback || ((_texts$en = texts.en) === null || _texts$en === void 0 ? void 0 : _texts$en.manualDownloadFallback);
+    if (fallback) {
+      return fallback;
+    }
+  }
+  return 'The download did not start automatically. A new tab opened so you can copy or save the file manually.';
+}
+function getManualDownloadCopyHint() {
+  if ((typeof texts === "undefined" ? "undefined" : _typeof(texts)) === 'object' && texts) {
+    var _texts$en2;
+    var lang = typeof currentLang === 'string' && texts[currentLang] ? currentLang : 'en';
+    var langTexts = texts[lang] || texts.en || {};
+    var fallback = langTexts.manualDownloadCopyHint || ((_texts$en2 = texts.en) === null || _texts$en2 === void 0 ? void 0 : _texts$en2.manualDownloadCopyHint);
+    if (fallback) {
+      return fallback;
+    }
+  }
+  return 'Select all the text below and copy it to store the file safely.';
+}
+function openBackupFallbackWindow(payload, fileName) {
+  if (typeof window === 'undefined' || typeof window.open !== 'function') {
     return false;
+  }
+  var backupWindow = null;
+  try {
+    backupWindow = window.open('', '_blank');
+  } catch (openError) {
+    console.warn('Failed to open manual backup window', openError);
+    backupWindow = null;
+  }
+  if (!backupWindow) {
+    return false;
+  }
+  try {
+    var doc = backupWindow.document;
+    if (!doc) {
+      return false;
+    }
+    var langAttr = document && document.documentElement && document.documentElement.getAttribute ? document.documentElement.getAttribute('lang') : 'en';
+    doc.open();
+    doc.write("<!DOCTYPE html><html lang=\"".concat(langAttr || 'en', "\"><head><meta charset=\"utf-8\"><title>Manual download</title></head><body></body></html>"));
+    doc.close();
+    try {
+      doc.title = fileName || 'backup.json';
+    } catch (titleError) {
+      void titleError;
+    }
+    var body = doc.body;
+    if (!body) {
+      return false;
+    }
+    body.style.margin = '0';
+    body.style.padding = '1.5rem';
+    body.style.background = '#f8f9fb';
+    body.style.color = '#0f172a';
+    body.style.fontFamily = "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+    var container = doc.createElement('div');
+    container.style.maxWidth = '960px';
+    container.style.margin = '0 auto';
+    container.style.display = 'flex';
+    container.style.flexDirection = 'column';
+    container.style.gap = '1rem';
+    var heading = doc.createElement('h1');
+    heading.textContent = fileName || 'Manual backup';
+    heading.style.margin = '0';
+    heading.style.fontSize = '1.5rem';
+    heading.style.fontWeight = '600';
+    var description = doc.createElement('p');
+    description.textContent = getManualDownloadFallbackMessage();
+    description.style.margin = '0';
+    description.style.lineHeight = '1.5';
+    var helper = doc.createElement('p');
+    helper.textContent = getManualDownloadCopyHint();
+    helper.style.margin = '0';
+    helper.style.lineHeight = '1.5';
+    var textArea = doc.createElement('textarea');
+    textArea.value = payload;
+    textArea.readOnly = true;
+    textArea.spellcheck = false;
+    textArea.style.width = '100%';
+    textArea.style.height = '70vh';
+    textArea.style.resize = 'vertical';
+    textArea.style.padding = '1rem';
+    textArea.style.borderRadius = '1rem';
+    textArea.style.border = '1px solid rgba(15, 23, 42, 0.15)';
+    textArea.style.background = '#ffffff';
+    textArea.style.fontFamily = "'SFMono-Regular', 'Roboto Mono', 'Menlo', 'Courier New', monospace";
+    textArea.style.fontSize = '0.875rem';
+    textArea.style.lineHeight = '1.5';
+    textArea.style.boxShadow = '0 0.75rem 2.5rem rgba(15, 23, 42, 0.16)';
+    container.appendChild(heading);
+    container.appendChild(description);
+    container.appendChild(helper);
+    container.appendChild(textArea);
+    body.appendChild(container);
+    try {
+      textArea.focus();
+      textArea.select();
+    } catch (focusError) {
+      void focusError;
+    }
+    try {
+      backupWindow.focus();
+    } catch (focusWindowError) {
+      void focusWindowError;
+    }
+    return true;
+  } catch (renderError) {
+    console.warn('Failed to render manual backup window', renderError);
+    return false;
+  }
+}
+function downloadBackupPayload(payload, fileName) {
+  var failureResult = {
+    success: false,
+    method: null
+  };
+  if (typeof payload !== 'string') {
+    return failureResult;
   }
   var blob = null;
   if (typeof Blob !== 'undefined') {
@@ -1721,7 +1857,10 @@ function downloadBackupPayload(payload, fileName) {
     if (typeof navigator !== 'undefined' && typeof navigator.msSaveOrOpenBlob === 'function') {
       try {
         navigator.msSaveOrOpenBlob(blob, fileName);
-        return true;
+        return {
+          success: true,
+          method: 'ms-save'
+        };
       } catch (msError) {
         console.warn('Saving backup via msSaveOrOpenBlob failed', msError);
       }
@@ -1744,16 +1883,31 @@ function downloadBackupPayload(payload, fileName) {
           console.warn('Failed to revoke backup object URL', revokeError);
         }
         if (triggered) {
-          return true;
+          return {
+            success: true,
+            method: 'object-url'
+          };
         }
       }
     }
   }
   var dataUrl = encodeBackupDataUrl(payload);
   if (dataUrl) {
-    return triggerBackupDownload(dataUrl, fileName);
+    var _triggered = triggerBackupDownload(dataUrl, fileName);
+    if (_triggered) {
+      return {
+        success: true,
+        method: 'data-url'
+      };
+    }
   }
-  return false;
+  if (openBackupFallbackWindow(payload, fileName)) {
+    return {
+      success: true,
+      method: 'window-fallback'
+    };
+  }
+  return failureResult;
 }
 function applyPreferencesFromStorage(safeGetItem) {
   if (typeof safeGetItem !== 'function') {
@@ -1763,7 +1917,7 @@ function applyPreferencesFromStorage(safeGetItem) {
       language: null
     };
   }
-  var restoredTemperatureUnit = safeGetItem(TEMPERATURE_UNIT_STORAGE_KEY);
+  var restoredTemperatureUnit = safeGetItem(temperatureStorageKey);
   if (restoredTemperatureUnit) {
     try {
       applyTemperatureUnitPreference(restoredTemperatureUnit, {
@@ -1860,11 +2014,17 @@ function createSettingsBackup() {
       data: typeof exportAllData === 'function' ? exportAllData() : {}
     };
     var payload = JSON.stringify(backup);
-    var downloaded = downloadBackupPayload(payload, fileName);
-    if (!downloaded) {
+    var downloadResult = downloadBackupPayload(payload, fileName);
+    if (!downloadResult || !downloadResult.success) {
       throw new Error('No supported download method available');
     }
-    if (shouldNotify) {
+    if (downloadResult.method === 'window-fallback') {
+      var manualMessage = getManualDownloadFallbackMessage();
+      showNotification('warning', manualMessage);
+      if (typeof alert === 'function') {
+        alert(manualMessage);
+      }
+    } else if (shouldNotify) {
       showNotification('success', 'Full app backup downloaded');
     }
     return fileName;
