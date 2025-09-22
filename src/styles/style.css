@@ -3402,10 +3402,19 @@ body.pink-mode #topBar #logo .logo-center {
   flex-wrap: nowrap;
 }
 
+.info-box-label {
+  font-weight: var(--font-weight-bold);
+  margin-right: 2px;
+  color: inherit;
+}
+
+html:not(.dark-mode) .info-box-label,
+body:not(.dark-mode) .info-box-label {
+  color: var(--accent-color);
+}
+
 .info-box-list .info-box-label {
   flex: 0 0 auto;
-  font-weight: var(--font-weight-medium);
-  margin-right: 2px;
 }
 
 .info-box-list .info-box-values {
