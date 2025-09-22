@@ -8,6 +8,7 @@
   --logo-accent-color: var(--brand-accent-color);
   --logo-center-color: #ffffff;
   --link-color: var(--accent-color);
+  --install-banner-text-color: var(--inverse-text-color);
   --background-color: #f9f9f9;
   --surface-color: #ffffff;
   --text-color: #000000;
@@ -279,27 +280,73 @@ textarea {
   top: 0;
   left: 0;
   right: 0;
-  background: var(--info-color);
-  color: var(--inverse-text-color);
-  text-align: center;
+  background: var(--accent-color);
+  color: var(--install-banner-text-color, var(--inverse-text-color));
   padding: 10px 16px;
   z-index: 999;
   border: none;
   border-radius: 0;
-  font: inherit;
-  cursor: pointer;
-  line-height: 1.4;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
   display: none;
+  align-items: center;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
 }
 
 #installPromptBanner:not([hidden]) {
-  display: block;
+  display: flex;
 }
 
-#installPromptBanner:focus-visible {
-  outline: 2px solid var(--inverse-text-color);
-  outline-offset: -2px;
+#installPromptBannerAction {
+  background: transparent;
+  border: none;
+  color: inherit;
+  font: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--button-icon-gap);
+  justify-content: center;
+  cursor: pointer;
+  flex: 1 1 220px;
+  padding: 0;
+  margin: 0;
+  line-height: 1.4;
+  text-align: center;
+}
+
+#installPromptBannerAction:focus-visible {
+  outline: 2px solid var(--install-banner-text-color, var(--inverse-text-color));
+  outline-offset: 2px;
+}
+
+#installPromptBannerAction .btn-icon {
+  font-size: var(--icon-size-lg);
+}
+
+#installPromptBannerDismiss {
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--install-banner-text-color, var(--inverse-text-color)) 65%, transparent);
+  color: inherit;
+  font: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--icon-gap);
+  cursor: pointer;
+  padding: 4px 12px;
+  border-radius: var(--border-radius);
+  line-height: 1.2;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+#installPromptBannerDismiss:hover,
+#installPromptBannerDismiss:focus-visible {
+  background: color-mix(in srgb, var(--install-banner-text-color, var(--inverse-text-color)) 15%, transparent);
+}
+
+#installPromptBannerDismiss:focus-visible {
+  outline: 2px solid var(--install-banner-text-color, var(--inverse-text-color));
+  outline-offset: 2px;
 }
 
 .visually-hidden {
