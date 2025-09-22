@@ -1313,7 +1313,7 @@ main.legal-content {
   background: color-mix(in srgb, var(--panel-bg) 88%, transparent);
   color: inherit;
   font: inherit;
-  font-weight: var(--font-weight-regular);
+  font-weight: var(--font-weight-medium);
   letter-spacing: 0.01em;
   padding: 8px 10px;
   cursor: pointer;
@@ -1388,7 +1388,7 @@ main.legal-content {
 
 .settings-tab-label {
   font-size: 0.9rem;
-  font-weight: var(--font-weight-regular);
+  font-weight: var(--font-weight-medium);
   line-height: 1.25;
   letter-spacing: 0.005em;
   color: currentColor;
@@ -1398,6 +1398,7 @@ main.legal-content {
 .settings-tab:hover .settings-tab-label,
 .settings-tab:focus-visible .settings-tab-label {
   color: color-mix(in srgb, var(--accent-color) 72%, currentColor);
+  font-weight: var(--font-weight-semibold);
 }
 
 body.light-mode .settings-tab {
@@ -1486,10 +1487,15 @@ body.high-contrast .settings-tab-icon {
 
 .settings-panel h3 {
   margin: 0;
+  font-weight: var(--font-weight-semibold);
 }
 
 .settings-panel p {
   margin: 0;
+}
+
+.settings-panel label {
+  font-weight: var(--font-weight-light);
 }
 
 .settings-panel .button-row {
