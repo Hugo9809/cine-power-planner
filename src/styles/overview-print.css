@@ -267,11 +267,18 @@ table, th, td {
   break-inside: avoid;
 }
 #overviewDialogContent #setupDiagram svg {
-  width: 90% !important;
-  max-width: 90%;
+  width: 100% !important;
+  max-width: none !important;
   height: auto !important;
   margin: 0 auto;
   display: block;
+}
+
+@media print {
+  #overviewDialogContent #setupDiagram svg {
+    width: 90% !important;
+    max-width: 90% !important;
+  }
 }
 #overviewDialogContent #setupDiagram #diagramArea {
   background: none !important;
