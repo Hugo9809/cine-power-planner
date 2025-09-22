@@ -9917,7 +9917,9 @@ function updateInstallBannerVisibility() {
 }
 function updateInstallBannerColors() {
   if (!installPromptBanner) return;
-  if (typeof window === 'undefined' || typeof window.getComputedStyle !== 'function') return;
+  if (typeof window === 'undefined' || typeof window.getComputedStyle !== 'function') {
+    return;
+  }
   try {
     var root = document.documentElement;
     if (!root) return;
@@ -10030,7 +10032,7 @@ function setupInstallBanner() {
   if (installPromptBannerDismiss) {
     installPromptBannerDismiss.addEventListener('click', function (event) {
       event.preventDefault();
-      if (event.stopPropagation) event.stopPropagation();
+      event.stopPropagation();
       markInstallBannerDismissed();
       updateInstallBannerVisibility();
     });

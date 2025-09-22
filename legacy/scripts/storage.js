@@ -52,6 +52,7 @@ function getCustomFontStorageKeyName() {
 }
 ensureCustomFontStorageKeyName();
 var CUSTOM_LOGO_STORAGE_KEY = 'customLogo';
+var TEMPERATURE_UNIT_STORAGE_KEY = 'cameraPowerPlanner_temperatureUnit';
 var AUTO_GEAR_RULES_STORAGE_KEY = 'cameraPowerPlanner_autoGearRules';
 var AUTO_GEAR_SEEDED_STORAGE_KEY = 'cameraPowerPlanner_autoGearSeeded';
 var AUTO_GEAR_BACKUPS_STORAGE_KEY = 'cameraPowerPlanner_autoGearBackups';
@@ -67,7 +68,7 @@ var STORAGE_BACKUP_SUFFIX = '__backup';
 var MAX_SAVE_ATTEMPTS = 3;
 var MAX_QUOTA_RECOVERY_STEPS = 100;
 var STORAGE_MIGRATION_BACKUP_SUFFIX = '__legacyMigrationBackup';
-var RAW_STORAGE_BACKUP_KEYS = new Set([getCustomFontStorageKeyName(), CUSTOM_LOGO_STORAGE_KEY]);
+var RAW_STORAGE_BACKUP_KEYS = new Set([getCustomFontStorageKeyName(), CUSTOM_LOGO_STORAGE_KEY, DEVICE_SCHEMA_CACHE_KEY]);
 function createStorageMigrationBackup(storage, key, originalValue) {
   if (!storage || typeof storage.setItem !== 'function') {
     return;
@@ -108,7 +109,7 @@ function createStorageMigrationBackup(storage, key, originalValue) {
   }
 }
 var PRIMARY_STORAGE_KEYS = [DEVICE_STORAGE_KEY, SETUP_STORAGE_KEY, SESSION_STATE_KEY, FEEDBACK_STORAGE_KEY, PROJECT_STORAGE_KEY, FAVORITES_STORAGE_KEY, DEVICE_SCHEMA_CACHE_KEY, AUTO_GEAR_RULES_STORAGE_KEY, AUTO_GEAR_SEEDED_STORAGE_KEY, AUTO_GEAR_BACKUPS_STORAGE_KEY, AUTO_GEAR_PRESETS_STORAGE_KEY, AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, AUTO_GEAR_AUTO_PRESET_STORAGE_KEY, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY];
-var SIMPLE_STORAGE_KEYS = [CUSTOM_LOGO_STORAGE_KEY, getCustomFontStorageKeyName(), 'darkMode', 'pinkMode', 'highContrast', 'reduceMotion', 'relaxedSpacing', 'showAutoBackups', 'accentColor', 'fontSize', 'fontFamily', 'language', 'iosPwaHelpShown'];
+var SIMPLE_STORAGE_KEYS = [CUSTOM_LOGO_STORAGE_KEY, getCustomFontStorageKeyName(), 'darkMode', 'pinkMode', 'highContrast', 'reduceMotion', 'relaxedSpacing', 'showAutoBackups', 'accentColor', 'fontSize', 'fontFamily', 'language', 'iosPwaHelpShown', TEMPERATURE_UNIT_STORAGE_KEY];
 var STORAGE_ALERT_FLAG_NAME = '__cameraPowerPlannerStorageAlertShown';
 var storageErrorAlertShown = false;
 if (GLOBAL_SCOPE) {
@@ -2638,6 +2639,10 @@ function collectPreferenceSnapshot() {
   if (iosPwaHelpShown !== null) {
     preferences.iosPwaHelpShown = iosPwaHelpShown;
   }
+  var temperatureUnit = readLocalStorageValue(TEMPERATURE_UNIT_STORAGE_KEY);
+  if (temperatureUnit) {
+    preferences.temperatureUnit = temperatureUnit;
+  }
   return preferences;
 }
 function normalizeCustomFontEntries(entries) {
@@ -2694,6 +2699,10 @@ function exportAllData() {
   var customFonts = readStoredCustomFonts();
   if (customFonts.length) {
     payload.customFonts = customFonts;
+  }
+  var schemaCache = readLocalStorageValue(DEVICE_SCHEMA_CACHE_KEY);
+  if (schemaCache !== null && schemaCache !== undefined) {
+    payload.schemaCache = schemaCache;
   }
   return payload;
 }
@@ -3081,6 +3090,18 @@ function convertStorageSnapshotToData(snapshot) {
       hasAssignments = true;
     }
   });
+  var temperatureUnitEntry = readSnapshotEntry(snapshot, TEMPERATURE_UNIT_STORAGE_KEY);
+  if (temperatureUnitEntry) {
+    markSnapshotEntry(temperatureUnitEntry);
+    var storedUnit = parseSnapshotStringValue(temperatureUnitEntry);
+    if (typeof storedUnit === 'string') {
+      var normalizedUnit = storedUnit.trim();
+      if (normalizedUnit) {
+        preferences.temperatureUnit = normalizedUnit;
+        hasAssignments = true;
+      }
+    }
+  }
   if (Object.keys(preferences).length > 0) {
     data.preferences = preferences;
   }
@@ -3141,6 +3162,17 @@ function importAllData(allData) {
         }
       }
     });
+    if (Object.prototype.hasOwnProperty.call(prefs, 'temperatureUnit')) {
+      var unit = prefs.temperatureUnit;
+      if (typeof unit === 'string') {
+        var normalizedUnit = unit.trim();
+        if (normalizedUnit) {
+          safeSetLocalStorage(TEMPERATURE_UNIT_STORAGE_KEY, normalizedUnit);
+        }
+      } else if (unit === null) {
+        safeSetLocalStorage(TEMPERATURE_UNIT_STORAGE_KEY, null);
+      }
+    }
   }
   if (Object.prototype.hasOwnProperty.call(allData, 'customLogo')) {
     var logo = allData.customLogo;
