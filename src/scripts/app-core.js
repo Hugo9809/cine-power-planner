@@ -13880,11 +13880,53 @@ function splitGearListHtml(html) {
   }
   const doc = new DOMParser().parseFromString(html, 'text/html');
   const title = doc.querySelector('h2');
-  const h3s = doc.querySelectorAll('h3');
-  const reqHeading = h3s[0];
   const reqGrid = doc.querySelector('.requirements-grid');
   const titleHtml = title ? title.outerHTML : '';
-  const projectHtml = reqHeading && reqGrid ? titleHtml + reqHeading.outerHTML + reqGrid.outerHTML : '';
+  let headingHtml = '';
+  let headingNodeUsed = null;
+  if (reqGrid) {
+    const isHeadingTag = element => Boolean(element && /^H[1-6]$/i.test(element.tagName));
+    const headingIsProjectTitle = element => Boolean(title && element && typeof element.isSameNode === 'function' && element.isSameNode(title));
+    const headingBeforeGrid = element => {
+      if (!element || typeof element.compareDocumentPosition !== 'function') return false;
+      return Boolean(element.compareDocumentPosition(reqGrid) & Node.DOCUMENT_POSITION_FOLLOWING);
+    };
+
+    let headingNode = null;
+    let sibling = reqGrid.previousElementSibling;
+    while (sibling) {
+      if (isHeadingTag(sibling) && !headingIsProjectTitle(sibling) && headingBeforeGrid(sibling)) {
+        headingNode = sibling;
+        break;
+      }
+      sibling = sibling.previousElementSibling;
+    }
+
+    if (!headingNode) {
+      const parent = reqGrid.parentElement;
+      if (parent) {
+        const candidates = Array.from(parent.querySelectorAll('h1, h2, h3, h4, h5, h6'));
+        for (let i = candidates.length - 1; i >= 0; i -= 1) {
+          const candidate = candidates[i];
+          if (!isHeadingTag(candidate)) continue;
+          if (headingIsProjectTitle(candidate)) continue;
+          if (headingBeforeGrid(candidate)) {
+            headingNode = candidate;
+            break;
+          }
+        }
+      }
+    }
+
+    if (headingNode) {
+      headingNodeUsed = headingNode;
+      headingHtml = headingNode.outerHTML;
+    } else {
+      const fallbackLabel = reqGrid.getAttribute('data-heading') || 'Project Requirements';
+      headingHtml = `<h3>${escapeHtml(fallbackLabel)}</h3>`;
+    }
+  }
+  const projectHtml = reqGrid ? titleHtml + headingHtml + reqGrid.outerHTML : '';
   const projectName = extractProjectNameFromHeading(title);
   let table = doc.querySelector('.gear-table');
   if (!table) {
@@ -13913,9 +13955,18 @@ function splitGearListHtml(html) {
         const cloneTitle = bodyClone.querySelector('h2');
         if (cloneTitle) cloneTitle.remove();
       }
-      if (reqHeading) {
+      if (headingNodeUsed) {
+        const headingTag = headingNodeUsed.tagName ? headingNodeUsed.tagName.toLowerCase() : '';
+        const headingText = headingNodeUsed.textContent ? headingNodeUsed.textContent.trim() : '';
+        const cloneHeading = headingTag ? bodyClone.querySelector(headingTag) : null;
+        if (cloneHeading && (!headingText || (cloneHeading.textContent || '').trim() === headingText)) {
+          cloneHeading.remove();
+        }
+      } else {
         const cloneHeading = bodyClone.querySelector('h3');
-        if (cloneHeading) cloneHeading.remove();
+        if (cloneHeading && /project requirements/i.test(cloneHeading.textContent || '')) {
+          cloneHeading.remove();
+        }
       }
       if (reqGrid) {
         const cloneGrid = bodyClone.querySelector('.requirements-grid');
