@@ -29,12 +29,37 @@ try {
   // overview generation not needed in test environments without module support
 }
 
+function resolveConnectorSummaryGenerator() {
+  const scopes = [];
+  if (typeof globalThis !== 'undefined') scopes.push(globalThis);
+  if (typeof window !== 'undefined') scopes.push(window);
+  if (typeof global !== 'undefined') scopes.push(global);
+  if (typeof self !== 'undefined') scopes.push(self);
+
+  for (const scope of scopes) {
+    if (scope && typeof scope.generateConnectorSummary === 'function') {
+      return scope.generateConnectorSummary;
+    }
+  }
+
+  if (typeof generateConnectorSummary === 'function') {
+    return generateConnectorSummary;
+  }
+
+  return null;
+}
+
 function safeGenerateConnectorSummary(device) {
-  if (!device || typeof generateConnectorSummary !== 'function') {
+  if (!device) {
+    return '';
+  }
+
+  const generator = resolveConnectorSummaryGenerator();
+  if (typeof generator !== 'function') {
     return '';
   }
   try {
-    const summary = generateConnectorSummary(device);
+    const summary = generator(device);
     return summary || '';
   } catch (error) {
     if (typeof console !== 'undefined' && typeof console.warn === 'function') {
