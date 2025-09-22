@@ -61,7 +61,43 @@ function getCustomFontStorageKeyName() {
 ensureCustomFontStorageKeyName();
 
 const CUSTOM_LOGO_STORAGE_KEY = 'customLogo';
-const TEMPERATURE_UNIT_STORAGE_KEY = 'cameraPowerPlanner_temperatureUnit';
+const TEMPERATURE_UNIT_STORAGE_KEY_DEFAULT = 'cameraPowerPlanner_temperatureUnit';
+
+function resolveTemperatureUnitStorageKey() {
+  if (!GLOBAL_SCOPE) {
+    return TEMPERATURE_UNIT_STORAGE_KEY_DEFAULT;
+  }
+
+  const existing =
+    typeof GLOBAL_SCOPE.TEMPERATURE_UNIT_STORAGE_KEY === 'string'
+      ? GLOBAL_SCOPE.TEMPERATURE_UNIT_STORAGE_KEY
+      : TEMPERATURE_UNIT_STORAGE_KEY_DEFAULT;
+
+  if (GLOBAL_SCOPE.TEMPERATURE_UNIT_STORAGE_KEY !== existing) {
+    try {
+      GLOBAL_SCOPE.TEMPERATURE_UNIT_STORAGE_KEY = existing;
+    } catch (assignError) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Unable to assign temperature unit storage key globally.', assignError);
+      }
+      try {
+        Object.defineProperty(GLOBAL_SCOPE, 'TEMPERATURE_UNIT_STORAGE_KEY', {
+          configurable: true,
+          writable: true,
+          value: existing,
+        });
+      } catch (defineError) {
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn('Unable to expose temperature unit storage key globally.', defineError);
+        }
+      }
+    }
+  }
+
+  return existing;
+}
+
+const TEMPERATURE_UNIT_STORAGE_KEY_NAME = resolveTemperatureUnitStorageKey();
 const AUTO_GEAR_RULES_STORAGE_KEY = 'cameraPowerPlanner_autoGearRules';
 const AUTO_GEAR_SEEDED_STORAGE_KEY = 'cameraPowerPlanner_autoGearSeeded';
 const AUTO_GEAR_BACKUPS_STORAGE_KEY = 'cameraPowerPlanner_autoGearBackups';
@@ -160,7 +196,7 @@ const SIMPLE_STORAGE_KEYS = [
   'fontFamily',
   'language',
   'iosPwaHelpShown',
-  TEMPERATURE_UNIT_STORAGE_KEY,
+  TEMPERATURE_UNIT_STORAGE_KEY_NAME,
 ];
 
 const STORAGE_ALERT_FLAG_NAME = '__cameraPowerPlannerStorageAlertShown';
@@ -3143,7 +3179,7 @@ function clearAllData() {
       preferences.iosPwaHelpShown = iosPwaHelpShown;
     }
 
-    const temperatureUnit = readLocalStorageValue(TEMPERATURE_UNIT_STORAGE_KEY);
+    const temperatureUnit = readLocalStorageValue(TEMPERATURE_UNIT_STORAGE_KEY_NAME);
     if (temperatureUnit) {
       preferences.temperatureUnit = temperatureUnit;
     }
@@ -3660,7 +3696,7 @@ function convertStorageSnapshotToData(snapshot) {
     }
   });
 
-  const temperatureUnitEntry = readSnapshotEntry(snapshot, TEMPERATURE_UNIT_STORAGE_KEY);
+  const temperatureUnitEntry = readSnapshotEntry(snapshot, TEMPERATURE_UNIT_STORAGE_KEY_NAME);
   if (temperatureUnitEntry) {
     markSnapshotEntry(temperatureUnitEntry);
     const storedUnit = parseSnapshotStringValue(temperatureUnitEntry);
@@ -3747,10 +3783,10 @@ function importAllData(allData, options = {}) {
       if (typeof unit === 'string') {
         const normalizedUnit = unit.trim();
         if (normalizedUnit) {
-          safeSetLocalStorage(TEMPERATURE_UNIT_STORAGE_KEY, normalizedUnit);
+          safeSetLocalStorage(TEMPERATURE_UNIT_STORAGE_KEY_NAME, normalizedUnit);
         }
       } else if (unit === null) {
-        safeSetLocalStorage(TEMPERATURE_UNIT_STORAGE_KEY, null);
+        safeSetLocalStorage(TEMPERATURE_UNIT_STORAGE_KEY_NAME, null);
       }
     }
   }
