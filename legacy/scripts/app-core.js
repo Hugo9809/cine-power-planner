@@ -15649,6 +15649,54 @@ function toggleFavorite(selectElem) {
   updateFavoriteButton(selectElem);
   adjustGearListSelectWidth(selectElem);
 }
+var selectWidthMeasureElement = null;
+function getSelectWidthMeasureElement() {
+  if (selectWidthMeasureElement && selectWidthMeasureElement.isConnected) {
+    return selectWidthMeasureElement;
+  }
+  var span = document.createElement('span');
+  span.className = 'gear-select-width-measure';
+  Object.assign(span.style, {
+    position: 'absolute',
+    visibility: 'hidden',
+    whiteSpace: 'pre',
+    pointerEvents: 'none',
+    top: '-9999px',
+    left: '-9999px',
+    padding: '0',
+    margin: '0',
+    border: '0'
+  });
+  var parent = document.body || document.documentElement;
+  parent.appendChild(span);
+  selectWidthMeasureElement = span;
+  return span;
+}
+function measureSelectTextWidth(selectElem, text, styles) {
+  var content = text && text.length ? text : '\u00a0';
+  var computedStyles = styles || window.getComputedStyle(selectElem);
+  if (!computedStyles) {
+    return content.length * 8;
+  }
+  var measureElem = getSelectWidthMeasureElement();
+  var parent = document.body || document.documentElement;
+  if (measureElem.parentElement !== parent) parent.appendChild(measureElem);
+  if (computedStyles.font && computedStyles.font !== 'normal normal normal medium/normal serif') {
+    measureElem.style.font = computedStyles.font;
+  } else {
+    measureElem.style.fontStyle = computedStyles.fontStyle || 'normal';
+    measureElem.style.fontVariant = computedStyles.fontVariant || 'normal';
+    measureElem.style.fontWeight = computedStyles.fontWeight || '400';
+    measureElem.style.fontStretch = computedStyles.fontStretch || 'normal';
+    measureElem.style.fontSize = computedStyles.fontSize || '16px';
+    measureElem.style.fontFamily = computedStyles.fontFamily || 'sans-serif';
+    measureElem.style.lineHeight = computedStyles.lineHeight || 'normal';
+  }
+  measureElem.style.letterSpacing = computedStyles.letterSpacing || 'normal';
+  measureElem.style.textTransform = computedStyles.textTransform || 'none';
+  measureElem.textContent = content;
+  return measureElem.getBoundingClientRect().width;
+}
 function adjustGearListSelectWidth(selectElem) {
   if (!selectElem || selectElem.multiple || selectElem.size > 1) return;
   var container = selectElem.closest('#gearListOutput, #projectRequirementsOutput');
@@ -15660,13 +15708,12 @@ function adjustGearListSelectWidth(selectElem) {
   }
   var selectedOption = selectElem.selectedOptions && selectElem.selectedOptions[0];
   var optionText = selectedOption ? selectedOption.textContent.trim() : selectElem.value || '';
-  var fontSize = parseFloat(styles.fontSize) || 16;
-  var approxCharWidth = fontSize * 0.6;
-  var textWidth = (optionText ? optionText.length : 1) * approxCharWidth;
+  var textWidth = measureSelectTextWidth(selectElem, optionText, styles);
   var paddingLeft = parseFloat(styles.paddingLeft) || 0;
   var paddingRight = parseFloat(styles.paddingRight) || 0;
   var borderLeft = parseFloat(styles.borderLeftWidth) || 0;
   var borderRight = parseFloat(styles.borderRightWidth) || 0;
+  var fontSize = parseFloat(styles.fontSize) || 16;
   var arrowReserve = Math.max(fontSize, 16);
   var minWidth = Math.max(fontSize * 4, 56);
   var widthPx = Math.max(Math.ceil(textWidth + paddingLeft + paddingRight + borderLeft + borderRight + arrowReserve), minWidth);
