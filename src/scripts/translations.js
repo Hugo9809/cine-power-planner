@@ -124,6 +124,14 @@ const texts = {
     temperatureUnitFahrenheit: "Fahrenheit (°F)",
     temperatureUnitSymbolCelsius: "°C",
     temperatureUnitSymbolFahrenheit: "°F",
+    lengthUnitSetting: "Length unit",
+    lengthUnitSettingHelp:
+      "Choose whether cable lengths and lens minimum focus distances are shown in meters or feet and inches.",
+    lengthUnitMetric: "Meters (m)",
+    lengthUnitImperial: "Feet & inches",
+    lengthUnitSymbolMetric: "m",
+    lengthUnitFeet: "ft",
+    lengthUnitInches: "in",
     fontSizeSetting: "Font size",
     fontSizeSettingHelp:
       "Set the base interface font size to improve readability or fit more information on screen.",
@@ -1381,6 +1389,14 @@ const texts = {
     temperatureUnitFahrenheit: "Fahrenheit (°F)",
     temperatureUnitSymbolCelsius: "°C",
     temperatureUnitSymbolFahrenheit: "°F",
+    lengthUnitSetting: "Unità di lunghezza",
+    lengthUnitSettingHelp:
+      "Scegli se mostrare le lunghezze dei cavi e la distanza minima di fuoco delle lenti in metri oppure in piedi e pollici.",
+    lengthUnitMetric: "Metri (m)",
+    lengthUnitImperial: "Piedi e pollici",
+    lengthUnitSymbolMetric: "m",
+    lengthUnitFeet: "ft",
+    lengthUnitInches: "in",
     fontSizeSetting: "Dimensione carattere",
     fontSizeSettingHelp:
       "Imposta la dimensione base del carattere per migliorare la leggibilità o avere più spazio sullo schermo.",
@@ -2241,6 +2257,14 @@ const texts = {
     temperatureUnitFahrenheit: "Fahrenheit (°F)",
     temperatureUnitSymbolCelsius: "°C",
     temperatureUnitSymbolFahrenheit: "°F",
+    lengthUnitSetting: "Unidad de longitud",
+    lengthUnitSettingHelp:
+      "Elige si las longitudes de los cables y las distancias mínimas de enfoque de los objetivos se muestran en metros o en pies y pulgadas.",
+    lengthUnitMetric: "Metros (m)",
+    lengthUnitImperial: "Pies y pulgadas",
+    lengthUnitSymbolMetric: "m",
+    lengthUnitFeet: "ft",
+    lengthUnitInches: "in",
     fontSizeSetting: "Tamaño de fuente",
     fontSizeSettingHelp:
       "Define el tamaño base de fuente para mejorar la legibilidad o mostrar más información.",
@@ -3102,6 +3126,14 @@ const texts = {
     temperatureUnitFahrenheit: "Fahrenheit (°F)",
     temperatureUnitSymbolCelsius: "°C",
     temperatureUnitSymbolFahrenheit: "°F",
+    lengthUnitSetting: "Unité de longueur",
+    lengthUnitSettingHelp:
+      "Choisissez d’afficher les longueurs des câbles et la distance minimale de mise au point des objectifs en mètres ou en pieds/pouces.",
+    lengthUnitMetric: "Mètres (m)",
+    lengthUnitImperial: "Pieds et pouces",
+    lengthUnitSymbolMetric: "m",
+    lengthUnitFeet: "pi",
+    lengthUnitInches: "po",
     fontSizeSetting: "Taille de police",
     fontSizeSettingHelp:
       "Définissez la taille de police de base pour améliorer la lisibilité ou afficher plus d’informations.",
@@ -3967,6 +3999,14 @@ const texts = {
     temperatureUnitFahrenheit: "Fahrenheit (°F)",
     temperatureUnitSymbolCelsius: "°C",
     temperatureUnitSymbolFahrenheit: "°F",
+    lengthUnitSetting: "Längeneinheit",
+    lengthUnitSettingHelp:
+      "Wähle, ob Kabellängen und minimale Naheinstellgrenzen der Objektive in Metern oder in Fuß und Zoll angezeigt werden.",
+    lengthUnitMetric: "Meter (m)",
+    lengthUnitImperial: "Fuß & Zoll",
+    lengthUnitSymbolMetric: "m",
+    lengthUnitFeet: "ft",
+    lengthUnitInches: "in",
     fontSizeSetting: "Schriftgröße",
     fontSizeSettingHelp:
       "Bestimme die Grundschriftgröße für bessere Lesbarkeit oder mehr Platz auf dem Bildschirm.",
