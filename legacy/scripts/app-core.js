@@ -1988,14 +1988,26 @@ function updateInstallBannerPosition() {
   }
 }
 function setupOfflineIndicator() {
+  if (
+    typeof document === 'undefined' ||
+    typeof document.getElementById !== 'function' ||
+    typeof navigator === 'undefined'
+  ) {
+    return;
+  }
   var offlineIndicator = document.getElementById('offlineIndicator');
   if (!offlineIndicator) return;
   var updateOnlineStatus = function updateOnlineStatus() {
-    offlineIndicator.style.display = navigator.onLine ? 'none' : 'block';
-    updateInstallBannerPosition();
+    var isOnline = typeof navigator.onLine === 'boolean' ? navigator.onLine : true;
+    offlineIndicator.style.display = isOnline ? 'none' : 'block';
+    if (typeof updateInstallBannerPosition === 'function') {
+      updateInstallBannerPosition();
+    }
   };
-  window.addEventListener('online', updateOnlineStatus);
-  window.addEventListener('offline', updateOnlineStatus);
+  if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+  }
   updateOnlineStatus();
 }
 if (typeof window !== 'undefined') {

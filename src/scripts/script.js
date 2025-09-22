@@ -9,6 +9,7 @@
 if (typeof require === 'function' && typeof module !== 'undefined' && module && module.exports) {
   const fs = require('fs');
   const path = require('path');
+  const vm = require('vm');
   const parts = ['app-core.js', 'app-events.js', 'app-setups.js', 'app-session.js'];
   const nodePrelude = [
     "var __cineGlobal = typeof globalThis !== 'undefined' ? globalThis : (typeof global !== 'undefined' ? global : this);",
@@ -41,17 +42,20 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     ...parts.map(part => fs.readFileSync(path.join(__dirname, part), 'utf8'))
   ].join('\n');
 
-  const factory = new Function(
-    'exports',
-    'require',
-    'module',
-    '__filename',
-    '__dirname',
-    combinedSource
-  );
-  factory(module.exports, require, module, __filename, __dirname);
+  const wrapperSource =
+    '(function (exports, require, module, __filename, __dirname, globalScope) {\n' +
+    'with (globalScope) {\n' +
+    combinedSource +
+    '\n}\n})';
+  const wrapper = vm.runInThisContext(wrapperSource, { filename: __filename });
+  const globalScope =
+    (typeof globalThis !== 'undefined' && globalThis)
+      || (typeof global !== 'undefined' && global)
+      || this;
+  wrapper.call(globalScope, module.exports, require, module, __filename, __dirname, globalScope);
 
-  const combinedAppVersion = module.exports && module.exports.APP_VERSION;
+  const aggregatedExports = module.exports;
+  const combinedAppVersion = aggregatedExports && aggregatedExports.APP_VERSION;
   const APP_VERSION = "1.0.5"; // Version marker for consistency checks
 
   if (combinedAppVersion && combinedAppVersion !== APP_VERSION) {
@@ -60,7 +64,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     );
   }
 
-  if (module.exports && !module.exports.APP_VERSION) {
-    module.exports.APP_VERSION = APP_VERSION;
+  if (aggregatedExports && !aggregatedExports.APP_VERSION) {
+    aggregatedExports.APP_VERSION = APP_VERSION;
   }
 }

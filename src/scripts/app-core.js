@@ -2125,14 +2125,33 @@ function updateInstallBannerPosition() {
  * found, the function quietly does nothing.
  */
 function setupOfflineIndicator() {
+  if (
+    typeof document === 'undefined' ||
+    typeof document.getElementById !== 'function' ||
+    typeof navigator === 'undefined'
+  ) {
+    return;
+  }
+
   const offlineIndicator = document.getElementById('offlineIndicator');
   if (!offlineIndicator) return;
+
   const updateOnlineStatus = () => {
-    offlineIndicator.style.display = navigator.onLine ? 'none' : 'block';
-    updateInstallBannerPosition();
+    const isOnline = typeof navigator.onLine === 'boolean' ? navigator.onLine : true;
+    offlineIndicator.style.display = isOnline ? 'none' : 'block';
+    if (typeof updateInstallBannerPosition === 'function') {
+      updateInstallBannerPosition();
+    }
   };
-  window.addEventListener('online', updateOnlineStatus);
-  window.addEventListener('offline', updateOnlineStatus);
+
+  if (
+    typeof window !== 'undefined' &&
+    typeof window.addEventListener === 'function'
+  ) {
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+  }
+
   updateOnlineStatus();
 }
 

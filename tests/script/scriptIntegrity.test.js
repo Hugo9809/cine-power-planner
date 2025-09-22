@@ -100,8 +100,9 @@ describe('script.js modular runtime', () => {
   it('contains the Node bootstrap that hydrates globals for the combined runtime', () => {
     const contents = getScriptContents();
     expect(contents).toContain('var __cineGlobal = typeof globalThis !== \'undefined\' ? globalThis : (typeof global !== \'undefined\' ? global : this);');
-    expect(contents).toContain('new Function');
-    expect(contents).toContain('module.exports && module.exports.APP_VERSION');
+    expect(contents).toContain("const vm = require('vm');");
+    expect(contents).toContain('vm.runInThisContext');
+    expect(contents).toContain('aggregatedExports && aggregatedExports.APP_VERSION');
   });
 
   it('exports the aggregated runtime object when required in Node contexts', () => {
