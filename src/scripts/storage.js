@@ -161,7 +161,6 @@ function createStorageMigrationBackup(storage, key, originalValue) {
 
   try {
     storage.setItem(backupKey, serialized);
-    console.log(`Stored migration backup for ${key}.`);
   } catch (writeError) {
     console.warn(`Unable to create migration backup for ${key}`, writeError);
   }
@@ -1323,7 +1322,6 @@ function saveJSONToStorage(
   key,
   value,
   errorMessage,
-  successMessage,
   options = {},
 ) {
   if (!storage) return;
@@ -1341,12 +1339,6 @@ function saveJSONToStorage(
       console.error(errorMessage, serializationError);
       alertStorageError();
       return null;
-    }
-  };
-
-  const logSuccess = () => {
-    if (successMessage) {
-      console.log(successMessage);
     }
   };
 
@@ -1426,7 +1418,6 @@ function saveJSONToStorage(
       skipPrimaryWrite
       && (!useBackup || (hasExistingBackup && existingBackupValue === serialized))
     ) {
-      logSuccess();
       return;
     }
 
@@ -1451,7 +1442,6 @@ function saveJSONToStorage(
     }
 
     if (!useBackup) {
-      logSuccess();
       return;
     }
 
@@ -1513,7 +1503,6 @@ function saveJSONToStorage(
 
     const backupResult = attemptBackupWrite();
     if (backupResult === 'success') {
-      logSuccess();
       return;
     }
 
@@ -1929,7 +1918,6 @@ function loadDeviceData() {
     );
   }
 
-  console.log("Device data loaded from localStorage.");
   return data;
 }
 
@@ -1941,7 +1929,6 @@ function saveDeviceData(deviceData) {
       DEVICE_STORAGE_KEY,
       "Error deleting device data from localStorage:",
     );
-    console.log("Device data cleared from localStorage.");
     return;
   }
 
@@ -1955,7 +1942,6 @@ function saveDeviceData(deviceData) {
     DEVICE_STORAGE_KEY,
     deviceData,
     "Error saving device data to localStorage:",
-    "Device data saved to localStorage.",
   );
 }
 
@@ -2038,7 +2024,6 @@ function saveSetups(setups) {
     SETUP_STORAGE_KEY,
     normalizedSetups,
     "Error saving setups to localStorage:",
-    "Setups saved to localStorage.",
     {
       onQuotaExceeded: () => {
         const removedKey = removeOldestAutoBackupEntry(normalizedSetups);
@@ -2319,7 +2304,7 @@ function readAllProjectsFromStorage() {
   return { projects, changed, originalValue };
 }
 
-function persistAllProjects(projects, successMessage) {
+function persistAllProjects(projects) {
   const safeStorage = getSafeLocalStorage();
   enforceAutoBackupLimits(projects);
   saveJSONToStorage(
@@ -2327,7 +2312,6 @@ function persistAllProjects(projects, successMessage) {
     PROJECT_STORAGE_KEY,
     projects,
     "Error saving project to localStorage:",
-    successMessage,
     {
       onQuotaExceeded: () => {
         const removedKey = removeOldestAutoBackupEntry(projects);
@@ -2454,7 +2438,7 @@ function saveProject(name, project) {
     }
   }
   projects[name || ""] = normalized;
-  persistAllProjects(projects, "Project saved to localStorage.");
+  persistAllProjects(projects);
 }
 
 function deleteProject(name) {
@@ -2493,11 +2477,6 @@ function deleteProject(name) {
     );
   } else {
     persistAllProjects(projects);
-    if (backupOutcome.status === 'created' && backupOutcome.backupName) {
-      console.log(
-        `Stored automatic backup "${backupOutcome.backupName}" before deleting project "${key}".`,
-      );
-    }
   }
 }
 
@@ -2694,7 +2673,6 @@ function saveFeedback(feedback) {
     FEEDBACK_STORAGE_KEY,
     feedback,
     "Error saving feedback to localStorage:",
-    "Feedback saved to localStorage.",
   );
 }
 
@@ -3214,7 +3192,6 @@ function clearAllData() {
 
   deletePrefixedKeys(storageCandidates);
   deletePrefixedKeys(sessionCandidates);
-  console.log("All planner data cleared from storage.");
 }
 
 // --- Export/Import All Planner Data ---
