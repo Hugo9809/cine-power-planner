@@ -108,7 +108,7 @@ function createStorageMigrationBackup(storage, key, originalValue) {
   }
 }
 var PRIMARY_STORAGE_KEYS = [DEVICE_STORAGE_KEY, SETUP_STORAGE_KEY, SESSION_STATE_KEY, FEEDBACK_STORAGE_KEY, PROJECT_STORAGE_KEY, FAVORITES_STORAGE_KEY, DEVICE_SCHEMA_CACHE_KEY, AUTO_GEAR_RULES_STORAGE_KEY, AUTO_GEAR_SEEDED_STORAGE_KEY, AUTO_GEAR_BACKUPS_STORAGE_KEY, AUTO_GEAR_PRESETS_STORAGE_KEY, AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, AUTO_GEAR_AUTO_PRESET_STORAGE_KEY, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY];
-var SIMPLE_STORAGE_KEYS = [CUSTOM_LOGO_STORAGE_KEY, getCustomFontStorageKeyName(), 'darkMode', 'pinkMode', 'highContrast', 'showAutoBackups', 'accentColor', 'fontSize', 'fontFamily', 'language', 'iosPwaHelpShown'];
+var SIMPLE_STORAGE_KEYS = [CUSTOM_LOGO_STORAGE_KEY, getCustomFontStorageKeyName(), 'darkMode', 'pinkMode', 'highContrast', 'reduceMotion', 'relaxedSpacing', 'showAutoBackups', 'accentColor', 'fontSize', 'fontFamily', 'language', 'iosPwaHelpShown'];
 var STORAGE_ALERT_FLAG_NAME = '__cameraPowerPlannerStorageAlertShown';
 var storageErrorAlertShown = false;
 if (GLOBAL_SCOPE) {
@@ -2276,7 +2276,7 @@ function removeAutoGearPresetFromStorage(presetId, storage) {
     return;
   }
   var filteredPresets = parsedPresets.filter(function (preset) {
-    if (!preset || typeof preset !== 'object') {
+    if (!preset || _typeof(preset) !== 'object') {
       return true;
     }
     return preset.id !== presetId;
@@ -2394,7 +2394,7 @@ function clearAllData() {
   if (typeof sessionStorage !== 'undefined') {
     deleteFromStorage(sessionStorage, SESSION_STATE_KEY, msg);
   }
-  var preferenceKeys = ['darkMode', 'pinkMode', 'highContrast', 'showAutoBackups', 'accentColor', 'fontSize', 'fontFamily', 'language', 'iosPwaHelpShown'];
+  var preferenceKeys = ['darkMode', 'pinkMode', 'highContrast', 'reduceMotion', 'relaxedSpacing', 'showAutoBackups', 'accentColor', 'fontSize', 'fontFamily', 'language', 'iosPwaHelpShown'];
   preferenceKeys.forEach(function (key) {
     deleteFromStorage(safeStorage, key, msg, {
       disableBackup: true
@@ -2522,6 +2522,14 @@ function collectPreferenceSnapshot() {
   var highContrast = parseStoredBoolean(readLocalStorageValue('highContrast'));
   if (highContrast !== null) {
     preferences.highContrast = highContrast;
+  }
+  var reduceMotion = parseStoredBoolean(readLocalStorageValue('reduceMotion'));
+  if (reduceMotion !== null) {
+    preferences.reduceMotion = reduceMotion;
+  }
+  var relaxedSpacing = parseStoredBoolean(readLocalStorageValue('relaxedSpacing'));
+  if (relaxedSpacing !== null) {
+    preferences.relaxedSpacing = relaxedSpacing;
   }
   var showAutoBackups = parseStoredBoolean(readLocalStorageValue('showAutoBackups'));
   if (showAutoBackups !== null) {
@@ -2966,8 +2974,8 @@ function convertStorageSnapshotToData(snapshot) {
     data.autoGearShowBackups = extractSnapshotStoredValue(backupsVisibilityEntry);
     hasAssignments = true;
   }
-  var preferenceKeys = ['darkMode', 'pinkMode', 'highContrast', 'showAutoBackups', 'accentColor', 'fontSize', 'fontFamily', 'language', 'iosPwaHelpShown'];
-  var booleanPreferenceKeys = new Set(['darkMode', 'pinkMode', 'highContrast', 'showAutoBackups', 'iosPwaHelpShown']);
+  var preferenceKeys = ['darkMode', 'pinkMode', 'highContrast', 'reduceMotion', 'relaxedSpacing', 'showAutoBackups', 'accentColor', 'fontSize', 'fontFamily', 'language', 'iosPwaHelpShown'];
+  var booleanPreferenceKeys = new Set(['darkMode', 'pinkMode', 'highContrast', 'reduceMotion', 'relaxedSpacing', 'showAutoBackups', 'iosPwaHelpShown']);
   var preferences = {};
   preferenceKeys.forEach(function (key) {
     var entry = readSnapshotEntry(snapshot, key);
@@ -3035,7 +3043,7 @@ function importAllData(allData) {
   }
   if (isPlainObject(allData.preferences)) {
     var prefs = allData.preferences;
-    var booleanPrefs = ['darkMode', 'pinkMode', 'highContrast', 'showAutoBackups', 'iosPwaHelpShown'];
+    var booleanPrefs = ['darkMode', 'pinkMode', 'highContrast', 'reduceMotion', 'relaxedSpacing', 'showAutoBackups', 'iosPwaHelpShown'];
     booleanPrefs.forEach(function (key) {
       if (Object.prototype.hasOwnProperty.call(prefs, key) && typeof prefs[key] === 'boolean') {
         safeSetLocalStorage(key, prefs[key]);
