@@ -81,6 +81,7 @@ const STORAGE_MIGRATION_BACKUP_SUFFIX = '__legacyMigrationBackup';
 const RAW_STORAGE_BACKUP_KEYS = new Set([
   getCustomFontStorageKeyName(),
   CUSTOM_LOGO_STORAGE_KEY,
+  DEVICE_SCHEMA_CACHE_KEY,
 ]);
 
 function createStorageMigrationBackup(storage, key, originalValue) {
@@ -3133,6 +3134,11 @@ function clearAllData() {
     const customFonts = readStoredCustomFonts();
     if (customFonts.length) {
       payload.customFonts = customFonts;
+    }
+
+    const schemaCache = readLocalStorageValue(DEVICE_SCHEMA_CACHE_KEY);
+    if (schemaCache !== null && schemaCache !== undefined) {
+      payload.schemaCache = schemaCache;
     }
 
     return payload;

@@ -1345,6 +1345,70 @@ function captureStorageSnapshot(storage) {
   return snapshot;
 }
 
+function createSafeStorageReader(storage, errorMessagePrefix) {
+  if (!storage || typeof storage.getItem !== 'function') {
+    return () => null;
+  }
+
+  const message = typeof errorMessagePrefix === 'string' && errorMessagePrefix
+    ? errorMessagePrefix
+    : 'Failed to read storage key';
+
+  return (key) => {
+    if (typeof key !== 'string') {
+      return null;
+    }
+    try {
+      return storage.getItem(key);
+    } catch (error) {
+      console.warn(`${message}`, key, error);
+      return null;
+    }
+  };
+}
+
+function restoreSessionStorageSnapshot(snapshot) {
+  if (typeof sessionStorage === 'undefined' || !sessionStorage) {
+    return;
+  }
+
+  const entries = snapshot && typeof snapshot === 'object'
+    ? Object.entries(snapshot)
+    : [];
+  const retainedKeys = new Set(entries.map(([key]) => key));
+
+  const keysToRemove = [];
+  try {
+    const { length } = sessionStorage;
+    for (let i = 0; i < length; i += 1) {
+      const key = sessionStorage.key(i);
+      if (typeof key !== 'string') continue;
+      if (!retainedKeys.has(key)) {
+        keysToRemove.push(key);
+      }
+    }
+  } catch (error) {
+    console.warn('Failed to inspect sessionStorage during restore rollback', error);
+  }
+
+  keysToRemove.forEach((key) => {
+    try {
+      sessionStorage.removeItem(key);
+    } catch (removeError) {
+      console.warn('Failed to remove sessionStorage key during restore rollback', key, removeError);
+    }
+  });
+
+  entries.forEach(([key, value]) => {
+    if (typeof key !== 'string') return;
+    try {
+      sessionStorage.setItem(key, typeof value === 'string' ? value : String(value));
+    } catch (setError) {
+      console.warn('Failed to reapply sessionStorage key during restore rollback', key, setError);
+    }
+  });
+}
+
 function sanitizeBackupPayload(raw) {
   if (raw === null || raw === undefined) {
     return '';
@@ -1504,6 +1568,52 @@ function looksLikeStoredSettingKey(key) {
     return true;
   }
   return BACKUP_STORAGE_KEY_PREFIXES.some(prefix => key.startsWith(prefix));
+}
+
+function restoreLocalStorageSnapshot(storage, snapshot) {
+  if (!storage || typeof storage.setItem !== 'function') {
+    return;
+  }
+
+  const entries = snapshot && typeof snapshot === 'object'
+    ? Object.entries(snapshot)
+    : [];
+  const targetKeys = new Set(entries.map(([key]) => key));
+
+  const keysToRemove = [];
+  try {
+    const { length } = storage;
+    for (let i = 0; i < length; i += 1) {
+      const key = storage.key(i);
+      if (typeof key !== 'string') continue;
+      if (!targetKeys.has(key) && looksLikeStoredSettingKey(key)) {
+        keysToRemove.push(key);
+      }
+    }
+  } catch (error) {
+    console.warn('Failed to inspect storage during restore rollback', error);
+  }
+
+  keysToRemove.forEach((key) => {
+    try {
+      storage.removeItem(key);
+    } catch (removeError) {
+      console.warn('Failed to remove storage key during restore rollback', key, removeError);
+    }
+  });
+
+  entries.forEach(([key, value]) => {
+    if (typeof key !== 'string') return;
+    try {
+      if (value === null || value === undefined) {
+        storage.removeItem(key);
+      } else {
+        storage.setItem(key, typeof value === 'string' ? value : String(value));
+      }
+    } catch (setError) {
+      console.warn('Failed to reapply storage key during restore rollback', key, setError);
+    }
+  });
 }
 
 function buildLegacyStorageFromRoot(source, metadataKeys) {
@@ -1716,6 +1826,93 @@ function downloadBackupPayload(payload, fileName) {
   return false;
 }
 
+function applyPreferencesFromStorage(safeGetItem) {
+  if (typeof safeGetItem !== 'function') {
+    return { showAutoBackups: false, accentColor: null, language: null };
+  }
+
+  const restoredTemperatureUnit = safeGetItem(TEMPERATURE_UNIT_STORAGE_KEY);
+  if (restoredTemperatureUnit) {
+    try {
+      applyTemperatureUnitPreference(restoredTemperatureUnit, { persist: false });
+    } catch (error) {
+      console.warn('Failed to apply restored temperature unit preference', error);
+    }
+  }
+
+  try {
+    applyDarkMode(safeGetItem('darkMode') === 'true');
+  } catch (error) {
+    console.warn('Failed to apply restored dark mode preference', error);
+  }
+  try {
+    applyPinkMode(safeGetItem('pinkMode') === 'true');
+  } catch (error) {
+    console.warn('Failed to apply restored pink mode preference', error);
+  }
+  try {
+    applyHighContrast(safeGetItem('highContrast') === 'true');
+  } catch (error) {
+    console.warn('Failed to apply restored high contrast preference', error);
+  }
+
+  const showBackups = safeGetItem('showAutoBackups') === 'true';
+  const color = safeGetItem('accentColor');
+  if (color) {
+    try {
+      document.documentElement.style.setProperty('--accent-color', color);
+      document.documentElement.style.setProperty('--link-color', color);
+    } catch (error) {
+      console.warn('Failed to apply restored accent color', error);
+    }
+    accentColor = color;
+    prevAccentColor = color;
+  }
+
+  const language = safeGetItem('language');
+
+  return {
+    showAutoBackups: showBackups,
+    accentColor: color || null,
+    language: language || null,
+  };
+}
+
+function captureSetupSelection() {
+  return {
+    value: setupSelect ? setupSelect.value : '',
+    name: setupNameInput ? setupNameInput.value : '',
+  };
+}
+
+function restoreSetupSelection(previousSelection, shouldShowAutoBackups) {
+  if (!previousSelection || typeof previousSelection !== 'object') {
+    return;
+  }
+
+  const { value = '', name = '' } = previousSelection;
+
+  if (setupSelect) {
+    try {
+      if (shouldShowAutoBackups || !value || !value.startsWith('auto-backup-')) {
+        setupSelect.value = value;
+      } else {
+        setupSelect.value = '';
+      }
+    } catch (error) {
+      console.warn('Failed to restore setup selection after restore', error);
+    }
+  }
+
+  if (setupNameInput) {
+    try {
+      setupNameInput.value = name || '';
+    } catch (error) {
+      console.warn('Failed to restore setup name after restore', error);
+    }
+  }
+}
+
 function createSettingsBackup(notify = true, timestamp = new Date()) {
   try {
     const isEvent = notify && typeof notify === 'object' && typeof notify.type === 'string';
@@ -1785,11 +1982,65 @@ if (restoreSettings && restoreSettingsInput) {
 
     showNotification('success', 'Full app backup downloaded');
 
+    const safeStorage = resolveSafeLocalStorage();
+    const storedSettingsSnapshot = captureStorageSnapshot(safeStorage);
+    const storedSessionSnapshot = captureStorageSnapshot(
+      typeof sessionStorage !== 'undefined' ? sessionStorage : null,
+    );
+    const previousSelection = captureSetupSelection();
+    let restoreMutated = false;
+
     const finalizeRestore = () => {
       try {
         restoreSettingsInput.value = '';
       } catch (resetError) {
         void resetError;
+      }
+    };
+
+    const revertAfterFailure = () => {
+      try {
+        restoreLocalStorageSnapshot(safeStorage, storedSettingsSnapshot);
+      } catch (restoreError) {
+        console.warn('Failed to restore localStorage snapshot after restore failure', restoreError);
+      }
+      try {
+        restoreSessionStorageSnapshot(storedSessionSnapshot);
+      } catch (sessionError) {
+        console.warn('Failed to restore sessionStorage snapshot after restore failure', sessionError);
+      }
+      try {
+        loadStoredLogoPreview();
+      } catch (logoError) {
+        console.warn('Failed to refresh logo preview after restore failure', logoError);
+      }
+      try {
+        syncAutoGearRulesFromStorage();
+      } catch (rulesError) {
+        console.warn('Failed to resync automatic gear rules after restore failure', rulesError);
+      }
+      const safeGetItem = createSafeStorageReader(safeStorage, 'Failed to read restored storage key');
+      const preferenceState = applyPreferencesFromStorage(safeGetItem);
+      showAutoBackups = preferenceState.showAutoBackups;
+      try {
+        populateSetupSelect();
+      } catch (populateError) {
+        console.warn('Failed to repopulate setup selector after restore failure', populateError);
+      }
+      restoreSetupSelection(previousSelection, showAutoBackups);
+      if (settingsShowAutoBackups) {
+        try {
+          settingsShowAutoBackups.checked = showAutoBackups;
+        } catch (checkboxError) {
+          console.warn('Failed to restore automatic backup visibility toggle after restore failure', checkboxError);
+        }
+      }
+      if (preferenceState.language) {
+        try {
+          setLanguage(preferenceState.language);
+        } catch (languageError) {
+          console.warn('Failed to restore language after restore failure', languageError);
+        }
       }
     };
 
@@ -1824,8 +2075,8 @@ if (restoreSettings && restoreSettingsInput) {
           alert(`${texts[currentLang].restoreVersionWarning} (${fileVersion || 'unknown'} → ${APP_VERSION})`);
         }
         if (restoredSettings && typeof restoredSettings === 'object') {
-          const safeStorage = resolveSafeLocalStorage();
           if (safeStorage && typeof safeStorage.setItem === 'function') {
+            restoreMutated = true;
             Object.entries(restoredSettings).forEach(([k, v]) => {
               if (typeof k !== 'string') return;
               try {
@@ -1843,6 +2094,7 @@ if (restoreSettings && restoreSettingsInput) {
           }
         }
         if (restoredSession && typeof sessionStorage !== 'undefined') {
+          restoreMutated = true;
           Object.entries(restoredSession).forEach(([key, value]) => {
             try {
               sessionStorage.setItem(key, value);
@@ -1851,59 +2103,41 @@ if (restoreSettings && restoreSettingsInput) {
             }
           });
         }
-        loadStoredLogoPreview();
+        try {
+          loadStoredLogoPreview();
+        } catch (logoError) {
+          console.warn('Failed to refresh logo preview after restore', logoError);
+        }
         if (data && typeof importAllData === 'function') {
+          restoreMutated = true;
           importAllData(data);
         }
-        syncAutoGearRulesFromStorage(data?.autoGearRules);
-        const safeStorage = resolveSafeLocalStorage();
-        const safeGetItem = (key) => {
-          if (!safeStorage || typeof safeStorage.getItem !== 'function') return null;
-          try {
-            return safeStorage.getItem(key);
-          } catch (error) {
-            console.warn('Failed to read restored storage key', key, error);
-            return null;
-          }
-        };
-        const restoredTemperatureUnit = safeGetItem(TEMPERATURE_UNIT_STORAGE_KEY);
-        if (restoredTemperatureUnit) {
-          applyTemperatureUnitPreference(restoredTemperatureUnit, {
-            persist: false,
-          });
+        try {
+          syncAutoGearRulesFromStorage(data?.autoGearRules);
+        } catch (rulesError) {
+          console.warn('Failed to sync automatic gear rules after restore', rulesError);
         }
-        applyDarkMode(safeGetItem('darkMode') === 'true');
-        applyPinkMode(safeGetItem('pinkMode') === 'true');
-        applyHighContrast(safeGetItem('highContrast') === 'true');
-        showAutoBackups = safeGetItem('showAutoBackups') === 'true';
-        const prevValue = setupSelect ? setupSelect.value : '';
-        const prevName = setupNameInput ? setupNameInput.value : '';
+        const safeGetItem = createSafeStorageReader(safeStorage, 'Failed to read restored storage key');
+        const preferenceState = applyPreferencesFromStorage(safeGetItem);
+        showAutoBackups = preferenceState.showAutoBackups;
         populateSetupSelect();
-        if (setupSelect) {
-          if (showAutoBackups || !prevValue.startsWith('auto-backup-')) {
-            setupSelect.value = prevValue;
-          } else {
-            setupSelect.value = '';
-          }
-        }
-        if (setupNameInput) {
-          setupNameInput.value = prevName;
-        }
+        restoreSetupSelection(previousSelection, showAutoBackups);
         if (settingsShowAutoBackups) {
           settingsShowAutoBackups.checked = showAutoBackups;
         }
-        const color = safeGetItem('accentColor');
-        if (color) {
-          document.documentElement.style.setProperty('--accent-color', color);
-          document.documentElement.style.setProperty('--link-color', color);
-          accentColor = color;
-          prevAccentColor = color;
+        if (preferenceState.language) {
+          setLanguage(preferenceState.language);
         }
-        const lang = safeGetItem('language');
-        if (lang) setLanguage(lang);
         alert(texts[currentLang].restoreSuccess);
         finalizeRestore();
       } catch (err) {
+        if (restoreMutated) {
+          try {
+            revertAfterFailure();
+          } catch (revertError) {
+            console.warn('Failed to restore previous state after restore error', revertError);
+          }
+        }
         handleRestoreError(err);
       }
     };

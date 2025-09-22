@@ -944,6 +944,15 @@ describe('export/import all data', () => {
     expect(exported.customLogo).toBe(backupLogo);
   });
 
+  test('exportAllData includes stored schema cache values', () => {
+    const schemaPayload = JSON.stringify({ version: 1, checksum: 'abc123' });
+    localStorage.setItem(SCHEMA_CACHE_KEY, schemaPayload);
+
+    const exported = exportAllData();
+
+    expect(exported.schemaCache).toBe(schemaPayload);
+  });
+
   test('importAllData restores planner data', () => {
     const data = {
       devices: validDeviceData,
