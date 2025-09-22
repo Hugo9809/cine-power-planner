@@ -89,6 +89,178 @@ describe('SAFE_LOCAL_STORAGE fallback behaviour', () => {
   });
 });
 
+describe('SAFE_LOCAL_STORAGE downgrade handling', () => {
+  const createToggleableStorage = () => {
+    const store = {};
+    let failWrites = false;
+    return {
+      enableFailure() {
+        failWrites = true;
+      },
+      disableFailure() {
+        failWrites = false;
+      },
+      get length() {
+        return Object.keys(store).length;
+      },
+      key: jest.fn((index) => {
+        const keys = Object.keys(store);
+        return index >= 0 && index < keys.length ? keys[index] : null;
+      }),
+      getItem: jest.fn((key) =>
+        Object.prototype.hasOwnProperty.call(store, key) ? store[key] : null,
+      ),
+      setItem: jest.fn((key, value) => {
+        if (failWrites) {
+          throw new Error('blocked');
+        }
+        store[key] = String(value);
+      }),
+      removeItem: jest.fn((key) => {
+        if (failWrites) {
+          throw new Error('blocked');
+        }
+        delete store[key];
+      }),
+      clear: jest.fn(() => {
+        Object.keys(store).forEach((key) => delete store[key]);
+      }),
+    };
+  };
+
+  const createMemoryStorage = () => {
+    const store = {};
+    return {
+      get length() {
+        return Object.keys(store).length;
+      },
+      key: jest.fn((index) => {
+        const keys = Object.keys(store);
+        return index >= 0 && index < keys.length ? keys[index] : null;
+      }),
+      getItem: jest.fn((key) =>
+        Object.prototype.hasOwnProperty.call(store, key) ? store[key] : null,
+      ),
+      setItem: jest.fn((key, value) => {
+        store[key] = String(value);
+      }),
+      removeItem: jest.fn((key) => {
+        delete store[key];
+      }),
+      clear: jest.fn(() => {
+        Object.keys(store).forEach((key) => delete store[key]);
+      }),
+    };
+  };
+
+  let originalWindow;
+  let originalLocalStorageDescriptor;
+  let originalSessionStorageDescriptor;
+  let originalGlobalLocalStorage;
+  let originalGlobalSessionStorage;
+  let toggleStorage;
+  let storageModule;
+  let consoleErrorSpy;
+  let consoleWarnSpy;
+
+  beforeEach(() => {
+    jest.resetModules();
+
+    originalWindow = typeof global.window === 'undefined' ? undefined : global.window;
+    if (!global.window) {
+      global.window = {};
+    }
+
+    originalLocalStorageDescriptor = Object.getOwnPropertyDescriptor(global.window, 'localStorage');
+    originalSessionStorageDescriptor = Object.getOwnPropertyDescriptor(global.window, 'sessionStorage');
+
+    originalGlobalLocalStorage = global.localStorage;
+    originalGlobalSessionStorage = global.sessionStorage;
+
+    toggleStorage = createToggleableStorage();
+    const session = createMemoryStorage();
+
+    Object.defineProperty(global.window, 'localStorage', {
+      configurable: true,
+      value: toggleStorage,
+    });
+
+    Object.defineProperty(global.window, 'sessionStorage', {
+      configurable: true,
+      value: session,
+    });
+
+    global.localStorage = toggleStorage;
+    global.sessionStorage = session;
+
+    consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    storageModule = require('../../src/scripts/storage');
+  });
+
+  afterEach(() => {
+    consoleErrorSpy.mockRestore();
+    consoleWarnSpy.mockRestore();
+    jest.resetModules();
+
+    if (originalLocalStorageDescriptor) {
+      Object.defineProperty(global.window, 'localStorage', originalLocalStorageDescriptor);
+    } else if (global.window) {
+      delete global.window.localStorage;
+    }
+
+    if (originalSessionStorageDescriptor) {
+      Object.defineProperty(global.window, 'sessionStorage', originalSessionStorageDescriptor);
+    } else if (global.window) {
+      delete global.window.sessionStorage;
+    }
+
+    if (originalWindow === undefined) {
+      delete global.window;
+    } else {
+      global.window = originalWindow;
+    }
+
+    if (originalGlobalLocalStorage !== undefined) {
+      global.localStorage = originalGlobalLocalStorage;
+    } else {
+      delete global.localStorage;
+    }
+
+    if (originalGlobalSessionStorage !== undefined) {
+      global.sessionStorage = originalGlobalSessionStorage;
+    } else {
+      delete global.sessionStorage;
+    }
+  });
+
+  test('downgrades to in-memory storage after write failures', () => {
+    const { saveFavorites, getSafeLocalStorage } = storageModule;
+
+    toggleStorage.setItem(
+      FAVORITES_KEY,
+      JSON.stringify({ cameraSelect: ['Existing'] }),
+    );
+
+    toggleStorage.enableFailure();
+
+    saveFavorites({ cameraSelect: ['Updated'] });
+
+    const downgradedStorage = getSafeLocalStorage();
+    expect(downgradedStorage).not.toBe(toggleStorage);
+    expect(downgradedStorage.getItem(FAVORITES_KEY)).toBe(
+      JSON.stringify({ cameraSelect: ['Existing'] }),
+    );
+
+    saveFavorites({ cameraSelect: ['Recovered'] });
+
+    expect(getSafeLocalStorage().getItem(FAVORITES_KEY)).toBe(
+      JSON.stringify({ cameraSelect: ['Recovered'] }),
+    );
+  });
+});
+
 describe('SAFE_LOCAL_STORAGE quota handling', () => {
   let originalWindow;
   let originalLocalStorageDescriptor;
