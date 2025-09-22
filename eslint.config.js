@@ -37,6 +37,24 @@ module.exports = [
     },
   },
   {
+    files: ['src/scripts/app-core.js'],
+    rules: {
+      'no-undef': 'off',
+      'no-unused-vars': 'off',
+    },
+  },
+  {
+    files: [
+      'src/scripts/app-events.js',
+      'src/scripts/app-setups.js',
+      'src/scripts/app-session.js',
+    ],
+    rules: {
+      'no-undef': 'off',
+      'no-unused-vars': 'off',
+    },
+  },
+  {
     files: ['tests/**'],
     languageOptions: {
       globals: globals.jest,

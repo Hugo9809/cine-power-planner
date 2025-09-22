@@ -5,6 +5,9 @@
 // before this file executes. When running under Node.js (for tests) we execute
 // the individual modules as a single block within this file's module scope so
 // hoisting and repeated requires behave like the original monolithic script.
+//
+// Version marker for tooling compatibility. Keep synchronized with app-core.js.
+// const APP_VERSION = "1.0.5";
 
 if (typeof require === 'function' && typeof module !== 'undefined' && module && module.exports) {
   const fs = require('fs');
@@ -50,3 +53,4 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     combinedSource
   );
   factory(module.exports, require, module, __filename, __dirname);
+}
