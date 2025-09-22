@@ -3123,6 +3123,10 @@ body.pink-mode #topBar #logo .logo-center {
   font-size: var(--font-size-relative-base);
 }
 
+#helpButton .icon-text {
+  font-weight: var(--font-weight-light);
+}
+
 /* Breakdown list */
 #breakdownList {
   list-style: none;
