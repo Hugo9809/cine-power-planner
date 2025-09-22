@@ -282,6 +282,7 @@ textarea {
   right: 0;
   background: var(--accent-color);
   color: var(--install-banner-text-color, var(--inverse-text-color));
+  --icon-color: var(--install-banner-text-color, currentColor);
   padding: 12px 18px;
   z-index: 999;
   border-radius: 0;
@@ -300,7 +301,8 @@ textarea {
 }
 
 #installPromptBanner .install-banner-action,
-#installPromptBanner .install-banner-dismiss {
+#installPromptBanner .install-banner-dismiss,
+#installPromptBanner .install-banner-close {
   appearance: none;
   border-radius: var(--border-radius);
   border: 1px solid color-mix(in srgb, var(--install-banner-text-color, #ffffff) 30%, transparent);
@@ -322,12 +324,16 @@ textarea {
   flex: 1 1 240px;
 }
 
-#installPromptBanner .install-banner-action .install-banner-icon {
+#installPromptBanner .install-banner-icon {
   font-size: var(--icon-size-lg);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 #installPromptBanner .install-banner-action:focus-visible,
-#installPromptBanner .install-banner-dismiss:focus-visible {
+#installPromptBanner .install-banner-dismiss:focus-visible,
+#installPromptBanner .install-banner-close:focus-visible {
   outline: 2px solid var(--install-banner-text-color, currentColor);
   outline-offset: 2px;
 }
@@ -335,7 +341,9 @@ textarea {
 #installPromptBanner .install-banner-action:hover,
 #installPromptBanner .install-banner-action:focus-visible,
 #installPromptBanner .install-banner-dismiss:hover,
-#installPromptBanner .install-banner-dismiss:focus-visible {
+#installPromptBanner .install-banner-dismiss:focus-visible,
+#installPromptBanner .install-banner-close:hover,
+#installPromptBanner .install-banner-close:focus-visible {
   border-color: color-mix(in srgb, var(--install-banner-text-color, #ffffff) 50%, transparent);
   background: color-mix(in srgb, var(--install-banner-text-color, #ffffff) 22%, transparent);
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--install-banner-text-color, #ffffff) 18%, transparent);
@@ -345,6 +353,20 @@ textarea {
   min-width: 0;
   white-space: nowrap;
   flex: 0 0 auto;
+}
+
+#installPromptBanner .install-banner-close {
+  padding: var(--spacing-2xs);
+  min-width: 0;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+}
+
+#installPromptBanner .install-banner-close .icon-glyph {
+  font-size: var(--icon-size-md);
 }
 
 .visually-hidden {

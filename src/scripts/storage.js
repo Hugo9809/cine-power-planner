@@ -566,6 +566,7 @@ function updateGlobalSafeLocalStorageReference() {
     });
     return;
   } catch (defineError) {
+    console.warn('Unable to redefine SAFE_LOCAL_STORAGE accessor', defineError);
     try {
       GLOBAL_SCOPE.SAFE_LOCAL_STORAGE = getSafeLocalStorage();
       return;

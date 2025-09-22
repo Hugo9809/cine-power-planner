@@ -7968,9 +7968,10 @@ const helpQuickLinksNav = document.getElementById("helpQuickLinks");
 const helpQuickLinksHeading = document.getElementById("helpQuickLinksHeading");
 const helpQuickLinksList = document.getElementById("helpQuickLinksList");
 const installPromptBanner = document.getElementById("installPromptBanner");
-const installPromptBannerText = document.getElementById("installPromptBannerText");
+let installPromptBannerText = document.getElementById("installPromptBannerText");
 const installPromptBannerAction = document.getElementById("installPromptBannerAction");
 const installPromptBannerDismiss = document.getElementById("installPromptBannerDismiss");
+const installPromptBannerClose = document.getElementById("installPromptBannerClose");
 const installGuideDialog = document.getElementById("installGuideDialog");
 const installGuideTitle = document.getElementById("installGuideTitle");
 const installGuideIntro = document.getElementById("installGuideIntro");
@@ -10624,6 +10625,40 @@ function updateInstallBannerColors() {
   }
 }
 
+function renderInstallBannerIcon() {
+  const glyph = resolveIconGlyph(ICON_GLYPHS.load);
+  const classes = ['install-banner-icon', 'btn-icon', 'icon-glyph'];
+  if (glyph.className) {
+    classes.push(glyph.className);
+  }
+  const classAttr = classes.join(' ');
+  if (glyph.markup) {
+    const markup = ensureSvgHasAriaHidden(glyph.markup);
+    return `<span id="installPromptBannerIcon" class="${classAttr}" aria-hidden="true">${markup}</span>`;
+  }
+  const fontAttr = glyph.font ? ` data-icon-font="${glyph.font}"` : '';
+  const char = glyph.char ? escapeHtml(glyph.char) : '';
+  return `<span id="installPromptBannerIcon" class="${classAttr}" aria-hidden="true"${fontAttr}>${char}</span>`;
+}
+
+function setInstallBannerMessage(message) {
+  if (!installPromptBannerAction) return;
+  const safeMessage = typeof message === 'string' ? escapeHtml(message) : '';
+  const iconHtml = renderInstallBannerIcon();
+  const textHtml = safeMessage ? `<span id="installPromptBannerText">${safeMessage}</span>` : '';
+  installPromptBannerAction.innerHTML = `${iconHtml}${textHtml}`;
+  installPromptBannerText = document.getElementById('installPromptBannerText');
+}
+
+function dismissInstallBanner(event) {
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+  markInstallBannerDismissed();
+  updateInstallBannerVisibility();
+}
+
 function renderInstallGuideContent(platform, lang = currentLang) {
   if (!installGuideDialog) return;
   const fallbackTexts = texts.en || {};
@@ -10733,12 +10768,12 @@ function setupInstallBanner() {
   }
 
   if (installPromptBannerDismiss) {
-    installPromptBannerDismiss.addEventListener('click', event => {
-      event.preventDefault();
-      event.stopPropagation();
-      markInstallBannerDismissed();
-      updateInstallBannerVisibility();
-    });
+    installPromptBannerDismiss.addEventListener('click', dismissInstallBanner);
+  }
+
+  if (installPromptBannerClose) {
+    installPromptBannerClose.innerHTML = iconMarkup(ICON_GLYPHS.circleX, 'btn-icon');
+    installPromptBannerClose.addEventListener('click', dismissInstallBanner);
   }
 
   if (installGuideClose) {
@@ -10780,10 +10815,8 @@ function setupInstallBanner() {
 function applyInstallTexts(lang) {
   const fallbackTexts = texts.en || {};
   const langTexts = texts[lang] || fallbackTexts;
-  const bannerText = langTexts.installBannerText || fallbackTexts.installBannerText;
-  if (installPromptBannerText && bannerText) {
-    installPromptBannerText.textContent = bannerText;
-  }
+  const bannerText = langTexts.installBannerText || fallbackTexts.installBannerText || '';
+  setInstallBannerMessage(bannerText);
   if (installPromptBanner) {
     if (bannerText) {
       installPromptBanner.setAttribute('aria-label', bannerText);
@@ -10816,6 +10849,15 @@ function applyInstallTexts(lang) {
     } else {
       installPromptBannerDismiss.removeAttribute('aria-label');
       installPromptBannerDismiss.removeAttribute('title');
+    }
+  }
+  if (installPromptBannerClose) {
+    if (dismissLabel) {
+      installPromptBannerClose.setAttribute('aria-label', dismissLabel);
+      installPromptBannerClose.setAttribute('title', dismissLabel);
+    } else {
+      installPromptBannerClose.removeAttribute('aria-label');
+      installPromptBannerClose.removeAttribute('title');
     }
   }
   if (installGuideClose && closeLabel) {
