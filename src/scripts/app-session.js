@@ -1513,14 +1513,30 @@ function normalizeStoredValue(value) {
 
 function convertEntriesToSnapshot(section) {
   if (!section) return null;
+
+  let source = section;
+  if (typeof source === 'string') {
+    let parsed = null;
+    try {
+      parsed = JSON.parse(source);
+    } catch (error) {
+      parsed = null;
+    }
+    if (parsed && (Array.isArray(parsed) || isPlainObject(parsed))) {
+      source = parsed;
+    } else {
+      return null;
+    }
+  }
+
   const snapshot = Object.create(null);
   const assignEntry = (key, value) => {
     if (typeof key !== 'string' || !key) return;
     snapshot[key] = normalizeStoredValue(value);
   };
 
-  if (Array.isArray(section)) {
-    section.forEach(entry => {
+  if (Array.isArray(source)) {
+    source.forEach(entry => {
       if (!entry) return;
       if (Array.isArray(entry)) {
         assignEntry(entry[0], entry[1]);
@@ -1540,8 +1556,8 @@ function convertEntriesToSnapshot(section) {
         }
       }
     });
-  } else if (isPlainObject(section)) {
-    Object.entries(section).forEach(([key, value]) => {
+  } else if (isPlainObject(source)) {
+    Object.entries(source).forEach(([key, value]) => {
       assignEntry(key, value);
     });
   } else {

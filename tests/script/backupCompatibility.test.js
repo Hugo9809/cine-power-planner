@@ -34,5 +34,32 @@ describe('backup compatibility utilities', () => {
 
     expect(sanitized).toBe('{"version":"1.0.0"}');
   });
+
+  test('extractBackupSections parses stringified storage snapshots', () => {
+    const { extractBackupSections } = loadApp();
+
+    const legacySnapshot = JSON.stringify([
+      ['darkMode', true],
+      { key: 'language', value: 'de' },
+      {
+        key: 'cameraPowerPlanner_setups',
+        value: { Main: { name: 'Main', items: [] } },
+      },
+    ]);
+
+    const backup = {
+      storage: legacySnapshot,
+      session: JSON.stringify({ activeSetup: 'Main' }),
+    };
+
+    const sections = extractBackupSections(backup);
+
+    expect(sections.settings.darkMode).toBe('true');
+    expect(sections.settings.language).toBe('de');
+    expect(sections.settings.cameraPowerPlanner_setups).toBe(
+      JSON.stringify({ Main: { name: 'Main', items: [] } }),
+    );
+    expect(sections.sessionStorage).toEqual({ activeSetup: 'Main' });
+  });
 });
 
