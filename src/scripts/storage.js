@@ -566,6 +566,7 @@ function updateGlobalSafeLocalStorageReference() {
     });
     return;
   } catch (defineError) {
+    void defineError;
     try {
       GLOBAL_SCOPE.SAFE_LOCAL_STORAGE = getSafeLocalStorage();
       return;

@@ -1,3 +1,5 @@
+/* global getManualDownloadFallbackMessage */
+
 // --- NEW SETUP MANAGEMENT FUNCTIONS ---
 
 // Generate a printable overview of the current selected setup in a new tab

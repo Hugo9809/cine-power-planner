@@ -1,4 +1,11 @@
 // --- SESSION STATE HANDLING ---
+/* global resolveTemperatureStorageKey */
+
+const TEMPERATURE_STORAGE_KEY =
+  typeof resolveTemperatureStorageKey === 'function'
+    ? resolveTemperatureStorageKey()
+    : 'cameraPowerPlanner_temperatureUnit';
+
 function saveCurrentSession(options = {}) {
   if (restoringSession || factoryResetInProgress) return;
   const info = projectForm ? collectProjectFormData() : {};
@@ -1996,7 +2003,7 @@ function applyPreferencesFromStorage(safeGetItem) {
     return { showAutoBackups: false, accentColor: null, language: null };
   }
 
-  const restoredTemperatureUnit = safeGetItem(TEMPERATURE_UNIT_STORAGE_KEY);
+  const restoredTemperatureUnit = safeGetItem(TEMPERATURE_STORAGE_KEY);
   if (restoredTemperatureUnit) {
     try {
       applyTemperatureUnitPreference(restoredTemperatureUnit, { persist: false });
