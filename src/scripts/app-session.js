@@ -1767,9 +1767,151 @@ function encodeBackupDataUrl(payload) {
   }
 }
 
-function downloadBackupPayload(payload, fileName) {
-  if (typeof payload !== 'string') {
+function getManualDownloadFallbackMessage() {
+  if (typeof texts === 'object' && texts) {
+    const lang = typeof currentLang === 'string' && texts[currentLang]
+      ? currentLang
+      : 'en';
+    const langTexts = texts[lang] || texts.en || {};
+    const fallback = langTexts.manualDownloadFallback || texts.en?.manualDownloadFallback;
+    if (fallback) {
+      return fallback;
+    }
+  }
+  return 'The download did not start automatically. A new tab opened so you can copy or save the file manually.';
+}
+
+function getManualDownloadCopyHint() {
+  if (typeof texts === 'object' && texts) {
+    const lang = typeof currentLang === 'string' && texts[currentLang]
+      ? currentLang
+      : 'en';
+    const langTexts = texts[lang] || texts.en || {};
+    const fallback = langTexts.manualDownloadCopyHint || texts.en?.manualDownloadCopyHint;
+    if (fallback) {
+      return fallback;
+    }
+  }
+  return 'Select all the text below and copy it to store the file safely.';
+}
+
+function openBackupFallbackWindow(payload, fileName) {
+  if (typeof window === 'undefined' || typeof window.open !== 'function') {
     return false;
+  }
+
+  let backupWindow = null;
+  try {
+    backupWindow = window.open('', '_blank');
+  } catch (openError) {
+    console.warn('Failed to open manual backup window', openError);
+    backupWindow = null;
+  }
+
+  if (!backupWindow) {
+    return false;
+  }
+
+  try {
+    const doc = backupWindow.document;
+    if (!doc) {
+      return false;
+    }
+
+    const langAttr = document && document.documentElement && document.documentElement.getAttribute
+      ? document.documentElement.getAttribute('lang')
+      : 'en';
+    doc.open();
+    doc.write(`<!DOCTYPE html><html lang="${langAttr || 'en'}"><head><meta charset="utf-8"><title>Manual download</title></head><body></body></html>`);
+    doc.close();
+
+    try {
+      doc.title = fileName || 'backup.json';
+    } catch (titleError) {
+      void titleError;
+    }
+
+    const body = doc.body;
+    if (!body) {
+      return false;
+    }
+
+    body.style.margin = '0';
+    body.style.padding = '1.5rem';
+    body.style.background = '#f8f9fb';
+    body.style.color = '#0f172a';
+    body.style.fontFamily = "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+
+    const container = doc.createElement('div');
+    container.style.maxWidth = '960px';
+    container.style.margin = '0 auto';
+    container.style.display = 'flex';
+    container.style.flexDirection = 'column';
+    container.style.gap = '1rem';
+
+    const heading = doc.createElement('h1');
+    heading.textContent = fileName || 'Manual backup';
+    heading.style.margin = '0';
+    heading.style.fontSize = '1.5rem';
+    heading.style.fontWeight = '600';
+
+    const description = doc.createElement('p');
+    description.textContent = getManualDownloadFallbackMessage();
+    description.style.margin = '0';
+    description.style.lineHeight = '1.5';
+
+    const helper = doc.createElement('p');
+    helper.textContent = getManualDownloadCopyHint();
+    helper.style.margin = '0';
+    helper.style.lineHeight = '1.5';
+
+    const textArea = doc.createElement('textarea');
+    textArea.value = payload;
+    textArea.readOnly = true;
+    textArea.spellcheck = false;
+    textArea.style.width = '100%';
+    textArea.style.height = '70vh';
+    textArea.style.resize = 'vertical';
+    textArea.style.padding = '1rem';
+    textArea.style.borderRadius = '1rem';
+    textArea.style.border = '1px solid rgba(15, 23, 42, 0.15)';
+    textArea.style.background = '#ffffff';
+    textArea.style.fontFamily = "'SFMono-Regular', 'Roboto Mono', 'Menlo', 'Courier New', monospace";
+    textArea.style.fontSize = '0.875rem';
+    textArea.style.lineHeight = '1.5';
+    textArea.style.boxShadow = '0 0.75rem 2.5rem rgba(15, 23, 42, 0.16)';
+
+    container.appendChild(heading);
+    container.appendChild(description);
+    container.appendChild(helper);
+    container.appendChild(textArea);
+    body.appendChild(container);
+
+    try {
+      textArea.focus();
+      textArea.select();
+    } catch (focusError) {
+      void focusError;
+    }
+
+    try {
+      backupWindow.focus();
+    } catch (focusWindowError) {
+      void focusWindowError;
+    }
+
+    return true;
+  } catch (renderError) {
+    console.warn('Failed to render manual backup window', renderError);
+    return false;
+  }
+}
+
+function downloadBackupPayload(payload, fileName) {
+  const failureResult = { success: false, method: null };
+
+  if (typeof payload !== 'string') {
+    return failureResult;
   }
 
   let blob = null;
@@ -1786,7 +1928,7 @@ function downloadBackupPayload(payload, fileName) {
     if (typeof navigator !== 'undefined' && typeof navigator.msSaveOrOpenBlob === 'function') {
       try {
         navigator.msSaveOrOpenBlob(blob, fileName);
-        return true;
+        return { success: true, method: 'ms-save' };
       } catch (msError) {
         console.warn('Saving backup via msSaveOrOpenBlob failed', msError);
       }
@@ -1812,7 +1954,7 @@ function downloadBackupPayload(payload, fileName) {
         }
 
         if (triggered) {
-          return true;
+          return { success: true, method: 'object-url' };
         }
       }
     }
@@ -1820,10 +1962,17 @@ function downloadBackupPayload(payload, fileName) {
 
   const dataUrl = encodeBackupDataUrl(payload);
   if (dataUrl) {
-    return triggerBackupDownload(dataUrl, fileName);
+    const triggered = triggerBackupDownload(dataUrl, fileName);
+    if (triggered) {
+      return { success: true, method: 'data-url' };
+    }
   }
 
-  return false;
+  if (openBackupFallbackWindow(payload, fileName)) {
+    return { success: true, method: 'window-fallback' };
+  }
+
+  return failureResult;
 }
 
 function applyPreferencesFromStorage(safeGetItem) {
@@ -1929,11 +2078,17 @@ function createSettingsBackup(notify = true, timestamp = new Date()) {
       data: typeof exportAllData === 'function' ? exportAllData() : {},
     };
     const payload = JSON.stringify(backup);
-    const downloaded = downloadBackupPayload(payload, fileName);
-    if (!downloaded) {
+    const downloadResult = downloadBackupPayload(payload, fileName);
+    if (!downloadResult || !downloadResult.success) {
       throw new Error('No supported download method available');
     }
-    if (shouldNotify) {
+    if (downloadResult.method === 'window-fallback') {
+      const manualMessage = getManualDownloadFallbackMessage();
+      showNotification('warning', manualMessage);
+      if (typeof alert === 'function') {
+        alert(manualMessage);
+      }
+    } else if (shouldNotify) {
       showNotification('success', 'Full app backup downloaded');
     }
     return fileName;

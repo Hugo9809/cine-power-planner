@@ -340,6 +340,9 @@ const texts = {
       "Automatic backup saved. Restore it anytime from Saved Projects.",
     preDeleteBackupFailed: "Automatic backup failed. The action was cancelled.",
     restoreBackupFailed: "Backup failed. Restore cancelled.",
+    manualDownloadFallback:
+      "The download didn't start automatically. A new tab opened with the file contents so you can copy or save them manually.",
+    manualDownloadCopyHint: "Select all the text below and copy it to keep the file safe.",
     dataHeading: "Data & Storage",
     dataHeadingHelp:
       "Review what the planner stores locally and how much space backups take.",
@@ -1600,6 +1603,10 @@ const texts = {
       "Backup automatico salvato. Puoi ripristinarlo da Progetti salvati.",
     preDeleteBackupFailed: "Backup automatico non riuscito. L'operazione è stata annullata.",
     restoreBackupFailed: "Backup non riuscito. Ripristino annullato.",
+    manualDownloadFallback:
+      "Il download non è partito automaticamente. Si è aperta una nuova scheda con il contenuto del file così puoi copiarlo o salvarlo manualmente.",
+    manualDownloadCopyHint:
+      "Seleziona tutto il testo qui sotto e copialo per conservare il file in modo sicuro.",
     dataHeading: "Dati e archiviazione",
     dataHeadingHelp:
       "Controlla quali dati vengono salvati localmente e quanto spazio occupano i backup.",
@@ -2461,6 +2468,10 @@ const texts = {
       "Copia de seguridad automática guardada. Puedes restaurarla desde Proyectos guardados.",
     preDeleteBackupFailed: "La copia de seguridad automática falló. La acción se canceló.",
     restoreBackupFailed: "La copia de seguridad falló. Restauración cancelada.",
+    manualDownloadFallback:
+      "La descarga no se inició automáticamente. Se abrió una pestaña nueva con el contenido del archivo para que puedas copiarlo o guardarlo manualmente.",
+    manualDownloadCopyHint:
+      "Selecciona todo el texto de abajo y cópialo para guardar el archivo de forma segura.",
     dataHeading: "Datos y almacenamiento",
     dataHeadingHelp:
       "Revisa qué guarda el planificador en este navegador y cuánto ocupan las copias de seguridad.",
@@ -3324,6 +3335,10 @@ const texts = {
       "Sauvegarde automatique enregistrée. Vous pouvez la restaurer depuis Projets enregistrés.",
     preDeleteBackupFailed: "La sauvegarde automatique a échoué. L’action a été annulée.",
     restoreBackupFailed: "Échec de la sauvegarde. Restauration annulée.",
+    manualDownloadFallback:
+      "Le téléchargement ne s’est pas lancé automatiquement. Un nouvel onglet s’est ouvert avec le contenu du fichier pour que vous puissiez le copier ou l’enregistrer manuellement.",
+    manualDownloadCopyHint:
+      "Sélectionnez tout le texte ci-dessous et copiez-le pour conserver le fichier en lieu sûr.",
     dataHeading: "Données et stockage",
     dataHeadingHelp:
       "Consultez ce que le planificateur conserve localement et la taille des sauvegardes.",
@@ -4190,6 +4205,10 @@ const texts = {
       "Automatische Sicherung gespeichert. Du kannst sie in Gespeicherte Projekte wiederherstellen.",
     preDeleteBackupFailed: "Automatische Sicherung fehlgeschlagen. Die Aktion wurde abgebrochen.",
     restoreBackupFailed: "Backup fehlgeschlagen. Wiederherstellung abgebrochen.",
+    manualDownloadFallback:
+      "Der Download wurde nicht automatisch gestartet. Ein neuer Tab mit dem Dateiinhalt wurde geöffnet, damit du ihn manuell kopieren oder speichern kannst.",
+    manualDownloadCopyHint:
+      "Markiere den gesamten Text unten und kopiere ihn, um die Datei sicher zu speichern.",
     dataHeading: "Daten & Speicherung",
     dataHeadingHelp:
       "Zeigt, welche Planer-Daten lokal gespeichert sind und wie groß Sicherungen werden.",
