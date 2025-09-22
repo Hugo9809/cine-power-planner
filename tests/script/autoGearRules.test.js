@@ -1229,6 +1229,100 @@ describe('applyAutoGearRulesToTableHtml', () => {
     }
   });
 
+  test('restore warns using fallback translation when language missing', () => {
+    env = setupScriptEnvironment();
+
+    const restoreInput = document.getElementById('restoreSettingsInput');
+    const fakeFile = { name: 'legacy-backup.json' };
+
+    Object.defineProperty(restoreInput, 'files', {
+      configurable: true,
+      get: () => [fakeFile]
+    });
+
+    const originalLang = window.currentLang;
+    const originalTexts = window.texts;
+    const fallbackWarning = (originalTexts && originalTexts.en && originalTexts.en.restoreVersionWarning)
+      || 'Backup created with a different version. Some features might not transfer.';
+
+    window.currentLang = 'xx';
+    window.texts = { ...originalTexts };
+    delete window.texts.xx;
+
+    const restoredRule = {
+      id: 'fallback-rule',
+      label: 'Fallback language rule',
+      scenarios: ['Legacy'],
+      add: [
+        { id: 'fallback-item', name: 'Legacy adapter', category: 'Power', quantity: 1 }
+      ],
+      remove: []
+    };
+
+    const restoreData = {
+      version: '0.9.0',
+      settings: {
+        [STORAGE_KEY]: JSON.stringify([restoredRule])
+      },
+      data: {
+        autoGearRules: [restoredRule]
+      }
+    };
+
+    const fileContent = JSON.stringify(restoreData);
+
+    const mockReaderInstance = {
+      onload: null,
+      readAsText: jest.fn(function readAsText() {
+        if (typeof this.onload === 'function') {
+          this.onload({ target: { result: fileContent } });
+        }
+      })
+    };
+
+    window.FileReader = jest.fn(() => mockReaderInstance);
+
+    const originalCreateElement = document.createElement;
+    jest.spyOn(document, 'createElement').mockImplementation(tagName => {
+      if (String(tagName).toLowerCase() === 'a') {
+        const anchor = originalCreateElement.call(document, tagName);
+        if (!('download' in anchor)) {
+          Object.defineProperty(anchor, 'download', {
+            configurable: true,
+            writable: true,
+            value: ''
+          });
+        }
+        anchor.click = jest.fn();
+        return anchor;
+      }
+      return originalCreateElement.call(document, tagName);
+    });
+
+    try {
+      expect(() => restoreInput.dispatchEvent(new Event('change'))).not.toThrow();
+
+      expect(window.alert).toHaveBeenCalledWith(
+        `${fallbackWarning} (${restoreData.version} → ${env.utils.APP_VERSION})`
+      );
+
+      const stored = JSON.parse(localStorage.getItem(STORAGE_KEY));
+      expect(stored).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ label: 'Fallback language rule' })
+        ])
+      );
+    } finally {
+      if (document.createElement.mockRestore) {
+        document.createElement.mockRestore();
+      } else {
+        document.createElement = originalCreateElement;
+      }
+      window.texts = originalTexts;
+      window.currentLang = originalLang;
+    }
+  });
+
   test('restore cancels when automatic backup fails before import', () => {
     env = setupScriptEnvironment();
 
