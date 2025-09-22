@@ -423,6 +423,10 @@ body:not(.light-mode) .gear-table .category-row td {
   box-shadow: var(--panel-shadow);
 }
 
+.device-block strong {
+  font-weight: var(--font-weight-bold) !important;
+}
+
 .connector-block,
 .info-box {
   background: var(--panel-bg) !important;
