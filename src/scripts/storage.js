@@ -68,6 +68,7 @@ const AUTO_GEAR_PRESETS_STORAGE_KEY = 'cameraPowerPlanner_autoGearPresets';
 const AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY = 'cameraPowerPlanner_autoGearActivePreset';
 const AUTO_GEAR_AUTO_PRESET_STORAGE_KEY = 'cameraPowerPlanner_autoGearAutoPreset';
 const AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY = 'cameraPowerPlanner_autoGearShowBackups';
+const FULL_BACKUP_HISTORY_STORAGE_KEY = 'cameraPowerPlanner_fullBackupHistory';
 const AUTO_BACKUP_NAME_PREFIX = 'auto-backup-';
 const AUTO_BACKUP_DELETION_PREFIX = 'auto-backup-before-delete-';
 const MAX_AUTO_BACKUPS = 50;
@@ -147,6 +148,7 @@ const PRIMARY_STORAGE_KEYS = [
 const SIMPLE_STORAGE_KEYS = [
   CUSTOM_LOGO_STORAGE_KEY,
   getCustomFontStorageKeyName(),
+  FULL_BACKUP_HISTORY_STORAGE_KEY,
   'darkMode',
   'pinkMode',
   'highContrast',
@@ -2733,6 +2735,96 @@ function saveAutoGearBackupVisibility(flag) {
   );
 }
 
+// --- Full Backup History Storage ---
+const FULL_BACKUP_HISTORY_LIMIT = 100;
+
+function normalizeFullBackupHistoryEntry(entry) {
+  if (!entry) {
+    return null;
+  }
+
+  if (typeof entry === 'string') {
+    const trimmed = entry.trim();
+    return trimmed ? { createdAt: trimmed } : null;
+  }
+
+  if (!isPlainObject(entry)) {
+    return null;
+  }
+
+  const timestamps = [entry.createdAt, entry.generatedAt, entry.timestamp]
+    .map((value) => (typeof value === 'string' ? value.trim() : ''))
+    .filter(Boolean);
+  const createdAt = timestamps.length ? timestamps[0] : '';
+  const fileName = typeof entry.fileName === 'string' ? entry.fileName.trim() : '';
+
+  if (!createdAt && !fileName) {
+    return null;
+  }
+
+  const normalized = {};
+  if (createdAt) {
+    normalized.createdAt = createdAt;
+  }
+  if (fileName) {
+    normalized.fileName = fileName;
+  }
+
+  return normalized;
+}
+
+function sanitizeFullBackupHistory(entries) {
+  if (!Array.isArray(entries)) {
+    return [];
+  }
+
+  return entries
+    .map(normalizeFullBackupHistoryEntry)
+    .filter(Boolean)
+    .map((entry) => ({ ...entry }));
+}
+
+function loadFullBackupHistory() {
+  applyLegacyStorageMigrations();
+  const safeStorage = getSafeLocalStorage();
+  const parsed = loadJSONFromStorage(
+    safeStorage,
+    FULL_BACKUP_HISTORY_STORAGE_KEY,
+    "Error loading full backup history from localStorage:",
+    [],
+    { validate: (value) => value === null || Array.isArray(value) },
+  );
+  const history = sanitizeFullBackupHistory(parsed);
+  if (history.length > FULL_BACKUP_HISTORY_LIMIT) {
+    return history.slice(history.length - FULL_BACKUP_HISTORY_LIMIT);
+  }
+  return history;
+}
+
+function saveFullBackupHistory(entries) {
+  const history = sanitizeFullBackupHistory(entries);
+  const limited = history.length > FULL_BACKUP_HISTORY_LIMIT
+    ? history.slice(history.length - FULL_BACKUP_HISTORY_LIMIT)
+    : history;
+  const safeStorage = getSafeLocalStorage();
+  saveJSONToStorage(
+    safeStorage,
+    FULL_BACKUP_HISTORY_STORAGE_KEY,
+    limited,
+    "Error saving full backup history to localStorage:",
+  );
+}
+
+function recordFullBackupHistoryEntry(entry) {
+  const normalized = sanitizeFullBackupHistory(Array.isArray(entry) ? entry : [entry]);
+  if (!normalized.length) {
+    return;
+  }
+  const history = loadFullBackupHistory();
+  history.push(...normalized);
+  saveFullBackupHistory(history);
+}
+
 // --- Clear All Stored Data ---
 function clearAllData() {
   const msg = "Error clearing storage:";
@@ -2751,6 +2843,7 @@ function clearAllData() {
   deleteFromStorage(safeStorage, AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, msg);
   deleteFromStorage(safeStorage, AUTO_GEAR_AUTO_PRESET_STORAGE_KEY, msg);
   deleteFromStorage(safeStorage, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY, msg);
+  deleteFromStorage(safeStorage, FULL_BACKUP_HISTORY_STORAGE_KEY, msg);
   deleteFromStorage(
     safeStorage,
     getCustomFontStorageKeyName(),
@@ -3021,6 +3114,11 @@ function clearAllData() {
     const customFonts = readStoredCustomFonts();
     if (customFonts.length) {
       payload.customFonts = customFonts;
+    }
+
+    const fullBackupHistory = loadFullBackupHistory();
+    if (fullBackupHistory.length) {
+      payload.fullBackupHistory = fullBackupHistory;
     }
 
     return payload;
@@ -3572,6 +3670,10 @@ function importAllData(allData, options = {}) {
     const rules = normalizeImportedAutoGearRules(allData.autoGearRules);
     saveAutoGearRules(rules);
   }
+  if (Object.prototype.hasOwnProperty.call(allData, 'fullBackupHistory')) {
+    const history = sanitizeFullBackupHistory(allData.fullBackupHistory);
+    saveFullBackupHistory(history);
+  }
   if (Object.prototype.hasOwnProperty.call(allData, 'autoGearBackups')) {
     const backups = normalizeImportedAutoGearBackups(allData.autoGearBackups);
     saveAutoGearBackups(backups);
@@ -3663,5 +3765,8 @@ if (typeof module !== "undefined" && module.exports) {
     loadAutoGearBackupVisibility,
     saveAutoGearBackupVisibility,
     requestPersistentStorage,
+    loadFullBackupHistory,
+    saveFullBackupHistory,
+    recordFullBackupHistoryEntry,
   };
 }

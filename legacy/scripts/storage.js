@@ -59,6 +59,7 @@ var AUTO_GEAR_PRESETS_STORAGE_KEY = 'cameraPowerPlanner_autoGearPresets';
 var AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY = 'cameraPowerPlanner_autoGearActivePreset';
 var AUTO_GEAR_AUTO_PRESET_STORAGE_KEY = 'cameraPowerPlanner_autoGearAutoPreset';
 var AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY = 'cameraPowerPlanner_autoGearShowBackups';
+var FULL_BACKUP_HISTORY_STORAGE_KEY = 'cameraPowerPlanner_fullBackupHistory';
 var AUTO_BACKUP_NAME_PREFIX = 'auto-backup-';
 var AUTO_BACKUP_DELETION_PREFIX = 'auto-backup-before-delete-';
 var MAX_AUTO_BACKUPS = 50;
@@ -108,7 +109,7 @@ function createStorageMigrationBackup(storage, key, originalValue) {
   }
 }
 var PRIMARY_STORAGE_KEYS = [DEVICE_STORAGE_KEY, SETUP_STORAGE_KEY, SESSION_STATE_KEY, FEEDBACK_STORAGE_KEY, PROJECT_STORAGE_KEY, FAVORITES_STORAGE_KEY, DEVICE_SCHEMA_CACHE_KEY, AUTO_GEAR_RULES_STORAGE_KEY, AUTO_GEAR_SEEDED_STORAGE_KEY, AUTO_GEAR_BACKUPS_STORAGE_KEY, AUTO_GEAR_PRESETS_STORAGE_KEY, AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, AUTO_GEAR_AUTO_PRESET_STORAGE_KEY, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY];
-var SIMPLE_STORAGE_KEYS = [CUSTOM_LOGO_STORAGE_KEY, getCustomFontStorageKeyName(), 'darkMode', 'pinkMode', 'highContrast', 'reduceMotion', 'relaxedSpacing', 'showAutoBackups', 'accentColor', 'fontSize', 'fontFamily', 'language', 'iosPwaHelpShown'];
+var SIMPLE_STORAGE_KEYS = [CUSTOM_LOGO_STORAGE_KEY, getCustomFontStorageKeyName(), FULL_BACKUP_HISTORY_STORAGE_KEY, 'darkMode', 'pinkMode', 'highContrast', 'reduceMotion', 'relaxedSpacing', 'showAutoBackups', 'accentColor', 'fontSize', 'fontFamily', 'language', 'iosPwaHelpShown'];
 var STORAGE_ALERT_FLAG_NAME = '__cameraPowerPlannerStorageAlertShown';
 var storageErrorAlertShown = false;
 if (GLOBAL_SCOPE) {
@@ -2372,6 +2373,74 @@ function saveAutoGearBackupVisibility(flag) {
   var safeStorage = getSafeLocalStorage();
   saveFlagToStorage(safeStorage, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY, Boolean(flag), "Error saving automatic gear backup visibility to localStorage:");
 }
+var FULL_BACKUP_HISTORY_LIMIT = 100;
+function normalizeFullBackupHistoryEntry(entry) {
+  if (!entry) {
+    return null;
+  }
+  if (typeof entry === 'string') {
+    var trimmed = entry.trim();
+    return trimmed ? {
+      createdAt: trimmed
+    } : null;
+  }
+  if (!isPlainObject(entry)) {
+    return null;
+  }
+  var timestamps = [entry.createdAt, entry.generatedAt, entry.timestamp].map(function (value) {
+    return typeof value === 'string' ? value.trim() : '';
+  }).filter(Boolean);
+  var createdAt = timestamps.length ? timestamps[0] : '';
+  var fileName = typeof entry.fileName === 'string' ? entry.fileName.trim() : '';
+  if (!createdAt && !fileName) {
+    return null;
+  }
+  var normalized = {};
+  if (createdAt) {
+    normalized.createdAt = createdAt;
+  }
+  if (fileName) {
+    normalized.fileName = fileName;
+  }
+  return normalized;
+}
+function sanitizeFullBackupHistory(entries) {
+  if (!Array.isArray(entries)) {
+    return [];
+  }
+  return entries.map(normalizeFullBackupHistoryEntry).filter(Boolean).map(function (entry) {
+    return _objectSpread({}, entry);
+  });
+}
+function loadFullBackupHistory() {
+  applyLegacyStorageMigrations();
+  var safeStorage = getSafeLocalStorage();
+  var parsed = loadJSONFromStorage(safeStorage, FULL_BACKUP_HISTORY_STORAGE_KEY, "Error loading full backup history from localStorage:", [], {
+    validate: function validate(value) {
+      return value === null || Array.isArray(value);
+    }
+  });
+  var history = sanitizeFullBackupHistory(parsed);
+  if (history.length > FULL_BACKUP_HISTORY_LIMIT) {
+    return history.slice(history.length - FULL_BACKUP_HISTORY_LIMIT);
+  }
+  return history;
+}
+function saveFullBackupHistory(entries) {
+  var history = sanitizeFullBackupHistory(entries);
+  var limited = history.length > FULL_BACKUP_HISTORY_LIMIT ? history.slice(history.length - FULL_BACKUP_HISTORY_LIMIT) : history;
+  var safeStorage = getSafeLocalStorage();
+  saveJSONToStorage(safeStorage, FULL_BACKUP_HISTORY_STORAGE_KEY, limited, "Error saving full backup history to localStorage:");
+}
+function recordFullBackupHistoryEntry(entry) {
+  var normalized = sanitizeFullBackupHistory(Array.isArray(entry) ? entry : [entry]);
+  if (!normalized.length) {
+    return;
+  }
+  var history = loadFullBackupHistory();
+  history.push.apply(history, _toConsumableArray(normalized));
+  saveFullBackupHistory(history);
+}
 function clearAllData() {
   var msg = "Error clearing storage:";
   var safeStorage = getSafeLocalStorage();
@@ -2387,6 +2456,7 @@ function clearAllData() {
   deleteFromStorage(safeStorage, AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, msg);
   deleteFromStorage(safeStorage, AUTO_GEAR_AUTO_PRESET_STORAGE_KEY, msg);
   deleteFromStorage(safeStorage, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY, msg);
+  deleteFromStorage(safeStorage, FULL_BACKUP_HISTORY_STORAGE_KEY, msg);
   deleteFromStorage(safeStorage, getCustomFontStorageKeyName(), msg);
   deleteFromStorage(safeStorage, CUSTOM_LOGO_STORAGE_KEY, msg);
   deleteFromStorage(safeStorage, DEVICE_SCHEMA_CACHE_KEY, msg);
@@ -2611,6 +2681,10 @@ function exportAllData() {
   var customFonts = readStoredCustomFonts();
   if (customFonts.length) {
     payload.customFonts = customFonts;
+  }
+  var fullBackupHistory = loadFullBackupHistory();
+  if (fullBackupHistory.length) {
+    payload.fullBackupHistory = fullBackupHistory;
   }
   return payload;
 }
@@ -3095,6 +3169,10 @@ function importAllData(allData) {
     var rules = normalizeImportedAutoGearRules(allData.autoGearRules);
     saveAutoGearRules(rules);
   }
+  if (Object.prototype.hasOwnProperty.call(allData, 'fullBackupHistory')) {
+    var history = sanitizeFullBackupHistory(allData.fullBackupHistory);
+    saveFullBackupHistory(history);
+  }
   if (Object.prototype.hasOwnProperty.call(allData, 'autoGearBackups')) {
     var backups = normalizeImportedAutoGearBackups(allData.autoGearBackups);
     saveAutoGearBackups(backups);
@@ -3180,6 +3258,9 @@ if (typeof module !== "undefined" && module.exports) {
     saveAutoGearAutoPresetId: saveAutoGearAutoPresetId,
     loadAutoGearBackupVisibility: loadAutoGearBackupVisibility,
     saveAutoGearBackupVisibility: saveAutoGearBackupVisibility,
-    requestPersistentStorage: requestPersistentStorage
+    requestPersistentStorage: requestPersistentStorage,
+    loadFullBackupHistory: loadFullBackupHistory,
+    saveFullBackupHistory: saveFullBackupHistory,
+    recordFullBackupHistoryEntry: recordFullBackupHistoryEntry
   };
 }
