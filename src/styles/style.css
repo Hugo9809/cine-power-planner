@@ -73,6 +73,7 @@
   --font-scale-icon-sm: 0.625;
   --font-scale-diagram-label: 0.7;
   --font-scale-diagram-text: 0.8;
+  --font-size-root: clamp(14px, 1vw + 10px, 16px);
   --icon-size-xs: calc(var(--font-size-relative-base) * var(--font-scale-xs));
   --icon-size-sm: calc(var(--font-size-relative-base) * var(--font-scale-sm));
   --icon-size-md: calc(var(--font-size-relative-base) * var(--font-scale-lg));
@@ -188,7 +189,7 @@ body.relaxed-spacing textarea {
 }
 
 html {
-  font-size: clamp(14px, 1vw + 10px, 16px);
+  font-size: var(--font-size-root);
 }
 
 html,
@@ -1387,7 +1388,7 @@ main.legal-content {
 }
 
 .settings-tab-label {
-  font-size: 0.9rem;
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-sm));
   font-weight: var(--font-weight-medium);
   line-height: 1.25;
   letter-spacing: 0.005em;
@@ -1923,7 +1924,7 @@ body.pink-mode .auto-gear-rule-title,
 #helpResultsSummary {
   margin: 0 0 12px;
   color: var(--muted-text-color);
-  font-size: 0.95rem;
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-md));
 }
 
 #helpResultsSummary[hidden] {
