@@ -55,6 +55,7 @@ body.dark-mode {
   --surface-color: #fff;
   --text-color: #000;
   --panel-shadow: none;
+  --panel-shadow-hover: none;
   --button-size: 24px;
   --diagram-node-fill: #f0f0f0;
   --power-color: #d33;
@@ -75,6 +76,12 @@ body.dark-mode {
   print-color-adjust: exact;
   background: var(--surface-color);
   color: var(--text-color);
+}
+
+#overviewDialogContent *,
+#overviewDialogContent *::before,
+#overviewDialogContent *::after {
+  box-shadow: none !important;
 }
 #overviewDialogContent,
 #overviewDialogContent.dark-mode {
