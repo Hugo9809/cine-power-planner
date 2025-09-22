@@ -45,7 +45,7 @@ select:focus-visible {
   color: var(--status-error-text-color);
 }
 
-body { font-family: 'Ubuntu', sans-serif; font-weight: var(--font-weight-light); margin: 25px; color: var(--control-text); font-size: calc(var(--font-size-relative-base) * var(--font-scale-sm)); line-height: var(--line-height-base, 1.6); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { font-family: 'Ubuntu', sans-serif; font-weight: var(--font-weight-light); margin: 25px; color: var(--control-text); font-size: calc(var(--font-size-relative-base) * var(--font-scale-sm)); line-height: var(--line-height-base, 1.6); -webkit-print-color-adjust: exact; print-color-adjust: exact; background-color: #ffffff; }
 @media (max-width: 600px) {
   body { margin: 10px; }
   h2 { padding-bottom: 8px; }
@@ -159,9 +159,9 @@ th { background-color: var(--control-bg); font-weight: var(--font-weight-bold); 
 .device-block-grid.fiz-single-column {
   grid-template-columns: 1fr;
 }
-.device-block {
-  background: rgba(255,255,255,0.95);
-  border: 1px solid var(--control-text);
+.device-block { 
+  background: #ffffff;
+  border: 1px solid var(--panel-border);
   border-radius: 6px;
   padding: 6px 10px;
   box-shadow: var(--panel-shadow);
@@ -169,8 +169,8 @@ th { background-color: var(--control-bg); font-weight: var(--font-weight-bold); 
 }
 .device-block strong { display: block; margin-bottom: 4px; }
 .device-category-container { display: flex; flex-wrap: wrap; gap: 10px; }
-.device-category {
-  background: var(--panel-bg);
+.device-category { 
+  background: #ffffff;
   border: 1px solid var(--panel-border);
   border-radius: var(--border-radius);
   padding: 10px;

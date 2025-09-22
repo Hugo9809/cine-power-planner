@@ -4352,6 +4352,12 @@ body:not(.dark-mode) .requirement-box,
   font-family: var(--font-family);
   font-weight: var(--font-weight-light);
 }
+
+#overviewDialogContent:not(.dark-mode) {
+  --surface-color: #ffffff;
+  --panel-bg: #ffffff;
+  background-color: #ffffff;
+}
 #overviewDialogContent h1,
 #overviewDialogContent h2,
 #overviewDialogContent h3 {
@@ -4409,8 +4415,8 @@ body:not(.dark-mode) .requirement-box,
   background-color: var(--panel-bg);
 }
 #overviewDialogContent .device-block {
-  background: rgba(255, 255, 255, 0.95);
-  border: 1px solid var(--control-text);
+  background: #ffffff;
+  border: 1px solid var(--panel-border);
   border-radius: 6px;
   padding: 6px 10px;
   box-shadow: var(--panel-shadow);
@@ -4426,7 +4432,7 @@ body:not(.dark-mode) .requirement-box,
   gap: 10px;
 }
 #overviewDialogContent .device-category {
-  background: var(--panel-bg);
+  background: #ffffff;
   border: 1px solid var(--panel-border);
   border-radius: var(--border-radius);
   padding: 10px;
