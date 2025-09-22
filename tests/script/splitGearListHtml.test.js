@@ -48,6 +48,36 @@ describe('splitGearListHtml', () => {
     expect(gearHtml).not.toContain('id="requirements"');
   });
 
+  test('reconstructs project requirements when heading markup is missing', () => {
+    const legacyHtml = `
+      <h2>Project Two</h2>
+      <div class="requirements-grid"><div class="requirement-box">Codec: H.264</div></div>
+      <h3>Gear List</h3>
+      <table class="gear-table"><tr><td>Main Kit Item</td></tr></table>
+    `;
+    const { projectHtml, gearHtml } = global.splitGearListHtml(legacyHtml);
+
+    expect(projectHtml).toContain('requirements-grid');
+    expect(projectHtml).toContain('Codec: H.264');
+    expect(projectHtml).toContain('<h3>Project Requirements</h3>');
+    const h2Matches = projectHtml.match(/<h2>/g) || [];
+    expect(h2Matches).toHaveLength(1);
+    expect(gearHtml).toContain('Gear List');
+  });
+
+  test('uses custom heading label stored on the requirements grid when missing heading markup', () => {
+    const legacyHtml = `
+      <h2>Projekt Eins</h2>
+      <div class="requirements-grid" data-heading="Projektdetails"><div class="requirement-box">Codec: ARRIRAW</div></div>
+      <h3>Gear List</h3>
+      <table class="gear-table"><tr><td>Main Kit Item</td></tr></table>
+    `;
+    const { projectHtml } = global.splitGearListHtml(legacyHtml);
+
+    expect(projectHtml).toContain('<h3>Projektdetails</h3>');
+    expect(projectHtml).toContain('requirements-grid');
+  });
+
   test('wraps category rows into tbody groups when missing grouping markup', () => {
     const legacyHtml = `
       <h2>Project Overview for "Night Shoot"</h2>
