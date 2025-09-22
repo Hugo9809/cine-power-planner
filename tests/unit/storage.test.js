@@ -69,6 +69,7 @@ const AUTO_GEAR_AUTO_PRESET_KEY = 'cameraPowerPlanner_autoGearAutoPreset';
 const AUTO_GEAR_BACKUP_VISIBILITY_KEY = 'cameraPowerPlanner_autoGearShowBackups';
 const CUSTOM_FONT_KEY = 'cameraPowerPlanner_customFonts';
 const CUSTOM_LOGO_KEY = 'customLogo';
+const TEMPERATURE_UNIT_KEY = 'cameraPowerPlanner_temperatureUnit';
 
 const BACKUP_SUFFIX = '__backup';
 const backupKeyFor = (key) => `${key}${BACKUP_SUFFIX}`;
@@ -770,6 +771,7 @@ describe('clearAllData', () => {
       backupKeyFor(CUSTOM_FONT_KEY),
       JSON.stringify([{ id: 'font-1', name: 'My Font', data: 'data:font/woff;base64,BBBB' }]),
     );
+    localStorage.setItem(TEMPERATURE_UNIT_KEY, 'fahrenheit');
     clearAllData();
     expect(localStorage.getItem(DEVICE_KEY)).toBeNull();
     expect(localStorage.getItem(SETUP_KEY)).toBeNull();
@@ -787,6 +789,7 @@ describe('clearAllData', () => {
     expect(localStorage.getItem(SCHEMA_CACHE_KEY)).toBeNull();
     expect(localStorage.getItem(CUSTOM_LOGO_KEY)).toBeNull();
     expect(localStorage.getItem(CUSTOM_FONT_KEY)).toBeNull();
+    expect(localStorage.getItem(TEMPERATURE_UNIT_KEY)).toBeNull();
 
     expect(localStorage.getItem(backupKeyFor(DEVICE_KEY))).toBeNull();
     expect(localStorage.getItem(backupKeyFor(SETUP_KEY))).toBeNull();
@@ -823,35 +826,36 @@ describe('export/import all data', () => {
   });
 
   test('exportAllData collects all planner data', () => {
-      saveDeviceData(validDeviceData);
-      saveSetups({ A: { foo: 1 } });
-      saveSessionState({ camera: 'CamA' });
-      saveFeedback({ note: 'hi' });
-      saveProject('Proj', { gearList: '<ul></ul>' });
-      saveFavorites({ cat: ['A'] });
-      localStorage.setItem('darkMode', 'true');
-      localStorage.setItem('pinkMode', 'true');
-      localStorage.setItem('highContrast', 'true');
-      localStorage.setItem('reduceMotion', 'true');
-      localStorage.setItem('relaxedSpacing', 'true');
-      localStorage.setItem('showAutoBackups', 'true');
-      localStorage.setItem('accentColor', '#ff00ff');
-      localStorage.setItem('fontSize', '18');
-      localStorage.setItem('fontFamily', "'My Font', sans-serif");
-      localStorage.setItem('language', 'de');
-      localStorage.setItem('iosPwaHelpShown', 'true');
-      localStorage.setItem('customLogo', 'data:image/svg+xml;base64,PHN2Zw==');
-      localStorage.setItem(
-        'cameraPowerPlanner_customFonts',
-        JSON.stringify([
-          { id: 'font-1', name: 'My Font', data: 'data:font/woff;base64,AAAA' }
-        ]),
-      );
-      const rules = [{ id: 'rule-outdoor', label: 'Outdoor', scenarios: ['Outdoor'], add: [], remove: [] }];
-      saveAutoGearRules(rules);
-      const backups = [
-        {
-          id: 'backup-1',
+    saveDeviceData(validDeviceData);
+    saveSetups({ A: { foo: 1 } });
+    saveSessionState({ camera: 'CamA' });
+    saveFeedback({ note: 'hi' });
+    saveProject('Proj', { gearList: '<ul></ul>' });
+    saveFavorites({ cat: ['A'] });
+    localStorage.setItem('darkMode', 'true');
+    localStorage.setItem('pinkMode', 'true');
+    localStorage.setItem('highContrast', 'true');
+    localStorage.setItem('reduceMotion', 'true');
+    localStorage.setItem('relaxedSpacing', 'true');
+    localStorage.setItem('showAutoBackups', 'true');
+    localStorage.setItem('accentColor', '#ff00ff');
+    localStorage.setItem('fontSize', '18');
+    localStorage.setItem('fontFamily', "'My Font', sans-serif");
+    localStorage.setItem('language', 'de');
+    localStorage.setItem('iosPwaHelpShown', 'true');
+    localStorage.setItem(TEMPERATURE_UNIT_KEY, 'fahrenheit');
+    localStorage.setItem('customLogo', 'data:image/svg+xml;base64,PHN2Zw==');
+    localStorage.setItem(
+      'cameraPowerPlanner_customFonts',
+      JSON.stringify([
+        { id: 'font-1', name: 'My Font', data: 'data:font/woff;base64,AAAA' }
+      ]),
+    );
+    const rules = [{ id: 'rule-outdoor', label: 'Outdoor', scenarios: ['Outdoor'], add: [], remove: [] }];
+    saveAutoGearRules(rules);
+    const backups = [
+      {
+        id: 'backup-1',
         label: 'Snapshot',
         createdAt: 1720646400000,
         rules,
@@ -875,30 +879,31 @@ describe('export/import all data', () => {
       favorites: { cat: ['A'] },
       autoGearRules: rules,
       autoGearBackups: backups,
-        autoGearSeeded: true,
-        autoGearPresets: presets,
-        autoGearActivePresetId: 'preset-1',
-        autoGearAutoPresetId: 'preset-auto',
-        autoGearShowBackups: true,
-        preferences: {
-          darkMode: true,
-          pinkMode: true,
-          highContrast: true,
-          reduceMotion: true,
-          relaxedSpacing: true,
-          showAutoBackups: true,
-          accentColor: '#ff00ff',
-          fontSize: '18',
-          fontFamily: "'My Font', sans-serif",
-          language: 'de',
-          iosPwaHelpShown: true,
-        },
-        customLogo: 'data:image/svg+xml;base64,PHN2Zw==',
-        customFonts: [
-          { id: 'font-1', name: 'My Font', data: 'data:font/woff;base64,AAAA' }
-        ],
-      });
+      autoGearSeeded: true,
+      autoGearPresets: presets,
+      autoGearActivePresetId: 'preset-1',
+      autoGearAutoPresetId: 'preset-auto',
+      autoGearShowBackups: true,
+      preferences: {
+        darkMode: true,
+        pinkMode: true,
+        highContrast: true,
+        reduceMotion: true,
+        relaxedSpacing: true,
+        showAutoBackups: true,
+        accentColor: '#ff00ff',
+        fontSize: '18',
+        fontFamily: "'My Font', sans-serif",
+        language: 'de',
+        iosPwaHelpShown: true,
+        temperatureUnit: 'fahrenheit',
+      },
+      customLogo: 'data:image/svg+xml;base64,PHN2Zw==',
+      customFonts: [
+        { id: 'font-1', name: 'My Font', data: 'data:font/woff;base64,AAAA' }
+      ],
     });
+  });
 
   test('exportAllData filters invalid custom font entries', () => {
     const invalidEntries = [
@@ -972,6 +977,7 @@ describe('export/import all data', () => {
           fontFamily: "'Other Font', serif",
           language: 'fr',
           iosPwaHelpShown: true,
+          temperatureUnit: 'fahrenheit',
         },
         customLogo: 'data:image/svg+xml;base64,PE1PQ0s+',
         customFonts: [
@@ -1004,9 +1010,16 @@ describe('export/import all data', () => {
       expect(localStorage.getItem('fontFamily')).toBe("'Other Font', serif");
       expect(localStorage.getItem('language')).toBe('fr');
       expect(localStorage.getItem('iosPwaHelpShown')).toBe('true');
+    expect(localStorage.getItem(TEMPERATURE_UNIT_KEY)).toBe('fahrenheit');
     expect(JSON.parse(localStorage.getItem('cameraPowerPlanner_customFonts'))).toEqual([
       { id: 'font-restore', name: 'Restore Font', data: 'data:font/woff;base64,BBBB' }
     ]);
+  });
+
+  test('importAllData applies temperature unit preference', () => {
+    importAllData({ preferences: { temperatureUnit: 'fahrenheit' } });
+
+    expect(localStorage.getItem(TEMPERATURE_UNIT_KEY)).toBe('fahrenheit');
   });
 
   test('importAllData converts legacy storage snapshots with prefixed keys', () => {
@@ -1049,6 +1062,7 @@ describe('export/import all data', () => {
       highContrast: 'false',
       language: 'es',
       iosPwaHelpShown: '1',
+      [TEMPERATURE_UNIT_KEY]: 'fahrenheit',
     };
 
     importAllData(snapshot);
@@ -1089,6 +1103,7 @@ describe('export/import all data', () => {
     expect(localStorage.getItem('highContrast')).toBe('false');
     expect(localStorage.getItem('language')).toBe('es');
     expect(localStorage.getItem('iosPwaHelpShown')).toBe('true');
+    expect(localStorage.getItem(TEMPERATURE_UNIT_KEY)).toBe('fahrenheit');
   });
 
   test('importAllData clears stored device overrides when payload sets devices to null', () => {
