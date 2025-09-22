@@ -499,6 +499,12 @@ function summarizeByType(list) {
     }, {});
 }
 
+function renderInfoLabel(text) {
+  const str = text != null ? String(text).trim() : '';
+  if (!str) return '';
+  return `<span class="info-box-label">${escapeHtml(str)}:</span> `;
+}
+
 function connectorBlocks(items, icon, cls = 'neutral-conn', label = '', dir = '') {
   if (!Array.isArray(items) || items.length === 0) return '';
   const counts = summarizeByType(items);
@@ -506,9 +512,10 @@ function connectorBlocks(items, icon, cls = 'neutral-conn', label = '', dir = ''
     return `${escapeHtml(type)}${count > 1 ? ` ×${count}` : ''}`;
   });
   if (!entries.length) return '';
-  const prefix = label ? `${label}${dir ? ` ${dir}` : ''}: ` : '';
+  const labelText = label ? `${label}${dir ? ` ${dir}` : ''}` : '';
+  const labelHtml = renderInfoLabel(labelText);
   const iconHtml = iconMarkup(icon, 'connector-icon');
-  return `<span class="connector-block ${cls}">${iconHtml}${prefix}${entries.join(', ')}</span>`;
+  return `<span class="connector-block ${cls}">${iconHtml}${labelHtml}${entries.join(', ')}</span>`;
 }
 
 function generateConnectorSummary(device) {
@@ -533,44 +540,44 @@ function generateConnectorSummary(device) {
 
   let specHtml = '';
   if (typeof device.powerDrawWatts === 'number') {
-    specHtml += `<span class="info-box power-conn">${iconMarkup(diagramConnectorIcons.powerSpec)}Power: ${device.powerDrawWatts} W</span>`;
+    specHtml += `<span class="info-box power-conn">${iconMarkup(diagramConnectorIcons.powerSpec)}${renderInfoLabel('Power')}${device.powerDrawWatts} W</span>`;
   }
   if (device.power?.input?.voltageRange) {
-    specHtml += `<span class="info-box power-conn">${iconMarkup(ICON_GLYPHS.batteryBolt)}Voltage: ${escapeHtml(String(device.power.input.voltageRange))}V</span>`;
+    specHtml += `<span class="info-box power-conn">${iconMarkup(ICON_GLYPHS.batteryBolt)}${renderInfoLabel('Voltage')}${escapeHtml(String(device.power.input.voltageRange))}V</span>`;
   }
   if (typeof device.weight_g === 'number') {
     const weightLabel = `${device.weight_g} g`;
-    specHtml += `<span class="info-box neutral-conn">${iconMarkup(ICON_GLYPHS.gears)}Weight: ${escapeHtml(weightLabel)}</span>`;
+    specHtml += `<span class="info-box neutral-conn">${iconMarkup(ICON_GLYPHS.gears)}${renderInfoLabel('Weight')}${escapeHtml(weightLabel)}</span>`;
   }
   if (typeof device.capacity === 'number') {
-        specHtml += `<span class="info-box power-conn">${iconMarkup(ICON_GLYPHS.batteryFull)}Capacity: ${device.capacity} Wh</span>`;
+        specHtml += `<span class="info-box power-conn">${iconMarkup(ICON_GLYPHS.batteryFull)}${renderInfoLabel('Capacity')}${device.capacity} Wh</span>`;
     }
     if (typeof device.pinA === 'number') {
-        specHtml += `<span class="info-box power-conn">Pins: ${device.pinA}A</span>`;
+        specHtml += `<span class="info-box power-conn">${renderInfoLabel('Pins')}${device.pinA}A</span>`;
     }
     if (typeof device.dtapA === 'number') {
-        specHtml += `<span class="info-box power-conn">D-Tap: ${device.dtapA}A</span>`;
+        specHtml += `<span class="info-box power-conn">${renderInfoLabel('D-Tap')}${device.dtapA}A</span>`;
     }
     if (device.mount_type) {
-        specHtml += `<span class="info-box power-conn">Mount: ${escapeHtml(String(device.mount_type))}</span>`;
+        specHtml += `<span class="info-box power-conn">${renderInfoLabel('Mount')}${escapeHtml(String(device.mount_type))}</span>`;
     }
   if (typeof device.screenSizeInches === 'number') {
-    specHtml += `<span class="info-box video-conn">${iconMarkup(DIAGRAM_MONITOR_ICON)}Screen: ${device.screenSizeInches}"</span>`;
+    specHtml += `<span class="info-box video-conn">${iconMarkup(DIAGRAM_MONITOR_ICON)}${renderInfoLabel('Screen')}${device.screenSizeInches}"</span>`;
   }
     if (typeof device.brightnessNits === 'number') {
-        specHtml += `<span class="info-box video-conn">${iconMarkup(ICON_GLYPHS.brightness)}Brightness: ${device.brightnessNits} nits</span>`;
+        specHtml += `<span class="info-box video-conn">${iconMarkup(ICON_GLYPHS.brightness)}${renderInfoLabel('Brightness')}${device.brightnessNits} nits</span>`;
     }
   if (typeof device.wirelessTx === 'boolean') {
-    specHtml += `<span class="info-box video-conn">${iconMarkup(ICON_GLYPHS.wifi)}Wireless: ${device.wirelessTx}</span>`;
+    specHtml += `<span class="info-box video-conn">${iconMarkup(ICON_GLYPHS.wifi)}${renderInfoLabel('Wireless')}${device.wirelessTx}</span>`;
   }
   if (device.internalController) {
-    specHtml += `<span class="info-box fiz-conn">${iconMarkup(diagramConnectorIcons.controller)}Controller: Internal</span>`;
+    specHtml += `<span class="info-box fiz-conn">${iconMarkup(diagramConnectorIcons.controller)}${renderInfoLabel('Controller')}Internal</span>`;
   }
   if (typeof device.torqueNm === 'number') {
-    specHtml += `<span class="info-box fiz-conn">${iconMarkup(diagramConnectorIcons.torque)}Torque: ${device.torqueNm} Nm</span>`;
+    specHtml += `<span class="info-box fiz-conn">${iconMarkup(diagramConnectorIcons.torque)}${renderInfoLabel('Torque')}${device.torqueNm} Nm</span>`;
   }
   if (device.powerSource) {
-    specHtml += `<span class="info-box power-conn">${iconMarkup(diagramConnectorIcons.powerSource)}Power Source: ${escapeHtml(String(device.powerSource))}</span>`;
+    specHtml += `<span class="info-box power-conn">${iconMarkup(diagramConnectorIcons.powerSource)}${renderInfoLabel('Power Source')}${escapeHtml(String(device.powerSource))}</span>`;
   }
 
   const uniqueList = list => {
@@ -590,7 +597,7 @@ function generateConnectorSummary(device) {
     const formatted = uniqueList(values);
     if (!formatted.length) return html;
     const iconHtml = iconMarkup(icon);
-    const labelHtml = `<span class="info-box-label">${label}:</span>`;
+    const labelHtml = renderInfoLabel(label);
     const valuesHtml = `<span class="info-box-values">${formatted.join(', ')}</span>`;
     return `${html}<span class="info-box ${cls} info-box-list">${iconHtml}${labelHtml}${valuesHtml}</span>`;
   };
@@ -617,21 +624,21 @@ function generateConnectorSummary(device) {
             const mount = p.mount ? ` (${escapeHtml(p.mount)})` : '';
             return `${escapeHtml(p.type)}${mount}`;
         });
-        extraHtml += `<span class="info-box power-conn">Battery Plate: ${types.join(', ')}</span>`;
+        extraHtml += `<span class="info-box power-conn">${renderInfoLabel('Battery Plate')}${types.join(', ')}</span>`;
     }
     if (Array.isArray(device.viewfinder) && device.viewfinder.length) {
         const types = device.viewfinder.map(v => escapeHtml(v.type));
-        extraHtml += `<span class="info-box video-conn">Viewfinder: ${types.join(', ')}</span>`;
+        extraHtml += `<span class="info-box video-conn">${renderInfoLabel('Viewfinder')}${types.join(', ')}</span>`;
     }
     if (Array.isArray(device.gearTypes) && device.gearTypes.length) {
         const types = device.gearTypes.map(g => escapeHtml(g));
-        extraHtml += `<span class="info-box fiz-conn">Gear: ${types.join(', ')}</span>`;
+        extraHtml += `<span class="info-box fiz-conn">${renderInfoLabel('Gear')}${types.join(', ')}</span>`;
     }
     if (device.connectivity) {
-        extraHtml += `<span class="info-box video-conn">Connectivity: ${escapeHtml(String(device.connectivity))}</span>`;
+        extraHtml += `<span class="info-box video-conn">${renderInfoLabel('Connectivity')}${escapeHtml(String(device.connectivity))}</span>`;
     }
     if (device.notes) {
-        extraHtml += `<span class="info-box neutral-conn">Notes: ${escapeHtml(String(device.notes))}</span>`;
+        extraHtml += `<span class="info-box neutral-conn">${renderInfoLabel('Notes')}${escapeHtml(String(device.notes))}</span>`;
     }
 
     let lensHtml = '';
