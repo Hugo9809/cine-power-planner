@@ -84,6 +84,17 @@ th { background-color: var(--control-bg); font-weight: var(--font-weight-bold); 
   page-break-inside: avoid;
 }
 
+#overviewDialogContent .favorite-toggle {
+  display: none !important;
+}
+
+#overviewDialogContent .gear-table .gear-item select {
+  background-color: var(--panel-bg);
+  color: inherit;
+  border-color: var(--panel-border);
+  box-shadow: none;
+}
+
 .gear-table .category-row td {
   border-top: 1px solid var(--accent-color);
   border-bottom: 1px solid var(--accent-color);
