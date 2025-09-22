@@ -11697,6 +11697,26 @@ function updateStorageSummary() {
   );
   const deviceSummary = summarizeCustomDevices();
   const approxBytes = estimateBackupSize(data);
+  const rawFullBackups = Array.isArray(data.fullBackupHistory)
+    ? data.fullBackupHistory
+    : Array.isArray(data.fullBackups)
+      ? data.fullBackups
+      : [];
+  const fullBackupCount = rawFullBackups.reduce((count, entry) => {
+    if (!entry) return count;
+    if (typeof entry === 'string') {
+      return entry.trim() ? count + 1 : count;
+    }
+    if (typeof entry === 'object') {
+      const createdAt = typeof entry.createdAt === 'string' ? entry.createdAt.trim() : '';
+      const iso = typeof entry.iso === 'string' ? entry.iso.trim() : '';
+      const timestamp = typeof entry.timestamp === 'string' ? entry.timestamp.trim() : '';
+      if (createdAt || iso || timestamp) {
+        return count + 1;
+      }
+    }
+    return count;
+  }, 0);
 
   const items = [
     {
@@ -11704,9 +11724,11 @@ function updateStorageSummary() {
       label: langTexts.storageKeyProjects || 'Saved projects',
       value: formatCountText(lang, langTexts, 'storageProjectsCount', totalProjects),
       description: langTexts.storageKeyProjectsDesc || '',
-      extra: autoBackups > 0
-        ? formatCountText(lang, langTexts, 'storageAutoBackupsCount', autoBackups)
-        : null,
+    },
+    {
+      label: langTexts.storageKeyAutoBackups || 'Auto backups',
+      value: formatCountText(lang, langTexts, 'storageAutoBackupsCount', autoBackups),
+      description: langTexts.storageKeyAutoBackupsDesc || '',
     },
     {
       storageKey: 'cameraPowerPlanner_project',
@@ -11745,6 +11767,12 @@ function updateStorageSummary() {
       description: langTexts.storageKeySessionDesc || '',
     },
     {
+      storageKey: 'cameraPowerPlanner_fullBackups',
+      label: langTexts.storageKeyFullBackups || 'Full app backups',
+      value: formatCountText(lang, langTexts, 'storageFullBackupsCount', fullBackupCount),
+      description: langTexts.storageKeyFullBackupsDesc || '',
+    },
+    {
       storageKey: 'localStorage',
       label: langTexts.storageKeyTotalSize || 'Approximate backup size',
       value: formatSizeText(lang, langTexts, approxBytes),
@@ -11764,6 +11792,7 @@ function updateStorageSummary() {
       || favoritesCount
       || feedbackCount
       || hasSession
+      || fullBackupCount
     );
     if (hasData) {
       storageSummaryEmpty.setAttribute('hidden', '');

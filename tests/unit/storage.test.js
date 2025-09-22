@@ -51,6 +51,9 @@ const {
   saveAutoGearAutoPresetId,
   loadAutoGearBackupVisibility,
   saveAutoGearBackupVisibility,
+  loadFullBackupHistory,
+  saveFullBackupHistory,
+  recordFullBackupHistoryEntry,
 } = require('../../src/scripts/storage');
 
 const DEVICE_KEY = 'cameraPowerPlanner_devices';
@@ -70,6 +73,7 @@ const AUTO_GEAR_BACKUP_VISIBILITY_KEY = 'cameraPowerPlanner_autoGearShowBackups'
 const CUSTOM_FONT_KEY = 'cameraPowerPlanner_customFonts';
 const CUSTOM_LOGO_KEY = 'customLogo';
 const TEMPERATURE_UNIT_KEY = 'cameraPowerPlanner_temperatureUnit';
+const FULL_BACKUP_HISTORY_KEY = 'cameraPowerPlanner_fullBackups';
 
 const BACKUP_SUFFIX = '__backup';
 const backupKeyFor = (key) => `${key}${BACKUP_SUFFIX}`;
@@ -884,6 +888,7 @@ describe('export/import all data', () => {
       autoGearActivePresetId: 'preset-1',
       autoGearAutoPresetId: 'preset-auto',
       autoGearShowBackups: true,
+      fullBackupHistory: [],
       preferences: {
         darkMode: true,
         pinkMode: true,
@@ -1378,6 +1383,38 @@ describe('export/import all data', () => {
     const inlineEntry = Object.entries(projects).find(([, value]) => value.gearList === '<article>Inline</article>');
     expect(inlineEntry).toBeDefined();
     expect(inlineEntry[1]).toEqual({ gearList: '<article>Inline</article>', projectInfo: null });
+  });
+});
+
+describe('full backup history storage', () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  test('recordFullBackupHistoryEntry appends entries and enforces limit', () => {
+    for (let i = 0; i < 205; i += 1) {
+      recordFullBackupHistoryEntry({ createdAt: `2024-01-01T00:00:00Z-${i}` });
+    }
+    const stored = JSON.parse(localStorage.getItem(FULL_BACKUP_HISTORY_KEY));
+    expect(Array.isArray(stored)).toBe(true);
+    expect(stored.length).toBe(200);
+    const history = loadFullBackupHistory();
+    expect(history).toHaveLength(200);
+    expect(history[0].createdAt).toBe('2024-01-01T00:00:00Z-5');
+    expect(history[history.length - 1].createdAt).toBe('2024-01-01T00:00:00Z-204');
+  });
+
+  test('saveFullBackupHistory removes storage key when empty array provided', () => {
+    saveFullBackupHistory([{ createdAt: '2024-02-02T12:00:00Z', fileName: 'backup.json' }]);
+    expect(localStorage.getItem(FULL_BACKUP_HISTORY_KEY)).not.toBeNull();
+    saveFullBackupHistory([]);
+    expect(localStorage.getItem(FULL_BACKUP_HISTORY_KEY)).toBeNull();
+  });
+
+  test('loadFullBackupHistory normalizes raw string entries', () => {
+    localStorage.setItem(FULL_BACKUP_HISTORY_KEY, JSON.stringify([' 2024-03-03T08:30:00Z ']));
+    const history = loadFullBackupHistory();
+    expect(history).toEqual([{ createdAt: '2024-03-03T08:30:00Z' }]);
   });
 });
 

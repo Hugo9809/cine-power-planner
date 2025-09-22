@@ -8,6 +8,21 @@ const temperaturePreferenceStorageKey =
       ? resolveTemperatureStorageKey()
       : 'cameraPowerPlanner_temperatureUnit';
 
+let recordFullBackupHistoryEntry = () => {};
+try {
+  ({ recordFullBackupHistoryEntry } = require('./storage.js'));
+} catch (error) {
+  if (
+    typeof window !== 'undefined'
+    && window
+    && typeof window.recordFullBackupHistoryEntry === 'function'
+  ) {
+    recordFullBackupHistoryEntry = window.recordFullBackupHistoryEntry;
+  } else {
+    void error;
+  }
+}
+
 function saveCurrentSession(options = {}) {
   if (restoringSession || factoryResetInProgress) return;
   const info = projectForm ? collectProjectFormData() : {};
@@ -2106,6 +2121,11 @@ function createSettingsBackup(notify = true, timestamp = new Date()) {
     const downloadResult = downloadBackupPayload(payload, fileName);
     if (!downloadResult || !downloadResult.success) {
       throw new Error('No supported download method available');
+    }
+    try {
+      recordFullBackupHistoryEntry({ createdAt: iso, fileName });
+    } catch (historyError) {
+      console.warn('Failed to record full backup history entry', historyError);
     }
     if (downloadResult.method === 'window-fallback') {
       const manualMessage = getManualDownloadFallbackMessage();
