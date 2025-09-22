@@ -2750,7 +2750,7 @@ function saveFullBackupHistory(entries) {
   );
 }
 
-function recordFullBackupHistoryEntry(entry) {
+const recordFullBackupHistoryEntry = entry => {
   const normalized = normalizeFullBackupHistoryEntry(entry);
   if (!normalized) {
     return loadFullBackupHistory();
@@ -2760,7 +2760,7 @@ function recordFullBackupHistoryEntry(entry) {
   const trimmed = history.slice(-MAX_FULL_BACKUP_HISTORY_ENTRIES);
   saveFullBackupHistory(trimmed);
   return trimmed;
-}
+};
 
 function normalizeImportedFullBackupHistory(value) {
   if (value === null || value === undefined) {
