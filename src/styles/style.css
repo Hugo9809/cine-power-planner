@@ -5089,11 +5089,6 @@ body.dark-mode.pink-mode #gearListOutput h2,
   outline-offset: 2px;
 }
 
-body.light-mode #sideMenu {
-  background: color-mix(in srgb, var(--accent-color) 12%, var(--surface-color));
-  box-shadow: -6px 0 18px color-mix(in srgb, var(--accent-color) 16%, rgba(0, 0, 0, 0.24));
-}
-
 body.light-mode #sideMenu ul {
   border-top: 1px solid color-mix(in srgb, var(--accent-color) 55%, var(--surface-color));
   border-bottom: 1px solid color-mix(in srgb, var(--accent-color) 55%, var(--surface-color));
