@@ -1744,6 +1744,13 @@ function renameSetup(oldName, newName) {
 }
 function normalizeProject(data) {
   if (typeof data === "string") {
+    var parsed = tryParseJSONLike(data);
+    if (parsed.success) {
+      var normalized = normalizeProject(parsed.parsed);
+      if (normalized) {
+        return normalized;
+      }
+    }
     return {
       gearList: data,
       projectInfo: null
@@ -1751,14 +1758,51 @@ function normalizeProject(data) {
   }
   if (isPlainObject(data)) {
     if (Object.prototype.hasOwnProperty.call(data, "gearList") || Object.prototype.hasOwnProperty.call(data, "projectInfo")) {
-      var normalized = {
-        gearList: typeof data.gearList === "string" || data.gearList && _typeof(data.gearList) === "object" ? data.gearList : "",
-        projectInfo: isPlainObject(data.projectInfo) ? data.projectInfo : null
-      };
-      if (Array.isArray(data.autoGearRules) && data.autoGearRules.length) {
-        normalized.autoGearRules = data.autoGearRules;
+      var normalizedProjectInfo = isPlainObject(data.projectInfo) ? data.projectInfo : null;
+      if (!normalizedProjectInfo && typeof data.projectInfo === "string") {
+        var parsedInfo = tryParseJSONLike(data.projectInfo);
+        if (parsedInfo.success && isPlainObject(parsedInfo.parsed)) {
+          normalizedProjectInfo = parsedInfo.parsed;
+        }
       }
-      return normalized;
+      var normalizedAutoGearRules = Array.isArray(data.autoGearRules) && data.autoGearRules.length ? data.autoGearRules : null;
+      if (!normalizedAutoGearRules && typeof data.autoGearRules === "string") {
+        var parsedRules = tryParseJSONLike(data.autoGearRules);
+        if (parsedRules.success && Array.isArray(parsedRules.parsed) && parsedRules.parsed.length) {
+          normalizedAutoGearRules = parsedRules.parsed;
+        }
+      }
+      var normalizedGearList = typeof data.gearList === "string" || data.gearList && _typeof(data.gearList) === "object" ? data.gearList : "";
+      if (typeof normalizedGearList === "string") {
+        var parsedGear = tryParseJSONLike(normalizedGearList);
+        if (parsedGear.success) {
+          var nested = normalizeProject(parsedGear.parsed);
+          if (nested) {
+            normalizedGearList = nested.gearList;
+            if (!normalizedProjectInfo && nested.projectInfo) {
+              normalizedProjectInfo = nested.projectInfo;
+            }
+            if ((!normalizedAutoGearRules || !normalizedAutoGearRules.length) && Array.isArray(nested.autoGearRules) && nested.autoGearRules.length) {
+              normalizedAutoGearRules = nested.autoGearRules;
+            }
+          } else if (typeof parsedGear.parsed === "string" || isPlainObject(parsedGear.parsed) && Object.values(parsedGear.parsed).every(function (value) {
+            return typeof value === "string";
+          })) {
+            normalizedGearList = parsedGear.parsed;
+          }
+        }
+      }
+      if (normalizedGearList && _typeof(normalizedGearList) === "object" && !isPlainObject(normalizedGearList)) {
+        normalizedGearList = "";
+      }
+      var _normalized2 = {
+        gearList: normalizedGearList,
+        projectInfo: normalizedProjectInfo
+      };
+      if (normalizedAutoGearRules && normalizedAutoGearRules.length) {
+        _normalized2.autoGearRules = normalizedAutoGearRules;
+      }
+      return _normalized2;
     }
     if (Object.prototype.hasOwnProperty.call(data, "projectHtml") || Object.prototype.hasOwnProperty.call(data, "gearHtml")) {
       return {
@@ -1860,9 +1904,9 @@ function readAllProjectsFromStorage() {
     return LEGACY_PROJECT_ROOT_KEYS.has(key);
   });
   if (maybeLegacy) {
-    var _normalized2 = normalizeProject(parsed);
-    if (_normalized2) {
-      projects[""] = _normalized2;
+    var _normalized3 = normalizeProject(parsed);
+    if (_normalized3) {
+      projects[""] = _normalized3;
     }
     return {
       projects: projects,
@@ -2712,9 +2756,9 @@ function normalizeImportedBoolean(value) {
   }
   if (Array.isArray(value)) {
     for (var i = 0; i < value.length; i += 1) {
-      var _normalized3 = normalizeImportedBoolean(value[i]);
-      if (_normalized3 !== null) {
-        return _normalized3;
+      var _normalized4 = normalizeImportedBoolean(value[i]);
+      if (_normalized4 !== null) {
+        return _normalized4;
       }
     }
     return null;
