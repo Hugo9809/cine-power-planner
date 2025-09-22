@@ -4,17 +4,29 @@ const { execFileSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-const rootDir = path.resolve(__dirname, '..');
-const babelBin = require.resolve('@babel/cli/bin/babel.js');
-const babelConfig = path.join(rootDir, 'babel.legacy.config.json');
-const legacyDir = path.join(rootDir, 'legacy');
-const legacyScriptsDir = path.join(legacyDir, 'scripts');
-const legacyDataDir = path.join(legacyDir, 'data');
-const legacyPolyfillsDir = path.join(legacyDir, 'polyfills');
+function createBuildContext(options = {}) {
+  const rootDir = options.rootDir
+    ? path.resolve(options.rootDir)
+    : path.resolve(__dirname, '..');
 
-function runBabel(sourceDir, outDir, ignores) {
-  fs.rmSync(outDir, { recursive: true, force: true });
-  fs.mkdirSync(outDir, { recursive: true });
+  return {
+    rootDir,
+    legacyDir: options.legacyDir || path.join(rootDir, 'legacy'),
+    stagingPrefix: options.stagingPrefix || path.join(rootDir, '.legacy-build-'),
+    babelBin: options.babelBin || require.resolve('@babel/cli/bin/babel.js'),
+    babelConfig: options.babelConfig || path.join(rootDir, 'babel.legacy.config.json'),
+    coreJsPath: options.coreJsPath || require.resolve('core-js-bundle/minified.js'),
+    regeneratorPath: options.regeneratorPath || require.resolve('regenerator-runtime/runtime.js'),
+    execFileSync: options.execFileSync || execFileSync,
+    fs: options.fs || fs,
+  };
+}
+
+function runBabel(context, sourceDir, outDir, ignores) {
+  const { execFileSync: runExec, fs: fsImpl, rootDir, babelBin, babelConfig } = context;
+
+  fsImpl.rmSync(outDir, { recursive: true, force: true });
+  fsImpl.mkdirSync(outDir, { recursive: true });
 
   const args = [
     babelBin,
@@ -37,27 +49,70 @@ function runBabel(sourceDir, outDir, ignores) {
     }
   }
 
-  execFileSync(process.execPath, args, {
+  runExec(process.execPath, args, {
     cwd: rootDir,
     stdio: 'inherit'
   });
 }
 
-function copyPolyfills() {
-  fs.mkdirSync(legacyPolyfillsDir, { recursive: true });
-  const coreJsPath = require.resolve('core-js-bundle/minified.js');
-  const regeneratorPath = require.resolve('regenerator-runtime/runtime.js');
+function copyPolyfills(context, destinationDir) {
+  const { fs: fsImpl, coreJsPath, regeneratorPath } = context;
+  const targetDir = destinationDir || path.join(context.legacyDir, 'polyfills');
 
-  fs.copyFileSync(coreJsPath, path.join(legacyPolyfillsDir, 'core-js-bundle.min.js'));
-  fs.copyFileSync(regeneratorPath, path.join(legacyPolyfillsDir, 'regenerator-runtime.js'));
+  fsImpl.mkdirSync(targetDir, { recursive: true });
+  fsImpl.copyFileSync(coreJsPath, path.join(targetDir, 'core-js-bundle.min.js'));
+  fsImpl.copyFileSync(regeneratorPath, path.join(targetDir, 'regenerator-runtime.js'));
+}
+
+function buildLegacy(options = {}) {
+  const context = createBuildContext(options);
+  const { fs: fsImpl, legacyDir, stagingPrefix } = context;
+
+  const stagingDir = fsImpl.mkdtempSync(stagingPrefix);
+  const stagingScriptsDir = path.join(stagingDir, 'scripts');
+  const stagingDataDir = path.join(stagingDir, 'data');
+  const stagingPolyfillsDir = path.join(stagingDir, 'polyfills');
+
+  let stagingActive = true;
+  let backupDir;
+
+  try {
+    runBabel(context, path.join('src', 'scripts'), stagingScriptsDir);
+    runBabel(context, path.join('src', 'data'), stagingDataDir, ['**/*.json']);
+    copyPolyfills(context, stagingPolyfillsDir);
+
+    if (fsImpl.existsSync(legacyDir)) {
+      backupDir = `${legacyDir}.backup-${Date.now()}`;
+      fsImpl.renameSync(legacyDir, backupDir);
+    }
+
+    fsImpl.renameSync(stagingDir, legacyDir);
+    stagingActive = false;
+
+    if (backupDir) {
+      fsImpl.rmSync(backupDir, { recursive: true, force: true });
+    }
+  } catch (error) {
+    if (backupDir) {
+      try {
+        if (!fsImpl.existsSync(legacyDir) && fsImpl.existsSync(backupDir)) {
+          fsImpl.renameSync(backupDir, legacyDir);
+        }
+      } catch (restoreError) {
+        error.restoreError = restoreError;
+      }
+    }
+
+    throw error;
+  } finally {
+    if (stagingActive && fsImpl.existsSync(stagingDir)) {
+      fsImpl.rmSync(stagingDir, { recursive: true, force: true });
+    }
+  }
 }
 
 function main() {
-  fs.mkdirSync(legacyDir, { recursive: true });
-
-  runBabel(path.join('src', 'scripts'), legacyScriptsDir);
-  runBabel(path.join('src', 'data'), legacyDataDir, ['**/*.json']);
-  copyPolyfills();
+  buildLegacy();
 }
 
 if (require.main === module) {
@@ -65,6 +120,8 @@ if (require.main === module) {
 }
 
 module.exports = {
-  runBabel,
+  buildLegacy,
   copyPolyfills,
+  createBuildContext,
+  runBabel,
 };
