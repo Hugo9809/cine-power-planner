@@ -1,5 +1,5 @@
 // --- SESSION STATE HANDLING ---
-/* global resolveTemperatureStorageKey, TEMPERATURE_STORAGE_KEY */
+/* global resolveTemperatureStorageKey, TEMPERATURE_STORAGE_KEY, updateCageSelectOptions */
 
 const temperaturePreferenceStorageKey =
   typeof TEMPERATURE_STORAGE_KEY === 'string'
@@ -229,7 +229,11 @@ function restoreSessionState() {
     updateBatteryOptions();
     setSelectValue(monitorSelect, state.monitor);
     setSelectValue(videoSelect, state.video);
-    setSelectValue(cageSelect, state.cage);
+    if (typeof updateCageSelectOptions === 'function') {
+      updateCageSelectOptions(state.cage);
+    } else {
+      setSelectValue(cageSelect, state.cage);
+    }
     setSelectValue(distanceSelect, state.distance);
     if (Array.isArray(state.motors)) {
       state.motors.forEach((val, i) => { if (motorSelects[i]) setSelectValue(motorSelects[i], val); });
@@ -404,7 +408,11 @@ function applySharedSetup(shared, options = {}) {
     updateBatteryOptions();
     setSelectValue(monitorSelect, decoded.monitor);
     setSelectValue(videoSelect, decoded.video);
-    setSelectValue(cageSelect, decoded.cage);
+    if (typeof updateCageSelectOptions === 'function') {
+      updateCageSelectOptions(decoded.cage);
+    } else {
+      setSelectValue(cageSelect, decoded.cage);
+    }
     setSelectValue(distanceSelect, decoded.distance);
     if (Array.isArray(decoded.motors)) {
       decoded.motors.forEach((val, i) => { if (motorSelects[i]) setSelectValue(motorSelects[i], val); });
@@ -573,6 +581,9 @@ if (cameraSelect) {
   cameraSelect.addEventListener('change', () => {
     updateBatteryPlateVisibility();
     updateBatteryOptions();
+    if (typeof updateCageSelectOptions === 'function') {
+      updateCageSelectOptions();
+    }
     populateRecordingResolutionDropdown(currentProjectInfo && currentProjectInfo.recordingResolution);
     populateSensorModeDropdown(currentProjectInfo && currentProjectInfo.sensorMode);
   });

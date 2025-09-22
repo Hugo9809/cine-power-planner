@@ -1,4 +1,5 @@
 // --- EVENT LISTENERS ---
+/* global updateCageSelectOptions */
 
 // Language selection
 languageSelect.addEventListener("change", (event) => {
@@ -174,6 +175,9 @@ deleteSetupBtn.addEventListener("click", () => {
           sel.selectedIndex = 0;
         }
       });
+      if (typeof updateCageSelectOptions === 'function') {
+        updateCageSelectOptions('None');
+      }
       const sbSel = getSliderBowlSelect();
       if (sbSel) sbSel.value = '';
       motorSelects.forEach(sel => { if (sel.options.length) sel.value = "None"; });
@@ -226,6 +230,9 @@ setupSelect.addEventListener("change", (event) => {
         sel.selectedIndex = 0;
       }
     });
+    if (typeof updateCageSelectOptions === 'function') {
+      updateCageSelectOptions('None');
+    }
     const sbSel = getSliderBowlSelect();
     if (sbSel) sbSel.value = '';
     motorSelects.forEach(sel => { if (sel.options.length) sel.value = "None"; });
@@ -254,7 +261,11 @@ setupSelect.addEventListener("change", (event) => {
       batteryPlateSelect.value = setup.batteryPlate || batteryPlateSelect.value;
       monitorSelect.value = setup.monitor;
       videoSelect.value = setup.video;
-      if (cageSelect) cageSelect.value = setup.cage || cageSelect.value;
+      if (typeof updateCageSelectOptions === 'function') {
+        updateCageSelectOptions(setup.cage);
+      } else if (cageSelect) {
+        cageSelect.value = setup.cage || cageSelect.value;
+      }
       (setup.motors || []).forEach((val, i) => { if (motorSelects[i]) motorSelects[i].value = val; });
       (setup.controllers || []).forEach((val, i) => { if (controllerSelects[i]) controllerSelects[i].value = val; });
       distanceSelect.value = setup.distance;
