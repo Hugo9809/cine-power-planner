@@ -1,5 +1,5 @@
 // script.js – Main logic for the Cine Power Planner app
-/* global texts, categoryNames, gearItems, loadSessionState, saveSessionState, loadProject, saveProject, deleteProject, renameSetup, registerDevice, loadFavorites, saveFavorites, exportAllData, importAllData, clearAllData, loadAutoGearRules, saveAutoGearRules, loadAutoGearBackups, saveAutoGearBackups, loadAutoGearSeedFlag, saveAutoGearSeedFlag, loadAutoGearPresets, saveAutoGearPresets, loadAutoGearActivePresetId, saveAutoGearActivePresetId, loadAutoGearAutoPresetId, saveAutoGearAutoPresetId, loadAutoGearBackupVisibility, saveAutoGearBackupVisibility, AUTO_GEAR_RULES_STORAGE_KEY, AUTO_GEAR_SEEDED_STORAGE_KEY, AUTO_GEAR_BACKUPS_STORAGE_KEY, AUTO_GEAR_PRESETS_STORAGE_KEY, AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, AUTO_GEAR_AUTO_PRESET_STORAGE_KEY, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY, SAFE_LOCAL_STORAGE, getSafeLocalStorage, CUSTOM_FONT_STORAGE_KEY, CUSTOM_FONT_STORAGE_KEY_NAME */
+/* global texts, categoryNames, gearItems, loadSessionState, saveSessionState, loadProject, saveProject, deleteProject, renameSetup, registerDevice, loadFavorites, saveFavorites, exportAllData, importAllData, clearAllData, loadAutoGearRules, saveAutoGearRules, loadAutoGearBackups, saveAutoGearBackups, loadAutoGearSeedFlag, saveAutoGearSeedFlag, loadAutoGearPresets, saveAutoGearPresets, loadAutoGearActivePresetId, saveAutoGearActivePresetId, loadAutoGearAutoPresetId, saveAutoGearAutoPresetId, loadAutoGearBackupVisibility, saveAutoGearBackupVisibility, AUTO_GEAR_RULES_STORAGE_KEY, AUTO_GEAR_SEEDED_STORAGE_KEY, AUTO_GEAR_BACKUPS_STORAGE_KEY, AUTO_GEAR_PRESETS_STORAGE_KEY, AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, AUTO_GEAR_AUTO_PRESET_STORAGE_KEY, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY, SAFE_LOCAL_STORAGE, getSafeLocalStorage, CUSTOM_FONT_STORAGE_KEY, CUSTOM_FONT_STORAGE_KEY_NAME, TEMPERATURE_UNIT_STORAGE_KEY */
 
 // Use `var` here instead of `let` because `index.html` loads the lz-string
 // library from a CDN which defines a global `LZString` variable. Using `let`
@@ -78,7 +78,34 @@ const AUTO_GEAR_BACKUP_INTERVAL_MS = 10 * 60 * 1000;
 const AUTO_GEAR_BACKUP_LIMIT = 12;
 const AUTO_GEAR_MULTI_SELECT_MIN_ROWS = 8;
 const AUTO_GEAR_MULTI_SELECT_MAX_ROWS = 12;
-const TEMPERATURE_UNIT_STORAGE_KEY = 'cameraPowerPlanner_temperatureUnit';
+function resolveTemperatureStorageKey() {
+  const scope =
+    typeof globalThis !== 'undefined'
+      ? globalThis
+      : typeof window !== 'undefined'
+        ? window
+        : typeof global !== 'undefined'
+          ? global
+          : undefined;
+
+  const fallback = 'cameraPowerPlanner_temperatureUnit';
+  const existing =
+    scope && typeof scope.TEMPERATURE_UNIT_STORAGE_KEY === 'string'
+      ? scope.TEMPERATURE_UNIT_STORAGE_KEY
+      : fallback;
+
+  if (scope && typeof scope.TEMPERATURE_UNIT_STORAGE_KEY !== 'string') {
+    try {
+      scope.TEMPERATURE_UNIT_STORAGE_KEY = existing;
+    } catch (error) {
+      void error;
+    }
+  }
+
+  return existing;
+}
+
+const TEMPERATURE_STORAGE_KEY = resolveTemperatureStorageKey();
 const TEMPERATURE_UNITS = {
   celsius: 'celsius',
   fahrenheit: 'fahrenheit'
@@ -119,7 +146,7 @@ let monitorVideoInputsContainer;
 
 try {
   if (typeof localStorage !== 'undefined') {
-    const storedTemperatureUnit = localStorage.getItem(TEMPERATURE_UNIT_STORAGE_KEY);
+    const storedTemperatureUnit = localStorage.getItem(TEMPERATURE_STORAGE_KEY);
     if (storedTemperatureUnit) {
       temperatureUnit = normalizeTemperatureUnit(storedTemperatureUnit);
     }
@@ -16756,7 +16783,7 @@ function applyTemperatureUnitPreference(unit, options = {}) {
   temperatureUnit = normalized;
   if (persist && typeof localStorage !== 'undefined') {
     try {
-      localStorage.setItem(TEMPERATURE_UNIT_STORAGE_KEY, temperatureUnit);
+      localStorage.setItem(TEMPERATURE_STORAGE_KEY, temperatureUnit);
     } catch (error) {
       console.warn('Could not save temperature unit preference', error);
     }
