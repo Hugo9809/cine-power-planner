@@ -404,7 +404,7 @@
     'legacy/scripts/script.js',
     'legacy/scripts/auto-gear-monitoring.js',
     'legacy/scripts/overview.js',
-    'src/scripts/autosave-overlay.js'
+    'legacy/scripts/autosave-overlay.js'
   ];
 
   function startLoading() {

@@ -25,6 +25,21 @@ function generatePrintableOverview() {
   var lang = typeof currentLang === 'string' ? currentLang : 'en';
   var locale = localeMap[lang] || 'en-US';
   var dateTimeString = now.toLocaleDateString(locale) + ' ' + now.toLocaleTimeString();
+  var fallbackProjectName = currentProjectInfo && typeof currentProjectInfo.projectName === 'string' ? currentProjectInfo.projectName.trim() : '';
+  var projectNameForTitle = setupName || fallbackProjectName;
+  var sanitizeTitleSegment = function sanitizeTitleSegment(value) {
+    if (!value) return '';
+    return String(value).trim().replace(/[\\/:*?"<>|]+/g, '').replace(/\s+/g, ' ').replace(/^\.+/, '').replace(/\.+$/, '').trim();
+  };
+  var padTwo = function padTwo(value) {
+    return String(value).padStart(2, '0');
+  };
+  var formattedDate = "".concat(now.getFullYear(), "-").concat(padTwo(now.getMonth() + 1), "-").concat(padTwo(now.getDate()));
+  var formattedTime = "".concat(padTwo(now.getHours()), "-").concat(padTwo(now.getMinutes()), "-").concat(padTwo(now.getSeconds()));
+  var timestampLabel = "".concat(formattedDate, " ").concat(formattedTime).trim();
+  var projectTitleSegment = sanitizeTitleSegment(projectNameForTitle) || 'Project';
+  var printDocumentTitle = [timestampLabel, projectTitleSegment, '- -', 'Project Overview and Gear List'].filter(Boolean).join(' ').replace(/\s+/g, ' ').trim();
+  var originalDocumentTitle = typeof document !== 'undefined' ? document.title : '';
   var t = (typeof texts === "undefined" ? "undefined" : _typeof(texts)) === 'object' && texts ? texts[lang] || texts.en || {} : {};
   var customLogo = typeof localStorage !== 'undefined' ? localStorage.getItem('customLogo') : null;
   var deviceListHtml = '<div class="device-category-container">';
@@ -163,23 +178,23 @@ function generatePrintableOverview() {
   };
   var batteryComparisonHtml = '';
   if (isSectionRenderable(batteryComparisonSection)) {
-    var clone = batteryComparisonSection.cloneNode(true);
-    clone.id = 'batteryComparisonOverview';
-    clone.classList.add('print-section', 'battery-comparison-section');
-    clone.removeAttribute('style');
-    var heading = clone.querySelector('#batteryComparisonHeading');
+    var _clone = batteryComparisonSection.cloneNode(true);
+    _clone.id = 'batteryComparisonOverview';
+    _clone.classList.add('print-section', 'battery-comparison-section');
+    _clone.removeAttribute('style');
+    var heading = _clone.querySelector('#batteryComparisonHeading');
     if (heading) {
       heading.id = 'batteryComparisonOverviewHeading';
     }
-    var container = clone.querySelector('#batteryTableContainer');
+    var container = _clone.querySelector('#batteryTableContainer');
     if (container) {
       container.id = 'batteryTableOverviewContainer';
     }
-    var table = clone.querySelector('#batteryTable');
+    var table = _clone.querySelector('#batteryTable');
     if (table) {
       table.removeAttribute('id');
     }
-    batteryComparisonHtml = "<div class=\"page-break\"></div>".concat(clone.outerHTML);
+    batteryComparisonHtml = "<div class=\"page-break\"></div>".concat(_clone.outerHTML);
   }
   var safeSetupName = escapeHtmlSafe(setupName);
   var diagramCss = getDiagramCss(false);
@@ -243,15 +258,7 @@ function generatePrintableOverview() {
   var content = overviewDialog.querySelector('#overviewDialogContent');
   var applyThemeClasses = function applyThemeClasses(target) {
     if (!target || typeof document === 'undefined') return;
-    var themeClasses = [
-      'dark-mode',
-      'light-mode',
-      'pink-mode',
-      'dark-accent-boost',
-      'high-contrast',
-      'reduce-motion',
-      'relaxed-spacing',
-    ];
+    var themeClasses = ['dark-mode', 'light-mode', 'pink-mode', 'dark-accent-boost', 'high-contrast', 'reduce-motion', 'relaxed-spacing'];
     var activeClasses = new Set([].concat(_toConsumableArray(document.documentElement ? Array.from(document.documentElement.classList) : []), _toConsumableArray(document.body ? Array.from(document.body.classList) : [])));
     themeClasses.forEach(function (themeClass) {
       target.classList.toggle(themeClass, activeClasses.has(themeClass));
@@ -332,6 +339,9 @@ function generatePrintableOverview() {
       window.removeEventListener('afterprint', _closeAfterPrint);
       afterPrintRegistered = false;
     }
+    if (typeof document !== 'undefined' && document.title !== originalDocumentTitle) {
+      document.title = originalDocumentTitle;
+    }
     closeDialog(overviewDialog);
   };
   var openFallbackPrintView = function openFallbackPrintView() {
@@ -354,11 +364,10 @@ function generatePrintableOverview() {
     var bodyElement = typeof document !== 'undefined' ? document.body : null;
     var bodyClassName = bodyElement ? bodyElement.className : '';
     var bodyInlineStyle = bodyElement ? bodyElement.getAttribute('style') || '' : '';
-    var overviewTitle = t.overviewTitle || 'Overview';
     doc.open();
     doc.write("<!DOCTYPE html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<meta name=\"color-scheme\" content=\"light dark\">\n<title></title>\n<link rel=\"stylesheet\" href=\"src/styles/style.css\">\n<link rel=\"stylesheet\" href=\"src/styles/overview.css\">\n<link rel=\"stylesheet\" href=\"src/styles/overview-print.css\" media=\"print\">\n<link rel=\"stylesheet\" href=\"overview-print.css\" media=\"screen\">\n</head>\n<body></body>\n</html>");
     doc.close();
-    doc.title = overviewTitle;
+    doc.title = printDocumentTitle;
     var fallbackHtml = doc.documentElement;
     if (fallbackHtml) {
       fallbackHtml.setAttribute('lang', htmlLang || 'en');
@@ -419,6 +428,9 @@ function generatePrintableOverview() {
         return;
       }
       try {
+        if (typeof document !== 'undefined') {
+          document.title = printDocumentTitle;
+        }
         var result = window.print();
         if (result && typeof result.then === 'function') {
           result.catch(handlePrintError);
