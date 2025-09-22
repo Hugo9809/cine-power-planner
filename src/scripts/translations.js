@@ -339,6 +339,9 @@ const texts = {
       "Automatic backup saved. Restore it anytime from Saved Projects.",
     preDeleteBackupFailed: "Automatic backup failed. The action was cancelled.",
     restoreBackupFailed: "Backup failed. Restore cancelled.",
+    backupDownloadSuccess: "Full app backup downloaded.",
+    backupDownloadSuccessWithName: "Full app backup downloaded (%s).",
+    backupDownloadFailure: "Full app backup failed.",
     dataHeading: "Data & Storage",
     dataHeadingHelp:
       "Review what the planner stores locally and how much space backups take.",
@@ -1598,6 +1601,9 @@ const texts = {
       "Backup automatico salvato. Puoi ripristinarlo da Progetti salvati.",
     preDeleteBackupFailed: "Backup automatico non riuscito. L'operazione è stata annullata.",
     restoreBackupFailed: "Backup non riuscito. Ripristino annullato.",
+    backupDownloadSuccess: "Backup completo dell'app scaricato.",
+    backupDownloadSuccessWithName: "Backup completo dell'app scaricato (%s).",
+    backupDownloadFailure: "Backup completo dell'app non riuscito.",
     dataHeading: "Dati e archiviazione",
     dataHeadingHelp:
       "Controlla quali dati vengono salvati localmente e quanto spazio occupano i backup.",
@@ -2458,6 +2464,9 @@ const texts = {
       "Copia de seguridad automática guardada. Puedes restaurarla desde Proyectos guardados.",
     preDeleteBackupFailed: "La copia de seguridad automática falló. La acción se canceló.",
     restoreBackupFailed: "La copia de seguridad falló. Restauración cancelada.",
+    backupDownloadSuccess: "Copia de seguridad completa descargada.",
+    backupDownloadSuccessWithName: "Copia de seguridad completa descargada (%s).",
+    backupDownloadFailure: "La copia de seguridad completa falló.",
     dataHeading: "Datos y almacenamiento",
     dataHeadingHelp:
       "Revisa qué guarda el planificador en este navegador y cuánto ocupan las copias de seguridad.",
@@ -3320,6 +3329,9 @@ const texts = {
       "Sauvegarde automatique enregistrée. Vous pouvez la restaurer depuis Projets enregistrés.",
     preDeleteBackupFailed: "La sauvegarde automatique a échoué. L’action a été annulée.",
     restoreBackupFailed: "Échec de la sauvegarde. Restauration annulée.",
+    backupDownloadSuccess: "Sauvegarde complète de l’application téléchargée.",
+    backupDownloadSuccessWithName: "Sauvegarde complète de l’application téléchargée (%s).",
+    backupDownloadFailure: "Échec de la sauvegarde complète de l’application.",
     dataHeading: "Données et stockage",
     dataHeadingHelp:
       "Consultez ce que le planificateur conserve localement et la taille des sauvegardes.",
@@ -4185,6 +4197,9 @@ const texts = {
       "Automatische Sicherung gespeichert. Du kannst sie in Gespeicherte Projekte wiederherstellen.",
     preDeleteBackupFailed: "Automatische Sicherung fehlgeschlagen. Die Aktion wurde abgebrochen.",
     restoreBackupFailed: "Backup fehlgeschlagen. Wiederherstellung abgebrochen.",
+    backupDownloadSuccess: "Komplettes App-Backup heruntergeladen.",
+    backupDownloadSuccessWithName: "Komplettes App-Backup heruntergeladen (%s).",
+    backupDownloadFailure: "Komplettes App-Backup fehlgeschlagen.",
     dataHeading: "Daten & Speicherung",
     dataHeadingHelp:
       "Zeigt, welche Planer-Daten lokal gespeichert sind und wie groß Sicherungen werden.",
