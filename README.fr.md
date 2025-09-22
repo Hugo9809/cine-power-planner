@@ -179,7 +179,7 @@ Le générateur transforme vos sélections en une liste de préparation classée
 - Consommation totale en watts
 - Intensité à 14,4 V et 12 V
 - Autonomie estimée en heures via la moyenne pondérée des retours
-- Nombre de batteries nécessaire pour un tournage de 10 h (avec une de réserve)
+- Nombre de batteries nécessaire pour un tournage de 10 h
 - Note de température pour ajuster l’autonomie par temps chaud ou froid
 
 ### 🔋 Vérification de la sortie batterie

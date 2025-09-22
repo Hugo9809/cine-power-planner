@@ -15999,7 +15999,7 @@ function renderTemperatureNote(baseHours) {
     var runtimeCell = Number.isFinite(runtime) ? runtime.toFixed(2) : '0.00';
     var batteries = '–';
     if (Number.isFinite(runtime) && runtime > 0) {
-      batteries = Math.ceil(10 / runtime + 1);
+      batteries = Math.ceil(10 / runtime);
     }
     var temperatureCell = formatTemperatureForDisplay(scenario.celsius);
     html += "<tr><td style=\"color:".concat(scenario.color, "\">").concat(temperatureCell, "</td><td>").concat(runtimeCell, "</td><td>").concat(batteries, "</td></tr>");
@@ -16264,7 +16264,10 @@ function updateCalculations() {
       batteryLifeElem.textContent = hours.toFixed(2);
     }
     lastRuntimeHours = hours;
-    var batteriesNeeded = Math.ceil(10 / hours + 1);
+    var batteriesNeeded = 1;
+    if (Number.isFinite(hours) && hours > 0) {
+      batteriesNeeded = Math.max(1, Math.ceil(10 / hours));
+    }
     batteryCountElem.textContent = batteriesNeeded.toString();
     setStatusMessage(pinWarnElem, '');
     setStatusMessage(dtapWarnElem, '');
@@ -16441,7 +16444,10 @@ function updateCalculations() {
     if (runtimeAverageNoteElem) {
       runtimeAverageNoteElem.textContent = feedback.count > 4 ? texts[currentLang].runtimeAverageNote : '';
     }
-    var _batteriesNeeded = Math.ceil(10 / combinedRuntime + 1);
+    var _batteriesNeeded = 1;
+    if (Number.isFinite(combinedRuntime) && combinedRuntime > 0) {
+      _batteriesNeeded = Math.max(1, Math.ceil(10 / combinedRuntime));
+    }
     batteryCountElem.textContent = _batteriesNeeded.toString();
   } else {
     if (batteryLifeLabelElem) {
