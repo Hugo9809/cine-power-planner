@@ -4566,6 +4566,12 @@ body:not(.dark-mode) .requirement-box,
   page-break-after: avoid;
 }
 
+body.light-mode .gear-table strong,
+#gearListOutput:not(.dark-mode) .gear-table strong,
+#overviewDialogContent:not(.dark-mode) .gear-table strong {
+  color: var(--accent-color);
+}
+
 .dark-mode .gear-table td {
   border-top: 1px solid var(--inverse-text-color);
   border-bottom: 1px solid var(--inverse-text-color);
