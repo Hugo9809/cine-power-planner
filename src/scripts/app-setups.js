@@ -176,14 +176,32 @@ function downloadSharedProject(shareFileName, includeAutoGear) {
     return;
   }
 
-  const downloaded = downloadBackupPayload(json, shareFileName);
+  const downloadResult = downloadBackupPayload(json, shareFileName);
 
   if (shareIncludeAutoGearCheckbox) {
     shareIncludeAutoGearCheckbox.checked = includeAutoGear && hasAutoGearRules;
   }
 
-  if (!downloaded) {
+  if (!downloadResult || !downloadResult.success) {
     notifyShareFailure();
+    return;
+  }
+
+  if (downloadResult.method === 'window-fallback') {
+    const manualMessage = typeof getManualDownloadFallbackMessage === 'function'
+      ? getManualDownloadFallbackMessage()
+      : getLocalizedText('manualDownloadFallback')
+        || 'The download did not start automatically. A new tab opened so you can copy or save the file manually.';
+    if (shareLinkMessage) {
+      shareLinkMessage.textContent = manualMessage;
+      setStatusLevel(shareLinkMessage, 'warning');
+      shareLinkMessage.classList.remove('hidden');
+      if (typeof setTimeout === 'function') {
+        setTimeout(() => shareLinkMessage.classList.add('hidden'), 8000);
+      }
+    } else if (typeof alert === 'function') {
+      alert(manualMessage);
+    }
     return;
   }
 
