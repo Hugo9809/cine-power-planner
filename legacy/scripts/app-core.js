@@ -50,33 +50,27 @@ try {
   var _require = require('./overview.js');
   generatePrintableOverview = _require.generatePrintableOverview;
 } catch (_unused2) {}
-
 function resolveConnectorSummaryGenerator() {
   var scopes = [];
   if (typeof globalThis !== 'undefined') scopes.push(globalThis);
   if (typeof window !== 'undefined') scopes.push(window);
   if (typeof global !== 'undefined') scopes.push(global);
   if (typeof self !== 'undefined') scopes.push(self);
-
-  for (var i = 0; i < scopes.length; i++) {
-    var scope = scopes[i];
+  for (var _i = 0, _scopes = scopes; _i < _scopes.length; _i++) {
+    var scope = _scopes[_i];
     if (scope && typeof scope.generateConnectorSummary === 'function') {
       return scope.generateConnectorSummary;
     }
   }
-
   if (typeof generateConnectorSummary === 'function') {
     return generateConnectorSummary;
   }
-
   return null;
 }
-
 function safeGenerateConnectorSummary(device) {
   if (!device) {
     return '';
   }
-
   var generator = resolveConnectorSummaryGenerator();
   if (typeof generator !== 'function') {
     return '';
@@ -117,7 +111,20 @@ var AUTO_GEAR_BACKUP_INTERVAL_MS = 10 * 60 * 1000;
 var AUTO_GEAR_BACKUP_LIMIT = 12;
 var AUTO_GEAR_MULTI_SELECT_MIN_ROWS = 8;
 var AUTO_GEAR_MULTI_SELECT_MAX_ROWS = 12;
-var TEMPERATURE_UNIT_STORAGE_KEY = 'cameraPowerPlanner_temperatureUnit';
+function resolveTemperatureStorageKey() {
+  var scope = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : undefined;
+  var fallback = 'cameraPowerPlanner_temperatureUnit';
+  var existing = scope && typeof scope.TEMPERATURE_UNIT_STORAGE_KEY === 'string' ? scope.TEMPERATURE_UNIT_STORAGE_KEY : fallback;
+  if (scope && typeof scope.TEMPERATURE_UNIT_STORAGE_KEY !== 'string') {
+    try {
+      scope.TEMPERATURE_UNIT_STORAGE_KEY = existing;
+    } catch (error) {
+      void error;
+    }
+  }
+  return existing;
+}
+var TEMPERATURE_STORAGE_KEY = resolveTemperatureStorageKey();
 var TEMPERATURE_UNITS = {
   celsius: 'celsius',
   fahrenheit: 'fahrenheit'
@@ -170,7 +177,7 @@ var monitorPortTypeInput;
 var monitorVideoInputsContainer;
 try {
   if (typeof localStorage !== 'undefined') {
-    var storedTemperatureUnit = localStorage.getItem(TEMPERATURE_UNIT_STORAGE_KEY);
+    var storedTemperatureUnit = localStorage.getItem(TEMPERATURE_STORAGE_KEY);
     if (storedTemperatureUnit) {
       temperatureUnit = normalizeTemperatureUnit(storedTemperatureUnit);
     }
@@ -2583,14 +2590,14 @@ if (window.defaultDevices === undefined) {
 var storedDevices = loadDeviceData();
 if (storedDevices) {
   var merged = JSON.parse(JSON.stringify(window.defaultDevices));
-  for (var _i = 0, _Object$entries = Object.entries(storedDevices); _i < _Object$entries.length; _i++) {
-    var _Object$entries$_i = _slicedToArray(_Object$entries[_i], 2),
+  for (var _i2 = 0, _Object$entries = Object.entries(storedDevices); _i2 < _Object$entries.length; _i2++) {
+    var _Object$entries$_i = _slicedToArray(_Object$entries[_i2], 2),
       key = _Object$entries$_i[0],
       value = _Object$entries$_i[1];
     if (key === 'fiz' && value && _typeof(value) === 'object') {
       merged.fiz = merged.fiz || {};
-      for (var _i2 = 0, _Object$entries2 = Object.entries(value); _i2 < _Object$entries2.length; _i2++) {
-        var _Object$entries2$_i = _slicedToArray(_Object$entries2[_i2], 2),
+      for (var _i3 = 0, _Object$entries2 = Object.entries(value); _i3 < _Object$entries2.length; _i3++) {
+        var _Object$entries2$_i = _slicedToArray(_Object$entries2[_i3], 2),
           sub = _Object$entries2$_i[0],
           subVal = _Object$entries2$_i[1];
         merged.fiz[sub] = _objectSpread(_objectSpread({}, merged.fiz[sub] || {}), subVal || {});
@@ -2638,8 +2645,8 @@ function supportsGoldMountCamera(name) {
 }
 function getBatteriesByMount(mountType) {
   var out = {};
-  for (var _i3 = 0, _Object$entries3 = Object.entries(devices.batteries); _i3 < _Object$entries3.length; _i3++) {
-    var _Object$entries3$_i = _slicedToArray(_Object$entries3[_i3], 2),
+  for (var _i4 = 0, _Object$entries3 = Object.entries(devices.batteries); _i4 < _Object$entries3.length; _i4++) {
+    var _Object$entries3$_i = _slicedToArray(_Object$entries3[_i4], 2),
       name = _Object$entries3$_i[0],
       info = _Object$entries3$_i[1];
     if (info && info.mount_type === mountType) out[name] = info;
@@ -2648,8 +2655,8 @@ function getBatteriesByMount(mountType) {
 }
 function getHotswapsByMount(mountType) {
   var out = {};
-  for (var _i4 = 0, _Object$entries4 = Object.entries(devices.batteryHotswaps || {}); _i4 < _Object$entries4.length; _i4++) {
-    var _Object$entries4$_i = _slicedToArray(_Object$entries4[_i4], 2),
+  for (var _i5 = 0, _Object$entries4 = Object.entries(devices.batteryHotswaps || {}); _i5 < _Object$entries4.length; _i5++) {
+    var _Object$entries4$_i = _slicedToArray(_Object$entries4[_i5], 2),
       name = _Object$entries4$_i[0],
       info = _Object$entries4$_i[1];
     if (info && info.mount_type === mountType) out[name] = info;
@@ -3051,8 +3058,8 @@ function detectBrand(name) {
   if (!name) return null;
   var n = String(name).trim().toLowerCase();
   if (n === 'none') return null;
-  for (var _i5 = 0, _Object$entries5 = Object.entries(BRAND_KEYWORDS); _i5 < _Object$entries5.length; _i5++) {
-    var _Object$entries5$_i = _slicedToArray(_Object$entries5[_i5], 2),
+  for (var _i6 = 0, _Object$entries5 = Object.entries(BRAND_KEYWORDS); _i6 < _Object$entries5.length; _i6++) {
+    var _Object$entries5$_i = _slicedToArray(_Object$entries5[_i6], 2),
       keyword = _Object$entries5$_i[0],
       brand = _Object$entries5$_i[1];
     if (n.includes(keyword)) return brand;
@@ -5967,6 +5974,7 @@ function createCrewRow() {
   var row = document.createElement('div');
   row.className = 'person-row';
   var roleSel = document.createElement('select');
+  roleSel.name = 'crewRole';
   crewRoles.forEach(function (r) {
     var _texts$currentLang, _texts$en127;
     var opt = document.createElement('option');
@@ -5978,6 +5986,7 @@ function createCrewRow() {
   if (data.role) roleSel.value = data.role;
   var nameInput = document.createElement('input');
   nameInput.type = 'text';
+  nameInput.name = 'crewName';
   var fallbackProjectForm = ((_texts$en128 = texts.en) === null || _texts$en128 === void 0 ? void 0 : _texts$en128.projectForm) || {};
   var projectFormTexts = ((_texts$currentLang2 = texts[currentLang]) === null || _texts$currentLang2 === void 0 ? void 0 : _texts$currentLang2.projectForm) || fallbackProjectForm;
   nameInput.placeholder = projectFormTexts.crewNamePlaceholder || fallbackProjectForm.crewNamePlaceholder || 'Name';
@@ -5985,11 +5994,13 @@ function createCrewRow() {
   nameInput.value = data.name || '';
   var phoneInput = document.createElement('input');
   phoneInput.type = 'tel';
+  phoneInput.name = 'crewPhone';
   phoneInput.placeholder = projectFormTexts.crewPhonePlaceholder || fallbackProjectForm.crewPhonePlaceholder || 'Phone';
   phoneInput.className = 'person-phone';
   phoneInput.value = data.phone || '';
   var emailInput = document.createElement('input');
   emailInput.type = 'email';
+  emailInput.name = 'crewEmail';
   emailInput.placeholder = projectFormTexts.crewEmailPlaceholder || fallbackProjectForm.crewEmailPlaceholder || 'Email';
   emailInput.className = 'person-email';
   emailInput.value = data.email || '';
@@ -6017,6 +6028,7 @@ function createPrepRow() {
   row.className = 'period-row';
   var start = document.createElement('input');
   start.type = 'date';
+  start.name = 'prepStart';
   start.className = 'prep-start';
   start.value = data.start || '';
   start.setAttribute('aria-labelledby', 'prepLabel');
@@ -6024,6 +6036,7 @@ function createPrepRow() {
   span.textContent = 'to';
   var end = document.createElement('input');
   end.type = 'date';
+  end.name = 'prepEnd';
   end.className = 'prep-end';
   end.value = data.end || '';
   end.setAttribute('aria-labelledby', 'prepLabel');
@@ -6051,6 +6064,7 @@ function createShootRow() {
   row.className = 'period-row';
   var start = document.createElement('input');
   start.type = 'date';
+  start.name = 'shootStart';
   start.className = 'shoot-start';
   start.value = data.start || '';
   start.setAttribute('aria-labelledby', 'shootLabel');
@@ -6058,6 +6072,7 @@ function createShootRow() {
   span.textContent = 'to';
   var end = document.createElement('input');
   end.type = 'date';
+  end.name = 'shootEnd';
   end.className = 'shoot-end';
   end.value = data.end || '';
   end.setAttribute('aria-labelledby', 'shootLabel');
@@ -6879,8 +6894,8 @@ function populateCategoryOptions() {
   };
   if (deviceSchema) {
     if (deviceSchema.accessories) {
-      for (var _i6 = 0, _Object$entries6 = Object.entries(deviceSchema.accessories); _i6 < _Object$entries6.length; _i6++) {
-        var _Object$entries6$_i = _slicedToArray(_Object$entries6[_i6], 2),
+      for (var _i7 = 0, _Object$entries6 = Object.entries(deviceSchema.accessories); _i7 < _Object$entries6.length; _i7++) {
+        var _Object$entries6$_i = _slicedToArray(_Object$entries6[_i7], 2),
           _sub = _Object$entries6$_i[0],
           obj = _Object$entries6$_i[1];
         if (_sub === 'cables') {
@@ -6890,16 +6905,16 @@ function populateCategoryOptions() {
         }
       }
     }
-    for (var _i7 = 0, _Object$entries7 = Object.entries(deviceSchema); _i7 < _Object$entries7.length; _i7++) {
-      var _Object$entries7$_i = _slicedToArray(_Object$entries7[_i7], 2),
+    for (var _i8 = 0, _Object$entries7 = Object.entries(deviceSchema); _i8 < _Object$entries7.length; _i8++) {
+      var _Object$entries7$_i = _slicedToArray(_Object$entries7[_i8], 2),
         _key = _Object$entries7$_i[0],
         _obj = _Object$entries7$_i[1];
       if (_key === 'accessories' || _key === 'fiz') continue;
       if (_obj && _obj.attributes) addOpt(_key);
     }
     if (deviceSchema.fiz) {
-      for (var _i8 = 0, _Object$entries8 = Object.entries(deviceSchema.fiz); _i8 < _Object$entries8.length; _i8++) {
-        var _Object$entries8$_i = _slicedToArray(_Object$entries8[_i8], 2),
+      for (var _i9 = 0, _Object$entries8 = Object.entries(deviceSchema.fiz); _i9 < _Object$entries8.length; _i9++) {
+        var _Object$entries8$_i = _slicedToArray(_Object$entries8[_i9], 2),
           _sub2 = _Object$entries8$_i[0],
           _obj2 = _Object$entries8$_i[1];
         if (_obj2 && _obj2.attributes) addOpt("fiz.".concat(_sub2));
@@ -6916,18 +6931,18 @@ function populateCategoryOptions() {
         existing.add(val);
       }
     };
-    for (var _i9 = 0, _Object$entries9 = Object.entries(devices); _i9 < _Object$entries9.length; _i9++) {
-      var _Object$entries9$_i = _slicedToArray(_Object$entries9[_i9], 2),
+    for (var _i0 = 0, _Object$entries9 = Object.entries(devices); _i0 < _Object$entries9.length; _i0++) {
+      var _Object$entries9$_i = _slicedToArray(_Object$entries9[_i0], 2),
         _key2 = _Object$entries9$_i[0],
         _obj3 = _Object$entries9$_i[1];
       if (_key2 === 'accessories') {
-        for (var _i0 = 0, _Object$keys = Object.keys(_obj3 || {}); _i0 < _Object$keys.length; _i0++) {
-          var _sub3 = _Object$keys[_i0];
+        for (var _i1 = 0, _Object$keys = Object.keys(_obj3 || {}); _i1 < _Object$keys.length; _i1++) {
+          var _sub3 = _Object$keys[_i1];
           addIfMissing("accessories.".concat(_sub3));
         }
       } else if (_key2 === 'fiz') {
-        for (var _i1 = 0, _Object$keys2 = Object.keys(_obj3 || {}); _i1 < _Object$keys2.length; _i1++) {
-          var _sub4 = _Object$keys2[_i1];
+        for (var _i10 = 0, _Object$keys2 = Object.keys(_obj3 || {}); _i10 < _Object$keys2.length; _i10++) {
+          var _sub4 = _Object$keys2[_i10];
           addIfMissing("fiz.".concat(_sub4));
         }
       } else if (_obj3 && _typeof(_obj3) === 'object' && !Array.isArray(_obj3)) {
@@ -7451,8 +7466,8 @@ function getCombinedCategoryAttributes(category) {
     _iterator10.f();
   }
   if (data && _typeof(data) === 'object' && !Array.isArray(data)) {
-    for (var _i10 = 0, _Object$keys3 = Object.keys(data); _i10 < _Object$keys3.length; _i10++) {
-      var _key4 = _Object$keys3[_i10];
+    for (var _i11 = 0, _Object$keys3 = Object.keys(data); _i11 < _Object$keys3.length; _i11++) {
+      var _key4 = _Object$keys3[_i11];
       if (skip(_key4)) continue;
       seen.add(_key4);
       attrs.push(_key4);
@@ -10262,8 +10277,8 @@ function countDeviceDatabaseEntries(collection) {
     return 0;
   }
   var total = 0;
-  for (var _i11 = 0, _Object$entries0 = Object.entries(collection); _i11 < _Object$entries0.length; _i11++) {
-    var _Object$entries0$_i = _slicedToArray(_Object$entries0[_i11], 2),
+  for (var _i12 = 0, _Object$entries0 = Object.entries(collection); _i12 < _Object$entries0.length; _i12++) {
+    var _Object$entries0$_i = _slicedToArray(_Object$entries0[_i12], 2),
       name = _Object$entries0$_i[0],
       _value4 = _Object$entries0$_i[1];
     if (name === 'filterOptions' || name === 'None') {
@@ -10285,8 +10300,8 @@ function looksLikeDeviceDatabase(candidate) {
     return false;
   }
   var matched = 0;
-  for (var _i12 = 0, _REQUIRED_DEVICE_CATE = REQUIRED_DEVICE_CATEGORIES; _i12 < _REQUIRED_DEVICE_CATE.length; _i12++) {
-    var _key6 = _REQUIRED_DEVICE_CATE[_i12];
+  for (var _i13 = 0, _REQUIRED_DEVICE_CATE = REQUIRED_DEVICE_CATEGORIES; _i13 < _REQUIRED_DEVICE_CATE.length; _i13++) {
+    var _key6 = _REQUIRED_DEVICE_CATE[_i13];
     if (Object.prototype.hasOwnProperty.call(candidate, _key6)) {
       matched += 1;
     }
@@ -10322,8 +10337,8 @@ function validateDeviceDatabaseStructure(candidate) {
   }
   var errors = [];
   var missing = [];
-  for (var _i13 = 0, _REQUIRED_DEVICE_CATE2 = REQUIRED_DEVICE_CATEGORIES; _i13 < _REQUIRED_DEVICE_CATE2.length; _i13++) {
-    var category = _REQUIRED_DEVICE_CATE2[_i13];
+  for (var _i14 = 0, _REQUIRED_DEVICE_CATE2 = REQUIRED_DEVICE_CATEGORIES; _i14 < _REQUIRED_DEVICE_CATE2.length; _i14++) {
+    var category = _REQUIRED_DEVICE_CATE2[_i14];
     if (category === 'fiz') {
       if (!isPlainObjectValue(candidate.fiz)) {
         missing.push('fiz');
@@ -10363,8 +10378,8 @@ function validateDeviceDatabaseStructure(candidate) {
     if (!isPlainObjectValue(candidate.accessories)) {
       errors.push('Accessory collections must be objects.');
     } else {
-      for (var _i14 = 0, _Object$entries1 = Object.entries(candidate.accessories); _i14 < _Object$entries1.length; _i14++) {
-        var _Object$entries1$_i = _slicedToArray(_Object$entries1[_i14], 2),
+      for (var _i15 = 0, _Object$entries1 = Object.entries(candidate.accessories); _i15 < _Object$entries1.length; _i15++) {
+        var _Object$entries1$_i = _slicedToArray(_Object$entries1[_i15], 2),
           subKey = _Object$entries1$_i[0],
           subValue = _Object$entries1$_i[1];
         if (!isPlainObjectValue(subValue)) {
@@ -10377,8 +10392,8 @@ function validateDeviceDatabaseStructure(candidate) {
     errors.push('Filter options must be provided as an array.');
   }
   if (candidate.fiz && isPlainObjectValue(candidate.fiz)) {
-    for (var _i15 = 0, _Object$entries10 = Object.entries(candidate.fiz); _i15 < _Object$entries10.length; _i15++) {
-      var _Object$entries10$_i = _slicedToArray(_Object$entries10[_i15], 2),
+    for (var _i16 = 0, _Object$entries10 = Object.entries(candidate.fiz); _i16 < _Object$entries10.length; _i16++) {
+      var _Object$entries10$_i = _slicedToArray(_Object$entries10[_i16], 2),
         _subKey = _Object$entries10$_i[0],
         _subValue = _Object$entries10$_i[1];
       if (_subValue !== undefined && !isPlainObjectValue(_subValue)) {
@@ -10392,8 +10407,8 @@ function validateDeviceDatabaseStructure(candidate) {
     if (!isPlainObjectValue(collection)) {
       return;
     }
-    for (var _i16 = 0, _Object$entries11 = Object.entries(collection); _i16 < _Object$entries11.length; _i16++) {
-      var _Object$entries11$_i = _slicedToArray(_Object$entries11[_i16], 2),
+    for (var _i17 = 0, _Object$entries11 = Object.entries(collection); _i17 < _Object$entries11.length; _i17++) {
+      var _Object$entries11$_i = _slicedToArray(_Object$entries11[_i17], 2),
         name = _Object$entries11$_i[0],
         _value5 = _Object$entries11$_i[1];
       if (name === 'None' || name === 'filterOptions') {
@@ -10419,8 +10434,8 @@ function validateDeviceDatabaseStructure(candidate) {
     errors.push('The imported database does not contain any devices.');
   }
   var uniqueErrors = [];
-  for (var _i17 = 0, _errors = errors; _i17 < _errors.length; _i17++) {
-    var message = _errors[_i17];
+  for (var _i18 = 0, _errors = errors; _i18 < _errors.length; _i18++) {
+    var message = _errors[_i18];
     if (message && !uniqueErrors.includes(message)) {
       uniqueErrors.push(message);
     }
@@ -10493,8 +10508,8 @@ function serializeIntlOptions(options) {
     return options == null ? DEFAULT_INTL_CACHE_KEY : String(options);
   }
   var entries = [];
-  for (var _i18 = 0, _Object$entries12 = Object.entries(options); _i18 < _Object$entries12.length; _i18++) {
-    var _Object$entries12$_i = _slicedToArray(_Object$entries12[_i18], 2),
+  for (var _i19 = 0, _Object$entries12 = Object.entries(options); _i19 < _Object$entries12.length; _i19++) {
+    var _Object$entries12$_i = _slicedToArray(_Object$entries12[_i19], 2),
       _key7 = _Object$entries12$_i[0],
       _value6 = _Object$entries12$_i[1];
     if (typeof _value6 === 'undefined') continue;
@@ -10989,12 +11004,31 @@ function updateStorageSummary() {
   var hasSession = Boolean(isPlainObjectValue(sessionData) && Object.keys(sessionData).length || Array.isArray(sessionData) && sessionData.length || typeof sessionData === 'string' && sessionData.trim());
   var deviceSummary = summarizeCustomDevices();
   var approxBytes = estimateBackupSize(data);
+  var rawFullBackups = Array.isArray(data.fullBackupHistory) ? data.fullBackupHistory : Array.isArray(data.fullBackups) ? data.fullBackups : [];
+  var fullBackupCount = rawFullBackups.reduce(function (count, entry) {
+    if (!entry) return count;
+    if (typeof entry === 'string') {
+      return entry.trim() ? count + 1 : count;
+    }
+    if (_typeof(entry) === 'object') {
+      var createdAt = typeof entry.createdAt === 'string' ? entry.createdAt.trim() : '';
+      var iso = typeof entry.iso === 'string' ? entry.iso.trim() : '';
+      var timestamp = typeof entry.timestamp === 'string' ? entry.timestamp.trim() : '';
+      if (createdAt || iso || timestamp) {
+        return count + 1;
+      }
+    }
+    return count;
+  }, 0);
   var items = [{
     storageKey: 'cameraPowerPlanner_setups',
     label: langTexts.storageKeyProjects || 'Saved projects',
     value: formatCountText(lang, langTexts, 'storageProjectsCount', totalProjects),
-    description: langTexts.storageKeyProjectsDesc || '',
-    extra: autoBackups > 0 ? formatCountText(lang, langTexts, 'storageAutoBackupsCount', autoBackups) : null
+    description: langTexts.storageKeyProjectsDesc || ''
+  }, {
+    label: langTexts.storageKeyAutoBackups || 'Auto backups',
+    value: formatCountText(lang, langTexts, 'storageAutoBackupsCount', autoBackups),
+    description: langTexts.storageKeyAutoBackupsDesc || ''
   }, {
     storageKey: 'cameraPowerPlanner_project',
     label: langTexts.storageKeyGearLists || 'Gear list snapshots',
@@ -11022,6 +11056,11 @@ function updateStorageSummary() {
     value: hasSession ? langTexts.storageSessionStored || ((_texts$en209 = texts.en) === null || _texts$en209 === void 0 ? void 0 : _texts$en209.storageSessionStored) || 'Stored' : langTexts.storageSessionNotStored || ((_texts$en210 = texts.en) === null || _texts$en210 === void 0 ? void 0 : _texts$en210.storageSessionNotStored) || 'Not stored',
     description: langTexts.storageKeySessionDesc || ''
   }, {
+    storageKey: 'cameraPowerPlanner_fullBackups',
+    label: langTexts.storageKeyFullBackups || 'Full app backups',
+    value: formatCountText(lang, langTexts, 'storageFullBackupsCount', fullBackupCount),
+    description: langTexts.storageKeyFullBackupsDesc || ''
+  }, {
     storageKey: 'localStorage',
     label: langTexts.storageKeyTotalSize || 'Approximate backup size',
     value: formatSizeText(lang, langTexts, approxBytes),
@@ -11031,7 +11070,7 @@ function updateStorageSummary() {
     storageSummaryList.appendChild(createSummaryItemElement(item));
   });
   if (storageSummaryEmpty) {
-    var hasData = Boolean(totalProjects || gearListCount || deviceSummary.total || favoritesCount || feedbackCount || hasSession);
+    var hasData = Boolean(totalProjects || gearListCount || deviceSummary.total || favoritesCount || feedbackCount || hasSession || fullBackupCount);
     if (hasData) {
       storageSummaryEmpty.setAttribute('hidden', '');
     } else {
@@ -11292,26 +11331,7 @@ var normaliseMarkVariants = function normaliseMarkVariants(str) {
     return "mk".concat(suffix);
   });
 };
-var UNICODE_FRACTIONS = new Map([
-  ['¼', '1/4'],
-  ['½', '1/2'],
-  ['¾', '3/4'],
-  ['⅓', '1/3'],
-  ['⅔', '2/3'],
-  ['⅕', '1/5'],
-  ['⅖', '2/5'],
-  ['⅗', '3/5'],
-  ['⅘', '4/5'],
-  ['⅙', '1/6'],
-  ['⅚', '5/6'],
-  ['⅛', '1/8'],
-  ['⅜', '3/8'],
-  ['⅝', '5/8'],
-  ['⅞', '7/8'],
-  ['⅑', '1/9'],
-  ['⅒', '1/10'],
-  ['⅐', '1/7']
-]);
+var UNICODE_FRACTIONS = new Map([['¼', '1/4'], ['½', '1/2'], ['¾', '3/4'], ['⅓', '1/3'], ['⅔', '2/3'], ['⅕', '1/5'], ['⅖', '2/5'], ['⅗', '3/5'], ['⅘', '4/5'], ['⅙', '1/6'], ['⅚', '5/6'], ['⅛', '1/8'], ['⅜', '3/8'], ['⅝', '5/8'], ['⅞', '7/8'], ['⅑', '1/9'], ['⅒', '1/10'], ['⅐', '1/7']]);
 var UNICODE_FRACTION_PATTERN = UNICODE_FRACTIONS.size > 0 ? new RegExp("[".concat(Array.from(UNICODE_FRACTIONS.keys()).join(''), "]"), 'g') : null;
 var normalizeUnicodeFractions = function normalizeUnicodeFractions(str) {
   if (!UNICODE_FRACTION_PATTERN || typeof str !== 'string' || !str) {
@@ -11359,6 +11379,32 @@ var searchTokens = function searchTokens(str) {
     var cleaned = token.replace(/[^a-z0-9]+/g, '');
     if (cleaned) tokens.add(cleaned);
   };
+  var isAlpha = function isAlpha(value) {
+    return /^[a-z]+$/.test(value);
+  };
+  var isNumeric = function isNumeric(value) {
+    return /^\d+$/.test(value);
+  };
+  var addAlphaNumericVariants = function addAlphaNumericVariants(segment) {
+    if (!segment) return;
+    var groups = segment.match(/[a-z]+|\d+/g);
+    if (!groups || groups.length <= 1) return;
+    groups.forEach(function (part) {
+      if (isNumeric(part) || part.length > 1) {
+        addToken(part);
+      }
+    });
+    for (var index = 0; index < groups.length - 1; index += 1) {
+      var current = groups[index];
+      var next = groups[index + 1];
+      if (!current || !next) continue;
+      var combined = "".concat(current).concat(next);
+      if (!combined || combined === segment) continue;
+      if (isAlpha(current) && isNumeric(next) || isNumeric(current) && isAlpha(next) || current.length > 1 && next.length > 1) {
+        addToken(combined);
+      }
+    }
+  };
   var processParts = function processParts(strToProcess) {
     var collectInitials = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
     strToProcess.split(/\s+/).forEach(function (part) {
@@ -11366,6 +11412,7 @@ var searchTokens = function searchTokens(str) {
       addToken(part);
       part.split(/[^a-z0-9]+/).filter(Boolean).forEach(function (segment) {
         addToken(segment);
+        addAlphaNumericVariants(segment);
         if (collectInitials && /^[a-z]/.test(segment)) {
           initialWords.push(segment);
         }
@@ -11681,8 +11728,8 @@ function findBestSearchMatch(map, key) {
   var bestPartialScore = Number.NEGATIVE_INFINITY;
   var bestPartialMatched = 0;
   var keyLength = hasKey ? key.length : 0;
-  for (var _i19 = 0, _flattened = flattened; _i19 < _flattened.length; _i19++) {
-    var _flattened$_i = _slicedToArray(_flattened[_i19], 2),
+  for (var _i20 = 0, _flattened = flattened; _i20 < _flattened.length; _i20++) {
+    var _flattened$_i = _slicedToArray(_flattened[_i20], 2),
       entryKey = _flattened$_i[0],
       _entryValue = _flattened$_i[1];
     if (!_entryValue) continue;
@@ -12372,7 +12419,7 @@ function handleLocalFontFiles(_x7) {
 }
 function _handleLocalFontFiles() {
   _handleLocalFontFiles = _asyncToGenerator(_regenerator().m(function _callee0(fileList) {
-    var added, unsupported, failed, persistFailure, _i22, _Array$from, file, dataUrl, result, message, _message5, _message6, _t9;
+    var added, unsupported, failed, persistFailure, _i23, _Array$from, file, dataUrl, result, message, _message5, _message6, _t9;
     return _regenerator().w(function (_context0) {
       while (1) switch (_context0.p = _context0.n) {
         case 0:
@@ -12390,13 +12437,13 @@ function _handleLocalFontFiles() {
           unsupported = [];
           failed = [];
           persistFailure = false;
-          _i22 = 0, _Array$from = Array.from(fileList);
+          _i23 = 0, _Array$from = Array.from(fileList);
         case 2:
-          if (!(_i22 < _Array$from.length)) {
+          if (!(_i23 < _Array$from.length)) {
             _context0.n = 9;
             break;
           }
-          file = _Array$from[_i22];
+          file = _Array$from[_i23];
           if (isSupportedFontFile(file)) {
             _context0.n = 3;
             break;
@@ -12432,7 +12479,7 @@ function _handleLocalFontFiles() {
           console.warn('Failed to import custom font', _t9);
           failed.push(file && typeof file.name === 'string' ? file.name : '');
         case 8:
-          _i22++;
+          _i23++;
           _context0.n = 2;
           break;
         case 9:
@@ -13495,8 +13542,8 @@ function displayGearAndRequirements(html) {
               categoryPath: path
             };
           }
-          for (var _i20 = 0, _Object$entries13 = Object.entries(node); _i20 < _Object$entries13.length; _i20++) {
-            var _Object$entries13$_i = _slicedToArray(_Object$entries13[_i20], 2),
+          for (var _i21 = 0, _Object$entries13 = Object.entries(node); _i21 < _Object$entries13.length; _i21++) {
+            var _Object$entries13$_i = _slicedToArray(_Object$entries13[_i21], 2),
               _key9 = _Object$entries13$_i[0],
               _value1 = _Object$entries13$_i[1];
             if (!isPlainObjectValue(_value1)) continue;
@@ -15753,7 +15800,7 @@ function getSelectWidthMeasureElement() {
   return span;
 }
 function measureSelectTextWidth(selectElem, text, styles) {
-  var content = text && text.length ? text : '\u00a0';
+  var content = text && text.length ? text : "\xA0";
   var computedStyles = styles || window.getComputedStyle(selectElem);
   if (!computedStyles) {
     return content.length * 8;
@@ -16204,7 +16251,7 @@ function applyTemperatureUnitPreference(unit) {
   temperatureUnit = normalized;
   if (persist && typeof localStorage !== 'undefined') {
     try {
-      localStorage.setItem(TEMPERATURE_UNIT_STORAGE_KEY, temperatureUnit);
+      localStorage.setItem(TEMPERATURE_STORAGE_KEY, temperatureUnit);
     } catch (error) {
       console.warn('Could not save temperature unit preference', error);
     }
@@ -17745,7 +17792,8 @@ function renderSetupDiagram() {
       var DEFAULT_MAX_NODE_FONT = 13;
       var referenceFontSize = Number.isFinite(diagramFontSizePx) && diagramFontSizePx > 0 ? diagramFontSizePx : DEFAULT_MAX_NODE_FONT;
       var maxAutoScale = bodyFontSize / referenceFontSize;
-      svgEl.style.maxWidth = "".concat(viewWidth * maxAutoScale, "px");
+      var scaleFactor = Math.max(1, maxAutoScale);
+      svgEl.style.maxWidth = "".concat(viewWidth * scaleFactor, "px");
     }
   }
   lastDiagramPositions = JSON.parse(JSON.stringify(pos));
@@ -17776,7 +17824,7 @@ function attachDiagramPopups(map) {
       var _devices$info$categor;
       deviceData = (_devices$info$categor = devices[info.category]) === null || _devices$info$categor === void 0 ? void 0 : _devices$info$categor[info.name];
     }
-    var connectors = deviceData ? safeGenerateConnectorSummary(deviceData) : '';
+    var connectors = safeGenerateConnectorSummary(deviceData);
     var infoHtml = (deviceData && deviceData.latencyMs ? "<div class=\"info-box video-conn\"><strong>Latency:</strong> ".concat(escapeHtml(String(deviceData.latencyMs)), "</div>") : '') + (deviceData && deviceData.frequency ? "<div class=\"info-box video-conn\"><strong>Frequency:</strong> ".concat(escapeHtml(String(deviceData.frequency)), "</div>") : '');
     var html = "<strong>".concat(escapeHtml(info.name), "</strong>") + connectors + infoHtml;
     var show = function show(e) {
@@ -18158,8 +18206,8 @@ function renderDeviceList(categoryKey, ulElement) {
     ulElement.appendChild(li);
   };
   if (categoryKey === "accessories.cables") {
-    for (var _i21 = 0, _Object$entries14 = Object.entries(categoryDevices); _i21 < _Object$entries14.length; _i21++) {
-      var _Object$entries14$_i = _slicedToArray(_Object$entries14[_i21], 2),
+    for (var _i22 = 0, _Object$entries14 = Object.entries(categoryDevices); _i22 < _Object$entries14.length; _i22++) {
+      var _Object$entries14$_i = _slicedToArray(_Object$entries14[_i22], 2),
         subcat = _Object$entries14$_i[0],
         devs = _Object$entries14$_i[1];
       for (var name in devs) {
