@@ -27,6 +27,13 @@
 </head>
 <body>
   <a href="#mainContent" class="skip-link" id="skipLink">Skip to content</a>
+  <div
+    id="screenReaderLiveRegion"
+    class="visually-hidden"
+    role="status"
+    aria-live="off"
+    aria-hidden="true"
+  ></div>
   <div id="offlineIndicator" role="status" aria-live="polite">Offline</div>
   <button
     id="installPromptBanner"
@@ -1254,6 +1261,13 @@
         </div>
         <p id="settingsRelaxedSpacingHelp" class="settings-hint">
           Increase line spacing and control padding to make text easier to scan and tap.
+        </p>
+        <div class="form-row">
+          <label for="settingsScreenReader" id="settingsScreenReaderLabel">Screen reader announcements</label>
+          <input type="checkbox" id="settingsScreenReader" />
+        </div>
+        <p id="settingsScreenReaderHelp" class="settings-hint">
+          Hear spoken feedback and expose extra live updates for assistive technologies.
         </p>
         </section>
       </section>

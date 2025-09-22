@@ -313,6 +313,12 @@ const texts = {
     relaxedSpacingSetting: "Relaxed spacing",
     relaxedSpacingSettingHelp:
       "Increase line spacing and control padding to make text easier to scan and tap.",
+    screenReaderSetting: "Screen reader announcements",
+    screenReaderSettingHelp:
+      "Hear spoken feedback and expose extra live updates for assistive technologies.",
+    screenReaderEnabledAnnouncement:
+      "Screen reader support enabled. Key planner updates will be spoken.",
+    screenReaderDisabledAnnouncement: "Screen reader support disabled.",
     backupHeading: "Backup & Restore",
     backupHeadingHelp:
       "Manage full backups of settings, saved projects, custom devices and runtime feedback.",
@@ -1572,6 +1578,12 @@ const texts = {
     relaxedSpacingSetting: "Spaziatura ampia",
     relaxedSpacingSettingHelp:
       "Aumenta l'interlinea e l'imbottitura dei controlli per facilitare la lettura e l'uso con il tocco.",
+    screenReaderSetting: "Annunci del lettore di schermo",
+    screenReaderSettingHelp:
+      "Attiva feedback vocali e aggiornamenti in tempo reale aggiuntivi per le tecnologie assistive.",
+    screenReaderEnabledAnnouncement:
+      "Supporto per lettore di schermo attivato. Gli aggiornamenti importanti del planner verranno letti ad alta voce.",
+    screenReaderDisabledAnnouncement: "Supporto per lettore di schermo disattivato.",
     backupHeading: "Backup e ripristino",
     backupHeadingHelp:
       "Gestisci backup completi di impostazioni, progetti salvati, dispositivi personalizzati e feedback.",
@@ -2432,6 +2444,12 @@ const texts = {
     relaxedSpacingSetting: "Espaciado amplio",
     relaxedSpacingSettingHelp:
       "Aumenta el interlineado y el acolchado de los controles para facilitar la lectura y ampliar las zonas táctiles.",
+    screenReaderSetting: "Anuncios del lector de pantalla",
+    screenReaderSettingHelp:
+      "Escucha comentarios hablados y habilita actualizaciones en vivo adicionales para tecnologías de asistencia.",
+    screenReaderEnabledAnnouncement:
+      "Compatibilidad con lector de pantalla activada. Se anunciarán las actualizaciones clave del planificador.",
+    screenReaderDisabledAnnouncement: "Compatibilidad con lector de pantalla desactivada.",
     backupHeading: "Copia de seguridad y restaurar",
     backupHeadingHelp:
       "Gestiona copias de seguridad completas de ajustes, proyectos guardados, dispositivos personalizados y comentarios.",
@@ -3294,6 +3312,12 @@ const texts = {
     relaxedSpacingSetting: "Espacement élargi",
     relaxedSpacingSettingHelp:
       "Augmente l'interligne et le rembourrage des contrôles afin de faciliter la lecture et d'agrandir les zones d'action.",
+    screenReaderSetting: "Annonces du lecteur d'écran",
+    screenReaderSettingHelp:
+      "Active des retours vocaux et des mises à jour en direct supplémentaires pour les technologies d'assistance.",
+    screenReaderEnabledAnnouncement:
+      "Assistance lecteur d'écran activée. Les mises à jour essentielles du planificateur seront énoncées.",
+    screenReaderDisabledAnnouncement: "Assistance lecteur d'écran désactivée.",
     backupHeading: "Sauvegarde et restauration",
     backupHeadingHelp:
       "Gérez des sauvegardes complètes des réglages, projets enregistrés, appareils personnalisés et retours.",
@@ -4159,6 +4183,12 @@ const texts = {
     relaxedSpacingSetting: "Großzügige Abstände",
     relaxedSpacingSettingHelp:
       "Vergrößert Zeilenabstand und Elementabstand, damit Text besser lesbar ist und Klickflächen leichter zu treffen sind.",
+    screenReaderSetting: "Screenreader-Ansagen",
+    screenReaderSettingHelp:
+      "Aktiviert gesprochene Rückmeldungen und zusätzliche Live-Updates für unterstützende Technologien.",
+    screenReaderEnabledAnnouncement:
+      "Screenreader-Unterstützung aktiviert. Wichtige Planer-Updates werden vorgelesen.",
+    screenReaderDisabledAnnouncement: "Screenreader-Unterstützung deaktiviert.",
     backupHeading: "Sichern & Wiederherstellen",
     backupHeadingHelp:
       "Verwalte vollständige Sicherungen von Einstellungen, Projekten, eigenen Geräten und Feedback.",

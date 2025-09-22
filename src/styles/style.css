@@ -155,6 +155,11 @@ body.reduce-motion {
   scroll-behavior: auto;
 }
 
+html.screen-reader-mode,
+body.screen-reader-mode {
+  scroll-behavior: auto;
+}
+
 body.reduce-motion *,
 body.reduce-motion *::before,
 body.reduce-motion *::after {
@@ -185,6 +190,11 @@ body.relaxed-spacing input:not([type='checkbox']):not([type='radio']),
 body.relaxed-spacing select,
 body.relaxed-spacing textarea {
   padding: 0.65em 0.9em;
+}
+
+body.screen-reader-mode :focus-visible {
+  outline: 3px solid var(--accent-color);
+  outline-offset: 3px;
 }
 
 html {
