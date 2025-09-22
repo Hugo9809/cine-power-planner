@@ -16261,6 +16261,58 @@ function getTimecodes() {
     adjustGearListSelectWidth(selectElem);
   }
 
+  let selectWidthMeasureElement = null;
+
+  function getSelectWidthMeasureElement() {
+    if (selectWidthMeasureElement && selectWidthMeasureElement.isConnected) {
+      return selectWidthMeasureElement;
+    }
+    const span = document.createElement('span');
+    span.className = 'gear-select-width-measure';
+    Object.assign(span.style, {
+      position: 'absolute',
+      visibility: 'hidden',
+      whiteSpace: 'pre',
+      pointerEvents: 'none',
+      top: '-9999px',
+      left: '-9999px',
+      padding: '0',
+      margin: '0',
+      border: '0'
+    });
+    const parent = document.body || document.documentElement;
+    parent.appendChild(span);
+    selectWidthMeasureElement = span;
+    return span;
+  }
+
+  function measureSelectTextWidth(selectElem, text, styles) {
+    const content = text && text.length ? text : '\u00a0';
+    const computedStyles = styles || window.getComputedStyle(selectElem);
+    if (!computedStyles) {
+      return content.length * 8;
+    }
+    const measureElem = getSelectWidthMeasureElement();
+    const parent = document.body || document.documentElement;
+    if (measureElem.parentElement !== parent) parent.appendChild(measureElem);
+
+    if (computedStyles.font && computedStyles.font !== 'normal normal normal medium/normal serif') {
+      measureElem.style.font = computedStyles.font;
+    } else {
+      measureElem.style.fontStyle = computedStyles.fontStyle || 'normal';
+      measureElem.style.fontVariant = computedStyles.fontVariant || 'normal';
+      measureElem.style.fontWeight = computedStyles.fontWeight || '400';
+      measureElem.style.fontStretch = computedStyles.fontStretch || 'normal';
+      measureElem.style.fontSize = computedStyles.fontSize || '16px';
+      measureElem.style.fontFamily = computedStyles.fontFamily || 'sans-serif';
+      measureElem.style.lineHeight = computedStyles.lineHeight || 'normal';
+    }
+    measureElem.style.letterSpacing = computedStyles.letterSpacing || 'normal';
+    measureElem.style.textTransform = computedStyles.textTransform || 'none';
+    measureElem.textContent = content;
+    return measureElem.getBoundingClientRect().width;
+  }
+
   function adjustGearListSelectWidth(selectElem) {
     if (!selectElem || selectElem.multiple || selectElem.size > 1) return;
     const container = selectElem.closest('#gearListOutput, #projectRequirementsOutput');
@@ -16272,13 +16324,12 @@ function getTimecodes() {
     }
     const selectedOption = selectElem.selectedOptions && selectElem.selectedOptions[0];
     const optionText = selectedOption ? selectedOption.textContent.trim() : selectElem.value || '';
-    const fontSize = parseFloat(styles.fontSize) || 16;
-    const approxCharWidth = fontSize * 0.6;
-    const textWidth = (optionText ? optionText.length : 1) * approxCharWidth;
+    const textWidth = measureSelectTextWidth(selectElem, optionText, styles);
     const paddingLeft = parseFloat(styles.paddingLeft) || 0;
     const paddingRight = parseFloat(styles.paddingRight) || 0;
     const borderLeft = parseFloat(styles.borderLeftWidth) || 0;
     const borderRight = parseFloat(styles.borderRightWidth) || 0;
+    const fontSize = parseFloat(styles.fontSize) || 16;
     const arrowReserve = Math.max(fontSize, 16);
     const minWidth = Math.max(fontSize * 4, 56);
     const widthPx = Math.max(
