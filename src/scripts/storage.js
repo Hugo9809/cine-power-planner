@@ -476,11 +476,13 @@ function rollbackMigratedKeys(target, keys) {
   });
 }
 
-function snapshotStorageEntries(storage) {
+function snapshotStorageEntries(storage, options = {}) {
   const snapshot = Object.create(null);
   if (!storage) {
     return snapshot;
   }
+
+  const { suppressAlerts = false } = options || {};
 
   const captureKey = (key) => {
     if (typeof key !== 'string' || !key) {
@@ -495,7 +497,9 @@ function snapshotStorageEntries(storage) {
       }
     } catch (error) {
       console.warn('Unable to read storage key during snapshot', key, error);
-      alertStorageError('migration-read');
+      if (!suppressAlerts) {
+        alertStorageError('migration-read');
+      }
       return;
     }
     if (value === null || value === undefined) {
@@ -519,7 +523,9 @@ function snapshotStorageEntries(storage) {
       }
     } catch (error) {
       console.warn('Unable to enumerate storage keys during snapshot', error);
-      alertStorageError('migration-read');
+      if (!suppressAlerts) {
+        alertStorageError('migration-read');
+      }
     }
     return snapshot;
   }
@@ -537,13 +543,75 @@ function snapshotStorageEntries(storage) {
       });
     } catch (error) {
       console.warn('Unable to iterate storage entries during snapshot', error);
-      alertStorageError('migration-read');
+      if (!suppressAlerts) {
+        alertStorageError('migration-read');
+      }
     }
     return snapshot;
   }
 
   Object.keys(storage).forEach(captureKey);
   return snapshot;
+}
+
+function updateGlobalSafeLocalStorageReference() {
+  if (!GLOBAL_SCOPE || typeof GLOBAL_SCOPE !== 'object') {
+    return;
+  }
+
+  try {
+    Object.defineProperty(GLOBAL_SCOPE, 'SAFE_LOCAL_STORAGE', {
+      configurable: true,
+      get: getSafeLocalStorage,
+    });
+    return;
+  } catch (defineError) {
+    try {
+      GLOBAL_SCOPE.SAFE_LOCAL_STORAGE = getSafeLocalStorage();
+      return;
+    } catch (assignError) {
+      console.warn('Unable to refresh SAFE_LOCAL_STORAGE global reference', assignError);
+    }
+  }
+}
+
+function downgradeSafeLocalStorageToMemory(reason, error, failingStorage) {
+  if (!safeLocalStorageInfo || safeLocalStorageInfo.type === 'memory') {
+    return;
+  }
+
+  const activeStorage = safeLocalStorageInfo.storage;
+  if (!activeStorage || (failingStorage && failingStorage !== activeStorage)) {
+    return;
+  }
+
+  let snapshot = Object.create(null);
+  try {
+    snapshot = snapshotStorageEntries(activeStorage, { suppressAlerts: true });
+  } catch (snapshotError) {
+    console.warn('Unable to capture storage snapshot during downgrade', snapshotError);
+  }
+
+  const memoryStorage = createMemoryStorage();
+  Object.keys(snapshot).forEach((key) => {
+    try {
+      memoryStorage.setItem(key, snapshot[key]);
+    } catch (copyError) {
+      console.warn('Unable to copy storage entry to memory during downgrade', key, copyError);
+    }
+  });
+
+  safeLocalStorageInfo = { storage: memoryStorage, type: 'memory' };
+  lastFailedUpgradeCandidate = null;
+
+  console.warn(
+    reason
+      ? `Downgraded planner storage to in-memory fallback after ${reason} errors.`
+      : 'Downgraded planner storage to in-memory fallback after storage errors.',
+    error,
+  );
+
+  updateGlobalSafeLocalStorageReference();
 }
 
 function attemptLocalStorageUpgrade() {
@@ -622,16 +690,7 @@ function getSafeLocalStorage() {
   return safeLocalStorageInfo.storage;
 }
 
-if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE === 'object') {
-  try {
-    Object.defineProperty(GLOBAL_SCOPE, 'SAFE_LOCAL_STORAGE', {
-      configurable: true,
-      get: getSafeLocalStorage,
-    });
-  } catch {
-    GLOBAL_SCOPE.SAFE_LOCAL_STORAGE = getSafeLocalStorage();
-  }
-}
+updateGlobalSafeLocalStorageReference();
 
 let persistentStorageRequestPromise = null;
 
@@ -1173,6 +1232,7 @@ function loadJSONFromStorage(
     primaryRaw = storage.getItem(key);
   } catch (err) {
     console.error(`${errorMessage} (read)`, err);
+    downgradeSafeLocalStorageToMemory('read access', err, storage);
     shouldAlert = true;
   }
 
@@ -1192,6 +1252,7 @@ function loadJSONFromStorage(
       backupRaw = storage.getItem(fallbackKey);
     } catch (err) {
       console.error(`${errorMessage} (backup read)`, err);
+      downgradeSafeLocalStorageToMemory('read access', err, storage);
       shouldAlert = true;
     }
 
@@ -1344,6 +1405,7 @@ function saveJSONToStorage(
           continue;
         }
         console.error(errorMessage, error);
+        downgradeSafeLocalStorageToMemory('write access', error, storage);
         alertStorageError();
         return;
       }
@@ -1456,16 +1518,18 @@ function deleteFromStorage(storage, key, errorMessage, options = {}) {
     storage.removeItem(key);
   } catch (e) {
     console.error(errorMessage, e);
+    downgradeSafeLocalStorageToMemory('deletion', e, storage);
     alertStorageError();
   }
 
   if (useBackup) {
     try {
-      storage.removeItem(fallbackKey);
-    } catch (backupError) {
-      console.error(`${errorMessage} (backup)`, backupError);
-      alertStorageError();
-    }
+    storage.removeItem(fallbackKey);
+  } catch (backupError) {
+    console.error(`${errorMessage} (backup)`, backupError);
+    downgradeSafeLocalStorageToMemory('deletion', backupError, storage);
+    alertStorageError();
+  }
   }
 
   const migrationBackupKey = `${key}${STORAGE_MIGRATION_BACKUP_SUFFIX}`;
@@ -1482,6 +1546,7 @@ function loadFlagFromStorage(storage, key, errorMessage) {
     return storage.getItem(key) === '1';
   } catch (e) {
     console.error(errorMessage, e);
+    downgradeSafeLocalStorageToMemory('read access', e, storage);
     alertStorageError();
     return false;
   }
@@ -1497,6 +1562,7 @@ function saveFlagToStorage(storage, key, value, errorMessage) {
     }
   } catch (e) {
     console.error(errorMessage, e);
+    downgradeSafeLocalStorageToMemory('write access', e, storage);
     alertStorageError();
   }
 }
@@ -2701,6 +2767,7 @@ function removeAutoGearPresetFromStorage(presetId, storage) {
     rawPresets = safeStorage.getItem(AUTO_GEAR_PRESETS_STORAGE_KEY);
   } catch (error) {
     console.error('Error loading automatic gear presets while removing autosaved preset from localStorage:', error);
+    downgradeSafeLocalStorageToMemory('read access', error, safeStorage);
     alertStorageError();
     return;
   }
@@ -2751,6 +2818,7 @@ function loadAutoGearActivePresetId() {
     return typeof value === 'string' ? value : '';
   } catch (error) {
     console.error('Error loading automatic gear active preset from localStorage:', error);
+    downgradeSafeLocalStorageToMemory('read access', error, safeStorage);
     alertStorageError();
     return '';
   }
@@ -2769,6 +2837,7 @@ function saveAutoGearActivePresetId(presetId) {
     }
   } catch (error) {
     console.error('Error saving automatic gear active preset to localStorage:', error);
+    downgradeSafeLocalStorageToMemory('write access', error, safeStorage);
     alertStorageError();
   }
 }
@@ -2784,6 +2853,7 @@ function loadAutoGearAutoPresetId() {
     return typeof value === 'string' ? value : '';
   } catch (error) {
     console.error('Error loading automatic gear auto preset from localStorage:', error);
+    downgradeSafeLocalStorageToMemory('read access', error, safeStorage);
     alertStorageError();
     return '';
   }
@@ -2802,6 +2872,7 @@ function saveAutoGearAutoPresetId(presetId) {
     }
   } catch (inspectionError) {
     console.error('Error inspecting automatic gear auto preset in localStorage:', inspectionError);
+    downgradeSafeLocalStorageToMemory('read access', inspectionError, safeStorage);
   }
   try {
     if (presetId) {
@@ -2817,6 +2888,7 @@ function saveAutoGearAutoPresetId(presetId) {
     }
   } catch (error) {
     console.error('Error saving automatic gear auto preset to localStorage:', error);
+    downgradeSafeLocalStorageToMemory('write access', error, safeStorage);
     alertStorageError();
   }
 }
@@ -2992,6 +3064,7 @@ function clearAllData() {
             }
           } catch (backupError) {
             console.warn('Unable to read backup key for export', key, backupError);
+            downgradeSafeLocalStorageToMemory('read access', backupError, storage);
           }
         }
         return null;
@@ -2999,6 +3072,7 @@ function clearAllData() {
       return String(value);
     } catch (error) {
       console.warn('Unable to read storage key for backup', key, error);
+      downgradeSafeLocalStorageToMemory('read access', error, storage);
       return null;
     }
   }
@@ -3157,6 +3231,7 @@ function clearAllData() {
             storage.removeItem(backupKey);
           } catch (backupError) {
             console.warn('Unable to remove backup key during import', backupKey, backupError);
+            downgradeSafeLocalStorageToMemory('deletion', backupError, storage);
           }
         }
       } else {
@@ -3167,12 +3242,14 @@ function clearAllData() {
             storage.setItem(backupKey, storedValue);
           } catch (backupError) {
             console.warn('Unable to update backup key during import', backupKey, backupError);
+            downgradeSafeLocalStorageToMemory('write access', backupError, storage);
             alertStorageError();
           }
         }
       }
     } catch (error) {
       console.warn('Unable to persist storage key during import', key, error);
+      downgradeSafeLocalStorageToMemory('write access', error, storage);
       if (useBackup) {
         alertStorageError();
       }
