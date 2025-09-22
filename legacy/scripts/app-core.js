@@ -17856,6 +17856,61 @@ function renderSetupDiagram() {
       var scaleFactor = Math.max(1, maxAutoScale);
       svgEl.style.maxWidth = "".concat(viewWidth * scaleFactor, "px");
     }
+    var rootEl = svgEl.querySelector('#diagramRoot');
+    if (rootEl && typeof rootEl.getBBox === 'function') {
+      var viewBox = svgEl.viewBox && svgEl.viewBox.baseVal;
+      var viewBoxWidth = viewBox && Number.isFinite(viewBox.width) && viewBox.width > 0 ? viewBox.width : viewWidth || svgEl.getBoundingClientRect().width || 1;
+      var viewBoxHeight = viewBox && Number.isFinite(viewBox.height) && viewBox.height > 0 ? viewBox.height : svgEl.getBoundingClientRect().height || 1;
+      var viewBoxX = viewBox && Number.isFinite(viewBox.x) ? viewBox.x : 0;
+      var viewBoxY = viewBox && Number.isFinite(viewBox.y) ? viewBox.y : 0;
+      var bbox = rootEl.getBBox();
+      var svgRect = svgEl.getBoundingClientRect();
+      var renderedWidth = svgRect.width || svgEl.clientWidth || viewBoxWidth;
+      var widthCandidates = [renderedWidth];
+      var parentRect = setupDiagramContainer.parentElement ? setupDiagramContainer.parentElement.getBoundingClientRect() : null;
+      if (parentRect && parentRect.width > 0) widthCandidates.push(parentRect.width - 32);
+      if (typeof window !== 'undefined' && Number.isFinite(window.innerWidth) && window.innerWidth > 0) {
+        widthCandidates.push(window.innerWidth - 80);
+      }
+      var positiveWidths = widthCandidates.filter(function (v) {
+        return Number.isFinite(v) && v > 0;
+      });
+      var maxAvailable = positiveWidths.length ? Math.max.apply(Math, positiveWidths) : renderedWidth;
+      var minAvailable = positiveWidths.length ? Math.min.apply(Math, positiveWidths) : renderedWidth;
+      var MAX_TARGET_WIDTH = 1400;
+      var desiredWidth = Math.max(minAvailable, Math.min(MAX_TARGET_WIDTH, maxAvailable));
+      var baseScale = viewBoxWidth > 0 ? renderedWidth / viewBoxWidth : 1;
+      var currentRootWidth = bbox.width * baseScale;
+      var desiredScale = currentRootWidth > 0 ? desiredWidth / currentRootWidth : 1;
+      if (!Number.isFinite(desiredScale) || desiredScale <= 0) desiredScale = 1;
+      var MIN_SCALE = isTouchDevice ? 0.55 : 0.65;
+      var MAX_INITIAL_SCALE = isTouchDevice ? 3 : 2.2;
+      var initialScale = Math.min(MAX_INITIAL_SCALE, Math.max(MIN_SCALE, desiredScale));
+      var centerX = bbox.x + bbox.width / 2;
+      var centerY = bbox.y + bbox.height / 2;
+      var targetCenterX = viewBoxX + viewBoxWidth / 2;
+      var targetCenterY = viewBoxY + viewBoxHeight / 2;
+      var initialPanX = targetCenterX / initialScale - centerX;
+      var initialPanY = targetCenterY / initialScale - centerY;
+      var roundedScale = Math.round(initialScale * 1000) / 1000;
+      var roundedPan = {
+        x: Math.round(initialPanX * 1000) / 1000,
+        y: Math.round(initialPanY * 1000) / 1000
+      };
+      if (Number.isFinite(roundedScale) && roundedScale > 0) {
+        setupDiagramContainer.dataset.initialScale = String(roundedScale);
+      } else {
+        delete setupDiagramContainer.dataset.initialScale;
+      }
+      if (Number.isFinite(roundedPan.x) && Number.isFinite(roundedPan.y)) {
+        setupDiagramContainer.dataset.initialPan = JSON.stringify(roundedPan);
+      } else {
+        delete setupDiagramContainer.dataset.initialPan;
+      }
+    } else {
+      delete setupDiagramContainer.dataset.initialScale;
+      delete setupDiagramContainer.dataset.initialPan;
+    }
   }
   lastDiagramPositions = JSON.parse(JSON.stringify(pos));
   attachDiagramPopups(nodeMap);
@@ -17937,10 +17992,34 @@ function enableDiagramInteractions() {
   var root = svg.querySelector('#diagramRoot') || svg;
   var isTouchDevice = (navigator.maxTouchPoints || 0) > 0;
   var MAX_SCALE = isTouchDevice ? Infinity : 3;
-  var INITIAL_SCALE = 0.9;
-  var pan = {
+  var MIN_SCALE = isTouchDevice ? 0.55 : 0.65;
+  var dataScale = parseFloat(setupDiagramContainer.dataset.initialScale || '');
+  var clampScale = function clampScale(value) {
+    if (!Number.isFinite(value) || value <= 0) return MIN_SCALE;
+    if (value > MAX_SCALE) return MAX_SCALE;
+    if (value < MIN_SCALE) return MIN_SCALE;
+    return value;
+  };
+  var fallbackScale = isTouchDevice ? 0.95 : 1.25;
+  var INITIAL_SCALE = clampScale(Number.isFinite(dataScale) ? dataScale : fallbackScale);
+  var initialPan = {
     x: 0,
     y: 0
+  };
+  if (setupDiagramContainer.dataset.initialPan) {
+    try {
+      var parsed = JSON.parse(setupDiagramContainer.dataset.initialPan);
+      if (parsed && Number.isFinite(parsed.x) && Number.isFinite(parsed.y)) {
+        initialPan = {
+          x: parsed.x,
+          y: parsed.y
+        };
+      }
+    } catch (err) {}
+  }
+  var pan = {
+    x: initialPan.x,
+    y: initialPan.y
   };
   var scale = INITIAL_SCALE;
   var panning = false;
@@ -17963,7 +18042,7 @@ function enableDiagramInteractions() {
     };
   };
   var apply = function apply() {
-    if (scale > MAX_SCALE) scale = MAX_SCALE;
+    scale = clampScale(scale);
     root.setAttribute('transform', "translate(".concat(pan.x, ",").concat(pan.y, ") scale(").concat(scale, ")"));
   };
   if (zoomInBtn) {
@@ -17981,8 +18060,8 @@ function enableDiagramInteractions() {
   if (resetViewBtn) {
     resetViewBtn.onclick = function () {
       pan = {
-        x: 0,
-        y: 0
+        x: initialPan.x,
+        y: initialPan.y
       };
       scale = INITIAL_SCALE;
       apply();

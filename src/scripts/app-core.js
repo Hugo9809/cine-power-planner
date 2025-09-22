@@ -18618,6 +18618,60 @@ function renderSetupDiagram() {
       const scaleFactor = Math.max(1, maxAutoScale);
       svgEl.style.maxWidth = `${viewWidth * scaleFactor}px`;
     }
+
+    const rootEl = svgEl.querySelector('#diagramRoot');
+    if (rootEl && typeof rootEl.getBBox === 'function') {
+      const viewBox = svgEl.viewBox?.baseVal;
+      const viewBoxWidth = viewBox?.width || viewWidth || svgEl.getBoundingClientRect().width || 1;
+      const viewBoxHeight = viewBox?.height || svgEl.getBoundingClientRect().height || 1;
+      const viewBoxX = viewBox?.x || 0;
+      const viewBoxY = viewBox?.y || 0;
+      const bbox = rootEl.getBBox();
+      const svgRect = svgEl.getBoundingClientRect();
+      const renderedWidth = svgRect.width || svgEl.clientWidth || viewBoxWidth;
+      const widthCandidates = [renderedWidth];
+      const parentRect = setupDiagramContainer.parentElement?.getBoundingClientRect();
+      if (parentRect && parentRect.width > 0) widthCandidates.push(parentRect.width - 32);
+      if (typeof window !== 'undefined' && Number.isFinite(window.innerWidth) && window.innerWidth > 0) {
+        widthCandidates.push(window.innerWidth - 80);
+      }
+      const positiveWidths = widthCandidates.filter(v => Number.isFinite(v) && v > 0);
+      const maxAvailable = positiveWidths.length ? Math.max(...positiveWidths) : renderedWidth;
+      const minAvailable = positiveWidths.length ? Math.min(...positiveWidths) : renderedWidth;
+      const MAX_TARGET_WIDTH = 1400;
+      const desiredWidth = Math.max(minAvailable, Math.min(MAX_TARGET_WIDTH, maxAvailable));
+      const baseScale = viewBoxWidth > 0 ? renderedWidth / viewBoxWidth : 1;
+      const currentRootWidth = bbox.width * baseScale;
+      let desiredScale = currentRootWidth > 0 ? desiredWidth / currentRootWidth : 1;
+      if (!Number.isFinite(desiredScale) || desiredScale <= 0) desiredScale = 1;
+      const MIN_SCALE = isTouchDevice ? 0.55 : 0.65;
+      const MAX_INITIAL_SCALE = isTouchDevice ? 3 : 2.2;
+      const initialScale = Math.min(MAX_INITIAL_SCALE, Math.max(MIN_SCALE, desiredScale));
+      const centerX = bbox.x + bbox.width / 2;
+      const centerY = bbox.y + bbox.height / 2;
+      const targetCenterX = viewBoxX + viewBoxWidth / 2;
+      const targetCenterY = viewBoxY + viewBoxHeight / 2;
+      const initialPanX = targetCenterX / initialScale - centerX;
+      const initialPanY = targetCenterY / initialScale - centerY;
+      const roundedScale = Math.round(initialScale * 1000) / 1000;
+      const roundedPan = {
+        x: Math.round(initialPanX * 1000) / 1000,
+        y: Math.round(initialPanY * 1000) / 1000
+      };
+      if (Number.isFinite(roundedScale) && roundedScale > 0) {
+        setupDiagramContainer.dataset.initialScale = String(roundedScale);
+      } else {
+        delete setupDiagramContainer.dataset.initialScale;
+      }
+      if (Number.isFinite(roundedPan.x) && Number.isFinite(roundedPan.y)) {
+        setupDiagramContainer.dataset.initialPan = JSON.stringify(roundedPan);
+      } else {
+        delete setupDiagramContainer.dataset.initialPan;
+      }
+    } else {
+      delete setupDiagramContainer.dataset.initialScale;
+      delete setupDiagramContainer.dataset.initialPan;
+    }
   }
 
   lastDiagramPositions = JSON.parse(JSON.stringify(pos));
@@ -18713,8 +18767,28 @@ function enableDiagramInteractions() {
   const root = svg.querySelector('#diagramRoot') || svg;
   const isTouchDevice = (navigator.maxTouchPoints || 0) > 0;
   const MAX_SCALE = isTouchDevice ? Infinity : 3;
-  const INITIAL_SCALE = 0.9;
-  let pan = { x: 0, y: 0 };
+  const MIN_SCALE = isTouchDevice ? 0.55 : 0.65;
+  const dataScale = parseFloat(setupDiagramContainer.dataset.initialScale || '');
+  const clampScale = value => {
+    if (!Number.isFinite(value) || value <= 0) return MIN_SCALE;
+    if (value > MAX_SCALE) return MAX_SCALE;
+    if (value < MIN_SCALE) return MIN_SCALE;
+    return value;
+  };
+  const fallbackScale = isTouchDevice ? 0.95 : 1.25;
+  const INITIAL_SCALE = clampScale(Number.isFinite(dataScale) ? dataScale : fallbackScale);
+  let initialPan = { x: 0, y: 0 };
+  if (setupDiagramContainer.dataset.initialPan) {
+    try {
+      const parsed = JSON.parse(setupDiagramContainer.dataset.initialPan);
+      if (parsed && Number.isFinite(parsed.x) && Number.isFinite(parsed.y)) {
+        initialPan = { x: parsed.x, y: parsed.y };
+      }
+    } catch (err) {
+      // Ignore parsing errors and fall back to default pan
+    }
+  }
+  let pan = { ...initialPan };
   let scale = INITIAL_SCALE;
   let panning = false;
   let panStart = { x: 0, y: 0 };
@@ -18724,7 +18798,7 @@ function enableDiagramInteractions() {
     return { x: e.clientX, y: e.clientY };
   };
   const apply = () => {
-    if (scale > MAX_SCALE) scale = MAX_SCALE;
+    scale = clampScale(scale);
     root.setAttribute('transform', `translate(${pan.x},${pan.y}) scale(${scale})`);
   };
   if (zoomInBtn) {
@@ -18741,7 +18815,7 @@ function enableDiagramInteractions() {
   }
   if (resetViewBtn) {
     resetViewBtn.onclick = () => {
-      pan = { x: 0, y: 0 };
+      pan = { ...initialPan };
       scale = INITIAL_SCALE;
       apply();
       manualPositions = {};
