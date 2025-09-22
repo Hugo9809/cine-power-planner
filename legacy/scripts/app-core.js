@@ -50,6 +50,47 @@ try {
   var _require = require('./overview.js');
   generatePrintableOverview = _require.generatePrintableOverview;
 } catch (_unused2) {}
+
+function resolveConnectorSummaryGenerator() {
+  var scopes = [];
+  if (typeof globalThis !== 'undefined') scopes.push(globalThis);
+  if (typeof window !== 'undefined') scopes.push(window);
+  if (typeof global !== 'undefined') scopes.push(global);
+  if (typeof self !== 'undefined') scopes.push(self);
+
+  for (var i = 0; i < scopes.length; i++) {
+    var scope = scopes[i];
+    if (scope && typeof scope.generateConnectorSummary === 'function') {
+      return scope.generateConnectorSummary;
+    }
+  }
+
+  if (typeof generateConnectorSummary === 'function') {
+    return generateConnectorSummary;
+  }
+
+  return null;
+}
+
+function safeGenerateConnectorSummary(device) {
+  if (!device) {
+    return '';
+  }
+
+  var generator = resolveConnectorSummaryGenerator();
+  if (typeof generator !== 'function') {
+    return '';
+  }
+  try {
+    var summary = generator(device);
+    return summary || '';
+  } catch (error) {
+    if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+      console.warn('Unable to generate connector summary', error);
+    }
+    return '';
+  }
+}
 if (typeof window !== 'undefined') {
   var lottie = window.lottie;
   if (lottie && typeof lottie.useWebWorker === 'function') {
@@ -13500,7 +13541,7 @@ function displayGearAndRequirements(html) {
         if (categoryParts.length) parts.push(categoryParts.join(' – '));
         if (libraryCategory) parts.push("Device library category: ".concat(libraryCategory));
         if (deviceInfo) {
-          var summary = generateConnectorSummary(deviceInfo);
+          var summary = safeGenerateConnectorSummary(deviceInfo);
           summary = summary ? summary.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim() : '';
           if (deviceInfo.notes) summary = summary ? "".concat(summary, "; Notes: ").concat(deviceInfo.notes) : deviceInfo.notes;
           if (summary) parts.push(summary);
@@ -17735,7 +17776,7 @@ function attachDiagramPopups(map) {
       var _devices$info$categor;
       deviceData = (_devices$info$categor = devices[info.category]) === null || _devices$info$categor === void 0 ? void 0 : _devices$info$categor[info.name];
     }
-    var connectors = deviceData ? generateConnectorSummary(deviceData) : '';
+    var connectors = deviceData ? safeGenerateConnectorSummary(deviceData) : '';
     var infoHtml = (deviceData && deviceData.latencyMs ? "<div class=\"info-box video-conn\"><strong>Latency:</strong> ".concat(escapeHtml(String(deviceData.latencyMs)), "</div>") : '') + (deviceData && deviceData.frequency ? "<div class=\"info-box video-conn\"><strong>Frequency:</strong> ".concat(escapeHtml(String(deviceData.frequency)), "</div>") : '');
     var html = "<strong>".concat(escapeHtml(info.name), "</strong>") + connectors + infoHtml;
     var show = function show(e) {
@@ -18075,7 +18116,7 @@ function renderDeviceList(categoryKey, ulElement) {
     header.className = "device-summary";
     var nameSpan = document.createElement("span");
     nameSpan.textContent = name;
-    var summary = generateConnectorSummary(deviceData);
+    var summary = safeGenerateConnectorSummary(deviceData);
     summary = summary ? summary.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim() : '';
     if (deviceData.notes) {
       summary = summary ? "".concat(summary, "; Notes: ").concat(deviceData.notes) : deviceData.notes;
