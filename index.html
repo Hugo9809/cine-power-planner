@@ -898,90 +898,87 @@
         id="settingsPanel-general"
         class="settings-panel"
         role="tabpanel"
-        aria-labelledby="settingsTab-general"
+        aria-labelledby="settingsTab-general generalSettingsHeading"
       >
-        <section class="settings-section general-settings" aria-labelledby="generalSettingsHeading">
-          <h3 id="generalSettingsHeading">General</h3>
-          <div class="form-row">
-            <label for="settingsLanguage" id="settingsLanguageLabel">Language</label>
-            <select id="settingsLanguage">
-              <option value="en">English</option>
-              <option value="de">Deutsch</option>
-              <option value="es">Español</option>
-              <option value="fr">Français</option>
-              <option value="it">Italiano</option>
-            </select>
+        <h3 id="generalSettingsHeading">General</h3>
+        <div class="form-row">
+          <label for="settingsLanguage" id="settingsLanguageLabel">Language</label>
+          <select id="settingsLanguage">
+            <option value="en">English</option>
+            <option value="de">Deutsch</option>
+            <option value="es">Español</option>
+            <option value="fr">Français</option>
+            <option value="it">Italiano</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label for="settingsDarkMode" id="settingsDarkModeLabel">Dark mode</label>
+          <input type="checkbox" id="settingsDarkMode" />
+        </div>
+        <div class="form-row">
+          <label for="settingsPinkMode" id="settingsPinkModeLabel">Pink mode</label>
+          <input type="checkbox" id="settingsPinkMode" />
+        </div>
+        <div class="form-row">
+          <label for="accentColorInput" id="accentColorLabel">Accent color</label>
+          <input type="color" id="accentColorInput" value="#001589" />
+        </div>
+        <div class="form-row">
+          <label for="settingsTemperatureUnit" id="settingsTemperatureUnitLabel">Temperature unit</label>
+          <select id="settingsTemperatureUnit">
+            <option value="celsius">Celsius (°C)</option>
+            <option value="fahrenheit">Fahrenheit (°F)</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label for="settingsFontSize" id="settingsFontSizeLabel">Font size</label>
+          <select id="settingsFontSize">
+            <option value="12">12px (Smaller)</option>
+            <option value="14">14px</option>
+            <option value="16">16px</option>
+            <option value="18">18px</option>
+            <option value="20">20px (Bigger)</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label for="settingsFontFamily" id="settingsFontFamilyLabel">Font</label>
+          <select id="settingsFontFamily">
+            <optgroup label="Bundled fonts" id="bundledFontOptions">
+              <option value="'Ubuntu', sans-serif">Ubuntu</option>
+              <option value="'Arial', sans-serif">Arial</option>
+              <option value="'Times New Roman', serif">Times New Roman</option>
+              <option value="'Courier New', monospace">Courier New</option>
+            </optgroup>
+            <optgroup label="Local fonts" id="localFontsGroup"></optgroup>
+          </select>
+          <button type="button" id="localFontsButton" class="inline-form-button" hidden>
+            Add local font…
+          </button>
+          <input
+            type="file"
+            id="localFontsInput"
+            class="visually-hidden"
+            accept=".woff2,.woff,.ttf,.otf,.ttc,application/font-woff,application/font-woff2,application/x-font-ttf,application/x-font-opentype,font/ttf,font/otf,font/woff,font/woff2"
+            multiple
+            hidden
+          />
+          <p id="localFontsStatus" class="settings-hint" role="status" aria-live="polite" hidden></p>
+        </div>
+        <div class="form-row">
+          <label for="settingsLogo" id="settingsLogoLabel">Logo (SVG)</label>
+          <div class="file-input-wrapper">
+            <input type="file" id="settingsLogo" accept="image/svg+xml" />
+            <div id="settingsLogoPreview" class="logo-preview" hidden aria-live="polite"></div>
           </div>
-          <div class="form-row">
-            <label for="settingsDarkMode" id="settingsDarkModeLabel">Dark mode</label>
-            <input type="checkbox" id="settingsDarkMode" />
-          </div>
-          <div class="form-row">
-            <label for="settingsPinkMode" id="settingsPinkModeLabel">Pink mode</label>
-            <input type="checkbox" id="settingsPinkMode" />
-          </div>
-          <div class="form-row">
-            <label for="accentColorInput" id="accentColorLabel">Accent color</label>
-            <input type="color" id="accentColorInput" value="#001589" />
-          </div>
-          <div class="form-row">
-            <label for="settingsTemperatureUnit" id="settingsTemperatureUnitLabel">Temperature unit</label>
-            <select id="settingsTemperatureUnit">
-              <option value="celsius">Celsius (°C)</option>
-              <option value="fahrenheit">Fahrenheit (°F)</option>
-            </select>
-          </div>
-          <div class="form-row">
-            <label for="settingsFontSize" id="settingsFontSizeLabel">Font size</label>
-            <select id="settingsFontSize">
-              <option value="12">12px (Smaller)</option>
-              <option value="14">14px</option>
-              <option value="16">16px</option>
-              <option value="18">18px</option>
-              <option value="20">20px (Bigger)</option>
-            </select>
-          </div>
-          <div class="form-row">
-            <label for="settingsFontFamily" id="settingsFontFamilyLabel">Font</label>
-            <select id="settingsFontFamily">
-              <optgroup label="Bundled fonts" id="bundledFontOptions">
-                <option value="'Ubuntu', sans-serif">Ubuntu</option>
-                <option value="'Arial', sans-serif">Arial</option>
-                <option value="'Times New Roman', serif">Times New Roman</option>
-                <option value="'Courier New', monospace">Courier New</option>
-              </optgroup>
-              <optgroup label="Local fonts" id="localFontsGroup"></optgroup>
-            </select>
-            <button type="button" id="localFontsButton" class="inline-form-button" hidden>
-              Add local font…
-            </button>
-            <input
-              type="file"
-              id="localFontsInput"
-              class="visually-hidden"
-              accept=".woff2,.woff,.ttf,.otf,.ttc,application/font-woff,application/font-woff2,application/x-font-ttf,application/x-font-opentype,font/ttf,font/otf,font/woff,font/woff2"
-              multiple
-              hidden
-            />
-            <p id="localFontsStatus" class="settings-hint" role="status" aria-live="polite" hidden></p>
-          </div>
-          <div class="form-row">
-            <label for="settingsLogo" id="settingsLogoLabel">Logo (SVG)</label>
-            <div class="file-input-wrapper">
-              <input type="file" id="settingsLogo" accept="image/svg+xml" />
-              <div id="settingsLogoPreview" class="logo-preview" hidden aria-live="polite"></div>
-            </div>
-          </div>
-        </section>
+        </div>
       </section>
       <section
         id="settingsPanel-autoGear"
         class="settings-panel"
         role="tabpanel"
-        aria-labelledby="settingsTab-autoGear"
+        aria-labelledby="settingsTab-autoGear autoGearHeading"
         hidden
       >
-        <section class="settings-section" aria-labelledby="autoGearHeading">
         <h3 id="autoGearHeading">Automatic Gear Rules</h3>
         <p id="autoGearDescription" class="settings-hint"></p>
         <div id="autoGearPresetPanel" class="auto-gear-preset-panel">
@@ -1223,16 +1220,14 @@
         </div>
         <datalist id="autoGearItemCatalog"></datalist>
         <datalist id="autoGearMonitorCatalog"></datalist>
-        </section>
       </section>
       <section
         id="settingsPanel-accessibility"
         class="settings-panel"
         role="tabpanel"
-        aria-labelledby="settingsTab-accessibility"
+        aria-labelledby="settingsTab-accessibility accessibilityHeading"
         hidden
       >
-        <section class="settings-section" aria-labelledby="accessibilityHeading">
         <h3 id="accessibilityHeading">Accessibility</h3>
         <div class="form-row">
           <label for="settingsHighContrast" id="settingsHighContrastLabel">High contrast</label>
@@ -1255,16 +1250,14 @@
         <p id="settingsRelaxedSpacingHelp" class="settings-hint">
           Increase line spacing and control padding to make text easier to scan and tap.
         </p>
-        </section>
       </section>
       <section
         id="settingsPanel-backup"
         class="settings-panel"
         role="tabpanel"
-        aria-labelledby="settingsTab-backup"
+        aria-labelledby="settingsTab-backup backupHeading"
         hidden
       >
-        <section class="settings-section" aria-labelledby="backupHeading">
         <h3 id="backupHeading">Backup &amp; Restore</h3>
         <div class="form-row">
           <label for="settingsShowAutoBackups" id="settingsShowAutoBackupsLabel">Show auto backups in project list</label>
@@ -1276,16 +1269,14 @@
           <button id="restoreSettings">Restore</button>
           <button id="factoryResetButton">Factory reset</button>
         </div>
-        </section>
       </section>
       <section
         id="settingsPanel-data"
         class="settings-panel"
         role="tabpanel"
-        aria-labelledby="settingsTab-data"
+        aria-labelledby="settingsTab-data dataHeading"
         hidden
       >
-        <section class="settings-section" aria-labelledby="dataHeading">
         <h3 id="dataHeading">Data &amp; Storage</h3>
         <p id="storageSummaryIntro" class="storage-summary-note">
           Everything below stays on this device.
@@ -1295,20 +1286,17 @@
         <p id="storageSummaryFootnote" class="storage-summary-note">
           Backups export each entry as human-readable JSON.
         </p>
-        </section>
       </section>
       <section
         id="settingsPanel-about"
         class="settings-panel"
         role="tabpanel"
-        aria-labelledby="settingsTab-about"
+        aria-labelledby="settingsTab-about aboutHeading"
         hidden
       >
-        <section class="settings-section" aria-labelledby="aboutHeading">
         <h3 id="aboutHeading">About &amp; Support</h3>
         <p id="aboutVersion">Version 1.0.5</p>
         <p><a href="https://github.com" id="supportLink" target="_blank">Support</a></p>
-        </section>
       </section>
       <div class="button-row action-buttons">
         <button id="settingsSave"><span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="essential">&#xF207;</span>Save</button>

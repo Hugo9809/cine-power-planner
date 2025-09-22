@@ -1473,32 +1473,32 @@ body.high-contrast .settings-tab-icon {
   }
 }
 
-.settings-panel[hidden] {
-  display: none;
-}
-
-.settings-section {
+.settings-panel {
   background: var(--panel-bg);
   border: 1px solid var(--panel-border);
   border-radius: var(--border-radius);
   box-shadow: var(--panel-shadow);
-  padding: 20px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
 }
 
-.settings-section h3 {
+.settings-panel h3 {
   margin: 0;
 }
 
-.settings-section p {
+.settings-panel p {
   margin: 0;
 }
 
-.settings-section .button-row {
+.settings-panel .button-row {
   justify-content: flex-start;
   flex-wrap: wrap;
+}
+
+.settings-panel[hidden] {
+  display: none;
 }
 
 .auto-gear-rules {
