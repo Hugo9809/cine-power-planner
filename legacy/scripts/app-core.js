@@ -11245,6 +11245,35 @@ var normaliseMarkVariants = function normaliseMarkVariants(str) {
     return "mk".concat(suffix);
   });
 };
+var UNICODE_FRACTIONS = new Map([
+  ['¼', '1/4'],
+  ['½', '1/2'],
+  ['¾', '3/4'],
+  ['⅓', '1/3'],
+  ['⅔', '2/3'],
+  ['⅕', '1/5'],
+  ['⅖', '2/5'],
+  ['⅗', '3/5'],
+  ['⅘', '4/5'],
+  ['⅙', '1/6'],
+  ['⅚', '5/6'],
+  ['⅛', '1/8'],
+  ['⅜', '3/8'],
+  ['⅝', '5/8'],
+  ['⅞', '7/8'],
+  ['⅑', '1/9'],
+  ['⅒', '1/10'],
+  ['⅐', '1/7']
+]);
+var UNICODE_FRACTION_PATTERN = UNICODE_FRACTIONS.size > 0 ? new RegExp("[".concat(Array.from(UNICODE_FRACTIONS.keys()).join(''), "]"), 'g') : null;
+var normalizeUnicodeFractions = function normalizeUnicodeFractions(str) {
+  if (!UNICODE_FRACTION_PATTERN || typeof str !== 'string' || !str) {
+    return str;
+  }
+  return str.replace(UNICODE_FRACTION_PATTERN, function (match) {
+    return UNICODE_FRACTIONS.get(match) || match;
+  });
+};
 var SPELLING_VARIANTS = new Map([['analyse', 'analyze'], ['analysed', 'analyzed'], ['analyses', 'analyzes'], ['analysing', 'analyzing'], ['behaviour', 'behavior'], ['behaviours', 'behaviors'], ['behavioural', 'behavioral'], ['behaviourally', 'behaviorally'], ['centre', 'center'], ['centres', 'centers'], ['colour', 'color'], ['colourful', 'colorful'], ['colouring', 'coloring'], ['colourings', 'colorings'], ['colourless', 'colorless'], ['colours', 'colors'], ['customisation', 'customization'], ['customisations', 'customizations'], ['customise', 'customize'], ['customised', 'customized'], ['customises', 'customizes'], ['customising', 'customizing'], ['defence', 'defense'], ['defences', 'defenses'], ['favour', 'favor'], ['favourable', 'favorable'], ['favourably', 'favorably'], ['favoured', 'favored'], ['favourite', 'favorite'], ['favourites', 'favorites'], ['favouring', 'favoring'], ['favours', 'favors'], ['licence', 'license'], ['licences', 'licenses'], ['localisation', 'localization'], ['localisations', 'localizations'], ['localise', 'localize'], ['localised', 'localized'], ['localises', 'localizes'], ['localising', 'localizing'], ['modelling', 'modeling'], ['modeller', 'modeler'], ['modellers', 'modelers'], ['optimisation', 'optimization'], ['optimisations', 'optimizations'], ['optimise', 'optimize'], ['optimised', 'optimized'], ['optimises', 'optimizes'], ['optimising', 'optimizing'], ['organisation', 'organization'], ['organisations', 'organizations'], ['organise', 'organize'], ['organised', 'organized'], ['organises', 'organizes'], ['organising', 'organizing'], ['personalisation', 'personalization'], ['personalisations', 'personalizations'], ['personalise', 'personalize'], ['personalised', 'personalized'], ['personalises', 'personalizes'], ['personalising', 'personalizing'], ['practise', 'practice'], ['practised', 'practiced'], ['practises', 'practices'], ['practising', 'practicing'], ['theatre', 'theater'], ['theatres', 'theaters'], ['traveller', 'traveler'], ['travellers', 'travelers'], ['travelling', 'traveling']]);
 var SPELLING_VARIANT_PATTERN = SPELLING_VARIANTS.size > 0 ? new RegExp("\\b(".concat(Array.from(SPELLING_VARIANTS.keys()).join('|'), ")\\b"), 'g') : null;
 var normalizeSpellingVariants = function normalizeSpellingVariants(str) {
@@ -11261,6 +11290,7 @@ var searchKey = function searchKey(str) {
     normalized = normalized.normalize('NFD');
   }
   normalized = normalized.replace(/[\u0300-\u036f]/g, '').replace(/ß/g, 'ss').replace(/æ/g, 'ae').replace(/œ/g, 'oe').replace(/ø/g, 'o').replace(/&/g, 'and').replace(/\+/g, 'plus').replace(/[°º˚]/g, 'deg').replace(/\bdegrees?\b/g, 'deg').replace(/[×✕✖✗✘]/g, 'x');
+  normalized = normalizeUnicodeFractions(normalized);
   normalized = normalizeSpellingVariants(normalized);
   normalized = normaliseMarkVariants(normalized);
   var simplified = normalized.replace(/[^a-z0-9]+/g, '');
@@ -11274,6 +11304,7 @@ var searchTokens = function searchTokens(str) {
     normalized = normalized.normalize('NFD');
   }
   normalized = normalized.replace(/[\u0300-\u036f]/g, '').replace(/ß/g, 'ss').replace(/æ/g, 'ae').replace(/œ/g, 'oe').replace(/ø/g, 'o').replace(/&/g, ' and ').replace(/\+/g, ' plus ').replace(/[°º˚]/g, ' deg ').replace(/\bdegrees?\b/g, ' deg ').replace(/[×✕✖✗✘]/g, ' x by ');
+  normalized = normalizeUnicodeFractions(normalized);
   var tokens = new Set();
   var initialWords = [];
   var addToken = function addToken(token) {
