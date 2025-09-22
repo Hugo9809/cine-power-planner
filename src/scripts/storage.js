@@ -3113,6 +3113,11 @@ function clearAllData() {
       autoGearShowBackups: loadAutoGearBackupVisibility(),
     };
 
+    const schemaCache = readLocalStorageValue(DEVICE_SCHEMA_CACHE_KEY);
+    if (schemaCache) {
+      payload.schemaCache = schemaCache;
+    }
+
     const preferences = collectPreferenceSnapshot();
     if (Object.keys(preferences).length) {
       payload.preferences = preferences;

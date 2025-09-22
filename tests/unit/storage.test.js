@@ -866,6 +866,8 @@ describe('export/import all data', () => {
     saveAutoGearActivePresetId('preset-1');
     saveAutoGearAutoPresetId('preset-auto');
     saveAutoGearBackupVisibility(true);
+    localStorage.setItem(SCHEMA_CACHE_KEY, JSON.stringify({ version: 1 }));
+
     expect(exportAllData()).toEqual({
       devices: validDeviceData,
       setups: { A: { foo: 1 } },
@@ -875,11 +877,12 @@ describe('export/import all data', () => {
       favorites: { cat: ['A'] },
       autoGearRules: rules,
       autoGearBackups: backups,
-        autoGearSeeded: true,
-        autoGearPresets: presets,
-        autoGearActivePresetId: 'preset-1',
-        autoGearAutoPresetId: 'preset-auto',
-        autoGearShowBackups: true,
+      schemaCache: JSON.stringify({ version: 1 }),
+      autoGearSeeded: true,
+      autoGearPresets: presets,
+      autoGearActivePresetId: 'preset-1',
+      autoGearAutoPresetId: 'preset-auto',
+      autoGearShowBackups: true,
         preferences: {
           darkMode: true,
           pinkMode: true,
@@ -953,10 +956,11 @@ describe('export/import all data', () => {
       autoGearBackups: [
         { id: 'backup-restore', label: 'Restore', createdAt: 1720646400000, rules: [] }
       ],
+      schemaCache: JSON.stringify({ version: 2 }),
       autoGearSeeded: true,
-        autoGearPresets: [
-          { id: 'preset-restore', label: 'Restore tweaks', rules: [] }
-        ],
+      autoGearPresets: [
+        { id: 'preset-restore', label: 'Restore tweaks', rules: [] }
+      ],
         autoGearActivePresetId: 'preset-restore',
         autoGearAutoPresetId: 'preset-restore',
         autoGearShowBackups: true,
@@ -1004,10 +1008,11 @@ describe('export/import all data', () => {
       expect(localStorage.getItem('fontFamily')).toBe("'Other Font', serif");
       expect(localStorage.getItem('language')).toBe('fr');
       expect(localStorage.getItem('iosPwaHelpShown')).toBe('true');
-    expect(JSON.parse(localStorage.getItem('cameraPowerPlanner_customFonts'))).toEqual([
-      { id: 'font-restore', name: 'Restore Font', data: 'data:font/woff;base64,BBBB' }
-    ]);
-  });
+      expect(localStorage.getItem(SCHEMA_CACHE_KEY)).toBe(JSON.stringify({ version: 2 }));
+      expect(JSON.parse(localStorage.getItem('cameraPowerPlanner_customFonts'))).toEqual([
+        { id: 'font-restore', name: 'Restore Font', data: 'data:font/woff;base64,BBBB' }
+      ]);
+    });
 
   test('importAllData converts legacy storage snapshots with prefixed keys', () => {
     localStorage.clear();
