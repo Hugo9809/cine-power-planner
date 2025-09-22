@@ -12159,6 +12159,32 @@ const searchTokens = str => {
     const cleaned = token.replace(/[^a-z0-9]+/g, '');
     if (cleaned) tokens.add(cleaned);
   };
+  const isAlpha = value => /^[a-z]+$/.test(value);
+  const isNumeric = value => /^\d+$/.test(value);
+  const addAlphaNumericVariants = segment => {
+    if (!segment) return;
+    const groups = segment.match(/[a-z]+|\d+/g);
+    if (!groups || groups.length <= 1) return;
+    groups.forEach(part => {
+      if (isNumeric(part) || part.length > 1) {
+        addToken(part);
+      }
+    });
+    for (let index = 0; index < groups.length - 1; index += 1) {
+      const current = groups[index];
+      const next = groups[index + 1];
+      if (!current || !next) continue;
+      const combined = `${current}${next}`;
+      if (!combined || combined === segment) continue;
+      if (
+        (isAlpha(current) && isNumeric(next)) ||
+        (isNumeric(current) && isAlpha(next)) ||
+        (current.length > 1 && next.length > 1)
+      ) {
+        addToken(combined);
+      }
+    }
+  };
   const processParts = (strToProcess, collectInitials = false) => {
     strToProcess.split(/\s+/).forEach(part => {
       if (!part) return;
@@ -12168,6 +12194,7 @@ const searchTokens = str => {
         .filter(Boolean)
         .forEach(segment => {
           addToken(segment);
+          addAlphaNumericVariants(segment);
           if (collectInitials && /^[a-z]/.test(segment)) {
             initialWords.push(segment);
           }
