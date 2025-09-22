@@ -16902,6 +16902,80 @@ function populateMonitorSelect() {
   populateSelect(monitorSelect, filtered, true);
 }
 
+function getCompatibleCagesForCamera(cameraName) {
+  const allCages = devices?.accessories?.cages || {};
+  if (!cameraName || cameraName === 'None') {
+    return allCages;
+  }
+  return Object.fromEntries(
+    Object.entries(allCages).filter(([, cage]) => {
+      if (!cage || typeof cage !== 'object') {
+        return true;
+      }
+      const compat = cage.compatible;
+      if (Array.isArray(compat)) {
+        return compat.includes(cameraName);
+      }
+      if (typeof compat === 'string' && compat) {
+        return compat === cameraName;
+      }
+      return !compat;
+    })
+  );
+}
+
+function applyCageSelectValue(value) {
+  if (!cageSelect) return;
+  if (typeof setSelectValue === 'function') {
+    setSelectValue(cageSelect, value);
+    return;
+  }
+  if (typeof value === 'string') {
+    cageSelect.value = value;
+    if (cageSelect.value !== value) {
+      if (value === 'None') {
+        cageSelect.value = 'None';
+      } else {
+        cageSelect.selectedIndex = -1;
+      }
+    }
+    return;
+  }
+  cageSelect.value = '';
+}
+
+function updateCageSelectOptions(preferredValue) {
+  if (!cageSelect) return;
+  const cameraName = cameraSelect ? cameraSelect.value : '';
+  const compatibleCages = getCompatibleCagesForCamera(cameraName);
+  const desiredValue = typeof preferredValue === 'string' ? preferredValue : cageSelect.value;
+  populateSelect(cageSelect, compatibleCages, true);
+
+  const hasDesired =
+    desiredValue && desiredValue !== 'None'
+    && Object.prototype.hasOwnProperty.call(compatibleCages, desiredValue);
+
+  if (hasDesired) {
+    applyCageSelectValue(desiredValue);
+    return;
+  }
+
+  const options = Array.from(cageSelect.options || []);
+  const noneOption = options.find(opt => opt.value === 'None');
+  if (desiredValue === 'None' && noneOption) {
+    applyCageSelectValue('None');
+    return;
+  }
+
+  if (noneOption) {
+    applyCageSelectValue('None');
+    return;
+  }
+
+  const firstOption = options.find(opt => opt.value && opt.value !== 'None');
+  applyCageSelectValue(firstOption ? firstOption.value : '');
+}
+
 function filterSelect(selectElem, filterValue) {
   const text = filterValue.toLowerCase();
   Array.from(selectElem.options).forEach(opt => {
@@ -17012,7 +17086,7 @@ function applyFilters() {
 populateSelect(cameraSelect, devices.cameras, true);
 populateMonitorSelect();
 populateSelect(videoSelect, devices.video, true);
-if (cageSelect) populateSelect(cageSelect, devices.accessories?.cages || {}, true);
+updateCageSelectOptions();
 motorSelects.forEach(sel => populateSelect(sel, devices.fiz.motors, true));
 controllerSelects.forEach(sel => populateSelect(sel, devices.fiz.controllers, true));
 populateSelect(distanceSelect, devices.fiz.distance, true);
@@ -17957,6 +18031,7 @@ function applyDeviceChanges(changes) {
   populateSelect(cameraSelect, devices.cameras, true);
   populateMonitorSelect();
   populateSelect(videoSelect, devices.video, true);
+  updateCageSelectOptions();
   motorSelects.forEach(sel => populateSelect(sel, devices.fiz.motors, true));
   controllerSelects.forEach(sel => populateSelect(sel, devices.fiz.controllers, true));
   populateSelect(distanceSelect, devices.fiz.distance, true);
