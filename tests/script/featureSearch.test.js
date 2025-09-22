@@ -176,6 +176,15 @@ describe('global feature search helpers', () => {
     expect(searchKey('3840×2160')).toBe(searchKey('3840 x 2160'));
   });
 
+  test('searchKey normalizes unicode fraction characters', () => {
+    expect(searchKey('¼"-20 Mount')).toBe(
+      searchKey('1/4"-20 Mount')
+    );
+    expect(searchKey('⅜-16 Thread Adapter')).toBe(
+      searchKey('3/8-16 Thread Adapter')
+    );
+  });
+
   test('searchTokens expose degree and multiplication variants', () => {
     expect(searchTokens('35° Tilt Module')).toEqual(
       expect.arrayContaining(['35', 'deg'])
@@ -185,6 +194,15 @@ describe('global feature search helpers', () => {
     );
     expect(searchTokens('3840×2160 (UHD)')).toEqual(
       expect.arrayContaining(['3840', '2160', 'x', 'by'])
+    );
+  });
+
+  test('searchTokens expose unicode fraction variants', () => {
+    expect(searchTokens('¼-20 Mounting Point')).toEqual(
+      expect.arrayContaining(['1420', '1', '4', '20'])
+    );
+    expect(searchTokens('⅜-16 Mounting Point')).toEqual(
+      expect.arrayContaining(['3816', '3', '8', '16'])
     );
   });
 
@@ -245,6 +263,25 @@ describe('global feature search helpers', () => {
       searchTokens('3840 by 2160')
     );
     expect(resolutionMatch?.value.label).toBe('3840×2160 (UHD)');
+  });
+
+  test('findBestSearchMatch links unicode fraction queries to ascii entries', () => {
+    const entries = new Map();
+    entries.set(
+      searchKey('1/4-20 Mount Adapter'),
+      {
+        label: '1/4-20 Mount Adapter',
+        tokens: searchTokens('1/4-20 Mount Adapter')
+      }
+    );
+
+    const fractionMatch = findBestSearchMatch(
+      entries,
+      searchKey('¼-20 mount adapter'),
+      searchTokens('¼-20 mount adapter')
+    );
+
+    expect(fractionMatch?.value.label).toBe('1/4-20 Mount Adapter');
   });
 
   test('searchKey treats mark and mk numbering the same', () => {
