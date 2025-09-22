@@ -87,7 +87,7 @@ body.dark-mode {
 #overviewDialogContent.dark-mode {
   --surface-color: #fff;
   --text-color: #000;
-  --panel-bg: #f9f9f9;
+  --panel-bg: #fff;
   --panel-border: #ddd;
   --control-bg: #f0f0f0;
   --control-text: #333;
@@ -419,14 +419,14 @@ body:not(.light-mode) .gear-table .category-row td {
 
 
 .device-category {
-  background: var(--panel-bg) !important;
+  background: #ffffff !important;
   border: 1px solid var(--panel-border) !important;
   box-shadow: var(--panel-shadow);
 }
 
 .device-block {
-  background: rgba(255, 255, 255, 0.95) !important;
-  border: 1px solid var(--control-text) !important;
+  background: #ffffff !important;
+  border: 1px solid var(--panel-border) !important;
   box-shadow: var(--panel-shadow);
 }
 
