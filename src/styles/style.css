@@ -44,7 +44,7 @@
   --button-link-padding-block: var(--button-padding-block);
   --button-link-padding-inline: 12px;
   --icon-gap: 0.3em;
-  --button-icon-gap: 1em;
+  --button-icon-gap: 1.35em;
   --form-control-font-size: var(--font-size-relative-base);
   --form-label-width: 150px;
   --form-label-min-width: 120px;
@@ -173,7 +173,7 @@ body.relaxed-spacing {
   --form-label-min-width: 140px;
   --button-size: 30px;
   --button-line-height: 1.45;
-  --button-icon-gap: 1.15em;
+  --button-icon-gap: 1.6em;
   --form-row-margin-block: 8px;
   --button-link-padding-inline: 16px;
 }
