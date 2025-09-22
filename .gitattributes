@@ -1,0 +1,24 @@
+# Ensure consistent LF line endings for text files
+* text=auto eol=lf
+
+# Treat common binary assets as binary to avoid line ending conversion
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.svg binary
+*.mp4 binary
+*.mov binary
+*.zip binary
+*.gz binary
+*.tgz binary
+*.bz2 binary
+*.pdf binary
+*.ttf binary
+*.otf binary
+*.woff binary
+*.woff2 binary
+*.mp3 binary
+*.wav binary
