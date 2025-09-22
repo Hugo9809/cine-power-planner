@@ -4810,11 +4810,24 @@ function renderGearListFilterDetails(details) {
   }
   container.classList.remove('hidden');
   details.forEach(detail => {
-    const { type, label, size, values, needsSize, needsValues } = detail;
+    const {
+      type,
+      label,
+      gearName,
+      entryId,
+      size,
+      values,
+      needsSize,
+      needsValues
+    } = detail;
     const row = document.createElement('div');
     row.className = 'filter-detail';
     const heading = document.createElement('div');
-    heading.className = 'filter-detail-label';
+    heading.className = 'filter-detail-label gear-item';
+    if (entryId) heading.setAttribute('data-filter-entry', entryId);
+    if (gearName) heading.setAttribute('data-gear-name', gearName);
+    if (label) heading.setAttribute('data-filter-label', label);
+    if (type) heading.setAttribute('data-filter-type', type);
     const displaySize = size && label && label.includes(size) ? '' : size;
     const displayValues = Array.isArray(values) ? values : undefined;
     if (label) {
@@ -4931,10 +4944,14 @@ function renderFilterDetails() {
     const size = prev.size || DEFAULT_FILTER_SIZE;
     const needsSize = type !== 'Diopter';
     const needsValues = filterTypeNeedsValueSelect(type);
-    const { label } = resolveFilterDisplayInfo(type, size);
+    const { label, gearName } = resolveFilterDisplayInfo(type, size);
+    let entryId = `filter-${filterId(type)}`;
+    if (type === 'Diopter') entryId = `${entryId}-set`;
     return {
       type,
       label,
+      gearName,
+      entryId,
       size,
       values: Array.isArray(prev.values) ? prev.values.slice() : [],
       needsSize,
@@ -5033,28 +5050,8 @@ function normalizeGearNameForComparison(name) {
   return normalized.replace(/[^a-z0-9]+/g, '');
 }
 
-function buildFilterSelectHtml(filters = [], precomputedEntries) {
-  const entries = Array.isArray(precomputedEntries)
-    ? precomputedEntries
-    : buildFilterGearEntries(filters);
-  const summaryHtml = entries.map(entry => {
-    const attrs = [
-      'class="gear-item"',
-      `data-gear-name="${escapeHtml(entry.gearName)}"`,
-      `data-filter-entry="${escapeHtml(entry.id)}"`,
-      `data-filter-label="${escapeHtml(entry.label)}"`
-    ];
-    if (entry.type) attrs.push(`data-filter-type="${escapeHtml(entry.type)}"`);
-    const text = formatFilterEntryText(entry);
-    return `<span ${attrs.join(' ')}>${escapeHtml(text)}</span>`;
-  }).join('<br>');
-  const detailsContainer = entries.length
-    ? '<div id="gearListFilterDetails" class="hidden" aria-live="polite"></div>'
-    : '';
-  const summaryContainer = summaryHtml
-    ? `<div class="gear-list-filter-summary">${summaryHtml}</div>`
-    : '';
-  return [detailsContainer, summaryContainer].filter(Boolean).join('');
+function buildFilterSelectHtml() {
+  return '<div id="gearListFilterDetails" class="hidden" aria-live="polite"></div>';
 }
 
 function collectFilterAccessories(filters = []) {
