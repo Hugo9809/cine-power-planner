@@ -1,24 +1,152 @@
 const fs = require('fs');
 const path = require('path');
 
-describe('script.js integrity', () => {
-  const scriptsDir = path.join(__dirname, '../../src/scripts');
-  const scriptPath = path.join(scriptsDir, 'script.js');
+const { createDeviceSkeleton } = require('../helpers/scriptEnvironment');
+const { getHtmlBody } = require('../helpers/domUtils');
 
-  it('aggregates the modular runtime for Node compatibility', () => {
-    const contents = fs.readFileSync(scriptPath, 'utf8');
-    expect(contents).toContain("const parts = ['app-core.js', 'app-events.js', 'app-setups.js', 'app-session.js']");
+describe('script.js modular runtime', () => {
+  const rootDir = path.join(__dirname, '..', '..');
+  const scriptsDir = path.join(rootDir, 'src/scripts');
+  const scriptPath = path.join(scriptsDir, 'script.js');
+  const packageVersion = require(path.join(rootDir, 'package.json')).version;
+
+  function getScriptContents() {
+    return fs.readFileSync(scriptPath, 'utf8');
+  }
+
+  function extractRuntimeParts() {
+    const contents = getScriptContents();
+    const match = contents.match(/const parts = \[(.*?)\];/s);
+
+    if (!match) {
+      throw new Error('Unable to locate runtime parts declaration in script.js');
+    }
+
+    const rawParts = match[1]
+      .split(',')
+      .map(entry => entry.trim())
+      .filter(Boolean)
+      .map(entry => entry.replace(/^['"]|['"]$/g, ''));
+
+    return rawParts;
+  }
+
+  function applyRuntimeGlobals() {
+    const stubs = {
+      devices: createDeviceSkeleton(),
+      loadDeviceData: jest.fn(() => null),
+      saveDeviceData: jest.fn(),
+      loadSetups: jest.fn(() => ({})),
+      saveSetups: jest.fn(),
+      saveSetup: jest.fn(),
+      loadSetup: jest.fn(),
+      deleteSetup: jest.fn(),
+      loadFavorites: jest.fn(() => ({})),
+      saveFavorites: jest.fn(),
+    };
+
+    const appliedKeys = Object.keys(stubs);
+    for (const key of appliedKeys) {
+      global[key] = stubs[key];
+    }
+
+    return () => {
+      for (const key of appliedKeys) {
+        delete global[key];
+      }
+    };
+  }
+
+  function applyDomStructure() {
+    const descriptor = Object.getOwnPropertyDescriptor(document, 'readyState');
+    try {
+      Object.defineProperty(document, 'readyState', {
+        configurable: true,
+        get: () => 'loading',
+      });
+    } catch {
+      // ignore if readyState cannot be redefined in this environment
+    }
+
+    const previousHtml = document.body.innerHTML;
+    document.body.innerHTML = getHtmlBody();
+
+    return () => {
+      if (descriptor) {
+        Object.defineProperty(document, 'readyState', descriptor);
+      } else {
+        delete document.readyState;
+      }
+      document.body.innerHTML = previousHtml;
+    };
+  }
+
+  it('declares and references the expected runtime modules', () => {
+    const parts = extractRuntimeParts();
+
+    expect(parts).toEqual([
+      'app-core.js',
+      'app-events.js',
+      'app-setups.js',
+      'app-session.js',
+    ]);
+
+    for (const part of parts) {
+      const filePath = path.join(scriptsDir, part);
+      expect(fs.existsSync(filePath)).toBe(true);
+    }
+  });
+
+  it('contains the Node bootstrap that hydrates globals for the combined runtime', () => {
+    const contents = getScriptContents();
+    expect(contents).toContain('var __cineGlobal = typeof globalThis !== \'undefined\' ? globalThis : (typeof global !== \'undefined\' ? global : this);');
     expect(contents).toContain('new Function');
     expect(contents).toContain('module.exports && module.exports.APP_VERSION');
   });
 
-  it('keeps the core runtime definitions inside the modular files', () => {
-    const coreContents = fs.readFileSync(path.join(scriptsDir, 'app-core.js'), 'utf8');
-    expect(coreContents).toContain('var LZString;');
+  it('exports the aggregated runtime object when required in Node contexts', () => {
+    jest.isolateModules(() => {
+      const restoreGlobals = applyRuntimeGlobals();
+      const restoreDom = applyDomStructure();
+      const resolvedPath = require.resolve(scriptPath);
+      try {
+        if (require.cache[resolvedPath]) {
+          delete require.cache[resolvedPath];
+        }
 
-    const sessionContents = fs.readFileSync(path.join(scriptsDir, 'app-session.js'), 'utf8');
-    expect(sessionContents).toContain('module.exports = {');
-    expect(sessionContents).toContain('function initApp');
-    expect(sessionContents).toContain('function formatFilterEntryText');
+        const runtime = require(resolvedPath);
+
+        expect(runtime).toBeTruthy();
+        expect(runtime.APP_VERSION).toBe(packageVersion);
+        expect(typeof runtime.updateCalculations).toBe('function');
+        expect(typeof runtime.createSettingsBackup).toBe('function');
+      } finally {
+        restoreGlobals();
+        restoreDom();
+        delete require.cache[resolvedPath];
+      }
+    });
+  });
+
+  it('restores the runtime version marker when loading through the helper', () => {
+    jest.isolateModules(() => {
+      const restoreGlobals = applyRuntimeGlobals();
+      const restoreDom = applyDomStructure();
+      try {
+        const { loadRuntime } = require('../helpers/runtimeLoader');
+
+        const first = loadRuntime();
+        expect(first.APP_VERSION).toBe(packageVersion);
+        delete first.APP_VERSION;
+
+        const second = loadRuntime();
+
+        expect(second.APP_VERSION).toBe(packageVersion);
+        expect(typeof second.updateCalculations).toBe('function');
+      } finally {
+        restoreGlobals();
+        restoreDom();
+      }
+    });
   });
 });
