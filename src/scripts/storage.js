@@ -398,8 +398,11 @@ let lastFailedUpgradeCandidate = null;
 let safeLocalStorageInfo = initializeSafeLocalStorage();
 
 function migrateSnapshotToStorage(snapshot, target) {
+  const migratedKeys = [];
+  const failedKeys = [];
+
   if (!snapshot || !target || typeof target.setItem !== 'function') {
-    return;
+    return { migratedKeys, failedKeys };
   }
 
   Object.keys(snapshot).forEach((key) => {
@@ -409,34 +412,63 @@ function migrateSnapshotToStorage(snapshot, target) {
     }
 
     let existing = null;
+    let existingRead = false;
     try {
       existing = target.getItem(key);
+      existingRead = true;
     } catch (readError) {
       console.warn('Unable to inspect localStorage during upgrade', key, readError);
     }
 
-    if (existing !== null && existing !== undefined && existing !== value) {
+    if (existingRead && existing !== null && existing !== undefined && existing !== value) {
       createStorageMigrationBackup(target, key, existing);
+    }
+
+    if (existingRead && existing === value) {
+      migratedKeys.push(key);
+      return;
     }
 
     try {
       target.setItem(key, value);
+      migratedKeys.push(key);
     } catch (writeError) {
       console.warn('Unable to migrate storage key during upgrade', key, writeError);
+      failedKeys.push(key);
     }
   });
+
+  return { migratedKeys, failedKeys };
 }
 
-function clearMigratedKeys(snapshot, source) {
+function clearMigratedKeys(snapshot, source, keysToRemove) {
   if (!snapshot || !source || typeof source.removeItem !== 'function') {
     return;
   }
 
-  Object.keys(snapshot).forEach((key) => {
+  const keys = Array.isArray(keysToRemove) && keysToRemove.length > 0
+    ? keysToRemove
+    : Object.keys(snapshot);
+
+  keys.forEach((key) => {
     try {
       source.removeItem(key);
     } catch (error) {
       console.warn('Unable to remove migrated storage key from fallback', key, error);
+    }
+  });
+}
+
+function rollbackMigratedKeys(target, keys) {
+  if (!target || typeof target.removeItem !== 'function' || !Array.isArray(keys)) {
+    return;
+  }
+
+  keys.forEach((key) => {
+    try {
+      target.removeItem(key);
+    } catch (error) {
+      console.warn('Unable to roll back migrated storage key after upgrade failure', key, error);
     }
   });
 }
@@ -555,8 +587,20 @@ function attemptLocalStorageUpgrade() {
   }
 
   const snapshot = snapshotStorageEntries(safeLocalStorageInfo.storage);
-  migrateSnapshotToStorage(snapshot, verified);
-  clearMigratedKeys(snapshot, safeLocalStorageInfo.storage);
+  const { migratedKeys, failedKeys } = migrateSnapshotToStorage(snapshot, verified);
+
+  if (failedKeys.length > 0) {
+    rollbackMigratedKeys(verified, migratedKeys);
+    console.warn(
+      'Aborting localStorage upgrade because some entries could not be migrated. Continuing to use fallback storage.',
+      failedKeys,
+    );
+    alertStorageError('migration-write');
+    lastFailedUpgradeCandidate = candidate;
+    return safeLocalStorageInfo.storage;
+  }
+
+  clearMigratedKeys(snapshot, safeLocalStorageInfo.storage, migratedKeys);
 
   safeLocalStorageInfo = { storage: verified, type: 'local' };
   lastFailedUpgradeCandidate = null;
