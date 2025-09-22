@@ -63,33 +63,33 @@ La aplicación adopta automáticamente el idioma de tu navegador en la primera v
 ---
 
 ## 🆕 Novedades recientes
-- Las reglas automáticas de equipo permiten definir adiciones o retiradas según el escenario, exportarlas y restaurarlas junto con los paquetes compartidos.
-- El panel de datos y almacenamiento revisa proyectos guardados, listas, dispositivos personalizados, favoritos y comentarios de autonomía desde Ajustes.
-- Los controles de acento y tipografía en Ajustes permiten definir el color de acento, el tamaño base y la familia tipográfica junto con los temas oscuro, rosa y de alto contraste.
-- Los atajos de teclado de la búsqueda global enfocan el campo al instante con / o Ctrl+K (⌘K en macOS), incluso cuando está dentro del menú lateral móvil contraído.
-- El botón **Forzar recarga** vacía los archivos en caché del service worker para que la aplicación sin conexión se actualice sin borrar proyectos ni dispositivos guardados.
-- Las estrellas de cada selector fijan cámaras, baterías y accesorios favoritos en la parte superior de la lista y los incluyen en las copias de seguridad.
+- Las reglas automáticas de equipo permiten diseñar adiciones o retiradas según el escenario, exportar la configuración y restaurarla junto con los paquetes de proyecto.
+- El panel Datos y almacenamiento audita proyectos guardados, listas de equipo, dispositivos personalizados, favoritos y comentarios de autonomía directamente desde Ajustes.
+- Los controles de acento y tipografía en Ajustes permiten ajustar el color de acento, el tamaño base de la fuente y la familia tipográfica junto a los temas oscuro, rosa y de alto contraste.
+- Los atajos de teclado de la búsqueda global enfocan la búsqueda de funciones al instante con / o Ctrl+K (⌘K en macOS), incluso cuando está dentro del menú lateral móvil contraído.
+- El botón **Forzar recarga** borra los archivos del service worker en caché para que la aplicación sin conexión se actualice sin eliminar proyectos ni dispositivos guardados.
+- Las estrellas de cada selector fijan cámaras, baterías y accesorios favoritos en la parte superior de la lista y los mantienen en las copias de seguridad.
 - El flujo de **Restablecimiento de fábrica** descarga automáticamente una copia de seguridad antes de eliminar proyectos, dispositivos y ajustes almacenados.
-- La lista de equipo y la vista imprimible muestran el nombre del proyecto para consultarlo rápidamente.
+- La lista de equipo y la vista imprimible muestran el nombre del proyecto para consultarlo de un vistazo.
 - Sube un logotipo personalizado para que aparezca en las vistas imprimibles y en las copias de seguridad.
-- Las copias de seguridad incluyen los favoritos y generan automáticamente una copia antes de restaurar.
+- Las copias de seguridad incluyen los favoritos y crean automáticamente una copia antes de restaurar.
 - Las fichas del equipo incluyen ahora un campo de correo electrónico.
-- Nuevo tema de alto contraste para mejorar la legibilidad.
-- Los formularios de dispositivos rellenan las categorías de forma dinámica según los atributos del esquema.
-- Interfaz rediseñada con más contraste y espacios más generosos para una experiencia más limpia en cualquier dispositivo.
-- Compartir proyectos es más sencillo: descarga un archivo JSON con selecciones, requisitos, listas de equipo, comentarios de autonomía y dispositivos personalizados, e impórtalo para restaurarlo todo.
-- Iconos propios para los escenarios obligatorios que muestran de inmediato los requisitos del proyecto.
-- Diagrama de proyecto interactivo para arrastrar dispositivos, hacer zoom, alinear a la cuadrícula y exportar como SVG o JPG.
+- Opciones de accesibilidad con alto contraste, animación reducida y espaciado relajado mejoran la legibilidad y la comodidad.
+- Los formularios de dispositivos rellenan los campos de categoría dinámicamente a partir de los atributos del esquema.
+- Interfaz rediseñada con mayor contraste y espaciado para una experiencia más limpia en cualquier dispositivo.
+- Compartir proyectos es más sencillo: descarga un archivo JSON que agrupa selecciones, requisitos, listas de equipo, comentarios de autonomía y dispositivos personalizados, e impórtalo para restaurarlo todo.
+- Iconos exclusivos para los escenarios obligatorios distinguen los requisitos del proyecto.
+- Diagrama de proyecto interactivo para arrastrar dispositivos, hacer zoom, ajustar los nodos a la cuadrícula y exportar el plano como SVG o JPG.
 - Tema rosa divertido que se mantiene entre visitas.
 - Diálogo de ayuda con búsqueda, secciones paso a paso y FAQ; ábrelo con ?, H, F1 o Ctrl+/.
 - Ayudas contextuales al pasar el cursor por botones, campos, menús y encabezados.
 - Barra de búsqueda global para saltar a funciones, selectores de dispositivos o temas de ayuda.
-- Compatibilidad con cámaras con placas V‑, B‑ o Gold-Mount.
-- Envía comentarios de autonomía con temperatura para perfeccionar las estimaciones.
-- Panel visual que pondera las autonomías y muestra cómo influyen los ajustes en cada medición, ordenado por peso con porcentajes precisos.
+- Compatibilidad con cámaras con placas de batería V‑, B‑ o Gold-Mount.
+- Envía comentarios de autonomía con temperatura para afinar las estimaciones.
+- Panel visual de ponderación de autonomías que muestra cómo influyen los ajustes en cada informe, ahora ordenado por peso y con porcentajes exactos.
 - Generador de listas de equipo que reúne el material seleccionado y los requisitos del proyecto.
-- Guarda los requisitos de proyecto con cada proyecto para conservar el contexto completo en las listas de equipo.
-- Duplica al instante las entradas personalizadas en los formularios de la lista de equipo con los botones en forma de horquilla.
+- Guarda los requisitos del proyecto con cada proyecto para conservar todo el contexto en las listas de equipo.
+- Duplica al instante las entradas personalizadas en los formularios de lista de equipo con los botones en forma de horquilla.
 
 ---
 
