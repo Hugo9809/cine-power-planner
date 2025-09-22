@@ -18367,7 +18367,8 @@ function renderSetupDiagram() {
         ? diagramFontSizePx
         : DEFAULT_MAX_NODE_FONT;
       const maxAutoScale = bodyFontSize / referenceFontSize;
-      svgEl.style.maxWidth = `${viewWidth * maxAutoScale}px`;
+      const scaleFactor = Math.max(1, maxAutoScale);
+      svgEl.style.maxWidth = `${viewWidth * scaleFactor}px`;
     }
   }
 
