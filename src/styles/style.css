@@ -5041,6 +5041,16 @@ body.dark-mode.pink-mode #gearListOutput h2,
   transform: translate(-50%, 0);
 }
 
+#settingsDialog.has-gear-list-note .settings-content {
+  padding-bottom: clamp(6rem, 12vw, 8rem);
+}
+
+@media (max-width: 600px) {
+  #settingsDialog.has-gear-list-note .settings-content {
+    padding-bottom: clamp(7rem, 24vw, 10rem);
+  }
+}
+
 @media (max-width: 600px) {
   .gear-list-autosave-note--overlay {
     padding: 0.75rem;
