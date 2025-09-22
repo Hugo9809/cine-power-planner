@@ -116,6 +116,7 @@ th { background-color: var(--control-bg); font-weight: var(--font-weight-bold); 
   margin: 0 0 15px;
 }
 .overview-actions .print-btn,
+.overview-actions .export-pdf-btn,
 .overview-actions .back-btn {
   margin: 0;
 }
