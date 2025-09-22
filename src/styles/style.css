@@ -1042,8 +1042,8 @@ main.legal-content {
   margin: 0;
   margin-left: calc(var(--form-label-width) + var(--gap-size));
   font-size: calc(var(--font-size-relative-base) * var(--font-scale-xxs));
-  color: var(--control-text);
-  opacity: 0.8;
+  color: var(--muted-text-color);
+  opacity: 1;
 }
 
 /* Ensure favorite star aligns with its select element without stretching */
@@ -1289,17 +1289,23 @@ main.legal-content {
 
 
 .settings-content {
-  padding: 20px;
+  padding: clamp(var(--spacing-xl), 4vw, 26px);
   width: min(90vw, 700px);
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: clamp(var(--gap-size), 3vw, 24px);
+}
+
+.settings-content > h2 {
+  margin: 0;
+  font-weight: var(--font-weight-light);
+  letter-spacing: 0.01em;
 }
 
 .settings-tabs {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-  gap: 10px;
+  gap: var(--gap-size);
   padding: 0;
   margin: 0;
   list-style: none;
@@ -1313,9 +1319,9 @@ main.legal-content {
   background: color-mix(in srgb, var(--panel-bg) 88%, transparent);
   color: inherit;
   font: inherit;
-  font-weight: var(--font-weight-regular);
+  font-weight: var(--font-weight-medium);
   letter-spacing: 0.01em;
-  padding: 8px 10px;
+  padding: var(--spacing-md) var(--spacing-lg);
   cursor: pointer;
   transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease,
     transform 0.25s ease;
@@ -1388,7 +1394,7 @@ main.legal-content {
 
 .settings-tab-label {
   font-size: 0.9rem;
-  font-weight: var(--font-weight-regular);
+  font-weight: inherit;
   line-height: 1.25;
   letter-spacing: 0.005em;
   color: currentColor;
@@ -1482,14 +1488,15 @@ body.high-contrast .settings-tab-icon {
   border: 1px solid var(--panel-border);
   border-radius: var(--border-radius);
   box-shadow: var(--panel-shadow);
-  padding: 20px;
+  padding: var(--section-padding);
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: calc(var(--gap-size) + var(--spacing-xs));
 }
 
 .settings-section h3 {
   margin: 0;
+  font-weight: var(--font-weight-medium);
 }
 
 .settings-section p {
