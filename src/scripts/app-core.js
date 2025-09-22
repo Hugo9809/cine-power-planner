@@ -11729,15 +11729,23 @@ function restoreFeatureSearchDefaults() {
 }
 
 const FEATURE_SEARCH_MATCH_PRIORITIES = {
-  none: 1,
-  partial: 2,
-  keySubset: 3,
-  keyPrefix: 4,
-  token: 5,
-  exactKey: 6
+  none: 0,
+  partial: 1,
+  keySubset: 2,
+  keyPrefix: 3,
+  token: 4,
+  phrase: 5,
+  displayPhrase: 6,
+  exactKey: 7
 };
 
-function scoreFeatureSearchEntry(entry, queryKey, queryTokens) {
+const FEATURE_SEARCH_TYPE_PRIORITY = {
+  help: 1,
+  device: 2,
+  feature: 3
+};
+
+function scoreFeatureSearchEntry(entry, queryKey, queryTokens, queryString) {
   if (!entry || !entry.key) return null;
   const display = entry.display;
   if (!display) return null;
@@ -11749,6 +11757,9 @@ function scoreFeatureSearchEntry(entry, queryKey, queryTokens) {
   const tokenDetails = validQueryTokens.length
     ? computeTokenMatchDetails(entryTokens, validQueryTokens)
     : { score: 0, matched: 0 };
+  const normalizedQueryPhrase = normalizeSearchPhrase(queryString);
+  const phraseInfo = computePhraseMatchInfo(entry.value, normalizedQueryPhrase);
+  const boostedTokenScore = tokenDetails.score + phraseInfo.boost;
 
   let bestType = 'none';
   let bestPriority = FEATURE_SEARCH_MATCH_PRIORITIES.none;
@@ -11778,13 +11789,21 @@ function scoreFeatureSearchEntry(entry, queryKey, queryTokens) {
   if (tokenDetails.score > 0) {
     updateType('token');
   }
+  if (phraseInfo.displayMatch) {
+    updateType('displayPhrase');
+  } else if (phraseInfo.searchMatch) {
+    updateType('phrase');
+  }
 
   return {
     entry,
     matchType: bestType,
     priority: bestPriority,
-    tokenScore: tokenDetails.score,
+    tokenScore: boostedTokenScore,
     tokenMatches: tokenDetails.matched,
+    phraseScore: phraseInfo.score,
+    phraseWordCount: phraseInfo.wordCount,
+    typePriority: FEATURE_SEARCH_TYPE_PRIORITY[entry.type] || 0,
     keyDistance: queryKey
       ? Math.abs(entryKey.length - queryKey.length)
       : Number.POSITIVE_INFINITY,
@@ -11808,7 +11827,7 @@ function updateFeatureSearchSuggestions(query) {
   }
 
   const scored = featureSearchEntries
-    .map(entry => scoreFeatureSearchEntry(entry, queryKey, queryTokens))
+    .map(entry => scoreFeatureSearchEntry(entry, queryKey, queryTokens, trimmed))
     .filter(Boolean);
 
   if (scored.length === 0) {
@@ -11823,8 +11842,11 @@ function updateFeatureSearchSuggestions(query) {
 
   const candidates = (meaningful.length > 0 ? meaningful : scored).sort((a, b) => {
     if (b.priority !== a.priority) return b.priority - a.priority;
+    if (b.phraseScore !== a.phraseScore) return b.phraseScore - a.phraseScore;
+    if (b.phraseWordCount !== a.phraseWordCount) return b.phraseWordCount - a.phraseWordCount;
     if (b.tokenScore !== a.tokenScore) return b.tokenScore - a.tokenScore;
     if (b.tokenMatches !== a.tokenMatches) return b.tokenMatches - a.tokenMatches;
+    if (b.typePriority !== a.typePriority) return b.typePriority - a.typePriority;
     if (a.keyDistance !== b.keyDistance) return a.keyDistance - b.keyDistance;
     if (a.keyLength !== b.keyLength) return a.keyLength - b.keyLength;
     return a.entry.display.localeCompare(b.entry.display, undefined, {
@@ -12017,6 +12039,62 @@ const searchKey       = str => {
   return value.toLowerCase().replace(/\s+/g, '');
 };
 
+const escapeRegExp = str => String(str).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+const normalizeSearchPhrase = str => {
+  if (!str) return '';
+  let normalized = String(str).toLowerCase();
+  if (typeof normalized.normalize === 'function') {
+    normalized = normalized.normalize('NFD');
+  }
+  normalized = normalized
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/ß/g, 'ss')
+    .replace(/æ/g, 'ae')
+    .replace(/œ/g, 'oe')
+    .replace(/ø/g, 'o')
+    .replace(/&/g, ' and ')
+    .replace(/\+/g, ' plus ')
+    .replace(/[°º˚]/g, ' deg ')
+    .replace(/\bdegrees?\b/g, ' deg ')
+    .replace(/[×✕✖✗✘]/g, ' x ');
+  normalized = normalizeSpellingVariants(normalized);
+  normalized = normaliseMarkVariants(normalized);
+  return normalized
+    .replace(/[^a-z0-9]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+};
+
+const buildPhrasePattern = phrase => {
+  if (!phrase) return null;
+  const escaped = escapeRegExp(phrase).replace(/\s+/g, '\\s+');
+  if (!escaped) return null;
+  return new RegExp(`(^|\\s)${escaped}(?:\\s|$)`);
+};
+
+const matchesNormalizedPhrase = (content, phrase) => {
+  if (!content || !phrase) return false;
+  const pattern = buildPhrasePattern(phrase);
+  if (!pattern) return false;
+  return pattern.test(content);
+};
+
+const computePhraseMatchInfo = (entryValue, normalizedQueryPhrase) => {
+  if (!normalizedQueryPhrase) {
+    return { displayMatch: false, searchMatch: false, score: 0, boost: 0, wordCount: 0 };
+  }
+  const searchPhrase = entryValue?.searchPhrase || entryValue?.displayPhrase || '';
+  const displayPhrase = entryValue?.displayPhrase || searchPhrase;
+  const wordCount = normalizedQueryPhrase.split(' ').filter(Boolean).length;
+  const multiplier = Math.max(1, wordCount);
+  const displayMatch = matchesNormalizedPhrase(displayPhrase, normalizedQueryPhrase);
+  const searchMatch = !displayMatch && matchesNormalizedPhrase(searchPhrase, normalizedQueryPhrase);
+  const score = displayMatch ? 2 * multiplier : searchMatch ? multiplier : 0;
+  const boost = displayMatch ? 6 * multiplier : searchMatch ? 3 * multiplier : 0;
+  return { displayMatch, searchMatch, score, boost, wordCount };
+};
+
 const searchTokens = str => {
   if (!str) return [];
   let normalized = String(str).toLowerCase();
@@ -12191,13 +12269,18 @@ const buildFeatureSearchEntry = (element, { label, keywords = '' }) => {
   const combinedKeywords = [baseLabel, contextLabels.join(' '), keywords]
     .filter(Boolean)
     .join(' ');
+  const entryTokens = searchTokens(combinedKeywords);
+  const displayPhrase = normalizeSearchPhrase(combinedLabel);
+  const searchPhrase = normalizeSearchPhrase(combinedKeywords);
   const entry = {
     element,
     label: baseLabel,
     baseLabel,
     displayLabel: combinedLabel,
     context: contextLabels,
-    tokens: searchTokens(combinedKeywords),
+    tokens: entryTokens,
+    searchPhrase,
+    displayPhrase,
     key: baseKey,
     optionValue: combinedLabel
   };
@@ -12251,18 +12334,32 @@ const computeTokenMatchDetails = (entryTokens = [], queryTokens = []) => {
   return { score: total, matched };
 };
 
-function findBestSearchMatch(map, key, tokens = []) {
+function findBestSearchMatch(map, key, tokens = [], phrase = '') {
   const queryTokens = Array.isArray(tokens) ? tokens.filter(Boolean) : [];
+  const queryPhrase = normalizeSearchPhrase(phrase);
   const hasKey = Boolean(key);
-  if (!hasKey && queryTokens.length === 0) return null;
+  const hasPhrase = Boolean(queryPhrase);
+  if (!hasKey && queryTokens.length === 0 && !hasPhrase) return null;
 
-  const toResult = (entryKey, entryValue, matchType, score = 0, matchedCount = 0) => ({
-    key: entryKey,
-    value: entryValue,
-    matchType,
-    score,
-    matchedCount
-  });
+  const toResult = (entryKey, entryValue, matchType, score = 0, matchedCount = 0, phraseInfo = null) => {
+    let finalType = matchType;
+    if (matchType === 'token' || matchType === 'partial') {
+      if (phraseInfo?.displayMatch) {
+        finalType = 'displayPhrase';
+      } else if (phraseInfo?.searchMatch) {
+        finalType = 'phrase';
+      }
+    }
+    return {
+      key: entryKey,
+      value: entryValue,
+      matchType: finalType,
+      score,
+      matchedCount,
+      phraseScore: phraseInfo?.score || 0,
+      phraseWordCount: phraseInfo?.wordCount || 0
+    };
+  };
 
   const flattened = [];
   for (const [entryKey, entryValue] of map.entries()) {
@@ -12280,38 +12377,47 @@ function findBestSearchMatch(map, key, tokens = []) {
     const exactCandidates = flattened.filter(([entryKey]) => entryKey === key);
     if (exactCandidates.length) {
       let bestEntry = exactCandidates[0][1];
-      let bestDetails = queryTokens.length > 0
-        ? computeTokenMatchDetails(bestEntry?.tokens || [], queryTokens)
-        : { score: Number.POSITIVE_INFINITY, matched: queryTokens.length };
+      let bestDetails = computeTokenMatchDetails(bestEntry?.tokens || [], queryTokens);
+      let bestPhrase = computePhraseMatchInfo(bestEntry, queryPhrase);
+      let bestScore = bestDetails.score + bestPhrase.boost;
       for (const [, entryValue] of exactCandidates.slice(1)) {
-        if (!queryTokens.length) break;
         const details = computeTokenMatchDetails(entryValue?.tokens || [], queryTokens);
+        const phraseInfo = computePhraseMatchInfo(entryValue, queryPhrase);
+        const candidateScore = details.score + phraseInfo.boost;
         if (
-          details.score > bestDetails.score ||
-          (details.score === bestDetails.score && details.matched > bestDetails.matched)
+          candidateScore > bestScore ||
+          (candidateScore === bestScore &&
+            (phraseInfo.score > bestPhrase.score ||
+              (phraseInfo.score === bestPhrase.score && details.matched > bestDetails.matched)))
         ) {
           bestDetails = details;
           bestEntry = entryValue;
+          bestPhrase = phraseInfo;
+          bestScore = candidateScore;
         }
       }
-      return toResult(key, bestEntry, 'exactKey', bestDetails.score, bestDetails.matched);
+      return toResult(key, bestEntry, 'exactKey', bestScore, bestDetails.matched, bestPhrase);
     }
   }
 
   let bestTokenMatch = null;
-  let bestTokenScore = 0;
+  let bestTokenScore = Number.NEGATIVE_INFINITY;
+  let bestTokenPhraseScore = Number.NEGATIVE_INFINITY;
   let bestTokenMatched = 0;
   let bestTokenKeyDistance = Number.POSITIVE_INFINITY;
   let bestPrefixMatch = null;
   let bestPrefixScore = Number.NEGATIVE_INFINITY;
+  let bestPrefixPhraseScore = Number.NEGATIVE_INFINITY;
   let bestPrefixMatched = 0;
   let bestPrefixLength = Number.POSITIVE_INFINITY;
   let bestSubsetMatch = null;
   let bestSubsetScore = Number.NEGATIVE_INFINITY;
+  let bestSubsetPhraseScore = Number.NEGATIVE_INFINITY;
   let bestSubsetMatched = 0;
   let bestSubsetLength = -1;
   let bestPartialMatch = null;
   let bestPartialScore = Number.NEGATIVE_INFINITY;
+  let bestPartialPhraseScore = Number.NEGATIVE_INFINITY;
   let bestPartialMatched = 0;
 
   const keyLength = hasKey ? key.length : 0;
@@ -12322,66 +12428,77 @@ function findBestSearchMatch(map, key, tokens = []) {
     const tokenDetails = queryTokens.length
       ? computeTokenMatchDetails(entryTokens, queryTokens)
       : { score: 0, matched: 0 };
+    const phraseInfo = computePhraseMatchInfo(entryValue, queryPhrase);
+    const boostedScore = tokenDetails.score + phraseInfo.boost;
 
     if (hasKey && entryKey.startsWith(key)) {
-      const score = queryTokens.length > 0 ? tokenDetails.score : Number.POSITIVE_INFINITY;
-      const candidate = toResult(entryKey, entryValue, 'keyPrefix', score, tokenDetails.matched);
+      const score = queryTokens.length > 0 || phraseInfo.boost > 0 ? boostedScore : Number.POSITIVE_INFINITY;
+      const candidate = toResult(entryKey, entryValue, 'keyPrefix', score, tokenDetails.matched, phraseInfo);
       if (
         !bestPrefixMatch ||
-        score > bestPrefixScore ||
-        (score === bestPrefixScore &&
-          (tokenDetails.matched > bestPrefixMatched ||
-            (tokenDetails.matched === bestPrefixMatched && entryKey.length < bestPrefixLength)))
+        candidate.score > bestPrefixScore ||
+        (candidate.score === bestPrefixScore &&
+          (candidate.phraseScore > bestPrefixPhraseScore ||
+            (candidate.phraseScore === bestPrefixPhraseScore &&
+              (candidate.matchedCount > bestPrefixMatched ||
+                (candidate.matchedCount === bestPrefixMatched && entryKey.length < bestPrefixLength)))))
       ) {
         bestPrefixMatch = candidate;
-        bestPrefixScore = score;
-        bestPrefixMatched = tokenDetails.matched;
+        bestPrefixScore = candidate.score;
+        bestPrefixPhraseScore = candidate.phraseScore;
+        bestPrefixMatched = candidate.matchedCount;
         bestPrefixLength = entryKey.length;
       }
     }
 
-    if (queryTokens.length) {
+    if (queryTokens.length || phraseInfo.boost > 0 || hasPhrase) {
       const distance = hasKey ? Math.abs(entryKey.length - keyLength) : Number.POSITIVE_INFINITY;
       if (
-        tokenDetails.score > bestTokenScore ||
-        (tokenDetails.score === bestTokenScore &&
-          (tokenDetails.matched > bestTokenMatched ||
-            (tokenDetails.matched === bestTokenMatched && distance < bestTokenKeyDistance)))
+        boostedScore > bestTokenScore ||
+        (boostedScore === bestTokenScore &&
+          (phraseInfo.score > bestTokenPhraseScore ||
+            (phraseInfo.score === bestTokenPhraseScore &&
+              (tokenDetails.matched > bestTokenMatched ||
+                (tokenDetails.matched === bestTokenMatched && distance < bestTokenKeyDistance)))))
       ) {
-        bestTokenMatch = toResult(entryKey, entryValue, 'token', tokenDetails.score, tokenDetails.matched);
-        bestTokenScore = tokenDetails.score;
+        bestTokenMatch = toResult(entryKey, entryValue, 'token', boostedScore, tokenDetails.matched, phraseInfo);
+        bestTokenScore = boostedScore;
+        bestTokenPhraseScore = phraseInfo.score;
         bestTokenMatched = tokenDetails.matched;
         bestTokenKeyDistance = distance;
       }
     }
 
     if (hasKey && key.startsWith(entryKey)) {
-      const score = queryTokens.length > 0 ? tokenDetails.score : Number.POSITIVE_INFINITY;
-      const candidate = toResult(entryKey, entryValue, 'keySubset', score, tokenDetails.matched);
+      const score = queryTokens.length > 0 || phraseInfo.boost > 0 ? boostedScore : Number.POSITIVE_INFINITY;
+      const candidate = toResult(entryKey, entryValue, 'keySubset', score, tokenDetails.matched, phraseInfo);
       if (
         !bestSubsetMatch ||
-        score > bestSubsetScore ||
-        (score === bestSubsetScore &&
-          (entryKey.length > bestSubsetLength || tokenDetails.matched > bestSubsetMatched))
+        candidate.score > bestSubsetScore ||
+        (candidate.score === bestSubsetScore &&
+          (candidate.phraseScore > bestSubsetPhraseScore ||
+            (candidate.phraseScore === bestSubsetPhraseScore &&
+              (entryKey.length > bestSubsetLength || candidate.matchedCount > bestSubsetMatched))))
       ) {
         bestSubsetMatch = candidate;
-        bestSubsetScore = score;
-        bestSubsetMatched = tokenDetails.matched;
+        bestSubsetScore = candidate.score;
+        bestSubsetPhraseScore = candidate.phraseScore;
+        bestSubsetMatched = candidate.matchedCount;
         bestSubsetLength = entryKey.length;
       }
-    } else if (
-      hasKey &&
-      (entryKey.includes(key) || key.includes(entryKey))
-    ) {
-      const candidate = toResult(entryKey, entryValue, 'partial', tokenDetails.score, tokenDetails.matched);
+    } else if (hasKey && (entryKey.includes(key) || key.includes(entryKey))) {
+      const candidate = toResult(entryKey, entryValue, 'partial', boostedScore, tokenDetails.matched, phraseInfo);
       if (
         !bestPartialMatch ||
-        tokenDetails.score > bestPartialScore ||
-        (tokenDetails.score === bestPartialScore && tokenDetails.matched > bestPartialMatched)
+        candidate.score > bestPartialScore ||
+        (candidate.score === bestPartialScore &&
+          (candidate.phraseScore > bestPartialPhraseScore ||
+            (candidate.phraseScore === bestPartialPhraseScore && candidate.matchedCount > bestPartialMatched)))
       ) {
         bestPartialMatch = candidate;
-        bestPartialScore = tokenDetails.score;
-        bestPartialMatched = tokenDetails.matched;
+        bestPartialScore = candidate.score;
+        bestPartialPhraseScore = candidate.phraseScore;
+        bestPartialMatched = candidate.matchedCount;
       }
     }
   }
@@ -13347,13 +13464,15 @@ function populateFeatureSearch() {
       const keywords = section.dataset.helpKeywords || '';
       const key = searchKey(label);
       const tokens = searchTokens(`${label} ${keywords}`.trim());
+      const optionValue = `${label} (help)`;
       const helpEntry = {
         section,
         label,
-        tokens
+        tokens,
+        searchPhrase: normalizeSearchPhrase(`${label} ${keywords}`.trim()),
+        displayPhrase: normalizeSearchPhrase(optionValue)
       };
       helpMap.set(key, helpEntry);
-      const optionValue = `${label} (help)`;
       registerOption(optionValue);
       featureSearchEntries.push({
         type: 'help',
@@ -13382,7 +13501,9 @@ function populateFeatureSearch() {
           select: sel,
           value: opt.value,
           label: name,
-          tokens
+          tokens,
+          searchPhrase: normalizeSearchPhrase(`${name} ${keywords}`.trim()),
+          displayPhrase: normalizeSearchPhrase(name)
         };
         deviceMap.set(key, deviceEntry);
         registerOption(name);

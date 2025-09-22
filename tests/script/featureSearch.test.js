@@ -6,6 +6,7 @@ describe('global feature search helpers', () => {
   let searchTokens;
   let findBestSearchMatch;
   let runFeatureSearch;
+  let normalizeSearchPhrase;
   let featureSearchInternals;
 
   const resetFeatureSearchState = () => {
@@ -40,6 +41,7 @@ describe('global feature search helpers', () => {
       searchTokens,
       findBestSearchMatch,
       runFeatureSearch,
+      normalizeSearchPhrase,
       __featureSearchInternals: featureSearchInternals,
     } = env.utils);
     resetFeatureSearchState();
@@ -74,7 +76,8 @@ describe('global feature search helpers', () => {
     const result = findBestSearchMatch(
       entries,
       searchKey('power 12v'),
-      searchTokens('power 12v')
+      searchTokens('power 12v'),
+      normalizeSearchPhrase('power 12v')
     );
 
     expect(result?.value.label).toBe('12V Power Input');
@@ -93,7 +96,8 @@ describe('global feature search helpers', () => {
     const result = findBestSearchMatch(
       entries,
       searchKey('b mount battery'),
-      searchTokens('b mount battery')
+      searchTokens('b mount battery'),
+      normalizeSearchPhrase('b mount battery')
     );
 
     expect(result?.value.label).toBe('B-Mount Battery Plate');
@@ -119,7 +123,8 @@ describe('global feature search helpers', () => {
     const result = findBestSearchMatch(
       entries,
       searchKey('power 12v camera rig'),
-      searchTokens('power 12v camera rig')
+      searchTokens('power 12v camera rig'),
+      normalizeSearchPhrase('power 12v camera rig')
     );
 
     expect(result?.value.label).toBe('12V Power Input');
@@ -153,7 +158,8 @@ describe('global feature search helpers', () => {
     const result = findBestSearchMatch(
       entries,
       searchKey('bms'),
-      searchTokens('bms')
+      searchTokens('bms'),
+      normalizeSearchPhrase('bms')
     );
 
     expect(result?.value.label).toBe('Battery Management System');
@@ -202,7 +208,8 @@ describe('global feature search helpers', () => {
     const result = findBestSearchMatch(
       entries,
       searchKey('favourite colour settings'),
-      searchTokens('favourite colour settings')
+      searchTokens('favourite colour settings'),
+      normalizeSearchPhrase('favourite colour settings')
     );
 
     expect(result?.value.label).toBe('Favorite Color Settings');
@@ -228,14 +235,16 @@ describe('global feature search helpers', () => {
     const degreeMatch = findBestSearchMatch(
       entries,
       searchKey('35 deg module'),
-      searchTokens('35 deg module')
+      searchTokens('35 deg module'),
+      normalizeSearchPhrase('35 deg module')
     );
     expect(degreeMatch?.value.label).toBe('35° Tilt Module');
 
     const resolutionMatch = findBestSearchMatch(
       entries,
       searchKey('3840 by 2160'),
-      searchTokens('3840 by 2160')
+      searchTokens('3840 by 2160'),
+      normalizeSearchPhrase('3840 by 2160')
     );
     expect(resolutionMatch?.value.label).toBe('3840×2160 (UHD)');
   });
@@ -281,7 +290,8 @@ describe('global feature search helpers', () => {
     const mkResult = findBestSearchMatch(
       entries,
       searchKey('r5 mk2'),
-      searchTokens('r5 mk2')
+      searchTokens('r5 mk2'),
+      normalizeSearchPhrase('r5 mk2')
     );
 
     expect(mkResult?.value.label).toBe('Canon EOS R5 Mark II');
@@ -289,7 +299,8 @@ describe('global feature search helpers', () => {
     const markResult = findBestSearchMatch(
       entries,
       searchKey('r5 mark 2'),
-      searchTokens('r5 mark 2')
+      searchTokens('r5 mark 2'),
+      normalizeSearchPhrase('r5 mark 2')
     );
 
     expect(markResult?.value.label).toBe('Canon EOS R5 Mark II');
@@ -383,6 +394,57 @@ describe('global feature search helpers', () => {
     expect(featureSearchInput.value).toBe('alexa 35');
   });
 
+  test('updateFeatureSearchSuggestions prioritizes feature entries for identical phrases', () => {
+    const {
+      featureSearchEntries,
+      featureSearchDefaultOptions,
+      featureListElement,
+      updateFeatureSearchSuggestions,
+    } = featureSearchInternals;
+
+    const query = 'Power Summary';
+    const key = searchKey(query);
+    const tokens = searchTokens(query);
+    const phrase = normalizeSearchPhrase(query);
+
+    featureSearchEntries.push({
+      type: 'help',
+      key,
+      display: `${query} (help)`,
+      tokens,
+      value: {
+        label: query,
+        tokens,
+        searchPhrase: phrase,
+        displayPhrase: normalizeSearchPhrase(`${query} (help)`)
+      }
+    });
+
+    featureSearchEntries.push({
+      type: 'feature',
+      key,
+      display: query,
+      tokens,
+      value: {
+        label: query,
+        tokens,
+        searchPhrase: phrase,
+        displayPhrase: phrase
+      }
+    });
+
+    featureSearchDefaultOptions.length = 0;
+    if (featureListElement) {
+      featureListElement.innerHTML = '';
+    }
+
+    updateFeatureSearchSuggestions(query);
+
+    const values = Array.from(featureListElement?.options || []).map(opt => opt.value);
+    expect(values[0]).toBe(query);
+    expect(values).toContain(`${query} (help)`);
+  });
+
   test('findBestSearchMatch selects the best match from duplicate keys', () => {
     const entries = [
       {
@@ -400,10 +462,39 @@ describe('global feature search helpers', () => {
     const result = findBestSearchMatch(
       map,
       searchKey('monitor video outputs'),
-      searchTokens('monitor video outputs')
+      searchTokens('monitor video outputs'),
+      normalizeSearchPhrase('monitor video outputs')
     );
 
     expect(result?.value?.label).toContain('Monitor');
+  });
+
+  test('findBestSearchMatch boosts entries matching the visible phrase', () => {
+    const key = searchKey('Power Hub');
+    const map = new Map();
+    const helpEntry = {
+      label: 'Battery Hub Article',
+      tokens: searchTokens('Power Hub reference guide'),
+      searchPhrase: normalizeSearchPhrase('Power Hub reference guide'),
+      displayPhrase: normalizeSearchPhrase('Battery Hub Article')
+    };
+    const featureEntry = {
+      label: 'Power Hub',
+      tokens: searchTokens('Power Hub'),
+      searchPhrase: normalizeSearchPhrase('Power Hub'),
+      displayPhrase: normalizeSearchPhrase('Power Hub')
+    };
+    map.set(key, [helpEntry, featureEntry]);
+
+    const result = findBestSearchMatch(
+      map,
+      searchKey('power hub'),
+      searchTokens('power hub'),
+      normalizeSearchPhrase('power hub')
+    );
+
+    expect(result?.value).toBe(featureEntry);
+    expect(result?.matchType).toBe('exactKey');
   });
 
   test('findBestSearchMatch picks the highest scoring keyPrefix candidate', () => {
@@ -426,7 +517,8 @@ describe('global feature search helpers', () => {
     const result = findBestSearchMatch(
       map,
       searchKey('monitoring se zebra'),
-      searchTokens('monitoring se zebra')
+      searchTokens('monitoring se zebra'),
+      normalizeSearchPhrase('monitoring se zebra')
     );
 
     expect(['keyPrefix', 'token']).toContain(result?.matchType);
@@ -453,7 +545,8 @@ describe('global feature search helpers', () => {
     const result = findBestSearchMatch(
       map,
       searchKey('help search shortcuts'),
-      searchTokens('help search shortcuts')
+      searchTokens('help search shortcuts'),
+      normalizeSearchPhrase('help search shortcuts')
     );
 
     expect(result?.value?.label).toBe('Help Search');

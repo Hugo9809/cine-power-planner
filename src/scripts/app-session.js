@@ -3562,10 +3562,11 @@ if (helpButton && helpDialog) {
     const clean = isHelp ? value.slice(0, -7).trim() : value;
     const cleanKey = searchKey(clean);
     const cleanTokens = searchTokens(clean);
+    const cleanPhrase = normalizeSearchPhrase(clean);
 
-    const helpMatch = findBestSearchMatch(helpMap, cleanKey, cleanTokens);
-    const deviceMatch = findBestSearchMatch(deviceMap, cleanKey, cleanTokens);
-    const featureMatch = findBestSearchMatch(featureMap, cleanKey, cleanTokens);
+    const helpMatch = findBestSearchMatch(helpMap, cleanKey, cleanTokens, cleanPhrase);
+    const deviceMatch = findBestSearchMatch(deviceMap, cleanKey, cleanTokens, cleanPhrase);
+    const featureMatch = findBestSearchMatch(featureMap, cleanKey, cleanTokens, cleanPhrase);
     const helpScore = helpMatch?.score || 0;
     const deviceScore = deviceMatch?.score || 0;
     const featureScore = featureMatch?.score || 0;
@@ -4746,6 +4747,7 @@ if (typeof module !== "undefined" && module.exports) {
     extractBackupSections,
     searchKey,
     searchTokens,
+    normalizeSearchPhrase,
     findBestSearchMatch,
     runFeatureSearch,
     __featureSearchInternals: {

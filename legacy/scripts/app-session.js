@@ -3322,9 +3322,10 @@ if (helpButton && helpDialog) {
     var clean = isHelp ? value.slice(0, -7).trim() : value;
     var cleanKey = searchKey(clean);
     var cleanTokens = searchTokens(clean);
-    var helpMatch = findBestSearchMatch(helpMap, cleanKey, cleanTokens);
-    var deviceMatch = findBestSearchMatch(deviceMap, cleanKey, cleanTokens);
-    var featureMatch = findBestSearchMatch(featureMap, cleanKey, cleanTokens);
+    var cleanPhrase = normalizeSearchPhrase(clean);
+    var helpMatch = findBestSearchMatch(helpMap, cleanKey, cleanTokens, cleanPhrase);
+    var deviceMatch = findBestSearchMatch(deviceMap, cleanKey, cleanTokens, cleanPhrase);
+    var featureMatch = findBestSearchMatch(featureMap, cleanKey, cleanTokens, cleanPhrase);
     var helpScore = (helpMatch === null || helpMatch === void 0 ? void 0 : helpMatch.score) || 0;
     var deviceScore = (deviceMatch === null || deviceMatch === void 0 ? void 0 : deviceMatch.score) || 0;
     var featureScore = (featureMatch === null || featureMatch === void 0 ? void 0 : featureMatch.score) || 0;
@@ -4504,6 +4505,7 @@ if (typeof module !== "undefined" && module.exports) {
     extractBackupSections: extractBackupSections,
     searchKey: searchKey,
     searchTokens: searchTokens,
+    normalizeSearchPhrase: normalizeSearchPhrase,
     findBestSearchMatch: findBestSearchMatch,
     runFeatureSearch: runFeatureSearch,
     __featureSearchInternals: {

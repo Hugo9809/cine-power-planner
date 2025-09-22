@@ -10989,14 +10989,21 @@ function restoreFeatureSearchDefaults() {
   renderFeatureListOptions(featureSearchDefaultOptions);
 }
 var FEATURE_SEARCH_MATCH_PRIORITIES = {
-  none: 1,
-  partial: 2,
-  keySubset: 3,
-  keyPrefix: 4,
-  token: 5,
-  exactKey: 6
+  none: 0,
+  partial: 1,
+  keySubset: 2,
+  keyPrefix: 3,
+  token: 4,
+  phrase: 5,
+  displayPhrase: 6,
+  exactKey: 7
 };
-function scoreFeatureSearchEntry(entry, queryKey, queryTokens) {
+var FEATURE_SEARCH_TYPE_PRIORITY = {
+  help: 1,
+  device: 2,
+  feature: 3
+};
+function scoreFeatureSearchEntry(entry, queryKey, queryTokens, queryString) {
   if (!entry || !entry.key) return null;
   var display = entry.display;
   if (!display) return null;
@@ -11007,6 +11014,9 @@ function scoreFeatureSearchEntry(entry, queryKey, queryTokens) {
     score: 0,
     matched: 0
   };
+  var normalizedQueryPhrase = normalizeSearchPhrase(queryString);
+  var phraseInfo = computePhraseMatchInfo(entry.value, normalizedQueryPhrase);
+  var boostedTokenScore = tokenDetails.score + phraseInfo.boost;
   var bestType = 'none';
   var bestPriority = FEATURE_SEARCH_MATCH_PRIORITIES.none;
   var updateType = function updateType(type) {
@@ -11033,12 +11043,20 @@ function scoreFeatureSearchEntry(entry, queryKey, queryTokens) {
   if (tokenDetails.score > 0) {
     updateType('token');
   }
+  if (phraseInfo.displayMatch) {
+    updateType('displayPhrase');
+  } else if (phraseInfo.searchMatch) {
+    updateType('phrase');
+  }
   return {
     entry: entry,
     matchType: bestType,
     priority: bestPriority,
-    tokenScore: tokenDetails.score,
+    tokenScore: boostedTokenScore,
     tokenMatches: tokenDetails.matched,
+    phraseScore: phraseInfo.score,
+    phraseWordCount: phraseInfo.wordCount,
+    typePriority: FEATURE_SEARCH_TYPE_PRIORITY[entry.type] || 0,
     keyDistance: queryKey ? Math.abs(entryKey.length - queryKey.length) : Number.POSITIVE_INFINITY,
     keyLength: entryKey.length
   };
@@ -11057,7 +11075,7 @@ function updateFeatureSearchSuggestions(query) {
     return;
   }
   var scored = featureSearchEntries.map(function (entry) {
-    return scoreFeatureSearchEntry(entry, queryKey, queryTokens);
+    return scoreFeatureSearchEntry(entry, queryKey, queryTokens, trimmed);
   }).filter(Boolean);
   if (scored.length === 0) {
     restoreFeatureSearchDefaults();
@@ -11068,8 +11086,11 @@ function updateFeatureSearchSuggestions(query) {
   });
   var candidates = (meaningful.length > 0 ? meaningful : scored).sort(function (a, b) {
     if (b.priority !== a.priority) return b.priority - a.priority;
+    if (b.phraseScore !== a.phraseScore) return b.phraseScore - a.phraseScore;
+    if (b.phraseWordCount !== a.phraseWordCount) return b.phraseWordCount - a.phraseWordCount;
     if (b.tokenScore !== a.tokenScore) return b.tokenScore - a.tokenScore;
     if (b.tokenMatches !== a.tokenMatches) return b.tokenMatches - a.tokenMatches;
+    if (b.typePriority !== a.typePriority) return b.typePriority - a.typePriority;
     if (a.keyDistance !== b.keyDistance) return a.keyDistance - b.keyDistance;
     if (a.keyLength !== b.keyLength) return a.keyLength - b.keyLength;
     return a.entry.display.localeCompare(b.entry.display, undefined, {
@@ -11183,6 +11204,58 @@ var searchKey = function searchKey(str) {
   var simplified = normalized.replace(/[^a-z0-9]+/g, '');
   if (simplified) return simplified;
   return value.toLowerCase().replace(/\s+/g, '');
+};
+var escapeRegExp = function escapeRegExp(str) {
+  return String(str).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+};
+var normalizeSearchPhrase = function normalizeSearchPhrase(str) {
+  if (!str) return '';
+  var normalized = String(str).toLowerCase();
+  if (typeof normalized.normalize === 'function') {
+    normalized = normalized.normalize('NFD');
+  }
+  normalized = normalized.replace(/[\u0300-\u036f]/g, '').replace(/ß/g, 'ss').replace(/æ/g, 'ae').replace(/œ/g, 'oe').replace(/ø/g, 'o').replace(/&/g, ' and ').replace(/\+/g, ' plus ').replace(/[°º˚]/g, ' deg ').replace(/\bdegrees?\b/g, ' deg ').replace(/[×✕✖✗✘]/g, ' x ');
+  normalized = normalizeSpellingVariants(normalized);
+  normalized = normaliseMarkVariants(normalized);
+  return normalized.replace(/[^a-z0-9]+/g, ' ').replace(/\s+/g, ' ').trim();
+};
+var buildPhrasePattern = function buildPhrasePattern(phrase) {
+  if (!phrase) return null;
+  var escaped = escapeRegExp(phrase).replace(/\s+/g, '\\s+');
+  if (!escaped) return null;
+  return new RegExp("(^|\\s)".concat(escaped, "(?:\\s|$)"));
+};
+var matchesNormalizedPhrase = function matchesNormalizedPhrase(content, phrase) {
+  if (!content || !phrase) return false;
+  var pattern = buildPhrasePattern(phrase);
+  if (!pattern) return false;
+  return pattern.test(content);
+};
+var computePhraseMatchInfo = function computePhraseMatchInfo(entryValue, normalizedQueryPhrase) {
+  if (!normalizedQueryPhrase) {
+    return {
+      displayMatch: false,
+      searchMatch: false,
+      score: 0,
+      boost: 0,
+      wordCount: 0
+    };
+  }
+  var searchPhrase = (entryValue === null || entryValue === void 0 ? void 0 : entryValue.searchPhrase) || (entryValue === null || entryValue === void 0 ? void 0 : entryValue.displayPhrase) || '';
+  var displayPhrase = (entryValue === null || entryValue === void 0 ? void 0 : entryValue.displayPhrase) || searchPhrase;
+  var wordCount = normalizedQueryPhrase.split(' ').filter(Boolean).length;
+  var multiplier = Math.max(1, wordCount);
+  var displayMatch = matchesNormalizedPhrase(displayPhrase, normalizedQueryPhrase);
+  var searchMatch = !displayMatch && matchesNormalizedPhrase(searchPhrase, normalizedQueryPhrase);
+  var score = displayMatch ? 2 * multiplier : searchMatch ? multiplier : 0;
+  var boost = displayMatch ? 6 * multiplier : searchMatch ? 3 * multiplier : 0;
+  return {
+    displayMatch: displayMatch,
+    searchMatch: searchMatch,
+    score: score,
+    boost: boost,
+    wordCount: wordCount
+  };
 };
 var searchTokens = function searchTokens(str) {
   if (!str) return [];
@@ -11333,13 +11406,18 @@ var buildFeatureSearchEntry = function buildFeatureSearchEntry(element, _ref42) 
     combinedLabel = "".concat(baseLabel, " (").concat(contextLabels.join(' › '), ")");
   }
   var combinedKeywords = [baseLabel, contextLabels.join(' '), keywords].filter(Boolean).join(' ');
+  var entryTokens = searchTokens(combinedKeywords);
+  var displayPhrase = normalizeSearchPhrase(combinedLabel);
+  var searchPhrase = normalizeSearchPhrase(combinedKeywords);
   var entry = {
     element: element,
     label: baseLabel,
     baseLabel: baseLabel,
     displayLabel: combinedLabel,
     context: contextLabels,
-    tokens: searchTokens(combinedKeywords),
+    tokens: entryTokens,
+    searchPhrase: searchPhrase,
+    displayPhrase: displayPhrase,
     key: baseKey,
     optionValue: combinedLabel
   };
@@ -11425,18 +11503,32 @@ var computeTokenMatchDetails = function computeTokenMatchDetails() {
 };
 function findBestSearchMatch(map, key) {
   var tokens = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+  var phrase = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : '';
   var queryTokens = Array.isArray(tokens) ? tokens.filter(Boolean) : [];
+  var queryPhrase = normalizeSearchPhrase(phrase);
   var hasKey = Boolean(key);
-  if (!hasKey && queryTokens.length === 0) return null;
+  var hasPhrase = Boolean(queryPhrase);
+  if (!hasKey && queryTokens.length === 0 && !hasPhrase) return null;
   var toResult = function toResult(entryKey, entryValue, matchType) {
     var score = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
     var matchedCount = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 0;
+    var phraseInfo = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : null;
+    var finalType = matchType;
+    if (matchType === 'token' || matchType === 'partial') {
+      if (phraseInfo !== null && phraseInfo !== void 0 && phraseInfo.displayMatch) {
+        finalType = 'displayPhrase';
+      } else if (phraseInfo !== null && phraseInfo !== void 0 && phraseInfo.searchMatch) {
+        finalType = 'phrase';
+      }
+    }
     return {
       key: entryKey,
       value: entryValue,
-      matchType: matchType,
+      matchType: finalType,
       score: score,
-      matchedCount: matchedCount
+      matchedCount: matchedCount,
+      phraseScore: (phraseInfo === null || phraseInfo === void 0 ? void 0 : phraseInfo.score) || 0,
+      phraseWordCount: (phraseInfo === null || phraseInfo === void 0 ? void 0 : phraseInfo.wordCount) || 0
     };
   };
   var flattened = [];
@@ -11479,21 +11571,23 @@ function findBestSearchMatch(map, key) {
     if (exactCandidates.length) {
       var _bestEntry;
       var bestEntry = exactCandidates[0][1];
-      var bestDetails = queryTokens.length > 0 ? computeTokenMatchDetails(((_bestEntry = bestEntry) === null || _bestEntry === void 0 ? void 0 : _bestEntry.tokens) || [], queryTokens) : {
-        score: Number.POSITIVE_INFINITY,
-        matched: queryTokens.length
-      };
+      var bestDetails = computeTokenMatchDetails(((_bestEntry = bestEntry) === null || _bestEntry === void 0 ? void 0 : _bestEntry.tokens) || [], queryTokens);
+      var bestPhrase = computePhraseMatchInfo(bestEntry, queryPhrase);
+      var bestScore = bestDetails.score + bestPhrase.boost;
       var _iterator18 = _createForOfIteratorHelper(exactCandidates.slice(1)),
         _step18;
       try {
         for (_iterator18.s(); !(_step18 = _iterator18.n()).done;) {
           var _step18$value = _slicedToArray(_step18.value, 2),
             entryValue = _step18$value[1];
-          if (!queryTokens.length) break;
           var details = computeTokenMatchDetails((entryValue === null || entryValue === void 0 ? void 0 : entryValue.tokens) || [], queryTokens);
-          if (details.score > bestDetails.score || details.score === bestDetails.score && details.matched > bestDetails.matched) {
+          var phraseInfo = computePhraseMatchInfo(entryValue, queryPhrase);
+          var candidateScore = details.score + phraseInfo.boost;
+          if (candidateScore > bestScore || candidateScore === bestScore && (phraseInfo.score > bestPhrase.score || phraseInfo.score === bestPhrase.score && details.matched > bestDetails.matched)) {
             bestDetails = details;
             bestEntry = entryValue;
+            bestPhrase = phraseInfo;
+            bestScore = candidateScore;
           }
         }
       } catch (err) {
@@ -11501,23 +11595,27 @@ function findBestSearchMatch(map, key) {
       } finally {
         _iterator18.f();
       }
-      return toResult(key, bestEntry, 'exactKey', bestDetails.score, bestDetails.matched);
+      return toResult(key, bestEntry, 'exactKey', bestScore, bestDetails.matched, bestPhrase);
     }
   }
   var bestTokenMatch = null;
-  var bestTokenScore = 0;
+  var bestTokenScore = Number.NEGATIVE_INFINITY;
+  var bestTokenPhraseScore = Number.NEGATIVE_INFINITY;
   var bestTokenMatched = 0;
   var bestTokenKeyDistance = Number.POSITIVE_INFINITY;
   var bestPrefixMatch = null;
   var bestPrefixScore = Number.NEGATIVE_INFINITY;
+  var bestPrefixPhraseScore = Number.NEGATIVE_INFINITY;
   var bestPrefixMatched = 0;
   var bestPrefixLength = Number.POSITIVE_INFINITY;
   var bestSubsetMatch = null;
   var bestSubsetScore = Number.NEGATIVE_INFINITY;
+  var bestSubsetPhraseScore = Number.NEGATIVE_INFINITY;
   var bestSubsetMatched = 0;
   var bestSubsetLength = -1;
   var bestPartialMatch = null;
   var bestPartialScore = Number.NEGATIVE_INFINITY;
+  var bestPartialPhraseScore = Number.NEGATIVE_INFINITY;
   var bestPartialMatched = 0;
   var keyLength = hasKey ? key.length : 0;
   for (var _i19 = 0, _flattened = flattened; _i19 < _flattened.length; _i19++) {
@@ -11530,40 +11628,46 @@ function findBestSearchMatch(map, key) {
       score: 0,
       matched: 0
     };
+    var _phraseInfo = computePhraseMatchInfo(_entryValue, queryPhrase);
+    var boostedScore = tokenDetails.score + _phraseInfo.boost;
     if (hasKey && entryKey.startsWith(key)) {
-      var score = queryTokens.length > 0 ? tokenDetails.score : Number.POSITIVE_INFINITY;
-      var candidate = toResult(entryKey, _entryValue, 'keyPrefix', score, tokenDetails.matched);
-      if (!bestPrefixMatch || score > bestPrefixScore || score === bestPrefixScore && (tokenDetails.matched > bestPrefixMatched || tokenDetails.matched === bestPrefixMatched && entryKey.length < bestPrefixLength)) {
+      var score = queryTokens.length > 0 || _phraseInfo.boost > 0 ? boostedScore : Number.POSITIVE_INFINITY;
+      var candidate = toResult(entryKey, _entryValue, 'keyPrefix', score, tokenDetails.matched, _phraseInfo);
+      if (!bestPrefixMatch || candidate.score > bestPrefixScore || candidate.score === bestPrefixScore && (candidate.phraseScore > bestPrefixPhraseScore || candidate.phraseScore === bestPrefixPhraseScore && (candidate.matchedCount > bestPrefixMatched || candidate.matchedCount === bestPrefixMatched && entryKey.length < bestPrefixLength))) {
         bestPrefixMatch = candidate;
-        bestPrefixScore = score;
-        bestPrefixMatched = tokenDetails.matched;
+        bestPrefixScore = candidate.score;
+        bestPrefixPhraseScore = candidate.phraseScore;
+        bestPrefixMatched = candidate.matchedCount;
         bestPrefixLength = entryKey.length;
       }
     }
-    if (queryTokens.length) {
+    if (queryTokens.length || _phraseInfo.boost > 0 || hasPhrase) {
       var distance = hasKey ? Math.abs(entryKey.length - keyLength) : Number.POSITIVE_INFINITY;
-      if (tokenDetails.score > bestTokenScore || tokenDetails.score === bestTokenScore && (tokenDetails.matched > bestTokenMatched || tokenDetails.matched === bestTokenMatched && distance < bestTokenKeyDistance)) {
-        bestTokenMatch = toResult(entryKey, _entryValue, 'token', tokenDetails.score, tokenDetails.matched);
-        bestTokenScore = tokenDetails.score;
+      if (boostedScore > bestTokenScore || boostedScore === bestTokenScore && (_phraseInfo.score > bestTokenPhraseScore || _phraseInfo.score === bestTokenPhraseScore && (tokenDetails.matched > bestTokenMatched || tokenDetails.matched === bestTokenMatched && distance < bestTokenKeyDistance))) {
+        bestTokenMatch = toResult(entryKey, _entryValue, 'token', boostedScore, tokenDetails.matched, _phraseInfo);
+        bestTokenScore = boostedScore;
+        bestTokenPhraseScore = _phraseInfo.score;
         bestTokenMatched = tokenDetails.matched;
         bestTokenKeyDistance = distance;
       }
     }
     if (hasKey && key.startsWith(entryKey)) {
-      var _score = queryTokens.length > 0 ? tokenDetails.score : Number.POSITIVE_INFINITY;
-      var _candidate = toResult(entryKey, _entryValue, 'keySubset', _score, tokenDetails.matched);
-      if (!bestSubsetMatch || _score > bestSubsetScore || _score === bestSubsetScore && (entryKey.length > bestSubsetLength || tokenDetails.matched > bestSubsetMatched)) {
+      var _score = queryTokens.length > 0 || _phraseInfo.boost > 0 ? boostedScore : Number.POSITIVE_INFINITY;
+      var _candidate = toResult(entryKey, _entryValue, 'keySubset', _score, tokenDetails.matched, _phraseInfo);
+      if (!bestSubsetMatch || _candidate.score > bestSubsetScore || _candidate.score === bestSubsetScore && (_candidate.phraseScore > bestSubsetPhraseScore || _candidate.phraseScore === bestSubsetPhraseScore && (entryKey.length > bestSubsetLength || _candidate.matchedCount > bestSubsetMatched))) {
         bestSubsetMatch = _candidate;
-        bestSubsetScore = _score;
-        bestSubsetMatched = tokenDetails.matched;
+        bestSubsetScore = _candidate.score;
+        bestSubsetPhraseScore = _candidate.phraseScore;
+        bestSubsetMatched = _candidate.matchedCount;
         bestSubsetLength = entryKey.length;
       }
     } else if (hasKey && (entryKey.includes(key) || key.includes(entryKey))) {
-      var _candidate2 = toResult(entryKey, _entryValue, 'partial', tokenDetails.score, tokenDetails.matched);
-      if (!bestPartialMatch || tokenDetails.score > bestPartialScore || tokenDetails.score === bestPartialScore && tokenDetails.matched > bestPartialMatched) {
+      var _candidate2 = toResult(entryKey, _entryValue, 'partial', boostedScore, tokenDetails.matched, _phraseInfo);
+      if (!bestPartialMatch || _candidate2.score > bestPartialScore || _candidate2.score === bestPartialScore && (_candidate2.phraseScore > bestPartialPhraseScore || _candidate2.phraseScore === bestPartialPhraseScore && _candidate2.matchedCount > bestPartialMatched)) {
         bestPartialMatch = _candidate2;
-        bestPartialScore = tokenDetails.score;
-        bestPartialMatched = tokenDetails.matched;
+        bestPartialScore = _candidate2.score;
+        bestPartialPhraseScore = _candidate2.phraseScore;
+        bestPartialMatched = _candidate2.matchedCount;
       }
     }
   }
@@ -12815,13 +12919,15 @@ function populateFeatureSearch() {
       var keywords = section.dataset.helpKeywords || '';
       var key = searchKey(label);
       var tokens = searchTokens("".concat(label, " ").concat(keywords).trim());
+      var optionValue = "".concat(label, " (help)");
       var helpEntry = {
         section: section,
         label: label,
-        tokens: tokens
+        tokens: tokens,
+        searchPhrase: normalizeSearchPhrase("".concat(label, " ").concat(keywords).trim()),
+        displayPhrase: normalizeSearchPhrase(optionValue)
       };
       helpMap.set(key, helpEntry);
-      var optionValue = "".concat(label, " (help)");
       registerOption(optionValue);
       featureSearchEntries.push({
         type: 'help',
@@ -12845,7 +12951,9 @@ function populateFeatureSearch() {
           select: sel,
           value: opt.value,
           label: name,
-          tokens: tokens
+          tokens: tokens,
+          searchPhrase: normalizeSearchPhrase("".concat(name, " ").concat(keywords).trim()),
+          displayPhrase: normalizeSearchPhrase(name)
         };
         deviceMap.set(key, deviceEntry);
         registerOption(name);
