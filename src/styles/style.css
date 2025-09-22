@@ -129,6 +129,7 @@
   --fiz-conn-bg: rgba(76, 175, 80, 0.15);
   --video-conn-bg: rgba(33, 150, 243, 0.15);
   --neutral-conn-bg: rgba(158, 158, 158, 0.15);
+  --connector-label-neutral-color: #000000;
 }
 @media (max-width: 600px) {
   :root {
@@ -3405,12 +3406,31 @@ body.pink-mode #topBar #logo .logo-center {
 .info-box-label {
   font-weight: var(--font-weight-bold);
   margin-right: 2px;
-  color: inherit;
+  color: var(--connector-label-neutral-color);
 }
 
-html:not(.dark-mode) .info-box-label,
-body:not(.dark-mode) .info-box-label {
-  color: var(--accent-color);
+.info-box strong:first-child {
+  color: var(--connector-label-neutral-color);
+}
+
+.power-conn .info-box-label,
+.info-box.power-conn strong:first-child {
+  color: var(--danger-color);
+}
+
+.video-conn .info-box-label,
+.info-box.video-conn strong:first-child {
+  color: var(--info-color);
+}
+
+.fiz-conn .info-box-label,
+.info-box.fiz-conn strong:first-child {
+  color: var(--success-color);
+}
+
+.neutral-conn .info-box-label,
+.info-box.neutral-conn strong:first-child {
+  color: var(--connector-label-neutral-color);
 }
 
 .info-box-list .info-box-label {
@@ -3801,6 +3821,7 @@ html.dark-mode,
   --fiz-conn-bg: rgba(102, 187, 106, 0.3);
   --video-conn-bg: rgba(126, 200, 255, 0.3);
   --neutral-conn-bg: rgba(187, 187, 187, 0.3);
+  --connector-label-neutral-color: var(--text-color);
 }
 
 html.high-contrast,
@@ -3848,6 +3869,7 @@ body.high-contrast {
   --fiz-conn-bg: rgba(0, 255, 0, 0.5);
   --video-conn-bg: rgba(0, 255, 255, 0.5);
   --neutral-conn-bg: rgba(255, 255, 255, 0.5);
+  --connector-label-neutral-color: #ffffff;
   --selected-row-bg: #fff;
 }
 
