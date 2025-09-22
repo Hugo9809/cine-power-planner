@@ -392,6 +392,10 @@ body:not(.light-mode) .gear-table .auto-gear-item {
   min-width: 0;
   max-width: 100%;
   flex: 0 0 auto;
+  background-color: var(--panel-bg);
+  color: inherit;
+  border-color: var(--panel-border);
+  box-shadow: none;
 }
 
 #overviewDialogContent .gear-table .gear-item select + select {
