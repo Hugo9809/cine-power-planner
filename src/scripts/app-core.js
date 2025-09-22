@@ -14221,11 +14221,132 @@ const formatDeviceCategoryPath = path => {
     .join(' › ');
 };
 
+const DANGEROUS_SHARED_TAGS = new Set([
+  'script',
+  'style',
+  'template',
+  'iframe',
+  'object',
+  'embed',
+  'link',
+  'meta',
+  'base'
+]);
+
+const DANGEROUS_SHARED_ATTRS = new Set([
+  'formaction',
+  'action',
+  'srcdoc'
+]);
+
+function isSafeSharedUrl(value) {
+  if (typeof value !== 'string') {
+    return false;
+  }
+
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return true;
+  }
+
+  if (trimmed.startsWith('#')) {
+    return true;
+  }
+
+  if (/^(?:javascript|vbscript|data):/i.test(trimmed)) {
+    return false;
+  }
+
+  try {
+    const base = typeof window !== 'undefined' && window.location ? window.location.href : 'https://localhost';
+    const url = new URL(trimmed, base);
+    if (/^(?:javascript|vbscript|data):/i.test(url.protocol)) {
+      return false;
+    }
+    if (typeof window !== 'undefined' && window.location && window.location.origin) {
+      return url.origin === window.location.origin;
+    }
+    // If we cannot determine the origin, treat relative URLs as safe.
+    if (!/^[a-z][a-z0-9+.-]*:/i.test(trimmed)) {
+      return true;
+    }
+  } catch (error) {
+    if (!/^[a-z][a-z0-9+.-]*:/i.test(trimmed)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+function sanitizeSharedHtml(html) {
+  if (!html) {
+    return '';
+  }
+
+  if (typeof html !== 'string') {
+    return sanitizeSharedHtml(String(html));
+  }
+
+  let doc;
+  try {
+    doc = new DOMParser().parseFromString(html, 'text/html');
+  } catch (error) {
+    console.warn('Failed to parse shared HTML for sanitization', error);
+    return '';
+  }
+
+  if (!doc || !doc.body) {
+    return '';
+  }
+
+  DANGEROUS_SHARED_TAGS.forEach(tag => {
+    doc.body.querySelectorAll(tag).forEach(node => {
+      node.remove();
+    });
+  });
+
+  doc.body.querySelectorAll('*').forEach(element => {
+    Array.from(element.attributes).forEach(attribute => {
+      const name = attribute.name.toLowerCase();
+      if (name.startsWith('on')) {
+        element.removeAttribute(attribute.name);
+        return;
+      }
+      if (name === 'style') {
+        element.removeAttribute(attribute.name);
+        return;
+      }
+      if (DANGEROUS_SHARED_ATTRS.has(name)) {
+        element.removeAttribute(attribute.name);
+        return;
+      }
+      if (name === 'href' || name === 'xlink:href' || name === 'src' || name === 'srcset') {
+        const value = attribute.value || '';
+        const parts = name === 'srcset'
+          ? value.split(',').map(part => part.trim().split(/\s+/)[0]).filter(Boolean)
+          : [value];
+        if (!parts.every(isSafeSharedUrl)) {
+          element.removeAttribute(attribute.name);
+        }
+        return;
+      }
+      if (name === 'target') {
+        element.removeAttribute(attribute.name);
+      }
+    });
+  });
+
+  return doc.body.innerHTML;
+}
+
 function displayGearAndRequirements(html) {
   const { projectHtml, gearHtml } = splitGearListHtml(html);
+  const safeProjectHtml = sanitizeSharedHtml(projectHtml);
+  const safeGearHtml = sanitizeSharedHtml(gearHtml);
   if (projectRequirementsOutput) {
-    if (projectHtml) {
-      projectRequirementsOutput.innerHTML = projectHtml;
+    if (safeProjectHtml) {
+      projectRequirementsOutput.innerHTML = safeProjectHtml;
       projectRequirementsOutput.classList.remove('hidden');
       projectRequirementsOutput.querySelectorAll('.requirement-box').forEach(box => {
         const label = box.querySelector('.req-label')?.textContent || '';
@@ -14248,8 +14369,8 @@ function displayGearAndRequirements(html) {
     }
   }
   if (gearListOutput) {
-    if (gearHtml) {
-      gearListOutput.innerHTML = gearHtml;
+    if (safeGearHtml) {
+      gearListOutput.innerHTML = safeGearHtml;
       gearListOutput.classList.remove('hidden');
       applyFilterSelectionsToGearList();
       renderFilterDetails();
