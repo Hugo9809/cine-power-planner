@@ -9,9 +9,22 @@ describe('service worker configuration', () => {
     expect(ASSETS).toEqual(
       expect.arrayContaining([
         './src/scripts/globalthis-polyfill.js',
+        './src/scripts/modern-support-check.mjs',
         './src/data/devices/batteryHotswaps.js',
         './src/data/devices/chargers.js',
         './src/data/devices/wirelessReceivers.js',
+      ]),
+    );
+  });
+
+  test('caches legacy fallback scripts for offline usage', () => {
+    expect(ASSETS).toEqual(
+      expect.arrayContaining([
+        './legacy/scripts/loader.js',
+        './legacy/scripts/script.js',
+        './legacy/scripts/auto-gear-monitoring.js',
+        './legacy/scripts/autosave-overlay.js',
+        './legacy/scripts/modern-support-check.js',
       ]),
     );
   });
