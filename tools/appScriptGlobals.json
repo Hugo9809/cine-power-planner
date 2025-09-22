@@ -310,6 +310,7 @@
     "getDeviceChanges",
     "getEasyrigValue",
     "getLocalizedText",
+    "getManualDownloadFallbackMessage",
     "getProjectScopedAutoGearRules",
     "getSelectedPlate",
     "getSetups",

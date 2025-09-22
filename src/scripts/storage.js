@@ -566,6 +566,7 @@ function updateGlobalSafeLocalStorageReference() {
     });
     return;
   } catch (defineError) {
+    console.warn('Unable to define SAFE_LOCAL_STORAGE getter', defineError);
     try {
       GLOBAL_SCOPE.SAFE_LOCAL_STORAGE = getSafeLocalStorage();
       return;
