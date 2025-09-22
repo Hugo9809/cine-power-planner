@@ -5043,7 +5043,7 @@ body.dark-mode.pink-mode #gearListOutput h2,
   border-bottom: 1px solid var(--accent-color);
 }
 
-#sideMenu li { 
+#sideMenu li {
   margin: 0;
 }
 
@@ -5087,6 +5087,31 @@ body.dark-mode.pink-mode #gearListOutput h2,
 #sideMenu button[data-sidebar-action]:focus-visible {
   outline: 2px solid var(--accent-color);
   outline-offset: 2px;
+}
+
+body.light-mode #sideMenu ul {
+  border-top: 1px solid color-mix(in srgb, var(--accent-color) 55%, var(--surface-color));
+  border-bottom: 1px solid color-mix(in srgb, var(--accent-color) 55%, var(--surface-color));
+}
+
+body.light-mode #sideMenu li + li {
+  border-top: 1px solid color-mix(in srgb, var(--accent-color) 45%, var(--surface-color));
+}
+
+body.light-mode #sideMenu a,
+body.light-mode #sideMenu button[data-sidebar-action] {
+  color: color-mix(in srgb, var(--accent-color) 72%, var(--text-color));
+}
+
+body.light-mode #sideMenu a:hover,
+body.light-mode #sideMenu button[data-sidebar-action]:hover {
+  color: var(--accent-color);
+}
+
+body.light-mode #sideMenu a:focus-visible,
+body.light-mode #sideMenu button[data-sidebar-action]:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent-color) 70%, var(--surface-color));
+  outline-offset: 3px;
 }
 
 .dark-mode #sideMenu ul {
