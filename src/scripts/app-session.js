@@ -4543,11 +4543,13 @@ function createFilterValueSelect(type, selected) {
   sel.style.display = 'none';
   const container = document.createElement('span');
   container.className = 'filter-values-container';
+  const checkboxName = `filterValues-${filterId(type)}`;
   opts.forEach(o => {
     const lbl = document.createElement('label');
     lbl.className = 'filter-value-option';
     const cb = document.createElement('input');
     cb.type = 'checkbox';
+    cb.name = checkboxName;
     cb.value = o;
     syncCheckbox(cb, selectedVals.includes(o));
     cb.addEventListener('change', () => {
@@ -4854,12 +4856,14 @@ function renderGearListFilterDetails(details) {
       optionsWrap.setAttribute('data-storage-values', `filter-values-${filterId(type)}`);
       const storageValuesId = optionsWrap.getAttribute('data-storage-values');
       const { opts, defaults = [] } = getFilterValueConfig(type);
+      const checkboxName = `filterValues-${filterId(type)}`;
       const currentValues = values == null ? defaults : (Array.isArray(values) ? values : []);
       opts.forEach(value => {
         const lbl = document.createElement('label');
         lbl.className = 'filter-value-option';
         const cb = document.createElement('input');
         cb.type = 'checkbox';
+        cb.name = checkboxName;
         cb.value = value;
         if (currentValues.includes(value)) {
           cb.checked = true;
