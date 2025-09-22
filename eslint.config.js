@@ -1,5 +1,27 @@
 const js = require('@eslint/js');
 const globals = require('globals');
+const appScriptGlobals = require('./tools/appScriptGlobals.json');
+
+const baseGlobals = {
+  ...globals.browser,
+  ...globals.node,
+};
+
+const buildAppScriptGlobals = (names = []) =>
+  Object.fromEntries(names.map(name => [name, 'writable']));
+
+const appScriptConfigs = Object.entries(appScriptGlobals).map(([key, names]) => ({
+  files: [`src/scripts/${key}.js`],
+  languageOptions: {
+    globals: {
+      ...baseGlobals,
+      ...buildAppScriptGlobals(names),
+    },
+  },
+  rules: {
+    'no-unused-vars': 'off',
+  },
+}));
 
 module.exports = [
   { ignores: ['vendor/**', 'src/vendor/**', 'legacy/**'] },
@@ -36,13 +58,7 @@ module.exports = [
       },
     },
   },
-  {
-    files: ['src/scripts/app-*.js'],
-    rules: {
-      'no-undef': 'off',
-      'no-unused-vars': 'off',
-    },
-  },
+  ...appScriptConfigs,
   {
     files: ['tests/**'],
     languageOptions: {
