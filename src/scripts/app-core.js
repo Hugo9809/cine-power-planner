@@ -16634,7 +16634,7 @@ function renderTemperatureNote(baseHours) {
     const runtimeCell = Number.isFinite(runtime) ? runtime.toFixed(2) : '0.00';
     let batteries = '–';
     if (Number.isFinite(runtime) && runtime > 0) {
-      batteries = Math.ceil(10 / runtime + 1);
+      batteries = Math.ceil(10 / runtime);
     }
     const temperatureCell = formatTemperatureForDisplay(scenario.celsius);
     html += `<tr><td style="color:${scenario.color}">${temperatureCell}</td><td>${runtimeCell}</td><td>${batteries}</td></tr>`;
@@ -16903,8 +16903,11 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
       batteryLifeElem.textContent = hours.toFixed(2);
     }
     lastRuntimeHours = hours;
-    // Round up total batteries (including one spare) to the next full number
-    const batteriesNeeded = Math.ceil(10 / hours + 1);
+    // Round up total batteries to the next full number
+    let batteriesNeeded = 1;
+    if (Number.isFinite(hours) && hours > 0) {
+      batteriesNeeded = Math.max(1, Math.ceil(10 / hours));
+    }
     batteryCountElem.textContent = batteriesNeeded.toString();
     // Warnings about current draw vs battery limits
     setStatusMessage(pinWarnElem, '');
@@ -17138,7 +17141,10 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
       runtimeAverageNoteElem.textContent =
         feedback.count > 4 ? texts[currentLang].runtimeAverageNote : '';
     }
-    const batteriesNeeded = Math.ceil(10 / combinedRuntime + 1);
+    let batteriesNeeded = 1;
+    if (Number.isFinite(combinedRuntime) && combinedRuntime > 0) {
+      batteriesNeeded = Math.max(1, Math.ceil(10 / combinedRuntime));
+    }
     batteryCountElem.textContent = batteriesNeeded.toString();
   } else {
     if (batteryLifeLabelElem) {

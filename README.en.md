@@ -202,7 +202,7 @@ The generator turns your selections into a categorized packing list:
 - Total consumption in watts
 - Current draw at 14.4 V and 12 V
 - Estimated battery runtime in hours using weighted user feedback
-- Required battery count for a 10 h shoot (incl. spare)
+- Required battery count for a 10 h shoot
 - Temperature note to adjust runtime for hot or cold conditions
 
 ### 🔋 Battery Output Check

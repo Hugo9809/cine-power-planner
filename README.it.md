@@ -179,7 +179,7 @@ Il generatore trasforma le tue scelte in una lista di carico ordinata per catego
 - Consumo totale in watt
 - Corrente a 14,4 V e 12 V
 - Autonomia stimata in ore utilizzando la media ponderata della community
-- Numero di batterie necessario per 10 h di riprese (inclusa la riserva)
+- Numero di batterie necessario per 10 h di riprese
 - Nota sulla temperatura per adattare l’autonomia in condizioni estreme
 
 ### 🔋 Controllo dell’erogazione

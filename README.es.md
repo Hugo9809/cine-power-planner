@@ -181,7 +181,7 @@ El generador convierte tus selecciones en una lista de empaque categorizada:
 - Consumo total en vatios
 - Corriente demandada a 14,4 V y 12 V
 - Autonomía estimada en horas usando la media ponderada de la comunidad
-- Número de baterías necesario para un rodaje de 10 h (incluida la de reserva)
+- Número de baterías necesario para un rodaje de 10 h
 - Nota de temperatura para ajustar la autonomía en condiciones extremas
 
 ### 🔋 Comprobación de entrega de batería

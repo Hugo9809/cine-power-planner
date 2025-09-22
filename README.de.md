@@ -178,7 +178,7 @@ Der Generator verwandelt deine Auswahl in eine nach Kategorien sortierte Packlis
 - Gesamtverbrauch in Watt
 - Stromstärke bei 14,4 V und 12 V
 - Geschätzte Akkulaufzeit in Stunden basierend auf gewichteten Community-Werten
-- Benötigte Akkumenge für einen 10-Stunden-Dreh (inkl. Reserve)
+- Benötigte Akkumenge für einen 10-Stunden-Dreh
 - Temperaturhinweis zur Anpassung der Laufzeit bei Hitze oder Kälte
 
 ### 🔋 Akkuausgang prüfen
