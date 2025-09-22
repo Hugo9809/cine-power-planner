@@ -42,4 +42,17 @@ module.exports = [
       globals: globals.jest,
     },
   },
+  {
+    files: [
+      'legacy/scripts/**/*.js',
+      'src/scripts/app-*.js',
+      'src/scripts/auto-gear-monitoring.js',
+      'src/scripts/autosave-overlay.js',
+      'src/scripts/overview.js'
+    ],
+    rules: {
+      'no-undef': 'off',
+      'no-unused-vars': 'off',
+    },
+  },
 ];

@@ -50,3 +50,8 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     combinedSource
   );
   factory(module.exports, require, module, __filename, __dirname);
+} else {
+  if (typeof window !== 'undefined') {
+    window.__cinePowerPlannerBrowserRuntime__ = true;
+  }
+}
