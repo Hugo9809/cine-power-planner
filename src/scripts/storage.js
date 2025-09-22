@@ -1960,20 +1960,81 @@ function renameSetup(oldName, newName) {
 // --- Project Storage ---
 function normalizeProject(data) {
   if (typeof data === "string") {
+    const parsed = tryParseJSONLike(data);
+    if (parsed.success) {
+      const normalized = normalizeProject(parsed.parsed);
+      if (normalized) {
+        return normalized;
+      }
+    }
     return { gearList: data, projectInfo: null };
   }
   if (isPlainObject(data)) {
     // New format { gearList, projectInfo }
     if (Object.prototype.hasOwnProperty.call(data, "gearList") || Object.prototype.hasOwnProperty.call(data, "projectInfo")) {
+      let normalizedProjectInfo = isPlainObject(data.projectInfo) ? data.projectInfo : null;
+      if (!normalizedProjectInfo && typeof data.projectInfo === "string") {
+        const parsedInfo = tryParseJSONLike(data.projectInfo);
+        if (parsedInfo.success && isPlainObject(parsedInfo.parsed)) {
+          normalizedProjectInfo = parsedInfo.parsed;
+        }
+      }
+
+      let normalizedAutoGearRules = Array.isArray(data.autoGearRules) && data.autoGearRules.length
+        ? data.autoGearRules
+        : null;
+      if (!normalizedAutoGearRules && typeof data.autoGearRules === "string") {
+        const parsedRules = tryParseJSONLike(data.autoGearRules);
+        if (parsedRules.success && Array.isArray(parsedRules.parsed) && parsedRules.parsed.length) {
+          normalizedAutoGearRules = parsedRules.parsed;
+        }
+      }
+
+      let normalizedGearList =
+        typeof data.gearList === "string" || (data.gearList && typeof data.gearList === "object")
+          ? data.gearList
+          : "";
+
+      if (typeof normalizedGearList === "string") {
+        const parsedGear = tryParseJSONLike(normalizedGearList);
+        if (parsedGear.success) {
+          const nested = normalizeProject(parsedGear.parsed);
+          if (nested) {
+            normalizedGearList = nested.gearList;
+            if (!normalizedProjectInfo && nested.projectInfo) {
+              normalizedProjectInfo = nested.projectInfo;
+            }
+            if (
+              (!normalizedAutoGearRules || !normalizedAutoGearRules.length)
+              && Array.isArray(nested.autoGearRules)
+              && nested.autoGearRules.length
+            ) {
+              normalizedAutoGearRules = nested.autoGearRules;
+            }
+          } else if (
+            typeof parsedGear.parsed === "string"
+            || (isPlainObject(parsedGear.parsed)
+              && Object.values(parsedGear.parsed).every((value) => typeof value === "string"))
+          ) {
+            normalizedGearList = parsedGear.parsed;
+          }
+        }
+      }
+
+      if (
+        normalizedGearList
+        && typeof normalizedGearList === "object"
+        && !isPlainObject(normalizedGearList)
+      ) {
+        normalizedGearList = "";
+      }
+
       const normalized = {
-        gearList:
-          typeof data.gearList === "string" || (data.gearList && typeof data.gearList === "object")
-            ? data.gearList
-            : "",
-        projectInfo: isPlainObject(data.projectInfo) ? data.projectInfo : null,
+        gearList: normalizedGearList,
+        projectInfo: normalizedProjectInfo,
       };
-      if (Array.isArray(data.autoGearRules) && data.autoGearRules.length) {
-        normalized.autoGearRules = data.autoGearRules;
+      if (normalizedAutoGearRules && normalizedAutoGearRules.length) {
+        normalized.autoGearRules = normalizedAutoGearRules;
       }
       return normalized;
     }

@@ -1179,10 +1179,87 @@ describe('export/import all data', () => {
     expect(loadProject('Legacy')).toEqual({ gearList: '<div>Legacy</div>', projectInfo: null });
   });
 
+  test('importAllData handles project map entries stored as JSON strings', () => {
+    const payload = {
+      project: {
+        Legacy: JSON.stringify({
+          gearList: '<div>Legacy</div>',
+          projectInfo: { projectName: 'Legacy JSON' },
+          autoGearRules: [
+            { id: 'legacy-json', label: 'Legacy JSON', scenarios: [], add: [], remove: [] },
+          ],
+        }),
+      },
+    };
+
+    importAllData(payload);
+
+    expect(loadProject('Legacy')).toEqual({
+      gearList: '<div>Legacy</div>',
+      projectInfo: { projectName: 'Legacy JSON' },
+      autoGearRules: [
+        { id: 'legacy-json', label: 'Legacy JSON', scenarios: [], add: [], remove: [] },
+      ],
+    });
+  });
+
   test('importAllData handles legacy single gearList', () => {
     const data = { gearList: '<p></p>' };
     importAllData(data);
     expect(loadProject('')).toEqual({ gearList: '<p></p>', projectInfo: null });
+  });
+
+  test('loadProject normalizes stored JSON string payloads', () => {
+    const jsonString = JSON.stringify({
+      gearList: '<section>Legacy</section>',
+      projectInfo: { projectName: 'Legacy Stored' },
+      autoGearRules: [
+        { id: 'stored-json', label: 'Stored JSON', scenarios: [], add: [], remove: [] },
+      ],
+    });
+    localStorage.setItem(PROJECT_KEY, JSON.stringify(jsonString));
+
+    const project = loadProject('');
+
+    expect(project).toEqual({
+      gearList: '<section>Legacy</section>',
+      projectInfo: { projectName: 'Legacy Stored' },
+      autoGearRules: [
+        { id: 'stored-json', label: 'Stored JSON', scenarios: [], add: [], remove: [] },
+      ],
+    });
+
+    const stored = JSON.parse(localStorage.getItem(PROJECT_KEY));
+    expect(stored['']).toEqual({
+      gearList: '<section>Legacy</section>',
+      projectInfo: { projectName: 'Legacy Stored' },
+      autoGearRules: [
+        { id: 'stored-json', label: 'Stored JSON', scenarios: [], add: [], remove: [] },
+      ],
+    });
+  });
+
+  test('loadProject normalizes project map entries saved as JSON strings', () => {
+    const stored = {
+      Legacy: JSON.stringify({
+        gearList: '<article>Legacy Map</article>',
+        projectInfo: { projectName: 'Legacy Map' },
+      }),
+    };
+    localStorage.setItem(PROJECT_KEY, JSON.stringify(stored));
+
+    const project = loadProject('Legacy');
+
+    expect(project).toEqual({
+      gearList: '<article>Legacy Map</article>',
+      projectInfo: { projectName: 'Legacy Map' },
+    });
+
+    const updated = JSON.parse(localStorage.getItem(PROJECT_KEY));
+    expect(updated.Legacy).toEqual({
+      gearList: '<article>Legacy Map</article>',
+      projectInfo: { projectName: 'Legacy Map' },
+    });
   });
 
   test('importAllData normalizes automatic gear booleans from strings', () => {
