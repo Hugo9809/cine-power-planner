@@ -6497,6 +6497,38 @@ function configureIconOnlyButton(button, glyph, options = {}) {
   }
 }
 
+let generatedFieldIdCounter = 0;
+
+function sanitizeForId(value, fallback = 'field') {
+  if (value === undefined || value === null) return fallback;
+  const normalized = String(value)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+  return normalized || fallback;
+}
+
+function ensureElementId(element, baseText = 'field') {
+  if (!element) return '';
+  if (element.id) return element.id;
+  const base = sanitizeForId(baseText, 'field');
+  let id = '';
+  do {
+    generatedFieldIdCounter += 1;
+    id = `${base}-${generatedFieldIdCounter}`;
+  } while (document.getElementById(id));
+  element.id = id;
+  return id;
+}
+
+function createHiddenLabel(forId, text) {
+  const label = document.createElement('label');
+  label.className = 'visually-hidden';
+  label.setAttribute('for', forId);
+  label.textContent = typeof text === 'string' ? text : '';
+  return label;
+}
+
 function createCrewRow(data = {}) {
   if (!crewContainer) return;
   const row = document.createElement('div');
@@ -6531,6 +6563,14 @@ function createCrewRow(data = {}) {
   emailInput.placeholder = projectFormTexts.crewEmailPlaceholder || fallbackProjectForm.crewEmailPlaceholder || 'Email';
   emailInput.className = 'person-email';
   emailInput.value = data.email || '';
+  const crewRoleLabelText = projectFormTexts.crewRoleLabel || fallbackProjectForm.crewRoleLabel || 'Crew role';
+  const crewNameLabelText = projectFormTexts.crewNameLabel || fallbackProjectForm.crewNameLabel || 'Crew member name';
+  const crewPhoneLabelText = projectFormTexts.crewPhoneLabel || fallbackProjectForm.crewPhoneLabel || 'Crew member phone';
+  const crewEmailLabelText = projectFormTexts.crewEmailLabel || fallbackProjectForm.crewEmailLabel || 'Crew member email';
+  const roleLabel = createHiddenLabel(ensureElementId(roleSel, crewRoleLabelText), crewRoleLabelText);
+  const nameLabel = createHiddenLabel(ensureElementId(nameInput, crewNameLabelText), crewNameLabelText);
+  const phoneLabel = createHiddenLabel(ensureElementId(phoneInput, crewPhoneLabelText), crewPhoneLabelText);
+  const emailLabel = createHiddenLabel(ensureElementId(emailInput, crewEmailLabelText), crewEmailLabelText);
   const removeBtn = document.createElement('button');
   removeBtn.type = 'button';
   const removeBase = texts[currentLang]?.projectForm?.removeEntry
@@ -6548,7 +6588,7 @@ function createCrewRow(data = {}) {
     row.remove();
     scheduleProjectAutoSave(true);
   });
-  row.append(roleSel, nameInput, phoneInput, emailInput, removeBtn);
+  row.append(roleLabel, roleSel, nameLabel, nameInput, phoneLabel, phoneInput, emailLabel, emailInput, removeBtn);
   crewContainer.appendChild(row);
 }
 
@@ -7334,6 +7374,8 @@ function createDeviceCategorySection(categoryKey) {
   filterInput.className = 'list-filter';
   filterInput.id = `${sanitizedId}ListFilter`;
   filterInput.dataset.categoryKey = categoryKey;
+  const filterLabel = createHiddenLabel(ensureElementId(filterInput, `${sanitizedId}-list-filter`), `Filter ${categoryKey}`);
+  section.appendChild(filterLabel);
   section.appendChild(filterInput);
   const list = document.createElement('ul');
   list.className = 'device-ul';
@@ -7345,7 +7387,7 @@ function createDeviceCategorySection(categoryKey) {
   section.appendChild(list);
   deviceListContainer.appendChild(section);
   bindFilterInput(filterInput, () => filterDeviceList(list, filterInput.value));
-  const entry = { section, heading, filterInput, list, sanitizedId };
+  const entry = { section, heading, filterInput, filterLabel, list, sanitizedId };
   deviceManagerLists.set(categoryKey, entry);
   return entry;
 }
@@ -7368,6 +7410,10 @@ function updateDeviceManagerLocalization(lang = currentLang) {
       entry.filterInput.setAttribute('autocapitalize', 'off');
       entry.filterInput.setAttribute('spellcheck', 'false');
       entry.filterInput.setAttribute('inputmode', 'search');
+      if (entry.filterLabel) {
+        const labelText = placeholder.replace(/\s*(?:\.{3}|\u2026)$/, '');
+        entry.filterLabel.textContent = labelText;
+      }
       const clearBtn = entry.filterInput.nextElementSibling;
       if (clearBtn && clearBtn.classList.contains('clear-input-btn')) {
         clearBtn.setAttribute('aria-label', clearLabel);
@@ -15014,6 +15060,9 @@ function createFieldWithLabel(el, label) {
   const wrapper = document.createElement('div');
   wrapper.className = 'field-with-label';
   wrapper.dataset.label = label;
+  const fieldId = ensureElementId(el, label);
+  const hiddenLabel = createHiddenLabel(fieldId, label);
+  wrapper.appendChild(hiddenLabel);
   wrapper.appendChild(el);
   return wrapper;
 }

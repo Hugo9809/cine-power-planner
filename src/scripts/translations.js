@@ -740,7 +740,11 @@ const texts = {
       submit: "OK",
       crewNamePlaceholder: "Name",
       crewPhonePlaceholder: "Phone",
-      crewEmailPlaceholder: "Email"
+      crewEmailPlaceholder: "Email",
+      crewRoleLabel: "Crew role",
+      crewNameLabel: "Crew member name",
+      crewPhoneLabel: "Crew member phone",
+      crewEmailLabel: "Crew member email"
     },
     projectFields: {
       productionCompany: "Production Company",
@@ -1300,7 +1304,11 @@ const texts = {
       submit: "Salva",
       crewNamePlaceholder: "Nome",
       crewPhonePlaceholder: "Telefono",
-      crewEmailPlaceholder: "Email"
+      crewEmailPlaceholder: "Email",
+      crewRoleLabel: "Ruolo della troupe",
+      crewNameLabel: "Nome membro della troupe",
+      crewPhoneLabel: "Telefono membro della troupe",
+      crewEmailLabel: "Email membro della troupe"
     },
     projectFields: {
       productionCompany: "Casa di produzione",
@@ -2177,7 +2185,11 @@ const texts = {
       submit: "Aceptar",
       crewNamePlaceholder: "Nombre",
       crewPhonePlaceholder: "Teléfono",
-      crewEmailPlaceholder: "Correo"
+      crewEmailPlaceholder: "Correo",
+      crewRoleLabel: "Rol del equipo",
+      crewNameLabel: "Nombre del miembro del equipo",
+      crewPhoneLabel: "Teléfono del miembro del equipo",
+      crewEmailLabel: "Correo del miembro del equipo"
     },
     projectFields: {
       productionCompany: "Productora",
@@ -3055,7 +3067,11 @@ const texts = {
       submit: "Valider",
       crewNamePlaceholder: "Nom",
       crewPhonePlaceholder: "Téléphone",
-      crewEmailPlaceholder: "Courriel"
+      crewEmailPlaceholder: "Courriel",
+      crewRoleLabel: "Rôle de l'équipe",
+      crewNameLabel: "Nom du membre de l'équipe",
+      crewPhoneLabel: "Téléphone du membre de l'équipe",
+      crewEmailLabel: "Courriel du membre de l'équipe"
     },
     projectFields: {
       productionCompany: "Société de production",
@@ -3937,7 +3953,11 @@ const texts = {
       submit: "Speichern",
       crewNamePlaceholder: "Name",
       crewPhonePlaceholder: "Telefon",
-      crewEmailPlaceholder: "E-Mail"
+      crewEmailPlaceholder: "E-Mail",
+      crewRoleLabel: "Rolle im Team",
+      crewNameLabel: "Name des Crewmitglieds",
+      crewPhoneLabel: "Telefon des Crewmitglieds",
+      crewEmailLabel: "E-Mail des Crewmitglieds"
     },
     projectFields: {
       productionCompany: "Produktionsfirma",
