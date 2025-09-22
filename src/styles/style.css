@@ -4380,7 +4380,7 @@ body:not(.dark-mode) .requirement-box,
 
 /* Overview dialog */
 #overviewDialog {
-  width: min(96vw, 1100px);
+  width: min(96vw, 210mm);
   max-width: none;
   padding: 0;
   border: none;
