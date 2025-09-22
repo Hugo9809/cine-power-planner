@@ -2354,13 +2354,15 @@ body.dark-mode .help-callout {
   margin-inline-end: var(--icon-gap);
 }
 
-button .btn-icon:only-child {
-  margin-inline-end: 0;
+button,
+.button-link,
+.button-link:visited {
+  gap: var(--button-icon-gap);
 }
 
-button .btn-icon:not(:only-child),
-.button-link .btn-icon:not(:only-child) {
-  margin-inline-end: var(--button-icon-gap);
+button .btn-icon,
+.button-link .btn-icon {
+  margin-inline-end: 0;
 }
 
 .favorite-icon.icon-glyph {
