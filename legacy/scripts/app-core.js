@@ -5039,6 +5039,7 @@ var ICON_GLYPHS = Object.freeze({
   trash: iconGlyph("\uF254", ICON_FONT_KEYS.ESSENTIAL),
   reload: iconGlyph("\uF202", ICON_FONT_KEYS.ESSENTIAL),
   load: iconGlyph("\uE0E0", ICON_FONT_KEYS.UICONS),
+  installApp: iconGlyph("\uE9D4", ICON_FONT_KEYS.UICONS),
   add: Object.freeze({
     char: '+',
     font: ICON_FONT_KEYS.TEXT,
@@ -7548,6 +7549,7 @@ var helpQuickLinksList = document.getElementById("helpQuickLinksList");
 var installPromptBanner = document.getElementById("installPromptBanner");
 var installPromptBannerText = document.getElementById("installPromptBannerText");
 var installPromptBannerAction = document.getElementById("installPromptBannerAction");
+var installPromptBannerIcon = document.getElementById("installPromptBannerIcon");
 var installPromptBannerDismiss = document.getElementById("installPromptBannerDismiss");
 var installGuideDialog = document.getElementById("installGuideDialog");
 var installGuideTitle = document.getElementById("installGuideTitle");
@@ -10022,6 +10024,9 @@ function closeInstallGuide() {
 }
 function setupInstallBanner() {
   if (!installPromptBanner) return;
+  if (installPromptBannerIcon) {
+    applyIconGlyph(installPromptBannerIcon, ICON_GLYPHS.installApp);
+  }
   if (installPromptBannerAction) {
     installPromptBannerAction.addEventListener('click', function (event) {
       event.preventDefault();
@@ -10099,10 +10104,11 @@ function applyInstallTexts(lang) {
   var closeLabel = langTexts.installHelpClose || fallbackTexts.installHelpClose;
   var dismissLabel = langTexts.installBannerDismiss || fallbackTexts.installBannerDismiss || closeLabel || '';
   if (installPromptBannerDismiss) {
-    installPromptBannerDismiss.textContent = dismissLabel;
-    if (dismissLabel) {
-      installPromptBannerDismiss.setAttribute('aria-label', dismissLabel);
-      installPromptBannerDismiss.setAttribute('title', dismissLabel);
+    var labelText = dismissLabel || '';
+    setButtonLabelWithIcon(installPromptBannerDismiss, labelText, ICON_GLYPHS.circleX);
+    if (labelText) {
+      installPromptBannerDismiss.setAttribute('aria-label', labelText);
+      installPromptBannerDismiss.setAttribute('title', labelText);
     } else {
       installPromptBannerDismiss.removeAttribute('aria-label');
       installPromptBannerDismiss.removeAttribute('title');
