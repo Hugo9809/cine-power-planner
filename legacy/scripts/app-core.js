@@ -5967,6 +5967,37 @@ function configureIconOnlyButton(button, glyph) {
     button.setAttribute('title', combinedLabel);
   }
 }
+
+var generatedFieldIdCounter = 0;
+
+function sanitizeForId(value) {
+  var fallback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'field';
+  if (value === undefined || value === null) return fallback;
+  var normalized = String(value).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  return normalized || fallback;
+}
+
+function ensureElementId(element) {
+  var baseText = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'field';
+  if (!element) return '';
+  if (element.id) return element.id;
+  var base = sanitizeForId(baseText, 'field');
+  var id = '';
+  do {
+    generatedFieldIdCounter += 1;
+    id = "".concat(base, "-").concat(generatedFieldIdCounter);
+  } while (document.getElementById(id));
+  element.id = id;
+  return id;
+}
+
+function createHiddenLabel(forId, text) {
+  var label = document.createElement('label');
+  label.className = 'visually-hidden';
+  label.setAttribute('for', forId);
+  label.textContent = typeof text === 'string' ? text : '';
+  return label;
+}
 function createCrewRow() {
   var _texts$en128, _texts$currentLang2, _texts$currentLang3, _texts$en129, _texts$currentLang4, _texts$en130;
   var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -6004,6 +6035,14 @@ function createCrewRow() {
   emailInput.placeholder = projectFormTexts.crewEmailPlaceholder || fallbackProjectForm.crewEmailPlaceholder || 'Email';
   emailInput.className = 'person-email';
   emailInput.value = data.email || '';
+  var crewRoleLabelText = projectFormTexts.crewRoleLabel || fallbackProjectForm.crewRoleLabel || 'Crew role';
+  var crewNameLabelText = projectFormTexts.crewNameLabel || fallbackProjectForm.crewNameLabel || 'Crew member name';
+  var crewPhoneLabelText = projectFormTexts.crewPhoneLabel || fallbackProjectForm.crewPhoneLabel || 'Crew member phone';
+  var crewEmailLabelText = projectFormTexts.crewEmailLabel || fallbackProjectForm.crewEmailLabel || 'Crew member email';
+  var roleLabel = createHiddenLabel(ensureElementId(roleSel, crewRoleLabelText), crewRoleLabelText);
+  var nameLabel = createHiddenLabel(ensureElementId(nameInput, crewNameLabelText), crewNameLabelText);
+  var phoneLabel = createHiddenLabel(ensureElementId(phoneInput, crewPhoneLabelText), crewPhoneLabelText);
+  var emailLabel = createHiddenLabel(ensureElementId(emailInput, crewEmailLabelText), crewEmailLabelText);
   var removeBtn = document.createElement('button');
   removeBtn.type = 'button';
   var removeBase = ((_texts$currentLang3 = texts[currentLang]) === null || _texts$currentLang3 === void 0 || (_texts$currentLang3 = _texts$currentLang3.projectForm) === null || _texts$currentLang3 === void 0 ? void 0 : _texts$currentLang3.removeEntry) || ((_texts$en129 = texts.en) === null || _texts$en129 === void 0 || (_texts$en129 = _texts$en129.projectForm) === null || _texts$en129 === void 0 ? void 0 : _texts$en129.removeEntry) || 'Remove';
@@ -6017,7 +6056,7 @@ function createCrewRow() {
     row.remove();
     scheduleProjectAutoSave(true);
   });
-  row.append(roleSel, nameInput, phoneInput, emailInput, removeBtn);
+  row.append(roleLabel, roleSel, nameLabel, nameInput, phoneLabel, phoneInput, emailLabel, emailInput, removeBtn);
   crewContainer.appendChild(row);
 }
 function createPrepRow() {
@@ -6758,6 +6797,8 @@ function createDeviceCategorySection(categoryKey) {
   filterInput.className = 'list-filter';
   filterInput.id = "".concat(sanitizedId, "ListFilter");
   filterInput.dataset.categoryKey = categoryKey;
+  var filterLabel = createHiddenLabel(ensureElementId(filterInput, "".concat(sanitizedId, "-list-filter")), "Filter ".concat(categoryKey));
+  section.appendChild(filterLabel);
   section.appendChild(filterInput);
   var list = document.createElement('ul');
   list.className = 'device-ul';
@@ -6775,6 +6816,7 @@ function createDeviceCategorySection(categoryKey) {
     section: section,
     heading: heading,
     filterInput: filterInput,
+    filterLabel: filterLabel,
     list: list,
     sanitizedId: sanitizedId
   };
@@ -6800,6 +6842,10 @@ function updateDeviceManagerLocalization() {
       entry.filterInput.setAttribute('autocapitalize', 'off');
       entry.filterInput.setAttribute('spellcheck', 'false');
       entry.filterInput.setAttribute('inputmode', 'search');
+      if (entry.filterLabel) {
+        var labelText = placeholder.replace(/\s*(?:\.{3}|\u2026)$/, '');
+        entry.filterLabel.textContent = labelText;
+      }
       var clearBtn = entry.filterInput.nextElementSibling;
       if (clearBtn && clearBtn.classList.contains('clear-input-btn')) {
         clearBtn.setAttribute('aria-label', clearLabel);
@@ -14226,6 +14272,9 @@ function createFieldWithLabel(el, label) {
   var wrapper = document.createElement('div');
   wrapper.className = 'field-with-label';
   wrapper.dataset.label = label;
+  var fieldId = ensureElementId(el, label);
+  var hiddenLabel = createHiddenLabel(fieldId, label);
+  wrapper.appendChild(hiddenLabel);
   wrapper.appendChild(el);
   return wrapper;
 }
