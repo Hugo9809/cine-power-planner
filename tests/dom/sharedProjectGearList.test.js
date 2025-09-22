@@ -101,6 +101,53 @@ describe('shared project gear list handling', () => {
     expect(importedCalls.some(([, data]) => data.gearList.includes('Imported'))).toBe(true);
   });
 
+  test('sanitizes potentially unsafe shared HTML before display', () => {
+    const { utils } = env;
+    const sharedData = {
+      setupName: 'Sanitized Project',
+      projectInfo: { projectName: 'Sanitized Project' },
+      gearList: `
+        <h2>Sanitized Project</h2>
+        <div class="requirements-grid">
+          <div class="requirement-box" onclick="alert('xss')" style="color:red;">
+            <span class="req-label">Camera</span>
+            <span class="req-value">Main</span>
+          </div>
+        </div>
+        <script>window.evil && window.evil()</script>
+        <table class="gear-table">
+          <tr>
+            <td class="gear-item" data-gear-name="Safe Item">
+              <a href="javascript:alert('xss')" target="_blank">Safe Item</a>
+            </td>
+            <td><img src="javascript:alert('img')" alt="unsafe" /></td>
+          </tr>
+        </table>
+      `
+    };
+
+    utils.applySharedSetup(sharedData);
+
+    const projectRequirementsOutput = document.getElementById('projectRequirementsOutput');
+    const gearListOutput = document.getElementById('gearListOutput');
+
+    expect(projectRequirementsOutput.querySelector('script')).toBeNull();
+    const requirementBox = projectRequirementsOutput.querySelector('.requirement-box');
+    expect(requirementBox).not.toBeNull();
+    expect(requirementBox.getAttribute('onclick')).toBeNull();
+    expect(requirementBox.getAttribute('style')).toBeNull();
+
+    expect(gearListOutput.querySelector('script')).toBeNull();
+    const itemLink = gearListOutput.querySelector('a');
+    expect(itemLink).not.toBeNull();
+    expect(itemLink.getAttribute('href')).toBeNull();
+    expect(itemLink.getAttribute('target')).toBeNull();
+    const image = gearListOutput.querySelector('img');
+    expect(image).not.toBeNull();
+    expect(image.getAttribute('src')).toBeNull();
+    expect(gearListOutput.textContent).toContain('Safe Item');
+  });
+
   test('applySharedSetupFromUrl falls back when URLSearchParams is unavailable', () => {
     const { utils, globals } = env;
     const sharedData = {
