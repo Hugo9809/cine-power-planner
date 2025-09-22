@@ -517,4 +517,34 @@ describe('global feature search helpers', () => {
 
     expect(result?.value?.label).toBe('Help Search');
   });
+
+  test('populateFeatureSearch indexes labels with associated controls', () => {
+    const { featureMap } = featureSearchInternals;
+    const key = searchKey('Dark mode');
+    const entry = featureMap.get(key);
+    expect(entry).toBeTruthy();
+    const entries = Array.isArray(entry) ? entry : [entry];
+    const labelEntry = entries.find(
+      item => item?.element && item.element.id === 'settingsDarkModeLabel'
+    );
+    expect(labelEntry).toBeTruthy();
+    expect(labelEntry?.focusTarget?.id).toBe('settingsDarkMode');
+    expect(labelEntry?.highlightTargets).toEqual(
+      expect.arrayContaining([
+        labelEntry.element,
+        labelEntry.focusTarget
+      ])
+    );
+  });
+
+  test('runFeatureSearch focuses controls referenced by labels', () => {
+    const { featureSearchInput } = featureSearchInternals;
+    const darkModeToggle = document.getElementById('settingsDarkMode');
+    expect(darkModeToggle).toBeTruthy();
+
+    featureSearchInput.value = 'Dark mode';
+    runFeatureSearch('Dark mode');
+
+    expect(document.activeElement).toBe(darkModeToggle);
+  });
 });
