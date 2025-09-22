@@ -100,7 +100,13 @@
       </svg>
       <h1 id="mainTitle">Cine Power Planner</h1>
     </a>
-    <button id="menuToggle" aria-label="Menu" aria-expanded="false">
+    <button
+      id="menuToggle"
+      aria-label="Menu"
+      aria-expanded="false"
+      data-search-entry="true"
+      data-search-keywords="navigation sidebar open close"
+    >
       <span class="icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE198;</span>
     </button>
     <div class="feature-search">
@@ -117,10 +123,24 @@
         <option value="fr">Français</option>
         <option value="it">Italiano</option>
       </select>
-      <button id="darkModeToggle" title="Toggle dark mode" aria-label="Toggle dark mode" aria-pressed="false">
+      <button
+        id="darkModeToggle"
+        title="Toggle dark mode"
+        aria-label="Toggle dark mode"
+        aria-pressed="false"
+        data-search-entry="true"
+        data-search-keywords="theme appearance night light"
+      >
         <span class="icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xEC7E;</span>
       </button>
-      <button id="pinkModeToggle" title="Toggle pink mode" aria-label="Toggle pink mode" aria-pressed="false">
+      <button
+        id="pinkModeToggle"
+        title="Toggle pink mode"
+        aria-label="Toggle pink mode"
+        aria-pressed="false"
+        data-search-entry="true"
+        data-search-keywords="theme accent color colour unicorn"
+      >
         <span class="icon-glyph icon-svg pink-mode-icon" aria-hidden="true">
           <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <path
@@ -145,7 +165,15 @@
           </svg>
         </span>
       </button>
-      <button id="settingsButton" aria-label="Settings" aria-haspopup="dialog" aria-controls="settingsDialog" title="Settings">
+      <button
+        id="settingsButton"
+        aria-label="Settings"
+        aria-haspopup="dialog"
+        aria-controls="settingsDialog"
+        title="Settings"
+        data-search-entry="true"
+        data-search-keywords="preferences options configuration"
+      >
         <span class="icon-glyph icon-svg" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path
@@ -165,10 +193,24 @@
           </svg>
         </span>
       </button>
-      <button id="helpButton" aria-label="Help" aria-haspopup="dialog" aria-controls="helpDialog" title="Help (press ?, H, F1 or Ctrl+/)">
+      <button
+        id="helpButton"
+        aria-label="Help"
+        aria-haspopup="dialog"
+        aria-controls="helpDialog"
+        title="Help (press ?, H, F1 or Ctrl+/)"
+        data-search-entry="true"
+        data-search-keywords="support documentation guide"
+      >
         <span class="icon-glyph icon-text" aria-hidden="true" data-icon-font="uicons">?</span>
       </button>
-      <button id="reloadButton" title="Force reload" aria-label="Force reload">
+      <button
+        id="reloadButton"
+        title="Force reload"
+        aria-label="Force reload"
+        data-search-entry="true"
+        data-search-keywords="refresh update"
+      >
         <span class="icon-glyph icon-svg" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <polyline
@@ -242,19 +284,32 @@
           <option value="">-- New Project --</option>
         </select>
       </div>
-      <button id="deleteSetupBtn" title="Delete selected project">
+      <button
+        id="deleteSetupBtn"
+        title="Delete selected project"
+        data-search-entry="true"
+        data-search-keywords="remove project"
+      >
         <span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="essential">&#xF254;</span>Delete
       </button>
     </div>
     <div class="form-row">
       <label for="setupName" id="setupNameLabel">Project Name:</label>
       <input type="text" id="setupName" placeholder="Project name" aria-labelledby="setupNameLabel" />
-      <button id="saveSetupBtn"><span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="essential">&#xF207;</span>Save</button>
+      <button
+        id="saveSetupBtn"
+        data-search-entry="true"
+        data-search-keywords="store project"
+      ><span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="essential">&#xF207;</span>Save</button>
     </div>
     <div class="form-row form-row-actions" role="group" aria-label="Project actions">
       <span class="form-label-spacer" aria-hidden="true"></span>
       <div class="form-actions">
-        <button id="shareSetupBtn">
+        <button
+          id="shareSetupBtn"
+          data-search-entry="true"
+          data-search-keywords="export project share download"
+        >
           <span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE7AB;</span>
           Export Project
         </button>
@@ -268,7 +323,11 @@
             tabindex="-1"
             class="visually-hidden"
           />
-          <button id="applySharedLinkBtn">
+          <button
+            id="applySharedLinkBtn"
+            data-search-entry="true"
+            data-search-keywords="import project load shared"
+          >
             <span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE7C7;</span>
             Import Project
           </button>
@@ -279,15 +338,30 @@
     <div class="form-row form-row-actions" role="group" aria-label="Project exports">
       <span class="form-label-spacer" aria-hidden="true"></span>
       <div class="form-actions">
-        <button id="generateOverviewBtn">
+        <button
+          id="generateOverviewBtn"
+          data-search-entry="true"
+          data-search-keywords="overview summary report"
+        >
           <span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xF1F5;</span>
           Generate Overview
         </button>
-        <button id="generateGearListBtn" type="button">
+        <button
+          id="generateGearListBtn"
+          type="button"
+          data-search-entry="true"
+          data-search-keywords="gear list requirements report"
+        >
           <span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE467;</span>
           Generate Gear List and Project Requirements
         </button>
-        <button id="deleteGearListProjectBtn" type="button" class="hidden"></button>
+        <button
+          id="deleteGearListProjectBtn"
+          type="button"
+          class="hidden"
+          data-search-entry="true"
+          data-search-keywords="remove generated gear list"
+        ></button>
       </div>
     </div>
   </section>
@@ -404,7 +478,12 @@
     <p id="dtapWarning" class="status-message" role="status" aria-live="polite" aria-describedby="batteryLabel"></p>
     <p id="hotswapWarning" class="status-message" role="status" aria-live="polite" aria-describedby="batteryHotswapLabel"></p>
     <div id="temperatureNote"></div>
-    <button id="runtimeFeedbackBtn" type="button">
+    <button
+      id="runtimeFeedbackBtn"
+      type="button"
+      data-search-entry="true"
+      data-search-keywords="runtime feedback submit report"
+    >
       <span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="essential">&#xF13E;</span>Submit User Runtime Feedback
     </button>
     <div id="feedbackTableContainer" class="hidden">
@@ -421,17 +500,42 @@
     </div>
     <div id="diagramLegend" class="diagram-legend"></div>
     <div class="diagram-controls">
-      <button id="zoomOut" type="button" title="Zoom out" aria-label="Zoom out">
+      <button
+        id="zoomOut"
+        type="button"
+        title="Zoom out"
+        aria-label="Zoom out"
+        data-search-entry="true"
+        data-search-keywords="diagram zoom out"
+      >
         <span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE9E0;</span>
       </button>
-      <button id="zoomIn" type="button" title="Zoom in" aria-label="Zoom in">
+      <button
+        id="zoomIn"
+        type="button"
+        title="Zoom in"
+        aria-label="Zoom in"
+        data-search-entry="true"
+        data-search-keywords="diagram zoom in"
+      >
         <span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE02E;</span>
       </button>
-      <button id="resetView" type="button">
+      <button
+        id="resetView"
+        type="button"
+        data-search-entry="true"
+        data-search-keywords="diagram reset"
+      >
         <span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xEB6D;</span>
         Reset View
       </button>
-      <button id="gridSnapToggle" type="button" aria-pressed="false">Snap to Grid</button>
+      <button
+        id="gridSnapToggle"
+        type="button"
+        aria-pressed="false"
+        data-search-entry="true"
+        data-search-keywords="diagram align grid"
+      >Snap to Grid</button>
     </div>
     <p id="diagramHint" class="diagram-hint"></p>
   </section>
@@ -447,7 +551,13 @@
     </div>
   </section>
 
-  <button id="toggleDeviceManager" aria-controls="device-manager" aria-expanded="false">Edit Device Data…</button>
+  <button
+    id="toggleDeviceManager"
+    aria-controls="device-manager"
+    aria-expanded="false"
+    data-search-entry="true"
+    data-search-keywords="device library database manage"
+  >Edit Device Data…</button>
 
   <section id="device-manager" class="hidden">
     <h2 id="deviceManagerHeading">Device Library</h2>
@@ -756,12 +866,33 @@
         <input type="number" id="newDtapA" step="0.1" placeholder="e.g. 5" aria-labelledby="dtapLabel" />
       </div>
     </div>
-    <button id="addDeviceBtn">Add</button>
-    <button id="cancelEditBtn" class="hidden"><span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="essential">&#xF131;</span>Cancel</button>
-      <button id="exportDataBtn"><span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE7AB;</span>Export Database</button>
-      <button id="importDataBtn"><span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE7C7;</span>Import Database</button>
+    <button
+      id="addDeviceBtn"
+      data-search-entry="true"
+      data-search-keywords="device manager add"
+    >Add</button>
+    <button
+      id="cancelEditBtn"
+      class="hidden"
+      data-search-entry="true"
+      data-search-keywords="device manager cancel"
+    ><span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="essential">&#xF131;</span>Cancel</button>
+      <button
+        id="exportDataBtn"
+        data-search-entry="true"
+        data-search-keywords="device manager export backup"
+      ><span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE7AB;</span>Export Database</button>
+      <button
+        id="importDataBtn"
+        data-search-entry="true"
+        data-search-keywords="device manager import restore"
+      ><span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE7C7;</span>Import Database</button>
       <input type="file" id="importFileInput" accept=".json" class="hidden" />
-      <button id="exportAndRevertBtn">Export and Revert to default Database</button>
+      <button
+        id="exportAndRevertBtn"
+        data-search-entry="true"
+        data-search-keywords="device manager revert reset"
+      >Export and Revert to default Database</button>
     </div>
     <textarea id="exportOutput" class="hidden" readonly></textarea>
 
@@ -1271,10 +1402,22 @@
           <input type="checkbox" id="settingsShowAutoBackups" />
         </div>
         <div class="button-row">
-          <button id="backupSettings">Backup</button>
+          <button
+            id="backupSettings"
+            data-search-entry="true"
+            data-search-keywords="settings backup export"
+          >Backup</button>
           <input type="file" id="restoreSettingsInput" accept="application/json" hidden />
-          <button id="restoreSettings">Restore</button>
-          <button id="factoryResetButton">Factory reset</button>
+          <button
+            id="restoreSettings"
+            data-search-entry="true"
+            data-search-keywords="settings restore import"
+          >Restore</button>
+          <button
+            id="factoryResetButton"
+            data-search-entry="true"
+            data-search-keywords="settings reset default"
+          >Factory reset</button>
         </div>
         </section>
       </section>
@@ -1311,8 +1454,16 @@
         </section>
       </section>
       <div class="button-row action-buttons">
-        <button id="settingsSave"><span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="essential">&#xF207;</span>Save</button>
-        <button id="settingsCancel"><span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="essential">&#xF131;</span>Cancel</button>
+        <button
+          id="settingsSave"
+          data-search-entry="true"
+          data-search-keywords="settings save apply"
+        ><span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="essential">&#xF207;</span>Save</button>
+        <button
+          id="settingsCancel"
+          data-search-entry="true"
+          data-search-keywords="settings cancel discard"
+        ><span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="essential">&#xF131;</span>Cancel</button>
       </div>
     </div>
   </dialog>
@@ -1410,7 +1561,12 @@
           <span class="icon-glyph" aria-hidden="true" data-icon-font="essential">&#xF131;</span>
         </button>
       </div>
-      <button id="hoverHelpButton" type="button">Hover for help</button>
+      <button
+        id="hoverHelpButton"
+        type="button"
+        data-search-entry="true"
+        data-search-keywords="hover help tooltips"
+      >Hover for help</button>
       <nav id="helpQuickLinks" aria-label="Help topics" hidden>
         <h3 id="helpQuickLinksHeading">Jump to a topic</h3>
         <ul id="helpQuickLinksList"></ul>

@@ -403,6 +403,16 @@ describe('global feature search helpers', () => {
     expect(featureSearchInput.value).toBe('alexa 35');
   });
 
+  test('populateFeatureSearch indexes labeled form controls', () => {
+    const { featureMap } = featureSearchInternals;
+    const entry = featureMap.get(searchKey('Project Name'));
+    expect(entry).toBeTruthy();
+    const list = Array.isArray(entry) ? entry : [entry];
+    const fieldEntry = list.find(item => item?.element?.id === 'setupName');
+    expect(fieldEntry).toBeTruthy();
+    expect(fieldEntry.tokens).toEqual(expect.arrayContaining(['project', 'name']));
+  });
+
   test('populateFeatureSearch indexes contextual subheadings for video outputs', () => {
     const { featureMap, featureListElement } = featureSearchInternals;
     const entries = featureMap.get(searchKey('Video Outputs'));
