@@ -377,6 +377,7 @@
     'src/vendor/lz-string.min.js',
     'src/vendor/lottie-light.min.js',
     'src/scripts/script.js',
+    'src/scripts/auto-gear-monitoring.js',
     'src/scripts/overview.js',
     'src/scripts/autosave-overlay.js'
   ];
@@ -401,6 +402,7 @@
     'src/vendor/lz-string.min.js',
     'src/vendor/lottie-light.min.js',
     'legacy/scripts/script.js',
+    'legacy/scripts/auto-gear-monitoring.js',
     'legacy/scripts/overview.js',
     'src/scripts/autosave-overlay.js'
   ];
