@@ -4541,6 +4541,8 @@ function renderGearListFilterDetails(details) {
   details.forEach(function (detail) {
     var type = detail.type,
       label = detail.label,
+      gearName = detail.gearName,
+      entryId = detail.entryId,
       size = detail.size,
       values = detail.values,
       needsSize = detail.needsSize,
@@ -4548,7 +4550,11 @@ function renderGearListFilterDetails(details) {
     var row = document.createElement('div');
     row.className = 'filter-detail';
     var heading = document.createElement('div');
-    heading.className = 'filter-detail-label';
+    heading.className = 'filter-detail-label gear-item';
+    if (entryId) heading.setAttribute('data-filter-entry', entryId);
+    if (gearName) heading.setAttribute('data-gear-name', gearName);
+    if (label) heading.setAttribute('data-filter-label', label);
+    if (type) heading.setAttribute('data-filter-type', type);
     var displaySize = size && label && label.includes(size) ? '' : size;
     var displayValues = Array.isArray(values) ? values : undefined;
     if (label) {
@@ -4670,10 +4676,15 @@ function renderFilterDetails() {
     var needsSize = type !== 'Diopter';
     var needsValues = filterTypeNeedsValueSelect(type);
     var _resolveFilterDisplay6 = resolveFilterDisplayInfo(type, size),
-      label = _resolveFilterDisplay6.label;
+      label = _resolveFilterDisplay6.label,
+      gearName = _resolveFilterDisplay6.gearName;
+    var entryId = "filter-".concat(filterId(type));
+    if (type === 'Diopter') entryId = "".concat(entryId, "-set");
     return {
       type: type,
       label: label,
+      gearName: gearName,
+      entryId: entryId,
       size: size,
       values: Array.isArray(prev.values) ? prev.values.slice() : [],
       needsSize: needsSize,
@@ -4784,18 +4795,7 @@ function normalizeGearNameForComparison(name) {
   return normalized.replace(/[^a-z0-9]+/g, '');
 }
 function buildFilterSelectHtml() {
-  var filters = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-  var precomputedEntries = arguments.length > 1 ? arguments[1] : undefined;
-  var entries = Array.isArray(precomputedEntries) ? precomputedEntries : buildFilterGearEntries(filters);
-  var summaryHtml = entries.map(function (entry) {
-    var attrs = ['class="gear-item"', "data-gear-name=\"".concat(escapeHtml(entry.gearName), "\""), "data-filter-entry=\"".concat(escapeHtml(entry.id), "\""), "data-filter-label=\"".concat(escapeHtml(entry.label), "\"")];
-    if (entry.type) attrs.push("data-filter-type=\"".concat(escapeHtml(entry.type), "\""));
-    var text = formatFilterEntryText(entry);
-    return "<span ".concat(attrs.join(' '), ">").concat(escapeHtml(text), "</span>");
-  }).join('<br>');
-  var detailsContainer = entries.length ? '<div id="gearListFilterDetails" class="hidden" aria-live="polite"></div>' : '';
-  var summaryContainer = summaryHtml ? "<div class=\"gear-list-filter-summary\">".concat(summaryHtml, "</div>") : '';
-  return [detailsContainer, summaryContainer].filter(Boolean).join('');
+  return '<div id="gearListFilterDetails" class="hidden" aria-live="polite"></div>';
 }
 function collectFilterAccessories() {
   var filters = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
