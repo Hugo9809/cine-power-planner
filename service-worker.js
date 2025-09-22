@@ -116,12 +116,68 @@ const ASSETS = [
   './tools/unifyPorts.js'
 ];
 
+async function precacheAssets(cacheName, assets) {
+  const cache = await caches.open(cacheName);
+
+  try {
+    await cache.addAll(assets);
+    return;
+  } catch (error) {
+    console.warn('Precaching via cache.addAll failed, falling back to resilient mode.', error);
+  }
+
+  const missingAssets = [];
+
+  await Promise.all(
+    assets.map(async asset => {
+      const request = new Request(asset);
+
+      try {
+        await cache.add(request);
+        return;
+      } catch (networkError) {
+        let reusedFromExistingCache = false;
+
+        try {
+          const cachedResponse = await caches.match(request, { ignoreSearch: true });
+          if (cachedResponse) {
+            await cache.put(request, cachedResponse.clone());
+            reusedFromExistingCache = true;
+          }
+        } catch (reuseError) {
+          console.warn(`Unable to reuse cached response for ${asset}`, reuseError);
+        }
+
+        if (!reusedFromExistingCache) {
+          missingAssets.push(asset);
+          console.warn(`Failed to precache asset ${asset}`, networkError);
+        }
+      }
+    })
+  );
+
+  if (missingAssets.length) {
+    console.warn(
+      'Service worker installed with missing cached assets. Offline support may be degraded until the next update.',
+      missingAssets
+    );
+  }
+}
+
 if (typeof self !== 'undefined') {
   self.addEventListener('install', event => {
-    event.waitUntil(
-      caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS))
-    );
-    self.skipWaiting();
+    event.waitUntil((async () => {
+      try {
+        await precacheAssets(CACHE_NAME, ASSETS);
+      } catch (error) {
+        console.error('Failed to precache assets during installation', error);
+        throw error;
+      }
+
+      if (typeof self.skipWaiting === 'function') {
+        await self.skipWaiting();
+      }
+    })());
   });
 
   self.addEventListener('activate', event => {
