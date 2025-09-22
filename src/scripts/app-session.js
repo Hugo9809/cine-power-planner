@@ -1,10 +1,12 @@
 // --- SESSION STATE HANDLING ---
-/* global resolveTemperatureStorageKey */
+/* global resolveTemperatureStorageKey, TEMPERATURE_STORAGE_KEY */
 
-const TEMPERATURE_STORAGE_KEY =
-  typeof resolveTemperatureStorageKey === 'function'
-    ? resolveTemperatureStorageKey()
-    : 'cameraPowerPlanner_temperatureUnit';
+const temperaturePreferenceStorageKey =
+  typeof TEMPERATURE_STORAGE_KEY === 'string'
+    ? TEMPERATURE_STORAGE_KEY
+    : typeof resolveTemperatureStorageKey === 'function'
+      ? resolveTemperatureStorageKey()
+      : 'cameraPowerPlanner_temperatureUnit';
 
 function saveCurrentSession(options = {}) {
   if (restoringSession || factoryResetInProgress) return;
@@ -2003,7 +2005,7 @@ function applyPreferencesFromStorage(safeGetItem) {
     return { showAutoBackups: false, accentColor: null, language: null };
   }
 
-  const restoredTemperatureUnit = safeGetItem(TEMPERATURE_STORAGE_KEY);
+  const restoredTemperatureUnit = safeGetItem(temperaturePreferenceStorageKey);
   if (restoredTemperatureUnit) {
     try {
       applyTemperatureUnitPreference(restoredTemperatureUnit, { persist: false });
