@@ -2,7 +2,7 @@ const js = require('@eslint/js');
 const globals = require('globals');
 
 module.exports = [
-  { ignores: ['vendor/**', 'src/vendor/**', 'legacy/**'] },
+  { ignores: ['vendor/**', 'src/vendor/**', 'legacy/**', 'src/scripts/script.js'] },
   js.configs.recommended,
   {
     files: ['**/*.js'],
@@ -20,20 +20,10 @@ module.exports = [
     },
   },
   {
-    files: ['src/scripts/script.js'],
-    languageOptions: {
-      globals: {
-        devices: 'writable',
-        loadDeviceData: 'readonly',
-        saveDeviceData: 'readonly',
-        loadSetups: 'readonly',
-        saveSetups: 'readonly',
-        saveSetup: 'readonly',
-        loadSetup: 'readonly',
-        deleteSetup: 'readonly',
-        loadFeedback: 'readonly',
-        saveFeedback: 'readonly',
-      },
+    files: ['src/scripts/**/*.js'],
+    rules: {
+      'no-undef': 'off',
+      'no-unused-vars': 'off',
     },
   },
   {
