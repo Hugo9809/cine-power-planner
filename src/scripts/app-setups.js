@@ -1,4 +1,10 @@
+/* eslint-disable no-undef, no-unused-vars */
 // --- NEW SETUP MANAGEMENT FUNCTIONS ---
+/*
+ * This module interacts with globals defined across the runtime. Disabling the
+ * undefined/unused checks keeps ESLint in sync with the stitched execution
+ * environment described in app-core.js.
+ */
 
 // Generate a printable overview of the current selected setup in a new tab
 generateOverviewBtn.addEventListener('click', () => {

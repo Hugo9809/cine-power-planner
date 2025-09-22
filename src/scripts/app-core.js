@@ -1,5 +1,14 @@
+/* eslint-disable no-undef, no-unused-vars */
 // script.js – Main logic for the Cine Power Planner app
 /* global texts, categoryNames, gearItems, loadSessionState, saveSessionState, loadProject, saveProject, deleteProject, renameSetup, registerDevice, loadFavorites, saveFavorites, exportAllData, importAllData, clearAllData, loadAutoGearRules, saveAutoGearRules, loadAutoGearBackups, saveAutoGearBackups, loadAutoGearSeedFlag, saveAutoGearSeedFlag, loadAutoGearPresets, saveAutoGearPresets, loadAutoGearActivePresetId, saveAutoGearActivePresetId, loadAutoGearAutoPresetId, saveAutoGearAutoPresetId, loadAutoGearBackupVisibility, saveAutoGearBackupVisibility, AUTO_GEAR_RULES_STORAGE_KEY, AUTO_GEAR_SEEDED_STORAGE_KEY, AUTO_GEAR_BACKUPS_STORAGE_KEY, AUTO_GEAR_PRESETS_STORAGE_KEY, AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, AUTO_GEAR_AUTO_PRESET_STORAGE_KEY, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY, SAFE_LOCAL_STORAGE, getSafeLocalStorage, CUSTOM_FONT_STORAGE_KEY, CUSTOM_FONT_STORAGE_KEY_NAME */
+/*
+ * These modules continue to execute inside a shared global scope. The loader
+ * stitches them together in the browser, and the Node aggregator rebuilds the
+ * monolithic runtime for tests. ESLint analyses them individually, which makes
+ * cross-file globals appear undefined or unused even though they are wired up
+ * at runtime. The targeted rule disable keeps the warnings quiet without
+ * altering behaviour.
+ */
 
 // Use `var` here instead of `let` because `index.html` loads the lz-string
 // library from a CDN which defines a global `LZString` variable. Using `let`

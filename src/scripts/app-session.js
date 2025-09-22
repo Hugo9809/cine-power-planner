@@ -1,4 +1,10 @@
+/* eslint-disable no-undef, no-unused-vars */
 // --- SESSION STATE HANDLING ---
+/*
+ * Session helpers read from and write to globals populated by other pieces of
+ * the aggregated runtime. Keeping the shared scope mirrors the historic
+ * monolithic script, so we silence ESLint's undefined/unused warnings here.
+ */
 function saveCurrentSession(options = {}) {
   if (restoringSession || factoryResetInProgress) return;
   const info = projectForm ? collectProjectFormData() : {};

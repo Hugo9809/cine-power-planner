@@ -1,4 +1,10 @@
+/* eslint-disable no-undef */
 // --- EVENT LISTENERS ---
+/*
+ * See app-core.js for details. The event bindings rely on globals defined
+ * across the aggregated runtime, so ESLint's module-level analysis would flag
+ * them incorrectly without disabling this rule.
+ */
 
 // Language selection
 languageSelect.addEventListener("change", (event) => {
