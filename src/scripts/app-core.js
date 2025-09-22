@@ -3302,6 +3302,13 @@ function setStatusMessage(element, message) {
   element.innerHTML = formatStatusMessage(message);
 }
 
+function formatCurrentValue(value) {
+  if (!Number.isFinite(value)) return '0';
+  const rounded = Number.parseFloat(value.toFixed(2));
+  if (Number.isNaN(rounded)) return '0';
+  return rounded.toString();
+}
+
 function checkFizCompatibility() {
   const brands = new Set();
   motorSelects.forEach(sel => { const b = detectBrand(sel.value); if (b) brands.add(b); });
@@ -3895,6 +3902,12 @@ function setLanguage(lang) {
     dtapWarnElem.setAttribute("data-help", texts[lang].dtapWarningHelp);
   if (hotswapWarnElem)
     hotswapWarnElem.setAttribute("data-help", texts[lang].hotswapWarningHelp);
+  if (powerWarningTitleElem)
+    powerWarningTitleElem.textContent = texts[lang].powerWarningTitle;
+  if (powerWarningAdviceElem)
+    powerWarningAdviceElem.textContent = texts[lang].powerWarningAdvice;
+  if (powerWarningCloseBtn)
+    setButtonLabelWithIcon(powerWarningCloseBtn, texts[lang].powerWarningClose, ICON_GLYPHS.check);
   const unitElem = document.getElementById("batteryLifeUnit");
   if (unitElem) unitElem.textContent = texts[lang].batteryLifeUnit;
   const fb = renderFeedbackTable(getCurrentSetupKey());
@@ -6715,10 +6728,121 @@ const batteryCountElem    = document.getElementById("batteryCount");
 const pinWarnElem         = document.getElementById("pinWarning");
 const dtapWarnElem        = document.getElementById("dtapWarning");
 const hotswapWarnElem     = document.getElementById("hotswapWarning");
+const powerWarningDialog  = document.getElementById("powerWarningDialog");
+const powerWarningTitleElem = document.getElementById("powerWarningTitle");
+const powerWarningMessageElem = document.getElementById("powerWarningMessage");
+const powerWarningPinsDetailElem = document.getElementById("powerWarningPinsDetail");
+const powerWarningDtapDetailElem = document.getElementById("powerWarningDtapDetail");
+const powerWarningAdviceElem = document.getElementById("powerWarningAdvice");
+const powerWarningCloseBtn = document.getElementById("powerWarningCloseBtn");
 const powerDiagramElem    = document.getElementById("powerDiagram");
 const powerDiagramBarElem = document.getElementById("powerDiagramBar");
 const maxPowerTextElem    = document.getElementById("maxPowerText");
 const powerDiagramLegendElem = document.getElementById("powerDiagramLegend");
+
+let currentPowerWarningKey = '';
+let dismissedPowerWarningKey = '';
+
+function closePowerWarningDialog(options = {}) {
+  if (!powerWarningDialog) return;
+  if (isDialogOpen(powerWarningDialog)) {
+    closeDialog(powerWarningDialog);
+  } else if (powerWarningDialog.removeAttribute) {
+    powerWarningDialog.removeAttribute('open');
+  }
+  currentPowerWarningKey = '';
+  if (!options.keepDismissed) {
+    dismissedPowerWarningKey = '';
+  }
+}
+
+function dismissPowerWarningDialog() {
+  if (!powerWarningDialog) return;
+  if (currentPowerWarningKey) {
+    dismissedPowerWarningKey = currentPowerWarningKey;
+  }
+  closePowerWarningDialog({ keepDismissed: true });
+}
+
+function showPowerWarningDialog(context) {
+  if (!powerWarningDialog) return;
+  const {
+    batteryName,
+    current,
+    hasPinLimit,
+    pinLimit,
+    hasDtapRating,
+    dtapLimit,
+    dtapAllowed,
+  } = context || {};
+
+  const safeBatteryName = batteryName && batteryName.trim() ? batteryName.trim() : (batterySelect?.value || '');
+  const formattedCurrent = formatCurrentValue(Number(current) || 0);
+  const langTexts = texts[currentLang] || texts.en || {};
+  const messageTemplate = langTexts.powerWarningMessage || texts.en?.powerWarningMessage || '';
+  const message = messageTemplate
+    ? messageTemplate
+        .replace(/\{battery\}/g, safeBatteryName)
+        .replace(/\{current\}/g, formattedCurrent)
+    : `${safeBatteryName} exceeds every available output (${formattedCurrent}A).`;
+  if (powerWarningMessageElem) {
+    powerWarningMessageElem.textContent = message;
+  }
+
+  const pinsDetail = hasPinLimit
+    ? (langTexts.powerWarningPinsDetail || texts.en?.powerWarningPinsDetail || 'Pins limit: {max}A')
+        .replace(/\{max\}/g, formatCurrentValue(Number(pinLimit) || 0))
+    : (langTexts.powerWarningPinsUnavailable || texts.en?.powerWarningPinsUnavailable || 'Pins limit unavailable.');
+  if (powerWarningPinsDetailElem) {
+    powerWarningPinsDetailElem.textContent = pinsDetail;
+  }
+
+  let dtapDetail = '';
+  if (hasDtapRating && dtapAllowed) {
+    dtapDetail = (langTexts.powerWarningDtapDetail || texts.en?.powerWarningDtapDetail || 'D-Tap limit: {max}A')
+      .replace(/\{max\}/g, formatCurrentValue(Number(dtapLimit) || 0));
+  } else if (hasDtapRating && !dtapAllowed) {
+    dtapDetail = langTexts.powerWarningDtapBlocked || texts.en?.powerWarningDtapBlocked || 'D-Tap cannot be used with the current configuration.';
+  } else {
+    dtapDetail = langTexts.powerWarningDtapUnavailable || texts.en?.powerWarningDtapUnavailable || 'No D-Tap output is available.';
+  }
+  if (powerWarningDtapDetailElem) {
+    powerWarningDtapDetailElem.textContent = dtapDetail;
+  }
+
+  const keyParts = [
+    safeBatteryName,
+    formattedCurrent,
+    hasPinLimit ? formatCurrentValue(Number(pinLimit) || 0) : 'no-pin',
+    hasDtapRating ? formatCurrentValue(Number(dtapLimit) || 0) : 'no-dtap',
+    dtapAllowed ? 'dtap-allowed' : 'dtap-blocked'
+  ];
+  const nextKey = keyParts.join('|');
+
+  if (dismissedPowerWarningKey && dismissedPowerWarningKey !== nextKey) {
+    dismissedPowerWarningKey = '';
+  }
+
+  currentPowerWarningKey = nextKey;
+
+  if (dismissedPowerWarningKey === nextKey) {
+    return;
+  }
+
+  if (!isDialogOpen(powerWarningDialog)) {
+    openDialog(powerWarningDialog);
+  }
+}
+
+if (powerWarningCloseBtn) {
+  powerWarningCloseBtn.addEventListener('click', dismissPowerWarningDialog);
+}
+if (powerWarningDialog) {
+  powerWarningDialog.addEventListener('cancel', event => {
+    event.preventDefault();
+    dismissPowerWarningDialog();
+  });
+}
 
 function drawPowerDiagram(availableWatt, segments, maxPinA) {
   if (!powerDiagramElem || !powerDiagramBarElem || !maxPowerTextElem || !powerDiagramLegendElem) return;
@@ -17329,6 +17453,7 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
     setStatusMessage(hotswapWarnElem, '');
     setStatusLevel(hotswapWarnElem, null);
   }
+  closePowerWarningDialog();
   lastRuntimeHours = null;
   drawPowerDiagram(0, segments, 0);
 } else {
@@ -17416,6 +17541,30 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
         );
         dtapSeverity = 'warning';
       }
+    }
+    const hasPinLimit = typeof maxPinA === 'number' && maxPinA > 0;
+    const pinsInsufficient = !hasPinLimit || totalCurrentLow > maxPinA;
+    const hasDtapRating = typeof maxDtapA === 'number' && maxDtapA > 0;
+    const dtapAllowed = !bMountCam && hasDtapRating;
+    const dtapInsufficient = !dtapAllowed || (hasDtapRating && totalCurrentLow > maxDtapA);
+    if (totalCurrentLow > 0 && pinsInsufficient && dtapInsufficient) {
+      const option = batterySelect && batterySelect.options
+        ? batterySelect.options[batterySelect.selectedIndex]
+        : null;
+      const labelText = option && typeof option.textContent === 'string'
+        ? option.textContent.trim()
+        : String(battery || '');
+      showPowerWarningDialog({
+        batteryName: labelText,
+        current: totalCurrentLow,
+        hasPinLimit,
+        pinLimit: hasPinLimit ? maxPinA : null,
+        hasDtapRating,
+        dtapLimit: hasDtapRating ? maxDtapA : null,
+        dtapAllowed,
+      });
+    } else {
+      closePowerWarningDialog();
     }
     // Show max current capability and status (OK/Warning) for Pin and D-Tap
     if (pinWarnElem.textContent === "") {
