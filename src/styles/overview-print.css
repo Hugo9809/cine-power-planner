@@ -430,23 +430,27 @@ body:not(.light-mode) .gear-table .category-row td {
 }
 
 .power-conn {
-  background-color: var(--power-conn-bg) !important;
+  background: var(--panel-bg) !important;
   border: 1px solid var(--power-color) !important;
+  --icon-color: var(--power-color);
 }
 
 .fiz-conn {
-  background-color: var(--fiz-conn-bg) !important;
+  background: var(--panel-bg) !important;
   border: 1px dashed var(--fiz-color) !important;
+  --icon-color: var(--fiz-color);
 }
 
 .video-conn {
-  background-color: var(--video-conn-bg) !important;
+  background: var(--panel-bg) !important;
   border: 1px dotted var(--video-color) !important;
+  --icon-color: var(--video-color);
 }
 
 .neutral-conn {
-  background-color: var(--neutral-conn-bg) !important;
+  background: var(--panel-bg) !important;
   border: 1px double var(--control-text) !important;
+  --icon-color: var(--control-text);
 }
 
 #overviewDialogContent .barContainer {

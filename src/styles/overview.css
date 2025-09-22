@@ -224,10 +224,10 @@ th { background-color: var(--control-bg); font-weight: var(--font-weight-bold); 
 .connector-summary { margin-top: 5px; display: flex; flex-wrap: wrap; gap: 4px; }
 .connector-block { padding: 2px 4px; border-radius: 4px; margin: 2px 2px 0 0; font-size: calc(var(--font-size-relative-base) * var(--font-scale-xs)); }
 .info-box { margin-top: 5px; padding: 6px 10px; border-radius: 4px; }
-.power-conn { background-color: var(--power-conn-bg); }
-.fiz-conn { background-color: var(--fiz-conn-bg); }
-.video-conn { background-color: var(--video-conn-bg); }
-.neutral-conn { background-color: var(--neutral-conn-bg); }
+.power-conn { --icon-color: var(--danger-color); }
+.fiz-conn { --icon-color: var(--success-color); }
+.video-conn { --icon-color: var(--info-color); }
+.neutral-conn { --icon-color: var(--neutral-color); }
 .diagram-section { margin-top: 20px; }
 .diagram-controls {
   margin-bottom: 10px;
@@ -268,11 +268,7 @@ th { background-color: var(--control-bg); font-weight: var(--font-weight-bold); 
   .device-category { background: var(--panel-bg); border-color: var(--panel-border); box-shadow: var(--panel-shadow); }
   .device-category h3 { border-bottom: 1px solid var(--inverse-text-color); color: var(--inverse-text-color); }
   .device-block { background: rgba(255,255,255,0.1); border-color: var(--control-border); box-shadow: var(--panel-shadow); }
-  .connector-block, .info-box { background-color: rgba(255,255,255,0.1); }
-  .power-conn { background-color: var(--power-conn-bg); }
-  .fiz-conn { background-color: var(--fiz-conn-bg); }
-  .video-conn { background-color: var(--video-conn-bg); }
-  .neutral-conn { background-color: var(--neutral-conn-bg); }
+  .connector-block, .info-box { background-color: transparent; }
   .gear-table td {
     border-top: 1px solid var(--inverse-text-color);
     border-bottom: 1px solid var(--inverse-text-color);
