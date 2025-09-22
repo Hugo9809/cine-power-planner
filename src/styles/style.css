@@ -1199,6 +1199,42 @@ main.legal-content {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
+.power-warning-dialog {
+  max-width: min(420px, 90vw);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.power-warning-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.power-warning-icon {
+  font-size: 2.5rem;
+  color: var(--danger-color);
+}
+
+.power-warning-details {
+  margin: 0;
+  padding-left: 1.25rem;
+  color: var(--text-color-secondary, inherit);
+}
+
+.power-warning-details li {
+  margin-bottom: 0.25rem;
+}
+
+.power-warning-details li:last-child {
+  margin-bottom: 0;
+}
+
+.dark-mode .power-warning-icon {
+  color: var(--danger-color, #ff6666);
+}
+
 .help-content.modal-surface,
 .settings-content.modal-surface {
   border: 2px solid var(--panel-border);

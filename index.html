@@ -3075,6 +3075,35 @@
     </div>
   </dialog>
   <dialog
+    id="powerWarningDialog"
+    class="app-modal"
+    role="alertdialog"
+    aria-modal="true"
+    aria-labelledby="powerWarningTitle"
+    aria-describedby="powerWarningMessage powerWarningPinsDetail powerWarningDtapDetail powerWarningAdvice"
+  >
+    <form method="dialog" class="modal-surface power-warning-dialog">
+      <div class="power-warning-header">
+        <span
+          class="icon-glyph power-warning-icon"
+          aria-hidden="true"
+          data-icon-font="essential"
+        >&#xF26F;</span>
+        <h3 id="powerWarningTitle">Battery cannot power this load</h3>
+      </div>
+      <p id="powerWarningMessage"></p>
+      <ul class="power-warning-details">
+        <li id="powerWarningPinsDetail"></li>
+        <li id="powerWarningDtapDetail"></li>
+      </ul>
+      <p id="powerWarningAdvice">Choose another battery, reduce the draw, or add power distribution.</p>
+      <div class="dialog-actions">
+        <button type="button" id="powerWarningCloseBtn" class="primary">Understood</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog
     id="shareDialog"
     class="app-modal"
     role="dialog"
