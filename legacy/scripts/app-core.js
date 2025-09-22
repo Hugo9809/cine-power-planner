@@ -62,6 +62,7 @@ if (typeof window !== 'undefined') {
 }
 var APP_VERSION = "1.0.5";
 var IOS_PWA_HELP_STORAGE_KEY = 'iosPwaHelpShown';
+var INSTALL_BANNER_DISMISSED_KEY = 'installPromptDismissed';
 var DEVICE_SCHEMA_PATH = 'src/data/schema.json';
 var DEVICE_SCHEMA_STORAGE_KEY = 'cameraPowerPlanner_schemaCache';
 var AUTO_GEAR_RULES_KEY = typeof AUTO_GEAR_RULES_STORAGE_KEY !== 'undefined' ? AUTO_GEAR_RULES_STORAGE_KEY : 'cameraPowerPlanner_autoGearRules';
@@ -7546,6 +7547,8 @@ var helpQuickLinksHeading = document.getElementById("helpQuickLinksHeading");
 var helpQuickLinksList = document.getElementById("helpQuickLinksList");
 var installPromptBanner = document.getElementById("installPromptBanner");
 var installPromptBannerText = document.getElementById("installPromptBannerText");
+var installPromptBannerAction = document.getElementById("installPromptBannerAction");
+var installPromptBannerDismiss = document.getElementById("installPromptBannerDismiss");
 var installGuideDialog = document.getElementById("installGuideDialog");
 var installGuideTitle = document.getElementById("installGuideTitle");
 var installGuideIntro = document.getElementById("installGuideIntro");
@@ -9879,18 +9882,58 @@ function markIosPwaHelpDismissed() {
     console.warn('Could not store iOS PWA help dismissal', error);
   }
 }
+function hasDismissedInstallBanner() {
+  if (typeof localStorage === 'undefined') return false;
+  try {
+    return localStorage.getItem(INSTALL_BANNER_DISMISSED_KEY) === '1';
+  } catch (error) {
+    console.warn('Could not read install banner dismissal flag', error);
+    return false;
+  }
+}
+function markInstallBannerDismissed() {
+  if (typeof localStorage === 'undefined') return;
+  try {
+    localStorage.setItem(INSTALL_BANNER_DISMISSED_KEY, '1');
+  } catch (error) {
+    console.warn('Could not store install banner dismissal', error);
+  }
+}
 function shouldShowInstallBanner() {
   if (!installPromptBanner) return false;
   if (isStandaloneDisplayMode()) return false;
+  if (hasDismissedInstallBanner()) return false;
   return isIosDevice() || isAndroidDevice();
 }
 function updateInstallBannerVisibility() {
   if (!installPromptBanner) return;
   if (shouldShowInstallBanner()) {
     installPromptBanner.removeAttribute('hidden');
+    updateInstallBannerColors();
     updateInstallBannerPosition();
   } else {
     installPromptBanner.setAttribute('hidden', '');
+  }
+}
+function updateInstallBannerColors() {
+  if (!installPromptBanner) return;
+  if (typeof window === 'undefined' || typeof window.getComputedStyle !== 'function') return;
+  try {
+    var root = document.documentElement;
+    if (!root) return;
+    var computed = window.getComputedStyle(root);
+    var accentValue = computed.getPropertyValue('--accent-color').trim();
+    if (!accentValue) {
+      installPromptBanner.style.removeProperty('--install-banner-text-color');
+      return;
+    }
+    var rgb = parseColorToRgb(accentValue);
+    if (!rgb) return;
+    var luminance = computeRelativeLuminance(rgb);
+    var textColor = luminance > 0.55 ? '#000000' : '#ffffff';
+    installPromptBanner.style.setProperty('--install-banner-text-color', textColor);
+  } catch (error) {
+    console.warn('Unable to update install banner colors', error);
   }
 }
 function renderInstallGuideContent(platform) {
@@ -9977,10 +10020,21 @@ function closeInstallGuide() {
 }
 function setupInstallBanner() {
   if (!installPromptBanner) return;
-  installPromptBanner.addEventListener('click', function () {
-    var platform = isIosDevice() ? 'ios' : 'android';
-    openInstallGuide(platform);
-  });
+  if (installPromptBannerAction) {
+    installPromptBannerAction.addEventListener('click', function (event) {
+      event.preventDefault();
+      var platform = isIosDevice() ? 'ios' : 'android';
+      openInstallGuide(platform);
+    });
+  }
+  if (installPromptBannerDismiss) {
+    installPromptBannerDismiss.addEventListener('click', function (event) {
+      event.preventDefault();
+      if (event.stopPropagation) event.stopPropagation();
+      markInstallBannerDismissed();
+      updateInstallBannerVisibility();
+    });
+  }
   if (installGuideClose) {
     installGuideClose.addEventListener('click', closeInstallGuide);
   }
@@ -9992,6 +10046,7 @@ function setupInstallBanner() {
     });
   }
   applyInstallTexts(currentLang);
+  updateInstallBannerColors();
   updateInstallBannerVisibility();
   updateInstallBannerPosition();
   if (typeof window !== 'undefined') {
@@ -10021,10 +10076,36 @@ function applyInstallTexts(lang) {
   if (installPromptBannerText && bannerText) {
     installPromptBannerText.textContent = bannerText;
   }
-  if (installPromptBanner && bannerText) {
-    installPromptBanner.setAttribute('aria-label', bannerText);
+  if (installPromptBanner) {
+    if (bannerText) {
+      installPromptBanner.setAttribute('aria-label', bannerText);
+      installPromptBanner.setAttribute('title', bannerText);
+    } else {
+      installPromptBanner.removeAttribute('aria-label');
+      installPromptBanner.removeAttribute('title');
+    }
+  }
+  if (installPromptBannerAction) {
+    if (bannerText) {
+      installPromptBannerAction.setAttribute('aria-label', bannerText);
+      installPromptBannerAction.setAttribute('title', bannerText);
+    } else {
+      installPromptBannerAction.removeAttribute('aria-label');
+      installPromptBannerAction.removeAttribute('title');
+    }
   }
   var closeLabel = langTexts.installHelpClose || fallbackTexts.installHelpClose;
+  var dismissLabel = langTexts.installBannerDismiss || fallbackTexts.installBannerDismiss || closeLabel || '';
+  if (installPromptBannerDismiss) {
+    installPromptBannerDismiss.textContent = dismissLabel;
+    if (dismissLabel) {
+      installPromptBannerDismiss.setAttribute('aria-label', dismissLabel);
+      installPromptBannerDismiss.setAttribute('title', dismissLabel);
+    } else {
+      installPromptBannerDismiss.removeAttribute('aria-label');
+      installPromptBannerDismiss.removeAttribute('title');
+    }
+  }
   if (installGuideClose && closeLabel) {
     setButtonLabelWithIcon(installGuideClose, closeLabel, ICON_GLYPHS.circleX);
     installGuideClose.setAttribute('aria-label', closeLabel);
@@ -11717,6 +11798,7 @@ function refreshDarkModeAccentBoost() {
   if (typeof document === 'undefined' || !document.body) return;
   var shouldEnable = shouldEnableDarkModeAccentBoost(options);
   document.body.classList.toggle(DARK_MODE_ACCENT_BOOST_CLASS, shouldEnable);
+  updateInstallBannerColors();
 }
 var isHighContrastActive = function isHighContrastActive() {
   return typeof document !== 'undefined' && (document.documentElement.classList.contains('high-contrast') || document.body && document.body.classList.contains('high-contrast'));

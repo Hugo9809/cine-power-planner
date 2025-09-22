@@ -42,6 +42,7 @@ if (typeof window !== 'undefined') {
 
 const APP_VERSION = "1.0.5";
 const IOS_PWA_HELP_STORAGE_KEY = 'iosPwaHelpShown';
+const INSTALL_BANNER_DISMISSED_KEY = 'installPromptDismissed';
 
 const DEVICE_SCHEMA_PATH = 'src/data/schema.json';
 const DEVICE_SCHEMA_STORAGE_KEY = 'cameraPowerPlanner_schemaCache';
@@ -7968,6 +7969,8 @@ const helpQuickLinksHeading = document.getElementById("helpQuickLinksHeading");
 const helpQuickLinksList = document.getElementById("helpQuickLinksList");
 const installPromptBanner = document.getElementById("installPromptBanner");
 const installPromptBannerText = document.getElementById("installPromptBannerText");
+const installPromptBannerAction = document.getElementById("installPromptBannerAction");
+const installPromptBannerDismiss = document.getElementById("installPromptBannerDismiss");
 const installGuideDialog = document.getElementById("installGuideDialog");
 const installGuideTitle = document.getElementById("installGuideTitle");
 const installGuideIntro = document.getElementById("installGuideIntro");
@@ -10560,9 +10563,29 @@ function markIosPwaHelpDismissed() {
   }
 }
 
+function hasDismissedInstallBanner() {
+  if (typeof localStorage === 'undefined') return false;
+  try {
+    return localStorage.getItem(INSTALL_BANNER_DISMISSED_KEY) === '1';
+  } catch (error) {
+    console.warn('Could not read install banner dismissal flag', error);
+    return false;
+  }
+}
+
+function markInstallBannerDismissed() {
+  if (typeof localStorage === 'undefined') return;
+  try {
+    localStorage.setItem(INSTALL_BANNER_DISMISSED_KEY, '1');
+  } catch (error) {
+    console.warn('Could not store install banner dismissal', error);
+  }
+}
+
 function shouldShowInstallBanner() {
   if (!installPromptBanner) return false;
   if (isStandaloneDisplayMode()) return false;
+  if (hasDismissedInstallBanner()) return false;
   return isIosDevice() || isAndroidDevice();
 }
 
@@ -10570,9 +10593,34 @@ function updateInstallBannerVisibility() {
   if (!installPromptBanner) return;
   if (shouldShowInstallBanner()) {
     installPromptBanner.removeAttribute('hidden');
+    updateInstallBannerColors();
     updateInstallBannerPosition();
   } else {
     installPromptBanner.setAttribute('hidden', '');
+  }
+}
+
+function updateInstallBannerColors() {
+  if (!installPromptBanner) return;
+  if (typeof window === 'undefined' || typeof window.getComputedStyle !== 'function') {
+    return;
+  }
+  try {
+    const root = document.documentElement;
+    if (!root) return;
+    const computed = window.getComputedStyle(root);
+    const accentValue = computed.getPropertyValue('--accent-color').trim();
+    if (!accentValue) {
+      installPromptBanner.style.removeProperty('--install-banner-text-color');
+      return;
+    }
+    const rgb = parseColorToRgb(accentValue);
+    if (!rgb) return;
+    const luminance = computeRelativeLuminance(rgb);
+    const textColor = luminance > 0.55 ? '#000000' : '#ffffff';
+    installPromptBanner.style.setProperty('--install-banner-text-color', textColor);
+  } catch (error) {
+    console.warn('Unable to update install banner colors', error);
   }
 }
 
@@ -10676,10 +10724,22 @@ function closeInstallGuide() {
 function setupInstallBanner() {
   if (!installPromptBanner) return;
 
-  installPromptBanner.addEventListener('click', () => {
-    const platform = isIosDevice() ? 'ios' : 'android';
-    openInstallGuide(platform);
-  });
+  if (installPromptBannerAction) {
+    installPromptBannerAction.addEventListener('click', event => {
+      event.preventDefault();
+      const platform = isIosDevice() ? 'ios' : 'android';
+      openInstallGuide(platform);
+    });
+  }
+
+  if (installPromptBannerDismiss) {
+    installPromptBannerDismiss.addEventListener('click', event => {
+      event.preventDefault();
+      event.stopPropagation();
+      markInstallBannerDismissed();
+      updateInstallBannerVisibility();
+    });
+  }
 
   if (installGuideClose) {
     installGuideClose.addEventListener('click', closeInstallGuide);
@@ -10694,6 +10754,7 @@ function setupInstallBanner() {
   }
 
   applyInstallTexts(currentLang);
+  updateInstallBannerColors();
   updateInstallBannerVisibility();
   updateInstallBannerPosition();
 
@@ -10723,10 +10784,40 @@ function applyInstallTexts(lang) {
   if (installPromptBannerText && bannerText) {
     installPromptBannerText.textContent = bannerText;
   }
-  if (installPromptBanner && bannerText) {
-    installPromptBanner.setAttribute('aria-label', bannerText);
+  if (installPromptBanner) {
+    if (bannerText) {
+      installPromptBanner.setAttribute('aria-label', bannerText);
+      installPromptBanner.setAttribute('title', bannerText);
+    } else {
+      installPromptBanner.removeAttribute('aria-label');
+      installPromptBanner.removeAttribute('title');
+    }
+  }
+  if (installPromptBannerAction) {
+    if (bannerText) {
+      installPromptBannerAction.setAttribute('aria-label', bannerText);
+      installPromptBannerAction.setAttribute('title', bannerText);
+    } else {
+      installPromptBannerAction.removeAttribute('aria-label');
+      installPromptBannerAction.removeAttribute('title');
+    }
   }
   const closeLabel = langTexts.installHelpClose || fallbackTexts.installHelpClose;
+  const dismissLabel =
+    langTexts.installBannerDismiss ||
+    fallbackTexts.installBannerDismiss ||
+    closeLabel ||
+    '';
+  if (installPromptBannerDismiss) {
+    installPromptBannerDismiss.textContent = dismissLabel;
+    if (dismissLabel) {
+      installPromptBannerDismiss.setAttribute('aria-label', dismissLabel);
+      installPromptBannerDismiss.setAttribute('title', dismissLabel);
+    } else {
+      installPromptBannerDismiss.removeAttribute('aria-label');
+      installPromptBannerDismiss.removeAttribute('title');
+    }
+  }
   if (installGuideClose && closeLabel) {
     setButtonLabelWithIcon(installGuideClose, closeLabel, ICON_GLYPHS.circleX);
     installGuideClose.setAttribute('aria-label', closeLabel);
@@ -12538,6 +12629,7 @@ function refreshDarkModeAccentBoost(options = {}) {
   if (typeof document === 'undefined' || !document.body) return;
   const shouldEnable = shouldEnableDarkModeAccentBoost(options);
   document.body.classList.toggle(DARK_MODE_ACCENT_BOOST_CLASS, shouldEnable);
+  updateInstallBannerColors();
 }
 
 const isHighContrastActive = () =>

@@ -9,6 +9,7 @@ const texts = {
     offlineIndicatorHelp:
       "Appears when the planner is offline. All projects, backups and device data stay stored on this device so you can keep working.",
     installBannerText: "Install Cine Power Planner on your device for quick access.",
+    installBannerDismiss: "Not now",
     installHelpTitleIos: "Install Cine Power Planner on iOS",
     installHelpTitleAndroid: "Install Cine Power Planner on Android",
     installHelpIntroIos: "Add the planner to your Home Screen to use it like an app.",
@@ -877,6 +878,7 @@ const texts = {
     offlineIndicatorHelp:
       "Compare quando l’app è offline. Tutti i progetti, i backup e i dati dei dispositivi restano salvati su questo dispositivo così puoi continuare a lavorare.",
     installBannerText: "Installa Cine Power Planner sul tuo dispositivo per un accesso rapido.",
+    installBannerDismiss: "Non ora",
     installHelpTitleIos: "Installa Cine Power Planner su iOS",
     installHelpTitleAndroid: "Installa Cine Power Planner su Android",
     installHelpIntroIos: "Aggiungi Cine Power Planner alla schermata Home per usarlo come app.",
@@ -1724,6 +1726,7 @@ const texts = {
     offlineIndicatorHelp:
       "Aparece cuando el planificador está sin conexión. Todos los proyectos, copias de seguridad y datos de dispositivos permanecen guardados en este dispositivo para que puedas seguir trabajando.",
     installBannerText: "Instala Cine Power Planner en tu dispositivo para acceder rápidamente.",
+    installBannerDismiss: "Ahora no",
     installHelpTitleIos: "Instala Cine Power Planner en iOS",
     installHelpTitleAndroid: "Instala Cine Power Planner en Android",
     installHelpIntroIos: "Añade Cine Power Planner a la pantalla de inicio para usarlo como una aplicación.",
@@ -2585,6 +2588,7 @@ const texts = {
     offlineIndicatorHelp:
       "S’affiche lorsque le planificateur est hors ligne. Tous les projets, sauvegardes et données d’appareil restent stockés sur cet appareil afin que vous puissiez continuer à travailler.",
     installBannerText: "Installez Cine Power Planner sur votre appareil pour un accès rapide.",
+    installBannerDismiss: "Pas maintenant",
     installHelpTitleIos: "Installer Cine Power Planner sur iOS",
     installHelpTitleAndroid: "Installer Cine Power Planner sur Android",
     installHelpIntroIos: "Ajoutez Cine Power Planner à votre écran d’accueil pour l’utiliser comme une application.",
@@ -3449,6 +3453,7 @@ const texts = {
     offlineIndicatorHelp:
       "Erscheint, wenn der Planner offline ist. Alle Projekte, Backups und Gerätedaten bleiben auf diesem Gerät gespeichert, damit du weiterarbeiten kannst.",
     installBannerText: "Installiere Cine Power Planner auf deinem Gerät für schnellen Zugriff.",
+    installBannerDismiss: "Nicht jetzt",
     installHelpTitleIos: "Cine Power Planner auf iOS installieren",
     installHelpTitleAndroid: "Cine Power Planner auf Android installieren",
     installHelpIntroIos: "Füge Cine Power Planner deinem Home-Bildschirm hinzu, um ihn wie eine App zu nutzen.",

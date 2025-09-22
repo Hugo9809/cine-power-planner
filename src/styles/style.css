@@ -280,27 +280,71 @@ textarea {
   top: 0;
   left: 0;
   right: 0;
-  background: var(--info-color);
-  color: var(--inverse-text-color);
-  text-align: center;
-  padding: 10px 16px;
+  background: var(--accent-color);
+  color: var(--install-banner-text-color, var(--inverse-text-color));
+  padding: 12px 18px;
   z-index: 999;
-  border: none;
   border-radius: 0;
-  font: inherit;
-  cursor: pointer;
-  line-height: 1.4;
+  line-height: 1.45;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
   display: none;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+  text-align: center;
 }
 
 #installPromptBanner:not([hidden]) {
-  display: block;
+  display: flex;
 }
 
-#installPromptBanner:focus-visible {
-  outline: 2px solid var(--inverse-text-color);
-  outline-offset: -2px;
+#installPromptBanner .install-banner-action,
+#installPromptBanner .install-banner-dismiss {
+  appearance: none;
+  border-radius: var(--border-radius);
+  border: 1px solid color-mix(in srgb, var(--install-banner-text-color, #ffffff) 30%, transparent);
+  background: color-mix(in srgb, var(--install-banner-text-color, #ffffff) 12%, transparent);
+  color: inherit;
+  font: inherit;
+  font-weight: var(--font-weight-medium);
+  padding: var(--spacing-xs) var(--spacing-md);
+  cursor: pointer;
+  transition: background-color 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+}
+
+#installPromptBanner .install-banner-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--icon-gap);
+  text-align: left;
+  flex: 1 1 240px;
+}
+
+#installPromptBanner .install-banner-action .install-banner-icon {
+  font-size: var(--icon-size-lg);
+}
+
+#installPromptBanner .install-banner-action:focus-visible,
+#installPromptBanner .install-banner-dismiss:focus-visible {
+  outline: 2px solid var(--install-banner-text-color, currentColor);
+  outline-offset: 2px;
+}
+
+#installPromptBanner .install-banner-action:hover,
+#installPromptBanner .install-banner-action:focus-visible,
+#installPromptBanner .install-banner-dismiss:hover,
+#installPromptBanner .install-banner-dismiss:focus-visible {
+  border-color: color-mix(in srgb, var(--install-banner-text-color, #ffffff) 50%, transparent);
+  background: color-mix(in srgb, var(--install-banner-text-color, #ffffff) 22%, transparent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--install-banner-text-color, #ffffff) 18%, transparent);
+}
+
+#installPromptBanner .install-banner-dismiss {
+  min-width: 0;
+  white-space: nowrap;
+  flex: 0 0 auto;
 }
 
 .visually-hidden {
