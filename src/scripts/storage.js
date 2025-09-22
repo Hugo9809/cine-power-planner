@@ -61,6 +61,7 @@ function getCustomFontStorageKeyName() {
 ensureCustomFontStorageKeyName();
 
 const CUSTOM_LOGO_STORAGE_KEY = 'customLogo';
+const TEMPERATURE_UNIT_STORAGE_KEY = 'cameraPowerPlanner_temperatureUnit';
 const AUTO_GEAR_RULES_STORAGE_KEY = 'cameraPowerPlanner_autoGearRules';
 const AUTO_GEAR_SEEDED_STORAGE_KEY = 'cameraPowerPlanner_autoGearSeeded';
 const AUTO_GEAR_BACKUPS_STORAGE_KEY = 'cameraPowerPlanner_autoGearBackups';
@@ -158,6 +159,7 @@ const SIMPLE_STORAGE_KEYS = [
   'fontFamily',
   'language',
   'iosPwaHelpShown',
+  TEMPERATURE_UNIT_STORAGE_KEY,
 ];
 
 const STORAGE_ALERT_FLAG_NAME = '__cameraPowerPlannerStorageAlertShown';
@@ -3065,6 +3067,11 @@ function clearAllData() {
       preferences.iosPwaHelpShown = iosPwaHelpShown;
     }
 
+    const temperatureUnit = readLocalStorageValue(TEMPERATURE_UNIT_STORAGE_KEY);
+    if (temperatureUnit) {
+      preferences.temperatureUnit = temperatureUnit;
+    }
+
     return preferences;
   }
 
@@ -3569,6 +3576,19 @@ function convertStorageSnapshotToData(snapshot) {
     }
   });
 
+  const temperatureUnitEntry = readSnapshotEntry(snapshot, TEMPERATURE_UNIT_STORAGE_KEY);
+  if (temperatureUnitEntry) {
+    markSnapshotEntry(temperatureUnitEntry);
+    const storedUnit = parseSnapshotStringValue(temperatureUnitEntry);
+    if (typeof storedUnit === 'string') {
+      const normalizedUnit = storedUnit.trim();
+      if (normalizedUnit) {
+        preferences.temperatureUnit = normalizedUnit;
+        hasAssignments = true;
+      }
+    }
+  }
+
   if (Object.keys(preferences).length > 0) {
     data.preferences = preferences;
   }
@@ -3637,6 +3657,18 @@ function importAllData(allData, options = {}) {
         }
       }
     });
+
+    if (Object.prototype.hasOwnProperty.call(prefs, 'temperatureUnit')) {
+      const unit = prefs.temperatureUnit;
+      if (typeof unit === 'string') {
+        const normalizedUnit = unit.trim();
+        if (normalizedUnit) {
+          safeSetLocalStorage(TEMPERATURE_UNIT_STORAGE_KEY, normalizedUnit);
+        }
+      } else if (unit === null) {
+        safeSetLocalStorage(TEMPERATURE_UNIT_STORAGE_KEY, null);
+      }
+    }
   }
   if (Object.prototype.hasOwnProperty.call(allData, 'customLogo')) {
     const logo = allData.customLogo;
