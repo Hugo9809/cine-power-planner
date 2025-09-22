@@ -23,6 +23,7 @@ function generatePrintableOverview() {
     it: 'it-IT'
   };
   var lang = typeof currentLang === 'string' ? currentLang : 'en';
+  var t = (typeof texts === "undefined" ? "undefined" : _typeof(texts)) === 'object' && texts ? texts[lang] || texts.en || {} : {};
   var locale = localeMap[lang] || 'en-US';
   var dateTimeString = now.toLocaleDateString(locale) + ' ' + now.toLocaleTimeString();
   var fallbackProjectName = currentProjectInfo && typeof currentProjectInfo.projectName === 'string' ? currentProjectInfo.projectName.trim() : '';
@@ -37,10 +38,14 @@ function generatePrintableOverview() {
   var formattedDate = "".concat(now.getFullYear(), "-").concat(padTwo(now.getMonth() + 1), "-").concat(padTwo(now.getDate()));
   var formattedTime = "".concat(padTwo(now.getHours()), "-").concat(padTwo(now.getMinutes()), "-").concat(padTwo(now.getSeconds()));
   var timestampLabel = "".concat(formattedDate, " ").concat(formattedTime).trim();
+  var safeTimestampLabel = sanitizeTitleSegment(timestampLabel) || timestampLabel;
   var projectTitleSegment = sanitizeTitleSegment(projectNameForTitle) || 'Project';
-  var printDocumentTitle = [timestampLabel, projectTitleSegment, '- -', 'Project Overview and Gear List'].filter(Boolean).join(' ').replace(/\s+/g, ' ').trim();
+  var overviewLabel = sanitizeTitleSegment((t.overviewTitle || '').trim());
+  var gearListLabel = sanitizeTitleSegment((t.gearListNav || '').trim());
+  var suffixRaw = [overviewLabel, gearListLabel].filter(Boolean).join(' – ');
+  var suffixSegment = sanitizeTitleSegment(suffixRaw) || 'Project Overview and Gear List';
+  var printDocumentTitle = [safeTimestampLabel, projectTitleSegment, suffixSegment].filter(Boolean).join(' - ').replace(/\s+/g, ' ').trim();
   var originalDocumentTitle = typeof document !== 'undefined' ? document.title : '';
-  var t = (typeof texts === "undefined" ? "undefined" : _typeof(texts)) === 'object' && texts ? texts[lang] || texts.en || {} : {};
   var customLogo = typeof localStorage !== 'undefined' ? localStorage.getItem('customLogo') : null;
   var deviceListHtml = '<div class="device-category-container">';
   var sections = {};
@@ -364,8 +369,9 @@ function generatePrintableOverview() {
     var bodyElement = typeof document !== 'undefined' ? document.body : null;
     var bodyClassName = bodyElement ? bodyElement.className : '';
     var bodyInlineStyle = bodyElement ? bodyElement.getAttribute('style') || '' : '';
+    var escapedPrintDocumentTitle = escapeHtmlSafe(printDocumentTitle);
     doc.open();
-    doc.write("<!DOCTYPE html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<meta name=\"color-scheme\" content=\"light dark\">\n<title></title>\n<link rel=\"stylesheet\" href=\"src/styles/style.css\">\n<link rel=\"stylesheet\" href=\"src/styles/overview.css\">\n<link rel=\"stylesheet\" href=\"src/styles/overview-print.css\" media=\"print\">\n<link rel=\"stylesheet\" href=\"overview-print.css\" media=\"screen\">\n</head>\n<body></body>\n</html>");
+    doc.write("<!DOCTYPE html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n<meta name=\"color-scheme\" content=\"light dark\">\n<title>".concat(escapedPrintDocumentTitle, "</title>\n<link rel=\"stylesheet\" href=\"src/styles/style.css\">\n<link rel=\"stylesheet\" href=\"src/styles/overview.css\">\n<link rel=\"stylesheet\" href=\"src/styles/overview-print.css\" media=\"print\">\n<link rel=\"stylesheet\" href=\"overview-print.css\" media=\"screen\">\n</head>\n<body></body>\n</html>"));
     doc.close();
     doc.title = printDocumentTitle;
     var fallbackHtml = doc.documentElement;

@@ -1349,6 +1349,68 @@ function captureStorageSnapshot(storage) {
   }
   return snapshot;
 }
+function createSafeStorageReader(storage, errorMessagePrefix) {
+  if (!storage || typeof storage.getItem !== 'function') {
+    return function () {
+      return null;
+    };
+  }
+  var message = typeof errorMessagePrefix === 'string' && errorMessagePrefix ? errorMessagePrefix : 'Failed to read storage key';
+  return function (key) {
+    if (typeof key !== 'string') {
+      return null;
+    }
+    try {
+      return storage.getItem(key);
+    } catch (error) {
+      console.warn("".concat(message), key, error);
+      return null;
+    }
+  };
+}
+function restoreSessionStorageSnapshot(snapshot) {
+  if (typeof sessionStorage === 'undefined' || !sessionStorage) {
+    return;
+  }
+  var entries = snapshot && _typeof(snapshot) === 'object' ? Object.entries(snapshot) : [];
+  var retainedKeys = new Set(entries.map(function (_ref2) {
+    var _ref3 = _slicedToArray(_ref2, 1),
+      key = _ref3[0];
+    return key;
+  }));
+  var keysToRemove = [];
+  try {
+    var _sessionStorage = sessionStorage,
+      length = _sessionStorage.length;
+    for (var i = 0; i < length; i += 1) {
+      var key = sessionStorage.key(i);
+      if (typeof key !== 'string') continue;
+      if (!retainedKeys.has(key)) {
+        keysToRemove.push(key);
+      }
+    }
+  } catch (error) {
+    console.warn('Failed to inspect sessionStorage during restore rollback', error);
+  }
+  keysToRemove.forEach(function (key) {
+    try {
+      sessionStorage.removeItem(key);
+    } catch (removeError) {
+      console.warn('Failed to remove sessionStorage key during restore rollback', key, removeError);
+    }
+  });
+  entries.forEach(function (_ref4) {
+    var _ref5 = _slicedToArray(_ref4, 2),
+      key = _ref5[0],
+      value = _ref5[1];
+    if (typeof key !== 'string') return;
+    try {
+      sessionStorage.setItem(key, typeof value === 'string' ? value : String(value));
+    } catch (setError) {
+      console.warn('Failed to reapply sessionStorage key during restore rollback', key, setError);
+    }
+  });
+}
 function sanitizeBackupPayload(raw) {
   if (raw === null || raw === undefined) {
     return '';
@@ -1413,13 +1475,13 @@ function convertEntriesToSnapshot(section) {
       }
       if (_typeof(entry) === 'object') {
         if (typeof entry.key === 'string') {
-          var _ref2, _ref3, _ref4, _entry$value;
-          assignEntry(entry.key, (_ref2 = (_ref3 = (_ref4 = (_entry$value = entry.value) !== null && _entry$value !== void 0 ? _entry$value : entry.val) !== null && _ref4 !== void 0 ? _ref4 : entry.data) !== null && _ref3 !== void 0 ? _ref3 : entry.content) !== null && _ref2 !== void 0 ? _ref2 : entry.string);
+          var _ref6, _ref7, _ref8, _entry$value;
+          assignEntry(entry.key, (_ref6 = (_ref7 = (_ref8 = (_entry$value = entry.value) !== null && _entry$value !== void 0 ? _entry$value : entry.val) !== null && _ref8 !== void 0 ? _ref8 : entry.data) !== null && _ref7 !== void 0 ? _ref7 : entry.content) !== null && _ref6 !== void 0 ? _ref6 : entry.string);
           return;
         }
         if (typeof entry.name === 'string') {
-          var _ref5, _ref6, _ref7, _entry$value2;
-          assignEntry(entry.name, (_ref5 = (_ref6 = (_ref7 = (_entry$value2 = entry.value) !== null && _entry$value2 !== void 0 ? _entry$value2 : entry.val) !== null && _ref7 !== void 0 ? _ref7 : entry.data) !== null && _ref6 !== void 0 ? _ref6 : entry.content) !== null && _ref5 !== void 0 ? _ref5 : entry.string);
+          var _ref9, _ref0, _ref1, _entry$value2;
+          assignEntry(entry.name, (_ref9 = (_ref0 = (_ref1 = (_entry$value2 = entry.value) !== null && _entry$value2 !== void 0 ? _entry$value2 : entry.val) !== null && _ref1 !== void 0 ? _ref1 : entry.data) !== null && _ref0 !== void 0 ? _ref0 : entry.content) !== null && _ref9 !== void 0 ? _ref9 : entry.string);
           return;
         }
         if (Array.isArray(entry.entry)) {
@@ -1428,10 +1490,10 @@ function convertEntriesToSnapshot(section) {
       }
     });
   } else if (isPlainObject(section)) {
-    Object.entries(section).forEach(function (_ref8) {
-      var _ref9 = _slicedToArray(_ref8, 2),
-        key = _ref9[0],
-        value = _ref9[1];
+    Object.entries(section).forEach(function (_ref10) {
+      var _ref11 = _slicedToArray(_ref10, 2),
+        key = _ref11[0],
+        value = _ref11[1];
       assignEntry(key, value);
     });
   } else {
@@ -1476,13 +1538,59 @@ function looksLikeStoredSettingKey(key) {
     return key.startsWith(prefix);
   });
 }
+function restoreLocalStorageSnapshot(storage, snapshot) {
+  if (!storage || typeof storage.setItem !== 'function') {
+    return;
+  }
+  var entries = snapshot && _typeof(snapshot) === 'object' ? Object.entries(snapshot) : [];
+  var targetKeys = new Set(entries.map(function (_ref12) {
+    var _ref13 = _slicedToArray(_ref12, 1),
+      key = _ref13[0];
+    return key;
+  }));
+  var keysToRemove = [];
+  try {
+    var length = storage.length;
+    for (var i = 0; i < length; i += 1) {
+      var key = storage.key(i);
+      if (typeof key !== 'string') continue;
+      if (!targetKeys.has(key) && looksLikeStoredSettingKey(key)) {
+        keysToRemove.push(key);
+      }
+    }
+  } catch (error) {
+    console.warn('Failed to inspect storage during restore rollback', error);
+  }
+  keysToRemove.forEach(function (key) {
+    try {
+      storage.removeItem(key);
+    } catch (removeError) {
+      console.warn('Failed to remove storage key during restore rollback', key, removeError);
+    }
+  });
+  entries.forEach(function (_ref14) {
+    var _ref15 = _slicedToArray(_ref14, 2),
+      key = _ref15[0],
+      value = _ref15[1];
+    if (typeof key !== 'string') return;
+    try {
+      if (value === null || value === undefined) {
+        storage.removeItem(key);
+      } else {
+        storage.setItem(key, typeof value === 'string' ? value : String(value));
+      }
+    } catch (setError) {
+      console.warn('Failed to reapply storage key during restore rollback', key, setError);
+    }
+  });
+}
 function buildLegacyStorageFromRoot(source, metadataKeys) {
   if (!isPlainObject(source)) return null;
   var snapshot = Object.create(null);
-  Object.entries(source).forEach(function (_ref0) {
-    var _ref1 = _slicedToArray(_ref0, 2),
-      key = _ref1[0],
-      value = _ref1[1];
+  Object.entries(source).forEach(function (_ref16) {
+    var _ref17 = _slicedToArray(_ref16, 2),
+      key = _ref17[0],
+      value = _ref17[1];
     if (metadataKeys.has(key)) return;
     if (!looksLikeStoredSettingKey(key)) return;
     snapshot[key] = normalizeStoredValue(value);
@@ -1647,6 +1755,91 @@ function downloadBackupPayload(payload, fileName) {
   }
   return false;
 }
+function applyPreferencesFromStorage(safeGetItem) {
+  if (typeof safeGetItem !== 'function') {
+    return {
+      showAutoBackups: false,
+      accentColor: null,
+      language: null
+    };
+  }
+  var restoredTemperatureUnit = safeGetItem(TEMPERATURE_UNIT_STORAGE_KEY);
+  if (restoredTemperatureUnit) {
+    try {
+      applyTemperatureUnitPreference(restoredTemperatureUnit, {
+        persist: false
+      });
+    } catch (error) {
+      console.warn('Failed to apply restored temperature unit preference', error);
+    }
+  }
+  try {
+    applyDarkMode(safeGetItem('darkMode') === 'true');
+  } catch (error) {
+    console.warn('Failed to apply restored dark mode preference', error);
+  }
+  try {
+    applyPinkMode(safeGetItem('pinkMode') === 'true');
+  } catch (error) {
+    console.warn('Failed to apply restored pink mode preference', error);
+  }
+  try {
+    applyHighContrast(safeGetItem('highContrast') === 'true');
+  } catch (error) {
+    console.warn('Failed to apply restored high contrast preference', error);
+  }
+  var showBackups = safeGetItem('showAutoBackups') === 'true';
+  var color = safeGetItem('accentColor');
+  if (color) {
+    try {
+      document.documentElement.style.setProperty('--accent-color', color);
+      document.documentElement.style.setProperty('--link-color', color);
+    } catch (error) {
+      console.warn('Failed to apply restored accent color', error);
+    }
+    accentColor = color;
+    prevAccentColor = color;
+  }
+  var language = safeGetItem('language');
+  return {
+    showAutoBackups: showBackups,
+    accentColor: color || null,
+    language: language || null
+  };
+}
+function captureSetupSelection() {
+  return {
+    value: setupSelect ? setupSelect.value : '',
+    name: setupNameInput ? setupNameInput.value : ''
+  };
+}
+function restoreSetupSelection(previousSelection, shouldShowAutoBackups) {
+  if (!previousSelection || _typeof(previousSelection) !== 'object') {
+    return;
+  }
+  var _previousSelection$va = previousSelection.value,
+    value = _previousSelection$va === void 0 ? '' : _previousSelection$va,
+    _previousSelection$na = previousSelection.name,
+    name = _previousSelection$na === void 0 ? '' : _previousSelection$na;
+  if (setupSelect) {
+    try {
+      if (shouldShowAutoBackups || !value || !value.startsWith('auto-backup-')) {
+        setupSelect.value = value;
+      } else {
+        setupSelect.value = '';
+      }
+    } catch (error) {
+      console.warn('Failed to restore setup selection after restore', error);
+    }
+  }
+  if (setupNameInput) {
+    try {
+      setupNameInput.value = name || '';
+    } catch (error) {
+      console.warn('Failed to restore setup name after restore', error);
+    }
+  }
+}
 function createSettingsBackup() {
   var notify = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
   var timestamp = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new Date();
@@ -1710,11 +1903,61 @@ if (restoreSettings && restoreSettingsInput) {
       return;
     }
     showNotification('success', 'Full app backup downloaded');
+    var safeStorage = resolveSafeLocalStorage();
+    var storedSettingsSnapshot = captureStorageSnapshot(safeStorage);
+    var storedSessionSnapshot = captureStorageSnapshot(typeof sessionStorage !== 'undefined' ? sessionStorage : null);
+    var previousSelection = captureSetupSelection();
+    var restoreMutated = false;
     var finalizeRestore = function finalizeRestore() {
       try {
         restoreSettingsInput.value = '';
       } catch (resetError) {
         void resetError;
+      }
+    };
+    var revertAfterFailure = function revertAfterFailure() {
+      try {
+        restoreLocalStorageSnapshot(safeStorage, storedSettingsSnapshot);
+      } catch (restoreError) {
+        console.warn('Failed to restore localStorage snapshot after restore failure', restoreError);
+      }
+      try {
+        restoreSessionStorageSnapshot(storedSessionSnapshot);
+      } catch (sessionError) {
+        console.warn('Failed to restore sessionStorage snapshot after restore failure', sessionError);
+      }
+      try {
+        loadStoredLogoPreview();
+      } catch (logoError) {
+        console.warn('Failed to refresh logo preview after restore failure', logoError);
+      }
+      try {
+        syncAutoGearRulesFromStorage();
+      } catch (rulesError) {
+        console.warn('Failed to resync automatic gear rules after restore failure', rulesError);
+      }
+      var safeGetItem = createSafeStorageReader(safeStorage, 'Failed to read restored storage key');
+      var preferenceState = applyPreferencesFromStorage(safeGetItem);
+      showAutoBackups = preferenceState.showAutoBackups;
+      try {
+        populateSetupSelect();
+      } catch (populateError) {
+        console.warn('Failed to repopulate setup selector after restore failure', populateError);
+      }
+      restoreSetupSelection(previousSelection, showAutoBackups);
+      if (settingsShowAutoBackups) {
+        try {
+          settingsShowAutoBackups.checked = showAutoBackups;
+        } catch (checkboxError) {
+          console.warn('Failed to restore automatic backup visibility toggle after restore failure', checkboxError);
+        }
+      }
+      if (preferenceState.language) {
+        try {
+          setLanguage(preferenceState.language);
+        } catch (languageError) {
+          console.warn('Failed to restore language after restore failure', languageError);
+        }
       }
     };
     var handleRestoreError = function handleRestoreError(error) {
@@ -1745,20 +1988,20 @@ if (restoreSettings && restoreSettingsInput) {
           alert("".concat(texts[currentLang].restoreVersionWarning, " (").concat(fileVersion || 'unknown', " \u2192 ").concat(APP_VERSION, ")"));
         }
         if (restoredSettings && _typeof(restoredSettings) === 'object') {
-          var _safeStorage = resolveSafeLocalStorage();
-          if (_safeStorage && typeof _safeStorage.setItem === 'function') {
-            Object.entries(restoredSettings).forEach(function (_ref10) {
-              var _ref11 = _slicedToArray(_ref10, 2),
-                k = _ref11[0],
-                v = _ref11[1];
+          if (safeStorage && typeof safeStorage.setItem === 'function') {
+            restoreMutated = true;
+            Object.entries(restoredSettings).forEach(function (_ref18) {
+              var _ref19 = _slicedToArray(_ref18, 2),
+                k = _ref19[0],
+                v = _ref19[1];
               if (typeof k !== 'string') return;
               try {
                 if (v === null || v === undefined) {
-                  if (typeof _safeStorage.removeItem === 'function') {
-                    _safeStorage.removeItem(k);
+                  if (typeof safeStorage.removeItem === 'function') {
+                    safeStorage.removeItem(k);
                   }
                 } else {
-                  _safeStorage.setItem(k, String(v));
+                  safeStorage.setItem(k, String(v));
                 }
               } catch (storageError) {
                 console.warn('Failed to restore storage entry', k, storageError);
@@ -1767,10 +2010,11 @@ if (restoreSettings && restoreSettingsInput) {
           }
         }
         if (restoredSession && typeof sessionStorage !== 'undefined') {
-          Object.entries(restoredSession).forEach(function (_ref12) {
-            var _ref13 = _slicedToArray(_ref12, 2),
-              key = _ref13[0],
-              value = _ref13[1];
+          restoreMutated = true;
+          Object.entries(restoredSession).forEach(function (_ref20) {
+            var _ref21 = _slicedToArray(_ref20, 2),
+              key = _ref21[0],
+              value = _ref21[1];
             try {
               sessionStorage.setItem(key, value);
             } catch (sessionError) {
@@ -1778,59 +2022,41 @@ if (restoreSettings && restoreSettingsInput) {
             }
           });
         }
-        loadStoredLogoPreview();
+        try {
+          loadStoredLogoPreview();
+        } catch (logoError) {
+          console.warn('Failed to refresh logo preview after restore', logoError);
+        }
         if (data && typeof importAllData === 'function') {
+          restoreMutated = true;
           importAllData(data);
         }
-        syncAutoGearRulesFromStorage(data === null || data === void 0 ? void 0 : data.autoGearRules);
-        var safeStorage = resolveSafeLocalStorage();
-        var safeGetItem = function safeGetItem(key) {
-          if (!safeStorage || typeof safeStorage.getItem !== 'function') return null;
-          try {
-            return safeStorage.getItem(key);
-          } catch (error) {
-            console.warn('Failed to read restored storage key', key, error);
-            return null;
-          }
-        };
-        var restoredTemperatureUnit = safeGetItem(TEMPERATURE_UNIT_STORAGE_KEY);
-        if (restoredTemperatureUnit) {
-          applyTemperatureUnitPreference(restoredTemperatureUnit, {
-            persist: false
-          });
+        try {
+          syncAutoGearRulesFromStorage(data === null || data === void 0 ? void 0 : data.autoGearRules);
+        } catch (rulesError) {
+          console.warn('Failed to sync automatic gear rules after restore', rulesError);
         }
-        applyDarkMode(safeGetItem('darkMode') === 'true');
-        applyPinkMode(safeGetItem('pinkMode') === 'true');
-        applyHighContrast(safeGetItem('highContrast') === 'true');
-        showAutoBackups = safeGetItem('showAutoBackups') === 'true';
-        var prevValue = setupSelect ? setupSelect.value : '';
-        var prevName = setupNameInput ? setupNameInput.value : '';
+        var safeGetItem = createSafeStorageReader(safeStorage, 'Failed to read restored storage key');
+        var preferenceState = applyPreferencesFromStorage(safeGetItem);
+        showAutoBackups = preferenceState.showAutoBackups;
         populateSetupSelect();
-        if (setupSelect) {
-          if (showAutoBackups || !prevValue.startsWith('auto-backup-')) {
-            setupSelect.value = prevValue;
-          } else {
-            setupSelect.value = '';
-          }
-        }
-        if (setupNameInput) {
-          setupNameInput.value = prevName;
-        }
+        restoreSetupSelection(previousSelection, showAutoBackups);
         if (settingsShowAutoBackups) {
           settingsShowAutoBackups.checked = showAutoBackups;
         }
-        var color = safeGetItem('accentColor');
-        if (color) {
-          document.documentElement.style.setProperty('--accent-color', color);
-          document.documentElement.style.setProperty('--link-color', color);
-          accentColor = color;
-          prevAccentColor = color;
+        if (preferenceState.language) {
+          setLanguage(preferenceState.language);
         }
-        var lang = safeGetItem('language');
-        if (lang) setLanguage(lang);
         alert(texts[currentLang].restoreSuccess);
         finalizeRestore();
       } catch (err) {
+        if (restoreMutated) {
+          try {
+            revertAfterFailure();
+          } catch (revertError) {
+            console.warn('Failed to restore previous state after restore error', revertError);
+          }
+        }
         handleRestoreError(err);
       }
     };
@@ -2637,10 +2863,10 @@ if (helpButton && helpDialog) {
       return;
     }
     var hasVisible = false;
-    helpQuickLinkItems.forEach(function (_ref14) {
-      var section = _ref14.section,
-        listItem = _ref14.listItem,
-        button = _ref14.button;
+    helpQuickLinkItems.forEach(function (_ref22) {
+      var section = _ref22.section,
+        listItem = _ref22.listItem,
+        button = _ref22.button;
       if (section && !section.hasAttribute('hidden')) {
         listItem.removeAttribute('hidden');
         hasVisible = true;
@@ -2672,9 +2898,9 @@ if (helpButton && helpDialog) {
       helpQuickLinksNav.removeAttribute('data-help');
     }
     var template = langTexts.helpQuickLinkButtonHelp || fallbackTexts.helpQuickLinkButtonHelp;
-    helpQuickLinkItems.forEach(function (_ref15) {
-      var button = _ref15.button,
-        label = _ref15.label;
+    helpQuickLinkItems.forEach(function (_ref23) {
+      var button = _ref23.button,
+        label = _ref23.label;
       if (!button) return;
       if (template) {
         var helpText = template.replace('%s', label);
@@ -2871,11 +3097,11 @@ if (helpButton && helpDialog) {
     return "(".concat(parts.join(''), ")");
   };
   updateHelpResultsSummaryText = function updateHelpResultsSummaryText() {
-    var _ref16 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-      totalCount = _ref16.totalCount,
-      visibleCount = _ref16.visibleCount,
-      hasQuery = _ref16.hasQuery,
-      queryText = _ref16.queryText;
+    var _ref24 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+      totalCount = _ref24.totalCount,
+      visibleCount = _ref24.visibleCount,
+      hasQuery = _ref24.hasQuery,
+      queryText = _ref24.queryText;
     if (!helpResultsSummary) return;
     if (typeof totalCount === 'number' && Number.isFinite(totalCount)) {
       helpResultsSummary.dataset.totalCount = String(totalCount);
@@ -3103,9 +3329,9 @@ if (helpButton && helpDialog) {
       if (!parts.includes(trimmed)) parts.push(trimmed);
     };
     var addTextFromElement = function addTextFromElement(element) {
-      var _ref17 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-        _ref17$includeTextCon = _ref17.includeTextContent,
-        includeTextContent = _ref17$includeTextCon === void 0 ? false : _ref17$includeTextCon;
+      var _ref25 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+        _ref25$includeTextCon = _ref25.includeTextContent,
+        includeTextContent = _ref25$includeTextCon === void 0 ? false : _ref25$includeTextCon;
       if (!element) return;
       addText(element.getAttribute('data-help'));
       addText(element.getAttribute('aria-label'));
@@ -3673,7 +3899,7 @@ function populateLensDropdown() {
     lensSelect.appendChild(emptyOpt);
   }
   Object.keys(lensData).sort(localeSort).forEach(function (name) {
-    var _ref18, _lens$minFocusMeters;
+    var _ref26, _lens$minFocusMeters;
     var opt = document.createElement('option');
     opt.value = name;
     var lens = lensData[name] || {};
@@ -3684,7 +3910,7 @@ function populateLensDropdown() {
     } else if (lens.clampOn === false) {
       attrs.push('no clamp-on');
     }
-    var minFocus = (_ref18 = (_lens$minFocusMeters = lens.minFocusMeters) !== null && _lens$minFocusMeters !== void 0 ? _lens$minFocusMeters : lens.minFocus) !== null && _ref18 !== void 0 ? _ref18 : lens.minFocusCm ? lens.minFocusCm / 100 : null;
+    var minFocus = (_ref26 = (_lens$minFocusMeters = lens.minFocusMeters) !== null && _lens$minFocusMeters !== void 0 ? _lens$minFocusMeters : lens.minFocus) !== null && _ref26 !== void 0 ? _ref26 : lens.minFocusCm ? lens.minFocusCm / 100 : null;
     if (minFocus) attrs.push("".concat(minFocus, "m min focus"));
     opt.textContent = attrs.length ? "".concat(name, " (").concat(attrs.join(', '), ")") : name;
     lensSelect.appendChild(opt);
@@ -3924,11 +4150,11 @@ function resolveFilterDisplayInfo(type) {
 function buildFilterGearEntries() {
   var filters = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
   var entries = [];
-  filters.forEach(function (_ref19) {
-    var type = _ref19.type,
-      _ref19$size = _ref19.size,
-      size = _ref19$size === void 0 ? DEFAULT_FILTER_SIZE : _ref19$size,
-      values = _ref19.values;
+  filters.forEach(function (_ref27) {
+    var type = _ref27.type,
+      _ref27$size = _ref27.size,
+      size = _ref27$size === void 0 ? DEFAULT_FILTER_SIZE : _ref27$size,
+      values = _ref27.values;
     if (!type) return;
     var sizeValue = size || DEFAULT_FILTER_SIZE;
     var idBase = "filter-".concat(filterId(type));
@@ -4391,8 +4617,8 @@ function buildFilterSelectHtml() {
 function collectFilterAccessories() {
   var filters = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
   var items = [];
-  filters.forEach(function (_ref20) {
-    var type = _ref20.type;
+  filters.forEach(function (_ref28) {
+    var type = _ref28.type;
     switch (type) {
       case 'ND Grad HE':
       case 'ND Grad SE':
