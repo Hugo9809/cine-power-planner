@@ -132,6 +132,13 @@ describe('global feature search helpers', () => {
     );
   });
 
+  test('searchTokens expose tokens split across letter and number boundaries', () => {
+    const tokens = searchTokens('FX6 4K120p Module');
+    expect(tokens).toEqual(
+      expect.arrayContaining(['fx', '6', '4k', '120p', '120'])
+    );
+  });
+
   test('findBestSearchMatch resolves initialism queries', () => {
     const entries = new Map();
     entries.set(
