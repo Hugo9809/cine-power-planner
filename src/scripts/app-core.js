@@ -5159,6 +5159,7 @@ function setLanguage(lang) {
       email: projectFormTexts.crewEmailPlaceholder || fallbackProjectForm.crewEmailPlaceholder
     };
     const crewRoleLabels = texts[lang].crewRoles || (texts.en && texts.en.crewRoles) || {};
+    const fieldLabels = getProjectFormFieldLabels(lang);
     document.querySelectorAll('#crewContainer .person-row').forEach(row => {
       const roleSelect = row.querySelector('select');
       if (roleSelect) {
@@ -5168,13 +5169,51 @@ function setLanguage(lang) {
           opt.textContent = crewRoleLabels[roleKey] || roleKey;
         });
         roleSelect.value = currentValue;
+        const roleLabelEl = roleSelect.id ? row.querySelector(`label[for="${roleSelect.id}"]`) : null;
+        if (roleLabelEl) roleLabelEl.textContent = fieldLabels.crewRole;
       }
       const nameInput = row.querySelector('.person-name');
       if (nameInput && crewPlaceholders.name) nameInput.placeholder = crewPlaceholders.name;
+      if (nameInput && nameInput.id) {
+        const nameLabelEl = row.querySelector(`label[for="${nameInput.id}"]`);
+        if (nameLabelEl) nameLabelEl.textContent = fieldLabels.crewName;
+      }
       const phoneInput = row.querySelector('.person-phone');
       if (phoneInput && crewPlaceholders.phone) phoneInput.placeholder = crewPlaceholders.phone;
+      if (phoneInput && phoneInput.id) {
+        const phoneLabelEl = row.querySelector(`label[for="${phoneInput.id}"]`);
+        if (phoneLabelEl) phoneLabelEl.textContent = fieldLabels.crewPhone;
+      }
       const emailInput = row.querySelector('.person-email');
       if (emailInput && crewPlaceholders.email) emailInput.placeholder = crewPlaceholders.email;
+      if (emailInput && emailInput.id) {
+        const emailLabelEl = row.querySelector(`label[for="${emailInput.id}"]`);
+        if (emailLabelEl) emailLabelEl.textContent = fieldLabels.crewEmail;
+      }
+    });
+    document.querySelectorAll('#prepContainer .period-row').forEach(row => {
+      const startInput = row.querySelector('.prep-start');
+      if (startInput && startInput.id) {
+        const startLabel = row.querySelector(`label[for="${startInput.id}"]`);
+        if (startLabel) startLabel.textContent = fieldLabels.prepStart;
+      }
+      const endInput = row.querySelector('.prep-end');
+      if (endInput && endInput.id) {
+        const endLabel = row.querySelector(`label[for="${endInput.id}"]`);
+        if (endLabel) endLabel.textContent = fieldLabels.prepEnd;
+      }
+    });
+    document.querySelectorAll('#shootContainer .period-row').forEach(row => {
+      const startInput = row.querySelector('.shoot-start');
+      if (startInput && startInput.id) {
+        const startLabel = row.querySelector(`label[for="${startInput.id}"]`);
+        if (startLabel) startLabel.textContent = fieldLabels.shootStart;
+      }
+      const endInput = row.querySelector('.shoot-end');
+      if (endInput && endInput.id) {
+        const endLabel = row.querySelector(`label[for="${endInput.id}"]`);
+        if (endLabel) endLabel.textContent = fieldLabels.shootEnd;
+      }
     });
     const stripTrailingPunctuation = value => (typeof value === 'string' ? value.replace(/[\s\u00a0]*[:：]\s*$/, '') : value);
     const addEntryLabel = projectFormTexts.addEntry || fallbackProjectForm.addEntry || 'Add';
@@ -6478,11 +6517,74 @@ function configureIconOnlyButton(button, glyph, options = {}) {
   }
 }
 
+let crewRowCounter = 0;
+let prepRowCounter = 0;
+let shootRowCounter = 0;
+
+const sanitizeLabelText = value => (
+  typeof value === 'string' ? value.replace(/[\s\u00a0]*[:：]\s*$/, '').trim() : ''
+);
+
+function createVisuallyHiddenLabel(forId, text) {
+  const label = document.createElement('label');
+  label.className = 'visually-hidden';
+  label.setAttribute('for', forId);
+  label.textContent = text;
+  return label;
+}
+
+function getProjectFormFieldLabels(lang = currentLang) {
+  const fallbackProjectForm = texts.en?.projectForm || {};
+  const projectFormTexts = texts[lang]?.projectForm || fallbackProjectForm;
+  const crewHeading = sanitizeLabelText(projectFormTexts.crewHeading || fallbackProjectForm.crewHeading || 'Crew');
+  const prepHeading = sanitizeLabelText(projectFormTexts.prepLabel || fallbackProjectForm.prepLabel || 'Prep');
+  const shootHeading = sanitizeLabelText(projectFormTexts.shootLabel || fallbackProjectForm.shootLabel || 'Shoot');
+  const crewNamePlaceholder = sanitizeLabelText(
+    projectFormTexts.crewNamePlaceholder || fallbackProjectForm.crewNamePlaceholder || 'Name'
+  );
+  const crewPhonePlaceholder = sanitizeLabelText(
+    projectFormTexts.crewPhonePlaceholder || fallbackProjectForm.crewPhonePlaceholder || 'Phone'
+  );
+  const crewEmailPlaceholder = sanitizeLabelText(
+    projectFormTexts.crewEmailPlaceholder || fallbackProjectForm.crewEmailPlaceholder || 'Email'
+  );
+
+  return {
+    crewRole: projectFormTexts.crewRoleLabel
+      || fallbackProjectForm.crewRoleLabel
+      || `${crewHeading || 'Crew'} role`,
+    crewName: projectFormTexts.crewNameLabel
+      || fallbackProjectForm.crewNameLabel
+      || `${crewHeading} ${crewNamePlaceholder}`.trim(),
+    crewPhone: projectFormTexts.crewPhoneLabel
+      || fallbackProjectForm.crewPhoneLabel
+      || `${crewHeading} ${crewPhonePlaceholder}`.trim(),
+    crewEmail: projectFormTexts.crewEmailLabel
+      || fallbackProjectForm.crewEmailLabel
+      || `${crewHeading} ${crewEmailPlaceholder}`.trim(),
+    prepStart: projectFormTexts.prepStartLabel
+      || fallbackProjectForm.prepStartLabel
+      || `${prepHeading || 'Prep'} start date`,
+    prepEnd: projectFormTexts.prepEndLabel
+      || fallbackProjectForm.prepEndLabel
+      || `${prepHeading || 'Prep'} end date`,
+    shootStart: projectFormTexts.shootStartLabel
+      || fallbackProjectForm.shootStartLabel
+      || `${shootHeading || 'Shoot'} start date`,
+    shootEnd: projectFormTexts.shootEndLabel
+      || fallbackProjectForm.shootEndLabel
+      || `${shootHeading || 'Shoot'} end date`
+  };
+}
+
 function createCrewRow(data = {}) {
   if (!crewContainer) return;
   const row = document.createElement('div');
   row.className = 'person-row';
+  const fieldLabels = getProjectFormFieldLabels();
+  const rowId = ++crewRowCounter;
   const roleSel = document.createElement('select');
+  roleSel.id = `crewRole-${rowId}`;
   crewRoles.forEach(r => {
     const opt = document.createElement('option');
     opt.value = r;
@@ -6497,16 +6599,19 @@ function createCrewRow(data = {}) {
   const projectFormTexts = texts[currentLang]?.projectForm || fallbackProjectForm;
   nameInput.placeholder = projectFormTexts.crewNamePlaceholder || fallbackProjectForm.crewNamePlaceholder || 'Name';
   nameInput.className = 'person-name';
+  nameInput.id = `crewName-${rowId}`;
   nameInput.value = data.name || '';
   const phoneInput = document.createElement('input');
   phoneInput.type = 'tel';
   phoneInput.placeholder = projectFormTexts.crewPhonePlaceholder || fallbackProjectForm.crewPhonePlaceholder || 'Phone';
   phoneInput.className = 'person-phone';
+  phoneInput.id = `crewPhone-${rowId}`;
   phoneInput.value = data.phone || '';
   const emailInput = document.createElement('input');
   emailInput.type = 'email';
   emailInput.placeholder = projectFormTexts.crewEmailPlaceholder || fallbackProjectForm.crewEmailPlaceholder || 'Email';
   emailInput.className = 'person-email';
+  emailInput.id = `crewEmail-${rowId}`;
   emailInput.value = data.email || '';
   const removeBtn = document.createElement('button');
   removeBtn.type = 'button';
@@ -6525,7 +6630,17 @@ function createCrewRow(data = {}) {
     row.remove();
     scheduleProjectAutoSave(true);
   });
-  row.append(roleSel, nameInput, phoneInput, emailInput, removeBtn);
+  row.append(
+    createVisuallyHiddenLabel(roleSel.id, fieldLabels.crewRole),
+    roleSel,
+    createVisuallyHiddenLabel(nameInput.id, fieldLabels.crewName),
+    nameInput,
+    createVisuallyHiddenLabel(phoneInput.id, fieldLabels.crewPhone),
+    phoneInput,
+    createVisuallyHiddenLabel(emailInput.id, fieldLabels.crewEmail),
+    emailInput,
+    removeBtn
+  );
   crewContainer.appendChild(row);
 }
 
@@ -6533,10 +6648,13 @@ function createPrepRow(data = {}) {
   if (!prepContainer) return;
   const row = document.createElement('div');
   row.className = 'period-row';
+  const fieldLabels = getProjectFormFieldLabels();
+  const rowId = ++prepRowCounter;
   const start = document.createElement('input');
   start.type = 'date';
   start.className = 'prep-start';
   start.value = data.start || '';
+  start.id = `prepStart-${rowId}`;
   start.setAttribute('aria-labelledby', 'prepLabel');
   const span = document.createElement('span');
   span.textContent = 'to';
@@ -6544,6 +6662,7 @@ function createPrepRow(data = {}) {
   end.type = 'date';
   end.className = 'prep-end';
   end.value = data.end || '';
+  end.id = `prepEnd-${rowId}`;
   end.setAttribute('aria-labelledby', 'prepLabel');
   const removeBtn = document.createElement('button');
   removeBtn.type = 'button';
@@ -6560,7 +6679,14 @@ function createPrepRow(data = {}) {
     row.remove();
     scheduleProjectAutoSave(true);
   });
-  row.append(start, span, end, removeBtn);
+  row.append(
+    createVisuallyHiddenLabel(start.id, fieldLabels.prepStart),
+    start,
+    span,
+    createVisuallyHiddenLabel(end.id, fieldLabels.prepEnd),
+    end,
+    removeBtn
+  );
   prepContainer.appendChild(row);
 }
 
@@ -6568,10 +6694,13 @@ function createShootRow(data = {}) {
   if (!shootContainer) return;
   const row = document.createElement('div');
   row.className = 'period-row';
+  const fieldLabels = getProjectFormFieldLabels();
+  const rowId = ++shootRowCounter;
   const start = document.createElement('input');
   start.type = 'date';
   start.className = 'shoot-start';
   start.value = data.start || '';
+  start.id = `shootStart-${rowId}`;
   start.setAttribute('aria-labelledby', 'shootLabel');
   const span = document.createElement('span');
   span.textContent = 'to';
@@ -6579,6 +6708,7 @@ function createShootRow(data = {}) {
   end.type = 'date';
   end.className = 'shoot-end';
   end.value = data.end || '';
+  end.id = `shootEnd-${rowId}`;
   end.setAttribute('aria-labelledby', 'shootLabel');
   const removeBtn = document.createElement('button');
   removeBtn.type = 'button';
@@ -6595,7 +6725,14 @@ function createShootRow(data = {}) {
     row.remove();
     scheduleProjectAutoSave(true);
   });
-  row.append(start, span, end, removeBtn);
+  row.append(
+    createVisuallyHiddenLabel(start.id, fieldLabels.shootStart),
+    start,
+    span,
+    createVisuallyHiddenLabel(end.id, fieldLabels.shootEnd),
+    end,
+    removeBtn
+  );
   shootContainer.appendChild(row);
 }
 
@@ -7307,6 +7444,13 @@ function createDeviceCategorySection(categoryKey) {
   filterInput.className = 'list-filter';
   filterInput.id = `${sanitizedId}ListFilter`;
   filterInput.dataset.categoryKey = categoryKey;
+  const filterLabel = document.createElement('label');
+  filterLabel.className = 'visually-hidden';
+  filterLabel.id = `${filterInput.id}Label`;
+  filterLabel.setAttribute('for', filterInput.id);
+  const initialLabelText = getCategoryLabel(categoryKey, currentLang) || categoryKey;
+  filterLabel.textContent = `Filter ${initialLabelText}`.trim();
+  section.appendChild(filterLabel);
   section.appendChild(filterInput);
   const list = document.createElement('ul');
   list.className = 'device-ul';
@@ -7318,7 +7462,7 @@ function createDeviceCategorySection(categoryKey) {
   section.appendChild(list);
   deviceListContainer.appendChild(section);
   bindFilterInput(filterInput, () => filterDeviceList(list, filterInput.value));
-  const entry = { section, heading, filterInput, list, sanitizedId };
+  const entry = { section, heading, filterInput, filterLabel, list, sanitizedId };
   deviceManagerLists.set(categoryKey, entry);
   return entry;
 }
@@ -7334,13 +7478,20 @@ function updateDeviceManagerLocalization(lang = currentLang) {
     }
     if (entry.filterInput) {
       const placeholder = placeholderTemplate.replace('{item}', label.toLowerCase());
+      const accessibleLabel = (
+        placeholderTemplate.replace('{item}', label).replace(/\.\.\.$/, '').trim()
+        || `Filter ${label}`.trim()
+      );
       entry.filterInput.placeholder = placeholder;
-      entry.filterInput.setAttribute('aria-label', placeholder);
+      entry.filterInput.setAttribute('aria-label', accessibleLabel);
       entry.filterInput.setAttribute('autocomplete', 'off');
       entry.filterInput.setAttribute('autocorrect', 'off');
       entry.filterInput.setAttribute('autocapitalize', 'off');
       entry.filterInput.setAttribute('spellcheck', 'false');
       entry.filterInput.setAttribute('inputmode', 'search');
+      if (entry.filterLabel) {
+        entry.filterLabel.textContent = accessibleLabel;
+      }
       const clearBtn = entry.filterInput.nextElementSibling;
       if (clearBtn && clearBtn.classList.contains('clear-input-btn')) {
         clearBtn.setAttribute('aria-label', clearLabel);

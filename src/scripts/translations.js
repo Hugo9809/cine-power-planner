@@ -740,7 +740,15 @@ const texts = {
       submit: "OK",
       crewNamePlaceholder: "Name",
       crewPhonePlaceholder: "Phone",
-      crewEmailPlaceholder: "Email"
+      crewEmailPlaceholder: "Email",
+      crewRoleLabel: "Crew role",
+      crewNameLabel: "Crew member name",
+      crewPhoneLabel: "Crew phone number",
+      crewEmailLabel: "Crew email address",
+      prepStartLabel: "Prep start date",
+      prepEndLabel: "Prep end date",
+      shootStartLabel: "Shoot start date",
+      shootEndLabel: "Shoot end date"
     },
     projectFields: {
       productionCompany: "Production Company",
@@ -1300,7 +1308,15 @@ const texts = {
       submit: "Salva",
       crewNamePlaceholder: "Nome",
       crewPhonePlaceholder: "Telefono",
-      crewEmailPlaceholder: "Email"
+      crewEmailPlaceholder: "Email",
+      crewRoleLabel: "Ruolo troupe",
+      crewNameLabel: "Nome membro troupe",
+      crewPhoneLabel: "Telefono troupe",
+      crewEmailLabel: "Email troupe",
+      prepStartLabel: "Inizio preparazione",
+      prepEndLabel: "Fine preparazione",
+      shootStartLabel: "Inizio riprese",
+      shootEndLabel: "Fine riprese"
     },
     projectFields: {
       productionCompany: "Casa di produzione",
@@ -2177,7 +2193,15 @@ const texts = {
       submit: "Aceptar",
       crewNamePlaceholder: "Nombre",
       crewPhonePlaceholder: "Teléfono",
-      crewEmailPlaceholder: "Correo"
+      crewEmailPlaceholder: "Correo",
+      crewRoleLabel: "Rol del equipo",
+      crewNameLabel: "Nombre del miembro del equipo",
+      crewPhoneLabel: "Teléfono del equipo",
+      crewEmailLabel: "Correo del equipo",
+      prepStartLabel: "Inicio de preparación",
+      prepEndLabel: "Fin de preparación",
+      shootStartLabel: "Inicio de rodaje",
+      shootEndLabel: "Fin de rodaje"
     },
     projectFields: {
       productionCompany: "Productora",
@@ -3055,7 +3079,15 @@ const texts = {
       submit: "Valider",
       crewNamePlaceholder: "Nom",
       crewPhonePlaceholder: "Téléphone",
-      crewEmailPlaceholder: "Courriel"
+      crewEmailPlaceholder: "Courriel",
+      crewRoleLabel: "Rôle de l'équipe",
+      crewNameLabel: "Nom du membre de l'équipe",
+      crewPhoneLabel: "Téléphone de l'équipe",
+      crewEmailLabel: "E-mail de l'équipe",
+      prepStartLabel: "Début de préparation",
+      prepEndLabel: "Fin de préparation",
+      shootStartLabel: "Début de tournage",
+      shootEndLabel: "Fin de tournage"
     },
     projectFields: {
       productionCompany: "Société de production",
@@ -3937,7 +3969,15 @@ const texts = {
       submit: "Speichern",
       crewNamePlaceholder: "Name",
       crewPhonePlaceholder: "Telefon",
-      crewEmailPlaceholder: "E-Mail"
+      crewEmailPlaceholder: "E-Mail",
+      crewRoleLabel: "Teamrolle",
+      crewNameLabel: "Name des Crewmitglieds",
+      crewPhoneLabel: "Telefon der Crew",
+      crewEmailLabel: "E-Mail der Crew",
+      prepStartLabel: "Beginn Vorbereitung",
+      prepEndLabel: "Ende Vorbereitung",
+      shootStartLabel: "Beginn Dreh",
+      shootEndLabel: "Ende Dreh"
     },
     projectFields: {
       productionCompany: "Produktionsfirma",
