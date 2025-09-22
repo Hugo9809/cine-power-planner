@@ -68,10 +68,12 @@ const AUTO_GEAR_PRESETS_STORAGE_KEY = 'cameraPowerPlanner_autoGearPresets';
 const AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY = 'cameraPowerPlanner_autoGearActivePreset';
 const AUTO_GEAR_AUTO_PRESET_STORAGE_KEY = 'cameraPowerPlanner_autoGearAutoPreset';
 const AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY = 'cameraPowerPlanner_autoGearShowBackups';
+const FULL_BACKUPS_STORAGE_KEY = 'cameraPowerPlanner_fullBackups';
 const AUTO_BACKUP_NAME_PREFIX = 'auto-backup-';
 const AUTO_BACKUP_DELETION_PREFIX = 'auto-backup-before-delete-';
 const MAX_AUTO_BACKUPS = 50;
 const MAX_DELETION_BACKUPS = 20;
+const FULL_BACKUP_HISTORY_LIMIT = 100;
 
 const STORAGE_BACKUP_SUFFIX = '__backup';
 const MAX_SAVE_ATTEMPTS = 3;
@@ -142,6 +144,7 @@ const PRIMARY_STORAGE_KEYS = [
   AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY,
   AUTO_GEAR_AUTO_PRESET_STORAGE_KEY,
   AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY,
+  FULL_BACKUPS_STORAGE_KEY,
 ];
 
 const SIMPLE_STORAGE_KEYS = [
@@ -2534,6 +2537,159 @@ function saveAutoGearBackups(backups) {
   );
 }
 
+// --- Full Backup History Storage ---
+function sanitizeFullBackupEntry(entry) {
+  if (entry === null || entry === undefined) {
+    return null;
+  }
+
+  if (typeof entry === 'string') {
+    const trimmed = entry.trim();
+    if (!trimmed) {
+      return null;
+    }
+    if (/\.json$/i.test(trimmed) && trimmed.length > 5) {
+      return { fileName: trimmed };
+    }
+    return { generatedAt: trimmed };
+  }
+
+  if (entry instanceof Date) {
+    return { generatedAt: entry.toISOString() };
+  }
+
+  if (typeof entry === 'number') {
+    if (!Number.isFinite(entry)) {
+      return null;
+    }
+    const date = new Date(entry);
+    return Number.isNaN(date.valueOf()) ? null : { generatedAt: date.toISOString() };
+  }
+
+  if (!isPlainObject(entry)) {
+    return null;
+  }
+
+  let generatedAt = null;
+  const rawGenerated = entry.generatedAt ?? entry.createdAt ?? entry.timestamp;
+  if (rawGenerated instanceof Date) {
+    generatedAt = rawGenerated.toISOString();
+  } else if (typeof rawGenerated === 'number' && Number.isFinite(rawGenerated)) {
+    const date = new Date(rawGenerated);
+    if (!Number.isNaN(date.valueOf())) {
+      generatedAt = date.toISOString();
+    }
+  } else if (typeof rawGenerated === 'string') {
+    const trimmed = rawGenerated.trim();
+    if (trimmed) {
+      generatedAt = trimmed;
+    }
+  }
+
+  let fileName = null;
+  const rawFileName = entry.fileName ?? entry.filename ?? entry.name;
+  if (typeof rawFileName === 'string') {
+    const trimmedName = rawFileName.trim();
+    if (trimmedName) {
+      fileName = trimmedName;
+    }
+  }
+
+  const normalized = {};
+  if (generatedAt) {
+    normalized.generatedAt = generatedAt;
+  }
+  if (fileName) {
+    normalized.fileName = fileName;
+  }
+
+  if (
+    typeof entry.size === 'number'
+    && Number.isFinite(entry.size)
+    && entry.size >= 0
+  ) {
+    normalized.size = entry.size;
+  }
+
+  return Object.keys(normalized).length ? normalized : null;
+}
+
+function sanitizeFullBackupHistory(entries) {
+  if (!Array.isArray(entries)) {
+    return [];
+  }
+
+  const sanitized = [];
+  const seen = new Set();
+
+  entries.forEach((entry) => {
+    const normalized = sanitizeFullBackupEntry(entry);
+    if (!normalized) {
+      return;
+    }
+    const key = normalized.generatedAt || normalized.fileName || JSON.stringify(normalized);
+    if (key && seen.has(key)) {
+      return;
+    }
+    if (key) {
+      seen.add(key);
+    } else {
+      seen.add(JSON.stringify(normalized));
+    }
+    sanitized.push(normalized);
+  });
+
+  if (sanitized.length > FULL_BACKUP_HISTORY_LIMIT) {
+    return sanitized.slice(0, FULL_BACKUP_HISTORY_LIMIT);
+  }
+
+  return sanitized;
+}
+
+function saveFullBackupHistory(history, options = {}) {
+  const { skipSanitize = false } = options || {};
+  const safeHistory = skipSanitize ? (Array.isArray(history) ? history : []) : sanitizeFullBackupHistory(history);
+  const safeStorage = getSafeLocalStorage();
+  saveJSONToStorage(
+    safeStorage,
+    FULL_BACKUPS_STORAGE_KEY,
+    safeHistory,
+    "Error saving full backup history to localStorage:",
+  );
+}
+
+function loadFullBackupHistory() {
+  applyLegacyStorageMigrations();
+  const safeStorage = getSafeLocalStorage();
+  const parsed = loadJSONFromStorage(
+    safeStorage,
+    FULL_BACKUPS_STORAGE_KEY,
+    "Error loading full backup history from localStorage:",
+    [],
+    { validate: (value) => value === null || Array.isArray(value) },
+  );
+  const sanitized = sanitizeFullBackupHistory(parsed);
+  if (Array.isArray(parsed)) {
+    try {
+      const original = JSON.stringify(parsed);
+      const normalized = JSON.stringify(sanitized);
+      if (original !== normalized) {
+        saveFullBackupHistory(sanitized, { skipSanitize: true });
+      }
+    } catch (error) {
+      console.warn('Unable to normalize full backup history snapshot', error);
+    }
+  }
+  return sanitized;
+}
+
+function recordFullBackupHistoryEntry(entry) {
+  const history = loadFullBackupHistory();
+  const updated = sanitizeFullBackupHistory([entry, ...history]);
+  saveFullBackupHistory(updated, { skipSanitize: true });
+  return updated;
+}
+
 function loadAutoGearSeedFlag() {
   applyLegacyStorageMigrations();
   const safeStorage = getSafeLocalStorage();
@@ -2751,6 +2907,7 @@ function clearAllData() {
   deleteFromStorage(safeStorage, AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, msg);
   deleteFromStorage(safeStorage, AUTO_GEAR_AUTO_PRESET_STORAGE_KEY, msg);
   deleteFromStorage(safeStorage, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY, msg);
+  deleteFromStorage(safeStorage, FULL_BACKUPS_STORAGE_KEY, msg);
   deleteFromStorage(
     safeStorage,
     getCustomFontStorageKeyName(),
@@ -3006,6 +3163,7 @@ function clearAllData() {
       autoGearActivePresetId: loadAutoGearActivePresetId(),
       autoGearAutoPresetId: loadAutoGearAutoPresetId(),
       autoGearShowBackups: loadAutoGearBackupVisibility(),
+      fullBackups: loadFullBackupHistory(),
     };
 
     const preferences = collectPreferenceSnapshot();
@@ -3161,6 +3319,15 @@ function normalizeImportedAutoGearBackups(value) {
     ["backups", "entries", "items", "list", "values", "data"],
     (entry) => entry !== null && typeof entry === "object",
   );
+}
+
+function normalizeImportedFullBackupHistory(value) {
+  const entries = normalizeImportedArray(
+    value,
+    ["history", "entries", "items", "list", "values", "data", "backups"],
+    (entry) => entry !== null && entry !== undefined,
+  );
+  return sanitizeFullBackupHistory(entries);
 }
 
 function normalizeImportedAutoGearPresets(value) {
@@ -3605,6 +3772,10 @@ function importAllData(allData, options = {}) {
       saveAutoGearBackupVisibility(visibility);
     }
   }
+  if (Object.prototype.hasOwnProperty.call(allData, 'fullBackups')) {
+    const history = normalizeImportedFullBackupHistory(allData.fullBackups);
+    saveFullBackupHistory(history, { skipSanitize: true });
+  }
 
   let importProjectEntry = null;
   const ensureProjectImporter = () => {
@@ -3645,6 +3816,9 @@ if (typeof module !== "undefined" && module.exports) {
     saveFavorites,
     loadAutoGearBackups,
     saveAutoGearBackups,
+    loadFullBackupHistory,
+    saveFullBackupHistory,
+    recordFullBackupHistoryEntry,
     loadFeedback,
     saveFeedback,
     clearAllData,

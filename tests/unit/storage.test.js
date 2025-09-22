@@ -43,6 +43,9 @@ const {
   saveAutoGearSeedFlag,
   loadAutoGearBackups,
   saveAutoGearBackups,
+  loadFullBackupHistory,
+  saveFullBackupHistory,
+  recordFullBackupHistoryEntry,
   loadAutoGearPresets,
   saveAutoGearPresets,
   loadAutoGearActivePresetId,
@@ -67,6 +70,7 @@ const AUTO_GEAR_PRESETS_KEY = 'cameraPowerPlanner_autoGearPresets';
 const AUTO_GEAR_ACTIVE_PRESET_KEY = 'cameraPowerPlanner_autoGearActivePreset';
 const AUTO_GEAR_AUTO_PRESET_KEY = 'cameraPowerPlanner_autoGearAutoPreset';
 const AUTO_GEAR_BACKUP_VISIBILITY_KEY = 'cameraPowerPlanner_autoGearShowBackups';
+const FULL_BACKUPS_KEY = 'cameraPowerPlanner_fullBackups';
 const CUSTOM_FONT_KEY = 'cameraPowerPlanner_customFonts';
 const CUSTOM_LOGO_KEY = 'customLogo';
 
@@ -735,6 +739,44 @@ describe('automatic gear storage', () => {
   });
 });
 
+describe('full backup history storage', () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  test('recordFullBackupHistoryEntry prepends newest entry', () => {
+    saveFullBackupHistory([
+      { generatedAt: '2024-01-01T00:00:00.000Z', fileName: '2024-01-01 full app backup.json' }
+    ]);
+
+    const updated = recordFullBackupHistoryEntry({
+      generatedAt: '2024-02-15T12:30:00.000Z',
+      fileName: '2024-02-15 full app backup.json',
+    });
+
+    expect(updated).toEqual([
+      { generatedAt: '2024-02-15T12:30:00.000Z', fileName: '2024-02-15 full app backup.json' },
+      { generatedAt: '2024-01-01T00:00:00.000Z', fileName: '2024-01-01 full app backup.json' },
+    ]);
+    expect(loadFullBackupHistory()).toEqual(updated);
+  });
+
+  test('saveFullBackupHistory filters invalid entries', () => {
+    saveFullBackupHistory([
+      { generatedAt: '', fileName: '' },
+      '   ',
+      { generatedAt: '2024-03-01T08:00:00.000Z' },
+      { fileName: '2024-03-01 full app backup.json' },
+      { generatedAt: '2024-03-01T08:00:00.000Z' },
+    ]);
+
+    expect(loadFullBackupHistory()).toEqual([
+      { generatedAt: '2024-03-01T08:00:00.000Z' },
+      { fileName: '2024-03-01 full app backup.json' },
+    ]);
+  });
+});
+
 describe('clearAllData', () => {
   beforeEach(() => {
     localStorage.clear();
@@ -759,6 +801,7 @@ describe('clearAllData', () => {
     saveAutoGearActivePresetId('preset-1');
     saveAutoGearAutoPresetId('preset-auto');
     saveAutoGearBackupVisibility(true);
+    saveFullBackupHistory([{ generatedAt: '2024-01-01T00:00:00.000Z', fileName: '2024-01-01 full app backup.json' }]);
     localStorage.setItem(SCHEMA_CACHE_KEY, JSON.stringify({ cached: true }));
     localStorage.setItem(CUSTOM_LOGO_KEY, 'data:image/svg+xml;base64,AAAA');
     localStorage.setItem(backupKeyFor(CUSTOM_LOGO_KEY), 'data:image/svg+xml;base64,AAAA');
@@ -784,6 +827,7 @@ describe('clearAllData', () => {
     expect(localStorage.getItem(AUTO_GEAR_ACTIVE_PRESET_KEY)).toBeNull();
     expect(localStorage.getItem(AUTO_GEAR_AUTO_PRESET_KEY)).toBeNull();
     expect(localStorage.getItem(AUTO_GEAR_BACKUP_VISIBILITY_KEY)).toBeNull();
+    expect(localStorage.getItem(FULL_BACKUPS_KEY)).toBeNull();
     expect(localStorage.getItem(SCHEMA_CACHE_KEY)).toBeNull();
     expect(localStorage.getItem(CUSTOM_LOGO_KEY)).toBeNull();
     expect(localStorage.getItem(CUSTOM_FONT_KEY)).toBeNull();
@@ -862,19 +906,25 @@ describe('export/import all data', () => {
     const presets = [
       { id: 'preset-1', label: 'Outdoor tweaks', rules }
     ];
-    saveAutoGearPresets(presets);
-    saveAutoGearActivePresetId('preset-1');
-    saveAutoGearAutoPresetId('preset-auto');
-    saveAutoGearBackupVisibility(true);
-    expect(exportAllData()).toEqual({
-      devices: validDeviceData,
-      setups: { A: { foo: 1 } },
-      session: { camera: 'CamA' },
-      feedback: { note: 'hi' },
-      project: { Proj: { gearList: '<ul></ul>', projectInfo: null } },
-      favorites: { cat: ['A'] },
-      autoGearRules: rules,
-      autoGearBackups: backups,
+      saveAutoGearPresets(presets);
+      saveAutoGearActivePresetId('preset-1');
+      saveAutoGearAutoPresetId('preset-auto');
+      saveAutoGearBackupVisibility(true);
+      saveFullBackupHistory([
+        { generatedAt: '2024-01-01T00:00:00.000Z', fileName: '2024-01-01 full app backup.json' }
+      ]);
+      expect(exportAllData()).toEqual({
+        devices: validDeviceData,
+        setups: { A: { foo: 1 } },
+        session: { camera: 'CamA' },
+        feedback: { note: 'hi' },
+        project: { Proj: { gearList: '<ul></ul>', projectInfo: null } },
+        favorites: { cat: ['A'] },
+        autoGearRules: rules,
+        autoGearBackups: backups,
+        fullBackups: [
+          { generatedAt: '2024-01-01T00:00:00.000Z', fileName: '2024-01-01 full app backup.json' }
+        ],
         autoGearSeeded: true,
         autoGearPresets: presets,
         autoGearActivePresetId: 'preset-1',
@@ -954,6 +1004,9 @@ describe('export/import all data', () => {
         { id: 'backup-restore', label: 'Restore', createdAt: 1720646400000, rules: [] }
       ],
       autoGearSeeded: true,
+      fullBackups: [
+        { generatedAt: '2024-02-01T12:34:56.000Z', fileName: '2024-02-01 full app backup.json' }
+      ],
         autoGearPresets: [
           { id: 'preset-restore', label: 'Restore tweaks', rules: [] }
         ],
@@ -992,6 +1045,9 @@ describe('export/import all data', () => {
     expect(loadAutoGearActivePresetId()).toBe('preset-restore');
     expect(loadAutoGearAutoPresetId()).toBe('preset-restore');
       expect(loadAutoGearBackupVisibility()).toBe(true);
+    expect(loadFullBackupHistory()).toEqual([
+      { generatedAt: '2024-02-01T12:34:56.000Z', fileName: '2024-02-01 full app backup.json' }
+    ]);
       expect(localStorage.getItem('customLogo')).toBe('data:image/svg+xml;base64,PE1PQ0s+');
       expect(localStorage.getItem('darkMode')).toBe('true');
       expect(localStorage.getItem('pinkMode')).toBe('false');
