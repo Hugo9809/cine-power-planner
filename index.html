@@ -28,6 +28,7 @@
 <body>
   <a href="#mainContent" class="skip-link" id="skipLink">Skip to content</a>
   <div id="offlineIndicator" role="status" aria-live="polite">Offline</div>
+  <div id="screenReaderLive" class="visually-hidden" aria-live="assertive" aria-atomic="true"></div>
   <button
     id="installPromptBanner"
     type="button"
@@ -1254,6 +1255,13 @@
         </div>
         <p id="settingsRelaxedSpacingHelp" class="settings-hint">
           Increase line spacing and control padding to make text easier to scan and tap.
+        </p>
+        <div class="form-row">
+          <label for="settingsScreenReader" id="settingsScreenReaderLabel">Screen reader narration</label>
+          <input type="checkbox" id="settingsScreenReader" />
+        </div>
+        <p id="settingsScreenReaderHelp" class="settings-hint">
+          Hear spoken descriptions for focused controls and important updates directly in the browser. Works offline.
         </p>
         </section>
       </section>

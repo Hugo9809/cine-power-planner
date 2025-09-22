@@ -56,6 +56,9 @@
     var relaxedSpacingEnabled = safeGet('relaxedSpacing') === 'true';
     root.classList.toggle('relaxed-spacing', relaxedSpacingEnabled);
     body.classList.toggle('relaxed-spacing', relaxedSpacingEnabled);
+    var screenReaderEnabled = safeGet('screenReader') === 'true';
+    root.classList.toggle('screen-reader', screenReaderEnabled);
+    body.classList.toggle('screen-reader', screenReaderEnabled);
     var pinkModeEnabled = safeGet('pinkMode') === 'true';
     body.classList.toggle('pink-mode', pinkModeEnabled);
     var storedFontSize = safeGet('fontSize');

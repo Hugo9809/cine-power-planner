@@ -61,6 +61,7 @@ describe('static theme preferences', () => {
     localStorage.setItem('accentColor', '#ff8800');
     localStorage.setItem('reduceMotion', 'true');
     localStorage.setItem('relaxedSpacing', 'true');
+    localStorage.setItem('screenReader', 'true');
 
     loadStaticTheme();
 
@@ -74,6 +75,8 @@ describe('static theme preferences', () => {
     expect(body.classList.contains('reduce-motion')).toBe(true);
     expect(root.classList.contains('relaxed-spacing')).toBe(true);
     expect(body.classList.contains('relaxed-spacing')).toBe(true);
+    expect(root.classList.contains('screen-reader')).toBe(true);
+    expect(body.classList.contains('screen-reader')).toBe(true);
     expect(root.classList.contains('dark-mode')).toBe(true);
     expect(body.classList.contains('dark-mode')).toBe(true);
     expect(root.classList.contains('light-mode')).toBe(false);

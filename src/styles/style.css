@@ -368,6 +368,16 @@ textarea:focus-visible {
   outline-offset: 2px;
 }
 
+body.screen-reader a:focus-visible,
+body.screen-reader button:focus-visible,
+body.screen-reader input:focus-visible,
+body.screen-reader select:focus-visible,
+body.screen-reader textarea:focus-visible {
+  outline-width: 3px;
+  outline-offset: 4px;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.16);
+}
+
 .button-group {
   margin-bottom: var(--spacing-lg);
 }
