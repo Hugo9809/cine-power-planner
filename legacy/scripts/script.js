@@ -8,3 +8,4 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
   }))).join('\n');
   var factory = new Function('exports', 'require', 'module', '__filename', '__dirname', combinedSource);
   factory(module.exports, require, module, __filename, __dirname);
+}
