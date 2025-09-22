@@ -627,12 +627,14 @@ main.legal-content {
   gap: var(--gap-size);
   flex-wrap: wrap; /* allow inputs to wrap on smaller screens */
 }
-.form-row label {
+.form-row label,
+.form-row .form-row-label {
   flex: 0 0 var(--form-label-width);
   min-width: var(--form-label-min-width);
   font-weight: var(--font-weight-light);
 }
-#setup-config .form-row label {
+#setup-config .form-row label,
+#setup-config .form-row .form-row-label {
   line-height: 1.3;
 }
 .form-row select,
@@ -989,7 +991,8 @@ main.legal-content {
     flex-direction: column;
     align-items: stretch;
   }
-  .form-row label {
+  .form-row label,
+  .form-row .form-row-label {
     flex: 1 0 100%;
     min-width: unset;
   }
@@ -4073,12 +4076,14 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .settings-content.modal-surface
     align-items: stretch;
   }
 
-  .form-row label {
+  .form-row label,
+  .form-row .form-row-label {
     width: auto;
     min-width: auto;
     margin-bottom: 4px;
   }
-  #setup-config .form-row label {
+  #setup-config .form-row label,
+  #setup-config .form-row .form-row-label {
     line-height: var(--line-height-base);
   }
   .form-row select,
@@ -4255,12 +4260,13 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .settings-content.modal-surface
   gap: var(--gap-size);
 }
 
-#projectDialog .form-row label {
+#projectDialog .form-row label,
+#projectDialog .form-row .form-row-label {
   flex: initial;
   min-width: 0;
 }
 
-#projectDialog .form-row > :not(label) {
+#projectDialog .form-row > :not(label):not(.form-row-label) {
   grid-column: 2;
   justify-self: stretch;
 }
