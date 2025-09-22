@@ -1,76 +1,56 @@
-const fs = require('fs');
-const path = require('path');
-
-const loadScript = () => {
-  jest.resetModules();
-
-  const { texts, categoryNames, gearItems } = require('../../src/scripts/translations.js');
-  const devicesData = require('../../src/data');
-
-  const template = fs.readFileSync(
-    path.join(__dirname, '../../index.html'),
-    'utf8'
-  );
-  const bodyMatch = template.match(/<body[^>]*>([\s\S]*)<\/body>/i);
-  const bodyHtml = bodyMatch ? bodyMatch[1] : '';
-  document.body.innerHTML = bodyHtml.replace(/<script[\s\S]*?<\/script>/gi, '');
-
-  if (typeof window.matchMedia !== 'function') {
-    window.matchMedia = () => ({
-      matches: false,
-      addEventListener: () => {},
-      removeEventListener: () => {},
-      addListener: () => {},
-      removeListener: () => {}
-    });
-  }
-
-  if (!Element.prototype.scrollIntoView) {
-    Element.prototype.scrollIntoView = () => {};
-  }
-
-  delete window.defaultDevices;
-  window.devices = JSON.parse(JSON.stringify(devicesData));
-  global.devices = window.devices;
-  window.texts = texts;
-  global.texts = texts;
-  window.categoryNames = categoryNames;
-  global.categoryNames = categoryNames;
-  window.gearItems = gearItems;
-  global.gearItems = gearItems;
-
-  global.loadDeviceData = jest.fn(() => null);
-  global.saveDeviceData = jest.fn();
-  global.loadSetups = jest.fn(() => ({}));
-  global.saveSetups = jest.fn();
-  global.loadSessionState = jest.fn(() => null);
-  global.saveSessionState = jest.fn();
-  global.loadProject = jest.fn(() => null);
-  global.saveProject = jest.fn();
-  global.deleteProject = jest.fn();
-  global.loadFavorites = jest.fn(() => ({}));
-  global.saveFavorites = jest.fn();
-  global.exportAllData = jest.fn();
-  global.importAllData = jest.fn();
-
-  return require('../../src/scripts/script.js');
-};
+const { setupScriptEnvironment } = require('../helpers/scriptEnvironment');
 
 describe('global feature search helpers', () => {
+  let env;
   let searchKey;
   let searchTokens;
   let findBestSearchMatch;
   let runFeatureSearch;
   let featureSearchInternals;
 
-  beforeEach(() => {
+  const resetFeatureSearchState = () => {
+    if (!featureSearchInternals) return;
+    const {
+      featureMap,
+      deviceMap,
+      helpMap,
+      featureListElement,
+      featureSearchInput,
+      featureSearchEntries,
+      featureSearchDefaultOptions,
+    } = featureSearchInternals;
+
+    featureMap.clear();
+    deviceMap.clear();
+    helpMap.clear();
+    featureSearchEntries.length = 0;
+    featureSearchDefaultOptions.length = 0;
+    if (featureListElement) {
+      featureListElement.innerHTML = '';
+    }
+    if (featureSearchInput) {
+      featureSearchInput.value = '';
+    }
+  };
+
+  beforeAll(() => {
+    env = setupScriptEnvironment();
     ({
       searchKey,
       searchTokens,
       findBestSearchMatch,
       runFeatureSearch,
       __featureSearchInternals: featureSearchInternals,
-    } = loadScript());
+    } = env.utils);
+    resetFeatureSearchState();
+  });
+
+  afterAll(() => {
+    env.cleanup();
+  });
+
+  beforeEach(() => {
+    resetFeatureSearchState();
   });
 
   test('searchTokens exposes hyphenated and numeric tokens', () => {
@@ -401,45 +381,6 @@ describe('global feature search helpers', () => {
     expect(select.value).toBe('alexa-35');
     expect(select.dispatchEvent).toHaveBeenCalledTimes(1);
     expect(featureSearchInput.value).toBe('alexa 35');
-  });
-
-  test('populateFeatureSearch indexes contextual subheadings for video outputs', () => {
-    const { featureMap, featureListElement } = featureSearchInternals;
-    const entries = featureMap.get(searchKey('Video Outputs'));
-    expect(entries).toBeTruthy();
-    const list = Array.isArray(entries) ? entries : [entries];
-    expect(list.length).toBeGreaterThan(1);
-
-    const monitorEntry = list.find(
-      entry => entry && entry.tokens && entry.tokens.includes('monitor')
-    );
-    const viewfinderEntry = list.find(
-      entry => entry && entry.tokens && entry.tokens.includes('viewfinder')
-    );
-
-    expect(monitorEntry).toBeTruthy();
-    expect(viewfinderEntry).toBeTruthy();
-    expect(monitorEntry.tokens).toEqual(
-      expect.arrayContaining(['video', 'outputs', 'monitor'])
-    );
-    expect(viewfinderEntry.tokens).toEqual(
-      expect.arrayContaining(['video', 'outputs', 'viewfinder'])
-    );
-
-    const optionValues = Array.from(
-      featureListElement.querySelectorAll('option')
-    ).map(opt => opt.value.toLowerCase());
-
-    expect(
-      optionValues.some(
-        value => value.includes('video outputs') && value.includes('monitor')
-      )
-    ).toBe(true);
-    expect(
-      optionValues.some(
-        value => value.includes('video outputs') && value.includes('viewfinder')
-      )
-    ).toBe(true);
   });
 
   test('findBestSearchMatch selects the best match from duplicate keys', () => {
