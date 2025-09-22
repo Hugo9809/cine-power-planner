@@ -294,6 +294,37 @@ table, th, td {
   border: 1px solid var(--text-color);
   box-shadow: var(--panel-shadow);
 }
+
+#overviewDialogContent .requirements-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 0.35cm;
+  align-items: stretch;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+#overviewDialogContent .requirements-grid .requirement-box {
+  padding: 0.45em 0.6em;
+  font-size: 0.95em;
+  -webkit-column-break-inside: avoid;
+  -webkit-region-break-inside: avoid;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+#overviewDialogContent .requirements-grid .requirement-box .req-icon {
+  --req-icon-size: 1.8rem;
+  margin-bottom: 0.35em;
+}
+
+#overviewDialogContent .requirements-grid .requirement-box .req-label {
+  font-size: 0.95em;
+}
+
+#overviewDialogContent .requirements-grid .requirement-box .req-value {
+  font-size: 0.9em;
+}
 #overviewDialogContent .gear-table td,
 #overviewDialogContent.dark-mode .gear-table td,
 body:not(.light-mode) .gear-table td {

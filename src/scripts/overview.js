@@ -8,6 +8,7 @@ function generatePrintableOverview() {
     const now = new Date();
     const localeMap = { de: 'de-DE', es: 'es-ES', fr: 'fr-FR', en: 'en-US', it: 'it-IT' };
     const lang = typeof currentLang === 'string' ? currentLang : 'en';
+    const t = (typeof texts === 'object' && texts) ? (texts[lang] || texts.en || {}) : {};
     const locale = localeMap[lang] || 'en-US';
     const dateTimeString = now.toLocaleDateString(locale) + ' ' + now.toLocaleTimeString();
     const fallbackProjectName = currentProjectInfo && typeof currentProjectInfo.projectName === 'string'
@@ -28,14 +29,18 @@ function generatePrintableOverview() {
     const formattedDate = `${now.getFullYear()}-${padTwo(now.getMonth() + 1)}-${padTwo(now.getDate())}`;
     const formattedTime = `${padTwo(now.getHours())}-${padTwo(now.getMinutes())}-${padTwo(now.getSeconds())}`;
     const timestampLabel = `${formattedDate} ${formattedTime}`.trim();
+    const safeTimestampLabel = sanitizeTitleSegment(timestampLabel) || timestampLabel;
     const projectTitleSegment = sanitizeTitleSegment(projectNameForTitle) || 'Project';
-    const printDocumentTitle = [timestampLabel, projectTitleSegment, '- -', 'Project Overview and Gear List']
+    const overviewLabel = sanitizeTitleSegment((t.overviewTitle || '').trim());
+    const gearListLabel = sanitizeTitleSegment((t.gearListNav || '').trim());
+    const suffixRaw = [overviewLabel, gearListLabel].filter(Boolean).join(' – ');
+    const suffixSegment = sanitizeTitleSegment(suffixRaw) || 'Project Overview and Gear List';
+    const printDocumentTitle = [safeTimestampLabel, projectTitleSegment, suffixSegment]
         .filter(Boolean)
-        .join(' ')
+        .join(' - ')
         .replace(/\s+/g, ' ')
         .trim();
     const originalDocumentTitle = typeof document !== 'undefined' ? document.title : '';
-    const t = (typeof texts === 'object' && texts) ? (texts[lang] || texts.en || {}) : {};
     const customLogo = typeof localStorage !== 'undefined' ? localStorage.getItem('customLogo') : null;
 
     let deviceListHtml = '<div class="device-category-container">';
@@ -437,13 +442,14 @@ function generatePrintableOverview() {
         const bodyElement = typeof document !== 'undefined' ? document.body : null;
         const bodyClassName = bodyElement ? bodyElement.className : '';
         const bodyInlineStyle = bodyElement ? bodyElement.getAttribute('style') || '' : '';
+        const escapedPrintDocumentTitle = escapeHtmlSafe(printDocumentTitle);
         doc.open();
         doc.write(`<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
 <meta name="color-scheme" content="light dark">
-<title></title>
+<title>${escapedPrintDocumentTitle}</title>
 <link rel="stylesheet" href="src/styles/style.css">
 <link rel="stylesheet" href="src/styles/overview.css">
 <link rel="stylesheet" href="src/styles/overview-print.css" media="print">
