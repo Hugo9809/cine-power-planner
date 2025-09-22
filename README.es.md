@@ -2,49 +2,49 @@
 
 Esta herramienta basada en navegador ayuda a planificar proyectos de cámara profesionales alimentados con baterías V‑Mount, B‑Mount o Gold-Mount. Calcula el **consumo total de energía**, la **corriente demandada** (a 14,4 V y 12 V) y la **autonomía estimada** mientras comprueba que la batería pueda suministrar con seguridad la potencia necesaria.
 
-Toda la planificación, las entradas y las exportaciones permanecen en tu dispositivo. El idioma, los proyectos, el equipo personalizado, los favoritos y los comentarios de autonomía se guardan en tu navegador, y las actualizaciones del service worker provienen directamente de este repositorio. Ejecuta Cine Power Planner sin conexión desde el disco o aloja la carpeta internamente para que cada departamento use la misma versión auditada.
+Toda la planificación, los datos introducidos y las exportaciones permanecen en el dispositivo que tienes delante. El idioma, los proyectos, el equipo personalizado, los favoritos y los comentarios de autonomía se guardan en tu navegador, y las actualizaciones del service worker llegan directamente desde este repositorio. Ejecuta Cine Power Planner sin conexión desde el disco o aloja la carpeta internamente para que todos los departamentos trabajen con la misma versión auditada.
 
 ## De un vistazo
 
-- **Planifica sin conexión.** Todos los iconos, tipografías y scripts auxiliares viven en este repositorio; abre `index.html`
-  directamente y trabaja offline.
-- **Los proyectos se quedan en el dispositivo.** Los guardados, los datos de autonomía, los equipos personalizados, los
-  favoritos y las listas de equipo permanecen locales; las copias de seguridad y los paquetes compartibles son JSON legible por
-  personas.
-- **Controla las actualizaciones.** El service worker solo se actualiza después de pulsar **Forzar recarga**, manteniendo al
-  equipo en una versión fiable durante los traslados.
-- **Red de seguridad en capas.** Guardados manuales, auto guardados y copias de seguridad automáticas con marca de tiempo hacen
-  sencillo ensayar la recuperación antes del rodaje.
+- **Planifica sin conexión.** Todos los iconos, tipografías y scripts auxiliares están incluidos en este repositorio; abre
+  `index.html` directamente y trabaja sin conexión.
+- **Los proyectos se quedan en tu dispositivo.** Las copias guardadas, los datos de autonomía, el equipo personalizado, los
+  favoritos y las listas de equipo permanecen locales; las copias de seguridad y los paquetes compartibles son archivos JSON
+  legibles.
+- **Controla las actualizaciones.** El service worker solo se renueva cuando pulsas **Forzar recarga**, de modo que el equipo se
+  mantiene en una versión fiable incluso durante los traslados.
+- **Red de seguridad en capas.** Guardados manuales, auto guardados y copias de seguridad automáticas con marca de tiempo
+  facilitan ensayar la recuperación antes del rodaje.
 
 ## Puesta en marcha rápida
 
 1. Descarga o clona el repositorio y abre `index.html` en un navegador moderno.
 2. (Opcional) Sirve la carpeta en local (por ejemplo con `npx http-server` o `python -m http.server`) para que el service worker
    se registre y almacene en caché los recursos para el uso sin conexión.
-3. Carga el planner una vez, cierra la pestaña, desconéctate de la red y vuelve a abrir `index.html`. El indicador offline debe
-   parpadear brevemente mientras se carga la interfaz almacenada.
+3. Carga el planner una vez, cierra la pestaña, desconéctate de la red y vuelve a abrir `index.html`. El indicador sin conexión
+   parpadeará brevemente mientras se carga la interfaz almacenada.
 4. Crea un proyecto, pulsa **Intro** (o **Ctrl+S**/`⌘S`) para guardar y comprueba la copia de seguridad automática que aparece
    en el selector tras unos minutos.
 5. Exporta **Ajustes → Copia de seguridad y restauración → Copia de seguridad**, importa el archivo en un perfil privado del
-   navegador y confirma que todos los proyectos, favoritos y equipos personalizados vuelven intactos.
-6. Practica la exportación de un paquete `.cpproject` y su importación en otra máquina o perfil para validar la cadena guardar →
-   compartir → importar antes de llegar al set.
+   navegador y confirma que todos los proyectos, favoritos y equipos personalizados se restauran correctamente.
+6. Practica exportar un paquete `.cpproject` e importarlo en otra máquina o perfil para validar la cadena guardar → compartir →
+   importar antes de llegar al set.
 
 ## Flujos de trabajo clave
 
-- **Planificar un rig.** Combina cámaras, placas, enlaces inalámbricos, monitores, motores y accesorios mientras las cifras de
+- **Planifica un rig.** Combina cámaras, placas, enlaces inalámbricos, monitores, motores y accesorios mientras las cifras de
   consumo y autonomía se actualizan al instante.
-- **Guardar versiones.** Mantén instantáneas explícitas de los proyectos y deja que las copias de seguridad automáticas con marca
+- **Guarda versiones.** Mantén instantáneas explícitas de los proyectos y deja que las copias de seguridad automáticas con marca
   de tiempo capturen el trabajo en curso cada 10 minutos.
-- **Compartir con seguridad.** Exporta paquetes `.cpproject` que permanecen sin conexión, validan el esquema al importar e incluyen
-  reglas automáticas de equipo si lo necesitas.
-- **Respaldarlo todo.** Las copias de seguridad completas del planner incluyen proyectos, favoritos, equipos personalizados, datos
-  de autonomía y preferencias de la interfaz para no perder contexto.
+- **Comparte con seguridad.** Exporta paquetes `.cpproject` que permanecen sin conexión, validan el esquema al importar e
+  incluyen reglas automáticas de equipo si lo necesitas.
+- **Haz copia de todo.** Las copias de seguridad completas del planner incluyen proyectos, favoritos, equipos personalizados,
+  datos de autonomía y preferencias de la interfaz para no perder contexto.
 
 ## Protección de datos sin conexión
 
-- Verifica con regularidad la preparación offline: carga la aplicación, desconéctate, actualiza y comprueba que tus proyectos siguen
-  disponibles.
+- Verifica con regularidad que todo está listo para trabajar sin conexión: carga la aplicación, desconéctate, actualiza y
+  comprueba que tus proyectos siguen disponibles.
 - Conserva copias redundantes en soportes etiquetados e impórtalas en un segundo perfil después de cada exportación.
 - Antes de aplicar actualizaciones o modificar datos importantes, genera una copia de seguridad manual y confirma que se restaura
   correctamente.
