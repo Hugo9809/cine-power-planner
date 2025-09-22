@@ -490,6 +490,84 @@ describe('automated backups', () => {
     }
   });
 
+  test('restore reverts storage and preferences when import fails', () => {
+    const { APP_VERSION } = loadApp();
+
+    const restoreInput = document.getElementById('restoreSettingsInput');
+    expect(restoreInput).not.toBeNull();
+
+    const fakeFile = { name: 'failed-backup.json' };
+    Object.defineProperty(restoreInput, 'files', {
+      configurable: true,
+      get: () => [fakeFile],
+    });
+
+    const originalAlert = window.alert;
+    window.alert = jest.fn();
+
+    const originalImportAllData = global.importAllData;
+    global.importAllData = jest.fn(() => {
+      throw new Error('Import failed');
+    });
+
+    const restorePayload = JSON.stringify({
+      version: APP_VERSION,
+      settings: {
+        cameraPowerPlanner_setups: JSON.stringify({ mutated: true }),
+        showAutoBackups: 'false',
+      },
+      sessionStorage: {
+        'planner-session': 'mutated-session',
+      },
+      data: {
+        setups: { mutated: true },
+      },
+    });
+
+    const originalFileReader = window.FileReader;
+    const readerInstance = {
+      onload: null,
+      onerror: null,
+      readAsText: jest.fn(function readAsText() {
+        if (typeof this.onload === 'function') {
+          this.onload({ target: { result: restorePayload } });
+        }
+      }),
+    };
+    window.FileReader = jest.fn(() => readerInstance);
+
+    const originalShowAutoBackups = window.showAutoBackups;
+    window.showAutoBackups = true;
+    global.showAutoBackups = true;
+
+    localStorage.setItem('cameraPowerPlanner_setups', JSON.stringify({ original: true }));
+    localStorage.setItem('showAutoBackups', 'true');
+    sessionStorage.setItem('planner-session', 'original-session');
+
+    try {
+      restoreInput.dispatchEvent(new Event('change'));
+
+      expect(window.alert).toHaveBeenCalled();
+      expect(localStorage.getItem('cameraPowerPlanner_setups')).toBe(JSON.stringify({ original: true }));
+      expect(localStorage.getItem('showAutoBackups')).toBe('true');
+      expect(sessionStorage.getItem('planner-session')).toBe('original-session');
+      expect(window.showAutoBackups).toBe(true);
+      expect(global.importAllData).toHaveBeenCalled();
+    } finally {
+      window.alert = originalAlert;
+      window.FileReader = originalFileReader;
+      global.importAllData = originalImportAllData;
+      delete restoreInput.files;
+      if (typeof originalShowAutoBackups !== 'undefined') {
+        window.showAutoBackups = originalShowAutoBackups;
+        global.showAutoBackups = originalShowAutoBackups;
+      } else {
+        delete window.showAutoBackups;
+        delete global.showAutoBackups;
+      }
+    }
+  });
+
   test('restore falls back to file.text when FileReader is unavailable', async () => {
     const { APP_VERSION } = loadApp();
 
