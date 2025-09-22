@@ -8,16 +8,16 @@ const temperaturePreferenceStorageKey =
       ? resolveTemperatureStorageKey()
       : 'cameraPowerPlanner_temperatureUnit';
 
-let recordFullBackupHistoryEntry = () => {};
+let recordFullBackupHistoryEntryFn = () => {};
 try {
-  ({ recordFullBackupHistoryEntry } = require('./storage.js'));
+  ({ recordFullBackupHistoryEntry: recordFullBackupHistoryEntryFn } = require('./storage.js'));
 } catch (error) {
   if (
     typeof window !== 'undefined'
     && window
     && typeof window.recordFullBackupHistoryEntry === 'function'
   ) {
-    recordFullBackupHistoryEntry = window.recordFullBackupHistoryEntry;
+    recordFullBackupHistoryEntryFn = window.recordFullBackupHistoryEntry;
   } else {
     void error;
   }
@@ -2123,7 +2123,7 @@ function createSettingsBackup(notify = true, timestamp = new Date()) {
       throw new Error('No supported download method available');
     }
     try {
-      recordFullBackupHistoryEntry({ createdAt: iso, fileName });
+      recordFullBackupHistoryEntryFn({ createdAt: iso, fileName });
     } catch (historyError) {
       console.warn('Failed to record full backup history entry', historyError);
     }
