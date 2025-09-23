@@ -2766,8 +2766,19 @@
                 >Power Summary</a>
                 as you adjust gear.
               </li>
-              <li>A temperature note helps account for runtime changes in hot or cold conditions.</li>
-              <li>Warnings appear if the configuration exceeds battery output limits.</li>
+              <li>
+                The
+                <a class="help-link" href="#temperatureNote" data-help-target="#temperatureNote">temperature note</a>
+                helps account for runtime changes in hot or cold conditions so you can document on-set performance accurately.
+              </li>
+              <li>
+                Warnings appear if the configuration exceeds battery output limits—watch the
+                <a class="help-link" href="#pinWarning" data-help-target="#pinWarning">main output</a>,
+                <a class="help-link" href="#dtapWarning" data-help-target="#dtapWarning">D-Tap</a>
+                and
+                <a class="help-link" href="#hotswapWarning" data-help-target="#hotswapWarning">hotswap</a>
+                alerts for guidance before committing to a battery plan.
+              </li>
               <li>
                 Select a
                 <a
@@ -2810,8 +2821,9 @@
               <li>Current at 14.4 V (33.6 V for B‑Mount) and 12 V (21.6 V for B‑Mount) equals total watts divided by voltage.</li>
               <li>Runtime&nbsp;=&nbsp;battery capacity (Wh)&nbsp;÷&nbsp;total consumption.</li>
             <li>
-              User-submitted runtimes are adjusted for temperature and weighted before
-              averaging:
+              User-submitted runtimes collected through
+              <a class="help-link" href="#runtimeFeedbackBtn" data-help-target="#runtimeFeedbackBtn">Submit User Runtime Feedback</a>
+              are adjusted for temperature and weighted before averaging:
               <ul>
                 <li>Temperature: ×2 at ≤−20 °C, ×1.6 at ≤−10 °C, ×1.25 at ≤0 °C.</li>
                 <li>Resolution: ≥12K ×3, ≥8K ×2, ≥4K ×1.5, ≥1080p ×1; lower scales with 1080p.</li>
@@ -2824,7 +2836,13 @@
                 <li>The final weight reflects each device's share of total power draw.</li>
               </ul>
             </li>
-              <li>Warnings highlight when current approaches or exceeds main or D‑Tap output ratings.</li>
+              <li>
+                Warnings highlight when current approaches or exceeds main or D‑Tap output ratings—check the
+                <a class="help-link" href="#pinWarning" data-help-target="#pinWarning">main output warning</a>
+                and
+                <a class="help-link" href="#dtapWarning" data-help-target="#dtapWarning">D-Tap warning</a>
+                rows for specific advice.
+              </li>
             </ul>
         </section>
         <section
@@ -2846,14 +2864,22 @@
                 <a class="help-link" href="#feedbackDialogHeading" data-help-target="#feedbackDialogHeading">feedback form</a>
                 walks through each field step by step.
               </li>
-              <li>Include temperature for more accurate weighting.</li>
+              <li>
+                Include temperature via the
+                <a class="help-link" href="#fbTemperature" data-help-target="#fbTemperature">Temp (°C)</a>
+                dropdown for more accurate weighting.
+              </li>
               <li>
                 Use the
                 <a class="help-link" href="#fbUseLocationBtn" data-help-target="#fbUseLocationBtn"><strong>Use Current Location</strong></a>
                 option to capture an approximate position in the log—everything stays stored on this device for offline
                 reference.
               </li>
-              <li>Your entries are stored locally and refine the runtime estimate.</li>
+              <li>
+                Your entries are stored locally and refine the runtime estimate—review them in the
+                <a class="help-link" href="#userFeedbackTable" data-help-target="#userFeedbackTable">runtime history table</a>
+                beneath the calculator.
+              </li>
             </ul>
         </section>
         <section
