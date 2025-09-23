@@ -68,6 +68,7 @@ body.dark-mode {
   --status-warning-bg: #ff6b6b;
   --status-warning-text-color: #ffffff;
   --status-error-text-color: #000;
+  --font-size-base: 11pt;
   font-family: 'Ubuntu', sans-serif;
   font-weight: var(--font-weight-light);
   font-size: var(--font-size-base);
@@ -165,8 +166,8 @@ strong {
 #overviewDialogContent h3 {
   font-family: 'Ubuntu', sans-serif;
   font-weight: var(--font-weight-regular);
-  border-color: var(--text-color) !important;
-  color: var(--text-color) !important;
+  border-color: var(--accent-color) !important;
+  color: var(--accent-color) !important;
 }
 
 #overviewDialogContent strong,
@@ -275,7 +276,7 @@ table, th, td {
 #overviewDialogContent section,
 #overviewDialogContent #diagramArea {
   background: var(--surface-color) !important;
-  border-color: var(--text-color);
+  border-color: var(--accent-color);
   box-shadow: var(--panel-shadow);
 }
 #overviewDialogContent #setupDiagram {
