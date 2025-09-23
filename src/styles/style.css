@@ -5030,7 +5030,7 @@ body.dark-mode.pink-mode #gearListOutput h2,
 }
 
 #gearListFilterDetails .filter-detail-sublabel {
-  font-weight: var(--font-weight-regular);
+  font-weight: var(--font-weight-light);
 }
 
 #gearListFilterDetails .filter-detail-sublabel::after {
