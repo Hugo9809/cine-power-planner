@@ -1221,6 +1221,23 @@ main.legal-content {
   align-items: center;
 }
 
+.full-backup-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-size);
+  margin-top: var(--gap-size);
+  padding-top: var(--gap-size);
+  border-top: 1px solid color-mix(in srgb, var(--panel-border) 60%, transparent);
+}
+
+.full-backup-section .settings-hint {
+  margin-left: 0;
+}
+
+.full-backup-actions {
+  align-items: center;
+}
+
 .backup-diff-section {
   display: flex;
   flex-direction: column;
