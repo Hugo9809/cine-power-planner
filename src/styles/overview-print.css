@@ -295,8 +295,8 @@ table, th, td {
 
 @media print {
   #overviewDialogContent #setupDiagram svg {
-    width: 90% !important;
-    max-width: 90% !important;
+    width: 96% !important;
+    max-width: 96% !important;
   }
 }
 #overviewDialogContent #setupDiagram #diagramArea {
