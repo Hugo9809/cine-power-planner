@@ -82,7 +82,7 @@
   --icon-size-xl: calc(var(--font-size-relative-base) * var(--font-scale-xxl));
   --font-weight-light: 300;
   --font-weight-regular: var(--font-weight-light);
-  --font-weight-medium: var(--font-weight-light);
+  --font-weight-medium: var(--font-weight-bold);
   --font-weight-bold: 500;
   --font-weight-semibold: var(--font-weight-bold);
   --font-size-diagram-icon: calc(var(--font-size-base) * var(--font-scale-icon-lg));
