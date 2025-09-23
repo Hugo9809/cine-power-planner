@@ -1432,6 +1432,50 @@ function extractAutoGearSelections(value) {
     .filter(Boolean);
 }
 
+function buildCameraHandleAutoRules(baseInfo, baselineMap) {
+  if (!baselineMap || typeof generateGearListHtml !== 'function' || typeof parseGearTableForAutoRules !== 'function') {
+    return [];
+  }
+
+  const selections = extractAutoGearSelections(baseInfo && baseInfo.cameraHandle);
+  if (!selections.length) return [];
+
+  const uniqueSelections = Array.from(new Set(selections));
+  const rules = [];
+
+  uniqueSelections.forEach(selection => {
+    const trimmed = selection.trim();
+    if (!trimmed) return;
+
+    const remainingSelections = selections.filter(value => value !== trimmed);
+    const variantInfo = { ...baseInfo, cameraHandle: remainingSelections.join(', ') };
+    const variantHtml = generateGearListHtml({ ...variantInfo, requiredScenarios: '' });
+    const variantMap = parseGearTableForAutoRules(variantHtml);
+    if (!variantMap) return;
+
+    const diff = diffGearTableMaps(variantMap, baselineMap);
+    if (!diff.add.length && !diff.remove.length) return;
+
+    const additions = cloneAutoGearItems(diff.add);
+    if (!additions.length) return;
+    const removals = cloneAutoGearItems(diff.remove);
+
+    rules.push({
+      id: generateAutoGearId('rule'),
+      label: trimmed,
+      scenarios: [],
+      mattebox: [],
+      cameraHandle: [trimmed],
+      viewfinderExtension: [],
+      videoDistribution: [],
+      add: additions,
+      remove: removals,
+    });
+  });
+
+  return rules;
+}
+
 function buildViewfinderExtensionAutoRules(baseInfo, baselineMap) {
   if (!baselineMap || typeof generateGearListHtml !== 'function' || typeof parseGearTableForAutoRules !== 'function') {
     return [];
@@ -1458,7 +1502,7 @@ function buildViewfinderExtensionAutoRules(baseInfo, baselineMap) {
 
     const additions = cloneAutoGearItems(diff.add);
     if (!additions.length) return;
-    const removals = cloneAutoGearItems(diff.add);
+    const removals = cloneAutoGearItems(diff.remove);
 
     rules.push({
       id: generateAutoGearId('rule'),
@@ -1504,7 +1548,7 @@ function buildVideoDistributionAutoRules(baseInfo, baselineMap) {
 
     const additions = cloneAutoGearItems(diff.add);
     if (!additions.length) return;
-    const removals = cloneAutoGearItems(diff.add);
+    const removals = cloneAutoGearItems(diff.remove);
 
     rules.push({
       id: generateAutoGearId('rule'),
@@ -1839,6 +1883,7 @@ function buildAutoGearRulesFromBaseInfo(baseInfo, scenarioValues) {
   }
 
   if (baselineMap) {
+    buildCameraHandleAutoRules(baseInfo, baselineMap).forEach(rule => rules.push(rule));
     buildViewfinderExtensionAutoRules(baseInfo, baselineMap).forEach(rule => rules.push(rule));
     buildVideoDistributionAutoRules(baseInfo, baselineMap).forEach(rule => rules.push(rule));
 

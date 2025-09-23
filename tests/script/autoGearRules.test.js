@@ -643,6 +643,84 @@ describe('applyAutoGearRulesToTableHtml', () => {
     });
   });
 
+  test('seeding factory defaults includes camera handle rules', () => {
+    env = setupScriptEnvironment();
+
+    const {
+      getAutoGearRules,
+      syncAutoGearRulesFromStorage,
+      __autoGearInternals,
+    } = env.utils;
+
+    syncAutoGearRulesFromStorage([]);
+    if (__autoGearInternals?.clearAutoGearDefaultsSeeded) {
+      __autoGearInternals.clearAutoGearDefaultsSeeded();
+    }
+
+    const handleSelect = document.getElementById('cameraHandle');
+    if (handleSelect) {
+      Array.from(handleSelect.options || []).forEach(option => {
+        option.selected = option.value === 'Hand Grips';
+      });
+    }
+
+    if (__autoGearInternals?.seedAutoGearRulesFromCurrentProject) {
+      __autoGearInternals.seedAutoGearRulesFromCurrentProject();
+    }
+
+    const rules = getAutoGearRules();
+    const handleRule = rules.find(rule =>
+      Array.isArray(rule.cameraHandle)
+      && rule.cameraHandle.includes('Hand Grips')
+    );
+
+    expect(handleRule).toBeDefined();
+    expect(handleRule.add).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        name: expect.stringContaining('SHAPE Telescopic Handle ARRI Rosette Kit 12'),
+      }),
+    ]));
+  });
+
+  test('seeding factory defaults includes viewfinder extension rules', () => {
+    env = setupScriptEnvironment();
+
+    const {
+      getAutoGearRules,
+      syncAutoGearRulesFromStorage,
+      __autoGearInternals,
+    } = env.utils;
+
+    syncAutoGearRulesFromStorage([]);
+    if (__autoGearInternals?.clearAutoGearDefaultsSeeded) {
+      __autoGearInternals.clearAutoGearDefaultsSeeded();
+    }
+
+    const viewfinderSelect = document.getElementById('viewfinderExtension');
+    if (viewfinderSelect) {
+      Array.from(viewfinderSelect.options || []).forEach(option => {
+        option.selected = option.value === 'ARRI VEB-3 Viewfinder Extension Bracket';
+      });
+    }
+
+    if (__autoGearInternals?.seedAutoGearRulesFromCurrentProject) {
+      __autoGearInternals.seedAutoGearRulesFromCurrentProject();
+    }
+
+    const rules = getAutoGearRules();
+    const viewfinderRule = rules.find(rule =>
+      Array.isArray(rule.viewfinderExtension)
+      && rule.viewfinderExtension.includes('ARRI VEB-3 Viewfinder Extension Bracket')
+    );
+
+    expect(viewfinderRule).toBeDefined();
+    expect(viewfinderRule.add).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        name: 'ARRI VEB-3 Viewfinder Extension Bracket',
+      }),
+    ]));
+  });
+
   test('saving a rule shows a confirmation notification', () => {
     env = setupScriptEnvironment();
 
