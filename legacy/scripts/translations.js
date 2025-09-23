@@ -702,7 +702,7 @@ var texts = {
       "Dolly Grip": "Dolly Grip",
       "Rigging Grip": "Rigging Grip"
     },
-    gearListAutosaveNote: "Gear lists save automatically with the project and are included in exported project files and backups.",
+    gearListAutosaveNote: '',
     deleteGearListBtn: "Delete Gear List",
     deleteGearListBtnHelp: "Remove the saved gear list from this project and hide the table.",
     confirmDeleteGearList: "Delete gear list?",
@@ -1216,7 +1216,7 @@ var texts = {
       "Dolly Grip": "Operatore dolly",
       "Rigging Grip": "Macchinista rigging"
     },
-    gearListAutosaveNote: "L'elenco attrezzatura viene salvato automaticamente con il progetto ed è incluso nei file progetto esportati e nei backup.",
+    gearListAutosaveNote: '',
     deleteGearListBtn: "Elimina elenco attrezzatura",
     deleteGearListBtnHelp: "Rimuovi l'elenco attrezzatura salvato dal progetto e nascondi la tabella.",
     confirmDeleteGearList: "Eliminare elenco attrezzatura?",
@@ -1982,7 +1982,7 @@ var texts = {
       "Dolly Grip": "Operador de dolly",
       "Rigging Grip": "Grip de rigging"
     },
-    gearListAutosaveNote: "La lista de equipo se guarda automáticamente con el proyecto y se incluye en los archivos de proyecto exportados y en las copias de seguridad.",
+    gearListAutosaveNote: '',
     deleteGearListBtn: "Eliminar lista de equipo",
     deleteGearListBtnHelp: "Elimina la lista de equipo guardada de este proyecto y oculta la tabla.",
     confirmDeleteGearList: "¿Eliminar lista de equipo?",
@@ -2748,7 +2748,7 @@ var texts = {
       "Dolly Grip": "Machiniste dolly",
       "Rigging Grip": "Machiniste rigging"
     },
-    gearListAutosaveNote: "La liste du matériel est enregistrée automatiquement avec le projet et incluse dans les fichiers de projet exportés et les sauvegardes.",
+    gearListAutosaveNote: '',
     deleteGearListBtn: "Supprimer la liste du matériel",
     deleteGearListBtnHelp: "Supprime la liste du matériel enregistrée du projet et masque le tableau.",
     confirmDeleteGearList: "Supprimer la liste du matériel ?",
@@ -3514,7 +3514,7 @@ var texts = {
       "Dolly Grip": "Dolly-Grip",
       "Rigging Grip": "Rigging-Grip"
     },
-    gearListAutosaveNote: "Die Gear-Liste wird automatisch mit dem Projekt gespeichert und ist in exportierten Projektdateien und Backups enthalten.",
+    gearListAutosaveNote: '',
     deleteGearListBtn: "Gear-Liste löschen",
     deleteGearListBtnHelp: "Entfernt die gespeicherte Gear-Liste aus diesem Projekt und blendet die Tabelle aus.",
     confirmDeleteGearList: "Gear-Liste löschen?",
