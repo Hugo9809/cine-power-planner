@@ -1,5 +1,5 @@
 // --- SESSION STATE HANDLING ---
-/* global resolveTemperatureStorageKey, TEMPERATURE_STORAGE_KEY, updateCageSelectOptions, updateAccentColorResetButtonState, normalizeAccentValue, DEFAULT_ACCENT_NORMALIZED */
+/* global resolveTemperatureStorageKey, TEMPERATURE_STORAGE_KEY, updateCageSelectOptions, updateAccentColorResetButtonState, normalizeAccentValue, DEFAULT_ACCENT_NORMALIZED, autoGearSearchInput, setAutoGearSearchQuery, autoGearFilterScenarioSelect, setAutoGearScenarioFilter, autoGearFilterClearButton, clearAutoGearFilters */
 
 const temperaturePreferenceStorageKey =
   typeof TEMPERATURE_STORAGE_KEY === 'string'
@@ -1221,6 +1221,21 @@ if (autoGearImportButton && autoGearImportInput) {
     autoGearImportInput.click();
   });
   autoGearImportInput.addEventListener('change', handleAutoGearImportSelection);
+}
+if (autoGearSearchInput) {
+  const updateQuery = event => {
+    setAutoGearSearchQuery(event?.target?.value || '');
+  };
+  autoGearSearchInput.addEventListener('input', updateQuery);
+  autoGearSearchInput.addEventListener('search', updateQuery);
+}
+if (autoGearFilterScenarioSelect) {
+  autoGearFilterScenarioSelect.addEventListener('change', event => {
+    setAutoGearScenarioFilter(event?.target?.value || 'all');
+  });
+}
+if (autoGearFilterClearButton) {
+  autoGearFilterClearButton.addEventListener('click', clearAutoGearFilters);
 }
 if (autoGearPresetSelect) {
   autoGearPresetSelect.addEventListener('change', handleAutoGearPresetSelection);

@@ -1673,6 +1673,43 @@ body.high-contrast .settings-tab[aria-selected="true"] {
   margin: 0;
 }
 
+.auto-gear-filters {
+  margin-top: 16px;
+  margin-bottom: 12px;
+  padding: 12px;
+  border: 1px solid var(--panel-border);
+  border-radius: var(--border-radius);
+  background: var(--panel-bg);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.auto-gear-filter-field {
+  flex: 1 1 220px;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.auto-gear-filter-field label {
+  margin: 0;
+  font-weight: var(--font-weight-medium);
+}
+
+.auto-gear-filter-field input[type='search'],
+.auto-gear-filter-select {
+  width: 100%;
+}
+
+.auto-gear-filter-clear {
+  flex: 0 0 auto;
+  align-self: center;
+  margin-left: auto;
+}
+
 .auto-gear-rule {
   display: flex;
   justify-content: space-between;
