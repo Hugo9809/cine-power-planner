@@ -17935,9 +17935,13 @@ function renderSetupDiagram() {
       var currentRootWidth = bbox.width * baseScale;
       var desiredScale = currentRootWidth > 0 ? desiredWidth / currentRootWidth : 1;
       if (!Number.isFinite(desiredScale) || desiredScale <= 0) desiredScale = 1;
-      var MIN_SCALE = isTouchDevice ? 0.55 : 0.65;
+      var MIN_AUTO_SCALE = isTouchDevice ? 0.4 : 0.35;
       var MAX_INITIAL_SCALE = isTouchDevice ? 3 : 2.2;
-      var initialScale = Math.min(MAX_INITIAL_SCALE, Math.max(MIN_SCALE, desiredScale));
+      var safeDesiredScale = Number.isFinite(desiredScale) && desiredScale > 0 ? desiredScale : 1;
+      var initialScale = Math.min(
+        MAX_INITIAL_SCALE,
+        Math.max(MIN_AUTO_SCALE, safeDesiredScale)
+      );
       var centerX = bbox.x + bbox.width / 2;
       var centerY = bbox.y + bbox.height / 2;
       var targetCenterX = viewBoxX + viewBoxWidth / 2;
@@ -18044,16 +18048,22 @@ function enableDiagramInteractions() {
   var root = svg.querySelector('#diagramRoot') || svg;
   var isTouchDevice = (navigator.maxTouchPoints || 0) > 0;
   var MAX_SCALE = isTouchDevice ? Infinity : 3;
-  var MIN_SCALE = isTouchDevice ? 0.55 : 0.65;
-  var dataScale = parseFloat(setupDiagramContainer.dataset.initialScale || '');
+  var BASE_MIN_SCALE = isTouchDevice ? 0.55 : 0.65;
+  var MIN_AUTO_SCALE = isTouchDevice ? 0.4 : 0.35;
+  var dataScaleRaw = parseFloat(setupDiagramContainer.dataset.initialScale || '');
+  var fallbackScale = isTouchDevice ? 0.95 : 1.25;
+  var initialScaleRaw = Number.isFinite(dataScaleRaw) && dataScaleRaw > 0 ? dataScaleRaw : fallbackScale;
+  var MIN_SCALE = Math.max(
+    MIN_AUTO_SCALE,
+    Math.min(BASE_MIN_SCALE, initialScaleRaw)
+  );
   var clampScale = function clampScale(value) {
     if (!Number.isFinite(value) || value <= 0) return MIN_SCALE;
     if (value > MAX_SCALE) return MAX_SCALE;
     if (value < MIN_SCALE) return MIN_SCALE;
     return value;
   };
-  var fallbackScale = isTouchDevice ? 0.95 : 1.25;
-  var INITIAL_SCALE = clampScale(Number.isFinite(dataScale) ? dataScale : fallbackScale);
+  var INITIAL_SCALE = clampScale(initialScaleRaw);
   var initialPan = {
     x: 0,
     y: 0
