@@ -5549,6 +5549,11 @@ body.dark-mode .requirement-box,
   max-width: 100%;
 }
 
+#gearListOutput .gear-table select {
+  padding: 0;
+  padding-inline: 0;
+}
+
 .gear-table .category-row td {
   border-top: 1px solid var(--accent-color);
   border-bottom: 1px solid var(--accent-color);

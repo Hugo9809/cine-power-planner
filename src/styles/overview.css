@@ -94,6 +94,8 @@ th { background-color: var(--control-bg); font-weight: var(--font-weight-bold); 
   color: inherit;
   border-color: var(--panel-border);
   box-shadow: none;
+  padding: 0;
+  padding-inline: 0;
 }
 
 .gear-table .category-row td {
