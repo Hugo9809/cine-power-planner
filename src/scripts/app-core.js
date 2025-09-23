@@ -8463,7 +8463,7 @@ if (settingsButton) {
   settingsButton.setAttribute('data-allow-hover-help', '');
 }
 if (settingsButtonIcon) {
-  applyIconGlyph(settingsButtonIcon, ICON_GLYPHS.gears);
+  applyIconGlyph(settingsButtonIcon, ICON_GLYPHS.sliders);
   settingsButtonIcon.setAttribute('aria-hidden', 'true');
 }
 if (settingsDialog) {
