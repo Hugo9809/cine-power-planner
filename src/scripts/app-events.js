@@ -377,8 +377,18 @@ setupSelect.addEventListener("change", (event) => {
 function populateSetupSelect() {
   const setups = getSetups();
   setupSelect.innerHTML = `<option value="">${texts[currentLang].newSetupOption}</option>`;
+  let includeAutoBackups = false;
+  if (typeof showAutoBackups === 'boolean') {
+    includeAutoBackups = showAutoBackups;
+  } else if (typeof localStorage !== 'undefined') {
+    try {
+      includeAutoBackups = localStorage.getItem('showAutoBackups') === 'true';
+    } catch (error) {
+      console.warn('Could not read auto backup visibility preference', error);
+    }
+  }
   const names = Object.keys(setups)
-    .filter(name => showAutoBackups || !name.startsWith('auto-backup-'))
+    .filter(name => includeAutoBackups || !name.startsWith('auto-backup-'))
     .sort((a, b) => {
       const autoA = a.startsWith('auto-backup-');
       const autoB = b.startsWith('auto-backup-');
