@@ -482,6 +482,35 @@ function isAutoGearMonitoringCategory(value) {
   if (typeof value !== 'string') return false;
   return value.trim().toLowerCase() === 'monitoring';
 }
+function isMonitoringCategorySelected(select) {
+  if (!select) return false;
+  var directValue = typeof select.value === 'string' ? select.value : '';
+  if (isAutoGearMonitoringCategory(directValue)) {
+    return true;
+  }
+  var option = select.options && typeof select.selectedIndex === 'number'
+    ? select.options[select.selectedIndex]
+    : null;
+  if (!option) return false;
+  var optionValue = typeof option.value === 'string' ? option.value : '';
+  if (isAutoGearMonitoringCategory(optionValue)) {
+    return true;
+  }
+  var optionLabel = typeof option.textContent === 'string' ? option.textContent : '';
+  return isAutoGearMonitoringCategory(optionLabel);
+}
+function setAutoGearFieldVisibility(field, isVisible) {
+  if (!field) return;
+  if (isVisible) {
+    field.hidden = false;
+    field.removeAttribute('hidden');
+    field.removeAttribute('aria-hidden');
+  } else {
+    field.hidden = true;
+    field.setAttribute('hidden', '');
+    field.setAttribute('aria-hidden', 'true');
+  }
+}
 function updateAutoGearMonitorFieldGroup(group) {
   if (!group || !group.select) return;
   var select = group.select,
@@ -493,15 +522,10 @@ function updateAutoGearMonitorFieldGroup(group) {
     selectorDefaultInput = group.selectorDefaultInput,
     selectorIncludeField = group.selectorIncludeField,
     selectorIncludeCheckbox = group.selectorIncludeCheckbox;
-  var isMonitoring = isAutoGearMonitoringCategory(select.value || '');
+  var isMonitoring = isMonitoringCategorySelected(select);
   var managedFields = [screenSizeField, selectorTypeField, selectorDefaultField, selectorIncludeField];
   managedFields.forEach(function (field) {
-    if (!field) return;
-    if (isMonitoring) {
-      field.removeAttribute('hidden');
-    } else {
-      field.setAttribute('hidden', '');
-    }
+    setAutoGearFieldVisibility(field, isMonitoring);
   });
   if (!isMonitoring) {
     if (screenSizeInput) screenSizeInput.value = '';

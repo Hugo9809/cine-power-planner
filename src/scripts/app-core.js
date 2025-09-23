@@ -549,6 +549,35 @@ function isAutoGearMonitoringCategory(value) {
   return value.trim().toLowerCase() === 'monitoring';
 }
 
+function isMonitoringCategorySelected(select) {
+  if (!select) return false;
+  const directValue = typeof select.value === 'string' ? select.value : '';
+  if (isAutoGearMonitoringCategory(directValue)) {
+    return true;
+  }
+  const option = select.options?.[select.selectedIndex] || null;
+  if (!option) return false;
+  const optionValue = typeof option.value === 'string' ? option.value : '';
+  if (isAutoGearMonitoringCategory(optionValue)) {
+    return true;
+  }
+  const optionLabel = typeof option.textContent === 'string' ? option.textContent : '';
+  return isAutoGearMonitoringCategory(optionLabel);
+}
+
+function setAutoGearFieldVisibility(field, isVisible) {
+  if (!field) return;
+  if (isVisible) {
+    field.hidden = false;
+    field.removeAttribute('hidden');
+    field.removeAttribute('aria-hidden');
+  } else {
+    field.hidden = true;
+    field.setAttribute('hidden', '');
+    field.setAttribute('aria-hidden', 'true');
+  }
+}
+
 function updateAutoGearMonitorFieldGroup(group) {
   if (!group || !group.select) return;
   const {
@@ -562,15 +591,10 @@ function updateAutoGearMonitorFieldGroup(group) {
     selectorIncludeField,
     selectorIncludeCheckbox,
   } = group;
-  const isMonitoring = isAutoGearMonitoringCategory(select.value || '');
+  const isMonitoring = isMonitoringCategorySelected(select);
   const managedFields = [screenSizeField, selectorTypeField, selectorDefaultField, selectorIncludeField];
   managedFields.forEach(field => {
-    if (!field) return;
-    if (isMonitoring) {
-      field.removeAttribute('hidden');
-    } else {
-      field.setAttribute('hidden', '');
-    }
+    setAutoGearFieldVisibility(field, isMonitoring);
   });
   if (!isMonitoring) {
     if (screenSizeInput) screenSizeInput.value = '';
