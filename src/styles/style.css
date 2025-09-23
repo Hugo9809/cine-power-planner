@@ -5169,8 +5169,8 @@ body.dark-mode.pink-mode #gearListOutput h2,
 
 #gearListFilterDetails .filter-detail {
   display: grid;
-  grid-template-columns: minmax(9.5rem, max-content) minmax(0, 1fr);
-  column-gap: 0.75rem;
+  grid-template-columns: minmax(8.5rem, max-content) minmax(0, 1fr);
+  column-gap: 0.5rem;
   row-gap: 0.125rem;
   align-items: center;
   padding: 0;
