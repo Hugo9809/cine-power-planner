@@ -1434,6 +1434,63 @@ describe('applyAutoGearRulesToTableHtml', () => {
     );
   });
 
+  test('duplicates an automatic gear rule into a new draft', () => {
+    env = setupScriptEnvironment();
+
+    document.getElementById('autoGearAddRule').click();
+
+    activateCondition('scenarios');
+
+    const scenarios = document.getElementById('autoGearScenarios');
+    const firstScenario = Array.from(scenarios.options || []).find(option => option.value);
+    if (firstScenario) {
+      firstScenario.selected = true;
+    }
+
+    const ruleNameInput = document.getElementById('autoGearRuleName');
+    ruleNameInput.value = 'Village monitors';
+
+    const addCategorySelect = document.getElementById('autoGearAddCategory');
+    addCategorySelect.value = addCategorySelect.options[0].value;
+
+    document.getElementById('autoGearAddName').value = 'Monitor Hood';
+    document.getElementById('autoGearAddQuantity').value = '1';
+    document.getElementById('autoGearAddItemButton').click();
+
+    document.getElementById('autoGearSaveRule').click();
+
+    const duplicateButton = document.querySelector('.auto-gear-duplicate');
+    expect(duplicateButton).not.toBeNull();
+    if (!duplicateButton) return;
+    duplicateButton.click();
+
+    const editor = document.getElementById('autoGearEditor');
+    expect(editor.hidden).toBe(false);
+
+    const duplicateNameInput = document.getElementById('autoGearRuleName');
+    expect(duplicateNameInput.value).toBe('Village monitors (Copy)');
+
+    const duplicateAddItems = document.querySelectorAll('#autoGearAddList .auto-gear-item');
+    expect(duplicateAddItems).toHaveLength(1);
+    expect(duplicateAddItems[0].textContent).toContain('Monitor Hood');
+
+    document.getElementById('autoGearSaveRule').click();
+
+    const stored = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    expect(Array.isArray(stored)).toBe(true);
+    expect(stored).toHaveLength(2);
+
+    const baseRule = stored.find(rule => rule.label === 'Village monitors');
+    const duplicateRule = stored.find(rule => rule.label === 'Village monitors (Copy)');
+    expect(baseRule).toBeDefined();
+    expect(duplicateRule).toBeDefined();
+    if (!baseRule || !duplicateRule) return;
+
+    expect(baseRule.id).not.toBe(duplicateRule.id);
+    expect(baseRule.scenarios).toEqual(duplicateRule.scenarios);
+    expect(baseRule.add[0].id).not.toBe(duplicateRule.add[0].id);
+  });
+
   test('automatic backups capture snapshots after rules change', () => {
     fakeTimersActive = true;
     jest.useFakeTimers();

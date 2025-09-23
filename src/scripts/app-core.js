@@ -11687,6 +11687,16 @@ function renderAutoGearRulesList() {
     editBtn.textContent = editLabel;
     editBtn.setAttribute('data-help', editLabel);
     actions.appendChild(editBtn);
+    const duplicateBtn = document.createElement('button');
+    duplicateBtn.type = 'button';
+    duplicateBtn.className = 'auto-gear-duplicate';
+    duplicateBtn.dataset.ruleId = rule.id;
+    const duplicateLabel = texts[currentLang]?.autoGearDuplicateRule
+      || texts.en?.autoGearDuplicateRule
+      || 'Duplicate';
+    duplicateBtn.textContent = duplicateLabel;
+    duplicateBtn.setAttribute('data-help', duplicateLabel);
+    actions.appendChild(duplicateBtn);
     const deleteBtn = document.createElement('button');
     deleteBtn.type = 'button';
     deleteBtn.className = 'auto-gear-delete';
@@ -11919,11 +11929,14 @@ function renderAutoGearDraftLists() {
   renderList(autoGearRemoveList, autoGearEditorDraft.remove, 'remove');
 }
 
-function openAutoGearEditor(ruleId) {
+function openAutoGearEditor(ruleId, options = {}) {
   if (!autoGearEditor) return;
+  const { initialDraft, highlightLabel = false } = options;
   const rules = getAutoGearRules();
-  const existing = ruleId ? rules.find(rule => rule.id === ruleId) : null;
-  autoGearEditorDraft = createAutoGearDraft(existing);
+  const source = initialDraft
+    ? initialDraft
+    : (ruleId ? rules.find(rule => rule.id === ruleId) : null);
+  autoGearEditorDraft = createAutoGearDraft(source);
   autoGearEditorActiveItem = null;
   autoGearEditor.hidden = false;
   autoGearEditor.setAttribute('aria-hidden', 'false');
@@ -11941,7 +11954,16 @@ function openAutoGearEditor(ruleId) {
   syncAutoGearMonitorFieldVisibility();
   updateAutoGearDraftActionState();
   renderAutoGearDraftLists();
-  if (autoGearRuleNameInput) autoGearRuleNameInput.focus();
+  if (autoGearRuleNameInput) {
+    autoGearRuleNameInput.focus();
+    if (highlightLabel && typeof autoGearRuleNameInput.select === 'function' && autoGearRuleNameInput.value) {
+      try {
+        autoGearRuleNameInput.select();
+      } catch {
+        // Ignore selection errors (for older browsers)
+      }
+    }
+  }
 }
 
 function closeAutoGearEditor() {
@@ -12189,6 +12211,72 @@ function saveAutoGearRuleFromEditor() {
     || 'Automatic gear rule saved.';
   showNotification('success', successMessage);
   closeAutoGearEditor();
+}
+
+function duplicateAutoGearRule(ruleId) {
+  if (!ruleId) return;
+  const rules = getAutoGearRules();
+  const original = rules.find(rule => rule && rule.id === ruleId);
+  if (!original) return;
+
+  const langTexts = texts[currentLang] || texts.en || {};
+  const suffixBase = typeof langTexts.autoGearDuplicateSuffix === 'string'
+    ? langTexts.autoGearDuplicateSuffix.trim()
+    : '';
+  const fallbackSuffix = typeof texts.en?.autoGearDuplicateSuffix === 'string'
+    ? texts.en.autoGearDuplicateSuffix.trim()
+    : '';
+  const suffix = suffixBase || fallbackSuffix || 'Copy';
+  const baseLabel = typeof original.label === 'string' ? original.label.trim() : '';
+  const existingLabels = new Set(
+    rules
+      .map(rule => (typeof rule?.label === 'string' ? rule.label.trim().toLowerCase() : ''))
+      .filter(Boolean)
+  );
+
+  const formatCandidate = index => {
+    if (baseLabel) {
+      return index === 1
+        ? `${baseLabel} (${suffix})`
+        : `${baseLabel} (${suffix} ${index})`;
+    }
+    return index === 1 ? suffix : `${suffix} ${index}`;
+  };
+
+  let attempt = 1;
+  let labelCandidate = formatCandidate(attempt);
+  while (existingLabels.has(labelCandidate.trim().toLowerCase())) {
+    attempt += 1;
+    labelCandidate = formatCandidate(attempt);
+  }
+
+  const duplicateRule = {
+    id: generateAutoGearId('rule'),
+    label: labelCandidate,
+    scenarios: Array.isArray(original.scenarios) ? original.scenarios.slice() : [],
+    mattebox: Array.isArray(original.mattebox) ? original.mattebox.slice() : [],
+    cameraHandle: Array.isArray(original.cameraHandle) ? original.cameraHandle.slice() : [],
+    viewfinderExtension: Array.isArray(original.viewfinderExtension)
+      ? original.viewfinderExtension.slice()
+      : [],
+    videoDistribution: Array.isArray(original.videoDistribution)
+      ? original.videoDistribution.slice()
+      : [],
+    camera: Array.isArray(original.camera) ? original.camera.slice() : [],
+    monitor: Array.isArray(original.monitor) ? original.monitor.slice() : [],
+    wireless: Array.isArray(original.wireless) ? original.wireless.slice() : [],
+    motors: Array.isArray(original.motors) ? original.motors.slice() : [],
+    controllers: Array.isArray(original.controllers) ? original.controllers.slice() : [],
+    distance: Array.isArray(original.distance) ? original.distance.slice() : [],
+    add: Array.isArray(original.add)
+      ? original.add.map(item => ({ ...item, id: generateAutoGearId('item') }))
+      : [],
+    remove: Array.isArray(original.remove)
+      ? original.remove.map(item => ({ ...item, id: generateAutoGearId('item') }))
+      : [],
+  };
+
+  openAutoGearEditor(null, { initialDraft: duplicateRule, highlightLabel: true });
 }
 
 function deleteAutoGearRule(ruleId) {
