@@ -139,6 +139,18 @@ describe('global feature search helpers', () => {
     );
   });
 
+  test('searchTokens expose digits for spelled-out numbers', () => {
+    expect(searchTokens('Mark Four Adapter')).toEqual(
+      expect.arrayContaining(['4', 'mk4'])
+    );
+    expect(searchTokens('Phase Second Output')).toEqual(
+      expect.arrayContaining(['2'])
+    );
+    expect(searchTokens('Twenty-one Volt Rail')).toEqual(
+      expect.arrayContaining(['21'])
+    );
+  });
+
   test('findBestSearchMatch resolves initialism queries', () => {
     const entries = new Map();
     entries.set(
@@ -164,6 +176,26 @@ describe('global feature search helpers', () => {
     );
 
     expect(result?.value.label).toBe('Battery Management System');
+  });
+
+  test('findBestSearchMatch resolves spelled-out mark numbers', () => {
+    const entries = new Map();
+    entries.set(
+      searchKey('Camera Mark IV'),
+      { label: 'Camera Mark IV', tokens: searchTokens('Camera Mark IV') }
+    );
+    entries.set(
+      searchKey('Camera Mark V'),
+      { label: 'Camera Mark V', tokens: searchTokens('Camera Mark V') }
+    );
+
+    const result = findBestSearchMatch(
+      entries,
+      searchKey('camera mark four'),
+      searchTokens('camera mark four')
+    );
+
+    expect(result?.value.label).toBe('Camera Mark IV');
   });
 
   test('searchKey normalizes degree and multiplication symbols', () => {

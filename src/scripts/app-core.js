@@ -13016,6 +13016,137 @@ const ROMAN_NUMERAL_VALUES = {
 
 const ROMAN_NUMERAL_PATTERN = /^[ivxlcdm]+$/;
 
+const CARDINAL_NUMBER_WORDS = new Map([
+  ['zero', 0],
+  ['one', 1],
+  ['two', 2],
+  ['three', 3],
+  ['four', 4],
+  ['five', 5],
+  ['six', 6],
+  ['seven', 7],
+  ['eight', 8],
+  ['nine', 9],
+  ['ten', 10],
+  ['eleven', 11],
+  ['twelve', 12],
+  ['thirteen', 13],
+  ['fourteen', 14],
+  ['fifteen', 15],
+  ['sixteen', 16],
+  ['seventeen', 17],
+  ['eighteen', 18],
+  ['nineteen', 19],
+  ['twenty', 20],
+  ['thirty', 30],
+  ['forty', 40],
+  ['fifty', 50],
+  ['sixty', 60],
+  ['seventy', 70],
+  ['eighty', 80],
+  ['ninety', 90]
+]);
+
+const ORDINAL_NUMBER_WORDS = new Map([
+  ['zeroth', 0],
+  ['first', 1],
+  ['second', 2],
+  ['third', 3],
+  ['fourth', 4],
+  ['fifth', 5],
+  ['sixth', 6],
+  ['seventh', 7],
+  ['eighth', 8],
+  ['ninth', 9],
+  ['tenth', 10],
+  ['eleventh', 11],
+  ['twelfth', 12],
+  ['thirteenth', 13],
+  ['fourteenth', 14],
+  ['fifteenth', 15],
+  ['sixteenth', 16],
+  ['seventeenth', 17],
+  ['eighteenth', 18],
+  ['nineteenth', 19],
+  ['twentieth', 20],
+  ['thirtieth', 30],
+  ['fortieth', 40],
+  ['fiftieth', 50],
+  ['sixtieth', 60],
+  ['seventieth', 70],
+  ['eightieth', 80],
+  ['ninetieth', 90],
+  ['hundredth', 100],
+  ['thousandth', 1000]
+]);
+
+const NUMBER_SCALE_WORDS = new Map([
+  ['hundred', 100],
+  ['thousand', 1000]
+]);
+
+const parseNumberWordValue = value => {
+  if (!value) return null;
+  const normalized = String(value)
+    .toLowerCase()
+    .replace(/[^a-z\s-]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  if (!normalized) return null;
+  const parts = normalized.split(/[\s-]+/).filter(Boolean);
+  if (parts.length === 0) return null;
+  let total = 0;
+  let current = 0;
+  let matched = false;
+  for (const part of parts) {
+    if (part === 'and') continue;
+    if (CARDINAL_NUMBER_WORDS.has(part)) {
+      current += CARDINAL_NUMBER_WORDS.get(part) || 0;
+      matched = true;
+      continue;
+    }
+    if (ORDINAL_NUMBER_WORDS.has(part)) {
+      current += ORDINAL_NUMBER_WORDS.get(part) || 0;
+      matched = true;
+      continue;
+    }
+    const scale = NUMBER_SCALE_WORDS.get(part);
+    if (scale) {
+      matched = true;
+      if (current === 0) {
+        current = 1;
+      }
+      current *= scale;
+      total += current;
+      current = 0;
+      continue;
+    }
+    return null;
+  }
+  const result = total + current;
+  return matched ? result : null;
+};
+
+const NUMBER_WORD_TOKEN_SET = new Set([
+  ...CARDINAL_NUMBER_WORDS.keys(),
+  ...ORDINAL_NUMBER_WORDS.keys(),
+  ...NUMBER_SCALE_WORDS.keys(),
+  'and'
+]);
+
+const NUMBER_WORD_PATTERN_STRING = NUMBER_WORD_TOKEN_SET.size
+  ? Array.from(NUMBER_WORD_TOKEN_SET)
+      .sort((a, b) => b.length - a.length)
+      .join('|')
+  : '';
+
+const MARK_SPELLED_NUMBER_PATTERN = NUMBER_WORD_PATTERN_STRING
+  ? new RegExp(
+      `\\b(mark|mk)[\\s-]+((?:${NUMBER_WORD_PATTERN_STRING})(?:[\\s-]+(?:${NUMBER_WORD_PATTERN_STRING}))*)\\b`,
+      'g'
+    )
+  : null;
+
 const parseMarkSuffix = value => {
   if (!value) {
     return { cleaned: '', number: null };
@@ -13046,6 +13177,11 @@ const parseMarkSuffix = value => {
     }
     if (total > 0) {
       number = total;
+    }
+  } else {
+    const wordValue = parseNumberWordValue(value);
+    if (typeof wordValue === 'number' && Number.isFinite(wordValue)) {
+      number = wordValue;
     }
   }
   return { cleaned, number };
@@ -13231,6 +13367,13 @@ const searchTokens = str => {
   };
   const isAlpha = value => /^[a-z]+$/.test(value);
   const isNumeric = value => /^\d+$/.test(value);
+  const addNumberWordVariants = segment => {
+    if (!segment) return;
+    const numericValue = parseNumberWordValue(segment);
+    if (typeof numericValue === 'number' && Number.isFinite(numericValue)) {
+      addToken(String(numericValue));
+    }
+  };
   const addAlphaNumericVariants = segment => {
     if (!segment) return;
     const groups = segment.match(/[a-z]+|\d+/g);
@@ -13259,12 +13402,14 @@ const searchTokens = str => {
     strToProcess.split(/\s+/).forEach(part => {
       if (!part) return;
       addToken(part);
+      addNumberWordVariants(part);
       part
         .split(/[^a-z0-9]+/)
         .filter(Boolean)
         .forEach(segment => {
           addToken(segment);
           addAlphaNumericVariants(segment);
+          addNumberWordVariants(segment);
           if (collectInitials && /^[a-z]/.test(segment)) {
             initialWords.push(segment);
           }
@@ -13302,14 +13447,38 @@ const searchTokens = str => {
     const rawValue = match[2];
     const { cleaned, number } = parseMarkSuffix(rawValue);
     if (!cleaned) continue;
+    const normalizedCleaned = cleaned.toLowerCase();
     const altPrefix = prefix === 'mk' ? 'mark' : 'mk';
     addToken(prefix);
     addToken(altPrefix);
-    addToken(cleaned);
-    addToken(`${prefix}${cleaned}`);
-    addToken(`${altPrefix}${cleaned}`);
+    addToken(normalizedCleaned);
+    addToken(`${prefix}${normalizedCleaned}`);
+    addToken(`${altPrefix}${normalizedCleaned}`);
     if (number != null) {
       const numberToken = String(number);
+      addToken(numberToken);
+      addToken(`${prefix}${numberToken}`);
+      addToken(`${altPrefix}${numberToken}`);
+    }
+  }
+  if (MARK_SPELLED_NUMBER_PATTERN) {
+    MARK_SPELLED_NUMBER_PATTERN.lastIndex = 0;
+    while ((match = MARK_SPELLED_NUMBER_PATTERN.exec(variantSource)) !== null) {
+      const prefix = match[1];
+      const rawValue = match[2];
+      const numericValue = parseNumberWordValue(rawValue);
+      if (typeof numericValue !== 'number' || !Number.isFinite(numericValue)) {
+        continue;
+      }
+      const cleaned = rawValue.replace(/[^a-z0-9]+/g, '').toLowerCase();
+      if (!cleaned) continue;
+      const altPrefix = prefix === 'mk' ? 'mark' : 'mk';
+      addToken(prefix);
+      addToken(altPrefix);
+      addToken(cleaned);
+      addToken(`${prefix}${cleaned}`);
+      addToken(`${altPrefix}${cleaned}`);
+      const numberToken = String(numericValue);
       addToken(numberToken);
       addToken(`${prefix}${numberToken}`);
       addToken(`${altPrefix}${numberToken}`);
