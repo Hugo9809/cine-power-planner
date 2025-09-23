@@ -1533,20 +1533,160 @@ function getAutoGearRuleDisplayLabel(rule) {
   return '';
 }
 
-function formatAutoGearRuleTooltip(rule) {
+function normalizeAutoGearRuleSource(entry) {
+    if (!entry || typeof entry !== 'object') {
+        return null;
+    }
+    const id = typeof entry.id === 'string' ? entry.id.trim() : '';
+    const label = typeof entry.label === 'string' ? entry.label.trim() : '';
+    if (!id && !label) {
+        return null;
+    }
+    return { id, label };
+}
+
+function createAutoGearRuleSource(rule) {
+    if (!rule || typeof rule !== 'object') {
+        return null;
+    }
+    const id = typeof rule.id === 'string' ? rule.id.trim() : '';
+    const label = getAutoGearRuleDisplayLabel(rule);
+    if (!id && !label) {
+        return null;
+    }
+    return { id, label };
+}
+
+function parseAutoGearRuleSources(value) {
+    if (typeof value !== 'string' || !value.trim()) {
+        return [];
+    }
+    try {
+        const parsed = JSON.parse(value);
+        if (!Array.isArray(parsed)) {
+            return [];
+        }
+        return parsed
+            .map(normalizeAutoGearRuleSource)
+            .filter(source => !!source);
+    } catch (error) {
+        console.warn('Unable to parse automatic gear rule sources from dataset', error);
+        return [];
+    }
+}
+
+function dedupeAutoGearRuleSources(sources) {
+    const seen = new Set();
+    const deduped = [];
+    sources.forEach(source => {
+        if (!source) {
+            return;
+        }
+        const key = `${source.id || ''}|||${source.label || ''}`;
+        if (seen.has(key)) {
+            return;
+        }
+        seen.add(key);
+        deduped.push(source);
+    });
+    return deduped;
+}
+
+function getAutoGearRuleSources(span) {
+    if (!span || !span.dataset) {
+        return [];
+    }
+    const rawSources = parseAutoGearRuleSources(span.dataset.autoGearRuleSources);
+    if (rawSources.length) {
+        return rawSources;
+    }
+    const fallbackSource = normalizeAutoGearRuleSource({
+        id: span.dataset.autoGearRuleId,
+        label: span.dataset.autoGearRuleLabel
+    });
+    if (fallbackSource) {
+        return [fallbackSource];
+    }
+    return [];
+}
+
+function setAutoGearRuleSources(span, sources) {
+    if (!span || !span.dataset) {
+        return [];
+    }
+    const normalized = Array.isArray(sources) ? sources.map(normalizeAutoGearRuleSource).filter(Boolean) : [];
+    const deduped = dedupeAutoGearRuleSources(normalized);
+    if (!deduped.length) {
+        delete span.dataset.autoGearRuleSources;
+        delete span.dataset.autoGearRuleId;
+        delete span.dataset.autoGearRuleLabel;
+        return [];
+    }
+    try {
+        span.dataset.autoGearRuleSources = JSON.stringify(deduped);
+    } catch (error) {
+        console.warn('Unable to serialize automatic gear rule sources', error);
+    }
+    const primary = deduped[0] || null;
+    if (primary && primary.id) {
+        span.dataset.autoGearRuleId = primary.id;
+    } else {
+        delete span.dataset.autoGearRuleId;
+    }
+    if (primary && primary.label) {
+        span.dataset.autoGearRuleLabel = primary.label;
+    } else {
+        delete span.dataset.autoGearRuleLabel;
+    }
+    return deduped;
+}
+
+function appendAutoGearRuleSource(span, rule) {
+    if (!span || !span.dataset) {
+        return [];
+    }
+    const sources = getAutoGearRuleSources(span);
+    const nextSources = sources.slice();
+    const created = createAutoGearRuleSource(rule);
+    if (created) {
+        nextSources.push(created);
+    }
+    return setAutoGearRuleSources(span, nextSources);
+}
+
+function formatAutoGearRuleTooltip(ruleOrRules) {
     const langTexts = texts[currentLang] || texts.en || {};
     const unnamedTemplate = langTexts.autoGearRuleTooltipUnnamed
         || texts.en?.autoGearRuleTooltipUnnamed
         || 'Added by automatic gear rule';
-    if (!rule || typeof rule !== 'object') return unnamedTemplate;
-    const label = getAutoGearRuleDisplayLabel(rule);
-    if (label) {
-        const namedTemplate = langTexts.autoGearRuleTooltipNamed
-            || texts.en?.autoGearRuleTooltipNamed
-            || `${unnamedTemplate}: %s`;
-        return namedTemplate.replace('%s', label);
+    const rulesArray = Array.isArray(ruleOrRules)
+        ? ruleOrRules
+        : (ruleOrRules ? [ruleOrRules] : []);
+    const labels = [];
+    const fallbackIds = [];
+    rulesArray.forEach(rule => {
+        if (!rule || typeof rule !== 'object') {
+            return;
+        }
+        const label = getAutoGearRuleDisplayLabel(rule);
+        if (label) {
+            labels.push(label);
+            return;
+        }
+        const id = typeof rule.id === 'string' ? rule.id.trim() : '';
+        if (id) {
+            fallbackIds.push(id);
+        }
+    });
+    const values = labels.length ? labels : fallbackIds;
+    if (!values.length) {
+        return unnamedTemplate;
     }
-    return unnamedTemplate;
+    const combined = values.join(', ');
+    const namedTemplate = langTexts.autoGearRuleTooltipNamed
+        || texts.en?.autoGearRuleTooltipNamed
+        || `${unnamedTemplate}: %s`;
+    return namedTemplate.replace('%s', combined);
 }
 
 function configureAutoGearSpan(span, normalizedItem, quantity, rule) {
@@ -1559,20 +1699,16 @@ function configureAutoGearSpan(span, normalizedItem, quantity, rule) {
     span.classList.add('gear-item');
     span.classList.add('auto-gear-item');
     span.setAttribute('data-gear-name', name);
+    let ruleSources = [];
     if (span.dataset) {
-        if (rule && typeof rule === 'object' && rule.id) {
-            span.dataset.autoGearRuleId = rule.id;
+        if (rule && typeof rule === 'object') {
+            const created = createAutoGearRuleSource(rule);
+            ruleSources = setAutoGearRuleSources(span, created ? [created] : []);
         } else {
-            delete span.dataset.autoGearRuleId;
-        }
-        const ruleLabel = rule && typeof rule === 'object' ? getAutoGearRuleDisplayLabel(rule) : '';
-        if (ruleLabel) {
-            span.dataset.autoGearRuleLabel = ruleLabel;
-        } else {
-            delete span.dataset.autoGearRuleLabel;
+            ruleSources = setAutoGearRuleSources(span, []);
         }
     }
-    const tooltip = formatAutoGearRuleTooltip(rule);
+    const tooltip = formatAutoGearRuleTooltip(ruleSources.length ? ruleSources : rule);
     if (tooltip) {
         span.title = tooltip;
     } else {
@@ -1666,20 +1802,12 @@ function addAutoGearItem(cell, item, rule) {
                 const newCount = getSpanCount(span) + quantity;
                 updateSpanCountInPlace(span, newCount);
                 if (rule && typeof rule === 'object') {
-                    if (!span.dataset.autoGearRuleId && rule.id) {
-                        span.dataset.autoGearRuleId = rule.id;
-                    }
-                    if (!span.dataset.autoGearRuleLabel) {
-                        const ruleLabel = getAutoGearRuleDisplayLabel(rule);
-                        if (ruleLabel) {
-                            span.dataset.autoGearRuleLabel = ruleLabel;
-                        }
-                    }
-                    if (!span.title) {
-                        const mergedTooltip = formatAutoGearRuleTooltip(rule);
-                        if (mergedTooltip) {
-                            span.title = mergedTooltip;
-                        }
+                    const sources = appendAutoGearRuleSource(span, rule);
+                    const mergedTooltip = formatAutoGearRuleTooltip(sources.length ? sources : rule);
+                    if (mergedTooltip) {
+                        span.title = mergedTooltip;
+                    } else {
+                        span.removeAttribute('title');
                     }
                 }
                 refreshAutoGearRuleBadge(span);
@@ -3436,27 +3564,35 @@ function refreshAutoGearRuleBadge(span) {
     if (!span || !span.classList || !span.classList.contains('auto-gear-item')) {
         return;
     }
-    const dataset = span.dataset || {};
-    const badgeText = formatAutoGearRuleBadgeText(dataset.autoGearRuleLabel, dataset.autoGearRuleId);
-    if (!badgeText) {
-        const staleBadge = span.querySelector('.auto-gear-rule-badge');
-        if (staleBadge) {
-            staleBadge.remove();
-        }
+    const existingBadges = Array.from(span.querySelectorAll('.auto-gear-rule-badge'));
+    existingBadges.forEach(badge => badge.remove());
+    const sources = getAutoGearRuleSources(span);
+    if (!sources.length) {
         if (span.dataset && Object.prototype.hasOwnProperty.call(span.dataset, 'autoGearRuleBadge')) {
             delete span.dataset.autoGearRuleBadge;
         }
         return;
     }
-    let badge = span.querySelector('.auto-gear-rule-badge');
-    if (!badge) {
-        badge = document.createElement('span');
+    const badgeTexts = [];
+    sources.forEach(source => {
+        const badgeText = formatAutoGearRuleBadgeText(source && source.label, source && source.id);
+        if (!badgeText) {
+            return;
+        }
+        const badge = document.createElement('span');
         badge.className = 'auto-gear-rule-badge';
+        badge.textContent = badgeText;
         span.appendChild(badge);
+        badgeTexts.push(badgeText);
+    });
+    if (!badgeTexts.length) {
+        if (span.dataset && Object.prototype.hasOwnProperty.call(span.dataset, 'autoGearRuleBadge')) {
+            delete span.dataset.autoGearRuleBadge;
+        }
+        return;
     }
-    badge.textContent = badgeText;
     if (span.dataset) {
-        span.dataset.autoGearRuleBadge = badgeText;
+        span.dataset.autoGearRuleBadge = badgeTexts.join(' | ');
     }
 }
 
