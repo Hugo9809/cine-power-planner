@@ -6498,6 +6498,19 @@ function renderFilterDetails() {
   });
   renderFilterDetailsStorage(details);
   renderGearListFilterDetails(details);
+  let gearEntries = buildFilterGearEntries(existingTokens);
+  if (!gearEntries.length) {
+    gearEntries = details
+      .map(detail => ({
+        id: detail.entryId,
+        gearName: detail.gearName,
+        label: detail.label,
+        type: detail.type,
+        hideDetails: detail.hideDetails
+      }))
+      .filter(entry => entry.id && entry.label);
+  }
+  updateGearListFilterEntries(gearEntries);
   if (matteboxSelect) {
     const needsSwing = selected.some(t => t === 'ND Grad HE' || t === 'ND Grad SE');
     if (needsSwing) matteboxSelect.value = 'Swing Away';

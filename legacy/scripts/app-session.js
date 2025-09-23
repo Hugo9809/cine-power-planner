@@ -5727,6 +5727,23 @@ function renderFilterDetails() {
   });
   renderFilterDetailsStorage(details);
   renderGearListFilterDetails(details);
+  var gearEntries = buildFilterGearEntries(existingTokens);
+  if (!gearEntries.length) {
+    gearEntries = details
+      .map(function (detail) {
+        return {
+          id: detail.entryId,
+          gearName: detail.gearName,
+          label: detail.label,
+          type: detail.type,
+          hideDetails: detail.hideDetails
+        };
+      })
+      .filter(function (entry) {
+        return entry.id && entry.label;
+      });
+  }
+  updateGearListFilterEntries(gearEntries);
   if (matteboxSelect) {
     var needsSwing = selected.some(function (t) {
       return t === 'ND Grad HE' || t === 'ND Grad SE';

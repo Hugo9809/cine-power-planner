@@ -25,14 +25,23 @@ describe('renderFilterDetails', () => {
     filterSelect.value = 'IRND';
 
     const gearListOutput = document.getElementById('gearListOutput');
-    gearListOutput.innerHTML = '<div id="gearListFilterDetails"></div>';
+    gearListOutput.innerHTML = [
+      '<span class="gear-item" data-filter-entry="filter-IRND" data-filter-label="IRND Filter Set">',
+      '1x IRND Filter Set (0.3 | 0.6)',
+      '</span>',
+      '<div id="gearListFilterDetails"></div>'
+    ].join('');
 
     setCurrentProjectInfo({ filter: 'IRND:4x5.65:0.3|0.6' });
 
     renderFilterDetails();
 
-    const heading = gearListOutput.querySelector('.filter-detail-label');
-    expect(heading).not.toBeNull();
-    expect(heading.textContent.trim()).toBe('1x IRND Filter Set');
+    const detailHeading = gearListOutput.querySelector('.filter-detail-label');
+    expect(detailHeading).not.toBeNull();
+    expect(detailHeading.textContent.trim()).toBe('1x IRND Filter Set');
+
+    const gearEntry = gearListOutput.querySelector('[data-filter-entry="filter-IRND"]');
+    expect(gearEntry).not.toBeNull();
+    expect(gearEntry.textContent.trim()).toBe('1x IRND Filter Set');
   });
 });
