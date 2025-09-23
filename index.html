@@ -2618,10 +2618,19 @@
                 to confirm it loads correctly; close the dialog or skip saving if you are only testing the archive.
               </li>
               <li>
-                Periodically test full-app backups by running
+                Periodically test full-app backups inside
+                <a
+                  class="help-link"
+                  href="#restoreRehearsalButton"
+                  data-help-target="#restoreRehearsalButton"
+                  data-help-highlight="#restoreRehearsalSection"
+                ><strong>Restore rehearsal</strong></a>
+                so you can inspect the sandboxed
+                <a class="help-link" href="#restoreRehearsalTable" data-help-target="#restoreRehearsalTable">comparison</a>
+                before committing to
                 <a class="help-link" href="#restoreSettings" data-help-target="#restoreSettings"><strong>Restore</strong></a>.
-                The planner automatically creates a fresh safety snapshot before applying the file, letting you revert instantly
-                if anything looks unexpected.
+                When you do proceed, the planner captures a fresh safety snapshot automatically, letting you revert instantly if
+                anything looks unexpected.
               </li>
             </ol>
             <p class="help-callout-note">
@@ -2698,6 +2707,61 @@
                 captures a fresh safety copy first and then loads the selected file, and the
                 <a class="help-link" href="#factoryResetButton" data-help-target="#factoryResetButton">Factory reset</a>
                 safeguard automates a pre-reset backup before clearing local data.
+              </li>
+              <li>
+                Toggle
+                <a
+                  class="help-link"
+                  href="#backupDiffToggleButton"
+                  data-help-target="#backupDiffToggleButton"
+                  data-help-highlight="#backupDiffSection"
+                >
+                  <strong>Compare versions</strong>
+                </a>
+                to open the
+                <a class="help-link" href="#backupDiffHeading" data-help-target="#backupDiffHeading">Version comparison</a>
+                workspace. Choose a
+                <a class="help-link" href="#backupDiffPrimary" data-help-target="#backupDiffPrimary">baseline</a>
+                and
+                <a class="help-link" href="#backupDiffSecondary" data-help-target="#backupDiffSecondary">comparison</a>
+                snapshot, review the
+                <a class="help-link" href="#backupDiffSummary" data-help-target="#backupDiffSummary">change summary</a>
+                and detailed
+                <a class="help-link" href="#backupDiffList" data-help-target="#backupDiffList">differences</a>, then log
+                findings in the
+                <a class="help-link" href="#backupDiffNotes" data-help-target="#backupDiffNotes">Incident notes</a>
+                field and
+                <a class="help-link" href="#backupDiffExport" data-help-target="#backupDiffExport">export</a>
+                the report for your offline archive.
+              </li>
+              <li>
+                Rehearse recoveries with the
+                <a
+                  class="help-link"
+                  href="#restoreRehearsalButton"
+                  data-help-target="#restoreRehearsalButton"
+                  data-help-highlight="#restoreRehearsalSection"
+                ><strong>Restore rehearsal</strong></a>
+                sandbox. Load either a
+                <a
+                  class="help-link"
+                  href="#restoreRehearsalModeBackup"
+                  data-help-target="#restoreRehearsalModeBackup"
+                >full-app backup</a>
+                or
+                <a
+                  class="help-link"
+                  href="#restoreRehearsalModeProject"
+                  data-help-target="#restoreRehearsalModeProject"
+                >project bundle</a>
+                into the disposable workspace, compare live data to the
+                <a
+                  class="help-link"
+                  href="#restoreRehearsalTable"
+                  data-help-target="#restoreRehearsalTable"
+                  data-help-highlight="#restoreRehearsalSection"
+                >difference table</a>
+                and confirm everything looks correct before running a full restore.
               </li>
             </ul>
         </section>
