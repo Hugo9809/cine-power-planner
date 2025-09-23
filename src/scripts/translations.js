@@ -412,6 +412,10 @@ const texts = {
       "Differences detected: %s. The sandbox was cleared automatically.",
     restoreRehearsalError:
       "Restore rehearsal failed. Check the file and try again.",
+    restoreRehearsalBackupMismatch:
+      "File doesn't look like a full app backup. Double-check the source and try again.",
+    restoreRehearsalProjectMismatch:
+      "File doesn't look like a project bundle. Double-check the source and try again.",
     restoreRehearsalTableCaption: "Backup rehearsal comparison",
     restoreRehearsalMetricColumn: "Data type",
     restoreRehearsalLiveColumn: "Live profile",
@@ -1826,6 +1830,10 @@ const texts = {
       "Differenze rilevate: %s. La sandbox è stata eliminata automaticamente.",
     restoreRehearsalError:
       "Prova di ripristino non riuscita. Controlla il file e riprova.",
+    restoreRehearsalBackupMismatch:
+      "File doesn't look like a full app backup. Double-check the source and try again.",
+    restoreRehearsalProjectMismatch:
+      "File doesn't look like a project bundle. Double-check the source and try again.",
     restoreRehearsalTableCaption: "Confronto prova di ripristino",
     restoreRehearsalMetricColumn: "Tipo di dato",
     restoreRehearsalLiveColumn: "Profilo attivo",
@@ -2819,6 +2827,10 @@ const texts = {
       "Se detectaron diferencias: %s. La sandbox se eliminó automáticamente.",
     restoreRehearsalError:
       "El ensayo de restauración falló. Revisa el archivo e inténtalo de nuevo.",
+    restoreRehearsalBackupMismatch:
+      "File doesn't look like a full app backup. Double-check the source and try again.",
+    restoreRehearsalProjectMismatch:
+      "File doesn't look like a project bundle. Double-check the source and try again.",
     restoreRehearsalTableCaption: "Comparación del ensayo de restauración",
     restoreRehearsalMetricColumn: "Tipo de dato",
     restoreRehearsalLiveColumn: "Perfil en vivo",
@@ -3814,6 +3826,10 @@ const texts = {
       "Des différences ont été détectées : %s. La sandbox a été supprimée automatiquement.",
     restoreRehearsalError:
       "La simulation de restauration a échoué. Vérifiez le fichier et réessayez.",
+    restoreRehearsalBackupMismatch:
+      "File doesn't look like a full app backup. Double-check the source and try again.",
+    restoreRehearsalProjectMismatch:
+      "File doesn't look like a project bundle. Double-check the source and try again.",
     restoreRehearsalTableCaption: "Comparaison de la simulation de restauration",
     restoreRehearsalMetricColumn: "Type de donnée",
     restoreRehearsalLiveColumn: "Profil actif",
@@ -4812,6 +4828,10 @@ const texts = {
       "Abweichungen gefunden: %s. Die Sandbox wurde automatisch gelöscht.",
     restoreRehearsalError:
       "Wiederherstellungsprobe fehlgeschlagen. Prüfe die Datei und versuche es erneut.",
+    restoreRehearsalBackupMismatch:
+      "File doesn't look like a full app backup. Double-check the source and try again.",
+    restoreRehearsalProjectMismatch:
+      "File doesn't look like a project bundle. Double-check the source and try again.",
     restoreRehearsalTableCaption: "Vergleich der Wiederherstellungsprobe",
     restoreRehearsalMetricColumn: "Datenart",
     restoreRehearsalLiveColumn: "Live-Profil",
