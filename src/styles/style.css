@@ -2083,6 +2083,79 @@ body.high-contrast .settings-tab[aria-selected="true"] {
   margin-top: 0;
 }
 
+.auto-gear-highlight-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--icon-gap);
+  margin: 0;
+  border: 1px solid color-mix(in srgb, var(--accent-color) 45%, transparent);
+  background: color-mix(in srgb, var(--surface-color) 92%, var(--accent-color) 8%);
+  color: var(--control-text);
+  font-weight: var(--font-weight-medium);
+  justify-content: flex-start;
+  padding-inline: calc(var(--button-padding-inline) * 0.9);
+  min-width: 0;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.auto-gear-highlight-toggle .btn-icon {
+  margin-inline-end: var(--icon-gap);
+  color: currentColor;
+}
+
+.auto-gear-highlight-toggle:hover,
+.auto-gear-highlight-toggle:focus-visible {
+  background: var(--accent-color);
+  color: var(--inverse-text-color);
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-color) 35%, transparent);
+}
+
+.auto-gear-highlight-toggle:focus-visible {
+  outline: none;
+}
+
+.auto-gear-highlight-toggle.is-active {
+  background: var(--accent-color);
+  color: var(--inverse-text-color);
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-color) 45%, transparent);
+}
+
+.auto-gear-highlight-toggle:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.auto-gear-highlight-state {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-inline-start: calc(var(--icon-gap) * 1.4);
+  padding: 0.15em 0.6em;
+  border-radius: 999px;
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-xs));
+  line-height: 1.2;
+  font-weight: var(--font-weight-medium);
+  border: 1px solid color-mix(in srgb, var(--accent-color) 35%, transparent);
+  background: color-mix(in srgb, var(--accent-color) 18%, transparent);
+  color: currentColor;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.auto-gear-highlight-toggle.is-active .auto-gear-highlight-state {
+  background: color-mix(in srgb, var(--inverse-text-color) 18%, transparent);
+  border-color: color-mix(in srgb, var(--inverse-text-color) 35%, transparent);
+  color: var(--inverse-text-color);
+}
+
+.auto-gear-highlight-toggle:disabled .auto-gear-highlight-state {
+  opacity: 0.7;
+}
+
 .auto-gear-backups {
   margin-top: 16px;
   padding: 16px;

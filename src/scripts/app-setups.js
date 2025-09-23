@@ -3513,6 +3513,8 @@ const AUTO_GEAR_HIGHLIGHT_ICON = '\uE8AF';
 const AUTO_GEAR_HIGHLIGHT_LABEL_FALLBACK = 'Highlight automatic gear';
 const AUTO_GEAR_HIGHLIGHT_HELP_FALLBACK =
     'Toggle a temporary color overlay for gear added by automatic rules. Useful while debugging gear rule behavior.';
+const AUTO_GEAR_HIGHLIGHT_STATE_ON_FALLBACK = 'On';
+const AUTO_GEAR_HIGHLIGHT_STATE_OFF_FALLBACK = 'Off';
 const AUTO_GEAR_RULE_BADGE_NAMED_FALLBACK = 'Rule: %s';
 const AUTO_GEAR_RULE_BADGE_UNNAMED_FALLBACK = 'Automatic rule';
 const AUTO_GEAR_RULE_COLOR_PALETTE = Object.freeze([
@@ -3723,6 +3725,8 @@ function canHighlightAutoGear() {
 function ensureAutoGearHighlightToggleStructure(toggle) {
     if (!toggle) return null;
 
+    toggle.classList.add('auto-gear-highlight-toggle', 'gear-list-action-btn');
+
     const iconClass = 'auto-gear-highlight-icon';
     let icon = toggle.querySelector(`.${iconClass}`);
     if (!icon) {
@@ -3760,13 +3764,46 @@ function ensureAutoGearHighlightToggleStructure(toggle) {
         toggle.appendChild(label);
     }
 
+    let state = toggle.querySelector('.auto-gear-highlight-state');
+    if (!state) {
+        state = document.createElement('span');
+        state.className = 'auto-gear-highlight-state';
+        if (typeof label.after === 'function') {
+            label.after(state);
+        } else {
+            toggle.appendChild(state);
+        }
+    }
+    if (state) {
+        state.setAttribute('aria-live', 'polite');
+        state.setAttribute('aria-atomic', 'true');
+    }
+
     const textNodes = Array.from(toggle.childNodes || [])
         .filter(node => node && node.nodeType === 3 && node.textContent && node.textContent.trim().length);
     textNodes.forEach(node => {
         toggle.removeChild(node);
     });
 
-    return label;
+    if (state && typeof label !== 'undefined' && label && state.previousElementSibling !== label) {
+        if (typeof label.after === 'function') {
+            label.after(state);
+        }
+    }
+
+    return { label, state };
+}
+
+function getAutoGearHighlightStateText(isActive) {
+    const key = isActive ? 'autoGearHighlightToggleStateOn' : 'autoGearHighlightToggleStateOff';
+    const fallback = isActive ? AUTO_GEAR_HIGHLIGHT_STATE_ON_FALLBACK : AUTO_GEAR_HIGHLIGHT_STATE_OFF_FALLBACK;
+    const localized = typeof getLocalizedText === 'function'
+        ? getLocalizedText(key)
+        : '';
+    if (typeof localized === 'string' && localized.trim()) {
+        return localized.trim();
+    }
+    return fallback;
 }
 
 function setAutoGearHighlightEnabled(enabled) {
@@ -3782,7 +3819,9 @@ function updateAutoGearHighlightToggleButton() {
     if (!toggle) return;
     const label = getAutoGearHighlightLabel();
     const help = getAutoGearHighlightHelp();
-    const labelContainer = ensureAutoGearHighlightToggleStructure(toggle);
+    const structure = ensureAutoGearHighlightToggleStructure(toggle);
+    const labelContainer = structure && structure.label;
+    const stateContainer = structure && structure.state;
     if (labelContainer) {
         labelContainer.textContent = label;
     } else if (typeof toggle.textContent === 'string') {
@@ -3794,6 +3833,13 @@ function updateAutoGearHighlightToggleButton() {
     toggle.setAttribute('data-help', help);
     toggle.setAttribute('aria-label', help);
     const active = isAutoGearHighlightEnabled();
+    const stateText = getAutoGearHighlightStateText(active);
+    if (stateContainer) {
+        stateContainer.textContent = stateText;
+        stateContainer.setAttribute('data-state', active ? 'on' : 'off');
+    }
+    toggle.setAttribute('data-state', active ? 'on' : 'off');
+    toggle.setAttribute('data-state-label', stateText);
     toggle.setAttribute('aria-pressed', active ? 'true' : 'false');
     toggle.classList.toggle('is-active', active);
     const available = canHighlightAutoGear();

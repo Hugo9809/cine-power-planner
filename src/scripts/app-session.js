@@ -9,7 +9,7 @@
           autoGearConditionSelect, updateAutoGearConditionAddButtonState,
           autoGearConditionAddButton, addAutoGearConditionFromPicker,
           autoGearConditionList, removeAutoGearCondition,
-          handleAutoGearConditionShortcut,
+          handleAutoGearConditionShortcut, loadAutoGearRules,
           isAutoGearHighlightEnabled, setAutoGearHighlightEnabled,
           updateAutoGearHighlightToggleButton,
           clearUiCacheStorageEntries, __cineGlobal, humanizeKey */
