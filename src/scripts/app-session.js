@@ -4741,7 +4741,9 @@ function updateGearListFilterEntries(entries = []) {
     if (!entryId) return;
     const entry = entryMap.get(entryId);
     if (!entry) return;
-    span.textContent = formatFilterEntryText(entry);
+    const hideSize = span.hasAttribute('data-filter-hide-size');
+    const displayEntry = hideSize ? { ...entry, size: '' } : entry;
+    span.textContent = formatFilterEntryText(displayEntry);
     span.setAttribute('data-gear-name', entry.gearName);
     span.setAttribute('data-filter-label', entry.label);
     if (entry.type) {
@@ -4839,7 +4841,15 @@ function renderGearListFilterDetails(details) {
     if (gearName) heading.setAttribute('data-gear-name', gearName);
     if (label) heading.setAttribute('data-filter-label', label);
     if (type) heading.setAttribute('data-filter-type', type);
-    const displaySize = size && label && label.includes(size) ? '' : size;
+    const shouldHideSize = !!needsSize;
+    if (shouldHideSize) {
+      heading.setAttribute('data-filter-hide-size', '');
+    } else {
+      heading.removeAttribute('data-filter-hide-size');
+    }
+    const displaySize = shouldHideSize
+      ? ''
+      : (size && label && label.includes(size) ? '' : size);
     const displayValues = Array.isArray(values) ? values : undefined;
     if (label) {
       heading.textContent = formatFilterEntryText({
