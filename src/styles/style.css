@@ -6139,12 +6139,12 @@ body.light-mode #sideMenu button[data-sidebar-action]:focus-visible {
   html,
   body,
   #overviewDialogContent {
-    --status-warning-text-color: #ffffff !important;
+    --status-warning-text-color: #000 !important;
     --status-error-text-color: #000 !important;
   }
 
   .status-message--warning {
-    color: #ffffff !important;
+    color: #000 !important;
   }
 
   .status-message--danger {
