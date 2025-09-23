@@ -4199,52 +4199,79 @@ function importAllData(allData, options = {}) {
   }
 }
 
+const STORAGE_API = {
+  getSafeLocalStorage,
+  loadDeviceData,
+  saveDeviceData,
+  loadSetups,
+  saveSetups,
+  saveSetup,
+  loadSetup,
+  deleteSetup,
+  renameSetup,
+  loadProject,
+  saveProject,
+  deleteProject,
+  loadSessionState,
+  saveSessionState,
+  loadFavorites,
+  saveFavorites,
+  loadAutoGearBackups,
+  saveAutoGearBackups,
+  loadFeedback,
+  saveFeedback,
+  clearAllData,
+  exportAllData,
+  importAllData,
+  loadAutoGearRules,
+  saveAutoGearRules,
+  loadAutoGearSeedFlag,
+  saveAutoGearSeedFlag,
+  loadAutoGearPresets,
+  saveAutoGearPresets,
+  loadAutoGearActivePresetId,
+  saveAutoGearActivePresetId,
+  loadAutoGearAutoPresetId,
+  saveAutoGearAutoPresetId,
+  loadAutoGearBackupVisibility,
+  saveAutoGearBackupVisibility,
+  loadFullBackupHistory,
+  saveFullBackupHistory,
+  recordFullBackupHistoryEntry,
+  requestPersistentStorage,
+  clearUiCacheStorageEntries,
+};
+
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = {
-    getSafeLocalStorage,
-    loadDeviceData,
-    saveDeviceData,
-    loadSetups,
-    saveSetups,
-    saveSetup,
-    loadSetup,
-    deleteSetup,
-    renameSetup,
-    loadProject,
-    saveProject,
-    deleteProject,
-    loadSessionState,
-    saveSessionState,
-    loadFavorites,
-    saveFavorites,
-    loadAutoGearBackups,
-    saveAutoGearBackups,
-    loadFeedback,
-    saveFeedback,
-    clearAllData,
-    exportAllData,
-    importAllData,
-    loadAutoGearRules,
-    saveAutoGearRules,
-    loadAutoGearSeedFlag,
-    saveAutoGearSeedFlag,
-    loadAutoGearPresets,
-    saveAutoGearPresets,
-    loadAutoGearActivePresetId,
-    saveAutoGearActivePresetId,
-    loadAutoGearAutoPresetId,
-    saveAutoGearAutoPresetId,
-    loadAutoGearBackupVisibility,
-    saveAutoGearBackupVisibility,
-    loadFullBackupHistory,
-    saveFullBackupHistory,
-    recordFullBackupHistoryEntry,
-    requestPersistentStorage,
-    clearUiCacheStorageEntries,
-  };
+  module.exports = STORAGE_API;
 }
 
-if (GLOBAL_SCOPE) {
+if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE === 'object') {
+  Object.keys(STORAGE_API).forEach((key) => {
+    const value = STORAGE_API[key];
+    if (typeof value !== 'function') {
+      return;
+    }
+    if (typeof GLOBAL_SCOPE[key] === 'function') {
+      return;
+    }
+    try {
+      GLOBAL_SCOPE[key] = value;
+    } catch (assignmentError) {
+      try {
+        Object.defineProperty(GLOBAL_SCOPE, key, {
+          configurable: true,
+          writable: true,
+          value,
+        });
+      } catch (definitionError) {
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn(`Unable to expose storage helper ${key} globally.`, definitionError);
+        }
+      }
+    }
+  });
+
   try {
     if (typeof GLOBAL_SCOPE.recordFullBackupHistoryEntry !== 'function') {
       GLOBAL_SCOPE.recordFullBackupHistoryEntry = recordFullBackupHistoryEntry;
