@@ -46,6 +46,20 @@
   --button-link-padding-inline: 12px;
   --icon-gap: 0.3em;
   --button-icon-gap: 0.375em;
+  --install-banner-font-scale: var(--font-scale-xs);
+  --install-banner-line-height: 1.3;
+  --install-banner-padding-block: var(--spacing-2xs);
+  --install-banner-padding-inline: var(--spacing-lg);
+  --install-banner-gap: var(--spacing-xs);
+  --install-banner-font-size: calc(var(--font-size-base) * var(--install-banner-font-scale));
+  --install-banner-offset: calc(
+    max(
+        calc(var(--install-banner-line-height) * var(--install-banner-font-size)),
+        var(--icon-size-md)
+      ) +
+    (var(--install-banner-padding-block) * 2) +
+    env(safe-area-inset-top, 0px)
+  );
   --form-control-font-size: var(--font-size-relative-base);
   --form-label-width: 150px;
   --form-label-min-width: 120px;
@@ -285,18 +299,21 @@ textarea {
   right: 0;
   background: var(--accent-color);
   color: var(--install-banner-text-color, var(--inverse-text-color));
-  padding: var(--spacing-sm) var(--spacing-xl);
+  padding:
+    calc(var(--install-banner-padding-block) + env(safe-area-inset-top, 0px))
+    var(--install-banner-padding-inline)
+    var(--install-banner-padding-block);
   z-index: 999;
   border-radius: 0;
-  line-height: 1.35;
+  line-height: var(--install-banner-line-height);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.14);
   display: none;
   flex-wrap: nowrap;
   align-items: center;
   justify-content: center;
-  gap: var(--spacing-sm);
+  gap: var(--install-banner-gap);
   text-align: center;
-  font-size: calc(var(--font-size-base) * var(--font-scale-sm));
+  font-size: var(--install-banner-font-size);
 }
 
 #installPromptBanner:not([hidden]) {
@@ -310,6 +327,21 @@ textarea {
   #installPromptBanner .install-banner-dismiss {
     align-self: flex-start;
   }
+}
+
+#installPromptBanner:not([hidden]) ~ #topBar {
+  margin-top: var(--install-banner-offset);
+  --top-bar-offset: var(--install-banner-offset);
+}
+
+#installPromptBanner:not([hidden]) ~ #sideMenu {
+  top: var(--install-banner-offset);
+  height: calc(100% - var(--install-banner-offset));
+}
+
+#installPromptBanner:not([hidden]) ~ #menuOverlay {
+  top: var(--install-banner-offset);
+  height: calc(100% - var(--install-banner-offset));
 }
 
 #installPromptBanner .install-banner-action,
@@ -332,10 +364,10 @@ textarea {
   display: inline-flex;
   align-items: center;
   justify-content: flex-start;
-  gap: var(--spacing-sm);
+  gap: var(--install-banner-gap);
   text-align: left;
   flex: 1 1 220px;
-  padding: var(--spacing-xs) var(--spacing-md);
+  padding: var(--spacing-2xs) var(--spacing-sm);
 }
 
 #installPromptBanner .install-banner-action .install-banner-icon {
@@ -3309,7 +3341,7 @@ input[type="file"]:disabled::-webkit-file-upload-button {
 /* Top bar */
 #topBar {
   position: sticky;
-  top: 0;
+  top: var(--top-bar-offset, 0);
   padding: 5px 20px;
   display: flex;
   align-items: center;
