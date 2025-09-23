@@ -341,6 +341,13 @@ table, th, td {
   break-inside: avoid;
 }
 
+#overviewDialogContent .requirement-box,
+#overviewDialogContent.dark-mode .requirement-box,
+body.dark-mode #overviewDialogContent .requirement-box {
+  --requirement-accent-color: var(--accent-color);
+  color: var(--text-color);
+}
+
 #overviewDialogContent .requirements-grid .requirement-box .req-icon {
   --req-icon-size: 1.8rem;
   margin-bottom: 0.35em;
