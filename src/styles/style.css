@@ -4716,8 +4716,13 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .settings-content.modal-surface
 
 body:not(.dark-mode) .requirement-box,
 #overviewDialogContent:not(.dark-mode) .requirement-box,
-#projectRequirementsOutput:not(.dark-mode) .requirement-box {
+body:not(.dark-mode) #projectRequirementsOutput .requirement-box {
   --requirement-accent-color: var(--accent-color);
+}
+
+body.dark-mode .requirement-box,
+#overviewDialogContent.dark-mode .requirement-box {
+  --requirement-accent-color: var(--inverse-text-color);
 }
 
 /* Let project scenarios span the full row for clarity */
