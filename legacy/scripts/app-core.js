@@ -425,6 +425,7 @@ var AUTO_GEAR_CUSTOM_CATEGORY = '';
 var GEAR_LIST_CATEGORIES = ['Camera', 'Camera Support', 'Media', 'Lens', 'Lens Support', 'Matte box + filter', 'LDS (FIZ)', 'Camera Batteries', 'Monitoring Batteries', 'Chargers', 'Monitoring', 'Monitoring support', 'Rigging', 'Power', 'Grip', 'Carts and Transportation', 'Miscellaneous', 'Consumables'];
 var AUTO_GEAR_SELECTOR_TYPES = ['none', 'monitor', 'directorMonitor'];
 var AUTO_GEAR_SELECTOR_TYPE_SET = new Set(AUTO_GEAR_SELECTOR_TYPES);
+var AUTO_GEAR_MONITOR_FALLBACKS = ['SmallHD Ultra 7', 'SmallHD Focus', 'SmallHD Cine 7'];
 function generateAutoGearId(prefix) {
   var base = prefix || 'rule';
   if (typeof crypto !== 'undefined' && crypto.randomUUID) {
@@ -545,6 +546,12 @@ function getAutoGearSelectorScrollHint() {
   var _texts$en4;
   var langTexts = texts[currentLang] || texts.en || {};
   return langTexts.autoGearSelectorScrollHint || ((_texts$en4 = texts.en) === null || _texts$en4 === void 0 ? void 0 : _texts$en4.autoGearSelectorScrollHint) || 'Scroll to see more devices.';
+}
+
+function getAutoGearSelectorDefaultPlaceholder() {
+  var _texts$en5;
+  var langTexts = texts[currentLang] || texts.en || {};
+  return langTexts.autoGearSelectorDefaultPlaceholder || ((_texts$en5 = texts.en) === null || _texts$en5 === void 0 ? void 0 : _texts$en5.autoGearSelectorDefaultPlaceholder) || 'Choose a default device';
 }
 function isAutoGearMonitoringCategory(value) {
   if (typeof value !== 'string') return false;
@@ -2120,12 +2127,15 @@ function collectAutoGearCatalogNames() {
 }
 function normalizeAutoGearMonitorCatalogMode(value) {
   var normalized = normalizeAutoGearSelectorType(value);
-  return normalized === 'directorMonitor' ? 'directorMonitor' : 'monitor';
+  if (normalized === 'monitor') return 'monitor';
+  if (normalized === 'directorMonitor') return 'directorMonitor';
+  return 'none';
 }
-var autoGearMonitorCatalogMode = 'monitor';
+var autoGearMonitorCatalogMode = 'none';
 function collectAutoGearMonitorNames() {
   var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : autoGearMonitorCatalogMode;
   var mode = normalizeAutoGearMonitorCatalogMode(type);
+  if (mode === 'none') return [];
   var includeMonitor = mode === 'monitor';
   var includeDirectorMonitor = mode === 'directorMonitor';
   var acceptedTypes = new Set();
@@ -2163,18 +2173,69 @@ function collectAutoGearMonitorNames() {
     (rule.add || []).forEach(processItem);
     (rule.remove || []).forEach(processItem);
   });
+  AUTO_GEAR_MONITOR_FALLBACKS.forEach(addName);
   return Array.from(names).sort(localeSort);
 }
 function updateAutoGearMonitorCatalogOptions() {
   var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : autoGearMonitorCatalogMode;
-  if (!autoGearMonitorCatalog) return;
+  var targetElements = arguments.length > 1 ? arguments[1] : undefined;
   autoGearMonitorCatalogMode = normalizeAutoGearMonitorCatalogMode(type);
-  var names = collectAutoGearMonitorNames(autoGearMonitorCatalogMode);
-  autoGearMonitorCatalog.innerHTML = '';
-  names.forEach(function (name) {
-    var option = document.createElement('option');
-    option.value = name;
-    autoGearMonitorCatalog.appendChild(option);
+  var targets = Array.isArray(targetElements) ? targetElements.filter(Boolean) : targetElements ? [targetElements] : autoGearMonitorDefaultGroups.map(function (group) {
+    return group.selectorDefaultInput;
+  }).filter(Boolean);
+  targets.forEach(function (select) {
+    var relatedGroup = autoGearMonitorDefaultGroups.find(function (group) {
+      return group.selectorDefaultInput === select;
+    });
+    var selectorType = relatedGroup && relatedGroup.selectorTypeSelect ? relatedGroup.selectorTypeSelect.value : autoGearMonitorCatalogMode;
+    var mode = normalizeAutoGearMonitorCatalogMode(selectorType);
+    var names = mode === 'none' ? [] : collectAutoGearMonitorNames(mode);
+    var previousValue = select.value || '';
+    var preferredValue = typeof select.dataset.autoGearPreferredDefault === 'string' ? select.dataset.autoGearPreferredDefault : '';
+    if (Object.prototype.hasOwnProperty.call(select.dataset, 'autoGearPreferredDefault')) {
+      delete select.dataset.autoGearPreferredDefault;
+    }
+    var placeholder = getAutoGearSelectorDefaultPlaceholder();
+    select.innerHTML = '';
+    var placeholderOption = document.createElement('option');
+    placeholderOption.value = '';
+    placeholderOption.textContent = placeholder;
+    select.appendChild(placeholderOption);
+    var added = new Set(['']);
+    var addOption = function addOption(name) {
+      if (typeof name !== 'string') return;
+      var trimmed = name.trim();
+      if (!trimmed || added.has(trimmed)) return;
+      var option = document.createElement('option');
+      option.value = trimmed;
+      option.textContent = trimmed;
+      select.appendChild(option);
+      added.add(trimmed);
+    };
+    names.forEach(addOption);
+    var desiredValue = preferredValue || previousValue;
+    if (desiredValue && !added.has(desiredValue)) {
+      addOption(desiredValue);
+    } else if (!desiredValue && previousValue && !added.has(previousValue)) {
+      addOption(previousValue);
+    }
+    if (desiredValue && added.has(desiredValue)) {
+      select.value = desiredValue;
+    } else if (previousValue && added.has(previousValue)) {
+      select.value = previousValue;
+    } else {
+      select.value = '';
+    }
+    var enableSelection = mode !== 'none' && select.options.length > 1;
+    select.disabled = !enableSelection;
+    var scrollHint = getAutoGearSelectorScrollHint();
+    if (enableSelection && names.length > 10) {
+      select.setAttribute('title', scrollHint);
+      select.setAttribute('data-help', scrollHint);
+    } else {
+      select.removeAttribute('title');
+      select.removeAttribute('data-help');
+    }
   });
 }
 var getCssVariableValue = function getCssVariableValue(name) {
@@ -8412,7 +8473,6 @@ var autoGearRemoveList = document.getElementById('autoGearRemoveList');
 var autoGearSaveRuleButton = document.getElementById('autoGearSaveRule');
 var autoGearCancelEditButton = document.getElementById('autoGearCancelEdit');
 var autoGearItemCatalog = document.getElementById('autoGearItemCatalog');
-var autoGearMonitorCatalog = document.getElementById('autoGearMonitorCatalog');
 function enableAutoGearMultiSelectToggle(select) {
   if (!select || !select.multiple) return;
   var handlePointerToggle = function handlePointerToggle(event) {
@@ -8488,6 +8548,15 @@ var autoGearRemoveMonitorFieldGroup = {
   selectorDefaultField: autoGearRemoveSelectorDefaultField,
   selectorDefaultInput: autoGearRemoveSelectorDefaultInput
 };
+var autoGearMonitorDefaultGroups = [{
+  selectorTypeSelect: autoGearAddSelectorTypeSelect,
+  selectorDefaultInput: autoGearAddSelectorDefaultInput
+}, {
+  selectorTypeSelect: autoGearRemoveSelectorTypeSelect,
+  selectorDefaultInput: autoGearRemoveSelectorDefaultInput
+}].filter(function (group) {
+  return group.selectorDefaultInput;
+});
 function syncAutoGearMonitorFieldVisibility() {
   updateAutoGearMonitorFieldGroup(autoGearAddMonitorFieldGroup);
   updateAutoGearMonitorFieldGroup(autoGearRemoveMonitorFieldGroup);
@@ -10097,9 +10166,12 @@ function resetAutoGearDraftInputs(type) {
   if (screenSizeInput) screenSizeInput.value = '';
   if (selectorTypeSelect) selectorTypeSelect.value = 'none';
   if (selectorDefaultInput) selectorDefaultInput.value = '';
+  if (selectorDefaultInput && Object.prototype.hasOwnProperty.call(selectorDefaultInput.dataset, 'autoGearPreferredDefault')) {
+    delete selectorDefaultInput.dataset.autoGearPreferredDefault;
+  }
   if (notesInput) notesInput.value = '';
   var selectorTypeValue = selectorTypeSelect ? selectorTypeSelect.value : 'none';
-  updateAutoGearMonitorCatalogOptions(selectorTypeValue);
+  updateAutoGearMonitorCatalogOptions(selectorTypeValue, selectorDefaultInput);
 }
 function updateAutoGearItemButtonState(type) {
   var _autoGearEditorActive, _texts$en196, _texts$en197;
@@ -10158,9 +10230,14 @@ function populateAutoGearDraftForm(type, item) {
   if (selectorTypeSelect) {
     var selectorValue = isMonitoring ? snapshot.selectorType || 'none' : 'none';
     selectorTypeSelect.value = selectorValue;
-    updateAutoGearMonitorCatalogOptions(selectorValue);
-  }
-  if (selectorDefaultInput) {
+    if (selectorDefaultInput) {
+      selectorDefaultInput.dataset.autoGearPreferredDefault = isMonitoring ? snapshot.selectorDefault || '' : '';
+    }
+    updateAutoGearMonitorCatalogOptions(selectorValue, selectorDefaultInput);
+    if (selectorDefaultInput) {
+      selectorDefaultInput.value = isMonitoring ? snapshot.selectorDefault || '' : '';
+    }
+  } else if (selectorDefaultInput) {
     selectorDefaultInput.value = isMonitoring ? snapshot.selectorDefault || '' : '';
   }
   if (notesInput) notesInput.value = snapshot.notes || '';

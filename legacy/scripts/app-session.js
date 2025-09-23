@@ -1339,12 +1339,14 @@ if (settingsButton && settingsDialog) {
   var bindAutoGearSelectorCatalogSync = function bindAutoGearSelectorCatalogSync(typeSelect, defaultInput) {
     if (!typeSelect) return;
     var refreshCatalog = function refreshCatalog() {
-      updateAutoGearMonitorCatalogOptions(typeSelect.value);
+      updateAutoGearMonitorCatalogOptions(typeSelect.value, defaultInput);
     };
     typeSelect.addEventListener('change', refreshCatalog);
     if (defaultInput) {
       defaultInput.addEventListener('focus', refreshCatalog);
+      defaultInput.addEventListener('click', refreshCatalog);
     }
+    refreshCatalog();
   };
   bindAutoGearSelectorCatalogSync(autoGearAddSelectorTypeSelect, autoGearAddSelectorDefaultInput);
   bindAutoGearSelectorCatalogSync(autoGearRemoveSelectorTypeSelect, autoGearRemoveSelectorDefaultInput);
