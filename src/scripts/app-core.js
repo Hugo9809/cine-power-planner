@@ -18877,6 +18877,11 @@ function renderSetupDiagram() {
   const svgEl = setupDiagramContainer.querySelector('svg');
   if (svgEl) {
     svgEl.style.width = '100%';
+    const containerRect = setupDiagramContainer.getBoundingClientRect();
+    const parentRect = setupDiagramContainer.parentElement?.getBoundingClientRect();
+    const containerWidth = containerRect?.width || setupDiagramContainer.clientWidth || 0;
+    const parentWidth = parentRect?.width || 0;
+    let maxWidthPx = 0;
     if (!isTouchDevice) {
       const bodyFontSize = parseFloat(getComputedStyle(document.body).fontSize) || 16;
       let diagramFontSizePx = Number.NaN;
@@ -18896,7 +18901,19 @@ function renderSetupDiagram() {
         : DEFAULT_MAX_NODE_FONT;
       const maxAutoScale = bodyFontSize / referenceFontSize;
       const scaleFactor = Math.max(1, maxAutoScale);
-      svgEl.style.maxWidth = `${viewWidth * scaleFactor}px`;
+      maxWidthPx = viewWidth * scaleFactor;
+    } else {
+      maxWidthPx = viewWidth;
+    }
+
+    const minTarget = Math.max(containerWidth, parentWidth);
+    if (minTarget > 0 && (!Number.isFinite(maxWidthPx) || maxWidthPx < minTarget)) {
+      maxWidthPx = minTarget;
+    }
+    if (Number.isFinite(maxWidthPx) && maxWidthPx > 0) {
+      svgEl.style.maxWidth = `${maxWidthPx}px`;
+    } else {
+      svgEl.style.maxWidth = '100%';
     }
 
     const rootEl = svgEl.querySelector('#diagramRoot');
