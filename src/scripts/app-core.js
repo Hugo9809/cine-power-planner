@@ -452,6 +452,9 @@ const GEAR_LIST_CATEGORIES = [
 const AUTO_GEAR_SELECTOR_TYPES = ['none', 'monitor', 'directorMonitor'];
 const AUTO_GEAR_SELECTOR_TYPE_SET = new Set(AUTO_GEAR_SELECTOR_TYPES);
 
+let autoGearAddSelectorDefaultInput;
+let autoGearRemoveSelectorDefaultInput;
+
 /**
  * Produce a deterministic-looking id for Auto Gear rules/presets.
  *
@@ -700,11 +703,16 @@ function updateAutoGearMonitorFieldGroup(group) {
   managedFields.forEach(field => {
     setAutoGearFieldVisibility(field, isMonitoring);
   });
+  const normalizedSelectorType = selectorTypeSelect
+    ? normalizeAutoGearSelectorType(selectorTypeSelect.value)
+    : 'none';
   if (!isMonitoring) {
     if (screenSizeInput) screenSizeInput.value = '';
     if (selectorTypeSelect) selectorTypeSelect.value = 'none';
     if (selectorDefaultInput) selectorDefaultInput.value = '';
     if (selectorIncludeCheckbox) selectorIncludeCheckbox.checked = false;
+  } else if (selectorDefaultInput && normalizedSelectorType !== 'none') {
+    updateAutoGearMonitorCatalogOptions(normalizedSelectorType, selectorDefaultInput);
   }
 }
 
@@ -2264,7 +2272,88 @@ function normalizeAutoGearMonitorCatalogMode(value) {
 
 let autoGearMonitorCatalogMode = 'monitor';
 
-function collectAutoGearMonitorNames(type = autoGearMonitorCatalogMode) {
+function parseMonitorScreenSize(entry) {
+  if (!entry || typeof entry !== 'object') return NaN;
+  const raw = Object.prototype.hasOwnProperty.call(entry, 'screenSizeInches')
+    ? entry.screenSizeInches
+    : Object.prototype.hasOwnProperty.call(entry, 'screenSize')
+      ? entry.screenSize
+      : null;
+  if (typeof raw === 'number') {
+    return Number.isFinite(raw) ? raw : NaN;
+  }
+  if (typeof raw === 'string') {
+    const parsed = parseFloat(raw.replace(/[^0-9.-]/g, ''));
+    return Number.isFinite(parsed) ? parsed : NaN;
+  }
+  return NaN;
+}
+
+function shouldIncludeMonitorOption(mode, entry) {
+  const size = parseMonitorScreenSize(entry);
+  if (!Number.isFinite(size)) return true;
+  if (mode === 'monitor') return size <= 10;
+  if (mode === 'directorMonitor') return size > 10;
+  return true;
+}
+
+let cachedFallbackDeviceCatalog;
+
+function resolveFallbackDeviceCatalog() {
+  if (cachedFallbackDeviceCatalog !== undefined) {
+    return cachedFallbackDeviceCatalog;
+  }
+
+  cachedFallbackDeviceCatalog = null;
+  if (typeof require === 'function') {
+    try {
+      const devicesCatalog = require('../data');
+      if (devicesCatalog && typeof devicesCatalog === 'object') {
+        cachedFallbackDeviceCatalog = devicesCatalog;
+      }
+    } catch (error) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Unable to load fallback device catalog.', error);
+      }
+    }
+  }
+
+  return cachedFallbackDeviceCatalog;
+}
+
+function hasMonitorEntries(catalog) {
+  if (!catalog || typeof catalog !== 'object') return false;
+  const hasEntries = entry => {
+    if (!entry || typeof entry !== 'object') return false;
+    return Object.keys(entry).some(name => name && name !== 'None');
+  };
+  if (hasEntries(catalog.monitors)) return true;
+  if (hasEntries(catalog.directorMonitors)) return true;
+  return false;
+}
+
+function resolveMonitorCatalogs(primaryCatalog) {
+  const catalog = primaryCatalog && typeof primaryCatalog === 'object' ? primaryCatalog : null;
+  const fallbackCatalog = resolveFallbackDeviceCatalog();
+  const selectCatalog = key => {
+    const primaryDb = catalog && catalog[key] && typeof catalog[key] === 'object' ? catalog[key] : null;
+    if (hasMonitorEntries({ [key]: primaryDb })) return primaryDb;
+
+    const fallbackDb = fallbackCatalog && fallbackCatalog[key] && typeof fallbackCatalog[key] === 'object'
+      ? fallbackCatalog[key]
+      : null;
+    if (hasMonitorEntries({ [key]: fallbackDb })) return fallbackDb;
+
+    return primaryDb || fallbackDb;
+  };
+
+  return {
+    monitors: selectCatalog('monitors'),
+    directorMonitors: selectCatalog('directorMonitors'),
+  };
+}
+
+function collectAutoGearMonitorNames(type = autoGearMonitorCatalogMode, forcedNames = []) {
   const mode = normalizeAutoGearMonitorCatalogMode(type);
   const includeMonitor = mode === 'monitor';
   const includeDirectorMonitor = mode === 'directorMonitor';
@@ -2274,49 +2363,106 @@ function collectAutoGearMonitorNames(type = autoGearMonitorCatalogMode) {
 
   const names = new Set();
   const addName = name => {
-    if (typeof name === 'string') {
-      const trimmed = name.trim();
-      if (trimmed) names.add(trimmed);
-    }
+    if (typeof name !== 'string') return;
+    const trimmed = name.trim();
+    if (trimmed) names.add(trimmed);
   };
-  if (includeMonitor) {
-    const monitorDb = devices && devices.monitors ? devices.monitors : null;
-    if (monitorDb && typeof monitorDb === 'object') {
-      Object.keys(monitorDb).forEach(addName);
-    }
+
+  const catalog = resolveDevicesSnapshot();
+  const { monitors: monitorDb, directorMonitors: directorDb } = resolveMonitorCatalogs(catalog);
+
+  if (includeMonitor && monitorDb && typeof monitorDb === 'object') {
+    Object.entries(monitorDb).forEach(([name, entry]) => {
+      if (!name || name === 'None') return;
+      if (!shouldIncludeMonitorOption('monitor', entry)) return;
+      addName(name);
+    });
   }
-  if (includeDirectorMonitor) {
-    const directorDb = devices && devices.directorMonitors ? devices.directorMonitors : null;
-    if (directorDb && typeof directorDb === 'object') {
-      Object.keys(directorDb)
-        .filter(name => name && name !== 'None')
-        .forEach(addName);
-    }
+
+  if (includeDirectorMonitor && directorDb && typeof directorDb === 'object') {
+    Object.entries(directorDb).forEach(([name, entry]) => {
+      if (!name || name === 'None') return;
+      if (!shouldIncludeMonitorOption('directorMonitor', entry)) return;
+      addName(name);
+    });
   }
+
+  const forced = new Set();
+  const addForcedName = value => {
+    if (typeof value !== 'string') return;
+    const trimmed = value.trim();
+    if (trimmed) forced.add(trimmed);
+  };
+
+  forcedNames.forEach(addForcedName);
+
   autoGearRules.forEach(rule => {
     const processItem = item => {
       if (!item || typeof item !== 'object') return;
       const selectorDefault = item.selectorDefault;
       if (!selectorDefault) return;
       const selectorType = normalizeAutoGearSelectorType(item.selectorType);
-      if (acceptedTypes.has(selectorType)) addName(selectorDefault);
+      if (!acceptedTypes.has(selectorType)) return;
+      addForcedName(selectorDefault);
     };
     (rule.add || []).forEach(processItem);
     (rule.remove || []).forEach(processItem);
   });
+
+  forced.forEach(addName);
+
   return Array.from(names).sort(localeSort);
 }
 
-function updateAutoGearMonitorCatalogOptions(type = autoGearMonitorCatalogMode) {
-  if (!autoGearMonitorCatalog) return;
-  autoGearMonitorCatalogMode = normalizeAutoGearMonitorCatalogMode(type);
-  const names = collectAutoGearMonitorNames(autoGearMonitorCatalogMode);
-  autoGearMonitorCatalog.innerHTML = '';
-  names.forEach(name => {
+function populateAutoGearSelectorDefaultSelect(select, names) {
+  if (!select) return;
+  const previous = typeof select.value === 'string' ? select.value : '';
+  const uniqueNames = Array.isArray(names) ? names : [];
+  select.innerHTML = '';
+
+  const emptyOption = document.createElement('option');
+  emptyOption.value = '';
+  emptyOption.textContent = '';
+  select.appendChild(emptyOption);
+
+  uniqueNames.forEach(name => {
     const option = document.createElement('option');
     option.value = name;
-    autoGearMonitorCatalog.appendChild(option);
+    option.textContent = name;
+    if (previous && previous === name) option.selected = true;
+    select.appendChild(option);
   });
+
+  if (previous && !uniqueNames.includes(previous)) {
+    const preservedOption = document.createElement('option');
+    preservedOption.value = previous;
+    preservedOption.textContent = previous;
+    preservedOption.selected = true;
+    select.appendChild(preservedOption);
+  }
+}
+
+function updateAutoGearMonitorCatalogOptions(type = autoGearMonitorCatalogMode, targetSelect) {
+  autoGearMonitorCatalogMode = normalizeAutoGearMonitorCatalogMode(type);
+  const forcedValues = [];
+  if (targetSelect && typeof targetSelect.value === 'string') {
+    forcedValues.push(targetSelect.value);
+  }
+  const names = collectAutoGearMonitorNames(autoGearMonitorCatalogMode, forcedValues);
+
+  if (autoGearMonitorCatalog) {
+    autoGearMonitorCatalog.innerHTML = '';
+    names.forEach(name => {
+      const option = document.createElement('option');
+      option.value = name;
+      autoGearMonitorCatalog.appendChild(option);
+    });
+  }
+
+  const targets = targetSelect
+    ? [targetSelect]
+    : [autoGearAddSelectorDefaultInput, autoGearRemoveSelectorDefaultInput].filter(Boolean);
+  targets.forEach(select => populateAutoGearSelectorDefaultSelect(select, names));
 }
 
 const getCssVariableValue = (name, fallback = '') => {
@@ -8949,7 +9095,7 @@ const autoGearAddCategorySelect = document.getElementById('autoGearAddCategory')
 const autoGearAddQuantityInput = document.getElementById('autoGearAddQuantity');
 const autoGearAddScreenSizeInput = document.getElementById('autoGearAddScreenSize');
 const autoGearAddSelectorTypeSelect = document.getElementById('autoGearAddSelectorType');
-const autoGearAddSelectorDefaultInput = document.getElementById('autoGearAddSelectorDefault');
+autoGearAddSelectorDefaultInput = document.getElementById('autoGearAddSelectorDefault');
 const autoGearAddSelectorIncludeCheckbox = document.getElementById('autoGearAddSelectorInclude');
 const autoGearAddNotesInput = document.getElementById('autoGearAddNotes');
 const autoGearAddItemButton = document.getElementById('autoGearAddItemButton');
@@ -8968,7 +9114,7 @@ const autoGearRemoveCategorySelect = document.getElementById('autoGearRemoveCate
 const autoGearRemoveQuantityInput = document.getElementById('autoGearRemoveQuantity');
 const autoGearRemoveScreenSizeInput = document.getElementById('autoGearRemoveScreenSize');
 const autoGearRemoveSelectorTypeSelect = document.getElementById('autoGearRemoveSelectorType');
-const autoGearRemoveSelectorDefaultInput = document.getElementById('autoGearRemoveSelectorDefault');
+autoGearRemoveSelectorDefaultInput = document.getElementById('autoGearRemoveSelectorDefault');
 const autoGearRemoveSelectorIncludeCheckbox = document.getElementById('autoGearRemoveSelectorInclude');
 const autoGearRemoveNotesInput = document.getElementById('autoGearRemoveNotes');
 const autoGearRemoveItemButton = document.getElementById('autoGearRemoveItemButton');
@@ -10027,15 +10173,23 @@ function populateAutoGearCategorySelect(select, currentValue) {
 }
 
 function updateAutoGearCatalogOptions() {
-  if (!autoGearItemCatalog) return;
-  const names = collectAutoGearCatalogNames();
-  autoGearItemCatalog.innerHTML = '';
-  names.forEach(name => {
-    const option = document.createElement('option');
-    option.value = name;
-    autoGearItemCatalog.appendChild(option);
-  });
-  updateAutoGearMonitorCatalogOptions();
+  if (autoGearItemCatalog) {
+    const names = collectAutoGearCatalogNames();
+    autoGearItemCatalog.innerHTML = '';
+    names.forEach(name => {
+      const option = document.createElement('option');
+      option.value = name;
+      autoGearItemCatalog.appendChild(option);
+    });
+  }
+
+  const addType = autoGearAddSelectorTypeSelect ? autoGearAddSelectorTypeSelect.value : undefined;
+  updateAutoGearMonitorCatalogOptions(addType, autoGearAddSelectorDefaultInput);
+
+  if (autoGearRemoveSelectorDefaultInput) {
+    const removeType = autoGearRemoveSelectorTypeSelect ? autoGearRemoveSelectorTypeSelect.value : undefined;
+    updateAutoGearMonitorCatalogOptions(removeType, autoGearRemoveSelectorDefaultInput);
+  }
 }
 
 function formatAutoGearCount(count, singularKey, pluralKey) {
