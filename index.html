@@ -1922,30 +1922,75 @@
           </h3>
           <ul>
             <li>
-              Name your project in <em>Project Overview</em> and press <strong>Save</strong> (or hit Enter/Ctrl+S/⌘S) to
-              capture the current configuration without leaving the planner. Saving with the same name updates that entry;
-              change the name first if you want to keep both versions side by side.
+              Name your project in the
+              <a
+                class="help-link"
+                href="#setupName"
+                data-help-target="#setupName"
+                data-help-highlight="#setup-manager"
+              ><em>Project Overview</em></a>
+              field and press the
+              <a
+                class="help-link button-link"
+                href="#saveSetupBtn"
+                data-help-target="#saveSetupBtn"
+                data-help-highlight="#setup-manager"
+              ><strong>Save</strong></a>
+              button (or hit Enter/Ctrl+S/⌘S) to capture the current configuration without leaving the planner. Saving with the
+              same name updates that entry; change the name first if you want to keep both versions side by side.
             </li>
             <li>
-              <strong>Export project</strong> downloads a portable JSON bundle with devices, requirements, automatic gear rules
-              and runtime feedback so you can archive or share the setup safely offline using your own storage or transfer
-              tools.
+              <a
+                class="help-link button-link"
+                href="#shareSetupBtn"
+                data-help-target="#shareSetupBtn"
+                data-help-highlight="#setup-manager"
+              ><strong>Export project</strong></a>
+              downloads a portable JSON bundle with devices, requirements, automatic gear rules and runtime feedback so you can
+              archive or share the setup safely offline using your own storage or transfer tools.
             </li>
             <li>
-              Use <strong>Import project</strong> to load any saved JSON file. Imports never overwrite your existing projects
-              until you press <strong>Save</strong>, and you can choose whether shared automatic gear rules should stay with the
-              project, update your global library or be ignored altogether.
+              Use the
+              <a
+                class="help-link button-link"
+                href="#applySharedLinkBtn"
+                data-help-target="#applySharedLinkBtn"
+                data-help-highlight="#setup-manager"
+              ><strong>Import project</strong></a>
+              control to load any saved JSON file. Imports never overwrite your existing projects until you press
+              <a
+                class="help-link button-link"
+                href="#saveSetupBtn"
+                data-help-target="#saveSetupBtn"
+                data-help-highlight="#setup-manager"
+              ><strong>Save</strong></a>
+              again, and you can choose whether shared automatic gear rules should stay with the project, update your global
+              library or be ignored altogether.
             </li>
             <li>
-              Open Settings → <em>Backup &amp; Restore</em> whenever you need a full-application snapshot. <strong>Backup</strong>
+              Open
+              <a class="help-link button-link" href="#settingsButton" data-help-target="#settingsButton">Settings</a>
+              → <em>Backup &amp; Restore</em> whenever you need a full-application snapshot.
+              <a class="help-link" href="#backupSettings" data-help-target="#backupSettings"><strong>Backup</strong></a>
               includes saved projects, device edits, preferences, favorites, automatic gear rules and runtime feedback.
-              <strong>Restore</strong> always captures a fresh safety copy before applying the selected file so nothing is lost
-              by mistake.
+              <a class="help-link" href="#restoreSettings" data-help-target="#restoreSettings"><strong>Restore</strong></a>
+              always captures a fresh safety copy before applying the selected file so nothing is lost by mistake.
             </li>
             <li>
-              Before using <strong>Force reload</strong>, <strong>Factory reset</strong> or clearing the browser cache, download
-              a backup so every project, device edit and auto-gear preset remains recoverable. Hourly background backups and the
-              10‑minute auto snapshots below add extra insurance without disrupting your workflow.
+              Before using
+              <a class="help-link" href="#reloadButton" data-help-target="#reloadButton"><strong>Force reload</strong></a>,
+              the
+              <a class="help-link" href="#factoryResetButton" data-help-target="#factoryResetButton"><strong>Factory reset</strong></a>
+              safeguard or clearing the browser cache, download a
+              <a class="help-link" href="#backupSettings" data-help-target="#backupSettings">Backup</a>
+              so every project, device edit and auto-gear preset remains recoverable. Hourly background backups and the
+              <a
+                class="help-link"
+                href="#automaticSafetyCopies"
+                data-help-target="#automaticSafetyCopies"
+                data-help-highlight="#automaticSafetyCopies"
+              >10‑minute auto snapshots below</a>
+              add extra insurance without disrupting your workflow.
             </li>
             <li>
               After each major milestone, run through the
@@ -1983,10 +2028,20 @@
               </li>
               <li>
                 <strong>Restore safeguards</strong> always create a brand-new safety backup before applying the file you choose,
-                giving you an immediate rollback point if you need to undo the restore.
+                giving you an immediate rollback point if you need to undo the
+                <a class="help-link" href="#restoreSettings" data-help-target="#restoreSettings"><strong>Restore</strong></a>
+                process.
               </li>
               <li>
-                Combine the automatic layers with manual <strong>Export project</strong> and Device Database <strong>Export</strong>
+                Combine the automatic layers with manual
+                <a
+                  class="help-link button-link"
+                  href="#shareSetupBtn"
+                  data-help-target="#shareSetupBtn"
+                  data-help-highlight="#setup-manager"
+                ><strong>Export project</strong></a>
+                and Device Database
+                <a class="help-link" href="#exportDataBtn" data-help-target="#exportDataBtn"><strong>Export</strong></a>
                 files when sharing work or moving between machines without internet access.
               </li>
             </ul>
@@ -2007,20 +2062,36 @@
                 Save the active setup under a new name before experimenting so earlier versions stay available for comparison.
               </li>
               <li>
-                Download both a full-app <strong>Backup</strong> and the current project JSON immediately after important updates
-                so you have self-contained copies you can move offline.
+                Download both a full-app
+                <a class="help-link" href="#backupSettings" data-help-target="#backupSettings"><strong>Backup</strong></a>
+                and the current project JSON (via
+                <a
+                  class="help-link button-link"
+                  href="#shareSetupBtn"
+                  data-help-target="#shareSetupBtn"
+                  data-help-highlight="#setup-manager"
+                ><strong>Export project</strong></a>
+                ) immediately after important updates so you have self-contained copies you can move offline.
               </li>
               <li>
                 Store at least two copies of every file (for example, on your laptop and an external SSD) to guard against device
                 loss when you are travelling or on set.
               </li>
               <li>
-                Open each project JSON through <strong>Import project</strong> to confirm it loads correctly; close the dialog or
-                skip saving if you are only testing the archive.
+                Open each project JSON through
+                <a
+                  class="help-link button-link"
+                  href="#applySharedLinkBtn"
+                  data-help-target="#applySharedLinkBtn"
+                  data-help-highlight="#setup-manager"
+                ><strong>Import project</strong></a>
+                to confirm it loads correctly; close the dialog or skip saving if you are only testing the archive.
               </li>
               <li>
-                Periodically test full-app backups by running <strong>Restore</strong>. The planner automatically creates a fresh
-                safety snapshot before applying the file, letting you revert instantly if anything looks unexpected.
+                Periodically test full-app backups by running
+                <a class="help-link" href="#restoreSettings" data-help-target="#restoreSettings"><strong>Restore</strong></a>.
+                The planner automatically creates a fresh safety snapshot before applying the file, letting you revert instantly
+                if anything looks unexpected.
               </li>
             </ol>
             <p class="help-callout-note">
@@ -2028,52 +2099,6 @@
               newest verified copy is obvious when you need to recover or share offline.
             </p>
           </div>
-          <p class="help-inline-links">
-            From here you can
-            <a
-              class="help-link"
-              href="#saveSetupBtn"
-              data-help-target="#saveSetupBtn"
-              data-help-highlight="#setup-manager"
-            >save the project</a>,
-            <a
-              class="help-link"
-              href="#shareSetupBtn"
-              data-help-target="#shareSetupBtn"
-              data-help-highlight="#setup-manager"
-            >export a sharable bundle</a>,
-            <a
-              class="help-link"
-              href="#applySharedLinkBtn"
-              data-help-target="#applySharedLinkBtn"
-              data-help-highlight="#setup-manager"
-            >import updates</a>, open Settings →
-            <a
-              class="help-link"
-              href="#backupSettings"
-              data-help-target="#backupSettings"
-            >Backup</a>
-            or
-            <a
-              class="help-link"
-              href="#restoreSettings"
-              data-help-target="#restoreSettings"
-            >Restore</a>, revisit the
-            <a
-              class="help-link"
-              href="#automaticSafetyCopies"
-              data-help-target="#automaticSafetyCopies"
-              data-help-highlight="#automaticSafetyCopies"
-            >automatic safety copies</a>
-            and run the
-            <a
-              class="help-link"
-              href="#projectDataSafetyChecklist"
-              data-help-target="#projectDataSafetyChecklist"
-              data-help-highlight="#projectDataSafetyChecklist"
-            >project data safety checklist</a>
-            without scrolling for buttons.
-          </p>
         </section>
         <section
           data-help-section
@@ -2101,28 +2126,50 @@
             </span>
             Settings &amp; Personalization
           </h3>
-          <ul>
-            <li>Switch languages instantly; the planner remembers your preference for next time.</li>
-            <li>Tune the interface with dark mode, high contrast, pink accents and a custom accent color to match your production.</li>
-            <li>Adjust the base font size or pick a different typeface. Add local fonts from your computer when the browser supports it.</li>
-            <li>Upload an SVG logo to brand printable overviews and configuration backups.</li>
-            <li>
-              Use <strong>Backup</strong> to download a JSON snapshot of settings, projects, custom devices, favorites, automatic gear rules and runtime feedback; <strong>Restore</strong> captures a fresh safety copy first and then loads the selected file.
-            </li>
-          </ul>
-          <p class="help-inline-links">
-            Open
-            <a class="help-link" href="#settingsButton" data-help-target="#settingsButton">Settings</a>
-            to adjust the
-            <a class="help-link" href="#accentColorInput" data-help-target="#accentColorInput">accent color</a>,
-            <a class="help-link" href="#settingsLogo" data-help-target="#settingsLogo">upload a logo</a>, manage
-            <a class="help-link" href="#backupSettings" data-help-target="#backupSettings">backups</a>
-            or
-            <a class="help-link" href="#restoreSettings" data-help-target="#restoreSettings">restores</a>,
-            and access the
-            <a class="help-link" href="#factoryResetButton" data-help-target="#factoryResetButton">factory reset</a>
-            safeguard.
-          </p>
+            <ul>
+              <li>
+                Use the
+                <a class="help-link" href="#settingsButton" data-help-target="#settingsButton">Settings</a>
+                button or the
+                <a class="help-link" href="#languageSelect" data-help-target="#languageSelect">language dropdown</a>
+                to switch languages instantly—the planner remembers your preference for next time.
+              </li>
+              <li>
+                Toggle
+                <a class="help-link" href="#settingsDarkMode" data-help-target="#settingsDarkMode">dark mode</a>,
+                enable
+                <a class="help-link" href="#settingsHighContrast" data-help-target="#settingsHighContrast">high contrast</a>,
+                explore
+                <a class="help-link" href="#settingsPinkMode" data-help-target="#settingsPinkMode">Pink Mode</a>
+                and fine-tune the
+                <a class="help-link" href="#accentColorInput" data-help-target="#accentColorInput">accent color picker</a>
+                to match your production branding.
+              </li>
+              <li>
+                Adjust the
+                <a class="help-link" href="#settingsFontSize" data-help-target="#settingsFontSize">base font size</a>
+                or pick a different
+                <a class="help-link" href="#settingsFontFamily" data-help-target="#settingsFontFamily">typeface</a>.
+                Add local fonts from your computer with the
+                <a class="help-link" href="#localFontsButton" data-help-target="#localFontsButton">Add local fonts</a>
+                option whenever the browser supports it.
+              </li>
+              <li>
+                Upload an SVG logo through the
+                <a class="help-link" href="#settingsLogo" data-help-target="#settingsLogo">Logo</a>
+                field to brand printable overviews and configuration backups.
+              </li>
+              <li>
+                Use the
+                <a class="help-link" href="#backupSettings" data-help-target="#backupSettings"><strong>Backup</strong></a>
+                control to download a JSON snapshot of settings, projects, custom devices, favorites, automatic gear rules and
+                runtime feedback.
+                <a class="help-link" href="#restoreSettings" data-help-target="#restoreSettings"><strong>Restore</strong></a>
+                captures a fresh safety copy first and then loads the selected file, and the
+                <a class="help-link" href="#factoryResetButton" data-help-target="#factoryResetButton">Factory reset</a>
+                safeguard automates a pre-reset backup before clearing local data.
+              </li>
+            </ul>
         </section>
         <section
           data-help-section
@@ -2130,27 +2177,58 @@
           data-help-keywords="auto backup automatic snapshot restore recovery safety hourly download full app backup notification show saved projects setting verification checklist redundancy"
         >
           <h3><span class="help-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE825;</span>Automatic Backups</h3>
-          <ul>
-            <li>The planner saves an auto backup every 10 minutes without interrupting your work. Entries are timestamped and stored alongside saved projects.</li>
-            <li>Enable <strong>Show auto backups in project list</strong> in Settings → Backup &amp; Restore to temporarily reveal those snapshots in the <em>Saved Projects</em> dropdown.</li>
-            <li>Select an auto backup to review it. Press <strong>Save</strong> to keep it as a regular project or return to your current setup without overwriting anything.</li>
-            <li>A full JSON export downloads automatically every hour with a name like “2024-05-12T14-00-00 full app backup.json” so you always have an offline safety copy.</li>
-            <li>Move hourly downloads and snapshots into your archive and follow the <a class="help-link" href="#projectDataSafetyChecklist" data-help-target="#projectDataSafetyChecklist" data-help-highlight="#projectDataSafetyChecklist">Project data safety checklist</a> so each file is verified, labelled and stored on redundant media.</li>
-          </ul>
-          <p class="help-inline-links">
-            Toggle
-            <a class="help-link" href="#settingsShowAutoBackups" data-help-target="#settingsShowAutoBackups">Show auto backups</a>
-            in Settings → Backup &amp; Restore, inspect entries in
-            <a
-              class="help-link"
-              href="#setupSelect"
-              data-help-target="#setupSelect"
-              data-help-highlight="#setup-manager"
-            >Saved Projects</a>
-            and download a fresh copy from
-            <a class="help-link" href="#backupSettings" data-help-target="#backupSettings">Backup</a>
-            whenever you want to verify safety copies.
-          </p>
+            <ul>
+              <li>
+                The planner saves an auto backup every 10 minutes without interrupting your work. Entries are timestamped and
+                stored alongside saved projects.
+              </li>
+              <li>
+                Enable
+                <a class="help-link" href="#settingsShowAutoBackups" data-help-target="#settingsShowAutoBackups">Show auto
+                  backups in project list</a>
+                in Settings → Backup &amp; Restore to temporarily reveal those snapshots in the
+                <a
+                  class="help-link"
+                  href="#setupSelect"
+                  data-help-target="#setupSelect"
+                  data-help-highlight="#setup-manager"
+                ><em>Saved Projects</em></a>
+                dropdown.
+              </li>
+              <li>
+                Select an auto backup in
+                <a
+                  class="help-link"
+                  href="#setupSelect"
+                  data-help-target="#setupSelect"
+                  data-help-highlight="#setup-manager"
+                >Saved Projects</a>
+                to review it. Press
+                <a
+                  class="help-link button-link"
+                  href="#saveSetupBtn"
+                  data-help-target="#saveSetupBtn"
+                  data-help-highlight="#setup-manager"
+                ><strong>Save</strong></a>
+                to keep it as a regular project or return to your current setup without overwriting anything.
+              </li>
+              <li>
+                A full JSON export downloads automatically every hour with a name like “2024-05-12T14-00-00 full app
+                backup.json” so you always have an offline safety copy. Trigger another snapshot on demand with the manual
+                <a class="help-link" href="#backupSettings" data-help-target="#backupSettings">Backup</a>
+                button after major changes.
+              </li>
+              <li>
+                Move hourly downloads and snapshots into your archive and follow the
+                <a
+                  class="help-link"
+                  href="#projectDataSafetyChecklist"
+                  data-help-target="#projectDataSafetyChecklist"
+                  data-help-highlight="#projectDataSafetyChecklist"
+                >Project data safety checklist</a>
+                so each file is verified, labelled and stored on redundant media.
+              </li>
+            </ul>
         </section>
         <section
           data-help-section
@@ -2164,18 +2242,17 @@
             <li>Multi-select lists let you specify multiple scenarios, accessories or monitoring setups.</li>
             <li>Use the + buttons to add crew entries or prep/shoot ranges, and tap the − buttons to remove items as plans change.</li>
             <li>A live summary under <strong>Required Scenarios</strong> displays icon-labelled chips for every selection so you can confirm which accessory packs will trigger; choosing <strong>Dolly</strong> unlocks <strong>Remote Head</strong> and automatically surfaces default monitor options to keep downstream lists complete.</li>
-            <li>The information is saved with the project and included in printed overviews and gear lists.</li>
-          </ul>
-          <p class="help-inline-links">
-            Launch the
-            <a
-              class="help-link"
-              href="#generateGearListBtn"
-              data-help-target="#generateGearListBtn"
-              data-help-highlight="#setup-manager"
-            >Generate Gear List</a>
-            dialog whenever the requirements are ready.
-          </p>
+              <li>
+                The information is saved with the project, included in printed overviews and ready to populate the
+                <a
+                  class="help-link"
+                  href="#generateGearListBtn"
+                  data-help-target="#generateGearListBtn"
+                  data-help-highlight="#setup-manager"
+                >Generate Gear List</a>
+                dialog as soon as the requirements are ready.
+              </li>
+            </ul>
         </section>
         <section
           data-help-section
@@ -2183,8 +2260,17 @@
           data-help-keywords="gear list equipment inventory export print accessories scenarios quantity breakdown report"
         >
           <h3><span class="help-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE467;</span>Gear List</h3>
-            <ul>
-              <li>The <strong>Generate Gear List</strong> button expands every selected device and project detail into a rich table grouped by category and quantity.</li>
+              <ul>
+                <li>
+                  The
+                  <a
+                    class="help-link button-link"
+                    href="#generateGearListBtn"
+                    data-help-target="#generateGearListBtn"
+                    data-help-highlight="#setup-manager"
+                  ><strong>Generate Gear List</strong></a>
+                  button expands every selected device and project detail into a rich table grouped by category and quantity.
+                </li>
               <li>Any change to devices, lenses, batteries or project information rebuilds the list so it always reflects the current configuration.</li>
               <li>The generator assembles the table step&nbsp;by&nbsp;step:
                 <ol>
@@ -2222,31 +2308,17 @@
                 </ul>
               </li>
               <li>The resulting gear list appears in printable overviews and exported project files so collaborators see full context.</li>
-              <li>Gear lists save automatically with the project; <strong>Export</strong> downloads a JSON file, <strong>Import</strong> restores it and <strong>Delete</strong> removes the saved list and shows the generator again.</li>
-              <li>Gear list forms use fork buttons to duplicate your entries instantly, making alternate configurations easy to explore.</li>
-            </ul>
-            <p class="help-inline-links">
-              Use
-              <a
-                class="help-link"
-                href="#generateGearListBtn"
-                data-help-target="#generateGearListBtn"
-                data-help-highlight="#setup-manager"
-              >Generate Gear List</a>
-              to build the table, then review the
-              <a
-                class="help-link"
-                href="#projectRequirementsOutput"
-                data-help-target="#projectRequirementsOutput"
-              >Project Requirements</a>
-              and
-              <a
-                class="help-link"
-                href="#gearListOutput"
-                data-help-target="#gearListOutput"
-              >Gear List</a>
-              outputs side by side.
-            </p>
+                <li>Gear lists save automatically with the project; <strong>Export</strong> downloads a JSON file, <strong>Import</strong> restores it and <strong>Delete</strong> removes the saved list and shows the generator again.</li>
+                <li>Gear list forms use fork buttons to duplicate your entries instantly, making alternate configurations easy to explore.</li>
+                <li>
+                  Review the
+                  <a class="help-link" href="#projectRequirementsOutput" data-help-target="#projectRequirementsOutput">Project
+                    Requirements</a>
+                  summary alongside the
+                  <a class="help-link" href="#gearListOutput" data-help-target="#gearListOutput">Gear List</a>
+                  output to confirm every selection is represented.
+                </li>
+              </ul>
           </section>
         <section
           data-help-section
@@ -2255,10 +2327,17 @@
         >
           <h3><span class="help-icon icon-glyph" aria-hidden="true" data-icon-font="film">&#xF129;</span>Automatic Gear Rules</h3>
           <ul>
-            <li>
-              Open <em>Settings → Automatic Gear Rules</em> to create custom additions or removals that run when specific
-              <strong>Required Scenarios</strong> are active.
-            </li>
+              <li>
+                Open
+                <a
+                  class="help-link"
+                  href="#autoGearHeading"
+                  data-help-target="#autoGearHeading"
+                  data-help-highlight="#settingsDialog"
+                >Settings → Automatic Gear Rules</a>
+                to create custom additions or removals that run when specific
+                <strong>Required Scenarios</strong> are active.
+              </li>
             <li>
               Choose any combination of <strong>Required Scenarios</strong>, <strong>Mattebox options</strong>,
               <strong>Camera handles</strong>, <strong>Viewfinder extension</strong> and <strong>Video distribution</strong>
@@ -2269,80 +2348,84 @@
               Rules execute after the planner assembles the gear list, so your adjustments stack on top of built-in accessories
               and scenario packs.
             </li>
-            <li>
-              Click <strong>Add rule</strong> to reveal the editor, name the rule for quick reference and select one or more
-              scenarios that must be enabled for it to trigger.
-            </li>
-            <li>
-              Use <strong>Add these items</strong> to insert gear lines with category and quantity; pick <em>Custom Additions</em>
-              for notes, bespoke equipment or reminders.
-            </li>
-            <li>
-              <strong>Remove these items</strong> hides entries the generator would normally include—match the item name and
-              category shown in the gear list to target the right row.
-            </li>
-            <li>
-              Tap <strong>Reset to factory additions</strong> whenever you want to restore the default helper rules that ship
-              with the planner.
-            </li>
-            <li>
-              Save frequently used combinations as presets via the <strong>Preset</strong> menu, then switch or delete them as
-              your workflow evolves.
-            </li>
-            <li>
-              Background automatic backups capture rule changes every 10 minutes. Toggle <strong>Show automatic backups</strong>
-              to reveal the timeline inside Automatic Gear Rules.
-            </li>
-            <li>
-              When backups are visible, pick a timestamped snapshot from the <strong>Choose a backup</strong> dropdown to review
-              its details and press <strong>Restore</strong> to roll back to that version. Each entry lists how many rules it
-              contains so you can recover confidently even while offline.
-            </li>
-            <li>
-              <strong>Export rules</strong> downloads a JSON copy of your automation set; <strong>Import rules</strong> loads an
-              existing file so crews can sync configurations without relying on connectivity.
-            </li>
+              <li>
+                Click
+                <a class="help-link" href="#autoGearAddRule" data-help-target="#autoGearAddRule">Add rule</a>
+                to reveal the editor, name the rule for quick reference and select one or more scenarios that must be enabled
+                for it to trigger.
+              </li>
+              <li>
+                Use
+                <a
+                  class="help-link"
+                  href="#autoGearAddItemsHeading"
+                  data-help-target="#autoGearAddItemsHeading"
+                ><strong>Add these items</strong></a>
+                to insert gear lines with category and quantity; pick <em>Custom Additions</em> for notes, bespoke equipment or
+                reminders.
+              </li>
+              <li>
+                The
+                <a class="help-link" href="#autoGearRulesList" data-help-target="#autoGearRulesList">rules list</a>
+                keeps every automation visible with duplicate, reorder and delete controls so you can maintain complex setups
+                quickly.
+              </li>
+              <li>
+                <a
+                  class="help-link"
+                  href="#autoGearRemoveItemsHeading"
+                  data-help-target="#autoGearRemoveItemsHeading"
+                ><strong>Remove these items</strong></a>
+                hides entries the generator would normally include—match the item name and category shown in the gear list to
+                target the right row.
+              </li>
+              <li>
+                Tap
+                <a class="help-link" href="#autoGearResetFactory" data-help-target="#autoGearResetFactory"><strong>Reset to
+                    factory additions</strong></a>
+                whenever you want to restore the default helper rules that ship with the planner.
+              </li>
+              <li>
+                Save frequently used combinations as presets via the
+                <a class="help-link" href="#autoGearPresetSelect" data-help-target="#autoGearPresetSelect"><strong>Preset</strong>
+                  menu</a>,
+                then switch or delete them as your workflow evolves.
+              </li>
+              <li>
+                Background automatic backups capture rule changes every 10 minutes. Toggle
+                <a class="help-link" href="#autoGearShowBackups" data-help-target="#autoGearShowBackups"><strong>Show automatic
+                    backups</strong></a>
+                to reveal the timeline inside Automatic Gear Rules.
+              </li>
+              <li>
+                When backups are visible, pick a timestamped snapshot from the
+                <a
+                  class="help-link"
+                  href="#autoGearBackupSelect"
+                  data-help-target="#autoGearBackupSelect"
+                  data-help-highlight="#autoGearBackupsSection"
+                ><strong>Choose a backup</strong></a>
+                dropdown to review its details and press
+                <a
+                  class="help-link"
+                  href="#autoGearBackupRestore"
+                  data-help-target="#autoGearBackupRestore"
+                  data-help-highlight="#autoGearBackupsSection"
+                ><strong>Restore</strong></a>
+                to roll back to that version. Each entry lists how many rules it contains so you can recover confidently even
+                while offline.
+              </li>
+              <li>
+                <a class="help-link" href="#autoGearExport" data-help-target="#autoGearExport"><strong>Export rules</strong></a>
+                downloads a JSON copy of your automation set;
+                <a class="help-link" href="#autoGearImport" data-help-target="#autoGearImport"><strong>Import rules</strong></a>
+                loads an existing file so crews can sync configurations without relying on connectivity.
+              </li>
             <li>
               Rules travel with backups and exports. Include them when sharing a project, then decide on import whether to apply
               the shared rules only to the opened project or add them to all projects.
             </li>
           </ul>
-          <p class="help-inline-links">
-            Open
-            <a
-              class="help-link"
-              href="#autoGearHeading"
-              data-help-target="#autoGearHeading"
-              data-help-highlight="#settingsDialog"
-            >Settings → Automatic Gear Rules</a>
-            to
-            <a class="help-link" href="#autoGearAddRule" data-help-target="#autoGearAddRule">add rules</a>,
-            <a class="help-link" href="#autoGearResetFactory" data-help-target="#autoGearResetFactory">restore the factory set</a>
-            and organise the
-            <a class="help-link" href="#autoGearRulesList" data-help-target="#autoGearRulesList">rules list</a>.
-            Switch presets via the
-            <a class="help-link" href="#autoGearPresetSelect" data-help-target="#autoGearPresetSelect">preset menu</a>,
-            <a class="help-link" href="#autoGearExport" data-help-target="#autoGearExport">export</a>
-            or
-            <a class="help-link" href="#autoGearImport" data-help-target="#autoGearImport">import</a>
-            automations, and reveal
-            <a class="help-link" href="#autoGearShowBackups" data-help-target="#autoGearShowBackups">automatic backups</a>
-            to
-            <a
-              class="help-link"
-              href="#autoGearBackupSelect"
-              data-help-target="#autoGearBackupSelect"
-              data-help-highlight="#autoGearBackupsSection"
-            >choose</a>
-            or
-            <a
-              class="help-link"
-              href="#autoGearBackupRestore"
-              data-help-target="#autoGearBackupRestore"
-              data-help-highlight="#autoGearBackupsSection"
-            >restore</a>
-            snapshots on demand.
-          </p>
         </section>
         <section
           data-help-section
@@ -2350,42 +2433,47 @@
           data-help-keywords="power calculator runtime estimator watt hours consumption battery life current warnings hotswap compare energy"
         >
           <h3><span class="help-icon icon-glyph" aria-hidden="true" data-icon-font="essential">&#xF1F8;</span>Power Calculator</h3>
-          <ul>
-            <li>Select a battery to see estimated runtime, current draw and required batteries for a 10&nbsp;h shoot.</li>
-            <li>A temperature note helps account for runtime changes in hot or cold conditions.</li>
-            <li>Warnings appear if the configuration exceeds battery output limits.</li>
-            <li>Select a <strong>Battery Hotswap</strong> to factor in dual plates or adapters; its capacity and pin limits are merged into the calculation.</li>
-            <li>The optional <strong>Battery Comparison</strong> panel shows runtimes for all batteries at once.</li>
-          </ul>
-          <p class="help-inline-links">
-            Choose packs with the
-            <a
-              class="help-link"
-              href="#batterySelect"
-              data-help-target="#batterySelect"
-              data-help-highlight="#setup-config"
-            >battery dropdown</a>, review totals in the
-            <a
-              class="help-link"
-              href="#resultsHeading"
-              data-help-target="#resultsHeading"
-              data-help-highlight="#results"
-            >Power Summary</a>, factor in a
-            <a
-              class="help-link"
-              href="#batteryHotswapSelect"
-              data-help-target="#batteryHotswapSelect"
-              data-help-highlight="#setup-config"
-            >Battery Hotswap</a>
-            and compare options across the
-            <a
-              class="help-link"
-              href="#batteryComparisonHeading"
-              data-help-target="#batteryComparisonHeading"
-              data-help-highlight="#batteryComparison"
-            >Battery Comparison</a>
-            grid.
-          </p>
+            <ul>
+              <li>
+                Select a battery in the
+                <a
+                  class="help-link"
+                  href="#batterySelect"
+                  data-help-target="#batterySelect"
+                  data-help-highlight="#setup-config"
+                >battery dropdown</a>
+                to see estimated runtime, current draw and required batteries for a 10&nbsp;h shoot. Review totals in the
+                <a
+                  class="help-link"
+                  href="#resultsHeading"
+                  data-help-target="#resultsHeading"
+                  data-help-highlight="#results"
+                >Power Summary</a>
+                as you adjust gear.
+              </li>
+              <li>A temperature note helps account for runtime changes in hot or cold conditions.</li>
+              <li>Warnings appear if the configuration exceeds battery output limits.</li>
+              <li>
+                Select a
+                <a
+                  class="help-link"
+                  href="#batteryHotswapSelect"
+                  data-help-target="#batteryHotswapSelect"
+                  data-help-highlight="#setup-config"
+                ><strong>Battery Hotswap</strong></a>
+                to factor in dual plates or adapters; its capacity and pin limits are merged into the calculation.
+              </li>
+              <li>
+                The optional
+                <a
+                  class="help-link"
+                  href="#batteryComparisonHeading"
+                  data-help-target="#batteryComparisonHeading"
+                  data-help-highlight="#batteryComparison"
+                ><strong>Battery Comparison</strong></a>
+                panel shows runtimes for all batteries at once so you can compare options side by side.
+              </li>
+            </ul>
         </section>
         <section
           data-help-section
@@ -2393,10 +2481,19 @@
           data-help-keywords="calculation math formula codec weighting brightness wifi runtime details advanced explanation"
         >
           <h3><span class="help-icon icon-glyph" aria-hidden="true" data-icon-font="essential">&#xF123;</span>Calculation Details</h3>
-          <ul>
-            <li>Each device contributes its power draw in watts to <em>Total Consumption</em>.</li>
-            <li>Current at 14.4 V (33.6 V for B‑Mount) and 12 V (21.6 V for B‑Mount) equals total watts divided by voltage.</li>
-            <li>Runtime&nbsp;=&nbsp;battery capacity (Wh)&nbsp;÷&nbsp;total consumption.</li>
+            <ul>
+              <li>
+                Each device contributes its power draw in watts to <em>Total Consumption</em>, which you can inspect in the
+                <a
+                  class="help-link"
+                  href="#resultsHeading"
+                  data-help-target="#resultsHeading"
+                  data-help-highlight="#results"
+                >Power Summary</a>
+                panel.
+              </li>
+              <li>Current at 14.4 V (33.6 V for B‑Mount) and 12 V (21.6 V for B‑Mount) equals total watts divided by voltage.</li>
+              <li>Runtime&nbsp;=&nbsp;battery capacity (Wh)&nbsp;÷&nbsp;total consumption.</li>
             <li>
               User-submitted runtimes are adjusted for temperature and weighted before
               averaging:
@@ -2412,18 +2509,8 @@
                 <li>The final weight reflects each device's share of total power draw.</li>
               </ul>
             </li>
-            <li>Warnings highlight when current approaches or exceeds main or D‑Tap output ratings.</li>
-          </ul>
-          <p class="help-inline-links">
-            View the calculations in context inside the
-            <a
-              class="help-link"
-              href="#resultsHeading"
-              data-help-target="#resultsHeading"
-              data-help-highlight="#results"
-            >Power Summary</a>
-            panel.
-          </p>
+              <li>Warnings highlight when current approaches or exceeds main or D‑Tap output ratings.</li>
+            </ul>
         </section>
         <section
           data-help-section
@@ -2431,28 +2518,28 @@
           data-help-keywords="runtime feedback user measurements field data submit temperature weighting crowdsource"
         >
           <h3><span class="help-icon icon-glyph" aria-hidden="true" data-icon-font="essential">&#xF13E;</span>User Runtime Feedback</h3>
-          <ul>
-            <li>Click <strong>Submit User Runtime Feedback</strong> below the runtime to add your own measurement.</li>
-            <li>Include temperature for more accurate weighting.</li>
-            <li>Use <strong>Use Current Location</strong> to capture an approximate position in the log—everything stays stored on this device for offline reference.</li>
-            <li>Your entries are stored locally and refine the runtime estimate.</li>
-          </ul>
-          <p class="help-inline-links">
-            Click
-            <a
-              class="help-link"
-              href="#runtimeFeedbackBtn"
-              data-help-target="#runtimeFeedbackBtn"
-              data-help-highlight="#results"
-            >Submit feedback</a>
-            to open the
-            <a
-              class="help-link"
-              href="#feedbackDialogHeading"
-              data-help-target="#feedbackDialogHeading"
-            >feedback form</a>
-            and log your runtime data.
-          </p>
+            <ul>
+              <li>
+                Click
+                <a
+                  class="help-link"
+                  href="#runtimeFeedbackBtn"
+                  data-help-target="#runtimeFeedbackBtn"
+                  data-help-highlight="#results"
+                ><strong>Submit User Runtime Feedback</strong></a>
+                below the runtime to add your own measurement; the
+                <a class="help-link" href="#feedbackDialogHeading" data-help-target="#feedbackDialogHeading">feedback form</a>
+                walks through each field step by step.
+              </li>
+              <li>Include temperature for more accurate weighting.</li>
+              <li>
+                Use the
+                <a class="help-link" href="#fbUseLocationBtn" data-help-target="#fbUseLocationBtn"><strong>Use Current Location</strong></a>
+                option to capture an approximate position in the log—everything stays stored on this device for offline
+                reference.
+              </li>
+              <li>Your entries are stored locally and refine the runtime estimate.</li>
+            </ul>
         </section>
         <section
           data-help-section
@@ -2460,30 +2547,39 @@
           data-help-keywords="connection diagram project diagram layout connections map wiring visualize nodes drag zoom pan svg jpg export reset snap grid"
         >
           <h3><span class="help-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xEF8C;</span>Connection Diagram</h3>
-          <ul>
-            <li>Visualizes power and video connections between selected devices.</li>
-            <li>Drag nodes to rearrange the layout; use +/– buttons to zoom.</li>
-            <li>Drag empty space to pan the diagram.</li>
-            <li>Enable <strong>Snap to Grid</strong> to align items precisely.</li>
-            <li>Click <strong>Reset View</strong> to restore the default layout and zoom.</li>
-            <li>Export the diagram as SVG or JPG via the <em>Download</em> button.</li>
-            <li>Icons denote device types and warn when FIZ brands are incompatible.</li>
-            <li>Hover or tap devices to see popup details; on touch devices, tapping a node keeps its popup until another is selected.</li>
-          </ul>
-          <p class="help-inline-links">
-            Open the
-            <a
-              class="help-link"
-              href="#setupDiagramHeading"
-              data-help-target="#setupDiagramHeading"
-              data-help-highlight="#setupDiagram"
-            >diagram</a>, adjust scale with
-            <a class="help-link" href="#zoomIn" data-help-target="#zoomIn">zoom controls</a>,
-            <a class="help-link" href="#resetView" data-help-target="#resetView">reset the view</a>
-            and toggle
-            <a class="help-link" href="#gridSnapToggle" data-help-target="#gridSnapToggle">Snap to Grid</a>
-            as you refine layouts.
-          </p>
+            <ul>
+              <li>
+                Visualize power and video connections in the
+                <a
+                  class="help-link"
+                  href="#setupDiagramHeading"
+                  data-help-target="#setupDiagramHeading"
+                  data-help-highlight="#setupDiagram"
+                >Connection Diagram</a>
+                to understand how every device links together.
+              </li>
+              <li>
+                Drag nodes to rearrange the layout and use the
+                <a class="help-link" href="#zoomOut" data-help-target="#zoomOut">Zoom Out</a>
+                and
+                <a class="help-link" href="#zoomIn" data-help-target="#zoomIn">Zoom In</a>
+                controls for precise framing.
+              </li>
+              <li>Drag empty space to pan the diagram.</li>
+              <li>
+                Enable
+                <a class="help-link" href="#gridSnapToggle" data-help-target="#gridSnapToggle"><strong>Snap to Grid</strong></a>
+                to align items precisely.
+              </li>
+              <li>
+                Click
+                <a class="help-link" href="#resetView" data-help-target="#resetView"><strong>Reset View</strong></a>
+                to restore the default layout and zoom.
+              </li>
+              <li>Export the diagram as SVG or JPG via the <em>Download</em> button.</li>
+              <li>Icons denote device types and warn when FIZ brands are incompatible.</li>
+              <li>Hover or tap devices to see popup details; on touch devices, tapping a node keeps its popup until another is selected.</li>
+            </ul>
         </section>
         <section
           data-help-section
@@ -2532,27 +2628,27 @@
           data-help-keywords="device categories slots limits optional required types selection count overview"
         >
           <h3><span class="help-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE84A;</span>Device Categories</h3>
-          <ul>
-            <li><strong>Camera</strong> (1)</li>
-            <li><strong>Monitor</strong> (optional)</li>
-            <li><strong>Wireless Transmitter</strong> (optional)</li>
-            <li><strong>FIZ Motors</strong> (0–4)</li>
-            <li><strong>FIZ Controllers</strong> (0–4)</li>
-            <li><strong>Distance Sensor</strong> (0–1)</li>
-            <li><strong>Battery Plate</strong> (on supported cameras)</li>
-            <li><strong>V‑ or B‑Mount Battery</strong> (0–1)</li>
-          </ul>
-          <p>The number in parentheses shows how many of that type you can select.</p>
-          <p class="help-inline-links">
-            Head to
-            <a
-              class="help-link"
-              href="#cameraSelect"
-              data-help-target="#cameraSelect"
-              data-help-highlight="#setup-config"
-            >Configure Devices</a>
-            to start choosing equipment for each category.
-          </p>
+            <ul>
+              <li><strong>Camera</strong> (1)</li>
+              <li><strong>Monitor</strong> (optional)</li>
+              <li><strong>Wireless Transmitter</strong> (optional)</li>
+              <li><strong>FIZ Motors</strong> (0–4)</li>
+              <li><strong>FIZ Controllers</strong> (0–4)</li>
+              <li><strong>Distance Sensor</strong> (0–1)</li>
+              <li><strong>Battery Plate</strong> (on supported cameras)</li>
+              <li><strong>V‑ or B‑Mount Battery</strong> (0–1)</li>
+            </ul>
+            <p>The number in parentheses shows how many of that type you can select.</p>
+            <p>
+              Head to
+              <a
+                class="help-link"
+                href="#cameraSelect"
+                data-help-target="#cameraSelect"
+                data-help-highlight="#setup-config"
+              >Configure Devices</a>
+              to start choosing equipment for each category.
+            </p>
         </section>
         <section
           data-help-section
@@ -2560,27 +2656,33 @@
           data-help-keywords="search filter filtering favourites favorites quick find slash ctrl+f ctrl+k global search star pinned clear query"
         >
           <h3><span class="help-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xF016;</span>Search &amp; Filtering</h3>
-          <ul>
-            <li>Every dropdown and list can be filtered via its search box.</li>
-            <li>The help dialog itself is searchable using the field at the top.</li>
-            <li>The global search bar jumps to features, device selectors or help topics; press <kbd>Ctrl</kbd>+<kbd>K</kbd> (<kbd>⌘</kbd>+<kbd>K</kbd> on macOS) to focus it from anywhere, press Enter to navigate and use × to clear. On small screens the side menu opens automatically.</li>
-            <li>Click the star beside a dropdown to mark favorites; pinned items move to the top and persist between sessions.</li>
-            <li>Press <kbd>/</kbd> or <kbd>Ctrl</kbd>+<kbd>F</kbd> (<kbd>⌘</kbd>+<kbd>F</kbd> on macOS) to focus the nearest search box.</li>
-            <li>Use the × button in any search field to reset the query and show all items.</li>
-          </ul>
-          <p class="help-inline-links">
-            Practice with the
-            <a class="help-link" href="#featureSearch" data-help-target="#featureSearch">global search bar</a>,
-            refine topics via the
-            <a class="help-link" href="#helpSearch" data-help-target="#helpSearch">help search</a>
-            and test dropdown filters inside
-            <a
-              class="help-link"
-              href="#cameraSelect"
-              data-help-target="#cameraSelect"
-              data-help-highlight="#setup-config"
-            >Configure Devices</a>.
-          </p>
+            <ul>
+              <li>Every dropdown and list can be filtered via its search box.</li>
+              <li>
+                The help dialog itself is searchable using the
+                <a class="help-link" href="#helpSearch" data-help-target="#helpSearch">field at the top</a>.
+              </li>
+              <li>
+                The
+                <a class="help-link" href="#featureSearch" data-help-target="#featureSearch">global search bar</a>
+                jumps to features, device selectors or help topics; press <kbd>Ctrl</kbd>+<kbd>K</kbd> (<kbd>⌘</kbd>+<kbd>K</kbd>
+                on macOS) to focus it from anywhere, press Enter to navigate and use × to clear. On small screens the side menu
+                opens automatically.
+              </li>
+              <li>Click the star beside a dropdown to mark favorites; pinned items move to the top and persist between sessions.</li>
+              <li>Press <kbd>/</kbd> or <kbd>Ctrl</kbd>+<kbd>F</kbd> (<kbd>⌘</kbd>+<kbd>F</kbd> on macOS) to focus the nearest search box.</li>
+              <li>Use the × button in any search field to reset the query and show all items.</li>
+              <li>
+                Test dropdown filtering in
+                <a
+                  class="help-link"
+                  href="#cameraSelect"
+                  data-help-target="#cameraSelect"
+                  data-help-highlight="#setup-config"
+                >Configure Devices</a>
+                to see how favourites and searches speed up selection.
+              </li>
+            </ul>
         </section>
         <section
           data-help-section
@@ -2678,17 +2780,6 @@
               —both actions prompt you to save a safety backup first.
             </li>
           </ul>
-          <p class="help-inline-links">
-            When issues appear, try
-            <a class="help-link" href="#reloadButton" data-help-target="#reloadButton"><em>Force reload</em></a>,
-            reveal
-            <a class="help-link" href="#settingsShowAutoBackups" data-help-target="#settingsShowAutoBackups">auto backups</a>
-            for quick restores, keep the
-            <a class="help-link" href="#factoryResetButton" data-help-target="#factoryResetButton">factory reset</a>
-            safeguard in mind and use
-            <a class="help-link" href="#exportAndRevertBtn" data-help-target="#exportAndRevertBtn">Export &amp; Revert</a>
-            in the device editor if you need to roll back changes.
-          </p>
         </section>
         <section
           data-help-section
@@ -2696,16 +2787,15 @@
           data-help-keywords="hover help tooltips hints guidance cursor descriptions overlay tips"
         >
           <h3><span class="help-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE597;</span>Hover Help</h3>
-          <ul>
-            <li>Activate tooltip mode with <strong>Hover for help</strong> in the help dialog.</li>
-            <li>Move the cursor over buttons, fields, dropdowns or headers to see brief explanations.</li>
-            <li>Click anywhere or press <kbd>Escape</kbd> to exit.</li>
-          </ul>
-          <p class="help-inline-links">
-            Use the
-            <a class="help-link" href="#hoverHelpButton" data-help-target="#hoverHelpButton">Hover for help</a>
-            button above to toggle the tooltip mode at any time.
-          </p>
+            <ul>
+              <li>
+                Activate tooltip mode with the
+                <a class="help-link" href="#hoverHelpButton" data-help-target="#hoverHelpButton"><strong>Hover for help</strong></a>
+                button in the help dialog.
+              </li>
+              <li>Move the cursor over buttons, fields, dropdowns or headers to see brief explanations.</li>
+              <li>Click anywhere or press <kbd>Escape</kbd> to exit.</li>
+            </ul>
         </section>
         <section
           data-help-section
@@ -2713,17 +2803,16 @@
           data-help-keywords="language translation locale localisation english german spanish french italian switch change"
         >
           <h3><span class="help-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xEAE7;</span>Language</h3>
-          <ul>
-            <li>Use the dropdown in the top right to switch languages.</li>
-            <li>Your choice is remembered for the next visit.</li>
-          </ul>
-          <p class="help-inline-links">
-            Switch with the
-            <a class="help-link" href="#languageSelect" data-help-target="#languageSelect">header language menu</a>
-            or adjust the
-            <a class="help-link" href="#settingsLanguage" data-help-target="#settingsLanguage">language setting</a>
-            inside Preferences.
-          </p>
+            <ul>
+              <li>
+                Use the
+                <a class="help-link" href="#languageSelect" data-help-target="#languageSelect">header language menu</a>
+                or adjust the
+                <a class="help-link" href="#settingsLanguage" data-help-target="#settingsLanguage">language setting</a>
+                inside Preferences to switch languages.
+              </li>
+              <li>Your choice is remembered for the next visit.</li>
+            </ul>
         </section>
         <section
           data-help-section
@@ -2731,15 +2820,14 @@
           data-help-keywords="dark mode night theme low light brightness contrast toggle d key"
         >
           <h3><span class="help-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xEC7E;</span>Dark Mode</h3>
-          <ul>
-            <li>Click the moon button or press <kbd>D</kbd> to toggle dark mode.</li>
-            <li>The setting persists between visits.</li>
-          </ul>
-          <p class="help-inline-links">
-            Toggle dark mode with the
-            <a class="help-link" href="#darkModeToggle" data-help-target="#darkModeToggle">moon button</a>
-            or the <kbd>D</kbd> shortcut.
-          </p>
+            <ul>
+              <li>
+                Toggle dark mode with the
+                <a class="help-link" href="#darkModeToggle" data-help-target="#darkModeToggle">moon button</a>
+                or press <kbd>D</kbd> as a keyboard shortcut.
+              </li>
+              <li>The setting persists between visits.</li>
+            </ul>
         </section>
         <section
           data-help-section
@@ -2780,11 +2868,11 @@
             <li>The setting persists between visits and works in light or dark mode.</li>
             <li>Press <kbd>P</kbd> to toggle pink mode.</li>
           </ul>
-          <p class="help-inline-links">
-            Turn on the playful palette with the
-            <a class="help-link" href="#pinkModeToggle" data-help-target="#pinkModeToggle">pink mode toggle</a>
-            or press <kbd>P</kbd> for the same effect.
-          </p>
+            <p>
+              Turn on the playful palette with the
+              <a class="help-link" href="#pinkModeToggle" data-help-target="#pinkModeToggle">pink mode toggle</a>
+              or press <kbd>P</kbd> for the same effect.
+            </p>
         </section>
         <section
           data-help-section
