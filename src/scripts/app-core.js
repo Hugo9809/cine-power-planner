@@ -10550,6 +10550,9 @@ function renderAutoGearBackupControls() {
 
 function renderAutoGearRulesList() {
   if (!autoGearRulesList) return;
+  if (autoGearEditor && !autoGearEditor.hidden && !autoGearEditorDraft) {
+    closeAutoGearEditor();
+  }
   autoGearRulesList.innerHTML = '';
   const rules = getAutoGearRules();
   const scenarioFilter = refreshAutoGearScenarioFilterOptions(rules);
