@@ -1,6 +1,6 @@
 // --- EVENT LISTENERS ---
 /* global updateCageSelectOptions, updateGlobalDevicesReference, scheduleProjectAutoSave,
-          saveCurrentSession, saveCurrentGearList */
+          saveCurrentSession, saveCurrentGearList, showAutoBackups */
 
 // Language selection
 languageSelect.addEventListener("change", (event) => {
@@ -377,9 +377,22 @@ setupSelect.addEventListener("change", (event) => {
 
 function populateSetupSelect() {
   const setups = getSetups();
+  const shouldShowAutoBackups = (() => {
+    if (typeof showAutoBackups === 'boolean') {
+      return showAutoBackups;
+    }
+    try {
+      if (typeof localStorage !== 'undefined') {
+        return localStorage.getItem('showAutoBackups') === 'true';
+      }
+    } catch (error) {
+      console.warn('Could not read auto backup visibility preference', error);
+    }
+    return false;
+  })();
   setupSelect.innerHTML = `<option value="">${texts[currentLang].newSetupOption}</option>`;
   const names = Object.keys(setups)
-    .filter(name => showAutoBackups || !name.startsWith('auto-backup-'))
+    .filter((name) => shouldShowAutoBackups || !name.startsWith('auto-backup-'))
     .sort((a, b) => {
       const autoA = a.startsWith('auto-backup-');
       const autoB = b.startsWith('auto-backup-');
