@@ -8895,6 +8895,17 @@ const autoGearDeletePresetButton = document.getElementById('autoGearDeletePreset
 const autoGearAddRuleBtn = document.getElementById('autoGearAddRule');
 const autoGearResetFactoryButton = document.getElementById('autoGearResetFactory');
 const autoGearEditor = document.getElementById('autoGearEditor');
+
+if (autoGearAddRuleBtn) {
+  autoGearAddRuleBtn.setAttribute('aria-controls', 'autoGearEditor');
+  autoGearAddRuleBtn.setAttribute(
+    'aria-expanded',
+    autoGearEditor && !autoGearEditor.hidden ? 'true' : 'false'
+  );
+}
+if (autoGearEditor) {
+  autoGearEditor.setAttribute('aria-hidden', autoGearEditor.hidden ? 'true' : 'false');
+}
 const autoGearRuleNameInput = document.getElementById('autoGearRuleName');
 const autoGearRuleNameLabel = document.getElementById('autoGearRuleNameLabel');
 const autoGearScenariosSelect = document.getElementById('autoGearScenarios');
@@ -11026,6 +11037,10 @@ function openAutoGearEditor(ruleId) {
   autoGearEditorDraft = createAutoGearDraft(existing);
   autoGearEditorActiveItem = null;
   autoGearEditor.hidden = false;
+  autoGearEditor.setAttribute('aria-hidden', 'false');
+  if (autoGearAddRuleBtn) {
+    autoGearAddRuleBtn.setAttribute('aria-expanded', 'true');
+  }
   if (autoGearRuleNameInput) {
     autoGearRuleNameInput.value = autoGearEditorDraft.label || '';
   }
@@ -11053,6 +11068,10 @@ function openAutoGearEditor(ruleId) {
 function closeAutoGearEditor() {
   if (!autoGearEditor) return;
   autoGearEditor.hidden = true;
+  autoGearEditor.setAttribute('aria-hidden', 'true');
+  if (autoGearAddRuleBtn) {
+    autoGearAddRuleBtn.setAttribute('aria-expanded', 'false');
+  }
   autoGearEditorDraft = null;
   autoGearEditorActiveItem = null;
   if (autoGearRuleNameInput) autoGearRuleNameInput.value = '';

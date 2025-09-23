@@ -1997,6 +1997,10 @@ body.pink-mode:not(.dark-mode) #settingsPanel-autoGear .auto-gear-rule-items-lab
   background: var(--panel-bg);
 }
 
+.auto-gear-editor[hidden] {
+  display: none !important;
+}
+
 .auto-gear-editor-columns {
   display: flex;
   flex-direction: column;
