@@ -49,4 +49,76 @@ describe('automatic gear monitor field visibility', () => {
     addCategorySelect.dispatchEvent(new Event('change', { bubbles: true }));
     expectFieldsVisible(false);
   });
+
+  test('default device selector filters by monitor size', () => {
+    const env = setupScriptEnvironment({
+      devices: {
+        monitors: {
+          'Alpha 7" Monitor': { screenSizeInches: 7 },
+          'Bravo 12" Monitor': { screenSizeInches: 12 },
+          'Charlie 10" Monitor': { screenSizeInches: 10 },
+        },
+        directorMonitors: {
+          'Director 11" Monitor': { screenSizeInches: 11 },
+          'Director 20" Monitor': { screenSizeInches: 20 },
+          'Director 10" Monitor': { screenSizeInches: 10 },
+        },
+      },
+    });
+    cleanup = env.cleanup;
+
+    const monitorCatalog = Object.keys(window.devices?.monitors || {});
+    expect(monitorCatalog).toEqual(expect.arrayContaining([
+      'Alpha 7" Monitor',
+      'Charlie 10" Monitor',
+    ]));
+    const directorCatalog = Object.keys(window.devices?.directorMonitors || {});
+    expect(directorCatalog).toEqual(expect.arrayContaining([
+      'Director 11" Monitor',
+      'Director 20" Monitor',
+    ]));
+
+    const addRuleButton = document.getElementById('autoGearAddRule');
+    expect(addRuleButton).not.toBeNull();
+    addRuleButton.click();
+
+    const addCategorySelect = document.getElementById('autoGearAddCategory');
+    expect(addCategorySelect).not.toBeNull();
+    addCategorySelect.value = 'Monitoring';
+    addCategorySelect.dispatchEvent(new Event('change', { bubbles: true }));
+
+    const selectorType = document.getElementById('autoGearAddSelectorType');
+    const selectorDefault = document.getElementById('autoGearAddSelectorDefault');
+    expect(selectorDefault).not.toBeNull();
+    expect(selectorDefault.tagName).toBe('SELECT');
+
+    selectorType.value = 'monitor';
+    selectorType.dispatchEvent(new Event('change', { bubbles: true }));
+
+    const monitorValues = Array.from(selectorDefault.options || [])
+      .map(option => option.value)
+      .filter(Boolean);
+    expect(selectorDefault.options[0].value).toBe('');
+    expect(monitorValues).toEqual([
+      'Alpha 7" Monitor',
+      'Charlie 10" Monitor',
+    ]);
+    expect(monitorValues).not.toContain('Bravo 12" Monitor');
+    expect(selectorDefault.disabled).toBe(false);
+
+    selectorType.value = 'directorMonitor';
+    selectorType.dispatchEvent(new Event('change', { bubbles: true }));
+
+    const directorValues = Array.from(selectorDefault.options || [])
+      .map(option => option.value)
+      .filter(Boolean);
+    expect(selectorDefault.options[0].value).toBe('');
+    expect(directorValues).toEqual([
+      'Director 11" Monitor',
+      'Director 20" Monitor',
+    ]);
+    expect(directorValues).not.toContain('Director 10" Monitor');
+    expect(directorValues).not.toContain('Alpha 7" Monitor');
+    expect(selectorDefault.disabled).toBe(false);
+  });
 });

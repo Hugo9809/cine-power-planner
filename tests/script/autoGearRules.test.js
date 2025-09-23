@@ -912,7 +912,13 @@ describe('applyAutoGearRulesToTableHtml', () => {
   });
 
   test('adds screen size, selector and notes details to applied gear items', () => {
-    env = setupScriptEnvironment();
+    env = setupScriptEnvironment({
+      devices: {
+        monitors: {
+          'SmallHD Ultra 7': { screenSizeInches: 7 },
+        },
+      },
+    });
 
     document.getElementById('autoGearAddRule').click();
 
@@ -929,7 +935,9 @@ describe('applyAutoGearRulesToTableHtml', () => {
     document.getElementById('autoGearAddName').value = 'Director monitor station';
     document.getElementById('autoGearAddQuantity').value = '1';
     document.getElementById('autoGearAddScreenSize').value = '17"';
-    document.getElementById('autoGearAddSelectorType').value = 'monitor';
+    const selectorType = document.getElementById('autoGearAddSelectorType');
+    selectorType.value = 'monitor';
+    selectorType.dispatchEvent(new Event('change', { bubbles: true }));
     document.getElementById('autoGearAddSelectorDefault').value = 'SmallHD Ultra 7';
     document.getElementById('autoGearAddSelectorInclude').checked = true;
     document.getElementById('autoGearAddNotes').value = 'incl. Directors cage';

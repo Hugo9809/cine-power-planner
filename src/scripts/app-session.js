@@ -1298,9 +1298,14 @@ if (autoGearAddItemButton) {
   const bindAutoGearSelectorCatalogSync = (typeSelect, defaultInput) => {
     if (!typeSelect) return;
     const refreshCatalog = () => {
-      updateAutoGearMonitorCatalogOptions(typeSelect.value);
+      updateAutoGearMonitorCatalogOptions();
     };
-    typeSelect.addEventListener('change', refreshCatalog);
+    typeSelect.addEventListener('change', () => {
+      if (defaultInput) {
+        defaultInput.value = '';
+      }
+      refreshCatalog();
+    });
     if (defaultInput) {
       defaultInput.addEventListener('focus', refreshCatalog);
     }

@@ -1253,9 +1253,14 @@ if (settingsButton && settingsDialog) {
   var bindAutoGearSelectorCatalogSync = function bindAutoGearSelectorCatalogSync(typeSelect, defaultInput) {
     if (!typeSelect) return;
     var refreshCatalog = function refreshCatalog() {
-      updateAutoGearMonitorCatalogOptions(typeSelect.value);
+      updateAutoGearMonitorCatalogOptions();
     };
-    typeSelect.addEventListener('change', refreshCatalog);
+    typeSelect.addEventListener('change', function () {
+      if (defaultInput) {
+        defaultInput.value = '';
+      }
+      refreshCatalog();
+    });
     if (defaultInput) {
       defaultInput.addEventListener('focus', refreshCatalog);
     }
