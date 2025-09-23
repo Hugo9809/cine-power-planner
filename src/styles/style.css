@@ -1200,21 +1200,55 @@ main.legal-content {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
+
 .power-warning-dialog {
   max-width: min(420px, 90vw);
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  padding: 1.5rem;
+  border-color: var(--danger-color);
 }
 
 .power-warning-header {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--danger-color);
 }
 
 .power-warning-icon {
   font-size: 2.5rem;
+  color: var(--danger-color);
+}
+
+
+.power-warning-summary {
+  border: 1px solid var(--danger-color);
+  border-left-width: 4px;
+  border-radius: var(--border-radius);
+  background: var(--danger-overlay-color);
+  padding: 0.75rem 1rem;
+  color: var(--text-color);
+  font-weight: 600;
+}
+
+.power-warning-summary p {
+  margin: 0;
+}
+
+.power-warning-section {
+  border: 1px solid var(--danger-color);
+  border-radius: var(--border-radius);
+  padding: 1rem;
+  background: var(--surface-color);
+  background: color-mix(in srgb, var(--surface-color) 75%, var(--danger-overlay-color));
+}
+
+.power-warning-section h4 {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
   color: var(--danger-color);
 }
 
@@ -1230,6 +1264,12 @@ main.legal-content {
 
 .power-warning-details li:last-child {
   margin-bottom: 0;
+}
+
+.power-warning-advice {
+  margin: 0;
+  font-weight: 600;
+  color: var(--danger-color);
 }
 
 .dark-mode .power-warning-icon {
