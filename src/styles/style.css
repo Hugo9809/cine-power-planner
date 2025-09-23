@@ -1463,17 +1463,23 @@ main.legal-content {
 
 .settings-tabs {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: var(--cluster-gap);
   padding: 0;
   margin: 0;
   list-style: none;
   align-items: stretch;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-gutter: stable both-edges;
 }
 
 .settings-tab {
   margin: 0;
-  flex: 1 1 220px;
+  flex: 1 1 140px;
+  min-width: 140px;
   justify-content: flex-start;
   align-items: center;
   text-align: left;
