@@ -3310,10 +3310,6 @@ body.pink-mode #topBar #logo .logo-center {
 body.light-mode #topBar .controls button {
   color: var(--accent-color);
   --icon-color: currentColor;
-  background-color: var(--control-bg);
-  box-shadow: 0 0 0 1px var(--accent-color);
-  transition: background-color 0.2s, box-shadow 0.2s, color 0.2s,
-    transform 0.2s;
 }
 
 body.light-mode #topBar .controls button:hover,
@@ -3329,9 +3325,6 @@ body.light-mode #topBar .controls button:focus-visible {
 body.light-mode #topBar select {
   color: var(--accent-color);
   font-weight: var(--font-weight-medium);
-  background-color: var(--control-bg);
-  box-shadow: 0 0 0 1px var(--accent-color);
-  transition: background-color 0.2s, box-shadow 0.2s, color 0.2s;
 }
 
 body.light-mode #topBar select:hover,
@@ -3342,55 +3335,6 @@ body.light-mode #topBar select:focus {
 body.light-mode #topBar select:focus-visible {
   outline: 2px solid var(--accent-color);
   outline-offset: 2px;
-}
-
-@supports (color: color-mix(in srgb, #000 50%, white)) {
-  body.light-mode #topBar .controls button {
-    background-color: color-mix(in srgb, var(--accent-color) 7%, var(--control-bg));
-    box-shadow: 0 0 0 1px color-mix(
-        in srgb,
-        var(--accent-color) 45%,
-        transparent
-      );
-  }
-
-  body.light-mode #topBar .controls button:hover,
-  body.light-mode #topBar .controls button:focus-visible,
-  body.light-mode #topBar .controls button:active {
-    background-color: color-mix(
-      in srgb,
-      var(--accent-color) 18%,
-      var(--control-bg)
-    );
-    box-shadow: 0 0 0 1px color-mix(
-        in srgb,
-        var(--accent-color) 60%,
-        transparent
-      );
-  }
-
-  body.light-mode #topBar select {
-    background-color: color-mix(in srgb, var(--accent-color) 7%, var(--control-bg));
-    box-shadow: 0 0 0 1px color-mix(
-        in srgb,
-        var(--accent-color) 45%,
-        transparent
-      );
-  }
-
-  body.light-mode #topBar select:hover,
-  body.light-mode #topBar select:focus {
-    background-color: color-mix(
-      in srgb,
-      var(--accent-color) 18%,
-      var(--control-bg)
-    );
-    box-shadow: 0 0 0 1px color-mix(
-        in srgb,
-        var(--accent-color) 60%,
-        transparent
-      );
-  }
 }
 
 @supports (padding: env(safe-area-inset-top)) {
