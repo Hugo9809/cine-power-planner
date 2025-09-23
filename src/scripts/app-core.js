@@ -19561,9 +19561,15 @@ function renderSetupDiagram() {
       const currentRootWidth = bbox.width * baseScale;
       let desiredScale = currentRootWidth > 0 ? desiredWidth / currentRootWidth : 1;
       if (!Number.isFinite(desiredScale) || desiredScale <= 0) desiredScale = 1;
-      const MIN_SCALE = isTouchDevice ? 0.55 : 0.65;
+      const MIN_AUTO_SCALE = isTouchDevice ? 0.4 : 0.35;
       const MAX_INITIAL_SCALE = isTouchDevice ? 3 : 2.2;
-      const initialScale = Math.min(MAX_INITIAL_SCALE, Math.max(MIN_SCALE, desiredScale));
+      const safeDesiredScale = Number.isFinite(desiredScale) && desiredScale > 0
+        ? desiredScale
+        : 1;
+      const initialScale = Math.min(
+        MAX_INITIAL_SCALE,
+        Math.max(MIN_AUTO_SCALE, safeDesiredScale)
+      );
       const centerX = bbox.x + bbox.width / 2;
       const centerY = bbox.y + bbox.height / 2;
       const targetCenterX = viewBoxX + viewBoxWidth / 2;
@@ -19684,16 +19690,24 @@ function enableDiagramInteractions() {
   const root = svg.querySelector('#diagramRoot') || svg;
   const isTouchDevice = (navigator.maxTouchPoints || 0) > 0;
   const MAX_SCALE = isTouchDevice ? Infinity : 3;
-  const MIN_SCALE = isTouchDevice ? 0.55 : 0.65;
-  const dataScale = parseFloat(setupDiagramContainer.dataset.initialScale || '');
+  const BASE_MIN_SCALE = isTouchDevice ? 0.55 : 0.65;
+  const MIN_AUTO_SCALE = isTouchDevice ? 0.4 : 0.35;
+  const dataScaleRaw = parseFloat(setupDiagramContainer.dataset.initialScale || '');
+  const fallbackScale = isTouchDevice ? 0.95 : 1.25;
+  const initialScaleRaw = Number.isFinite(dataScaleRaw) && dataScaleRaw > 0
+    ? dataScaleRaw
+    : fallbackScale;
+  const MIN_SCALE = Math.max(
+    MIN_AUTO_SCALE,
+    Math.min(BASE_MIN_SCALE, initialScaleRaw)
+  );
   const clampScale = value => {
     if (!Number.isFinite(value) || value <= 0) return MIN_SCALE;
     if (value > MAX_SCALE) return MAX_SCALE;
     if (value < MIN_SCALE) return MIN_SCALE;
     return value;
   };
-  const fallbackScale = isTouchDevice ? 0.95 : 1.25;
-  const INITIAL_SCALE = clampScale(Number.isFinite(dataScale) ? dataScale : fallbackScale);
+  const INITIAL_SCALE = clampScale(initialScaleRaw);
   let initialPan = { x: 0, y: 0 };
   if (setupDiagramContainer.dataset.initialPan) {
     try {
