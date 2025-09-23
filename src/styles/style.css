@@ -2803,20 +2803,42 @@ body.pink-mode:not(.dark-mode) #settingsPanel-autoGear .auto-gear-rule-items-lab
   border-radius: var(--border-radius);
 }
 
+.help-link {
+  text-decoration: none;
+  transition:
+    color 0.2s ease,
+    text-decoration-color 0.2s ease;
+}
+
+.help-link:focus-visible {
+  border-radius: calc(var(--border-radius) * 0.75);
+}
+
+.help-link:not(.button-link) {
+  color: var(--accent-color);
+  font-weight: var(--font-weight-semibold);
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 0.12em;
+}
+
+.help-link:not(.button-link):visited {
+  color: var(--accent-color);
+}
+
+.help-link:not(.button-link):hover,
+.help-link:not(.button-link):focus-visible {
+  text-decoration: underline;
+}
+
 .help-inline-links {
   margin: 0.75rem 0 0;
   line-height: 1.6;
   font-size: calc(var(--font-size-relative-base) * var(--font-scale-sm));
 }
 
-.help-inline-links .help-link {
-  font-weight: 600;
-}
-
 .help-inline-links .help-link:focus-visible {
   outline: 2px solid var(--accent-color);
   outline-offset: 2px;
-  border-radius: calc(var(--border-radius) * 0.75);
 }
 
 .help-callout {
