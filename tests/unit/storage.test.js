@@ -341,6 +341,26 @@ describe('setup storage', () => {
     expect(autoBackupCount).toBeLessThanOrEqual(50);
   });
 
+  test('saveSetups keeps auto backups with identical data when labels differ', () => {
+    const shared = {
+      camera: 'Shared Camera',
+      motors: ['Motor 1'],
+      controllers: ['Controller 1'],
+    };
+    const alphaKey = 'auto-backup-2024-01-01-00-00-Project Alpha';
+    const betaKey = 'auto-backup-2024-01-01-00-01-Project Beta';
+    const setups = {
+      [alphaKey]: shared,
+      [betaKey]: shared,
+    };
+
+    saveSetups(setups);
+
+    const stored = JSON.parse(localStorage.getItem(SETUP_KEY));
+    expect(stored[alphaKey]).toEqual(shared);
+    expect(stored[betaKey]).toEqual(shared);
+  });
+
   test('saveSetups keeps the newest auto backup for each project label when trimming', () => {
     const setups = {};
     for (let index = 0; index < 60; index += 1) {
