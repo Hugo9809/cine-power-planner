@@ -19939,8 +19939,10 @@ function renderSetupDiagram() {
       let desiredScale = currentRootWidth > 0 ? desiredWidth / currentRootWidth : 1;
       if (!Number.isFinite(desiredScale) || desiredScale <= 0) desiredScale = 1;
       if (!isTouchDevice && desiredScale > 1) {
-        const DESKTOP_SCALE_RELAXATION = 0.35;
+        const DESKTOP_SCALE_RELAXATION = 0.3;
+        const DESKTOP_MAX_AUTO_SCALE = 1.2;
         desiredScale = 1 + (desiredScale - 1) * DESKTOP_SCALE_RELAXATION;
+        if (desiredScale > DESKTOP_MAX_AUTO_SCALE) desiredScale = DESKTOP_MAX_AUTO_SCALE;
       }
       const MIN_AUTO_SCALE = isTouchDevice ? 0.4 : 0.35;
       const MAX_INITIAL_SCALE = isTouchDevice ? 3 : 1.6;
@@ -20074,7 +20076,7 @@ function enableDiagramInteractions() {
   const BASE_MIN_SCALE = isTouchDevice ? 0.55 : 0.65;
   const MIN_AUTO_SCALE = isTouchDevice ? 0.4 : 0.35;
   const dataScaleRaw = parseFloat(setupDiagramContainer.dataset.initialScale || '');
-  const fallbackScale = isTouchDevice ? 0.95 : 1.0;
+  const fallbackScale = isTouchDevice ? 0.95 : 0.9;
   const initialScaleRaw = Number.isFinite(dataScaleRaw) && dataScaleRaw > 0
     ? dataScaleRaw
     : fallbackScale;
