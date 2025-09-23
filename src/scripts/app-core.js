@@ -8973,7 +8973,10 @@ function refreshAutoGearMatteboxOptions(selected) {
   }
 
   const selectableOptions = Array.from(autoGearMatteboxSelect.options || []).filter(option => !option.disabled);
-  autoGearMatteboxSelect.size = computeAutoGearMultiSelectSize(selectableOptions.length);
+  autoGearMatteboxSelect.size = computeAutoGearMultiSelectSize(
+    selectableOptions.length,
+    { minRows: AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS }
+  );
 }
 
 function refreshAutoGearCameraHandleOptions(selected) {
@@ -9039,7 +9042,10 @@ function refreshAutoGearCameraHandleOptions(selected) {
   }
 
   const selectableOptions = Array.from(autoGearCameraHandleSelect.options || []).filter(option => !option.disabled);
-  autoGearCameraHandleSelect.size = computeAutoGearMultiSelectSize(selectableOptions.length);
+  autoGearCameraHandleSelect.size = computeAutoGearMultiSelectSize(
+    selectableOptions.length,
+    { minRows: AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS }
+  );
 }
 
 function resolveViewfinderOptionValue(option) {
@@ -9138,7 +9144,10 @@ function refreshAutoGearViewfinderExtensionOptions(selected) {
   }
 
   const selectableOptions = Array.from(autoGearViewfinderExtensionSelect.options || []).filter(option => !option.disabled);
-  autoGearViewfinderExtensionSelect.size = computeAutoGearMultiSelectSize(selectableOptions.length);
+  autoGearViewfinderExtensionSelect.size = computeAutoGearMultiSelectSize(
+    selectableOptions.length,
+    { minRows: AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS }
+  );
 }
 
 function refreshAutoGearVideoDistributionOptions(selected) {
@@ -9220,7 +9229,10 @@ function refreshAutoGearVideoDistributionOptions(selected) {
   }
 
   const selectableOptions = Array.from(autoGearVideoDistributionSelect.options || []).filter(option => !option.disabled);
-  autoGearVideoDistributionSelect.size = computeAutoGearMultiSelectSize(selectableOptions.length);
+  autoGearVideoDistributionSelect.size = computeAutoGearMultiSelectSize(
+    selectableOptions.length,
+    { minRows: AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS }
+  );
 }
 
 function collectAutoGearSelectedValues(selected, key) {
@@ -9466,7 +9478,10 @@ function refreshAutoGearDistanceOptions(selected) {
   });
 
   const visibleCount = Array.from(autoGearDistanceSelect.options || []).filter(option => !option.disabled).length;
-  autoGearDistanceSelect.size = computeAutoGearMultiSelectSize(visibleCount);
+  autoGearDistanceSelect.size = computeAutoGearMultiSelectSize(
+    visibleCount,
+    { minRows: AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS }
+  );
 }
 
 function populateAutoGearCategorySelect(select, currentValue) {
