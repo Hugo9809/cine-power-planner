@@ -1383,9 +1383,9 @@ main.legal-content {
 }
 
 .settings-tabs {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-  gap: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--cluster-gap);
   padding: 0;
   margin: 0;
   list-style: none;
@@ -1393,44 +1393,25 @@ main.legal-content {
 }
 
 .settings-tab {
-  appearance: none;
-  border: 1px solid color-mix(in srgb, var(--panel-border) 65%, transparent);
-  border-radius: calc(var(--border-radius) * 0.8);
-  background: color-mix(in srgb, var(--panel-bg) 88%, transparent);
-  color: inherit;
-  font: inherit;
-  font-weight: var(--font-weight-medium);
-  letter-spacing: 0.01em;
-  padding: 8px 10px;
-  cursor: pointer;
-  transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease,
-    transform 0.25s ease;
-  white-space: normal;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
+  margin: 0;
+  flex: 1 1 220px;
+  justify-content: flex-start;
   align-items: center;
-  justify-content: center;
-  gap: 6px;
-  position: relative;
-  isolation: isolate;
-  min-height: 80px;
+  text-align: left;
+  white-space: normal;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: normal;
+  transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease,
+    transform 0.2s ease;
 }
 
 .settings-tab:hover,
 .settings-tab:focus-visible {
-  border-color: color-mix(in srgb, var(--accent-color) 60%, transparent);
-  background: color-mix(in srgb, var(--accent-color) 16%, var(--panel-bg));
-}
-
-.settings-tab[aria-selected="true"] {
-  background: color-mix(in srgb, var(--accent-color) 22%, var(--panel-bg));
-  border-color: color-mix(in srgb, var(--accent-color) 70%, transparent);
-  color: color-mix(in srgb, var(--accent-color) 78%, currentColor);
-}
-
-.settings-tab.active {
   transform: translateY(-1px);
+}
+
+.settings-tab:active {
+  transform: translateY(0);
 }
 
 .settings-tab:focus-visible {
@@ -1438,123 +1419,78 @@ main.legal-content {
   outline-offset: 2px;
 }
 
+.settings-tab[aria-selected="true"] {
+  background-color: var(--accent-color);
+  color: var(--inverse-text-color);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--accent-color) 35%, transparent);
+}
+
+.settings-tab[aria-selected="true"]:hover,
+.settings-tab[aria-selected="true"]:focus-visible {
+  background-color: color-mix(in srgb, var(--accent-color) 90%, var(--control-hover-bg));
+}
+
 .settings-tab-icon {
-  --icon-size: 20px;
-  inline-size: 32px;
-  block-size: 32px;
-  min-inline-size: 32px;
-  min-block-size: 32px;
+  --icon-size: var(--button-icon-size);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 10px;
-  background: color-mix(in srgb, var(--accent-color) 14%, transparent);
-  border: 1px solid color-mix(in srgb, var(--accent-color) 24%, transparent);
-  color: color-mix(in srgb, var(--accent-color) 60%, currentColor);
-  flex: 0 0 32px;
-  transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease,
-    border-color 0.2s ease;
+  color: var(--accent-color);
+  flex: 0 0 auto;
+  margin-inline-end: 0;
+  flex-shrink: 0;
+  transition: color 0.2s ease;
 }
 
 .settings-tab:hover .settings-tab-icon,
-.settings-tab:focus-visible .settings-tab-icon {
-  background: color-mix(in srgb, var(--accent-color) 26%, transparent);
-  color: var(--accent-color);
-  transform: translateY(-1px);
-  border-color: color-mix(in srgb, var(--accent-color) 40%, transparent);
-}
-
-.settings-tab[aria-selected="true"] .settings-tab-icon,
-.settings-tab.active .settings-tab-icon {
-  background: color-mix(in srgb, var(--accent-color) 34%, transparent);
-  color: var(--accent-color);
-  border-color: color-mix(in srgb, var(--accent-color) 48%, transparent);
-  transform: translateY(-1px) scale(1.02);
-}
-
-.settings-tab-label {
-  font-size: calc(var(--font-size-relative-base) * var(--font-scale-sm));
-  font-weight: var(--font-weight-medium);
-  line-height: 1.25;
-  letter-spacing: 0.005em;
+.settings-tab:focus-visible .settings-tab-icon,
+.settings-tab[aria-selected="true"] .settings-tab-icon {
   color: currentColor;
 }
 
-.settings-tab[aria-selected="true"] .settings-tab-label,
-.settings-tab:hover .settings-tab-label,
-.settings-tab:focus-visible .settings-tab-label {
-  color: color-mix(in srgb, var(--accent-color) 72%, currentColor);
+.settings-tab-label {
+  font-size: var(--form-control-font-size);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--button-line-height);
+  color: inherit;
+  text-align: left;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.settings-tab[aria-selected="true"] .settings-tab-label {
   font-weight: var(--font-weight-semibold);
 }
 
-body.light-mode .settings-tab {
-  background: color-mix(in srgb, var(--accent-color) 12%, var(--surface-color));
-  border-color: color-mix(in srgb, var(--accent-color) 52%, transparent);
-  color: color-mix(in srgb, var(--accent-color) 70%, var(--text-color));
-}
-
-body.light-mode .settings-tab:hover,
-body.light-mode .settings-tab:focus-visible {
-  background: color-mix(in srgb, var(--accent-color) 20%, var(--surface-color));
-}
-
-body.light-mode .settings-tab[aria-selected="true"],
-body.light-mode .settings-tab.active {
-  background: color-mix(in srgb, var(--accent-color) 28%, var(--surface-color));
-  color: var(--accent-color);
-}
-
-body.light-mode .settings-tab-icon {
-  background: color-mix(in srgb, var(--accent-color) 24%, transparent);
-  border-color: color-mix(in srgb, var(--accent-color) 48%, transparent);
-  color: var(--accent-color);
-}
-
-body.light-mode .settings-tab:hover .settings-tab-icon,
-body.light-mode .settings-tab:focus-visible .settings-tab-icon {
-  background: color-mix(in srgb, var(--accent-color) 32%, transparent);
-  border-color: color-mix(in srgb, var(--accent-color) 56%, transparent);
-}
-
-body.light-mode .settings-tab[aria-selected="true"] .settings-tab-icon,
-body.light-mode .settings-tab.active .settings-tab-icon {
-  background: color-mix(in srgb, var(--accent-color) 38%, transparent);
-  border-color: color-mix(in srgb, var(--accent-color) 64%, transparent);
-}
-
 body.high-contrast .settings-tab {
-  background: var(--surface-color);
-  border: 1px solid var(--panel-border);
+  border: 2px solid currentColor;
+  background-color: var(--surface-color);
+  color: inherit;
   box-shadow: none;
 }
 
 body.high-contrast .settings-tab:hover,
-body.high-contrast .settings-tab:focus-visible,
-body.high-contrast .settings-tab[aria-selected="true"],
-body.high-contrast .settings-tab.active {
-  color: inherit;
-  border-color: var(--panel-border);
-  box-shadow: none;
+body.high-contrast .settings-tab:focus-visible {
+  transform: none;
 }
 
-body.high-contrast .settings-tab-icon {
-  background: transparent;
-  color: currentColor;
+body.high-contrast .settings-tab[aria-selected="true"] {
+  border-color: var(--accent-color);
+  color: var(--inverse-text-color);
   box-shadow: none;
 }
 
 @media (max-width: 600px) {
-  .settings-tabs {
-    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-  }
   .settings-tab {
-    min-height: 72px;
-    padding: 7px 8px;
+    flex-basis: 100%;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .settings-tab,
+  .settings-tab {
+    transition: none;
+    transform: none;
+  }
   .settings-tab-icon {
     transition: none;
   }
