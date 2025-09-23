@@ -459,10 +459,19 @@ body:not(.light-mode) .gear-table .category-row td {
   font-weight: var(--font-weight-bold) !important;
 }
 
+
 .connector-block,
 .info-box {
   background: var(--panel-bg) !important;
   box-shadow: var(--panel-shadow);
+}
+
+#overviewDialogContent .device-ul li {
+  border-bottom: 1px solid var(--panel-border) !important;
+}
+
+#overviewDialogContent .device-ul li:last-child {
+  border-bottom: none !important;
 }
 
 .power-conn {
@@ -479,13 +488,13 @@ body:not(.light-mode) .gear-table .category-row td {
 
 .video-conn {
   background: var(--panel-bg) !important;
-  border: 1px dotted var(--video-color) !important;
+  border: 1px solid var(--video-color) !important;
   --icon-color: var(--video-color);
 }
 
 .neutral-conn {
   background: var(--panel-bg) !important;
-  border: 1px double var(--control-text) !important;
+  border: 1px solid var(--control-text) !important;
   --icon-color: var(--control-text);
 }
 
