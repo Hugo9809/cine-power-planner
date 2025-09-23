@@ -75,6 +75,13 @@
     var hasText = typeof lastText === 'string' && lastText.trim().length > 0;
     var shouldShow = !!(dialog.open && notePresent && !noteHidden && hasText);
     overlay.setAttribute('aria-hidden', shouldShow ? 'false' : 'true');
+    if (dialog && dialog.classList) {
+      if (shouldShow) {
+        dialog.classList.add('has-gear-list-note');
+      } else {
+        dialog.classList.remove('has-gear-list-note');
+      }
+    }
     if (shouldShow) {
       overlay.hidden = false;
       if (overlay.classList) {

@@ -1315,15 +1315,30 @@ if (autoGearAddItemButton) {
   if (autoGearEditor) {
     autoGearEditor.addEventListener('click', event => {
       const target = event.target;
-      if (!target || !target.classList.contains('auto-gear-remove-entry')) return;
-      const listType = target.dataset.listType;
-      const itemId = target.dataset.itemId;
-      if (!autoGearEditorDraft || !itemId) return;
-      const list = listType === 'remove' ? autoGearEditorDraft.remove : autoGearEditorDraft.add;
-      const index = list.findIndex(item => item.id === itemId);
-      if (index >= 0) {
-        list.splice(index, 1);
-        renderAutoGearDraftLists();
+      if (!target) return;
+      if (target.classList.contains('auto-gear-remove-entry')) {
+        const listType = target.dataset.listType;
+        const normalizedType = listType === 'remove' ? 'remove' : 'add';
+        const itemId = target.dataset.itemId;
+        if (!autoGearEditorDraft || !itemId) return;
+        const list = normalizedType === 'remove' ? autoGearEditorDraft.remove : autoGearEditorDraft.add;
+        const index = list.findIndex(item => item.id === itemId);
+        if (index >= 0) {
+          list.splice(index, 1);
+          if (
+            autoGearEditorActiveItem
+            && autoGearEditorActiveItem.listType === normalizedType
+            && autoGearEditorActiveItem.itemId === itemId
+          ) {
+            clearAutoGearDraftItemEdit(normalizedType, { skipRender: true });
+          }
+          renderAutoGearDraftLists();
+          updateAutoGearCatalogOptions();
+        }
+        return;
+      }
+      if (target.classList.contains('auto-gear-edit-entry')) {
+        beginAutoGearDraftItemEdit(target.dataset.listType, target.dataset.itemId);
       }
     });
   }

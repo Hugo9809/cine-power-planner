@@ -692,11 +692,9 @@ function updateAutoGearMonitorFieldGroup(group) {
     selectorTypeSelect,
     selectorDefaultField,
     selectorDefaultInput,
-    selectorIncludeField,
-    selectorIncludeCheckbox,
   } = group;
   const isMonitoring = isMonitoringCategorySelected(select);
-  const managedFields = [screenSizeField, selectorTypeField, selectorDefaultField, selectorIncludeField];
+  const managedFields = [screenSizeField, selectorTypeField, selectorDefaultField];
   managedFields.forEach(field => {
     setAutoGearFieldVisibility(field, isMonitoring);
   });
@@ -704,7 +702,6 @@ function updateAutoGearMonitorFieldGroup(group) {
     if (screenSizeInput) screenSizeInput.value = '';
     if (selectorTypeSelect) selectorTypeSelect.value = 'none';
     if (selectorDefaultInput) selectorDefaultInput.value = '';
-    if (selectorIncludeCheckbox) selectorIncludeCheckbox.checked = false;
   }
 }
 
@@ -718,7 +715,12 @@ function normalizeAutoGearItem(entry) {
   const screenSize = normalizeAutoGearText(entry.screenSize);
   const selectorType = normalizeAutoGearSelectorType(entry.selectorType);
   const selectorDefault = normalizeAutoGearSelectorDefault(selectorType, entry.selectorDefault);
-  const selectorEnabled = !!entry.selectorEnabled;
+  let selectorEnabled = !!entry.selectorEnabled;
+  if (selectorType === 'none') {
+    selectorEnabled = false;
+  } else if (isAutoGearMonitoringCategory(category)) {
+    selectorEnabled = true;
+  }
   const notes = normalizeAutoGearText(entry.notes);
   return { id, name, category, quantity, screenSize, selectorType, selectorDefault, selectorEnabled, notes };
 }
@@ -4995,13 +4997,6 @@ function setLanguage(lang) {
       autoGearAddSelectorDefaultInput.setAttribute('aria-label', label);
     }
   }
-  if (autoGearAddSelectorIncludeLabel) {
-    const label = texts[lang].autoGearAddSelectorIncludeLabel || texts.en?.autoGearAddSelectorIncludeLabel || autoGearAddSelectorIncludeLabel.textContent;
-    autoGearAddSelectorIncludeLabel.textContent = label;
-    if (autoGearAddSelectorIncludeCheckbox) {
-      autoGearAddSelectorIncludeCheckbox.setAttribute('aria-label', label);
-    }
-  }
   if (autoGearAddNotesLabel) {
     const label = texts[lang].autoGearAddNotesLabel || texts.en?.autoGearAddNotesLabel || autoGearAddNotesLabel.textContent;
     autoGearAddNotesLabel.textContent = label;
@@ -5010,9 +5005,7 @@ function setLanguage(lang) {
     }
   }
   if (autoGearAddItemButton) {
-    const label = texts[lang].autoGearAddItemButton || texts.en?.autoGearAddItemButton || autoGearAddItemButton.textContent;
-    setButtonLabelWithIcon(autoGearAddItemButton, label, ICON_GLYPHS.add);
-    autoGearAddItemButton.setAttribute('data-help', label);
+    updateAutoGearItemButtonState('add');
   }
   if (autoGearRemoveItemsHeading) {
     autoGearRemoveItemsHeading.textContent = texts[lang].autoGearRemoveItemsHeading || texts.en?.autoGearRemoveItemsHeading || autoGearRemoveItemsHeading.textContent;
@@ -5076,13 +5069,6 @@ function setLanguage(lang) {
       autoGearRemoveSelectorDefaultInput.setAttribute('aria-label', label);
     }
   }
-  if (autoGearRemoveSelectorIncludeLabel) {
-    const label = texts[lang].autoGearRemoveSelectorIncludeLabel || texts.en?.autoGearRemoveSelectorIncludeLabel || autoGearRemoveSelectorIncludeLabel.textContent;
-    autoGearRemoveSelectorIncludeLabel.textContent = label;
-    if (autoGearRemoveSelectorIncludeCheckbox) {
-      autoGearRemoveSelectorIncludeCheckbox.setAttribute('aria-label', label);
-    }
-  }
   if (autoGearRemoveNotesLabel) {
     const label = texts[lang].autoGearRemoveNotesLabel || texts.en?.autoGearRemoveNotesLabel || autoGearRemoveNotesLabel.textContent;
     autoGearRemoveNotesLabel.textContent = label;
@@ -5091,9 +5077,7 @@ function setLanguage(lang) {
     }
   }
   if (autoGearRemoveItemButton) {
-    const label = texts[lang].autoGearRemoveItemButton || texts.en?.autoGearRemoveItemButton || autoGearRemoveItemButton.textContent;
-    setButtonLabelWithIcon(autoGearRemoveItemButton, label, ICON_GLYPHS.minus);
-    autoGearRemoveItemButton.setAttribute('data-help', label);
+    updateAutoGearItemButtonState('remove');
   }
   if (autoGearSaveRuleButton) {
     const label = texts[lang].autoGearSaveRule || texts.en?.autoGearSaveRule || autoGearSaveRuleButton.textContent;
@@ -8942,7 +8926,6 @@ const autoGearAddQuantityLabel = document.getElementById('autoGearAddQuantityLab
 const autoGearAddScreenSizeLabel = document.getElementById('autoGearAddScreenSizeLabel');
 const autoGearAddSelectorTypeLabel = document.getElementById('autoGearAddSelectorTypeLabel');
 const autoGearAddSelectorDefaultLabel = document.getElementById('autoGearAddSelectorDefaultLabel');
-const autoGearAddSelectorIncludeLabel = document.getElementById('autoGearAddSelectorIncludeLabel');
 const autoGearAddNotesLabel = document.getElementById('autoGearAddNotesLabel');
 const autoGearAddNameInput = document.getElementById('autoGearAddName');
 const autoGearAddCategorySelect = document.getElementById('autoGearAddCategory');
@@ -8950,7 +8933,6 @@ const autoGearAddQuantityInput = document.getElementById('autoGearAddQuantity');
 const autoGearAddScreenSizeInput = document.getElementById('autoGearAddScreenSize');
 const autoGearAddSelectorTypeSelect = document.getElementById('autoGearAddSelectorType');
 const autoGearAddSelectorDefaultInput = document.getElementById('autoGearAddSelectorDefault');
-const autoGearAddSelectorIncludeCheckbox = document.getElementById('autoGearAddSelectorInclude');
 const autoGearAddNotesInput = document.getElementById('autoGearAddNotes');
 const autoGearAddItemButton = document.getElementById('autoGearAddItemButton');
 const autoGearAddList = document.getElementById('autoGearAddList');
@@ -8961,7 +8943,6 @@ const autoGearRemoveQuantityLabel = document.getElementById('autoGearRemoveQuant
 const autoGearRemoveScreenSizeLabel = document.getElementById('autoGearRemoveScreenSizeLabel');
 const autoGearRemoveSelectorTypeLabel = document.getElementById('autoGearRemoveSelectorTypeLabel');
 const autoGearRemoveSelectorDefaultLabel = document.getElementById('autoGearRemoveSelectorDefaultLabel');
-const autoGearRemoveSelectorIncludeLabel = document.getElementById('autoGearRemoveSelectorIncludeLabel');
 const autoGearRemoveNotesLabel = document.getElementById('autoGearRemoveNotesLabel');
 const autoGearRemoveNameInput = document.getElementById('autoGearRemoveName');
 const autoGearRemoveCategorySelect = document.getElementById('autoGearRemoveCategory');
@@ -8969,7 +8950,6 @@ const autoGearRemoveQuantityInput = document.getElementById('autoGearRemoveQuant
 const autoGearRemoveScreenSizeInput = document.getElementById('autoGearRemoveScreenSize');
 const autoGearRemoveSelectorTypeSelect = document.getElementById('autoGearRemoveSelectorType');
 const autoGearRemoveSelectorDefaultInput = document.getElementById('autoGearRemoveSelectorDefault');
-const autoGearRemoveSelectorIncludeCheckbox = document.getElementById('autoGearRemoveSelectorInclude');
 const autoGearRemoveNotesInput = document.getElementById('autoGearRemoveNotes');
 const autoGearRemoveItemButton = document.getElementById('autoGearRemoveItemButton');
 const autoGearRemoveList = document.getElementById('autoGearRemoveList');
@@ -9059,9 +9039,6 @@ const autoGearAddSelectorTypeField = autoGearAddSelectorTypeSelect?.closest('.au
 const autoGearAddSelectorDefaultField = autoGearAddSelectorDefaultInput?.closest('.auto-gear-field')
   || autoGearAddSelectorDefaultLabel?.closest('.auto-gear-field')
   || null;
-const autoGearAddSelectorIncludeField = autoGearAddSelectorIncludeCheckbox?.closest('.auto-gear-field')
-  || autoGearAddSelectorIncludeLabel?.closest('.auto-gear-field')
-  || null;
 const autoGearRemoveScreenSizeField = autoGearRemoveScreenSizeInput?.closest('.auto-gear-field')
   || autoGearRemoveScreenSizeLabel?.closest('.auto-gear-field')
   || null;
@@ -9070,9 +9047,6 @@ const autoGearRemoveSelectorTypeField = autoGearRemoveSelectorTypeSelect?.closes
   || null;
 const autoGearRemoveSelectorDefaultField = autoGearRemoveSelectorDefaultInput?.closest('.auto-gear-field')
   || autoGearRemoveSelectorDefaultLabel?.closest('.auto-gear-field')
-  || null;
-const autoGearRemoveSelectorIncludeField = autoGearRemoveSelectorIncludeCheckbox?.closest('.auto-gear-field')
-  || autoGearRemoveSelectorIncludeLabel?.closest('.auto-gear-field')
   || null;
 
 const autoGearAddMonitorFieldGroup = {
@@ -9083,8 +9057,6 @@ const autoGearAddMonitorFieldGroup = {
   selectorTypeSelect: autoGearAddSelectorTypeSelect,
   selectorDefaultField: autoGearAddSelectorDefaultField,
   selectorDefaultInput: autoGearAddSelectorDefaultInput,
-  selectorIncludeField: autoGearAddSelectorIncludeField,
-  selectorIncludeCheckbox: autoGearAddSelectorIncludeCheckbox,
 };
 
 const autoGearRemoveMonitorFieldGroup = {
@@ -9095,8 +9067,6 @@ const autoGearRemoveMonitorFieldGroup = {
   selectorTypeSelect: autoGearRemoveSelectorTypeSelect,
   selectorDefaultField: autoGearRemoveSelectorDefaultField,
   selectorDefaultInput: autoGearRemoveSelectorDefaultInput,
-  selectorIncludeField: autoGearRemoveSelectorIncludeField,
-  selectorIncludeCheckbox: autoGearRemoveSelectorIncludeCheckbox,
 };
 
 function syncAutoGearMonitorFieldVisibility() {
@@ -9139,6 +9109,7 @@ function computeAutoGearMultiSelectSize(optionCount, {
 }
 
 let autoGearEditorDraft = null;
+let autoGearEditorActiveItem = null;
 let autoGearSearchQuery = '';
 let autoGearScenarioFilter = 'all';
 
@@ -10839,7 +10810,147 @@ function renderAutoGearRulesList() {
   });
 }
 
+function resetAutoGearDraftInputs(type) {
+  const normalizedType = type === 'remove' ? 'remove' : 'add';
+  const isAdd = normalizedType === 'add';
+  const nameInput = isAdd ? autoGearAddNameInput : autoGearRemoveNameInput;
+  const quantityInput = isAdd ? autoGearAddQuantityInput : autoGearRemoveQuantityInput;
+  const screenSizeInput = isAdd ? autoGearAddScreenSizeInput : autoGearRemoveScreenSizeInput;
+  const selectorTypeSelect = isAdd ? autoGearAddSelectorTypeSelect : autoGearRemoveSelectorTypeSelect;
+  const selectorDefaultInput = isAdd ? autoGearAddSelectorDefaultInput : autoGearRemoveSelectorDefaultInput;
+  const notesInput = isAdd ? autoGearAddNotesInput : autoGearRemoveNotesInput;
+  if (nameInput) nameInput.value = '';
+  if (quantityInput) quantityInput.value = '1';
+  if (screenSizeInput) screenSizeInput.value = '';
+  if (selectorTypeSelect) selectorTypeSelect.value = 'none';
+  if (selectorDefaultInput) selectorDefaultInput.value = '';
+  if (notesInput) notesInput.value = '';
+  const selectorTypeValue = selectorTypeSelect ? selectorTypeSelect.value : 'none';
+  updateAutoGearMonitorCatalogOptions(selectorTypeValue);
+}
+
+function updateAutoGearItemButtonState(type) {
+  const normalizedType = type === 'remove' ? 'remove' : 'add';
+  const button = normalizedType === 'remove' ? autoGearRemoveItemButton : autoGearAddItemButton;
+  if (!button) return;
+  const langTexts = texts[currentLang] || texts.en || {};
+  const isEditing = autoGearEditorActiveItem?.listType === normalizedType;
+  const defaultKey = normalizedType === 'remove' ? 'autoGearRemoveItemButton' : 'autoGearAddItemButton';
+  const defaultLabel = langTexts[defaultKey]
+    || texts.en?.[defaultKey]
+    || button.textContent
+    || '';
+  const updateLabel = langTexts.autoGearUpdateItemButton
+    || texts.en?.autoGearUpdateItemButton
+    || defaultLabel;
+  const label = isEditing ? updateLabel : defaultLabel;
+  const glyph = isEditing
+    ? ICON_GLYPHS.save
+    : (normalizedType === 'remove' ? ICON_GLYPHS.minus : ICON_GLYPHS.add);
+  setButtonLabelWithIcon(button, label, glyph);
+  button.setAttribute('data-help', label);
+}
+
+function updateAutoGearDraftActionState() {
+  updateAutoGearItemButtonState('add');
+  updateAutoGearItemButtonState('remove');
+}
+
+function getAutoGearDraftList(type) {
+  if (!autoGearEditorDraft) return null;
+  const normalizedType = type === 'remove' ? 'remove' : 'add';
+  return normalizedType === 'remove' ? autoGearEditorDraft.remove : autoGearEditorDraft.add;
+}
+
+function populateAutoGearDraftForm(type, item) {
+  if (!item) return;
+  const normalizedType = type === 'remove' ? 'remove' : 'add';
+  const snapshot = autoGearItemSnapshot(item);
+  if (!snapshot) return;
+  const isAdd = normalizedType === 'add';
+  const nameInput = isAdd ? autoGearAddNameInput : autoGearRemoveNameInput;
+  const categorySelect = isAdd ? autoGearAddCategorySelect : autoGearRemoveCategorySelect;
+  const quantityInput = isAdd ? autoGearAddQuantityInput : autoGearRemoveQuantityInput;
+  const screenSizeInput = isAdd ? autoGearAddScreenSizeInput : autoGearRemoveScreenSizeInput;
+  const selectorTypeSelect = isAdd ? autoGearAddSelectorTypeSelect : autoGearRemoveSelectorTypeSelect;
+  const selectorDefaultInput = isAdd ? autoGearAddSelectorDefaultInput : autoGearRemoveSelectorDefaultInput;
+  const notesInput = isAdd ? autoGearAddNotesInput : autoGearRemoveNotesInput;
+  if (nameInput) nameInput.value = snapshot.name || '';
+  if (quantityInput) quantityInput.value = String(normalizeAutoGearQuantity(snapshot.quantity));
+  if (categorySelect) {
+    const targetCategory = snapshot.category || AUTO_GEAR_CUSTOM_CATEGORY;
+    let matched = false;
+    Array.from(categorySelect.options || []).forEach(option => {
+      if (option && option.value === targetCategory) {
+        matched = true;
+      }
+    });
+    categorySelect.value = matched ? targetCategory : AUTO_GEAR_CUSTOM_CATEGORY;
+  }
+  const activeCategory = categorySelect ? categorySelect.value : snapshot.category;
+  const isMonitoring = isAutoGearMonitoringCategory(activeCategory);
+  if (screenSizeInput) {
+    screenSizeInput.value = isMonitoring ? (snapshot.screenSize || '') : '';
+  }
+  if (selectorTypeSelect) {
+    const selectorValue = isMonitoring ? (snapshot.selectorType || 'none') : 'none';
+    selectorTypeSelect.value = selectorValue;
+    updateAutoGearMonitorCatalogOptions(selectorValue);
+  }
+  if (selectorDefaultInput) {
+    selectorDefaultInput.value = isMonitoring ? (snapshot.selectorDefault || '') : '';
+  }
+  if (notesInput) notesInput.value = snapshot.notes || '';
+  syncAutoGearMonitorFieldVisibility();
+  if (nameInput) {
+    try {
+      nameInput.focus({ preventScroll: true });
+      if (typeof nameInput.select === 'function') {
+        nameInput.select();
+      }
+    } catch {
+      nameInput.focus();
+    }
+  }
+}
+
+function clearAutoGearDraftItemEdit(type, options = {}) {
+  const normalizedType = type === 'remove' ? 'remove' : 'add';
+  const { skipRender = false } = options;
+  if (autoGearEditorActiveItem && autoGearEditorActiveItem.listType === normalizedType) {
+    autoGearEditorActiveItem = null;
+  }
+  resetAutoGearDraftInputs(normalizedType);
+  syncAutoGearMonitorFieldVisibility();
+  updateAutoGearDraftActionState();
+  if (!skipRender) {
+    renderAutoGearDraftLists();
+  }
+}
+
+function beginAutoGearDraftItemEdit(listType, itemId) {
+  if (!autoGearEditorDraft || !itemId) return;
+  const normalizedType = listType === 'remove' ? 'remove' : 'add';
+  const list = getAutoGearDraftList(normalizedType);
+  if (!Array.isArray(list)) return;
+  if (
+    autoGearEditorActiveItem
+    && autoGearEditorActiveItem.listType === normalizedType
+    && autoGearEditorActiveItem.itemId === itemId
+  ) {
+    clearAutoGearDraftItemEdit(normalizedType);
+    return;
+  }
+  const target = list.find(entry => entry && entry.id === itemId);
+  if (!target) return;
+  autoGearEditorActiveItem = { listType: normalizedType, itemId };
+  populateAutoGearDraftForm(normalizedType, target);
+  updateAutoGearDraftActionState();
+  renderAutoGearDraftLists();
+}
+
 function renderAutoGearDraftLists() {
+  updateAutoGearDraftActionState();
   if (!autoGearEditorDraft) {
     if (autoGearAddList) autoGearAddList.innerHTML = '';
     if (autoGearRemoveList) autoGearRemoveList.innerHTML = '';
@@ -10860,9 +10971,35 @@ function renderAutoGearDraftLists() {
     items.forEach(item => {
       const li = document.createElement('li');
       li.className = 'auto-gear-item';
+      if (
+        autoGearEditorActiveItem
+        && autoGearEditorActiveItem.listType === type
+        && autoGearEditorActiveItem.itemId === item.id
+      ) {
+        li.classList.add('auto-gear-item-editing');
+      }
       const span = document.createElement('span');
       span.textContent = formatAutoGearItemSummary(item, { includeSign: true, listType: type });
       li.appendChild(span);
+      const actions = document.createElement('span');
+      actions.className = 'auto-gear-item-actions';
+      const editBtn = document.createElement('button');
+      editBtn.type = 'button';
+      editBtn.className = 'auto-gear-edit-entry';
+      editBtn.dataset.listType = type;
+      editBtn.dataset.itemId = item.id;
+      const editLabel = texts[currentLang]?.autoGearListEdit
+        || texts.en?.autoGearListEdit
+        || 'Edit';
+      editBtn.textContent = editLabel;
+      editBtn.setAttribute('data-help', editLabel);
+      editBtn.setAttribute(
+        'aria-pressed',
+        autoGearEditorActiveItem && autoGearEditorActiveItem.listType === type && autoGearEditorActiveItem.itemId === item.id
+          ? 'true'
+          : 'false'
+      );
+      actions.appendChild(editBtn);
       const removeBtn = document.createElement('button');
       removeBtn.type = 'button';
       removeBtn.className = 'auto-gear-remove-entry';
@@ -10873,7 +11010,8 @@ function renderAutoGearDraftLists() {
         || 'Remove';
       removeBtn.textContent = removeLabel;
       removeBtn.setAttribute('data-help', removeLabel);
-      li.appendChild(removeBtn);
+      actions.appendChild(removeBtn);
+      li.appendChild(actions);
       element.appendChild(li);
     });
   };
@@ -10886,6 +11024,7 @@ function openAutoGearEditor(ruleId) {
   const rules = getAutoGearRules();
   const existing = ruleId ? rules.find(rule => rule.id === ruleId) : null;
   autoGearEditorDraft = createAutoGearDraft(existing);
+  autoGearEditorActiveItem = null;
   autoGearEditor.hidden = false;
   if (autoGearRuleNameInput) {
     autoGearRuleNameInput.value = autoGearEditorDraft.label || '';
@@ -10903,21 +11042,10 @@ function openAutoGearEditor(ruleId) {
   refreshAutoGearDistanceOptions(autoGearEditorDraft.distance);
   populateAutoGearCategorySelect(autoGearAddCategorySelect, autoGearEditorDraft.add[0]?.category || '');
   populateAutoGearCategorySelect(autoGearRemoveCategorySelect, autoGearEditorDraft.remove[0]?.category || '');
+  resetAutoGearDraftInputs('add');
+  resetAutoGearDraftInputs('remove');
   syncAutoGearMonitorFieldVisibility();
-  if (autoGearAddNameInput) autoGearAddNameInput.value = '';
-  if (autoGearAddQuantityInput) autoGearAddQuantityInput.value = '1';
-  if (autoGearAddScreenSizeInput) autoGearAddScreenSizeInput.value = '';
-  if (autoGearAddSelectorTypeSelect) autoGearAddSelectorTypeSelect.value = 'none';
-  if (autoGearAddSelectorDefaultInput) autoGearAddSelectorDefaultInput.value = '';
-  if (autoGearAddSelectorIncludeCheckbox) autoGearAddSelectorIncludeCheckbox.checked = false;
-  if (autoGearAddNotesInput) autoGearAddNotesInput.value = '';
-  if (autoGearRemoveNameInput) autoGearRemoveNameInput.value = '';
-  if (autoGearRemoveQuantityInput) autoGearRemoveQuantityInput.value = '1';
-  if (autoGearRemoveScreenSizeInput) autoGearRemoveScreenSizeInput.value = '';
-  if (autoGearRemoveSelectorTypeSelect) autoGearRemoveSelectorTypeSelect.value = 'none';
-  if (autoGearRemoveSelectorDefaultInput) autoGearRemoveSelectorDefaultInput.value = '';
-  if (autoGearRemoveSelectorIncludeCheckbox) autoGearRemoveSelectorIncludeCheckbox.checked = false;
-  if (autoGearRemoveNotesInput) autoGearRemoveNotesInput.value = '';
+  updateAutoGearDraftActionState();
   renderAutoGearDraftLists();
   if (autoGearRuleNameInput) autoGearRuleNameInput.focus();
 }
@@ -10926,6 +11054,7 @@ function closeAutoGearEditor() {
   if (!autoGearEditor) return;
   autoGearEditor.hidden = true;
   autoGearEditorDraft = null;
+  autoGearEditorActiveItem = null;
   if (autoGearRuleNameInput) autoGearRuleNameInput.value = '';
   refreshAutoGearScenarioOptions([]);
   refreshAutoGearMatteboxOptions([]);
@@ -10938,33 +11067,23 @@ function closeAutoGearEditor() {
   refreshAutoGearMotorsOptions([]);
   refreshAutoGearControllersOptions([]);
   refreshAutoGearDistanceOptions([]);
-  if (autoGearAddNameInput) autoGearAddNameInput.value = '';
-  if (autoGearAddQuantityInput) autoGearAddQuantityInput.value = '1';
-  if (autoGearAddScreenSizeInput) autoGearAddScreenSizeInput.value = '';
-  if (autoGearAddSelectorTypeSelect) autoGearAddSelectorTypeSelect.value = 'none';
-  if (autoGearAddSelectorDefaultInput) autoGearAddSelectorDefaultInput.value = '';
-  if (autoGearAddSelectorIncludeCheckbox) autoGearAddSelectorIncludeCheckbox.checked = false;
-  if (autoGearAddNotesInput) autoGearAddNotesInput.value = '';
-  if (autoGearRemoveNameInput) autoGearRemoveNameInput.value = '';
-  if (autoGearRemoveQuantityInput) autoGearRemoveQuantityInput.value = '1';
-  if (autoGearRemoveScreenSizeInput) autoGearRemoveScreenSizeInput.value = '';
-  if (autoGearRemoveSelectorTypeSelect) autoGearRemoveSelectorTypeSelect.value = 'none';
-  if (autoGearRemoveSelectorDefaultInput) autoGearRemoveSelectorDefaultInput.value = '';
-  if (autoGearRemoveSelectorIncludeCheckbox) autoGearRemoveSelectorIncludeCheckbox.checked = false;
-  if (autoGearRemoveNotesInput) autoGearRemoveNotesInput.value = '';
+  resetAutoGearDraftInputs('add');
+  resetAutoGearDraftInputs('remove');
   syncAutoGearMonitorFieldVisibility();
+  updateAutoGearDraftActionState();
+  renderAutoGearDraftLists();
 }
 
 function addAutoGearDraftItem(type) {
   if (!autoGearEditorDraft) return;
-  const isAdd = type === 'add';
+  const normalizedType = type === 'remove' ? 'remove' : 'add';
+  const isAdd = normalizedType === 'add';
   const nameInput = isAdd ? autoGearAddNameInput : autoGearRemoveNameInput;
   const categorySelect = isAdd ? autoGearAddCategorySelect : autoGearRemoveCategorySelect;
   const quantityInput = isAdd ? autoGearAddQuantityInput : autoGearRemoveQuantityInput;
   const screenSizeInput = isAdd ? autoGearAddScreenSizeInput : autoGearRemoveScreenSizeInput;
   const selectorTypeSelect = isAdd ? autoGearAddSelectorTypeSelect : autoGearRemoveSelectorTypeSelect;
   const selectorDefaultInput = isAdd ? autoGearAddSelectorDefaultInput : autoGearRemoveSelectorDefaultInput;
-  const selectorIncludeCheckbox = isAdd ? autoGearAddSelectorIncludeCheckbox : autoGearRemoveSelectorIncludeCheckbox;
   const notesInput = isAdd ? autoGearAddNotesInput : autoGearRemoveNotesInput;
   if (!nameInput || !categorySelect || !quantityInput) return;
   const parsedNames = parseAutoGearDraftNames(nameInput.value);
@@ -10981,14 +11100,60 @@ function addAutoGearDraftItem(type) {
     screenSize: screenSizeInput ? screenSizeInput.value : '',
     selectorType: selectorTypeSelect ? selectorTypeSelect.value : 'none',
     selectorDefault: selectorDefaultInput ? selectorDefaultInput.value : '',
-    selectorEnabled: selectorIncludeCheckbox ? !!selectorIncludeCheckbox.checked : false,
     notes: notesInput ? notesInput.value : '',
   };
-  if (!isAutoGearMonitoringCategory(baseValues.category)) {
+  if (isAutoGearMonitoringCategory(baseValues.category)) {
+    baseValues.selectorEnabled = baseValues.selectorType !== 'none';
+  } else {
     baseValues.screenSize = '';
     baseValues.selectorType = 'none';
     baseValues.selectorDefault = '';
     baseValues.selectorEnabled = false;
+  }
+  const editingTarget = autoGearEditorActiveItem && autoGearEditorActiveItem.listType === normalizedType
+    ? autoGearEditorActiveItem
+    : null;
+  if (editingTarget) {
+    if (parsedNames.length !== 1) {
+      const warning = texts[currentLang]?.autoGearEditSingleItemWarning
+        || texts.en?.autoGearEditSingleItemWarning
+        || 'Edit one item at a time.';
+      window.alert(warning);
+      return;
+    }
+    const entry = parsedNames[0];
+    const quantity = Object.prototype.hasOwnProperty.call(entry, 'quantity')
+      ? normalizeAutoGearQuantity(entry.quantity)
+      : baseValues.quantity;
+    const list = getAutoGearDraftList(normalizedType);
+    if (!Array.isArray(list)) return;
+    const index = list.findIndex(item => item && item.id === editingTarget.itemId);
+    if (index < 0) {
+      clearAutoGearDraftItemEdit(normalizedType, { skipRender: true });
+      renderAutoGearDraftLists();
+      updateAutoGearCatalogOptions();
+      return;
+    }
+    const itemData = normalizeAutoGearItem({
+      id: editingTarget.itemId,
+      name: entry.name,
+      category: baseValues.category,
+      quantity,
+      screenSize: baseValues.screenSize,
+      selectorType: baseValues.selectorType,
+      selectorDefault: baseValues.selectorDefault,
+      selectorEnabled: baseValues.selectorEnabled,
+      notes: baseValues.notes,
+    });
+    if (itemData) {
+      list[index] = itemData;
+    } else {
+      list.splice(index, 1);
+    }
+    clearAutoGearDraftItemEdit(normalizedType, { skipRender: true });
+    renderAutoGearDraftLists();
+    updateAutoGearCatalogOptions();
+    return;
   }
   parsedNames.forEach(entry => {
     const quantity = Object.prototype.hasOwnProperty.call(entry, 'quantity')
@@ -11011,13 +11176,8 @@ function addAutoGearDraftItem(type) {
       targetList.push(itemData);
     }
   });
-  nameInput.value = '';
-  quantityInput.value = '1';
-  if (screenSizeInput) screenSizeInput.value = '';
-  if (selectorTypeSelect) selectorTypeSelect.value = 'none';
-  if (selectorDefaultInput) selectorDefaultInput.value = '';
-  if (selectorIncludeCheckbox) selectorIncludeCheckbox.checked = false;
-  if (notesInput) notesInput.value = '';
+  resetAutoGearDraftInputs(normalizedType);
+  syncAutoGearMonitorFieldVisibility();
   renderAutoGearDraftLists();
   updateAutoGearCatalogOptions();
 }

@@ -1589,73 +1589,53 @@ function configureAutoGearSpan(span, normalizedItem, quantity, rule) {
     if (selectorType && selectorType !== 'none') {
         if (normalizedItem.selectorEnabled) {
             const options = getAutoGearSelectorOptions(selectorType);
-            const shouldRenderSelector = options.length || selectorDefault;
-            if (shouldRenderSelector) {
-                const sanitizedRuleId = rule && rule.id ? rule.id.replace(/[^a-zA-Z0-9_-]/g, '') : 'rule';
-                const selectId = `autoGearSelector_${sanitizedRuleId}_${normalizedItem.id}`;
-                const select = document.createElement('select');
-                select.id = selectId;
-                select.className = 'auto-gear-selector';
-                select.dataset.autoGearSelectorType = selectorType;
-                if (selectorLabel) {
-                    select.setAttribute('aria-label', selectorLabel);
-                }
-                let normalizedDefaultValue = '';
-                options.forEach(optionName => {
-                    const option = document.createElement('option');
-                    option.value = optionName;
-                    option.textContent = typeof addArriKNumber === 'function' ? addArriKNumber(optionName) : optionName;
-                    if (!normalizedDefaultValue && selectorDefault && optionName.toLowerCase() === selectorDefault.toLowerCase()) {
-                        normalizedDefaultValue = option.value;
-                    }
-                    select.appendChild(option);
-                });
-                if (selectorDefault && !normalizedDefaultValue) {
-                    const fallbackOption = document.createElement('option');
-                    fallbackOption.value = selectorDefault;
-                    fallbackOption.textContent = typeof addArriKNumber === 'function'
-                        ? addArriKNumber(selectorDefault)
-                        : selectorDefault;
-                    select.insertBefore(fallbackOption, select.firstChild);
-                    normalizedDefaultValue = selectorDefault;
-                }
-                if (normalizedDefaultValue) {
-                    select.value = normalizedDefaultValue;
-                } else if (select.options.length) {
-                    select.selectedIndex = 0;
-                }
-                const optionCount = select.options.length;
-                const minVisibleRows = 6;
-                const maxVisibleRows = 12;
-                let visibleRows = optionCount >= minVisibleRows
-                    ? Math.min(maxVisibleRows, optionCount)
-                    : (optionCount || minVisibleRows);
-                if (!Number.isFinite(visibleRows) || visibleRows <= 0) {
-                    visibleRows = minVisibleRows;
-                }
-                select.size = visibleRows;
-                const hintText = getAutoGearSelectorScrollHint();
-                let selectorWrapper = select;
-                if (hintText) {
-                    const wrapper = document.createElement('span');
-                    wrapper.className = 'auto-gear-selector-container';
-                    wrapper.appendChild(select);
-                    const hint = document.createElement('span');
-                    hint.id = `${selectId}_hint`;
-                    hint.className = 'auto-gear-selector-hint';
-                    hint.textContent = hintText;
-                    wrapper.appendChild(hint);
-                    select.setAttribute('aria-describedby', hint.id);
-                    selectorWrapper = wrapper;
-                }
-                span.appendChild(document.createTextNode(' - '));
-                span.appendChild(selectorWrapper);
-            } else if (selectorDefault) {
-                const formattedDefault = typeof addArriKNumber === 'function' ? addArriKNumber(selectorDefault) : selectorDefault;
-                span.appendChild(document.createTextNode(` - ${selectorLabel}: ${formattedDefault}`));
-            } else if (selectorLabel) {
-                span.appendChild(document.createTextNode(` - ${selectorLabel}`));
+            const sanitizedRuleId = rule && rule.id ? rule.id.replace(/[^a-zA-Z0-9_-]/g, '') : 'rule';
+            const selectId = `autoGearSelector_${sanitizedRuleId}_${normalizedItem.id}`;
+            const select = document.createElement('select');
+            select.id = selectId;
+            select.className = 'auto-gear-selector';
+            select.dataset.autoGearSelectorType = selectorType;
+            if (selectorLabel) {
+                select.setAttribute('aria-label', selectorLabel);
             }
+            let normalizedDefaultValue = '';
+            options.forEach(optionName => {
+                const option = document.createElement('option');
+                option.value = optionName;
+                option.textContent = typeof addArriKNumber === 'function' ? addArriKNumber(optionName) : optionName;
+                if (!normalizedDefaultValue && selectorDefault && optionName.toLowerCase() === selectorDefault.toLowerCase()) {
+                    normalizedDefaultValue = option.value;
+                }
+                select.appendChild(option);
+            });
+            if (selectorDefault && !normalizedDefaultValue) {
+                const fallbackOption = document.createElement('option');
+                fallbackOption.value = selectorDefault;
+                fallbackOption.textContent = typeof addArriKNumber === 'function'
+                    ? addArriKNumber(selectorDefault)
+                    : selectorDefault;
+                select.insertBefore(fallbackOption, select.firstChild);
+                normalizedDefaultValue = selectorDefault;
+            }
+            if (normalizedDefaultValue) {
+                select.value = normalizedDefaultValue;
+            } else if (select.options.length) {
+                select.selectedIndex = 0;
+            }
+            if (!select.options.length) {
+                const placeholder = document.createElement('option');
+                placeholder.value = '';
+                placeholder.textContent = selectorLabel || '';
+                placeholder.disabled = true;
+                placeholder.selected = true;
+                select.appendChild(placeholder);
+                select.disabled = true;
+            }
+            const wrapper = document.createElement('span');
+            wrapper.className = 'auto-gear-selector-container';
+            wrapper.appendChild(select);
+            span.appendChild(document.createTextNode(' - '));
+            span.appendChild(wrapper);
         } else if (selectorDefault) {
             const formattedDefault = typeof addArriKNumber === 'function' ? addArriKNumber(selectorDefault) : selectorDefault;
             span.appendChild(document.createTextNode(` - ${selectorLabel}: ${formattedDefault}`));

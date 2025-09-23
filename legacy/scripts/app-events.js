@@ -160,6 +160,9 @@ deleteSetupBtn.addEventListener("click", function () {
           sel.selectedIndex = 0;
         }
       });
+      if (typeof updateCageSelectOptions === 'function') {
+        updateCageSelectOptions('None');
+      }
       var sbSel = getSliderBowlSelect();
       if (sbSel) sbSel.value = '';
       motorSelects.forEach(function (sel) {
@@ -209,6 +212,9 @@ setupSelect.addEventListener("change", function (event) {
         sel.selectedIndex = 0;
       }
     });
+    if (typeof updateCageSelectOptions === 'function') {
+      updateCageSelectOptions('None');
+    }
     var sbSel = getSliderBowlSelect();
     if (sbSel) sbSel.value = '';
     motorSelects.forEach(function (sel) {
@@ -241,7 +247,11 @@ setupSelect.addEventListener("change", function (event) {
       batteryPlateSelect.value = setup.batteryPlate || batteryPlateSelect.value;
       monitorSelect.value = setup.monitor;
       videoSelect.value = setup.video;
-      if (cageSelect) cageSelect.value = setup.cage || cageSelect.value;
+      if (typeof updateCageSelectOptions === 'function') {
+        updateCageSelectOptions(setup.cage);
+      } else if (cageSelect) {
+        cageSelect.value = setup.cage || cageSelect.value;
+      }
       (setup.motors || []).forEach(function (val, i) {
         if (motorSelects[i]) motorSelects[i].value = val;
       });
@@ -1239,6 +1249,9 @@ importFileInput.addEventListener("change", function (event) {
         return;
       }
       devices = result.devices;
+      if (typeof updateGlobalDevicesReference === 'function') {
+        updateGlobalDevicesReference(devices);
+      }
       unifyDevices(devices);
       storeDevices(devices);
       viewfinderTypeOptions = getAllViewfinderTypes();

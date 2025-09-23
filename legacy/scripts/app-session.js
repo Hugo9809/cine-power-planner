@@ -1,11 +1,12 @@
 function _regenerator() { var e, t, r = "function" == typeof Symbol ? Symbol : {}, n = r.iterator || "@@iterator", o = r.toStringTag || "@@toStringTag"; function i(r, n, o, i) { var c = n && n.prototype instanceof Generator ? n : Generator, u = Object.create(c.prototype); return _regeneratorDefine2(u, "_invoke", function (r, n, o) { var i, c, u, f = 0, p = o || [], y = !1, G = { p: 0, n: 0, v: e, a: d, f: d.bind(e, 4), d: function d(t, r) { return i = t, c = 0, u = e, G.n = r, a; } }; function d(r, n) { for (c = r, u = n, t = 0; !y && f && !o && t < p.length; t++) { var o, i = p[t], d = G.p, l = i[2]; r > 3 ? (o = l === n) && (u = i[(c = i[4]) ? 5 : (c = 3, 3)], i[4] = i[5] = e) : i[0] <= d && ((o = r < 2 && d < i[1]) ? (c = 0, G.v = n, G.n = i[1]) : d < l && (o = r < 3 || i[0] > n || n > l) && (i[4] = r, i[5] = n, G.n = l, c = 0)); } if (o || r > 1) return a; throw y = !0, n; } return function (o, p, l) { if (f > 1) throw TypeError("Generator is already running"); for (y && 1 === p && d(p, l), c = p, u = l; (t = c < 2 ? e : u) || !y;) { i || (c ? c < 3 ? (c > 1 && (G.n = -1), d(c, u)) : G.n = u : G.v = u); try { if (f = 2, i) { if (c || (o = "next"), t = i[o]) { if (!(t = t.call(i, u))) throw TypeError("iterator result is not an object"); if (!t.done) return t; u = t.value, c < 2 && (c = 0); } else 1 === c && (t = i.return) && t.call(i), c < 2 && (u = TypeError("The iterator does not provide a '" + o + "' method"), c = 1); i = e; } else if ((t = (y = G.n < 0) ? u : r.call(n, G)) !== a) break; } catch (t) { i = e, c = 1, u = t; } finally { f = 1; } } return { value: t, done: y }; }; }(r, o, i), !0), u; } var a = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} t = Object.getPrototypeOf; var c = [][n] ? t(t([][n]())) : (_regeneratorDefine2(t = {}, n, function () { return this; }), t), u = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(c); function f(e) { return Object.setPrototypeOf ? Object.setPrototypeOf(e, GeneratorFunctionPrototype) : (e.__proto__ = GeneratorFunctionPrototype, _regeneratorDefine2(e, o, "GeneratorFunction")), e.prototype = Object.create(u), e; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, _regeneratorDefine2(u, "constructor", GeneratorFunctionPrototype), _regeneratorDefine2(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = "GeneratorFunction", _regeneratorDefine2(GeneratorFunctionPrototype, o, "GeneratorFunction"), _regeneratorDefine2(u), _regeneratorDefine2(u, o, "Generator"), _regeneratorDefine2(u, n, function () { return this; }), _regeneratorDefine2(u, "toString", function () { return "[object Generator]"; }), (_regenerator = function _regenerator() { return { w: i, m: f }; })(); }
 function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { i({}, "", {}); } catch (e) { i = 0; } _regeneratorDefine2 = function _regeneratorDefine(e, r, n, t) { if (r) i ? i(e, r, { value: n, enumerable: !t, configurable: !t, writable: !t }) : e[r] = n;else { function o(r, n) { _regeneratorDefine2(e, r, function (e) { return this._invoke(r, n, e); }); } o("next", 0), o("throw", 1), o("return", 2); } }, _regeneratorDefine2(e, r, n, t); }
-function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
-function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
 function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
 function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
+function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
+function _toArray(r) { return _arrayWithHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableRest(); }
+function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
 function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
 function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -240,7 +241,11 @@ function restoreSessionState() {
     updateBatteryOptions();
     setSelectValue(monitorSelect, state.monitor);
     setSelectValue(videoSelect, state.video);
-    setSelectValue(cageSelect, state.cage);
+    if (typeof updateCageSelectOptions === 'function') {
+      updateCageSelectOptions(state.cage);
+    } else {
+      setSelectValue(cageSelect, state.cage);
+    }
     setSelectValue(distanceSelect, state.distance);
     if (Array.isArray(state.motors)) {
       state.motors.forEach(function (val, i) {
@@ -414,7 +419,11 @@ function applySharedSetup(shared) {
     updateBatteryOptions();
     setSelectValue(monitorSelect, decoded.monitor);
     setSelectValue(videoSelect, decoded.video);
-    setSelectValue(cageSelect, decoded.cage);
+    if (typeof updateCageSelectOptions === 'function') {
+      updateCageSelectOptions(decoded.cage);
+    } else {
+      setSelectValue(cageSelect, decoded.cage);
+    }
     setSelectValue(distanceSelect, decoded.distance);
     if (Array.isArray(decoded.motors)) {
       decoded.motors.forEach(function (val, i) {
@@ -571,6 +580,9 @@ if (cameraSelect) {
   cameraSelect.addEventListener('change', function () {
     updateBatteryPlateVisibility();
     updateBatteryOptions();
+    if (typeof updateCageSelectOptions === 'function') {
+      updateCageSelectOptions();
+    }
     populateRecordingResolutionDropdown(currentProjectInfo && currentProjectInfo.recordingResolution);
     populateSensorModeDropdown(currentProjectInfo && currentProjectInfo.sensorMode);
   });
@@ -886,14 +898,16 @@ function applyPinkMode(enabled) {
   if (settingsPinkMode) {
     settingsPinkMode.checked = enabled;
   }
+  if (typeof updateAccentColorResetButtonState === 'function') {
+    updateAccentColorResetButtonState();
+  }
 }
 function isPinkModeActive() {
   return !!(document.body && document.body.classList.contains('pink-mode'));
 }
 var pinkModeEnabled = false;
 var settingsInitialPinkMode = isPinkModeActive();
-var settingsInitialTemperatureUnit =
-  typeof temperatureUnit === 'string' ? temperatureUnit : 'celsius';
+var settingsInitialTemperatureUnit = typeof temperatureUnit === 'string' ? temperatureUnit : 'celsius';
 function persistPinkModePreference(enabled) {
   pinkModeEnabled = !!enabled;
   applyPinkMode(pinkModeEnabled);
@@ -917,10 +931,7 @@ function rememberSettingsTemperatureUnitBaseline() {
   }
 }
 function revertSettingsTemperatureUnitIfNeeded() {
-  var baseline =
-    typeof settingsInitialTemperatureUnit === 'string'
-      ? settingsInitialTemperatureUnit
-      : 'celsius';
+  var baseline = typeof settingsInitialTemperatureUnit === 'string' ? settingsInitialTemperatureUnit : 'celsius';
   if (typeof applyTemperatureUnitPreference === 'function') {
     if (temperatureUnit !== baseline) {
       applyTemperatureUnitPreference(baseline, {
@@ -972,6 +983,9 @@ if (settingsButton && settingsDialog) {
     if (accentColorInput) {
       var _stored = localStorage.getItem('accentColor');
       accentColorInput.value = _stored || accentColor;
+      if (typeof updateAccentColorResetButtonState === 'function') {
+        updateAccentColorResetButtonState();
+      }
     }
     if (settingsTemperatureUnit) settingsTemperatureUnit.value = temperatureUnit;
     if (settingsFontSize) settingsFontSize.value = fontSize;
@@ -1001,6 +1015,7 @@ if (settingsButton && settingsDialog) {
     if (activeSettingsTabId) {
       activateSettingsTab(activeSettingsTabId);
     }
+    collapseBackupDiffSection();
     settingsDialog.removeAttribute('hidden');
     openDialog(settingsDialog);
     scheduleSettingsTabsOverflowUpdate();
@@ -1026,6 +1041,7 @@ if (settingsButton && settingsDialog) {
       if (settingsLogo) settingsLogo.value = '';
       if (settingsLogoPreview) loadStoredLogoPreview();
       closeAutoGearEditor();
+      collapseBackupDiffSection();
       closeDialog(settingsDialog);
       settingsDialog.setAttribute('hidden', '');
     });
@@ -1087,12 +1103,19 @@ if (settingsButton && settingsDialog) {
           applyAccentColor(color);
         }
         try {
-          localStorage.setItem('accentColor', color);
+          if (normalizeAccentValue(color) === DEFAULT_ACCENT_NORMALIZED) {
+            localStorage.removeItem('accentColor');
+          } else {
+            localStorage.setItem('accentColor', color);
+          }
         } catch (e) {
           console.warn('Could not save accent color', e);
         }
         accentColor = color;
         prevAccentColor = color;
+        if (typeof updateAccentColorResetButtonState === 'function') {
+          updateAccentColorResetButtonState();
+        }
       }
       if (settingsTemperatureUnit) {
         applyTemperatureUnitPreference(settingsTemperatureUnit.value);
@@ -1138,6 +1161,7 @@ if (settingsButton && settingsDialog) {
         }
       }
       closeAutoGearEditor();
+      collapseBackupDiffSection();
       rememberSettingsPinkModeBaseline();
       rememberSettingsTemperatureUnitBaseline();
       closeDialog(settingsDialog);
@@ -1154,6 +1178,7 @@ if (settingsButton && settingsDialog) {
       if (settingsLogo) settingsLogo.value = '';
       if (settingsLogoPreview) loadStoredLogoPreview();
       closeAutoGearEditor();
+      collapseBackupDiffSection();
       closeDialog(settingsDialog);
       settingsDialog.setAttribute('hidden', '');
     }
@@ -1168,6 +1193,7 @@ if (settingsButton && settingsDialog) {
     if (settingsLogo) settingsLogo.value = '';
     if (settingsLogoPreview) loadStoredLogoPreview();
     closeAutoGearEditor();
+    collapseBackupDiffSection();
     closeDialog(settingsDialog);
     settingsDialog.setAttribute('hidden', '');
   });
@@ -1187,6 +1213,23 @@ if (settingsButton && settingsDialog) {
       autoGearImportInput.click();
     });
     autoGearImportInput.addEventListener('change', handleAutoGearImportSelection);
+  }
+  if (autoGearSearchInput) {
+    var updateQuery = function updateQuery(event) {
+      var _event$target;
+      setAutoGearSearchQuery((event === null || event === void 0 || (_event$target = event.target) === null || _event$target === void 0 ? void 0 : _event$target.value) || '');
+    };
+    autoGearSearchInput.addEventListener('input', updateQuery);
+    autoGearSearchInput.addEventListener('search', updateQuery);
+  }
+  if (autoGearFilterScenarioSelect) {
+    autoGearFilterScenarioSelect.addEventListener('change', function (event) {
+      var _event$target2;
+      setAutoGearScenarioFilter((event === null || event === void 0 || (_event$target2 = event.target) === null || _event$target2 === void 0 ? void 0 : _event$target2.value) || 'all');
+    });
+  }
+  if (autoGearFilterClearButton) {
+    autoGearFilterClearButton.addEventListener('click', clearAutoGearFilters);
   }
   if (autoGearPresetSelect) {
     autoGearPresetSelect.addEventListener('change', handleAutoGearPresetSelection);
@@ -1265,17 +1308,30 @@ if (settingsButton && settingsDialog) {
   if (autoGearEditor) {
     autoGearEditor.addEventListener('click', function (event) {
       var target = event.target;
-      if (!target || !target.classList.contains('auto-gear-remove-entry')) return;
-      var listType = target.dataset.listType;
-      var itemId = target.dataset.itemId;
-      if (!autoGearEditorDraft || !itemId) return;
-      var list = listType === 'remove' ? autoGearEditorDraft.remove : autoGearEditorDraft.add;
-      var index = list.findIndex(function (item) {
-        return item.id === itemId;
-      });
-      if (index >= 0) {
-        list.splice(index, 1);
-        renderAutoGearDraftLists();
+      if (!target) return;
+      if (target.classList.contains('auto-gear-remove-entry')) {
+        var listType = target.dataset.listType;
+        var normalizedType = listType === 'remove' ? 'remove' : 'add';
+        var itemId = target.dataset.itemId;
+        if (!autoGearEditorDraft || !itemId) return;
+        var list = normalizedType === 'remove' ? autoGearEditorDraft.remove : autoGearEditorDraft.add;
+        var index = list.findIndex(function (item) {
+          return item.id === itemId;
+        });
+        if (index >= 0) {
+          list.splice(index, 1);
+          if (autoGearEditorActiveItem && autoGearEditorActiveItem.listType === normalizedType && autoGearEditorActiveItem.itemId === itemId) {
+            clearAutoGearDraftItemEdit(normalizedType, {
+              skipRender: true
+            });
+          }
+          renderAutoGearDraftLists();
+          updateAutoGearCatalogOptions();
+        }
+        return;
+      }
+      if (target.classList.contains('auto-gear-edit-entry')) {
+        beginAutoGearDraftItemEdit(target.dataset.listType, target.dataset.itemId);
       }
     });
   }
@@ -1964,6 +2020,636 @@ function downloadBackupPayload(payload, fileName) {
   }
   return failureResult;
 }
+var SESSION_AUTO_BACKUP_NAME_PREFIX = 'auto-backup-';
+var SESSION_AUTO_BACKUP_DELETION_PREFIX = 'auto-backup-before-delete-';
+var backupDiffOptionsCache = [];
+var backupDiffState = {
+  baseline: '',
+  comparison: ''
+};
+function getDiffText(key) {
+  var fallbackValue = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+  var langTexts = texts && typeof currentLang === 'string' ? texts[currentLang] : null;
+  var fallbackTexts = texts && texts.en ? texts.en : {};
+  if (langTexts && Object.prototype.hasOwnProperty.call(langTexts, key)) {
+    var value = langTexts[key];
+    if (typeof value === 'string' && value) {
+      return value;
+    }
+  }
+  if (fallbackTexts && Object.prototype.hasOwnProperty.call(fallbackTexts, key)) {
+    var _value = fallbackTexts[key];
+    if (typeof _value === 'string' && _value) {
+      return _value;
+    }
+  }
+  return fallbackValue;
+}
+function formatNumberForComparison(value) {
+  var lang = typeof currentLang === 'string' && currentLang ? currentLang : 'en';
+  try {
+    return new Intl.NumberFormat(lang).format(value);
+  } catch (error) {
+    if (lang !== 'en') {
+      try {
+        return new Intl.NumberFormat('en').format(value);
+      } catch (fallbackError) {
+        console.warn('Number formatting failed for comparison summary', error, fallbackError);
+        return String(value);
+      }
+    }
+    console.warn('Number formatting failed for comparison summary', error);
+    return String(value);
+  }
+}
+function isAutoBackupName(name) {
+  return typeof name === 'string' && (name.startsWith(SESSION_AUTO_BACKUP_NAME_PREFIX) || name.startsWith(SESSION_AUTO_BACKUP_DELETION_PREFIX));
+}
+function parseAutoBackupName(name) {
+  if (typeof name !== 'string') {
+    return null;
+  }
+  if (name.startsWith(SESSION_AUTO_BACKUP_DELETION_PREFIX)) {
+    var remainder = name.slice(SESSION_AUTO_BACKUP_DELETION_PREFIX.length);
+    var parts = remainder.split('-');
+    if (parts.length >= 6) {
+      var _parts = _toArray(parts),
+        year = _parts[0],
+        month = _parts[1],
+        day = _parts[2],
+        hour = _parts[3],
+        minute = _parts[4],
+        second = _parts[5],
+        rest = _parts.slice(6);
+      var date = new Date(Number(year), Number(month) - 1, Number(day), Number(hour), Number(minute), Number(second));
+      var label = rest.join('-').trim();
+      return {
+        type: 'auto-backup-before-delete',
+        date: Number.isNaN(date.valueOf()) ? null : date,
+        label: label,
+        includeSeconds: true
+      };
+    }
+  } else if (name.startsWith(SESSION_AUTO_BACKUP_NAME_PREFIX)) {
+    var _remainder = name.slice(SESSION_AUTO_BACKUP_NAME_PREFIX.length);
+    var _parts2 = _remainder.split('-');
+    if (_parts2.length >= 5) {
+      var _parts3 = _toArray(_parts2),
+        _year = _parts3[0],
+        _month = _parts3[1],
+        _day = _parts3[2],
+        _hour = _parts3[3],
+        _minute = _parts3[4],
+        _rest = _parts3.slice(5);
+      var _date = new Date(Number(_year), Number(_month) - 1, Number(_day), Number(_hour), Number(_minute));
+      var _label = _rest.join('-').trim();
+      return {
+        type: 'auto-backup',
+        date: Number.isNaN(_date.valueOf()) ? null : _date,
+        label: _label,
+        includeSeconds: false
+      };
+    }
+  }
+  return null;
+}
+function formatTimestampForComparison(date, includeSeconds) {
+  if (!(date instanceof Date) || Number.isNaN(date.valueOf())) {
+    return '';
+  }
+  var lang = typeof currentLang === 'string' && currentLang ? currentLang : 'en';
+  var options = {
+    year: 'numeric',
+    month: 'short',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit'
+  };
+  if (includeSeconds) {
+    options.second = '2-digit';
+  }
+  try {
+    return new Intl.DateTimeFormat(lang, options).format(date);
+  } catch (error) {
+    if (lang !== 'en') {
+      try {
+        return new Intl.DateTimeFormat('en', options).format(date);
+      } catch (fallbackError) {
+        console.warn('Date formatting failed for comparison timestamp', error, fallbackError);
+      }
+    } else {
+      console.warn('Date formatting failed for comparison timestamp', error);
+    }
+  }
+  return date.toISOString();
+}
+function formatComparisonOptionLabel(name) {
+  if (typeof name !== 'string') {
+    return '';
+  }
+  var parsed = parseAutoBackupName(name);
+  if (!parsed) {
+    var manualLabel = getDiffText('versionCompareManualLabel', 'Manual save');
+    return "".concat(manualLabel, " \xB7 ").concat(name);
+  }
+  var typeLabel = parsed.type === 'auto-backup-before-delete' ? getDiffText('versionCompareAutoDeleteLabel', 'Auto backup before delete') : getDiffText('versionCompareAutoLabel', 'Auto backup');
+  var timestamp = formatTimestampForComparison(parsed.date, parsed.includeSeconds);
+  var suffix = parsed.label ? " \xB7 ".concat(parsed.label) : '';
+  return timestamp ? "".concat(typeLabel, " \xB7 ").concat(timestamp).concat(suffix) : "".concat(typeLabel).concat(suffix ? " \xB7 ".concat(suffix) : '');
+}
+function collectBackupDiffOptions() {
+  var setups = getSetups();
+  if (!setups || _typeof(setups) !== 'object') {
+    return [];
+  }
+  return Object.keys(setups).filter(function (name) {
+    return typeof name === 'string' && name;
+  }).map(function (name) {
+    return {
+      value: name,
+      label: formatComparisonOptionLabel(name),
+      data: setups[name]
+    };
+  }).sort(function (a, b) {
+    var autoA = isAutoBackupName(a.value);
+    var autoB = isAutoBackupName(b.value);
+    if (autoA !== autoB) {
+      return autoA ? 1 : -1;
+    }
+    return localeSort(a.label, b.label);
+  });
+}
+function fillBackupDiffSelect(select, options, selectedValue) {
+  if (!select) return;
+  var placeholderText = getDiffText('versionCompareSelectPlaceholder', 'Select a version');
+  var fragment = document.createDocumentFragment();
+  var placeholder = document.createElement('option');
+  placeholder.value = '';
+  placeholder.textContent = placeholderText;
+  placeholder.disabled = options.length > 0;
+  placeholder.selected = true;
+  fragment.appendChild(placeholder);
+  options.forEach(function (option) {
+    var opt = document.createElement('option');
+    opt.value = option.value;
+    opt.textContent = option.label;
+    fragment.appendChild(opt);
+  });
+  select.innerHTML = '';
+  select.appendChild(fragment);
+  if (selectedValue && options.some(function (option) {
+    return option.value === selectedValue;
+  })) {
+    select.value = selectedValue;
+    placeholder.selected = false;
+  } else {
+    select.value = '';
+  }
+}
+function clearBackupDiffResults() {
+  if (backupDiffList) {
+    backupDiffList.innerHTML = '';
+  }
+  if (backupDiffListContainer) {
+    backupDiffListContainer.hidden = true;
+  }
+}
+function formatDiffPath(parts) {
+  if (!Array.isArray(parts) || !parts.length) {
+    return getDiffText('versionCompareRootPath', 'Entire setup');
+  }
+  return parts.map(function (part) {
+    if (typeof part !== 'string') {
+      return String(part);
+    }
+    return part;
+  }).join(' › ');
+}
+function valuesEqual(a, b) {
+  if (a === b) return true;
+  return Number.isNaN(a) && Number.isNaN(b);
+}
+function computeSetupDiff(baseline, comparison) {
+  var entries = [];
+  function walk(baseValue, compareValue, path) {
+    if (valuesEqual(baseValue, compareValue)) {
+      return;
+    }
+    var baseIsObject = isPlainObject(baseValue);
+    var compareIsObject = isPlainObject(compareValue);
+    if (baseIsObject && compareIsObject) {
+      var keys = new Set([].concat(_toConsumableArray(Object.keys(baseValue)), _toConsumableArray(Object.keys(compareValue))));
+      keys.forEach(function (key) {
+        var hasBase = Object.prototype.hasOwnProperty.call(baseValue, key);
+        var hasCompare = Object.prototype.hasOwnProperty.call(compareValue, key);
+        if (!hasBase) {
+          entries.push({
+            type: 'added',
+            path: path.concat(key),
+            before: undefined,
+            after: compareValue[key]
+          });
+        } else if (!hasCompare) {
+          entries.push({
+            type: 'removed',
+            path: path.concat(key),
+            before: baseValue[key],
+            after: undefined
+          });
+        } else {
+          walk(baseValue[key], compareValue[key], path.concat(key));
+        }
+      });
+      return;
+    }
+    var baseIsArray = Array.isArray(baseValue);
+    var compareIsArray = Array.isArray(compareValue);
+    if (baseIsArray && compareIsArray) {
+      var maxLength = Math.max(baseValue.length, compareValue.length);
+      for (var index = 0; index < maxLength; index += 1) {
+        var hasBase = index < baseValue.length;
+        var hasCompare = index < compareValue.length;
+        var nextPath = path.concat("[".concat(index, "]"));
+        if (!hasBase) {
+          entries.push({
+            type: 'added',
+            path: nextPath,
+            before: undefined,
+            after: compareValue[index]
+          });
+        } else if (!hasCompare) {
+          entries.push({
+            type: 'removed',
+            path: nextPath,
+            before: baseValue[index],
+            after: undefined
+          });
+        } else {
+          walk(baseValue[index], compareValue[index], nextPath);
+        }
+      }
+      return;
+    }
+    if (!baseIsObject && !baseIsArray && (compareIsObject || compareIsArray)) {
+      entries.push({
+        type: 'changed',
+        path: path,
+        before: baseValue,
+        after: compareValue
+      });
+      return;
+    }
+    if ((baseIsObject || baseIsArray) && !compareIsObject && !compareIsArray) {
+      entries.push({
+        type: 'changed',
+        path: path,
+        before: baseValue,
+        after: compareValue
+      });
+      return;
+    }
+    var changeType = baseValue === undefined ? 'added' : compareValue === undefined ? 'removed' : 'changed';
+    entries.push({
+      type: changeType,
+      path: path,
+      before: baseValue,
+      after: compareValue
+    });
+  }
+  walk(baseline, comparison, []);
+  return entries;
+}
+function createDiffValueElement(value) {
+  var element = document.createElement('pre');
+  element.className = 'diff-value';
+  if (value === undefined) {
+    element.textContent = getDiffText('versionCompareMissingValue', 'Not present');
+    return element;
+  }
+  if (value === null) {
+    element.textContent = 'null';
+    return element;
+  }
+  if (typeof value === 'string') {
+    element.textContent = value;
+    return element;
+  }
+  if (typeof value === 'number' || typeof value === 'boolean') {
+    element.textContent = String(value);
+    return element;
+  }
+  try {
+    element.textContent = JSON.stringify(value, null, 2);
+  } catch (error) {
+    console.warn('Failed to stringify diff value', error);
+    element.textContent = String(value);
+  }
+  return element;
+}
+function createDiffChangeBlock(labelText, value) {
+  var block = document.createElement('div');
+  block.className = 'diff-change';
+  var label = document.createElement('span');
+  label.className = 'diff-label';
+  label.textContent = labelText;
+  block.appendChild(label);
+  block.appendChild(createDiffValueElement(value));
+  return block;
+}
+function renderBackupDiffEntries(entries) {
+  if (!backupDiffList || !backupDiffListContainer) {
+    return;
+  }
+  backupDiffList.innerHTML = '';
+  if (!Array.isArray(entries) || !entries.length) {
+    backupDiffListContainer.hidden = true;
+    return;
+  }
+  backupDiffListContainer.hidden = false;
+  entries.forEach(function (entry) {
+    var item = document.createElement('li');
+    item.className = "diff-entry diff-".concat(entry.type);
+    var path = document.createElement('div');
+    path.className = 'diff-path';
+    path.textContent = formatDiffPath(entry.path);
+    item.appendChild(path);
+    if (entry.type === 'changed') {
+      var status = document.createElement('span');
+      status.className = 'diff-label diff-status';
+      status.textContent = getDiffText('versionCompareChangeUpdated', 'Updated');
+      item.appendChild(status);
+      item.appendChild(createDiffChangeBlock(getDiffText('versionCompareChangeRemoved', 'Removed'), entry.before));
+      item.appendChild(createDiffChangeBlock(getDiffText('versionCompareChangeAdded', 'Added'), entry.after));
+    } else if (entry.type === 'added') {
+      item.appendChild(createDiffChangeBlock(getDiffText('versionCompareChangeAdded', 'Added'), entry.after));
+    } else if (entry.type === 'removed') {
+      item.appendChild(createDiffChangeBlock(getDiffText('versionCompareChangeRemoved', 'Removed'), entry.before));
+    }
+    backupDiffList.appendChild(item);
+  });
+}
+function formatDiffCount(count) {
+  var key = count === 1 ? 'versionCompareDifferencesCountOne' : 'versionCompareDifferencesCountOther';
+  var template = getDiffText(key, count === 1 ? '%s difference noted.' : '%s differences noted.');
+  return template.replace('%s', formatNumberForComparison(count));
+}
+function formatDiffDetail(key, count) {
+  var template = getDiffText(key, '%s');
+  return template.replace('%s', formatNumberForComparison(count));
+}
+function updateBackupDiffSummary(entries) {
+  if (!backupDiffSummary) {
+    return;
+  }
+  if (!Array.isArray(entries) || !entries.length) {
+    backupDiffSummary.textContent = getDiffText('versionCompareIdentical', 'Versions match—no changes detected.');
+    return;
+  }
+  var totals = {
+    added: 0,
+    removed: 0,
+    changed: 0
+  };
+  entries.forEach(function (entry) {
+    if (entry && entry.type && Object.prototype.hasOwnProperty.call(totals, entry.type)) {
+      totals[entry.type] += 1;
+    }
+  });
+  var summaryText = formatDiffCount(entries.length);
+  var breakdown = [];
+  if (totals.added) {
+    breakdown.push(formatDiffDetail('versionCompareSummaryAdded', totals.added));
+  }
+  if (totals.removed) {
+    breakdown.push(formatDiffDetail('versionCompareSummaryRemoved', totals.removed));
+  }
+  if (totals.changed) {
+    breakdown.push(formatDiffDetail('versionCompareSummaryChanged', totals.changed));
+  }
+  backupDiffSummary.textContent = breakdown.length ? "".concat(summaryText, " (").concat(breakdown.join(' · '), ")") : summaryText;
+}
+function renderBackupDiff() {
+  if (!backupDiffSummary) {
+    return;
+  }
+  if (!backupDiffOptionsCache.length) {
+    clearBackupDiffResults();
+    backupDiffSummary.textContent = getDiffText('versionCompareEmpty', 'Save a project or wait for auto-backups to start comparing versions.');
+    if (backupDiffExportButton) backupDiffExportButton.disabled = true;
+    if (backupDiffNotes) backupDiffNotes.disabled = true;
+    return;
+  }
+  if (backupDiffNotes) backupDiffNotes.disabled = false;
+  var baseline = backupDiffState.baseline;
+  var comparison = backupDiffState.comparison;
+  if (!baseline || !comparison) {
+    clearBackupDiffResults();
+    backupDiffSummary.textContent = getDiffText('versionCompareNoSelection', 'Choose two versions to generate a diff.');
+    if (backupDiffExportButton) backupDiffExportButton.disabled = true;
+    return;
+  }
+  if (baseline === comparison) {
+    clearBackupDiffResults();
+    backupDiffSummary.textContent = getDiffText('versionCompareSameSelection', 'Select two different versions to compare.');
+    if (backupDiffExportButton) backupDiffExportButton.disabled = true;
+    return;
+  }
+  var optionsMap = new Map(backupDiffOptionsCache.map(function (option) {
+    return [option.value, option];
+  }));
+  var baselineEntry = optionsMap.get(baseline);
+  var comparisonEntry = optionsMap.get(comparison);
+  if (!baselineEntry || !comparisonEntry) {
+    clearBackupDiffResults();
+    backupDiffSummary.textContent = getDiffText('versionCompareMissingSelection', 'Select two versions before exporting a log.');
+    if (backupDiffExportButton) backupDiffExportButton.disabled = true;
+    return;
+  }
+  var diffEntries = computeSetupDiff(baselineEntry.data, comparisonEntry.data);
+  renderBackupDiffEntries(diffEntries);
+  updateBackupDiffSummary(diffEntries);
+  if (backupDiffExportButton) backupDiffExportButton.disabled = false;
+}
+function populateBackupDiffSelectors() {
+  backupDiffOptionsCache = collectBackupDiffOptions();
+  fillBackupDiffSelect(backupDiffPrimarySelect, backupDiffOptionsCache, backupDiffState.baseline);
+  fillBackupDiffSelect(backupDiffSecondarySelect, backupDiffOptionsCache, backupDiffState.comparison);
+  if (backupDiffEmptyState) {
+    backupDiffEmptyState.hidden = backupDiffOptionsCache.length > 0;
+  }
+  renderBackupDiff();
+}
+function collapseBackupDiffSection() {
+  var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  if (!backupDiffSection) {
+    return;
+  }
+  if (!backupDiffSection.hasAttribute('hidden')) {
+    backupDiffSection.setAttribute('hidden', '');
+  }
+  if (backupDiffToggleButton) {
+    backupDiffToggleButton.setAttribute('aria-expanded', 'false');
+  }
+  if (options.resetSelections) {
+    backupDiffState.baseline = '';
+    backupDiffState.comparison = '';
+  }
+  if (options.resetNotes && backupDiffNotes) {
+    backupDiffNotes.value = '';
+  }
+}
+function showBackupDiffSection() {
+  if (!backupDiffSection) {
+    return;
+  }
+  populateBackupDiffSelectors();
+  backupDiffSection.removeAttribute('hidden');
+  if (backupDiffToggleButton) {
+    backupDiffToggleButton.setAttribute('aria-expanded', 'true');
+  }
+  if (backupDiffPrimarySelect) {
+    try {
+      backupDiffPrimarySelect.focus({
+        preventScroll: true
+      });
+    } catch (error) {
+      backupDiffPrimarySelect.focus();
+    }
+  }
+}
+function handleBackupDiffToggle() {
+  if (!backupDiffSection) {
+    return;
+  }
+  if (backupDiffSection.hasAttribute('hidden')) {
+    showBackupDiffSection();
+  } else {
+    collapseBackupDiffSection();
+  }
+}
+function handleBackupDiffSelectionChange(event) {
+  var target = event && event.target ? event.target : null;
+  if (!target) {
+    return;
+  }
+  var value = typeof target.value === 'string' ? target.value : '';
+  if (target === backupDiffPrimarySelect) {
+    backupDiffState.baseline = value;
+  } else if (target === backupDiffSecondarySelect) {
+    backupDiffState.comparison = value;
+  }
+  renderBackupDiff();
+}
+function getComparisonEntryType(name) {
+  if (typeof name !== 'string') {
+    return 'manual';
+  }
+  if (name.startsWith(SESSION_AUTO_BACKUP_DELETION_PREFIX)) {
+    return 'auto-backup-before-delete';
+  }
+  if (name.startsWith(SESSION_AUTO_BACKUP_NAME_PREFIX)) {
+    return 'auto-backup';
+  }
+  return 'manual';
+}
+function cloneValueForExport(value) {
+  if (value === undefined) {
+    return undefined;
+  }
+  try {
+    return JSON.parse(JSON.stringify(value));
+  } catch (error) {
+    console.warn('Failed to clone comparison snapshot for export', error);
+    return value;
+  }
+}
+function handleBackupDiffExport() {
+  if (!backupDiffOptionsCache.length) {
+    showNotification('warning', getDiffText('versionCompareEmpty', 'Save a project or wait for auto-backups to start comparing versions.'));
+    return;
+  }
+  var baseline = backupDiffState.baseline;
+  var comparison = backupDiffState.comparison;
+  if (!baseline || !comparison || baseline === comparison) {
+    showNotification('warning', getDiffText('versionCompareMissingSelection', 'Select two versions before exporting a log.'));
+    return;
+  }
+  var optionsMap = new Map(backupDiffOptionsCache.map(function (option) {
+    return [option.value, option];
+  }));
+  var baselineEntry = optionsMap.get(baseline);
+  var comparisonEntry = optionsMap.get(comparison);
+  if (!baselineEntry || !comparisonEntry) {
+    showNotification('warning', getDiffText('versionCompareMissingSelection', 'Select two versions before exporting a log.'));
+    return;
+  }
+  var diffEntries = computeSetupDiff(baselineEntry.data, comparisonEntry.data);
+  var totals = {
+    added: 0,
+    removed: 0,
+    changed: 0
+  };
+  diffEntries.forEach(function (entry) {
+    if (entry && entry.type && Object.prototype.hasOwnProperty.call(totals, entry.type)) {
+      totals[entry.type] += 1;
+    }
+  });
+  var note = backupDiffNotes && typeof backupDiffNotes.value === 'string' ? backupDiffNotes.value.trim() : '';
+  var timestamp = new Date();
+  var _formatFullBackupFile = formatFullBackupFilename(timestamp),
+    iso = _formatFullBackupFile.iso;
+  var safeIso = iso.replace(/[:]/g, '-');
+  var fileName = "cine-power-planner-version-log-".concat(safeIso, ".json");
+  var exportPayload = {
+    type: 'cine-power-planner-version-log',
+    version: 1,
+    createdAt: new Date().toISOString(),
+    appVersion: typeof APP_VERSION === 'string' ? APP_VERSION : null,
+    baseline: {
+      id: baselineEntry.value,
+      label: baselineEntry.label,
+      type: getComparisonEntryType(baselineEntry.value),
+      snapshot: cloneValueForExport(baselineEntry.data)
+    },
+    comparison: {
+      id: comparisonEntry.value,
+      label: comparisonEntry.label,
+      type: getComparisonEntryType(comparisonEntry.value),
+      snapshot: cloneValueForExport(comparisonEntry.data)
+    },
+    summary: {
+      totalDifferences: diffEntries.length,
+      added: totals.added,
+      removed: totals.removed,
+      updated: totals.changed
+    },
+    differences: diffEntries.map(function (entry) {
+      return {
+        type: entry.type,
+        path: entry.path,
+        before: entry.before,
+        after: entry.after
+      };
+    })
+  };
+  if (note) {
+    exportPayload.note = note;
+  }
+  var serialized;
+  try {
+    serialized = JSON.stringify(exportPayload, null, 2);
+  } catch (error) {
+    console.warn('Failed to serialize comparison export payload', error);
+    showNotification('error', getDiffText('versionCompareExportFailure', 'Comparison export failed.'));
+    return;
+  }
+  var downloadResult = downloadBackupPayload(serialized, fileName);
+  if (downloadResult && downloadResult.success) {
+    showNotification('success', getDiffText('versionCompareExportSuccess', 'Comparison log exported.'));
+  } else {
+    showNotification('error', getDiffText('versionCompareExportFailure', 'Comparison export failed.'));
+  }
+}
 function applyPreferencesFromStorage(safeGetItem) {
   if (typeof safeGetItem !== 'function') {
     return {
@@ -2008,6 +2694,12 @@ function applyPreferencesFromStorage(safeGetItem) {
     }
     accentColor = color;
     prevAccentColor = color;
+    if (accentColorInput) {
+      accentColorInput.value = color;
+    }
+    if (typeof updateAccentColorResetButtonState === 'function') {
+      updateAccentColorResetButtonState();
+    }
   }
   var language = safeGetItem('language');
   return {
@@ -2055,9 +2747,9 @@ function createSettingsBackup() {
   try {
     var isEvent = notify && _typeof(notify) === 'object' && typeof notify.type === 'string';
     var shouldNotify = isEvent ? true : Boolean(notify);
-    var _formatFullBackupFile = formatFullBackupFilename(timestamp),
-      iso = _formatFullBackupFile.iso,
-      fileName = _formatFullBackupFile.fileName;
+    var _formatFullBackupFile2 = formatFullBackupFilename(timestamp),
+      iso = _formatFullBackupFile2.iso,
+      fileName = _formatFullBackupFile2.fileName;
     var safeStorage = resolveSafeLocalStorage();
     var settings = captureStorageSnapshot(safeStorage);
     var sessionEntries = captureStorageSnapshot(typeof sessionStorage !== 'undefined' ? sessionStorage : null);
@@ -2101,6 +2793,33 @@ function createSettingsBackup() {
 }
 if (backupSettings) {
   backupSettings.addEventListener('click', createSettingsBackup);
+}
+if (backupDiffToggleButton) {
+  backupDiffToggleButton.addEventListener('click', handleBackupDiffToggle);
+}
+if (backupDiffCloseButton) {
+  backupDiffCloseButton.addEventListener('click', function () {
+    return collapseBackupDiffSection();
+  });
+}
+if (backupDiffPrimarySelect) {
+  backupDiffPrimarySelect.addEventListener('change', handleBackupDiffSelectionChange);
+}
+if (backupDiffSecondarySelect) {
+  backupDiffSecondarySelect.addEventListener('change', handleBackupDiffSelectionChange);
+}
+if (backupDiffExportButton) {
+  backupDiffExportButton.addEventListener('click', handleBackupDiffExport);
+  backupDiffExportButton.disabled = true;
+}
+if (backupDiffSummary) {
+  backupDiffSummary.textContent = getDiffText('versionCompareNoSelection', 'Choose two versions to generate a diff.');
+}
+if (backupDiffNotes) {
+  backupDiffNotes.disabled = true;
+}
+if (backupDiffSection) {
+  collapseBackupDiffSection();
 }
 if (restoreSettings && restoreSettingsInput) {
   restoreSettings.addEventListener('click', function () {
@@ -2580,6 +3299,9 @@ if (factoryResetButton) {
         if (accentColorInput) {
           accentColorInput.value = DEFAULT_ACCENT_COLOR;
         }
+        if (typeof updateAccentColorResetButtonState === 'function') {
+          updateAccentColorResetButtonState();
+        }
       } catch (accentError) {
         console.warn('Failed to reset accent color during factory reset', accentError);
       }
@@ -2626,84 +3348,226 @@ if (factoryResetButton) {
     }
   });
 }
+var UI_CACHE_STORAGE_KEYS_FOR_RELOAD = ['cameraPowerPlanner_schemaCache', 'cinePowerPlanner_schemaCache'];
+var UI_CACHE_STORAGE_SUFFIXES_FOR_RELOAD = ['', '__backup', '__legacyMigrationBackup'];
+var uiCacheFallbackWarningKeys = new Set();
+function collectFallbackUiCacheStorages() {
+  var storages = new Set();
+  var registerStorage = function registerStorage(candidate, label) {
+    if (!candidate || _typeof(candidate) !== 'object' && typeof candidate !== 'function') {
+      return;
+    }
+    var hasRemove = typeof candidate.removeItem === 'function';
+    var hasDelete = typeof candidate.delete === 'function';
+    if (!hasRemove && !hasDelete) {
+      return;
+    }
+    storages.add(candidate);
+  };
+  var _inspectScope = function inspectScope(scope, label) {
+    if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+      return;
+    }
+    try {
+      registerStorage(scope.SAFE_LOCAL_STORAGE, "".concat(label, ".SAFE_LOCAL_STORAGE"));
+    } catch (error) {
+      if (!uiCacheFallbackWarningKeys.has("".concat(label, ".SAFE_LOCAL_STORAGE"))) {
+        uiCacheFallbackWarningKeys.add("".concat(label, ".SAFE_LOCAL_STORAGE"));
+        console.warn("Unable to inspect ".concat(label, ".SAFE_LOCAL_STORAGE while clearing UI caches"), error);
+      }
+    }
+    try {
+      registerStorage(scope.localStorage, "".concat(label, ".localStorage"));
+    } catch (error) {
+      if (!uiCacheFallbackWarningKeys.has("".concat(label, ".localStorage"))) {
+        uiCacheFallbackWarningKeys.add("".concat(label, ".localStorage"));
+        console.warn("Unable to inspect ".concat(label, ".localStorage while clearing UI caches"), error);
+      }
+    }
+    try {
+      registerStorage(scope.sessionStorage, "".concat(label, ".sessionStorage"));
+    } catch (error) {
+      if (!uiCacheFallbackWarningKeys.has("".concat(label, ".sessionStorage"))) {
+        uiCacheFallbackWarningKeys.add("".concat(label, ".sessionStorage"));
+        console.warn("Unable to inspect ".concat(label, ".sessionStorage while clearing UI caches"), error);
+      }
+    }
+    var nested = null;
+    try {
+      nested = scope.__cineGlobal;
+    } catch (error) {
+      if (!uiCacheFallbackWarningKeys.has("".concat(label, ".__cineGlobal"))) {
+        uiCacheFallbackWarningKeys.add("".concat(label, ".__cineGlobal"));
+        console.warn("Unable to inspect ".concat(label, ".__cineGlobal while clearing UI caches"), error);
+      }
+    }
+    if (nested && nested !== scope) {
+      _inspectScope(nested, "".concat(label, ".__cineGlobal"));
+    }
+  };
+  registerStorage(resolveSafeLocalStorage(), 'safeLocalStorage');
+  if (typeof SAFE_LOCAL_STORAGE !== 'undefined') {
+    try {
+      registerStorage(SAFE_LOCAL_STORAGE, 'SAFE_LOCAL_STORAGE');
+    } catch (error) {
+      if (!uiCacheFallbackWarningKeys.has('SAFE_LOCAL_STORAGE')) {
+        uiCacheFallbackWarningKeys.add('SAFE_LOCAL_STORAGE');
+        console.warn('Unable to inspect SAFE_LOCAL_STORAGE while clearing UI caches', error);
+      }
+    }
+  }
+  var scopeCandidates = [{
+    scope: typeof globalThis !== 'undefined' ? globalThis : null,
+    label: 'globalThis'
+  }, {
+    scope: typeof window !== 'undefined' ? window : null,
+    label: 'window'
+  }, {
+    scope: typeof self !== 'undefined' ? self : null,
+    label: 'self'
+  }, {
+    scope: typeof global !== 'undefined' ? global : null,
+    label: 'global'
+  }];
+  if (typeof __cineGlobal !== 'undefined') {
+    scopeCandidates.push({
+      scope: __cineGlobal,
+      label: '__cineGlobal'
+    });
+  }
+  scopeCandidates.forEach(function (_ref22) {
+    var scope = _ref22.scope,
+      label = _ref22.label;
+    _inspectScope(scope, label);
+  });
+  if (typeof localStorage !== 'undefined') {
+    registerStorage(localStorage, 'localStorage');
+  }
+  if (typeof sessionStorage !== 'undefined') {
+    registerStorage(sessionStorage, 'sessionStorage');
+  }
+  return storages;
+}
+function clearUiCacheEntriesFallback() {
+  var storages = collectFallbackUiCacheStorages();
+  if (!storages || !storages.size) {
+    return;
+  }
+  storages.forEach(function (storage) {
+    UI_CACHE_STORAGE_KEYS_FOR_RELOAD.forEach(function (baseKey) {
+      if (typeof baseKey !== 'string' || !baseKey) {
+        return;
+      }
+      UI_CACHE_STORAGE_SUFFIXES_FOR_RELOAD.forEach(function (suffix) {
+        var entryKey = suffix ? "".concat(baseKey).concat(suffix) : baseKey;
+        try {
+          if (typeof storage.removeItem === 'function') {
+            storage.removeItem(entryKey);
+          } else if (typeof storage.delete === 'function') {
+            storage.delete(entryKey);
+          }
+        } catch (error) {
+          console.warn('Failed to remove UI cache entry', entryKey, error);
+        }
+      });
+    });
+  });
+}
 function clearCachesAndReload() {
   return _clearCachesAndReload.apply(this, arguments);
 }
 function _clearCachesAndReload() {
   _clearCachesAndReload = _asyncToGenerator(_regenerator().m(function _callee() {
-    var registrations, _navigator, serviceWorker, regs, reg, readyReg, keys, _window, location, hasReplace, hasReload, navigationTriggered, paramName, timestamp, href, hash, hashIndex, pattern, replacement, _t, _t2, _t3;
+    var uiCacheCleared, registrations, _navigator, serviceWorker, regs, reg, readyReg, keys, _window, location, hasReplace, hasReload, navigationTriggered, paramName, timestamp, href, hash, hashIndex, pattern, replacement, _t, _t2, _t3;
     return _regenerator().w(function (_context) {
       while (1) switch (_context.p = _context.n) {
         case 0:
-          _context.p = 0;
+          uiCacheCleared = false;
+          try {
+            if (typeof clearUiCacheStorageEntries === 'function') {
+              clearUiCacheStorageEntries();
+              uiCacheCleared = true;
+            }
+          } catch (uiCacheError) {
+            console.warn('Failed to clear UI caches via storage helper', uiCacheError);
+          }
+          if (!uiCacheCleared) {
+            try {
+              clearUiCacheEntriesFallback();
+              uiCacheCleared = true;
+            } catch (fallbackError) {
+              console.warn('Fallback UI cache clear failed', fallbackError);
+            }
+          }
+          _context.p = 1;
           if (!(typeof navigator !== 'undefined' && navigator.serviceWorker)) {
-            _context.n = 12;
+            _context.n = 13;
             break;
           }
           registrations = [];
           _navigator = navigator, serviceWorker = _navigator.serviceWorker;
-          _context.p = 1;
+          _context.p = 2;
           if (!(typeof serviceWorker.getRegistrations === 'function')) {
-            _context.n = 3;
+            _context.n = 4;
             break;
           }
-          _context.n = 2;
+          _context.n = 3;
           return serviceWorker.getRegistrations();
-        case 2:
+        case 3:
           regs = _context.v;
           if (Array.isArray(regs)) {
             regs.forEach(function (reg) {
               return registrations.push(reg);
             });
           }
-          _context.n = 9;
+          _context.n = 10;
           break;
-        case 3:
+        case 4:
           if (!(typeof serviceWorker.getRegistration === 'function')) {
-            _context.n = 5;
+            _context.n = 6;
             break;
           }
-          _context.n = 4;
+          _context.n = 5;
           return serviceWorker.getRegistration();
-        case 4:
+        case 5:
           reg = _context.v;
           if (reg) {
             registrations.push(reg);
           }
-          _context.n = 9;
+          _context.n = 10;
           break;
-        case 5:
+        case 6:
           if (!(serviceWorker.ready && typeof serviceWorker.ready.then === 'function')) {
-            _context.n = 9;
+            _context.n = 10;
             break;
           }
-          _context.p = 6;
-          _context.n = 7;
+          _context.p = 7;
+          _context.n = 8;
           return serviceWorker.ready;
-        case 7:
+        case 8:
           readyReg = _context.v;
           if (readyReg) {
             registrations.push(readyReg);
           }
-          _context.n = 9;
+          _context.n = 10;
           break;
-        case 8:
-          _context.p = 8;
+        case 9:
+          _context.p = 9;
           _t = _context.v;
           console.warn('Failed to await active service worker', _t);
-        case 9:
-          _context.n = 11;
-          break;
         case 10:
-          _context.p = 10;
+          _context.n = 12;
+          break;
+        case 11:
+          _context.p = 11;
           _t2 = _context.v;
           console.warn('Failed to query service worker registrations', _t2);
-        case 11:
+        case 12:
           if (!registrations.length) {
-            _context.n = 12;
+            _context.n = 13;
             break;
           }
-          _context.n = 12;
+          _context.n = 13;
           return Promise.all(registrations.map(function (reg) {
             if (!reg || typeof reg.unregister !== 'function') {
               return Promise.resolve();
@@ -2712,16 +3576,16 @@ function _clearCachesAndReload() {
               console.warn('Service worker unregister failed', unregisterError);
             });
           }));
-        case 12:
+        case 13:
           if (!(typeof caches !== 'undefined' && caches && typeof caches.keys === 'function')) {
-            _context.n = 14;
+            _context.n = 15;
             break;
           }
-          _context.n = 13;
-          return caches.keys();
-        case 13:
-          keys = _context.v;
           _context.n = 14;
+          return caches.keys();
+        case 14:
+          keys = _context.v;
+          _context.n = 15;
           return Promise.all(keys.map(function (key) {
             if (!key || typeof caches.delete !== 'function') {
               return Promise.resolve(false);
@@ -2731,15 +3595,15 @@ function _clearCachesAndReload() {
               return false;
             });
           }));
-        case 14:
-          _context.n = 16;
-          break;
         case 15:
-          _context.p = 15;
-          _t3 = _context.v;
-          console.warn('Cache clear failed', _t3);
+          _context.n = 17;
+          break;
         case 16:
           _context.p = 16;
+          _t3 = _context.v;
+          console.warn('Cache clear failed', _t3);
+        case 17:
+          _context.p = 17;
           try {
             if (typeof window !== 'undefined' && window.location) {
               _window = window, location = _window.location;
@@ -2778,11 +3642,11 @@ function _clearCachesAndReload() {
               window.location.reload();
             }
           }
-          return _context.f(16);
-        case 17:
+          return _context.f(17);
+        case 18:
           return _context.a(2);
       }
-    }, _callee, null, [[6, 8], [1, 10], [0, 15, 16, 17]]);
+    }, _callee, null, [[7, 9], [2, 11], [1, 16, 17, 18]]);
   }));
   return _clearCachesAndReload.apply(this, arguments);
 }
@@ -3086,10 +3950,10 @@ if (helpButton && helpDialog) {
       return;
     }
     var hasVisible = false;
-    helpQuickLinkItems.forEach(function (_ref22) {
-      var section = _ref22.section,
-        listItem = _ref22.listItem,
-        button = _ref22.button;
+    helpQuickLinkItems.forEach(function (_ref23) {
+      var section = _ref23.section,
+        listItem = _ref23.listItem,
+        button = _ref23.button;
       if (section && !section.hasAttribute('hidden')) {
         listItem.removeAttribute('hidden');
         hasVisible = true;
@@ -3121,9 +3985,9 @@ if (helpButton && helpDialog) {
       helpQuickLinksNav.removeAttribute('data-help');
     }
     var template = langTexts.helpQuickLinkButtonHelp || fallbackTexts.helpQuickLinkButtonHelp;
-    helpQuickLinkItems.forEach(function (_ref23) {
-      var button = _ref23.button,
-        label = _ref23.label;
+    helpQuickLinkItems.forEach(function (_ref24) {
+      var button = _ref24.button,
+        label = _ref24.label;
       if (!button) return;
       if (template) {
         var helpText = template.replace('%s', label);
@@ -3320,11 +4184,11 @@ if (helpButton && helpDialog) {
     return "(".concat(parts.join(''), ")");
   };
   updateHelpResultsSummaryText = function updateHelpResultsSummaryText() {
-    var _ref24 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-      totalCount = _ref24.totalCount,
-      visibleCount = _ref24.visibleCount,
-      hasQuery = _ref24.hasQuery,
-      queryText = _ref24.queryText;
+    var _ref25 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+      totalCount = _ref25.totalCount,
+      visibleCount = _ref25.visibleCount,
+      hasQuery = _ref25.hasQuery,
+      queryText = _ref25.queryText;
     if (!helpResultsSummary) return;
     if (typeof totalCount === 'number' && Number.isFinite(totalCount)) {
       helpResultsSummary.dataset.totalCount = String(totalCount);
@@ -3552,9 +4416,9 @@ if (helpButton && helpDialog) {
       if (!parts.includes(trimmed)) parts.push(trimmed);
     };
     var addTextFromElement = function addTextFromElement(element) {
-      var _ref25 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-        _ref25$includeTextCon = _ref25.includeTextContent,
-        includeTextContent = _ref25$includeTextCon === void 0 ? false : _ref25$includeTextCon;
+      var _ref26 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+        _ref26$includeTextCon = _ref26.includeTextContent,
+        includeTextContent = _ref26$includeTextCon === void 0 ? false : _ref26$includeTextCon;
       if (!element) return;
       addText(element.getAttribute('data-help'));
       addText(element.getAttribute('aria-label'));
@@ -4124,7 +4988,7 @@ function populateLensDropdown() {
     lensSelect.appendChild(emptyOpt);
   }
   Object.keys(lensData).sort(localeSort).forEach(function (name) {
-    var _ref26, _lens$minFocusMeters;
+    var _ref27, _lens$minFocusMeters;
     var opt = document.createElement('option');
     opt.value = name;
     var lens = lensData[name] || {};
@@ -4135,7 +4999,7 @@ function populateLensDropdown() {
     } else if (lens.clampOn === false) {
       attrs.push('no clamp-on');
     }
-    var minFocus = (_ref26 = (_lens$minFocusMeters = lens.minFocusMeters) !== null && _lens$minFocusMeters !== void 0 ? _lens$minFocusMeters : lens.minFocus) !== null && _ref26 !== void 0 ? _ref26 : lens.minFocusCm ? lens.minFocusCm / 100 : null;
+    var minFocus = (_ref27 = (_lens$minFocusMeters = lens.minFocusMeters) !== null && _lens$minFocusMeters !== void 0 ? _lens$minFocusMeters : lens.minFocus) !== null && _ref27 !== void 0 ? _ref27 : lens.minFocusCm ? lens.minFocusCm / 100 : null;
     if (minFocus) attrs.push("".concat(minFocus, "m min focus"));
     opt.textContent = attrs.length ? "".concat(name, " (").concat(attrs.join(', '), ")") : name;
     lensSelect.appendChild(opt);
@@ -4377,11 +5241,11 @@ function resolveFilterDisplayInfo(type) {
 function buildFilterGearEntries() {
   var filters = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
   var entries = [];
-  filters.forEach(function (_ref27) {
-    var type = _ref27.type,
-      _ref27$size = _ref27.size,
-      size = _ref27$size === void 0 ? DEFAULT_FILTER_SIZE : _ref27$size,
-      values = _ref27.values;
+  filters.forEach(function (_ref28) {
+    var type = _ref28.type,
+      _ref28$size = _ref28.size,
+      size = _ref28$size === void 0 ? DEFAULT_FILTER_SIZE : _ref28$size,
+      values = _ref28.values;
     if (!type) return;
     var sizeValue = size || DEFAULT_FILTER_SIZE;
     var idBase = "filter-".concat(filterId(type));
@@ -4425,12 +5289,12 @@ function buildFilterGearEntries() {
       case 'Pol':
         {
           var _resolveFilterDisplay2 = resolveFilterDisplayInfo(type, sizeValue),
-            _label = _resolveFilterDisplay2.label,
+            _label2 = _resolveFilterDisplay2.label,
             _gearName = _resolveFilterDisplay2.gearName;
           entries.push({
             id: idBase,
             gearName: _gearName,
-            label: _label,
+            label: _label2,
             type: type,
             size: sizeValue,
             values: []
@@ -4440,13 +5304,13 @@ function buildFilterGearEntries() {
       case 'Rota-Pol':
         {
           var _resolveFilterDisplay3 = resolveFilterDisplayInfo(type, sizeValue),
-            _label2 = _resolveFilterDisplay3.label,
+            _label3 = _resolveFilterDisplay3.label,
             _gearName2 = _resolveFilterDisplay3.gearName;
-          var displaySize = _label2.includes(sizeValue) ? '' : sizeValue;
+          var displaySize = _label3.includes(sizeValue) ? '' : sizeValue;
           entries.push({
             id: idBase,
             gearName: _gearName2,
-            label: _label2,
+            label: _label3,
             type: type,
             size: displaySize,
             values: []
@@ -4457,13 +5321,13 @@ function buildFilterGearEntries() {
       case 'ND Grad SE':
         {
           var _resolveFilterDisplay4 = resolveFilterDisplayInfo(type, sizeValue),
-            _label3 = _resolveFilterDisplay4.label,
+            _label4 = _resolveFilterDisplay4.label,
             _gearName3 = _resolveFilterDisplay4.gearName;
           var gradValues = values == null ? (getFilterValueConfig(type).defaults || []).slice() : Array.isArray(values) ? values.slice() : [];
           entries.push({
             id: idBase,
             gearName: _gearName3,
-            label: _label3,
+            label: _label4,
             type: type,
             size: sizeValue,
             values: gradValues
@@ -4473,13 +5337,13 @@ function buildFilterGearEntries() {
       default:
         {
           var _resolveFilterDisplay5 = resolveFilterDisplayInfo(type, sizeValue),
-            _label4 = _resolveFilterDisplay5.label,
+            _label5 = _resolveFilterDisplay5.label,
             _gearName4 = _resolveFilterDisplay5.gearName;
           var filterValues = values == null ? (getFilterValueConfig(type).defaults || []).slice() : Array.isArray(values) ? values.slice() : [];
           entries.push({
             id: idBase,
             gearName: _gearName4,
-            label: _label4,
+            label: _label5,
             type: type,
             size: sizeValue,
             values: filterValues
@@ -4507,7 +5371,11 @@ function updateGearListFilterEntries() {
     if (!entryId) return;
     var entry = entryMap.get(entryId);
     if (!entry) return;
-    span.textContent = formatFilterEntryText(entry);
+    var hideSize = span.hasAttribute('data-filter-hide-size');
+    var displayEntry = hideSize ? _objectSpread(_objectSpread({}, entry), {}, {
+      size: ''
+    }) : entry;
+    span.textContent = formatFilterEntryText(displayEntry);
     span.setAttribute('data-gear-name', entry.gearName);
     span.setAttribute('data-filter-label', entry.label);
     if (entry.type) {
@@ -4601,7 +5469,13 @@ function renderGearListFilterDetails(details) {
     if (gearName) heading.setAttribute('data-gear-name', gearName);
     if (label) heading.setAttribute('data-filter-label', label);
     if (type) heading.setAttribute('data-filter-type', type);
-    var displaySize = size && label && label.includes(size) ? '' : size;
+    var shouldHideSize = !!needsSize;
+    if (shouldHideSize) {
+      heading.setAttribute('data-filter-hide-size', '');
+    } else {
+      heading.removeAttribute('data-filter-hide-size');
+    }
+    var displaySize = shouldHideSize ? '' : size && label && label.includes(size) ? '' : size;
     var displayValues = Array.isArray(values) ? values : undefined;
     if (label) {
       heading.textContent = formatFilterEntryText({
@@ -4846,8 +5720,8 @@ function buildFilterSelectHtml() {
 function collectFilterAccessories() {
   var filters = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
   var items = [];
-  filters.forEach(function (_ref28) {
-    var type = _ref28.type;
+  filters.forEach(function (_ref29) {
+    var type = _ref29.type;
     switch (type) {
       case 'ND Grad HE':
       case 'ND Grad SE':
