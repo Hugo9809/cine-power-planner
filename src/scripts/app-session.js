@@ -1899,29 +1899,112 @@ function resolveSafeLocalStorage() {
 function captureStorageSnapshot(storage) {
   const snapshot = Object.create(null);
   if (!storage) return snapshot;
-  try {
-    if (typeof storage.key === 'function' && typeof storage.length === 'number') {
-      const length = storage.length;
-      for (let i = 0; i < length; i++) {
-        const key = storage.key(i);
-        if (typeof key !== 'string') continue;
-        snapshot[key] = storage.getItem(key);
-      }
-    } else if (typeof storage.keys === 'function') {
-      const keys = storage.keys();
-      keys.forEach((key) => {
-        if (typeof key !== 'string') return;
-        snapshot[key] = storage.getItem(key);
-      });
-    } else if (typeof storage.forEach === 'function') {
-      storage.forEach((value, key) => {
-        if (typeof key !== 'string') return;
-        snapshot[key] = value;
-      });
+
+  const assignEntry = (key, valueOrGetter) => {
+    if (typeof key !== 'string' || !key) {
+      return;
     }
+    try {
+      const value = typeof valueOrGetter === 'function'
+        ? valueOrGetter()
+        : valueOrGetter;
+      snapshot[key] = value;
+    } catch (error) {
+      console.warn('Failed to read storage entry for backup', key, error);
+    }
+  };
+
+  const tryEnumerateByIndex = () => {
+    if (typeof storage.key !== 'function' || typeof storage.length !== 'number') {
+      return false;
+    }
+    let length = 0;
+    try {
+      length = Number(storage.length) || 0;
+    } catch (lengthError) {
+      console.warn('Failed to inspect storage length for backup snapshot', lengthError);
+      return true;
+    }
+    for (let i = 0; i < length; i += 1) {
+      let key;
+      try {
+        key = storage.key(i);
+      } catch (keyError) {
+        console.warn('Failed to access storage key for backup snapshot', keyError);
+        continue;
+      }
+      assignEntry(key, () => storage.getItem(key));
+    }
+    return true;
+  };
+
+  const tryEnumerateByKeys = () => {
+    if (typeof storage.keys !== 'function') {
+      return false;
+    }
+    let keys;
+    try {
+      keys = storage.keys();
+    } catch (keysError) {
+      console.warn('Failed to enumerate storage keys for backup snapshot', keysError);
+      return true;
+    }
+    if (!keys) {
+      return true;
+    }
+    const iterate = (list) => {
+      if (!list) return;
+      if (typeof list.forEach === 'function') {
+        list.forEach(key => assignEntry(key, () => storage.getItem(key)));
+      } else if (typeof list[Symbol.iterator] === 'function') {
+        for (const key of list) {
+          assignEntry(key, () => storage.getItem(key));
+        }
+      }
+    };
+    iterate(keys);
+    return true;
+  };
+
+  const tryEnumerateByForEach = () => {
+    if (typeof storage.forEach !== 'function') {
+      return false;
+    }
+    try {
+      storage.forEach((value, key) => {
+        assignEntry(key, value);
+      });
+    } catch (error) {
+      console.warn('Failed to iterate storage for backup snapshot', error);
+    }
+    return true;
+  };
+
+  let enumerated = false;
+  try {
+    enumerated = tryEnumerateByIndex();
   } catch (error) {
-    console.warn('Failed to snapshot storage', error);
+    console.warn('Failed to snapshot storage via index enumeration', error);
   }
+
+  if (!Object.keys(snapshot).length) {
+    try {
+      enumerated = tryEnumerateByKeys() || enumerated;
+    } catch (error) {
+      console.warn('Failed to snapshot storage via key enumeration', error);
+    }
+  }
+
+  if (!Object.keys(snapshot).length && !enumerated) {
+    try {
+      tryEnumerateByForEach();
+    } catch (error) {
+      console.warn('Failed to snapshot storage via iteration', error);
+    }
+  } else if (!Object.keys(snapshot).length) {
+    tryEnumerateByForEach();
+  }
+
   return snapshot;
 }
 
@@ -3762,39 +3845,295 @@ function restoreSetupSelection(previousSelection, shouldShowAutoBackups) {
   }
 }
 
-function collectFullBackupData() {
-  let rawData = {};
-  if (typeof exportAllData === 'function') {
-    try {
-      rawData = exportAllData() || {};
-    } catch (error) {
-      console.warn('Failed to collect planner data for full backup', error);
-      rawData = {};
+const backupFallbackLoaders = [
+  {
+    key: 'devices',
+    loaderName: 'loadDeviceData',
+    isValid: value => value === null || isPlainObject(value),
+    loader: () => (typeof loadDeviceData === 'function' ? loadDeviceData() : undefined),
+  },
+  {
+    key: 'setups',
+    loaderName: 'loadSetups',
+    isValid: value => isPlainObject(value),
+    loader: () => (typeof loadSetups === 'function' ? loadSetups() : undefined),
+  },
+  {
+    key: 'session',
+    loaderName: 'loadSessionState',
+    isValid: value => value === null || isPlainObject(value),
+    loader: () => (typeof loadSessionState === 'function' ? loadSessionState() : undefined),
+  },
+  {
+    key: 'feedback',
+    loaderName: 'loadFeedback',
+    isValid: value => value === null || isPlainObject(value),
+    loader: () => (typeof loadFeedback === 'function' ? loadFeedback() : undefined),
+  },
+  {
+    key: 'project',
+    loaderName: 'loadProject',
+    isValid: value => isPlainObject(value),
+    loader: () => (typeof loadProject === 'function' ? loadProject() : undefined),
+  },
+  {
+    key: 'favorites',
+    loaderName: 'loadFavorites',
+    isValid: value => isPlainObject(value),
+    loader: () => (typeof loadFavorites === 'function' ? loadFavorites() : undefined),
+  },
+  {
+    key: 'autoGearBackups',
+    loaderName: 'loadAutoGearBackups',
+    isValid: value => Array.isArray(value),
+    loader: () => (typeof loadAutoGearBackups === 'function' ? loadAutoGearBackups() : undefined),
+  },
+  {
+    key: 'autoGearPresets',
+    loaderName: 'loadAutoGearPresets',
+    isValid: value => Array.isArray(value),
+    loader: () => (typeof loadAutoGearPresets === 'function' ? loadAutoGearPresets() : undefined),
+  },
+  {
+    key: 'autoGearSeeded',
+    loaderName: 'loadAutoGearSeedFlag',
+    isValid: value => typeof value === 'boolean',
+    loader: () => (typeof loadAutoGearSeedFlag === 'function' ? loadAutoGearSeedFlag() : undefined),
+  },
+  {
+    key: 'autoGearActivePresetId',
+    loaderName: 'loadAutoGearActivePresetId',
+    isValid: value => typeof value === 'string',
+    loader: () => (typeof loadAutoGearActivePresetId === 'function'
+      ? loadAutoGearActivePresetId()
+      : undefined),
+  },
+  {
+    key: 'autoGearAutoPresetId',
+    loaderName: 'loadAutoGearAutoPresetId',
+    isValid: value => typeof value === 'string',
+    loader: () => (typeof loadAutoGearAutoPresetId === 'function'
+      ? loadAutoGearAutoPresetId()
+      : undefined),
+  },
+  {
+    key: 'autoGearShowBackups',
+    loaderName: 'loadAutoGearBackupVisibility',
+    isValid: value => typeof value === 'boolean',
+    loader: () => (typeof loadAutoGearBackupVisibility === 'function'
+      ? loadAutoGearBackupVisibility()
+      : undefined),
+  },
+  {
+    key: 'fullBackupHistory',
+    loaderName: 'loadFullBackupHistory',
+    isValid: value => Array.isArray(value),
+    loader: () => (typeof loadFullBackupHistory === 'function' ? loadFullBackupHistory() : undefined),
+  },
+];
+
+function describeError(error) {
+  if (!error) {
+    return null;
+  }
+  if (typeof error === 'string') {
+    return error;
+  }
+  if (typeof error.message === 'string' && error.message.trim()) {
+    return error.message;
+  }
+  try {
+    return JSON.stringify(error);
+  } catch (serializationError) {
+    void serializationError;
+  }
+  try {
+    return String(error);
+  } catch (stringifyError) {
+    void stringifyError;
+  }
+  return null;
+}
+
+function recordDiagnostic(diagnostics, section, status, options = {}) {
+  if (!Array.isArray(diagnostics)) {
+    return;
+  }
+  const entry = { section, status };
+  if (options.source && typeof options.source === 'string') {
+    entry.source = options.source;
+  }
+  if (typeof options.message === 'string') {
+    const trimmedMessage = options.message.trim();
+    if (trimmedMessage) {
+      entry.message = trimmedMessage;
     }
   }
+  diagnostics.push(entry);
+}
 
-  const data = isPlainObject(rawData) ? { ...rawData } : {};
+function applyBackupFallbacks(target, diagnostics) {
+  if (!target || typeof target !== 'object') {
+    return;
+  }
+
+  backupFallbackLoaders.forEach(({ key, loader, loaderName, isValid }) => {
+    const currentValue = target[key];
+    if (isValid(currentValue)) {
+      return;
+    }
+    if (typeof loader !== 'function') {
+      return;
+    }
+    try {
+      const fallbackValue = loader();
+      if (fallbackValue === undefined) {
+        recordDiagnostic(diagnostics, key, 'missing', { source: loaderName });
+        return;
+      }
+      target[key] = fallbackValue;
+      recordDiagnostic(diagnostics, key, 'recovered', { source: loaderName });
+    } catch (error) {
+      console.warn(`Failed to recover ${key} for full backup`, error);
+      const message = describeError(error);
+      recordDiagnostic(diagnostics, key, 'error', { source: loaderName, message });
+    }
+  });
+}
+
+function mergeAutoGearRuleLists(primary, secondary) {
+  const baseList = Array.isArray(primary) ? primary.slice() : [];
+  if (!Array.isArray(secondary) || !secondary.length) {
+    return { combined: baseList, changed: false };
+  }
+
+  const existingIds = new Set(
+    baseList
+      .map(entry => (entry && typeof entry.id === 'string' ? entry.id : null))
+      .filter(Boolean),
+  );
+
+  let changed = false;
+  secondary.forEach(entry => {
+    if (!entry) {
+      return;
+    }
+    const identifier = entry && typeof entry.id === 'string' ? entry.id : null;
+    if (identifier && existingIds.has(identifier)) {
+      return;
+    }
+    if (identifier) {
+      existingIds.add(identifier);
+    }
+    baseList.push(entry);
+    changed = true;
+  });
+
+  return { combined: baseList, changed };
+}
+
+function collectFullBackupData() {
+  const diagnostics = [];
+  let rawData = {};
+  let exportAttempted = false;
+  let exportFailed = false;
+
+  if (typeof exportAllData === 'function') {
+    exportAttempted = true;
+    try {
+      rawData = exportAllData();
+    } catch (error) {
+      exportFailed = true;
+      console.warn('Failed to collect planner data for full backup', error);
+      const message = describeError(error);
+      recordDiagnostic(diagnostics, 'exportAllData', 'error', {
+        source: 'exportAllData',
+        message,
+      });
+      rawData = {};
+    }
+  } else {
+    recordDiagnostic(diagnostics, 'exportAllData', 'missing', { source: 'exportAllData' });
+  }
+
+  let data = {};
+  if (isPlainObject(rawData)) {
+    data = { ...rawData };
+  } else if (exportAttempted && !exportFailed && rawData && typeof rawData === 'object') {
+    data = { ...rawData };
+    recordDiagnostic(diagnostics, 'exportAllData', 'coerced', { source: 'exportAllData' });
+  } else {
+    if (exportAttempted && !exportFailed) {
+      recordDiagnostic(diagnostics, 'exportAllData', 'invalid', { source: 'exportAllData' });
+    }
+    data = {};
+  }
+
+  applyBackupFallbacks(data, diagnostics);
 
   if (!Array.isArray(data.autoGearRules)) {
     let rules = null;
+    let ruleSource = '';
+    let recovered = false;
     if (typeof getBaseAutoGearRules === 'function') {
       try {
-        rules = getBaseAutoGearRules();
+        const baseRules = getBaseAutoGearRules();
+        if (Array.isArray(baseRules)) {
+          rules = baseRules.slice();
+          ruleSource = 'getBaseAutoGearRules';
+          recovered = true;
+        }
       } catch (error) {
         console.warn('Failed to capture automatic gear rules from state for full backup', error);
+        const message = describeError(error);
+        recordDiagnostic(diagnostics, 'autoGearRules', 'error', {
+          source: 'getBaseAutoGearRules',
+          message,
+        });
       }
     }
-    if (!Array.isArray(rules) && typeof loadAutoGearRules === 'function') {
+
+    let storedRules = null;
+    if (typeof loadAutoGearRules === 'function') {
       try {
-        rules = loadAutoGearRules();
+        storedRules = loadAutoGearRules();
       } catch (error) {
         console.warn('Failed to load automatic gear rules from storage for full backup', error);
+        const message = describeError(error);
+        recordDiagnostic(diagnostics, 'autoGearRules', 'error', {
+          source: 'loadAutoGearRules',
+          message,
+        });
       }
     }
-    data.autoGearRules = Array.isArray(rules) ? rules : [];
+
+    if (Array.isArray(storedRules) && storedRules.length) {
+      if (!Array.isArray(rules) || !rules.length) {
+        rules = storedRules;
+        ruleSource = 'loadAutoGearRules';
+        recovered = true;
+      } else {
+        const { combined, changed } = mergeAutoGearRuleLists(rules, storedRules);
+        rules = combined;
+        if (changed) {
+          recovered = true;
+          ruleSource = ruleSource ? `${ruleSource}+loadAutoGearRules` : 'loadAutoGearRules';
+        }
+      }
+    }
+
+    if (Array.isArray(rules)) {
+      data.autoGearRules = rules;
+      recordDiagnostic(diagnostics, 'autoGearRules', recovered ? 'recovered' : 'preserved', {
+        source: ruleSource || (Array.isArray(storedRules) && storedRules.length ? 'loadAutoGearRules' : ''),
+      });
+    } else {
+      data.autoGearRules = [];
+      recordDiagnostic(diagnostics, 'autoGearRules', 'defaulted');
+    }
   }
 
-  return data;
+  return { data, diagnostics };
 }
 
 function createSettingsBackup(notify = true, timestamp = new Date()) {
@@ -3805,13 +4144,17 @@ function createSettingsBackup(notify = true, timestamp = new Date()) {
     const safeStorage = resolveSafeLocalStorage();
     const settings = captureStorageSnapshot(safeStorage);
     const sessionEntries = captureStorageSnapshot(typeof sessionStorage !== 'undefined' ? sessionStorage : null);
+    const { data: backupData, diagnostics } = collectFullBackupData();
     const backup = {
       version: APP_VERSION,
       generatedAt: iso,
       settings,
       sessionStorage: Object.keys(sessionEntries).length ? sessionEntries : undefined,
-      data: collectFullBackupData(),
+      data: backupData,
     };
+    if (Array.isArray(diagnostics) && diagnostics.length) {
+      backup.diagnostics = diagnostics;
+    }
     const payload = JSON.stringify(backup);
     const downloadResult = downloadBackupPayload(payload, fileName);
     if (!downloadResult || !downloadResult.success) {
