@@ -10262,10 +10262,14 @@ function applyInstallTexts(lang) {
   var dismissLabel = langTexts.installBannerDismiss || fallbackTexts.installBannerDismiss || closeLabel || '';
   if (installPromptBannerDismiss) {
     var labelText = dismissLabel || '';
-    setButtonLabelWithIcon(installPromptBannerDismiss, labelText, ICON_GLYPHS.circleX);
+    setButtonLabelWithIcon(installPromptBannerDismiss, '', ICON_GLYPHS.circleX);
     if (labelText) {
       installPromptBannerDismiss.setAttribute('aria-label', labelText);
       installPromptBannerDismiss.setAttribute('title', labelText);
+      var hiddenLabel = document.createElement('span');
+      hiddenLabel.className = 'visually-hidden';
+      hiddenLabel.textContent = labelText;
+      installPromptBannerDismiss.appendChild(hiddenLabel);
     } else {
       installPromptBannerDismiss.removeAttribute('aria-label');
       installPromptBannerDismiss.removeAttribute('title');
