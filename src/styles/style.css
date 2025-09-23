@@ -131,6 +131,9 @@
   --video-conn-bg: rgba(51, 102, 153, 0.15);
   --neutral-conn-bg: rgba(158, 158, 158, 0.15);
   --connector-label-neutral-color: #000000;
+  --auto-gear-highlight-bg: rgba(255, 210, 64, 0.35);
+  --auto-gear-highlight-border: rgba(255, 181, 0, 0.7);
+  --auto-gear-highlight-text: var(--text-color);
 }
 @media (max-width: 600px) {
   :root {
@@ -4266,6 +4269,9 @@ html.dark-mode,
 body.dark-mode {
   background-color: var(--background-color);
   color: var(--text-color);
+  --auto-gear-highlight-bg: rgba(255, 196, 0, 0.28);
+  --auto-gear-highlight-border: rgba(255, 208, 0, 0.72);
+  --auto-gear-highlight-text: var(--inverse-text-color);
 }
 
 .dark-mode h1,
@@ -5020,6 +5026,48 @@ body.dark-mode .requirement-box,
   box-shadow: none;
 }
 
+#gearListOutput .auto-gear-rule-badge {
+  display: none;
+  margin-left: 0.75rem;
+  padding: 0.1rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  background: color-mix(in srgb, var(--auto-gear-highlight-bg) 65%, transparent);
+  border: 1px solid color-mix(in srgb, var(--auto-gear-highlight-border) 75%, transparent);
+  color: var(--auto-gear-highlight-text);
+  white-space: nowrap;
+}
+
+#gearListOutput.show-auto-gear-highlight .auto-gear-rule-badge {
+  display: inline-flex;
+  align-items: center;
+}
+
+#gearListOutput.show-auto-gear-highlight .auto-gear-item {
+  display: inline-block;
+  max-width: 100%;
+  padding: 0.1em 0.5em;
+  margin-block: 0.15em;
+  border-radius: calc(var(--border-radius) * 0.75);
+  background: var(--auto-gear-highlight-bg);
+  box-shadow: 0 0 0 2px var(--auto-gear-highlight-border);
+  color: var(--auto-gear-highlight-text);
+  white-space: normal;
+  word-break: break-word;
+}
+
+#gearListOutput.show-auto-gear-highlight .auto-gear-item select {
+  border-color: var(--auto-gear-highlight-border);
+  background: color-mix(in srgb, var(--auto-gear-highlight-bg) 60%, transparent);
+  color: var(--auto-gear-highlight-text);
+}
+
+.dark-mode #gearListOutput.show-auto-gear-highlight .auto-gear-item select {
+  background: color-mix(in srgb, var(--auto-gear-highlight-bg) 70%, transparent);
+}
+
 #gearListOutput .cage-select-wrapper {
   display: inline-flex;
   flex-direction: row;
@@ -5359,6 +5407,41 @@ body.dark-mode.pink-mode #gearListOutput h2,
   margin: 0;
   font-size: calc(var(--font-size-base) * var(--font-scale-sm));
   color: var(--muted-text-color);
+}
+
+#gearListActions .gear-list-action-btn {
+  margin: 0;
+  border: 1px solid color-mix(in srgb, var(--accent-color) 45%, transparent);
+  background: color-mix(in srgb, var(--surface-color) 92%, var(--accent-color) 8%);
+  color: var(--control-text);
+  font-weight: var(--font-weight-medium);
+  justify-content: flex-start;
+  padding-inline: calc(var(--button-padding-inline) * 0.9);
+  min-width: 0;
+}
+
+#gearListActions .gear-list-action-btn .btn-icon {
+  margin-inline-end: var(--icon-gap);
+  color: currentColor;
+}
+
+#gearListActions .gear-list-action-btn:hover,
+#gearListActions .gear-list-action-btn:focus-visible {
+  background: var(--accent-color);
+  color: var(--inverse-text-color);
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-color) 35%, transparent);
+}
+
+#gearListActions .gear-list-action-btn:focus-visible {
+  outline: none;
+}
+
+#gearListActions .gear-list-action-btn.is-active {
+  background: var(--accent-color);
+  color: var(--inverse-text-color);
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-color) 45%, transparent);
 }
 
 .gear-list-autosave-note--overlay {
