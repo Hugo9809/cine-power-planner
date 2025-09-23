@@ -762,12 +762,15 @@ function applyHighContrast(enabled) {
     }
     document.documentElement.classList.add("high-contrast");
     applyAccentColor(accentColor);
+    if (document.body && document.body.classList.contains('pink-mode')) {
+      clearAccentColorOverrides();
+    }
   } else {
     if (document.body) {
       document.body.classList.remove("high-contrast");
     }
     document.documentElement.classList.remove("high-contrast");
-    if (document.body && document.body.classList.contains('pink-mode') && !hasCustomAccentSelection()) {
+    if (document.body && document.body.classList.contains('pink-mode')) {
       clearAccentColorOverrides();
     } else {
       applyAccentColor(accentColor);
@@ -852,17 +855,13 @@ function startPinkModeIconRotation() {
   }, PINK_MODE_ICON_INTERVAL_MS);
 }
 function applyPinkMode(enabled) {
-  var preserveAccent = shouldPreserveAccentInPinkMode();
   if (enabled) {
     document.body.classList.add("pink-mode");
+    document.documentElement.classList.add("pink-mode");
     if (accentColorInput) {
       accentColorInput.disabled = true;
     }
-    if (preserveAccent) {
-      applyAccentColor(accentColor);
-    } else {
-      clearAccentColorOverrides();
-    }
+    clearAccentColorOverrides();
     if (pinkModeToggle) {
       pinkModeToggle.setAttribute("aria-pressed", "true");
     }
@@ -871,6 +870,7 @@ function applyPinkMode(enabled) {
   } else {
     stopPinkModeAnimatedIcons();
     document.body.classList.remove("pink-mode");
+    document.documentElement.classList.remove("pink-mode");
     if (accentColorInput) {
       accentColorInput.disabled = false;
     }
@@ -1083,7 +1083,9 @@ if (settingsButton && settingsDialog) {
       }
       if (accentColorInput) {
         var color = accentColorInput.value;
-        applyAccentColor(color);
+        if (!document.body.classList.contains('pink-mode')) {
+          applyAccentColor(color);
+        }
         try {
           localStorage.setItem('accentColor', color);
         } catch (e) {

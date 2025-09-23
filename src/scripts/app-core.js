@@ -13007,8 +13007,7 @@ const hasCustomAccentSelection = () => {
   return normalized && normalized !== DEFAULT_ACCENT_NORMALIZED;
 };
 
-const shouldPreserveAccentInPinkMode = () =>
-  hasCustomAccentSelection() || isHighContrastActive();
+const shouldPreserveAccentInPinkMode = () => false;
 
 const applyAccentColor = (color) => {
   const highContrast = isHighContrastActive();

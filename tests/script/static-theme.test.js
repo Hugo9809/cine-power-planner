@@ -124,7 +124,7 @@ describe('static theme preferences', () => {
     expect(themeMeta.getAttribute('content')).toBe('#f9f9f9');
   });
 
-  test('retains stored custom accent when pink mode is enabled', () => {
+  test('pink mode ignores stored custom accent overrides', () => {
     localStorage.getItem.mockImplementation(key => {
       if (key === 'pinkMode') {
         return 'true';
@@ -141,9 +141,10 @@ describe('static theme preferences', () => {
     const body = document.body;
 
     expect(body.classList.contains('pink-mode')).toBe(true);
-    expect(root.style.getPropertyValue('--accent-color')).toBe('#ff8800');
-    expect(root.style.getPropertyValue('--link-color')).toBe('#ff8800');
-    expect(body.style.getPropertyValue('--accent-color')).toBe('#ff8800');
-    expect(body.style.getPropertyValue('--link-color')).toBe('#ff8800');
+    expect(root.classList.contains('pink-mode')).toBe(true);
+    expect(root.style.getPropertyValue('--accent-color')).toBe('');
+    expect(root.style.getPropertyValue('--link-color')).toBe('');
+    expect(body.style.getPropertyValue('--accent-color')).toBe('');
+    expect(body.style.getPropertyValue('--link-color')).toBe('');
   });
 });

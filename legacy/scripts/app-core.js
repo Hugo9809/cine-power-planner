@@ -11993,7 +11993,7 @@ var hasCustomAccentSelection = function hasCustomAccentSelection() {
   return normalized && normalized !== DEFAULT_ACCENT_NORMALIZED;
 };
 var shouldPreserveAccentInPinkMode = function shouldPreserveAccentInPinkMode() {
-  return hasCustomAccentSelection() || isHighContrastActive();
+  return false;
 };
 var applyAccentColor = function applyAccentColor(color) {
   var highContrast = isHighContrastActive();
