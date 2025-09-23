@@ -2182,6 +2182,11 @@ body.pink-mode:not(.dark-mode) #settingsPanel-autoGear .auto-gear-rule-items-lab
   gap: 8px;
 }
 
+.auto-gear-condition-controls label {
+  flex: 0 0 auto;
+  min-width: 0;
+}
+
 .auto-gear-condition-picker {
   display: flex;
   flex-wrap: wrap;
