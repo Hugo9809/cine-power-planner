@@ -69,6 +69,7 @@
     body.classList.toggle('relaxed-spacing', relaxedSpacingEnabled);
 
     var pinkModeEnabled = safeGet('pinkMode') === 'true';
+    root.classList.toggle('pink-mode', pinkModeEnabled);
     body.classList.toggle('pink-mode', pinkModeEnabled);
 
     var storedFontSize = safeGet('fontSize');
@@ -94,11 +95,7 @@
 
     var storedAccent = safeGet('accentColor');
     var accentColor = storedAccent || DEFAULT_ACCENT;
-    var hasCustomAccent =
-      typeof storedAccent === 'string' &&
-      storedAccent.trim().toLowerCase() !== DEFAULT_ACCENT.toLowerCase();
-    var shouldPreserveAccent = hasCustomAccent || highContrastEnabled;
-    if (pinkModeEnabled && !shouldPreserveAccent) {
+    if (pinkModeEnabled) {
       root.style.removeProperty('--accent-color');
       root.style.removeProperty('--link-color');
       body.style.removeProperty('--accent-color');

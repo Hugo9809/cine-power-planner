@@ -143,6 +143,7 @@
     padding-bottom: 0.3em;
   }
 }
+html.pink-mode,
 body.pink-mode {
   --accent-color: #ff69b4;
   --link-color: #ff69b4;
@@ -3919,6 +3920,16 @@ body.high-contrast {
   --neutral-conn-bg: rgba(255, 255, 255, 0.5);
   --connector-label-neutral-color: #ffffff;
   --selected-row-bg: #fff;
+}
+
+html.high-contrast.pink-mode,
+body.high-contrast.pink-mode {
+  --accent-color: #ff69b4;
+  --link-color: #ff69b4;
+  --icon-color: var(--accent-color);
+  --logo-accent-color: #f255a8;
+  --logo-background-color: #f255a8;
+  --logo-center-color: #ffffff;
 }
 
 html.dark-mode,
