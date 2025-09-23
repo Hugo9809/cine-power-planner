@@ -1750,8 +1750,30 @@ body.high-contrast .settings-tab[aria-selected="true"] {
 
 .auto-gear-filter-clear {
   flex: 0 0 auto;
-  align-self: center;
+  align-self: flex-end;
+  margin: 0 0 var(--button-margin-block-end);
   margin-left: auto;
+  padding-inline: calc(var(--button-padding-inline) + 2px);
+  background-color: var(--surface-color);
+  border: 1px solid var(--panel-border);
+  color: var(--control-text);
+  box-shadow: none;
+}
+
+.auto-gear-filter-clear:hover {
+  background-color: color-mix(in srgb, var(--accent-color) 12%, var(--surface-color));
+  border-color: color-mix(in srgb, var(--accent-color) 55%, var(--panel-border));
+  color: var(--control-text);
+}
+
+.auto-gear-filter-clear:active {
+  background-color: color-mix(in srgb, var(--accent-color) 18%, var(--surface-color));
+  border-color: color-mix(in srgb, var(--accent-color) 65%, var(--panel-border));
+}
+
+.auto-gear-filter-clear:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
 }
 
 .auto-gear-rule {
