@@ -4855,7 +4855,7 @@ body.dark-mode.pink-mode #gearListOutput h2,
 
 #gearListFilterDetails .filter-detail-label {
   font-size: inherit;
-  font-weight: var(--font-weight-regular);
+  font-weight: var(--font-weight-medium);
   min-width: 0;
   margin-right: 0;
   line-height: inherit;
