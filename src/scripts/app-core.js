@@ -3928,6 +3928,8 @@ function setLanguage(lang) {
     hotswapWarnElem.setAttribute("data-help", texts[lang].hotswapWarningHelp);
   if (powerWarningTitleElem)
     powerWarningTitleElem.textContent = texts[lang].powerWarningTitle;
+  if (powerWarningLimitsHeadingElem)
+    powerWarningLimitsHeadingElem.textContent = texts[lang].powerWarningLimitsHeading;
   if (powerWarningAdviceElem)
     powerWarningAdviceElem.textContent = texts[lang].powerWarningAdvice;
   if (powerWarningCloseBtn)
@@ -6746,6 +6748,7 @@ const hotswapWarnElem     = document.getElementById("hotswapWarning");
 const powerWarningDialog  = document.getElementById("powerWarningDialog");
 const powerWarningTitleElem = document.getElementById("powerWarningTitle");
 const powerWarningMessageElem = document.getElementById("powerWarningMessage");
+const powerWarningLimitsHeadingElem = document.getElementById("powerWarningLimitsHeading");
 const powerWarningPinsDetailElem = document.getElementById("powerWarningPinsDetail");
 const powerWarningDtapDetailElem = document.getElementById("powerWarningDtapDetail");
 const powerWarningAdviceElem = document.getElementById("powerWarningAdvice");
