@@ -18629,21 +18629,34 @@ function renderSetupDiagram() {
     return;
   }
 
-  const xs = Object.values(pos).map(p => p.x);
-  const minX = Math.min(...xs);
-  const maxX = Math.max(...xs);
+  let xs = Object.values(pos).map(p => p.x);
+  let minX = Math.min(...xs);
+  let maxX = Math.max(...xs);
   const contentWidth = maxX - minX;
-  viewWidth = Math.max(500, contentWidth + NODE_W);
-  let shiftX = 0;
+  const baseViewWidth = Math.max(500, contentWidth + NODE_W);
   if (Object.keys(manualPositions).length === 0) {
-    shiftX = viewWidth / 2 - (minX + maxX) / 2;
+    const shiftX = baseViewWidth / 2 - (minX + maxX) / 2;
     Object.values(pos).forEach(p => { p.x += shiftX; });
+    xs = Object.values(pos).map(p => p.x);
+    minX = Math.min(...xs);
+    maxX = Math.max(...xs);
   }
 
   const ys = Object.values(pos).map(p => p.y);
   const minY = Math.min(...ys);
   const maxY = Math.max(...ys);
-  const viewHeight = (maxY - minY) + NODE_H + 120;
+  const HORIZONTAL_MARGIN = Math.max(40, NODE_W * 0.25);
+  const TOP_MARGIN = Math.max(40, NODE_H * 0.25);
+  const BOTTOM_MARGIN = Math.max(120, NODE_H * 0.4);
+  const minBoundX = minX - NODE_W / 2 - HORIZONTAL_MARGIN;
+  const maxBoundX = maxX + NODE_W / 2 + HORIZONTAL_MARGIN;
+  const minBoundY = minY - NODE_H / 2 - TOP_MARGIN;
+  const maxBoundY = maxY + NODE_H / 2 + BOTTOM_MARGIN;
+  const viewBoxX = Math.floor(Math.min(0, minBoundX));
+  const viewBoxY = Math.floor(minBoundY);
+  viewWidth = Math.max(baseViewWidth, Math.ceil(maxBoundX - viewBoxX));
+  const baseViewHeight = (maxY - minY) + NODE_H + TOP_MARGIN + BOTTOM_MARGIN;
+  const viewHeight = Math.max(Math.ceil(baseViewHeight), Math.ceil(maxBoundY - viewBoxY));
 
   function computePath(fromId, toId, labelSpacing = 0, opts = {}) {
     const from = connectorPos(fromId, opts.fromSide);
@@ -18692,7 +18705,7 @@ function renderSetupDiagram() {
     return lines;
   }
 
-  let svg = `<svg viewBox="0 ${minY - NODE_H/2 - 20} ${viewWidth} ${viewHeight}" xmlns="http://www.w3.org/2000/svg">`;
+  let svg = `<svg viewBox="${viewBoxX} ${viewBoxY} ${viewWidth} ${viewHeight}" xmlns="http://www.w3.org/2000/svg">`;
   svg += `<defs>
     <linearGradient id="firstFizGrad" x1="0%" y1="0%" x2="0%" y2="100%">
       <stop offset="0%" stop-color="#090" />
