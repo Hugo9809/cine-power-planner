@@ -181,6 +181,7 @@
     "setButtonLabelWithIcon",
     "setEasyrigValue",
     "setFizConnectors",
+    "setAutoGearHighlightEnabled",
     "setLanguage",
     "setLensMounts",
     "setMonitorVideoInputs",

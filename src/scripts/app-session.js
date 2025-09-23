@@ -10,6 +10,8 @@
           autoGearConditionAddButton, addAutoGearConditionFromPicker,
           autoGearConditionList, removeAutoGearCondition,
           handleAutoGearConditionShortcut,
+          isAutoGearHighlightEnabled, setAutoGearHighlightEnabled,
+          updateAutoGearHighlightToggleButton,
           clearUiCacheStorageEntries, __cineGlobal, humanizeKey */
 /* eslint-enable no-redeclare */
 
@@ -463,7 +465,10 @@ function saveCurrentSession(options = {}) {
     batteryHotswap: hotswapSelect ? hotswapSelect.value : '',
     sliderBowl: info.sliderBowl,
     easyrig: info.easyrig,
-    projectInfo: currentProjectInfo
+    projectInfo: currentProjectInfo,
+    autoGearHighlight: typeof isAutoGearHighlightEnabled === 'function'
+      ? !!isAutoGearHighlightEnabled()
+      : false
   };
   storeSession(state);
   // Persist the current gear list and project requirements alongside the
@@ -736,6 +741,17 @@ function restoreSessionState() {
         // Ensure the generator button reflects the restored gear list state
         updateGearListButtonVisibility();
       }
+    }
+  }
+  const highlightPreference = state && Object.prototype.hasOwnProperty.call(state, 'autoGearHighlight')
+    ? Boolean(state.autoGearHighlight)
+    : false;
+  if (typeof setAutoGearHighlightEnabled === 'function') {
+    setAutoGearHighlightEnabled(highlightPreference);
+  } else if (gearListOutput && gearListOutput.classList) {
+    gearListOutput.classList.toggle('show-auto-gear-highlight', highlightPreference);
+    if (typeof updateAutoGearHighlightToggleButton === 'function') {
+      updateAutoGearHighlightToggleButton();
     }
   }
   lastSetupName = setupSelect ? setupSelect.value : '';

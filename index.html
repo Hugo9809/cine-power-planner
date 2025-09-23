@@ -1056,7 +1056,14 @@
           <div class="auto-gear-action-row">
             <button type="button" id="autoGearAddRule">Add rule</button>
             <button type="button" id="autoGearResetFactory">Reset to factory additions</button>
-            <button type="button" id="autoGearHighlightToggle">Highlight automatic gear</button>
+            <button type="button" id="autoGearHighlightToggle">
+              <span
+                class="btn-icon icon-glyph auto-gear-highlight-icon"
+                aria-hidden="true"
+                data-icon-font="uicons"
+              >&#xE8AF;</span>
+              <span class="auto-gear-highlight-label">Highlight automatic gear</span>
+            </button>
             <button type="button" id="autoGearExport">Export rules</button>
             <button type="button" id="autoGearImport">Import rules</button>
             <input type="file" id="autoGearImportInput" accept=".json,application/json" hidden />

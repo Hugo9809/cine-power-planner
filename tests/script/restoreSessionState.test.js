@@ -56,6 +56,7 @@ describe('restoreSessionState', () => {
     const [savedName, savedPayload] = saveProjectMock.mock.calls[saveProjectMock.mock.calls.length - 1];
     expect(savedPayload.gearList).toContain('Saved Item');
     const savedSessionState = saveSessionStateMock.mock.calls[saveSessionStateMock.mock.calls.length - 1][0];
+    expect(savedSessionState.autoGearHighlight).toBe(false);
 
     initialEnv.cleanup();
 
@@ -122,6 +123,53 @@ describe('restoreSessionState', () => {
 
     const savedNames = saveProjectMock.mock.calls.map(([name]) => name);
     expect(savedNames).toContain('Project Two');
+
+    env.cleanup();
+  });
+
+  test('restores automatic gear highlight preference from session state', () => {
+    const highlightGearHtml = `
+      <h2>Highlight Project</h2>
+      <h3>Gear List</h3>
+      <table class="gear-table">
+        <tbody>
+          <tr>
+            <td>
+              <span
+                class="gear-item auto-gear-item"
+                data-auto-gear-rule-id="sample-rule"
+                data-auto-gear-rule-label="Sample Rule"
+              >1x Sample Item</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    `;
+
+    const savedPayload = { gearList: highlightGearHtml };
+    const loadProjectMock = jest.fn(name => (name === 'Highlight Project' ? savedPayload : null));
+
+    const env = setupScriptEnvironment({
+      readyState: 'complete',
+      globals: {
+        loadSessionState: jest.fn(() => ({
+          setupName: 'Highlight Project',
+          setupSelect: 'Highlight Project',
+          autoGearHighlight: true
+        })),
+        loadProject: loadProjectMock,
+        saveProject: jest.fn(),
+        deleteProject: jest.fn()
+      }
+    });
+
+    expect(loadProjectMock).toHaveBeenCalledWith('Highlight Project');
+
+    const gearListOutput = document.getElementById('gearListOutput');
+    expect(gearListOutput.classList.contains('show-auto-gear-highlight')).toBe(true);
+    const toggle = document.getElementById('autoGearHighlightToggle');
+    expect(toggle.getAttribute('aria-pressed')).toBe('true');
+    expect(toggle.classList.contains('is-active')).toBe(true);
 
     env.cleanup();
   });
