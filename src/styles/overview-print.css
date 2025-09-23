@@ -486,7 +486,7 @@ body:not(.light-mode) .gear-table .category-row td {
 
 .neutral-conn {
   background: var(--panel-bg) !important;
-  border: 1px double var(--control-text) !important;
+  border: 1px solid var(--control-text) !important;
   --icon-color: var(--control-text);
 }
 
