@@ -1898,6 +1898,17 @@ body.pink-mode .auto-gear-rule-title,
   display: block;
 }
 
+.auto-gear-item-list .auto-gear-item .auto-gear-item-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.auto-gear-item-list .auto-gear-item .auto-gear-item-actions > button {
+  white-space: nowrap;
+}
+
 .auto-gear-selector-container {
   display: inline-flex;
   flex-direction: column;
@@ -1905,6 +1916,13 @@ body.pink-mode .auto-gear-rule-title,
   gap: 4px;
   max-width: min(100%, 320px);
   vertical-align: top;
+}
+
+.auto-gear-selector-placeholder {
+  margin: 0;
+  padding: 0;
+  height: 0;
+  overflow: hidden;
 }
 
 .auto-gear-selector,

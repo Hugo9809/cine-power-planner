@@ -545,6 +545,161 @@ function getAutoGearSelectorScrollHint() {
     || 'Scroll to see more devices.';
 }
 
+function getAutoGearSelectorDefaultPlaceholder(control) {
+  if (!control) return '';
+  if (control === autoGearAddSelectorDefaultInput) {
+    return autoGearAddSelectorDefaultLabel?.textContent
+      || texts[currentLang]?.autoGearAddSelectorDefaultLabel
+      || texts.en?.autoGearAddSelectorDefaultLabel
+      || 'Default item';
+  }
+  if (control === autoGearRemoveSelectorDefaultInput) {
+    return autoGearRemoveSelectorDefaultLabel?.textContent
+      || texts[currentLang]?.autoGearRemoveSelectorDefaultLabel
+      || texts.en?.autoGearRemoveSelectorDefaultLabel
+      || 'Default item';
+  }
+  return texts[currentLang]?.autoGearAddSelectorDefaultLabel
+    || texts.en?.autoGearAddSelectorDefaultLabel
+    || 'Default item';
+}
+
+function refreshAutoGearSelectorDefaultControl(typeSelect, defaultSelect, options = {}) {
+  if (!defaultSelect) return;
+  enableAutoGearSelectorValueProxy(defaultSelect);
+  const typeValue = typeSelect ? typeSelect.value : '';
+  const mode = normalizeAutoGearMonitorCatalogMode(typeValue);
+  const placeholderText = getAutoGearSelectorDefaultPlaceholder(defaultSelect);
+  const availableNames = collectAutoGearMonitorNames(mode);
+  const requestedValue = typeof options.selectedValue === 'string'
+    ? options.selectedValue
+    : defaultSelect.value;
+  const normalizedValue = normalizeAutoGearSelectorDefault(mode, requestedValue);
+
+  defaultSelect.innerHTML = '';
+
+  const placeholder = document.createElement('option');
+  placeholder.value = '';
+  placeholder.textContent = placeholderText;
+  defaultSelect.appendChild(placeholder);
+
+  let matched = false;
+  availableNames.forEach(name => {
+    if (!name) return;
+    const option = document.createElement('option');
+    option.value = name;
+    option.textContent = name;
+    if (normalizedValue && name.toLowerCase() === normalizedValue.toLowerCase()) {
+      option.selected = true;
+      matched = true;
+    }
+    defaultSelect.appendChild(option);
+  });
+
+  if (normalizedValue && !matched) {
+    const fallbackOption = document.createElement('option');
+    fallbackOption.value = normalizedValue;
+    fallbackOption.textContent = normalizedValue;
+    fallbackOption.selected = true;
+    defaultSelect.appendChild(fallbackOption);
+    matched = true;
+  }
+
+  if (!matched) {
+    placeholder.selected = true;
+    defaultSelect.value = '';
+  }
+
+  const shouldDisable = availableNames.length === 0 && !matched;
+  defaultSelect.disabled = shouldDisable;
+
+  const scrollHint = getAutoGearSelectorScrollHint();
+  if (scrollHint) {
+    defaultSelect.setAttribute('title', scrollHint);
+  } else {
+    defaultSelect.removeAttribute('title');
+  }
+}
+
+const autoGearSelectManualValues = typeof WeakMap === 'function' ? new WeakMap() : null;
+let autoGearSelectValueProxyInstalled = false;
+
+function ensureAutoGearSelectorValueProxyInstalled() {
+  if (autoGearSelectValueProxyInstalled) return;
+  if (!autoGearSelectManualValues || typeof HTMLSelectElement === 'undefined') return;
+  const descriptor = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value');
+  if (!descriptor || typeof descriptor.get !== 'function' || typeof descriptor.set !== 'function') {
+    return;
+  }
+  const nativeGet = descriptor.get;
+  const nativeSet = descriptor.set;
+
+  Object.defineProperty(HTMLSelectElement.prototype, 'value', {
+    configurable: true,
+    enumerable: descriptor.enumerable ?? false,
+    get() {
+      if (this && this.dataset && this.dataset.autoGearValueProxy === 'true') {
+        const entry = autoGearSelectManualValues.get(this);
+        if (entry && entry.value) {
+          return entry.value;
+        }
+      }
+      return nativeGet.call(this);
+    },
+    set(value) {
+      nativeSet.call(this, value);
+      if (this && this.dataset && this.dataset.autoGearValueProxy === 'true') {
+        const resolved = nativeGet.call(this);
+        const candidate = resolved && resolved.trim && resolved.trim().length > 0
+          ? resolved
+          : typeof value === 'string'
+            ? value
+            : '';
+        const normalized = typeof candidate === 'string' ? candidate.trim() : '';
+        if (normalized) {
+          autoGearSelectManualValues.set(this, { value: normalized });
+        } else {
+          autoGearSelectManualValues.delete(this);
+        }
+      } else if (this) {
+        autoGearSelectManualValues.delete(this);
+      }
+    },
+  });
+
+  Object.defineProperty(HTMLSelectElement.prototype, 'autoGearManualSelection', {
+    configurable: true,
+    enumerable: false,
+    get() {
+      const entry = autoGearSelectManualValues ? autoGearSelectManualValues.get(this) : null;
+      return entry && entry.value ? entry.value : '';
+    },
+    set(value) {
+      if (!autoGearSelectManualValues || !this || !this.dataset || this.dataset.autoGearValueProxy !== 'true') {
+        if (autoGearSelectManualValues) {
+          autoGearSelectManualValues.delete(this);
+        }
+        return;
+      }
+      const normalized = typeof value === 'string' ? value.trim() : '';
+      if (normalized) {
+        autoGearSelectManualValues.set(this, { value: normalized });
+      } else {
+        autoGearSelectManualValues.delete(this);
+      }
+    },
+  });
+
+  autoGearSelectValueProxyInstalled = true;
+}
+
+function enableAutoGearSelectorValueProxy(select) {
+  if (!select || select.dataset.autoGearValueProxy === 'true') return;
+  ensureAutoGearSelectorValueProxyInstalled();
+  if (!autoGearSelectValueProxyInstalled) return;
+  select.dataset.autoGearValueProxy = 'true';
+}
+
 function isAutoGearMonitoringCategory(value) {
   if (typeof value !== 'string') return false;
   return value.trim().toLowerCase() === 'monitoring';
@@ -605,7 +760,7 @@ function updateAutoGearMonitorFieldGroup(group) {
     selectorDefaultField,
     selectorDefaultInput,
     selectorIncludeField,
-    selectorIncludeCheckbox,
+    selectorIncludeInput,
   } = group;
   const isMonitoring = isMonitoringCategorySelected(select);
   const managedFields = [screenSizeField, selectorTypeField, selectorDefaultField, selectorIncludeField];
@@ -615,8 +770,26 @@ function updateAutoGearMonitorFieldGroup(group) {
   if (!isMonitoring) {
     if (screenSizeInput) screenSizeInput.value = '';
     if (selectorTypeSelect) selectorTypeSelect.value = 'none';
-    if (selectorDefaultInput) selectorDefaultInput.value = '';
-    if (selectorIncludeCheckbox) selectorIncludeCheckbox.checked = false;
+    if (selectorDefaultInput) {
+      selectorDefaultInput.value = '';
+      selectorDefaultInput.disabled = true;
+      selectorDefaultInput.innerHTML = '';
+    }
+    if (selectorIncludeInput) selectorIncludeInput.checked = false;
+    return;
+  }
+  if (selectorTypeSelect && normalizeAutoGearSelectorType(selectorTypeSelect.value) === 'none') {
+    selectorTypeSelect.value = 'monitor';
+  }
+  if (selectorDefaultInput) {
+    selectorDefaultInput.disabled = false;
+    refreshAutoGearSelectorDefaultControl(selectorTypeSelect, selectorDefaultInput, {
+      selectedValue: selectorDefaultInput.value,
+    });
+  }
+  if (selectorIncludeInput) selectorIncludeInput.checked = true;
+  if (screenSizeInput && typeof screenSizeInput.focus === 'function' && !screenSizeInput.value) {
+    // No-op placeholder to keep focus behaviour explicit when field becomes visible.
   }
 }
 
@@ -630,7 +803,7 @@ function normalizeAutoGearItem(entry) {
   const screenSize = normalizeAutoGearText(entry.screenSize);
   const selectorType = normalizeAutoGearSelectorType(entry.selectorType);
   const selectorDefault = normalizeAutoGearSelectorDefault(selectorType, entry.selectorDefault);
-  const selectorEnabled = !!entry.selectorEnabled;
+  const selectorEnabled = isAutoGearMonitoringCategory(category) ? true : !!entry.selectorEnabled;
   const notes = normalizeAutoGearText(entry.notes);
   return { id, name, category, quantity, screenSize, selectorType, selectorDefault, selectorEnabled, notes };
 }
@@ -2174,9 +2347,7 @@ function normalizeAutoGearMonitorCatalogMode(value) {
   return normalized === 'directorMonitor' ? 'directorMonitor' : 'monitor';
 }
 
-let autoGearMonitorCatalogMode = 'monitor';
-
-function collectAutoGearMonitorNames(type = autoGearMonitorCatalogMode) {
+function collectAutoGearMonitorNames(type = 'monitor') {
   const mode = normalizeAutoGearMonitorCatalogMode(type);
   const includeMonitor = mode === 'monitor';
   const includeDirectorMonitor = mode === 'directorMonitor';
@@ -2194,7 +2365,9 @@ function collectAutoGearMonitorNames(type = autoGearMonitorCatalogMode) {
   if (includeMonitor) {
     const monitorDb = devices && devices.monitors ? devices.monitors : null;
     if (monitorDb && typeof monitorDb === 'object') {
-      Object.keys(monitorDb).forEach(addName);
+      Object.keys(monitorDb)
+        .filter(name => name && name !== 'None')
+        .forEach(addName);
     }
   }
   if (includeDirectorMonitor) {
@@ -2219,16 +2392,9 @@ function collectAutoGearMonitorNames(type = autoGearMonitorCatalogMode) {
   return Array.from(names).sort(localeSort);
 }
 
-function updateAutoGearMonitorCatalogOptions(type = autoGearMonitorCatalogMode) {
-  if (!autoGearMonitorCatalog) return;
-  autoGearMonitorCatalogMode = normalizeAutoGearMonitorCatalogMode(type);
-  const names = collectAutoGearMonitorNames(autoGearMonitorCatalogMode);
-  autoGearMonitorCatalog.innerHTML = '';
-  names.forEach(name => {
-    const option = document.createElement('option');
-    option.value = name;
-    autoGearMonitorCatalog.appendChild(option);
-  });
+function updateAutoGearMonitorCatalogOptions() {
+  refreshAutoGearSelectorDefaultControl(autoGearAddSelectorTypeSelect, autoGearAddSelectorDefaultInput);
+  refreshAutoGearSelectorDefaultControl(autoGearRemoveSelectorTypeSelect, autoGearRemoveSelectorDefaultInput);
 }
 
 const getCssVariableValue = (name, fallback = '') => {
@@ -4909,13 +5075,6 @@ function setLanguage(lang) {
       autoGearAddSelectorDefaultInput.setAttribute('aria-label', label);
     }
   }
-  if (autoGearAddSelectorIncludeLabel) {
-    const label = texts[lang].autoGearAddSelectorIncludeLabel || texts.en?.autoGearAddSelectorIncludeLabel || autoGearAddSelectorIncludeLabel.textContent;
-    autoGearAddSelectorIncludeLabel.textContent = label;
-    if (autoGearAddSelectorIncludeCheckbox) {
-      autoGearAddSelectorIncludeCheckbox.setAttribute('aria-label', label);
-    }
-  }
   if (autoGearAddNotesLabel) {
     const label = texts[lang].autoGearAddNotesLabel || texts.en?.autoGearAddNotesLabel || autoGearAddNotesLabel.textContent;
     autoGearAddNotesLabel.textContent = label;
@@ -4988,13 +5147,6 @@ function setLanguage(lang) {
     autoGearRemoveSelectorDefaultLabel.textContent = label;
     if (autoGearRemoveSelectorDefaultInput) {
       autoGearRemoveSelectorDefaultInput.setAttribute('aria-label', label);
-    }
-  }
-  if (autoGearRemoveSelectorIncludeLabel) {
-    const label = texts[lang].autoGearRemoveSelectorIncludeLabel || texts.en?.autoGearRemoveSelectorIncludeLabel || autoGearRemoveSelectorIncludeLabel.textContent;
-    autoGearRemoveSelectorIncludeLabel.textContent = label;
-    if (autoGearRemoveSelectorIncludeCheckbox) {
-      autoGearRemoveSelectorIncludeCheckbox.setAttribute('aria-label', label);
     }
   }
   if (autoGearRemoveNotesLabel) {
@@ -8811,7 +8963,8 @@ const autoGearAddQuantityInput = document.getElementById('autoGearAddQuantity');
 const autoGearAddScreenSizeInput = document.getElementById('autoGearAddScreenSize');
 const autoGearAddSelectorTypeSelect = document.getElementById('autoGearAddSelectorType');
 const autoGearAddSelectorDefaultInput = document.getElementById('autoGearAddSelectorDefault');
-const autoGearAddSelectorIncludeCheckbox = document.getElementById('autoGearAddSelectorInclude');
+const autoGearAddSelectorIncludeInput = document.getElementById('autoGearAddSelectorInclude');
+enableAutoGearSelectorValueProxy(autoGearAddSelectorDefaultInput);
 const autoGearAddNotesInput = document.getElementById('autoGearAddNotes');
 const autoGearAddItemButton = document.getElementById('autoGearAddItemButton');
 const autoGearAddList = document.getElementById('autoGearAddList');
@@ -8830,14 +8983,14 @@ const autoGearRemoveQuantityInput = document.getElementById('autoGearRemoveQuant
 const autoGearRemoveScreenSizeInput = document.getElementById('autoGearRemoveScreenSize');
 const autoGearRemoveSelectorTypeSelect = document.getElementById('autoGearRemoveSelectorType');
 const autoGearRemoveSelectorDefaultInput = document.getElementById('autoGearRemoveSelectorDefault');
-const autoGearRemoveSelectorIncludeCheckbox = document.getElementById('autoGearRemoveSelectorInclude');
+const autoGearRemoveSelectorIncludeInput = document.getElementById('autoGearRemoveSelectorInclude');
+enableAutoGearSelectorValueProxy(autoGearRemoveSelectorDefaultInput);
 const autoGearRemoveNotesInput = document.getElementById('autoGearRemoveNotes');
 const autoGearRemoveItemButton = document.getElementById('autoGearRemoveItemButton');
 const autoGearRemoveList = document.getElementById('autoGearRemoveList');
 const autoGearSaveRuleButton = document.getElementById('autoGearSaveRule');
 const autoGearCancelEditButton = document.getElementById('autoGearCancelEdit');
 const autoGearItemCatalog = document.getElementById('autoGearItemCatalog');
-const autoGearMonitorCatalog = document.getElementById('autoGearMonitorCatalog');
 
 function enableAutoGearMultiSelectToggle(select) {
   if (!select || !select.multiple) return;
@@ -8920,7 +9073,7 @@ const autoGearAddSelectorTypeField = autoGearAddSelectorTypeSelect?.closest('.au
 const autoGearAddSelectorDefaultField = autoGearAddSelectorDefaultInput?.closest('.auto-gear-field')
   || autoGearAddSelectorDefaultLabel?.closest('.auto-gear-field')
   || null;
-const autoGearAddSelectorIncludeField = autoGearAddSelectorIncludeCheckbox?.closest('.auto-gear-field')
+const autoGearAddSelectorIncludeField = autoGearAddSelectorIncludeInput?.closest('.auto-gear-field')
   || autoGearAddSelectorIncludeLabel?.closest('.auto-gear-field')
   || null;
 const autoGearRemoveScreenSizeField = autoGearRemoveScreenSizeInput?.closest('.auto-gear-field')
@@ -8932,7 +9085,7 @@ const autoGearRemoveSelectorTypeField = autoGearRemoveSelectorTypeSelect?.closes
 const autoGearRemoveSelectorDefaultField = autoGearRemoveSelectorDefaultInput?.closest('.auto-gear-field')
   || autoGearRemoveSelectorDefaultLabel?.closest('.auto-gear-field')
   || null;
-const autoGearRemoveSelectorIncludeField = autoGearRemoveSelectorIncludeCheckbox?.closest('.auto-gear-field')
+const autoGearRemoveSelectorIncludeField = autoGearRemoveSelectorIncludeInput?.closest('.auto-gear-field')
   || autoGearRemoveSelectorIncludeLabel?.closest('.auto-gear-field')
   || null;
 
@@ -8945,7 +9098,7 @@ const autoGearAddMonitorFieldGroup = {
   selectorDefaultField: autoGearAddSelectorDefaultField,
   selectorDefaultInput: autoGearAddSelectorDefaultInput,
   selectorIncludeField: autoGearAddSelectorIncludeField,
-  selectorIncludeCheckbox: autoGearAddSelectorIncludeCheckbox,
+  selectorIncludeInput: autoGearAddSelectorIncludeInput,
 };
 
 const autoGearRemoveMonitorFieldGroup = {
@@ -8957,7 +9110,7 @@ const autoGearRemoveMonitorFieldGroup = {
   selectorDefaultField: autoGearRemoveSelectorDefaultField,
   selectorDefaultInput: autoGearRemoveSelectorDefaultInput,
   selectorIncludeField: autoGearRemoveSelectorIncludeField,
-  selectorIncludeCheckbox: autoGearRemoveSelectorIncludeCheckbox,
+  selectorIncludeInput: autoGearRemoveSelectorIncludeInput,
 };
 
 function syncAutoGearMonitorFieldVisibility() {
@@ -10721,6 +10874,17 @@ function renderAutoGearDraftLists() {
       const span = document.createElement('span');
       span.textContent = formatAutoGearItemSummary(item, { includeSign: true, listType: type });
       li.appendChild(span);
+      const actions = document.createElement('div');
+      actions.className = 'auto-gear-item-actions';
+      const editBtn = document.createElement('button');
+      editBtn.type = 'button';
+      editBtn.className = 'auto-gear-edit-entry';
+      editBtn.dataset.listType = type;
+      editBtn.dataset.itemId = item.id;
+      const editLabel = texts[currentLang]?.editBtn || texts.en?.editBtn || 'Edit';
+      editBtn.textContent = editLabel;
+      editBtn.setAttribute('data-help', editLabel);
+      actions.appendChild(editBtn);
       const removeBtn = document.createElement('button');
       removeBtn.type = 'button';
       removeBtn.className = 'auto-gear-remove-entry';
@@ -10731,7 +10895,8 @@ function renderAutoGearDraftLists() {
         || 'Remove';
       removeBtn.textContent = removeLabel;
       removeBtn.setAttribute('data-help', removeLabel);
-      li.appendChild(removeBtn);
+      actions.appendChild(removeBtn);
+      li.appendChild(actions);
       element.appendChild(li);
     });
   };
@@ -10767,16 +10932,15 @@ function openAutoGearEditor(ruleId) {
   if (autoGearAddScreenSizeInput) autoGearAddScreenSizeInput.value = '';
   if (autoGearAddSelectorTypeSelect) autoGearAddSelectorTypeSelect.value = 'none';
   if (autoGearAddSelectorDefaultInput) autoGearAddSelectorDefaultInput.value = '';
-  if (autoGearAddSelectorIncludeCheckbox) autoGearAddSelectorIncludeCheckbox.checked = false;
   if (autoGearAddNotesInput) autoGearAddNotesInput.value = '';
   if (autoGearRemoveNameInput) autoGearRemoveNameInput.value = '';
   if (autoGearRemoveQuantityInput) autoGearRemoveQuantityInput.value = '1';
   if (autoGearRemoveScreenSizeInput) autoGearRemoveScreenSizeInput.value = '';
   if (autoGearRemoveSelectorTypeSelect) autoGearRemoveSelectorTypeSelect.value = 'none';
   if (autoGearRemoveSelectorDefaultInput) autoGearRemoveSelectorDefaultInput.value = '';
-  if (autoGearRemoveSelectorIncludeCheckbox) autoGearRemoveSelectorIncludeCheckbox.checked = false;
   if (autoGearRemoveNotesInput) autoGearRemoveNotesInput.value = '';
   renderAutoGearDraftLists();
+  updateAutoGearMonitorCatalogOptions();
   if (autoGearRuleNameInput) autoGearRuleNameInput.focus();
 }
 
@@ -10801,16 +10965,15 @@ function closeAutoGearEditor() {
   if (autoGearAddScreenSizeInput) autoGearAddScreenSizeInput.value = '';
   if (autoGearAddSelectorTypeSelect) autoGearAddSelectorTypeSelect.value = 'none';
   if (autoGearAddSelectorDefaultInput) autoGearAddSelectorDefaultInput.value = '';
-  if (autoGearAddSelectorIncludeCheckbox) autoGearAddSelectorIncludeCheckbox.checked = false;
   if (autoGearAddNotesInput) autoGearAddNotesInput.value = '';
   if (autoGearRemoveNameInput) autoGearRemoveNameInput.value = '';
   if (autoGearRemoveQuantityInput) autoGearRemoveQuantityInput.value = '1';
   if (autoGearRemoveScreenSizeInput) autoGearRemoveScreenSizeInput.value = '';
   if (autoGearRemoveSelectorTypeSelect) autoGearRemoveSelectorTypeSelect.value = 'none';
   if (autoGearRemoveSelectorDefaultInput) autoGearRemoveSelectorDefaultInput.value = '';
-  if (autoGearRemoveSelectorIncludeCheckbox) autoGearRemoveSelectorIncludeCheckbox.checked = false;
   if (autoGearRemoveNotesInput) autoGearRemoveNotesInput.value = '';
   syncAutoGearMonitorFieldVisibility();
+  updateAutoGearMonitorCatalogOptions();
 }
 
 function addAutoGearDraftItem(type) {
@@ -10822,9 +10985,15 @@ function addAutoGearDraftItem(type) {
   const screenSizeInput = isAdd ? autoGearAddScreenSizeInput : autoGearRemoveScreenSizeInput;
   const selectorTypeSelect = isAdd ? autoGearAddSelectorTypeSelect : autoGearRemoveSelectorTypeSelect;
   const selectorDefaultInput = isAdd ? autoGearAddSelectorDefaultInput : autoGearRemoveSelectorDefaultInput;
-  const selectorIncludeCheckbox = isAdd ? autoGearAddSelectorIncludeCheckbox : autoGearRemoveSelectorIncludeCheckbox;
+  const selectorIncludeInput = isAdd ? autoGearAddSelectorIncludeInput : autoGearRemoveSelectorIncludeInput;
   const notesInput = isAdd ? autoGearAddNotesInput : autoGearRemoveNotesInput;
   if (!nameInput || !categorySelect || !quantityInput) return;
+  if (selectorTypeSelect && selectorDefaultInput) {
+    const pendingValue = selectorDefaultInput.value;
+    refreshAutoGearSelectorDefaultControl(selectorTypeSelect, selectorDefaultInput, {
+      selectedValue: pendingValue,
+    });
+  }
   const parsedNames = parseAutoGearDraftNames(nameInput.value);
   if (!parsedNames.length) {
     const message = texts[currentLang]?.autoGearItemNameRequired
@@ -10839,7 +11008,7 @@ function addAutoGearDraftItem(type) {
     screenSize: screenSizeInput ? screenSizeInput.value : '',
     selectorType: selectorTypeSelect ? selectorTypeSelect.value : 'none',
     selectorDefault: selectorDefaultInput ? selectorDefaultInput.value : '',
-    selectorEnabled: selectorIncludeCheckbox ? !!selectorIncludeCheckbox.checked : false,
+    selectorEnabled: false,
     notes: notesInput ? notesInput.value : '',
   };
   if (!isAutoGearMonitoringCategory(baseValues.category)) {
@@ -10847,6 +11016,20 @@ function addAutoGearDraftItem(type) {
     baseValues.selectorType = 'none';
     baseValues.selectorDefault = '';
     baseValues.selectorEnabled = false;
+    if (selectorIncludeInput) selectorIncludeInput.checked = false;
+  } else {
+    const normalizedType = normalizeAutoGearSelectorType(baseValues.selectorType);
+    baseValues.selectorType = normalizedType === 'none' ? 'monitor' : normalizedType;
+    baseValues.selectorEnabled = true;
+    if (selectorIncludeInput) selectorIncludeInput.checked = true;
+    if (selectorDefaultInput) {
+      const manualValue = typeof selectorDefaultInput.autoGearManualSelection === 'string'
+        ? selectorDefaultInput.autoGearManualSelection.trim()
+        : '';
+      if (!baseValues.selectorDefault && manualValue) {
+        baseValues.selectorDefault = manualValue;
+      }
+    }
   }
   parsedNames.forEach(entry => {
     const quantity = Object.prototype.hasOwnProperty.call(entry, 'quantity')
@@ -10874,10 +11057,76 @@ function addAutoGearDraftItem(type) {
   if (screenSizeInput) screenSizeInput.value = '';
   if (selectorTypeSelect) selectorTypeSelect.value = 'none';
   if (selectorDefaultInput) selectorDefaultInput.value = '';
-  if (selectorIncludeCheckbox) selectorIncludeCheckbox.checked = false;
+  if (selectorIncludeInput) selectorIncludeInput.checked = false;
   if (notesInput) notesInput.value = '';
   renderAutoGearDraftLists();
   updateAutoGearCatalogOptions();
+  syncAutoGearMonitorFieldVisibility();
+}
+
+function editAutoGearDraftEntry(listType, itemId) {
+  if (!autoGearEditorDraft || !itemId) return;
+  const isAddList = listType !== 'remove';
+  const list = isAddList ? autoGearEditorDraft.add : autoGearEditorDraft.remove;
+  const index = list.findIndex(entry => entry.id === itemId);
+  if (index < 0) return;
+  const [item] = list.splice(index, 1);
+  renderAutoGearDraftLists();
+
+  const snapshot = autoGearItemSnapshot(item);
+  const nameInput = isAddList ? autoGearAddNameInput : autoGearRemoveNameInput;
+  const categorySelect = isAddList ? autoGearAddCategorySelect : autoGearRemoveCategorySelect;
+  const quantityInput = isAddList ? autoGearAddQuantityInput : autoGearRemoveQuantityInput;
+  const screenSizeInput = isAddList ? autoGearAddScreenSizeInput : autoGearRemoveScreenSizeInput;
+  const selectorTypeSelect = isAddList ? autoGearAddSelectorTypeSelect : autoGearRemoveSelectorTypeSelect;
+  const selectorDefaultInput = isAddList ? autoGearAddSelectorDefaultInput : autoGearRemoveSelectorDefaultInput;
+  const notesInput = isAddList ? autoGearAddNotesInput : autoGearRemoveNotesInput;
+
+  const categoryValue = snapshot.category || '';
+  if (categorySelect) {
+    populateAutoGearCategorySelect(categorySelect, categoryValue);
+    categorySelect.value = categoryValue;
+  }
+  if (quantityInput) {
+    quantityInput.value = String(normalizeAutoGearQuantity(snapshot.quantity));
+  }
+  if (notesInput) {
+    notesInput.value = snapshot.notes || '';
+  }
+  if (screenSizeInput) {
+    screenSizeInput.value = snapshot.screenSize || '';
+  }
+  const monitoringCategory = isAutoGearMonitoringCategory(categoryValue);
+  if (selectorTypeSelect) {
+    const normalizedType = normalizeAutoGearSelectorType(snapshot.selectorType);
+    if (monitoringCategory) {
+      selectorTypeSelect.value = normalizedType === 'none' ? 'monitor' : normalizedType;
+    } else {
+      selectorTypeSelect.value = 'none';
+    }
+  }
+
+  syncAutoGearMonitorFieldVisibility();
+
+  if (screenSizeInput && !monitoringCategory) {
+    screenSizeInput.value = '';
+  } else if (screenSizeInput) {
+    screenSizeInput.value = snapshot.screenSize || '';
+  }
+
+  if (selectorDefaultInput) {
+    const selectedDefault = snapshot.selectorDefault || '';
+    refreshAutoGearSelectorDefaultControl(selectorTypeSelect, selectorDefaultInput, { selectedValue: selectedDefault });
+  }
+
+  if (nameInput) {
+    nameInput.value = snapshot.name || '';
+    try {
+      nameInput.focus({ preventScroll: true });
+    } catch {
+      nameInput.focus();
+    }
+  }
 }
 
 function saveAutoGearRuleFromEditor() {

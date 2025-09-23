@@ -1214,11 +1214,11 @@
                 </div>
                 <div class="auto-gear-field" hidden>
                   <label for="autoGearAddSelectorDefault" id="autoGearAddSelectorDefaultLabel">Default item</label>
-                  <input type="text" id="autoGearAddSelectorDefault" list="autoGearMonitorCatalog" />
+                  <select id="autoGearAddSelectorDefault"></select>
                 </div>
-                <div class="auto-gear-field auto-gear-checkbox-field" hidden>
-                  <input type="checkbox" id="autoGearAddSelectorInclude" />
-                  <label for="autoGearAddSelectorInclude" id="autoGearAddSelectorIncludeLabel">Include selector</label>
+                <div class="auto-gear-field auto-gear-selector-placeholder" hidden>
+                  <label for="autoGearAddSelectorInclude" id="autoGearAddSelectorIncludeLabel" class="visually-hidden">Include selector</label>
+                  <input type="checkbox" id="autoGearAddSelectorInclude" checked hidden />
                 </div>
                 <div class="auto-gear-field auto-gear-notes-field">
                   <label for="autoGearAddNotes" id="autoGearAddNotesLabel">Notes</label>
@@ -1257,11 +1257,11 @@
                 </div>
                 <div class="auto-gear-field" hidden>
                   <label for="autoGearRemoveSelectorDefault" id="autoGearRemoveSelectorDefaultLabel">Default item</label>
-                  <input type="text" id="autoGearRemoveSelectorDefault" list="autoGearMonitorCatalog" />
+                  <select id="autoGearRemoveSelectorDefault"></select>
                 </div>
-                <div class="auto-gear-field auto-gear-checkbox-field" hidden>
-                  <input type="checkbox" id="autoGearRemoveSelectorInclude" />
-                  <label for="autoGearRemoveSelectorInclude" id="autoGearRemoveSelectorIncludeLabel">Include selector</label>
+                <div class="auto-gear-field auto-gear-selector-placeholder" hidden>
+                  <label for="autoGearRemoveSelectorInclude" id="autoGearRemoveSelectorIncludeLabel" class="visually-hidden">Include selector</label>
+                  <input type="checkbox" id="autoGearRemoveSelectorInclude" checked hidden />
                 </div>
                 <div class="auto-gear-field auto-gear-notes-field">
                   <label for="autoGearRemoveNotes" id="autoGearRemoveNotesLabel">Notes</label>
@@ -1278,7 +1278,6 @@
           </div>
         </div>
         <datalist id="autoGearItemCatalog"></datalist>
-        <datalist id="autoGearMonitorCatalog"></datalist>
       </section>
       <section
         id="settingsPanel-accessibility"

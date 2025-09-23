@@ -1,5 +1,5 @@
 // --- SESSION STATE HANDLING ---
-/* global resolveTemperatureStorageKey, TEMPERATURE_STORAGE_KEY, updateCageSelectOptions, updateAccentColorResetButtonState, normalizeAccentValue, DEFAULT_ACCENT_NORMALIZED, autoGearSearchInput, setAutoGearSearchQuery, autoGearFilterScenarioSelect, setAutoGearScenarioFilter, autoGearFilterClearButton, clearAutoGearFilters */
+/* global resolveTemperatureStorageKey, TEMPERATURE_STORAGE_KEY, updateCageSelectOptions, updateAccentColorResetButtonState, normalizeAccentValue, DEFAULT_ACCENT_NORMALIZED, autoGearSearchInput, setAutoGearSearchQuery, autoGearFilterScenarioSelect, setAutoGearScenarioFilter, autoGearFilterClearButton, clearAutoGearFilters, refreshAutoGearSelectorDefaultControl, editAutoGearDraftEntry */
 
 const temperaturePreferenceStorageKey =
   typeof TEMPERATURE_STORAGE_KEY === 'string'
@@ -1296,29 +1296,35 @@ if (autoGearAddItemButton) {
     autoGearRemoveCategorySelect.addEventListener('change', syncAutoGearMonitorFieldVisibility);
   }
   const bindAutoGearSelectorCatalogSync = (typeSelect, defaultInput) => {
-    if (!typeSelect) return;
+    if (!typeSelect || !defaultInput) return;
     const refreshCatalog = () => {
-      updateAutoGearMonitorCatalogOptions(typeSelect.value);
+      refreshAutoGearSelectorDefaultControl(typeSelect, defaultInput);
     };
     typeSelect.addEventListener('change', refreshCatalog);
-    if (defaultInput) {
-      defaultInput.addEventListener('focus', refreshCatalog);
-    }
+    defaultInput.addEventListener('focus', refreshCatalog);
   };
   bindAutoGearSelectorCatalogSync(autoGearAddSelectorTypeSelect, autoGearAddSelectorDefaultInput);
   bindAutoGearSelectorCatalogSync(autoGearRemoveSelectorTypeSelect, autoGearRemoveSelectorDefaultInput);
   if (autoGearEditor) {
     autoGearEditor.addEventListener('click', event => {
       const target = event.target;
-      if (!target || !target.classList.contains('auto-gear-remove-entry')) return;
-      const listType = target.dataset.listType;
-      const itemId = target.dataset.itemId;
-      if (!autoGearEditorDraft || !itemId) return;
-      const list = listType === 'remove' ? autoGearEditorDraft.remove : autoGearEditorDraft.add;
-      const index = list.findIndex(item => item.id === itemId);
-      if (index >= 0) {
-        list.splice(index, 1);
-        renderAutoGearDraftLists();
+      if (!target) return;
+      if (target.classList.contains('auto-gear-remove-entry')) {
+        const listType = target.dataset.listType;
+        const itemId = target.dataset.itemId;
+        if (!autoGearEditorDraft || !itemId) return;
+        const list = listType === 'remove' ? autoGearEditorDraft.remove : autoGearEditorDraft.add;
+        const index = list.findIndex(item => item.id === itemId);
+        if (index >= 0) {
+          list.splice(index, 1);
+          renderAutoGearDraftLists();
+        }
+        return;
+      }
+      if (target.classList.contains('auto-gear-edit-entry')) {
+        const listType = target.dataset.listType || 'add';
+        const itemId = target.dataset.itemId;
+        editAutoGearDraftEntry(listType, itemId);
       }
     });
   }
