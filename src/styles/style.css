@@ -1574,6 +1574,7 @@ main.legal-content {
   margin: 0;
   list-style: none;
   align-items: stretch;
+  flex: 0 0 auto;
   overflow-x: auto;
   overflow-y: hidden;
   scrollbar-width: thin;
