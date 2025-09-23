@@ -56,10 +56,10 @@ const texts = {
     projectRequirementsNavHelp: "Jump to the Project Requirements output once generated.",
     gearListNav: "Gear List",
     gearListNavHelp: "View the generated gear list with all items and categories.",
-    openSettingsNav: "Open Settings",
+    openSettingsNav: "Settings",
     openSettingsNavHelp:
       "Open Settings to adjust language, themes, accessibility options and backups.",
-    openHelpNav: "Open Help Center",
+    openHelpNav: "Help Center",
     openHelpNavHelp:
       "Open the in-app help guide with tutorials, troubleshooting tips and shortcuts.",
     setupManageHeadingHelp:
@@ -1005,10 +1005,10 @@ const texts = {
     gearListNav: "Lista attrezzatura",
     gearListNavHelp:
       "Visualizza la lista attrezzatura generata con tutti gli elementi e le categorie.",
-    openSettingsNav: "Apri Impostazioni",
+    openSettingsNav: "Impostazioni",
     openSettingsNavHelp:
       "Apri le Impostazioni per modificare lingua, temi, opzioni di accessibilità e backup.",
-    openHelpNav: "Apri Centro assistenza",
+    openHelpNav: "Centro assistenza",
     openHelpNavHelp:
       "Apri la guida in-app con tutorial, suggerimenti per la risoluzione dei problemi e scorciatoie.",
     setupManageHeadingHelp:
@@ -1932,10 +1932,10 @@ const texts = {
     gearListNav: "Lista de equipo",
     gearListNavHelp:
       "Ver la lista de equipo generada con todos los artículos y categorías.",
-    openSettingsNav: "Abrir Ajustes",
+    openSettingsNav: "Ajustes",
     openSettingsNavHelp:
       "Abrir Ajustes para cambiar idioma, temas, opciones de accesibilidad y copias de seguridad.",
-    openHelpNav: "Abrir Centro de ayuda",
+    openHelpNav: "Centro de ayuda",
     openHelpNavHelp:
       "Abrir la guía de ayuda integrada con tutoriales, consejos de resolución de problemas y atajos.",
     setupManageHeadingHelp:
@@ -2872,10 +2872,10 @@ const texts = {
     gearListNav: "Liste du matériel",
     gearListNavHelp:
       "Voir la liste du matériel générée avec tous les éléments et catégories.",
-    openSettingsNav: "Ouvrir les paramètres",
+    openSettingsNav: "Paramètres",
     openSettingsNavHelp:
       "Ouvrir les paramètres pour régler la langue, les thèmes, l’accessibilité et les sauvegardes.",
-    openHelpNav: "Ouvrir l’aide",
+    openHelpNav: "Centre d’aide",
     openHelpNavHelp:
       "Ouvrir l’aide intégrée avec tutoriels, conseils de dépannage et raccourcis.",
     setupManageHeadingHelp:
@@ -3815,10 +3815,10 @@ const texts = {
     gearListNav: "Gear-Liste",
     gearListNavHelp:
       "Die erzeugte Gear-Liste mit allen Geräten und Kategorien ansehen.",
-    openSettingsNav: "Einstellungen öffnen",
+    openSettingsNav: "Einstellungen",
     openSettingsNavHelp:
       "Einstellungen öffnen, um Sprache, Designs, Barrierefreiheit und Backups anzupassen.",
-    openHelpNav: "Hilfe öffnen",
+    openHelpNav: "Hilfe-Center",
     openHelpNavHelp:
       "Die integrierte Hilfe mit Anleitungen, Tipps zur Fehlerbehebung und Tastenkürzeln öffnen.",
     setupManageHeadingHelp:
