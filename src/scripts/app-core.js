@@ -8549,7 +8549,7 @@ if (settingsButton) {
   settingsButton.setAttribute('data-allow-hover-help', '');
 }
 if (settingsButtonIcon) {
-  applyIconGlyph(settingsButtonIcon, ICON_GLYPHS.settingsGeneral);
+  applyIconGlyph(settingsButtonIcon, ICON_GLYPHS.gears);
   settingsButtonIcon.setAttribute('aria-hidden', 'true');
 }
 if (settingsDialog) {
