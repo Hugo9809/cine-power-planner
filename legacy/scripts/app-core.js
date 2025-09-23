@@ -5074,7 +5074,6 @@ function glyphText(glyph) {
   var resolved = resolveIconGlyph(glyph);
   return resolved.char || '';
 }
-var FEEDBACK_ICON_SVG = "\n  <svg viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\">\n    <path\n      d=\"M5 4.5H19Q21.5 4.5 21.5 7V13Q21.5 15.5 19 15.5H15.5L12 19 8.5 15.5H5Q2.5 15.5 2.5 13V7Q2.5 4.5 5 4.5Z\"\n      fill=\"none\"\n      stroke=\"currentColor\"\n      stroke-width=\"1.5\"\n      stroke-linecap=\"round\"\n      stroke-linejoin=\"round\"\n    />\n    <path\n      d=\"M8.5 10.5 10.5 12.5 14.5 8.5\"\n      fill=\"none\"\n      stroke=\"currentColor\"\n      stroke-width=\"1.5\"\n      stroke-linecap=\"round\"\n      stroke-linejoin=\"round\"\n    />\n  </svg>\n".trim();
 var PRODUCTION_COMPANY_ICON = iconGlyph("\uE2D5", ICON_FONT_KEYS.UICONS);
 var RENTAL_HOUSE_ICON = iconGlyph("\uEA09", ICON_FONT_KEYS.UICONS);
 var ASPECT_RATIO_ICON = iconGlyph("\uE86E", ICON_FONT_KEYS.UICONS);
@@ -5124,10 +5123,7 @@ var ICON_GLYPHS = Object.freeze({
   note: iconGlyph("\uF13E", ICON_FONT_KEYS.ESSENTIAL),
   overview: iconGlyph("\uF1F5", ICON_FONT_KEYS.UICONS),
   gearList: iconGlyph("\uE467", ICON_FONT_KEYS.UICONS),
-  feedback: Object.freeze({
-    markup: FEEDBACK_ICON_SVG,
-    className: 'icon-svg'
-  }),
+  feedback: iconGlyph("\uE791", ICON_FONT_KEYS.UICONS),
   resetView: iconGlyph("\uEB6D", ICON_FONT_KEYS.UICONS),
   pin: iconGlyph("\uF1EF", ICON_FONT_KEYS.ESSENTIAL),
   sun: iconGlyph("\uF1FE", ICON_FONT_KEYS.UICONS),
