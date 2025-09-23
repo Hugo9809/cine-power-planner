@@ -1,5 +1,6 @@
 describe('storage error alert handling', () => {
   const STORAGE_ALERT_FLAG_NAME = '__cameraPowerPlannerStorageAlertShown';
+  const SESSION_FALLBACK_ALERT_FLAG_NAME = '__cameraPowerPlannerSessionFallbackAlertShown';
 
   const createControlledStorage = () => {
     const data = new Map();
@@ -63,6 +64,7 @@ describe('storage error alert handling', () => {
     jest.resetModules();
 
     delete global[STORAGE_ALERT_FLAG_NAME];
+    delete global[SESSION_FALLBACK_ALERT_FLAG_NAME];
 
     hadWindow = Object.prototype.hasOwnProperty.call(global, 'window');
     originalWindow = global.window;
@@ -70,6 +72,8 @@ describe('storage error alert handling', () => {
       global.window = {};
     }
     win = global.window;
+
+    delete win[SESSION_FALLBACK_ALERT_FLAG_NAME];
 
     controlledStorage = createControlledStorage();
 
@@ -114,6 +118,7 @@ describe('storage error alert handling', () => {
     consoleWarnSpy.mockRestore();
 
     delete global[STORAGE_ALERT_FLAG_NAME];
+    delete global[SESSION_FALLBACK_ALERT_FLAG_NAME];
 
     if (originalAlert === undefined) {
       delete win.alert;

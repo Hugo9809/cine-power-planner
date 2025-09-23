@@ -141,12 +141,21 @@ function createStorageMigrationBackup(storage, key, originalValue) {
 var PRIMARY_STORAGE_KEYS = [DEVICE_STORAGE_KEY, SETUP_STORAGE_KEY, SESSION_STATE_KEY, FEEDBACK_STORAGE_KEY, PROJECT_STORAGE_KEY, FAVORITES_STORAGE_KEY, DEVICE_SCHEMA_CACHE_KEY, AUTO_GEAR_RULES_STORAGE_KEY, AUTO_GEAR_SEEDED_STORAGE_KEY, AUTO_GEAR_BACKUPS_STORAGE_KEY, AUTO_GEAR_PRESETS_STORAGE_KEY, AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, AUTO_GEAR_AUTO_PRESET_STORAGE_KEY, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY];
 var SIMPLE_STORAGE_KEYS = [CUSTOM_LOGO_STORAGE_KEY, getCustomFontStorageKeyName(), 'darkMode', 'pinkMode', 'highContrast', 'reduceMotion', 'relaxedSpacing', 'showAutoBackups', 'accentColor', 'fontSize', 'fontFamily', 'language', 'iosPwaHelpShown', TEMPERATURE_UNIT_STORAGE_KEY_NAME];
 var STORAGE_ALERT_FLAG_NAME = '__cameraPowerPlannerStorageAlertShown';
+var SESSION_FALLBACK_ALERT_FLAG_NAME = '__cameraPowerPlannerSessionFallbackAlertShown';
 var storageErrorAlertShown = false;
 if (GLOBAL_SCOPE) {
   if (typeof GLOBAL_SCOPE[STORAGE_ALERT_FLAG_NAME] === 'boolean') {
     storageErrorAlertShown = GLOBAL_SCOPE[STORAGE_ALERT_FLAG_NAME];
   } else {
     GLOBAL_SCOPE[STORAGE_ALERT_FLAG_NAME] = false;
+  }
+}
+var sessionFallbackAlertShown = false;
+if (GLOBAL_SCOPE) {
+  if (typeof GLOBAL_SCOPE[SESSION_FALLBACK_ALERT_FLAG_NAME] === 'boolean') {
+    sessionFallbackAlertShown = GLOBAL_SCOPE[SESSION_FALLBACK_ALERT_FLAG_NAME];
+  } else {
+    GLOBAL_SCOPE[SESSION_FALLBACK_ALERT_FLAG_NAME] = false;
   }
 }
 var DEVICE_COLLECTION_KEYS = ['cameras', 'monitors', 'video', 'viewfinders', 'directorMonitors', 'iosVideo', 'videoAssist', 'media', 'lenses', 'batteries', 'batteryHotswaps', 'wirelessReceivers'];
@@ -297,6 +306,7 @@ function initializeSafeLocalStorage() {
         var _storage = verifyStorage(window.sessionStorage);
         if (_storage) {
           console.warn('Falling back to sessionStorage; data persists for this tab only.');
+          alertSessionFallback();
           return {
             storage: _storage,
             type: 'session'
@@ -893,6 +903,27 @@ function alertStorageError(reason) {
       var _texts$lang;
       var lang = typeof currentLang !== 'undefined' && texts[currentLang] ? currentLang : 'en';
       msg = ((_texts$lang = texts[lang]) === null || _texts$lang === void 0 ? void 0 : _texts$lang.alertStorageError) || msg;
+    }
+  } catch (err) {
+    void err;
+  }
+  window.alert(msg);
+}
+function alertSessionFallback() {
+  if (sessionFallbackAlertShown) {
+    return;
+  }
+  sessionFallbackAlertShown = true;
+  if (GLOBAL_SCOPE) {
+    GLOBAL_SCOPE[SESSION_FALLBACK_ALERT_FLAG_NAME] = true;
+  }
+  if (typeof window === 'undefined' || typeof window.alert !== 'function') return;
+  var msg = 'Warning: Local storage is unavailable. Data will only persist for this browser tab.';
+  try {
+    if (typeof texts !== 'undefined') {
+      var _texts$lang2;
+      var lang = typeof currentLang !== 'undefined' && texts[currentLang] ? currentLang : 'en';
+      msg = ((_texts$lang2 = texts[lang]) === null || _texts$lang2 === void 0 ? void 0 : _texts$lang2.alertSessionFallback) || msg;
     }
   } catch (err) {
     void err;

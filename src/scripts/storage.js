@@ -202,6 +202,7 @@ const SIMPLE_STORAGE_KEYS = [
 ];
 
 const STORAGE_ALERT_FLAG_NAME = '__cameraPowerPlannerStorageAlertShown';
+const SESSION_FALLBACK_ALERT_FLAG_NAME = '__cameraPowerPlannerSessionFallbackAlertShown';
 
 let storageErrorAlertShown = false;
 if (GLOBAL_SCOPE) {
@@ -209,6 +210,15 @@ if (GLOBAL_SCOPE) {
     storageErrorAlertShown = GLOBAL_SCOPE[STORAGE_ALERT_FLAG_NAME];
   } else {
     GLOBAL_SCOPE[STORAGE_ALERT_FLAG_NAME] = false;
+  }
+}
+
+let sessionFallbackAlertShown = false;
+if (GLOBAL_SCOPE) {
+  if (typeof GLOBAL_SCOPE[SESSION_FALLBACK_ALERT_FLAG_NAME] === 'boolean') {
+    sessionFallbackAlertShown = GLOBAL_SCOPE[SESSION_FALLBACK_ALERT_FLAG_NAME];
+  } else {
+    GLOBAL_SCOPE[SESSION_FALLBACK_ALERT_FLAG_NAME] = false;
   }
 }
 
@@ -423,6 +433,7 @@ function initializeSafeLocalStorage() {
         const storage = verifyStorage(window.sessionStorage);
         if (storage) {
           console.warn('Falling back to sessionStorage; data persists for this tab only.');
+          alertSessionFallback();
           return { storage, type: 'session' };
         }
       }
@@ -1060,6 +1071,32 @@ function alertStorageError(reason) {
     void err;
     // ignore and fall back to default
   }
+  window.alert(msg);
+}
+
+function alertSessionFallback() {
+  if (sessionFallbackAlertShown) {
+    return;
+  }
+
+  sessionFallbackAlertShown = true;
+  if (GLOBAL_SCOPE) {
+    GLOBAL_SCOPE[SESSION_FALLBACK_ALERT_FLAG_NAME] = true;
+  }
+
+  if (typeof window === 'undefined' || typeof window.alert !== 'function') return;
+
+  let msg = 'Warning: Local storage is unavailable. Data will only persist for this browser tab.';
+  try {
+    if (typeof texts !== 'undefined') {
+      const lang = typeof currentLang !== 'undefined' && texts[currentLang] ? currentLang : 'en';
+      msg = texts[lang]?.alertSessionFallback || msg;
+    }
+  } catch (err) {
+    void err;
+    // ignore and fall back to default
+  }
+
   window.alert(msg);
 }
 
