@@ -6602,19 +6602,6 @@ function buildFilterGearEntries(filters = []) {
   return entries;
 }
 
-function formatFilterEntryText(entry) {
-  const labelText = typeof entry?.label === 'string' ? entry.label : '';
-  const hideDetailsOverride = typeof entry?.hideDetails === 'boolean' ? entry.hideDetails : null;
-  const hideDetails = hideDetailsOverride !== null
-    ? hideDetailsOverride
-    : labelText.toLowerCase().includes('filter set');
-  const details = [];
-  if (!hideDetails && entry.size) details.push(entry.size);
-  if (!hideDetails && entry.values && entry.values.length) details.push(entry.values.join(', '));
-  const suffix = details.length ? ` (${details.join(' • ')})` : '';
-  return `1x ${labelText}${suffix}`;
-}
-
 function updateGearListFilterEntries(entries = []) {
   if (!gearListOutput) return;
   const entryMap = new Map(entries.map(entry => [entry.id, entry]));
@@ -6623,9 +6610,8 @@ function updateGearListFilterEntries(entries = []) {
     if (!entryId) return;
     const entry = entryMap.get(entryId);
     if (!entry) return;
-    const hideSize = span.hasAttribute('data-filter-hide-size');
-    const displayEntry = hideSize ? { ...entry, size: '' } : entry;
-    span.textContent = formatFilterEntryText(displayEntry);
+    const labelText = typeof entry?.label === 'string' ? entry.label : '';
+    span.textContent = labelText ? `1x ${labelText}` : '';
     span.setAttribute('data-gear-name', entry.gearName);
     span.setAttribute('data-filter-label', entry.label);
     if (entry.type) {
@@ -6729,23 +6715,7 @@ function renderGearListFilterDetails(details) {
     } else {
       heading.removeAttribute('data-filter-hide-size');
     }
-    const displaySize = shouldHideSize
-      ? ''
-      : (size && label && label.includes(size) ? '' : size);
-    const displayValues = Array.isArray(values) ? values : undefined;
-    if (label) {
-      const entryInfo = {
-        label,
-        size: displaySize,
-        values: displayValues
-      };
-      if (typeof detail.hideDetails === 'boolean') {
-        entryInfo.hideDetails = detail.hideDetails;
-      }
-      heading.textContent = formatFilterEntryText(entryInfo);
-    } else {
-      heading.textContent = '';
-    }
+    heading.textContent = label ? `1x ${label}` : '';
     row.appendChild(heading);
     const controls = document.createElement('div');
     controls.className = 'filter-detail-controls';
@@ -6868,6 +6838,19 @@ function renderFilterDetails() {
   });
   renderFilterDetailsStorage(details);
   renderGearListFilterDetails(details);
+  let gearEntries = buildFilterGearEntries(existingTokens);
+  if (!gearEntries.length) {
+    gearEntries = details
+      .map(detail => ({
+        id: detail.entryId,
+        gearName: detail.gearName,
+        label: detail.label,
+        type: detail.type,
+        hideDetails: detail.hideDetails
+      }))
+      .filter(entry => entry.id && entry.label);
+  }
+  updateGearListFilterEntries(gearEntries);
   if (matteboxSelect) {
     const needsSwing = selected.some(t => t === 'ND Grad HE' || t === 'ND Grad SE');
     if (needsSwing) matteboxSelect.value = 'Swing Away';
