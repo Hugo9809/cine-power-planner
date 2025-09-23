@@ -3339,6 +3339,7 @@ function deleteCurrentGearList() {
     if (gearListOutput) {
         gearListOutput.innerHTML = '';
         gearListOutput.classList.add('hidden');
+        updateAutoGearHighlightToggleButton();
     }
     if (projectRequirementsOutput) {
         projectRequirementsOutput.innerHTML = '';
@@ -3587,6 +3588,11 @@ function isAutoGearHighlightEnabled() {
     return !!(gearListOutput && gearListOutput.classList && gearListOutput.classList.contains(AUTO_GEAR_HIGHLIGHT_CLASS));
 }
 
+function canHighlightAutoGear() {
+    if (!gearListOutput || !gearListOutput.classList) return false;
+    return !gearListOutput.classList.contains('hidden');
+}
+
 function updateAutoGearHighlightToggleButton() {
     const toggle = document.getElementById('autoGearHighlightToggle');
     if (!toggle) return;
@@ -3605,6 +3611,13 @@ function updateAutoGearHighlightToggleButton() {
     const active = isAutoGearHighlightEnabled();
     toggle.setAttribute('aria-pressed', active ? 'true' : 'false');
     toggle.classList.toggle('is-active', active);
+    const available = canHighlightAutoGear();
+    toggle.disabled = !available;
+    if (available) {
+        toggle.removeAttribute('aria-disabled');
+    } else {
+        toggle.setAttribute('aria-disabled', 'true');
+    }
     updateAutoGearRuleBadges(gearListOutput);
 }
 
@@ -3647,12 +3660,8 @@ function ensureGearListActions() {
         autoSaveNote.hidden = true;
     }
 
-    let highlightToggle = document.getElementById('autoGearHighlightToggle');
-    if (!highlightToggle) {
-        highlightToggle = document.createElement('button');
-        highlightToggle.id = 'autoGearHighlightToggle';
-        highlightToggle.type = 'button';
-        highlightToggle.className = 'gear-list-action-btn';
+    const highlightToggle = document.getElementById('autoGearHighlightToggle');
+    if (highlightToggle && !highlightToggle.dataset.gearListHighlightBound) {
         highlightToggle.addEventListener('click', () => {
             if (!gearListOutput) return;
             const nextState = !isAutoGearHighlightEnabled();
@@ -3660,13 +3669,7 @@ function ensureGearListActions() {
             updateAutoGearRuleBadges(gearListOutput);
             updateAutoGearHighlightToggleButton();
         });
-    }
-    if (!actions.contains(highlightToggle)) {
-        if (autoSaveNote) {
-            actions.insertBefore(highlightToggle, autoSaveNote);
-        } else {
-            actions.appendChild(highlightToggle);
-        }
+        highlightToggle.dataset.gearListHighlightBound = 'true';
     }
     updateAutoGearHighlightToggleButton();
     updateAutoGearRuleBadges(actions.closest('#gearListOutput') || gearListOutput);
