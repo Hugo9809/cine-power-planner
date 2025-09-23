@@ -6068,12 +6068,83 @@ function ensureSvgHasAriaHidden(markup) {
   return trimmed.replace(/<svg\b/i, match => `${match} aria-hidden="true"`);
 }
 
+function normalizePinkModeIconMarkup(markup) {
+  if (typeof markup !== 'string') return '';
+  const trimmed = markup.trim();
+  if (!trimmed) return '';
+
+  const normalizePaintAttribute = (match, attr, quote, value) => {
+    if (typeof value !== 'string') return match;
+    const normalizedValue = value.trim();
+    if (!normalizedValue) return match;
+    const lowerValue = normalizedValue.toLowerCase();
+    if (
+      lowerValue === 'none' ||
+      lowerValue === 'currentcolor' ||
+      lowerValue.startsWith('url(')
+    ) {
+      return match;
+    }
+    return `${attr}=${quote}currentColor${quote}`;
+  };
+
+  const normalizeStyleDeclaration = (match, quote, content) => {
+    if (typeof content !== 'string') {
+      return match;
+    }
+    const declarations = content
+      .split(';')
+      .map(part => part.trim())
+      .filter(Boolean);
+    if (!declarations.length) {
+      return match;
+    }
+    let changed = false;
+    const updated = declarations.map(part => {
+      const [property, rawValue] = part.split(':');
+      if (!property || rawValue === undefined) {
+        return part;
+      }
+      const propName = property.trim().toLowerCase();
+      const value = rawValue.trim();
+      if (!value) {
+        return part;
+      }
+      const lowerValue = value.toLowerCase();
+      if (
+        (propName === 'fill' || propName === 'stroke') &&
+        lowerValue !== 'none' &&
+        lowerValue !== 'currentcolor' &&
+        !lowerValue.startsWith('url(')
+      ) {
+        changed = true;
+        return `${property.trim()}:currentColor`;
+      }
+      return part;
+    });
+    if (!changed) {
+      return match;
+    }
+    return `style=${quote}${updated.join('; ')}${quote}`;
+  };
+
+  let result = trimmed.replace(
+    /(fill|stroke)=(['"])([^'"]*)\2/gi,
+    normalizePaintAttribute
+  );
+
+  result = result.replace(/style=(['"])([^'"]*)\1/gi, normalizeStyleDeclaration);
+
+  return result;
+}
+
 function setPinkModeIconSequence(markupList) {
   if (!Array.isArray(markupList) || !markupList.length) {
     return false;
   }
   const configs = markupList
     .map(ensureSvgHasAriaHidden)
+    .map(normalizePinkModeIconMarkup)
     .filter(Boolean)
     .map(markup =>
       Object.freeze({
