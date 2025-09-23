@@ -3069,9 +3069,12 @@ if (restoreSettings && restoreSettingsInput) {
       } catch (rulesError) {
         console.warn('Failed to resync automatic gear rules after restore failure', rulesError);
       }
-      const safeGetItem = createSafeStorageReader(safeStorage, 'Failed to read restored storage key');
-      const preferenceState = applyPreferencesFromStorage(safeGetItem);
-      showAutoBackups = preferenceState.showAutoBackups;
+      const restoredPreferenceReader = createSafeStorageReader(
+        safeStorage,
+        'Failed to read restored storage key',
+      );
+      const restoredPreferences = applyPreferencesFromStorage(restoredPreferenceReader);
+      showAutoBackups = restoredPreferences.showAutoBackups;
       try {
         populateSetupSelect();
       } catch (populateError) {
@@ -3085,9 +3088,9 @@ if (restoreSettings && restoreSettingsInput) {
           console.warn('Failed to restore automatic backup visibility toggle after restore failure', checkboxError);
         }
       }
-      if (preferenceState.language) {
+      if (restoredPreferences.language) {
         try {
-          setLanguage(preferenceState.language);
+          setLanguage(restoredPreferences.language);
         } catch (languageError) {
           console.warn('Failed to restore language after restore failure', languageError);
         }
@@ -3167,16 +3170,19 @@ if (restoreSettings && restoreSettingsInput) {
         } catch (rulesError) {
           console.warn('Failed to sync automatic gear rules after restore', rulesError);
         }
-        const safeGetItem = createSafeStorageReader(safeStorage, 'Failed to read restored storage key');
-        const preferenceState = applyPreferencesFromStorage(safeGetItem);
-        showAutoBackups = preferenceState.showAutoBackups;
+        const preferenceReader = createSafeStorageReader(
+          safeStorage,
+          'Failed to read restored storage key',
+        );
+        const restoredPreferenceState = applyPreferencesFromStorage(preferenceReader);
+        showAutoBackups = restoredPreferenceState.showAutoBackups;
         populateSetupSelect();
         restoreSetupSelection(previousSelection, showAutoBackups);
         if (settingsShowAutoBackups) {
           settingsShowAutoBackups.checked = showAutoBackups;
         }
-        if (preferenceState.language) {
-          setLanguage(preferenceState.language);
+        if (restoredPreferenceState.language) {
+          setLanguage(restoredPreferenceState.language);
         }
         alert(texts[currentLang].restoreSuccess);
         finalizeRestore();
