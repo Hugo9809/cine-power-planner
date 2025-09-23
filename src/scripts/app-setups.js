@@ -3280,11 +3280,17 @@ function getCurrentGearListHtml() {
         gearHtml = table ? '<h3>Gear List</h3>' + table.outerHTML : '';
     }
 
-    if (!projHtml && !gearHtml) return '';
+    if (!projHtml && !gearHtml) {
+        return '';
+    }
 
     const projectName = getCurrentProjectName();
     const titleHtml = projectName ? `<h2>${projectName}</h2>` : '';
-    return `${titleHtml}${projHtml}${gearHtml}`.trim();
+    const combined = `${titleHtml}${projHtml}${gearHtml}`.trim();
+    if (combined && typeof globalThis !== 'undefined') {
+        globalThis.__cineLastGearListHtml = combined;
+    }
+    return combined;
 }
 
 function getGearListSelectors() {
@@ -3354,9 +3360,6 @@ function saveCurrentGearList() {
             setup.gearList = html;
             changed = true;
         }
-    } else if (Object.prototype.hasOwnProperty.call(setup, 'gearList')) {
-        delete setup.gearList;
-        changed = true;
     }
 
     if (currentProjectInfo) {
@@ -3432,6 +3435,9 @@ function deleteCurrentGearList() {
     if (projectRequirementsOutput) {
         projectRequirementsOutput.innerHTML = '';
         projectRequirementsOutput.classList.add('hidden');
+    }
+    if (typeof globalThis !== 'undefined') {
+        globalThis.__cineLastGearListHtml = '';
     }
     currentProjectInfo = null;
     if (projectForm) populateProjectForm({});
