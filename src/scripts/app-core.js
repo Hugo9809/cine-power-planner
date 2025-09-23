@@ -159,6 +159,9 @@ const TEMPERATURE_SCENARIOS = [
   { celsius: -20, factor: 0.5, color: '#0275d8' }
 ];
 
+const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
+const localeSort = (a, b) => collator.compare(a, b);
+
 const DEVICE_GLOBAL_SCOPE =
   typeof globalThis !== 'undefined'
     ? globalThis
@@ -2537,9 +2540,6 @@ const VIDEO_OUTPUT_TYPES = new Set([
   'Micro HDMI',
   'DisplayPort'
 ]);
-
-const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
-const localeSort = (a, b) => collator.compare(a, b);
 
 const DEFAULT_FILTER_SIZE = '4x5.65';
 
