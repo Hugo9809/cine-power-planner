@@ -1100,6 +1100,7 @@
                 <div class="auto-gear-condition-picker">
                   <select id="autoGearConditionSelect" class="auto-gear-condition-select">
                     <option value="">Choose a condition</option>
+                    <option value="always">Always include</option>
                     <option value="scenarios">Required scenarios</option>
                     <option value="mattebox">Mattebox options</option>
                     <option value="cameraHandle">Camera handles</option>
@@ -1116,6 +1117,28 @@
                 </div>
               </div>
               <div id="autoGearConditionList" class="auto-gear-condition-list">
+                <section
+                  id="autoGearCondition-always"
+                  class="auto-gear-condition"
+                  data-condition="always"
+                  hidden
+                  aria-hidden="true"
+                >
+                  <div class="auto-gear-condition-header">
+                    <p id="autoGearAlwaysLabel" class="auto-gear-always-label">Always include this rule</p>
+                    <div class="auto-gear-condition-actions">
+                      <button
+                        type="button"
+                        class="auto-gear-condition-remove"
+                        data-action="remove"
+                        data-condition="always"
+                      >Remove</button>
+                    </div>
+                  </div>
+                  <p id="autoGearAlwaysHelp" class="auto-gear-condition-help">
+                    This rule runs every time the gear list is generated.
+                  </p>
+                </section>
                 <section
                   id="autoGearCondition-scenarios"
                   class="auto-gear-condition"

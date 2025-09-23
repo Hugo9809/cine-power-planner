@@ -787,6 +787,23 @@ function normalizeAutoGearRule(rule) {
   if (!rule || typeof rule !== 'object') return null;
   const id = typeof rule.id === 'string' && rule.id ? rule.id : generateAutoGearId('rule');
   const label = typeof rule.label === 'string' ? rule.label.trim() : '';
+  let always = false;
+  if (Array.isArray(rule.always)) {
+    always = rule.always.some(value => {
+      if (typeof value === 'string') {
+        const trimmed = value.trim().toLowerCase();
+        if (!trimmed) return false;
+        if (trimmed === 'false' || trimmed === '0') return false;
+        return true;
+      }
+      return Boolean(value);
+    });
+  } else if (typeof rule.always === 'string') {
+    const trimmed = rule.always.trim().toLowerCase();
+    always = trimmed === 'true' || (trimmed && trimmed !== 'false' && trimmed !== '0');
+  } else {
+    always = Boolean(rule.always);
+  }
   const scenarios = normalizeAutoGearTriggerList(rule.scenarios).sort((a, b) => a.localeCompare(b));
   const mattebox = normalizeAutoGearTriggerList(rule.mattebox).sort((a, b) => a.localeCompare(b));
   const cameraHandle = normalizeAutoGearTriggerList(rule.cameraHandle).sort((a, b) => a.localeCompare(b));
@@ -800,6 +817,7 @@ function normalizeAutoGearRule(rule) {
   const controllers = normalizeAutoGearTriggerList(rule.controllers).sort((a, b) => a.localeCompare(b));
   const distance = normalizeAutoGearTriggerList(rule.distance).sort((a, b) => a.localeCompare(b));
   if (
+    !always &&
     !scenarios.length
     && !mattebox.length
     && !cameraHandle.length
@@ -818,6 +836,7 @@ function normalizeAutoGearRule(rule) {
   return {
     id,
     label,
+    always,
     scenarios,
     mattebox,
     cameraHandle,
@@ -891,6 +910,7 @@ function snapshotAutoGearRuleForFingerprint(rule) {
     .sort((a, b) => autoGearItemSortKey(a).localeCompare(autoGearItemSortKey(b)));
   return {
     label: normalized.label || '',
+    always: normalized.always ? 1 : 0,
     scenarios: normalized.scenarios.slice().sort((a, b) => a.localeCompare(b)),
     mattebox: normalized.mattebox.slice().sort((a, b) => a.localeCompare(b)),
     cameraHandle: normalized.cameraHandle.slice().sort((a, b) => a.localeCompare(b)),
@@ -908,6 +928,7 @@ function snapshotAutoGearRuleForFingerprint(rule) {
 }
 
 function autoGearRuleSortKey(rule) {
+  const alwaysKey = rule && rule.always ? '1' : '0';
   const scenarioKey = Array.isArray(rule.scenarios) ? rule.scenarios.join('|') : '';
   const matteboxKey = Array.isArray(rule.mattebox) ? rule.mattebox.join('|') : '';
   const cameraHandleKey = Array.isArray(rule.cameraHandle) ? rule.cameraHandle.join('|') : '';
@@ -921,7 +942,7 @@ function autoGearRuleSortKey(rule) {
   const distanceKey = Array.isArray(rule.distance) ? rule.distance.join('|') : '';
   const addKey = Array.isArray(rule.add) ? rule.add.map(autoGearItemSortKey).join('|') : '';
   const removeKey = Array.isArray(rule.remove) ? rule.remove.map(autoGearItemSortKey).join('|') : '';
-  return `${scenarioKey}|${matteboxKey}|${cameraHandleKey}|${viewfinderKey}|${videoDistributionKey}|${cameraKey}|${monitorKey}|${wirelessKey}|${motorsKey}|${controllersKey}|${distanceKey}|${rule.label || ''}|${addKey}|${removeKey}`;
+  return `${alwaysKey}|${scenarioKey}|${matteboxKey}|${cameraHandleKey}|${viewfinderKey}|${videoDistributionKey}|${cameraKey}|${monitorKey}|${wirelessKey}|${motorsKey}|${controllersKey}|${distanceKey}|${rule.label || ''}|${addKey}|${removeKey}`;
 }
 
 function createAutoGearRulesFingerprint(rules) {
@@ -1492,6 +1513,7 @@ function cloneAutoGearRule(rule) {
   return {
     id: typeof rule.id === 'string' ? rule.id : '',
     label: typeof rule.label === 'string' ? rule.label : '',
+    always: Boolean(rule.always),
     scenarios: Array.isArray(rule.scenarios) ? rule.scenarios.slice() : [],
     mattebox: Array.isArray(rule.mattebox) ? rule.mattebox.slice() : [],
     cameraHandle: Array.isArray(rule.cameraHandle) ? rule.cameraHandle.slice() : [],
@@ -1913,6 +1935,69 @@ function buildDefaultMatteboxAutoGearRules() {
   ];
 }
 
+function buildAlwaysAutoGearRule() {
+  const createItem = (name, category, quantity = 1, options = {}) => {
+    if (!name || !category || quantity <= 0) return null;
+    return {
+      id: generateAutoGearId('item'),
+      name,
+      category,
+      quantity,
+      screenSize: typeof options.screenSize === 'string' ? options.screenSize : '',
+      selectorType: typeof options.selectorType === 'string' ? options.selectorType : 'none',
+      selectorDefault: typeof options.selectorDefault === 'string' ? options.selectorDefault : '',
+      selectorEnabled: options.selectorEnabled === true,
+      notes: typeof options.notes === 'string' ? options.notes : '',
+    };
+  };
+  const additions = [];
+  const pushItem = (name, category, quantity, options) => {
+    const item = createItem(name, category, quantity, options);
+    if (item) additions.push(item);
+  };
+  [
+    ['BNC Cable 0.5 m', 'Monitoring support', 1],
+    ['BNC Cable 1 m', 'Monitoring support', 1],
+    ['BNC Cable 5 m', 'Monitoring support', 1],
+    ['BNC Cable 10 m', 'Monitoring support', 1],
+    ['BNC Drum 25 m', 'Monitoring support', 1],
+    ['ULCS Bracket with 1/4" to 1/4"', 'Rigging', 2],
+    ['ULCS Bracket with 3/8" to 1/4"', 'Rigging', 2],
+    ['Noga Arm', 'Rigging', 2],
+    ['Mini Magic Arm', 'Rigging', 2],
+    ['Cine Quick Release', 'Rigging', 4],
+    ['SmallRig - Super lightweight 15mm RailBlock', 'Rigging', 1],
+    ['Spigot with male 3/8" and 1/4"', 'Rigging', 3],
+    ['Clapper Stick', 'Rigging', 2],
+    ['D-Tap Splitter', 'Rigging', 2],
+    ['Magliner Senior - with quick release mount + tripod holder + utility tray + O‘Connor-Aufhängung', 'Carts and Transportation', 1],
+    ['Securing Straps (25mm wide)', 'Carts and Transportation', 10],
+    ['Loading Ramp (pair, 420kg)', 'Carts and Transportation', 1],
+    ['Ring Fitting for Airline Rails', 'Carts and Transportation', 20],
+  ].forEach(([name, category, quantity]) => pushItem(name, category, quantity));
+
+  if (!additions.length) return null;
+
+  return {
+    id: generateAutoGearId('rule'),
+    label: 'Always',
+    always: true,
+    scenarios: [],
+    mattebox: [],
+    cameraHandle: [],
+    viewfinderExtension: [],
+    videoDistribution: [],
+    camera: [],
+    monitor: [],
+    wireless: [],
+    motors: [],
+    controllers: [],
+    distance: [],
+    add: additions,
+    remove: [],
+  };
+}
+
 function ensureDefaultMatteboxAutoGearRules() {
   const defaults = buildDefaultMatteboxAutoGearRules();
   if (!defaults.length) return false;
@@ -2112,6 +2197,11 @@ function buildAutoGearRulesFromBaseInfo(baseInfo, scenarioValues) {
         existingSignatures.add(signature);
       });
     }
+  }
+
+  const alwaysRule = buildAlwaysAutoGearRule();
+  if (alwaysRule) {
+    rules.push(alwaysRule);
   }
 
   buildDefaultMatteboxAutoGearRules().forEach(rule => rules.push(rule));
@@ -4948,6 +5038,21 @@ function setLanguage(lang) {
     setButtonLabelWithIcon(autoGearConditionAddButton, label, ICON_GLYPHS.add);
     autoGearConditionAddButton.setAttribute('aria-label', label);
     autoGearConditionAddButton.setAttribute('data-help', label);
+  }
+  if (autoGearAlwaysLabel) {
+    const label = texts[lang].autoGearAlwaysLabel
+      || texts.en?.autoGearAlwaysLabel
+      || autoGearAlwaysLabel.textContent
+      || 'Always include';
+    const help = texts[lang].autoGearAlwaysHelp
+      || texts.en?.autoGearAlwaysHelp
+      || label;
+    autoGearAlwaysLabel.textContent = label;
+    autoGearAlwaysLabel.setAttribute('data-help', help);
+    if (autoGearAlwaysHelp) {
+      autoGearAlwaysHelp.textContent = help;
+      autoGearAlwaysHelp.setAttribute('data-help', help);
+    }
   }
   configureAutoGearConditionButtons();
   refreshAutoGearConditionPicker();
@@ -9117,7 +9222,10 @@ const autoGearConditionSelectLabel = document.getElementById('autoGearConditionS
 const autoGearConditionSelect = document.getElementById('autoGearConditionSelect');
 const autoGearConditionAddButton = document.getElementById('autoGearConditionAdd');
 const autoGearConditionList = document.getElementById('autoGearConditionList');
+const autoGearAlwaysLabel = document.getElementById('autoGearAlwaysLabel');
+const autoGearAlwaysHelp = document.getElementById('autoGearAlwaysHelp');
 const autoGearConditionSections = {
+  always: document.getElementById('autoGearCondition-always'),
   scenarios: document.getElementById('autoGearCondition-scenarios'),
   mattebox: document.getElementById('autoGearCondition-mattebox'),
   cameraHandle: document.getElementById('autoGearCondition-cameraHandle'),
@@ -9132,6 +9240,7 @@ const autoGearConditionSections = {
 };
 
 const autoGearConditionAddShortcuts = {
+  always: autoGearConditionSections.always?.querySelector('.auto-gear-condition-add') || null,
   scenarios: autoGearConditionSections.scenarios?.querySelector('.auto-gear-condition-add') || null,
   mattebox: autoGearConditionSections.mattebox?.querySelector('.auto-gear-condition-add') || null,
   cameraHandle: autoGearConditionSections.cameraHandle?.querySelector('.auto-gear-condition-add') || null,
@@ -9146,6 +9255,7 @@ const autoGearConditionAddShortcuts = {
 };
 
 const autoGearConditionRemoveButtons = {
+  always: autoGearConditionSections.always?.querySelector('.auto-gear-condition-remove') || null,
   scenarios: autoGearConditionSections.scenarios?.querySelector('.auto-gear-condition-remove') || null,
   mattebox: autoGearConditionSections.mattebox?.querySelector('.auto-gear-condition-remove') || null,
   cameraHandle: autoGearConditionSections.cameraHandle?.querySelector('.auto-gear-condition-remove') || null,
@@ -9194,6 +9304,7 @@ const autoGearControllersLabel = document.getElementById('autoGearControllersLab
 const autoGearDistanceSelect = document.getElementById('autoGearDistance');
 const autoGearDistanceLabel = document.getElementById('autoGearDistanceLabel');
 const autoGearConditionLabels = {
+  always: autoGearAlwaysLabel,
   scenarios: autoGearScenariosLabel,
   mattebox: autoGearMatteboxLabel,
   cameraHandle: autoGearCameraHandleLabel,
@@ -9207,6 +9318,7 @@ const autoGearConditionLabels = {
   distance: autoGearDistanceLabel,
 };
 const autoGearConditionSelects = {
+  always: null,
   scenarios: autoGearScenariosSelect,
   mattebox: autoGearMatteboxSelect,
   cameraHandle: autoGearCameraHandleSelect,
@@ -9220,6 +9332,7 @@ const autoGearConditionSelects = {
   distance: autoGearDistanceSelect,
 };
 const AUTO_GEAR_CONDITION_KEYS = [
+  'always',
   'scenarios',
   'mattebox',
   'cameraHandle',
@@ -9233,6 +9346,7 @@ const AUTO_GEAR_CONDITION_KEYS = [
   'distance',
 ];
 const AUTO_GEAR_CONDITION_FALLBACK_LABELS = {
+  always: 'Always include',
   scenarios: 'Required scenarios',
   mattebox: 'Mattebox options',
   cameraHandle: 'Camera handles',
@@ -9261,6 +9375,7 @@ const autoGearConditionConfigs = AUTO_GEAR_CONDITION_KEYS.reduce((acc, key) => {
   return acc;
 }, {});
 const autoGearConditionRefreshers = {
+  always: null,
   scenarios: refreshAutoGearScenarioOptions,
   mattebox: refreshAutoGearMatteboxOptions,
   cameraHandle: refreshAutoGearCameraHandleOptions,
@@ -9416,12 +9531,18 @@ function addAutoGearCondition(key, options = {}) {
     config.section.hidden = false;
     config.section.setAttribute('aria-hidden', 'false');
   }
-  if (autoGearEditorDraft && !Array.isArray(autoGearEditorDraft[key])) {
-    autoGearEditorDraft[key] = [];
+  if (autoGearEditorDraft) {
+    if (key === 'always') {
+      autoGearEditorDraft.always = ['always'];
+    } else if (!Array.isArray(autoGearEditorDraft[key])) {
+      autoGearEditorDraft[key] = [];
+    }
   }
-  const values = Array.isArray(options.initialValues)
-    ? options.initialValues
-    : (Array.isArray(autoGearEditorDraft?.[key]) ? autoGearEditorDraft[key] : []);
+  const values = key === 'always'
+    ? ['always']
+    : (Array.isArray(options.initialValues)
+      ? options.initialValues
+      : (Array.isArray(autoGearEditorDraft?.[key]) ? autoGearEditorDraft[key] : []));
   const refresher = autoGearConditionRefreshers[key];
   if (typeof refresher === 'function') {
     refresher(values);
@@ -9465,8 +9586,12 @@ function removeAutoGearCondition(key, options = {}) {
     config.section.hidden = true;
     config.section.setAttribute('aria-hidden', 'true');
   }
-  if (!options.preserveDraft && autoGearEditorDraft && Array.isArray(autoGearEditorDraft[key])) {
-    autoGearEditorDraft[key] = [];
+  if (!options.preserveDraft && autoGearEditorDraft) {
+    if (key === 'always') {
+      autoGearEditorDraft.always = [];
+    } else if (Array.isArray(autoGearEditorDraft[key])) {
+      autoGearEditorDraft[key] = [];
+    }
   }
   if (config.select) {
     Array.from(config.select.options || []).forEach(option => {
@@ -9499,8 +9624,12 @@ function clearAllAutoGearConditions(options = {}) {
       config.section.hidden = true;
       config.section.setAttribute('aria-hidden', 'true');
     }
-    if (!preserveDraft && autoGearEditorDraft && Array.isArray(autoGearEditorDraft[key])) {
-      autoGearEditorDraft[key] = [];
+    if (!preserveDraft && autoGearEditorDraft) {
+      if (key === 'always') {
+        autoGearEditorDraft.always = [];
+      } else if (Array.isArray(autoGearEditorDraft[key])) {
+        autoGearEditorDraft[key] = [];
+      }
     }
     if (config.select) {
       Array.from(config.select.options || []).forEach(option => {
@@ -9521,9 +9650,11 @@ function clearAllAutoGearConditions(options = {}) {
 function initializeAutoGearConditionsFromDraft() {
   clearAllAutoGearConditions({ preserveDraft: true });
   AUTO_GEAR_CONDITION_KEYS.forEach(key => {
-    const values = Array.isArray(autoGearEditorDraft?.[key])
-      ? autoGearEditorDraft[key].filter(value => typeof value === 'string' && value.trim())
-      : [];
+    const values = key === 'always'
+      ? (autoGearEditorDraft?.always && autoGearEditorDraft.always.length ? ['always'] : [])
+      : (Array.isArray(autoGearEditorDraft?.[key])
+        ? autoGearEditorDraft[key].filter(value => typeof value === 'string' && value.trim())
+        : []);
     if (values.length) {
       addAutoGearCondition(key, { focus: false, initialValues: values });
     } else {
@@ -9808,6 +9939,15 @@ function autoGearRuleMatchesSearch(rule, query) {
   if (rule && typeof rule.label === 'string') {
     haystack.push(rule.label);
   }
+  if (rule && rule.always) {
+    haystack.push('always');
+    const alwaysText = texts[currentLang]?.autoGearAlwaysMeta
+      || texts.en?.autoGearAlwaysMeta
+      || 'Always active';
+    if (alwaysText) {
+      haystack.push(alwaysText);
+    }
+  }
   pushValues(rule?.scenarios);
   pushValues(rule?.mattebox);
   pushValues(rule?.cameraHandle);
@@ -9939,6 +10079,7 @@ function createAutoGearDraft(rule) {
     return {
       id: rule.id,
       label: rule.label || '',
+      always: rule.always ? ['always'] : [],
       scenarios: Array.isArray(rule.scenarios) ? rule.scenarios.slice() : [],
       mattebox: Array.isArray(rule.mattebox) ? rule.mattebox.slice() : [],
       cameraHandle: Array.isArray(rule.cameraHandle) ? rule.cameraHandle.slice() : [],
@@ -9957,6 +10098,7 @@ function createAutoGearDraft(rule) {
   return {
     id: generateAutoGearId('rule'),
     label: '',
+    always: [],
     scenarios: [],
     mattebox: [],
     cameraHandle: [],
@@ -11303,6 +11445,15 @@ function renderAutoGearRulesList() {
     const fallbackTitle = fallbackSource.length ? fallbackSource.join(' + ') : '';
     title.textContent = rule.label || fallbackTitle;
     info.appendChild(title);
+    if (rule.always) {
+      const alwaysLabel = texts[currentLang]?.autoGearAlwaysMeta
+        || texts.en?.autoGearAlwaysMeta
+        || 'Always active';
+      const alwaysMeta = document.createElement('p');
+      alwaysMeta.className = 'auto-gear-rule-meta';
+      alwaysMeta.textContent = alwaysLabel;
+      info.appendChild(alwaysMeta);
+    }
     if (scenarioList.length) {
       const scenarioLabel = texts[currentLang]?.projectFields?.requiredScenarios
         || texts.en?.projectFields?.requiredScenarios
@@ -11879,8 +12030,10 @@ function saveAutoGearRuleFromEditor() {
         .map(option => option.value)
         .filter(value => typeof value === 'string' && value.trim())
     : [];
+  const alwaysActive = isAutoGearConditionActive('always');
   if (
-    !scenarios.length
+    !alwaysActive
+    && !scenarios.length
     && !matteboxSelections.length
     && !cameraHandleSelections.length
     && !viewfinderSelections.length
@@ -11903,6 +12056,7 @@ function saveAutoGearRuleFromEditor() {
   if (autoGearRuleNameInput) {
     autoGearEditorDraft.label = autoGearRuleNameInput.value.trim();
   }
+  autoGearEditorDraft.always = alwaysActive ? ['always'] : [];
   autoGearEditorDraft.scenarios = scenarios;
   autoGearEditorDraft.mattebox = matteboxSelections;
   autoGearEditorDraft.cameraHandle = cameraHandleSelections;
