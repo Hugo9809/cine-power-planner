@@ -2949,11 +2949,11 @@ function formatTimestampForComparison(date, includeSeconds) {
   return date.toISOString();
 }
 
-function formatComparisonOptionLabel(name) {
+function formatComparisonOptionLabel(name, parsedDetails) {
   if (typeof name !== 'string') {
     return '';
   }
-  const parsed = parseAutoBackupName(name);
+  const parsed = parsedDetails || parseAutoBackupName(name);
   if (!parsed) {
     const manualLabel = getDiffText('versionCompareManualLabel', 'Manual save');
     return `${manualLabel} · ${name}`;
@@ -2974,19 +2974,42 @@ function collectBackupDiffOptions() {
   if (setups && typeof setups === 'object') {
     const setupOptions = Object.keys(setups)
       .filter(name => typeof name === 'string' && name)
-      .map(name => ({
-        value: name,
-        label: formatComparisonOptionLabel(name),
-        data: setups[name],
-      }))
+      .map(name => {
+        const parsed = parseAutoBackupName(name);
+        const label = formatComparisonOptionLabel(name, parsed);
+        const hasValidDate = parsed
+          && parsed.date instanceof Date
+          && !Number.isNaN(parsed.date.valueOf());
+        return {
+          value: name,
+          label,
+          data: setups[name],
+          parsed,
+          timestamp: hasValidDate ? parsed.date.getTime() : null,
+        };
+      })
       .sort((a, b) => {
-        const autoA = isAutoBackupName(a.value);
-        const autoB = isAutoBackupName(b.value);
+        const autoA = Boolean(a.parsed);
+        const autoB = Boolean(b.parsed);
         if (autoA !== autoB) {
           return autoA ? 1 : -1;
         }
+        if (autoA && autoB) {
+          const timeA = typeof a.timestamp === 'number' ? a.timestamp : null;
+          const timeB = typeof b.timestamp === 'number' ? b.timestamp : null;
+          if (timeA !== null && timeB !== null && timeA !== timeB) {
+            return timeB - timeA;
+          }
+          if (timeA !== null && timeB === null) {
+            return -1;
+          }
+          if (timeA === null && timeB !== null) {
+            return 1;
+          }
+        }
         return localeSort(a.label, b.label);
-      });
+      })
+      .map(({ parsed, timestamp, ...option }) => option);
     options.push(...setupOptions);
   }
 

@@ -4258,6 +4258,7 @@ if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE === 'object') {
     try {
       GLOBAL_SCOPE[key] = value;
     } catch (assignmentError) {
+      void assignmentError;
       try {
         Object.defineProperty(GLOBAL_SCOPE, key, {
           configurable: true,
