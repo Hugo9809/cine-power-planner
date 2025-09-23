@@ -19636,11 +19636,34 @@ function enableDiagramInteractions() {
   let pan = { ...initialPan };
   let scale = INITIAL_SCALE;
   let panning = false;
-  let panStart = { x: 0, y: 0 };
+  let panStart = { ...pan };
+  let panPointerStart = null;
   const getPos = e => {
     if (e.touches && e.touches[0]) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
     if (e.changedTouches && e.changedTouches[0]) return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
     return { x: e.clientX, y: e.clientY };
+  };
+  const getMetrics = () => {
+    const rect = typeof svg.getBoundingClientRect === 'function' ? svg.getBoundingClientRect() : null;
+    const viewBox = svg.viewBox?.baseVal;
+    const viewBoxWidth = viewBox && Number.isFinite(viewBox.width) && viewBox.width > 0
+      ? viewBox.width
+      : (svg.width?.baseVal?.value || rect?.width || 1);
+    const viewBoxHeight = viewBox && Number.isFinite(viewBox.height) && viewBox.height > 0
+      ? viewBox.height
+      : (svg.height?.baseVal?.value || rect?.height || 1);
+    const rectWidth = rect && Number.isFinite(rect.width) && rect.width > 0 ? rect.width : viewBoxWidth;
+    const rectHeight = rect && Number.isFinite(rect.height) && rect.height > 0 ? rect.height : viewBoxHeight;
+    const viewPerPxX = rectWidth > 0 ? viewBoxWidth / rectWidth : 1;
+    const viewPerPxY = rectHeight > 0 ? viewBoxHeight / rectHeight : 1;
+    return { rect, viewPerPxX, viewPerPxY };
+  };
+  const convertPointerDeltaToView = (dxPx, dyPx) => {
+    const { viewPerPxX, viewPerPxY } = getMetrics();
+    return {
+      x: (Number.isFinite(dxPx) ? dxPx : 0) * viewPerPxX / (scale || 1),
+      y: (Number.isFinite(dyPx) ? dyPx : 0) * viewPerPxY / (scale || 1)
+    };
   };
   const apply = () => {
     scale = clampScale(scale);
@@ -19655,14 +19678,14 @@ function enableDiagramInteractions() {
       apply();
       return;
     }
-    const rect = typeof svg.getBoundingClientRect === 'function' ? svg.getBoundingClientRect() : null;
+    const { rect, viewPerPxX, viewPerPxY } = getMetrics();
     if (rect && Number.isFinite(rect.width) && Number.isFinite(rect.height) && rect.width > 0 && rect.height > 0) {
-      const centerX = rect.left + rect.width / 2;
-      const centerY = rect.top + rect.height / 2;
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
       const inverseCurrent = 1 / currentScale;
       const inverseTarget = 1 / targetScale;
-      pan.x += centerX * (inverseTarget - inverseCurrent);
-      pan.y += centerY * (inverseTarget - inverseCurrent);
+      pan.x += centerX * viewPerPxX * (inverseTarget - inverseCurrent);
+      pan.y += centerY * viewPerPxY * (inverseTarget - inverseCurrent);
     }
     scale = targetScale;
     apply();
@@ -19690,43 +19713,48 @@ function enableDiagramInteractions() {
     if (e.target.closest('.diagram-node')) return;
     const pos = getPos(e);
     panning = true;
-    panStart = { x: pos.x - pan.x, y: pos.y - pan.y };
+    panPointerStart = pos;
+    panStart = { ...pan };
     if (e.touches) e.preventDefault();
   };
   const onPanMove = e => {
-    if (!panning) return;
+    if (!panning || !panPointerStart) return;
     const pos = getPos(e);
-    pan.x = pos.x - panStart.x;
-    pan.y = pos.y - panStart.y;
+    const delta = convertPointerDeltaToView(pos.x - panPointerStart.x, pos.y - panPointerStart.y);
+    pan.x = panStart.x + delta.x;
+    pan.y = panStart.y + delta.y;
     apply();
     if (e.touches) e.preventDefault();
   };
-  const stopPanning = () => { panning = false; };
+  const stopPanning = () => {
+    panning = false;
+    panPointerStart = null;
+  };
 
   let dragId = null;
-  let dragStart = null;
+  let dragPointerStart = null;
   let dragNode = null;
   const onDragStart = e => {
     const node = e.target.closest('.diagram-node');
     if (!node) return;
     dragId = node.getAttribute('data-node');
     dragNode = node;
-    const pos = getPos(e);
-    dragStart = { x: pos.x, y: pos.y };
+    dragPointerStart = getPos(e);
     if (e.touches) e.preventDefault();
     e.stopPropagation();
   };
   const onDragMove = e => {
-    if (!dragId) return;
+    if (!dragId || !dragPointerStart) return;
     const start = lastDiagramPositions[dragId];
     if (!start) return;
     const pos = getPos(e);
-    const dx = (pos.x - dragStart.x) / scale;
-    const dy = (pos.y - dragStart.y) / scale;
+    const delta = convertPointerDeltaToView(pos.x - dragPointerStart.x, pos.y - dragPointerStart.y);
+    const dx = delta.x;
+    const dy = delta.y;
     let newX = start.x + dx;
     let newY = start.y + dy;
     if (gridSnap) {
-      const g = 20 / scale;
+      const g = 20;
       newX = Math.round(newX / g) * g;
       newY = Math.round(newY / g) * g;
     }
@@ -19736,16 +19764,17 @@ function enableDiagramInteractions() {
     if (e.touches) e.preventDefault();
   };
   const onDragEnd = e => {
-    if (!dragId) return;
+    if (!dragId || !dragPointerStart) return;
     const start = lastDiagramPositions[dragId];
     if (start) {
       const pos = getPos(e);
-      const dx = (pos.x - dragStart.x) / scale;
-      const dy = (pos.y - dragStart.y) / scale;
+      const delta = convertPointerDeltaToView(pos.x - dragPointerStart.x, pos.y - dragPointerStart.y);
+      const dx = delta.x;
+      const dy = delta.y;
       let newX = start.x + dx;
       let newY = start.y + dy;
       if (gridSnap) {
-        const g = 20 / scale;
+        const g = 20;
         newX = Math.round(newX / g) * g;
         newY = Math.round(newY / g) * g;
       }
@@ -19753,6 +19782,7 @@ function enableDiagramInteractions() {
     }
     dragId = null;
     dragNode = null;
+    dragPointerStart = null;
     renderSetupDiagram();
     if (e.touches) e.preventDefault();
   };
