@@ -320,7 +320,7 @@ table, th, td {
 
   #overviewDialogContent #setupDiagram svg {
     width: 100% !important;
-    max-width: 19cm !important;
+    max-width: 20cm !important;
   }
 }
 #overviewDialogContent #setupDiagram #diagramArea {
