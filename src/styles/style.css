@@ -1829,17 +1829,23 @@ body.pink-mode .auto-gear-rule-title,
 .auto-gear-multiselect {
   width: 100%;
   height: auto;
-  max-height: 18rem;
   overflow-y: auto;
 }
 
+.auto-gear-selector {
+  max-height: 18rem;
+}
+
 .auto-gear-multiselect {
-  min-height: 14rem;
   max-height: min(24rem, 60vh);
 }
 
+.auto-gear-device-multiselect {
+  min-height: 14rem;
+}
+
 @media (max-width: 640px) {
-  .auto-gear-multiselect {
+  .auto-gear-device-multiselect {
     min-height: 12rem;
   }
 }

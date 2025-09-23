@@ -85,13 +85,28 @@ describe('applyAutoGearRulesToTableHtml', () => {
       'autoGearDistance',
     ];
 
+    const fixedHeightSelectors = new Set([
+      'autoGearCamera',
+      'autoGearMonitor',
+      'autoGearWireless',
+      'autoGearMotors',
+      'autoGearControllers',
+    ]);
+
     selectorIds.forEach(id => {
       const select = document.getElementById(id);
       expect(select).not.toBeNull();
       if (!select) return;
       expect(select.multiple).toBe(true);
       const visibleRows = Number.parseInt(select.getAttribute('size') || '0', 10);
-      expect(visibleRows).toBeGreaterThanOrEqual(8);
+      const selectableOptions = Array.from(select.options || []).filter(option => !option.disabled);
+
+      if (fixedHeightSelectors.has(id)) {
+        expect(visibleRows).toBeGreaterThanOrEqual(8);
+      } else {
+        const expectedRows = Math.max(1, Math.min(selectableOptions.length, 12));
+        expect(visibleRows).toBe(expectedRows);
+      }
     });
   });
 
