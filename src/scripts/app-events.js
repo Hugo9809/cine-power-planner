@@ -318,6 +318,9 @@ setupSelect.addEventListener("change", (event) => {
       updateBatteryOptions();
       const storedProject = typeof loadProject === 'function' ? loadProject(setupName) : null;
       const html = setup.gearList || storedProject?.gearList || '';
+      if (html && typeof globalThis !== 'undefined') {
+        globalThis.__cineLastGearListHtml = html;
+      }
       currentProjectInfo = setup.projectInfo || storedProject?.projectInfo || null;
       const projectRulesSource = Array.isArray(setup.autoGearRules) && setup.autoGearRules.length
         ? setup.autoGearRules
@@ -432,7 +435,34 @@ function autoBackup(options = {}) {
       : '';
     const backupName = normalizedName ? `${baseName}-${normalizedName}` : baseName;
     const currentSetup = { ...getCurrentSetupState() };
-    const gearListHtml = getCurrentGearListHtml();
+    let gearListHtml = getCurrentGearListHtml();
+    if (!gearListHtml) {
+      const activeName = (setupSelect && typeof setupSelect.value === 'string'
+        ? setupSelect.value.trim()
+        : '')
+        || (setupNameInput && typeof setupNameInput.value === 'string'
+          ? setupNameInput.value.trim()
+          : '');
+      if (activeName) {
+        const setups = typeof getSetups === 'function' ? getSetups() : null;
+        const storedSetup = setups && typeof setups === 'object' ? setups[activeName] : null;
+        if (storedSetup && typeof storedSetup.gearList === 'string' && storedSetup.gearList.trim()) {
+          gearListHtml = storedSetup.gearList;
+        } else if (typeof loadProject === 'function') {
+          try {
+            const storedProject = loadProject(activeName);
+            if (storedProject && typeof storedProject.gearList === 'string' && storedProject.gearList.trim()) {
+              gearListHtml = storedProject.gearList;
+            }
+          } catch (error) {
+            console.warn('Failed to read stored project while preparing auto backup', error);
+          }
+        }
+      }
+      if (!gearListHtml && typeof globalThis !== 'undefined' && typeof globalThis.__cineLastGearListHtml === 'string') {
+        gearListHtml = globalThis.__cineLastGearListHtml;
+      }
+    }
     if (gearListHtml) {
       currentSetup.gearList = gearListHtml;
     }

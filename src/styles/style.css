@@ -5878,6 +5878,14 @@ body.dark-mode.pink-mode #gearListOutput h2,
   vertical-align: middle;
 }
 
+#gearListOutput select,
+#projectRequirementsOutput select {
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  color: inherit;
+}
+
 #gearListOutput .select-wrapper select,
 #projectRequirementsOutput .select-wrapper select {
   flex: 0 0 auto;

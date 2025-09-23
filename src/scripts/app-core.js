@@ -16437,10 +16437,28 @@ function displayGearAndRequirements(html) {
       gearListOutput.innerHTML = '';
       gearListOutput.classList.add('hidden');
     }
+
+    if (typeof ensureGearListActions === 'function') {
+      ensureGearListActions();
+    } else if (!gearListOutput.querySelector('#gearListActions')) {
+      const actions = document.createElement('div');
+      actions.id = 'gearListActions';
+      const note = document.createElement('p');
+      note.id = 'gearListAutosaveNote';
+      note.className = 'gear-list-autosave-note';
+      note.hidden = true;
+      note.setAttribute('hidden', '');
+      actions.appendChild(note);
+      gearListOutput.appendChild(actions);
+    }
   }
   if (loadedSetupState) {
     setSliderBowlValue(loadedSetupState.sliderBowl || '');
     setEasyrigValue(loadedSetupState.easyrig || '');
+  }
+  const combinedHtmlSnapshot = `${safeProjectHtml || ''}${safeGearHtml || ''}`.trim();
+  if (combinedHtmlSnapshot && typeof globalThis !== 'undefined') {
+    globalThis.__cineLastGearListHtml = combinedHtmlSnapshot;
   }
   updateGearListButtonVisibility();
   if (typeof updateAutoGearHighlightToggleButton === 'function') {
