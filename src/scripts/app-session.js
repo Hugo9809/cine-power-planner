@@ -5,9 +5,7 @@
           autoGearSearchInput, setAutoGearSearchQuery,
           autoGearFilterScenarioSelect, setAutoGearScenarioFilter,
           autoGearFilterClearButton, clearAutoGearFilters,
-          clearUiCacheStorageEntries, __cineGlobal,
-          autoGearEditorActiveItem, clearAutoGearDraftItemEdit,
-          beginAutoGearDraftItemEdit */
+          clearUiCacheStorageEntries, __cineGlobal */
 
 const temperaturePreferenceStorageKey =
   typeof TEMPERATURE_STORAGE_KEY === 'string'
