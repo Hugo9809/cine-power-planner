@@ -2563,6 +2563,42 @@
                 process.
               </li>
               <li>
+                <strong>Version history audits</strong> keep your change log organised. Toggle
+                <a
+                  class="help-link button-link"
+                  href="#backupDiffToggleButton"
+                  data-help-target="#backupDiffToggleButton"
+                  data-help-highlight="#backupDiffSection"
+                ><strong>Compare versions</strong></a>
+                to open the diff panel, pick two saves, review the highlighted summary, capture context in
+                <a
+                  class="help-link"
+                  href="#backupDiffNotes"
+                  data-help-target="#backupDiffNotes"
+                  data-help-highlight="#backupDiffSection"
+                >Incident notes</a>
+                and
+                <a
+                  class="help-link button-link"
+                  href="#backupDiffExport"
+                  data-help-target="#backupDiffExport"
+                  data-help-highlight="#backupDiffSection"
+                ><strong>Export log</strong></a>
+                for your archive.
+              </li>
+              <li>
+                <strong>Restore rehearsals</strong> verify backups without touching production data. Launch
+                <a
+                  class="help-link button-link"
+                  href="#restoreRehearsalButton"
+                  data-help-target="#restoreRehearsalButton"
+                  data-help-highlight="#restoreRehearsalSection"
+                ><strong>Restore rehearsal</strong></a>
+                to load the file into the sandbox, check the comparison table for mismatches, then run
+                <a class="help-link button-link" href="#restoreSettings" data-help-target="#restoreSettings"><strong>Restore</strong></a>
+                once everything lines up.
+              </li>
+              <li>
                 Combine the automatic layers with manual
                 <a
                   class="help-link button-link"
@@ -2618,10 +2654,17 @@
                 to confirm it loads correctly; close the dialog or skip saving if you are only testing the archive.
               </li>
               <li>
-                Periodically test full-app backups by running
-                <a class="help-link button-link" href="#restoreSettings" data-help-target="#restoreSettings"><strong>Restore</strong></a>.
-                The planner automatically creates a fresh safety snapshot before applying the file, letting you revert instantly
-                if anything looks unexpected.
+                Periodically test full-app backups by loading them with
+                <a
+                  class="help-link button-link"
+                  href="#restoreRehearsalButton"
+                  data-help-target="#restoreRehearsalButton"
+                  data-help-highlight="#restoreRehearsalSection"
+                ><strong>Restore rehearsal</strong></a>
+                first. Review the sandbox comparison, then run
+                <a class="help-link button-link" href="#restoreSettings" data-help-target="#restoreSettings"><strong>Restore</strong></a>
+                on the verified file; the planner still creates a fresh safety snapshot before applying anything so you can
+                revert instantly if needed.
               </li>
             </ol>
             <p class="help-callout-note">
@@ -3512,6 +3555,17 @@
               When you run <a class="help-link" href="#settingsDialog" data-help-target="#restoreSettings"><em>Restore</em></a>
               the planner downloads a fresh safety backup first. Keep that file until you have confirmed the restored data so you
               can revert instantly if anything looks off.
+            </li>
+            <li>
+              Unsure about a backup? Use
+              <a
+                class="help-link button-link"
+                href="#restoreRehearsalButton"
+                data-help-target="#restoreRehearsalButton"
+                data-help-highlight="#restoreRehearsalSection"
+              ><em>Restore rehearsal</em></a>
+              to inspect it in an isolated sandbox. The comparison table flags differences and the sandbox clears itself after
+              each run, keeping your live data untouched until you're ready to restore for real.
             </li>
             <li>
               To wipe everything clean, use
