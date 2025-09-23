@@ -8424,9 +8424,14 @@ const iosPwaHelpNote = document.getElementById("iosPwaHelpNote");
 const iosPwaHelpClose = document.getElementById("iosPwaHelpClose");
 const hoverHelpButton = document.getElementById("hoverHelpButton");
 const settingsButton  = document.getElementById("settingsButton");
+const settingsButtonIcon = settingsButton?.querySelector?.('.settings-button-icon');
 const settingsDialog  = document.getElementById("settingsDialog");
 if (settingsButton) {
   settingsButton.setAttribute('data-allow-hover-help', '');
+}
+if (settingsButtonIcon) {
+  applyIconGlyph(settingsButtonIcon, ICON_GLYPHS.gears);
+  settingsButtonIcon.setAttribute('aria-hidden', 'true');
 }
 if (settingsDialog) {
   settingsDialog.setAttribute('data-allow-hover-help', '');
