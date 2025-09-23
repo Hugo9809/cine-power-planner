@@ -29,6 +29,8 @@ try {
   // overview generation not needed in test environments without module support
 }
 
+const DESKTOP_DEFAULT_DIAGRAM_SCALE = 0.9;
+
 function resolveConnectorSummaryGenerator() {
   const scopes = [];
   if (typeof globalThis !== 'undefined') scopes.push(globalThis);
@@ -19917,6 +19919,9 @@ function renderSetupDiagram() {
         const DESKTOP_SCALE_RELAXATION = 0.35;
         desiredScale = 1 + (desiredScale - 1) * DESKTOP_SCALE_RELAXATION;
       }
+      if (!isTouchDevice && desiredScale > DESKTOP_DEFAULT_DIAGRAM_SCALE) {
+        desiredScale = DESKTOP_DEFAULT_DIAGRAM_SCALE;
+      }
       const MIN_AUTO_SCALE = isTouchDevice ? 0.4 : 0.35;
       const MAX_INITIAL_SCALE = isTouchDevice ? 3 : 1.6;
       const safeDesiredScale = Number.isFinite(desiredScale) && desiredScale > 0
@@ -20049,7 +20054,7 @@ function enableDiagramInteractions() {
   const BASE_MIN_SCALE = isTouchDevice ? 0.55 : 0.65;
   const MIN_AUTO_SCALE = isTouchDevice ? 0.4 : 0.35;
   const dataScaleRaw = parseFloat(setupDiagramContainer.dataset.initialScale || '');
-  const fallbackScale = isTouchDevice ? 0.95 : 1.0;
+  const fallbackScale = isTouchDevice ? 0.95 : DESKTOP_DEFAULT_DIAGRAM_SCALE;
   const initialScaleRaw = Number.isFinite(dataScaleRaw) && dataScaleRaw > 0
     ? dataScaleRaw
     : fallbackScale;
