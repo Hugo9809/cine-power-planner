@@ -5721,11 +5721,13 @@ function buildFilterGearEntries(filters = []) {
 }
 
 function formatFilterEntryText(entry) {
+  const labelText = typeof entry?.label === 'string' ? entry.label : '';
+  const hideDetails = labelText.toLowerCase().includes('filter set');
   const details = [];
-  if (entry.size) details.push(entry.size);
-  if (entry.values && entry.values.length) details.push(entry.values.join(', '));
+  if (!hideDetails && entry.size) details.push(entry.size);
+  if (!hideDetails && entry.values && entry.values.length) details.push(entry.values.join(', '));
   const suffix = details.length ? ` (${details.join(' • ')})` : '';
-  return `1x ${entry.label}${suffix}`;
+  return `1x ${labelText}${suffix}`;
 }
 
 function updateGearListFilterEntries(entries = []) {
