@@ -2529,22 +2529,51 @@ if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
   });
 }
 
+function getElementHeight(element) {
+  if (!element) return 0;
+  const rect = typeof element.getBoundingClientRect === 'function'
+    ? element.getBoundingClientRect()
+    : null;
+  if (rect && typeof rect.height === 'number' && rect.height > 0) {
+    return rect.height;
+  }
+  return element.offsetHeight || 0;
+}
+
+function setInstallBannerOffset(offset) {
+  if (typeof document === 'undefined') return;
+  const root = document.documentElement;
+  if (!root) return;
+  if (offset > 0) {
+    root.style.setProperty('--install-banner-offset', `${Math.ceil(offset)}px`);
+  } else {
+    root.style.removeProperty('--install-banner-offset');
+  }
+}
+
 function updateInstallBannerPosition() {
   if (typeof document === 'undefined') return;
   const installBanner = document.getElementById('installPromptBanner');
-  if (!installBanner) return;
-  const offlineIndicator = document.getElementById('offlineIndicator');
-  if (offlineIndicator && offlineIndicator.style.display !== 'none') {
-    const rect = typeof offlineIndicator.getBoundingClientRect === 'function'
-      ? offlineIndicator.getBoundingClientRect()
-      : null;
-    const height = rect && typeof rect.height === 'number' && rect.height > 0
-      ? rect.height
-      : offlineIndicator.offsetHeight || 0;
-    installBanner.style.top = `${height}px`;
-  } else {
-    installBanner.style.top = '0';
+  if (!installBanner) {
+    setInstallBannerOffset(0);
+    return;
   }
+
+  const offlineIndicator = document.getElementById('offlineIndicator');
+  const offlineHeight = offlineIndicator && offlineIndicator.style.display !== 'none'
+    ? getElementHeight(offlineIndicator)
+    : 0;
+
+  installBanner.style.top = `${offlineHeight}px`;
+
+  const bannerHeight = getElementHeight(installBanner);
+  if (!bannerHeight) {
+    setInstallBannerOffset(0);
+    return;
+  }
+
+  const totalOffset = offlineHeight + bannerHeight;
+  setInstallBannerOffset(totalOffset);
 }
 
 /**
@@ -12732,6 +12761,8 @@ function updateInstallBannerVisibility() {
     updateInstallBannerPosition();
   } else {
     installPromptBanner.setAttribute('hidden', '');
+    setInstallBannerOffset(0);
+    installPromptBanner.style.removeProperty('top');
   }
 }
 
@@ -12970,6 +13001,8 @@ function applyInstallTexts(lang) {
   if (installGuideDialog && !installGuideDialog.hasAttribute('hidden') && currentInstallGuidePlatform) {
     renderInstallGuideContent(currentInstallGuidePlatform, lang);
   }
+
+  updateInstallBannerPosition();
 }
 
 function shouldShowIosPwaHelp() {
