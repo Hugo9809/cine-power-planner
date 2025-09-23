@@ -3857,22 +3857,22 @@ body.light-mode #topBar select:focus-visible {
 
 .power-conn {
   border-color: var(--power-color);
-  background-color: var(--power-conn-bg);
+  background-color: transparent;
   --icon-color: var(--power-color);
 }
 .fiz-conn {
   border-color: var(--fiz-color);
-  background-color: var(--fiz-conn-bg);
+  background-color: transparent;
   --icon-color: var(--fiz-color);
 }
 .video-conn {
   border-color: var(--video-color);
-  background-color: var(--video-conn-bg);
+  background-color: transparent;
   --icon-color: var(--video-color);
 }
 .neutral-conn {
   border-color: var(--neutral-color);
-  background-color: var(--neutral-conn-bg);
+  background-color: transparent;
   --icon-color: var(--neutral-color);
 }
 
