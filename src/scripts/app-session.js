@@ -12,7 +12,8 @@
           handleAutoGearConditionShortcut,
           isAutoGearHighlightEnabled, setAutoGearHighlightEnabled,
           updateAutoGearHighlightToggleButton,
-          clearUiCacheStorageEntries, __cineGlobal, humanizeKey */
+          clearUiCacheStorageEntries, __cineGlobal, humanizeKey,
+          loadAutoGearRules */
 /* eslint-enable no-redeclare */
 
 const temperaturePreferenceStorageKey =
@@ -82,11 +83,6 @@ const {
   exportButton: backupDiffExportButtonEl,
   closeButton: backupDiffCloseButtonEl,
 } = createBackupDiffRefs();
-
-const BACKUP_DIFF_LOAD_FULL_BACKUP_VALUE = '__load_full_backup__';
-const BACKUP_DIFF_FULL_BACKUP_PREFIX = 'full-backup::';
-
-let backupDiffFileInputEl = null;
 
 function createRestoreRehearsalRefs() {
   const doc = typeof document !== 'undefined' ? document : null;
@@ -2595,8 +2591,6 @@ const SESSION_AUTO_BACKUP_NAME_PREFIX = 'auto-backup-';
 const SESSION_AUTO_BACKUP_DELETION_PREFIX = 'auto-backup-before-delete-';
 
 let backupDiffOptionsCache = [];
-const backupDiffLoadedFullBackups = [];
-let backupDiffFullBackupCounter = 0;
 const backupDiffState = {
   baseline: '',
   comparison: '',
@@ -2756,254 +2750,6 @@ function formatComparisonOptionLabel(name) {
     : `${typeLabel}${suffix ? ` · ${suffix}` : ''}`;
 }
 
-function ensureBackupDiffFileInput() {
-  if (backupDiffFileInputEl && backupDiffFileInputEl.ownerDocument === document) {
-    return backupDiffFileInputEl;
-  }
-  if (typeof document === 'undefined' || !document || !document.body) {
-    return null;
-  }
-  try {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = '.json,application/json';
-    input.style.display = 'none';
-    document.body.appendChild(input);
-    backupDiffFileInputEl = input;
-    return backupDiffFileInputEl;
-  } catch (error) {
-    console.warn('Failed to prepare file input for backup comparison', error);
-  }
-  return null;
-}
-
-function formatFullBackupOptionLabel(metadata = {}) {
-  const baseLabel = getDiffText('versionCompareFullBackupLabel', 'Full backup');
-  const parts = [baseLabel];
-
-  const generatedAt = typeof metadata.generatedAt === 'string'
-    ? metadata.generatedAt
-    : null;
-  if (generatedAt) {
-    const date = new Date(generatedAt);
-    if (!Number.isNaN(date.valueOf())) {
-      const includeSeconds = /:\d{2}(?:\.|Z|$)/.test(generatedAt) || generatedAt.split(':').length > 2;
-      const timestamp = formatTimestampForComparison(date, includeSeconds);
-      if (timestamp) {
-        parts.push(timestamp);
-      }
-    }
-  }
-
-  const fileName = typeof metadata.fileName === 'string' && metadata.fileName
-    ? metadata.fileName
-    : null;
-  if (fileName) {
-    parts.push(fileName);
-  }
-
-  const appVersion = typeof metadata.appVersion === 'string' && metadata.appVersion
-    ? metadata.appVersion
-    : null;
-  if (appVersion) {
-    parts.push(appVersion);
-  }
-
-  return parts.join(' · ');
-}
-
-function normalizeFullBackupForComparison(rawBackup, fileName) {
-  if (!rawBackup) {
-    return null;
-  }
-
-  let parsed = rawBackup;
-  if (typeof parsed === 'string') {
-    try {
-      parsed = JSON.parse(parsed);
-    } catch (error) {
-      console.warn('Failed to parse full backup payload for comparison', error);
-      return null;
-    }
-  }
-
-  if (!isPlainObject(parsed)) {
-    return null;
-  }
-
-  const snapshot = {};
-  const metadata = {};
-
-  const generatedAt = [
-    parsed.generatedAt,
-    parsed.createdAt,
-    parsed.created,
-    parsed.iso,
-    parsed.timestamp,
-  ].find((value) => typeof value === 'string' && value.trim());
-  if (generatedAt) {
-    metadata.generatedAt = generatedAt.trim();
-  }
-
-  if (typeof fileName === 'string' && fileName.trim()) {
-    metadata.fileName = fileName.trim();
-  }
-
-  const appVersion = [
-    parsed.appVersion,
-    parsed.applicationVersion,
-    parsed.version,
-  ].find((value) => typeof value === 'string' && value.trim());
-  if (appVersion) {
-    metadata.appVersion = appVersion.trim();
-  }
-
-  if (Object.keys(metadata).length) {
-    snapshot.metadata = metadata;
-  }
-
-  const storageSnapshot = extractFirstMatchingSnapshot(parsed, [
-    'settings',
-    'storage',
-    'localStorage',
-    'values',
-    'entries',
-  ]).snapshot;
-  if (storageSnapshot) {
-    snapshot.localStorage = storageSnapshot;
-  }
-
-  const sessionSnapshot = extractFirstMatchingSnapshot(parsed, [
-    'sessionStorage',
-    'sessionState',
-    'sessionEntries',
-  ]).snapshot;
-  if (sessionSnapshot) {
-    snapshot.sessionStorage = sessionSnapshot;
-  }
-
-  let dataSnapshot = null;
-  const dataCandidates = [
-    parsed.data,
-    parsed.plannerData,
-    parsed.allData,
-    parsed.payload,
-  ];
-  for (let i = 0; i < dataCandidates.length; i += 1) {
-    const candidate = dataCandidates[i];
-    if (isPlainObject(candidate)) {
-      dataSnapshot = { ...candidate };
-      break;
-    }
-  }
-
-  if (!dataSnapshot) {
-    dataSnapshot = {};
-  }
-
-  BACKUP_DATA_KEYS.forEach((key) => {
-    if (!Object.prototype.hasOwnProperty.call(parsed, key)) {
-      return;
-    }
-    const value = parsed[key];
-    if (value === undefined) {
-      return;
-    }
-    if (!isPlainObject(dataSnapshot)) {
-      dataSnapshot = {};
-    }
-    if (!Object.prototype.hasOwnProperty.call(dataSnapshot, key)) {
-      dataSnapshot[key] = value;
-    }
-  });
-
-  if (isPlainObject(dataSnapshot) && Object.keys(dataSnapshot).length) {
-    snapshot.data = dataSnapshot;
-  } else if (Array.isArray(dataSnapshot) && dataSnapshot.length) {
-    snapshot.data = dataSnapshot;
-  }
-
-  if (!Object.keys(snapshot).length) {
-    return cloneValueForExport(parsed);
-  }
-
-  return cloneValueForExport(snapshot);
-}
-
-function handleBackupDiffFileSelection(slot) {
-  if (typeof slot !== 'string') {
-    return;
-  }
-
-  const input = ensureBackupDiffFileInput();
-  if (!input) {
-    if (typeof showNotification === 'function') {
-      showNotification('error', getDiffText('versionCompareFullBackupLoadError', 'Unable to load full backup for comparison.'));
-    }
-    return;
-  }
-
-  input.value = '';
-
-  const handleChange = () => {
-    input.removeEventListener('change', handleChange);
-
-    const file = input.files && input.files[0] ? input.files[0] : null;
-    if (!file) {
-      populateBackupDiffSelectors();
-      return;
-    }
-
-    readFileAsText(file)
-      .then((rawPayload) => {
-        const sanitizedPayload = sanitizeBackupPayload(rawPayload);
-        if (!sanitizedPayload) {
-          throw new Error('Backup payload empty');
-        }
-        let parsed;
-        try {
-          parsed = JSON.parse(sanitizedPayload);
-        } catch (error) {
-          throw new Error('Invalid JSON backup payload');
-        }
-        const snapshot = normalizeFullBackupForComparison(parsed, file.name);
-        if (!snapshot) {
-          throw new Error('Unable to normalize backup payload');
-        }
-
-        if (snapshot.metadata && typeof snapshot.metadata === 'object' && !snapshot.metadata.fileName && file.name) {
-          snapshot.metadata.fileName = file.name;
-        }
-
-        const label = formatFullBackupOptionLabel(snapshot.metadata || { fileName: file.name });
-        backupDiffFullBackupCounter += 1;
-        const value = `${BACKUP_DIFF_FULL_BACKUP_PREFIX}${Date.now()}-${backupDiffFullBackupCounter}`;
-        backupDiffLoadedFullBackups.push({ value, label, data: snapshot });
-        backupDiffState[slot] = value;
-        populateBackupDiffSelectors();
-        if (typeof showNotification === 'function') {
-          showNotification('success', getDiffText('versionCompareFullBackupLoaded', 'Full backup ready for comparison.'));
-        }
-      })
-      .catch((error) => {
-        console.warn('Failed to load full backup for comparison', error);
-        if (typeof showNotification === 'function') {
-          showNotification('error', getDiffText('versionCompareFullBackupLoadError', 'Unable to load full backup for comparison.'));
-        }
-        populateBackupDiffSelectors();
-      });
-  };
-
-  input.addEventListener('change', handleChange, { once: true });
-
-  try {
-    input.click();
-  } catch (error) {
-    input.removeEventListener('change', handleChange);
-    console.warn('Failed to open file picker for full backup comparison', error);
-  }
-}
-
 function collectBackupDiffOptions() {
   const options = [];
   const setups = getSetups();
@@ -3026,14 +2772,6 @@ function collectBackupDiffOptions() {
     options.push(...setupOptions);
   }
 
-  if (backupDiffLoadedFullBackups.length) {
-    options.push(...backupDiffLoadedFullBackups.map(entry => ({
-      value: entry.value,
-      label: entry.label,
-      data: entry.data,
-    })));
-  }
-
   return options;
 }
 
@@ -3054,11 +2792,6 @@ function fillBackupDiffSelect(select, options, selectedValue) {
     opt.textContent = option.label;
     fragment.appendChild(opt);
   });
-
-  const loadOption = document.createElement('option');
-  loadOption.value = BACKUP_DIFF_LOAD_FULL_BACKUP_VALUE;
-  loadOption.textContent = getDiffText('versionCompareLoadFullBackup', 'Load full backup (.json)…');
-  fragment.appendChild(loadOption);
 
   select.innerHTML = '';
   select.appendChild(fragment);
@@ -3551,16 +3284,6 @@ function handleBackupDiffSelectionChange(event) {
     return;
   }
   const value = typeof target.value === 'string' ? target.value : '';
-  if (value === BACKUP_DIFF_LOAD_FULL_BACKUP_VALUE) {
-    if (target === backupDiffPrimarySelectEl) {
-      target.value = backupDiffState.baseline || '';
-      handleBackupDiffFileSelection('baseline');
-    } else if (target === backupDiffSecondarySelectEl) {
-      target.value = backupDiffState.comparison || '';
-      handleBackupDiffFileSelection('comparison');
-    }
-    return;
-  }
   if (target === backupDiffPrimarySelectEl) {
     backupDiffState.baseline = value;
   } else if (target === backupDiffSecondarySelectEl) {
@@ -3572,9 +3295,6 @@ function handleBackupDiffSelectionChange(event) {
 function getComparisonEntryType(name) {
   if (typeof name !== 'string') {
     return 'manual';
-  }
-  if (name.startsWith(BACKUP_DIFF_FULL_BACKUP_PREFIX)) {
-    return 'full-backup';
   }
   if (name.startsWith(SESSION_AUTO_BACKUP_DELETION_PREFIX)) {
     return 'auto-backup-before-delete';
