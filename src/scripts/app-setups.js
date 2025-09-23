@@ -1743,6 +1743,11 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
   const scenarios = info && info.requiredScenarios
       ? info.requiredScenarios.split(',').map(s => s.trim()).filter(Boolean)
       : [];
+  const normalizedScenarioSet = new Set(
+    scenarios
+      .map(normalizeAutoGearTriggerValue)
+      .filter(Boolean)
+  );
   const selectedMattebox = info && typeof info.mattebox === 'string'
       ? info.mattebox.trim()
       : '';
@@ -1760,7 +1765,7 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
   const hasViewfinderSelection = Boolean(rawViewfinderExtension);
   const normalizedViewfinderExtension = hasViewfinderSelection
       ? normalizeAutoGearTriggerValue(rawViewfinderExtension)
-      : '__none__';
+      : '';
   let videoDistribution = [];
   if (info && Array.isArray(info.videoDistribution)) {
     videoDistribution = info.videoDistribution;
@@ -1770,14 +1775,10 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
       .map(s => s.trim())
       .filter(Boolean);
   }
-  const normalizedVideoDistributionRaw = videoDistribution
+  const normalizedVideoDistribution = videoDistribution
     .map(normalizeVideoDistributionOptionValue)
-    .map(value => (value === '__none__' ? '__none__' : normalizeAutoGearTriggerValue(value)))
-    .filter(value => value || value === '__none__');
-  const hasRealVideoDistributionSelection = normalizedVideoDistributionRaw.some(value => value !== '__none__');
-  const normalizedVideoDistribution = hasRealVideoDistributionSelection
-    ? normalizedVideoDistributionRaw.filter(value => value !== '__none__')
-    : ['__none__'];
+    .map(value => (value === '__none__' ? '' : normalizeAutoGearTriggerValue(value)))
+    .filter(Boolean);
   const videoDistributionSet = new Set(normalizedVideoDistribution);
   const rawCameraSelection = info && typeof info.cameraSelection === 'string'
       ? info.cameraSelection.trim()
@@ -1848,8 +1849,12 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
 
     let triggered = autoGearRules.filter(rule => {
         const scenarioList = Array.isArray(rule.scenarios) ? rule.scenarios.filter(Boolean) : [];
-        if (scenarioList.length && !scenarioList.every(s => scenarios.includes(s))) {
-            return false;
+        if (scenarioList.length) {
+            const normalizedTargets = scenarioList
+                .map(normalizeAutoGearTriggerValue)
+                .filter(Boolean);
+            if (!normalizedTargets.length) return false;
+            if (!normalizedTargets.every(target => normalizedScenarioSet.has(target))) return false;
         }
         const matteboxList = Array.isArray(rule.mattebox) ? rule.mattebox.filter(Boolean) : [];
         if (matteboxList.length) {
@@ -1923,15 +1928,17 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
         const viewfinderList = Array.isArray(rule.viewfinderExtension) ? rule.viewfinderExtension.filter(Boolean) : [];
         if (viewfinderList.length) {
             const normalizedTargets = viewfinderList
-                .map(value => (value === '__none__' ? '__none__' : normalizeAutoGearTriggerValue(value)))
-                .filter(value => value || value === '__none__');
+                .map(value => normalizeAutoGearTriggerValue(value))
+                .filter(Boolean);
             if (!normalizedTargets.length) return false;
+            if (!normalizedViewfinderExtension) return false;
             if (!normalizedTargets.includes(normalizedViewfinderExtension)) return false;
         }
         const videoDistList = Array.isArray(rule.videoDistribution) ? rule.videoDistribution.filter(Boolean) : [];
         if (videoDistList.length) {
             const normalizedTargets = videoDistList
-                .map(normalizeAutoGearTriggerValue)
+                .map(value => normalizeVideoDistributionOptionValue(value))
+                .map(value => (value === '__none__' ? '' : normalizeAutoGearTriggerValue(value)))
                 .filter(Boolean);
             if (!normalizedTargets.length) return false;
             if (!normalizedTargets.every(target => videoDistributionSet.has(target))) return false;
