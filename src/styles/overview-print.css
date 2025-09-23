@@ -170,6 +170,15 @@ strong {
   color: var(--accent-color) !important;
 }
 
+#overviewDialogContent h2 {
+  font-size: calc(var(--font-size-base) * 1.4);
+  line-height: 1.3;
+}
+
+#overviewDialogContent .results-section > h2 {
+  font-size: calc(var(--font-size-base) * 1.4);
+}
+
 #overviewDialogContent strong,
 #overviewDialogContent b {
   color: var(--accent-color) !important;
