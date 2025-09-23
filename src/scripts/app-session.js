@@ -1699,6 +1699,7 @@ let pinkModeEnabled = false;
 let settingsInitialPinkMode = isPinkModeActive();
 let settingsInitialTemperatureUnit =
   typeof temperatureUnit === 'string' ? temperatureUnit : 'celsius';
+let settingsInitialShowAutoBackups = Boolean(showAutoBackups);
 
 function persistPinkModePreference(enabled) {
   pinkModeEnabled = !!enabled;
@@ -1746,6 +1747,70 @@ function revertSettingsTemperatureUnitIfNeeded() {
   }
 }
 
+function applyShowAutoBackupsPreference(enabled, options = {}) {
+  const config = typeof options === 'object' && options !== null ? options : {};
+  const persist = config.persist !== false;
+  const forceRepopulate = Boolean(config.forceRepopulate);
+  const normalized = Boolean(enabled);
+  const previousValue = Boolean(showAutoBackups);
+  const changed = normalized !== previousValue;
+
+  showAutoBackups = normalized;
+
+  if (persist && typeof localStorage !== 'undefined') {
+    try {
+      localStorage.setItem('showAutoBackups', normalized);
+    } catch (error) {
+      console.warn('Could not save auto backup visibility preference', error);
+    }
+  }
+
+  if (!changed && !forceRepopulate) {
+    if (settingsShowAutoBackups) {
+      settingsShowAutoBackups.checked = normalized;
+    }
+    return;
+  }
+
+  const prevValue = setupSelect ? setupSelect.value : '';
+  const prevName = setupNameInput ? setupNameInput.value : '';
+
+  try {
+    populateSetupSelect();
+  } catch (error) {
+    console.warn('Failed to refresh setup selector after changing auto backup visibility', error);
+  }
+
+  if (setupSelect) {
+    if (normalized || !prevValue || !prevValue.startsWith('auto-backup-')) {
+      setupSelect.value = prevValue;
+    } else {
+      setupSelect.value = '';
+    }
+  }
+
+  if (setupNameInput) {
+    setupNameInput.value = prevName;
+  }
+
+  if (settingsShowAutoBackups) {
+    settingsShowAutoBackups.checked = normalized;
+  }
+}
+
+function rememberSettingsShowAutoBackupsBaseline() {
+  settingsInitialShowAutoBackups = Boolean(showAutoBackups);
+}
+
+function revertSettingsShowAutoBackupsIfNeeded() {
+  const baseline = Boolean(settingsInitialShowAutoBackups);
+  if (Boolean(showAutoBackups) !== baseline) {
+    applyShowAutoBackupsPreference(baseline, { forceRepopulate: true });
+  } else if (settingsShowAutoBackups) {
+    settingsShowAutoBackups.checked = baseline;
+  }
+}
+
 try {
   pinkModeEnabled = localStorage.getItem('pinkMode') === 'true';
 } catch (e) {
@@ -1754,6 +1819,7 @@ try {
 applyPinkMode(pinkModeEnabled);
 rememberSettingsPinkModeBaseline();
 rememberSettingsTemperatureUnitBaseline();
+rememberSettingsShowAutoBackupsBaseline();
 
 if (pinkModeToggle) {
   pinkModeToggle.addEventListener("click", event => {
@@ -1770,6 +1836,12 @@ if (settingsPinkMode) {
   });
 }
 
+if (settingsShowAutoBackups) {
+  settingsShowAutoBackups.addEventListener('change', () => {
+    applyShowAutoBackupsPreference(settingsShowAutoBackups.checked);
+  });
+}
+
 if (settingsTemperatureUnit) {
   settingsTemperatureUnit.addEventListener('change', () => {
     applyTemperatureUnitPreference(settingsTemperatureUnit.value, {
@@ -1783,6 +1855,7 @@ if (settingsButton && settingsDialog) {
     prevAccentColor = accentColor;
     rememberSettingsPinkModeBaseline();
     rememberSettingsTemperatureUnitBaseline();
+    rememberSettingsShowAutoBackupsBaseline();
     if (settingsLanguage) settingsLanguage.value = currentLang;
     if (settingsDarkMode) settingsDarkMode.checked = document.body.classList.contains('dark-mode');
     if (settingsPinkMode) settingsPinkMode.checked = document.body.classList.contains('pink-mode');
@@ -1845,6 +1918,8 @@ if (settingsButton && settingsDialog) {
       rememberSettingsPinkModeBaseline();
       revertSettingsTemperatureUnitIfNeeded();
       rememberSettingsTemperatureUnitBaseline();
+      revertSettingsShowAutoBackupsIfNeeded();
+      rememberSettingsShowAutoBackupsBaseline();
       revertAccentColor();
       if (settingsLogo) settingsLogo.value = '';
       if (settingsLogoPreview) loadStoredLogoPreview();
@@ -1882,29 +1957,7 @@ if (settingsButton && settingsDialog) {
         }
       }
       if (settingsShowAutoBackups) {
-        const enabled = settingsShowAutoBackups.checked;
-        const changed = enabled !== showAutoBackups;
-        showAutoBackups = enabled;
-        try {
-          localStorage.setItem('showAutoBackups', enabled);
-        } catch (e) {
-          console.warn('Could not save auto backup visibility preference', e);
-        }
-        if (changed) {
-          const prevValue = setupSelect ? setupSelect.value : '';
-          const prevName = setupNameInput ? setupNameInput.value : '';
-          populateSetupSelect();
-          if (setupSelect) {
-            if (showAutoBackups || !prevValue.startsWith('auto-backup-')) {
-              setupSelect.value = prevValue;
-            } else {
-              setupSelect.value = '';
-            }
-          }
-          if (setupNameInput) {
-            setupNameInput.value = prevName;
-          }
-        }
+        applyShowAutoBackupsPreference(settingsShowAutoBackups.checked);
       }
       if (accentColorInput) {
         const color = accentColorInput.value;
@@ -1973,6 +2026,7 @@ if (settingsButton && settingsDialog) {
       collapseBackupDiffSection();
       rememberSettingsPinkModeBaseline();
       rememberSettingsTemperatureUnitBaseline();
+      rememberSettingsShowAutoBackupsBaseline();
       closeDialog(settingsDialog);
       settingsDialog.setAttribute('hidden', '');
     });
@@ -1984,6 +2038,8 @@ if (settingsButton && settingsDialog) {
       rememberSettingsPinkModeBaseline();
       revertSettingsTemperatureUnitIfNeeded();
       rememberSettingsTemperatureUnitBaseline();
+      revertSettingsShowAutoBackupsIfNeeded();
+      rememberSettingsShowAutoBackupsBaseline();
       revertAccentColor();
       if (settingsLogo) settingsLogo.value = '';
       if (settingsLogoPreview) loadStoredLogoPreview();
@@ -2000,6 +2056,8 @@ if (settingsButton && settingsDialog) {
     rememberSettingsPinkModeBaseline();
     revertSettingsTemperatureUnitIfNeeded();
     rememberSettingsTemperatureUnitBaseline();
+    revertSettingsShowAutoBackupsIfNeeded();
+    rememberSettingsShowAutoBackupsBaseline();
     revertAccentColor();
     if (settingsLogo) settingsLogo.value = '';
     if (settingsLogoPreview) loadStoredLogoPreview();

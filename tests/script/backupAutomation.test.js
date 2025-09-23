@@ -257,6 +257,89 @@ describe('automated backups', () => {
     expect(visibleValues).toContain(backupKey);
   });
 
+  test('show auto backups toggle reveals backups immediately', () => {
+    fakeTimersActive = true;
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date('2024-05-06T14:15:00'));
+
+    localStorage.clear();
+
+    const { autoBackup } = loadApp();
+
+    const setupsStore = { 'Main Setup': { projectInfo: { projectName: 'Main Setup' } } };
+    global.loadSetups.mockImplementation(() => setupsStore);
+    global.saveSetups.mockImplementation(() => {});
+
+    const setupSelect = document.getElementById('setupSelect');
+    const setupNameInput = document.getElementById('setupName');
+    const manualOption = document.createElement('option');
+    manualOption.value = 'Main Setup';
+    manualOption.textContent = 'Main Setup';
+    setupSelect.appendChild(manualOption);
+    setupSelect.value = 'Main Setup';
+    setupNameInput.value = 'Main Setup';
+
+    autoBackup();
+
+    const backupKey = Object.keys(setupsStore).find((name) => name.startsWith('auto-backup-'));
+    expect(backupKey).toBeDefined();
+    expect(Array.from(setupSelect.options).map((opt) => opt.value)).not.toContain(backupKey);
+
+    const settingsButton = document.getElementById('settingsButton');
+    settingsButton.click();
+
+    const settingsShowAutoBackups = document.getElementById('settingsShowAutoBackups');
+    settingsShowAutoBackups.checked = true;
+    settingsShowAutoBackups.dispatchEvent(new Event('change'));
+
+    expect(Array.from(setupSelect.options).map((opt) => opt.value)).toContain(backupKey);
+    expect(localStorage.getItem('showAutoBackups')).toBe('true');
+  });
+
+  test('cancelling settings restores previous auto backup visibility', () => {
+    fakeTimersActive = true;
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date('2024-05-06T14:45:00'));
+
+    localStorage.clear();
+
+    const { autoBackup } = loadApp();
+
+    const setupsStore = { 'Main Setup': { projectInfo: { projectName: 'Main Setup' } } };
+    global.loadSetups.mockImplementation(() => setupsStore);
+    global.saveSetups.mockImplementation(() => {});
+
+    const setupSelect = document.getElementById('setupSelect');
+    const setupNameInput = document.getElementById('setupName');
+    const manualOption = document.createElement('option');
+    manualOption.value = 'Main Setup';
+    manualOption.textContent = 'Main Setup';
+    setupSelect.appendChild(manualOption);
+    setupSelect.value = 'Main Setup';
+    setupNameInput.value = 'Main Setup';
+
+    autoBackup();
+
+    const backupKey = Object.keys(setupsStore).find((name) => name.startsWith('auto-backup-'));
+    expect(backupKey).toBeDefined();
+
+    const settingsButton = document.getElementById('settingsButton');
+    settingsButton.click();
+
+    const settingsShowAutoBackups = document.getElementById('settingsShowAutoBackups');
+    settingsShowAutoBackups.checked = true;
+    settingsShowAutoBackups.dispatchEvent(new Event('change'));
+
+    expect(Array.from(setupSelect.options).map((opt) => opt.value)).toContain(backupKey);
+    expect(localStorage.getItem('showAutoBackups')).toBe('true');
+
+    const settingsCancel = document.getElementById('settingsCancel');
+    settingsCancel.click();
+
+    expect(Array.from(setupSelect.options).map((opt) => opt.value)).not.toContain(backupKey);
+    expect(localStorage.getItem('showAutoBackups')).toBe('false');
+  });
+
   test('auto backups include unsaved setup names from the input field', () => {
     fakeTimersActive = true;
     jest.useFakeTimers();
