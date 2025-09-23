@@ -2111,8 +2111,8 @@ function downloadBackupPayload(payload, fileName) {
 }
 
 // --- Backup diff viewer ---
-const AUTO_BACKUP_NAME_PREFIX = 'auto-backup-';
-const AUTO_BACKUP_DELETION_PREFIX = 'auto-backup-before-delete-';
+const SESSION_AUTO_BACKUP_NAME_PREFIX = 'auto-backup-';
+const SESSION_AUTO_BACKUP_DELETION_PREFIX = 'auto-backup-before-delete-';
 
 let backupDiffOptionsCache = [];
 const backupDiffState = {
@@ -2158,16 +2158,16 @@ function formatNumberForComparison(value) {
 
 function isAutoBackupName(name) {
   return typeof name === 'string'
-    && (name.startsWith(AUTO_BACKUP_NAME_PREFIX)
-      || name.startsWith(AUTO_BACKUP_DELETION_PREFIX));
+    && (name.startsWith(SESSION_AUTO_BACKUP_NAME_PREFIX)
+      || name.startsWith(SESSION_AUTO_BACKUP_DELETION_PREFIX));
 }
 
 function parseAutoBackupName(name) {
   if (typeof name !== 'string') {
     return null;
   }
-  if (name.startsWith(AUTO_BACKUP_DELETION_PREFIX)) {
-    const remainder = name.slice(AUTO_BACKUP_DELETION_PREFIX.length);
+  if (name.startsWith(SESSION_AUTO_BACKUP_DELETION_PREFIX)) {
+    const remainder = name.slice(SESSION_AUTO_BACKUP_DELETION_PREFIX.length);
     const parts = remainder.split('-');
     if (parts.length >= 6) {
       const [year, month, day, hour, minute, second, ...rest] = parts;
@@ -2187,8 +2187,8 @@ function parseAutoBackupName(name) {
         includeSeconds: true,
       };
     }
-  } else if (name.startsWith(AUTO_BACKUP_NAME_PREFIX)) {
-    const remainder = name.slice(AUTO_BACKUP_NAME_PREFIX.length);
+  } else if (name.startsWith(SESSION_AUTO_BACKUP_NAME_PREFIX)) {
+    const remainder = name.slice(SESSION_AUTO_BACKUP_NAME_PREFIX.length);
     const parts = remainder.split('-');
     if (parts.length >= 5) {
       const [year, month, day, hour, minute, ...rest] = parts;
@@ -2657,10 +2657,10 @@ function getComparisonEntryType(name) {
   if (typeof name !== 'string') {
     return 'manual';
   }
-  if (name.startsWith(AUTO_BACKUP_DELETION_PREFIX)) {
+  if (name.startsWith(SESSION_AUTO_BACKUP_DELETION_PREFIX)) {
     return 'auto-backup-before-delete';
   }
-  if (name.startsWith(AUTO_BACKUP_NAME_PREFIX)) {
+  if (name.startsWith(SESSION_AUTO_BACKUP_NAME_PREFIX)) {
     return 'auto-backup';
   }
   return 'manual';
