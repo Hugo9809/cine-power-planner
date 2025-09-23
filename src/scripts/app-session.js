@@ -1,5 +1,13 @@
 // --- SESSION STATE HANDLING ---
-/* global resolveTemperatureStorageKey, TEMPERATURE_STORAGE_KEY, updateCageSelectOptions, updateAccentColorResetButtonState, normalizeAccentValue, DEFAULT_ACCENT_NORMALIZED, autoGearSearchInput, setAutoGearSearchQuery, autoGearFilterScenarioSelect, setAutoGearScenarioFilter, autoGearFilterClearButton, clearAutoGearFilters, clearUiCacheStorageEntries, __cineGlobal, autoGearEditorActiveItem, clearAutoGearDraftItemEdit, beginAutoGearDraftItemEdit */
+/* global resolveTemperatureStorageKey, TEMPERATURE_STORAGE_KEY,
+          updateCageSelectOptions, updateAccentColorResetButtonState,
+          normalizeAccentValue, DEFAULT_ACCENT_NORMALIZED,
+          autoGearSearchInput, setAutoGearSearchQuery,
+          autoGearFilterScenarioSelect, setAutoGearScenarioFilter,
+          autoGearFilterClearButton, clearAutoGearFilters,
+          clearUiCacheStorageEntries, __cineGlobal,
+          autoGearEditorActiveItem, clearAutoGearDraftItemEdit,
+          beginAutoGearDraftItemEdit */
 
 const temperaturePreferenceStorageKey =
   typeof TEMPERATURE_STORAGE_KEY === 'string'
