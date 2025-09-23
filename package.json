@@ -15,7 +15,7 @@
     "test:jest": "node --max-old-space-size=3072 ./node_modules/jest/bin/jest.js --runInBand",
     "test:unit": "node --max-old-space-size=1024 ./node_modules/jest/bin/jest.js --runInBand --selectProjects unit",
     "test:data": "node --max-old-space-size=1024 ./node_modules/jest/bin/jest.js --runInBand --selectProjects data",
-    "test:dom": "node --max-old-space-size=1536 ./node_modules/jest/bin/jest.js --runInBand --selectProjects dom",
+    "test:dom": "node --max-old-space-size=1536 tools/runDomTests.js",
     "test:script": "node --max-old-space-size=3072 ./node_modules/jest/bin/jest.js --runInBand --selectProjects script"
   },
   "keywords": [],
