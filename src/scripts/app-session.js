@@ -398,6 +398,94 @@ function bundleHasProject(bundle) {
   return false;
 }
 
+const RESTORE_REHEARSAL_BACKUP_HINT_KEYS = [
+  'data',
+  'payload',
+  'plannerData',
+  'allData',
+  'devices',
+  'setups',
+  'session',
+  'sessions',
+  'sessionStorage',
+  'sessionState',
+  'customLogo',
+  'customFonts',
+  'preferences',
+  'schemaCache',
+  'fullBackupHistory',
+];
+
+const RESTORE_REHEARSAL_PROJECT_HINT_KEYS = [
+  'setupName',
+  'camera',
+  'monitor',
+  'video',
+  'cage',
+  'distance',
+  'batteryPlate',
+  'battery',
+  'batteryHotswap',
+  'motors',
+  'controllers',
+  'project',
+  'projectInfo',
+  'projectHtml',
+  'gearList',
+  'gearSelectors',
+  'autoGearRules',
+  'favorites',
+  'feedback',
+  'changedDevices',
+];
+
+function hasAnyRestoreRehearsalKeys(source, keys) {
+  if (!isPlainObject(source)) {
+    return false;
+  }
+  for (let index = 0; index < keys.length; index += 1) {
+    const key = keys[index];
+    if (Object.prototype.hasOwnProperty.call(source, key)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function looksLikeRestoreRehearsalProjectBundle(bundle) {
+  if (!isPlainObject(bundle)) {
+    return false;
+  }
+  if (bundleHasProject(bundle)) {
+    return true;
+  }
+  if (hasAnyRestoreRehearsalKeys(bundle, RESTORE_REHEARSAL_PROJECT_HINT_KEYS)) {
+    return true;
+  }
+  const nestedProject = isPlainObject(bundle.project) ? bundle.project : null;
+  if (hasAnyRestoreRehearsalKeys(nestedProject, RESTORE_REHEARSAL_PROJECT_HINT_KEYS)) {
+    return true;
+  }
+  return false;
+}
+
+function looksLikeRestoreRehearsalBackupPayload(payload) {
+  if (!isPlainObject(payload)) {
+    return false;
+  }
+  if (hasAnyRestoreRehearsalKeys(payload, RESTORE_REHEARSAL_BACKUP_HINT_KEYS)) {
+    return true;
+  }
+  const candidateKeys = ['data', 'payload', 'plannerData', 'allData'];
+  for (let i = 0; i < candidateKeys.length; i += 1) {
+    const key = candidateKeys[i];
+    if (hasAnyRestoreRehearsalKeys(payload[key], RESTORE_REHEARSAL_BACKUP_HINT_KEYS)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 function summarizeProjectBundle(bundle) {
   if (!isPlainObject(bundle)) {
     return {
@@ -617,7 +705,18 @@ function runRestoreRehearsal(file) {
       const mode = getSelectedRestoreRehearsalMode();
       let sandboxCounts;
       if (mode === 'project') {
-        const parsed = JSON.parse(raw);
+        const sanitizedPayload = sanitizeBackupPayload(raw);
+        if (!sanitizedPayload || !sanitizedPayload.trim()) {
+          const mismatchError = new Error('Restore rehearsal received an empty project bundle.');
+          mismatchError.code = 'restore-rehearsal-project-mismatch';
+          throw mismatchError;
+        }
+        const parsed = JSON.parse(sanitizedPayload);
+        if (!looksLikeRestoreRehearsalProjectBundle(parsed)) {
+          const mismatchError = new Error('Restore rehearsal received an unrecognized project bundle.');
+          mismatchError.code = 'restore-rehearsal-project-mismatch';
+          throw mismatchError;
+        }
         sandboxCounts = summarizeProjectBundle(parsed);
       } else {
         const sanitizedPayload = sanitizeBackupPayload(raw);
@@ -625,6 +724,11 @@ function runRestoreRehearsal(file) {
           throw new Error('Backup payload empty');
         }
         const parsed = JSON.parse(sanitizedPayload);
+        if (!looksLikeRestoreRehearsalBackupPayload(parsed)) {
+          const mismatchError = new Error('Restore rehearsal received an unrecognized backup payload.');
+          mismatchError.code = 'restore-rehearsal-backup-mismatch';
+          throw mismatchError;
+        }
         const { data } = extractBackupSections(parsed);
         sandboxCounts = summarizeCountsFromData(isPlainObject(data) ? data : {});
       }
@@ -638,9 +742,19 @@ function runRestoreRehearsal(file) {
     .catch((error) => {
       console.warn('Restore rehearsal failed', error);
       if (restoreRehearsalStatusEl) {
-        const failureMessage = langTexts.restoreRehearsalError
-          || texts.en?.restoreRehearsalError
-          || 'Restore rehearsal failed. Check the file and try again.';
+        let failureMessage;
+        if (error && error.code === 'restore-rehearsal-project-mismatch') {
+          failureMessage = langTexts.restoreRehearsalProjectMismatch
+            || texts.en?.restoreRehearsalProjectMismatch;
+        } else if (error && error.code === 'restore-rehearsal-backup-mismatch') {
+          failureMessage = langTexts.restoreRehearsalBackupMismatch
+            || texts.en?.restoreRehearsalBackupMismatch;
+        }
+        if (!failureMessage) {
+          failureMessage = langTexts.restoreRehearsalError
+            || texts.en?.restoreRehearsalError
+            || 'Restore rehearsal failed. Check the file and try again.';
+        }
         restoreRehearsalStatusEl.textContent = failureMessage;
       }
       if (restoreRehearsalTableEl) {
@@ -4374,6 +4488,15 @@ if (restoreSettings && restoreSettingsInput) {
         }
         if (restoredPreferenceState.language) {
           setLanguage(restoredPreferenceState.language);
+        }
+        if (restoredSession && typeof sessionStorage !== 'undefined') {
+          Object.entries(restoredSession).forEach(([key, value]) => {
+            try {
+              sessionStorage.setItem(key, value);
+            } catch (sessionError) {
+              console.warn('Failed to refresh sessionStorage entry after restore', key, sessionError);
+            }
+          });
         }
         alert(texts[currentLang].restoreSuccess);
         finalizeRestore();
