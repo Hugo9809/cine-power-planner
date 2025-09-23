@@ -164,6 +164,191 @@ function countFavoritesEntries(favorites) {
   }, 0);
 }
 
+function projectInfoValueHasData(value) {
+  if (value === null || value === undefined) return false;
+  if (typeof value === 'string') return value.trim().length > 0;
+  if (typeof value === 'number') return !Number.isNaN(value);
+  if (typeof value === 'boolean') return value;
+  if (Array.isArray(value)) {
+    return value.some((item) => projectInfoValueHasData(item));
+  }
+  if (isPlainObject(value)) {
+    return Object.keys(value).some((key) => projectInfoValueHasData(value[key]));
+  }
+  return false;
+}
+
+function countCrewEntries(value) {
+  if (!value) return 0;
+  if (Array.isArray(value)) {
+    return value.reduce((total, entry) => total + countCrewEntries(entry), 0);
+  }
+  if (typeof value === 'string') {
+    return value
+      .split(/\r?\n+/)
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .length;
+  }
+  if (isPlainObject(value)) {
+    if (Array.isArray(value.people)) {
+      return countCrewEntries(value.people);
+    }
+    if (Array.isArray(value.entries)) {
+      return countCrewEntries(value.entries);
+    }
+    if (typeof value.text === 'string') {
+      return countCrewEntries(value.text);
+    }
+    if (
+      typeof value.name === 'string'
+      || typeof value.role === 'string'
+      || typeof value.phone === 'string'
+      || typeof value.email === 'string'
+      || typeof value.text === 'string'
+    ) {
+      const name = typeof value.name === 'string' ? value.name.trim() : '';
+      const role = typeof value.role === 'string' ? value.role.trim() : '';
+      const phone = typeof value.phone === 'string' ? value.phone.trim() : '';
+      const email = typeof value.email === 'string' ? value.email.trim() : '';
+      const text = typeof value.text === 'string' ? value.text.trim() : '';
+      return name || role || phone || email || text ? 1 : 0;
+    }
+    const nestedKeys = Object.keys(value).filter((key) => key !== '__html');
+    if (nestedKeys.length) {
+      return countCrewEntries(nestedKeys.map((key) => value[key]));
+    }
+  }
+  return 0;
+}
+
+function countScheduleEntries(value) {
+  if (!value) return 0;
+  if (Array.isArray(value)) {
+    return value.reduce((total, entry) => total + countScheduleEntries(entry), 0);
+  }
+  if (typeof value === 'string') {
+    return value
+      .split(/\r?\n+/)
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .length;
+  }
+  if (isPlainObject(value)) {
+    if (Array.isArray(value.entries)) {
+      return countScheduleEntries(value.entries);
+    }
+    if (typeof value.text === 'string') {
+      return countScheduleEntries(value.text);
+    }
+    if (typeof value.label === 'string' || typeof value.value === 'string') {
+      const label = typeof value.label === 'string' ? value.label.trim() : '';
+      const val = typeof value.value === 'string' ? value.value.trim() : '';
+      return label || val ? 1 : 0;
+    }
+    const nestedKeys = Object.keys(value).filter((key) => key !== '__html');
+    if (nestedKeys.length) {
+      return countScheduleEntries(nestedKeys.map((key) => value[key]));
+    }
+  }
+  return 0;
+}
+
+function summarizeProjectInfoStats(projectInfo) {
+  if (typeof projectInfo === 'string') {
+    try {
+      const parsed = JSON.parse(projectInfo);
+      if (isPlainObject(parsed)) {
+        return summarizeProjectInfoStats(parsed);
+      }
+    } catch (parseError) {
+      void parseError;
+    }
+  }
+
+  if (!projectInfo || typeof projectInfo !== 'object' || Array.isArray(projectInfo)) {
+    const hasDetails = projectInfoValueHasData(projectInfo);
+    return {
+      details: hasDetails ? 1 : 0,
+      crew: 0,
+      schedule: 0,
+      hasDetails,
+    };
+  }
+
+  let details = 0;
+  let crew = 0;
+  let schedule = 0;
+  let hasDetails = false;
+
+  Object.entries(projectInfo).forEach(([key, value]) => {
+    if (key === 'projectName') return;
+    if (projectInfoValueHasData(value)) {
+      details += 1;
+      hasDetails = true;
+    }
+    if (key === 'crew' || key === 'people') {
+      const crewCount = countCrewEntries(value);
+      if (crewCount > 0) {
+        crew += crewCount;
+        hasDetails = true;
+      }
+    }
+    if (key === 'prepDays' || key === 'shootingDays') {
+      const scheduleCount = countScheduleEntries(value);
+      if (scheduleCount > 0) {
+        schedule += scheduleCount;
+        hasDetails = true;
+      }
+    }
+  });
+
+  return { details, crew, schedule, hasDetails };
+}
+
+function summarizeProjectCollection(collection) {
+  const result = {
+    details: 0,
+    crew: 0,
+    schedule: 0,
+    hasProjectInfo: false,
+  };
+
+  if (!collection) {
+    return result;
+  }
+
+  const entries = Array.isArray(collection)
+    ? collection
+    : isPlainObject(collection)
+      ? Object.values(collection)
+      : [];
+
+  entries.forEach((entry) => {
+    if (!entry) return;
+    let info = null;
+    if (isPlainObject(entry) && Object.prototype.hasOwnProperty.call(entry, 'projectInfo')) {
+      info = entry.projectInfo;
+    } else if (
+      isPlainObject(entry)
+      && isPlainObject(entry.project)
+      && Object.prototype.hasOwnProperty.call(entry.project, 'projectInfo')
+    ) {
+      info = entry.project.projectInfo;
+    }
+    if (!info) return;
+    const stats = summarizeProjectInfoStats(info);
+    if (stats.hasDetails) {
+      result.hasProjectInfo = true;
+    }
+    result.details += stats.details;
+    result.crew += stats.crew;
+    result.schedule += stats.schedule;
+  });
+
+  return result;
+}
+
 function summarizeCountsFromData(data) {
   const setups = isPlainObject(data) && isPlainObject(data.setups) ? data.setups : {};
   const rules = isPlainObject(data) && Array.isArray(data.autoGearRules)
@@ -172,8 +357,21 @@ function summarizeCountsFromData(data) {
   const favorites = isPlainObject(data) && isPlainObject(data.favorites)
     ? data.favorites
     : {};
+  const storedProjects = isPlainObject(data) ? summarizeProjectCollection(data.project) : {
+    details: 0,
+    crew: 0,
+    schedule: 0,
+    hasProjectInfo: false,
+  };
+  const setupProjects = summarizeProjectCollection(setups);
+  const projectDetails = Math.max(storedProjects.details, setupProjects.details);
+  const projectCrew = Math.max(storedProjects.crew, setupProjects.crew);
+  const projectSchedule = Math.max(storedProjects.schedule, setupProjects.schedule);
   return {
     projects: countProjectsFromSetups(setups),
+    projectDetails,
+    projectCrew,
+    projectSchedules: projectSchedule,
     rules: rules.length,
     favorites: countFavoritesEntries(favorites),
   };
@@ -206,11 +404,28 @@ function bundleHasProject(bundle) {
 
 function summarizeProjectBundle(bundle) {
   if (!isPlainObject(bundle)) {
-    return { projects: 0, rules: 0, favorites: 0 };
+    return {
+      projects: 0,
+      projectDetails: 0,
+      projectCrew: 0,
+      projectSchedules: 0,
+      rules: 0,
+      favorites: 0,
+    };
   }
   const favorites = isPlainObject(bundle.favorites) ? bundle.favorites : {};
+  let projectInfo = null;
+  if (isPlainObject(bundle.projectInfo) || typeof bundle.projectInfo === 'string') {
+    projectInfo = bundle.projectInfo;
+  } else if (isPlainObject(bundle.project) && (isPlainObject(bundle.project.projectInfo) || typeof bundle.project.projectInfo === 'string')) {
+    projectInfo = bundle.project.projectInfo;
+  }
+  const projectStats = summarizeProjectInfoStats(projectInfo);
   return {
     projects: bundleHasProject(bundle) ? 1 : 0,
+    projectDetails: projectStats.details,
+    projectCrew: projectStats.crew,
+    projectSchedules: projectStats.schedule,
     rules: Array.isArray(bundle.autoGearRules) ? bundle.autoGearRules.length : 0,
     favorites: countFavoritesEntries(favorites),
   };
@@ -234,6 +449,9 @@ function buildRestoreRehearsalRows(liveCounts, sandboxCounts) {
   const langTexts = texts[lang] || texts.en || {};
   const metrics = [
     { key: 'projects', label: langTexts.restoreRehearsalMetricProjects || 'Projects' },
+    { key: 'projectDetails', label: langTexts.restoreRehearsalMetricProjectDetails || 'Project details' },
+    { key: 'projectCrew', label: langTexts.restoreRehearsalMetricCrew || 'Crew entries' },
+    { key: 'projectSchedules', label: langTexts.restoreRehearsalMetricSchedule || 'Schedule entries' },
     { key: 'rules', label: langTexts.restoreRehearsalMetricRules || 'Rules' },
     { key: 'favorites', label: langTexts.restoreRehearsalMetricFavorites || 'Favorites' },
   ];
