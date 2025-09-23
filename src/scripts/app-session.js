@@ -10,6 +10,7 @@
           autoGearConditionAddButton, addAutoGearConditionFromPicker,
           autoGearConditionList, removeAutoGearCondition,
           handleAutoGearConditionShortcut, loadAutoGearRules,
+          duplicateAutoGearRule,
           isAutoGearHighlightEnabled, setAutoGearHighlightEnabled,
           updateAutoGearHighlightToggleButton,
           clearUiCacheStorageEntries, __cineGlobal, humanizeKey,

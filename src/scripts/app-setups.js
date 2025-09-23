@@ -1582,6 +1582,22 @@ function dedupeAutoGearRuleSources(entries) {
     return normalized;
 }
 
+function formatAutoGearSelectorDisplayValue(type, value) {
+    const normalizedValue = typeof value === 'string' ? value : (value == null ? '' : String(value));
+    const scope = typeof globalThis !== 'undefined'
+        ? globalThis
+        : (typeof window !== 'undefined'
+            ? window
+            : (typeof self !== 'undefined' ? self : {}));
+    if (typeof scope.formatAutoGearSelectorValue === 'function') {
+        return scope.formatAutoGearSelectorValue(type, normalizedValue);
+    }
+    if (typeof addArriKNumber === 'function' && (type === 'monitor' || type === 'directorMonitor')) {
+        return addArriKNumber(normalizedValue);
+    }
+    return normalizedValue;
+}
+
 function getAutoGearRuleSources(span) {
     if (!span || !span.dataset) return [];
     const dataset = span.dataset;
@@ -1706,7 +1722,7 @@ function configureAutoGearSpan(span, normalizedItem, quantity, rule) {
             options.forEach(optionName => {
                 const option = document.createElement('option');
                 option.value = optionName;
-                option.textContent = typeof addArriKNumber === 'function' ? addArriKNumber(optionName) : optionName;
+                option.textContent = formatAutoGearSelectorDisplayValue(selectorType, optionName);
                 if (!normalizedDefaultValue && selectorDefault && optionName.toLowerCase() === selectorDefault.toLowerCase()) {
                     normalizedDefaultValue = option.value;
                 }
@@ -1715,9 +1731,7 @@ function configureAutoGearSpan(span, normalizedItem, quantity, rule) {
             if (selectorDefault && !normalizedDefaultValue) {
                 const fallbackOption = document.createElement('option');
                 fallbackOption.value = selectorDefault;
-                fallbackOption.textContent = typeof addArriKNumber === 'function'
-                    ? addArriKNumber(selectorDefault)
-                    : selectorDefault;
+                fallbackOption.textContent = formatAutoGearSelectorDisplayValue(selectorType, selectorDefault);
                 select.insertBefore(fallbackOption, select.firstChild);
                 normalizedDefaultValue = selectorDefault;
             }
@@ -1741,7 +1755,7 @@ function configureAutoGearSpan(span, normalizedItem, quantity, rule) {
             span.appendChild(document.createTextNode(' - '));
             span.appendChild(wrapper);
         } else if (selectorDefault) {
-            const formattedDefault = typeof addArriKNumber === 'function' ? addArriKNumber(selectorDefault) : selectorDefault;
+            const formattedDefault = formatAutoGearSelectorDisplayValue(selectorType, selectorDefault);
             span.appendChild(document.createTextNode(` - ${selectorLabel}: ${formattedDefault}`));
         } else if (selectorLabel) {
             span.appendChild(document.createTextNode(` - ${selectorLabel}`));

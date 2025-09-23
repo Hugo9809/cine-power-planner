@@ -424,9 +424,16 @@ var LEGAL_LINKS = {
 };
 var AUTO_GEAR_CUSTOM_CATEGORY = '';
 var GEAR_LIST_CATEGORIES = ['Camera', 'Camera Support', 'Media', 'Lens', 'Lens Support', 'Matte box + filter', 'LDS (FIZ)', 'Camera Batteries', 'Monitoring Batteries', 'Chargers', 'Monitoring', 'Monitoring support', 'Rigging', 'Power', 'Grip', 'Carts and Transportation', 'Miscellaneous', 'Consumables'];
-var AUTO_GEAR_SELECTOR_TYPES = ['none', 'monitor', 'directorMonitor'];
+var AUTO_GEAR_SELECTOR_TYPES = ['none', 'monitor', 'directorMonitor', 'tripodHeadBrand', 'tripodBowl', 'tripodTypes', 'tripodSpreader'];
 var AUTO_GEAR_SELECTOR_TYPE_SET = new Set(AUTO_GEAR_SELECTOR_TYPES);
 var AUTO_GEAR_MONITOR_FALLBACKS = ['SmallHD Ultra 7', 'SmallHD Focus', 'SmallHD Cine 7'];
+var AUTO_GEAR_TRIPOD_SELECTOR_TYPES = new Set(['tripodHeadBrand', 'tripodBowl', 'tripodTypes', 'tripodSpreader']);
+var AUTO_GEAR_TRIPOD_FIELD_IDS = {
+  tripodHeadBrand: 'tripodHeadBrand',
+  tripodBowl: 'tripodBowl',
+  tripodTypes: 'tripodTypes',
+  tripodSpreader: 'tripodSpreader'
+};
 function generateAutoGearId(prefix) {
   var base = prefix || 'rule';
   if (typeof crypto !== 'undefined' && crypto.randomUUID) {
@@ -507,6 +514,35 @@ function resolveDevicesSnapshot() {
     throw error;
   }
 }
+function resolveTripodPreferenceSelect(type) {
+  if (typeof document === 'undefined') return null;
+  var id = AUTO_GEAR_TRIPOD_FIELD_IDS[type];
+  if (!id) return null;
+  return document.getElementById(id);
+}
+function collectTripodPreferenceOptions(type) {
+  if (!AUTO_GEAR_TRIPOD_SELECTOR_TYPES.has(type)) return [];
+  var select = resolveTripodPreferenceSelect(type);
+  if (!select || !select.options) return [];
+  var options = Array.from(select.options);
+  var seen = new Set();
+  var results = [];
+  options.forEach(function (option) {
+    if (!option) return;
+    var value = typeof option.value === 'string' ? option.value.trim() : '';
+    var label = typeof option.textContent === 'string' ? option.textContent.trim() : '';
+    var storeValue = value || label;
+    if (!storeValue) return;
+    var key = storeValue.toLowerCase();
+    if (seen.has(key)) return;
+    seen.add(key);
+    results.push({
+      value: storeValue,
+      label: label || storeValue
+    });
+  });
+  return results;
+}
 function getAutoGearSelectorOptions(type) {
   var normalizedType = normalizeAutoGearSelectorType(type);
   var catalog = resolveDevicesSnapshot();
@@ -527,6 +563,11 @@ function getAutoGearSelectorOptions(type) {
       return name && name !== 'None';
     }).sort(localeSort);
   }
+  if (AUTO_GEAR_TRIPOD_SELECTOR_TYPES.has(normalizedType)) {
+    return collectTripodPreferenceOptions(normalizedType).map(function (option) {
+      return option.value;
+    });
+  }
   return [];
 }
 function getAutoGearSelectorLabel(type) {
@@ -541,6 +582,22 @@ function getAutoGearSelectorLabel(type) {
     var _texts$en2;
     return langTexts.autoGearSelectorDirectorOption || ((_texts$en2 = texts.en) === null || _texts$en2 === void 0 ? void 0 : _texts$en2.autoGearSelectorDirectorOption) || 'Director monitor selector';
   }
+  if (normalizedType === 'tripodHeadBrand') {
+    var _texts$en4;
+    return langTexts.autoGearSelectorTripodHeadOption || ((_texts$en4 = texts.en) === null || _texts$en4 === void 0 ? void 0 : _texts$en4.autoGearSelectorTripodHeadOption) || 'Tripod head selector';
+  }
+  if (normalizedType === 'tripodBowl') {
+    var _texts$en5;
+    return langTexts.autoGearSelectorTripodBowlOption || ((_texts$en5 = texts.en) === null || _texts$en5 === void 0 ? void 0 : _texts$en5.autoGearSelectorTripodBowlOption) || 'Tripod bowl selector';
+  }
+  if (normalizedType === 'tripodTypes') {
+    var _texts$en6;
+    return langTexts.autoGearSelectorTripodTypesOption || ((_texts$en6 = texts.en) === null || _texts$en6 === void 0 ? void 0 : _texts$en6.autoGearSelectorTripodTypesOption) || 'Tripod type selector';
+  }
+  if (normalizedType === 'tripodSpreader') {
+    var _texts$en7;
+    return langTexts.autoGearSelectorTripodSpreaderOption || ((_texts$en7 = texts.en) === null || _texts$en7 === void 0 ? void 0 : _texts$en7.autoGearSelectorTripodSpreaderOption) || 'Tripod spreader selector';
+  }
   return langTexts.autoGearSelectorNoneOption || ((_texts$en3 = texts.en) === null || _texts$en3 === void 0 ? void 0 : _texts$en3.autoGearSelectorNoneOption) || 'No selector';
 }
 function getAutoGearSelectorScrollHint() {
@@ -553,6 +610,24 @@ function getAutoGearSelectorDefaultPlaceholder() {
   var _texts$en5;
   var langTexts = texts[currentLang] || texts.en || {};
   return langTexts.autoGearSelectorDefaultPlaceholder || ((_texts$en5 = texts.en) === null || _texts$en5 === void 0 ? void 0 : _texts$en5.autoGearSelectorDefaultPlaceholder) || 'Choose a default device';
+}
+function formatAutoGearSelectorValue(type, value) {
+  var normalizedValue = typeof value === 'string' ? value.trim() : '';
+  if (!normalizedValue) return '';
+  var normalizedType = normalizeAutoGearSelectorType(type);
+  if (AUTO_GEAR_TRIPOD_SELECTOR_TYPES.has(normalizedType)) {
+    var options = collectTripodPreferenceOptions(normalizedType);
+    var match = options.find(function (option) {
+      return option.value.toLowerCase() === normalizedValue.toLowerCase();
+    });
+    if (match && match.label) {
+      return match.label;
+    }
+  }
+  if (typeof addArriKNumber === 'function' && (normalizedType === 'monitor' || normalizedType === 'directorMonitor')) {
+    return addArriKNumber(normalizedValue);
+  }
+  return normalizedValue;
 }
 function isAutoGearMonitoringCategory(value) {
   if (typeof value !== 'string') return false;
@@ -573,6 +648,23 @@ function isMonitoringCategorySelected(select) {
   }
   var optionLabel = typeof option.textContent === 'string' ? option.textContent : '';
   return isAutoGearMonitoringCategory(optionLabel);
+}
+function matchesTripodCategory(value) {
+  var normalized = typeof value === 'string' ? value.trim().toLowerCase() : '';
+  if (!normalized) return false;
+  if (normalized === 'camera support') return true;
+  return normalized.indexOf('tripod') !== -1;
+}
+function isTripodCategorySelected(select) {
+  var _select$options2;
+  if (!select) return false;
+  var directValue = typeof select.value === 'string' ? select.value : '';
+  if (matchesTripodCategory(directValue)) return true;
+  var option = ((_select$options2 = select.options) === null || _select$options2 === void 0 ? void 0 : _select$options2[select.selectedIndex]) || null;
+  if (!option) return false;
+  if (matchesTripodCategory(option.value)) return true;
+  var optionLabel = typeof option.textContent === 'string' ? option.textContent : '';
+  return matchesTripodCategory(optionLabel);
 }
 function setAutoGearFieldVisibility(field, isVisible) {
   if (!field) return;
@@ -611,14 +703,23 @@ function updateAutoGearMonitorFieldGroup(group) {
     selectorDefaultField = group.selectorDefaultField,
     selectorDefaultInput = group.selectorDefaultInput;
   var isMonitoring = isMonitoringCategorySelected(select);
-  var managedFields = [screenSizeField, selectorTypeField, selectorDefaultField];
-  managedFields.forEach(function (field) {
-    setAutoGearFieldVisibility(field, isMonitoring);
-  });
-  if (!isMonitoring) {
-    if (screenSizeInput) screenSizeInput.value = '';
+  var isTripod = isTripodCategorySelected(select);
+  var showScreenSize = isMonitoring;
+  var showSelectorFields = isMonitoring || isTripod;
+  setAutoGearFieldVisibility(screenSizeField, showScreenSize);
+  setAutoGearFieldVisibility(selectorTypeField, showSelectorFields);
+  setAutoGearFieldVisibility(selectorDefaultField, showSelectorFields);
+  if (!showScreenSize && screenSizeInput) {
+    screenSizeInput.value = '';
+  }
+  if (!showSelectorFields) {
     if (selectorTypeSelect) selectorTypeSelect.value = 'none';
-    if (selectorDefaultInput) selectorDefaultInput.value = '';
+    if (selectorDefaultInput) {
+      selectorDefaultInput.value = '';
+      if (selectorDefaultInput.dataset && Object.prototype.hasOwnProperty.call(selectorDefaultInput.dataset, 'autoGearPreferredDefault')) {
+        delete selectorDefaultInput.dataset.autoGearPreferredDefault;
+      }
+    }
   }
 }
 function normalizeAutoGearItem(entry) {
@@ -2128,8 +2229,8 @@ function collectAutoGearCatalogNames() {
 }
 function normalizeAutoGearMonitorCatalogMode(value) {
   var normalized = normalizeAutoGearSelectorType(value);
-  if (normalized === 'monitor') return 'monitor';
-  if (normalized === 'directorMonitor') return 'directorMonitor';
+  if (normalized === 'monitor' || normalized === 'directorMonitor') return normalized;
+  if (AUTO_GEAR_TRIPOD_SELECTOR_TYPES.has(normalized)) return normalized;
   return 'none';
 }
 var autoGearMonitorCatalogMode = 'none';
@@ -2177,6 +2278,72 @@ function collectAutoGearMonitorNames() {
   AUTO_GEAR_MONITOR_FALLBACKS.forEach(addName);
   return Array.from(names).sort(localeSort);
 }
+function collectAutoGearSelectorValuesFromRules(type) {
+  var normalized = normalizeAutoGearSelectorType(type);
+  if (normalized === 'none') return [];
+  var values = new Set();
+  var addValue = function addValue(value) {
+    if (typeof value !== 'string') return;
+    var trimmed = value.trim();
+    if (!trimmed) return;
+    values.add(trimmed);
+  };
+  autoGearRules.forEach(function (rule) {
+    var processItem = function processItem(item) {
+      if (!item || _typeof(item) !== 'object') return;
+      if (normalizeAutoGearSelectorType(item.selectorType) !== normalized) return;
+      addValue(item.selectorDefault);
+    };
+    (rule.add || []).forEach(processItem);
+    (rule.remove || []).forEach(processItem);
+  });
+  return Array.from(values);
+}
+function collectAutoGearTripodNames(type) {
+  if (!AUTO_GEAR_TRIPOD_SELECTOR_TYPES.has(type)) return [];
+  var baseOptions = collectTripodPreferenceOptions(type);
+  var seen = new Set();
+  var results = [];
+  baseOptions.forEach(function (option) {
+    if (!option || !option.value) return;
+    var key = option.value.trim().toLowerCase();
+    if (seen.has(key)) return;
+    seen.add(key);
+    results.push({
+      value: option.value.trim(),
+      label: option.label || option.value.trim()
+    });
+  });
+  var extras = collectAutoGearSelectorValuesFromRules(type).map(function (value) {
+    return value.trim();
+  }).filter(Boolean).sort(localeSort);
+  extras.forEach(function (value) {
+    var key = value.toLowerCase();
+    if (seen.has(key)) return;
+    seen.add(key);
+    results.push({
+      value: value,
+      label: value
+    });
+  });
+  return results;
+}
+function collectAutoGearSelectorDefaultEntries(type) {
+  var mode = normalizeAutoGearMonitorCatalogMode(type);
+  if (mode === 'none') return [];
+  if (mode === 'monitor' || mode === 'directorMonitor') {
+    return collectAutoGearMonitorNames(mode).map(function (name) {
+      return {
+        value: name,
+        label: formatAutoGearSelectorValue(mode, name)
+      };
+    });
+  }
+  if (AUTO_GEAR_TRIPOD_SELECTOR_TYPES.has(mode)) {
+    return collectAutoGearTripodNames(mode);
+  }
+  return [];
+}
 function updateAutoGearMonitorCatalogOptions() {
   var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : autoGearMonitorCatalogMode;
   var targetElements = arguments.length > 1 ? arguments[1] : undefined;
@@ -2190,7 +2357,7 @@ function updateAutoGearMonitorCatalogOptions() {
     });
     var selectorType = relatedGroup && relatedGroup.selectorTypeSelect ? relatedGroup.selectorTypeSelect.value : autoGearMonitorCatalogMode;
     var mode = normalizeAutoGearMonitorCatalogMode(selectorType);
-    var names = mode === 'none' ? [] : collectAutoGearMonitorNames(mode);
+    var entries = mode === 'none' ? [] : collectAutoGearSelectorDefaultEntries(mode);
     var previousValue = select.value || '';
     var preferredValue = typeof select.dataset.autoGearPreferredDefault === 'string' ? select.dataset.autoGearPreferredDefault : '';
     if (Object.prototype.hasOwnProperty.call(select.dataset, 'autoGearPreferredDefault')) {
@@ -2203,26 +2370,35 @@ function updateAutoGearMonitorCatalogOptions() {
     placeholderOption.textContent = placeholder;
     select.appendChild(placeholderOption);
     var added = new Set(['']);
-    var addOption = function addOption(name) {
-      if (typeof name !== 'string') return;
-      var trimmed = name.trim();
-      if (!trimmed || added.has(trimmed)) return;
+    var addOption = function addOption(value, label) {
+      var trimmedValue = typeof value === 'string' ? value.trim() : '';
+      if (!trimmedValue) return;
+      var key = trimmedValue.toLowerCase();
+      if (added.has(key)) return;
       var option = document.createElement('option');
-      option.value = trimmed;
-      option.textContent = trimmed;
+      option.value = trimmedValue;
+      option.textContent = label || formatAutoGearSelectorValue(mode, trimmedValue);
       select.appendChild(option);
-      added.add(trimmed);
+      added.add(key);
     };
-    names.forEach(addOption);
+    entries.forEach(function (entry) {
+      if (entry && _typeof(entry) === 'object') {
+        addOption(entry.value, entry.label);
+      } else {
+        addOption(entry);
+      }
+    });
     var desiredValue = preferredValue || previousValue;
-    if (desiredValue && !added.has(desiredValue)) {
+    var desiredKey = desiredValue ? desiredValue.trim().toLowerCase() : '';
+    var previousKey = previousValue ? previousValue.trim().toLowerCase() : '';
+    if (desiredValue && !added.has(desiredKey)) {
       addOption(desiredValue);
-    } else if (!desiredValue && previousValue && !added.has(previousValue)) {
+    } else if (!desiredValue && previousValue && !added.has(previousKey)) {
       addOption(previousValue);
     }
-    if (desiredValue && added.has(desiredValue)) {
+    if (desiredValue && added.has(desiredKey)) {
       select.value = desiredValue;
-    } else if (previousValue && added.has(previousValue)) {
+    } else if (previousValue && added.has(previousKey)) {
       select.value = previousValue;
     } else {
       select.value = '';
@@ -2230,7 +2406,7 @@ function updateAutoGearMonitorCatalogOptions() {
     var enableSelection = mode !== 'none' && select.options.length > 1;
     select.disabled = !enableSelection;
     var scrollHint = getAutoGearSelectorScrollHint();
-    if (enableSelection && names.length > 10) {
+    if (enableSelection && entries.length > 10) {
       select.setAttribute('title', scrollHint);
       select.setAttribute('data-help', scrollHint);
     } else {
@@ -4648,15 +4824,27 @@ function setLanguage(lang) {
     var _label34 = texts[lang].autoGearAddSelectorTypeLabel || ((_texts$en106 = texts.en) === null || _texts$en106 === void 0 ? void 0 : _texts$en106.autoGearAddSelectorTypeLabel) || autoGearAddSelectorTypeLabel.textContent;
     autoGearAddSelectorTypeLabel.textContent = _label34;
     if (autoGearAddSelectorTypeSelect) {
-      var _texts$en107, _texts$en108, _texts$en109;
+      var _texts$en107, _texts$en108, _texts$en109, _texts$en110, _texts$en111, _texts$en112, _texts$en113;
       autoGearAddSelectorTypeSelect.setAttribute('aria-label', _label34);
       var noneLabel = texts[lang].autoGearSelectorNoneOption || ((_texts$en107 = texts.en) === null || _texts$en107 === void 0 ? void 0 : _texts$en107.autoGearSelectorNoneOption) || 'No selector';
       var monitorLabel = texts[lang].autoGearSelectorMonitorOption || ((_texts$en108 = texts.en) === null || _texts$en108 === void 0 ? void 0 : _texts$en108.autoGearSelectorMonitorOption) || 'Monitor selector';
       var directorLabel = texts[lang].autoGearSelectorDirectorOption || ((_texts$en109 = texts.en) === null || _texts$en109 === void 0 ? void 0 : _texts$en109.autoGearSelectorDirectorOption) || 'Director monitor selector';
+      var tripodHeadLabel = texts[lang].autoGearSelectorTripodHeadOption || ((_texts$en110 = texts.en) === null || _texts$en110 === void 0 ? void 0 : _texts$en110.autoGearSelectorTripodHeadOption) || 'Tripod head selector';
+      var tripodBowlLabel = texts[lang].autoGearSelectorTripodBowlOption || ((_texts$en111 = texts.en) === null || _texts$en111 === void 0 ? void 0 : _texts$en111.autoGearSelectorTripodBowlOption) || 'Tripod bowl selector';
+      var tripodTypesLabel = texts[lang].autoGearSelectorTripodTypesOption || ((_texts$en112 = texts.en) === null || _texts$en112 === void 0 ? void 0 : _texts$en112.autoGearSelectorTripodTypesOption) || 'Tripod type selector';
+      var tripodSpreaderLabel = texts[lang].autoGearSelectorTripodSpreaderOption || ((_texts$en113 = texts.en) === null || _texts$en113 === void 0 ? void 0 : _texts$en113.autoGearSelectorTripodSpreaderOption) || 'Tripod spreader selector';
+      var selectorLabels = new Map([
+        ['none', noneLabel],
+        ['monitor', monitorLabel],
+        ['directorMonitor', directorLabel],
+        ['tripodHeadBrand', tripodHeadLabel],
+        ['tripodBowl', tripodBowlLabel],
+        ['tripodTypes', tripodTypesLabel],
+        ['tripodSpreader', tripodSpreaderLabel]
+      ]);
       Array.from(autoGearAddSelectorTypeSelect.options || []).forEach(function (opt) {
-        if (opt.value === 'none') opt.textContent = noneLabel;
-        if (opt.value === 'monitor') opt.textContent = monitorLabel;
-        if (opt.value === 'directorMonitor') opt.textContent = directorLabel;
+        var text = selectorLabels.get(opt.value);
+        if (text) opt.textContent = text;
       });
     }
   }
@@ -4729,15 +4917,27 @@ function setLanguage(lang) {
     var _label41 = texts[lang].autoGearRemoveSelectorTypeLabel || ((_texts$en118 = texts.en) === null || _texts$en118 === void 0 ? void 0 : _texts$en118.autoGearRemoveSelectorTypeLabel) || autoGearRemoveSelectorTypeLabel.textContent;
     autoGearRemoveSelectorTypeLabel.textContent = _label41;
     if (autoGearRemoveSelectorTypeSelect) {
-      var _texts$en119, _texts$en120, _texts$en121;
+      var _texts$en119, _texts$en120, _texts$en121, _texts$en122, _texts$en123, _texts$en124, _texts$en125;
       autoGearRemoveSelectorTypeSelect.setAttribute('aria-label', _label41);
       var _noneLabel = texts[lang].autoGearSelectorNoneOption || ((_texts$en119 = texts.en) === null || _texts$en119 === void 0 ? void 0 : _texts$en119.autoGearSelectorNoneOption) || 'No selector';
       var _monitorLabel = texts[lang].autoGearSelectorMonitorOption || ((_texts$en120 = texts.en) === null || _texts$en120 === void 0 ? void 0 : _texts$en120.autoGearSelectorMonitorOption) || 'Monitor selector';
       var _directorLabel = texts[lang].autoGearSelectorDirectorOption || ((_texts$en121 = texts.en) === null || _texts$en121 === void 0 ? void 0 : _texts$en121.autoGearSelectorDirectorOption) || 'Director monitor selector';
+      var _tripodHeadLabel = texts[lang].autoGearSelectorTripodHeadOption || ((_texts$en122 = texts.en) === null || _texts$en122 === void 0 ? void 0 : _texts$en122.autoGearSelectorTripodHeadOption) || 'Tripod head selector';
+      var _tripodBowlLabel = texts[lang].autoGearSelectorTripodBowlOption || ((_texts$en123 = texts.en) === null || _texts$en123 === void 0 ? void 0 : _texts$en123.autoGearSelectorTripodBowlOption) || 'Tripod bowl selector';
+      var _tripodTypesLabel = texts[lang].autoGearSelectorTripodTypesOption || ((_texts$en124 = texts.en) === null || _texts$en124 === void 0 ? void 0 : _texts$en124.autoGearSelectorTripodTypesOption) || 'Tripod type selector';
+      var _tripodSpreaderLabel = texts[lang].autoGearSelectorTripodSpreaderOption || ((_texts$en125 = texts.en) === null || _texts$en125 === void 0 ? void 0 : _texts$en125.autoGearSelectorTripodSpreaderOption) || 'Tripod spreader selector';
+      var removeSelectorLabels = new Map([
+        ['none', _noneLabel],
+        ['monitor', _monitorLabel],
+        ['directorMonitor', _directorLabel],
+        ['tripodHeadBrand', _tripodHeadLabel],
+        ['tripodBowl', _tripodBowlLabel],
+        ['tripodTypes', _tripodTypesLabel],
+        ['tripodSpreader', _tripodSpreaderLabel]
+      ]);
       Array.from(autoGearRemoveSelectorTypeSelect.options || []).forEach(function (opt) {
-        if (opt.value === 'none') opt.textContent = _noneLabel;
-        if (opt.value === 'monitor') opt.textContent = _monitorLabel;
-        if (opt.value === 'directorMonitor') opt.textContent = _directorLabel;
+        var text = removeSelectorLabels.get(opt.value);
+        if (text) opt.textContent = text;
       });
     }
   }
@@ -9428,7 +9628,7 @@ function formatAutoGearItemSummary(item) {
   }
   if (selectorType && selectorType !== 'none') {
     var selectorLabel = getAutoGearSelectorLabel(selectorType);
-    var formattedDefault = selectorDefault ? addArriKNumber(selectorDefault) : '';
+    var formattedDefault = selectorDefault ? formatAutoGearSelectorValue(selectorType, selectorDefault) : '';
     if (selectorEnabled) {
       var _texts$en160, _texts$en161;
       var selectorTemplate = formattedDefault ? langTexts.autoGearSelectorSummaryWithDefault || ((_texts$en160 = texts.en) === null || _texts$en160 === void 0 ? void 0 : _texts$en160.autoGearSelectorSummaryWithDefault) || '%s selector (default: %s)' : langTexts.autoGearSelectorSummary || ((_texts$en161 = texts.en) === null || _texts$en161 === void 0 ? void 0 : _texts$en161.autoGearSelectorSummary) || '%s selector';
