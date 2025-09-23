@@ -480,7 +480,7 @@ body:not(.light-mode) .gear-table .category-row td {
 
 .video-conn {
   background: var(--panel-bg) !important;
-  border: 1px dotted var(--video-color) !important;
+  border: 1px solid var(--video-color) !important;
   --icon-color: var(--video-color);
 }
 
