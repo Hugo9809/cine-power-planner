@@ -14722,6 +14722,21 @@ let restoringSession = false;
 let skipNextGearListRefresh = false;
 
 let defaultProjectInfoSnapshot = null;
+const DEFAULT_PROJECT_INFO_FIELDS = new Set([
+  'viewfinderEyeLeatherColor',
+  'monitoringConfiguration'
+]);
+
+function extractDefaultProjectInfoFields(info) {
+  if (!info || typeof info !== 'object') return {};
+  const defaults = {};
+  DEFAULT_PROJECT_INFO_FIELDS.forEach(field => {
+    if (Object.prototype.hasOwnProperty.call(info, field)) {
+      defaults[field] = info[field];
+    }
+  });
+  return defaults;
+}
 
 function sanitizeProjectInfoValue(value) {
   if (value === null || value === undefined) return undefined;
@@ -14788,7 +14803,14 @@ function ensureDefaultProjectInfoSnapshot() {
   const baseInfo = collectProjectFormData ? collectProjectFormData() : {};
   baseInfo.sliderBowl = getSliderBowlValue();
   baseInfo.easyrig = getEasyrigValue();
-  defaultProjectInfoSnapshot = sanitizeProjectInfo(baseInfo) || {};
+  const sanitizedBase = sanitizeProjectInfo(baseInfo) || {};
+  const baseKeys = Object.keys(sanitizedBase);
+  if (baseKeys.some(key => !DEFAULT_PROJECT_INFO_FIELDS.has(key))) {
+    const defaultsOnly = extractDefaultProjectInfoFields(sanitizedBase);
+    defaultProjectInfoSnapshot = sanitizeProjectInfo(defaultsOnly) || {};
+    return;
+  }
+  defaultProjectInfoSnapshot = sanitizedBase;
 }
 
 function deriveProjectInfo(info) {
