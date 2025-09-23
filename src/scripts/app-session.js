@@ -1585,7 +1585,7 @@ function handlePinkModeIconPress() {
   pinkModeIconPressCount += 1;
   schedulePinkModeIconPressReset();
   if (
-    pinkModeIconPressCount > PINK_MODE_ICON_RAIN_PRESS_TRIGGER_COUNT &&
+    pinkModeIconPressCount >= PINK_MODE_ICON_RAIN_PRESS_TRIGGER_COUNT &&
     typeof triggerPinkModeIconRain === 'function'
   ) {
     pinkModeIconPressCount = 0;
