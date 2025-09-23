@@ -4270,15 +4270,27 @@ function setLanguage(lang) {
     }
   }
   const accentLabel = document.getElementById("accentColorLabel");
+  const accentHelp = texts[lang].accentColorHelp || texts[lang].accentColorSetting;
   if (accentLabel) {
     accentLabel.textContent = texts[lang].accentColorSetting;
-    const accentHelp =
-      texts[lang].accentColorHelp || texts[lang].accentColorSetting;
     accentLabel.setAttribute("data-help", accentHelp);
-    if (accentColorInput) {
-      accentColorInput.setAttribute("data-help", accentHelp);
-      accentColorInput.setAttribute("aria-label", texts[lang].accentColorSetting);
-    }
+  }
+  if (accentColorInput) {
+    accentColorInput.setAttribute("data-help", accentHelp);
+    accentColorInput.setAttribute("aria-label", texts[lang].accentColorSetting);
+  }
+  if (accentColorResetButton) {
+    const accentResetLabel =
+      (texts[lang] && texts[lang].accentColorReset) ||
+      (texts.en && texts.en.accentColorReset) ||
+      accentColorResetButton.textContent ||
+      'Reset to default';
+    const accentResetHelp =
+      (texts[lang] && texts[lang].accentColorResetHelp) || accentHelp;
+    accentColorResetButton.textContent = accentResetLabel;
+    accentColorResetButton.setAttribute('data-help', accentResetHelp);
+    accentColorResetButton.setAttribute('aria-label', accentResetHelp);
+    accentColorResetButton.setAttribute('title', accentResetHelp);
   }
   const settingsTemperatureUnitLabel = document.getElementById('settingsTemperatureUnitLabel');
   if (settingsTemperatureUnitLabel) {
@@ -8424,6 +8436,7 @@ const settingsLanguage = document.getElementById("settingsLanguage");
 const settingsDarkMode = document.getElementById("settingsDarkMode");
 const settingsPinkMode = document.getElementById("settingsPinkMode");
 const accentColorInput = document.getElementById("accentColorInput");
+const accentColorResetButton = document.getElementById("accentColorReset");
 const settingsTemperatureUnit = document.getElementById('settingsTemperatureUnit');
 const settingsFontSize = document.getElementById("settingsFontSize");
 const settingsFontFamily = document.getElementById("settingsFontFamily");
@@ -12878,6 +12891,24 @@ const DEFAULT_ACCENT_NORMALIZED = DEFAULT_ACCENT_COLOR.toLowerCase();
 const normalizeAccentValue = value =>
   typeof value === 'string' ? value.trim().toLowerCase() : '';
 
+const updateAccentColorResetButtonState = () => {
+  if (!accentColorResetButton) return;
+  const body = typeof document !== 'undefined' ? document.body : null;
+  const pinkModeActive = !!(body && body.classList.contains('pink-mode'));
+  const inputDisabled = !accentColorInput || accentColorInput.disabled;
+  const currentValue = accentColorInput
+    ? normalizeAccentValue(accentColorInput.value || '')
+    : '';
+  const isDefaultSelection = !currentValue || currentValue === DEFAULT_ACCENT_NORMALIZED;
+  const shouldDisable = pinkModeActive || inputDisabled || isDefaultSelection;
+  accentColorResetButton.disabled = shouldDisable;
+  if (shouldDisable) {
+    accentColorResetButton.setAttribute('aria-disabled', 'true');
+  } else {
+    accentColorResetButton.removeAttribute('aria-disabled');
+  }
+};
+
 const DARK_MODE_ACCENT_BOOST_CLASS = 'dark-accent-boost';
 const PINK_REFERENCE_COLOR = '#ff69b4';
 const PINK_LUMINANCE_TOLERANCE = 0.06;
@@ -13056,12 +13087,57 @@ try {
   console.warn('Could not load accent color', e);
 }
 prevAccentColor = accentColor;
+updateAccentColorResetButtonState();
 
 if (accentColorInput) {
   accentColorInput.addEventListener('input', () => {
-    if (document.body.classList.contains('pink-mode')) return;
+    if (
+      typeof document !== 'undefined' &&
+      document.body &&
+      document.body.classList.contains('pink-mode')
+    ) {
+      updateAccentColorResetButtonState();
+      return;
+    }
     const color = accentColorInput.value;
     applyAccentColor(color);
+    updateAccentColorResetButtonState();
+  });
+}
+
+if (accentColorResetButton && accentColorInput) {
+  accentColorResetButton.addEventListener('click', () => {
+    if (accentColorResetButton.disabled || accentColorInput.disabled) return;
+    if (
+      typeof document !== 'undefined' &&
+      document.body &&
+      document.body.classList.contains('pink-mode')
+    ) {
+      updateAccentColorResetButtonState();
+      return;
+    }
+    const currentValue = normalizeAccentValue(accentColorInput.value || '');
+    if (currentValue === DEFAULT_ACCENT_NORMALIZED) {
+      updateAccentColorResetButtonState();
+      return;
+    }
+    accentColorInput.value = DEFAULT_ACCENT_COLOR;
+    let eventHandled = false;
+    try {
+      const inputEvent = new Event('input', { bubbles: true });
+      eventHandled = accentColorInput.dispatchEvent(inputEvent);
+    } catch (error) {
+      void error;
+      if (typeof document !== 'undefined' && document.createEvent) {
+        const legacyEvent = document.createEvent('Event');
+        legacyEvent.initEvent('input', true, true);
+        eventHandled = accentColorInput.dispatchEvent(legacyEvent);
+      }
+    }
+    if (!eventHandled) {
+      applyAccentColor(DEFAULT_ACCENT_COLOR);
+    }
+    updateAccentColorResetButtonState();
   });
 }
 

@@ -1,5 +1,5 @@
 // --- SESSION STATE HANDLING ---
-/* global resolveTemperatureStorageKey, TEMPERATURE_STORAGE_KEY, updateCageSelectOptions */
+/* global resolveTemperatureStorageKey, TEMPERATURE_STORAGE_KEY, updateCageSelectOptions, updateAccentColorResetButtonState, normalizeAccentValue, DEFAULT_ACCENT_NORMALIZED */
 
 const temperaturePreferenceStorageKey =
   typeof TEMPERATURE_STORAGE_KEY === 'string'
@@ -889,6 +889,9 @@ function applyPinkMode(enabled) {
   if (settingsPinkMode) {
     settingsPinkMode.checked = enabled;
   }
+  if (typeof updateAccentColorResetButtonState === 'function') {
+    updateAccentColorResetButtonState();
+  }
 }
 
 function isPinkModeActive() {
@@ -989,6 +992,9 @@ if (settingsButton && settingsDialog) {
     if (accentColorInput) {
       const stored = localStorage.getItem('accentColor');
       accentColorInput.value = stored || accentColor;
+      if (typeof updateAccentColorResetButtonState === 'function') {
+        updateAccentColorResetButtonState();
+      }
     }
     if (settingsTemperatureUnit) settingsTemperatureUnit.value = temperatureUnit;
     if (settingsFontSize) settingsFontSize.value = fontSize;
@@ -1105,12 +1111,19 @@ if (settingsButton && settingsDialog) {
           applyAccentColor(color);
         }
         try {
-          localStorage.setItem('accentColor', color);
+          if (normalizeAccentValue(color) === DEFAULT_ACCENT_NORMALIZED) {
+            localStorage.removeItem('accentColor');
+          } else {
+            localStorage.setItem('accentColor', color);
+          }
         } catch (e) {
           console.warn('Could not save accent color', e);
         }
         accentColor = color;
         prevAccentColor = color;
+        if (typeof updateAccentColorResetButtonState === 'function') {
+          updateAccentColorResetButtonState();
+        }
       }
       if (settingsTemperatureUnit) {
         applyTemperatureUnitPreference(settingsTemperatureUnit.value);
@@ -2118,6 +2131,12 @@ function applyPreferencesFromStorage(safeGetItem) {
     }
     accentColor = color;
     prevAccentColor = color;
+    if (accentColorInput) {
+      accentColorInput.value = color;
+    }
+    if (typeof updateAccentColorResetButtonState === 'function') {
+      updateAccentColorResetButtonState();
+    }
   }
 
   const language = safeGetItem('language');
@@ -2745,6 +2764,9 @@ if (factoryResetButton) {
         applyAccentColor(accentColor);
         if (accentColorInput) {
           accentColorInput.value = DEFAULT_ACCENT_COLOR;
+        }
+        if (typeof updateAccentColorResetButtonState === 'function') {
+          updateAccentColorResetButtonState();
         }
       } catch (accentError) {
         console.warn('Failed to reset accent color during factory reset', accentError);
