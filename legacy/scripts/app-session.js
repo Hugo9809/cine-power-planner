@@ -32,6 +32,49 @@ try {
     void error;
   }
 }
+var createBackupDiffRefs = function createBackupDiffRefs() {
+  var doc = typeof document !== 'undefined' ? document : null;
+  if (!doc) {
+    return {
+      toggleButton: null,
+      section: null,
+      primarySelect: null,
+      secondarySelect: null,
+      emptyState: null,
+      summary: null,
+      list: null,
+      listContainer: null,
+      notes: null,
+      exportButton: null,
+      closeButton: null
+    };
+  }
+  return {
+    toggleButton: doc.getElementById('backupDiffToggleButton'),
+    section: doc.getElementById('backupDiffSection'),
+    primarySelect: doc.getElementById('backupDiffPrimary'),
+    secondarySelect: doc.getElementById('backupDiffSecondary'),
+    emptyState: doc.getElementById('backupDiffEmptyState'),
+    summary: doc.getElementById('backupDiffSummary'),
+    list: doc.getElementById('backupDiffList'),
+    listContainer: doc.getElementById('backupDiffListContainer'),
+    notes: doc.getElementById('backupDiffNotes'),
+    exportButton: doc.getElementById('backupDiffExport'),
+    closeButton: doc.getElementById('backupDiffClose')
+  };
+};
+var _createBackupDiffRefs = createBackupDiffRefs(),
+  backupDiffToggleButtonEl = _createBackupDiffRefs.toggleButton,
+  backupDiffSectionEl = _createBackupDiffRefs.section,
+  backupDiffPrimarySelectEl = _createBackupDiffRefs.primarySelect,
+  backupDiffSecondarySelectEl = _createBackupDiffRefs.secondarySelect,
+  backupDiffEmptyStateEl = _createBackupDiffRefs.emptyState,
+  backupDiffSummaryEl = _createBackupDiffRefs.summary,
+  backupDiffListEl = _createBackupDiffRefs.list,
+  backupDiffListContainerEl = _createBackupDiffRefs.listContainer,
+  backupDiffNotesEl = _createBackupDiffRefs.notes,
+  backupDiffExportButtonEl = _createBackupDiffRefs.exportButton,
+  backupDiffCloseButtonEl = _createBackupDiffRefs.closeButton;
 function saveCurrentSession() {
   var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   if (restoringSession || factoryResetInProgress) return;
@@ -2207,11 +2250,11 @@ function fillBackupDiffSelect(select, options, selectedValue) {
   }
 }
 function clearBackupDiffResults() {
-  if (backupDiffList) {
-    backupDiffList.innerHTML = '';
+  if (backupDiffListEl) {
+    backupDiffListEl.innerHTML = '';
   }
-  if (backupDiffListContainer) {
-    backupDiffListContainer.hidden = true;
+  if (backupDiffListContainerEl) {
+    backupDiffListContainerEl.hidden = true;
   }
 }
 function formatDiffPath(parts) {
@@ -2357,15 +2400,15 @@ function createDiffChangeBlock(labelText, value) {
   return block;
 }
 function renderBackupDiffEntries(entries) {
-  if (!backupDiffList || !backupDiffListContainer) {
+  if (!backupDiffListEl || !backupDiffListContainerEl) {
     return;
   }
-  backupDiffList.innerHTML = '';
+  backupDiffListEl.innerHTML = '';
   if (!Array.isArray(entries) || !entries.length) {
-    backupDiffListContainer.hidden = true;
+    backupDiffListContainerEl.hidden = true;
     return;
   }
-  backupDiffListContainer.hidden = false;
+  backupDiffListContainerEl.hidden = false;
   entries.forEach(function (entry) {
     var item = document.createElement('li');
     item.className = "diff-entry diff-".concat(entry.type);
@@ -2385,7 +2428,7 @@ function renderBackupDiffEntries(entries) {
     } else if (entry.type === 'removed') {
       item.appendChild(createDiffChangeBlock(getDiffText('versionCompareChangeRemoved', 'Removed'), entry.before));
     }
-    backupDiffList.appendChild(item);
+    backupDiffListEl.appendChild(item);
   });
 }
 function formatDiffCount(count) {
@@ -2398,11 +2441,11 @@ function formatDiffDetail(key, count) {
   return template.replace('%s', formatNumberForComparison(count));
 }
 function updateBackupDiffSummary(entries) {
-  if (!backupDiffSummary) {
+  if (!backupDiffSummaryEl) {
     return;
   }
   if (!Array.isArray(entries) || !entries.length) {
-    backupDiffSummary.textContent = getDiffText('versionCompareIdentical', 'Versions match—no changes detected.');
+    backupDiffSummaryEl.textContent = getDiffText('versionCompareIdentical', 'Versions match—no changes detected.');
     return;
   }
   var totals = {
@@ -2426,32 +2469,32 @@ function updateBackupDiffSummary(entries) {
   if (totals.changed) {
     breakdown.push(formatDiffDetail('versionCompareSummaryChanged', totals.changed));
   }
-  backupDiffSummary.textContent = breakdown.length ? "".concat(summaryText, " (").concat(breakdown.join(' · '), ")") : summaryText;
+  backupDiffSummaryEl.textContent = breakdown.length ? "".concat(summaryText, " (").concat(breakdown.join(' · '), ")") : summaryText;
 }
 function renderBackupDiff() {
-  if (!backupDiffSummary) {
+  if (!backupDiffSummaryEl) {
     return;
   }
   if (!backupDiffOptionsCache.length) {
     clearBackupDiffResults();
-    backupDiffSummary.textContent = getDiffText('versionCompareEmpty', 'Save a project or wait for auto-backups to start comparing versions.');
-    if (backupDiffExportButton) backupDiffExportButton.disabled = true;
-    if (backupDiffNotes) backupDiffNotes.disabled = true;
+    backupDiffSummaryEl.textContent = getDiffText('versionCompareEmpty', 'Save a project or wait for auto-backups to start comparing versions.');
+    if (backupDiffExportButtonEl) backupDiffExportButtonEl.disabled = true;
+    if (backupDiffNotesEl) backupDiffNotesEl.disabled = true;
     return;
   }
-  if (backupDiffNotes) backupDiffNotes.disabled = false;
+  if (backupDiffNotesEl) backupDiffNotesEl.disabled = false;
   var baseline = backupDiffState.baseline;
   var comparison = backupDiffState.comparison;
   if (!baseline || !comparison) {
     clearBackupDiffResults();
-    backupDiffSummary.textContent = getDiffText('versionCompareNoSelection', 'Choose two versions to generate a diff.');
-    if (backupDiffExportButton) backupDiffExportButton.disabled = true;
+    backupDiffSummaryEl.textContent = getDiffText('versionCompareNoSelection', 'Choose two versions to generate a diff.');
+    if (backupDiffExportButtonEl) backupDiffExportButtonEl.disabled = true;
     return;
   }
   if (baseline === comparison) {
     clearBackupDiffResults();
-    backupDiffSummary.textContent = getDiffText('versionCompareSameSelection', 'Select two different versions to compare.');
-    if (backupDiffExportButton) backupDiffExportButton.disabled = true;
+    backupDiffSummaryEl.textContent = getDiffText('versionCompareSameSelection', 'Select two different versions to compare.');
+    if (backupDiffExportButtonEl) backupDiffExportButtonEl.disabled = true;
     return;
   }
   var optionsMap = new Map(backupDiffOptionsCache.map(function (option) {
@@ -2461,67 +2504,67 @@ function renderBackupDiff() {
   var comparisonEntry = optionsMap.get(comparison);
   if (!baselineEntry || !comparisonEntry) {
     clearBackupDiffResults();
-    backupDiffSummary.textContent = getDiffText('versionCompareMissingSelection', 'Select two versions before exporting a log.');
-    if (backupDiffExportButton) backupDiffExportButton.disabled = true;
+    backupDiffSummaryEl.textContent = getDiffText('versionCompareMissingSelection', 'Select two versions before exporting a log.');
+    if (backupDiffExportButtonEl) backupDiffExportButtonEl.disabled = true;
     return;
   }
   var diffEntries = computeSetupDiff(baselineEntry.data, comparisonEntry.data);
   renderBackupDiffEntries(diffEntries);
   updateBackupDiffSummary(diffEntries);
-  if (backupDiffExportButton) backupDiffExportButton.disabled = false;
+  if (backupDiffExportButtonEl) backupDiffExportButtonEl.disabled = false;
 }
 function populateBackupDiffSelectors() {
   backupDiffOptionsCache = collectBackupDiffOptions();
-  fillBackupDiffSelect(backupDiffPrimarySelect, backupDiffOptionsCache, backupDiffState.baseline);
-  fillBackupDiffSelect(backupDiffSecondarySelect, backupDiffOptionsCache, backupDiffState.comparison);
-  if (backupDiffEmptyState) {
-    backupDiffEmptyState.hidden = backupDiffOptionsCache.length > 0;
+  fillBackupDiffSelect(backupDiffPrimarySelectEl, backupDiffOptionsCache, backupDiffState.baseline);
+  fillBackupDiffSelect(backupDiffSecondarySelectEl, backupDiffOptionsCache, backupDiffState.comparison);
+  if (backupDiffEmptyStateEl) {
+    backupDiffEmptyStateEl.hidden = backupDiffOptionsCache.length > 0;
   }
   renderBackupDiff();
 }
 function collapseBackupDiffSection() {
   var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-  if (!backupDiffSection) {
+  if (!backupDiffSectionEl) {
     return;
   }
-  if (!backupDiffSection.hasAttribute('hidden')) {
-    backupDiffSection.setAttribute('hidden', '');
+  if (!backupDiffSectionEl.hasAttribute('hidden')) {
+    backupDiffSectionEl.setAttribute('hidden', '');
   }
-  if (backupDiffToggleButton) {
-    backupDiffToggleButton.setAttribute('aria-expanded', 'false');
+  if (backupDiffToggleButtonEl) {
+    backupDiffToggleButtonEl.setAttribute('aria-expanded', 'false');
   }
   if (options.resetSelections) {
     backupDiffState.baseline = '';
     backupDiffState.comparison = '';
   }
-  if (options.resetNotes && backupDiffNotes) {
-    backupDiffNotes.value = '';
+  if (options.resetNotes && backupDiffNotesEl) {
+    backupDiffNotesEl.value = '';
   }
 }
 function showBackupDiffSection() {
-  if (!backupDiffSection) {
+  if (!backupDiffSectionEl) {
     return;
   }
   populateBackupDiffSelectors();
-  backupDiffSection.removeAttribute('hidden');
-  if (backupDiffToggleButton) {
-    backupDiffToggleButton.setAttribute('aria-expanded', 'true');
+  backupDiffSectionEl.removeAttribute('hidden');
+  if (backupDiffToggleButtonEl) {
+    backupDiffToggleButtonEl.setAttribute('aria-expanded', 'true');
   }
-  if (backupDiffPrimarySelect) {
+  if (backupDiffPrimarySelectEl) {
     try {
-      backupDiffPrimarySelect.focus({
+      backupDiffPrimarySelectEl.focus({
         preventScroll: true
       });
     } catch (error) {
-      backupDiffPrimarySelect.focus();
+      backupDiffPrimarySelectEl.focus();
     }
   }
 }
 function handleBackupDiffToggle() {
-  if (!backupDiffSection) {
+  if (!backupDiffSectionEl) {
     return;
   }
-  if (backupDiffSection.hasAttribute('hidden')) {
+  if (backupDiffSectionEl.hasAttribute('hidden')) {
     showBackupDiffSection();
   } else {
     collapseBackupDiffSection();
@@ -2533,9 +2576,9 @@ function handleBackupDiffSelectionChange(event) {
     return;
   }
   var value = typeof target.value === 'string' ? target.value : '';
-  if (target === backupDiffPrimarySelect) {
+  if (target === backupDiffPrimarySelectEl) {
     backupDiffState.baseline = value;
-  } else if (target === backupDiffSecondarySelect) {
+  } else if (target === backupDiffSecondarySelectEl) {
     backupDiffState.comparison = value;
   }
   renderBackupDiff();
@@ -2594,7 +2637,7 @@ function handleBackupDiffExport() {
       totals[entry.type] += 1;
     }
   });
-  var note = backupDiffNotes && typeof backupDiffNotes.value === 'string' ? backupDiffNotes.value.trim() : '';
+  var note = backupDiffNotesEl && typeof backupDiffNotesEl.value === 'string' ? backupDiffNotesEl.value.trim() : '';
   var timestamp = new Date();
   var _formatFullBackupFile = formatFullBackupFilename(timestamp),
     iso = _formatFullBackupFile.iso;
@@ -2794,31 +2837,31 @@ function createSettingsBackup() {
 if (backupSettings) {
   backupSettings.addEventListener('click', createSettingsBackup);
 }
-if (backupDiffToggleButton) {
-  backupDiffToggleButton.addEventListener('click', handleBackupDiffToggle);
+if (backupDiffToggleButtonEl) {
+  backupDiffToggleButtonEl.addEventListener('click', handleBackupDiffToggle);
 }
-if (backupDiffCloseButton) {
-  backupDiffCloseButton.addEventListener('click', function () {
+if (backupDiffCloseButtonEl) {
+  backupDiffCloseButtonEl.addEventListener('click', function () {
     return collapseBackupDiffSection();
   });
 }
-if (backupDiffPrimarySelect) {
-  backupDiffPrimarySelect.addEventListener('change', handleBackupDiffSelectionChange);
+if (backupDiffPrimarySelectEl) {
+  backupDiffPrimarySelectEl.addEventListener('change', handleBackupDiffSelectionChange);
 }
-if (backupDiffSecondarySelect) {
-  backupDiffSecondarySelect.addEventListener('change', handleBackupDiffSelectionChange);
+if (backupDiffSecondarySelectEl) {
+  backupDiffSecondarySelectEl.addEventListener('change', handleBackupDiffSelectionChange);
 }
-if (backupDiffExportButton) {
-  backupDiffExportButton.addEventListener('click', handleBackupDiffExport);
-  backupDiffExportButton.disabled = true;
+if (backupDiffExportButtonEl) {
+  backupDiffExportButtonEl.addEventListener('click', handleBackupDiffExport);
+  backupDiffExportButtonEl.disabled = true;
 }
-if (backupDiffSummary) {
-  backupDiffSummary.textContent = getDiffText('versionCompareNoSelection', 'Choose two versions to generate a diff.');
+if (backupDiffSummaryEl) {
+  backupDiffSummaryEl.textContent = getDiffText('versionCompareNoSelection', 'Choose two versions to generate a diff.');
 }
-if (backupDiffNotes) {
-  backupDiffNotes.disabled = true;
+if (backupDiffNotesEl) {
+  backupDiffNotesEl.disabled = true;
 }
-if (backupDiffSection) {
+if (backupDiffSectionEl) {
   collapseBackupDiffSection();
 }
 if (restoreSettings && restoreSettingsInput) {
@@ -5354,11 +5397,13 @@ function buildFilterGearEntries() {
   return entries;
 }
 function formatFilterEntryText(entry) {
+  var labelText = typeof (entry === null || entry === void 0 ? void 0 : entry.label) === 'string' ? entry.label : '';
+  var hideDetails = labelText.toLowerCase().includes('filter set');
   var details = [];
-  if (entry.size) details.push(entry.size);
-  if (entry.values && entry.values.length) details.push(entry.values.join(', '));
+  if (!hideDetails && entry.size) details.push(entry.size);
+  if (!hideDetails && entry.values && entry.values.length) details.push(entry.values.join(', '));
   var suffix = details.length ? " (".concat(details.join(' • '), ")") : '';
-  return "1x ".concat(entry.label).concat(suffix);
+  return "1x ".concat(labelText).concat(suffix);
 }
 function updateGearListFilterEntries() {
   var entries = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];

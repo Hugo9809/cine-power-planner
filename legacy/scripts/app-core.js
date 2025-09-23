@@ -5538,11 +5538,65 @@ function ensureSvgHasAriaHidden(markup) {
     return "".concat(match, " aria-hidden=\"true\"");
   });
 }
+function normalizePinkModeIconMarkup(markup) {
+  if (typeof markup !== 'string') return '';
+  var trimmed = markup.trim();
+  if (!trimmed) return '';
+  var normalizePaintAttribute = function normalizePaintAttribute(match, attr, quote, value) {
+    if (typeof value !== 'string') return match;
+    var normalizedValue = value.trim();
+    if (!normalizedValue) return match;
+    var lowerValue = normalizedValue.toLowerCase();
+    if (lowerValue === 'none' || lowerValue === 'currentcolor' || lowerValue.startsWith('url(')) {
+      return match;
+    }
+    return "".concat(attr, "=").concat(quote, "currentColor").concat(quote);
+  };
+  var normalizeStyleDeclaration = function normalizeStyleDeclaration(match, quote, content) {
+    if (typeof content !== 'string') {
+      return match;
+    }
+    var declarations = content.split(';').map(function (part) {
+      return part.trim();
+    }).filter(Boolean);
+    if (!declarations.length) {
+      return match;
+    }
+    var changed = false;
+    var updated = declarations.map(function (part) {
+      var _part$split = part.split(':'),
+        _part$split2 = _slicedToArray(_part$split, 2),
+        property = _part$split2[0],
+        rawValue = _part$split2[1];
+      if (!property || rawValue === undefined) {
+        return part;
+      }
+      var propName = property.trim().toLowerCase();
+      var value = rawValue.trim();
+      if (!value) {
+        return part;
+      }
+      var lowerValue = value.toLowerCase();
+      if ((propName === 'fill' || propName === 'stroke') && lowerValue !== 'none' && lowerValue !== 'currentcolor' && !lowerValue.startsWith('url(')) {
+        changed = true;
+        return "".concat(property.trim(), ":currentColor");
+      }
+      return part;
+    });
+    if (!changed) {
+      return match;
+    }
+    return "style=".concat(quote).concat(updated.join('; ')).concat(quote);
+  };
+  var result = trimmed.replace(/(fill|stroke)=(['"])([^'"]*)\2/gi, normalizePaintAttribute);
+  result = result.replace(/style=(['"])([^'"]*)\1/gi, normalizeStyleDeclaration);
+  return result;
+}
 function setPinkModeIconSequence(markupList) {
   if (!Array.isArray(markupList) || !markupList.length) {
     return false;
   }
-  var configs = markupList.map(ensureSvgHasAriaHidden).filter(Boolean).map(function (markup) {
+  var configs = markupList.map(ensureSvgHasAriaHidden).map(normalizePinkModeIconMarkup).filter(Boolean).map(function (markup) {
     return Object.freeze({
       className: 'icon-svg pink-mode-icon',
       markup: markup
@@ -8338,6 +8392,13 @@ var autoGearDeletePresetButton = document.getElementById('autoGearDeletePreset')
 var autoGearAddRuleBtn = document.getElementById('autoGearAddRule');
 var autoGearResetFactoryButton = document.getElementById('autoGearResetFactory');
 var autoGearEditor = document.getElementById('autoGearEditor');
+if (autoGearAddRuleBtn) {
+  autoGearAddRuleBtn.setAttribute('aria-controls', 'autoGearEditor');
+  autoGearAddRuleBtn.setAttribute('aria-expanded', autoGearEditor && !autoGearEditor.hidden ? 'true' : 'false');
+}
+if (autoGearEditor) {
+  autoGearEditor.setAttribute('aria-hidden', autoGearEditor.hidden ? 'true' : 'false');
+}
 var autoGearRuleNameInput = document.getElementById('autoGearRuleName');
 var autoGearRuleNameLabel = document.getElementById('autoGearRuleNameLabel');
 var autoGearScenariosSelect = document.getElementById('autoGearScenarios');
@@ -10270,6 +10331,10 @@ function openAutoGearEditor(ruleId) {
   autoGearEditorDraft = createAutoGearDraft(existing);
   autoGearEditorActiveItem = null;
   autoGearEditor.hidden = false;
+  autoGearEditor.setAttribute('aria-hidden', 'false');
+  if (autoGearAddRuleBtn) {
+    autoGearAddRuleBtn.setAttribute('aria-expanded', 'true');
+  }
   if (autoGearRuleNameInput) {
     autoGearRuleNameInput.value = autoGearEditorDraft.label || '';
   }
@@ -10296,6 +10361,10 @@ function openAutoGearEditor(ruleId) {
 function closeAutoGearEditor() {
   if (!autoGearEditor) return;
   autoGearEditor.hidden = true;
+  autoGearEditor.setAttribute('aria-hidden', 'true');
+  if (autoGearAddRuleBtn) {
+    autoGearAddRuleBtn.setAttribute('aria-expanded', 'false');
+  }
   autoGearEditorDraft = null;
   autoGearEditorActiveItem = null;
   if (autoGearRuleNameInput) autoGearRuleNameInput.value = '';
@@ -19109,7 +19178,7 @@ function enableDiagramInteractions() {
   var BASE_MIN_SCALE = isTouchDevice ? 0.55 : 0.65;
   var MIN_AUTO_SCALE = isTouchDevice ? 0.4 : 0.35;
   var dataScaleRaw = parseFloat(setupDiagramContainer.dataset.initialScale || '');
-  var fallbackScale = isTouchDevice ? 0.95 : 1;
+  var fallbackScale = isTouchDevice ? 0.95 : 1.0;
   var initialScaleRaw = Number.isFinite(dataScaleRaw) && dataScaleRaw > 0 ? dataScaleRaw : fallbackScale;
   var MIN_SCALE = Math.max(MIN_AUTO_SCALE, Math.min(BASE_MIN_SCALE, initialScaleRaw));
   var clampScale = function clampScale(value) {
