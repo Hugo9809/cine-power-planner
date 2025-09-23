@@ -3762,6 +3762,41 @@ function restoreSetupSelection(previousSelection, shouldShowAutoBackups) {
   }
 }
 
+function collectFullBackupData() {
+  let rawData = {};
+  if (typeof exportAllData === 'function') {
+    try {
+      rawData = exportAllData() || {};
+    } catch (error) {
+      console.warn('Failed to collect planner data for full backup', error);
+      rawData = {};
+    }
+  }
+
+  const data = isPlainObject(rawData) ? { ...rawData } : {};
+
+  if (!Array.isArray(data.autoGearRules)) {
+    let rules = null;
+    if (typeof getBaseAutoGearRules === 'function') {
+      try {
+        rules = getBaseAutoGearRules();
+      } catch (error) {
+        console.warn('Failed to capture automatic gear rules from state for full backup', error);
+      }
+    }
+    if (!Array.isArray(rules) && typeof loadAutoGearRules === 'function') {
+      try {
+        rules = loadAutoGearRules();
+      } catch (error) {
+        console.warn('Failed to load automatic gear rules from storage for full backup', error);
+      }
+    }
+    data.autoGearRules = Array.isArray(rules) ? rules : [];
+  }
+
+  return data;
+}
+
 function createSettingsBackup(notify = true, timestamp = new Date()) {
   try {
     const isEvent = notify && typeof notify === 'object' && typeof notify.type === 'string';
@@ -3775,7 +3810,7 @@ function createSettingsBackup(notify = true, timestamp = new Date()) {
       generatedAt: iso,
       settings,
       sessionStorage: Object.keys(sessionEntries).length ? sessionEntries : undefined,
-      data: typeof exportAllData === 'function' ? exportAllData() : {},
+      data: collectFullBackupData(),
     };
     const payload = JSON.stringify(backup);
     const downloadResult = downloadBackupPayload(payload, fileName);

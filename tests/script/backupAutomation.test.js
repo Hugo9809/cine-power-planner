@@ -65,6 +65,66 @@ const loadApp = () => {
   return loadRuntime();
 };
 
+async function captureBackupDownload(createSettingsBackup, timestamp = new Date('2024-05-06T10:00:00Z')) {
+  const objectUrl = 'blob:capture-backup';
+  const originalBlob = global.Blob;
+  class MockBlob {
+    constructor(parts) {
+      this.parts = parts;
+    }
+    text() {
+      return Promise.resolve(
+        this.parts.map(part => (typeof part === 'string' ? part : String(part))).join(''),
+      );
+    }
+  }
+  global.Blob = MockBlob;
+
+  const createObjectURLSpy = jest
+    .spyOn(URL, 'createObjectURL')
+    .mockReturnValue(objectUrl);
+  const revokeObjectURLSpy = jest
+    .spyOn(URL, 'revokeObjectURL')
+    .mockImplementation(() => {});
+
+  const originalCreateElement = document.createElement.bind(document);
+  const anchors = [];
+  jest.spyOn(document, 'createElement').mockImplementation(tag => {
+    const element = originalCreateElement(tag);
+    if (tag === 'a') {
+      element.click = () => anchors.push(element);
+    }
+    return element;
+  });
+
+  try {
+    const fileName = createSettingsBackup(false, timestamp);
+    const createObjectURLCalls = createObjectURLSpy.mock.calls.map(args => args);
+    const revokeObjectURLCalls = revokeObjectURLSpy.mock.calls.map(args => args);
+    const blob = createObjectURLCalls[0] ? createObjectURLCalls[0][0] : null;
+    const payload = blob && typeof blob.text === 'function'
+      ? JSON.parse(await blob.text())
+      : null;
+    return {
+      fileName,
+      payload,
+      anchors,
+      objectUrl,
+      createObjectURLCalls,
+      revokeObjectURLCalls,
+    };
+  } finally {
+    document.createElement.mockRestore();
+    createObjectURLSpy.mockRestore();
+    revokeObjectURLSpy.mockRestore();
+    if (typeof originalBlob === 'undefined') {
+      delete global.Blob;
+    } else {
+      global.Blob = originalBlob;
+    }
+  }
+}
+
 let fakeTimersActive = false;
 
 beforeEach(() => {
@@ -230,65 +290,64 @@ describe('automated backups', () => {
     localStorage.setItem('cameraPowerPlanner_devices', '{"cameras":{}}');
     sessionStorage.setItem('cameraPowerPlanner_session', '{"camera":"Alexa"}');
 
-    const objectUrl = 'blob:backup';
-    const originalCreateObjectURL = URL.createObjectURL;
-    if (typeof originalCreateObjectURL !== 'function') {
-      URL.createObjectURL = () => {};
-    }
-    const originalRevokeObjectURL = URL.revokeObjectURL;
-    if (typeof originalRevokeObjectURL !== 'function') {
-      URL.revokeObjectURL = () => {};
-    }
-    const originalBlob = global.Blob;
-    class MockBlob {
-      constructor(parts) {
-        this.parts = parts;
-      }
-      text() {
-        return Promise.resolve(
-          this.parts.map(part => (typeof part === 'string' ? part : String(part))).join('')
-        );
-      }
-    }
-    global.Blob = MockBlob;
+    const result = await captureBackupDownload(
+      createSettingsBackup,
+      new Date('2024-05-06T10:00:00'),
+    );
 
-    const createObjectURLSpy = jest
-      .spyOn(URL, 'createObjectURL')
-      .mockReturnValue(objectUrl);
-    const revokeObjectURLSpy = jest.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {});
-    const originalCreateElement = document.createElement.bind(document);
-    const anchorClicks = [];
-    jest.spyOn(document, 'createElement').mockImplementation((tag) => {
-      const el = originalCreateElement(tag);
-      if (tag === 'a') {
-        el.click = () => anchorClicks.push(el);
-      }
-      return el;
-    });
+    expect(typeof result.fileName).toBe('string');
+    expect(result.createObjectURLCalls).toHaveLength(1);
+    expect(result.payload.settings).toHaveProperty('cameraPowerPlanner_devices', '{"cameras":{}}');
+    expect(result.payload.sessionStorage).toHaveProperty('cameraPowerPlanner_session', '{"camera":"Alexa"}');
+    expect(result.payload.data).toMatchObject({ exported: true });
+    expect(Array.isArray(result.payload.data.autoGearRules)).toBe(true);
 
-    const fileName = createSettingsBackup(false, new Date('2024-05-06T10:00:00'));
-    expect(typeof fileName).toBe('string');
+    expect(result.anchors).toHaveLength(1);
+    expect(result.revokeObjectURLCalls).toContainEqual([result.objectUrl]);
+  });
 
-    expect(createObjectURLSpy).toHaveBeenCalledTimes(1);
-    const blob = createObjectURLSpy.mock.calls[0][0];
-    const json = JSON.parse(await blob.text());
-    expect(json.settings).toHaveProperty('cameraPowerPlanner_devices', '{"cameras":{}}');
-    expect(json.sessionStorage).toHaveProperty('cameraPowerPlanner_session', '{"camera":"Alexa"}');
-    expect(json.data).toEqual({ exported: true });
+  test('createSettingsBackup injects automatic gear rules when exportAllData omits them', async () => {
+    const storedRules = [{
+      id: 'rule-backup',
+      label: 'Backup Auto Gear Rule',
+      scenarios: ['Studio'],
+      add: [{
+        id: 'item-backup',
+        name: 'Wireless TX',
+        category: 'wireless',
+        quantity: 1,
+      }],
+      remove: [],
+    }];
+    localStorage.setItem('cameraPowerPlanner_autoGearRules', JSON.stringify(storedRules));
 
-    expect(anchorClicks).toHaveLength(1);
-    expect(revokeObjectURLSpy).toHaveBeenCalledWith(objectUrl);
+    const { createSettingsBackup } = loadApp();
+    global.exportAllData.mockImplementation(() => ({}));
 
-    createObjectURLSpy.mockRestore();
-    revokeObjectURLSpy.mockRestore();
-    if (typeof originalCreateObjectURL !== 'function') {
-      delete URL.createObjectURL;
-    }
-    if (typeof originalRevokeObjectURL !== 'function') {
-      delete URL.revokeObjectURL;
-    }
-    global.Blob = originalBlob;
-    document.createElement.mockRestore();
+    const result = await captureBackupDownload(
+      createSettingsBackup,
+      new Date('2024-05-06T10:30:00Z'),
+    );
+
+    expect(result.payload).not.toBeNull();
+    expect(result.payload.data).toBeDefined();
+    expect(Array.isArray(result.payload.data.autoGearRules)).toBe(true);
+    const exportedRules = result.payload.data.autoGearRules;
+    const rule = exportedRules.find(entry => entry && entry.label === 'Backup Auto Gear Rule');
+    expect(rule).toBeDefined();
+    expect(rule).toEqual(expect.objectContaining({
+      id: expect.any(String),
+      label: 'Backup Auto Gear Rule',
+      scenarios: ['Studio'],
+      remove: [],
+    }));
+    expect(rule.add).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        name: 'Wireless TX',
+        category: 'wireless',
+        quantity: 1,
+      }),
+    ]));
   });
 
   test('createSettingsBackup falls back to data URLs when object URLs fail', () => {
