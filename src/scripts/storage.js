@@ -107,8 +107,8 @@ const AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY = 'cameraPowerPlanner_autoGearActivePr
 const AUTO_GEAR_AUTO_PRESET_STORAGE_KEY = 'cameraPowerPlanner_autoGearAutoPreset';
 const AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY = 'cameraPowerPlanner_autoGearShowBackups';
 const FULL_BACKUP_HISTORY_STORAGE_KEY = 'cameraPowerPlanner_fullBackups';
-const AUTO_BACKUP_NAME_PREFIX = 'auto-backup-';
-const AUTO_BACKUP_DELETION_PREFIX = 'auto-backup-before-delete-';
+const STORAGE_AUTO_BACKUP_NAME_PREFIX = 'auto-backup-';
+const STORAGE_AUTO_BACKUP_DELETION_PREFIX = 'auto-backup-before-delete-';
 const MAX_AUTO_BACKUPS = 50;
 const MAX_DELETION_BACKUPS = 20;
 const MAX_FULL_BACKUP_HISTORY_ENTRIES = 200;
@@ -819,7 +819,7 @@ function getAutoBackupTimestamp(name) {
   }
 
   let match = null;
-  if (name.startsWith(AUTO_BACKUP_NAME_PREFIX)) {
+  if (name.startsWith(STORAGE_AUTO_BACKUP_NAME_PREFIX)) {
     match = name.match(/^auto-backup-(\d{4})-(\d{2})-(\d{2})-(\d{2})-(\d{2})/);
     if (!match) {
       return Number.NEGATIVE_INFINITY;
@@ -838,7 +838,7 @@ function getAutoBackupTimestamp(name) {
     return Number.isNaN(time) ? Number.NEGATIVE_INFINITY : time;
   }
 
-  if (name.startsWith(AUTO_BACKUP_DELETION_PREFIX)) {
+  if (name.startsWith(STORAGE_AUTO_BACKUP_DELETION_PREFIX)) {
     match = name.match(/^auto-backup-before-delete-(\d{4})-(\d{2})-(\d{2})-(\d{2})-(\d{2})-(\d{2})/);
     if (!match) {
       return Number.NEGATIVE_INFINITY;
@@ -951,7 +951,7 @@ function enforceAutoBackupLimits(container) {
 
   const removed = [];
 
-  const autoBackups = collectAutoBackupEntries(container, AUTO_BACKUP_NAME_PREFIX);
+  const autoBackups = collectAutoBackupEntries(container, STORAGE_AUTO_BACKUP_NAME_PREFIX);
   if (autoBackups.length > MAX_AUTO_BACKUPS) {
     removed.push(...removeDuplicateAutoBackupEntries(container, autoBackups));
     while (autoBackups.length > MAX_AUTO_BACKUPS) {
@@ -964,7 +964,7 @@ function enforceAutoBackupLimits(container) {
     }
   }
 
-  const deletionBackups = collectAutoBackupEntries(container, AUTO_BACKUP_DELETION_PREFIX);
+  const deletionBackups = collectAutoBackupEntries(container, STORAGE_AUTO_BACKUP_DELETION_PREFIX);
   if (deletionBackups.length > MAX_DELETION_BACKUPS) {
     removed.push(...removeDuplicateAutoBackupEntries(container, deletionBackups));
     while (deletionBackups.length > MAX_DELETION_BACKUPS) {
@@ -992,7 +992,7 @@ function removeOldestAutoBackupEntry(container) {
     return null;
   }
 
-  const autoBackups = collectAutoBackupEntries(container, AUTO_BACKUP_NAME_PREFIX);
+  const autoBackups = collectAutoBackupEntries(container, STORAGE_AUTO_BACKUP_NAME_PREFIX);
   if (autoBackups.length > 0) {
     const oldest = autoBackups.shift();
     if (oldest) {
@@ -1001,7 +1001,7 @@ function removeOldestAutoBackupEntry(container) {
     }
   }
 
-  const deletionBackups = collectAutoBackupEntries(container, AUTO_BACKUP_DELETION_PREFIX);
+  const deletionBackups = collectAutoBackupEntries(container, STORAGE_AUTO_BACKUP_DELETION_PREFIX);
   if (deletionBackups.length > 0) {
     const oldest = deletionBackups.shift();
     if (oldest) {
@@ -2480,8 +2480,8 @@ function generateDeletionBackupMetadata(projectName, projects) {
   const timestamp = formatAutoBackupTimestamp(now);
   const sanitizedName = sanitizeProjectNameForBackup(projectName);
   const baseName = sanitizedName
-    ? `${AUTO_BACKUP_DELETION_PREFIX}${timestamp}-${sanitizedName}`
-    : `${AUTO_BACKUP_DELETION_PREFIX}${timestamp}`;
+    ? `${STORAGE_AUTO_BACKUP_DELETION_PREFIX}${timestamp}-${sanitizedName}`
+    : `${STORAGE_AUTO_BACKUP_DELETION_PREFIX}${timestamp}`;
   const usedNames = new Set(Object.keys(projects));
   if (!usedNames.has(baseName)) {
     return { name: baseName };
@@ -2514,7 +2514,7 @@ function maybeCreateProjectDeletionBackup(projects, key) {
   if (!projects || !Object.prototype.hasOwnProperty.call(projects, key)) {
     return { status: 'missing' };
   }
-  if (typeof key === 'string' && key.startsWith(AUTO_BACKUP_NAME_PREFIX)) {
+  if (typeof key === 'string' && key.startsWith(STORAGE_AUTO_BACKUP_NAME_PREFIX)) {
     return { status: 'skipped' };
   }
   const entry = projects[key];
