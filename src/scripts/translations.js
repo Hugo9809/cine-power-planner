@@ -921,7 +921,8 @@ const texts = {
       "Dolly Grip": "Dolly Grip",
       "Rigging Grip": "Rigging Grip"
     },
-    gearListAutosaveNote: '',
+    gearListAutosaveNote:
+      "Gear lists save automatically with this project. Backups capture the latest version under Settings → Backup & Restore.",
     autoGearHighlightToggle: "Highlight automatic gear",
     autoGearHighlightToggleHelp:
       "Toggle a temporary color overlay for gear added by automatic rules. Useful while debugging gear rule behavior.",
@@ -1502,7 +1503,8 @@ const texts = {
       "Dolly Grip": "Operatore dolly",
       "Rigging Grip": "Macchinista rigging"
     },
-    gearListAutosaveNote: '',
+    gearListAutosaveNote:
+      "Le liste attrezzatura vengono salvate automaticamente con questo progetto. I backup registrano l'ultima versione in Impostazioni → Backup e ripristino.",
     autoGearHighlightToggle: "Evidenzia accessori automatici",
     autoGearHighlightToggleHelp:
       "Attiva o disattiva una colorazione temporanea per l'attrezzatura aggiunta automaticamente dalle regole. Utile per il debug del comportamento delle regole.",
@@ -2499,7 +2501,8 @@ const texts = {
       "Dolly Grip": "Operador de dolly",
       "Rigging Grip": "Grip de rigging"
     },
-    gearListAutosaveNote: '',
+    gearListAutosaveNote:
+      "Las listas de equipo se guardan automáticamente con este proyecto. Las copias de seguridad registran la última versión en Ajustes → Copia de seguridad y restaurar.",
     autoGearHighlightToggle: "Resaltar equipo automático",
     autoGearHighlightToggleHelp:
       "Activa o desactiva un color temporal para el equipo añadido por reglas automáticas. Útil para depurar el comportamiento de las reglas.",
@@ -3497,7 +3500,8 @@ const texts = {
       "Dolly Grip": "Machiniste dolly",
       "Rigging Grip": "Machiniste rigging"
     },
-    gearListAutosaveNote: '',
+    gearListAutosaveNote:
+      "Les listes de matériel sont enregistrées automatiquement avec ce projet. Les sauvegardes conservent la dernière version dans Paramètres → Sauvegarde et restauration.",
     autoGearHighlightToggle: "Mettre en évidence l'équipement automatique",
     autoGearHighlightToggleHelp:
       "Active ou désactive une surbrillance temporaire pour le matériel ajouté par les règles automatiques. Utile pour déboguer le comportement des règles.",
@@ -4499,7 +4503,8 @@ const texts = {
       "Dolly Grip": "Dolly-Grip",
       "Rigging Grip": "Rigging-Grip"
     },
-    gearListAutosaveNote: '',
+    gearListAutosaveNote:
+      "Gerätelisten werden automatisch mit diesem Projekt gespeichert. Sicherungen erfassen die neueste Version unter Einstellungen → Backup & Wiederherstellen.",
     autoGearHighlightToggle: "Automatisches Equipment hervorheben",
     autoGearHighlightToggleHelp:
       "Schaltet eine temporäre Farbmarkierung für durch automatische Regeln hinzugefügtes Equipment um. Nützlich zum Debuggen des Regelverhaltens.",
