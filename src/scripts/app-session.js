@@ -13,7 +13,7 @@
           isAutoGearHighlightEnabled, setAutoGearHighlightEnabled,
           updateAutoGearHighlightToggleButton,
           clearUiCacheStorageEntries, __cineGlobal, humanizeKey,
-          loadAutoGearRules */
+          loadAutoGearRules, duplicateAutoGearRule */
 /* eslint-enable no-redeclare */
 /* global triggerPinkModeIconRain, loadDeviceData, loadSetups, loadSessionState,
           loadFeedback, loadFavorites, loadAutoGearBackups,
