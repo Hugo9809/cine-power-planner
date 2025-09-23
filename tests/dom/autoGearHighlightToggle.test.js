@@ -37,6 +37,28 @@ const EXPECTED_BADGE_TEXTS = [
   (texts.en.autoGearRuleBadgeNamed || 'Rule: %s').replace('%s', SAMPLE_RULE_LABEL),
   (texts.en.autoGearRuleBadgeNamed || 'Rule: %s').replace('%s', SAMPLE_RULE_LABEL_TWO),
 ];
+const MULTI_RULE_SOURCES = JSON.stringify([
+  { id: SAMPLE_RULE_ID, label: SAMPLE_RULE_LABEL },
+  { id: SAMPLE_RULE_ID_TWO, label: SAMPLE_RULE_LABEL_TWO },
+]);
+const SAMPLE_MULTI_RULE_TABLE_HTML = `
+  <table class="gear-table">
+    <tbody class="category-group">
+      <tr class="category-row"><td>Auto</td></tr>
+      <tr>
+        <td>
+          <span
+            class="gear-item auto-gear-item"
+            data-gear-name="Auto Item"
+            data-auto-gear-rule-id="${SAMPLE_RULE_ID}"
+            data-auto-gear-rule-label="${SAMPLE_RULE_LABEL}"
+            data-auto-gear-rule-sources='${MULTI_RULE_SOURCES}'
+          >1x Auto Item</span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+`;
 
 describe('automatic gear highlight toggle', () => {
   let env;
@@ -122,5 +144,37 @@ describe('automatic gear highlight toggle', () => {
     expect(gearListOutput.classList.contains('show-auto-gear-highlight')).toBe(false);
     expect(toggleAfterRefresh.getAttribute('aria-pressed')).toBe('false');
     expect(toggleAfterRefresh.classList.contains('is-active')).toBe(false);
+  });
+
+  test('highlight lists every automatic rule that added an item', () => {
+  const gearListOutput = document.getElementById('gearListOutput');
+  expect(gearListOutput).not.toBeNull();
+
+  gearListOutput.classList.remove('hidden');
+  gearListOutput.innerHTML = SAMPLE_MULTI_RULE_TABLE_HTML;
+
+  env.utils.ensureGearListActions();
+
+  const toggle = document.getElementById('autoGearHighlightToggle');
+  expect(toggle).not.toBeNull();
+
+  const item = gearListOutput.querySelector('.auto-gear-item');
+  expect(item).not.toBeNull();
+
+  const initialBadges = Array.from(item.querySelectorAll('.auto-gear-rule-badge'));
+  expect(initialBadges).toHaveLength(2);
+  const initialBadgeTexts = initialBadges.map(node => node.textContent);
+  EXPECTED_BADGE_TEXTS.forEach(expected => {
+    expect(initialBadgeTexts).toContain(expected);
+  });
+
+  toggle.click();
+
+  const toggledBadges = Array.from(item.querySelectorAll('.auto-gear-rule-badge'));
+  expect(toggledBadges).toHaveLength(2);
+  const toggledBadgeTexts = toggledBadges.map(node => node.textContent);
+  EXPECTED_BADGE_TEXTS.forEach(expected => {
+    expect(toggledBadgeTexts).toContain(expected);
+  });
   });
 });
