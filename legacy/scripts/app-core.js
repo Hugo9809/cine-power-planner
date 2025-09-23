@@ -98,6 +98,7 @@ if (typeof window !== 'undefined') {
 var APP_VERSION = "1.0.7";
 var IOS_PWA_HELP_STORAGE_KEY = 'iosPwaHelpShown';
 var INSTALL_BANNER_DISMISSED_KEY = 'installPromptDismissed';
+var installBannerDismissedInSession = false;
 var DEVICE_SCHEMA_PATH = 'src/data/schema.json';
 var DEVICE_SCHEMA_STORAGE_KEY = 'cameraPowerPlanner_schemaCache';
 var AUTO_GEAR_RULES_KEY = typeof AUTO_GEAR_RULES_STORAGE_KEY !== 'undefined' ? AUTO_GEAR_RULES_STORAGE_KEY : 'cameraPowerPlanner_autoGearRules';
@@ -10866,15 +10867,22 @@ function markIosPwaHelpDismissed() {
   }
 }
 function hasDismissedInstallBanner() {
+  if (installBannerDismissedInSession) return true;
   if (typeof localStorage === 'undefined') return false;
   try {
-    return localStorage.getItem(INSTALL_BANNER_DISMISSED_KEY) === '1';
+    var storedValue = localStorage.getItem(INSTALL_BANNER_DISMISSED_KEY);
+    var dismissed = storedValue === '1';
+    if (dismissed) {
+      installBannerDismissedInSession = true;
+    }
+    return dismissed;
   } catch (error) {
     console.warn('Could not read install banner dismissal flag', error);
-    return false;
+    return installBannerDismissedInSession;
   }
 }
 function markInstallBannerDismissed() {
+  installBannerDismissedInSession = true;
   if (typeof localStorage === 'undefined') return;
   try {
     localStorage.setItem(INSTALL_BANNER_DISMISSED_KEY, '1');
