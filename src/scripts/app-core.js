@@ -20353,6 +20353,11 @@ function renderSetupDiagram() {
         const DESKTOP_MAX_AUTO_SCALE = 1.2;
         desiredScale = 1 + (desiredScale - 1) * DESKTOP_SCALE_RELAXATION;
         if (desiredScale > DESKTOP_MAX_AUTO_SCALE) desiredScale = DESKTOP_MAX_AUTO_SCALE;
+        // Keep a margin so the default desktop view does not feel cramped.
+        const DESKTOP_AUTO_FILL_RATIO = 0.88;
+        const MIN_DESKTOP_AUTO_SCALE = 0.82;
+        const adjustedScale = desiredScale * DESKTOP_AUTO_FILL_RATIO;
+        desiredScale = Math.max(MIN_DESKTOP_AUTO_SCALE, adjustedScale);
       }
       const MIN_AUTO_SCALE = isTouchDevice ? 0.4 : 0.35;
       const MAX_INITIAL_SCALE = isTouchDevice ? 3 : 1.6;
@@ -20483,10 +20488,10 @@ function enableDiagramInteractions() {
   const root = svg.querySelector('#diagramRoot') || svg;
   const isTouchDevice = (navigator.maxTouchPoints || 0) > 0;
   const MAX_SCALE = isTouchDevice ? Infinity : 3;
-  const BASE_MIN_SCALE = isTouchDevice ? 0.55 : 0.65;
+  const BASE_MIN_SCALE = isTouchDevice ? 0.55 : 0.6;
   const MIN_AUTO_SCALE = isTouchDevice ? 0.4 : 0.35;
   const dataScaleRaw = parseFloat(setupDiagramContainer.dataset.initialScale || '');
-  const fallbackScale = isTouchDevice ? 0.95 : 0.9;
+  const fallbackScale = isTouchDevice ? 0.95 : 0.85;
   const initialScaleRaw = Number.isFinite(dataScaleRaw) && dataScaleRaw > 0
     ? dataScaleRaw
     : fallbackScale;
