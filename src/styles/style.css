@@ -3718,6 +3718,8 @@ body.pink-mode #topBar #logo .logo-center {
   font-size: var(--font-size-diagram-icon);
   font-family: 'UiconsThinStraightV2', system-ui, sans-serif;
   font-style: normal;
+  color: var(--accent-color);
+  fill: var(--accent-color);
 }
 #setupDiagram .node-icon[data-icon-font='essential'] {
   font-family: 'EssentialIconsV2', system-ui, sans-serif;
