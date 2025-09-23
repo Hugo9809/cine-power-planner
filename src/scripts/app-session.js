@@ -2233,49 +2233,62 @@ function parseAutoBackupName(name) {
   if (typeof name !== 'string') {
     return null;
   }
-  if (name.startsWith(SESSION_AUTO_BACKUP_DELETION_PREFIX)) {
-    const remainder = name.slice(SESSION_AUTO_BACKUP_DELETION_PREFIX.length);
-    const parts = remainder.split('-');
-    if (parts.length >= 6) {
-      const [year, month, day, hour, minute, second, ...rest] = parts;
-      const date = new Date(
-        Number(year),
-        Number(month) - 1,
-        Number(day),
-        Number(hour),
-        Number(minute),
-        Number(second),
-      );
-      const label = rest.join('-').trim();
+
+  const config = (() => {
+    if (name.startsWith(SESSION_AUTO_BACKUP_DELETION_PREFIX)) {
       return {
+        prefixLength: SESSION_AUTO_BACKUP_DELETION_PREFIX.length,
         type: 'auto-backup-before-delete',
-        date: Number.isNaN(date.valueOf()) ? null : date,
-        label,
         includeSeconds: true,
+        minParts: 6,
       };
     }
-  } else if (name.startsWith(SESSION_AUTO_BACKUP_NAME_PREFIX)) {
-    const remainder = name.slice(SESSION_AUTO_BACKUP_NAME_PREFIX.length);
-    const parts = remainder.split('-');
-    if (parts.length >= 5) {
-      const [year, month, day, hour, minute, ...rest] = parts;
-      const date = new Date(
-        Number(year),
-        Number(month) - 1,
-        Number(day),
-        Number(hour),
-        Number(minute),
-      );
-      const label = rest.join('-').trim();
+    if (name.startsWith(SESSION_AUTO_BACKUP_NAME_PREFIX)) {
       return {
+        prefixLength: SESSION_AUTO_BACKUP_NAME_PREFIX.length,
         type: 'auto-backup',
-        date: Number.isNaN(date.valueOf()) ? null : date,
-        label,
         includeSeconds: false,
+        minParts: 5,
       };
     }
+    return null;
+  })();
+
+  if (!config) {
+    return null;
   }
-  return null;
+
+  const remainder = name.slice(config.prefixLength);
+  const parts = remainder.split('-');
+  if (parts.length < config.minParts) {
+    return null;
+  }
+
+  const [year, month, day, hour, minute, ...rest] = parts;
+  const dateParts = [
+    Number(year),
+    Number(month) - 1,
+    Number(day),
+    Number(hour),
+    Number(minute),
+  ];
+
+  let labelParts = rest;
+  if (config.includeSeconds) {
+    const secondsPart = rest.length ? rest[0] : '0';
+    dateParts.push(Number(secondsPart));
+    labelParts = rest.slice(1);
+  }
+
+  const label = labelParts.join('-').trim();
+  const date = new Date(...dateParts);
+
+  return {
+    type: config.type,
+    date: Number.isNaN(date.valueOf()) ? null : date,
+    label,
+    includeSeconds: config.includeSeconds,
+  };
 }
 
 function formatTimestampForComparison(date, includeSeconds) {
