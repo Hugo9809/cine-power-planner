@@ -5759,12 +5759,12 @@ const ICON_GLYPHS = Object.freeze({
   sun: iconGlyph('\uF1FE', ICON_FONT_KEYS.UICONS),
   moon: iconGlyph('\uEC7E', ICON_FONT_KEYS.UICONS),
   circleX: iconGlyph('\uF131', ICON_FONT_KEYS.ESSENTIAL),
-  settingsGeneral: iconGlyph('\uEAC4', ICON_FONT_KEYS.UICONS),
-  settingsAutoGear: iconGlyph('\uE467', ICON_FONT_KEYS.UICONS),
-  settingsAccessibility: iconGlyph('\uE597', ICON_FONT_KEYS.UICONS),
-  settingsBackup: iconGlyph('\uE825', ICON_FONT_KEYS.UICONS),
-  settingsData: iconGlyph('\uF2DF', ICON_FONT_KEYS.UICONS),
-  settingsAbout: iconGlyph('\uF139', ICON_FONT_KEYS.UICONS),
+  settingsGeneral: iconGlyph('\uE5A3', ICON_FONT_KEYS.UICONS),
+  settingsAutoGear: iconGlyph('\uE8AF', ICON_FONT_KEYS.UICONS),
+  settingsAccessibility: iconGlyph('\uF392', ICON_FONT_KEYS.UICONS),
+  settingsBackup: iconGlyph('\uE5BD', ICON_FONT_KEYS.UICONS),
+  settingsData: iconGlyph('\uE5C7', ICON_FONT_KEYS.UICONS),
+  settingsAbout: iconGlyph('\uEA4F', ICON_FONT_KEYS.UICONS),
   star: Object.freeze({
     markup: STAR_ICON_SVG,
     className: 'icon-svg favorite-star-icon'
