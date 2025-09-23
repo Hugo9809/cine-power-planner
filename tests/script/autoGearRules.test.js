@@ -28,6 +28,7 @@ describe('applyAutoGearRulesToTableHtml', () => {
   const stripRuleIds = rule => ({
     label: rule.label,
     scenarios: rule.scenarios,
+    deliveryResolution: Array.isArray(rule.deliveryResolution) ? rule.deliveryResolution : [],
     mattebox: Array.isArray(rule.mattebox) ? rule.mattebox : [],
     add: rule.add.map(({ name, category, quantity }) => ({ name, category, quantity })),
     remove: rule.remove.map(({ name, category, quantity }) => ({ name, category, quantity })),
@@ -85,6 +86,7 @@ describe('applyAutoGearRulesToTableHtml', () => {
     [
       'always',
       'scenarios',
+      'deliveryResolution',
       'mattebox',
       'cameraHandle',
       'viewfinderExtension',
@@ -99,6 +101,7 @@ describe('applyAutoGearRulesToTableHtml', () => {
 
     const selectorIds = [
       'autoGearScenarios',
+      'autoGearDeliveryResolution',
       'autoGearMattebox',
       'autoGearCameraHandle',
       'autoGearViewfinderExtension',
@@ -150,6 +153,7 @@ describe('applyAutoGearRulesToTableHtml', () => {
     [
       'always',
       'scenarios',
+      'deliveryResolution',
       'mattebox',
       'cameraHandle',
       'viewfinderExtension',
@@ -199,7 +203,9 @@ describe('applyAutoGearRulesToTableHtml', () => {
     );
 
     env = setupScriptEnvironment();
-    const { applyAutoGearRulesToTableHtml } = env.utils;
+    const { applyAutoGearRulesToTableHtml, getAutoGearRules } = env.utils;
+
+    window.__rulesAfterEnv = getAutoGearRules();
 
     const tableHtml = `
       <table class="gear-table">
@@ -338,6 +344,60 @@ describe('applyAutoGearRulesToTableHtml', () => {
     const items = container.querySelectorAll('[data-gear-name="Prosup Tango Roller"]');
     expect(items).toHaveLength(1);
     expect(items[0].classList.contains('auto-gear-item')).toBe(true);
+  });
+
+  test('applies delivery resolution-triggered rules when the resolution matches', () => {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify([
+        {
+          id: 'rule-delivery',
+          label: 'Streaming add-ons',
+          scenarios: [],
+          deliveryResolution: ['4K'],
+          mattebox: [],
+          cameraHandle: [],
+          viewfinderExtension: [],
+          videoDistribution: [],
+          camera: [],
+          monitor: [],
+          wireless: [],
+          motors: [],
+          controllers: [],
+          distance: [],
+          add: [
+            {
+              id: 'add-delivery',
+              name: 'Extra SSD Media',
+              category: 'Camera support',
+              quantity: 1,
+            }
+          ],
+          remove: []
+        }
+      ])
+    );
+
+    env = setupScriptEnvironment();
+    const { applyAutoGearRulesToTableHtml } = env.utils;
+
+    const tableHtml = `
+      <table class="gear-table">
+        <tbody class="category-group">
+          <tr class="category-row"><td>Camera support</td></tr>
+          <tr><td></td></tr>
+        </tbody>
+      </table>
+    `;
+
+    const result = applyAutoGearRulesToTableHtml(tableHtml, { deliveryResolution: '4K' });
+    const container = document.createElement('div');
+    container.innerHTML = result;
+
+    const entries = container.querySelectorAll('[data-gear-name="Extra SSD Media"]');
+    expect(entries).toHaveLength(1);
+    expect(entries[0].classList.contains('auto-gear-item')).toBe(true);
+    expect(entries[0].textContent).toContain('1x');
   });
 
   test('applies mattebox-triggered rules when the selection matches', () => {

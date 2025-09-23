@@ -202,6 +202,10 @@ const texts = {
     autoGearScenariosHelp:
       "Pick every scenario that must be selected for this rule to apply. Hold Ctrl (Cmd on Mac) to choose multiple.",
     autoGearScenarioPlaceholder: "Select scenarios",
+    autoGearDeliveryResolutionLabel: "Delivery resolution",
+    autoGearDeliveryResolutionHelp:
+      "Apply this rule when the project delivery resolution matches any of these selections.",
+    autoGearDeliveryResolutionPlaceholder: "Select delivery resolutions",
     autoGearMatteboxLabel: "Mattebox options",
     autoGearMatteboxHelp:
       "Apply this rule when these mattebox choices are selected.",
@@ -238,7 +242,7 @@ const texts = {
     autoGearDistanceHelp:
       "Apply this rule when these distance devices are selected.",
     autoGearRuleConditionRequired:
-      "Select at least one scenario, camera, monitor, wireless transmitter, motor, controller, distance device, mattebox option, camera handle, viewfinder extension or video distribution before saving.",
+      "Select at least one scenario, delivery resolution, camera, monitor, wireless transmitter, motor, controller, distance device, mattebox option, camera handle, viewfinder extension or video distribution before saving.",
     autoGearAddItemsHeading: "Add these items",
     autoGearAddItemLabel: "Item",
     autoGearAddCategoryLabel: "Category",
@@ -1620,6 +1624,10 @@ const texts = {
     autoGearScenariosHelp:
       "Seleziona tutti gli scenari che devono essere attivi perché la regola si applichi. Tieni premuto Ctrl (Cmd su Mac) per sceglierne più di uno.",
     autoGearScenarioPlaceholder: "Seleziona scenari",
+    autoGearDeliveryResolutionLabel: "Risoluzione di consegna",
+    autoGearDeliveryResolutionHelp:
+      "Applica questa regola quando la risoluzione di consegna del progetto corrisponde a una di queste selezioni.",
+    autoGearDeliveryResolutionPlaceholder: "Seleziona risoluzioni di consegna",
     autoGearMatteboxLabel: "Opzioni matte box",
     autoGearMatteboxHelp:
       "Applica la regola quando sono selezionate queste opzioni di matte box.",
@@ -1656,7 +1664,7 @@ const texts = {
     autoGearDistanceHelp:
       "Applica la regola quando sono selezionati questi dispositivi di distanza.",
     autoGearRuleConditionRequired:
-      "Seleziona almeno uno scenario, un'opzione di matte box, una maniglia camera, una prolunga mirino o una distribuzione video prima di salvare.",
+      "Seleziona almeno uno scenario, una risoluzione di consegna, una camera, un monitor, un trasmettitore wireless, un motore, un controller, un dispositivo di distanza, un'opzione di matte box, una maniglia camera, una prolunga mirino o una distribuzione video prima di salvare.",
     autoGearAddItemsHeading: "Aggiungi questi elementi",
     autoGearAddItemLabel: "Elemento",
     autoGearAddCategoryLabel: "Categoria",
@@ -2619,6 +2627,10 @@ const texts = {
     autoGearScenariosHelp:
       "Selecciona todos los escenarios que deben estar activos para que se aplique esta regla. Mantén pulsado Ctrl (Cmd en Mac) para elegir varios.",
     autoGearScenarioPlaceholder: "Selecciona escenarios",
+    autoGearDeliveryResolutionLabel: "Resolución de entrega",
+    autoGearDeliveryResolutionHelp:
+      "Aplica esta regla cuando la resolución de entrega del proyecto coincida con cualquiera de estas selecciones.",
+    autoGearDeliveryResolutionPlaceholder: "Selecciona resoluciones de entrega",
     autoGearMatteboxLabel: "Opciones de matte box",
     autoGearMatteboxHelp:
       "Aplica la regla cuando se eligen estas opciones de matte box.",
@@ -2655,7 +2667,7 @@ const texts = {
     autoGearDistanceHelp:
       "Aplica la regla cuando se seleccionan estos dispositivos de distancia.",
     autoGearRuleConditionRequired:
-      "Selecciona al menos un escenario, una opción de matte box, una empuñadura de cámara, una extensión de visor o una distribución de vídeo antes de guardar.",
+      "Selecciona al menos un escenario, una resolución de entrega, una cámara, un monitor, un transmisor inalámbrico, un motor, un controlador, un dispositivo de distancia, una opción de matte box, una empuñadura de cámara, una extensión de visor o una distribución de vídeo antes de guardar.",
     autoGearAddItemsHeading: "Agregar estos elementos",
     autoGearAddItemLabel: "Elemento",
     autoGearAddCategoryLabel: "Categoría",
@@ -3620,6 +3632,10 @@ const texts = {
     autoGearScenariosHelp:
       "Sélectionnez tous les scénarios qui doivent être actifs pour appliquer cette règle. Maintenez Ctrl (Cmd sur Mac) pour en choisir plusieurs.",
     autoGearScenarioPlaceholder: "Sélectionnez des scénarios",
+    autoGearDeliveryResolutionLabel: "Résolution de livraison",
+    autoGearDeliveryResolutionHelp:
+      "Appliquez cette règle lorsque la résolution de livraison du projet correspond à l'une de ces sélections.",
+    autoGearDeliveryResolutionPlaceholder: "Sélectionnez des résolutions de livraison",
     autoGearMatteboxLabel: "Options de matte box",
     autoGearMatteboxHelp:
       "Appliquer la règle lorsque ces options de matte box sont sélectionnées.",
@@ -3656,7 +3672,7 @@ const texts = {
     autoGearDistanceHelp:
       "Appliquez la règle lorsque ces capteurs de distance sont sélectionnés.",
     autoGearRuleConditionRequired:
-      "Sélectionnez au moins un scénario, une option de matte box, une poignée caméra, une extension de viseur ou une distribution vidéo avant d’enregistrer.",
+      "Sélectionnez au moins un scénario, une résolution de livraison, une caméra, un moniteur, un émetteur sans fil, un moteur, un contrôleur, un capteur de distance, une option de matte box, une poignée caméra, une extension de viseur ou une distribution vidéo avant d’enregistrer.",
     autoGearAddItemsHeading: "Ajouter ces éléments",
     autoGearAddItemLabel: "Élément",
     autoGearAddCategoryLabel: "Catégorie",
@@ -4624,6 +4640,10 @@ const texts = {
     autoGearScenariosHelp:
       "Wähle alle Szenarien, die aktiv sein müssen, damit diese Regel greift. Halte Strg (Cmd auf dem Mac) gedrückt, um mehrere auszuwählen.",
     autoGearScenarioPlaceholder: "Szenarien auswählen",
+    autoGearDeliveryResolutionLabel: "Auslieferungsauflösung",
+    autoGearDeliveryResolutionHelp:
+      "Regel anwenden, wenn die Auslieferungsauflösung des Projekts einer dieser Auswahlmöglichkeiten entspricht.",
+    autoGearDeliveryResolutionPlaceholder: "Lieferauflösungen auswählen",
     autoGearMatteboxLabel: "Mattebox-Optionen",
     autoGearMatteboxHelp:
       "Regel anwenden, wenn diese Mattebox-Optionen gewählt sind.",
@@ -4660,7 +4680,7 @@ const texts = {
     autoGearDistanceHelp:
       "Wende die Regel an, wenn diese Distanzgeräte ausgewählt sind.",
     autoGearRuleConditionRequired:
-      "Wähle mindestens ein Szenario, eine Mattebox-Option, einen Kamera-Handgriff, eine Sucher-Verlängerung oder eine Videoverteilung, bevor du speicherst.",
+      "Wähle mindestens ein Szenario, eine Auslieferungsauflösung, eine Kamera, einen Monitor, einen Funk-Sender, einen Motor, einen Controller, ein Distanzgerät, eine Mattebox-Option, einen Kamera-Handgriff, eine Sucher-Verlängerung oder eine Videoverteilung, bevor du speicherst.",
     autoGearAddItemsHeading: "Diese Geräte hinzufügen",
     autoGearAddItemLabel: "Gerät",
     autoGearAddCategoryLabel: "Kategorie",

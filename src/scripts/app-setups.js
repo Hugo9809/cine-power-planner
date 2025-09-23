@@ -1870,6 +1870,10 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
       .map(normalizeAutoGearTriggerValue)
       .filter(Boolean)
   );
+  const rawDeliveryResolution = info && typeof info.deliveryResolution === 'string'
+      ? info.deliveryResolution.trim()
+      : '';
+  const normalizedDeliveryResolution = normalizeAutoGearTriggerValue(rawDeliveryResolution);
   const selectedMattebox = info && typeof info.mattebox === 'string'
       ? info.mattebox.trim()
       : '';
@@ -1980,6 +1984,15 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
                 .filter(Boolean);
             if (!normalizedTargets.length) return false;
             if (!normalizedTargets.every(target => normalizedScenarioSet.has(target))) return false;
+        }
+        const deliveryResolutionList = Array.isArray(rule.deliveryResolution) ? rule.deliveryResolution.filter(Boolean) : [];
+        if (deliveryResolutionList.length) {
+          const normalizedTargets = deliveryResolutionList
+            .map(normalizeAutoGearTriggerValue)
+            .filter(Boolean);
+          if (!normalizedTargets.length) return false;
+          if (!normalizedDeliveryResolution) return false;
+          if (!normalizedTargets.includes(normalizedDeliveryResolution)) return false;
         }
         const matteboxList = Array.isArray(rule.mattebox) ? rule.mattebox.filter(Boolean) : [];
         if (matteboxList.length) {
