@@ -206,6 +206,43 @@ describe('global feature search helpers', () => {
     );
   });
 
+  test('searchKey normalizes spelled-out numbers', () => {
+    expect(searchKey('Four-pin XLR Input')).toBe(
+      searchKey('4-pin XLR Input')
+    );
+    expect(searchKey('Twenty Four Volt Output')).toBe(
+      searchKey('24 Volt Output')
+    );
+  });
+
+  test('searchTokens expose number word variants', () => {
+    expect(searchTokens('Four-pin XLR Input')).toEqual(
+      expect.arrayContaining(['4', 'pin'])
+    );
+    expect(searchTokens('Twenty Four Volt Output')).toEqual(
+      expect.arrayContaining(['24'])
+    );
+  });
+
+  test('findBestSearchMatch resolves number word queries', () => {
+    const entries = new Map();
+    entries.set(
+      searchKey('4-pin XLR Power'),
+      {
+        label: '4-pin XLR Power',
+        tokens: searchTokens('4-pin XLR Power')
+      }
+    );
+
+    const result = findBestSearchMatch(
+      entries,
+      searchKey('four pin xlr power'),
+      searchTokens('four pin xlr power')
+    );
+
+    expect(result?.value.label).toBe('4-pin XLR Power');
+  });
+
   test('search handles British and American spelling variants', () => {
     expect(searchKey('Favourite Colour Settings')).toBe(
       searchKey('Favorite Color Settings')
