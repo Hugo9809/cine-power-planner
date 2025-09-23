@@ -1,4 +1,5 @@
 // --- SESSION STATE HANDLING ---
+/* eslint-disable no-redeclare */
 /* global resolveTemperatureStorageKey, TEMPERATURE_STORAGE_KEY,
           updateCageSelectOptions, updateAccentColorResetButtonState,
           normalizeAccentValue, DEFAULT_ACCENT_NORMALIZED,
@@ -10,6 +11,7 @@
           autoGearConditionList, removeAutoGearCondition,
           handleAutoGearConditionShortcut,
           clearUiCacheStorageEntries, __cineGlobal, humanizeKey */
+/* eslint-enable no-redeclare */
 
 const temperaturePreferenceStorageKey =
   typeof TEMPERATURE_STORAGE_KEY === 'string'
@@ -2940,9 +2942,12 @@ function computeSetupDiff(baseline, comparison) {
   return entries;
 }
 
-function createDiffValueElement(value) {
+function createDiffValueElement(value, variant) {
   const element = document.createElement('pre');
   element.className = 'diff-value';
+  if (variant) {
+    element.className += ` diff-value-${variant}`;
+  }
   if (value === undefined) {
     element.textContent = getDiffText('versionCompareMissingValue', 'Not present');
     return element;
@@ -2968,15 +2973,42 @@ function createDiffValueElement(value) {
   return element;
 }
 
-function createDiffChangeBlock(labelText, value) {
+function createDiffChangeBlock(labelText, value, variant) {
   const block = document.createElement('div');
   block.className = 'diff-change';
+  if (variant) {
+    block.classList.add(`diff-change-${variant}`);
+  }
   const label = document.createElement('span');
   label.className = 'diff-label';
   label.textContent = labelText;
   block.appendChild(label);
-  block.appendChild(createDiffValueElement(value));
+  block.appendChild(createDiffValueElement(value, variant));
   return block;
+}
+
+function createDiffStatusBadge(type) {
+  const badge = document.createElement('span');
+  badge.className = 'diff-label diff-status-badge';
+  let variant = 'changed';
+  let textKey = 'versionCompareChangeUpdated';
+  let fallbackText = 'Updated';
+  if (type === 'added') {
+    variant = 'added';
+    textKey = 'versionCompareChangeAdded';
+    fallbackText = 'Added';
+  } else if (type === 'removed') {
+    variant = 'removed';
+    textKey = 'versionCompareChangeRemoved';
+    fallbackText = 'Removed';
+  } else if (type === 'changed') {
+    variant = 'changed';
+    textKey = 'versionCompareChangeUpdated';
+    fallbackText = 'Updated';
+  }
+  badge.classList.add(`diff-status-${variant}`);
+  badge.textContent = getDiffText(textKey, fallbackText);
+  return badge;
 }
 
 function sortDiffEntries(entries) {
@@ -3021,33 +3053,55 @@ function renderBackupDiffEntries(entries) {
     const item = document.createElement('li');
     const typeClass = entry.type ? ` diff-${entry.type}` : '';
     item.className = `diff-entry${typeClass}`;
+
+    const header = document.createElement('div');
+    header.className = 'diff-entry-header';
+
     const path = document.createElement('div');
     path.className = 'diff-path';
     path.textContent = pathText;
-    item.appendChild(path);
+    header.appendChild(path);
+
+    header.appendChild(createDiffStatusBadge(entry.type));
+    item.appendChild(header);
+
+    const changeGroup = document.createElement('div');
+    changeGroup.className = 'diff-change-group';
+
     if (entry.type === 'changed') {
-      const status = document.createElement('span');
-      status.className = 'diff-label diff-status';
-      status.textContent = getDiffText('versionCompareChangeUpdated', 'Updated');
-      item.appendChild(status);
-      item.appendChild(createDiffChangeBlock(
+      changeGroup.classList.add('diff-change-group--split');
+      changeGroup.appendChild(createDiffChangeBlock(
         getDiffText('versionCompareChangeRemoved', 'Removed'),
         entry.before,
+        'removed',
       ));
-      item.appendChild(createDiffChangeBlock(
+      changeGroup.appendChild(createDiffChangeBlock(
         getDiffText('versionCompareChangeAdded', 'Added'),
         entry.after,
+        'added',
       ));
     } else if (entry.type === 'added') {
-      item.appendChild(createDiffChangeBlock(
+      changeGroup.appendChild(createDiffChangeBlock(
         getDiffText('versionCompareChangeAdded', 'Added'),
         entry.after,
+        'added',
       ));
     } else if (entry.type === 'removed') {
-      item.appendChild(createDiffChangeBlock(
+      changeGroup.appendChild(createDiffChangeBlock(
         getDiffText('versionCompareChangeRemoved', 'Removed'),
         entry.before,
+        'removed',
       ));
+    } else {
+      changeGroup.appendChild(createDiffChangeBlock(
+        getDiffText('versionCompareChangeUpdated', 'Updated'),
+        entry.after,
+        'changed',
+      ));
+    }
+
+    if (changeGroup.childNodes.length) {
+      item.appendChild(changeGroup);
     }
     backupDiffListEl.appendChild(item);
   });
