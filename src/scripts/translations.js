@@ -700,6 +700,8 @@ const texts = {
     confirmExportAndRevert: "Are you sure you want to export the current database AND then revert to the default database? This will overwrite your current saved data with the original defaults.",
     alertExportAndRevertSuccess: "Database exported and reverted to defaults successfully.",
     alertStorageError: "Storage error: Unable to access local data. Changes may not be saved.",
+    alertSessionFallback:
+      "Warning: Local storage is unavailable. Data will only persist for this browser tab.",
 
     placeholder_deviceName: "Device name",
     placeholder_watt: "e.g. 12.5",
@@ -1281,6 +1283,8 @@ const texts = {
     confirmExportAndRevert: "Sei sicuro di voler esportare il database corrente e quindi tornare al database predefinito? Ciò sovrascriverà i tuoi dati salvati attuali con le impostazioni predefinite originali.",
     alertExportAndRevertSuccess: "Database esportato e ripristinato in predefiniti.",
     alertStorageError: "Errore di archiviazione: impossibile accedere ai dati locali. Le modifiche potrebbero non essere salvate.",
+    alertSessionFallback:
+      "Avviso: l'archiviazione locale non è disponibile. I dati resteranno solo per questa scheda del browser.",
     placeholder_deviceName: "Nome del dispositivo",
     placeholder_watt: "es. 12.5",
     placeholder_capacity: "es. 98",
@@ -2216,7 +2220,10 @@ const texts = {
     alertImportError: "Error al importar la base de datos.",
     confirmExportAndRevert: "¿Seguro que deseas exportar y restaurar la base de datos por defecto?",
     alertExportAndRevertSuccess: "Base de datos exportada y restablecida.",
-    alertStorageError: "Error de almacenamiento: no se pudo acceder a los datos locales. Es posible que los cambios no se guarden.",
+    alertStorageError:
+      "Error de almacenamiento: no se pudo acceder a los datos locales. Es posible que los cambios no se guarden.",
+    alertSessionFallback:
+      "Aviso: el almacenamiento local no está disponible. Los datos solo persistirán en esta pestaña del navegador.",
 
     placeholder_deviceName: "Nombre del dispositivo",
     placeholder_watt: "ej. 12.5",
@@ -3159,7 +3166,10 @@ const texts = {
     alertImportError: "Échec de l'importation de la base.",
     confirmExportAndRevert: "Exporter puis rétablir la base par défaut ?",
     alertExportAndRevertSuccess: "Base exportée et réinitialisée.",
-    alertStorageError: "Erreur de stockage : accès aux données locales impossible. Les modifications peuvent ne pas être enregistrées.",
+    alertStorageError:
+      "Erreur de stockage : accès aux données locales impossible. Les modifications peuvent ne pas être enregistrées.",
+    alertSessionFallback:
+      "Avertissement : le stockage local est indisponible. Les données ne persisteront que pour cet onglet du navigateur.",
 
     placeholder_deviceName: "Nom de l'appareil",
     placeholder_watt: "ex. 12.5",
@@ -4106,7 +4116,10 @@ const texts = {
     alertImportError: "Fehler beim Import der Datenbank. Ungültige Datei oder Datenformat.",
     confirmExportAndRevert: "Möchten Sie die aktuelle Datenbank exportieren UND dann auf die Standarddatenbank zurücksetzen? Dies wird Ihre aktuell gespeicherten Daten mit den ursprünglichen Standardwerten überschreiben.",
     alertExportAndRevertSuccess: "Datenbank exportiert und erfolgreich auf Standardwerte zurückgesetzt.",
-    alertStorageError: "Speicherfehler: Auf lokale Daten konnte nicht zugegriffen werden. Änderungen werden möglicherweise nicht gespeichert.",
+    alertStorageError:
+      "Speicherfehler: Auf lokale Daten konnte nicht zugegriffen werden. Änderungen werden möglicherweise nicht gespeichert.",
+    alertSessionFallback:
+      "Warnung: Der lokale Speicher ist nicht verfügbar. Daten bleiben nur für diesen Browser-Tab erhalten.",
 
     placeholder_deviceName: "Gerätename",
     placeholder_watt: "z.B. 12.5",

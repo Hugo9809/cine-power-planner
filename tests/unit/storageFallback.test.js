@@ -1,4 +1,5 @@
 const FAVORITES_KEY = 'cameraPowerPlanner_favorites';
+const SESSION_FALLBACK_ALERT_FLAG_NAME = '__cameraPowerPlannerSessionFallbackAlertShown';
 
 const createQuotaStorage = (initialData = {}) => {
   const store = { ...initialData };
@@ -36,6 +37,7 @@ const createQuotaStorage = (initialData = {}) => {
 describe('SAFE_LOCAL_STORAGE fallback behaviour', () => {
   let originalLocalStorageDescriptor;
   let storageModule;
+  let originalAlert;
 
   beforeEach(() => {
     jest.resetModules();
@@ -43,6 +45,12 @@ describe('SAFE_LOCAL_STORAGE fallback behaviour', () => {
     if (typeof window === 'undefined') {
       global.window = {};
     }
+
+    delete global[SESSION_FALLBACK_ALERT_FLAG_NAME];
+    delete global.window[SESSION_FALLBACK_ALERT_FLAG_NAME];
+
+    originalAlert = global.window.alert;
+    global.window.alert = jest.fn();
 
     originalLocalStorageDescriptor = Object.getOwnPropertyDescriptor(global.window, 'localStorage');
 
@@ -67,6 +75,17 @@ describe('SAFE_LOCAL_STORAGE fallback behaviour', () => {
   afterEach(() => {
     jest.resetModules();
 
+    delete global[SESSION_FALLBACK_ALERT_FLAG_NAME];
+    if (global.window) {
+      delete global.window[SESSION_FALLBACK_ALERT_FLAG_NAME];
+    }
+
+    if (originalAlert === undefined) {
+      delete global.window.alert;
+    } else {
+      global.window.alert = originalAlert;
+    }
+
     if (originalLocalStorageDescriptor) {
       Object.defineProperty(global.window, 'localStorage', originalLocalStorageDescriptor);
     } else {
@@ -86,6 +105,14 @@ describe('SAFE_LOCAL_STORAGE fallback behaviour', () => {
     );
     expect(global.localStorage.getItem(FAVORITES_KEY)).toBeNull();
     expect(loadFavorites()).toEqual({ cameraSelect: ['Alexa Mini'] });
+  });
+
+  test('notifies the user when falling back to sessionStorage', () => {
+    const expectedMessage =
+      'Warning: Local storage is unavailable. Data will only persist for this browser tab.';
+
+    expect(global.window.alert).toHaveBeenCalledTimes(1);
+    expect(global.window.alert).toHaveBeenCalledWith(expectedMessage);
   });
 });
 
