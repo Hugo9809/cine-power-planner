@@ -35,6 +35,7 @@ describe('automatic gear monitor field visibility', () => {
         expect(element.hidden).toBe(!visible);
         expect(element.hasAttribute('hidden')).toBe(!visible);
         expect(element.getAttribute('aria-hidden')).toBe(visible ? null : 'true');
+        expect(element.style.display === 'none').toBe(!visible);
       });
     };
 

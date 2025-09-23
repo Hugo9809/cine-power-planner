@@ -572,10 +572,25 @@ function setAutoGearFieldVisibility(field, isVisible) {
     field.hidden = false;
     field.removeAttribute('hidden');
     field.removeAttribute('aria-hidden');
+    if (Object.prototype.hasOwnProperty.call(field.dataset, 'autoGearHiddenDisplay')) {
+      const storedDisplay = field.dataset.autoGearHiddenDisplay;
+      if (storedDisplay) {
+        field.style.display = storedDisplay;
+      } else {
+        field.style.removeProperty('display');
+      }
+      delete field.dataset.autoGearHiddenDisplay;
+    } else if (field.style.display === 'none') {
+      field.style.removeProperty('display');
+    }
   } else {
     field.hidden = true;
     field.setAttribute('hidden', '');
     field.setAttribute('aria-hidden', 'true');
+    if (!Object.prototype.hasOwnProperty.call(field.dataset, 'autoGearHiddenDisplay')) {
+      field.dataset.autoGearHiddenDisplay = field.style.display || '';
+    }
+    field.style.display = 'none';
   }
 }
 
