@@ -26,6 +26,7 @@ var FEEDBACK_STORAGE_KEY = 'cameraPowerPlanner_feedback';
 var PROJECT_STORAGE_KEY = 'cameraPowerPlanner_project';
 var FAVORITES_STORAGE_KEY = 'cameraPowerPlanner_favorites';
 var DEVICE_SCHEMA_CACHE_KEY = 'cameraPowerPlanner_schemaCache';
+var LEGACY_SCHEMA_CACHE_KEY = 'cinePowerPlanner_schemaCache';
 var CUSTOM_FONT_STORAGE_KEY_DEFAULT = 'cameraPowerPlanner_customFonts';
 function ensureCustomFontStorageKeyName() {
   if (!GLOBAL_SCOPE) {
@@ -89,8 +90,8 @@ var AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY = 'cameraPowerPlanner_autoGearActivePres
 var AUTO_GEAR_AUTO_PRESET_STORAGE_KEY = 'cameraPowerPlanner_autoGearAutoPreset';
 var AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY = 'cameraPowerPlanner_autoGearShowBackups';
 var FULL_BACKUP_HISTORY_STORAGE_KEY = 'cameraPowerPlanner_fullBackups';
-var LEGACY_STORAGE_AUTO_BACKUP_NAME_PREFIX = 'auto-backup-';
-var AUTO_BACKUP_DELETION_PREFIX = 'auto-backup-before-delete-';
+var STORAGE_AUTO_BACKUP_NAME_PREFIX = 'auto-backup-';
+var STORAGE_AUTO_BACKUP_DELETION_PREFIX = 'auto-backup-before-delete-';
 var MAX_AUTO_BACKUPS = 50;
 var MAX_DELETION_BACKUPS = 20;
 var MAX_FULL_BACKUP_HISTORY_ENTRIES = 200;
@@ -682,7 +683,7 @@ function getAutoBackupTimestamp(name) {
     return Number.NEGATIVE_INFINITY;
   }
   var match = null;
-  if (name.startsWith(LEGACY_STORAGE_AUTO_BACKUP_NAME_PREFIX)) {
+  if (name.startsWith(STORAGE_AUTO_BACKUP_NAME_PREFIX)) {
     match = name.match(/^auto-backup-(\d{4})-(\d{2})-(\d{2})-(\d{2})-(\d{2})/);
     if (!match) {
       return Number.NEGATIVE_INFINITY;
@@ -698,7 +699,7 @@ function getAutoBackupTimestamp(name) {
     var time = date.getTime();
     return Number.isNaN(time) ? Number.NEGATIVE_INFINITY : time;
   }
-  if (name.startsWith(AUTO_BACKUP_DELETION_PREFIX)) {
+  if (name.startsWith(STORAGE_AUTO_BACKUP_DELETION_PREFIX)) {
     match = name.match(/^auto-backup-before-delete-(\d{4})-(\d{2})-(\d{2})-(\d{2})-(\d{2})-(\d{2})/);
     if (!match) {
       return Number.NEGATIVE_INFINITY;
@@ -807,7 +808,7 @@ function enforceAutoBackupLimits(container) {
     return [];
   }
   var removed = [];
-  var autoBackups = collectAutoBackupEntries(container, LEGACY_STORAGE_AUTO_BACKUP_NAME_PREFIX);
+  var autoBackups = collectAutoBackupEntries(container, STORAGE_AUTO_BACKUP_NAME_PREFIX);
   if (autoBackups.length > MAX_AUTO_BACKUPS) {
     removed.push.apply(removed, _toConsumableArray(removeDuplicateAutoBackupEntries(container, autoBackups)));
     while (autoBackups.length > MAX_AUTO_BACKUPS) {
@@ -819,7 +820,7 @@ function enforceAutoBackupLimits(container) {
       removed.push(entry.key);
     }
   }
-  var deletionBackups = collectAutoBackupEntries(container, AUTO_BACKUP_DELETION_PREFIX);
+  var deletionBackups = collectAutoBackupEntries(container, STORAGE_AUTO_BACKUP_DELETION_PREFIX);
   if (deletionBackups.length > MAX_DELETION_BACKUPS) {
     removed.push.apply(removed, _toConsumableArray(removeDuplicateAutoBackupEntries(container, deletionBackups)));
     while (deletionBackups.length > MAX_DELETION_BACKUPS) {
@@ -840,7 +841,7 @@ function removeOldestAutoBackupEntry(container) {
   if (!isPlainObject(container)) {
     return null;
   }
-  var autoBackups = collectAutoBackupEntries(container, LEGACY_STORAGE_AUTO_BACKUP_NAME_PREFIX);
+  var autoBackups = collectAutoBackupEntries(container, STORAGE_AUTO_BACKUP_NAME_PREFIX);
   if (autoBackups.length > 0) {
     var oldest = autoBackups.shift();
     if (oldest) {
@@ -848,7 +849,7 @@ function removeOldestAutoBackupEntry(container) {
       return oldest.key;
     }
   }
-  var deletionBackups = collectAutoBackupEntries(container, AUTO_BACKUP_DELETION_PREFIX);
+  var deletionBackups = collectAutoBackupEntries(container, STORAGE_AUTO_BACKUP_DELETION_PREFIX);
   if (deletionBackups.length > 0) {
     var _oldest = deletionBackups.shift();
     if (_oldest) {
@@ -1384,6 +1385,89 @@ function deleteFromStorage(storage, key, errorMessage) {
   } catch (migrationError) {
     console.warn("Unable to remove migration backup for ".concat(key), migrationError);
   }
+}
+var UI_CACHE_STORAGE_KEYS = [DEVICE_SCHEMA_CACHE_KEY, LEGACY_SCHEMA_CACHE_KEY];
+var UI_CACHE_STORAGE_ACCESS_WARNINGS = new Set();
+function collectUiCacheStorages() {
+  var candidates = [];
+  var seenScopes = new Set();
+  var pushCandidate = function pushCandidate(candidate) {
+    if (!candidate || typeof candidate.getItem !== 'function') {
+      return;
+    }
+    candidates.push(candidate);
+  };
+  var readProperty = function readProperty(scope, property, label) {
+    if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+      return null;
+    }
+    try {
+      return scope[property];
+    } catch (error) {
+      if (label && !UI_CACHE_STORAGE_ACCESS_WARNINGS.has(label)) {
+        UI_CACHE_STORAGE_ACCESS_WARNINGS.add(label);
+        console.warn("Unable to access ".concat(label, " while clearing UI caches"), error);
+      }
+      return null;
+    }
+  };
+  var _inspectScope = function inspectScope(scope, label) {
+    if (!scope || seenScopes.has(scope)) {
+      return;
+    }
+    seenScopes.add(scope);
+    pushCandidate(readProperty(scope, 'SAFE_LOCAL_STORAGE', "".concat(label, ".SAFE_LOCAL_STORAGE")));
+    pushCandidate(readProperty(scope, 'localStorage', "".concat(label, ".localStorage")));
+    pushCandidate(readProperty(scope, 'sessionStorage', "".concat(label, ".sessionStorage")));
+    var nested = readProperty(scope, '__cineGlobal', "".concat(label, ".__cineGlobal"));
+    if (nested && nested !== scope) {
+      _inspectScope(nested, "".concat(label, ".__cineGlobal"));
+    }
+  };
+  _inspectScope(typeof globalThis !== 'undefined' ? globalThis : null, 'globalThis');
+  _inspectScope(typeof window !== 'undefined' ? window : null, 'window');
+  _inspectScope(typeof self !== 'undefined' ? self : null, 'self');
+  _inspectScope(typeof global !== 'undefined' ? global : null, 'global');
+  if (typeof __cineGlobal !== 'undefined') {
+    _inspectScope(__cineGlobal, '__cineGlobal');
+  }
+  if (safeLocalStorageInfo && safeLocalStorageInfo.storage) {
+    pushCandidate(safeLocalStorageInfo.storage);
+  }
+  if (typeof SAFE_LOCAL_STORAGE !== 'undefined' && SAFE_LOCAL_STORAGE) {
+    pushCandidate(SAFE_LOCAL_STORAGE);
+  }
+  try {
+    pushCandidate(getSafeLocalStorage());
+  } catch (error) {
+    if (!UI_CACHE_STORAGE_ACCESS_WARNINGS.has('getSafeLocalStorage')) {
+      UI_CACHE_STORAGE_ACCESS_WARNINGS.add('getSafeLocalStorage');
+      console.warn('Unable to access safe local storage while clearing UI caches', error);
+    }
+  }
+  pushCandidate(getWindowStorage('localStorage'));
+  pushCandidate(getWindowStorage('sessionStorage'));
+  if (typeof localStorage !== 'undefined') {
+    pushCandidate(localStorage);
+  }
+  if (typeof sessionStorage !== 'undefined') {
+    pushCandidate(sessionStorage);
+  }
+  return collectUniqueStorages(candidates);
+}
+function clearUiCacheStorageEntries() {
+  var storages = collectUiCacheStorages();
+  if (!storages.length) {
+    return;
+  }
+  UI_CACHE_STORAGE_KEYS.forEach(function (key) {
+    if (typeof key !== 'string' || !key) {
+      return;
+    }
+    storages.forEach(function (storage) {
+      deleteFromStorage(storage, key, "Failed to clear UI cache entry ".concat(key));
+    });
+  });
 }
 function loadFlagFromStorage(storage, key, errorMessage) {
   if (!storage) return false;
@@ -2066,7 +2150,7 @@ function generateDeletionBackupMetadata(projectName, projects) {
   var now = new Date();
   var timestamp = formatAutoBackupTimestamp(now);
   var sanitizedName = sanitizeProjectNameForBackup(projectName);
-  var baseName = sanitizedName ? "".concat(AUTO_BACKUP_DELETION_PREFIX).concat(timestamp, "-").concat(sanitizedName) : "".concat(AUTO_BACKUP_DELETION_PREFIX).concat(timestamp);
+  var baseName = sanitizedName ? "".concat(STORAGE_AUTO_BACKUP_DELETION_PREFIX).concat(timestamp, "-").concat(sanitizedName) : "".concat(STORAGE_AUTO_BACKUP_DELETION_PREFIX).concat(timestamp);
   var usedNames = new Set(Object.keys(projects));
   if (!usedNames.has(baseName)) {
     return {
@@ -2103,7 +2187,7 @@ function maybeCreateProjectDeletionBackup(projects, key) {
       status: 'missing'
     };
   }
-  if (typeof key === 'string' && key.startsWith(LEGACY_STORAGE_AUTO_BACKUP_NAME_PREFIX)) {
+  if (typeof key === 'string' && key.startsWith(STORAGE_AUTO_BACKUP_NAME_PREFIX)) {
     return {
       status: 'skipped'
     };
@@ -3488,7 +3572,8 @@ if (typeof module !== "undefined" && module.exports) {
     loadFullBackupHistory: loadFullBackupHistory,
     saveFullBackupHistory: saveFullBackupHistory,
     recordFullBackupHistoryEntry: recordFullBackupHistoryEntry,
-    requestPersistentStorage: requestPersistentStorage
+    requestPersistentStorage: requestPersistentStorage,
+    clearUiCacheStorageEntries: clearUiCacheStorageEntries
   };
 }
 if (GLOBAL_SCOPE) {

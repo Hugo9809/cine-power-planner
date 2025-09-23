@@ -13,8 +13,10 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
   var combinedSource = [nodePrelude].concat(_toConsumableArray(parts.map(function (part) {
     return fs.readFileSync(path.join(__dirname, part), 'utf8');
   }))).join('\n');
-  var wrapperSource = '(function (exports, require, module, __filename, __dirname, globalScope) {\nwith (globalScope) {\n' + combinedSource + '\n}\n})';
-  var wrapper = vm.runInThisContext(wrapperSource, { filename: __filename });
+  var wrapperSource = '(function (exports, require, module, __filename, __dirname, globalScope) {\n' + 'with (globalScope) {\n' + combinedSource + '\n}\n})';
+  var wrapper = vm.runInThisContext(wrapperSource, {
+    filename: __filename
+  });
   var globalScope = typeof globalThis !== 'undefined' && globalThis || typeof global !== 'undefined' && global || this;
   wrapper.call(globalScope, module.exports, require, module, __filename, __dirname, globalScope);
   var aggregatedExports = module.exports;

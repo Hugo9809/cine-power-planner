@@ -2049,8 +2049,20 @@ body.pink-mode:not(.dark-mode) #settingsPanel-autoGear .auto-gear-rule-items-lab
   background: var(--surface-color);
 }
 
+.auto-gear-item-list .auto-gear-item.auto-gear-item-editing {
+  border-color: var(--accent-color, #007aff);
+  box-shadow: 0 0 0 1px var(--accent-color, #007aff);
+}
+
 .auto-gear-item-list .auto-gear-item span {
   display: block;
+}
+
+.auto-gear-item-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
 }
 
 .auto-gear-selector-container {

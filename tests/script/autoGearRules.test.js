@@ -931,7 +931,6 @@ describe('applyAutoGearRulesToTableHtml', () => {
     document.getElementById('autoGearAddScreenSize').value = '17"';
     document.getElementById('autoGearAddSelectorType').value = 'monitor';
     document.getElementById('autoGearAddSelectorDefault').value = 'SmallHD Ultra 7';
-    document.getElementById('autoGearAddSelectorInclude').checked = true;
     document.getElementById('autoGearAddNotes').value = 'incl. Directors cage';
 
     document.getElementById('autoGearAddItemButton').click();
@@ -974,12 +973,76 @@ describe('applyAutoGearRulesToTableHtml', () => {
     expect(entry.textContent).toContain('incl. Directors cage');
     const select = entry.querySelector('select');
     expect(select).not.toBeNull();
+    expect(select?.hasAttribute('size')).toBe(false);
+    expect(select?.multiple).toBe(false);
     expect(select.value).toBe('SmallHD Ultra 7');
     expect(Array.from(select.options || [])).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ value: 'SmallHD Ultra 7' })
       ])
     );
+  });
+
+  test('allows editing automatic gear draft items', () => {
+    env = setupScriptEnvironment();
+
+    document.getElementById('autoGearAddRule').click();
+
+    const addNameInput = document.getElementById('autoGearAddName');
+    const addCategorySelect = document.getElementById('autoGearAddCategory');
+    const addQuantityInput = document.getElementById('autoGearAddQuantity');
+    const addSelectorType = document.getElementById('autoGearAddSelectorType');
+    const addSelectorDefault = document.getElementById('autoGearAddSelectorDefault');
+    const addButton = document.getElementById('autoGearAddItemButton');
+
+    expect(addNameInput).not.toBeNull();
+    expect(addCategorySelect).not.toBeNull();
+    expect(addQuantityInput).not.toBeNull();
+    expect(addSelectorType).not.toBeNull();
+    expect(addSelectorDefault).not.toBeNull();
+    expect(addButton).not.toBeNull();
+
+    addNameInput.value = 'Focus monitor';
+    addCategorySelect.value = 'Monitoring';
+    addQuantityInput.value = '1';
+    addSelectorType.value = 'monitor';
+    addSelectorDefault.value = 'SmallHD Focus';
+    addButton.click();
+
+    const initialEditButton = document.querySelector('#autoGearAddList .auto-gear-edit-entry');
+    expect(initialEditButton).not.toBeNull();
+    initialEditButton.click();
+
+    expect(addButton.textContent).toContain('Save item');
+    expect(addNameInput.value).toBe('Focus monitor');
+
+    addNameInput.value = 'Director monitor';
+    addQuantityInput.value = '2';
+    addSelectorDefault.value = 'SmallHD Cine 7';
+    addButton.click();
+
+    const addListItems = document.querySelectorAll('#autoGearAddList .auto-gear-item');
+    expect(addListItems).toHaveLength(1);
+    const updatedText = addListItems[0]?.textContent || '';
+    expect(updatedText).toContain('Director monitor');
+    expect(updatedText).toContain('+2');
+    expect(updatedText).toContain('Monitoring');
+    expect(addButton.textContent).toContain('Add item');
+
+    const editButtonAfterUpdate = document.querySelector('#autoGearAddList .auto-gear-edit-entry');
+    expect(editButtonAfterUpdate).not.toBeNull();
+    editButtonAfterUpdate.click();
+
+    expect(addButton.textContent).toContain('Save item');
+    expect(addNameInput.value).toBe('Director monitor');
+    expect(addSelectorDefault.value).toBe('SmallHD Cine 7');
+
+    const editButtonCancel = document.querySelector('#autoGearAddList .auto-gear-edit-entry');
+    expect(editButtonCancel).not.toBeNull();
+    editButtonCancel.click();
+
+    expect(addNameInput.value).toBe('');
+    expect(addButton.textContent).toContain('Add item');
   });
 
   test('allows creating a camera handle automatic gear rule', () => {

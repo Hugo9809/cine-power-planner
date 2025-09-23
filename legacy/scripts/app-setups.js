@@ -472,6 +472,11 @@ function summarizeByType(list) {
     return counts;
   }, {});
 }
+function renderInfoLabel(text) {
+  var str = text != null ? String(text).trim() : '';
+  if (!str) return '';
+  return "<span class=\"info-box-label\">".concat(escapeHtml(str), ":</span> ");
+}
 function connectorBlocks(items, icon) {
   var cls = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'neutral-conn';
   var label = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : '';
@@ -485,9 +490,10 @@ function connectorBlocks(items, icon) {
     return "".concat(escapeHtml(type)).concat(count > 1 ? " \xD7".concat(count) : '');
   });
   if (!entries.length) return '';
-  var prefix = label ? "".concat(label).concat(dir ? " ".concat(dir) : '', ": ") : '';
+  var labelText = label ? "".concat(label).concat(dir ? " ".concat(dir) : '') : '';
+  var labelHtml = renderInfoLabel(labelText);
   var iconHtml = iconMarkup(icon, 'connector-icon');
-  return "<span class=\"connector-block ".concat(cls, "\">").concat(iconHtml).concat(prefix).concat(entries.join(', '), "</span>");
+  return "<span class=\"connector-block ".concat(cls, "\">").concat(iconHtml).concat(labelHtml).concat(entries.join(', '), "</span>");
 }
 function generateConnectorSummary(device) {
   var _device$power, _device$video, _device$video2, _device$audioInput, _device$audioOutput, _device$audioIo, _device$power2, _device$power3;
@@ -567,44 +573,44 @@ function generateConnectorSummary(device) {
   }
   var specHtml = '';
   if (typeof device.powerDrawWatts === 'number') {
-    specHtml += "<span class=\"info-box power-conn\">".concat(iconMarkup(diagramConnectorIcons.powerSpec), "Power: ").concat(device.powerDrawWatts, " W</span>");
+    specHtml += "<span class=\"info-box power-conn\">".concat(iconMarkup(diagramConnectorIcons.powerSpec)).concat(renderInfoLabel('Power')).concat(device.powerDrawWatts, " W</span>");
   }
   if ((_device$power2 = device.power) !== null && _device$power2 !== void 0 && (_device$power2 = _device$power2.input) !== null && _device$power2 !== void 0 && _device$power2.voltageRange) {
-    specHtml += "<span class=\"info-box power-conn\">".concat(iconMarkup(ICON_GLYPHS.batteryBolt), "Voltage: ").concat(escapeHtml(String(device.power.input.voltageRange)), "V</span>");
+    specHtml += "<span class=\"info-box power-conn\">".concat(iconMarkup(ICON_GLYPHS.batteryBolt)).concat(renderInfoLabel('Voltage')).concat(escapeHtml(String(device.power.input.voltageRange)), "V</span>");
   }
   if (typeof device.weight_g === 'number') {
     var weightLabel = "".concat(device.weight_g, " g");
-    specHtml += "<span class=\"info-box neutral-conn\">".concat(iconMarkup(ICON_GLYPHS.gears), "Weight: ").concat(escapeHtml(weightLabel), "</span>");
+    specHtml += "<span class=\"info-box neutral-conn\">".concat(iconMarkup(ICON_GLYPHS.gears)).concat(renderInfoLabel('Weight')).concat(escapeHtml(weightLabel), "</span>");
   }
   if (typeof device.capacity === 'number') {
-    specHtml += "<span class=\"info-box power-conn\">".concat(iconMarkup(ICON_GLYPHS.batteryFull), "Capacity: ").concat(device.capacity, " Wh</span>");
+    specHtml += "<span class=\"info-box power-conn\">".concat(iconMarkup(ICON_GLYPHS.batteryFull)).concat(renderInfoLabel('Capacity')).concat(device.capacity, " Wh</span>");
   }
   if (typeof device.pinA === 'number') {
-    specHtml += "<span class=\"info-box power-conn\">Pins: ".concat(device.pinA, "A</span>");
+    specHtml += "<span class=\"info-box power-conn\">".concat(renderInfoLabel('Pins')).concat(device.pinA, "A</span>");
   }
   if (typeof device.dtapA === 'number') {
-    specHtml += "<span class=\"info-box power-conn\">D-Tap: ".concat(device.dtapA, "A</span>");
+    specHtml += "<span class=\"info-box power-conn\">".concat(renderInfoLabel('D-Tap')).concat(device.dtapA, "A</span>");
   }
   if (device.mount_type) {
-    specHtml += "<span class=\"info-box power-conn\">Mount: ".concat(escapeHtml(String(device.mount_type)), "</span>");
+    specHtml += "<span class=\"info-box power-conn\">".concat(renderInfoLabel('Mount')).concat(escapeHtml(String(device.mount_type)), "</span>");
   }
   if (typeof device.screenSizeInches === 'number') {
-    specHtml += "<span class=\"info-box video-conn\">".concat(iconMarkup(DIAGRAM_MONITOR_ICON), "Screen: ").concat(device.screenSizeInches, "\"</span>");
+    specHtml += "<span class=\"info-box video-conn\">".concat(iconMarkup(DIAGRAM_MONITOR_ICON)).concat(renderInfoLabel('Screen')).concat(device.screenSizeInches, "\"</span>");
   }
   if (typeof device.brightnessNits === 'number') {
-    specHtml += "<span class=\"info-box video-conn\">".concat(iconMarkup(ICON_GLYPHS.brightness), "Brightness: ").concat(device.brightnessNits, " nits</span>");
+    specHtml += "<span class=\"info-box video-conn\">".concat(iconMarkup(ICON_GLYPHS.brightness)).concat(renderInfoLabel('Brightness')).concat(device.brightnessNits, " nits</span>");
   }
   if (typeof device.wirelessTx === 'boolean') {
-    specHtml += "<span class=\"info-box video-conn\">".concat(iconMarkup(ICON_GLYPHS.wifi), "Wireless: ").concat(device.wirelessTx, "</span>");
+    specHtml += "<span class=\"info-box video-conn\">".concat(iconMarkup(ICON_GLYPHS.wifi)).concat(renderInfoLabel('Wireless')).concat(device.wirelessTx, "</span>");
   }
   if (device.internalController) {
-    specHtml += "<span class=\"info-box fiz-conn\">".concat(iconMarkup(diagramConnectorIcons.controller), "Controller: Internal</span>");
+    specHtml += "<span class=\"info-box fiz-conn\">".concat(iconMarkup(diagramConnectorIcons.controller)).concat(renderInfoLabel('Controller'), "Internal</span>");
   }
   if (typeof device.torqueNm === 'number') {
-    specHtml += "<span class=\"info-box fiz-conn\">".concat(iconMarkup(diagramConnectorIcons.torque), "Torque: ").concat(device.torqueNm, " Nm</span>");
+    specHtml += "<span class=\"info-box fiz-conn\">".concat(iconMarkup(diagramConnectorIcons.torque)).concat(renderInfoLabel('Torque')).concat(device.torqueNm, " Nm</span>");
   }
   if (device.powerSource) {
-    specHtml += "<span class=\"info-box power-conn\">".concat(iconMarkup(diagramConnectorIcons.powerSource), "Power Source: ").concat(escapeHtml(String(device.powerSource)), "</span>");
+    specHtml += "<span class=\"info-box power-conn\">".concat(iconMarkup(diagramConnectorIcons.powerSource)).concat(renderInfoLabel('Power Source')).concat(escapeHtml(String(device.powerSource)), "</span>");
   }
   var uniqueList = function uniqueList(list) {
     if (!Array.isArray(list)) return [];
@@ -622,7 +628,7 @@ function generateConnectorSummary(device) {
     var formatted = uniqueList(values);
     if (!formatted.length) return html;
     var iconHtml = iconMarkup(icon);
-    var labelHtml = "<span class=\"info-box-label\">".concat(label, ":</span>");
+    var labelHtml = renderInfoLabel(label);
     var valuesHtml = "<span class=\"info-box-values\">".concat(formatted.join(', '), "</span>");
     return "".concat(html, "<span class=\"info-box ").concat(cls, " info-box-list\">").concat(iconHtml).concat(labelHtml).concat(valuesHtml, "</span>");
   };
@@ -648,25 +654,25 @@ function generateConnectorSummary(device) {
       var mount = p.mount ? " (".concat(escapeHtml(p.mount), ")") : '';
       return "".concat(escapeHtml(p.type)).concat(mount);
     });
-    extraHtml += "<span class=\"info-box power-conn\">Battery Plate: ".concat(types.join(', '), "</span>");
+    extraHtml += "<span class=\"info-box power-conn\">".concat(renderInfoLabel('Battery Plate')).concat(types.join(', '), "</span>");
   }
   if (Array.isArray(device.viewfinder) && device.viewfinder.length) {
     var _types = device.viewfinder.map(function (v) {
       return escapeHtml(v.type);
     });
-    extraHtml += "<span class=\"info-box video-conn\">Viewfinder: ".concat(_types.join(', '), "</span>");
+    extraHtml += "<span class=\"info-box video-conn\">".concat(renderInfoLabel('Viewfinder')).concat(_types.join(', '), "</span>");
   }
   if (Array.isArray(device.gearTypes) && device.gearTypes.length) {
     var _types2 = device.gearTypes.map(function (g) {
       return escapeHtml(g);
     });
-    extraHtml += "<span class=\"info-box fiz-conn\">Gear: ".concat(_types2.join(', '), "</span>");
+    extraHtml += "<span class=\"info-box fiz-conn\">".concat(renderInfoLabel('Gear')).concat(_types2.join(', '), "</span>");
   }
   if (device.connectivity) {
-    extraHtml += "<span class=\"info-box video-conn\">Connectivity: ".concat(escapeHtml(String(device.connectivity)), "</span>");
+    extraHtml += "<span class=\"info-box video-conn\">".concat(renderInfoLabel('Connectivity')).concat(escapeHtml(String(device.connectivity)), "</span>");
   }
   if (device.notes) {
-    extraHtml += "<span class=\"info-box neutral-conn\">Notes: ".concat(escapeHtml(String(device.notes)), "</span>");
+    extraHtml += "<span class=\"info-box neutral-conn\">".concat(renderInfoLabel('Notes')).concat(escapeHtml(String(device.notes)), "</span>");
   }
   var lensHtml = '';
   if (Array.isArray(device.lensMount)) {
@@ -1642,6 +1648,103 @@ function formatAutoGearRuleTooltip(rule) {
   }
   return unnamedTemplate;
 }
+function configureAutoGearSpan(span, normalizedItem, quantity, rule) {
+  if (!span || !normalizedItem) return;
+  var name = normalizedItem.name ? normalizedItem.name.trim() : '';
+  if (!name) return;
+  while (span.firstChild) {
+    span.removeChild(span.firstChild);
+  }
+  span.classList.add('gear-item');
+  span.classList.add('auto-gear-item');
+  span.setAttribute('data-gear-name', name);
+  if (span.dataset) {
+    if (rule && _typeof(rule) === 'object' && rule.id) {
+      span.dataset.autoGearRuleId = rule.id;
+    } else {
+      delete span.dataset.autoGearRuleId;
+    }
+    var ruleLabel = rule && _typeof(rule) === 'object' ? getAutoGearRuleDisplayLabel(rule) : '';
+    if (ruleLabel) {
+      span.dataset.autoGearRuleLabel = ruleLabel;
+    } else {
+      delete span.dataset.autoGearRuleLabel;
+    }
+  }
+  var tooltip = formatAutoGearRuleTooltip(rule);
+  if (tooltip) {
+    span.title = tooltip;
+  } else {
+    span.removeAttribute('title');
+  }
+  var displayName = typeof addArriKNumber === 'function' ? addArriKNumber(name) : name;
+  span.appendChild(document.createTextNode("".concat(quantity, "x ").concat(displayName)));
+  if (normalizedItem.screenSize) {
+    span.appendChild(document.createTextNode(" - ".concat(normalizedItem.screenSize)));
+  }
+  var selectorType = normalizedItem.selectorType || 'none';
+  var selectorDefault = normalizedItem.selectorDefault || '';
+  var selectorLabel = getAutoGearSelectorLabel(selectorType);
+  if (selectorType && selectorType !== 'none') {
+    if (normalizedItem.selectorEnabled) {
+      var options = getAutoGearSelectorOptions(selectorType);
+      var sanitizedRuleId = rule && rule.id ? rule.id.replace(/[^a-zA-Z0-9_-]/g, '') : 'rule';
+      var selectId = "autoGearSelector_".concat(sanitizedRuleId, "_").concat(normalizedItem.id);
+      var select = document.createElement('select');
+      select.id = selectId;
+      select.className = 'auto-gear-selector';
+      select.dataset.autoGearSelectorType = selectorType;
+      if (selectorLabel) {
+        select.setAttribute('aria-label', selectorLabel);
+      }
+      var normalizedDefaultValue = '';
+      options.forEach(function (optionName) {
+        var option = document.createElement('option');
+        option.value = optionName;
+        option.textContent = typeof addArriKNumber === 'function' ? addArriKNumber(optionName) : optionName;
+        if (!normalizedDefaultValue && selectorDefault && optionName.toLowerCase() === selectorDefault.toLowerCase()) {
+          normalizedDefaultValue = option.value;
+        }
+        select.appendChild(option);
+      });
+      if (selectorDefault && !normalizedDefaultValue) {
+        var fallbackOption = document.createElement('option');
+        fallbackOption.value = selectorDefault;
+        fallbackOption.textContent = typeof addArriKNumber === 'function' ? addArriKNumber(selectorDefault) : selectorDefault;
+        select.insertBefore(fallbackOption, select.firstChild);
+        normalizedDefaultValue = selectorDefault;
+      }
+      if (normalizedDefaultValue) {
+        select.value = normalizedDefaultValue;
+      } else if (select.options.length) {
+        select.selectedIndex = 0;
+      }
+      if (!select.options.length) {
+        var placeholder = document.createElement('option');
+        placeholder.value = '';
+        placeholder.textContent = selectorLabel || '';
+        placeholder.disabled = true;
+        placeholder.selected = true;
+        select.appendChild(placeholder);
+        select.disabled = true;
+      }
+      var wrapper = document.createElement('span');
+      wrapper.className = 'auto-gear-selector-container';
+      wrapper.appendChild(select);
+      span.appendChild(document.createTextNode(' - '));
+      span.appendChild(wrapper);
+    } else if (selectorDefault) {
+      var formattedDefault = typeof addArriKNumber === 'function' ? addArriKNumber(selectorDefault) : selectorDefault;
+      span.appendChild(document.createTextNode(" - ".concat(selectorLabel, ": ").concat(formattedDefault)));
+    } else if (selectorLabel) {
+      span.appendChild(document.createTextNode(" - ".concat(selectorLabel)));
+    }
+  }
+  if (normalizedItem.notes) {
+    var delimiter = normalizedItem.notes.trim().toLowerCase().startsWith('incl') ? ' ' : ' – ';
+    span.appendChild(document.createTextNode("".concat(delimiter).concat(normalizedItem.notes)));
+  }
+}
 function addAutoGearItem(cell, item, rule) {
   if (!cell) return;
   var normalizedItem = normalizeAutoGearItem(item);
@@ -1655,8 +1758,29 @@ function addAutoGearItem(cell, item, rule) {
     var _span = _spans[_i1];
     var spanName = _span.getAttribute('data-gear-name') || (_span.textContent || '').replace(/^(\d+)x\s+/, '').trim();
     if (matchesAutoGearItem(name, spanName)) {
-      var newCount = getSpanCount(_span) + quantity;
-      updateSpanCountInPlace(_span, newCount);
+      if (_span.classList.contains('auto-gear-item')) {
+        var newCount = getSpanCount(_span) + quantity;
+        updateSpanCountInPlace(_span, newCount);
+        if (rule && _typeof(rule) === 'object') {
+          if (!_span.dataset.autoGearRuleId && rule.id) {
+            _span.dataset.autoGearRuleId = rule.id;
+          }
+          if (!_span.dataset.autoGearRuleLabel) {
+            var ruleLabel = getAutoGearRuleDisplayLabel(rule);
+            if (ruleLabel) {
+              _span.dataset.autoGearRuleLabel = ruleLabel;
+            }
+          }
+          if (!_span.title) {
+            var mergedTooltip = formatAutoGearRuleTooltip(rule);
+            if (mergedTooltip) {
+              _span.title = mergedTooltip;
+            }
+          }
+        }
+      } else {
+        configureAutoGearSpan(_span, normalizedItem, quantity, rule);
+      }
       return;
     }
   }
@@ -1664,104 +1788,7 @@ function addAutoGearItem(cell, item, rule) {
     cell.appendChild(document.createElement('br'));
   }
   var span = document.createElement('span');
-  span.className = 'gear-item auto-gear-item';
-  span.setAttribute('data-gear-name', name);
-  if (rule && _typeof(rule) === 'object') {
-    if (rule.id) {
-      span.dataset.autoGearRuleId = rule.id;
-    }
-    var ruleLabel = getAutoGearRuleDisplayLabel(rule);
-    if (ruleLabel) {
-      span.dataset.autoGearRuleLabel = ruleLabel;
-    }
-    var tooltip = formatAutoGearRuleTooltip(rule);
-    if (tooltip) {
-      span.title = tooltip;
-    }
-  }
-  var displayName = typeof addArriKNumber === 'function' ? addArriKNumber(name) : name;
-  span.textContent = "".concat(quantity, "x ").concat(displayName);
-  if (normalizedItem.screenSize) {
-    span.appendChild(document.createTextNode(" - ".concat(normalizedItem.screenSize)));
-  }
-  var selectorType = normalizedItem.selectorType || 'none';
-  var selectorDefault = normalizedItem.selectorDefault || '';
-  if (selectorType && selectorType !== 'none') {
-    var selectorLabel = getAutoGearSelectorLabel(selectorType);
-    if (normalizedItem.selectorEnabled) {
-      var options = getAutoGearSelectorOptions(selectorType);
-      var shouldRenderSelector = options.length || selectorDefault;
-      if (shouldRenderSelector) {
-        var sanitizedRuleId = rule && rule.id ? rule.id.replace(/[^a-zA-Z0-9_-]/g, '') : 'rule';
-        var selectId = "autoGearSelector_".concat(sanitizedRuleId, "_").concat(normalizedItem.id);
-        var select = document.createElement('select');
-        select.id = selectId;
-        select.className = 'auto-gear-selector';
-        select.dataset.autoGearSelectorType = selectorType;
-        select.setAttribute('aria-label', selectorLabel);
-        var normalizedDefaultValue = '';
-        options.forEach(function (optionName) {
-          var option = document.createElement('option');
-          option.value = optionName;
-          option.textContent = typeof addArriKNumber === 'function' ? addArriKNumber(optionName) : optionName;
-          if (!normalizedDefaultValue && selectorDefault && optionName.toLowerCase() === selectorDefault.toLowerCase()) {
-            normalizedDefaultValue = option.value;
-          }
-          select.appendChild(option);
-        });
-        if (selectorDefault && !normalizedDefaultValue) {
-          var fallbackOption = document.createElement('option');
-          fallbackOption.value = selectorDefault;
-          fallbackOption.textContent = typeof addArriKNumber === 'function' ? addArriKNumber(selectorDefault) : selectorDefault;
-          select.insertBefore(fallbackOption, select.firstChild);
-          normalizedDefaultValue = selectorDefault;
-        }
-        if (normalizedDefaultValue) {
-          select.value = normalizedDefaultValue;
-        } else if (select.options.length) {
-          select.selectedIndex = 0;
-        }
-        var optionCount = select.options.length;
-        var minVisibleRows = 6;
-        var maxVisibleRows = 12;
-        var visibleRows = optionCount >= minVisibleRows ? Math.min(maxVisibleRows, optionCount) : optionCount || minVisibleRows;
-        if (!Number.isFinite(visibleRows) || visibleRows <= 0) {
-          visibleRows = minVisibleRows;
-        }
-        select.size = visibleRows;
-        var hintText = getAutoGearSelectorScrollHint();
-        var selectorWrapper = select;
-        if (hintText) {
-          var wrapper = document.createElement('span');
-          wrapper.className = 'auto-gear-selector-container';
-          wrapper.appendChild(select);
-          var hint = document.createElement('span');
-          hint.id = "".concat(selectId, "_hint");
-          hint.className = 'auto-gear-selector-hint';
-          hint.textContent = hintText;
-          wrapper.appendChild(hint);
-          select.setAttribute('aria-describedby', hint.id);
-          selectorWrapper = wrapper;
-        }
-        span.appendChild(document.createTextNode(' - '));
-        span.appendChild(selectorWrapper);
-      } else if (selectorDefault) {
-        var formattedDefault = typeof addArriKNumber === 'function' ? addArriKNumber(selectorDefault) : selectorDefault;
-        span.appendChild(document.createTextNode(" - ".concat(selectorLabel, ": ").concat(formattedDefault)));
-      } else if (selectorLabel) {
-        span.appendChild(document.createTextNode(" - ".concat(selectorLabel)));
-      }
-    } else if (selectorDefault) {
-      var _formattedDefault = typeof addArriKNumber === 'function' ? addArriKNumber(selectorDefault) : selectorDefault;
-      span.appendChild(document.createTextNode(" - ".concat(selectorLabel, ": ").concat(_formattedDefault)));
-    } else if (selectorLabel) {
-      span.appendChild(document.createTextNode(" - ".concat(selectorLabel)));
-    }
-  }
-  if (normalizedItem.notes) {
-    var delimiter = normalizedItem.notes.trim().toLowerCase().startsWith('incl') ? ' ' : ' – ';
-    span.appendChild(document.createTextNode("".concat(delimiter).concat(normalizedItem.notes)));
-  }
+  configureAutoGearSpan(span, normalizedItem, quantity, rule);
   cell.appendChild(span);
 }
 function ensureAutoGearCategory(table, category) {
@@ -1830,6 +1857,7 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
   var scenarios = info && info.requiredScenarios ? info.requiredScenarios.split(',').map(function (s) {
     return s.trim();
   }).filter(Boolean) : [];
+  var normalizedScenarioSet = new Set(scenarios.map(normalizeAutoGearTriggerValue).filter(Boolean));
   var selectedMattebox = info && typeof info.mattebox === 'string' ? info.mattebox.trim() : '';
   var normalizedMattebox = normalizeAutoGearTriggerValue(selectedMattebox);
   var cameraHandles = info && typeof info.cameraHandle === 'string' ? info.cameraHandle.split(',').map(function (s) {
@@ -1839,7 +1867,7 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
   var cameraHandleSet = new Set(normalizedCameraHandles);
   var rawViewfinderExtension = info && typeof info.viewfinderExtension === 'string' ? info.viewfinderExtension.trim() : '';
   var hasViewfinderSelection = Boolean(rawViewfinderExtension);
-  var normalizedViewfinderExtension = hasViewfinderSelection ? normalizeAutoGearTriggerValue(rawViewfinderExtension) : '__none__';
+  var normalizedViewfinderExtension = hasViewfinderSelection ? normalizeAutoGearTriggerValue(rawViewfinderExtension) : '';
   var videoDistribution = [];
   if (info && Array.isArray(info.videoDistribution)) {
     videoDistribution = info.videoDistribution;
@@ -1848,17 +1876,9 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
       return s.trim();
     }).filter(Boolean);
   }
-  var normalizedVideoDistributionRaw = videoDistribution.map(normalizeVideoDistributionOptionValue).map(function (value) {
-    return value === '__none__' ? '__none__' : normalizeAutoGearTriggerValue(value);
-  }).filter(function (value) {
-    return value || value === '__none__';
-  });
-  var hasRealVideoDistributionSelection = normalizedVideoDistributionRaw.some(function (value) {
-    return value !== '__none__';
-  });
-  var normalizedVideoDistribution = hasRealVideoDistributionSelection ? normalizedVideoDistributionRaw.filter(function (value) {
-    return value !== '__none__';
-  }) : ['__none__'];
+  var normalizedVideoDistribution = videoDistribution.map(normalizeVideoDistributionOptionValue).map(function (value) {
+    return value === '__none__' ? '' : normalizeAutoGearTriggerValue(value);
+  }).filter(Boolean);
   var videoDistributionSet = new Set(normalizedVideoDistribution);
   var rawCameraSelection = info && typeof info.cameraSelection === 'string' ? info.cameraSelection.trim() : '';
   var normalizedCameraSelection = normalizeAutoGearTriggerValue(rawCameraSelection);
@@ -1918,85 +1938,90 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
   };
   var triggered = autoGearRules.filter(function (rule) {
     var scenarioList = Array.isArray(rule.scenarios) ? rule.scenarios.filter(Boolean) : [];
-    if (scenarioList.length && !scenarioList.every(function (s) {
-      return scenarios.includes(s);
-    })) {
-      return false;
+    if (scenarioList.length) {
+      var normalizedTargets = scenarioList.map(normalizeAutoGearTriggerValue).filter(Boolean);
+      if (!normalizedTargets.length) return false;
+      if (!normalizedTargets.every(function (target) {
+        return normalizedScenarioSet.has(target);
+      })) return false;
     }
     var matteboxList = Array.isArray(rule.mattebox) ? rule.mattebox.filter(Boolean) : [];
     if (matteboxList.length) {
-      var normalizedTargets = matteboxList.map(normalizeAutoGearTriggerValue).filter(Boolean);
-      if (!normalizedTargets.length) return false;
+      var _normalizedTargets = matteboxList.map(normalizeAutoGearTriggerValue).filter(Boolean);
+      if (!_normalizedTargets.length) return false;
       if (!normalizedMattebox) return false;
-      if (!normalizedTargets.includes(normalizedMattebox)) return false;
+      if (!_normalizedTargets.includes(normalizedMattebox)) return false;
     }
     var cameraList = Array.isArray(rule.camera) ? rule.camera.filter(Boolean) : [];
     if (cameraList.length) {
-      var _normalizedTargets = cameraList.map(normalizeAutoGearTriggerValue).filter(Boolean);
-      if (!_normalizedTargets.length) return false;
+      var _normalizedTargets2 = cameraList.map(normalizeAutoGearTriggerValue).filter(Boolean);
+      if (!_normalizedTargets2.length) return false;
       if (!normalizedCameraSelection) return false;
-      if (!_normalizedTargets.includes(normalizedCameraSelection)) return false;
+      if (!_normalizedTargets2.includes(normalizedCameraSelection)) return false;
     }
     var monitorList = Array.isArray(rule.monitor) ? rule.monitor.filter(Boolean) : [];
     if (monitorList.length) {
-      var _normalizedTargets2 = monitorList.map(normalizeAutoGearTriggerValue).filter(Boolean);
-      if (!_normalizedTargets2.length) return false;
+      var _normalizedTargets3 = monitorList.map(normalizeAutoGearTriggerValue).filter(Boolean);
+      if (!_normalizedTargets3.length) return false;
       if (!normalizedMonitorSelection) return false;
-      if (!_normalizedTargets2.includes(normalizedMonitorSelection)) return false;
+      if (!_normalizedTargets3.includes(normalizedMonitorSelection)) return false;
     }
     var wirelessList = Array.isArray(rule.wireless) ? rule.wireless.filter(Boolean) : [];
     if (wirelessList.length) {
-      var _normalizedTargets3 = wirelessList.map(normalizeAutoGearTriggerValue).filter(Boolean);
-      if (!_normalizedTargets3.length) return false;
+      var _normalizedTargets4 = wirelessList.map(normalizeAutoGearTriggerValue).filter(Boolean);
+      if (!_normalizedTargets4.length) return false;
       if (!normalizedWirelessSelection) return false;
-      if (!_normalizedTargets3.includes(normalizedWirelessSelection)) return false;
+      if (!_normalizedTargets4.includes(normalizedWirelessSelection)) return false;
     }
     var motorsList = Array.isArray(rule.motors) ? rule.motors.filter(Boolean) : [];
     if (motorsList.length) {
-      var _normalizedTargets4 = motorsList.map(normalizeAutoGearTriggerValue).filter(Boolean);
-      if (!_normalizedTargets4.length) return false;
-      if (!_normalizedTargets4.every(function (target) {
+      var _normalizedTargets5 = motorsList.map(normalizeAutoGearTriggerValue).filter(Boolean);
+      if (!_normalizedTargets5.length) return false;
+      if (!_normalizedTargets5.every(function (target) {
         return normalizedMotorSet.has(target);
       })) return false;
     }
     var controllersList = Array.isArray(rule.controllers) ? rule.controllers.filter(Boolean) : [];
     if (controllersList.length) {
-      var _normalizedTargets5 = controllersList.map(normalizeAutoGearTriggerValue).filter(Boolean);
-      if (!_normalizedTargets5.length) return false;
-      if (!_normalizedTargets5.every(function (target) {
+      var _normalizedTargets6 = controllersList.map(normalizeAutoGearTriggerValue).filter(Boolean);
+      if (!_normalizedTargets6.length) return false;
+      if (!_normalizedTargets6.every(function (target) {
         return normalizedControllerSet.has(target);
       })) return false;
     }
     var distanceList = Array.isArray(rule.distance) ? rule.distance.filter(Boolean) : [];
     if (distanceList.length) {
-      var _normalizedTargets6 = distanceList.map(normalizeAutoGearTriggerValue).filter(Boolean);
-      if (!_normalizedTargets6.length) return false;
+      var _normalizedTargets7 = distanceList.map(normalizeAutoGearTriggerValue).filter(Boolean);
+      if (!_normalizedTargets7.length) return false;
       if (!normalizedDistanceSelection) return false;
-      if (!_normalizedTargets6.includes(normalizedDistanceSelection)) return false;
+      if (!_normalizedTargets7.includes(normalizedDistanceSelection)) return false;
     }
     var cameraHandleList = Array.isArray(rule.cameraHandle) ? rule.cameraHandle.filter(Boolean) : [];
     if (cameraHandleList.length) {
-      var _normalizedTargets7 = cameraHandleList.map(normalizeAutoGearTriggerValue).filter(Boolean);
-      if (!_normalizedTargets7.length) return false;
-      if (!_normalizedTargets7.every(function (target) {
+      var _normalizedTargets8 = cameraHandleList.map(normalizeAutoGearTriggerValue).filter(Boolean);
+      if (!_normalizedTargets8.length) return false;
+      if (!_normalizedTargets8.every(function (target) {
         return cameraHandleSet.has(target);
       })) return false;
     }
     var viewfinderList = Array.isArray(rule.viewfinderExtension) ? rule.viewfinderExtension.filter(Boolean) : [];
     if (viewfinderList.length) {
-      var _normalizedTargets8 = viewfinderList.map(function (value) {
-        return value === '__none__' ? '__none__' : normalizeAutoGearTriggerValue(value);
-      }).filter(function (value) {
-        return value || value === '__none__';
-      });
-      if (!_normalizedTargets8.length) return false;
-      if (!_normalizedTargets8.includes(normalizedViewfinderExtension)) return false;
+      var _normalizedTargets9 = viewfinderList.map(function (value) {
+        return normalizeAutoGearTriggerValue(value);
+      }).filter(Boolean);
+      if (!_normalizedTargets9.length) return false;
+      if (!normalizedViewfinderExtension) return false;
+      if (!_normalizedTargets9.includes(normalizedViewfinderExtension)) return false;
     }
     var videoDistList = Array.isArray(rule.videoDistribution) ? rule.videoDistribution.filter(Boolean) : [];
     if (videoDistList.length) {
-      var _normalizedTargets9 = videoDistList.map(normalizeAutoGearTriggerValue).filter(Boolean);
-      if (!_normalizedTargets9.length) return false;
-      if (!_normalizedTargets9.every(function (target) {
+      var _normalizedTargets0 = videoDistList.map(function (value) {
+        return normalizeVideoDistributionOptionValue(value);
+      }).map(function (value) {
+        return value === '__none__' ? '' : normalizeAutoGearTriggerValue(value);
+      }).filter(Boolean);
+      if (!_normalizedTargets0.length) return false;
+      if (!_normalizedTargets0.every(function (target) {
         return videoDistributionSet.has(target);
       })) return false;
     }
@@ -3531,10 +3556,9 @@ function ensureGearListActions() {
   } else if (!actions.contains(autoSaveNote)) {
     actions.appendChild(autoSaveNote);
   }
-  var noteText = (texts[currentLang] && texts[currentLang].gearListAutosaveNote) || '';
+  var noteText = texts[currentLang] && texts[currentLang].gearListAutosaveNote || '';
   var trimmedNoteText = typeof noteText === 'string' ? noteText.trim() : '';
   var hasNoteText = trimmedNoteText.length > 0;
-
   if (hasNoteText) {
     autoSaveNote.hidden = false;
     autoSaveNote.removeAttribute('hidden');

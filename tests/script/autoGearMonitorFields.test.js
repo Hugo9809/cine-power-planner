@@ -24,9 +24,7 @@ describe('automatic gear monitor field visibility', () => {
     const screenField = document.getElementById('autoGearAddScreenSize')?.closest('.auto-gear-field');
     const selectorTypeField = document.getElementById('autoGearAddSelectorType')?.closest('.auto-gear-field');
     const selectorDefaultField = document.getElementById('autoGearAddSelectorDefault')?.closest('.auto-gear-field');
-    const selectorIncludeField = document.getElementById('autoGearAddSelectorInclude')?.closest('.auto-gear-field');
-
-    const trackedFields = [screenField, selectorTypeField, selectorDefaultField, selectorIncludeField];
+    const trackedFields = [screenField, selectorTypeField, selectorDefaultField];
     trackedFields.forEach(field => expect(field).not.toBeNull());
 
     const expectFieldsVisible = visible => {
