@@ -341,6 +341,33 @@ describe('setup storage', () => {
     expect(autoBackupCount).toBeLessThanOrEqual(50);
   });
 
+  test('saveSetups keeps the newest auto backup for each project label when trimming', () => {
+    const setups = {};
+    for (let index = 0; index < 60; index += 1) {
+      const minute = String(index).padStart(2, '0');
+      const label = index % 2 === 0 ? 'Project Alpha' : 'Project Beta';
+      const key = `auto-backup-2024-01-01-00-${minute}-${label}`;
+      setups[key] = {
+        camera: 'Camera 1',
+        projectInfo: { projectName: label },
+      };
+    }
+
+    saveSetups(setups);
+
+    const stored = JSON.parse(localStorage.getItem(SETUP_KEY));
+    const autoKeys = Object.keys(stored).filter((name) => name.startsWith('auto-backup-')).sort();
+    expect(autoKeys.length).toBeLessThanOrEqual(50);
+
+    const alphaKeys = autoKeys.filter((name) => name.endsWith('Project Alpha'));
+    const betaKeys = autoKeys.filter((name) => name.endsWith('Project Beta'));
+
+    expect(alphaKeys.length).toBeGreaterThan(0);
+    expect(betaKeys.length).toBeGreaterThan(0);
+    expect(alphaKeys[alphaKeys.length - 1]).toBe('auto-backup-2024-01-01-00-58-Project Alpha');
+    expect(betaKeys[betaKeys.length - 1]).toBe('auto-backup-2024-01-01-00-59-Project Beta');
+  });
+
   test('saveSetup adds and persists single setup', () => {
     const initial = {A: {foo: 1}};
     localStorage.setItem(SETUP_KEY, JSON.stringify(initial));

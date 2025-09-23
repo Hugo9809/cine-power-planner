@@ -824,18 +824,17 @@ function isPlainObject(val) {
   return val !== null && typeof val === 'object' && !Array.isArray(val);
 }
 
-function getAutoBackupTimestamp(name) {
+function parseAutoBackupKey(name) {
   if (typeof name !== 'string') {
-    return Number.NEGATIVE_INFINITY;
+    return { timestamp: Number.NEGATIVE_INFINITY, label: '' };
   }
 
-  let match = null;
   if (name.startsWith(STORAGE_AUTO_BACKUP_NAME_PREFIX)) {
-    match = name.match(/^auto-backup-(\d{4})-(\d{2})-(\d{2})-(\d{2})-(\d{2})/);
+    const match = name.match(/^auto-backup-(\d{4})-(\d{2})-(\d{2})-(\d{2})-(\d{2})(?:-(.*))?$/);
     if (!match) {
-      return Number.NEGATIVE_INFINITY;
+      return { timestamp: Number.NEGATIVE_INFINITY, label: '' };
     }
-    const [, year, month, day, hour, minute] = match;
+    const [, year, month, day, hour, minute, rawLabel = ''] = match;
     const date = new Date(
       Number.parseInt(year, 10),
       Number.parseInt(month, 10) - 1,
@@ -846,15 +845,18 @@ function getAutoBackupTimestamp(name) {
       0,
     );
     const time = date.getTime();
-    return Number.isNaN(time) ? Number.NEGATIVE_INFINITY : time;
+    return {
+      timestamp: Number.isNaN(time) ? Number.NEGATIVE_INFINITY : time,
+      label: rawLabel.trim(),
+    };
   }
 
   if (name.startsWith(STORAGE_AUTO_BACKUP_DELETION_PREFIX)) {
-    match = name.match(/^auto-backup-before-delete-(\d{4})-(\d{2})-(\d{2})-(\d{2})-(\d{2})-(\d{2})/);
+    const match = name.match(/^auto-backup-before-delete-(\d{4})-(\d{2})-(\d{2})-(\d{2})-(\d{2})-(\d{2})(?:-(.*))?$/);
     if (!match) {
-      return Number.NEGATIVE_INFINITY;
+      return { timestamp: Number.NEGATIVE_INFINITY, label: '' };
     }
-    const [, year, month, day, hour, minute, second] = match;
+    const [, year, month, day, hour, minute, second, rawLabel = ''] = match;
     const date = new Date(
       Number.parseInt(year, 10),
       Number.parseInt(month, 10) - 1,
@@ -865,10 +867,13 @@ function getAutoBackupTimestamp(name) {
       0,
     );
     const time = date.getTime();
-    return Number.isNaN(time) ? Number.NEGATIVE_INFINITY : time;
+    return {
+      timestamp: Number.isNaN(time) ? Number.NEGATIVE_INFINITY : time,
+      label: rawLabel.trim(),
+    };
   }
 
-  return Number.NEGATIVE_INFINITY;
+  return { timestamp: Number.NEGATIVE_INFINITY, label: '' };
 }
 
 function collectAutoBackupEntries(container, prefix) {
@@ -878,7 +883,10 @@ function collectAutoBackupEntries(container, prefix) {
 
   return Object.keys(container)
     .filter((key) => typeof key === 'string' && key.startsWith(prefix))
-    .map((key) => ({ key, timestamp: getAutoBackupTimestamp(key) }))
+    .map((key) => {
+      const { timestamp, label } = parseAutoBackupKey(key);
+      return { key, timestamp, label };
+    })
     .sort((a, b) => {
       if (a.timestamp !== b.timestamp) {
         return a.timestamp - b.timestamp;
@@ -955,6 +963,60 @@ function removeDuplicateAutoBackupEntries(container, entries) {
   return removedKeys;
 }
 
+function pruneAutoBackupEntries(container, entries, limit, removedKeys) {
+  if (!isPlainObject(container) || !Array.isArray(entries) || entries.length <= limit) {
+    return;
+  }
+
+  const labelCounts = new Map();
+  for (let index = 0; index < entries.length; index += 1) {
+    const entry = entries[index];
+    if (!entry || typeof entry !== 'object') {
+      continue;
+    }
+    const labelKey = typeof entry.label === 'string' ? entry.label : '';
+    labelCounts.set(labelKey, (labelCounts.get(labelKey) || 0) + 1);
+  }
+
+  let index = 0;
+  while (entries.length > limit && index < entries.length) {
+    const entry = entries[index];
+    if (!entry || typeof entry.key !== 'string') {
+      index += 1;
+      continue;
+    }
+    const labelKey = typeof entry.label === 'string' ? entry.label : '';
+    const count = labelCounts.get(labelKey) || 0;
+    if (count > 1) {
+      delete container[entry.key];
+      entries.splice(index, 1);
+      labelCounts.set(labelKey, count - 1);
+      removedKeys.push(entry.key);
+      continue;
+    }
+    index += 1;
+  }
+
+  if (entries.length <= limit) {
+    return;
+  }
+
+  index = 0;
+  while (entries.length > limit && index < entries.length) {
+    const entry = entries[index];
+    if (!entry || typeof entry.key !== 'string') {
+      index += 1;
+      continue;
+    }
+    const labelKey = typeof entry.label === 'string' ? entry.label : '';
+    const count = labelCounts.get(labelKey) || 0;
+    delete container[entry.key];
+    entries.splice(index, 1);
+    labelCounts.set(labelKey, Math.max(0, count - 1));
+    removedKeys.push(entry.key);
+  }
+}
+
 function enforceAutoBackupLimits(container) {
   if (!isPlainObject(container)) {
     return [];
@@ -965,27 +1027,13 @@ function enforceAutoBackupLimits(container) {
   const autoBackups = collectAutoBackupEntries(container, STORAGE_AUTO_BACKUP_NAME_PREFIX);
   if (autoBackups.length > MAX_AUTO_BACKUPS) {
     removed.push(...removeDuplicateAutoBackupEntries(container, autoBackups));
-    while (autoBackups.length > MAX_AUTO_BACKUPS) {
-      const entry = autoBackups.shift();
-      if (!entry) {
-        break;
-      }
-      delete container[entry.key];
-      removed.push(entry.key);
-    }
+    pruneAutoBackupEntries(container, autoBackups, MAX_AUTO_BACKUPS, removed);
   }
 
   const deletionBackups = collectAutoBackupEntries(container, STORAGE_AUTO_BACKUP_DELETION_PREFIX);
   if (deletionBackups.length > MAX_DELETION_BACKUPS) {
     removed.push(...removeDuplicateAutoBackupEntries(container, deletionBackups));
-    while (deletionBackups.length > MAX_DELETION_BACKUPS) {
-      const entry = deletionBackups.shift();
-      if (!entry) {
-        break;
-      }
-      delete container[entry.key];
-      removed.push(entry.key);
-    }
+    pruneAutoBackupEntries(container, deletionBackups, MAX_DELETION_BACKUPS, removed);
   }
 
   if (removed.length > 0) {
