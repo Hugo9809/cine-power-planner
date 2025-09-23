@@ -1,5 +1,5 @@
 // --- EVENT LISTENERS ---
-/* global updateCageSelectOptions */
+/* global updateCageSelectOptions, updateGlobalDevicesReference */
 
 // Language selection
 languageSelect.addEventListener("change", (event) => {
@@ -1317,6 +1317,9 @@ importFileInput.addEventListener("change", (event) => {
       }
 
       devices = result.devices; // Overwrite current devices with imported data
+      if (typeof updateGlobalDevicesReference === 'function') {
+        updateGlobalDevicesReference(devices);
+      }
       unifyDevices(devices);
       storeDevices(devices);
       viewfinderTypeOptions = getAllViewfinderTypes();

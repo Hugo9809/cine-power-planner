@@ -158,6 +158,70 @@ const TEMPERATURE_SCENARIOS = [
   { celsius: -10, factor: 0.625, color: '#5bc0de' },
   { celsius: -20, factor: 0.5, color: '#0275d8' }
 ];
+
+const DEVICE_GLOBAL_SCOPE =
+  typeof globalThis !== 'undefined'
+    ? globalThis
+    : typeof window !== 'undefined'
+      ? window
+      : typeof global !== 'undefined'
+        ? global
+        : typeof self !== 'undefined'
+          ? self
+          : undefined;
+
+function updateGlobalDevicesReference(value) {
+  if (!DEVICE_GLOBAL_SCOPE) {
+    return;
+  }
+
+  try {
+    DEVICE_GLOBAL_SCOPE.devices = value;
+  } catch (assignError) {
+    try {
+      Object.defineProperty(DEVICE_GLOBAL_SCOPE, 'devices', {
+        configurable: true,
+        writable: true,
+        value
+      });
+    } catch (defineError) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Unable to expose device database globally.', defineError);
+      }
+    }
+  }
+}
+
+function initializeDeviceDatabase() {
+  if (DEVICE_GLOBAL_SCOPE && DEVICE_GLOBAL_SCOPE.devices && typeof DEVICE_GLOBAL_SCOPE.devices === 'object') {
+    return DEVICE_GLOBAL_SCOPE.devices;
+  }
+
+  if (typeof require === 'function') {
+    try {
+      const requiredDevices = require('../data');
+      if (requiredDevices && typeof requiredDevices === 'object') {
+        updateGlobalDevicesReference(requiredDevices);
+        return requiredDevices;
+      }
+    } catch (error) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Unable to load bundled device data.', error);
+      }
+    }
+  }
+
+  const fallback = {};
+  updateGlobalDevicesReference(fallback);
+  return fallback;
+}
+
+// Ensure the global `devices` reference always exists before any other logic
+// accesses it. This avoids temporal dead zone errors in browsers that treat
+// top-level bindings as lexical declarations.
+/* eslint-disable-next-line no-redeclare */
+var devices = initializeDeviceDatabase();
+
 const FEEDBACK_TEMPERATURE_MIN = -20;
 const FEEDBACK_TEMPERATURE_MAX = 50;
 let temperatureUnit = TEMPERATURE_UNITS.celsius;
@@ -2941,6 +3005,7 @@ if (storedDevices) {
     }
   }
   devices = merged;
+  updateGlobalDevicesReference(devices);
 }
 unifyDevices(devices);
 
