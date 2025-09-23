@@ -2341,44 +2341,20 @@ body.pink-mode:not(.dark-mode) #settingsPanel-autoGear .auto-gear-rule-items-lab
   border-radius: var(--border-radius);
 }
 
-.help-link-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 0.75rem;
-  --button-link-padding-inline: 8px;
+.help-inline-links {
+  margin: 0.75rem 0 0;
+  line-height: 1.6;
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-sm));
 }
 
-.help-link-group .button-link,
-.help-link-group .button-link:visited {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: var(--button-size);
-  border-radius: var(--border-radius);
-  background-color: var(--control-bg);
-  color: var(--control-text);
-  font-size: calc(var(--font-size-relative-base) * var(--font-scale-xs));
-  text-decoration: none;
-  transition: background-color 0.2s, color 0.2s;
+.help-inline-links .help-link {
+  font-weight: 600;
 }
 
-.help-link-group .button-link:hover {
-  background-color: var(--control-hover-bg);
-  color: var(--control-text);
-  transform: none;
-}
-
-.help-link-group .button-link:active {
-  background-color: var(--control-active-bg);
-  color: var(--control-text);
-  filter: none;
-  transform: none;
-}
-
-.help-link-group .button-link:focus-visible {
+.help-inline-links .help-link:focus-visible {
   outline: 2px solid var(--accent-color);
   outline-offset: 2px;
+  border-radius: calc(var(--border-radius) * 0.75);
 }
 
 .help-callout {
