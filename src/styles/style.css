@@ -1351,13 +1351,34 @@ main.legal-content {
 .diff-entry {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
-  border-left: 3px solid var(--accent-color);
-  padding-left: 0.75rem;
+  gap: 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--panel-border) 65%, transparent);
+  border-radius: calc(var(--border-radius) * 0.9);
+  padding: 0.75rem;
+  background: color-mix(in srgb, var(--surface-color) 96%, transparent);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04);
 }
 
-.diff-entry .diff-status {
-  margin-top: 0.25rem;
+.diff-entry.diff-added {
+  border-color: color-mix(in srgb, var(--success-color) 55%, var(--panel-border) 45%);
+  background: color-mix(in srgb, var(--surface-color) 90%, var(--success-color) 10%);
+}
+
+.diff-entry.diff-removed {
+  border-color: color-mix(in srgb, var(--danger-color) 55%, var(--panel-border) 45%);
+  background: color-mix(in srgb, var(--surface-color) 90%, var(--danger-color) 10%);
+}
+
+.diff-entry.diff-changed {
+  border-color: color-mix(in srgb, var(--info-color) 55%, var(--panel-border) 45%);
+  background: color-mix(in srgb, var(--surface-color) 92%, var(--info-color) 8%);
+}
+
+.diff-entry-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
 }
 
 .diff-path {
@@ -1366,8 +1387,48 @@ main.legal-content {
   word-break: break-word;
 }
 
-.diff-change {
+.diff-status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--panel-border) 70%, transparent);
+  background: color-mix(in srgb, var(--surface-color) 92%, transparent);
+  color: color-mix(in srgb, var(--text-color) 90%, transparent);
+}
+
+.diff-status-added {
+  border-color: color-mix(in srgb, var(--success-color) 55%, transparent);
+  background: color-mix(in srgb, var(--surface-color) 82%, var(--success-color) 18%);
+  color: color-mix(in srgb, var(--success-color) 85%, var(--text-color) 15%);
+}
+
+.diff-status-removed {
+  border-color: color-mix(in srgb, var(--danger-color) 55%, transparent);
+  background: color-mix(in srgb, var(--surface-color) 80%, var(--danger-color) 20%);
+  color: color-mix(in srgb, var(--danger-color) 80%, var(--text-color) 20%);
+}
+
+.diff-status-changed {
+  border-color: color-mix(in srgb, var(--info-color) 55%, transparent);
+  background: color-mix(in srgb, var(--surface-color) 84%, var(--info-color) 16%);
+  color: color-mix(in srgb, var(--info-color) 80%, var(--text-color) 20%);
+}
+
+.diff-change-group {
   display: grid;
+  gap: 0.75rem;
+}
+
+.diff-change-group--split {
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.diff-change {
+  display: flex;
+  flex-direction: column;
   gap: 0.4rem;
 }
 
@@ -1380,15 +1441,67 @@ main.legal-content {
 
 .diff-value {
   margin: 0;
-  padding: 0.5rem 0.6rem;
+  padding: 0.6rem 0.7rem;
   border-radius: calc(var(--border-radius) * 0.75);
-  background: color-mix(in srgb, var(--surface-color) 92%, var(--accent-color) 8%);
+  border: 1px solid color-mix(in srgb, var(--panel-border) 70%, transparent);
+  background: color-mix(in srgb, var(--surface-color) 94%, transparent);
   font-family: "SFMono-Regular", "Roboto Mono", "Menlo", "Courier New", monospace;
   font-size: calc(var(--font-size-relative-base) * var(--font-scale-xxs));
   white-space: pre-wrap;
   word-break: break-word;
   max-height: 10rem;
   overflow: auto;
+}
+
+.diff-value-added {
+  border-color: color-mix(in srgb, var(--success-color) 55%, transparent);
+  background: color-mix(in srgb, var(--surface-color) 86%, var(--success-color) 14%);
+}
+
+.diff-value-removed {
+  border-color: color-mix(in srgb, var(--danger-color) 55%, transparent);
+  background: color-mix(in srgb, var(--surface-color) 84%, var(--danger-color) 16%);
+}
+
+.diff-value-changed {
+  border-color: color-mix(in srgb, var(--info-color) 55%, transparent);
+  background: color-mix(in srgb, var(--surface-color) 88%, var(--info-color) 12%);
+}
+
+html.high-contrast .diff-entry,
+body.high-contrast .diff-entry {
+  background: var(--background-color);
+  border-color: var(--text-color);
+  box-shadow: none;
+}
+
+html.high-contrast .diff-entry.diff-added,
+body.high-contrast .diff-entry.diff-added,
+html.high-contrast .diff-entry.diff-removed,
+body.high-contrast .diff-entry.diff-removed,
+html.high-contrast .diff-entry.diff-changed,
+body.high-contrast .diff-entry.diff-changed {
+  background: var(--background-color);
+}
+
+html.high-contrast .diff-status-badge,
+body.high-contrast .diff-status-badge {
+  background: var(--background-color);
+  border-color: var(--text-color);
+  color: var(--text-color);
+}
+
+html.high-contrast .diff-value,
+body.high-contrast .diff-value,
+html.high-contrast .diff-value-added,
+body.high-contrast .diff-value-added,
+html.high-contrast .diff-value-removed,
+body.high-contrast .diff-value-removed,
+html.high-contrast .diff-value-changed,
+body.high-contrast .diff-value-changed {
+  background: var(--background-color);
+  border-color: var(--text-color);
+  color: var(--text-color);
 }
 
 .diff-actions {
