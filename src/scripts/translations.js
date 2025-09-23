@@ -120,6 +120,9 @@ const texts = {
     accentColorSetting: "Accent color",
     accentColorHelp:
       "Pick the accent color used for buttons, highlights and diagrams. The choice is saved with your settings.",
+    accentColorReset: "Reset to default",
+    accentColorResetHelp:
+      "Revert the accent color to the original theme color while keeping other preferences intact.",
     temperatureUnitSetting: "Temperature unit",
     temperatureUnitSettingHelp:
       "Choose whether temperatures are shown in Celsius or Fahrenheit throughout the app.",
@@ -1422,6 +1425,9 @@ const texts = {
     accentColorSetting: "Colore evidenza",
     accentColorHelp:
       "Seleziona il colore d'accento per pulsanti, evidenziazioni e diagramma. La scelta viene salvata.",
+    accentColorReset: "Ripristina predefinito",
+    accentColorResetHelp:
+      "Ripristina il colore d'accento originale del tema senza modificare le altre preferenze.",
     temperatureUnitSetting: "Unità di temperatura",
     temperatureUnitSettingHelp:
       "Scegli se mostrare le temperature in Celsius o Fahrenheit in tutta l'app.",
@@ -2312,6 +2318,9 @@ const texts = {
     accentColorSetting: "Color de acento",
     accentColorHelp:
       "Selecciona el color de acento usado en botones, destacados y diagramas. Se guarda con tus ajustes.",
+    accentColorReset: "Restablecer predeterminado",
+    accentColorResetHelp:
+      "Restaura el color de acento original del tema sin cambiar otras preferencias.",
     temperatureUnitSetting: "Unidad de temperatura",
     temperatureUnitSettingHelp:
       "Elige si mostrar las temperaturas en grados Celsius o Fahrenheit en toda la aplicación.",
@@ -3203,6 +3212,9 @@ const texts = {
     accentColorSetting: "Couleur d’accent",
     accentColorHelp:
       "Sélectionnez la couleur d’accent utilisée pour les boutons, les surlignages et le diagramme. Elle est enregistrée.",
+    accentColorReset: "Réinitialiser par défaut",
+    accentColorResetHelp:
+      "Rétablit la couleur d’accent d’origine du thème sans modifier les autres préférences.",
     temperatureUnitSetting: "Unité de température",
     temperatureUnitSettingHelp:
       "Choisissez d'afficher les températures en Celsius ou en Fahrenheit dans toute l'application.",
@@ -4098,6 +4110,9 @@ const texts = {
     accentColorSetting: "Akzentfarbe",
     accentColorHelp:
       "Wähle die Akzentfarbe für Buttons, Hervorhebungen und Diagramm. Die Auswahl wird gespeichert.",
+    accentColorReset: "Auf Standard zurücksetzen",
+    accentColorResetHelp:
+      "Stellt die ursprüngliche Akzentfarbe des Designs wieder her, ohne andere Einstellungen zu ändern.",
     temperatureUnitSetting: "Temperatureinheit",
     temperatureUnitSettingHelp:
       "Wählen Sie, ob Temperaturen in Celsius oder Fahrenheit in der gesamten App angezeigt werden.",
