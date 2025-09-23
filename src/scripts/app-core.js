@@ -461,9 +461,29 @@ const GEAR_LIST_CATEGORIES = [
   'Miscellaneous',
   'Consumables',
 ];
-const AUTO_GEAR_SELECTOR_TYPES = ['none', 'monitor', 'directorMonitor'];
+const AUTO_GEAR_SELECTOR_TYPES = [
+  'none',
+  'monitor',
+  'directorMonitor',
+  'tripodHeadBrand',
+  'tripodBowl',
+  'tripodTypes',
+  'tripodSpreader',
+];
 const AUTO_GEAR_SELECTOR_TYPE_SET = new Set(AUTO_GEAR_SELECTOR_TYPES);
 const AUTO_GEAR_MONITOR_FALLBACKS = ['SmallHD Ultra 7', 'SmallHD Focus', 'SmallHD Cine 7'];
+const AUTO_GEAR_TRIPOD_SELECTOR_TYPES = new Set([
+  'tripodHeadBrand',
+  'tripodBowl',
+  'tripodTypes',
+  'tripodSpreader',
+]);
+const AUTO_GEAR_TRIPOD_FIELD_IDS = {
+  tripodHeadBrand: 'tripodHeadBrand',
+  tripodBowl: 'tripodBowl',
+  tripodTypes: 'tripodTypes',
+  tripodSpreader: 'tripodSpreader',
+};
 
 /**
  * Produce a deterministic-looking id for Auto Gear rules/presets.
@@ -559,7 +579,7 @@ function normalizeAutoGearText(value, { collapseWhitespace = true } = {}) {
  * the future.
  *
  * @param {unknown} value
- * @returns {'none'|'monitor'|'directorMonitor'}
+ * @returns {'none'|'monitor'|'directorMonitor'|'tripodHeadBrand'|'tripodBowl'|'tripodTypes'|'tripodSpreader'}
  */
 function normalizeAutoGearSelectorType(value) {
   const candidate = typeof value === 'string' ? value.trim().toLowerCase() : '';
@@ -572,7 +592,7 @@ function normalizeAutoGearSelectorType(value) {
  * validated against the available options so that restoring backups never
  * yields an impossible selection.
  *
- * @param {'none'|'monitor'|'directorMonitor'} type
+ * @param {'none'|'monitor'|'directorMonitor'|'tripodHeadBrand'|'tripodBowl'|'tripodTypes'|'tripodSpreader'} type
  * @param {unknown} value
  * @returns {string}
  */
@@ -600,6 +620,34 @@ function resolveDevicesSnapshot() {
   }
 }
 
+function resolveTripodPreferenceSelect(type) {
+  if (typeof document === 'undefined') return null;
+  const id = AUTO_GEAR_TRIPOD_FIELD_IDS[type];
+  if (!id) return null;
+  return document.getElementById(id);
+}
+
+function collectTripodPreferenceOptions(type) {
+  if (!AUTO_GEAR_TRIPOD_SELECTOR_TYPES.has(type)) return [];
+  const select = resolveTripodPreferenceSelect(type);
+  if (!select || !select.options) return [];
+  const options = Array.from(select.options);
+  const seen = new Set();
+  const results = [];
+  options.forEach(option => {
+    if (!option) return;
+    const value = typeof option.value === 'string' ? option.value.trim() : '';
+    const label = typeof option.textContent === 'string' ? option.textContent.trim() : '';
+    const storeValue = value || label;
+    if (!storeValue) return;
+    const dedupeKey = storeValue.toLowerCase();
+    if (seen.has(dedupeKey)) return;
+    seen.add(dedupeKey);
+    results.push({ value: storeValue, label: label || storeValue });
+  });
+  return results;
+}
+
 function getAutoGearSelectorOptions(type) {
   const normalizedType = normalizeAutoGearSelectorType(type);
   const catalog = resolveDevicesSnapshot();
@@ -618,6 +666,9 @@ function getAutoGearSelectorOptions(type) {
     if (!directorDb || typeof directorDb !== 'object') return [];
     return Object.keys(directorDb).filter(name => name && name !== 'None').sort(localeSort);
   }
+  if (AUTO_GEAR_TRIPOD_SELECTOR_TYPES.has(normalizedType)) {
+    return collectTripodPreferenceOptions(normalizedType).map(option => option.value);
+  }
   return [];
 }
 
@@ -633,6 +684,26 @@ function getAutoGearSelectorLabel(type) {
     return langTexts.autoGearSelectorDirectorOption
       || texts.en?.autoGearSelectorDirectorOption
       || 'Director monitor selector';
+  }
+  if (normalizedType === 'tripodHeadBrand') {
+    return langTexts.autoGearSelectorTripodHeadOption
+      || texts.en?.autoGearSelectorTripodHeadOption
+      || 'Tripod head selector';
+  }
+  if (normalizedType === 'tripodBowl') {
+    return langTexts.autoGearSelectorTripodBowlOption
+      || texts.en?.autoGearSelectorTripodBowlOption
+      || 'Tripod bowl selector';
+  }
+  if (normalizedType === 'tripodTypes') {
+    return langTexts.autoGearSelectorTripodTypesOption
+      || texts.en?.autoGearSelectorTripodTypesOption
+      || 'Tripod type selector';
+  }
+  if (normalizedType === 'tripodSpreader') {
+    return langTexts.autoGearSelectorTripodSpreaderOption
+      || texts.en?.autoGearSelectorTripodSpreaderOption
+      || 'Tripod spreader selector';
   }
   return langTexts.autoGearSelectorNoneOption
     || texts.en?.autoGearSelectorNoneOption
@@ -651,6 +722,23 @@ function getAutoGearSelectorDefaultPlaceholder() {
   return langTexts.autoGearSelectorDefaultPlaceholder
     || texts.en?.autoGearSelectorDefaultPlaceholder
     || 'Choose a default device';
+}
+
+function formatAutoGearSelectorValue(type, value) {
+  const normalizedValue = typeof value === 'string' ? value.trim() : '';
+  if (!normalizedValue) return '';
+  const normalizedType = normalizeAutoGearSelectorType(type);
+  if (AUTO_GEAR_TRIPOD_SELECTOR_TYPES.has(normalizedType)) {
+    const options = collectTripodPreferenceOptions(normalizedType);
+    const match = options.find(option => option.value.toLowerCase() === normalizedValue.toLowerCase());
+    if (match && match.label) {
+      return match.label;
+    }
+  }
+  if (typeof addArriKNumber === 'function' && (normalizedType === 'monitor' || normalizedType === 'directorMonitor')) {
+    return addArriKNumber(normalizedValue);
+  }
+  return normalizedValue;
 }
 
 function isAutoGearMonitoringCategory(value) {
@@ -672,6 +760,24 @@ function isMonitoringCategorySelected(select) {
   }
   const optionLabel = typeof option.textContent === 'string' ? option.textContent : '';
   return isAutoGearMonitoringCategory(optionLabel);
+}
+
+function matchesTripodCategory(value) {
+  const normalized = typeof value === 'string' ? value.trim().toLowerCase() : '';
+  if (!normalized) return false;
+  if (normalized === 'camera support') return true;
+  return normalized.includes('tripod');
+}
+
+function isTripodCategorySelected(select) {
+  if (!select) return false;
+  const directValue = typeof select.value === 'string' ? select.value : '';
+  if (matchesTripodCategory(directValue)) return true;
+  const option = select.options?.[select.selectedIndex] || null;
+  if (!option) return false;
+  if (matchesTripodCategory(option.value)) return true;
+  const optionLabel = typeof option.textContent === 'string' ? option.textContent : '';
+  return matchesTripodCategory(optionLabel);
 }
 
 function setAutoGearFieldVisibility(field, isVisible) {
@@ -714,14 +820,23 @@ function updateAutoGearMonitorFieldGroup(group) {
     selectorDefaultInput,
   } = group;
   const isMonitoring = isMonitoringCategorySelected(select);
-  const managedFields = [screenSizeField, selectorTypeField, selectorDefaultField];
-  managedFields.forEach(field => {
-    setAutoGearFieldVisibility(field, isMonitoring);
-  });
-  if (!isMonitoring) {
-    if (screenSizeInput) screenSizeInput.value = '';
+  const isTripod = isTripodCategorySelected(select);
+  const showScreenSize = isMonitoring;
+  const showSelectorFields = isMonitoring || isTripod;
+  setAutoGearFieldVisibility(screenSizeField, showScreenSize);
+  setAutoGearFieldVisibility(selectorTypeField, showSelectorFields);
+  setAutoGearFieldVisibility(selectorDefaultField, showSelectorFields);
+  if (!showScreenSize && screenSizeInput) {
+    screenSizeInput.value = '';
+  }
+  if (!showSelectorFields) {
     if (selectorTypeSelect) selectorTypeSelect.value = 'none';
-    if (selectorDefaultInput) selectorDefaultInput.value = '';
+    if (selectorDefaultInput) {
+      selectorDefaultInput.value = '';
+      if (Object.prototype.hasOwnProperty.call(selectorDefaultInput.dataset || {}, 'autoGearPreferredDefault')) {
+        delete selectorDefaultInput.dataset.autoGearPreferredDefault;
+      }
+    }
   }
 }
 
@@ -2393,8 +2508,8 @@ function collectAutoGearCatalogNames() {
 
 function normalizeAutoGearMonitorCatalogMode(value) {
   const normalized = normalizeAutoGearSelectorType(value);
-  if (normalized === 'monitor') return 'monitor';
-  if (normalized === 'directorMonitor') return 'directorMonitor';
+  if (normalized === 'monitor' || normalized === 'directorMonitor') return normalized;
+  if (AUTO_GEAR_TRIPOD_SELECTOR_TYPES.has(normalized)) return normalized;
   return 'none';
 }
 
@@ -2445,6 +2560,68 @@ function collectAutoGearMonitorNames(type = autoGearMonitorCatalogMode) {
   return Array.from(names).sort(localeSort);
 }
 
+function collectAutoGearSelectorValuesFromRules(type) {
+  const normalized = normalizeAutoGearSelectorType(type);
+  if (normalized === 'none') return [];
+  const values = new Set();
+  const addValue = value => {
+    if (typeof value !== 'string') return;
+    const trimmed = value.trim();
+    if (!trimmed) return;
+    values.add(trimmed);
+  };
+  autoGearRules.forEach(rule => {
+    const processItem = item => {
+      if (!item || typeof item !== 'object') return;
+      if (normalizeAutoGearSelectorType(item.selectorType) !== normalized) return;
+      addValue(item.selectorDefault);
+    };
+    (rule.add || []).forEach(processItem);
+    (rule.remove || []).forEach(processItem);
+  });
+  return Array.from(values);
+}
+
+function collectAutoGearTripodNames(type) {
+  if (!AUTO_GEAR_TRIPOD_SELECTOR_TYPES.has(type)) return [];
+  const baseOptions = collectTripodPreferenceOptions(type);
+  const seen = new Set();
+  const results = [];
+  baseOptions.forEach(option => {
+    if (!option || !option.value) return;
+    const key = option.value.trim().toLowerCase();
+    if (seen.has(key)) return;
+    seen.add(key);
+    results.push({ value: option.value.trim(), label: option.label || option.value.trim() });
+  });
+  const extras = collectAutoGearSelectorValuesFromRules(type)
+    .map(value => value.trim())
+    .filter(Boolean)
+    .sort(localeSort);
+  extras.forEach(value => {
+    const key = value.toLowerCase();
+    if (seen.has(key)) return;
+    seen.add(key);
+    results.push({ value, label: value });
+  });
+  return results;
+}
+
+function collectAutoGearSelectorDefaultEntries(type) {
+  const mode = normalizeAutoGearMonitorCatalogMode(type);
+  if (mode === 'none') return [];
+  if (mode === 'monitor' || mode === 'directorMonitor') {
+    return collectAutoGearMonitorNames(mode).map(name => ({
+      value: name,
+      label: formatAutoGearSelectorValue(mode, name),
+    }));
+  }
+  if (AUTO_GEAR_TRIPOD_SELECTOR_TYPES.has(mode)) {
+    return collectAutoGearTripodNames(mode);
+  }
+  return [];
+}
+
 function updateAutoGearMonitorCatalogOptions(type = autoGearMonitorCatalogMode, targetElements) {
   autoGearMonitorCatalogMode = normalizeAutoGearMonitorCatalogMode(type);
   const targets = (() => {
@@ -2460,7 +2637,7 @@ function updateAutoGearMonitorCatalogOptions(type = autoGearMonitorCatalogMode, 
     const relatedGroup = autoGearMonitorDefaultGroups.find(group => group.selectorDefaultInput === select);
     const selectorType = relatedGroup?.selectorTypeSelect ? relatedGroup.selectorTypeSelect.value : autoGearMonitorCatalogMode;
     const mode = normalizeAutoGearMonitorCatalogMode(selectorType);
-    const names = mode === 'none' ? [] : collectAutoGearMonitorNames(mode);
+    const entries = mode === 'none' ? [] : collectAutoGearSelectorDefaultEntries(mode);
     const previousValue = select.value || '';
     const preferredValue = typeof select.dataset.autoGearPreferredDefault === 'string'
       ? select.dataset.autoGearPreferredDefault
@@ -2475,26 +2652,35 @@ function updateAutoGearMonitorCatalogOptions(type = autoGearMonitorCatalogMode, 
     placeholderOption.textContent = placeholder;
     select.appendChild(placeholderOption);
     const added = new Set(['']);
-    const addOption = name => {
-      if (typeof name !== 'string') return;
-      const trimmed = name.trim();
-      if (!trimmed || added.has(trimmed)) return;
+    const addOption = (value, label) => {
+      const trimmedValue = typeof value === 'string' ? value.trim() : '';
+      if (!trimmedValue) return;
+      const key = trimmedValue.toLowerCase();
+      if (added.has(key)) return;
       const option = document.createElement('option');
-      option.value = trimmed;
-      option.textContent = trimmed;
+      option.value = trimmedValue;
+      option.textContent = label || formatAutoGearSelectorValue(mode, trimmedValue);
       select.appendChild(option);
-      added.add(trimmed);
+      added.add(key);
     };
-    names.forEach(addOption);
+    entries.forEach(entry => {
+      if (entry && typeof entry === 'object') {
+        addOption(entry.value, entry.label);
+      } else {
+        addOption(entry);
+      }
+    });
     const desiredValue = preferredValue || previousValue;
-    if (desiredValue && !added.has(desiredValue)) {
+    const desiredKey = desiredValue ? desiredValue.trim().toLowerCase() : '';
+    const previousKey = previousValue ? previousValue.trim().toLowerCase() : '';
+    if (desiredValue && !added.has(desiredKey)) {
       addOption(desiredValue);
-    } else if (!desiredValue && previousValue && !added.has(previousValue)) {
+    } else if (!desiredValue && previousValue && !added.has(previousKey)) {
       addOption(previousValue);
     }
-    if (desiredValue && added.has(desiredValue)) {
+    if (desiredValue && added.has(desiredKey)) {
       select.value = desiredValue;
-    } else if (previousValue && added.has(previousValue)) {
+    } else if (previousValue && added.has(previousKey)) {
       select.value = previousValue;
     } else {
       select.value = '';
@@ -2502,7 +2688,7 @@ function updateAutoGearMonitorCatalogOptions(type = autoGearMonitorCatalogMode, 
     const enableSelection = mode !== 'none' && select.options.length > 1;
     select.disabled = !enableSelection;
     const scrollHint = getAutoGearSelectorScrollHint();
-    if (enableSelection && names.length > 10) {
+    if (enableSelection && entries.length > 10) {
       select.setAttribute('title', scrollHint);
       select.setAttribute('data-help', scrollHint);
     } else {
@@ -5245,10 +5431,22 @@ function setLanguage(lang) {
       const noneLabel = texts[lang].autoGearSelectorNoneOption || texts.en?.autoGearSelectorNoneOption || 'No selector';
       const monitorLabel = texts[lang].autoGearSelectorMonitorOption || texts.en?.autoGearSelectorMonitorOption || 'Monitor selector';
       const directorLabel = texts[lang].autoGearSelectorDirectorOption || texts.en?.autoGearSelectorDirectorOption || 'Director monitor selector';
+      const tripodHeadLabel = texts[lang].autoGearSelectorTripodHeadOption || texts.en?.autoGearSelectorTripodHeadOption || 'Tripod head selector';
+      const tripodBowlLabel = texts[lang].autoGearSelectorTripodBowlOption || texts.en?.autoGearSelectorTripodBowlOption || 'Tripod bowl selector';
+      const tripodTypesLabel = texts[lang].autoGearSelectorTripodTypesOption || texts.en?.autoGearSelectorTripodTypesOption || 'Tripod type selector';
+      const tripodSpreaderLabel = texts[lang].autoGearSelectorTripodSpreaderOption || texts.en?.autoGearSelectorTripodSpreaderOption || 'Tripod spreader selector';
+      const selectorLabels = new Map([
+        ['none', noneLabel],
+        ['monitor', monitorLabel],
+        ['directorMonitor', directorLabel],
+        ['tripodHeadBrand', tripodHeadLabel],
+        ['tripodBowl', tripodBowlLabel],
+        ['tripodTypes', tripodTypesLabel],
+        ['tripodSpreader', tripodSpreaderLabel],
+      ]);
       Array.from(autoGearAddSelectorTypeSelect.options || []).forEach(opt => {
-        if (opt.value === 'none') opt.textContent = noneLabel;
-        if (opt.value === 'monitor') opt.textContent = monitorLabel;
-        if (opt.value === 'directorMonitor') opt.textContent = directorLabel;
+        const text = selectorLabels.get(opt.value);
+        if (text) opt.textContent = text;
       });
     }
   }
@@ -5317,10 +5515,22 @@ function setLanguage(lang) {
       const noneLabel = texts[lang].autoGearSelectorNoneOption || texts.en?.autoGearSelectorNoneOption || 'No selector';
       const monitorLabel = texts[lang].autoGearSelectorMonitorOption || texts.en?.autoGearSelectorMonitorOption || 'Monitor selector';
       const directorLabel = texts[lang].autoGearSelectorDirectorOption || texts.en?.autoGearSelectorDirectorOption || 'Director monitor selector';
+      const tripodHeadLabel = texts[lang].autoGearSelectorTripodHeadOption || texts.en?.autoGearSelectorTripodHeadOption || 'Tripod head selector';
+      const tripodBowlLabel = texts[lang].autoGearSelectorTripodBowlOption || texts.en?.autoGearSelectorTripodBowlOption || 'Tripod bowl selector';
+      const tripodTypesLabel = texts[lang].autoGearSelectorTripodTypesOption || texts.en?.autoGearSelectorTripodTypesOption || 'Tripod type selector';
+      const tripodSpreaderLabel = texts[lang].autoGearSelectorTripodSpreaderOption || texts.en?.autoGearSelectorTripodSpreaderOption || 'Tripod spreader selector';
+      const selectorLabels = new Map([
+        ['none', noneLabel],
+        ['monitor', monitorLabel],
+        ['directorMonitor', directorLabel],
+        ['tripodHeadBrand', tripodHeadLabel],
+        ['tripodBowl', tripodBowlLabel],
+        ['tripodTypes', tripodTypesLabel],
+        ['tripodSpreader', tripodSpreaderLabel],
+      ]);
       Array.from(autoGearRemoveSelectorTypeSelect.options || []).forEach(opt => {
-        if (opt.value === 'none') opt.textContent = noneLabel;
-        if (opt.value === 'monitor') opt.textContent = monitorLabel;
-        if (opt.value === 'directorMonitor') opt.textContent = directorLabel;
+        const text = selectorLabels.get(opt.value);
+        if (text) opt.textContent = text;
       });
     }
   }
@@ -11129,7 +11339,7 @@ function formatAutoGearItemSummary(item, options = {}) {
   }
   if (selectorType && selectorType !== 'none') {
     const selectorLabel = getAutoGearSelectorLabel(selectorType);
-    const formattedDefault = selectorDefault ? addArriKNumber(selectorDefault) : '';
+    const formattedDefault = selectorDefault ? formatAutoGearSelectorValue(selectorType, selectorDefault) : '';
     if (selectorEnabled) {
       const selectorTemplate = formattedDefault
         ? (langTexts.autoGearSelectorSummaryWithDefault
