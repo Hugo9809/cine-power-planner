@@ -392,6 +392,124 @@ describe('automated backups', () => {
     URL.createObjectURL = originalCreateObjectURL;
   });
 
+  test('createSettingsBackup recovers data when exportAllData throws', async () => {
+    const { createSettingsBackup } = loadApp();
+
+    const fallbackDevices = { cameras: { recovered: true } };
+    const fallbackSetups = { 'Main Setup': { gearList: '<p>Recovered</p>' } };
+    const fallbackSession = { camera: 'FX6' };
+    const fallbackFeedback = { note: 'Recovered feedback' };
+    const fallbackProject = {
+      'Main Setup': { projectInfo: { projectName: 'Main Setup' } },
+    };
+    const fallbackFavorites = { cameras: ['FX6'] };
+    const fallbackBackups = [
+      { id: 'auto-backup-1', createdAt: '2024-05-01T10:00:00Z', rules: [] },
+    ];
+    const fallbackPresets = [{ id: 'preset-1', label: 'Recovered preset' }];
+    const fallbackHistory = [
+      { createdAt: '2024-05-01T10:00:00Z', fileName: 'cine-power-planner-full-backup.json' },
+    ];
+    const fallbackRules = [{ id: 'rule-1', label: 'Recovered rule', add: [], remove: [], scenarios: [] }];
+
+    global.getBaseAutoGearRules = jest.fn(() => null);
+    global.loadDeviceData.mockImplementation(() => fallbackDevices);
+    global.loadSetups.mockImplementation(() => fallbackSetups);
+    global.loadSessionState.mockImplementation(() => fallbackSession);
+    global.loadFavorites.mockImplementation(() => fallbackFavorites);
+    global.loadProject.mockImplementation(() => fallbackProject);
+    global.exportAllData.mockImplementation(() => { throw new Error('export failed'); });
+
+    global.loadFeedback = jest.fn(() => fallbackFeedback);
+    global.loadAutoGearBackups = jest.fn(() => fallbackBackups);
+    global.loadAutoGearPresets = jest.fn(() => fallbackPresets);
+    global.loadAutoGearSeedFlag = jest.fn(() => true);
+    global.loadAutoGearActivePresetId = jest.fn(() => 'preset-1');
+    global.loadAutoGearAutoPresetId = jest.fn(() => 'auto-1');
+    global.loadAutoGearBackupVisibility = jest.fn(() => true);
+    global.loadFullBackupHistory = jest.fn(() => fallbackHistory);
+    global.loadAutoGearRules = jest.fn(() => fallbackRules);
+
+    const result = await captureBackupDownload(
+      createSettingsBackup,
+      new Date('2024-05-06T11:45:00Z'),
+    );
+
+    expect(result.payload).not.toBeNull();
+    expect(result.payload.data).toMatchObject({
+      devices: fallbackDevices,
+      setups: fallbackSetups,
+      session: fallbackSession,
+      feedback: fallbackFeedback,
+      project: fallbackProject,
+      favorites: fallbackFavorites,
+      autoGearBackups: fallbackBackups,
+      autoGearPresets: fallbackPresets,
+      autoGearSeeded: true,
+      autoGearActivePresetId: 'preset-1',
+      autoGearAutoPresetId: 'auto-1',
+      autoGearShowBackups: true,
+      fullBackupHistory: fallbackHistory,
+    });
+    expect(result.payload.data.autoGearRules).toEqual(expect.arrayContaining([
+      expect.objectContaining({ label: 'Recovered rule' }),
+    ]));
+
+    expect(Array.isArray(result.payload.diagnostics)).toBe(true);
+    expect(result.payload.diagnostics).toEqual(expect.arrayContaining([
+      expect.objectContaining({ section: 'exportAllData', status: 'error' }),
+      expect.objectContaining({ section: 'setups', status: 'recovered' }),
+      expect.objectContaining({ section: 'autoGearRules', status: 'recovered' }),
+    ]));
+  });
+
+  test('createSettingsBackup continues when individual storage entries fail to read', async () => {
+    const { createSettingsBackup } = loadApp();
+
+    const failingStorage = {
+      length: 2,
+      key: jest.fn(index => (index === 0 ? 'cameraPowerPlanner_devices' : 'broken-key')),
+      getItem: jest.fn((key) => {
+        if (key === 'broken-key') {
+          throw new Error('access denied');
+        }
+        return '{"cameras":{"Alexa":1}}';
+      }),
+    };
+
+    const originalGetSafeLocalStorage = global.getSafeLocalStorage;
+    global.getSafeLocalStorage = jest.fn(() => failingStorage);
+
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    try {
+      const result = await captureBackupDownload(
+        createSettingsBackup,
+        new Date('2024-05-06T12:15:00Z'),
+      );
+
+      expect(result.payload.settings).toHaveProperty(
+        'cameraPowerPlanner_devices',
+        '{"cameras":{"Alexa":1}}',
+      );
+      expect(result.payload.settings).not.toHaveProperty('broken-key');
+
+      expect(failingStorage.getItem).toHaveBeenCalledTimes(2);
+      expect(warnSpy).toHaveBeenCalledWith(
+        'Failed to read storage entry for backup',
+        'broken-key',
+        expect.any(Error),
+      );
+    } finally {
+      warnSpy.mockRestore();
+      if (originalGetSafeLocalStorage) {
+        global.getSafeLocalStorage = originalGetSafeLocalStorage;
+      } else {
+        delete global.getSafeLocalStorage;
+      }
+    }
+  });
+
   test('restore surfaces errors when the backup payload cannot be parsed', () => {
     loadApp();
 
