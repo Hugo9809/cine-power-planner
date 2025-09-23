@@ -406,7 +406,7 @@ describe('applyAutoGearRulesToTableHtml', () => {
     expect(entries).toHaveLength(1);
   });
 
-  test('applies viewfinder extension rules when no extension is selected', () => {
+  test('does not apply viewfinder extension rules when no extension is selected', () => {
     localStorage.setItem(
       STORAGE_KEY,
       JSON.stringify([
@@ -448,7 +448,7 @@ describe('applyAutoGearRulesToTableHtml', () => {
     container.innerHTML = result;
 
     const entries = container.querySelectorAll('[data-gear-name="Standard VF Cable"]');
-    expect(entries).toHaveLength(1);
+    expect(entries).toHaveLength(0);
   });
 
   test('applies video distribution-triggered rules when the selection matches', () => {
@@ -496,7 +496,7 @@ describe('applyAutoGearRulesToTableHtml', () => {
     expect(entries).toHaveLength(1);
   });
 
-  test('applies video distribution rules when no distribution is selected', () => {
+  test('does not apply video distribution rules when no distribution is selected', () => {
     localStorage.setItem(
       STORAGE_KEY,
       JSON.stringify([
@@ -538,7 +538,57 @@ describe('applyAutoGearRulesToTableHtml', () => {
     container.innerHTML = result;
 
     const entries = container.querySelectorAll('[data-gear-name="HDMI Switcher"]');
-    expect(entries).toHaveLength(1);
+    expect(entries).toHaveLength(0);
+  });
+
+  test('requires all selected scenarios before triggering scenario-based rules', () => {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify([
+        {
+          id: 'rule-multi-scenario',
+          label: 'Full weather prep',
+          scenarios: ['Extreme cold (snow)', 'Extreme rain'],
+          mattebox: [],
+          cameraHandle: [],
+          viewfinderExtension: [],
+          videoDistribution: [],
+          add: [
+            {
+              id: 'add-weather',
+              name: 'Rain Deflector',
+              category: 'Camera Support',
+              quantity: 1,
+            }
+          ],
+          remove: [],
+        }
+      ])
+    );
+
+    env = setupScriptEnvironment();
+    const { applyAutoGearRulesToTableHtml } = env.utils;
+
+    const tableHtml = `
+      <table class="gear-table">
+        <tbody class="category-group">
+          <tr class="category-row"><td>Camera Support</td></tr>
+          <tr><td></td></tr>
+        </tbody>
+      </table>
+    `;
+
+    const partialMatch = applyAutoGearRulesToTableHtml(tableHtml, { requiredScenarios: 'Extreme cold (snow)' });
+    const partialContainer = document.createElement('div');
+    partialContainer.innerHTML = partialMatch;
+    const partialEntries = partialContainer.querySelectorAll('[data-gear-name="Rain Deflector"]');
+    expect(partialEntries).toHaveLength(0);
+
+    const fullMatch = applyAutoGearRulesToTableHtml(tableHtml, { requiredScenarios: 'Extreme cold (snow), Extreme rain' });
+    const fullContainer = document.createElement('div');
+    fullContainer.innerHTML = fullMatch;
+    const fullEntries = fullContainer.querySelectorAll('[data-gear-name="Rain Deflector"]');
+    expect(fullEntries).toHaveLength(1);
   });
 
   test('buildDefaultVideoDistributionAutoGearRules covers each selector option', () => {
