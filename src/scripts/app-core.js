@@ -5196,6 +5196,26 @@ function setLanguage(lang) {
       texts[lang].backupHeadingHelp || texts[lang].backupHeading
     );
   }
+  if (projectBackupsHeading) {
+    const headingText = texts[lang].projectBackupsHeading || "Project Backups";
+    projectBackupsHeading.textContent = headingText;
+    const descriptionText = texts[lang].projectBackupsDescription || "";
+    if (descriptionText) {
+      projectBackupsHeading.setAttribute("data-help", descriptionText);
+    } else {
+      projectBackupsHeading.removeAttribute("data-help");
+    }
+  }
+  if (projectBackupsDescription) {
+    const descriptionText = texts[lang].projectBackupsDescription || "";
+    if (descriptionText) {
+      projectBackupsDescription.textContent = descriptionText;
+      projectBackupsDescription.hidden = false;
+    } else {
+      projectBackupsDescription.textContent = "";
+      projectBackupsDescription.hidden = true;
+    }
+  }
   if (dataHeading) {
     dataHeading.textContent = texts[lang].dataHeading;
     const dataHelp = texts[lang].dataHeadingHelp || texts[lang].dataHeading;
@@ -13353,6 +13373,8 @@ const restoreRehearsalLiveHeader = document.getElementById("restoreRehearsalLive
 const restoreRehearsalSandboxHeader = document.getElementById("restoreRehearsalSandboxHeader");
 const restoreRehearsalDifferenceHeader = document.getElementById("restoreRehearsalDifferenceHeader");
 const restoreRehearsalCloseButton = document.getElementById("restoreRehearsalClose");
+const projectBackupsHeading = document.getElementById("projectBackupsHeading");
+const projectBackupsDescription = document.getElementById("projectBackupsDescription");
 const settingsShowAutoBackups = document.getElementById("settingsShowAutoBackups");
 const backupDiffToggleButton = document.getElementById("backupDiffToggleButton");
 const backupDiffSection = document.getElementById("backupDiffSection");

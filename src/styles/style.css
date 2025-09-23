@@ -1204,6 +1204,23 @@ main.legal-content {
   opacity: 0.8;
 }
 
+.project-backups {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-size);
+  margin-top: var(--gap-size);
+  padding-top: var(--gap-size);
+  border-top: 1px solid color-mix(in srgb, var(--panel-border) 60%, transparent);
+}
+
+.project-backups .settings-hint {
+  margin-left: 0;
+}
+
+.project-backups-actions {
+  align-items: center;
+}
+
 .backup-diff-section {
   display: flex;
   flex-direction: column;
