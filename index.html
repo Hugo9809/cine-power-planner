@@ -1517,26 +1517,66 @@
           <h3><span class="help-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xEAC4;</span>Start Here</h3>
           <ul>
             <li>
-              Open this guide from the header <strong>Help</strong> button or press <strong>?</strong>, <strong>H</strong>,
-              <strong>F1</strong> or <strong>Ctrl+/</strong> (<strong>⌘/</strong> on Mac). Press <strong>Esc</strong> to close
-              the dialog and return to your project.
+              Open this guide from the header
+              <a class="help-link button-link" href="#helpButton" data-help-target="#helpButton">Help</a>
+              button or press <strong>?</strong>, <strong>H</strong>, <strong>F1</strong> or <strong>Ctrl+/</strong>
+              (<strong>⌘/</strong> on Mac). Press <strong>Esc</strong> or select
+              <a class="help-link button-link" href="#closeHelp" data-help-target="#closeHelp">Close</a>
+              to return to your project when you're finished.
             </li>
             <li>
-              The search box filters topics as you type and highlights matching words. Use the × button to clear the query, or
-              press <strong>/</strong> or <strong>Ctrl+F</strong> (<strong>⌘F</strong>) while the dialog is open to jump
-              straight to search.
+              The
+              <a class="help-link" href="#helpSearch" data-help-target="#helpSearch">search box</a>
+              filters topics as you type and highlights matching words. Use the
+              <a class="help-link" href="#helpSearchClear" data-help-target="#helpSearchClear">clear</a>
+              button to reset the query, or press <strong>/</strong> or <strong>Ctrl+F</strong> (<strong>⌘F</strong>) while
+              the dialog is open to jump straight to search.
             </li>
             <li>
-              Use the <strong>Jump to a topic</strong> quick links for instant navigation. The list stays in sync with your
-              search and focuses the selected heading so you can start reading immediately.
+              Use the
+              <a
+                class="help-link"
+                href="#helpQuickLinksHeading"
+                data-help-target="#helpQuickLinksHeading"
+                data-help-highlight="#helpQuickLinks"
+              >Jump to a topic quick links</a>
+              for instant navigation. The list stays in sync with your search and focuses the selected heading so you can start
+              reading immediately.
             </li>
             <li>
-              Select <strong>Hover for help</strong> to turn the cursor into a help pointer. Move across buttons, menus and
-              form fields to read concise tooltips without leaving this dialog.
+              Select
+              <a class="help-link button-link" href="#hoverHelpButton" data-help-target="#hoverHelpButton"
+                >Hover for help</a
+              >
+              to turn the cursor into a help pointer. Move across buttons, menus and form fields to read concise tooltips
+              without leaving this dialog.
             </li>
             <li>
-              Buttons inside each article highlight or focus the matching controls in the planner, making it easy to follow
-              along and verify every step.
+              Buttons inside each article highlight or focus the matching controls in the planner—look for inline links such
+              as
+              <a class="help-link button-link" href="#settingsButton" data-help-target="#settingsButton">Settings</a>
+              or
+              <a
+                class="help-link button-link"
+                href="#applySharedLinkBtn"
+                data-help-target="#applySharedLinkBtn"
+                data-help-highlight="#setup-manager"
+              >Import Project</a>
+              to follow along and verify every step. Need a refresher? Jump to the
+              <a
+                class="help-link"
+                href="#helpQuickStartGuide"
+                data-help-target="#helpQuickStartGuide"
+                data-help-highlight="#helpQuickStartGuide"
+              >Quick start checklist</a>
+              or browse the
+              <a
+                class="help-link"
+                href="#helpKeyboardShortcuts"
+                data-help-target="#helpKeyboardShortcuts"
+                data-help-highlight="#helpKeyboardShortcuts"
+              >essential keyboard shortcuts</a>
+              callouts below for fast navigation tips.
             </li>
           </ul>
           <div
@@ -1548,17 +1588,71 @@
             <h4>Quick start checklist</h4>
             <ol>
               <li>
-                Name your project and press <strong>Save</strong> (or press <kbd>Enter</kbd>/<kbd>Ctrl</kbd>+<kbd>S</kbd>) to
-                capture the current rig before experimenting—saved entries stay available offline.
+                Name your project in the
+                <a
+                  class="help-link"
+                  href="#setupName"
+                  data-help-target="#setupName"
+                  data-help-highlight="#setup-manager"
+                >Project Name</a>
+                field and press
+                <a
+                  class="help-link button-link"
+                  href="#saveSetupBtn"
+                  data-help-target="#saveSetupBtn"
+                  data-help-highlight="#setup-manager"
+                ><strong>Save</strong></a>
+                (or press <kbd>Enter</kbd>/<kbd>Ctrl</kbd>+<kbd>S</kbd>) to capture the current rig before experimenting—saved
+                entries stay available offline.
               </li>
               <li>
-                Walk through <em>Configure Devices</em>, the <em>Power Summary</em> and the <em>Connection Diagram</em> in
-                order. Each section updates immediately so you can verify power draw, cable routing and runtime checks at a
+                Walk through
+                <a
+                  class="help-link"
+                  href="#setup-config"
+                  data-help-target="#setup-config"
+                  data-help-highlight="#setup-config"
+                ><em>Configure Devices</em></a>
+                , the
+                <a
+                  class="help-link"
+                  href="#resultsHeading"
+                  data-help-target="#resultsHeading"
+                  data-help-highlight="#results"
+                ><em>Power Summary</em></a>
+                and the
+                <a
+                  class="help-link"
+                  href="#setupDiagramHeading"
+                  data-help-target="#setupDiagramHeading"
+                  data-help-highlight="#setupDiagram"
+                ><em>Connection Diagram</em></a>
+                in order. Each section updates immediately so you can verify power draw, cable routing and runtime checks at a
                 glance.
               </li>
               <li>
-                Before wrapping up, download an <strong>Export project</strong> JSON and a full-app <strong>Backup</strong> so
-                you have two offline recovery copies that can be restored from the <em>Backup &amp; Restore</em> panel.
+                Before wrapping up, download an
+                <a
+                  class="help-link button-link"
+                  href="#shareSetupBtn"
+                  data-help-target="#shareSetupBtn"
+                  data-help-highlight="#setup-manager"
+                ><strong>Export project</strong></a>
+                JSON and a full-app
+                <a
+                  class="help-link button-link"
+                  href="#backupSettings"
+                  data-help-target="#backupSettings"
+                  data-help-highlight="#settingsDialog"
+                ><strong>Backup</strong></a>
+                so you have two offline recovery copies that can be restored from the
+                <a
+                  class="help-link"
+                  href="#restoreSettings"
+                  data-help-target="#restoreSettings"
+                  data-help-highlight="#settingsDialog"
+                ><em>Backup &amp; Restore</em></a>
+                panel.
               </li>
             </ol>
             <p class="help-callout-note">
@@ -1587,29 +1681,6 @@
               <li><kbd>P</kbd> — switch the playful pink theme and store the preference for next time.</li>
             </ul>
           </div>
-          <p class="help-inline-links">
-            Continue with the
-            <a
-              class="help-link"
-              href="#helpQuickStartGuide"
-              data-help-target="#helpQuickStartGuide"
-              data-help-highlight="#helpQuickStartGuide"
-            >Quick start checklist</a>, review the
-            <a
-              class="help-link"
-              href="#helpKeyboardShortcuts"
-              data-help-target="#helpKeyboardShortcuts"
-              data-help-highlight="#helpKeyboardShortcuts"
-            >essential keyboard shortcuts</a>
-            or
-            <a
-              class="help-link"
-              href="#hoverHelpButton"
-              data-help-target="#hoverHelpButton"
-              data-help-highlight="#hoverHelpButton"
-            >enable hover help</a>
-            for instant tooltips.
-          </p>
         </section>
         <section
           data-help-section
@@ -1635,42 +1706,45 @@
             <li>Force reload clears cached files and updates the app without deleting saved data.</li>
             <li>Save automatic gear rules as presets, recover them from background backups and include them in shared project bundles with per-import controls.</li>
             <li>Cameras with both V- and B-Mount plates let you swap battery types; the list updates automatically.</li>
+            <li>
+              Ready to explore? Jump to the
+              <a
+                class="help-link"
+                href="#setupName"
+                data-help-target="#setupName"
+                data-help-highlight="#setup-manager"
+              >Project Overview</a>
+              , configure hardware in
+              <a
+                class="help-link"
+                href="#cameraSelect"
+                data-help-target="#cameraSelect"
+                data-help-highlight="#setup-config"
+              >Configure Devices</a>
+              , check draw in the
+              <a
+                class="help-link"
+                href="#resultsHeading"
+                data-help-target="#resultsHeading"
+                data-help-highlight="#results"
+              >Power Summary</a>
+              , map connections with the
+              <a
+                class="help-link"
+                href="#setupDiagramHeading"
+                data-help-target="#setupDiagramHeading"
+                data-help-highlight="#setupDiagram"
+              >Connection Diagram</a>
+              or fine-tune entries in the
+              <a
+                class="help-link"
+                href="#deviceManagerHeading"
+                data-help-target="#deviceManagerHeading"
+                data-help-highlight="#device-manager"
+              >Device Library</a>
+              right from here.
+            </li>
           </ul>
-          <p class="help-inline-links">
-            Jump directly to the
-            <a
-              class="help-link"
-              href="#setupName"
-              data-help-target="#setupName"
-              data-help-highlight="#setup-manager"
-            >Project Overview</a>, configure hardware in
-            <a
-              class="help-link"
-              href="#cameraSelect"
-              data-help-target="#cameraSelect"
-              data-help-highlight="#setup-config"
-            >Configure Devices</a>, check draw in the
-            <a
-              class="help-link"
-              href="#resultsHeading"
-              data-help-target="#resultsHeading"
-              data-help-highlight="#results"
-            >Power Summary</a>, map connections with the
-            <a
-              class="help-link"
-              href="#setupDiagramHeading"
-              data-help-target="#setupDiagramHeading"
-              data-help-highlight="#setupDiagram"
-            >Connection Diagram</a>
-            or fine-tune entries in the
-            <a
-              class="help-link"
-              href="#deviceManagerHeading"
-              data-help-target="#deviceManagerHeading"
-              data-help-highlight="#device-manager"
-            >Device Library</a>
-            right from here.
-          </p>
         </section>
         <section
           data-help-section
@@ -2417,30 +2491,40 @@
           data-help-keywords="device editor database custom gear add edit modify remove import export revert data management"
         >
           <h3><span class="help-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xF2DF;</span>Device Database Editor</h3>
-          <ul>
-            <li>Open with <em>Edit Device Data…</em> to add, modify or remove devices.</li>
-            <li>Changes are stored locally; use <em>Export</em> and <em>Import</em> to share databases.</li>
-            <li><em>Revert</em> restores defaults from the files in <code>devices/</code>.</li>
-          </ul>
-          <p class="help-inline-links">
-            Jump into
-            <a
-              class="help-link"
-              href="#toggleDeviceManager"
-              data-help-target="#toggleDeviceManager"
-            >Edit Device Data…</a>
-            from the
-            <a
-              class="help-link"
-              href="#deviceManagerHeading"
-              data-help-target="#deviceManagerHeading"
-              data-help-highlight="#device-manager"
-            >Device Library</a>, then
-            <a class="help-link" href="#exportDataBtn" data-help-target="#exportDataBtn">export</a>
-            or
-            <a class="help-link" href="#importDataBtn" data-help-target="#importDataBtn">import</a>
-            the database as needed.
-          </p>
+            <ul>
+              <li>
+                Open
+                <a
+                  class="help-link button-link"
+                  href="#toggleDeviceManager"
+                  data-help-target="#toggleDeviceManager"
+                ><em>Edit Device Data…</em></a>
+                from the
+                <a
+                  class="help-link"
+                  href="#deviceManagerHeading"
+                  data-help-target="#deviceManagerHeading"
+                  data-help-highlight="#device-manager"
+                >Device Library</a>
+                to add, modify or remove devices.
+              </li>
+              <li>
+                Changes are stored locally—use
+                <a class="help-link" href="#exportDataBtn" data-help-target="#exportDataBtn"><em>Export</em></a>
+                and
+                <a class="help-link" href="#importDataBtn" data-help-target="#importDataBtn"><em>Import</em></a>
+                to share databases without losing your offline copy.
+              </li>
+              <li>
+                Need to start fresh? Choose
+                <a
+                  class="help-link button-link"
+                  href="#exportAndRevertBtn"
+                  data-help-target="#exportAndRevertBtn"
+                ><em>Export &amp; Revert</em></a>
+                to back up your edits and restore the defaults from the files in <code>devices/</code>.
+              </li>
+            </ul>
         </section>
         <section
           data-help-section
@@ -2504,23 +2588,45 @@
           data-help-keywords="help dialog window modal question mark f1 instructions search toggle open close clear focus"
         >
           <h3><span class="help-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xEEFB;</span>Help Dialog</h3>
-          <ul>
-            <li>Open with the <strong>?</strong> button or press <kbd>?</kbd>, <kbd>H</kbd>, <kbd>F1</kbd> or <kbd>Ctrl</kbd>+<kbd>/</kbd> (<kbd>⌘</kbd>+<kbd>/</kbd> on macOS); shortcuts work even while typing.</li>
-            <li>Type keywords or alternate spellings to filter topics; the search resets automatically whenever you close the dialog.</li>
-            <li>Quick links update as you type—use <kbd>Tab</kbd> or click to focus a link, then press <kbd>Enter</kbd> to scroll to that section.</li>
-            <li>Click the × button to clear the search and show all topics again, or press <kbd>/</kbd> or <kbd>Ctrl</kbd>+<kbd>F</kbd> (<kbd>⌘</kbd>+<kbd>F</kbd> on macOS) to jump back to the search box.</li>
-            <li>The search matches common keywords and alternate spellings, so queries like “favourites” still highlight the Favorites tips.</li>
-            <li>Close the dialog with <kbd>Escape</kbd> or by clicking outside.</li>
-          </ul>
-          <p class="help-inline-links">
-            Try the
-            <a class="help-link" href="#helpButton" data-help-target="#helpButton">Help button</a>,
-            refine results with the
-            <a class="help-link" href="#helpSearch" data-help-target="#helpSearch">search field</a>
-            and use
-            <a class="help-link" href="#helpSearchClear" data-help-target="#helpSearchClear">Clear search</a>
-            to reset the list.
-          </p>
+            <ul>
+              <li>
+                Open with the
+                <a class="help-link button-link" href="#helpButton" data-help-target="#helpButton">Help</a>
+                button or press <kbd>?</kbd>, <kbd>H</kbd>, <kbd>F1</kbd> or <kbd>Ctrl</kbd>+<kbd>/</kbd> (<kbd>⌘</kbd>+<kbd>/</kbd>
+                on macOS); shortcuts work even while typing.
+              </li>
+              <li>
+                Type keywords or alternate spellings in the
+                <a class="help-link" href="#helpSearch" data-help-target="#helpSearch">search field</a>
+                to filter topics—the list resets automatically whenever you close the dialog.
+              </li>
+              <li>
+                The
+                <a
+                  class="help-link"
+                  href="#helpQuickLinksHeading"
+                  data-help-target="#helpQuickLinksHeading"
+                  data-help-highlight="#helpQuickLinks"
+                >quick links</a>
+                update as you type; use <kbd>Tab</kbd> or click to focus a link, then press <kbd>Enter</kbd> to scroll to that
+                section immediately.
+              </li>
+              <li>
+                Click the
+                <a class="help-link" href="#helpSearchClear" data-help-target="#helpSearchClear">Clear search</a>
+                button to show all topics again, or press <kbd>/</kbd> or <kbd>Ctrl</kbd>+<kbd>F</kbd> (<kbd>⌘</kbd>+<kbd>F</kbd>
+                on macOS) to jump straight back to the search box.
+              </li>
+              <li>
+                The
+                <a class="help-link" href="#helpSearch" data-help-target="#helpSearch">search</a>
+                matches common keywords and alternate spellings, so queries like “favourites” still highlight the Favorites tips.
+              </li>
+              <li>
+                Close the dialog with <kbd>Escape</kbd>, by clicking outside or by pressing
+                <a class="help-link button-link" href="#closeHelp" data-help-target="#closeHelp">Close</a>.
+              </li>
+            </ul>
         </section>
         <section
           data-help-section
