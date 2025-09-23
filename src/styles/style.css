@@ -1204,6 +1204,33 @@ main.legal-content {
   opacity: 0.8;
 }
 
+.project-backups {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-size);
+  padding: 1rem;
+  border: 1px solid color-mix(in srgb, var(--panel-border) 65%, transparent);
+  border-radius: var(--border-radius);
+  background: color-mix(in srgb, var(--surface-color) 96%, var(--accent-color) 4%);
+}
+
+.project-backups-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap-size);
+}
+
+.project-backups h4 {
+  margin: 0;
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-sm));
+  font-weight: var(--font-weight-semibold);
+}
+
+.project-backups-header .inline-form-button {
+  flex: 0 0 auto;
+}
+
 .backup-diff-section {
   display: flex;
   flex-direction: column;

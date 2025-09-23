@@ -5196,6 +5196,14 @@ function setLanguage(lang) {
       texts[lang].backupHeadingHelp || texts[lang].backupHeading
     );
   }
+  if (projectBackupsHeading) {
+    const projectBackupsLabel =
+      texts[lang].projectBackupsHeading || projectBackupsHeading.textContent;
+    projectBackupsHeading.textContent = projectBackupsLabel;
+    const projectBackupsHelp =
+      texts[lang].projectBackupsHeadingHelp || projectBackupsLabel;
+    projectBackupsHeading.setAttribute("data-help", projectBackupsHelp);
+  }
   if (dataHeading) {
     dataHeading.textContent = texts[lang].dataHeading;
     const dataHelp = texts[lang].dataHeadingHelp || texts[lang].dataHeading;
@@ -13338,6 +13346,7 @@ const restoreSettingsInput = document.getElementById("restoreSettingsInput");
 const restoreRehearsalButton = document.getElementById("restoreRehearsalButton");
 const restoreRehearsalSection = document.getElementById("restoreRehearsalSection");
 const restoreRehearsalHeading = document.getElementById("restoreRehearsalHeading");
+const projectBackupsHeading = document.getElementById("projectBackupsHeading");
 const restoreRehearsalIntro = document.getElementById("restoreRehearsalIntro");
 const restoreRehearsalModeLabel = document.getElementById("restoreRehearsalModeLabel");
 const restoreRehearsalModeBackupText = document.getElementById("restoreRehearsalModeBackupText");

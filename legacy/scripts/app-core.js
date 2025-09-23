@@ -4763,6 +4763,12 @@ function setLanguage(lang) {
     backupHeading.textContent = texts[lang].backupHeading;
     backupHeading.setAttribute("data-help", texts[lang].backupHeadingHelp || texts[lang].backupHeading);
   }
+  if (projectBackupsHeading) {
+    var projectBackupsLabel = texts[lang].projectBackupsHeading || projectBackupsHeading.textContent;
+    projectBackupsHeading.textContent = projectBackupsLabel;
+    var projectBackupsHelp = texts[lang].projectBackupsHeadingHelp || projectBackupsLabel;
+    projectBackupsHeading.setAttribute("data-help", projectBackupsHelp);
+  }
   if (dataHeading) {
     dataHeading.textContent = texts[lang].dataHeading;
     var dataHelp = texts[lang].dataHeadingHelp || texts[lang].dataHeading;
@@ -11955,6 +11961,7 @@ var backupSettings = document.getElementById("backupSettings");
 var restoreSettings = document.getElementById("restoreSettings");
 var factoryResetButton = document.getElementById("factoryResetButton");
 var restoreSettingsInput = document.getElementById("restoreSettingsInput");
+var projectBackupsHeading = document.getElementById("projectBackupsHeading");
 var settingsShowAutoBackups = document.getElementById("settingsShowAutoBackups");
 var backupDiffToggleButton = document.getElementById("backupDiffToggleButton");
 var backupDiffSection = document.getElementById("backupDiffSection");

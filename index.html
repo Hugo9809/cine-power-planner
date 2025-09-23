@@ -1526,20 +1526,28 @@
         hidden
       >
         <h3 id="backupHeading">Backup &amp; Restore</h3>
-        <div class="form-row">
-          <label for="settingsShowAutoBackups" id="settingsShowAutoBackupsLabel">Show auto backups in project list</label>
-          <input type="checkbox" id="settingsShowAutoBackups" />
-          <button
-            type="button"
-            id="backupDiffToggleButton"
-            class="inline-form-button"
-            aria-expanded="false"
-            aria-controls="backupDiffSection"
-          >
-            Compare versions
-          </button>
-        </div>
         <section
+          id="projectBackupsSection"
+          class="project-backups"
+          aria-labelledby="projectBackupsHeading"
+        >
+          <div class="project-backups-header">
+            <h4 id="projectBackupsHeading">Project Backups</h4>
+            <button
+              type="button"
+              id="backupDiffToggleButton"
+              class="inline-form-button"
+              aria-expanded="false"
+              aria-controls="backupDiffSection"
+            >
+              Compare versions
+            </button>
+          </div>
+          <div class="form-row">
+            <label for="settingsShowAutoBackups" id="settingsShowAutoBackupsLabel">Show auto backups in project list</label>
+            <input type="checkbox" id="settingsShowAutoBackups" />
+          </div>
+          <section
           id="backupDiffSection"
           class="backup-diff-section"
           aria-labelledby="backupDiffHeading"

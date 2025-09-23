@@ -5,7 +5,11 @@
           autoGearSearchInput, setAutoGearSearchQuery,
           autoGearFilterScenarioSelect, setAutoGearScenarioFilter,
           autoGearFilterClearButton, clearAutoGearFilters,
-          clearUiCacheStorageEntries, __cineGlobal, humanizeKey */
+          clearUiCacheStorageEntries, __cineGlobal, humanizeKey,
+          autoGearConditionSelect, updateAutoGearConditionAddButtonState,
+          autoGearConditionAddButton, addAutoGearConditionFromPicker,
+          autoGearConditionList, removeAutoGearCondition,
+          handleAutoGearConditionShortcut */
 
 const temperaturePreferenceStorageKey =
   typeof TEMPERATURE_STORAGE_KEY === 'string'
