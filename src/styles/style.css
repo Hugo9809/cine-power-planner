@@ -3976,9 +3976,22 @@ body.light-mode #topBar select:focus-visible {
   font-variant-numeric: tabular-nums;
 }
 
+#temperatureNote th {
+  font-weight: var(--font-weight-bold);
+  background-color: var(--surface-color);
+}
+
+#temperatureNote td {
+  font-weight: var(--font-weight-light);
+}
+
 body:not(.light-mode) #temperatureNote th,
 body:not(.light-mode) #temperatureNote td {
   border-color: var(--border-strong-color);
+}
+
+body:not(.light-mode) #temperatureNote th {
+  background-color: var(--panel-bg);
 }
 
 /* Battery comparison section */
