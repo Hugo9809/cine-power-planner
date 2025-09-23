@@ -1589,69 +1589,80 @@
             <button type="button" id="backupDiffClose">Close</button>
           </div>
         </section>
-        <div class="button-row">
-          <button id="backupSettings">Backup</button>
-          <input type="file" id="restoreSettingsInput" accept="application/json" hidden />
-          <button id="restoreSettings">Restore</button>
-          <button id="restoreRehearsalButton">Restore rehearsal</button>
-          <button id="factoryResetButton">Factory reset</button>
-        </div>
         <section
-          id="restoreRehearsalSection"
-          class="restore-rehearsal"
-          aria-labelledby="restoreRehearsalHeading"
-          hidden
+          id="fullBackupSection"
+          class="full-backup-section"
+          aria-labelledby="fullBackupHeading"
+          aria-describedby="fullBackupDescription"
         >
-          <div class="restore-rehearsal-header">
-            <h4 id="restoreRehearsalHeading">Restore rehearsal</h4>
-            <button type="button" id="restoreRehearsalClose" class="inline-form-button">Close</button>
-          </div>
-          <p id="restoreRehearsalIntro" class="settings-hint">
-            Load a backup into a disposable workspace to verify it before running a full restore.
+          <h4 id="fullBackupHeading">Full Backup and Restore</h4>
+          <p id="fullBackupDescription" class="settings-hint">
+            Create complete archives, rehearse restores in a sandbox, or reset the planner safely.
           </p>
-          <fieldset class="restore-rehearsal-modes">
-            <legend id="restoreRehearsalModeLabel">Choose a rehearsal source</legend>
-            <label for="restoreRehearsalModeBackup" id="restoreRehearsalModeBackupLabel">
-              <input
-                type="radio"
-                name="restoreRehearsalMode"
-                id="restoreRehearsalModeBackup"
-                value="backup"
-                checked
-              />
-              <span id="restoreRehearsalModeBackupText">Full app backup (.json)</span>
-            </label>
-            <label for="restoreRehearsalModeProject" id="restoreRehearsalModeProjectLabel">
-              <input
-                type="radio"
-                name="restoreRehearsalMode"
-                id="restoreRehearsalModeProject"
-                value="project"
-              />
-              <span id="restoreRehearsalModeProjectText">Project bundle (.json)</span>
-            </label>
-          </fieldset>
-          <div class="form-row restore-rehearsal-file">
-            <label for="restoreRehearsalInput" id="restoreRehearsalFileLabel">Select file</label>
-            <input type="file" id="restoreRehearsalInput" accept="application/json" hidden />
-            <button type="button" id="restoreRehearsalBrowse">Choose file</button>
-            <p id="restoreRehearsalFileName" class="settings-hint" aria-live="polite">
-              No file selected yet.
-            </p>
+          <div class="button-row full-backup-actions">
+            <button id="backupSettings">Backup</button>
+            <input type="file" id="restoreSettingsInput" accept="application/json" hidden />
+            <button id="restoreSettings">Restore</button>
+            <button id="restoreRehearsalButton">Restore rehearsal</button>
+            <button id="factoryResetButton">Factory reset</button>
           </div>
-          <p id="restoreRehearsalStatus" class="settings-hint" aria-live="polite"></p>
-          <table id="restoreRehearsalTable" class="restore-rehearsal-table" hidden>
-            <caption id="restoreRehearsalTableCaption">Backup rehearsal comparison</caption>
-            <thead>
-              <tr>
-                <th scope="col" id="restoreRehearsalMetricHeader">Data</th>
-                <th scope="col" id="restoreRehearsalLiveHeader">Live profile</th>
-                <th scope="col" id="restoreRehearsalSandboxHeader">Sandbox import</th>
-                <th scope="col" id="restoreRehearsalDifferenceHeader">Difference</th>
-              </tr>
-            </thead>
-            <tbody id="restoreRehearsalTableBody"></tbody>
-          </table>
+          <section
+            id="restoreRehearsalSection"
+            class="restore-rehearsal"
+            aria-labelledby="restoreRehearsalHeading"
+            hidden
+          >
+            <div class="restore-rehearsal-header">
+              <h4 id="restoreRehearsalHeading">Restore rehearsal</h4>
+              <button type="button" id="restoreRehearsalClose" class="inline-form-button">Close</button>
+            </div>
+            <p id="restoreRehearsalIntro" class="settings-hint">
+              Load a backup into a disposable workspace to verify it before running a full restore.
+            </p>
+            <fieldset class="restore-rehearsal-modes">
+              <legend id="restoreRehearsalModeLabel">Choose a rehearsal source</legend>
+              <label for="restoreRehearsalModeBackup" id="restoreRehearsalModeBackupLabel">
+                <input
+                  type="radio"
+                  name="restoreRehearsalMode"
+                  id="restoreRehearsalModeBackup"
+                  value="backup"
+                  checked
+                />
+                <span id="restoreRehearsalModeBackupText">Full app backup (.json)</span>
+              </label>
+              <label for="restoreRehearsalModeProject" id="restoreRehearsalModeProjectLabel">
+                <input
+                  type="radio"
+                  name="restoreRehearsalMode"
+                  id="restoreRehearsalModeProject"
+                  value="project"
+                />
+                <span id="restoreRehearsalModeProjectText">Project bundle (.json)</span>
+              </label>
+            </fieldset>
+            <div class="form-row restore-rehearsal-file">
+              <label for="restoreRehearsalInput" id="restoreRehearsalFileLabel">Select file</label>
+              <input type="file" id="restoreRehearsalInput" accept="application/json" hidden />
+              <button type="button" id="restoreRehearsalBrowse">Choose file</button>
+              <p id="restoreRehearsalFileName" class="settings-hint" aria-live="polite">
+                No file selected yet.
+              </p>
+            </div>
+            <p id="restoreRehearsalStatus" class="settings-hint" aria-live="polite"></p>
+            <table id="restoreRehearsalTable" class="restore-rehearsal-table" hidden>
+              <caption id="restoreRehearsalTableCaption">Backup rehearsal comparison</caption>
+              <thead>
+                <tr>
+                  <th scope="col" id="restoreRehearsalMetricHeader">Data</th>
+                  <th scope="col" id="restoreRehearsalLiveHeader">Live profile</th>
+                  <th scope="col" id="restoreRehearsalSandboxHeader">Sandbox import</th>
+                  <th scope="col" id="restoreRehearsalDifferenceHeader">Difference</th>
+                </tr>
+              </thead>
+              <tbody id="restoreRehearsalTableBody"></tbody>
+            </table>
+          </section>
         </section>
       </section>
       <section
