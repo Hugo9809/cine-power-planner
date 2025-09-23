@@ -892,6 +892,8 @@ function isPinkModeActive() {
 }
 var pinkModeEnabled = false;
 var settingsInitialPinkMode = isPinkModeActive();
+var settingsInitialTemperatureUnit =
+  typeof temperatureUnit === 'string' ? temperatureUnit : 'celsius';
 function persistPinkModePreference(enabled) {
   pinkModeEnabled = !!enabled;
   applyPinkMode(pinkModeEnabled);
@@ -909,6 +911,29 @@ function revertSettingsPinkModeIfNeeded() {
     persistPinkModePreference(settingsInitialPinkMode);
   }
 }
+function rememberSettingsTemperatureUnitBaseline() {
+  if (typeof temperatureUnit === 'string') {
+    settingsInitialTemperatureUnit = temperatureUnit;
+  }
+}
+function revertSettingsTemperatureUnitIfNeeded() {
+  var baseline =
+    typeof settingsInitialTemperatureUnit === 'string'
+      ? settingsInitialTemperatureUnit
+      : 'celsius';
+  if (typeof applyTemperatureUnitPreference === 'function') {
+    if (temperatureUnit !== baseline) {
+      applyTemperatureUnitPreference(baseline, {
+        persist: false,
+        forceUpdate: true
+      });
+    } else if (settingsTemperatureUnit) {
+      settingsTemperatureUnit.value = baseline;
+    }
+  } else if (settingsTemperatureUnit) {
+    settingsTemperatureUnit.value = baseline;
+  }
+}
 try {
   pinkModeEnabled = localStorage.getItem('pinkMode') === 'true';
 } catch (e) {
@@ -916,6 +941,7 @@ try {
 }
 applyPinkMode(pinkModeEnabled);
 rememberSettingsPinkModeBaseline();
+rememberSettingsTemperatureUnitBaseline();
 if (pinkModeToggle) {
   pinkModeToggle.addEventListener("click", function () {
     persistPinkModePreference(!document.body.classList.contains('pink-mode'));
@@ -926,10 +952,18 @@ if (settingsPinkMode) {
     persistPinkModePreference(settingsPinkMode.checked);
   });
 }
+if (settingsTemperatureUnit) {
+  settingsTemperatureUnit.addEventListener('change', function () {
+    applyTemperatureUnitPreference(settingsTemperatureUnit.value, {
+      persist: false
+    });
+  });
+}
 if (settingsButton && settingsDialog) {
   settingsButton.addEventListener('click', function () {
     prevAccentColor = accentColor;
     rememberSettingsPinkModeBaseline();
+    rememberSettingsTemperatureUnitBaseline();
     if (settingsLanguage) settingsLanguage.value = currentLang;
     if (settingsDarkMode) settingsDarkMode.checked = document.body.classList.contains('dark-mode');
     if (settingsPinkMode) settingsPinkMode.checked = document.body.classList.contains('pink-mode');
@@ -986,6 +1020,8 @@ if (settingsButton && settingsDialog) {
     settingsCancel.addEventListener('click', function () {
       revertSettingsPinkModeIfNeeded();
       rememberSettingsPinkModeBaseline();
+      revertSettingsTemperatureUnitIfNeeded();
+      rememberSettingsTemperatureUnitBaseline();
       revertAccentColor();
       if (settingsLogo) settingsLogo.value = '';
       if (settingsLogoPreview) loadStoredLogoPreview();
@@ -1058,6 +1094,7 @@ if (settingsButton && settingsDialog) {
       }
       if (settingsTemperatureUnit) {
         applyTemperatureUnitPreference(settingsTemperatureUnit.value);
+        rememberSettingsTemperatureUnitBaseline();
       }
       if (settingsFontSize) {
         var size = settingsFontSize.value;
@@ -1100,6 +1137,7 @@ if (settingsButton && settingsDialog) {
       }
       closeAutoGearEditor();
       rememberSettingsPinkModeBaseline();
+      rememberSettingsTemperatureUnitBaseline();
       closeDialog(settingsDialog);
       settingsDialog.setAttribute('hidden', '');
     });
@@ -1108,6 +1146,8 @@ if (settingsButton && settingsDialog) {
     if (e.target === settingsDialog) {
       revertSettingsPinkModeIfNeeded();
       rememberSettingsPinkModeBaseline();
+      revertSettingsTemperatureUnitIfNeeded();
+      rememberSettingsTemperatureUnitBaseline();
       revertAccentColor();
       if (settingsLogo) settingsLogo.value = '';
       if (settingsLogoPreview) loadStoredLogoPreview();
@@ -1120,6 +1160,8 @@ if (settingsButton && settingsDialog) {
     e.preventDefault();
     revertSettingsPinkModeIfNeeded();
     rememberSettingsPinkModeBaseline();
+    revertSettingsTemperatureUnitIfNeeded();
+    rememberSettingsTemperatureUnitBaseline();
     revertAccentColor();
     if (settingsLogo) settingsLogo.value = '';
     if (settingsLogoPreview) loadStoredLogoPreview();
@@ -3864,6 +3906,8 @@ if (helpButton && helpDialog) {
       e.preventDefault();
       revertSettingsPinkModeIfNeeded();
       rememberSettingsPinkModeBaseline();
+      revertSettingsTemperatureUnitIfNeeded();
+      rememberSettingsTemperatureUnitBaseline();
       revertAccentColor();
       closeDialog(settingsDialog);
       settingsDialog.setAttribute('hidden', '');
