@@ -1689,23 +1689,279 @@
         >
           <h3><span class="help-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xF139;</span>Features at a Glance</h3>
           <ul>
-            <li>Plan complete camera rigs and compute power draw and battery life.</li>
-            <li>Save multiple projects, export or import them and print overviews.</li>
-            <li>Visualize power and video connections with an interactive diagram—drag to rearrange, pan, snap to grid, reset the view, zoom and download the layout.</li>
-            <li>Compare battery runtimes and check against safe output limits.</li>
-            <li>Customize the device database with your own gear.</li>
-            <li>Star frequently used devices to pin them at the top of dropdowns.</li>
-            <li>Generate categorized gear lists and printable project overviews with one click.</li>
-            <li>Refine runtime estimates with user feedback and a visual weighting dashboard.</li>
-            <li>Use the global search bar to jump straight to features, device selectors or help topics from anywhere.</li>
-            <li>Open a searchable help dialog with step-by-step guides and FAQ.</li>
-            <li>Switch languages, toggle dark or playful pink themes and work fully offline. Theme settings persist.</li>
-            <li>Personalize the interface from Settings—adjust accent color, base font size and typeface, toggle high contrast and upload a custom logo that appears in backups and printable overviews.</li>
-            <li>Start fresh at any time with the Factory reset button in Settings. It automatically downloads a backup before removing saved projects, custom devices, favorites and runtime feedback in one step.</li>
-            <li>Automatic snapshots save the current project every 10 minutes and hourly full-app backups download timestamped JSON archives so you always have a recovery point.</li>
-            <li>Force reload clears cached files and updates the app without deleting saved data.</li>
-            <li>Save automatic gear rules as presets, recover them from background backups and include them in shared project bundles with per-import controls.</li>
-            <li>Cameras with both V- and B-Mount plates let you swap battery types; the list updates automatically.</li>
+            <li>
+              Plan complete camera rigs in
+              <a
+                class="help-link"
+                href="#setup-config"
+                data-help-target="#setup-config"
+                data-help-highlight="#setup-config"
+              ><em>Configure Devices</em></a>
+              and review draw and runtime in the
+              <a
+                class="help-link"
+                href="#resultsHeading"
+                data-help-target="#resultsHeading"
+                data-help-highlight="#results"
+              ><em>Power Summary</em></a>
+              panel.
+            </li>
+            <li>
+              Save multiple projects with
+              <a
+                class="help-link button-link"
+                href="#saveSetupBtn"
+                data-help-target="#saveSetupBtn"
+                data-help-highlight="#setup-manager"
+              ><strong>Save</strong></a>
+              , export or import them via
+              <a
+                class="help-link button-link"
+                href="#shareSetupBtn"
+                data-help-target="#shareSetupBtn"
+                data-help-highlight="#setup-manager"
+              ><strong>Export Project</strong></a>
+              and
+              <a
+                class="help-link button-link"
+                href="#applySharedLinkBtn"
+                data-help-target="#applySharedLinkBtn"
+                data-help-highlight="#setup-manager"
+              ><strong>Import Project</strong></a>
+              , then print summaries with
+              <a
+                class="help-link button-link"
+                href="#generateOverviewBtn"
+                data-help-target="#generateOverviewBtn"
+                data-help-highlight="#setup-manager"
+              ><strong>Generate Overview</strong></a>
+              .
+            </li>
+            <li>
+              Visualize power and video connections with the
+              <a
+                class="help-link"
+                href="#setupDiagramHeading"
+                data-help-target="#setupDiagramHeading"
+                data-help-highlight="#setupDiagram"
+              >Connection Diagram</a>
+              —drag nodes to rearrange them and use the toolbar to pan, snap to grid, zoom or download the layout.
+            </li>
+            <li>
+              Compare runtimes and output limits in the
+              <a
+                class="help-link"
+                href="#batteryComparisonHeading"
+                data-help-target="#batteryComparisonHeading"
+                data-help-highlight="#batteryComparison"
+              >Battery Comparison</a>
+              view.
+            </li>
+            <li>
+              Customize the database with your own gear through the
+              <a
+                class="help-link"
+                href="#deviceManagerHeading"
+                data-help-target="#deviceManagerHeading"
+                data-help-highlight="#device-manager"
+              >Device Library</a>
+              editor.
+            </li>
+            <li>
+              Star frequently used devices in selectors like
+              <a
+                class="help-link"
+                href="#cameraSelect"
+                data-help-target="#cameraSelect"
+                data-help-highlight="#setup-config"
+              >Camera</a>
+              to pin them at the top for quicker access on every visit.
+            </li>
+            <li>
+              Generate categorized gear lists and printable summaries with
+              <a
+                class="help-link button-link"
+                href="#generateGearListBtn"
+                data-help-target="#generateGearListBtn"
+                data-help-highlight="#setup-manager"
+              ><strong>Generate Gear List</strong></a>
+              and
+              <a
+                class="help-link button-link"
+                href="#generateOverviewBtn"
+                data-help-target="#generateOverviewBtn"
+                data-help-highlight="#setup-manager"
+              ><strong>Generate Overview</strong></a>
+              .
+            </li>
+            <li>
+              Refine runtime estimates with
+              <a
+                class="help-link button-link"
+                href="#runtimeFeedbackBtn"
+                data-help-target="#runtimeFeedbackBtn"
+              ><strong>Runtime feedback</strong></a>
+              submissions and the weighting dashboard inside the dialog.
+            </li>
+            <li>
+              Use the
+              <a
+                class="help-link"
+                href="#featureSearch"
+                data-help-target="#featureSearch"
+              >global search bar</a>
+              to jump straight to features, device selectors or help topics from anywhere.
+            </li>
+            <li>
+              Open the searchable help dialog with the
+              <a
+                class="help-link button-link"
+                href="#helpButton"
+                data-help-target="#helpButton"
+              ><strong>Help</strong></a>
+              button for step-by-step guides and FAQ articles.
+            </li>
+            <li>
+              Switch languages from the
+              <a
+                class="help-link"
+                href="#languageSelect"
+                data-help-target="#languageSelect"
+              >language dropdown</a>
+              , toggle
+              <a
+                class="help-link"
+                href="#darkModeToggle"
+                data-help-target="#darkModeToggle"
+              >dark mode</a>
+              or
+              <a
+                class="help-link"
+                href="#pinkModeToggle"
+                data-help-target="#pinkModeToggle"
+              >Pink Mode</a>
+              and watch the
+              <a
+                class="help-link"
+                href="#offlineIndicator"
+                data-help-target="#offlineIndicator"
+              >Offline indicator</a>
+              confirm the planner keeps working without a connection.
+            </li>
+            <li>
+              Personalize the interface from
+              <a
+                class="help-link button-link"
+                href="#settingsButton"
+                data-help-target="#settingsButton"
+              ><strong>Settings</strong></a>
+              —adjust the
+              <a
+                class="help-link"
+                href="#accentColorInput"
+                data-help-target="#accentColorInput"
+              >accent color</a>
+              ,
+              <a
+                class="help-link"
+                href="#settingsFontSize"
+                data-help-target="#settingsFontSize"
+              >base font size</a>
+              and
+              <a
+                class="help-link"
+                href="#settingsFontFamily"
+                data-help-target="#settingsFontFamily"
+              >typeface</a>
+              , toggle
+              <a
+                class="help-link"
+                href="#settingsHighContrast"
+                data-help-target="#settingsHighContrast"
+              >high contrast</a>
+              and upload a
+              <a
+                class="help-link"
+                href="#settingsLogo"
+                data-help-target="#settingsLogo"
+              >custom logo</a>
+              for backups and printouts.
+            </li>
+            <li>
+              Start fresh with the
+              <a
+                class="help-link"
+                href="#factoryResetButton"
+                data-help-target="#factoryResetButton"
+              >Factory reset</a>
+              safeguard in Settings—it automatically captures a
+              <a
+                class="help-link"
+                href="#backupSettings"
+                data-help-target="#backupSettings"
+              >Backup</a>
+              before clearing saved projects, custom devices, favorites and runtime feedback.
+            </li>
+            <li>
+              Automatic snapshots save the active project every 10 minutes; enable
+              <a
+                class="help-link"
+                href="#settingsShowAutoBackups"
+                data-help-target="#settingsShowAutoBackups"
+              >Show auto backups in project list</a>
+              to recover them instantly and trigger manual safety copies with
+              <a
+                class="help-link"
+                href="#backupSettings"
+                data-help-target="#backupSettings"
+              ><strong>Backup</strong></a>
+              whenever you finish a milestone.
+            </li>
+            <li>
+              Use
+              <a
+                class="help-link"
+                href="#reloadButton"
+                data-help-target="#reloadButton"
+              ><em>Force reload</em></a>
+              to refresh cached files and update the app without deleting saved data.
+            </li>
+            <li>
+              Manage automatic gear rules with the
+              <a
+                class="help-link"
+                href="#autoGearPresetSelect"
+                data-help-target="#autoGearPresetSelect"
+              ><strong>Preset</strong></a>
+              menu, surface 10-minute snapshots via
+              <a
+                class="help-link"
+                href="#autoGearShowBackups"
+                data-help-target="#autoGearShowBackups"
+              ><strong>Show automatic backups</strong></a>
+              and move rules between machines using
+              <a
+                class="help-link"
+                href="#autoGearExport"
+                data-help-target="#autoGearExport"
+              ><strong>Export rules</strong></a>
+              and
+              <a
+                class="help-link"
+                href="#autoGearImport"
+                data-help-target="#autoGearImport"
+              ><strong>Import rules</strong></a>
+              .
+            </li>
+            <li>
+              Cameras with both mounts let you swap plates directly from the
+              <a
+                class="help-link"
+                href="#batteryPlateSelect"
+                data-help-target="#batteryPlateSelect"
+              >Battery Plate</a>
+              selector—the available battery list updates automatically.
+            </li>
             <li>
               Ready to explore? Jump to the
               <a
@@ -3109,7 +3365,14 @@
             data-help-keywords="offline pwa cached caching service worker airplane mode"
           >
             <summary>Does the planner work offline?</summary>
-            <p>Yes. Once the fonts and database are cached on first load, all features continue to work without an internet connection.</p>
+            <p>
+              Yes. Once the fonts and database are cached on first load, all features continue to work without an internet
+              connection. The
+              <a class="help-link" href="#offlineIndicator" data-help-target="#offlineIndicator">Offline indicator</a>
+              confirms when the app is running locally, and you can refresh assets without losing saved data through
+              <a class="help-link" href="#reloadButton" data-help-target="#reloadButton"><em>Force reload</em></a>
+              whenever you reconnect.
+            </p>
           </details>
           <details
             class="faq-item"
@@ -3123,6 +3386,18 @@
               <li><strong>iOS/iPadOS Safari:</strong> Tap the <em>Share</em> button and select <em>Add to Home Screen</em>.</li>
               <li>After installation it runs offline and updates automatically.</li>
             </ul>
+            <p>
+              Tap the
+              <a
+                class="help-link button-link"
+                href="#installPromptBannerAction"
+                data-help-target="#installPromptBannerAction"
+                data-help-highlight="#installPromptBanner"
+              ><strong>Install</strong></a>
+              banner when it appears or open the
+              <a class="help-link" href="#installGuideDialog" data-help-target="#installGuideDialog">install guide</a>
+              for step-by-step migration tips.
+            </p>
           </details>
           <details
             class="faq-item"
