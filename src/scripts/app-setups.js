@@ -1,4 +1,4 @@
-/* global getManualDownloadFallbackMessage, setButtonLabelWithIcon */
+/* global getManualDownloadFallbackMessage */
 
 // --- NEW SETUP MANAGEMENT FUNCTIONS ---
 
@@ -3724,9 +3724,7 @@ function updateAutoGearHighlightToggleButton() {
     if (!toggle) return;
     const label = getAutoGearHighlightLabel();
     const help = getAutoGearHighlightHelp();
-    if (typeof setButtonLabelWithIcon === 'function' && ICON_GLYPHS && ICON_GLYPHS.brightness) {
-        setButtonLabelWithIcon(toggle, label, ICON_GLYPHS.brightness);
-    } else if (typeof toggle.textContent === 'string') {
+    if (typeof toggle.textContent === 'string') {
         toggle.textContent = label;
     } else {
         toggle.innerHTML = escapeHtml(label);
