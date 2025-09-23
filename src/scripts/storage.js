@@ -943,21 +943,27 @@ function removeDuplicateAutoBackupEntries(container, entries) {
   }
 
   const removedKeys = [];
-  const seenSignatures = new Map();
+  const seenSignaturesByLabel = new Map();
 
   for (let index = entries.length - 1; index >= 0; index -= 1) {
     const entry = entries[index];
     if (!entry || typeof entry.key !== 'string') {
       continue;
     }
-    const signature = createStableValueSignature(container[entry.key]);
-    if (seenSignatures.has(signature)) {
+    const labelKey = typeof entry.label === 'string' ? entry.label : '';
+    const labelSignatures = seenSignaturesByLabel.get(labelKey) || new Set();
+    const value = Object.prototype.hasOwnProperty.call(container, entry.key)
+      ? container[entry.key]
+      : undefined;
+    const signature = createStableValueSignature(value);
+    if (labelSignatures.has(signature)) {
       delete container[entry.key];
       entries.splice(index, 1);
       removedKeys.push(entry.key);
-    } else {
-      seenSignatures.set(signature, entry.key);
+      continue;
     }
+    labelSignatures.add(signature);
+    seenSignaturesByLabel.set(labelKey, labelSignatures);
   }
 
   return removedKeys;
