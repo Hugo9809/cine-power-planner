@@ -1267,6 +1267,34 @@ if (autoGearAddRuleBtn) {
     openAutoGearEditor();
   });
 }
+if (autoGearConditionSelect) {
+  autoGearConditionSelect.addEventListener('change', () => {
+    updateAutoGearConditionAddButtonState();
+  });
+}
+if (autoGearConditionAddButton) {
+  autoGearConditionAddButton.addEventListener('click', () => {
+    addAutoGearConditionFromPicker();
+  });
+}
+if (autoGearConditionList) {
+  autoGearConditionList.addEventListener('click', event => {
+    const target = event.target instanceof HTMLElement
+      ? event.target.closest('button')
+      : null;
+    if (!target) return;
+    if (target.classList.contains('auto-gear-condition-remove')) {
+      const condition = target.dataset.condition || '';
+      if (condition) {
+        removeAutoGearCondition(condition, { focusPicker: true });
+      }
+      return;
+    }
+    if (target.classList.contains('auto-gear-condition-add')) {
+      handleAutoGearConditionShortcut();
+    }
+  });
+}
 if (autoGearResetFactoryButton) {
   autoGearResetFactoryButton.addEventListener('click', resetAutoGearRulesToFactoryAdditions);
 }

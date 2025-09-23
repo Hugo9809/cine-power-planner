@@ -189,6 +189,12 @@ const texts = {
     autoGearFilterClear: "Clear filters",
     autoGearRuleNameLabel: "Rule name",
     autoGearRuleNameHelp: "Optional label displayed in the rules list.",
+    autoGearConditionSelectLabel: "Add a condition",
+    autoGearConditionSelectHelp: "Reveal the selectors you want to use as rule conditions.",
+    autoGearAddCondition: "Add condition",
+    autoGearConditionPlaceholder: "Choose a condition",
+    autoGearConditionAddShortcut: "Add another condition",
+    autoGearConditionRemove: "Remove this condition",
     autoGearScenariosLabel: "Required scenarios",
     autoGearScenariosHelp:
       "Pick every scenario that must be selected for this rule to apply. Hold Ctrl (Cmd on Mac) to choose multiple.",

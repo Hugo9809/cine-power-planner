@@ -2036,6 +2036,79 @@ body.pink-mode:not(.dark-mode) #settingsPanel-autoGear .auto-gear-rule-items-lab
   display: none !important;
 }
 
+.auto-gear-conditions-row {
+  padding: 0;
+}
+
+.auto-gear-conditions {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.auto-gear-condition-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.auto-gear-condition-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.auto-gear-condition-controls:focus-within {
+  outline: 2px solid var(--accent-color, #007aff);
+  outline-offset: 4px;
+  border-radius: var(--border-radius);
+}
+
+.auto-gear-condition-select {
+  min-width: min(220px, 100%);
+}
+
+.auto-gear-condition-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.auto-gear-condition {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid var(--panel-border);
+  border-radius: var(--border-radius);
+  background: var(--surface-color);
+}
+
+.auto-gear-condition[hidden] {
+  display: none !important;
+}
+
+.auto-gear-condition-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.auto-gear-condition-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.auto-gear-condition-actions button {
+  min-width: 40px;
+  padding-inline: 10px;
+}
+
 .auto-gear-editor-columns {
   display: flex;
   flex-direction: column;

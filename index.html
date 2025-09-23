@@ -1085,104 +1085,319 @@
             <label for="autoGearRuleName" id="autoGearRuleNameLabel">Rule name</label>
             <input type="text" id="autoGearRuleName" />
           </div>
-          <div class="form-row">
-            <label for="autoGearScenarios" id="autoGearScenariosLabel">Required scenarios</label>
-            <select
-              id="autoGearScenarios"
-              class="auto-gear-scenarios auto-gear-multiselect"
-              multiple
-              size="10"
-            ></select>
-          </div>
-          <div class="form-row">
-            <label for="autoGearMattebox" id="autoGearMatteboxLabel">Mattebox options</label>
-            <select
-              id="autoGearMattebox"
-              class="auto-gear-mattebox auto-gear-multiselect"
-              multiple
-              size="10"
-            ></select>
-          </div>
-          <div class="form-row">
-            <label for="autoGearCameraHandle" id="autoGearCameraHandleLabel">Camera handles</label>
-            <select
-              id="autoGearCameraHandle"
-              class="auto-gear-camera-handle auto-gear-multiselect"
-              multiple
-              size="10"
-            ></select>
-          </div>
-          <div class="form-row">
-            <label for="autoGearViewfinderExtension" id="autoGearViewfinderExtensionLabel">Viewfinder extension</label>
-            <select
-              id="autoGearViewfinderExtension"
-              class="auto-gear-viewfinder-extension auto-gear-multiselect"
-              multiple
-              size="10"
-            ></select>
-          </div>
-          <div class="form-row" hidden>
-            <label for="autoGearVideoDistribution" id="autoGearVideoDistributionLabel">Video distribution</label>
-            <select
-              id="autoGearVideoDistribution"
-              class="auto-gear-video-distribution auto-gear-multiselect"
-              multiple
-              size="10"
-            ></select>
-          </div>
-          <div class="form-row">
-            <label for="autoGearCamera" id="autoGearCameraLabel">Camera</label>
-            <select
-              id="autoGearCamera"
-              class="auto-gear-camera auto-gear-multiselect auto-gear-device-multiselect"
-              multiple
-              size="10"
-            ></select>
-          </div>
-          <div class="form-row" hidden>
-            <label for="autoGearMonitor" id="autoGearMonitorLabel">Onboard monitor</label>
-            <select
-              id="autoGearMonitor"
-              class="auto-gear-monitor auto-gear-multiselect auto-gear-device-multiselect"
-              multiple
-              size="10"
-            ></select>
-          </div>
-          <div class="form-row" hidden>
-            <label for="autoGearWireless" id="autoGearWirelessLabel">Wireless transmitter</label>
-            <select
-              id="autoGearWireless"
-              class="auto-gear-wireless auto-gear-multiselect auto-gear-device-multiselect"
-              multiple
-              size="10"
-            ></select>
-          </div>
-          <div class="form-row">
-            <label for="autoGearMotors" id="autoGearMotorsLabel">FIZ motors</label>
-            <select
-              id="autoGearMotors"
-              class="auto-gear-motors auto-gear-multiselect auto-gear-device-multiselect"
-              multiple
-              size="10"
-            ></select>
-          </div>
-          <div class="form-row">
-            <label for="autoGearControllers" id="autoGearControllersLabel">FIZ controllers</label>
-            <select
-              id="autoGearControllers"
-              class="auto-gear-controllers auto-gear-multiselect auto-gear-device-multiselect"
-              multiple
-              size="10"
-            ></select>
-          </div>
-          <div class="form-row">
-            <label for="autoGearDistance" id="autoGearDistanceLabel">FIZ distance devices</label>
-            <select
-              id="autoGearDistance"
-              class="auto-gear-distance auto-gear-multiselect"
-              multiple
-              size="10"
-            ></select>
+          <div class="form-row auto-gear-conditions-row">
+            <div id="autoGearConditions" class="auto-gear-conditions">
+              <div id="autoGearConditionControls" class="auto-gear-condition-controls">
+                <label for="autoGearConditionSelect" id="autoGearConditionSelectLabel">Add a condition</label>
+                <div class="auto-gear-condition-picker">
+                  <select id="autoGearConditionSelect" class="auto-gear-condition-select">
+                    <option value="">Choose a condition</option>
+                    <option value="scenarios">Required scenarios</option>
+                    <option value="mattebox">Mattebox options</option>
+                    <option value="cameraHandle">Camera handles</option>
+                    <option value="viewfinderExtension">Viewfinder extension</option>
+                    <option value="videoDistribution">Video distribution</option>
+                    <option value="camera">Camera</option>
+                    <option value="monitor">Onboard monitor</option>
+                    <option value="wireless">Wireless transmitter</option>
+                    <option value="motors">FIZ motors</option>
+                    <option value="controllers">FIZ controllers</option>
+                    <option value="distance">FIZ distance devices</option>
+                  </select>
+                  <button type="button" id="autoGearConditionAdd">Add condition</button>
+                </div>
+              </div>
+              <div id="autoGearConditionList" class="auto-gear-condition-list">
+                <section
+                  id="autoGearCondition-scenarios"
+                  class="auto-gear-condition"
+                  data-condition="scenarios"
+                  hidden
+                  aria-hidden="true"
+                >
+                  <div class="auto-gear-condition-header">
+                    <label for="autoGearScenarios" id="autoGearScenariosLabel">Required scenarios</label>
+                    <div class="auto-gear-condition-actions">
+                      <button type="button" class="auto-gear-condition-add" data-action="add">Add</button>
+                      <button
+                        type="button"
+                        class="auto-gear-condition-remove"
+                        data-action="remove"
+                        data-condition="scenarios"
+                      >Remove</button>
+                    </div>
+                  </div>
+                  <select
+                    id="autoGearScenarios"
+                    class="auto-gear-scenarios auto-gear-multiselect"
+                    multiple
+                    size="10"
+                  ></select>
+                </section>
+                <section
+                  id="autoGearCondition-mattebox"
+                  class="auto-gear-condition"
+                  data-condition="mattebox"
+                  hidden
+                  aria-hidden="true"
+                >
+                  <div class="auto-gear-condition-header">
+                    <label for="autoGearMattebox" id="autoGearMatteboxLabel">Mattebox options</label>
+                    <div class="auto-gear-condition-actions">
+                      <button type="button" class="auto-gear-condition-add" data-action="add">Add</button>
+                      <button
+                        type="button"
+                        class="auto-gear-condition-remove"
+                        data-action="remove"
+                        data-condition="mattebox"
+                      >Remove</button>
+                    </div>
+                  </div>
+                  <select
+                    id="autoGearMattebox"
+                    class="auto-gear-mattebox auto-gear-multiselect"
+                    multiple
+                    size="10"
+                  ></select>
+                </section>
+                <section
+                  id="autoGearCondition-cameraHandle"
+                  class="auto-gear-condition"
+                  data-condition="cameraHandle"
+                  hidden
+                  aria-hidden="true"
+                >
+                  <div class="auto-gear-condition-header">
+                    <label for="autoGearCameraHandle" id="autoGearCameraHandleLabel">Camera handles</label>
+                    <div class="auto-gear-condition-actions">
+                      <button type="button" class="auto-gear-condition-add" data-action="add">Add</button>
+                      <button
+                        type="button"
+                        class="auto-gear-condition-remove"
+                        data-action="remove"
+                        data-condition="cameraHandle"
+                      >Remove</button>
+                    </div>
+                  </div>
+                  <select
+                    id="autoGearCameraHandle"
+                    class="auto-gear-camera-handle auto-gear-multiselect"
+                    multiple
+                    size="10"
+                  ></select>
+                </section>
+                <section
+                  id="autoGearCondition-viewfinderExtension"
+                  class="auto-gear-condition"
+                  data-condition="viewfinderExtension"
+                  hidden
+                  aria-hidden="true"
+                >
+                  <div class="auto-gear-condition-header">
+                    <label for="autoGearViewfinderExtension" id="autoGearViewfinderExtensionLabel">
+                      Viewfinder extension
+                    </label>
+                    <div class="auto-gear-condition-actions">
+                      <button type="button" class="auto-gear-condition-add" data-action="add">Add</button>
+                      <button
+                        type="button"
+                        class="auto-gear-condition-remove"
+                        data-action="remove"
+                        data-condition="viewfinderExtension"
+                      >Remove</button>
+                    </div>
+                  </div>
+                  <select
+                    id="autoGearViewfinderExtension"
+                    class="auto-gear-viewfinder-extension auto-gear-multiselect"
+                    multiple
+                    size="10"
+                  ></select>
+                </section>
+                <section
+                  id="autoGearCondition-videoDistribution"
+                  class="auto-gear-condition"
+                  data-condition="videoDistribution"
+                  hidden
+                  aria-hidden="true"
+                >
+                  <div class="auto-gear-condition-header">
+                    <label for="autoGearVideoDistribution" id="autoGearVideoDistributionLabel">Video distribution</label>
+                    <div class="auto-gear-condition-actions">
+                      <button type="button" class="auto-gear-condition-add" data-action="add">Add</button>
+                      <button
+                        type="button"
+                        class="auto-gear-condition-remove"
+                        data-action="remove"
+                        data-condition="videoDistribution"
+                      >Remove</button>
+                    </div>
+                  </div>
+                  <select
+                    id="autoGearVideoDistribution"
+                    class="auto-gear-video-distribution auto-gear-multiselect"
+                    multiple
+                    size="10"
+                  ></select>
+                </section>
+                <section
+                  id="autoGearCondition-camera"
+                  class="auto-gear-condition"
+                  data-condition="camera"
+                  hidden
+                  aria-hidden="true"
+                >
+                  <div class="auto-gear-condition-header">
+                    <label for="autoGearCamera" id="autoGearCameraLabel">Camera</label>
+                    <div class="auto-gear-condition-actions">
+                      <button type="button" class="auto-gear-condition-add" data-action="add">Add</button>
+                      <button
+                        type="button"
+                        class="auto-gear-condition-remove"
+                        data-action="remove"
+                        data-condition="camera"
+                      >Remove</button>
+                    </div>
+                  </div>
+                  <select
+                    id="autoGearCamera"
+                    class="auto-gear-camera auto-gear-multiselect auto-gear-device-multiselect"
+                    multiple
+                    size="10"
+                  ></select>
+                </section>
+                <section
+                  id="autoGearCondition-monitor"
+                  class="auto-gear-condition"
+                  data-condition="monitor"
+                  hidden
+                  aria-hidden="true"
+                >
+                  <div class="auto-gear-condition-header">
+                    <label for="autoGearMonitor" id="autoGearMonitorLabel">Onboard monitor</label>
+                    <div class="auto-gear-condition-actions">
+                      <button type="button" class="auto-gear-condition-add" data-action="add">Add</button>
+                      <button
+                        type="button"
+                        class="auto-gear-condition-remove"
+                        data-action="remove"
+                        data-condition="monitor"
+                      >Remove</button>
+                    </div>
+                  </div>
+                  <select
+                    id="autoGearMonitor"
+                    class="auto-gear-monitor auto-gear-multiselect auto-gear-device-multiselect"
+                    multiple
+                    size="10"
+                  ></select>
+                </section>
+                <section
+                  id="autoGearCondition-wireless"
+                  class="auto-gear-condition"
+                  data-condition="wireless"
+                  hidden
+                  aria-hidden="true"
+                >
+                  <div class="auto-gear-condition-header">
+                    <label for="autoGearWireless" id="autoGearWirelessLabel">Wireless transmitter</label>
+                    <div class="auto-gear-condition-actions">
+                      <button type="button" class="auto-gear-condition-add" data-action="add">Add</button>
+                      <button
+                        type="button"
+                        class="auto-gear-condition-remove"
+                        data-action="remove"
+                        data-condition="wireless"
+                      >Remove</button>
+                    </div>
+                  </div>
+                  <select
+                    id="autoGearWireless"
+                    class="auto-gear-wireless auto-gear-multiselect auto-gear-device-multiselect"
+                    multiple
+                    size="10"
+                  ></select>
+                </section>
+                <section
+                  id="autoGearCondition-motors"
+                  class="auto-gear-condition"
+                  data-condition="motors"
+                  hidden
+                  aria-hidden="true"
+                >
+                  <div class="auto-gear-condition-header">
+                    <label for="autoGearMotors" id="autoGearMotorsLabel">FIZ motors</label>
+                    <div class="auto-gear-condition-actions">
+                      <button type="button" class="auto-gear-condition-add" data-action="add">Add</button>
+                      <button
+                        type="button"
+                        class="auto-gear-condition-remove"
+                        data-action="remove"
+                        data-condition="motors"
+                      >Remove</button>
+                    </div>
+                  </div>
+                  <select
+                    id="autoGearMotors"
+                    class="auto-gear-motors auto-gear-multiselect auto-gear-device-multiselect"
+                    multiple
+                    size="10"
+                  ></select>
+                </section>
+                <section
+                  id="autoGearCondition-controllers"
+                  class="auto-gear-condition"
+                  data-condition="controllers"
+                  hidden
+                  aria-hidden="true"
+                >
+                  <div class="auto-gear-condition-header">
+                    <label for="autoGearControllers" id="autoGearControllersLabel">FIZ controllers</label>
+                    <div class="auto-gear-condition-actions">
+                      <button type="button" class="auto-gear-condition-add" data-action="add">Add</button>
+                      <button
+                        type="button"
+                        class="auto-gear-condition-remove"
+                        data-action="remove"
+                        data-condition="controllers"
+                      >Remove</button>
+                    </div>
+                  </div>
+                  <select
+                    id="autoGearControllers"
+                    class="auto-gear-controllers auto-gear-multiselect auto-gear-device-multiselect"
+                    multiple
+                    size="10"
+                  ></select>
+                </section>
+                <section
+                  id="autoGearCondition-distance"
+                  class="auto-gear-condition"
+                  data-condition="distance"
+                  hidden
+                  aria-hidden="true"
+                >
+                  <div class="auto-gear-condition-header">
+                    <label for="autoGearDistance" id="autoGearDistanceLabel">FIZ distance devices</label>
+                    <div class="auto-gear-condition-actions">
+                      <button type="button" class="auto-gear-condition-add" data-action="add">Add</button>
+                      <button
+                        type="button"
+                        class="auto-gear-condition-remove"
+                        data-action="remove"
+                        data-condition="distance"
+                      >Remove</button>
+                    </div>
+                  </div>
+                  <select
+                    id="autoGearDistance"
+                    class="auto-gear-distance auto-gear-multiselect"
+                    multiple
+                    size="10"
+                  ></select>
+                </section>
+              </div>
+            </div>
           </div>
           <div class="auto-gear-editor-columns">
             <div class="auto-gear-column">
