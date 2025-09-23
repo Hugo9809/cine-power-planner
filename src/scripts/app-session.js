@@ -1620,7 +1620,7 @@ function sanitizeBackupPayload(raw) {
   return text;
 }
 
-const BACKUP_STORAGE_KEY_PREFIXES = ['cameraPowerPlanner_'];
+const BACKUP_STORAGE_KEY_PREFIXES = ['cameraPowerPlanner_', 'cinePowerPlanner_'];
 const BACKUP_STORAGE_KNOWN_KEYS = new Set([
   'darkMode',
   'pinkMode',

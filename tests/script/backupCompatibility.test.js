@@ -79,5 +79,29 @@ describe('backup compatibility utilities', () => {
     expect(sections.data.fullBackups).toEqual([{ createdAt: '2023-12-31T00:00:00.000Z' }]);
     expect(sections.data.schemaCache).toBe('{"checksum":"abc123"}');
   });
+
+  test('extractBackupSections keeps cinePowerPlanner_* storage entries from the root object', () => {
+    const { extractBackupSections } = loadApp();
+
+    const legacyBackup = {
+      cinePowerPlanner_setups: {
+        Main: { name: 'Main', items: ['Camera A'] },
+      },
+      cinePowerPlanner_session: { activeSetup: 'Main' },
+      unrelated: 'ignore-me',
+    };
+
+    const sections = extractBackupSections(legacyBackup);
+
+    expect(sections.settings.cinePowerPlanner_setups).toBe(
+      JSON.stringify({
+        Main: { name: 'Main', items: ['Camera A'] },
+      }),
+    );
+    expect(sections.settings.cinePowerPlanner_session).toBe(
+      JSON.stringify({ activeSetup: 'Main' }),
+    );
+    expect(sections.sessionStorage).toBeNull();
+  });
 });
 
