@@ -319,6 +319,8 @@ const texts = {
     autoGearSelectorSummaryNoSelector: "%s default: %s",
     autoGearRuleTooltipNamed: "Added by automatic gear rule “%s”.",
     autoGearRuleTooltipUnnamed: "Added by an automatic gear rule.",
+    autoGearRuleBadgeNamed: "Rule: %s",
+    autoGearRuleBadgeUnnamed: "Automatic rule",
     accessibilityHeading: "Accessibility",
     accessibilityHeadingHelp:
       "Adjust contrast and other options that improve legibility.",
@@ -869,6 +871,9 @@ const texts = {
       "Rigging Grip": "Rigging Grip"
     },
     gearListAutosaveNote: '',
+    autoGearHighlightToggle: "Highlight automatic gear",
+    autoGearHighlightToggleHelp:
+      "Toggle a temporary color overlay for gear added by automatic rules. Useful while debugging gear rule behavior.",
     deleteGearListBtn: "Delete Gear List",
     deleteGearListBtnHelp:
       "Remove the saved gear list from this project and hide the table.",
@@ -1445,6 +1450,9 @@ const texts = {
       "Rigging Grip": "Macchinista rigging"
     },
     gearListAutosaveNote: '',
+    autoGearHighlightToggle: "Evidenzia accessori automatici",
+    autoGearHighlightToggleHelp:
+      "Attiva o disattiva una colorazione temporanea per l'attrezzatura aggiunta automaticamente dalle regole. Utile per il debug del comportamento delle regole.",
     deleteGearListBtn: "Elimina elenco attrezzatura",
     deleteGearListBtnHelp:
       "Rimuovi l'elenco attrezzatura salvato dal progetto e nascondi la tabella.",
@@ -1680,6 +1688,8 @@ const texts = {
     autoGearSelectorSummaryNoSelector: "Predefinito %s: %s",
     autoGearRuleTooltipNamed: "Aggiunto dalla regola automatica “%s”.",
     autoGearRuleTooltipUnnamed: "Aggiunto da una regola automatica.",
+    autoGearRuleBadgeNamed: "Regola: %s",
+    autoGearRuleBadgeUnnamed: "Regola automatica",
     accessibilityHeading: "Accessibilità",
     accessibilityHeadingHelp:
       "Regola le opzioni che migliorano la leggibilità, come il contrasto elevato.",
@@ -2390,6 +2400,9 @@ const texts = {
       "Rigging Grip": "Grip de rigging"
     },
     gearListAutosaveNote: '',
+    autoGearHighlightToggle: "Resaltar equipo automático",
+    autoGearHighlightToggleHelp:
+      "Activa o desactiva un color temporal para el equipo añadido por reglas automáticas. Útil para depurar el comportamiento de las reglas.",
     deleteGearListBtn: "Eliminar lista de equipo",
     deleteGearListBtnHelp:
       "Elimina la lista de equipo guardada de este proyecto y oculta la tabla.",
@@ -2625,6 +2638,8 @@ const texts = {
     autoGearSelectorSummaryNoSelector: "Predeterminado de %s: %s",
     autoGearRuleTooltipNamed: "Añadido por la regla automática “%s”.",
     autoGearRuleTooltipUnnamed: "Añadido por una regla automática.",
+    autoGearRuleBadgeNamed: "Regla: %s",
+    autoGearRuleBadgeUnnamed: "Regla automática",
     accessibilityHeading: "Accesibilidad",
     accessibilityHeadingHelp:
       "Ajusta opciones que mejoran la legibilidad, como el alto contraste.",
@@ -3336,6 +3351,9 @@ const texts = {
       "Rigging Grip": "Machiniste rigging"
     },
     gearListAutosaveNote: '',
+    autoGearHighlightToggle: "Mettre en évidence l'équipement automatique",
+    autoGearHighlightToggleHelp:
+      "Active ou désactive une surbrillance temporaire pour le matériel ajouté par les règles automatiques. Utile pour déboguer le comportement des règles.",
     deleteGearListBtn: "Supprimer la liste du matériel",
     deleteGearListBtnHelp:
       "Supprime la liste du matériel enregistrée du projet et masque le tableau.",
@@ -3608,6 +3626,8 @@ const texts = {
     autoGearSelectorSummaryNoSelector: "Par défaut %s : %s",
     autoGearRuleTooltipNamed: "Ajouté par la règle automatique « %s ».",
     autoGearRuleTooltipUnnamed: "Ajouté par une règle automatique.",
+    autoGearRuleBadgeNamed: "Règle : %s",
+    autoGearRuleBadgeUnnamed: "Règle automatique",
     accessibilityHeading: "Accessibilité",
     accessibilityHeadingHelp:
       "Ajustez les options qui améliorent la lisibilité, comme le contraste élevé.",
@@ -4286,6 +4306,9 @@ const texts = {
       "Rigging Grip": "Rigging-Grip"
     },
     gearListAutosaveNote: '',
+    autoGearHighlightToggle: "Automatisches Equipment hervorheben",
+    autoGearHighlightToggleHelp:
+      "Schaltet eine temporäre Farbmarkierung für durch automatische Regeln hinzugefügtes Equipment um. Nützlich zum Debuggen des Regelverhaltens.",
     deleteGearListBtn: "Gear-Liste löschen",
     deleteGearListBtnHelp:
       "Entfernt die gespeicherte Gear-Liste aus diesem Projekt und blendet die Tabelle aus.",
@@ -4558,6 +4581,8 @@ const texts = {
     autoGearSelectorSummaryNoSelector: "%s-Standard: %s",
     autoGearRuleTooltipNamed: "Hinzugefügt durch die automatische Regel „%s“.",
     autoGearRuleTooltipUnnamed: "Hinzugefügt durch eine automatische Regel.",
+    autoGearRuleBadgeNamed: "Regel: %s",
+    autoGearRuleBadgeUnnamed: "Automatische Regel",
     accessibilityHeading: "Barrierefreiheit",
     accessibilityHeadingHelp:
       "Passe Optionen für bessere Lesbarkeit wie hohen Kontrast an.",

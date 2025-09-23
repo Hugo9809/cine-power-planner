@@ -1,4 +1,4 @@
-/* global getManualDownloadFallbackMessage */
+/* global getManualDownloadFallbackMessage, setButtonLabelWithIcon */
 
 // --- NEW SETUP MANAGEMENT FUNCTIONS ---
 
@@ -1647,6 +1647,7 @@ function configureAutoGearSpan(span, normalizedItem, quantity, rule) {
         const delimiter = normalizedItem.notes.trim().toLowerCase().startsWith('incl') ? ' ' : ' – ';
         span.appendChild(document.createTextNode(`${delimiter}${normalizedItem.notes}`));
     }
+    refreshAutoGearRuleBadge(span);
 }
 
 function addAutoGearItem(cell, item, rule) {
@@ -1681,6 +1682,7 @@ function addAutoGearItem(cell, item, rule) {
                         }
                     }
                 }
+                refreshAutoGearRuleBadge(span);
             } else {
                 configureAutoGearSpan(span, normalizedItem, quantity, rule);
             }
@@ -3399,6 +3401,119 @@ function deleteCurrentGearList() {
     return true;
 }
 
+const AUTO_GEAR_HIGHLIGHT_CLASS = 'show-auto-gear-highlight';
+const AUTO_GEAR_HIGHLIGHT_LABEL_FALLBACK = 'Highlight automatic gear';
+const AUTO_GEAR_HIGHLIGHT_HELP_FALLBACK =
+    'Toggle a temporary color overlay for gear added by automatic rules. Useful while debugging gear rule behavior.';
+const AUTO_GEAR_RULE_BADGE_NAMED_FALLBACK = 'Rule: %s';
+const AUTO_GEAR_RULE_BADGE_UNNAMED_FALLBACK = 'Automatic rule';
+
+function getAutoGearRuleBadgeTemplates() {
+    const langTexts = texts[currentLang] || texts.en || {};
+    const named = langTexts.autoGearRuleBadgeNamed
+        || texts.en?.autoGearRuleBadgeNamed
+        || AUTO_GEAR_RULE_BADGE_NAMED_FALLBACK;
+    const unnamed = langTexts.autoGearRuleBadgeUnnamed
+        || texts.en?.autoGearRuleBadgeUnnamed
+        || AUTO_GEAR_RULE_BADGE_UNNAMED_FALLBACK;
+    return { named, unnamed };
+}
+
+function formatAutoGearRuleBadgeText(ruleLabel, ruleId) {
+    const { named, unnamed } = getAutoGearRuleBadgeTemplates();
+    const trimmedLabel = typeof ruleLabel === 'string' ? ruleLabel.trim() : '';
+    if (trimmedLabel) {
+        return named.replace('%s', trimmedLabel);
+    }
+    const trimmedId = typeof ruleId === 'string' ? ruleId.trim() : '';
+    if (trimmedId) {
+        return named.replace('%s', trimmedId);
+    }
+    return unnamed;
+}
+
+function refreshAutoGearRuleBadge(span) {
+    if (!span || !span.classList || !span.classList.contains('auto-gear-item')) {
+        return;
+    }
+    const dataset = span.dataset || {};
+    const badgeText = formatAutoGearRuleBadgeText(dataset.autoGearRuleLabel, dataset.autoGearRuleId);
+    if (!badgeText) {
+        const staleBadge = span.querySelector('.auto-gear-rule-badge');
+        if (staleBadge) {
+            staleBadge.remove();
+        }
+        if (span.dataset && Object.prototype.hasOwnProperty.call(span.dataset, 'autoGearRuleBadge')) {
+            delete span.dataset.autoGearRuleBadge;
+        }
+        return;
+    }
+    let badge = span.querySelector('.auto-gear-rule-badge');
+    if (!badge) {
+        badge = document.createElement('span');
+        badge.className = 'auto-gear-rule-badge';
+        span.appendChild(badge);
+    }
+    badge.textContent = badgeText;
+    if (span.dataset) {
+        span.dataset.autoGearRuleBadge = badgeText;
+    }
+}
+
+function updateAutoGearRuleBadges(container) {
+    const scope = container || gearListOutput;
+    if (!scope || typeof scope.querySelectorAll !== 'function') {
+        return;
+    }
+    const autoGearItems = scope.querySelectorAll('.auto-gear-item');
+    autoGearItems.forEach(item => refreshAutoGearRuleBadge(item));
+}
+
+function getAutoGearHighlightLabel() {
+    const localized = typeof getLocalizedText === 'function'
+        ? getLocalizedText('autoGearHighlightToggle')
+        : '';
+    if (typeof localized === 'string' && localized.trim()) {
+        return localized.trim();
+    }
+    return AUTO_GEAR_HIGHLIGHT_LABEL_FALLBACK;
+}
+
+function getAutoGearHighlightHelp() {
+    const localized = typeof getLocalizedText === 'function'
+        ? getLocalizedText('autoGearHighlightToggleHelp')
+        : '';
+    if (typeof localized === 'string' && localized.trim()) {
+        return localized.trim();
+    }
+    return AUTO_GEAR_HIGHLIGHT_HELP_FALLBACK;
+}
+
+function isAutoGearHighlightEnabled() {
+    return !!(gearListOutput && gearListOutput.classList && gearListOutput.classList.contains(AUTO_GEAR_HIGHLIGHT_CLASS));
+}
+
+function updateAutoGearHighlightToggleButton() {
+    const toggle = document.getElementById('autoGearHighlightToggle');
+    if (!toggle) return;
+    const label = getAutoGearHighlightLabel();
+    const help = getAutoGearHighlightHelp();
+    if (typeof setButtonLabelWithIcon === 'function' && ICON_GLYPHS && ICON_GLYPHS.brightness) {
+        setButtonLabelWithIcon(toggle, label, ICON_GLYPHS.brightness);
+    } else if (typeof toggle.textContent === 'string') {
+        toggle.textContent = label;
+    } else {
+        toggle.innerHTML = escapeHtml(label);
+    }
+    toggle.setAttribute('title', help);
+    toggle.setAttribute('data-help', help);
+    toggle.setAttribute('aria-label', help);
+    const active = isAutoGearHighlightEnabled();
+    toggle.setAttribute('aria-pressed', active ? 'true' : 'false');
+    toggle.classList.toggle('is-active', active);
+    updateAutoGearRuleBadges(gearListOutput);
+}
+
 function ensureGearListActions() {
     if (!gearListOutput) return;
     let actions = document.getElementById('gearListActions');
@@ -3437,6 +3552,30 @@ function ensureGearListActions() {
         autoSaveNote.setAttribute('data-help', '');
         autoSaveNote.hidden = true;
     }
+
+    let highlightToggle = document.getElementById('autoGearHighlightToggle');
+    if (!highlightToggle) {
+        highlightToggle = document.createElement('button');
+        highlightToggle.id = 'autoGearHighlightToggle';
+        highlightToggle.type = 'button';
+        highlightToggle.className = 'gear-list-action-btn';
+        highlightToggle.addEventListener('click', () => {
+            if (!gearListOutput) return;
+            const nextState = !isAutoGearHighlightEnabled();
+            gearListOutput.classList.toggle(AUTO_GEAR_HIGHLIGHT_CLASS, nextState);
+            updateAutoGearRuleBadges(gearListOutput);
+            updateAutoGearHighlightToggleButton();
+        });
+    }
+    if (!actions.contains(highlightToggle)) {
+        if (autoSaveNote) {
+            actions.insertBefore(highlightToggle, autoSaveNote);
+        } else {
+            actions.appendChild(highlightToggle);
+        }
+    }
+    updateAutoGearHighlightToggleButton();
+    updateAutoGearRuleBadges(actions.closest('#gearListOutput') || gearListOutput);
 
     if (!gearListOutput._filterListenerBound) {
         gearListOutput.addEventListener('change', e => {
