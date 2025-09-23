@@ -1045,7 +1045,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         "PM Filter Set": {
           "brand": "Tiffen"
         },
-        "IRND Filter": {
+        "IRND Filter Set": {
           "brand": "ARRI"
         },
         "FSND Filter Set": {

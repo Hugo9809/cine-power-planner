@@ -1009,7 +1009,7 @@ const gear = {
       "PM Filter Set": {
         "brand": "Tiffen"
       },
-      "IRND Filter": {
+      "IRND Filter Set": {
         "brand": "ARRI"
       },
       "FSND Filter Set": {
