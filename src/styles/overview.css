@@ -55,6 +55,7 @@ h1 { font-size: calc(var(--font-size-relative-base) * var(--font-scale-display))
 h2 { font-size: calc(var(--font-size-relative-base) * var(--font-scale-xxl)); margin-top: 1.3em; border-bottom: 1px solid var(--accent-color); padding-bottom: 5px; }
 h3 { font-size: calc(var(--font-size-relative-base) * var(--font-scale-lg)); margin-top: 1em; }
 p { line-height: var(--line-height-base, 1.6); }
+b, strong { font-weight: var(--font-weight-bold, 500); }
 ul { list-style: none; margin: 5px 0; padding-left: 0; }
 li { margin: 3px 0; }
 table {

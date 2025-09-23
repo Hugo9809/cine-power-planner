@@ -78,6 +78,11 @@ body.dark-mode {
   color: var(--text-color);
 }
 
+b,
+strong {
+  font-weight: var(--font-weight-bold, 500);
+}
+
 #overviewDialogContent *,
 #overviewDialogContent *::before,
 #overviewDialogContent *::after {
@@ -167,6 +172,7 @@ body.dark-mode {
 #overviewDialogContent strong,
 #overviewDialogContent b {
   color: var(--accent-color) !important;
+  font-weight: var(--font-weight-bold, 500);
 }
 
 #overviewDialogContent .device-category h3 {
