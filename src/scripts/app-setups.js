@@ -3509,6 +3509,7 @@ function deleteCurrentGearList() {
 }
 
 const AUTO_GEAR_HIGHLIGHT_CLASS = 'show-auto-gear-highlight';
+const AUTO_GEAR_HIGHLIGHT_ICON = '\uE8AF';
 const AUTO_GEAR_HIGHLIGHT_LABEL_FALLBACK = 'Highlight automatic gear';
 const AUTO_GEAR_HIGHLIGHT_HELP_FALLBACK =
     'Toggle a temporary color overlay for gear added by automatic rules. Useful while debugging gear rule behavior.';
@@ -3719,12 +3720,72 @@ function canHighlightAutoGear() {
     return !gearListOutput.classList.contains('hidden');
 }
 
+function ensureAutoGearHighlightToggleStructure(toggle) {
+    if (!toggle) return null;
+
+    const iconClass = 'auto-gear-highlight-icon';
+    let icon = toggle.querySelector(`.${iconClass}`);
+    if (!icon) {
+        icon = document.createElement('span');
+        icon.className = `btn-icon icon-glyph ${iconClass}`;
+        icon.setAttribute('aria-hidden', 'true');
+        icon.setAttribute('data-icon-font', 'uicons');
+        icon.textContent = AUTO_GEAR_HIGHLIGHT_ICON;
+        if (toggle.firstChild) {
+            toggle.insertBefore(icon, toggle.firstChild);
+        } else {
+            toggle.appendChild(icon);
+        }
+    } else {
+        if (!icon.classList.contains('btn-icon')) {
+            icon.classList.add('btn-icon');
+        }
+        if (!icon.classList.contains('icon-glyph')) {
+            icon.classList.add('icon-glyph');
+        }
+        if (!icon.classList.contains(iconClass)) {
+            icon.classList.add(iconClass);
+        }
+        icon.setAttribute('aria-hidden', 'true');
+        icon.setAttribute('data-icon-font', 'uicons');
+        if (icon.textContent !== AUTO_GEAR_HIGHLIGHT_ICON) {
+            icon.textContent = AUTO_GEAR_HIGHLIGHT_ICON;
+        }
+    }
+
+    let label = toggle.querySelector('.auto-gear-highlight-label');
+    if (!label) {
+        label = document.createElement('span');
+        label.className = 'auto-gear-highlight-label';
+        toggle.appendChild(label);
+    }
+
+    const textNodes = Array.from(toggle.childNodes || [])
+        .filter(node => node && node.nodeType === 3 && node.textContent && node.textContent.trim().length);
+    textNodes.forEach(node => {
+        toggle.removeChild(node);
+    });
+
+    return label;
+}
+
+function setAutoGearHighlightEnabled(enabled) {
+    const nextState = !!enabled;
+    if (gearListOutput && gearListOutput.classList) {
+        gearListOutput.classList.toggle(AUTO_GEAR_HIGHLIGHT_CLASS, nextState);
+    }
+    updateAutoGearHighlightToggleButton();
+}
+
 function updateAutoGearHighlightToggleButton() {
     const toggle = document.getElementById('autoGearHighlightToggle');
     if (!toggle) return;
     const label = getAutoGearHighlightLabel();
     const help = getAutoGearHighlightHelp();
-    if (typeof toggle.textContent === 'string') {
+    const labelContainer = ensureAutoGearHighlightToggleStructure(toggle);
+    if (labelContainer) {
+        labelContainer.textContent = label;
+    } else if (typeof toggle.textContent === 'string') {
         toggle.textContent = label;
     } else {
         toggle.innerHTML = escapeHtml(label);
@@ -3787,11 +3848,11 @@ function ensureGearListActions() {
     const highlightToggle = document.getElementById('autoGearHighlightToggle');
     if (highlightToggle && !highlightToggle.dataset.gearListHighlightBound) {
         highlightToggle.addEventListener('click', () => {
-            if (!gearListOutput) return;
             const nextState = !isAutoGearHighlightEnabled();
-            gearListOutput.classList.toggle(AUTO_GEAR_HIGHLIGHT_CLASS, nextState);
-            updateAutoGearRuleBadges(gearListOutput);
-            updateAutoGearHighlightToggleButton();
+            setAutoGearHighlightEnabled(nextState);
+            if (typeof saveCurrentSession === 'function') {
+                saveCurrentSession({ skipGearList: true });
+            }
         });
         highlightToggle.dataset.gearListHighlightBound = 'true';
     }

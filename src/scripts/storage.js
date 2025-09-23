@@ -1990,6 +1990,15 @@ function normalizeSessionStatePayload(raw) {
     changed = true;
   }
 
+  if (Object.prototype.hasOwnProperty.call(state, 'autoGearHighlight')) {
+    const value = state.autoGearHighlight;
+    const normalized = value === true || value === 'true' || value === 1 || value === '1';
+    if (value !== normalized || typeof value !== 'boolean') {
+      state.autoGearHighlight = normalized;
+      changed = true;
+    }
+  }
+
   return { state, changed };
 }
 
