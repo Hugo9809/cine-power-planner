@@ -1549,51 +1549,44 @@ function formatAutoGearRuleTooltip(rule) {
     return unnamedTemplate;
 }
 
-function addAutoGearItem(cell, item, rule) {
-    if (!cell) return;
-    const normalizedItem = normalizeAutoGearItem(item);
-    if (!normalizedItem) return;
-    const quantity = normalizeAutoGearQuantity(normalizedItem.quantity);
-    if (quantity <= 0) return;
+function configureAutoGearSpan(span, normalizedItem, quantity, rule) {
+    if (!span || !normalizedItem) return;
     const name = normalizedItem.name ? normalizedItem.name.trim() : '';
     if (!name) return;
-    const spans = Array.from(cell.querySelectorAll('.gear-item'));
-    for (const span of spans) {
-        const spanName = span.getAttribute('data-gear-name') || (span.textContent || '').replace(/^(\d+)x\s+/, '').trim();
-        if (matchesAutoGearItem(name, spanName)) {
-            const newCount = getSpanCount(span) + quantity;
-            updateSpanCountInPlace(span, newCount);
-            return;
-        }
+    while (span.firstChild) {
+        span.removeChild(span.firstChild);
     }
-    if (cell.childNodes.length) {
-        cell.appendChild(document.createElement('br'));
-    }
-    const span = document.createElement('span');
-    span.className = 'gear-item auto-gear-item';
+    span.classList.add('gear-item');
+    span.classList.add('auto-gear-item');
     span.setAttribute('data-gear-name', name);
-    if (rule && typeof rule === 'object') {
-        if (rule.id) {
+    if (span.dataset) {
+        if (rule && typeof rule === 'object' && rule.id) {
             span.dataset.autoGearRuleId = rule.id;
+        } else {
+            delete span.dataset.autoGearRuleId;
         }
-        const ruleLabel = getAutoGearRuleDisplayLabel(rule);
+        const ruleLabel = rule && typeof rule === 'object' ? getAutoGearRuleDisplayLabel(rule) : '';
         if (ruleLabel) {
             span.dataset.autoGearRuleLabel = ruleLabel;
-        }
-        const tooltip = formatAutoGearRuleTooltip(rule);
-        if (tooltip) {
-            span.title = tooltip;
+        } else {
+            delete span.dataset.autoGearRuleLabel;
         }
     }
+    const tooltip = formatAutoGearRuleTooltip(rule);
+    if (tooltip) {
+        span.title = tooltip;
+    } else {
+        span.removeAttribute('title');
+    }
     const displayName = typeof addArriKNumber === 'function' ? addArriKNumber(name) : name;
-    span.textContent = `${quantity}x ${displayName}`;
+    span.appendChild(document.createTextNode(`${quantity}x ${displayName}`));
     if (normalizedItem.screenSize) {
         span.appendChild(document.createTextNode(` - ${normalizedItem.screenSize}`));
     }
     const selectorType = normalizedItem.selectorType || 'none';
     const selectorDefault = normalizedItem.selectorDefault || '';
+    const selectorLabel = getAutoGearSelectorLabel(selectorType);
     if (selectorType && selectorType !== 'none') {
-        const selectorLabel = getAutoGearSelectorLabel(selectorType);
         if (normalizedItem.selectorEnabled) {
             const options = getAutoGearSelectorOptions(selectorType);
             const shouldRenderSelector = options.length || selectorDefault;
@@ -1604,7 +1597,9 @@ function addAutoGearItem(cell, item, rule) {
                 select.id = selectId;
                 select.className = 'auto-gear-selector';
                 select.dataset.autoGearSelectorType = selectorType;
-                select.setAttribute('aria-label', selectorLabel);
+                if (selectorLabel) {
+                    select.setAttribute('aria-label', selectorLabel);
+                }
                 let normalizedDefaultValue = '';
                 options.forEach(optionName => {
                     const option = document.createElement('option');
@@ -1672,6 +1667,51 @@ function addAutoGearItem(cell, item, rule) {
         const delimiter = normalizedItem.notes.trim().toLowerCase().startsWith('incl') ? ' ' : ' – ';
         span.appendChild(document.createTextNode(`${delimiter}${normalizedItem.notes}`));
     }
+}
+
+function addAutoGearItem(cell, item, rule) {
+    if (!cell) return;
+    const normalizedItem = normalizeAutoGearItem(item);
+    if (!normalizedItem) return;
+    const quantity = normalizeAutoGearQuantity(normalizedItem.quantity);
+    if (quantity <= 0) return;
+    const name = normalizedItem.name ? normalizedItem.name.trim() : '';
+    if (!name) return;
+    const spans = Array.from(cell.querySelectorAll('.gear-item'));
+    for (const span of spans) {
+        const spanName = span.getAttribute('data-gear-name') || (span.textContent || '').replace(/^(\d+)x\s+/, '').trim();
+        if (matchesAutoGearItem(name, spanName)) {
+            if (span.classList.contains('auto-gear-item')) {
+                const newCount = getSpanCount(span) + quantity;
+                updateSpanCountInPlace(span, newCount);
+                if (rule && typeof rule === 'object') {
+                    if (!span.dataset.autoGearRuleId && rule.id) {
+                        span.dataset.autoGearRuleId = rule.id;
+                    }
+                    if (!span.dataset.autoGearRuleLabel) {
+                        const ruleLabel = getAutoGearRuleDisplayLabel(rule);
+                        if (ruleLabel) {
+                            span.dataset.autoGearRuleLabel = ruleLabel;
+                        }
+                    }
+                    if (!span.title) {
+                        const mergedTooltip = formatAutoGearRuleTooltip(rule);
+                        if (mergedTooltip) {
+                            span.title = mergedTooltip;
+                        }
+                    }
+                }
+            } else {
+                configureAutoGearSpan(span, normalizedItem, quantity, rule);
+            }
+            return;
+        }
+    }
+    if (cell.childNodes.length) {
+        cell.appendChild(document.createElement('br'));
+    }
+    const span = document.createElement('span');
+    configureAutoGearSpan(span, normalizedItem, quantity, rule);
     cell.appendChild(span);
 }
 
