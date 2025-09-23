@@ -33,7 +33,8 @@
   --page-padding: var(--spacing-xxl);
   --main-top-padding-multiplier: 1.5;
   --gap-size: var(--spacing-lg);
-  --button-size: 24px;
+  --button-size: 27px;
+  --select-height: var(--button-size);
   --button-icon-size: var(--icon-size-md);
   --button-line-height: 1.25;
   --button-padding-block: 0;
@@ -172,7 +173,7 @@ body.relaxed-spacing {
   --gap-size: 14px;
   --form-label-width: 170px;
   --form-label-min-width: 140px;
-  --button-size: 30px;
+  --button-size: 33px;
   --button-line-height: 1.45;
   --button-icon-gap: 1em;
   --form-row-margin-block: 8px;
@@ -2508,9 +2509,12 @@ textarea {
 }
 
 /* Match input and select heights to standard buttons */
-input:not([type="checkbox"]),
-select {
+input:not([type="checkbox"]) {
   height: var(--button-size);
+}
+
+select {
+  height: var(--select-height);
 }
 
 #accentColorInput {
@@ -3115,13 +3119,9 @@ body.pink-mode #topBar #logo .logo-center {
   height: var(--button-size);
 }
 
-.controls select,
-.controls button {
-  height: var(--button-size);
-  margin: 0;
-}
-
 .controls select {
+  height: var(--select-height);
+  margin: 0;
   font-size: var(--font-size-relative-base);
   padding: 2px 4px;
   text-align: center;
@@ -3129,6 +3129,8 @@ body.pink-mode #topBar #logo .logo-center {
 }
 
 .controls button {
+  height: var(--button-size);
+  margin: 0;
   min-width: var(--button-size);
   width: var(--button-size);
   padding: 0;
