@@ -15,6 +15,11 @@
           clearUiCacheStorageEntries, __cineGlobal, humanizeKey,
           loadAutoGearRules */
 /* eslint-enable no-redeclare */
+/* global triggerPinkModeIconRain, loadDeviceData, loadSetups, loadSessionState,
+          loadFeedback, loadFavorites, loadAutoGearBackups,
+          loadAutoGearPresets, loadAutoGearSeedFlag, loadAutoGearActivePresetId,
+          loadAutoGearAutoPresetId, loadAutoGearBackupVisibility,
+          loadFullBackupHistory */
 
 const temperaturePreferenceStorageKey =
   typeof TEMPERATURE_STORAGE_KEY === 'string'
@@ -1561,6 +1566,34 @@ function stopPinkModeIconRotation() {
   }
 }
 
+const PINK_MODE_ICON_RAIN_PRESS_TRIGGER_COUNT = 5;
+const PINK_MODE_ICON_RAIN_PRESS_RESET_MS = 1800;
+let pinkModeIconPressCount = 0;
+let pinkModeIconPressResetTimer = null;
+
+function schedulePinkModeIconPressReset() {
+  if (pinkModeIconPressResetTimer) {
+    clearTimeout(pinkModeIconPressResetTimer);
+  }
+  pinkModeIconPressResetTimer = setTimeout(() => {
+    pinkModeIconPressCount = 0;
+    pinkModeIconPressResetTimer = null;
+  }, PINK_MODE_ICON_RAIN_PRESS_RESET_MS);
+}
+
+function handlePinkModeIconPress() {
+  pinkModeIconPressCount += 1;
+  schedulePinkModeIconPressReset();
+  if (
+    pinkModeIconPressCount > PINK_MODE_ICON_RAIN_PRESS_TRIGGER_COUNT &&
+    typeof triggerPinkModeIconRain === 'function'
+  ) {
+    pinkModeIconPressCount = 0;
+    schedulePinkModeIconPressReset();
+    triggerPinkModeIconRain();
+  }
+}
+
 function triggerPinkModeIconAnimation() {
   const targets = [];
   if (pinkModeToggle) {
@@ -1723,7 +1756,10 @@ rememberSettingsPinkModeBaseline();
 rememberSettingsTemperatureUnitBaseline();
 
 if (pinkModeToggle) {
-  pinkModeToggle.addEventListener("click", () => {
+  pinkModeToggle.addEventListener("click", event => {
+    if (event && event.isTrusted) {
+      handlePinkModeIconPress();
+    }
     persistPinkModePreference(!document.body.classList.contains('pink-mode'));
   });
 }

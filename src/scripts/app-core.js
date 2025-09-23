@@ -6217,6 +6217,23 @@ const PINK_MODE_ANIMATED_ICON_FILES = Object.freeze([
   'animated icons 3/video-camera.json'
 ]);
 
+const PINK_MODE_ICON_RAIN_MIN_COUNT = 12;
+const PINK_MODE_ICON_RAIN_MAX_COUNT = 20;
+const PINK_MODE_ICON_RAIN_MIN_DURATION_MS = 3600;
+const PINK_MODE_ICON_RAIN_MAX_DURATION_MS = 5600;
+const PINK_MODE_ICON_RAIN_MIN_SIZE_PX = 52;
+const PINK_MODE_ICON_RAIN_MAX_SIZE_PX = 88;
+const PINK_MODE_ICON_RAIN_VERTICAL_START_VH_MIN = 12;
+const PINK_MODE_ICON_RAIN_VERTICAL_START_VH_MAX = 26;
+const PINK_MODE_ICON_RAIN_HORIZONTAL_MARGIN_PERCENT = 8;
+const PINK_MODE_ICON_RAIN_HORIZONTAL_DRIFT_VW_MIN = -12;
+const PINK_MODE_ICON_RAIN_HORIZONTAL_DRIFT_VW_MAX = 12;
+const PINK_MODE_ICON_RAIN_MIN_SCALE = 0.78;
+const PINK_MODE_ICON_RAIN_MAX_SCALE = 1.12;
+const PINK_MODE_ICON_RAIN_MAX_ACTIVE = 48;
+const PINK_MODE_ICON_RAIN_COOLDOWN_MS = 12000;
+const PINK_MODE_ICON_RAIN_DELAY_SPREAD_MS = 960;
+
 const pinkModeIcons = {
   off: Object.freeze({
     className: 'icon-svg pink-mode-icon',
@@ -6260,6 +6277,8 @@ let pinkModeAnimatedIconTemplates = null;
 let pinkModeAnimatedIconTemplatesPromise = null;
 const pinkModeAnimatedIconInstances = new Set();
 let pinkModeAnimatedIconLastTemplateName = null;
+const pinkModeIconRainInstances = new Set();
+let pinkModeIconRainLastTriggeredAt = 0;
 
 const pinkModeReduceMotionQuery =
   typeof window !== 'undefined' && typeof window.matchMedia === 'function'
@@ -6618,6 +6637,238 @@ function destroyPinkModeAnimatedIconInstance(instance) {
     instance.container.parentNode.removeChild(instance.container);
   }
   pinkModeAnimatedIconInstances.delete(instance);
+}
+
+function destroyPinkModeIconRainInstance(instance) {
+  if (!instance || instance.destroyed) {
+    return;
+  }
+  instance.destroyed = true;
+  if (instance.animation && typeof instance.animation.destroy === 'function') {
+    try {
+      instance.animation.destroy();
+    } catch (error) {
+      console.warn('Could not dispose pink mode rain animation', error);
+    }
+  }
+  if (instance.container && instance.container.parentNode) {
+    instance.container.parentNode.removeChild(instance.container);
+  }
+  pinkModeIconRainInstances.delete(instance);
+}
+
+function spawnPinkModeIconRainInstance(templates) {
+  if (
+    !Array.isArray(templates) ||
+    !templates.length ||
+    typeof window === 'undefined' ||
+    !window.lottie ||
+    typeof window.lottie.loadAnimation !== 'function'
+  ) {
+    return false;
+  }
+  const layer = ensurePinkModeAnimationLayer();
+  if (!layer) {
+    return false;
+  }
+  const sanitizedTemplates = templates.filter(Boolean);
+  if (!sanitizedTemplates.length) {
+    return false;
+  }
+
+  const activeTemplateNames = new Set();
+  for (const instance of pinkModeIconRainInstances) {
+    if (!instance) continue;
+    const { templateName } = instance;
+    if (typeof templateName === 'string' && templateName) {
+      activeTemplateNames.add(templateName);
+    }
+  }
+  for (const instance of pinkModeAnimatedIconInstances) {
+    if (!instance) continue;
+    const { templateName } = instance;
+    if (typeof templateName === 'string' && templateName) {
+      activeTemplateNames.add(templateName);
+    }
+  }
+
+  let availableTemplates = sanitizedTemplates.filter(template => {
+    if (!template || typeof template.name !== 'string') {
+      return true;
+    }
+    return !activeTemplateNames.has(template.name);
+  });
+
+  if (!availableTemplates.length) {
+    availableTemplates = sanitizedTemplates;
+  }
+
+  const template =
+    availableTemplates[Math.floor(Math.random() * availableTemplates.length)];
+  if (!template || !template.data) {
+    return false;
+  }
+
+  const container = document.createElement('div');
+  container.className = 'pink-mode-animation-instance pink-mode-icon-rain';
+  container.setAttribute('aria-hidden', 'true');
+
+  const size = Math.round(
+    Math.random() * (PINK_MODE_ICON_RAIN_MAX_SIZE_PX - PINK_MODE_ICON_RAIN_MIN_SIZE_PX) +
+      PINK_MODE_ICON_RAIN_MIN_SIZE_PX
+  );
+  container.style.setProperty('--pink-mode-animation-size', `${size}px`);
+
+  const horizontalMargin = Math.max(
+    0,
+    Math.min(40, PINK_MODE_ICON_RAIN_HORIZONTAL_MARGIN_PERCENT)
+  );
+  const horizontalPercent =
+    Math.random() * (100 - horizontalMargin * 2) + horizontalMargin;
+  container.style.setProperty(
+    '--pink-mode-animation-x',
+    `${horizontalPercent.toFixed(2)}%`
+  );
+
+  const verticalOffset =
+    Math.random() *
+      (PINK_MODE_ICON_RAIN_VERTICAL_START_VH_MAX -
+        PINK_MODE_ICON_RAIN_VERTICAL_START_VH_MIN) +
+    PINK_MODE_ICON_RAIN_VERTICAL_START_VH_MIN;
+  container.style.setProperty(
+    '--pink-mode-animation-y',
+    `-${verticalOffset.toFixed(2)}vh`
+  );
+
+  const duration = Math.round(
+    Math.random() *
+      (PINK_MODE_ICON_RAIN_MAX_DURATION_MS - PINK_MODE_ICON_RAIN_MIN_DURATION_MS) +
+      PINK_MODE_ICON_RAIN_MIN_DURATION_MS
+  );
+  container.style.setProperty('--pink-mode-rain-duration', `${duration}ms`);
+
+  const scale =
+    Math.random() *
+      (PINK_MODE_ICON_RAIN_MAX_SCALE - PINK_MODE_ICON_RAIN_MIN_SCALE) +
+    PINK_MODE_ICON_RAIN_MIN_SCALE;
+  container.style.setProperty('--pink-mode-rain-scale', scale.toFixed(3));
+
+  const drift =
+    Math.random() *
+      (PINK_MODE_ICON_RAIN_HORIZONTAL_DRIFT_VW_MAX -
+        PINK_MODE_ICON_RAIN_HORIZONTAL_DRIFT_VW_MIN) +
+    PINK_MODE_ICON_RAIN_HORIZONTAL_DRIFT_VW_MIN;
+  container.style.setProperty('--pink-mode-rain-drift', `${drift.toFixed(2)}vw`);
+
+  const rotation = Math.random() * 40 - 20;
+  container.style.setProperty(
+    '--pink-mode-rain-rotation',
+    `${rotation.toFixed(2)}deg`
+  );
+
+  layer.appendChild(container);
+
+  let animationData;
+  try {
+    animationData = JSON.parse(template.data);
+  } catch (error) {
+    console.warn('Could not parse pink mode rain animation', error);
+    if (container.parentNode) {
+      container.parentNode.removeChild(container);
+    }
+    return false;
+  }
+
+  let animationInstance;
+  try {
+    animationInstance = window.lottie.loadAnimation({
+      container,
+      renderer: 'svg',
+      loop: true,
+      autoplay: true,
+      animationData
+    });
+  } catch (error) {
+    console.warn('Could not start pink mode rain animation', error);
+    if (container.parentNode) {
+      container.parentNode.removeChild(container);
+    }
+    return false;
+  }
+
+  const instance = {
+    container,
+    animation: animationInstance,
+    destroyed: false,
+    templateName: typeof template.name === 'string' ? template.name : null
+  };
+
+  container.addEventListener(
+    'animationend',
+    () => {
+      destroyPinkModeIconRainInstance(instance);
+    },
+    { once: true }
+  );
+
+  pinkModeIconRainInstances.add(instance);
+  if (pinkModeIconRainInstances.size > PINK_MODE_ICON_RAIN_MAX_ACTIVE) {
+    const oldest = pinkModeIconRainInstances.values().next().value;
+    if (oldest && oldest !== instance) {
+      destroyPinkModeIconRainInstance(oldest);
+    }
+  }
+
+  return true;
+}
+
+/* eslint-disable-next-line no-redeclare */
+function triggerPinkModeIconRain() {
+  if (
+    typeof window === 'undefined' ||
+    typeof document === 'undefined' ||
+    !document.body ||
+    (pinkModeReduceMotionQuery && pinkModeReduceMotionQuery.matches)
+  ) {
+    return;
+  }
+
+  const now = Date.now();
+  if (
+    pinkModeIconRainLastTriggeredAt &&
+    now - pinkModeIconRainLastTriggeredAt < PINK_MODE_ICON_RAIN_COOLDOWN_MS
+  ) {
+    return;
+  }
+  pinkModeIconRainLastTriggeredAt = now;
+
+  loadPinkModeAnimatedIconTemplates()
+    .then(templates => {
+      if (!Array.isArray(templates) || !templates.length) {
+        return templates;
+      }
+
+      const maxAdditional = Math.max(
+        0,
+        PINK_MODE_ICON_RAIN_MAX_COUNT - PINK_MODE_ICON_RAIN_MIN_COUNT
+      );
+      const dropCount =
+        PINK_MODE_ICON_RAIN_MIN_COUNT + Math.round(Math.random() * maxAdditional);
+
+      for (let i = 0; i < dropCount; i += 1) {
+        const delay = Math.round(
+          Math.random() * PINK_MODE_ICON_RAIN_DELAY_SPREAD_MS + i * 60
+        );
+        window.setTimeout(() => {
+          spawnPinkModeIconRainInstance(templates);
+        }, delay);
+      }
+
+      return templates;
+    })
+    .catch(error => {
+      console.warn('Could not trigger pink mode icon rain', error);
+    });
 }
 
 function spawnPinkModeAnimatedIconInstance(templates) {

@@ -26,7 +26,8 @@
     "setSelectValue",
     "showNotification",
     "startPinkModeIconRotation",
-    "stopPinkModeIconRotation"
+    "stopPinkModeIconRotation",
+    "triggerPinkModeIconRain"
   ],
   "app-events": [
     "AUTO_GEAR_BACKUP_INTERVAL_MS",

@@ -3041,6 +3041,17 @@ body.pink-mode .pink-mode-icon {
   display: block;
 }
 
+.pink-mode-animation-instance.pink-mode-icon-rain {
+  animation-name: pink-mode-rain-icon;
+  animation-duration: var(--pink-mode-rain-duration, 4800ms);
+  animation-timing-function: ease-in;
+}
+
+.pink-mode-animation-instance.pink-mode-icon-rain svg {
+  transform: scale(var(--pink-mode-rain-scale, 1))
+    rotate(var(--pink-mode-rain-rotation, 0deg));
+}
+
 @keyframes pink-mode-floating-icon {
   0% {
     opacity: 0;
@@ -3060,6 +3071,29 @@ body.pink-mode .pink-mode-icon {
   100% {
     opacity: 0;
     transform: translate3d(0, -14%, 0) scale(0.85);
+  }
+}
+
+@keyframes pink-mode-rain-icon {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -18vh, 0)
+      scale(var(--pink-mode-rain-scale, 1))
+      rotate(var(--pink-mode-rain-rotation, 0deg));
+  }
+
+  12% {
+    opacity: 1;
+    transform: translate3d(0, -2vh, 0)
+      scale(var(--pink-mode-rain-scale, 1))
+      rotate(var(--pink-mode-rain-rotation, 0deg));
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--pink-mode-rain-drift, 0vw), 112vh, 0)
+      scale(var(--pink-mode-rain-scale, 1))
+      rotate(var(--pink-mode-rain-rotation, 0deg));
   }
 }
 
