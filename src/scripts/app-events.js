@@ -198,6 +198,24 @@ setupSelect.addEventListener("change", (event) => {
     (lastSetupName && typeof lastSetupName === 'string' ? lastSetupName : '')
     || typedName
     || '';
+  const normalizeProjectName = (value) =>
+    typeof value === 'string' ? value.replace(/\s+/g, ' ').trim() : '';
+  const normalizedLastSelection = normalizeProjectName(lastSetupName);
+  const normalizedTargetSelection = normalizeProjectName(setupName);
+
+  if (
+    typeof autoBackup === 'function'
+    && normalizedTargetSelection !== normalizedLastSelection
+  ) {
+    try {
+      autoBackup({
+        suppressSuccess: true,
+        projectNameOverride: normalizeProjectName(previousKey),
+      });
+    } catch (error) {
+      console.warn('Failed to auto backup project before loading a different setup', error);
+    }
+  }
 
   if (typeof saveProject === 'function') {
     const info = projectForm ? collectProjectFormData() : {};
@@ -365,15 +383,26 @@ function autoBackup(options = {}) {
   const errorMessage = typeof config.errorMessage === 'string' && config.errorMessage
     ? config.errorMessage
     : 'Auto backup failed';
+  const normalizeProjectName = (value) =>
+    typeof value === 'string' ? value.replace(/\s+/g, ' ').trim() : '';
+  const hasProjectNameOverride = Object.prototype.hasOwnProperty.call(
+    config,
+    'projectNameOverride',
+  );
+  const overrideName = hasProjectNameOverride
+    ? normalizeProjectName(config.projectNameOverride)
+    : null;
 
   try {
     const pad = (n) => String(n).padStart(2, '0');
     const now = new Date();
     const baseName = `auto-backup-${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}-${pad(now.getHours())}-${pad(now.getMinutes())}`;
-    const activeNameRaw = setupSelect.value
-      || (setupNameInput && typeof setupNameInput.value === 'string'
-        ? setupNameInput.value.trim()
-        : '');
+    const activeNameRaw = hasProjectNameOverride
+      ? overrideName
+      : (setupSelect.value
+        || (setupNameInput && typeof setupNameInput.value === 'string'
+          ? setupNameInput.value.trim()
+          : ''));
     const normalizedName = activeNameRaw
       ? activeNameRaw.replace(/\s+/g, ' ').trim()
       : '';
