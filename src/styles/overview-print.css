@@ -66,7 +66,7 @@ body.dark-mode {
   --video-conn-bg: rgba(51, 102, 153, 0.15);
   --neutral-conn-bg: rgba(158, 158, 158, 0.15);
   --status-warning-bg: #ff6b6b;
-  --status-warning-text-color: #ffffff;
+  --status-warning-text-color: #000000;
   --status-error-text-color: #000;
   --font-size-base: 11pt;
   font-family: 'Ubuntu', sans-serif;
@@ -102,7 +102,7 @@ strong {
   --video-conn-bg: rgba(51, 102, 153, 0.15);
   --neutral-conn-bg: rgba(158, 158, 158, 0.15);
   --status-warning-bg: #ff6b6b;
-  --status-warning-text-color: #ffffff;
+  --status-warning-text-color: #000000;
   --status-error-text-color: #000;
   --diagram-node-fill: #f0f0f0;
   --power-color: #d33;
@@ -336,7 +336,7 @@ table, th, td {
 
 .requirement-box {
   background: var(--surface-color);
-  border: 1px solid var(--text-color);
+  border: 1px solid var(--panel-border);
   box-shadow: var(--panel-shadow);
 }
 
@@ -520,7 +520,7 @@ body:not(.light-mode) .gear-table .category-row td {
 }
 
 #overviewDialogContent .bar {
-  border: 1px solid var(--text-color) !important;
+  border: 1px solid var(--panel-border) !important;
   box-sizing: border-box;
 }
 
