@@ -454,6 +454,8 @@ body:not(.light-mode) .gear-table .auto-gear-item {
   min-width: 0;
   max-width: 100%;
   flex: 0 0 auto;
+  padding: 0;
+  padding-inline: 0;
   background-color: var(--panel-bg);
   color: inherit;
   border-color: var(--panel-border);
