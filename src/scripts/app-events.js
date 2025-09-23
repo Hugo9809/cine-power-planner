@@ -1,5 +1,6 @@
 // --- EVENT LISTENERS ---
-/* global updateCageSelectOptions, updateGlobalDevicesReference */
+/* global updateCageSelectOptions, updateGlobalDevicesReference, scheduleProjectAutoSave,
+          saveCurrentSession, saveCurrentGearList */
 
 // Language selection
 languageSelect.addEventListener("change", (event) => {
@@ -202,6 +203,29 @@ setupSelect.addEventListener("change", (event) => {
     typeof value === 'string' ? value.replace(/\s+/g, ' ').trim() : '';
   const normalizedLastSelection = normalizeProjectName(lastSetupName);
   const normalizedTargetSelection = normalizeProjectName(setupName);
+
+  let autoSaveFlushed = false;
+  if (typeof scheduleProjectAutoSave === 'function') {
+    try {
+      scheduleProjectAutoSave(true);
+      autoSaveFlushed = true;
+    } catch (error) {
+      console.warn('Failed to flush project autosave before switching setups', error);
+    }
+  }
+
+  if (!autoSaveFlushed) {
+    try {
+      if (typeof saveCurrentSession === 'function') {
+        saveCurrentSession();
+      }
+      if (typeof saveCurrentGearList === 'function') {
+        saveCurrentGearList();
+      }
+    } catch (error) {
+      console.warn('Failed to persist project state before switching setups', error);
+    }
+  }
 
   if (
     typeof autoBackup === 'function'
