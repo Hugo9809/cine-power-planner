@@ -2095,12 +2095,17 @@ if (autoGearAddItemButton) {
   }
   if (autoGearRulesList) {
     autoGearRulesList.addEventListener('click', event => {
-      const target = event.target;
-      if (!target) return;
-      if (target.classList.contains('auto-gear-edit')) {
-        openAutoGearEditor(target.dataset.ruleId || '');
-      } else if (target.classList.contains('auto-gear-delete')) {
-        deleteAutoGearRule(target.dataset.ruleId || '');
+      const targetElement = event.target;
+      const button = targetElement && typeof targetElement.closest === 'function'
+        ? targetElement.closest('button')
+        : null;
+      if (!button) return;
+      if (button.classList.contains('auto-gear-edit')) {
+        openAutoGearEditor(button.dataset.ruleId || '');
+      } else if (button.classList.contains('auto-gear-duplicate')) {
+        duplicateAutoGearRule(button.dataset.ruleId || '');
+      } else if (button.classList.contains('auto-gear-delete')) {
+        deleteAutoGearRule(button.dataset.ruleId || '');
       }
     });
   }
