@@ -379,6 +379,39 @@ const texts = {
     restoreSettings: "Restore",
     restoreSettingsHelp:
       "Load a previously exported JSON snapshot to restore your planner data.",
+    restoreRehearsalButton: "Restore rehearsal",
+    restoreRehearsalButtonHelp:
+      "Test a backup or project bundle in a disposable sandbox before you restore your live data.",
+    restoreRehearsalHeading: "Restore rehearsal",
+    restoreRehearsalIntro:
+      "Load a backup or project bundle into a disposable workspace. We compare key counts with your live profile and clear the sandbox automatically.",
+    restoreRehearsalModeLabel: "Choose a rehearsal source",
+    restoreRehearsalModeBackup: "Full app backup (.json)",
+    restoreRehearsalModeProject: "Project bundle (.json)",
+    restoreRehearsalFileLabel: "Select file",
+    restoreRehearsalFileButton: "Choose file",
+    restoreRehearsalNoFile: "No file selected yet.",
+    restoreRehearsalReady: "Sandbox ready. Pick a JSON file to inspect.",
+    restoreRehearsalProcessing: "Loading file in an isolated sandbox…",
+    restoreRehearsalMatch:
+      "All counts match. The sandbox was cleared automatically.",
+    restoreRehearsalMismatch:
+      "Differences detected: %s. The sandbox was cleared automatically.",
+    restoreRehearsalError:
+      "Restore rehearsal failed. Check the file and try again.",
+    restoreRehearsalTableCaption: "Backup rehearsal comparison",
+    restoreRehearsalMetricColumn: "Data type",
+    restoreRehearsalLiveColumn: "Live profile",
+    restoreRehearsalSandboxColumn: "Sandbox import",
+    restoreRehearsalDifferenceColumn: "Difference",
+    restoreRehearsalClose: "Close rehearsal",
+    restoreRehearsalMetricProjects: "Projects",
+    restoreRehearsalMetricRules: "Automatic gear rules",
+    restoreRehearsalMetricFavorites: "Favorites",
+    restoreRehearsalMatchLabel: "Match",
+    restoreRehearsalDifferenceListJoin: ", ",
+    restoreRehearsalIncreaseLabel: "Sandbox includes %d more %s.",
+    restoreRehearsalDecreaseLabel: "Sandbox includes %d fewer %s.",
     factoryResetButton: "Factory reset",
     factoryResetButtonHelp:
       "Create a backup and wipe all planner data after confirmation.",
@@ -1740,6 +1773,39 @@ const texts = {
     restoreSettings: "Ripristina",
     restoreSettingsHelp:
       "Carica uno snapshot JSON esportato in precedenza per ripristinare dati e impostazioni.",
+    restoreRehearsalButton: "Prova di ripristino",
+    restoreRehearsalButtonHelp:
+      "Metti alla prova un backup o un pacchetto progetto in una sandbox temporanea prima di ripristinare i dati attivi.",
+    restoreRehearsalHeading: "Prova di ripristino",
+    restoreRehearsalIntro:
+      "Carica un backup o un pacchetto progetto in un ambiente temporaneo. Confrontiamo i conteggi principali con il profilo attivo e cancelliamo automaticamente la sandbox.",
+    restoreRehearsalModeLabel: "Scegli l'origine della prova",
+    restoreRehearsalModeBackup: "Backup completo (.json)",
+    restoreRehearsalModeProject: "Pacchetto progetto (.json)",
+    restoreRehearsalFileLabel: "Seleziona file",
+    restoreRehearsalFileButton: "Scegli file",
+    restoreRehearsalNoFile: "Nessun file selezionato.",
+    restoreRehearsalReady: "Sandbox pronta. Scegli un file JSON da verificare.",
+    restoreRehearsalProcessing: "Caricamento del file in una sandbox isolata…",
+    restoreRehearsalMatch:
+      "Tutti i conteggi combaciano. La sandbox è stata eliminata automaticamente.",
+    restoreRehearsalMismatch:
+      "Differenze rilevate: %s. La sandbox è stata eliminata automaticamente.",
+    restoreRehearsalError:
+      "Prova di ripristino non riuscita. Controlla il file e riprova.",
+    restoreRehearsalTableCaption: "Confronto prova di ripristino",
+    restoreRehearsalMetricColumn: "Tipo di dato",
+    restoreRehearsalLiveColumn: "Profilo attivo",
+    restoreRehearsalSandboxColumn: "Import sandbox",
+    restoreRehearsalDifferenceColumn: "Differenza",
+    restoreRehearsalClose: "Chiudi prova",
+    restoreRehearsalMetricProjects: "Progetti",
+    restoreRehearsalMetricRules: "Regole gear automatiche",
+    restoreRehearsalMetricFavorites: "Preferiti",
+    restoreRehearsalMatchLabel: "Coincide",
+    restoreRehearsalDifferenceListJoin: ", ",
+    restoreRehearsalIncreaseLabel: "La sandbox include %d %s in più.",
+    restoreRehearsalDecreaseLabel: "La sandbox include %d %s in meno.",
     factoryResetButton: "Ripristino di fabbrica",
     factoryResetButtonHelp:
       "Crea un backup e cancella tutti i dati dell’app dopo la conferma.",
@@ -2685,6 +2751,39 @@ const texts = {
     restoreSettings: "Restaurar",
     restoreSettingsHelp:
       "Carga una instantánea JSON exportada previamente para restaurar datos y ajustes.",
+    restoreRehearsalButton: "Ensayo de restauración",
+    restoreRehearsalButtonHelp:
+      "Prueba una copia de seguridad o un paquete de proyecto en una sandbox desechable antes de restaurar tus datos activos.",
+    restoreRehearsalHeading: "Ensayo de restauración",
+    restoreRehearsalIntro:
+      "Carga una copia de seguridad o un paquete de proyecto en un espacio temporal. Comparamos los recuentos clave con tu perfil en vivo y eliminamos la sandbox automáticamente.",
+    restoreRehearsalModeLabel: "Elige el origen del ensayo",
+    restoreRehearsalModeBackup: "Copia de seguridad completa (.json)",
+    restoreRehearsalModeProject: "Paquete de proyecto (.json)",
+    restoreRehearsalFileLabel: "Seleccionar archivo",
+    restoreRehearsalFileButton: "Elegir archivo",
+    restoreRehearsalNoFile: "Todavía no se ha seleccionado archivo.",
+    restoreRehearsalReady: "Sandbox lista. Elige un archivo JSON para revisar.",
+    restoreRehearsalProcessing: "Cargando archivo en una sandbox aislada…",
+    restoreRehearsalMatch:
+      "Todos los recuentos coinciden. La sandbox se eliminó automáticamente.",
+    restoreRehearsalMismatch:
+      "Se detectaron diferencias: %s. La sandbox se eliminó automáticamente.",
+    restoreRehearsalError:
+      "El ensayo de restauración falló. Revisa el archivo e inténtalo de nuevo.",
+    restoreRehearsalTableCaption: "Comparación del ensayo de restauración",
+    restoreRehearsalMetricColumn: "Tipo de dato",
+    restoreRehearsalLiveColumn: "Perfil en vivo",
+    restoreRehearsalSandboxColumn: "Importación en sandbox",
+    restoreRehearsalDifferenceColumn: "Diferencia",
+    restoreRehearsalClose: "Cerrar ensayo",
+    restoreRehearsalMetricProjects: "Proyectos",
+    restoreRehearsalMetricRules: "Reglas automáticas",
+    restoreRehearsalMetricFavorites: "Favoritos",
+    restoreRehearsalMatchLabel: "Coincide",
+    restoreRehearsalDifferenceListJoin: ", ",
+    restoreRehearsalIncreaseLabel: "La sandbox incluye %d %s más.",
+    restoreRehearsalDecreaseLabel: "La sandbox incluye %d %s menos.",
     factoryResetButton: "Restablecimiento de fábrica",
     factoryResetButtonHelp:
       "Crea una copia de seguridad y borra todos los datos del planificador tras la confirmación.",
@@ -3632,6 +3731,39 @@ const texts = {
     restoreSettings: "Restaurer",
     restoreSettingsHelp:
       "Chargez une sauvegarde JSON exportée auparavant pour restaurer données et réglages.",
+    restoreRehearsalButton: "Simulation de restauration",
+    restoreRehearsalButtonHelp:
+      "Testez une sauvegarde ou un lot de projet dans un espace temporaire avant de restaurer vos données actives.",
+    restoreRehearsalHeading: "Simulation de restauration",
+    restoreRehearsalIntro:
+      "Chargez une sauvegarde ou un lot de projet dans un espace jetable. Nous comparons les compteurs clés à votre profil actif puis supprimons automatiquement la sandbox.",
+    restoreRehearsalModeLabel: "Choisir la source de la simulation",
+    restoreRehearsalModeBackup: "Sauvegarde complète (.json)",
+    restoreRehearsalModeProject: "Lot de projet (.json)",
+    restoreRehearsalFileLabel: "Sélectionner un fichier",
+    restoreRehearsalFileButton: "Choisir un fichier",
+    restoreRehearsalNoFile: "Aucun fichier sélectionné pour le moment.",
+    restoreRehearsalReady: "Sandbox prête. Choisissez un fichier JSON à vérifier.",
+    restoreRehearsalProcessing: "Chargement du fichier dans une sandbox isolée…",
+    restoreRehearsalMatch:
+      "Tous les compteurs correspondent. La sandbox a été supprimée automatiquement.",
+    restoreRehearsalMismatch:
+      "Des différences ont été détectées : %s. La sandbox a été supprimée automatiquement.",
+    restoreRehearsalError:
+      "La simulation de restauration a échoué. Vérifiez le fichier et réessayez.",
+    restoreRehearsalTableCaption: "Comparaison de la simulation de restauration",
+    restoreRehearsalMetricColumn: "Type de donnée",
+    restoreRehearsalLiveColumn: "Profil actif",
+    restoreRehearsalSandboxColumn: "Import sandbox",
+    restoreRehearsalDifferenceColumn: "Différence",
+    restoreRehearsalClose: "Fermer la simulation",
+    restoreRehearsalMetricProjects: "Projets",
+    restoreRehearsalMetricRules: "Règles automatiques",
+    restoreRehearsalMetricFavorites: "Favoris",
+    restoreRehearsalMatchLabel: "Identique",
+    restoreRehearsalDifferenceListJoin: ", ",
+    restoreRehearsalIncreaseLabel: "La sandbox contient %d %s supplémentaires.",
+    restoreRehearsalDecreaseLabel: "La sandbox contient %d %s en moins.",
     factoryResetButton: "Réinitialisation d’usine",
     factoryResetButtonHelp:
       "Crée une sauvegarde puis efface toutes les données du planificateur après confirmation.",
@@ -4582,6 +4714,39 @@ const texts = {
     restoreSettings: "Wiederherstellen",
     restoreSettingsHelp:
       "Importiere eine zuvor exportierte JSON-Sicherung, um Daten und Einstellungen wiederherzustellen.",
+    restoreRehearsalButton: "Wiederherstellungsprobe",
+    restoreRehearsalButtonHelp:
+      "Teste eine Sicherung oder ein Projektpaket in einer Wegwerf-Sandbox, bevor du deine Live-Daten zurückspielst.",
+    restoreRehearsalHeading: "Wiederherstellungsprobe",
+    restoreRehearsalIntro:
+      "Lade eine Sicherung oder ein Projektpaket in eine Wegwerf-Arbeitsumgebung. Wir vergleichen die wichtigsten Anzahlen mit deinem Profil und entfernen die Sandbox danach automatisch.",
+    restoreRehearsalModeLabel: "Quelle für die Probe auswählen",
+    restoreRehearsalModeBackup: "Komplettes Backup (.json)",
+    restoreRehearsalModeProject: "Projektpaket (.json)",
+    restoreRehearsalFileLabel: "Datei auswählen",
+    restoreRehearsalFileButton: "Datei wählen",
+    restoreRehearsalNoFile: "Noch keine Datei ausgewählt.",
+    restoreRehearsalReady: "Sandbox bereit. Wähle eine JSON-Datei zur Prüfung.",
+    restoreRehearsalProcessing: "Datei wird in einer isolierten Sandbox geladen …",
+    restoreRehearsalMatch:
+      "Alle Anzahlen stimmen überein. Die Sandbox wurde automatisch gelöscht.",
+    restoreRehearsalMismatch:
+      "Abweichungen gefunden: %s. Die Sandbox wurde automatisch gelöscht.",
+    restoreRehearsalError:
+      "Wiederherstellungsprobe fehlgeschlagen. Prüfe die Datei und versuche es erneut.",
+    restoreRehearsalTableCaption: "Vergleich der Wiederherstellungsprobe",
+    restoreRehearsalMetricColumn: "Datenart",
+    restoreRehearsalLiveColumn: "Live-Profil",
+    restoreRehearsalSandboxColumn: "Sandbox-Import",
+    restoreRehearsalDifferenceColumn: "Differenz",
+    restoreRehearsalClose: "Probe schließen",
+    restoreRehearsalMetricProjects: "Projekte",
+    restoreRehearsalMetricRules: "Automatische Gear-Regeln",
+    restoreRehearsalMetricFavorites: "Favoriten",
+    restoreRehearsalMatchLabel: "Identisch",
+    restoreRehearsalDifferenceListJoin: ", ",
+    restoreRehearsalIncreaseLabel: "Sandbox enthält %d weitere %s.",
+    restoreRehearsalDecreaseLabel: "Sandbox enthält %d weniger %s.",
     factoryResetButton: "Werkseinstellungen",
     factoryResetButtonHelp:
       "Erstellt ein Backup und löscht nach Bestätigung alle Planer-Daten.",

@@ -5246,6 +5246,66 @@ function setLanguage(lang) {
     restoreSettings.setAttribute("title", restoreHelp);
     restoreSettings.setAttribute("aria-label", restoreHelp);
   }
+  if (restoreRehearsalButton) {
+    const rehearsalLabel = texts[lang].restoreRehearsalButton || 'Restore rehearsal';
+    setButtonLabelWithIcon(restoreRehearsalButton, rehearsalLabel, ICON_GLYPHS.load);
+    const rehearsalHelp = texts[lang].restoreRehearsalButtonHelp || rehearsalLabel;
+    restoreRehearsalButton.setAttribute('data-help', rehearsalHelp);
+    restoreRehearsalButton.setAttribute('title', rehearsalHelp);
+    restoreRehearsalButton.setAttribute('aria-label', rehearsalHelp);
+  }
+  if (restoreRehearsalHeading) {
+    restoreRehearsalHeading.textContent = texts[lang].restoreRehearsalHeading || restoreRehearsalHeading.textContent;
+  }
+  if (restoreRehearsalIntro) {
+    restoreRehearsalIntro.textContent = texts[lang].restoreRehearsalIntro || restoreRehearsalIntro.textContent;
+  }
+  if (restoreRehearsalModeLabel) {
+    restoreRehearsalModeLabel.textContent = texts[lang].restoreRehearsalModeLabel || restoreRehearsalModeLabel.textContent;
+  }
+  if (restoreRehearsalModeBackupText) {
+    restoreRehearsalModeBackupText.textContent = texts[lang].restoreRehearsalModeBackup || restoreRehearsalModeBackupText.textContent;
+  }
+  if (restoreRehearsalModeProjectText) {
+    restoreRehearsalModeProjectText.textContent = texts[lang].restoreRehearsalModeProject || restoreRehearsalModeProjectText.textContent;
+  }
+  if (restoreRehearsalFileLabel) {
+    restoreRehearsalFileLabel.textContent = texts[lang].restoreRehearsalFileLabel || restoreRehearsalFileLabel.textContent;
+  }
+  if (restoreRehearsalBrowse) {
+    const browseLabel = texts[lang].restoreRehearsalFileButton || 'Choose file';
+    setButtonLabelWithIcon(restoreRehearsalBrowse, browseLabel, ICON_GLYPHS.fileImport);
+    restoreRehearsalBrowse.setAttribute('data-help', browseLabel);
+    restoreRehearsalBrowse.setAttribute('title', browseLabel);
+    restoreRehearsalBrowse.setAttribute('aria-label', browseLabel);
+  }
+  if (restoreRehearsalFileName) {
+    restoreRehearsalFileName.textContent = texts[lang].restoreRehearsalNoFile || restoreRehearsalFileName.textContent;
+  }
+  if (restoreRehearsalStatus) {
+    restoreRehearsalStatus.textContent = texts[lang].restoreRehearsalReady || '';
+  }
+  if (restoreRehearsalTableCaption) {
+    restoreRehearsalTableCaption.textContent = texts[lang].restoreRehearsalTableCaption || restoreRehearsalTableCaption.textContent;
+  }
+  if (restoreRehearsalMetricHeader) {
+    restoreRehearsalMetricHeader.textContent = texts[lang].restoreRehearsalMetricColumn || restoreRehearsalMetricHeader.textContent;
+  }
+  if (restoreRehearsalLiveHeader) {
+    restoreRehearsalLiveHeader.textContent = texts[lang].restoreRehearsalLiveColumn || restoreRehearsalLiveHeader.textContent;
+  }
+  if (restoreRehearsalSandboxHeader) {
+    restoreRehearsalSandboxHeader.textContent = texts[lang].restoreRehearsalSandboxColumn || restoreRehearsalSandboxHeader.textContent;
+  }
+  if (restoreRehearsalDifferenceHeader) {
+    restoreRehearsalDifferenceHeader.textContent = texts[lang].restoreRehearsalDifferenceColumn || restoreRehearsalDifferenceHeader.textContent;
+  }
+  if (restoreRehearsalCloseButton) {
+    const closeLabel = texts[lang].restoreRehearsalClose || texts[lang].cancelSettings || 'Close';
+    setButtonLabelWithIcon(restoreRehearsalCloseButton, closeLabel, ICON_GLYPHS.circleX);
+    restoreRehearsalCloseButton.setAttribute('title', closeLabel);
+    restoreRehearsalCloseButton.setAttribute('aria-label', closeLabel);
+  }
   if (factoryResetButton) {
     const resetLabel = texts[lang].factoryResetButton || "Factory reset";
     const resetHelp =
@@ -12843,6 +12903,24 @@ const backupSettings = document.getElementById("backupSettings");
 const restoreSettings = document.getElementById("restoreSettings");
 const factoryResetButton = document.getElementById("factoryResetButton");
 const restoreSettingsInput = document.getElementById("restoreSettingsInput");
+const restoreRehearsalButton = document.getElementById("restoreRehearsalButton");
+const restoreRehearsalSection = document.getElementById("restoreRehearsalSection");
+const restoreRehearsalHeading = document.getElementById("restoreRehearsalHeading");
+const restoreRehearsalIntro = document.getElementById("restoreRehearsalIntro");
+const restoreRehearsalModeLabel = document.getElementById("restoreRehearsalModeLabel");
+const restoreRehearsalModeBackupText = document.getElementById("restoreRehearsalModeBackupText");
+const restoreRehearsalModeProjectText = document.getElementById("restoreRehearsalModeProjectText");
+const restoreRehearsalFileLabel = document.getElementById("restoreRehearsalFileLabel");
+const restoreRehearsalBrowse = document.getElementById("restoreRehearsalBrowse");
+const restoreRehearsalFileName = document.getElementById("restoreRehearsalFileName");
+const restoreRehearsalStatus = document.getElementById("restoreRehearsalStatus");
+const restoreRehearsalTable = document.getElementById("restoreRehearsalTable");
+const restoreRehearsalTableCaption = document.getElementById("restoreRehearsalTableCaption");
+const restoreRehearsalMetricHeader = document.getElementById("restoreRehearsalMetricHeader");
+const restoreRehearsalLiveHeader = document.getElementById("restoreRehearsalLiveHeader");
+const restoreRehearsalSandboxHeader = document.getElementById("restoreRehearsalSandboxHeader");
+const restoreRehearsalDifferenceHeader = document.getElementById("restoreRehearsalDifferenceHeader");
+const restoreRehearsalCloseButton = document.getElementById("restoreRehearsalClose");
 const settingsShowAutoBackups = document.getElementById("settingsShowAutoBackups");
 const backupDiffToggleButton = document.getElementById("backupDiffToggleButton");
 const backupDiffSection = document.getElementById("backupDiffSection");

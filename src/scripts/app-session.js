@@ -75,6 +75,362 @@ const {
   closeButton: backupDiffCloseButtonEl,
 } = createBackupDiffRefs();
 
+function createRestoreRehearsalRefs() {
+  const doc = typeof document !== 'undefined' ? document : null;
+  if (!doc) {
+    return {
+      button: null,
+      section: null,
+      heading: null,
+      closeButton: null,
+      input: null,
+      browseButton: null,
+      fileName: null,
+      status: null,
+      table: null,
+      tableBody: null,
+      modeInputs: [],
+    };
+  }
+  const modeInputs = [
+    doc.getElementById('restoreRehearsalModeBackup'),
+    doc.getElementById('restoreRehearsalModeProject'),
+  ].filter(Boolean);
+  return {
+    button: doc.getElementById('restoreRehearsalButton'),
+    section: doc.getElementById('restoreRehearsalSection'),
+    heading: doc.getElementById('restoreRehearsalHeading'),
+    closeButton: doc.getElementById('restoreRehearsalClose'),
+    input: doc.getElementById('restoreRehearsalInput'),
+    browseButton: doc.getElementById('restoreRehearsalBrowse'),
+    fileName: doc.getElementById('restoreRehearsalFileName'),
+    status: doc.getElementById('restoreRehearsalStatus'),
+    table: doc.getElementById('restoreRehearsalTable'),
+    tableBody: doc.getElementById('restoreRehearsalTableBody'),
+    modeInputs,
+  };
+}
+
+const {
+  button: restoreRehearsalButtonEl,
+  section: restoreRehearsalSectionEl,
+  heading: restoreRehearsalHeadingEl,
+  closeButton: restoreRehearsalCloseButtonEl,
+  input: restoreRehearsalInputEl,
+  browseButton: restoreRehearsalBrowseButtonEl,
+  fileName: restoreRehearsalFileNameEl,
+  status: restoreRehearsalStatusEl,
+  table: restoreRehearsalTableEl,
+  tableBody: restoreRehearsalTableBodyEl,
+  modeInputs: restoreRehearsalModeInputs,
+} = createRestoreRehearsalRefs();
+
+function countProjectsFromSetups(setups) {
+  if (Array.isArray(setups)) {
+    return setups.length;
+  }
+  if (isPlainObject(setups)) {
+    return Object.keys(setups).length;
+  }
+  if (typeof setups === 'string' && setups.trim()) {
+    return 1;
+  }
+  return 0;
+}
+
+function countFavoritesEntries(favorites) {
+  if (!isPlainObject(favorites)) return 0;
+  return Object.values(favorites).reduce((count, entry) => {
+    if (Array.isArray(entry)) {
+      return count + entry.filter(Boolean).length;
+    }
+    if (isPlainObject(entry) && Array.isArray(entry.entries)) {
+      return count + entry.entries.filter(Boolean).length;
+    }
+    return count;
+  }, 0);
+}
+
+function summarizeCountsFromData(data) {
+  const setups = isPlainObject(data) && isPlainObject(data.setups) ? data.setups : {};
+  const rules = isPlainObject(data) && Array.isArray(data.autoGearRules)
+    ? data.autoGearRules
+    : [];
+  const favorites = isPlainObject(data) && isPlainObject(data.favorites)
+    ? data.favorites
+    : {};
+  return {
+    projects: countProjectsFromSetups(setups),
+    rules: rules.length,
+    favorites: countFavoritesEntries(favorites),
+  };
+}
+
+function bundleHasProject(bundle) {
+  if (!isPlainObject(bundle)) return false;
+  if (typeof bundle.setupName === 'string' && bundle.setupName.trim()) return true;
+  if (typeof bundle.projectHtml === 'string' && bundle.projectHtml.trim()) return true;
+  if (typeof bundle.gearList === 'string' && bundle.gearList.trim()) return true;
+  if (isPlainObject(bundle.projectInfo) && Object.keys(bundle.projectInfo).length) return true;
+  if (isPlainObject(bundle.gearSelectors) && Object.keys(bundle.gearSelectors).length) return true;
+  const deviceFields = [
+    'camera',
+    'monitor',
+    'video',
+    'cage',
+    'distance',
+    'batteryPlate',
+    'battery',
+    'batteryHotswap',
+  ];
+  if (deviceFields.some((field) => typeof bundle[field] === 'string' && bundle[field].trim())) {
+    return true;
+  }
+  if (Array.isArray(bundle.motors) && bundle.motors.some(Boolean)) return true;
+  if (Array.isArray(bundle.controllers) && bundle.controllers.some(Boolean)) return true;
+  return false;
+}
+
+function summarizeProjectBundle(bundle) {
+  if (!isPlainObject(bundle)) {
+    return { projects: 0, rules: 0, favorites: 0 };
+  }
+  const favorites = isPlainObject(bundle.favorites) ? bundle.favorites : {};
+  return {
+    projects: bundleHasProject(bundle) ? 1 : 0,
+    rules: Array.isArray(bundle.autoGearRules) ? bundle.autoGearRules.length : 0,
+    favorites: countFavoritesEntries(favorites),
+  };
+}
+
+function getRestoreRehearsalLiveCounts() {
+  const snapshot = typeof exportAllData === 'function' ? exportAllData() : {};
+  return summarizeCountsFromData(isPlainObject(snapshot) ? snapshot : {});
+}
+
+function getSelectedRestoreRehearsalMode() {
+  if (!Array.isArray(restoreRehearsalModeInputs) || !restoreRehearsalModeInputs.length) {
+    return 'backup';
+  }
+  const selected = restoreRehearsalModeInputs.find((input) => input && input.checked);
+  return selected && typeof selected.value === 'string' ? selected.value : 'backup';
+}
+
+function buildRestoreRehearsalRows(liveCounts, sandboxCounts) {
+  const lang = typeof currentLang === 'string' && texts[currentLang] ? currentLang : 'en';
+  const langTexts = texts[lang] || texts.en || {};
+  const metrics = [
+    { key: 'projects', label: langTexts.restoreRehearsalMetricProjects || 'Projects' },
+    { key: 'rules', label: langTexts.restoreRehearsalMetricRules || 'Rules' },
+    { key: 'favorites', label: langTexts.restoreRehearsalMetricFavorites || 'Favorites' },
+  ];
+  return metrics.map((metric) => {
+    const live = typeof liveCounts[metric.key] === 'number' ? liveCounts[metric.key] : 0;
+    const sandbox = typeof sandboxCounts[metric.key] === 'number' ? sandboxCounts[metric.key] : 0;
+    return {
+      key: metric.key,
+      label: metric.label,
+      live,
+      sandbox,
+      diff: sandbox - live,
+    };
+  });
+}
+
+function resetRestoreRehearsalState(options = {}) {
+  const { keepStatus = false } = options || {};
+  if (restoreRehearsalFileNameEl) {
+    const lang = typeof currentLang === 'string' && texts[currentLang] ? currentLang : 'en';
+    const fallback = texts.en?.restoreRehearsalNoFile || 'No file selected yet.';
+    const message = texts[lang]?.restoreRehearsalNoFile || fallback;
+    restoreRehearsalFileNameEl.textContent = message;
+  }
+  if (!keepStatus && restoreRehearsalStatusEl) {
+    const lang = typeof currentLang === 'string' && texts[currentLang] ? currentLang : 'en';
+    const fallback = texts.en?.restoreRehearsalReady || '';
+    restoreRehearsalStatusEl.textContent = texts[lang]?.restoreRehearsalReady || fallback;
+  }
+  if (restoreRehearsalTableEl) {
+    restoreRehearsalTableEl.setAttribute('hidden', '');
+  }
+  if (restoreRehearsalTableBodyEl) {
+    while (restoreRehearsalTableBodyEl.firstChild) {
+      restoreRehearsalTableBodyEl.removeChild(restoreRehearsalTableBodyEl.firstChild);
+    }
+  }
+  if (restoreRehearsalInputEl) {
+    restoreRehearsalInputEl.value = '';
+  }
+}
+
+function openRestoreRehearsal() {
+  if (!restoreRehearsalSectionEl) return;
+  restoreRehearsalSectionEl.removeAttribute('hidden');
+  resetRestoreRehearsalState();
+  if (restoreRehearsalHeadingEl && typeof restoreRehearsalHeadingEl.focus === 'function') {
+    restoreRehearsalHeadingEl.focus({ preventScroll: true });
+  }
+}
+
+function closeRestoreRehearsal() {
+  resetRestoreRehearsalState();
+  if (restoreRehearsalSectionEl) {
+    restoreRehearsalSectionEl.setAttribute('hidden', '');
+  }
+}
+
+function readFileAsText(file) {
+  if (!file) {
+    return Promise.reject(new Error('No file provided'));
+  }
+  if (typeof file.text === 'function') {
+    return Promise.resolve().then(() => file.text());
+  }
+  return new Promise((resolve, reject) => {
+    if (typeof FileReader !== 'function') {
+      reject(new Error('No supported file reader available'));
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(reader.error || new Error('Failed to read file'));
+    try {
+      reader.readAsText(file);
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
+function formatRestoreRehearsalSummary(rows) {
+  const lang = typeof currentLang === 'string' && texts[currentLang] ? currentLang : 'en';
+  const langTexts = texts[lang] || texts.en || {};
+  const joiner = langTexts.restoreRehearsalDifferenceListJoin || ', ';
+  const diffs = rows
+    .filter((row) => row.diff !== 0)
+    .map((row) => `${row.label} (${row.diff > 0 ? '+' : '−'}${Math.abs(row.diff)})`);
+  if (!diffs.length) {
+    return langTexts.restoreRehearsalMatch
+      || texts.en?.restoreRehearsalMatch
+      || 'All counts match. The sandbox was cleared automatically.';
+  }
+  const template = langTexts.restoreRehearsalMismatch
+    || texts.en?.restoreRehearsalMismatch
+    || 'Differences detected: %s. The sandbox was cleared automatically.';
+  return template.replace('%s', diffs.join(joiner));
+}
+
+function applyRestoreRehearsalDifferenceCell(cell, label, diff) {
+  if (!cell) return;
+  const lang = typeof currentLang === 'string' && texts[currentLang] ? currentLang : 'en';
+  const langTexts = texts[lang] || texts.en || {};
+  cell.textContent = '';
+  cell.classList.remove('restore-rehearsal-diff-match', 'restore-rehearsal-diff-positive', 'restore-rehearsal-diff-negative');
+  if (diff === 0) {
+    const text = langTexts.restoreRehearsalMatchLabel || texts.en?.restoreRehearsalMatchLabel || 'Match';
+    cell.textContent = text;
+    cell.classList.add('restore-rehearsal-diff-match');
+    cell.setAttribute('aria-label', `${label} ${text}`);
+    return;
+  }
+  const abs = Math.abs(diff);
+  const template = diff > 0
+    ? langTexts.restoreRehearsalIncreaseLabel || texts.en?.restoreRehearsalIncreaseLabel || 'Sandbox includes %d more %s.'
+    : langTexts.restoreRehearsalDecreaseLabel || texts.en?.restoreRehearsalDecreaseLabel || 'Sandbox includes %d fewer %s.';
+  const display = `${diff > 0 ? '+' : '−'}${abs}`;
+  cell.textContent = display;
+  cell.setAttribute('aria-label', template.replace('%d', abs).replace('%s', label));
+  cell.classList.add(diff > 0 ? 'restore-rehearsal-diff-positive' : 'restore-rehearsal-diff-negative');
+}
+
+function renderRestoreRehearsalResults(rows) {
+  if (!restoreRehearsalTableBodyEl || !restoreRehearsalStatusEl) return;
+  while (restoreRehearsalTableBodyEl.firstChild) {
+    restoreRehearsalTableBodyEl.removeChild(restoreRehearsalTableBodyEl.firstChild);
+  }
+  rows.forEach((row) => {
+    const tr = document.createElement('tr');
+    const metricCell = document.createElement('th');
+    metricCell.scope = 'row';
+    metricCell.textContent = row.label;
+    tr.appendChild(metricCell);
+
+    const liveCell = document.createElement('td');
+    liveCell.textContent = String(row.live);
+    tr.appendChild(liveCell);
+
+    const sandboxCell = document.createElement('td');
+    sandboxCell.textContent = String(row.sandbox);
+    tr.appendChild(sandboxCell);
+
+    const diffCell = document.createElement('td');
+    applyRestoreRehearsalDifferenceCell(diffCell, row.label, row.diff);
+    tr.appendChild(diffCell);
+
+    restoreRehearsalTableBodyEl.appendChild(tr);
+  });
+  if (restoreRehearsalTableEl) {
+    restoreRehearsalTableEl.removeAttribute('hidden');
+  }
+  restoreRehearsalStatusEl.textContent = formatRestoreRehearsalSummary(rows);
+}
+
+function runRestoreRehearsal(file) {
+  if (!file) return;
+  const lang = typeof currentLang === 'string' && texts[currentLang] ? currentLang : 'en';
+  const langTexts = texts[lang] || texts.en || {};
+  if (restoreRehearsalStatusEl) {
+    const processingText = langTexts.restoreRehearsalProcessing
+      || texts.en?.restoreRehearsalProcessing
+      || 'Loading file in an isolated sandbox…';
+    restoreRehearsalStatusEl.textContent = processingText;
+  }
+  readFileAsText(file)
+    .then((raw) => {
+      const mode = getSelectedRestoreRehearsalMode();
+      let sandboxCounts;
+      if (mode === 'project') {
+        const parsed = JSON.parse(raw);
+        sandboxCounts = summarizeProjectBundle(parsed);
+      } else {
+        const sanitizedPayload = sanitizeBackupPayload(raw);
+        if (!sanitizedPayload || !sanitizedPayload.trim()) {
+          throw new Error('Backup payload empty');
+        }
+        const parsed = JSON.parse(sanitizedPayload);
+        const { data } = extractBackupSections(parsed);
+        sandboxCounts = summarizeCountsFromData(isPlainObject(data) ? data : {});
+      }
+      const liveCounts = getRestoreRehearsalLiveCounts();
+      const rows = buildRestoreRehearsalRows(liveCounts, sandboxCounts);
+      renderRestoreRehearsalResults(rows);
+      if (restoreRehearsalInputEl) {
+        restoreRehearsalInputEl.value = '';
+      }
+    })
+    .catch((error) => {
+      console.warn('Restore rehearsal failed', error);
+      if (restoreRehearsalStatusEl) {
+        const failureMessage = langTexts.restoreRehearsalError
+          || texts.en?.restoreRehearsalError
+          || 'Restore rehearsal failed. Check the file and try again.';
+        restoreRehearsalStatusEl.textContent = failureMessage;
+      }
+      if (restoreRehearsalTableEl) {
+        restoreRehearsalTableEl.setAttribute('hidden', '');
+      }
+    })
+    .finally(() => {
+      if (restoreRehearsalInputEl) {
+        try {
+          restoreRehearsalInputEl.value = '';
+        } catch (resetError) {
+          void resetError;
+        }
+      }
+    });
+}
+
 function saveCurrentSession(options = {}) {
   if (restoringSession || factoryResetInProgress) return;
   const info = projectForm ? collectProjectFormData() : {};
@@ -3242,9 +3598,41 @@ if (restoreSettings && restoreSettingsInput) {
       }
     }
 
-    if (!attemptTextFallback()) {
+  if (!attemptTextFallback()) {
       handleRestoreError(new Error('No supported file reader available'));
     }
+  });
+}
+
+if (restoreRehearsalButtonEl) {
+  restoreRehearsalButtonEl.addEventListener('click', () => {
+    openRestoreRehearsal();
+  });
+}
+
+if (restoreRehearsalCloseButtonEl) {
+  restoreRehearsalCloseButtonEl.addEventListener('click', () => {
+    closeRestoreRehearsal();
+  });
+}
+
+if (restoreRehearsalBrowseButtonEl && restoreRehearsalInputEl) {
+  restoreRehearsalBrowseButtonEl.addEventListener('click', () => {
+    restoreRehearsalInputEl.click();
+  });
+}
+
+if (restoreRehearsalInputEl) {
+  restoreRehearsalInputEl.addEventListener('change', () => {
+    const file = restoreRehearsalInputEl.files && restoreRehearsalInputEl.files[0];
+    if (!file) {
+      resetRestoreRehearsalState({ keepStatus: true });
+      return;
+    }
+    if (restoreRehearsalFileNameEl) {
+      restoreRehearsalFileNameEl.textContent = file.name || restoreRehearsalFileNameEl.textContent;
+    }
+    runRestoreRehearsal(file);
   });
 }
 
