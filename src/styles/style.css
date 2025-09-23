@@ -1661,6 +1661,11 @@ body.high-contrast .settings-tab[aria-selected="true"] {
   margin-top: 12px;
 }
 
+.auto-gear-filters .auto-gear-action-row {
+  flex: 1 1 100%;
+  margin-top: 0;
+}
+
 .auto-gear-backups {
   margin-top: 16px;
   padding: 16px;

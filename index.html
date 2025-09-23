@@ -1053,6 +1053,13 @@
           </div>
         </div>
         <div id="autoGearFilters" class="auto-gear-filters" role="search">
+          <div class="auto-gear-action-row">
+            <button type="button" id="autoGearAddRule">Add rule</button>
+            <button type="button" id="autoGearResetFactory">Reset to factory additions</button>
+            <button type="button" id="autoGearExport">Export rules</button>
+            <button type="button" id="autoGearImport">Import rules</button>
+            <input type="file" id="autoGearImportInput" accept=".json,application/json" hidden />
+          </div>
           <div class="auto-gear-filter-field">
             <label for="autoGearSearch" id="autoGearSearchLabel">Search rules</label>
             <input
@@ -1073,13 +1080,6 @@
           </button>
         </div>
         <div id="autoGearRulesList" class="auto-gear-rules" aria-live="polite"></div>
-        <div class="auto-gear-action-row">
-          <button type="button" id="autoGearAddRule">Add rule</button>
-          <button type="button" id="autoGearResetFactory">Reset to factory additions</button>
-          <button type="button" id="autoGearExport">Export rules</button>
-          <button type="button" id="autoGearImport">Import rules</button>
-          <input type="file" id="autoGearImportInput" accept=".json,application/json" hidden />
-        </div>
         <div id="autoGearEditor" class="auto-gear-editor" hidden>
           <div class="form-row">
             <label for="autoGearRuleName" id="autoGearRuleNameLabel">Rule name</label>
