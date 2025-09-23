@@ -5637,6 +5637,12 @@ const ICON_GLYPHS = Object.freeze({
   sun: iconGlyph('\uF1FE', ICON_FONT_KEYS.UICONS),
   moon: iconGlyph('\uEC7E', ICON_FONT_KEYS.UICONS),
   circleX: iconGlyph('\uF131', ICON_FONT_KEYS.ESSENTIAL),
+  settingsGeneral: iconGlyph('\uEAC4', ICON_FONT_KEYS.UICONS),
+  settingsAutoGear: iconGlyph('\uE467', ICON_FONT_KEYS.UICONS),
+  settingsAccessibility: iconGlyph('\uE597', ICON_FONT_KEYS.UICONS),
+  settingsBackup: iconGlyph('\uE825', ICON_FONT_KEYS.UICONS),
+  settingsData: iconGlyph('\uF2DF', ICON_FONT_KEYS.UICONS),
+  settingsAbout: iconGlyph('\uF139', ICON_FONT_KEYS.UICONS),
   star: Object.freeze({
     markup: STAR_ICON_SVG,
     className: 'icon-svg favorite-star-icon'
@@ -8483,6 +8489,21 @@ const settingsTabAccessibility = document.getElementById('settingsTab-accessibil
 const settingsTabBackup = document.getElementById('settingsTab-backup');
 const settingsTabData = document.getElementById('settingsTab-data');
 const settingsTabAbout = document.getElementById('settingsTab-about');
+const settingsTabIconAssignments = [
+  [settingsTabGeneral, ICON_GLYPHS.settingsGeneral],
+  [settingsTabAutoGear, ICON_GLYPHS.settingsAutoGear],
+  [settingsTabAccessibility, ICON_GLYPHS.settingsAccessibility],
+  [settingsTabBackup, ICON_GLYPHS.settingsBackup],
+  [settingsTabData, ICON_GLYPHS.settingsData],
+  [settingsTabAbout, ICON_GLYPHS.settingsAbout]
+];
+settingsTabIconAssignments.forEach(([button, glyph]) => {
+  if (!button || !glyph) return;
+  const iconElement = button.querySelector?.('.settings-tab-icon');
+  if (!iconElement) return;
+  applyIconGlyph(iconElement, glyph);
+  iconElement.setAttribute('aria-hidden', 'true');
+});
 const generalSettingsHeading = document.getElementById('generalSettingsHeading');
 const settingsLanguage = document.getElementById("settingsLanguage");
 const settingsDarkMode = document.getElementById("settingsDarkMode");
