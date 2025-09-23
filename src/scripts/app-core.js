@@ -4847,6 +4847,33 @@ function setLanguage(lang) {
       autoGearRuleNameInput.setAttribute('aria-label', label);
     }
   }
+  if (autoGearConditionSelectLabel) {
+    const label = texts[lang].autoGearConditionSelectLabel
+      || texts.en?.autoGearConditionSelectLabel
+      || autoGearConditionSelectLabel.textContent
+      || 'Add a condition';
+    const help = texts[lang].autoGearConditionSelectHelp
+      || texts.en?.autoGearConditionSelectHelp
+      || label;
+    autoGearConditionSelectLabel.textContent = label;
+    autoGearConditionSelectLabel.setAttribute('data-help', help);
+    if (autoGearConditionSelect) {
+      autoGearConditionSelect.setAttribute('aria-label', label);
+      autoGearConditionSelect.setAttribute('data-help', help);
+    }
+  }
+  if (autoGearConditionAddButton) {
+    const label = texts[lang].autoGearAddCondition
+      || texts.en?.autoGearAddCondition
+      || autoGearConditionAddButton.textContent
+      || 'Add condition';
+    setButtonLabelWithIcon(autoGearConditionAddButton, label, ICON_GLYPHS.add);
+    autoGearConditionAddButton.setAttribute('aria-label', label);
+    autoGearConditionAddButton.setAttribute('data-help', label);
+  }
+  configureAutoGearConditionButtons();
+  refreshAutoGearConditionPicker();
+  updateAutoGearConditionAddButtonState();
   if (autoGearScenariosLabel) {
     const label = texts[lang].autoGearScenariosLabel || texts.en?.autoGearScenariosLabel || autoGearScenariosLabel.textContent;
     autoGearScenariosLabel.textContent = label;
@@ -8987,6 +9014,52 @@ const autoGearDeletePresetButton = document.getElementById('autoGearDeletePreset
 const autoGearAddRuleBtn = document.getElementById('autoGearAddRule');
 const autoGearResetFactoryButton = document.getElementById('autoGearResetFactory');
 const autoGearEditor = document.getElementById('autoGearEditor');
+const autoGearConditionControls = document.getElementById('autoGearConditionControls');
+const autoGearConditionSelectLabel = document.getElementById('autoGearConditionSelectLabel');
+const autoGearConditionSelect = document.getElementById('autoGearConditionSelect');
+const autoGearConditionAddButton = document.getElementById('autoGearConditionAdd');
+const autoGearConditionList = document.getElementById('autoGearConditionList');
+const autoGearConditionSections = {
+  scenarios: document.getElementById('autoGearCondition-scenarios'),
+  mattebox: document.getElementById('autoGearCondition-mattebox'),
+  cameraHandle: document.getElementById('autoGearCondition-cameraHandle'),
+  viewfinderExtension: document.getElementById('autoGearCondition-viewfinderExtension'),
+  videoDistribution: document.getElementById('autoGearCondition-videoDistribution'),
+  camera: document.getElementById('autoGearCondition-camera'),
+  monitor: document.getElementById('autoGearCondition-monitor'),
+  wireless: document.getElementById('autoGearCondition-wireless'),
+  motors: document.getElementById('autoGearCondition-motors'),
+  controllers: document.getElementById('autoGearCondition-controllers'),
+  distance: document.getElementById('autoGearCondition-distance'),
+};
+
+const autoGearConditionAddShortcuts = {
+  scenarios: autoGearConditionSections.scenarios?.querySelector('.auto-gear-condition-add') || null,
+  mattebox: autoGearConditionSections.mattebox?.querySelector('.auto-gear-condition-add') || null,
+  cameraHandle: autoGearConditionSections.cameraHandle?.querySelector('.auto-gear-condition-add') || null,
+  viewfinderExtension: autoGearConditionSections.viewfinderExtension?.querySelector('.auto-gear-condition-add') || null,
+  videoDistribution: autoGearConditionSections.videoDistribution?.querySelector('.auto-gear-condition-add') || null,
+  camera: autoGearConditionSections.camera?.querySelector('.auto-gear-condition-add') || null,
+  monitor: autoGearConditionSections.monitor?.querySelector('.auto-gear-condition-add') || null,
+  wireless: autoGearConditionSections.wireless?.querySelector('.auto-gear-condition-add') || null,
+  motors: autoGearConditionSections.motors?.querySelector('.auto-gear-condition-add') || null,
+  controllers: autoGearConditionSections.controllers?.querySelector('.auto-gear-condition-add') || null,
+  distance: autoGearConditionSections.distance?.querySelector('.auto-gear-condition-add') || null,
+};
+
+const autoGearConditionRemoveButtons = {
+  scenarios: autoGearConditionSections.scenarios?.querySelector('.auto-gear-condition-remove') || null,
+  mattebox: autoGearConditionSections.mattebox?.querySelector('.auto-gear-condition-remove') || null,
+  cameraHandle: autoGearConditionSections.cameraHandle?.querySelector('.auto-gear-condition-remove') || null,
+  viewfinderExtension: autoGearConditionSections.viewfinderExtension?.querySelector('.auto-gear-condition-remove') || null,
+  videoDistribution: autoGearConditionSections.videoDistribution?.querySelector('.auto-gear-condition-remove') || null,
+  camera: autoGearConditionSections.camera?.querySelector('.auto-gear-condition-remove') || null,
+  monitor: autoGearConditionSections.monitor?.querySelector('.auto-gear-condition-remove') || null,
+  wireless: autoGearConditionSections.wireless?.querySelector('.auto-gear-condition-remove') || null,
+  motors: autoGearConditionSections.motors?.querySelector('.auto-gear-condition-remove') || null,
+  controllers: autoGearConditionSections.controllers?.querySelector('.auto-gear-condition-remove') || null,
+  distance: autoGearConditionSections.distance?.querySelector('.auto-gear-condition-remove') || null,
+};
 
 if (autoGearAddRuleBtn) {
   autoGearAddRuleBtn.setAttribute('aria-controls', 'autoGearEditor');
@@ -9022,6 +9095,363 @@ const autoGearControllersSelect = document.getElementById('autoGearControllers')
 const autoGearControllersLabel = document.getElementById('autoGearControllersLabel');
 const autoGearDistanceSelect = document.getElementById('autoGearDistance');
 const autoGearDistanceLabel = document.getElementById('autoGearDistanceLabel');
+const autoGearConditionLabels = {
+  scenarios: autoGearScenariosLabel,
+  mattebox: autoGearMatteboxLabel,
+  cameraHandle: autoGearCameraHandleLabel,
+  viewfinderExtension: autoGearViewfinderExtensionLabel,
+  videoDistribution: autoGearVideoDistributionLabel,
+  camera: autoGearCameraLabel,
+  monitor: autoGearMonitorLabel,
+  wireless: autoGearWirelessLabel,
+  motors: autoGearMotorsLabel,
+  controllers: autoGearControllersLabel,
+  distance: autoGearDistanceLabel,
+};
+const autoGearConditionSelects = {
+  scenarios: autoGearScenariosSelect,
+  mattebox: autoGearMatteboxSelect,
+  cameraHandle: autoGearCameraHandleSelect,
+  viewfinderExtension: autoGearViewfinderExtensionSelect,
+  videoDistribution: autoGearVideoDistributionSelect,
+  camera: autoGearCameraSelect,
+  monitor: autoGearMonitorSelect,
+  wireless: autoGearWirelessSelect,
+  motors: autoGearMotorsSelect,
+  controllers: autoGearControllersSelect,
+  distance: autoGearDistanceSelect,
+};
+const AUTO_GEAR_CONDITION_KEYS = [
+  'scenarios',
+  'mattebox',
+  'cameraHandle',
+  'viewfinderExtension',
+  'videoDistribution',
+  'camera',
+  'monitor',
+  'wireless',
+  'motors',
+  'controllers',
+  'distance',
+];
+const AUTO_GEAR_CONDITION_FALLBACK_LABELS = {
+  scenarios: 'Required scenarios',
+  mattebox: 'Mattebox options',
+  cameraHandle: 'Camera handles',
+  viewfinderExtension: 'Viewfinder extension',
+  videoDistribution: 'Video distribution',
+  camera: 'Camera',
+  monitor: 'Onboard monitor',
+  wireless: 'Wireless transmitter',
+  motors: 'FIZ motors',
+  controllers: 'FIZ controllers',
+  distance: 'FIZ distance devices',
+};
+const autoGearConditionConfigs = AUTO_GEAR_CONDITION_KEYS.reduce((acc, key) => {
+  const section = autoGearConditionSections[key] || null;
+  acc[key] = {
+    key,
+    section,
+    label: autoGearConditionLabels[key] || null,
+    select: autoGearConditionSelects[key] || null,
+    addShortcut: autoGearConditionAddShortcuts[key] || null,
+    removeButton: autoGearConditionRemoveButtons[key] || null,
+  };
+  if (section) {
+    section.setAttribute('aria-hidden', section.hidden ? 'true' : 'false');
+  }
+  return acc;
+}, {});
+const autoGearConditionRefreshers = {
+  scenarios: refreshAutoGearScenarioOptions,
+  mattebox: refreshAutoGearMatteboxOptions,
+  cameraHandle: refreshAutoGearCameraHandleOptions,
+  viewfinderExtension: refreshAutoGearViewfinderExtensionOptions,
+  videoDistribution: refreshAutoGearVideoDistributionOptions,
+  camera: refreshAutoGearCameraOptions,
+  monitor: refreshAutoGearMonitorOptions,
+  wireless: refreshAutoGearWirelessOptions,
+  motors: refreshAutoGearMotorsOptions,
+  controllers: refreshAutoGearControllersOptions,
+  distance: refreshAutoGearDistanceOptions,
+};
+const autoGearActiveConditions = new Set();
+
+function getAutoGearConditionConfig(key) {
+  if (!key) return null;
+  if (Object.prototype.hasOwnProperty.call(autoGearConditionConfigs, key)) {
+    return autoGearConditionConfigs[key];
+  }
+  return null;
+}
+
+function getAutoGearConditionLabel(key) {
+  const config = getAutoGearConditionConfig(key);
+  if (config && config.label && typeof config.label.textContent === 'string') {
+    const text = config.label.textContent.trim();
+    if (text) return text;
+  }
+  const fallback = AUTO_GEAR_CONDITION_FALLBACK_LABELS[key];
+  if (typeof fallback === 'string' && fallback) {
+    return fallback;
+  }
+  if (typeof key === 'string' && key) {
+    return key.replace(/([A-Z])/g, ' $1').replace(/^./, char => char.toUpperCase());
+  }
+  return '';
+}
+
+function isAutoGearConditionActive(key) {
+  return autoGearActiveConditions.has(key);
+}
+
+function refreshAutoGearConditionPicker() {
+  if (!autoGearConditionSelect) return;
+  const previousValue = autoGearConditionSelect.value || '';
+  const placeholderLabel = texts[currentLang]?.autoGearConditionPlaceholder
+    || texts.en?.autoGearConditionPlaceholder
+    || 'Choose a condition';
+  autoGearConditionSelect.innerHTML = '';
+  const placeholder = document.createElement('option');
+  placeholder.value = '';
+  placeholder.textContent = placeholderLabel;
+  autoGearConditionSelect.appendChild(placeholder);
+  const available = AUTO_GEAR_CONDITION_KEYS.filter(key => !autoGearActiveConditions.has(key));
+  available.forEach(key => {
+    const option = document.createElement('option');
+    option.value = key;
+    option.textContent = getAutoGearConditionLabel(key);
+    autoGearConditionSelect.appendChild(option);
+  });
+  if (previousValue && available.includes(previousValue)) {
+    autoGearConditionSelect.value = previousValue;
+  } else {
+    autoGearConditionSelect.value = '';
+  }
+  autoGearConditionSelect.disabled = available.length === 0;
+}
+
+function updateAutoGearConditionAddButtonState() {
+  const hasSelection = autoGearConditionSelect && autoGearConditionSelect.value;
+  const disabledPicker = autoGearConditionSelect ? autoGearConditionSelect.disabled : true;
+  if (autoGearConditionAddButton) {
+    autoGearConditionAddButton.disabled = !hasSelection || disabledPicker;
+  }
+  const hasAvailable = AUTO_GEAR_CONDITION_KEYS.some(key => !autoGearActiveConditions.has(key));
+  AUTO_GEAR_CONDITION_KEYS.forEach(key => {
+    const shortcut = autoGearConditionAddShortcuts[key];
+    if (shortcut) {
+      shortcut.disabled = !hasAvailable;
+    }
+  });
+}
+
+function focusAutoGearConditionPicker() {
+  if (autoGearConditionSelect) {
+    try {
+      autoGearConditionSelect.focus({ preventScroll: true });
+    } catch {
+      autoGearConditionSelect.focus();
+    }
+  }
+}
+
+function handleAutoGearConditionShortcut() {
+  if (!autoGearConditionSelect) {
+    focusAutoGearConditionPicker();
+    return;
+  }
+  if (autoGearConditionSelect.disabled) {
+    focusAutoGearConditionPicker();
+    return;
+  }
+  const availableOptions = Array.from(autoGearConditionSelect.options || [])
+    .filter(option => option.value);
+  if (availableOptions.length === 1) {
+    autoGearConditionSelect.value = availableOptions[0].value;
+    addAutoGearConditionFromPicker();
+    return;
+  }
+  focusAutoGearConditionPicker();
+}
+
+function configureAutoGearConditionButtons() {
+  const addLabel = texts[currentLang]?.autoGearConditionAddShortcut
+    || texts.en?.autoGearConditionAddShortcut
+    || 'Add another condition';
+  const removeLabel = texts[currentLang]?.autoGearConditionRemove
+    || texts.en?.autoGearConditionRemove
+    || 'Remove this condition';
+  AUTO_GEAR_CONDITION_KEYS.forEach(key => {
+    const config = getAutoGearConditionConfig(key);
+    if (!config) return;
+    if (config.addShortcut) {
+      setButtonLabelWithIcon(config.addShortcut, '', ICON_GLYPHS.add);
+      config.addShortcut.setAttribute('aria-label', addLabel);
+      config.addShortcut.setAttribute('title', addLabel);
+      config.addShortcut.setAttribute('data-help', addLabel);
+    }
+    if (config.removeButton) {
+      setButtonLabelWithIcon(config.removeButton, '', ICON_GLYPHS.minus);
+      config.removeButton.setAttribute('aria-label', removeLabel);
+      config.removeButton.setAttribute('title', removeLabel);
+      config.removeButton.setAttribute('data-help', removeLabel);
+    }
+  });
+}
+
+function addAutoGearCondition(key, options = {}) {
+  const config = getAutoGearConditionConfig(key);
+  if (!config) return false;
+  if (autoGearActiveConditions.has(key)) {
+    if (options.focus !== false && config.select) {
+      try {
+        config.select.focus({ preventScroll: true });
+      } catch {
+        config.select.focus();
+      }
+    }
+    return false;
+  }
+  autoGearActiveConditions.add(key);
+  if (config.section) {
+    config.section.hidden = false;
+    config.section.setAttribute('aria-hidden', 'false');
+  }
+  if (autoGearEditorDraft && !Array.isArray(autoGearEditorDraft[key])) {
+    autoGearEditorDraft[key] = [];
+  }
+  const values = Array.isArray(options.initialValues)
+    ? options.initialValues
+    : (Array.isArray(autoGearEditorDraft?.[key]) ? autoGearEditorDraft[key] : []);
+  const refresher = autoGearConditionRefreshers[key];
+  if (typeof refresher === 'function') {
+    refresher(values);
+  }
+  if (autoGearConditionSelect) {
+    autoGearConditionSelect.value = '';
+  }
+  refreshAutoGearConditionPicker();
+  updateAutoGearConditionAddButtonState();
+  if (options.focus !== false && config.select) {
+    try {
+      config.select.focus({ preventScroll: true });
+    } catch {
+      config.select.focus();
+    }
+  }
+  return true;
+}
+
+function addAutoGearConditionFromPicker() {
+  if (!autoGearConditionSelect) return false;
+  const key = autoGearConditionSelect.value;
+  if (!key) {
+    focusAutoGearConditionPicker();
+    return false;
+  }
+  const result = addAutoGearCondition(key, { focus: true });
+  if (result && autoGearConditionSelect) {
+    autoGearConditionSelect.value = '';
+  }
+  updateAutoGearConditionAddButtonState();
+  return result;
+}
+
+function removeAutoGearCondition(key, options = {}) {
+  const config = getAutoGearConditionConfig(key);
+  if (!config) return false;
+  if (!autoGearActiveConditions.has(key)) return false;
+  autoGearActiveConditions.delete(key);
+  if (config.section) {
+    config.section.hidden = true;
+    config.section.setAttribute('aria-hidden', 'true');
+  }
+  if (!options.preserveDraft && autoGearEditorDraft && Array.isArray(autoGearEditorDraft[key])) {
+    autoGearEditorDraft[key] = [];
+  }
+  if (config.select) {
+    Array.from(config.select.options || []).forEach(option => {
+      option.selected = false;
+    });
+    config.select.value = '';
+  }
+  const refresher = autoGearConditionRefreshers[key];
+  if (typeof refresher === 'function') {
+    refresher([]);
+  }
+  refreshAutoGearConditionPicker();
+  updateAutoGearConditionAddButtonState();
+  if (options.focusPicker) {
+    focusAutoGearConditionPicker();
+  }
+  return true;
+}
+
+function clearAllAutoGearConditions(options = {}) {
+  const { preserveDraft = false } = options || {};
+  Array.from(autoGearActiveConditions).forEach(key => {
+    removeAutoGearCondition(key, { preserveDraft, focusPicker: false });
+  });
+  AUTO_GEAR_CONDITION_KEYS.forEach(key => {
+    if (autoGearActiveConditions.has(key)) return;
+    const config = getAutoGearConditionConfig(key);
+    if (!config) return;
+    if (config.section) {
+      config.section.hidden = true;
+      config.section.setAttribute('aria-hidden', 'true');
+    }
+    if (!preserveDraft && autoGearEditorDraft && Array.isArray(autoGearEditorDraft[key])) {
+      autoGearEditorDraft[key] = [];
+    }
+    if (config.select) {
+      Array.from(config.select.options || []).forEach(option => {
+        option.selected = false;
+      });
+      config.select.value = '';
+    }
+    const refresher = autoGearConditionRefreshers[key];
+    if (typeof refresher === 'function') {
+      refresher(preserveDraft ? autoGearEditorDraft?.[key] : []);
+    }
+  });
+  autoGearActiveConditions.clear();
+  refreshAutoGearConditionPicker();
+  updateAutoGearConditionAddButtonState();
+}
+
+function initializeAutoGearConditionsFromDraft() {
+  clearAllAutoGearConditions({ preserveDraft: true });
+  AUTO_GEAR_CONDITION_KEYS.forEach(key => {
+    const values = Array.isArray(autoGearEditorDraft?.[key])
+      ? autoGearEditorDraft[key].filter(value => typeof value === 'string' && value.trim())
+      : [];
+    if (values.length) {
+      addAutoGearCondition(key, { focus: false, initialValues: values });
+    } else {
+      const refresher = autoGearConditionRefreshers[key];
+      if (typeof refresher === 'function') {
+        refresher([]);
+      }
+      const config = getAutoGearConditionConfig(key);
+      if (config) {
+        if (config.section) {
+          config.section.hidden = true;
+          config.section.setAttribute('aria-hidden', 'true');
+        }
+        if (config.select) {
+          config.select.value = '';
+        }
+      }
+    }
+  });
+  refreshAutoGearConditionPicker();
+  updateAutoGearConditionAddButtonState();
+}
+
+refreshAutoGearConditionPicker();
+updateAutoGearConditionAddButtonState();
+configureAutoGearConditionButtons();
 const autoGearAddItemsHeading = document.getElementById('autoGearAddItemsHeading');
 const autoGearAddItemLabel = document.getElementById('autoGearAddItemLabel');
 const autoGearAddCategoryLabel = document.getElementById('autoGearAddCategoryLabel');
@@ -11136,17 +11566,7 @@ function openAutoGearEditor(ruleId) {
   if (autoGearRuleNameInput) {
     autoGearRuleNameInput.value = autoGearEditorDraft.label || '';
   }
-  refreshAutoGearScenarioOptions(autoGearEditorDraft.scenarios);
-  refreshAutoGearMatteboxOptions(autoGearEditorDraft.mattebox);
-  refreshAutoGearCameraHandleOptions(autoGearEditorDraft.cameraHandle);
-  refreshAutoGearViewfinderExtensionOptions(autoGearEditorDraft.viewfinderExtension);
-  refreshAutoGearVideoDistributionOptions(autoGearEditorDraft.videoDistribution);
-  refreshAutoGearCameraOptions(autoGearEditorDraft.camera);
-  refreshAutoGearMonitorOptions(autoGearEditorDraft.monitor);
-  refreshAutoGearWirelessOptions(autoGearEditorDraft.wireless);
-  refreshAutoGearMotorsOptions(autoGearEditorDraft.motors);
-  refreshAutoGearControllersOptions(autoGearEditorDraft.controllers);
-  refreshAutoGearDistanceOptions(autoGearEditorDraft.distance);
+  initializeAutoGearConditionsFromDraft();
   populateAutoGearCategorySelect(autoGearAddCategorySelect, autoGearEditorDraft.add[0]?.category || '');
   populateAutoGearCategorySelect(autoGearRemoveCategorySelect, autoGearEditorDraft.remove[0]?.category || '');
   resetAutoGearDraftInputs('add');
@@ -11167,17 +11587,7 @@ function closeAutoGearEditor() {
   autoGearEditorDraft = null;
   autoGearEditorActiveItem = null;
   if (autoGearRuleNameInput) autoGearRuleNameInput.value = '';
-  refreshAutoGearScenarioOptions([]);
-  refreshAutoGearMatteboxOptions([]);
-  refreshAutoGearCameraHandleOptions([]);
-  refreshAutoGearViewfinderExtensionOptions([]);
-  refreshAutoGearVideoDistributionOptions([]);
-  refreshAutoGearCameraOptions([]);
-  refreshAutoGearMonitorOptions([]);
-  refreshAutoGearWirelessOptions([]);
-  refreshAutoGearMotorsOptions([]);
-  refreshAutoGearControllersOptions([]);
-  refreshAutoGearDistanceOptions([]);
+  clearAllAutoGearConditions();
   resetAutoGearDraftInputs('add');
   resetAutoGearDraftInputs('remove');
   syncAutoGearMonitorFieldVisibility();
@@ -11295,27 +11705,27 @@ function addAutoGearDraftItem(type) {
 
 function saveAutoGearRuleFromEditor() {
   if (!autoGearEditorDraft) return;
-  const scenarios = autoGearScenariosSelect
+  const scenarios = isAutoGearConditionActive('scenarios') && autoGearScenariosSelect
     ? Array.from(autoGearScenariosSelect.selectedOptions || [])
         .map(option => option.value)
         .filter(Boolean)
     : [];
-  const matteboxSelections = autoGearMatteboxSelect
+  const matteboxSelections = isAutoGearConditionActive('mattebox') && autoGearMatteboxSelect
     ? Array.from(autoGearMatteboxSelect.selectedOptions || [])
         .map(option => option.value)
         .filter(Boolean)
     : [];
-  const cameraHandleSelections = autoGearCameraHandleSelect
+  const cameraHandleSelections = isAutoGearConditionActive('cameraHandle') && autoGearCameraHandleSelect
     ? Array.from(autoGearCameraHandleSelect.selectedOptions || [])
         .map(option => option.value)
         .filter(Boolean)
     : [];
-  const viewfinderSelections = autoGearViewfinderExtensionSelect
+  const viewfinderSelections = isAutoGearConditionActive('viewfinderExtension') && autoGearViewfinderExtensionSelect
     ? Array.from(autoGearViewfinderExtensionSelect.selectedOptions || [])
         .map(option => option.value)
         .filter(value => typeof value === 'string' && value.trim())
     : [];
-  let videoDistributionSelections = autoGearVideoDistributionSelect
+  let videoDistributionSelections = isAutoGearConditionActive('videoDistribution') && autoGearVideoDistributionSelect
     ? Array.from(autoGearVideoDistributionSelect.selectedOptions || [])
         .map(option => option.value)
         .filter(Boolean)
@@ -11323,32 +11733,32 @@ function saveAutoGearRuleFromEditor() {
   if (videoDistributionSelections.includes('__none__') && videoDistributionSelections.length > 1) {
     videoDistributionSelections = videoDistributionSelections.filter(value => value !== '__none__');
   }
-  const cameraSelections = autoGearCameraSelect
+  const cameraSelections = isAutoGearConditionActive('camera') && autoGearCameraSelect
     ? Array.from(autoGearCameraSelect.selectedOptions || [])
         .map(option => option.value)
         .filter(value => typeof value === 'string' && value.trim())
     : [];
-  const monitorSelections = autoGearMonitorSelect
+  const monitorSelections = isAutoGearConditionActive('monitor') && autoGearMonitorSelect
     ? Array.from(autoGearMonitorSelect.selectedOptions || [])
         .map(option => option.value)
         .filter(value => typeof value === 'string' && value.trim())
     : [];
-  const wirelessSelections = autoGearWirelessSelect
+  const wirelessSelections = isAutoGearConditionActive('wireless') && autoGearWirelessSelect
     ? Array.from(autoGearWirelessSelect.selectedOptions || [])
         .map(option => option.value)
         .filter(value => typeof value === 'string' && value.trim())
     : [];
-  const motorSelections = autoGearMotorsSelect
+  const motorSelections = isAutoGearConditionActive('motors') && autoGearMotorsSelect
     ? Array.from(autoGearMotorsSelect.selectedOptions || [])
         .map(option => option.value)
         .filter(value => typeof value === 'string' && value.trim())
     : [];
-  const controllerSelections = autoGearControllersSelect
+  const controllerSelections = isAutoGearConditionActive('controllers') && autoGearControllersSelect
     ? Array.from(autoGearControllersSelect.selectedOptions || [])
         .map(option => option.value)
         .filter(value => typeof value === 'string' && value.trim())
     : [];
-  const distanceSelections = autoGearDistanceSelect
+  const distanceSelections = isAutoGearConditionActive('distance') && autoGearDistanceSelect
     ? Array.from(autoGearDistanceSelect.selectedOptions || [])
         .map(option => option.value)
         .filter(value => typeof value === 'string' && value.trim())

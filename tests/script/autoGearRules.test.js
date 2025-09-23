@@ -66,10 +66,35 @@ describe('applyAutoGearRulesToTableHtml', () => {
     }
   });
 
+  const activateCondition = key => {
+    const picker = document.getElementById('autoGearConditionSelect');
+    const addButton = document.getElementById('autoGearConditionAdd');
+    expect(picker).not.toBeNull();
+    expect(addButton).not.toBeNull();
+    if (!picker || !addButton) return;
+    picker.value = key;
+    picker.dispatchEvent(new Event('change', { bubbles: true }));
+    addButton.click();
+  };
+
   test('rule editor selectors allow multiple choices and show expanded lists', () => {
     env = setupScriptEnvironment();
 
     document.getElementById('autoGearAddRule').click();
+
+    [
+      'scenarios',
+      'mattebox',
+      'cameraHandle',
+      'viewfinderExtension',
+      'videoDistribution',
+      'camera',
+      'monitor',
+      'wireless',
+      'motors',
+      'controllers',
+      'distance',
+    ].forEach(activateCondition);
 
     const selectorIds = [
       'autoGearScenarios',
@@ -108,6 +133,51 @@ describe('applyAutoGearRulesToTableHtml', () => {
         expect(visibleRows).toBe(expectedRows);
       }
     });
+  });
+
+  test('condition shortcut adds the last available selector automatically', () => {
+    env = setupScriptEnvironment();
+
+    document.getElementById('autoGearAddRule').click();
+
+    const picker = document.getElementById('autoGearConditionSelect');
+    expect(picker).not.toBeNull();
+    const addButton = document.getElementById('autoGearConditionAdd');
+    expect(addButton).not.toBeNull();
+    if (!picker || !addButton) return;
+
+    [
+      'scenarios',
+      'mattebox',
+      'cameraHandle',
+      'viewfinderExtension',
+      'videoDistribution',
+      'camera',
+      'monitor',
+      'wireless',
+      'motors',
+      'controllers',
+    ].forEach(key => {
+      picker.value = key;
+      picker.dispatchEvent(new Event('change', { bubbles: true }));
+      addButton.click();
+    });
+
+    const remainingOptions = Array.from(picker.options || []).filter(option => option.value);
+    expect(remainingOptions).toHaveLength(1);
+    expect(remainingOptions[0].value).toBe('distance');
+
+    const shortcut = document.querySelector('#autoGearCondition-monitor .auto-gear-condition-add');
+    expect(shortcut).not.toBeNull();
+    shortcut.click();
+
+    const distanceSection = document.getElementById('autoGearCondition-distance');
+    expect(distanceSection).not.toBeNull();
+    if (!distanceSection) return;
+    expect(distanceSection.hidden).toBe(false);
+    expect(distanceSection.getAttribute('aria-hidden')).toBe('false');
+    expect(picker.disabled).toBe(true);
+    expect(picker.value).toBe('');
   });
 
   test('removes matching gear without duplicating categories', () => {
@@ -839,6 +909,8 @@ describe('applyAutoGearRulesToTableHtml', () => {
     const addRuleButton = document.getElementById('autoGearAddRule');
     addRuleButton.click();
 
+    activateCondition('scenarios');
+
     const scenarios = document.getElementById('autoGearScenarios');
     expect(scenarios.options.length).toBeGreaterThan(0);
     const firstSelectable = Array.from(scenarios.options).find(opt => opt.value);
@@ -879,6 +951,8 @@ describe('applyAutoGearRulesToTableHtml', () => {
 
     document.getElementById('autoGearAddRule').click();
 
+    activateCondition('scenarios');
+
     const scenarios = document.getElementById('autoGearScenarios');
     const firstSelectable = Array.from(scenarios.options).find(opt => opt.value);
     if (firstSelectable) firstSelectable.selected = true;
@@ -912,6 +986,8 @@ describe('applyAutoGearRulesToTableHtml', () => {
 
     const addRuleButton = document.getElementById('autoGearAddRule');
     addRuleButton.click();
+
+    activateCondition('mattebox');
 
     const ruleNameInput = document.getElementById('autoGearRuleName');
     ruleNameInput.value = 'Clamp-on extras';
@@ -949,6 +1025,8 @@ describe('applyAutoGearRulesToTableHtml', () => {
     env = setupScriptEnvironment();
 
     document.getElementById('autoGearAddRule').click();
+
+    activateCondition('mattebox');
 
     const matteboxSelect = document.getElementById('autoGearMattebox');
     const matteboxOption = Array.from(matteboxSelect.options).find(opt => opt.value);
@@ -1084,6 +1162,8 @@ describe('applyAutoGearRulesToTableHtml', () => {
 
     document.getElementById('autoGearAddRule').click();
 
+    activateCondition('cameraHandle');
+
     document.getElementById('autoGearRuleName').value = 'Handle additions';
 
     const handleSelect = document.getElementById('autoGearCameraHandle');
@@ -1118,6 +1198,8 @@ describe('applyAutoGearRulesToTableHtml', () => {
 
     document.getElementById('autoGearAddRule').click();
 
+    activateCondition('viewfinderExtension');
+
     document.getElementById('autoGearRuleName').value = 'Viewfinder support';
 
     const vfSelect = document.getElementById('autoGearViewfinderExtension');
@@ -1151,6 +1233,8 @@ describe('applyAutoGearRulesToTableHtml', () => {
     env = setupScriptEnvironment();
 
     document.getElementById('autoGearAddRule').click();
+
+    activateCondition('videoDistribution');
 
     document.getElementById('autoGearRuleName').value = 'Wireless village';
 
@@ -1295,6 +1379,8 @@ describe('applyAutoGearRulesToTableHtml', () => {
     const addRuleButton = document.getElementById('autoGearAddRule');
     addRuleButton.click();
 
+    activateCondition('scenarios');
+
     const scenarios = document.getElementById('autoGearScenarios');
     const firstSelectable = Array.from(scenarios.options).find(opt => opt.value);
     if (firstSelectable) firstSelectable.selected = true;
@@ -1338,6 +1424,8 @@ describe('applyAutoGearRulesToTableHtml', () => {
     const addRuleButton = document.getElementById('autoGearAddRule');
     addRuleButton.click();
 
+    activateCondition('scenarios');
+
     const scenarios = document.getElementById('autoGearScenarios');
     const firstSelectable = Array.from(scenarios.options).find(opt => opt.value);
     if (firstSelectable) firstSelectable.selected = true;
@@ -1377,6 +1465,7 @@ describe('applyAutoGearRulesToTableHtml', () => {
 
     const addRuleButton = document.getElementById('autoGearAddRule');
     addRuleButton.click();
+    activateCondition('scenarios');
     const scenarios = document.getElementById('autoGearScenarios');
     const firstSelectable = Array.from(scenarios.options).find(opt => opt.value);
     if (firstSelectable) firstSelectable.selected = true;
