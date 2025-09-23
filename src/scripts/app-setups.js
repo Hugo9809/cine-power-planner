@@ -2808,13 +2808,14 @@ function generateGearListHtml(info = {}) {
         if (selectedSize) monitorSizes.push(selectedSize);
     }
     const monitoringGear = [];
-    const wirelessSize = monitorSizes.includes(5) ? 5 : 7;
+    const wirelessSize = monitorSizes.includes(5) ? 5 : null;
     if (selectedNames.video) {
-        monitoringGear.push(`Wireless Transmitter - ${wirelessSize}&quot; - ${addArriKNumber(selectedNames.video)}`);
+        const wirelessSizeHtml = wirelessSize ? `${wirelessSize}&quot; - ` : '';
+        monitoringGear.push(`Wireless Transmitter - ${wirelessSizeHtml}${addArriKNumber(selectedNames.video)}`);
         const rxName = selectedNames.video.replace(/ TX\b/, ' RX');
         if (devices && devices.wirelessReceivers && devices.wirelessReceivers[rxName]) {
             receiverLabels.forEach(label => {
-                monitoringGear.push(`Wireless Receiver - ${wirelessSize}&quot; - ${addArriKNumber(rxName)} (${label})`);
+                monitoringGear.push(`Wireless Receiver - ${wirelessSizeHtml}${addArriKNumber(rxName)} (${label})`);
             });
         }
     }
