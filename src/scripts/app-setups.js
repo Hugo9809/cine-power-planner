@@ -837,13 +837,7 @@ function suggestArriFizCables() {
 function collectAccessories({ hasMotor = false, videoDistPrefs = [] } = {}) {
     const cameraSupport = [];
     const misc = [];
-    const monitoringSupport = [
-        'BNC Cable 0.5 m',
-        'BNC Cable 1 m',
-        'BNC Cable 5 m',
-        'BNC Cable 10 m',
-        'BNC Drum 25 m'
-    ];
+    const monitoringSupport = [];
     const rigging = [];
     const chargers = [];
     const fizCables = [];
@@ -1976,6 +1970,9 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
     };
 
     let triggered = autoGearRules.filter(rule => {
+        if (rule && rule.always) {
+            return true;
+        }
         const scenarioList = Array.isArray(rule.scenarios) ? rule.scenarios.filter(Boolean) : [];
         if (scenarioList.length) {
             const normalizedTargets = scenarioList
@@ -2198,15 +2195,6 @@ function generateGearListHtml(info = {}) {
         selectedNames.viewfinder = "";
     }
     const { cameraSupport: cameraSupportAcc, chargers: chargersAcc, fizCables: fizCableAcc, misc: miscAcc, monitoringSupport: monitoringSupportAcc, rigging: riggingAcc } = collectAccessories({ hasMotor, videoDistPrefs });
-    for (let i = 0; i < 2; i++) riggingAcc.push('ULCS Bracket with 1/4" to 1/4"');
-    for (let i = 0; i < 2; i++) riggingAcc.push('ULCS Bracket with 3/8" to 1/4"');
-    for (let i = 0; i < 2; i++) riggingAcc.push('Noga Arm');
-    for (let i = 0; i < 2; i++) riggingAcc.push('Mini Magic Arm');
-    for (let i = 0; i < 4; i++) riggingAcc.push('Cine Quick Release');
-    riggingAcc.push('SmallRig - Super lightweight 15mm RailBlock');
-    for (let i = 0; i < 3; i++) riggingAcc.push('Spigot with male 3/8" and 1/4"');
-    for (let i = 0; i < 2; i++) riggingAcc.push('Clapper Stick');
-    for (let i = 0; i < 2; i++) riggingAcc.push('D-Tap Splitter');
     const cagesDb = devices.accessories?.cages || {};
     const compatibleCages = [];
     if (cameraSelect && cameraSelect.value && cameraSelect.value !== 'None') {
@@ -2846,12 +2834,7 @@ function generateGearListHtml(info = {}) {
     const monitoringSupportHardware = formatItems(monitoringSupportAcc);
     const monitoringSupportItems = monitoringSupportHardware;
     addRow('Monitoring support', monitoringSupportItems);
-    const cartsTransportationItems = [
-        'Magliner Senior - with quick release mount + tripod holder + utility tray + O‘Connor-Aufhängung',
-        ...Array(10).fill('Securing Straps (25mm wide)'),
-        'Loading Ramp (pair, 420kg)',
-        ...Array(20).fill('Ring Fitting for Airline Rails')
-    ];
+    const cartsTransportationItems = [];
     ensureItems(cartsTransportationItems, 'accessories.carts');
     const gripItems = [];
     let needsStandardTripod = false;

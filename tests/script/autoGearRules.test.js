@@ -83,6 +83,7 @@ describe('applyAutoGearRulesToTableHtml', () => {
     document.getElementById('autoGearAddRule').click();
 
     [
+      'always',
       'scenarios',
       'mattebox',
       'cameraHandle',
@@ -147,6 +148,7 @@ describe('applyAutoGearRulesToTableHtml', () => {
     if (!picker || !addButton) return;
 
     [
+      'always',
       'scenarios',
       'mattebox',
       'cameraHandle',

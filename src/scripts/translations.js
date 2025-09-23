@@ -195,6 +195,9 @@ const texts = {
     autoGearConditionPlaceholder: "Choose a condition",
     autoGearConditionAddShortcut: "Add another condition",
     autoGearConditionRemove: "Remove this condition",
+    autoGearAlwaysLabel: "Always include",
+    autoGearAlwaysHelp: "Apply this rule to every gear list.",
+    autoGearAlwaysMeta: "Always active",
     autoGearScenariosLabel: "Required scenarios",
     autoGearScenariosHelp:
       "Pick every scenario that must be selected for this rule to apply. Hold Ctrl (Cmd on Mac) to choose multiple.",
