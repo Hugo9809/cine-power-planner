@@ -3401,11 +3401,22 @@ function ensureGearListActions() {
     } else if (!actions.contains(autoSaveNote)) {
         actions.appendChild(autoSaveNote);
     }
-    const noteText = texts[currentLang].gearListAutosaveNote
-        || 'Gear lists save automatically with the project.';
-    autoSaveNote.textContent = noteText;
-    autoSaveNote.setAttribute('title', noteText);
-    autoSaveNote.setAttribute('data-help', noteText);
+    const noteText = (texts[currentLang] && texts[currentLang].gearListAutosaveNote) || '';
+    const trimmedNoteText = typeof noteText === 'string' ? noteText.trim() : '';
+    const hasNoteText = trimmedNoteText.length > 0;
+
+    if (hasNoteText) {
+        autoSaveNote.hidden = false;
+        autoSaveNote.removeAttribute('hidden');
+        autoSaveNote.textContent = trimmedNoteText;
+        autoSaveNote.setAttribute('title', trimmedNoteText);
+        autoSaveNote.setAttribute('data-help', trimmedNoteText);
+    } else {
+        autoSaveNote.textContent = '';
+        autoSaveNote.setAttribute('title', '');
+        autoSaveNote.setAttribute('data-help', '');
+        autoSaveNote.hidden = true;
+    }
 
     if (!gearListOutput._filterListenerBound) {
         gearListOutput.addEventListener('change', e => {
