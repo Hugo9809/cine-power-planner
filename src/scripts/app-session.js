@@ -1,5 +1,5 @@
 // --- SESSION STATE HANDLING ---
-/* global resolveTemperatureStorageKey, TEMPERATURE_STORAGE_KEY, updateCageSelectOptions, updateAccentColorResetButtonState, normalizeAccentValue, DEFAULT_ACCENT_NORMALIZED, autoGearSearchInput, setAutoGearSearchQuery, autoGearFilterScenarioSelect, setAutoGearScenarioFilter, autoGearFilterClearButton, clearAutoGearFilters, clearUiCacheStorageEntries, backupDiffToggleButton, backupDiffSection, backupDiffPrimarySelect, backupDiffSecondarySelect, backupDiffEmptyState, backupDiffSummary, backupDiffList, backupDiffListContainer, backupDiffNotes, backupDiffExportButton, backupDiffCloseButton, __cineGlobal */
+/* global resolveTemperatureStorageKey, TEMPERATURE_STORAGE_KEY, updateCageSelectOptions, updateAccentColorResetButtonState, normalizeAccentValue, DEFAULT_ACCENT_NORMALIZED, autoGearSearchInput, setAutoGearSearchQuery, autoGearFilterScenarioSelect, setAutoGearScenarioFilter, autoGearFilterClearButton, clearAutoGearFilters, clearUiCacheStorageEntries, __cineGlobal */
 
 const temperaturePreferenceStorageKey =
   typeof TEMPERATURE_STORAGE_KEY === 'string'
@@ -22,6 +22,52 @@ try {
     void error;
   }
 }
+
+const createBackupDiffRefs = () => {
+  const doc = typeof document !== 'undefined' ? document : null;
+  if (!doc) {
+    return {
+      toggleButton: null,
+      section: null,
+      primarySelect: null,
+      secondarySelect: null,
+      emptyState: null,
+      summary: null,
+      list: null,
+      listContainer: null,
+      notes: null,
+      exportButton: null,
+      closeButton: null,
+    };
+  }
+  return {
+    toggleButton: doc.getElementById('backupDiffToggleButton'),
+    section: doc.getElementById('backupDiffSection'),
+    primarySelect: doc.getElementById('backupDiffPrimary'),
+    secondarySelect: doc.getElementById('backupDiffSecondary'),
+    emptyState: doc.getElementById('backupDiffEmptyState'),
+    summary: doc.getElementById('backupDiffSummary'),
+    list: doc.getElementById('backupDiffList'),
+    listContainer: doc.getElementById('backupDiffListContainer'),
+    notes: doc.getElementById('backupDiffNotes'),
+    exportButton: doc.getElementById('backupDiffExport'),
+    closeButton: doc.getElementById('backupDiffClose'),
+  };
+};
+
+const {
+  toggleButton: backupDiffToggleButtonEl,
+  section: backupDiffSectionEl,
+  primarySelect: backupDiffPrimarySelectEl,
+  secondarySelect: backupDiffSecondarySelectEl,
+  emptyState: backupDiffEmptyStateEl,
+  summary: backupDiffSummaryEl,
+  list: backupDiffListEl,
+  listContainer: backupDiffListContainerEl,
+  notes: backupDiffNotesEl,
+  exportButton: backupDiffExportButtonEl,
+  closeButton: backupDiffCloseButtonEl,
+} = createBackupDiffRefs();
 
 function saveCurrentSession(options = {}) {
   if (restoringSession || factoryResetInProgress) return;
@@ -2313,11 +2359,11 @@ function fillBackupDiffSelect(select, options, selectedValue) {
 }
 
 function clearBackupDiffResults() {
-  if (backupDiffList) {
-    backupDiffList.innerHTML = '';
+  if (backupDiffListEl) {
+    backupDiffListEl.innerHTML = '';
   }
-  if (backupDiffListContainer) {
-    backupDiffListContainer.hidden = true;
+  if (backupDiffListContainerEl) {
+    backupDiffListContainerEl.hidden = true;
   }
 }
 
@@ -2446,15 +2492,15 @@ function createDiffChangeBlock(labelText, value) {
 }
 
 function renderBackupDiffEntries(entries) {
-  if (!backupDiffList || !backupDiffListContainer) {
+  if (!backupDiffListEl || !backupDiffListContainerEl) {
     return;
   }
-  backupDiffList.innerHTML = '';
+  backupDiffListEl.innerHTML = '';
   if (!Array.isArray(entries) || !entries.length) {
-    backupDiffListContainer.hidden = true;
+    backupDiffListContainerEl.hidden = true;
     return;
   }
-  backupDiffListContainer.hidden = false;
+  backupDiffListContainerEl.hidden = false;
   entries.forEach(entry => {
     const item = document.createElement('li');
     item.className = `diff-entry diff-${entry.type}`;
@@ -2486,7 +2532,7 @@ function renderBackupDiffEntries(entries) {
         entry.before,
       ));
     }
-    backupDiffList.appendChild(item);
+    backupDiffListEl.appendChild(item);
   });
 }
 
@@ -2504,11 +2550,11 @@ function formatDiffDetail(key, count) {
 }
 
 function updateBackupDiffSummary(entries) {
-  if (!backupDiffSummary) {
+  if (!backupDiffSummaryEl) {
     return;
   }
   if (!Array.isArray(entries) || !entries.length) {
-    backupDiffSummary.textContent = getDiffText('versionCompareIdentical', 'Versions match—no changes detected.');
+    backupDiffSummaryEl.textContent = getDiffText('versionCompareIdentical', 'Versions match—no changes detected.');
     return;
   }
   const totals = { added: 0, removed: 0, changed: 0 };
@@ -2528,39 +2574,39 @@ function updateBackupDiffSummary(entries) {
   if (totals.changed) {
     breakdown.push(formatDiffDetail('versionCompareSummaryChanged', totals.changed));
   }
-  backupDiffSummary.textContent = breakdown.length
+  backupDiffSummaryEl.textContent = breakdown.length
     ? `${summaryText} (${breakdown.join(' · ')})`
     : summaryText;
 }
 
 function renderBackupDiff() {
-  if (!backupDiffSummary) {
+  if (!backupDiffSummaryEl) {
     return;
   }
   if (!backupDiffOptionsCache.length) {
     clearBackupDiffResults();
-    backupDiffSummary.textContent = getDiffText('versionCompareEmpty', 'Save a project or wait for auto-backups to start comparing versions.');
-    if (backupDiffExportButton) backupDiffExportButton.disabled = true;
-    if (backupDiffNotes) backupDiffNotes.disabled = true;
+    backupDiffSummaryEl.textContent = getDiffText('versionCompareEmpty', 'Save a project or wait for auto-backups to start comparing versions.');
+    if (backupDiffExportButtonEl) backupDiffExportButtonEl.disabled = true;
+    if (backupDiffNotesEl) backupDiffNotesEl.disabled = true;
     return;
   }
 
-  if (backupDiffNotes) backupDiffNotes.disabled = false;
+  if (backupDiffNotesEl) backupDiffNotesEl.disabled = false;
 
   const baseline = backupDiffState.baseline;
   const comparison = backupDiffState.comparison;
 
   if (!baseline || !comparison) {
     clearBackupDiffResults();
-    backupDiffSummary.textContent = getDiffText('versionCompareNoSelection', 'Choose two versions to generate a diff.');
-    if (backupDiffExportButton) backupDiffExportButton.disabled = true;
+    backupDiffSummaryEl.textContent = getDiffText('versionCompareNoSelection', 'Choose two versions to generate a diff.');
+    if (backupDiffExportButtonEl) backupDiffExportButtonEl.disabled = true;
     return;
   }
 
   if (baseline === comparison) {
     clearBackupDiffResults();
-    backupDiffSummary.textContent = getDiffText('versionCompareSameSelection', 'Select two different versions to compare.');
-    if (backupDiffExportButton) backupDiffExportButton.disabled = true;
+    backupDiffSummaryEl.textContent = getDiffText('versionCompareSameSelection', 'Select two different versions to compare.');
+    if (backupDiffExportButtonEl) backupDiffExportButtonEl.disabled = true;
     return;
   }
 
@@ -2570,69 +2616,69 @@ function renderBackupDiff() {
 
   if (!baselineEntry || !comparisonEntry) {
     clearBackupDiffResults();
-    backupDiffSummary.textContent = getDiffText('versionCompareMissingSelection', 'Select two versions before exporting a log.');
-    if (backupDiffExportButton) backupDiffExportButton.disabled = true;
+    backupDiffSummaryEl.textContent = getDiffText('versionCompareMissingSelection', 'Select two versions before exporting a log.');
+    if (backupDiffExportButtonEl) backupDiffExportButtonEl.disabled = true;
     return;
   }
 
   const diffEntries = computeSetupDiff(baselineEntry.data, comparisonEntry.data);
   renderBackupDiffEntries(diffEntries);
   updateBackupDiffSummary(diffEntries);
-  if (backupDiffExportButton) backupDiffExportButton.disabled = false;
+  if (backupDiffExportButtonEl) backupDiffExportButtonEl.disabled = false;
 }
 
 function populateBackupDiffSelectors() {
   backupDiffOptionsCache = collectBackupDiffOptions();
-  fillBackupDiffSelect(backupDiffPrimarySelect, backupDiffOptionsCache, backupDiffState.baseline);
-  fillBackupDiffSelect(backupDiffSecondarySelect, backupDiffOptionsCache, backupDiffState.comparison);
-  if (backupDiffEmptyState) {
-    backupDiffEmptyState.hidden = backupDiffOptionsCache.length > 0;
+  fillBackupDiffSelect(backupDiffPrimarySelectEl, backupDiffOptionsCache, backupDiffState.baseline);
+  fillBackupDiffSelect(backupDiffSecondarySelectEl, backupDiffOptionsCache, backupDiffState.comparison);
+  if (backupDiffEmptyStateEl) {
+    backupDiffEmptyStateEl.hidden = backupDiffOptionsCache.length > 0;
   }
   renderBackupDiff();
 }
 
 function collapseBackupDiffSection(options = {}) {
-  if (!backupDiffSection) {
+  if (!backupDiffSectionEl) {
     return;
   }
-  if (!backupDiffSection.hasAttribute('hidden')) {
-    backupDiffSection.setAttribute('hidden', '');
+  if (!backupDiffSectionEl.hasAttribute('hidden')) {
+    backupDiffSectionEl.setAttribute('hidden', '');
   }
-  if (backupDiffToggleButton) {
-    backupDiffToggleButton.setAttribute('aria-expanded', 'false');
+  if (backupDiffToggleButtonEl) {
+    backupDiffToggleButtonEl.setAttribute('aria-expanded', 'false');
   }
   if (options.resetSelections) {
     backupDiffState.baseline = '';
     backupDiffState.comparison = '';
   }
-  if (options.resetNotes && backupDiffNotes) {
-    backupDiffNotes.value = '';
+  if (options.resetNotes && backupDiffNotesEl) {
+    backupDiffNotesEl.value = '';
   }
 }
 
 function showBackupDiffSection() {
-  if (!backupDiffSection) {
+  if (!backupDiffSectionEl) {
     return;
   }
   populateBackupDiffSelectors();
-  backupDiffSection.removeAttribute('hidden');
-  if (backupDiffToggleButton) {
-    backupDiffToggleButton.setAttribute('aria-expanded', 'true');
+  backupDiffSectionEl.removeAttribute('hidden');
+  if (backupDiffToggleButtonEl) {
+    backupDiffToggleButtonEl.setAttribute('aria-expanded', 'true');
   }
-  if (backupDiffPrimarySelect) {
+  if (backupDiffPrimarySelectEl) {
     try {
-      backupDiffPrimarySelect.focus({ preventScroll: true });
+      backupDiffPrimarySelectEl.focus({ preventScroll: true });
     } catch (error) {
-      backupDiffPrimarySelect.focus();
+      backupDiffPrimarySelectEl.focus();
     }
   }
 }
 
 function handleBackupDiffToggle() {
-  if (!backupDiffSection) {
+  if (!backupDiffSectionEl) {
     return;
   }
-  if (backupDiffSection.hasAttribute('hidden')) {
+  if (backupDiffSectionEl.hasAttribute('hidden')) {
     showBackupDiffSection();
   } else {
     collapseBackupDiffSection();
@@ -2645,9 +2691,9 @@ function handleBackupDiffSelectionChange(event) {
     return;
   }
   const value = typeof target.value === 'string' ? target.value : '';
-  if (target === backupDiffPrimarySelect) {
+  if (target === backupDiffPrimarySelectEl) {
     backupDiffState.baseline = value;
-  } else if (target === backupDiffSecondarySelect) {
+  } else if (target === backupDiffSecondarySelectEl) {
     backupDiffState.comparison = value;
   }
   renderBackupDiff();
@@ -2705,8 +2751,8 @@ function handleBackupDiffExport() {
     }
   });
 
-  const note = backupDiffNotes && typeof backupDiffNotes.value === 'string'
-    ? backupDiffNotes.value.trim()
+  const note = backupDiffNotesEl && typeof backupDiffNotesEl.value === 'string'
+    ? backupDiffNotesEl.value.trim()
     : '';
 
   const timestamp = new Date();
@@ -2907,29 +2953,29 @@ if (backupSettings) {
   backupSettings.addEventListener('click', createSettingsBackup);
 }
 
-if (backupDiffToggleButton) {
-  backupDiffToggleButton.addEventListener('click', handleBackupDiffToggle);
+if (backupDiffToggleButtonEl) {
+  backupDiffToggleButtonEl.addEventListener('click', handleBackupDiffToggle);
 }
-if (backupDiffCloseButton) {
-  backupDiffCloseButton.addEventListener('click', () => collapseBackupDiffSection());
+if (backupDiffCloseButtonEl) {
+  backupDiffCloseButtonEl.addEventListener('click', () => collapseBackupDiffSection());
 }
-if (backupDiffPrimarySelect) {
-  backupDiffPrimarySelect.addEventListener('change', handleBackupDiffSelectionChange);
+if (backupDiffPrimarySelectEl) {
+  backupDiffPrimarySelectEl.addEventListener('change', handleBackupDiffSelectionChange);
 }
-if (backupDiffSecondarySelect) {
-  backupDiffSecondarySelect.addEventListener('change', handleBackupDiffSelectionChange);
+if (backupDiffSecondarySelectEl) {
+  backupDiffSecondarySelectEl.addEventListener('change', handleBackupDiffSelectionChange);
 }
-if (backupDiffExportButton) {
-  backupDiffExportButton.addEventListener('click', handleBackupDiffExport);
-  backupDiffExportButton.disabled = true;
+if (backupDiffExportButtonEl) {
+  backupDiffExportButtonEl.addEventListener('click', handleBackupDiffExport);
+  backupDiffExportButtonEl.disabled = true;
 }
-if (backupDiffSummary) {
-  backupDiffSummary.textContent = getDiffText('versionCompareNoSelection', 'Choose two versions to generate a diff.');
+if (backupDiffSummaryEl) {
+  backupDiffSummaryEl.textContent = getDiffText('versionCompareNoSelection', 'Choose two versions to generate a diff.');
 }
-if (backupDiffNotes) {
-  backupDiffNotes.disabled = true;
+if (backupDiffNotesEl) {
+  backupDiffNotesEl.disabled = true;
 }
-if (backupDiffSection) {
+if (backupDiffSectionEl) {
   collapseBackupDiffSection();
 }
 
