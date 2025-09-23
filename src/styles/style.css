@@ -372,12 +372,12 @@ textarea {
 
 #installPromptBanner .install-banner-dismiss .btn-icon {
   margin-inline-end: 0;
+  --icon-color: #ffffff;
+  color: #ffffff;
 }
 
 #installPromptBanner .install-banner-dismiss .btn-icon.icon-glyph {
   --icon-size: var(--icon-size-md);
-  --icon-color: #ffffff;
-  color: #ffffff;
 }
 
 .visually-hidden {
