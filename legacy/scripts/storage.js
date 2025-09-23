@@ -89,7 +89,7 @@ var AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY = 'cameraPowerPlanner_autoGearActivePres
 var AUTO_GEAR_AUTO_PRESET_STORAGE_KEY = 'cameraPowerPlanner_autoGearAutoPreset';
 var AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY = 'cameraPowerPlanner_autoGearShowBackups';
 var FULL_BACKUP_HISTORY_STORAGE_KEY = 'cameraPowerPlanner_fullBackups';
-var AUTO_BACKUP_NAME_PREFIX = 'auto-backup-';
+var LEGACY_STORAGE_AUTO_BACKUP_NAME_PREFIX = 'auto-backup-';
 var AUTO_BACKUP_DELETION_PREFIX = 'auto-backup-before-delete-';
 var MAX_AUTO_BACKUPS = 50;
 var MAX_DELETION_BACKUPS = 20;
@@ -682,7 +682,7 @@ function getAutoBackupTimestamp(name) {
     return Number.NEGATIVE_INFINITY;
   }
   var match = null;
-  if (name.startsWith(AUTO_BACKUP_NAME_PREFIX)) {
+  if (name.startsWith(LEGACY_STORAGE_AUTO_BACKUP_NAME_PREFIX)) {
     match = name.match(/^auto-backup-(\d{4})-(\d{2})-(\d{2})-(\d{2})-(\d{2})/);
     if (!match) {
       return Number.NEGATIVE_INFINITY;
@@ -807,7 +807,7 @@ function enforceAutoBackupLimits(container) {
     return [];
   }
   var removed = [];
-  var autoBackups = collectAutoBackupEntries(container, AUTO_BACKUP_NAME_PREFIX);
+  var autoBackups = collectAutoBackupEntries(container, LEGACY_STORAGE_AUTO_BACKUP_NAME_PREFIX);
   if (autoBackups.length > MAX_AUTO_BACKUPS) {
     removed.push.apply(removed, _toConsumableArray(removeDuplicateAutoBackupEntries(container, autoBackups)));
     while (autoBackups.length > MAX_AUTO_BACKUPS) {
@@ -840,7 +840,7 @@ function removeOldestAutoBackupEntry(container) {
   if (!isPlainObject(container)) {
     return null;
   }
-  var autoBackups = collectAutoBackupEntries(container, AUTO_BACKUP_NAME_PREFIX);
+  var autoBackups = collectAutoBackupEntries(container, LEGACY_STORAGE_AUTO_BACKUP_NAME_PREFIX);
   if (autoBackups.length > 0) {
     var oldest = autoBackups.shift();
     if (oldest) {
@@ -2103,7 +2103,7 @@ function maybeCreateProjectDeletionBackup(projects, key) {
       status: 'missing'
     };
   }
-  if (typeof key === 'string' && key.startsWith(AUTO_BACKUP_NAME_PREFIX)) {
+  if (typeof key === 'string' && key.startsWith(LEGACY_STORAGE_AUTO_BACKUP_NAME_PREFIX)) {
     return {
       status: 'skipped'
     };
