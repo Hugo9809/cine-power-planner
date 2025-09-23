@@ -3011,13 +3011,14 @@ function generateGearListHtml() {
     if (selectedSize) monitorSizes.push(selectedSize);
   }
   var monitoringGear = [];
-  var wirelessSize = monitorSizes.includes(5) ? 5 : 7;
+  var wirelessSize = monitorSizes.includes(5) ? 5 : null;
+  var wirelessSizeHtml = wirelessSize ? "".concat(wirelessSize, "&quot; - ") : '';
   if (selectedNames.video) {
-    monitoringGear.push("Wireless Transmitter - ".concat(wirelessSize, "&quot; - ").concat(addArriKNumber(selectedNames.video)));
+    monitoringGear.push("Wireless Transmitter - ".concat(wirelessSizeHtml).concat(addArriKNumber(selectedNames.video)));
     var _rxName = selectedNames.video.replace(/ TX\b/, ' RX');
     if (devices && devices.wirelessReceivers && devices.wirelessReceivers[_rxName]) {
       receiverLabels.forEach(function (label) {
-        monitoringGear.push("Wireless Receiver - ".concat(wirelessSize, "&quot; - ").concat(addArriKNumber(_rxName), " (").concat(label, ")"));
+        monitoringGear.push("Wireless Receiver - ".concat(wirelessSizeHtml).concat(addArriKNumber(_rxName), " (").concat(label, ")"));
       });
     }
   }
