@@ -5542,55 +5542,7 @@ function normalizePinkModeIconMarkup(markup) {
   if (typeof markup !== 'string') return '';
   var trimmed = markup.trim();
   if (!trimmed) return '';
-  var normalizePaintAttribute = function normalizePaintAttribute(match, attr, quote, value) {
-    if (typeof value !== 'string') return match;
-    var normalizedValue = value.trim();
-    if (!normalizedValue) return match;
-    var lowerValue = normalizedValue.toLowerCase();
-    if (lowerValue === 'none' || lowerValue === 'currentcolor' || lowerValue.startsWith('url(')) {
-      return match;
-    }
-    return "".concat(attr, "=").concat(quote, "currentColor").concat(quote);
-  };
-  var normalizeStyleDeclaration = function normalizeStyleDeclaration(match, quote, content) {
-    if (typeof content !== 'string') {
-      return match;
-    }
-    var declarations = content.split(';').map(function (part) {
-      return part.trim();
-    }).filter(Boolean);
-    if (!declarations.length) {
-      return match;
-    }
-    var changed = false;
-    var updated = declarations.map(function (part) {
-      var _part$split = part.split(':'),
-        _part$split2 = _slicedToArray(_part$split, 2),
-        property = _part$split2[0],
-        rawValue = _part$split2[1];
-      if (!property || rawValue === undefined) {
-        return part;
-      }
-      var propName = property.trim().toLowerCase();
-      var value = rawValue.trim();
-      if (!value) {
-        return part;
-      }
-      var lowerValue = value.toLowerCase();
-      if ((propName === 'fill' || propName === 'stroke') && lowerValue !== 'none' && lowerValue !== 'currentcolor' && !lowerValue.startsWith('url(')) {
-        changed = true;
-        return "".concat(property.trim(), ":currentColor");
-      }
-      return part;
-    });
-    if (!changed) {
-      return match;
-    }
-    return "style=".concat(quote).concat(updated.join('; ')).concat(quote);
-  };
-  var result = trimmed.replace(/(fill|stroke)=(['"])([^'"]*)\2/gi, normalizePaintAttribute);
-  result = result.replace(/style=(['"])([^'"]*)\1/gi, normalizeStyleDeclaration);
-  return result;
+  return trimmed;
 }
 function setPinkModeIconSequence(markupList) {
   if (!Array.isArray(markupList) || !markupList.length) {
@@ -12257,6 +12209,37 @@ var normalizeUnicodeFractions = function normalizeUnicodeFractions(str) {
     return UNICODE_FRACTIONS.get(match) || match;
   });
 };
+var NUMBER_WORD_ONES = new Map([['zero', 0], ['one', 1], ['two', 2], ['three', 3], ['four', 4], ['five', 5], ['six', 6], ['seven', 7], ['eight', 8], ['nine', 9]]);
+var NUMBER_WORD_TEENS = new Map([['ten', 10], ['eleven', 11], ['twelve', 12], ['thirteen', 13], ['fourteen', 14], ['fifteen', 15], ['sixteen', 16], ['seventeen', 17], ['eighteen', 18], ['nineteen', 19]]);
+var NUMBER_WORD_TENS = new Map([['twenty', 20], ['thirty', 30], ['forty', 40], ['fifty', 50], ['sixty', 60], ['seventy', 70], ['eighty', 80], ['ninety', 90]]);
+var NUMBER_WORD_BASE = new Map([].concat(_toConsumableArray(NUMBER_WORD_ONES), _toConsumableArray(NUMBER_WORD_TEENS), _toConsumableArray(NUMBER_WORD_TENS)));
+var NUMBER_WORD_BASE_KEYS = Array.from(NUMBER_WORD_BASE.keys()).sort(function (a, b) {
+  return b.length - a.length;
+});
+var NUMBER_WORD_ONES_KEYS = Array.from(NUMBER_WORD_ONES.keys()).sort(function (a, b) {
+  return b.length - a.length;
+});
+var NUMBER_WORD_PATTERN = NUMBER_WORD_BASE.size > 0 ? new RegExp("\\b(?:".concat(NUMBER_WORD_BASE_KEYS.join('|'), ")(?:[\\s-](?:").concat(NUMBER_WORD_ONES_KEYS.join('|'), "))?\\b"), 'g') : null;
+var normalizeNumberWords = function normalizeNumberWords(str) {
+  if (!NUMBER_WORD_PATTERN || typeof str !== 'string' || !str) {
+    return str;
+  }
+  return str.replace(NUMBER_WORD_PATTERN, function (match) {
+    var lower = match.toLowerCase();
+    if (NUMBER_WORD_BASE.has(lower)) {
+      return String(NUMBER_WORD_BASE.get(lower));
+    }
+    var parts = lower.split(/[\s-]+/).filter(Boolean);
+    if (parts.length === 2) {
+      var tens = NUMBER_WORD_TENS.get(parts[0]);
+      var ones = NUMBER_WORD_ONES.get(parts[1]);
+      if (typeof tens === 'number' && typeof ones === 'number') {
+        return String(tens + ones);
+      }
+    }
+    return match;
+  });
+};
 var SPELLING_VARIANTS = new Map([['analyse', 'analyze'], ['analysed', 'analyzed'], ['analyses', 'analyzes'], ['analysing', 'analyzing'], ['behaviour', 'behavior'], ['behaviours', 'behaviors'], ['behavioural', 'behavioral'], ['behaviourally', 'behaviorally'], ['centre', 'center'], ['centres', 'centers'], ['colour', 'color'], ['colourful', 'colorful'], ['colouring', 'coloring'], ['colourings', 'colorings'], ['colourless', 'colorless'], ['colours', 'colors'], ['customisation', 'customization'], ['customisations', 'customizations'], ['customise', 'customize'], ['customised', 'customized'], ['customises', 'customizes'], ['customising', 'customizing'], ['defence', 'defense'], ['defences', 'defenses'], ['favour', 'favor'], ['favourable', 'favorable'], ['favourably', 'favorably'], ['favoured', 'favored'], ['favourite', 'favorite'], ['favourites', 'favorites'], ['favouring', 'favoring'], ['favours', 'favors'], ['licence', 'license'], ['licences', 'licenses'], ['localisation', 'localization'], ['localisations', 'localizations'], ['localise', 'localize'], ['localised', 'localized'], ['localises', 'localizes'], ['localising', 'localizing'], ['modelling', 'modeling'], ['modeller', 'modeler'], ['modellers', 'modelers'], ['optimisation', 'optimization'], ['optimisations', 'optimizations'], ['optimise', 'optimize'], ['optimised', 'optimized'], ['optimises', 'optimizes'], ['optimising', 'optimizing'], ['organisation', 'organization'], ['organisations', 'organizations'], ['organise', 'organize'], ['organised', 'organized'], ['organises', 'organizes'], ['organising', 'organizing'], ['personalisation', 'personalization'], ['personalisations', 'personalizations'], ['personalise', 'personalize'], ['personalised', 'personalized'], ['personalises', 'personalizes'], ['personalising', 'personalizing'], ['practise', 'practice'], ['practised', 'practiced'], ['practises', 'practices'], ['practising', 'practicing'], ['theatre', 'theater'], ['theatres', 'theaters'], ['traveller', 'traveler'], ['travellers', 'travelers'], ['travelling', 'traveling']]);
 var SPELLING_VARIANT_PATTERN = SPELLING_VARIANTS.size > 0 ? new RegExp("\\b(".concat(Array.from(SPELLING_VARIANTS.keys()).join('|'), ")\\b"), 'g') : null;
 var normalizeSpellingVariants = function normalizeSpellingVariants(str) {
@@ -12274,6 +12257,7 @@ var searchKey = function searchKey(str) {
   }
   normalized = normalized.replace(/[\u0300-\u036f]/g, '').replace(/ß/g, 'ss').replace(/æ/g, 'ae').replace(/œ/g, 'oe').replace(/ø/g, 'o').replace(/&/g, 'and').replace(/\+/g, 'plus').replace(/[°º˚]/g, 'deg').replace(/\bdegrees?\b/g, 'deg').replace(/[×✕✖✗✘]/g, 'x');
   normalized = normalizeUnicodeFractions(normalized);
+  normalized = normalizeNumberWords(normalized);
   normalized = normalizeSpellingVariants(normalized);
   normalized = normaliseMarkVariants(normalized);
   var simplified = normalized.replace(/[^a-z0-9]+/g, '');
@@ -12288,6 +12272,7 @@ var searchTokens = function searchTokens(str) {
   }
   normalized = normalized.replace(/[\u0300-\u036f]/g, '').replace(/ß/g, 'ss').replace(/æ/g, 'ae').replace(/œ/g, 'oe').replace(/ø/g, 'o').replace(/&/g, ' and ').replace(/\+/g, ' plus ').replace(/[°º˚]/g, ' deg ').replace(/\bdegrees?\b/g, ' deg ').replace(/[×✕✖✗✘]/g, ' x by ');
   normalized = normalizeUnicodeFractions(normalized);
+  var numberNormalized = normalizeNumberWords(normalized);
   var tokens = new Set();
   var initialWords = [];
   var addToken = function addToken(token) {
@@ -12336,8 +12321,11 @@ var searchTokens = function searchTokens(str) {
     });
   };
   processParts(normalized, true);
-  var spellingNormalized = normalizeSpellingVariants(normalized);
-  if (spellingNormalized !== normalized) {
+  if (numberNormalized !== normalized) {
+    processParts(numberNormalized);
+  }
+  var spellingNormalized = normalizeSpellingVariants(numberNormalized);
+  if (spellingNormalized !== numberNormalized) {
     processParts(spellingNormalized);
   }
   var markNormalized = normaliseMarkVariants(spellingNormalized);

@@ -107,7 +107,7 @@ describe('version comparison viewer', () => {
 
     const diffEntries = document.querySelectorAll('#backupDiffList li');
     expect(diffEntries.length).toBe(1);
-    expect(diffEntries[0].querySelector('.diff-path').textContent).toBe('camera');
+    expect(diffEntries[0].querySelector('.diff-path').textContent).toBe('Camera');
     expect(diffEntries[0].textContent).toContain('Updated');
 
     const exportButton = document.getElementById('backupDiffExport');

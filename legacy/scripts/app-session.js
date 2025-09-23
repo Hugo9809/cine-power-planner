@@ -2257,16 +2257,71 @@ function clearBackupDiffResults() {
     backupDiffListContainerEl.hidden = true;
   }
 }
+function fallbackHumanizeDiffKey(key) {
+  if (typeof key !== 'string') {
+    return String(key);
+  }
+  var spaced = key.replace(/[_\s-]+/g, ' ').replace(/([a-z\d])([A-Z])/g, '$1 $2').replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2').trim();
+  if (!spaced) {
+    return key;
+  }
+  return spaced.split(' ').map(function (part) {
+    if (!part) return part;
+    if (part.length > 3 && part === part.toUpperCase()) {
+      return part;
+    }
+    if (/^\d+$/.test(part)) {
+      return formatNumberForComparison(Number(part));
+    }
+    return part.charAt(0).toUpperCase() + part.slice(1);
+  }).join(' ');
+}
+function humanizeDiffKey(key) {
+  if (typeof key !== 'string') {
+    return String(key);
+  }
+  if (typeof humanizeKey === 'function') {
+    try {
+      var result = humanizeKey(key);
+      if (typeof result === 'string' && result) {
+        return result;
+      }
+    } catch (error) {
+      console.warn('Failed to humanize diff key via humanizeKey', error);
+    }
+  }
+  return fallbackHumanizeDiffKey(key);
+}
+function formatDiffListIndex(part) {
+  if (typeof part !== 'string') {
+    return null;
+  }
+  var match = part.match(/^\[(\d+)\]$/);
+  if (!match) {
+    return null;
+  }
+  var index = Number(match[1]);
+  if (!Number.isFinite(index) || index < 0) {
+    return null;
+  }
+  var template = getDiffText('versionCompareListItemLabel', 'Item %s');
+  return template.replace('%s', formatNumberForComparison(index + 1));
+}
+function formatDiffPathSegment(part) {
+  var listLabel = formatDiffListIndex(part);
+  if (listLabel) {
+    return listLabel;
+  }
+  if (typeof part !== 'string') {
+    return String(part);
+  }
+  return humanizeDiffKey(part);
+}
 function formatDiffPath(parts) {
   if (!Array.isArray(parts) || !parts.length) {
     return getDiffText('versionCompareRootPath', 'Entire setup');
   }
-  return parts.map(function (part) {
-    if (typeof part !== 'string') {
-      return String(part);
-    }
-    return part;
-  }).join(' › ');
+  return parts.map(formatDiffPathSegment).join(' › ');
 }
 function valuesEqual(a, b) {
   if (a === b) return true;
@@ -2399,6 +2454,33 @@ function createDiffChangeBlock(labelText, value) {
   block.appendChild(createDiffValueElement(value));
   return block;
 }
+function sortDiffEntries(entries) {
+  if (!Array.isArray(entries)) {
+    return [];
+  }
+  var typeRank = {
+    changed: 0,
+    added: 1,
+    removed: 2
+  };
+  var compareStrings = typeof localeSort === 'function' ? function (a, b) {
+    return localeSort(a, b);
+  } : function (a, b) {
+    return a.localeCompare(b);
+  };
+  return entries.map(function (entry) {
+    return {
+      entry: entry,
+      pathText: formatDiffPath(entry && entry.path),
+      rank: entry && entry.type && Object.prototype.hasOwnProperty.call(typeRank, entry.type) ? typeRank[entry.type] : 3
+    };
+  }).sort(function (a, b) {
+    if (a.rank !== b.rank) {
+      return a.rank - b.rank;
+    }
+    return compareStrings(a.pathText, b.pathText);
+  });
+}
 function renderBackupDiffEntries(entries) {
   if (!backupDiffListEl || !backupDiffListContainerEl) {
     return;
@@ -2409,12 +2491,19 @@ function renderBackupDiffEntries(entries) {
     return;
   }
   backupDiffListContainerEl.hidden = false;
-  entries.forEach(function (entry) {
+  var decoratedEntries = sortDiffEntries(entries);
+  decoratedEntries.forEach(function (_ref18) {
+    var entry = _ref18.entry,
+      pathText = _ref18.pathText;
+    if (!entry) {
+      return;
+    }
     var item = document.createElement('li');
-    item.className = "diff-entry diff-".concat(entry.type);
+    var typeClass = entry.type ? " diff-".concat(entry.type) : '';
+    item.className = "diff-entry".concat(typeClass);
     var path = document.createElement('div');
     path.className = 'diff-path';
-    path.textContent = formatDiffPath(entry.path);
+    path.textContent = pathText;
     item.appendChild(path);
     if (entry.type === 'changed') {
       var status = document.createElement('span');
@@ -2975,10 +3064,10 @@ if (restoreSettings && restoreSettingsInput) {
         if (restoredSettings && _typeof(restoredSettings) === 'object') {
           if (safeStorage && typeof safeStorage.setItem === 'function') {
             restoreMutated = true;
-            Object.entries(restoredSettings).forEach(function (_ref18) {
-              var _ref19 = _slicedToArray(_ref18, 2),
-                k = _ref19[0],
-                v = _ref19[1];
+            Object.entries(restoredSettings).forEach(function (_ref19) {
+              var _ref20 = _slicedToArray(_ref19, 2),
+                k = _ref20[0],
+                v = _ref20[1];
               if (typeof k !== 'string') return;
               try {
                 if (v === null || v === undefined) {
@@ -2996,10 +3085,10 @@ if (restoreSettings && restoreSettingsInput) {
         }
         if (restoredSession && typeof sessionStorage !== 'undefined') {
           restoreMutated = true;
-          Object.entries(restoredSession).forEach(function (_ref20) {
-            var _ref21 = _slicedToArray(_ref20, 2),
-              key = _ref21[0],
-              value = _ref21[1];
+          Object.entries(restoredSession).forEach(function (_ref21) {
+            var _ref22 = _slicedToArray(_ref21, 2),
+              key = _ref22[0],
+              value = _ref22[1];
             try {
               sessionStorage.setItem(key, value);
             } catch (sessionError) {
@@ -3478,9 +3567,9 @@ function collectFallbackUiCacheStorages() {
       label: '__cineGlobal'
     });
   }
-  scopeCandidates.forEach(function (_ref22) {
-    var scope = _ref22.scope,
-      label = _ref22.label;
+  scopeCandidates.forEach(function (_ref23) {
+    var scope = _ref23.scope,
+      label = _ref23.label;
     _inspectScope(scope, label);
   });
   if (typeof localStorage !== 'undefined') {
@@ -3993,10 +4082,10 @@ if (helpButton && helpDialog) {
       return;
     }
     var hasVisible = false;
-    helpQuickLinkItems.forEach(function (_ref23) {
-      var section = _ref23.section,
-        listItem = _ref23.listItem,
-        button = _ref23.button;
+    helpQuickLinkItems.forEach(function (_ref24) {
+      var section = _ref24.section,
+        listItem = _ref24.listItem,
+        button = _ref24.button;
       if (section && !section.hasAttribute('hidden')) {
         listItem.removeAttribute('hidden');
         hasVisible = true;
@@ -4028,9 +4117,9 @@ if (helpButton && helpDialog) {
       helpQuickLinksNav.removeAttribute('data-help');
     }
     var template = langTexts.helpQuickLinkButtonHelp || fallbackTexts.helpQuickLinkButtonHelp;
-    helpQuickLinkItems.forEach(function (_ref24) {
-      var button = _ref24.button,
-        label = _ref24.label;
+    helpQuickLinkItems.forEach(function (_ref25) {
+      var button = _ref25.button,
+        label = _ref25.label;
       if (!button) return;
       if (template) {
         var helpText = template.replace('%s', label);
@@ -4227,11 +4316,11 @@ if (helpButton && helpDialog) {
     return "(".concat(parts.join(''), ")");
   };
   updateHelpResultsSummaryText = function updateHelpResultsSummaryText() {
-    var _ref25 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-      totalCount = _ref25.totalCount,
-      visibleCount = _ref25.visibleCount,
-      hasQuery = _ref25.hasQuery,
-      queryText = _ref25.queryText;
+    var _ref26 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+      totalCount = _ref26.totalCount,
+      visibleCount = _ref26.visibleCount,
+      hasQuery = _ref26.hasQuery,
+      queryText = _ref26.queryText;
     if (!helpResultsSummary) return;
     if (typeof totalCount === 'number' && Number.isFinite(totalCount)) {
       helpResultsSummary.dataset.totalCount = String(totalCount);
@@ -4459,9 +4548,9 @@ if (helpButton && helpDialog) {
       if (!parts.includes(trimmed)) parts.push(trimmed);
     };
     var addTextFromElement = function addTextFromElement(element) {
-      var _ref26 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-        _ref26$includeTextCon = _ref26.includeTextContent,
-        includeTextContent = _ref26$includeTextCon === void 0 ? false : _ref26$includeTextCon;
+      var _ref27 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+        _ref27$includeTextCon = _ref27.includeTextContent,
+        includeTextContent = _ref27$includeTextCon === void 0 ? false : _ref27$includeTextCon;
       if (!element) return;
       addText(element.getAttribute('data-help'));
       addText(element.getAttribute('aria-label'));
@@ -5031,7 +5120,7 @@ function populateLensDropdown() {
     lensSelect.appendChild(emptyOpt);
   }
   Object.keys(lensData).sort(localeSort).forEach(function (name) {
-    var _ref27, _lens$minFocusMeters;
+    var _ref28, _lens$minFocusMeters;
     var opt = document.createElement('option');
     opt.value = name;
     var lens = lensData[name] || {};
@@ -5042,7 +5131,7 @@ function populateLensDropdown() {
     } else if (lens.clampOn === false) {
       attrs.push('no clamp-on');
     }
-    var minFocus = (_ref27 = (_lens$minFocusMeters = lens.minFocusMeters) !== null && _lens$minFocusMeters !== void 0 ? _lens$minFocusMeters : lens.minFocus) !== null && _ref27 !== void 0 ? _ref27 : lens.minFocusCm ? lens.minFocusCm / 100 : null;
+    var minFocus = (_ref28 = (_lens$minFocusMeters = lens.minFocusMeters) !== null && _lens$minFocusMeters !== void 0 ? _lens$minFocusMeters : lens.minFocus) !== null && _ref28 !== void 0 ? _ref28 : lens.minFocusCm ? lens.minFocusCm / 100 : null;
     if (minFocus) attrs.push("".concat(minFocus, "m min focus"));
     opt.textContent = attrs.length ? "".concat(name, " (").concat(attrs.join(', '), ")") : name;
     lensSelect.appendChild(opt);
@@ -5284,11 +5373,11 @@ function resolveFilterDisplayInfo(type) {
 function buildFilterGearEntries() {
   var filters = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
   var entries = [];
-  filters.forEach(function (_ref28) {
-    var type = _ref28.type,
-      _ref28$size = _ref28.size,
-      size = _ref28$size === void 0 ? DEFAULT_FILTER_SIZE : _ref28$size,
-      values = _ref28.values;
+  filters.forEach(function (_ref29) {
+    var type = _ref29.type,
+      _ref29$size = _ref29.size,
+      size = _ref29$size === void 0 ? DEFAULT_FILTER_SIZE : _ref29$size,
+      values = _ref29.values;
     if (!type) return;
     var sizeValue = size || DEFAULT_FILTER_SIZE;
     var idBase = "filter-".concat(filterId(type));
@@ -5772,8 +5861,8 @@ function buildFilterSelectHtml() {
 function collectFilterAccessories() {
   var filters = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
   var items = [];
-  filters.forEach(function (_ref29) {
-    var type = _ref29.type;
+  filters.forEach(function (_ref30) {
+    var type = _ref30.type;
     switch (type) {
       case 'ND Grad HE':
       case 'ND Grad SE':
