@@ -451,10 +451,19 @@ body:not(.light-mode) .gear-table .category-row td {
   font-weight: var(--font-weight-bold) !important;
 }
 
+
 .connector-block,
 .info-box {
   background: var(--panel-bg) !important;
   box-shadow: var(--panel-shadow);
+}
+
+#overviewDialogContent .device-ul li {
+  border-bottom: 1px solid var(--panel-border) !important;
+}
+
+#overviewDialogContent .device-ul li:last-child {
+  border-bottom: none !important;
 }
 
 .power-conn {
