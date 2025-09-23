@@ -81,10 +81,10 @@
   --icon-size-lg: calc(var(--font-size-relative-base) * var(--font-scale-xl));
   --icon-size-xl: calc(var(--font-size-relative-base) * var(--font-scale-xxl));
   --font-weight-light: 300;
-  --font-weight-regular: 400;
-  --font-weight-medium: 500;
-  --font-weight-semibold: 600;
-  --font-weight-bold: 700;
+  --font-weight-regular: var(--font-weight-light);
+  --font-weight-medium: var(--font-weight-light);
+  --font-weight-bold: 500;
+  --font-weight-semibold: var(--font-weight-bold);
   --font-size-diagram-icon: calc(var(--font-size-base) * var(--font-scale-icon-lg));
   --font-size-diagram-label: calc(var(--font-size-base) * var(--font-scale-diagram-label));
   --font-size-diagram-text: calc(var(--font-size-base) * var(--font-scale-diagram-text));
@@ -517,6 +517,11 @@ a {
   color: var(--link-color);
   font-weight: var(--font-weight-regular);
   text-decoration: none;
+}
+
+b,
+strong {
+  font-weight: var(--font-weight-bold);
 }
 
 a:visited {
@@ -1369,7 +1374,7 @@ main.legal-content {
   background: var(--danger-overlay-color);
   padding: 0.75rem 1rem;
   color: var(--text-color);
-  font-weight: 600;
+  font-weight: var(--font-weight-bold);
 }
 
 .power-warning-summary p {
@@ -1406,7 +1411,7 @@ main.legal-content {
 
 .power-warning-advice {
   margin: 0;
-  font-weight: 600;
+  font-weight: var(--font-weight-bold);
   color: var(--danger-color);
 }
 
