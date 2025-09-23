@@ -1,5 +1,5 @@
 // storage.js - Handles reading from and writing to localStorage.
-/* global texts, currentLang, SAFE_LOCAL_STORAGE */
+/* global texts, currentLang, SAFE_LOCAL_STORAGE, __cineGlobal */
 
 const GLOBAL_SCOPE =
   typeof globalThis !== 'undefined'
@@ -19,6 +19,7 @@ const FEEDBACK_STORAGE_KEY = 'cameraPowerPlanner_feedback';
 const PROJECT_STORAGE_KEY = 'cameraPowerPlanner_project';
 const FAVORITES_STORAGE_KEY = 'cameraPowerPlanner_favorites';
 const DEVICE_SCHEMA_CACHE_KEY = 'cameraPowerPlanner_schemaCache';
+const LEGACY_SCHEMA_CACHE_KEY = 'cinePowerPlanner_schemaCache';
 const CUSTOM_FONT_STORAGE_KEY_DEFAULT = 'cameraPowerPlanner_customFonts';
 
 function ensureCustomFontStorageKeyName() {
@@ -1566,6 +1567,111 @@ function deleteFromStorage(storage, key, errorMessage, options = {}) {
   } catch (migrationError) {
     console.warn(`Unable to remove migration backup for ${key}`, migrationError);
   }
+}
+
+const UI_CACHE_STORAGE_KEYS = [
+  DEVICE_SCHEMA_CACHE_KEY,
+  LEGACY_SCHEMA_CACHE_KEY,
+];
+
+const UI_CACHE_STORAGE_ACCESS_WARNINGS = new Set();
+
+function collectUiCacheStorages() {
+  const candidates = [];
+  const seenScopes = new Set();
+
+  const pushCandidate = (candidate) => {
+    if (!candidate || typeof candidate.getItem !== 'function') {
+      return;
+    }
+    candidates.push(candidate);
+  };
+
+  const readProperty = (scope, property, label) => {
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+      return null;
+    }
+    try {
+      return scope[property];
+    } catch (error) {
+      if (label && !UI_CACHE_STORAGE_ACCESS_WARNINGS.has(label)) {
+        UI_CACHE_STORAGE_ACCESS_WARNINGS.add(label);
+        console.warn(`Unable to access ${label} while clearing UI caches`, error);
+      }
+      return null;
+    }
+  };
+
+  const inspectScope = (scope, label) => {
+    if (!scope || seenScopes.has(scope)) {
+      return;
+    }
+    seenScopes.add(scope);
+
+    pushCandidate(readProperty(scope, 'SAFE_LOCAL_STORAGE', `${label}.SAFE_LOCAL_STORAGE`));
+    pushCandidate(readProperty(scope, 'localStorage', `${label}.localStorage`));
+    pushCandidate(readProperty(scope, 'sessionStorage', `${label}.sessionStorage`));
+
+    const nested = readProperty(scope, '__cineGlobal', `${label}.__cineGlobal`);
+    if (nested && nested !== scope) {
+      inspectScope(nested, `${label}.__cineGlobal`);
+    }
+  };
+
+  inspectScope(typeof globalThis !== 'undefined' ? globalThis : null, 'globalThis');
+  inspectScope(typeof window !== 'undefined' ? window : null, 'window');
+  inspectScope(typeof self !== 'undefined' ? self : null, 'self');
+  inspectScope(typeof global !== 'undefined' ? global : null, 'global');
+  if (typeof __cineGlobal !== 'undefined') {
+    inspectScope(__cineGlobal, '__cineGlobal');
+  }
+
+  if (safeLocalStorageInfo && safeLocalStorageInfo.storage) {
+    pushCandidate(safeLocalStorageInfo.storage);
+  }
+
+  if (typeof SAFE_LOCAL_STORAGE !== 'undefined' && SAFE_LOCAL_STORAGE) {
+    pushCandidate(SAFE_LOCAL_STORAGE);
+  }
+
+  try {
+    pushCandidate(getSafeLocalStorage());
+  } catch (error) {
+    if (!UI_CACHE_STORAGE_ACCESS_WARNINGS.has('getSafeLocalStorage')) {
+      UI_CACHE_STORAGE_ACCESS_WARNINGS.add('getSafeLocalStorage');
+      console.warn('Unable to access safe local storage while clearing UI caches', error);
+    }
+  }
+
+  pushCandidate(getWindowStorage('localStorage'));
+  pushCandidate(getWindowStorage('sessionStorage'));
+
+  if (typeof localStorage !== 'undefined') {
+    pushCandidate(localStorage);
+  }
+
+  if (typeof sessionStorage !== 'undefined') {
+    pushCandidate(sessionStorage);
+  }
+
+  return collectUniqueStorages(candidates);
+}
+
+function clearUiCacheStorageEntries() {
+  const storages = collectUiCacheStorages();
+  if (!storages.length) {
+    return;
+  }
+
+  UI_CACHE_STORAGE_KEYS.forEach((key) => {
+    if (typeof key !== 'string' || !key) {
+      return;
+    }
+
+    storages.forEach((storage) => {
+      deleteFromStorage(storage, key, `Failed to clear UI cache entry ${key}`);
+    });
+  });
 }
 
 function loadFlagFromStorage(storage, key, errorMessage) {
@@ -4040,6 +4146,7 @@ if (typeof module !== "undefined" && module.exports) {
     saveFullBackupHistory,
     recordFullBackupHistoryEntry,
     requestPersistentStorage,
+    clearUiCacheStorageEntries,
   };
 }
 
