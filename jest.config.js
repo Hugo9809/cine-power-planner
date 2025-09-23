@@ -3,6 +3,7 @@ const createProject = (name, environment, pattern) => ({
   testEnvironment: environment,
   testMatch: [pattern],
   setupFiles: ['jest-localstorage-mock'],
+  setupFilesAfterEnv: ['<rootDir>/tests/setup/jest.setup.js'],
   moduleNameMapper: {
     '^lz-string$': '<rootDir>/tests/__mocks__/lz-string.js'
   }
