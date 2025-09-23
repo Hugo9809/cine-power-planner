@@ -2487,6 +2487,195 @@
         </section>
         <section
           data-help-section
+          id="offlineStorageHelp"
+          data-help-keywords="offline storage local persistence browser cache pwa migrate transfer install indicator safety backup"
+        >
+          <h3>
+            <span class="help-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE9C3;</span>Local Storage &amp; Offline Access
+          </h3>
+          <ul>
+            <li>
+              The
+              <a
+                class="help-link"
+                href="#offlineIndicator"
+                data-help-target="#offlineIndicator"
+              >Offline indicator</a>
+              confirms when the planner is running entirely from local storage; every save, backup and device edit stays on this
+              device until you export it.
+            </li>
+            <li>
+              Installing the app from the
+              <a
+                class="help-link button-link"
+                href="#installPromptBannerAction"
+                data-help-target="#installPromptBannerAction"
+                data-help-highlight="#installPromptBanner"
+              ><strong>Install</strong></a>
+              banner or the
+              <a
+                class="help-link"
+                href="#installGuideDialog"
+                data-help-target="#installGuideDialog"
+              >install guide</a>
+              uses the same database as the browser tab, so projects, backups, favorites and automatic gear rules stay in sync
+              offline across both entry points.
+            </li>
+            <li>
+              After reconnecting, choose
+              <a
+                class="help-link"
+                href="#reloadButton"
+                data-help-target="#reloadButton"
+              ><strong>Force reload</strong></a>
+              to refresh cached scripts, icons and data files without touching your saved work.
+            </li>
+            <li>
+              Before clearing a browser profile or switching hardware, capture a full-app
+              <a
+                class="help-link"
+                href="#backupSettings"
+                data-help-target="#backupSettings"
+                data-help-highlight="#settingsDialog"
+              ><strong>Backup</strong></a>, the current
+              <a
+                class="help-link button-link"
+                href="#shareSetupBtn"
+                data-help-target="#shareSetupBtn"
+                data-help-highlight="#setup-manager"
+              ><strong>Export project</strong></a>
+              JSON and any Device Library
+              <a
+                class="help-link"
+                href="#exportDataBtn"
+                data-help-target="#exportDataBtn"
+                data-help-highlight="#device-manager"
+              ><strong>Export</strong></a>
+              so every dataset has an offline copy.
+            </li>
+            <li>
+              Follow the
+              <a
+                class="help-link"
+                href="#offlineTransferChecklist"
+                data-help-target="#offlineTransferChecklist"
+                data-help-highlight="#offlineTransferChecklist"
+              >Offline transfer checklist</a>
+              whenever you migrate to another computer or profile to confirm nothing is left behind.
+            </li>
+          </ul>
+          <div
+            id="offlineTransferChecklist"
+            class="help-callout"
+            role="note"
+            aria-label="Offline transfer checklist"
+          >
+            <h4>Offline transfer checklist</h4>
+            <ol>
+              <li>
+                Save each project with the
+                <a
+                  class="help-link button-link"
+                  href="#saveSetupBtn"
+                  data-help-target="#saveSetupBtn"
+                  data-help-highlight="#setup-manager"
+                ><strong>Save</strong></a>
+                button so the latest edits are captured locally.
+              </li>
+              <li>
+                Download the active configuration via
+                <a
+                  class="help-link button-link"
+                  href="#shareSetupBtn"
+                  data-help-target="#shareSetupBtn"
+                  data-help-highlight="#setup-manager"
+                ><strong>Export project</strong></a>
+                and capture a complete snapshot with
+                <a
+                  class="help-link"
+                  href="#backupSettings"
+                  data-help-target="#backupSettings"
+                  data-help-highlight="#settingsDialog"
+                ><strong>Backup</strong></a>
+                before leaving the original device.
+              </li>
+              <li>
+                If you changed the Device Library, open
+                <a
+                  class="help-link"
+                  href="#device-manager"
+                  data-help-target="#toggleDeviceManager"
+                  data-help-highlight="#device-manager"
+                >Edit Device Data…</a>
+                and download a JSON copy with
+                <a
+                  class="help-link"
+                  href="#exportDataBtn"
+                  data-help-target="#exportDataBtn"
+                  data-help-highlight="#device-manager"
+                ><strong>Export</strong></a>.
+              </li>
+              <li>Copy the JSON files to redundant offline storage (for example, two separate SSDs) before you travel.</li>
+              <li>
+                On the destination machine, open the planner once while connected—or use the
+                <a
+                  class="help-link button-link"
+                  href="#installPromptBannerAction"
+                  data-help-target="#installPromptBannerAction"
+                  data-help-highlight="#installPromptBanner"
+                ><strong>Install</strong></a>
+                workflow—so fonts and data cache for offline use.
+              </li>
+              <li>
+                In
+                <a
+                  class="help-link"
+                  href="#settingsButton"
+                  data-help-target="#settingsButton"
+                  data-help-highlight="#settingsDialog"
+                >Settings</a>
+                → <em>Backup &amp; Restore</em>, choose
+                <a
+                  class="help-link"
+                  href="#restoreSettings"
+                  data-help-target="#restoreSettings"
+                  data-help-highlight="#settingsDialog"
+                ><strong>Restore</strong></a>
+                to load the full snapshot; optionally reopen
+                <a
+                  class="help-link button-link"
+                  href="#applySharedLinkBtn"
+                  data-help-target="#applySharedLinkBtn"
+                  data-help-highlight="#setup-manager"
+                ><strong>Import project</strong></a>
+                to test individual archives.
+              </li>
+              <li>
+                Verify recovery by loading entries from
+                <a
+                  class="help-link button-link"
+                  href="#setupSelect"
+                  data-help-target="#setupSelect"
+                  data-help-highlight="#setup-manager"
+                ><strong>Saved Projects</strong></a>
+                and browsing the
+                <a
+                  class="help-link"
+                  href="#deviceManagerHeading"
+                  data-help-target="#deviceManagerHeading"
+                  data-help-highlight="#device-manager"
+                >Device Library</a>
+                before archiving the source files.
+              </li>
+            </ol>
+            <p class="help-callout-note">
+              Tip: Keep the original backup and export untouched so you can repeat the migration or roll back instantly if
+              something looks out of place on the new machine.
+            </p>
+          </div>
+        </section>
+        <section
+          data-help-section
           id="autoBackupsHelp"
           data-help-keywords="auto backup automatic snapshot restore recovery safety hourly download full app backup notification show saved projects setting verification checklist redundancy"
         >
@@ -3396,26 +3585,35 @@
           >
             <summary>Where are my projects saved?</summary>
             <p>
-              Projects and device edits are stored in your browser's <code>localStorage</code>. Use
+              Projects, project requirements, automatic gear rules, preferences and runtime feedback live in your browser's
+              <code>localStorage</code> so they remain available offline. Download the active setup with
               <a
                 class="help-link"
                 href="#setup-manager"
                 data-help-target="#shareSetupBtn"
                 data-help-highlight="#setup-manager"
-              ><em>Export Project</em></a>
-              to download a setup file, and use the Device Database Editor's
+              ><em>Export Project</em></a>, capture a full planner snapshot through
+              <a
+                class="help-link"
+                href="#backupSettings"
+                data-help-target="#backupSettings"
+                data-help-highlight="#settingsDialog"
+              ><em>Backup</em></a>
+              and use the Device Database Editor's
               <a
                 class="help-link"
                 href="#device-manager"
                 data-help-target="#exportDataBtn"
+                data-help-highlight="#device-manager"
               ><em>Export</em></a>
               /
               <a
                 class="help-link"
                 href="#device-manager"
                 data-help-target="#importDataBtn"
+                data-help-highlight="#device-manager"
               ><em>Import</em></a>
-              buttons to back up custom gear.
+              controls for custom gear. Restores always create a safety copy first so you never lose data while testing archives.
             </p>
           </details>
           <details
@@ -3431,6 +3629,72 @@
               <a class="help-link" href="#reloadButton" data-help-target="#reloadButton"><em>Force reload</em></a>
               whenever you reconnect.
             </p>
+          </details>
+          <details
+            class="faq-item"
+            data-help-keywords="move transfer migrate new computer laptop workstation backup restore copy offline"
+          >
+            <summary>How do I move everything to another computer?</summary>
+            <p>Prepare both devices before you leave the original workstation:</p>
+            <ol>
+              <li>
+                Save each project and download the active setup with
+                <a
+                  class="help-link"
+                  href="#setup-manager"
+                  data-help-target="#shareSetupBtn"
+                  data-help-highlight="#setup-manager"
+                ><em>Export Project</em></a>.
+              </li>
+              <li>
+                Open
+                <a
+                  class="help-link"
+                  href="#settingsButton"
+                  data-help-target="#settingsButton"
+                  data-help-highlight="#settingsDialog"
+                >Settings</a>
+                → <em>Backup &amp; Restore</em> and download a full-app
+                <a
+                  class="help-link"
+                  href="#backupSettings"
+                  data-help-target="#backupSettings"
+                  data-help-highlight="#settingsDialog"
+                ><em>Backup</em></a>
+                so preferences, automatic gear rules, custom devices and runtime feedback travel with you.
+              </li>
+              <li>
+                Export custom gear from the Device Database Editor using the
+                <a
+                  class="help-link"
+                  href="#device-manager"
+                  data-help-target="#exportDataBtn"
+                  data-help-highlight="#device-manager"
+                ><em>Export</em></a>
+                button.
+              </li>
+              <li>Copy the JSON files to redundant storage (two drives or a drive plus cloud sync) before leaving.</li>
+              <li>
+                On the destination machine, open the planner once while connected (or complete the
+                <a
+                  class="help-link"
+                  href="#installGuideDialog"
+                  data-help-target="#installGuideDialog"
+                >install guide</a>
+                ) so assets cache for offline use.
+              </li>
+              <li>
+                Restore the planner snapshot through
+                <a
+                  class="help-link"
+                  href="#restoreSettings"
+                  data-help-target="#restoreSettings"
+                  data-help-highlight="#settingsDialog"
+                ><em>Restore</em></a>
+                , then import project JSON files or Device Library exports as needed.
+              </li>
+            </ol>
+            <p>Keep the original backup untouched until you confirm the projects and device entries load correctly on the new system.</p>
           </details>
           <details
             class="faq-item"
