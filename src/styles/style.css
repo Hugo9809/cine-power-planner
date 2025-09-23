@@ -3694,7 +3694,7 @@ body.light-mode #topBar select:focus-visible {
   display: none;
   position: absolute;
   pointer-events: none;
-  background: var(--surface-color);
+  background: none;
   color: var(--text-color);
   border: 1px solid var(--panel-border);
   font-size: var(--font-size-relative-base);
