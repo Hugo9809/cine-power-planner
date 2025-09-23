@@ -1321,7 +1321,54 @@
         <div class="form-row">
           <label for="settingsShowAutoBackups" id="settingsShowAutoBackupsLabel">Show auto backups in project list</label>
           <input type="checkbox" id="settingsShowAutoBackups" />
+          <button
+            type="button"
+            id="backupDiffToggleButton"
+            class="inline-form-button"
+            aria-expanded="false"
+            aria-controls="backupDiffSection"
+          >
+            Compare versions
+          </button>
         </div>
+        <section
+          id="backupDiffSection"
+          class="backup-diff-section"
+          aria-labelledby="backupDiffHeading"
+          hidden
+        >
+          <h4 id="backupDiffHeading">Version comparison</h4>
+          <p id="backupDiffIntro" class="settings-hint">
+            Pick two manual saves or automatic backups to inspect changes before archiving a log.
+          </p>
+          <div class="form-row">
+            <label for="backupDiffPrimary" id="backupDiffPrimaryLabel">Baseline version</label>
+            <select id="backupDiffPrimary"></select>
+          </div>
+          <div class="form-row">
+            <label for="backupDiffSecondary" id="backupDiffSecondaryLabel">Comparison version</label>
+            <select id="backupDiffSecondary"></select>
+          </div>
+          <p id="backupDiffEmptyState" class="settings-hint">
+            Save a project or wait for auto-backups to start comparing versions.
+          </p>
+          <div id="backupDiffSummary" class="diff-summary" role="status" aria-live="polite"></div>
+          <div id="backupDiffListContainer" class="diff-list-container" hidden>
+            <ul id="backupDiffList" class="diff-list"></ul>
+          </div>
+          <div class="form-row">
+            <label for="backupDiffNotes" id="backupDiffNotesLabel">Incident notes</label>
+            <textarea
+              id="backupDiffNotes"
+              rows="4"
+              placeholder="Record context, on-set observations, or required follow-up."
+            ></textarea>
+          </div>
+          <div class="button-row diff-actions">
+            <button type="button" id="backupDiffExport">Export log</button>
+            <button type="button" id="backupDiffClose">Close</button>
+          </div>
+        </section>
         <div class="button-row">
           <button id="backupSettings">Backup</button>
           <input type="file" id="restoreSettingsInput" accept="application/json" hidden />

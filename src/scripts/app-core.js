@@ -5191,6 +5191,59 @@ function setLanguage(lang) {
       );
     }
   }
+  if (backupDiffToggleButton) {
+    const compareLabel = texts[lang].versionCompareButton || 'Compare versions';
+    setButtonLabelWithIcon(backupDiffToggleButton, compareLabel, ICON_GLYPHS.note);
+    const compareHelp = texts[lang].versionCompareButtonHelp || compareLabel;
+    backupDiffToggleButton.setAttribute('data-help', compareHelp);
+    backupDiffToggleButton.setAttribute('title', compareHelp);
+  }
+  if (backupDiffHeading) {
+    backupDiffHeading.textContent = texts[lang].versionCompareHeading || 'Version comparison';
+  }
+  if (backupDiffIntro) {
+    backupDiffIntro.textContent = texts[lang].versionCompareIntro || '';
+  }
+  if (backupDiffPrimaryLabel) {
+    const primaryLabel = texts[lang].versionComparePrimaryLabel || 'Baseline version';
+    backupDiffPrimaryLabel.textContent = primaryLabel;
+    if (backupDiffPrimarySelect) {
+      backupDiffPrimarySelect.setAttribute('aria-label', primaryLabel);
+    }
+  }
+  if (backupDiffSecondaryLabel) {
+    const compareLabelText = texts[lang].versionCompareSecondaryLabel || 'Comparison version';
+    backupDiffSecondaryLabel.textContent = compareLabelText;
+    if (backupDiffSecondarySelect) {
+      backupDiffSecondarySelect.setAttribute('aria-label', compareLabelText);
+    }
+  }
+  if (backupDiffEmptyState) {
+    backupDiffEmptyState.textContent =
+      texts[lang].versionCompareEmpty
+      || 'Save a project or wait for auto-backups to start comparing versions.';
+  }
+  if (backupDiffNotesLabel) {
+    backupDiffNotesLabel.textContent = texts[lang].versionCompareNotesLabel || 'Incident notes';
+  }
+  if (backupDiffNotes) {
+    const placeholder = texts[lang].versionCompareNotesPlaceholder
+      || 'Record context, on-set observations, or required follow-up.';
+    backupDiffNotes.placeholder = placeholder;
+  }
+  if (backupDiffExportButton) {
+    const exportLabel = texts[lang].versionCompareExport || 'Export log';
+    setButtonLabelWithIcon(backupDiffExportButton, exportLabel, ICON_GLYPHS.fileExport);
+    const exportHelp = texts[lang].versionCompareExportHelp || exportLabel;
+    backupDiffExportButton.setAttribute('data-help', exportHelp);
+    backupDiffExportButton.setAttribute('title', exportHelp);
+  }
+  if (backupDiffCloseButton) {
+    const closeLabel = texts[lang].versionCompareClose
+      || texts[lang].cancelSettings
+      || 'Close';
+    setButtonLabelWithIcon(backupDiffCloseButton, closeLabel, ICON_GLYPHS.circleX);
+  }
   if (backupSettings) {
     const backupLabel = texts[lang].backupSettings;
     setButtonLabelWithIcon(backupSettings, backupLabel, ICON_GLYPHS.fileExport);
@@ -12599,6 +12652,22 @@ const restoreSettings = document.getElementById("restoreSettings");
 const factoryResetButton = document.getElementById("factoryResetButton");
 const restoreSettingsInput = document.getElementById("restoreSettingsInput");
 const settingsShowAutoBackups = document.getElementById("settingsShowAutoBackups");
+const backupDiffToggleButton = document.getElementById("backupDiffToggleButton");
+const backupDiffSection = document.getElementById("backupDiffSection");
+const backupDiffHeading = document.getElementById("backupDiffHeading");
+const backupDiffIntro = document.getElementById("backupDiffIntro");
+const backupDiffPrimaryLabel = document.getElementById("backupDiffPrimaryLabel");
+const backupDiffSecondaryLabel = document.getElementById("backupDiffSecondaryLabel");
+const backupDiffPrimarySelect = document.getElementById("backupDiffPrimary");
+const backupDiffSecondarySelect = document.getElementById("backupDiffSecondary");
+const backupDiffEmptyState = document.getElementById("backupDiffEmptyState");
+const backupDiffSummary = document.getElementById("backupDiffSummary");
+const backupDiffList = document.getElementById("backupDiffList");
+const backupDiffListContainer = document.getElementById("backupDiffListContainer");
+const backupDiffNotesLabel = document.getElementById("backupDiffNotesLabel");
+const backupDiffNotes = document.getElementById("backupDiffNotes");
+const backupDiffExportButton = document.getElementById("backupDiffExport");
+const backupDiffCloseButton = document.getElementById("backupDiffClose");
 const aboutVersionElem = document.getElementById("aboutVersion");
 const supportLink = document.getElementById("supportLink");
 const settingsSave    = document.getElementById("settingsSave");
