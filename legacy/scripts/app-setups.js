@@ -3099,7 +3099,7 @@ function generateGearListHtml() {
     for (var _i27 = 0; _i27 < monitorsAbove10 + 2; _i27++) consumables.push('CapIt Large');
     for (var _i28 = 0; _i28 < monitorsUnder10 + 3; _i28++) consumables.push('CapIt Medium');
     for (var _i29 = 0; _i29 < 3; _i29++) consumables.push('CapIt Small');
-    for (var _i30 = 0; _i30 < 10; _i30++) consumables.push('Duschhaube');
+    for (var _i30 = 0; _i30 < 10; _i30++) consumables.push('Shower Cap');
     consumables.push('Magliner Rain Cover Transparent');
   }
   var needsHairDryer = isWinterShoot && isScenarioActive('Outdoor') || isScenarioActive('Extreme cold (snow)');

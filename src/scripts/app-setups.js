@@ -2954,7 +2954,7 @@ function generateGearListHtml(info = {}) {
         for (let i = 0; i < monitorsAbove10 + 2; i++) consumables.push('CapIt Large');
         for (let i = 0; i < monitorsUnder10 + 3; i++) consumables.push('CapIt Medium');
         for (let i = 0; i < 3; i++) consumables.push('CapIt Small');
-        for (let i = 0; i < 10; i++) consumables.push('Duschhaube');
+        for (let i = 0; i < 10; i++) consumables.push('Shower Cap');
         consumables.push('Magliner Rain Cover Transparent');
     }
     const needsHairDryer =
