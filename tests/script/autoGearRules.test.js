@@ -591,6 +591,40 @@ describe('applyAutoGearRulesToTableHtml', () => {
     expect(fullEntries).toHaveLength(1);
   });
 
+  test('buildAutoGearRulesFromBaseInfo adds overlap cleanup for Extreme rain and Rain Machine', () => {
+    env = setupScriptEnvironment();
+
+    const { __autoGearInternals, collectProjectFormData } = env.utils;
+    const baseInfo = typeof collectProjectFormData === 'function'
+      ? collectProjectFormData()
+      : {};
+    const scenarioValues = ['Extreme rain', 'Rain Machine'];
+
+    const rules = __autoGearInternals.buildAutoGearRulesFromBaseInfo(baseInfo, scenarioValues);
+    const overlapRule = rules.find(rule => Array.isArray(rule.scenarios)
+      && rule.scenarios.length === 2
+      && rule.scenarios.includes('Extreme rain')
+      && rule.scenarios.includes('Rain Machine')
+      && Array.isArray(rule.remove)
+      && rule.remove.some(item => item && item.name === 'Schulz Sprayoff Micro'));
+
+    expect(overlapRule).toBeDefined();
+    if (!overlapRule) return;
+
+    const expectRemoval = (name, quantity) => {
+      const match = overlapRule.remove.find(item => item
+        && item.name === name
+        && item.category === 'Matte box + filter');
+      expect(match).toBeDefined();
+      if (!match) return;
+      expect(match.quantity).toBe(quantity);
+    };
+
+    expectRemoval('Schulz Sprayoff Micro', 1);
+    expectRemoval('Fischer RS to D-Tap cable 0,5m', 2);
+    expectRemoval('Spare Disc (Schulz Sprayoff Micro)', 1);
+  });
+
   test('buildDefaultVideoDistributionAutoGearRules covers each selector option', () => {
     env = setupScriptEnvironment();
 

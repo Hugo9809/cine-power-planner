@@ -2049,6 +2049,28 @@ function buildAutoGearRulesFromBaseInfo(baseInfo, scenarioValues) {
           remove: adjusted.remove,
         });
       });
+
+      const rainOverlapKeys = ['Extreme rain', 'Rain Machine'];
+      const hasRainOverlap = rainOverlapKeys.every(key => scenarioDiffMap.has(key));
+      if (hasRainOverlap) {
+        const overlapRemovals = [
+          { name: 'Schulz Sprayoff Micro', quantity: 1 },
+          { name: 'Fischer RS to D-Tap cable 0,5m', quantity: 2 },
+          { name: 'Spare Disc (Schulz Sprayoff Micro)', quantity: 1 },
+        ].map(entry => ({
+          id: generateAutoGearId('item'),
+          name: entry.name,
+          category: 'Matte box + filter',
+          quantity: entry.quantity,
+        }));
+        rules.push({
+          id: generateAutoGearId('rule'),
+          label: 'Extreme rain + Rain Machine overlap',
+          scenarios: rainOverlapKeys.slice(),
+          add: [],
+          remove: overlapRemovals,
+        });
+      }
     }
   }
 
