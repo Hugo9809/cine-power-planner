@@ -5595,7 +5595,7 @@ function resolveFilterDisplayInfo(type, size = DEFAULT_FILTER_SIZE) {
     case 'Clear':
       return { label: 'Clear Filter', gearName: 'Clear Filter' };
     case 'IRND':
-      return { label: 'IRND Filter', gearName: 'IRND Filter' };
+      return { label: 'IRND Filter Set', gearName: 'IRND Filter Set', hideDetails: false };
     case 'Pol':
       return { label: 'Pol Filter', gearName: 'Pol Filter' };
     case 'Rota-Pol': {
@@ -5617,11 +5617,11 @@ function resolveFilterDisplayInfo(type, size = DEFAULT_FILTER_SIZE) {
       };
     }
     case 'ND Grad HE':
-      return { label: 'ND Grad HE Filter', gearName: 'ND Grad HE Filter' };
+      return { label: 'ND Grad HE Filter Set', gearName: 'ND Grad HE Filter Set', hideDetails: false };
     case 'ND Grad SE':
-      return { label: 'ND Grad SE Filter', gearName: 'ND Grad SE Filter' };
+      return { label: 'ND Grad SE Filter Set', gearName: 'ND Grad SE Filter Set', hideDetails: false };
     default:
-      return { label: `${type} Filter Set`, gearName: `${type} Filter Set` };
+      return { label: `${type} Filter Set`, gearName: `${type} Filter Set`, hideDetails: true };
   }
 }
 
@@ -5693,7 +5693,7 @@ function buildFilterGearEntries(filters = []) {
       }
       case 'ND Grad HE':
       case 'ND Grad SE': {
-        const { label, gearName } = resolveFilterDisplayInfo(type, sizeValue);
+        const { label, gearName, hideDetails } = resolveFilterDisplayInfo(type, sizeValue);
         const gradValues = values == null
           ? (getFilterValueConfig(type).defaults || []).slice()
           : (Array.isArray(values) ? values.slice() : []);
@@ -5701,6 +5701,7 @@ function buildFilterGearEntries(filters = []) {
           id: idBase,
           gearName,
           label,
+          hideDetails,
           type,
           size: sizeValue,
           values: gradValues
@@ -5708,7 +5709,7 @@ function buildFilterGearEntries(filters = []) {
         break;
       }
       default: {
-        const { label, gearName } = resolveFilterDisplayInfo(type, sizeValue);
+        const { label, gearName, hideDetails } = resolveFilterDisplayInfo(type, sizeValue);
         const filterValues = values == null
           ? (getFilterValueConfig(type).defaults || []).slice()
           : (Array.isArray(values) ? values.slice() : []);
@@ -5716,6 +5717,7 @@ function buildFilterGearEntries(filters = []) {
           id: idBase,
           gearName,
           label,
+          hideDetails,
           type,
           size: sizeValue,
           values: filterValues
@@ -5728,7 +5730,10 @@ function buildFilterGearEntries(filters = []) {
 
 function formatFilterEntryText(entry) {
   const labelText = typeof entry?.label === 'string' ? entry.label : '';
-  const hideDetails = labelText.toLowerCase().includes('filter set');
+  const hideDetailsOverride = typeof entry?.hideDetails === 'boolean' ? entry.hideDetails : null;
+  const hideDetails = hideDetailsOverride !== null
+    ? hideDetailsOverride
+    : labelText.toLowerCase().includes('filter set');
   const details = [];
   if (!hideDetails && entry.size) details.push(entry.size);
   if (!hideDetails && entry.values && entry.values.length) details.push(entry.values.join(', '));
@@ -5855,11 +5860,15 @@ function renderGearListFilterDetails(details) {
       : (size && label && label.includes(size) ? '' : size);
     const displayValues = Array.isArray(values) ? values : undefined;
     if (label) {
-      heading.textContent = formatFilterEntryText({
+      const entryInfo = {
         label,
         size: displaySize,
         values: displayValues
-      });
+      };
+      if (typeof detail.hideDetails === 'boolean') {
+        entryInfo.hideDetails = detail.hideDetails;
+      }
+      heading.textContent = formatFilterEntryText(entryInfo);
     } else {
       heading.textContent = '';
     }
@@ -5968,7 +5977,7 @@ function renderFilterDetails() {
     const size = prev.size || DEFAULT_FILTER_SIZE;
     const needsSize = type !== 'Diopter';
     const needsValues = filterTypeNeedsValueSelect(type);
-    const { label, gearName } = resolveFilterDisplayInfo(type, size);
+    const { label, gearName, hideDetails } = resolveFilterDisplayInfo(type, size);
     let entryId = `filter-${filterId(type)}`;
     if (type === 'Diopter') entryId = `${entryId}-set`;
     return {
@@ -5979,7 +5988,8 @@ function renderFilterDetails() {
       size,
       values: Array.isArray(prev.values) ? prev.values.slice() : [],
       needsSize,
-      needsValues
+      needsValues,
+      hideDetails
     };
   });
   renderFilterDetailsStorage(details);

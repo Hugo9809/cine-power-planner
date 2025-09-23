@@ -5237,8 +5237,8 @@ function resolveFilterDisplayInfo(type) {
       };
     case 'IRND':
       return {
-        label: 'IRND Filter',
-        gearName: 'IRND Filter'
+        label: 'IRND Filter Set',
+        gearName: 'IRND Filter Set'
       };
     case 'Pol':
       return {
@@ -5266,13 +5266,13 @@ function resolveFilterDisplayInfo(type) {
       }
     case 'ND Grad HE':
       return {
-        label: 'ND Grad HE Filter',
-        gearName: 'ND Grad HE Filter'
+        label: 'ND Grad HE Filter Set',
+        gearName: 'ND Grad HE Filter Set'
       };
     case 'ND Grad SE':
       return {
-        label: 'ND Grad SE Filter',
-        gearName: 'ND Grad SE Filter'
+        label: 'ND Grad SE Filter Set',
+        gearName: 'ND Grad SE Filter Set'
       };
     default:
       return {
@@ -5505,7 +5505,8 @@ function renderGearListFilterDetails(details) {
       size = detail.size,
       values = detail.values,
       needsSize = detail.needsSize,
-      needsValues = detail.needsValues;
+      needsValues = detail.needsValues,
+      hideDetails = detail.hideDetails;
     var row = document.createElement('div');
     row.className = 'filter-detail';
     var heading = document.createElement('div');
@@ -5523,11 +5524,15 @@ function renderGearListFilterDetails(details) {
     var displaySize = shouldHideSize ? '' : size && label && label.includes(size) ? '' : size;
     var displayValues = Array.isArray(values) ? values : undefined;
     if (label) {
-      heading.textContent = formatFilterEntryText({
+      var entryInfo = {
         label: label,
         size: displaySize,
         values: displayValues
-      });
+      };
+      if (typeof hideDetails === 'boolean') {
+        entryInfo.hideDetails = hideDetails;
+      }
+      heading.textContent = formatFilterEntryText(entryInfo);
     } else {
       heading.textContent = '';
     }
@@ -5642,7 +5647,8 @@ function renderFilterDetails() {
     var needsValues = filterTypeNeedsValueSelect(type);
     var _resolveFilterDisplay6 = resolveFilterDisplayInfo(type, size),
       label = _resolveFilterDisplay6.label,
-      gearName = _resolveFilterDisplay6.gearName;
+      gearName = _resolveFilterDisplay6.gearName,
+      hideDetails = _resolveFilterDisplay6.hideDetails;
     var entryId = "filter-".concat(filterId(type));
     if (type === 'Diopter') entryId = "".concat(entryId, "-set");
     return {
@@ -5653,7 +5659,8 @@ function renderFilterDetails() {
       size: size,
       values: Array.isArray(prev.values) ? prev.values.slice() : [],
       needsSize: needsSize,
-      needsValues: needsValues
+      needsValues: needsValues,
+      hideDetails: hideDetails
     };
   });
   renderFilterDetailsStorage(details);
