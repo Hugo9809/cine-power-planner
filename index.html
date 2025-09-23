@@ -3218,14 +3218,16 @@
                   data-help-target="#autoGearHeading"
                   data-help-highlight="#settingsDialog"
                 >Settings → Automatic Gear Rules</a>
-                to create custom additions or removals that run when specific
-                <strong>Required Scenarios</strong> are active.
+                to create custom additions or removals that run when specific project requirements or device selections are
+                active.
               </li>
             <li>
-              Choose any combination of <strong>Required Scenarios</strong>, <strong>Mattebox options</strong>,
-              <strong>Camera handles</strong>, <strong>Viewfinder extension</strong> and <strong>Video distribution</strong>
-              values to define when the rule fires. All selected conditions must match the project before the automation runs,
-              and at least one condition is required to save a rule.
+              Use <strong>Add a condition</strong> to reveal the selectors the rule should watch. Rules can react to
+              <strong>Required Scenarios</strong>, <strong>Mattebox options</strong>, <strong>Camera handles</strong>,
+              <strong>Viewfinder extension</strong>, <strong>Video distribution</strong>, <strong>Camera selection</strong>,
+              <strong>Onboard monitors</strong>, <strong>Wireless transmitters</strong>, <strong>FIZ motors</strong>,
+              <strong>FIZ controllers</strong> and <strong>FIZ distance devices</strong>. Every chosen condition must match the
+              project before the automation runs, and at least one condition is required to save a rule.
             </li>
             <li>
               Rules execute after the planner assembles the gear list, so your adjustments stack on top of built-in accessories
@@ -3234,8 +3236,8 @@
               <li>
                 Click
                 <a class="help-link button-link" href="#autoGearAddRule" data-help-target="#autoGearAddRule">Add rule</a>
-                to reveal the editor, name the rule for quick reference and select one or more scenarios that must be enabled
-                for it to trigger.
+                to reveal the editor, name the rule for quick reference and choose the conditions that must be active before it
+                triggers.
               </li>
               <li>
                 Use
@@ -3946,19 +3948,22 @@
             <p>
               Open <em>Settings → Automatic Gear Rules</em> and click
               <a class="help-link" href="#settingsDialog" data-help-target="#autoGearAddRule">Add rule</a>
-              to reveal the editor. Name the rule so it is easy to recognise later.
+              to reveal the editor. Name the rule so it is easy to recognise later and pick the conditions that must be active
+              before it runs.
             </p>
             <p>
-              Select at least one condition from <strong>Required Scenarios</strong>, <strong>Mattebox options</strong>,
-              <strong>Camera handles</strong>, <strong>Viewfinder extension</strong> or <strong>Video distribution</strong>.
-              The rule runs only when every chosen value is active in the
+              Conditions can watch <strong>Required Scenarios</strong>, <strong>Mattebox options</strong>,
+              <strong>Camera handles</strong>, <strong>Viewfinder extension</strong>, <strong>Video distribution</strong>,
+              <strong>Camera selection</strong>, <strong>Onboard monitors</strong>, <strong>Wireless transmitters</strong>,
+              <strong>FIZ motors</strong>, <strong>FIZ controllers</strong> and <strong>FIZ distance devices</strong>. The rule
+              runs only when every chosen value is active in the
               <a
                 class="help-link"
                 href="#projectRequirementsOutput"
                 data-help-target="#projectRequirementsOutput"
               >Project Requirements</a>
-              form. Add gear lines with category and quantity in <strong>Add these items</strong>—choose
-              <em>Custom Additions</em> for notes or bespoke kit.
+              form or selected in the <em>Configure Devices</em> panel. Add gear lines with category and quantity in
+              <strong>Add these items</strong>—choose <em>Custom Additions</em> for notes or bespoke kit.
             </p>
             <p>
               Use the <strong>Remove these items</strong> list to hide entries the generator adds by default. Rules are stored in
