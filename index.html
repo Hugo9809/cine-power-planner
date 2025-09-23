@@ -1067,6 +1067,26 @@
             <p id="autoGearBackupEmpty" class="auto-gear-backup-empty" hidden>No automatic backups yet.</p>
           </div>
         </div>
+        <div id="autoGearFilters" class="auto-gear-filters" role="search">
+          <div class="auto-gear-filter-field">
+            <label for="autoGearSearch" id="autoGearSearchLabel">Search rules</label>
+            <input
+              type="search"
+              id="autoGearSearch"
+              placeholder="Search by name, scenario or item"
+              autocomplete="off"
+            />
+          </div>
+          <div class="auto-gear-filter-field">
+            <label for="autoGearFilterScenario" id="autoGearFilterScenarioLabel">Filter by scenario</label>
+            <select id="autoGearFilterScenario" class="auto-gear-filter-select" disabled>
+              <option value="all">All scenarios</option>
+            </select>
+          </div>
+          <button type="button" id="autoGearFilterClear" class="auto-gear-filter-clear" hidden>
+            Clear filters
+          </button>
+        </div>
         <div id="autoGearRulesList" class="auto-gear-rules" aria-live="polite"></div>
         <div class="auto-gear-action-row">
           <button type="button" id="autoGearAddRule">Add rule</button>

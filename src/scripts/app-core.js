@@ -4576,6 +4576,48 @@ function setLanguage(lang) {
     autoGearImportButton.setAttribute('title', help);
     autoGearImportButton.setAttribute('aria-label', label);
   }
+  if (autoGearSearchLabel) {
+    const label = texts[lang].autoGearSearchLabel
+      || texts.en?.autoGearSearchLabel
+      || autoGearSearchLabel.textContent;
+    const help = texts[lang].autoGearSearchHelp
+      || texts.en?.autoGearSearchHelp
+      || label;
+    autoGearSearchLabel.textContent = label;
+    autoGearSearchLabel.setAttribute('data-help', help);
+    if (autoGearSearchInput) {
+      const placeholder = texts[lang].autoGearSearchPlaceholder
+        || texts.en?.autoGearSearchPlaceholder
+        || autoGearSearchInput.getAttribute('placeholder')
+        || '';
+      autoGearSearchInput.setAttribute('placeholder', placeholder);
+      autoGearSearchInput.setAttribute('aria-label', label);
+      autoGearSearchInput.setAttribute('data-help', help);
+    }
+  }
+  if (autoGearFilterScenarioLabel) {
+    const label = texts[lang].autoGearFilterScenarioLabel
+      || texts.en?.autoGearFilterScenarioLabel
+      || autoGearFilterScenarioLabel.textContent;
+    const help = texts[lang].autoGearFilterScenarioHelp
+      || texts.en?.autoGearFilterScenarioHelp
+      || label;
+    autoGearFilterScenarioLabel.textContent = label;
+    autoGearFilterScenarioLabel.setAttribute('data-help', help);
+    if (autoGearFilterScenarioSelect) {
+      autoGearFilterScenarioSelect.setAttribute('aria-label', label);
+      autoGearFilterScenarioSelect.setAttribute('data-help', help);
+    }
+  }
+  if (autoGearFilterClearButton) {
+    const label = texts[lang].autoGearFilterClear
+      || texts.en?.autoGearFilterClear
+      || autoGearFilterClearButton.textContent;
+    setButtonLabelWithIcon(autoGearFilterClearButton, label, ICON_GLYPHS.circleX);
+    autoGearFilterClearButton.setAttribute('data-help', label);
+    autoGearFilterClearButton.setAttribute('aria-label', label);
+  }
+  refreshAutoGearScenarioFilterOptions(getAutoGearRules());
   if (autoGearBackupsHeading) {
     autoGearBackupsHeading.textContent = texts[lang].autoGearBackupsHeading
       || texts.en?.autoGearBackupsHeading
@@ -8663,6 +8705,11 @@ if (settingsTabButtons.length) {
 
 const autoGearHeadingElem = document.getElementById('autoGearHeading');
 const autoGearDescriptionElem = document.getElementById('autoGearDescription');
+const autoGearSearchInput = document.getElementById('autoGearSearch');
+const autoGearSearchLabel = document.getElementById('autoGearSearchLabel');
+const autoGearFilterScenarioLabel = document.getElementById('autoGearFilterScenarioLabel');
+const autoGearFilterScenarioSelect = document.getElementById('autoGearFilterScenario');
+const autoGearFilterClearButton = document.getElementById('autoGearFilterClear');
 const autoGearRulesList = document.getElementById('autoGearRulesList');
 const autoGearPresetDescription = document.getElementById('autoGearPresetDescription');
 const autoGearPresetLabel = document.getElementById('autoGearPresetLabel');
@@ -8900,6 +8947,172 @@ function computeAutoGearMultiSelectSize(optionCount, {
 }
 
 let autoGearEditorDraft = null;
+let autoGearSearchQuery = '';
+let autoGearScenarioFilter = 'all';
+
+function setAutoGearSearchQuery(value) {
+  const nextValue = typeof value === 'string' ? value : '';
+  if (autoGearSearchQuery === nextValue) return;
+  autoGearSearchQuery = nextValue;
+  renderAutoGearRulesList();
+}
+
+function setAutoGearScenarioFilter(value) {
+  const nextValue = typeof value === 'string' && value !== 'all' ? value : 'all';
+  if (autoGearScenarioFilter === nextValue) return;
+  autoGearScenarioFilter = nextValue;
+  renderAutoGearRulesList();
+}
+
+function clearAutoGearFilters() {
+  autoGearSearchQuery = '';
+  autoGearScenarioFilter = 'all';
+  if (autoGearSearchInput && autoGearSearchInput.value !== '') {
+    autoGearSearchInput.value = '';
+  }
+  if (autoGearFilterScenarioSelect && autoGearFilterScenarioSelect.value !== 'all') {
+    autoGearFilterScenarioSelect.value = 'all';
+  }
+  renderAutoGearRulesList();
+  if (autoGearSearchInput && typeof autoGearSearchInput.focus === 'function') {
+    try {
+      autoGearSearchInput.focus({ preventScroll: true });
+    } catch {
+      autoGearSearchInput.focus();
+    }
+  }
+}
+
+function autoGearRuleMatchesScenario(rule, scenarioValue) {
+  if (!scenarioValue || scenarioValue === 'all') return true;
+  if (!rule || !Array.isArray(rule.scenarios)) return false;
+  return rule.scenarios.some(value => value === scenarioValue);
+}
+
+function autoGearRuleMatchesSearch(rule, query) {
+  const normalizedQuery = typeof query === 'string' ? query.trim().toLowerCase() : '';
+  if (!normalizedQuery) return true;
+  const haystack = [];
+  const pushValues = values => {
+    if (!Array.isArray(values)) return;
+    values.forEach(value => {
+      if (typeof value === 'string' && value) {
+        haystack.push(value);
+      }
+    });
+  };
+  if (rule && typeof rule.label === 'string') {
+    haystack.push(rule.label);
+  }
+  pushValues(rule?.scenarios);
+  pushValues(rule?.mattebox);
+  pushValues(rule?.cameraHandle);
+  pushValues(rule?.viewfinderExtension);
+  pushValues(rule?.videoDistribution);
+  pushValues(rule?.camera);
+  pushValues(rule?.monitor);
+  pushValues(rule?.wireless);
+  pushValues(rule?.motors);
+  pushValues(rule?.controllers);
+  pushValues(rule?.distance);
+  const collectItems = items => {
+    if (!Array.isArray(items)) return;
+    items.forEach(item => {
+      if (!item || typeof item !== 'object') return;
+      if (typeof item.name === 'string' && item.name) {
+        haystack.push(item.name);
+      }
+      if (typeof item.notes === 'string' && item.notes) {
+        haystack.push(item.notes);
+      }
+      if (typeof item.category === 'string' && item.category) {
+        haystack.push(item.category);
+      }
+      if (typeof item.screenSize === 'string' && item.screenSize) {
+        haystack.push(item.screenSize);
+      }
+      if (item.selector && typeof item.selector === 'object') {
+        if (typeof item.selector.type === 'string' && item.selector.type) {
+          haystack.push(item.selector.type);
+        }
+        if (typeof item.selector.default === 'string' && item.selector.default) {
+          haystack.push(item.selector.default);
+        }
+      }
+      haystack.push(formatAutoGearItemSummary(item));
+    });
+  };
+  collectItems(rule?.add);
+  collectItems(rule?.remove);
+  return haystack.some(value =>
+    typeof value === 'string' && value.toLowerCase().includes(normalizedQuery)
+  );
+}
+
+function collectAutoGearScenarioFilterOptions(rules) {
+  const options = new Map();
+  const source = document.getElementById('requiredScenarios');
+  if (source) {
+    Array.from(source.options || []).forEach(option => {
+      const value = typeof option.value === 'string' ? option.value.trim() : '';
+      if (!value) return;
+      const label = option.textContent || value;
+      if (!options.has(value)) {
+        options.set(value, label);
+      }
+    });
+  }
+  if (Array.isArray(rules)) {
+    rules.forEach(rule => {
+      if (!rule || !Array.isArray(rule.scenarios)) return;
+      rule.scenarios.forEach(value => {
+        if (typeof value !== 'string') return;
+        const trimmed = value.trim();
+        if (!trimmed) return;
+        if (!options.has(trimmed)) {
+          options.set(trimmed, trimmed);
+        }
+      });
+    });
+  }
+  return Array.from(options.entries())
+    .map(([value, label]) => ({ value, label }))
+    .sort((a, b) => localeSort(a.label, b.label));
+}
+
+function refreshAutoGearScenarioFilterOptions(rules) {
+  if (!autoGearFilterScenarioSelect) return autoGearScenarioFilter;
+  const options = collectAutoGearScenarioFilterOptions(rules);
+  const anyLabel = texts[currentLang]?.autoGearFilterScenarioAny
+    || texts.en?.autoGearFilterScenarioAny
+    || 'All scenarios';
+  autoGearFilterScenarioSelect.innerHTML = '';
+  const anyOption = document.createElement('option');
+  anyOption.value = 'all';
+  anyOption.textContent = anyLabel;
+  autoGearFilterScenarioSelect.appendChild(anyOption);
+  options.forEach(({ value, label }) => {
+    const option = document.createElement('option');
+    option.value = value;
+    option.textContent = label;
+    if (value === autoGearScenarioFilter) {
+      option.selected = true;
+    }
+    autoGearFilterScenarioSelect.appendChild(option);
+  });
+  const optionsAvailable = options.length > 0;
+  autoGearFilterScenarioSelect.disabled = !optionsAvailable;
+  if (!optionsAvailable && autoGearScenarioFilter !== 'all') {
+    autoGearScenarioFilter = 'all';
+  } else if (
+    autoGearScenarioFilter !== 'all' &&
+    !options.some(option => option.value === autoGearScenarioFilter)
+  ) {
+    autoGearScenarioFilter = 'all';
+  }
+  autoGearFilterScenarioSelect.value = autoGearScenarioFilter;
+  return autoGearScenarioFilter;
+}
 
 function cloneAutoGearDraftItem(item) {
   const normalized = normalizeAutoGearItem(item);
@@ -10200,16 +10413,51 @@ function renderAutoGearRulesList() {
   if (!autoGearRulesList) return;
   autoGearRulesList.innerHTML = '';
   const rules = getAutoGearRules();
-  if (!rules.length) {
+  const scenarioFilter = refreshAutoGearScenarioFilterOptions(rules);
+  const rawSearch = typeof autoGearSearchQuery === 'string' ? autoGearSearchQuery : '';
+  const normalizedQuery = rawSearch.trim().toLowerCase();
+  const filteredRules = rules.filter(rule =>
+    autoGearRuleMatchesScenario(rule, scenarioFilter)
+    && autoGearRuleMatchesSearch(rule, normalizedQuery)
+  );
+  const hasFilters = Boolean(normalizedQuery) || scenarioFilter !== 'all';
+  const allowSearch = rules.length > 0 || Boolean(rawSearch.trim());
+
+  if (autoGearSearchInput) {
+    if (autoGearSearchInput.value !== rawSearch) {
+      autoGearSearchInput.value = rawSearch;
+    }
+    autoGearSearchInput.disabled = !allowSearch;
+  }
+  if (autoGearFilterScenarioSelect) {
+    autoGearFilterScenarioSelect.value = autoGearScenarioFilter;
+    if (autoGearFilterScenarioSelect.disabled) {
+      autoGearFilterScenarioSelect.setAttribute('aria-disabled', 'true');
+    } else {
+      autoGearFilterScenarioSelect.removeAttribute('aria-disabled');
+    }
+  }
+  if (autoGearFilterClearButton) {
+    autoGearFilterClearButton.hidden = !hasFilters;
+    autoGearFilterClearButton.disabled = !hasFilters;
+  }
+  if (!filteredRules.length) {
     const empty = document.createElement('p');
     empty.className = 'auto-gear-empty';
-    empty.textContent = texts[currentLang]?.autoGearNoRules
-      || texts.en?.autoGearNoRules
-      || 'No custom rules yet.';
+    if (!rules.length && !hasFilters) {
+      empty.textContent = texts[currentLang]?.autoGearNoRules
+        || texts.en?.autoGearNoRules
+        || 'No custom rules yet.';
+    } else {
+      empty.textContent = texts[currentLang]?.autoGearNoMatches
+        || texts.en?.autoGearNoMatches
+        || 'No rules match your filters.';
+    }
     autoGearRulesList.appendChild(empty);
     return;
   }
-  rules.forEach(rule => {
+
+  filteredRules.forEach(rule => {
     const wrapper = document.createElement('div');
     wrapper.className = 'auto-gear-rule';
     wrapper.dataset.ruleId = rule.id;
