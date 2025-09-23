@@ -5,7 +5,7 @@
           autoGearSearchInput, setAutoGearSearchQuery,
           autoGearFilterScenarioSelect, setAutoGearScenarioFilter,
           autoGearFilterClearButton, clearAutoGearFilters,
-          clearUiCacheStorageEntries, __cineGlobal */
+          clearUiCacheStorageEntries, __cineGlobal, humanizeKey */
 
 const temperaturePreferenceStorageKey =
   typeof TEMPERATURE_STORAGE_KEY === 'string'
@@ -2388,16 +2388,82 @@ function clearBackupDiffResults() {
   }
 }
 
+function fallbackHumanizeDiffKey(key) {
+  if (typeof key !== 'string') {
+    return String(key);
+  }
+  const spaced = key
+    .replace(/[_\s-]+/g, ' ')
+    .replace(/([a-z\d])([A-Z])/g, '$1 $2')
+    .replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2')
+    .trim();
+  if (!spaced) {
+    return key;
+  }
+  return spaced
+    .split(' ')
+    .map(part => {
+      if (!part) return part;
+      if (part.length > 3 && part === part.toUpperCase()) {
+        return part;
+      }
+      if (/^\d+$/.test(part)) {
+        return formatNumberForComparison(Number(part));
+      }
+      return part.charAt(0).toUpperCase() + part.slice(1);
+    })
+    .join(' ');
+}
+
+function humanizeDiffKey(key) {
+  if (typeof key !== 'string') {
+    return String(key);
+  }
+  if (typeof humanizeKey === 'function') {
+    try {
+      const result = humanizeKey(key);
+      if (typeof result === 'string' && result) {
+        return result;
+      }
+    } catch (error) {
+      console.warn('Failed to humanize diff key via humanizeKey', error);
+    }
+  }
+  return fallbackHumanizeDiffKey(key);
+}
+
+function formatDiffListIndex(part) {
+  if (typeof part !== 'string') {
+    return null;
+  }
+  const match = part.match(/^\[(\d+)\]$/);
+  if (!match) {
+    return null;
+  }
+  const index = Number(match[1]);
+  if (!Number.isFinite(index) || index < 0) {
+    return null;
+  }
+  const template = getDiffText('versionCompareListItemLabel', 'Item %s');
+  return template.replace('%s', formatNumberForComparison(index + 1));
+}
+
+function formatDiffPathSegment(part) {
+  const listLabel = formatDiffListIndex(part);
+  if (listLabel) {
+    return listLabel;
+  }
+  if (typeof part !== 'string') {
+    return String(part);
+  }
+  return humanizeDiffKey(part);
+}
+
 function formatDiffPath(parts) {
   if (!Array.isArray(parts) || !parts.length) {
     return getDiffText('versionCompareRootPath', 'Entire setup');
   }
-  return parts.map(part => {
-    if (typeof part !== 'string') {
-      return String(part);
-    }
-    return part;
-  }).join(' › ');
+  return parts.map(formatDiffPathSegment).join(' › ');
 }
 
 function valuesEqual(a, b) {
@@ -2512,6 +2578,30 @@ function createDiffChangeBlock(labelText, value) {
   return block;
 }
 
+function sortDiffEntries(entries) {
+  if (!Array.isArray(entries)) {
+    return [];
+  }
+  const typeRank = { changed: 0, added: 1, removed: 2 };
+  const compareStrings = typeof localeSort === 'function'
+    ? (a, b) => localeSort(a, b)
+    : (a, b) => a.localeCompare(b);
+  return entries
+    .map(entry => ({
+      entry,
+      pathText: formatDiffPath(entry && entry.path),
+      rank: entry && entry.type && Object.prototype.hasOwnProperty.call(typeRank, entry.type)
+        ? typeRank[entry.type]
+        : 3,
+    }))
+    .sort((a, b) => {
+      if (a.rank !== b.rank) {
+        return a.rank - b.rank;
+      }
+      return compareStrings(a.pathText, b.pathText);
+    });
+}
+
 function renderBackupDiffEntries(entries) {
   if (!backupDiffListEl || !backupDiffListContainerEl) {
     return;
@@ -2522,12 +2612,17 @@ function renderBackupDiffEntries(entries) {
     return;
   }
   backupDiffListContainerEl.hidden = false;
-  entries.forEach(entry => {
+  const decoratedEntries = sortDiffEntries(entries);
+  decoratedEntries.forEach(({ entry, pathText }) => {
+    if (!entry) {
+      return;
+    }
     const item = document.createElement('li');
-    item.className = `diff-entry diff-${entry.type}`;
+    const typeClass = entry.type ? ` diff-${entry.type}` : '';
+    item.className = `diff-entry${typeClass}`;
     const path = document.createElement('div');
     path.className = 'diff-path';
-    path.textContent = formatDiffPath(entry.path);
+    path.textContent = pathText;
     item.appendChild(path);
     if (entry.type === 'changed') {
       const status = document.createElement('span');
