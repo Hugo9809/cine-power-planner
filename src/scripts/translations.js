@@ -922,6 +922,8 @@ const texts = {
     autoGearHighlightToggle: "Highlight automatic gear",
     autoGearHighlightToggleHelp:
       "Toggle a temporary color overlay for gear added by automatic rules. Useful while debugging gear rule behavior.",
+    autoGearHighlightToggleOn: "On",
+    autoGearHighlightToggleOff: "Off",
     deleteGearListBtn: "Delete Gear List",
     deleteGearListBtnHelp:
       "Remove the saved gear list from this project and hide the table.",
@@ -1501,6 +1503,8 @@ const texts = {
     autoGearHighlightToggle: "Evidenzia accessori automatici",
     autoGearHighlightToggleHelp:
       "Attiva o disattiva una colorazione temporanea per l'attrezzatura aggiunta automaticamente dalle regole. Utile per il debug del comportamento delle regole.",
+    autoGearHighlightToggleOn: "Attivo",
+    autoGearHighlightToggleOff: "Disattivo",
     deleteGearListBtn: "Elimina elenco attrezzatura",
     deleteGearListBtnHelp:
       "Rimuovi l'elenco attrezzatura salvato dal progetto e nascondi la tabella.",
@@ -2493,6 +2497,8 @@ const texts = {
     autoGearHighlightToggle: "Resaltar equipo automático",
     autoGearHighlightToggleHelp:
       "Activa o desactiva un color temporal para el equipo añadido por reglas automáticas. Útil para depurar el comportamiento de las reglas.",
+    autoGearHighlightToggleOn: "Activado",
+    autoGearHighlightToggleOff: "Desactivado",
     deleteGearListBtn: "Eliminar lista de equipo",
     deleteGearListBtnHelp:
       "Elimina la lista de equipo guardada de este proyecto y oculta la tabla.",
@@ -3486,6 +3492,8 @@ const texts = {
     autoGearHighlightToggle: "Mettre en évidence l'équipement automatique",
     autoGearHighlightToggleHelp:
       "Active ou désactive une surbrillance temporaire pour le matériel ajouté par les règles automatiques. Utile pour déboguer le comportement des règles.",
+    autoGearHighlightToggleOn: "Activé",
+    autoGearHighlightToggleOff: "Désactivé",
     deleteGearListBtn: "Supprimer la liste du matériel",
     deleteGearListBtnHelp:
       "Supprime la liste du matériel enregistrée du projet et masque le tableau.",
@@ -4483,6 +4491,8 @@ const texts = {
     autoGearHighlightToggle: "Automatisches Equipment hervorheben",
     autoGearHighlightToggleHelp:
       "Schaltet eine temporäre Farbmarkierung für durch automatische Regeln hinzugefügtes Equipment um. Nützlich zum Debuggen des Regelverhaltens.",
+    autoGearHighlightToggleOn: "Aktiv",
+    autoGearHighlightToggleOff: "Deaktiviert",
     deleteGearListBtn: "Gear-Liste löschen",
     deleteGearListBtnHelp:
       "Entfernt die gespeicherte Gear-Liste aus diesem Projekt und blendet die Tabelle aus.",

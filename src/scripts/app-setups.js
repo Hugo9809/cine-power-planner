@@ -3512,6 +3512,8 @@ const AUTO_GEAR_HIGHLIGHT_CLASS = 'show-auto-gear-highlight';
 const AUTO_GEAR_HIGHLIGHT_LABEL_FALLBACK = 'Highlight automatic gear';
 const AUTO_GEAR_HIGHLIGHT_HELP_FALLBACK =
     'Toggle a temporary color overlay for gear added by automatic rules. Useful while debugging gear rule behavior.';
+const AUTO_GEAR_HIGHLIGHT_ON_FALLBACK = 'On';
+const AUTO_GEAR_HIGHLIGHT_OFF_FALLBACK = 'Off';
 const AUTO_GEAR_RULE_BADGE_NAMED_FALLBACK = 'Rule: %s';
 const AUTO_GEAR_RULE_BADGE_UNNAMED_FALLBACK = 'Automatic rule';
 const AUTO_GEAR_RULE_COLOR_PALETTE = Object.freeze([
@@ -3710,6 +3712,16 @@ function getAutoGearHighlightHelp() {
     return AUTO_GEAR_HIGHLIGHT_HELP_FALLBACK;
 }
 
+function getAutoGearHighlightStateLabel(isEnabled) {
+    const key = isEnabled ? 'autoGearHighlightToggleOn' : 'autoGearHighlightToggleOff';
+    const fallback = isEnabled ? AUTO_GEAR_HIGHLIGHT_ON_FALLBACK : AUTO_GEAR_HIGHLIGHT_OFF_FALLBACK;
+    const localized = typeof getLocalizedText === 'function' ? getLocalizedText(key) : '';
+    if (typeof localized === 'string' && localized.trim()) {
+        return localized.trim();
+    }
+    return fallback;
+}
+
 function isAutoGearHighlightEnabled() {
     return !!(gearListOutput && gearListOutput.classList && gearListOutput.classList.contains(AUTO_GEAR_HIGHLIGHT_CLASS));
 }
@@ -3724,17 +3736,21 @@ function updateAutoGearHighlightToggleButton() {
     if (!toggle) return;
     const label = getAutoGearHighlightLabel();
     const help = getAutoGearHighlightHelp();
-    if (typeof toggle.textContent === 'string') {
-        toggle.textContent = label;
-    } else {
-        toggle.innerHTML = escapeHtml(label);
-    }
     toggle.setAttribute('title', help);
     toggle.setAttribute('data-help', help);
-    toggle.setAttribute('aria-label', help);
     const active = isAutoGearHighlightEnabled();
+    const stateLabel = getAutoGearHighlightStateLabel(active);
+    const combinedLabel = `${label} (${stateLabel})`;
+    if (typeof toggle.textContent === 'string') {
+        toggle.textContent = combinedLabel;
+    } else {
+        toggle.innerHTML = escapeHtml(combinedLabel);
+    }
+    toggle.setAttribute('aria-label', combinedLabel);
+    toggle.setAttribute('aria-description', help);
     toggle.setAttribute('aria-pressed', active ? 'true' : 'false');
     toggle.classList.toggle('is-active', active);
+    toggle.dataset.state = active ? 'on' : 'off';
     const available = canHighlightAutoGear();
     toggle.disabled = !available;
     if (available) {

@@ -60,6 +60,14 @@ const SAMPLE_MULTI_RULE_TABLE_HTML = `
   </table>
 `;
 
+const getExpectedToggleLabel = isActive => {
+  const base = (texts.en.autoGearHighlightToggle || 'Highlight automatic gear').trim();
+  const onLabel = (texts.en.autoGearHighlightToggleOn || 'On').trim();
+  const offLabel = (texts.en.autoGearHighlightToggleOff || 'Off').trim();
+  const stateLabel = isActive ? onLabel : offLabel;
+  return `${base} (${stateLabel})`;
+};
+
 describe('automatic gear highlight toggle', () => {
   let env;
 
@@ -101,8 +109,9 @@ describe('automatic gear highlight toggle', () => {
       .not.toBe(secondItem.style.getPropertyValue('--auto-gear-rule-bg'));
 
     const labelText = (toggle.textContent || '').trim();
-    expect(labelText.length).toBeGreaterThan(0);
+    expect(labelText).toBe(getExpectedToggleLabel(false));
     expect(toggle.getAttribute('aria-pressed')).toBe('false');
+    expect(toggle.dataset.state).toBe('off');
     expect(gearListOutput.classList.contains('show-auto-gear-highlight')).toBe(false);
 
     toggle.click();
@@ -110,6 +119,8 @@ describe('automatic gear highlight toggle', () => {
     expect(gearListOutput.classList.contains('show-auto-gear-highlight')).toBe(true);
     expect(toggle.getAttribute('aria-pressed')).toBe('true');
     expect(toggle.classList.contains('is-active')).toBe(true);
+    expect((toggle.textContent || '').trim()).toBe(getExpectedToggleLabel(true));
+    expect(toggle.dataset.state).toBe('on');
     const badgesAfterToggle = Array.from(gearListOutput.querySelectorAll('.auto-gear-rule-badge'));
     expect(badgesAfterToggle).toHaveLength(2);
     const badgeTextsAfterToggle = badgesAfterToggle.map(node => node.textContent);
@@ -127,6 +138,8 @@ describe('automatic gear highlight toggle', () => {
     expect(toggleAfterRefresh.getAttribute('aria-pressed')).toBe('true');
     expect(toggleAfterRefresh.classList.contains('is-active')).toBe(true);
     expect(gearListOutput.classList.contains('show-auto-gear-highlight')).toBe(true);
+    expect((toggleAfterRefresh.textContent || '').trim()).toBe(getExpectedToggleLabel(true));
+    expect(toggleAfterRefresh.dataset.state).toBe('on');
     const refreshedItems = Array.from(gearListOutput.querySelectorAll('.auto-gear-item'));
     expect(refreshedItems).toHaveLength(2);
     refreshedItems.forEach(item => {
@@ -144,6 +157,8 @@ describe('automatic gear highlight toggle', () => {
     expect(gearListOutput.classList.contains('show-auto-gear-highlight')).toBe(false);
     expect(toggleAfterRefresh.getAttribute('aria-pressed')).toBe('false');
     expect(toggleAfterRefresh.classList.contains('is-active')).toBe(false);
+    expect((toggleAfterRefresh.textContent || '').trim()).toBe(getExpectedToggleLabel(false));
+    expect(toggleAfterRefresh.dataset.state).toBe('off');
   });
 
   test('highlight lists every automatic rule that added an item', () => {
@@ -157,6 +172,8 @@ describe('automatic gear highlight toggle', () => {
 
   const toggle = document.getElementById('autoGearHighlightToggle');
   expect(toggle).not.toBeNull();
+  expect((toggle.textContent || '').trim()).toBe(getExpectedToggleLabel(false));
+  expect(toggle.dataset.state).toBe('off');
 
   const item = gearListOutput.querySelector('.auto-gear-item');
   expect(item).not.toBeNull();
@@ -176,5 +193,7 @@ describe('automatic gear highlight toggle', () => {
   EXPECTED_BADGE_TEXTS.forEach(expected => {
     expect(toggledBadgeTexts).toContain(expected);
   });
+  expect((toggle.textContent || '').trim()).toBe(getExpectedToggleLabel(true));
+  expect(toggle.dataset.state).toBe('on');
   });
 });
