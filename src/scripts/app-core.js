@@ -118,6 +118,7 @@ const AUTO_GEAR_BACKUP_INTERVAL_MS = 10 * 60 * 1000;
 const AUTO_GEAR_BACKUP_LIMIT = 12;
 const AUTO_GEAR_MULTI_SELECT_MIN_ROWS = 8;
 const AUTO_GEAR_MULTI_SELECT_MAX_ROWS = 12;
+const AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS = 1;
 function resolveTemperatureStorageKey() {
   const scope =
     typeof globalThis !== 'undefined'
@@ -8903,7 +8904,10 @@ function refreshAutoGearScenarioOptions(selected) {
   }
 
   const selectableOptions = Array.from(autoGearScenariosSelect.options || []).filter(option => !option.disabled);
-  autoGearScenariosSelect.size = computeAutoGearMultiSelectSize(selectableOptions.length);
+  autoGearScenariosSelect.size = computeAutoGearMultiSelectSize(
+    selectableOptions.length,
+    { minRows: AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS }
+  );
 }
 
 function refreshAutoGearMatteboxOptions(selected) {
