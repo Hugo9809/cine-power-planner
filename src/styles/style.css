@@ -5036,6 +5036,9 @@ body.dark-mode .requirement-box,
   border-radius: 0;
   background: none;
   box-shadow: none;
+  --auto-gear-rule-bg: var(--auto-gear-highlight-bg);
+  --auto-gear-rule-border: var(--auto-gear-highlight-border);
+  --auto-gear-rule-text: var(--auto-gear-highlight-text);
 }
 
 #gearListOutput .auto-gear-rule-badge {
@@ -5046,9 +5049,9 @@ body.dark-mode .requirement-box,
   font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.02em;
-  background: color-mix(in srgb, var(--auto-gear-highlight-bg) 65%, transparent);
-  border: 1px solid color-mix(in srgb, var(--auto-gear-highlight-border) 75%, transparent);
-  color: var(--auto-gear-highlight-text);
+  background: color-mix(in srgb, var(--auto-gear-rule-bg, var(--auto-gear-highlight-bg)) 65%, transparent);
+  border: 1px solid color-mix(in srgb, var(--auto-gear-rule-border, var(--auto-gear-highlight-border)) 75%, transparent);
+  color: var(--auto-gear-rule-text, var(--auto-gear-highlight-text));
   white-space: nowrap;
 }
 
@@ -5063,21 +5066,21 @@ body.dark-mode .requirement-box,
   padding: 0.1em 0.5em;
   margin-block: 0.15em;
   border-radius: calc(var(--border-radius) * 0.75);
-  background: var(--auto-gear-highlight-bg);
-  box-shadow: 0 0 0 2px var(--auto-gear-highlight-border);
-  color: var(--auto-gear-highlight-text);
+  background: var(--auto-gear-rule-bg, var(--auto-gear-highlight-bg));
+  box-shadow: 0 0 0 2px var(--auto-gear-rule-border, var(--auto-gear-highlight-border));
+  color: var(--auto-gear-rule-text, var(--auto-gear-highlight-text));
   white-space: normal;
   word-break: break-word;
 }
 
 #gearListOutput.show-auto-gear-highlight .auto-gear-item select {
-  border-color: var(--auto-gear-highlight-border);
-  background: color-mix(in srgb, var(--auto-gear-highlight-bg) 60%, transparent);
-  color: var(--auto-gear-highlight-text);
+  border-color: var(--auto-gear-rule-border, var(--auto-gear-highlight-border));
+  background: color-mix(in srgb, var(--auto-gear-rule-bg, var(--auto-gear-highlight-bg)) 60%, transparent);
+  color: var(--auto-gear-rule-text, var(--auto-gear-highlight-text));
 }
 
 .dark-mode #gearListOutput.show-auto-gear-highlight .auto-gear-item select {
-  background: color-mix(in srgb, var(--auto-gear-highlight-bg) 70%, transparent);
+  background: color-mix(in srgb, var(--auto-gear-rule-bg, var(--auto-gear-highlight-bg)) 70%, transparent);
 }
 
 #gearListOutput .cage-select-wrapper {

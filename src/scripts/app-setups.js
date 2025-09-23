@@ -1647,6 +1647,7 @@ function configureAutoGearSpan(span, normalizedItem, quantity, rule) {
         const delimiter = normalizedItem.notes.trim().toLowerCase().startsWith('incl') ? ' ' : ' – ';
         span.appendChild(document.createTextNode(`${delimiter}${normalizedItem.notes}`));
     }
+    applyAutoGearRuleColors(span, rule);
     refreshAutoGearRuleBadge(span);
 }
 
@@ -1682,6 +1683,7 @@ function addAutoGearItem(cell, item, rule) {
                         }
                     }
                 }
+                applyAutoGearRuleColors(span, rule);
                 refreshAutoGearRuleBadge(span);
             } else {
                 configureAutoGearSpan(span, normalizedItem, quantity, rule);
@@ -3407,6 +3409,97 @@ const AUTO_GEAR_HIGHLIGHT_HELP_FALLBACK =
     'Toggle a temporary color overlay for gear added by automatic rules. Useful while debugging gear rule behavior.';
 const AUTO_GEAR_RULE_BADGE_NAMED_FALLBACK = 'Rule: %s';
 const AUTO_GEAR_RULE_BADGE_UNNAMED_FALLBACK = 'Automatic rule';
+const AUTO_GEAR_RULE_COLOR_PALETTE = Object.freeze([
+    { bg: 'rgba(255, 210, 64, 0.35)', border: 'rgba(255, 181, 0, 0.7)' },
+    { bg: 'rgba(88, 200, 255, 0.32)', border: 'rgba(0, 146, 214, 0.65)' },
+    { bg: 'rgba(146, 232, 129, 0.32)', border: 'rgba(70, 180, 80, 0.65)' },
+    { bg: 'rgba(255, 186, 222, 0.32)', border: 'rgba(230, 112, 190, 0.65)' },
+    { bg: 'rgba(255, 214, 153, 0.32)', border: 'rgba(230, 156, 64, 0.65)' },
+    { bg: 'rgba(201, 186, 255, 0.32)', border: 'rgba(146, 118, 230, 0.65)' },
+    { bg: 'rgba(152, 219, 217, 0.32)', border: 'rgba(72, 182, 178, 0.65)' },
+]);
+
+function getAutoGearRuleColorKey(rule, dataset) {
+    if (rule && typeof rule === 'object') {
+        const ruleId = typeof rule.id === 'string' ? rule.id.trim() : '';
+        if (ruleId) {
+            return `id:${ruleId.toLowerCase()}`;
+        }
+        const label = getAutoGearRuleDisplayLabel(rule);
+        if (label) {
+            return `label:${label.toLowerCase()}`;
+        }
+    }
+    if (dataset && typeof dataset === 'object') {
+        const datasetId = typeof dataset.autoGearRuleId === 'string' ? dataset.autoGearRuleId.trim() : '';
+        if (datasetId) {
+            return `id:${datasetId.toLowerCase()}`;
+        }
+        const datasetLabel = typeof dataset.autoGearRuleLabel === 'string' ? dataset.autoGearRuleLabel.trim() : '';
+        if (datasetLabel) {
+            return `label:${datasetLabel.toLowerCase()}`;
+        }
+    }
+    return '';
+}
+
+function getAutoGearRuleColorEntry(rule, dataset) {
+    if (!AUTO_GEAR_RULE_COLOR_PALETTE.length) {
+        return null;
+    }
+    const key = getAutoGearRuleColorKey(rule, dataset);
+    if (!key) {
+        const defaultEntry = AUTO_GEAR_RULE_COLOR_PALETTE[0];
+        return { ...defaultEntry, index: 0 };
+    }
+    let hash = 0;
+    for (let i = 0; i < key.length; i += 1) {
+        hash = (hash * 31 + key.charCodeAt(i)) & 0x7fffffff;
+    }
+    const paletteIndex = Math.abs(hash) % AUTO_GEAR_RULE_COLOR_PALETTE.length;
+    const paletteEntry = AUTO_GEAR_RULE_COLOR_PALETTE[paletteIndex] || AUTO_GEAR_RULE_COLOR_PALETTE[0];
+    return { ...paletteEntry, index: paletteIndex };
+}
+
+function applyAutoGearRuleColors(span, rule) {
+    if (!span || !span.style) {
+        return;
+    }
+    const dataset = span.dataset || {};
+    const entry = getAutoGearRuleColorEntry(rule, dataset);
+    if (!entry) {
+        span.style.removeProperty('--auto-gear-rule-bg');
+        span.style.removeProperty('--auto-gear-rule-border');
+        span.style.removeProperty('--auto-gear-rule-text');
+        if (dataset && Object.prototype.hasOwnProperty.call(dataset, 'autoGearRuleColor')) {
+            delete dataset.autoGearRuleColor;
+        }
+        return;
+    }
+    const { bg, border, text, index } = entry;
+    if (bg) {
+        span.style.setProperty('--auto-gear-rule-bg', bg);
+    } else {
+        span.style.removeProperty('--auto-gear-rule-bg');
+    }
+    if (border) {
+        span.style.setProperty('--auto-gear-rule-border', border);
+    } else {
+        span.style.removeProperty('--auto-gear-rule-border');
+    }
+    if (text) {
+        span.style.setProperty('--auto-gear-rule-text', text);
+    } else {
+        span.style.removeProperty('--auto-gear-rule-text');
+    }
+    if (dataset) {
+        try {
+            span.dataset.autoGearRuleColor = String(index);
+        } catch (error) {
+            console.warn('Failed to annotate automatic gear color index', error);
+        }
+    }
+}
 
 function getAutoGearRuleBadgeTemplates() {
     const langTexts = texts[currentLang] || texts.en || {};
@@ -3437,6 +3530,7 @@ function refreshAutoGearRuleBadge(span) {
         return;
     }
     const dataset = span.dataset || {};
+    applyAutoGearRuleColors(span);
     const badgeText = formatAutoGearRuleBadgeText(dataset.autoGearRuleLabel, dataset.autoGearRuleId);
     if (!badgeText) {
         const staleBadge = span.querySelector('.auto-gear-rule-badge');
