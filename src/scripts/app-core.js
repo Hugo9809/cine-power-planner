@@ -1635,11 +1635,44 @@ function buildDefaultVideoDistributionAutoGearRules(baseInfo = {}) {
 
   if (!optionValues.length) return [];
 
-  const info = { ...(baseInfo || {}), videoDistribution: optionValues.join(', ') };
-  const baselineHtml = generateGearListHtml({ ...info, requiredScenarios: '' });
-  const baselineMap = parseGearTableForAutoRules(baselineHtml);
-  if (!baselineMap) return [];
-  const generatedRules = buildVideoDistributionAutoRules(info, baselineMap);
+  const baseProjectInfo = { ...(baseInfo || {}) };
+  delete baseProjectInfo.videoDistribution;
+  const emptyHtml = generateGearListHtml({ ...baseProjectInfo, requiredScenarios: '' });
+  const emptyMap = parseGearTableForAutoRules(emptyHtml);
+  if (!emptyMap) return [];
+
+  const generatedRules = [];
+  const handledTriggers = new Set();
+
+  optionValues.forEach(rawValue => {
+    const trimmed = typeof rawValue === 'string' ? rawValue.trim() : '';
+    if (!trimmed) return;
+    const normalized = normalizeVideoDistributionOptionValue(trimmed);
+    if (!normalized || handledTriggers.has(normalized)) return;
+    handledTriggers.add(normalized);
+
+    const infoForSelection = { ...(baseInfo || {}), videoDistribution: trimmed };
+    const selectionHtml = generateGearListHtml({ ...infoForSelection, requiredScenarios: '' });
+    const selectionMap = parseGearTableForAutoRules(selectionHtml);
+    if (!selectionMap) return;
+
+    const diff = diffGearTableMaps(emptyMap, selectionMap);
+    const additions = cloneAutoGearItems(diff.add);
+    const removals = cloneAutoGearItems(diff.remove);
+    if (!additions.length && !removals.length) return;
+
+    generatedRules.push({
+      id: generateAutoGearId('rule'),
+      label: getVideoDistributionFallbackLabel(trimmed),
+      scenarios: [],
+      mattebox: [],
+      cameraHandle: [],
+      viewfinderExtension: [],
+      videoDistribution: [trimmed],
+      add: additions,
+      remove: removals,
+    });
+  });
 
   const hasIosOption = optionValues.some(value => value && value.toLowerCase() === 'ios video');
   if (hasIosOption) {
