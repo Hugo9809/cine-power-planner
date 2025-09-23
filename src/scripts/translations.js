@@ -342,6 +342,9 @@ const texts = {
     backupHeading: "Backup & Restore",
     backupHeadingHelp:
       "Manage full backups of settings, saved projects, custom devices and runtime feedback.",
+    projectBackupsHeading: "Project Backups",
+    projectBackupsDescription:
+      "Manage automatic snapshots and compare saved versions before restoring changes.",
     showAutoBackupsSetting: "Show auto backups in project list",
     showAutoBackupsHelp:
       "Temporarily list automatic backup snapshots in Saved Projects so you can restore them manually.",
@@ -1745,6 +1748,9 @@ const texts = {
     backupHeading: "Backup e ripristino",
     backupHeadingHelp:
       "Gestisci backup completi di impostazioni, progetti salvati, dispositivi personalizzati e feedback.",
+    projectBackupsHeading: "Backup dei progetti",
+    projectBackupsDescription:
+      "Gestisci le istantanee automatiche e confronta le versioni salvate prima di ripristinare le modifiche.",
     showAutoBackupsSetting: "Mostra i salvataggi automatici nell'elenco progetti",
     showAutoBackupsHelp:
       "Mostra temporaneamente gli snapshot di backup automatici nei progetti salvati per poterli ripristinare manualmente.",
@@ -2729,6 +2735,9 @@ const texts = {
     backupHeading: "Copia de seguridad y restaurar",
     backupHeadingHelp:
       "Gestiona copias de seguridad completas de ajustes, proyectos guardados, dispositivos personalizados y comentarios.",
+    projectBackupsHeading: "Copias de seguridad de proyectos",
+    projectBackupsDescription:
+      "Gestiona las instantáneas automáticas y compara las versiones guardadas antes de restaurar los cambios.",
     showAutoBackupsSetting: "Mostrar las copias de seguridad automáticas en la lista de proyectos",
     showAutoBackupsHelp:
       "Muestra temporalmente las instantáneas automáticas en Proyectos guardados para que puedas restaurarlas manualmente.",
@@ -3752,6 +3761,9 @@ const texts = {
     backupHeading: "Sauvegarde et restauration",
     backupHeadingHelp:
       "Gérez des sauvegardes complètes des réglages, projets enregistrés, appareils personnalisés et retours.",
+    projectBackupsHeading: "Sauvegardes de projets",
+    projectBackupsDescription:
+      "Gérez les instantanés automatiques et comparez les versions enregistrées avant de restaurer les modifications.",
     showAutoBackupsSetting: "Afficher les sauvegardes automatiques dans la liste des projets",
     showAutoBackupsHelp:
       "Affiche temporairement les instantanés de sauvegarde automatiques dans Projets enregistrés afin de pouvoir les restaurer manuellement.",
@@ -4741,6 +4753,9 @@ const texts = {
     backupHeading: "Sichern & Wiederherstellen",
     backupHeadingHelp:
       "Verwalte vollständige Sicherungen von Einstellungen, Projekten, eigenen Geräten und Feedback.",
+    projectBackupsHeading: "Projekt-Backups",
+    projectBackupsDescription:
+      "Verwalte automatische Schnappschüsse und vergleiche gespeicherte Versionen, bevor du Änderungen wiederherstellst.",
     showAutoBackupsSetting: "Automatische Sicherungen in der Projektliste anzeigen",
     showAutoBackupsHelp:
       "Blendet automatische Sicherungs-Snapshots vorübergehend in den gespeicherten Projekten ein, damit du sie manuell wiederherstellen kannst.",
