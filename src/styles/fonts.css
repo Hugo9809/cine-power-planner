@@ -8,23 +8,9 @@
 @font-face {
   font-family: 'Ubuntu';
   font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url('../fonts/Ubuntu/Ubuntu-Regular.ttf') format('truetype');
-}
-@font-face {
-  font-family: 'Ubuntu';
-  font-style: normal;
   font-weight: 500;
   font-display: swap;
   src: url('../fonts/Ubuntu/Ubuntu-Medium.ttf') format('truetype');
-}
-@font-face {
-  font-family: 'Ubuntu';
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url('../fonts/Ubuntu/Ubuntu-Bold.ttf') format('truetype');
 }
 @font-face {
   font-family: 'Ubuntu';
@@ -36,25 +22,10 @@
 @font-face {
   font-family: 'Ubuntu';
   font-style: italic;
-  font-weight: 400;
-  font-display: swap;
-  src: url('../fonts/Ubuntu/Ubuntu-Italic.ttf') format('truetype');
-}
-@font-face {
-  font-family: 'Ubuntu';
-  font-style: italic;
   font-weight: 500;
   font-display: swap;
   src: url('../fonts/Ubuntu/Ubuntu-MediumItalic.ttf') format('truetype');
 }
-@font-face {
-  font-family: 'Ubuntu';
-  font-style: italic;
-  font-weight: 700;
-  font-display: swap;
-  src: url('../fonts/Ubuntu/Ubuntu-BoldItalic.ttf') format('truetype');
-}
-
 @font-face {
   font-family: 'EssentialIconsV2';
   font-style: normal;
