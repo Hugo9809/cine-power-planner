@@ -126,9 +126,9 @@
   --motor-color: #9c27b0;
   --controller-color: #ff5722;
   --distance-color: #795548;
-  --power-conn-bg: rgba(244, 67, 54, 0.15);
-  --fiz-conn-bg: rgba(76, 175, 80, 0.15);
-  --video-conn-bg: rgba(33, 150, 243, 0.15);
+  --power-conn-bg: rgba(221, 51, 51, 0.15);
+  --fiz-conn-bg: rgba(0, 153, 0, 0.15);
+  --video-conn-bg: rgba(51, 102, 153, 0.15);
   --neutral-conn-bg: rgba(158, 158, 158, 0.15);
   --connector-label-neutral-color: #000000;
 }
@@ -3577,17 +3577,17 @@ body.pink-mode #topBar #logo .logo-center {
 
 .power-conn .info-box-label,
 .info-box.power-conn strong:first-child {
-  color: var(--danger-color);
+  color: var(--power-color);
 }
 
 .video-conn .info-box-label,
 .info-box.video-conn strong:first-child {
-  color: var(--info-color);
+  color: var(--video-color);
 }
 
 .fiz-conn .info-box-label,
 .info-box.fiz-conn strong:first-child {
-  color: var(--success-color);
+  color: var(--fiz-color);
 }
 
 .neutral-conn .info-box-label,
@@ -3660,33 +3660,37 @@ body.pink-mode #topBar #logo .logo-center {
 
 .port-table .power-row th,
 .port-table .power-row td {
-  color: var(--danger-color);
+  color: var(--power-color);
 }
 
 .port-table .fiz-row th,
 .port-table .fiz-row td {
-  color: var(--success-color);
+  color: var(--fiz-color);
 }
 
 .port-table .video-row th,
 .port-table .video-row td {
-  color: var(--info-color);
+  color: var(--video-color);
 }
 
 .power-conn {
-  border-color: var(--danger-color);
-  --icon-color: var(--danger-color);
+  border-color: var(--power-color);
+  background-color: var(--power-conn-bg);
+  --icon-color: var(--power-color);
 }
 .fiz-conn {
-  border-color: var(--success-color);
-  --icon-color: var(--success-color);
+  border-color: var(--fiz-color);
+  background-color: var(--fiz-conn-bg);
+  --icon-color: var(--fiz-color);
 }
 .video-conn {
-  border-color: var(--info-color);
-  --icon-color: var(--info-color);
+  border-color: var(--video-color);
+  background-color: var(--video-conn-bg);
+  --icon-color: var(--video-color);
 }
 .neutral-conn {
   border-color: var(--neutral-color);
+  background-color: var(--neutral-conn-bg);
   --icon-color: var(--neutral-color);
 }
 
