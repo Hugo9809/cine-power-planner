@@ -279,6 +279,23 @@ table, th, td {
   border-color: var(--accent-color);
   box-shadow: var(--panel-shadow);
 }
+
+#overviewDialogContent .results-section,
+#overviewDialogContent .project-requirements-section,
+#overviewDialogContent .gear-list-section,
+#overviewDialogContent .battery-comparison-section,
+#overviewDialogContent #batteryComparisonOverview {
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  width: 100%;
+  padding-top: var(--section-padding, 0.75cm);
+  padding-bottom: var(--section-padding, 0.75cm);
+  padding-left: 0;
+  padding-right: 0;
+}
 #overviewDialogContent #setupDiagram {
   background: none !important;
   border: none !important;
