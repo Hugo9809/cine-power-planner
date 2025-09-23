@@ -1438,23 +1438,55 @@ function buildCameraHandleAutoRules(baseInfo, baselineMap) {
   }
 
   const selections = extractAutoGearSelections(baseInfo && baseInfo.cameraHandle);
-  if (!selections.length) return [];
+  const selectionSet = new Set(selections);
+  const optionValues = [];
 
-  const uniqueSelections = Array.from(new Set(selections));
+  if (typeof document !== 'undefined') {
+    const handleSelect = document.getElementById('cameraHandle');
+    if (handleSelect) {
+      Array.from(handleSelect.options || []).forEach(option => {
+        const value = typeof option.value === 'string' ? option.value.trim() : '';
+        if (value) optionValues.push(value);
+      });
+    }
+  }
+
+  const candidates = Array.from(new Set(
+    selections
+      .concat(optionValues)
+      .map(value => (typeof value === 'string' ? value.trim() : ''))
+      .filter(Boolean)
+  ));
+
+  if (!candidates.length) return [];
+
   const rules = [];
 
-  uniqueSelections.forEach(selection => {
-    const trimmed = selection.trim();
+  candidates.forEach(candidate => {
+    const trimmed = candidate.trim();
     if (!trimmed) return;
 
-    const remainingSelections = selections.filter(value => value !== trimmed);
-    const variantInfo = { ...baseInfo, cameraHandle: remainingSelections.join(', ') };
-    const variantHtml = generateGearListHtml({ ...variantInfo, requiredScenarios: '' });
-    const variantMap = parseGearTableForAutoRules(variantHtml);
-    if (!variantMap) return;
+    let variantHandles;
+    let diff;
 
-    const diff = diffGearTableMaps(variantMap, baselineMap);
-    if (!diff.add.length && !diff.remove.length) return;
+    if (selectionSet.has(trimmed)) {
+      variantHandles = selections.filter(value => value !== trimmed);
+      const variantInfo = { ...baseInfo, cameraHandle: variantHandles.join(', ') };
+      const variantHtml = generateGearListHtml({ ...variantInfo, requiredScenarios: '' });
+      const variantMap = parseGearTableForAutoRules(variantHtml);
+      if (!variantMap) return;
+      diff = diffGearTableMaps(variantMap, baselineMap);
+    } else {
+      variantHandles = selections.slice();
+      variantHandles.push(trimmed);
+      const variantInfo = { ...baseInfo, cameraHandle: variantHandles.join(', ') };
+      const variantHtml = generateGearListHtml({ ...variantInfo, requiredScenarios: '' });
+      const variantMap = parseGearTableForAutoRules(variantHtml);
+      if (!variantMap) return;
+      diff = diffGearTableMaps(baselineMap, variantMap);
+    }
+
+    if (!diff || (!diff.add.length && !diff.remove.length)) return;
 
     const additions = cloneAutoGearItems(diff.add);
     if (!additions.length) return;

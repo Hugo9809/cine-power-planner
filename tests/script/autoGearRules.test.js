@@ -682,6 +682,34 @@ describe('applyAutoGearRulesToTableHtml', () => {
     ]));
   });
 
+  test('seeding factory defaults adds camera handle rules without preselecting handles', () => {
+    env = setupScriptEnvironment();
+
+    const {
+      getAutoGearRules,
+      syncAutoGearRulesFromStorage,
+      __autoGearInternals,
+    } = env.utils;
+
+    syncAutoGearRulesFromStorage([]);
+    if (__autoGearInternals?.clearAutoGearDefaultsSeeded) {
+      __autoGearInternals.clearAutoGearDefaultsSeeded();
+    }
+
+    if (__autoGearInternals?.seedAutoGearRulesFromCurrentProject) {
+      __autoGearInternals.seedAutoGearRulesFromCurrentProject();
+    }
+
+    const rules = getAutoGearRules();
+    const handleRule = rules.find(rule =>
+      Array.isArray(rule.cameraHandle)
+      && rule.cameraHandle.includes('Hand Grips')
+    );
+
+    expect(handleRule).toBeDefined();
+    expect(handleRule?.add || []).not.toHaveLength(0);
+  });
+
   test('seeding factory defaults includes viewfinder extension rules', () => {
     env = setupScriptEnvironment();
 
