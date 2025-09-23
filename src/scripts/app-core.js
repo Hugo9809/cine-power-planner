@@ -572,15 +572,36 @@ function normalizeAutoGearSelectorDefault(type, value) {
   return match || text;
 }
 
+function resolveDevicesSnapshot() {
+  if (DEVICE_GLOBAL_SCOPE && DEVICE_GLOBAL_SCOPE.devices && typeof DEVICE_GLOBAL_SCOPE.devices === 'object') {
+    return DEVICE_GLOBAL_SCOPE.devices;
+  }
+
+  try {
+    return typeof devices !== 'undefined' && devices && typeof devices === 'object' ? devices : null;
+  } catch (error) {
+    if (error && typeof error === 'object' && error.name === 'ReferenceError') {
+      return null;
+    }
+    throw error;
+  }
+}
+
 function getAutoGearSelectorOptions(type) {
   const normalizedType = normalizeAutoGearSelectorType(type);
+  const catalog = resolveDevicesSnapshot();
+
+  if (!catalog || typeof catalog !== 'object') {
+    return [];
+  }
+
   if (normalizedType === 'monitor') {
-    const monitorDb = devices && devices.monitors ? devices.monitors : null;
+    const monitorDb = catalog && catalog.monitors ? catalog.monitors : null;
     if (!monitorDb || typeof monitorDb !== 'object') return [];
     return Object.keys(monitorDb).filter(name => name && name !== 'None').sort(localeSort);
   }
   if (normalizedType === 'directorMonitor') {
-    const directorDb = devices && devices.directorMonitors ? devices.directorMonitors : null;
+    const directorDb = catalog && catalog.directorMonitors ? catalog.directorMonitors : null;
     if (!directorDb || typeof directorDb !== 'object') return [];
     return Object.keys(directorDb).filter(name => name && name !== 'None').sort(localeSort);
   }
