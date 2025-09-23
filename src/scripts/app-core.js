@@ -29,7 +29,14 @@ try {
   // overview generation not needed in test environments without module support
 }
 
+let cachedConnectorSummaryGenerator = null;
+let connectorSummaryCachePrimed = false;
+
 function resolveConnectorSummaryGenerator() {
+  if (connectorSummaryCachePrimed && typeof cachedConnectorSummaryGenerator === 'function') {
+    return cachedConnectorSummaryGenerator;
+  }
+
   const scopes = [];
   if (typeof globalThis !== 'undefined') scopes.push(globalThis);
   if (typeof window !== 'undefined') scopes.push(window);
@@ -38,12 +45,16 @@ function resolveConnectorSummaryGenerator() {
 
   for (const scope of scopes) {
     if (scope && typeof scope.generateConnectorSummary === 'function') {
-      return scope.generateConnectorSummary;
+      cachedConnectorSummaryGenerator = scope.generateConnectorSummary;
+      connectorSummaryCachePrimed = true;
+      return cachedConnectorSummaryGenerator;
     }
   }
 
   if (typeof generateConnectorSummary === 'function') {
-    return generateConnectorSummary;
+    cachedConnectorSummaryGenerator = generateConnectorSummary;
+    connectorSummaryCachePrimed = true;
+    return cachedConnectorSummaryGenerator;
   }
 
   return null;
