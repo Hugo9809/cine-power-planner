@@ -18992,8 +18992,12 @@ function renderSetupDiagram() {
       var currentRootWidth = bbox.width * baseScale;
       var desiredScale = currentRootWidth > 0 ? desiredWidth / currentRootWidth : 1;
       if (!Number.isFinite(desiredScale) || desiredScale <= 0) desiredScale = 1;
+      if (!isTouchDevice && desiredScale > 1) {
+        var DESKTOP_SCALE_RELAXATION = 0.35;
+        desiredScale = 1 + (desiredScale - 1) * DESKTOP_SCALE_RELAXATION;
+      }
       var MIN_AUTO_SCALE = isTouchDevice ? 0.4 : 0.35;
-      var MAX_INITIAL_SCALE = isTouchDevice ? 3 : 2.2;
+      var MAX_INITIAL_SCALE = isTouchDevice ? 3 : 1.6;
       var safeDesiredScale = Number.isFinite(desiredScale) && desiredScale > 0 ? desiredScale : 1;
       var initialScale = Math.min(MAX_INITIAL_SCALE, Math.max(MIN_AUTO_SCALE, safeDesiredScale));
       var centerX = bbox.x + bbox.width / 2;
@@ -19105,7 +19109,7 @@ function enableDiagramInteractions() {
   var BASE_MIN_SCALE = isTouchDevice ? 0.55 : 0.65;
   var MIN_AUTO_SCALE = isTouchDevice ? 0.4 : 0.35;
   var dataScaleRaw = parseFloat(setupDiagramContainer.dataset.initialScale || '');
-  var fallbackScale = isTouchDevice ? 0.95 : 1.25;
+  var fallbackScale = isTouchDevice ? 0.95 : 1;
   var initialScaleRaw = Number.isFinite(dataScaleRaw) && dataScaleRaw > 0 ? dataScaleRaw : fallbackScale;
   var MIN_SCALE = Math.max(MIN_AUTO_SCALE, Math.min(BASE_MIN_SCALE, initialScaleRaw));
   var clampScale = function clampScale(value) {
