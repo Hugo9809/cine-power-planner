@@ -18065,16 +18065,35 @@ function enableDiagramInteractions() {
     scale = clampScale(scale);
     root.setAttribute('transform', "translate(".concat(pan.x, ",").concat(pan.y, ") scale(").concat(scale, ")"));
   };
+  var zoomWithCenter = function zoomWithCenter(factor) {
+    var currentScale = scale;
+    if (!Number.isFinite(currentScale) || currentScale <= 0) return;
+    var targetScale = clampScale(currentScale * factor);
+    if (!Number.isFinite(targetScale) || targetScale <= 0 || targetScale === currentScale) {
+      scale = targetScale;
+      apply();
+      return;
+    }
+    var rect = typeof svg.getBoundingClientRect === 'function' ? svg.getBoundingClientRect() : null;
+    if (rect && Number.isFinite(rect.width) && Number.isFinite(rect.height) && rect.width > 0 && rect.height > 0) {
+      var centerX = rect.left + rect.width / 2;
+      var centerY = rect.top + rect.height / 2;
+      var inverseCurrent = 1 / currentScale;
+      var inverseTarget = 1 / targetScale;
+      pan.x += centerX * (inverseTarget - inverseCurrent);
+      pan.y += centerY * (inverseTarget - inverseCurrent);
+    }
+    scale = targetScale;
+    apply();
+  };
   if (zoomInBtn) {
     zoomInBtn.onclick = function () {
-      scale *= 1.1;
-      apply();
+      zoomWithCenter(1.1);
     };
   }
   if (zoomOutBtn) {
     zoomOutBtn.onclick = function () {
-      scale *= 0.9;
-      apply();
+      zoomWithCenter(0.9);
     };
   }
   if (resetViewBtn) {

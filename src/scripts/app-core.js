@@ -19189,16 +19189,35 @@ function enableDiagramInteractions() {
     scale = clampScale(scale);
     root.setAttribute('transform', `translate(${pan.x},${pan.y}) scale(${scale})`);
   };
+  const zoomWithCenter = factor => {
+    const currentScale = scale;
+    if (!Number.isFinite(currentScale) || currentScale <= 0) return;
+    const targetScale = clampScale(currentScale * factor);
+    if (!Number.isFinite(targetScale) || targetScale <= 0 || targetScale === currentScale) {
+      scale = targetScale;
+      apply();
+      return;
+    }
+    const rect = typeof svg.getBoundingClientRect === 'function' ? svg.getBoundingClientRect() : null;
+    if (rect && Number.isFinite(rect.width) && Number.isFinite(rect.height) && rect.width > 0 && rect.height > 0) {
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      const inverseCurrent = 1 / currentScale;
+      const inverseTarget = 1 / targetScale;
+      pan.x += centerX * (inverseTarget - inverseCurrent);
+      pan.y += centerY * (inverseTarget - inverseCurrent);
+    }
+    scale = targetScale;
+    apply();
+  };
   if (zoomInBtn) {
     zoomInBtn.onclick = () => {
-      scale *= 1.1;
-      apply();
+      zoomWithCenter(1.1);
     };
   }
   if (zoomOutBtn) {
     zoomOutBtn.onclick = () => {
-      scale *= 0.9;
-      apply();
+      zoomWithCenter(0.9);
     };
   }
   if (resetViewBtn) {
