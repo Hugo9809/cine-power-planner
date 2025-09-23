@@ -1041,8 +1041,16 @@ describe('applyAutoGearRulesToTableHtml', () => {
     document.getElementById('autoGearAddName').value = 'Director monitor station';
     document.getElementById('autoGearAddQuantity').value = '1';
     document.getElementById('autoGearAddScreenSize').value = '17"';
-    document.getElementById('autoGearAddSelectorType').value = 'monitor';
-    document.getElementById('autoGearAddSelectorDefault').value = 'SmallHD Ultra 7';
+    const addSelectorType = document.getElementById('autoGearAddSelectorType');
+    addSelectorType.value = 'monitor';
+    addSelectorType.dispatchEvent(new Event('change', { bubbles: true }));
+    const addSelectorDefault = document.getElementById('autoGearAddSelectorDefault');
+    const addSelectorDefaultOption = Array.from(addSelectorDefault.options || [])
+      .find(option => option.value === 'SmallHD Ultra 7');
+    expect(addSelectorDefaultOption).toBeDefined();
+    if (addSelectorDefaultOption) {
+      addSelectorDefault.value = addSelectorDefaultOption.value;
+    }
     document.getElementById('autoGearAddNotes').value = 'incl. Directors cage';
 
     document.getElementById('autoGearAddItemButton').click();
@@ -1118,7 +1126,13 @@ describe('applyAutoGearRulesToTableHtml', () => {
     addCategorySelect.value = 'Monitoring';
     addQuantityInput.value = '1';
     addSelectorType.value = 'monitor';
-    addSelectorDefault.value = 'SmallHD Focus';
+    addSelectorType.dispatchEvent(new Event('change', { bubbles: true }));
+    const addFocusOption = Array.from(addSelectorDefault.options || [])
+      .find(option => option.value === 'SmallHD Focus');
+    expect(addFocusOption).toBeDefined();
+    if (addFocusOption) {
+      addSelectorDefault.value = addFocusOption.value;
+    }
     addButton.click();
 
     const initialEditButton = document.querySelector('#autoGearAddList .auto-gear-edit-entry');
@@ -1130,7 +1144,12 @@ describe('applyAutoGearRulesToTableHtml', () => {
 
     addNameInput.value = 'Director monitor';
     addQuantityInput.value = '2';
-    addSelectorDefault.value = 'SmallHD Cine 7';
+    const cineOption = Array.from(addSelectorDefault.options || [])
+      .find(option => option.value === 'SmallHD Cine 7');
+    expect(cineOption).toBeDefined();
+    if (cineOption) {
+      addSelectorDefault.value = cineOption.value;
+    }
     addButton.click();
 
     const addListItems = document.querySelectorAll('#autoGearAddList .auto-gear-item');

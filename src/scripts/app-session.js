@@ -1743,12 +1743,14 @@ if (autoGearAddItemButton) {
   const bindAutoGearSelectorCatalogSync = (typeSelect, defaultInput) => {
     if (!typeSelect) return;
     const refreshCatalog = () => {
-      updateAutoGearMonitorCatalogOptions(typeSelect.value);
+      updateAutoGearMonitorCatalogOptions(typeSelect.value, defaultInput);
     };
     typeSelect.addEventListener('change', refreshCatalog);
     if (defaultInput) {
       defaultInput.addEventListener('focus', refreshCatalog);
+      defaultInput.addEventListener('click', refreshCatalog);
     }
+    refreshCatalog();
   };
   bindAutoGearSelectorCatalogSync(autoGearAddSelectorTypeSelect, autoGearAddSelectorDefaultInput);
   bindAutoGearSelectorCatalogSync(autoGearRemoveSelectorTypeSelect, autoGearRemoveSelectorDefaultInput);
