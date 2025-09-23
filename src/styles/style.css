@@ -1219,6 +1219,103 @@ main.legal-content {
   gap: 0.75rem;
 }
 
+.restore-rehearsal {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-size);
+  margin-top: var(--gap-size);
+  padding: 1rem;
+  border: 1px solid color-mix(in srgb, var(--panel-border) 65%, transparent);
+  border-radius: var(--border-radius);
+  background: color-mix(in srgb, var(--surface-color) 94%, var(--accent-color) 6%);
+}
+
+.restore-rehearsal[hidden] {
+  display: none;
+}
+
+.restore-rehearsal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap-size);
+}
+
+.restore-rehearsal-header h4 {
+  margin: 0;
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-sm));
+}
+
+.restore-rehearsal-modes {
+  border: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--gap-size) * 0.75);
+}
+
+.restore-rehearsal-modes label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+}
+
+.restore-rehearsal-file {
+  align-items: center;
+}
+
+.restore-rehearsal-file button {
+  margin-left: auto;
+}
+
+.restore-rehearsal-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid color-mix(in srgb, var(--panel-border) 55%, transparent);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  background: color-mix(in srgb, var(--surface-color) 96%, var(--accent-color) 4%);
+}
+
+.restore-rehearsal-table caption {
+  text-align: left;
+  font-weight: 600;
+  padding: 0.75rem;
+}
+
+.restore-rehearsal-table th,
+.restore-rehearsal-table td {
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  border-top: 1px solid color-mix(in srgb, var(--panel-border) 45%, transparent);
+}
+
+.restore-rehearsal-table th:first-child,
+.restore-rehearsal-table td:first-child {
+  width: 35%;
+}
+
+.restore-rehearsal-table tbody tr:first-child th,
+.restore-rehearsal-table tbody tr:first-child td {
+  border-top: none;
+}
+
+.restore-rehearsal-table .restore-rehearsal-diff-match {
+  color: color-mix(in srgb, var(--text-color) 85%, var(--accent-color) 15%);
+}
+
+.restore-rehearsal-table .restore-rehearsal-diff-positive {
+  color: var(--danger-color, #b00020);
+  font-weight: 600;
+}
+
+.restore-rehearsal-table .restore-rehearsal-diff-negative {
+  color: var(--warning-color, #8a6d3b);
+  font-weight: 600;
+}
+
 .diff-entry {
   display: flex;
   flex-direction: column;
