@@ -1,5 +1,5 @@
 // --- SESSION STATE HANDLING ---
-/* global resolveTemperatureStorageKey, TEMPERATURE_STORAGE_KEY, updateCageSelectOptions, updateAccentColorResetButtonState, normalizeAccentValue, DEFAULT_ACCENT_NORMALIZED, autoGearSearchInput, setAutoGearSearchQuery, autoGearFilterScenarioSelect, setAutoGearScenarioFilter, autoGearFilterClearButton, clearAutoGearFilters, clearUiCacheStorageEntries, __cineGlobal */
+/* global resolveTemperatureStorageKey, TEMPERATURE_STORAGE_KEY, updateCageSelectOptions, updateAccentColorResetButtonState, normalizeAccentValue, DEFAULT_ACCENT_NORMALIZED, autoGearSearchInput, setAutoGearSearchQuery, autoGearFilterScenarioSelect, setAutoGearScenarioFilter, autoGearFilterClearButton, clearAutoGearFilters, clearUiCacheStorageEntries, backupDiffToggleButton, backupDiffSection, backupDiffPrimarySelect, backupDiffSecondarySelect, backupDiffEmptyState, backupDiffSummary, backupDiffList, backupDiffListContainer, backupDiffNotes, backupDiffExportButton, backupDiffCloseButton, __cineGlobal */
 
 const temperaturePreferenceStorageKey =
   typeof TEMPERATURE_STORAGE_KEY === 'string'
@@ -1024,6 +1024,7 @@ if (settingsButton && settingsDialog) {
     if (activeSettingsTabId) {
       activateSettingsTab(activeSettingsTabId);
     }
+    collapseBackupDiffSection();
     settingsDialog.removeAttribute('hidden');
     openDialog(settingsDialog);
     scheduleSettingsTabsOverflowUpdate();
@@ -1049,6 +1050,7 @@ if (settingsButton && settingsDialog) {
       if (settingsLogo) settingsLogo.value = '';
       if (settingsLogoPreview) loadStoredLogoPreview();
       closeAutoGearEditor();
+      collapseBackupDiffSection();
       closeDialog(settingsDialog);
       settingsDialog.setAttribute('hidden', '');
     });
@@ -1169,6 +1171,7 @@ if (settingsButton && settingsDialog) {
         }
       }
       closeAutoGearEditor();
+      collapseBackupDiffSection();
       rememberSettingsPinkModeBaseline();
       rememberSettingsTemperatureUnitBaseline();
       closeDialog(settingsDialog);
@@ -1186,6 +1189,7 @@ if (settingsButton && settingsDialog) {
       if (settingsLogo) settingsLogo.value = '';
       if (settingsLogoPreview) loadStoredLogoPreview();
       closeAutoGearEditor();
+      collapseBackupDiffSection();
       closeDialog(settingsDialog);
       settingsDialog.setAttribute('hidden', '');
     }
@@ -1201,6 +1205,7 @@ if (settingsButton && settingsDialog) {
     if (settingsLogo) settingsLogo.value = '';
     if (settingsLogoPreview) loadStoredLogoPreview();
     closeAutoGearEditor();
+    collapseBackupDiffSection();
     closeDialog(settingsDialog);
     settingsDialog.setAttribute('hidden', '');
   });
@@ -2105,6 +2110,662 @@ function downloadBackupPayload(payload, fileName) {
   return failureResult;
 }
 
+// --- Backup diff viewer ---
+const AUTO_BACKUP_NAME_PREFIX = 'auto-backup-';
+const AUTO_BACKUP_DELETION_PREFIX = 'auto-backup-before-delete-';
+
+let backupDiffOptionsCache = [];
+const backupDiffState = {
+  baseline: '',
+  comparison: '',
+};
+
+function getDiffText(key, fallbackValue = '') {
+  const langTexts = texts && typeof currentLang === 'string' ? texts[currentLang] : null;
+  const fallbackTexts = texts && texts.en ? texts.en : {};
+  if (langTexts && Object.prototype.hasOwnProperty.call(langTexts, key)) {
+    const value = langTexts[key];
+    if (typeof value === 'string' && value) {
+      return value;
+    }
+  }
+  if (fallbackTexts && Object.prototype.hasOwnProperty.call(fallbackTexts, key)) {
+    const value = fallbackTexts[key];
+    if (typeof value === 'string' && value) {
+      return value;
+    }
+  }
+  return fallbackValue;
+}
+
+function formatNumberForComparison(value) {
+  const lang = typeof currentLang === 'string' && currentLang ? currentLang : 'en';
+  try {
+    return new Intl.NumberFormat(lang).format(value);
+  } catch (error) {
+    if (lang !== 'en') {
+      try {
+        return new Intl.NumberFormat('en').format(value);
+      } catch (fallbackError) {
+        console.warn('Number formatting failed for comparison summary', error, fallbackError);
+        return String(value);
+      }
+    }
+    console.warn('Number formatting failed for comparison summary', error);
+    return String(value);
+  }
+}
+
+function isAutoBackupName(name) {
+  return typeof name === 'string'
+    && (name.startsWith(AUTO_BACKUP_NAME_PREFIX)
+      || name.startsWith(AUTO_BACKUP_DELETION_PREFIX));
+}
+
+function parseAutoBackupName(name) {
+  if (typeof name !== 'string') {
+    return null;
+  }
+  if (name.startsWith(AUTO_BACKUP_DELETION_PREFIX)) {
+    const remainder = name.slice(AUTO_BACKUP_DELETION_PREFIX.length);
+    const parts = remainder.split('-');
+    if (parts.length >= 6) {
+      const [year, month, day, hour, minute, second, ...rest] = parts;
+      const date = new Date(
+        Number(year),
+        Number(month) - 1,
+        Number(day),
+        Number(hour),
+        Number(minute),
+        Number(second),
+      );
+      const label = rest.join('-').trim();
+      return {
+        type: 'auto-backup-before-delete',
+        date: Number.isNaN(date.valueOf()) ? null : date,
+        label,
+        includeSeconds: true,
+      };
+    }
+  } else if (name.startsWith(AUTO_BACKUP_NAME_PREFIX)) {
+    const remainder = name.slice(AUTO_BACKUP_NAME_PREFIX.length);
+    const parts = remainder.split('-');
+    if (parts.length >= 5) {
+      const [year, month, day, hour, minute, ...rest] = parts;
+      const date = new Date(
+        Number(year),
+        Number(month) - 1,
+        Number(day),
+        Number(hour),
+        Number(minute),
+      );
+      const label = rest.join('-').trim();
+      return {
+        type: 'auto-backup',
+        date: Number.isNaN(date.valueOf()) ? null : date,
+        label,
+        includeSeconds: false,
+      };
+    }
+  }
+  return null;
+}
+
+function formatTimestampForComparison(date, includeSeconds) {
+  if (!(date instanceof Date) || Number.isNaN(date.valueOf())) {
+    return '';
+  }
+  const lang = typeof currentLang === 'string' && currentLang ? currentLang : 'en';
+  const options = {
+    year: 'numeric',
+    month: 'short',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  };
+  if (includeSeconds) {
+    options.second = '2-digit';
+  }
+  try {
+    return new Intl.DateTimeFormat(lang, options).format(date);
+  } catch (error) {
+    if (lang !== 'en') {
+      try {
+        return new Intl.DateTimeFormat('en', options).format(date);
+      } catch (fallbackError) {
+        console.warn('Date formatting failed for comparison timestamp', error, fallbackError);
+      }
+    } else {
+      console.warn('Date formatting failed for comparison timestamp', error);
+    }
+  }
+  return date.toISOString();
+}
+
+function formatComparisonOptionLabel(name) {
+  if (typeof name !== 'string') {
+    return '';
+  }
+  const parsed = parseAutoBackupName(name);
+  if (!parsed) {
+    const manualLabel = getDiffText('versionCompareManualLabel', 'Manual save');
+    return `${manualLabel} · ${name}`;
+  }
+  const typeLabel = parsed.type === 'auto-backup-before-delete'
+    ? getDiffText('versionCompareAutoDeleteLabel', 'Auto backup before delete')
+    : getDiffText('versionCompareAutoLabel', 'Auto backup');
+  const timestamp = formatTimestampForComparison(parsed.date, parsed.includeSeconds);
+  const suffix = parsed.label ? ` · ${parsed.label}` : '';
+  return timestamp
+    ? `${typeLabel} · ${timestamp}${suffix}`
+    : `${typeLabel}${suffix ? ` · ${suffix}` : ''}`;
+}
+
+function collectBackupDiffOptions() {
+  const setups = getSetups();
+  if (!setups || typeof setups !== 'object') {
+    return [];
+  }
+  return Object.keys(setups)
+    .filter(name => typeof name === 'string' && name)
+    .map(name => ({
+      value: name,
+      label: formatComparisonOptionLabel(name),
+      data: setups[name],
+    }))
+    .sort((a, b) => {
+      const autoA = isAutoBackupName(a.value);
+      const autoB = isAutoBackupName(b.value);
+      if (autoA !== autoB) {
+        return autoA ? 1 : -1;
+      }
+      return localeSort(a.label, b.label);
+    });
+}
+
+function fillBackupDiffSelect(select, options, selectedValue) {
+  if (!select) return;
+  const placeholderText = getDiffText('versionCompareSelectPlaceholder', 'Select a version');
+  const fragment = document.createDocumentFragment();
+  const placeholder = document.createElement('option');
+  placeholder.value = '';
+  placeholder.textContent = placeholderText;
+  placeholder.disabled = options.length > 0;
+  placeholder.selected = true;
+  fragment.appendChild(placeholder);
+
+  options.forEach(option => {
+    const opt = document.createElement('option');
+    opt.value = option.value;
+    opt.textContent = option.label;
+    fragment.appendChild(opt);
+  });
+
+  select.innerHTML = '';
+  select.appendChild(fragment);
+
+  if (selectedValue && options.some(option => option.value === selectedValue)) {
+    select.value = selectedValue;
+    placeholder.selected = false;
+  } else {
+    select.value = '';
+  }
+}
+
+function clearBackupDiffResults() {
+  if (backupDiffList) {
+    backupDiffList.innerHTML = '';
+  }
+  if (backupDiffListContainer) {
+    backupDiffListContainer.hidden = true;
+  }
+}
+
+function formatDiffPath(parts) {
+  if (!Array.isArray(parts) || !parts.length) {
+    return getDiffText('versionCompareRootPath', 'Entire setup');
+  }
+  return parts.map(part => {
+    if (typeof part !== 'string') {
+      return String(part);
+    }
+    return part;
+  }).join(' › ');
+}
+
+function valuesEqual(a, b) {
+  if (a === b) return true;
+  return Number.isNaN(a) && Number.isNaN(b);
+}
+
+function computeSetupDiff(baseline, comparison) {
+  const entries = [];
+
+  function walk(baseValue, compareValue, path) {
+    if (valuesEqual(baseValue, compareValue)) {
+      return;
+    }
+
+    const baseIsObject = isPlainObject(baseValue);
+    const compareIsObject = isPlainObject(compareValue);
+
+    if (baseIsObject && compareIsObject) {
+      const keys = new Set([
+        ...Object.keys(baseValue),
+        ...Object.keys(compareValue),
+      ]);
+      keys.forEach(key => {
+        const hasBase = Object.prototype.hasOwnProperty.call(baseValue, key);
+        const hasCompare = Object.prototype.hasOwnProperty.call(compareValue, key);
+        if (!hasBase) {
+          entries.push({ type: 'added', path: path.concat(key), before: undefined, after: compareValue[key] });
+        } else if (!hasCompare) {
+          entries.push({ type: 'removed', path: path.concat(key), before: baseValue[key], after: undefined });
+        } else {
+          walk(baseValue[key], compareValue[key], path.concat(key));
+        }
+      });
+      return;
+    }
+
+    const baseIsArray = Array.isArray(baseValue);
+    const compareIsArray = Array.isArray(compareValue);
+    if (baseIsArray && compareIsArray) {
+      const maxLength = Math.max(baseValue.length, compareValue.length);
+      for (let index = 0; index < maxLength; index += 1) {
+        const hasBase = index < baseValue.length;
+        const hasCompare = index < compareValue.length;
+        const nextPath = path.concat(`[${index}]`);
+        if (!hasBase) {
+          entries.push({ type: 'added', path: nextPath, before: undefined, after: compareValue[index] });
+        } else if (!hasCompare) {
+          entries.push({ type: 'removed', path: nextPath, before: baseValue[index], after: undefined });
+        } else {
+          walk(baseValue[index], compareValue[index], nextPath);
+        }
+      }
+      return;
+    }
+
+    if (!baseIsObject && !baseIsArray && (compareIsObject || compareIsArray)) {
+      entries.push({ type: 'changed', path, before: baseValue, after: compareValue });
+      return;
+    }
+    if ((baseIsObject || baseIsArray) && !compareIsObject && !compareIsArray) {
+      entries.push({ type: 'changed', path, before: baseValue, after: compareValue });
+      return;
+    }
+
+    const changeType = baseValue === undefined ? 'added'
+      : compareValue === undefined ? 'removed'
+        : 'changed';
+    entries.push({ type: changeType, path, before: baseValue, after: compareValue });
+  }
+
+  walk(baseline, comparison, []);
+  return entries;
+}
+
+function createDiffValueElement(value) {
+  const element = document.createElement('pre');
+  element.className = 'diff-value';
+  if (value === undefined) {
+    element.textContent = getDiffText('versionCompareMissingValue', 'Not present');
+    return element;
+  }
+  if (value === null) {
+    element.textContent = 'null';
+    return element;
+  }
+  if (typeof value === 'string') {
+    element.textContent = value;
+    return element;
+  }
+  if (typeof value === 'number' || typeof value === 'boolean') {
+    element.textContent = String(value);
+    return element;
+  }
+  try {
+    element.textContent = JSON.stringify(value, null, 2);
+  } catch (error) {
+    console.warn('Failed to stringify diff value', error);
+    element.textContent = String(value);
+  }
+  return element;
+}
+
+function createDiffChangeBlock(labelText, value) {
+  const block = document.createElement('div');
+  block.className = 'diff-change';
+  const label = document.createElement('span');
+  label.className = 'diff-label';
+  label.textContent = labelText;
+  block.appendChild(label);
+  block.appendChild(createDiffValueElement(value));
+  return block;
+}
+
+function renderBackupDiffEntries(entries) {
+  if (!backupDiffList || !backupDiffListContainer) {
+    return;
+  }
+  backupDiffList.innerHTML = '';
+  if (!Array.isArray(entries) || !entries.length) {
+    backupDiffListContainer.hidden = true;
+    return;
+  }
+  backupDiffListContainer.hidden = false;
+  entries.forEach(entry => {
+    const item = document.createElement('li');
+    item.className = `diff-entry diff-${entry.type}`;
+    const path = document.createElement('div');
+    path.className = 'diff-path';
+    path.textContent = formatDiffPath(entry.path);
+    item.appendChild(path);
+    if (entry.type === 'changed') {
+      const status = document.createElement('span');
+      status.className = 'diff-label diff-status';
+      status.textContent = getDiffText('versionCompareChangeUpdated', 'Updated');
+      item.appendChild(status);
+      item.appendChild(createDiffChangeBlock(
+        getDiffText('versionCompareChangeRemoved', 'Removed'),
+        entry.before,
+      ));
+      item.appendChild(createDiffChangeBlock(
+        getDiffText('versionCompareChangeAdded', 'Added'),
+        entry.after,
+      ));
+    } else if (entry.type === 'added') {
+      item.appendChild(createDiffChangeBlock(
+        getDiffText('versionCompareChangeAdded', 'Added'),
+        entry.after,
+      ));
+    } else if (entry.type === 'removed') {
+      item.appendChild(createDiffChangeBlock(
+        getDiffText('versionCompareChangeRemoved', 'Removed'),
+        entry.before,
+      ));
+    }
+    backupDiffList.appendChild(item);
+  });
+}
+
+function formatDiffCount(count) {
+  const key = count === 1
+    ? 'versionCompareDifferencesCountOne'
+    : 'versionCompareDifferencesCountOther';
+  const template = getDiffText(key, count === 1 ? '%s difference noted.' : '%s differences noted.');
+  return template.replace('%s', formatNumberForComparison(count));
+}
+
+function formatDiffDetail(key, count) {
+  const template = getDiffText(key, '%s');
+  return template.replace('%s', formatNumberForComparison(count));
+}
+
+function updateBackupDiffSummary(entries) {
+  if (!backupDiffSummary) {
+    return;
+  }
+  if (!Array.isArray(entries) || !entries.length) {
+    backupDiffSummary.textContent = getDiffText('versionCompareIdentical', 'Versions match—no changes detected.');
+    return;
+  }
+  const totals = { added: 0, removed: 0, changed: 0 };
+  entries.forEach(entry => {
+    if (entry && entry.type && Object.prototype.hasOwnProperty.call(totals, entry.type)) {
+      totals[entry.type] += 1;
+    }
+  });
+  const summaryText = formatDiffCount(entries.length);
+  const breakdown = [];
+  if (totals.added) {
+    breakdown.push(formatDiffDetail('versionCompareSummaryAdded', totals.added));
+  }
+  if (totals.removed) {
+    breakdown.push(formatDiffDetail('versionCompareSummaryRemoved', totals.removed));
+  }
+  if (totals.changed) {
+    breakdown.push(formatDiffDetail('versionCompareSummaryChanged', totals.changed));
+  }
+  backupDiffSummary.textContent = breakdown.length
+    ? `${summaryText} (${breakdown.join(' · ')})`
+    : summaryText;
+}
+
+function renderBackupDiff() {
+  if (!backupDiffSummary) {
+    return;
+  }
+  if (!backupDiffOptionsCache.length) {
+    clearBackupDiffResults();
+    backupDiffSummary.textContent = getDiffText('versionCompareEmpty', 'Save a project or wait for auto-backups to start comparing versions.');
+    if (backupDiffExportButton) backupDiffExportButton.disabled = true;
+    if (backupDiffNotes) backupDiffNotes.disabled = true;
+    return;
+  }
+
+  if (backupDiffNotes) backupDiffNotes.disabled = false;
+
+  const baseline = backupDiffState.baseline;
+  const comparison = backupDiffState.comparison;
+
+  if (!baseline || !comparison) {
+    clearBackupDiffResults();
+    backupDiffSummary.textContent = getDiffText('versionCompareNoSelection', 'Choose two versions to generate a diff.');
+    if (backupDiffExportButton) backupDiffExportButton.disabled = true;
+    return;
+  }
+
+  if (baseline === comparison) {
+    clearBackupDiffResults();
+    backupDiffSummary.textContent = getDiffText('versionCompareSameSelection', 'Select two different versions to compare.');
+    if (backupDiffExportButton) backupDiffExportButton.disabled = true;
+    return;
+  }
+
+  const optionsMap = new Map(backupDiffOptionsCache.map(option => [option.value, option]));
+  const baselineEntry = optionsMap.get(baseline);
+  const comparisonEntry = optionsMap.get(comparison);
+
+  if (!baselineEntry || !comparisonEntry) {
+    clearBackupDiffResults();
+    backupDiffSummary.textContent = getDiffText('versionCompareMissingSelection', 'Select two versions before exporting a log.');
+    if (backupDiffExportButton) backupDiffExportButton.disabled = true;
+    return;
+  }
+
+  const diffEntries = computeSetupDiff(baselineEntry.data, comparisonEntry.data);
+  renderBackupDiffEntries(diffEntries);
+  updateBackupDiffSummary(diffEntries);
+  if (backupDiffExportButton) backupDiffExportButton.disabled = false;
+}
+
+function populateBackupDiffSelectors() {
+  backupDiffOptionsCache = collectBackupDiffOptions();
+  fillBackupDiffSelect(backupDiffPrimarySelect, backupDiffOptionsCache, backupDiffState.baseline);
+  fillBackupDiffSelect(backupDiffSecondarySelect, backupDiffOptionsCache, backupDiffState.comparison);
+  if (backupDiffEmptyState) {
+    backupDiffEmptyState.hidden = backupDiffOptionsCache.length > 0;
+  }
+  renderBackupDiff();
+}
+
+function collapseBackupDiffSection(options = {}) {
+  if (!backupDiffSection) {
+    return;
+  }
+  if (!backupDiffSection.hasAttribute('hidden')) {
+    backupDiffSection.setAttribute('hidden', '');
+  }
+  if (backupDiffToggleButton) {
+    backupDiffToggleButton.setAttribute('aria-expanded', 'false');
+  }
+  if (options.resetSelections) {
+    backupDiffState.baseline = '';
+    backupDiffState.comparison = '';
+  }
+  if (options.resetNotes && backupDiffNotes) {
+    backupDiffNotes.value = '';
+  }
+}
+
+function showBackupDiffSection() {
+  if (!backupDiffSection) {
+    return;
+  }
+  populateBackupDiffSelectors();
+  backupDiffSection.removeAttribute('hidden');
+  if (backupDiffToggleButton) {
+    backupDiffToggleButton.setAttribute('aria-expanded', 'true');
+  }
+  if (backupDiffPrimarySelect) {
+    try {
+      backupDiffPrimarySelect.focus({ preventScroll: true });
+    } catch (error) {
+      backupDiffPrimarySelect.focus();
+    }
+  }
+}
+
+function handleBackupDiffToggle() {
+  if (!backupDiffSection) {
+    return;
+  }
+  if (backupDiffSection.hasAttribute('hidden')) {
+    showBackupDiffSection();
+  } else {
+    collapseBackupDiffSection();
+  }
+}
+
+function handleBackupDiffSelectionChange(event) {
+  const target = event && event.target ? event.target : null;
+  if (!target) {
+    return;
+  }
+  const value = typeof target.value === 'string' ? target.value : '';
+  if (target === backupDiffPrimarySelect) {
+    backupDiffState.baseline = value;
+  } else if (target === backupDiffSecondarySelect) {
+    backupDiffState.comparison = value;
+  }
+  renderBackupDiff();
+}
+
+function getComparisonEntryType(name) {
+  if (typeof name !== 'string') {
+    return 'manual';
+  }
+  if (name.startsWith(AUTO_BACKUP_DELETION_PREFIX)) {
+    return 'auto-backup-before-delete';
+  }
+  if (name.startsWith(AUTO_BACKUP_NAME_PREFIX)) {
+    return 'auto-backup';
+  }
+  return 'manual';
+}
+
+function cloneValueForExport(value) {
+  if (value === undefined) {
+    return undefined;
+  }
+  try {
+    return JSON.parse(JSON.stringify(value));
+  } catch (error) {
+    console.warn('Failed to clone comparison snapshot for export', error);
+    return value;
+  }
+}
+
+function handleBackupDiffExport() {
+  if (!backupDiffOptionsCache.length) {
+    showNotification('warning', getDiffText('versionCompareEmpty', 'Save a project or wait for auto-backups to start comparing versions.'));
+    return;
+  }
+  const baseline = backupDiffState.baseline;
+  const comparison = backupDiffState.comparison;
+  if (!baseline || !comparison || baseline === comparison) {
+    showNotification('warning', getDiffText('versionCompareMissingSelection', 'Select two versions before exporting a log.'));
+    return;
+  }
+  const optionsMap = new Map(backupDiffOptionsCache.map(option => [option.value, option]));
+  const baselineEntry = optionsMap.get(baseline);
+  const comparisonEntry = optionsMap.get(comparison);
+  if (!baselineEntry || !comparisonEntry) {
+    showNotification('warning', getDiffText('versionCompareMissingSelection', 'Select two versions before exporting a log.'));
+    return;
+  }
+
+  const diffEntries = computeSetupDiff(baselineEntry.data, comparisonEntry.data);
+  const totals = { added: 0, removed: 0, changed: 0 };
+  diffEntries.forEach(entry => {
+    if (entry && entry.type && Object.prototype.hasOwnProperty.call(totals, entry.type)) {
+      totals[entry.type] += 1;
+    }
+  });
+
+  const note = backupDiffNotes && typeof backupDiffNotes.value === 'string'
+    ? backupDiffNotes.value.trim()
+    : '';
+
+  const timestamp = new Date();
+  const { iso } = formatFullBackupFilename(timestamp);
+  const safeIso = iso.replace(/[:]/g, '-');
+  const fileName = `cine-power-planner-version-log-${safeIso}.json`;
+
+  const exportPayload = {
+    type: 'cine-power-planner-version-log',
+    version: 1,
+    createdAt: new Date().toISOString(),
+    appVersion: typeof APP_VERSION === 'string' ? APP_VERSION : null,
+    baseline: {
+      id: baselineEntry.value,
+      label: baselineEntry.label,
+      type: getComparisonEntryType(baselineEntry.value),
+      snapshot: cloneValueForExport(baselineEntry.data),
+    },
+    comparison: {
+      id: comparisonEntry.value,
+      label: comparisonEntry.label,
+      type: getComparisonEntryType(comparisonEntry.value),
+      snapshot: cloneValueForExport(comparisonEntry.data),
+    },
+    summary: {
+      totalDifferences: diffEntries.length,
+      added: totals.added,
+      removed: totals.removed,
+      updated: totals.changed,
+    },
+    differences: diffEntries.map(entry => ({
+      type: entry.type,
+      path: entry.path,
+      before: entry.before,
+      after: entry.after,
+    })),
+  };
+
+  if (note) {
+    exportPayload.note = note;
+  }
+
+  let serialized;
+  try {
+    serialized = JSON.stringify(exportPayload, null, 2);
+  } catch (error) {
+    console.warn('Failed to serialize comparison export payload', error);
+    showNotification('error', getDiffText('versionCompareExportFailure', 'Comparison export failed.'));
+    return;
+  }
+
+  const downloadResult = downloadBackupPayload(serialized, fileName);
+  if (downloadResult && downloadResult.success) {
+    showNotification('success', getDiffText('versionCompareExportSuccess', 'Comparison log exported.'));
+  } else {
+    showNotification('error', getDiffText('versionCompareExportFailure', 'Comparison export failed.'));
+  }
+}
+
 function applyPreferencesFromStorage(safeGetItem) {
   if (typeof safeGetItem !== 'function') {
     return { showAutoBackups: false, accentColor: null, language: null };
@@ -2244,6 +2905,32 @@ function createSettingsBackup(notify = true, timestamp = new Date()) {
 
 if (backupSettings) {
   backupSettings.addEventListener('click', createSettingsBackup);
+}
+
+if (backupDiffToggleButton) {
+  backupDiffToggleButton.addEventListener('click', handleBackupDiffToggle);
+}
+if (backupDiffCloseButton) {
+  backupDiffCloseButton.addEventListener('click', () => collapseBackupDiffSection());
+}
+if (backupDiffPrimarySelect) {
+  backupDiffPrimarySelect.addEventListener('change', handleBackupDiffSelectionChange);
+}
+if (backupDiffSecondarySelect) {
+  backupDiffSecondarySelect.addEventListener('change', handleBackupDiffSelectionChange);
+}
+if (backupDiffExportButton) {
+  backupDiffExportButton.addEventListener('click', handleBackupDiffExport);
+  backupDiffExportButton.disabled = true;
+}
+if (backupDiffSummary) {
+  backupDiffSummary.textContent = getDiffText('versionCompareNoSelection', 'Choose two versions to generate a diff.');
+}
+if (backupDiffNotes) {
+  backupDiffNotes.disabled = true;
+}
+if (backupDiffSection) {
+  collapseBackupDiffSection();
 }
 
 if (restoreSettings && restoreSettingsInput) {
