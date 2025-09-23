@@ -33,6 +33,6 @@ describe('renderFilterDetails', () => {
 
     const heading = gearListOutput.querySelector('.filter-detail-label');
     expect(heading).not.toBeNull();
-    expect(heading.textContent.trim()).toBe('1x IRND Filter Set (0.3, 0.6)');
+    expect(heading.textContent.trim()).toBe('1x IRND Filter Set');
   });
 });

@@ -5485,15 +5485,6 @@ function buildFilterGearEntries() {
   });
   return entries;
 }
-function formatFilterEntryText(entry) {
-  var labelText = typeof (entry === null || entry === void 0 ? void 0 : entry.label) === 'string' ? entry.label : '';
-  var hideDetails = labelText.toLowerCase().includes('filter set');
-  var details = [];
-  if (!hideDetails && entry.size) details.push(entry.size);
-  if (!hideDetails && entry.values && entry.values.length) details.push(entry.values.join(', '));
-  var suffix = details.length ? " (".concat(details.join(' • '), ")") : '';
-  return "1x ".concat(labelText).concat(suffix);
-}
 function updateGearListFilterEntries() {
   var entries = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
   if (!gearListOutput) return;
@@ -5505,11 +5496,8 @@ function updateGearListFilterEntries() {
     if (!entryId) return;
     var entry = entryMap.get(entryId);
     if (!entry) return;
-    var hideSize = span.hasAttribute('data-filter-hide-size');
-    var displayEntry = hideSize ? _objectSpread(_objectSpread({}, entry), {}, {
-      size: ''
-    }) : entry;
-    span.textContent = formatFilterEntryText(displayEntry);
+    var labelText = typeof (entry === null || entry === void 0 ? void 0 : entry.label) === 'string' ? entry.label : '';
+    span.textContent = labelText ? "1x ".concat(labelText) : '';
     span.setAttribute('data-gear-name', entry.gearName);
     span.setAttribute('data-filter-label', entry.label);
     if (entry.type) {
@@ -5594,8 +5582,7 @@ function renderGearListFilterDetails(details) {
       size = detail.size,
       values = detail.values,
       needsSize = detail.needsSize,
-      needsValues = detail.needsValues,
-      hideDetails = detail.hideDetails;
+      needsValues = detail.needsValues;
     var row = document.createElement('div');
     row.className = 'filter-detail';
     var heading = document.createElement('div');
@@ -5610,21 +5597,7 @@ function renderGearListFilterDetails(details) {
     } else {
       heading.removeAttribute('data-filter-hide-size');
     }
-    var displaySize = shouldHideSize ? '' : size && label && label.includes(size) ? '' : size;
-    var displayValues = Array.isArray(values) ? values : undefined;
-    if (label) {
-      var entryInfo = {
-        label: label,
-        size: displaySize,
-        values: displayValues
-      };
-      if (typeof hideDetails === 'boolean') {
-        entryInfo.hideDetails = hideDetails;
-      }
-      heading.textContent = formatFilterEntryText(entryInfo);
-    } else {
-      heading.textContent = '';
-    }
+    heading.textContent = label ? "1x ".concat(label) : '';
     row.appendChild(heading);
     var controls = document.createElement('div');
     controls.className = 'filter-detail-controls';
