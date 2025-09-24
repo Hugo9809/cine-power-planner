@@ -24,6 +24,8 @@
           loadAutoGearPresets, loadAutoGearSeedFlag, loadAutoGearActivePresetId,
           loadAutoGearAutoPresetId, loadAutoGearBackupVisibility,
           loadFullBackupHistory */
+/* global getDiagramManualPositions, setManualDiagramPositions,
+          normalizeDiagramPositionsInput, ensureAutoBackupsFromProjects */
 
 const temperaturePreferenceStorageKey =
   typeof TEMPERATURE_STORAGE_KEY === 'string'
@@ -807,6 +809,12 @@ function saveCurrentSession(options = {}) {
       ? !!isAutoGearHighlightEnabled()
       : false
   };
+  if (typeof getDiagramManualPositions === 'function') {
+    const diagramPositions = getDiagramManualPositions();
+    if (diagramPositions && Object.keys(diagramPositions).length) {
+      state.diagramPositions = diagramPositions;
+    }
+  }
   storeSession(state);
   // Persist the current gear list and project requirements alongside the
   // session so they survive reloads without requiring a manual save action.
@@ -834,6 +842,14 @@ function autoSaveCurrentSetup() {
   const gearListHtml = getCurrentGearListHtml();
   if (gearListHtml) {
     currentSetup.gearList = gearListHtml;
+  }
+  if (typeof getDiagramManualPositions === 'function') {
+    const diagramPositions = getDiagramManualPositions();
+    if (diagramPositions && Object.keys(diagramPositions).length) {
+      currentSetup.diagramPositions = diagramPositions;
+    } else if (Object.prototype.hasOwnProperty.call(currentSetup, 'diagramPositions')) {
+      delete currentSetup.diagramPositions;
+    }
   }
   const setups = getSetups();
   setups[name] = currentSetup;
@@ -977,6 +993,13 @@ function restoreSessionState() {
   restoringSession = true;
   const state = loadSession();
   storeLoadedSetupState(state || null);
+  let sessionDiagramPositions = {};
+  if (state && typeof state.diagramPositions === 'object' && typeof normalizeDiagramPositionsInput === 'function') {
+    sessionDiagramPositions = normalizeDiagramPositionsInput(state.diagramPositions);
+  }
+  if (typeof setManualDiagramPositions === 'function') {
+    setManualDiagramPositions(sessionDiagramPositions, { render: false });
+  }
   resetSelectsToNone(motorSelects);
   resetSelectsToNone(controllerSelects);
   if (state) {
@@ -1058,6 +1081,17 @@ function restoreSessionState() {
       };
       currentProjectInfo = mergedInfo;
       if (projectForm) populateProjectForm(currentProjectInfo);
+      if (
+        typeof normalizeDiagramPositionsInput === 'function'
+        && typeof setManualDiagramPositions === 'function'
+      ) {
+        const storedDiagramPositions = normalizeDiagramPositionsInput(storedProject.diagramPositions);
+        const combinedDiagramPositions = Object.keys(storedDiagramPositions).length
+          ? { ...storedDiagramPositions, ...sessionDiagramPositions }
+          : sessionDiagramPositions;
+        setManualDiagramPositions(combinedDiagramPositions, { render: false });
+        sessionDiagramPositions = combinedDiagramPositions;
+      }
       displayGearAndRequirements(storedProject.gearList);
       if (gearListOutput && storedProject.gearList) {
         gearListOutput.classList.remove('hidden');
@@ -1194,6 +1228,13 @@ function applySharedSetup(shared, options = {}) {
     }
     setSelectValue(batterySelect, decoded.battery);
     setSelectValue(hotswapSelect, decoded.batteryHotswap);
+    if (typeof setManualDiagramPositions === 'function') {
+      let sharedDiagramPositions = {};
+      if (typeof normalizeDiagramPositionsInput === 'function' && decoded.diagramPositions) {
+        sharedDiagramPositions = normalizeDiagramPositionsInput(decoded.diagramPositions);
+      }
+      setManualDiagramPositions(sharedDiagramPositions, { render: false });
+    }
     saveCurrentSession();
     if (Array.isArray(decoded.feedback) && decoded.feedback.length) {
       const key = getCurrentSetupKey();
@@ -1233,6 +1274,12 @@ function applySharedSetup(shared, options = {}) {
         gearList: getCurrentGearListHtml(),
         projectInfo: decoded.projectInfo || null
       };
+      if (typeof getDiagramManualPositions === 'function') {
+        const diagramPositions = getDiagramManualPositions();
+        if (diagramPositions && Object.keys(diagramPositions).length) {
+          payload.diagramPositions = diagramPositions;
+        }
+      }
       const activeRules = getProjectScopedAutoGearRules();
       if (activeRules && activeRules.length) {
         payload.autoGearRules = activeRules;

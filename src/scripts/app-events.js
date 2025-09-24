@@ -1,6 +1,7 @@
 // --- EVENT LISTENERS ---
 /* global updateCageSelectOptions, updateGlobalDevicesReference, scheduleProjectAutoSave,
-          ensureAutoBackupsFromProjects */
+          ensureAutoBackupsFromProjects, getDiagramManualPositions,
+          setManualDiagramPositions, normalizeDiagramPositionsInput */
 
 // Language selection
 languageSelect.addEventListener("change", (event) => {
@@ -253,6 +254,12 @@ setupSelect.addEventListener("change", (event) => {
       projectInfo: previousProjectInfo,
       gearList: getCurrentGearListHtml()
     };
+    if (typeof getDiagramManualPositions === 'function') {
+      const diagramPositions = getDiagramManualPositions();
+      if (diagramPositions && Object.keys(diagramPositions).length) {
+        previousPayload.diagramPositions = diagramPositions;
+      }
+    }
     const previousRules = getProjectScopedAutoGearRules();
     if (previousRules && previousRules.length) {
       previousPayload.autoGearRules = previousRules;
@@ -293,6 +300,9 @@ setupSelect.addEventListener("change", (event) => {
     currentProjectInfo = null;
     if (projectForm) populateProjectForm({});
     clearProjectAutoGearRules();
+    if (typeof setManualDiagramPositions === 'function') {
+      setManualDiagramPositions({}, { render: false });
+    }
   } else {
     const setups = getSetups();
     const setup = setups[setupName];
@@ -322,6 +332,17 @@ setupSelect.addEventListener("change", (event) => {
         globalThis.__cineLastGearListHtml = html;
       }
       currentProjectInfo = setup.projectInfo || storedProject?.projectInfo || null;
+      if (typeof setManualDiagramPositions === 'function') {
+        let diagramPositions = {};
+        if (typeof normalizeDiagramPositionsInput === 'function') {
+          diagramPositions = normalizeDiagramPositionsInput(storedProject?.diagramPositions);
+          const setupDiagramPositions = normalizeDiagramPositionsInput(setup.diagramPositions);
+          if (Object.keys(setupDiagramPositions).length) {
+            diagramPositions = { ...diagramPositions, ...setupDiagramPositions };
+          }
+        }
+        setManualDiagramPositions(diagramPositions, { render: false });
+      }
       const projectRulesSource = Array.isArray(setup.autoGearRules) && setup.autoGearRules.length
         ? setup.autoGearRules
         : (Array.isArray(storedProject?.autoGearRules) && storedProject.autoGearRules.length
@@ -349,6 +370,12 @@ setupSelect.addEventListener("change", (event) => {
             projectInfo: currentProjectInfo,
             gearList: html
           };
+          if (typeof getDiagramManualPositions === 'function') {
+            const diagramPositions = getDiagramManualPositions();
+            if (diagramPositions && Object.keys(diagramPositions).length) {
+              payload.diagramPositions = diagramPositions;
+            }
+          }
           const activeRules = getProjectScopedAutoGearRules();
           if (activeRules && activeRules.length) {
             payload.autoGearRules = activeRules;
@@ -361,6 +388,9 @@ setupSelect.addEventListener("change", (event) => {
       if (projectForm) populateProjectForm({});
       displayGearAndRequirements('');
       clearProjectAutoGearRules();
+      if (typeof setManualDiagramPositions === 'function') {
+        setManualDiagramPositions({}, { render: false });
+      }
     }
     storeLoadedSetupState(getCurrentSetupState());
   }
