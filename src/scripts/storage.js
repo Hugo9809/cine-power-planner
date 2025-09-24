@@ -2731,6 +2731,97 @@ function cloneProjectInfo(projectInfo) {
   }
 }
 
+function sanitizeImportedCrewEntries(entries) {
+  if (!Array.isArray(entries)) {
+    return [];
+  }
+  const sanitized = [];
+  entries.forEach((entry) => {
+    if (!isPlainObject(entry)) {
+      const normalized = sanitizeImportedValue(entry);
+      if (normalized !== null && normalized !== undefined) {
+        sanitized.push(normalized);
+      }
+      return;
+    }
+    const result = {};
+    const name = typeof entry.name === 'string' ? entry.name.trim() : '';
+    if (name) {
+      result.name = name;
+    }
+    const phone = typeof entry.phone === 'string' ? entry.phone.trim() : '';
+    if (phone) {
+      result.phone = phone;
+    }
+    const email = typeof entry.email === 'string' ? entry.email.trim() : '';
+    if (email) {
+      result.email = email;
+    }
+    const note = typeof entry.text === 'string' ? entry.text.trim() : '';
+    if (note) {
+      result.text = note;
+    }
+    const role = typeof entry.role === 'string' ? entry.role.trim() : '';
+    if (role && (role.toLowerCase() !== 'producer' || phone || email || note)) {
+      result.role = role;
+    }
+    if (Object.keys(result).length) {
+      sanitized.push(result);
+    }
+  });
+  return sanitized;
+}
+
+function sanitizeImportedValue(value) {
+  if (value === null || value === undefined) {
+    return null;
+  }
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    return trimmed ? trimmed : null;
+  }
+  if (typeof value === 'number') {
+    return Number.isNaN(value) ? null : value;
+  }
+  if (typeof value === 'boolean') {
+    return value ? true : null;
+  }
+  if (Array.isArray(value)) {
+    const sanitized = value
+      .map((item) => sanitizeImportedValue(item))
+      .filter((item) => item !== null && item !== undefined && !(typeof item === 'string' && !item));
+    return sanitized.length ? sanitized : null;
+  }
+  if (isPlainObject(value)) {
+    return sanitizeImportedProjectInfo(value);
+  }
+  return null;
+}
+
+function sanitizeImportedProjectInfo(info) {
+  if (!isPlainObject(info)) {
+    return null;
+  }
+  const normalized = {};
+  Object.entries(info).forEach(([key, raw]) => {
+    if (raw === null || raw === undefined) {
+      return;
+    }
+    if (key === 'people') {
+      const crew = sanitizeImportedCrewEntries(raw);
+      if (crew.length) {
+        normalized.people = crew;
+      }
+      return;
+    }
+    const value = sanitizeImportedValue(raw);
+    if (value !== null && value !== undefined) {
+      normalized[key] = value;
+    }
+  });
+  return Object.keys(normalized).length ? normalized : null;
+}
+
 function cloneAutoGearRules(rules) {
   if (!Array.isArray(rules) || !rules.length) {
     return null;
@@ -2808,6 +2899,16 @@ function normalizeProject(data) {
           normalizedProjectInfo = parsedInfo.parsed;
         }
       }
+      if (!normalizedProjectInfo && isPlainObject(data.project)) {
+        if (isPlainObject(data.project.projectInfo)) {
+          normalizedProjectInfo = data.project.projectInfo;
+        } else if (typeof data.project.projectInfo === "string") {
+          const parsedProjectInfo = tryParseJSONLike(data.project.projectInfo);
+          if (parsedProjectInfo.success && isPlainObject(parsedProjectInfo.parsed)) {
+            normalizedProjectInfo = parsedProjectInfo.parsed;
+          }
+        }
+      }
 
       let normalizedAutoGearRules = Array.isArray(data.autoGearRules) && data.autoGearRules.length
         ? data.autoGearRules
@@ -2818,10 +2919,32 @@ function normalizeProject(data) {
           normalizedAutoGearRules = parsedRules.parsed;
         }
       }
+      if (!normalizedAutoGearRules && isPlainObject(data.project)) {
+        const nestedRules = data.project.autoGearRules;
+        if (Array.isArray(nestedRules) && nestedRules.length) {
+          normalizedAutoGearRules = nestedRules;
+        } else if (typeof nestedRules === "string") {
+          const parsedNestedRules = tryParseJSONLike(nestedRules);
+          if (parsedNestedRules.success && Array.isArray(parsedNestedRules.parsed) && parsedNestedRules.parsed.length) {
+            normalizedAutoGearRules = parsedNestedRules.parsed;
+          }
+        }
+      }
+
+      let gearListSource = data.gearList;
+      if (
+        (gearListSource === null
+          || gearListSource === undefined
+          || (typeof gearListSource === "string" && !gearListSource))
+        && isPlainObject(data.project)
+        && Object.prototype.hasOwnProperty.call(data.project, "gearList")
+      ) {
+        gearListSource = data.project.gearList;
+      }
 
       let normalizedGearList =
-        typeof data.gearList === "string" || (data.gearList && typeof data.gearList === "object")
-          ? data.gearList
+        typeof gearListSource === "string" || (gearListSource && typeof gearListSource === "object")
+          ? gearListSource
           : "";
 
       let normalizedGearSelectors = null;
@@ -2869,6 +2992,10 @@ function normalizeProject(data) {
         && !isPlainObject(normalizedGearList)
       ) {
         normalizedGearList = "";
+      }
+
+      if (normalizedProjectInfo) {
+        normalizedProjectInfo = sanitizeImportedProjectInfo(normalizedProjectInfo) || null;
       }
 
       const normalized = {
@@ -2938,6 +3065,21 @@ function normalizeProject(data) {
         gearList: { projectHtml: data.projectHtml || "", gearHtml: data.gearHtml || "" },
         projectInfo: null,
       };
+    }
+
+    if (isPlainObject(data.project)) {
+      const nested = normalizeProject(data.project);
+      if (nested) {
+        return nested;
+      }
+    } else if (typeof data.project === "string") {
+      const parsedProject = tryParseJSONLike(data.project);
+      if (parsedProject.success) {
+        const nested = normalizeProject(parsedProject.parsed);
+        if (nested) {
+          return nested;
+        }
+      }
     }
   }
   return null;

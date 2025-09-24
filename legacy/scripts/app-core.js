@@ -104,7 +104,7 @@ if (typeof window !== 'undefined') {
     }
   }
 }
-var APP_VERSION = "1.0.8";
+var APP_VERSION = "1.0.9";
 var IOS_PWA_HELP_STORAGE_KEY = 'iosPwaHelpShown';
 var INSTALL_BANNER_DISMISSED_KEY = 'installPromptDismissed';
 var installBannerDismissedInSession = false;

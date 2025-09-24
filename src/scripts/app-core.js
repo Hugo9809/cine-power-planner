@@ -91,7 +91,7 @@ if (typeof window !== 'undefined') {
   }
 }
 
-const APP_VERSION = "1.0.8";
+const APP_VERSION = "1.0.9";
 const IOS_PWA_HELP_STORAGE_KEY = 'iosPwaHelpShown';
 const INSTALL_BANNER_DISMISSED_KEY = 'installPromptDismissed';
 let installBannerDismissedInSession = false;
