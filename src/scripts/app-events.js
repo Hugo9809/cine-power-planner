@@ -234,7 +234,6 @@ setupSelect.addEventListener("change", (event) => {
   ) {
     try {
       autoBackup({
-        suppressSuccess: true,
         projectNameOverride: normalizeProjectName(previousKey),
       });
     } catch (error) {
