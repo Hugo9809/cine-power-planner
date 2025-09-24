@@ -329,8 +329,8 @@ describe('setup storage', () => {
       setups[key] = { camera: `Camera ${index}` };
     }
     const duplicateValue = { camera: 'Shared Camera', lens: 'Shared Lens' };
-    const oldDuplicateKey = 'auto-backup-2024-01-01-01-00';
-    const newDuplicateKey = 'auto-backup-2024-01-02-00-00';
+    const oldDuplicateKey = 'auto-backup-2024-01-01-01-00-Project Alpha';
+    const newDuplicateKey = 'auto-backup-2024-01-02-00-00-Project Alpha';
     setups[oldDuplicateKey] = duplicateValue;
     setups[newDuplicateKey] = duplicateValue;
 
@@ -388,6 +388,27 @@ describe('setup storage', () => {
     expect(betaKeys.length).toBeGreaterThan(0);
     expect(alphaKeys[alphaKeys.length - 1]).toBe('auto-backup-2024-01-01-00-58-Project Alpha');
     expect(betaKeys[betaKeys.length - 1]).toBe('auto-backup-2024-01-01-00-59-Project Beta');
+  });
+
+  test('saveSetups keeps multiple unlabeled auto backups when trimming', () => {
+    const setups = {};
+    for (let index = 0; index < 60; index += 1) {
+      const minute = String(index).padStart(2, '0');
+      const key = `auto-backup-2024-01-01-00-${minute}`;
+      setups[key] = {
+        camera: 'Camera 1',
+        projectInfo: { projectName: '' },
+      };
+    }
+
+    saveSetups(setups);
+
+    const stored = JSON.parse(localStorage.getItem(SETUP_KEY));
+    const autoKeys = Object.keys(stored).filter((name) => name.startsWith('auto-backup-')).sort();
+
+    expect(autoKeys.length).toBe(50);
+    expect(autoKeys[0]).toBe('auto-backup-2024-01-01-00-10');
+    expect(autoKeys[autoKeys.length - 1]).toBe('auto-backup-2024-01-01-00-59');
   });
 
   test('saveSetup adds and persists single setup', () => {
@@ -580,12 +601,12 @@ describe('project storage', () => {
     const projects = {};
     for (let index = 0; index < 49; index += 1) {
       const minute = String(index).padStart(2, '0');
-      const key = `auto-backup-2024-01-01-00-${minute}`;
+      const key = `auto-backup-2024-01-01-00-${minute}-Project Alpha`;
       projects[key] = { gearList: `<ul>${index}</ul>`, projectInfo: null };
     }
     const duplicateValue = { gearList: '<ul>duplicate</ul>', projectInfo: null };
-    const oldDuplicateKey = 'auto-backup-2024-01-01-01-00';
-    const newDuplicateKey = 'auto-backup-2024-01-02-00-00';
+    const oldDuplicateKey = 'auto-backup-2024-01-01-01-00-Project Alpha';
+    const newDuplicateKey = 'auto-backup-2024-01-02-00-00-Project Alpha';
     projects[oldDuplicateKey] = duplicateValue;
     projects[newDuplicateKey] = duplicateValue;
     localStorage.setItem(PROJECT_KEY, JSON.stringify(projects));

@@ -896,6 +896,19 @@ function collectAutoBackupEntries(container, prefix) {
     });
 }
 
+function getAutoBackupLabelKey(entry) {
+  if (!entry || typeof entry !== 'object') {
+    return '';
+  }
+  if (typeof entry.label === 'string' && entry.label.trim()) {
+    return entry.label.trim();
+  }
+  if (typeof entry.key === 'string') {
+    return entry.key;
+  }
+  return '';
+}
+
 function createStableValueSignature(value) {
   if (value === null) {
     return 'null';
@@ -951,7 +964,7 @@ function removeDuplicateAutoBackupEntries(container, entries) {
     if (!entry || typeof entry.key !== 'string') {
       continue;
     }
-    const labelKey = typeof entry.label === 'string' ? entry.label : '';
+    const labelKey = getAutoBackupLabelKey(entry);
     const labelSignatures = seenSignaturesByLabel.get(labelKey) || new Set();
     const value = Object.prototype.hasOwnProperty.call(container, entry.key)
       ? container[entry.key]
@@ -981,7 +994,7 @@ function pruneAutoBackupEntries(container, entries, limit, removedKeys) {
     if (!entry || typeof entry !== 'object') {
       continue;
     }
-    const labelKey = typeof entry.label === 'string' ? entry.label : '';
+    const labelKey = getAutoBackupLabelKey(entry);
     labelCounts.set(labelKey, (labelCounts.get(labelKey) || 0) + 1);
   }
 
@@ -992,9 +1005,9 @@ function pruneAutoBackupEntries(container, entries, limit, removedKeys) {
       index += 1;
       continue;
     }
-    const labelKey = typeof entry.label === 'string' ? entry.label : '';
+    const labelKey = getAutoBackupLabelKey(entry);
     const count = labelCounts.get(labelKey) || 0;
-    if (count > 1) {
+    if (labelKey && count > 1) {
       delete container[entry.key];
       entries.splice(index, 1);
       labelCounts.set(labelKey, count - 1);
@@ -1015,7 +1028,7 @@ function pruneAutoBackupEntries(container, entries, limit, removedKeys) {
       index += 1;
       continue;
     }
-    const labelKey = typeof entry.label === 'string' ? entry.label : '';
+    const labelKey = getAutoBackupLabelKey(entry);
     const count = labelCounts.get(labelKey) || 0;
     delete container[entry.key];
     entries.splice(index, 1);
