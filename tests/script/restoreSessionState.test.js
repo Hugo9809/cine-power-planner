@@ -222,4 +222,33 @@ describe('restoreSessionState', () => {
 
     env.cleanup();
   });
+
+  test('restores partially completed crew entries to the project form', () => {
+    const partialInfo = { people: [{ name: 'Jamie', phone: '555-1212' }] };
+    const loadSessionStateMock = jest.fn(() => ({
+      setupName: 'Crew Notes',
+      projectInfo: partialInfo
+    }));
+    const loadProjectMock = jest.fn(() => ({ gearList: '', projectInfo: partialInfo }));
+
+    const env = setupScriptEnvironment({
+      readyState: 'complete',
+      globals: {
+        loadSessionState: loadSessionStateMock,
+        loadProject: loadProjectMock,
+        saveProject: jest.fn(),
+        saveSessionState: jest.fn(),
+        deleteProject: jest.fn()
+      }
+    });
+
+    const crewNameInput = document.querySelector('.person-row .person-name');
+    const crewPhoneInput = document.querySelector('.person-row .person-phone');
+    expect(crewNameInput).not.toBeNull();
+    expect(crewNameInput.value).toBe('Jamie');
+    expect(crewPhoneInput.value).toBe('555-1212');
+
+    env.cleanup();
+    localStorage.clear();
+  });
 });

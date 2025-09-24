@@ -45,6 +45,41 @@ describe('project autosave', () => {
     env.cleanup();
   });
 
+  test('autosaves partially filled crew entries', () => {
+    const env = setupScriptEnvironment({
+      globals: {
+        saveSessionState: jest.fn(),
+        saveSetups: jest.fn(),
+        loadSetups: jest.fn(() => ({}))
+      }
+    });
+
+    require('../../src/scripts/storage.js');
+
+    const setupNameInput = document.getElementById('setupName');
+    setupNameInput.value = 'Crew Draft';
+    setupNameInput.dispatchEvent(new Event('input'));
+
+    const addPersonBtn = document.getElementById('addPersonBtn');
+    addPersonBtn.click();
+
+    const nameInput = document.querySelector('.person-row .person-name');
+    expect(nameInput).not.toBeNull();
+    nameInput.value = 'Jamie';
+    nameInput.dispatchEvent(new Event('input', { bubbles: true }));
+
+    jest.advanceTimersByTime(500);
+
+    const storedRaw = localStorage.getItem(PROJECT_STORAGE_KEY);
+    expect(storedRaw).toBeTruthy();
+    const stored = JSON.parse(storedRaw);
+    const crewEntries = stored['Crew Draft']?.projectInfo?.people;
+    expect(Array.isArray(crewEntries)).toBe(true);
+    expect(crewEntries).toEqual([{ name: 'Jamie' }]);
+
+    env.cleanup();
+  });
+
   test('saves pending project edits when switching setups without waiting for autosave timer', () => {
     const env = setupScriptEnvironment({
       globals: {
