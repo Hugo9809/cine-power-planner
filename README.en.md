@@ -64,8 +64,12 @@ The app automatically uses your browser language on first load, and you can swit
 ---
 
 ## 🆕 Recent Features
+- Backup version comparisons let you pick any manual save or timestamped auto-backup to review diffs, add incident notes and export a log before rolling a change back or handing footage to post.
+- Restore rehearsals load a full-app backup or project bundle into an isolated sandbox so you can confirm its contents match live data without touching production profiles.
 - Automatic gear rules let you design scenario-driven additions or removals, export the configuration and restore it alongside project bundles.
 - Data & storage dashboard audits saved projects, gear lists, custom devices, favorites and runtime feedback directly inside Settings.
+- Autosave status overlay mirrors the latest autosave note inside Settings so crews can see background activity while practicing recovery drills.
+- Monitoring-aware gear editor surfaces extra monitoring and video accessories only when scenarios demand them so rule authoring stays focused.
 - Accent and typography controls in Settings let you adjust the accent color, base font size and typeface alongside dark, pink and high contrast themes.
 - Keyboard shortcuts for the global search let you press / or Ctrl+K (⌘K on macOS) to focus the feature search instantly, even when it sits inside the collapsed mobile side menu.
 - Force reload button clears cached service worker files so the offline app refreshes without deleting saved projects or devices.

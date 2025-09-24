@@ -61,8 +61,12 @@ L’application adopte automatiquement la langue de votre navigateur lors de la 
 ---
 
 ## 🆕 Nouveautés
+- Les comparaisons de versions de sauvegarde permettent de sélectionner n’importe quel enregistrement manuel ou sauvegarde automatique horodatée pour analyser les différences, ajouter des notes d’incident et exporter un journal avant un retour arrière ou une remise d’images à la post-production.
+- Les répétitions de restauration chargent une sauvegarde complète de l’application ou un bundle de projet dans un bac à sable isolé pour confirmer que son contenu correspond aux données actives sans toucher aux profils de production.
 - Les règles automatiques d’équipement ajoutent ou retirent du matériel selon le scénario, avec export/import aux côtés des bundles partagés.
-- Le tableau de bord Données & stockage audite projets enregistrés, listes de matériel, appareils personnalisés, favoris et retours d’autonomie depuis les Réglages.
+- Le tableau de bord Données & stockage audite projets enregistrés, listes de matériel, appareils personnalisés, favoris et retours d’autonomie depuis les Réglages et affiche la taille approximative des sauvegardes.
+- Une superposition d’état d’enregistrement automatique reflète la dernière note dans Paramètres afin que les équipes visualisent l’activité en arrière-plan pendant les exercices de récupération.
+- Un éditeur d’équipement sensible au monitoring affiche des accessoires supplémentaires de monitoring et de vidéo uniquement lorsque les scénarios l’exigent, pour garder la conception des règles focalisée.
 - Les réglages d’accent et de typographie dans Paramètres permettent d’ajuster couleur d’accent, taille de base et famille de police, aux côtés des thèmes sombre, rose et à fort contraste.
 - Les raccourcis clavier de la recherche globale placent le focus sur le champ instantanément avec / ou Ctrl+K (⌘K sur macOS), même lorsqu’il se trouve dans le menu latéral replié.
 - Le bouton **Forcer le rechargement** vide les fichiers mis en cache par le service worker afin de mettre à jour l’application hors ligne sans effacer projets ou appareils.

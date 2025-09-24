@@ -63,8 +63,12 @@ La aplicación adopta automáticamente el idioma de tu navegador en la primera v
 ---
 
 ## 🆕 Novedades recientes
+- Las comparaciones de versiones de respaldos permiten elegir cualquier guardado manual o copia automática con marca de tiempo para revisar diferencias, añadir notas de incidentes y exportar un registro antes de revertir cambios o entregar material a postproducción.
+- Los ensayos de restauración cargan una copia completa de la aplicación o un paquete de proyecto en un entorno aislado para confirmar que su contenido coincide con los datos en vivo sin tocar los perfiles de producción.
 - Las reglas automáticas de equipo permiten diseñar adiciones o retiradas según el escenario, exportar la configuración y restaurarla junto con los paquetes de proyecto.
-- El panel Datos y almacenamiento audita proyectos guardados, listas de equipo, dispositivos personalizados, favoritos y comentarios de autonomía directamente desde Ajustes.
+- El panel Datos y almacenamiento audita proyectos guardados, listas de equipo, dispositivos personalizados, favoritos y comentarios de autonomía directamente desde Ajustes y muestra el tamaño aproximado del respaldo.
+- La superposición del estado de auto-guardado refleja la nota más reciente dentro de Ajustes para que los equipos vean la actividad en segundo plano mientras practican los ejercicios de recuperación.
+- El editor de equipo consciente del monitoreo muestra accesorios adicionales de monitor y video solo cuando los escenarios lo requieren para mantener enfocado el diseño de reglas.
 - Los controles de acento y tipografía en Ajustes permiten ajustar el color de acento, el tamaño base de la fuente y la familia tipográfica junto a los temas oscuro, rosa y de alto contraste.
 - Los atajos de teclado de la búsqueda global enfocan la búsqueda de funciones al instante con / o Ctrl+K (⌘K en macOS), incluso cuando está dentro del menú lateral móvil contraído.
 - El botón **Forzar recarga** borra los archivos del service worker en caché para que la aplicación sin conexión se actualice sin eliminar proyectos ni dispositivos guardados.
