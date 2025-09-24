@@ -1,7 +1,8 @@
 // --- EVENT LISTENERS ---
 /* global updateCageSelectOptions, updateGlobalDevicesReference, scheduleProjectAutoSave,
           ensureAutoBackupsFromProjects, getDiagramManualPositions,
-          setManualDiagramPositions, normalizeDiagramPositionsInput */
+          setManualDiagramPositions, normalizeDiagramPositionsInput,
+          normalizeSetupName, createProjectInfoSnapshotForStorage */
 
 // Language selection
 languageSelect.addEventListener("change", (event) => {
@@ -251,8 +252,23 @@ setupSelect.addEventListener("change", (event) => {
     }
     const previousProjectInfo = deriveProjectInfo(info);
     currentProjectInfo = previousProjectInfo;
+    const normalizeForOverride = typeof normalizeSetupName === 'function'
+      ? normalizeSetupName
+      : (value => (typeof value === 'string' ? value.trim() : ''));
+    const normalizedPreviousKey = normalizeForOverride(previousKey);
+    const normalizedTypedName = normalizeForOverride(typedName);
+    const renameInProgressForPrevious = Boolean(
+      normalizedPreviousKey
+      && normalizedTypedName
+      && normalizedTypedName !== normalizedPreviousKey,
+    );
+    const projectInfoForStorage = typeof createProjectInfoSnapshotForStorage === 'function'
+      ? createProjectInfoSnapshotForStorage(previousProjectInfo, {
+        projectNameOverride: renameInProgressForPrevious ? normalizedPreviousKey : undefined,
+      })
+      : previousProjectInfo;
     const previousPayload = {
-      projectInfo: previousProjectInfo,
+      projectInfo: projectInfoForStorage,
       gearList: getCurrentGearListHtml()
     };
     if (typeof getDiagramManualPositions === 'function') {

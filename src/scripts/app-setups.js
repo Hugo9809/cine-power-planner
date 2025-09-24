@@ -1,4 +1,6 @@
-/* global getManualDownloadFallbackMessage, getDiagramManualPositions, normalizeAutoGearShootingDayValue, normalizeAutoGearShootingDaysCondition, getAutoGearMonitorDefault */
+/* global getManualDownloadFallbackMessage, getDiagramManualPositions, normalizeAutoGearShootingDayValue,
+          normalizeAutoGearShootingDaysCondition, getAutoGearMonitorDefault, getSetupNameState,
+          createProjectInfoSnapshotForStorage */
 
 // --- NEW SETUP MANAGEMENT FUNCTIONS ---
 
@@ -3880,15 +3882,30 @@ function saveCurrentGearList() {
     const gearSelectorsRaw = getGearListSelectors();
     const gearSelectors = cloneGearListSelectors(gearSelectorsRaw);
     const hasGearSelectors = Object.keys(gearSelectors).length > 0;
-    const selectedStorageKey =
-        setupSelect && typeof setupSelect.value === 'string'
-            ? setupSelect.value.trim()
-            : '';
-    const typedStorageKey =
-        setupNameInput && typeof setupNameInput.value === 'string'
-            ? setupNameInput.value.trim()
-            : '';
-    const projectStorageKey = selectedStorageKey || typedStorageKey;
+    const nameState = typeof getSetupNameState === 'function'
+        ? getSetupNameState()
+        : null;
+    const fallbackNormalize = (value) => {
+        if (typeof value !== 'string') return '';
+        return value.trim();
+    };
+    const selectedStorageKey = nameState
+        ? nameState.selectedName
+        : fallbackNormalize(setupSelect && typeof setupSelect.value === 'string' ? setupSelect.value : '');
+    const typedStorageKey = nameState
+        ? nameState.typedName
+        : fallbackNormalize(setupNameInput && typeof setupNameInput.value === 'string' ? setupNameInput.value : '');
+    const projectStorageKey = nameState
+        ? nameState.storageKey
+        : (selectedStorageKey || typedStorageKey);
+    const renameInProgress = nameState
+        ? nameState.renameInProgress
+        : Boolean(selectedStorageKey && typedStorageKey && selectedStorageKey !== typedStorageKey);
+    const projectInfoForStorage = typeof createProjectInfoSnapshotForStorage === 'function'
+        ? createProjectInfoSnapshotForStorage(currentProjectInfo, {
+            projectNameOverride: renameInProgress ? selectedStorageKey : undefined,
+        })
+        : currentProjectInfo;
     const projectRules = getProjectScopedAutoGearRules();
     let diagramPositions = null;
     if (typeof getDiagramManualPositions === 'function') {
@@ -3899,7 +3916,7 @@ function saveCurrentGearList() {
     }
     if (typeof saveProject === 'function' && typeof projectStorageKey === 'string' && projectStorageKey) {
         const payload = {
-            projectInfo: currentProjectInfo,
+            projectInfo: projectInfoForStorage,
             gearList: html
         };
         if (hasGearSelectors) {
@@ -3932,9 +3949,9 @@ function saveCurrentGearList() {
         }
     }
 
-    if (currentProjectInfo) {
-        if (setup.projectInfo !== currentProjectInfo) {
-            setup.projectInfo = currentProjectInfo;
+    if (projectInfoForStorage) {
+        if (setup.projectInfo !== projectInfoForStorage) {
+            setup.projectInfo = projectInfoForStorage;
             changed = true;
         }
     } else if (Object.prototype.hasOwnProperty.call(setup, 'projectInfo')) {

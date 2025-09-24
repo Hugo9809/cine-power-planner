@@ -75,7 +75,7 @@ describe('project autosave', () => {
     const stored = JSON.parse(storedRaw);
     const crewEntries = stored['Crew Draft']?.projectInfo?.people;
     expect(Array.isArray(crewEntries)).toBe(true);
-    expect(crewEntries).toEqual([{ name: 'Jamie' }]);
+    expect(crewEntries).toEqual([{ name: 'Jamie', role: 'Producer' }]);
 
     env.cleanup();
   });

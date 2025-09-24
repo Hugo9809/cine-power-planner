@@ -9712,6 +9712,55 @@ function getCurrentProjectName() {
   return (setupSelect && setupSelect.value) || '';
 }
 
+function normalizeSetupName(value) {
+  if (typeof value !== 'string') {
+    return '';
+  }
+  return value.trim();
+}
+
+function getSetupNameState() {
+  const rawTyped =
+    setupNameInput && typeof setupNameInput.value === 'string'
+      ? setupNameInput.value
+      : '';
+  const rawSelected =
+    setupSelect && typeof setupSelect.value === 'string'
+      ? setupSelect.value
+      : '';
+  const typedName = normalizeSetupName(rawTyped);
+  const selectedName = normalizeSetupName(rawSelected);
+  const renameInProgress = Boolean(
+    selectedName
+    && typedName
+    && typedName !== selectedName,
+  );
+  const storageKey = selectedName || typedName || '';
+  return {
+    typedName,
+    selectedName,
+    renameInProgress,
+    storageKey,
+  };
+}
+
+function createProjectInfoSnapshotForStorage(baseInfo, options = {}) {
+  if (baseInfo == null || typeof baseInfo !== 'object') {
+    return baseInfo == null ? null : baseInfo;
+  }
+  const { projectNameOverride } = options;
+  if (typeof projectNameOverride !== 'string' || !projectNameOverride) {
+    return baseInfo;
+  }
+  if (
+    typeof baseInfo.projectName === 'string'
+    && normalizeSetupName(baseInfo.projectName) === projectNameOverride
+  ) {
+    return baseInfo;
+  }
+  return { ...baseInfo, projectName: projectNameOverride };
+}
+
 function getCurrentProjectStorageKey(options = {}) {
   const typedName =
     setupNameInput && typeof setupNameInput.value === 'string'
