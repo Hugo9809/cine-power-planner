@@ -1643,6 +1643,10 @@ function handlePinkModeIconPress() {
   }
 }
 
+if (typeof window !== 'undefined') {
+  window.handlePinkModeIconPress = handlePinkModeIconPress;
+}
+
 function triggerPinkModeIconAnimation() {
   const targets = [];
   if (pinkModeToggle) {
