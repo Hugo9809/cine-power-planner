@@ -1070,13 +1070,20 @@ function collectProjectFormData() {
         : getValue('mattebox');
 
     const people = Array.from(crewContainer?.querySelectorAll('.person-row') || [])
-        .map(row => ({
-            role: row.querySelector('select')?.value,
-            name: row.querySelector('.person-name')?.value.trim(),
-            phone: row.querySelector('.person-phone')?.value.trim(),
-            email: row.querySelector('.person-email')?.value?.trim()
-        }))
-        .filter(person => person.role && person.name);
+        .map(row => {
+            const roleValue = row.querySelector('select')?.value;
+            const nameInput = row.querySelector('.person-name');
+            const phoneInput = row.querySelector('.person-phone');
+            const emailInput = row.querySelector('.person-email');
+            const role = typeof roleValue === 'string'
+                ? roleValue.trim()
+                : (roleValue == null ? '' : String(roleValue));
+            const name = typeof nameInput?.value === 'string' ? nameInput.value.trim() : '';
+            const phone = typeof phoneInput?.value === 'string' ? phoneInput.value.trim() : '';
+            const email = typeof emailInput?.value === 'string' ? emailInput.value.trim() : '';
+            return { role, name, phone, email };
+        })
+        .filter(person => person.role || person.name || person.phone || person.email);
 
     const collectRanges = (container, startSel, endSel) => Array.from(container?.querySelectorAll('.period-row') || [])
         .map(row => {
@@ -2736,8 +2743,10 @@ function generateGearListHtml(info = {}) {
                 }
                 const linkDetails = detailLinks.length ? ` (${detailLinks.join(', ')})` : '';
                 const plainDetails = detailText.length ? ` (${detailText.join(', ')})` : '';
-                crewEntriesHtml.push(`<span class="crew-entry">${safeRole}: ${safeName}${linkDetails}</span>`);
-                crewEntriesText.push(`${roleLabel}: ${nameValue}${plainDetails}`);
+                const rolePrefixHtml = roleLabel ? `${safeRole}: ` : '';
+                const rolePrefixText = roleLabel ? `${roleLabel}: ` : '';
+                crewEntriesHtml.push(`<span class="crew-entry">${rolePrefixHtml}${safeName}${linkDetails}</span>`);
+                crewEntriesText.push(`${rolePrefixText}${nameValue}${plainDetails}`);
             });
         if (crewEntriesHtml.length) {
             projectInfo.crew = {
