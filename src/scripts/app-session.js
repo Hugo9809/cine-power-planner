@@ -2989,6 +2989,162 @@ function extractBackupSections(raw) {
   };
 }
 
+function resolveRestoreTranslation(langTexts, fallbackTexts, key, defaultText) {
+  if (langTexts && Object.prototype.hasOwnProperty.call(langTexts, key)) {
+    return langTexts[key];
+  }
+  if (fallbackTexts && Object.prototype.hasOwnProperty.call(fallbackTexts, key)) {
+    return fallbackTexts[key];
+  }
+  return defaultText;
+}
+
+function hasAnyDataKey(data, keys) {
+  if (!data || typeof data !== 'object') {
+    return false;
+  }
+  for (let i = 0; i < keys.length; i += 1) {
+    const key = keys[i];
+    if (Object.prototype.hasOwnProperty.call(data, key)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function buildRestoreVersionCompatibilityMessage(options) {
+  const {
+    langTexts,
+    fallbackTexts,
+    fileVersion,
+    targetVersion,
+    data,
+    settingsSnapshot,
+    sessionSnapshot,
+    backupFileName,
+  } = options || {};
+
+  const translation = (key, fallback) => resolveRestoreTranslation(langTexts, fallbackTexts, key, fallback);
+
+  const unknownVersion = translation('restoreVersionUnknownVersion', 'unknown version');
+  const safeData = isPlainObject(data) ? data : {};
+
+  const coreDefinitions = [
+    { keys: ['devices'], labelKey: 'restoreSectionDevices', fallback: 'Device library' },
+    { keys: ['setups'], labelKey: 'restoreSectionSetups', fallback: 'Saved setups' },
+    {
+      keys: ['project', 'projects', 'gearList'],
+      labelKey: 'restoreSectionProjects',
+      fallback: 'Projects',
+      detect: (section) => {
+        if (hasAnyDataKey(section, ['project', 'projects'])) {
+          return true;
+        }
+        return typeof section.gearList === 'string' && section.gearList.trim().length > 0;
+      },
+    },
+    { keys: ['favorites'], labelKey: 'restoreSectionFavorites', fallback: 'Favorites' },
+    { keys: ['autoGearRules'], labelKey: 'restoreSectionAutoGearRules', fallback: 'Automatic gear rules' },
+    { keys: ['autoGearPresets'], labelKey: 'restoreSectionAutoGearPresets', fallback: 'Automatic gear presets' },
+    { keys: ['autoGearBackups'], labelKey: 'restoreSectionAutoGearBackups', fallback: 'Automatic gear backups' },
+  ];
+
+  const optionalDefinitions = [
+    { keys: ['autoGearActivePresetId'], labelKey: 'restoreSectionAutoGearActivePreset', fallback: 'Selected automatic gear preset' },
+    { keys: ['autoGearAutoPresetId'], labelKey: 'restoreSectionAutoGearAutoPreset', fallback: 'Automatic assignment preset' },
+    { keys: ['autoGearShowBackups'], labelKey: 'restoreSectionAutoGearVisibility', fallback: 'Automatic backup visibility' },
+    { keys: ['autoGearSeeded'], labelKey: 'restoreSectionAutoGearSeeded', fallback: 'Automatic gear seed state' },
+    { keys: ['autoGearMonitorDefaults'], labelKey: 'restoreSectionAutoGearMonitorDefaults', fallback: 'Monitor defaults' },
+    { keys: ['session'], labelKey: 'restoreSectionSession', fallback: 'Current planner session' },
+    { keys: ['feedback'], labelKey: 'restoreSectionFeedback', fallback: 'Feedback drafts' },
+    { keys: ['preferences'], labelKey: 'restoreSectionPreferences', fallback: 'App preferences' },
+    { keys: ['customLogo'], labelKey: 'restoreSectionCustomLogo', fallback: 'Custom logo' },
+    { keys: ['customFonts'], labelKey: 'restoreSectionCustomFonts', fallback: 'Custom fonts' },
+    { keys: ['schemaCache'], labelKey: 'restoreSectionSchemaCache', fallback: 'Device schema cache' },
+    { keys: ['fullBackupHistory', 'fullBackups'], labelKey: 'restoreSectionFullBackupHistory', fallback: 'Backup history' },
+  ];
+
+  const missingCore = [];
+  coreDefinitions.forEach((def) => {
+    const present = typeof def.detect === 'function'
+      ? def.detect(safeData)
+      : hasAnyDataKey(safeData, def.keys);
+    if (!present) {
+      missingCore.push(translation(def.labelKey, def.fallback));
+    }
+  });
+
+  const missingOptional = [];
+  optionalDefinitions.forEach((def) => {
+    const present = typeof def.detect === 'function'
+      ? def.detect(safeData)
+      : hasAnyDataKey(safeData, def.keys);
+    if (!present) {
+      missingOptional.push(translation(def.labelKey, def.fallback));
+    }
+  });
+
+  const missingStorage = [];
+  if (!settingsSnapshot) {
+    missingStorage.push(translation('restoreSectionStoredSettings', 'Stored settings snapshot'));
+  }
+  if (!sessionSnapshot) {
+    missingStorage.push(translation('restoreSectionStoredSession', 'Stored session snapshot'));
+  }
+
+  const lines = [];
+  lines.push(`⚠️ ${translation('restoreVersionSummaryTitle', 'Older backup detected')}`);
+  const headingTemplate = translation(
+    'restoreVersionSummaryHeading',
+    'This backup was created with {oldVersion} and you are running {newVersion}.',
+  );
+  const heading = headingTemplate
+    .replace('{oldVersion}', fileVersion || unknownVersion)
+    .replace('{newVersion}', targetVersion || unknownVersion);
+  lines.push(heading);
+
+  const hasProblems = missingCore.length || missingOptional.length || missingStorage.length;
+  if (hasProblems) {
+    if (missingCore.length) {
+      lines.push('');
+      lines.push(translation('restoreVersionCoreMissing', 'Not included in this backup:'));
+      missingCore.forEach((label) => {
+        lines.push(`• ${label}`);
+      });
+    }
+    if (missingStorage.length) {
+      lines.push('');
+      lines.push(translation('restoreVersionStorageMissing', 'Stored preferences not included:'));
+      missingStorage.forEach((label) => {
+        lines.push(`• ${label}`);
+      });
+    }
+    if (missingOptional.length) {
+      lines.push('');
+      lines.push(translation('restoreVersionOptionalMissing', 'Optional items you may need to recreate:'));
+      missingOptional.forEach((label) => {
+        lines.push(`◦ ${label}`);
+      });
+    }
+  } else {
+    lines.push('');
+    lines.push(translation('restoreVersionNoIssues', 'All modern data sections were found in this backup.'));
+  }
+
+  if (backupFileName) {
+    lines.push('');
+    const backupLine = translation('restoreVersionBackupLabel', 'Safety backup saved before restore: {fileName}')
+      .replace('{fileName}', backupFileName);
+    lines.push(backupLine);
+  }
+
+  lines.push('');
+  lines.push(translation('restoreVersionTip', 'We saved a safety backup of your current data before importing.'));
+  lines.push(translation('restoreVersionFooter', 'You can continue and manually recreate the missing items afterward.'));
+
+  return lines.join('\n');
+}
+
 function triggerBackupDownload(url, fileName) {
   if (typeof document === 'undefined') {
     return false;
@@ -4903,7 +5059,17 @@ if (restoreSettings && restoreSettingsInput) {
           throw new Error('Backup missing recognized sections');
         }
         if (fileVersion !== APP_VERSION) {
-          alert(`${texts[currentLang].restoreVersionWarning} (${fileVersion || 'unknown'} → ${APP_VERSION})`);
+          const compatibilityMessage = buildRestoreVersionCompatibilityMessage({
+            langTexts,
+            fallbackTexts,
+            fileVersion,
+            targetVersion: APP_VERSION,
+            data,
+            settingsSnapshot: restoredSettings,
+            sessionSnapshot: restoredSession,
+            backupFileName,
+          });
+          alert(compatibilityMessage);
         }
         if (restoredSettings && typeof restoredSettings === 'object') {
           if (safeStorage && typeof safeStorage.setItem === 'function') {
