@@ -335,14 +335,14 @@ table, th, td {
 
 @media print {
   #overviewDialogContent #setupDiagram {
-    --font-size-diagram-icon: calc(var(--font-size-base) * 1.65);
-    --font-size-diagram-text: calc(var(--font-size-base) * 0.95);
-    --font-size-diagram-label: calc(var(--font-size-base) * 0.85);
+    --font-size-diagram-icon: calc(var(--font-size-base) * 2.05);
+    --font-size-diagram-text: calc(var(--font-size-base) * 1.15);
+    --font-size-diagram-label: calc(var(--font-size-base) * 1.05);
   }
 
   #overviewDialogContent #setupDiagram svg {
     width: 100% !important;
-    max-width: 20cm !important;
+    max-width: none !important;
   }
 }
 #overviewDialogContent #setupDiagram #diagramArea {
