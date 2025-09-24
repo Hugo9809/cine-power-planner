@@ -387,6 +387,13 @@ function populateSetupSelect() {
       console.warn('Could not read auto backup visibility preference', error);
     }
   }
+  if (includeAutoBackups && typeof ensureAutoBackupsFromProjects === 'function') {
+    try {
+      ensureAutoBackupsFromProjects();
+    } catch (error) {
+      console.warn('Failed to prepare auto backups before populating selector', error);
+    }
+  }
   const names = Object.keys(setups)
     .filter(name => includeAutoBackups || !name.startsWith('auto-backup-'))
     .sort((a, b) => {
