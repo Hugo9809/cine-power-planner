@@ -2301,6 +2301,350 @@ function renameSetup(oldName, newName) {
 }
 
 // --- Project Storage ---
+const REQUIREMENT_FIELDS_KEEP_NEWLINES = new Set(['prepDays', 'shootingDays', 'crew']);
+
+const LEGACY_PROJECT_FIELD_LABELS = {
+  productionCompany: [
+    'Production Company',
+    'Produktionsfirma',
+    'Société de production',
+    'Productora',
+    'Casa di produzione',
+  ],
+  rentalHouse: ['Rental House', 'Verleih', 'Location', 'Rental', 'Rental'],
+  crew: ['Crew', 'Team', 'Équipe', 'Equipo', 'Troupe'],
+  prepDays: [
+    'Prep Days',
+    'Prep-Tage',
+    'Jours de préparation',
+    'Días de preparación',
+    'Giorni di preparazione',
+  ],
+  shootingDays: [
+    'Shooting Days',
+    'Drehtage',
+    'Jours de tournage',
+    'Días de rodaje',
+    'Giorni di riprese',
+  ],
+  deliveryResolution: [
+    'Delivery Resolution',
+    'Auslieferungsauflösung',
+    'Résolution de livraison',
+    'Resolución de entrega',
+    'Risoluzione di consegna',
+  ],
+  recordingResolution: [
+    'Recording Resolution',
+    'Aufnahmeauflösung',
+    'Résolution d’enregistrement',
+    'Resolución de grabación',
+    'Risoluzione di registrazione',
+  ],
+  aspectRatio: [
+    'Aspect Ratio',
+    'Seitenverhältnis',
+    "Format d’image",
+    'Relación de aspecto',
+    'Formato',
+  ],
+  codec: ['Codec', 'Codec', 'Codec', 'Códec', 'Codec'],
+  baseFrameRate: [
+    'Base Frame Rate',
+    'Basis-Framerate',
+    'Cadence de base',
+    'Velocidad base',
+    'Frame rate base',
+  ],
+  sensorMode: [
+    'Sensor Mode',
+    'Sensormodus',
+    'Mode capteur',
+    'Modo de sensor',
+    'Modalità sensore',
+  ],
+  lenses: ['Lenses', 'Objektive', 'Optiques', 'Ópticas', 'Obiettivi'],
+  requiredScenarios: [
+    'Required Scenarios',
+    'Anforderungen',
+    'Scénarios requis',
+    'Escenarios requeridos',
+    'Scenari richiesti',
+  ],
+  cameraHandle: [
+    'Camera Handle',
+    'Kamera-Handgriff',
+    'Poignée caméra',
+    'Empuñadura de cámara',
+    'Maniglia camera',
+  ],
+  viewfinderExtension: [
+    'Viewfinder Extension',
+    'Sucher-Verlängerung',
+    'Extension viseur',
+    'Extensión de visor',
+    'Prolunga mirino',
+  ],
+  viewfinderEyeLeatherColor: [
+    'Viewfinder Eye Leather Color',
+    'Sucher-Augenmuschel-Farbe',
+    "Couleur de l’œil du viseur",
+    'Color del ocular del visor',
+    'Colore gomma mirino',
+  ],
+  mattebox: ['Mattebox', 'Matte-Box', 'Matte box', 'Matte box', 'Matte box'],
+  gimbal: [
+    'Gimbal',
+    'Gimbal-Stabilisator',
+    'Stabilisateur gimbal',
+    'Estabilizador gimbal',
+    'Stabilizzatore gimbal',
+  ],
+  videoDistribution: [
+    'Video Distribution',
+    'Videoverteilung',
+    'Distribution vidéo',
+    'Distribución de vídeo',
+    'Distribuzione video',
+  ],
+  monitoringSupport: [
+    'Monitoring support',
+    'Monitoring-Support',
+    'Support de monitoring',
+    'Soporte de monitorización',
+    'Supporto monitoraggio',
+  ],
+  monitoringConfiguration: [
+    'Monitoring configuration',
+    'Monitoring-Konfiguration',
+    'Configuration de monitoring',
+    'Configuración de monitorización',
+    'Configurazione monitoraggio',
+  ],
+  focusMonitor: [
+    'Focus Monitor',
+    'Fokusmonitor',
+    'Moniteur focus',
+    'Monitor de foco',
+    'Monitor fuoco',
+  ],
+  monitorUserButtons: [
+    'Onboard Monitor User Buttons',
+    'Onboard-Monitor-Buttons',
+    'Boutons personnalisés du moniteur',
+    'Botones de usuario del monitor integrado',
+    'Tasti monitor onboard',
+  ],
+  cameraUserButtons: [
+    'Camera User Buttons',
+    'Kamera-Buttons',
+    'Boutons personnalisés caméra',
+    'Botones de usuario de la cámara',
+    'Tasti camera',
+  ],
+  viewfinderUserButtons: [
+    'Viewfinder User Buttons',
+    'Sucher-Buttons',
+    'Boutons personnalisés viseur',
+    'Botones de usuario del visor',
+    'Tasti mirino',
+  ],
+  tripodHeadBrand: [
+    'Tripod Head Brand',
+    'Kopfmarke',
+    'Marque de la tête',
+    'Marca de la cabeza',
+    'Marca della testa',
+  ],
+  tripodBowl: [
+    'Tripod Bowl',
+    'Schalentyp',
+    'Type de bol',
+    'Tipo de bowl',
+    'Tipo di bowl',
+  ],
+  tripodTypes: [
+    'Tripod Types',
+    'Stativtypen',
+    'Types de trépied',
+    'Tipos de trípode',
+    'Tipi di treppiede',
+  ],
+  tripodSpreader: [
+    'Tripod Spreader',
+    'Spreizer-Option',
+    'Type de spreader',
+    'Tipo de esparcidor',
+    'Tipo di spreader',
+  ],
+  sliderBowl: [
+    'Slider Bowl',
+    'Slider-Schale',
+    'Slider bowl',
+    'Bowl del slider',
+    'Slider bowl',
+  ],
+  easyrig: [
+    'Further Stabilisation',
+    'Weitere Stabilisierung',
+    'Stabilisation complémentaire',
+    'Estabilización adicional',
+    'Stabilizzazione aggiuntiva',
+  ],
+};
+
+const LEGACY_PROJECT_LABEL_FIELD_MAP = (() => {
+  const map = new Map();
+  const normalize = (label) => {
+    if (typeof label !== 'string') return '';
+    return label
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[:：]/g, '')
+      .replace(/[^a-zA-Z0-9]+/g, ' ')
+      .trim()
+      .toLowerCase();
+  };
+  Object.entries(LEGACY_PROJECT_FIELD_LABELS).forEach(([field, labels]) => {
+    labels.forEach((label) => {
+      const normalized = normalize(label);
+      if (normalized && !map.has(normalized)) {
+        map.set(normalized, field);
+      }
+    });
+  });
+  return map;
+})();
+
+const HTML_ENTITY_MAP = {
+  amp: '&',
+  lt: '<',
+  gt: '>',
+  quot: '"',
+  apos: "'",
+  nbsp: ' ',
+};
+
+function decodeHtmlEntities(value) {
+  if (typeof value !== 'string' || !value) {
+    return '';
+  }
+  return value.replace(/&(#x?[0-9a-fA-F]+|[a-zA-Z]+);/g, (match, entity) => {
+    if (!entity) return match;
+    if (entity[0] === '#') {
+      const code = entity[1] === 'x' || entity[1] === 'X'
+        ? parseInt(entity.slice(2), 16)
+        : parseInt(entity.slice(1), 10);
+      return Number.isFinite(code) ? String.fromCodePoint(code) : match;
+    }
+    const mapped = HTML_ENTITY_MAP[entity.toLowerCase()];
+    return mapped !== undefined ? mapped : match;
+  });
+}
+
+function stripHtmlTags(value) {
+  if (typeof value !== 'string') return '';
+  return value.replace(/<[^>]*>/g, '');
+}
+
+function normalizeRequirementValueFromHtml(rawHtml, fieldName) {
+  if (typeof rawHtml !== 'string') {
+    return '';
+  }
+  const normalizedBreaks = rawHtml
+    .replace(/<\s*br\s*\/?\s*>/gi, '\n')
+    .replace(/<\/(p|div|li|ul|ol)>/gi, '\n')
+    .replace(/<li[^>]*>/gi, '');
+  const text = decodeHtmlEntities(stripHtmlTags(normalizedBreaks))
+    .replace(/\r\n/g, '\n')
+    .replace(/\r/g, '\n');
+  const parts = text
+    .split('\n')
+    .map((part) => part.replace(/\s+/g, ' ').trim())
+    .filter((part) => part);
+  if (!parts.length) {
+    return '';
+  }
+  if (fieldName && REQUIREMENT_FIELDS_KEEP_NEWLINES.has(fieldName)) {
+    return parts.join('\n');
+  }
+  return parts.join(', ');
+}
+
+function mapLegacyRequirementLabel(labelText) {
+  if (typeof labelText !== 'string') {
+    return '';
+  }
+  const normalized = labelText
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[:：]/g, '')
+    .replace(/[^a-zA-Z0-9]+/g, ' ')
+    .trim()
+    .toLowerCase();
+  if (!normalized) {
+    return '';
+  }
+  return LEGACY_PROJECT_LABEL_FIELD_MAP.get(normalized) || '';
+}
+
+function extractProjectInfoFromHtml(html) {
+  if (typeof html !== 'string') {
+    return null;
+  }
+  const trimmed = html.trim();
+  if (!trimmed) {
+    return null;
+  }
+  const info = {};
+  const gridOpenMatch = trimmed.match(/<div[^>]*class=["'][^"']*requirements-grid[^"']*["'][^>]*>/i);
+  const gridStartIndex = gridOpenMatch ? gridOpenMatch.index : -1;
+  if (gridStartIndex === -1) {
+    const headingMatch = trimmed.match(/<h2[^>]*>([\s\S]*?)<\/h2>/i);
+    if (headingMatch) {
+      const title = decodeHtmlEntities(stripHtmlTags(headingMatch[1]));
+      const projectName = title.replace(/[“”"']/g, '').trim();
+      if (projectName) {
+        info.projectName = projectName;
+      }
+    }
+    return Object.keys(info).length ? info : null;
+  }
+  const gridHtml = trimmed.slice(gridStartIndex);
+  const prefix = trimmed.slice(0, gridStartIndex);
+  const headingMatch = prefix.match(/<h2[^>]*>([\s\S]*?)<\/h2>/i);
+  if (headingMatch) {
+    const title = decodeHtmlEntities(stripHtmlTags(headingMatch[1]));
+    const projectName = title.replace(/[“”"']/g, '').trim();
+    if (projectName && !/gear list/i.test(projectName)) {
+      info.projectName = projectName;
+    }
+  }
+  const boxRegex = /<div[^>]*class=["'][^"']*requirement-box[^"']*["'][^>]*>[\s\S]*?<\/div>/gi;
+  let match;
+  while ((match = boxRegex.exec(gridHtml))) {
+    const boxHtml = match[0];
+    const fieldMatch = boxHtml.match(/data-field=["']([^"']+)["']/i);
+    const labelMatch = boxHtml.match(/<span[^>]*class=["'][^"']*req-label[^"']*["'][^>]*>([\s\S]*?)<\/span>/i);
+    const valueMatch = boxHtml.match(/<span[^>]*class=["'][^"']*req-value[^"']*["'][^>]*>([\s\S]*?)<\/span>/i);
+    const rawField = fieldMatch ? fieldMatch[1].trim() : '';
+    const label = labelMatch ? decodeHtmlEntities(stripHtmlTags(labelMatch[1])) : '';
+    const fieldName = rawField || mapLegacyRequirementLabel(label);
+    if (!fieldName) {
+      continue;
+    }
+    const rawValue = valueMatch ? valueMatch[1] : '';
+    const normalizedValue = normalizeRequirementValueFromHtml(rawValue, fieldName);
+    if (!normalizedValue) {
+      continue;
+    }
+    if (!Object.prototype.hasOwnProperty.call(info, fieldName)) {
+      info[fieldName] = normalizedValue;
+    }
+  }
+  return Object.keys(info).length ? info : null;
+}
+
 function normalizeProject(data) {
   if (typeof data === "string") {
     const parsed = tryParseJSONLike(data);
@@ -2376,6 +2720,35 @@ function normalizeProject(data) {
         gearList: normalizedGearList,
         projectInfo: normalizedProjectInfo,
       };
+      const htmlSources = [];
+      if (typeof data.projectHtml === 'string') {
+        htmlSources.push(data.projectHtml);
+      }
+      if (isPlainObject(data.project) && typeof data.project.projectHtml === 'string') {
+        htmlSources.push(data.project.projectHtml);
+      }
+      if (isPlainObject(normalizedGearList) && typeof normalizedGearList.projectHtml === 'string') {
+        htmlSources.push(normalizedGearList.projectHtml);
+      } else if (typeof normalizedGearList === 'string') {
+        htmlSources.push(normalizedGearList);
+      }
+      if (!normalizedProjectInfo) {
+        for (let i = 0; i < htmlSources.length; i += 1) {
+          const recovered = extractProjectInfoFromHtml(htmlSources[i]);
+          if (recovered) {
+            normalized.projectInfo = recovered;
+            break;
+          }
+        }
+      } else if (htmlSources.length) {
+        for (let i = 0; i < htmlSources.length; i += 1) {
+          const recovered = extractProjectInfoFromHtml(htmlSources[i]);
+          if (recovered) {
+            normalized.projectInfo = { ...recovered, ...normalizedProjectInfo };
+            break;
+          }
+        }
+      }
       if (normalizedAutoGearRules && normalizedAutoGearRules.length) {
         normalized.autoGearRules = normalizedAutoGearRules;
       }
