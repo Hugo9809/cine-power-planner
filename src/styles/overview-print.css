@@ -70,6 +70,9 @@ body.dark-mode {
   --status-error-text-color: #000;
   --nd-grad-border-color: var(--accent-color);
   --font-size-base: 11pt;
+  --font-size-h1: calc(var(--font-size-base) * 1.8);
+  --font-size-h2: calc(var(--font-size-base) * 1.35);
+  --font-size-h3: calc(var(--font-size-base) * 1.15);
   font-family: 'Ubuntu', sans-serif;
   font-weight: var(--font-weight-light);
   font-size: var(--font-size-base);
@@ -183,13 +186,20 @@ body.pink-mode,
   color: var(--accent-color) !important;
 }
 
-#overviewDialogContent h2 {
-  font-size: calc(var(--font-size-base) * 1.4);
+#overviewDialogContent h1 {
+  font-size: var(--font-size-h1);
+  line-height: 1.2;
+}
+
+#overviewDialogContent h2,
+#overviewDialogContent .results-section > h2 {
+  font-size: var(--font-size-h2);
   line-height: 1.3;
 }
 
-#overviewDialogContent .results-section > h2 {
-  font-size: calc(var(--font-size-base) * 1.4);
+#overviewDialogContent h3 {
+  font-size: var(--font-size-h3);
+  line-height: 1.25;
 }
 
 #overviewDialogContent strong,
@@ -334,10 +344,10 @@ table, th, td {
 }
 
 @media print {
-  #overviewDialogContent #setupDiagram {
-    --font-size-diagram-icon: calc(var(--font-size-base) * 1.65);
-    --font-size-diagram-text: calc(var(--font-size-base) * 0.95);
-    --font-size-diagram-label: calc(var(--font-size-base) * 0.85);
+#overviewDialogContent #setupDiagram {
+    --font-size-diagram-icon: var(--font-size-h2);
+    --font-size-diagram-text: var(--font-size-base);
+    --font-size-diagram-label: var(--font-size-h3);
   }
 
   #overviewDialogContent #setupDiagram svg {
@@ -379,7 +389,7 @@ table, th, td {
 
 #overviewDialogContent .requirements-grid .requirement-box {
   padding: 0.65em 0.85em;
-  font-size: 0.95em;
+  font-size: var(--font-size-base);
   border-radius: 0.6em;
   display: flex;
   flex-direction: column;
@@ -408,11 +418,11 @@ body.dark-mode #overviewDialogContent .requirement-box {
 }
 
 #overviewDialogContent .requirements-grid .requirement-box .req-label {
-  font-size: 0.95em;
+  font-size: var(--font-size-base);
 }
 
 #overviewDialogContent .requirements-grid .requirement-box .req-value {
-  font-size: 0.9em;
+  font-size: var(--font-size-base);
 }
 #overviewDialogContent .gear-table td,
 #overviewDialogContent.dark-mode .gear-table td,
