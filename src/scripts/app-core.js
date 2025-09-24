@@ -6826,6 +6826,10 @@ const PINK_MODE_ANIMATED_ICON_MAX_PLACEMENT_ATTEMPTS = 12;
 const PINK_MODE_ANIMATED_ICON_AVOID_MARGIN_PX = 28;
 const PINK_MODE_ANIMATED_ICON_MIN_SCALE = 0.65;
 const PINK_MODE_ANIMATED_ICON_FULL_SIZE_VIEWPORT_MIN = 920;
+const PINK_MODE_ANIMATED_ICON_MARGIN_MAX_PX = 320;
+const PINK_MODE_ANIMATED_ICON_MARGIN_MIN_VIEWPORT = 1024;
+const PINK_MODE_ANIMATED_ICON_MARGIN_EDGE_BUFFER_PX = 72;
+const PINK_MODE_ANIMATED_ICON_MARGIN_INNER_BUFFER_PX = 56;
 const PINK_MODE_ANIMATED_ICON_AVOID_SELECTOR = [
   'a',
   'button',
@@ -7199,16 +7203,57 @@ function findPinkModeAnimationPlacement({
   verticalPadding,
   hostWidth,
   size,
-  avoidRegions
+  avoidRegions,
+  leftMarginRange = 0,
+  rightMarginRange = 0,
+  marginInnerGap = 0
 }) {
   const minY = Math.max(visibleTop - hostTop + verticalPadding, verticalPadding);
   const maxY = Math.max(visibleBottom - hostTop - verticalPadding, minY);
-  const minX = horizontalPadding;
-  const maxX = Math.max(hostWidth - horizontalPadding, minX);
+  const hostMinX = horizontalPadding;
+  const hostMaxX = Math.max(hostWidth - horizontalPadding, hostMinX);
+  const segments = [];
+  if (leftMarginRange > 0 && marginInnerGap > 0) {
+    segments.push({
+      start: -marginInnerGap - leftMarginRange,
+      end: -marginInnerGap
+    });
+  }
+  segments.push({ start: hostMinX, end: hostMaxX });
+  if (rightMarginRange > 0 && marginInnerGap > 0) {
+    segments.push({
+      start: hostWidth + marginInnerGap,
+      end: hostWidth + marginInnerGap + rightMarginRange
+    });
+  }
+  const totalSpan = segments.reduce((sum, segment) => {
+    const width = segment.end - segment.start;
+    return width > 0 ? sum + width : sum;
+  }, 0);
 
   for (let attempt = 0; attempt < PINK_MODE_ANIMATED_ICON_MAX_PLACEMENT_ATTEMPTS; attempt += 1) {
     const y = maxY > minY ? minY + Math.random() * (maxY - minY) : minY;
-    const x = maxX > minX ? minX + Math.random() * (maxX - minX) : minX;
+    let x;
+    if (totalSpan > 0) {
+      let remaining = Math.random() * totalSpan;
+      for (const segment of segments) {
+        const width = segment.end - segment.start;
+        if (width <= 0) {
+          continue;
+        }
+        if (remaining <= width) {
+          x = segment.start + remaining;
+          break;
+        }
+        remaining -= width;
+      }
+    }
+    if (!Number.isFinite(x)) {
+      x =
+        hostMaxX > hostMinX
+          ? hostMinX + Math.random() * (hostMaxX - hostMinX)
+          : hostMinX;
+    }
     if (isPinkModeAnimationSpotClear(layer, hostRect, x, y, size, avoidRegions)) {
       return { x, y };
     }
@@ -7666,6 +7711,43 @@ function spawnPinkModeAnimatedIconInstance(templates) {
     Math.max(size * 0.6 + 64, 64),
     safeVerticalRange / 2
   );
+  const marginInnerGap = Math.max(
+    size / 2 + 16,
+    PINK_MODE_ANIMATED_ICON_MARGIN_INNER_BUFFER_PX
+  );
+  const marginEdgeBuffer = Math.max(
+    size / 2 + 24,
+    PINK_MODE_ANIMATED_ICON_MARGIN_EDGE_BUFFER_PX
+  );
+  let leftMarginRange = 0;
+  let rightMarginRange = 0;
+  if (
+    viewportWidth &&
+    hostRect &&
+    typeof hostRect.left === 'number' &&
+    typeof hostRect.right === 'number' &&
+    viewportWidth >= PINK_MODE_ANIMATED_ICON_MARGIN_MIN_VIEWPORT
+  ) {
+    const hostLeft = Math.max(0, hostRect.left);
+    const hostRight = Math.min(
+      viewportWidth,
+      Math.max(hostRect.right, hostRect.left + hostWidth)
+    );
+    const leftAvailable = hostLeft;
+    const rightAvailable = Math.max(0, viewportWidth - hostRight);
+    if (leftAvailable > marginEdgeBuffer + marginInnerGap) {
+      leftMarginRange = Math.min(
+        PINK_MODE_ANIMATED_ICON_MARGIN_MAX_PX,
+        leftAvailable - marginEdgeBuffer - marginInnerGap
+      );
+    }
+    if (rightAvailable > marginEdgeBuffer + marginInnerGap) {
+      rightMarginRange = Math.min(
+        PINK_MODE_ANIMATED_ICON_MARGIN_MAX_PX,
+        rightAvailable - marginEdgeBuffer - marginInnerGap
+      );
+    }
+  }
   const historicalAvoidRegions = pinkModeAnimatedIconPlacementHistory
     .map(spot => {
       if (!spot) {
@@ -7710,7 +7792,10 @@ function spawnPinkModeAnimatedIconInstance(templates) {
     verticalPadding,
     hostWidth,
     size,
-    avoidRegions
+    avoidRegions,
+    leftMarginRange,
+    rightMarginRange,
+    marginInnerGap
   });
   if (!placement) {
     if (container.parentNode) {

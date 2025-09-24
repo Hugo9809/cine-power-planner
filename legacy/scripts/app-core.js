@@ -5847,6 +5847,10 @@ var PINK_MODE_ANIMATED_ICON_MAX_PLACEMENT_ATTEMPTS = 12;
 var PINK_MODE_ANIMATED_ICON_AVOID_MARGIN_PX = 28;
 var PINK_MODE_ANIMATED_ICON_MIN_SCALE = 0.65;
 var PINK_MODE_ANIMATED_ICON_FULL_SIZE_VIEWPORT_MIN = 920;
+var PINK_MODE_ANIMATED_ICON_MARGIN_MAX_PX = 320;
+var PINK_MODE_ANIMATED_ICON_MARGIN_MIN_VIEWPORT = 1024;
+var PINK_MODE_ANIMATED_ICON_MARGIN_EDGE_BUFFER_PX = 72;
+var PINK_MODE_ANIMATED_ICON_MARGIN_INNER_BUFFER_PX = 56;
 var PINK_MODE_ANIMATED_ICON_AVOID_SELECTOR = 'a, button, input, select, textarea, label, summary, h1, h2, h3, h4, h5, h6, p, li, td, th, [role="button"], [role="link"], [role="menu"], [role="dialog"], [role="listbox"], [role="combobox"], [role="textbox"], [contenteditable="true"], .form-row, .form-row-actions, .form-actions';
 var PINK_MODE_ANIMATED_ICON_PROBE_POINTS = Object.freeze([Object.freeze({
   x: 0,
@@ -6233,14 +6237,69 @@ function findPinkModeAnimationPlacement(_ref19) {
     verticalPadding = _ref19.verticalPadding,
     hostWidth = _ref19.hostWidth,
     size = _ref19.size,
-    avoidRegions = _ref19.avoidRegions;
+    avoidRegions = _ref19.avoidRegions,
+    _ref19$leftMarginRang = _ref19.leftMarginRange,
+    leftMarginRange = _ref19$leftMarginRang === void 0 ? 0 : _ref19$leftMarginRang,
+    _ref19$rightMarginRan = _ref19.rightMarginRange,
+    rightMarginRange = _ref19$rightMarginRan === void 0 ? 0 : _ref19$rightMarginRan,
+    _ref19$marginInnerGap = _ref19.marginInnerGap,
+    marginInnerGap = _ref19$marginInnerGap === void 0 ? 0 : _ref19$marginInnerGap;
   var minY = Math.max(visibleTop - hostTop + verticalPadding, verticalPadding);
   var maxY = Math.max(visibleBottom - hostTop - verticalPadding, minY);
-  var minX = horizontalPadding;
-  var maxX = Math.max(hostWidth - horizontalPadding, minX);
+  var hostMinX = horizontalPadding;
+  var hostMaxX = Math.max(hostWidth - horizontalPadding, hostMinX);
+  var segments = [];
+  if (leftMarginRange > 0 && marginInnerGap > 0) {
+    segments.push({
+      start: -marginInnerGap - leftMarginRange,
+      end: -marginInnerGap
+    });
+  }
+  segments.push({
+    start: hostMinX,
+    end: hostMaxX
+  });
+  if (rightMarginRange > 0 && marginInnerGap > 0) {
+    segments.push({
+      start: hostWidth + marginInnerGap,
+      end: hostWidth + marginInnerGap + rightMarginRange
+    });
+  }
+  var totalSpan = 0;
+  for (var sIndex = 0; sIndex < segments.length; sIndex += 1) {
+    var segment = segments[sIndex];
+    if (!segment) {
+      continue;
+    }
+    var width = segment.end - segment.start;
+    if (width > 0) {
+      totalSpan += width;
+    }
+  }
   for (var attempt = 0; attempt < PINK_MODE_ANIMATED_ICON_MAX_PLACEMENT_ATTEMPTS; attempt += 1) {
     var y = maxY > minY ? minY + Math.random() * (maxY - minY) : minY;
-    var x = maxX > minX ? minX + Math.random() * (maxX - minX) : minX;
+    var x;
+    if (totalSpan > 0) {
+      var remaining = Math.random() * totalSpan;
+      for (var segIndex = 0; segIndex < segments.length; segIndex += 1) {
+        var seg = segments[segIndex];
+        if (!seg) {
+          continue;
+        }
+        var segWidth = seg.end - seg.start;
+        if (segWidth <= 0) {
+          continue;
+        }
+        if (remaining <= segWidth) {
+          x = seg.start + remaining;
+          break;
+        }
+        remaining -= segWidth;
+      }
+    }
+    if (typeof x !== 'number' || !isFinite(x)) {
+      x = hostMaxX > hostMinX ? hostMinX + Math.random() * (hostMaxX - hostMinX) : hostMinX;
+    }
     if (isPinkModeAnimationSpotClear(layer, hostRect, x, y, size, avoidRegions)) {
       return {
         x: x,
@@ -6346,6 +6405,37 @@ function spawnPinkModeAnimatedIconInstance(templates) {
   var safeVerticalRange = Math.max(hostHeight, size * 3);
   var horizontalPadding = Math.min(Math.max(size * 0.6 + 48, 48), safeHorizontalRange / 2);
   var verticalPadding = Math.min(Math.max(size * 0.6 + 64, 64), safeVerticalRange / 2);
+  var marginInnerGap = Math.max(size / 2 + 16, PINK_MODE_ANIMATED_ICON_MARGIN_INNER_BUFFER_PX);
+  var marginEdgeBuffer = Math.max(size / 2 + 24, PINK_MODE_ANIMATED_ICON_MARGIN_EDGE_BUFFER_PX);
+  var leftMarginRange = 0;
+  var rightMarginRange = 0;
+  if (
+    viewportWidth &&
+    hostRect &&
+    typeof hostRect.left === 'number' &&
+    typeof hostRect.right === 'number' &&
+    viewportWidth >= PINK_MODE_ANIMATED_ICON_MARGIN_MIN_VIEWPORT
+  ) {
+    var hostLeft = Math.max(0, hostRect.left);
+    var hostRight = Math.min(
+      viewportWidth,
+      Math.max(hostRect.right, hostRect.left + hostWidth)
+    );
+    var leftAvailable = hostLeft;
+    var rightAvailable = Math.max(0, viewportWidth - hostRight);
+    if (leftAvailable > marginEdgeBuffer + marginInnerGap) {
+      leftMarginRange = Math.min(
+        PINK_MODE_ANIMATED_ICON_MARGIN_MAX_PX,
+        leftAvailable - marginEdgeBuffer - marginInnerGap
+      );
+    }
+    if (rightAvailable > marginEdgeBuffer + marginInnerGap) {
+      rightMarginRange = Math.min(
+        PINK_MODE_ANIMATED_ICON_MARGIN_MAX_PX,
+        rightAvailable - marginEdgeBuffer - marginInnerGap
+      );
+    }
+  }
   var avoidRegions = [].concat(_toConsumableArray(computePinkModeAnimationAvoidRegions(layer)), _toConsumableArray(collectPinkModeAnimationInstanceRegions(layer)));
   var placement = findPinkModeAnimationPlacement({
     layer: layer,
@@ -6357,7 +6447,10 @@ function spawnPinkModeAnimatedIconInstance(templates) {
     verticalPadding: verticalPadding,
     hostWidth: hostWidth,
     size: size,
-    avoidRegions: avoidRegions
+    avoidRegions: avoidRegions,
+    leftMarginRange: leftMarginRange,
+    rightMarginRange: rightMarginRange,
+    marginInnerGap: marginInnerGap
   });
   if (!placement) {
     if (container.parentNode) {
