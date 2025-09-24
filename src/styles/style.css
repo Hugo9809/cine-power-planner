@@ -4144,10 +4144,15 @@ body.light-mode #topBar select:focus-visible {
   width: min(90%, var(--diagram-max-width, 100%));
   max-width: var(--diagram-max-width, 100%);
   text-align: left;
+  overflow: hidden;
 }
 
 #diagramArea > * {
   flex: 0 0 auto;
+}
+
+#diagramArea > svg {
+  overflow: visible;
 }
 
 #diagramArea > svg,
