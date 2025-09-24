@@ -236,6 +236,7 @@ setupSelect.addEventListener("change", (event) => {
       autoBackup({
         suppressSuccess: true,
         projectNameOverride: normalizeProjectName(previousKey),
+        triggerAutoSaveNotification: true,
       });
     } catch (error) {
       console.warn('Failed to auto backup project before loading a different setup', error);
@@ -443,6 +444,42 @@ function populateSetupSelect() {
 populateSetupSelect(); // Initial populate of setups
 checkSetupChanged();
 
+function notifyAutoSaveFromBackup(message, backupName) {
+  if (typeof message !== 'string') {
+    return;
+  }
+  const trimmed = message.trim();
+  if (!trimmed) {
+    return;
+  }
+  if (typeof showNotification === 'function') {
+    try {
+      showNotification('success', trimmed);
+    } catch (notifyError) {
+      console.warn('Failed to display auto save notification after auto backup', notifyError);
+    }
+  }
+  if (
+    typeof document !== 'undefined'
+    && typeof CustomEvent === 'function'
+    && document
+    && typeof document.dispatchEvent === 'function'
+  ) {
+    try {
+      document.dispatchEvent(new CustomEvent('cine:auto-save-notification', {
+        detail: {
+          message: trimmed,
+          source: 'auto-backup',
+          backupName: backupName || null,
+          timestamp: new Date().toISOString(),
+        },
+      }));
+    } catch (eventError) {
+      console.warn('Failed to dispatch auto save notification event after auto backup', eventError);
+    }
+  }
+}
+
 // Auto-save backups every 10 minutes. Saved backups appear in the setup
 // selector but do not change the currently selected setup. Intervals are
 // unref'ed when possible so Node environments can exit cleanly.
@@ -457,6 +494,11 @@ function autoBackup(options = {}) {
   const errorMessage = typeof config.errorMessage === 'string' && config.errorMessage
     ? config.errorMessage
     : 'Auto backup failed';
+  const triggerAutoSaveNotification = Boolean(config.triggerAutoSaveNotification);
+  const autoSaveNotificationMessage = typeof config.autoSaveNotificationMessage === 'string'
+    && config.autoSaveNotificationMessage.trim()
+      ? config.autoSaveNotificationMessage.trim()
+      : successMessage;
   const normalizeProjectName = (value) =>
     typeof value === 'string' ? value.replace(/\s+/g, ' ').trim() : '';
   const hasProjectNameOverride = Object.prototype.hasOwnProperty.call(
@@ -559,6 +601,9 @@ function autoBackup(options = {}) {
     if (setupNameInput) setupNameInput.value = prevName;
     if (!suppressSuccess) {
       showNotification('success', successMessage);
+    }
+    if (triggerAutoSaveNotification) {
+      notifyAutoSaveFromBackup(autoSaveNotificationMessage, backupName);
     }
     return backupName;
   } catch (e) {
