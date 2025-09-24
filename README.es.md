@@ -63,6 +63,7 @@ La aplicación adopta automáticamente el idioma de tu navegador en la primera v
 ---
 
 ## 🆕 Novedades recientes
+- Las reglas automáticas de equipo ahora incluyen umbrales de peso de la cámara para comparar los gramos del cuerpo seleccionado con valores más pesados, más ligeros o exactos.
 - Las reglas automáticas de equipo permiten diseñar adiciones o retiradas según el escenario, exportar la configuración y restaurarla junto con los paquetes de proyecto.
 - El panel Datos y almacenamiento audita proyectos guardados, listas de equipo, dispositivos personalizados, favoritos y comentarios de autonomía directamente desde Ajustes.
 - Los controles de acento y tipografía en Ajustes permiten ajustar el color de acento, el tamaño base de la fuente y la familia tipográfica junto a los temas oscuro, rosa y de alto contraste.

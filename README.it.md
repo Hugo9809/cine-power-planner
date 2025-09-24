@@ -61,6 +61,7 @@ Al primo avvio l’applicazione adotta la lingua del browser; puoi cambiarla dal
 ---
 
 ## 🆕 Novità
+- Le regole automatiche dell'attrezzatura ora includono soglie basate sul peso della camera, confrontando i grammi del corpo selezionato con valori più pesanti, più leggeri o identici.
 - Le regole automatiche dell'attrezzatura consentono di definire aggiunte o rimozioni guidate dallo scenario, esportarle e ripristinarle insieme ai bundle condivisi.
 - Il cruscotto Dati e archiviazione controlla progetti salvati, elenchi, dispositivi personalizzati, preferiti e feedback sulle autonomie direttamente nelle Impostazioni.
 - I controlli di accento e tipografia nelle Impostazioni consentono di regolare colore, dimensione base e famiglia del font insieme ai temi scuro, rosa e ad alto contrasto.

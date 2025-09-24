@@ -64,6 +64,7 @@ The app automatically uses your browser language on first load, and you can swit
 ---
 
 ## 🆕 Recent Features
+- Automatic gear rules now include camera-weight thresholds so you can compare the selected body’s grams against heavier, lighter or exact matches.
 - Automatic gear rules let you design scenario-driven additions or removals, export the configuration and restore it alongside project bundles.
 - Data & storage dashboard audits saved projects, gear lists, custom devices, favorites and runtime feedback directly inside Settings.
 - Accent and typography controls in Settings let you adjust the accent color, base font size and typeface alongside dark, pink and high contrast themes.

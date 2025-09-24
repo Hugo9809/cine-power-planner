@@ -61,6 +61,7 @@ L’application adopte automatiquement la langue de votre navigateur lors de la 
 ---
 
 ## 🆕 Nouveautés
+- Les règles automatiques d’équipement gèrent désormais des seuils de poids caméra afin de comparer les grammes du boîtier choisi à des valeurs plus lourdes, plus légères ou identiques.
 - Les règles automatiques d’équipement ajoutent ou retirent du matériel selon le scénario, avec export/import aux côtés des bundles partagés.
 - Le tableau de bord Données & stockage audite projets enregistrés, listes de matériel, appareils personnalisés, favoris et retours d’autonomie depuis les Réglages.
 - Les réglages d’accent et de typographie dans Paramètres permettent d’ajuster couleur d’accent, taille de base et famille de police, aux côtés des thèmes sombre, rose et à fort contraste.

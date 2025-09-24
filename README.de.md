@@ -60,6 +60,7 @@ Beim ersten Start übernimmt die Anwendung automatisch die Sprache deines Browse
 ---
 
 ## 🆕 Neueste Funktionen
+- Automatische Gear-Regeln berücksichtigen jetzt Kameragewichts-Schwellen, sodass du die Grammangabe des ausgewählten Bodys mit schwerer-, leichter- oder exakt-Vorgaben vergleichen kannst.
 - Die neuen automatischen Gear-Regeln fügen szenariobasierte Ergänzungen oder Entfernungen hinzu, lassen sich exportieren und gemeinsam mit Bundles wiederherstellen.
 - Das Daten- & Speicher-Dashboard prüft gespeicherte Projekte, Gerätelisten, eigene Geräte, Favoriten und Laufzeit-Feedback direkt in den Einstellungen.
 - Akzent- und Typografie-Regler in den Einstellungen erlauben dir Akzentfarbe, Grundschriftgröße und Schriftfamilie sowie die Themes Dunkel, Pink und Hoher Kontrast einstellen.
