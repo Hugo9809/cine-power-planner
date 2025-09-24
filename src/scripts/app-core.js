@@ -1,5 +1,5 @@
 // script.js – Main logic for the Cine Power Planner app
-/* global texts, categoryNames, gearItems, loadSessionState, saveSessionState, loadProject, saveProject, deleteProject, renameSetup, registerDevice, loadFavorites, saveFavorites, exportAllData, importAllData, clearAllData, loadAutoGearRules, saveAutoGearRules, loadAutoGearBackups, saveAutoGearBackups, loadAutoGearSeedFlag, saveAutoGearSeedFlag, loadAutoGearPresets, saveAutoGearPresets, loadAutoGearActivePresetId, saveAutoGearActivePresetId, loadAutoGearAutoPresetId, saveAutoGearAutoPresetId, loadAutoGearBackupVisibility, saveAutoGearBackupVisibility, AUTO_GEAR_RULES_STORAGE_KEY, AUTO_GEAR_SEEDED_STORAGE_KEY, AUTO_GEAR_BACKUPS_STORAGE_KEY, AUTO_GEAR_PRESETS_STORAGE_KEY, AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, AUTO_GEAR_AUTO_PRESET_STORAGE_KEY, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY, SAFE_LOCAL_STORAGE, getSafeLocalStorage, CUSTOM_FONT_STORAGE_KEY, CUSTOM_FONT_STORAGE_KEY_NAME, TEMPERATURE_UNIT_STORAGE_KEY, updateAutoGearHighlightToggleButton, handlePinkModeIconPress */
+/* global texts, categoryNames, gearItems, loadSessionState, saveSessionState, loadProject, saveProject, deleteProject, renameSetup, registerDevice, loadFavorites, saveFavorites, exportAllData, importAllData, clearAllData, loadAutoGearRules, saveAutoGearRules, loadAutoGearBackups, saveAutoGearBackups, loadAutoGearSeedFlag, saveAutoGearSeedFlag, loadAutoGearPresets, saveAutoGearPresets, loadAutoGearActivePresetId, saveAutoGearActivePresetId, loadAutoGearAutoPresetId, saveAutoGearAutoPresetId, loadAutoGearBackupVisibility, saveAutoGearBackupVisibility, loadAutoGearMonitorDefaults, saveAutoGearMonitorDefaults, AUTO_GEAR_RULES_STORAGE_KEY, AUTO_GEAR_SEEDED_STORAGE_KEY, AUTO_GEAR_BACKUPS_STORAGE_KEY, AUTO_GEAR_PRESETS_STORAGE_KEY, AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, AUTO_GEAR_AUTO_PRESET_STORAGE_KEY, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY, AUTO_GEAR_MONITOR_DEFAULTS_STORAGE_KEY, SAFE_LOCAL_STORAGE, getSafeLocalStorage, CUSTOM_FONT_STORAGE_KEY, CUSTOM_FONT_STORAGE_KEY_NAME, TEMPERATURE_UNIT_STORAGE_KEY, updateAutoGearHighlightToggleButton, handlePinkModeIconPress */
 
 // Use `var` here instead of `let` because `index.html` loads the lz-string
 // library from a CDN which defines a global `LZString` variable. Using `let`
@@ -126,6 +126,10 @@ const AUTO_GEAR_BACKUP_VISIBILITY_KEY =
   typeof AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY !== 'undefined'
     ? AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY
     : 'cameraPowerPlanner_autoGearShowBackups';
+const AUTO_GEAR_MONITOR_DEFAULTS_KEY =
+  typeof AUTO_GEAR_MONITOR_DEFAULTS_STORAGE_KEY !== 'undefined'
+    ? AUTO_GEAR_MONITOR_DEFAULTS_STORAGE_KEY
+    : 'cameraPowerPlanner_autoGearMonitorDefaults';
 const AUTO_GEAR_BACKUP_INTERVAL_MS = 10 * 60 * 1000;
 const AUTO_GEAR_BACKUP_LIMIT = 12;
 const AUTO_GEAR_MULTI_SELECT_MIN_ROWS = 8;
@@ -724,6 +728,13 @@ function getAutoGearSelectorDefaultPlaceholder() {
     || 'Choose a default device';
 }
 
+function getAutoGearMonitorDefaultPlaceholder() {
+  const langTexts = texts[currentLang] || texts.en || {};
+  return langTexts.autoGearMonitorDefaultPlaceholder
+    || texts.en?.autoGearMonitorDefaultPlaceholder
+    || 'Use recommended automatically';
+}
+
 function formatAutoGearSelectorValue(type, value) {
   const normalizedValue = typeof value === 'string' ? value.trim() : '';
   if (!normalizedValue) return '';
@@ -1276,7 +1287,8 @@ function normalizeAutoGearBackupEntry(entry) {
   const normalizedRules = rawRules.map(normalizeAutoGearRule).filter(Boolean);
   const rules = rawRules.length === 0 ? [] : normalizedRules;
   const id = typeof entry.id === 'string' && entry.id ? entry.id : generateAutoGearId('backup');
-  return { id, createdAt, rules };
+  const monitorDefaults = normalizeAutoGearMonitorDefaults(entry.monitorDefaults);
+  return { id, createdAt, rules, monitorDefaults };
 }
 
 function readAutoGearBackupsFromStorage() {
@@ -1356,6 +1368,80 @@ function persistAutoGearPresets(presets) {
   } catch (error) {
     console.warn('Failed to persist automatic gear presets', error);
   }
+}
+
+const AUTO_GEAR_MONITOR_DEFAULT_TYPES = {
+  focus: 'monitor',
+  handheld7: 'monitor',
+  combo15: 'directorMonitor',
+  director15: 'directorMonitor',
+};
+
+const AUTO_GEAR_MONITOR_DEFAULT_LABEL_KEYS = {
+  focus: 'autoGearDefaultFocusMonitorLabel',
+  handheld7: 'autoGearDefaultHandheldMonitorLabel',
+  combo15: 'autoGearDefaultComboMonitorLabel',
+  director15: 'autoGearDefaultDirectorMonitorLabel',
+};
+
+function normalizeAutoGearMonitorDefaults(value) {
+  const result = {
+    focus: '',
+    handheld7: '',
+    combo15: '',
+    director15: '',
+  };
+  if (!value || typeof value !== 'object') {
+    return result;
+  }
+  Object.keys(AUTO_GEAR_MONITOR_DEFAULT_TYPES).forEach(key => {
+    const type = AUTO_GEAR_MONITOR_DEFAULT_TYPES[key];
+    const normalized = normalizeAutoGearSelectorDefault(type, value[key]);
+    result[key] = normalized;
+  });
+  return result;
+}
+
+function readAutoGearMonitorDefaultsFromStorage() {
+  let stored = {};
+  if (typeof loadAutoGearMonitorDefaults === 'function') {
+    try {
+      stored = loadAutoGearMonitorDefaults();
+    } catch (error) {
+      console.warn('Failed to load automatic gear monitor defaults', error);
+      stored = {};
+    }
+  } else if (typeof localStorage !== 'undefined') {
+    try {
+      const raw = localStorage.getItem(AUTO_GEAR_MONITOR_DEFAULTS_KEY);
+      stored = raw ? JSON.parse(raw) : {};
+    } catch (error) {
+      console.warn('Failed to read automatic gear monitor defaults from storage', error);
+      stored = {};
+    }
+  }
+  return normalizeAutoGearMonitorDefaults(stored);
+}
+
+function persistAutoGearMonitorDefaults(defaults) {
+  const payload = normalizeAutoGearMonitorDefaults(defaults);
+  if (typeof saveAutoGearMonitorDefaults === 'function') {
+    try {
+      saveAutoGearMonitorDefaults(payload);
+      return payload;
+    } catch (error) {
+      console.warn('Failed to save automatic gear monitor defaults', error);
+    }
+  }
+  if (typeof localStorage === 'undefined') {
+    return payload;
+  }
+  try {
+    localStorage.setItem(AUTO_GEAR_MONITOR_DEFAULTS_KEY, JSON.stringify(payload));
+  } catch (error) {
+    console.warn('Failed to persist automatic gear monitor defaults', error);
+  }
+  return payload;
 }
 
 function readActiveAutoGearPresetIdFromStorage() {
@@ -1486,6 +1572,7 @@ function persistAutoGearBackups(backups) {
         id: entry.id,
         createdAt: entry.createdAt,
         rules: Array.isArray(entry.rules) ? entry.rules : [],
+        monitorDefaults: normalizeAutoGearMonitorDefaults(entry.monitorDefaults),
       }))
     : [];
   if (typeof saveAutoGearBackups === 'function') {
@@ -1528,11 +1615,31 @@ let autoGearPresets = readAutoGearPresetsFromStorage();
 let activeAutoGearPresetId = readActiveAutoGearPresetIdFromStorage();
 let autoGearAutoPresetId = readAutoGearAutoPresetIdFromStorage();
 let autoGearBackupsVisible = readAutoGearBackupVisibilityFromStorage();
+let autoGearMonitorDefaults = readAutoGearMonitorDefaultsFromStorage();
 let factoryAutoGearRulesSnapshot = null;
 let factoryAutoGearSeedContext = null;
-const initialAutoGearRulesSignature = stableStringify(autoGearRules);
+function getAutoGearBackupEntrySignature(entry) {
+  if (!entry || typeof entry !== 'object') return '';
+  return stableStringify({
+    rules: Array.isArray(entry.rules) ? entry.rules : [],
+    monitorDefaults: normalizeAutoGearMonitorDefaults(entry.monitorDefaults),
+  });
+}
+
+function getAutoGearConfigurationSignature(rules = baseAutoGearRules, defaults = autoGearMonitorDefaults) {
+  return stableStringify({
+    rules: Array.isArray(rules) ? rules : [],
+    monitorDefaults: normalizeAutoGearMonitorDefaults(defaults),
+  });
+}
+
+function getAutoGearMonitorDefaultsSnapshot() {
+  return normalizeAutoGearMonitorDefaults(autoGearMonitorDefaults);
+}
+
+const initialAutoGearRulesSignature = getAutoGearConfigurationSignature(autoGearRules, autoGearMonitorDefaults);
 let autoGearRulesLastBackupSignature = autoGearBackups.length
-  ? stableStringify(autoGearBackups[0].rules || [])
+  ? getAutoGearBackupEntrySignature(autoGearBackups[0])
   : initialAutoGearRulesSignature;
 let autoGearRulesLastPersistedSignature = initialAutoGearRulesSignature;
 let autoGearRulesDirtySinceBackup =
@@ -1549,7 +1656,7 @@ function assignAutoGearRules(rules) {
 }
 
 function syncBaseAutoGearRulesState() {
-  const signature = stableStringify(baseAutoGearRules);
+  const signature = getAutoGearConfigurationSignature();
   autoGearRulesLastPersistedSignature = signature;
   autoGearRulesDirtySinceBackup = signature !== autoGearRulesLastBackupSignature;
 }
@@ -1569,6 +1676,70 @@ function persistAutoGearRules() {
   } catch (error) {
     console.warn('Failed to save automatic gear rules', error);
   }
+}
+
+function getAutoGearMonitorDefault(key) {
+  if (!Object.prototype.hasOwnProperty.call(AUTO_GEAR_MONITOR_DEFAULT_TYPES, key)) {
+    return '';
+  }
+  return normalizeAutoGearSelectorDefault(
+    AUTO_GEAR_MONITOR_DEFAULT_TYPES[key],
+    autoGearMonitorDefaults[key],
+  );
+}
+
+function getAutoGearMonitorDefaults() {
+  return { ...autoGearMonitorDefaults };
+}
+
+function setAutoGearMonitorDefaults(defaults, { skipRender = false, skipRefresh = false } = {}) {
+  const normalized = normalizeAutoGearMonitorDefaults(defaults);
+  let changed = false;
+  Object.keys(AUTO_GEAR_MONITOR_DEFAULT_TYPES).forEach(key => {
+    const existing = autoGearMonitorDefaults[key] || '';
+    const next = normalized[key] || '';
+    if (existing !== next) {
+      changed = true;
+    }
+  });
+  if (!changed) {
+    if (!skipRender) {
+      updateAutoGearMonitorDefaultOptions();
+      renderAutoGearMonitorDefaultsControls();
+    }
+    return autoGearMonitorDefaults;
+  }
+  autoGearMonitorDefaults = persistAutoGearMonitorDefaults(normalized);
+  syncBaseAutoGearRulesState();
+  if (!skipRender) {
+    updateAutoGearMonitorDefaultOptions();
+    renderAutoGearMonitorDefaultsControls();
+  }
+  if (!skipRefresh && typeof refreshGearListIfVisible === 'function') {
+    refreshGearListIfVisible();
+  }
+  return autoGearMonitorDefaults;
+}
+
+function setAutoGearMonitorDefault(key, value, options = {}) {
+  if (!Object.prototype.hasOwnProperty.call(AUTO_GEAR_MONITOR_DEFAULT_TYPES, key)) {
+    return getAutoGearMonitorDefault(key);
+  }
+  const current = autoGearMonitorDefaults[key] || '';
+  const normalizedValue = normalizeAutoGearSelectorDefault(
+    AUTO_GEAR_MONITOR_DEFAULT_TYPES[key],
+    value,
+  );
+  if (current === normalizedValue) {
+    if (!options.skipRender) {
+      updateAutoGearMonitorDefaultOptions();
+      renderAutoGearMonitorDefaultsControls();
+    }
+    return normalizedValue;
+  }
+  const nextDefaults = { ...autoGearMonitorDefaults, [key]: normalizedValue };
+  setAutoGearMonitorDefaults(nextDefaults, options);
+  return normalizedValue;
 }
 
 function setAutoGearRules(rules) {
@@ -1600,6 +1771,12 @@ function syncAutoGearRulesFromStorage(rules) {
   activeAutoGearPresetId = readActiveAutoGearPresetIdFromStorage();
   autoGearAutoPresetId = readAutoGearAutoPresetIdFromStorage();
   autoGearBackupsVisible = readAutoGearBackupVisibilityFromStorage();
+  autoGearMonitorDefaults = readAutoGearMonitorDefaultsFromStorage();
+  autoGearRulesLastBackupSignature = autoGearBackups.length
+    ? getAutoGearBackupEntrySignature(autoGearBackups[0])
+    : getAutoGearConfigurationSignature();
+  autoGearRulesLastPersistedSignature = getAutoGearConfigurationSignature();
+  autoGearRulesDirtySinceBackup = autoGearRulesLastPersistedSignature !== autoGearRulesLastBackupSignature;
   reconcileAutoGearAutoPresetState({ persist: true, skipRender: true });
   syncAutoGearAutoPreset(baseAutoGearRules);
   alignActiveAutoGearPreset({ skipRender: true });
@@ -1608,6 +1785,7 @@ function syncAutoGearRulesFromStorage(rules) {
   closeAutoGearEditor();
   renderAutoGearRulesList();
   updateAutoGearCatalogOptions();
+  renderAutoGearMonitorDefaultsControls();
 }
 
 function useProjectAutoGearRules(rules) {
@@ -5337,6 +5515,37 @@ function setLanguage(lang) {
   if (autoGearDescriptionElem) {
     autoGearDescriptionElem.textContent = texts[lang].autoGearDescription || texts.en?.autoGearDescription || '';
   }
+  if (autoGearMonitorDefaultsHeading) {
+    const heading = texts[lang].autoGearMonitorDefaultsHeading
+      || texts.en?.autoGearMonitorDefaultsHeading
+      || autoGearMonitorDefaultsHeading.textContent;
+    autoGearMonitorDefaultsHeading.textContent = heading;
+  }
+  if (autoGearMonitorDefaultsDescription) {
+    const description = texts[lang].autoGearMonitorDefaultsDescription
+      || texts.en?.autoGearMonitorDefaultsDescription
+      || autoGearMonitorDefaultsDescription.textContent;
+    autoGearMonitorDefaultsDescription.textContent = description;
+  }
+  autoGearMonitorDefaultControls.forEach(control => {
+    if (!control) return;
+    const labelKey = AUTO_GEAR_MONITOR_DEFAULT_LABEL_KEYS[control.key];
+    const labelText = labelKey
+      ? texts[lang][labelKey]
+        || texts.en?.[labelKey]
+        || control.label?.textContent
+      : control.label?.textContent;
+    if (control.label && labelText) {
+      control.label.textContent = labelText;
+      control.label.setAttribute('data-help', labelText);
+    }
+    if (control.select && labelText) {
+      control.select.setAttribute('aria-label', labelText);
+      control.select.setAttribute('data-help', labelText);
+    }
+  });
+  updateAutoGearMonitorDefaultOptions();
+  renderAutoGearMonitorDefaultsControls();
   if (autoGearPresetDescription) {
     autoGearPresetDescription.textContent = texts[lang].autoGearPresetDescription
       || texts.en?.autoGearPresetDescription
@@ -10418,6 +10627,45 @@ if (settingsTabButtons.length) {
 
 const autoGearHeadingElem = document.getElementById('autoGearHeading');
 const autoGearDescriptionElem = document.getElementById('autoGearDescription');
+const autoGearMonitorDefaultsSection = document.getElementById('autoGearMonitorDefaultsSection');
+const autoGearMonitorDefaultsHeading = document.getElementById('autoGearMonitorDefaultsHeading');
+const autoGearMonitorDefaultsDescription = document.getElementById('autoGearMonitorDefaultsDescription');
+const autoGearDefaultFocusMonitorSelect = document.getElementById('autoGearDefaultFocusMonitor');
+const autoGearDefaultHandheldMonitorSelect = document.getElementById('autoGearDefaultHandheldMonitor');
+const autoGearDefaultComboMonitorSelect = document.getElementById('autoGearDefaultComboMonitor');
+const autoGearDefaultDirectorMonitorSelect = document.getElementById('autoGearDefaultDirectorMonitor');
+const autoGearDefaultFocusMonitorLabel = document.getElementById('autoGearDefaultFocusMonitorLabel');
+const autoGearDefaultHandheldMonitorLabel = document.getElementById('autoGearDefaultHandheldMonitorLabel');
+const autoGearDefaultComboMonitorLabel = document.getElementById('autoGearDefaultComboMonitorLabel');
+const autoGearDefaultDirectorMonitorLabel = document.getElementById('autoGearDefaultDirectorMonitorLabel');
+const autoGearMonitorDefaultControls = [
+  {
+    key: 'focus',
+    select: autoGearDefaultFocusMonitorSelect,
+    label: autoGearDefaultFocusMonitorLabel,
+  },
+  {
+    key: 'handheld7',
+    select: autoGearDefaultHandheldMonitorSelect,
+    label: autoGearDefaultHandheldMonitorLabel,
+  },
+  {
+    key: 'combo15',
+    select: autoGearDefaultComboMonitorSelect,
+    label: autoGearDefaultComboMonitorLabel,
+  },
+  {
+    key: 'director15',
+    select: autoGearDefaultDirectorMonitorSelect,
+    label: autoGearDefaultDirectorMonitorLabel,
+  },
+];
+autoGearMonitorDefaultControls.forEach(control => {
+  if (!control || !control.select) return;
+  control.select.addEventListener('change', event => {
+    setAutoGearMonitorDefault(control.key, event.target.value);
+  });
+});
 const autoGearSearchInput = document.getElementById('autoGearSearch');
 const autoGearSearchLabel = document.getElementById('autoGearSearchLabel');
 const autoGearFilterScenarioLabel = document.getElementById('autoGearFilterScenarioLabel');
@@ -12448,6 +12696,77 @@ function updateAutoGearCatalogOptions() {
     autoGearItemCatalog.appendChild(option);
   });
   updateAutoGearMonitorCatalogOptions();
+  updateAutoGearMonitorDefaultOptions();
+}
+
+function updateAutoGearMonitorDefaultOptions(targets = autoGearMonitorDefaultControls) {
+  const controls = Array.isArray(targets) ? targets : [targets];
+  const placeholder = getAutoGearMonitorDefaultPlaceholder();
+  controls.forEach(control => {
+    if (!control || !control.select || !Object.prototype.hasOwnProperty.call(AUTO_GEAR_MONITOR_DEFAULT_TYPES, control.key)) {
+      return;
+    }
+    const select = control.select;
+    const type = AUTO_GEAR_MONITOR_DEFAULT_TYPES[control.key];
+    const names = collectAutoGearMonitorNames(type === 'directorMonitor' ? 'directorMonitor' : 'monitor');
+    const previousValue = select.value || '';
+    select.innerHTML = '';
+    const placeholderOption = document.createElement('option');
+    placeholderOption.value = '';
+    placeholderOption.textContent = placeholder;
+    select.appendChild(placeholderOption);
+    const added = new Set(['']);
+    names.forEach(name => {
+      if (!name) return;
+      const key = name.toLowerCase();
+      if (added.has(key)) return;
+      const option = document.createElement('option');
+      option.value = name;
+      option.textContent = formatAutoGearSelectorValue(type, name);
+      select.appendChild(option);
+      added.add(key);
+    });
+    const currentValue = getAutoGearMonitorDefault(control.key);
+    let normalizedValue = '';
+    if (currentValue) {
+      const match = names.find(name => name.toLowerCase() === currentValue.toLowerCase());
+      if (match) {
+        normalizedValue = match;
+      } else {
+        const option = document.createElement('option');
+        option.value = currentValue;
+        option.textContent = formatAutoGearSelectorValue(type, currentValue);
+        select.appendChild(option);
+        normalizedValue = currentValue;
+      }
+    }
+    select.value = normalizedValue;
+    if (!normalizedValue && previousValue && select.value !== previousValue && select.querySelector(`option[value="${previousValue}"]`)) {
+      select.value = previousValue;
+    }
+    select.disabled = names.length === 0 && !normalizedValue;
+  });
+}
+
+function renderAutoGearMonitorDefaultsControls() {
+  autoGearMonitorDefaultControls.forEach(control => {
+    if (!control || !control.select || !Object.prototype.hasOwnProperty.call(AUTO_GEAR_MONITOR_DEFAULT_TYPES, control.key)) {
+      return;
+    }
+    const select = control.select;
+    const type = AUTO_GEAR_MONITOR_DEFAULT_TYPES[control.key];
+    const currentValue = getAutoGearMonitorDefault(control.key);
+    if (currentValue && !Array.from(select.options || []).some(option => option.value === currentValue)) {
+      const option = document.createElement('option');
+      option.value = currentValue;
+      option.textContent = formatAutoGearSelectorValue(type, currentValue);
+      select.appendChild(option);
+    }
+    const normalizedValue = currentValue || '';
+    if (select.value !== normalizedValue) {
+      select.value = normalizedValue;
+    }
+  });
 }
 
 function formatAutoGearCount(count, singularKey, pluralKey) {
@@ -13982,22 +14301,169 @@ function deleteAutoGearRule(ruleId) {
 }
 
 function parseAutoGearImportPayload(data) {
-  if (Array.isArray(data)) return data;
-  if (!data || typeof data !== 'object') return null;
-  if (Array.isArray(data.rules)) return data.rules;
-  if (Array.isArray(data.autoGearRules)) return data.autoGearRules;
-  if (data.data && Array.isArray(data.data.autoGearRules)) {
-    return data.data.autoGearRules;
+  const extractMonitorDefaults = source => {
+    if (!source || typeof source !== 'object') return null;
+    if (source.monitorDefaults && typeof source.monitorDefaults === 'object') {
+      return source.monitorDefaults;
+    }
+    if (source.autoGearMonitorDefaults && typeof source.autoGearMonitorDefaults === 'object') {
+      return source.autoGearMonitorDefaults;
+    }
+    return null;
+  };
+
+  const resolveValue = value => {
+    if (typeof value !== 'string') return value;
+    const trimmed = value.trim();
+    if (!trimmed) return value;
+    try {
+      const parsed = JSON.parse(trimmed);
+      if (parsed === value) return parsed;
+      return resolveValue(parsed);
+    } catch {
+      return value;
+    }
+  };
+
+  const visited = new Set();
+  const queue = [];
+
+  const enqueue = (rawValue, parent, root, key) => {
+    const value = resolveValue(rawValue);
+    if (!value || typeof value !== 'object') {
+      return;
+    }
+    if (visited.has(value)) {
+      return;
+    }
+    visited.add(value);
+    queue.push({
+      value,
+      parent: parent && typeof parent === 'object' ? parent : null,
+      root: root && typeof root === 'object' ? root : null,
+      key: typeof key === 'string' ? key : '',
+    });
+  };
+
+  const initialValue = resolveValue(data);
+  if (Array.isArray(initialValue)) {
+    return { rules: initialValue, monitorDefaults: null };
   }
+  if (!initialValue || typeof initialValue !== 'object') {
+    return null;
+  }
+
+  const initialRoot = !Array.isArray(initialValue) ? initialValue : null;
+  enqueue(initialValue, null, initialRoot, '');
+
+  while (queue.length) {
+    const { value, parent, root, key } = queue.shift();
+    const baseRoot = root || (value && typeof value === 'object' && !Array.isArray(value) ? value : null);
+
+    if (Array.isArray(value)) {
+      const treatAsRules = !parent || key === 'rules' || key === 'autoGearRules';
+      if (treatAsRules) {
+        const monitorDefaults = (parent ? extractMonitorDefaults(parent) : null)
+          || (root ? extractMonitorDefaults(root) : null)
+          || null;
+        return { rules: value, monitorDefaults };
+      }
+      value.forEach(item => {
+        if (item && typeof item === 'object') {
+          enqueue(item, parent, baseRoot, '');
+        }
+      });
+      continue;
+    }
+
+    if (!value || typeof value !== 'object') {
+      continue;
+    }
+
+    const monitorDefaultsFromValue = extractMonitorDefaults(value);
+    const monitorDefaultsFromParent = parent ? extractMonitorDefaults(parent) : null;
+    const monitorDefaultsFromRoot = root ? extractMonitorDefaults(root) : null;
+    const fallbackDefaults = monitorDefaultsFromValue
+      || monitorDefaultsFromParent
+      || monitorDefaultsFromRoot
+      || null;
+
+    const rawAutoGearRules = Object.prototype.hasOwnProperty.call(value, 'autoGearRules')
+      ? resolveValue(value.autoGearRules)
+      : null;
+    if (Array.isArray(rawAutoGearRules)) {
+      return { rules: rawAutoGearRules, monitorDefaults: fallbackDefaults };
+    }
+
+    const rawRules = Object.prototype.hasOwnProperty.call(value, 'rules')
+      ? resolveValue(value.rules)
+      : null;
+    if (Array.isArray(rawRules)) {
+      return { rules: rawRules, monitorDefaults: fallbackDefaults };
+    }
+    if (rawRules && typeof rawRules === 'object') {
+      const nestedAutoGearRules = Object.prototype.hasOwnProperty.call(rawRules, 'autoGearRules')
+        ? resolveValue(rawRules.autoGearRules)
+        : null;
+      if (Array.isArray(nestedAutoGearRules)) {
+        const nestedDefaults = extractMonitorDefaults(rawRules) || fallbackDefaults;
+        return {
+          rules: nestedAutoGearRules,
+          monitorDefaults: nestedDefaults,
+        };
+      }
+    }
+
+    const containerEntries = [
+      { value: value.data, key: 'data' },
+      { value: value.payload, key: 'payload' },
+      { value: value.bundle, key: 'bundle' },
+      { value: value.project, key: 'project' },
+      { value: value.config, key: 'config' },
+      { value: value.settings, key: 'settings' },
+      { value: value.content, key: 'content' },
+      { value: value.body, key: 'body' },
+      { value: value.autoGear, key: 'autoGear' },
+      { value: value.rules, key: 'rules' },
+      { value: value.autoGearRules, key: 'autoGearRules' },
+    ];
+    containerEntries.forEach(entry => {
+      if (!entry.value) return;
+      enqueue(entry.value, value, baseRoot, entry.key);
+    });
+
+    Object.keys(value).forEach(prop => {
+      if (!Object.prototype.hasOwnProperty.call(value, prop)) return;
+      if (prop === 'monitorDefaults' || prop === 'autoGearMonitorDefaults') return;
+      if (prop === 'rules' || prop === 'autoGearRules') return;
+      const child = value[prop];
+      if (!child || typeof child === 'function') return;
+      if (typeof child === 'object') {
+        enqueue(child, value, baseRoot, prop);
+      } else if (typeof child === 'string') {
+        const resolvedChild = resolveValue(child);
+        if (resolvedChild && resolvedChild !== child && typeof resolvedChild === 'object') {
+          enqueue(resolvedChild, value, baseRoot, prop);
+        }
+      }
+    });
+  }
+
   return null;
 }
 
 function importAutoGearRulesFromData(data, options = {}) {
   const parsed = parseAutoGearImportPayload(data);
-  if (parsed === null) {
+  if (!parsed || !Array.isArray(parsed.rules)) {
     throw new Error('Invalid automatic gear rules import payload');
   }
-  setAutoGearRules(Array.isArray(parsed) ? parsed : []);
+  setAutoGearRules(parsed.rules);
+  if (parsed.monitorDefaults && typeof parsed.monitorDefaults === 'object') {
+    setAutoGearMonitorDefaults(parsed.monitorDefaults);
+  } else {
+    updateAutoGearMonitorDefaultOptions();
+    renderAutoGearMonitorDefaultsControls();
+  }
   closeAutoGearEditor();
   renderAutoGearRulesList();
   updateAutoGearCatalogOptions();
@@ -14020,11 +14486,13 @@ function exportAutoGearRules() {
   if (typeof document === 'undefined') return null;
   try {
     const rules = getBaseAutoGearRules();
+    const monitorDefaults = getAutoGearMonitorDefaultsSnapshot();
     const payload = {
       type: 'camera-power-planner/auto-gear-rules',
       version: APP_VERSION,
       createdAt: new Date().toISOString(),
       rules,
+      monitorDefaults,
     };
     const json = JSON.stringify(payload, null, 2);
     if (typeof Blob !== 'function' || !URL || typeof URL.createObjectURL !== 'function') {
@@ -14060,7 +14528,8 @@ function exportAutoGearRules() {
 function createAutoGearBackup() {
   if (!autoGearRulesDirtySinceBackup) return false;
   const rules = getBaseAutoGearRules();
-  const signature = stableStringify(rules);
+  const monitorDefaultsSnapshot = getAutoGearMonitorDefaultsSnapshot();
+  const signature = getAutoGearConfigurationSignature(rules, monitorDefaultsSnapshot);
   if (signature === autoGearRulesLastBackupSignature) {
     autoGearRulesDirtySinceBackup = false;
     return false;
@@ -14069,6 +14538,7 @@ function createAutoGearBackup() {
     id: generateAutoGearId('backup'),
     createdAt: new Date().toISOString(),
     rules,
+    monitorDefaults: monitorDefaultsSnapshot,
   };
   const updatedBackups = [entry, ...autoGearBackups].slice(0, AUTO_GEAR_BACKUP_LIMIT);
   try {
@@ -14106,10 +14576,17 @@ function restoreAutoGearBackup(backupId) {
   }
   try {
     setAutoGearRules(Array.isArray(backup.rules) ? backup.rules : []);
+    if (backup.monitorDefaults) {
+      setAutoGearMonitorDefaults(backup.monitorDefaults, { skipRefresh: true });
+    }
     closeAutoGearEditor();
     renderAutoGearRulesList();
     updateAutoGearCatalogOptions();
-    autoGearRulesLastBackupSignature = stableStringify(backup.rules || []);
+    renderAutoGearMonitorDefaultsControls();
+    if (typeof refreshGearListIfVisible === 'function') {
+      refreshGearListIfVisible();
+    }
+    autoGearRulesLastBackupSignature = getAutoGearBackupEntrySignature(backup);
     autoGearRulesLastPersistedSignature = autoGearRulesLastBackupSignature;
     autoGearRulesDirtySinceBackup = false;
     const message = texts[currentLang]?.autoGearBackupRestoreSuccess

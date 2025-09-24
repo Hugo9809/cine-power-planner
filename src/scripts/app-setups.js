@@ -1,4 +1,4 @@
-/* global getManualDownloadFallbackMessage, getDiagramManualPositions, normalizeAutoGearShootingDayValue, normalizeAutoGearShootingDaysCondition */
+/* global getManualDownloadFallbackMessage, getDiagramManualPositions, normalizeAutoGearShootingDayValue, normalizeAutoGearShootingDaysCondition, getAutoGearMonitorDefault */
 
 // --- NEW SETUP MANAGEMENT FUNCTIONS ---
 
@@ -1164,6 +1164,14 @@ function collectProjectFormData() {
         }
     };
 
+    const assignManualFlag = (prop, id) => {
+        if (!gearListOutput) return;
+        const el = gearListOutput.querySelector(`#${id}`);
+        if (el && el.dataset && el.dataset.autoGearManual === 'true') {
+            info[`${prop}Manual`] = true;
+        }
+    };
+
     assignGearField('directorMonitor', 'gearListDirectorMonitor');
     assignGearField('dopMonitor', 'gearListDopMonitor');
     assignGearField('gafferMonitor', 'gearListGafferMonitor');
@@ -1172,6 +1180,14 @@ function collectProjectFormData() {
     assignGearField('dopMonitor15', 'gearListDopMonitor15');
 
     info.focusMonitor = getGearValue('gearListFocusMonitor') || '';
+
+    assignManualFlag('directorMonitor', 'gearListDirectorMonitor');
+    assignManualFlag('dopMonitor', 'gearListDopMonitor');
+    assignManualFlag('gafferMonitor', 'gearListGafferMonitor');
+    assignManualFlag('directorMonitor15', 'gearListDirectorMonitor15');
+    assignManualFlag('comboMonitor15', 'gearListComboMonitor15');
+    assignManualFlag('dopMonitor15', 'gearListDopMonitor15');
+    assignManualFlag('focusMonitor', 'gearListFocusMonitor');
 
     if (proGaffColor1 || proGaffWidth1) {
         info.proGaffColor1 = proGaffColor1 || '';
@@ -3093,42 +3109,145 @@ function generateGearListHtml(info = {}) {
             .filter(n => (!monitorsDb[n].wirelessTx || monitorsDb[n].wirelessRX))
             .sort(localeSort);
         const infoKey = role === 'DoP' ? 'dopMonitor' : `${role.toLowerCase()}Monitor`;
-        let defaultName = info[infoKey] && names.includes(info[infoKey])
-            ? info[infoKey]
-            : names.includes('SmallHD Ultra 7') ? 'SmallHD Ultra 7' : names[0];
-        if (!info[infoKey] && size) {
-            const sized = names.find(n => monitorsDb[n].screenSizeInches === size);
-            if (size === 7 && names.includes('SmallHD Ultra 7')) {
-                defaultName = 'SmallHD Ultra 7';
-            } else if (sized) {
-                defaultName = sized;
+        const manualFlag = !!info[`${infoKey}Manual`];
+        const infoValue = typeof info[infoKey] === 'string' ? info[infoKey].trim() : '';
+        const autoDefault = getAutoGearMonitorDefault('handheld7');
+        let candidate = '';
+        if (manualFlag && infoValue) {
+            candidate = infoValue;
+        } else if (autoDefault) {
+            candidate = autoDefault;
+        } else if (infoValue) {
+            candidate = infoValue;
+        }
+        const lowerNames = names.map(n => n.toLowerCase());
+        let defaultName = '';
+        if (candidate) {
+            const matchIndex = lowerNames.indexOf(candidate.toLowerCase());
+            if (matchIndex >= 0) {
+                defaultName = names[matchIndex];
             }
         }
-        const opts = names
-            .map(n => `<option value="${escapeHtml(n)}"${n === defaultName ? ' selected' : ''}>${escapeHtml(addArriKNumber(n))}</option>`)
+        if (!defaultName) {
+            if (!manualFlag && size) {
+                const sized = names.find(n => monitorsDb[n].screenSizeInches === size);
+                if (size === 7 && names.includes('SmallHD Ultra 7')) {
+                    defaultName = 'SmallHD Ultra 7';
+                } else if (sized) {
+                    defaultName = sized;
+                }
+            }
+            if (!defaultName) {
+                if (!manualFlag && !candidate && names.includes('SmallHD Ultra 7')) {
+                    defaultName = 'SmallHD Ultra 7';
+                } else if (names.length) {
+                    defaultName = names[0];
+                } else if (candidate) {
+                    defaultName = candidate;
+                }
+            }
+        }
+        const optionValues = names.slice();
+        if (candidate && !lowerNames.includes(candidate.toLowerCase())) {
+            optionValues.unshift(candidate);
+        }
+        if (defaultName && !optionValues.some(value => value.toLowerCase() === defaultName.toLowerCase())) {
+            optionValues.unshift(defaultName);
+        }
+        const seenOptions = new Set();
+        const opts = optionValues
+            .filter(Boolean)
+            .filter(value => {
+                const key = value.toLowerCase();
+                if (seenOptions.has(key)) return false;
+                seenOptions.add(key);
+                return true;
+            })
+            .map(value => {
+                const isSelected = value.toLowerCase() === (defaultName || '').toLowerCase();
+                return `<option value="${escapeHtml(value)}"${isSelected ? ' selected' : ''}>${escapeHtml(addArriKNumber(value))}</option>`;
+            })
             .join('');
         const idSuffix = role === 'DoP' ? 'Dop' : role;
         const labelRole = role.replace(/s$/, '');
-        const selectedSize = devices && devices.monitors && devices.monitors[defaultName]
-            ? devices.monitors[defaultName].screenSizeInches
-            : '';
-        monitoringItems += (monitoringItems ? '<br>' : '') + `1x <strong>${labelRole} Handheld Monitor</strong> - <span id="monitorSize${idSuffix}">${selectedSize}&quot;</span> - <select id="gearList${idSuffix}Monitor">${opts}</select> incl. Directors cage, shoulder strap, sunhood, rigging for teradeks`;
-        monitorSizes.push(selectedSize);
+        const resolvedName = Array.from(seenOptions.values()).find(value => value === (defaultName || '').toLowerCase())
+            ? optionValues.find(value => value && value.toLowerCase() === (defaultName || '').toLowerCase())
+            : defaultName;
+        const selectedMonitor = resolvedName && monitorsDb[resolvedName]
+            ? monitorsDb[resolvedName]
+            : monitorsDb[defaultName] || monitorsDb[candidate] || null;
+        const selectedSize = selectedMonitor?.screenSizeInches || '';
+        monitoringItems += (monitoringItems ? '<br>' : '')
+            + `1x <strong>${labelRole} Handheld Monitor</strong> - <span id="monitorSize${idSuffix}">${selectedSize}&quot;</span> - `
+            + `<select id="gearList${idSuffix}Monitor" data-auto-gear-manual="${manualFlag ? 'true' : 'false'}">${opts}</select> `
+            + 'incl. Directors cage, shoulder strap, sunhood, rigging for teradeks';
+        if (selectedSize) monitorSizes.push(selectedSize);
     });
     largeMonitorPrefs.forEach(({ role }) => {
         const dirDb = devices && devices.directorMonitors ? devices.directorMonitors : {};
         const names = Object.keys(dirDb).filter(n => n !== 'None').sort(localeSort);
         const infoKey = role === 'DoP' ? 'dopMonitor15' : role === 'Combo' ? 'comboMonitor15' : 'directorMonitor15';
-        let defaultName = info[infoKey] && names.includes(info[infoKey])
-            ? info[infoKey]
-            : 'SmallHD Cine 24" 4K High-Bright Monitor';
-        const opts = names
-            .map(n => `<option value="${escapeHtml(n)}"${n === defaultName ? ' selected' : ''}>${escapeHtml(addArriKNumber(n))}</option>`)
+        const manualFlag = !!info[`${infoKey}Manual`];
+        const infoValue = typeof info[infoKey] === 'string' ? info[infoKey].trim() : '';
+        const defaultKey = role === 'Combo' ? 'combo15' : 'director15';
+        const autoDefault = getAutoGearMonitorDefault(defaultKey);
+        let candidate = '';
+        if (manualFlag && infoValue) {
+            candidate = infoValue;
+        } else if (autoDefault) {
+            candidate = autoDefault;
+        } else if (infoValue) {
+            candidate = infoValue;
+        }
+        const lowerNames = names.map(n => n.toLowerCase());
+        let defaultName = '';
+        if (candidate) {
+            const matchIndex = lowerNames.indexOf(candidate.toLowerCase());
+            if (matchIndex >= 0) {
+                defaultName = names[matchIndex];
+            }
+        }
+        if (!defaultName) {
+            if (names.includes('SmallHD Cine 24" 4K High-Bright Monitor')) {
+                defaultName = 'SmallHD Cine 24" 4K High-Bright Monitor';
+            } else if (names.length) {
+                defaultName = names[0];
+            } else if (candidate) {
+                defaultName = candidate;
+            }
+        }
+        const optionValues = names.slice();
+        if (candidate && !lowerNames.includes(candidate.toLowerCase())) {
+            optionValues.unshift(candidate);
+        }
+        if (defaultName && !optionValues.some(value => value.toLowerCase() === defaultName.toLowerCase())) {
+            optionValues.unshift(defaultName);
+        }
+        const seenOptions = new Set();
+        const opts = optionValues
+            .filter(Boolean)
+            .filter(value => {
+                const key = value.toLowerCase();
+                if (seenOptions.has(key)) return false;
+                seenOptions.add(key);
+                return true;
+            })
+            .map(value => {
+                const isSelected = value.toLowerCase() === (defaultName || '').toLowerCase();
+                return `<option value="${escapeHtml(value)}"${isSelected ? ' selected' : ''}>${escapeHtml(addArriKNumber(value))}</option>`;
+            })
             .join('');
         const idSuffix = role === 'DoP' ? 'Dop' : role;
-        const size = dirDb[defaultName]?.screenSizeInches || '';
-        monitoringItems += (monitoringItems ? '<br>' : '') +
-            `1x <strong>${role} Monitor</strong> - <span id="monitorSize${idSuffix}15">${size}&quot;</span> - <select id="gearList${idSuffix}Monitor15">${opts}</select> incl. sunhood, V-Mount, AC Adapter and Wooden Camera Ultra QR Monitor Mount (Baby Pin, C-Stand)`;
+        const resolvedName = Array.from(seenOptions.values()).find(value => value === (defaultName || '').toLowerCase())
+            ? optionValues.find(value => value && value.toLowerCase() === (defaultName || '').toLowerCase())
+            : defaultName;
+        const size = resolvedName && dirDb[resolvedName]?.screenSizeInches
+            ? dirDb[resolvedName].screenSizeInches
+            : (dirDb[defaultName]?.screenSizeInches || dirDb[candidate]?.screenSizeInches || '');
+        monitoringItems += (monitoringItems ? '<br>' : '')
+            + `1x <strong>${role} Monitor</strong> - <span id="monitorSize${idSuffix}15">${size}&quot;</span> - `
+            + `<select id="gearList${idSuffix}Monitor15" data-auto-gear-manual="${manualFlag ? 'true' : 'false'}">${opts}</select> `
+            + 'incl. sunhood, V-Mount, AC Adapter and Wooden Camera Ultra QR Monitor Mount (Baby Pin, C-Stand)';
         if (size) monitorSizes.push(size);
     });
     if (hasMotor) {
@@ -3136,15 +3255,65 @@ function generateGearListHtml(info = {}) {
         const names = Object.keys(monitorsDb)
             .filter(n => (!monitorsDb[n].wirelessTx || monitorsDb[n].wirelessRX))
             .sort(localeSort);
-        const defaultName = info.focusMonitor && names.includes(info.focusMonitor)
-            ? info.focusMonitor
-            : names.includes('TV Logic F7HS') ? 'TV Logic F7HS' : names[0];
-        const opts = names
-            .map(n => `<option value="${escapeHtml(n)}"${n === defaultName ? ' selected' : ''}>${escapeHtml(addArriKNumber(n))}</option>`)
+        const manualFlag = !!info.focusMonitorManual;
+        const infoValue = typeof info.focusMonitor === 'string' ? info.focusMonitor.trim() : '';
+        const autoDefault = getAutoGearMonitorDefault('focus');
+        let candidate = '';
+        if (manualFlag && infoValue) {
+            candidate = infoValue;
+        } else if (autoDefault) {
+            candidate = autoDefault;
+        } else if (infoValue) {
+            candidate = infoValue;
+        }
+        const lowerNames = names.map(n => n.toLowerCase());
+        let defaultName = '';
+        if (candidate) {
+            const matchIndex = lowerNames.indexOf(candidate.toLowerCase());
+            if (matchIndex >= 0) {
+                defaultName = names[matchIndex];
+            }
+        }
+        if (!defaultName) {
+            if (names.includes('TV Logic F7HS')) {
+                defaultName = 'TV Logic F7HS';
+            } else if (names.length) {
+                defaultName = names[0];
+            } else if (candidate) {
+                defaultName = candidate;
+            }
+        }
+        const optionValues = names.slice();
+        if (candidate && !lowerNames.includes(candidate.toLowerCase())) {
+            optionValues.unshift(candidate);
+        }
+        if (defaultName && !optionValues.some(value => value.toLowerCase() === defaultName.toLowerCase())) {
+            optionValues.unshift(defaultName);
+        }
+        const seenOptions = new Set();
+        const opts = optionValues
+            .filter(Boolean)
+            .filter(value => {
+                const key = value.toLowerCase();
+                if (seenOptions.has(key)) return false;
+                seenOptions.add(key);
+                return true;
+            })
+            .map(value => {
+                const isSelected = value.toLowerCase() === (defaultName || '').toLowerCase();
+                return `<option value="${escapeHtml(value)}"${isSelected ? ' selected' : ''}>${escapeHtml(addArriKNumber(value))}</option>`;
+            })
             .join('');
-        const selectedSize = monitorsDb[defaultName]?.screenSizeInches || '';
-        monitoringItems += (monitoringItems ? '<br>' : '') +
-            `1x <strong>Focus Monitor</strong> - <span id="monitorSizeFocus">${selectedSize}&quot;</span> - <select id="gearListFocusMonitor">${opts}</select> incl Directors cage, shoulder strap, sunhood, rigging for teradeks`;
+        const resolvedName = Array.from(seenOptions.values()).find(value => value === (defaultName || '').toLowerCase())
+            ? optionValues.find(value => value && value.toLowerCase() === (defaultName || '').toLowerCase())
+            : defaultName;
+        const selectedSize = resolvedName && monitorsDb[resolvedName]
+            ? monitorsDb[resolvedName].screenSizeInches
+            : (monitorsDb[defaultName]?.screenSizeInches || monitorsDb[candidate]?.screenSizeInches || '');
+        monitoringItems += (monitoringItems ? '<br>' : '')
+            + `1x <strong>Focus Monitor</strong> - <span id="monitorSizeFocus">${selectedSize}&quot;</span> - `
+            + `<select id="gearListFocusMonitor" data-auto-gear-manual="${manualFlag ? 'true' : 'false'}">${opts}</select> `
+            + 'incl Directors cage, shoulder strap, sunhood, rigging for teradeks';
         if (selectedSize) monitorSizes.push(selectedSize);
     }
     const monitoringGear = [];
@@ -4439,6 +4608,7 @@ function bindGearListDirectorMonitorListener() {
                 if (span && monitorInfo && monitorInfo.screenSizeInches) {
                     span.textContent = `${monitorInfo.screenSizeInches}"`;
                 }
+                sel.dataset.autoGearManual = 'true';
                 saveCurrentGearList();
                 saveCurrentSession();
                 checkSetupChanged();
@@ -4454,6 +4624,7 @@ function bindGearListDirectorMonitorListener() {
                 if (span && monitorInfo && monitorInfo.screenSizeInches) {
                     span.textContent = `${monitorInfo.screenSizeInches}"`;
                 }
+                sel.dataset.autoGearManual = 'true';
                 saveCurrentGearList();
                 saveCurrentSession();
                 checkSetupChanged();
