@@ -530,8 +530,9 @@ Use the following repeatable routines to keep projects, backups and offline
 assets in sync on every machine that runs Cine Power Planner. Each checklist is
 designed so crews can confirm that saving, sharing, importing, backup and
 restore paths all function before heading to set and again before wrapping. A
-print-friendly version lives in `docs/operations-checklist.md` for quick field
-reference.
+print-friendly version lives in `docs/operations-checklist.md`, and the travel-
+focused `docs/offline-readiness.md` runbook expands on these steps for crews
+preparing hardware that will operate without connectivity for extended periods.
 
 ### Pre-shoot readiness
 
