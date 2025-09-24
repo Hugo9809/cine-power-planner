@@ -481,7 +481,7 @@ const gear = {
     }
   },
   "iosVideo": {
-    "Teradek Serv": {
+    "Teradek - Serv 4K v2": {
       "powerDrawWatts": 9,
       "videoInputs": [
         {
@@ -507,7 +507,7 @@ const gear = {
       },
       "notes": "Streams to iOS devices for on-set monitoring"
     },
-    "Teradek Serv + Link": {
+    "Teradek - Link AX WifiRouter/Access Point": {
       "powerDrawWatts": 9,
       "videoInputs": [
         {
@@ -531,7 +531,7 @@ const gear = {
           }
         ]
       },
-      "notes": "Streams to iOS devices for on-set monitoring; includes Link access point"
+      "notes": "Streams to iOS devices for on-set monitoring; includes Link AX Wi-Fi router/access point"
     }
   },
   "accessories": {

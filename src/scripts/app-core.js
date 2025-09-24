@@ -2150,7 +2150,7 @@ function buildDefaultVideoDistributionAutoGearRules(baseInfo = {}) {
       }
 
       if (!additions.length) {
-        const fallback = createItem('Teradek Serv + Link', 'Monitoring');
+        const fallback = createItem('Teradek - Link AX WifiRouter/Access Point', 'Monitoring');
         if (fallback) additions.push(fallback);
       }
 
