@@ -6624,6 +6624,7 @@ var PINK_MODE_ANIMATED_ICON_PROBE_POINTS = Object.freeze([Object.freeze({
   y: -0.25
 })]);
 var pinkModeAnimatedIconLayer = null;
+var pinkModeIconRainLayer = null;
 var pinkModeAnimatedIconTimeoutId = null;
 var pinkModeAnimatedIconsActive = false;
 var pinkModeAnimatedIconTemplates = null;
@@ -6765,25 +6766,31 @@ function _loadPinkModeAnimatedIconTemplates() {
   }));
   return _loadPinkModeAnimatedIconTemplates.apply(this, arguments);
 }
-function ensurePinkModeAnimationLayer() {
-  if (!document) {
+function ensurePinkModeAnimationLayer(options) {
+  if (typeof document === 'undefined') {
     return null;
   }
-  var host = document.body || document.getElementById('mainContent');
+  var useGlobalLayer = Boolean(options && options.global);
+  var host = useGlobalLayer ? document.body || document.getElementById('mainContent') : document.getElementById('mainContent') || document.body;
   if (!host) {
     return null;
   }
-  if (pinkModeAnimatedIconLayer && pinkModeAnimatedIconLayer.isConnected && host.contains(pinkModeAnimatedIconLayer)) {
-    return pinkModeAnimatedIconLayer;
+  var layer = useGlobalLayer ? pinkModeIconRainLayer : pinkModeAnimatedIconLayer;
+  if (layer && layer.isConnected && host.contains(layer)) {
+    return layer;
   }
-  if (pinkModeAnimatedIconLayer && pinkModeAnimatedIconLayer.parentNode) {
-    pinkModeAnimatedIconLayer.parentNode.removeChild(pinkModeAnimatedIconLayer);
+  if (layer && layer.parentNode) {
+    layer.parentNode.removeChild(layer);
   }
-  var layer = document.createElement('div');
-  layer.className = 'pink-mode-animation-layer';
+  layer = document.createElement('div');
+  layer.className = useGlobalLayer ? 'pink-mode-animation-layer pink-mode-animation-layer--global' : 'pink-mode-animation-layer';
   layer.setAttribute('aria-hidden', 'true');
   host.appendChild(layer);
-  pinkModeAnimatedIconLayer = layer;
+  if (useGlobalLayer) {
+    pinkModeIconRainLayer = layer;
+  } else {
+    pinkModeAnimatedIconLayer = layer;
+  }
   return layer;
 }
 function computePinkModeAnimationAvoidRegions(layer) {
@@ -7228,12 +7235,18 @@ function destroyPinkModeIconRainInstance(instance) {
     instance.container.parentNode.removeChild(instance.container);
   }
   pinkModeIconRainInstances.delete(instance);
+  if (!pinkModeIconRainInstances.size && pinkModeIconRainLayer && pinkModeIconRainLayer.parentNode) {
+    pinkModeIconRainLayer.parentNode.removeChild(pinkModeIconRainLayer);
+    pinkModeIconRainLayer = null;
+  }
 }
 function spawnPinkModeIconRainInstance(templates) {
   if (!Array.isArray(templates) || !templates.length || typeof window === 'undefined' || !window.lottie || typeof window.lottie.loadAnimation !== 'function') {
     return false;
   }
-  var layer = ensurePinkModeAnimationLayer();
+  var layer = ensurePinkModeAnimationLayer({
+    global: true
+  });
   if (!layer) {
     return false;
   }
@@ -8813,6 +8826,42 @@ function getCurrentProjectName() {
     return typedName;
   }
   return setupSelect && setupSelect.value || '';
+}
+function normalizeSetupName(value) {
+  if (typeof value !== 'string') {
+    return '';
+  }
+  return value.trim();
+}
+function getSetupNameState() {
+  var rawTyped = setupNameInput && typeof setupNameInput.value === 'string' ? setupNameInput.value : '';
+  var rawSelected = setupSelect && typeof setupSelect.value === 'string' ? setupSelect.value : '';
+  var typedName = normalizeSetupName(rawTyped);
+  var selectedName = normalizeSetupName(rawSelected);
+  var renameInProgress = Boolean(selectedName && typedName && typedName !== selectedName);
+  var storageKey = selectedName || typedName || '';
+  return {
+    typedName: typedName,
+    selectedName: selectedName,
+    renameInProgress: renameInProgress,
+    storageKey: storageKey
+  };
+}
+function createProjectInfoSnapshotForStorage(baseInfo) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  if (baseInfo == null || _typeof(baseInfo) !== 'object') {
+    return baseInfo == null ? null : baseInfo;
+  }
+  var projectNameOverride = options.projectNameOverride;
+  if (typeof projectNameOverride !== 'string' || !projectNameOverride) {
+    return baseInfo;
+  }
+  if (typeof baseInfo.projectName === 'string' && normalizeSetupName(baseInfo.projectName) === projectNameOverride) {
+    return baseInfo;
+  }
+  return _objectSpread(_objectSpread({}, baseInfo), {}, {
+    projectName: projectNameOverride
+  });
 }
 function getCurrentProjectStorageKey() {
   var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -22118,21 +22167,30 @@ function attachDiagramPopups(map) {
     var infoHtml = (deviceData && deviceData.latencyMs ? "<div class=\"info-box video-conn\"><strong>Latency:</strong> ".concat(escapeHtml(String(deviceData.latencyMs)), "</div>") : '') + (deviceData && deviceData.frequency ? "<div class=\"info-box video-conn\"><strong>Frequency:</strong> ".concat(escapeHtml(String(deviceData.frequency)), "</div>") : '');
     var html = "<strong>".concat(escapeHtml(info.name), "</strong>") + connectors + infoHtml;
     var show = function show(e) {
+      var _window$visualViewpor, _document$documentEle, _window$visualViewpor2, _document$documentEle2;
       e.stopPropagation();
       var pointer = e.touches && e.touches[0] ? e.touches[0] : e;
       popup.innerHTML = html;
       popup.style.display = 'block';
-      var rect = setupDiagramContainer.getBoundingClientRect();
-      var relX = pointer.clientX - rect.left;
-      var relY = pointer.clientY - rect.top;
-      var offset = 10;
-      var popupWidth = popup.offsetWidth;
-      var left = relX + offset;
-      if (relX + popupWidth + offset > rect.width) {
-        left = Math.max(0, relX - popupWidth - offset);
+      var offset = 12;
+      var viewportWidth = ((_window$visualViewpor = window.visualViewport) === null || _window$visualViewpor === void 0 ? void 0 : _window$visualViewpor.width) || window.innerWidth || ((_document$documentEle = document.documentElement) === null || _document$documentEle === void 0 ? void 0 : _document$documentEle.clientWidth) || 0;
+      var viewportHeight = ((_window$visualViewpor2 = window.visualViewport) === null || _window$visualViewpor2 === void 0 ? void 0 : _window$visualViewpor2.height) || window.innerHeight || ((_document$documentEle2 = document.documentElement) === null || _document$documentEle2 === void 0 ? void 0 : _document$documentEle2.clientHeight) || 0;
+      var popupWidth = popup.offsetWidth || 0;
+      var popupHeight = popup.offsetHeight || 0;
+      var pointerX = pointer.clientX;
+      var pointerY = pointer.clientY;
+      var left = pointerX + offset;
+      if (viewportWidth > 0 && popupWidth > 0 && left + popupWidth + offset > viewportWidth) {
+        left = Math.max(offset, pointerX - popupWidth - offset);
       }
-      popup.style.left = "".concat(left, "px");
-      popup.style.top = "".concat(relY + offset, "px");
+      var top = pointerY + offset;
+      if (viewportHeight > 0 && popupHeight > 0 && top + popupHeight + offset > viewportHeight) {
+        top = Math.max(offset, pointerY - popupHeight - offset);
+      }
+      var maxLeft = viewportWidth > 0 && popupWidth > 0 ? Math.max(offset, viewportWidth - popupWidth - offset) : left;
+      var maxTop = viewportHeight > 0 && popupHeight > 0 ? Math.max(offset, viewportHeight - popupHeight - offset) : top;
+      popup.style.left = "".concat(Math.max(offset, Math.min(left, maxLeft)), "px");
+      popup.style.top = "".concat(Math.max(offset, Math.min(top, maxTop)), "px");
     };
     var hide = function hide() {
       popup.style.display = 'none';

@@ -225,8 +225,17 @@ setupSelect.addEventListener("change", function (event) {
     }
     var previousProjectInfo = deriveProjectInfo(info);
     currentProjectInfo = previousProjectInfo;
+    var normalizeForOverride = typeof normalizeSetupName === 'function' ? normalizeSetupName : function (value) {
+      return typeof value === 'string' ? value.trim() : '';
+    };
+    var normalizedPreviousKey = normalizeForOverride(previousKey);
+    var normalizedTypedName = normalizeForOverride(typedName);
+    var renameInProgressForPrevious = Boolean(normalizedPreviousKey && normalizedTypedName && normalizedTypedName !== normalizedPreviousKey);
+    var projectInfoForStorage = typeof createProjectInfoSnapshotForStorage === 'function' ? createProjectInfoSnapshotForStorage(previousProjectInfo, {
+      projectNameOverride: renameInProgressForPrevious ? normalizedPreviousKey : undefined
+    }) : previousProjectInfo;
     var previousPayload = {
-      projectInfo: previousProjectInfo,
+      projectInfo: projectInfoForStorage,
       gearList: getCurrentGearListHtml()
     };
     if (typeof getDiagramManualPositions === 'function') {
