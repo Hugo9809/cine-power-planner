@@ -68,6 +68,7 @@ body.dark-mode {
   --status-warning-bg: #ff6b6b;
   --status-warning-text-color: #000000;
   --status-error-text-color: #000;
+  --nd-grad-border-color: var(--accent-color);
   --font-size-base: 11pt;
   font-family: 'Ubuntu', sans-serif;
   font-weight: var(--font-weight-light);
@@ -108,8 +109,20 @@ strong {
   --power-color: #d33;
   --video-color: #369;
   --fiz-color: #090;
+  --nd-grad-border-color: var(--accent-color);
   background: var(--surface-color) !important;
   color: var(--text-color) !important;
+}
+
+body.dark-mode,
+#overviewDialogContent.dark-mode {
+  --nd-grad-border-color: #ffffff;
+}
+
+html.pink-mode,
+body.pink-mode,
+#overviewDialogContent.pink-mode {
+  --nd-grad-border-color: #ff69b4;
 }
 
 /* Ensure setup diagram uses light theme when printing */
@@ -436,6 +449,14 @@ body:not(.light-mode) .gear-table .category-row {
   gap: 0.4em;
   flex-wrap: nowrap;
   white-space: nowrap;
+}
+
+#overviewDialogContent .gear-table .gear-item[data-gear-name^="ND Grad HE Filter Set"],
+#overviewDialogContent .gear-table .gear-item[data-gear-name^="ND Grad SE Filter Set"] {
+  padding: 0.15em 0.45em;
+  border: 1px solid var(--nd-grad-border-color, var(--accent-color));
+  border-radius: calc(var(--border-radius) * 0.75);
+  background-color: color-mix(in srgb, var(--panel-bg) 88%, transparent);
 }
 
 #overviewDialogContent .gear-table .auto-gear-item,
