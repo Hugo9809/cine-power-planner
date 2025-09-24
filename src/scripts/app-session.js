@@ -1758,6 +1758,14 @@ function applyShowAutoBackupsPreference(enabled, options = {}) {
 
   showAutoBackups = normalized;
 
+  if (normalized && typeof ensureAutoBackupsFromProjects === 'function') {
+    try {
+      ensureAutoBackupsFromProjects();
+    } catch (error) {
+      console.warn('Failed to sync auto backups from project storage', error);
+    }
+  }
+
   if (persist && typeof localStorage !== 'undefined') {
     try {
       localStorage.setItem('showAutoBackups', normalized);

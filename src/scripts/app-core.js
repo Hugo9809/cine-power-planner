@@ -2997,6 +2997,8 @@ const VIDEO_OUTPUT_TYPES = new Set([
 ]);
 
 const DEFAULT_FILTER_SIZE = '4x5.65';
+const AUTO_BACKUP_NAME_PREFIX = 'auto-backup-';
+const AUTO_BACKUP_DELETION_PREFIX = 'auto-backup-before-delete-';
 
 let showAutoBackups = false;
 try {
@@ -3005,6 +3007,88 @@ try {
   }
 } catch (e) {
   console.warn('Could not load auto backup visibility preference', e);
+}
+function cloneProjectEntryForSetup(projectEntry) {
+  if (!projectEntry || typeof projectEntry !== 'object') {
+    return {};
+  }
+
+  const snapshot = {};
+  const { projectInfo, gearList, autoGearRules } = projectEntry;
+
+  if (projectInfo && typeof projectInfo === 'object') {
+    try {
+      snapshot.projectInfo = JSON.parse(JSON.stringify(projectInfo));
+    } catch (error) {
+      console.warn('Failed to clone project info for auto backup import', error);
+      snapshot.projectInfo = projectInfo;
+    }
+  }
+
+  if (typeof gearList === 'string' && gearList.trim()) {
+    snapshot.gearList = gearList;
+  }
+
+  if (Array.isArray(autoGearRules) && autoGearRules.length) {
+    try {
+      snapshot.autoGearRules = JSON.parse(JSON.stringify(autoGearRules));
+    } catch (error) {
+      console.warn('Failed to clone auto gear rules for auto backup import', error);
+      snapshot.autoGearRules = autoGearRules.slice();
+    }
+  }
+
+  return snapshot;
+}
+
+function ensureAutoBackupsFromProjects() {
+  if (typeof loadProject !== 'function') return false;
+
+  let projects;
+  try {
+    projects = loadProject();
+  } catch (error) {
+    console.warn('Failed to read projects while syncing auto backups', error);
+    return false;
+  }
+
+  if (!projects || typeof projects !== 'object') {
+    return false;
+  }
+
+  const setups = getSetups();
+  let changed = false;
+
+  Object.keys(projects).forEach((name) => {
+    if (typeof name !== 'string' || !name) return;
+    const isAutoBackup = name.startsWith(AUTO_BACKUP_NAME_PREFIX)
+      || name.startsWith(AUTO_BACKUP_DELETION_PREFIX);
+    if (!isAutoBackup) return;
+    if (Object.prototype.hasOwnProperty.call(setups, name)) return;
+
+    const snapshot = cloneProjectEntryForSetup(projects[name]);
+    setups[name] = snapshot;
+    changed = true;
+  });
+
+  if (changed) {
+    try {
+      storeSetups(setups);
+    } catch (error) {
+      console.warn('Failed to persist imported auto backups from projects', error);
+      return false;
+    }
+  }
+
+  return changed;
+}
+
+if (showAutoBackups) {
+  try {
+    ensureAutoBackupsFromProjects();
+  } catch (error) {
+    console.warn('Failed to prepare auto backups from project storage', error);
+  }
 }
 
 // Labels for B-Mount support are defined in translations.js using the keys

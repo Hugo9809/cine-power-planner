@@ -296,6 +296,60 @@ describe('automated backups', () => {
     expect(localStorage.getItem('showAutoBackups')).toBe('true');
   });
 
+  test('enabling show auto backups imports missing project-only backups', () => {
+    localStorage.clear();
+
+    loadApp();
+
+    const autoBackupName = 'auto-backup-2024-05-06-14-30-Main Setup';
+    const setupSelect = document.getElementById('setupSelect');
+    const setupNameInput = document.getElementById('setupName');
+    const settingsButton = document.getElementById('settingsButton');
+    const settingsShowAutoBackups = document.getElementById('settingsShowAutoBackups');
+
+    let storedSetups = { 'Main Setup': { projectInfo: { projectName: 'Main Setup' } } };
+    global.loadSetups.mockImplementation(() => ({ ...storedSetups }));
+    global.saveSetups.mockImplementation((data) => {
+      storedSetups = { ...data };
+    });
+    global.loadProject.mockImplementation(() => ({
+      [autoBackupName]: {
+        projectInfo: { projectName: 'Main Setup', projectNotes: 'synced from project storage' },
+        gearList: '<div>gear</div>',
+        autoGearRules: [{ id: 'rule-1', label: 'Auto import rule' }],
+      },
+    }));
+
+    setupSelect.innerHTML = '';
+    const defaultOption = document.createElement('option');
+    defaultOption.value = '';
+    defaultOption.textContent = '';
+    setupSelect.appendChild(defaultOption);
+    const manualOption = document.createElement('option');
+    manualOption.value = 'Main Setup';
+    manualOption.textContent = 'Main Setup';
+    setupSelect.appendChild(manualOption);
+
+    expect(Array.from(setupSelect.options).map((opt) => opt.value)).not.toContain(autoBackupName);
+
+    setupSelect.value = 'Main Setup';
+    setupNameInput.value = 'Main Setup';
+
+    settingsButton.click();
+    settingsShowAutoBackups.checked = true;
+    settingsShowAutoBackups.dispatchEvent(new Event('change'));
+
+    expect(global.saveSetups).toHaveBeenCalledWith(expect.objectContaining({
+      [autoBackupName]: expect.objectContaining({
+        projectInfo: expect.objectContaining({ projectName: 'Main Setup' }),
+      }),
+    }));
+
+    const optionValues = Array.from(setupSelect.options).map((opt) => opt.value);
+    expect(optionValues).toContain(autoBackupName);
+    expect(localStorage.getItem('showAutoBackups')).toBe('true');
+  });
+
   test('cancelling settings restores previous auto backup visibility', () => {
     fakeTimersActive = true;
     jest.useFakeTimers();
