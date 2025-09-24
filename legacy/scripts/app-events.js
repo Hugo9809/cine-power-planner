@@ -180,6 +180,42 @@ setupSelect.addEventListener("change", function (event) {
   var setupName = event.target.value;
   var typedName = setupNameInput && typeof setupNameInput.value === 'string' ? setupNameInput.value.trim() : '';
   var previousKey = (lastSetupName && typeof lastSetupName === 'string' ? lastSetupName : '') || typedName || '';
+  var normalizeProjectName = function normalizeProjectName(value) {
+    return typeof value === 'string' ? value.replace(/\s+/g, ' ').trim() : '';
+  };
+  var normalizedLastSelection = normalizeProjectName(lastSetupName);
+  var normalizedTargetSelection = normalizeProjectName(setupName);
+  var autoSaveFlushed = false;
+  if (typeof scheduleProjectAutoSave === 'function') {
+    try {
+      scheduleProjectAutoSave(true);
+      autoSaveFlushed = true;
+    } catch (error) {
+      console.warn('Failed to flush project autosave before switching setups', error);
+    }
+  }
+  if (!autoSaveFlushed) {
+    try {
+      if (typeof saveCurrentSession === 'function') {
+        saveCurrentSession();
+      }
+      if (typeof saveCurrentGearList === 'function') {
+        saveCurrentGearList();
+      }
+    } catch (error) {
+      console.warn('Failed to persist project state before switching setups', error);
+    }
+  }
+  if (typeof autoBackup === 'function' && normalizedTargetSelection !== normalizedLastSelection) {
+    try {
+      autoBackup({
+        suppressSuccess: true,
+        projectNameOverride: normalizeProjectName(previousKey)
+      });
+    } catch (error) {
+      console.warn('Failed to auto backup project before loading a different setup', error);
+    }
+  }
   if (typeof saveProject === 'function') {
     var info = projectForm ? collectProjectFormData() : {};
     if (info) {
@@ -266,6 +302,9 @@ setupSelect.addEventListener("change", function (event) {
       updateBatteryOptions();
       var storedProject = typeof loadProject === 'function' ? loadProject(setupName) : null;
       var html = setup.gearList || (storedProject === null || storedProject === void 0 ? void 0 : storedProject.gearList) || '';
+      if (html && typeof globalThis !== 'undefined') {
+        globalThis.__cineLastGearListHtml = html;
+      }
       currentProjectInfo = setup.projectInfo || (storedProject === null || storedProject === void 0 ? void 0 : storedProject.projectInfo) || null;
       var projectRulesSource = Array.isArray(setup.autoGearRules) && setup.autoGearRules.length ? setup.autoGearRules : Array.isArray(storedProject === null || storedProject === void 0 ? void 0 : storedProject.autoGearRules) && storedProject.autoGearRules.length ? storedProject.autoGearRules : null;
       if (projectRulesSource) {
@@ -317,8 +356,25 @@ setupSelect.addEventListener("change", function (event) {
 function populateSetupSelect() {
   var setups = getSetups();
   setupSelect.innerHTML = "<option value=\"\">".concat(texts[currentLang].newSetupOption, "</option>");
+  var includeAutoBackups = false;
+  if (typeof showAutoBackups === 'boolean') {
+    includeAutoBackups = showAutoBackups;
+  } else if (typeof localStorage !== 'undefined') {
+    try {
+      includeAutoBackups = localStorage.getItem('showAutoBackups') === 'true';
+    } catch (error) {
+      console.warn('Could not read auto backup visibility preference', error);
+    }
+  }
+  if (includeAutoBackups && typeof ensureAutoBackupsFromProjects === 'function') {
+    try {
+      ensureAutoBackupsFromProjects();
+    } catch (error) {
+      console.warn('Failed to prepare auto backups before populating selector', error);
+    }
+  }
   var names = Object.keys(setups).filter(function (name) {
-    return showAutoBackups || !name.startsWith('auto-backup-');
+    return includeAutoBackups || !name.startsWith('auto-backup-');
   }).sort(function (a, b) {
     var autoA = a.startsWith('auto-backup-');
     var autoB = b.startsWith('auto-backup-');
@@ -351,17 +407,44 @@ function autoBackup() {
   var suppressError = Boolean(config.suppressError);
   var successMessage = typeof config.successMessage === 'string' && config.successMessage ? config.successMessage : 'Auto backup saved';
   var errorMessage = typeof config.errorMessage === 'string' && config.errorMessage ? config.errorMessage : 'Auto backup failed';
+  var normalizeProjectName = function normalizeProjectName(value) {
+    return typeof value === 'string' ? value.replace(/\s+/g, ' ').trim() : '';
+  };
+  var hasProjectNameOverride = Object.prototype.hasOwnProperty.call(config, 'projectNameOverride');
+  var overrideName = hasProjectNameOverride ? normalizeProjectName(config.projectNameOverride) : null;
   try {
     var pad = function pad(n) {
       return String(n).padStart(2, '0');
     };
     var now = new Date();
     var baseName = "auto-backup-".concat(now.getFullYear(), "-").concat(pad(now.getMonth() + 1), "-").concat(pad(now.getDate()), "-").concat(pad(now.getHours()), "-").concat(pad(now.getMinutes()));
-    var activeNameRaw = setupSelect.value || (setupNameInput && typeof setupNameInput.value === 'string' ? setupNameInput.value.trim() : '');
+    var activeNameRaw = hasProjectNameOverride ? overrideName : setupSelect.value || (setupNameInput && typeof setupNameInput.value === 'string' ? setupNameInput.value.trim() : '');
     var normalizedName = activeNameRaw ? activeNameRaw.replace(/\s+/g, ' ').trim() : '';
     var backupName = normalizedName ? "".concat(baseName, "-").concat(normalizedName) : baseName;
     var currentSetup = _objectSpread({}, getCurrentSetupState());
     var gearListHtml = getCurrentGearListHtml();
+    if (!gearListHtml) {
+      var activeName = (setupSelect && typeof setupSelect.value === 'string' ? setupSelect.value.trim() : '') || (setupNameInput && typeof setupNameInput.value === 'string' ? setupNameInput.value.trim() : '');
+      if (activeName) {
+        var _setups = typeof getSetups === 'function' ? getSetups() : null;
+        var storedSetup = _setups && _typeof(_setups) === 'object' ? _setups[activeName] : null;
+        if (storedSetup && typeof storedSetup.gearList === 'string' && storedSetup.gearList.trim()) {
+          gearListHtml = storedSetup.gearList;
+        } else if (typeof loadProject === 'function') {
+          try {
+            var storedProject = loadProject(activeName);
+            if (storedProject && typeof storedProject.gearList === 'string' && storedProject.gearList.trim()) {
+              gearListHtml = storedProject.gearList;
+            }
+          } catch (error) {
+            console.warn('Failed to read stored project while preparing auto backup', error);
+          }
+        }
+      }
+      if (!gearListHtml && typeof globalThis !== 'undefined' && typeof globalThis.__cineLastGearListHtml === 'string') {
+        gearListHtml = globalThis.__cineLastGearListHtml;
+      }
+    }
     if (gearListHtml) {
       currentSetup.gearList = gearListHtml;
     }

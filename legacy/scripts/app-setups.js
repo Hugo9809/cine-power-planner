@@ -885,7 +885,7 @@ function collectAccessories() {
     videoDistPrefs = _ref5$videoDistPrefs === void 0 ? [] : _ref5$videoDistPrefs;
   var cameraSupport = [];
   var misc = [];
-  var monitoringSupport = ['BNC Cable 0.5 m', 'BNC Cable 1 m', 'BNC Cable 5 m', 'BNC Cable 10 m', 'BNC Drum 25 m'];
+  var monitoringSupport = [];
   var rigging = [];
   var chargers = [];
   var fizCables = [];
@@ -1648,7 +1648,6 @@ function formatAutoGearRuleTooltip(rule) {
   }
   return unnamedTemplate;
 }
-
 function extractAutoGearRuleSource(rule) {
   if (!rule || _typeof(rule) !== 'object') return null;
   var id = typeof rule.id === 'string' ? rule.id.trim() : '';
@@ -1659,7 +1658,6 @@ function extractAutoGearRuleSource(rule) {
     label: label
   };
 }
-
 function normalizeAutoGearRuleSourceEntry(entry) {
   if (!entry) return null;
   if (typeof entry === 'string') {
@@ -1679,7 +1677,6 @@ function normalizeAutoGearRuleSourceEntry(entry) {
     label: label
   };
 }
-
 function dedupeAutoGearRuleSources(entries) {
   if (!Array.isArray(entries) || !entries.length) return [];
   var seen = new Set();
@@ -1699,7 +1696,6 @@ function dedupeAutoGearRuleSources(entries) {
   });
   return normalized;
 }
-
 function formatAutoGearSelectorDisplayValue(type, value) {
   var normalizedValue = typeof value === 'string' ? value : value == null ? '' : String(value);
   var scope = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : {};
@@ -1711,7 +1707,6 @@ function formatAutoGearSelectorDisplayValue(type, value) {
   }
   return normalizedValue;
 }
-
 function getAutoGearRuleSources(span) {
   if (!span || !span.dataset) return [];
   var dataset = span.dataset;
@@ -1729,16 +1724,13 @@ function getAutoGearRuleSources(span) {
     }
   }
   if (!sources.length) {
-    sources = dedupeAutoGearRuleSources([
-      {
-        id: dataset.autoGearRuleId,
-        label: dataset.autoGearRuleLabel
-      }
-    ]);
+    sources = dedupeAutoGearRuleSources([{
+      id: dataset.autoGearRuleId,
+      label: dataset.autoGearRuleLabel
+    }]);
   }
   return sources;
 }
-
 function setAutoGearRuleSources(span, entries) {
   if (!span || !span.dataset) return;
   var normalized = dedupeAutoGearRuleSources(entries);
@@ -1766,7 +1758,6 @@ function setAutoGearRuleSources(span, entries) {
     delete dataset.autoGearRuleLabel;
   }
 }
-
 function appendAutoGearRuleSource(span, rule) {
   if (!span || !span.dataset) return;
   var addition = extractAutoGearRuleSource(rule);
@@ -1776,7 +1767,6 @@ function appendAutoGearRuleSource(span, rule) {
   }
   setAutoGearRuleSources(span, existing);
 }
-
 function buildAutoGearRuleTooltipFromSources(sources) {
   if (!Array.isArray(sources) || !sources.length) return '';
   var labels = sources.map(function (source) {
@@ -1790,61 +1780,6 @@ function buildAutoGearRuleTooltipFromSources(sources) {
   return formatAutoGearRuleTooltip({
     label: labels.join(', ')
   });
-}
-
-function refreshAutoGearRuleBadge(span) {
-  if (!span || !span.classList || !span.classList.contains('auto-gear-item')) {
-    return;
-  }
-  var sources = getAutoGearRuleSources(span);
-  setAutoGearRuleSources(span, sources);
-  applyAutoGearRuleColors(span);
-  var badgeTexts = sources.map(function (source) {
-    return formatAutoGearRuleBadgeText(source.label, source.id);
-  }).filter(Boolean);
-  var existingBadges = Array.from(span.querySelectorAll('.auto-gear-rule-badge'));
-  if (!badgeTexts.length) {
-    existingBadges.forEach(function (node) {
-      return node.remove();
-    });
-    if (span.dataset && Object.prototype.hasOwnProperty.call(span.dataset, 'autoGearRuleBadge')) {
-      delete span.dataset.autoGearRuleBadge;
-    }
-    var emptyTooltip = buildAutoGearRuleTooltipFromSources(sources);
-    if (emptyTooltip) {
-      span.title = emptyTooltip;
-    } else {
-      span.removeAttribute('title');
-    }
-    return;
-  }
-  badgeTexts.forEach(function (text, index) {
-    var badge = existingBadges[index];
-    if (!badge) {
-      badge = document.createElement('span');
-      badge.className = 'auto-gear-rule-badge';
-      span.appendChild(badge);
-    }
-    badge.textContent = text;
-  });
-  if (existingBadges.length > badgeTexts.length) {
-    existingBadges.slice(badgeTexts.length).forEach(function (node) {
-      return node.remove();
-    });
-  }
-  if (span.dataset) {
-    try {
-      span.dataset.autoGearRuleBadge = JSON.stringify(badgeTexts);
-    } catch (error) {
-      console.warn('Failed to serialize automatic gear rule badge labels', error);
-    }
-  }
-  var tooltip = buildAutoGearRuleTooltipFromSources(sources);
-  if (tooltip) {
-    span.title = tooltip;
-  } else {
-    span.removeAttribute('title');
-  }
 }
 function configureAutoGearSpan(span, normalizedItem, quantity, rule) {
   if (!span || !normalizedItem) return;
@@ -1934,6 +1869,8 @@ function configureAutoGearSpan(span, normalizedItem, quantity, rule) {
     var delimiter = normalizedItem.notes.trim().toLowerCase().startsWith('incl') ? ' ' : ' – ';
     span.appendChild(document.createTextNode("".concat(delimiter).concat(normalizedItem.notes)));
   }
+  applyAutoGearRuleColors(span, rule);
+  refreshAutoGearRuleBadge(span);
 }
 function addAutoGearItem(cell, item, rule) {
   if (!cell) return;
@@ -2054,6 +1991,8 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
   var rawViewfinderExtension = info && typeof info.viewfinderExtension === 'string' ? info.viewfinderExtension.trim() : '';
   var hasViewfinderSelection = Boolean(rawViewfinderExtension);
   var normalizedViewfinderExtension = hasViewfinderSelection ? normalizeAutoGearTriggerValue(rawViewfinderExtension) : '';
+  var rawDeliveryResolution = info && typeof info.deliveryResolution === 'string' ? info.deliveryResolution.trim() : '';
+  var normalizedDeliveryResolution = normalizeAutoGearTriggerValue(rawDeliveryResolution);
   var videoDistribution = [];
   if (info && Array.isArray(info.videoDistribution)) {
     videoDistribution = info.videoDistribution;
@@ -2123,6 +2062,9 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
     });
   };
   var triggered = autoGearRules.filter(function (rule) {
+    if (rule && rule.always) {
+      return true;
+    }
     var scenarioList = Array.isArray(rule.scenarios) ? rule.scenarios.filter(Boolean) : [];
     if (scenarioList.length) {
       var normalizedTargets = scenarioList.map(normalizeAutoGearTriggerValue).filter(Boolean);
@@ -2199,15 +2141,22 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
       if (!normalizedViewfinderExtension) return false;
       if (!_normalizedTargets9.includes(normalizedViewfinderExtension)) return false;
     }
+    var deliveryList = Array.isArray(rule.deliveryResolution) ? rule.deliveryResolution.filter(Boolean) : [];
+    if (deliveryList.length) {
+      var _normalizedTargets0 = deliveryList.map(normalizeAutoGearTriggerValue).filter(Boolean);
+      if (!_normalizedTargets0.length) return false;
+      if (!normalizedDeliveryResolution) return false;
+      if (!_normalizedTargets0.includes(normalizedDeliveryResolution)) return false;
+    }
     var videoDistList = Array.isArray(rule.videoDistribution) ? rule.videoDistribution.filter(Boolean) : [];
     if (videoDistList.length) {
-      var _normalizedTargets0 = videoDistList.map(function (value) {
+      var _normalizedTargets1 = videoDistList.map(function (value) {
         return normalizeVideoDistributionOptionValue(value);
       }).map(function (value) {
         return value === '__none__' ? '' : normalizeAutoGearTriggerValue(value);
       }).filter(Boolean);
-      if (!_normalizedTargets0.length) return false;
-      if (!_normalizedTargets0.every(function (target) {
+      if (!_normalizedTargets1.length) return false;
+      if (!_normalizedTargets1.every(function (target) {
         return videoDistributionSet.has(target);
       })) return false;
     }
@@ -2340,20 +2289,11 @@ function generateGearListHtml() {
     miscAcc = _collectAccessories.misc,
     monitoringSupportAcc = _collectAccessories.monitoringSupport,
     riggingAcc = _collectAccessories.rigging;
-  for (var i = 0; i < 2; i++) riggingAcc.push('ULCS Bracket with 1/4" to 1/4"');
-  for (var _i12 = 0; _i12 < 2; _i12++) riggingAcc.push('ULCS Bracket with 3/8" to 1/4"');
-  for (var _i13 = 0; _i13 < 2; _i13++) riggingAcc.push('Noga Arm');
-  for (var _i14 = 0; _i14 < 2; _i14++) riggingAcc.push('Mini Magic Arm');
-  for (var _i15 = 0; _i15 < 4; _i15++) riggingAcc.push('Cine Quick Release');
-  riggingAcc.push('SmallRig - Super lightweight 15mm RailBlock');
-  for (var _i16 = 0; _i16 < 3; _i16++) riggingAcc.push('Spigot with male 3/8" and 1/4"');
-  for (var _i17 = 0; _i17 < 2; _i17++) riggingAcc.push('Clapper Stick');
-  for (var _i18 = 0; _i18 < 2; _i18++) riggingAcc.push('D-Tap Splitter');
   var cagesDb = ((_devices$accessories2 = devices.accessories) === null || _devices$accessories2 === void 0 ? void 0 : _devices$accessories2.cages) || {};
   var compatibleCages = [];
   if (cameraSelect && cameraSelect.value && cameraSelect.value !== 'None') {
-    for (var _i19 = 0, _Object$entries7 = Object.entries(cagesDb); _i19 < _Object$entries7.length; _i19++) {
-      var _Object$entries7$_i = _slicedToArray(_Object$entries7[_i19], 2),
+    for (var _i12 = 0, _Object$entries7 = Object.entries(cagesDb); _i12 < _Object$entries7.length; _i12++) {
+      var _Object$entries7$_i = _slicedToArray(_Object$entries7[_i12], 2),
         name = _Object$entries7$_i[0],
         cage = _Object$entries7$_i[1];
       if (!cage.compatible || cage.compatible.includes(cameraSelect.value)) {
@@ -2379,11 +2319,11 @@ function generateGearListHtml() {
   };
   var hasGimbal = isScenarioActive('Gimbal');
   if (isAnyScenarioActive(['Trinity', 'Steadicam'])) {
-    for (var _i20 = 0; _i20 < 2; _i20++) {
+    for (var i = 0; i < 2; i++) {
       riggingAcc.push('D-Tap Splitter');
       riggingAcc.push('D-Tap Extension 50 cm (Steadicam/Trinity)');
     }
-    for (var _i21 = 0; _i21 < 2; _i21++) {
+    for (var _i13 = 0; _i13 < 2; _i13++) {
       riggingAcc.push('D-Tap Extension 50 cm (Spare)');
     }
   }
@@ -2492,7 +2432,7 @@ function generateGearListHtml() {
     var rxName = selectedNames.video.replace(/ TX\b/, ' RX');
     if (devices && devices.wirelessReceivers && devices.wirelessReceivers[rxName]) {
       var receivers = receiverCount || 1;
-      for (var _i22 = 0; _i22 < receivers; _i22++) {
+      for (var _i14 = 0; _i14 < receivers; _i14++) {
         monitoringSupportAcc.push('Antenna 5,8GHz 5dBi Long (spare)');
       }
     }
@@ -3024,8 +2964,8 @@ function generateGearListHtml() {
   }
   var monitoringGear = [];
   var wirelessSize = monitorSizes.includes(5) ? 5 : null;
-  var wirelessSizeHtml = wirelessSize ? "".concat(wirelessSize, "&quot; - ") : '';
   if (selectedNames.video) {
+    var wirelessSizeHtml = wirelessSize ? "".concat(wirelessSize, "&quot; - ") : '';
     monitoringGear.push("Wireless Transmitter - ".concat(wirelessSizeHtml).concat(addArriKNumber(selectedNames.video)));
     var _rxName = selectedNames.video.replace(/ TX\b/, ' RX');
     if (devices && devices.wirelessReceivers && devices.wirelessReceivers[_rxName]) {
@@ -3043,13 +2983,13 @@ function generateGearListHtml() {
     return /V98micro/i.test(n);
   }) || 'Bebob V98micro';
   handheldPrefs.forEach(function (p) {
-    for (var _i23 = 0; _i23 < 3; _i23++) monitoringBatteryItems.push("".concat(bebob98, " (").concat(p.role, " handheld)"));
+    for (var _i15 = 0; _i15 < 3; _i15++) monitoringBatteryItems.push("".concat(bebob98, " (").concat(p.role, " handheld)"));
   });
   if (hasMotor) {
     var bebob150 = Object.keys(devices.batteries || {}).find(function (n) {
       return /V150micro/i.test(n);
     }) || 'Bebob V150micro';
-    for (var _i24 = 0; _i24 < 3; _i24++) monitoringBatteryItems.push("".concat(bebob150, " (Focus)"));
+    for (var _i16 = 0; _i16 < 3; _i16++) monitoringBatteryItems.push("".concat(bebob150, " (Focus)"));
   }
   var bebob290 = Object.keys(devices.batteries || {}).find(function (n) {
     return /V290RM-Cine/i.test(n);
@@ -3064,7 +3004,7 @@ function generateGearListHtml() {
   var monitoringSupportHardware = formatItems(monitoringSupportAcc);
   var monitoringSupportItems = monitoringSupportHardware;
   addRow('Monitoring support', monitoringSupportItems);
-  var cartsTransportationItems = ['Magliner Senior - with quick release mount + tripod holder + utility tray + O‘Connor-Aufhängung'].concat(_toConsumableArray(Array(10).fill('Securing Straps (25mm wide)')), ['Loading Ramp (pair, 420kg)'], _toConsumableArray(Array(20).fill('Ring Fitting for Airline Rails')));
+  var cartsTransportationItems = [];
   ensureItems(cartsTransportationItems, 'accessories.carts');
   var gripItems = [];
   var needsStandardTripod = false;
@@ -3276,15 +3216,15 @@ function generateGearListHtml() {
     multiplier = 2;
   }
   var klappenMultiplier = multiplier % 2 === 0 ? multiplier : Math.max(1, multiplier - 1);
-  for (var _i25 = 0, _baseConsumables = baseConsumables; _i25 < _baseConsumables.length; _i25++) {
-    var item = _baseConsumables[_i25];
+  for (var _i17 = 0, _baseConsumables = baseConsumables; _i17 < _baseConsumables.length; _i17++) {
+    var item = _baseConsumables[_i17];
     var _count2 = item.count;
     if (item.noScale) {} else if (item.klappen) {
       _count2 *= klappenMultiplier;
     } else {
       _count2 *= multiplier;
     }
-    for (var _i26 = 0; _i26 < _count2; _i26++) consumables.push(item.name);
+    for (var _i18 = 0; _i18 < _count2; _i18++) consumables.push(item.name);
   }
   if (eyeLeatherCount) eyeLeatherCount *= multiplier;
   var needsRainProtection = isAnyScenarioActive(['Outdoor', 'Extreme rain', 'Rain Machine']);
@@ -3308,10 +3248,10 @@ function generateGearListHtml() {
     var monitorsUnder10 = _monitorSizes.filter(function (s) {
       return s <= 10;
     }).length;
-    for (var _i27 = 0; _i27 < monitorsAbove10 + 2; _i27++) consumables.push('CapIt Large');
-    for (var _i28 = 0; _i28 < monitorsUnder10 + 3; _i28++) consumables.push('CapIt Medium');
-    for (var _i29 = 0; _i29 < 3; _i29++) consumables.push('CapIt Small');
-    for (var _i30 = 0; _i30 < 10; _i30++) consumables.push('Shower Cap');
+    for (var _i19 = 0; _i19 < monitorsAbove10 + 2; _i19++) consumables.push('CapIt Large');
+    for (var _i20 = 0; _i20 < monitorsUnder10 + 3; _i20++) consumables.push('CapIt Medium');
+    for (var _i21 = 0; _i21 < 3; _i21++) consumables.push('CapIt Small');
+    for (var _i22 = 0; _i22 < 10; _i22++) consumables.push('Shower Cap');
     consumables.push('Magliner Rain Cover Transparent');
   }
   var needsHairDryer = isWinterShoot && isScenarioActive('Outdoor') || isScenarioActive('Extreme cold (snow)');
@@ -3326,8 +3266,8 @@ function generateGearListHtml() {
   }
   if (needsHandAndFeetWarmers) {
     var warmersCount = Math.max(shootDays, 1) * 2;
-    for (var _i31 = 0; _i31 < warmersCount; _i31++) miscItems.push('Hand Warmers');
-    for (var _i32 = 0; _i32 < warmersCount; _i32++) miscItems.push('Feet Warmers');
+    for (var _i23 = 0; _i23 < warmersCount; _i23++) miscItems.push('Hand Warmers');
+    for (var _i24 = 0; _i24 < warmersCount; _i24++) miscItems.push('Feet Warmers');
   }
   var gaffColors = [['red', 'Red'], ['blue', 'Blue'], ['green', 'Green'], ['yellow', 'Yellow'], ['black', 'Black'], ['pink', 'Pink'], ['orange', 'Orange'], ['violette', 'Violette'], ['white', 'White']];
   var gaffWidths = ['6mm', '12mm', '19mm', '24mm', '48mm'];
@@ -3505,10 +3445,16 @@ function getCurrentGearListHtml() {
     var table = clone.querySelector('.gear-table');
     gearHtml = table ? '<h3>Gear List</h3>' + table.outerHTML : '';
   }
-  if (!projHtml && !gearHtml) return '';
+  if (!projHtml && !gearHtml) {
+    return '';
+  }
   var projectName = getCurrentProjectName();
   var titleHtml = projectName ? "<h2>".concat(projectName, "</h2>") : '';
-  return "".concat(titleHtml).concat(projHtml).concat(gearHtml).trim();
+  var combined = "".concat(titleHtml).concat(projHtml).concat(gearHtml).trim();
+  if (combined && typeof globalThis !== 'undefined') {
+    globalThis.__cineLastGearListHtml = combined;
+  }
+  return combined;
 }
 function getGearListSelectors() {
   if (!gearListOutput) return {};
@@ -3576,9 +3522,6 @@ function saveCurrentGearList() {
       setup.gearList = html;
       changed = true;
     }
-  } else if (Object.prototype.hasOwnProperty.call(setup, 'gearList')) {
-    delete setup.gearList;
-    changed = true;
   }
   if (currentProjectInfo) {
     if (setup.projectInfo !== currentProjectInfo) {
@@ -3648,10 +3591,14 @@ function deleteCurrentGearList() {
   if (gearListOutput) {
     gearListOutput.innerHTML = '';
     gearListOutput.classList.add('hidden');
+    updateAutoGearHighlightToggleButton();
   }
   if (projectRequirementsOutput) {
     projectRequirementsOutput.innerHTML = '';
     projectRequirementsOutput.classList.add('hidden');
+  }
+  if (typeof globalThis !== 'undefined') {
+    globalThis.__cineLastGearListHtml = '';
   }
   currentProjectInfo = null;
   if (projectForm) populateProjectForm({});
@@ -3721,6 +3668,352 @@ function deleteCurrentGearList() {
   }
   return true;
 }
+var AUTO_GEAR_HIGHLIGHT_CLASS = 'show-auto-gear-highlight';
+var AUTO_GEAR_HIGHLIGHT_ICON = "\uE8AF";
+var AUTO_GEAR_HIGHLIGHT_LABEL_FALLBACK = 'Highlight automatic gear';
+var AUTO_GEAR_HIGHLIGHT_HELP_FALLBACK = 'Toggle a temporary color overlay for gear added by automatic rules. Useful while debugging gear rule behavior.';
+var AUTO_GEAR_HIGHLIGHT_STATE_ON_FALLBACK = 'On';
+var AUTO_GEAR_HIGHLIGHT_STATE_OFF_FALLBACK = 'Off';
+var AUTO_GEAR_RULE_BADGE_NAMED_FALLBACK = 'Rule: %s';
+var AUTO_GEAR_RULE_BADGE_UNNAMED_FALLBACK = 'Automatic rule';
+var AUTO_GEAR_RULE_COLOR_PALETTE = Object.freeze([{
+  bg: 'rgba(255, 210, 64, 0.35)',
+  border: 'rgba(255, 181, 0, 0.7)'
+}, {
+  bg: 'rgba(88, 200, 255, 0.32)',
+  border: 'rgba(0, 146, 214, 0.65)'
+}, {
+  bg: 'rgba(146, 232, 129, 0.32)',
+  border: 'rgba(70, 180, 80, 0.65)'
+}, {
+  bg: 'rgba(255, 186, 222, 0.32)',
+  border: 'rgba(230, 112, 190, 0.65)'
+}, {
+  bg: 'rgba(255, 214, 153, 0.32)',
+  border: 'rgba(230, 156, 64, 0.65)'
+}, {
+  bg: 'rgba(201, 186, 255, 0.32)',
+  border: 'rgba(146, 118, 230, 0.65)'
+}, {
+  bg: 'rgba(152, 219, 217, 0.32)',
+  border: 'rgba(72, 182, 178, 0.65)'
+}]);
+function getAutoGearRuleColorKey(rule, dataset) {
+  if (rule && _typeof(rule) === 'object') {
+    var ruleId = typeof rule.id === 'string' ? rule.id.trim() : '';
+    if (ruleId) {
+      return "id:".concat(ruleId.toLowerCase());
+    }
+    var label = getAutoGearRuleDisplayLabel(rule);
+    if (label) {
+      return "label:".concat(label.toLowerCase());
+    }
+  }
+  if (dataset && _typeof(dataset) === 'object') {
+    var datasetId = typeof dataset.autoGearRuleId === 'string' ? dataset.autoGearRuleId.trim() : '';
+    if (datasetId) {
+      return "id:".concat(datasetId.toLowerCase());
+    }
+    var datasetLabel = typeof dataset.autoGearRuleLabel === 'string' ? dataset.autoGearRuleLabel.trim() : '';
+    if (datasetLabel) {
+      return "label:".concat(datasetLabel.toLowerCase());
+    }
+  }
+  return '';
+}
+function getAutoGearRuleColorEntry(rule, dataset) {
+  if (!AUTO_GEAR_RULE_COLOR_PALETTE.length) {
+    return null;
+  }
+  var key = getAutoGearRuleColorKey(rule, dataset);
+  if (!key) {
+    var defaultEntry = AUTO_GEAR_RULE_COLOR_PALETTE[0];
+    return _objectSpread(_objectSpread({}, defaultEntry), {}, {
+      index: 0
+    });
+  }
+  var hash = 0;
+  for (var i = 0; i < key.length; i += 1) {
+    hash = hash * 31 + key.charCodeAt(i) & 0x7fffffff;
+  }
+  var paletteIndex = Math.abs(hash) % AUTO_GEAR_RULE_COLOR_PALETTE.length;
+  var paletteEntry = AUTO_GEAR_RULE_COLOR_PALETTE[paletteIndex] || AUTO_GEAR_RULE_COLOR_PALETTE[0];
+  return _objectSpread(_objectSpread({}, paletteEntry), {}, {
+    index: paletteIndex
+  });
+}
+function applyAutoGearRuleColors(span, rule) {
+  if (!span || !span.style) {
+    return;
+  }
+  var dataset = span.dataset || {};
+  var entry = getAutoGearRuleColorEntry(rule, dataset);
+  if (!entry) {
+    span.style.removeProperty('--auto-gear-rule-bg');
+    span.style.removeProperty('--auto-gear-rule-border');
+    span.style.removeProperty('--auto-gear-rule-text');
+    if (dataset && Object.prototype.hasOwnProperty.call(dataset, 'autoGearRuleColor')) {
+      delete dataset.autoGearRuleColor;
+    }
+    return;
+  }
+  var bg = entry.bg,
+    border = entry.border,
+    text = entry.text,
+    index = entry.index;
+  if (bg) {
+    span.style.setProperty('--auto-gear-rule-bg', bg);
+  } else {
+    span.style.removeProperty('--auto-gear-rule-bg');
+  }
+  if (border) {
+    span.style.setProperty('--auto-gear-rule-border', border);
+  } else {
+    span.style.removeProperty('--auto-gear-rule-border');
+  }
+  if (text) {
+    span.style.setProperty('--auto-gear-rule-text', text);
+  } else {
+    span.style.removeProperty('--auto-gear-rule-text');
+  }
+  if (dataset) {
+    try {
+      span.dataset.autoGearRuleColor = String(index);
+    } catch (error) {
+      console.warn('Failed to annotate automatic gear color index', error);
+    }
+  }
+}
+function getAutoGearRuleBadgeTemplates() {
+  var _texts$en7, _texts$en8;
+  var langTexts = texts[currentLang] || texts.en || {};
+  var named = langTexts.autoGearRuleBadgeNamed || ((_texts$en7 = texts.en) === null || _texts$en7 === void 0 ? void 0 : _texts$en7.autoGearRuleBadgeNamed) || AUTO_GEAR_RULE_BADGE_NAMED_FALLBACK;
+  var unnamed = langTexts.autoGearRuleBadgeUnnamed || ((_texts$en8 = texts.en) === null || _texts$en8 === void 0 ? void 0 : _texts$en8.autoGearRuleBadgeUnnamed) || AUTO_GEAR_RULE_BADGE_UNNAMED_FALLBACK;
+  return {
+    named: named,
+    unnamed: unnamed
+  };
+}
+function formatAutoGearRuleBadgeText(ruleLabel, ruleId) {
+  var _getAutoGearRuleBadge = getAutoGearRuleBadgeTemplates(),
+    named = _getAutoGearRuleBadge.named,
+    unnamed = _getAutoGearRuleBadge.unnamed;
+  var trimmedLabel = typeof ruleLabel === 'string' ? ruleLabel.trim() : '';
+  if (trimmedLabel) {
+    return named.replace('%s', trimmedLabel);
+  }
+  var trimmedId = typeof ruleId === 'string' ? ruleId.trim() : '';
+  if (trimmedId) {
+    return named.replace('%s', trimmedId);
+  }
+  return unnamed;
+}
+function refreshAutoGearRuleBadge(span) {
+  if (!span || !span.classList || !span.classList.contains('auto-gear-item')) {
+    return;
+  }
+  var sources = getAutoGearRuleSources(span);
+  setAutoGearRuleSources(span, sources);
+  applyAutoGearRuleColors(span);
+  var badgeTexts = sources.map(function (source) {
+    return formatAutoGearRuleBadgeText(source.label, source.id);
+  }).filter(Boolean);
+  var existingBadges = Array.from(span.querySelectorAll('.auto-gear-rule-badge'));
+  if (!badgeTexts.length) {
+    existingBadges.forEach(function (node) {
+      return node.remove();
+    });
+    if (span.dataset && Object.prototype.hasOwnProperty.call(span.dataset, 'autoGearRuleBadge')) {
+      delete span.dataset.autoGearRuleBadge;
+    }
+    var _tooltip = buildAutoGearRuleTooltipFromSources(sources);
+    if (_tooltip) {
+      span.title = _tooltip;
+    } else {
+      span.removeAttribute('title');
+    }
+    return;
+  }
+  badgeTexts.forEach(function (text, index) {
+    var badge = existingBadges[index];
+    if (!badge) {
+      badge = document.createElement('span');
+      badge.className = 'auto-gear-rule-badge';
+      span.appendChild(badge);
+    }
+    badge.textContent = text;
+  });
+  if (existingBadges.length > badgeTexts.length) {
+    existingBadges.slice(badgeTexts.length).forEach(function (node) {
+      return node.remove();
+    });
+  }
+  if (span.dataset) {
+    try {
+      span.dataset.autoGearRuleBadge = JSON.stringify(badgeTexts);
+    } catch (error) {
+      console.warn('Failed to serialize automatic gear rule badge labels', error);
+    }
+  }
+  var tooltip = buildAutoGearRuleTooltipFromSources(sources);
+  if (tooltip) {
+    span.title = tooltip;
+  } else {
+    span.removeAttribute('title');
+  }
+}
+function updateAutoGearRuleBadges(container) {
+  var scope = container || gearListOutput;
+  if (!scope || typeof scope.querySelectorAll !== 'function') {
+    return;
+  }
+  var autoGearItems = scope.querySelectorAll('.auto-gear-item');
+  autoGearItems.forEach(function (item) {
+    return refreshAutoGearRuleBadge(item);
+  });
+}
+function getAutoGearHighlightLabel() {
+  var localized = typeof getLocalizedText === 'function' ? getLocalizedText('autoGearHighlightToggle') : '';
+  if (typeof localized === 'string' && localized.trim()) {
+    return localized.trim();
+  }
+  return AUTO_GEAR_HIGHLIGHT_LABEL_FALLBACK;
+}
+function getAutoGearHighlightHelp() {
+  var localized = typeof getLocalizedText === 'function' ? getLocalizedText('autoGearHighlightToggleHelp') : '';
+  if (typeof localized === 'string' && localized.trim()) {
+    return localized.trim();
+  }
+  return AUTO_GEAR_HIGHLIGHT_HELP_FALLBACK;
+}
+function isAutoGearHighlightEnabled() {
+  return !!(gearListOutput && gearListOutput.classList && gearListOutput.classList.contains(AUTO_GEAR_HIGHLIGHT_CLASS));
+}
+function canHighlightAutoGear() {
+  if (!gearListOutput || !gearListOutput.classList) return false;
+  return !gearListOutput.classList.contains('hidden');
+}
+function ensureAutoGearHighlightToggleStructure(toggle) {
+  if (!toggle) return null;
+  toggle.classList.add('auto-gear-highlight-toggle', 'gear-list-action-btn');
+  var iconClass = 'auto-gear-highlight-icon';
+  var icon = toggle.querySelector(".".concat(iconClass));
+  if (!icon) {
+    icon = document.createElement('span');
+    icon.className = "btn-icon icon-glyph ".concat(iconClass);
+    icon.setAttribute('aria-hidden', 'true');
+    icon.setAttribute('data-icon-font', 'uicons');
+    icon.textContent = AUTO_GEAR_HIGHLIGHT_ICON;
+    if (toggle.firstChild) {
+      toggle.insertBefore(icon, toggle.firstChild);
+    } else {
+      toggle.appendChild(icon);
+    }
+  } else {
+    if (!icon.classList.contains('btn-icon')) {
+      icon.classList.add('btn-icon');
+    }
+    if (!icon.classList.contains('icon-glyph')) {
+      icon.classList.add('icon-glyph');
+    }
+    if (!icon.classList.contains(iconClass)) {
+      icon.classList.add(iconClass);
+    }
+    icon.setAttribute('aria-hidden', 'true');
+    icon.setAttribute('data-icon-font', 'uicons');
+    if (icon.textContent !== AUTO_GEAR_HIGHLIGHT_ICON) {
+      icon.textContent = AUTO_GEAR_HIGHLIGHT_ICON;
+    }
+  }
+  var label = toggle.querySelector('.auto-gear-highlight-label');
+  if (!label) {
+    label = document.createElement('span');
+    label.className = 'auto-gear-highlight-label';
+    toggle.appendChild(label);
+  }
+  var state = toggle.querySelector('.auto-gear-highlight-state');
+  if (!state) {
+    state = document.createElement('span');
+    state.className = 'auto-gear-highlight-state';
+    if (typeof label.after === 'function') {
+      label.after(state);
+    } else {
+      toggle.appendChild(state);
+    }
+  }
+  if (state) {
+    state.setAttribute('aria-live', 'polite');
+    state.setAttribute('aria-atomic', 'true');
+  }
+  var textNodes = Array.from(toggle.childNodes || []).filter(function (node) {
+    return node && node.nodeType === 3 && node.textContent && node.textContent.trim().length;
+  });
+  textNodes.forEach(function (node) {
+    toggle.removeChild(node);
+  });
+  if (state && typeof label !== 'undefined' && label && state.previousElementSibling !== label) {
+    if (typeof label.after === 'function') {
+      label.after(state);
+    }
+  }
+  return {
+    label: label,
+    state: state
+  };
+}
+function getAutoGearHighlightStateText(isActive) {
+  var key = isActive ? 'autoGearHighlightToggleStateOn' : 'autoGearHighlightToggleStateOff';
+  var fallback = isActive ? AUTO_GEAR_HIGHLIGHT_STATE_ON_FALLBACK : AUTO_GEAR_HIGHLIGHT_STATE_OFF_FALLBACK;
+  var localized = typeof getLocalizedText === 'function' ? getLocalizedText(key) : '';
+  if (typeof localized === 'string' && localized.trim()) {
+    return localized.trim();
+  }
+  return fallback;
+}
+function setAutoGearHighlightEnabled(enabled) {
+  var nextState = !!enabled;
+  if (gearListOutput && gearListOutput.classList) {
+    gearListOutput.classList.toggle(AUTO_GEAR_HIGHLIGHT_CLASS, nextState);
+  }
+  updateAutoGearHighlightToggleButton();
+}
+function updateAutoGearHighlightToggleButton() {
+  var toggle = document.getElementById('autoGearHighlightToggle');
+  if (!toggle) return;
+  var label = getAutoGearHighlightLabel();
+  var help = getAutoGearHighlightHelp();
+  var structure = ensureAutoGearHighlightToggleStructure(toggle);
+  var labelContainer = structure && structure.label;
+  var stateContainer = structure && structure.state;
+  if (labelContainer) {
+    labelContainer.textContent = label;
+  } else if (typeof toggle.textContent === 'string') {
+    toggle.textContent = label;
+  } else {
+    toggle.innerHTML = escapeHtml(label);
+  }
+  toggle.setAttribute('title', help);
+  toggle.setAttribute('data-help', help);
+  toggle.setAttribute('aria-label', help);
+  var active = isAutoGearHighlightEnabled();
+  var stateText = getAutoGearHighlightStateText(active);
+  if (stateContainer) {
+    stateContainer.textContent = stateText;
+    stateContainer.setAttribute('data-state', active ? 'on' : 'off');
+  }
+  toggle.setAttribute('data-state', active ? 'on' : 'off');
+  toggle.setAttribute('data-state-label', stateText);
+  toggle.setAttribute('aria-pressed', active ? 'true' : 'false');
+  toggle.classList.toggle('is-active', active);
+  var available = canHighlightAutoGear();
+  toggle.disabled = !available;
+  if (available) {
+    toggle.removeAttribute('aria-disabled');
+  } else {
+    toggle.setAttribute('aria-disabled', 'true');
+  }
+  updateAutoGearRuleBadges(gearListOutput);
+}
 function ensureGearListActions() {
   if (!gearListOutput) return;
   var actions = document.getElementById('gearListActions');
@@ -3758,6 +4051,21 @@ function ensureGearListActions() {
     autoSaveNote.setAttribute('data-help', '');
     autoSaveNote.hidden = true;
   }
+  var highlightToggle = document.getElementById('autoGearHighlightToggle');
+  if (highlightToggle && !highlightToggle.dataset.gearListHighlightBound) {
+    highlightToggle.addEventListener('click', function () {
+      var nextState = !isAutoGearHighlightEnabled();
+      setAutoGearHighlightEnabled(nextState);
+      if (typeof saveCurrentSession === 'function') {
+        saveCurrentSession({
+          skipGearList: true
+        });
+      }
+    });
+    highlightToggle.dataset.gearListHighlightBound = 'true';
+  }
+  updateAutoGearHighlightToggleButton();
+  updateAutoGearRuleBadges(actions.closest('#gearListOutput') || gearListOutput);
   if (!gearListOutput._filterListenerBound) {
     gearListOutput.addEventListener('change', function (e) {
       var target = e.target;

@@ -688,45 +688,64 @@ if (typeof window !== 'undefined' && typeof navigator !== 'undefined') {
 function isPlainObject(val) {
   return val !== null && _typeof(val) === 'object' && !Array.isArray(val);
 }
-function getAutoBackupTimestamp(name) {
+function parseAutoBackupKey(name) {
   if (typeof name !== 'string') {
-    return Number.NEGATIVE_INFINITY;
+    return {
+      timestamp: Number.NEGATIVE_INFINITY,
+      label: ''
+    };
   }
-  var match = null;
   if (name.startsWith(STORAGE_AUTO_BACKUP_NAME_PREFIX)) {
-    match = name.match(/^auto-backup-(\d{4})-(\d{2})-(\d{2})-(\d{2})-(\d{2})/);
+    var match = name.match(/^auto-backup-(\d{4})-(\d{2})-(\d{2})-(\d{2})-(\d{2})(?:-(.*))?$/);
     if (!match) {
-      return Number.NEGATIVE_INFINITY;
+      return {
+        timestamp: Number.NEGATIVE_INFINITY,
+        label: ''
+      };
     }
-    var _match = match,
-      _match2 = _slicedToArray(_match, 6),
-      year = _match2[1],
-      month = _match2[2],
-      day = _match2[3],
-      hour = _match2[4],
-      minute = _match2[5];
+    var _match = _slicedToArray(match, 7),
+      year = _match[1],
+      month = _match[2],
+      day = _match[3],
+      hour = _match[4],
+      minute = _match[5],
+      _match$ = _match[6],
+      rawLabel = _match$ === void 0 ? '' : _match$;
     var date = new Date(Number.parseInt(year, 10), Number.parseInt(month, 10) - 1, Number.parseInt(day, 10), Number.parseInt(hour, 10), Number.parseInt(minute, 10), 0, 0);
     var time = date.getTime();
-    return Number.isNaN(time) ? Number.NEGATIVE_INFINITY : time;
+    return {
+      timestamp: Number.isNaN(time) ? Number.NEGATIVE_INFINITY : time,
+      label: rawLabel.trim()
+    };
   }
   if (name.startsWith(STORAGE_AUTO_BACKUP_DELETION_PREFIX)) {
-    match = name.match(/^auto-backup-before-delete-(\d{4})-(\d{2})-(\d{2})-(\d{2})-(\d{2})-(\d{2})/);
-    if (!match) {
-      return Number.NEGATIVE_INFINITY;
+    var _match2 = name.match(/^auto-backup-before-delete-(\d{4})-(\d{2})-(\d{2})-(\d{2})-(\d{2})-(\d{2})(?:-(.*))?$/);
+    if (!_match2) {
+      return {
+        timestamp: Number.NEGATIVE_INFINITY,
+        label: ''
+      };
     }
-    var _match3 = match,
-      _match4 = _slicedToArray(_match3, 7),
-      _year = _match4[1],
-      _month = _match4[2],
-      _day = _match4[3],
-      _hour = _match4[4],
-      _minute = _match4[5],
-      second = _match4[6];
+    var _match3 = _slicedToArray(_match2, 8),
+      _year = _match3[1],
+      _month = _match3[2],
+      _day = _match3[3],
+      _hour = _match3[4],
+      _minute = _match3[5],
+      second = _match3[6],
+      _match3$ = _match3[7],
+      _rawLabel = _match3$ === void 0 ? '' : _match3$;
     var _date = new Date(Number.parseInt(_year, 10), Number.parseInt(_month, 10) - 1, Number.parseInt(_day, 10), Number.parseInt(_hour, 10), Number.parseInt(_minute, 10), Number.parseInt(second, 10), 0);
     var _time = _date.getTime();
-    return Number.isNaN(_time) ? Number.NEGATIVE_INFINITY : _time;
+    return {
+      timestamp: Number.isNaN(_time) ? Number.NEGATIVE_INFINITY : _time,
+      label: _rawLabel.trim()
+    };
   }
-  return Number.NEGATIVE_INFINITY;
+  return {
+    timestamp: Number.NEGATIVE_INFINITY,
+    label: ''
+  };
 }
 function collectAutoBackupEntries(container, prefix) {
   if (!isPlainObject(container) || typeof prefix !== 'string') {
@@ -735,9 +754,13 @@ function collectAutoBackupEntries(container, prefix) {
   return Object.keys(container).filter(function (key) {
     return typeof key === 'string' && key.startsWith(prefix);
   }).map(function (key) {
+    var _parseAutoBackupKey = parseAutoBackupKey(key),
+      timestamp = _parseAutoBackupKey.timestamp,
+      label = _parseAutoBackupKey.label;
     return {
       key: key,
-      timestamp: getAutoBackupTimestamp(key)
+      timestamp: timestamp,
+      label: label
     };
   }).sort(function (a, b) {
     if (a.timestamp !== b.timestamp) {
@@ -796,22 +819,75 @@ function removeDuplicateAutoBackupEntries(container, entries) {
     return [];
   }
   var removedKeys = [];
-  var seenSignatures = new Map();
+  var seenSignaturesByLabel = new Map();
   for (var index = entries.length - 1; index >= 0; index -= 1) {
     var entry = entries[index];
     if (!entry || typeof entry.key !== 'string') {
       continue;
     }
-    var signature = createStableValueSignature(container[entry.key]);
-    if (seenSignatures.has(signature)) {
+    var labelKey = typeof entry.label === 'string' ? entry.label : '';
+    var labelSignatures = seenSignaturesByLabel.get(labelKey) || new Set();
+    var value = Object.prototype.hasOwnProperty.call(container, entry.key) ? container[entry.key] : undefined;
+    var signature = createStableValueSignature(value);
+    if (labelSignatures.has(signature)) {
       delete container[entry.key];
       entries.splice(index, 1);
       removedKeys.push(entry.key);
-    } else {
-      seenSignatures.set(signature, entry.key);
+      continue;
     }
+    labelSignatures.add(signature);
+    seenSignaturesByLabel.set(labelKey, labelSignatures);
   }
   return removedKeys;
+}
+function pruneAutoBackupEntries(container, entries, limit, removedKeys) {
+  if (!isPlainObject(container) || !Array.isArray(entries) || entries.length <= limit) {
+    return;
+  }
+  var labelCounts = new Map();
+  for (var _index = 0; _index < entries.length; _index += 1) {
+    var entry = entries[_index];
+    if (!entry || _typeof(entry) !== 'object') {
+      continue;
+    }
+    var labelKey = typeof entry.label === 'string' ? entry.label : '';
+    labelCounts.set(labelKey, (labelCounts.get(labelKey) || 0) + 1);
+  }
+  var index = 0;
+  while (entries.length > limit && index < entries.length) {
+    var _entry = entries[index];
+    if (!_entry || typeof _entry.key !== 'string') {
+      index += 1;
+      continue;
+    }
+    var _labelKey = typeof _entry.label === 'string' ? _entry.label : '';
+    var count = labelCounts.get(_labelKey) || 0;
+    if (count > 1) {
+      delete container[_entry.key];
+      entries.splice(index, 1);
+      labelCounts.set(_labelKey, count - 1);
+      removedKeys.push(_entry.key);
+      continue;
+    }
+    index += 1;
+  }
+  if (entries.length <= limit) {
+    return;
+  }
+  index = 0;
+  while (entries.length > limit && index < entries.length) {
+    var _entry2 = entries[index];
+    if (!_entry2 || typeof _entry2.key !== 'string') {
+      index += 1;
+      continue;
+    }
+    var _labelKey2 = typeof _entry2.label === 'string' ? _entry2.label : '';
+    var _count = labelCounts.get(_labelKey2) || 0;
+    delete container[_entry2.key];
+    entries.splice(index, 1);
+    labelCounts.set(_labelKey2, Math.max(0, _count - 1));
+    removedKeys.push(_entry2.key);
+  }
 }
 function enforceAutoBackupLimits(container) {
   if (!isPlainObject(container)) {
@@ -821,26 +897,12 @@ function enforceAutoBackupLimits(container) {
   var autoBackups = collectAutoBackupEntries(container, STORAGE_AUTO_BACKUP_NAME_PREFIX);
   if (autoBackups.length > MAX_AUTO_BACKUPS) {
     removed.push.apply(removed, _toConsumableArray(removeDuplicateAutoBackupEntries(container, autoBackups)));
-    while (autoBackups.length > MAX_AUTO_BACKUPS) {
-      var entry = autoBackups.shift();
-      if (!entry) {
-        break;
-      }
-      delete container[entry.key];
-      removed.push(entry.key);
-    }
+    pruneAutoBackupEntries(container, autoBackups, MAX_AUTO_BACKUPS, removed);
   }
   var deletionBackups = collectAutoBackupEntries(container, STORAGE_AUTO_BACKUP_DELETION_PREFIX);
   if (deletionBackups.length > MAX_DELETION_BACKUPS) {
     removed.push.apply(removed, _toConsumableArray(removeDuplicateAutoBackupEntries(container, deletionBackups)));
-    while (deletionBackups.length > MAX_DELETION_BACKUPS) {
-      var _entry = deletionBackups.shift();
-      if (!_entry) {
-        break;
-      }
-      delete container[_entry.key];
-      removed.push(_entry.key);
-    }
+    pruneAutoBackupEntries(container, deletionBackups, MAX_DELETION_BACKUPS, removed);
   }
   if (removed.length > 0) {
     console.warn("Removed ".concat(removed.length, " older automatic backup").concat(removed.length > 1 ? 's' : '', " to stay within storage limits."), removed);
@@ -1685,6 +1747,14 @@ function normalizeSessionStatePayload(raw) {
   if (Object.prototype.hasOwnProperty.call(state, 'projectInfo') && !isPlainObject(state.projectInfo)) {
     state.projectInfo = null;
     changed = true;
+  }
+  if (Object.prototype.hasOwnProperty.call(state, 'autoGearHighlight')) {
+    var value = state.autoGearHighlight;
+    var normalized = value === true || value === 'true' || value === 1 || value === '1';
+    if (value !== normalized || typeof value !== 'boolean') {
+      state.autoGearHighlight = normalized;
+      changed = true;
+    }
   }
   return {
     state: state,
@@ -2552,9 +2622,9 @@ function normalizeImportedFullBackupHistory(value) {
     if (Array.isArray(value.list)) {
       return normalizeImportedFullBackupHistory(value.list);
     }
-    var _entry2 = normalizeFullBackupHistoryEntry(value);
-    if (_entry2) {
-      return [_entry2];
+    var _entry3 = normalizeFullBackupHistoryEntry(value);
+    if (_entry3) {
+      return [_entry3];
     }
     var nestedValues = Object.values(value);
     if (nestedValues.length) {
@@ -3563,51 +3633,77 @@ function importAllData(allData) {
     });
   }
 }
+var STORAGE_API = {
+  getSafeLocalStorage: getSafeLocalStorage,
+  loadDeviceData: loadDeviceData,
+  saveDeviceData: saveDeviceData,
+  loadSetups: loadSetups,
+  saveSetups: saveSetups,
+  saveSetup: saveSetup,
+  loadSetup: loadSetup,
+  deleteSetup: deleteSetup,
+  renameSetup: renameSetup,
+  loadProject: loadProject,
+  saveProject: saveProject,
+  deleteProject: deleteProject,
+  loadSessionState: loadSessionState,
+  saveSessionState: saveSessionState,
+  loadFavorites: loadFavorites,
+  saveFavorites: saveFavorites,
+  loadAutoGearBackups: loadAutoGearBackups,
+  saveAutoGearBackups: saveAutoGearBackups,
+  loadFeedback: loadFeedback,
+  saveFeedback: saveFeedback,
+  clearAllData: clearAllData,
+  exportAllData: exportAllData,
+  importAllData: importAllData,
+  loadAutoGearRules: loadAutoGearRules,
+  saveAutoGearRules: saveAutoGearRules,
+  loadAutoGearSeedFlag: loadAutoGearSeedFlag,
+  saveAutoGearSeedFlag: saveAutoGearSeedFlag,
+  loadAutoGearPresets: loadAutoGearPresets,
+  saveAutoGearPresets: saveAutoGearPresets,
+  loadAutoGearActivePresetId: loadAutoGearActivePresetId,
+  saveAutoGearActivePresetId: saveAutoGearActivePresetId,
+  loadAutoGearAutoPresetId: loadAutoGearAutoPresetId,
+  saveAutoGearAutoPresetId: saveAutoGearAutoPresetId,
+  loadAutoGearBackupVisibility: loadAutoGearBackupVisibility,
+  saveAutoGearBackupVisibility: saveAutoGearBackupVisibility,
+  loadFullBackupHistory: loadFullBackupHistory,
+  saveFullBackupHistory: saveFullBackupHistory,
+  recordFullBackupHistoryEntry: recordFullBackupHistoryEntry,
+  requestPersistentStorage: requestPersistentStorage,
+  clearUiCacheStorageEntries: clearUiCacheStorageEntries
+};
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = {
-    getSafeLocalStorage: getSafeLocalStorage,
-    loadDeviceData: loadDeviceData,
-    saveDeviceData: saveDeviceData,
-    loadSetups: loadSetups,
-    saveSetups: saveSetups,
-    saveSetup: saveSetup,
-    loadSetup: loadSetup,
-    deleteSetup: deleteSetup,
-    renameSetup: renameSetup,
-    loadProject: loadProject,
-    saveProject: saveProject,
-    deleteProject: deleteProject,
-    loadSessionState: loadSessionState,
-    saveSessionState: saveSessionState,
-    loadFavorites: loadFavorites,
-    saveFavorites: saveFavorites,
-    loadAutoGearBackups: loadAutoGearBackups,
-    saveAutoGearBackups: saveAutoGearBackups,
-    loadFeedback: loadFeedback,
-    saveFeedback: saveFeedback,
-    clearAllData: clearAllData,
-    exportAllData: exportAllData,
-    importAllData: importAllData,
-    loadAutoGearRules: loadAutoGearRules,
-    saveAutoGearRules: saveAutoGearRules,
-    loadAutoGearSeedFlag: loadAutoGearSeedFlag,
-    saveAutoGearSeedFlag: saveAutoGearSeedFlag,
-    loadAutoGearPresets: loadAutoGearPresets,
-    saveAutoGearPresets: saveAutoGearPresets,
-    loadAutoGearActivePresetId: loadAutoGearActivePresetId,
-    saveAutoGearActivePresetId: saveAutoGearActivePresetId,
-    loadAutoGearAutoPresetId: loadAutoGearAutoPresetId,
-    saveAutoGearAutoPresetId: saveAutoGearAutoPresetId,
-    loadAutoGearBackupVisibility: loadAutoGearBackupVisibility,
-    saveAutoGearBackupVisibility: saveAutoGearBackupVisibility,
-    loadFullBackupHistory: loadFullBackupHistory,
-    saveFullBackupHistory: saveFullBackupHistory,
-    recordFullBackupHistoryEntry: recordFullBackupHistoryEntry,
-    requestPersistentStorage: requestPersistentStorage,
-    clearUiCacheStorageEntries: clearUiCacheStorageEntries
-  };
+  module.exports = STORAGE_API;
 }
-if (GLOBAL_SCOPE) {
+if (GLOBAL_SCOPE && _typeof(GLOBAL_SCOPE) === 'object') {
+  Object.keys(STORAGE_API).forEach(function (key) {
+    var value = STORAGE_API[key];
+    if (typeof value !== 'function') {
+      return;
+    }
+    if (typeof GLOBAL_SCOPE[key] === 'function') {
+      return;
+    }
+    try {
+      GLOBAL_SCOPE[key] = value;
+    } catch (assignmentError) {
+      void assignmentError;
+      try {
+        Object.defineProperty(GLOBAL_SCOPE, key, {
+          configurable: true,
+          writable: true,
+          value: value
+        });
+      } catch (definitionError) {
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn("Unable to expose storage helper ".concat(key, " globally."), definitionError);
+        }
+      }
+    }
+  });
   try {
     if (typeof GLOBAL_SCOPE.recordFullBackupHistoryEntry !== 'function') {
       GLOBAL_SCOPE.recordFullBackupHistoryEntry = recordFullBackupHistoryEntry;

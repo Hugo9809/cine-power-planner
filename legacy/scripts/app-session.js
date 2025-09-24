@@ -1,3 +1,4 @@
+var _excluded = ["parsed", "timestamp"];
 function _regenerator() { var e, t, r = "function" == typeof Symbol ? Symbol : {}, n = r.iterator || "@@iterator", o = r.toStringTag || "@@toStringTag"; function i(r, n, o, i) { var c = n && n.prototype instanceof Generator ? n : Generator, u = Object.create(c.prototype); return _regeneratorDefine2(u, "_invoke", function (r, n, o) { var i, c, u, f = 0, p = o || [], y = !1, G = { p: 0, n: 0, v: e, a: d, f: d.bind(e, 4), d: function d(t, r) { return i = t, c = 0, u = e, G.n = r, a; } }; function d(r, n) { for (c = r, u = n, t = 0; !y && f && !o && t < p.length; t++) { var o, i = p[t], d = G.p, l = i[2]; r > 3 ? (o = l === n) && (u = i[(c = i[4]) ? 5 : (c = 3, 3)], i[4] = i[5] = e) : i[0] <= d && ((o = r < 2 && d < i[1]) ? (c = 0, G.v = n, G.n = i[1]) : d < l && (o = r < 3 || i[0] > n || n > l) && (i[4] = r, i[5] = n, G.n = l, c = 0)); } if (o || r > 1) return a; throw y = !0, n; } return function (o, p, l) { if (f > 1) throw TypeError("Generator is already running"); for (y && 1 === p && d(p, l), c = p, u = l; (t = c < 2 ? e : u) || !y;) { i || (c ? c < 3 ? (c > 1 && (G.n = -1), d(c, u)) : G.n = u : G.v = u); try { if (f = 2, i) { if (c || (o = "next"), t = i[o]) { if (!(t = t.call(i, u))) throw TypeError("iterator result is not an object"); if (!t.done) return t; u = t.value, c < 2 && (c = 0); } else 1 === c && (t = i.return) && t.call(i), c < 2 && (u = TypeError("The iterator does not provide a '" + o + "' method"), c = 1); i = e; } else if ((t = (y = G.n < 0) ? u : r.call(n, G)) !== a) break; } catch (t) { i = e, c = 1, u = t; } finally { f = 1; } } return { value: t, done: y }; }; }(r, o, i), !0), u; } var a = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} t = Object.getPrototypeOf; var c = [][n] ? t(t([][n]())) : (_regeneratorDefine2(t = {}, n, function () { return this; }), t), u = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(c); function f(e) { return Object.setPrototypeOf ? Object.setPrototypeOf(e, GeneratorFunctionPrototype) : (e.__proto__ = GeneratorFunctionPrototype, _regeneratorDefine2(e, o, "GeneratorFunction")), e.prototype = Object.create(u), e; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, _regeneratorDefine2(u, "constructor", GeneratorFunctionPrototype), _regeneratorDefine2(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = "GeneratorFunction", _regeneratorDefine2(GeneratorFunctionPrototype, o, "GeneratorFunction"), _regeneratorDefine2(u), _regeneratorDefine2(u, o, "Generator"), _regeneratorDefine2(u, n, function () { return this; }), _regeneratorDefine2(u, "toString", function () { return "[object Generator]"; }), (_regenerator = function _regenerator() { return { w: i, m: f }; })(); }
 function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { i({}, "", {}); } catch (e) { i = 0; } _regeneratorDefine2 = function _regeneratorDefine(e, r, n, t) { if (r) i ? i(e, r, { value: n, enumerable: !t, configurable: !t, writable: !t }) : e[r] = n;else { function o(r, n) { _regeneratorDefine2(e, r, function (e) { return this._invoke(r, n, e); }); } o("next", 0), o("throw", 1), o("return", 2); } }, _regeneratorDefine2(e, r, n, t); }
 function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
@@ -5,9 +6,19 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
 function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
+function _objectWithoutProperties(e, t) { if (null == e) return {}; var o, r, i = _objectWithoutPropertiesLoose(e, t); if (Object.getOwnPropertySymbols) { var n = Object.getOwnPropertySymbols(e); for (r = 0; r < n.length; r++) o = n[r], -1 === t.indexOf(o) && {}.propertyIsEnumerable.call(e, o) && (i[o] = e[o]); } return i; }
+function _objectWithoutPropertiesLoose(r, e) { if (null == r) return {}; var t = {}; for (var n in r) if ({}.hasOwnProperty.call(r, n)) { if (-1 !== e.indexOf(n)) continue; t[n] = r[n]; } return t; }
+function _construct(t, e, r) { if (_isNativeReflectConstruct()) return Reflect.construct.apply(null, arguments); var o = [null]; o.push.apply(o, e); var p = new (t.bind.apply(t, o))(); return r && _setPrototypeOf(p, r.prototype), p; }
+function _setPrototypeOf(t, e) { return _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function (t, e) { return t.__proto__ = e, t; }, _setPrototypeOf(t, e); }
+function _isNativeReflectConstruct() { try { var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); } catch (t) {} return (_isNativeReflectConstruct = function _isNativeReflectConstruct() { return !!t; })(); }
 function _toArray(r) { return _arrayWithHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableRest(); }
 function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
 function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
@@ -15,11 +26,6 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
 function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t.return && (u = t.return(), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
-function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
-function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
-function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
-function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
-function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 var temperaturePreferenceStorageKey = typeof TEMPERATURE_STORAGE_KEY === 'string' ? TEMPERATURE_STORAGE_KEY : typeof resolveTemperatureStorageKey === 'function' ? resolveTemperatureStorageKey() : 'cameraPowerPlanner_temperatureUnit';
 var recordFullBackupHistoryEntryFn = function recordFullBackupHistoryEntryFn() {};
 try {
@@ -75,6 +81,630 @@ var _createBackupDiffRefs = createBackupDiffRefs(),
   backupDiffNotesEl = _createBackupDiffRefs.notes,
   backupDiffExportButtonEl = _createBackupDiffRefs.exportButton,
   backupDiffCloseButtonEl = _createBackupDiffRefs.closeButton;
+function createRestoreRehearsalRefs() {
+  var doc = typeof document !== 'undefined' ? document : null;
+  if (!doc) {
+    return {
+      button: null,
+      section: null,
+      heading: null,
+      closeButton: null,
+      input: null,
+      browseButton: null,
+      fileName: null,
+      status: null,
+      table: null,
+      tableBody: null,
+      modeInputs: []
+    };
+  }
+  var modeInputs = [doc.getElementById('restoreRehearsalModeBackup'), doc.getElementById('restoreRehearsalModeProject')].filter(Boolean);
+  return {
+    button: doc.getElementById('restoreRehearsalButton'),
+    section: doc.getElementById('restoreRehearsalSection'),
+    heading: doc.getElementById('restoreRehearsalHeading'),
+    closeButton: doc.getElementById('restoreRehearsalClose'),
+    input: doc.getElementById('restoreRehearsalInput'),
+    browseButton: doc.getElementById('restoreRehearsalBrowse'),
+    fileName: doc.getElementById('restoreRehearsalFileName'),
+    status: doc.getElementById('restoreRehearsalStatus'),
+    table: doc.getElementById('restoreRehearsalTable'),
+    tableBody: doc.getElementById('restoreRehearsalTableBody'),
+    modeInputs: modeInputs
+  };
+}
+var _createRestoreRehears = createRestoreRehearsalRefs(),
+  restoreRehearsalButtonEl = _createRestoreRehears.button,
+  restoreRehearsalSectionEl = _createRestoreRehears.section,
+  restoreRehearsalHeadingEl = _createRestoreRehears.heading,
+  restoreRehearsalCloseButtonEl = _createRestoreRehears.closeButton,
+  restoreRehearsalInputEl = _createRestoreRehears.input,
+  restoreRehearsalBrowseButtonEl = _createRestoreRehears.browseButton,
+  restoreRehearsalFileNameEl = _createRestoreRehears.fileName,
+  restoreRehearsalStatusEl = _createRestoreRehears.status,
+  restoreRehearsalTableEl = _createRestoreRehears.table,
+  restoreRehearsalTableBodyEl = _createRestoreRehears.tableBody,
+  restoreRehearsalModeInputs = _createRestoreRehears.modeInputs;
+function countProjectsFromSetups(setups) {
+  if (Array.isArray(setups)) {
+    return setups.length;
+  }
+  if (isPlainObject(setups)) {
+    return Object.keys(setups).length;
+  }
+  if (typeof setups === 'string' && setups.trim()) {
+    return 1;
+  }
+  return 0;
+}
+function countFavoritesEntries(favorites) {
+  if (!isPlainObject(favorites)) return 0;
+  return Object.values(favorites).reduce(function (count, entry) {
+    if (Array.isArray(entry)) {
+      return count + entry.filter(Boolean).length;
+    }
+    if (isPlainObject(entry) && Array.isArray(entry.entries)) {
+      return count + entry.entries.filter(Boolean).length;
+    }
+    return count;
+  }, 0);
+}
+function projectInfoValueHasData(value) {
+  if (value === null || value === undefined) return false;
+  if (typeof value === 'string') return value.trim().length > 0;
+  if (typeof value === 'number') return !Number.isNaN(value);
+  if (typeof value === 'boolean') return value;
+  if (Array.isArray(value)) {
+    return value.some(function (item) {
+      return projectInfoValueHasData(item);
+    });
+  }
+  if (isPlainObject(value)) {
+    return Object.keys(value).some(function (key) {
+      return projectInfoValueHasData(value[key]);
+    });
+  }
+  return false;
+}
+function countCrewEntries(value) {
+  if (!value) return 0;
+  if (Array.isArray(value)) {
+    return value.reduce(function (total, entry) {
+      return total + countCrewEntries(entry);
+    }, 0);
+  }
+  if (typeof value === 'string') {
+    return value.split(/\r?\n+/).map(function (line) {
+      return line.trim();
+    }).filter(Boolean).length;
+  }
+  if (isPlainObject(value)) {
+    if (Array.isArray(value.people)) {
+      return countCrewEntries(value.people);
+    }
+    if (Array.isArray(value.entries)) {
+      return countCrewEntries(value.entries);
+    }
+    if (typeof value.text === 'string') {
+      return countCrewEntries(value.text);
+    }
+    if (typeof value.name === 'string' || typeof value.role === 'string' || typeof value.phone === 'string' || typeof value.email === 'string' || typeof value.text === 'string') {
+      var name = typeof value.name === 'string' ? value.name.trim() : '';
+      var role = typeof value.role === 'string' ? value.role.trim() : '';
+      var phone = typeof value.phone === 'string' ? value.phone.trim() : '';
+      var email = typeof value.email === 'string' ? value.email.trim() : '';
+      var text = typeof value.text === 'string' ? value.text.trim() : '';
+      return name || role || phone || email || text ? 1 : 0;
+    }
+    var nestedKeys = Object.keys(value).filter(function (key) {
+      return key !== '__html';
+    });
+    if (nestedKeys.length) {
+      return countCrewEntries(nestedKeys.map(function (key) {
+        return value[key];
+      }));
+    }
+  }
+  return 0;
+}
+function countScheduleEntries(value) {
+  if (!value) return 0;
+  if (Array.isArray(value)) {
+    return value.reduce(function (total, entry) {
+      return total + countScheduleEntries(entry);
+    }, 0);
+  }
+  if (typeof value === 'string') {
+    return value.split(/\r?\n+/).map(function (line) {
+      return line.trim();
+    }).filter(Boolean).length;
+  }
+  if (isPlainObject(value)) {
+    if (Array.isArray(value.entries)) {
+      return countScheduleEntries(value.entries);
+    }
+    if (typeof value.text === 'string') {
+      return countScheduleEntries(value.text);
+    }
+    if (typeof value.label === 'string' || typeof value.value === 'string') {
+      var label = typeof value.label === 'string' ? value.label.trim() : '';
+      var val = typeof value.value === 'string' ? value.value.trim() : '';
+      return label || val ? 1 : 0;
+    }
+    var nestedKeys = Object.keys(value).filter(function (key) {
+      return key !== '__html';
+    });
+    if (nestedKeys.length) {
+      return countScheduleEntries(nestedKeys.map(function (key) {
+        return value[key];
+      }));
+    }
+  }
+  return 0;
+}
+function summarizeProjectInfoStats(projectInfo) {
+  if (typeof projectInfo === 'string') {
+    try {
+      var parsed = JSON.parse(projectInfo);
+      if (isPlainObject(parsed)) {
+        return summarizeProjectInfoStats(parsed);
+      }
+    } catch (parseError) {
+      void parseError;
+    }
+  }
+  if (!projectInfo || _typeof(projectInfo) !== 'object' || Array.isArray(projectInfo)) {
+    var _hasDetails = projectInfoValueHasData(projectInfo);
+    return {
+      details: _hasDetails ? 1 : 0,
+      crew: 0,
+      schedule: 0,
+      hasDetails: _hasDetails
+    };
+  }
+  var details = 0;
+  var crew = 0;
+  var schedule = 0;
+  var hasDetails = false;
+  Object.entries(projectInfo).forEach(function (_ref) {
+    var _ref2 = _slicedToArray(_ref, 2),
+      key = _ref2[0],
+      value = _ref2[1];
+    if (key === 'projectName') return;
+    if (projectInfoValueHasData(value)) {
+      details += 1;
+      hasDetails = true;
+    }
+    if (key === 'crew' || key === 'people') {
+      var crewCount = countCrewEntries(value);
+      if (crewCount > 0) {
+        crew += crewCount;
+        hasDetails = true;
+      }
+    }
+    if (key === 'prepDays' || key === 'shootingDays') {
+      var scheduleCount = countScheduleEntries(value);
+      if (scheduleCount > 0) {
+        schedule += scheduleCount;
+        hasDetails = true;
+      }
+    }
+  });
+  return {
+    details: details,
+    crew: crew,
+    schedule: schedule,
+    hasDetails: hasDetails
+  };
+}
+function summarizeProjectCollection(collection) {
+  var result = {
+    details: 0,
+    crew: 0,
+    schedule: 0,
+    hasProjectInfo: false
+  };
+  if (!collection) {
+    return result;
+  }
+  var entries = Array.isArray(collection) ? collection : isPlainObject(collection) ? Object.values(collection) : [];
+  entries.forEach(function (entry) {
+    if (!entry) return;
+    var info = null;
+    if (isPlainObject(entry) && Object.prototype.hasOwnProperty.call(entry, 'projectInfo')) {
+      info = entry.projectInfo;
+    } else if (isPlainObject(entry) && isPlainObject(entry.project) && Object.prototype.hasOwnProperty.call(entry.project, 'projectInfo')) {
+      info = entry.project.projectInfo;
+    }
+    if (!info) return;
+    var stats = summarizeProjectInfoStats(info);
+    if (stats.hasDetails) {
+      result.hasProjectInfo = true;
+    }
+    result.details += stats.details;
+    result.crew += stats.crew;
+    result.schedule += stats.schedule;
+  });
+  return result;
+}
+function summarizeCountsFromData(data) {
+  var setups = isPlainObject(data) && isPlainObject(data.setups) ? data.setups : {};
+  var rules = isPlainObject(data) && Array.isArray(data.autoGearRules) ? data.autoGearRules : [];
+  var favorites = isPlainObject(data) && isPlainObject(data.favorites) ? data.favorites : {};
+  var storedProjects = isPlainObject(data) ? summarizeProjectCollection(data.project) : {
+    details: 0,
+    crew: 0,
+    schedule: 0,
+    hasProjectInfo: false
+  };
+  var setupProjects = summarizeProjectCollection(setups);
+  var projectDetails = Math.max(storedProjects.details, setupProjects.details);
+  var projectCrew = Math.max(storedProjects.crew, setupProjects.crew);
+  var projectSchedule = Math.max(storedProjects.schedule, setupProjects.schedule);
+  return {
+    projects: countProjectsFromSetups(setups),
+    projectDetails: projectDetails,
+    projectCrew: projectCrew,
+    projectSchedules: projectSchedule,
+    rules: rules.length,
+    favorites: countFavoritesEntries(favorites)
+  };
+}
+function bundleHasProject(bundle) {
+  if (!isPlainObject(bundle)) return false;
+  if (typeof bundle.setupName === 'string' && bundle.setupName.trim()) return true;
+  if (typeof bundle.projectHtml === 'string' && bundle.projectHtml.trim()) return true;
+  if (typeof bundle.gearList === 'string' && bundle.gearList.trim()) return true;
+  if (isPlainObject(bundle.projectInfo) && Object.keys(bundle.projectInfo).length) return true;
+  if (isPlainObject(bundle.gearSelectors) && Object.keys(bundle.gearSelectors).length) return true;
+  var deviceFields = ['camera', 'monitor', 'video', 'cage', 'distance', 'batteryPlate', 'battery', 'batteryHotswap'];
+  if (deviceFields.some(function (field) {
+    return typeof bundle[field] === 'string' && bundle[field].trim();
+  })) {
+    return true;
+  }
+  if (Array.isArray(bundle.motors) && bundle.motors.some(Boolean)) return true;
+  if (Array.isArray(bundle.controllers) && bundle.controllers.some(Boolean)) return true;
+  return false;
+}
+var RESTORE_REHEARSAL_BACKUP_HINT_KEYS = ['data', 'payload', 'plannerData', 'allData', 'devices', 'setups', 'session', 'sessions', 'sessionStorage', 'sessionState', 'customLogo', 'customFonts', 'preferences', 'schemaCache', 'fullBackupHistory'];
+var RESTORE_REHEARSAL_PROJECT_HINT_KEYS = ['setupName', 'camera', 'monitor', 'video', 'cage', 'distance', 'batteryPlate', 'battery', 'batteryHotswap', 'motors', 'controllers', 'project', 'projectInfo', 'projectHtml', 'gearList', 'gearSelectors', 'autoGearRules', 'favorites', 'feedback', 'changedDevices'];
+function hasAnyRestoreRehearsalKeys(source, keys) {
+  if (!isPlainObject(source)) {
+    return false;
+  }
+  for (var index = 0; index < keys.length; index += 1) {
+    var key = keys[index];
+    if (Object.prototype.hasOwnProperty.call(source, key)) {
+      return true;
+    }
+  }
+  return false;
+}
+function looksLikeRestoreRehearsalProjectBundle(bundle) {
+  if (!isPlainObject(bundle)) {
+    return false;
+  }
+  if (bundleHasProject(bundle)) {
+    return true;
+  }
+  if (hasAnyRestoreRehearsalKeys(bundle, RESTORE_REHEARSAL_PROJECT_HINT_KEYS)) {
+    return true;
+  }
+  var nestedProject = isPlainObject(bundle.project) ? bundle.project : null;
+  if (hasAnyRestoreRehearsalKeys(nestedProject, RESTORE_REHEARSAL_PROJECT_HINT_KEYS)) {
+    return true;
+  }
+  return false;
+}
+function looksLikeRestoreRehearsalBackupPayload(payload) {
+  if (!isPlainObject(payload)) {
+    return false;
+  }
+  if (hasAnyRestoreRehearsalKeys(payload, RESTORE_REHEARSAL_BACKUP_HINT_KEYS)) {
+    return true;
+  }
+  var candidateKeys = ['data', 'payload', 'plannerData', 'allData'];
+  for (var i = 0; i < candidateKeys.length; i += 1) {
+    var key = candidateKeys[i];
+    if (hasAnyRestoreRehearsalKeys(payload[key], RESTORE_REHEARSAL_BACKUP_HINT_KEYS)) {
+      return true;
+    }
+  }
+  return false;
+}
+function summarizeProjectBundle(bundle) {
+  if (!isPlainObject(bundle)) {
+    return {
+      projects: 0,
+      projectDetails: 0,
+      projectCrew: 0,
+      projectSchedules: 0,
+      rules: 0,
+      favorites: 0
+    };
+  }
+  var favorites = isPlainObject(bundle.favorites) ? bundle.favorites : {};
+  var projectInfo = null;
+  if (isPlainObject(bundle.projectInfo) || typeof bundle.projectInfo === 'string') {
+    projectInfo = bundle.projectInfo;
+  } else if (isPlainObject(bundle.project) && (isPlainObject(bundle.project.projectInfo) || typeof bundle.project.projectInfo === 'string')) {
+    projectInfo = bundle.project.projectInfo;
+  }
+  var projectStats = summarizeProjectInfoStats(projectInfo);
+  return {
+    projects: bundleHasProject(bundle) ? 1 : 0,
+    projectDetails: projectStats.details,
+    projectCrew: projectStats.crew,
+    projectSchedules: projectStats.schedule,
+    rules: Array.isArray(bundle.autoGearRules) ? bundle.autoGearRules.length : 0,
+    favorites: countFavoritesEntries(favorites)
+  };
+}
+function getRestoreRehearsalLiveCounts() {
+  var snapshot = typeof exportAllData === 'function' ? exportAllData() : {};
+  return summarizeCountsFromData(isPlainObject(snapshot) ? snapshot : {});
+}
+function getSelectedRestoreRehearsalMode() {
+  if (!Array.isArray(restoreRehearsalModeInputs) || !restoreRehearsalModeInputs.length) {
+    return 'backup';
+  }
+  var selected = restoreRehearsalModeInputs.find(function (input) {
+    return input && input.checked;
+  });
+  return selected && typeof selected.value === 'string' ? selected.value : 'backup';
+}
+function buildRestoreRehearsalRows(liveCounts, sandboxCounts) {
+  var lang = typeof currentLang === 'string' && texts[currentLang] ? currentLang : 'en';
+  var langTexts = texts[lang] || texts.en || {};
+  var metrics = [{
+    key: 'projects',
+    label: langTexts.restoreRehearsalMetricProjects || 'Projects'
+  }, {
+    key: 'projectDetails',
+    label: langTexts.restoreRehearsalMetricProjectDetails || 'Project details'
+  }, {
+    key: 'projectCrew',
+    label: langTexts.restoreRehearsalMetricCrew || 'Crew entries'
+  }, {
+    key: 'projectSchedules',
+    label: langTexts.restoreRehearsalMetricSchedule || 'Schedule entries'
+  }, {
+    key: 'rules',
+    label: langTexts.restoreRehearsalMetricRules || 'Rules'
+  }, {
+    key: 'favorites',
+    label: langTexts.restoreRehearsalMetricFavorites || 'Favorites'
+  }];
+  return metrics.map(function (metric) {
+    var live = typeof liveCounts[metric.key] === 'number' ? liveCounts[metric.key] : 0;
+    var sandbox = typeof sandboxCounts[metric.key] === 'number' ? sandboxCounts[metric.key] : 0;
+    return {
+      key: metric.key,
+      label: metric.label,
+      live: live,
+      sandbox: sandbox,
+      diff: sandbox - live
+    };
+  });
+}
+function resetRestoreRehearsalState() {
+  var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  var _ref3 = options || {},
+    _ref3$keepStatus = _ref3.keepStatus,
+    keepStatus = _ref3$keepStatus === void 0 ? false : _ref3$keepStatus;
+  if (restoreRehearsalFileNameEl) {
+    var _texts$en, _texts$lang;
+    var lang = typeof currentLang === 'string' && texts[currentLang] ? currentLang : 'en';
+    var fallback = ((_texts$en = texts.en) === null || _texts$en === void 0 ? void 0 : _texts$en.restoreRehearsalNoFile) || 'No file selected yet.';
+    var message = ((_texts$lang = texts[lang]) === null || _texts$lang === void 0 ? void 0 : _texts$lang.restoreRehearsalNoFile) || fallback;
+    restoreRehearsalFileNameEl.textContent = message;
+  }
+  if (!keepStatus && restoreRehearsalStatusEl) {
+    var _texts$en2, _texts$_lang;
+    var _lang = typeof currentLang === 'string' && texts[currentLang] ? currentLang : 'en';
+    var _fallback = ((_texts$en2 = texts.en) === null || _texts$en2 === void 0 ? void 0 : _texts$en2.restoreRehearsalReady) || '';
+    restoreRehearsalStatusEl.textContent = ((_texts$_lang = texts[_lang]) === null || _texts$_lang === void 0 ? void 0 : _texts$_lang.restoreRehearsalReady) || _fallback;
+  }
+  if (restoreRehearsalTableEl) {
+    restoreRehearsalTableEl.setAttribute('hidden', '');
+  }
+  if (restoreRehearsalTableBodyEl) {
+    while (restoreRehearsalTableBodyEl.firstChild) {
+      restoreRehearsalTableBodyEl.removeChild(restoreRehearsalTableBodyEl.firstChild);
+    }
+  }
+  if (restoreRehearsalInputEl) {
+    restoreRehearsalInputEl.value = '';
+  }
+}
+function openRestoreRehearsal() {
+  if (!restoreRehearsalSectionEl) return;
+  restoreRehearsalSectionEl.removeAttribute('hidden');
+  resetRestoreRehearsalState();
+  if (restoreRehearsalHeadingEl && typeof restoreRehearsalHeadingEl.focus === 'function') {
+    restoreRehearsalHeadingEl.focus({
+      preventScroll: true
+    });
+  }
+}
+function closeRestoreRehearsal() {
+  resetRestoreRehearsalState();
+  if (restoreRehearsalSectionEl) {
+    restoreRehearsalSectionEl.setAttribute('hidden', '');
+  }
+}
+function readFileAsText(file) {
+  if (!file) {
+    return Promise.reject(new Error('No file provided'));
+  }
+  if (typeof file.text === 'function') {
+    return Promise.resolve().then(function () {
+      return file.text();
+    });
+  }
+  return new Promise(function (resolve, reject) {
+    if (typeof FileReader !== 'function') {
+      reject(new Error('No supported file reader available'));
+      return;
+    }
+    var reader = new FileReader();
+    reader.onload = function () {
+      return resolve(reader.result);
+    };
+    reader.onerror = function () {
+      return reject(reader.error || new Error('Failed to read file'));
+    };
+    try {
+      reader.readAsText(file);
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+function formatRestoreRehearsalSummary(rows) {
+  var _texts$en4;
+  var lang = typeof currentLang === 'string' && texts[currentLang] ? currentLang : 'en';
+  var langTexts = texts[lang] || texts.en || {};
+  var joiner = langTexts.restoreRehearsalDifferenceListJoin || ', ';
+  var diffs = rows.filter(function (row) {
+    return row.diff !== 0;
+  }).map(function (row) {
+    return "".concat(row.label, " (").concat(row.diff > 0 ? '+' : '−').concat(Math.abs(row.diff), ")");
+  });
+  if (!diffs.length) {
+    var _texts$en3;
+    return langTexts.restoreRehearsalMatch || ((_texts$en3 = texts.en) === null || _texts$en3 === void 0 ? void 0 : _texts$en3.restoreRehearsalMatch) || 'All counts match. The sandbox was cleared automatically.';
+  }
+  var template = langTexts.restoreRehearsalMismatch || ((_texts$en4 = texts.en) === null || _texts$en4 === void 0 ? void 0 : _texts$en4.restoreRehearsalMismatch) || 'Differences detected: %s. The sandbox was cleared automatically.';
+  return template.replace('%s', diffs.join(joiner));
+}
+function applyRestoreRehearsalDifferenceCell(cell, label, diff) {
+  var _texts$en6, _texts$en7;
+  if (!cell) return;
+  var lang = typeof currentLang === 'string' && texts[currentLang] ? currentLang : 'en';
+  var langTexts = texts[lang] || texts.en || {};
+  cell.textContent = '';
+  cell.classList.remove('restore-rehearsal-diff-match', 'restore-rehearsal-diff-positive', 'restore-rehearsal-diff-negative');
+  if (diff === 0) {
+    var _texts$en5;
+    var text = langTexts.restoreRehearsalMatchLabel || ((_texts$en5 = texts.en) === null || _texts$en5 === void 0 ? void 0 : _texts$en5.restoreRehearsalMatchLabel) || 'Match';
+    cell.textContent = text;
+    cell.classList.add('restore-rehearsal-diff-match');
+    cell.setAttribute('aria-label', "".concat(label, " ").concat(text));
+    return;
+  }
+  var abs = Math.abs(diff);
+  var template = diff > 0 ? langTexts.restoreRehearsalIncreaseLabel || ((_texts$en6 = texts.en) === null || _texts$en6 === void 0 ? void 0 : _texts$en6.restoreRehearsalIncreaseLabel) || 'Sandbox includes %d more %s.' : langTexts.restoreRehearsalDecreaseLabel || ((_texts$en7 = texts.en) === null || _texts$en7 === void 0 ? void 0 : _texts$en7.restoreRehearsalDecreaseLabel) || 'Sandbox includes %d fewer %s.';
+  var display = "".concat(diff > 0 ? '+' : '−').concat(abs);
+  cell.textContent = display;
+  cell.setAttribute('aria-label', template.replace('%d', abs).replace('%s', label));
+  cell.classList.add(diff > 0 ? 'restore-rehearsal-diff-positive' : 'restore-rehearsal-diff-negative');
+}
+function renderRestoreRehearsalResults(rows) {
+  if (!restoreRehearsalTableBodyEl || !restoreRehearsalStatusEl) return;
+  while (restoreRehearsalTableBodyEl.firstChild) {
+    restoreRehearsalTableBodyEl.removeChild(restoreRehearsalTableBodyEl.firstChild);
+  }
+  rows.forEach(function (row) {
+    var tr = document.createElement('tr');
+    var metricCell = document.createElement('th');
+    metricCell.scope = 'row';
+    metricCell.textContent = row.label;
+    tr.appendChild(metricCell);
+    var liveCell = document.createElement('td');
+    liveCell.textContent = String(row.live);
+    tr.appendChild(liveCell);
+    var sandboxCell = document.createElement('td');
+    sandboxCell.textContent = String(row.sandbox);
+    tr.appendChild(sandboxCell);
+    var diffCell = document.createElement('td');
+    applyRestoreRehearsalDifferenceCell(diffCell, row.label, row.diff);
+    tr.appendChild(diffCell);
+    restoreRehearsalTableBodyEl.appendChild(tr);
+  });
+  if (restoreRehearsalTableEl) {
+    restoreRehearsalTableEl.removeAttribute('hidden');
+  }
+  restoreRehearsalStatusEl.textContent = formatRestoreRehearsalSummary(rows);
+}
+function runRestoreRehearsal(file) {
+  if (!file) return;
+  var lang = typeof currentLang === 'string' && texts[currentLang] ? currentLang : 'en';
+  var langTexts = texts[lang] || texts.en || {};
+  if (restoreRehearsalStatusEl) {
+    var _texts$en8;
+    var processingText = langTexts.restoreRehearsalProcessing || ((_texts$en8 = texts.en) === null || _texts$en8 === void 0 ? void 0 : _texts$en8.restoreRehearsalProcessing) || 'Loading file in an isolated sandbox…';
+    restoreRehearsalStatusEl.textContent = processingText;
+  }
+  readFileAsText(file).then(function (raw) {
+    var mode = getSelectedRestoreRehearsalMode();
+    var sandboxCounts;
+    if (mode === 'project') {
+      var sanitizedPayload = sanitizeBackupPayload(raw);
+      if (!sanitizedPayload || !sanitizedPayload.trim()) {
+        var mismatchError = new Error('Restore rehearsal received an empty project bundle.');
+        mismatchError.code = 'restore-rehearsal-project-mismatch';
+        throw mismatchError;
+      }
+      var parsed = JSON.parse(sanitizedPayload);
+      if (!looksLikeRestoreRehearsalProjectBundle(parsed)) {
+        var _mismatchError = new Error('Restore rehearsal received an unrecognized project bundle.');
+        _mismatchError.code = 'restore-rehearsal-project-mismatch';
+        throw _mismatchError;
+      }
+      sandboxCounts = summarizeProjectBundle(parsed);
+    } else {
+      var _sanitizedPayload = sanitizeBackupPayload(raw);
+      if (!_sanitizedPayload || !_sanitizedPayload.trim()) {
+        throw new Error('Backup payload empty');
+      }
+      var _parsed = JSON.parse(_sanitizedPayload);
+      if (!looksLikeRestoreRehearsalBackupPayload(_parsed)) {
+        var _mismatchError2 = new Error('Restore rehearsal received an unrecognized backup payload.');
+        _mismatchError2.code = 'restore-rehearsal-backup-mismatch';
+        throw _mismatchError2;
+      }
+      var _extractBackupSection = extractBackupSections(_parsed),
+        data = _extractBackupSection.data;
+      sandboxCounts = summarizeCountsFromData(isPlainObject(data) ? data : {});
+    }
+    var liveCounts = getRestoreRehearsalLiveCounts();
+    var rows = buildRestoreRehearsalRows(liveCounts, sandboxCounts);
+    renderRestoreRehearsalResults(rows);
+    if (restoreRehearsalInputEl) {
+      restoreRehearsalInputEl.value = '';
+    }
+  }).catch(function (error) {
+    console.warn('Restore rehearsal failed', error);
+    if (restoreRehearsalStatusEl) {
+      var failureMessage;
+      if (error && error.code === 'restore-rehearsal-project-mismatch') {
+        var _texts$en9;
+        failureMessage = langTexts.restoreRehearsalProjectMismatch || ((_texts$en9 = texts.en) === null || _texts$en9 === void 0 ? void 0 : _texts$en9.restoreRehearsalProjectMismatch);
+      } else if (error && error.code === 'restore-rehearsal-backup-mismatch') {
+        var _texts$en0;
+        failureMessage = langTexts.restoreRehearsalBackupMismatch || ((_texts$en0 = texts.en) === null || _texts$en0 === void 0 ? void 0 : _texts$en0.restoreRehearsalBackupMismatch);
+      }
+      if (!failureMessage) {
+        var _texts$en1;
+        failureMessage = langTexts.restoreRehearsalError || ((_texts$en1 = texts.en) === null || _texts$en1 === void 0 ? void 0 : _texts$en1.restoreRehearsalError) || 'Restore rehearsal failed. Check the file and try again.';
+      }
+      restoreRehearsalStatusEl.textContent = failureMessage;
+    }
+    if (restoreRehearsalTableEl) {
+      restoreRehearsalTableEl.setAttribute('hidden', '');
+    }
+  }).finally(function () {
+    if (restoreRehearsalInputEl) {
+      try {
+        restoreRehearsalInputEl.value = '';
+      } catch (resetError) {
+        void resetError;
+      }
+    }
+  });
+}
 function saveCurrentSession() {
   var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   if (restoringSession || factoryResetInProgress) return;
@@ -101,7 +731,8 @@ function saveCurrentSession() {
     batteryHotswap: hotswapSelect ? hotswapSelect.value : '',
     sliderBowl: info.sliderBowl,
     easyrig: info.easyrig,
-    projectInfo: currentProjectInfo
+    projectInfo: currentProjectInfo,
+    autoGearHighlight: typeof isAutoGearHighlightEnabled === 'function' ? !!isAutoGearHighlightEnabled() : false
   };
   storeSession(state);
   if (!options.skipGearList) {
@@ -373,6 +1004,15 @@ function restoreSessionState() {
         }
         updateGearListButtonVisibility();
       }
+    }
+  }
+  var highlightPreference = state && Object.prototype.hasOwnProperty.call(state, 'autoGearHighlight') ? Boolean(state.autoGearHighlight) : false;
+  if (typeof setAutoGearHighlightEnabled === 'function') {
+    setAutoGearHighlightEnabled(highlightPreference);
+  } else if (gearListOutput && gearListOutput.classList) {
+    gearListOutput.classList.toggle('show-auto-gear-highlight', highlightPreference);
+    if (typeof updateAutoGearHighlightToggleButton === 'function') {
+      updateAutoGearHighlightToggleButton();
     }
   }
   lastSetupName = setupSelect ? setupSelect.value : '';
@@ -845,6 +1485,28 @@ function stopPinkModeIconRotation() {
     pinkModeIconRotationTimer = null;
   }
 }
+var PINK_MODE_ICON_RAIN_PRESS_TRIGGER_COUNT = 5;
+var PINK_MODE_ICON_RAIN_PRESS_RESET_MS = 1800;
+var pinkModeIconPressCount = 0;
+var pinkModeIconPressResetTimer = null;
+function schedulePinkModeIconPressReset() {
+  if (pinkModeIconPressResetTimer) {
+    clearTimeout(pinkModeIconPressResetTimer);
+  }
+  pinkModeIconPressResetTimer = setTimeout(function () {
+    pinkModeIconPressCount = 0;
+    pinkModeIconPressResetTimer = null;
+  }, PINK_MODE_ICON_RAIN_PRESS_RESET_MS);
+}
+function handlePinkModeIconPress() {
+  pinkModeIconPressCount += 1;
+  schedulePinkModeIconPressReset();
+  if (pinkModeIconPressCount >= PINK_MODE_ICON_RAIN_PRESS_TRIGGER_COUNT && typeof triggerPinkModeIconRain === 'function') {
+    pinkModeIconPressCount = 0;
+    schedulePinkModeIconPressReset();
+    triggerPinkModeIconRain();
+  }
+}
 function triggerPinkModeIconAnimation() {
   var targets = [];
   if (pinkModeToggle) {
@@ -871,9 +1533,9 @@ function triggerPinkModeIconAnimation() {
   });
 }
 function applyPinkModeIcon(iconConfig) {
-  var _ref = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-    _ref$animate = _ref.animate,
-    animate = _ref$animate === void 0 ? false : _ref$animate;
+  var _ref4 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+    _ref4$animate = _ref4.animate,
+    animate = _ref4$animate === void 0 ? false : _ref4$animate;
   if (!iconConfig) return;
   if (pinkModeToggle) {
     setToggleIcon(pinkModeToggle, iconConfig);
@@ -951,6 +1613,7 @@ function isPinkModeActive() {
 var pinkModeEnabled = false;
 var settingsInitialPinkMode = isPinkModeActive();
 var settingsInitialTemperatureUnit = typeof temperatureUnit === 'string' ? temperatureUnit : 'celsius';
+var settingsInitialShowAutoBackups = Boolean(showAutoBackups);
 function persistPinkModePreference(enabled) {
   pinkModeEnabled = !!enabled;
   applyPinkMode(pinkModeEnabled);
@@ -988,6 +1651,69 @@ function revertSettingsTemperatureUnitIfNeeded() {
     settingsTemperatureUnit.value = baseline;
   }
 }
+function applyShowAutoBackupsPreference(enabled) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  var config = _typeof(options) === 'object' && options !== null ? options : {};
+  var persist = config.persist !== false;
+  var forceRepopulate = Boolean(config.forceRepopulate);
+  var normalized = Boolean(enabled);
+  var previousValue = Boolean(showAutoBackups);
+  var changed = normalized !== previousValue;
+  showAutoBackups = normalized;
+  if (normalized && typeof ensureAutoBackupsFromProjects === 'function') {
+    try {
+      ensureAutoBackupsFromProjects();
+    } catch (error) {
+      console.warn('Failed to sync auto backups from project storage', error);
+    }
+  }
+  if (persist && typeof localStorage !== 'undefined') {
+    try {
+      localStorage.setItem('showAutoBackups', normalized);
+    } catch (error) {
+      console.warn('Could not save auto backup visibility preference', error);
+    }
+  }
+  if (!changed && !forceRepopulate) {
+    if (settingsShowAutoBackups) {
+      settingsShowAutoBackups.checked = normalized;
+    }
+    return;
+  }
+  var prevValue = setupSelect ? setupSelect.value : '';
+  var prevName = setupNameInput ? setupNameInput.value : '';
+  try {
+    populateSetupSelect();
+  } catch (error) {
+    console.warn('Failed to refresh setup selector after changing auto backup visibility', error);
+  }
+  if (setupSelect) {
+    if (normalized || !prevValue || !prevValue.startsWith('auto-backup-')) {
+      setupSelect.value = prevValue;
+    } else {
+      setupSelect.value = '';
+    }
+  }
+  if (setupNameInput) {
+    setupNameInput.value = prevName;
+  }
+  if (settingsShowAutoBackups) {
+    settingsShowAutoBackups.checked = normalized;
+  }
+}
+function rememberSettingsShowAutoBackupsBaseline() {
+  settingsInitialShowAutoBackups = Boolean(showAutoBackups);
+}
+function revertSettingsShowAutoBackupsIfNeeded() {
+  var baseline = Boolean(settingsInitialShowAutoBackups);
+  if (Boolean(showAutoBackups) !== baseline) {
+    applyShowAutoBackupsPreference(baseline, {
+      forceRepopulate: true
+    });
+  } else if (settingsShowAutoBackups) {
+    settingsShowAutoBackups.checked = baseline;
+  }
+}
 try {
   pinkModeEnabled = localStorage.getItem('pinkMode') === 'true';
 } catch (e) {
@@ -996,14 +1722,23 @@ try {
 applyPinkMode(pinkModeEnabled);
 rememberSettingsPinkModeBaseline();
 rememberSettingsTemperatureUnitBaseline();
+rememberSettingsShowAutoBackupsBaseline();
 if (pinkModeToggle) {
-  pinkModeToggle.addEventListener("click", function () {
+  pinkModeToggle.addEventListener("click", function (event) {
+    if (event && event.isTrusted) {
+      handlePinkModeIconPress();
+    }
     persistPinkModePreference(!document.body.classList.contains('pink-mode'));
   });
 }
 if (settingsPinkMode) {
   settingsPinkMode.addEventListener('change', function () {
     persistPinkModePreference(settingsPinkMode.checked);
+  });
+}
+if (settingsShowAutoBackups) {
+  settingsShowAutoBackups.addEventListener('change', function () {
+    applyShowAutoBackupsPreference(settingsShowAutoBackups.checked);
   });
 }
 if (settingsTemperatureUnit) {
@@ -1018,6 +1753,7 @@ if (settingsButton && settingsDialog) {
     prevAccentColor = accentColor;
     rememberSettingsPinkModeBaseline();
     rememberSettingsTemperatureUnitBaseline();
+    rememberSettingsShowAutoBackupsBaseline();
     if (settingsLanguage) settingsLanguage.value = currentLang;
     if (settingsDarkMode) settingsDarkMode.checked = document.body.classList.contains('dark-mode');
     if (settingsPinkMode) settingsPinkMode.checked = document.body.classList.contains('pink-mode');
@@ -1080,6 +1816,8 @@ if (settingsButton && settingsDialog) {
       rememberSettingsPinkModeBaseline();
       revertSettingsTemperatureUnitIfNeeded();
       rememberSettingsTemperatureUnitBaseline();
+      revertSettingsShowAutoBackupsIfNeeded();
+      rememberSettingsShowAutoBackupsBaseline();
       revertAccentColor();
       if (settingsLogo) settingsLogo.value = '';
       if (settingsLogoPreview) loadStoredLogoPreview();
@@ -1116,29 +1854,7 @@ if (settingsButton && settingsDialog) {
         }
       }
       if (settingsShowAutoBackups) {
-        var _enabled2 = settingsShowAutoBackups.checked;
-        var changed = _enabled2 !== showAutoBackups;
-        showAutoBackups = _enabled2;
-        try {
-          localStorage.setItem('showAutoBackups', _enabled2);
-        } catch (e) {
-          console.warn('Could not save auto backup visibility preference', e);
-        }
-        if (changed) {
-          var prevValue = setupSelect ? setupSelect.value : '';
-          var prevName = setupNameInput ? setupNameInput.value : '';
-          populateSetupSelect();
-          if (setupSelect) {
-            if (showAutoBackups || !prevValue.startsWith('auto-backup-')) {
-              setupSelect.value = prevValue;
-            } else {
-              setupSelect.value = '';
-            }
-          }
-          if (setupNameInput) {
-            setupNameInput.value = prevName;
-          }
-        }
+        applyShowAutoBackupsPreference(settingsShowAutoBackups.checked);
       }
       if (accentColorInput) {
         var color = accentColorInput.value;
@@ -1207,6 +1923,7 @@ if (settingsButton && settingsDialog) {
       collapseBackupDiffSection();
       rememberSettingsPinkModeBaseline();
       rememberSettingsTemperatureUnitBaseline();
+      rememberSettingsShowAutoBackupsBaseline();
       closeDialog(settingsDialog);
       settingsDialog.setAttribute('hidden', '');
     });
@@ -1217,6 +1934,8 @@ if (settingsButton && settingsDialog) {
       rememberSettingsPinkModeBaseline();
       revertSettingsTemperatureUnitIfNeeded();
       rememberSettingsTemperatureUnitBaseline();
+      revertSettingsShowAutoBackupsIfNeeded();
+      rememberSettingsShowAutoBackupsBaseline();
       revertAccentColor();
       if (settingsLogo) settingsLogo.value = '';
       if (settingsLogoPreview) loadStoredLogoPreview();
@@ -1232,6 +1951,8 @@ if (settingsButton && settingsDialog) {
     rememberSettingsPinkModeBaseline();
     revertSettingsTemperatureUnitIfNeeded();
     rememberSettingsTemperatureUnitBaseline();
+    revertSettingsShowAutoBackupsIfNeeded();
+    rememberSettingsShowAutoBackupsBaseline();
     revertAccentColor();
     if (settingsLogo) settingsLogo.value = '';
     if (settingsLogoPreview) loadStoredLogoPreview();
@@ -1243,6 +1964,34 @@ if (settingsButton && settingsDialog) {
   if (autoGearAddRuleBtn) {
     autoGearAddRuleBtn.addEventListener('click', function () {
       openAutoGearEditor();
+    });
+  }
+  if (autoGearConditionSelect) {
+    autoGearConditionSelect.addEventListener('change', function () {
+      updateAutoGearConditionAddButtonState();
+    });
+  }
+  if (autoGearConditionAddButton) {
+    autoGearConditionAddButton.addEventListener('click', function () {
+      addAutoGearConditionFromPicker();
+    });
+  }
+  if (autoGearConditionList) {
+    autoGearConditionList.addEventListener('click', function (event) {
+      var target = event.target instanceof HTMLElement ? event.target.closest('button') : null;
+      if (!target) return;
+      if (target.classList.contains('auto-gear-condition-remove')) {
+        var condition = target.dataset.condition || '';
+        if (condition) {
+          removeAutoGearCondition(condition, {
+            focusPicker: true
+          });
+        }
+        return;
+      }
+      if (target.classList.contains('auto-gear-condition-add')) {
+        handleAutoGearConditionShortcut();
+      }
     });
   }
   if (autoGearResetFactoryButton) {
@@ -1304,12 +2053,15 @@ if (settingsButton && settingsDialog) {
   }
   if (autoGearRulesList) {
     autoGearRulesList.addEventListener('click', function (event) {
-      var target = event.target;
-      if (!target) return;
-      if (target.classList.contains('auto-gear-edit')) {
-        openAutoGearEditor(target.dataset.ruleId || '');
-      } else if (target.classList.contains('auto-gear-delete')) {
-        deleteAutoGearRule(target.dataset.ruleId || '');
+      var targetElement = event.target;
+      var button = targetElement && typeof targetElement.closest === 'function' ? targetElement.closest('button') : null;
+      if (!button) return;
+      if (button.classList.contains('auto-gear-edit')) {
+        openAutoGearEditor(button.dataset.ruleId || '');
+      } else if (button.classList.contains('auto-gear-duplicate')) {
+        duplicateAutoGearRule(button.dataset.ruleId || '');
+      } else if (button.classList.contains('auto-gear-delete')) {
+        deleteAutoGearRule(button.dataset.ruleId || '');
       }
     });
   }
@@ -1481,28 +2233,124 @@ function resolveSafeLocalStorage() {
 function captureStorageSnapshot(storage) {
   var snapshot = Object.create(null);
   if (!storage) return snapshot;
-  try {
-    if (typeof storage.key === 'function' && typeof storage.length === 'number') {
-      var length = storage.length;
-      for (var i = 0; i < length; i++) {
-        var key = storage.key(i);
-        if (typeof key !== 'string') continue;
-        snapshot[key] = storage.getItem(key);
-      }
-    } else if (typeof storage.keys === 'function') {
-      var keys = storage.keys();
-      keys.forEach(function (key) {
-        if (typeof key !== 'string') return;
-        snapshot[key] = storage.getItem(key);
-      });
-    } else if (typeof storage.forEach === 'function') {
-      storage.forEach(function (value, key) {
-        if (typeof key !== 'string') return;
-        snapshot[key] = value;
-      });
+  var assignEntry = function assignEntry(key, valueOrGetter) {
+    if (typeof key !== 'string' || !key) {
+      return;
     }
+    try {
+      var value = typeof valueOrGetter === 'function' ? valueOrGetter() : valueOrGetter;
+      snapshot[key] = value;
+    } catch (error) {
+      console.warn('Failed to read storage entry for backup', key, error);
+    }
+  };
+  var tryEnumerateByIndex = function tryEnumerateByIndex() {
+    if (typeof storage.key !== 'function' || typeof storage.length !== 'number') {
+      return false;
+    }
+    var length = 0;
+    try {
+      length = Number(storage.length) || 0;
+    } catch (lengthError) {
+      console.warn('Failed to inspect storage length for backup snapshot', lengthError);
+      return true;
+    }
+    var _loop = function _loop() {
+      var key;
+      try {
+        key = storage.key(i);
+      } catch (keyError) {
+        console.warn('Failed to access storage key for backup snapshot', keyError);
+        return 1;
+      }
+      assignEntry(key, function () {
+        return storage.getItem(key);
+      });
+    };
+    for (var i = 0; i < length; i += 1) {
+      if (_loop()) continue;
+    }
+    return true;
+  };
+  var tryEnumerateByKeys = function tryEnumerateByKeys() {
+    if (typeof storage.keys !== 'function') {
+      return false;
+    }
+    var keys;
+    try {
+      keys = storage.keys();
+    } catch (keysError) {
+      console.warn('Failed to enumerate storage keys for backup snapshot', keysError);
+      return true;
+    }
+    if (!keys) {
+      return true;
+    }
+    var iterate = function iterate(list) {
+      if (!list) return;
+      if (typeof list.forEach === 'function') {
+        list.forEach(function (key) {
+          return assignEntry(key, function () {
+            return storage.getItem(key);
+          });
+        });
+      } else if (typeof list[Symbol.iterator] === 'function') {
+        var _iterator = _createForOfIteratorHelper(list),
+          _step;
+        try {
+          var _loop2 = function _loop2() {
+            var key = _step.value;
+            assignEntry(key, function () {
+              return storage.getItem(key);
+            });
+          };
+          for (_iterator.s(); !(_step = _iterator.n()).done;) {
+            _loop2();
+          }
+        } catch (err) {
+          _iterator.e(err);
+        } finally {
+          _iterator.f();
+        }
+      }
+    };
+    iterate(keys);
+    return true;
+  };
+  var tryEnumerateByForEach = function tryEnumerateByForEach() {
+    if (typeof storage.forEach !== 'function') {
+      return false;
+    }
+    try {
+      storage.forEach(function (value, key) {
+        assignEntry(key, value);
+      });
+    } catch (error) {
+      console.warn('Failed to iterate storage for backup snapshot', error);
+    }
+    return true;
+  };
+  var enumerated = false;
+  try {
+    enumerated = tryEnumerateByIndex();
   } catch (error) {
-    console.warn('Failed to snapshot storage', error);
+    console.warn('Failed to snapshot storage via index enumeration', error);
+  }
+  if (!Object.keys(snapshot).length) {
+    try {
+      enumerated = tryEnumerateByKeys() || enumerated;
+    } catch (error) {
+      console.warn('Failed to snapshot storage via key enumeration', error);
+    }
+  }
+  if (!Object.keys(snapshot).length && !enumerated) {
+    try {
+      tryEnumerateByForEach();
+    } catch (error) {
+      console.warn('Failed to snapshot storage via iteration', error);
+    }
+  } else if (!Object.keys(snapshot).length) {
+    tryEnumerateByForEach();
   }
   return snapshot;
 }
@@ -1530,9 +2378,9 @@ function restoreSessionStorageSnapshot(snapshot) {
     return;
   }
   var entries = snapshot && _typeof(snapshot) === 'object' ? Object.entries(snapshot) : [];
-  var retainedKeys = new Set(entries.map(function (_ref2) {
-    var _ref3 = _slicedToArray(_ref2, 1),
-      key = _ref3[0];
+  var retainedKeys = new Set(entries.map(function (_ref5) {
+    var _ref6 = _slicedToArray(_ref5, 1),
+      key = _ref6[0];
     return key;
   }));
   var keysToRemove = [];
@@ -1556,10 +2404,10 @@ function restoreSessionStorageSnapshot(snapshot) {
       console.warn('Failed to remove sessionStorage key during restore rollback', key, removeError);
     }
   });
-  entries.forEach(function (_ref4) {
-    var _ref5 = _slicedToArray(_ref4, 2),
-      key = _ref5[0],
-      value = _ref5[1];
+  entries.forEach(function (_ref7) {
+    var _ref8 = _slicedToArray(_ref7, 2),
+      key = _ref8[0],
+      value = _ref8[1];
     if (typeof key !== 'string') return;
     try {
       sessionStorage.setItem(key, typeof value === 'string' ? value : String(value));
@@ -1646,13 +2494,13 @@ function convertEntriesToSnapshot(section) {
       }
       if (_typeof(entry) === 'object') {
         if (typeof entry.key === 'string') {
-          var _ref6, _ref7, _ref8, _entry$value;
-          assignEntry(entry.key, (_ref6 = (_ref7 = (_ref8 = (_entry$value = entry.value) !== null && _entry$value !== void 0 ? _entry$value : entry.val) !== null && _ref8 !== void 0 ? _ref8 : entry.data) !== null && _ref7 !== void 0 ? _ref7 : entry.content) !== null && _ref6 !== void 0 ? _ref6 : entry.string);
+          var _ref9, _ref0, _ref1, _entry$value;
+          assignEntry(entry.key, (_ref9 = (_ref0 = (_ref1 = (_entry$value = entry.value) !== null && _entry$value !== void 0 ? _entry$value : entry.val) !== null && _ref1 !== void 0 ? _ref1 : entry.data) !== null && _ref0 !== void 0 ? _ref0 : entry.content) !== null && _ref9 !== void 0 ? _ref9 : entry.string);
           return;
         }
         if (typeof entry.name === 'string') {
-          var _ref9, _ref0, _ref1, _entry$value2;
-          assignEntry(entry.name, (_ref9 = (_ref0 = (_ref1 = (_entry$value2 = entry.value) !== null && _entry$value2 !== void 0 ? _entry$value2 : entry.val) !== null && _ref1 !== void 0 ? _ref1 : entry.data) !== null && _ref0 !== void 0 ? _ref0 : entry.content) !== null && _ref9 !== void 0 ? _ref9 : entry.string);
+          var _ref10, _ref11, _ref12, _entry$value2;
+          assignEntry(entry.name, (_ref10 = (_ref11 = (_ref12 = (_entry$value2 = entry.value) !== null && _entry$value2 !== void 0 ? _entry$value2 : entry.val) !== null && _ref12 !== void 0 ? _ref12 : entry.data) !== null && _ref11 !== void 0 ? _ref11 : entry.content) !== null && _ref10 !== void 0 ? _ref10 : entry.string);
           return;
         }
         if (Array.isArray(entry.entry)) {
@@ -1661,10 +2509,10 @@ function convertEntriesToSnapshot(section) {
       }
     });
   } else if (isPlainObject(source)) {
-    Object.entries(source).forEach(function (_ref10) {
-      var _ref11 = _slicedToArray(_ref10, 2),
-        key = _ref11[0],
-        value = _ref11[1];
+    Object.entries(source).forEach(function (_ref13) {
+      var _ref14 = _slicedToArray(_ref13, 2),
+        key = _ref14[0],
+        value = _ref14[1];
       assignEntry(key, value);
     });
   } else {
@@ -1677,11 +2525,11 @@ function extractFirstMatchingSnapshot(source, keys) {
     snapshot: null,
     keyUsed: null
   };
-  var _iterator = _createForOfIteratorHelper(keys),
-    _step;
+  var _iterator2 = _createForOfIteratorHelper(keys),
+    _step2;
   try {
-    for (_iterator.s(); !(_step = _iterator.n()).done;) {
-      var key = _step.value;
+    for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+      var key = _step2.value;
       if (!Object.prototype.hasOwnProperty.call(source, key)) continue;
       var snapshot = convertEntriesToSnapshot(source[key]);
       if (snapshot) {
@@ -1692,9 +2540,9 @@ function extractFirstMatchingSnapshot(source, keys) {
       }
     }
   } catch (err) {
-    _iterator.e(err);
+    _iterator2.e(err);
   } finally {
-    _iterator.f();
+    _iterator2.f();
   }
   return {
     snapshot: null,
@@ -1714,9 +2562,9 @@ function restoreLocalStorageSnapshot(storage, snapshot) {
     return;
   }
   var entries = snapshot && _typeof(snapshot) === 'object' ? Object.entries(snapshot) : [];
-  var targetKeys = new Set(entries.map(function (_ref12) {
-    var _ref13 = _slicedToArray(_ref12, 1),
-      key = _ref13[0];
+  var targetKeys = new Set(entries.map(function (_ref15) {
+    var _ref16 = _slicedToArray(_ref15, 1),
+      key = _ref16[0];
     return key;
   }));
   var keysToRemove = [];
@@ -1739,10 +2587,10 @@ function restoreLocalStorageSnapshot(storage, snapshot) {
       console.warn('Failed to remove storage key during restore rollback', key, removeError);
     }
   });
-  entries.forEach(function (_ref14) {
-    var _ref15 = _slicedToArray(_ref14, 2),
-      key = _ref15[0],
-      value = _ref15[1];
+  entries.forEach(function (_ref17) {
+    var _ref18 = _slicedToArray(_ref17, 2),
+      key = _ref18[0],
+      value = _ref18[1];
     if (typeof key !== 'string') return;
     try {
       if (value === null || value === undefined) {
@@ -1758,10 +2606,10 @@ function restoreLocalStorageSnapshot(storage, snapshot) {
 function buildLegacyStorageFromRoot(source, metadataKeys) {
   if (!isPlainObject(source)) return null;
   var snapshot = Object.create(null);
-  Object.entries(source).forEach(function (_ref16) {
-    var _ref17 = _slicedToArray(_ref16, 2),
-      key = _ref17[0],
-      value = _ref17[1];
+  Object.entries(source).forEach(function (_ref19) {
+    var _ref20 = _slicedToArray(_ref19, 2),
+      key = _ref20[0],
+      value = _ref20[1];
     if (metadataKeys.has(key)) return;
     if (!looksLikeStoredSettingKey(key)) return;
     snapshot[key] = normalizeStoredValue(value);
@@ -1875,10 +2723,10 @@ function encodeBackupDataUrl(payload) {
 }
 function getManualDownloadFallbackMessage() {
   if ((typeof texts === "undefined" ? "undefined" : _typeof(texts)) === 'object' && texts) {
-    var _texts$en;
+    var _texts$en10;
     var lang = typeof currentLang === 'string' && texts[currentLang] ? currentLang : 'en';
     var langTexts = texts[lang] || texts.en || {};
-    var fallback = langTexts.manualDownloadFallback || ((_texts$en = texts.en) === null || _texts$en === void 0 ? void 0 : _texts$en.manualDownloadFallback);
+    var fallback = langTexts.manualDownloadFallback || ((_texts$en10 = texts.en) === null || _texts$en10 === void 0 ? void 0 : _texts$en10.manualDownloadFallback);
     if (fallback) {
       return fallback;
     }
@@ -1887,10 +2735,10 @@ function getManualDownloadFallbackMessage() {
 }
 function getManualDownloadCopyHint() {
   if ((typeof texts === "undefined" ? "undefined" : _typeof(texts)) === 'object' && texts) {
-    var _texts$en2;
+    var _texts$en11;
     var lang = typeof currentLang === 'string' && texts[currentLang] ? currentLang : 'en';
     var langTexts = texts[lang] || texts.en || {};
-    var fallback = langTexts.manualDownloadCopyHint || ((_texts$en2 = texts.en) === null || _texts$en2 === void 0 ? void 0 : _texts$en2.manualDownloadCopyHint);
+    var fallback = langTexts.manualDownloadCopyHint || ((_texts$en11 = texts.en) === null || _texts$en11 === void 0 ? void 0 : _texts$en11.manualDownloadCopyHint);
     if (fallback) {
       return fallback;
     }
@@ -2114,49 +2962,55 @@ function parseAutoBackupName(name) {
   if (typeof name !== 'string') {
     return null;
   }
-  if (name.startsWith(SESSION_AUTO_BACKUP_DELETION_PREFIX)) {
-    var remainder = name.slice(SESSION_AUTO_BACKUP_DELETION_PREFIX.length);
-    var parts = remainder.split('-');
-    if (parts.length >= 6) {
-      var _parts = _toArray(parts),
-        year = _parts[0],
-        month = _parts[1],
-        day = _parts[2],
-        hour = _parts[3],
-        minute = _parts[4],
-        second = _parts[5],
-        rest = _parts.slice(6);
-      var date = new Date(Number(year), Number(month) - 1, Number(day), Number(hour), Number(minute), Number(second));
-      var label = rest.join('-').trim();
+  var config = function () {
+    if (name.startsWith(SESSION_AUTO_BACKUP_DELETION_PREFIX)) {
       return {
+        prefixLength: SESSION_AUTO_BACKUP_DELETION_PREFIX.length,
         type: 'auto-backup-before-delete',
-        date: Number.isNaN(date.valueOf()) ? null : date,
-        label: label,
-        includeSeconds: true
+        includeSeconds: true,
+        minParts: 6
       };
     }
-  } else if (name.startsWith(SESSION_AUTO_BACKUP_NAME_PREFIX)) {
-    var _remainder = name.slice(SESSION_AUTO_BACKUP_NAME_PREFIX.length);
-    var _parts2 = _remainder.split('-');
-    if (_parts2.length >= 5) {
-      var _parts3 = _toArray(_parts2),
-        _year = _parts3[0],
-        _month = _parts3[1],
-        _day = _parts3[2],
-        _hour = _parts3[3],
-        _minute = _parts3[4],
-        _rest = _parts3.slice(5);
-      var _date = new Date(Number(_year), Number(_month) - 1, Number(_day), Number(_hour), Number(_minute));
-      var _label = _rest.join('-').trim();
+    if (name.startsWith(SESSION_AUTO_BACKUP_NAME_PREFIX)) {
       return {
+        prefixLength: SESSION_AUTO_BACKUP_NAME_PREFIX.length,
         type: 'auto-backup',
-        date: Number.isNaN(_date.valueOf()) ? null : _date,
-        label: _label,
-        includeSeconds: false
+        includeSeconds: false,
+        minParts: 5
       };
     }
+    return null;
+  }();
+  if (!config) {
+    return null;
   }
-  return null;
+  var remainder = name.slice(config.prefixLength);
+  var parts = remainder.split('-');
+  if (parts.length < config.minParts) {
+    return null;
+  }
+  var _parts = _toArray(parts),
+    year = _parts[0],
+    month = _parts[1],
+    day = _parts[2],
+    hour = _parts[3],
+    minute = _parts[4],
+    rest = _parts.slice(5);
+  var dateParts = [Number(year), Number(month) - 1, Number(day), Number(hour), Number(minute)];
+  var labelParts = rest;
+  if (config.includeSeconds) {
+    var secondsPart = rest.length ? rest[0] : '0';
+    dateParts.push(Number(secondsPart));
+    labelParts = rest.slice(1);
+  }
+  var label = labelParts.join('-').trim();
+  var date = _construct(Date, dateParts);
+  return {
+    type: config.type,
+    date: Number.isNaN(date.valueOf()) ? null : date,
+    label: label,
+    includeSeconds: config.includeSeconds
+  };
 }
 function formatTimestampForComparison(date, includeSeconds) {
   if (!(date instanceof Date) || Number.isNaN(date.valueOf())) {
@@ -2188,11 +3042,11 @@ function formatTimestampForComparison(date, includeSeconds) {
   }
   return date.toISOString();
 }
-function formatComparisonOptionLabel(name) {
+function formatComparisonOptionLabel(name, parsedDetails) {
   if (typeof name !== 'string') {
     return '';
   }
-  var parsed = parseAutoBackupName(name);
+  var parsed = parsedDetails || parseAutoBackupName(name);
   if (!parsed) {
     var manualLabel = getDiffText('versionCompareManualLabel', 'Manual save');
     return "".concat(manualLabel, " \xB7 ").concat(name);
@@ -2203,26 +3057,51 @@ function formatComparisonOptionLabel(name) {
   return timestamp ? "".concat(typeLabel, " \xB7 ").concat(timestamp).concat(suffix) : "".concat(typeLabel).concat(suffix ? " \xB7 ".concat(suffix) : '');
 }
 function collectBackupDiffOptions() {
+  var options = [];
   var setups = getSetups();
-  if (!setups || _typeof(setups) !== 'object') {
-    return [];
+  if (setups && _typeof(setups) === 'object') {
+    var setupOptions = Object.keys(setups).filter(function (name) {
+      return typeof name === 'string' && name;
+    }).map(function (name) {
+      var parsed = parseAutoBackupName(name);
+      var label = formatComparisonOptionLabel(name, parsed);
+      var hasValidDate = parsed && parsed.date instanceof Date && !Number.isNaN(parsed.date.valueOf());
+      return {
+        value: name,
+        label: label,
+        data: setups[name],
+        parsed: parsed,
+        timestamp: hasValidDate ? parsed.date.getTime() : null
+      };
+    }).sort(function (a, b) {
+      var autoA = Boolean(a.parsed);
+      var autoB = Boolean(b.parsed);
+      if (autoA !== autoB) {
+        return autoA ? 1 : -1;
+      }
+      if (autoA && autoB) {
+        var timeA = typeof a.timestamp === 'number' ? a.timestamp : null;
+        var timeB = typeof b.timestamp === 'number' ? b.timestamp : null;
+        if (timeA !== null && timeB !== null && timeA !== timeB) {
+          return timeB - timeA;
+        }
+        if (timeA !== null && timeB === null) {
+          return -1;
+        }
+        if (timeA === null && timeB !== null) {
+          return 1;
+        }
+      }
+      return localeSort(a.label, b.label);
+    }).map(function (_ref21) {
+      var parsed = _ref21.parsed,
+        timestamp = _ref21.timestamp,
+        option = _objectWithoutProperties(_ref21, _excluded);
+      return option;
+    });
+    options.push.apply(options, _toConsumableArray(setupOptions));
   }
-  return Object.keys(setups).filter(function (name) {
-    return typeof name === 'string' && name;
-  }).map(function (name) {
-    return {
-      value: name,
-      label: formatComparisonOptionLabel(name),
-      data: setups[name]
-    };
-  }).sort(function (a, b) {
-    var autoA = isAutoBackupName(a.value);
-    var autoB = isAutoBackupName(b.value);
-    if (autoA !== autoB) {
-      return autoA ? 1 : -1;
-    }
-    return localeSort(a.label, b.label);
-  });
+  return options;
 }
 function fillBackupDiffSelect(select, options, selectedValue) {
   if (!select) return;
@@ -2419,9 +3298,12 @@ function computeSetupDiff(baseline, comparison) {
   walk(baseline, comparison, []);
   return entries;
 }
-function createDiffValueElement(value) {
+function createDiffValueElement(value, variant) {
   var element = document.createElement('pre');
   element.className = 'diff-value';
+  if (variant) {
+    element.className += " diff-value-".concat(variant);
+  }
   if (value === undefined) {
     element.textContent = getDiffText('versionCompareMissingValue', 'Not present');
     return element;
@@ -2446,15 +3328,41 @@ function createDiffValueElement(value) {
   }
   return element;
 }
-function createDiffChangeBlock(labelText, value) {
+function createDiffChangeBlock(labelText, value, variant) {
   var block = document.createElement('div');
   block.className = 'diff-change';
+  if (variant) {
+    block.classList.add("diff-change-".concat(variant));
+  }
   var label = document.createElement('span');
   label.className = 'diff-label';
   label.textContent = labelText;
   block.appendChild(label);
-  block.appendChild(createDiffValueElement(value));
+  block.appendChild(createDiffValueElement(value, variant));
   return block;
+}
+function createDiffStatusBadge(type) {
+  var badge = document.createElement('span');
+  badge.className = 'diff-label diff-status-badge';
+  var variant = 'changed';
+  var textKey = 'versionCompareChangeUpdated';
+  var fallbackText = 'Updated';
+  if (type === 'added') {
+    variant = 'added';
+    textKey = 'versionCompareChangeAdded';
+    fallbackText = 'Added';
+  } else if (type === 'removed') {
+    variant = 'removed';
+    textKey = 'versionCompareChangeRemoved';
+    fallbackText = 'Removed';
+  } else if (type === 'changed') {
+    variant = 'changed';
+    textKey = 'versionCompareChangeUpdated';
+    fallbackText = 'Updated';
+  }
+  badge.classList.add("diff-status-".concat(variant));
+  badge.textContent = getDiffText(textKey, fallbackText);
+  return badge;
 }
 function sortDiffEntries(entries) {
   if (!Array.isArray(entries)) {
@@ -2494,30 +3402,38 @@ function renderBackupDiffEntries(entries) {
   }
   backupDiffListContainerEl.hidden = false;
   var decoratedEntries = sortDiffEntries(entries);
-  decoratedEntries.forEach(function (_ref18) {
-    var entry = _ref18.entry,
-      pathText = _ref18.pathText;
+  decoratedEntries.forEach(function (_ref22) {
+    var entry = _ref22.entry,
+      pathText = _ref22.pathText;
     if (!entry) {
       return;
     }
     var item = document.createElement('li');
     var typeClass = entry.type ? " diff-".concat(entry.type) : '';
     item.className = "diff-entry".concat(typeClass);
+    var header = document.createElement('div');
+    header.className = 'diff-entry-header';
     var path = document.createElement('div');
     path.className = 'diff-path';
     path.textContent = pathText;
-    item.appendChild(path);
+    header.appendChild(path);
+    header.appendChild(createDiffStatusBadge(entry.type));
+    item.appendChild(header);
+    var changeGroup = document.createElement('div');
+    changeGroup.className = 'diff-change-group';
     if (entry.type === 'changed') {
-      var status = document.createElement('span');
-      status.className = 'diff-label diff-status';
-      status.textContent = getDiffText('versionCompareChangeUpdated', 'Updated');
-      item.appendChild(status);
-      item.appendChild(createDiffChangeBlock(getDiffText('versionCompareChangeRemoved', 'Removed'), entry.before));
-      item.appendChild(createDiffChangeBlock(getDiffText('versionCompareChangeAdded', 'Added'), entry.after));
+      changeGroup.classList.add('diff-change-group--split');
+      changeGroup.appendChild(createDiffChangeBlock(getDiffText('versionCompareChangeRemoved', 'Removed'), entry.before, 'removed'));
+      changeGroup.appendChild(createDiffChangeBlock(getDiffText('versionCompareChangeAdded', 'Added'), entry.after, 'added'));
     } else if (entry.type === 'added') {
-      item.appendChild(createDiffChangeBlock(getDiffText('versionCompareChangeAdded', 'Added'), entry.after));
+      changeGroup.appendChild(createDiffChangeBlock(getDiffText('versionCompareChangeAdded', 'Added'), entry.after, 'added'));
     } else if (entry.type === 'removed') {
-      item.appendChild(createDiffChangeBlock(getDiffText('versionCompareChangeRemoved', 'Removed'), entry.before));
+      changeGroup.appendChild(createDiffChangeBlock(getDiffText('versionCompareChangeRemoved', 'Removed'), entry.before, 'removed'));
+    } else {
+      changeGroup.appendChild(createDiffChangeBlock(getDiffText('versionCompareChangeUpdated', 'Updated'), entry.after, 'changed'));
+    }
+    if (changeGroup.childNodes.length) {
+      item.appendChild(changeGroup);
     }
     backupDiffListEl.appendChild(item);
   });
@@ -2875,6 +3791,341 @@ function restoreSetupSelection(previousSelection, shouldShowAutoBackups) {
     }
   }
 }
+var backupFallbackLoaders = [{
+  key: 'devices',
+  loaderName: 'loadDeviceData',
+  isValid: function isValid(value) {
+    return value === null || isPlainObject(value);
+  },
+  loader: function loader() {
+    return typeof loadDeviceData === 'function' ? loadDeviceData() : undefined;
+  }
+}, {
+  key: 'setups',
+  loaderName: 'loadSetups',
+  isValid: function isValid(value) {
+    return isPlainObject(value);
+  },
+  loader: function loader() {
+    return typeof loadSetups === 'function' ? loadSetups() : undefined;
+  }
+}, {
+  key: 'session',
+  loaderName: 'loadSessionState',
+  isValid: function isValid(value) {
+    return value === null || isPlainObject(value);
+  },
+  loader: function loader() {
+    return typeof loadSessionState === 'function' ? loadSessionState() : undefined;
+  }
+}, {
+  key: 'feedback',
+  loaderName: 'loadFeedback',
+  isValid: function isValid(value) {
+    return value === null || isPlainObject(value);
+  },
+  loader: function loader() {
+    return typeof loadFeedback === 'function' ? loadFeedback() : undefined;
+  }
+}, {
+  key: 'project',
+  loaderName: 'loadProject',
+  isValid: function isValid(value) {
+    return isPlainObject(value);
+  },
+  loader: function loader() {
+    return typeof loadProject === 'function' ? loadProject() : undefined;
+  }
+}, {
+  key: 'favorites',
+  loaderName: 'loadFavorites',
+  isValid: function isValid(value) {
+    return isPlainObject(value);
+  },
+  loader: function loader() {
+    return typeof loadFavorites === 'function' ? loadFavorites() : undefined;
+  }
+}, {
+  key: 'autoGearBackups',
+  loaderName: 'loadAutoGearBackups',
+  isValid: function isValid(value) {
+    return Array.isArray(value);
+  },
+  loader: function loader() {
+    return typeof loadAutoGearBackups === 'function' ? loadAutoGearBackups() : undefined;
+  }
+}, {
+  key: 'autoGearPresets',
+  loaderName: 'loadAutoGearPresets',
+  isValid: function isValid(value) {
+    return Array.isArray(value);
+  },
+  loader: function loader() {
+    return typeof loadAutoGearPresets === 'function' ? loadAutoGearPresets() : undefined;
+  }
+}, {
+  key: 'autoGearSeeded',
+  loaderName: 'loadAutoGearSeedFlag',
+  isValid: function isValid(value) {
+    return typeof value === 'boolean';
+  },
+  loader: function loader() {
+    return typeof loadAutoGearSeedFlag === 'function' ? loadAutoGearSeedFlag() : undefined;
+  }
+}, {
+  key: 'autoGearActivePresetId',
+  loaderName: 'loadAutoGearActivePresetId',
+  isValid: function isValid(value) {
+    return typeof value === 'string';
+  },
+  loader: function loader() {
+    return typeof loadAutoGearActivePresetId === 'function' ? loadAutoGearActivePresetId() : undefined;
+  }
+}, {
+  key: 'autoGearAutoPresetId',
+  loaderName: 'loadAutoGearAutoPresetId',
+  isValid: function isValid(value) {
+    return typeof value === 'string';
+  },
+  loader: function loader() {
+    return typeof loadAutoGearAutoPresetId === 'function' ? loadAutoGearAutoPresetId() : undefined;
+  }
+}, {
+  key: 'autoGearShowBackups',
+  loaderName: 'loadAutoGearBackupVisibility',
+  isValid: function isValid(value) {
+    return typeof value === 'boolean';
+  },
+  loader: function loader() {
+    return typeof loadAutoGearBackupVisibility === 'function' ? loadAutoGearBackupVisibility() : undefined;
+  }
+}, {
+  key: 'fullBackupHistory',
+  loaderName: 'loadFullBackupHistory',
+  isValid: function isValid(value) {
+    return Array.isArray(value);
+  },
+  loader: function loader() {
+    return typeof loadFullBackupHistory === 'function' ? loadFullBackupHistory() : undefined;
+  }
+}];
+function describeError(error) {
+  if (!error) {
+    return null;
+  }
+  if (typeof error === 'string') {
+    return error;
+  }
+  if (typeof error.message === 'string' && error.message.trim()) {
+    return error.message;
+  }
+  try {
+    return JSON.stringify(error);
+  } catch (serializationError) {
+    void serializationError;
+  }
+  try {
+    return String(error);
+  } catch (stringifyError) {
+    void stringifyError;
+  }
+  return null;
+}
+function recordDiagnostic(diagnostics, section, status) {
+  var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+  if (!Array.isArray(diagnostics)) {
+    return;
+  }
+  var entry = {
+    section: section,
+    status: status
+  };
+  if (options.source && typeof options.source === 'string') {
+    entry.source = options.source;
+  }
+  if (typeof options.message === 'string') {
+    var trimmedMessage = options.message.trim();
+    if (trimmedMessage) {
+      entry.message = trimmedMessage;
+    }
+  }
+  diagnostics.push(entry);
+}
+function applyBackupFallbacks(target, diagnostics) {
+  if (!target || _typeof(target) !== 'object') {
+    return;
+  }
+  backupFallbackLoaders.forEach(function (_ref23) {
+    var key = _ref23.key,
+      loader = _ref23.loader,
+      loaderName = _ref23.loaderName,
+      isValid = _ref23.isValid;
+    var currentValue = target[key];
+    if (isValid(currentValue)) {
+      return;
+    }
+    if (typeof loader !== 'function') {
+      return;
+    }
+    try {
+      var fallbackValue = loader();
+      if (fallbackValue === undefined) {
+        recordDiagnostic(diagnostics, key, 'missing', {
+          source: loaderName
+        });
+        return;
+      }
+      target[key] = fallbackValue;
+      recordDiagnostic(diagnostics, key, 'recovered', {
+        source: loaderName
+      });
+    } catch (error) {
+      console.warn("Failed to recover ".concat(key, " for full backup"), error);
+      var message = describeError(error);
+      recordDiagnostic(diagnostics, key, 'error', {
+        source: loaderName,
+        message: message
+      });
+    }
+  });
+}
+function mergeAutoGearRuleLists(primary, secondary) {
+  var baseList = Array.isArray(primary) ? primary.slice() : [];
+  if (!Array.isArray(secondary) || !secondary.length) {
+    return {
+      combined: baseList,
+      changed: false
+    };
+  }
+  var existingIds = new Set(baseList.map(function (entry) {
+    return entry && typeof entry.id === 'string' ? entry.id : null;
+  }).filter(Boolean));
+  var changed = false;
+  secondary.forEach(function (entry) {
+    if (!entry) {
+      return;
+    }
+    var identifier = entry && typeof entry.id === 'string' ? entry.id : null;
+    if (identifier && existingIds.has(identifier)) {
+      return;
+    }
+    if (identifier) {
+      existingIds.add(identifier);
+    }
+    baseList.push(entry);
+    changed = true;
+  });
+  return {
+    combined: baseList,
+    changed: changed
+  };
+}
+function collectFullBackupData() {
+  var diagnostics = [];
+  var rawData = {};
+  var exportAttempted = false;
+  var exportFailed = false;
+  if (typeof exportAllData === 'function') {
+    exportAttempted = true;
+    try {
+      rawData = exportAllData();
+    } catch (error) {
+      exportFailed = true;
+      console.warn('Failed to collect planner data for full backup', error);
+      var message = describeError(error);
+      recordDiagnostic(diagnostics, 'exportAllData', 'error', {
+        source: 'exportAllData',
+        message: message
+      });
+      rawData = {};
+    }
+  } else {
+    recordDiagnostic(diagnostics, 'exportAllData', 'missing', {
+      source: 'exportAllData'
+    });
+  }
+  var data = {};
+  if (isPlainObject(rawData)) {
+    data = _objectSpread({}, rawData);
+  } else if (exportAttempted && !exportFailed && rawData && _typeof(rawData) === 'object') {
+    data = _objectSpread({}, rawData);
+    recordDiagnostic(diagnostics, 'exportAllData', 'coerced', {
+      source: 'exportAllData'
+    });
+  } else {
+    if (exportAttempted && !exportFailed) {
+      recordDiagnostic(diagnostics, 'exportAllData', 'invalid', {
+        source: 'exportAllData'
+      });
+    }
+    data = {};
+  }
+  applyBackupFallbacks(data, diagnostics);
+  if (!Array.isArray(data.autoGearRules)) {
+    var rules = null;
+    var ruleSource = '';
+    var recovered = false;
+    if (typeof getBaseAutoGearRules === 'function') {
+      try {
+        var baseRules = getBaseAutoGearRules();
+        if (Array.isArray(baseRules)) {
+          rules = baseRules.slice();
+          ruleSource = 'getBaseAutoGearRules';
+          recovered = true;
+        }
+      } catch (error) {
+        console.warn('Failed to capture automatic gear rules from state for full backup', error);
+        var _message = describeError(error);
+        recordDiagnostic(diagnostics, 'autoGearRules', 'error', {
+          source: 'getBaseAutoGearRules',
+          message: _message
+        });
+      }
+    }
+    var storedRules = null;
+    if (typeof loadAutoGearRules === 'function') {
+      try {
+        storedRules = loadAutoGearRules();
+      } catch (error) {
+        console.warn('Failed to load automatic gear rules from storage for full backup', error);
+        var _message2 = describeError(error);
+        recordDiagnostic(diagnostics, 'autoGearRules', 'error', {
+          source: 'loadAutoGearRules',
+          message: _message2
+        });
+      }
+    }
+    if (Array.isArray(storedRules) && storedRules.length) {
+      if (!Array.isArray(rules) || !rules.length) {
+        rules = storedRules;
+        ruleSource = 'loadAutoGearRules';
+        recovered = true;
+      } else {
+        var _mergeAutoGearRuleLis = mergeAutoGearRuleLists(rules, storedRules),
+          combined = _mergeAutoGearRuleLis.combined,
+          changed = _mergeAutoGearRuleLis.changed;
+        rules = combined;
+        if (changed) {
+          recovered = true;
+          ruleSource = ruleSource ? "".concat(ruleSource, "+loadAutoGearRules") : 'loadAutoGearRules';
+        }
+      }
+    }
+    if (Array.isArray(rules)) {
+      data.autoGearRules = rules;
+      recordDiagnostic(diagnostics, 'autoGearRules', recovered ? 'recovered' : 'preserved', {
+        source: ruleSource || (Array.isArray(storedRules) && storedRules.length ? 'loadAutoGearRules' : '')
+      });
+    } else {
+      data.autoGearRules = [];
+      recordDiagnostic(diagnostics, 'autoGearRules', 'defaulted');
+    }
+  }
+  return {
+    data: data,
+    diagnostics: diagnostics
+  };
+}
 function createSettingsBackup() {
   var notify = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
   var timestamp = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new Date();
@@ -2887,13 +4138,19 @@ function createSettingsBackup() {
     var safeStorage = resolveSafeLocalStorage();
     var settings = captureStorageSnapshot(safeStorage);
     var sessionEntries = captureStorageSnapshot(typeof sessionStorage !== 'undefined' ? sessionStorage : null);
+    var _collectFullBackupDat = collectFullBackupData(),
+      backupData = _collectFullBackupDat.data,
+      diagnostics = _collectFullBackupDat.diagnostics;
     var backup = {
       version: APP_VERSION,
       generatedAt: iso,
       settings: settings,
       sessionStorage: Object.keys(sessionEntries).length ? sessionEntries : undefined,
-      data: typeof exportAllData === 'function' ? exportAllData() : {}
+      data: backupData
     };
+    if (Array.isArray(diagnostics) && diagnostics.length) {
+      backup.diagnostics = diagnostics;
+    }
     var payload = JSON.stringify(backup);
     var downloadResult = downloadBackupPayload(payload, fileName);
     if (!downloadResult || !downloadResult.success) {
@@ -3012,9 +4269,9 @@ if (restoreSettings && restoreSettingsInput) {
       } catch (rulesError) {
         console.warn('Failed to resync automatic gear rules after restore failure', rulesError);
       }
-      var safeGetItem = createSafeStorageReader(safeStorage, 'Failed to read restored storage key');
-      var preferenceState = applyPreferencesFromStorage(safeGetItem);
-      showAutoBackups = preferenceState.showAutoBackups;
+      var restoredPreferenceReader = createSafeStorageReader(safeStorage, 'Failed to read restored storage key');
+      var restoredPreferences = applyPreferencesFromStorage(restoredPreferenceReader);
+      showAutoBackups = restoredPreferences.showAutoBackups;
       try {
         populateSetupSelect();
       } catch (populateError) {
@@ -3028,9 +4285,9 @@ if (restoreSettings && restoreSettingsInput) {
           console.warn('Failed to restore automatic backup visibility toggle after restore failure', checkboxError);
         }
       }
-      if (preferenceState.language) {
+      if (restoredPreferences.language) {
         try {
-          setLanguage(preferenceState.language);
+          setLanguage(restoredPreferences.language);
         } catch (languageError) {
           console.warn('Failed to restore language after restore failure', languageError);
         }
@@ -3049,11 +4306,11 @@ if (restoreSettings && restoreSettingsInput) {
           throw new Error('Backup payload empty');
         }
         var parsed = JSON.parse(sanitizedPayload);
-        var _extractBackupSection = extractBackupSections(parsed),
-          restoredSettings = _extractBackupSection.settings,
-          restoredSession = _extractBackupSection.sessionStorage,
-          data = _extractBackupSection.data,
-          fileVersion = _extractBackupSection.fileVersion;
+        var _extractBackupSection2 = extractBackupSections(parsed),
+          restoredSettings = _extractBackupSection2.settings,
+          restoredSession = _extractBackupSection2.sessionStorage,
+          data = _extractBackupSection2.data,
+          fileVersion = _extractBackupSection2.fileVersion;
         var hasSettings = restoredSettings && Object.keys(restoredSettings).length > 0;
         var hasSessionEntries = restoredSession && Object.keys(restoredSession).length > 0;
         var hasDataEntries = data && Object.keys(data).length > 0;
@@ -3066,10 +4323,10 @@ if (restoreSettings && restoreSettingsInput) {
         if (restoredSettings && _typeof(restoredSettings) === 'object') {
           if (safeStorage && typeof safeStorage.setItem === 'function') {
             restoreMutated = true;
-            Object.entries(restoredSettings).forEach(function (_ref19) {
-              var _ref20 = _slicedToArray(_ref19, 2),
-                k = _ref20[0],
-                v = _ref20[1];
+            Object.entries(restoredSettings).forEach(function (_ref24) {
+              var _ref25 = _slicedToArray(_ref24, 2),
+                k = _ref25[0],
+                v = _ref25[1];
               if (typeof k !== 'string') return;
               try {
                 if (v === null || v === undefined) {
@@ -3087,10 +4344,10 @@ if (restoreSettings && restoreSettingsInput) {
         }
         if (restoredSession && typeof sessionStorage !== 'undefined') {
           restoreMutated = true;
-          Object.entries(restoredSession).forEach(function (_ref21) {
-            var _ref22 = _slicedToArray(_ref21, 2),
-              key = _ref22[0],
-              value = _ref22[1];
+          Object.entries(restoredSession).forEach(function (_ref26) {
+            var _ref27 = _slicedToArray(_ref26, 2),
+              key = _ref27[0],
+              value = _ref27[1];
             try {
               sessionStorage.setItem(key, value);
             } catch (sessionError) {
@@ -3112,16 +4369,28 @@ if (restoreSettings && restoreSettingsInput) {
         } catch (rulesError) {
           console.warn('Failed to sync automatic gear rules after restore', rulesError);
         }
-        var safeGetItem = createSafeStorageReader(safeStorage, 'Failed to read restored storage key');
-        var preferenceState = applyPreferencesFromStorage(safeGetItem);
-        showAutoBackups = preferenceState.showAutoBackups;
+        var preferenceReader = createSafeStorageReader(safeStorage, 'Failed to read restored storage key');
+        var restoredPreferenceState = applyPreferencesFromStorage(preferenceReader);
+        showAutoBackups = restoredPreferenceState.showAutoBackups;
         populateSetupSelect();
         restoreSetupSelection(previousSelection, showAutoBackups);
         if (settingsShowAutoBackups) {
           settingsShowAutoBackups.checked = showAutoBackups;
         }
-        if (preferenceState.language) {
-          setLanguage(preferenceState.language);
+        if (restoredPreferenceState.language) {
+          setLanguage(restoredPreferenceState.language);
+        }
+        if (restoredSession && typeof sessionStorage !== 'undefined') {
+          Object.entries(restoredSession).forEach(function (_ref28) {
+            var _ref29 = _slicedToArray(_ref28, 2),
+              key = _ref29[0],
+              value = _ref29[1];
+            try {
+              sessionStorage.setItem(key, value);
+            } catch (sessionError) {
+              console.warn('Failed to refresh sessionStorage entry after restore', key, sessionError);
+            }
+          });
         }
         alert(texts[currentLang].restoreSuccess);
         finalizeRestore();
@@ -3185,6 +4454,36 @@ if (restoreSettings && restoreSettingsInput) {
     if (!attemptTextFallback()) {
       handleRestoreError(new Error('No supported file reader available'));
     }
+  });
+}
+if (restoreRehearsalButtonEl) {
+  restoreRehearsalButtonEl.addEventListener('click', function () {
+    openRestoreRehearsal();
+  });
+}
+if (restoreRehearsalCloseButtonEl) {
+  restoreRehearsalCloseButtonEl.addEventListener('click', function () {
+    closeRestoreRehearsal();
+  });
+}
+if (restoreRehearsalBrowseButtonEl && restoreRehearsalInputEl) {
+  restoreRehearsalBrowseButtonEl.addEventListener('click', function () {
+    restoreRehearsalInputEl.click();
+  });
+}
+if (restoreRehearsalInputEl) {
+  restoreRehearsalInputEl.addEventListener('change', function () {
+    var file = restoreRehearsalInputEl.files && restoreRehearsalInputEl.files[0];
+    if (!file) {
+      resetRestoreRehearsalState({
+        keepStatus: true
+      });
+      return;
+    }
+    if (restoreRehearsalFileNameEl) {
+      restoreRehearsalFileNameEl.textContent = file.name || restoreRehearsalFileNameEl.textContent;
+    }
+    runRestoreRehearsal(file);
   });
 }
 function resetPlannerStateAfterFactoryReset() {
@@ -3569,9 +4868,9 @@ function collectFallbackUiCacheStorages() {
       label: '__cineGlobal'
     });
   }
-  scopeCandidates.forEach(function (_ref23) {
-    var scope = _ref23.scope,
-      label = _ref23.label;
+  scopeCandidates.forEach(function (_ref30) {
+    var scope = _ref30.scope,
+      label = _ref30.label;
     _inspectScope(scope, label);
   });
   if (typeof localStorage !== 'undefined') {
@@ -4084,10 +5383,10 @@ if (helpButton && helpDialog) {
       return;
     }
     var hasVisible = false;
-    helpQuickLinkItems.forEach(function (_ref24) {
-      var section = _ref24.section,
-        listItem = _ref24.listItem,
-        button = _ref24.button;
+    helpQuickLinkItems.forEach(function (_ref31) {
+      var section = _ref31.section,
+        listItem = _ref31.listItem,
+        button = _ref31.button;
       if (section && !section.hasAttribute('hidden')) {
         listItem.removeAttribute('hidden');
         hasVisible = true;
@@ -4119,9 +5418,9 @@ if (helpButton && helpDialog) {
       helpQuickLinksNav.removeAttribute('data-help');
     }
     var template = langTexts.helpQuickLinkButtonHelp || fallbackTexts.helpQuickLinkButtonHelp;
-    helpQuickLinkItems.forEach(function (_ref25) {
-      var button = _ref25.button,
-        label = _ref25.label;
+    helpQuickLinkItems.forEach(function (_ref32) {
+      var button = _ref32.button,
+        label = _ref32.label;
       if (!button) return;
       if (template) {
         var helpText = template.replace('%s', label);
@@ -4287,19 +5586,19 @@ if (helpButton && helpDialog) {
       var variants = HELP_SEARCH_ACCENT_VARIANTS.get(char) || '';
       var chars = new Set();
       var all = "".concat(char).concat(variants);
-      var _iterator2 = _createForOfIteratorHelper(all),
-        _step2;
+      var _iterator3 = _createForOfIteratorHelper(all),
+        _step3;
       try {
-        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
-          var ch = _step2.value;
+        for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+          var ch = _step3.value;
           chars.add(ch);
           var upper = ch.toUpperCase();
           if (upper) chars.add(upper);
         }
       } catch (err) {
-        _iterator2.e(err);
+        _iterator3.e(err);
       } finally {
-        _iterator2.f();
+        _iterator3.f();
       }
       var escaped = Array.from(chars).map(escapeRegExp).join('');
       return "[".concat(escaped, "]");
@@ -4318,11 +5617,11 @@ if (helpButton && helpDialog) {
     return "(".concat(parts.join(''), ")");
   };
   updateHelpResultsSummaryText = function updateHelpResultsSummaryText() {
-    var _ref26 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-      totalCount = _ref26.totalCount,
-      visibleCount = _ref26.visibleCount,
-      hasQuery = _ref26.hasQuery,
-      queryText = _ref26.queryText;
+    var _ref33 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+      totalCount = _ref33.totalCount,
+      visibleCount = _ref33.visibleCount,
+      hasQuery = _ref33.hasQuery,
+      queryText = _ref33.queryText;
     if (!helpResultsSummary) return;
     if (typeof totalCount === 'number' && Number.isFinite(totalCount)) {
       helpResultsSummary.dataset.totalCount = String(totalCount);
@@ -4550,9 +5849,9 @@ if (helpButton && helpDialog) {
       if (!parts.includes(trimmed)) parts.push(trimmed);
     };
     var addTextFromElement = function addTextFromElement(element) {
-      var _ref27 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-        _ref27$includeTextCon = _ref27.includeTextContent,
-        includeTextContent = _ref27$includeTextCon === void 0 ? false : _ref27$includeTextCon;
+      var _ref34 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+        _ref34$includeTextCon = _ref34.includeTextContent,
+        includeTextContent = _ref34$includeTextCon === void 0 ? false : _ref34$includeTextCon;
       if (!element) return;
       addText(element.getAttribute('data-help'));
       addText(element.getAttribute('aria-label'));
@@ -5122,7 +6421,7 @@ function populateLensDropdown() {
     lensSelect.appendChild(emptyOpt);
   }
   Object.keys(lensData).sort(localeSort).forEach(function (name) {
-    var _ref28, _lens$minFocusMeters;
+    var _ref35, _lens$minFocusMeters;
     var opt = document.createElement('option');
     opt.value = name;
     var lens = lensData[name] || {};
@@ -5133,7 +6432,7 @@ function populateLensDropdown() {
     } else if (lens.clampOn === false) {
       attrs.push('no clamp-on');
     }
-    var minFocus = (_ref28 = (_lens$minFocusMeters = lens.minFocusMeters) !== null && _lens$minFocusMeters !== void 0 ? _lens$minFocusMeters : lens.minFocus) !== null && _ref28 !== void 0 ? _ref28 : lens.minFocusCm ? lens.minFocusCm / 100 : null;
+    var minFocus = (_ref35 = (_lens$minFocusMeters = lens.minFocusMeters) !== null && _lens$minFocusMeters !== void 0 ? _lens$minFocusMeters : lens.minFocus) !== null && _ref35 !== void 0 ? _ref35 : lens.minFocusCm ? lens.minFocusCm / 100 : null;
     if (minFocus) attrs.push("".concat(minFocus, "m min focus"));
     opt.textContent = attrs.length ? "".concat(name, " (").concat(attrs.join(', '), ")") : name;
     lensSelect.appendChild(opt);
@@ -5329,7 +6628,8 @@ function resolveFilterDisplayInfo(type) {
     case 'IRND':
       return {
         label: 'IRND Filter Set',
-        gearName: 'IRND Filter Set'
+        gearName: 'IRND Filter Set',
+        hideDetails: false
       };
     case 'Pol':
       return {
@@ -5358,28 +6658,31 @@ function resolveFilterDisplayInfo(type) {
     case 'ND Grad HE':
       return {
         label: 'ND Grad HE Filter Set',
-        gearName: 'ND Grad HE Filter Set'
+        gearName: 'ND Grad HE Filter Set',
+        hideDetails: false
       };
     case 'ND Grad SE':
       return {
         label: 'ND Grad SE Filter Set',
-        gearName: 'ND Grad SE Filter Set'
+        gearName: 'ND Grad SE Filter Set',
+        hideDetails: false
       };
     default:
       return {
         label: "".concat(type, " Filter Set"),
-        gearName: "".concat(type, " Filter Set")
+        gearName: "".concat(type, " Filter Set"),
+        hideDetails: true
       };
   }
 }
 function buildFilterGearEntries() {
   var filters = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
   var entries = [];
-  filters.forEach(function (_ref29) {
-    var type = _ref29.type,
-      _ref29$size = _ref29.size,
-      size = _ref29$size === void 0 ? DEFAULT_FILTER_SIZE : _ref29$size,
-      values = _ref29.values;
+  filters.forEach(function (_ref36) {
+    var type = _ref36.type,
+      _ref36$size = _ref36.size,
+      size = _ref36$size === void 0 ? DEFAULT_FILTER_SIZE : _ref36$size,
+      values = _ref36.values;
     if (!type) return;
     var sizeValue = size || DEFAULT_FILTER_SIZE;
     var idBase = "filter-".concat(filterId(type));
@@ -5423,12 +6726,12 @@ function buildFilterGearEntries() {
       case 'Pol':
         {
           var _resolveFilterDisplay2 = resolveFilterDisplayInfo(type, sizeValue),
-            _label2 = _resolveFilterDisplay2.label,
+            _label = _resolveFilterDisplay2.label,
             _gearName = _resolveFilterDisplay2.gearName;
           entries.push({
             id: idBase,
             gearName: _gearName,
-            label: _label2,
+            label: _label,
             type: type,
             size: sizeValue,
             values: []
@@ -5438,13 +6741,13 @@ function buildFilterGearEntries() {
       case 'Rota-Pol':
         {
           var _resolveFilterDisplay3 = resolveFilterDisplayInfo(type, sizeValue),
-            _label3 = _resolveFilterDisplay3.label,
+            _label2 = _resolveFilterDisplay3.label,
             _gearName2 = _resolveFilterDisplay3.gearName;
-          var displaySize = _label3.includes(sizeValue) ? '' : sizeValue;
+          var displaySize = _label2.includes(sizeValue) ? '' : sizeValue;
           entries.push({
             id: idBase,
             gearName: _gearName2,
-            label: _label3,
+            label: _label2,
             type: type,
             size: displaySize,
             values: []
@@ -5455,13 +6758,15 @@ function buildFilterGearEntries() {
       case 'ND Grad SE':
         {
           var _resolveFilterDisplay4 = resolveFilterDisplayInfo(type, sizeValue),
-            _label4 = _resolveFilterDisplay4.label,
-            _gearName3 = _resolveFilterDisplay4.gearName;
+            _label3 = _resolveFilterDisplay4.label,
+            _gearName3 = _resolveFilterDisplay4.gearName,
+            hideDetails = _resolveFilterDisplay4.hideDetails;
           var gradValues = values == null ? (getFilterValueConfig(type).defaults || []).slice() : Array.isArray(values) ? values.slice() : [];
           entries.push({
             id: idBase,
             gearName: _gearName3,
-            label: _label4,
+            label: _label3,
+            hideDetails: hideDetails,
             type: type,
             size: sizeValue,
             values: gradValues
@@ -5471,13 +6776,15 @@ function buildFilterGearEntries() {
       default:
         {
           var _resolveFilterDisplay5 = resolveFilterDisplayInfo(type, sizeValue),
-            _label5 = _resolveFilterDisplay5.label,
-            _gearName4 = _resolveFilterDisplay5.gearName;
+            _label4 = _resolveFilterDisplay5.label,
+            _gearName4 = _resolveFilterDisplay5.gearName,
+            _hideDetails = _resolveFilterDisplay5.hideDetails;
           var filterValues = values == null ? (getFilterValueConfig(type).defaults || []).slice() : Array.isArray(values) ? values.slice() : [];
           entries.push({
             id: idBase,
             gearName: _gearName4,
-            label: _label5,
+            label: _label4,
+            hideDetails: _hideDetails,
             type: type,
             size: sizeValue,
             values: filterValues
@@ -5731,19 +7038,17 @@ function renderFilterDetails() {
   renderGearListFilterDetails(details);
   var gearEntries = buildFilterGearEntries(existingTokens);
   if (!gearEntries.length) {
-    gearEntries = details
-      .map(function (detail) {
-        return {
-          id: detail.entryId,
-          gearName: detail.gearName,
-          label: detail.label,
-          type: detail.type,
-          hideDetails: detail.hideDetails
-        };
-      })
-      .filter(function (entry) {
-        return entry.id && entry.label;
-      });
+    gearEntries = details.map(function (detail) {
+      return {
+        id: detail.entryId,
+        gearName: detail.gearName,
+        label: detail.label,
+        type: detail.type,
+        hideDetails: detail.hideDetails
+      };
+    }).filter(function (entry) {
+      return entry.id && entry.label;
+    });
   }
   updateGearListFilterEntries(gearEntries);
   if (matteboxSelect) {
@@ -5853,8 +7158,8 @@ function buildFilterSelectHtml() {
 function collectFilterAccessories() {
   var filters = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
   var items = [];
-  filters.forEach(function (_ref30) {
-    var type = _ref30.type;
+  filters.forEach(function (_ref37) {
+    var type = _ref37.type;
     switch (type) {
       case 'ND Grad HE':
       case 'ND Grad SE':
