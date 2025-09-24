@@ -1,6 +1,37 @@
 const fs = require('fs');
 const path = require('path');
 
+let cachedBodyHtml = null;
+let cachedDevicesJson = null;
+
+function getBodyHtml() {
+  if (cachedBodyHtml === null) {
+    const template = fs.readFileSync(
+      path.join(__dirname, '../../../index.html'),
+      'utf8',
+    );
+    const bodyMatch = template.match(/<body[^>]*>([\s\S]*)<\/body>/i);
+    cachedBodyHtml = (bodyMatch ? bodyMatch[1] : '').replace(
+      /<script[\s\S]*?<\/script>/gi,
+      '',
+    );
+  }
+
+  return cachedBodyHtml;
+}
+
+function cloneDevices(data) {
+  if (typeof global.structuredClone === 'function') {
+    return global.structuredClone(data);
+  }
+
+  if (cachedDevicesJson === null) {
+    cachedDevicesJson = JSON.stringify(data);
+  }
+
+  return JSON.parse(cachedDevicesJson);
+}
+
 function ensureTestDom() {
   if (typeof window.matchMedia !== 'function') {
     window.matchMedia = () => ({
@@ -21,13 +52,7 @@ function loadApp() {
   jest.resetModules();
   ensureTestDom();
 
-  const template = fs.readFileSync(
-    path.join(__dirname, '../../../index.html'),
-    'utf8',
-  );
-  const bodyMatch = template.match(/<body[^>]*>([\s\S]*)<\/body>/i);
-  const bodyHtml = bodyMatch ? bodyMatch[1] : '';
-  document.body.innerHTML = bodyHtml.replace(/<script[\s\S]*?<\/script>/gi, '');
+  document.body.innerHTML = getBodyHtml();
 
   const { texts, categoryNames, gearItems } = require('../../../src/scripts/translations.js');
   const devicesData = require('../../../src/data');
@@ -38,7 +63,7 @@ function loadApp() {
   global.categoryNames = categoryNames;
   window.gearItems = gearItems;
   global.gearItems = gearItems;
-  window.devices = JSON.parse(JSON.stringify(devicesData));
+  window.devices = cloneDevices(devicesData);
   global.devices = window.devices;
 
   global.loadDeviceData = jest.fn(() => null);
