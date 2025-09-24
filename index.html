@@ -1165,6 +1165,31 @@
                     multiple
                     size="10"
                   ></select>
+                  <div id="autoGearScenarioSettings" class="auto-gear-scenario-settings">
+                    <div class="auto-gear-field">
+                      <label for="autoGearScenarioMode" id="autoGearScenarioModeLabel">Scenario matching</label>
+                      <select id="autoGearScenarioMode">
+                        <option value="all">Require every selected scenario</option>
+                        <option value="any">Match any selected scenario</option>
+                        <option value="multiplier">Multiply when combined</option>
+                      </select>
+                    </div>
+                    <div
+                      id="autoGearScenarioMultiplierContainer"
+                      class="auto-gear-scenario-multiplier"
+                      hidden
+                      aria-hidden="true"
+                    >
+                      <div class="auto-gear-field">
+                        <label for="autoGearScenarioBase" id="autoGearScenarioBaseLabel">Base scenario</label>
+                        <select id="autoGearScenarioBase"></select>
+                      </div>
+                      <div class="auto-gear-field">
+                        <label for="autoGearScenarioFactor" id="autoGearScenarioFactorLabel">Multiplier factor</label>
+                        <input type="number" id="autoGearScenarioFactor" min="1" step="1" value="1" />
+                      </div>
+                    </div>
+                  </div>
                 </section>
                 <section
                   id="autoGearCondition-mattebox"

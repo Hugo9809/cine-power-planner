@@ -757,6 +757,31 @@ function normalizeAutoGearTriggerList(values) {
     return typeof value === 'string' ? value.trim() : '';
   }).filter(Boolean)));
 }
+
+var AUTO_GEAR_SCENARIO_LOGIC_VALUES = new Set(['all', 'any', 'multiplier']);
+
+function normalizeAutoGearScenarioLogic(value) {
+  if (typeof value !== 'string') return 'all';
+  var normalized = value.trim().toLowerCase();
+  if (!normalized) return 'all';
+  if (normalized === 'or') return 'any';
+  if (normalized === 'and') return 'all';
+  if (normalized === 'any') return 'any';
+  if (normalized === 'multiplier' || normalized === 'multiply' || normalized === 'multiplied') {
+    return 'multiplier';
+  }
+  return AUTO_GEAR_SCENARIO_LOGIC_VALUES.has(normalized) ? normalized : 'all';
+}
+
+function normalizeAutoGearScenarioMultiplier(value) {
+  var num = parseInt(value, 10);
+  return isFinite(num) && num > 1 ? num : 1;
+}
+
+function normalizeAutoGearScenarioPrimary(value) {
+  return typeof value === 'string' ? value.trim() : '';
+}
+
 function normalizeVideoDistributionTriggerList(values) {
   if (!Array.isArray(values)) return [];
   var base = normalizeAutoGearTriggerList(values);
@@ -786,9 +811,62 @@ function normalizeAutoGearRule(rule) {
   if (!rule || _typeof(rule) !== 'object') return null;
   var id = typeof rule.id === 'string' && rule.id ? rule.id : generateAutoGearId('rule');
   var label = typeof rule.label === 'string' ? rule.label.trim() : '';
-  var scenarios = normalizeAutoGearTriggerList(rule.scenarios).sort(function (a, b) {
+  var always = false;
+  if (Array.isArray(rule.always)) {
+    always = rule.always.some(function (value) {
+      if (typeof value === 'string') {
+        var trimmed = value.trim().toLowerCase();
+        if (!trimmed) return false;
+        if (trimmed === 'false' || trimmed === '0') return false;
+        return true;
+      }
+      return !!value;
+    });
+  } else if (typeof rule.always === 'string') {
+    var trimmed = rule.always.trim().toLowerCase();
+    always = trimmed === 'true' || trimmed && trimmed !== 'false' && trimmed !== '0';
+  } else {
+    always = !!rule.always;
+  }
+  var scenarios = normalizeAutoGearTriggerList(rule.scenarios);
+  var scenarioLogic = normalizeAutoGearScenarioLogic(rule.scenarioLogic);
+  var scenarioMultiplier = 1;
+  var scenarioPrimary = '';
+  if (scenarioLogic === 'multiplier') {
+    scenarioMultiplier = normalizeAutoGearScenarioMultiplier(rule.scenarioMultiplier);
+    var requestedPrimary = normalizeAutoGearScenarioPrimary(rule.scenarioPrimary);
+    var normalizedPrimary = normalizeAutoGearTriggerValue(requestedPrimary);
+    if (normalizedPrimary) {
+      for (var i = 0; i < scenarios.length; i += 1) {
+        if (normalizeAutoGearTriggerValue(scenarios[i]) === normalizedPrimary) {
+          scenarioPrimary = scenarios[i];
+          break;
+        }
+      }
+      if (!scenarioPrimary && requestedPrimary) {
+        scenarioPrimary = requestedPrimary;
+        scenarios.push(requestedPrimary);
+      }
+    }
+    if (!scenarioPrimary && scenarios.length) {
+      scenarioPrimary = scenarios[0];
+    }
+  }
+  scenarios = scenarios.sort(function (a, b) {
     return a.localeCompare(b);
   });
+  if (scenarioLogic === 'multiplier' && scenarioPrimary) {
+    var normalizedScenarioPrimary = normalizeAutoGearTriggerValue(scenarioPrimary);
+    var hasPrimary = scenarios.some(function (value) {
+      return normalizeAutoGearTriggerValue(value) === normalizedScenarioPrimary;
+    });
+    if (!hasPrimary) {
+      scenarios.push(scenarioPrimary);
+      scenarios.sort(function (a, b) {
+        return a.localeCompare(b);
+      });
+    }
+  }
   var mattebox = normalizeAutoGearTriggerList(rule.mattebox).sort(function (a, b) {
     return a.localeCompare(b);
   });
@@ -819,13 +897,17 @@ function normalizeAutoGearRule(rule) {
   var distance = normalizeAutoGearTriggerList(rule.distance).sort(function (a, b) {
     return a.localeCompare(b);
   });
-  if (!scenarios.length && !mattebox.length && !cameraHandle.length && !viewfinderExtension.length && !videoDistribution.length && !camera.length && !monitor.length && !wireless.length && !motors.length && !controllers.length && !distance.length) return null;
+  if (!always && !scenarios.length && !mattebox.length && !cameraHandle.length && !viewfinderExtension.length && !videoDistribution.length && !camera.length && !monitor.length && !wireless.length && !motors.length && !controllers.length && !distance.length) return null;
   var add = Array.isArray(rule.add) ? rule.add.map(normalizeAutoGearItem).filter(Boolean) : [];
   var remove = Array.isArray(rule.remove) ? rule.remove.map(normalizeAutoGearItem).filter(Boolean) : [];
   if (!add.length && !remove.length) return null;
   return {
     id: id,
     label: label,
+    always: always,
+    scenarioLogic: scenarioLogic,
+    scenarioPrimary: scenarioPrimary,
+    scenarioMultiplier: scenarioMultiplier,
     scenarios: scenarios,
     mattebox: mattebox,
     cameraHandle: cameraHandle,
@@ -896,6 +978,10 @@ function snapshotAutoGearRuleForFingerprint(rule) {
   };
   return {
     label: normalized.label || '',
+    always: normalized.always ? 1 : 0,
+    scenarioLogic: normalizeAutoGearScenarioLogic(normalized.scenarioLogic),
+    scenarioPrimary: normalizeAutoGearScenarioPrimary(normalized.scenarioPrimary),
+    scenarioMultiplier: normalizeAutoGearScenarioMultiplier(normalized.scenarioMultiplier),
     scenarios: normalized.scenarios.slice().sort(function (a, b) {
       return a.localeCompare(b);
     }),
@@ -934,6 +1020,10 @@ function snapshotAutoGearRuleForFingerprint(rule) {
   };
 }
 function autoGearRuleSortKey(rule) {
+  var alwaysKey = rule && rule.always ? '1' : '0';
+  var scenarioLogicKey = normalizeAutoGearScenarioLogic(rule && rule.scenarioLogic ? rule.scenarioLogic : '');
+  var scenarioPrimaryKey = typeof (rule && rule.scenarioPrimary) === 'string' ? rule.scenarioPrimary : '';
+  var scenarioMultiplierKey = scenarioLogicKey === 'multiplier' ? normalizeAutoGearScenarioMultiplier(rule && rule.scenarioMultiplier) : 1;
   var scenarioKey = Array.isArray(rule.scenarios) ? rule.scenarios.join('|') : '';
   var matteboxKey = Array.isArray(rule.mattebox) ? rule.mattebox.join('|') : '';
   var cameraHandleKey = Array.isArray(rule.cameraHandle) ? rule.cameraHandle.join('|') : '';
@@ -947,7 +1037,7 @@ function autoGearRuleSortKey(rule) {
   var distanceKey = Array.isArray(rule.distance) ? rule.distance.join('|') : '';
   var addKey = Array.isArray(rule.add) ? rule.add.map(autoGearItemSortKey).join('|') : '';
   var removeKey = Array.isArray(rule.remove) ? rule.remove.map(autoGearItemSortKey).join('|') : '';
-  return "".concat(scenarioKey, "|").concat(matteboxKey, "|").concat(cameraHandleKey, "|").concat(viewfinderKey, "|").concat(videoDistributionKey, "|").concat(cameraKey, "|").concat(monitorKey, "|").concat(wirelessKey, "|").concat(motorsKey, "|").concat(controllersKey, "|").concat(distanceKey, "|").concat(rule.label || '', "|").concat(addKey, "|").concat(removeKey);
+  return "".concat(alwaysKey, "|").concat(scenarioLogicKey, "|").concat(scenarioPrimaryKey, "|").concat(String(scenarioMultiplierKey), "|").concat(scenarioKey, "|").concat(matteboxKey, "|").concat(cameraHandleKey, "|").concat(viewfinderKey, "|").concat(videoDistributionKey, "|").concat(cameraKey, "|").concat(monitorKey, "|").concat(wirelessKey, "|").concat(motorsKey, "|").concat(controllersKey, "|").concat(distanceKey, "|").concat(rule.label || '', "|").concat(addKey, "|").concat(removeKey);
 }
 function createAutoGearRulesFingerprint(rules) {
   var snapshot = (Array.isArray(rules) ? rules : []).map(snapshotAutoGearRuleForFingerprint).filter(Boolean).sort(function (a, b) {
@@ -1505,6 +1595,10 @@ function cloneAutoGearRule(rule) {
   return {
     id: typeof rule.id === 'string' ? rule.id : '',
     label: typeof rule.label === 'string' ? rule.label : '',
+    always: !!rule.always,
+    scenarioLogic: normalizeAutoGearScenarioLogic(rule && rule.scenarioLogic ? rule.scenarioLogic : ''),
+    scenarioPrimary: normalizeAutoGearScenarioPrimary(rule && rule.scenarioPrimary ? rule.scenarioPrimary : ''),
+    scenarioMultiplier: normalizeAutoGearScenarioMultiplier(rule && rule.scenarioMultiplier ? rule.scenarioMultiplier : 1),
     scenarios: Array.isArray(rule.scenarios) ? rule.scenarios.slice() : [],
     mattebox: Array.isArray(rule.mattebox) ? rule.mattebox.slice() : [],
     cameraHandle: Array.isArray(rule.cameraHandle) ? rule.cameraHandle.slice() : [],
@@ -8988,6 +9082,10 @@ function createAutoGearDraft(rule) {
     return {
       id: rule.id,
       label: rule.label || '',
+      always: rule.always ? ['always'] : [],
+      scenarioLogic: normalizeAutoGearScenarioLogic(rule.scenarioLogic),
+      scenarioPrimary: normalizeAutoGearScenarioPrimary(rule.scenarioPrimary),
+      scenarioMultiplier: normalizeAutoGearScenarioMultiplier(rule.scenarioMultiplier),
       scenarios: Array.isArray(rule.scenarios) ? rule.scenarios.slice() : [],
       mattebox: Array.isArray(rule.mattebox) ? rule.mattebox.slice() : [],
       cameraHandle: Array.isArray(rule.cameraHandle) ? rule.cameraHandle.slice() : [],
@@ -9006,6 +9104,10 @@ function createAutoGearDraft(rule) {
   return {
     id: generateAutoGearId('rule'),
     label: '',
+    always: [],
+    scenarioLogic: 'all',
+    scenarioPrimary: '',
+    scenarioMultiplier: 1,
     scenarios: [],
     mattebox: [],
     cameraHandle: [],

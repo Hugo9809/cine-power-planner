@@ -10,7 +10,11 @@
           autoGearConditionAddButton, addAutoGearConditionFromPicker,
           autoGearConditionList, removeAutoGearCondition,
           handleAutoGearConditionShortcut, loadAutoGearRules,
-          duplicateAutoGearRule,
+          duplicateAutoGearRule, autoGearScenarioModeSelect,
+          normalizeAutoGearScenarioLogic, applyAutoGearScenarioSettings,
+          getAutoGearScenarioSelectedValues, autoGearScenarioBaseSelect,
+          normalizeAutoGearScenarioPrimary, autoGearScenarioFactorInput,
+          normalizeAutoGearScenarioMultiplier, ensureAutoBackupsFromProjects,
           isAutoGearHighlightEnabled, setAutoGearHighlightEnabled,
           updateAutoGearHighlightToggleButton,
           clearUiCacheStorageEntries, __cineGlobal, humanizeKey,
@@ -2090,6 +2094,30 @@ if (autoGearConditionAddButton) {
   autoGearConditionAddButton.addEventListener('click', () => {
     addAutoGearConditionFromPicker();
   });
+}
+if (autoGearScenarioModeSelect) {
+  autoGearScenarioModeSelect.addEventListener('change', () => {
+    if (autoGearEditorDraft) {
+      autoGearEditorDraft.scenarioLogic = normalizeAutoGearScenarioLogic(autoGearScenarioModeSelect.value);
+    }
+    applyAutoGearScenarioSettings(getAutoGearScenarioSelectedValues());
+  });
+}
+if (autoGearScenarioBaseSelect) {
+  autoGearScenarioBaseSelect.addEventListener('change', () => {
+    if (autoGearEditorDraft) {
+      autoGearEditorDraft.scenarioPrimary = normalizeAutoGearScenarioPrimary(autoGearScenarioBaseSelect.value);
+    }
+  });
+}
+if (autoGearScenarioFactorInput) {
+  const handleFactorUpdate = () => {
+    if (autoGearEditorDraft) {
+      autoGearEditorDraft.scenarioMultiplier = normalizeAutoGearScenarioMultiplier(autoGearScenarioFactorInput.value);
+    }
+  };
+  autoGearScenarioFactorInput.addEventListener('change', handleFactorUpdate);
+  autoGearScenarioFactorInput.addEventListener('input', handleFactorUpdate);
 }
 if (autoGearConditionList) {
   autoGearConditionList.addEventListener('click', event => {
