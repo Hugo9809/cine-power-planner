@@ -38,6 +38,9 @@ describe('applyAutoGearRulesToTableHtml', () => {
     mattebox: Array.isArray(rule.mattebox) ? rule.mattebox : [],
     add: rule.add.map(({ name, category, quantity }) => ({ name, category, quantity })),
     remove: rule.remove.map(({ name, category, quantity }) => ({ name, category, quantity })),
+    shootingDays: rule.shootingDays && typeof rule.shootingDays === 'object'
+      ? { mode: rule.shootingDays.mode, value: rule.shootingDays.value }
+      : null,
   });
 
   afterEach(() => {
@@ -92,6 +95,7 @@ describe('applyAutoGearRulesToTableHtml', () => {
     [
       'always',
       'scenarios',
+      'shootingDays',
       'mattebox',
       'cameraHandle',
       'viewfinderExtension',
@@ -159,6 +163,7 @@ describe('applyAutoGearRulesToTableHtml', () => {
     [
       'always',
       'scenarios',
+      'shootingDays',
       'mattebox',
       'cameraHandle',
       'viewfinderExtension',
@@ -815,6 +820,191 @@ describe('applyAutoGearRulesToTableHtml', () => {
 
     const entries = container.querySelectorAll('[data-gear-name="HDMI Switcher"]');
     expect(entries).toHaveLength(0);
+  });
+
+  test('activates rules when shooting schedule meets minimum days', () => {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify([
+        {
+          id: 'rule-duration',
+          label: 'Extended shoot support',
+          scenarios: [],
+          mattebox: [],
+          cameraHandle: [],
+          viewfinderExtension: [],
+          deliveryResolution: [],
+          videoDistribution: [],
+          camera: [],
+          monitor: [],
+          wireless: [],
+          motors: [],
+          controllers: [],
+          distance: [],
+          shootingDays: { mode: 'minimum', value: 5 },
+          add: [
+            {
+              id: 'add-rain-cover',
+              name: 'Rain Cover Kit',
+              category: 'Accessories',
+              quantity: 1,
+            }
+          ],
+          remove: [],
+        }
+      ])
+    );
+
+    env = setupScriptEnvironment();
+    const { applyAutoGearRulesToTableHtml } = env.utils;
+
+    const tableHtml = `
+      <table class="gear-table">
+        <tbody class="category-group">
+          <tr class="category-row"><td>Accessories</td></tr>
+          <tr><td></td></tr>
+        </tbody>
+      </table>
+    `;
+
+    const shortResult = applyAutoGearRulesToTableHtml(tableHtml, {
+      shootingDays: ['2024-02-01 to 2024-02-03'],
+    });
+    const shortContainer = document.createElement('div');
+    shortContainer.innerHTML = shortResult;
+    expect(shortContainer.querySelectorAll('[data-gear-name="Rain Cover Kit"]')).toHaveLength(0);
+
+    const extendedResult = applyAutoGearRulesToTableHtml(tableHtml, {
+      shootingDays: ['2024-02-01 to 2024-02-03', '2024-02-10 to 2024-02-11'],
+    });
+    const extendedContainer = document.createElement('div');
+    extendedContainer.innerHTML = extendedResult;
+    const additions = extendedContainer.querySelectorAll('[data-gear-name="Rain Cover Kit"]');
+    expect(additions).toHaveLength(1);
+    expect(additions[0].classList.contains('auto-gear-item')).toBe(true);
+    expect(additions[0].textContent).toContain('1x');
+  });
+
+  test('skips rules that exceed the configured maximum shooting days', () => {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify([
+        {
+          id: 'rule-max-duration',
+          label: 'Short shoot kit',
+          scenarios: [],
+          mattebox: [],
+          cameraHandle: [],
+          viewfinderExtension: [],
+          deliveryResolution: [],
+          videoDistribution: [],
+          camera: [],
+          monitor: [],
+          wireless: [],
+          motors: [],
+          controllers: [],
+          distance: [],
+          shootingDays: { mode: 'maximum', value: 3 },
+          add: [
+            {
+              id: 'add-pop-up-tent',
+              name: 'Pop-Up Tent',
+              category: 'Accessories',
+              quantity: 1,
+            }
+          ],
+          remove: [],
+        }
+      ])
+    );
+
+    env = setupScriptEnvironment();
+    const { applyAutoGearRulesToTableHtml } = env.utils;
+
+    const tableHtml = `
+      <table class="gear-table">
+        <tbody class="category-group">
+          <tr class="category-row"><td>Accessories</td></tr>
+          <tr><td></td></tr>
+        </tbody>
+      </table>
+    `;
+
+    const withinLimit = applyAutoGearRulesToTableHtml(tableHtml, {
+      shootingDays: ['2024-03-01 to 2024-03-02'],
+    });
+    const withinContainer = document.createElement('div');
+    withinContainer.innerHTML = withinLimit;
+    expect(withinContainer.querySelectorAll('[data-gear-name="Pop-Up Tent"]').length).toBe(1);
+
+    const beyondLimit = applyAutoGearRulesToTableHtml(tableHtml, {
+      shootingDays: ['2024-03-01 to 2024-03-05'],
+    });
+    const beyondContainer = document.createElement('div');
+    beyondContainer.innerHTML = beyondLimit;
+    expect(beyondContainer.querySelectorAll('[data-gear-name="Pop-Up Tent"]').length).toBe(0);
+  });
+
+  test('adds extra quantity for every shooting-day interval', () => {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify([
+        {
+          id: 'rule-every-duration',
+          label: 'Fresh batteries',
+          scenarios: [],
+          mattebox: [],
+          cameraHandle: [],
+          viewfinderExtension: [],
+          deliveryResolution: [],
+          videoDistribution: [],
+          camera: [],
+          monitor: [],
+          wireless: [],
+          motors: [],
+          controllers: [],
+          distance: [],
+          shootingDays: { mode: 'every', value: 2 },
+          add: [
+            {
+              id: 'add-battery-pack',
+              name: 'Battery Pack',
+              category: 'Power',
+              quantity: 1,
+            }
+          ],
+          remove: [],
+        }
+      ])
+    );
+
+    env = setupScriptEnvironment();
+    const { applyAutoGearRulesToTableHtml } = env.utils;
+
+    const tableHtml = `
+      <table class="gear-table">
+        <tbody class="category-group">
+          <tr class="category-row"><td>Power</td></tr>
+          <tr><td></td></tr>
+        </tbody>
+      </table>
+    `;
+
+    const shortSchedule = applyAutoGearRulesToTableHtml(tableHtml, {
+      shootingDays: ['2024-03-01'],
+    });
+    const shortContainer = document.createElement('div');
+    shortContainer.innerHTML = shortSchedule;
+    expect(shortContainer.querySelectorAll('[data-gear-name="Battery Pack"]').length).toBe(0);
+
+    const extendedSchedule = applyAutoGearRulesToTableHtml(tableHtml, {
+      shootingDays: ['2024-03-01 to 2024-03-05'],
+    });
+    const extendedContainer = document.createElement('div');
+    extendedContainer.innerHTML = extendedSchedule;
+    const repeatedItems = extendedContainer.querySelectorAll('[data-gear-name="Battery Pack"]');
+    expect(repeatedItems).toHaveLength(1);
+    expect(repeatedItems[0].textContent).toContain('2x');
   });
 
   test('requires all selected scenarios before triggering scenario-based rules', () => {

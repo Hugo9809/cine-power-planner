@@ -1,4 +1,4 @@
-/* global getManualDownloadFallbackMessage, getDiagramManualPositions */
+/* global getManualDownloadFallbackMessage, getDiagramManualPositions, normalizeAutoGearShootingDayValue, normalizeAutoGearShootingDaysCondition */
 
 // --- NEW SETUP MANAGEMENT FUNCTIONS ---
 
@@ -2029,6 +2029,43 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
       .map(value => normalizeAutoGearTriggerValue(value))
       .filter(Boolean)
   );
+  const parseShootingPeriodDays = entry => {
+    if (typeof entry !== 'string') return 0;
+    const trimmed = entry.trim();
+    if (!trimmed) return 0;
+    const parts = trimmed.split(' to ');
+    let start = parts[0] ? parts[0].trim() : '';
+    let end = parts[1] ? parts[1].trim() : '';
+    if (!start && end) start = end;
+    if (!end && start) end = start;
+    if (!start) return 0;
+    const toTimestamp = value => {
+      if (!value) return NaN;
+      return Date.parse(`${value}T00:00:00Z`);
+    };
+    const startTime = toTimestamp(start);
+    let endTime = toTimestamp(end);
+    if (!Number.isFinite(startTime)) return 0;
+    if (!Number.isFinite(endTime)) endTime = startTime;
+    if (endTime < startTime) return 1;
+    const diff = Math.floor((endTime - startTime) / (24 * 60 * 60 * 1000));
+    return diff + 1;
+  };
+  const shootingDayEntries = (() => {
+    if (!info) return [];
+    if (Array.isArray(info.shootingDays)) return info.shootingDays;
+    if (typeof info.shootingDays === 'string') {
+      return info.shootingDays
+        .split('\n')
+        .map(value => value.trim())
+        .filter(Boolean);
+    }
+    return [];
+  })();
+  const totalShootingDays = shootingDayEntries.reduce(
+    (total, entry) => total + parseShootingPeriodDays(entry),
+    0,
+  );
   const rawDistanceSelection = info && typeof info.distanceSelection === 'string'
       ? info.distanceSelection.trim()
       : '';
@@ -2125,6 +2162,19 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
           if (!normalizedTargets.length) return false;
           if (!normalizedDistanceSelection) return false;
           if (!normalizedTargets.includes(normalizedDistanceSelection)) return false;
+        }
+        const shootingCondition = normalizeAutoGearShootingDaysCondition(rule.shootingDays);
+        if (shootingCondition && Number.isFinite(shootingCondition.value) && shootingCondition.value > 0) {
+          if (shootingCondition.mode === 'minimum') {
+            if (totalShootingDays < shootingCondition.value) return false;
+          } else if (shootingCondition.mode === 'maximum') {
+            if (totalShootingDays > shootingCondition.value) return false;
+          } else if (shootingCondition.mode === 'every') {
+            const interval = shootingCondition.value;
+            const occurrences = interval > 0 ? Math.floor(totalShootingDays / interval) : 0;
+            if (occurrences < 1) return false;
+            multiplier *= occurrences;
+          }
         }
         const cameraHandleList = Array.isArray(rule.cameraHandle) ? rule.cameraHandle.filter(Boolean) : [];
         if (cameraHandleList.length) {

@@ -2465,6 +2465,23 @@ body.pink-mode:not(.dark-mode) #settingsPanel-autoGear .auto-gear-rule-items-lab
   padding-inline: 10px;
 }
 
+.auto-gear-shooting-days-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.auto-gear-shooting-days-group select {
+  flex: 1 1 160px;
+  min-width: 140px;
+}
+
+.auto-gear-shooting-days-group input[type="number"] {
+  flex: 0 1 120px;
+  min-width: 100px;
+}
+
 .auto-gear-editor-columns {
   display: flex;
   flex-direction: column;

@@ -1102,6 +1102,7 @@
                     <option value="">Choose a condition</option>
                     <option value="always">Always include</option>
                     <option value="scenarios">Required scenarios</option>
+                    <option value="shootingDays">Shooting days condition</option>
                     <option value="mattebox">Mattebox options</option>
                     <option value="cameraHandle">Camera handles</option>
                     <option value="viewfinderExtension">Viewfinder extension</option>
@@ -1190,6 +1191,46 @@
                       </div>
                     </div>
                   </div>
+                </section>
+                <section
+                  id="autoGearCondition-shootingDays"
+                  class="auto-gear-condition"
+                  data-condition="shootingDays"
+                  hidden
+                  aria-hidden="true"
+                >
+                  <div class="auto-gear-condition-header">
+                    <label for="autoGearShootingDaysMode" id="autoGearShootingDaysLabel">Shooting days condition</label>
+                    <div class="auto-gear-condition-actions">
+                      <button
+                        type="button"
+                        class="auto-gear-condition-remove"
+                        data-action="remove"
+                        data-condition="shootingDays"
+                      >Remove</button>
+                    </div>
+                  </div>
+                  <div class="auto-gear-shooting-days-group">
+                    <select id="autoGearShootingDaysMode" aria-describedby="autoGearShootingDaysHelp">
+                      <option value="minimum">Minimum</option>
+                      <option value="maximum">Maximum</option>
+                      <option value="every">Every</option>
+                    </select>
+                    <label class="visually-hidden" for="autoGearShootingDays" id="autoGearShootingDaysCountLabel">
+                      Shooting days value
+                    </label>
+                    <input
+                      type="number"
+                      id="autoGearShootingDays"
+                      min="1"
+                      step="1"
+                      aria-labelledby="autoGearShootingDaysLabel autoGearShootingDaysCountLabel"
+                      aria-describedby="autoGearShootingDaysHelp"
+                    />
+                  </div>
+                  <p id="autoGearShootingDaysHelp" class="auto-gear-condition-help">
+                    Activate this rule when the selected shooting schedule meets the requirement you set or repeat the gear for each block of days.
+                  </p>
                 </section>
                 <section
                   id="autoGearCondition-mattebox"

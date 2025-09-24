@@ -923,6 +923,82 @@ function autoGearRuleMatteboxKey(rule) {
     .join('|');
 }
 
+const AUTO_GEAR_SHOOTING_DAY_MODES = new Set(['minimum', 'maximum', 'every']);
+
+function normalizeAutoGearShootingDayMode(value) {
+  if (typeof value !== 'string') return 'minimum';
+  const normalized = value.trim().toLowerCase();
+  if (!normalized) return 'minimum';
+  if (AUTO_GEAR_SHOOTING_DAY_MODES.has(normalized)) return normalized;
+  if (normalized === 'min' || normalized === 'at least') return 'minimum';
+  if (normalized === 'max' || normalized === 'at most') return 'maximum';
+  if (normalized === 'each' || normalized === 'every') return 'every';
+  return 'minimum';
+}
+
+function normalizeAutoGearShootingDayValue(value) {
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    const rounded = Math.round(value);
+    return rounded > 0 ? rounded : null;
+  }
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    if (!trimmed) return null;
+    const parsed = Number.parseInt(trimmed, 10);
+    if (!Number.isFinite(parsed)) return null;
+    return parsed > 0 ? parsed : null;
+  }
+  return null;
+}
+
+function normalizeAutoGearShootingDaysList(values) {
+  if (!Array.isArray(values)) return [];
+  const unique = new Set();
+  values.forEach(value => {
+    const normalized = normalizeAutoGearShootingDayValue(value);
+    if (Number.isFinite(normalized) && normalized > 0) {
+      unique.add(normalized);
+    }
+  });
+  return Array.from(unique).sort((a, b) => a - b);
+}
+
+function normalizeAutoGearShootingDaysCondition(setting) {
+  if (!setting) return null;
+  if (Array.isArray(setting)) {
+    const values = normalizeAutoGearShootingDaysList(setting);
+    if (!values.length) return null;
+    const maxValue = values[values.length - 1];
+    return Number.isFinite(maxValue) && maxValue > 0
+      ? { mode: 'minimum', value: maxValue }
+      : null;
+  }
+  if (typeof setting === 'object') {
+    const modeSource = setting.mode
+      ?? setting.type
+      ?? setting.comparison
+      ?? setting.condition
+      ?? setting.kind;
+    const mode = normalizeAutoGearShootingDayMode(modeSource);
+    const valueSource = setting.value
+      ?? setting.count
+      ?? setting.days
+      ?? setting.minimum
+      ?? setting.maximum
+      ?? setting.frequency;
+    const value = normalizeAutoGearShootingDayValue(valueSource);
+    if (Number.isFinite(value) && value > 0) {
+      return { mode, value };
+    }
+    return null;
+  }
+  const normalizedValue = normalizeAutoGearShootingDayValue(setting);
+  if (Number.isFinite(normalizedValue) && normalizedValue > 0) {
+    return { mode: 'minimum', value: normalizedValue };
+  }
+  return null;
+}
+
 function normalizeAutoGearRule(rule) {
   if (!rule || typeof rule !== 'object') return null;
   const id = typeof rule.id === 'string' && rule.id ? rule.id : generateAutoGearId('rule');
@@ -986,9 +1062,11 @@ function normalizeAutoGearRule(rule) {
   const motors = normalizeAutoGearTriggerList(rule.motors).sort((a, b) => a.localeCompare(b));
   const controllers = normalizeAutoGearTriggerList(rule.controllers).sort((a, b) => a.localeCompare(b));
   const distance = normalizeAutoGearTriggerList(rule.distance).sort((a, b) => a.localeCompare(b));
+  const shootingDays = normalizeAutoGearShootingDaysCondition(rule.shootingDays);
   if (
     !always &&
     !scenarios.length
+    && !shootingDays
     && !mattebox.length
     && !cameraHandle.length
     && !viewfinderExtension.length
@@ -1023,6 +1101,7 @@ function normalizeAutoGearRule(rule) {
     motors,
     controllers,
     distance,
+    shootingDays,
     add,
     remove,
   };
@@ -1098,6 +1177,7 @@ function snapshotAutoGearRuleForFingerprint(rule) {
     motors: normalized.motors.slice().sort((a, b) => a.localeCompare(b)),
     controllers: normalized.controllers.slice().sort((a, b) => a.localeCompare(b)),
     distance: normalized.distance.slice().sort((a, b) => a.localeCompare(b)),
+    shootingDays: normalizeAutoGearShootingDaysCondition(normalized.shootingDays),
     add: mapItems(normalized.add),
     remove: mapItems(normalized.remove),
   };
@@ -1117,9 +1197,13 @@ function autoGearRuleSortKey(rule) {
   const motorsKey = Array.isArray(rule.motors) ? rule.motors.join('|') : '';
   const controllersKey = Array.isArray(rule.controllers) ? rule.controllers.join('|') : '';
   const distanceKey = Array.isArray(rule.distance) ? rule.distance.join('|') : '';
+  const shootingDaysCondition = normalizeAutoGearShootingDaysCondition(rule?.shootingDays);
+  const shootingDaysKey = shootingDaysCondition
+    ? `${shootingDaysCondition.mode}:${shootingDaysCondition.value}`
+    : '';
   const addKey = Array.isArray(rule.add) ? rule.add.map(autoGearItemSortKey).join('|') : '';
   const removeKey = Array.isArray(rule.remove) ? rule.remove.map(autoGearItemSortKey).join('|') : '';
-  return `${alwaysKey}|${scenarioKey}|${matteboxKey}|${cameraHandleKey}|${viewfinderKey}|${deliveryResolutionKey}|${videoDistributionKey}|${cameraKey}|${monitorKey}|${wirelessKey}|${motorsKey}|${controllersKey}|${distanceKey}|${rule.label || ''}|${addKey}|${removeKey}`;
+  return `${alwaysKey}|${scenarioKey}|${matteboxKey}|${cameraHandleKey}|${viewfinderKey}|${deliveryResolutionKey}|${videoDistributionKey}|${cameraKey}|${monitorKey}|${wirelessKey}|${motorsKey}|${controllersKey}|${distanceKey}|${shootingDaysKey}|${rule.label || ''}|${addKey}|${removeKey}`;
 }
 
 function createAutoGearRulesFingerprint(rules) {
@@ -1706,6 +1790,7 @@ function cloneAutoGearRule(rule) {
     motors: Array.isArray(rule.motors) ? rule.motors.slice() : [],
     controllers: Array.isArray(rule.controllers) ? rule.controllers.slice() : [],
     distance: Array.isArray(rule.distance) ? rule.distance.slice() : [],
+    shootingDays: normalizeAutoGearShootingDaysCondition(rule.shootingDays),
     add: Array.isArray(rule.add) ? rule.add.map(cloneAutoGearRuleItem) : [],
     remove: Array.isArray(rule.remove) ? rule.remove.map(cloneAutoGearRuleItem) : [],
   };
@@ -5492,6 +5577,55 @@ function setLanguage(lang) {
         autoGearScenarioFactorInput.setAttribute('data-help', factorHelp);
         autoGearScenarioFactorInput.setAttribute('aria-label', factorLabel);
       }
+    }
+  }
+  if (autoGearShootingDaysLabel) {
+    const label = texts[lang].autoGearShootingDaysLabel
+      || texts.en?.autoGearShootingDaysLabel
+      || autoGearShootingDaysLabel.textContent
+      || 'Shooting days condition';
+    const help = texts[lang].autoGearShootingDaysHelp
+      || texts.en?.autoGearShootingDaysHelp
+      || label;
+    const minimumLabel = texts[lang].autoGearShootingDaysModeMinimum
+      || texts.en?.autoGearShootingDaysModeMinimum
+      || 'Minimum';
+    const maximumLabel = texts[lang].autoGearShootingDaysModeMaximum
+      || texts.en?.autoGearShootingDaysModeMaximum
+      || 'Maximum';
+    const everyLabel = texts[lang].autoGearShootingDaysModeEvery
+      || texts.en?.autoGearShootingDaysModeEvery
+      || 'Every';
+    const valueLabel = texts[lang].autoGearShootingDaysValueLabel
+      || texts.en?.autoGearShootingDaysValueLabel
+      || 'Shooting days value';
+    autoGearShootingDaysLabel.textContent = label;
+    autoGearShootingDaysLabel.setAttribute('data-help', help);
+    if (autoGearShootingDaysMode) {
+      autoGearShootingDaysMode.setAttribute('data-help', help);
+      autoGearShootingDaysMode.setAttribute('aria-label', label);
+      Array.from(autoGearShootingDaysMode.options || []).forEach(option => {
+        if (!option || typeof option.value !== 'string') return;
+        if (option.value === 'minimum') {
+          option.textContent = minimumLabel;
+        } else if (option.value === 'maximum') {
+          option.textContent = maximumLabel;
+        } else if (option.value === 'every') {
+          option.textContent = everyLabel;
+        }
+      });
+    }
+    if (autoGearShootingDaysValueLabel) {
+      autoGearShootingDaysValueLabel.textContent = valueLabel;
+      autoGearShootingDaysValueLabel.setAttribute('data-help', help);
+    }
+    if (autoGearShootingDaysInput) {
+      autoGearShootingDaysInput.setAttribute('data-help', help);
+      autoGearShootingDaysInput.setAttribute('aria-label', valueLabel || label);
+    }
+    if (autoGearShootingDaysHelp) {
+      autoGearShootingDaysHelp.textContent = help;
+      autoGearShootingDaysHelp.setAttribute('data-help', help);
     }
   }
   if (autoGearMatteboxLabel) {
@@ -10059,6 +10193,7 @@ const autoGearAlwaysHelp = document.getElementById('autoGearAlwaysHelp');
 const autoGearConditionSections = {
   always: document.getElementById('autoGearCondition-always'),
   scenarios: document.getElementById('autoGearCondition-scenarios'),
+  shootingDays: document.getElementById('autoGearCondition-shootingDays'),
   mattebox: document.getElementById('autoGearCondition-mattebox'),
   cameraHandle: document.getElementById('autoGearCondition-cameraHandle'),
   viewfinderExtension: document.getElementById('autoGearCondition-viewfinderExtension'),
@@ -10075,6 +10210,7 @@ const autoGearConditionSections = {
 const autoGearConditionAddShortcuts = {
   always: autoGearConditionSections.always?.querySelector('.auto-gear-condition-add') || null,
   scenarios: autoGearConditionSections.scenarios?.querySelector('.auto-gear-condition-add') || null,
+  shootingDays: autoGearConditionSections.shootingDays?.querySelector('.auto-gear-condition-add') || null,
   mattebox: autoGearConditionSections.mattebox?.querySelector('.auto-gear-condition-add') || null,
   cameraHandle: autoGearConditionSections.cameraHandle?.querySelector('.auto-gear-condition-add') || null,
   viewfinderExtension: autoGearConditionSections.viewfinderExtension?.querySelector('.auto-gear-condition-add') || null,
@@ -10091,6 +10227,7 @@ const autoGearConditionAddShortcuts = {
 const autoGearConditionRemoveButtons = {
   always: autoGearConditionSections.always?.querySelector('.auto-gear-condition-remove') || null,
   scenarios: autoGearConditionSections.scenarios?.querySelector('.auto-gear-condition-remove') || null,
+  shootingDays: autoGearConditionSections.shootingDays?.querySelector('.auto-gear-condition-remove') || null,
   mattebox: autoGearConditionSections.mattebox?.querySelector('.auto-gear-condition-remove') || null,
   cameraHandle: autoGearConditionSections.cameraHandle?.querySelector('.auto-gear-condition-remove') || null,
   viewfinderExtension: autoGearConditionSections.viewfinderExtension?.querySelector('.auto-gear-condition-remove') || null,
@@ -10125,6 +10262,11 @@ const autoGearScenarioBaseSelect = document.getElementById('autoGearScenarioBase
 const autoGearScenarioBaseLabel = document.getElementById('autoGearScenarioBaseLabel');
 const autoGearScenarioFactorInput = document.getElementById('autoGearScenarioFactor');
 const autoGearScenarioFactorLabel = document.getElementById('autoGearScenarioFactorLabel');
+const autoGearShootingDaysMode = document.getElementById('autoGearShootingDaysMode');
+const autoGearShootingDaysInput = document.getElementById('autoGearShootingDays');
+const autoGearShootingDaysLabel = document.getElementById('autoGearShootingDaysLabel');
+const autoGearShootingDaysHelp = document.getElementById('autoGearShootingDaysHelp');
+const autoGearShootingDaysValueLabel = document.getElementById('autoGearShootingDaysCountLabel');
 const autoGearMatteboxSelect = document.getElementById('autoGearMattebox');
 const autoGearMatteboxLabel = document.getElementById('autoGearMatteboxLabel');
 const autoGearCameraHandleSelect = document.getElementById('autoGearCameraHandle');
@@ -10150,6 +10292,7 @@ const autoGearDistanceLabel = document.getElementById('autoGearDistanceLabel');
 const autoGearConditionLabels = {
   always: autoGearAlwaysLabel,
   scenarios: autoGearScenariosLabel,
+  shootingDays: autoGearShootingDaysLabel,
   mattebox: autoGearMatteboxLabel,
   cameraHandle: autoGearCameraHandleLabel,
   viewfinderExtension: autoGearViewfinderExtensionLabel,
@@ -10165,6 +10308,7 @@ const autoGearConditionLabels = {
 const autoGearConditionSelects = {
   always: null,
   scenarios: autoGearScenariosSelect,
+  shootingDays: autoGearShootingDaysInput,
   mattebox: autoGearMatteboxSelect,
   cameraHandle: autoGearCameraHandleSelect,
   viewfinderExtension: autoGearViewfinderExtensionSelect,
@@ -10180,6 +10324,7 @@ const autoGearConditionSelects = {
 const AUTO_GEAR_CONDITION_KEYS = [
   'always',
   'scenarios',
+  'shootingDays',
   'mattebox',
   'cameraHandle',
   'viewfinderExtension',
@@ -10195,6 +10340,7 @@ const AUTO_GEAR_CONDITION_KEYS = [
 const AUTO_GEAR_CONDITION_FALLBACK_LABELS = {
   always: 'Always include',
   scenarios: 'Required scenarios',
+  shootingDays: 'Shooting days condition',
   mattebox: 'Mattebox options',
   cameraHandle: 'Camera handles',
   viewfinderExtension: 'Viewfinder extension',
@@ -10225,6 +10371,7 @@ const autoGearConditionConfigs = AUTO_GEAR_CONDITION_KEYS.reduce((acc, key) => {
 const autoGearConditionRefreshers = {
   always: null,
   scenarios: refreshAutoGearScenarioOptions,
+  shootingDays: refreshAutoGearShootingDaysValue,
   mattebox: refreshAutoGearMatteboxOptions,
   cameraHandle: refreshAutoGearCameraHandleOptions,
   viewfinderExtension: refreshAutoGearViewfinderExtensionOptions,
@@ -10383,15 +10530,30 @@ function addAutoGearCondition(key, options = {}) {
   if (autoGearEditorDraft) {
     if (key === 'always') {
       autoGearEditorDraft.always = ['always'];
+    } else if (key === 'shootingDays') {
+      if (!autoGearEditorDraft.shootingDays) {
+        autoGearEditorDraft.shootingDays = null;
+      }
     } else if (!Array.isArray(autoGearEditorDraft[key])) {
       autoGearEditorDraft[key] = [];
     }
   }
-  const values = key === 'always'
-    ? ['always']
-    : (Array.isArray(options.initialValues)
+  let values;
+  if (key === 'always') {
+    values = ['always'];
+  } else if (key === 'shootingDays') {
+    if (options.initialValues) {
+      values = options.initialValues;
+    } else if (autoGearEditorDraft?.shootingDays) {
+      values = autoGearEditorDraft.shootingDays;
+    } else {
+      values = null;
+    }
+  } else {
+    values = Array.isArray(options.initialValues)
       ? options.initialValues
-      : (Array.isArray(autoGearEditorDraft?.[key]) ? autoGearEditorDraft[key] : []));
+      : (Array.isArray(autoGearEditorDraft?.[key]) ? autoGearEditorDraft[key] : []);
+  }
   const refresher = autoGearConditionRefreshers[key];
   if (typeof refresher === 'function') {
     refresher(values);
@@ -10438,6 +10600,8 @@ function removeAutoGearCondition(key, options = {}) {
   if (!options.preserveDraft && autoGearEditorDraft) {
     if (key === 'always') {
       autoGearEditorDraft.always = [];
+    } else if (key === 'shootingDays') {
+      autoGearEditorDraft.shootingDays = null;
     } else if (Array.isArray(autoGearEditorDraft[key])) {
       autoGearEditorDraft[key] = [];
     }
@@ -10448,9 +10612,21 @@ function removeAutoGearCondition(key, options = {}) {
     });
     config.select.value = '';
   }
+  if (key === 'shootingDays') {
+    if (autoGearShootingDaysMode) {
+      autoGearShootingDaysMode.value = 'minimum';
+    }
+    if (autoGearShootingDaysInput) {
+      autoGearShootingDaysInput.value = '';
+    }
+  }
   const refresher = autoGearConditionRefreshers[key];
   if (typeof refresher === 'function') {
-    refresher([]);
+    if (key === 'shootingDays') {
+      refresher(null);
+    } else {
+      refresher([]);
+    }
   }
   refreshAutoGearConditionPicker();
   updateAutoGearConditionAddButtonState();
@@ -10476,6 +10652,8 @@ function clearAllAutoGearConditions(options = {}) {
     if (!preserveDraft && autoGearEditorDraft) {
       if (key === 'always') {
         autoGearEditorDraft.always = [];
+      } else if (key === 'shootingDays') {
+        autoGearEditorDraft.shootingDays = null;
       } else if (Array.isArray(autoGearEditorDraft[key])) {
         autoGearEditorDraft[key] = [];
       }
@@ -10486,9 +10664,22 @@ function clearAllAutoGearConditions(options = {}) {
       });
       config.select.value = '';
     }
+    if (key === 'shootingDays') {
+      if (autoGearShootingDaysMode) {
+        autoGearShootingDaysMode.value = 'minimum';
+      }
+      if (autoGearShootingDaysInput) {
+        autoGearShootingDaysInput.value = '';
+      }
+    }
     const refresher = autoGearConditionRefreshers[key];
     if (typeof refresher === 'function') {
-      refresher(preserveDraft ? autoGearEditorDraft?.[key] : []);
+      if (key === 'shootingDays') {
+        const source = preserveDraft ? autoGearEditorDraft?.shootingDays : null;
+        refresher(source || null);
+      } else {
+        refresher(preserveDraft ? autoGearEditorDraft?.[key] : []);
+      }
     }
   });
   autoGearActiveConditions.clear();
@@ -10499,17 +10690,41 @@ function clearAllAutoGearConditions(options = {}) {
 function initializeAutoGearConditionsFromDraft() {
   clearAllAutoGearConditions({ preserveDraft: true });
   AUTO_GEAR_CONDITION_KEYS.forEach(key => {
-    const values = key === 'always'
-      ? (autoGearEditorDraft?.always && autoGearEditorDraft.always.length ? ['always'] : [])
-      : (Array.isArray(autoGearEditorDraft?.[key])
-        ? autoGearEditorDraft[key].filter(value => typeof value === 'string' && value.trim())
-        : []);
-    if (values.length) {
+    let hasValue = false;
+    let values = [];
+    if (key === 'always') {
+      values = autoGearEditorDraft?.always && autoGearEditorDraft.always.length ? ['always'] : [];
+      hasValue = values.length > 0;
+    } else if (key === 'shootingDays') {
+      const condition = autoGearEditorDraft?.shootingDays
+        ? normalizeAutoGearShootingDaysCondition(autoGearEditorDraft.shootingDays)
+        : null;
+      if (condition) {
+        values = condition;
+        hasValue = true;
+      }
+    } else if (Array.isArray(autoGearEditorDraft?.[key])) {
+      values = autoGearEditorDraft[key].filter(value => {
+        if (typeof value === 'number') {
+          return Number.isFinite(value) && value > 0;
+        }
+        if (typeof value === 'string') {
+          return value.trim();
+        }
+        return false;
+      });
+      hasValue = values.length > 0;
+    }
+    if (hasValue) {
       addAutoGearCondition(key, { focus: false, initialValues: values });
     } else {
       const refresher = autoGearConditionRefreshers[key];
       if (typeof refresher === 'function') {
-        refresher([]);
+        if (key === 'shootingDays') {
+          refresher(null);
+        } else {
+          refresher([]);
+        }
       }
       const config = getAutoGearConditionConfig(key);
       if (config) {
@@ -10519,6 +10734,14 @@ function initializeAutoGearConditionsFromDraft() {
         }
         if (config.select) {
           config.select.value = '';
+        }
+        if (key === 'shootingDays') {
+          if (autoGearShootingDaysMode) {
+            autoGearShootingDaysMode.value = 'minimum';
+          }
+          if (autoGearShootingDaysInput) {
+            autoGearShootingDaysInput.value = '';
+          }
         }
       }
     }
@@ -10819,6 +11042,32 @@ function autoGearRuleMatchesSearch(rule, query) {
   pushValues(rule?.motors);
   pushValues(rule?.controllers);
   pushValues(rule?.distance);
+  const shootingCondition = normalizeAutoGearShootingDaysCondition(rule?.shootingDays);
+  if (shootingCondition) {
+    const shootingLabel = texts[currentLang]?.autoGearShootingDaysLabel
+      || texts.en?.autoGearShootingDaysLabel
+      || 'Shooting days condition';
+    const minimumLabel = texts[currentLang]?.autoGearShootingDaysModeMinimum
+      || texts.en?.autoGearShootingDaysModeMinimum
+      || 'Minimum';
+    const maximumLabel = texts[currentLang]?.autoGearShootingDaysModeMaximum
+      || texts.en?.autoGearShootingDaysModeMaximum
+      || 'Maximum';
+    const everyLabel = texts[currentLang]?.autoGearShootingDaysModeEvery
+      || texts.en?.autoGearShootingDaysModeEvery
+      || 'Every';
+    if (shootingLabel) {
+      haystack.push(shootingLabel);
+    }
+    haystack.push(String(shootingCondition.value));
+    if (shootingCondition.mode === 'minimum') {
+      haystack.push(minimumLabel);
+    } else if (shootingCondition.mode === 'maximum') {
+      haystack.push(maximumLabel);
+    } else if (shootingCondition.mode === 'every') {
+      haystack.push(everyLabel);
+    }
+  }
   const collectItems = items => {
     if (!Array.isArray(items)) return;
     items.forEach(item => {
@@ -10955,6 +11204,7 @@ function createAutoGearDraft(rule) {
       motors: Array.isArray(rule.motors) ? rule.motors.slice() : [],
       controllers: Array.isArray(rule.controllers) ? rule.controllers.slice() : [],
       distance: Array.isArray(rule.distance) ? rule.distance.slice() : [],
+      shootingDays: normalizeAutoGearShootingDaysCondition(rule.shootingDays),
       add: Array.isArray(rule.add) ? rule.add.map(cloneAutoGearDraftItem) : [],
       remove: Array.isArray(rule.remove) ? rule.remove.map(cloneAutoGearDraftItem) : [],
     };
@@ -10978,9 +11228,32 @@ function createAutoGearDraft(rule) {
     motors: [],
     controllers: [],
     distance: [],
+    shootingDays: null,
     add: [],
     remove: [],
   };
+}
+
+function refreshAutoGearShootingDaysValue(selected) {
+  if (!autoGearShootingDaysInput) return;
+  const condition = (() => {
+    if (selected && typeof selected === 'object' && !Array.isArray(selected)) {
+      return normalizeAutoGearShootingDaysCondition(selected);
+    }
+    if (Array.isArray(selected) && selected.length) {
+      return normalizeAutoGearShootingDaysCondition({ mode: 'minimum', value: selected[0] });
+    }
+    if (autoGearEditorDraft?.shootingDays) {
+      return normalizeAutoGearShootingDaysCondition(autoGearEditorDraft.shootingDays);
+    }
+    return null;
+  })();
+  const mode = condition ? condition.mode : 'minimum';
+  if (autoGearShootingDaysMode) {
+    autoGearShootingDaysMode.value = AUTO_GEAR_SHOOTING_DAY_MODES.has(mode) ? mode : 'minimum';
+  }
+  const value = condition ? condition.value : '';
+  autoGearShootingDaysInput.value = value ? String(value) : '';
 }
 
 function refreshAutoGearScenarioOptions(selected) {
@@ -12471,6 +12744,10 @@ function renderAutoGearRulesList() {
     const motorsList = Array.isArray(rule.motors) ? rule.motors : [];
     const controllersList = Array.isArray(rule.controllers) ? rule.controllers : [];
     const distanceList = Array.isArray(rule.distance) ? rule.distance : [];
+    const shootingCondition = normalizeAutoGearShootingDaysCondition(rule.shootingDays);
+    const shootingDaysDisplayList = shootingCondition
+      ? [String(shootingCondition.value)]
+      : [];
     const fallbackCandidates = [
       cameraList,
       monitorList,
@@ -12483,6 +12760,7 @@ function renderAutoGearRulesList() {
       viewfinderDisplayList,
       deliveryResolutionList,
       videoDistributionDisplayList,
+      shootingDaysDisplayList,
     ];
     const fallbackSource = scenarioList.length
       ? scenarioList
@@ -12561,6 +12839,35 @@ function renderAutoGearRulesList() {
       distanceMeta.className = 'auto-gear-rule-meta';
       distanceMeta.textContent = `${distanceLabelText}: ${distanceList.join(' + ')}`;
       info.appendChild(distanceMeta);
+    }
+    if (shootingCondition) {
+      const shootingLabelText = texts[currentLang]?.autoGearShootingDaysLabel
+        || texts.en?.autoGearShootingDaysLabel
+        || 'Shooting days condition';
+      const minimumLabel = texts[currentLang]?.autoGearShootingDaysModeMinimum
+        || texts.en?.autoGearShootingDaysModeMinimum
+        || 'Minimum';
+      const maximumLabel = texts[currentLang]?.autoGearShootingDaysModeMaximum
+        || texts.en?.autoGearShootingDaysModeMaximum
+        || 'Maximum';
+      const everyLabel = texts[currentLang]?.autoGearShootingDaysModeEvery
+        || texts.en?.autoGearShootingDaysModeEvery
+        || 'Every';
+      const shootingMeta = document.createElement('p');
+      shootingMeta.className = 'auto-gear-rule-meta';
+      let formattedValue = String(shootingCondition.value);
+      if (shootingCondition.mode === 'minimum') {
+        formattedValue = `≥ ${shootingCondition.value}`;
+        shootingMeta.textContent = `${shootingLabelText}: ${minimumLabel} ${formattedValue.replace('≥ ', '')}`;
+      } else if (shootingCondition.mode === 'maximum') {
+        formattedValue = `≤ ${shootingCondition.value}`;
+        shootingMeta.textContent = `${shootingLabelText}: ${maximumLabel} ${formattedValue.replace('≤ ', '')}`;
+      } else if (shootingCondition.mode === 'every') {
+        shootingMeta.textContent = `${shootingLabelText}: ${everyLabel} ${shootingCondition.value}`;
+      } else {
+        shootingMeta.textContent = `${shootingLabelText}: ${formattedValue}`;
+      }
+      info.appendChild(shootingMeta);
     }
     if (matteboxList.length) {
       const matteboxLabelText = texts[currentLang]?.autoGearMatteboxLabel
@@ -13127,6 +13434,13 @@ function saveAutoGearRuleFromEditor() {
         .map(option => option.value)
         .filter(value => typeof value === 'string' && value.trim())
     : [];
+  const shootingDaysRequirement = (() => {
+    if (!isAutoGearConditionActive('shootingDays')) return null;
+    if (!autoGearShootingDaysInput) return null;
+    const modeValue = autoGearShootingDaysMode ? autoGearShootingDaysMode.value : 'minimum';
+    const rawCondition = { mode: modeValue, value: autoGearShootingDaysInput.value };
+    return normalizeAutoGearShootingDaysCondition(rawCondition);
+  })();
   const alwaysActive = isAutoGearConditionActive('always');
   if (
     !alwaysActive
@@ -13142,6 +13456,7 @@ function saveAutoGearRuleFromEditor() {
     && !motorSelections.length
     && !controllerSelections.length
     && !distanceSelections.length
+    && !shootingDaysRequirement
   ) {
     const message = texts[currentLang]?.autoGearRuleConditionRequired
       || texts.en?.autoGearRuleConditionRequired
@@ -13170,6 +13485,7 @@ function saveAutoGearRuleFromEditor() {
   autoGearEditorDraft.motors = motorSelections;
   autoGearEditorDraft.controllers = controllerSelections;
   autoGearEditorDraft.distance = distanceSelections;
+  autoGearEditorDraft.shootingDays = shootingDaysRequirement;
   if (!autoGearEditorDraft.add.length && !autoGearEditorDraft.remove.length) {
     const message = texts[currentLang]?.autoGearRuleNeedsItems
       || texts.en?.autoGearRuleNeedsItems
@@ -13254,6 +13570,7 @@ function duplicateAutoGearRule(ruleId) {
     motors: Array.isArray(original.motors) ? original.motors.slice() : [],
     controllers: Array.isArray(original.controllers) ? original.controllers.slice() : [],
     distance: Array.isArray(original.distance) ? original.distance.slice() : [],
+    shootingDays: normalizeAutoGearShootingDaysCondition(original.shootingDays),
     add: Array.isArray(original.add)
       ? original.add.map(item => ({ ...item, id: generateAutoGearId('item') }))
       : [],

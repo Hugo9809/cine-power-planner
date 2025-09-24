@@ -212,6 +212,13 @@ const texts = {
     autoGearScenarioBasePlaceholder: "Select a base scenario",
     autoGearScenarioFactorLabel: "Multiplier factor",
     autoGearScenarioFactorHelp: "Scale item quantities when every additional scenario is active.",
+    autoGearShootingDaysLabel: "Shooting days condition",
+    autoGearShootingDaysHelp:
+      "Activate this rule when the shooting schedule meets your chosen minimum or maximum, or repeat the gear for each block of days.",
+    autoGearShootingDaysModeMinimum: "Minimum",
+    autoGearShootingDaysModeMaximum: "Maximum",
+    autoGearShootingDaysModeEvery: "Every",
+    autoGearShootingDaysValueLabel: "Shooting days value",
     autoGearMatteboxLabel: "Mattebox options",
     autoGearMatteboxHelp:
       "Apply this rule when these mattebox choices are selected.",
@@ -1638,6 +1645,13 @@ const texts = {
     autoGearScenariosHelp:
       "Seleziona tutti gli scenari che devono essere attivi perché la regola si applichi. Tieni premuto Ctrl (Cmd su Mac) per sceglierne più di uno.",
     autoGearScenarioPlaceholder: "Seleziona scenari",
+    autoGearShootingDaysLabel: "Condizione sui giorni di ripresa",
+    autoGearShootingDaysHelp:
+      "Attiva questa regola quando il calendario delle riprese rispetta il minimo o il massimo scelto, oppure ripeti l'attrezzatura per ogni blocco di giorni.",
+    autoGearShootingDaysModeMinimum: "Minimo",
+    autoGearShootingDaysModeMaximum: "Massimo",
+    autoGearShootingDaysModeEvery: "Ogni",
+    autoGearShootingDaysValueLabel: "Valore giorni di ripresa",
     autoGearMatteboxLabel: "Opzioni matte box",
     autoGearMatteboxHelp:
       "Applica la regola quando sono selezionate queste opzioni di matte box.",
@@ -2645,6 +2659,13 @@ const texts = {
     autoGearScenariosHelp:
       "Selecciona todos los escenarios que deben estar activos para que se aplique esta regla. Mantén pulsado Ctrl (Cmd en Mac) para elegir varios.",
     autoGearScenarioPlaceholder: "Selecciona escenarios",
+    autoGearShootingDaysLabel: "Condición de días de rodaje",
+    autoGearShootingDaysHelp:
+      "Activa esta regla cuando el plan de rodaje cumpla el mínimo o máximo elegido, o repite el equipo por cada bloque de días.",
+    autoGearShootingDaysModeMinimum: "Mínimo",
+    autoGearShootingDaysModeMaximum: "Máximo",
+    autoGearShootingDaysModeEvery: "Cada",
+    autoGearShootingDaysValueLabel: "Valor de días de rodaje",
     autoGearMatteboxLabel: "Opciones de matte box",
     autoGearMatteboxHelp:
       "Aplica la regla cuando se eligen estas opciones de matte box.",
@@ -3654,6 +3675,13 @@ const texts = {
     autoGearScenariosHelp:
       "Sélectionnez tous les scénarios qui doivent être actifs pour appliquer cette règle. Maintenez Ctrl (Cmd sur Mac) pour en choisir plusieurs.",
     autoGearScenarioPlaceholder: "Sélectionnez des scénarios",
+    autoGearShootingDaysLabel: "Condition sur les jours de tournage",
+    autoGearShootingDaysHelp:
+      "Activez cette règle lorsque le planning respecte le minimum ou le maximum choisi, ou répétez l'équipement pour chaque bloc de jours.",
+    autoGearShootingDaysModeMinimum: "Minimum",
+    autoGearShootingDaysModeMaximum: "Maximum",
+    autoGearShootingDaysModeEvery: "Chaque",
+    autoGearShootingDaysValueLabel: "Valeur de jours de tournage",
     autoGearMatteboxLabel: "Options de matte box",
     autoGearMatteboxHelp:
       "Appliquer la règle lorsque ces options de matte box sont sélectionnées.",
@@ -4666,6 +4694,13 @@ const texts = {
     autoGearScenariosHelp:
       "Wähle alle Szenarien, die aktiv sein müssen, damit diese Regel greift. Halte Strg (Cmd auf dem Mac) gedrückt, um mehrere auszuwählen.",
     autoGearScenarioPlaceholder: "Szenarien auswählen",
+    autoGearShootingDaysLabel: "Bedingung für Drehtage",
+    autoGearShootingDaysHelp:
+      "Aktiviere diese Regel, wenn der Drehplan dein gewähltes Minimum oder Maximum erreicht, oder wiederhole das Equipment für jeden Block an Tagen.",
+    autoGearShootingDaysModeMinimum: "Minimum",
+    autoGearShootingDaysModeMaximum: "Maximum",
+    autoGearShootingDaysModeEvery: "Alle",
+    autoGearShootingDaysValueLabel: "Drehtage-Wert",
     autoGearMatteboxLabel: "Mattebox-Optionen",
     autoGearMatteboxHelp:
       "Regel anwenden, wenn diese Mattebox-Optionen gewählt sind.",
