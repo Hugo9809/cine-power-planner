@@ -5586,8 +5586,8 @@ body.dark-mode .requirement-box,
 }
 
 #gearListOutput .gear-table select {
-  padding: 0;
-  padding-inline: 0;
+  padding-block: 0;
+  padding-inline: 0.35rem 0;
 }
 
 .gear-table .category-row td {
