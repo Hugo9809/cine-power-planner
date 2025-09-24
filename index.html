@@ -1110,6 +1110,8 @@
                     <option value="videoDistribution">Video distribution</option>
                     <option value="camera">Camera</option>
                     <option value="monitor">Onboard monitor</option>
+                    <option value="crewPresent">Crew present</option>
+                    <option value="crewAbsent">Crew absent</option>
                     <option value="wireless">Wireless transmitter</option>
                     <option value="motors">FIZ motors</option>
                     <option value="controllers">FIZ controllers</option>
@@ -1414,6 +1416,58 @@
                   <select
                     id="autoGearMonitor"
                     class="auto-gear-monitor auto-gear-multiselect auto-gear-device-multiselect"
+                    multiple
+                    size="10"
+                  ></select>
+                </section>
+                <section
+                  id="autoGearCondition-crewPresent"
+                  class="auto-gear-condition"
+                  data-condition="crewPresent"
+                  hidden
+                  aria-hidden="true"
+                >
+                  <div class="auto-gear-condition-header">
+                    <label for="autoGearCrewPresent" id="autoGearCrewPresentLabel">Crew present</label>
+                    <div class="auto-gear-condition-actions">
+                      <button type="button" class="auto-gear-condition-add" data-action="add">Add</button>
+                      <button
+                        type="button"
+                        class="auto-gear-condition-remove"
+                        data-action="remove"
+                        data-condition="crewPresent"
+                      >Remove</button>
+                    </div>
+                  </div>
+                  <select
+                    id="autoGearCrewPresent"
+                    class="auto-gear-crew auto-gear-multiselect"
+                    multiple
+                    size="10"
+                  ></select>
+                </section>
+                <section
+                  id="autoGearCondition-crewAbsent"
+                  class="auto-gear-condition"
+                  data-condition="crewAbsent"
+                  hidden
+                  aria-hidden="true"
+                >
+                  <div class="auto-gear-condition-header">
+                    <label for="autoGearCrewAbsent" id="autoGearCrewAbsentLabel">Crew absent</label>
+                    <div class="auto-gear-condition-actions">
+                      <button type="button" class="auto-gear-condition-add" data-action="add">Add</button>
+                      <button
+                        type="button"
+                        class="auto-gear-condition-remove"
+                        data-action="remove"
+                        data-condition="crewAbsent"
+                      >Remove</button>
+                    </div>
+                  </div>
+                  <select
+                    id="autoGearCrewAbsent"
+                    class="auto-gear-crew auto-gear-multiselect"
                     multiple
                     size="10"
                   ></select>

@@ -1607,6 +1607,14 @@ function removeAutoGearItem(cell, item, remainingOverride) {
   }
   return remaining;
 }
+function getCrewRoleLabelForDisplay(value) {
+  if (typeof value !== 'string') return '';
+  var trimmed = value.trim();
+  if (!trimmed) return '';
+  var langTexts = texts[currentLang] || texts.en || {};
+  var crewRoleLabels = langTexts.crewRoles || (texts.en ? texts.en.crewRoles : null) || {};
+  return crewRoleLabels && crewRoleLabels[trimmed] ? crewRoleLabels[trimmed] : trimmed;
+}
 function getAutoGearRuleDisplayLabel(rule) {
   if (!rule || _typeof(rule) !== 'object') return '';
   var label = typeof rule.label === 'string' ? rule.label.trim() : '';
@@ -1617,6 +1625,14 @@ function getAutoGearRuleDisplayLabel(rule) {
   if (cameraList.length) return cameraList.join(' + ');
   var monitorList = Array.isArray(rule.monitor) ? rule.monitor.filter(Boolean) : [];
   if (monitorList.length) return monitorList.join(' + ');
+  var crewPresentList = Array.isArray(rule.crewPresent) ? rule.crewPresent.filter(Boolean) : [];
+  if (crewPresentList.length) {
+    return crewPresentList.map(getCrewRoleLabelForDisplay).join(' + ');
+  }
+  var crewAbsentList = Array.isArray(rule.crewAbsent) ? rule.crewAbsent.filter(Boolean) : [];
+  if (crewAbsentList.length) {
+    return crewAbsentList.map(getCrewRoleLabelForDisplay).join(' + ');
+  }
   var wirelessList = Array.isArray(rule.wireless) ? rule.wireless.filter(Boolean) : [];
   if (wirelessList.length) return wirelessList.join(' + ');
   var motorsList = Array.isArray(rule.motors) ? rule.motors.filter(Boolean) : [];
@@ -2158,6 +2174,12 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
   var normalizedMonitorSelection = normalizeAutoGearTriggerValue(rawMonitorSelection);
   var rawWirelessSelection = info && typeof info.wirelessSelection === 'string' ? info.wirelessSelection.trim() : '';
   var normalizedWirelessSelection = normalizeAutoGearTriggerValue(rawWirelessSelection);
+  var crewRoleSet = new Set((info && Array.isArray(info.people) ? info.people : []).map(function (entry) {
+    if (!entry || _typeof(entry) !== 'object') return '';
+    var role = typeof entry.role === 'string' ? entry.role.trim() : '';
+    if (!role) return '';
+    return normalizeAutoGearTriggerValue(role);
+  }).filter(Boolean));
   var rawMotorSelections = [];
   if (info) {
     if (Array.isArray(info.motorSelections)) {
@@ -2240,35 +2262,53 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
       if (!normalizedMonitorSelection) return;
       if (_normalizedTargets3.indexOf(normalizedMonitorSelection) === -1) return;
     }
+    var crewPresentList = Array.isArray(rule.crewPresent) ? rule.crewPresent.filter(Boolean) : [];
+    if (crewPresentList.length) {
+      var _normalizedTargets4 = crewPresentList.map(normalizeAutoGearTriggerValue).filter(Boolean);
+      if (!_normalizedTargets4.length) return;
+      var allPresent = _normalizedTargets4.every(function (target) {
+        return crewRoleSet.has(target);
+      });
+      if (!allPresent) return;
+    }
+    var crewAbsentList = Array.isArray(rule.crewAbsent) ? rule.crewAbsent.filter(Boolean) : [];
+    if (crewAbsentList.length) {
+      var _normalizedTargets5 = crewAbsentList.map(normalizeAutoGearTriggerValue).filter(Boolean);
+      if (!_normalizedTargets5.length) return;
+      var anyPresent = _normalizedTargets5.some(function (target) {
+        return crewRoleSet.has(target);
+      });
+      if (anyPresent) return;
+    }
     var wirelessList = Array.isArray(rule.wireless) ? rule.wireless.filter(Boolean) : [];
     if (wirelessList.length) {
-      var _normalizedTargets4 = wirelessList.map(normalizeAutoGearTriggerValue).filter(Boolean);
-      if (!_normalizedTargets4.length) return;
+      var _normalizedTargets6 = wirelessList.map(normalizeAutoGearTriggerValue).filter(Boolean);
+      if (!_normalizedTargets6.length) return;
       if (!normalizedWirelessSelection) return;
-      if (_normalizedTargets4.indexOf(normalizedWirelessSelection) === -1) return;
+      if (_normalizedTargets6.indexOf(normalizedWirelessSelection) === -1) return;
     }
     var motorsList = Array.isArray(rule.motors) ? rule.motors.filter(Boolean) : [];
     if (motorsList.length) {
-      var _normalizedTargets5 = motorsList.map(normalizeAutoGearTriggerValue).filter(Boolean);
-      if (!_normalizedTargets5.length) return;
-      if (!_normalizedTargets5.every(function (target) {
+      var _normalizedTargets7 = motorsList.map(normalizeAutoGearTriggerValue).filter(Boolean);
+      if (!_normalizedTargets7.length) return;
+      if (!_normalizedTargets7.every(function (target) {
         return normalizedMotorSet.has(target);
       })) return;
     }
     var controllersList = Array.isArray(rule.controllers) ? rule.controllers.filter(Boolean) : [];
     if (controllersList.length) {
-      var _normalizedTargets6 = controllersList.map(normalizeAutoGearTriggerValue).filter(Boolean);
-      if (!_normalizedTargets6.length) return;
-      if (!_normalizedTargets6.every(function (target) {
+      var _normalizedTargets8 = controllersList.map(normalizeAutoGearTriggerValue).filter(Boolean);
+      if (!_normalizedTargets8.length) return;
+      if (!_normalizedTargets8.every(function (target) {
         return normalizedControllerSet.has(target);
       })) return;
     }
     var distanceList = Array.isArray(rule.distance) ? rule.distance.filter(Boolean) : [];
     if (distanceList.length) {
-      var _normalizedTargets7 = distanceList.map(normalizeAutoGearTriggerValue).filter(Boolean);
-      if (!_normalizedTargets7.length) return;
+      var _normalizedTargets9 = distanceList.map(normalizeAutoGearTriggerValue).filter(Boolean);
+      if (!_normalizedTargets9.length) return;
       if (!normalizedDistanceSelection) return;
-      if (_normalizedTargets7.indexOf(normalizedDistanceSelection) === -1) return;
+      if (_normalizedTargets9.indexOf(normalizedDistanceSelection) === -1) return;
     }
     var cameraHandleList = Array.isArray(rule.cameraHandle) ? rule.cameraHandle.filter(Boolean) : [];
     if (cameraHandleList.length) {

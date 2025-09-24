@@ -246,6 +246,12 @@ const texts = {
     autoGearMonitorLabel: "Onboard monitors",
     autoGearMonitorHelp:
       "Apply this rule when these onboard monitors are selected.",
+    autoGearCrewPresentLabel: "Crew present",
+    autoGearCrewPresentHelp:
+      "Apply this rule when these crew roles are listed on the project.",
+    autoGearCrewAbsentLabel: "Crew absent",
+    autoGearCrewAbsentHelp:
+      "Apply this rule when these crew roles are not listed on the project.",
     autoGearWirelessLabel: "Wireless transmitters",
     autoGearWirelessHelp:
       "Apply this rule when these wireless transmitters are selected.",
@@ -1679,6 +1685,12 @@ const texts = {
     autoGearMonitorLabel: "Monitor onboard",
     autoGearMonitorHelp:
       "Applica la regola quando sono selezionati questi monitor onboard.",
+    autoGearCrewPresentLabel: "Crew present",
+    autoGearCrewPresentHelp:
+      "Apply this rule when these crew roles are listed on the project.",
+    autoGearCrewAbsentLabel: "Crew absent",
+    autoGearCrewAbsentHelp:
+      "Apply this rule when these crew roles are not listed on the project.",
     autoGearWirelessLabel: "Trasmettitori wireless",
     autoGearWirelessHelp:
       "Applica la regola quando sono selezionati questi trasmettitori wireless.",
@@ -2693,6 +2705,12 @@ const texts = {
     autoGearMonitorLabel: "Monitores a bordo",
     autoGearMonitorHelp:
       "Aplica la regla cuando se seleccionan estos monitores a bordo.",
+    autoGearCrewPresentLabel: "Crew present",
+    autoGearCrewPresentHelp:
+      "Apply this rule when these crew roles are listed on the project.",
+    autoGearCrewAbsentLabel: "Crew absent",
+    autoGearCrewAbsentHelp:
+      "Apply this rule when these crew roles are not listed on the project.",
     autoGearWirelessLabel: "Transmisores inalámbricos",
     autoGearWirelessHelp:
       "Aplica la regla cuando se seleccionan estos transmisores inalámbricos.",
@@ -3709,6 +3727,12 @@ const texts = {
     autoGearMonitorLabel: "Moniteurs embarqués",
     autoGearMonitorHelp:
       "Appliquez la règle lorsque ces moniteurs embarqués sont sélectionnés.",
+    autoGearCrewPresentLabel: "Crew present",
+    autoGearCrewPresentHelp:
+      "Apply this rule when these crew roles are listed on the project.",
+    autoGearCrewAbsentLabel: "Crew absent",
+    autoGearCrewAbsentHelp:
+      "Apply this rule when these crew roles are not listed on the project.",
     autoGearWirelessLabel: "Émetteurs sans fil",
     autoGearWirelessHelp:
       "Appliquez la règle lorsque ces émetteurs sans fil sont sélectionnés.",
@@ -4728,6 +4752,12 @@ const texts = {
     autoGearMonitorLabel: "Onboard-Monitore",
     autoGearMonitorHelp:
       "Wende die Regel an, wenn diese Onboard-Monitore ausgewählt sind.",
+    autoGearCrewPresentLabel: "Crew present",
+    autoGearCrewPresentHelp:
+      "Apply this rule when these crew roles are listed on the project.",
+    autoGearCrewAbsentLabel: "Crew absent",
+    autoGearCrewAbsentHelp:
+      "Apply this rule when these crew roles are not listed on the project.",
     autoGearWirelessLabel: "Funk-Sender",
     autoGearWirelessHelp:
       "Wende die Regel an, wenn diese Funk-Sender ausgewählt sind.",

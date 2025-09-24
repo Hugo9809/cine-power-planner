@@ -36,6 +36,8 @@ describe('applyAutoGearRulesToTableHtml', () => {
       : 1,
     scenarios: rule.scenarios,
     mattebox: Array.isArray(rule.mattebox) ? rule.mattebox : [],
+    crewPresent: Array.isArray(rule.crewPresent) ? rule.crewPresent : [],
+    crewAbsent: Array.isArray(rule.crewAbsent) ? rule.crewAbsent : [],
     add: rule.add.map(({ name, category, quantity }) => ({ name, category, quantity })),
     remove: rule.remove.map(({ name, category, quantity }) => ({ name, category, quantity })),
     shootingDays: rule.shootingDays && typeof rule.shootingDays === 'object'
@@ -103,6 +105,8 @@ describe('applyAutoGearRulesToTableHtml', () => {
       'videoDistribution',
       'camera',
       'monitor',
+      'crewPresent',
+      'crewAbsent',
       'wireless',
       'motors',
       'controllers',
@@ -118,6 +122,8 @@ describe('applyAutoGearRulesToTableHtml', () => {
       'autoGearVideoDistribution',
       'autoGearCamera',
       'autoGearMonitor',
+      'autoGearCrewPresent',
+      'autoGearCrewAbsent',
       'autoGearWireless',
       'autoGearMotors',
       'autoGearControllers',
@@ -171,6 +177,8 @@ describe('applyAutoGearRulesToTableHtml', () => {
       'videoDistribution',
       'camera',
       'monitor',
+      'crewPresent',
+      'crewAbsent',
       'wireless',
       'motors',
       'controllers',
@@ -501,6 +509,93 @@ describe('applyAutoGearRulesToTableHtml', () => {
     expect(entries).toHaveLength(1);
     expect(entries[0].classList.contains('auto-gear-item')).toBe(true);
     expect(entries[0].textContent).toContain('1x');
+  });
+
+  test('crew presence and absence conditions influence legacy gear updates', () => {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify([
+        {
+          id: 'rule-crew-present',
+          label: 'Focus Monitor Support',
+          crewPresent: ['1st AC'],
+          crewAbsent: [],
+          scenarios: [],
+          mattebox: [],
+          cameraHandle: [],
+          viewfinderExtension: [],
+          videoDistribution: [],
+          camera: [],
+          monitor: [],
+          wireless: [],
+          motors: [],
+          controllers: [],
+          distance: [],
+          add: [
+            { name: 'Focus Monitor Kit', category: 'Monitoring', quantity: 1 }
+          ],
+          remove: []
+        },
+        {
+          id: 'rule-crew-absent',
+          label: 'No Grip Helpers',
+          crewPresent: [],
+          crewAbsent: ['Grip'],
+          scenarios: [],
+          mattebox: [],
+          cameraHandle: [],
+          viewfinderExtension: [],
+          videoDistribution: [],
+          camera: [],
+          monitor: [],
+          wireless: [],
+          motors: [],
+          controllers: [],
+          distance: [],
+          add: [
+            { name: 'Lightweight Stand', category: 'Grip', quantity: 1 }
+          ],
+          remove: []
+        }
+      ])
+    );
+
+    env = setupScriptEnvironment();
+    const { applyAutoGearRulesToTableHtml } = env.utils;
+
+    const tableHtml = `
+      <table class="gear-table">
+        <tbody class="category-group">
+          <tr class="category-row"><td>Monitoring</td></tr>
+          <tr><td></td></tr>
+        </tbody>
+        <tbody class="category-group">
+          <tr class="category-row"><td>Grip</td></tr>
+          <tr><td></td></tr>
+        </tbody>
+      </table>
+    `;
+
+    const withFocus = applyAutoGearRulesToTableHtml(tableHtml, {
+      people: [
+        { role: '1st AC', name: 'Alex' }
+      ]
+    });
+    const focusContainer = document.createElement('div');
+    focusContainer.innerHTML = withFocus;
+    expect(focusContainer.querySelector('[data-gear-name="Focus Monitor Kit"]')).not.toBeNull();
+    expect(focusContainer.querySelector('[data-gear-name="Lightweight Stand"]')).not.toBeNull();
+
+    const withGrip = applyAutoGearRulesToTableHtml(tableHtml, {
+      people: [
+        { role: '1st AC', name: 'Alex' },
+        { role: 'Grip', name: 'Sam' }
+      ]
+    });
+    const gripContainer = document.createElement('div');
+    gripContainer.innerHTML = withGrip;
+    expect(gripContainer.querySelector('[data-gear-name="Focus Monitor Kit"]')).not.toBeNull();
+    expect(gripContainer.querySelector('[data-gear-name="Lightweight Stand"]')).toBeNull();
   });
 
   test('applies camera handle-triggered rules when selections include all handles', () => {

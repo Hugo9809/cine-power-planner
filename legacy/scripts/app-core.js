@@ -885,6 +885,12 @@ function normalizeAutoGearRule(rule) {
   var monitor = normalizeAutoGearTriggerList(rule.monitor).sort(function (a, b) {
     return a.localeCompare(b);
   });
+  var crewPresent = normalizeAutoGearTriggerList(rule.crewPresent).sort(function (a, b) {
+    return a.localeCompare(b);
+  });
+  var crewAbsent = normalizeAutoGearTriggerList(rule.crewAbsent).sort(function (a, b) {
+    return a.localeCompare(b);
+  });
   var wireless = normalizeAutoGearTriggerList(rule.wireless).sort(function (a, b) {
     return a.localeCompare(b);
   });
@@ -897,7 +903,7 @@ function normalizeAutoGearRule(rule) {
   var distance = normalizeAutoGearTriggerList(rule.distance).sort(function (a, b) {
     return a.localeCompare(b);
   });
-  if (!always && !scenarios.length && !mattebox.length && !cameraHandle.length && !viewfinderExtension.length && !videoDistribution.length && !camera.length && !monitor.length && !wireless.length && !motors.length && !controllers.length && !distance.length) return null;
+  if (!always && !scenarios.length && !mattebox.length && !cameraHandle.length && !viewfinderExtension.length && !videoDistribution.length && !camera.length && !monitor.length && !crewPresent.length && !crewAbsent.length && !wireless.length && !motors.length && !controllers.length && !distance.length) return null;
   var add = Array.isArray(rule.add) ? rule.add.map(normalizeAutoGearItem).filter(Boolean) : [];
   var remove = Array.isArray(rule.remove) ? rule.remove.map(normalizeAutoGearItem).filter(Boolean) : [];
   if (!add.length && !remove.length) return null;
@@ -915,6 +921,8 @@ function normalizeAutoGearRule(rule) {
     videoDistribution: videoDistribution,
     camera: camera,
     monitor: monitor,
+    crewPresent: crewPresent,
+    crewAbsent: crewAbsent,
     wireless: wireless,
     motors: motors,
     controllers: controllers,
@@ -1003,6 +1011,12 @@ function snapshotAutoGearRuleForFingerprint(rule) {
     monitor: normalized.monitor.slice().sort(function (a, b) {
       return a.localeCompare(b);
     }),
+    crewPresent: normalized.crewPresent.slice().sort(function (a, b) {
+      return a.localeCompare(b);
+    }),
+    crewAbsent: normalized.crewAbsent.slice().sort(function (a, b) {
+      return a.localeCompare(b);
+    }),
     wireless: normalized.wireless.slice().sort(function (a, b) {
       return a.localeCompare(b);
     }),
@@ -1031,13 +1045,15 @@ function autoGearRuleSortKey(rule) {
   var videoDistributionKey = Array.isArray(rule.videoDistribution) ? rule.videoDistribution.join('|') : '';
   var cameraKey = Array.isArray(rule.camera) ? rule.camera.join('|') : '';
   var monitorKey = Array.isArray(rule.monitor) ? rule.monitor.join('|') : '';
+  var crewPresentKey = Array.isArray(rule.crewPresent) ? rule.crewPresent.join('|') : '';
+  var crewAbsentKey = Array.isArray(rule.crewAbsent) ? rule.crewAbsent.join('|') : '';
   var wirelessKey = Array.isArray(rule.wireless) ? rule.wireless.join('|') : '';
   var motorsKey = Array.isArray(rule.motors) ? rule.motors.join('|') : '';
   var controllersKey = Array.isArray(rule.controllers) ? rule.controllers.join('|') : '';
   var distanceKey = Array.isArray(rule.distance) ? rule.distance.join('|') : '';
   var addKey = Array.isArray(rule.add) ? rule.add.map(autoGearItemSortKey).join('|') : '';
   var removeKey = Array.isArray(rule.remove) ? rule.remove.map(autoGearItemSortKey).join('|') : '';
-  return "".concat(alwaysKey, "|").concat(scenarioLogicKey, "|").concat(scenarioPrimaryKey, "|").concat(String(scenarioMultiplierKey), "|").concat(scenarioKey, "|").concat(matteboxKey, "|").concat(cameraHandleKey, "|").concat(viewfinderKey, "|").concat(videoDistributionKey, "|").concat(cameraKey, "|").concat(monitorKey, "|").concat(wirelessKey, "|").concat(motorsKey, "|").concat(controllersKey, "|").concat(distanceKey, "|").concat(rule.label || '', "|").concat(addKey, "|").concat(removeKey);
+  return "".concat(alwaysKey, "|").concat(scenarioLogicKey, "|").concat(scenarioPrimaryKey, "|").concat(String(scenarioMultiplierKey), "|").concat(scenarioKey, "|").concat(matteboxKey, "|").concat(cameraHandleKey, "|").concat(viewfinderKey, "|").concat(videoDistributionKey, "|").concat(cameraKey, "|").concat(monitorKey, "|").concat(crewPresentKey, "|").concat(crewAbsentKey, "|").concat(wirelessKey, "|").concat(motorsKey, "|").concat(controllersKey, "|").concat(distanceKey, "|").concat(rule.label || '', "|").concat(addKey, "|").concat(removeKey);
 }
 function createAutoGearRulesFingerprint(rules) {
   var snapshot = (Array.isArray(rules) ? rules : []).map(snapshotAutoGearRuleForFingerprint).filter(Boolean).sort(function (a, b) {
@@ -1606,6 +1622,8 @@ function cloneAutoGearRule(rule) {
     videoDistribution: Array.isArray(rule.videoDistribution) ? rule.videoDistribution.slice() : [],
     camera: Array.isArray(rule.camera) ? rule.camera.slice() : [],
     monitor: Array.isArray(rule.monitor) ? rule.monitor.slice() : [],
+    crewPresent: Array.isArray(rule.crewPresent) ? rule.crewPresent.slice() : [],
+    crewAbsent: Array.isArray(rule.crewAbsent) ? rule.crewAbsent.slice() : [],
     wireless: Array.isArray(rule.wireless) ? rule.wireless.slice() : [],
     motors: Array.isArray(rule.motors) ? rule.motors.slice() : [],
     controllers: Array.isArray(rule.controllers) ? rule.controllers.slice() : [],
@@ -9093,6 +9111,8 @@ function createAutoGearDraft(rule) {
       videoDistribution: Array.isArray(rule.videoDistribution) ? rule.videoDistribution.slice() : [],
       camera: Array.isArray(rule.camera) ? rule.camera.slice() : [],
       monitor: Array.isArray(rule.monitor) ? rule.monitor.slice() : [],
+      crewPresent: Array.isArray(rule.crewPresent) ? rule.crewPresent.slice() : [],
+      crewAbsent: Array.isArray(rule.crewAbsent) ? rule.crewAbsent.slice() : [],
       wireless: Array.isArray(rule.wireless) ? rule.wireless.slice() : [],
       motors: Array.isArray(rule.motors) ? rule.motors.slice() : [],
       controllers: Array.isArray(rule.controllers) ? rule.controllers.slice() : [],
@@ -9115,6 +9135,8 @@ function createAutoGearDraft(rule) {
     videoDistribution: [],
     camera: [],
     monitor: [],
+    crewPresent: [],
+    crewAbsent: [],
     wireless: [],
     motors: [],
     controllers: [],
