@@ -547,7 +547,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
       }
     },
     "iosVideo": {
-      "Teradek Serv": {
+    "Teradek - Serv 4K v2": {
         "powerDrawWatts": 9,
         "videoInputs": [{
           "type": "HDMI"
@@ -565,9 +565,9 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
             "type": "D-Tap"
           }]
         },
-        "notes": "Streams to iOS devices for on-set monitoring"
-      },
-      "Teradek Serv + Link": {
+      "notes": "Streams to iOS devices for on-set monitoring"
+    },
+    "Teradek - Link AX WifiRouter/Access Point": {
         "powerDrawWatts": 9,
         "videoInputs": [{
           "type": "HDMI"
@@ -585,8 +585,8 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
             "type": "D-Tap"
           }]
         },
-        "notes": "Streams to iOS devices for on-set monitoring; includes Link access point"
-      }
+      "notes": "Streams to iOS devices for on-set monitoring; includes Link AX Wi-Fi router/access point"
+    }
     },
     "accessories": {
       "powerPlates": {

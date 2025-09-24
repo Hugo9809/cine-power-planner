@@ -1930,7 +1930,7 @@ function buildDefaultVideoDistributionAutoGearRules() {
         });
       }
       if (!additions.length) {
-        var fallback = createItem('Teradek Serv + Link', 'Monitoring');
+        var fallback = createItem('Teradek - Link AX WifiRouter/Access Point', 'Monitoring');
         if (fallback) additions.push(fallback);
       }
       var pushSupport = function pushSupport(name, category) {
