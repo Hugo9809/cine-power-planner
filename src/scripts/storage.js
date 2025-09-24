@@ -4721,7 +4721,7 @@ function importAllData(allData, options = {}) {
   if (Object.prototype.hasOwnProperty.call(allData, 'autoGearSeeded')) {
     const flag = normalizeImportedBoolean(allData.autoGearSeeded);
     if (flag === null) {
-      saveAutoGearSeedFlag(Boolean(allData.autoGearSeeded));
+      saveAutoGearSeedFlag(false);
     } else {
       saveAutoGearSeedFlag(flag);
     }
@@ -4742,7 +4742,7 @@ function importAllData(allData, options = {}) {
   if (Object.prototype.hasOwnProperty.call(allData, 'autoGearShowBackups')) {
     const visibility = normalizeImportedBoolean(allData.autoGearShowBackups);
     if (visibility === null) {
-      saveAutoGearBackupVisibility(Boolean(allData.autoGearShowBackups));
+      saveAutoGearBackupVisibility(false);
     } else {
       saveAutoGearBackupVisibility(visibility);
     }
