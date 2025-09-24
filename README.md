@@ -142,12 +142,24 @@ localization steps.
 
 ## What’s New
 
+- **Backup version comparisons** – pick any manual save or timestamped
+  auto-backup to review diffs, add incident notes and export a log before you
+  roll a change back or hand footage to post.
+- **Restore rehearsals** – load a full-app backup or project bundle into an
+  isolated sandbox to confirm its contents match live data without touching
+  production profiles.
 - **Automatic gear rules** – design scenario-triggered additions or removals
   that apply after the generator runs, complete with import/export controls
   and timed backups.
 - **Data & storage dashboard** – audit stored projects, gear lists, custom
   devices, favorites and runtime feedback, and review approximate backup size
   without leaving the Settings dialog.
+- **Autosave status overlay** – mirror the latest autosave note inside the
+  settings dialog so crews see background activity while rehearsing recovery
+  drills.
+- **Monitoring-aware gear editor** – surface additional monitor and video
+  distribution selectors only when scenarios demand them, keeping rule
+  authoring focused.
 - **Accent and typography controls** – adjust accent color, font size and
   typeface while dark, pink and high-contrast themes persist between visits.
 - **Global search shortcuts** – press `/` or `Ctrl+K` (`⌘K` on macOS) to focus
@@ -158,16 +170,6 @@ localization steps.
   and accessories at the top of selectors and inside backups.
 - **Factory reset safeguards** – capture an automatic backup before wiping
   saved projects, custom devices and settings.
-- **Custom print branding** – upload a logo that appears in printable overviews
-  and exported bundles.
-- **Backups that include favorites** – downloads include favorites alongside
-  projects, gear lists and custom devices.
-- **Interactive project diagram** – drag nodes, zoom, snap to grid and export
-  clean SVG or JPG layouts with compatibility indicators.
-- **Simplified sharing** – export a single project bundle that restores device
-  selections, gear lists, runtime feedback and custom gear in one upload.
-- **Refined interface** – refreshed layout, improved contrast and persistent
-  diagram popovers on touch make the planner easier to use anywhere.
 
 See the language-specific README files for release details in other locales.
 
