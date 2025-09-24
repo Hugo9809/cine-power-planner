@@ -8992,6 +8992,13 @@ function syncDeviceManagerCategories() {
   });
   updateDeviceManagerLocalization(currentLang);
 }
+function normalizeProjectStorageKeyForComparison(name) {
+  if (typeof name !== 'string') {
+    return '';
+  }
+  return name.replace(/\s+/g, ' ').trim().toLowerCase();
+}
+
 function getCurrentProjectName() {
   const typedName =
     (setupNameInput && typeof setupNameInput.value === 'string'
@@ -9004,17 +9011,37 @@ function getCurrentProjectName() {
 }
 
 function getCurrentProjectStorageKey(options = {}) {
-  const typedName =
+  const rawTypedName =
     setupNameInput && typeof setupNameInput.value === 'string'
-      ? setupNameInput.value.trim()
+      ? setupNameInput.value
       : '';
-  const selectedName =
+  const rawSelectedName =
     setupSelect && typeof setupSelect.value === 'string'
-      ? setupSelect.value.trim()
+      ? setupSelect.value
       : '';
 
+  const typedName = rawTypedName.trim();
+  const selectedName = rawSelectedName.trim();
+  const normalizedTyped = normalizeProjectStorageKeyForComparison(rawTypedName);
+  const normalizedSelected = normalizeProjectStorageKeyForComparison(rawSelectedName);
+
+  const selectOptions = Array.from((setupSelect && setupSelect.options) || []);
+  const typedMatchesExistingOption = Boolean(
+    normalizedTyped
+      && selectOptions.some(option => normalizeProjectStorageKeyForComparison(option && option.value) === normalizedTyped)
+  );
+
   if (options.allowTyped && typedName) {
-    return typedName;
+    if (selectedName) {
+      if (normalizedTyped === normalizedSelected) {
+        return selectedName;
+      }
+      if (!typedMatchesExistingOption) {
+        return typedName;
+      }
+    } else if (!typedMatchesExistingOption) {
+      return typedName;
+    }
   }
 
   if (selectedName) {
@@ -9023,15 +9050,6 @@ function getCurrentProjectStorageKey(options = {}) {
 
   if (!setupSelect) {
     return '';
-  }
-
-  if (
-    typedName &&
-    Array.from((setupSelect && setupSelect.options) || []).some(
-      option => option && option.value === typedName
-    )
-  ) {
-    return typedName;
   }
 
   return '';
@@ -17635,11 +17653,34 @@ function deriveProjectInfo(info) {
     }
     return null;
   }
-  if (
-    defaultProjectInfoSnapshot &&
-    projectInfoEquals(sanitized, defaultProjectInfoSnapshot)
-  ) {
+  const infoKeysExcludingName = Object.keys(sanitized).filter(key => key !== 'projectName');
+  if (!infoKeysExcludingName.length) {
     return null;
+  }
+  const stripProjectName = (value) => {
+    if (!value || typeof value !== 'object') {
+      return value;
+    }
+    if (Array.isArray(value)) {
+      return value.map(stripProjectName);
+    }
+    const entries = Object.entries(value)
+      .filter(([key]) => key !== 'projectName')
+      .map(([key, val]) => [key, stripProjectName(val)]);
+    if (!entries.length) {
+      return {};
+    }
+    return entries.reduce((acc, [key, val]) => {
+      acc[key] = val;
+      return acc;
+    }, {});
+  };
+  if (defaultProjectInfoSnapshot) {
+    const sanitizedWithoutName = stripProjectName(sanitized);
+    const defaultWithoutName = stripProjectName(defaultProjectInfoSnapshot);
+    if (projectInfoEquals(sanitizedWithoutName, defaultWithoutName)) {
+      return null;
+    }
   }
   return sanitized;
 }

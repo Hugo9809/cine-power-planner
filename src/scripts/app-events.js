@@ -119,6 +119,39 @@ saveSetupBtn.addEventListener("click", () => {
   alert(texts[currentLang].alertSetupSaved.replace("{name}", finalName));
 });
 
+function projectPayloadHasContent(payload) {
+  if (!payload || typeof payload !== 'object') {
+    return false;
+  }
+  const hasGearList = typeof payload.gearList === 'string'
+    ? payload.gearList.trim().length > 0
+    : Boolean(payload.gearList);
+  const info = payload.projectInfo;
+  const infoKeys = info && typeof info === 'object'
+    ? Object.keys(info).filter(key => key !== 'projectName')
+    : [];
+  const hasInfo = infoKeys.length > 0;
+  const rules = payload.autoGearRules;
+  const hasRules = Array.isArray(rules) && rules.length > 0;
+  return hasGearList || hasInfo || hasRules;
+}
+
+function loadProjectHasContent(name) {
+  if (typeof name !== 'string' || !name) {
+    return false;
+  }
+  if (typeof loadProject !== 'function') {
+    return false;
+  }
+  try {
+    const stored = loadProject(name);
+    return projectPayloadHasContent(stored || {});
+  } catch (error) {
+    console.warn('Failed to inspect stored project payload', error);
+    return false;
+  }
+}
+
 deleteSetupBtn.addEventListener("click", () => {
   const setupName = setupSelect.value;
   if (!setupName) {
@@ -248,6 +281,9 @@ setupSelect.addEventListener("change", (event) => {
       info.easyrig = getEasyrigValue();
     }
     const previousProjectInfo = deriveProjectInfo(info);
+    if (previousProjectInfo && typeof previousProjectInfo === 'object' && previousKey) {
+      previousProjectInfo.projectName = previousKey;
+    }
     currentProjectInfo = previousProjectInfo;
     const previousPayload = {
       projectInfo: previousProjectInfo,
@@ -257,7 +293,22 @@ setupSelect.addEventListener("change", (event) => {
     if (previousRules && previousRules.length) {
       previousPayload.autoGearRules = previousRules;
     }
-    saveProject(previousKey, previousPayload);
+    if (
+      previousKey
+      && (
+        projectPayloadHasContent(previousPayload)
+        || loadProjectHasContent(previousKey)
+      )
+    ) {
+      const payloadForSave = {
+        projectInfo: previousPayload.projectInfo || null,
+        gearList: typeof previousPayload.gearList === 'string' ? previousPayload.gearList : ''
+      };
+      if (previousPayload.autoGearRules && previousPayload.autoGearRules.length) {
+        payloadForSave.autoGearRules = previousPayload.autoGearRules;
+      }
+      saveProject(previousKey, payloadForSave);
+    }
   }
 
   displayGearAndRequirements('');
@@ -321,7 +372,10 @@ setupSelect.addEventListener("change", (event) => {
       if (html && typeof globalThis !== 'undefined') {
         globalThis.__cineLastGearListHtml = html;
       }
-      currentProjectInfo = setup.projectInfo || storedProject?.projectInfo || null;
+      const baseProjectInfo = setup.projectInfo || storedProject?.projectInfo || null;
+      currentProjectInfo = baseProjectInfo && typeof baseProjectInfo === 'object'
+        ? { ...baseProjectInfo, projectName: setupName }
+        : baseProjectInfo;
       const projectRulesSource = Array.isArray(setup.autoGearRules) && setup.autoGearRules.length
         ? setup.autoGearRules
         : (Array.isArray(storedProject?.autoGearRules) && storedProject.autoGearRules.length
@@ -332,6 +386,7 @@ setupSelect.addEventListener("change", (event) => {
       } else {
         clearProjectAutoGearRules();
       }
+      const storedProjectHasContent = projectPayloadHasContent(storedProject || {});
       if (gearListOutput) {
         displayGearAndRequirements(html);
         populateProjectForm(currentProjectInfo || {});
@@ -347,13 +402,24 @@ setupSelect.addEventListener("change", (event) => {
         if (typeof saveProject === 'function') {
           const payload = {
             projectInfo: currentProjectInfo,
-            gearList: html
+            gearList: typeof html === 'string' ? html : ''
           };
           const activeRules = getProjectScopedAutoGearRules();
           if (activeRules && activeRules.length) {
             payload.autoGearRules = activeRules;
           }
-          saveProject(setupName, payload);
+          if (
+            setupName
+            && (projectPayloadHasContent(payload) || storedProjectHasContent)
+          ) {
+            if (!payload.projectInfo) {
+              payload.projectInfo = null;
+            }
+            if (!payload.gearList) {
+              payload.gearList = '';
+            }
+            saveProject(setupName, payload);
+          }
         }
       }
     } else {

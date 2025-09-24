@@ -1169,9 +1169,9 @@ function collectProjectFormData() {
         info.proGaffWidth2 = proGaffWidth2 || '';
     }
 
-    const currentProjectName = getCurrentProjectName();
-    if (currentProjectName) {
-        info.projectName = currentProjectName;
+    const projectNameForInfo = getCurrentProjectStorageKey({ allowTyped: true });
+    if (projectNameForInfo) {
+        info.projectName = projectNameForInfo;
     }
 
     return info;
@@ -3427,12 +3427,41 @@ function saveCurrentGearList() {
     const projectStorageKey = getCurrentProjectStorageKey({ allowTyped: true });
     const storageKey = getCurrentProjectStorageKey();
     const projectRules = getProjectScopedAutoGearRules();
-    if (typeof saveProject === 'function' && typeof projectStorageKey === 'string') {
+    const infoHasContent = (value) =>
+        value && typeof value === 'object'
+            ? Object.keys(value).some(key => key !== 'projectName')
+            : false;
+    const hasInfo = infoHasContent(currentProjectInfo);
+    const hasHtml = typeof html === 'string' ? html.trim().length > 0 : Boolean(html);
+    const hasRules = Array.isArray(projectRules) && projectRules.length > 0;
+    let shouldPersistProject = hasInfo || hasHtml || hasRules;
+    if (!shouldPersistProject) {
+        shouldPersistProject = Boolean(projectStorageKey);
+    }
+    if (!shouldPersistProject && projectStorageKey && typeof loadProject === 'function') {
+        const existingProject = loadProject(projectStorageKey);
+        if (existingProject && typeof existingProject === 'object') {
+            const existingHtml = typeof existingProject.gearList === 'string'
+                ? existingProject.gearList.trim()
+                : '';
+            const existingInfo = infoHasContent(existingProject.projectInfo);
+            const existingRules = Array.isArray(existingProject.autoGearRules)
+                ? existingProject.autoGearRules.length > 0
+                : false;
+            if (existingHtml || existingInfo || existingRules) {
+                shouldPersistProject = true;
+            }
+        }
+    }
+    if (typeof saveProject === 'function' && projectStorageKey && shouldPersistProject) {
         const payload = {
-            projectInfo: currentProjectInfo,
-            gearList: html
+            projectInfo: hasInfo ? currentProjectInfo : null,
+            gearList: hasHtml ? html : ''
         };
-        if (projectRules && projectRules.length) {
+        if (payload.projectInfo) {
+            payload.projectInfo = { ...payload.projectInfo, projectName: projectStorageKey };
+        }
+        if (hasRules) {
             payload.autoGearRules = projectRules;
         }
         saveProject(projectStorageKey, payload);
