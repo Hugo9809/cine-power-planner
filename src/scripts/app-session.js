@@ -5472,6 +5472,16 @@ if (helpButton && helpDialog) {
   const appTargetHighlightTimers = new Map();
   const featureSearchHighlightTimers = new Map();
 
+  const ensureHelpLinksUseButtonStyle = () => {
+    if (!helpContent) return;
+    const helpLinks = helpContent.querySelectorAll('a.help-link');
+    helpLinks.forEach(link => {
+      link.classList.add('button-link');
+    });
+  };
+
+  ensureHelpLinksUseButtonStyle();
+
   const highlightAppTarget = element => {
     if (!element) return;
     const target = element;
