@@ -3430,8 +3430,15 @@ function saveCurrentGearList() {
     info.sliderBowl = getSliderBowlValue();
     info.easyrig = getEasyrigValue();
     currentProjectInfo = deriveProjectInfo(info);
-    const projectStorageKey = getCurrentProjectStorageKey({ allowTyped: true });
-    const storageKey = getCurrentProjectStorageKey();
+    const selectedStorageKey =
+        setupSelect && typeof setupSelect.value === 'string'
+            ? setupSelect.value.trim()
+            : '';
+    const typedStorageKey =
+        setupNameInput && typeof setupNameInput.value === 'string'
+            ? setupNameInput.value.trim()
+            : '';
+    const projectStorageKey = selectedStorageKey || typedStorageKey;
     const projectRules = getProjectScopedAutoGearRules();
     let diagramPositions = null;
     if (typeof getDiagramManualPositions === 'function') {
@@ -3440,7 +3447,7 @@ function saveCurrentGearList() {
             diagramPositions = positions;
         }
     }
-    if (typeof saveProject === 'function' && typeof projectStorageKey === 'string') {
+    if (typeof saveProject === 'function' && typeof projectStorageKey === 'string' && projectStorageKey) {
         const payload = {
             projectInfo: currentProjectInfo,
             gearList: html
@@ -3454,10 +3461,10 @@ function saveCurrentGearList() {
         saveProject(projectStorageKey, payload);
     }
 
-    if (!storageKey) return;
+    if (!selectedStorageKey) return;
 
     const setups = getSetups();
-    const existing = setups[storageKey];
+    const existing = setups[selectedStorageKey];
     if (!existing && !html && !currentProjectInfo && !(projectRules && projectRules.length) && !diagramPositions) {
         return;
     }
@@ -3510,10 +3517,10 @@ function saveCurrentGearList() {
     }
 
     if (!existing) {
-        setups[storageKey] = setup;
+        setups[selectedStorageKey] = setup;
         storeSetups(setups);
     } else if (changed) {
-        setups[storageKey] = setup;
+        setups[selectedStorageKey] = setup;
         storeSetups(setups);
     }
 }

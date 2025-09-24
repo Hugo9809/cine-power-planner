@@ -76,6 +76,11 @@ describe('shared project gear list handling', () => {
     setupNameInput.value = 'Existing Project';
     setupNameInput.dispatchEvent(new Event('input'));
 
+    setupSelect.value = '';
+    setupSelect.dispatchEvent(new Event('change'));
+    setupNameInput.value = '';
+    setupNameInput.dispatchEvent(new Event('input'));
+
     globals.saveProject.mockClear();
 
     const sharedData = {
