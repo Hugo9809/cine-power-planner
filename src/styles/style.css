@@ -4304,7 +4304,7 @@ body.light-mode #topBar select:focus-visible {
 
 .diagram-popup {
   display: none;
-  position: absolute;
+  position: fixed;
   pointer-events: none;
   background: var(--surface-color);
   color: var(--text-color);
@@ -4316,6 +4316,7 @@ body.light-mode #topBar select:focus-visible {
   box-shadow: var(--panel-shadow);
   z-index: 10;
   max-width: 320px;
+  max-height: min(70vh, 480px);
   overflow: auto;
 }
 

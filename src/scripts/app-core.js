@@ -23194,20 +23194,40 @@ function attachDiagramPopups(map) {
       popup.innerHTML = html;
       popup.style.display = 'block';
 
-      const rect = setupDiagramContainer.getBoundingClientRect();
-      const relX = pointer.clientX - rect.left;
-      const relY = pointer.clientY - rect.top;
-      const offset = 10;
-      const popupWidth = popup.offsetWidth;
+      const offset = 12;
+      const viewportWidth = window.visualViewport?.width
+        || window.innerWidth
+        || document.documentElement?.clientWidth
+        || 0;
+      const viewportHeight = window.visualViewport?.height
+        || window.innerHeight
+        || document.documentElement?.clientHeight
+        || 0;
+      const popupWidth = popup.offsetWidth || 0;
+      const popupHeight = popup.offsetHeight || 0;
 
-      // Open the popup to the left if it would otherwise overflow the container
-      let left = relX + offset;
-      if (relX + popupWidth + offset > rect.width) {
-        left = Math.max(0, relX - popupWidth - offset);
+      const pointerX = pointer.clientX;
+      const pointerY = pointer.clientY;
+
+      let left = pointerX + offset;
+      if (viewportWidth > 0 && popupWidth > 0 && left + popupWidth + offset > viewportWidth) {
+        left = Math.max(offset, pointerX - popupWidth - offset);
       }
 
-      popup.style.left = `${left}px`;
-      popup.style.top = `${relY + offset}px`;
+      let top = pointerY + offset;
+      if (viewportHeight > 0 && popupHeight > 0 && top + popupHeight + offset > viewportHeight) {
+        top = Math.max(offset, pointerY - popupHeight - offset);
+      }
+
+      const maxLeft = viewportWidth > 0 && popupWidth > 0
+        ? Math.max(offset, viewportWidth - popupWidth - offset)
+        : left;
+      const maxTop = viewportHeight > 0 && popupHeight > 0
+        ? Math.max(offset, viewportHeight - popupHeight - offset)
+        : top;
+
+      popup.style.left = `${Math.max(offset, Math.min(left, maxLeft))}px`;
+      popup.style.top = `${Math.max(offset, Math.min(top, maxTop))}px`;
     };
     const hide = () => { popup.style.display = 'none'; };
     if (isTouchDevice) {
