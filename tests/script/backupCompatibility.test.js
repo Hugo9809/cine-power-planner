@@ -1,4 +1,17 @@
 const { loadApp } = require('./helpers/loadApp');
+const { createDeviceSkeleton } = require('../helpers/scriptEnvironment');
+
+function loadMinimalApp() {
+  return loadApp({
+    devices: createDeviceSkeleton(),
+    globals: {
+      exportAllData: jest.fn(() => ({ exported: true, autoGearRules: [] })),
+      importAllData: jest.fn(),
+      clearAllData: jest.fn(),
+      showNotification: jest.fn()
+    }
+  });
+}
 
 describe('backup compatibility utilities', () => {
   beforeEach(() => {
@@ -9,7 +22,7 @@ describe('backup compatibility utilities', () => {
   });
 
   test('extractBackupSections preserves object values as JSON strings', () => {
-    const { extractBackupSections } = loadApp();
+    const { extractBackupSections } = loadMinimalApp();
 
     const legacyBackup = {
       settings: {
@@ -27,7 +40,7 @@ describe('backup compatibility utilities', () => {
   });
 
   test('sanitizeBackupPayload removes UTF-8 BOM characters', () => {
-    const { sanitizeBackupPayload } = loadApp();
+    const { sanitizeBackupPayload } = loadMinimalApp();
 
     const bomPayload = '\ufeff{"version":"1.0.0"}';
     const sanitized = sanitizeBackupPayload(bomPayload);
@@ -36,7 +49,7 @@ describe('backup compatibility utilities', () => {
   });
 
   test('extractBackupSections parses stringified storage snapshots', () => {
-    const { extractBackupSections } = loadApp();
+    const { extractBackupSections } = loadMinimalApp();
 
     const legacySnapshot = JSON.stringify([
       ['darkMode', true],
@@ -63,7 +76,7 @@ describe('backup compatibility utilities', () => {
   });
 
   test('extractBackupSections preserves legacy top-level backup data keys', () => {
-    const { extractBackupSections } = loadApp();
+    const { extractBackupSections } = loadMinimalApp();
 
     const legacyBackup = {
       fullBackupHistory: [{ createdAt: '2024-01-01T00:00:00.000Z', fileName: 'snapshot.json' }],
@@ -81,7 +94,7 @@ describe('backup compatibility utilities', () => {
   });
 
   test('extractBackupSections keeps cinePowerPlanner_* storage entries from the root object', () => {
-    const { extractBackupSections } = loadApp();
+    const { extractBackupSections } = loadMinimalApp();
 
     const legacyBackup = {
       cinePowerPlanner_setups: {

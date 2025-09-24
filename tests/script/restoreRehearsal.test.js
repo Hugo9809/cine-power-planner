@@ -1,4 +1,18 @@
 const { loadApp } = require('./helpers/loadApp');
+const { createDeviceSkeleton } = require('../helpers/scriptEnvironment');
+
+function loadMinimalApp(overrides = {}) {
+  return loadApp({
+    devices: createDeviceSkeleton(),
+    globals: {
+      exportAllData: jest.fn(() => ({ exported: true, autoGearRules: [] })),
+      importAllData: jest.fn(),
+      clearAllData: jest.fn(),
+      showNotification: jest.fn(),
+      ...overrides.globals
+    }
+  });
+}
 
 jest.setTimeout(15000);
 
@@ -13,7 +27,7 @@ describe('restore rehearsal safeguards', () => {
   });
 
   test('warns when a project bundle is opened in backup mode', async () => {
-    loadApp();
+    loadMinimalApp();
 
     const status = document.getElementById('restoreRehearsalStatus');
     const table = document.getElementById('restoreRehearsalTable');
@@ -54,7 +68,7 @@ describe('restore rehearsal safeguards', () => {
   });
 
   test('warns when a full backup is opened while project mode is active', async () => {
-    loadApp();
+    loadMinimalApp();
 
     const backupMode = document.getElementById('restoreRehearsalModeBackup');
     const projectMode = document.getElementById('restoreRehearsalModeProject');
@@ -104,7 +118,7 @@ describe('restore rehearsal safeguards', () => {
   });
 
   test('processes a project bundle with a UTF-8 BOM prefix', async () => {
-    loadApp();
+    loadMinimalApp();
 
     const backupMode = document.getElementById('restoreRehearsalModeBackup');
     const projectMode = document.getElementById('restoreRehearsalModeProject');

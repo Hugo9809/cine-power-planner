@@ -3,6 +3,7 @@ const path = require('path');
 
 let cachedBodyHtml = null;
 let cachedDevicesJson = null;
+let cachedTranslations = null;
 
 function getBodyHtml() {
   if (cachedBodyHtml === null) {
@@ -20,16 +21,31 @@ function getBodyHtml() {
   return cachedBodyHtml;
 }
 
-function cloneDevices(data) {
+function cloneJson(data) {
   if (typeof global.structuredClone === 'function') {
-    return global.structuredClone(data);
+    try {
+      return global.structuredClone(data);
+    } catch {
+      // fall back to JSON cloning below
+    }
   }
 
+  return JSON.parse(JSON.stringify(data));
+}
+
+function cloneDevices(data) {
   if (cachedDevicesJson === null) {
     cachedDevicesJson = JSON.stringify(data);
   }
 
   return JSON.parse(cachedDevicesJson);
+}
+
+function getTranslations() {
+  if (!cachedTranslations) {
+    cachedTranslations = require('../../../src/scripts/translations.js');
+  }
+  return cachedTranslations;
 }
 
 function ensureTestDom() {
@@ -48,14 +64,18 @@ function ensureTestDom() {
   }
 }
 
-function loadApp() {
+function loadApp(options = {}) {
   jest.resetModules();
   ensureTestDom();
 
-  document.body.innerHTML = getBodyHtml();
+  document.body.innerHTML = options.bodyHtml || getBodyHtml();
 
-  const { texts, categoryNames, gearItems } = require('../../../src/scripts/translations.js');
-  const devicesData = require('../../../src/data');
+  const translations = options.translations || getTranslations();
+  const devicesData = options.devices || require('../../../src/data');
+
+  const texts = translations.texts || {};
+  const categoryNames = translations.categoryNames || {};
+  const gearItems = translations.gearItems || {};
 
   window.texts = texts;
   global.texts = texts;
@@ -63,27 +83,38 @@ function loadApp() {
   global.categoryNames = categoryNames;
   window.gearItems = gearItems;
   global.gearItems = gearItems;
-  window.devices = cloneDevices(devicesData);
+
+  const devicesClone = options.devices ? cloneJson(devicesData) : cloneDevices(devicesData);
+  window.devices = devicesClone;
   global.devices = window.devices;
 
-  global.loadDeviceData = jest.fn(() => null);
-  global.saveDeviceData = jest.fn();
-  global.loadSetups = jest.fn(() => ({}));
-  global.saveSetups = jest.fn();
-  global.loadSessionState = jest.fn(() => null);
-  global.saveSessionState = jest.fn();
-  global.loadProject = jest.fn(() => ({}));
-  global.saveProject = jest.fn();
-  global.deleteProject = jest.fn();
-  global.loadFavorites = jest.fn(() => ({}));
-  global.saveFavorites = jest.fn();
-  global.exportAllData = jest.fn(() => ({ exported: true }));
-  global.importAllData = jest.fn();
-  global.clearAllData = jest.fn();
-  global.showNotification = jest.fn();
+  const baseGlobals = {
+    loadDeviceData: jest.fn(() => null),
+    saveDeviceData: jest.fn(),
+    loadSetups: jest.fn(() => ({})),
+    saveSetups: jest.fn(),
+    loadSessionState: jest.fn(() => null),
+    saveSessionState: jest.fn(),
+    loadProject: jest.fn(() => ({})),
+    saveProject: jest.fn(),
+    deleteProject: jest.fn(),
+    loadFavorites: jest.fn(() => ({})),
+    saveFavorites: jest.fn(),
+    exportAllData: jest.fn(() => ({ exported: true })),
+    importAllData: jest.fn(),
+    clearAllData: jest.fn(),
+    showNotification: jest.fn()
+  };
+
+  const appliedGlobals = { ...baseGlobals, ...(options.globals || {}) };
+  for (const [key, value] of Object.entries(appliedGlobals)) {
+    global[key] = value;
+  }
 
   const { loadRuntime } = require('../../helpers/runtimeLoader');
-  return loadRuntime();
+  const runtime = loadRuntime();
+
+  return runtime;
 }
 
 module.exports = {

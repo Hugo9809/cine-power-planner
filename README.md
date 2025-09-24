@@ -750,8 +750,14 @@ Run targeted suites while iterating:
 npm run test:unit   # module-level logic and storage helpers (1 GB heap cap)
 npm run test:data   # static dataset validations (1 GB heap cap)
 npm run test:dom    # lightweight DOM utilities (1.5 GB heap cap)
-npm run test:script # reduced smoke checks for script.js (3 GB heap cap)
+npm run test:script # smoke checks for backup/share/import flows (3 GB heap cap)
 ```
+
+> **Resource note:** To keep the Jest suite friendly on machines with limited
+> memory, the script project now focuses on critical offline flows (backups,
+> restore, data import, share/export and integrity guards). Visual theme and
+> cosmetic regression tests were removed so the essential safety nets can still
+> run comfortably alongside the data validators.
 
 ### Legacy browser bundle
 
