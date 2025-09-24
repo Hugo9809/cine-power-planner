@@ -351,14 +351,48 @@ function autoBackup() {
   var suppressError = Boolean(config.suppressError);
   var successMessage = typeof config.successMessage === 'string' && config.successMessage ? config.successMessage : 'Auto backup saved';
   var errorMessage = typeof config.errorMessage === 'string' && config.errorMessage ? config.errorMessage : 'Auto backup failed';
+  var normalizeProjectName = function normalizeProjectName(value) {
+    return typeof value === 'string' ? value.replace(/\s+/g, ' ').trim() : '';
+  };
+  var hasProjectNameOverride = Object.prototype.hasOwnProperty.call(config, 'projectNameOverride');
+  var overrideName = hasProjectNameOverride ? normalizeProjectName(config.projectNameOverride) : null;
+  var selectedName = setupSelect && typeof setupSelect.value === 'string' ? setupSelect.value : '';
+  var typedName = setupNameInput && typeof setupNameInput.value === 'string' ? setupNameInput.value : '';
+  var normalizedSelectedName = normalizeProjectName(selectedName);
+  var normalizedTypedName = normalizeProjectName(typedName);
+  var isAutoBackupName = function isAutoBackupName(name) {
+    return typeof name === 'string' && name.indexOf('auto-backup-') === 0;
+  };
+  var nameForBackup = '';
+  if (overrideName !== null && overrideName !== undefined) {
+    if (overrideName && isAutoBackupName(overrideName)) {
+      return {
+        status: 'skipped',
+        reason: 'auto-backup-selected'
+      };
+    }
+    nameForBackup = overrideName;
+  } else if (normalizedSelectedName && isAutoBackupName(normalizedSelectedName)) {
+    if (normalizedTypedName && !isAutoBackupName(normalizedTypedName) && normalizedTypedName !== normalizedSelectedName) {
+      nameForBackup = normalizedTypedName;
+    } else {
+      return {
+        status: 'skipped',
+        reason: 'auto-backup-selected'
+      };
+    }
+  } else if (normalizedSelectedName) {
+    nameForBackup = normalizedSelectedName;
+  } else if (normalizedTypedName) {
+    nameForBackup = normalizedTypedName;
+  }
   try {
     var pad = function pad(n) {
       return String(n).padStart(2, '0');
     };
     var now = new Date();
     var baseName = "auto-backup-".concat(now.getFullYear(), "-").concat(pad(now.getMonth() + 1), "-").concat(pad(now.getDate()), "-").concat(pad(now.getHours()), "-").concat(pad(now.getMinutes()));
-    var activeNameRaw = setupSelect.value || (setupNameInput && typeof setupNameInput.value === 'string' ? setupNameInput.value.trim() : '');
-    var normalizedName = activeNameRaw ? activeNameRaw.replace(/\s+/g, ' ').trim() : '';
+    var normalizedName = nameForBackup || '';
     var backupName = normalizedName ? "".concat(baseName, "-").concat(normalizedName) : baseName;
     var currentSetup = _objectSpread({}, getCurrentSetupState());
     var gearListHtml = getCurrentGearListHtml();
@@ -409,13 +443,24 @@ function ensureAutoBackupBeforeDeletion(context) {
     suppressSuccess: true,
     suppressError: true
   }, config.autoBackupOptions || {});
-  var backupName = null;
+  var backupResult = null;
   if (typeof autoBackup === 'function') {
     try {
-      backupName = autoBackup(autoBackupOptions);
+      backupResult = autoBackup(autoBackupOptions);
     } catch (error) {
       console.error("Automatic backup before ".concat(context || 'deletion', " failed"), error);
-      backupName = null;
+      backupResult = null;
+    }
+  }
+  var backupName = null;
+  if (typeof backupResult === 'string') {
+    backupName = backupResult;
+  } else if (backupResult && _typeof(backupResult) === 'object') {
+    if (backupResult.status === 'skipped') {
+      return backupResult;
+    }
+    if (typeof backupResult.name === 'string' && backupResult.name) {
+      backupName = backupResult.name;
     }
   }
   if (!backupName) {

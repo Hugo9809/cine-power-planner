@@ -436,20 +436,43 @@ function autoBackup(options = {}) {
   const overrideName = hasProjectNameOverride
     ? normalizeProjectName(config.projectNameOverride)
     : null;
+  const selectedName = setupSelect && typeof setupSelect.value === 'string'
+    ? setupSelect.value
+    : '';
+  const typedName = setupNameInput && typeof setupNameInput.value === 'string'
+    ? setupNameInput.value
+    : '';
+  const normalizedSelectedName = normalizeProjectName(selectedName);
+  const normalizedTypedName = normalizeProjectName(typedName);
+  const isAutoBackupName = (name) => typeof name === 'string' && name.startsWith('auto-backup-');
+
+  let nameForBackup = '';
+  if (overrideName !== null && overrideName !== undefined) {
+    if (overrideName && isAutoBackupName(overrideName)) {
+      return { status: 'skipped', reason: 'auto-backup-selected' };
+    }
+    nameForBackup = overrideName;
+  } else if (normalizedSelectedName && isAutoBackupName(normalizedSelectedName)) {
+    if (
+      normalizedTypedName &&
+      !isAutoBackupName(normalizedTypedName) &&
+      normalizedTypedName !== normalizedSelectedName
+    ) {
+      nameForBackup = normalizedTypedName;
+    } else {
+      return { status: 'skipped', reason: 'auto-backup-selected' };
+    }
+  } else if (normalizedSelectedName) {
+    nameForBackup = normalizedSelectedName;
+  } else if (normalizedTypedName) {
+    nameForBackup = normalizedTypedName;
+  }
 
   try {
     const pad = (n) => String(n).padStart(2, '0');
     const now = new Date();
     const baseName = `auto-backup-${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}-${pad(now.getHours())}-${pad(now.getMinutes())}`;
-    const activeNameRaw = hasProjectNameOverride
-      ? overrideName
-      : (setupSelect.value
-        || (setupNameInput && typeof setupNameInput.value === 'string'
-          ? setupNameInput.value.trim()
-          : ''));
-    const normalizedName = activeNameRaw
-      ? activeNameRaw.replace(/\s+/g, ' ').trim()
-      : '';
+    const normalizedName = nameForBackup || '';
     const backupName = normalizedName ? `${baseName}-${normalizedName}` : baseName;
     const currentSetup = { ...getCurrentSetupState() };
     let gearListHtml = getCurrentGearListHtml();
@@ -535,13 +558,25 @@ function ensureAutoBackupBeforeDeletion(context, options = {}) {
     ...(config.autoBackupOptions || {}),
   };
 
-  let backupName = null;
+  let backupResult = null;
   if (typeof autoBackup === 'function') {
     try {
-      backupName = autoBackup(autoBackupOptions);
+      backupResult = autoBackup(autoBackupOptions);
     } catch (error) {
       console.error(`Automatic backup before ${context || 'deletion'} failed`, error);
-      backupName = null;
+      backupResult = null;
+    }
+  }
+
+  let backupName = null;
+  if (typeof backupResult === 'string') {
+    backupName = backupResult;
+  } else if (backupResult && typeof backupResult === 'object') {
+    if (backupResult.status === 'skipped') {
+      return backupResult;
+    }
+    if (typeof backupResult.name === 'string' && backupResult.name) {
+      backupName = backupResult.name;
     }
   }
 
