@@ -1071,29 +1071,19 @@ function collectProjectFormData() {
 
     const people = Array.from(crewContainer?.querySelectorAll('.person-row') || [])
         .map(row => {
-            const roleSelect = row.querySelector('select');
-            const rawRole = typeof roleSelect?.value === 'string'
-                ? roleSelect.value.trim()
-                : (roleSelect == null ? '' : String(roleSelect.value).trim());
-            const roleSelected = roleSelect?.dataset.userSelected === 'true' && rawRole.length > 0;
+            const roleValue = row.querySelector('select')?.value;
             const nameInput = row.querySelector('.person-name');
             const phoneInput = row.querySelector('.person-phone');
             const emailInput = row.querySelector('.person-email');
+            const role = typeof roleValue === 'string'
+                ? roleValue.trim()
+                : (roleValue == null ? '' : String(roleValue));
             const name = typeof nameInput?.value === 'string' ? nameInput.value.trim() : '';
             const phone = typeof phoneInput?.value === 'string' ? phoneInput.value.trim() : '';
             const email = typeof emailInput?.value === 'string' ? emailInput.value.trim() : '';
-            const person = {
-                name,
-                phone,
-                email
-            };
-            if (roleSelected) {
-                person.role = rawRole;
-            }
-            const hasAnyField = roleSelected || name || phone || email;
-            return hasAnyField ? person : null;
+            return { role, name, phone, email };
         })
-        .filter(Boolean);
+        .filter(person => person.role || person.name || person.phone || person.email);
 
     const collectRanges = (container, startSel, endSel) => Array.from(container?.querySelectorAll('.period-row') || [])
         .map(row => {

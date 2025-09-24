@@ -8680,15 +8680,7 @@ function createCrewRow(data = {}) {
     opt.textContent = roleLabels[r] || r;
     roleSel.appendChild(opt);
   });
-  let presetRole = false;
-  if (data.role) {
-    roleSel.value = data.role;
-    presetRole = roleSel.value === data.role;
-  }
-  roleSel.dataset.userSelected = presetRole ? 'true' : 'false';
-  roleSel.addEventListener('change', () => {
-    roleSel.dataset.userSelected = 'true';
-  });
+  if (data.role) roleSel.value = data.role;
   const nameInput = document.createElement('input');
   nameInput.type = 'text';
   nameInput.name = 'crewName';
