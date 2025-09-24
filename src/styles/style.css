@@ -4366,26 +4366,6 @@ body.light-mode #topBar select:focus-visible {
   color: var(--connector-label-neutral-color);
 }
 
-.power-conn .info-box-label,
-.info-box.power-conn strong:first-child {
-  color: var(--power-color);
-}
-
-.video-conn .info-box-label,
-.info-box.video-conn strong:first-child {
-  color: var(--video-color);
-}
-
-.fiz-conn .info-box-label,
-.info-box.fiz-conn strong:first-child {
-  color: var(--fiz-color);
-}
-
-.neutral-conn .info-box-label,
-.info-box.neutral-conn strong:first-child {
-  color: var(--connector-label-neutral-color);
-}
-
 .info-box-list .info-box-label {
   flex: 0 0 auto;
 }
