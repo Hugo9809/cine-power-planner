@@ -45,6 +45,20 @@ select:focus-visible {
   color: var(--status-error-text-color);
 }
 
+#overviewDialogContent .status-message--warning,
+#overviewDialogContent .status-message--danger,
+#overviewDialogContent.dark-mode .status-message--warning,
+#overviewDialogContent.dark-mode .status-message--danger {
+  color: #000 !important;
+}
+
+#overviewDialogContent .status-message--warning strong,
+#overviewDialogContent .status-message--danger strong,
+#overviewDialogContent.dark-mode .status-message--warning strong,
+#overviewDialogContent.dark-mode .status-message--danger strong {
+  color: inherit !important;
+}
+
 @page {
   size: A4;
   margin: 1cm;
