@@ -2822,7 +2822,12 @@ function generateGearListHtml(info = {}) {
         'proGaffWidth2'
     ]);
     const infoEntries = Object.entries(projectInfo)
-        .filter(([k, v]) => v && k !== 'projectName' && !excludedFields.has(k));
+        .filter(([k, v]) =>
+            v &&
+            k !== 'projectName' &&
+            !excludedFields.has(k) &&
+            !k.endsWith('Manual')
+        );
     const boxesHtml = infoEntries.length ? '<div class="requirements-grid">' +
         infoEntries.map(([k, v]) => {
             const value = formatRequirementValue(v);
