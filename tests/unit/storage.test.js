@@ -184,6 +184,43 @@ describe('device data storage', () => {
     expect(JSON.parse(localStorage.getItem(DEVICE_KEY))).toEqual(expected);
   });
 
+  test('loadDeviceData creates migration backup before rewriting normalized data', () => {
+    const legacy = { cameras: { Alexa: {} } };
+    localStorage.setItem(DEVICE_KEY, JSON.stringify(legacy));
+
+    expect(localStorage.getItem(migrationBackupKeyFor(DEVICE_KEY))).toBeNull();
+
+    const result = loadDeviceData();
+
+    expect(result).toMatchObject({ cameras: { Alexa: {} } });
+    const stored = JSON.parse(localStorage.getItem(DEVICE_KEY));
+    expect(stored).toEqual(result);
+
+    const backupRaw = localStorage.getItem(migrationBackupKeyFor(DEVICE_KEY));
+    expect(backupRaw).toBeTruthy();
+    const backup = JSON.parse(backupRaw);
+    expect(typeof backup.createdAt).toBe('string');
+    expect(backup.createdAt.length).toBeGreaterThan(0);
+    expect(backup.data).toEqual(legacy);
+  });
+
+  test('loadDeviceData preserves existing migration backup entries', () => {
+    const legacy = { cameras: { Alexa: {} } };
+    const existingBackup = { createdAt: '2024-01-01T00:00:00.000Z', data: { legacy: true } };
+    localStorage.setItem(DEVICE_KEY, JSON.stringify(legacy));
+    localStorage.setItem(
+      migrationBackupKeyFor(DEVICE_KEY),
+      JSON.stringify(existingBackup),
+    );
+
+    const result = loadDeviceData();
+
+    expect(result).toMatchObject({ cameras: { Alexa: {} } });
+    expect(localStorage.getItem(migrationBackupKeyFor(DEVICE_KEY))).toBe(
+      JSON.stringify(existingBackup),
+    );
+  });
+
   test('loadDeviceData migrates legacy key prefix to current storage', () => {
     const legacy = { cameras: {}, monitors: {} };
     localStorage.setItem('cinePowerPlanner_devices', JSON.stringify(legacy));
@@ -547,6 +584,51 @@ describe('session state storage', () => {
     expect(stored).toEqual(result);
     expect(stored.motor).toBeUndefined();
     expect(stored.controller).toBeUndefined();
+  });
+
+  test('loadSessionState creates migration backup before rewriting normalized data', () => {
+    const legacyState = {
+      setupName: ' Legacy ',
+      motor: 'FocusMotor',
+      controller: 'FocusWheel',
+    };
+    localStorage.setItem(SESSION_KEY, JSON.stringify(legacyState));
+
+    expect(localStorage.getItem(migrationBackupKeyFor(SESSION_KEY))).toBeNull();
+
+    const state = loadSessionState();
+
+    expect(state).toMatchObject({
+      setupName: 'Legacy',
+      motors: ['FocusMotor'],
+      controllers: ['FocusWheel'],
+    });
+    const stored = JSON.parse(localStorage.getItem(SESSION_KEY));
+    expect(stored).toEqual(state);
+
+    const backupRaw = localStorage.getItem(migrationBackupKeyFor(SESSION_KEY));
+    expect(backupRaw).toBeTruthy();
+    const backup = JSON.parse(backupRaw);
+    expect(typeof backup.createdAt).toBe('string');
+    expect(backup.createdAt.length).toBeGreaterThan(0);
+    expect(backup.data).toEqual(legacyState);
+  });
+
+  test('loadSessionState preserves existing migration backup entries', () => {
+    const legacyState = { setupName: ' Legacy ', motor: 'FocusMotor' };
+    const existingBackup = { createdAt: '2024-01-01T00:00:00.000Z', data: { keep: true } };
+    localStorage.setItem(SESSION_KEY, JSON.stringify(legacyState));
+    localStorage.setItem(
+      migrationBackupKeyFor(SESSION_KEY),
+      JSON.stringify(existingBackup),
+    );
+
+    const state = loadSessionState();
+
+    expect(state).toMatchObject({ setupName: 'Legacy', motors: ['FocusMotor'] });
+    expect(localStorage.getItem(migrationBackupKeyFor(SESSION_KEY))).toBe(
+      JSON.stringify(existingBackup),
+    );
   });
 });
 
