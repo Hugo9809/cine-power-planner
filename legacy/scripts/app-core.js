@@ -17331,7 +17331,7 @@ function adjustGearListSelectWidth(selectElem) {
   var borderLeft = parseFloat(styles.borderLeftWidth) || 0;
   var borderRight = parseFloat(styles.borderRightWidth) || 0;
   var fontSize = parseFloat(styles.fontSize) || 16;
-  var arrowReserve = Math.max(fontSize * 0.65, 12);
+  var arrowReserve = Math.max(fontSize * 0.5, 10);
   var minWidth = Math.max(fontSize * 4, 56);
   var widthPx = Math.max(Math.ceil(textWidth + paddingLeft + paddingRight + borderLeft + borderRight + arrowReserve), minWidth);
   selectElem.style.setProperty('--gear-select-width', "".concat(widthPx, "px"));

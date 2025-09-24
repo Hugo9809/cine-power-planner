@@ -850,7 +850,7 @@ function extractAutoGearContextNotes(name) {
   let match = baseName.match(contextPattern);
   while (match) {
     const candidate = match[2].trim();
-    if (/handheld\b/i.test(candidate) || /15-21\"?$/.test(candidate)) {
+    if (/handheld\b/i.test(candidate) || /15-21"?$/.test(candidate)) {
       contexts.unshift(candidate);
       baseName = match[1].trim();
     } else {
@@ -20375,9 +20375,10 @@ function getTimecodes() {
     const borderLeft = parseFloat(styles.borderLeftWidth) || 0;
     const borderRight = parseFloat(styles.borderRightWidth) || 0;
     const fontSize = parseFloat(styles.fontSize) || 16;
-    // Reserve a slightly smaller space for the native arrow to trim the extra
-    // padding on the right while keeping the disclosure indicator visible.
-    const arrowReserve = Math.max(fontSize * 0.65, 12);
+    // Reserve space for the native arrow that keeps the disclosure indicator
+    // visible without leaving an oversized gap between the option text and the
+    // edge of the control.
+    const arrowReserve = Math.max(fontSize * 0.5, 10);
     const minWidth = Math.max(fontSize * 4, 56);
     const widthPx = Math.max(
       Math.ceil(textWidth + paddingLeft + paddingRight + borderLeft + borderRight + arrowReserve),
