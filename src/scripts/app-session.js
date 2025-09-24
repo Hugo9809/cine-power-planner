@@ -7664,6 +7664,12 @@ function renderGearListFilterDetails(details) {
     } = detail;
     const row = document.createElement('div');
     row.className = 'filter-detail';
+    if (gearName) {
+      row.setAttribute('data-gear-name', gearName);
+    }
+    if (type) {
+      row.setAttribute('data-filter-type', type);
+    }
     const heading = document.createElement('div');
     heading.className = 'filter-detail-label gear-item';
     if (entryId) heading.setAttribute('data-filter-entry', entryId);
