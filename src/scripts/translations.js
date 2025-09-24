@@ -1687,6 +1687,29 @@ const texts = {
     autoGearFilterClear: "Azzera filtri",
     autoGearRuleNameLabel: "Nome regola",
     autoGearRuleNameHelp: "Etichetta facoltativa mostrata nell'elenco delle regole.",
+    autoGearConditionSelectLabel: "Aggiungi una condizione",
+    autoGearConditionSelectHelp:
+      "Mostra i selettori da usare come condizioni della regola.",
+    autoGearAddCondition: "Aggiungi condizione",
+    autoGearConditionPlaceholder: "Scegli una condizione",
+    autoGearConditionAddShortcut: "Aggiungi un'altra condizione",
+    autoGearConditionRemove: "Rimuovi questa condizione",
+    autoGearAlwaysLabel: "Includi sempre",
+    autoGearAlwaysHelp: "Applica questa regola a ogni lista attrezzatura.",
+    autoGearAlwaysMeta: "Sempre attiva",
+    autoGearScenarioModeLabel: "Corrispondenza scenari",
+    autoGearScenarioModeHelp:
+      "Scegli come interagiscono gli scenari selezionati prima che la regola si attivi.",
+    autoGearScenarioModeAll: "Richiedi tutti gli scenari selezionati",
+    autoGearScenarioModeAny: "Abbina uno qualsiasi degli scenari selezionati",
+    autoGearScenarioModeMultiplier: "Moltiplica quando combinati",
+    autoGearScenarioBaseLabel: "Scenario base",
+    autoGearScenarioBaseHelp:
+      "Gli elementi si aggiungono sempre quando questo scenario è attivo.",
+    autoGearScenarioBasePlaceholder: "Seleziona uno scenario base",
+    autoGearScenarioFactorLabel: "Fattore moltiplicatore",
+    autoGearScenarioFactorHelp:
+      "Ridimensiona le quantità degli elementi quando ogni scenario aggiuntivo è attivo.",
     autoGearScenariosLabel: "Scenari richiesti",
     autoGearScenariosHelp:
       "Seleziona tutti gli scenari che devono essere attivi perché la regola si applichi. Tieni premuto Ctrl (Cmd su Mac) per sceglierne più di uno.",
@@ -2746,6 +2769,29 @@ const texts = {
     autoGearFilterClear: "Borrar filtros",
     autoGearRuleNameLabel: "Nombre de la regla",
     autoGearRuleNameHelp: "Etiqueta opcional que aparece en la lista de reglas.",
+    autoGearConditionSelectLabel: "Añadir una condición",
+    autoGearConditionSelectHelp:
+      "Muestra los selectores que quieres usar como condiciones de la regla.",
+    autoGearAddCondition: "Añadir condición",
+    autoGearConditionPlaceholder: "Elige una condición",
+    autoGearConditionAddShortcut: "Añadir otra condición",
+    autoGearConditionRemove: "Eliminar esta condición",
+    autoGearAlwaysLabel: "Incluir siempre",
+    autoGearAlwaysHelp: "Aplica esta regla a todas las listas de equipo.",
+    autoGearAlwaysMeta: "Siempre activa",
+    autoGearScenarioModeLabel: "Coincidencia de escenarios",
+    autoGearScenarioModeHelp:
+      "Elige cómo interactúan los escenarios seleccionados antes de que se active la regla.",
+    autoGearScenarioModeAll: "Requerir todos los escenarios seleccionados",
+    autoGearScenarioModeAny: "Coincidir con cualquier escenario seleccionado",
+    autoGearScenarioModeMultiplier: "Multiplicar al combinarse",
+    autoGearScenarioBaseLabel: "Escenario base",
+    autoGearScenarioBaseHelp:
+      "Los elementos siempre se añaden cuando este escenario está activo.",
+    autoGearScenarioBasePlaceholder: "Selecciona un escenario base",
+    autoGearScenarioFactorLabel: "Factor multiplicador",
+    autoGearScenarioFactorHelp:
+      "Escala las cantidades de los elementos cuando todos los escenarios adicionales estén activos.",
     autoGearScenariosLabel: "Escenarios necesarios",
     autoGearScenariosHelp:
       "Selecciona todos los escenarios que deben estar activos para que se aplique esta regla. Mantén pulsado Ctrl (Cmd en Mac) para elegir varios.",
@@ -3807,6 +3853,29 @@ const texts = {
     autoGearFilterClear: "Réinitialiser les filtres",
     autoGearRuleNameLabel: "Nom de la règle",
     autoGearRuleNameHelp: "Étiquette facultative affichée dans la liste des règles.",
+    autoGearConditionSelectLabel: "Ajouter une condition",
+    autoGearConditionSelectHelp:
+      "Afficher les sélecteurs à utiliser comme conditions de règle.",
+    autoGearAddCondition: "Ajouter une condition",
+    autoGearConditionPlaceholder: "Choisissez une condition",
+    autoGearConditionAddShortcut: "Ajouter une autre condition",
+    autoGearConditionRemove: "Supprimer cette condition",
+    autoGearAlwaysLabel: "Toujours inclure",
+    autoGearAlwaysHelp: "Applique cette règle à chaque liste de matériel.",
+    autoGearAlwaysMeta: "Toujours active",
+    autoGearScenarioModeLabel: "Correspondance des scénarios",
+    autoGearScenarioModeHelp:
+      "Choisissez la façon dont les scénarios sélectionnés interagissent avant l’activation de la règle.",
+    autoGearScenarioModeAll: "Exiger tous les scénarios sélectionnés",
+    autoGearScenarioModeAny: "Correspondre à n’importe quel scénario sélectionné",
+    autoGearScenarioModeMultiplier: "Multiplier lorsqu’ils sont combinés",
+    autoGearScenarioBaseLabel: "Scénario de base",
+    autoGearScenarioBaseHelp:
+      "Les éléments sont toujours ajoutés lorsque ce scénario est actif.",
+    autoGearScenarioBasePlaceholder: "Sélectionnez un scénario de base",
+    autoGearScenarioFactorLabel: "Facteur multiplicateur",
+    autoGearScenarioFactorHelp:
+      "Ajuste les quantités lorsque tous les scénarios supplémentaires sont actifs.",
     autoGearScenariosLabel: "Scénarios requis",
     autoGearScenariosHelp:
       "Sélectionnez tous les scénarios qui doivent être actifs pour appliquer cette règle. Maintenez Ctrl (Cmd sur Mac) pour en choisir plusieurs.",
@@ -4871,6 +4940,29 @@ const texts = {
     autoGearFilterClear: "Filter zurücksetzen",
     autoGearRuleNameLabel: "Regelname",
     autoGearRuleNameHelp: "Optionaler Name, der in der Regelnliste angezeigt wird.",
+    autoGearConditionSelectLabel: "Bedingung hinzufügen",
+    autoGearConditionSelectHelp:
+      "Blendet die Selektoren ein, die du als Regelbedingungen verwenden möchtest.",
+    autoGearAddCondition: "Bedingung hinzufügen",
+    autoGearConditionPlaceholder: "Wähle eine Bedingung",
+    autoGearConditionAddShortcut: "Weitere Bedingung hinzufügen",
+    autoGearConditionRemove: "Diese Bedingung entfernen",
+    autoGearAlwaysLabel: "Immer einschließen",
+    autoGearAlwaysHelp: "Wendet diese Regel auf jede Geräteliste an.",
+    autoGearAlwaysMeta: "Immer aktiv",
+    autoGearScenarioModeLabel: "Szenarioabgleich",
+    autoGearScenarioModeHelp:
+      "Legt fest, wie die ausgewählten Szenarien zusammenwirken, bevor die Regel aktiv wird.",
+    autoGearScenarioModeAll: "Alle ausgewählten Szenarien erforderlich",
+    autoGearScenarioModeAny: "Beliebiges ausgewähltes Szenario genügt",
+    autoGearScenarioModeMultiplier: "Beim Kombinieren multiplizieren",
+    autoGearScenarioBaseLabel: "Basisszenario",
+    autoGearScenarioBaseHelp:
+      "Elemente werden immer hinzugefügt, wenn dieses Szenario aktiv ist.",
+    autoGearScenarioBasePlaceholder: "Basisszenario auswählen",
+    autoGearScenarioFactorLabel: "Multiplikator",
+    autoGearScenarioFactorHelp:
+      "Passt die Stückzahlen an, sobald jedes zusätzliche Szenario aktiv ist.",
     autoGearScenariosLabel: "Benötigte Szenarien",
     autoGearScenariosHelp:
       "Wähle alle Szenarien, die aktiv sein müssen, damit diese Regel greift. Halte Strg (Cmd auf dem Mac) gedrückt, um mehrere auszuwählen.",
