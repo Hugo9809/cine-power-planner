@@ -7202,7 +7202,7 @@ function ensurePinkModeAnimationLayer() {
   if (!document) {
     return null;
   }
-  const host = document.getElementById('mainContent') || document.body;
+  const host = document.body || document.getElementById('mainContent');
   if (!host) {
     return null;
   }
