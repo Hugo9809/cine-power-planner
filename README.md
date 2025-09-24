@@ -611,7 +611,7 @@ data.
 
 ## Gear Lists & Reporting
 
-- Click **Generate Gear List** to expand selections and project requirements into
+- Click **Generate Gear List and Project Requirements** to expand selections and project requirements into
   categorized packing tables. Lists refresh automatically when data changes.
 - Entries are grouped by category with duplicates merged. Scenario selections add
   matching rigging, weather protection and specialty accessories so the printed
