@@ -210,10 +210,21 @@
     },
     "tripods": {
       "attributes": [
-        "bowlSizeMm",
         "brand",
+        "model",
         "material",
-        "spreader"
+        "stages",
+        "bowlSizeMm",
+        "bowlMount",
+        "payloadKg",
+        "heightRangeCm",
+        "weightKg",
+        "spreader",
+        "features",
+        "dimensionsCm",
+        "sizeClass",
+        "notes",
+        "sourceUrl"
       ]
     },
     "videoAssist": {
