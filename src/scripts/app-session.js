@@ -5738,7 +5738,7 @@ if (helpButton && helpDialog) {
       const li = document.createElement('li');
       const button = document.createElement('button');
       button.type = 'button';
-      button.className = 'help-quick-link';
+      button.className = 'help-quick-link button-link';
       button.dataset.targetId = id;
       button.setAttribute('aria-label', label);
 
