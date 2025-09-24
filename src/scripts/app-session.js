@@ -789,6 +789,30 @@ function saveCurrentSession(options = {}) {
   info.sliderBowl = getSliderBowlValue();
   info.easyrig = getEasyrigValue();
   currentProjectInfo = deriveProjectInfo(info);
+  const hasCrewEntries = Array.isArray(info.people) && info.people.length > 0;
+  if (hasCrewEntries) {
+    const normalizedCrew = info.people
+      .map((entry) => {
+        if (!entry || typeof entry !== 'object') return null;
+        const role = typeof entry.role === 'string' ? entry.role.trim() : '';
+        const name = typeof entry.name === 'string' ? entry.name.trim() : '';
+        if (!role || !name) return null;
+        const normalized = { role, name };
+        const phone = typeof entry.phone === 'string' ? entry.phone.trim() : '';
+        const email = typeof entry.email === 'string' ? entry.email.trim() : '';
+        if (phone) normalized.phone = phone;
+        if (email) normalized.email = email;
+        return normalized;
+      })
+      .filter(Boolean);
+    if (normalizedCrew.length) {
+      if (!currentProjectInfo) {
+        currentProjectInfo = { people: normalizedCrew };
+      } else if (!Array.isArray(currentProjectInfo.people) || !currentProjectInfo.people.length) {
+        currentProjectInfo = { ...currentProjectInfo, people: normalizedCrew };
+      }
+    }
+  }
   const state = {
     setupName: setupNameInput ? setupNameInput.value : '',
     setupSelect: setupSelect ? setupSelect.value : '',

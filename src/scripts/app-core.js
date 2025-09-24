@@ -18369,7 +18369,12 @@ function ensureDefaultProjectInfoSnapshot() {
   const baseInfo = collectProjectFormData ? collectProjectFormData() : {};
   baseInfo.sliderBowl = getSliderBowlValue();
   baseInfo.easyrig = getEasyrigValue();
-  defaultProjectInfoSnapshot = sanitizeProjectInfo(baseInfo) || {};
+  const sanitizedBase = sanitizeProjectInfo(baseInfo);
+  if (sanitizedBase && hasProjectInfoData(sanitizedBase)) {
+    defaultProjectInfoSnapshot = {};
+  } else {
+    defaultProjectInfoSnapshot = sanitizedBase || {};
+  }
 }
 
 function deriveProjectInfo(info) {
