@@ -88,6 +88,7 @@ describe('applyAutoGearRulesToTableHtml', () => {
       'mattebox',
       'cameraHandle',
       'viewfinderExtension',
+      'deliveryResolution',
       'videoDistribution',
       'camera',
       'monitor',
@@ -102,6 +103,7 @@ describe('applyAutoGearRulesToTableHtml', () => {
       'autoGearMattebox',
       'autoGearCameraHandle',
       'autoGearViewfinderExtension',
+      'autoGearDeliveryResolution',
       'autoGearVideoDistribution',
       'autoGearCamera',
       'autoGearMonitor',
@@ -153,6 +155,7 @@ describe('applyAutoGearRulesToTableHtml', () => {
       'mattebox',
       'cameraHandle',
       'viewfinderExtension',
+      'deliveryResolution',
       'videoDistribution',
       'camera',
       'monitor',
@@ -520,6 +523,99 @@ describe('applyAutoGearRulesToTableHtml', () => {
     container.innerHTML = result;
 
     const entries = container.querySelectorAll('[data-gear-name="Standard VF Cable"]');
+    expect(entries).toHaveLength(0);
+  });
+
+  test('applies delivery resolution rules when the selection matches', () => {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify([
+        {
+          id: 'rule-delivery',
+          label: '4K delivery kit',
+          scenarios: [],
+          mattebox: [],
+          cameraHandle: [],
+          viewfinderExtension: [],
+          deliveryResolution: ['4K'],
+          videoDistribution: [],
+          add: [
+            {
+              id: 'add-delivery',
+              name: 'Dedicated 4K Master Monitor',
+              category: 'Monitoring',
+              quantity: 1,
+            }
+          ],
+          remove: []
+        }
+      ])
+    );
+
+    env = setupScriptEnvironment();
+    const { applyAutoGearRulesToTableHtml } = env.utils;
+
+    const tableHtml = `
+      <table class="gear-table">
+        <tbody class="category-group">
+          <tr class="category-row"><td>Monitoring</td></tr>
+          <tr><td></td></tr>
+        </tbody>
+      </table>
+    `;
+
+    const result = applyAutoGearRulesToTableHtml(tableHtml, { deliveryResolution: '4K' });
+    const container = document.createElement('div');
+    container.innerHTML = result;
+
+    const entries = container.querySelectorAll('[data-gear-name="Dedicated 4K Master Monitor"]');
+    expect(entries).toHaveLength(1);
+    expect(entries[0].classList.contains('auto-gear-item')).toBe(true);
+  });
+
+  test('does not apply delivery resolution rules for a different selection', () => {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify([
+        {
+          id: 'rule-delivery-mismatch',
+          label: '8K finishing',
+          scenarios: [],
+          mattebox: [],
+          cameraHandle: [],
+          viewfinderExtension: [],
+          deliveryResolution: ['8K'],
+          videoDistribution: [],
+          add: [
+            {
+              id: 'add-delivery-mismatch',
+              name: '8K QC Station',
+              category: 'Monitoring',
+              quantity: 1,
+            }
+          ],
+          remove: []
+        }
+      ])
+    );
+
+    env = setupScriptEnvironment();
+    const { applyAutoGearRulesToTableHtml } = env.utils;
+
+    const tableHtml = `
+      <table class="gear-table">
+        <tbody class="category-group">
+          <tr class="category-row"><td>Monitoring</td></tr>
+          <tr><td></td></tr>
+        </tbody>
+      </table>
+    `;
+
+    const result = applyAutoGearRulesToTableHtml(tableHtml, { deliveryResolution: '4K' });
+    const container = document.createElement('div');
+    container.innerHTML = result;
+
+    const entries = container.querySelectorAll('[data-gear-name="8K QC Station"]');
     expect(entries).toHaveLength(0);
   });
 

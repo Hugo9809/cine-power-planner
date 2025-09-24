@@ -924,6 +924,7 @@ function normalizeAutoGearRule(rule) {
   const mattebox = normalizeAutoGearTriggerList(rule.mattebox).sort((a, b) => a.localeCompare(b));
   const cameraHandle = normalizeAutoGearTriggerList(rule.cameraHandle).sort((a, b) => a.localeCompare(b));
   const viewfinderExtension = normalizeAutoGearTriggerList(rule.viewfinderExtension).sort((a, b) => a.localeCompare(b));
+  const deliveryResolution = normalizeAutoGearTriggerList(rule.deliveryResolution).sort((a, b) => a.localeCompare(b));
   const videoDistribution = normalizeVideoDistributionTriggerList(rule.videoDistribution)
     .sort((a, b) => a.localeCompare(b));
   const camera = normalizeAutoGearTriggerList(rule.camera).sort((a, b) => a.localeCompare(b));
@@ -938,6 +939,7 @@ function normalizeAutoGearRule(rule) {
     && !mattebox.length
     && !cameraHandle.length
     && !viewfinderExtension.length
+    && !deliveryResolution.length
     && !videoDistribution.length
     && !camera.length
     && !monitor.length
@@ -957,6 +959,7 @@ function normalizeAutoGearRule(rule) {
     mattebox,
     cameraHandle,
     viewfinderExtension,
+    deliveryResolution,
     videoDistribution,
     camera,
     monitor,
@@ -1031,6 +1034,7 @@ function snapshotAutoGearRuleForFingerprint(rule) {
     mattebox: normalized.mattebox.slice().sort((a, b) => a.localeCompare(b)),
     cameraHandle: normalized.cameraHandle.slice().sort((a, b) => a.localeCompare(b)),
     viewfinderExtension: normalized.viewfinderExtension.slice().sort((a, b) => a.localeCompare(b)),
+    deliveryResolution: normalized.deliveryResolution.slice().sort((a, b) => a.localeCompare(b)),
     videoDistribution: normalized.videoDistribution.slice().sort((a, b) => a.localeCompare(b)),
     camera: normalized.camera.slice().sort((a, b) => a.localeCompare(b)),
     monitor: normalized.monitor.slice().sort((a, b) => a.localeCompare(b)),
@@ -1049,6 +1053,7 @@ function autoGearRuleSortKey(rule) {
   const matteboxKey = Array.isArray(rule.mattebox) ? rule.mattebox.join('|') : '';
   const cameraHandleKey = Array.isArray(rule.cameraHandle) ? rule.cameraHandle.join('|') : '';
   const viewfinderKey = Array.isArray(rule.viewfinderExtension) ? rule.viewfinderExtension.join('|') : '';
+  const deliveryResolutionKey = Array.isArray(rule.deliveryResolution) ? rule.deliveryResolution.join('|') : '';
   const videoDistributionKey = Array.isArray(rule.videoDistribution) ? rule.videoDistribution.join('|') : '';
   const cameraKey = Array.isArray(rule.camera) ? rule.camera.join('|') : '';
   const monitorKey = Array.isArray(rule.monitor) ? rule.monitor.join('|') : '';
@@ -1058,7 +1063,7 @@ function autoGearRuleSortKey(rule) {
   const distanceKey = Array.isArray(rule.distance) ? rule.distance.join('|') : '';
   const addKey = Array.isArray(rule.add) ? rule.add.map(autoGearItemSortKey).join('|') : '';
   const removeKey = Array.isArray(rule.remove) ? rule.remove.map(autoGearItemSortKey).join('|') : '';
-  return `${alwaysKey}|${scenarioKey}|${matteboxKey}|${cameraHandleKey}|${viewfinderKey}|${videoDistributionKey}|${cameraKey}|${monitorKey}|${wirelessKey}|${motorsKey}|${controllersKey}|${distanceKey}|${rule.label || ''}|${addKey}|${removeKey}`;
+  return `${alwaysKey}|${scenarioKey}|${matteboxKey}|${cameraHandleKey}|${viewfinderKey}|${deliveryResolutionKey}|${videoDistributionKey}|${cameraKey}|${monitorKey}|${wirelessKey}|${motorsKey}|${controllersKey}|${distanceKey}|${rule.label || ''}|${addKey}|${removeKey}`;
 }
 
 function createAutoGearRulesFingerprint(rules) {
@@ -5313,6 +5318,16 @@ function setLanguage(lang) {
       autoGearViewfinderExtensionSelect.setAttribute('aria-label', label);
     }
   }
+  if (autoGearDeliveryResolutionLabel) {
+    const label = texts[lang].autoGearDeliveryResolutionLabel || texts.en?.autoGearDeliveryResolutionLabel || autoGearDeliveryResolutionLabel.textContent;
+    autoGearDeliveryResolutionLabel.textContent = label;
+    const help = texts[lang].autoGearDeliveryResolutionHelp || texts.en?.autoGearDeliveryResolutionHelp || label;
+    autoGearDeliveryResolutionLabel.setAttribute('data-help', help);
+    if (autoGearDeliveryResolutionSelect) {
+      autoGearDeliveryResolutionSelect.setAttribute('data-help', help);
+      autoGearDeliveryResolutionSelect.setAttribute('aria-label', label);
+    }
+  }
   if (autoGearVideoDistributionLabel) {
     const label = texts[lang].autoGearVideoDistributionLabel || texts.en?.autoGearVideoDistributionLabel || autoGearVideoDistributionLabel.textContent;
     autoGearVideoDistributionLabel.textContent = label;
@@ -5579,6 +5594,9 @@ function setLanguage(lang) {
   }
   if (autoGearViewfinderExtensionSelect) {
     refreshAutoGearViewfinderExtensionOptions(autoGearEditorDraft?.viewfinderExtension);
+  }
+  if (autoGearDeliveryResolutionSelect) {
+    refreshAutoGearDeliveryResolutionOptions(autoGearEditorDraft?.deliveryResolution);
   }
   if (autoGearVideoDistributionSelect) {
     refreshAutoGearVideoDistributionOptions(autoGearEditorDraft?.videoDistribution);
@@ -6186,6 +6204,7 @@ const crewLabelElem = document.getElementById("crewLabel");
 const prepLabelElem = document.getElementById("prepLabel");
 const shootLabelElem = document.getElementById("shootLabel");
 const deliveryResolutionLabel = document.getElementById("deliveryResolutionLabel");
+const deliveryResolutionSelect = document.getElementById("deliveryResolution");
 const recordingResolutionLabel = document.getElementById("recordingResolutionLabel");
 const sensorModeLabel = document.getElementById("sensorModeLabel");
 const aspectRatioLabel = document.getElementById("aspectRatioLabel");
@@ -9721,6 +9740,7 @@ const autoGearConditionSections = {
   mattebox: document.getElementById('autoGearCondition-mattebox'),
   cameraHandle: document.getElementById('autoGearCondition-cameraHandle'),
   viewfinderExtension: document.getElementById('autoGearCondition-viewfinderExtension'),
+  deliveryResolution: document.getElementById('autoGearCondition-deliveryResolution'),
   videoDistribution: document.getElementById('autoGearCondition-videoDistribution'),
   camera: document.getElementById('autoGearCondition-camera'),
   monitor: document.getElementById('autoGearCondition-monitor'),
@@ -9736,6 +9756,7 @@ const autoGearConditionAddShortcuts = {
   mattebox: autoGearConditionSections.mattebox?.querySelector('.auto-gear-condition-add') || null,
   cameraHandle: autoGearConditionSections.cameraHandle?.querySelector('.auto-gear-condition-add') || null,
   viewfinderExtension: autoGearConditionSections.viewfinderExtension?.querySelector('.auto-gear-condition-add') || null,
+  deliveryResolution: autoGearConditionSections.deliveryResolution?.querySelector('.auto-gear-condition-add') || null,
   videoDistribution: autoGearConditionSections.videoDistribution?.querySelector('.auto-gear-condition-add') || null,
   camera: autoGearConditionSections.camera?.querySelector('.auto-gear-condition-add') || null,
   monitor: autoGearConditionSections.monitor?.querySelector('.auto-gear-condition-add') || null,
@@ -9751,6 +9772,7 @@ const autoGearConditionRemoveButtons = {
   mattebox: autoGearConditionSections.mattebox?.querySelector('.auto-gear-condition-remove') || null,
   cameraHandle: autoGearConditionSections.cameraHandle?.querySelector('.auto-gear-condition-remove') || null,
   viewfinderExtension: autoGearConditionSections.viewfinderExtension?.querySelector('.auto-gear-condition-remove') || null,
+  deliveryResolution: autoGearConditionSections.deliveryResolution?.querySelector('.auto-gear-condition-remove') || null,
   videoDistribution: autoGearConditionSections.videoDistribution?.querySelector('.auto-gear-condition-remove') || null,
   camera: autoGearConditionSections.camera?.querySelector('.auto-gear-condition-remove') || null,
   monitor: autoGearConditionSections.monitor?.querySelector('.auto-gear-condition-remove') || null,
@@ -9780,6 +9802,8 @@ const autoGearCameraHandleSelect = document.getElementById('autoGearCameraHandle
 const autoGearCameraHandleLabel = document.getElementById('autoGearCameraHandleLabel');
 const autoGearViewfinderExtensionSelect = document.getElementById('autoGearViewfinderExtension');
 const autoGearViewfinderExtensionLabel = document.getElementById('autoGearViewfinderExtensionLabel');
+const autoGearDeliveryResolutionSelect = document.getElementById('autoGearDeliveryResolution');
+const autoGearDeliveryResolutionLabel = document.getElementById('autoGearDeliveryResolutionLabel');
 const autoGearVideoDistributionSelect = document.getElementById('autoGearVideoDistribution');
 const autoGearVideoDistributionLabel = document.getElementById('autoGearVideoDistributionLabel');
 const autoGearCameraSelect = document.getElementById('autoGearCamera');
@@ -9800,6 +9824,7 @@ const autoGearConditionLabels = {
   mattebox: autoGearMatteboxLabel,
   cameraHandle: autoGearCameraHandleLabel,
   viewfinderExtension: autoGearViewfinderExtensionLabel,
+  deliveryResolution: autoGearDeliveryResolutionLabel,
   videoDistribution: autoGearVideoDistributionLabel,
   camera: autoGearCameraLabel,
   monitor: autoGearMonitorLabel,
@@ -9814,6 +9839,7 @@ const autoGearConditionSelects = {
   mattebox: autoGearMatteboxSelect,
   cameraHandle: autoGearCameraHandleSelect,
   viewfinderExtension: autoGearViewfinderExtensionSelect,
+  deliveryResolution: autoGearDeliveryResolutionSelect,
   videoDistribution: autoGearVideoDistributionSelect,
   camera: autoGearCameraSelect,
   monitor: autoGearMonitorSelect,
@@ -9828,6 +9854,7 @@ const AUTO_GEAR_CONDITION_KEYS = [
   'mattebox',
   'cameraHandle',
   'viewfinderExtension',
+  'deliveryResolution',
   'videoDistribution',
   'camera',
   'monitor',
@@ -9842,6 +9869,7 @@ const AUTO_GEAR_CONDITION_FALLBACK_LABELS = {
   mattebox: 'Mattebox options',
   cameraHandle: 'Camera handles',
   viewfinderExtension: 'Viewfinder extension',
+  deliveryResolution: 'Delivery resolution',
   videoDistribution: 'Video distribution',
   camera: 'Camera',
   monitor: 'Onboard monitor',
@@ -9871,6 +9899,7 @@ const autoGearConditionRefreshers = {
   mattebox: refreshAutoGearMatteboxOptions,
   cameraHandle: refreshAutoGearCameraHandleOptions,
   viewfinderExtension: refreshAutoGearViewfinderExtensionOptions,
+  deliveryResolution: refreshAutoGearDeliveryResolutionOptions,
   videoDistribution: refreshAutoGearVideoDistributionOptions,
   camera: refreshAutoGearCameraOptions,
   monitor: refreshAutoGearMonitorOptions,
@@ -10443,6 +10472,7 @@ function autoGearRuleMatchesSearch(rule, query) {
   pushValues(rule?.mattebox);
   pushValues(rule?.cameraHandle);
   pushValues(rule?.viewfinderExtension);
+  pushValues(rule?.deliveryResolution);
   pushValues(rule?.videoDistribution);
   pushValues(rule?.camera);
   pushValues(rule?.monitor);
@@ -10575,6 +10605,7 @@ function createAutoGearDraft(rule) {
       mattebox: Array.isArray(rule.mattebox) ? rule.mattebox.slice() : [],
       cameraHandle: Array.isArray(rule.cameraHandle) ? rule.cameraHandle.slice() : [],
       viewfinderExtension: Array.isArray(rule.viewfinderExtension) ? rule.viewfinderExtension.slice() : [],
+      deliveryResolution: Array.isArray(rule.deliveryResolution) ? rule.deliveryResolution.slice() : [],
       videoDistribution: Array.isArray(rule.videoDistribution) ? rule.videoDistribution.slice() : [],
       camera: Array.isArray(rule.camera) ? rule.camera.slice() : [],
       monitor: Array.isArray(rule.monitor) ? rule.monitor.slice() : [],
@@ -10594,6 +10625,7 @@ function createAutoGearDraft(rule) {
     mattebox: [],
     cameraHandle: [],
     viewfinderExtension: [],
+    deliveryResolution: [],
     videoDistribution: [],
     camera: [],
     monitor: [],
@@ -10913,6 +10945,60 @@ function refreshAutoGearViewfinderExtensionOptions(selected) {
   const selectableOptions = Array.from(autoGearViewfinderExtensionSelect.options || []).filter(option => !option.disabled);
   autoGearViewfinderExtensionSelect.size = computeAutoGearMultiSelectSize(
     selectableOptions.length,
+    { minRows: AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS }
+  );
+}
+
+function refreshAutoGearDeliveryResolutionOptions(selected) {
+  if (!autoGearDeliveryResolutionSelect) return;
+
+  const selectedValues = collectAutoGearSelectedValues(selected, 'deliveryResolution');
+
+  autoGearDeliveryResolutionSelect.innerHTML = '';
+  autoGearDeliveryResolutionSelect.multiple = true;
+
+  const seen = new Set();
+  const addOption = (value, label) => {
+    const normalized = typeof value === 'string' ? value.trim() : '';
+    if (!normalized || seen.has(normalized)) return;
+    const option = document.createElement('option');
+    option.value = normalized;
+    option.textContent = label || normalized;
+    if (selectedValues.includes(normalized)) {
+      option.selected = true;
+    }
+    autoGearDeliveryResolutionSelect.appendChild(option);
+    seen.add(normalized);
+  };
+
+  if (deliveryResolutionSelect) {
+    Array.from(deliveryResolutionSelect.options || []).forEach(opt => {
+      if (!opt || typeof opt.value !== 'string') return;
+      const value = opt.value.trim();
+      if (!value) return;
+      const label = (opt.textContent || value).trim();
+      addOption(value, label);
+    });
+  }
+
+  selectedValues.forEach(value => {
+    if (!seen.has(value)) addOption(value, value);
+  });
+
+  if (!autoGearDeliveryResolutionSelect.options.length) {
+    const placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = texts[currentLang]?.autoGearDeliveryResolutionPlaceholder
+      || texts.en?.autoGearDeliveryResolutionPlaceholder
+      || 'Select delivery resolutions';
+    placeholder.disabled = true;
+    placeholder.selected = true;
+    autoGearDeliveryResolutionSelect.appendChild(placeholder);
+  }
+
+  const visibleCount = Array.from(autoGearDeliveryResolutionSelect.options || []).filter(option => !option.disabled).length;
+  autoGearDeliveryResolutionSelect.size = computeAutoGearMultiSelectSize(
+    visibleCount,
     { minRows: AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS }
   );
 }
@@ -11912,6 +11998,7 @@ function renderAutoGearRulesList() {
     const viewfinderDisplayList = rawViewfinderList.map(getViewfinderFallbackLabel);
     const videoDistributionList = Array.isArray(rule.videoDistribution) ? rule.videoDistribution : [];
     const videoDistributionDisplayList = videoDistributionList.map(getVideoDistributionFallbackLabel);
+    const deliveryResolutionList = Array.isArray(rule.deliveryResolution) ? rule.deliveryResolution : [];
     const cameraList = Array.isArray(rule.camera) ? rule.camera : [];
     const monitorList = Array.isArray(rule.monitor) ? rule.monitor : [];
     const wirelessList = Array.isArray(rule.wireless) ? rule.wireless : [];
@@ -11928,6 +12015,7 @@ function renderAutoGearRulesList() {
       matteboxList,
       cameraHandleList,
       viewfinderDisplayList,
+      deliveryResolutionList,
       videoDistributionDisplayList,
     ];
     const fallbackSource = scenarioList.length
@@ -12043,6 +12131,15 @@ function renderAutoGearRulesList() {
       videoDistMeta.className = 'auto-gear-rule-meta';
       videoDistMeta.textContent = `${videoDistLabelText}: ${videoDistributionDisplayList.join(' + ')}`;
       info.appendChild(videoDistMeta);
+    }
+    if (deliveryResolutionList.length) {
+      const deliveryLabelText = texts[currentLang]?.autoGearDeliveryResolutionLabel
+        || texts.en?.autoGearDeliveryResolutionLabel
+        || 'Delivery resolution';
+      const deliveryMeta = document.createElement('p');
+      deliveryMeta.className = 'auto-gear-rule-meta';
+      deliveryMeta.textContent = `${deliveryLabelText}: ${deliveryResolutionList.join(' + ')}`;
+      info.appendChild(deliveryMeta);
     }
     const addSummary = formatAutoGearCount(rule.add.length, 'autoGearAddsCountOne', 'autoGearAddsCountOther');
     const removeSummary = formatAutoGearCount(rule.remove.length, 'autoGearRemovalsCountOne', 'autoGearRemovalsCountOther');
@@ -12505,6 +12602,11 @@ function saveAutoGearRuleFromEditor() {
         .map(option => option.value)
         .filter(value => typeof value === 'string' && value.trim())
     : [];
+  const deliveryResolutionSelections = isAutoGearConditionActive('deliveryResolution') && autoGearDeliveryResolutionSelect
+    ? Array.from(autoGearDeliveryResolutionSelect.selectedOptions || [])
+        .map(option => option.value)
+        .filter(value => typeof value === 'string' && value.trim())
+    : [];
   let videoDistributionSelections = isAutoGearConditionActive('videoDistribution') && autoGearVideoDistributionSelect
     ? Array.from(autoGearVideoDistributionSelect.selectedOptions || [])
         .map(option => option.value)
@@ -12550,6 +12652,7 @@ function saveAutoGearRuleFromEditor() {
     && !matteboxSelections.length
     && !cameraHandleSelections.length
     && !viewfinderSelections.length
+    && !deliveryResolutionSelections.length
     && !videoDistributionSelections.length
     && !cameraSelections.length
     && !monitorSelections.length
@@ -12562,7 +12665,7 @@ function saveAutoGearRuleFromEditor() {
       || texts.en?.autoGearRuleConditionRequired
       || texts[currentLang]?.autoGearRuleScenarioRequired
       || texts.en?.autoGearRuleScenarioRequired
-      || 'Select at least one scenario, mattebox option, camera handle, viewfinder extension or video distribution before saving.';
+      || 'Select at least one scenario, mattebox option, camera handle, viewfinder extension, delivery resolution or video distribution before saving.';
     window.alert(message);
     return;
   }
@@ -12574,6 +12677,7 @@ function saveAutoGearRuleFromEditor() {
   autoGearEditorDraft.mattebox = matteboxSelections;
   autoGearEditorDraft.cameraHandle = cameraHandleSelections;
   autoGearEditorDraft.viewfinderExtension = viewfinderSelections;
+  autoGearEditorDraft.deliveryResolution = deliveryResolutionSelections;
   autoGearEditorDraft.videoDistribution = videoDistributionSelections;
   autoGearEditorDraft.camera = cameraSelections;
   autoGearEditorDraft.monitor = monitorSelections;

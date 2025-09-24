@@ -214,6 +214,10 @@ const texts = {
     autoGearViewfinderExtensionHelp:
       "Apply this rule when these viewfinder extension choices are selected.",
     autoGearViewfinderExtensionPlaceholder: "Select viewfinder extension options",
+    autoGearDeliveryResolutionLabel: "Delivery resolution",
+    autoGearDeliveryResolutionHelp:
+      "Apply this rule when these delivery resolutions are selected.",
+    autoGearDeliveryResolutionPlaceholder: "Select delivery resolutions",
     autoGearVideoDistributionLabel: "Video distribution",
     autoGearVideoDistributionHelp:
       "Apply this rule when these video distribution preferences are selected.",
@@ -1636,6 +1640,10 @@ const texts = {
     autoGearViewfinderExtensionHelp:
       "Applica la regola quando sono selezionate queste scelte di prolunga mirino.",
     autoGearViewfinderExtensionPlaceholder: "Seleziona opzioni di prolunga mirino",
+    autoGearDeliveryResolutionLabel: "Risoluzione di consegna",
+    autoGearDeliveryResolutionHelp:
+      "Applica la regola quando sono selezionate queste risoluzioni di consegna.",
+    autoGearDeliveryResolutionPlaceholder: "Seleziona risoluzioni di consegna",
     autoGearVideoDistributionLabel: "Distribuzione video",
     autoGearVideoDistributionHelp:
       "Applica la regola quando sono selezionate queste preferenze di distribuzione video.",
@@ -2639,6 +2647,10 @@ const texts = {
     autoGearViewfinderExtensionHelp:
       "Aplica la regla cuando se eligen estas opciones de extensión de visor.",
     autoGearViewfinderExtensionPlaceholder: "Selecciona opciones de extensión de visor",
+    autoGearDeliveryResolutionLabel: "Resolución de entrega",
+    autoGearDeliveryResolutionHelp:
+      "Aplica la regla cuando se eligen estas resoluciones de entrega.",
+    autoGearDeliveryResolutionPlaceholder: "Selecciona resoluciones de entrega",
     autoGearVideoDistributionLabel: "Distribución de vídeo",
     autoGearVideoDistributionHelp:
       "Aplica la regla cuando se eligen estas preferencias de distribución de vídeo.",
@@ -3644,6 +3656,10 @@ const texts = {
     autoGearViewfinderExtensionHelp:
       "Appliquer la règle lorsque ces choix d’extension de viseur sont sélectionnés.",
     autoGearViewfinderExtensionPlaceholder: "Sélectionnez des options d’extension de viseur",
+    autoGearDeliveryResolutionLabel: "Résolution de livraison",
+    autoGearDeliveryResolutionHelp:
+      "Appliquer la règle lorsque ces résolutions de livraison sont sélectionnées.",
+    autoGearDeliveryResolutionPlaceholder: "Sélectionnez des résolutions de livraison",
     autoGearVideoDistributionLabel: "Distribution vidéo",
     autoGearVideoDistributionHelp:
       "Appliquer la règle lorsque ces préférences de distribution vidéo sont sélectionnées.",
@@ -4652,6 +4668,10 @@ const texts = {
     autoGearViewfinderExtensionHelp:
       "Regel anwenden, wenn diese Sucher-Verlängerungsoptionen ausgewählt sind.",
     autoGearViewfinderExtensionPlaceholder: "Sucher-Verlängerungsoptionen auswählen",
+    autoGearDeliveryResolutionLabel: "Auslieferungsauflösung",
+    autoGearDeliveryResolutionHelp:
+      "Regel anwenden, wenn diese Auslieferungsauflösungen ausgewählt sind.",
+    autoGearDeliveryResolutionPlaceholder: "Auslieferungsauflösungen auswählen",
     autoGearVideoDistributionLabel: "Videoverteilung",
     autoGearVideoDistributionHelp:
       "Regel anwenden, wenn diese Videoverteilungsoptionen ausgewählt sind.",
