@@ -1105,6 +1105,13 @@ function restoreSessionState() {
         bindGearListEyeLeatherListener();
         bindGearListProGaffTapeListener();
         bindGearListDirectorMonitorListener();
+        if (
+          storedProject
+          && isPlainObject(storedProject.gearSelectors)
+          && Object.keys(storedProject.gearSelectors).length
+        ) {
+          applyGearListSelectors(storedProject.gearSelectors);
+        }
         if (state) {
           setSliderBowlValue(state.sliderBowl);
           setEasyrigValue(state.easyrig);
