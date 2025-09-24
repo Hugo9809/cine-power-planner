@@ -314,9 +314,10 @@ Use Cine Power Planner end-to-end with the following routine:
   referenced custom devices. Rename the file if your archiving standards call
   for a `.cpproject` extension, then send it via your preferred secure channel;
   recipients can import without needing internet access.
-- **Automatic gear rules travel with bundles.** Decide whether to include your
-  rules during export; teammates who import the bundle can ignore them, apply
-  them only to the imported project or merge them into their global ruleset.
+- **Automatic gear rules travel with bundles.** Flip the **Include automatic
+  gear rules** toggle during export to decide whether your automations ship with
+  the bundle; teammates who import the file can ignore them, apply them only to
+  the imported project or merge them into their global ruleset.
 - **Restores are double-buffered.** Importing a bundle prompts you to save a
   backup of your current environment first. After choosing the bundle file, the
   planner validates its JSON schema, merges new devices and places the restored

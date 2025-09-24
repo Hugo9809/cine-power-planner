@@ -120,7 +120,7 @@ The app automatically uses your browser language on first load, and you can swit
 ### ✅ Project Management
 - Save, load and delete multiple camera projects (press Enter or Ctrl+S/⌘S to save quickly; the Save button stays disabled until a name is entered).
 - Automatic snapshots are created every 10 minutes while the planner is open, and the Settings dialog can trigger hourly backup exports as a reminder to archive data.
-- Download a JSON project file that bundles selections, requirements, gear lists, runtime feedback and custom devices; load it through the Import Project picker to restore everything in one step.
+- Download a JSON project file that bundles selections, requirements, gear lists, runtime feedback and custom devices—flip the **Include automatic gear rules** toggle if you also want your automations embedded; load it through the Import Project picker to restore everything in one step.
 - Data is stored locally via `localStorage` and favorites are preserved in backups; use the **Factory reset** option in Settings to capture a backup automatically before wiping cached projects and device edits.
 - Generate printable overviews for any saved project and add a custom logo so exports and backups match your production branding.
 - Save project requirements along with each project so gear lists retain full context.
