@@ -2775,7 +2775,7 @@ function sanitizeImportedCrewEntries(entries) {
       result.text = note;
     }
     const role = typeof entry.role === 'string' ? entry.role.trim() : '';
-    if (role && (role.toLowerCase() !== 'producer' || phone || email || note)) {
+    if (role) {
       result.role = role;
     }
     if (Object.keys(result).length) {
