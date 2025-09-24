@@ -79,7 +79,7 @@ Al primo avvio l’applicazione adotta la lingua del browser; puoi cambiarla dal
 - Nuovo tema ad alto contrasto per migliorare la leggibilità.
 - I moduli dei dispositivi compilano le categorie in modo dinamico partendo dallo schema.
 - Interfaccia ridisegnata con contrasto maggiore e spaziature più generose per un’esperienza più pulita su qualsiasi dispositivo.
-- Condividere i progetti è più semplice: scarica un file JSON con selezioni, requisiti, lista attrezzatura, feedback di autonomia e dispositivi personalizzati, quindi importalo per ripristinare tutto.
+- Condividere i progetti è più semplice: scarica un file JSON con selezioni, requisiti, lista attrezzatura, feedback di autonomia e dispositivi personalizzati, quindi importalo per ripristinare tutto. Attiva l'interruttore **Includi regole automatiche dell'attrezzatura** se vuoi che le automazioni viaggino con l'export oppure lascialo disattivato per mantenerle locali.
 - Icone dedicate per gli scenari obbligatori evidenziano subito i requisiti del progetto.
 - Diagramma del progetto interattivo per trascinare i dispositivi, fare zoom, allineare alla griglia ed esportare in SVG o JPG.
 - Tema rosa giocoso che resta attivo tra una visita e l’altra.

@@ -78,7 +78,7 @@ Beim ersten Start übernimmt die Anwendung automatisch die Sprache deines Browse
 - Neues High-Contrast-Theme für bessere Lesbarkeit.
 - Geräteformulare füllen die Kategorien dynamisch anhand der Schema-Attribute aus.
 - Überarbeitete Oberfläche mit verbessertem Kontrast und großzügigerem Spacing für ein klares Erlebnis auf jedem Gerät.
-- Projekt-Sharing wurde vereinfacht: Lade eine JSON-Datei mit Auswahl, Anforderungen, Geräteliste, Laufzeit-Feedback und eigenen Geräten herunter und importiere sie anschließend, um alles wiederherzustellen.
+- Projekt-Sharing wurde vereinfacht: Lade eine JSON-Datei mit Auswahl, Anforderungen, Geräteliste, Laufzeit-Feedback und eigenen Geräten herunter und importiere sie anschließend, um alles wiederherzustellen. Aktiviere bei Bedarf den Schalter **Automatische Gear-Regeln einschließen**, damit deine Automationen mitreisen oder lokal bleiben.
 - Eigene Symbole für verpflichtende Szenarien machen Projektanforderungen auf einen Blick sichtbar.
 - Interaktives Projekt-Diagramm zum Verschieben, Zoomen, Einrasten und Exportieren als SVG oder JPG.
 - Verspieltes pinkes Akzent-Theme, das zwischen Besuchen erhalten bleibt.

@@ -79,7 +79,7 @@ L’application adopte automatiquement la langue de votre navigateur lors de la 
 - Nouveau thème à fort contraste pour améliorer la lisibilité.
 - Les formulaires d’appareils complètent les catégories dynamiquement à partir du schéma.
 - Interface repensée avec contraste renforcé et espacements plus généreux pour une expérience plus nette sur tout appareil.
-- Partage simplifié : téléchargez un fichier JSON regroupant sélections, exigences, liste de matériel, retours d’autonomie et appareils personnalisés, puis importez-le pour tout restaurer.
+- Partage simplifié : téléchargez un fichier JSON regroupant sélections, exigences, liste de matériel, retours d’autonomie et appareils personnalisés, puis importez-le pour tout restaurer. Activez l’option **Inclure les règles automatiques d’équipement** si vous souhaitez embarquer vos automatisations ou laissez-la désactivée pour les conserver en local.
 - Des icônes dédiées pour les scénarios obligatoires mettent en évidence les contraintes du projet.
 - Diagramme de projet interactif pour déplacer les appareils, zoomer, aligner sur la grille et exporter en SVG ou JPG.
 - Thème rose ludique qui persiste entre les visites.

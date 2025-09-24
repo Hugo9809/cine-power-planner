@@ -81,7 +81,7 @@ La aplicación adopta automáticamente el idioma de tu navegador en la primera v
 - Opciones de accesibilidad con alto contraste, animación reducida y espaciado relajado mejoran la legibilidad y la comodidad.
 - Los formularios de dispositivos rellenan los campos de categoría dinámicamente a partir de los atributos del esquema.
 - Interfaz rediseñada con mayor contraste y espaciado para una experiencia más limpia en cualquier dispositivo.
-- Compartir proyectos es más sencillo: descarga un archivo JSON que agrupa selecciones, requisitos, listas de equipo, comentarios de autonomía y dispositivos personalizados, e impórtalo para restaurarlo todo.
+- Compartir proyectos es más sencillo: descarga un archivo JSON que agrupa selecciones, requisitos, listas de equipo, comentarios de autonomía y dispositivos personalizados, e impórtalo para restaurarlo todo. Activa el interruptor **Incluir reglas automáticas de equipo** cuando quieras que tus automatizaciones viajen en el archivo o déjalo desmarcado para mantenerlas locales.
 - Iconos exclusivos para los escenarios obligatorios distinguen los requisitos del proyecto.
 - Diagrama de proyecto interactivo para arrastrar dispositivos, hacer zoom, ajustar los nodos a la cuadrícula y exportar el plano como SVG o JPG.
 - Tema rosa divertido que se mantiene entre visitas.
