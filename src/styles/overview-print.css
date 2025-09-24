@@ -438,6 +438,14 @@ body:not(.light-mode) .gear-table .category-row {
   white-space: nowrap;
 }
 
+#overviewDialogContent .gear-table .gear-item[data-gear-name^="ND Grad HE Filter Set"],
+#overviewDialogContent .gear-table .gear-item[data-gear-name^="ND Grad SE Filter Set"] {
+  padding: 0.15em 0.45em;
+  border: 1px solid var(--panel-border);
+  border-radius: calc(var(--border-radius) * 0.75);
+  background-color: color-mix(in srgb, var(--panel-bg) 88%, transparent);
+}
+
 #overviewDialogContent .gear-table .auto-gear-item,
 #overviewDialogContent.dark-mode .gear-table .auto-gear-item,
 body:not(.light-mode) .gear-table .auto-gear-item {
