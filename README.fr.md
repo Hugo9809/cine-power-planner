@@ -62,6 +62,7 @@ L’application adopte automatiquement la langue de votre navigateur lors de la 
 
 ## 🆕 Nouveautés
 - Les comparaisons de versions de sauvegarde permettent de sélectionner n’importe quel enregistrement manuel ou sauvegarde automatique horodatée pour analyser les différences, ajouter des notes d’incident et exporter un journal avant un retour arrière ou une remise d’images à la post-production.
+- Les sauvegardes normalisent désormais les anciens paquets de données enregistrés en chaînes JSON ou en tableaux d’entrées afin que les exports historiques se restaurent correctement.
 - Les répétitions de restauration chargent une sauvegarde complète de l’application ou un bundle de projet dans un bac à sable isolé pour confirmer que son contenu correspond aux données actives sans toucher aux profils de production.
 - Les règles automatiques d’équipement ajoutent ou retirent du matériel selon le scénario, avec export/import aux côtés des bundles partagés.
 - Le tableau de bord Données & stockage audite projets enregistrés, listes de matériel, appareils personnalisés, favoris et retours d’autonomie depuis les Réglages et affiche la taille approximative des sauvegardes.

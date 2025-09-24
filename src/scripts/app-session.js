@@ -2718,6 +2718,178 @@ function sanitizeBackupPayload(raw) {
   return text;
 }
 
+function parseBackupDataString(raw) {
+  if (typeof raw !== 'string') {
+    return null;
+  }
+
+  const sanitized = sanitizeBackupPayload(raw);
+  if (!sanitized) {
+    return null;
+  }
+
+  const trimmed = sanitized.trim();
+  if (!trimmed) {
+    return null;
+  }
+
+  try {
+    const parsed = JSON.parse(trimmed);
+    if (isPlainObject(parsed)) {
+      return parsed;
+    }
+    if (Array.isArray(parsed)) {
+      return convertLegacyDataEntriesToObject(parsed);
+    }
+  } catch (error) {
+    console.warn('Failed to parse backup data string', error);
+  }
+
+  return null;
+}
+
+function convertLegacyDataEntriesToObject(entries) {
+  if (!Array.isArray(entries)) {
+    return null;
+  }
+
+  const snapshot = Object.create(null);
+  const assignEntry = (key, value) => {
+    if (typeof key !== 'string' || !key) return;
+    if (Object.prototype.hasOwnProperty.call(snapshot, key)) return;
+    snapshot[key] = value;
+  };
+
+  const keyCandidateKeys = ['key', 'name', 'section', 'type'];
+  const valueCandidateKeys = [
+    'value',
+    'data',
+    'content',
+    'payload',
+    'entries',
+    'items',
+    'record',
+    'snapshot',
+    'state',
+    'values',
+    'settings',
+    'sectionData',
+    'body',
+  ];
+
+  entries.forEach(entry => {
+    if (!entry) return;
+    if (Array.isArray(entry)) {
+      assignEntry(entry[0], entry[1]);
+      return;
+    }
+    if (!isPlainObject(entry)) {
+      return;
+    }
+
+    if (Array.isArray(entry.entry)) {
+      assignEntry(entry.entry[0], entry.entry[1]);
+      return;
+    }
+
+    const keyCandidate = keyCandidateKeys.find(candidate => {
+      const value = entry[candidate];
+      return typeof value === 'string' && value;
+    });
+
+    if (!keyCandidate) {
+      return;
+    }
+
+    let value = undefined;
+    for (let i = 0; i < valueCandidateKeys.length; i += 1) {
+      const candidate = valueCandidateKeys[i];
+      if (Object.prototype.hasOwnProperty.call(entry, candidate)) {
+        value = entry[candidate];
+        break;
+      }
+    }
+
+    if (value === undefined) {
+      value = entry.value
+        ?? entry.data
+        ?? entry.content
+        ?? entry.payload
+        ?? entry.entries
+        ?? entry.items
+        ?? entry.snapshot
+        ?? entry.state
+        ?? entry.values
+        ?? entry.settings;
+    }
+
+    if (value === undefined) {
+      return;
+    }
+
+    assignEntry(entry[keyCandidate], value);
+  });
+
+  return Object.keys(snapshot).length ? snapshot : null;
+}
+
+function normalizeBackupDataSection(section) {
+  if (isPlainObject(section)) {
+    return section;
+  }
+
+  if (Array.isArray(section)) {
+    const converted = convertLegacyDataEntriesToObject(section);
+    if (converted) {
+      return converted;
+    }
+  }
+
+  if (typeof section === 'string') {
+    const parsed = parseBackupDataString(section);
+    if (parsed) {
+      return parsed;
+    }
+  }
+
+  if (section && typeof section.toJSON === 'function') {
+    try {
+      const parsed = section.toJSON();
+      if (isPlainObject(parsed)) {
+        return parsed;
+      }
+    } catch (error) {
+      console.warn('Failed to convert backup data via toJSON', error);
+    }
+  }
+
+  return null;
+}
+
+function normalizeBackupDataValue(key, value) {
+  if (typeof key === 'string' && BACKUP_DATA_COMPLEX_KEYS.has(key)) {
+    const normalized = normalizeBackupDataSection(value);
+    if (normalized) {
+      return normalized;
+    }
+  }
+  return value;
+}
+
+function mergeBackupDataSections(base, additions) {
+  if (!isPlainObject(additions) || !Object.keys(additions).length) {
+    return base ? { ...base } : null;
+  }
+
+  const target = base ? { ...base } : {};
+  Object.entries(additions).forEach(([key, value]) => {
+    if (typeof key !== 'string') return;
+    if (Object.prototype.hasOwnProperty.call(target, key)) return;
+    target[key] = normalizeBackupDataValue(key, value);
+  });
+  return target;
+}
+
 const BACKUP_STORAGE_KEY_PREFIXES = ['cameraPowerPlanner_', 'cinePowerPlanner_'];
 const BACKUP_STORAGE_KNOWN_KEYS = new Set([
   'darkMode',
@@ -2761,6 +2933,7 @@ const BACKUP_DATA_KEYS = [
   'autoGearSeeded',
   'autoGearBackups',
   'autoGearPresets',
+  'autoGearMonitorDefaults',
   'autoGearActivePresetId',
   'autoGearAutoPresetId',
   'autoGearShowBackups',
@@ -2771,6 +2944,25 @@ const BACKUP_DATA_KEYS = [
   'fullBackupHistory',
   'fullBackups',
 ];
+const BACKUP_DATA_COMPLEX_KEYS = new Set([
+  'devices',
+  'setups',
+  'session',
+  'sessions',
+  'feedback',
+  'project',
+  'projects',
+  'gearList',
+  'favorites',
+  'autoGearRules',
+  'autoGearBackups',
+  'autoGearPresets',
+  'autoGearMonitorDefaults',
+  'preferences',
+  'fullBackupHistory',
+  'fullBackups',
+  'customFonts',
+]);
 
 function isPlainObject(value) {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
@@ -2963,22 +3155,21 @@ function extractBackupSections(raw) {
 
   let dataSection = null;
   for (const key of ['data', 'payload', 'plannerData', 'allData']) {
-    if (isPlainObject(parsed[key])) {
-      dataSection = parsed[key];
-      break;
+    if (!Object.prototype.hasOwnProperty.call(parsed, key)) continue;
+    const normalized = normalizeBackupDataSection(parsed[key]);
+    if (normalized) {
+      dataSection = mergeBackupDataSections(dataSection, normalized);
     }
   }
-  if (!dataSection) {
-    const fallback = {};
-    BACKUP_DATA_KEYS.forEach(key => {
-      if (metadataKeys.has(key)) return;
-      if (Object.prototype.hasOwnProperty.call(parsed, key)) {
-        fallback[key] = parsed[key];
-      }
-    });
-    if (Object.keys(fallback).length) {
-      dataSection = fallback;
-    }
+
+  const fallback = {};
+  BACKUP_DATA_KEYS.forEach(key => {
+    if (metadataKeys.has(key)) return;
+    if (!Object.prototype.hasOwnProperty.call(parsed, key)) return;
+    fallback[key] = normalizeBackupDataValue(key, parsed[key]);
+  });
+  if (Object.keys(fallback).length) {
+    dataSection = mergeBackupDataSections(dataSection, fallback);
   }
 
   return {

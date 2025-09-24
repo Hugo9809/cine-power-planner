@@ -62,6 +62,7 @@ Al primo avvio l’applicazione adotta la lingua del browser; puoi cambiarla dal
 
 ## 🆕 Novità
 - I confronti delle versioni dei backup permettono di scegliere qualsiasi salvataggio manuale o backup automatico con timestamp per rivedere le differenze, aggiungere note sugli incidenti ed esportare un registro prima di annullare una modifica o consegnare il materiale alla post.
+- I backup ora normalizzano i pacchetti di dati legacy salvati come stringhe JSON o array di voci, così gli export storici si ripristinano correttamente.
 - Le prove di ripristino caricano un backup completo dell’app o un bundle di progetto in una sandbox isolata così puoi confermare che il contenuto corrisponde ai dati live senza toccare i profili di produzione.
 - Le regole automatiche dell'attrezzatura consentono di definire aggiunte o rimozioni guidate dallo scenario, esportarle e ripristinarle insieme ai bundle condivisi.
 - Il cruscotto Dati e archiviazione controlla progetti salvati, elenchi, dispositivi personalizzati, preferiti e feedback sulle autonomie direttamente nelle Impostazioni e mostra la dimensione approssimativa del backup.
