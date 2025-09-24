@@ -33,8 +33,27 @@ function generatePrintableOverview() {
     const projectTitleSegment = sanitizeTitleSegment(projectNameForTitle) || 'Project';
     const overviewLabel = sanitizeTitleSegment((t.overviewTitle || '').trim());
     const gearListLabel = sanitizeTitleSegment((t.gearListNav || '').trim());
-    const suffixRaw = [overviewLabel, gearListLabel].filter(Boolean).join(' – ');
-    const suffixSegment = sanitizeTitleSegment(suffixRaw) || 'Project Overview and Gear List';
+    const projectRequirementsLabel = sanitizeTitleSegment((t.projectRequirementsNav || '').trim());
+    const preferredSuffix = sanitizeTitleSegment((t.overviewExportTitleSuffix || '').trim());
+    let suffixSegment = preferredSuffix;
+    if (!suffixSegment) {
+        const combinedNavLabels = [];
+        if (gearListLabel) combinedNavLabels.push(gearListLabel);
+        if (projectRequirementsLabel) combinedNavLabels.push(projectRequirementsLabel);
+        if (combinedNavLabels.length === 2) {
+            suffixSegment = sanitizeTitleSegment(combinedNavLabels.join(' and '));
+        }
+    }
+    if (!suffixSegment) {
+        const fallbackLabels = [overviewLabel, gearListLabel].filter(Boolean);
+        suffixSegment = fallbackLabels.length
+            ? sanitizeTitleSegment(fallbackLabels.join(' – '))
+            : '';
+    }
+    if (!suffixSegment) {
+        suffixSegment = 'Gear List and Project Requirements';
+    }
+    suffixSegment = sanitizeTitleSegment(suffixSegment) || 'Gear List and Project Requirements';
     const printDocumentTitle = [safeTimestampLabel, projectTitleSegment, suffixSegment]
         .filter(Boolean)
         .join(' - ')

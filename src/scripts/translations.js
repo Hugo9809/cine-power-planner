@@ -56,6 +56,7 @@ const texts = {
     projectRequirementsNavHelp: "Jump to the Project Requirements output once generated.",
     gearListNav: "Gear List",
     gearListNavHelp: "View the generated gear list with all items and categories.",
+    overviewExportTitleSuffix: "Gear List and Project Requirements",
     openSettingsNav: "Settings",
     openSettingsNavHelp:
       "Open Settings to adjust language, themes, accessibility options and backups.",
@@ -1111,6 +1112,7 @@ const texts = {
     gearListNav: "Lista attrezzatura",
     gearListNavHelp:
       "Visualizza la lista attrezzatura generata con tutti gli elementi e le categorie.",
+    overviewExportTitleSuffix: "Lista attrezzatura e requisiti di progetto",
     openSettingsNav: "Impostazioni",
     openSettingsNavHelp:
       "Apri le Impostazioni per modificare lingua, temi, opzioni di accessibilità e backup.",
@@ -2125,6 +2127,7 @@ const texts = {
     gearListNav: "Lista de equipo",
     gearListNavHelp:
       "Ver la lista de equipo generada con todos los artículos y categorías.",
+    overviewExportTitleSuffix: "Lista de equipo y requisitos del proyecto",
     openSettingsNav: "Ajustes",
     openSettingsNavHelp:
       "Abrir Ajustes para cambiar idioma, temas, opciones de accesibilidad y copias de seguridad.",
@@ -3153,6 +3156,7 @@ const texts = {
     gearListNav: "Liste du matériel",
     gearListNavHelp:
       "Voir la liste du matériel générée avec tous les éléments et catégories.",
+    overviewExportTitleSuffix: "Liste du matériel et exigences du projet",
     openSettingsNav: "Paramètres",
     openSettingsNavHelp:
       "Ouvrir les paramètres pour régler la langue, les thèmes, l’accessibilité et les sauvegardes.",
@@ -4184,6 +4188,7 @@ const texts = {
     gearListNav: "Gear-Liste",
     gearListNavHelp:
       "Die erzeugte Gear-Liste mit allen Geräten und Kategorien ansehen.",
+    overviewExportTitleSuffix: "Gear-Liste und Projektanforderungen",
     openSettingsNav: "Einstellungen",
     openSettingsNavHelp:
       "Einstellungen öffnen, um Sprache, Designs, Barrierefreiheit und Backups anzupassen.",
