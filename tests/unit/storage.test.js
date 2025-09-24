@@ -1404,6 +1404,18 @@ describe('export/import all data', () => {
     expect(localStorage.getItem(AUTO_GEAR_BACKUP_VISIBILITY_KEY)).toBe('1');
   });
 
+  test('importAllData treats ambiguous automatic gear booleans as disabled', () => {
+    importAllData({
+      autoGearSeeded: '   ',
+      autoGearShowBackups: { enabled: '   ' },
+    });
+
+    expect(loadAutoGearSeedFlag()).toBe(false);
+    expect(localStorage.getItem(AUTO_GEAR_SEEDED_KEY)).toBeNull();
+    expect(loadAutoGearBackupVisibility()).toBe(false);
+    expect(localStorage.getItem(AUTO_GEAR_BACKUP_VISIBILITY_KEY)).toBeNull();
+  });
+
   test('importAllData accepts automatic gear data stored as object maps', () => {
     const payload = {
       autoGearRules: {

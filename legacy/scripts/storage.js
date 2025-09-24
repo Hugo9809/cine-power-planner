@@ -3515,7 +3515,7 @@ function importAllData(allData) {
   if (Object.prototype.hasOwnProperty.call(allData, 'autoGearSeeded')) {
     var flag = normalizeImportedBoolean(allData.autoGearSeeded);
     if (flag === null) {
-      saveAutoGearSeedFlag(Boolean(allData.autoGearSeeded));
+      saveAutoGearSeedFlag(false);
     } else {
       saveAutoGearSeedFlag(flag);
     }
@@ -3534,7 +3534,7 @@ function importAllData(allData) {
   if (Object.prototype.hasOwnProperty.call(allData, 'autoGearShowBackups')) {
     var visibility = normalizeImportedBoolean(allData.autoGearShowBackups);
     if (visibility === null) {
-      saveAutoGearBackupVisibility(Boolean(allData.autoGearShowBackups));
+      saveAutoGearBackupVisibility(false);
     } else {
       saveAutoGearBackupVisibility(visibility);
     }
