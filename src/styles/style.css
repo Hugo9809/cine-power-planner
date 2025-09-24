@@ -3254,10 +3254,13 @@ body.pink-mode .favorite-toggle.favorited:active {
 #hoverHelpTooltip {
   position: absolute;
   z-index: 1000;
-  background: var(--accent-color);
-  color: var(--inverse-text-color);
+  background: var(--surface-color);
+  color: var(--text-color);
+  border: 1px solid color-mix(in srgb, var(--accent-color) 70%, transparent);
+  box-shadow: var(--panel-shadow);
   padding: 4px 8px;
   border-radius: 4px;
+  --icon-color: var(--accent-color);
   /* Allow icon glyphs from all local fonts to render inside hover help */
   font-family: var(--font-family), 'EssentialIconsV2', 'FilmIndustryIconsV2', 'GadgetIconsV2';
   font-size: calc(var(--font-size-base) * var(--font-scale-compact));
