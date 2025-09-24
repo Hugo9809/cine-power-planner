@@ -1427,6 +1427,58 @@
                   ></select>
                 </section>
                 <section
+                  id="autoGearCondition-cameraWeight"
+                  class="auto-gear-condition"
+                  data-condition="cameraWeight"
+                  hidden
+                  aria-hidden="true"
+                >
+                  <div class="auto-gear-condition-header">
+                    <label for="autoGearCameraWeightValue" id="autoGearCameraWeightLabel">Camera weight condition</label>
+                    <div class="auto-gear-condition-actions">
+                      <button
+                        type="button"
+                        class="auto-gear-condition-remove"
+                        data-action="remove"
+                        data-condition="cameraWeight"
+                      >Remove</button>
+                    </div>
+                  </div>
+                  <div class="auto-gear-camera-weight-group">
+                    <label
+                      class="visually-hidden"
+                      for="autoGearCameraWeightComparison"
+                      id="autoGearCameraWeightComparisonLabel"
+                    >Camera weight comparison</label>
+                    <select
+                      id="autoGearCameraWeightComparison"
+                      aria-labelledby="autoGearCameraWeightLabel autoGearCameraWeightComparisonLabel"
+                      aria-describedby="autoGearCameraWeightHelp"
+                    >
+                      <option value="greater">Heavier than (>)</option>
+                      <option value="less">Lighter than (<)</option>
+                      <option value="equal">Exactly (=)</option>
+                    </select>
+                    <label
+                      class="visually-hidden"
+                      for="autoGearCameraWeightValue"
+                      id="autoGearCameraWeightValueLabel"
+                    >Camera weight value (g)</label>
+                    <input
+                      type="number"
+                      id="autoGearCameraWeightValue"
+                      min="0"
+                      step="1"
+                      aria-labelledby="autoGearCameraWeightLabel autoGearCameraWeightValueLabel"
+                      aria-describedby="autoGearCameraWeightHelp"
+                    />
+                    <span class="auto-gear-camera-weight-unit" aria-hidden="true">g</span>
+                  </div>
+                  <p id="autoGearCameraWeightHelp" class="auto-gear-condition-help">
+                    Activate this rule when the selected camera’s weight compares to your threshold in grams.
+                  </p>
+                </section>
+                <section
                   id="autoGearCondition-monitor"
                   class="auto-gear-condition"
                   data-condition="monitor"

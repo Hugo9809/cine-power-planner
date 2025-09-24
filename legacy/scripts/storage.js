@@ -770,6 +770,18 @@ function collectAutoBackupEntries(container, prefix) {
     return a.key.localeCompare(b.key);
   });
 }
+function getAutoBackupLabelKey(entry) {
+  if (!entry || _typeof(entry) !== 'object') {
+    return '';
+  }
+  if (typeof entry.label === 'string' && entry.label.trim()) {
+    return entry.label.trim();
+  }
+  if (typeof entry.key === 'string') {
+    return entry.key;
+  }
+  return '';
+}
 function createStableValueSignature(value) {
   if (value === null) {
     return 'null';
@@ -826,7 +838,7 @@ function removeDuplicateAutoBackupEntries(container, entries) {
     if (!entry || typeof entry.key !== 'string') {
       continue;
     }
-    var labelKey = typeof entry.label === 'string' ? entry.label : '';
+    var labelKey = getAutoBackupLabelKey(entry);
     var labelSignatures = seenSignaturesByLabel.get(labelKey) || new Set();
     var value = Object.prototype.hasOwnProperty.call(container, entry.key) ? container[entry.key] : undefined;
     var signature = createStableValueSignature(value);
@@ -851,7 +863,7 @@ function pruneAutoBackupEntries(container, entries, limit, removedKeys) {
     if (!entry || _typeof(entry) !== 'object') {
       continue;
     }
-    var labelKey = typeof entry.label === 'string' ? entry.label : '';
+    var labelKey = getAutoBackupLabelKey(entry);
     labelCounts.set(labelKey, (labelCounts.get(labelKey) || 0) + 1);
   }
   var index = 0;
@@ -861,9 +873,9 @@ function pruneAutoBackupEntries(container, entries, limit, removedKeys) {
       index += 1;
       continue;
     }
-    var _labelKey = typeof _entry.label === 'string' ? _entry.label : '';
+    var _labelKey = getAutoBackupLabelKey(_entry);
     var count = labelCounts.get(_labelKey) || 0;
-    if (count > 1) {
+    if (_labelKey && count > 1) {
       delete container[_entry.key];
       entries.splice(index, 1);
       labelCounts.set(_labelKey, count - 1);
@@ -882,7 +894,7 @@ function pruneAutoBackupEntries(container, entries, limit, removedKeys) {
       index += 1;
       continue;
     }
-    var _labelKey2 = typeof _entry2.label === 'string' ? _entry2.label : '';
+    var _labelKey2 = getAutoBackupLabelKey(_entry2);
     var _count = labelCounts.get(_labelKey2) || 0;
     delete container[_entry2.key];
     entries.splice(index, 1);
@@ -2260,6 +2272,99 @@ function cloneProjectInfo(projectInfo) {
     }
   }
 }
+function sanitizeImportedCrewEntries(entries) {
+  if (!Array.isArray(entries)) {
+    return [];
+  }
+  var sanitized = [];
+  entries.forEach(function (entry) {
+    if (!isPlainObject(entry)) {
+      var normalized = sanitizeImportedValue(entry);
+      if (normalized !== null && normalized !== undefined) {
+        sanitized.push(normalized);
+      }
+      return;
+    }
+    var result = {};
+    var name = typeof entry.name === 'string' ? entry.name.trim() : '';
+    if (name) {
+      result.name = name;
+    }
+    var phone = typeof entry.phone === 'string' ? entry.phone.trim() : '';
+    if (phone) {
+      result.phone = phone;
+    }
+    var email = typeof entry.email === 'string' ? entry.email.trim() : '';
+    if (email) {
+      result.email = email;
+    }
+    var note = typeof entry.text === 'string' ? entry.text.trim() : '';
+    if (note) {
+      result.text = note;
+    }
+    var role = typeof entry.role === 'string' ? entry.role.trim() : '';
+    if (role && (role.toLowerCase() !== 'producer' || name || phone || email || note)) {
+      result.role = role;
+    }
+    if (Object.keys(result).length) {
+      sanitized.push(result);
+    }
+  });
+  return sanitized;
+}
+function sanitizeImportedValue(value) {
+  if (value === null || value === undefined) {
+    return null;
+  }
+  if (typeof value === 'string') {
+    var trimmed = value.trim();
+    return trimmed ? trimmed : null;
+  }
+  if (typeof value === 'number') {
+    return Number.isNaN(value) ? null : value;
+  }
+  if (typeof value === 'boolean') {
+    return value ? true : null;
+  }
+  if (Array.isArray(value)) {
+    var sanitized = value.map(function (item) {
+      return sanitizeImportedValue(item);
+    }).filter(function (item) {
+      return item !== null && item !== undefined && !(typeof item === 'string' && !item);
+    });
+    return sanitized.length ? sanitized : null;
+  }
+  if (isPlainObject(value)) {
+    return sanitizeImportedProjectInfo(value);
+  }
+  return null;
+}
+function sanitizeImportedProjectInfo(info) {
+  if (!isPlainObject(info)) {
+    return null;
+  }
+  var normalized = {};
+  Object.entries(info).forEach(function (_ref10) {
+    var _ref11 = _slicedToArray(_ref10, 2),
+      key = _ref11[0],
+      raw = _ref11[1];
+    if (raw === null || raw === undefined) {
+      return;
+    }
+    if (key === 'people') {
+      var crew = sanitizeImportedCrewEntries(raw);
+      if (crew.length) {
+        normalized.people = crew;
+      }
+      return;
+    }
+    var value = sanitizeImportedValue(raw);
+    if (value !== null && value !== undefined) {
+      normalized[key] = value;
+    }
+  });
+  return Object.keys(normalized).length ? normalized : null;
+}
 function cloneAutoGearRules(rules) {
   if (!Array.isArray(rules) || !rules.length) {
     return null;
@@ -2297,10 +2402,10 @@ function cloneProjectGearSelectors(selectors) {
     return null;
   }
   var clone = {};
-  Object.entries(selectors).forEach(function (_ref10) {
-    var _ref11 = _slicedToArray(_ref10, 2),
-      id = _ref11[0],
-      value = _ref11[1];
+  Object.entries(selectors).forEach(function (_ref12) {
+    var _ref13 = _slicedToArray(_ref12, 2),
+      id = _ref13[0],
+      value = _ref13[1];
     if (typeof id !== 'string' || !id) {
       return;
     }
@@ -2339,6 +2444,16 @@ function normalizeProject(data) {
           normalizedProjectInfo = parsedInfo.parsed;
         }
       }
+      if (!normalizedProjectInfo && isPlainObject(data.project)) {
+        if (isPlainObject(data.project.projectInfo)) {
+          normalizedProjectInfo = data.project.projectInfo;
+        } else if (typeof data.project.projectInfo === "string") {
+          var parsedProjectInfo = tryParseJSONLike(data.project.projectInfo);
+          if (parsedProjectInfo.success && isPlainObject(parsedProjectInfo.parsed)) {
+            normalizedProjectInfo = parsedProjectInfo.parsed;
+          }
+        }
+      }
       var normalizedAutoGearRules = Array.isArray(data.autoGearRules) && data.autoGearRules.length ? data.autoGearRules : null;
       if (!normalizedAutoGearRules && typeof data.autoGearRules === "string") {
         var parsedRules = tryParseJSONLike(data.autoGearRules);
@@ -2346,7 +2461,22 @@ function normalizeProject(data) {
           normalizedAutoGearRules = parsedRules.parsed;
         }
       }
-      var normalizedGearList = typeof data.gearList === "string" || data.gearList && _typeof(data.gearList) === "object" ? data.gearList : "";
+      if (!normalizedAutoGearRules && isPlainObject(data.project)) {
+        var nestedRules = data.project.autoGearRules;
+        if (Array.isArray(nestedRules) && nestedRules.length) {
+          normalizedAutoGearRules = nestedRules;
+        } else if (typeof nestedRules === "string") {
+          var parsedNestedRules = tryParseJSONLike(nestedRules);
+          if (parsedNestedRules.success && Array.isArray(parsedNestedRules.parsed) && parsedNestedRules.parsed.length) {
+            normalizedAutoGearRules = parsedNestedRules.parsed;
+          }
+        }
+      }
+      var gearListSource = data.gearList;
+      if ((gearListSource === null || gearListSource === undefined || typeof gearListSource === "string" && !gearListSource) && isPlainObject(data.project) && Object.prototype.hasOwnProperty.call(data.project, "gearList")) {
+        gearListSource = data.project.gearList;
+      }
+      var normalizedGearList = typeof gearListSource === "string" || gearListSource && _typeof(gearListSource) === "object" ? gearListSource : "";
       var normalizedGearSelectors = null;
       if (isPlainObject(data.gearSelectors)) {
         normalizedGearSelectors = cloneProjectGearSelectors(data.gearSelectors);
@@ -2380,6 +2510,9 @@ function normalizeProject(data) {
       }
       if (normalizedGearList && _typeof(normalizedGearList) === "object" && !isPlainObject(normalizedGearList)) {
         normalizedGearList = "";
+      }
+      if (normalizedProjectInfo) {
+        normalizedProjectInfo = sanitizeImportedProjectInfo(normalizedProjectInfo) || null;
       }
       var _normalized2 = {
         gearList: Array.isArray(normalizedGearList) || isPlainObject(normalizedGearList) ? cloneProjectData(normalizedGearList) : normalizedGearList,
@@ -2445,6 +2578,20 @@ function normalizeProject(data) {
         },
         projectInfo: null
       };
+    }
+    if (isPlainObject(data.project)) {
+      var _nested = normalizeProject(data.project);
+      if (_nested) {
+        return _nested;
+      }
+    } else if (typeof data.project === "string") {
+      var parsedProject = tryParseJSONLike(data.project);
+      if (parsedProject.success) {
+        var _nested2 = normalizeProject(parsedProject.parsed);
+        if (_nested2) {
+          return _nested2;
+        }
+      }
     }
   }
   return null;
@@ -2856,10 +3003,10 @@ function importProjectCollection(collection, ensureImporter) {
   }
   if (isPlainObject(collection)) {
     var _importProject = ensureImporter();
-    Object.entries(collection).forEach(function (_ref12) {
-      var _ref13 = _slicedToArray(_ref12, 2),
-        name = _ref13[0],
-        proj = _ref13[1];
+    Object.entries(collection).forEach(function (_ref14) {
+      var _ref15 = _slicedToArray(_ref14, 2),
+        name = _ref15[0],
+        proj = _ref15[1];
       _importProject(name, proj);
     });
     return true;
@@ -3601,10 +3748,10 @@ function normalizeImportedAutoGearMonitorDefaults(value) {
     return {};
   }
   var normalized = {};
-  Object.entries(value).forEach(function (_ref14) {
-    var _ref15 = _slicedToArray(_ref14, 2),
-      key = _ref15[0],
-      val = _ref15[1];
+  Object.entries(value).forEach(function (_ref16) {
+    var _ref17 = _slicedToArray(_ref16, 2),
+      key = _ref17[0],
+      val = _ref17[1];
     if (typeof val !== 'string') return;
     var trimmed = val.trim();
     if (!trimmed) return;
@@ -3892,9 +4039,9 @@ function importAllData(allData) {
   if (!isPlainObject(allData)) {
     return;
   }
-  var _ref16 = options || {},
-    _ref16$skipSnapshotCo = _ref16.skipSnapshotConversion,
-    skipSnapshotConversion = _ref16$skipSnapshotCo === void 0 ? false : _ref16$skipSnapshotCo;
+  var _ref18 = options || {},
+    _ref18$skipSnapshotCo = _ref18.skipSnapshotConversion,
+    skipSnapshotConversion = _ref18$skipSnapshotCo === void 0 ? false : _ref18$skipSnapshotCo;
   if (!skipSnapshotConversion) {
     var converted = convertStorageSnapshotToData(allData);
     if (converted) {

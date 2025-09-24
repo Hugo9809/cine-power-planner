@@ -42,8 +42,25 @@ function generatePrintableOverview() {
   var projectTitleSegment = sanitizeTitleSegment(projectNameForTitle) || 'Project';
   var overviewLabel = sanitizeTitleSegment((t.overviewTitle || '').trim());
   var gearListLabel = sanitizeTitleSegment((t.gearListNav || '').trim());
-  var suffixRaw = [overviewLabel, gearListLabel].filter(Boolean).join(' – ');
-  var suffixSegment = sanitizeTitleSegment(suffixRaw) || 'Project Overview and Gear List';
+  var projectRequirementsLabel = sanitizeTitleSegment((t.projectRequirementsNav || '').trim());
+  var preferredSuffix = sanitizeTitleSegment((t.overviewExportTitleSuffix || '').trim());
+  var suffixSegment = preferredSuffix;
+  if (!suffixSegment) {
+    var combinedNavLabels = [];
+    if (gearListLabel) combinedNavLabels.push(gearListLabel);
+    if (projectRequirementsLabel) combinedNavLabels.push(projectRequirementsLabel);
+    if (combinedNavLabels.length === 2) {
+      suffixSegment = sanitizeTitleSegment(combinedNavLabels.join(' and '));
+    }
+  }
+  if (!suffixSegment) {
+    var fallbackLabels = [overviewLabel, gearListLabel].filter(Boolean);
+    suffixSegment = fallbackLabels.length ? sanitizeTitleSegment(fallbackLabels.join(' – ')) : '';
+  }
+  if (!suffixSegment) {
+    suffixSegment = 'Gear List and Project Requirements';
+  }
+  suffixSegment = sanitizeTitleSegment(suffixSegment) || 'Gear List and Project Requirements';
   var printDocumentTitle = [safeTimestampLabel, projectTitleSegment, suffixSegment].filter(Boolean).join(' - ').replace(/\s+/g, ' ').trim();
   var originalDocumentTitle = typeof document !== 'undefined' ? document.title : '';
   var customLogo = typeof localStorage !== 'undefined' ? localStorage.getItem('customLogo') : null;

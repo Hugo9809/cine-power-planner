@@ -2493,21 +2493,29 @@ body.pink-mode:not(.dark-mode) #settingsPanel-autoGear .auto-gear-rule-items-lab
   padding-inline: 10px;
 }
 
-.auto-gear-shooting-days-group {
+.auto-gear-shooting-days-group,
+.auto-gear-camera-weight-group {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;
 }
 
-.auto-gear-shooting-days-group select {
+.auto-gear-shooting-days-group select,
+.auto-gear-camera-weight-group select {
   flex: 1 1 160px;
   min-width: 140px;
 }
 
-.auto-gear-shooting-days-group input[type="number"] {
+.auto-gear-shooting-days-group input[type="number"],
+.auto-gear-camera-weight-group input[type="number"] {
   flex: 0 1 120px;
   min-width: 100px;
+}
+
+.auto-gear-camera-weight-unit {
+  font-weight: var(--font-weight-medium);
+  min-width: 20px;
 }
 
 .auto-gear-editor-columns {

@@ -244,6 +244,14 @@ const texts = {
     autoGearCameraLabel: "Camera selection",
     autoGearCameraHelp:
       "Apply this rule when these camera bodies are selected.",
+    autoGearCameraWeightLabel: "Camera weight condition",
+    autoGearCameraWeightHelp:
+      "Activate this rule when the selected camera’s weight in grams is greater than, less than or equal to your threshold.",
+    autoGearCameraWeightComparisonLabel: "Camera weight comparison",
+    autoGearCameraWeightComparisonHeavier: "Heavier than (>)",
+    autoGearCameraWeightComparisonLighter: "Lighter than (<)",
+    autoGearCameraWeightComparisonEqual: "Exactly (=)",
+    autoGearCameraWeightValueLabel: "Camera weight value (g)",
     autoGearMonitorLabel: "Onboard monitors",
     autoGearMonitorDefaultsHeading: "Monitor defaults",
     autoGearMonitorDefaultsDescription: "Choose which monitors should be preselected for new gear lists.",
@@ -273,7 +281,7 @@ const texts = {
     autoGearDistanceHelp:
       "Apply this rule when these distance devices are selected.",
     autoGearRuleConditionRequired:
-      "Select at least one scenario, camera, monitor, wireless transmitter, motor, controller, distance device, mattebox option, camera handle, viewfinder extension or video distribution before saving.",
+      "Select at least one scenario, camera, monitor, wireless transmitter, motor, controller, distance device, mattebox option, camera handle, viewfinder extension, delivery resolution, video distribution or camera weight before saving.",
     autoGearAddItemsHeading: "Add these items",
     autoGearAddItemLabel: "Item",
     autoGearAddCategoryLabel: "Category",
@@ -1722,6 +1730,14 @@ const texts = {
     autoGearCameraLabel: "Selezione telecamera",
     autoGearCameraHelp:
       "Applica la regola quando sono selezionati questi corpi macchina.",
+    autoGearCameraWeightLabel: "Condizione sul peso della camera",
+    autoGearCameraWeightHelp:
+      "Attiva questa regola quando il peso della camera selezionata in grammi è maggiore, minore o uguale alla soglia impostata.",
+    autoGearCameraWeightComparisonLabel: "Confronto peso camera",
+    autoGearCameraWeightComparisonHeavier: "Più pesante di (>)",
+    autoGearCameraWeightComparisonLighter: "Più leggera di (<)",
+    autoGearCameraWeightComparisonEqual: "Esattamente (=)",
+    autoGearCameraWeightValueLabel: "Valore peso camera (g)",
     autoGearMonitorLabel: "Monitor onboard",
     autoGearMonitorDefaultsHeading: "Monitor defaults",
     autoGearMonitorDefaultsDescription: "Choose which monitors should be preselected for new gear lists.",
@@ -1751,7 +1767,7 @@ const texts = {
     autoGearDistanceHelp:
       "Applica la regola quando sono selezionati questi dispositivi di distanza.",
     autoGearRuleConditionRequired:
-      "Seleziona almeno uno scenario, un'opzione di matte box, una maniglia camera, una prolunga mirino o una distribuzione video prima di salvare.",
+      "Seleziona almeno uno scenario, una camera, un monitor, un trasmettitore wireless, un motore, un controller, un dispositivo di distanza, un'opzione di matte box, una maniglia camera, una prolunga mirino, una risoluzione di consegna, una distribuzione video o una condizione sul peso della camera prima di salvare.",
     autoGearAddItemsHeading: "Aggiungi questi elementi",
     autoGearAddItemLabel: "Elemento",
     autoGearAddCategoryLabel: "Categoria",
@@ -2781,6 +2797,14 @@ const texts = {
     autoGearCameraLabel: "Selección de cámara",
     autoGearCameraHelp:
       "Aplica la regla cuando se seleccionan estos cuerpos de cámara.",
+    autoGearCameraWeightLabel: "Condición de peso de la cámara",
+    autoGearCameraWeightHelp:
+      "Activa esta regla cuando el peso de la cámara seleccionada en gramos sea mayor, menor o igual a tu umbral.",
+    autoGearCameraWeightComparisonLabel: "Comparación de peso de la cámara",
+    autoGearCameraWeightComparisonHeavier: "Más pesada que (>)",
+    autoGearCameraWeightComparisonLighter: "Más ligera que (<)",
+    autoGearCameraWeightComparisonEqual: "Exactamente (=)",
+    autoGearCameraWeightValueLabel: "Valor de peso de la cámara (g)",
     autoGearMonitorLabel: "Monitores a bordo",
     autoGearMonitorDefaultsHeading: "Monitor defaults",
     autoGearMonitorDefaultsDescription: "Choose which monitors should be preselected for new gear lists.",
@@ -2810,7 +2834,7 @@ const texts = {
     autoGearDistanceHelp:
       "Aplica la regla cuando se seleccionan estos dispositivos de distancia.",
     autoGearRuleConditionRequired:
-      "Selecciona al menos un escenario, una opción de matte box, una empuñadura de cámara, una extensión de visor o una distribución de vídeo antes de guardar.",
+      "Selecciona al menos un escenario, una cámara, un monitor, un transmisor inalámbrico, un motor, un controlador, un dispositivo de distancia, una opción de matte box, una empuñadura de cámara, una extensión de visor, una resolución de entrega, una distribución de vídeo o una condición de peso de la cámara antes de guardar.",
     autoGearAddItemsHeading: "Agregar estos elementos",
     autoGearAddItemLabel: "Elemento",
     autoGearAddCategoryLabel: "Categoría",
@@ -3842,6 +3866,14 @@ const texts = {
     autoGearCameraLabel: "Sélection de caméra",
     autoGearCameraHelp:
       "Appliquez la règle lorsque ces boîtiers caméra sont sélectionnés.",
+    autoGearCameraWeightLabel: "Condition de poids de caméra",
+    autoGearCameraWeightHelp:
+      "Active cette règle lorsque le poids de la caméra sélectionnée en grammes est supérieur, inférieur ou égal à ton seuil.",
+    autoGearCameraWeightComparisonLabel: "Comparaison du poids de la caméra",
+    autoGearCameraWeightComparisonHeavier: "Plus lourde que (>)",
+    autoGearCameraWeightComparisonLighter: "Plus légère que (<)",
+    autoGearCameraWeightComparisonEqual: "Exactement (=)",
+    autoGearCameraWeightValueLabel: "Valeur du poids de la caméra (g)",
     autoGearMonitorLabel: "Moniteurs embarqués",
     autoGearMonitorDefaultsHeading: "Monitor defaults",
     autoGearMonitorDefaultsDescription: "Choose which monitors should be preselected for new gear lists.",
@@ -3871,7 +3903,7 @@ const texts = {
     autoGearDistanceHelp:
       "Appliquez la règle lorsque ces capteurs de distance sont sélectionnés.",
     autoGearRuleConditionRequired:
-      "Sélectionnez au moins un scénario, une option de matte box, une poignée caméra, une extension de viseur ou une distribution vidéo avant d’enregistrer.",
+      "Sélectionne au moins un scénario, une caméra, un moniteur, un émetteur sans fil, un moteur, un contrôleur, un capteur de distance, une option de matte box, une poignée caméra, une extension de viseur, une résolution de livraison, une distribution vidéo ou une condition de poids de caméra avant d’enregistrer.",
     autoGearAddItemsHeading: "Ajouter ces éléments",
     autoGearAddItemLabel: "Élément",
     autoGearAddCategoryLabel: "Catégorie",
@@ -4906,6 +4938,14 @@ const texts = {
     autoGearCameraLabel: "Kameraauswahl",
     autoGearCameraHelp:
       "Wende die Regel an, wenn diese Kamerabodys ausgewählt sind.",
+    autoGearCameraWeightLabel: "Kameragewicht-Bedingung",
+    autoGearCameraWeightHelp:
+      "Aktiviere diese Regel, wenn das Gewicht der ausgewählten Kamera in Gramm größer, kleiner oder gleich deinem Grenzwert ist.",
+    autoGearCameraWeightComparisonLabel: "Kameragewicht vergleichen",
+    autoGearCameraWeightComparisonHeavier: "Schwerer als (>)",
+    autoGearCameraWeightComparisonLighter: "Leichter als (<)",
+    autoGearCameraWeightComparisonEqual: "Genau (=)",
+    autoGearCameraWeightValueLabel: "Kameragewicht (g)",
     autoGearMonitorLabel: "Onboard-Monitore",
     autoGearMonitorDefaultsHeading: "Monitor defaults",
     autoGearMonitorDefaultsDescription: "Choose which monitors should be preselected for new gear lists.",
@@ -4935,7 +4975,7 @@ const texts = {
     autoGearDistanceHelp:
       "Wende die Regel an, wenn diese Distanzgeräte ausgewählt sind.",
     autoGearRuleConditionRequired:
-      "Wähle mindestens ein Szenario, eine Mattebox-Option, einen Kamera-Handgriff, eine Sucher-Verlängerung oder eine Videoverteilung, bevor du speicherst.",
+      "Wähle mindestens ein Szenario, eine Kamera, einen Monitor, einen Funksender, einen Motor, einen Controller, ein Distanzgerät, eine Mattebox-Option, einen Kamera-Handgriff, eine Sucher-Verlängerung, eine Auslieferungsauflösung, eine Videoverteilung oder eine Kameragewicht-Bedingung, bevor du speicherst.",
     autoGearAddItemsHeading: "Diese Geräte hinzufügen",
     autoGearAddItemLabel: "Gerät",
     autoGearAddCategoryLabel: "Kategorie",

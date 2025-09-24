@@ -1,5 +1,6 @@
 /* global getManualDownloadFallbackMessage, getDiagramManualPositions, normalizeAutoGearShootingDayValue,
-          normalizeAutoGearShootingDaysCondition, getAutoGearMonitorDefault, getSetupNameState,
+          normalizeAutoGearShootingDaysCondition, normalizeAutoGearCameraWeightCondition,
+          formatAutoGearCameraWeightCondition, getAutoGearMonitorDefault, getSetupNameState,
           createProjectInfoSnapshotForStorage */
 
 // --- NEW SETUP MANAGEMENT FUNCTIONS ---
@@ -1549,7 +1550,12 @@ function getAutoGearRuleDisplayLabel(rule) {
   const scenarioList = Array.isArray(rule.scenarios) ? rule.scenarios.filter(Boolean) : [];
   if (scenarioList.length) return scenarioList.join(' + ');
   const cameraList = Array.isArray(rule.camera) ? rule.camera.filter(Boolean) : [];
+  const cameraWeightCondition = normalizeAutoGearCameraWeightCondition(rule.cameraWeight);
   if (cameraList.length) return cameraList.join(' + ');
+  if (cameraWeightCondition) {
+    const formatted = formatAutoGearCameraWeightCondition(cameraWeightCondition);
+    if (formatted) return formatted;
+  }
   const monitorList = Array.isArray(rule.monitor) ? rule.monitor.filter(Boolean) : [];
   if (monitorList.length) return monitorList.join(' + ');
   const crewPresentList = Array.isArray(rule.crewPresent) ? rule.crewPresent.filter(Boolean) : [];
@@ -2177,6 +2183,12 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
       ? info.cameraSelection.trim()
       : '';
   const normalizedCameraSelection = normalizeAutoGearTriggerValue(rawCameraSelection);
+  const selectedCameraWeight = (() => {
+    if (!rawCameraSelection) return null;
+    const device = devices && devices.cameras ? devices.cameras[rawCameraSelection] : null;
+    if (!device || typeof device.weight_g !== 'number') return null;
+    return Number.isFinite(device.weight_g) ? Math.round(device.weight_g) : null;
+  })();
   const rawMonitorSelection = info && typeof info.monitorSelection === 'string'
       ? info.monitorSelection.trim()
       : '';
@@ -2314,6 +2326,21 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
           if (!normalizedTargets.length) return false;
           if (!normalizedCameraSelection) return false;
           if (!normalizedTargets.includes(normalizedCameraSelection)) return false;
+        }
+        const cameraWeightCondition = normalizeAutoGearCameraWeightCondition(rule.cameraWeight);
+        if (cameraWeightCondition) {
+          if (!Number.isFinite(selectedCameraWeight)) return false;
+          const threshold = typeof cameraWeightCondition.value === 'number'
+            ? cameraWeightCondition.value
+            : null;
+          if (!Number.isFinite(threshold)) return false;
+          if (cameraWeightCondition.comparison === 'greater') {
+            if (!(selectedCameraWeight > threshold)) return false;
+          } else if (cameraWeightCondition.comparison === 'less') {
+            if (!(selectedCameraWeight < threshold)) return false;
+          } else if (!(selectedCameraWeight === threshold)) {
+            return false;
+          }
         }
         const monitorList = Array.isArray(rule.monitor) ? rule.monitor.filter(Boolean) : [];
         if (monitorList.length) {

@@ -1155,21 +1155,29 @@ function collectProjectFormData() {
     return t === 'ND Grad HE' || t === 'ND Grad SE';
   }) ? 'Swing Away' : getValue('mattebox');
   var people = Array.from(((_crewContainer = crewContainer) === null || _crewContainer === void 0 ? void 0 : _crewContainer.querySelectorAll('.person-row')) || []).map(function (row) {
-    var _row$querySelector, _row$querySelector2, _row$querySelector3, _row$querySelector4;
+    var _row$querySelector;
+    var roleValue = (_row$querySelector = row.querySelector('select')) === null || _row$querySelector === void 0 ? void 0 : _row$querySelector.value;
+    var nameInput = row.querySelector('.person-name');
+    var phoneInput = row.querySelector('.person-phone');
+    var emailInput = row.querySelector('.person-email');
+    var role = typeof roleValue === 'string' ? roleValue.trim() : roleValue == null ? '' : String(roleValue);
+    var name = typeof (nameInput === null || nameInput === void 0 ? void 0 : nameInput.value) === 'string' ? nameInput.value.trim() : '';
+    var phone = typeof (phoneInput === null || phoneInput === void 0 ? void 0 : phoneInput.value) === 'string' ? phoneInput.value.trim() : '';
+    var email = typeof (emailInput === null || emailInput === void 0 ? void 0 : emailInput.value) === 'string' ? emailInput.value.trim() : '';
     return {
-      role: (_row$querySelector = row.querySelector('select')) === null || _row$querySelector === void 0 ? void 0 : _row$querySelector.value,
-      name: (_row$querySelector2 = row.querySelector('.person-name')) === null || _row$querySelector2 === void 0 ? void 0 : _row$querySelector2.value.trim(),
-      phone: (_row$querySelector3 = row.querySelector('.person-phone')) === null || _row$querySelector3 === void 0 ? void 0 : _row$querySelector3.value.trim(),
-      email: (_row$querySelector4 = row.querySelector('.person-email')) === null || _row$querySelector4 === void 0 || (_row$querySelector4 = _row$querySelector4.value) === null || _row$querySelector4 === void 0 ? void 0 : _row$querySelector4.trim()
+      role: role,
+      name: name,
+      phone: phone,
+      email: email
     };
   }).filter(function (person) {
-    return person.role && person.name;
+    return person.role || person.name || person.phone || person.email;
   });
   var collectRanges = function collectRanges(container, startSel, endSel) {
     return Array.from((container === null || container === void 0 ? void 0 : container.querySelectorAll('.period-row')) || []).map(function (row) {
-      var _row$querySelector5, _row$querySelector6;
-      var start = (_row$querySelector5 = row.querySelector(startSel)) === null || _row$querySelector5 === void 0 ? void 0 : _row$querySelector5.value;
-      var end = (_row$querySelector6 = row.querySelector(endSel)) === null || _row$querySelector6 === void 0 ? void 0 : _row$querySelector6.value;
+      var _row$querySelector2, _row$querySelector3;
+      var start = (_row$querySelector2 = row.querySelector(startSel)) === null || _row$querySelector2 === void 0 ? void 0 : _row$querySelector2.value;
+      var end = (_row$querySelector3 = row.querySelector(endSel)) === null || _row$querySelector3 === void 0 ? void 0 : _row$querySelector3.value;
       return [start, end].filter(Boolean).join(' to ');
     }).filter(Boolean);
   };
@@ -1649,7 +1657,12 @@ function getAutoGearRuleDisplayLabel(rule) {
   var scenarioList = Array.isArray(rule.scenarios) ? rule.scenarios.filter(Boolean) : [];
   if (scenarioList.length) return scenarioList.join(' + ');
   var cameraList = Array.isArray(rule.camera) ? rule.camera.filter(Boolean) : [];
+  var cameraWeightCondition = normalizeAutoGearCameraWeightCondition(rule.cameraWeight);
   if (cameraList.length) return cameraList.join(' + ');
+  if (cameraWeightCondition) {
+    var formatted = formatAutoGearCameraWeightCondition(cameraWeightCondition);
+    if (formatted) return formatted;
+  }
   var monitorList = Array.isArray(rule.monitor) ? rule.monitor.filter(Boolean) : [];
   if (monitorList.length) return monitorList.join(' + ');
   var crewPresentList = Array.isArray(rule.crewPresent) ? rule.crewPresent.filter(Boolean) : [];
@@ -2277,6 +2290,12 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
   var videoDistributionSet = new Set(normalizedVideoDistribution);
   var rawCameraSelection = info && typeof info.cameraSelection === 'string' ? info.cameraSelection.trim() : '';
   var normalizedCameraSelection = normalizeAutoGearTriggerValue(rawCameraSelection);
+  var selectedCameraWeight = function () {
+    if (!rawCameraSelection) return null;
+    var device = devices && devices.cameras ? devices.cameras[rawCameraSelection] : null;
+    if (!device || typeof device.weight_g !== 'number') return null;
+    return Number.isFinite(device.weight_g) ? Math.round(device.weight_g) : null;
+  }();
   var rawMonitorSelection = info && typeof info.monitorSelection === 'string' ? info.monitorSelection.trim() : '';
   var normalizedMonitorSelection = normalizeAutoGearTriggerValue(rawMonitorSelection);
   var rawWirelessSelection = info && typeof info.wirelessSelection === 'string' ? info.wirelessSelection.trim() : '';
@@ -2395,6 +2414,19 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
       if (!_normalizedTargets.length) return false;
       if (!normalizedCameraSelection) return false;
       if (!_normalizedTargets.includes(normalizedCameraSelection)) return false;
+    }
+    var cameraWeightCondition = normalizeAutoGearCameraWeightCondition(rule.cameraWeight);
+    if (cameraWeightCondition) {
+      if (!Number.isFinite(selectedCameraWeight)) return false;
+      var threshold = typeof cameraWeightCondition.value === 'number' ? cameraWeightCondition.value : null;
+      if (!Number.isFinite(threshold)) return false;
+      if (cameraWeightCondition.comparison === 'greater') {
+        if (!(selectedCameraWeight > threshold)) return false;
+      } else if (cameraWeightCondition.comparison === 'less') {
+        if (!(selectedCameraWeight < threshold)) return false;
+      } else if (!(selectedCameraWeight === threshold)) {
+        return false;
+      }
     }
     var monitorList = Array.isArray(rule.monitor) ? rule.monitor.filter(Boolean) : [];
     if (monitorList.length) {
@@ -2864,8 +2896,10 @@ function generateGearListHtml() {
       }
       var linkDetails = detailLinks.length ? " (".concat(detailLinks.join(', '), ")") : '';
       var plainDetails = detailText.length ? " (".concat(detailText.join(', '), ")") : '';
-      crewEntriesHtml.push("<span class=\"crew-entry\">".concat(safeRole, ": ").concat(safeName).concat(linkDetails, "</span>"));
-      crewEntriesText.push("".concat(roleLabel, ": ").concat(nameValue).concat(plainDetails));
+      var rolePrefixHtml = roleLabel ? "".concat(safeRole, ": ") : '';
+      var rolePrefixText = roleLabel ? "".concat(roleLabel, ": ") : '';
+      crewEntriesHtml.push("<span class=\"crew-entry\">".concat(rolePrefixHtml).concat(safeName).concat(linkDetails, "</span>"));
+      crewEntriesText.push("".concat(rolePrefixText).concat(nameValue).concat(plainDetails));
     });
     if (crewEntriesHtml.length) {
       projectInfo.crew = {
@@ -4045,9 +4079,18 @@ function saveCurrentGearList() {
   var gearSelectorsRaw = getGearListSelectors();
   var gearSelectors = cloneGearListSelectors(gearSelectorsRaw);
   var hasGearSelectors = Object.keys(gearSelectors).length > 0;
-  var selectedStorageKey = setupSelect && typeof setupSelect.value === 'string' ? setupSelect.value.trim() : '';
-  var typedStorageKey = setupNameInput && typeof setupNameInput.value === 'string' ? setupNameInput.value.trim() : '';
-  var projectStorageKey = selectedStorageKey || typedStorageKey;
+  var nameState = typeof getSetupNameState === 'function' ? getSetupNameState() : null;
+  var fallbackNormalize = function fallbackNormalize(value) {
+    if (typeof value !== 'string') return '';
+    return value.trim();
+  };
+  var selectedStorageKey = nameState ? nameState.selectedName : fallbackNormalize(setupSelect && typeof setupSelect.value === 'string' ? setupSelect.value : '');
+  var typedStorageKey = nameState ? nameState.typedName : fallbackNormalize(setupNameInput && typeof setupNameInput.value === 'string' ? setupNameInput.value : '');
+  var projectStorageKey = nameState ? nameState.storageKey : selectedStorageKey || typedStorageKey;
+  var renameInProgress = nameState ? nameState.renameInProgress : Boolean(selectedStorageKey && typedStorageKey && selectedStorageKey !== typedStorageKey);
+  var projectInfoForStorage = typeof createProjectInfoSnapshotForStorage === 'function' ? createProjectInfoSnapshotForStorage(currentProjectInfo, {
+    projectNameOverride: renameInProgress ? selectedStorageKey : undefined
+  }) : currentProjectInfo;
   var projectRules = getProjectScopedAutoGearRules();
   var diagramPositions = null;
   if (typeof getDiagramManualPositions === 'function') {
@@ -4058,7 +4101,7 @@ function saveCurrentGearList() {
   }
   if (typeof saveProject === 'function' && typeof projectStorageKey === 'string' && projectStorageKey) {
     var payload = {
-      projectInfo: currentProjectInfo,
+      projectInfo: projectInfoForStorage,
       gearList: html
     };
     if (hasGearSelectors) {
@@ -4086,9 +4129,9 @@ function saveCurrentGearList() {
       changed = true;
     }
   }
-  if (currentProjectInfo) {
-    if (setup.projectInfo !== currentProjectInfo) {
-      setup.projectInfo = currentProjectInfo;
+  if (projectInfoForStorage) {
+    if (setup.projectInfo !== projectInfoForStorage) {
+      setup.projectInfo = projectInfoForStorage;
       changed = true;
     }
   } else if (Object.prototype.hasOwnProperty.call(setup, 'projectInfo')) {
