@@ -1089,6 +1089,8 @@ function normalizeAutoGearRule(rule) {
     .sort((a, b) => a.localeCompare(b));
   const camera = normalizeAutoGearTriggerList(rule.camera).sort((a, b) => a.localeCompare(b));
   const monitor = normalizeAutoGearTriggerList(rule.monitor).sort((a, b) => a.localeCompare(b));
+  const crewPresent = normalizeAutoGearTriggerList(rule.crewPresent).sort((a, b) => a.localeCompare(b));
+  const crewAbsent = normalizeAutoGearTriggerList(rule.crewAbsent).sort((a, b) => a.localeCompare(b));
   const wireless = normalizeAutoGearTriggerList(rule.wireless).sort((a, b) => a.localeCompare(b));
   const motors = normalizeAutoGearTriggerList(rule.motors).sort((a, b) => a.localeCompare(b));
   const controllers = normalizeAutoGearTriggerList(rule.controllers).sort((a, b) => a.localeCompare(b));
@@ -1105,6 +1107,8 @@ function normalizeAutoGearRule(rule) {
     && !videoDistribution.length
     && !camera.length
     && !monitor.length
+    && !crewPresent.length
+    && !crewAbsent.length
     && !wireless.length
     && !motors.length
     && !controllers.length
@@ -1128,6 +1132,8 @@ function normalizeAutoGearRule(rule) {
     videoDistribution,
     camera,
     monitor,
+    crewPresent,
+    crewAbsent,
     wireless,
     motors,
     controllers,
@@ -1204,6 +1210,8 @@ function snapshotAutoGearRuleForFingerprint(rule) {
     videoDistribution: normalized.videoDistribution.slice().sort((a, b) => a.localeCompare(b)),
     camera: normalized.camera.slice().sort((a, b) => a.localeCompare(b)),
     monitor: normalized.monitor.slice().sort((a, b) => a.localeCompare(b)),
+    crewPresent: normalized.crewPresent.slice().sort((a, b) => a.localeCompare(b)),
+    crewAbsent: normalized.crewAbsent.slice().sort((a, b) => a.localeCompare(b)),
     wireless: normalized.wireless.slice().sort((a, b) => a.localeCompare(b)),
     motors: normalized.motors.slice().sort((a, b) => a.localeCompare(b)),
     controllers: normalized.controllers.slice().sort((a, b) => a.localeCompare(b)),
@@ -1224,6 +1232,8 @@ function autoGearRuleSortKey(rule) {
   const videoDistributionKey = Array.isArray(rule.videoDistribution) ? rule.videoDistribution.join('|') : '';
   const cameraKey = Array.isArray(rule.camera) ? rule.camera.join('|') : '';
   const monitorKey = Array.isArray(rule.monitor) ? rule.monitor.join('|') : '';
+  const crewPresentKey = Array.isArray(rule.crewPresent) ? rule.crewPresent.join('|') : '';
+  const crewAbsentKey = Array.isArray(rule.crewAbsent) ? rule.crewAbsent.join('|') : '';
   const wirelessKey = Array.isArray(rule.wireless) ? rule.wireless.join('|') : '';
   const motorsKey = Array.isArray(rule.motors) ? rule.motors.join('|') : '';
   const controllersKey = Array.isArray(rule.controllers) ? rule.controllers.join('|') : '';
@@ -1234,7 +1244,7 @@ function autoGearRuleSortKey(rule) {
     : '';
   const addKey = Array.isArray(rule.add) ? rule.add.map(autoGearItemSortKey).join('|') : '';
   const removeKey = Array.isArray(rule.remove) ? rule.remove.map(autoGearItemSortKey).join('|') : '';
-  return `${alwaysKey}|${scenarioKey}|${matteboxKey}|${cameraHandleKey}|${viewfinderKey}|${deliveryResolutionKey}|${videoDistributionKey}|${cameraKey}|${monitorKey}|${wirelessKey}|${motorsKey}|${controllersKey}|${distanceKey}|${shootingDaysKey}|${rule.label || ''}|${addKey}|${removeKey}`;
+  return `${alwaysKey}|${scenarioKey}|${matteboxKey}|${cameraHandleKey}|${viewfinderKey}|${deliveryResolutionKey}|${videoDistributionKey}|${cameraKey}|${monitorKey}|${crewPresentKey}|${crewAbsentKey}|${wirelessKey}|${motorsKey}|${controllersKey}|${distanceKey}|${shootingDaysKey}|${rule.label || ''}|${addKey}|${removeKey}`;
 }
 
 function createAutoGearRulesFingerprint(rules) {
@@ -1819,6 +1829,8 @@ function cloneAutoGearRule(rule) {
       : [],
     camera: Array.isArray(rule.camera) ? rule.camera.slice() : [],
     monitor: Array.isArray(rule.monitor) ? rule.monitor.slice() : [],
+    crewPresent: Array.isArray(rule.crewPresent) ? rule.crewPresent.slice() : [],
+    crewAbsent: Array.isArray(rule.crewAbsent) ? rule.crewAbsent.slice() : [],
     wireless: Array.isArray(rule.wireless) ? rule.wireless.slice() : [],
     motors: Array.isArray(rule.motors) ? rule.motors.slice() : [],
     controllers: Array.isArray(rule.controllers) ? rule.controllers.slice() : [],
@@ -5729,6 +5741,34 @@ function setLanguage(lang) {
     if (autoGearMonitorSelect) {
       autoGearMonitorSelect.setAttribute('data-help', help);
       autoGearMonitorSelect.setAttribute('aria-label', label);
+    }
+  }
+  if (autoGearCrewPresentLabel) {
+    const label = texts[lang].autoGearCrewPresentLabel
+      || texts.en?.autoGearCrewPresentLabel
+      || autoGearCrewPresentLabel.textContent;
+    autoGearCrewPresentLabel.textContent = label;
+    const help = texts[lang].autoGearCrewPresentHelp
+      || texts.en?.autoGearCrewPresentHelp
+      || label;
+    autoGearCrewPresentLabel.setAttribute('data-help', help);
+    if (autoGearCrewPresentSelect) {
+      autoGearCrewPresentSelect.setAttribute('data-help', help);
+      autoGearCrewPresentSelect.setAttribute('aria-label', label);
+    }
+  }
+  if (autoGearCrewAbsentLabel) {
+    const label = texts[lang].autoGearCrewAbsentLabel
+      || texts.en?.autoGearCrewAbsentLabel
+      || autoGearCrewAbsentLabel.textContent;
+    autoGearCrewAbsentLabel.textContent = label;
+    const help = texts[lang].autoGearCrewAbsentHelp
+      || texts.en?.autoGearCrewAbsentHelp
+      || label;
+    autoGearCrewAbsentLabel.setAttribute('data-help', help);
+    if (autoGearCrewAbsentSelect) {
+      autoGearCrewAbsentSelect.setAttribute('data-help', help);
+      autoGearCrewAbsentSelect.setAttribute('aria-label', label);
     }
   }
   if (autoGearWirelessLabel) {
@@ -10410,6 +10450,8 @@ const autoGearConditionSections = {
   videoDistribution: document.getElementById('autoGearCondition-videoDistribution'),
   camera: document.getElementById('autoGearCondition-camera'),
   monitor: document.getElementById('autoGearCondition-monitor'),
+  crewPresent: document.getElementById('autoGearCondition-crewPresent'),
+  crewAbsent: document.getElementById('autoGearCondition-crewAbsent'),
   wireless: document.getElementById('autoGearCondition-wireless'),
   motors: document.getElementById('autoGearCondition-motors'),
   controllers: document.getElementById('autoGearCondition-controllers'),
@@ -10427,6 +10469,8 @@ const autoGearConditionAddShortcuts = {
   videoDistribution: autoGearConditionSections.videoDistribution?.querySelector('.auto-gear-condition-add') || null,
   camera: autoGearConditionSections.camera?.querySelector('.auto-gear-condition-add') || null,
   monitor: autoGearConditionSections.monitor?.querySelector('.auto-gear-condition-add') || null,
+  crewPresent: autoGearConditionSections.crewPresent?.querySelector('.auto-gear-condition-add') || null,
+  crewAbsent: autoGearConditionSections.crewAbsent?.querySelector('.auto-gear-condition-add') || null,
   wireless: autoGearConditionSections.wireless?.querySelector('.auto-gear-condition-add') || null,
   motors: autoGearConditionSections.motors?.querySelector('.auto-gear-condition-add') || null,
   controllers: autoGearConditionSections.controllers?.querySelector('.auto-gear-condition-add') || null,
@@ -10444,6 +10488,8 @@ const autoGearConditionRemoveButtons = {
   videoDistribution: autoGearConditionSections.videoDistribution?.querySelector('.auto-gear-condition-remove') || null,
   camera: autoGearConditionSections.camera?.querySelector('.auto-gear-condition-remove') || null,
   monitor: autoGearConditionSections.monitor?.querySelector('.auto-gear-condition-remove') || null,
+  crewPresent: autoGearConditionSections.crewPresent?.querySelector('.auto-gear-condition-remove') || null,
+  crewAbsent: autoGearConditionSections.crewAbsent?.querySelector('.auto-gear-condition-remove') || null,
   wireless: autoGearConditionSections.wireless?.querySelector('.auto-gear-condition-remove') || null,
   motors: autoGearConditionSections.motors?.querySelector('.auto-gear-condition-remove') || null,
   controllers: autoGearConditionSections.controllers?.querySelector('.auto-gear-condition-remove') || null,
@@ -10490,6 +10536,10 @@ const autoGearCameraSelect = document.getElementById('autoGearCamera');
 const autoGearCameraLabel = document.getElementById('autoGearCameraLabel');
 const autoGearMonitorSelect = document.getElementById('autoGearMonitor');
 const autoGearMonitorLabel = document.getElementById('autoGearMonitorLabel');
+const autoGearCrewPresentSelect = document.getElementById('autoGearCrewPresent');
+const autoGearCrewPresentLabel = document.getElementById('autoGearCrewPresentLabel');
+const autoGearCrewAbsentSelect = document.getElementById('autoGearCrewAbsent');
+const autoGearCrewAbsentLabel = document.getElementById('autoGearCrewAbsentLabel');
 const autoGearWirelessSelect = document.getElementById('autoGearWireless');
 const autoGearWirelessLabel = document.getElementById('autoGearWirelessLabel');
 const autoGearMotorsSelect = document.getElementById('autoGearMotors');
@@ -10509,6 +10559,8 @@ const autoGearConditionLabels = {
   videoDistribution: autoGearVideoDistributionLabel,
   camera: autoGearCameraLabel,
   monitor: autoGearMonitorLabel,
+  crewPresent: autoGearCrewPresentLabel,
+  crewAbsent: autoGearCrewAbsentLabel,
   wireless: autoGearWirelessLabel,
   motors: autoGearMotorsLabel,
   controllers: autoGearControllersLabel,
@@ -10525,6 +10577,8 @@ const autoGearConditionSelects = {
   videoDistribution: autoGearVideoDistributionSelect,
   camera: autoGearCameraSelect,
   monitor: autoGearMonitorSelect,
+  crewPresent: autoGearCrewPresentSelect,
+  crewAbsent: autoGearCrewAbsentSelect,
   wireless: autoGearWirelessSelect,
   motors: autoGearMotorsSelect,
   controllers: autoGearControllersSelect,
@@ -10541,6 +10595,8 @@ const AUTO_GEAR_CONDITION_KEYS = [
   'videoDistribution',
   'camera',
   'monitor',
+  'crewPresent',
+  'crewAbsent',
   'wireless',
   'motors',
   'controllers',
@@ -10557,6 +10613,8 @@ const AUTO_GEAR_CONDITION_FALLBACK_LABELS = {
   videoDistribution: 'Video distribution',
   camera: 'Camera',
   monitor: 'Onboard monitor',
+  crewPresent: 'Crew present',
+  crewAbsent: 'Crew absent',
   wireless: 'Wireless transmitter',
   motors: 'FIZ motors',
   controllers: 'FIZ controllers',
@@ -10588,6 +10646,8 @@ const autoGearConditionRefreshers = {
   videoDistribution: refreshAutoGearVideoDistributionOptions,
   camera: refreshAutoGearCameraOptions,
   monitor: refreshAutoGearMonitorOptions,
+  crewPresent: selected => refreshAutoGearCrewOptions(autoGearCrewPresentSelect, selected, 'crewPresent'),
+  crewAbsent: selected => refreshAutoGearCrewOptions(autoGearCrewAbsentSelect, selected, 'crewAbsent'),
   wireless: refreshAutoGearWirelessOptions,
   motors: refreshAutoGearMotorsOptions,
   controllers: refreshAutoGearControllersOptions,
@@ -11076,6 +11136,8 @@ function enableAutoGearMultiSelectToggle(select) {
   autoGearVideoDistributionSelect,
   autoGearCameraSelect,
   autoGearMonitorSelect,
+  autoGearCrewPresentSelect,
+  autoGearCrewAbsentSelect,
   autoGearWirelessSelect,
   autoGearMotorsSelect,
   autoGearControllersSelect,
@@ -11247,6 +11309,8 @@ function autoGearRuleMatchesSearch(rule, query) {
   pushValues(rule?.videoDistribution);
   pushValues(rule?.camera);
   pushValues(rule?.monitor);
+  pushValues(rule?.crewPresent);
+  pushValues(rule?.crewAbsent);
   pushValues(rule?.wireless);
   pushValues(rule?.motors);
   pushValues(rule?.controllers);
@@ -11409,6 +11473,8 @@ function createAutoGearDraft(rule) {
       videoDistribution: Array.isArray(rule.videoDistribution) ? rule.videoDistribution.slice() : [],
       camera: Array.isArray(rule.camera) ? rule.camera.slice() : [],
       monitor: Array.isArray(rule.monitor) ? rule.monitor.slice() : [],
+      crewPresent: Array.isArray(rule.crewPresent) ? rule.crewPresent.slice() : [],
+      crewAbsent: Array.isArray(rule.crewAbsent) ? rule.crewAbsent.slice() : [],
       wireless: Array.isArray(rule.wireless) ? rule.wireless.slice() : [],
       motors: Array.isArray(rule.motors) ? rule.motors.slice() : [],
       controllers: Array.isArray(rule.controllers) ? rule.controllers.slice() : [],
@@ -11433,6 +11499,8 @@ function createAutoGearDraft(rule) {
     videoDistribution: [],
     camera: [],
     monitor: [],
+    crewPresent: [],
+    crewAbsent: [],
     wireless: [],
     motors: [],
     controllers: [],
@@ -12050,6 +12118,71 @@ function collectAutoGearSelectedValues(selected, key) {
       .map(value => value.trim())
       .filter(Boolean)
   ));
+}
+
+function getCrewRoleEntries() {
+  const langTexts = texts[currentLang] || texts.en || {};
+  const crewRoleMap = langTexts.crewRoles || texts.en?.crewRoles || {};
+  const seen = new Set();
+  const entries = [];
+  Object.entries(crewRoleMap).forEach(([value, label]) => {
+    if (typeof value !== 'string') return;
+    const trimmedValue = value.trim();
+    if (!trimmedValue) return;
+    const key = trimmedValue.toLowerCase();
+    if (seen.has(key)) return;
+    seen.add(key);
+    const displayLabel = typeof label === 'string' && label.trim() ? label.trim() : trimmedValue;
+    entries.push({ value: trimmedValue, label: displayLabel });
+  });
+  return entries.sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: 'base' }));
+}
+
+function refreshAutoGearCrewOptions(selectElement, selected, key) {
+  if (!selectElement) return;
+
+  const selectedValues = collectAutoGearSelectedValues(selected, key);
+
+  selectElement.innerHTML = '';
+  selectElement.multiple = true;
+
+  const entries = getCrewRoleEntries();
+  const seen = new Set();
+
+  const appendOption = (value, label) => {
+    if (!value || seen.has(value)) return;
+    const option = document.createElement('option');
+    option.value = value;
+    option.textContent = label;
+    if (selectedValues.includes(value)) {
+      option.selected = true;
+    }
+    selectElement.appendChild(option);
+    seen.add(value);
+  };
+
+  entries.forEach(entry => appendOption(entry.value, entry.label));
+
+  selectedValues.forEach(value => {
+    if (!seen.has(value)) {
+      appendOption(value, value);
+    }
+  });
+
+  const selectableOptions = Array.from(selectElement.options || []).filter(option => !option.disabled);
+  selectElement.size = computeAutoGearMultiSelectSize(
+    selectableOptions.length,
+    { minRows: AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS }
+  );
+}
+
+function getCrewRoleLabel(value) {
+  if (typeof value !== 'string') return '';
+  const trimmed = value.trim();
+  if (!trimmed) return '';
+  const langTexts = texts[currentLang] || texts.en || {};
+  const crewRoleMap = langTexts.crewRoles || texts.en?.crewRoles || {};
+  return crewRoleMap?.[trimmed] || trimmed;
 }
 
 function refreshAutoGearCameraOptions(selected) {
@@ -12949,6 +13082,8 @@ function renderAutoGearRulesList() {
     const deliveryResolutionList = Array.isArray(rule.deliveryResolution) ? rule.deliveryResolution : [];
     const cameraList = Array.isArray(rule.camera) ? rule.camera : [];
     const monitorList = Array.isArray(rule.monitor) ? rule.monitor : [];
+    const crewPresentList = Array.isArray(rule.crewPresent) ? rule.crewPresent : [];
+    const crewAbsentList = Array.isArray(rule.crewAbsent) ? rule.crewAbsent : [];
     const wirelessList = Array.isArray(rule.wireless) ? rule.wireless : [];
     const motorsList = Array.isArray(rule.motors) ? rule.motors : [];
     const controllersList = Array.isArray(rule.controllers) ? rule.controllers : [];
@@ -12960,6 +13095,8 @@ function renderAutoGearRulesList() {
     const fallbackCandidates = [
       cameraList,
       monitorList,
+      crewPresentList,
+      crewAbsentList,
       wirelessList,
       motorsList,
       controllersList,
@@ -13012,6 +13149,26 @@ function renderAutoGearRulesList() {
       monitorMeta.className = 'auto-gear-rule-meta';
       monitorMeta.textContent = `${monitorLabelText}: ${monitorList.join(' + ')}`;
       info.appendChild(monitorMeta);
+    }
+    if (crewPresentList.length) {
+      const crewPresentLabelText = texts[currentLang]?.autoGearCrewPresentLabel
+        || texts.en?.autoGearCrewPresentLabel
+        || 'Crew present';
+      const crewMeta = document.createElement('p');
+      crewMeta.className = 'auto-gear-rule-meta';
+      const labels = crewPresentList.map(value => getCrewRoleLabel(value)).filter(Boolean);
+      crewMeta.textContent = `${crewPresentLabelText}: ${labels.join(' + ')}`;
+      info.appendChild(crewMeta);
+    }
+    if (crewAbsentList.length) {
+      const crewAbsentLabelText = texts[currentLang]?.autoGearCrewAbsentLabel
+        || texts.en?.autoGearCrewAbsentLabel
+        || 'Crew absent';
+      const crewAbsentMeta = document.createElement('p');
+      crewAbsentMeta.className = 'auto-gear-rule-meta';
+      const labels = crewAbsentList.map(value => getCrewRoleLabel(value)).filter(Boolean);
+      crewAbsentMeta.textContent = `${crewAbsentLabelText}: ${labels.join(' + ')}`;
+      info.appendChild(crewAbsentMeta);
     }
     if (wirelessList.length) {
       const wirelessLabelText = texts[currentLang]?.autoGearWirelessLabel
@@ -13623,6 +13780,16 @@ function saveAutoGearRuleFromEditor() {
         .map(option => option.value)
         .filter(value => typeof value === 'string' && value.trim())
     : [];
+  const crewPresentSelections = isAutoGearConditionActive('crewPresent') && autoGearCrewPresentSelect
+    ? Array.from(autoGearCrewPresentSelect.selectedOptions || [])
+        .map(option => option.value)
+        .filter(value => typeof value === 'string' && value.trim())
+    : [];
+  const crewAbsentSelections = isAutoGearConditionActive('crewAbsent') && autoGearCrewAbsentSelect
+    ? Array.from(autoGearCrewAbsentSelect.selectedOptions || [])
+        .map(option => option.value)
+        .filter(value => typeof value === 'string' && value.trim())
+    : [];
   const wirelessSelections = isAutoGearConditionActive('wireless') && autoGearWirelessSelect
     ? Array.from(autoGearWirelessSelect.selectedOptions || [])
         .map(option => option.value)
@@ -13661,6 +13828,8 @@ function saveAutoGearRuleFromEditor() {
     && !videoDistributionSelections.length
     && !cameraSelections.length
     && !monitorSelections.length
+    && !crewPresentSelections.length
+    && !crewAbsentSelections.length
     && !wirelessSelections.length
     && !motorSelections.length
     && !controllerSelections.length
@@ -13690,6 +13859,8 @@ function saveAutoGearRuleFromEditor() {
   autoGearEditorDraft.videoDistribution = videoDistributionSelections;
   autoGearEditorDraft.camera = cameraSelections;
   autoGearEditorDraft.monitor = monitorSelections;
+  autoGearEditorDraft.crewPresent = crewPresentSelections;
+  autoGearEditorDraft.crewAbsent = crewAbsentSelections;
   autoGearEditorDraft.wireless = wirelessSelections;
   autoGearEditorDraft.motors = motorSelections;
   autoGearEditorDraft.controllers = controllerSelections;

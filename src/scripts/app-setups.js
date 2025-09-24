@@ -1500,6 +1500,15 @@ function removeAutoGearItem(cell, item, remainingOverride) {
     return remaining;
 }
 
+function getCrewRoleLabelForDisplay(value) {
+  if (typeof value !== 'string') return '';
+  const trimmed = value.trim();
+  if (!trimmed) return '';
+  const langTexts = texts[currentLang] || texts.en || {};
+  const crewRoleLabels = langTexts.crewRoles || texts.en?.crewRoles || {};
+  return crewRoleLabels?.[trimmed] || trimmed;
+}
+
 function getAutoGearRuleDisplayLabel(rule) {
   if (!rule || typeof rule !== 'object') return '';
   const label = typeof rule.label === 'string' ? rule.label.trim() : '';
@@ -1510,6 +1519,14 @@ function getAutoGearRuleDisplayLabel(rule) {
   if (cameraList.length) return cameraList.join(' + ');
   const monitorList = Array.isArray(rule.monitor) ? rule.monitor.filter(Boolean) : [];
   if (monitorList.length) return monitorList.join(' + ');
+  const crewPresentList = Array.isArray(rule.crewPresent) ? rule.crewPresent.filter(Boolean) : [];
+  if (crewPresentList.length) {
+    return crewPresentList.map(getCrewRoleLabelForDisplay).join(' + ');
+  }
+  const crewAbsentList = Array.isArray(rule.crewAbsent) ? rule.crewAbsent.filter(Boolean) : [];
+  if (crewAbsentList.length) {
+    return crewAbsentList.map(getCrewRoleLabelForDisplay).join(' + ');
+  }
   const wirelessList = Array.isArray(rule.wireless) ? rule.wireless.filter(Boolean) : [];
   if (wirelessList.length) return wirelessList.join(' + ');
   const motorsList = Array.isArray(rule.motors) ? rule.motors.filter(Boolean) : [];
@@ -2135,6 +2152,15 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
       ? info.wirelessSelection.trim()
       : '';
   const normalizedWirelessSelection = normalizeAutoGearTriggerValue(rawWirelessSelection);
+  const crewRoleSet = new Set(
+    Array.isArray(info?.people)
+      ? info.people
+          .map(entry => (entry && typeof entry.role === 'string') ? entry.role.trim() : '')
+          .filter(Boolean)
+          .map(value => normalizeAutoGearTriggerValue(value))
+          .filter(Boolean)
+      : []
+  );
   const rawMotorSelections = [];
   if (info) {
     if (Array.isArray(info.motorSelections)) {
@@ -2264,6 +2290,22 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
           if (!normalizedTargets.length) return false;
           if (!normalizedMonitorSelection) return false;
           if (!normalizedTargets.includes(normalizedMonitorSelection)) return false;
+        }
+        const crewPresentList = Array.isArray(rule.crewPresent) ? rule.crewPresent.filter(Boolean) : [];
+        if (crewPresentList.length) {
+          const normalizedTargets = crewPresentList
+            .map(normalizeAutoGearTriggerValue)
+            .filter(Boolean);
+          if (!normalizedTargets.length) return false;
+          if (!normalizedTargets.every(target => crewRoleSet.has(target))) return false;
+        }
+        const crewAbsentList = Array.isArray(rule.crewAbsent) ? rule.crewAbsent.filter(Boolean) : [];
+        if (crewAbsentList.length) {
+          const normalizedTargets = crewAbsentList
+            .map(normalizeAutoGearTriggerValue)
+            .filter(Boolean);
+          if (!normalizedTargets.length) return false;
+          if (normalizedTargets.some(target => crewRoleSet.has(target))) return false;
         }
         const wirelessList = Array.isArray(rule.wireless) ? rule.wireless.filter(Boolean) : [];
         if (wirelessList.length) {
