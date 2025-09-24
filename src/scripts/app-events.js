@@ -1,5 +1,6 @@
 // --- EVENT LISTENERS ---
-/* global updateCageSelectOptions, updateGlobalDevicesReference, scheduleProjectAutoSave */
+/* global updateCageSelectOptions, updateGlobalDevicesReference, scheduleProjectAutoSave,
+          ensureAutoBackupsFromProjects */
 
 // Language selection
 languageSelect.addEventListener("change", (event) => {
