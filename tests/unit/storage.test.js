@@ -76,7 +76,9 @@ const TEMPERATURE_UNIT_KEY = 'cameraPowerPlanner_temperatureUnit';
 const FULL_BACKUP_HISTORY_KEY = 'cameraPowerPlanner_fullBackups';
 
 const BACKUP_SUFFIX = '__backup';
+const MIGRATION_BACKUP_SUFFIX = '__legacyMigrationBackup';
 const backupKeyFor = (key) => `${key}${BACKUP_SUFFIX}`;
+const migrationBackupKeyFor = (key) => `${key}${MIGRATION_BACKUP_SUFFIX}`;
 
 const validDeviceData = {
   cameras: {},
@@ -687,6 +689,42 @@ describe('project storage', () => {
     expect(localStorage.getItem('cinePowerPlanner_project')).toBeNull();
   });
 
+  test('loadProject creates migration backup before rewriting normalized data', () => {
+    const legacySerialized = JSON.stringify('<p>Legacy project</p>');
+    localStorage.setItem(PROJECT_KEY, legacySerialized);
+
+    expect(localStorage.getItem(migrationBackupKeyFor(PROJECT_KEY))).toBeNull();
+
+    const projects = loadProject();
+
+    const stored = localStorage.getItem(PROJECT_KEY);
+    expect(stored).not.toBeNull();
+    expect(JSON.parse(stored)).toEqual(projects);
+
+    const backupRaw = localStorage.getItem(migrationBackupKeyFor(PROJECT_KEY));
+    expect(backupRaw).toBeTruthy();
+    const backup = JSON.parse(backupRaw);
+    expect(typeof backup.createdAt).toBe('string');
+    expect(backup.createdAt.length).toBeGreaterThan(0);
+    expect(backup.data).toBe('<p>Legacy project</p>');
+  });
+
+  test('loadProject preserves existing migration backup entries', () => {
+    const legacySerialized = JSON.stringify('<p>Legacy project</p>');
+    const existingBackup = { createdAt: '2023-01-01T00:00:00.000Z', data: 'keep-me' };
+    localStorage.setItem(PROJECT_KEY, legacySerialized);
+    localStorage.setItem(
+      migrationBackupKeyFor(PROJECT_KEY),
+      JSON.stringify(existingBackup),
+    );
+
+    const projects = loadProject();
+    expect(projects).toEqual({ '': { gearList: '<p>Legacy project</p>', projectInfo: null } });
+
+    const storedBackup = localStorage.getItem(migrationBackupKeyFor(PROJECT_KEY));
+    expect(storedBackup).toBe(JSON.stringify(existingBackup));
+  });
+
   test('deleteProject removes individual projects and stores an automatic backup before deleting', () => {
     saveProject('Keep', { gearList: '<ul>Keep</ul>' });
     saveProject('Drop', { gearList: '<ul>Drop</ul>' });
@@ -1151,7 +1189,7 @@ describe('export/import all data', () => {
       }),
       [FEEDBACK_KEY]: JSON.stringify({ message: 'snapshot' }),
       [FAVORITES_KEY]: JSON.stringify({ camera: ['Mini'] }),
-      [`${PROJECT_KEY}__legacyMigrationBackup`]: JSON.stringify({
+      [migrationBackupKeyFor(PROJECT_KEY)]: JSON.stringify({
         createdAt: '2024-01-01T00:00:00.000Z',
         data: JSON.stringify({ Snapshot: { gearList: '<p>Snapshot</p>' } }),
       }),
