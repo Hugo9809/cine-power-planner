@@ -244,6 +244,13 @@ const texts = {
     autoGearCameraHelp:
       "Apply this rule when these camera bodies are selected.",
     autoGearMonitorLabel: "Onboard monitors",
+    autoGearMonitorDefaultsHeading: "Monitor defaults",
+    autoGearMonitorDefaultsDescription: "Choose which monitors should be preselected for new gear lists.",
+    autoGearDefaultFocusMonitorLabel: "Focus monitor",
+    autoGearDefaultHandheldMonitorLabel: "7\" handheld monitor",
+    autoGearDefaultComboMonitorLabel: "Combo monitor 15-21\"",
+    autoGearDefaultDirectorMonitorLabel: "Director monitor 15-21\"",
+    autoGearMonitorDefaultPlaceholder: "Use recommended automatically",
     autoGearMonitorHelp:
       "Apply this rule when these onboard monitors are selected.",
     autoGearCrewPresentLabel: "Crew present",
@@ -1683,6 +1690,13 @@ const texts = {
     autoGearCameraHelp:
       "Applica la regola quando sono selezionati questi corpi macchina.",
     autoGearMonitorLabel: "Monitor onboard",
+    autoGearMonitorDefaultsHeading: "Monitor defaults",
+    autoGearMonitorDefaultsDescription: "Choose which monitors should be preselected for new gear lists.",
+    autoGearDefaultFocusMonitorLabel: "Focus monitor",
+    autoGearDefaultHandheldMonitorLabel: "7\" handheld monitor",
+    autoGearDefaultComboMonitorLabel: "Combo monitor 15-21\"",
+    autoGearDefaultDirectorMonitorLabel: "Director monitor 15-21\"",
+    autoGearMonitorDefaultPlaceholder: "Use recommended automatically",
     autoGearMonitorHelp:
       "Applica la regola quando sono selezionati questi monitor onboard.",
     autoGearCrewPresentLabel: "Crew present",
@@ -2703,6 +2717,13 @@ const texts = {
     autoGearCameraHelp:
       "Aplica la regla cuando se seleccionan estos cuerpos de cámara.",
     autoGearMonitorLabel: "Monitores a bordo",
+    autoGearMonitorDefaultsHeading: "Monitor defaults",
+    autoGearMonitorDefaultsDescription: "Choose which monitors should be preselected for new gear lists.",
+    autoGearDefaultFocusMonitorLabel: "Focus monitor",
+    autoGearDefaultHandheldMonitorLabel: "7\" handheld monitor",
+    autoGearDefaultComboMonitorLabel: "Combo monitor 15-21\"",
+    autoGearDefaultDirectorMonitorLabel: "Director monitor 15-21\"",
+    autoGearMonitorDefaultPlaceholder: "Use recommended automatically",
     autoGearMonitorHelp:
       "Aplica la regla cuando se seleccionan estos monitores a bordo.",
     autoGearCrewPresentLabel: "Crew present",
@@ -3725,6 +3746,13 @@ const texts = {
     autoGearCameraHelp:
       "Appliquez la règle lorsque ces boîtiers caméra sont sélectionnés.",
     autoGearMonitorLabel: "Moniteurs embarqués",
+    autoGearMonitorDefaultsHeading: "Monitor defaults",
+    autoGearMonitorDefaultsDescription: "Choose which monitors should be preselected for new gear lists.",
+    autoGearDefaultFocusMonitorLabel: "Focus monitor",
+    autoGearDefaultHandheldMonitorLabel: "7\" handheld monitor",
+    autoGearDefaultComboMonitorLabel: "Combo monitor 15-21\"",
+    autoGearDefaultDirectorMonitorLabel: "Director monitor 15-21\"",
+    autoGearMonitorDefaultPlaceholder: "Use recommended automatically",
     autoGearMonitorHelp:
       "Appliquez la règle lorsque ces moniteurs embarqués sont sélectionnés.",
     autoGearCrewPresentLabel: "Crew present",
@@ -4750,6 +4778,13 @@ const texts = {
     autoGearCameraHelp:
       "Wende die Regel an, wenn diese Kamerabodys ausgewählt sind.",
     autoGearMonitorLabel: "Onboard-Monitore",
+    autoGearMonitorDefaultsHeading: "Monitor defaults",
+    autoGearMonitorDefaultsDescription: "Choose which monitors should be preselected for new gear lists.",
+    autoGearDefaultFocusMonitorLabel: "Focus monitor",
+    autoGearDefaultHandheldMonitorLabel: "7\" handheld monitor",
+    autoGearDefaultComboMonitorLabel: "Combo monitor 15-21\"",
+    autoGearDefaultDirectorMonitorLabel: "Director monitor 15-21\"",
+    autoGearMonitorDefaultPlaceholder: "Use recommended automatically",
     autoGearMonitorHelp:
       "Wende die Regel an, wenn diese Onboard-Monitore ausgewählt sind.",
     autoGearCrewPresentLabel: "Crew present",

@@ -2057,6 +2057,33 @@ body.high-contrast .settings-tab[aria-selected="true"] {
   gap: 8px;
 }
 
+.auto-gear-defaults {
+  margin-top: 16px;
+  margin-bottom: 16px;
+  padding: 16px;
+  border: 1px solid var(--panel-border);
+  border-radius: var(--border-radius);
+  background: var(--panel-bg);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.auto-gear-defaults-description {
+  margin: 0;
+  color: var(--muted-text);
+}
+
+.auto-gear-default-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.auto-gear-defaults .auto-gear-field select {
+  width: 100%;
+}
+
 .auto-gear-preset-row {
   display: flex;
   flex-wrap: wrap;

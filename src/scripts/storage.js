@@ -103,6 +103,7 @@ const AUTO_GEAR_RULES_STORAGE_KEY = 'cameraPowerPlanner_autoGearRules';
 const AUTO_GEAR_SEEDED_STORAGE_KEY = 'cameraPowerPlanner_autoGearSeeded';
 const AUTO_GEAR_BACKUPS_STORAGE_KEY = 'cameraPowerPlanner_autoGearBackups';
 const AUTO_GEAR_PRESETS_STORAGE_KEY = 'cameraPowerPlanner_autoGearPresets';
+const AUTO_GEAR_MONITOR_DEFAULTS_STORAGE_KEY = 'cameraPowerPlanner_autoGearMonitorDefaults';
 const AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY = 'cameraPowerPlanner_autoGearActivePreset';
 const AUTO_GEAR_AUTO_PRESET_STORAGE_KEY = 'cameraPowerPlanner_autoGearAutoPreset';
 const AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY = 'cameraPowerPlanner_autoGearShowBackups';
@@ -3674,6 +3675,30 @@ function saveAutoGearPresets(presets) {
   );
 }
 
+function loadAutoGearMonitorDefaults() {
+  applyLegacyStorageMigrations();
+  const safeStorage = getSafeLocalStorage();
+  const defaults = loadJSONFromStorage(
+    safeStorage,
+    AUTO_GEAR_MONITOR_DEFAULTS_STORAGE_KEY,
+    "Error loading automatic gear monitor defaults from localStorage:",
+    {},
+    { validate: (value) => value === null || typeof value === 'object' },
+  );
+  return defaults && typeof defaults === 'object' ? defaults : {};
+}
+
+function saveAutoGearMonitorDefaults(defaults) {
+  const safeDefaults = defaults && typeof defaults === 'object' ? defaults : {};
+  const safeStorage = getSafeLocalStorage();
+  saveJSONToStorage(
+    safeStorage,
+    AUTO_GEAR_MONITOR_DEFAULTS_STORAGE_KEY,
+    safeDefaults,
+    "Error saving automatic gear monitor defaults to localStorage:",
+  );
+}
+
 function removeAutoGearPresetFromStorage(presetId, storage) {
   if (!presetId) {
     return;
@@ -3853,6 +3878,7 @@ function clearAllData() {
   deleteFromStorage(safeStorage, AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, msg);
   deleteFromStorage(safeStorage, AUTO_GEAR_AUTO_PRESET_STORAGE_KEY, msg);
   deleteFromStorage(safeStorage, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY, msg);
+  deleteFromStorage(safeStorage, AUTO_GEAR_MONITOR_DEFAULTS_STORAGE_KEY, msg);
   deleteFromStorage(
     safeStorage,
     getCustomFontStorageKeyName(),
@@ -4288,6 +4314,20 @@ function normalizeImportedAutoGearPresets(value) {
   );
 }
 
+function normalizeImportedAutoGearMonitorDefaults(value) {
+  if (!value || typeof value !== 'object') {
+    return {};
+  }
+  const normalized = {};
+  Object.entries(value).forEach(([key, val]) => {
+    if (typeof val !== 'string') return;
+    const trimmed = val.trim();
+    if (!trimmed) return;
+    normalized[key] = trimmed;
+  });
+  return normalized;
+}
+
 function normalizeImportedPresetId(value) {
   if (typeof value === "string") {
     return value;
@@ -4476,6 +4516,7 @@ function convertStorageSnapshotToData(snapshot) {
   assignJSONValue(AUTO_GEAR_RULES_STORAGE_KEY, 'autoGearRules');
   assignJSONValue(AUTO_GEAR_BACKUPS_STORAGE_KEY, 'autoGearBackups');
   assignJSONValue(AUTO_GEAR_PRESETS_STORAGE_KEY, 'autoGearPresets');
+  assignJSONValue(AUTO_GEAR_MONITOR_DEFAULTS_STORAGE_KEY, 'autoGearMonitorDefaults');
 
   const schemaEntry = readSnapshotEntry(snapshot, DEVICE_SCHEMA_CACHE_KEY);
   if (schemaEntry) {
@@ -4730,6 +4771,10 @@ function importAllData(allData, options = {}) {
     const presets = normalizeImportedAutoGearPresets(allData.autoGearPresets);
     saveAutoGearPresets(presets);
   }
+  if (Object.prototype.hasOwnProperty.call(allData, 'autoGearMonitorDefaults')) {
+    const defaults = normalizeImportedAutoGearMonitorDefaults(allData.autoGearMonitorDefaults);
+    saveAutoGearMonitorDefaults(defaults);
+  }
   if (Object.prototype.hasOwnProperty.call(allData, 'autoGearActivePresetId')) {
     const presetId = normalizeImportedPresetId(allData.autoGearActivePresetId);
     saveAutoGearActivePresetId(typeof presetId === 'string' ? presetId : '');
@@ -4805,6 +4850,8 @@ const STORAGE_API = {
   saveAutoGearSeedFlag,
   loadAutoGearPresets,
   saveAutoGearPresets,
+  loadAutoGearMonitorDefaults,
+  saveAutoGearMonitorDefaults,
   loadAutoGearActivePresetId,
   saveAutoGearActivePresetId,
   loadAutoGearAutoPresetId,
