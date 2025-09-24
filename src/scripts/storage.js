@@ -2699,6 +2699,71 @@ function extractProjectInfoFromHtml(html) {
   return Object.keys(info).length ? info : null;
 }
 
+function cloneProjectData(value) {
+  if (Array.isArray(value)) {
+    return value.map((item) => cloneProjectData(item));
+  }
+  if (isPlainObject(value)) {
+    const clone = {};
+    Object.entries(value).forEach(([key, val]) => {
+      clone[key] = cloneProjectData(val);
+    });
+    return clone;
+  }
+  return value;
+}
+
+function cloneProjectInfo(projectInfo) {
+  if (!isPlainObject(projectInfo)) {
+    return null;
+  }
+  try {
+    return JSON.parse(JSON.stringify(projectInfo));
+  } catch (error) {
+    console.warn('Unable to serialize project info during normalization', error);
+    try {
+      return cloneProjectData(projectInfo);
+    } catch (fallbackError) {
+      console.warn('Unable to deep clone project info during normalization', fallbackError);
+      return { ...projectInfo };
+    }
+  }
+}
+
+function cloneAutoGearRules(rules) {
+  if (!Array.isArray(rules) || !rules.length) {
+    return null;
+  }
+  try {
+    return JSON.parse(JSON.stringify(rules));
+  } catch (error) {
+    console.warn('Unable to serialize automatic gear rules during normalization', error);
+    try {
+      return cloneProjectData(rules);
+    } catch (fallbackError) {
+      console.warn('Unable to deep clone automatic gear rules during normalization', fallbackError);
+      return rules.slice();
+    }
+  }
+}
+
+function cloneDiagramPositionsForStorage(positions) {
+  if (!isPlainObject(positions) || !Object.keys(positions).length) {
+    return {};
+  }
+  try {
+    return JSON.parse(JSON.stringify(positions));
+  } catch (error) {
+    console.warn('Unable to serialize diagram positions during normalization', error);
+    try {
+      return cloneProjectData(positions);
+    } catch (fallbackError) {
+      console.warn('Unable to deep clone diagram positions during normalization', fallbackError);
+      return { ...positions };
+    }
+  }
+}
+
 function normalizeProject(data) {
   if (typeof data === "string") {
     const parsed = tryParseJSONLike(data);
@@ -2713,7 +2778,9 @@ function normalizeProject(data) {
   if (isPlainObject(data)) {
     // New format { gearList, projectInfo }
     if (Object.prototype.hasOwnProperty.call(data, "gearList") || Object.prototype.hasOwnProperty.call(data, "projectInfo")) {
-      let normalizedProjectInfo = isPlainObject(data.projectInfo) ? data.projectInfo : null;
+      let normalizedProjectInfo = isPlainObject(data.projectInfo)
+        ? data.projectInfo
+        : null;
       if (!normalizedProjectInfo && typeof data.projectInfo === "string") {
         const parsedInfo = tryParseJSONLike(data.projectInfo);
         if (parsedInfo.success && isPlainObject(parsedInfo.parsed)) {
@@ -2771,8 +2838,10 @@ function normalizeProject(data) {
       }
 
       const normalized = {
-        gearList: normalizedGearList,
-        projectInfo: normalizedProjectInfo,
+        gearList: Array.isArray(normalizedGearList) || isPlainObject(normalizedGearList)
+          ? cloneProjectData(normalizedGearList)
+          : normalizedGearList,
+        projectInfo: normalizedProjectInfo ? cloneProjectInfo(normalizedProjectInfo) : null,
       };
       let normalizedDiagramPositions = normalizeDiagramPositions(data.diagramPositions);
       if (
@@ -2782,7 +2851,7 @@ function normalizeProject(data) {
         normalizedDiagramPositions = normalizeDiagramPositions(data.project.diagramPositions);
       }
       if (Object.keys(normalizedDiagramPositions).length) {
-        normalized.diagramPositions = normalizedDiagramPositions;
+        normalized.diagramPositions = cloneDiagramPositionsForStorage(normalizedDiagramPositions);
       }
       const htmlSources = [];
       if (typeof data.projectHtml === 'string') {
@@ -2800,7 +2869,7 @@ function normalizeProject(data) {
         for (let i = 0; i < htmlSources.length; i += 1) {
           const recovered = extractProjectInfoFromHtml(htmlSources[i]);
           if (recovered) {
-            normalized.projectInfo = recovered;
+            normalized.projectInfo = cloneProjectInfo(recovered);
             break;
           }
         }
@@ -2808,13 +2877,15 @@ function normalizeProject(data) {
         for (let i = 0; i < htmlSources.length; i += 1) {
           const recovered = extractProjectInfoFromHtml(htmlSources[i]);
           if (recovered) {
-            normalized.projectInfo = { ...recovered, ...normalizedProjectInfo };
+            const recoveredClone = cloneProjectInfo(recovered) || {};
+            const normalizedClone = cloneProjectInfo(normalizedProjectInfo) || {};
+            normalized.projectInfo = { ...recoveredClone, ...normalizedClone };
             break;
           }
         }
       }
       if (normalizedAutoGearRules && normalizedAutoGearRules.length) {
-        normalized.autoGearRules = normalizedAutoGearRules;
+        normalized.autoGearRules = cloneAutoGearRules(normalizedAutoGearRules);
       }
       return normalized;
     }
