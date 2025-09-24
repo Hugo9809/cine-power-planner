@@ -2737,22 +2737,24 @@ body.pink-mode:not(.dark-mode) #settingsPanel-autoGear .auto-gear-rule-items-lab
   margin: 0;
 }
 
-.help-quick-link {
+.help-quick-link,
+.help-quick-link:visited {
   display: inline-flex;
   align-items: center;
   justify-content: flex-start;
   gap: 0.5em;
-  background: none;
-  border: none;
-  color: inherit;
   width: 100%;
   margin: 0;
-  padding: 0 10px;
   text-align: left;
   white-space: normal;
 }
 
-.help-quick-link-icon {
+.help-quick-link {
+  border: none;
+  padding: var(--button-link-padding-block) var(--button-link-padding-inline);
+}
+
+.help-quick-link-icon { 
   --icon-color: var(--accent-color);
   flex: 0 0 auto;
   font-size: var(--icon-size-md);
@@ -2767,6 +2769,11 @@ body.pink-mode:not(.dark-mode) #settingsPanel-autoGear .auto-gear-rule-items-lab
 }
 
 .help-quick-link.active .help-quick-link-icon {
+  --icon-color: var(--inverse-text-color);
+}
+
+.help-quick-link:hover .help-quick-link-icon,
+.help-quick-link:focus-visible .help-quick-link-icon {
   --icon-color: var(--inverse-text-color);
 }
 
