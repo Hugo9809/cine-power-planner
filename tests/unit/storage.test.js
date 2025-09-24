@@ -617,6 +617,60 @@ describe('project storage', () => {
     });
   });
 
+  test('loadProject recovers project info from stored requirements HTML', () => {
+    const legacyHtml = [
+      '<h2>Legacy Project</h2>',
+      '<h3>Project Requirements</h3>',
+      '<div class="requirements-grid">',
+      '  <div class="requirement-box" data-field="productionCompany">',
+      '    <span class="req-label">Production Company</span>',
+      '    <span class="req-value">Test Studios &amp; Co.</span>',
+      '  </div>',
+      '  <div class="requirement-box" data-field="prepDays">',
+      '    <span class="req-label">Prep Days</span>',
+      '    <span class="req-value">2024-01-01 to 2024-01-02<br>2024-01-05 to 2024-01-06</span>',
+      '  </div>',
+      '  <div class="requirement-box" data-field="requiredScenarios">',
+      '    <span class="req-label">Required Scenarios</span>',
+      '    <span class="req-value">Rain Machine<br>Gimbal</span>',
+      '  </div>',
+      '</div>',
+      '<table class="gear-table"><tr><td>gear</td></tr></table>',
+    ].join('');
+
+    localStorage.setItem(PROJECT_KEY, JSON.stringify({ Legacy: { gearList: legacyHtml } }));
+
+    const project = loadProject('Legacy');
+    expect(project).not.toBeNull();
+    expect(project.projectInfo).toEqual({
+      projectName: 'Legacy Project',
+      productionCompany: 'Test Studios & Co.',
+      prepDays: '2024-01-01 to 2024-01-02\n2024-01-05 to 2024-01-06',
+      requiredScenarios: 'Rain Machine, Gimbal',
+    });
+  });
+
+  test('loadProject maps localized requirement labels when data-field is missing', () => {
+    const html = [
+      '<h2>Projekt Archiv</h2>',
+      '<div class="requirements-grid">',
+      '  <div class="requirement-box">',
+      '    <span class="req-label">Produktionsfirma</span>',
+      '    <span class="req-value">Filmhaus GmbH</span>',
+      '  </div>',
+      '</div>',
+    ].join('');
+
+    localStorage.setItem(PROJECT_KEY, JSON.stringify({ Alt: { gearList: html } }));
+
+    const project = loadProject('Alt');
+    expect(project).not.toBeNull();
+    expect(project.projectInfo).toEqual({
+      projectName: 'Projekt Archiv',
+      productionCompany: 'Filmhaus GmbH',
+    });
+  });
+
   test('loadProject returns null for unknown names', () => {
     saveProject('Known', { gearList: '<ul></ul>' });
     expect(loadProject('Missing')).toBeNull();
