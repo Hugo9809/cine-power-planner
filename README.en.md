@@ -65,6 +65,7 @@ The app automatically uses your browser language on first load, and you can swit
 
 ## 🆕 Recent Features
 - Backup version comparisons let you pick any manual save or timestamped auto-backup to review diffs, add incident notes and export a log before rolling a change back or handing footage to post.
+- Backups now normalize legacy data bundles saved as JSON strings or entry arrays so older exports restore correctly.
 - Restore rehearsals load a full-app backup or project bundle into an isolated sandbox so you can confirm its contents match live data without touching production profiles.
 - Automatic gear rules let you design scenario-driven additions or removals, export the configuration and restore it alongside project bundles.
 - Data & storage dashboard audits saved projects, gear lists, custom devices, favorites and runtime feedback directly inside Settings.

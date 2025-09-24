@@ -61,6 +61,7 @@ Beim ersten Start übernimmt die Anwendung automatisch die Sprache deines Browse
 
 ## 🆕 Neueste Funktionen
 - Versionsvergleiche für Backups lassen dich beliebige manuelle Speicherungen oder automatisch datierte Backups auswählen, um Diffs zu prüfen, Vorfallnotizen zu ergänzen und vor einem Rollback oder einer Übergabe an die Post einen Bericht zu exportieren.
+- Backups normalisieren jetzt ältere Datenpakete, die als JSON-Zeichenketten oder Eintragsarrays gespeichert wurden, damit alte Exporte zuverlässig wiederhergestellt werden.
 - Wiederherstellungsproben laden ein komplettes App-Backup oder Projekt-Bundle in eine isolierte Sandbox, damit du Inhalte mit den Live-Daten abgleichen kannst, ohne Produktionsprofile anzutasten.
 - Die neuen automatischen Gear-Regeln fügen szenariobasierte Ergänzungen oder Entfernungen hinzu, lassen sich exportieren und gemeinsam mit Bundles wiederherstellen.
 - Das Daten- & Speicher-Dashboard prüft gespeicherte Projekte, Gerätelisten, eigene Geräte, Favoriten und Laufzeit-Feedback direkt in den Einstellungen und zeigt die geschätzte Backup-Größe an.

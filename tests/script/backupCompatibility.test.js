@@ -80,6 +80,52 @@ describe('backup compatibility utilities', () => {
     expect(sections.data.schemaCache).toBe('{"checksum":"abc123"}');
   });
 
+  test('extractBackupSections parses stringified data containers', () => {
+    const { extractBackupSections } = loadApp();
+
+    const backup = {
+      data: JSON.stringify({
+        setups: { Main: { name: 'Main', items: ['Camera A'] } },
+        favorites: { monitor: 'Operator' },
+      }),
+    };
+
+    const sections = extractBackupSections(backup);
+
+    expect(sections.data.setups).toEqual({ Main: { name: 'Main', items: ['Camera A'] } });
+    expect(sections.data.favorites).toEqual({ monitor: 'Operator' });
+  });
+
+  test('extractBackupSections normalizes array-based data containers', () => {
+    const { extractBackupSections } = loadApp();
+
+    const legacyPlannerData = [
+      ['setups', { Secondary: { name: 'Secondary', items: [] } }],
+      { key: 'autoGearRules', value: [{ id: 'rule-1' }] },
+      { section: 'favorites', data: { rig: 'Steadicam' } },
+    ];
+
+    const sections = extractBackupSections({ plannerData: legacyPlannerData });
+
+    expect(sections.data.setups).toEqual({ Secondary: { name: 'Secondary', items: [] } });
+    expect(sections.data.autoGearRules).toEqual([{ id: 'rule-1' }]);
+    expect(sections.data.favorites).toEqual({ rig: 'Steadicam' });
+  });
+
+  test('extractBackupSections parses stringified fallback data entries', () => {
+    const { extractBackupSections } = loadApp();
+
+    const legacyBackup = {
+      setups: JSON.stringify({ A: { name: 'A', items: [] } }),
+      autoGearMonitorDefaults: JSON.stringify({ monitor: 'Director' }),
+    };
+
+    const sections = extractBackupSections(legacyBackup);
+
+    expect(sections.data.setups).toEqual({ A: { name: 'A', items: [] } });
+    expect(sections.data.autoGearMonitorDefaults).toEqual({ monitor: 'Director' });
+  });
+
   test('extractBackupSections keeps cinePowerPlanner_* storage entries from the root object', () => {
     const { extractBackupSections } = loadApp();
 
