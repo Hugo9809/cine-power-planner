@@ -2738,6 +2738,22 @@ function setInstallBannerOffset(offset) {
   }
 }
 
+let pendingInstallBannerPositionUpdate = false;
+
+function scheduleInstallBannerPositionUpdate() {
+  if (pendingInstallBannerPositionUpdate) return;
+  if (typeof window === 'undefined') return;
+  const scheduler =
+    (typeof window.requestAnimationFrame === 'function' && window.requestAnimationFrame.bind(window)) ||
+    (typeof window.setTimeout === 'function' && (callback => window.setTimeout(callback, 0)));
+  if (!scheduler) return;
+  pendingInstallBannerPositionUpdate = true;
+  scheduler(() => {
+    pendingInstallBannerPositionUpdate = false;
+    updateInstallBannerPosition();
+  });
+}
+
 function updateInstallBannerPosition() {
   if (typeof document === 'undefined') return;
   const installBanner = document.getElementById('installPromptBanner');
@@ -2751,16 +2767,21 @@ function updateInstallBannerPosition() {
     ? getElementHeight(offlineIndicator)
     : 0;
 
-  installBanner.style.top = `${offlineHeight}px`;
-
-  const bannerHeight = getElementHeight(installBanner);
-  if (!bannerHeight) {
-    setInstallBannerOffset(0);
-    return;
+  if (offlineHeight > 0) {
+    installBanner.style.top = `${offlineHeight}px`;
+  } else {
+    installBanner.style.removeProperty('top');
   }
 
+  const bannerVisible = !installBanner.hasAttribute('hidden');
+  const bannerHeight = bannerVisible ? getElementHeight(installBanner) : 0;
   const totalOffset = offlineHeight + bannerHeight;
+
   setInstallBannerOffset(totalOffset);
+
+  if (bannerVisible && !bannerHeight) {
+    scheduleInstallBannerPositionUpdate();
+  }
 }
 
 /**
