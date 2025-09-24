@@ -7279,6 +7279,7 @@ const PINK_MODE_ANIMATED_ICON_PROBE_POINTS = Object.freeze([
 ]);
 
 let pinkModeAnimatedIconLayer = null;
+let pinkModeIconRainLayer = null;
 let pinkModeAnimatedIconTimeoutId = null;
 let pinkModeAnimatedIconsActive = false;
 let pinkModeAnimatedIconTemplates = null;
@@ -7405,29 +7406,35 @@ async function loadPinkModeAnimatedIconTemplates() {
   return pinkModeAnimatedIconTemplatesPromise;
 }
 
-function ensurePinkModeAnimationLayer() {
-  if (!document) {
+function ensurePinkModeAnimationLayer(options) {
+  if (typeof document === 'undefined') {
     return null;
   }
-  const host = document.body || document.getElementById('mainContent');
+  const useGlobalLayer = Boolean(options && options.global);
+  const host = useGlobalLayer
+    ? document.body || document.getElementById('mainContent')
+    : document.getElementById('mainContent') || document.body;
   if (!host) {
     return null;
   }
-  if (
-    pinkModeAnimatedIconLayer &&
-    pinkModeAnimatedIconLayer.isConnected &&
-    host.contains(pinkModeAnimatedIconLayer)
-  ) {
-    return pinkModeAnimatedIconLayer;
+  let layer = useGlobalLayer ? pinkModeIconRainLayer : pinkModeAnimatedIconLayer;
+  if (layer && layer.isConnected && host.contains(layer)) {
+    return layer;
   }
-  if (pinkModeAnimatedIconLayer && pinkModeAnimatedIconLayer.parentNode) {
-    pinkModeAnimatedIconLayer.parentNode.removeChild(pinkModeAnimatedIconLayer);
+  if (layer && layer.parentNode) {
+    layer.parentNode.removeChild(layer);
   }
-  const layer = document.createElement('div');
-  layer.className = 'pink-mode-animation-layer';
+  layer = document.createElement('div');
+  layer.className = useGlobalLayer
+    ? 'pink-mode-animation-layer pink-mode-animation-layer--global'
+    : 'pink-mode-animation-layer';
   layer.setAttribute('aria-hidden', 'true');
   host.appendChild(layer);
-  pinkModeAnimatedIconLayer = layer;
+  if (useGlobalLayer) {
+    pinkModeIconRainLayer = layer;
+  } else {
+    pinkModeAnimatedIconLayer = layer;
+  }
   return layer;
 }
 
@@ -7858,6 +7865,14 @@ function destroyPinkModeIconRainInstance(instance) {
     instance.container.parentNode.removeChild(instance.container);
   }
   pinkModeIconRainInstances.delete(instance);
+  if (
+    !pinkModeIconRainInstances.size &&
+    pinkModeIconRainLayer &&
+    pinkModeIconRainLayer.parentNode
+  ) {
+    pinkModeIconRainLayer.parentNode.removeChild(pinkModeIconRainLayer);
+    pinkModeIconRainLayer = null;
+  }
 }
 
 function spawnPinkModeIconRainInstance(templates) {
@@ -7870,7 +7885,7 @@ function spawnPinkModeIconRainInstance(templates) {
   ) {
     return false;
   }
-  const layer = ensurePinkModeAnimationLayer();
+  const layer = ensurePinkModeAnimationLayer({ global: true });
   if (!layer) {
     return false;
   }

@@ -3089,11 +3089,15 @@ body.pink-mode .pink-mode-icon {
 }
 
 .pink-mode-animation-layer {
-  position: fixed;
+  position: absolute;
   inset: 0;
   pointer-events: none;
   z-index: 2;
   overflow: visible;
+}
+
+.pink-mode-animation-layer.pink-mode-animation-layer--global {
+  position: fixed;
 }
 
 .pink-mode-animation-instance {
