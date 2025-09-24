@@ -7000,7 +7000,7 @@ const PINK_MODE_ICON_RAIN_MIN_SIZE_PX = 52;
 const PINK_MODE_ICON_RAIN_MAX_SIZE_PX = 88;
 const PINK_MODE_ICON_RAIN_VERTICAL_START_VH_MIN = 12;
 const PINK_MODE_ICON_RAIN_VERTICAL_START_VH_MAX = 26;
-const PINK_MODE_ICON_RAIN_HORIZONTAL_MARGIN_PERCENT = 8;
+const PINK_MODE_ICON_RAIN_HORIZONTAL_MARGIN_PERCENT = 0;
 const PINK_MODE_ICON_RAIN_HORIZONTAL_DRIFT_VW_MIN = -12;
 const PINK_MODE_ICON_RAIN_HORIZONTAL_DRIFT_VW_MAX = 12;
 const PINK_MODE_ICON_RAIN_MIN_SCALE = 0.78;
@@ -7713,12 +7713,65 @@ function spawnPinkModeIconRainInstance(templates) {
   );
   container.style.setProperty('--pink-mode-animation-size', `${size}px`);
 
+  let minHorizontalPercent = 0;
+  let maxHorizontalPercent = 100;
+  if (typeof window !== 'undefined' && window.visualViewport) {
+    const viewport = window.visualViewport;
+    const layoutWidth =
+      typeof window.innerWidth === 'number' && window.innerWidth > 0
+        ? window.innerWidth
+        : typeof viewport.width === 'number' && viewport.width > 0
+          ? viewport.width
+          : 0;
+    const visualWidth =
+      typeof viewport.width === 'number' && viewport.width > 0
+        ? viewport.width
+        : layoutWidth;
+    if (layoutWidth > 0 && visualWidth > 0) {
+      const rawOffsetLeft =
+        typeof viewport.offsetLeft === 'number'
+          ? viewport.offsetLeft
+          : typeof viewport.pageLeft === 'number'
+            ? viewport.pageLeft
+            : 0;
+      const offsetLeft = Math.min(
+        Math.max(rawOffsetLeft, 0),
+        Math.max(layoutWidth - visualWidth, 0)
+      );
+      const offsetRight = Math.max(
+        0,
+        layoutWidth - visualWidth - offsetLeft
+      );
+      const computedMin = (offsetLeft / layoutWidth) * 100;
+      const computedMax = 100 - (offsetRight / layoutWidth) * 100;
+      if (
+        Number.isFinite(computedMin) &&
+        Number.isFinite(computedMax) &&
+        computedMax > computedMin
+      ) {
+        minHorizontalPercent = Math.max(0, Math.min(100, computedMin));
+        maxHorizontalPercent = Math.max(
+          minHorizontalPercent,
+          Math.min(100, computedMax)
+        );
+      }
+    }
+  }
+
   const horizontalMargin = Math.max(
     0,
     Math.min(40, PINK_MODE_ICON_RAIN_HORIZONTAL_MARGIN_PERCENT)
   );
+  minHorizontalPercent = Math.max(minHorizontalPercent, horizontalMargin);
+  maxHorizontalPercent = Math.min(100 - horizontalMargin, maxHorizontalPercent);
+  if (maxHorizontalPercent <= minHorizontalPercent) {
+    minHorizontalPercent = 0;
+    maxHorizontalPercent = 100;
+  }
+
   const horizontalPercent =
-    Math.random() * (100 - horizontalMargin * 2) + horizontalMargin;
+    Math.random() * (maxHorizontalPercent - minHorizontalPercent) +
+    minHorizontalPercent;
   container.style.setProperty(
     '--pink-mode-animation-x',
     `${horizontalPercent.toFixed(2)}%`
