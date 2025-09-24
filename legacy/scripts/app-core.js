@@ -1921,8 +1921,6 @@ function buildDefaultVideoDistributionAutoGearRules() {
         if (item) additions.push(item);
       };
       pushSupport('Apple iPad Air 5 or better', 'Monitoring', 1);
-      pushSupport('iPad receiver (DoP)', 'Monitoring');
-      pushSupport('iPad receiver (Gaffer)', 'Monitoring');
       pushSupport('USB-C Charger (iOS Video)', 'Monitoring support', 2);
       pushSupport('Wi-Fi Router (iOS Video Village)', 'Monitoring support');
       if (additions.length) {
