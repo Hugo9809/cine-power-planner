@@ -3064,8 +3064,8 @@ body.pink-mode .pink-mode-icon {
   transform-origin: center;
   will-change: transform, opacity;
   filter: drop-shadow(0 4px 12px rgba(255, 105, 180, 0.25));
-  pointer-events: auto;
-  cursor: pointer;
+  pointer-events: none;
+  cursor: default;
   touch-action: none;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
@@ -3082,8 +3082,8 @@ body.pink-mode .pink-mode-icon {
   animation-name: pink-mode-rain-icon;
   animation-duration: var(--pink-mode-rain-duration, 4800ms);
   animation-timing-function: ease-in;
-  pointer-events: auto;
-  cursor: pointer;
+  pointer-events: none;
+  cursor: default;
   touch-action: none;
   user-select: none;
   -webkit-user-drag: none;

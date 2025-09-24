@@ -7414,59 +7414,6 @@ function spawnPinkModeIconRainInstance(templates) {
     templateName: typeof template.name === 'string' ? template.name : null
   };
 
-  const stopEventPropagation = event => {
-    if (!event) {
-      return;
-    }
-    if (typeof event.stopImmediatePropagation === 'function') {
-      event.stopImmediatePropagation();
-    }
-    if (typeof event.stopPropagation === 'function') {
-      event.stopPropagation();
-    }
-  };
-
-  const preventAndStopEvent = event => {
-    stopEventPropagation(event);
-    if (event && typeof event.preventDefault === 'function') {
-      try {
-        event.preventDefault();
-      } catch (error) {
-        // Ignore errors when preventDefault isn't allowed (e.g. passive listeners)
-      }
-    }
-  };
-
-  const supportsPointerEvents =
-    typeof window !== 'undefined' && typeof window.PointerEvent === 'function';
-
-  const handleIconRainPress = event => {
-    preventAndStopEvent(event);
-    destroyPinkModeIconRainInstance(instance);
-  };
-
-  const handleIconRainClick = event => {
-    preventAndStopEvent(event);
-  };
-
-  const pressEvents = supportsPointerEvents
-    ? ['pointerdown']
-    : ['mousedown', 'touchstart'];
-
-  pressEvents.forEach(eventName => {
-    container.addEventListener(eventName, handleIconRainPress, {
-      passive: false
-    });
-  });
-  container.addEventListener('click', handleIconRainClick, true);
-
-  instance.cleanup = () => {
-    pressEvents.forEach(eventName => {
-      container.removeEventListener(eventName, handleIconRainPress, false);
-    });
-    container.removeEventListener('click', handleIconRainClick, true);
-  };
-
   container.addEventListener(
     'animationend',
     () => {
@@ -7765,60 +7712,6 @@ function spawnPinkModeAnimatedIconInstance(templates) {
     animation: animationInstance,
     destroyed: false,
     templateName: typeof template.name === 'string' ? template.name : null
-  };
-
-  const stopEventPropagation = event => {
-    if (!event) {
-      return;
-    }
-    if (typeof event.stopImmediatePropagation === 'function') {
-      event.stopImmediatePropagation();
-    }
-    if (typeof event.stopPropagation === 'function') {
-      event.stopPropagation();
-    }
-  };
-
-  const preventAndStopEvent = event => {
-    stopEventPropagation(event);
-    if (event && typeof event.preventDefault === 'function') {
-      try {
-        event.preventDefault();
-      } catch (error) {
-        // Ignore errors when preventDefault isn't allowed (e.g. passive listeners)
-      }
-    }
-  };
-
-  const supportsPointerEvents =
-    typeof window !== 'undefined' && typeof window.PointerEvent === 'function';
-
-  const handleIconPress = event => {
-    preventAndStopEvent(event);
-    destroyPinkModeAnimatedIconInstance(instance);
-  };
-
-  const handleIconClick = event => {
-    preventAndStopEvent(event);
-  };
-
-  const pressEvents = supportsPointerEvents
-    ? ['pointerdown']
-    : ['mousedown', 'touchstart'];
-
-  pressEvents.forEach(eventName => {
-    container.addEventListener(eventName, handleIconPress, {
-      passive: false
-    });
-  });
-
-  container.addEventListener('click', handleIconClick, true);
-
-  instance.cleanup = () => {
-    pressEvents.forEach(eventName => {
-      container.removeEventListener(eventName, handleIconPress, false);
-    });
-    container.removeEventListener('click', handleIconClick, true);
   };
 
   container.addEventListener(
