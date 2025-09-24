@@ -186,7 +186,19 @@
     },
     "sliders": {
       "attributes": [
-        "brand"
+        "brand",
+        "bowlMount",
+        "dimensionsCm",
+        "driveType",
+        "features",
+        "material",
+        "model",
+        "motorized",
+        "notes",
+        "payloadHorizontalKg",
+        "payloadVerticalKg",
+        "travelCm",
+        "weightKg"
       ]
     },
     "tripodHeads": {
