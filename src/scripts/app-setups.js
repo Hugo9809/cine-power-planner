@@ -873,12 +873,13 @@ function collectAccessories({ hasMotor = false, videoDistPrefs = [] } = {}) {
                 monCount += largeCount * 2;
             }
             if (hasMotor) monCount += 3;
-            const total = camCount + monCount;
-            if (total > 0) {
+
+            const pushChargersForMount = (targetMount, total) => {
+                if (!targetMount || total <= 0) return;
                 const counts = suggestChargerCounts(total);
                 const findName = slots => {
                     for (const [name, charger] of Object.entries(acc.chargers)) {
-                        if (charger.mount === mount && charger.slots === slots) return name;
+                        if (charger.mount === targetMount && charger.slots === slots) return name;
                     }
                     return null;
                 };
@@ -890,6 +891,13 @@ function collectAccessories({ hasMotor = false, videoDistPrefs = [] } = {}) {
                 pushCharger(4, counts.quad);
                 pushCharger(2, counts.dual);
                 pushCharger(1, counts.single);
+            };
+
+            if (mount === 'B-Mount') {
+                pushChargersForMount('B-Mount', camCount);
+                pushChargersForMount('V-Mount', monCount);
+            } else {
+                pushChargersForMount(mount, camCount + monCount);
             }
         }
     }
