@@ -1,5 +1,5 @@
 // script.js – Main logic for the Cine Power Planner app
-/* global texts, categoryNames, gearItems, loadSessionState, saveSessionState, loadProject, saveProject, deleteProject, renameSetup, registerDevice, loadFavorites, saveFavorites, exportAllData, importAllData, clearAllData, loadAutoGearRules, saveAutoGearRules, loadAutoGearBackups, saveAutoGearBackups, loadAutoGearSeedFlag, saveAutoGearSeedFlag, loadAutoGearPresets, saveAutoGearPresets, loadAutoGearActivePresetId, saveAutoGearActivePresetId, loadAutoGearAutoPresetId, saveAutoGearAutoPresetId, loadAutoGearBackupVisibility, saveAutoGearBackupVisibility, AUTO_GEAR_RULES_STORAGE_KEY, AUTO_GEAR_SEEDED_STORAGE_KEY, AUTO_GEAR_BACKUPS_STORAGE_KEY, AUTO_GEAR_PRESETS_STORAGE_KEY, AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, AUTO_GEAR_AUTO_PRESET_STORAGE_KEY, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY, SAFE_LOCAL_STORAGE, getSafeLocalStorage, CUSTOM_FONT_STORAGE_KEY, CUSTOM_FONT_STORAGE_KEY_NAME, TEMPERATURE_UNIT_STORAGE_KEY, updateAutoGearHighlightToggleButton */
+/* global texts, categoryNames, gearItems, loadSessionState, saveSessionState, loadProject, saveProject, deleteProject, renameSetup, registerDevice, loadFavorites, saveFavorites, exportAllData, importAllData, clearAllData, loadAutoGearRules, saveAutoGearRules, loadAutoGearBackups, saveAutoGearBackups, loadAutoGearSeedFlag, saveAutoGearSeedFlag, loadAutoGearPresets, saveAutoGearPresets, loadAutoGearActivePresetId, saveAutoGearActivePresetId, loadAutoGearAutoPresetId, saveAutoGearAutoPresetId, loadAutoGearBackupVisibility, saveAutoGearBackupVisibility, AUTO_GEAR_RULES_STORAGE_KEY, AUTO_GEAR_SEEDED_STORAGE_KEY, AUTO_GEAR_BACKUPS_STORAGE_KEY, AUTO_GEAR_PRESETS_STORAGE_KEY, AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, AUTO_GEAR_AUTO_PRESET_STORAGE_KEY, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY, SAFE_LOCAL_STORAGE, getSafeLocalStorage, CUSTOM_FONT_STORAGE_KEY, CUSTOM_FONT_STORAGE_KEY_NAME, TEMPERATURE_UNIT_STORAGE_KEY, updateAutoGearHighlightToggleButton, handlePinkModeIconPress */
 
 // Use `var` here instead of `let` because `index.html` loads the lz-string
 // library from a CDN which defines a global `LZString` variable. Using `let`
@@ -7008,6 +7008,8 @@ let pinkModeAnimatedIconLastTemplateName = null;
 const pinkModeAnimatedIconPlacementHistory = [];
 const pinkModeIconRainInstances = new Set();
 let pinkModeIconRainLastTriggeredAt = 0;
+let pinkModeAnimatedIconPressListenerCleanup = null;
+let pinkModeAnimatedIconLastTouchTime = 0;
 
 const pinkModeReduceMotionQuery =
   typeof window !== 'undefined' && typeof window.matchMedia === 'function'
@@ -7233,6 +7235,173 @@ function collectPinkModeAnimationInstanceRegions(layer) {
   return Object.freeze(regions);
 }
 
+function callPinkModeAnimatedIconPressHandler() {
+  let handler = null;
+  if (typeof window !== 'undefined' && typeof window.handlePinkModeIconPress === 'function') {
+    handler = window.handlePinkModeIconPress;
+  } else if (typeof handlePinkModeIconPress === 'function') {
+    handler = handlePinkModeIconPress;
+  }
+  if (typeof handler === 'function') {
+    try {
+      handler();
+      return true;
+    } catch (error) {
+      console.warn('Could not process pink mode icon press', error);
+    }
+  }
+  return false;
+}
+
+function extractPinkModeAnimatedIconPoint(event) {
+  if (!event) {
+    return null;
+  }
+  if (typeof event.clientX === 'number' && typeof event.clientY === 'number') {
+    return { x: event.clientX, y: event.clientY };
+  }
+  const touches =
+    (event.touches && event.touches.length ? event.touches : null) ||
+    (event.changedTouches && event.changedTouches.length ? event.changedTouches : null);
+  if (touches) {
+    const touch = touches[0];
+    if (touch && typeof touch.clientX === 'number' && typeof touch.clientY === 'number') {
+      return { x: touch.clientX, y: touch.clientY };
+    }
+  }
+  return null;
+}
+
+function isPointWithinRect(point, rect) {
+  if (!point || !rect) {
+    return false;
+  }
+  const { x, y } = point;
+  const { left, right, top, bottom } = rect;
+  if (!Number.isFinite(x) || !Number.isFinite(y)) {
+    return false;
+  }
+  if (!Number.isFinite(left) || !Number.isFinite(right) || !Number.isFinite(top) || !Number.isFinite(bottom)) {
+    return false;
+  }
+  return x >= left && x <= right && y >= top && y <= bottom;
+}
+
+function detectPinkModeAnimatedIconPress(point) {
+  if (!point || !pinkModeAnimatedIconInstances.size) {
+    return false;
+  }
+  const instances = Array.from(pinkModeAnimatedIconInstances);
+  for (let index = instances.length - 1; index >= 0; index -= 1) {
+    const instance = instances[index];
+    if (!instance || instance.destroyed) {
+      continue;
+    }
+    const container = instance.container;
+    if (!container || !container.isConnected || typeof container.getBoundingClientRect !== 'function') {
+      continue;
+    }
+    const rect = container.getBoundingClientRect();
+    if (!rect || rect.width <= 0 || rect.height <= 0) {
+      continue;
+    }
+    if (isPointWithinRect(point, rect) && callPinkModeAnimatedIconPressHandler()) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function handlePinkModeAnimatedIconPointerEvent(event) {
+  if (!event || event.defaultPrevented || !event.isTrusted) {
+    return;
+  }
+  if (typeof event.button === 'number' && event.button !== 0) {
+    return;
+  }
+  const pointerType = typeof event.pointerType === 'string' ? event.pointerType.toLowerCase() : '';
+  if (pointerType === 'touch' || pointerType === 'pen') {
+    pinkModeAnimatedIconLastTouchTime = Date.now();
+  } else {
+    pinkModeAnimatedIconLastTouchTime = 0;
+  }
+  const point = extractPinkModeAnimatedIconPoint(event);
+  if (!point) {
+    return;
+  }
+  detectPinkModeAnimatedIconPress(point);
+}
+
+function handlePinkModeAnimatedIconMouseEvent(event) {
+  if (!event || event.defaultPrevented || !event.isTrusted) {
+    return;
+  }
+  if (typeof event.button === 'number' && event.button !== 0) {
+    return;
+  }
+  if (pinkModeAnimatedIconLastTouchTime) {
+    const now = Date.now();
+    if (now - pinkModeAnimatedIconLastTouchTime < 450) {
+      return;
+    }
+  }
+  const point = extractPinkModeAnimatedIconPoint(event);
+  if (!point) {
+    return;
+  }
+  detectPinkModeAnimatedIconPress(point);
+}
+
+function handlePinkModeAnimatedIconTouchEvent(event) {
+  if (!event || !event.isTrusted) {
+    return;
+  }
+  pinkModeAnimatedIconLastTouchTime = Date.now();
+  const point = extractPinkModeAnimatedIconPoint(event);
+  if (!point) {
+    return;
+  }
+  detectPinkModeAnimatedIconPress(point);
+}
+
+function teardownPinkModeAnimatedIconPressListener() {
+  if (!pinkModeAnimatedIconPressListenerCleanup) {
+    return;
+  }
+  try {
+    pinkModeAnimatedIconPressListenerCleanup();
+  } catch (cleanupError) {
+    console.warn('Could not detach pink mode animation press listener', cleanupError);
+  }
+  pinkModeAnimatedIconPressListenerCleanup = null;
+  pinkModeAnimatedIconLastTouchTime = 0;
+}
+
+function ensurePinkModeAnimatedIconPressListener() {
+  if (pinkModeAnimatedIconPressListenerCleanup || typeof document === 'undefined') {
+    return;
+  }
+  const target = document;
+  if (!target) {
+    return;
+  }
+  if (typeof window !== 'undefined' && typeof window.PointerEvent === 'function') {
+    target.addEventListener('pointerdown', handlePinkModeAnimatedIconPointerEvent, true);
+    pinkModeAnimatedIconPressListenerCleanup = () => {
+      target.removeEventListener('pointerdown', handlePinkModeAnimatedIconPointerEvent, true);
+      pinkModeAnimatedIconLastTouchTime = 0;
+    };
+    return;
+  }
+  target.addEventListener('mousedown', handlePinkModeAnimatedIconMouseEvent, true);
+  target.addEventListener('touchstart', handlePinkModeAnimatedIconTouchEvent, true);
+  pinkModeAnimatedIconPressListenerCleanup = () => {
+    target.removeEventListener('mousedown', handlePinkModeAnimatedIconMouseEvent, true);
+    target.removeEventListener('touchstart', handlePinkModeAnimatedIconTouchEvent, true);
+    pinkModeAnimatedIconLastTouchTime = 0;
+  };
+}
+
 function isPinkModeAnimationSpotClear(layer, hostRect, x, y, size, avoidRegions) {
   if (
     typeof document === 'undefined' ||
@@ -7380,6 +7549,9 @@ function destroyPinkModeAnimatedIconInstance(instance) {
     instance.container.parentNode.removeChild(instance.container);
   }
   pinkModeAnimatedIconInstances.delete(instance);
+  if (!pinkModeAnimatedIconInstances.size) {
+    teardownPinkModeAnimatedIconPressListener();
+  }
 }
 
 function destroyPinkModeIconRainInstance(instance) {
@@ -7899,6 +8071,7 @@ function spawnPinkModeAnimatedIconInstance(templates) {
   }
 
   pinkModeAnimatedIconLastTemplateName = typeof template.name === 'string' ? template.name : null;
+  ensurePinkModeAnimatedIconPressListener();
 
   return true;
 }
@@ -7971,6 +8144,9 @@ function stopPinkModeAnimatedIcons() {
       destroyPinkModeAnimatedIconInstance(instance);
     });
     pinkModeAnimatedIconInstances.clear();
+  }
+  if (!pinkModeAnimatedIconInstances.size) {
+    teardownPinkModeAnimatedIconPressListener();
   }
   pinkModeAnimatedIconPlacementHistory.length = 0;
   if (pinkModeAnimatedIconLayer && pinkModeAnimatedIconLayer.parentNode) {
