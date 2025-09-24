@@ -17510,6 +17510,26 @@ function sanitizeProjectInfo(info) {
   return Object.keys(result).length > 0 ? result : null;
 }
 
+function hasProjectInfoData(value) {
+  if (value === null || value === undefined) return false;
+  if (typeof value === 'string') {
+    return value.trim().length > 0;
+  }
+  if (typeof value === 'number') {
+    return !Number.isNaN(value);
+  }
+  if (typeof value === 'boolean') {
+    return value;
+  }
+  if (Array.isArray(value)) {
+    return value.some(item => hasProjectInfoData(item));
+  }
+  if (typeof value === 'object') {
+    return Object.keys(value).some(key => hasProjectInfoData(value[key]));
+  }
+  return false;
+}
+
 function projectInfoEquals(a, b) {
   if (a === b) return true;
   if (!a || !b) return false;
@@ -17544,7 +17564,12 @@ function ensureDefaultProjectInfoSnapshot() {
 function deriveProjectInfo(info) {
   ensureDefaultProjectInfoSnapshot();
   const sanitized = sanitizeProjectInfo(info);
-  if (!sanitized) return null;
+  if (!sanitized) {
+    if (hasProjectInfoData(info) && hasProjectInfoData(currentProjectInfo)) {
+      return currentProjectInfo;
+    }
+    return null;
+  }
   if (
     defaultProjectInfoSnapshot &&
     projectInfoEquals(sanitized, defaultProjectInfoSnapshot)

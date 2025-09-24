@@ -173,4 +173,53 @@ describe('restoreSessionState', () => {
 
     env.cleanup();
   });
+
+  test('preserves project requirements when autosaving immediately after restore', () => {
+    const savedGearHtml = `
+      <h2>Project One</h2>
+      <h3>Project Requirements</h3>
+      <div class="requirements-grid">
+        <div class="requirement-box" data-field="productionCompany">
+          <span class="req-label">Production Company</span>
+          <span class="req-value">Acme Studios</span>
+        </div>
+      </div>
+      <h3>Gear List</h3>
+      <table class="gear-table"><tr><td>Saved Item</td></tr></table>
+    `;
+
+    const projectInfo = { productionCompany: 'Acme Studios' };
+    const saveProjectMock = jest.fn();
+    const saveSessionStateMock = jest.fn();
+    const loadProjectMock = jest.fn(() => ({ gearList: savedGearHtml, projectInfo }));
+
+    const env = setupScriptEnvironment({
+      readyState: 'complete',
+      globals: {
+        loadSessionState: jest.fn(() => ({
+          setupName: 'Project One',
+          setupSelect: 'Project One',
+          projectInfo,
+        })),
+        loadProject: loadProjectMock,
+        saveProject: saveProjectMock,
+        saveSessionState: saveSessionStateMock,
+        saveSetups: jest.fn(),
+        loadSetups: jest.fn(() => ({})),
+      }
+    });
+
+    expect(loadProjectMock).toHaveBeenCalledWith('Project One');
+
+    const savedStateCall = saveSessionStateMock.mock.calls[saveSessionStateMock.mock.calls.length - 1];
+    expect(savedStateCall).toBeDefined();
+    expect(savedStateCall[0].projectInfo).toEqual(expect.objectContaining(projectInfo));
+
+    const savedProjectCall = saveProjectMock.mock.calls[saveProjectMock.mock.calls.length - 1];
+    expect(savedProjectCall).toBeDefined();
+    expect(savedProjectCall[0]).toBe('Project One');
+    expect(savedProjectCall[1].projectInfo).toEqual(expect.objectContaining(projectInfo));
+
+    env.cleanup();
+  });
 });

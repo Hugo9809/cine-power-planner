@@ -17,14 +17,13 @@
           normalizeAutoGearScenarioMultiplier,
           isAutoGearHighlightEnabled, setAutoGearHighlightEnabled,
           updateAutoGearHighlightToggleButton,
-          clearUiCacheStorageEntries, __cineGlobal, humanizeKey,
-          loadAutoGearRules, duplicateAutoGearRule */
+          clearUiCacheStorageEntries, __cineGlobal, humanizeKey */
 /* eslint-enable no-redeclare */
 /* global triggerPinkModeIconRain, loadDeviceData, loadSetups, loadSessionState,
           loadFeedback, loadFavorites, loadAutoGearBackups,
           loadAutoGearPresets, loadAutoGearSeedFlag, loadAutoGearActivePresetId,
           loadAutoGearAutoPresetId, loadAutoGearBackupVisibility,
-          loadFullBackupHistory, ensureAutoBackupsFromProjects */
+          loadFullBackupHistory */
 
 const temperaturePreferenceStorageKey =
   typeof TEMPERATURE_STORAGE_KEY === 'string'
