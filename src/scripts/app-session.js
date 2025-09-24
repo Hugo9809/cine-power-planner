@@ -1284,17 +1284,16 @@ function applySharedSetup(shared, options = {}) {
       if (activeRules && activeRules.length) {
         payload.autoGearRules = activeRules;
       }
-      let storageKey = getCurrentProjectStorageKey({ allowTyped: true });
-      const typedName = setupNameInput && typeof setupNameInput.value === 'string'
-        ? setupNameInput.value.trim()
-        : '';
       const selectedName = setupSelect && typeof setupSelect.value === 'string'
         ? setupSelect.value.trim()
         : '';
-      if (typedName && typedName !== selectedName) {
-        storageKey = typedName;
+      const typedName = setupNameInput && typeof setupNameInput.value === 'string'
+        ? setupNameInput.value.trim()
+        : '';
+      const storageKey = selectedName || typedName;
+      if (storageKey) {
+        saveProject(storageKey, payload);
       }
-      saveProject(storageKey, payload);
     }
   } catch (e) {
     console.error('Failed to apply shared setup', e);
