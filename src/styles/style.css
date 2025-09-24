@@ -3062,7 +3062,7 @@ body.pink-mode .pink-mode-icon {
 }
 
 .pink-mode-animation-layer {
-  position: absolute;
+  position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 2;
