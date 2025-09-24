@@ -2147,7 +2147,7 @@ function buildDefaultVideoDistributionAutoGearRules(baseInfo = {}) {
         if (item) additions.push(item);
       };
 
-      pushSupport('iPad receiver (Director)', 'Monitoring');
+      pushSupport('Apple iPad Air 5 or better', 'Monitoring', 1);
       pushSupport('iPad receiver (DoP)', 'Monitoring');
       pushSupport('iPad receiver (Gaffer)', 'Monitoring');
       pushSupport('USB-C Charger (iOS Video)', 'Monitoring support', 2);
