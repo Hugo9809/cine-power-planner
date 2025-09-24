@@ -840,10 +840,41 @@ function updateAutoGearMonitorFieldGroup(group) {
   }
 }
 
+function extractAutoGearContextNotes(name) {
+  const contexts = [];
+  if (!name || typeof name !== 'string') {
+    return { baseName: '', contexts };
+  }
+  let baseName = name.trim();
+  const contextPattern = /^(.*\([^()]*\)) \(([^()]+)\)$/;
+  let match = baseName.match(contextPattern);
+  while (match) {
+    const candidate = match[2].trim();
+    if (/handheld\b/i.test(candidate) || /15-21\"?$/.test(candidate)) {
+      contexts.unshift(candidate);
+      baseName = match[1].trim();
+    } else {
+      break;
+    }
+    match = baseName.match(contextPattern);
+  }
+  return { baseName, contexts };
+}
+
 function normalizeAutoGearItem(entry) {
   if (!entry || typeof entry !== 'object') return null;
-  const name = normalizeAutoGearText(entry.name);
-  if (!name) return null;
+  const rawName = normalizeAutoGearText(entry.name);
+  if (!rawName) return null;
+  const { baseName, contexts } = extractAutoGearContextNotes(rawName);
+  const name = baseName || rawName;
+  const storedContexts = Array.isArray(entry.contextNotes)
+    ? entry.contextNotes.filter(value => typeof value === 'string' && value.trim())
+    : [];
+  storedContexts.forEach(note => {
+    const trimmed = note.trim();
+    if (!trimmed) return;
+    if (!contexts.includes(trimmed)) contexts.push(trimmed);
+  });
   const category = normalizeAutoGearText(entry.category);
   const quantity = normalizeAutoGearQuantity(entry.quantity);
   const id = typeof entry.id === 'string' && entry.id ? entry.id : generateAutoGearId('item');
@@ -857,7 +888,7 @@ function normalizeAutoGearItem(entry) {
     selectorEnabled = true;
   }
   const notes = normalizeAutoGearText(entry.notes);
-  return { id, name, category, quantity, screenSize, selectorType, selectorDefault, selectorEnabled, notes };
+  return { id, name, category, quantity, screenSize, selectorType, selectorDefault, selectorEnabled, notes, contextNotes: contexts };
 }
 
 function normalizeAutoGearTriggerList(values) {
@@ -1754,6 +1785,7 @@ function cloneAutoGearRuleItem(item) {
       selectorDefault: '',
       selectorEnabled: false,
       notes: '',
+      contextNotes: [],
     };
   }
   return {
@@ -1766,6 +1798,7 @@ function cloneAutoGearRuleItem(item) {
     selectorDefault: typeof item.selectorDefault === 'string' ? item.selectorDefault : '',
     selectorEnabled: !!item.selectorEnabled,
     notes: typeof item.notes === 'string' ? item.notes : '',
+    contextNotes: Array.isArray(item.contextNotes) ? item.contextNotes.filter(Boolean) : [],
   };
 }
 
