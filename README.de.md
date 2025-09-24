@@ -60,8 +60,12 @@ Beim ersten Start übernimmt die Anwendung automatisch die Sprache deines Browse
 ---
 
 ## 🆕 Neueste Funktionen
+- Versionsvergleiche für Backups lassen dich beliebige manuelle Speicherungen oder automatisch datierte Backups auswählen, um Diffs zu prüfen, Vorfallnotizen zu ergänzen und vor einem Rollback oder einer Übergabe an die Post einen Bericht zu exportieren.
+- Wiederherstellungsproben laden ein komplettes App-Backup oder Projekt-Bundle in eine isolierte Sandbox, damit du Inhalte mit den Live-Daten abgleichen kannst, ohne Produktionsprofile anzutasten.
 - Die neuen automatischen Gear-Regeln fügen szenariobasierte Ergänzungen oder Entfernungen hinzu, lassen sich exportieren und gemeinsam mit Bundles wiederherstellen.
-- Das Daten- & Speicher-Dashboard prüft gespeicherte Projekte, Gerätelisten, eigene Geräte, Favoriten und Laufzeit-Feedback direkt in den Einstellungen.
+- Das Daten- & Speicher-Dashboard prüft gespeicherte Projekte, Gerätelisten, eigene Geräte, Favoriten und Laufzeit-Feedback direkt in den Einstellungen und zeigt die geschätzte Backup-Größe an.
+- Ein Overlay für den Auto-Save-Status spiegelt die letzte Auto-Save-Notiz im Einstellungsdialog, damit Teams Hintergrundaktivität während Wiederherstellungsübungen sehen.
+- Ein monitoring-sensitiver Gerätemanager blendet zusätzliche Monitor- und Videozubehörfelder nur ein, wenn Szenarien sie verlangen, damit Regeln fokussiert bleiben.
 - Akzent- und Typografie-Regler in den Einstellungen erlauben dir Akzentfarbe, Grundschriftgröße und Schriftfamilie sowie die Themes Dunkel, Pink und Hoher Kontrast einstellen.
 - Tastenkürzel für die globale Suche setzen den Fokus sofort mit / oder Strg+K (⌘K auf macOS) – selbst wenn es im eingeklappten mobilen Seitenmenü steckt.
 - Die Aktion „Neu laden erzwingen" leert zwischengespeicherte Service-Worker-Dateien, damit sich die Offline-Anwendung aktualisiert, ohne Projekte oder Geräte zu löschen.

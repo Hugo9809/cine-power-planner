@@ -61,8 +61,12 @@ Al primo avvio l’applicazione adotta la lingua del browser; puoi cambiarla dal
 ---
 
 ## 🆕 Novità
+- I confronti delle versioni dei backup permettono di scegliere qualsiasi salvataggio manuale o backup automatico con timestamp per rivedere le differenze, aggiungere note sugli incidenti ed esportare un registro prima di annullare una modifica o consegnare il materiale alla post.
+- Le prove di ripristino caricano un backup completo dell’app o un bundle di progetto in una sandbox isolata così puoi confermare che il contenuto corrisponde ai dati live senza toccare i profili di produzione.
 - Le regole automatiche dell'attrezzatura consentono di definire aggiunte o rimozioni guidate dallo scenario, esportarle e ripristinarle insieme ai bundle condivisi.
-- Il cruscotto Dati e archiviazione controlla progetti salvati, elenchi, dispositivi personalizzati, preferiti e feedback sulle autonomie direttamente nelle Impostazioni.
+- Il cruscotto Dati e archiviazione controlla progetti salvati, elenchi, dispositivi personalizzati, preferiti e feedback sulle autonomie direttamente nelle Impostazioni e mostra la dimensione approssimativa del backup.
+- Un overlay di stato dell'autosalvataggio riporta l’ultima nota di autosalvataggio dentro alle Impostazioni così le squadre vedono l’attività in background mentre provano le procedure di recupero.
+- Un editor dell'attrezzatura sensibile al monitoraggio mette in evidenza accessori aggiuntivi per monitor e video solo quando gli scenari lo richiedono, mantenendo la creazione delle regole concentrata.
 - I controlli di accento e tipografia nelle Impostazioni consentono di regolare colore, dimensione base e famiglia del font insieme ai temi scuro, rosa e ad alto contrasto.
 - Le scorciatoie della ricerca globale portano il focus sul campo all’istante con / o Ctrl+K (⌘K su macOS), anche quando è nascosto nel menu laterale compresso.
 - Il pulsante **Forza ricarica** cancella i file del service worker in cache per aggiornare l’applicazione offline senza eliminare progetti o dispositivi salvati.
