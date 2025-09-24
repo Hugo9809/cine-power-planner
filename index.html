@@ -3316,7 +3316,27 @@
                   <li><strong>Viewfinder Settings</strong> and <strong>Tripod Preferences</strong> add EVF mounts, extension brackets, tripod heads, spreaders and counterbalance details.</li>
                 </ul>
               </li>
+              <li>
+                Toggle
+                <a
+                  class="help-link button-link"
+                  href="#autoGearHighlightToggle"
+                  data-help-target="#autoGearHighlightToggle"
+                  data-help-highlight="#settingsDialog"
+                ><strong>Highlight automatic gear</strong></a>
+                to temporarily tint rows injected by rules. Badges on each affected line list the rule names so you can audit automations at a glance.
+              </li>
               <li>The resulting gear list appears in printable overviews and exported project files so collaborators see full context.</li>
+              <li>
+                Use the
+                <a
+                  class="help-link button-link"
+                  href="#deleteGearListProjectBtn"
+                  data-help-target="#deleteGearListProjectBtn"
+                  data-help-highlight="#setup-manager"
+                ><strong>Delete Gear List</strong></a>
+                control (also available inside printable overviews) when you need to rebuild from scratch—the planner double-checks, saves an automatic backup and then clears the saved gear table and project requirements safely.
+              </li>
                 <li>Gear lists save automatically with the project; <strong>Export</strong> downloads a JSON file, <strong>Import</strong> restores it and <strong>Delete</strong> removes the saved list and shows the generator again.</li>
                 <li>Gear list forms use fork buttons to duplicate your entries instantly, making alternate configurations easy to explore.</li>
                 <li>
@@ -3355,15 +3375,25 @@
               <strong>FIZ controllers</strong> and <strong>FIZ distance devices</strong>. Every chosen condition must match the
               project before the automation runs, and at least one condition is required to save a rule.
             </li>
-            <li>
-              Rules execute after the planner assembles the gear list, so your adjustments stack on top of built-in accessories
-              and scenario packs.
-            </li>
               <li>
-                Click
-                <a class="help-link button-link" href="#autoGearAddRule" data-help-target="#autoGearAddRule">Add rule</a>
-                to reveal the editor, name the rule for quick reference and choose the conditions that must be active before it
-                triggers.
+                Rules execute after the planner assembles the gear list, so your adjustments stack on top of built-in accessories
+                and scenario packs.
+              </li>
+              <li>
+                Switch on
+                <a
+                  class="help-link button-link"
+                  href="#autoGearHighlightToggle"
+                  data-help-target="#autoGearHighlightToggle"
+                  data-help-highlight="#settingsDialog"
+                ><strong>Highlight automatic gear</strong></a>
+                while reviewing the gear list to wash rule-driven rows with a temporary color overlay. The badges that appear beside each tinted line list the rule names that fired so you can trace changes instantly.
+              </li>
+                <li>
+                  Click
+                  <a class="help-link button-link" href="#autoGearAddRule" data-help-target="#autoGearAddRule">Add rule</a>
+                  to reveal the editor, name the rule for quick reference and choose the conditions that must be active before it
+                  triggers.
               </li>
               <li>
                 Use
