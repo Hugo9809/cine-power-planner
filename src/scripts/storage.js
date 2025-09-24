@@ -1290,6 +1290,7 @@ function migrateLegacyStorageKeys() {
     { legacy: `${legacyPrefix}autoGearActivePreset`, modern: AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY },
     { legacy: `${legacyPrefix}autoGearAutoPreset`, modern: AUTO_GEAR_AUTO_PRESET_STORAGE_KEY },
     { legacy: `${legacyPrefix}autoGearShowBackups`, modern: AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY },
+    { legacy: `${legacyPrefix}autoGearMonitorDefaults`, modern: AUTO_GEAR_MONITOR_DEFAULTS_STORAGE_KEY },
     { legacy: `${legacyPrefix}customFonts`, modern: CUSTOM_FONT_STORAGE_KEY_DEFAULT, updateFontKey: true },
   ];
 

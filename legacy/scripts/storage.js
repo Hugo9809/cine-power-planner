@@ -1139,6 +1139,9 @@ function migrateLegacyStorageKeys() {
     legacy: "".concat(legacyPrefix, "autoGearShowBackups"),
     modern: AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY
   }, {
+    legacy: "".concat(legacyPrefix, "autoGearMonitorDefaults"),
+    modern: AUTO_GEAR_MONITOR_DEFAULTS_STORAGE_KEY
+  }, {
     legacy: "".concat(legacyPrefix, "customFonts"),
     modern: CUSTOM_FONT_STORAGE_KEY_DEFAULT,
     updateFontKey: true

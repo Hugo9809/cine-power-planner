@@ -49,6 +49,7 @@ const {
   saveAutoGearActivePresetId,
   loadAutoGearAutoPresetId,
   saveAutoGearAutoPresetId,
+  loadAutoGearMonitorDefaults,
   loadAutoGearBackupVisibility,
   saveAutoGearBackupVisibility,
   loadFullBackupHistory,
@@ -70,6 +71,7 @@ const AUTO_GEAR_PRESETS_KEY = 'cameraPowerPlanner_autoGearPresets';
 const AUTO_GEAR_ACTIVE_PRESET_KEY = 'cameraPowerPlanner_autoGearActivePreset';
 const AUTO_GEAR_AUTO_PRESET_KEY = 'cameraPowerPlanner_autoGearAutoPreset';
 const AUTO_GEAR_BACKUP_VISIBILITY_KEY = 'cameraPowerPlanner_autoGearShowBackups';
+const AUTO_GEAR_MONITOR_DEFAULTS_KEY = 'cameraPowerPlanner_autoGearMonitorDefaults';
 const CUSTOM_FONT_KEY = 'cameraPowerPlanner_customFonts';
 const CUSTOM_LOGO_KEY = 'customLogo';
 const TEMPERATURE_UNIT_KEY = 'cameraPowerPlanner_temperatureUnit';
@@ -979,6 +981,16 @@ describe('automatic gear storage', () => {
       { id: 'auto-new', label: 'Autosaved rules', rules: [{ id: 'rule-2' }] },
       { id: 'manual-1', label: 'Manual preset', rules: [] },
     ]);
+  });
+
+  test('loadAutoGearMonitorDefaults migrates legacy key prefix', () => {
+    const defaults = { focus: 'monitor-a' };
+    localStorage.setItem('cinePowerPlanner_autoGearMonitorDefaults', JSON.stringify(defaults));
+
+    const loaded = loadAutoGearMonitorDefaults();
+    expect(loaded).toEqual(defaults);
+    expect(JSON.parse(localStorage.getItem(AUTO_GEAR_MONITOR_DEFAULTS_KEY))).toEqual(defaults);
+    expect(localStorage.getItem('cinePowerPlanner_autoGearMonitorDefaults')).toBeNull();
   });
 });
 
