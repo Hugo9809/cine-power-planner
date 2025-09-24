@@ -2764,6 +2764,26 @@ function cloneDiagramPositionsForStorage(positions) {
   }
 }
 
+function cloneProjectGearSelectors(selectors) {
+  if (!isPlainObject(selectors)) {
+    return null;
+  }
+  const clone = {};
+  Object.entries(selectors).forEach(([id, value]) => {
+    if (typeof id !== 'string' || !id) {
+      return;
+    }
+    if (Array.isArray(value)) {
+      clone[id] = value.map((item) => (typeof item === 'string' ? item : String(item ?? '')));
+    } else if (value === undefined || value === null) {
+      clone[id] = '';
+    } else {
+      clone[id] = typeof value === 'string' ? value : String(value);
+    }
+  });
+  return Object.keys(clone).length ? clone : null;
+}
+
 function normalizeProject(data) {
   if (typeof data === "string") {
     const parsed = tryParseJSONLike(data);
@@ -2803,6 +2823,16 @@ function normalizeProject(data) {
           ? data.gearList
           : "";
 
+      let normalizedGearSelectors = null;
+      if (isPlainObject(data.gearSelectors)) {
+        normalizedGearSelectors = cloneProjectGearSelectors(data.gearSelectors);
+      } else if (typeof data.gearSelectors === "string") {
+        const parsedSelectors = tryParseJSONLike(data.gearSelectors);
+        if (parsedSelectors.success && isPlainObject(parsedSelectors.parsed)) {
+          normalizedGearSelectors = cloneProjectGearSelectors(parsedSelectors.parsed);
+        }
+      }
+
       if (typeof normalizedGearList === "string") {
         const parsedGear = tryParseJSONLike(normalizedGearList);
         if (parsedGear.success) {
@@ -2818,6 +2848,9 @@ function normalizeProject(data) {
               && nested.autoGearRules.length
             ) {
               normalizedAutoGearRules = nested.autoGearRules;
+            }
+            if (!normalizedGearSelectors && isPlainObject(nested.gearSelectors)) {
+              normalizedGearSelectors = cloneProjectGearSelectors(nested.gearSelectors);
             }
           } else if (
             typeof parsedGear.parsed === "string"
@@ -2865,6 +2898,12 @@ function normalizeProject(data) {
       } else if (typeof normalizedGearList === 'string') {
         htmlSources.push(normalizedGearList);
       }
+      if (!normalizedGearSelectors && isPlainObject(data.project) && isPlainObject(data.project.gearSelectors)) {
+        normalizedGearSelectors = cloneProjectGearSelectors(data.project.gearSelectors);
+      }
+      if (!normalizedGearSelectors && isPlainObject(normalizedGearList) && isPlainObject(normalizedGearList.gearSelectors)) {
+        normalizedGearSelectors = cloneProjectGearSelectors(normalizedGearList.gearSelectors);
+      }
       if (!normalizedProjectInfo) {
         for (let i = 0; i < htmlSources.length; i += 1) {
           const recovered = extractProjectInfoFromHtml(htmlSources[i]);
@@ -2887,6 +2926,9 @@ function normalizeProject(data) {
       if (normalizedAutoGearRules && normalizedAutoGearRules.length) {
         normalized.autoGearRules = cloneAutoGearRules(normalizedAutoGearRules);
       }
+      if (normalizedGearSelectors && Object.keys(normalizedGearSelectors).length) {
+        normalized.gearSelectors = normalizedGearSelectors;
+      }
       return normalized;
     }
     // Legacy format { projectHtml, gearHtml }
@@ -2908,7 +2950,13 @@ const LEGACY_PROJECT_ROOT_KEYS = new Set([
   "autoGearRules",
 ]);
 
-const NORMALIZED_PROJECT_KEYS = new Set(["gearList", "projectInfo", "autoGearRules"]);
+const NORMALIZED_PROJECT_KEYS = new Set([
+  "gearList",
+  "projectInfo",
+  "autoGearRules",
+  "diagramPositions",
+  "gearSelectors",
+]);
 
 function isNormalizedProjectEntry(entry) {
   if (!isPlainObject(entry)) {
@@ -2930,7 +2978,21 @@ function isNormalizedProjectEntry(entry) {
     return false;
   }
   if (Object.prototype.hasOwnProperty.call(entry, "autoGearRules")) {
-    return Array.isArray(entry.autoGearRules) && entry.autoGearRules.length > 0;
+    if (!Array.isArray(entry.autoGearRules) || !entry.autoGearRules.length) {
+      return false;
+    }
+  }
+  if (
+    Object.prototype.hasOwnProperty.call(entry, "diagramPositions")
+    && !isPlainObject(entry.diagramPositions)
+  ) {
+    return false;
+  }
+  if (
+    Object.prototype.hasOwnProperty.call(entry, "gearSelectors")
+    && !isPlainObject(entry.gearSelectors)
+  ) {
+    return false;
   }
   return true;
 }

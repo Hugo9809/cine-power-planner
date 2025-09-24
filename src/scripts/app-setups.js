@@ -128,7 +128,7 @@ function downloadSharedProject(shareFileName, includeAutoGear) {
       currentSetup.projectInfo = project.projectInfo;
     }
   }
-  const gearSelectors = getGearListSelectors();
+  const gearSelectors = cloneGearListSelectors(getGearListSelectors());
   if (Object.keys(gearSelectors).length) {
     currentSetup.gearSelectors = gearSelectors;
   }
@@ -3657,6 +3657,22 @@ function getGearListSelectors() {
     return selectors;
 }
 
+function cloneGearListSelectors(selectors) {
+    if (!selectors || typeof selectors !== 'object') return {};
+    const clone = {};
+    Object.entries(selectors).forEach(([id, value]) => {
+        if (!id || typeof id !== 'string') return;
+        if (Array.isArray(value)) {
+            clone[id] = value.map(item => (typeof item === 'string' ? item : String(item ?? '')));
+        } else if (value === undefined || value === null) {
+            clone[id] = '';
+        } else {
+            clone[id] = typeof value === 'string' ? value : String(value);
+        }
+    });
+    return clone;
+}
+
 function applyGearListSelectors(selectors) {
     if (!gearListOutput || !selectors) return;
     Object.entries(selectors).forEach(([id, value]) => {
@@ -3683,6 +3699,9 @@ function saveCurrentGearList() {
     info.sliderBowl = getSliderBowlValue();
     info.easyrig = getEasyrigValue();
     currentProjectInfo = deriveProjectInfo(info);
+    const gearSelectorsRaw = getGearListSelectors();
+    const gearSelectors = cloneGearListSelectors(gearSelectorsRaw);
+    const hasGearSelectors = Object.keys(gearSelectors).length > 0;
     const selectedStorageKey =
         setupSelect && typeof setupSelect.value === 'string'
             ? setupSelect.value.trim()
@@ -3705,6 +3724,9 @@ function saveCurrentGearList() {
             projectInfo: currentProjectInfo,
             gearList: html
         };
+        if (hasGearSelectors) {
+            payload.gearSelectors = gearSelectors;
+        }
         if (diagramPositions) {
             payload.diagramPositions = diagramPositions;
         }
@@ -3766,6 +3788,19 @@ function saveCurrentGearList() {
         }
     } else if (Object.prototype.hasOwnProperty.call(setup, 'autoGearRules')) {
         delete setup.autoGearRules;
+        changed = true;
+    }
+
+    const existingSelectors = setup.gearSelectors;
+    const existingSelectorsSig = existingSelectors ? stableStringify(existingSelectors) : '';
+    const newSelectorsSig = hasGearSelectors ? stableStringify(gearSelectors) : '';
+    if (newSelectorsSig) {
+        if (existingSelectorsSig !== newSelectorsSig) {
+            setup.gearSelectors = gearSelectors;
+            changed = true;
+        }
+    } else if (Object.prototype.hasOwnProperty.call(setup, 'gearSelectors')) {
+        delete setup.gearSelectors;
         changed = true;
     }
 
