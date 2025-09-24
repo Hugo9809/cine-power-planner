@@ -2012,11 +2012,15 @@ function downloadBackupPayload(payload, fileName) {
   if (blob) {
     if (typeof navigator !== 'undefined' && typeof navigator.msSaveOrOpenBlob === 'function') {
       try {
-        navigator.msSaveOrOpenBlob(blob, fileName);
-        return {
-          success: true,
-          method: 'ms-save'
-        };
+        var msSaveResult = navigator.msSaveOrOpenBlob(blob, fileName);
+        if (msSaveResult === false) {
+          console.warn('Saving backup via msSaveOrOpenBlob was cancelled or declined');
+        } else {
+          return {
+            success: true,
+            method: 'ms-save'
+          };
+        }
       } catch (msError) {
         console.warn('Saving backup via msSaveOrOpenBlob failed', msError);
       }

@@ -591,6 +591,35 @@ describe('automated backups', () => {
     URL.createObjectURL = originalCreateObjectURL;
   });
 
+  test('createSettingsBackup continues when msSaveOrOpenBlob declines the download', async () => {
+    const { createSettingsBackup } = loadApp();
+
+    const originalMsSave = navigator.msSaveOrOpenBlob;
+    const msSaveSpy = jest.fn(() => false);
+    navigator.msSaveOrOpenBlob = msSaveSpy;
+
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    try {
+      const result = await captureBackupDownload(
+        createSettingsBackup,
+        new Date('2024-05-06T10:30:00Z'),
+      );
+
+      expect(msSaveSpy).toHaveBeenCalledTimes(1);
+      expect(result.createObjectURLCalls.length).toBeGreaterThan(0);
+      expect(result.anchors).toHaveLength(1);
+      expect(result.anchors[0].href).toBe(result.objectUrl);
+    } finally {
+      warnSpy.mockRestore();
+      if (typeof originalMsSave === 'function') {
+        navigator.msSaveOrOpenBlob = originalMsSave;
+      } else {
+        delete navigator.msSaveOrOpenBlob;
+      }
+    }
+  });
+
   test('createSettingsBackup recovers data when exportAllData throws', async () => {
     const { createSettingsBackup } = loadApp();
 
