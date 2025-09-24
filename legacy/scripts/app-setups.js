@@ -2722,9 +2722,13 @@ function generateGearListHtml() {
   var infoHtml = infoEntries.length ? "<h3>".concat(escapeHtml(requirementsHeading), "</h3>").concat(boxesHtml) : '';
   var formatItems = function formatItems(arr) {
     var counts = {};
-    arr.filter(Boolean).map(addArriKNumber).forEach(function (item) {
-      var match = item.trim().match(/^(.*?)(?: \(([^()]+)\))?$/);
-      var base = match ? match[1].trim() : item.trim();
+    arr.filter(Boolean).map(addArriKNumber).forEach(function (rawItem) {
+      var item = rawItem.trim();
+      var quantityMatch = item.match(/^(\d+)x\s+(.*)$/);
+      var quantity = quantityMatch ? parseInt(quantityMatch[1], 10) : 1;
+      var namePart = quantityMatch ? quantityMatch[2] : item;
+      var match = namePart.trim().match(/^(.*?)(?: \(([^()]+)\))?$/);
+      var base = match ? match[1].trim() : namePart.trim();
       var ctx = match && match[2] ? match[2].trim() : '';
       if (!counts[base]) {
         counts[base] = {
@@ -2732,8 +2736,9 @@ function generateGearListHtml() {
           ctxCounts: {}
         };
       }
-      counts[base].total++;
-      counts[base].ctxCounts[ctx] = (counts[base].ctxCounts[ctx] || 0) + 1;
+      var qty = Number.isFinite(quantity) && quantity > 0 ? quantity : 1;
+      counts[base].total += qty;
+      counts[base].ctxCounts[ctx] = (counts[base].ctxCounts[ctx] || 0) + qty;
     });
     return Object.entries(counts).sort(function (_ref1, _ref10) {
       var _ref11 = _slicedToArray(_ref1, 1),
@@ -2788,11 +2793,23 @@ function generateGearListHtml() {
             var _ref26 = _slicedToArray(_ref25, 1),
               c = _ref26[0];
             return c && c.toLowerCase() !== 'spare';
-          }).sort(function (_ref27, _ref28) {
-            var _ref29 = _slicedToArray(_ref27, 1),
-              a = _ref29[0];
-            var _ref30 = _slicedToArray(_ref28, 1),
-              b = _ref30[0];
+          }).map(function (_ref27) {
+            var _ref28 = _slicedToArray(_ref27, 2),
+              c = _ref28[0],
+              count = _ref28[1];
+            var qtyMatch = c.match(/^(\d+)x\s+(.*)$/i);
+            if (qtyMatch) {
+              var qty = parseInt(qtyMatch[1], 10);
+              if (Number.isFinite(qty) && qty > 0) {
+                return [qtyMatch[2].trim(), count * qty];
+              }
+            }
+            return [c, count];
+          }).sort(function (_ref29, _ref30) {
+            var _ref31 = _slicedToArray(_ref29, 1),
+              a = _ref31[0];
+            var _ref32 = _slicedToArray(_ref30, 1),
+              b = _ref32[0];
             return a.localeCompare(b, undefined, {
               sensitivity: 'base'
             });

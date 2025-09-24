@@ -2760,15 +2760,20 @@ function generateGearListHtml(info = {}) {
     const infoHtml = infoEntries.length ? `<h3>${escapeHtml(requirementsHeading)}</h3>${boxesHtml}` : '';
     const formatItems = arr => {
         const counts = {};
-        arr.filter(Boolean).map(addArriKNumber).forEach(item => {
-            const match = item.trim().match(/^(.*?)(?: \(([^()]+)\))?$/);
-            const base = match ? match[1].trim() : item.trim();
+        arr.filter(Boolean).map(addArriKNumber).forEach(rawItem => {
+            const item = rawItem.trim();
+            const quantityMatch = item.match(/^(\d+)x\s+(.*)$/);
+            const quantity = quantityMatch ? parseInt(quantityMatch[1], 10) : 1;
+            const namePart = quantityMatch ? quantityMatch[2] : item;
+            const match = namePart.trim().match(/^(.*?)(?: \(([^()]+)\))?$/);
+            const base = match ? match[1].trim() : namePart.trim();
             const ctx = match && match[2] ? match[2].trim() : '';
             if (!counts[base]) {
                 counts[base] = { total: 0, ctxCounts: {} };
             }
-            counts[base].total++;
-            counts[base].ctxCounts[ctx] = (counts[base].ctxCounts[ctx] || 0) + 1;
+            counts[base].total += Number.isFinite(quantity) && quantity > 0 ? quantity : 1;
+            const current = counts[base].ctxCounts[ctx] || 0;
+            counts[base].ctxCounts[ctx] = current + (Number.isFinite(quantity) && quantity > 0 ? quantity : 1);
         });
         return Object.entries(counts)
             .sort(([a], [b]) => a.localeCompare(b, undefined, { sensitivity: 'base' }))
@@ -2788,6 +2793,17 @@ function generateGearListHtml(info = {}) {
                     } else if (base.startsWith('Bebob ')) {
                         const realEntries = Object.entries(ctxCounts)
                             .filter(([c]) => c && c.toLowerCase() !== 'spare')
+                            .map(([c, count]) => {
+                                const qtyMatch = c.match(/^(\d+)x\s+(.*)$/i);
+                                if (qtyMatch) {
+                                    const [, qty, label] = qtyMatch;
+                                    const qtyNum = parseInt(qty, 10);
+                                    if (Number.isFinite(qtyNum) && qtyNum > 0) {
+                                        return [label.trim(), count * qtyNum];
+                                    }
+                                }
+                                return [c, count];
+                            })
                             .sort(([a], [b]) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
                         const usedCount = realEntries.reduce((sum, [, count]) => sum + count, 0);
                         const spareCount = total - usedCount;
