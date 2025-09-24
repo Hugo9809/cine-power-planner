@@ -161,7 +161,7 @@ The app automatically uses your browser language on first load, and you can swit
 ### 📋 Gear List
 The generator turns your selections into a categorized packing list:
 
-- Click **Generate Gear List** to compile chosen gear and project requirements into a table.
+- Click **Generate Gear List and Project Requirements** to compile chosen gear and project requirements into a table.
 - The table updates automatically when device selections or requirements change.
 - Items are grouped by category (camera, lens, power, monitoring, rigging, grip, accessories, consumables) and duplicates are merged with counts.
 - Required cables, rigging and accessories are added for monitors, motors, gimbals and weather scenarios.
@@ -282,7 +282,7 @@ The generator turns your selections into a categorized packing list:
 3. **Select Devices:** Choose gear from each category using the dropdowns—type to filter, click the star to pin favourites and let scenario presets fill in accessories automatically.
 4. **View Calculations:** See total draw, current and runtime once a battery is selected; warnings highlight when output limits are exceeded.
 5. **Save & Export Projects:** Name and save your configuration, auto-backups capture snapshots, and the Export button downloads a JSON bundle for collaborators while the Import button restores them.
-6. **Generate Gear Lists:** Press **Generate Gear List** to turn project requirements into a categorized packing list with tooltips and accessory packs.
+6. **Generate Gear Lists:** Press **Generate Gear List and Project Requirements** to turn project requirements into a categorized packing list with tooltips and accessory packs.
 7. **Manage Device Data:** Click “Edit Device Data…” to open the database editor, modify devices, export/import JSON or revert to the defaults.
 8. **Submit Runtime Feedback:** Use “Submit User Runtime Feedback” to record field measurements and refine weighted estimates.
 
