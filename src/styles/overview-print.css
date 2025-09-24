@@ -87,6 +87,10 @@ body.dark-mode {
   --font-size-h1: calc(var(--font-size-base) * 1.8);
   --font-size-h2: calc(var(--font-size-base) * 1.35);
   --font-size-h3: calc(var(--font-size-base) * 1.15);
+  --print-diagram-max-width: 20cm;
+  --print-diagram-icon-scale: 1;
+  --print-diagram-text-scale: 1;
+  --print-diagram-label-scale: 1;
   font-family: 'Ubuntu', sans-serif;
   font-weight: var(--font-weight-light);
   font-size: var(--font-size-base);
@@ -358,15 +362,53 @@ table, th, td {
 }
 
 @media print {
-#overviewDialogContent #setupDiagram {
-    --font-size-diagram-icon: var(--font-size-h2);
-    --font-size-diagram-text: var(--font-size-base);
-    --font-size-diagram-label: var(--font-size-h3);
+  #overviewDialogContent {
+    max-width: 100%;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  #overviewDialogContent #setupDiagram {
+    --font-size-diagram-icon: calc(var(--font-size-h2) * var(--print-diagram-icon-scale, 1));
+    --font-size-diagram-text: calc(var(--font-size-base) * var(--print-diagram-text-scale, 1));
+    --font-size-diagram-label: calc(var(--font-size-h3) * var(--print-diagram-label-scale, 1));
   }
 
   #overviewDialogContent #setupDiagram svg {
     width: 100% !important;
-    max-width: 20cm !important;
+    max-width: var(--print-diagram-max-width, 20cm) !important;
+  }
+}
+
+@media print and (min-width: 240mm) {
+  body,
+  body.dark-mode {
+    --font-size-base: 12pt;
+    --line-height-base: 1.65;
+    --print-diagram-max-width: 24cm;
+    --print-diagram-icon-scale: 1.05;
+    --print-diagram-text-scale: 1.07;
+    --print-diagram-label-scale: 1.06;
+  }
+
+  #overviewDialogContent {
+    --section-padding: 0.9cm;
+  }
+}
+
+@media print and (min-width: 297mm) {
+  body,
+  body.dark-mode {
+    --font-size-base: 13pt;
+    --line-height-base: 1.7;
+    --print-diagram-max-width: 28cm;
+    --print-diagram-icon-scale: 1.1;
+    --print-diagram-text-scale: 1.12;
+    --print-diagram-label-scale: 1.1;
+  }
+
+  #overviewDialogContent {
+    --section-padding: 1.1cm;
   }
 }
 #overviewDialogContent #setupDiagram #diagramArea {
