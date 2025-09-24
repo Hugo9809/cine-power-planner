@@ -3269,7 +3269,8 @@ function generateGearListHtml() {
     gripItems.push("".concat(headName, " ").concat(bowlType));
   }
   tripodTypes.forEach(function (t) {
-    var base = bowlType ? "".concat(bowlType, " ").concat(t) : t;
+    var typeLabel = t === 'Hi-Head' ? 'Hi-Head' : "".concat(t, " Tripod");
+    var base = bowlType ? "".concat(bowlType, " ").concat(typeLabel) : typeLabel;
     if (t === 'Hi-Head') {
       gripItems.push(base);
     } else if (spreader) {
@@ -3277,17 +3278,17 @@ function generateGearListHtml() {
     } else {
       gripItems.push(base);
     }
-    if (t === 'Frog Tripod') {
-      gripItems.push('Sand bag (Frog Tripod)');
+    if (t === 'Short') {
+      gripItems.push('Sand bag (Short Tripod)');
     }
     if (t === 'Hi-Head') {
       gripItems.push('Sand bag (Hi-Head)');
     }
   });
   if (needsStandardTripod && !gripItems.some(function (item) {
-    return /Standard Tripod/.test(item);
+    return /Long Tripod/.test(item);
   })) {
-    gripItems.push('Standard Tripod');
+    gripItems.push('Long Tripod');
   }
   var standCount = gripItems.filter(function (item) {
     return /\bstand\b/i.test(item) && !/wheel/i.test(item);

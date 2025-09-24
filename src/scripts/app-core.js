@@ -850,7 +850,7 @@ function extractAutoGearContextNotes(name) {
   let match = baseName.match(contextPattern);
   while (match) {
     const candidate = match[2].trim();
-    if (/handheld\b/i.test(candidate) || /15-21\"?$/.test(candidate)) {
+    if (/handheld\b/i.test(candidate) || /15-21"?$/.test(candidate)) {
       contexts.unshift(candidate);
       baseName = match[1].trim();
     } else {
