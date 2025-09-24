@@ -3082,11 +3082,11 @@ body.pink-mode .pink-mode-icon {
   animation-name: pink-mode-rain-icon;
   animation-duration: var(--pink-mode-rain-duration, 4800ms);
   animation-timing-function: ease-in;
-  pointer-events: none;
-  cursor: default;
-  touch-action: auto;
-  user-select: auto;
-  -webkit-user-drag: auto;
+  pointer-events: auto;
+  cursor: pointer;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-drag: none;
 }
 
 .pink-mode-animation-instance.pink-mode-icon-rain svg {
