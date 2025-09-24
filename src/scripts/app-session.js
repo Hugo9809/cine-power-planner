@@ -861,22 +861,92 @@ function autoSaveCurrentSetup() {
   checkSetupChanged();
 }
 
+const PROJECT_AUTOSAVE_BASE_DELAY_MS = 300;
+const PROJECT_AUTOSAVE_RETRY_DELAY_MS = 900;
+const PROJECT_AUTOSAVE_RETRY_CAP_MS = 5000;
+const PROJECT_AUTOSAVE_MAX_RETRIES = 4;
+
 let projectAutoSaveTimer = null;
+let projectAutoSaveFailureCount = 0;
+let projectAutoSavePendingWhileRestoring = null;
 let factoryResetInProgress = false;
+
+function getProjectAutoSaveDelay() {
+  if (projectAutoSaveFailureCount <= 0) {
+    return PROJECT_AUTOSAVE_BASE_DELAY_MS;
+  }
+  const scaledDelay = PROJECT_AUTOSAVE_BASE_DELAY_MS
+    + PROJECT_AUTOSAVE_RETRY_DELAY_MS * (projectAutoSaveFailureCount - 1);
+  return Math.min(scaledDelay, PROJECT_AUTOSAVE_RETRY_CAP_MS);
+}
 
 function runProjectAutoSave() {
   if (factoryResetInProgress) {
-    projectAutoSaveTimer = null;
+    if (projectAutoSaveTimer) {
+      clearTimeout(projectAutoSaveTimer);
+      projectAutoSaveTimer = null;
+    }
     return;
   }
-  if (restoringSession) return;
-  projectAutoSaveTimer = null;
-  const hasSetupName = Boolean(setupNameInput && setupNameInput.value.trim());
-  if (!hasSetupName) {
-    saveCurrentSession();
+
+  if (restoringSession) {
+    projectAutoSaveTimer = null;
+    if (projectAutoSavePendingWhileRestoring !== 'immediate') {
+      projectAutoSavePendingWhileRestoring = projectAutoSavePendingWhileRestoring || 'queued';
+    }
+    return;
   }
-  autoSaveCurrentSetup();
-  saveCurrentGearList();
+
+  projectAutoSaveTimer = null;
+  projectAutoSavePendingWhileRestoring = null;
+
+  let encounteredError = false;
+
+  const guard = (fn, context) => {
+    if (typeof fn !== 'function') {
+      return true;
+    }
+    try {
+      fn();
+      return true;
+    } catch (error) {
+      encounteredError = true;
+      console.error(`Project autosave failed while ${context}.`, error);
+      return false;
+    }
+  };
+
+  const hasSetupName = Boolean(
+    setupNameInput
+    && typeof setupNameInput.value === 'string'
+    && setupNameInput.value.trim(),
+  );
+
+  if (!hasSetupName) {
+    guard(() => saveCurrentSession(), 'saving the current session state');
+  }
+
+  const setupSaved = guard(autoSaveCurrentSetup, 'saving the current setup');
+  if (!setupSaved) {
+    guard(
+      () => saveCurrentSession({ skipGearList: true }),
+      'saving the current session state as a fallback',
+    );
+  }
+
+  guard(saveCurrentGearList, 'saving the gear list');
+
+  if (encounteredError) {
+    if (projectAutoSaveFailureCount < PROJECT_AUTOSAVE_MAX_RETRIES) {
+      projectAutoSaveFailureCount += 1;
+      scheduleProjectAutoSave();
+    } else if (projectAutoSaveFailureCount === PROJECT_AUTOSAVE_MAX_RETRIES) {
+      console.warn('Project autosave retries have been paused after repeated failures.');
+    }
+    return;
+  }
+
+  projectAutoSaveFailureCount = 0;
 }
 
 function scheduleProjectAutoSave(immediate = false) {
@@ -892,8 +962,13 @@ function scheduleProjectAutoSave(immediate = false) {
       clearTimeout(projectAutoSaveTimer);
       projectAutoSaveTimer = null;
     }
+    const pendingState = immediate ? 'immediate' : 'queued';
+    if (projectAutoSavePendingWhileRestoring !== 'immediate') {
+      projectAutoSavePendingWhileRestoring = pendingState;
+    }
     return;
   }
+  projectAutoSavePendingWhileRestoring = null;
   if (immediate) {
     if (projectAutoSaveTimer) {
       clearTimeout(projectAutoSaveTimer);
@@ -905,7 +980,8 @@ function scheduleProjectAutoSave(immediate = false) {
   if (projectAutoSaveTimer) {
     clearTimeout(projectAutoSaveTimer);
   }
-  projectAutoSaveTimer = setTimeout(runProjectAutoSave, 300);
+  const delay = getProjectAutoSaveDelay();
+  projectAutoSaveTimer = setTimeout(runProjectAutoSave, delay);
   if (
     projectAutoSaveTimer &&
     typeof projectAutoSaveTimer === 'object' &&
@@ -1128,6 +1204,13 @@ function restoreSessionState() {
   lastSetupName = setupSelect ? setupSelect.value : '';
   restoringSession = false;
   saveCurrentSession();
+  const pendingAutoSaveState = projectAutoSavePendingWhileRestoring;
+  projectAutoSavePendingWhileRestoring = null;
+  if (pendingAutoSaveState === 'immediate') {
+    scheduleProjectAutoSave(true);
+  } else if (pendingAutoSaveState === 'queued') {
+    scheduleProjectAutoSave();
+  }
 }
 
 function applySharedSetup(shared, options = {}) {
