@@ -180,6 +180,43 @@ setupSelect.addEventListener("change", function (event) {
   var setupName = event.target.value;
   var typedName = setupNameInput && typeof setupNameInput.value === 'string' ? setupNameInput.value.trim() : '';
   var previousKey = (lastSetupName && typeof lastSetupName === 'string' ? lastSetupName : '') || typedName || '';
+  var normalizeProjectName = function normalizeProjectName(value) {
+    return typeof value === 'string' ? value.replace(/\s+/g, ' ').trim() : '';
+  };
+  var normalizedLastSelection = normalizeProjectName(lastSetupName);
+  var normalizedTargetSelection = normalizeProjectName(setupName);
+  var autoSaveFlushed = false;
+  if (typeof scheduleProjectAutoSave === 'function') {
+    try {
+      scheduleProjectAutoSave(true);
+      autoSaveFlushed = true;
+    } catch (error) {
+      console.warn('Failed to flush project autosave before switching setups', error);
+    }
+  }
+  if (!autoSaveFlushed) {
+    try {
+      if (typeof saveCurrentSession === 'function') {
+        saveCurrentSession();
+      }
+      if (typeof saveCurrentGearList === 'function') {
+        saveCurrentGearList();
+      }
+    } catch (error) {
+      console.warn('Failed to persist project state before switching setups', error);
+    }
+  }
+  if (typeof autoBackup === 'function' && normalizedTargetSelection !== normalizedLastSelection) {
+    try {
+      autoBackup({
+        suppressSuccess: true,
+        projectNameOverride: normalizeProjectName(previousKey),
+        triggerAutoSaveNotification: true
+      });
+    } catch (error) {
+      console.warn('Failed to auto backup project before loading a different setup', error);
+    }
+  }
   if (typeof saveProject === 'function') {
     var info = projectForm ? collectProjectFormData() : {};
     if (info) {
@@ -192,6 +229,12 @@ setupSelect.addEventListener("change", function (event) {
       projectInfo: previousProjectInfo,
       gearList: getCurrentGearListHtml()
     };
+    if (typeof getDiagramManualPositions === 'function') {
+      var diagramPositions = getDiagramManualPositions();
+      if (diagramPositions && Object.keys(diagramPositions).length) {
+        previousPayload.diagramPositions = diagramPositions;
+      }
+    }
     var previousRules = getProjectScopedAutoGearRules();
     if (previousRules && previousRules.length) {
       previousPayload.autoGearRules = previousRules;
@@ -237,6 +280,11 @@ setupSelect.addEventListener("change", function (event) {
     currentProjectInfo = null;
     if (projectForm) populateProjectForm({});
     clearProjectAutoGearRules();
+    if (typeof setManualDiagramPositions === 'function') {
+      setManualDiagramPositions({}, {
+        render: false
+      });
+    }
   } else {
     var setups = getSetups();
     var setup = setups[setupName];
@@ -266,7 +314,23 @@ setupSelect.addEventListener("change", function (event) {
       updateBatteryOptions();
       var storedProject = typeof loadProject === 'function' ? loadProject(setupName) : null;
       var html = setup.gearList || (storedProject === null || storedProject === void 0 ? void 0 : storedProject.gearList) || '';
+      if (html && typeof globalThis !== 'undefined') {
+        globalThis.__cineLastGearListHtml = html;
+      }
       currentProjectInfo = setup.projectInfo || (storedProject === null || storedProject === void 0 ? void 0 : storedProject.projectInfo) || null;
+      if (typeof setManualDiagramPositions === 'function') {
+        var _diagramPositions = {};
+        if (typeof normalizeDiagramPositionsInput === 'function') {
+          _diagramPositions = normalizeDiagramPositionsInput(storedProject === null || storedProject === void 0 ? void 0 : storedProject.diagramPositions);
+          var setupDiagramPositions = normalizeDiagramPositionsInput(setup.diagramPositions);
+          if (Object.keys(setupDiagramPositions).length) {
+            _diagramPositions = _objectSpread(_objectSpread({}, _diagramPositions), setupDiagramPositions);
+          }
+        }
+        setManualDiagramPositions(_diagramPositions, {
+          render: false
+        });
+      }
       var projectRulesSource = Array.isArray(setup.autoGearRules) && setup.autoGearRules.length ? setup.autoGearRules : Array.isArray(storedProject === null || storedProject === void 0 ? void 0 : storedProject.autoGearRules) && storedProject.autoGearRules.length ? storedProject.autoGearRules : null;
       if (projectRulesSource) {
         useProjectAutoGearRules(projectRulesSource);
@@ -290,6 +354,12 @@ setupSelect.addEventListener("change", function (event) {
             projectInfo: currentProjectInfo,
             gearList: html
           };
+          if (typeof getDiagramManualPositions === 'function') {
+            var _diagramPositions2 = getDiagramManualPositions();
+            if (_diagramPositions2 && Object.keys(_diagramPositions2).length) {
+              payload.diagramPositions = _diagramPositions2;
+            }
+          }
           var activeRules = getProjectScopedAutoGearRules();
           if (activeRules && activeRules.length) {
             payload.autoGearRules = activeRules;
@@ -302,6 +372,11 @@ setupSelect.addEventListener("change", function (event) {
       if (projectForm) populateProjectForm({});
       displayGearAndRequirements('');
       clearProjectAutoGearRules();
+      if (typeof setManualDiagramPositions === 'function') {
+        setManualDiagramPositions({}, {
+          render: false
+        });
+      }
     }
     storeLoadedSetupState(getCurrentSetupState());
   }
@@ -317,8 +392,25 @@ setupSelect.addEventListener("change", function (event) {
 function populateSetupSelect() {
   var setups = getSetups();
   setupSelect.innerHTML = "<option value=\"\">".concat(texts[currentLang].newSetupOption, "</option>");
+  var includeAutoBackups = false;
+  if (typeof showAutoBackups === 'boolean') {
+    includeAutoBackups = showAutoBackups;
+  } else if (typeof localStorage !== 'undefined') {
+    try {
+      includeAutoBackups = localStorage.getItem('showAutoBackups') === 'true';
+    } catch (error) {
+      console.warn('Could not read auto backup visibility preference', error);
+    }
+  }
+  if (includeAutoBackups && typeof ensureAutoBackupsFromProjects === 'function') {
+    try {
+      ensureAutoBackupsFromProjects();
+    } catch (error) {
+      console.warn('Failed to prepare auto backups before populating selector', error);
+    }
+  }
   var names = Object.keys(setups).filter(function (name) {
-    return showAutoBackups || !name.startsWith('auto-backup-');
+    return includeAutoBackups || !name.startsWith('auto-backup-');
   }).sort(function (a, b) {
     var autoA = a.startsWith('auto-backup-');
     var autoB = b.startsWith('auto-backup-');
@@ -343,6 +435,36 @@ function populateSetupSelect() {
 }
 populateSetupSelect();
 checkSetupChanged();
+function notifyAutoSaveFromBackup(message, backupName) {
+  if (typeof message !== 'string') {
+    return;
+  }
+  var trimmed = message.trim();
+  if (!trimmed) {
+    return;
+  }
+  if (typeof showNotification === 'function') {
+    try {
+      showNotification('success', trimmed);
+    } catch (notifyError) {
+      console.warn('Failed to display auto save notification after auto backup', notifyError);
+    }
+  }
+  if (typeof document !== 'undefined' && typeof CustomEvent === 'function' && document && typeof document.dispatchEvent === 'function') {
+    try {
+      document.dispatchEvent(new CustomEvent('cine:auto-save-notification', {
+        detail: {
+          message: trimmed,
+          source: 'auto-backup',
+          backupName: backupName || null,
+          timestamp: new Date().toISOString()
+        }
+      }));
+    } catch (eventError) {
+      console.warn('Failed to dispatch auto save notification event after auto backup', eventError);
+    }
+  }
+}
 function autoBackup() {
   var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   if (!setupSelect) return null;
@@ -351,6 +473,8 @@ function autoBackup() {
   var suppressError = Boolean(config.suppressError);
   var successMessage = typeof config.successMessage === 'string' && config.successMessage ? config.successMessage : 'Auto backup saved';
   var errorMessage = typeof config.errorMessage === 'string' && config.errorMessage ? config.errorMessage : 'Auto backup failed';
+  var triggerAutoSaveNotification = Boolean(config.triggerAutoSaveNotification);
+  var autoSaveNotificationMessage = typeof config.autoSaveNotificationMessage === 'string' && config.autoSaveNotificationMessage.trim() ? config.autoSaveNotificationMessage.trim() : successMessage;
   var normalizeProjectName = function normalizeProjectName(value) {
     return typeof value === 'string' ? value.replace(/\s+/g, ' ').trim() : '';
   };
@@ -361,7 +485,7 @@ function autoBackup() {
   var normalizedSelectedName = normalizeProjectName(selectedName);
   var normalizedTypedName = normalizeProjectName(typedName);
   var isAutoBackupName = function isAutoBackupName(name) {
-    return typeof name === 'string' && name.indexOf('auto-backup-') === 0;
+    return typeof name === 'string' && name.startsWith('auto-backup-');
   };
   var nameForBackup = '';
   if (overrideName !== null && overrideName !== undefined) {
@@ -396,6 +520,28 @@ function autoBackup() {
     var backupName = normalizedName ? "".concat(baseName, "-").concat(normalizedName) : baseName;
     var currentSetup = _objectSpread({}, getCurrentSetupState());
     var gearListHtml = getCurrentGearListHtml();
+    if (!gearListHtml) {
+      var activeName = (setupSelect && typeof setupSelect.value === 'string' ? setupSelect.value.trim() : '') || (setupNameInput && typeof setupNameInput.value === 'string' ? setupNameInput.value.trim() : '');
+      if (activeName) {
+        var _setups = typeof getSetups === 'function' ? getSetups() : null;
+        var storedSetup = _setups && _typeof(_setups) === 'object' ? _setups[activeName] : null;
+        if (storedSetup && typeof storedSetup.gearList === 'string' && storedSetup.gearList.trim()) {
+          gearListHtml = storedSetup.gearList;
+        } else if (typeof loadProject === 'function') {
+          try {
+            var storedProject = loadProject(activeName);
+            if (storedProject && typeof storedProject.gearList === 'string' && storedProject.gearList.trim()) {
+              gearListHtml = storedProject.gearList;
+            }
+          } catch (error) {
+            console.warn('Failed to read stored project while preparing auto backup', error);
+          }
+        }
+      }
+      if (!gearListHtml && typeof globalThis !== 'undefined' && typeof globalThis.__cineLastGearListHtml === 'string') {
+        gearListHtml = globalThis.__cineLastGearListHtml;
+      }
+    }
     if (gearListHtml) {
       currentSetup.gearList = gearListHtml;
     }
@@ -422,6 +568,9 @@ function autoBackup() {
     if (setupNameInput) setupNameInput.value = prevName;
     if (!suppressSuccess) {
       showNotification('success', successMessage);
+    }
+    if (triggerAutoSaveNotification) {
+      notifyAutoSaveFromBackup(autoSaveNotificationMessage, backupName);
     }
     return backupName;
   } catch (e) {

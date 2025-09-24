@@ -8,7 +8,7 @@ describe('saveCurrentGearList project info handling', () => {
     env = null;
   });
 
-  test('skips persisting empty project info into setups', () => {
+  test('persists derived project info into saved projects', () => {
     env = setupScriptEnvironment({
       globals: {
         saveProject: jest.fn(),
@@ -34,9 +34,19 @@ describe('saveCurrentGearList project info handling', () => {
     expect(globals.saveProject).toHaveBeenCalled();
     const lastCall = globals.saveProject.mock.calls[globals.saveProject.mock.calls.length - 1];
     expect(lastCall[0]).toBe('Empty Project');
-    expect(lastCall[1]).toMatchObject({ projectInfo: null, gearList: '' });
+
+    const { projectInfo, gearList, diagramPositions, autoGearRules } = lastCall[1];
+    expect(gearList).toBe('');
+    expect(projectInfo).toEqual(utils.getCurrentProjectInfo());
+    expect(projectInfo).toMatchObject({
+      projectName: 'Empty Project',
+    });
+    expect(diagramPositions).toBeUndefined();
+    expect(autoGearRules).toBeUndefined();
 
     expect(globals.saveSetups).not.toHaveBeenCalled();
-    expect(utils.getCurrentProjectInfo()).toBeNull();
+    expect(utils.getCurrentProjectInfo()).toMatchObject({
+      projectName: 'Empty Project',
+    });
   });
 });
