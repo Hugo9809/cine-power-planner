@@ -421,6 +421,68 @@ describe('automated backups', () => {
     expect(autoKeys[0]).toMatch(/-Fresh Concept$/);
   });
 
+  test('autoBackup skips when the active setup is an auto backup', () => {
+    fakeTimersActive = true;
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date('2024-05-06T12:30:00'));
+
+    const { autoBackup } = loadApp();
+
+    const autoName = 'auto-backup-2024-05-06-10-20-Restore Candidate';
+    const setupsStore = { [autoName]: { projectInfo: { projectName: autoName } } };
+    global.loadSetups.mockImplementation(() => setupsStore);
+    global.saveSetups.mockImplementation(() => {});
+    global.saveProject.mockImplementation(() => {});
+
+    const setupSelect = document.getElementById('setupSelect');
+    const setupNameInput = document.getElementById('setupName');
+    const option = document.createElement('option');
+    option.value = autoName;
+    option.textContent = autoName;
+    setupSelect.appendChild(option);
+    setupSelect.value = autoName;
+    setupNameInput.value = autoName;
+
+    const result = autoBackup();
+
+    expect(result).toMatchObject({ status: 'skipped', reason: 'auto-backup-selected' });
+    expect(global.saveSetups).not.toHaveBeenCalled();
+    expect(global.saveProject).not.toHaveBeenCalled();
+    expect(global.showNotification).not.toHaveBeenCalled();
+  });
+
+  test('autoBackup resumes once an auto backup is renamed', () => {
+    fakeTimersActive = true;
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date('2024-05-06T12:30:00'));
+
+    const { autoBackup } = loadApp();
+
+    const setupsStore = {};
+    global.loadSetups.mockImplementation(() => setupsStore);
+    global.saveSetups.mockImplementation((next) => {
+      Object.assign(setupsStore, next);
+      return next;
+    });
+
+    const setupSelect = document.getElementById('setupSelect');
+    const setupNameInput = document.getElementById('setupName');
+    const autoName = 'auto-backup-2024-05-05-09-10-Old Snapshot';
+    const option = document.createElement('option');
+    option.value = autoName;
+    option.textContent = autoName;
+    setupSelect.appendChild(option);
+    setupSelect.value = autoName;
+    setupNameInput.value = 'Restored Sequence';
+
+    const result = autoBackup();
+
+    expect(typeof result).toBe('string');
+    expect(result).toMatch(/-Restored Sequence$/);
+    expect(global.saveSetups).toHaveBeenCalledTimes(1);
+    expect(Object.prototype.hasOwnProperty.call(setupsStore, result)).toBe(true);
+  });
+
   test('createSettingsBackup includes session storage snapshot', async () => {
     const { createSettingsBackup } = loadApp();
 
