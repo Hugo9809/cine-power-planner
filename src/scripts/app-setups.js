@@ -1902,6 +1902,10 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
   const normalizedViewfinderExtension = hasViewfinderSelection
       ? normalizeAutoGearTriggerValue(rawViewfinderExtension)
       : '';
+  const rawDeliveryResolution = info && typeof info.deliveryResolution === 'string'
+      ? info.deliveryResolution.trim()
+      : '';
+  const normalizedDeliveryResolution = normalizeAutoGearTriggerValue(rawDeliveryResolution);
   let videoDistribution = [];
   if (info && Array.isArray(info.videoDistribution)) {
     videoDistribution = info.videoDistribution;
@@ -2072,6 +2076,15 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
             if (!normalizedTargets.length) return false;
             if (!normalizedViewfinderExtension) return false;
             if (!normalizedTargets.includes(normalizedViewfinderExtension)) return false;
+        }
+        const deliveryList = Array.isArray(rule.deliveryResolution) ? rule.deliveryResolution.filter(Boolean) : [];
+        if (deliveryList.length) {
+          const normalizedTargets = deliveryList
+            .map(normalizeAutoGearTriggerValue)
+            .filter(Boolean);
+          if (!normalizedTargets.length) return false;
+          if (!normalizedDeliveryResolution) return false;
+          if (!normalizedTargets.includes(normalizedDeliveryResolution)) return false;
         }
         const videoDistList = Array.isArray(rule.videoDistribution) ? rule.videoDistribution.filter(Boolean) : [];
         if (videoDistList.length) {
