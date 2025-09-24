@@ -3573,20 +3573,184 @@ function humanizeDiffKey(key) {
   return fallbackHumanizeDiffKey(key);
 }
 
+const ARRAY_COMPARISON_KEY_CANDIDATES = [
+  'name',
+  'label',
+  'title',
+  'id',
+  'uuid',
+  'key',
+  'slug',
+];
+
+const ARRAY_COMPARISON_KEY_LABEL_OVERRIDES = {
+  id: 'ID',
+  uuid: 'UUID',
+};
+
+const ARRAY_COMPARISON_KEY_LABEL_OMIT = new Set(['name', 'label', 'title']);
+
+function createKeyedDiffPathSegment(keyName, keyValue) {
+  let serializedValue;
+  try {
+    serializedValue = JSON.stringify(keyValue);
+  } catch (error) {
+    console.warn('Failed to serialize keyed diff path value', error);
+    try {
+      serializedValue = JSON.stringify(String(keyValue));
+    } catch (stringError) {
+      console.warn('Failed to stringify keyed diff fallback value', stringError);
+      serializedValue = '"?"';
+    }
+  }
+  return `[${keyName}=${serializedValue}]`;
+}
+
+function parseKeyedDiffPathSegment(segment) {
+  if (typeof segment !== 'string') {
+    return null;
+  }
+  const match = segment.match(/^\[([^=[\]]+)=([\s\S]+)\]$/);
+  if (!match) {
+    return null;
+  }
+  const keyName = match[1];
+  const rawValue = match[2];
+  try {
+    return { key: keyName, value: JSON.parse(rawValue) };
+  } catch (error) {
+    console.warn('Failed to parse keyed diff path segment', segment, error);
+    return { key: keyName, value: rawValue };
+  }
+}
+
+function findArrayComparisonKey(baseArray, compareArray) {
+  if (!Array.isArray(baseArray) || !Array.isArray(compareArray)) {
+    return null;
+  }
+
+  const arrays = [baseArray, compareArray];
+  for (const candidate of ARRAY_COMPARISON_KEY_CANDIDATES) {
+    let hasValues = false;
+    let valid = true;
+    const seenByArray = arrays.map(() => new Set());
+
+    for (let arrayIndex = 0; arrayIndex < arrays.length && valid; arrayIndex += 1) {
+      const currentArray = arrays[arrayIndex];
+      for (let i = 0; i < currentArray.length; i += 1) {
+        const item = currentArray[i];
+        if (!isPlainObject(item)) {
+          valid = false;
+          break;
+        }
+        if (!Object.prototype.hasOwnProperty.call(item, candidate)) {
+          valid = false;
+          break;
+        }
+        const keyValue = item[candidate];
+        if (keyValue === null || keyValue === undefined) {
+          valid = false;
+          break;
+        }
+        if (typeof keyValue !== 'string' && typeof keyValue !== 'number') {
+          valid = false;
+          break;
+        }
+        hasValues = true;
+        const serialized = String(keyValue);
+        const seen = seenByArray[arrayIndex];
+        if (seen.has(serialized)) {
+          valid = false;
+          break;
+        }
+        seen.add(serialized);
+      }
+    }
+
+    if (valid && hasValues) {
+      return candidate;
+    }
+  }
+
+  return null;
+}
+
+function buildArrayKeyIndex(array, keyName) {
+  const map = new Map();
+  const order = [];
+  if (!Array.isArray(array)) {
+    return { map, order };
+  }
+  array.forEach(item => {
+    if (!isPlainObject(item)) {
+      return;
+    }
+    const keyValue = item[keyName];
+    if (keyValue === null || keyValue === undefined) {
+      return;
+    }
+    if (typeof keyValue !== 'string' && typeof keyValue !== 'number') {
+      return;
+    }
+    const serialized = String(keyValue);
+    if (map.has(serialized)) {
+      return;
+    }
+    map.set(serialized, { value: item, keyValue });
+    order.push(serialized);
+  });
+  return { map, order };
+}
+
 function formatDiffListIndex(part) {
   if (typeof part !== 'string') {
     return null;
   }
-  const match = part.match(/^\[(\d+)\]$/);
-  if (!match) {
-    return null;
+  const indexMatch = part.match(/^\[(\d+)\]$/);
+  if (indexMatch) {
+    const index = Number(indexMatch[1]);
+    if (!Number.isFinite(index) || index < 0) {
+      return null;
+    }
+    const template = getDiffText('versionCompareListItemLabel', 'Item %s');
+    return template.replace('%s', formatNumberForComparison(index + 1));
   }
-  const index = Number(match[1]);
-  if (!Number.isFinite(index) || index < 0) {
-    return null;
+
+  const keyedSegment = parseKeyedDiffPathSegment(part);
+  if (keyedSegment) {
+    const { key, value } = keyedSegment;
+    let valueText;
+    if (typeof value === 'number' && Number.isFinite(value)) {
+      valueText = formatNumberForComparison(value);
+    } else if (typeof value === 'string') {
+      valueText = value;
+    } else if (value === null) {
+      valueText = 'null';
+    } else {
+      try {
+        valueText = JSON.stringify(value);
+      } catch (error) {
+        console.warn('Failed to stringify keyed diff value', error);
+        valueText = String(value);
+      }
+    }
+
+    const template = getDiffText('versionCompareListItemLabel', 'Item %s');
+    const baseLabel = template.replace('%s', valueText);
+
+    if (ARRAY_COMPARISON_KEY_LABEL_OMIT.has(key)) {
+      return baseLabel;
+    }
+
+    const overrideLabel = ARRAY_COMPARISON_KEY_LABEL_OVERRIDES[key];
+    const keyLabel = overrideLabel || humanizeDiffKey(key);
+    if (!keyLabel) {
+      return baseLabel;
+    }
+    return `${keyLabel} · ${baseLabel}`;
   }
-  const template = getDiffText('versionCompareListItemLabel', 'Item %s');
-  return template.replace('%s', formatNumberForComparison(index + 1));
+
+  return null;
 }
 
 function formatDiffPathSegment(part) {
@@ -3645,6 +3809,37 @@ function computeSetupDiff(baseline, comparison) {
     const baseIsArray = Array.isArray(baseValue);
     const compareIsArray = Array.isArray(compareValue);
     if (baseIsArray && compareIsArray) {
+      const comparisonKey = findArrayComparisonKey(baseValue, compareValue);
+      if (comparisonKey) {
+        const { map: baseIndex, order: baseOrder } = buildArrayKeyIndex(baseValue, comparisonKey);
+        const { map: compareIndex, order: compareOrder } = buildArrayKeyIndex(compareValue, comparisonKey);
+        const combinedOrder = [];
+        const seenKeys = new Set();
+        const appendKey = key => {
+          if (!seenKeys.has(key)) {
+            seenKeys.add(key);
+            combinedOrder.push(key);
+          }
+        };
+        baseOrder.forEach(appendKey);
+        compareOrder.forEach(appendKey);
+
+        combinedOrder.forEach(serializedKey => {
+          const baseEntry = baseIndex.get(serializedKey) || null;
+          const compareEntry = compareIndex.get(serializedKey) || null;
+          const keyValue = baseEntry ? baseEntry.keyValue : compareEntry ? compareEntry.keyValue : serializedKey;
+          const nextPath = path.concat(createKeyedDiffPathSegment(comparisonKey, keyValue));
+          if (!baseEntry && compareEntry) {
+            entries.push({ type: 'added', path: nextPath, before: undefined, after: compareEntry.value });
+          } else if (baseEntry && !compareEntry) {
+            entries.push({ type: 'removed', path: nextPath, before: baseEntry.value, after: undefined });
+          } else if (baseEntry && compareEntry) {
+            walk(baseEntry.value, compareEntry.value, nextPath);
+          }
+        });
+        return;
+      }
+
       const maxLength = Math.max(baseValue.length, compareValue.length);
       for (let index = 0; index < maxLength; index += 1) {
         const hasBase = index < baseValue.length;
@@ -7843,6 +8038,14 @@ if (typeof module !== "undefined" && module.exports) {
     searchTokens,
     findBestSearchMatch,
     runFeatureSearch,
+    computeSetupDiff,
+    __versionCompareInternals: {
+      formatDiffPath,
+      formatDiffListIndex,
+      createKeyedDiffPathSegment,
+      parseKeyedDiffPathSegment,
+      findArrayComparisonKey,
+    },
     __featureSearchInternals: {
       featureMap,
       deviceMap,
