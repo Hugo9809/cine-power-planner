@@ -2,10 +2,10 @@ function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLim
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t.return && (u = t.return(), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
-function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
 function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
 function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
@@ -176,6 +176,142 @@ deleteSetupBtn.addEventListener("click", function () {
     alert(texts[currentLang].alertSetupDeleted.replace("{name}", setupName));
   }
 });
+function resetSetupStateToDefaults() {
+  var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  var config = _typeof(options) === 'object' && options !== null ? options : {};
+  var preserveSetupNameInput = Boolean(config.preserveSetupNameInput);
+  if (!preserveSetupNameInput && setupNameInput) {
+    setupNameInput.value = "";
+  }
+  var resetSelectToDefault = function resetSelectToDefault(select) {
+    if (!select || _typeof(select) !== 'object') return;
+    var noneOption = Array.from(select.options || []).find(function (opt) {
+      return opt.value === "None";
+    });
+    if (noneOption) {
+      select.value = "None";
+    } else if (select.options && select.options.length) {
+      select.selectedIndex = 0;
+    } else {
+      select.value = "";
+    }
+  };
+  [cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, hotswapSelect].forEach(resetSelectToDefault);
+  if (typeof updateCageSelectOptions === 'function') {
+    try {
+      updateCageSelectOptions('None');
+    } catch (error) {
+      console.warn('Failed to reset cage options while preparing setup switch', error);
+    }
+  }
+  var sliderBowlSelect = typeof getSliderBowlSelect === 'function' ? getSliderBowlSelect() : null;
+  if (sliderBowlSelect) {
+    sliderBowlSelect.value = '';
+  }
+  if (Array.isArray(motorSelects)) {
+    motorSelects.forEach(resetSelectToDefault);
+  }
+  if (Array.isArray(controllerSelects)) {
+    controllerSelects.forEach(resetSelectToDefault);
+  }
+  if (typeof updateBatteryPlateVisibility === 'function') {
+    try {
+      updateBatteryPlateVisibility();
+    } catch (error) {
+      console.warn('Failed to reset battery plate visibility while preparing setup switch', error);
+    }
+  }
+  if (typeof updateBatteryOptions === 'function') {
+    try {
+      updateBatteryOptions();
+    } catch (error) {
+      console.warn('Failed to reset battery options while preparing setup switch', error);
+    }
+  }
+  if (typeof displayGearAndRequirements === 'function') {
+    try {
+      displayGearAndRequirements('');
+    } catch (error) {
+      console.warn('Failed to reset gear and requirements display while preparing setup switch', error);
+    }
+  }
+  if (gearListOutput) {
+    gearListOutput.innerHTML = '';
+    gearListOutput.classList.add('hidden');
+  }
+  if (projectRequirementsOutput) {
+    projectRequirementsOutput.innerHTML = '';
+    projectRequirementsOutput.classList.add('hidden');
+  }
+  currentProjectInfo = null;
+  if (projectForm) {
+    try {
+      populateProjectForm({});
+    } catch (error) {
+      console.warn('Failed to reset project form while preparing setup switch', error);
+    }
+  }
+  if (typeof clearProjectAutoGearRules === 'function') {
+    try {
+      clearProjectAutoGearRules();
+    } catch (error) {
+      console.warn('Failed to clear project auto gear rules while preparing setup switch', error);
+    }
+  }
+  if (typeof setManualDiagramPositions === 'function') {
+    try {
+      setManualDiagramPositions({}, {
+        render: false
+      });
+    } catch (error) {
+      console.warn('Failed to reset manual diagram positions while preparing setup switch', error);
+    }
+  }
+  if (typeof storeLoadedSetupState === 'function') {
+    try {
+      storeLoadedSetupState(null);
+    } catch (error) {
+      console.warn('Failed to reset stored setup state while preparing setup switch', error);
+    }
+  }
+  if (typeof globalThis !== 'undefined') {
+    globalThis.__cineLastGearListHtml = '';
+  }
+}
+function finalizeSetupSelection(nextSetupName) {
+  if (typeof renderAutoGearRulesList === 'function') {
+    try {
+      renderAutoGearRulesList();
+    } catch (error) {
+      console.warn('Failed to render auto gear rules list after setup switch', error);
+    }
+  }
+  if (typeof updateAutoGearCatalogOptions === 'function') {
+    try {
+      updateAutoGearCatalogOptions();
+    } catch (error) {
+      console.warn('Failed to update auto gear catalog options after setup switch', error);
+    }
+  }
+  if (saveSetupBtn) {
+    saveSetupBtn.disabled = !setupNameInput.value.trim();
+  }
+  if (typeof updateCalculations === 'function') {
+    try {
+      updateCalculations();
+    } catch (error) {
+      console.warn('Failed to update calculations after setup switch', error);
+    }
+  }
+  if (typeof checkSetupChanged === 'function') {
+    try {
+      checkSetupChanged();
+    } catch (error) {
+      console.warn('Failed to evaluate setup changes after setup switch', error);
+    }
+  }
+  lastSetupName = nextSetupName;
+}
 setupSelect.addEventListener("change", function (event) {
   var setupName = event.target.value;
   var typedName = setupNameInput && typeof setupNameInput.value === 'string' ? setupNameInput.value.trim() : '';
@@ -206,17 +342,6 @@ setupSelect.addEventListener("change", function (event) {
       console.warn('Failed to persist project state before switching setups', error);
     }
   }
-  if (typeof autoBackup === 'function' && normalizedTargetSelection !== normalizedLastSelection) {
-    try {
-      autoBackup({
-        suppressSuccess: true,
-        projectNameOverride: normalizeProjectName(previousKey),
-        triggerAutoSaveNotification: true
-      });
-    } catch (error) {
-      console.warn('Failed to auto backup project before loading a different setup', error);
-    }
-  }
   if (typeof saveProject === 'function') {
     var info = projectForm ? collectProjectFormData() : {};
     if (info) {
@@ -225,8 +350,17 @@ setupSelect.addEventListener("change", function (event) {
     }
     var previousProjectInfo = deriveProjectInfo(info);
     currentProjectInfo = previousProjectInfo;
+    var normalizeForOverride = typeof normalizeSetupName === 'function' ? normalizeSetupName : function (value) {
+      return typeof value === 'string' ? value.trim() : '';
+    };
+    var normalizedPreviousKey = normalizeForOverride(previousKey);
+    var normalizedTypedName = normalizeForOverride(typedName);
+    var renameInProgressForPrevious = Boolean(normalizedPreviousKey && normalizedTypedName && normalizedTypedName !== normalizedPreviousKey);
+    var projectInfoForStorage = typeof createProjectInfoSnapshotForStorage === 'function' ? createProjectInfoSnapshotForStorage(previousProjectInfo, {
+      projectNameOverride: renameInProgressForPrevious ? normalizedPreviousKey : undefined
+    }) : previousProjectInfo;
     var previousPayload = {
-      projectInfo: previousProjectInfo,
+      projectInfo: projectInfoForStorage,
       gearList: getCurrentGearListHtml()
     };
     if (typeof getDiagramManualPositions === 'function') {
@@ -241,51 +375,23 @@ setupSelect.addEventListener("change", function (event) {
     }
     saveProject(previousKey, previousPayload);
   }
-  displayGearAndRequirements('');
-  currentProjectInfo = null;
+  if (typeof autoBackup === 'function' && normalizedTargetSelection !== normalizedLastSelection) {
+    try {
+      autoBackup({
+        suppressSuccess: true,
+        projectNameOverride: normalizeProjectName(previousKey),
+        triggerAutoSaveNotification: true
+      });
+    } catch (error) {
+      console.warn('Failed to auto backup project before loading a different setup', error);
+    }
+  }
+  resetSetupStateToDefaults();
   if (setupName === "") {
-    setupNameInput.value = "";
-    [cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, hotswapSelect].forEach(function (sel) {
-      var noneOption = Array.from(sel.options).find(function (opt) {
-        return opt.value === "None";
-      });
-      if (noneOption) {
-        sel.value = "None";
-      } else {
-        sel.selectedIndex = 0;
-      }
-    });
-    if (typeof updateCageSelectOptions === 'function') {
-      updateCageSelectOptions('None');
-    }
-    var sbSel = getSliderBowlSelect();
-    if (sbSel) sbSel.value = '';
-    motorSelects.forEach(function (sel) {
-      if (sel.options.length) sel.value = "None";
-    });
-    controllerSelects.forEach(function (sel) {
-      if (sel.options.length) sel.value = "None";
-    });
-    updateBatteryPlateVisibility();
-    updateBatteryOptions();
-    storeLoadedSetupState(null);
-    if (gearListOutput) {
-      gearListOutput.innerHTML = '';
-      gearListOutput.classList.add('hidden');
-    }
-    if (projectRequirementsOutput) {
-      projectRequirementsOutput.innerHTML = '';
-      projectRequirementsOutput.classList.add('hidden');
-    }
-    currentProjectInfo = null;
-    if (projectForm) populateProjectForm({});
-    clearProjectAutoGearRules();
-    if (typeof setManualDiagramPositions === 'function') {
-      setManualDiagramPositions({}, {
-        render: false
-      });
-    }
-  } else {
+    finalizeSetupSelection(setupName);
+    return;
+  }
+  {
     var setups = getSetups();
     var setup = setups[setupName];
     if (setup) {
@@ -380,14 +486,7 @@ setupSelect.addEventListener("change", function (event) {
     }
     storeLoadedSetupState(getCurrentSetupState());
   }
-  renderAutoGearRulesList();
-  updateAutoGearCatalogOptions();
-  if (saveSetupBtn) {
-    saveSetupBtn.disabled = !setupNameInput.value.trim();
-  }
-  updateCalculations();
-  checkSetupChanged();
-  lastSetupName = setupName;
+  finalizeSetupSelection(setupName);
 });
 function populateSetupSelect() {
   var setups = getSetups();
