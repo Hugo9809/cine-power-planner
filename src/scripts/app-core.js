@@ -850,7 +850,7 @@ function extractAutoGearContextNotes(name) {
   let match = baseName.match(contextPattern);
   while (match) {
     const candidate = match[2].trim();
-    if (/handheld\b/i.test(candidate) || /15-21\"?$/.test(candidate)) {
+    if (/handheld\b/i.test(candidate) || /15-21"?$/.test(candidate)) {
       contexts.unshift(candidate);
       baseName = match[1].trim();
     } else {
@@ -22341,6 +22341,8 @@ function renderSetupDiagram() {
   const svgEl = setupDiagramContainer.querySelector('svg');
   if (svgEl) {
     svgEl.style.width = '100%';
+    svgEl.style.overflow = 'visible';
+    svgEl.setAttribute('overflow', 'visible');
     const containerRect = setupDiagramContainer.getBoundingClientRect();
     const parentRect = setupDiagramContainer.parentElement?.getBoundingClientRect();
     const containerWidth = containerRect?.width || setupDiagramContainer.clientWidth || 0;
