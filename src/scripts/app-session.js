@@ -14,7 +14,7 @@
           normalizeAutoGearScenarioLogic, applyAutoGearScenarioSettings,
           getAutoGearScenarioSelectedValues, autoGearScenarioBaseSelect,
           normalizeAutoGearScenarioPrimary, autoGearScenarioFactorInput,
-          normalizeAutoGearScenarioMultiplier, ensureAutoBackupsFromProjects,
+          normalizeAutoGearScenarioMultiplier,
           isAutoGearHighlightEnabled, setAutoGearHighlightEnabled,
           updateAutoGearHighlightToggleButton,
           clearUiCacheStorageEntries, __cineGlobal, humanizeKey,
@@ -1572,29 +1572,28 @@ function stopPinkModeIconRotation() {
 }
 
 const PINK_MODE_ICON_RAIN_PRESS_TRIGGER_COUNT = 5;
-const PINK_MODE_ICON_RAIN_PRESS_RESET_MS = 1800;
-let pinkModeIconPressCount = 0;
-let pinkModeIconPressResetTimer = null;
+const PINK_MODE_ICON_RAIN_PRESS_WINDOW_MS = 6000;
+let pinkModeIconPressTimestamps = [];
 
-function schedulePinkModeIconPressReset() {
-  if (pinkModeIconPressResetTimer) {
-    clearTimeout(pinkModeIconPressResetTimer);
+function prunePinkModeIconPressHistory(now) {
+  const cutoff = now - PINK_MODE_ICON_RAIN_PRESS_WINDOW_MS;
+  if (cutoff <= 0 || !pinkModeIconPressTimestamps.length) {
+    return;
   }
-  pinkModeIconPressResetTimer = setTimeout(() => {
-    pinkModeIconPressCount = 0;
-    pinkModeIconPressResetTimer = null;
-  }, PINK_MODE_ICON_RAIN_PRESS_RESET_MS);
+  pinkModeIconPressTimestamps = pinkModeIconPressTimestamps.filter(
+    timestamp => timestamp >= cutoff
+  );
 }
 
 function handlePinkModeIconPress() {
-  pinkModeIconPressCount += 1;
-  schedulePinkModeIconPressReset();
+  const now = Date.now();
+  prunePinkModeIconPressHistory(now);
+  pinkModeIconPressTimestamps.push(now);
   if (
-    pinkModeIconPressCount >= PINK_MODE_ICON_RAIN_PRESS_TRIGGER_COUNT &&
+    pinkModeIconPressTimestamps.length >= PINK_MODE_ICON_RAIN_PRESS_TRIGGER_COUNT &&
     typeof triggerPinkModeIconRain === 'function'
   ) {
-    pinkModeIconPressCount = 0;
-    schedulePinkModeIconPressReset();
+    pinkModeIconPressTimestamps = [];
     triggerPinkModeIconRain();
   }
 }
