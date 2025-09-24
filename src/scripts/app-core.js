@@ -18415,14 +18415,10 @@ function projectInfoEquals(a, b) {
 
 function ensureDefaultProjectInfoSnapshot() {
   if (defaultProjectInfoSnapshot !== null) return;
-  if (!projectForm) {
-    defaultProjectInfoSnapshot = {};
-    return;
-  }
-  const baseInfo = collectProjectFormData ? collectProjectFormData() : {};
-  baseInfo.sliderBowl = getSliderBowlValue();
-  baseInfo.easyrig = getEasyrigValue();
-  defaultProjectInfoSnapshot = sanitizeProjectInfo(baseInfo) || {};
+  // Treat an entirely empty project info payload as the only "default" state so
+  // any restored values—including those matching the UI's initial selections—are
+  // preserved when sanitizing project info for storage.
+  defaultProjectInfoSnapshot = {};
 }
 
 function deriveProjectInfo(info) {
