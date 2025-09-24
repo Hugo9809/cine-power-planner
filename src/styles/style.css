@@ -2884,6 +2884,7 @@ body.pink-mode:not(.dark-mode) #settingsPanel-autoGear .auto-gear-rule-items-lab
   transition:
     color 0.2s ease,
     text-decoration-color 0.2s ease;
+  font-weight: var(--font-weight-regular);
 }
 
 .help-link:focus-visible {
@@ -2892,7 +2893,6 @@ body.pink-mode:not(.dark-mode) #settingsPanel-autoGear .auto-gear-rule-items-lab
 
 .help-link:not(.button-link) {
   color: var(--accent-color);
-  font-weight: var(--font-weight-semibold);
   text-underline-offset: 0.2em;
   text-decoration-thickness: 0.12em;
 }
