@@ -1874,6 +1874,67 @@ function findAutoGearCategoryCell(table, category) {
     return null;
 }
 
+function normalizeAutoGearScenarioLogicValue(value) {
+    if (typeof value !== 'string') return 'all';
+    const normalized = value.trim().toLowerCase();
+    if (!normalized) return 'all';
+    if (normalized === 'or') return 'any';
+    if (normalized === 'and') return 'all';
+    if (normalized === 'any') return 'any';
+    if (normalized === 'multiplier' || normalized === 'multiply' || normalized === 'multiplied') {
+        return 'multiplier';
+    }
+    return normalized === 'all' ? 'all' : 'all';
+}
+
+function normalizeAutoGearScenarioMultiplierValue(value) {
+    const num = parseInt(value, 10);
+    return Number.isFinite(num) && num > 1 ? num : 1;
+}
+
+function computeAutoGearScenarioOutcome(rule, scenarioSet) {
+    if (!rule || typeof rule !== 'object') {
+        return { active: true, multiplier: 1 };
+    }
+    const rawList = Array.isArray(rule.scenarios) ? rule.scenarios.filter(Boolean) : [];
+    if (!rawList.length) {
+        return { active: true, multiplier: 1 };
+    }
+    const normalizedTargets = rawList
+        .map(normalizeAutoGearTriggerValue)
+        .filter(Boolean);
+    if (!normalizedTargets.length) {
+        return { active: false, multiplier: 0 };
+    }
+    const logic = normalizeAutoGearScenarioLogicValue(rule.scenarioLogic);
+    if (logic === 'any') {
+        const hasAny = normalizedTargets.some(target => scenarioSet.has(target));
+        return { active: hasAny, multiplier: hasAny ? 1 : 0 };
+    }
+    if (logic === 'multiplier') {
+        const requestedPrimary = typeof rule.scenarioPrimary === 'string' ? rule.scenarioPrimary : '';
+        const normalizedPrimary = normalizeAutoGearTriggerValue(requestedPrimary);
+        let baseTarget = '';
+        if (normalizedPrimary && normalizedTargets.includes(normalizedPrimary)) {
+            baseTarget = normalizedPrimary;
+        } else {
+            baseTarget = normalizedTargets[0] || '';
+        }
+        if (!baseTarget || !scenarioSet.has(baseTarget)) {
+            return { active: false, multiplier: 0 };
+        }
+        const extras = normalizedTargets.filter(target => target !== baseTarget);
+        if (!extras.length) {
+            return { active: true, multiplier: 1 };
+        }
+        const extrasSatisfied = extras.every(target => scenarioSet.has(target));
+        const multiplier = normalizeAutoGearScenarioMultiplierValue(rule.scenarioMultiplier);
+        return { active: true, multiplier: extrasSatisfied ? multiplier : 1 };
+    }
+    const allPresent = normalizedTargets.every(target => scenarioSet.has(target));
+    return { active: allPresent, multiplier: allPresent ? 1 : 0 };
+}
+
 function applyAutoGearRulesToTableHtml(tableHtml, info) {
     if (!tableHtml || !autoGearRules.length || typeof document === 'undefined') return tableHtml;
   const scenarios = info && info.requiredScenarios
@@ -1987,17 +2048,16 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
         }));
     };
 
-    let triggered = autoGearRules.filter(rule => {
-        if (rule && rule.always) {
-            return true;
-        }
-        const scenarioList = Array.isArray(rule.scenarios) ? rule.scenarios.filter(Boolean) : [];
-        if (scenarioList.length) {
-            const normalizedTargets = scenarioList
-                .map(normalizeAutoGearTriggerValue)
-                .filter(Boolean);
-            if (!normalizedTargets.length) return false;
-            if (!normalizedTargets.every(target => normalizedScenarioSet.has(target))) return false;
+    const triggeredEntries = [];
+    autoGearRules.forEach(rule => {
+        if (!rule) return;
+        let multiplier = 1;
+        if (rule.always) {
+            multiplier = 1;
+        } else {
+            const scenarioOutcome = computeAutoGearScenarioOutcome(rule, normalizedScenarioSet);
+            if (!scenarioOutcome.active) return;
+            multiplier = scenarioOutcome.multiplier || 1;
         }
         const matteboxList = Array.isArray(rule.mattebox) ? rule.mattebox.filter(Boolean) : [];
         if (matteboxList.length) {
@@ -2095,12 +2155,12 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
             if (!normalizedTargets.length) return false;
             if (!normalizedTargets.every(target => videoDistributionSet.has(target))) return false;
         }
-        return true;
+        triggeredEntries.push({ rule, multiplier });
     });
-    if (!triggered.length) return tableHtml;
+    if (!triggeredEntries.length) return tableHtml;
 
     if (normalizedMattebox) {
-        triggered = triggered.filter(rule => {
+        const filtered = triggeredEntries.filter(({ rule }) => {
             if (!touchesMatteboxCategory(rule)) return true;
             const matteboxList = Array.isArray(rule.mattebox) ? rule.mattebox.filter(Boolean) : [];
             if (!matteboxList.length) return false;
@@ -2110,15 +2170,18 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
             if (!normalizedTargets.length) return false;
             return normalizedTargets.includes(normalizedMattebox);
         });
-        if (!triggered.length) return tableHtml;
+        if (!filtered.length) return tableHtml;
+        triggeredEntries.length = 0;
+        filtered.forEach(entry => triggeredEntries.push(entry));
     }
     const container = document.createElement('div');
     container.innerHTML = tableHtml;
     const table = container.querySelector('.gear-table');
     if (!table) return tableHtml;
-    triggered.forEach(rule => {
+    triggeredEntries.forEach(({ rule, multiplier }) => {
+        const effectiveMultiplier = Math.max(1, Math.round(Number.isFinite(multiplier) ? multiplier : 1));
         rule.remove.forEach(item => {
-            let remaining = normalizeAutoGearQuantity(item.quantity);
+            let remaining = normalizeAutoGearQuantity(item.quantity) * effectiveMultiplier;
             if (remaining <= 0) return;
             const primaryCell = findAutoGearCategoryCell(table, item.category);
             if (primaryCell) {
@@ -2134,8 +2197,12 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
             }
         });
         rule.add.forEach(item => {
+            const quantity = normalizeAutoGearQuantity(item.quantity) * effectiveMultiplier;
+            const scaledItem = quantity === normalizeAutoGearQuantity(item.quantity)
+                ? item
+                : { ...item, quantity };
             const cell = ensureAutoGearCategory(table, item.category);
-            if (cell) addAutoGearItem(cell, item, rule);
+            if (cell) addAutoGearItem(cell, scaledItem, rule);
         });
     });
     return container.innerHTML;

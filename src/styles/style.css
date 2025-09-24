@@ -2542,6 +2542,28 @@ body.pink-mode:not(.dark-mode) #settingsPanel-autoGear .auto-gear-rule-items-lab
   vertical-align: top;
 }
 
+.auto-gear-scenario-settings {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap-size);
+  margin-top: 12px;
+}
+
+.auto-gear-scenario-settings .auto-gear-field {
+  flex: 1 1 220px;
+}
+
+.auto-gear-scenario-multiplier {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap-size);
+  align-items: flex-end;
+}
+
+.auto-gear-scenario-multiplier .auto-gear-field {
+  flex: 1 1 200px;
+}
+
 .auto-gear-selector,
 .auto-gear-multiselect {
   width: 100%;

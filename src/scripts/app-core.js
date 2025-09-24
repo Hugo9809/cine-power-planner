@@ -867,6 +867,30 @@ function normalizeAutoGearTriggerList(values) {
     .filter(Boolean)));
 }
 
+const AUTO_GEAR_SCENARIO_LOGIC_VALUES = new Set(['all', 'any', 'multiplier']);
+
+function normalizeAutoGearScenarioLogic(value) {
+  if (typeof value !== 'string') return 'all';
+  const normalized = value.trim().toLowerCase();
+  if (!normalized) return 'all';
+  if (normalized === 'or') return 'any';
+  if (normalized === 'and') return 'all';
+  if (normalized === 'any') return 'any';
+  if (normalized === 'multiplier' || normalized === 'multiply' || normalized === 'multiplied') {
+    return 'multiplier';
+  }
+  return AUTO_GEAR_SCENARIO_LOGIC_VALUES.has(normalized) ? normalized : 'all';
+}
+
+function normalizeAutoGearScenarioMultiplier(value) {
+  const num = parseInt(value, 10);
+  return Number.isFinite(num) && num > 1 ? num : 1;
+}
+
+function normalizeAutoGearScenarioPrimary(value) {
+  return typeof value === 'string' ? value.trim() : '';
+}
+
 function normalizeVideoDistributionTriggerList(values) {
   if (!Array.isArray(values)) return [];
   const base = normalizeAutoGearTriggerList(values);
@@ -920,7 +944,36 @@ function normalizeAutoGearRule(rule) {
   } else {
     always = Boolean(rule.always);
   }
-  const scenarios = normalizeAutoGearTriggerList(rule.scenarios).sort((a, b) => a.localeCompare(b));
+  let scenarios = normalizeAutoGearTriggerList(rule.scenarios);
+  const scenarioLogic = normalizeAutoGearScenarioLogic(rule.scenarioLogic);
+  let scenarioMultiplier = 1;
+  let scenarioPrimary = '';
+  if (scenarioLogic === 'multiplier') {
+    scenarioMultiplier = normalizeAutoGearScenarioMultiplier(rule.scenarioMultiplier);
+    const requestedPrimary = normalizeAutoGearScenarioPrimary(rule.scenarioPrimary);
+    const normalizedPrimary = normalizeAutoGearTriggerValue(requestedPrimary);
+    if (normalizedPrimary) {
+      const matched = scenarios.find(value => normalizeAutoGearTriggerValue(value) === normalizedPrimary);
+      if (matched) {
+        scenarioPrimary = matched;
+      } else if (requestedPrimary) {
+        scenarioPrimary = requestedPrimary;
+        scenarios.push(requestedPrimary);
+      }
+    }
+    if (!scenarioPrimary && scenarios.length) {
+      scenarioPrimary = scenarios[0];
+    }
+  }
+  scenarios = scenarios.sort((a, b) => a.localeCompare(b));
+  if (scenarioLogic === 'multiplier' && scenarioPrimary) {
+    const normalizedPrimary = normalizeAutoGearTriggerValue(scenarioPrimary);
+    const hasPrimary = scenarios.some(value => normalizeAutoGearTriggerValue(value) === normalizedPrimary);
+    if (!hasPrimary) {
+      scenarios.push(scenarioPrimary);
+      scenarios.sort((a, b) => a.localeCompare(b));
+    }
+  }
   const mattebox = normalizeAutoGearTriggerList(rule.mattebox).sort((a, b) => a.localeCompare(b));
   const cameraHandle = normalizeAutoGearTriggerList(rule.cameraHandle).sort((a, b) => a.localeCompare(b));
   const viewfinderExtension = normalizeAutoGearTriggerList(rule.viewfinderExtension).sort((a, b) => a.localeCompare(b));
@@ -955,6 +1008,9 @@ function normalizeAutoGearRule(rule) {
     id,
     label,
     always,
+    scenarioLogic,
+    scenarioPrimary,
+    scenarioMultiplier,
     scenarios,
     mattebox,
     cameraHandle,
@@ -5391,6 +5447,51 @@ function setLanguage(lang) {
     if (autoGearScenariosSelect) {
       autoGearScenariosSelect.setAttribute('data-help', help);
       autoGearScenariosSelect.setAttribute('aria-label', label);
+    }
+    if (autoGearScenarioModeLabel) {
+      const modeLabel = texts[lang].autoGearScenarioModeLabel
+        || texts.en?.autoGearScenarioModeLabel
+        || autoGearScenarioModeLabel.textContent
+        || 'Scenario matching';
+      const modeHelp = texts[lang].autoGearScenarioModeHelp
+        || texts.en?.autoGearScenarioModeHelp
+        || modeLabel;
+      autoGearScenarioModeLabel.textContent = modeLabel;
+      autoGearScenarioModeLabel.setAttribute('data-help', modeHelp);
+      if (autoGearScenarioModeSelect) {
+        autoGearScenarioModeSelect.setAttribute('data-help', modeHelp);
+        autoGearScenarioModeSelect.setAttribute('aria-label', modeLabel);
+      }
+    }
+    if (autoGearScenarioBaseLabel) {
+      const baseLabel = texts[lang].autoGearScenarioBaseLabel
+        || texts.en?.autoGearScenarioBaseLabel
+        || autoGearScenarioBaseLabel.textContent
+        || 'Base scenario';
+      const baseHelp = texts[lang].autoGearScenarioBaseHelp
+        || texts.en?.autoGearScenarioBaseHelp
+        || baseLabel;
+      autoGearScenarioBaseLabel.textContent = baseLabel;
+      autoGearScenarioBaseLabel.setAttribute('data-help', baseHelp);
+      if (autoGearScenarioBaseSelect) {
+        autoGearScenarioBaseSelect.setAttribute('data-help', baseHelp);
+        autoGearScenarioBaseSelect.setAttribute('aria-label', baseLabel);
+      }
+    }
+    if (autoGearScenarioFactorLabel) {
+      const factorLabel = texts[lang].autoGearScenarioFactorLabel
+        || texts.en?.autoGearScenarioFactorLabel
+        || autoGearScenarioFactorLabel.textContent
+        || 'Multiplier factor';
+      const factorHelp = texts[lang].autoGearScenarioFactorHelp
+        || texts.en?.autoGearScenarioFactorHelp
+        || factorLabel;
+      autoGearScenarioFactorLabel.textContent = factorLabel;
+      autoGearScenarioFactorLabel.setAttribute('data-help', factorHelp);
+      if (autoGearScenarioFactorInput) {
+        autoGearScenarioFactorInput.setAttribute('data-help', factorHelp);
+        autoGearScenarioFactorInput.setAttribute('aria-label', factorLabel);
+      }
     }
   }
   if (autoGearMatteboxLabel) {
@@ -9901,6 +10002,13 @@ const autoGearRuleNameInput = document.getElementById('autoGearRuleName');
 const autoGearRuleNameLabel = document.getElementById('autoGearRuleNameLabel');
 const autoGearScenariosSelect = document.getElementById('autoGearScenarios');
 const autoGearScenariosLabel = document.getElementById('autoGearScenariosLabel');
+const autoGearScenarioModeSelect = document.getElementById('autoGearScenarioMode');
+const autoGearScenarioModeLabel = document.getElementById('autoGearScenarioModeLabel');
+const autoGearScenarioMultiplierContainer = document.getElementById('autoGearScenarioMultiplierContainer');
+const autoGearScenarioBaseSelect = document.getElementById('autoGearScenarioBase');
+const autoGearScenarioBaseLabel = document.getElementById('autoGearScenarioBaseLabel');
+const autoGearScenarioFactorInput = document.getElementById('autoGearScenarioFactor');
+const autoGearScenarioFactorLabel = document.getElementById('autoGearScenarioFactorLabel');
 const autoGearMatteboxSelect = document.getElementById('autoGearMattebox');
 const autoGearMatteboxLabel = document.getElementById('autoGearMatteboxLabel');
 const autoGearCameraHandleSelect = document.getElementById('autoGearCameraHandle');
@@ -10301,6 +10409,16 @@ function initializeAutoGearConditionsFromDraft() {
   });
   refreshAutoGearConditionPicker();
   updateAutoGearConditionAddButtonState();
+  if (autoGearScenarioModeSelect && autoGearEditorDraft) {
+    autoGearScenarioModeSelect.value = normalizeAutoGearScenarioLogic(autoGearEditorDraft.scenarioLogic);
+  }
+  if (autoGearScenarioFactorInput) {
+    const storedMultiplier = autoGearEditorDraft
+      ? normalizeAutoGearScenarioMultiplier(autoGearEditorDraft.scenarioMultiplier)
+      : 1;
+    autoGearScenarioFactorInput.value = String(storedMultiplier);
+  }
+  applyAutoGearScenarioSettings(getAutoGearScenarioSelectedValues());
 }
 
 refreshAutoGearConditionPicker();
@@ -10706,6 +10824,9 @@ function createAutoGearDraft(rule) {
       id: rule.id,
       label: rule.label || '',
       always: rule.always ? ['always'] : [],
+      scenarioLogic: normalizeAutoGearScenarioLogic(rule.scenarioLogic),
+      scenarioPrimary: normalizeAutoGearScenarioPrimary(rule.scenarioPrimary),
+      scenarioMultiplier: normalizeAutoGearScenarioMultiplier(rule.scenarioMultiplier),
       scenarios: Array.isArray(rule.scenarios) ? rule.scenarios.slice() : [],
       mattebox: Array.isArray(rule.mattebox) ? rule.mattebox.slice() : [],
       cameraHandle: Array.isArray(rule.cameraHandle) ? rule.cameraHandle.slice() : [],
@@ -10726,6 +10847,9 @@ function createAutoGearDraft(rule) {
     id: generateAutoGearId('rule'),
     label: '',
     always: [],
+    scenarioLogic: 'all',
+    scenarioPrimary: '',
+    scenarioMultiplier: 1,
     scenarios: [],
     mattebox: [],
     cameraHandle: [],
@@ -10812,6 +10936,127 @@ function refreshAutoGearScenarioOptions(selected) {
     selectableOptions.length,
     { minRows: AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS }
   );
+  applyAutoGearScenarioSettings(selectedValues);
+}
+
+function getAutoGearScenarioSelectedValues() {
+  if (!autoGearScenariosSelect) return [];
+  return Array.from(autoGearScenariosSelect.selectedOptions || [])
+    .map(option => (option ? option.value : ''))
+    .filter(value => typeof value === 'string' && value.trim());
+}
+
+function applyAutoGearScenarioSettings(selectedValues) {
+  const values = Array.isArray(selectedValues)
+    ? selectedValues.filter(value => typeof value === 'string' && value.trim())
+    : [];
+  const uniqueValues = Array.from(new Set(values));
+  const desiredMode = autoGearEditorDraft
+    ? normalizeAutoGearScenarioLogic(autoGearEditorDraft.scenarioLogic)
+    : normalizeAutoGearScenarioLogic(autoGearScenarioModeSelect?.value);
+  if (autoGearScenarioModeSelect) {
+    const modeLabels = {
+      all: texts[currentLang]?.autoGearScenarioModeAll
+        || texts.en?.autoGearScenarioModeAll
+        || 'Require every selected scenario',
+      any: texts[currentLang]?.autoGearScenarioModeAny
+        || texts.en?.autoGearScenarioModeAny
+        || 'Match any selected scenario',
+      multiplier: texts[currentLang]?.autoGearScenarioModeMultiplier
+        || texts.en?.autoGearScenarioModeMultiplier
+        || 'Multiply when combined',
+    };
+    Array.from(autoGearScenarioModeSelect.options || []).forEach(option => {
+      if (!option) return;
+      if (option.value === 'multiplier') {
+        option.disabled = uniqueValues.length < 2;
+      } else {
+        option.disabled = false;
+      }
+      const label = modeLabels[option.value] || modeLabels.all;
+      if (label) {
+        option.textContent = label;
+      }
+    });
+    let nextMode = desiredMode;
+    if (nextMode === 'multiplier' && uniqueValues.length < 2) {
+      nextMode = 'all';
+    }
+    autoGearScenarioModeSelect.value = nextMode;
+    if (autoGearEditorDraft && autoGearEditorDraft.scenarioLogic !== nextMode) {
+      autoGearEditorDraft.scenarioLogic = nextMode;
+    }
+    updateAutoGearScenarioMultiplierVisibility(nextMode, uniqueValues);
+  } else {
+    updateAutoGearScenarioMultiplierVisibility(desiredMode, uniqueValues);
+  }
+}
+
+function updateAutoGearScenarioMultiplierVisibility(mode, selectedValues) {
+  if (!autoGearScenarioMultiplierContainer) return;
+  const normalizedMode = normalizeAutoGearScenarioLogic(mode);
+  const values = Array.isArray(selectedValues)
+    ? selectedValues.filter(value => typeof value === 'string' && value.trim())
+    : [];
+  const shouldShow = normalizedMode === 'multiplier' && values.length >= 1;
+  autoGearScenarioMultiplierContainer.hidden = !shouldShow;
+  autoGearScenarioMultiplierContainer.setAttribute('aria-hidden', shouldShow ? 'false' : 'true');
+  if (autoGearScenarioFactorInput) {
+    autoGearScenarioFactorInput.disabled = !shouldShow;
+  }
+  refreshAutoGearScenarioBaseSelect(values, { forceDisable: !shouldShow });
+}
+
+function refreshAutoGearScenarioBaseSelect(selectedValues, options = {}) {
+  if (!autoGearScenarioBaseSelect) return;
+  const { forceDisable = false } = options;
+  const values = Array.isArray(selectedValues)
+    ? selectedValues.filter(value => typeof value === 'string' && value.trim())
+    : [];
+  const uniqueValues = Array.from(new Set(values));
+  const previousValue = autoGearScenarioBaseSelect.value || '';
+  autoGearScenarioBaseSelect.innerHTML = '';
+  if (forceDisable || !uniqueValues.length) {
+    const placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = texts[currentLang]?.autoGearScenarioBasePlaceholder
+      || texts.en?.autoGearScenarioBasePlaceholder
+      || 'Select a base scenario';
+    placeholder.disabled = true;
+    placeholder.selected = true;
+    autoGearScenarioBaseSelect.appendChild(placeholder);
+    autoGearScenarioBaseSelect.disabled = true;
+    return;
+  }
+  uniqueValues.forEach(value => {
+    const option = document.createElement('option');
+    option.value = value;
+    option.textContent = value;
+    autoGearScenarioBaseSelect.appendChild(option);
+  });
+  const preferred = autoGearEditorDraft
+    ? normalizeAutoGearScenarioPrimary(autoGearEditorDraft.scenarioPrimary)
+    : '';
+  const normalizedPreferred = normalizeAutoGearTriggerValue(preferred);
+  let nextValue = '';
+  if (normalizedPreferred) {
+    const matched = uniqueValues.find(value => normalizeAutoGearTriggerValue(value) === normalizedPreferred);
+    if (matched) {
+      nextValue = matched;
+    }
+  }
+  if (!nextValue && previousValue) {
+    const normalizedPrevious = normalizeAutoGearTriggerValue(previousValue);
+    const matchedPrevious = uniqueValues.find(value => normalizeAutoGearTriggerValue(value) === normalizedPrevious);
+    if (matchedPrevious) {
+      nextValue = matchedPrevious;
+    }
+  }
+  if (!nextValue) {
+    nextValue = uniqueValues[0];
+  }
+  autoGearScenarioBaseSelect.value = nextValue;
+  autoGearScenarioBaseSelect.disabled = false;
 }
 
 function refreshAutoGearMatteboxOptions(selected) {
@@ -12692,6 +12937,22 @@ function saveAutoGearRuleFromEditor() {
         .map(option => option.value)
         .filter(Boolean)
     : [];
+  const rawScenarioMode = autoGearScenarioModeSelect
+    ? normalizeAutoGearScenarioLogic(autoGearScenarioModeSelect.value)
+    : 'all';
+  const multiplierInputValue = autoGearScenarioFactorInput ? autoGearScenarioFactorInput.value : '1';
+  const normalizedMultiplier = normalizeAutoGearScenarioMultiplier(multiplierInputValue);
+  let scenarioMode = rawScenarioMode;
+  if (scenarioMode === 'multiplier' && scenarios.length < 2) {
+    scenarioMode = 'all';
+  }
+  const baseSelection = autoGearScenarioBaseSelect ? autoGearScenarioBaseSelect.value : '';
+  const scenarioBase = scenarioMode === 'multiplier'
+    ? normalizeAutoGearScenarioPrimary(baseSelection)
+    : '';
+  if (scenarioMode === 'multiplier' && scenarioBase && !scenarios.includes(scenarioBase)) {
+    scenarios.push(scenarioBase);
+  }
   const matteboxSelections = isAutoGearConditionActive('mattebox') && autoGearMatteboxSelect
     ? Array.from(autoGearMatteboxSelect.selectedOptions || [])
         .map(option => option.value)
@@ -12778,6 +13039,9 @@ function saveAutoGearRuleFromEditor() {
     autoGearEditorDraft.label = autoGearRuleNameInput.value.trim();
   }
   autoGearEditorDraft.always = alwaysActive ? ['always'] : [];
+  autoGearEditorDraft.scenarioLogic = scenarioMode;
+  autoGearEditorDraft.scenarioMultiplier = scenarioMode === 'multiplier' ? normalizedMultiplier : 1;
+  autoGearEditorDraft.scenarioPrimary = scenarioMode === 'multiplier' ? scenarioBase : '';
   autoGearEditorDraft.scenarios = scenarios;
   autoGearEditorDraft.mattebox = matteboxSelections;
   autoGearEditorDraft.cameraHandle = cameraHandleSelections;
@@ -12856,6 +13120,9 @@ function duplicateAutoGearRule(ruleId) {
   const duplicateRule = {
     id: generateAutoGearId('rule'),
     label: labelCandidate,
+    scenarioLogic: normalizeAutoGearScenarioLogic(original.scenarioLogic),
+    scenarioPrimary: normalizeAutoGearScenarioPrimary(original.scenarioPrimary),
+    scenarioMultiplier: normalizeAutoGearScenarioMultiplier(original.scenarioMultiplier),
     scenarios: Array.isArray(original.scenarios) ? original.scenarios.slice() : [],
     mattebox: Array.isArray(original.mattebox) ? original.mattebox.slice() : [],
     cameraHandle: Array.isArray(original.cameraHandle) ? original.cameraHandle.slice() : [],

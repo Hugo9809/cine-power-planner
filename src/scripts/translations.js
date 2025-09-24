@@ -202,6 +202,16 @@ const texts = {
     autoGearScenariosHelp:
       "Pick every scenario that must be selected for this rule to apply. Hold Ctrl (Cmd on Mac) to choose multiple.",
     autoGearScenarioPlaceholder: "Select scenarios",
+    autoGearScenarioModeLabel: "Scenario matching",
+    autoGearScenarioModeHelp: "Choose how the selected scenarios interact before the rule activates.",
+    autoGearScenarioModeAll: "Require every selected scenario",
+    autoGearScenarioModeAny: "Match any selected scenario",
+    autoGearScenarioModeMultiplier: "Multiply when combined",
+    autoGearScenarioBaseLabel: "Base scenario",
+    autoGearScenarioBaseHelp: "Items always add when this scenario is active.",
+    autoGearScenarioBasePlaceholder: "Select a base scenario",
+    autoGearScenarioFactorLabel: "Multiplier factor",
+    autoGearScenarioFactorHelp: "Scale item quantities when every additional scenario is active.",
     autoGearMatteboxLabel: "Mattebox options",
     autoGearMatteboxHelp:
       "Apply this rule when these mattebox choices are selected.",

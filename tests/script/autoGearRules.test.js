@@ -27,6 +27,13 @@ describe('applyAutoGearRulesToTableHtml', () => {
 
   const stripRuleIds = rule => ({
     label: rule.label,
+    scenarioLogic: typeof rule.scenarioLogic === 'string' && rule.scenarioLogic
+      ? rule.scenarioLogic
+      : 'all',
+    scenarioPrimary: typeof rule.scenarioPrimary === 'string' ? rule.scenarioPrimary : '',
+    scenarioMultiplier: Number.isFinite(rule.scenarioMultiplier)
+      ? rule.scenarioMultiplier
+      : 1,
     scenarios: rule.scenarios,
     mattebox: Array.isArray(rule.mattebox) ? rule.mattebox : [],
     add: rule.add.map(({ name, category, quantity }) => ({ name, category, quantity })),
@@ -310,6 +317,107 @@ describe('applyAutoGearRulesToTableHtml', () => {
     container.innerHTML = result;
 
     expect(container.querySelectorAll('tbody.auto-gear-category').length).toBe(0);
+  });
+
+  test('applies scenario rules when any selected scenario matches', () => {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify([
+        {
+          id: 'rule-or',
+          label: 'Weather cover',
+          scenarioLogic: 'any',
+          scenarioMultiplier: 1,
+          scenarioPrimary: '',
+          scenarios: ['Scenario A', 'Scenario B'],
+          add: [
+            { id: 'add-rain', name: 'Rain Cover', category: 'Protection', quantity: 1 }
+          ],
+          remove: []
+        }
+      ])
+    );
+
+    env = setupScriptEnvironment();
+    const { applyAutoGearRulesToTableHtml } = env.utils;
+
+    const tableHtml = `
+      <table class="gear-table">
+        <tbody class="category-group">
+          <tr class="category-row"><td>Protection</td></tr>
+          <tr><td></td></tr>
+        </tbody>
+      </table>
+    `;
+
+    const singleMatch = applyAutoGearRulesToTableHtml(tableHtml, { requiredScenarios: 'Scenario A' });
+    const singleContainer = document.createElement('div');
+    singleContainer.innerHTML = singleMatch;
+    const singleItem = singleContainer.querySelector('[data-gear-name="Rain Cover"]');
+    expect(singleItem).not.toBeNull();
+    expect(singleItem && singleItem.textContent).toContain('1x Rain Cover');
+
+    const otherMatch = applyAutoGearRulesToTableHtml(tableHtml, { requiredScenarios: 'Scenario B' });
+    const otherContainer = document.createElement('div');
+    otherContainer.innerHTML = otherMatch;
+    const otherItem = otherContainer.querySelector('[data-gear-name="Rain Cover"]');
+    expect(otherItem).not.toBeNull();
+
+    const noMatch = applyAutoGearRulesToTableHtml(tableHtml, { requiredScenarios: 'Scenario C' });
+    const noMatchContainer = document.createElement('div');
+    noMatchContainer.innerHTML = noMatch;
+    expect(noMatchContainer.querySelector('[data-gear-name="Rain Cover"]')).toBeNull();
+  });
+
+  test('scales quantities when scenario multiplier conditions are satisfied', () => {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify([
+        {
+          id: 'rule-multiplier',
+          label: 'Heavy rain prep',
+          scenarioLogic: 'multiplier',
+          scenarioMultiplier: 3,
+          scenarioPrimary: 'Heavy Rain',
+          scenarios: ['Heavy Rain', 'Rain Machine'],
+          add: [
+            { id: 'add-wipers', name: 'Lens Wiper Kit', category: 'Protection', quantity: 1 }
+          ],
+          remove: []
+        }
+      ])
+    );
+
+    env = setupScriptEnvironment();
+    const { applyAutoGearRulesToTableHtml } = env.utils;
+
+    const tableHtml = `
+      <table class="gear-table">
+        <tbody class="category-group">
+          <tr class="category-row"><td>Protection</td></tr>
+          <tr><td></td></tr>
+        </tbody>
+      </table>
+    `;
+
+    const baseOnly = applyAutoGearRulesToTableHtml(tableHtml, { requiredScenarios: 'Heavy Rain' });
+    const baseContainer = document.createElement('div');
+    baseContainer.innerHTML = baseOnly;
+    const baseItem = baseContainer.querySelector('[data-gear-name="Lens Wiper Kit"]');
+    expect(baseItem).not.toBeNull();
+    expect(baseItem && baseItem.textContent).toContain('1x');
+
+    const both = applyAutoGearRulesToTableHtml(tableHtml, { requiredScenarios: 'Heavy Rain, Rain Machine' });
+    const bothContainer = document.createElement('div');
+    bothContainer.innerHTML = both;
+    const bothItem = bothContainer.querySelector('[data-gear-name="Lens Wiper Kit"]');
+    expect(bothItem).not.toBeNull();
+    expect(bothItem && bothItem.textContent).toContain('3x');
+
+    const extraOnly = applyAutoGearRulesToTableHtml(tableHtml, { requiredScenarios: 'Rain Machine' });
+    const extraContainer = document.createElement('div');
+    extraContainer.innerHTML = extraOnly;
+    expect(extraContainer.querySelector('[data-gear-name="Lens Wiper Kit"]')).toBeNull();
   });
 
   test('legacy scenario gear additions are disabled once rules exist', () => {

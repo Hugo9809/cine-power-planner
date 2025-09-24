@@ -2038,6 +2038,92 @@ function findAutoGearCategoryCell(table, category) {
   }
   return null;
 }
+function normalizeAutoGearScenarioLogicValue(value) {
+  if (typeof value !== 'string') return 'all';
+  var normalized = value.trim().toLowerCase();
+  if (!normalized) return 'all';
+  if (normalized === 'or') return 'any';
+  if (normalized === 'and') return 'all';
+  if (normalized === 'any') return 'any';
+  if (normalized === 'multiplier' || normalized === 'multiply' || normalized === 'multiplied') {
+    return 'multiplier';
+  }
+  return normalized === 'all' ? 'all' : 'all';
+}
+
+function normalizeAutoGearScenarioMultiplierValue(value) {
+  var num = parseInt(value, 10);
+  return isFinite(num) && num > 1 ? num : 1;
+}
+
+function computeAutoGearScenarioOutcome(rule, scenarioSet) {
+  if (!rule || typeof rule !== 'object') {
+    return { active: true, multiplier: 1 };
+  }
+  var rawList = Array.isArray(rule.scenarios) ? rule.scenarios.filter(Boolean) : [];
+  if (!rawList.length) {
+    return { active: true, multiplier: 1 };
+  }
+  var normalizedTargets = rawList
+    .map(normalizeAutoGearTriggerValue)
+    .filter(Boolean);
+  if (!normalizedTargets.length) {
+    return { active: false, multiplier: 0 };
+  }
+  var logic = normalizeAutoGearScenarioLogicValue(rule.scenarioLogic);
+  if (logic === 'any') {
+    var hasAny = normalizedTargets.some(function (target) {
+      return scenarioSet.has(target);
+    });
+    return { active: hasAny, multiplier: hasAny ? 1 : 0 };
+  }
+  if (logic === 'multiplier') {
+    var requestedPrimary = typeof rule.scenarioPrimary === 'string' ? rule.scenarioPrimary : '';
+    var normalizedPrimary = normalizeAutoGearTriggerValue(requestedPrimary);
+    var baseTarget = '';
+    if (normalizedPrimary && normalizedTargets.indexOf(normalizedPrimary) >= 0) {
+      baseTarget = normalizedPrimary;
+    } else {
+      baseTarget = normalizedTargets[0] || '';
+    }
+    if (!baseTarget || !scenarioSet.has(baseTarget)) {
+      return { active: false, multiplier: 0 };
+    }
+    var extras = normalizedTargets.filter(function (target) {
+      return target !== baseTarget;
+    });
+    if (!extras.length) {
+      return { active: true, multiplier: 1 };
+    }
+    var extrasSatisfied = extras.every(function (target) {
+      return scenarioSet.has(target);
+    });
+    var multiplier = normalizeAutoGearScenarioMultiplierValue(rule.scenarioMultiplier);
+    return { active: true, multiplier: extrasSatisfied ? multiplier : 1 };
+  }
+  var allPresent = normalizedTargets.every(function (target) {
+    return scenarioSet.has(target);
+  });
+  return { active: allPresent, multiplier: allPresent ? 1 : 0 };
+}
+
+function createScaledAutoGearItem(item, quantity) {
+  if (!item || typeof item !== 'object') {
+    return item;
+  }
+  if (typeof Object.assign === 'function') {
+    return Object.assign({}, item, { quantity: quantity });
+  }
+  var copy = {};
+  for (var key in item) {
+    if (Object.prototype.hasOwnProperty.call(item, key)) {
+      copy[key] = item[key];
+    }
+  }
+  copy.quantity = quantity;
+  return copy;
+}
+
 function applyAutoGearRulesToTableHtml(tableHtml, info) {
   if (!tableHtml || !autoGearRules.length || typeof document === 'undefined') return tableHtml;
   var scenarios = info && info.requiredScenarios ? info.requiredScenarios.split(',').map(function (s) {
@@ -2122,82 +2208,84 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
       });
     });
   };
-  var triggered = autoGearRules.filter(function (rule) {
-    var scenarioList = Array.isArray(rule.scenarios) ? rule.scenarios.filter(Boolean) : [];
-    if (scenarioList.length) {
-      var normalizedTargets = scenarioList.map(normalizeAutoGearTriggerValue).filter(Boolean);
-      if (!normalizedTargets.length) return false;
-      if (!normalizedTargets.every(function (target) {
-        return normalizedScenarioSet.has(target);
-      })) return false;
+  var triggeredEntries = [];
+  autoGearRules.forEach(function (rule) {
+    if (!rule) return;
+    var multiplier = 1;
+    if (rule.always) {
+      multiplier = 1;
+    } else {
+      var scenarioOutcome = computeAutoGearScenarioOutcome(rule, normalizedScenarioSet);
+      if (!scenarioOutcome.active) return;
+      multiplier = scenarioOutcome.multiplier || 1;
     }
     var matteboxList = Array.isArray(rule.mattebox) ? rule.mattebox.filter(Boolean) : [];
     if (matteboxList.length) {
       var _normalizedTargets = matteboxList.map(normalizeAutoGearTriggerValue).filter(Boolean);
-      if (!_normalizedTargets.length) return false;
-      if (!normalizedMattebox) return false;
-      if (!_normalizedTargets.includes(normalizedMattebox)) return false;
+      if (!_normalizedTargets.length) return;
+      if (!normalizedMattebox) return;
+      if (_normalizedTargets.indexOf(normalizedMattebox) === -1) return;
     }
     var cameraList = Array.isArray(rule.camera) ? rule.camera.filter(Boolean) : [];
     if (cameraList.length) {
       var _normalizedTargets2 = cameraList.map(normalizeAutoGearTriggerValue).filter(Boolean);
-      if (!_normalizedTargets2.length) return false;
-      if (!normalizedCameraSelection) return false;
-      if (!_normalizedTargets2.includes(normalizedCameraSelection)) return false;
+      if (!_normalizedTargets2.length) return;
+      if (!normalizedCameraSelection) return;
+      if (_normalizedTargets2.indexOf(normalizedCameraSelection) === -1) return;
     }
     var monitorList = Array.isArray(rule.monitor) ? rule.monitor.filter(Boolean) : [];
     if (monitorList.length) {
       var _normalizedTargets3 = monitorList.map(normalizeAutoGearTriggerValue).filter(Boolean);
-      if (!_normalizedTargets3.length) return false;
-      if (!normalizedMonitorSelection) return false;
-      if (!_normalizedTargets3.includes(normalizedMonitorSelection)) return false;
+      if (!_normalizedTargets3.length) return;
+      if (!normalizedMonitorSelection) return;
+      if (_normalizedTargets3.indexOf(normalizedMonitorSelection) === -1) return;
     }
     var wirelessList = Array.isArray(rule.wireless) ? rule.wireless.filter(Boolean) : [];
     if (wirelessList.length) {
       var _normalizedTargets4 = wirelessList.map(normalizeAutoGearTriggerValue).filter(Boolean);
-      if (!_normalizedTargets4.length) return false;
-      if (!normalizedWirelessSelection) return false;
-      if (!_normalizedTargets4.includes(normalizedWirelessSelection)) return false;
+      if (!_normalizedTargets4.length) return;
+      if (!normalizedWirelessSelection) return;
+      if (_normalizedTargets4.indexOf(normalizedWirelessSelection) === -1) return;
     }
     var motorsList = Array.isArray(rule.motors) ? rule.motors.filter(Boolean) : [];
     if (motorsList.length) {
       var _normalizedTargets5 = motorsList.map(normalizeAutoGearTriggerValue).filter(Boolean);
-      if (!_normalizedTargets5.length) return false;
+      if (!_normalizedTargets5.length) return;
       if (!_normalizedTargets5.every(function (target) {
         return normalizedMotorSet.has(target);
-      })) return false;
+      })) return;
     }
     var controllersList = Array.isArray(rule.controllers) ? rule.controllers.filter(Boolean) : [];
     if (controllersList.length) {
       var _normalizedTargets6 = controllersList.map(normalizeAutoGearTriggerValue).filter(Boolean);
-      if (!_normalizedTargets6.length) return false;
+      if (!_normalizedTargets6.length) return;
       if (!_normalizedTargets6.every(function (target) {
         return normalizedControllerSet.has(target);
-      })) return false;
+      })) return;
     }
     var distanceList = Array.isArray(rule.distance) ? rule.distance.filter(Boolean) : [];
     if (distanceList.length) {
       var _normalizedTargets7 = distanceList.map(normalizeAutoGearTriggerValue).filter(Boolean);
-      if (!_normalizedTargets7.length) return false;
-      if (!normalizedDistanceSelection) return false;
-      if (!_normalizedTargets7.includes(normalizedDistanceSelection)) return false;
+      if (!_normalizedTargets7.length) return;
+      if (!normalizedDistanceSelection) return;
+      if (_normalizedTargets7.indexOf(normalizedDistanceSelection) === -1) return;
     }
     var cameraHandleList = Array.isArray(rule.cameraHandle) ? rule.cameraHandle.filter(Boolean) : [];
     if (cameraHandleList.length) {
       var _normalizedTargets8 = cameraHandleList.map(normalizeAutoGearTriggerValue).filter(Boolean);
-      if (!_normalizedTargets8.length) return false;
+      if (!_normalizedTargets8.length) return;
       if (!_normalizedTargets8.every(function (target) {
         return cameraHandleSet.has(target);
-      })) return false;
+      })) return;
     }
     var viewfinderList = Array.isArray(rule.viewfinderExtension) ? rule.viewfinderExtension.filter(Boolean) : [];
     if (viewfinderList.length) {
       var _normalizedTargets9 = viewfinderList.map(function (value) {
         return normalizeAutoGearTriggerValue(value);
       }).filter(Boolean);
-      if (!_normalizedTargets9.length) return false;
-      if (!normalizedViewfinderExtension) return false;
-      if (!_normalizedTargets9.includes(normalizedViewfinderExtension)) return false;
+      if (!_normalizedTargets9.length) return;
+      if (!normalizedViewfinderExtension) return;
+      if (_normalizedTargets9.indexOf(normalizedViewfinderExtension) === -1) return;
     }
     var videoDistList = Array.isArray(rule.videoDistribution) ? rule.videoDistribution.filter(Boolean) : [];
     if (videoDistList.length) {
@@ -2206,32 +2294,40 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
       }).map(function (value) {
         return value === '__none__' ? '' : normalizeAutoGearTriggerValue(value);
       }).filter(Boolean);
-      if (!_normalizedTargets0.length) return false;
+      if (!_normalizedTargets0.length) return;
       if (!_normalizedTargets0.every(function (target) {
         return videoDistributionSet.has(target);
-      })) return false;
+      })) return;
     }
-    return true;
+    triggeredEntries.push({ rule: rule, multiplier: multiplier });
   });
-  if (!triggered.length) return tableHtml;
+  if (!triggeredEntries.length) return tableHtml;
+
   if (normalizedMattebox) {
-    triggered = triggered.filter(function (rule) {
+    triggeredEntries = triggeredEntries.filter(function (entry) {
+      var rule = entry.rule;
       if (!touchesMatteboxCategory(rule)) return true;
       var matteboxList = Array.isArray(rule.mattebox) ? rule.mattebox.filter(Boolean) : [];
       if (!matteboxList.length) return false;
       var normalizedTargets = matteboxList.map(normalizeAutoGearTriggerValue).filter(Boolean);
       if (!normalizedTargets.length) return false;
-      return normalizedTargets.includes(normalizedMattebox);
+      return normalizedTargets.indexOf(normalizedMattebox) !== -1;
     });
-    if (!triggered.length) return tableHtml;
+    if (!triggeredEntries.length) return tableHtml;
   }
   var container = document.createElement('div');
   container.innerHTML = tableHtml;
   var table = container.querySelector('.gear-table');
   if (!table) return tableHtml;
-  triggered.forEach(function (rule) {
+  triggeredEntries.forEach(function (entry) {
+    var rule = entry.rule;
+    var multiplier = entry.multiplier;
+    var parsedMultiplier = parseInt(multiplier, 10);
+    if (!isFinite(parsedMultiplier) || parsedMultiplier < 1) {
+      parsedMultiplier = 1;
+    }
     rule.remove.forEach(function (item) {
-      var remaining = normalizeAutoGearQuantity(item.quantity);
+      var remaining = normalizeAutoGearQuantity(item.quantity) * parsedMultiplier;
       if (remaining <= 0) return;
       var primaryCell = findAutoGearCategoryCell(table, item.category);
       if (primaryCell) {
@@ -2239,8 +2335,8 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
       }
       if (remaining > 0) {
         var gearCells = Array.from(table.querySelectorAll('tbody.category-group tr:not(.category-row) td'));
-        for (var _i11 = 0, _gearCells = gearCells; _i11 < _gearCells.length; _i11++) {
-          var cell = _gearCells[_i11];
+        for (var i = 0; i < gearCells.length; i += 1) {
+          var cell = gearCells[i];
           if (cell === primaryCell) continue;
           remaining = removeAutoGearItem(cell, item, remaining);
           if (remaining <= 0) break;
@@ -2248,12 +2344,16 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
       }
     });
     rule.add.forEach(function (item) {
+      var baseQuantity = normalizeAutoGearQuantity(item.quantity);
+      var quantity = baseQuantity * parsedMultiplier;
+      var scaledItem = quantity === baseQuantity ? item : createScaledAutoGearItem(item, quantity);
       var cell = ensureAutoGearCategory(table, item.category);
-      if (cell) addAutoGearItem(cell, item, rule);
+      if (cell) addAutoGearItem(cell, scaledItem, rule);
     });
   });
   return container.innerHTML;
 }
+
 function formatPhoneHref(phone) {
   if (typeof phone !== 'string') return '';
   var trimmed = phone.trim();
