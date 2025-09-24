@@ -1535,6 +1535,31 @@ describe('export/import all data', () => {
     expect(inlineEntry).toBeDefined();
     expect(inlineEntry[1]).toEqual({ gearList: '<article>Inline</article>', projectInfo: null });
   });
+
+  test('importAllData normalizes nested legacy project payloads', () => {
+    const legacyRules = [
+      { id: 'nested-rule', label: 'Nested', scenarios: [], add: [], remove: [] },
+    ];
+
+    importAllData({
+      project: {
+        LegacyNested: {
+          project: {
+            projectInfo: JSON.stringify({ projectName: 'Legacy Nested' }),
+            gearList: '<div>Legacy nested</div>',
+            autoGearRules: JSON.stringify(legacyRules),
+          },
+        },
+      },
+    });
+
+    const legacyProject = loadProject('LegacyNested');
+    expect(legacyProject).toEqual({
+      gearList: '<div>Legacy nested</div>',
+      projectInfo: { projectName: 'Legacy Nested' },
+      autoGearRules: legacyRules,
+    });
+  });
 });
 
 describe('full backup history storage', () => {

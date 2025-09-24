@@ -21,7 +21,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
   wrapper.call(globalScope, module.exports, require, module, __filename, __dirname, globalScope);
   var aggregatedExports = module.exports;
   var combinedAppVersion = aggregatedExports && aggregatedExports.APP_VERSION;
-  var APP_VERSION = "1.0.8";
+  var APP_VERSION = "1.0.9";
   if (combinedAppVersion && combinedAppVersion !== APP_VERSION) {
     throw new Error("Combined app version (".concat(combinedAppVersion, ") does not match script marker (").concat(APP_VERSION, ")."));
   }
