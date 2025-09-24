@@ -8441,7 +8441,8 @@ const sharedKeyMap = {
   gearList: "l",
   changedDevices: "x",
   feedback: "f",
-  autoGearRules: "a"
+  autoGearRules: "a",
+  diagramPositions: "y"
 };
 
 let lastSharedSetupData = null;
@@ -17682,7 +17683,8 @@ function computeSetupSignature(state) {
     state.sliderBowl || '',
     state.easyrig || '',
     stableStringify(state.projectInfo || null),
-    stableStringify(state.autoGearRules || null)
+    stableStringify(state.autoGearRules || null),
+    stableStringify(state.diagramPositions || null)
   ].join('||');
 }
 
@@ -17714,6 +17716,10 @@ function getCurrentSetupState() {
   const projectRules = getProjectScopedAutoGearRules();
   if (projectRules && projectRules.length) {
     state.autoGearRules = projectRules;
+  }
+  const diagramPositions = getDiagramManualPositions();
+  if (Object.keys(diagramPositions).length) {
+    state.diagramPositions = diagramPositions;
   }
   return state;
 }
@@ -17832,6 +17838,35 @@ const diagramHint = document.getElementById("diagramHint");
 
 let manualPositions = {};
 let lastDiagramPositions = {};
+
+function normalizeDiagramPositionsInput(positions) {
+  if (!positions || typeof positions !== 'object') {
+    return {};
+  }
+  const normalized = {};
+  Object.entries(positions).forEach(([id, value]) => {
+    if (!value || typeof value !== 'object') return;
+    const x = Number(value.x);
+    const y = Number(value.y);
+    if (!Number.isFinite(x) || !Number.isFinite(y)) return;
+    normalized[id] = { x, y };
+  });
+  return normalized;
+}
+
+function getDiagramManualPositions() {
+  return normalizeDiagramPositionsInput(manualPositions);
+}
+
+function setManualDiagramPositions(positions, options = {}) {
+  manualPositions = normalizeDiagramPositionsInput(positions);
+  if (options && options.render === false) {
+    return;
+  }
+  if (typeof renderSetupDiagram === 'function') {
+    renderSetupDiagram();
+  }
+}
 let gridSnap = false;
 let cleanupDiagramInteractions = null;
 
@@ -22037,6 +22072,14 @@ function enableDiagramInteractions() {
       apply();
       manualPositions = {};
       renderSetupDiagram();
+      if (typeof scheduleProjectAutoSave === 'function') {
+        scheduleProjectAutoSave();
+      } else if (typeof saveCurrentSession === 'function') {
+        saveCurrentSession();
+      }
+      if (typeof checkSetupChanged === 'function') {
+        checkSetupChanged();
+      }
     };
   }
   const onSvgMouseDown = e => {
@@ -22114,6 +22157,14 @@ function enableDiagramInteractions() {
     dragNode = null;
     dragPointerStart = null;
     renderSetupDiagram();
+    if (typeof scheduleProjectAutoSave === 'function') {
+      scheduleProjectAutoSave();
+    } else if (typeof saveCurrentSession === 'function') {
+      saveCurrentSession();
+    }
+    if (typeof checkSetupChanged === 'function') {
+      checkSetupChanged();
+    }
     if (e.touches) e.preventDefault();
   };
 

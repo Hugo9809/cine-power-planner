@@ -1890,6 +1890,49 @@ function arraysEqual(a, b) {
   return true;
 }
 
+function normalizeDiagramPositions(positions) {
+  if (!positions || typeof positions !== 'object') {
+    return {};
+  }
+  const normalized = {};
+  Object.keys(positions).forEach((key) => {
+    const value = positions[key];
+    if (!value || typeof value !== 'object') {
+      return;
+    }
+    const x = Number(value.x);
+    const y = Number(value.y);
+    if (!Number.isFinite(x) || !Number.isFinite(y)) {
+      return;
+    }
+    normalized[key] = { x, y };
+  });
+  return normalized;
+}
+
+function diagramPositionsEqual(a, b) {
+  const keysA = Object.keys(a || {});
+  const keysB = Object.keys(b || {});
+  if (keysA.length !== keysB.length) {
+    return false;
+  }
+  for (let i = 0; i < keysA.length; i += 1) {
+    const key = keysA[i];
+    if (!Object.prototype.hasOwnProperty.call(b || {}, key)) {
+      return false;
+    }
+    const valueA = a[key];
+    const valueB = b[key];
+    if (!valueA || typeof valueA !== 'object' || !valueB || typeof valueB !== 'object') {
+      return false;
+    }
+    if (Number(valueA.x) !== valueB.x || Number(valueA.y) !== valueB.y) {
+      return false;
+    }
+  }
+  return true;
+}
+
 function normalizeSessionStatePayload(raw) {
   if (!isPlainObject(raw)) {
     return { state: null, changed: false };
@@ -2001,6 +2044,17 @@ function normalizeSessionStatePayload(raw) {
     const normalized = value === true || value === 'true' || value === 1 || value === '1';
     if (value !== normalized || typeof value !== 'boolean') {
       state.autoGearHighlight = normalized;
+      changed = true;
+    }
+  }
+
+  if (Object.prototype.hasOwnProperty.call(state, 'diagramPositions')) {
+    const normalizedPositions = normalizeDiagramPositions(state.diagramPositions);
+    if (Object.keys(normalizedPositions).length === 0) {
+      delete state.diagramPositions;
+      changed = true;
+    } else if (!diagramPositionsEqual(state.diagramPositions, normalizedPositions)) {
+      state.diagramPositions = normalizedPositions;
       changed = true;
     }
   }
@@ -2720,6 +2774,16 @@ function normalizeProject(data) {
         gearList: normalizedGearList,
         projectInfo: normalizedProjectInfo,
       };
+      let normalizedDiagramPositions = normalizeDiagramPositions(data.diagramPositions);
+      if (
+        Object.keys(normalizedDiagramPositions).length === 0
+        && isPlainObject(data.project)
+      ) {
+        normalizedDiagramPositions = normalizeDiagramPositions(data.project.diagramPositions);
+      }
+      if (Object.keys(normalizedDiagramPositions).length) {
+        normalized.diagramPositions = normalizedDiagramPositions;
+      }
       const htmlSources = [];
       if (typeof data.projectHtml === 'string') {
         htmlSources.push(data.projectHtml);

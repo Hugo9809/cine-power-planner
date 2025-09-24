@@ -1,4 +1,4 @@
-/* global getManualDownloadFallbackMessage */
+/* global getManualDownloadFallbackMessage, getDiagramManualPositions */
 
 // --- NEW SETUP MANAGEMENT FUNCTIONS ---
 
@@ -114,6 +114,12 @@ function downloadSharedProject(shareFileName, includeAutoGear) {
     battery: batterySelect.value,
     batteryHotswap: hotswapSelect.value
   };
+  if (typeof getDiagramManualPositions === 'function') {
+    const diagramPositions = getDiagramManualPositions();
+    if (diagramPositions && Object.keys(diagramPositions).length) {
+      currentSetup.diagramPositions = diagramPositions;
+    }
+  }
   if (currentProjectInfo) {
     currentSetup.projectInfo = currentProjectInfo;
   } else {
@@ -3427,11 +3433,21 @@ function saveCurrentGearList() {
     const projectStorageKey = getCurrentProjectStorageKey({ allowTyped: true });
     const storageKey = getCurrentProjectStorageKey();
     const projectRules = getProjectScopedAutoGearRules();
+    let diagramPositions = null;
+    if (typeof getDiagramManualPositions === 'function') {
+        const positions = getDiagramManualPositions();
+        if (positions && Object.keys(positions).length) {
+            diagramPositions = positions;
+        }
+    }
     if (typeof saveProject === 'function' && typeof projectStorageKey === 'string') {
         const payload = {
             projectInfo: currentProjectInfo,
             gearList: html
         };
+        if (diagramPositions) {
+            payload.diagramPositions = diagramPositions;
+        }
         if (projectRules && projectRules.length) {
             payload.autoGearRules = projectRules;
         }
@@ -3442,7 +3458,7 @@ function saveCurrentGearList() {
 
     const setups = getSetups();
     const existing = setups[storageKey];
-    if (!existing && !html && !currentProjectInfo && !(projectRules && projectRules.length)) {
+    if (!existing && !html && !currentProjectInfo && !(projectRules && projectRules.length) && !diagramPositions) {
         return;
     }
 
@@ -3463,6 +3479,20 @@ function saveCurrentGearList() {
         }
     } else if (Object.prototype.hasOwnProperty.call(setup, 'projectInfo')) {
         delete setup.projectInfo;
+        changed = true;
+    }
+
+    if (diagramPositions) {
+        const existingDiagramSig = setup.diagramPositions
+            ? stableStringify(setup.diagramPositions)
+            : '';
+        const newDiagramSig = stableStringify(diagramPositions);
+        if (existingDiagramSig !== newDiagramSig) {
+            setup.diagramPositions = diagramPositions;
+            changed = true;
+        }
+    } else if (Object.prototype.hasOwnProperty.call(setup, 'diagramPositions')) {
+        delete setup.diagramPositions;
         changed = true;
     }
 
@@ -3514,6 +3544,10 @@ function deleteCurrentGearList() {
             }
             if (Object.prototype.hasOwnProperty.call(existingSetup, 'autoGearRules')) {
                 delete existingSetup.autoGearRules;
+                changed = true;
+            }
+            if (Object.prototype.hasOwnProperty.call(existingSetup, 'diagramPositions')) {
+                delete existingSetup.diagramPositions;
                 changed = true;
             }
             if (changed) {
