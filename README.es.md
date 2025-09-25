@@ -40,6 +40,12 @@ Toda la planificación, los datos introducidos y las exportaciones permanecen en
   incluyen reglas automáticas de equipo si lo necesitas.
 - **Haz copia de todo.** Las copias de seguridad completas del planner incluyen proyectos, favoritos, equipos personalizados,
   datos de autonomía y preferencias de la interfaz para no perder contexto.
+- **Copias de migración ocultas.** Antes de sobrescribir planificadores, ajustes
+  o preferencias guardados, la aplicación conserva la instantánea JSON anterior
+  en el espacio protegido `__legacyMigrationBackup`. Si una escritura falla o
+  genera datos corruptos, las herramientas de recuperación recurren
+  automáticamente a esa copia de seguridad para que no se pierdan datos de
+  usuario.
 
 ## Protección de datos sin conexión
 

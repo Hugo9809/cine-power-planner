@@ -43,6 +43,11 @@ same audited version.
   gear rules.
 - **Back up everything.** Full planner backups include projects, favorites, custom devices, runtime data and UI preferences so no
   context is lost.
+- **Hidden migration backups.** Before overwriting planners, setups or
+  preferences, the app preserves the previous JSON snapshot inside the protected
+  `__legacyMigrationBackup` slot. If a write ever fails or produces corrupt
+  data, the recovery tools automatically fall back to that safety copy so no
+  user data disappears.
 
 ## Protecting data offline
 

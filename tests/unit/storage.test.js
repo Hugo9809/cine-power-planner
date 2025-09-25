@@ -50,6 +50,7 @@ const {
   loadAutoGearAutoPresetId,
   saveAutoGearAutoPresetId,
   loadAutoGearMonitorDefaults,
+  saveAutoGearMonitorDefaults,
   loadAutoGearBackupVisibility,
   saveAutoGearBackupVisibility,
   loadFullBackupHistory,
@@ -1706,6 +1707,113 @@ describe('full backup history storage', () => {
     localStorage.setItem(FULL_BACKUP_HISTORY_KEY, JSON.stringify([' 2024-03-03T08:30:00Z ']));
     const history = loadFullBackupHistory();
     expect(history).toEqual([{ createdAt: '2024-03-03T08:30:00Z' }]);
+  });
+});
+
+describe('migration backups before overwriting data', () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  const readMigrationBackupData = (storageKey) => {
+    const raw = localStorage.getItem(migrationBackupKeyFor(storageKey));
+    expect(raw).not.toBeNull();
+    const parsed = JSON.parse(raw);
+    expect(typeof parsed.createdAt).toBe('string');
+    expect(parsed).toHaveProperty('data');
+    return parsed.data;
+  };
+
+  test.each([
+    {
+      label: 'device overrides',
+      key: DEVICE_KEY,
+      initial: { cameras: { Legacy: {} } },
+      save: (value) => saveDeviceData(value),
+      next: validDeviceData,
+    },
+    {
+      label: 'session state',
+      key: SESSION_KEY,
+      initial: { activeSetup: 'Legacy' },
+      save: (value) => saveSessionState(value),
+      next: { activeSetup: 'Current' },
+    },
+    {
+      label: 'setups',
+      key: SETUP_KEY,
+      initial: { Legacy: { name: 'Legacy', items: [] } },
+      save: (value) => saveSetups(value),
+      next: { Next: { name: 'Next', items: [] } },
+    },
+    {
+      label: 'favorites',
+      key: FAVORITES_KEY,
+      initial: { camera: 'A' },
+      save: (value) => saveFavorites(value),
+      next: { camera: 'B' },
+    },
+    {
+      label: 'feedback',
+      key: FEEDBACK_KEY,
+      initial: { note: 'Original' },
+      save: (value) => saveFeedback(value),
+      next: { note: 'Updated' },
+    },
+    {
+      label: 'automatic gear rules',
+      key: AUTO_GEAR_RULES_KEY,
+      initial: [{ id: 'legacy-rule' }],
+      save: (value) => saveAutoGearRules(value),
+      next: [{ id: 'current-rule' }],
+    },
+    {
+      label: 'automatic gear backups',
+      key: AUTO_GEAR_BACKUPS_KEY,
+      initial: [{ id: 'legacy-backup' }],
+      save: (value) => saveAutoGearBackups(value),
+      next: [{ id: 'snapshot' }],
+    },
+    {
+      label: 'automatic gear presets',
+      key: AUTO_GEAR_PRESETS_KEY,
+      initial: [{ id: 'preset-a' }],
+      save: (value) => saveAutoGearPresets(value),
+      next: [{ id: 'preset-b' }],
+    },
+    {
+      label: 'automatic gear monitor defaults',
+      key: AUTO_GEAR_MONITOR_DEFAULTS_KEY,
+      initial: { monitor: 'Legacy' },
+      save: (value) => saveAutoGearMonitorDefaults(value),
+      next: { monitor: 'Operator' },
+    },
+    {
+      label: 'full backup history',
+      key: FULL_BACKUP_HISTORY_KEY,
+      initial: [{ createdAt: '2024-01-01T00:00:00Z' }],
+      save: (value) => saveFullBackupHistory(value),
+      next: [{ createdAt: '2024-02-02T00:00:00Z' }],
+    },
+  ])('captures previous %s snapshot before writing new data', ({ key, initial, save, next }) => {
+    localStorage.setItem(key, JSON.stringify(initial));
+    expect(localStorage.getItem(migrationBackupKeyFor(key))).toBeNull();
+
+    save(next);
+
+    const backupData = readMigrationBackupData(key);
+    expect(backupData).toEqual(initial);
+  });
+
+  test('saveProject preserves existing project container before overwriting', () => {
+    const initialProjects = { Legacy: { gearList: '', projectInfo: null } };
+    localStorage.setItem(PROJECT_KEY, JSON.stringify(initialProjects));
+    expect(localStorage.getItem(migrationBackupKeyFor(PROJECT_KEY))).toBeNull();
+
+    saveProject('New Project', { gearList: '', projectInfo: null });
+
+    const backupData = readMigrationBackupData(PROJECT_KEY);
+    expect(backupData).toEqual(initialProjects);
   });
 });
 

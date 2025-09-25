@@ -124,6 +124,36 @@ const RAW_STORAGE_BACKUP_KEYS = new Set([
   DEVICE_SCHEMA_CACHE_KEY,
 ]);
 
+function ensurePreWriteMigrationBackup(storage, key) {
+  if (!storage || typeof storage.getItem !== 'function' || !key) {
+    return null;
+  }
+
+  let rawValue = null;
+  try {
+    rawValue = storage.getItem(key);
+  } catch (inspectionError) {
+    console.warn(`Unable to inspect existing value for ${key} before creating migration backup`, inspectionError);
+    return null;
+  }
+
+  if (rawValue === null || rawValue === undefined) {
+    return null;
+  }
+
+  let parsedValue = rawValue;
+  if (typeof rawValue === 'string' && rawValue) {
+    try {
+      parsedValue = JSON.parse(rawValue);
+    } catch (parseError) {
+      void parseError;
+    }
+  }
+
+  createStorageMigrationBackup(storage, key, parsedValue);
+  return parsedValue;
+}
+
 function createStorageMigrationBackup(storage, key, originalValue) {
   if (!storage || typeof storage.setItem !== 'function') {
     return;
@@ -2123,6 +2153,7 @@ function saveSessionState(state) {
     return;
   }
 
+  ensurePreWriteMigrationBackup(safeStorage, SESSION_STATE_KEY);
   saveJSONToStorage(
     safeStorage,
     SESSION_STATE_KEY,
@@ -2212,6 +2243,7 @@ function saveDeviceData(deviceData) {
     return;
   }
 
+  ensurePreWriteMigrationBackup(safeStorage, DEVICE_STORAGE_KEY);
   saveJSONToStorage(
     safeStorage,
     DEVICE_STORAGE_KEY,
@@ -2294,6 +2326,7 @@ function saveSetups(setups) {
   const { data: normalizedSetups } = normalizeSetups(setups);
   enforceAutoBackupLimits(normalizedSetups);
   const safeStorage = getSafeLocalStorage();
+  ensurePreWriteMigrationBackup(safeStorage, SETUP_STORAGE_KEY);
   saveJSONToStorage(
     safeStorage,
     SETUP_STORAGE_KEY,
@@ -3240,6 +3273,7 @@ function readAllProjectsFromStorage() {
 function persistAllProjects(projects) {
   const safeStorage = getSafeLocalStorage();
   enforceAutoBackupLimits(projects);
+  ensurePreWriteMigrationBackup(safeStorage, PROJECT_STORAGE_KEY);
   saveJSONToStorage(
     safeStorage,
     PROJECT_STORAGE_KEY,
@@ -3560,6 +3594,7 @@ function saveFavorites(favs) {
     return;
   }
 
+  ensurePreWriteMigrationBackup(safeStorage, FAVORITES_STORAGE_KEY);
   saveJSONToStorage(
     safeStorage,
     FAVORITES_STORAGE_KEY,
@@ -3601,6 +3636,7 @@ function saveFeedback(feedback) {
     return;
   }
 
+  ensurePreWriteMigrationBackup(safeStorage, FEEDBACK_STORAGE_KEY);
   saveJSONToStorage(
     safeStorage,
     FEEDBACK_STORAGE_KEY,
@@ -3675,6 +3711,7 @@ function saveFullBackupHistory(entries) {
     );
     return;
   }
+  ensurePreWriteMigrationBackup(safeStorage, FULL_BACKUP_HISTORY_STORAGE_KEY);
   saveJSONToStorage(
     safeStorage,
     FULL_BACKUP_HISTORY_STORAGE_KEY,
@@ -3755,6 +3792,7 @@ function loadAutoGearRules() {
 function saveAutoGearRules(rules) {
   const safeRules = Array.isArray(rules) ? rules : [];
   const safeStorage = getSafeLocalStorage();
+  ensurePreWriteMigrationBackup(safeStorage, AUTO_GEAR_RULES_STORAGE_KEY);
   saveJSONToStorage(
     safeStorage,
     AUTO_GEAR_RULES_STORAGE_KEY,
@@ -3779,6 +3817,7 @@ function loadAutoGearBackups() {
 function saveAutoGearBackups(backups) {
   const safeBackups = Array.isArray(backups) ? backups : [];
   const safeStorage = getSafeLocalStorage();
+  ensurePreWriteMigrationBackup(safeStorage, AUTO_GEAR_BACKUPS_STORAGE_KEY);
   saveJSONToStorage(
     safeStorage,
     AUTO_GEAR_BACKUPS_STORAGE_KEY,
@@ -3823,6 +3862,7 @@ function loadAutoGearPresets() {
 function saveAutoGearPresets(presets) {
   const safePresets = Array.isArray(presets) ? presets : [];
   const safeStorage = getSafeLocalStorage();
+  ensurePreWriteMigrationBackup(safeStorage, AUTO_GEAR_PRESETS_STORAGE_KEY);
   saveJSONToStorage(
     safeStorage,
     AUTO_GEAR_PRESETS_STORAGE_KEY,
@@ -3847,6 +3887,7 @@ function loadAutoGearMonitorDefaults() {
 function saveAutoGearMonitorDefaults(defaults) {
   const safeDefaults = defaults && typeof defaults === 'object' ? defaults : {};
   const safeStorage = getSafeLocalStorage();
+  ensurePreWriteMigrationBackup(safeStorage, AUTO_GEAR_MONITOR_DEFAULTS_STORAGE_KEY);
   saveJSONToStorage(
     safeStorage,
     AUTO_GEAR_MONITOR_DEFAULTS_STORAGE_KEY,

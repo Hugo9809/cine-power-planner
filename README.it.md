@@ -39,6 +39,11 @@ Tutta la pianificazione, gli input e gli export restano sul dispositivo davanti 
   includere regole automatiche per l'attrezzatura.
 - **Eseguire backup completi.** I backup del planner includono progetti, preferiti, attrezzature personalizzate, dati sulle
   autonomie e preferenze dell'interfaccia in modo da non perdere contesto.
+- **Backup di migrazione nascosti.** Prima di sovrascrivere planner, set o
+  preferenze salvate, l’app conserva lo snapshot JSON precedente nello slot
+  protetto `__legacyMigrationBackup`. Se una scrittura fallisce o produce dati
+  danneggiati, gli strumenti di ripristino tornano automaticamente a quella
+  copia di sicurezza così da non perdere alcun dato utente.
 
 ## Proteggere i dati offline
 
