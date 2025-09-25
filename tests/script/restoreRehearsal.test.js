@@ -244,8 +244,9 @@ describe('restore rehearsal safeguards', () => {
 
     const entries = ruleList.querySelectorAll('li.diff-entry');
     expect(entries.length).toBe(2);
-    expect(entries[0].textContent).toContain('Rain cover');
-    expect(entries[1].textContent).toContain('Gimbal prep');
+    const entryTexts = Array.from(entries).map((entry) => entry.textContent || '');
+    expect(entryTexts.some((text) => text.includes('Rain cover'))).toBe(true);
+    expect(entryTexts.some((text) => text.includes('Gimbal prep'))).toBe(true);
 
     const abortButton = document.getElementById('restoreRehearsalAbort');
     expect(abortButton).not.toBeNull();
@@ -258,6 +259,156 @@ describe('restore rehearsal safeguards', () => {
     const expectedAbortMessage = textsByLang.en?.restoreRehearsalAbortMessage
       || 'Rehearsal sandbox cleared. Live data remains untouched.';
     expect(status.textContent).toBe(expectedAbortMessage);
+
+    delete input.files;
+  });
+
+  test('reports extended backup metrics', async () => {
+    loadApp();
+
+    global.exportAllData.mockImplementation(() => ({
+      setups: {},
+      devices: {},
+      favorites: {},
+      autoGearRules: [],
+      autoGearBackups: [],
+      autoGearPresets: [],
+      fullBackupHistory: [],
+      customFonts: [],
+      customLogo: '',
+      preferences: {},
+      session: {},
+      feedback: {},
+      schemaCache: '',
+    }));
+
+    const input = document.getElementById('restoreRehearsalInput');
+    const table = document.getElementById('restoreRehearsalTable');
+    const tbody = document.getElementById('restoreRehearsalTableBody');
+    const status = document.getElementById('restoreRehearsalStatus');
+    expect(input).not.toBeNull();
+    expect(table).not.toBeNull();
+    expect(tbody).not.toBeNull();
+    expect(status).not.toBeNull();
+
+    const backupPayload = {
+      data: {
+        devices: {
+          cameras: {
+            'Cinema Cam': { id: 'camera-1', brand: 'Test' },
+          },
+        },
+        session: { setupName: 'Rehearsal Session' },
+        feedback: { draft1: { message: 'Check lighting cues' } },
+        autoGearPresets: [{ id: 'preset-1', label: 'Rain' }],
+        autoGearBackups: [{ id: 'backup-1', createdAt: '2024-01-01' }],
+        fullBackupHistory: [{ createdAt: '2024-01-02T10:00:00Z' }],
+        customFonts: [{ id: 'font-1', name: 'Planner Sans', data: 'data:font/woff2;base64,AAA' }],
+        customLogo: 'data:image/png;base64,AAA',
+        preferences: { theme: 'dark' },
+        schemaCache: '{}',
+        setups: {},
+        favorites: {},
+        autoGearRules: [],
+      },
+    };
+
+    const fakeFile = {
+      name: 'extended-backup.json',
+      text: () => Promise.resolve(JSON.stringify(backupPayload)),
+    };
+
+    Object.defineProperty(input, 'files', {
+      configurable: true,
+      get: () => [fakeFile],
+    });
+
+    input.dispatchEvent(new Event('change'));
+
+    await flushPromises();
+    await flushPromises();
+
+    expect(table.hasAttribute('hidden')).toBe(false);
+
+    const textsByLang = window.texts || {};
+    const deviceLabel = textsByLang.en?.restoreRehearsalMetricDeviceLibrary
+      || 'Device library entries';
+    const logoLabel = textsByLang.en?.restoreRehearsalMetricCustomLogo
+      || 'Custom logo saved';
+
+    const rows = Array.from(tbody.querySelectorAll('tr'));
+    const findRow = (label) => rows.find((row) => row.querySelector('th')?.textContent === label);
+
+    const deviceRow = findRow(deviceLabel);
+    expect(deviceRow).toBeDefined();
+    if (deviceRow) {
+      const cells = deviceRow.querySelectorAll('td');
+      expect(cells[0].textContent).toBe('0');
+      expect(cells[1].textContent).toBe('1');
+      expect(cells[2].textContent).toBe('+1');
+    }
+
+    const logoRow = findRow(logoLabel);
+    expect(logoRow).toBeDefined();
+    if (logoRow) {
+      const cells = logoRow.querySelectorAll('td');
+      expect(cells[0].textContent).toBe('0');
+      expect(cells[1].textContent).toBe('1');
+      expect(cells[2].textContent).toBe('+1');
+    }
+
+    expect(status.textContent).toContain('+1');
+
+    delete input.files;
+  });
+
+  test('project rehearsal hides backup-only metrics', async () => {
+    loadApp();
+
+    const backupMode = document.getElementById('restoreRehearsalModeBackup');
+    const projectMode = document.getElementById('restoreRehearsalModeProject');
+    if (backupMode) backupMode.checked = false;
+    if (projectMode) projectMode.checked = true;
+
+    global.exportAllData.mockImplementation(() => ({
+      setups: {},
+      favorites: {},
+      autoGearRules: [],
+    }));
+
+    const input = document.getElementById('restoreRehearsalInput');
+    const tbody = document.getElementById('restoreRehearsalTableBody');
+    expect(input).not.toBeNull();
+    expect(tbody).not.toBeNull();
+
+    const projectBundle = {
+      setupName: 'Project Only',
+      projectInfo: { summary: 'Notes' },
+      favorites: { monitors: ['Field monitor'] },
+    };
+
+    const fakeFile = {
+      name: 'project-only.json',
+      text: () => Promise.resolve(JSON.stringify(projectBundle)),
+    };
+
+    Object.defineProperty(input, 'files', {
+      configurable: true,
+      get: () => [fakeFile],
+    });
+
+    input.dispatchEvent(new Event('change'));
+
+    await flushPromises();
+    await flushPromises();
+
+    const textsByLang = window.texts || {};
+    const deviceLabel = textsByLang.en?.restoreRehearsalMetricDeviceLibrary
+      || 'Device library entries';
+
+    const rows = Array.from(tbody.querySelectorAll('tr'));
+    const deviceRow = rows.find((row) => row.querySelector('th')?.textContent === deviceLabel);
+    expect(deviceRow).toBeUndefined();
 
     delete input.files;
   });
