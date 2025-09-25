@@ -1977,6 +1977,26 @@ body.high-contrast .diff-value-changed {
   gap: 20px;
 }
 
+.settings-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.settings-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.settings-panels {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+
 .settings-tabs {
   display: flex;
   flex-wrap: nowrap;
@@ -2085,6 +2105,45 @@ body.high-contrast .settings-tab[aria-selected="true"] {
 @media (max-width: 600px) {
   .settings-tab {
     flex-basis: 100%;
+  }
+}
+
+@media (max-width: 720px) {
+  .settings-content {
+    width: min(100vw, 960px);
+    padding: clamp(16px, 4vw, 20px);
+  }
+
+  .settings-layout {
+    flex-direction: row;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .settings-sidebar {
+    flex: 0 0 clamp(140px, 38vw, 220px);
+    max-width: clamp(140px, 38vw, 240px);
+  }
+
+  .settings-tabs {
+    flex-direction: column;
+    align-items: stretch;
+    overflow-x: hidden;
+    overflow-y: auto;
+    max-height: min(60vh, 420px);
+    padding-right: 4px;
+  }
+
+  .settings-tab {
+    flex: 0 0 auto;
+    flex-basis: auto;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .settings-panels {
+    flex: 1 1 auto;
+    min-width: 0;
   }
 }
 
