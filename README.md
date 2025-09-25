@@ -109,6 +109,7 @@ production day.
 - [Storage Quota & Maintenance](#storage-quota--maintenance)
 - [Backup & Recovery](#backup--recovery)
 - [Data Integrity Drills](#data-integrity-drills)
+- [Backup Rotation & Archive Guide](#backup-rotation--archive-guide)
 - [Operational Checklists](#operational-checklists)
 - [Emergency Recovery Playbook](#emergency-recovery-playbook)
 - [Gear Lists & Reporting](#gear-lists--reporting)
@@ -542,6 +543,18 @@ repeatable verification loop:
   if your asset tracker expects it) and a ZIP of the repository on at least two
   physical media. Rotate which copy you open for spot-checks so you
   catch media degradation before it causes data loss.
+
+## Backup Rotation & Archive Guide
+
+- Follow the dedicated [Backup Rotation & Archive Guide](docs/backup-rotation-guide.md)
+  for naming conventions, validation drills and multi-tier retention practices
+  that keep redundant copies healthy without risking accidental overwrite.
+- The guide covers daily, weekly and project-archive rotations, along with
+  incident-specific capture routines so every export is rehearsed in isolation
+  before promotion.
+- Pair the rotation steps with the [Operational Checklist](docs/operations-checklist.md)
+  and [Offline Readiness Runbook](docs/offline-readiness.md) to confirm saving,
+  sharing, import, backup and restore flows stay flawless on every workstation.
 
 ## Operational Checklists
 
