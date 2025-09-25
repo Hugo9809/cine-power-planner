@@ -3164,7 +3164,7 @@ body.pink-mode:not(.dark-mode) #settingsPanel-autoGear .auto-gear-rule-items-lab
 
 .help-content p,
 .help-content li {
-  line-height: 1.6;
+  line-height: 1.7;
 }
 
 
@@ -3357,6 +3357,12 @@ body.pink-mode:not(.dark-mode) #settingsPanel-autoGear .auto-gear-rule-items-lab
   margin: 0.75rem 0 0;
   line-height: 1.6;
   font-size: calc(var(--font-size-relative-base) * var(--font-scale-sm));
+}
+
+.help-inline-links .button-link,
+.help-inline-links .button-link:visited {
+  background-color: transparent;
+  color: var(--accent-color);
 }
 
 .help-inline-links .help-link:focus-visible {
