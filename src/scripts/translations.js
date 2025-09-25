@@ -282,6 +282,15 @@ const texts = {
     autoGearCameraLabel: "Camera selection",
     autoGearCameraHelp:
       "Apply this rule when these camera bodies are selected.",
+    autoGearCameraWeightLabel: "Camera weight",
+    autoGearCameraWeightHelp:
+      "Compare the selected camera's weight to the threshold before triggering this rule.",
+    autoGearCameraWeightOperatorLabel: "Weight comparison",
+    autoGearCameraWeightOperatorGreater: "Heavier than",
+    autoGearCameraWeightOperatorLess: "Lighter than",
+    autoGearCameraWeightOperatorEqual: "Exactly",
+    autoGearCameraWeightValueLabel: "Weight threshold (grams)",
+    autoGearCameraWeightValueRequired: "Enter a camera weight threshold before saving.",
     autoGearMonitorLabel: "Onboard monitors",
     autoGearMonitorDefaultsHeading: "Monitor defaults",
     autoGearMonitorDefaultsDescription: "Choose which monitors should be preselected for new gear lists.",
@@ -1905,6 +1914,15 @@ const texts = {
     autoGearCameraLabel: "Selezione telecamera",
     autoGearCameraHelp:
       "Applica la regola quando sono selezionati questi corpi macchina.",
+    autoGearCameraWeightLabel: "Peso della camera",
+    autoGearCameraWeightHelp:
+      "Confronta il peso della camera selezionata con la soglia prima di attivare questa regola.",
+    autoGearCameraWeightOperatorLabel: "Confronto peso",
+    autoGearCameraWeightOperatorGreater: "Più pesante di",
+    autoGearCameraWeightOperatorLess: "Più leggera di",
+    autoGearCameraWeightOperatorEqual: "Esattamente",
+    autoGearCameraWeightValueLabel: "Soglia di peso (grammi)",
+    autoGearCameraWeightValueRequired: "Inserisci una soglia di peso della camera prima di salvare.",
     autoGearMonitorLabel: "Monitor onboard",
     autoGearMonitorDefaultsHeading: "Monitor defaults",
     autoGearMonitorDefaultsDescription: "Choose which monitors should be preselected for new gear lists.",
@@ -3108,6 +3126,15 @@ const texts = {
     autoGearCameraLabel: "Selección de cámara",
     autoGearCameraHelp:
       "Aplica la regla cuando se seleccionan estos cuerpos de cámara.",
+    autoGearCameraWeightLabel: "Peso de la cámara",
+    autoGearCameraWeightHelp:
+      "Compara el peso de la cámara seleccionada con el umbral antes de activar esta regla.",
+    autoGearCameraWeightOperatorLabel: "Comparación de peso",
+    autoGearCameraWeightOperatorGreater: "Más pesada que",
+    autoGearCameraWeightOperatorLess: "Más ligera que",
+    autoGearCameraWeightOperatorEqual: "Exactamente",
+    autoGearCameraWeightValueLabel: "Umbral de peso (gramos)",
+    autoGearCameraWeightValueRequired: "Introduce un umbral de peso de la cámara antes de guardar.",
     autoGearMonitorLabel: "Monitores a bordo",
     autoGearMonitorDefaultsHeading: "Monitor defaults",
     autoGearMonitorDefaultsDescription: "Choose which monitors should be preselected for new gear lists.",
@@ -4313,6 +4340,15 @@ const texts = {
     autoGearCameraLabel: "Sélection de caméra",
     autoGearCameraHelp:
       "Appliquez la règle lorsque ces boîtiers caméra sont sélectionnés.",
+    autoGearCameraWeightLabel: "Poids de la caméra",
+    autoGearCameraWeightHelp:
+      "Compare le poids de la caméra sélectionnée au seuil avant de déclencher cette règle.",
+    autoGearCameraWeightOperatorLabel: "Comparaison de poids",
+    autoGearCameraWeightOperatorGreater: "Plus lourde que",
+    autoGearCameraWeightOperatorLess: "Plus légère que",
+    autoGearCameraWeightOperatorEqual: "Exactement",
+    autoGearCameraWeightValueLabel: "Seuil de poids (grammes)",
+    autoGearCameraWeightValueRequired: "Saisissez un seuil de poids de la caméra avant d'enregistrer.",
     autoGearMonitorLabel: "Moniteurs embarqués",
     autoGearMonitorDefaultsHeading: "Monitor defaults",
     autoGearMonitorDefaultsDescription: "Choose which monitors should be preselected for new gear lists.",
@@ -5530,6 +5566,16 @@ const texts = {
     autoGearCameraLabel: "Kameraauswahl",
     autoGearCameraHelp:
       "Wende die Regel an, wenn diese Kamerabodys ausgewählt sind.",
+    autoGearCameraWeightLabel: "Kameragewicht",
+    autoGearCameraWeightHelp:
+      "Vergleicht das ausgewählte Kameragewicht mit dem Schwellenwert, bevor diese Regel ausgelöst wird.",
+    autoGearCameraWeightOperatorLabel: "Gewichtsvergleich",
+    autoGearCameraWeightOperatorGreater: "Schwerer als",
+    autoGearCameraWeightOperatorLess: "Leichter als",
+    autoGearCameraWeightOperatorEqual: "Genau",
+    autoGearCameraWeightValueLabel: "Gewichtsschwellenwert (Gramm)",
+    autoGearCameraWeightValueRequired:
+      "Geben Sie vor dem Speichern einen Kameragewichts-Schwellenwert ein.",
     autoGearMonitorLabel: "Onboard-Monitore",
     autoGearMonitorDefaultsHeading: "Monitor defaults",
     autoGearMonitorDefaultsDescription: "Choose which monitors should be preselected for new gear lists.",

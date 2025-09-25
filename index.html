@@ -1209,6 +1209,7 @@
                     <option value="deliveryResolution">Delivery resolution</option>
                     <option value="videoDistribution">Video distribution</option>
                     <option value="camera">Camera</option>
+                    <option value="cameraWeight">Camera weight</option>
                     <option value="monitor">Onboard monitor</option>
                     <option value="crewPresent">Crew present</option>
                     <option value="crewAbsent">Crew absent</option>
@@ -1493,6 +1494,43 @@
                     multiple
                     size="10"
                   ></select>
+                </section>
+                <section
+                  id="autoGearCondition-cameraWeight"
+                  class="auto-gear-condition"
+                  data-condition="cameraWeight"
+                  hidden
+                  aria-hidden="true"
+                >
+                  <div class="auto-gear-condition-header">
+                    <label for="autoGearCameraWeightValue" id="autoGearCameraWeightLabel">Camera weight</label>
+                    <div class="auto-gear-condition-actions">
+                      <button type="button" class="auto-gear-condition-add" data-action="add">Add</button>
+                      <button
+                        type="button"
+                        class="auto-gear-condition-remove"
+                        data-action="remove"
+                        data-condition="cameraWeight"
+                      >Remove</button>
+                    </div>
+                  </div>
+                  <div class="auto-gear-camera-weight">
+                    <div class="auto-gear-field">
+                      <label for="autoGearCameraWeightOperator" id="autoGearCameraWeightOperatorLabel">Weight comparison</label>
+                      <select id="autoGearCameraWeightOperator">
+                        <option value="greater">Heavier than</option>
+                        <option value="less">Lighter than</option>
+                        <option value="equal">Exactly</option>
+                      </select>
+                    </div>
+                    <div class="auto-gear-field">
+                      <label for="autoGearCameraWeightValue" id="autoGearCameraWeightValueLabel">Weight threshold (grams)</label>
+                      <input type="number" id="autoGearCameraWeightValue" min="0" step="1" inputmode="numeric" />
+                    </div>
+                  </div>
+                  <p id="autoGearCameraWeightHelp" class="auto-gear-condition-help">
+                    Compare the selected camera's weight to the threshold before triggering this rule.
+                  </p>
                 </section>
                 <section
                   id="autoGearCondition-monitor"

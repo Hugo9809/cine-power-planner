@@ -1,5 +1,6 @@
 /* global getManualDownloadFallbackMessage, getDiagramManualPositions, normalizeAutoGearShootingDayValue,
-          normalizeAutoGearShootingDaysCondition, getAutoGearMonitorDefault, getSetupNameState,
+          normalizeAutoGearShootingDaysCondition, normalizeAutoGearCameraWeightCondition, evaluateAutoGearCameraWeightCondition,
+          getAutoGearMonitorDefault, getSetupNameState,
           createProjectInfoSnapshotForStorage, getProjectAutoSaveOverrides, getAutoGearRuleCoverageSummary */
 
 // --- NEW SETUP MANAGEMENT FUNCTIONS ---
@@ -2181,6 +2182,34 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
       ? info.cameraSelection.trim()
       : '';
   const normalizedCameraSelection = normalizeAutoGearTriggerValue(rawCameraSelection);
+  const cameraWeightDataset = devices && devices.cameras ? devices.cameras : null;
+  const normalizedCameraWeights = (() => {
+    if (!cameraWeightDataset) return null;
+    const lookup = {};
+    Object.keys(cameraWeightDataset).forEach(name => {
+      const entry = cameraWeightDataset[name];
+      if (!entry || !Number.isFinite(entry.weight_g)) return;
+      const normalizedName = normalizeAutoGearTriggerValue(name);
+      if (normalizedName && !Object.prototype.hasOwnProperty.call(lookup, normalizedName)) {
+        lookup[normalizedName] = Number(entry.weight_g);
+      }
+    });
+    return lookup;
+  })();
+  const selectedCameraWeight = (() => {
+    if (!cameraWeightDataset) return null;
+    const direct = rawCameraSelection && Object.prototype.hasOwnProperty.call(cameraWeightDataset, rawCameraSelection)
+      ? cameraWeightDataset[rawCameraSelection]
+      : null;
+    if (direct && Number.isFinite(direct.weight_g)) {
+      return Number(direct.weight_g);
+    }
+    if (!normalizedCameraSelection || !normalizedCameraWeights) return null;
+    if (Object.prototype.hasOwnProperty.call(normalizedCameraWeights, normalizedCameraSelection)) {
+      return normalizedCameraWeights[normalizedCameraSelection];
+    }
+    return null;
+  })();
   const rawMonitorSelection = info && typeof info.monitorSelection === 'string'
       ? info.monitorSelection.trim()
       : '';
@@ -2311,6 +2340,7 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
           if (!normalizedTargets.includes(normalizedMattebox)) return false;
         }
         const cameraList = Array.isArray(rule.camera) ? rule.camera.filter(Boolean) : [];
+        const cameraWeightCondition = normalizeAutoGearCameraWeightCondition(rule.cameraWeight);
         if (cameraList.length) {
           const normalizedTargets = cameraList
             .map(normalizeAutoGearTriggerValue)
@@ -2318,6 +2348,12 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
           if (!normalizedTargets.length) return false;
           if (!normalizedCameraSelection) return false;
           if (!normalizedTargets.includes(normalizedCameraSelection)) return false;
+        }
+        if (cameraWeightCondition) {
+          if (!Number.isFinite(selectedCameraWeight)) return false;
+          if (!evaluateAutoGearCameraWeightCondition(cameraWeightCondition, selectedCameraWeight)) {
+            return false;
+          }
         }
         const monitorList = Array.isArray(rule.monitor) ? rule.monitor.filter(Boolean) : [];
         if (monitorList.length) {

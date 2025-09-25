@@ -298,6 +298,7 @@ Print-freundliche Versionen findest du in `docs/operations-checklist.md`; der Tr
 **Einstellungen → Automatische Gear-Regeln** ermöglicht Feintuning ohne JSON-Bearbeitung:
 
 - Regeln nur aktivieren, wenn bestimmte **Pflichtszenarien** gewählt sind; optionale Labels erleichtern das Scannen.
+- Regeln auch nach dem **Kameragewicht** steuern: Vergleiche den ausgewählten Body mit einem schwerer-, leichter- oder exakt-definierten Schwellenwert, bevor die Automatisierung greift.
 - Equipment mit Kategorie und Anzahl hinzufügen oder **Custom Additions** für Hinweise/Spezialkits verwenden. Entfernen-Regeln blenden bestimmte Zeilen aus.
 - Regeln laufen nach den Standardpaketen, greifen nahtlos in Gearlisten, Backups und Bundles ein.
 - Ein Dashboard zur Regelabdeckung hebt doppelte Auslöser, Netto-Zu-/Abgänge, Konflikte und ungedeckte Szenarien hervor. Fokus-Karten filtern die Liste, springen zu betroffenen Regeln und bleiben offline nutzbar.
