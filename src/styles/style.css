@@ -1739,6 +1739,10 @@ body.high-contrast .diff-value-changed {
   overscroll-behavior: contain;
 }
 
+html.install-banner-visible .app-modal[open] {
+  padding-top: calc(20px + var(--install-banner-offset, 0px));
+}
+
 .modal-surface {
   background: var(--surface-color);
   color: var(--text-color);
