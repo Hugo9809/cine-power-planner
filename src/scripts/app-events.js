@@ -5,7 +5,7 @@
           normalizeSetupName, createProjectInfoSnapshotForStorage,
           applyDynamicFieldValues, applyBatteryPlateSelectionFromBattery */
 
-const AUTO_BACKUP_RENAMED_FLAG =
+const APP_EVENTS_AUTO_BACKUP_RENAMED_FLAG =
   (typeof globalThis !== 'undefined' && globalThis.__CINE_AUTO_BACKUP_RENAMED_FLAG)
     ? globalThis.__CINE_AUTO_BACKUP_RENAMED_FLAG
     : '__cineAutoBackupRenamed';
@@ -15,14 +15,14 @@ function markAutoBackupDataAsRenamed(value) {
     return;
   }
   try {
-    value[AUTO_BACKUP_RENAMED_FLAG] = true;
+    value[APP_EVENTS_AUTO_BACKUP_RENAMED_FLAG] = true;
   } catch (assignmentError) {
     void assignmentError;
   }
   const info = value.projectInfo;
   if (info && typeof info === 'object') {
     try {
-      info[AUTO_BACKUP_RENAMED_FLAG] = true;
+      info[APP_EVENTS_AUTO_BACKUP_RENAMED_FLAG] = true;
     } catch (infoError) {
       void infoError;
     }

@@ -88,7 +88,7 @@ const BACKUP_SUFFIX = '__backup';
 const MIGRATION_BACKUP_SUFFIX = '__legacyMigrationBackup';
 const backupKeyFor = (key) => `${key}${BACKUP_SUFFIX}`;
 const migrationBackupKeyFor = (key) => `${key}${MIGRATION_BACKUP_SUFFIX}`;
-const AUTO_BACKUP_RENAMED_FLAG =
+const TEST_AUTO_BACKUP_RENAMED_FLAG =
   (typeof globalThis !== 'undefined' && globalThis.__CINE_AUTO_BACKUP_RENAMED_FLAG)
     ? globalThis.__CINE_AUTO_BACKUP_RENAMED_FLAG
     : '__cineAutoBackupRenamed';
@@ -511,14 +511,14 @@ describe('setup storage', () => {
     expect(result).toBe(renamedKey);
 
     const stored = JSON.parse(localStorage.getItem(SETUP_KEY));
-    expect(stored[renamedKey][AUTO_BACKUP_RENAMED_FLAG]).toBe(true);
+    expect(stored[renamedKey][TEST_AUTO_BACKUP_RENAMED_FLAG]).toBe(true);
   });
 
   test('saveSetups keeps renamed auto backups when a new snapshot shares the label', () => {
     const renamedKey = 'auto-backup-2024-01-01-00-00-Project Alpha';
     const newKey = 'auto-backup-2024-02-01-00-00-Project Alpha';
     const setups = {
-      [renamedKey]: { camera: 'A', [AUTO_BACKUP_RENAMED_FLAG]: true },
+      [renamedKey]: { camera: 'A', [TEST_AUTO_BACKUP_RENAMED_FLAG]: true },
       [newKey]: { camera: 'A' },
     };
 
