@@ -2859,7 +2859,7 @@ function ensureDefaultMatteboxAutoGearRules() {
 
 function captureSetupSelectValues() {
   const captureList = list => list.map(sel => (sel && typeof sel.value === 'string') ? sel.value : '');
-  return {
+  const captured = {
     camera: cameraSelect && typeof cameraSelect.value === 'string' ? cameraSelect.value : '',
     monitor: monitorSelect && typeof monitorSelect.value === 'string' ? monitorSelect.value : '',
     video: videoSelect && typeof videoSelect.value === 'string' ? videoSelect.value : '',
@@ -2875,6 +2875,15 @@ function captureSetupSelectValues() {
     sliderBowl: typeof getSliderBowlValue === 'function' ? getSliderBowlValue() : '',
     easyrig: typeof getEasyrigValue === 'function' ? getEasyrigValue() : '',
   };
+  return finalizeCapturedSetupValues(captured);
+}
+
+function finalizeCapturedSetupValues(values) {
+  if (!values || typeof values !== 'object') {
+    return values;
+  }
+  values.batteryPlate = normalizeBatteryPlateValue(values.batteryPlate, values.battery);
+  return values;
 }
 
 function applySetupSelectValues(values) {
@@ -2889,6 +2898,9 @@ function applySetupSelectValues(values) {
     }
   }
   if (batteryPlateSelect) setSelectValue(batteryPlateSelect, values.batteryPlate);
+  if (values && typeof values.battery === 'string') {
+    applyBatteryPlateSelectionFromBattery(values.battery, batteryPlateSelect ? batteryPlateSelect.value : '');
+  }
   if (monitorSelect) setSelectValue(monitorSelect, values.monitor);
   if (videoSelect) setSelectValue(videoSelect, values.video);
   if (cageSelect) setSelectValue(cageSelect, values.cage);
@@ -4318,6 +4330,44 @@ function getHotswapsByMount(mountType) {
     if (info && info.mount_type === mountType) out[name] = info;
   }
   return out;
+}
+
+function getBatteryMountType(batteryName) {
+  if (!batteryName || batteryName === 'None') {
+    return '';
+  }
+  const info = devices?.batteries?.[batteryName];
+  const mount = info && typeof info.mount_type === 'string' ? info.mount_type : '';
+  return mount || '';
+}
+
+function normalizeBatteryPlateValue(plateValue, batteryName) {
+  const normalizedPlate = typeof plateValue === 'string' ? plateValue.trim() : '';
+  const derivedMount = getBatteryMountType(batteryName);
+  if (!derivedMount) {
+    return normalizedPlate;
+  }
+  if (!normalizedPlate || normalizedPlate !== derivedMount) {
+    return derivedMount;
+  }
+  return normalizedPlate;
+}
+
+function applyBatteryPlateSelectionFromBattery(batteryName, currentPlateValue) {
+  const normalizedPlate = typeof currentPlateValue === 'string' ? currentPlateValue.trim() : '';
+  const desiredPlate = normalizeBatteryPlateValue(normalizedPlate, batteryName);
+  if (!batteryPlateSelect || !desiredPlate) {
+    return desiredPlate || normalizedPlate;
+  }
+  const options = Array.from(batteryPlateSelect.options || []);
+  const hasDesiredOption = options.some(option => option && option.value === desiredPlate);
+  if (!hasDesiredOption) {
+    return normalizedPlate;
+  }
+  if (batteryPlateSelect.value !== desiredPlate) {
+    batteryPlateSelect.value = desiredPlate;
+  }
+  return desiredPlate;
 }
 
 function getSelectedPlate() {
@@ -21820,6 +21870,7 @@ function getCurrentSetupState() {
     easyrig: info.easyrig,
     projectInfo
   };
+  state.batteryPlate = normalizeBatteryPlateValue(state.batteryPlate, state.battery);
   const projectRules = getProjectScopedAutoGearRules();
   if (projectRules && projectRules.length) {
     state.autoGearRules = projectRules;

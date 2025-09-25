@@ -3,7 +3,7 @@
           ensureAutoBackupsFromProjects, getDiagramManualPositions,
           setManualDiagramPositions, normalizeDiagramPositionsInput,
           normalizeSetupName, createProjectInfoSnapshotForStorage,
-          applyDynamicFieldValues */
+          applyDynamicFieldValues, applyBatteryPlateSelectionFromBattery */
 
 // Language selection
 languageSelect.addEventListener("change", (event) => {
@@ -481,6 +481,7 @@ setupSelect.addEventListener("change", (event) => {
       cameraSelect.value = setup.camera;
       updateBatteryPlateVisibility();
       batteryPlateSelect.value = setup.batteryPlate || batteryPlateSelect.value;
+      applyBatteryPlateSelectionFromBattery(setup.battery, batteryPlateSelect.value);
       monitorSelect.value = setup.monitor;
       videoSelect.value = setup.video;
       if (typeof updateCageSelectOptions === 'function') {
@@ -492,6 +493,7 @@ setupSelect.addEventListener("change", (event) => {
       (setup.controllers || []).forEach((val, i) => { if (controllerSelects[i]) controllerSelects[i].value = val; });
       distanceSelect.value = setup.distance;
       batterySelect.value = setup.battery;
+      applyBatteryPlateSelectionFromBattery(setup.battery, batteryPlateSelect ? batteryPlateSelect.value : '');
       hotswapSelect.value = setup.batteryHotswap || hotswapSelect.value;
       setSliderBowlValue(setup.sliderBowl || '');
       setEasyrigValue(setup.easyrig || '');
