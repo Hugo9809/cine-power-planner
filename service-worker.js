@@ -23,6 +23,7 @@ const ASSETS = [
   './src/scripts/script.js',
   './src/scripts/storage.js',
   './src/scripts/modules/persistence.js',
+  './src/scripts/modules/offline.js',
   './src/scripts/translations.js',
   './src/scripts/loader.js',
   './src/scripts/modern-support-check.mjs',

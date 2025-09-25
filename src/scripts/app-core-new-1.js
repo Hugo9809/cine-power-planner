@@ -535,7 +535,6 @@ function initializeDeviceDatabase() {
 // Ensure the global `devices` reference always exists before any other logic
 // accesses it. This avoids temporal dead zone errors in browsers that treat
 // top-level bindings as lexical declarations.
-/* eslint-disable-next-line no-redeclare */
 var devices = initializeDeviceDatabase();
 
 const FEEDBACK_TEMPERATURE_MIN = -20;
@@ -3525,7 +3524,27 @@ const getCssVariableValue = (name, fallback = '') => {
 
 if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('service-worker.js');
+    const offlineModule =
+      (typeof globalThis !== 'undefined' && globalThis && globalThis.cineOffline)
+      || (typeof window !== 'undefined' && window && window.cineOffline)
+      || null;
+
+    if (offlineModule && typeof offlineModule.registerServiceWorker === 'function') {
+      offlineModule.registerServiceWorker('service-worker.js', {
+        immediate: true,
+        window,
+        navigator,
+      });
+      return;
+    }
+
+    try {
+      navigator.serviceWorker.register('service-worker.js');
+    } catch (error) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Service worker registration failed via fallback path.', error);
+      }
+    }
   });
 }
 
@@ -8858,7 +8877,6 @@ function spawnPinkModeIconRainInstance(templates) {
   return true;
 }
 
-/* eslint-disable-next-line no-redeclare */
 function triggerPinkModeIconRain() {
   if (
     typeof window === 'undefined' ||

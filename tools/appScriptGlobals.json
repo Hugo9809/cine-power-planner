@@ -408,6 +408,7 @@
     "SAFE_LOCAL_STORAGE",
     "STRONG_SEARCH_MATCH_TYPES",
     "TEMPERATURE_UNIT_STORAGE_KEY",
+    "cineOffline",
     "accentColor",
     "accentColorInput",
     "activateSettingsTab",

@@ -10,6 +10,7 @@ describe('service worker configuration', () => {
       expect.arrayContaining([
         './src/scripts/globalthis-polyfill.js',
         './src/scripts/modern-support-check.mjs',
+        './src/scripts/modules/offline.js',
         './src/data/devices/batteryHotswaps.js',
         './src/data/devices/chargers.js',
         './src/data/devices/wirelessReceivers.js',

@@ -6610,6 +6610,15 @@ function clearUiCacheEntriesFallback() {
   });
 }
 function clearCachesAndReload() {
+  var offlineModule = typeof globalThis !== 'undefined' && globalThis && globalThis.cineOffline ? globalThis.cineOffline : typeof window !== 'undefined' && window && window.cineOffline ? window.cineOffline : null;
+  if (offlineModule && typeof offlineModule.reloadApp === 'function') {
+    return offlineModule.reloadApp({
+      window: typeof window !== 'undefined' ? window : undefined,
+      navigator: typeof navigator !== 'undefined' ? navigator : undefined,
+      caches: typeof caches !== 'undefined' ? caches : undefined
+    });
+  }
+
   return _clearCachesAndReload.apply(this, arguments);
 }
 function _clearCachesAndReload() {

@@ -7070,6 +7070,20 @@ function clearUiCacheEntriesFallback() {
 }
 
 async function clearCachesAndReload() {
+  const offlineModule =
+    (typeof globalThis !== 'undefined' && globalThis && globalThis.cineOffline)
+    || (typeof window !== 'undefined' && window && window.cineOffline)
+    || null;
+
+  if (offlineModule && typeof offlineModule.reloadApp === 'function') {
+    await offlineModule.reloadApp({
+      window,
+      navigator: typeof navigator !== 'undefined' ? navigator : undefined,
+      caches: typeof caches !== 'undefined' ? caches : undefined,
+    });
+    return;
+  }
+
   let uiCacheCleared = false;
   try {
     if (typeof clearUiCacheStorageEntries === 'function') {
