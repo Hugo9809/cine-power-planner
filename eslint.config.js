@@ -1,3 +1,5 @@
+const fs = require('fs');
+const path = require('path');
 const js = require('@eslint/js');
 const globals = require('globals');
 const appScriptGlobals = require('./tools/appScriptGlobals.json');
@@ -10,21 +12,46 @@ const baseGlobals = {
 const buildAppScriptGlobals = (names = []) =>
   Object.fromEntries(names.map(name => [name, 'writable']));
 
-const appScriptConfigs = Object.entries(appScriptGlobals).map(([key, names]) => ({
-  files: [`src/scripts/${key}.js`],
-  languageOptions: {
-    globals: {
-      ...baseGlobals,
-      ...buildAppScriptGlobals(names),
-    },
-  },
-  rules: {
-    'no-unused-vars': 'off',
-  },
-}));
+const allAppScriptGlobalNames = Array.from(
+  new Set(Object.values(appScriptGlobals).flat())
+);
+
+const additionalGlobalsByKey = {
+  'app-core': allAppScriptGlobalNames,
+};
+
+const additionalAppScriptFiles = {
+  'app-core': ['app-core-new-1', 'app-core-new-2'],
+};
+
+const appScriptConfigs = Object.entries(appScriptGlobals).flatMap(([key, names]) => {
+  const fileKeys = [key, ...(additionalAppScriptFiles[key] || [])];
+  const combinedNames = [...new Set([...names, ...(additionalGlobalsByKey[key] || [])])];
+  return fileKeys
+    .map(fileKey => `src/scripts/${fileKey}.js`)
+    .filter(srcFilePath => fs.existsSync(path.join(__dirname, srcFilePath)))
+    .map(srcFilePath => ({
+      files: [srcFilePath, `./${srcFilePath}`, `**/${srcFilePath}`],
+      languageOptions: {
+        globals: {
+          ...baseGlobals,
+          ...buildAppScriptGlobals(combinedNames),
+        },
+      },
+      rules: {
+        'no-unused-vars': 'off',
+        ...(key === 'app-core'
+          ? {
+            'no-undef': 'off',
+            'no-redeclare': 'off',
+          }
+          : {}),
+      },
+    }));
+});
 
 module.exports = [
-  { ignores: ['vendor/**', 'src/vendor/**'] },
+  { ignores: ['vendor/**', 'src/vendor/**', 'legacy/**'] },
   {
     ...js.configs.recommended,
     files: ['**/*.js'],
@@ -59,21 +86,6 @@ module.exports = [
     },
   },
   ...appScriptConfigs,
-  {
-    files: ['legacy/**/*.js'],
-    languageOptions: {
-      ecmaVersion: 2021,
-      sourceType: 'module',
-      globals: {
-        ...globals.browser,
-        ...globals.node,
-      },
-    },
-    rules: {
-      'no-undef': 'off',
-      'no-unused-vars': 'off',
-    },
-  },
   {
     files: ['tests/**'],
     languageOptions: {

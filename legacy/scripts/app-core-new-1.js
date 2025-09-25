@@ -3294,7 +3294,22 @@ var getCssVariableValue = function getCssVariableValue(name) {
 };
 if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
   window.addEventListener('load', function () {
-    navigator.serviceWorker.register('service-worker.js');
+    var offlineModule = typeof globalThis !== 'undefined' && globalThis && globalThis.cineOffline ? globalThis.cineOffline : typeof window !== 'undefined' && window && window.cineOffline ? window.cineOffline : null;
+    if (offlineModule && typeof offlineModule.registerServiceWorker === 'function') {
+      offlineModule.registerServiceWorker('service-worker.js', {
+        immediate: true,
+        window: window,
+        navigator: navigator
+      });
+      return;
+    }
+    try {
+      navigator.serviceWorker.register('service-worker.js');
+    } catch (error) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Service worker registration failed via fallback path.', error);
+      }
+    }
   });
 }
 function getElementHeight(element) {

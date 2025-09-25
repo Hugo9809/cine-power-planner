@@ -18,6 +18,7 @@
     try {
       return require(modulePath);
     } catch (error) {
+      void error;
       return null;
     }
   }
