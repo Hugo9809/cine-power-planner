@@ -6333,6 +6333,30 @@ function setLanguage(lang) {
       autoGearRemoveNotesInput.setAttribute('aria-label', label);
     }
   }
+  if (autoGearDraftImpactHeading) {
+    const heading = texts[lang].autoGearDraftImpactHeading
+      || texts.en?.autoGearDraftImpactHeading
+      || autoGearDraftImpactHeading.textContent;
+    autoGearDraftImpactHeading.textContent = heading;
+  }
+  if (autoGearDraftImpactDescription) {
+    const description = texts[lang].autoGearDraftImpactDescription
+      || texts.en?.autoGearDraftImpactDescription
+      || autoGearDraftImpactDescription.textContent;
+    autoGearDraftImpactDescription.textContent = description;
+    if (autoGearDraftImpactHeading) {
+      autoGearDraftImpactHeading.setAttribute('data-help', description);
+    }
+    if (autoGearDraftImpactContainer) {
+      autoGearDraftImpactContainer.setAttribute('data-help', description);
+    }
+  }
+  if (autoGearDraftWarningHeading) {
+    const heading = texts[lang].autoGearDraftWarningHeading
+      || texts.en?.autoGearDraftWarningHeading
+      || autoGearDraftWarningHeading.textContent;
+    autoGearDraftWarningHeading.textContent = heading;
+  }
   if (autoGearRemoveItemButton) {
     updateAutoGearItemButtonState('remove');
   }
@@ -11618,6 +11642,13 @@ const autoGearRemoveSelectorDefaultInput = document.getElementById('autoGearRemo
 const autoGearRemoveNotesInput = document.getElementById('autoGearRemoveNotes');
 const autoGearRemoveItemButton = document.getElementById('autoGearRemoveItemButton');
 const autoGearRemoveList = document.getElementById('autoGearRemoveList');
+const autoGearDraftImpactContainer = document.getElementById('autoGearDraftImpact');
+const autoGearDraftImpactHeading = document.getElementById('autoGearDraftImpactHeading');
+const autoGearDraftImpactDescription = document.getElementById('autoGearDraftImpactDescription');
+const autoGearDraftImpactList = document.getElementById('autoGearDraftImpactList');
+const autoGearDraftWarningContainer = document.getElementById('autoGearDraftWarningContainer');
+const autoGearDraftWarningHeading = document.getElementById('autoGearDraftWarningHeading');
+const autoGearDraftWarningList = document.getElementById('autoGearDraftWarningList');
 const autoGearSaveRuleButton = document.getElementById('autoGearSaveRule');
 const autoGearCancelEditButton = document.getElementById('autoGearCancelEdit');
 const autoGearItemCatalog = document.getElementById('autoGearItemCatalog');
@@ -11797,6 +11828,7 @@ function computeAutoGearMultiSelectSize(optionCount, {
 
 let autoGearEditorDraft = null;
 let autoGearEditorActiveItem = null;
+let autoGearDraftPendingWarnings = null;
 let autoGearSearchQuery = '';
 let autoGearScenarioFilter = 'all';
 
@@ -14319,11 +14351,360 @@ function beginAutoGearDraftItemEdit(listType, itemId) {
   renderAutoGearDraftLists();
 }
 
+function getAutoGearItemIdentityData(item) {
+  const normalized = normalizeAutoGearItem(item);
+  if (!normalized) return null;
+  const contexts = Array.isArray(normalized.contextNotes)
+    ? normalized.contextNotes
+        .map(value => (typeof value === 'string' ? value.trim() : ''))
+        .filter(Boolean)
+        .sort((a, b) => a.localeCompare(b))
+    : [];
+  const identity = [
+    normalized.name || '',
+    normalized.category || '',
+    normalized.screenSize || '',
+    normalized.selectorType || 'none',
+    normalized.selectorDefault || '',
+    normalized.selectorEnabled ? '1' : '0',
+    normalized.notes || '',
+    contexts.join('|'),
+  ].join('||');
+  return {
+    identity,
+    item: {
+      ...normalized,
+      contextNotes: contexts.slice(),
+    },
+  };
+}
+
+function aggregateAutoGearRuleItems(rules) {
+  const aggregate = new Map();
+  const list = Array.isArray(rules) ? rules : [];
+  list.forEach(rule => {
+    const normalizedRule = normalizeAutoGearRule(rule);
+    if (!normalizedRule) return;
+    const ruleId = typeof normalizedRule.id === 'string' ? normalizedRule.id : '';
+    normalizedRule.add.forEach(entry => {
+      const identityData = getAutoGearItemIdentityData(entry);
+      if (!identityData) return;
+      const { identity, item } = identityData;
+      const quantity = normalizeAutoGearQuantity(item.quantity);
+      if (!Number.isFinite(quantity)) return;
+      const existing = aggregate.get(identity) || {
+        item,
+        add: 0,
+        remove: 0,
+        addRules: new Set(),
+        removeRules: new Set(),
+      };
+      existing.add += quantity;
+      if (ruleId) existing.addRules.add(ruleId);
+      aggregate.set(identity, existing);
+    });
+    normalizedRule.remove.forEach(entry => {
+      const identityData = getAutoGearItemIdentityData(entry);
+      if (!identityData) return;
+      const { identity, item } = identityData;
+      const quantity = normalizeAutoGearQuantity(item.quantity);
+      if (!Number.isFinite(quantity)) return;
+      const existing = aggregate.get(identity) || {
+        item,
+        add: 0,
+        remove: 0,
+        addRules: new Set(),
+        removeRules: new Set(),
+      };
+      existing.remove += quantity;
+      if (ruleId) existing.removeRules.add(ruleId);
+      aggregate.set(identity, existing);
+    });
+  });
+  return aggregate;
+}
+
+function computeAutoGearDraftImpactState() {
+  if (!autoGearEditorDraft) {
+    return { available: false, entries: [], warnings: null };
+  }
+  const draftRule = normalizeAutoGearRule(autoGearEditorDraft);
+  if (!draftRule) {
+    return { available: false, entries: [], warnings: null };
+  }
+  const baseRules = getAutoGearRules();
+  const previewRules = baseRules.slice();
+  const matchIndex = previewRules.findIndex(rule => rule && rule.id === draftRule.id);
+  if (matchIndex >= 0) {
+    previewRules[matchIndex] = draftRule;
+  } else {
+    previewRules.push(draftRule);
+  }
+  const baseAggregate = aggregateAutoGearRuleItems(baseRules);
+  const previewAggregate = aggregateAutoGearRuleItems(previewRules);
+  const keys = new Set([...baseAggregate.keys(), ...previewAggregate.keys()]);
+  const entries = [];
+  const warnings = { critical: [], conflict: [], redundant: [] };
+  keys.forEach(identity => {
+    const baseEntry = baseAggregate.get(identity);
+    const previewEntry = previewAggregate.get(identity);
+    if (!baseEntry && !previewEntry) return;
+    const itemSource = previewEntry?.item || baseEntry?.item;
+    if (!itemSource) return;
+    const item = cloneAutoGearDraftItem(itemSource);
+    const baseNet = baseEntry ? (baseEntry.add - baseEntry.remove) : 0;
+    const previewNet = previewEntry ? (previewEntry.add - previewEntry.remove) : 0;
+    const delta = previewNet - baseNet;
+    const addRulesCount = previewEntry ? previewEntry.addRules.size : 0;
+    const removeRulesCount = previewEntry ? previewEntry.removeRules.size : 0;
+    const baseAddRulesCount = baseEntry ? baseEntry.addRules.size : 0;
+    const conflict = previewEntry ? (previewEntry.add > 0 && previewEntry.remove > 0) : false;
+    const stacked = addRulesCount > 1;
+    const shouldDisplay = delta !== 0 || stacked || conflict;
+    if (!shouldDisplay) return;
+    entries.push({
+      identity,
+      item,
+      baseNet,
+      previewNet,
+      delta,
+      addRulesCount,
+      removeRulesCount,
+      conflict,
+      stacked,
+    });
+    if (baseNet > 0 && previewNet <= 0) {
+      warnings.critical.push({ item, baseNet, previewNet });
+    }
+    if (conflict) {
+      warnings.conflict.push({ item, addRulesCount, removeRulesCount });
+    }
+    const newAddRules = addRulesCount - baseAddRulesCount;
+    if (newAddRules > 0 && previewNet <= baseNet) {
+      warnings.redundant.push({ item, addRulesCount, baseAddRulesCount });
+    }
+  });
+  entries.sort((a, b) => {
+    const deltaDiff = Math.abs(b.delta) - Math.abs(a.delta);
+    if (deltaDiff !== 0) return deltaDiff;
+    const previewDiff = Math.abs(b.previewNet) - Math.abs(a.previewNet);
+    if (previewDiff !== 0) return previewDiff;
+    return (a.item.name || '').localeCompare(b.item.name || '');
+  });
+  return { available: true, entries, warnings };
+}
+
+function formatAutoGearImpactNumber(value) {
+  if (!Number.isFinite(value)) return '0';
+  const rounded = Math.round(value);
+  if (typeof Intl !== 'undefined' && typeof Intl.NumberFormat === 'function') {
+    try {
+      return new Intl.NumberFormat().format(rounded);
+    } catch {
+      // Ignore formatting errors and fall back to raw values
+    }
+  }
+  return String(rounded);
+}
+
+function formatAutoGearImpactSigned(value) {
+  if (!Number.isFinite(value) || value === 0) return '0';
+  const rounded = Math.round(value);
+  const absValue = Math.abs(rounded);
+  const formattedAbs = formatAutoGearImpactNumber(absValue);
+  return rounded > 0 ? `+${formattedAbs}` : `−${formattedAbs}`;
+}
+
+function formatAutoGearDraftItemLabel(item, quantity) {
+  const snapshot = autoGearItemSnapshot(item);
+  if (!snapshot) return '';
+  const normalizedQuantity = Number.isFinite(quantity) && quantity !== 0
+    ? Math.abs(Math.round(quantity))
+    : normalizeAutoGearQuantity(snapshot.quantity) || 1;
+  const summaryItem = {
+    ...snapshot,
+    quantity: normalizedQuantity > 0 ? normalizedQuantity : 1,
+  };
+  return formatAutoGearItemSummary(summaryItem, { includeSign: false });
+}
+
+function hasAutoGearDraftWarnings(warnings) {
+  if (!warnings) return false;
+  return Boolean(
+    (Array.isArray(warnings.critical) && warnings.critical.length)
+    || (Array.isArray(warnings.conflict) && warnings.conflict.length)
+    || (Array.isArray(warnings.redundant) && warnings.redundant.length),
+  );
+}
+
+function buildAutoGearDraftWarningMessages(warnings, langTexts) {
+  if (!warnings) return [];
+  const messages = [];
+  const fallback = texts.en || {};
+  const addMessage = (key, label) => {
+    const template = langTexts[key] || fallback[key];
+    if (template) {
+      messages.push(formatWithPlaceholders(template, label));
+    } else if (label) {
+      messages.push(label);
+    }
+  };
+  (Array.isArray(warnings.critical) ? warnings.critical : []).forEach(entry => {
+    const label = formatAutoGearDraftItemLabel(entry.item, entry.baseNet);
+    addMessage('autoGearDraftWarningCritical', label);
+  });
+  (Array.isArray(warnings.conflict) ? warnings.conflict : []).forEach(entry => {
+    const label = formatAutoGearDraftItemLabel(entry.item, entry.addRulesCount || entry.removeRulesCount || 1);
+    addMessage('autoGearDraftWarningConflict', label);
+  });
+  (Array.isArray(warnings.redundant) ? warnings.redundant : []).forEach(entry => {
+    const label = formatAutoGearDraftItemLabel(entry.item, entry.addRulesCount || 1);
+    addMessage('autoGearDraftWarningRedundant', label);
+  });
+  return Array.from(new Set(messages));
+}
+
+function renderAutoGearDraftImpact() {
+  if (!autoGearDraftImpactList) return;
+  const langTexts = texts[currentLang] || texts.en || {};
+  autoGearDraftImpactList.innerHTML = '';
+  if (autoGearDraftWarningList) {
+    autoGearDraftWarningList.innerHTML = '';
+  }
+  autoGearDraftPendingWarnings = null;
+
+  if (!autoGearEditorDraft) {
+    const message = langTexts.autoGearDraftImpactUnavailable
+      || texts.en?.autoGearDraftImpactUnavailable
+      || '';
+    if (message) {
+      const empty = document.createElement('li');
+      empty.className = 'auto-gear-impact-empty';
+      empty.textContent = message;
+      autoGearDraftImpactList.appendChild(empty);
+    }
+    if (autoGearDraftWarningContainer) {
+      autoGearDraftWarningContainer.hidden = true;
+    }
+    return;
+  }
+
+  const impact = computeAutoGearDraftImpactState();
+  autoGearDraftPendingWarnings = impact.available ? impact.warnings : null;
+
+  if (!impact.available) {
+    const message = langTexts.autoGearDraftImpactUnavailable
+      || texts.en?.autoGearDraftImpactUnavailable
+      || '';
+    if (message) {
+      const empty = document.createElement('li');
+      empty.className = 'auto-gear-impact-empty';
+      empty.textContent = message;
+      autoGearDraftImpactList.appendChild(empty);
+    }
+    if (autoGearDraftWarningContainer) {
+      autoGearDraftWarningContainer.hidden = true;
+    }
+    return;
+  }
+
+  if (!impact.entries.length) {
+    const message = langTexts.autoGearDraftImpactEmpty
+      || texts.en?.autoGearDraftImpactEmpty
+      || '';
+    if (message) {
+      const empty = document.createElement('li');
+      empty.className = 'auto-gear-impact-empty';
+      empty.textContent = message;
+      autoGearDraftImpactList.appendChild(empty);
+    }
+  } else {
+    const totalsTemplate = langTexts.autoGearDraftImpactTotals
+      || texts.en?.autoGearDraftImpactTotals
+      || 'Current total: %s → After save: %s';
+    const changeTemplate = langTexts.autoGearDraftImpactChange
+      || texts.en?.autoGearDraftImpactChange
+      || 'Change: %s';
+    impact.entries.forEach(entry => {
+      const li = document.createElement('li');
+      li.className = 'auto-gear-impact-item';
+      if (entry.delta > 0) {
+        li.classList.add('auto-gear-impact-positive');
+      } else if (entry.delta < 0) {
+        li.classList.add('auto-gear-impact-negative');
+      }
+      const summary = document.createElement('div');
+      summary.className = 'auto-gear-impact-summary';
+      summary.textContent = formatAutoGearDraftItemLabel(entry.item, entry.previewNet || entry.baseNet || entry.delta);
+      li.appendChild(summary);
+      const totals = document.createElement('div');
+      totals.className = 'auto-gear-impact-totals';
+      totals.textContent = formatWithPlaceholders(
+        totalsTemplate,
+        formatAutoGearImpactNumber(entry.baseNet),
+        formatAutoGearImpactNumber(entry.previewNet),
+      );
+      li.appendChild(totals);
+      const delta = document.createElement('div');
+      delta.className = 'auto-gear-impact-delta';
+      delta.textContent = formatWithPlaceholders(changeTemplate, formatAutoGearImpactSigned(entry.delta));
+      li.appendChild(delta);
+      const metaTexts = [];
+      if (entry.stacked) {
+        const stackKey = entry.addRulesCount === 1
+          ? 'autoGearDraftImpactStackedOne'
+          : 'autoGearDraftImpactStackedOther';
+        const stackTemplate = langTexts[stackKey] || texts.en?.[stackKey];
+        if (stackTemplate) {
+          metaTexts.push(formatWithPlaceholders(stackTemplate, formatAutoGearImpactNumber(entry.addRulesCount)));
+        }
+      }
+      if (entry.conflict && entry.removeRulesCount > 0) {
+        const conflictKey = entry.removeRulesCount === 1
+          ? 'autoGearDraftImpactConflictOne'
+          : 'autoGearDraftImpactConflictOther';
+        const conflictTemplate = langTexts[conflictKey] || texts.en?.[conflictKey];
+        if (conflictTemplate) {
+          metaTexts.push(formatWithPlaceholders(
+            conflictTemplate,
+            formatAutoGearImpactNumber(entry.removeRulesCount),
+          ));
+        }
+      }
+      if (metaTexts.length) {
+        const meta = document.createElement('div');
+        meta.className = 'auto-gear-impact-meta';
+        meta.textContent = metaTexts.join(' ');
+        li.appendChild(meta);
+      }
+      autoGearDraftImpactList.appendChild(li);
+    });
+  }
+
+  if (autoGearDraftWarningContainer) {
+    const warningMessages = buildAutoGearDraftWarningMessages(autoGearDraftPendingWarnings, langTexts);
+    if (warningMessages.length) {
+      autoGearDraftWarningContainer.hidden = false;
+      if (autoGearDraftWarningList) {
+        warningMessages.forEach(message => {
+          const item = document.createElement('li');
+          item.className = 'auto-gear-impact-warning-item';
+          item.textContent = message;
+          autoGearDraftWarningList.appendChild(item);
+        });
+      }
+    } else {
+      autoGearDraftWarningContainer.hidden = true;
+    }
+  }
+}
+
 function renderAutoGearDraftLists() {
   updateAutoGearDraftActionState();
   if (!autoGearEditorDraft) {
     if (autoGearAddList) autoGearAddList.innerHTML = '';
     if (autoGearRemoveList) autoGearRemoveList.innerHTML = '';
+    renderAutoGearDraftImpact();
     return;
   }
   const renderList = (element, items, type) => {
@@ -14387,6 +14768,7 @@ function renderAutoGearDraftLists() {
   };
   renderList(autoGearAddList, autoGearEditorDraft.add, 'add');
   renderList(autoGearRemoveList, autoGearEditorDraft.remove, 'remove');
+  renderAutoGearDraftImpact();
 }
 
 function openAutoGearEditor(ruleId, options = {}) {
@@ -14706,8 +15088,21 @@ function saveAutoGearRuleFromEditor() {
     window.alert(message);
     return;
   }
+  renderAutoGearDraftImpact();
   const draftRule = normalizeAutoGearRule(autoGearEditorDraft);
   if (!draftRule) return;
+  const langTexts = texts[currentLang] || texts.en || {};
+  const warningMessages = buildAutoGearDraftWarningMessages(autoGearDraftPendingWarnings, langTexts);
+  if (warningMessages.length && typeof window.confirm === 'function') {
+    const confirmBase = langTexts.autoGearDraftWarningConfirm
+      || texts.en?.autoGearDraftWarningConfirm
+      || 'Save anyway? Review the impact warnings below before confirming.';
+    const details = warningMessages.map(message => `• ${message}`).join('\n');
+    const confirmMessage = `${confirmBase}\n\n${details}`;
+    if (!window.confirm(confirmMessage)) {
+      return;
+    }
+  }
   const rules = getAutoGearRules();
   const index = rules.findIndex(rule => rule.id === draftRule.id);
   if (index >= 0) {
