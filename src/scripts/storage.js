@@ -111,6 +111,26 @@ const AUTO_GEAR_BACKUP_RETENTION_STORAGE_KEY = 'cameraPowerPlanner_autoGearBacku
 const FULL_BACKUP_HISTORY_STORAGE_KEY = 'cameraPowerPlanner_fullBackups';
 const STORAGE_AUTO_BACKUP_NAME_PREFIX = 'auto-backup-';
 const STORAGE_AUTO_BACKUP_DELETION_PREFIX = 'auto-backup-before-delete-';
+const AUTO_BACKUP_RENAMED_FLAG = '__cineAutoBackupRenamed';
+
+if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE === 'object') {
+  try {
+    if (!Object.prototype.hasOwnProperty.call(GLOBAL_SCOPE, '__CINE_AUTO_BACKUP_RENAMED_FLAG')) {
+      Object.defineProperty(GLOBAL_SCOPE, '__CINE_AUTO_BACKUP_RENAMED_FLAG', {
+        configurable: true,
+        writable: false,
+        value: AUTO_BACKUP_RENAMED_FLAG,
+      });
+    }
+  } catch (error) {
+    void error;
+    try {
+      GLOBAL_SCOPE.__CINE_AUTO_BACKUP_RENAMED_FLAG = AUTO_BACKUP_RENAMED_FLAG;
+    } catch (assignmentError) {
+      void assignmentError;
+    }
+  }
+}
 const MAX_AUTO_BACKUPS = 50;
 const MAX_DELETION_BACKUPS = 20;
 const MAX_FULL_BACKUP_HISTORY_ENTRIES = 200;
@@ -1272,6 +1292,59 @@ function collectAutoBackupEntries(container, prefix) {
     });
 }
 
+function markAutoBackupValueAsRenamed(value) {
+  if (!value || typeof value !== 'object') {
+    return;
+  }
+
+  try {
+    value[AUTO_BACKUP_RENAMED_FLAG] = true;
+  } catch (assignmentError) {
+    void assignmentError;
+    try {
+      Object.defineProperty(value, AUTO_BACKUP_RENAMED_FLAG, {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        value: true,
+      });
+    } catch (definitionError) {
+      void definitionError;
+    }
+  }
+
+  if (isPlainObject(value.projectInfo)) {
+    try {
+      value.projectInfo[AUTO_BACKUP_RENAMED_FLAG] = true;
+    } catch (infoError) {
+      void infoError;
+    }
+  }
+}
+
+function isAutoBackupValueRenamed(value) {
+  if (!value || typeof value !== 'object') {
+    return false;
+  }
+  if (value[AUTO_BACKUP_RENAMED_FLAG] === true) {
+    return true;
+  }
+  if (
+    isPlainObject(value.projectInfo)
+    && value.projectInfo[AUTO_BACKUP_RENAMED_FLAG] === true
+  ) {
+    return true;
+  }
+  return false;
+}
+
+function isRenamedAutoBackupEntry(container, key) {
+  if (!isPlainObject(container) || typeof key !== 'string') {
+    return false;
+  }
+  return isAutoBackupValueRenamed(container[key]);
+}
+
 function getAutoBackupLabelKey(entry) {
   if (!entry || typeof entry !== 'object') {
     return '';
@@ -1346,6 +1419,9 @@ function removeSingleDuplicateAutoBackupEntry(container, entries) {
     if (!entry || typeof entry.key !== 'string') {
       continue;
     }
+    if (isRenamedAutoBackupEntry(container, entry.key)) {
+      continue;
+    }
     const labelKey = getAutoBackupLabelKey(entry);
     const labelSignatures = seenSignaturesByLabel.get(labelKey) || new Set();
     const value = Object.prototype.hasOwnProperty.call(container, entry.key)
@@ -1398,6 +1474,10 @@ function pruneAutoBackupEntries(container, entries, limit, removedKeys) {
       index += 1;
       continue;
     }
+    if (isRenamedAutoBackupEntry(container, entry.key)) {
+      index += 1;
+      continue;
+    }
     const labelKey = getAutoBackupLabelKey(entry);
     const count = labelCounts.get(labelKey) || 0;
     if (labelKey && count > 1) {
@@ -1421,12 +1501,28 @@ function pruneAutoBackupEntries(container, entries, limit, removedKeys) {
       index += 1;
       continue;
     }
+    if (isRenamedAutoBackupEntry(container, entry.key)) {
+      index += 1;
+      continue;
+    }
     const labelKey = getAutoBackupLabelKey(entry);
     const count = labelCounts.get(labelKey) || 0;
     delete container[entry.key];
     entries.splice(index, 1);
     labelCounts.set(labelKey, Math.max(0, count - 1));
     removedKeys.push(entry.key);
+  }
+
+  if (entries.length > limit) {
+    for (let fallbackIndex = entries.length - 1; entries.length > limit && fallbackIndex >= 0; fallbackIndex -= 1) {
+      const entry = entries[fallbackIndex];
+      if (!entry || typeof entry.key !== 'string') {
+        continue;
+      }
+      delete container[entry.key];
+      entries.splice(fallbackIndex, 1);
+      removedKeys.push(entry.key);
+    }
   }
 }
 
@@ -1470,10 +1566,23 @@ function removeOldestAutoBackupEntry(container) {
     return duplicateAutoBackupKey;
   }
   if (autoBackups.length > 0) {
-    const oldest = autoBackups.shift();
-    if (oldest) {
-      delete container[oldest.key];
-      return oldest.key;
+    let fallback = null;
+    for (let index = 0; index < autoBackups.length; index += 1) {
+      const candidate = autoBackups[index];
+      if (!candidate || typeof candidate.key !== 'string') {
+        continue;
+      }
+      if (!isRenamedAutoBackupEntry(container, candidate.key)) {
+        delete container[candidate.key];
+        return candidate.key;
+      }
+      if (!fallback) {
+        fallback = candidate;
+      }
+    }
+    if (fallback && typeof fallback.key === 'string') {
+      delete container[fallback.key];
+      return fallback.key;
     }
   }
 
@@ -1483,10 +1592,23 @@ function removeOldestAutoBackupEntry(container) {
     return duplicateDeletionBackupKey;
   }
   if (deletionBackups.length > 0) {
-    const oldest = deletionBackups.shift();
-    if (oldest) {
-      delete container[oldest.key];
-      return oldest.key;
+    let fallback = null;
+    for (let index = 0; index < deletionBackups.length; index += 1) {
+      const candidate = deletionBackups[index];
+      if (!candidate || typeof candidate.key !== 'string') {
+        continue;
+      }
+      if (!isRenamedAutoBackupEntry(container, candidate.key)) {
+        delete container[candidate.key];
+        return candidate.key;
+      }
+      if (!fallback) {
+        fallback = candidate;
+      }
+    }
+    if (fallback && typeof fallback.key === 'string') {
+      delete container[fallback.key];
+      return fallback.key;
     }
   }
 
@@ -2768,8 +2890,16 @@ function renameSetup(oldName, newName) {
     const used = new Set(Object.keys(setups));
     used.delete(oldName);
     const target = generateUniqueName(sanitized, used);
-    setups[target] = setups[oldName];
+    const movedValue = setups[oldName];
+    setups[target] = movedValue;
     delete setups[oldName];
+    const wasAutoBackup = typeof oldName === 'string'
+      && oldName.startsWith(STORAGE_AUTO_BACKUP_NAME_PREFIX);
+    const targetIsAutoBackup = typeof target === 'string'
+      && target.startsWith(STORAGE_AUTO_BACKUP_NAME_PREFIX);
+    if (wasAutoBackup && targetIsAutoBackup) {
+      markAutoBackupValueAsRenamed(movedValue);
+    }
     return { result: target, changed: true };
   });
 }
