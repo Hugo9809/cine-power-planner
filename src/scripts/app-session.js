@@ -8094,7 +8094,7 @@ if (helpButton && helpDialog) {
   let hoverHelpPointerClientY = null;
 
   const HOVER_HELP_TARGET_SELECTOR =
-    '[data-help], [aria-label], [title], [aria-labelledby], [alt], [aria-describedby]';
+    '[data-help], [aria-label], [title], [aria-labelledby], [alt], [aria-describedby], [placeholder], [aria-placeholder], [aria-roledescription], [aria-valuetext], [aria-valuenow]';
 
   const findHoverHelpTarget = start => {
     if (!start) return null;
@@ -8113,6 +8113,41 @@ if (helpButton && helpDialog) {
     const seen = new Set();
     const labelParts = [];
     const detailParts = [];
+
+    const langKey =
+      typeof currentLang === 'string' && texts && texts[currentLang]
+        ? currentLang
+        : 'en';
+    const langTexts = (texts && texts[langKey]) || {};
+    const fallbackTexts = (texts && texts.en) || {};
+
+    const formatText = (template, ...values) => {
+      if (typeof template !== 'string') return '';
+      let result = template;
+      if (/%\d+\$s/.test(template)) {
+        values.forEach((value, index) => {
+          const pattern = new RegExp(`%${index + 1}\\$s`, 'g');
+          result = result.replace(pattern, value);
+        });
+        return result;
+      }
+      values.forEach(value => {
+        result = result.replace('%s', value);
+      });
+      return result;
+    };
+
+    const getText = (key, fallback) => {
+      if (!key) return fallback;
+      return langTexts[key] || fallbackTexts[key] || fallback;
+    };
+
+    const addFormattedDetail = (key, fallback, ...values) => {
+      const template = getText(key, fallback);
+      if (!template) return;
+      const text = formatText(template, ...values);
+      addDetailText(text || template);
+    };
 
     const addUnique = (value, bucket) => {
       if (typeof value !== 'string') return;
@@ -8133,8 +8168,32 @@ if (helpButton && helpDialog) {
       addDetailText(element.getAttribute('data-help'));
       addDetailText(element.getAttribute('aria-description'));
       addDetailText(element.getAttribute('title'));
+      addDetailText(element.getAttribute('placeholder'));
+      addDetailText(element.getAttribute('aria-placeholder'));
+      addDetailText(element.getAttribute('aria-roledescription'));
       addLabelText(element.getAttribute('aria-label'));
       addLabelText(element.getAttribute('alt'));
+
+      if (element.dataset) {
+        const dataset = element.dataset;
+        const extraKeys = [
+          'helpDetail',
+          'helpDetails',
+          'helpSummary',
+          'summary',
+          'description',
+          'hint',
+          'note',
+          'tooltip',
+          'state',
+          'status'
+        ];
+        extraKeys.forEach(key => {
+          if (key in dataset) {
+            addDetailText(dataset[key]);
+          }
+        });
+      }
       if (includeTextContent) {
         const text = element.textContent;
         if (preferTextAsLabel) {
@@ -8170,12 +8229,114 @@ if (helpButton && helpDialog) {
       addTextFromElement(labelEl, { includeTextContent: true, preferTextAsLabel: true });
     });
 
+    const fieldset = el.closest('fieldset');
+    if (fieldset) {
+      const legend = fieldset.querySelector('legend');
+      if (legend) {
+        addTextFromElement(legend, { includeTextContent: true, preferTextAsLabel: true });
+      }
+    }
+
     if (!labelParts.length) {
       addLabelText(el.textContent);
     }
 
     if (!detailParts.length && labelParts.length > 1) {
       labelParts.slice(1).forEach(text => addDetailText(text));
+    }
+
+    const ariaPressed = el.getAttribute('aria-pressed');
+    if (ariaPressed === 'true') {
+      addFormattedDetail('hoverHelpStatePressedOn', 'Toggle is currently on.');
+    } else if (ariaPressed === 'false') {
+      addFormattedDetail('hoverHelpStatePressedOff', 'Toggle is currently off.');
+    } else if (ariaPressed === 'mixed') {
+      addFormattedDetail('hoverHelpStatePressedMixed', 'Toggle is partially on.');
+    }
+
+    const ariaChecked = el.getAttribute('aria-checked');
+    if (ariaChecked === 'true') {
+      addFormattedDetail('hoverHelpStateCheckedOn', 'Checkbox is selected.');
+    } else if (ariaChecked === 'false') {
+      addFormattedDetail('hoverHelpStateCheckedOff', 'Checkbox is not selected.');
+    } else if (ariaChecked === 'mixed') {
+      addFormattedDetail('hoverHelpStateCheckedMixed', 'Checkbox is partially selected.');
+    }
+
+    const ariaExpanded = el.getAttribute('aria-expanded');
+    if (ariaExpanded === 'true') {
+      addFormattedDetail('hoverHelpStateExpanded', 'Section is expanded.');
+    } else if (ariaExpanded === 'false') {
+      addFormattedDetail('hoverHelpStateCollapsed', 'Section is collapsed.');
+    }
+
+    const ariaDisabled = el.getAttribute('aria-disabled');
+    if (ariaDisabled === 'true' || el.hasAttribute('disabled')) {
+      addFormattedDetail('hoverHelpStateDisabled', 'Control is disabled.');
+    }
+
+    const ariaRequired = el.getAttribute('aria-required');
+    if (ariaRequired === 'true' || el.hasAttribute('required')) {
+      addFormattedDetail('hoverHelpStateRequired', 'This field is required.');
+    }
+
+    const ariaHasPopup = el.getAttribute('aria-haspopup');
+    if (ariaHasPopup) {
+      addDetailText(
+        formatText(
+          getText('hoverHelpStateHasPopup', 'Opens an additional panel: %s'),
+          ariaHasPopup
+        )
+      );
+    }
+
+    const valueText =
+      el.getAttribute('aria-valuetext') ||
+      el.getAttribute('aria-valuenow') ||
+      (el.value && typeof el.value === 'string' ? el.value : '');
+    if (valueText) {
+      addFormattedDetail('hoverHelpCurrentValue', 'Current value: %s', valueText);
+    }
+
+    const minValue =
+      el.getAttribute('aria-valuemin') ||
+      (typeof el.min === 'string' && el.min !== '' ? el.min : null);
+    const maxValue =
+      el.getAttribute('aria-valuemax') ||
+      (typeof el.max === 'string' && el.max !== '' ? el.max : null);
+    if (minValue !== null || maxValue !== null) {
+      addFormattedDetail(
+        'hoverHelpRange',
+        'Allowed range: %1$s to %2$s',
+        minValue !== null ? minValue : '—',
+        maxValue !== null ? maxValue : '—'
+      );
+    }
+
+    const stepValue = typeof el.step === 'string' && el.step !== '' ? el.step : el.getAttribute('step');
+    if (stepValue) {
+      addFormattedDetail('hoverHelpStep', 'Step size: %s', stepValue);
+    }
+
+    const placeholderValue =
+      el.getAttribute('placeholder') || el.getAttribute('aria-placeholder');
+    if (placeholderValue) {
+      addFormattedDetail('hoverHelpPlaceholder', 'Placeholder: %s', placeholderValue);
+    }
+
+    if (el.tagName === 'SELECT') {
+      const options = Array.from(el.selectedOptions || []);
+      if (options.length) {
+        const selectedText = options
+          .map(option => option.textContent && option.textContent.trim())
+          .filter(Boolean)
+          .join(', ');
+        if (selectedText) {
+          addFormattedDetail('hoverHelpSelection', 'Selected: %s', selectedText);
+        }
+      } else {
+        addFormattedDetail('hoverHelpSelectionEmpty', 'No option selected.');
+      }
     }
 
     return {
