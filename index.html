@@ -2931,11 +2931,12 @@
                   data-help-target="#shareSetupBtn"
                   data-help-highlight="#setup-manager"
                 ><strong>Export project</strong></a>
-                ) immediately after important updates so you have self-contained copies you can move offline.
+                ) immediately after important updates so you have self-contained copies you can move offline. Annotate filenames
+                with the project, operator, location and timestamp to preserve context.
               </li>
               <li>
                 Store at least two copies of every file (for example, on your laptop and an external SSD) to guard against device
-                loss when you are travelling or on set.
+                loss when you are travelling or on set. Note where the redundant copies live so handoffs remain traceable.
               </li>
               <li>
                 Open each project JSON through
@@ -2945,7 +2946,8 @@
                   data-help-target="#applySharedLinkBtn"
                   data-help-highlight="#setup-manager"
                 ><strong>Import project</strong></a>
-                to confirm it loads correctly; close the dialog or skip saving if you are only testing the archive.
+                inside a private or secondary profile that stays offline to confirm it loads correctly; close the dialog or skip
+                saving if you are only testing the archive.
               </li>
               <li>
                 Periodically test full-app backups by loading them with
@@ -2958,12 +2960,13 @@
                 first. Review the sandbox comparison, then run
                 <a class="help-link button-link" href="#restoreSettings" data-help-target="#restoreSettings"><strong>Restore</strong></a>
                 on the verified file; the planner still creates a fresh safety snapshot before applying anything so you can
-                revert instantly if needed.
+                revert instantly if needed. Log which backup you restored and where the validation copy lives.
               </li>
             </ol>
             <p class="help-callout-note">
-              Tip: Rename archived files with the project name and date (for example, “2024-06-15 camera-rig backup.json”) so the
-              newest verified copy is obvious when you need to recover or share offline.
+              Tip: Rename archived files with the project name and date (for example, “2024-06-15 camera-rig backup.json”) and
+              mark trusted copies as read-only so the newest verified export stays obvious when you need to recover or share
+              offline.
             </p>
           </div>
         </section>
@@ -3235,7 +3238,8 @@
                   data-help-target="#backupSettings"
                   data-help-highlight="#settingsDialog"
                 ><strong>Backup</strong></a>
-                before leaving the original device.
+                before leaving the original device. Label both files with the project name, date, operator and location so the
+                verified copy is unmistakable during recovery.
               </li>
               <li>
                 If you changed the Device Library, open
@@ -3253,7 +3257,10 @@
                   data-help-highlight="#device-manager"
                 ><strong>Export</strong></a>.
               </li>
-              <li>Copy the JSON files to redundant offline storage (for example, two separate SSDs) before you travel.</li>
+              <li>
+                Copy the JSON files to redundant offline storage (for example, two separate SSDs) before you travel and record
+                which teammate verified the transfer in your production log.
+              </li>
               <li>
                 On the destination machine, open the planner once while connected—or use the
                 <a
@@ -3262,7 +3269,8 @@
                   data-help-target="#installPromptBannerAction"
                   data-help-highlight="#installPromptBanner"
                 ><strong>Install</strong></a>
-                workflow—so fonts and data cache for offline use.
+                workflow—so fonts and data cache for offline use. While still connected, open the Help dialog and legal pages to
+                prime every locally bundled asset.
               </li>
               <li>
                 In
@@ -3307,8 +3315,8 @@
               </li>
             </ol>
             <p class="help-callout-note">
-              Tip: Keep the original backup and export untouched so you can repeat the migration or roll back instantly if
-              something looks out of place on the new machine.
+              Tip: Keep the original backup and export untouched (or marked read-only) so you can repeat the migration or roll
+              back instantly if something looks out of place on the new machine.
             </p>
           </div>
         </section>
