@@ -3719,10 +3719,41 @@ body.pink-mode .favorite-toggle.favorited:active {
   /* Allow longer hover help descriptions */
   max-width: 320px;
   white-space: normal;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 #hoverHelpTooltip[hidden] {
   display: none;
+}
+
+#hoverHelpTooltip .hover-help-heading {
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+#hoverHelpTooltip .hover-help-details {
+  line-height: 1.35;
+  font-size: calc(var(--font-size-base) * var(--font-scale-compact));
+}
+
+.hover-help-highlight {
+  outline: 2px solid color-mix(in srgb, var(--accent-color) 75%, transparent);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent-color) 18%, transparent);
+  border-radius: 6px;
+  transition: outline-color 120ms ease, box-shadow 120ms ease;
+}
+
+body.dark-mode .hover-help-highlight {
+  outline-color: color-mix(in srgb, var(--accent-color) 80%, black 20%);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent-color) 30%, transparent);
+}
+
+body.high-contrast .hover-help-highlight {
+  outline-color: var(--accent-color);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent-color) 40%, transparent);
 }
 
 /* Force help cursor when hover help is active */
