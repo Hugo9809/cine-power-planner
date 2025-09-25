@@ -8105,6 +8105,133 @@ if (helpButton && helpDialog) {
     return el;
   };
 
+  const HOVER_HELP_SHORTCUT_TOKEN_MAP = {
+    control: 'Ctrl',
+    ctrl: 'Ctrl',
+    meta: 'Cmd',
+    cmd: 'Cmd',
+    command: 'Cmd',
+    option: 'Alt',
+    alt: 'Alt',
+    shift: 'Shift',
+    enter: 'Enter',
+    return: 'Enter',
+    escape: 'Esc',
+    esc: 'Esc',
+    space: 'Space',
+    spacebar: 'Space',
+    tab: 'Tab',
+    slash: '/',
+    question: '?',
+    backslash: '\\',
+    minus: '−',
+    dash: '−',
+    plus: '+',
+    period: '.',
+    comma: ',',
+    semicolon: ';',
+    colon: ':',
+    arrowup: '↑',
+    arrowdown: '↓',
+    arrowleft: '←',
+    arrowright: '→',
+    pageup: 'Page Up',
+    pagedown: 'Page Down',
+    home: 'Home',
+    end: 'End',
+    delete: 'Delete',
+    backspace: 'Backspace',
+    insert: 'Insert'
+  };
+
+  const formatHoverHelpShortcutToken = token => {
+    if (typeof token !== 'string') return '';
+    const clean = token.trim();
+    if (!clean) return '';
+    const lower = clean.toLowerCase();
+    if (HOVER_HELP_SHORTCUT_TOKEN_MAP[lower]) {
+      return HOVER_HELP_SHORTCUT_TOKEN_MAP[lower];
+    }
+    if (/^f\d{1,2}$/i.test(clean)) {
+      return clean.toUpperCase();
+    }
+    if (/^key[a-z]$/i.test(clean)) {
+      return clean.slice(3).toUpperCase();
+    }
+    if (/^digit\d$/i.test(clean)) {
+      return clean.slice(5);
+    }
+    if (/^numpad\d$/i.test(clean)) {
+      return `Numpad ${clean.slice(6)}`;
+    }
+    if (/^numpad(add|subtract|multiply|divide)$/i.test(lower)) {
+      const op = lower.slice(6);
+      const symbolMap = { add: '+', subtract: '−', multiply: '×', divide: '÷' };
+      return `Numpad ${symbolMap[op] || op}`;
+    }
+    if (clean.length === 1) {
+      return clean.toUpperCase();
+    }
+    return clean.replace(/^[a-z]/, c => c.toUpperCase());
+  };
+
+  const formatHoverHelpShortcut = shortcut => {
+    if (typeof shortcut !== 'string') return '';
+    const parts = shortcut
+      .split('+')
+      .map(formatHoverHelpShortcutToken)
+      .filter(Boolean);
+    if (!parts.length) {
+      return '';
+    }
+    return parts.join(' + ');
+  };
+
+  const splitHoverHelpShortcutList = value => {
+    if (typeof value !== 'string') return [];
+    return value
+      .split(/[;,\n\u2022\u2027\u00b7]+/)
+      .map(part => part.trim())
+      .filter(Boolean);
+  };
+
+  const gatherHoverHelpShortcuts = element => {
+    if (!element) return [];
+    const shortcuts = [];
+    const attrValues = [
+      element.getAttribute('data-shortcut'),
+      element.getAttribute('data-shortcuts'),
+      element.getAttribute('data-help-shortcut'),
+      element.getAttribute('data-help-shortcuts')
+    ];
+    attrValues.forEach(value => {
+      splitHoverHelpShortcutList(value).forEach(item => {
+        if (item) shortcuts.push(item);
+      });
+    });
+    const ariaShortcuts = element.getAttribute('aria-keyshortcuts');
+    if (ariaShortcuts) {
+      ariaShortcuts
+        .split(/\s+/)
+        .map(formatHoverHelpShortcut)
+        .filter(Boolean)
+        .forEach(item => shortcuts.push(item));
+    }
+    return shortcuts;
+  };
+
+  const getHoverHelpLocaleValue = key => {
+    if (!texts || typeof texts !== 'object') return '';
+    const fallback = typeof texts.en === 'object' ? texts.en[key] : '';
+    if (typeof currentLang === 'string' && texts[currentLang]) {
+      const value = texts[currentLang][key];
+      if (typeof value === 'string' && value.trim()) {
+        return value;
+      }
+    }
+    return typeof fallback === 'string' ? fallback : '';
+  };
+
   const collectHoverHelpContent = el => {
     if (!el) {
       return { label: '', details: [] };
@@ -8113,10 +8240,11 @@ if (helpButton && helpDialog) {
     const seen = new Set();
     const labelParts = [];
     const detailParts = [];
+    const shortcutParts = [];
 
     const addUnique = (value, bucket) => {
       if (typeof value !== 'string') return;
-      const trimmed = value.trim();
+      const trimmed = value.replace(/\s+/g, ' ').trim();
       if (!trimmed || seen.has(trimmed)) return;
       seen.add(trimmed);
       bucket.push(trimmed);
@@ -8124,6 +8252,7 @@ if (helpButton && helpDialog) {
 
     const addLabelText = value => addUnique(value, labelParts);
     const addDetailText = value => addUnique(value, detailParts);
+    const addShortcutText = value => addUnique(value, shortcutParts);
 
     const addTextFromElement = (
       element,
@@ -8135,6 +8264,7 @@ if (helpButton && helpDialog) {
       addDetailText(element.getAttribute('title'));
       addLabelText(element.getAttribute('aria-label'));
       addLabelText(element.getAttribute('alt'));
+      gatherHoverHelpShortcuts(element).forEach(addShortcutText);
       if (includeTextContent) {
         const text = element.textContent;
         if (preferTextAsLabel) {
@@ -8180,7 +8310,8 @@ if (helpButton && helpDialog) {
 
     return {
       label: labelParts[0] || '',
-      details: detailParts
+      details: detailParts,
+      shortcuts: shortcutParts
     };
   };
 
@@ -8383,10 +8514,13 @@ if (helpButton && helpDialog) {
       hideHoverHelpTooltip();
       return;
     }
-    const { label, details } = collectHoverHelpContent(target);
+    const { label, details, shortcuts } = collectHoverHelpContent(target);
     const hasLabel = typeof label === 'string' && label.trim().length > 0;
     const detailText = Array.isArray(details) ? details.filter(Boolean) : [];
-    if (!hasLabel && detailText.length === 0) {
+    const shortcutList = Array.isArray(shortcuts)
+      ? shortcuts.filter(Boolean)
+      : [];
+    if (!hasLabel && detailText.length === 0 && shortcutList.length === 0) {
       hideHoverHelpTooltip();
       return;
     }
@@ -8402,6 +8536,30 @@ if (helpButton && helpDialog) {
       bodyEl.className = 'hover-help-details';
       bodyEl.appendChild(createHoverHelpDetailsFragment(detailText));
       hoverHelpTooltip.appendChild(bodyEl);
+    }
+    if (shortcutList.length) {
+      const shortcutsWrapper = document.createElement('div');
+      shortcutsWrapper.className = 'hover-help-shortcuts';
+      const headingText = getHoverHelpLocaleValue('hoverHelpShortcutsHeading');
+      if (headingText) {
+        const headingEl = document.createElement('div');
+        headingEl.className = 'hover-help-shortcuts-heading';
+        headingEl.textContent = headingText;
+        shortcutsWrapper.appendChild(headingEl);
+      }
+      const listEl = document.createElement('ul');
+      listEl.className = 'hover-help-shortcuts-list';
+      shortcutList.forEach(shortcutText => {
+        if (!shortcutText) return;
+        const item = document.createElement('li');
+        item.className = 'hover-help-shortcut';
+        item.textContent = shortcutText;
+        listEl.appendChild(item);
+      });
+      if (listEl.childElementCount) {
+        shortcutsWrapper.appendChild(listEl);
+        hoverHelpTooltip.appendChild(shortcutsWrapper);
+      }
     }
     const wasHidden = hoverHelpTooltip.hasAttribute('hidden');
     if (wasHidden) {

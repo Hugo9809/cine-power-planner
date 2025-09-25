@@ -7115,16 +7115,33 @@ function setLanguage(lang) {
       texts[lang].featureSearchHelp || texts[lang].featureSearchLabel
     );
   }
-  if (helpButton) {
-    helpButton.setAttribute("title", texts[lang].helpButtonTitle || texts[lang].helpButtonLabel);
-    helpButton.setAttribute("aria-label", texts[lang].helpButtonLabel);
-    helpButton.setAttribute(
-      "data-help",
-      texts[lang].helpButtonHelp ||
-        texts[lang].helpButtonTitle ||
-        texts[lang].helpButtonLabel
-    );
-  if (hoverHelpButton) {
+    if (helpButton) {
+      helpButton.setAttribute(
+        "title",
+        texts[lang].helpButtonTitle || texts[lang].helpButtonLabel
+      );
+      helpButton.setAttribute("aria-label", texts[lang].helpButtonLabel);
+      helpButton.setAttribute(
+        "data-help",
+        texts[lang].helpButtonHelp ||
+          texts[lang].helpButtonTitle ||
+          texts[lang].helpButtonLabel
+      );
+      const helpShortcutList = texts[lang].helpButtonShortcuts;
+      if (typeof helpShortcutList === 'string' && helpShortcutList.trim()) {
+        helpButton.setAttribute('data-shortcuts', helpShortcutList);
+      } else {
+        helpButton.removeAttribute('data-shortcuts');
+      }
+      const helpAriaShortcuts =
+        texts[lang].helpButtonAriaShortcuts ||
+        'F1 Control+Slash Meta+Slash Shift+Slash KeyH';
+      if (typeof helpAriaShortcuts === 'string' && helpAriaShortcuts.trim()) {
+        helpButton.setAttribute('aria-keyshortcuts', helpAriaShortcuts);
+      } else {
+        helpButton.removeAttribute('aria-keyshortcuts');
+      }
+    if (hoverHelpButton) {
     setButtonLabelWithIcon(hoverHelpButton, texts[lang].hoverHelpButtonLabel, ICON_GLYPHS.note);
     hoverHelpButton.setAttribute("aria-label", texts[lang].hoverHelpButtonLabel);
     hoverHelpButton.setAttribute(

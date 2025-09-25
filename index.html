@@ -73,7 +73,15 @@
     </button>
     <div class="feature-search">
       <div id="featureSearchContainer">
-        <input type="search" id="featureSearch" list="featureList" placeholder="Search features or devices..." aria-label="Search features, devices and help" />
+        <input
+          type="search"
+          id="featureSearch"
+          list="featureList"
+          placeholder="Search features or devices..."
+          aria-label="Search features, devices and help"
+          data-shortcuts="/"
+          aria-keyshortcuts="Slash"
+        />
       </div>
       <datalist id="featureList"></datalist>
     </div>
@@ -116,7 +124,15 @@
       <button id="settingsButton" aria-label="Settings" aria-haspopup="dialog" aria-controls="settingsDialog" title="Settings">
         <span class="icon-glyph settings-button-icon" aria-hidden="true" data-icon-font="uicons">&#xE8AF;</span>
       </button>
-      <button id="helpButton" aria-label="Help" aria-haspopup="dialog" aria-controls="helpDialog" title="Help (press ?, H, F1 or Ctrl+/)">
+      <button
+        id="helpButton"
+        aria-label="Help"
+        aria-haspopup="dialog"
+        aria-controls="helpDialog"
+        title="Help (press ?, H, F1 or Ctrl+/)"
+        data-shortcuts="F1; Ctrl + /; Cmd + /; ?; H"
+        aria-keyshortcuts="F1 Control+Slash Meta+Slash Shift+Slash KeyH"
+      >
         <span class="icon-glyph icon-text" aria-hidden="true" data-icon-font="uicons">?</span>
       </button>
       <button id="reloadButton" title="Force reload" aria-label="Force reload">
