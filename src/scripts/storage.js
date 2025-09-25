@@ -155,6 +155,176 @@ const RAW_STORAGE_BACKUP_KEYS = new Set([
   DEVICE_SCHEMA_CACHE_KEY,
 ]);
 
+const MAX_MIGRATION_BACKUP_CLEANUP_STEPS = 10;
+
+function parseMigrationBackupMetadata(raw) {
+  if (typeof raw !== 'string' || !raw) {
+    return { createdAt: 0, size: typeof raw === 'string' ? raw.length : 0 };
+  }
+
+  const metadata = { createdAt: 0, size: raw.length };
+
+  try {
+    const parsed = JSON.parse(raw);
+    if (parsed && typeof parsed === 'object') {
+      const candidate = typeof parsed.createdAt === 'string' ? parsed.createdAt.trim() : '';
+      if (candidate) {
+        const timestamp = Date.parse(candidate);
+        if (!Number.isNaN(timestamp)) {
+          metadata.createdAt = timestamp;
+        }
+      }
+    }
+  } catch (error) {
+    void error;
+  }
+
+  return metadata;
+}
+
+function collectMigrationBackupEntriesForCleanup(storage, excludeKey) {
+  if (!storage) {
+    return [];
+  }
+
+  let snapshot;
+  try {
+    snapshot = snapshotStorageEntries(storage, { suppressAlerts: true });
+  } catch (error) {
+    console.warn('Unable to inspect storage while preparing migration backup cleanup', error);
+    return [];
+  }
+
+  if (!snapshot || typeof snapshot !== 'object') {
+    return [];
+  }
+
+  return Object.keys(snapshot)
+    .filter((candidate) => {
+      if (typeof candidate !== 'string' || !candidate) {
+        return false;
+      }
+      if (!candidate.endsWith(STORAGE_MIGRATION_BACKUP_SUFFIX)) {
+        return false;
+      }
+      if (excludeKey && candidate === excludeKey) {
+        return false;
+      }
+      return true;
+    })
+    .map((candidate) => {
+      const raw = snapshot[candidate];
+      const normalized = typeof raw === 'string' ? raw : raw === null || raw === undefined ? '' : String(raw);
+      const metadata = parseMigrationBackupMetadata(normalized);
+      return {
+        key: candidate,
+        createdAt: metadata.createdAt,
+        size: metadata.size,
+      };
+    })
+    .sort((a, b) => {
+      if (a.createdAt && b.createdAt && a.createdAt !== b.createdAt) {
+        return a.createdAt - b.createdAt;
+      }
+      if (a.createdAt && !b.createdAt) {
+        return -1;
+      }
+      if (!a.createdAt && b.createdAt) {
+        return 1;
+      }
+      if (a.size !== b.size) {
+        return b.size - a.size;
+      }
+      return a.key.localeCompare(b.key);
+    });
+}
+
+function pruneMigrationBackupEntriesForCleanup(storage, excludeKey) {
+  const entries = collectMigrationBackupEntriesForCleanup(storage, excludeKey);
+  if (!entries.length) {
+    return [];
+  }
+
+  const removedKeys = [];
+  const target = entries[0];
+  try {
+    storage.removeItem(target.key);
+    removedKeys.push(target.key);
+  } catch (error) {
+    console.warn(`Unable to remove migration backup ${target.key} during cleanup`, error);
+  }
+
+  return removedKeys;
+}
+
+function attemptMigrationBackupQuotaRecovery(storage, key, backupKey, serialized) {
+  if (!storage || typeof storage.setItem !== 'function') {
+    return { success: false, error: null };
+  }
+
+  const removedBackups = [];
+  let lastError = null;
+
+  const tryWrite = () => {
+    try {
+      storage.setItem(backupKey, serialized);
+      return { success: true, quota: false };
+    } catch (error) {
+      lastError = error;
+      return { success: false, quota: isQuotaExceededError(error), error };
+    }
+  };
+
+  if (typeof clearUiCacheStorageEntries === 'function') {
+    let cleared = false;
+    try {
+      clearUiCacheStorageEntries();
+      cleared = true;
+    } catch (clearError) {
+      console.warn('Unable to clear cached UI storage entries before creating migration backup', clearError);
+    }
+
+    if (cleared) {
+      const retryAfterClear = tryWrite();
+      if (retryAfterClear.success) {
+        console.warn(`Cleared cached planner data to free storage before creating migration backup for ${key}.`);
+        return { success: true, error: null };
+      }
+      if (!retryAfterClear.quota) {
+        return { success: false, error: retryAfterClear.error };
+      }
+    }
+  }
+
+  for (let attempt = 0; attempt < MAX_MIGRATION_BACKUP_CLEANUP_STEPS; attempt += 1) {
+    const removed = pruneMigrationBackupEntriesForCleanup(storage, backupKey);
+    if (!removed.length) {
+      break;
+    }
+    removedBackups.push(...removed);
+    const retry = tryWrite();
+    if (retry.success) {
+      console.warn(
+        `Removed ${removedBackups.length} older migration backup${removedBackups.length > 1 ? 's' : ''} to free up storage before creating migration backup for ${key}.`,
+        removedBackups,
+      );
+      return { success: true, error: null };
+    }
+    if (!retry.quota) {
+      return { success: false, error: retry.error };
+    }
+  }
+
+  if (removedBackups.length > 0) {
+    console.warn(
+      `Removed ${removedBackups.length} older migration backup${removedBackups.length > 1 ? 's' : ''} while attempting to create migration backup for ${key}, but storage quota is still exceeded.`,
+      removedBackups,
+    );
+  }
+
+  return { success: false, error: lastError };
+}
+
 function ensurePreWriteMigrationBackup(storage, key) {
   if (!storage || typeof storage.getItem !== 'function' || !key) {
     return null;
@@ -225,6 +395,16 @@ function createStorageMigrationBackup(storage, key, originalValue) {
   try {
     storage.setItem(backupKey, serialized);
   } catch (writeError) {
+    if (isQuotaExceededError(writeError)) {
+      const recovery = attemptMigrationBackupQuotaRecovery(storage, key, backupKey, serialized);
+      if (recovery && recovery.success) {
+        return;
+      }
+      const errorToReport = recovery && recovery.error ? recovery.error : writeError;
+      console.warn(`Unable to create migration backup for ${key}`, errorToReport);
+      alertStorageError('migration-backup-quota');
+      return;
+    }
     console.warn(`Unable to create migration backup for ${key}`, writeError);
   }
 }
