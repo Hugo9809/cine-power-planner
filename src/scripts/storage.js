@@ -5218,9 +5218,68 @@ function convertStorageSnapshotToData(snapshot) {
     return null;
   }
 
+  const exportStructureKeys = [
+    'devices',
+    'setups',
+    'session',
+    'feedback',
+    'favorites',
+    'preferences',
+    'project',
+    'projects',
+    'autoGearRules',
+    'autoGearBackups',
+    'autoGearPresets',
+    'autoGearMonitorDefaults',
+    'autoGearSeeded',
+    'autoGearActivePresetId',
+    'autoGearAutoPresetId',
+    'autoGearBackupRetention',
+    'autoGearShowBackups',
+    'fullBackupHistory',
+    'fullBackups',
+  ];
+
+  const resemblesExportPayload = exportStructureKeys.some((key) =>
+    Object.prototype.hasOwnProperty.call(snapshot, key),
+  );
+
+  if (resemblesExportPayload) {
+    return null;
+  }
+
   const data = {};
   let hasAssignments = false;
   let hasSnapshotKeys = false;
+
+  const preferenceKeys = [
+    'darkMode',
+    'pinkMode',
+    'highContrast',
+    'reduceMotion',
+    'relaxedSpacing',
+    'showAutoBackups',
+    'accentColor',
+    'fontSize',
+    'fontFamily',
+    'language',
+    'iosPwaHelpShown',
+  ];
+
+  const simpleSnapshotKeys = new Set([
+    CUSTOM_LOGO_STORAGE_KEY,
+    ...preferenceKeys,
+  ]);
+
+  const booleanPreferenceKeys = new Set([
+    'darkMode',
+    'pinkMode',
+    'highContrast',
+    'reduceMotion',
+    'relaxedSpacing',
+    'showAutoBackups',
+    'iosPwaHelpShown',
+  ]);
 
   const markSnapshotEntry = (entry) => {
     if (!entry || typeof entry.key !== 'string') {
@@ -5232,6 +5291,12 @@ function convertStorageSnapshotToData(snapshot) {
       entry.key.endsWith(STORAGE_BACKUP_SUFFIX) ||
       entry.key.endsWith(STORAGE_MIGRATION_BACKUP_SUFFIX)
     ) {
+      hasSnapshotKeys = true;
+      return;
+    }
+
+    const normalizedKey = entry.key.replace(/(?:__backup|__legacyMigrationBackup)$/u, '');
+    if (simpleSnapshotKeys.has(normalizedKey)) {
       hasSnapshotKeys = true;
     }
   };
@@ -5320,28 +5385,6 @@ function convertStorageSnapshotToData(snapshot) {
     hasAssignments = true;
   }
 
-  const preferenceKeys = [
-    'darkMode',
-    'pinkMode',
-    'highContrast',
-    'reduceMotion',
-    'relaxedSpacing',
-    'showAutoBackups',
-    'accentColor',
-    'fontSize',
-    'fontFamily',
-    'language',
-    'iosPwaHelpShown',
-  ];
-  const booleanPreferenceKeys = new Set([
-    'darkMode',
-    'pinkMode',
-    'highContrast',
-    'reduceMotion',
-    'relaxedSpacing',
-    'showAutoBackups',
-    'iosPwaHelpShown',
-  ]);
   const preferences = {};
 
   preferenceKeys.forEach((key) => {
