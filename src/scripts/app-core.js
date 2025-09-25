@@ -3566,14 +3566,23 @@ if (typeof window !== 'undefined') {
  */
 function closeSideMenu() {
   const menu = document.getElementById('sideMenu');
+  if (!menu) return;
   const overlay = document.getElementById('menuOverlay');
   const toggle = document.getElementById('menuToggle');
-  if (!menu || !overlay || !toggle) return;
   menu.classList.remove('open');
   menu.setAttribute('hidden', '');
-  overlay.classList.add('hidden');
-  toggle.setAttribute('aria-expanded', 'false');
-  toggle.setAttribute('aria-label', 'Menu');
+  overlay?.classList?.add('hidden');
+  if (toggle) {
+    toggle.setAttribute('aria-expanded', 'false');
+    const defaultLabel =
+      toggle.dataset?.menuLabel ||
+      toggle.getAttribute('data-menu-label') ||
+      toggle.getAttribute('title') ||
+      'Menu';
+    toggle.setAttribute('aria-label', defaultLabel);
+    toggle.setAttribute('title', defaultLabel);
+  }
+  document.body?.classList?.remove('side-menu-open');
 }
 
 /**
@@ -3581,15 +3590,28 @@ function closeSideMenu() {
  */
 function openSideMenu() {
   const menu = document.getElementById('sideMenu');
+  if (!menu) return;
   const overlay = document.getElementById('menuOverlay');
   const toggle = document.getElementById('menuToggle');
-  if (!menu || !overlay || !toggle) return;
+  if (!overlay || !toggle) return;
   if (menu.classList.contains('open')) return;
   menu.classList.add('open');
   menu.removeAttribute('hidden');
   overlay.classList.remove('hidden');
   toggle.setAttribute('aria-expanded', 'true');
-  toggle.setAttribute('aria-label', 'Close menu');
+  const closeLabel =
+    toggle.dataset?.menuCloseLabel ||
+    toggle.getAttribute('data-menu-close-label') ||
+    'Close menu';
+  toggle.setAttribute('aria-label', closeLabel);
+  toggle.setAttribute('title', closeLabel);
+  document.body?.classList?.add('side-menu-open');
+  const focusTarget =
+    menu.querySelector('[data-sidebar-close]') ||
+    menu.querySelector('a, button');
+  if (focusTarget && typeof focusTarget.focus === 'function') {
+    focusTarget.focus();
+  }
 }
 
 /**
@@ -3601,6 +3623,20 @@ function setupSideMenu() {
   const overlay = document.getElementById('menuOverlay');
   if (!toggle || !menu || !overlay) return;
 
+  if (!toggle.dataset.menuLabel) {
+    const baseLabel =
+      toggle.getAttribute('aria-label') ||
+      toggle.getAttribute('title') ||
+      'Menu';
+    toggle.dataset.menuLabel = baseLabel;
+    toggle.setAttribute('data-menu-label', baseLabel);
+  }
+  if (!toggle.dataset.menuCloseLabel) {
+    const closeLabel = toggle.getAttribute('data-menu-close-label') || 'Close menu';
+    toggle.dataset.menuCloseLabel = closeLabel;
+    toggle.setAttribute('data-menu-close-label', closeLabel);
+  }
+
   toggle.addEventListener('click', () => {
     if (menu.classList.contains('open')) {
       closeSideMenu();
@@ -3610,6 +3646,12 @@ function setupSideMenu() {
   });
 
   overlay.addEventListener('click', closeSideMenu);
+  menu.querySelectorAll('[data-sidebar-close]').forEach(button => {
+    button.addEventListener('click', () => {
+      closeSideMenu();
+      toggle.focus();
+    });
+  });
   document.addEventListener('keydown', event => {
     if (event.key === 'Escape' && menu.classList.contains('open')) {
       closeSideMenu();
@@ -7089,6 +7131,14 @@ function setLanguage(lang) {
     menuToggle.setAttribute("aria-label", menuLabel);
     const menuHelp = texts[lang].menuToggleHelp || menuLabel;
     menuToggle.setAttribute("data-help", menuHelp);
+    const menuCloseLabel =
+      texts[lang].menuToggleCloseLabel ||
+      texts.en?.menuToggleCloseLabel ||
+      "Close menu";
+    menuToggle.dataset.menuLabel = menuLabel;
+    menuToggle.dataset.menuCloseLabel = menuCloseLabel;
+    menuToggle.setAttribute("data-menu-label", menuLabel);
+    menuToggle.setAttribute("data-menu-close-label", menuCloseLabel);
   }
   const sideMenu = document.getElementById("sideMenu");
   if (sideMenu) {
@@ -7098,6 +7148,28 @@ function setLanguage(lang) {
     } else {
       sideMenu.removeAttribute("data-help");
     }
+  }
+  const sideMenuTitle = document.getElementById("sideMenuTitle");
+  if (sideMenuTitle) {
+    const titleText =
+      texts[lang].sideMenuTitle ||
+      texts.en?.sideMenuTitle ||
+      sideMenuTitle.textContent ||
+      "Planner navigation";
+    sideMenuTitle.textContent = titleText;
+    sideMenuTitle.setAttribute("data-help", titleText);
+  }
+  const sideMenuCloseButton = document.getElementById("sideMenuCloseButton");
+  if (sideMenuCloseButton) {
+    const closeLabel =
+      texts[lang].sideMenuClose ||
+      texts.en?.sideMenuClose ||
+      "Close menu";
+    const closeHelp = texts[lang].sideMenuCloseHelp || closeLabel;
+    setButtonLabelWithIcon(sideMenuCloseButton, closeLabel, ICON_GLYPHS.circleX);
+    sideMenuCloseButton.setAttribute("data-help", closeHelp);
+    sideMenuCloseButton.setAttribute("title", closeHelp);
+    sideMenuCloseButton.setAttribute("aria-label", closeHelp);
   }
   if (reloadButton) {
     reloadButton.setAttribute("title", texts[lang].reloadAppLabel);

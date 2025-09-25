@@ -142,9 +142,28 @@
     </nav>
   </header>
 
-  <nav id="sideMenu" class="side-menu" aria-label="Sidebar navigation" hidden>
-    <div class="sidebar-controls"></div>
-    <ul>
+  <nav
+    id="sideMenu"
+    class="side-menu"
+    aria-label="Sidebar navigation"
+    aria-labelledby="sideMenuTitle"
+    hidden
+  >
+    <div class="side-menu__inner">
+      <div class="side-menu__handle" aria-hidden="true"></div>
+      <div class="side-menu__header">
+        <h2 id="sideMenuTitle" class="side-menu__title">Planner navigation</h2>
+        <button
+          type="button"
+          id="sideMenuCloseButton"
+          class="side-menu__close"
+          data-sidebar-close="true"
+          aria-haspopup="false"
+        ></button>
+      </div>
+      <div class="side-menu__content">
+        <div class="sidebar-controls"></div>
+        <ul>
       <li><a href="#setup-manager" data-nav-key="setupManageHeading">Project Overview</a></li>
       <li><a href="#setup-config" data-nav-key="deviceSelectionHeading">Configure Devices</a></li>
       <li><a href="#results" data-nav-key="resultsHeading">Power Summary</a></li>
@@ -176,7 +195,9 @@
           Help Center
         </button>
       </li>
-    </ul>
+        </ul>
+      </div>
+    </div>
   </nav>
   <div id="menuOverlay" class="hidden"></div>
 

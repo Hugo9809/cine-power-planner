@@ -86,9 +86,13 @@ const texts = {
     pinkModeLabel: "Toggle pink mode",
     menuToggleLabel: "Menu",
     menuToggleHelp:
-      "Open the sidebar to jump between planner sections or reveal controls on smaller screens. Click again to close it.",
+      "Open the navigation menu to jump between planner sections or reveal controls on smaller screens. On phones it opens as a bottom drawer so controls stay within reach. Click again to close it.",
+    menuToggleCloseLabel: "Close menu",
     sideMenuHelp:
       "Sidebar navigation listing planner sections. Select a section to scroll there and the menu closes automatically.",
+    sideMenuTitle: "Planner navigation",
+    sideMenuClose: "Close menu",
+    sideMenuCloseHelp: "Close the navigation menu and return to the planner.",
     featureSearchPlaceholder: "Search features or devices...",
     featureSearchLabel: "Search features, devices and help",
     featureSearchHelp:
@@ -1309,9 +1313,13 @@ const texts = {
     pinkModeLabel: "Attiva modalità rosa",
     menuToggleLabel: "Menu",
     menuToggleHelp:
-      "Apri la barra laterale per raggiungere rapidamente le sezioni dell’app o mostrare i controlli sugli schermi piccoli. Premi di nuovo per chiuderla.",
+      "Apri il menu di navigazione per passare tra le sezioni del planner o mostrare i controlli sui dispositivi più piccoli. Su telefono si apre come un pannello dal basso per restare a portata. Tocca di nuovo per chiuderlo.",
+    menuToggleCloseLabel: "Chiudi menu",
     sideMenuHelp:
       "Navigazione laterale con le sezioni dell’app. Seleziona una sezione per scorrere fino a essa e chiudere automaticamente il menu.",
+    sideMenuTitle: "Navigazione del planner",
+    sideMenuClose: "Chiudi menu",
+    sideMenuCloseHelp: "Chiudi il menu di navigazione e torna al planner.",
     featureSearchPlaceholder: "Cerca funzionalità o dispositivi...",
     featureSearchLabel: "Cerca funzionalità, dispositivi e aiuto",
     featureSearchHelp:
@@ -2515,9 +2523,13 @@ const texts = {
     pinkModeLabel: "Alternar modo rosa",
     menuToggleLabel: "Menú",
     menuToggleHelp:
-      "Abre la barra lateral para saltar entre las secciones del planificador o mostrar los controles en pantallas pequeñas. Pulsa de nuevo para cerrarla.",
+      "Abre el menú de navegación para saltar entre las secciones del planificador o mostrar controles en pantallas pequeñas. En el teléfono se abre como un panel inferior para mantener los controles a mano. Pulsa de nuevo para cerrarlo.",
+    menuToggleCloseLabel: "Cerrar menú",
     sideMenuHelp:
       "Navegación lateral con las secciones del planificador. Elige una sección para desplazarte allí y cerrar automáticamente el menú.",
+    sideMenuTitle: "Navegación del planificador",
+    sideMenuClose: "Cerrar menú",
+    sideMenuCloseHelp: "Cierra el menú de navegación y vuelve al planificador.",
     featureSearchPlaceholder: "Buscar funciones o dispositivos...",
     featureSearchLabel: "Buscar funciones, dispositivos y ayuda",
     featureSearchHelp:
@@ -3734,9 +3746,13 @@ const texts = {
     pinkModeLabel: "Basculer en mode rose",
     menuToggleLabel: "Menu",
     menuToggleHelp:
-      "Ouvre la barre latérale pour passer rapidement d’une section du planificateur à l’autre ou afficher les commandes sur les petits écrans. Cliquez de nouveau pour la fermer.",
+      "Ouvrez le menu de navigation pour passer d’une section du planificateur à l’autre ou afficher les commandes sur les petits écrans. Sur téléphone, il s’ouvre en tiroir depuis le bas pour garder les commandes à portée. Touchez à nouveau pour le fermer.",
+    menuToggleCloseLabel: "Fermer le menu",
     sideMenuHelp:
       "Navigation latérale listant les sections du planificateur. Choisissez une section pour y faire défiler la page et fermer automatiquement le menu.",
+    sideMenuTitle: "Navigation du planificateur",
+    sideMenuClose: "Fermer le menu",
+    sideMenuCloseHelp: "Fermez le menu de navigation et retournez au planificateur.",
     featureSearchPlaceholder: "Rechercher des fonctionnalités ou des appareils...",
     featureSearchLabel: "Rechercher des fonctionnalités, des appareils et de l’aide",
     featureSearchHelp:
@@ -4964,9 +4980,13 @@ const texts = {
     pinkModeLabel: "Pinkmodus umschalten",
     menuToggleLabel: "Menü",
     menuToggleHelp:
-      "Öffnet die Seitenleiste, um schnell zwischen den Planerbereichen zu wechseln oder die Bedienelemente auf kleinen Bildschirmen einzublenden. Nochmal klicken schließt sie wieder.",
+      "Öffnet das Navigationsmenü, um zwischen den Planerbereichen zu springen oder Steuerungen auf kleineren Bildschirmen einzublenden. Auf dem Smartphone öffnet es sich als untere Schublade, damit alles erreichbar bleibt. Tippen Sie erneut, um es zu schließen.",
+    menuToggleCloseLabel: "Menü schließen",
     sideMenuHelp:
       "Seitenleiste mit den Bereichen des Planers. Wähle einen Bereich aus, um dorthin zu scrollen; das Menü schließt sich dabei automatisch.",
+    sideMenuTitle: "Planer-Navigation",
+    sideMenuClose: "Menü schließen",
+    sideMenuCloseHelp: "Das Navigationsmenü schließen und zum Planer zurückkehren.",
     featureSearchPlaceholder: "Funktionen oder Geräte durchsuchen...",
     featureSearchLabel: "Funktionen, Geräte und Hilfe durchsuchen",
     featureSearchHelp:
