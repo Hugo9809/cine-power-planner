@@ -4476,6 +4476,7 @@ function clearAllData() {
       autoGearBackups: loadAutoGearBackups(),
       autoGearSeeded: loadAutoGearSeedFlag(),
       autoGearPresets: loadAutoGearPresets(),
+      autoGearMonitorDefaults: loadAutoGearMonitorDefaults(),
       autoGearActivePresetId: loadAutoGearActivePresetId(),
       autoGearAutoPresetId: loadAutoGearAutoPresetId(),
       autoGearShowBackups: loadAutoGearBackupVisibility(),
