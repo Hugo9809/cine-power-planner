@@ -41,6 +41,9 @@ describe('global feature search help navigation', () => {
       opt.value.endsWith(' (help)')
     );
     expect(helpOptions.length).toBeGreaterThan(0);
+    expect(
+      helpOptions.every(opt => typeof opt.label === 'string' && opt.label.includes('Help'))
+    ).toBe(true);
 
     triggerFeatureSearch('offline mode');
 
@@ -104,5 +107,29 @@ describe('global feature search help navigation', () => {
     if (helpIndex >= 0) {
       expect(helpIndex).toBeGreaterThan(featureIndex);
     }
+  });
+
+  test('suggestions label result types for clarity', async () => {
+    document.dispatchEvent(new Event('DOMContentLoaded'));
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+    const featureList = document.getElementById('featureList');
+    expect(featureList).toBeTruthy();
+
+    const options = Array.from(featureList.options);
+    expect(options.length).toBeGreaterThan(0);
+
+    expect(
+      options.some(opt => typeof opt.label === 'string' && opt.label.includes('Feature'))
+    ).toBe(true);
+    expect(
+      options.some(opt => typeof opt.label === 'string' && opt.label.includes('Action'))
+    ).toBe(true);
+    expect(
+      options.some(opt => typeof opt.label === 'string' && opt.label.includes('Device'))
+    ).toBe(true);
+    expect(
+      options.some(opt => typeof opt.label === 'string' && opt.label.includes('Help'))
+    ).toBe(true);
   });
 });

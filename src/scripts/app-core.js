@@ -18888,6 +18888,35 @@ const normalizeSearchValue = value =>
   typeof value === 'string' ? value.trim().toLowerCase() : '';
 const FEATURE_SEARCH_EXTRA_SELECTOR = '[data-feature-search]';
 
+const FEATURE_SEARCH_TYPE_LABEL_KEYS = {
+  feature: 'featureSearchTypeFeature',
+  action: 'featureSearchTypeAction',
+  device: 'featureSearchTypeDevice',
+  help: 'featureSearchTypeHelp'
+};
+
+const getFeatureSearchEntryType = element => {
+  if (!element) return 'feature';
+  const explicit =
+    element.dataset?.featureSearchType ||
+    element.getAttribute('data-feature-search-type');
+  if (explicit && explicit.trim()) {
+    return explicit.trim().toLowerCase();
+  }
+  const tagName = element.tagName ? element.tagName.toLowerCase() : '';
+  const role = element.getAttribute('role')?.toLowerCase() || '';
+  if (tagName === 'button') return 'action';
+  if (tagName === 'a' && element.hasAttribute('href')) return 'action';
+  if (tagName === 'input') {
+    const type = element.getAttribute('type')?.toLowerCase();
+    if (type && ['button', 'submit', 'reset', 'image'].includes(type)) {
+      return 'action';
+    }
+  }
+  if (role === 'button' || role === 'menuitem') return 'action';
+  return 'feature';
+};
+
 const getFeatureSearchLabel = element => {
   if (!element) return '';
   const { dataset } = element;
@@ -18929,13 +18958,45 @@ let runFeatureSearch = () => {};
 let featureSearchEntries = [];
 let featureSearchDefaultOptions = [];
 
+const buildFeatureSearchOptionData = entry => {
+  if (!entry) return null;
+  const value = typeof entry === 'string' ? entry : entry.display;
+  if (!value) return null;
+  const baseLabel =
+    typeof entry === 'string'
+      ? entry
+      : entry.optionLabel || entry.display || '';
+  const type = typeof entry === 'string' ? 'feature' : entry.type || 'feature';
+  const typeKey = FEATURE_SEARCH_TYPE_LABEL_KEYS[type];
+  const typeLabel = typeKey ? getLocalizedText(typeKey) : '';
+  const label = typeLabel ? `${typeLabel} · ${baseLabel}` : baseLabel || value;
+  if (!label || label === value) {
+    return { value, label: label || value };
+  }
+  return { value, label };
+};
+
 const renderFeatureListOptions = values => {
   if (!featureList || !Array.isArray(values)) return;
   const fragment = document.createDocumentFragment();
   for (const value of values) {
     if (!value) continue;
     const option = document.createElement('option');
-    option.value = value;
+    if (typeof value === 'object') {
+      const optionValue = value.value || value.display || '';
+      if (!optionValue) continue;
+      option.value = optionValue;
+      const optionLabel = value.label || value.optionLabel || '';
+      if (optionLabel) {
+        option.label = optionLabel;
+        option.textContent = optionLabel;
+      } else {
+        option.textContent = optionValue;
+      }
+    } else {
+      option.value = value;
+      option.textContent = value;
+    }
     fragment.appendChild(option);
   }
   featureList.innerHTML = '';
@@ -18957,6 +19018,7 @@ const FEATURE_SEARCH_MATCH_PRIORITIES = {
 
 const FEATURE_SEARCH_TYPE_PRIORITIES = {
   feature: 3,
+  action: 4,
   device: 3,
   help: 1
 };
@@ -19070,10 +19132,10 @@ function updateFeatureSearchSuggestions(query) {
   const values = [];
   const seen = new Set();
   for (const item of candidates.slice(0, 25)) {
-    const value = item.entry.display;
-    if (!value || seen.has(value)) continue;
-    seen.add(value);
-    values.push(value);
+    const optionData = buildFeatureSearchOptionData(item.entry);
+    if (!optionData || !optionData.value || seen.has(optionData.value)) continue;
+    seen.add(optionData.value);
+    values.push(optionData);
   }
 
 
@@ -20764,8 +20826,14 @@ function populateFeatureSearch() {
   deviceMap.clear();
   featureSearchEntries = [];
   featureSearchDefaultOptions = [];
-  const registerOption = value => {
-    if (value) featureSearchDefaultOptions.push(value);
+  const defaultOptionValues = new Set();
+  const registerOption = entry => {
+    const optionData = buildFeatureSearchOptionData(entry);
+    if (!optionData || !optionData.value || defaultOptionValues.has(optionData.value)) {
+      return;
+    }
+    defaultOptionValues.add(optionData.value);
+    featureSearchDefaultOptions.push(optionData);
   };
   document
     .querySelectorAll('h2[id], legend[id], h3[id], h4[id]')
@@ -20778,14 +20846,16 @@ function populateFeatureSearch() {
       if (!entry || !entry.key) return;
       const display = entry.optionValue || entry.displayLabel || entry.baseLabel;
       if (!display) return;
-      registerOption(display);
-      featureSearchEntries.push({
+      const entryData = {
         type: 'feature',
         key: entry.key,
         display,
         tokens: Array.isArray(entry.tokens) ? entry.tokens : [],
-        value: entry
-      });
+        value: entry,
+        optionLabel: entry.displayLabel || entry.baseLabel || display
+      };
+      registerOption(entryData);
+      featureSearchEntries.push(entryData);
     });
   document.querySelectorAll(FEATURE_SEARCH_EXTRA_SELECTOR).forEach(el => {
     if (!el || (helpDialog && helpDialog.contains(el))) return;
@@ -20796,14 +20866,17 @@ function populateFeatureSearch() {
     if (!entry || !entry.key) return;
     const display = entry.optionValue || entry.displayLabel || entry.baseLabel;
     if (!display) return;
-    registerOption(display);
-    featureSearchEntries.push({
-      type: 'feature',
+    const entryType = getFeatureSearchEntryType(el);
+    const entryData = {
+      type: entryType,
       key: entry.key,
       display,
       tokens: Array.isArray(entry.tokens) ? entry.tokens : [],
-      value: entry
-    });
+      value: entry,
+      optionLabel: entry.displayLabel || entry.baseLabel || display
+    };
+    registerOption(entryData);
+    featureSearchEntries.push(entryData);
   });
   if (helpDialog) {
     helpDialog.querySelectorAll('section[data-help-section]').forEach(section => {
@@ -20821,14 +20894,16 @@ function populateFeatureSearch() {
       };
       helpMap.set(key, helpEntry);
       const optionValue = `${label} (help)`;
-      registerOption(optionValue);
-      featureSearchEntries.push({
+      const helpData = {
         type: 'help',
         key,
         display: optionValue,
         tokens,
-        value: helpEntry
-      });
+        value: helpEntry,
+        optionLabel: label
+      };
+      registerOption(helpData);
+      featureSearchEntries.push(helpData);
     });
   }
 
@@ -20852,14 +20927,16 @@ function populateFeatureSearch() {
           tokens
         };
         deviceMap.set(key, deviceEntry);
-        registerOption(name);
-        featureSearchEntries.push({
+        const deviceData = {
           type: 'device',
           key,
           display: name,
           tokens,
-          value: deviceEntry
-        });
+          value: deviceEntry,
+          optionLabel: name
+        };
+        registerOption(deviceData);
+        featureSearchEntries.push(deviceData);
       }
     });
   });
