@@ -1,9 +1,22 @@
+const AUTO_BACKUP_NAME_PREFIX = 'auto-backup-';
+const AUTO_BACKUP_DELETION_PREFIX = 'auto-backup-before-delete-';
+
+function isAutoBackupKey(name) {
+  return (
+    typeof name === 'string'
+    && (
+      name.startsWith(AUTO_BACKUP_NAME_PREFIX)
+      || name.startsWith(AUTO_BACKUP_DELETION_PREFIX)
+    )
+  );
+}
+
 // --- EVENT LISTENERS ---
 /* global updateCageSelectOptions, updateGlobalDevicesReference, scheduleProjectAutoSave,
           ensureAutoBackupsFromProjects, getDiagramManualPositions,
           setManualDiagramPositions, normalizeDiagramPositionsInput,
           normalizeSetupName, createProjectInfoSnapshotForStorage,
-          applyDynamicFieldValues */
+          applyDynamicFieldValues, markAutoBackupEntryRenamed */
 
 // Language selection
 languageSelect.addEventListener("change", (event) => {
@@ -57,6 +70,16 @@ saveSetupBtn.addEventListener("click", () => {
         storedProjectSnapshot = loadProject(selectedName);
       } catch (error) {
         console.warn('Failed to load project data while renaming setup', error);
+      }
+      if (
+        storedProjectSnapshot
+        && isAutoBackupKey(selectedName)
+        && typeof markAutoBackupEntryRenamed === 'function'
+      ) {
+        storedProjectSnapshot = markAutoBackupEntryRenamed(
+          storedProjectSnapshot,
+          selectedName,
+        );
       }
     }
 
@@ -679,7 +702,7 @@ function autoBackup(options = {}) {
     : '';
   const normalizedSelectedName = normalizeProjectName(selectedName);
   const normalizedTypedName = normalizeProjectName(typedName);
-  const isAutoBackupName = (name) => typeof name === 'string' && name.startsWith('auto-backup-');
+  const isAutoBackupName = (name) => isAutoBackupKey(name);
 
   let nameForBackup = '';
   if (overrideName !== null && overrideName !== undefined) {

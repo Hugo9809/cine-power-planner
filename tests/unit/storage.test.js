@@ -496,6 +496,32 @@ describe('setup storage', () => {
     expect(autoKeys[autoKeys.length - 1]).toBe('auto-backup-2024-01-01-00-59');
   });
 
+  test('saveSetups preserves renamed auto backups that match newer snapshots', () => {
+    const renamedKey = 'auto-backup-2024-02-01-00-00-Project Alpha';
+    const latestKey = 'auto-backup-2024-02-02-00-00-Project Alpha';
+    const sharedValue = {
+      gearList: '<ul>shared</ul>',
+      projectInfo: { projectName: 'Project Alpha' },
+    };
+
+    const setups = {
+      [renamedKey]: {
+        ...sharedValue,
+        metadata: {
+          autoBackupRenamed: true,
+          autoBackupOriginalKey: 'auto-backup-2024-01-31-23-50-Project Alpha',
+        },
+      },
+      [latestKey]: sharedValue,
+    };
+
+    saveSetups(setups);
+
+    const stored = JSON.parse(localStorage.getItem(SETUP_KEY));
+    expect(stored[renamedKey]).toBeDefined();
+    expect(stored[latestKey]).toEqual(sharedValue);
+  });
+
   test('saveSetup adds and persists single setup', () => {
     const initial = {A: {foo: 1}};
     localStorage.setItem(SETUP_KEY, JSON.stringify(initial));
@@ -523,6 +549,23 @@ describe('setup storage', () => {
       const newName = renameSetup('A', 'C');
       expect(newName).toBe('C');
       expect(JSON.parse(localStorage.getItem(SETUP_KEY))).toEqual({C:{foo:1}, B:{bar:2}});
+    });
+
+    test('renameSetup marks auto backups as renamed when retitled', () => {
+      const originalKey = 'auto-backup-2024-01-01-00-00-Project';
+      const setups = {
+        [originalKey]: { gearList: '<ul></ul>', projectInfo: { projectName: 'Project' } },
+      };
+      localStorage.setItem(SETUP_KEY, JSON.stringify(setups));
+
+      const result = renameSetup(originalKey, 'auto-backup-2024-01-01-00-00-Project Archive');
+
+      const stored = JSON.parse(localStorage.getItem(SETUP_KEY));
+      const renamedEntry = stored[result];
+
+      expect(result).toBe('auto-backup-2024-01-01-00-00-Project Archive');
+      expect(renamedEntry.metadata.autoBackupRenamed).toBe(true);
+      expect(renamedEntry.metadata.autoBackupOriginalKey).toBe(originalKey);
     });
 
     test('renameSetup appends suffix when target exists', () => {

@@ -1272,6 +1272,43 @@ function collectAutoBackupEntries(container, prefix) {
     });
 }
 
+function markAutoBackupEntryRenamed(value, originalKey) {
+  if (!isPlainObject(value)) {
+    return value;
+  }
+
+  const metadata = isPlainObject(value.metadata) ? { ...value.metadata } : {};
+  metadata.autoBackupRenamed = true;
+  if (typeof metadata.autoBackupOriginalKey !== 'string' || !metadata.autoBackupOriginalKey.trim()) {
+    if (typeof originalKey === 'string' && originalKey.trim()) {
+      metadata.autoBackupOriginalKey = originalKey;
+    }
+  }
+
+  return { ...value, metadata };
+}
+
+function isAutoBackupEntryMarkedRenamed(value) {
+  if (!isPlainObject(value)) {
+    return false;
+  }
+
+  const { metadata } = value;
+  if (!isPlainObject(metadata)) {
+    return false;
+  }
+
+  if (metadata.autoBackupRenamed === true) {
+    return true;
+  }
+
+  if (typeof metadata.autoBackupOriginalKey === 'string' && metadata.autoBackupOriginalKey.trim()) {
+    return true;
+  }
+
+  return false;
+}
+
 function getAutoBackupLabelKey(entry) {
   if (!entry || typeof entry !== 'object') {
     return '';
@@ -1353,6 +1390,9 @@ function removeSingleDuplicateAutoBackupEntry(container, entries) {
       : undefined;
     const signature = createStableValueSignature(value);
     if (labelSignatures.has(signature)) {
+      if (isAutoBackupEntryMarkedRenamed(value)) {
+        continue;
+      }
       delete container[entry.key];
       entries.splice(index, 1);
       return entry.key;
@@ -2768,7 +2808,14 @@ function renameSetup(oldName, newName) {
     const used = new Set(Object.keys(setups));
     used.delete(oldName);
     const target = generateUniqueName(sanitized, used);
-    setups[target] = setups[oldName];
+    const entry = setups[oldName];
+    const autoBackupRenamed =
+      typeof oldName === 'string'
+      && (
+        oldName.startsWith(STORAGE_AUTO_BACKUP_NAME_PREFIX)
+        || oldName.startsWith(STORAGE_AUTO_BACKUP_DELETION_PREFIX)
+      );
+    setups[target] = autoBackupRenamed ? markAutoBackupEntryRenamed(entry, oldName) : entry;
     delete setups[oldName];
     return { result: target, changed: true };
   });
@@ -5644,6 +5691,7 @@ const STORAGE_API = {
   loadProject,
   saveProject,
   deleteProject,
+  markAutoBackupEntryRenamed,
   loadSessionState,
   saveSessionState,
   loadFavorites,
