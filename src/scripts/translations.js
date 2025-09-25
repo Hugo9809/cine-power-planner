@@ -1259,8 +1259,9 @@ const texts = {
       "Passa tra tema chiaro e scuro; premi D per attivarlo. La scelta viene ricordata.",
     pinkModeHelp:
       "Aggiungi un tema rosa giocoso. Quando la modalità rosa è attiva, l’icona dell’unicorno cambia ogni 30 secondi con una delicata animazione pop e l’impostazione funziona in modalità chiara o scura ed è ricordata per la volta successiva.",
-    reloadAppLabel: "Ricarica",
-    reloadAppHelp: "Svuota la cache e ricarica l'app senza eliminare i dati salvati.",
+    reloadAppLabel: "Ricarica forzata",
+    reloadAppHelp:
+      "Svuota la cache ed esegue una ricarica forzata dell'app senza eliminare i dati salvati.",
 
     favoriteToggleLabel: "Preferito",
     favoriteToggleHelp:
@@ -4724,8 +4725,9 @@ const texts = {
       "Zwischen hellem und dunklem Design wechseln; mit D umschalten. Die Einstellung wird gespeichert.",
     pinkModeHelp:
       "Füge ein verspieltes pinkes Akzentthema hinzu. Während der Pinkmodus aktiv ist, wechselt das Einhorn-Symbol alle 30 Sekunden mit einer sanften Pop-Animation, und die Einstellung funktioniert in hellen wie dunklen Modi und bleibt für das nächste Mal gespeichert.",
-    reloadAppLabel: "Neu laden",
-    reloadAppHelp: "Cache leeren und Anwendung neu laden, ohne gespeicherte Daten zu entfernen.",
+    reloadAppLabel: "Neu laden erzwingen",
+    reloadAppHelp:
+      "Leert den Cache und erzwingt ein Neuladen, ohne gespeicherte Daten zu entfernen.",
 
     favoriteToggleLabel: "Favorit",
     favoriteToggleHelp:
