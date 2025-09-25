@@ -1901,6 +1901,24 @@
               </thead>
               <tbody id="restoreRehearsalTableBody"></tbody>
             </table>
+            <section
+              id="restoreRehearsalRuleSection"
+              class="restore-rehearsal-rule-preview"
+              hidden
+            >
+              <h5 id="restoreRehearsalRuleHeading">Automatic gear rule changes</h5>
+              <p id="restoreRehearsalRuleIntro" class="settings-hint">
+                Compare every automatic gear rule before loading the sandbox. Live rules stay untouched.
+              </p>
+              <p id="restoreRehearsalRuleEmpty" class="settings-hint" hidden>
+                No automatic gear rule differences found.
+              </p>
+              <ul id="restoreRehearsalRuleList" class="diff-list"></ul>
+            </section>
+            <div id="restoreRehearsalActions" class="button-row restore-rehearsal-actions" hidden>
+              <button type="button" id="restoreRehearsalProceed">Continue rehearsal restore</button>
+              <button type="button" id="restoreRehearsalAbort">Abort rehearsal</button>
+            </div>
           </section>
         </section>
       </section>

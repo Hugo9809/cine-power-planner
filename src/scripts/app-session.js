@@ -109,6 +109,14 @@ function createRestoreRehearsalRefs() {
       status: null,
       table: null,
       tableBody: null,
+      ruleSection: null,
+      ruleHeading: null,
+      ruleIntro: null,
+      ruleEmpty: null,
+      ruleList: null,
+      actions: null,
+      proceedButton: null,
+      abortButton: null,
       modeInputs: [],
     };
   }
@@ -127,6 +135,14 @@ function createRestoreRehearsalRefs() {
     status: doc.getElementById('restoreRehearsalStatus'),
     table: doc.getElementById('restoreRehearsalTable'),
     tableBody: doc.getElementById('restoreRehearsalTableBody'),
+    ruleSection: doc.getElementById('restoreRehearsalRuleSection'),
+    ruleHeading: doc.getElementById('restoreRehearsalRuleHeading'),
+    ruleIntro: doc.getElementById('restoreRehearsalRuleIntro'),
+    ruleEmpty: doc.getElementById('restoreRehearsalRuleEmpty'),
+    ruleList: doc.getElementById('restoreRehearsalRuleList'),
+    actions: doc.getElementById('restoreRehearsalActions'),
+    proceedButton: doc.getElementById('restoreRehearsalProceed'),
+    abortButton: doc.getElementById('restoreRehearsalAbort'),
     modeInputs,
   };
 }
@@ -142,8 +158,18 @@ const {
   status: restoreRehearsalStatusEl,
   table: restoreRehearsalTableEl,
   tableBody: restoreRehearsalTableBodyEl,
+  ruleSection: restoreRehearsalRuleSectionEl,
+  ruleHeading: restoreRehearsalRuleHeadingEl,
+  ruleIntro: restoreRehearsalRuleIntroEl,
+  ruleEmpty: restoreRehearsalRuleEmptyEl,
+  ruleList: restoreRehearsalRuleListEl,
+  actions: restoreRehearsalActionsEl,
+  proceedButton: restoreRehearsalProceedButtonEl,
+  abortButton: restoreRehearsalAbortButtonEl,
   modeInputs: restoreRehearsalModeInputs,
 } = createRestoreRehearsalRefs();
+
+let restoreRehearsalLastSnapshot = null;
 
 function countProjectsFromSetups(setups) {
   if (Array.isArray(setups)) {
@@ -527,8 +553,8 @@ function summarizeProjectBundle(bundle) {
 }
 
 function getRestoreRehearsalLiveCounts() {
-  const snapshot = typeof exportAllData === 'function' ? exportAllData() : {};
-  return summarizeCountsFromData(isPlainObject(snapshot) ? snapshot : {});
+  const snapshot = getRestoreRehearsalLiveSnapshot();
+  return snapshot && snapshot.counts ? snapshot.counts : {};
 }
 
 function getSelectedRestoreRehearsalMode() {
@@ -563,6 +589,499 @@ function buildRestoreRehearsalRows(liveCounts, sandboxCounts) {
   });
 }
 
+function normalizeRestoreRehearsalScenarioLogic(value) {
+  if (typeof value !== 'string') {
+    return 'all';
+  }
+  const normalized = value.trim().toLowerCase();
+  if (!normalized) {
+    return 'all';
+  }
+  if (normalized === 'any' || normalized === 'or') {
+    return 'any';
+  }
+  if (normalized === 'multiplier' || normalized === 'multiply') {
+    return 'multiplier';
+  }
+  return 'all';
+}
+
+function normalizeRestoreRehearsalScenarioMultiplier(value) {
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return value;
+  }
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    if (trimmed) {
+      const parsed = Number(trimmed);
+      if (Number.isFinite(parsed)) {
+        return parsed;
+      }
+    }
+  }
+  return 1;
+}
+
+function normalizeRestoreRehearsalRuleItems(items) {
+  if (!Array.isArray(items)) {
+    return [];
+  }
+  const normalizedItems = items
+    .map((item) => {
+      if (!isPlainObject(item)) return null;
+      const name = typeof item.name === 'string' ? item.name.trim() : '';
+      if (!name) return null;
+      const category = typeof item.category === 'string' ? item.category.trim() : '';
+      let quantity = 1;
+      if (typeof item.quantity === 'number' && Number.isFinite(item.quantity)) {
+        quantity = item.quantity;
+      } else if (typeof item.quantity === 'string') {
+        const trimmedQuantity = item.quantity.trim();
+        if (trimmedQuantity) {
+          const parsedQuantity = Number(trimmedQuantity);
+          if (Number.isFinite(parsedQuantity)) {
+            quantity = parsedQuantity;
+          }
+        }
+      }
+      const notes = typeof item.notes === 'string' ? item.notes.trim() : '';
+      const screenSize = typeof item.screenSize === 'string' ? item.screenSize.trim() : '';
+      const selectorType = typeof item.selectorType === 'string' ? item.selectorType.trim() : '';
+      const selectorDefault = typeof item.selectorDefault === 'string' ? item.selectorDefault.trim() : '';
+      const selectorEnabled = Boolean(item.selectorEnabled);
+      const contextNotes = Array.isArray(item.contextNotes)
+        ? item.contextNotes
+            .map((note) => (typeof note === 'string' ? note.trim() : ''))
+            .filter(Boolean)
+        : [];
+      contextNotes.sort((a, b) => a.localeCompare(b));
+      const normalized = {
+        id: typeof item.id === 'string' ? item.id : '',
+        name,
+        category,
+        quantity,
+        notes,
+        screenSize,
+        selectorType,
+        selectorDefault,
+        selectorEnabled,
+        contextNotes,
+      };
+      const signatureSource = {
+        name,
+        category,
+        quantity,
+        notes,
+        screenSize,
+        selectorType,
+        selectorDefault,
+        selectorEnabled,
+        contextNotes,
+      };
+      normalized.signature = JSON.stringify(signatureSource);
+      return normalized;
+    })
+    .filter(Boolean);
+  normalizedItems.sort((a, b) => {
+    const categoryA = a.category || '';
+    const categoryB = b.category || '';
+    if (categoryA !== categoryB) {
+      return categoryA.localeCompare(categoryB);
+    }
+    return a.name.localeCompare(b.name);
+  });
+  return normalizedItems;
+}
+
+function formatRestoreRehearsalRuleItem(item) {
+  if (!item) {
+    return '';
+  }
+  const quantity = item.quantity;
+  const hasQuantity = quantity !== undefined && quantity !== null && quantity !== 1;
+  const displayQuantity = hasQuantity ? ` ×${formatNumberForComparison(quantity)}` : '';
+  const categorySuffix = item.category ? ` (${item.category})` : '';
+  const notesSuffix = item.notes ? ` — ${item.notes}` : '';
+  const contextSuffix = Array.isArray(item.contextNotes) && item.contextNotes.length
+    ? ` (${item.contextNotes.join(', ')})`
+    : '';
+  const screenSuffix = item.screenSize ? ` [${item.screenSize}]` : '';
+  const selectorParts = [];
+  if (item.selectorType && item.selectorType !== 'none') {
+    selectorParts.push(item.selectorType);
+  }
+  if (item.selectorDefault) {
+    selectorParts.push(item.selectorDefault);
+  }
+  const selectorSuffix = selectorParts.length ? ` {${selectorParts.join(': ')}}` : '';
+  return `${item.name}${categorySuffix}${displayQuantity}${notesSuffix}${contextSuffix}${screenSuffix}${selectorSuffix}`;
+}
+
+function normalizeRestoreRehearsalRule(rule, index, origin) {
+  if (!isPlainObject(rule)) {
+    return null;
+  }
+  const normalized = {
+    id: typeof rule.id === 'string' ? rule.id : '',
+    label: typeof rule.label === 'string' ? rule.label.trim() : '',
+    always: Boolean(rule.always),
+  };
+  normalized.scenarioLogic = normalizeRestoreRehearsalScenarioLogic(rule.scenarioLogic);
+  normalized.scenarioMultiplier = normalizeRestoreRehearsalScenarioMultiplier(rule.scenarioMultiplier);
+  if (normalized.scenarioLogic !== 'multiplier') {
+    normalized.scenarioMultiplier = 1;
+  }
+  normalized.scenarioPrimary = typeof rule.scenarioPrimary === 'string' ? rule.scenarioPrimary.trim() : '';
+  const scenarios = Array.isArray(rule.scenarios)
+    ? rule.scenarios
+        .map((value) => (typeof value === 'string' ? value.trim() : ''))
+        .filter(Boolean)
+    : [];
+  const scenarioSet = new Set(scenarios);
+  normalized.scenarios = Array.from(scenarioSet).sort((a, b) => a.localeCompare(b));
+  normalized.addItems = normalizeRestoreRehearsalRuleItems(rule.add);
+  normalized.removeItems = normalizeRestoreRehearsalRuleItems(rule.remove);
+  const addSignatures = normalized.addItems.map((item) => item.signature).sort();
+  const removeSignatures = normalized.removeItems.map((item) => item.signature).sort();
+  normalized.signature = JSON.stringify({
+    always: normalized.always,
+    scenarioLogic: normalized.scenarioLogic,
+    scenarioPrimary: normalized.scenarioPrimary,
+    scenarioMultiplier: normalized.scenarioMultiplier,
+    scenarios: normalized.scenarios,
+    add: addSignatures,
+    remove: removeSignatures,
+  });
+  const fallbackParts = [
+    normalized.label.toLowerCase(),
+    normalized.scenarios.join('|').toLowerCase(),
+    normalized.addItems.map((item) => item.name.toLowerCase()).join('|'),
+    normalized.removeItems.map((item) => item.name.toLowerCase()).join('|'),
+  ].filter(Boolean);
+  const fallbackSignature = fallbackParts.join('::');
+  normalized.matchKey = normalized.id
+    ? `id:${normalized.id}`
+    : fallbackSignature
+      ? `fallback:${fallbackSignature}`
+      : `index:${origin}:${index}`;
+  normalized.entryKey = `${normalized.matchKey}|${origin}|${index}`;
+  if (normalized.label) {
+    normalized.displayName = normalized.label;
+  } else if (normalized.scenarios.length) {
+    normalized.displayName = normalized.scenarios.join(' + ');
+  } else if (normalized.id) {
+    normalized.displayName = normalized.id;
+  } else {
+    normalized.displayName = `Rule ${index + 1}`;
+  }
+  return normalized;
+}
+
+function normalizeRestoreRehearsalRules(value, origin = 'sandbox') {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+  return value
+    .map((rule, index) => normalizeRestoreRehearsalRule(rule, index, origin))
+    .filter(Boolean);
+}
+
+function indexRestoreRehearsalRules(rules) {
+  const map = new Map();
+  if (!Array.isArray(rules)) {
+    return map;
+  }
+  rules.forEach((rule) => {
+    if (!rule || !rule.matchKey) return;
+    const bucket = map.get(rule.matchKey);
+    if (bucket) {
+      bucket.push(rule);
+    } else {
+      map.set(rule.matchKey, [rule]);
+    }
+  });
+  return map;
+}
+
+function buildRestoreRehearsalRuleDiff(liveRules, sandboxRules) {
+  const liveList = Array.isArray(liveRules) ? liveRules : [];
+  const sandboxList = Array.isArray(sandboxRules) ? sandboxRules : [];
+  const liveIndex = indexRestoreRehearsalRules(liveList);
+  const unmatchedLive = new Set(liveList.filter(Boolean));
+  const differences = [];
+
+  sandboxList.forEach((sandboxRule) => {
+    if (!sandboxRule) return;
+    let liveRule = null;
+    const bucket = sandboxRule.matchKey ? liveIndex.get(sandboxRule.matchKey) : null;
+    if (bucket && bucket.length) {
+      liveRule = bucket.shift();
+      if (!bucket.length) {
+        liveIndex.delete(sandboxRule.matchKey);
+      }
+    }
+    if (liveRule) {
+      unmatchedLive.delete(liveRule);
+      if (liveRule.signature !== sandboxRule.signature) {
+        differences.push({
+          status: 'changed',
+          label: sandboxRule.displayName || liveRule.displayName,
+          live: liveRule,
+          sandbox: sandboxRule,
+          key: `changed:${sandboxRule.entryKey}`,
+        });
+      }
+    } else {
+      differences.push({
+        status: 'added',
+        label: sandboxRule.displayName,
+        live: null,
+        sandbox: sandboxRule,
+        key: `added:${sandboxRule.entryKey}`,
+      });
+    }
+  });
+
+  unmatchedLive.forEach((liveRule) => {
+    if (!liveRule) return;
+    differences.push({
+      status: 'removed',
+      label: liveRule.displayName,
+      live: liveRule,
+      sandbox: null,
+      key: `removed:${liveRule.entryKey}`,
+    });
+  });
+
+  const compareStrings = typeof localeSort === 'function'
+    ? (a, b) => localeSort(a, b)
+    : (a, b) => a.localeCompare(b);
+
+  return differences.sort((a, b) => compareStrings(a.label || '', b.label || ''));
+}
+
+function formatRestoreRehearsalRuleScenarioLines(rule, langTexts) {
+  if (!rule) {
+    return [];
+  }
+  const fallbackTexts = texts.en || {};
+  const logicLabel = langTexts.restoreRehearsalRuleLogicLabel
+    || fallbackTexts.restoreRehearsalRuleLogicLabel
+    || 'Scenario logic';
+  const baseLabel = langTexts.restoreRehearsalRuleBaseLabel
+    || fallbackTexts.restoreRehearsalRuleBaseLabel
+    || 'Base scenario';
+  const multiplierLabel = langTexts.restoreRehearsalRuleMultiplierLabel
+    || fallbackTexts.restoreRehearsalRuleMultiplierLabel
+    || 'Multiplier';
+  const requiredLabel = langTexts.restoreRehearsalRuleRequiredLabel
+    || texts[currentLang]?.projectFields?.requiredScenarios
+    || fallbackTexts.projectFields?.requiredScenarios
+    || 'Required scenarios';
+  const alwaysLabel = langTexts.restoreRehearsalRuleAlwaysLabel
+    || fallbackTexts.restoreRehearsalRuleAlwaysLabel
+    || 'Always active';
+  const noneLabel = langTexts.restoreRehearsalRuleNone
+    || fallbackTexts.restoreRehearsalRuleNone
+    || 'None';
+
+  let logicText = fallbackTexts.autoGearScenarioModeAll || 'Require every selected scenario';
+  if (rule.scenarioLogic === 'any') {
+    logicText = texts[currentLang]?.autoGearScenarioModeAny
+      || fallbackTexts.autoGearScenarioModeAny
+      || 'Match any selected scenario';
+  } else if (rule.scenarioLogic === 'multiplier') {
+    logicText = texts[currentLang]?.autoGearScenarioModeMultiplier
+      || fallbackTexts.autoGearScenarioModeMultiplier
+      || 'Multiply when combined';
+  } else {
+    logicText = texts[currentLang]?.autoGearScenarioModeAll
+      || fallbackTexts.autoGearScenarioModeAll
+      || 'Require every selected scenario';
+  }
+
+  const lines = [`${logicLabel}: ${logicText}`];
+
+  if (rule.scenarioPrimary) {
+    lines.push(`${baseLabel}: ${rule.scenarioPrimary}`);
+  }
+
+  if (rule.scenarioLogic === 'multiplier' && rule.scenarioMultiplier !== 1) {
+    lines.push(`${multiplierLabel}: ×${formatNumberForComparison(rule.scenarioMultiplier)}`);
+  }
+
+  if (rule.scenarios && rule.scenarios.length) {
+    lines.push(`${requiredLabel}: ${rule.scenarios.join(' + ')}`);
+  } else {
+    lines.push(`${requiredLabel}: ${noneLabel}`);
+  }
+
+  if (rule.always) {
+    lines.push(alwaysLabel);
+  }
+
+  return lines;
+}
+
+function createRestoreRehearsalRuleList(entries, emptyText) {
+  const list = document.createElement('ul');
+  list.className = 'restore-rehearsal-rule-list';
+  const lines = Array.isArray(entries) ? entries.filter((line) => typeof line === 'string' && line.trim()) : [];
+  if (!lines.length) {
+    const emptyItem = document.createElement('li');
+    emptyItem.textContent = emptyText;
+    list.appendChild(emptyItem);
+    return list;
+  }
+  lines.forEach((line) => {
+    const item = document.createElement('li');
+    item.textContent = line;
+    list.appendChild(item);
+  });
+  return list;
+}
+
+function createRestoreRehearsalRuleSection(label, entries, emptyText) {
+  const section = document.createElement('div');
+  section.className = 'restore-rehearsal-rule-section';
+  const heading = document.createElement('span');
+  heading.className = 'restore-rehearsal-rule-section-label';
+  heading.textContent = label;
+  section.appendChild(heading);
+  section.appendChild(createRestoreRehearsalRuleList(entries, emptyText));
+  return section;
+}
+
+function createRestoreRehearsalRuleColumn(title, rule, variant, langTexts, emptyText) {
+  const column = document.createElement('div');
+  column.className = 'restore-rehearsal-rule-column';
+  if (variant) {
+    column.classList.add(`restore-rehearsal-rule-column--${variant}`);
+  }
+  const heading = document.createElement('div');
+  heading.className = 'restore-rehearsal-rule-column-title';
+  heading.textContent = title;
+  column.appendChild(heading);
+
+  const additions = rule ? rule.addItems.map((item) => formatRestoreRehearsalRuleItem(item)).filter(Boolean) : [];
+  column.appendChild(createRestoreRehearsalRuleSection(
+    langTexts.restoreRehearsalRuleAddsLabel
+      || texts.en?.restoreRehearsalRuleAddsLabel
+      || 'Automatic additions',
+    additions,
+    emptyText,
+  ));
+
+  const removals = rule ? rule.removeItems.map((item) => formatRestoreRehearsalRuleItem(item)).filter(Boolean) : [];
+  column.appendChild(createRestoreRehearsalRuleSection(
+    langTexts.restoreRehearsalRuleRemovesLabel
+      || texts.en?.restoreRehearsalRuleRemovesLabel
+      || 'Automatic removals',
+    removals,
+    emptyText,
+  ));
+
+  const scenarioLines = formatRestoreRehearsalRuleScenarioLines(rule, langTexts);
+  column.appendChild(createRestoreRehearsalRuleSection(
+    langTexts.restoreRehearsalRuleScenariosLabel
+      || texts.en?.restoreRehearsalRuleScenariosLabel
+      || 'Scenario scope',
+    scenarioLines,
+    emptyText,
+  ));
+
+  return column;
+}
+
+function renderRestoreRehearsalRuleDiff(differences) {
+  if (!restoreRehearsalRuleSectionEl || !restoreRehearsalRuleListEl || !restoreRehearsalRuleEmptyEl) {
+    return;
+  }
+  const lang = typeof currentLang === 'string' && texts[currentLang] ? currentLang : 'en';
+  const langTexts = texts[lang] || texts.en || {};
+  restoreRehearsalRuleListEl.innerHTML = '';
+  const hasDifferences = Array.isArray(differences) && differences.length > 0;
+  if (!hasDifferences) {
+    if (restoreRehearsalRuleEmptyEl) {
+      restoreRehearsalRuleEmptyEl.textContent = langTexts.restoreRehearsalRuleEmpty
+        || texts.en?.restoreRehearsalRuleEmpty
+        || 'No automatic gear rule differences found.';
+      restoreRehearsalRuleEmptyEl.removeAttribute('hidden');
+    }
+    restoreRehearsalRuleSectionEl.removeAttribute('hidden');
+    if (restoreRehearsalActionsEl) {
+      restoreRehearsalActionsEl.removeAttribute('hidden');
+    }
+    return;
+  }
+  restoreRehearsalRuleEmptyEl.setAttribute('hidden', '');
+  const liveTitle = langTexts.restoreRehearsalLiveColumn
+    || texts.en?.restoreRehearsalLiveColumn
+    || 'Live profile';
+  const sandboxTitle = langTexts.restoreRehearsalSandboxColumn
+    || texts.en?.restoreRehearsalSandboxColumn
+    || 'Sandbox import';
+  const emptyText = langTexts.restoreRehearsalRuleNone
+    || texts.en?.restoreRehearsalRuleNone
+    || 'None';
+
+  differences.forEach((entry) => {
+    if (!entry) return;
+    const item = document.createElement('li');
+    const typeClass = entry.status ? ` diff-${entry.status}` : '';
+    item.className = `diff-entry${typeClass}`;
+
+    const header = document.createElement('div');
+    header.className = 'diff-entry-header';
+
+    const path = document.createElement('div');
+    path.className = 'diff-path';
+    const fallbackLabel = entry.label
+      || entry.sandbox?.displayName
+      || entry.live?.displayName
+      || langTexts.restoreRehearsalRuleFallback
+      || texts.en?.restoreRehearsalRuleFallback
+      || 'Automatic rule change';
+    path.textContent = fallbackLabel;
+    header.appendChild(path);
+
+    header.appendChild(createDiffStatusBadge(entry.status || 'changed'));
+    item.appendChild(header);
+
+    const columns = document.createElement('div');
+    columns.className = 'restore-rehearsal-rule-columns';
+    if (entry.status === 'changed') {
+      columns.classList.add('restore-rehearsal-rule-columns--split');
+    }
+
+    if (entry.live) {
+      const variant = entry.status === 'added' ? null : 'removed';
+      columns.appendChild(createRestoreRehearsalRuleColumn(liveTitle, entry.live, variant, langTexts, emptyText));
+    }
+    if (entry.sandbox) {
+      const variant = entry.status === 'removed' ? null : 'added';
+      columns.appendChild(createRestoreRehearsalRuleColumn(sandboxTitle, entry.sandbox, variant, langTexts, emptyText));
+    }
+
+    item.appendChild(columns);
+    restoreRehearsalRuleListEl.appendChild(item);
+  });
+
+  restoreRehearsalRuleSectionEl.removeAttribute('hidden');
+  if (restoreRehearsalActionsEl) {
+    restoreRehearsalActionsEl.removeAttribute('hidden');
+  }
+}
+
+function getRestoreRehearsalLiveSnapshot() {
+  const snapshot = typeof exportAllData === 'function' ? exportAllData() : {};
+  const data = isPlainObject(snapshot) ? snapshot : {};
+  return {
+    counts: summarizeCountsFromData(data),
+    rules: normalizeRestoreRehearsalRules(data.autoGearRules, 'live'),
+  };
+}
+
 function resetRestoreRehearsalState(options = {}) {
   const { keepStatus = false } = options || {};
   if (restoreRehearsalFileNameEl) {
@@ -584,6 +1103,19 @@ function resetRestoreRehearsalState(options = {}) {
       restoreRehearsalTableBodyEl.removeChild(restoreRehearsalTableBodyEl.firstChild);
     }
   }
+  if (restoreRehearsalRuleSectionEl) {
+    restoreRehearsalRuleSectionEl.setAttribute('hidden', '');
+  }
+  if (restoreRehearsalRuleListEl) {
+    restoreRehearsalRuleListEl.innerHTML = '';
+  }
+  if (restoreRehearsalRuleEmptyEl) {
+    restoreRehearsalRuleEmptyEl.setAttribute('hidden', '');
+  }
+  if (restoreRehearsalActionsEl) {
+    restoreRehearsalActionsEl.setAttribute('hidden', '');
+  }
+  restoreRehearsalLastSnapshot = null;
   if (restoreRehearsalInputEl) {
     restoreRehearsalInputEl.value = '';
   }
@@ -669,7 +1201,7 @@ function applyRestoreRehearsalDifferenceCell(cell, label, diff) {
   cell.classList.add(diff > 0 ? 'restore-rehearsal-diff-positive' : 'restore-rehearsal-diff-negative');
 }
 
-function renderRestoreRehearsalResults(rows) {
+function renderRestoreRehearsalResults(rows, ruleDiff) {
   if (!restoreRehearsalTableBodyEl || !restoreRehearsalStatusEl) return;
   while (restoreRehearsalTableBodyEl.firstChild) {
     restoreRehearsalTableBodyEl.removeChild(restoreRehearsalTableBodyEl.firstChild);
@@ -699,6 +1231,7 @@ function renderRestoreRehearsalResults(rows) {
     restoreRehearsalTableEl.removeAttribute('hidden');
   }
   restoreRehearsalStatusEl.textContent = formatRestoreRehearsalSummary(rows);
+  renderRestoreRehearsalRuleDiff(Array.isArray(ruleDiff) ? ruleDiff : []);
 }
 
 function runRestoreRehearsal(file) {
@@ -715,6 +1248,7 @@ function runRestoreRehearsal(file) {
     .then((raw) => {
       const mode = getSelectedRestoreRehearsalMode();
       let sandboxCounts;
+      let sandboxRules = [];
       if (mode === 'project') {
         const sanitizedPayload = sanitizeBackupPayload(raw);
         if (!sanitizedPayload || !sanitizedPayload.trim()) {
@@ -729,6 +1263,7 @@ function runRestoreRehearsal(file) {
           throw mismatchError;
         }
         sandboxCounts = summarizeProjectBundle(parsed);
+        sandboxRules = normalizeRestoreRehearsalRules(parsed.autoGearRules, 'sandbox');
       } else {
         const sanitizedPayload = sanitizeBackupPayload(raw);
         if (!sanitizedPayload || !sanitizedPayload.trim()) {
@@ -741,17 +1276,31 @@ function runRestoreRehearsal(file) {
           throw mismatchError;
         }
         const { data } = extractBackupSections(parsed);
-        sandboxCounts = summarizeCountsFromData(isPlainObject(data) ? data : {});
+        const normalizedData = isPlainObject(data) ? data : {};
+        sandboxCounts = summarizeCountsFromData(normalizedData);
+        sandboxRules = normalizeRestoreRehearsalRules(normalizedData.autoGearRules, 'sandbox');
       }
-      const liveCounts = getRestoreRehearsalLiveCounts();
+      const liveSnapshot = getRestoreRehearsalLiveSnapshot();
+      const liveCounts = liveSnapshot && isPlainObject(liveSnapshot.counts) ? liveSnapshot.counts : {};
+      const liveRules = liveSnapshot && Array.isArray(liveSnapshot.rules) ? liveSnapshot.rules : [];
       const rows = buildRestoreRehearsalRows(liveCounts, sandboxCounts);
-      renderRestoreRehearsalResults(rows);
+      const ruleDiff = buildRestoreRehearsalRuleDiff(liveRules, sandboxRules);
+      renderRestoreRehearsalResults(rows, ruleDiff);
+      restoreRehearsalLastSnapshot = {
+        fileName: typeof file.name === 'string' ? file.name : '',
+        mode,
+        processedAt: Date.now(),
+        live: { counts: liveCounts, rules: liveRules },
+        sandbox: { counts: sandboxCounts, rules: sandboxRules },
+        diff: ruleDiff,
+      };
       if (restoreRehearsalInputEl) {
         restoreRehearsalInputEl.value = '';
       }
     })
     .catch((error) => {
       console.warn('Restore rehearsal failed', error);
+      restoreRehearsalLastSnapshot = null;
       if (restoreRehearsalStatusEl) {
         let failureMessage;
         if (error && error.code === 'restore-rehearsal-project-mismatch') {
@@ -771,6 +1320,12 @@ function runRestoreRehearsal(file) {
       if (restoreRehearsalTableEl) {
         restoreRehearsalTableEl.setAttribute('hidden', '');
       }
+      if (restoreRehearsalRuleSectionEl) {
+        restoreRehearsalRuleSectionEl.setAttribute('hidden', '');
+      }
+      if (restoreRehearsalActionsEl) {
+        restoreRehearsalActionsEl.setAttribute('hidden', '');
+      }
     })
     .finally(() => {
       if (restoreRehearsalInputEl) {
@@ -781,6 +1336,54 @@ function runRestoreRehearsal(file) {
         }
       }
     });
+}
+
+function handleRestoreRehearsalProceed() {
+  const lang = typeof currentLang === 'string' && texts[currentLang] ? currentLang : 'en';
+  const langTexts = texts[lang] || texts.en || {};
+  if (!restoreRehearsalLastSnapshot) {
+    if (restoreRehearsalStatusEl) {
+      const readyText = langTexts.restoreRehearsalReady || texts.en?.restoreRehearsalReady || '';
+      restoreRehearsalStatusEl.textContent = readyText;
+    }
+    return;
+  }
+  const message = langTexts.restoreRehearsalProceedMessage
+    || texts.en?.restoreRehearsalProceedMessage
+    || 'Sandbox snapshot staged. Live data remains untouched until you perform a full restore.';
+  if (restoreRehearsalStatusEl) {
+    restoreRehearsalStatusEl.textContent = message;
+  }
+  if (typeof document !== 'undefined' && typeof document.dispatchEvent === 'function') {
+    try {
+      document.dispatchEvent(new CustomEvent('restoreRehearsalProceed', {
+        detail: {
+          fileName: restoreRehearsalLastSnapshot.fileName,
+          mode: restoreRehearsalLastSnapshot.mode,
+          processedAt: restoreRehearsalLastSnapshot.processedAt,
+          sandboxCounts: restoreRehearsalLastSnapshot.sandbox?.counts || {},
+          ruleChanges: Array.isArray(restoreRehearsalLastSnapshot.diff)
+            ? restoreRehearsalLastSnapshot.diff.length
+            : 0,
+        },
+      }));
+    } catch (eventError) {
+      console.warn('Restore rehearsal proceed notification failed', eventError);
+    }
+  }
+}
+
+function handleRestoreRehearsalAbort() {
+  const lang = typeof currentLang === 'string' && texts[currentLang] ? currentLang : 'en';
+  const langTexts = texts[lang] || texts.en || {};
+  const message = langTexts.restoreRehearsalAbortMessage
+    || texts.en?.restoreRehearsalAbortMessage
+    || 'Rehearsal sandbox cleared. Live data remains untouched.';
+  restoreRehearsalLastSnapshot = null;
+  resetRestoreRehearsalState({ keepStatus: true });
+  if (restoreRehearsalStatusEl) {
+    restoreRehearsalStatusEl.textContent = message;
+  }
 }
 
 function saveCurrentSession(options = {}) {
@@ -5413,6 +6016,16 @@ if (restoreRehearsalCloseButtonEl) {
 if (restoreRehearsalBrowseButtonEl && restoreRehearsalInputEl) {
   restoreRehearsalBrowseButtonEl.addEventListener('click', () => {
     restoreRehearsalInputEl.click();
+  });
+}
+if (restoreRehearsalProceedButtonEl) {
+  restoreRehearsalProceedButtonEl.addEventListener('click', () => {
+    handleRestoreRehearsalProceed();
+  });
+}
+if (restoreRehearsalAbortButtonEl) {
+  restoreRehearsalAbortButtonEl.addEventListener('click', () => {
+    handleRestoreRehearsalAbort();
   });
 }
 

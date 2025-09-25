@@ -31,7 +31,10 @@ update the repository or hand off a project at the end of the day.
 4. **Restore in isolation.** Launch a private browsing window or secondary
    profile, stay offline, import the backup and bundle, and verify that the
    project selector, automatic gear rules and offline indicator all mirror the
-   source machine. Delete the temporary profile after confirmation.
+   source machine. Use **Settings → Backup & Restore → Restore rehearsal** to
+   review the rule-by-rule diff before you load the snapshot so additions,
+   removals and scenario scope changes are confirmed without touching live
+   storage. Delete the temporary profile after confirmation.
 5. **Review data & storage dashboard.** Open **Settings → Data & Storage** to
    ensure counts for projects, backups and custom devices match expectations.
 

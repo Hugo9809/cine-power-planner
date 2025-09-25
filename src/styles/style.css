@@ -1385,6 +1385,97 @@ main.legal-content {
   font-weight: 600;
 }
 
+.restore-rehearsal-rule-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--panel-border) 55%, transparent);
+  border-radius: var(--border-radius);
+  padding: 0.9rem;
+  background: color-mix(in srgb, var(--surface-color) 96%, var(--accent-color) 4%);
+}
+
+.restore-rehearsal-rule-preview h5 {
+  margin: 0;
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-xs));
+}
+
+.restore-rehearsal-rule-columns {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.restore-rehearsal-rule-columns--split {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.restore-rehearsal-rule-column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  border: 1px solid color-mix(in srgb, var(--panel-border) 65%, transparent);
+  border-radius: calc(var(--border-radius) * 0.85);
+  padding: 0.75rem;
+  background: color-mix(in srgb, var(--surface-color) 98%, transparent);
+}
+
+.restore-rehearsal-rule-column--added {
+  border-color: color-mix(in srgb, var(--success-color) 55%, var(--panel-border) 45%);
+  background: color-mix(in srgb, var(--surface-color) 90%, var(--success-color) 10%);
+}
+
+.restore-rehearsal-rule-column--removed {
+  border-color: color-mix(in srgb, var(--danger-color) 55%, var(--panel-border) 45%);
+  background: color-mix(in srgb, var(--surface-color) 90%, var(--danger-color) 10%);
+}
+
+.restore-rehearsal-rule-column-title {
+  font-weight: var(--font-weight-medium);
+  color: color-mix(in srgb, var(--text-color) 92%, transparent);
+}
+
+.restore-rehearsal-rule-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.restore-rehearsal-rule-section-label {
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-xxs));
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: color-mix(in srgb, var(--text-color) 70%, transparent);
+}
+
+.restore-rehearsal-rule-list {
+  margin: 0;
+  padding-left: 1.1rem;
+  list-style: disc;
+  color: color-mix(in srgb, var(--text-color) 92%, transparent);
+}
+
+.restore-rehearsal-rule-list li {
+  line-height: 1.4;
+}
+
+.restore-rehearsal-rule-list li + li {
+  margin-top: 0.25rem;
+}
+
+.restore-rehearsal-rule-note {
+  font-style: italic;
+  color: color-mix(in srgb, var(--text-color) 70%, transparent);
+}
+
+.restore-rehearsal-actions {
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+.restore-rehearsal-actions button {
+  min-width: 12rem;
+}
+
 .diff-entry {
   display: flex;
   flex-direction: column;
@@ -1519,6 +1610,12 @@ body.high-contrast .diff-entry.diff-removed,
 html.high-contrast .diff-entry.diff-changed,
 body.high-contrast .diff-entry.diff-changed {
   background: var(--background-color);
+}
+
+html.high-contrast .restore-rehearsal-rule-column,
+body.high-contrast .restore-rehearsal-rule-column {
+  background: var(--background-color);
+  border-color: var(--text-color);
 }
 
 html.high-contrast .diff-status-badge,

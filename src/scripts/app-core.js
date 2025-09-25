@@ -6565,6 +6565,21 @@ function setLanguage(lang) {
   if (restoreRehearsalStatus) {
     restoreRehearsalStatus.textContent = texts[lang].restoreRehearsalReady || '';
   }
+  if (restoreRehearsalRuleHeading) {
+    restoreRehearsalRuleHeading.textContent = texts[lang].restoreRehearsalRuleHeading
+      || texts.en?.restoreRehearsalRuleHeading
+      || restoreRehearsalRuleHeading.textContent;
+  }
+  if (restoreRehearsalRuleIntro) {
+    restoreRehearsalRuleIntro.textContent = texts[lang].restoreRehearsalRuleIntro
+      || texts.en?.restoreRehearsalRuleIntro
+      || restoreRehearsalRuleIntro.textContent;
+  }
+  if (restoreRehearsalRuleEmpty) {
+    restoreRehearsalRuleEmpty.textContent = texts[lang].restoreRehearsalRuleEmpty
+      || texts.en?.restoreRehearsalRuleEmpty
+      || restoreRehearsalRuleEmpty.textContent;
+  }
   if (restoreRehearsalTableCaption) {
     restoreRehearsalTableCaption.textContent = texts[lang].restoreRehearsalTableCaption || restoreRehearsalTableCaption.textContent;
   }
@@ -6585,6 +6600,30 @@ function setLanguage(lang) {
     setButtonLabelWithIcon(restoreRehearsalCloseButton, closeLabel, ICON_GLYPHS.circleX);
     restoreRehearsalCloseButton.setAttribute('title', closeLabel);
     restoreRehearsalCloseButton.setAttribute('aria-label', closeLabel);
+  }
+  if (restoreRehearsalProceedButton) {
+    const proceedLabel = texts[lang].restoreRehearsalProceed
+      || texts.en?.restoreRehearsalProceed
+      || 'Continue rehearsal restore';
+    const proceedHelp = texts[lang].restoreRehearsalProceedHelp
+      || texts.en?.restoreRehearsalProceedHelp
+      || proceedLabel;
+    setButtonLabelWithIcon(restoreRehearsalProceedButton, proceedLabel, ICON_GLYPHS.check);
+    restoreRehearsalProceedButton.setAttribute('data-help', proceedHelp);
+    restoreRehearsalProceedButton.setAttribute('title', proceedHelp);
+    restoreRehearsalProceedButton.setAttribute('aria-label', proceedHelp);
+  }
+  if (restoreRehearsalAbortButton) {
+    const abortLabel = texts[lang].restoreRehearsalAbort
+      || texts.en?.restoreRehearsalAbort
+      || 'Abort rehearsal';
+    const abortHelp = texts[lang].restoreRehearsalAbortHelp
+      || texts.en?.restoreRehearsalAbortHelp
+      || abortLabel;
+    setButtonLabelWithIcon(restoreRehearsalAbortButton, abortLabel, ICON_GLYPHS.circleX);
+    restoreRehearsalAbortButton.setAttribute('data-help', abortHelp);
+    restoreRehearsalAbortButton.setAttribute('title', abortHelp);
+    restoreRehearsalAbortButton.setAttribute('aria-label', abortHelp);
   }
   if (factoryResetButton) {
     const resetLabel = texts[lang].factoryResetButton || "Factory reset";
@@ -16475,6 +16514,11 @@ const restoreRehearsalFileLabel = document.getElementById("restoreRehearsalFileL
 const restoreRehearsalBrowse = document.getElementById("restoreRehearsalBrowse");
 const restoreRehearsalFileName = document.getElementById("restoreRehearsalFileName");
 const restoreRehearsalStatus = document.getElementById("restoreRehearsalStatus");
+const restoreRehearsalRuleHeading = document.getElementById("restoreRehearsalRuleHeading");
+const restoreRehearsalRuleIntro = document.getElementById("restoreRehearsalRuleIntro");
+const restoreRehearsalRuleEmpty = document.getElementById("restoreRehearsalRuleEmpty");
+const restoreRehearsalProceedButton = document.getElementById("restoreRehearsalProceed");
+const restoreRehearsalAbortButton = document.getElementById("restoreRehearsalAbort");
 const restoreRehearsalTable = document.getElementById("restoreRehearsalTable");
 const restoreRehearsalTableCaption = document.getElementById("restoreRehearsalTableCaption");
 const restoreRehearsalMetricHeader = document.getElementById("restoreRehearsalMetricHeader");

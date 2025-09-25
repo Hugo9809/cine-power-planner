@@ -473,6 +473,30 @@ const texts = {
       "File doesn't look like a full app backup. Double-check the source and try again.",
     restoreRehearsalProjectMismatch:
       "File doesn't look like a project bundle. Double-check the source and try again.",
+    restoreRehearsalRuleHeading: "Automatic gear rule changes",
+    restoreRehearsalRuleIntro:
+      "Compare every automatic gear rule before loading the sandbox. Live rules stay untouched.",
+    restoreRehearsalRuleEmpty: "No automatic gear rule differences found.",
+    restoreRehearsalRuleAddsLabel: "Automatic additions",
+    restoreRehearsalRuleRemovesLabel: "Automatic removals",
+    restoreRehearsalRuleScenariosLabel: "Scenario scope",
+    restoreRehearsalRuleNone: "None",
+    restoreRehearsalRuleLogicLabel: "Scenario logic",
+    restoreRehearsalRuleBaseLabel: "Base scenario",
+    restoreRehearsalRuleMultiplierLabel: "Multiplier",
+    restoreRehearsalRuleRequiredLabel: "Required scenarios",
+    restoreRehearsalRuleAlwaysLabel: "Always active",
+    restoreRehearsalRuleFallback: "Automatic rule change",
+    restoreRehearsalProceed: "Continue rehearsal restore",
+    restoreRehearsalProceedHelp:
+      "Stage the sandbox snapshot to continue the rehearsal.",
+    restoreRehearsalProceedMessage:
+      "Sandbox snapshot staged. Live data remains untouched until you perform a full restore.",
+    restoreRehearsalAbort: "Abort rehearsal",
+    restoreRehearsalAbortHelp:
+      "Discard the sandbox snapshot and keep live data unchanged.",
+    restoreRehearsalAbortMessage:
+      "Rehearsal sandbox cleared. Live data remains untouched.",
     restoreRehearsalTableCaption: "Backup rehearsal comparison",
     restoreRehearsalMetricColumn: "Data type",
     restoreRehearsalLiveColumn: "Live profile",
@@ -1989,6 +2013,30 @@ const texts = {
       "File doesn't look like a full app backup. Double-check the source and try again.",
     restoreRehearsalProjectMismatch:
       "File doesn't look like a project bundle. Double-check the source and try again.",
+    restoreRehearsalRuleHeading: "Modifiche alle regole automatiche",
+    restoreRehearsalRuleIntro:
+      "Confronta ogni regola automatica prima di caricare l'ambiente di prova. Le regole attive restano intatte.",
+    restoreRehearsalRuleEmpty: "Nessuna differenza rilevata nelle regole automatiche.",
+    restoreRehearsalRuleAddsLabel: "Aggiunte automatiche",
+    restoreRehearsalRuleRemovesLabel: "Rimozioni automatiche",
+    restoreRehearsalRuleScenariosLabel: "Ambito degli scenari",
+    restoreRehearsalRuleNone: "Nessuno",
+    restoreRehearsalRuleLogicLabel: "Logica dello scenario",
+    restoreRehearsalRuleBaseLabel: "Scenario di base",
+    restoreRehearsalRuleMultiplierLabel: "Moltiplicatore",
+    restoreRehearsalRuleRequiredLabel: "Scenari richiesti",
+    restoreRehearsalRuleAlwaysLabel: "Sempre attivo",
+    restoreRehearsalRuleFallback: "Modifica automatica della regola",
+    restoreRehearsalProceed: "Prosegui con il ripristino simulato",
+    restoreRehearsalProceedHelp:
+      "Prepara l'istantanea della sandbox per continuare la prova.",
+    restoreRehearsalProceedMessage:
+      "Istantanea della sandbox pronta. I dati live restano invariati finché non esegui un ripristino completo.",
+    restoreRehearsalAbort: "Interrompi la prova",
+    restoreRehearsalAbortHelp:
+      "Scarta l'istantanea della sandbox e mantieni i dati live.",
+    restoreRehearsalAbortMessage:
+      "Sandbox della prova svuotata. I dati live restano intatti.",
     restoreRehearsalTableCaption: "Confronto prova di ripristino",
     restoreRehearsalMetricColumn: "Tipo di dato",
     restoreRehearsalLiveColumn: "Profilo attivo",
@@ -3084,6 +3132,30 @@ const texts = {
       "File doesn't look like a full app backup. Double-check the source and try again.",
     restoreRehearsalProjectMismatch:
       "File doesn't look like a project bundle. Double-check the source and try again.",
+    restoreRehearsalRuleHeading: "Cambios en las reglas automáticas",
+    restoreRehearsalRuleIntro:
+      "Compara cada regla automática antes de cargar el entorno de ensayo. Las reglas en vivo se mantienen intactas.",
+    restoreRehearsalRuleEmpty: "No se encontraron diferencias en las reglas automáticas.",
+    restoreRehearsalRuleAddsLabel: "Adiciones automáticas",
+    restoreRehearsalRuleRemovesLabel: "Eliminaciones automáticas",
+    restoreRehearsalRuleScenariosLabel: "Alcance de escenarios",
+    restoreRehearsalRuleNone: "Ninguno",
+    restoreRehearsalRuleLogicLabel: "Lógica de escenario",
+    restoreRehearsalRuleBaseLabel: "Escenario base",
+    restoreRehearsalRuleMultiplierLabel: "Multiplicador",
+    restoreRehearsalRuleRequiredLabel: "Escenarios requeridos",
+    restoreRehearsalRuleAlwaysLabel: "Siempre activo",
+    restoreRehearsalRuleFallback: "Cambio de regla automática",
+    restoreRehearsalProceed: "Continuar ensayo de restauración",
+    restoreRehearsalProceedHelp:
+      "Preparar la instantánea del entorno aislado para seguir con el ensayo.",
+    restoreRehearsalProceedMessage:
+      "Instantánea del entorno de ensayo preparada. Los datos en vivo permanecen intactos hasta ejecutar una restauración completa.",
+    restoreRehearsalAbort: "Abortar ensayo",
+    restoreRehearsalAbortHelp:
+      "Descartar la instantánea del entorno de ensayo y mantener los datos en vivo.",
+    restoreRehearsalAbortMessage:
+      "Entorno de ensayo borrado. Los datos en vivo permanecen sin cambios.",
     restoreRehearsalTableCaption: "Comparación del ensayo de restauración",
     restoreRehearsalMetricColumn: "Tipo de dato",
     restoreRehearsalLiveColumn: "Perfil en vivo",
@@ -4189,6 +4261,30 @@ const texts = {
       "File doesn't look like a full app backup. Double-check the source and try again.",
     restoreRehearsalProjectMismatch:
       "File doesn't look like a project bundle. Double-check the source and try again.",
+    restoreRehearsalRuleHeading: "Modifications des règles automatiques",
+    restoreRehearsalRuleIntro:
+      "Comparez chaque règle d'ajout automatique avant de charger le bac à sable. Les règles actives restent inchangées.",
+    restoreRehearsalRuleEmpty: "Aucune différence détectée dans les règles automatiques.",
+    restoreRehearsalRuleAddsLabel: "Ajouts automatiques",
+    restoreRehearsalRuleRemovesLabel: "Suppressions automatiques",
+    restoreRehearsalRuleScenariosLabel: "Périmètre des scénarios",
+    restoreRehearsalRuleNone: "Aucun",
+    restoreRehearsalRuleLogicLabel: "Logique de scénario",
+    restoreRehearsalRuleBaseLabel: "Scénario de base",
+    restoreRehearsalRuleMultiplierLabel: "Multiplicateur",
+    restoreRehearsalRuleRequiredLabel: "Scénarios requis",
+    restoreRehearsalRuleAlwaysLabel: "Toujours actif",
+    restoreRehearsalRuleFallback: "Modification de règle automatique",
+    restoreRehearsalProceed: "Poursuivre la restauration simulée",
+    restoreRehearsalProceedHelp:
+      "Préparez l'instantané du bac à sable pour continuer la répétition.",
+    restoreRehearsalProceedMessage:
+      "Instantané du bac à sable prêt. Les données actives restent intactes jusqu'à la restauration complète.",
+    restoreRehearsalAbort: "Annuler la répétition",
+    restoreRehearsalAbortHelp:
+      "Ignorer l'instantané du bac à sable et conserver les données actives.",
+    restoreRehearsalAbortMessage:
+      "Bac à sable de répétition effacé. Les données actives restent inchangées.",
     restoreRehearsalTableCaption: "Comparaison de la simulation de restauration",
     restoreRehearsalMetricColumn: "Type de donnée",
     restoreRehearsalLiveColumn: "Profil actif",
@@ -5298,6 +5394,30 @@ const texts = {
       "File doesn't look like a full app backup. Double-check the source and try again.",
     restoreRehearsalProjectMismatch:
       "File doesn't look like a project bundle. Double-check the source and try again.",
+    restoreRehearsalRuleHeading: "Änderungen an automatischen Regeln",
+    restoreRehearsalRuleIntro:
+      "Vergleichen Sie alle automatischen Regeln, bevor die Sandbox geladen wird. Die Live-Regeln bleiben unangetastet.",
+    restoreRehearsalRuleEmpty: "Keine Unterschiede bei den automatischen Regeln gefunden.",
+    restoreRehearsalRuleAddsLabel: "Automatische Ergänzungen",
+    restoreRehearsalRuleRemovesLabel: "Automatische Entfernungen",
+    restoreRehearsalRuleScenariosLabel: "Szenario-Geltungsbereich",
+    restoreRehearsalRuleNone: "Keine",
+    restoreRehearsalRuleLogicLabel: "Szenariologik",
+    restoreRehearsalRuleBaseLabel: "Basisszenario",
+    restoreRehearsalRuleMultiplierLabel: "Multiplikator",
+    restoreRehearsalRuleRequiredLabel: "Erforderliche Szenarien",
+    restoreRehearsalRuleAlwaysLabel: "Immer aktiv",
+    restoreRehearsalRuleFallback: "Automatische Regeländerung",
+    restoreRehearsalProceed: "Proberestauration fortsetzen",
+    restoreRehearsalProceedHelp:
+      "Sandbox-Schnappschuss bereitstellen, um mit der Probe fortzufahren.",
+    restoreRehearsalProceedMessage:
+      "Sandbox-Schnappschuss bereitgestellt. Live-Daten bleiben unverändert, bis eine vollständige Wiederherstellung ausgeführt wird.",
+    restoreRehearsalAbort: "Probe abbrechen",
+    restoreRehearsalAbortHelp:
+      "Sandbox-Schnappschuss verwerfen und Live-Daten bewahren.",
+    restoreRehearsalAbortMessage:
+      "Probesandbox geleert. Live-Daten bleiben unangetastet.",
     restoreRehearsalTableCaption: "Vergleich der Wiederherstellungsprobe",
     restoreRehearsalMetricColumn: "Datenart",
     restoreRehearsalLiveColumn: "Live-Profil",
