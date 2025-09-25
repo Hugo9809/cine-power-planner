@@ -153,6 +153,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       legacy: legacyPrefix + 'autoGearShowBackups',
       modern: 'cameraPowerPlanner_autoGearShowBackups'
     }, {
+      legacy: legacyPrefix + 'autoGearBackupRetention',
+      modern: 'cameraPowerPlanner_autoGearBackupRetention'
+    }, {
+      legacy: legacyPrefix + 'autoGearMonitorDefaults',
+      modern: 'cameraPowerPlanner_autoGearMonitorDefaults'
+    }, {
       legacy: legacyPrefix + 'customFonts',
       modern: 'cameraPowerPlanner_customFonts',
       updateFontKey: true
