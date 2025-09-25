@@ -104,3 +104,26 @@ this triage list:
 
 Keeping this runbook nearby ensures crews can prove offline readiness, preserve user data
 and rehearse recovery workflows without relying on an internet connection.
+
+## 5. Verification logging & audits
+
+Every successful drill should leave a trail operators can reference later. After each
+rehearsal, append a short note to your verification log (or create one alongside the
+exported artifacts if it does not already exist) with:
+
+- **Timestamp and workstation.** Note the local time, browser version and machine name so
+  future crews can trace which environment proved the offline workflow.
+- **Exports inspected.** List the filenames for the planner backup, project bundle and any
+  automatic gear rule exports you validated. Include checksum values when available to
+  make integrity checks trivial.
+- **Share and restore results.** Record whether manual saves, autosaves, shareable bundles,
+  imports and automatic rollbacks behaved as expected. Document anything that required a
+  retry so auditors know what to watch during the next drill.
+- **Cache status.** Confirm the help dialog, legal pages and other locally stored Uicons or
+  helper scripts rendered correctly while offline. A quick note here proves the service
+  worker cache stayed intact.
+
+Store the log in the same folder as the verified exports on both redundant media sets. The
+auditable paper trail makes it obvious when the last offline rehearsal occurred and which
+assets were inspected, keeping save, share, import, backup and restore workflows trusted by
+every crew member.

@@ -212,9 +212,11 @@ same online or offline.
    offline workflows are airtight and that locally stored Uicons, fonts and
    helper scripts follow the project.
 8. Archive the verified backup and project bundle alongside the repository copy
-   you opened. This keeps save, share, import, backup and restore workflows
-   provably in sync from the first session and gives you redundant recovery
-   media for travel days.
+   you opened. Log the verification date, machine name and operator in the same
+   folder (mirroring the recommendations in `docs/backup-rotation-guide.md`) so
+   every crew can prove when the drill succeeded. This keeps save, share,
+   import, backup and restore workflows provably in sync from the first session
+   and gives you redundant recovery media for travel days.
 
 ## System Requirements & Browser Support
 
@@ -257,8 +259,11 @@ access.
    the interface matches the source machine and locally stored Uicons plus
    helper scripts load without flicker.
 5. **Archive with confidence.** Delete the rehearsal profile after confirming
-   everything restored cleanly, then label and file the verified exports with
-   your production’s archival checklist.
+   everything restored cleanly. Label and file the verified exports with your
+   production’s archival checklist and add a short verification log (timestamp,
+   machine, operator and notes). The paper trail makes it easy to prove that
+   save, share, import, backup and restore workflows were validated end-to-end
+   before anyone relies on them in the field.
 
 ## Everyday Workflow
 
