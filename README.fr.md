@@ -166,6 +166,7 @@ Cette routine prouve que sauvegarde, partage, import, backup et restauration fon
 - **Restaurations double tampon.** Avant tout import, une sauvegarde du contexte courant est demandée. Une fois le bundle validé, le projet restauré apparaît en tête du sélecteur.
 - **Workflows inter-appareils hors ligne.** Copiez `index.html`, `script.js`, `devices/` et vos fichiers de backup/bundle sur un support amovible, lancez depuis le disque et continuez sans connexion.
 - **Exporter en conscience.** Relisez le JSON avant partage pour vérifier le contenu. Le format étant lisible, vous pouvez supprimer ou dupliquer les entrées nécessaires.
+- **Le téléchargement manuel sécurise les exports.** Si le navigateur ou un bloqueur empêche la sauvegarde, le planner ouvre un onglet « Manual download » avec le contenu JSON. Appuyez sur `Ctrl+A`/`Ctrl+C` (`⌘A`/`⌘C` sur macOS), collez le texte dans un fichier `.json` et rangez-le avec vos sauvegardes avant de fermer l’onglet.
 - **Synchroniser avec les check-lists.** Lorsqu’un collaborateur vous envoie un bundle mis à jour, importez-le, vérifiez les horodatages `Mis à jour` et archivez le JSON précédent pour garder l’historique.
 - **Partager sans perdre le contexte.** Les bundles mémorisent langue, thème, logo et préférences pour que le destinataire retrouve un environnement familier même hors ligne.
 

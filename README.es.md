@@ -166,6 +166,7 @@ Repite esta rutina cuando se incorpore personal, se prepare una estación nueva 
 - **Restauraciones con doble buffer.** Antes de importar, se solicita guardar una copia del estado actual. Tras validar el paquete, el proyecto restaurado aparece arriba en el selector.
 - **Flujos entre dispositivos sin red.** Copia `index.html`, `script.js`, `devices/` y tus archivos de respaldo a un medio externo. Lanza la app desde disco, importa el paquete y continúa trabajando sin conectarte.
 - **Exporta con responsabilidad.** Revisa el JSON antes de compartirlo para asegurarte de que sólo incluye lo necesario. El formato es legible para editar o depurar entradas.
+- **La descarga manual protege los archivos.** Si el navegador o un bloqueador impide la descarga, el planner abre una pestaña «Manual download» con el contenido JSON. Pulsa `Ctrl+A`/`Ctrl+C` (`⌘A`/`⌘C` en macOS), pega el texto en un archivo `.json` y guárdalo junto a tus copias de seguridad antes de cerrar la pestaña.
 - **Sincroniza con checklists.** Cuando recibas un paquete actualizado, impórtalo, revisa los sellos `Actualizado` en la barra lateral y archiva el JSON anterior para mantener el historial.
 - **Comparte sin perder contexto.** Los paquetes recuerdan idioma, tema, logotipo y preferencias para que quien lo abra vea el proyecto como tú, incluso offline.
 

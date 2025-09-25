@@ -336,6 +336,10 @@ Use Cine Power Planner end-to-end with the following routine:
   make sure no extra projects or notes are included. The structure is human
   readable so you can redact or duplicate entries as needed, and the file stays
   portable even when renamed to `.cpproject` for filing.
+- **Manual download fallback safeguards exports.** If a browser or content
+  blocker stops an export, the planner opens a Manual download tab with the JSON
+  contents. Press `Ctrl+A`/`Ctrl+C` (`⌘A`/`⌘C` on macOS) to copy everything into
+  a `.json` file and store it with your backups before closing the tab.
 - **Synchronize with checklists.** When a teammate sends you an updated bundle,
   import it, review the `Updated at` timestamps in the sidebar and archive the
   previous JSON (or `.cpproject`) bundle in your storage system to maintain a

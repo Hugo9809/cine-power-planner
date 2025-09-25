@@ -166,6 +166,7 @@ Dieser kurze Ablauf sollte bei neuen Teammitgliedern, frisch eingerichteten Work
 - **Restores sind doppelt gepuffert.** Vor jedem Import wird ein Backup des aktuellen Zustands erzwungen. Danach wird das Bundle validiert und oben in der Liste platziert.
 - **Cross-Device bleibt offline.** Kopiere `index.html`, `script.js`, `devices/` sowie Backups/Bundles auf Wechseldatenträger, öffne von dort und arbeite ohne Netzwerk.
 - **Exporte prüfen.** JSON vor dem Teilen sichten, um unerwünschte Inhalte auszuschließen. Struktur ist lesbar und kann bei Bedarf redigiert werden.
+- **Manueller Download sichert Exporte ab.** Wenn Browser oder Content-Blocker den Download verhindern, öffnet der Planner einen "Manual download"-Tab mit dem JSON-Inhalt. Drücke `Strg+A`/`Strg+C` (`⌘A`/`⌘C` auf macOS), füge den Text in eine `.json`-Datei ein und archiviere sie mit deinen Backups, bevor du den Tab schließt.
 - **Mit Checklisten synchronisieren.** Bei neuen Bundles `Updated at`-Zeitstempel prüfen und alte JSONs archivieren.
 - **Kontext bewahren.** Bundles merken Sprache, Theme, Logos und Personalisierungen, damit Empfänger vertraut starten – auch offline.
 
