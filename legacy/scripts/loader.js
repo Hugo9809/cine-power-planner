@@ -234,6 +234,80 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return false;
   }
+  function isUnsafeEvalAllowed() {
+    if (typeof document === 'undefined') {
+      return true;
+    }
+    var metas = document.getElementsByTagName('meta');
+    for (var index = 0; index < metas.length; index += 1) {
+      var meta = metas[index];
+      if (!meta || typeof meta.getAttribute !== 'function') {
+        continue;
+      }
+      var httpEquiv = meta.getAttribute('http-equiv');
+      if (!httpEquiv || typeof httpEquiv !== 'string') {
+        continue;
+      }
+      if (httpEquiv.toLowerCase() !== 'content-security-policy') {
+        continue;
+      }
+      var content = meta.getAttribute('content');
+      if (!content || typeof content !== 'string') {
+        continue;
+      }
+      var lowerContent = content.toLowerCase();
+      var directives = lowerContent.split(';');
+      var scriptDirective = null;
+      var defaultDirective = null;
+      for (var dirIndex = 0; dirIndex < directives.length; dirIndex += 1) {
+        var rawDirective = directives[dirIndex];
+        if (!rawDirective) {
+          continue;
+        }
+        var directive = rawDirective.trim();
+        if (!directive) {
+          continue;
+        }
+        if (directive.indexOf('script-src') === 0) {
+          var scriptChar = directive.charAt('script-src'.length);
+          if (scriptChar && scriptChar !== ' ' && scriptChar !== "\t" && scriptChar !== "'" && scriptChar !== '"') {
+            continue;
+          }
+          scriptDirective = directive;
+        } else if (directive.indexOf('default-src') === 0) {
+          defaultDirective = directive;
+        }
+      }
+      var directiveToInspect = scriptDirective || defaultDirective;
+      if (directiveToInspect && directiveToInspect.indexOf('unsafe-eval') === -1) {
+        return false;
+      }
+      if (directiveToInspect) {
+        return true;
+      }
+    }
+    return true;
+  }
+  function detectOptionalChainingSupport() {
+    if (typeof Function !== 'function') {
+      return null;
+    }
+    if (!isUnsafeEvalAllowed()) {
+      return null;
+    }
+    try {
+      var evaluator = Function('"use strict"; return ({ a: { b: 1 } })?.a?.b ?? 2 === 1;');
+      return evaluator() === true;
+    } catch (error) {
+      if (isSyntaxErrorEvent(error)) {
+        return false;
+      }
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Optional chaining detection via Function constructor failed unexpectedly. Falling back to module-based check.', error);
+      }
+      return null;
+    }
+  }
   function supportsModernFeatures(callback) {
     var cb = typeof callback === 'function' ? callback : function () {};
     if (typeof window === 'undefined') {
@@ -263,6 +337,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return;
     }
     if (typeof stringProto.includes !== 'function' || typeof stringProto.startsWith !== 'function') {
+      cb(false);
+      return;
+    }
+    var optionalSupport = detectOptionalChainingSupport();
+    if (optionalSupport === true) {
+      cb(true);
+      return;
+    }
+    if (optionalSupport === false) {
       cb(false);
       return;
     }
@@ -342,8 +425,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     next();
   }
-  var modernScripts = ['src/scripts/globalthis-polyfill.js', 'src/data/devices/index.js', 'src/data/devices/cameras.js', 'src/data/devices/monitors.js', 'src/data/devices/video.js', 'src/data/devices/fiz.js', 'src/data/devices/batteries.js', 'src/data/devices/batteryHotswaps.js', 'src/data/devices/chargers.js', 'src/data/devices/cages.js', 'src/data/devices/gearList.js', 'src/data/devices/wirelessReceivers.js', 'src/scripts/storage.js', 'src/scripts/translations.js', 'src/vendor/lz-string.min.js', 'src/vendor/lottie-light.min.js', 'src/scripts/app-core.js', 'src/scripts/app-events.js', 'src/scripts/app-setups.js', 'src/scripts/app-session.js', 'src/scripts/script.js', 'src/scripts/auto-gear-monitoring.js', 'src/scripts/overview.js', 'src/scripts/autosave-overlay.js'];
-  var legacyScripts = ['legacy/polyfills/core-js-bundle.min.js', 'legacy/polyfills/regenerator-runtime.js', 'legacy/scripts/globalthis-polyfill.js', 'legacy/data/devices/index.js', 'legacy/data/devices/cameras.js', 'legacy/data/devices/monitors.js', 'legacy/data/devices/video.js', 'legacy/data/devices/fiz.js', 'legacy/data/devices/batteries.js', 'legacy/data/devices/batteryHotswaps.js', 'legacy/data/devices/chargers.js', 'legacy/data/devices/cages.js', 'legacy/data/devices/gearList.js', 'legacy/data/devices/wirelessReceivers.js', 'legacy/scripts/storage.js', 'legacy/scripts/translations.js', 'src/vendor/lz-string.min.js', 'src/vendor/lottie-light.min.js', 'legacy/scripts/app-core.js', 'legacy/scripts/app-events.js', 'legacy/scripts/app-setups.js', 'legacy/scripts/app-session.js', 'legacy/scripts/script.js', 'legacy/scripts/auto-gear-monitoring.js', 'legacy/scripts/overview.js', 'legacy/scripts/autosave-overlay.js'];
+  var modernScripts = ['src/scripts/globalthis-polyfill.js', 'src/data/devices/index.js', 'src/data/devices/cameras.js', 'src/data/devices/monitors.js', 'src/data/devices/video.js', 'src/data/devices/fiz.js', 'src/data/devices/batteries.js', 'src/data/devices/batteryHotswaps.js', 'src/data/devices/chargers.js', 'src/data/devices/cages.js', 'src/data/devices/gearList.js', 'src/data/devices/wirelessReceivers.js', 'src/scripts/storage.js', 'src/scripts/translations.js', 'src/vendor/lz-string.min.js', 'src/vendor/lottie-light.min.js', 'src/scripts/auto-gear-weight.js', 'src/scripts/app-core.js', 'src/scripts/app-events.js', 'src/scripts/app-setups.js', 'src/scripts/app-session.js', 'src/scripts/script.js', 'src/scripts/auto-gear-monitoring.js', 'src/scripts/overview.js', 'src/scripts/autosave-overlay.js'];
+  var legacyScripts = ['legacy/polyfills/core-js-bundle.min.js', 'legacy/polyfills/regenerator-runtime.js', 'legacy/scripts/globalthis-polyfill.js', 'legacy/data/devices/index.js', 'legacy/data/devices/cameras.js', 'legacy/data/devices/monitors.js', 'legacy/data/devices/video.js', 'legacy/data/devices/fiz.js', 'legacy/data/devices/batteries.js', 'legacy/data/devices/batteryHotswaps.js', 'legacy/data/devices/chargers.js', 'legacy/data/devices/cages.js', 'legacy/data/devices/gearList.js', 'legacy/data/devices/wirelessReceivers.js', 'legacy/scripts/storage.js', 'legacy/scripts/translations.js', 'src/vendor/lz-string.min.js', 'src/vendor/lottie-light.min.js', 'legacy/scripts/auto-gear-weight.js', 'legacy/scripts/app-core.js', 'legacy/scripts/app-events.js', 'legacy/scripts/app-setups.js', 'legacy/scripts/app-session.js', 'legacy/scripts/script.js', 'legacy/scripts/auto-gear-monitoring.js', 'legacy/scripts/overview.js', 'legacy/scripts/autosave-overlay.js'];
   function startLoading() {
     supportsModernFeatures(function (supportsModern) {
       var scriptsToLoad = supportsModern ? modernScripts : legacyScripts;
