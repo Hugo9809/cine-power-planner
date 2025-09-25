@@ -19641,6 +19641,65 @@ const collectFeatureContexts = (element, baseLabelLower) => {
   return contexts.reverse();
 };
 
+const collectFeatureSearchHelpTexts = element => {
+  if (!element) return [];
+  const texts = new Set();
+  const MAX_TEXTS = 4;
+  const clean = value => {
+    if (typeof value !== 'string') return '';
+    const normalized = value.replace(/\s+/g, ' ').trim();
+    if (!normalized) return '';
+    if (normalized.length > 160) {
+      return normalized.slice(0, 160);
+    }
+    return normalized;
+  };
+  const add = value => {
+    if (texts.size >= MAX_TEXTS) return;
+    const cleaned = clean(value);
+    if (cleaned) {
+      texts.add(cleaned);
+    }
+  };
+  const addFromElement = el => {
+    if (!el) return;
+    add(el.getAttribute('data-help'));
+    add(el.getAttribute('aria-description'));
+    add(el.getAttribute('title'));
+  };
+
+  add(element.getAttribute('data-help'));
+  add(element.getAttribute('aria-description'));
+  add(element.getAttribute('title'));
+
+  const ownerDoc = element.ownerDocument || (typeof document !== 'undefined' ? document : null);
+
+  const processIdRefs = (attrName, collector) => {
+    if (!ownerDoc) return;
+    const attrValue = element.getAttribute(attrName);
+    if (!attrValue) return;
+    attrValue
+      .split(/\s+/)
+      .map(id => id && ownerDoc.getElementById(id))
+      .filter(Boolean)
+      .forEach(collector);
+  };
+
+  processIdRefs('aria-describedby', addFromElement);
+  processIdRefs('aria-labelledby', addFromElement);
+
+  if (element.labels && typeof element.labels === 'object') {
+    Array.from(element.labels).forEach(addFromElement);
+  }
+
+  if (typeof element.closest === 'function') {
+    const wrappingLabel = element.closest('label');
+    if (wrappingLabel) addFromElement(wrappingLabel);
+  }
+
+  return Array.from(texts);
+};
+
 const buildFeatureSearchEntry = (element, { label, keywords = '' }) => {
   if (!element || !label) return null;
   const baseLabel = label.trim();
@@ -19649,11 +19708,19 @@ const buildFeatureSearchEntry = (element, { label, keywords = '' }) => {
   if (!baseKey) return null;
   const baseLabelLower = baseLabel.toLowerCase();
   const contextLabels = collectFeatureContexts(element, baseLabelLower);
+  const shouldCollectHelp =
+    typeof element.hasAttribute === 'function' && element.hasAttribute('data-feature-search');
+  const helpTexts = shouldCollectHelp ? collectFeatureSearchHelpTexts(element) : [];
   let combinedLabel = baseLabel;
   if (contextLabels.length) {
     combinedLabel = `${baseLabel} (${contextLabels.join(' › ')})`;
   }
-  const combinedKeywords = [baseLabel, contextLabels.join(' '), keywords]
+  const combinedKeywords = [
+    baseLabel,
+    contextLabels.join(' '),
+    keywords,
+    helpTexts.join(' ')
+  ]
     .filter(Boolean)
     .join(' ');
   const entry = {
@@ -19664,7 +19731,8 @@ const buildFeatureSearchEntry = (element, { label, keywords = '' }) => {
     context: contextLabels,
     tokens: searchTokens(combinedKeywords),
     key: baseKey,
-    optionValue: combinedLabel
+    optionValue: combinedLabel,
+    helpTexts
   };
   const existing = featureMap.get(baseKey);
   if (!existing) {
