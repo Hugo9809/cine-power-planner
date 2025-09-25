@@ -35,3 +35,31 @@ threatening saved data.
 
 If higher-resource environments are available, the deleted suites can be restored from
 version control for extended regression testing.
+
+## Manual offline validation checklist
+
+Automated coverage now concentrates on the code paths that protect user data and
+offline workflows. Pair those suites with a short hands-on rehearsal whenever
+you prepare a release candidate or validate a workstation:
+
+1. **Prime caches while online.** Launch `index.html`, open the help dialog and
+   legal pages, then toggle each theme once so locally stored Uicons, OpenMoji
+   art and typography files stay cached.
+2. **Verify autosave health.** Create or load a project, trigger a manual save
+   (`Enter`/`Ctrl+S`/`⌘S`) and confirm the new timestamp in the selector. Open
+   **Settings → Backup & Restore** and ensure the autosave status overlay mirrors
+   the same timestamp before continuing.
+3. **Inspect data inventory.** Visit **Settings → Data & Storage** to confirm
+   project, backup, gear list and custom device counts match expectations. This
+   step catches storage issues before they risk user data.
+4. **Exercise backups and bundles.** Export a planner backup and a
+   `project-name.json` bundle, import both into an offline private profile and
+   review gear lists, automatic gear rules, runtime dashboards and favorites for
+   parity. Delete the profile after verification.
+5. **Simulate loss of connectivity.** While the verification profile stays
+   offline, refresh the planner and make sure the offline indicator appears,
+   cached assets render instantly and the restored project remains intact.
+
+Document the drill results alongside your automated test logs so every release
+carries evidence that saving, sharing, importing, backup and restore routines
+were validated end-to-end.
