@@ -10730,6 +10730,36 @@ const settingsTabsScrollPrev = document.getElementById('settingsTabsScrollPrev')
 const settingsTabsScrollNext = document.getElementById('settingsTabsScrollNext');
 let settingsTabsOverflowFrame = 0;
 
+const SETTINGS_TABS_SIDEBAR_QUERY = '(max-width: 720px)';
+const settingsTabsOrientationQuery =
+  typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+    ? window.matchMedia(SETTINGS_TABS_SIDEBAR_QUERY)
+    : null;
+
+function applySettingsTabsOrientation(matches) {
+  if (!settingsTablist) return;
+  settingsTablist.setAttribute('aria-orientation', matches ? 'vertical' : 'horizontal');
+  scheduleSettingsTabsOverflowUpdate();
+}
+
+if (settingsTabsOrientationQuery) {
+  try {
+    applySettingsTabsOrientation(settingsTabsOrientationQuery.matches);
+    const handleSettingsTabsOrientationChange = event => {
+      applySettingsTabsOrientation(event.matches);
+    };
+    if (typeof settingsTabsOrientationQuery.addEventListener === 'function') {
+      settingsTabsOrientationQuery.addEventListener('change', handleSettingsTabsOrientationChange);
+    } else if (typeof settingsTabsOrientationQuery.addListener === 'function') {
+      settingsTabsOrientationQuery.addListener(handleSettingsTabsOrientationChange);
+    }
+  } catch {
+    applySettingsTabsOrientation(false);
+  }
+} else if (settingsTablist) {
+  settingsTablist.setAttribute('aria-orientation', 'horizontal');
+}
+
 function updateSettingsTabsOverflowIndicators() {
   if (!settingsTablist || !settingsTabsContainer) {
     if (settingsTabsScrollPrev) {
