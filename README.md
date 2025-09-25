@@ -119,6 +119,7 @@ production day.
 - [Localization](#localization)
 - [Install as an App](#install-as-an-app)
 - [Device Data Workflow](#device-data-workflow)
+- [Documentation, Help & Translation Maintenance](#documentation-help--translation-maintenance)
 - [Development](#development)
 - [Troubleshooting](#troubleshooting)
 - [Feedback & Support](#feedback--support)
@@ -799,6 +800,22 @@ npm run test:data
 Add `--help` to any helper command for usage notes and review generated JSON
 diffs before opening a pull request. `npm run help` prints a summary of all
 available scripts.
+
+## Documentation, Help & Translation Maintenance
+
+Keeping the help center, printable manuals and localized READMEs current is part of every
+feature change. Follow the [Documentation, Help & Translation Maintenance Guide](docs/documentation-maintenance.md)
+whenever you ship a new workflow so offline crews inherit accurate drills, translation
+coverage and recovery instructions. Each update should:
+
+- Refresh help dialog topics and hover-help text so shortcuts, save routines and offline
+  indicators match the live build.
+- Mirror the same adjustments in every localized README and static legal page, preserving
+  guidance on saving, sharing, importing, backing up and restoring.
+- Update translation keys and selectors so language options stay synchronized with the UI
+  and remain fully functional without connectivity.
+- Rehearse the save → share → import loop after documentation edits to guarantee the printed
+  instructions, help content and offline behavior still align.
 
 ## Development
 
