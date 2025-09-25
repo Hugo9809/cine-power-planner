@@ -6,6 +6,12 @@
 
 // --- NEW SETUP MANAGEMENT FUNCTIONS ---
 
+const cineUi =
+  (typeof globalThis !== 'undefined' && globalThis.cineUi)
+  || (typeof window !== 'undefined' && window.cineUi)
+  || (typeof self !== 'undefined' && self.cineUi)
+  || null;
+
 // Generate a printable overview of the current selected setup in a new tab
 generateOverviewBtn.addEventListener('click', () => {
     if (!setupSelect.value) { // Ensure a setup is selected
@@ -231,7 +237,7 @@ function downloadSharedProject(shareFileName, includeAutoGear) {
   }
 }
 
-shareSetupBtn.addEventListener('click', () => {
+function handleShareSetupClick() {
   saveCurrentGearList();
   const setupName = getCurrentProjectName();
   const defaultName = getDefaultShareFilename(setupName);
@@ -294,115 +300,200 @@ shareSetupBtn.addEventListener('click', () => {
       shareFilenameInput.select();
     }, 0);
   }
-});
+}
+
+shareSetupBtn.addEventListener('click', handleShareSetupClick);
+
+function handleShareFormSubmit(event) {
+  event.preventDefault();
+  if (!shareFilenameInput) return;
+  const sanitized = sanitizeShareFilename(shareFilenameInput.value);
+  if (!sanitized) {
+    const invalidMessage =
+      getLocalizedText('shareFilenameInvalid')
+      || 'Please enter a valid file name to continue.';
+    shareFilenameInput.setCustomValidity(invalidMessage);
+    shareFilenameInput.reportValidity();
+    return;
+  }
+  shareFilenameInput.setCustomValidity('');
+  const shareFileName = ensureJsonExtension(sanitized);
+  const includeAutoGear = !!(
+    shareIncludeAutoGearCheckbox
+    && !shareIncludeAutoGearCheckbox.disabled
+    && shareIncludeAutoGearCheckbox.checked
+  );
+  closeDialog(shareDialog);
+  downloadSharedProject(shareFileName, includeAutoGear);
+}
 
 if (shareForm) {
-  shareForm.addEventListener('submit', event => {
-    event.preventDefault();
-    if (!shareFilenameInput) return;
-    const sanitized = sanitizeShareFilename(shareFilenameInput.value);
-    if (!sanitized) {
-      const invalidMessage =
-        getLocalizedText('shareFilenameInvalid')
-        || 'Please enter a valid file name to continue.';
-      shareFilenameInput.setCustomValidity(invalidMessage);
-      shareFilenameInput.reportValidity();
-      return;
-    }
+  shareForm.addEventListener('submit', handleShareFormSubmit);
+}
+
+function handleShareCancelClick() {
+  if (shareFilenameInput) {
     shareFilenameInput.setCustomValidity('');
-    const shareFileName = ensureJsonExtension(sanitized);
-    const includeAutoGear = !!(
-      shareIncludeAutoGearCheckbox
-      && !shareIncludeAutoGearCheckbox.disabled
-      && shareIncludeAutoGearCheckbox.checked
-    );
-    closeDialog(shareDialog);
-    downloadSharedProject(shareFileName, includeAutoGear);
-  });
+  }
+  closeDialog(shareDialog);
 }
 
 if (shareCancelBtn) {
-  shareCancelBtn.addEventListener('click', () => {
-    if (shareFilenameInput) {
-      shareFilenameInput.setCustomValidity('');
-    }
-    closeDialog(shareDialog);
-  });
+  shareCancelBtn.addEventListener('click', handleShareCancelClick);
+}
+
+function handleShareDialogCancel(event) {
+  event.preventDefault();
+  if (shareFilenameInput) {
+    shareFilenameInput.setCustomValidity('');
+  }
+  closeDialog(shareDialog);
 }
 
 if (shareDialog) {
-  shareDialog.addEventListener('cancel', event => {
-    event.preventDefault();
-    if (shareFilenameInput) {
-      shareFilenameInput.setCustomValidity('');
-    }
-    closeDialog(shareDialog);
-  });
+  shareDialog.addEventListener('cancel', handleShareDialogCancel);
+}
+
+function handleSharedLinkInputChange() {
+  if (pendingSharedLinkListener) return;
+  const file = sharedLinkInput.files && sharedLinkInput.files[0];
+  if (file) {
+    readSharedProjectFile(file);
+  }
 }
 
 if (sharedLinkInput) {
-  sharedLinkInput.addEventListener('change', () => {
-    if (pendingSharedLinkListener) return;
+  sharedLinkInput.addEventListener('change', handleSharedLinkInputChange);
+}
+
+function handleApplySharedLinkClick() {
+  if (!sharedLinkInput) {
+    return;
+  }
+  if (pendingSharedLinkListener) {
+    sharedLinkInput.removeEventListener('change', pendingSharedLinkListener);
+    pendingSharedLinkListener = null;
+  }
+  const handleSelection = () => {
+    sharedLinkInput.removeEventListener('change', handleSelection);
+    pendingSharedLinkListener = null;
     const file = sharedLinkInput.files && sharedLinkInput.files[0];
     if (file) {
       readSharedProjectFile(file);
     }
-  });
+  };
+  pendingSharedLinkListener = handleSelection;
+  sharedLinkInput.addEventListener('change', handleSelection);
+  sharedLinkInput.value = '';
+  sharedLinkInput.click();
+  if (sharedLinkInput.files && sharedLinkInput.files.length) {
+    handleSelection();
+  }
 }
 
 if (applySharedLinkBtn && sharedLinkInput) {
-  applySharedLinkBtn.addEventListener('click', () => {
-    if (pendingSharedLinkListener) {
-      sharedLinkInput.removeEventListener('change', pendingSharedLinkListener);
-      pendingSharedLinkListener = null;
-    }
-    const handleSelection = () => {
-      sharedLinkInput.removeEventListener('change', handleSelection);
-      pendingSharedLinkListener = null;
-      const file = sharedLinkInput.files && sharedLinkInput.files[0];
-      if (file) {
-        readSharedProjectFile(file);
-      }
-    };
-    pendingSharedLinkListener = handleSelection;
-    sharedLinkInput.addEventListener('change', handleSelection);
-    sharedLinkInput.value = '';
-    sharedLinkInput.click();
-    if (sharedLinkInput.files && sharedLinkInput.files.length) {
-      handleSelection();
-    }
-  });
+  applySharedLinkBtn.addEventListener('click', handleApplySharedLinkClick);
+}
+
+function handleSharedImportModeChange() {
+  if (sharedImportPromptActive) return;
+  if (lastSharedSetupData === null) return;
+  reapplySharedImportSelection();
 }
 
 if (sharedImportModeSelect) {
-  sharedImportModeSelect.addEventListener('change', () => {
-    if (sharedImportPromptActive) return;
-    if (lastSharedSetupData === null) return;
-    reapplySharedImportSelection();
-  });
+  sharedImportModeSelect.addEventListener('change', handleSharedImportModeChange);
+}
+
+function handleSharedImportSubmit(event) {
+  event.preventDefault();
+  finalizeSharedImportPrompt();
+  applyStoredSharedImport();
 }
 
 if (sharedImportForm) {
-  sharedImportForm.addEventListener('submit', event => {
-    event.preventDefault();
-    finalizeSharedImportPrompt();
-    applyStoredSharedImport();
-  });
+  sharedImportForm.addEventListener('submit', handleSharedImportSubmit);
+}
+
+function handleSharedImportCancel() {
+  finalizeSharedImportPrompt();
+  clearStoredSharedImportData();
 }
 
 if (sharedImportCancelBtn) {
-  sharedImportCancelBtn.addEventListener('click', () => {
-    finalizeSharedImportPrompt();
-    clearStoredSharedImportData();
-  });
+  sharedImportCancelBtn.addEventListener('click', handleSharedImportCancel);
+}
+
+function handleSharedImportDialogCancel(event) {
+  event.preventDefault();
+  finalizeSharedImportPrompt();
+  clearStoredSharedImportData();
 }
 
 if (sharedImportDialog) {
-  sharedImportDialog.addEventListener('cancel', event => {
-    event.preventDefault();
-    finalizeSharedImportPrompt();
-    clearStoredSharedImportData();
-  });
+  sharedImportDialog.addEventListener('cancel', handleSharedImportDialogCancel);
+}
+
+if (cineUi) {
+  try {
+    if (cineUi.controllers && typeof cineUi.controllers.register === 'function') {
+      cineUi.controllers.register('shareDialog', {
+        open: handleShareSetupClick,
+        submit: handleShareFormSubmit,
+        cancel: handleShareCancelClick,
+        dismiss: handleShareDialogCancel,
+      });
+
+      cineUi.controllers.register('sharedImportDialog', {
+        submit: handleSharedImportSubmit,
+        cancel: handleSharedImportCancel,
+        dismiss: handleSharedImportDialogCancel,
+        changeMode: handleSharedImportModeChange,
+      });
+    }
+  } catch (error) {
+    console.warn('cineUi controller registration (setups) failed', error);
+  }
+
+  try {
+    if (cineUi.interactions && typeof cineUi.interactions.register === 'function') {
+      cineUi.interactions.register('shareOpen', handleShareSetupClick);
+      cineUi.interactions.register('shareSubmit', handleShareFormSubmit);
+      cineUi.interactions.register('shareCancel', handleShareCancelClick);
+      cineUi.interactions.register('shareApplyFile', handleApplySharedLinkClick);
+      cineUi.interactions.register('shareInputChange', handleSharedLinkInputChange);
+      cineUi.interactions.register('sharedImportSubmit', handleSharedImportSubmit);
+      cineUi.interactions.register('sharedImportCancel', handleSharedImportCancel);
+    }
+  } catch (error) {
+    console.warn('cineUi interaction registration (setups) failed', error);
+  }
+
+  try {
+    if (cineUi.help && typeof cineUi.help.register === 'function') {
+      cineUi.help.register('shareProject', () => {
+        const langTexts = texts[currentLang] || {};
+        const fallbackTexts = texts.en || {};
+        return (
+          langTexts.shareSetupHelp
+          || fallbackTexts.shareSetupHelp
+          || 'Download a JSON file of the current project to share with others.'
+        );
+      });
+
+      cineUi.help.register('sharedImport', () => {
+        const langTexts = texts[currentLang] || {};
+        const fallbackTexts = texts.en || {};
+        return (
+          langTexts.applySharedLinkHelp
+          || fallbackTexts.applySharedLinkHelp
+          || 'Load the configuration from the selected project file.'
+        );
+      });
+    }
+  } catch (error) {
+    console.warn('cineUi help registration (setups) failed', error);
+  }
 }
 
 // Open feedback dialog and handle submission

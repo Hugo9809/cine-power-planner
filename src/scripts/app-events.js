@@ -29,6 +29,34 @@ function markAutoBackupDataAsRenamed(value) {
   }
 }
 
+function resolveCineUi() {
+  const scopes = [];
+
+  if (typeof globalThis !== 'undefined') scopes.push(globalThis);
+  if (typeof window !== 'undefined') scopes.push(window);
+  if (typeof self !== 'undefined') scopes.push(self);
+  if (typeof global !== 'undefined') scopes.push(global);
+
+  for (let index = 0; index < scopes.length; index += 1) {
+    const scope = scopes[index];
+    if (!scope || typeof scope !== 'object') {
+      continue;
+    }
+
+    try {
+      if (scope.cineUi && typeof scope.cineUi === 'object') {
+        return scope.cineUi;
+      }
+    } catch (error) {
+      void error;
+    }
+  }
+
+  return null;
+}
+
+const cineUi = resolveCineUi();
+
 // Language selection
 languageSelect.addEventListener("change", (event) => {
   setLanguage(event.target.value);
@@ -47,7 +75,7 @@ if (skipLink) {
 
 
 // Setup management
-saveSetupBtn.addEventListener("click", () => {
+function handleSaveSetupClick() {
   const typedName = setupNameInput.value.trim();
   if (!typedName) {
     alert(texts[currentLang].alertSetupName);
@@ -155,9 +183,11 @@ saveSetupBtn.addEventListener("click", () => {
   }
 
   alert(texts[currentLang].alertSetupSaved.replace("{name}", finalName));
-});
+}
 
-deleteSetupBtn.addEventListener("click", () => {
+saveSetupBtn.addEventListener("click", handleSaveSetupClick);
+
+function handleDeleteSetupClick() {
   const setupName = setupSelect.value;
   if (!setupName) {
     alert(texts[currentLang].alertNoSetupSelected);
@@ -225,7 +255,9 @@ deleteSetupBtn.addEventListener("click", () => {
     }
     alert(texts[currentLang].alertSetupDeleted.replace("{name}", setupName));
   }
-});
+}
+
+deleteSetupBtn.addEventListener("click", handleDeleteSetupClick);
 
 function resetSetupStateToDefaults(options = {}) {
   const config = typeof options === 'object' && options !== null ? options : {};
@@ -912,15 +944,67 @@ function hideDeviceManagerSection() {
   toggleDeviceBtn.setAttribute('aria-expanded', 'false');
 }
 
+function toggleDeviceManagerSection() {
+  if (!deviceManagerSection || !toggleDeviceBtn) return;
+  if (deviceManagerSection.classList.contains('hidden')) {
+    showDeviceManagerSection();
+  } else {
+    hideDeviceManagerSection();
+  }
+}
+
 // Toggle device manager visibility
 if (toggleDeviceBtn) {
-  toggleDeviceBtn.addEventListener('click', () => {
-    if (deviceManagerSection.classList.contains('hidden')) {
-      showDeviceManagerSection();
-    } else {
-      hideDeviceManagerSection();
+  toggleDeviceBtn.addEventListener('click', toggleDeviceManagerSection);
+}
+
+if (cineUi) {
+  try {
+    if (cineUi.controllers && typeof cineUi.controllers.register === 'function') {
+      cineUi.controllers.register('deviceManagerSection', {
+        show: showDeviceManagerSection,
+        hide: hideDeviceManagerSection,
+        toggle: toggleDeviceManagerSection,
+      });
     }
-  });
+  } catch (error) {
+    console.warn('cineUi controller registration failed', error);
+  }
+
+  try {
+    if (cineUi.interactions && typeof cineUi.interactions.register === 'function') {
+      cineUi.interactions.register('saveSetup', handleSaveSetupClick);
+      cineUi.interactions.register('deleteSetup', handleDeleteSetupClick);
+    }
+  } catch (error) {
+    console.warn('cineUi interaction registration failed', error);
+  }
+
+  try {
+    if (cineUi.help && typeof cineUi.help.register === 'function') {
+      cineUi.help.register('saveSetup', () => {
+        const langTexts = texts[currentLang] || {};
+        const fallbackTexts = texts.en || {};
+        return (
+          langTexts.saveSetupHelp
+          || fallbackTexts.saveSetupHelp
+          || 'Store the current project so it is never lost. Press Enter or Ctrl+S to save instantly.'
+        );
+      });
+
+      cineUi.help.register('autoBackupBeforeDeletion', () => {
+        const langTexts = texts[currentLang] || {};
+        const fallbackTexts = texts.en || {};
+        return (
+          langTexts.preDeleteBackupSuccess
+          || fallbackTexts.preDeleteBackupSuccess
+          || 'Automatic backup saved. Restore it anytime from Saved Projects.'
+        );
+      });
+    }
+  } catch (error) {
+    console.warn('cineUi help registration failed', error);
+  }
 }
 
 

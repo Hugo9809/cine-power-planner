@@ -9,6 +9,11 @@ All persistence-facing documentation should now reference the consolidated
 `cinePersistence` module so that future refactors maintain a single, lossless contract for
 saving, sharing, backups and restores.【F:src/scripts/modules/persistence.js†L1-L125】
 
+Coordinated UI flows now surface through the frozen `cineUi` registry. Update help topics,
+workflow diagrams and troubleshooting notes to reference the registered controllers,
+interactions and help entries so offline operators can cross-check the exact button or
+dialog names documented in code.【F:src/scripts/modules/ui.js†L1-L192】
+
 ## 1. Identify every surface that needs an update
 
 1. **Help dialog topics.** Review contextual help entries, FAQ answers and hover-help copy in
