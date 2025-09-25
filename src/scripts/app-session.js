@@ -8008,6 +8008,8 @@ if (helpButton && helpDialog) {
   let hoverHelpTooltip;
   let hoverHelpCurrentTarget = null;
   let hoverHelpHighlightedTarget = null;
+  let hoverHelpPointerClientX = null;
+  let hoverHelpPointerClientY = null;
 
   const HOVER_HELP_TARGET_SELECTOR =
     '[data-help], [aria-label], [title], [aria-labelledby], [alt], [aria-describedby]';
@@ -8116,6 +8118,14 @@ if (helpButton && helpDialog) {
     }
   };
 
+  const usingPointerAnchor = () =>
+    hoverHelpActive &&
+    hoverHelpTooltip &&
+    typeof hoverHelpPointerClientX === 'number' &&
+    typeof hoverHelpPointerClientY === 'number' &&
+    Number.isFinite(hoverHelpPointerClientX) &&
+    Number.isFinite(hoverHelpPointerClientY);
+
   const positionHoverHelpTooltip = target => {
     if (!hoverHelpTooltip || !target) return;
     const rect = target.getBoundingClientRect();
@@ -8137,14 +8147,24 @@ if (helpButton && helpDialog) {
     const tooltipWidth = tooltipRect.width || hoverHelpTooltip.offsetWidth || 0;
     const tooltipHeight = tooltipRect.height || hoverHelpTooltip.offsetHeight || 0;
 
-    let top = safeBottom + scrollY + verticalOffset;
-    let left = safeLeft + scrollX;
+    const pointerAnchored = usingPointerAnchor();
+
+    let top = pointerAnchored
+      ? hoverHelpPointerClientY + scrollY + verticalOffset
+      : safeBottom + scrollY + verticalOffset;
+    let left = pointerAnchored
+      ? hoverHelpPointerClientX + scrollX + horizontalOffset
+      : safeLeft + scrollX;
 
     if (tooltipWidth) {
       const viewportRightLimit = scrollX + viewportWidth - viewportPadding;
       const defaultRight = left + tooltipWidth;
       if (defaultRight > viewportRightLimit) {
-        left = safeRight + scrollX - tooltipWidth - horizontalOffset;
+        if (pointerAnchored) {
+          left = hoverHelpPointerClientX + scrollX - tooltipWidth - horizontalOffset;
+        } else {
+          left = safeRight + scrollX - tooltipWidth - horizontalOffset;
+        }
       }
 
       const minLeft = scrollX + viewportPadding;
@@ -8161,7 +8181,9 @@ if (helpButton && helpDialog) {
       const minTop = scrollY + viewportPadding;
       const maxTop = scrollY + Math.max(viewportHeight - tooltipHeight - viewportPadding, viewportPadding);
       if (top > maxTop) {
-        const aboveTop = safeTop + scrollY - tooltipHeight - verticalOffset;
+        const aboveTop = pointerAnchored
+          ? hoverHelpPointerClientY + scrollY - tooltipHeight - verticalOffset
+          : safeTop + scrollY - tooltipHeight - verticalOffset;
         if (aboveTop >= minTop) {
           top = aboveTop;
         } else {
@@ -8180,6 +8202,8 @@ if (helpButton && helpDialog) {
     if (!hoverHelpTooltip) return;
     hoverHelpTooltip.setAttribute('hidden', '');
     hoverHelpTooltip.style.removeProperty('visibility');
+    hoverHelpPointerClientX = null;
+    hoverHelpPointerClientY = null;
     clearHoverHelpHighlight();
   };
 
@@ -8269,6 +8293,8 @@ if (helpButton && helpDialog) {
 
   document.addEventListener('focusin', e => {
     if (!hoverHelpActive || !hoverHelpTooltip) return;
+    hoverHelpPointerClientX = null;
+    hoverHelpPointerClientY = null;
     const target = findHoverHelpTarget(e.target);
     updateHoverHelpTooltip(target);
   });
@@ -8283,6 +8309,17 @@ if (helpButton && helpDialog) {
 
   window.addEventListener('scroll', refreshTooltipPosition, true);
   window.addEventListener('resize', refreshTooltipPosition);
+
+  const updatePointerPosition = e => {
+    if (!hoverHelpActive || !hoverHelpTooltip) return;
+    hoverHelpPointerClientX = e.clientX;
+    hoverHelpPointerClientY = e.clientY;
+    if (hoverHelpCurrentTarget) {
+      positionHoverHelpTooltip(hoverHelpCurrentTarget);
+    }
+  };
+
+  window.addEventListener('pointermove', updatePointerPosition, true);
 
   // Prevent interacting with controls like dropdowns while hover help is active
   document.addEventListener(
