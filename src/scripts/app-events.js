@@ -371,7 +371,26 @@ setupSelect.addEventListener("change", (event) => {
   let autoSaveFlushed = false;
   if (typeof scheduleProjectAutoSave === 'function') {
     try {
-      scheduleProjectAutoSave(true);
+      const normalizeForOverride = typeof normalizeSetupName === 'function'
+        ? normalizeSetupName
+        : (value => (typeof value === 'string' ? value.trim() : ''));
+      const previousSelection = normalizeForOverride(
+        typeof lastSetupName === 'string' ? lastSetupName : '',
+      );
+      const storageKeyOverride = normalizeForOverride(previousKey);
+      const overrides = {
+        setupNameState: {
+          typedName,
+          selectedName: previousSelection,
+          storageKey: storageKeyOverride,
+          renameInProgress: Boolean(
+            previousSelection
+            && typedName
+            && typedName !== previousSelection,
+          ),
+        },
+      };
+      scheduleProjectAutoSave({ immediate: true, overrides });
       autoSaveFlushed = true;
     } catch (error) {
       console.warn('Failed to flush project autosave before switching setups', error);

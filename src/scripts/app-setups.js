@@ -1,6 +1,6 @@
 /* global getManualDownloadFallbackMessage, getDiagramManualPositions, normalizeAutoGearShootingDayValue,
           normalizeAutoGearShootingDaysCondition, getAutoGearMonitorDefault, getSetupNameState,
-          createProjectInfoSnapshotForStorage */
+          createProjectInfoSnapshotForStorage, getProjectAutoSaveOverrides */
 
 // --- NEW SETUP MANAGEMENT FUNCTIONS ---
 
@@ -3916,9 +3916,36 @@ function saveCurrentGearList() {
     const gearSelectorsRaw = getGearListSelectors();
     const gearSelectors = cloneGearListSelectors(gearSelectorsRaw);
     const hasGearSelectors = Object.keys(gearSelectors).length > 0;
-    const nameState = typeof getSetupNameState === 'function'
+    let nameState = typeof getSetupNameState === 'function'
         ? getSetupNameState()
         : null;
+    if (typeof getProjectAutoSaveOverrides === 'function') {
+        const overrides = getProjectAutoSaveOverrides();
+        if (overrides && typeof overrides === 'object' && overrides.setupNameState && typeof overrides.setupNameState === 'object') {
+            const normalize = (value) => (typeof value === 'string' ? value.trim() : '');
+            const rawOverride = overrides.setupNameState;
+            const overrideTyped = normalize(rawOverride.typedName);
+            const overrideSelected = normalize(rawOverride.selectedName);
+            const overrideStorage = normalize(
+                typeof rawOverride.storageKey === 'string'
+                    ? rawOverride.storageKey
+                    : (overrideSelected || overrideTyped),
+            );
+            const renameOverride = typeof rawOverride.renameInProgress === 'boolean'
+                ? rawOverride.renameInProgress
+                : Boolean(
+                    overrideSelected
+                    && overrideTyped
+                    && overrideTyped !== overrideSelected,
+                );
+            nameState = {
+                typedName: overrideTyped,
+                selectedName: overrideSelected,
+                storageKey: overrideStorage,
+                renameInProgress: renameOverride,
+            };
+        }
+    }
     const fallbackNormalize = (value) => {
         if (typeof value !== 'string') return '';
         return value.trim();

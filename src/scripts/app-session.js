@@ -870,6 +870,39 @@ let projectAutoSaveTimer = null;
 let projectAutoSaveFailureCount = 0;
 let projectAutoSavePendingWhileRestoring = null;
 let factoryResetInProgress = false;
+let projectAutoSaveOverrides = null;
+
+function setProjectAutoSaveOverrides(overrides) {
+  if (!overrides || typeof overrides !== 'object') {
+    projectAutoSaveOverrides = null;
+    return;
+  }
+  const context = {};
+  if (overrides.setupNameState && typeof overrides.setupNameState === 'object') {
+    const state = overrides.setupNameState;
+    const typedName = typeof state.typedName === 'string' ? state.typedName : '';
+    const selectedName = typeof state.selectedName === 'string' ? state.selectedName : '';
+    const storageKey = typeof state.storageKey === 'string' ? state.storageKey : '';
+    const renameInProgress = typeof state.renameInProgress === 'boolean'
+      ? state.renameInProgress
+      : Boolean(selectedName && typedName && typedName !== selectedName);
+    context.setupNameState = {
+      typedName,
+      selectedName,
+      storageKey,
+      renameInProgress,
+    };
+  }
+  projectAutoSaveOverrides = context.setupNameState ? context : null;
+}
+
+function getProjectAutoSaveOverrides() {
+  return projectAutoSaveOverrides;
+}
+
+function clearProjectAutoSaveOverrides() {
+  projectAutoSaveOverrides = null;
+}
 
 function getProjectAutoSaveDelay() {
   if (projectAutoSaveFailureCount <= 0) {
@@ -886,6 +919,7 @@ function runProjectAutoSave() {
       clearTimeout(projectAutoSaveTimer);
       projectAutoSaveTimer = null;
     }
+    clearProjectAutoSaveOverrides();
     return;
   }
 
@@ -943,18 +977,35 @@ function runProjectAutoSave() {
     } else if (projectAutoSaveFailureCount === PROJECT_AUTOSAVE_MAX_RETRIES) {
       console.warn('Project autosave retries have been paused after repeated failures.');
     }
+    clearProjectAutoSaveOverrides();
     return;
   }
 
   projectAutoSaveFailureCount = 0;
+  clearProjectAutoSaveOverrides();
 }
 
-function scheduleProjectAutoSave(immediate = false) {
+function scheduleProjectAutoSave(immediateOrOptions = false) {
+  let immediate = false;
+  let overrides;
+  if (typeof immediateOrOptions === 'object' && immediateOrOptions !== null) {
+    immediate = Boolean(immediateOrOptions.immediate);
+    overrides = immediateOrOptions.overrides;
+  } else {
+    immediate = Boolean(immediateOrOptions);
+    overrides = undefined;
+  }
+
+  if (overrides !== undefined) {
+    setProjectAutoSaveOverrides(overrides);
+  }
+
   if (factoryResetInProgress) {
     if (projectAutoSaveTimer) {
       clearTimeout(projectAutoSaveTimer);
       projectAutoSaveTimer = null;
     }
+    clearProjectAutoSaveOverrides();
     return;
   }
   if (restoringSession) {
