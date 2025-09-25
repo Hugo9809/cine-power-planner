@@ -2907,7 +2907,7 @@ function generateGearListHtml() {
     var _ref16 = _slicedToArray(_ref15, 2),
       k = _ref16[0],
       v = _ref16[1];
-    return v && k !== 'projectName' && !excludedFields.has(k);
+    return v && k !== 'projectName' && !excludedFields.has(k) && !k.endsWith('Manual');
   });
   var boxesHtml = infoEntries.length ? '<div class="requirements-grid">' + infoEntries.map(function (_ref17) {
     var _ref18 = _slicedToArray(_ref17, 2),
@@ -4045,6 +4045,36 @@ function applyGearListSelectors(selectors) {
     }
   });
 }
+function cloneProjectInfoForStorage(info) {
+  if (info === undefined || info === null) {
+    return null;
+  }
+  if (_typeof(info) !== 'object') {
+    return info;
+  }
+  if (typeof structuredClone === 'function') {
+    try {
+      return structuredClone(info);
+    } catch (error) {
+      console.warn('Failed to structured clone project info for storage', error);
+    }
+  }
+  try {
+    return JSON.parse(JSON.stringify(info));
+  } catch (error) {
+    console.warn('Failed to serialize project info for storage', error);
+  }
+  if (Array.isArray(info)) {
+    return info.map(function (item) {
+      return cloneProjectInfoForStorage(item);
+    });
+  }
+  var clone = {};
+  Object.keys(info).forEach(function (key) {
+    clone[key] = cloneProjectInfoForStorage(info[key]);
+  });
+  return clone;
+}
 function saveCurrentGearList() {
   if (factoryResetInProgress) return;
   var html = getCurrentGearListHtml();
@@ -4067,6 +4097,9 @@ function saveCurrentGearList() {
   var projectInfoForStorage = typeof createProjectInfoSnapshotForStorage === 'function' ? createProjectInfoSnapshotForStorage(currentProjectInfo, {
     projectNameOverride: renameInProgress ? selectedStorageKey : undefined
   }) : currentProjectInfo;
+  var projectInfoSnapshot = cloneProjectInfoForStorage(projectInfoForStorage);
+  var projectInfoSignature = projectInfoSnapshot ? stableStringify(projectInfoSnapshot) : '';
+  var projectInfoSnapshotForSetups = projectInfoSnapshot ? cloneProjectInfoForStorage(projectInfoSnapshot) : null;
   var projectRules = getProjectScopedAutoGearRules();
   var diagramPositions = null;
   if (typeof getDiagramManualPositions === 'function') {
@@ -4077,7 +4110,7 @@ function saveCurrentGearList() {
   }
   if (typeof saveProject === 'function' && typeof projectStorageKey === 'string' && projectStorageKey) {
     var payload = {
-      projectInfo: projectInfoForStorage,
+      projectInfo: projectInfoSnapshot,
       gearList: html
     };
     if (hasGearSelectors) {
@@ -4105,9 +4138,11 @@ function saveCurrentGearList() {
       changed = true;
     }
   }
-  if (projectInfoForStorage) {
-    if (setup.projectInfo !== projectInfoForStorage) {
-      setup.projectInfo = projectInfoForStorage;
+  if (projectInfoSignature) {
+    var existingInfo = setup.projectInfo;
+    var existingInfoSignature = existingInfo ? stableStringify(existingInfo) : '';
+    if (existingInfoSignature !== projectInfoSignature) {
+      setup.projectInfo = projectInfoSnapshotForSetups;
       changed = true;
     }
   } else if (Object.prototype.hasOwnProperty.call(setup, 'projectInfo')) {
