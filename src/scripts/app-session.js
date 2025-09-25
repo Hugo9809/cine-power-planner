@@ -8149,12 +8149,32 @@ if (helpButton && helpDialog) {
 
     const pointerAnchored = usingPointerAnchor();
 
+    const preferLeftSide = (() => {
+      if (!tooltipWidth) return false;
+      if (pointerAnchored && typeof hoverHelpPointerClientX === 'number') {
+        return hoverHelpPointerClientX >= viewportWidth / 2;
+      }
+      const elementMidpoint = safeLeft + (rect.width || 0) / 2;
+      return elementMidpoint >= viewportWidth / 2;
+    })();
+
     let top = pointerAnchored
       ? hoverHelpPointerClientY + scrollY + verticalOffset
       : safeBottom + scrollY + verticalOffset;
-    let left = pointerAnchored
-      ? hoverHelpPointerClientX + scrollX + horizontalOffset
-      : safeLeft + scrollX;
+    let left;
+
+    if (pointerAnchored) {
+      left = hoverHelpPointerClientX + scrollX + horizontalOffset;
+      if (preferLeftSide) {
+        left = hoverHelpPointerClientX + scrollX - tooltipWidth - horizontalOffset;
+      }
+    } else {
+      const baseAnchor = preferLeftSide ? safeRight : safeLeft;
+      left = baseAnchor + scrollX + (preferLeftSide ? -horizontalOffset : horizontalOffset);
+      if (preferLeftSide) {
+        left -= tooltipWidth;
+      }
+    }
 
     if (tooltipWidth) {
       const viewportRightLimit = scrollX + viewportWidth - viewportPadding;
@@ -8165,6 +8185,8 @@ if (helpButton && helpDialog) {
         } else {
           left = safeRight + scrollX - tooltipWidth - horizontalOffset;
         }
+      } else if (left < scrollX + viewportPadding && preferLeftSide) {
+        left = Math.max(left, scrollX + viewportPadding);
       }
 
       const minLeft = scrollX + viewportPadding;
@@ -8287,6 +8309,10 @@ if (helpButton && helpDialog) {
 
   document.addEventListener('mouseover', e => {
     if (!hoverHelpActive || !hoverHelpTooltip) return;
+    if (typeof e?.clientX === 'number' && typeof e?.clientY === 'number') {
+      hoverHelpPointerClientX = e.clientX;
+      hoverHelpPointerClientY = e.clientY;
+    }
     const target = findHoverHelpTarget(e.target);
     updateHoverHelpTooltip(target);
   });
