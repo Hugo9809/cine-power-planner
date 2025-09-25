@@ -2,7 +2,8 @@
 /* global updateCageSelectOptions, updateGlobalDevicesReference, scheduleProjectAutoSave,
           ensureAutoBackupsFromProjects, getDiagramManualPositions,
           setManualDiagramPositions, normalizeDiagramPositionsInput,
-          normalizeSetupName, createProjectInfoSnapshotForStorage */
+          normalizeSetupName, createProjectInfoSnapshotForStorage,
+          applyDynamicFieldValues */
 
 // Language selection
 languageSelect.addEventListener("change", (event) => {
@@ -1369,11 +1370,15 @@ addDeviceBtn.addEventListener("click", () => {
     } else {
       targetCategory[name] = { ...existing, capacity: capacity, pinA: pinA, dtapA: dtapA };
     }
-    Object.assign(targetCategory[name], collectDynamicFieldValues(category, categoryExcludedAttrs[category] || []));
+    applyDynamicFieldValues(targetCategory[name], category, categoryExcludedAttrs[category] || []);
   } else if (category === "accessories.cables") {
     const existing = isEditing && originalDeviceData ? { ...originalDeviceData } : {};
-    const attrs = collectDynamicFieldValues(`accessories.cables.${subcategory}`, categoryExcludedAttrs[`accessories.cables.${subcategory}`] || []);
-    targetCategory[name] = { ...existing, ...attrs };
+    targetCategory[name] = { ...existing };
+    applyDynamicFieldValues(
+      targetCategory[name],
+      `accessories.cables.${subcategory}`,
+      categoryExcludedAttrs[`accessories.cables.${subcategory}`] || []
+    );
   } else if (category === "cameras") {
     const watt = parseFloat(cameraWattInput.value);
     if (isNaN(watt) || watt <= 0) {
@@ -1410,7 +1415,7 @@ addDeviceBtn.addEventListener("click", () => {
       lensMount: getLensMounts(),
       timecode: timecode
     };
-    Object.assign(targetCategory[name], collectDynamicFieldValues(category, categoryExcludedAttrs[category] || []));
+    applyDynamicFieldValues(targetCategory[name], category, categoryExcludedAttrs[category] || []);
   } else if (category === "monitors" || category === "directorMonitors") {
     const watt = parseFloat(monitorWattInput.value);
     if (isNaN(watt) || watt <= 0) {
@@ -1438,7 +1443,7 @@ addDeviceBtn.addEventListener("click", () => {
       latencyMs: monitorWirelessTxInput.checked ? monitorLatencyInput.value : undefined,
       audioOutput: monitorAudioOutputInput.value ? { portType: monitorAudioOutputInput.value } : undefined
     };
-    Object.assign(targetCategory[name], collectDynamicFieldValues(category, categoryExcludedAttrs[category] || []));
+    applyDynamicFieldValues(targetCategory[name], category, categoryExcludedAttrs[category] || []);
   } else if (category === "viewfinders") {
     const watt = parseFloat(viewfinderWattInput.value);
     if (isNaN(watt) || watt <= 0) {
@@ -1465,7 +1470,7 @@ addDeviceBtn.addEventListener("click", () => {
       wirelessTx: viewfinderWirelessTxInput.checked,
       latencyMs: viewfinderWirelessTxInput.checked ? viewfinderLatencyInput.value : undefined
     };
-    Object.assign(targetCategory[name], collectDynamicFieldValues(category, categoryExcludedAttrs[category] || []));
+    applyDynamicFieldValues(targetCategory[name], category, categoryExcludedAttrs[category] || []);
   } else if (category === "video" || category === "wirelessReceivers" || category === "iosVideo") {
     const watt = parseFloat(newWattInput.value);
     if (isNaN(watt) || watt <= 0) {
@@ -1480,7 +1485,7 @@ addDeviceBtn.addEventListener("click", () => {
       frequency: videoFrequencyInput.value,
       latencyMs: videoLatencyInput.value
     };
-    Object.assign(targetCategory[name], collectDynamicFieldValues(category, categoryExcludedAttrs[category] || []));
+    applyDynamicFieldValues(targetCategory[name], category, categoryExcludedAttrs[category] || []);
   } else if (category === "fiz.motors") {
     const watt = parseFloat(newWattInput.value);
     if (isNaN(watt) || watt <= 0) {
@@ -1495,7 +1500,7 @@ addDeviceBtn.addEventListener("click", () => {
       gearTypes: motorGearInput.value ? motorGearInput.value.split(',').map(s => s.trim()).filter(Boolean) : [],
       notes: motorNotesInput.value
     };
-    Object.assign(targetCategory[name], collectDynamicFieldValues(category, categoryExcludedAttrs[category] || []));
+    applyDynamicFieldValues(targetCategory[name], category, categoryExcludedAttrs[category] || []);
   } else if (category === "fiz.controllers") {
     const watt = parseFloat(newWattInput.value);
     if (isNaN(watt) || watt <= 0) {
@@ -1510,7 +1515,7 @@ addDeviceBtn.addEventListener("click", () => {
       connectivity: controllerConnectivityInput.value,
       notes: controllerNotesInput.value
     };
-    Object.assign(targetCategory[name], collectDynamicFieldValues(category, categoryExcludedAttrs[category] || []));
+    applyDynamicFieldValues(targetCategory[name], category, categoryExcludedAttrs[category] || []);
   } else if (category === "fiz.distance") {
     const watt = parseFloat(newWattInput.value);
     if (isNaN(watt) || watt <= 0) {
@@ -1526,7 +1531,7 @@ addDeviceBtn.addEventListener("click", () => {
       outputDisplay: distanceOutputInput.value,
       notes: distanceNotesInput.value
     };
-    Object.assign(targetCategory[name], collectDynamicFieldValues(category, categoryExcludedAttrs[category] || []));
+    applyDynamicFieldValues(targetCategory[name], category, categoryExcludedAttrs[category] || []);
   } else {
     const watt = parseFloat(newWattInput.value);
     if (isNaN(watt) || watt <= 0) {
@@ -1534,8 +1539,8 @@ addDeviceBtn.addEventListener("click", () => {
       return;
     }
     const existing = editingSamePath && originalDeviceData ? { ...originalDeviceData } : {};
-    const attrs = collectDynamicFieldValues(category, categoryExcludedAttrs[category] || []);
-    targetCategory[name] = { ...existing, ...attrs, powerDrawWatts: watt };
+    targetCategory[name] = { ...existing, powerDrawWatts: watt };
+    applyDynamicFieldValues(targetCategory[name], category, categoryExcludedAttrs[category] || []);
   }
 
   if (isEditing) {

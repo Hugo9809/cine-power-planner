@@ -10332,6 +10332,46 @@ function buildDynamicFields(category, data = {}, exclude = []) {
   dynamicFieldsDiv.appendChild(list);
 }
 
+const COLLECTED_DYNAMIC_ATTRS_SYMBOL =
+  typeof Symbol === 'function' ? Symbol('collectedDynamicAttrs') : '__collectedDynamicAttrs';
+
+function markCollectedDynamicAttributes(target, attrs) {
+  if (!target || !Array.isArray(attrs)) {
+    return;
+  }
+  try {
+    Object.defineProperty(target, COLLECTED_DYNAMIC_ATTRS_SYMBOL, {
+      configurable: true,
+      enumerable: false,
+      value: attrs.slice(),
+    });
+  } catch (error) {
+    void error;
+  }
+}
+
+function getCollectedDynamicAttributes(source) {
+  if (!source || typeof source !== 'object') {
+    return [];
+  }
+  const attrs = source[COLLECTED_DYNAMIC_ATTRS_SYMBOL];
+  return Array.isArray(attrs) ? attrs : [];
+}
+
+function removeClearedDynamicAttributes(target, attrs, values) {
+  if (!target || !Array.isArray(attrs)) {
+    return;
+  }
+  attrs.forEach(attr => {
+    if (
+      Object.prototype.hasOwnProperty.call(target, attr) &&
+      !Object.prototype.hasOwnProperty.call(values, attr)
+    ) {
+      delete target[attr];
+    }
+  });
+}
+
 function collectDynamicFieldValues(category, exclude = []) {
   let attrs = [];
   if (dynamicFieldsDiv && dynamicFieldsDiv.dataset && dynamicFieldsDiv.dataset.attrs) {
@@ -10347,50 +10387,63 @@ function collectDynamicFieldValues(category, exclude = []) {
   if (!attrs.length) {
     attrs = getCombinedCategoryAttributes(category, {}, exclude);
   }
+  const filteredAttrs = attrs.filter(attr => !exclude.includes(attr));
   const result = {};
-  for (const attr of attrs) {
-    if (exclude.includes(attr)) continue;
+  for (const attr of filteredAttrs) {
     const el = document.getElementById(`attr-${attr}`);
-    if (el) {
-      const type = el.dataset.attrType || el.type;
-      if (type === 'boolean') {
-        result[attr] = el.checked;
-        continue;
+    if (!el) {
+      continue;
+    }
+    const type = el.dataset.attrType || el.type;
+    if (type === 'boolean') {
+      result[attr] = el.checked;
+      continue;
+    }
+    if (type === 'list') {
+      const list = el.value
+        .split('\n')
+        .map(item => item.trim())
+        .filter(Boolean);
+      if (list.length) {
+        result[attr] = list;
       }
-      if (type === 'list') {
-        const list = el.value
-          .split('\n')
-          .map(item => item.trim())
-          .filter(Boolean);
-        if (list.length) {
-          result[attr] = list;
+      continue;
+    }
+    if (type === 'json') {
+      const raw = el.value.trim();
+      if (raw) {
+        try {
+          result[attr] = JSON.parse(raw);
+        } catch {
+          result[attr] = raw;
         }
-        continue;
       }
-      if (type === 'json') {
-        const raw = el.value.trim();
-        if (raw) {
-          try {
-            result[attr] = JSON.parse(raw);
-          } catch {
-            result[attr] = raw;
-          }
-        }
-        continue;
+      continue;
+    }
+    if (type === 'number') {
+      const num = parseFloat(el.value);
+      if (!isNaN(num)) {
+        result[attr] = num;
       }
-      if (type === 'number') {
-        const num = parseFloat(el.value);
-        if (!isNaN(num)) {
-          result[attr] = num;
-        }
-        continue;
-      }
-      if (el.value !== '') {
-        result[attr] = el.value;
-      }
+      continue;
+    }
+    if (el.value !== '') {
+      result[attr] = el.value;
     }
   }
+  markCollectedDynamicAttributes(result, filteredAttrs);
   return result;
+}
+
+function applyDynamicFieldValues(target, category, exclude = []) {
+  if (!target) {
+    return {};
+  }
+  const values = collectDynamicFieldValues(category, exclude);
+  Object.assign(target, values);
+  const attrs = getCollectedDynamicAttributes(values);
+  removeClearedDynamicAttributes(target, attrs, values);
+  return values;
 }
 const languageSelect  = document.getElementById("languageSelect");
 const pinkModeToggle  = document.getElementById("pinkModeToggle");
