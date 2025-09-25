@@ -2376,6 +2376,76 @@
             </p>
           </div>
           <div
+            id="helpDataSafety"
+            class="help-callout"
+            role="note"
+            aria-label="Data safety essentials"
+          >
+            <h4>Protect your work</h4>
+            <ul>
+              <li>
+                Press
+                <a
+                  class="help-link button-link"
+                  href="#saveSetupBtn"
+                  data-help-target="#saveSetupBtn"
+                  data-help-highlight="#setup-manager"
+                ><strong>Save</strong></a>
+                after meaningful tweaks—manual saves are instant, work offline and make it easy to roll back using the project
+                switcher.
+              </li>
+              <li>
+                Enable
+                <a
+                  class="help-link"
+                  href="#settingsDialog"
+                  data-help-target="#settingsShowAutoBackups"
+                  data-help-highlight="#settingsDialog"
+                >Show auto backups in project list</a>
+                to surface the background snapshots captured every ten minutes and after device imports.
+              </li>
+              <li>
+                Download redundant copies whenever you finish a milestone:
+                <a
+                  class="help-link button-link"
+                  href="#shareSetupBtn"
+                  data-help-target="#shareSetupBtn"
+                  data-help-highlight="#setup-manager"
+                ><strong>Export Project</strong></a>
+                for the active rig,
+                <a
+                  class="help-link button-link"
+                  href="#backupSettings"
+                  data-help-target="#backupSettings"
+                  data-help-highlight="#settingsDialog"
+                ><strong>Backup</strong></a>
+                for global preferences and auto gear, and the Device Library
+                <a
+                  class="help-link button-link"
+                  href="#device-manager"
+                  data-help-target="#exportDataBtn"
+                  data-help-highlight="#device-manager"
+                ><strong>Export</strong></a>
+                for custom gear.
+              </li>
+              <li>
+                Store exports on at least two locations (for example SSD + cloud sync) before updating browsers, clearing
+                caches or installing on another computer, then verify restores from the
+                <a
+                  class="help-link button-link"
+                  href="#restoreSettings"
+                  data-help-target="#restoreSettings"
+                  data-help-highlight="#settingsDialog"
+                ><strong>Restore</strong></a>
+                panel while you still have the originals.
+              </li>
+            </ul>
+            <p class="help-callout-note">
+              Manual backups bundle a timestamped copy of every saved project, favorite, rule and preference. Restores make a
+              safety snapshot first so you can undo any mistake without losing data.
+            </p>
+          </div>
+          <div
             id="helpKeyboardShortcuts"
             class="help-callout"
             role="note"
@@ -4572,7 +4642,15 @@
             <summary>Where are my projects saved?</summary>
             <p>
               Projects, project requirements, automatic gear rules, preferences and runtime feedback live in your browser's
-              <code>localStorage</code> so they remain available offline. Download the active setup with
+              <code>localStorage</code> so they remain available offline. The active project autosaves after every change and
+              the planner records background safety snapshots you can reveal via
+              <a
+                class="help-link"
+                href="#settingsDialog"
+                data-help-target="#settingsShowAutoBackups"
+                data-help-highlight="#settingsDialog"
+              >Show auto backups in project list</a>
+              . Download the active setup with
               <a
                 class="help-link button-link"
                 href="#setup-manager"
@@ -4609,11 +4687,12 @@
             <summary>Does the planner work offline?</summary>
             <p>
               Yes. Once the fonts and database are cached on first load, all features continue to work without an internet
-              connection. The
+              connection, including saving, autosaving, backups, restores and device imports. The
               <a class="help-link" href="#offlineIndicator" data-help-target="#offlineIndicator">Offline indicator</a>
               confirms when the app is running locally, and you can refresh assets without losing saved data through
               <a class="help-link button-link" href="#reloadButton" data-help-target="#reloadButton"><em>Force reload</em></a>
-              whenever you reconnect.
+              whenever you reconnect. Keep your latest exports handy so every workflow—on set, in transit or in the studio—has
+              an immediate offline recovery path.
             </p>
           </details>
           <details
