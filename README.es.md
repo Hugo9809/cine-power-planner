@@ -1,323 +1,352 @@
-# 🎥 Cine Power Planner
+# Cine Power Planner
 
-Esta herramienta basada en navegador ayuda a planificar proyectos de cámara profesionales alimentados con baterías V‑Mount, B‑Mount o Gold-Mount. Calcula el **consumo total de energía**, la **corriente demandada** (a 14,4 V y 12 V) y la **autonomía estimada** mientras comprueba que la batería pueda suministrar con seguridad la potencia necesaria.
+![Icono de Cine Power Planner](src/icons/app-icon.svg)
 
-Toda la planificación, los datos introducidos y las exportaciones permanecen en el dispositivo que tienes delante. El idioma, los proyectos, el equipo personalizado, los favoritos y los comentarios de autonomía se guardan en tu navegador, y las actualizaciones del service worker llegan directamente desde este repositorio. Ejecuta Cine Power Planner sin conexión desde el disco o aloja la carpeta internamente para que todos los departamentos trabajen con la misma versión auditada.
+Cine Power Planner es una aplicación web independiente para crear, auditar y compartir planes de alimentación profesional que nunca abandonan tu equipo. Diseña rigs V‑Mount, B‑Mount o Gold-Mount, modela tiempos de autonomía, documenta requisitos del proyecto y exporta paquetes compartibles, todo dentro del navegador, incluso sin conexión. Cada dependencia vive en este repositorio para que la experiencia sea idéntica en un estudio, un portátil de rodaje o un disco aislado.
 
 ## De un vistazo
 
-- **Planifica sin conexión.** Todos los iconos, tipografías y scripts auxiliares están incluidos en este repositorio; abre
-  `index.html` directamente y trabaja sin conexión.
-- **Los proyectos se quedan en tu dispositivo.** Las copias guardadas, los datos de autonomía, el equipo personalizado, los
-  favoritos y las listas de equipo permanecen locales; las copias de seguridad y los paquetes compartibles son archivos JSON
-  legibles.
-- **Controla las actualizaciones.** El service worker solo se renueva cuando pulsas **Forzar recarga**, de modo que el equipo se
-  mantiene en una versión fiable incluso durante los traslados.
-- **Red de seguridad en capas.** Guardados manuales, auto guardados y copias de seguridad automáticas con marca de tiempo
-  facilitan ensayar la recuperación antes del rodaje.
+- **Planifica sin conexión.** Construye configuraciones V‑Mount, B‑Mount o Gold-Mount directamente en el navegador. Todos los Uicons, fuentes y scripts auxiliares están incluidos, sin depender de CDNs ni de la red. Clona el repositorio, desconecta el cable y la interfaz seguirá funcionando igual.
+- **Mantén los datos en el dispositivo.** Proyectos, comentarios de autonomía, favoritos, equipos personalizados, listas y ajustes permanecen locales. Las copias de seguridad y los paquetes compartibles son archivos JSON legibles.
+- **Pon a prueba las redes de seguridad.** Guardados manuales, auto-guardados en segundo plano y copias automáticas con sello horario se combinan para que practiques la rutina Guardar → Copia → Paquete → Restaurar desde el primer día.
+- **Aprueba actualizaciones a conciencia.** El service worker espera tu confirmación antes de actualizar, de modo que el equipo se mantiene en una versión auditada incluso durante viajes o con conectividad limitada.
 
-## Puesta en marcha rápida
+## Panorama general
 
-1. Descarga o clona el repositorio y abre `index.html` en un navegador moderno.
-2. (Opcional) Sirve la carpeta en local (por ejemplo con `npx http-server` o `python -m http.server`) para que el service worker
-   se registre y almacene en caché los recursos para el uso sin conexión.
-3. Carga el planner una vez, cierra la pestaña, desconéctate de la red y vuelve a abrir `index.html`. El indicador sin conexión
-   parpadeará brevemente mientras se carga la interfaz almacenada.
-4. Crea un proyecto, pulsa **Intro** (o **Ctrl+S**/`⌘S`) para guardar y comprueba la copia de seguridad automática que aparece
-   en el selector tras unos minutos.
-5. Exporta **Ajustes → Copia de seguridad y restauración → Copia de seguridad**, importa el archivo en un perfil privado del
-   navegador y confirma que todos los proyectos, favoritos y equipos personalizados se restauran correctamente.
-6. Practica exportar un paquete `.cpproject` e importarlo en otra máquina o perfil para validar la cadena guardar → compartir →
-   importar antes de llegar al set.
+### Construido para equipos
 
-## Flujos de trabajo clave
+El planner se diseñó para foquistas, data wranglers y directores de fotografía. Cuando añades cuerpos, placas de batería, enlaces inalámbricos o accesorios, el consumo total y las estimaciones de autonomía se actualizan al instante. Las advertencias señalan packs sobrecargados y las listas de equipos permanecen ligadas al contexto del proyecto para que nada se pierda al compartir el plan.
 
-- **Planifica un rig.** Combina cámaras, placas, enlaces inalámbricos, monitores, motores y accesorios mientras las cifras de
-  consumo y autonomía se actualizan al instante.
-- **Guarda versiones.** Mantén instantáneas explícitas de los proyectos y deja que las copias de seguridad automáticas con marca
-  de tiempo capturen el trabajo en curso cada 10 minutos.
-- **Comparte con seguridad.** Exporta paquetes `.cpproject` que permanecen sin conexión, validan el esquema al importar e
-  incluyen reglas automáticas de equipo si lo necesitas.
-- **Haz copia de todo.** Las copias de seguridad completas del planner incluyen proyectos, favoritos, equipos personalizados,
-  datos de autonomía y preferencias de la interfaz para no perder contexto.
-- **Copias de migración ocultas.** Antes de sobrescribir planificadores, ajustes
-  o preferencias guardados, la aplicación conserva la instantánea JSON anterior
-  en el espacio protegido `__legacyMigrationBackup`. Si una escritura falla o
-  genera datos corruptos, las herramientas de recuperación recurren
-  automáticamente a esa copia de seguridad para que no se pierdan datos de
-  usuario.
+### Listo para viajar
 
-## Protección de datos sin conexión
+Abre `index.html` directamente desde disco o aloja el repositorio en tu red interna, sin builds, servidores ni cuentas. Un service worker mantiene la aplicación disponible offline, recuerda las preferencias y sólo se actualiza cuando lo autorizas. Guardar, compartir, importar, respaldar y restaurar siempre se ejecutan localmente, protegiendo los datos.
 
-- Verifica con regularidad que todo está listo para trabajar sin conexión: carga la aplicación, desconéctate, actualiza y
-  comprueba que tus proyectos siguen disponibles.
-- Conserva copias redundantes en soportes etiquetados e impórtalas en un segundo perfil después de cada exportación.
-- Antes de aplicar actualizaciones o modificar datos importantes, genera una copia de seguridad manual y confirma que se restaura
-  correctamente.
+### Por qué importa el enfoque offline-first
 
----
+Los rodajes raramente tienen conectividad garantizada y muchos estudios exigen herramientas desconectadas. Cine Power Planner ofrece las mismas capacidades con o sin red: todos los recursos están empaquetados, cada flujo funciona localmente y cada guardado genera artefactos que puedes archivar en medios redundantes. Practicar estos flujos antes de filmar forma parte de la lista de comprobación para no depender de servicios externos en pleno rodaje.
 
-## 🌍 Idiomas
+### Pilares de funciones
+
+- **Planifica con confianza.** Calcula la demanda a 14,4 V/12 V (y 33,6 V/21,6 V para B‑Mount), compara baterías compatibles y visualiza el impacto en un panel ponderado de retroalimentación.
+- **Mantente listo para producción.** Los proyectos capturan dispositivos, requisitos, escenarios, detalles de equipo y listas; los auto-backups, paquetes y actualizaciones controladas mantienen la información vigente sin perder estabilidad.
+- **Trabaja como prefieras.** Detección de idioma, temas oscuro, rosa y de alto contraste, controles tipográficos, logotipos personalizados y ayuda contextual hacen que la interfaz sea cómoda en rodajes y en preparación.
+
+## Principios clave
+
+- **Siempre offline.** Toda la aplicación, incluidos iconos, páginas legales y herramientas, vive en el repositorio. Abre `index.html` desde disco o una intranet y el service worker sincroniza los recursos sin obligarte a conectarte.
+- **Sin rutas ocultas de datos.** Guardados, paquetes, importaciones, copias de seguridad y restauraciones suceden íntegramente en el navegador. Nada sale del equipo a menos que lo exportes.
+- **Redes redundantes.** Guardados manuales, auto-guardados en segundo plano, copias periódicas, respaldos previos a la restauración y exportaciones legibles garantizan que ningún dato desaparezca.
+- **Actualizaciones previsibles.** Sólo se aplican cuando tú las activas. Las versiones en caché siguen disponibles hasta que confirmas **Forzar recarga**.
+- **Presentación consistente.** Uicons locales, recursos OpenMoji y tipografías integradas aseguran la misma apariencia en un estudio o en un portátil desconectado.
+
+## Tabla de contenidos
+
+- [De un vistazo](#de-un-vistazo)
+- [Panorama general](#panorama-general)
+- [Principios clave](#principios-clave)
+- [Traducciones](#traducciones)
+- [Novedades](#novedades)
+- [Guía rápida](#guía-rápida)
+- [Requisitos del sistema y navegadores](#requisitos-del-sistema-y-navegadores)
+- [Ensayo de guardado, compartido e importación](#ensayo-de-guardado-compartido-e-importación)
+- [Flujo cotidiano](#flujo-cotidiano)
+- [Gestión de proyectos y guardados](#gestión-de-proyectos-y-guardados)
+- [Compartir e importar](#compartir-e-importar)
+- [Formatos de archivos](#formatos-de-archivos)
+- [Recorrido por la interfaz](#recorrido-por-la-interfaz)
+- [Personalización y accesibilidad](#personalización-y-accesibilidad)
+- [Seguridad de datos y operación offline](#seguridad-de-datos-y-operación-offline)
+- [Resumen de datos y almacenamiento](#resumen-de-datos-y-almacenamiento)
+- [Cuotas y mantenimiento](#cuotas-y-mantenimiento)
+- [Copias de seguridad y recuperación](#copias-de-seguridad-y-recuperación)
+- [Ensayos de integridad](#ensayos-de-integridad)
+- [Listas operativas](#listas-operativas)
+- [Plan de recuperación de emergencia](#plan-de-recuperación-de-emergencia)
+- [Listas de equipo e informes](#listas-de-equipo-e-informes)
+- [Reglas automáticas](#reglas-automáticas)
+- [Inteligencia de autonomía](#inteligencia-de-autonomía)
+- [Atajos de teclado](#atajos-de-teclado)
+- [Localización](#localización)
+- [Instalación como app](#instalación-como-app)
+- [Flujo de datos de dispositivos](#flujo-de-datos-de-dispositivos)
+- [Desarrollo](#desarrollo)
+- [Resolución de problemas](#resolución-de-problemas)
+- [Comentarios y soporte](#comentarios-y-soporte)
+- [Contribuir](#contribuir)
+- [Agradecimientos](#agradecimientos)
+- [Licencia](#licencia)
+
+## Traducciones
+
+La documentación está disponible en varios idiomas. La aplicación detecta automáticamente el idioma del navegador al primer inicio y puedes cambiarlo en cualquier momento desde el menú superior derecho o en **Configuración**.
+
 - 🇬🇧 [English](README.en.md)
 - 🇩🇪 [Deutsch](README.de.md)
 - 🇪🇸 [Español](README.es.md)
 - 🇮🇹 [Italiano](README.it.md)
 - 🇫🇷 [Français](README.fr.md)
 
-La aplicación adopta automáticamente el idioma de tu navegador en la primera visita y puedes cambiarlo desde la esquina superior derecha. El ajuste se guarda para la siguiente sesión.
+Consulta `docs/translation-guide.md` para más detalles sobre la localización.
 
----
+## Novedades
 
-## 🆕 Novedades recientes
-- Las comparaciones de versiones de respaldos permiten elegir cualquier guardado manual o copia automática con marca de tiempo para revisar diferencias, añadir notas de incidentes y exportar un registro antes de revertir cambios o entregar material a postproducción.
-- Las copias de seguridad ahora normalizan los paquetes de datos heredados guardados como cadenas JSON o como matrices de entradas para que los archivos antiguos se restauren correctamente.
-- Los ensayos de restauración cargan una copia completa de la aplicación o un paquete de proyecto en un entorno aislado para confirmar que su contenido coincide con los datos en vivo sin tocar los perfiles de producción.
-- Las reglas automáticas de equipo permiten diseñar adiciones o retiradas según el escenario, exportar la configuración y restaurarla junto con los paquetes de proyecto.
-- El panel Datos y almacenamiento audita proyectos guardados, listas de equipo, dispositivos personalizados, favoritos y comentarios de autonomía directamente desde Ajustes y muestra el tamaño aproximado del respaldo.
-- La superposición del estado de auto-guardado refleja la nota más reciente dentro de Ajustes para que los equipos vean la actividad en segundo plano mientras practican los ejercicios de recuperación.
-- El editor de equipo consciente del monitoreo muestra accesorios adicionales de monitor y video solo cuando los escenarios lo requieren para mantener enfocado el diseño de reglas.
-- Los controles de acento y tipografía en Ajustes permiten ajustar el color de acento, el tamaño base de la fuente y la familia tipográfica junto a los temas oscuro, rosa y de alto contraste.
-- Los atajos de teclado de la búsqueda global enfocan la búsqueda de funciones al instante con / o Ctrl+K (⌘K en macOS), incluso cuando está dentro del menú lateral móvil contraído.
-- El botón **Forzar recarga** borra los archivos del service worker en caché para que la aplicación sin conexión se actualice sin eliminar proyectos ni dispositivos guardados.
-- Las estrellas de cada selector fijan cámaras, baterías y accesorios favoritos en la parte superior de la lista y los mantienen en las copias de seguridad.
-- El flujo de **Restablecimiento de fábrica** descarga automáticamente una copia de seguridad antes de eliminar proyectos, dispositivos y ajustes almacenados.
-- La lista de equipo y la vista imprimible muestran el nombre del proyecto para consultarlo de un vistazo.
-- Sube un logotipo personalizado para que aparezca en las vistas imprimibles y en las copias de seguridad.
-- Las copias de seguridad incluyen los favoritos y crean automáticamente una copia antes de restaurar.
-- Las fichas del equipo incluyen ahora un campo de correo electrónico.
-- Opciones de accesibilidad con alto contraste, animación reducida y espaciado relajado mejoran la legibilidad y la comodidad.
-- Los formularios de dispositivos rellenan los campos de categoría dinámicamente a partir de los atributos del esquema.
-- Interfaz rediseñada con mayor contraste y espaciado para una experiencia más limpia en cualquier dispositivo.
-- Compartir proyectos es más sencillo: descarga un archivo JSON que agrupa selecciones, requisitos, listas de equipo, comentarios de autonomía y dispositivos personalizados, e impórtalo para restaurarlo todo. Activa el interruptor **Incluir reglas automáticas de equipo** cuando quieras que tus automatizaciones viajen en el archivo o déjalo desmarcado para mantenerlas locales.
-- Iconos exclusivos para los escenarios obligatorios distinguen los requisitos del proyecto.
-- Diagrama de proyecto interactivo para arrastrar dispositivos, hacer zoom, ajustar los nodos a la cuadrícula y exportar el plano como SVG o JPG.
-- Tema rosa divertido que se mantiene entre visitas.
-- Diálogo de ayuda con búsqueda, secciones paso a paso y FAQ; ábrelo con ?, H, F1 o Ctrl+/.
-- Ayudas contextuales al pasar el cursor por botones, campos, menús y encabezados.
-- Barra de búsqueda global para saltar a funciones, selectores de dispositivos o temas de ayuda.
-- Compatibilidad con cámaras con placas de batería V‑, B‑ o Gold-Mount.
-- Envía comentarios de autonomía con temperatura para afinar las estimaciones.
-- Panel visual de ponderación de autonomías que muestra cómo influyen los ajustes en cada informe, ahora ordenado por peso y con porcentajes exactos.
-- Generador de listas de equipo que reúne el material seleccionado y los requisitos del proyecto.
-- Guarda los requisitos del proyecto con cada proyecto para conservar todo el contexto en las listas de equipo.
-- Duplica al instante las entradas personalizadas en los formularios de lista de equipo con los botones en forma de horquilla.
+- **Comparación de copias de seguridad** – Selecciona guardados manuales o auto-backups, revisa diferencias, añade notas de incidente y exporta un registro antes de revertir cambios o entregar material a postproducción.
+- **Ensayos de restauración** – Carga copias completas o paquetes de proyectos en un entorno aislado para comprobar su contenido sin tocar perfiles de producción.
+- **Reglas automáticas de equipo** – Define añadidos o retiradas activados por escenarios, con controles de importación/exportación y copias temporizadas.
+- **Panel de datos y almacenamiento** – Audita proyectos, listas, equipos personalizados, favoritos y comentarios de autonomía desde Configuración y estima el tamaño del backup.
+- **Superposición de estado de auto-guardado** – Refleja la nota más reciente dentro del diálogo de ajustes para que el equipo vea la actividad de fondo durante los ensayos.
+- **Editor sensible al monitoreo** – Sólo muestra campos extra de monitores y distribución cuando el escenario lo requiere.
+- **Controles de acento y tipografía** – Ajusta color de acento, tamaño y familia de fuente; los temas oscuro, rosa y alto contraste persisten entre sesiones.
+- **Atajos de búsqueda global** – Pulsa `/` o `Ctrl+K` (`⌘K` en macOS) para enfocar la búsqueda aunque el menú móvil esté plegado.
+- **Botón de forzar recarga** – Actualiza los recursos del service worker sin borrar proyectos ni dispositivos.
+- **Favoritos anclados** – Marca opciones con estrella para mantener cámaras, baterías y accesorios habituales arriba y en las copias de seguridad.
+- **Reseteo de fábrica con respaldo** – Descarga automáticamente una copia antes de borrar proyectos, dispositivos y ajustes guardados.
 
----
+Consulta los README específicos para ver detalles por idioma.
 
-## 🔧 Funciones
+## Guía rápida
 
-### ✨ Destacados ampliados
+Ejecuta esta lista tras instalar o actualizar el planner. Confirma que guardado, compartido, importación, respaldo y restauración funcionan igual en línea y sin red.
 
-- **Diseña rigs complejos sin adivinar.** Combina cámaras, placas de batería, enlaces inalámbricos, monitores, motores y accesorios mientras supervisas el consumo total a 14,4 V/12 V (y 33,6 V/21,6 V en B‑Mount) junto a autonomías realistas basadas en datos de campo ponderados. El panel de comparación de baterías avisa de sobrecargas antes de que el equipo salga al rodaje.
-- **Mantén coordinados a todos los departamentos.** Guarda varios proyectos con requisitos, contactos del equipo, escenarios y notas. Las listas imprimibles agrupan el material por categoría, fusionan duplicados, muestran metadatos técnicos e incluyen accesorios condicionados por los escenarios para que cámara, iluminación y grip trabajen con el mismo contexto.
-- **Trabaja con seguridad estés donde estés.** Abre `index.html` directamente o sirve la carpeta por HTTPS para activar el service worker. La caché sin conexión conserva idioma, temas, favoritos y proyectos, y **Forzar recarga** actualiza los recursos almacenados sin tocar tus datos.
-- **Ajusta Cine Power Planner a tu equipo.** Cambia al instante entre español, inglés, alemán, italiano y francés, ajusta el tamaño de la fuente y la tipografía, define un color de acento, sube un logotipo para impresión y alterna entre temas claro, oscuro, rosa o de alto contraste. Los selectores con búsqueda, los favoritos fijados, los botones de duplicar y las ayudas flotantes mantienen ágil el trabajo en set.
+1. Descarga o clona el repositorio.
+2. Abre `index.html` en un navegador moderno.
+3. (Opcional) Sirve la carpeta por HTTP(S) para instalar el service worker:
+   ```bash
+   npx http-server
+   # o
+   python -m http.server
+   ```
+   La aplicación se almacenará en caché para uso offline y aplicará actualizaciones cuando las apruebes.
+4. Carga el planner, cierra la pestaña, desconecta la red (o activa modo avión) y vuelve a abrir `index.html`. El indicador offline debe parpadear mientras se cargan los recursos en caché, incluidos los Uicons locales.
+5. Crea un proyecto, pulsa **Enter** (o **Ctrl+S**/`⌘S`) para guardar manualmente y revisa el selector para ver el auto-backup con sello horario que aparece a los pocos minutos.
+6. Exporta **Configuración → Copia de seguridad y restauración → Copia de seguridad** e importa el archivo `planner-backup.json` en un perfil privado. Verificar la ruta de restauración demuestra que ninguna copia queda atrapada y que la salvaguarda previa funciona.
+7. Practica la exportación de un paquete (`project-name.json`) y su importación en otro equipo o perfil. Ensayar el flujo Guardar → Compartir → Importar asegura que los recursos locales acompañan al proyecto.
+8. Archiva la copia verificada y el paquete junto a la versión del repositorio usada. Así mantienes sincronizados los flujos y tienes medios redundantes para viajar.
 
-### ✅ Gestión de proyectos
-- Guarda, carga y elimina múltiples proyectos (pulsa Enter o Ctrl+S/⌘S para guardar rápido; el botón Guardar permanece desactivado hasta introducir un nombre).
-- Se generan instantáneas automáticas cada 10 minutos mientras Cine Power Planner está abierto, y el cuadro de Ajustes puede lanzar exportaciones de copias de seguridad cada hora como recordatorio.
-- Descarga un archivo JSON que reúne selecciones, requisitos, listas de equipo, comentarios de autonomía y dispositivos personalizados; impórtalo mediante el selector de proyectos para recuperarlo todo de una vez.
-- Los datos se guardan localmente mediante `localStorage`, y los favoritos se incluyen en las copias de seguridad; usa la opción **Restablecimiento de fábrica** para descargar automáticamente una copia antes de limpiar proyectos y dispositivos guardados.
-- Genera vistas imprimibles de cualquier proyecto y añade un logotipo personalizado para que exportaciones y copias coincidan con tu identidad de producción.
-- Los requisitos de proyecto se guardan junto a cada proyecto, de modo que la lista de equipo mantiene todo el contexto.
-- Funciona íntegramente sin conexión gracias al service worker: idioma, tema, datos de dispositivos y favoritos persisten entre sesiones.
-- El diseño adaptable responde sin esfuerzo en ordenadores, tabletas y teléfonos.
-- En las cámaras compatibles puedes elegir placas **V‑Mount**, **B‑Mount** o **Gold-Mount**; la lista de baterías se actualiza automáticamente.
+## Requisitos del sistema y navegadores
 
-### 🧭 Descripción de la interfaz
-- **Resumen rápido:**
-  - **Búsqueda global** (`/` o `Ctrl+K`/`⌘K`) salta a funciones, selectores o temas de ayuda incluso con el menú lateral plegado.
-  - **Centro de ayuda** (`?`, `H`, `F1` o `Ctrl+/`) ofrece guías filtrables, preguntas frecuentes, atajos y el modo de ayuda flotante.
-  - **Diagrama del proyecto** muestra las conexiones; mantén pulsada Mayús al descargar para guardar un JPG en lugar de un SVG y ver avisos de compatibilidad.
-  - **Comparador de baterías** revela el rendimiento de cada pack compatible y resalta riesgos de sobrecarga.
-  - **Generador de listas** crea tablas por categoría con metadatos, correos del equipo y accesorios según escenario listos para imprimir.
-  - **Indicador sin conexión y Forzar recarga** reflejan el estado de la conexión y renuevan los archivos en caché sin borrar proyectos.
-- Un enlace de salto y un indicador sin conexión mantienen la interfaz accesible para teclado y pantallas táctiles; la insignia aparece cuando el navegador pierde la conexión.
-- La barra de búsqueda global salta a funciones, selectores de dispositivos o temas de ayuda; pulsa Enter para abrir el resultado destacado, usa / o Ctrl+K (⌘K en macOS) para enfocarla desde cualquier lugar (el menú lateral se abre automáticamente en pantallas pequeñas) y pulsa Escape o × para limpiar la consulta.
-- Los controles superiores permiten cambiar de idioma, alternar los temas oscuro y rosa y abrir Ajustes con opciones de color de acento, tamaño y familia tipográfica, modo de alto contraste y carga de logotipo, además de herramientas para copia de seguridad, restauración y Restablecimiento de fábrica que guardan una copia antes de borrar datos.
-- El botón de Ayuda abre un diálogo con búsqueda, secciones guiadas, atajos de teclado, FAQ y un modo de ayuda emergente opcional; también puedes abrirlo con ?, H, F1 o Ctrl+/ incluso mientras escribes.
-- El botón de recarga forzada (🔄) borra los archivos del service worker almacenados en caché para que la aplicación sin conexión se actualice sin perder proyectos ni dispositivos.
-- En pantallas pequeñas, un menú lateral plegable replica cada sección principal para navegar con rapidez.
+- **Navegadores modernos.** Validado en las últimas versiones de Chromium, Firefox y Safari. Activa service workers, IndexedDB y almacenamiento persistente.
+- **Dispositivos orientados a offline.** Portátiles y tabletas deben permitir almacenamiento persistente. Ejecuta la app una vez en línea para que el service worker almacene todos los recursos y practica la recarga offline antes de viajar.
+- **Espacio local suficiente.** Las producciones grandes acumulan proyectos, backups y listas. Vigila el espacio del perfil y exporta regularmente a medios redundantes.
+- **Sin dependencias externas.** Todos los iconos, fuentes y scripts se entregan con el repositorio. Copia también `animated icons 3/` y los Uicons locales al mover la carpeta.
 
-### ♿ Personalización y accesibilidad
-- Los temas incluyen modo oscuro, acentos rosas lúdicos y un interruptor de alto contraste para mejorar la legibilidad.
-- Los cambios de color de acento, tamaño base y tipografía se aplican al instante y se conservan en el navegador, ideales para adaptarse a la identidad visual o a necesidades de accesibilidad.
-- Los atajos integrados cubren la búsqueda global (/ o Ctrl+K/⌘K), la ayuda ( ?, H, F1, Ctrl+/ ), el guardado (Enter o Ctrl+S/⌘S), el modo oscuro (D) y el modo rosa (P).
-- El modo de ayuda emergente convierte botones, campos, menús y encabezados en descripciones bajo demanda para que el equipo se familiarice rápido.
-- Las entradas con búsqueda incremental, los estados visibles al enfocar y las estrellas junto a los selectores permiten filtrar listas largas y fijar los favoritos.
-- Sube un logotipo para impresiones, configura roles de monitorización predeterminados y ajusta los presets de requisitos del proyecto para que las exportaciones respeten la identidad de la producción.
-- Los botones de bifurcación duplican filas al instante, y los favoritos fijados mantienen el equipo habitual en la parte superior de cada selector.
+## Ensayo de guardado, compartido e importación
 
-### 📋 Lista de equipo
-El generador convierte tus selecciones en una lista de empaque categorizada:
+Repite esta rutina cuando se incorpore personal, se prepare una estación nueva o se publique una actualización importante. Verifica que los flujos de guardado, compartido, importación, copia de seguridad y restauración funcionan sin conexión.
 
-- Haz clic en **Generar lista de equipo** para combinar el equipo elegido y los requisitos del proyecto en una tabla.
-- La tabla se actualiza en cuanto cambian las selecciones o los requisitos.
-- Los elementos se agrupan por categoría (cámara, óptica, alimentación, monitorización, rigging, grip, accesorios, consumibles) y los duplicados se fusionan con sus cantidades.
-- Se añaden cables, rigging y accesorios necesarios para monitores, motores, gimbals y escenarios meteorológicos.
-- Las selecciones de escenarios agregan el equipo relacionado:
-  - *Handheld* + *Easyrig* incorpora una empuñadura telescópica para un soporte estable.
-  - *Gimbal* suma el gimbal seleccionado, brazos articulados, espigas y parasoles o kits de filtros.
-  - *Outdoor* aporta espigas, paraguas y fundas de lluvia CapIt.
-  - Los escenarios *Vehicle* y *Steadicam* incluyen montajes, brazos de aislamiento y ventosas cuando corresponde.
-- Las selecciones de óptica aportan diámetro frontal, peso, datos de varillas y enfoque mínimo, añaden soportes de lente y adaptadores de matte box y avisan de estándares incompatibles.
-- Las filas de baterías reflejan los cálculos del módulo de potencia e incluyen placas o dispositivos de hotswap cuando son necesarios.
-- Las preferencias de monitorización asignan monitores predeterminados para cada rol (director, DoP, foco, etc.) con juegos de cables y receptores inalámbricos.
-- El formulario de **Requisitos del proyecto** nutre la lista:
-  - **Nombre del proyecto**, **productora**, **casa de alquiler** y **DoP** aparecen en el encabezado de los requisitos impresos.
-  - Las entradas de **equipo** recogen nombres, roles y correos electrónicos para que la información de contacto acompañe al proyecto.
-  - **Días de preparación** y **días de rodaje** aportan notas de calendario y, combinados con escenarios exteriores, proponen equipo para la climatología.
-  - Los **escenarios obligatorios** añaden rigging, gimbals y protección climática adecuada.
-  - **Empuñadura de cámara** y **extensión de visor** incluyen las piezas o soportes seleccionados.
-  - Las opciones de **matte box** y **filtros** agregan el sistema elegido con bandejas, adaptadores de pinza o filtros necesarios.
-  - Las configuraciones de **monitorización**, **distribución de vídeo** y **visor** añaden monitores, cables y overlays para cada rol.
-  - Las selecciones de **botones de usuario** y **preferencias de trípode** se listan para referencia rápida.
-- Los elementos de cada categoría se ordenan alfabéticamente y muestran descripciones emergentes al pasar el cursor.
-- La lista de equipo se incluye en las vistas imprimibles y en los archivos de proyecto exportados.
-- Las listas de equipo se guardan automáticamente con el proyecto y se incluyen tanto en los archivos exportados como en las copias de seguridad.
-- **Eliminar lista de equipo** borra la lista guardada y oculta la salida.
-- Los formularios incluyen botones de bifurcación para duplicar entradas personalizadas al instante.
+1. **Guardado base.** Abre el proyecto actual, realiza un guardado manual y observa el sello horario. Un auto-backup debería añadirse en menos de diez minutos.
+2. **Exporta redundancias.** Genera una copia completa y un paquete del proyecto. Renómbralo a `.cpproject` si lo requiere tu flujo y guarda ambos en medios distintos.
+3. **Ensayo de restauración.** Cambia a un perfil privado (o segunda máquina), importa la copia completa y después el paquete. Comprueba listas, paneles, reglas y favoritos.
+4. **Verificación offline.** En el perfil de ensayo, desconecta la red y recarga `index.html`. Confirma que aparece el indicador offline y que los Uicons y scripts locales cargan correctamente.
+5. **Archiva con confianza.** Borra el perfil de ensayo tras confirmar la restauración y etiqueta los archivos verificados según el protocolo del proyecto.
 
-### 📦 Categorías de dispositivos
-- **Cámara** (1)
-- **Monitor** (opcional)
-- **Transmisor inalámbrico** (opcional)
-- **Motores FIZ** (0–4)
-- **Controladores FIZ** (0–4)
-- **Sensor de distancia** (0–1)
-- **Placa de batería** (solo en cámaras que aceptan V‑ o B‑Mount)
-- **Batería V‑Mount** (0–1)
+## Flujo cotidiano
 
-### ⚙️ Cálculos de energía
-- Consumo total en vatios
-- Corriente demandada a 14,4 V y 12 V
-- Autonomía estimada en horas usando la media ponderada de la comunidad
-- Número de baterías necesario para un rodaje de 10 h
-- Nota de temperatura para ajustar la autonomía en condiciones extremas
+1. **Crea o abre un proyecto.** Escribe un nombre y pulsa **Enter**/**Guardar**. El nombre activo aparece en listas e impresiones.
+2. **Añade cámaras, energía y accesorios.** Selecciona equipos en menús categorizados. La búsqueda al escribir, los favoritos y el atajo `/` (`Ctrl+K`/`⌘K`) aceleran la selección.
+3. **Revisa potencia y autonomía.** Observa las alertas, compara baterías y usa el panel de autonomía para evaluar cómo influyen temperatura, códec, fps, etc.
+4. **Documenta requisitos.** Introduce equipo, escenarios, agarres, matte boxes y configuraciones de monitoreo. Los botones de bifurcar duplican entradas. Usa **Configuración → Reglas automáticas** para agregar o quitar elementos según escenarios antes de exportar.
+5. **Exporta o archiva el plan.** Genera la lista de equipo, descarga una copia o un paquete antes de salir al set. Los respaldos incluyen dispositivos personalizados, comentarios y favoritos.
+6. **Confirma la preparación offline.** Desconecta la red, recarga la app y verifica que todo siga accesible. Restaura la copia más reciente si algo parece fuera de lugar.
 
-### 🔋 Comprobación de entrega de batería
-- Avisa si la corriente demandada supera la salida de la batería (pin o D‑Tap)
-- Indica cuando el consumo se acerca al límite (80 % de uso)
+## Gestión de proyectos y guardados
 
-### 📊 Comparación de baterías (opcional)
-- Compara estimaciones de autonomía entre todas las baterías
-- Gráficos de barras para consulta rápida
+- **Guardados manuales para versiones explícitas.** Introduce el nombre y pulsa **Enter**/**Guardar**. Cada guardado preserva dispositivos, requisitos, listas, favoritos, diagramas y observaciones.
+- **Auto-guardados para progreso en curso.** Mientras el proyecto está abierto, la app escribe cambios en segundo plano. Las entradas `auto-backup-…` aparecen cada diez minutos.
+- **Mostrar auto-backups bajo demanda.** Activa **Configuración → Copia de seguridad y restauración → Mostrar auto-backups** para ver los sellos temporales.
+- **Renombrar crea bifurcaciones.** Cambia el nombre y pulsa **Enter** para duplicar la versión. Útil para comparar variantes.
+- **Cambiar de proyecto no destruye datos.** Selecciona otro elemento en el menú; la app conserva la posición de scroll y campos no guardados.
+- **Eliminación con confirmación.** Usa el icono de papelera; siempre se solicita confirmación antes de borrar.
 
-### 🖼 Diagrama del proyecto
-- Visualiza las conexiones de alimentación y vídeo de los dispositivos seleccionados
-- Advierte cuando las marcas FIZ son incompatibles
-- Arrastra nodos para reorganizar el esquema, usa los botones de zoom y exporta el diagrama como SVG o JPG
-- Mantén pulsada Mayús al descargar para exportar una instantánea JPG en lugar de un SVG
-- Pasa el cursor o toca los dispositivos para ver detalles emergentes
-- Utiliza iconos OpenMoji cuando hay conexión, con emoji como alternativa: 🔋 batería, 🎥 cámara, 🖥️ monitor, 📡 vídeo, ⚙️ motor, 🎮 controlador, 📐 distancia, 🎮 empuñadura y 🔌 placa de batería
+## Compartir e importar
 
-### 🧮 Ponderación de datos de autonomía
-- Los tiempos enviados por la comunidad refinan la estimación
-- Cada registro se ajusta por temperatura, escalando desde ×1 a 25 °C hasta:
-  - ×1,25 a 0 °C
-  - ×1,6 a −10 °C
-  - ×2 a −20 °C
-- Los ajustes de cámara influyen en el peso:
-  - Multiplicadores de resolución: ≥12K ×3, ≥8K ×2, ≥4K ×1,5, ≥1080p ×1; resoluciones menores se escalan a 1080p
-  - La frecuencia de cuadro escala linealmente desde 24 fps (por ejemplo, 48 fps = ×2)
-  - Wi‑Fi activado suma un 10 %
-  - Factores de códec: RAW/BRAW/ARRIRAW/R3D/CinemaDNG/Canon RAW/X‑OCN ×1; ProRes ×1,1; DNx/AVID ×1,2; All‑Intra ×1,3; H.264/AVC ×1,5; H.265/HEVC ×1,7
-  - Las entradas de monitores por debajo del brillo especificado se ponderan según su relación de brillo
-- El peso final refleja la cuota de consumo de cada dispositivo, de modo que los proyectos similares cuentan más
-- Se usa la media ponderada cuando hay al menos tres entradas disponibles
-- Un panel ordena los registros por peso y muestra el porcentaje de cada uno para compararlos al instante
+- **Paquetes de proyecto ligeros.** **Exportar proyecto** descarga `project-name.json` con el proyecto activo, favoritos y dispositivos personalizados. Renómbralo a `.cpproject` si tu archivo maestro lo requiere.
+- **Reglas automáticas junto al paquete.** Activa **Incluir reglas automáticas** durante la exportación para que viajen; al importar se pueden aplicar sólo al proyecto o fusionarse con las reglas globales.
+- **Importaciones validadas offline.** Al importar `auto-gear-rules-*.json`, la app verifica tipo, versión semántica y metadatos antes de sobrescribir. Las discrepancias muestran avisos y, si algo falla, se restaura el snapshot anterior automáticamente.
+- **Restauraciones con doble buffer.** Antes de importar, se solicita guardar una copia del estado actual. Tras validar el paquete, el proyecto restaurado aparece arriba en el selector.
+- **Flujos entre dispositivos sin red.** Copia `index.html`, `script.js`, `devices/` y tus archivos de respaldo a un medio externo. Lanza la app desde disco, importa el paquete y continúa trabajando sin conectarte.
+- **Exporta con responsabilidad.** Revisa el JSON antes de compartirlo para asegurarte de que sólo incluye lo necesario. El formato es legible para editar o depurar entradas.
+- **Sincroniza con checklists.** Cuando recibas un paquete actualizado, impórtalo, revisa los sellos `Actualizado` en la barra lateral y archiva el JSON anterior para mantener el historial.
+- **Comparte sin perder contexto.** Los paquetes recuerdan idioma, tema, logotipo y preferencias para que quien lo abra vea el proyecto como tú, incluso offline.
 
-### 🔍 Búsqueda y filtrado
-- Escribe en los menús desplegables para encontrar entradas rápidamente
-- Filtra las listas de dispositivos con un cuadro de búsqueda
-- Utiliza la barra de búsqueda global en la parte superior para saltar a funciones, dispositivos o temas de ayuda; pulsa Enter para navegar, usa / o Ctrl+K (⌘K en macOS) para enfocarla y pulsa Escape o × para limpiar
-- Pulsa “/” o Ctrl+F (⌘F en macOS) para enfocar al instante el cuadro de búsqueda más cercano
-- Haz clic en la estrella junto a cualquier selector para fijar favoritos y sincronizarlos con las copias de seguridad
+## Formatos de archivos
 
-### 🛠 Editor de la base de datos
-- Añade, edita o elimina dispositivos en todas las categorías
-- Importa o exporta la base completa como JSON
-- Vuelve a la base predeterminada de `src/data/index.js`
+- **`project-name.json` (paquete).** Incluye un proyecto, favoritos y dispositivos personalizados. Cambiar la extensión a `.cpproject` no altera la importación.
+- **`planner-backup.json` (respaldo completo).** **Configuración → Copia de seguridad y restauración → Copia de seguridad** captura proyectos, auto-backups, favoritos, comentarios, reglas, ajustes, fuentes y branding.
+- **`auto-gear-rules-*.json` (reglas).** Exportaciones opcionales desde **Reglas automáticas** con tipo de archivo, versión y metadatos para validar offline. Guarda estas copias junto a los respaldos completos.
 
-### 🌓 Modo oscuro
-- Actívalo con el botón de la luna junto al selector de idioma
-- La preferencia se guarda en tu navegador
+## Recorrido por la interfaz
 
-### 🦄 Modo rosa
-- Haz clic en el botón del unicornio (el modo rosa rota iconos cada 30 segundos con una animación suave y vuelve al caballo cuando sales) o pulsa **P** para activar un acento rosa lúdico
-- Funciona en los temas claro y oscuro y persiste entre visitas
+### Referencia rápida
 
-### ⚫ Modo de alto contraste
-- Activa un tema de alto contraste para mejorar la legibilidad
+- **Búsqueda global** (`/`, `Ctrl+K`, `⌘K`) salta a funciones, selectores o temas de ayuda, incluso con navegación oculta.
+- **Centro de ayuda** (`?`, `H`, `F1`, `Ctrl+/`) ofrece guías, atajos, preguntas frecuentes y modo de ayuda flotante.
+- **Diagrama de proyecto** visualiza rutas de energía y señal; mantén Shift al exportar para guardar JPG.
+- **Panel de comparación de baterías** muestra rendimiento de packs compatibles y alerta sobre sobrecargas.
+- **Generador de listas** crea tablas categorizadas con metadatos, correos de equipo y accesorios según escenarios.
+- **Indicador offline y Forzar recarga** muestran el estado de conexión y actualizan recursos sin tocar los datos.
 
-### 📝 Comentarios de autonomía
-- Haz clic en <strong>Enviar comentarios de autonomía</strong> debajo de la estimación para añadir tu medición
-- Incluye la temperatura para obtener una ponderación más precisa
-- Las entradas se guardan en tu navegador y mejoran estimaciones futuras
-- Un panel dedicado ordena los envíos por peso, muestra porcentajes de contribución y resalta valores atípicos para analizarlos rápidamente
+### Controles superiores
 
-### ❓ Ayuda con búsqueda
-- Ábrela mediante el botón <strong>?</strong> o pulsa <kbd>?</kbd>, <kbd>H</kbd>, <kbd>F1</kbd> o <kbd>Ctrl+/</kbd>
-- Usa el campo de búsqueda para filtrar temas al instante; la consulta se restablece al cerrar el diálogo
-- Cierra con <kbd>Escape</kbd> o haciendo clic fuera del diálogo
+- Un enlace para saltar, el indicador offline y la marca responsiva mantienen la navegación accesible.
+- La barra de búsqueda se enfoca con `/` o `Ctrl+K` (`⌘K`), abre el menú lateral en móviles y se limpia con Escape.
+- El cambio de idioma, los modos oscuro/rosa y el diálogo de Configuración permiten ajustar color de acento, tamaño y familia de fuente, alto contraste, logotipo personalizado y acceder a herramientas de respaldo, restauración y restablecimiento (siempre con copia previa).
+- El botón de ayuda abre el diálogo buscable y responde a `?`, `H`, `F1` o `Ctrl+/` en cualquier momento.
+- El botón 🔄 elimina recursos en caché y recarga la app sin borrar proyectos ni datos de autonomía.
 
----
+### Navegación y búsqueda
 
-## ▶️ Cómo usarlo
-1. **Inicia la aplicación:** abre `index.html` en cualquier navegador moderno; no necesita servidor.
-2. **Explora la barra superior:** cambia de idioma, alterna los temas oscuro o rosa, abre Ajustes para modificar acento y tipografía y lanza la ayuda con ? o Ctrl+/.
-3. **Selecciona los dispositivos:** elige el equipo de cada categoría en los menús desplegables; escribe para filtrar, fija favoritos con la estrella y deja que los escenarios rellenen los accesorios automáticamente.
-4. **Consulta los cálculos:** verás consumo, corriente y autonomía en cuanto elijas una batería; las alertas señalan cuando se superan los límites.
-5. **Guarda y exporta proyectos:** pon nombre y guarda la configuración, las copias automáticas capturan instantáneas y el botón Exportar descarga un paquete JSON mientras Importar lo restaura.
-6. **Genera listas de equipo:** pulsa **Generar lista de equipo** para convertir los requisitos en una lista categorizada con descripciones y accesorios.
-7. **Gestiona los datos de dispositivos:** haz clic en “Editar datos de dispositivos…” para abrir el editor, ajustar el catálogo, exportar/importar JSON o volver a los valores predeterminados.
-8. **Envía comentarios de autonomía:** usa “Enviar comentarios de autonomía” para registrar mediciones reales y refinar los promedios ponderados.
+- En pantallas pequeñas, un menú lateral plegable replica las secciones principales.
+- Cada lista y desplegable permite buscar escribiendo y filtrar al vuelo. `/` o `Ctrl+F` (`⌘F`) enfocan el campo más cercano.
+- Los iconos de estrella fijan dispositivos favoritos en la parte superior y los preservan en las copias de seguridad.
 
-## 📱 Instalar como aplicación
+## Personalización y accesibilidad
 
-Cine Power Planner es una aplicación web progresiva y puede instalarse directamente desde el navegador:
+- Cambia entre temas claro, oscuro, rosa y alto contraste; el color de acento, el tamaño base y la tipografía persisten offline.
+- El enlace de salto, los estados de foco visibles y el diseño responsivo facilitan la navegación con teclado, tablet o móvil.
+- Atajos disponibles: búsqueda (`/`, `Ctrl+K`, `⌘K`), ayuda (`?`, `H`, `F1`, `Ctrl+/`), guardado (`Enter`, `Ctrl+S`, `⌘S`), modo oscuro (`D`) y tema rosa (`P`).
+- El modo de ayuda flotante convierte botones, campos y cabeceras en tooltips bajo demanda.
+- Sube un logotipo personalizado para las vistas imprimibles, define valores por defecto de monitoreo y conjuntos de requisitos.
+- Los botones de bifurcar duplican campos rápidamente y los favoritos mantienen a mano los dispositivos recurrentes.
 
-- **Chrome/Edge (escritorio):** haz clic en el icono de instalación de la barra de direcciones.
-- **Android:** abre el menú del navegador y elige *Añadir a pantalla de inicio*.
-- **iOS/iPadOS Safari:** toca *Compartir* y selecciona *Añadir a pantalla de inicio*.
+## Seguridad de datos y operación offline
 
-Una vez instalada, la aplicación se abre desde la pantalla de inicio, funciona sin conexión y se actualiza automáticamente.
+- Un service worker almacena todos los recursos, ejecuta la app sin conexión y aplica actualizaciones sólo tras **Forzar recarga**.
+- Proyectos, comentarios, favoritos, dispositivos, temas y listas viven en el almacenamiento del navegador. Se solicita persistencia cuando está disponible para reducir riesgos de expulsión.
+- Ejecutar la app desde disco o una red interna mantiene los datos sensibles fuera de servicios externos. Las exportaciones en JSON son auditables.
+- La cabecera muestra el indicador offline cuando cae la conexión; **Forzar recarga** actualiza archivos sin tocar el trabajo guardado.
+- **Restablecer fábrica** o borrar datos del sitio sólo se permite tras generar automáticamente una copia.
+- Las actualizaciones del service worker se descargan en segundo plano y esperan tu aprobación. Al ver **Actualización lista**, termina los cambios, crea un backup y pulsa **Forzar recarga**.
+- El almacenamiento reside en IndexedDB con preferencias pequeñas reflejadas en `localStorage`. Usa las herramientas del navegador para inspeccionar o exportar datos antes de limpiar cachés.
 
-## 📡 Uso sin conexión y almacenamiento
+## Resumen de datos y almacenamiento
 
-Servir la aplicación mediante HTTP(S) instala un service worker que almacena en caché cada archivo, de modo que Cine Power Planner funciona completamente sin conexión y se actualiza en segundo plano. Los proyectos, los comentarios de autonomía y las preferencias (idioma, tema, modo rosa y listas guardadas) se almacenan en el `localStorage` del navegador. Borrar los datos del sitio elimina toda la información, y el cuadro de Ajustes incluye un flujo de **Restablecimiento de fábrica** que guarda automáticamente una copia antes de efectuar la limpieza. La cabecera muestra un indicador sin conexión cuando la red falla y la acción 🔄 **Forzar recarga** actualiza los recursos en caché sin tocar los proyectos guardados.
+- Abre **Configuración → Datos y almacenamiento** para revisar proyectos, auto-backups, listas, dispositivos personalizados, favoritos, comentarios y la caché de sesión con recuentos en vivo.
+- Cada entrada explica qué representa; las secciones vacías permanecen ocultas para que identifiques el estado rápidamente.
+- El resumen estima el tamaño del backup usando la exportación más reciente.
 
----
+## Cuotas y mantenimiento
 
-## 🗂️ Estructura de archivos
-```bash
-index.html                 # Estructura principal en HTML
-src/styles/style.css       # Estilos base y diseño
-src/styles/overview.css    # Estilos de la vista general
-src/styles/overview-print.css # Ajustes de impresión para la vista general
-src/scripts/script.js        # Lógica de la aplicación
-src/scripts/storage.js       # Utilidades para LocalStorage
-src/scripts/static-theme.js  # Lógica de tema compartida para las páginas legales
-src/data/index.js       # Lista predeterminada de dispositivos
-src/data/devices/       # Catálogos de dispositivos por categoría
-src/data/schema.json    # Esquema generado para los selectores
-src/vendor/             # Bibliotecas de terceros incluidas
-legal/                     # Documentación legal sin conexión
-tools/                     # Scripts de mantenimiento de datos
-tests/                     # Suite de pruebas con Jest
-```
-Las fuentes se incluyen localmente mediante `fonts.css`; una vez en caché, la aplicación funciona completamente sin conexión.
+- **Confirma el almacenamiento persistente.** Revisa el panel en cada estación. Si el navegador lo deniega, solicita acceso de nuevo o planifica exportaciones manuales más frecuentes.
+- **Vigila el espacio disponible.** Usa el panel o el inspector de almacenamiento. Si el margen se reduce, archiva backups antiguos, elimina entradas `auto-backup-…` redundantes y verifica que los nuevos archivos se descargan sin avisos.
+- **Prepara las cachés tras actualizar.** Después de **Forzar recarga**, abre el diálogo de ayuda, las páginas legales y las vistas habituales para volver a almacenar Uicons, OpenMoji y fuentes.
+- **Documenta la salud del almacenamiento.** Añade estas comprobaciones a tus registros de preparación y cierre: estado de persistencia, espacio libre y ubicación de las copias más recientes.
 
-## 🛠️ Desarrollo
-Se requiere Node.js 18 o posterior.
+## Copias de seguridad y recuperación
 
-```bash
-npm install
-npm run lint     # ejecuta solo ESLint
-npm test         # realiza linting, comprobaciones de datos y pruebas de Jest
-```
+- **Instantáneas guardadas** – El selector conserva cada plan manual y crea `auto-backup-…` cada diez minutos mientras la app está abierta.
+- **Copias completas** – **Configuración → Copia de seguridad y restauración → Copia de seguridad** descarga `planner-backup.json` con proyectos, dispositivos, comentarios, reglas y estado de UI. Antes de restaurar se crea un respaldo de seguridad y se muestran avisos si el archivo proviene de otra versión.
+- **Resguardos ocultos de migración** – Antes de sobrescribir planners, configuraciones o preferencias, la app guarda el JSON anterior en `__legacyMigrationBackup`. Si algo falla, la recuperación vuelve automáticamente a esa copia.
+- **Historial automático de reglas** – Los cambios en **Reglas automáticas** generan copias con sello horario cada diez minutos.
+- **Restablecimiento de fábrica** – Borra datos sólo después de descargar un backup.
+- **Recordatorios por hora** – Una rutina en segundo plano sugiere realizar una copia adicional cada hora.
+- **Bucle de verificación** – Tras cada backup crítico, impórtalo en un perfil separado y confirma que coincide antes de eliminar el perfil.
+- **Hábitos de almacenamiento seguro** – Etiqueta los archivos con nombre del proyecto y fecha y guárdalos en medios redundantes (RAID, USB cifrado, disco óptico).
+- **Compara antes de sobrescribir** – Descarga un backup nuevo antes de restaurar y revisa diferencias con una herramienta de diff JSON.
 
-Tras editar los datos de dispositivos, regenera la base normalizada:
+## Ensayos de integridad
+
+- **Validación previa (diaria o antes de cambios mayores).** Guarda manualmente, exporta copia completa y paquete, impórtalos en un perfil privado y comprueba proyectos, reglas, favoritos y paneles antes de borrarlo.
+- **Ensayo offline (semanal o antes de viajar).** Ejecuta la app, crea un backup, desconecta toda red y recarga `index.html`. Verifica el indicador offline, los Uicons y la apertura del proyecto verificado.
+- **Control de cambios (tras editar datos o scripts).** Corre `npm test` para recuperar confianza y repite la validación previa. Archiva el backup aprobado con una nota de cambios.
+- **Rotación de redundancia (mensual o antes de archivar).** Guarda el backup más reciente, un paquete verificado (renombrado a `.cpproject` si es necesario) y un ZIP del repositorio en al menos dos medios. Alterna cuál se inspecciona para detectar degradación.
+
+## Listas operativas
+
+Rutinas repetibles para mantener proyectos, respaldos y recursos offline sincronizados en cada equipo que usa Cine Power Planner. Existe una versión imprimible en `docs/operations-checklist.md` y la guía `docs/offline-readiness.md` amplía los pasos para viajes largos sin conectividad.
+
+### Preparación previa al rodaje
+
+1. **Confirma la revisión correcta.** Abre `index.html`, pulsa **Forzar recarga** y verifica la versión en **Configuración → Acerca de**. Abre las páginas legales para precargar Uicons, OpenMoji y tipografías.
+2. **Carga proyectos críticos.** Abre el plan activo y un `auto-backup-…` reciente. Comprueba listas, comentarios y favoritos en ambos.
+3. **Ejercita la cadena de guardado.** Realiza un cambio, guarda con `Enter` o `Ctrl+S`/`⌘S`, exporta `planner-backup.json`, impórtalo en un perfil privado y compara el selector.
+4. **Prueba el flujo de compartido.** Exporta `project-name.json`, impórtalo, revisa reglas automáticas, dispositivos y el indicador offline. Elimina el perfil después.
+5. **Simula operación sin red.** Desconecta el equipo, recarga la app y confirma que el indicador offline aparece, los iconos se ven nítidos y los proyectos siguen accesibles.
+6. **Archiva los artefactos.** Guarda el backup verificado, el paquete y un ZIP del repositorio en medios redundantes para reconstruir el entorno sin internet.
+
+### Entrega al finalizar
+
+1. **Captura un backup final.** Con el proyecto abierto, exporta `planner-backup.json` y el último `project-name.json` (renómbralo a `.cpproject` si procede) y etiquétalos con fecha, localización y jornada.
+2. **Valida importaciones.** Restaura ambos archivos en una máquina de verificación y asegúrate de que no haya corrupción. Mantén esa instancia offline.
+3. **Registra los cambios.** Documenta qué auto-backups se promovieron, qué dispositivos personalizados se añadieron y qué reglas cambiaron. Guarda las notas junto a los respaldos.
+4. **Actualiza cachés con intención.** Tras archivar, pulsa **Forzar recarga**, abre el diálogo de ayuda y las páginas legales para recargar documentos antes de volver a trabajar offline.
+5. **Entrega medios redundantes.** Proporciona copias cifradas a la unidad de almacenamiento y conserva un segundo juego según la política de retención.
+
+## Plan de recuperación de emergencia
+
+1. **Pausa y preserva el estado.** Deja la pestaña abierta, desconecta la red si puedes y registra la hora y el estado del indicador offline. Evita recargar.
+2. **Exporta lo que queda.** Ejecuta **Configuración → Copia de seguridad y restauración → Copia de seguridad** y descarga `planner-backup.json`. Aun si la lista parece incorrecta, captura auto-backups, favoritos, comentarios y reglas para análisis.
+3. **Duplica auto-backups.** Muestra las entradas `auto-backup-…`, promueve los snapshots recientes a guardados manuales y renómbralos con el ID del incidente o un sello temporal.
+4. **Inspecciona el paquete verificado.** Importa el último `project-name.json`/`.cpproject` confiable en un perfil privado o máquina secundaria sin conexión y compara proyectos, listas y ajustes.
+5. **Restaura con cuidado.** Si la verificación es correcta, restaura el backup fresco en la máquina principal. El flujo guarda primero una copia de seguridad para comparar con herramientas de diff si fuera necesario.
+6. **Recarga y documenta.** Tras recuperarte, pulsa **Forzar recarga**, abre el diálogo de ayuda y las páginas legales para rehidratar cachés, luego registra el incidente (qué ocurrió, qué archivos se exportaron, dónde se guardaron y qué estación validó la solución). Almacena el informe junto a la copia.
+
+## Listas de equipo e informes
+
+- **Generar lista de equipo y requisitos** crea tablas categorizadas que se actualizan automáticamente cuando cambian los datos.
+- Los elementos se agrupan por categoría y fusionan duplicados. Los escenarios añaden rigging, protección climática y accesorios especializados para reflejar la realidad del rodaje.
+- Las reglas automáticas se ejecutan tras el generador para añadir o quitar elementos específicos sin editar JSON a mano.
+- Las filas de lentes incluyen diámetro frontal, peso, mínimo enfoque, necesidad de varillas y componentes de matte box. Las filas de baterías consideran cantidades y hardware para hot-swap.
+- Detalles del equipo, configuraciones de monitoreo, preferencias de distribución de vídeo y notas personalizadas aparecen en las exportaciones.
+- Las listas se guardan con el proyecto, aparecen en las vistas imprimibles y en los paquetes; puedes reiniciarlas con **Eliminar lista de equipo**.
+
+## Reglas automáticas
+
+Desde **Configuración → Reglas automáticas** puedes ajustar cada lista sin editar JSON manualmente:
+
+- Activa reglas sólo cuando ciertos **Escenarios requeridos** estén marcados; añade etiquetas opcionales para identificarlas rápidamente.
+- Agrega equipo con categoría y cantidad o utiliza **Adiciones personalizadas** para recordatorios, kits especiales o avisos. Las reglas de eliminación ocultan filas que el generador incluiría.
+- Las reglas se ejecutan después de los paquetes predeterminados para integrarse con la lógica base y fluyen a las listas, backups y paquetes.
+- Guardar una lista almacena el conjunto de reglas activo con el proyecto. Al cargarlo o importar un paquete, se recupera el alcance correcto.
+- Exporta o importa el conjunto como JSON, restablécelo a los valores de fábrica cuando necesites un punto limpio y recurre al historial automático (cada diez minutos) si un ajuste falla.
+
+## Inteligencia de autonomía
+
+Los tiempos aportados por usuarios alimentan un modelo ponderado para aproximarse a la experiencia real:
+
+- Ajustes de temperatura: ×1 a 25 °C, ×1,25 a 0 °C, ×1,6 a −10 °C y ×2 a −20 °C.
+- Resolución: ≥12K ×3, ≥8K ×2, ≥4K ×1,5, ≥1080p ×1; menores se escalan en relación a 1080p.
+- Fotogramas: escala lineal a partir de 24 fps (48 fps = ×2).
+- Wi‑Fi activado suma 10 %.
+- Códecs: RAW/BRAW/ARRIRAW/R3D/CinemaDNG/Canon RAW/X‑OCN ×1; ProRes ×1,1; DNx/AVID ×1,2; All-Intra ×1,3; H.264/AVC ×1,5; H.265/HEVC ×1,7.
+- Monitores ponderados según la relación de brillo.
+- El peso final refleja cuánta energía aporta cada componente para que rigs similares influyan más.
+- Un panel ordena por peso, muestra porcentajes y destaca valores atípicos para análisis rápido.
+
+## Atajos de teclado
+
+| Atajo | Acción | Notas |
+| --- | --- | --- |
+| `/`, `Ctrl+K`, `⌘K` | Enfocar la búsqueda global | Funciona incluso con navegación plegada; `Esc` limpia |
+| `Enter`, `Ctrl+S`, `⌘S` | Guardar el proyecto activo | El botón Guardar se habilita tras introducir un nombre |
+| `?`, `H`, `F1`, `Ctrl+/` | Abrir la ayuda | El diálogo sigue siendo buscable mientras escribes |
+| `D` | Cambiar a modo oscuro | También disponible en **Configuración → Temas** |
+| `P` | Alternar tema rosa | Compatible con temas claro, oscuro o alto contraste |
+| 🔄 | Forzar recarga de recursos | También desde **Configuración → Forzar recarga** |
+
+## Localización
+
+Puedes previsualizar nuevas traducciones sin build:
+
+1. Duplica el README más cercano como `README.<lang>.md` y tradúcelo.
+2. Añade cadenas en `translations.js`, manteniendo los marcadores como `%s`.
+3. Copia y traduce las páginas estáticas (privacidad, aviso legal).
+4. Ejecuta `npm test` antes de enviar un pull request.
+
+## Instalación como app
+
+Cine Power Planner es una aplicación web progresiva:
+
+1. Abre `index.html` en un navegador compatible.
+2. Usa la opción **Instalar** o **Añadir a la pantalla de inicio**.
+   - **Chrome/Edge (escritorio):** Haz clic en el icono de instalación en la barra de direcciones.
+   - **Android:** Menú del navegador → *Añadir a pantalla de inicio*.
+   - **iOS Safari:** Botón compartir → *Añadir a pantalla de inicio*.
+3. Inicia la app desde tu lista de aplicaciones. Funciona offline y se actualiza automáticamente tras aprobar una recarga.
+
+## Flujo de datos de dispositivos
+
+Los catálogos viven en `devices/`. Cada archivo agrupa equipos relacionados para facilitar las auditorías. Ejecuta los siguientes scripts antes de hacer commit:
 
 ```bash
 npm run normalize
@@ -326,9 +355,75 @@ npm run check-consistency
 npm run generate-schema
 ```
 
-Añade `--help` a cualquiera de los scripts anteriores para ver las opciones disponibles.
+`npm run normalize` limpia nombres y abreviaturas de conectores. `npm run unify-ports` estandariza etiquetas. `npm run check-consistency` verifica campos obligatorios y `npm run generate-schema` reconstruye `schema.json`. Para iterar rápido con datos:
 
-Ejecuta `npm run help` para obtener un recordatorio rápido de los scripts de mantenimiento y del orden recomendado.
+```bash
+npm run test:data
+```
 
-## 🤝 Contribuciones
-Las contribuciones son bienvenidas. Abre una incidencia o envía un pull request. Si informas de correcciones de datos, adjuntar copias de seguridad o mediciones de autonomía ayuda a mantener el catálogo fiable para todos.
+Añade `--help` a cualquier comando para ver instrucciones y revisa los diffs generados antes de abrir un pull request. `npm run help` resume los scripts disponibles.
+
+## Desarrollo
+
+Configura Node.js 18 o superior. Tras clonar:
+
+```bash
+npm install
+npm run lint
+npm test
+```
+
+`npm test` ejecuta ESLint, comprobaciones de datos y Jest de forma secuencial (`--runInBand`, `maxWorkers=1`). Ejecuta suites específicas mientras iteras:
+
+```bash
+npm run test:unit
+npm run test:data
+npm run test:dom
+npm run test:script
+```
+
+### Bundle para navegadores legacy
+
+Después de modificar `src/scripts/` o `src/data/`, ejecuta `npm run build:legacy` para regenerar el bundle ES5 que sirve a navegadores antiguos. El comando también actualiza los polyfills locales para preservar la experiencia offline.
+
+### Estructura de archivos
+
+```
+index.html
+src/styles/style.css
+src/styles/overview.css
+src/styles/overview-print.css
+src/scripts/script.js
+src/scripts/storage.js
+src/scripts/static-theme.js
+src/data/index.js
+src/data/devices/
+src/data/schema.json
+src/vendor/
+legal/
+tools/
+tests/
+```
+
+## Resolución de problemas
+
+- **¿El service worker está bloqueado en una versión antigua?** Pulsa **Forzar recarga** o realiza una recarga dura desde las herramientas de desarrollador.
+- **¿Faltan datos tras cerrar la pestaña?** Asegúrate de que el sitio tenga acceso a almacenamiento; la navegación privada puede bloquearlo.
+- **¿Descargas bloqueadas?** Permite descargas múltiples para guardar copias y paquetes.
+- **¿Fallo en scripts de línea de comandos?** Verifica que Node.js 18+ esté instalado, ejecuta `npm install` y vuelve a probar. Si hay errores de memoria, usa una suite más pequeña como `npm run test:unit`.
+
+## Comentarios y soporte
+
+Abre un issue si encuentras problemas, tienes preguntas o quieres proponer funciones. Incluir exportaciones o muestras de autonomía ayuda a mantener el catálogo preciso.
+
+## Contribuir
+
+¡Se aceptan contribuciones! Abre un issue o envía un pull request tras leer `CONTRIBUTING.md`. Ejecuta `npm test` antes de enviarlo.
+
+## Agradecimientos
+
+El planner incluye Uicons locales, recursos OpenMoji y otros elementos para disponer de iconografía sin conexión, y utiliza lz-string para almacenar proyectos de forma compacta en URLs y respaldos.
+
+## Licencia
+
+Distribuido bajo la licencia ISC. Consulta `package.json` para más detalles.

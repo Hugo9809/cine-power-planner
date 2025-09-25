@@ -1,353 +1,730 @@
-# 🎥 Cine Power Planner
+# Cine Power Planner
 
-This browser based tool helps plan professional camera projects powered by V‑Mount, B‑Mount or Gold-Mount batteries. It calculates **total power consumption**, **current draw** (at 14.4 V and 12 V) and **estimated battery runtime** while checking that the battery can safely supply the required power.
+![Cine Power Planner icon](src/icons/app-icon.svg)
 
-All planning, inputs and exports stay on the device in front of you. Language
-choice, projects, custom equipment, favorites and runtime feedback live in your
-browser, and service worker updates are driven directly by this repository. Run
-the planner offline from disk or host it internally so every department uses the
-same audited version.
+Cine Power Planner is a standalone web app for building, auditing and sharing
+professional camera power plans that never leave your machine. Plan V‑Mount,
+B‑Mount or Gold‑Mount rigs, model runtime expectations, capture project
+requirements and export shareable bundles—entirely inside your browser, even
+when you are offline. Every dependency lives in this repository so the same
+experience runs on a stage workstation, a field laptop or an air-gapped archive
+drive without phoning home.
 
-## At a glance
+## At a Glance
 
-- **Plan without a network.** Every icon, font and helper script ships inside this repository so you can open `index.html`
-  directly and work offline.
-- **Keep projects on-device.** Saves, runtime feedback, custom devices, favorites and gear lists remain local; backups and
-  shareable bundles are human-readable JSON.
-- **Stay in control of updates.** The service worker only refreshes after you press **Force reload**, keeping crews on a trusted
-  build during travel.
-- **Rely on layered safety nets.** Manual saves, auto-saves and timestamped auto-backups make it easy to rehearse recovery before
-  a shoot.
+- **Plan offline-first.** Build V‑Mount, B‑Mount or Gold‑Mount setups directly
+  in your browser. Every icon, font and helper script ships with the
+  repository so nothing relies on external CDNs or network access. Clone the
+  repo, unplug the network cable and the interface keeps working exactly as it
+  did online.
+- **Keep data on-device.** Projects, runtime feedback, favorites, custom
+  devices, gear lists and settings stay local. Backups and shareable bundles are
+  human-readable JSON files you control.
+- **Verify safety nets quickly.** Manual saves, background auto-saves and
+  timestamped auto-backups layer together so you can rehearse recovery before
+  leaving for set. Practicing the save → backup → bundle → restore loop is part
+  of the recommended first-run routine so crews confirm every safeguard.
+- **Approve updates intentionally.** The service worker waits for you to
+  confirm a refresh, keeping teams on a known-good revision during travel or
+  low-connectivity shoots.
 
-## Quick start
+## Overview
 
-1. Download or clone the repository and open `index.html` in a modern browser.
-2. (Optional) Serve the folder locally (for example with `npx http-server` or `python -m http.server`) so the service worker
-   registers and caches assets for offline use.
-3. Load the planner once, close the tab, go offline and reopen `index.html`. The offline badge should flash briefly while the
-   cached interface loads.
-4. Create a project, press **Enter** (or **Ctrl+S**/`⌘S`) to save and watch for the automatic backup that appears after a few
-   minutes.
-5. Export **Settings → Backup & Restore → Backup**, import the file in a private browser profile and confirm every project,
-   favorite and custom device restores correctly.
-6. Practice exporting a `.cpproject` bundle and importing it on another machine or profile so the save → share → import loop is
-   proven before you arrive on set.
+### Built for crews
 
-## Core workflows
+The planner was designed with ACs, data wranglers and DoPs in mind. As you add
+or swap bodies, battery plates, wireless links and accessories, the total draw
+and runtime estimates update instantly. Safety warnings flag overloaded packs,
+and gear lists stay tied to project context so nothing slips through when you
+hand off prep notes.
 
-- **Plan a rig.** Combine cameras, plates, wireless links, monitors, motors and accessories while watching draw calculations and
-  runtime estimates update instantly.
-- **Save versions.** Maintain explicit project snapshots and let timestamped auto-backups capture in-progress work every 10
-  minutes.
-- **Share securely.** Export `.cpproject` bundles that stay offline, validate schema on import and optionally include automatic
-  gear rules.
-- **Back up everything.** Full planner backups include projects, favorites, custom devices, runtime data and UI preferences so no
-  context is lost.
-- **Hidden migration backups.** Before overwriting planners, setups or
-  preferences, the app preserves the previous JSON snapshot inside the protected
-  `__legacyMigrationBackup` slot. If a write ever fails or produces corrupt
-  data, the recovery tools automatically fall back to that safety copy so no
-  user data disappears.
+### Designed to travel
 
-## Protecting data offline
+Open `index.html` directly from disk or host the repository on your internal
+network—no build process, server dependencies or accounts required. A service
+worker keeps the whole app available offline, remembers every preference and
+only updates when you approve a refresh. Saving, sharing, import, backup and
+restore tools are always available and always run locally so user data stays
+safe.
 
-- Verify offline readiness regularly: load the app, disconnect, refresh and confirm your projects stay accessible.
-- Keep redundant backups on labelled storage and re-import them in a secondary profile after every export.
-- Before applying updates or major data edits, capture a manual backup and confirm it restores cleanly.
+### Why offline-first matters
 
----
+Film sets rarely have guaranteed connectivity, and studios frequently require
+air-gapped planning tools. Cine Power Planner delivers the exact same
+capabilities regardless of connection status: every asset is bundled, every
+workflow runs locally and every save creates artifacts you can archive on
+redundant media. Validating those workflows before a shoot becomes a standard
+checklist item so nothing relies on an external service in the middle of a
+production day.
 
-## 🌍 Languages
+### Feature pillars
+
+- **Plan with confidence.** Calculate draw at 14.4 V/12 V (and 33.6 V/21.6 V for
+  B‑Mount), compare compatible batteries and visualize runtime impact through a
+  weighted feedback dashboard.
+- **Stay production-ready.** Projects capture devices, requirements, scenarios,
+  crew details and gear lists; auto-backups, shareable bundles and forced
+  refreshes keep data current without sacrificing stability.
+- **Work the way you prefer.** Language detection, dark, pink and high-contrast
+  themes, typography controls, custom logos and hover help make the interface
+  approachable on set and in prep.
+
+## Core Principles
+
+- **Offline always.** The full application, including icons, legal pages and
+  helper tools, ships in this repository. Open `index.html` from disk or a
+  private intranet and the service worker keeps every locally stored asset in
+  sync so you are never forced online.
+- **No hidden data paths.** Saves, shareable bundles, imports, backups and
+  restores all happen inside the browser. Nothing leaves your machine unless
+  you export it.
+- **Redundant safety nets.** Manual saves, background auto-saves, periodic
+  auto-backups, forced pre-restore backups and human-readable JSON exports work
+  together so user data cannot disappear silently.
+- **Predictable updates.** Refreshes only apply when you trigger them. Cached
+  versions remain available until you approve a **Force reload**, keeping
+  planning sessions stable even when crews stay offline for extended periods.
+- **Consistent presentation.** Locally bundled Uicons, OpenMoji assets and
+  typography files guarantee identical visuals whether you run the planner on a
+  stage workstation or a field laptop with no connectivity.
+
+## Table of Contents
+
+- [At a Glance](#at-a-glance)
+- [Overview](#overview)
+- [Core Principles](#core-principles)
+- [Translations](#translations)
+- [What’s New](#whats-new)
+- [Quick Start](#quick-start)
+- [System Requirements & Browser Support](#system-requirements--browser-support)
+- [Save, Share & Import Drill](#save-share--import-drill)
+- [Everyday Workflow](#everyday-workflow)
+- [Saving & Project Management](#saving--project-management)
+- [Sharing & Imports](#sharing--imports)
+- [Project & Backup File Formats](#project--backup-file-formats)
+- [Interface Tour](#interface-tour)
+- [Customization & Accessibility](#customization--accessibility)
+- [Data Safety & Offline Operation](#data-safety--offline-operation)
+- [Data & Storage Overview](#data--storage-overview)
+- [Storage Quota & Maintenance](#storage-quota--maintenance)
+- [Backup & Recovery](#backup--recovery)
+- [Data Integrity Drills](#data-integrity-drills)
+- [Operational Checklists](#operational-checklists)
+- [Emergency Recovery Playbook](#emergency-recovery-playbook)
+- [Gear Lists & Reporting](#gear-lists--reporting)
+- [Automatic Gear Rules](#automatic-gear-rules)
+- [Runtime Intelligence](#runtime-intelligence)
+- [Keyboard Shortcuts](#keyboard-shortcuts)
+- [Localization](#localization)
+- [Install as an App](#install-as-an-app)
+- [Device Data Workflow](#device-data-workflow)
+- [Development](#development)
+- [Troubleshooting](#troubleshooting)
+- [Feedback & Support](#feedback--support)
+- [Contributing](#contributing)
+- [Acknowledgements](#acknowledgements)
+- [License](#license)
+
+## Translations
+
+Documentation is available in multiple languages. The app automatically detects
+your browser language on the first launch and you can switch at any time from
+the top-right language menu or through **Settings**.
+
 - 🇬🇧 [English](README.en.md)
 - 🇩🇪 [Deutsch](README.de.md)
 - 🇪🇸 [Español](README.es.md)
 - 🇮🇹 [Italiano](README.it.md)
 - 🇫🇷 [Français](README.fr.md)
 
-The app automatically uses your browser language on first load, and you can switch the language in the top right corner. The choice is remembered for your next visit.
+Follow the translation guide in `docs/translation-guide.md` for detailed
+localization steps.
 
----
+## What’s New
 
-## 🆕 Recent Features
-- Backup version comparisons let you pick any manual save or timestamped auto-backup to review diffs, add incident notes and export a log before rolling a change back or handing footage to post.
-- Backups now normalize legacy data bundles saved as JSON strings or entry arrays so older exports restore correctly.
-- Restore rehearsals load a full-app backup or project bundle into an isolated sandbox so you can confirm its contents match live data without touching production profiles.
-- Automatic gear rules let you design scenario-driven additions or removals, export the configuration and restore it alongside project bundles.
-- Data & storage dashboard audits saved projects, gear lists, custom devices, favorites and runtime feedback directly inside Settings.
-- Autosave status overlay mirrors the latest autosave note inside Settings so crews can see background activity while practicing recovery drills.
-- Monitoring-aware gear editor surfaces extra monitoring and video accessories only when scenarios demand them so rule authoring stays focused.
-- Accent and typography controls in Settings let you adjust the accent color, base font size and typeface alongside dark, pink and high contrast themes.
-- Keyboard shortcuts for the global search let you press / or Ctrl+K (⌘K on macOS) to focus the feature search instantly, even when it sits inside the collapsed mobile side menu.
-- Force reload button clears cached service worker files so the offline app refreshes without deleting saved projects or devices.
-- Star icons in every selector pin favorite cameras, batteries and accessories to the top of the list and keep them in backups.
-- Factory reset workflow automatically downloads a backup before wiping stored projects, custom devices and settings.
-- Gear list and printable overview display the project name for quick reference.
-- Upload a custom logo for printed overviews and backups.
-- Backups include favorites and create an automatic backup before restore.
-- Crew list entries now feature an email field.
-- High contrast, reduced motion, and relaxed spacing accessibility options for improved readability and comfort.
-- Device forms populate category fields dynamically based on schema attributes.
-- Revamped interface design with improved contrast and spacing for a cleaner experience on any device.
-- Simplified project sharing – download a JSON project file that bundles selections, requirements, gear lists, runtime feedback and custom devices, then load it to restore the full setup.
-- Unique icons for required scenarios to distinguish project requirements.
-- Interactive project diagram that lets you drag devices, zoom, snap nodes to a grid and export the layout as SVG or JPG.
-- Playful pink accent theme that persists between visits.
-- Searchable help dialog with step-by-step sections and a FAQ; open with ?, H, F1 or Ctrl+/.
-- Contextual hover help for buttons, fields, dropdowns and headers.
-- Global search bar to jump to features, device selectors or help topics.
-- Support for cameras with V-, B- or Gold-Mount battery plates.
-- Submit user runtime feedback with temperature for better estimates.
-- Visual runtime weighting dashboard to inspect how settings influence each report, now sorted by weight and showing exact share percentages.
-- Generate gear lists to compile selected gear and project requirements.
-- Save project requirements with each project so gear lists retain full context.
-- Duplicate user entries in gear list forms using fork buttons to copy fields instantly.
+- **Backup version comparisons** – pick any manual save or timestamped
+  auto-backup to review diffs, add incident notes and export a log before you
+  roll a change back or hand footage to post.
+- **Restore rehearsals** – load a full-app backup or project bundle into an
+  isolated sandbox to confirm its contents match live data without touching
+  production profiles.
+- **Automatic gear rules** – design scenario-triggered additions or removals
+  that apply after the generator runs, complete with import/export controls
+  and timed backups.
+- **Data & storage dashboard** – audit stored projects, gear lists, custom
+  devices, favorites and runtime feedback, and review approximate backup size
+  without leaving the Settings dialog.
+- **Autosave status overlay** – mirror the latest autosave note inside the
+  settings dialog so crews see background activity while rehearsing recovery
+  drills.
+- **Monitoring-aware gear editor** – surface additional monitor and video
+  distribution selectors only when scenarios demand them, keeping rule
+  authoring focused.
+- **Accent and typography controls** – adjust accent color, font size and
+  typeface while dark, pink and high-contrast themes persist between visits.
+- **Global search shortcuts** – press `/` or `Ctrl+K` (`⌘K` on macOS) to focus
+  the feature search instantly, even when the mobile navigation is collapsed.
+- **Force reload button** – refresh cached service worker assets without
+  deleting projects or devices.
+- **Pinned favorites** – star dropdown entries to keep go-to cameras, batteries
+  and accessories at the top of selectors and inside backups.
+- **Factory reset safeguards** – capture an automatic backup before wiping
+  saved projects, custom devices and settings.
 
----
+See the language-specific README files for release details in other locales.
 
-## 🔧 Features
+## Quick Start
 
-### ✨ Expanded highlights
+Run this checklist the first time you install or update the planner. It proves
+that every save, share, import, backup and restore workflow works exactly the
+same online or offline.
 
-- **Build complex rigs without guesswork.** Combine cameras, battery plates,
-  wireless links, monitors, motors and accessories while tracking total draw at
-  14.4 V/12 V (and 33.6 V/21.6 V for B‑Mount) plus realistic runtimes from
-  weighted field data. The battery comparison panel flags overloads before the
-  wrong kit goes on the truck.
-- **Keep every department aligned.** Save multiple projects with requirements,
-  crew contacts, scenarios and notes. Printable gear lists group equipment by
-  category, merge duplicates, surface technical metadata and include
-  scenario-driven accessories so camera, lighting and grip teams stay synced.
-- **Work confidently anywhere.** Open `index.html` directly or serve the folder
-  over HTTPS to enable the service worker. Offline caching preserves language,
-  themes, favorites and projects, and **Force reload** refreshes cached assets
-  without touching stored data.
-- **Tailor the planner to your crew.** Switch instantly between English,
-  Deutsch, Español, Italiano and Français, adjust font size and typeface, pick a
-  custom accent color, upload a print logo and toggle dark, pink or
-  high-contrast themes. Type-to-search selectors, pinned favorites, fork buttons
-  and hover help keep on-set workflows fast.
+1. Download or clone this repository.
+2. Open `index.html` in any modern browser.
+3. (Optional) Serve the folder over HTTP(S) to install the service worker and
+   Progressive Web App features:
+   ```bash
+   npx http-server
+   # or
+   python -m http.server
+   ```
+   The app then caches itself for offline use and applies updates when you
+   approve them.
+4. Load the planner once, close the tab, disconnect from the network (or toggle
+   Airplane Mode) and reopen `index.html`. The offline indicator in the header
+   should flash briefly while cached files load. Confirm the interface mirrors
+   the last session exactly, including any locally stored Uicons or helper
+   assets.
+5. Create your first project, press **Enter** (or **Ctrl+S**/`⌘S`) to capture a
+   manual save and review the project selector to see the timestamped
+   auto-backup that appears after a few minutes.
+6. Export **Settings → Backup & Restore → Backup** and import the resulting
+   `planner-backup.json` file into a private browser profile. Verifying the
+   restore path early proves that no saves are stranded on a single machine and
+   demonstrates the forced pre-restore backup safeguard.
+7. Practice exporting a project bundle (the download defaults to
+   `project-name.json`) and re-importing it on a secondary machine or profile.
+   Rehearsing the full save → share → import loop keeps crews confident that
+   offline workflows are airtight and that locally stored Uicons, fonts and
+   helper scripts follow the project.
+8. Archive the verified backup and project bundle alongside the repository copy
+   you opened. This keeps save, share, import, backup and restore workflows
+   provably in sync from the first session and gives you redundant recovery
+   media for travel days.
 
-### ✅ Project Management
-- Save, load and delete multiple camera projects (press Enter or Ctrl+S/⌘S to save quickly; the Save button stays disabled until a name is entered).
-- Automatic snapshots are created every 10 minutes while the planner is open, and the Settings dialog can trigger hourly backup exports as a reminder to archive data.
-- Download a JSON project file that bundles selections, requirements, gear lists, runtime feedback and custom devices—flip the **Include automatic gear rules** toggle if you also want your automations embedded; load it through the Import Project picker to restore everything in one step.
-- Data is stored locally via `localStorage` and favorites are preserved in backups; use the **Factory reset** option in Settings to capture a backup automatically before wiping cached projects and device edits.
-- Generate printable overviews for any saved project and add a custom logo so exports and backups match your production branding.
-- Save project requirements along with each project so gear lists retain full context.
-- Works fully offline with the installed service worker—language, theme, device data and favorites persist between sessions.
-- Responsive layout adapts seamlessly across desktops, tablets and phones.
-- Choose **V‑Mount**, **B‑Mount** or **Gold‑Mount** plates on supported cameras; the battery list adapts automatically.
+## System Requirements & Browser Support
 
-### 🧭 Interface Overview
-- **Quick reference:**
-  - **Global search** (`/` or `Ctrl+K`/`⌘K`) jumps to features, selectors or help
-    topics even when the side drawer is collapsed.
-  - **Help center** (`?`, `H`, `F1` or `Ctrl+/`) surfaces searchable guides,
-    FAQs, shortcuts and the optional hover-help mode.
-  - **Project diagram** visualizes connections; hold Shift when downloading to
-    save a JPG snapshot instead of SVG while seeing compatibility notices.
-  - **Battery comparison** reveals how compatible packs perform and highlights
-    overload risks before call time.
-  - **Gear list generator** outputs categorized tables with metadata, crew
-    emails and scenario-driven accessories ready for print or PDF.
-  - **Offline badge & Force reload** show connectivity status and refresh cached
-    assets without clearing projects.
-- A skip link and offline indicator keep the layout accessible on keyboard and touch devices—the badge appears whenever the browser loses its connection.
-- The global search bar jumps to features, device selectors or help topics; press Enter to activate the highlighted result, use / or Ctrl+K (⌘K on macOS) to focus it from anywhere (the side menu opens automatically on small screens) and press Escape or tap × to clear the query.
-- Top bar controls provide language switching, dark and pink theme toggles plus a Settings dialog that exposes accent color, font size, font family, high contrast and custom logo uploads alongside backup, restore and Factory reset tools that back up data before wiping it.
-- The Help button opens a searchable dialog with step-by-step sections, keyboard shortcuts, FAQs and an optional hover-help mode; it can also be triggered with ?, H, F1 or Ctrl+/ even while typing.
-- The Force reload button (🔄) clears cached service worker files so the offline app updates without deleting saved projects or custom devices.
-- On smaller screens a collapsible side menu mirrors every major section for quick navigation.
+- **Modern evergreen browsers.** The planner is validated on the latest
+  releases of Chromium, Firefox and Safari on desktop and mobile. Enable
+  service workers, IndexedDB and persistent storage to unlock the full offline
+  workflow.
+- **Offline-friendly devices.** Laptops and tablets must allow persistent
+  storage so backups and auto-saves stay available. When running from removable
+  media or a field workstation, launch the planner once while online so the
+  service worker can cache every asset, then rehearse the offline reload
+  routine before travel.
+- **Sufficient local storage.** Large productions can accumulate many projects,
+  backups and gear lists. Monitor available disk space in your browser profile
+  and export archives regularly to redundant media to avoid storage eviction.
+- **No external dependencies.** All icons, fonts and helper scripts ship with
+  the repository. Keep the folder intact (including `animated icons 3/` and
+  locally stored Uicons) when copying it between machines so visuals and
+  scripts match exactly.
 
-### ♿ Customization & Accessibility
-- Theme preferences include dark mode, playful pink accents and a dedicated high contrast switch for improved readability.
-- Accent color, base font size and typeface changes apply instantly and persist in the browser, letting you match studio branding or accessibility needs.
-- Built-in keyboard shortcuts cover global search (/ or Ctrl+K/⌘K), help ( ?, H, F1, Ctrl+/ ), saving (Enter or Ctrl+S/⌘S), dark mode (D) and pink mode (P).
-- Hover-help mode turns every button, field, dropdown and header into an on-demand tooltip so new users can learn the interface quickly.
-- Type-to-search inputs, focus-visible controls and star icons beside selectors let you filter long lists quickly and pin favourite devices to the top.
-- Upload a custom logo for printouts, configure default monitoring roles and tweak project requirement presets so exports match your production branding.
-- Fork buttons duplicate gear list rows instantly, and pinned favourites keep go-to equipment at the top of selectors for faster data entry on set.
+## Save, Share & Import Drill
 
-### 📋 Gear List
-The generator turns your selections into a categorized packing list:
+Run this short rehearsal whenever a new crew member joins, a workstation is
+provisioned or a significant update ships. The routine proves that saving,
+sharing, importing, backup and restore all behave as expected without network
+access.
 
-- Click **Generate Gear List and Project Requirements** to compile chosen gear and project requirements into a table.
-- The table updates automatically when device selections or requirements change.
-- Items are grouped by category (camera, lens, power, monitoring, rigging, grip, accessories, consumables) and duplicates are merged with counts.
-- Required cables, rigging and accessories are added for monitors, motors, gimbals and weather scenarios.
-- Scenario selections inject related gear:
-  - *Handheld* + *Easyrig* inserts a telescopic handle for stable support.
-  - *Gimbal* adds the selected gimbal, friction arms, spigots and sunshades or filter kits.
-  - *Outdoor* supplies spigots, umbrellas and CapIt rain covers.
-  - *Vehicle* and *Steadicam* scenarios pack in mounts, isolation arms and suction gear where applicable.
-- Lens selections append front diameter, weight, rod data and minimum focus, add lens supports and matte box adapters, and warn about incompatible rod standards.
-- Battery rows mirror counts from the power calculator and include hotswap plates or chosen hotswap devices when required.
-- Monitoring preferences assign default monitors for each role (Director, DoP, Focus, etc.) with cable sets and wireless receivers.
-- The **Project Requirements** form feeds the list:
-  - **Project Name**, **Production Company**, **Rental House** and **DoP** appear in the heading of the printed requirements.
-  - **Crew** entries capture names, roles and email addresses so contact info travels with the project.
-  - **Prep Days** and **Shooting Days** supply schedule notes and, when paired with outdoor scenarios, suggest weather gear.
-  - **Required Scenarios** append matching rigging, gimbals and weather protection.
-  - **Camera Handle** and **Viewfinder Extension** insert the chosen handle parts or extension brackets.
-  - **Matte Box** and **Filter** choices inject the selected system with any needed trays, clamp adapters or filters.
-  - **Monitoring Configuration**, **Video Distribution** and **Viewfinder** settings add monitors, cables and overlays for each role.
-  - **User Button** selections and **Tripod Preferences** are listed for quick reference.
-- Items inside each category are sorted alphabetically and display tooltips on hover.
-- The gear list is included in printable overviews and exported project files.
-- Gear lists save automatically with the project and are included in exported project files and backups.
-- **Delete Gear List** removes the saved list and hides the output.
-- Gear list forms provide fork buttons to duplicate user entries instantly.
+1. **Baseline save.** Open the current project, trigger a manual save and note
+   the timestamp that appears in the selector. Confirm an auto-backup joins the
+   list within ten minutes while you continue editing.
+2. **Export redundancy.** Create a planner backup and a project bundle. Rename
+   the bundle if you follow a `.cpproject` convention, then store both files on
+   separate physical media.
+3. **Restore dress rehearsal.** Switch to a private browser profile (or a
+   second machine), import the planner backup, then import the project bundle.
+   Inspect gear lists, runtime dashboards, automatic gear rules and favorites
+   to confirm they survived the round-trip.
+4. **Offline verification.** While still in the rehearsal profile, disconnect
+   from the network and reload `index.html`. Ensure the offline indicator shows,
+   the interface matches the source machine and locally stored Uicons plus
+   helper scripts load without flicker.
+5. **Archive with confidence.** Delete the rehearsal profile after confirming
+   everything restored cleanly, then label and file the verified exports with
+   your production’s archival checklist.
 
-### 📦 Device Categories
-- **Camera** (1)
-- **Monitor** (optional)
-- **Wireless Transmitter** (optional)
-- **FIZ Motors** (0–4)
-- **FIZ Controllers** (0–4)
-- **Distance Sensor** (0–1)
-- **Battery Plate** (only on cameras that accept V‑ or B‑Mount)
-- **V‑Mount Battery** (0–1)
+## Everyday Workflow
 
-### ⚙️ Power Calculations
-- Total consumption in watts
-- Current draw at 14.4 V and 12 V
-- Estimated battery runtime in hours using weighted user feedback
-- Required battery count for a 10 h shoot
-- Temperature note to adjust runtime for hot or cold conditions
+Use Cine Power Planner end-to-end with the following routine:
 
-### 🔋 Battery Output Check
-- Warns if current draw exceeds the battery output (Pin or D‑Tap)
-- Indicates when draw is close to the limit (80 % usage)
+1. **Create or load a project.** Select an existing setup or type a new project
+   name and press Enter (or click **Save**). The active project name appears in
+   gear lists, printable overviews and exports.
+2. **Add cameras, power and accessories.** Choose devices from categorized
+   dropdowns. Type-to-filter search, pinned favorites and the global shortcut
+   `/` (or `Ctrl+K`/`⌘K`) jump straight to the gear or feature you need.
+3. **Verify power and runtime.** Monitor draw warnings, compare compatible
+   batteries and review the runtime dashboard to see how temperature, codec,
+   frame rate and other factors influence field data.
+4. **Capture project requirements.** Fill out crew details, scenarios, handles,
+   matte box preferences and monitoring layouts so generated lists reflect the
+   full production context. Fork buttons duplicate entries for faster data
+   entry. When specific scenarios demand bespoke kits, open **Settings →
+   Automatic Gear Rules** to layer custom additions or removals before
+   generating exports.
+5. **Export or archive the plan.** Generate the gear list, export a planner
+   backup or download an exportable project bundle before heading to set.
+   Backups include custom devices, runtime feedback and favorites.
+6. **Verify offline readiness.** Toggle the offline switch on your router or
+   device, refresh the planner and confirm that the project, settings and gear
+   lists all remain accessible. Restore from the most recent backup if anything
+   looks out of sync.
 
-### 📊 Battery Comparison (optional)
-- Compare runtime estimates across all batteries
-- Visual bar graph for quick reference
+## Saving & Project Management
 
-### 🖼 Project Diagram
-- Visualize power and video connections for the selected devices
-- Warns when FIZ brands are incompatible
-- Drag nodes to rearrange the layout, zoom with the buttons and download the diagram as SVG or JPG
-- Hold Shift while clicking Download to export a JPG snapshot instead of SVG
-- Hover or tap devices to see popup details
-- Uses [OpenMoji](https://openmoji.org/) icons when online, falling back to emoji:
-  🔋 battery, 🎥 camera, 🖥️ monitor, 📡 video, ⚙️ motor,
-  🎮 controller, 📐 distance, 🎮 handle and 🔌 battery plate
+- **Manual saves keep versions explicit.** Enter a project name in the header
+  field and press **Enter** or click **Save** to capture the current state. Each
+  manual save preserves devices, requirements, gear lists, favorites, diagram
+  layouts and runtime observations.
+- **Auto-saves protect in-progress work.** While a project is open the planner
+  writes incremental changes in the background. Timestamped `auto-backup-…`
+  versions appear in the project selector every 10 minutes so you can roll back
+  without leaving the interface.
+- **Reveal auto backup snapshots on demand.** Toggle **Settings → Backup &
+  Restore → Show auto backups** to temporarily display the timestamped safety
+  copies in the project selector when you need to restore one manually.
+- **Renaming duplicates on purpose.** Editing the active project name and
+  pressing **Enter** creates a branched copy. Use this when you want to compare
+  alternate builds or keep both day and night configurations side by side.
+- **Switching projects is non-destructive.** Select another entry from the
+  project menu to load it instantly. The planner preserves scroll position and
+  unsaved form inputs for the new project so you can review or edit without
+  re-entering data.
+- **Deletion requires confirmation.** Use the trash icon in the selector to
+  remove unused versions. You’ll be asked to confirm before anything leaves the
+  browser, ensuring you do not lose a project by accident.
 
-### 🧮 Runtime data weighting
-- User-submitted battery runtimes refine the runtime estimate.
-- Each entry is adjusted for temperature, scaling from ×1 at 25 °C to:
-  - ×1.25 at 0 °C
-  - ×1.6 at −10 °C
-  - ×2 at −20 °C
-- Camera settings influence the weight:
-  - Resolution multipliers: ≥12K ×3, ≥8K ×2, ≥4K ×1.5, ≥1080p ×1, lower scaled to 1080p
-  - Frame rate scales linearly from 24 fps (e.g. 48 fps = ×2)
-  - Wi‑Fi enabled adds 10 %
-  - Codec factors: RAW/BRAW/ARRIRAW/R3D/CinemaDNG/Canon RAW/X‑OCN ×1; ProRes ×1.1; DNx/AVID ×1.2; All‑Intra ×1.3; H.264/AVC ×1.5; H.265/HEVC ×1.7
-  - Monitor entries below the specified brightness are weighted by their brightness ratio
-- The final weight reflects each device's share of the total power draw, so matching projects count more.
-- The weighted average is used once at least three entries are available.
-- A dashboard orders entries by weight and displays each one's share percentage for quick comparison.
+## Sharing & Imports
 
-### 🔍 Search & Filtering
-- Type inside dropdowns to quickly find entries
-- Filter device lists with a search box
-- Use the global search bar at the top to jump to features, devices or help topics; press Enter to navigate, use / or Ctrl+K (⌘K on macOS) to focus it instantly and press Escape or × to clear.
-- Press '/' or Ctrl+F (⌘F on macOS) to focus the nearest search box instantly.
-- Click the star beside any selector to pin favourites so they stay at the top of the list and sync with backups.
+- **Project bundles travel light.** Click **Export Project** to download a
+  `project-name.json` file containing the active project, favorites and any
+  referenced custom devices. Rename the file if your archiving standards call
+  for a `.cpproject` extension, then send it via your preferred secure channel;
+  recipients can import without needing internet access.
+- **Automatic gear rules travel with bundles.** Flip the **Include automatic
+  gear rules** toggle during export to decide whether your automations ship with
+  the bundle; teammates who import the file can ignore them, apply them only to
+  the imported project or merge them into their global ruleset.
+- **Standalone rule imports validate metadata offline.** When you import an
+  `auto-gear-rules-*.json` file, the planner now checks the file type, semantic
+  version and timestamp metadata before touching your saved rules—even without
+  connectivity. You’ll see a warning if the payload came from an older or newer
+  build or if required fields were removed, and the previous snapshot is restored
+  automatically if validation fails.
+- **Restores are double-buffered.** Importing a bundle prompts you to save a
+  backup of your current environment first. After choosing the bundle file, the
+  planner validates its JSON schema, merges new devices and places the restored
+  project at the top of the selector.
+- **Cross-device workflows stay offline.** To move a plan to a workstation with
+  no connectivity, copy `index.html`, `script.js`, `devices/` and your backup or
+  bundle files onto removable media. Launch from disk, import the bundle and
+  continue planning without touching external networks.
+- **Export responsibly.** Review the exported JSON before distributing it to
+  make sure no extra projects or notes are included. The structure is human
+  readable so you can redact or duplicate entries as needed, and the file stays
+  portable even when renamed to `.cpproject` for filing.
+- **Synchronize with checklists.** When a teammate sends you an updated bundle,
+  import it, review the `Updated at` timestamps in the sidebar and archive the
+  previous JSON (or `.cpproject`) bundle in your storage system to maintain a
+  clear history.
+- **Share without losing context.** Bundles remember language, theme, custom
+  logo and other personalization choices so the recipient opens the project in a
+  familiar state even if they stay offline.
 
-### 🛠 Device Database Editor
-- Add, edit or delete devices in all categories
-- Import or export the full database as JSON
-- Revert to the default database from `src/data/index.js`
+## Project & Backup File Formats
 
-### 🌓 Dark Mode
-- Toggle via the moon button next to the language selector.
-- Preference is stored in your browser.
+- **`project-name.json` (project bundle).** Exported from **Export Project**,
+  this JSON bundle stores one project, favorites and any referenced custom
+  devices. Rename it to `.cpproject` if your workflow expects that extension;
+  the planner treats both identically during import.
+- **`planner-backup.json` (full backup).** Created via **Settings → Backup &
+  Restore → Backup**, this archive captures every project, auto-backup,
+  favorite, runtime submission, automatic gear rule, UI preference, custom
+  font and branding asset so a restore never loses context.
+- **`auto-gear-rules-*.json` (rule exports).** Optional downloads from
+  **Automatic Gear Rules** provide timestamped copies of your automation setup.
+  They now embed file type, semantic version and timestamp metadata so the
+  importer can validate payloads offline. Store them alongside full backups so
+  custom presets never disappear during cross-team handoffs, and keep an eye on
+  import warnings if you restore them on a different build.
 
-### 🦄 Pink Mode
-- Click the unicorn button (pink mode cycles through unicorn icons every 30 seconds with a gentle pop animation and switches back to the horse icon when you leave the theme) or press **P** for a playful pink accent.
-- Works in both light and dark themes and persists between visits.
+## Interface Tour
 
-### ⚫ High Contrast Mode
-- Toggle a high contrast theme for improved readability.
+### Quick reference
 
-### 📝 User Runtime Feedback
-- Click <strong>Submit User Runtime Feedback</strong> below the runtime to add your own measurement.
-- Optionally include temperature for more accurate weighting.
-- Entries are saved in your browser and improve future estimates.
-- A dashboard orders submissions by weight, shows contribution percentages and
-  highlights outliers so crews can review field data quickly.
+- **Global search** (`/`, `Ctrl+K`, `⌘K`) jumps to any feature, selector or help
+  topic—even when the side navigation is hidden on smaller screens.
+- **Help center** (`?`, `H`, `F1`, `Ctrl+/`) provides searchable guides,
+  shortcuts, FAQs and an optional hover-help mode so every control explains
+  itself.
+- **Project diagram** visualizes power and signal paths. Hold Shift while
+  exporting to save a JPG snapshot instead of SVG.
+- **Battery comparison panel** reveals how each compatible pack performs and
+  flags overload risks before you leave prep.
+- **Gear list generator** turns selections into categorized tables with tooltips
+  for specs, crew emails and scenario-driven accessories.
+- **Offline indicator and Force reload** badges show connectivity status and
+  refresh cached assets without touching saved data.
 
-### ❓ Searchable Help
-- Open via the <strong>?</strong> button or press <kbd>?</kbd>, <kbd>H</kbd>, <kbd>F1</kbd> or <kbd>Ctrl+/</kbd>.
-- Use the search field to filter topics instantly; the query resets when the dialog closes.
-- Close with <kbd>Escape</kbd> or by clicking outside the dialog.
+### Top bar controls
 
----
+- A keyboard-friendly skip link, offline indicator and responsive branding keep
+  navigation accessible across devices.
+- The global search bar focuses with `/` or `Ctrl+K` (`⌘K` on macOS), opens the
+  side menu on mobile and clears with Escape.
+- Language, dark mode and pink mode toggles sit beside the Settings dialog,
+  which exposes accent color, font size, font family, high-contrast mode, custom
+  logo uploads plus backup, restore and factory reset tools that always save a
+  backup first.
+- The Help button opens a searchable dialog and can be triggered at any time
+  with `?`, `H`, `F1` or `Ctrl+/`.
+- The 🔄 **Force reload** button removes cached assets and reloads the app
+  without erasing projects or runtime data.
 
-## ▶️ How to Use
-1. **Launch App:** Open `index.html` in any modern browser – no server required.
-2. **Explore the Top Bar:** Switch language, toggle dark or pink themes, open Settings for accent and typography options, and start the searchable help dialog with ? or Ctrl+/.
-3. **Select Devices:** Choose gear from each category using the dropdowns—type to filter, click the star to pin favourites and let scenario presets fill in accessories automatically.
-4. **View Calculations:** See total draw, current and runtime once a battery is selected; warnings highlight when output limits are exceeded.
-5. **Save & Export Projects:** Name and save your configuration, auto-backups capture snapshots, and the Export button downloads a JSON bundle for collaborators while the Import button restores them.
-6. **Generate Gear Lists:** Press **Generate Gear List and Project Requirements** to turn project requirements into a categorized packing list with tooltips and accessory packs.
-7. **Manage Device Data:** Click “Edit Device Data…” to open the database editor, modify devices, export/import JSON or revert to the defaults.
-8. **Submit Runtime Feedback:** Use “Submit User Runtime Feedback” to record field measurements and refine weighted estimates.
+### Navigation and search
 
-## 📱 Install as an App
+- On small screens, a collapsible side menu mirrors the main sections for quick
+  navigation.
+- Every dropdown and editor list includes inline search and supports type-to-
+  filter interactions. `/` or `Ctrl+F` (`⌘F` on macOS) focuses the nearest
+  search field.
+- Star icons pin favorite devices so they stay at the top of selectors and
+  persist across sessions and backups.
 
-The planner is a Progressive Web App and can be installed directly from your browser:
+## Customization & Accessibility
 
-- **Chrome/Edge (desktop):** Click the install icon in the address bar.
-- **Android:** Open the browser menu and choose *Add to Home Screen*.
-- **iOS/iPadOS Safari:** Tap the *Share* button and select *Add to Home Screen*.
+- Switch among light, dark, pink and high-contrast themes; accent color, base
+  font size and typeface can be tuned in Settings and persist offline.
+- A skip link, focus-visible controls and responsive layout keep navigation
+  smooth on keyboards, tablets and phones.
+- Keyboard shortcuts cover global search (`/`, `Ctrl+K`, `⌘K`), help (`?`, `H`,
+  `F1`, `Ctrl+/`), saving (`Enter`, `Ctrl+S`, `⌘S`), dark mode (`D`) and the pink
+  accent (`P`).
+- Hover-help mode turns every button, field, dropdown and header into an
+  on-demand tooltip so new users can self-teach the interface.
+- Upload a custom logo for printed overviews, configure monitoring defaults and
+  set preferred requirement presets so deliverables match production branding.
+- Fork buttons in gear list forms duplicate entries, while favorites keep
+  frequently used devices in reach.
 
-Once installed, the app launches from your home screen, works offline and updates itself automatically.
+## Data Safety & Offline Operation
 
-## 📡 Offline Use & Data Storage
+- A service worker caches every asset so the planner runs offline and applies
+  updates only when you approve them via **Force reload**.
+- Projects, runtime submissions, favorites, custom devices, theme selections and
+  gear lists live in browser storage. Browsers that support persistent storage
+  receive an automatic retention request to reduce eviction risk.
+- Opening the repository directly from disk or serving it internally keeps
+  sensitive data off external networks. All exports are human-readable JSON so
+  you can audit what leaves the machine.
+- The header shows an offline indicator whenever connectivity drops, and the
+  Force reload control refreshes cached files without touching saved work.
+- Clearing the site’s data or using **Factory reset** removes local entries only
+  after exporting a backup automatically, ensuring nothing disappears without a
+  copy.
+- Service worker updates download in the background and wait for your approval.
+  When the **Update ready** toast appears, finish your current edits, trigger a
+  manual backup, then click **Force reload** so fresh assets load alongside your
+  preserved data.
+- Storage lives inside IndexedDB with small preferences mirrored to
+  `localStorage`. Use your browser’s developer tools to inspect or export raw
+  records before making experimental changes or clearing caches.
 
-Serving the app over HTTP(S) installs a service worker that caches every file
-so Cine Power Planner works fully offline and updates in the background. Projects,
-runtime submissions and preferences (language, theme, pink mode and saved gear
-lists) live in your browser's `localStorage`. Clearing the site's data in the
-browser removes all stored information, and the Settings dialog includes a
-**Factory reset** workflow that saves a backup automatically before clearing everything. The header shows an
-offline badge whenever connectivity drops, and the 🔄 **Force reload** action
-refreshes cached assets without disturbing saved projects.
+## Data & Storage Overview
 
----
+- Open **Settings → Data & Storage** to review everything the planner keeps on
+  the current device—saved projects, timestamped auto backups, gear list
+  snapshots, custom devices, favorites, runtime feedback and the unsaved session
+  cache all appear with live counts.
+- Each entry clarifies what it represents and, when relevant, lists affected
+  categories or whether the session data is currently stored. Empty sections stay
+  hidden so you know at a glance when the planner is pristine.
+- The summary also estimates backup size using the most recent export, giving you
+  a quick check that archives will fit on the storage you bring to set.
 
-## 🗂️ File Structure
-```bash
-index.html                 # Main HTML layout
-src/styles/style.css       # Core styles and layout
-src/styles/overview.css    # Printable overview styling
-src/styles/overview-print.css # Print overrides for the overview
-src/scripts/script.js        # Application logic
-src/scripts/storage.js       # LocalStorage helpers
-src/scripts/static-theme.js  # Shared theme logic for legal pages
-src/data/index.js       # Default device list
-src/data/devices/       # Device catalogs by category
-src/data/schema.json    # Generated schema for selectors
-src/vendor/             # Bundled third-party libraries
-legal/                     # Offline legal documents
-tools/                     # Data maintenance scripts
-tests/                     # Jest test suite
-```
-Fonts are bundled locally via `fonts.css`, so once the assets are cached the application works entirely offline.
+## Storage Quota & Maintenance
 
-## 🛠️ Development
-Requires Node.js 18 or later.
+- **Confirm persistent storage access.** Visit **Settings → Data & Storage** on
+  every workstation you provision. The panel reports whether the browser granted
+  persistent storage; if it did not, request access from the settings dialog or
+  manually via developer tools before loading large projects. Browsers that
+  reject the request should trigger a contingency plan—schedule more frequent
+  manual exports so nothing depends on eviction-prone storage.
+- **Watch quota headroom.** Use the same dashboard (or your browser’s storage
+  inspector) to review how much space projects, backups and cached assets
+  consume. If available space drops below your comfort margin, archive older
+  backups to encrypted external media, delete redundant `auto-backup-…` entries
+  from the project selector and confirm fresh exports still complete without
+  warnings.
+- **Prime caches after updates.** Any time you click **Force reload**, reopen the
+  help dialog, legal pages and high-traffic screens such as the device catalog so
+  locally bundled Uicons, OpenMoji artwork and typography files repopulate the
+  cache. Confirm the offline indicator flickers only briefly on the next load.
+- **Document storage health.** Add storage checks to your prep and wrap logs. A
+  quick note about granted persistent storage status, remaining quota and where
+  the latest backups live makes audits easier and guards against accidental data
+  loss when the project transitions to another crew.
 
-```bash
-npm install
-npm run lint     # run ESLint alone
-npm test         # runs linting, data checks and Jest tests
-```
+## Backup & Recovery
 
-After editing device data, regenerate the normalized database:
+- **Saved project snapshots** – the selector keeps every plan you save and
+  creates timestamped `auto-backup-…` entries every 10 minutes while the app is
+  open so you can roll back without losing changes.
+- **Full planner backups** – **Settings → Backup & Restore → Backup** downloads
+  `planner-backup.json` with projects, custom devices, runtime feedback,
+  favorites, automatic gear rules and UI state. Restores create a safety copy
+  before importing and warn if the file was produced on another version.
+- **Hidden migration backups** – before overwriting stored planners, setups or
+  preferences, the app now preserves the previous JSON snapshot in a protected
+  `__legacyMigrationBackup` slot. If a write ever fails or produces corrupt
+  data, the recovery tools automatically fall back to that safety copy so no
+  user data disappears.
+- **Automatic gear snapshots** – rule changes trigger timestamped safety copies
+  every 10 minutes in **Settings → Automatic Gear Rules**, and you can restore or
+  export them if a customization misfires.
+- **Factory reset** – wipes stored data only after downloading a backup. Use it
+  when you need a clean slate.
+- **Hourly reminders** – a background routine prompts an additional backup each
+  hour so crews always have a recent snapshot ready to archive.
+- **Verification loop** – after every critical backup, re-import it into a
+  separate browser profile or private window, confirm projects and gear lists
+  match expectations, then delete the temporary profile. This routine catches
+  corrupted files before they matter.
+- **Secure storage habits** – label exported backups with the project name and
+  timestamp, then store them on redundant media (RAID volume, encrypted thumb
+  drive, optical disc) according to your production’s data policy.
+- **Compare before overwriting** – when restoring from an older file, download a
+  fresh backup of the current state first. Use a JSON-aware diff tool to review
+  differences so you can merge notes manually if needed.
+
+## Data Integrity Drills
+
+Treat data protection as an ongoing habit so no crew member ever wonders whether
+the latest save or export is trustworthy. Pair the backup options above with a
+repeatable verification loop:
+
+- **Pre-flight validation (daily or before major edits).** Create a manual save,
+  export both a planner backup and a `project-name.json` bundle, then import each
+  file into a private browser profile. Confirm projects, automatic gear rules,
+  favorites and runtime dashboards match the source machine before deleting the
+  verification profile. This proves the full save → share → import chain is
+  intact.
+- **Offline rehearsal (weekly or before travel).** Launch the planner, trigger a
+  manual backup, disconnect from all networks and reload `index.html`. Verify
+  the offline indicator appears, locally stored Uicons and other assets stay
+  crisp and the imported verification project opens without errors. Reconnect
+  only after the restored project is confirmed.
+- **Change control check (after updating data or scripts).** When devices,
+  automatic rules or helper tools change, run `npm test` to rebuild confidence,
+  then repeat the pre-flight validation above. Archive the passing backup with a
+  changelog entry so future crews know which revisions were certified for
+  offline work.
+- **Redundancy rotation (monthly or before archiving).** Store the most recent
+  planner backup, a verified `project-name.json` bundle (rename to `.cpproject`
+  if your asset tracker expects it) and a ZIP of the repository on at least two
+  physical media. Rotate which copy you open for spot-checks so you
+  catch media degradation before it causes data loss.
+
+## Operational Checklists
+
+Use the following repeatable routines to keep projects, backups and offline
+assets in sync on every machine that runs Cine Power Planner. Each checklist is
+designed so crews can confirm that saving, sharing, importing, backup and
+restore paths all function before heading to set and again before wrapping. A
+print-friendly version lives in `docs/operations-checklist.md`, and the travel-
+focused `docs/offline-readiness.md` runbook expands on these steps for crews
+preparing hardware that will operate without connectivity for extended periods.
+
+### Pre-shoot readiness
+
+1. **Confirm the right repository revision.** Open `index.html`, press the
+   **Force reload** button and verify the app reports the expected version in
+   **Settings → About**. Launch the legal pages once to warm up locally stored
+   Uicons, OpenMoji artwork and typography files.
+2. **Load critical projects.** Open the active production plan plus a recent
+   `auto-backup-…` snapshot. Confirm gear lists, runtime feedback and favorites
+   appear correctly in both.
+3. **Exercise the save pipeline.** Make a small edit, press `Enter` or
+   `Ctrl+S`/`⌘S` to save, then export a `planner-backup.json` file. Restore that
+   backup into a private browsing window or secondary profile and confirm the
+   project selector matches the source machine.
+4. **Test sharing flows.** Export a `project-name.json` bundle, import it into
+   the verification profile and ensure automatic gear rules, custom devices and
+   the offline indicator load as expected. Delete the profile afterwards.
+5. **Simulate no-connectivity operation.** Disconnect from the network or toggle
+   Airplane Mode, refresh the planner and confirm the offline badge appears,
+   icons stay crisp and previously verified projects remain accessible.
+6. **Archive sign-off artifacts.** Store the verified backup, bundle and a copy
+   of the repository ZIP on redundant media so the crew can rebuild the exact
+   environment even without internet access.
+
+### Wrap-day handoff
+
+1. **Capture a final manual backup.** With the project still open, export a
+   `planner-backup.json` file plus the latest `project-name.json` bundle (rename
+   to `.cpproject` if needed) and label them with the date, location and shoot
+   day.
+2. **Validate imports.** Restore both files on a verification machine to ensure
+   no corruption occurred during export. Keep the verification instance offline
+   to mimic field conditions.
+3. **Log changes for the archive.** Record which auto backups were promoted to
+   manual saves, which custom devices were added and which automatic gear rules
+   changed. Store the notes alongside the backups so future crews understand the
+   delta.
+4. **Refresh cached assets intentionally.** Once everything is archived, trigger
+   **Force reload** so the next session starts with current assets, then open the
+   help dialog and legal pages to recache any large documents before going
+   offline again.
+5. **Hand off redundant media.** Deliver encrypted copies of the backups,
+   bundles and repository snapshot to the production’s storage team and retain a
+   second copy per your organization’s data retention policy.
+
+## Emergency Recovery Playbook
+
+Follow these steps immediately if something feels wrong—missing gear lists,
+unexpected validation warnings or a suspected storage issue. The goal is to
+stabilize the environment, capture evidence and restore service without losing
+data.
+
+1. **Pause and preserve the current state.** Keep the tab open, disconnect from
+   the network (if possible) and note the time plus the offline indicator state.
+   Avoid reloading until you record what happened.
+2. **Export what still exists.** Trigger **Settings → Backup & Restore → Backup**
+   and download the resulting `planner-backup.json`. Even if the project list
+   looks wrong, the export captures auto backups, favorites, runtime feedback and
+   automatic gear rules for forensic review.
+3. **Duplicate auto backups.** In the project selector, reveal `auto-backup-…`
+   entries (if hidden) and promote the most recent snapshots to manual saves so
+   they cannot be pruned automatically. Rename each copy with an incident ID or
+   timestamp.
+4. **Inspect the verification bundle.** Import the latest known-good
+   `project-name.json` (or `.cpproject`) bundle into a private browser profile or
+   secondary machine that stays offline. Confirm projects, gear lists and
+   settings appear as expected there before touching the production environment.
+5. **Restore carefully.** Once the verification import passes, restore the fresh
+   backup on the primary machine. The workflow saves a safety copy first, letting
+   you compare the incident snapshot against the restored state with a JSON diff
+   tool if needed.
+6. **Recache and document.** After recovery, click **Force reload**, reopen the
+   help dialog and legal pages to rehydrate caches, then log the incident: what
+   happened, which files were exported, where redundant copies were stored and
+   which workstation verified the fix. Store the incident log alongside the
+   backup so future crews can audit the resolution.
+
+## Gear Lists & Reporting
+
+- Click **Generate Gear List and Project Requirements** to expand selections and project requirements into
+  categorized packing tables. Lists refresh automatically when data changes.
+- Entries are grouped by category with duplicates merged. Scenario selections add
+  matching rigging, weather protection and specialty accessories so the printed
+  kit reflects reality.
+- Automatic gear rules execute after the generator finishes, inserting
+  scenario-specific additions or removals so exports reflect bespoke crew
+  preferences without editing JSON by hand.
+- Lens rows include front diameter, weight, minimum focus, rod requirements and
+  matte box components. Battery rows account for calculator counts and required
+  hot-swap hardware.
+- Crew details, monitoring configurations, video distribution preferences and
+  custom notes appear in exports so departments stay aligned.
+- Gear lists save with the project, appear in printable overviews, live inside
+  shareable project files and can be removed with **Delete Gear List** if you
+  want a fresh start.
+
+## Automatic Gear Rules
+
+Settings → **Automatic Gear Rules** lets you fine-tune every generated packing
+list without editing JSON exports manually:
+
+- Build rules that only trigger when selected **Required Scenarios** are active.
+  Each rule can have an optional label for quick scanning in the settings list.
+- Add equipment with explicit category and quantity values or pick **Custom
+  Additions** for reminders, specialty kits or callouts. Matching remove rules
+  hide specific rows the generator would normally include.
+- Rules run after built-in accessory packs so they stack cleanly with default
+  planner logic and flow through to printable gear lists, project backups and
+  shareable bundles.
+- Saving a gear list stores the active rule set with the project. Loading that
+  project—or importing a bundle—restores its rule scope so scenario tweaks stay
+  attached to the plan.
+- Export or import the rule set as JSON, reset to the factory additions when you
+  need a clean baseline and fall back to the automatic history captured every 10
+  minutes if edits go sideways.
+
+## Runtime Intelligence
+
+User-submitted runtimes feed a weighted model so estimates match field
+experience:
+
+- Temperature adjustments scale from ×1 at 25 °C to ×1.25 at 0 °C, ×1.6 at −10 °C
+  and ×2 at −20 °C.
+- Resolution multipliers: ≥12K ×3, ≥8K ×2, ≥4K ×1.5, ≥1080p ×1, lower scaled
+  relative to 1080p.
+- Frame rate scales linearly from 24 fps (for example, 48 fps = ×2).
+- Wi‑Fi enabled adds 10 %.
+- Codec factors: RAW/BRAW/ARRIRAW/R3D/CinemaDNG/Canon RAW/X‑OCN ×1; ProRes ×1.1;
+  DNx/AVID ×1.2; All-Intra ×1.3; H.264/AVC ×1.5; H.265/HEVC ×1.7.
+- Monitor entries below specified brightness are weighted by their brightness
+  ratio.
+- Final weighting reflects how much of the total draw comes from each component
+  so similar rigs carry more influence.
+- A dashboard sorts entries by weight, shows contribution percentages and flags
+  outliers for quick evaluation.
+
+## Keyboard Shortcuts
+
+| Shortcut | Action | Notes |
+| --- | --- | --- |
+| `/`, `Ctrl+K`, `⌘K` | Focus the global search field. | Works even when navigation is collapsed; press `Esc` to clear. |
+| `Enter`, `Ctrl+S`, `⌘S` | Save the active project. | The Save button stays disabled until a project name is entered. |
+| `?`, `H`, `F1`, `Ctrl+/` | Open the help dialog. | The dialog stays searchable while you type elsewhere. |
+| `D` | Toggle dark mode. | Also available from **Settings → Themes**. |
+| `P` | Toggle the pink accent theme. | Works alongside light, dark or high-contrast modes. |
+| 🔄 button | Force reload cached assets. | Also accessible via **Settings → Force reload** without erasing projects. |
+
+## Localization
+
+New locales can be previewed immediately—no build step required. To translate
+the planner:
+
+1. Duplicate the closest language README as `README.<lang>.md` and translate the
+   documentation.
+2. Add UI strings to `translations.js` by copying an existing language block and
+   translating each value. Preserve formatting placeholders such as `%s`.
+3. Provide translated static pages (privacy policy, imprint) by copying the
+   relevant HTML files.
+4. Run `npm test` to ensure linting, data validation and Jest suites pass before
+   submitting a pull request.
+
+## Install as an App
+
+Cine Power Planner is a Progressive Web App:
+
+1. Open `index.html` in a supported browser.
+2. Use the browser’s **Install** or **Add to Home Screen** option.
+   - **Chrome/Edge (desktop):** Click the install icon in the address bar.
+   - **Android:** Open the browser menu and choose *Add to Home screen*.
+   - **iOS Safari:** Tap the share icon and select *Add to Home Screen*.
+3. Launch the app from your applications list. The installed version works
+   offline and updates automatically once you approve a refresh.
+
+## Device Data Workflow
+
+Device catalogs live under `devices/`. Each file groups related equipment so
+changes are easy to audit in version control and inside the app. When editing
+the dataset, run helper scripts before committing:
 
 ```bash
 npm run normalize
@@ -356,11 +733,100 @@ npm run check-consistency
 npm run generate-schema
 ```
 
-Add `--help` to any of the above scripts for usage details.
+`npm run normalize` cleans connector names and expands shorthand entries.
+`npm run unify-ports` standardizes connector labels. `npm run
+check-consistency` confirms required fields are present, and `npm run
+generate-schema` rebuilds `schema.json` so the interface reflects the latest
+data. Iterate quickly with the data-focused Jest project:
 
-Run `npm run help` whenever you need a quick reminder of the maintenance commands and their suggested order.
+```bash
+npm run test:data
+```
 
-## 🤝 Contributing
-Contributions are welcome! Feel free to open an issue or submit a pull request on GitHub.
-When reporting data corrections, attaching project backups or runtime samples
-helps keep the catalog accurate for everyone.
+Add `--help` to any helper command for usage notes and review generated JSON
+diffs before opening a pull request. `npm run help` prints a summary of all
+available scripts.
+
+## Development
+
+Set up with Node.js 18 or later. After cloning the repository:
+
+```bash
+npm install
+npm run lint     # run ESLint alone
+npm test
+```
+
+`npm test` runs ESLint, data consistency checks and the Jest suite sequentially
+(`--runInBand`, `maxWorkers=1`) to reduce memory usage while still failing fast.
+Run targeted suites while iterating:
+
+```bash
+npm run test:unit   # module-level logic and storage helpers (1 GB heap cap)
+npm run test:data   # static dataset validations (1 GB heap cap)
+npm run test:dom    # lightweight DOM utilities (1.5 GB heap cap)
+npm run test:script # reduced smoke checks for script.js (3 GB heap cap)
+```
+
+### Legacy browser bundle
+
+Run `npm run build:legacy` after modifying files in `src/scripts/` or `src/data/`
+to regenerate the transpiled ES5 bundle served to older browsers. The command
+rebuilds everything inside `legacy/` and refreshes the local polyfill copies so
+offline usage stays reliable.
+
+### File structure
+
+```
+index.html                 # Main HTML layout
+src/styles/style.css       # Core styles and layout
+src/styles/overview.css    # Printable overview styling
+src/styles/overview-print.css # Print overrides for the overview dialog
+src/scripts/script.js        # Application logic
+src/scripts/storage.js       # Local storage helpers
+src/scripts/static-theme.js  # Shared theme logic for legal pages
+src/data/index.js       # Default device list
+src/data/devices/       # Device catalogs by category
+src/data/schema.json    # Schema used for validation
+src/vendor/             # Bundled third-party libraries
+legal/                     # Offline legal documents
+tools/                     # Data maintenance scripts
+tests/                     # Jest test suites
+```
+
+## Troubleshooting
+
+- **Service worker stuck on an old version?** Click **Force reload** or perform a
+  hard reload in your browser’s developer tools to update cached assets without
+  deleting saved projects.
+- **Missing data after closing the tab?** Ensure the site has storage access.
+  Private browsing modes or restrictive tracking protections can block
+  persistence.
+- **Downloads blocked?** Allow multiple downloads so backups and shareable
+  bundles can save to disk.
+- **Command-line scripts failing?** Confirm Node.js 18+ is installed, run
+  `npm install` and rerun the requested npm script. Memory errors usually mean a
+  suite exceeded its cap—retry with a narrower target like `npm run test:unit`.
+
+## Feedback & Support
+
+Open an issue if you encounter problems, have questions or want to suggest new
+features. Including project exports or runtime samples helps keep the catalog
+accurate for future shoots.
+
+## Contributing
+
+Contributions are welcome! Open an issue or submit a pull request after reading
+`CONTRIBUTING.md`. Run `npm test` before submitting to ensure linting, data
+consistency checks and unit tests all pass.
+
+## Acknowledgements
+
+The planner ships with locally stored Uicons, OpenMoji assets and other bundled
+artwork so icons stay available without a network connection, and relies on
+lz-string to compactly store projects in URLs and backups.
+
+## License
+
+Distributed under the ISC license. See `package.json` for details.
+
