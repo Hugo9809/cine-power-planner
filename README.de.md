@@ -29,7 +29,7 @@ Filmsets haben selten garantierte Konnektivität, Studios verlangen häufig luft
 
 - **Mit Vertrauen planen.** Berechne Stromaufnahme bei 14,4 V/12 V (und 33,6 V/21,6 V für B‑Mount), vergleiche kompatible Akkus und visualisiere Laufzeiteffekte über ein gewichtetetes Feedback-Dashboard.
 - **Produktionsbereit bleiben.** Projekte erfassen Geräte, Anforderungen, Szenarien, Crewdetails und Gerätelisten; Auto-Backups, Bundles und gesteuerte Aktualisierungen halten Daten aktuell, ohne Stabilität zu opfern.
-- **Arbeiten wie gewohnt.** Spracherkennung, Dark-, Pink- und High-Contrast-Themes, Typografie-Regler, Custom-Logo und Hover-Hilfe machen die Oberfläche on set und in der Vorbereitung zugänglich.
+- **Arbeiten wie gewohnt.** Spracherkennung, Dark-, Pink- und High-Contrast-Themes, Typografie-Regler, Custom-Logo und Hover-Hilfe machen die Oberfläche on set und in der Vorbereitung zugänglich. Die Hover-Hilfe ergänzt nun automatisch kontextbezogene Beschreibungen für jede Schaltfläche, jedes Feld und jedes Menü, sodass sich jedes Bedienelement auch offline selbst erklärt.
 
 ## Grundprinzipien
 

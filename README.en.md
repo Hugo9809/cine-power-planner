@@ -67,7 +67,9 @@ production day.
   refreshes keep data current without sacrificing stability.
 - **Work the way you prefer.** Language detection, dark, pink and high-contrast
   themes, typography controls, custom logos and hover help make the interface
-  approachable on set and in prep.
+  approachable on set and in prep. Hover help now auto-fills contextual
+  descriptions for every button, field and menu so each control explains itself
+  even when you stay offline.
 
 ## Core Principles
 

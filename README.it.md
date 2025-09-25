@@ -29,7 +29,7 @@ Sul set la connettività non è garantita e molti studi richiedono strumenti iso
 
 - **Pianifica con sicurezza.** Calcola l’assorbimento a 14,4 V/12 V (e 33,6 V/21,6 V per B‑Mount), confronta batterie compatibili e visualizza l’impatto in un cruscotto ponderato.
 - **Resta pronto per la produzione.** I progetti includono dispositivi, requisiti, scenari, dettagli della troupe e liste; auto-backup, bundle e aggiornamenti controllati mantengono i dati aggiornati senza perdere stabilità.
-- **Lavora come preferisci.** Rilevamento lingua, temi scuro, rosa e alto contrasto, controlli tipografici, logo personalizzato e aiuto contestuale rendono l’interfaccia accogliente sia in preparazione sia sul set.
+- **Lavora come preferisci.** Rilevamento lingua, temi scuro, rosa e alto contrasto, controlli tipografici, logo personalizzato e aiuto contestuale rendono l’interfaccia accogliente sia in preparazione sia sul set. L’aiuto contestuale ora compila automaticamente descrizioni per ogni pulsante, campo e menu così ogni controllo si spiega da solo anche offline.
 
 ## Principi chiave
 

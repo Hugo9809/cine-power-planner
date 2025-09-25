@@ -8232,6 +8232,100 @@ if (helpButton && helpDialog) {
     return typeof fallback === 'string' ? fallback : '';
   };
 
+  const getHoverHelpFallbackKeys = element => {
+    if (!element) return [];
+
+    const keys = [];
+    const push = key => {
+      if (!key || keys.includes(key)) return;
+      keys.push(key);
+    };
+
+    const role = (element.getAttribute('role') || '').toLowerCase();
+    const tagName = element.tagName ? element.tagName.toLowerCase() : '';
+    const typeAttr = (element.getAttribute('type') || '').toLowerCase();
+    const elementType = typeof element.type === 'string' ? element.type.toLowerCase() : '';
+    const inputType = typeAttr || elementType;
+    const ariaHasPopup = (element.getAttribute('aria-haspopup') || '').toLowerCase();
+    const ariaPressed = (element.getAttribute('aria-pressed') || '').toLowerCase();
+
+    if (role === 'dialog') {
+      push('hoverHelpFallbackDialog');
+    }
+    if (role === 'tablist') {
+      push('hoverHelpFallbackTablist');
+    }
+    if (role === 'tab') {
+      push('hoverHelpFallbackTab');
+    }
+    if (role === 'menu') {
+      push('hoverHelpFallbackMenu');
+    }
+    if (role === 'menuitem') {
+      push('hoverHelpFallbackMenu');
+    }
+    if (role === 'progressbar') {
+      push('hoverHelpFallbackProgress');
+    }
+    if (role === 'status') {
+      push('hoverHelpFallbackStatus');
+    }
+    if (role === 'alert') {
+      push('hoverHelpFallbackAlert');
+    }
+    if (role === 'switch') {
+      push('hoverHelpFallbackSwitch');
+    }
+    if (role === 'combobox') {
+      push('hoverHelpFallbackSelect');
+    }
+
+    if (tagName === 'button' || role === 'button' || element.matches?.("input[type='button']") || element.matches?.("input[type='submit']") || element.matches?.("input[type='reset']")) {
+      if (ariaHasPopup && ariaHasPopup !== 'false') {
+        push('hoverHelpFallbackMenuButton');
+      }
+      if (ariaPressed === 'true' || ariaPressed === 'mixed' || ariaPressed === 'false') {
+        push('hoverHelpFallbackToggleButton');
+      }
+      push('hoverHelpFallbackButton');
+    } else if (tagName === 'a' && element.hasAttribute('href')) {
+      push('hoverHelpFallbackLink');
+    } else if (tagName === 'select') {
+      push('hoverHelpFallbackSelect');
+    } else if (tagName === 'textarea') {
+      push('hoverHelpFallbackTextarea');
+    } else if (tagName === 'details') {
+      push('hoverHelpFallbackDetails');
+    } else if (tagName === 'input') {
+      switch (inputType) {
+        case 'checkbox':
+          push('hoverHelpFallbackCheckbox');
+          break;
+        case 'radio':
+          push('hoverHelpFallbackRadio');
+          break;
+        case 'range':
+          push('hoverHelpFallbackSlider');
+          break;
+        case 'number':
+          push('hoverHelpFallbackNumberInput');
+          break;
+        case 'file':
+          push('hoverHelpFallbackFileInput');
+          break;
+        case 'color':
+          push('hoverHelpFallbackColorInput');
+          break;
+        default:
+          push('hoverHelpFallbackTextInput');
+          break;
+      }
+    }
+
+    push('hoverHelpFallbackGeneric');
+    return keys;
+  };
+
   const collectHoverHelpContent = el => {
     if (!el) {
       return { label: '', details: [] };
@@ -8262,8 +8356,22 @@ if (helpButton && helpDialog) {
       addDetailText(element.getAttribute('data-help'));
       addDetailText(element.getAttribute('aria-description'));
       addDetailText(element.getAttribute('title'));
+      addDetailText(element.getAttribute('aria-placeholder'));
       addLabelText(element.getAttribute('aria-label'));
       addLabelText(element.getAttribute('alt'));
+      const placeholderAttr = element.getAttribute('placeholder');
+      addDetailText(placeholderAttr);
+      if (element.placeholder && element.placeholder !== placeholderAttr) {
+        addDetailText(element.placeholder);
+      }
+      const roleDescription = element.getAttribute('aria-roledescription');
+      if (roleDescription) {
+        if (preferTextAsLabel) {
+          addLabelText(roleDescription);
+        } else {
+          addDetailText(roleDescription);
+        }
+      }
       gatherHoverHelpShortcuts(element).forEach(addShortcutText);
       if (includeTextContent) {
         const text = element.textContent;
@@ -8306,6 +8414,20 @@ if (helpButton && helpDialog) {
 
     if (!detailParts.length && labelParts.length > 1) {
       labelParts.slice(1).forEach(text => addDetailText(text));
+    }
+
+    if (!detailParts.length) {
+      const fallbackKeys = getHoverHelpFallbackKeys(el);
+      let addedFallback = false;
+      fallbackKeys.forEach(key => {
+        const text = getHoverHelpLocaleValue(key);
+        if (!text) return;
+        addedFallback = true;
+        addDetailText(text);
+      });
+      if (!addedFallback) {
+        addDetailText(getHoverHelpLocaleValue('hoverHelpFallbackGeneric'));
+      }
     }
 
     return {
