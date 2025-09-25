@@ -107,6 +107,8 @@ const ASSETS = [
   './animated icons 3/video-camera.json',
   './src/icons/app-icon.svg',
   './src/icons/app-icon.png',
+  './Icon Bluenew.svg',
+  './Icon Pinknew.svg',
   './manifest.webmanifest',
   './tools/checkConsistency.js',
   './tools/cliHelp.js',
