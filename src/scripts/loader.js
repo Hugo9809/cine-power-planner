@@ -230,8 +230,78 @@
     return false;
   }
 
+  function isUnsafeEvalAllowed() {
+    if (typeof document === 'undefined') {
+      return true;
+    }
+
+    var metas = document.getElementsByTagName('meta');
+    for (var index = 0; index < metas.length; index += 1) {
+      var meta = metas[index];
+      if (!meta || typeof meta.getAttribute !== 'function') {
+        continue;
+      }
+
+      var httpEquiv = meta.getAttribute('http-equiv');
+      if (!httpEquiv || typeof httpEquiv !== 'string') {
+        continue;
+      }
+
+      if (httpEquiv.toLowerCase() !== 'content-security-policy') {
+        continue;
+      }
+
+      var content = meta.getAttribute('content');
+      if (!content || typeof content !== 'string') {
+        continue;
+      }
+
+      var lowerContent = content.toLowerCase();
+      var directives = lowerContent.split(';');
+      var scriptDirective = null;
+      var defaultDirective = null;
+
+      for (var dirIndex = 0; dirIndex < directives.length; dirIndex += 1) {
+        var rawDirective = directives[dirIndex];
+        if (!rawDirective) {
+          continue;
+        }
+
+        var directive = rawDirective.trim();
+        if (!directive) {
+          continue;
+        }
+
+        if (directive.indexOf('script-src') === 0) {
+          var scriptChar = directive.charAt('script-src'.length);
+          if (scriptChar && scriptChar !== ' ' && scriptChar !== "\t" && scriptChar !== "'" && scriptChar !== '"') {
+            continue;
+          }
+          scriptDirective = directive;
+        } else if (directive.indexOf('default-src') === 0) {
+          defaultDirective = directive;
+        }
+      }
+
+      var directiveToInspect = scriptDirective || defaultDirective;
+      if (directiveToInspect && directiveToInspect.indexOf('unsafe-eval') === -1) {
+        return false;
+      }
+
+      if (directiveToInspect) {
+        return true;
+      }
+    }
+
+    return true;
+  }
+
   function detectOptionalChainingSupport() {
     if (typeof Function !== 'function') {
+      return null;
+    }
+
+    if (!isUnsafeEvalAllowed()) {
       return null;
     }
 
