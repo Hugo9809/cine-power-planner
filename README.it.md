@@ -301,6 +301,7 @@ Da **Impostazioni → Regole automatiche** puoi affinare ogni lista senza modifi
 - Aggiungi attrezzatura con categoria e quantità oppure usa **Aggiunte personalizzate** per promemoria, kit speciali o note. Le regole di rimozione nascondono righe che il generatore includerebbe.
 - Le regole girano dopo i pacchetti predefiniti così si integrano con la logica di base e confluiscono in liste, backup e bundle.
 - Un pannello dedicato mette in evidenza trigger duplicati, variazioni nette, conflitti e scenari scoperti. Le card di focus filtrano l’elenco, aprono le regole coinvolte e restano disponibili offline.
+- Puoi anche vincolare le regole in base al **Peso della camera**, confrontando il corpo selezionato con una soglia in grammi (più pesante, più leggera o identica) prima che l’automazione aggiunga o rimuova elementi.
 - Salvare una lista memorizza l’insieme di regole attivo; caricando il progetto o importando un bundle si ripristina lo stesso perimetro.
 - Questi insight di copertura viaggiano come oggetto `coverage` in stampe, backup, export di progetto e bundle condivisi, così le verifiche successive trovano lo stesso stato.
 - Esporta/importa l’insieme in JSON, ripristina le impostazioni di fabbrica o usa la cronologia automatica (ogni dieci minuti) se un editing va storto.

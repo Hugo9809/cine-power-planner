@@ -2285,6 +2285,32 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
   var videoDistributionSet = new Set(normalizedVideoDistribution);
   var rawCameraSelection = info && typeof info.cameraSelection === 'string' ? info.cameraSelection.trim() : '';
   var normalizedCameraSelection = normalizeAutoGearTriggerValue(rawCameraSelection);
+  var cameraWeightDataset = devices && devices.cameras ? devices.cameras : null;
+  var normalizedCameraWeights = function () {
+    if (!cameraWeightDataset) return null;
+    var lookup = {};
+    Object.keys(cameraWeightDataset).forEach(function (name) {
+      var entry = cameraWeightDataset[name];
+      if (!entry || !Number.isFinite(entry.weight_g)) return;
+      var normalizedName = normalizeAutoGearTriggerValue(name);
+      if (normalizedName && !Object.prototype.hasOwnProperty.call(lookup, normalizedName)) {
+        lookup[normalizedName] = Number(entry.weight_g);
+      }
+    });
+    return lookup;
+  }();
+  var selectedCameraWeight = function () {
+    if (!cameraWeightDataset) return null;
+    var direct = rawCameraSelection && Object.prototype.hasOwnProperty.call(cameraWeightDataset, rawCameraSelection) ? cameraWeightDataset[rawCameraSelection] : null;
+    if (direct && Number.isFinite(direct.weight_g)) {
+      return Number(direct.weight_g);
+    }
+    if (!normalizedCameraSelection || !normalizedCameraWeights) return null;
+    if (Object.prototype.hasOwnProperty.call(normalizedCameraWeights, normalizedCameraSelection)) {
+      return normalizedCameraWeights[normalizedCameraSelection];
+    }
+    return null;
+  }();
   var rawMonitorSelection = info && typeof info.monitorSelection === 'string' ? info.monitorSelection.trim() : '';
   var normalizedMonitorSelection = normalizeAutoGearTriggerValue(rawMonitorSelection);
   var rawWirelessSelection = info && typeof info.wirelessSelection === 'string' ? info.wirelessSelection.trim() : '';
@@ -2403,6 +2429,13 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
       if (!_normalizedTargets.length) return false;
       if (!normalizedCameraSelection) return false;
       if (!_normalizedTargets.includes(normalizedCameraSelection)) return false;
+    }
+    var cameraWeightCondition = normalizeAutoGearCameraWeightCondition(rule.cameraWeight);
+    if (cameraWeightCondition) {
+      if (!Number.isFinite(selectedCameraWeight)) return false;
+      if (!evaluateAutoGearCameraWeightCondition(cameraWeightCondition, selectedCameraWeight)) {
+        return false;
+      }
     }
     var monitorList = Array.isArray(rule.monitor) ? rule.monitor.filter(Boolean) : [];
     if (monitorList.length) {

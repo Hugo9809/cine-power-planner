@@ -5451,6 +5451,55 @@ function setLanguage(lang) {
       autoGearCameraSelect.setAttribute('aria-label', _label29);
     }
   }
+  if (autoGearCameraWeightLabel) {
+    var _texts$en118, _texts$en119;
+    var cameraWeightLabel = texts[lang].autoGearCameraWeightLabel || ((_texts$en118 = texts.en) === null || _texts$en118 === void 0 ? void 0 : _texts$en118.autoGearCameraWeightLabel) || autoGearCameraWeightLabel.textContent || 'Camera weight';
+    var cameraWeightHelp = texts[lang].autoGearCameraWeightHelp || ((_texts$en119 = texts.en) === null || _texts$en119 === void 0 ? void 0 : _texts$en119.autoGearCameraWeightHelp) || cameraWeightLabel;
+    autoGearCameraWeightLabel.textContent = cameraWeightLabel;
+    autoGearCameraWeightLabel.setAttribute('data-help', cameraWeightHelp);
+  }
+  if (autoGearCameraWeightOperatorLabel) {
+    var _texts$en120, _texts$en121, _texts$en122, _texts$en123;
+    var cameraWeightOperatorLabel = texts[lang].autoGearCameraWeightOperatorLabel || ((_texts$en120 = texts.en) === null || _texts$en120 === void 0 ? void 0 : _texts$en120.autoGearCameraWeightOperatorLabel) || autoGearCameraWeightOperatorLabel.textContent || 'Weight comparison';
+    autoGearCameraWeightOperatorLabel.textContent = cameraWeightOperatorLabel;
+    autoGearCameraWeightOperatorLabel.setAttribute('data-help', cameraWeightOperatorLabel);
+    if (autoGearCameraWeightOperator) {
+      autoGearCameraWeightOperator.setAttribute('data-help', cameraWeightOperatorLabel);
+      autoGearCameraWeightOperator.setAttribute('aria-label', cameraWeightOperatorLabel);
+      var cameraWeightGreater = texts[lang].autoGearCameraWeightOperatorGreater || ((_texts$en121 = texts.en) === null || _texts$en121 === void 0 ? void 0 : _texts$en121.autoGearCameraWeightOperatorGreater) || 'Heavier than';
+      var cameraWeightLess = texts[lang].autoGearCameraWeightOperatorLess || ((_texts$en122 = texts.en) === null || _texts$en122 === void 0 ? void 0 : _texts$en122.autoGearCameraWeightOperatorLess) || 'Lighter than';
+      var cameraWeightEqual = texts[lang].autoGearCameraWeightOperatorEqual || ((_texts$en123 = texts.en) === null || _texts$en123 === void 0 ? void 0 : _texts$en123.autoGearCameraWeightOperatorEqual) || 'Exactly';
+      Array.from(autoGearCameraWeightOperator.options || []).forEach(function (option) {
+        if (!option) return;
+        if (option.value === 'greater') {
+          option.textContent = cameraWeightGreater;
+        } else if (option.value === 'less') {
+          option.textContent = cameraWeightLess;
+        } else if (option.value === 'equal') {
+          option.textContent = cameraWeightEqual;
+        }
+      });
+    }
+  }
+  if (autoGearCameraWeightValueLabel) {
+    var _texts$en124, _texts$en125;
+    var cameraWeightValueLabel = texts[lang].autoGearCameraWeightValueLabel || ((_texts$en124 = texts.en) === null || _texts$en124 === void 0 ? void 0 : _texts$en124.autoGearCameraWeightValueLabel) || autoGearCameraWeightValueLabel.textContent || 'Weight threshold (grams)';
+    var cameraWeightValueHelp = texts[lang].autoGearCameraWeightHelp || ((_texts$en125 = texts.en) === null || _texts$en125 === void 0 ? void 0 : _texts$en125.autoGearCameraWeightHelp) || cameraWeightValueLabel;
+    autoGearCameraWeightValueLabel.textContent = cameraWeightValueLabel;
+    autoGearCameraWeightValueLabel.setAttribute('data-help', cameraWeightValueHelp);
+    if (autoGearCameraWeightValueInput) {
+      autoGearCameraWeightValueInput.setAttribute('data-help', cameraWeightValueHelp);
+      autoGearCameraWeightValueInput.setAttribute('aria-label', cameraWeightValueLabel);
+    }
+  }
+  if (autoGearCameraWeightHelp) {
+    var _texts$en126;
+    var cameraWeightHelpText = texts[lang].autoGearCameraWeightHelp || ((_texts$en126 = texts.en) === null || _texts$en126 === void 0 ? void 0 : _texts$en126.autoGearCameraWeightHelp) || autoGearCameraWeightHelp.textContent || '';
+    autoGearCameraWeightHelp.textContent = cameraWeightHelpText;
+    if (cameraWeightHelpText) {
+      autoGearCameraWeightHelp.setAttribute('data-help', cameraWeightHelpText);
+    }
+  }
   if (autoGearMonitorLabel) {
     var _texts$en118, _texts$en119;
     var _label30 = texts[lang].autoGearMonitorLabel || ((_texts$en118 = texts.en) === null || _texts$en118 === void 0 ? void 0 : _texts$en118.autoGearMonitorLabel) || autoGearMonitorLabel.textContent;
@@ -10390,6 +10439,8 @@ function removeAutoGearCondition(key) {
       autoGearEditorDraft.always = [];
     } else if (key === 'shootingDays') {
       autoGearEditorDraft.shootingDays = null;
+    } else if (key === 'cameraWeight') {
+      autoGearEditorDraft.cameraWeight = null;
     } else if (Array.isArray(autoGearEditorDraft[key])) {
       autoGearEditorDraft[key] = [];
     }
@@ -10399,6 +10450,14 @@ function removeAutoGearCondition(key) {
       option.selected = false;
     });
     config.select.value = '';
+  }
+  if (key === 'cameraWeight') {
+    if (autoGearCameraWeightOperator) {
+      autoGearCameraWeightOperator.value = 'greater';
+    }
+    if (autoGearCameraWeightValueInput) {
+      autoGearCameraWeightValueInput.value = '';
+    }
   }
   if (key === 'shootingDays') {
     if (autoGearShootingDaysMode) {
@@ -10447,6 +10506,8 @@ function clearAllAutoGearConditions() {
         autoGearEditorDraft.always = [];
       } else if (key === 'shootingDays') {
         autoGearEditorDraft.shootingDays = null;
+      } else if (key === 'cameraWeight') {
+        autoGearEditorDraft.cameraWeight = null;
       } else if (Array.isArray(autoGearEditorDraft[key])) {
         autoGearEditorDraft[key] = [];
       }
@@ -10456,6 +10517,14 @@ function clearAllAutoGearConditions() {
         option.selected = false;
       });
       config.select.value = '';
+    }
+    if (key === 'cameraWeight') {
+      if (autoGearCameraWeightOperator) {
+        autoGearCameraWeightOperator.value = 'greater';
+      }
+      if (autoGearCameraWeightValueInput) {
+        autoGearCameraWeightValueInput.value = '';
+      }
     }
     if (key === 'shootingDays') {
       if (autoGearShootingDaysMode) {
@@ -10560,6 +10629,23 @@ function initializeAutoGearConditionsFromDraft() {
 refreshAutoGearConditionPicker();
 updateAutoGearConditionAddButtonState();
 configureAutoGearConditionButtons();
+if (autoGearCameraWeightOperator) {
+  var handleCameraWeightOperatorChange = function handleCameraWeightOperatorChange() {
+    updateAutoGearCameraWeightDraft();
+    renderAutoGearDraftImpact();
+  };
+  autoGearCameraWeightOperator.addEventListener('input', handleCameraWeightOperatorChange);
+  autoGearCameraWeightOperator.addEventListener('change', handleCameraWeightOperatorChange);
+}
+if (autoGearCameraWeightValueInput) {
+  var handleCameraWeightValueInput = function handleCameraWeightValueInput() {
+    updateAutoGearCameraWeightDraft();
+    renderAutoGearDraftImpact();
+  };
+  autoGearCameraWeightValueInput.addEventListener('input', handleCameraWeightValueInput);
+  autoGearCameraWeightValueInput.addEventListener('change', handleCameraWeightValueInput);
+  autoGearCameraWeightValueInput.addEventListener('blur', handleCameraWeightValueInput);
+}
 var autoGearAddItemsHeading = document.getElementById('autoGearAddItemsHeading');
 var autoGearAddItemLabel = document.getElementById('autoGearAddItemLabel');
 var autoGearAddCategoryLabel = document.getElementById('autoGearAddCategoryLabel');

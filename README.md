@@ -657,6 +657,8 @@ list without editing JSON exports manually:
 
 - Build rules that only trigger when selected **Required Scenarios** are active.
   Each rule can have an optional label for quick scanning in the settings list.
+- Gate rules by **Camera weight**, comparing the selected body to a heavier-than,
+  lighter-than or exact gram threshold before the automation fires.
 - Add equipment with explicit category and quantity values or pick **Custom
   Additions** for reminders, specialty kits or callouts. Matching remove rules
   hide specific rows the generator would normally include.
