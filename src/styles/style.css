@@ -2197,6 +2197,29 @@ body.high-contrast .settings-tab[aria-selected="true"] {
   gap: 8px;
 }
 
+.auto-gear-backup-retention {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.auto-gear-backup-retention-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.auto-gear-backup-retention-input {
+  width: 90px;
+}
+
+.auto-gear-backup-warning {
+  margin: 0;
+  color: var(--warning-color, #ff9f1c);
+  font-weight: 500;
+}
+
 .auto-gear-backup-header {
   display: flex;
   flex-wrap: wrap;

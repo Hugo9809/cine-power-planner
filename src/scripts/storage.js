@@ -107,12 +107,15 @@ const AUTO_GEAR_MONITOR_DEFAULTS_STORAGE_KEY = 'cameraPowerPlanner_autoGearMonit
 const AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY = 'cameraPowerPlanner_autoGearActivePreset';
 const AUTO_GEAR_AUTO_PRESET_STORAGE_KEY = 'cameraPowerPlanner_autoGearAutoPreset';
 const AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY = 'cameraPowerPlanner_autoGearShowBackups';
+const AUTO_GEAR_BACKUP_RETENTION_STORAGE_KEY = 'cameraPowerPlanner_autoGearBackupRetention';
 const FULL_BACKUP_HISTORY_STORAGE_KEY = 'cameraPowerPlanner_fullBackups';
 const STORAGE_AUTO_BACKUP_NAME_PREFIX = 'auto-backup-';
 const STORAGE_AUTO_BACKUP_DELETION_PREFIX = 'auto-backup-before-delete-';
 const MAX_AUTO_BACKUPS = 50;
 const MAX_DELETION_BACKUPS = 20;
 const MAX_FULL_BACKUP_HISTORY_ENTRIES = 200;
+const AUTO_GEAR_BACKUP_RETENTION_DEFAULT = 12;
+const AUTO_GEAR_BACKUP_RETENTION_MIN = 1;
 
 const STORAGE_BACKUP_SUFFIX = '__backup';
 const MAX_SAVE_ATTEMPTS = 3;
@@ -183,6 +186,7 @@ const PRIMARY_STORAGE_KEYS = [
   AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY,
   AUTO_GEAR_AUTO_PRESET_STORAGE_KEY,
   AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY,
+  AUTO_GEAR_BACKUP_RETENTION_STORAGE_KEY,
 ];
 
 const SIMPLE_STORAGE_KEYS = [
@@ -1290,6 +1294,7 @@ function migrateLegacyStorageKeys() {
     { legacy: `${legacyPrefix}autoGearActivePreset`, modern: AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY },
     { legacy: `${legacyPrefix}autoGearAutoPreset`, modern: AUTO_GEAR_AUTO_PRESET_STORAGE_KEY },
     { legacy: `${legacyPrefix}autoGearShowBackups`, modern: AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY },
+    { legacy: `${legacyPrefix}autoGearBackupRetention`, modern: AUTO_GEAR_BACKUP_RETENTION_STORAGE_KEY },
     { legacy: `${legacyPrefix}autoGearMonitorDefaults`, modern: AUTO_GEAR_MONITOR_DEFAULTS_STORAGE_KEY },
     { legacy: `${legacyPrefix}customFonts`, modern: CUSTOM_FONT_STORAGE_KEY_DEFAULT, updateFontKey: true },
   ];
@@ -4016,6 +4021,103 @@ function saveAutoGearBackupVisibility(flag) {
   );
 }
 
+function clampAutoGearBackupRetention(value) {
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric)) {
+    return AUTO_GEAR_BACKUP_RETENTION_DEFAULT;
+  }
+  const rounded = Math.round(numeric);
+  if (!Number.isFinite(rounded)) {
+    return AUTO_GEAR_BACKUP_RETENTION_DEFAULT;
+  }
+  if (rounded < AUTO_GEAR_BACKUP_RETENTION_MIN) {
+    return AUTO_GEAR_BACKUP_RETENTION_MIN;
+  }
+  if (rounded > MAX_AUTO_BACKUPS) {
+    return MAX_AUTO_BACKUPS;
+  }
+  return rounded;
+}
+
+function normalizeAutoGearBackupRetentionValue(value, fallback = AUTO_GEAR_BACKUP_RETENTION_DEFAULT) {
+  if (value === null || value === undefined) {
+    return fallback;
+  }
+  if (typeof value === 'number') {
+    return clampAutoGearBackupRetention(value);
+  }
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    if (!trimmed) {
+      return fallback;
+    }
+    const parsed = Number(trimmed);
+    if (Number.isFinite(parsed)) {
+      return clampAutoGearBackupRetention(parsed);
+    }
+    const maybeJson = tryParseJSONLike(trimmed);
+    if (maybeJson && maybeJson.success) {
+      return normalizeAutoGearBackupRetentionValue(maybeJson.parsed, fallback);
+    }
+    return fallback;
+  }
+  if (Array.isArray(value)) {
+    for (let index = 0; index < value.length; index += 1) {
+      const candidate = normalizeAutoGearBackupRetentionValue(value[index], null);
+      if (typeof candidate === 'number' && Number.isFinite(candidate)) {
+        return clampAutoGearBackupRetention(candidate);
+      }
+    }
+    return fallback;
+  }
+  if (isPlainObject(value)) {
+    const candidateKeys = ['value', 'retention', 'limit', 'count'];
+    for (let i = 0; i < candidateKeys.length; i += 1) {
+      const key = candidateKeys[i];
+      if (!Object.prototype.hasOwnProperty.call(value, key)) {
+        continue;
+      }
+      const candidate = normalizeAutoGearBackupRetentionValue(value[key], null);
+      if (typeof candidate === 'number' && Number.isFinite(candidate)) {
+        return clampAutoGearBackupRetention(candidate);
+      }
+    }
+    return fallback;
+  }
+  return fallback;
+}
+
+function loadAutoGearBackupRetention() {
+  applyLegacyStorageMigrations();
+  const safeStorage = getSafeLocalStorage();
+  const retention = loadJSONFromStorage(
+    safeStorage,
+    AUTO_GEAR_BACKUP_RETENTION_STORAGE_KEY,
+    "Error loading automatic gear backup retention from localStorage:",
+    AUTO_GEAR_BACKUP_RETENTION_DEFAULT,
+    {
+      validate: (value) =>
+        value === null
+        || typeof value === 'number'
+        || typeof value === 'string'
+        || Array.isArray(value)
+        || isPlainObject(value),
+    },
+  );
+  return normalizeAutoGearBackupRetentionValue(retention);
+}
+
+function saveAutoGearBackupRetention(retention) {
+  const safeStorage = getSafeLocalStorage();
+  const normalized = normalizeAutoGearBackupRetentionValue(retention);
+  saveJSONToStorage(
+    safeStorage,
+    AUTO_GEAR_BACKUP_RETENTION_STORAGE_KEY,
+    normalized,
+    "Error saving automatic gear backup retention to localStorage:",
+  );
+}
+
 // --- Clear All Stored Data ---
 function clearAllData() {
   const msg = "Error clearing storage:";
@@ -4034,6 +4136,7 @@ function clearAllData() {
   deleteFromStorage(safeStorage, AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, msg);
   deleteFromStorage(safeStorage, AUTO_GEAR_AUTO_PRESET_STORAGE_KEY, msg);
   deleteFromStorage(safeStorage, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY, msg);
+  deleteFromStorage(safeStorage, AUTO_GEAR_BACKUP_RETENTION_STORAGE_KEY, msg);
   deleteFromStorage(safeStorage, AUTO_GEAR_MONITOR_DEFAULTS_STORAGE_KEY, msg);
   deleteFromStorage(
     safeStorage,
@@ -4296,6 +4399,7 @@ function clearAllData() {
       autoGearActivePresetId: loadAutoGearActivePresetId(),
       autoGearAutoPresetId: loadAutoGearAutoPresetId(),
       autoGearShowBackups: loadAutoGearBackupVisibility(),
+      autoGearBackupRetention: loadAutoGearBackupRetention(),
       fullBackupHistory: loadFullBackupHistory(),
     };
 
@@ -4460,6 +4564,57 @@ function normalizeImportedAutoGearBackups(value) {
     ["backups", "entries", "items", "list", "values", "data"],
     (entry) => entry !== null && typeof entry === "object",
   );
+}
+
+function normalizeImportedAutoGearBackupRetention(value) {
+  if (value === null || value === undefined) {
+    return null;
+  }
+  if (typeof value === 'number') {
+    return clampAutoGearBackupRetention(value);
+  }
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    if (!trimmed) {
+      return null;
+    }
+    const direct = Number(trimmed);
+    if (Number.isFinite(direct)) {
+      return clampAutoGearBackupRetention(direct);
+    }
+    const parsed = tryParseJSONLike(trimmed);
+    if (parsed && parsed.success) {
+      return normalizeImportedAutoGearBackupRetention(parsed.parsed);
+    }
+    return null;
+  }
+  if (Array.isArray(value)) {
+    for (let i = 0; i < value.length; i += 1) {
+      const candidate = normalizeImportedAutoGearBackupRetention(value[i]);
+      if (typeof candidate === 'number') {
+        return candidate;
+      }
+    }
+    return null;
+  }
+  if (isPlainObject(value)) {
+    const candidateKeys = ['value', 'retention', 'limit', 'count'];
+    for (let i = 0; i < candidateKeys.length; i += 1) {
+      const key = candidateKeys[i];
+      if (!Object.prototype.hasOwnProperty.call(value, key)) {
+        continue;
+      }
+      const candidate = normalizeImportedAutoGearBackupRetention(value[key]);
+      if (typeof candidate === 'number') {
+        return candidate;
+      }
+    }
+    return null;
+  }
+  if (typeof value === 'boolean') {
+    return value ? AUTO_GEAR_BACKUP_RETENTION_MIN : null;
+  }
+  return null;
 }
 
 function normalizeImportedAutoGearPresets(value) {
@@ -4673,6 +4828,7 @@ function convertStorageSnapshotToData(snapshot) {
   assignJSONValue(AUTO_GEAR_BACKUPS_STORAGE_KEY, 'autoGearBackups');
   assignJSONValue(AUTO_GEAR_PRESETS_STORAGE_KEY, 'autoGearPresets');
   assignJSONValue(AUTO_GEAR_MONITOR_DEFAULTS_STORAGE_KEY, 'autoGearMonitorDefaults');
+  assignJSONValue(AUTO_GEAR_BACKUP_RETENTION_STORAGE_KEY, 'autoGearBackupRetention');
 
   const schemaEntry = readSnapshotEntry(snapshot, DEVICE_SCHEMA_CACHE_KEY);
   if (schemaEntry) {
@@ -4948,6 +5104,12 @@ function importAllData(allData, options = {}) {
       saveAutoGearBackupVisibility(visibility);
     }
   }
+  if (Object.prototype.hasOwnProperty.call(allData, 'autoGearBackupRetention')) {
+    const retention = normalizeImportedAutoGearBackupRetention(allData.autoGearBackupRetention);
+    if (typeof retention === 'number' && Number.isFinite(retention)) {
+      saveAutoGearBackupRetention(retention);
+    }
+  }
 
   if (Object.prototype.hasOwnProperty.call(allData, 'fullBackupHistory')) {
     const history = normalizeImportedFullBackupHistory(allData.fullBackupHistory);
@@ -5014,6 +5176,8 @@ const STORAGE_API = {
   saveAutoGearAutoPresetId,
   loadAutoGearBackupVisibility,
   saveAutoGearBackupVisibility,
+  loadAutoGearBackupRetention,
+  saveAutoGearBackupRetention,
   loadFullBackupHistory,
   saveFullBackupHistory,
   recordFullBackupHistoryEntry,

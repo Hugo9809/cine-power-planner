@@ -1,5 +1,5 @@
 // script.js – Main logic for the Cine Power Planner app
-/* global texts, categoryNames, gearItems, loadSessionState, saveSessionState, loadProject, saveProject, deleteProject, renameSetup, registerDevice, loadFavorites, saveFavorites, exportAllData, importAllData, clearAllData, loadAutoGearRules, saveAutoGearRules, loadAutoGearBackups, saveAutoGearBackups, loadAutoGearSeedFlag, saveAutoGearSeedFlag, loadAutoGearPresets, saveAutoGearPresets, loadAutoGearActivePresetId, saveAutoGearActivePresetId, loadAutoGearAutoPresetId, saveAutoGearAutoPresetId, loadAutoGearBackupVisibility, saveAutoGearBackupVisibility, loadAutoGearMonitorDefaults, saveAutoGearMonitorDefaults, AUTO_GEAR_RULES_STORAGE_KEY, AUTO_GEAR_SEEDED_STORAGE_KEY, AUTO_GEAR_BACKUPS_STORAGE_KEY, AUTO_GEAR_PRESETS_STORAGE_KEY, AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, AUTO_GEAR_AUTO_PRESET_STORAGE_KEY, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY, AUTO_GEAR_MONITOR_DEFAULTS_STORAGE_KEY, SAFE_LOCAL_STORAGE, getSafeLocalStorage, CUSTOM_FONT_STORAGE_KEY, CUSTOM_FONT_STORAGE_KEY_NAME, TEMPERATURE_UNIT_STORAGE_KEY, updateAutoGearHighlightToggleButton, handlePinkModeIconPress */
+/* global texts, categoryNames, gearItems, loadSessionState, saveSessionState, loadProject, saveProject, deleteProject, renameSetup, registerDevice, loadFavorites, saveFavorites, exportAllData, importAllData, clearAllData, loadAutoGearRules, saveAutoGearRules, loadAutoGearBackups, saveAutoGearBackups, loadAutoGearSeedFlag, saveAutoGearSeedFlag, loadAutoGearPresets, saveAutoGearPresets, loadAutoGearActivePresetId, saveAutoGearActivePresetId, loadAutoGearAutoPresetId, saveAutoGearAutoPresetId, loadAutoGearBackupVisibility, saveAutoGearBackupVisibility, loadAutoGearBackupRetention, saveAutoGearBackupRetention, loadAutoGearMonitorDefaults, saveAutoGearMonitorDefaults, AUTO_GEAR_RULES_STORAGE_KEY, AUTO_GEAR_SEEDED_STORAGE_KEY, AUTO_GEAR_BACKUPS_STORAGE_KEY, AUTO_GEAR_PRESETS_STORAGE_KEY, AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, AUTO_GEAR_AUTO_PRESET_STORAGE_KEY, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY, AUTO_GEAR_BACKUP_RETENTION_STORAGE_KEY, AUTO_GEAR_MONITOR_DEFAULTS_STORAGE_KEY, SAFE_LOCAL_STORAGE, getSafeLocalStorage, CUSTOM_FONT_STORAGE_KEY, CUSTOM_FONT_STORAGE_KEY_NAME, TEMPERATURE_UNIT_STORAGE_KEY, updateAutoGearHighlightToggleButton, handlePinkModeIconPress */
 
 // Use `var` here instead of `let` because `index.html` loads the lz-string
 // library from a CDN which defines a global `LZString` variable. Using `let`
@@ -126,12 +126,18 @@ const AUTO_GEAR_BACKUP_VISIBILITY_KEY =
   typeof AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY !== 'undefined'
     ? AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY
     : 'cameraPowerPlanner_autoGearShowBackups';
+const AUTO_GEAR_BACKUP_RETENTION_KEY =
+  typeof AUTO_GEAR_BACKUP_RETENTION_STORAGE_KEY !== 'undefined'
+    ? AUTO_GEAR_BACKUP_RETENTION_STORAGE_KEY
+    : 'cameraPowerPlanner_autoGearBackupRetention';
 const AUTO_GEAR_MONITOR_DEFAULTS_KEY =
   typeof AUTO_GEAR_MONITOR_DEFAULTS_STORAGE_KEY !== 'undefined'
     ? AUTO_GEAR_MONITOR_DEFAULTS_STORAGE_KEY
     : 'cameraPowerPlanner_autoGearMonitorDefaults';
 const AUTO_GEAR_BACKUP_INTERVAL_MS = 10 * 60 * 1000;
-const AUTO_GEAR_BACKUP_LIMIT = 12;
+const AUTO_GEAR_BACKUP_RETENTION_DEFAULT = 12;
+const AUTO_GEAR_BACKUP_RETENTION_MIN = 1;
+const AUTO_GEAR_BACKUP_RETENTION_MAX = 50;
 const AUTO_GEAR_MULTI_SELECT_MIN_ROWS = 8;
 const AUTO_GEAR_MULTI_SELECT_MAX_ROWS = 12;
 const AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS = 1;
@@ -1288,10 +1294,11 @@ function normalizeAutoGearBackupEntry(entry) {
   const rules = rawRules.length === 0 ? [] : normalizedRules;
   const id = typeof entry.id === 'string' && entry.id ? entry.id : generateAutoGearId('backup');
   const monitorDefaults = normalizeAutoGearMonitorDefaults(entry.monitorDefaults);
-  return { id, createdAt, rules, monitorDefaults };
+  const note = typeof entry.note === 'string' ? entry.note : '';
+  return { id, createdAt, rules, monitorDefaults, note };
 }
 
-function readAutoGearBackupsFromStorage() {
+function readAutoGearBackupsFromStorage(retentionLimit = AUTO_GEAR_BACKUP_RETENTION_DEFAULT) {
   let stored = [];
   if (typeof loadAutoGearBackups === 'function') {
     try {
@@ -1310,6 +1317,7 @@ function readAutoGearBackupsFromStorage() {
     }
   }
   if (!Array.isArray(stored)) return [];
+  const limit = clampAutoGearBackupRetentionLimit(retentionLimit);
   return stored
     .map(normalizeAutoGearBackupEntry)
     .filter(Boolean)
@@ -1317,7 +1325,7 @@ function readAutoGearBackupsFromStorage() {
       if (a.createdAt === b.createdAt) return 0;
       return a.createdAt > b.createdAt ? -1 : 1;
     })
-    .slice(0, AUTO_GEAR_BACKUP_LIMIT);
+    .slice(0, limit);
 }
 
 function sortAutoGearPresets(list) {
@@ -1566,6 +1574,78 @@ function persistAutoGearBackupVisibility(flag) {
   }
 }
 
+function clampAutoGearBackupRetentionLimit(value) {
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric)) {
+    return AUTO_GEAR_BACKUP_RETENTION_DEFAULT;
+  }
+  const rounded = Math.round(numeric);
+  if (!Number.isFinite(rounded)) {
+    return AUTO_GEAR_BACKUP_RETENTION_DEFAULT;
+  }
+  if (rounded < AUTO_GEAR_BACKUP_RETENTION_MIN) {
+    return AUTO_GEAR_BACKUP_RETENTION_MIN;
+  }
+  if (rounded > AUTO_GEAR_BACKUP_RETENTION_MAX) {
+    return AUTO_GEAR_BACKUP_RETENTION_MAX;
+  }
+  return rounded;
+}
+
+function readAutoGearBackupRetentionFromStorage() {
+  if (typeof loadAutoGearBackupRetention === 'function') {
+    try {
+      return clampAutoGearBackupRetentionLimit(loadAutoGearBackupRetention());
+    } catch (error) {
+      console.warn('Failed to load automatic gear backup retention', error);
+    }
+  }
+  if (typeof localStorage === 'undefined') {
+    return AUTO_GEAR_BACKUP_RETENTION_DEFAULT;
+  }
+  try {
+    const raw = localStorage.getItem(AUTO_GEAR_BACKUP_RETENTION_KEY);
+    if (raw === null || raw === undefined) {
+      return AUTO_GEAR_BACKUP_RETENTION_DEFAULT;
+    }
+    try {
+      const parsed = JSON.parse(raw);
+      return clampAutoGearBackupRetentionLimit(parsed);
+    } catch (parseError) {
+      const numeric = Number(raw);
+      if (Number.isFinite(numeric)) {
+        return clampAutoGearBackupRetentionLimit(numeric);
+      }
+      throw parseError;
+    }
+  } catch (error) {
+    console.warn('Failed to read automatic gear backup retention from storage', error);
+    return AUTO_GEAR_BACKUP_RETENTION_DEFAULT;
+  }
+}
+
+function persistAutoGearBackupRetention(retention) {
+  const normalized = clampAutoGearBackupRetentionLimit(retention);
+  if (typeof saveAutoGearBackupRetention === 'function') {
+    try {
+      saveAutoGearBackupRetention(normalized);
+      return true;
+    } catch (error) {
+      console.warn('Failed to save automatic gear backup retention', error);
+    }
+  }
+  if (typeof localStorage === 'undefined') {
+    return false;
+  }
+  try {
+    localStorage.setItem(AUTO_GEAR_BACKUP_RETENTION_KEY, JSON.stringify(normalized));
+    return true;
+  } catch (error) {
+    console.warn('Failed to persist automatic gear backup retention', error);
+    return false;
+  }
+}
+
 function persistAutoGearBackups(backups) {
   const payload = Array.isArray(backups)
     ? backups.map(entry => ({
@@ -1573,6 +1653,7 @@ function persistAutoGearBackups(backups) {
         createdAt: entry.createdAt,
         rules: Array.isArray(entry.rules) ? entry.rules : [],
         monitorDefaults: normalizeAutoGearMonitorDefaults(entry.monitorDefaults),
+        note: typeof entry.note === 'string' ? entry.note : undefined,
       }))
     : [];
   if (typeof saveAutoGearBackups === 'function') {
@@ -1583,6 +1664,53 @@ function persistAutoGearBackups(backups) {
     throw new Error('Storage unavailable');
   }
   localStorage.setItem(AUTO_GEAR_BACKUPS_KEY, JSON.stringify(payload));
+}
+
+function enforceAutoGearBackupRetentionLimit(limit) {
+  const normalized = clampAutoGearBackupRetentionLimit(limit);
+  const previousLimit = autoGearBackupRetention;
+  if (normalized === previousLimit) {
+    renderAutoGearBackupRetentionControls();
+    return { success: true, trimmed: [], previousLimit };
+  }
+
+  const previousBackups = autoGearBackups.slice();
+  const trimmedEntries = [];
+
+  const retentionPersisted = persistAutoGearBackupRetention(normalized);
+  if (!retentionPersisted) {
+    autoGearBackupRetentionInput && (autoGearBackupRetentionInput.value = String(autoGearBackupRetention));
+    renderAutoGearBackupRetentionControls();
+    return { success: false, error: new Error('retention-persist-failed'), previousLimit };
+  }
+
+  autoGearBackupRetention = normalized;
+
+  if (autoGearBackups.length > normalized) {
+    const updatedBackups = autoGearBackups.slice(0, normalized);
+    trimmedEntries.push(...autoGearBackups.slice(normalized));
+    try {
+      persistAutoGearBackups(updatedBackups);
+      autoGearBackups = updatedBackups;
+    } catch (error) {
+      console.warn('Failed to trim automatic gear backups to retention limit', error);
+      autoGearBackupRetention = previousLimit;
+      persistAutoGearBackupRetention(previousLimit);
+      try {
+        persistAutoGearBackups(previousBackups);
+      } catch (restoreError) {
+        console.warn('Failed to restore automatic gear backups after trim error', restoreError);
+      }
+      autoGearBackups = readAutoGearBackupsFromStorage(previousLimit);
+      renderAutoGearBackupControls();
+      renderAutoGearBackupRetentionControls();
+      return { success: false, error, previousLimit };
+    }
+  }
+
+  renderAutoGearBackupControls();
+  renderAutoGearBackupRetentionControls();
+  return { success: true, trimmed: trimmedEntries, previousLimit };
 }
 
 function readAutoGearRulesFromStorage() {
@@ -1610,19 +1738,23 @@ function readAutoGearRulesFromStorage() {
 let autoGearRules = readAutoGearRulesFromStorage();
 let baseAutoGearRules = autoGearRules.slice();
 let projectScopedAutoGearRules = null;
-let autoGearBackups = readAutoGearBackupsFromStorage();
+let autoGearBackupRetention = readAutoGearBackupRetentionFromStorage();
+let autoGearBackups = readAutoGearBackupsFromStorage(autoGearBackupRetention);
 let autoGearPresets = readAutoGearPresetsFromStorage();
 let activeAutoGearPresetId = readActiveAutoGearPresetIdFromStorage();
 let autoGearAutoPresetId = readAutoGearAutoPresetIdFromStorage();
 let autoGearBackupsVisible = readAutoGearBackupVisibilityFromStorage();
 let autoGearMonitorDefaults = readAutoGearMonitorDefaultsFromStorage();
+persistAutoGearBackupRetention(autoGearBackupRetention);
 let factoryAutoGearRulesSnapshot = null;
 let factoryAutoGearSeedContext = null;
+let autoGearBackupRetentionWarningText = '';
 function getAutoGearBackupEntrySignature(entry) {
   if (!entry || typeof entry !== 'object') return '';
   return stableStringify({
     rules: Array.isArray(entry.rules) ? entry.rules : [],
     monitorDefaults: normalizeAutoGearMonitorDefaults(entry.monitorDefaults),
+    note: typeof entry.note === 'string' ? entry.note : '',
   });
 }
 
@@ -1639,7 +1771,7 @@ function getAutoGearMonitorDefaultsSnapshot() {
 
 const initialAutoGearRulesSignature = getAutoGearConfigurationSignature(autoGearRules, autoGearMonitorDefaults);
 let autoGearRulesLastBackupSignature = autoGearBackups.length
-  ? getAutoGearBackupEntrySignature(autoGearBackups[0])
+  ? getAutoGearConfigurationSignature(autoGearBackups[0].rules, autoGearBackups[0].monitorDefaults)
   : initialAutoGearRulesSignature;
 let autoGearRulesLastPersistedSignature = initialAutoGearRulesSignature;
 let autoGearRulesDirtySinceBackup =
@@ -1766,14 +1898,15 @@ function syncAutoGearRulesFromStorage(rules) {
     assignAutoGearRules(baseAutoGearRules);
     syncBaseAutoGearRulesState();
   }
-  autoGearBackups = readAutoGearBackupsFromStorage();
+  autoGearBackupRetention = readAutoGearBackupRetentionFromStorage();
+  autoGearBackups = readAutoGearBackupsFromStorage(autoGearBackupRetention);
   autoGearPresets = readAutoGearPresetsFromStorage();
   activeAutoGearPresetId = readActiveAutoGearPresetIdFromStorage();
   autoGearAutoPresetId = readAutoGearAutoPresetIdFromStorage();
   autoGearBackupsVisible = readAutoGearBackupVisibilityFromStorage();
   autoGearMonitorDefaults = readAutoGearMonitorDefaultsFromStorage();
   autoGearRulesLastBackupSignature = autoGearBackups.length
-    ? getAutoGearBackupEntrySignature(autoGearBackups[0])
+    ? getAutoGearConfigurationSignature(autoGearBackups[0].rules, autoGearBackups[0].monitorDefaults)
     : getAutoGearConfigurationSignature();
   autoGearRulesLastPersistedSignature = getAutoGearConfigurationSignature();
   autoGearRulesDirtySinceBackup = autoGearRulesLastPersistedSignature !== autoGearRulesLastBackupSignature;
@@ -5696,6 +5829,23 @@ function setLanguage(lang) {
       || texts.en?.autoGearBackupsHidden
       || autoGearBackupsHiddenNotice.textContent;
     autoGearBackupsHiddenNotice.textContent = hiddenText;
+  }
+  if (autoGearBackupRetentionLabel) {
+    const label = texts[lang].autoGearBackupRetentionLabel
+      || texts.en?.autoGearBackupRetentionLabel
+      || autoGearBackupRetentionLabel.textContent;
+    const help = texts[lang].autoGearBackupRetentionHelp
+      || texts.en?.autoGearBackupRetentionHelp
+      || label;
+    autoGearBackupRetentionLabel.textContent = label;
+    autoGearBackupRetentionLabel.setAttribute('data-help', help);
+    if (autoGearBackupRetentionInput) {
+      autoGearBackupRetentionInput.setAttribute('aria-label', label);
+      autoGearBackupRetentionInput.setAttribute('title', label);
+    }
+  }
+  if (autoGearBackupRetentionSummary) {
+    renderAutoGearBackupRetentionControls();
   }
   if (autoGearBackupSelectLabel) {
     const label = texts[lang].autoGearBackupSelectLabel
@@ -11572,6 +11722,10 @@ const autoGearBackupSelect = document.getElementById('autoGearBackupSelect');
 const autoGearBackupRestoreButton = document.getElementById('autoGearBackupRestore');
 const autoGearBackupControls = document.getElementById('autoGearBackupControls');
 const autoGearBackupEmptyMessage = document.getElementById('autoGearBackupEmpty');
+const autoGearBackupRetentionLabel = document.getElementById('autoGearBackupRetentionLabel');
+const autoGearBackupRetentionInput = document.getElementById('autoGearBackupRetention');
+const autoGearBackupRetentionSummary = document.getElementById('autoGearBackupRetentionSummary');
+const autoGearBackupRetentionWarning = document.getElementById('autoGearBackupRetentionWarning');
 const autoGearShowBackupsCheckbox = document.getElementById('autoGearShowBackups');
 const autoGearShowBackupsLabel = document.getElementById('autoGearShowBackupsLabel');
 const autoGearBackupsHiddenNotice = document.getElementById('autoGearBackupsHidden');
@@ -11580,6 +11734,12 @@ const storageSummaryIntro = document.getElementById("storageSummaryIntro");
 const storageSummaryList = document.getElementById("storageSummaryList");
 const storageSummaryEmpty = document.getElementById("storageSummaryEmpty");
 const storageSummaryFootnote = document.getElementById("storageSummaryFootnote");
+
+if (autoGearBackupRetentionInput) {
+  autoGearBackupRetentionInput.addEventListener('input', handleAutoGearBackupRetentionInput);
+  autoGearBackupRetentionInput.addEventListener('blur', handleAutoGearBackupRetentionBlur);
+  autoGearBackupRetentionInput.addEventListener('change', handleAutoGearBackupRetentionChange);
+}
 
 function computeAutoGearMultiSelectSize(optionCount, {
   fallback,
@@ -12988,6 +13148,23 @@ function formatAutoGearRuleCount(count) {
   return template ? template.replace('%s', String(count)) : String(count);
 }
 
+function formatAutoGearBackupCount(count) {
+  const langTexts = texts[currentLang] || texts.en || {};
+  const fallbackTexts = texts.en || {};
+  if (count === 1) {
+    const template = langTexts.storageAutoBackupsCountOne || fallbackTexts.storageAutoBackupsCountOne;
+    if (typeof template === 'string' && template.includes('%s')) {
+      return template.replace('%s', '1');
+    }
+    return '1 auto backup';
+  }
+  const template = langTexts.storageAutoBackupsCountOther || fallbackTexts.storageAutoBackupsCountOther;
+  if (typeof template === 'string' && template.includes('%s')) {
+    return template.replace('%s', String(count));
+  }
+  return `${count} auto backups`;
+}
+
 function formatAutoGearBackupTime(isoString) {
   if (typeof isoString !== 'string') return '';
   const date = new Date(isoString);
@@ -13016,10 +13193,14 @@ function formatAutoGearBackupMeta(backup) {
         || 'Clears all rules')
     : formatAutoGearRuleCount(ruleCount);
   const template = langTexts.autoGearBackupMeta || texts.en?.autoGearBackupMeta;
-  if (template && template.includes('%s')) {
-    return formatWithPlaceholders(template, timeLabel, rulesLabel);
+  const baseSummary = template && template.includes('%s')
+    ? formatWithPlaceholders(template, timeLabel, rulesLabel)
+    : `${timeLabel} · ${rulesLabel}`;
+  const note = typeof backup.note === 'string' ? backup.note.trim() : '';
+  if (note) {
+    return `${baseSummary} – ${note}`;
   }
-  return `${timeLabel} · ${rulesLabel}`;
+  return baseSummary;
 }
 
 function getAutoGearBackupSelectPlaceholder() {
@@ -13032,6 +13213,43 @@ function updateAutoGearBackupRestoreButtonState() {
   if (!autoGearBackupRestoreButton) return;
   const hasSelection = Boolean(autoGearBackupSelect && autoGearBackupSelect.value);
   autoGearBackupRestoreButton.disabled = !hasSelection;
+}
+
+function updateAutoGearBackupRetentionWarning(message = '') {
+  autoGearBackupRetentionWarningText = typeof message === 'string' ? message : '';
+  if (!autoGearBackupRetentionWarning) {
+    return;
+  }
+  if (autoGearBackupRetentionWarningText) {
+    autoGearBackupRetentionWarning.textContent = autoGearBackupRetentionWarningText;
+    autoGearBackupRetentionWarning.hidden = false;
+  } else {
+    autoGearBackupRetentionWarning.textContent = '';
+    autoGearBackupRetentionWarning.hidden = true;
+  }
+}
+
+function renderAutoGearBackupRetentionControls() {
+  const limitValue = clampAutoGearBackupRetentionLimit(autoGearBackupRetention);
+  if (autoGearBackupRetentionInput) {
+    autoGearBackupRetentionInput.setAttribute('min', String(AUTO_GEAR_BACKUP_RETENTION_MIN));
+    autoGearBackupRetentionInput.setAttribute('max', String(AUTO_GEAR_BACKUP_RETENTION_MAX));
+    if (autoGearBackupRetentionInput.value !== String(limitValue)) {
+      autoGearBackupRetentionInput.value = String(limitValue);
+    }
+  }
+  if (autoGearBackupRetentionSummary) {
+    const template = texts[currentLang]?.autoGearBackupRetentionSummary
+      || texts.en?.autoGearBackupRetentionSummary
+      || 'Keeping the latest {limit}. Currently {stored} stored.';
+    const limitLabel = formatAutoGearBackupCount(limitValue);
+    const storedLabel = formatAutoGearBackupCount(autoGearBackups.length);
+    const summary = template
+      .replace('{limit}', limitLabel)
+      .replace('{stored}', storedLabel);
+    autoGearBackupRetentionSummary.textContent = summary;
+  }
+  updateAutoGearBackupRetentionWarning(autoGearBackupRetentionWarningText);
 }
 
 function getAutoGearPresetById(presetId) {
@@ -13396,6 +13614,147 @@ function handleAutoGearShowBackupsToggle() {
   setAutoGearBackupsVisible(autoGearShowBackupsCheckbox.checked);
 }
 
+function handleAutoGearBackupRetentionInput() {
+  if (!autoGearBackupRetentionInput) return;
+  if (autoGearBackupRetentionWarningText) {
+    updateAutoGearBackupRetentionWarning('');
+  }
+}
+
+function handleAutoGearBackupRetentionBlur() {
+  setTimeout(() => {
+    if (!autoGearBackupRetentionWarningText) {
+      updateAutoGearBackupRetentionWarning('');
+    }
+  }, 0);
+}
+
+function handleAutoGearBackupRetentionChange() {
+  if (!autoGearBackupRetentionInput) return;
+  const rawValue = autoGearBackupRetentionInput.value;
+  const parsed = Number(rawValue);
+  if (!Number.isFinite(parsed)) {
+    autoGearBackupRetentionInput.value = String(autoGearBackupRetention);
+    updateAutoGearBackupRetentionWarning('');
+    renderAutoGearBackupRetentionControls();
+    return;
+  }
+
+  const normalized = clampAutoGearBackupRetentionLimit(parsed);
+  if (normalized === autoGearBackupRetention) {
+    updateAutoGearBackupRetentionWarning('');
+    renderAutoGearBackupRetentionControls();
+    return;
+  }
+
+  const previousLimit = autoGearBackupRetention;
+
+  if (normalized < previousLimit) {
+    const trimmedEstimate = Math.max(0, autoGearBackups.length - normalized);
+    const warningTemplate = texts[currentLang]?.autoGearBackupRetentionWarning
+      || texts.en?.autoGearBackupRetentionWarning
+      || 'Lowering to {limit} will remove {trimmed}. A safety snapshot will be saved first.';
+    const warningMessage = warningTemplate
+      .replace('{limit}', formatAutoGearBackupCount(normalized))
+      .replace('{trimmed}', formatAutoGearBackupCount(Math.max(trimmedEstimate, 1)));
+    updateAutoGearBackupRetentionWarning(warningMessage);
+
+    const confirmTemplate = texts[currentLang]?.autoGearBackupRetentionConfirm
+      || texts.en?.autoGearBackupRetentionConfirm
+      || 'Save a safety snapshot and trim older backups now?';
+    const confirmMessage = confirmTemplate
+      .replace('{limit}', formatAutoGearBackupCount(normalized))
+      .replace('{trimmed}', formatAutoGearBackupCount(Math.max(trimmedEstimate, 1)));
+    const confirmed = typeof window !== 'undefined' && typeof window.confirm === 'function'
+      ? window.confirm(confirmMessage)
+      : true;
+    if (!confirmed) {
+      autoGearBackupRetentionInput.value = String(autoGearBackupRetention);
+      updateAutoGearBackupRetentionWarning('');
+      renderAutoGearBackupRetentionControls();
+      return;
+    }
+
+    const safetyBase = texts[currentLang]?.autoGearBackupRetentionSafetyNote
+      || texts.en?.autoGearBackupRetentionSafetyNote
+      || 'Retention lowered to {limit}.';
+    const safetyTrimmed = texts[currentLang]?.autoGearBackupRetentionSafetyNoteTrimmed
+      || texts.en?.autoGearBackupRetentionSafetyNoteTrimmed
+      || 'Retention lowered to {limit}. Removed {trimmed} in this change.';
+    const safetyTemplate = trimmedEstimate > 0 ? safetyTrimmed : safetyBase;
+    const safetyNote = safetyTemplate
+      .replace('{limit}', formatAutoGearBackupCount(normalized))
+      .replace('{trimmed}', formatAutoGearBackupCount(Math.max(trimmedEstimate, 1)));
+
+    const safetyResult = captureAutoGearBackupSnapshot({
+      force: true,
+      notifySuccess: false,
+      note: safetyNote,
+    });
+
+    if (safetyResult.status !== 'created') {
+      const failureMessage = texts[currentLang]?.autoGearBackupRetentionSafetyFailed
+        || texts.en?.autoGearBackupRetentionSafetyFailed
+        || 'Safety snapshot failed. Retention was not changed.';
+      showNotification('error', failureMessage);
+      autoGearBackupRetentionInput.value = String(autoGearBackupRetention);
+      updateAutoGearBackupRetentionWarning('');
+      renderAutoGearBackupControls();
+      renderAutoGearBackupRetentionControls();
+      return;
+    }
+
+    const safetySavedMessage = texts[currentLang]?.autoGearBackupRetentionSafetySaved
+      || texts.en?.autoGearBackupRetentionSafetySaved
+      || 'Safety snapshot captured before trimming backups.';
+    showNotification('success', safetySavedMessage);
+
+    const trimResult = enforceAutoGearBackupRetentionLimit(normalized);
+    if (!trimResult.success) {
+      const failureMessage = texts[currentLang]?.autoGearBackupRetentionUpdateFailed
+        || texts.en?.autoGearBackupRetentionUpdateFailed
+        || 'Could not apply the new retention limit.';
+      showNotification('error', failureMessage);
+      autoGearBackupRetentionInput.value = String(autoGearBackupRetention);
+      updateAutoGearBackupRetentionWarning('');
+      return;
+    }
+
+    const trimmedCount = trimResult.trimmed.length;
+    const successTemplate = trimmedCount > 0
+      ? texts[currentLang]?.autoGearBackupRetentionUpdated
+        || texts.en?.autoGearBackupRetentionUpdated
+        || 'Retention updated to {limit}. Removed {trimmed}.'
+      : texts[currentLang]?.autoGearBackupRetentionUpdatedNoTrim
+        || texts.en?.autoGearBackupRetentionUpdatedNoTrim
+        || 'Retention updated to {limit}. No backups were removed.';
+    const successMessage = successTemplate
+      .replace('{limit}', formatAutoGearBackupCount(normalized))
+      .replace('{trimmed}', formatAutoGearBackupCount(Math.max(trimmedCount, 1)));
+    showNotification('success', successMessage);
+    updateAutoGearBackupRetentionWarning('');
+    return;
+  }
+
+  const increaseResult = enforceAutoGearBackupRetentionLimit(normalized);
+  if (!increaseResult.success) {
+    const failureMessage = texts[currentLang]?.autoGearBackupRetentionUpdateFailed
+      || texts.en?.autoGearBackupRetentionUpdateFailed
+      || 'Could not apply the new retention limit.';
+    showNotification('error', failureMessage);
+    autoGearBackupRetentionInput.value = String(autoGearBackupRetention);
+    updateAutoGearBackupRetentionWarning('');
+    return;
+  }
+
+  const successTemplate = texts[currentLang]?.autoGearBackupRetentionExpanded
+    || texts.en?.autoGearBackupRetentionExpanded
+    || 'Retention updated to {limit}.';
+  const successMessage = successTemplate.replace('{limit}', formatAutoGearBackupCount(normalized));
+  showNotification('success', successMessage);
+  updateAutoGearBackupRetentionWarning('');
+}
+
 function renderAutoGearBackupControls() {
   if (!autoGearBackupSelect || !autoGearBackupEmptyMessage) return;
 
@@ -13445,6 +13804,7 @@ function renderAutoGearBackupControls() {
 
   updateAutoGearBackupRestoreButtonState();
   applyAutoGearBackupVisibility();
+  renderAutoGearBackupRetentionControls();
 }
 
 function renderAutoGearRulesList() {
@@ -14640,22 +15000,40 @@ function exportAutoGearRules() {
   }
 }
 
-function createAutoGearBackup() {
-  if (!autoGearRulesDirtySinceBackup) return false;
+function captureAutoGearBackupSnapshot(options = {}) {
+  const config = typeof options === 'object' && options !== null ? options : {};
+  const force = config.force === true;
+  const notifySuccess = config.notifySuccess !== false;
+  const notifyFailure = config.notifyFailure !== false;
+  const note = typeof config.note === 'string' ? config.note.trim() : '';
+
+  if (!force && !autoGearRulesDirtySinceBackup) {
+    return { status: 'skipped', reason: 'clean' };
+  }
+
   const rules = getBaseAutoGearRules();
   const monitorDefaultsSnapshot = getAutoGearMonitorDefaultsSnapshot();
   const signature = getAutoGearConfigurationSignature(rules, monitorDefaultsSnapshot);
-  if (signature === autoGearRulesLastBackupSignature) {
+
+  if (!force && signature === autoGearRulesLastBackupSignature) {
     autoGearRulesDirtySinceBackup = false;
-    return false;
+    return { status: 'skipped', reason: 'unchanged' };
   }
+
   const entry = {
     id: generateAutoGearId('backup'),
     createdAt: new Date().toISOString(),
     rules,
     monitorDefaults: monitorDefaultsSnapshot,
   };
-  const updatedBackups = [entry, ...autoGearBackups].slice(0, AUTO_GEAR_BACKUP_LIMIT);
+  if (note) {
+    entry.note = note;
+  }
+
+  const retentionLimit = clampAutoGearBackupRetentionLimit(autoGearBackupRetention);
+  const effectiveLimit = Math.max(1, retentionLimit);
+  const updatedBackups = [entry, ...autoGearBackups].slice(0, effectiveLimit);
+
   try {
     persistAutoGearBackups(updatedBackups);
     autoGearBackups = updatedBackups;
@@ -14663,20 +15041,30 @@ function createAutoGearBackup() {
     autoGearRulesLastPersistedSignature = signature;
     autoGearRulesDirtySinceBackup = false;
     renderAutoGearBackupControls();
-    const message = texts[currentLang]?.autoGearBackupSaved
-      || texts.en?.autoGearBackupSaved
-      || 'Automatic gear backup saved.';
-    showNotification('success', message);
-    return true;
+    renderAutoGearBackupRetentionControls();
+    if (notifySuccess) {
+      const message = texts[currentLang]?.autoGearBackupSaved
+        || texts.en?.autoGearBackupSaved
+        || 'Automatic gear backup saved.';
+      showNotification('success', message);
+    }
+    return { status: 'created', entry };
   } catch (error) {
     console.warn('Automatic gear backup failed', error);
     autoGearRulesDirtySinceBackup = true;
-    const message = texts[currentLang]?.autoGearBackupFailed
-      || texts.en?.autoGearBackupFailed
-      || 'Automatic gear backup failed.';
-    showNotification('error', message);
-    return false;
+    if (notifyFailure) {
+      const message = texts[currentLang]?.autoGearBackupFailed
+        || texts.en?.autoGearBackupFailed
+        || 'Automatic gear backup failed.';
+      showNotification('error', message);
+    }
+    return { status: 'error', error };
   }
+}
+
+function createAutoGearBackup(options = {}) {
+  const result = captureAutoGearBackupSnapshot(options);
+  return result.status === 'created';
 }
 
 function restoreAutoGearBackup(backupId) {
@@ -14701,7 +15089,7 @@ function restoreAutoGearBackup(backupId) {
     if (typeof refreshGearListIfVisible === 'function') {
       refreshGearListIfVisible();
     }
-    autoGearRulesLastBackupSignature = getAutoGearBackupEntrySignature(backup);
+    autoGearRulesLastBackupSignature = getAutoGearConfigurationSignature(backup.rules, backup.monitorDefaults);
     autoGearRulesLastPersistedSignature = autoGearRulesLastBackupSignature;
     autoGearRulesDirtySinceBackup = false;
     const message = texts[currentLang]?.autoGearBackupRestoreSuccess

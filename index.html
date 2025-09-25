@@ -1073,6 +1073,26 @@
           </div>
           <p id="autoGearBackupsDescription" class="settings-hint"></p>
           <p id="autoGearBackupsHidden" class="settings-hint" hidden></p>
+          <div class="auto-gear-backup-retention">
+            <div class="auto-gear-backup-retention-row">
+              <label for="autoGearBackupRetention" id="autoGearBackupRetentionLabel">Backup retention</label>
+              <input
+                type="number"
+                id="autoGearBackupRetention"
+                class="auto-gear-backup-retention-input"
+                min="1"
+                max="50"
+                inputmode="numeric"
+              />
+            </div>
+            <p id="autoGearBackupRetentionSummary" class="settings-hint" aria-live="polite"></p>
+            <p
+              id="autoGearBackupRetentionWarning"
+              class="auto-gear-backup-warning"
+              hidden
+              aria-live="polite"
+            ></p>
+          </div>
           <div id="autoGearBackupControls" class="auto-gear-backup-controls" aria-live="polite">
             <label for="autoGearBackupSelect" id="autoGearBackupSelectLabel">Choose a backup</label>
             <div class="auto-gear-backup-row">
