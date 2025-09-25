@@ -89,6 +89,105 @@ if (typeof require === 'function') {
   }
 }
 
+let deviceFormattingModule = null;
+try {
+  deviceFormattingModule = require('./device-formatting.js');
+} catch (error) {
+  void error;
+}
+
+let deviceManagerViewModule = null;
+try {
+  deviceManagerViewModule = require('./device-manager-view.js');
+} catch (error) {
+  void error;
+}
+
+const DEVICE_VIEW_SCOPE = typeof globalThis !== 'undefined'
+  ? globalThis
+  : typeof window !== 'undefined'
+    ? window
+    : typeof global !== 'undefined'
+      ? global
+      : typeof self !== 'undefined'
+        ? self
+        : {};
+
+const humanizeKey =
+  deviceFormattingModule && typeof deviceFormattingModule.humanizeKey === 'function'
+    ? deviceFormattingModule.humanizeKey
+    : typeof DEVICE_VIEW_SCOPE.humanizeKey === 'function'
+      ? DEVICE_VIEW_SCOPE.humanizeKey
+      : function humanizeKey(key) {
+          const map = {
+            powerDrawWatts: 'Power (W)',
+            capacity: 'Capacity (Wh)',
+            pinA: 'Pin A',
+            dtapA: 'D-Tap A',
+            mount_type: 'Mount',
+            screenSizeInches: 'Screen Size (in)',
+            brightnessNits: 'Brightness (nits)',
+            torqueNm: 'Torque (Nm)',
+            internalController: 'Internal Controller',
+            powerSource: 'Power Source',
+            batteryType: 'Battery Type',
+            connectivity: 'Connectivity'
+          };
+          if (typeof key === 'string' && map[key]) return map[key];
+          if (typeof key !== 'string' || !key) return '';
+          return key
+            .replace(/_/g, ' ')
+            .replace(/([A-Z])/g, ' $1')
+            .replace(/^./, c => c.toUpperCase());
+        };
+
+const formatValue =
+  deviceFormattingModule && typeof deviceFormattingModule.formatValue === 'function'
+    ? deviceFormattingModule.formatValue
+    : typeof DEVICE_VIEW_SCOPE.formatValue === 'function'
+      ? DEVICE_VIEW_SCOPE.formatValue
+      : function formatValue(value) {
+          if (Array.isArray(value)) {
+            return value.map(v => formatValue(v)).join('; ');
+          }
+          if (value && typeof value === 'object') {
+            const parts = [];
+            for (const k in value) {
+              if (!Object.prototype.hasOwnProperty.call(value, k)) continue;
+              const nested = value[k];
+              if (nested === '' || nested === null || typeof nested === 'undefined') continue;
+              parts.push(`${humanizeKey(k)}: ${formatValue(nested)}`);
+            }
+            return `{ ${parts.join(', ')} }`;
+          }
+          if (typeof value === 'boolean') return value ? 'Yes' : 'No';
+          if (value === null || typeof value === 'undefined') return '';
+          return String(value);
+        };
+
+const formatDateString =
+  deviceFormattingModule && typeof deviceFormattingModule.formatDateString === 'function'
+    ? deviceFormattingModule.formatDateString
+    : typeof DEVICE_VIEW_SCOPE.formatDateString === 'function'
+      ? DEVICE_VIEW_SCOPE.formatDateString
+      : function formatDateString(val) {
+          if (!val) return '';
+          const d = new Date(val);
+          if (Number.isNaN(d.getTime())) return String(val);
+          return d.toISOString().split('T')[0];
+        };
+
+const refreshDeviceLists =
+  deviceManagerViewModule && typeof deviceManagerViewModule.refreshDeviceLists === 'function'
+    ? deviceManagerViewModule.refreshDeviceLists
+    : typeof DEVICE_VIEW_SCOPE.refreshDeviceLists === 'function'
+      ? DEVICE_VIEW_SCOPE.refreshDeviceLists
+      : function refreshDeviceLists() {};
+
+if (DEVICE_VIEW_SCOPE && typeof DEVICE_VIEW_SCOPE.refreshDeviceLists !== 'function' && typeof refreshDeviceLists === 'function') {
+  DEVICE_VIEW_SCOPE.refreshDeviceLists = refreshDeviceLists;
+}
+
 const autoGearWeightScope = typeof globalThis !== 'undefined'
   ? globalThis
   : typeof window !== 'undefined'
@@ -26552,183 +26651,6 @@ function updateDiagramLegend() {
   diagramLegend.innerHTML = legendItems
     .map(({ cls, text }) => `<span><span class="swatch ${cls}"></span>${text}</span>`)
     .join('');
-}
-
-// Convert a camelCase or underscore key to a human friendly label
-function humanizeKey(key) {
-  const map = {
-    powerDrawWatts: 'Power (W)',
-    capacity: 'Capacity (Wh)',
-    pinA: 'Pin A',
-    dtapA: 'D-Tap A',
-    mount_type: 'Mount',
-    screenSizeInches: 'Screen Size (in)',
-    brightnessNits: 'Brightness (nits)',
-    torqueNm: 'Torque (Nm)',
-    internalController: 'Internal Controller',
-    powerSource: 'Power Source',
-    batteryType: 'Battery Type',
-    connectivity: 'Connectivity'
-  };
-  if (map[key]) return map[key];
-  return key
-    .replace(/_/g, ' ')
-    .replace(/([A-Z])/g, ' $1')
-    .replace(/^./, (c) => c.toUpperCase());
-}
-
-function formatValue(value) {
-  if (Array.isArray(value)) {
-    return value.map((v) => formatValue(v)).join('; ');
-  }
-  if (value && typeof value === 'object') {
-    const parts = [];
-    for (const k in value) {
-      if (value[k] === '' || value[k] === null || value[k] === undefined) continue;
-      parts.push(`${humanizeKey(k)}: ${formatValue(value[k])}`);
-    }
-    return `{ ${parts.join(', ')} }`;
-  }
-  if (typeof value === 'boolean') return value ? 'Yes' : 'No';
-  return String(value);
-}
-
-function createDeviceDetailsList(deviceData) {
-  const list = document.createElement('ul');
-  list.className = 'device-detail-list';
-
-  const appendItem = (key, value, parent) => {
-    if (value === '' || value === null || value === undefined) return;
-    const li = document.createElement('li');
-    const label = document.createElement('strong');
-    label.textContent = humanizeKey(key) + ':';
-    li.appendChild(label);
-
-    if (Array.isArray(value)) {
-      if (value.length && typeof value[0] === 'object') {
-        const subList = document.createElement('ul');
-        subList.className = 'device-detail-list';
-        value.forEach((v) => {
-          const subLi = document.createElement('li');
-          subLi.appendChild(createDeviceDetailsList(v));
-          subList.appendChild(subLi);
-        });
-        li.appendChild(subList);
-      } else {
-        li.appendChild(document.createTextNode(value.map((v) => formatValue(v)).join(', ')));
-      }
-    } else if (value && typeof value === 'object') {
-      li.appendChild(createDeviceDetailsList(value));
-    } else {
-      li.appendChild(document.createTextNode(formatValue(value)));
-    }
-
-    parent.appendChild(li);
-  };
-
-  if (typeof deviceData !== 'object') {
-    appendItem('powerDrawWatts', deviceData, list);
-  } else {
-    Object.keys(deviceData).forEach((k) => appendItem(k, deviceData[k], list));
-  }
-
-  return list;
-}
-function formatDateString(val) {
-  if (!val) return '';
-  const d = new Date(val);
-  if (Number.isNaN(d.getTime())) return String(val);
-  return d.toISOString().split('T')[0];
-}
-
-// Helper to render existing devices in the manager section
-function renderDeviceList(categoryKey, ulElement) {
-  ulElement.innerHTML = "";
-  let categoryDevices = devices[categoryKey];
-  // Handle nested FIZ categories
-  if (categoryKey.includes('.')) {
-    const [mainCat, subCat] = categoryKey.split('.');
-    categoryDevices = devices[mainCat] && devices[mainCat][subCat];
-  }
-  if (!categoryDevices) return;
-
-  const buildItem = (name, deviceData, subcategory) => {
-    if (name === "None") return;
-    const li = document.createElement("li");
-    const header = document.createElement("div");
-    header.className = "device-summary";
-
-    const nameSpan = document.createElement("span");
-    nameSpan.textContent = name;
-    let summary = safeGenerateConnectorSummary(deviceData);
-    summary = summary ? summary.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim() : '';
-    if (deviceData.notes) {
-      summary = summary ? `${summary}; Notes: ${deviceData.notes}` : deviceData.notes;
-    }
-    if (summary) {
-      nameSpan.setAttribute('title', summary);
-      nameSpan.setAttribute('data-help', summary);
-    }
-    header.appendChild(nameSpan);
-
-    const toggleBtn = document.createElement("button");
-    toggleBtn.className = "detail-toggle";
-    toggleBtn.type = "button";
-    toggleBtn.setAttribute("aria-expanded", "false");
-    toggleBtn.textContent = texts[currentLang].showDetails;
-    toggleBtn.setAttribute('data-help', texts[currentLang].showDetails);
-    header.appendChild(toggleBtn);
-
-    const editBtn = document.createElement("button");
-    editBtn.className = "edit-btn";
-    editBtn.dataset.name = name;
-    editBtn.dataset.category = categoryKey;
-    if (subcategory) editBtn.dataset.subcategory = subcategory;
-    editBtn.textContent = texts[currentLang].editBtn;
-    editBtn.setAttribute('data-help', texts[currentLang].editBtnHelp || texts[currentLang].editBtn);
-    header.appendChild(editBtn);
-
-    const deleteBtn = document.createElement("button");
-    deleteBtn.className = "delete-btn";
-    deleteBtn.dataset.name = name;
-    deleteBtn.dataset.category = categoryKey;
-    if (subcategory) deleteBtn.dataset.subcategory = subcategory;
-    deleteBtn.textContent = texts[currentLang].deleteDeviceBtn;
-    deleteBtn.setAttribute('data-help', texts[currentLang].deleteDeviceBtnHelp || texts[currentLang].deleteDeviceBtn);
-    header.appendChild(deleteBtn);
-
-    li.appendChild(header);
-
-    const detailsDiv = document.createElement("div");
-    detailsDiv.className = "device-details";
-    detailsDiv.style.display = "none";
-    detailsDiv.appendChild(createDeviceDetailsList(deviceData));
-    li.appendChild(detailsDiv);
-
-    ulElement.appendChild(li);
-  };
-
-  if (categoryKey === "accessories.cables") {
-    for (const [subcat, devs] of Object.entries(categoryDevices)) {
-      for (const name in devs) {
-        buildItem(name, devs[name], subcat);
-      }
-    }
-  } else {
-    for (let name in categoryDevices) {
-      buildItem(name, categoryDevices[name]);
-    }
-  }
-}
-
-function refreshDeviceLists() {
-  syncDeviceManagerCategories();
-  deviceManagerLists.forEach(({ list, filterInput }, categoryKey) => {
-    if (!list) return;
-    renderDeviceList(categoryKey, list);
-    const filterValue = filterInput ? filterInput.value : '';
-    filterDeviceList(list, filterValue);
-  });
 }
 
 // Initial render of device lists
