@@ -19,7 +19,9 @@
           normalizeAutoGearScenarioMultiplier,
           isAutoGearHighlightEnabled, setAutoGearHighlightEnabled,
           updateAutoGearHighlightToggleButton,
-          clearUiCacheStorageEntries, __cineGlobal, humanizeKey */
+          clearUiCacheStorageEntries, __cineGlobal, humanizeKey,
+          normalizeBatteryPlateValue, applyBatteryPlateSelectionFromBattery,
+          settingsReduceMotion, settingsRelaxedSpacing */
 /* eslint-enable no-redeclare */
 /* global triggerPinkModeIconRain, loadDeviceData, loadSetups, loadSessionState,
           loadFeedback, loadFavorites, loadAutoGearBackups,
@@ -1601,6 +1603,8 @@ function saveCurrentSession(options = {}) {
   info.sliderBowl = getSliderBowlValue();
   info.easyrig = getEasyrigValue();
   currentProjectInfo = deriveProjectInfo(info);
+  const batteryValue = batterySelect ? batterySelect.value : '';
+  const batteryPlateValue = batteryPlateSelect ? batteryPlateSelect.value : '';
   const state = {
     setupName: setupNameInput ? setupNameInput.value : '',
     setupSelect: setupSelect ? setupSelect.value : '',
@@ -1611,8 +1615,8 @@ function saveCurrentSession(options = {}) {
     motors: motorSelects.map(sel => sel ? sel.value : ''),
     controllers: controllerSelects.map(sel => sel ? sel.value : ''),
     distance: distanceSelect ? distanceSelect.value : '',
-    batteryPlate: batteryPlateSelect ? batteryPlateSelect.value : '',
-    battery: batterySelect ? batterySelect.value : '',
+    batteryPlate: normalizeBatteryPlateValue(batteryPlateValue, batteryValue),
+    battery: batteryValue,
     batteryHotswap: hotswapSelect ? hotswapSelect.value : '',
     sliderBowl: info.sliderBowl,
     easyrig: info.easyrig,
@@ -1949,6 +1953,7 @@ function restoreSessionState() {
     setSelectValue(cameraSelect, state.camera);
     updateBatteryPlateVisibility();
     setSelectValue(batteryPlateSelect, state.batteryPlate);
+    applyBatteryPlateSelectionFromBattery(state.battery, batteryPlateSelect ? batteryPlateSelect.value : '');
     updateBatteryOptions();
     setSelectValue(monitorSelect, state.monitor);
     setSelectValue(videoSelect, state.video);
@@ -1965,6 +1970,7 @@ function restoreSessionState() {
       state.controllers.forEach((val, i) => { if (controllerSelects[i]) setSelectValue(controllerSelects[i], val); });
     }
     setSelectValue(batterySelect, state.battery);
+    applyBatteryPlateSelectionFromBattery(state.battery, batteryPlateSelect ? batteryPlateSelect.value : '');
     setSelectValue(hotswapSelect, state.batteryHotswap);
     if ((state && typeof state.battery === 'string' && state.battery.trim())
       || (state && typeof state.batteryHotswap === 'string' && state.batteryHotswap.trim())) {
@@ -2168,6 +2174,7 @@ function applySharedSetup(shared, options = {}) {
     setSelectValue(cameraSelect, decoded.camera);
     updateBatteryPlateVisibility();
     setSelectValue(batteryPlateSelect, decoded.batteryPlate);
+    applyBatteryPlateSelectionFromBattery(decoded.battery, batteryPlateSelect ? batteryPlateSelect.value : '');
     updateBatteryOptions();
     setSelectValue(monitorSelect, decoded.monitor);
     setSelectValue(videoSelect, decoded.video);
@@ -2184,6 +2191,7 @@ function applySharedSetup(shared, options = {}) {
       decoded.controllers.forEach((val, i) => { if (controllerSelects[i]) setSelectValue(controllerSelects[i], val); });
     }
     setSelectValue(batterySelect, decoded.battery);
+    applyBatteryPlateSelectionFromBattery(decoded.battery, batteryPlateSelect ? batteryPlateSelect.value : '');
     setSelectValue(hotswapSelect, decoded.batteryHotswap);
     if ((typeof decoded.battery === 'string' && decoded.battery.trim())
       || (typeof decoded.batteryHotswap === 'string' && decoded.batteryHotswap.trim())) {

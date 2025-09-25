@@ -1,7 +1,8 @@
 /* global getManualDownloadFallbackMessage, getDiagramManualPositions, normalizeAutoGearShootingDayValue,
           normalizeAutoGearShootingDaysCondition, normalizeAutoGearCameraWeightCondition, evaluateAutoGearCameraWeightCondition,
           getAutoGearMonitorDefault, getSetupNameState,
-          createProjectInfoSnapshotForStorage, getProjectAutoSaveOverrides, getAutoGearRuleCoverageSummary */
+          createProjectInfoSnapshotForStorage, getProjectAutoSaveOverrides, getAutoGearRuleCoverageSummary,
+          normalizeBatteryPlateValue */
 
 // --- NEW SETUP MANAGEMENT FUNCTIONS ---
 
@@ -113,7 +114,7 @@ function downloadSharedProject(shareFileName, includeAutoGear) {
     motors: motorSelects.map(sel => sel.value),
     controllers: controllerSelects.map(sel => sel.value),
     distance: distanceSelect.value,
-    batteryPlate: batteryPlateSelect.value,
+    batteryPlate: normalizeBatteryPlateValue(batteryPlateSelect.value, batterySelect.value),
     battery: batterySelect.value,
     batteryHotswap: hotswapSelect.value
   };
@@ -4175,7 +4176,10 @@ function deleteCurrentGearList() {
         motors: motorSelects.map(sel => sel ? sel.value : ''),
         controllers: controllerSelects.map(sel => sel ? sel.value : ''),
         distance: distanceSelect ? distanceSelect.value : '',
-        batteryPlate: batteryPlateSelect ? batteryPlateSelect.value : '',
+        batteryPlate: normalizeBatteryPlateValue(
+            batteryPlateSelect ? batteryPlateSelect.value : '',
+            batterySelect ? batterySelect.value : ''
+        ),
         battery: batterySelect ? batterySelect.value : '',
         batteryHotswap: hotswapSelect ? hotswapSelect.value : '',
         sliderBowl: getSliderBowlValue(),
