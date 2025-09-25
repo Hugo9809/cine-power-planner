@@ -3679,7 +3679,7 @@ const texts = {
     batteryComparisonHeading: "Comparaison des batteries",
     setupDiagramHeading: "Schéma de connexion",
     diagramPdfNote:
-      "Le schéma de connexion n'est pas inclus dans l'export PDF. Ouvrez la vue d'impression pour consulter la mise en page.",
+      "Le schéma de connexion n’est pas inclus dans l’export PDF. Ouvrez la vue d’impression pour vérifier la mise en page.",
     projectRequirementsNav: "Exigences du projet",
     projectRequirementsNavHelp:
       "Accéder à la sortie Exigences du projet une fois générée.",
@@ -3722,7 +3722,7 @@ const texts = {
     featureSearchPlaceholder: "Rechercher des fonctionnalités ou des appareils...",
     featureSearchLabel: "Rechercher des fonctionnalités, des appareils et de l’aide",
     featureSearchHelp:
-      "Tapez pour accéder aux fonctionnalités, appareils, actions rapides comme Enregistrer ou Sauvegarde, ou aux sujets d’aide associés. Appuyez sur Entrée pour naviguer, sur / ou Ctrl+K (Cmd+K sur Mac) pour placer le focus sur la recherche où que vous soyez, puis sur Échap ou × pour effacer la requête.",
+      "Saisissez du texte pour retrouver des fonctionnalités, des appareils, des actions rapides comme Enregistrer ou Sauvegarder et les sujets d’aide associés. Appuyez sur Entrée pour ouvrir l’élément sélectionné, sur / ou Ctrl+K (Cmd+K sur Mac) pour activer la recherche à tout moment, puis sur Échap ou × pour effacer la requête.",
     featureSearchClear: "Effacer la recherche",
     featureSearchClearHelp: "Efface le champ de recherche et affiche à nouveau tous les résultats. Appuyez sur Échap pour effacer rapidement.",
     darkModeHelp:
@@ -3785,8 +3785,8 @@ const texts = {
     distanceLabel: "Capteur de distance:",
     batteryLabel: "Batterie:",
     batteryBMountLabel: "Batterie B-Mount:",
-    batteryPlateLabel: "Plaque Batterie:",
-    batteryHotswapLabel: "Hotswap de batterie:",
+    batteryPlateLabel: "Plaque batterie :",
+    batteryHotswapLabel: "Module hotswap :",
     lensesLabel: "Objectifs:",
 
     fizLegend: "Systèmes FIZ",
