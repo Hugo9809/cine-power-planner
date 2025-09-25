@@ -3156,9 +3156,65 @@
                   data-help-target="#restoreRehearsalButton"
                   data-help-highlight="#restoreRehearsalSection"
                 ><strong>Restore rehearsal</strong></a>
-                to load the file into the sandbox, check the comparison table for mismatches, then run
+                , pick either the
+                <a
+                  class="help-link"
+                  href="#restoreRehearsalModeBackupLabel"
+                  data-help-target="#restoreRehearsalModeBackupLabel"
+                  data-help-highlight="#restoreRehearsalSection"
+                >Full app backup</a>
+                or
+                <a
+                  class="help-link"
+                  href="#restoreRehearsalModeProjectLabel"
+                  data-help-target="#restoreRehearsalModeProjectLabel"
+                  data-help-highlight="#restoreRehearsalSection"
+                >Project bundle</a>
+                mode, then click
+                <a
+                  class="help-link button-link"
+                  href="#restoreRehearsalBrowse"
+                  data-help-target="#restoreRehearsalBrowse"
+                  data-help-highlight="#restoreRehearsalSection"
+                ><strong>Choose file</strong></a>
+                and watch the
+                <a
+                  class="help-link"
+                  href="#restoreRehearsalStatus"
+                  data-help-target="#restoreRehearsalStatus"
+                  data-help-highlight="#restoreRehearsalSection"
+                >status banner</a>
+                as the sandbox loads. Review the
+                <a
+                  class="help-link"
+                  href="#restoreRehearsalTable"
+                  data-help-target="#restoreRehearsalTable"
+                  data-help-highlight="#restoreRehearsalSection"
+                >comparison table</a>
+                and any
+                <a
+                  class="help-link"
+                  href="#restoreRehearsalRuleSection"
+                  data-help-target="#restoreRehearsalRuleSection"
+                  data-help-highlight="#restoreRehearsalSection"
+                >automatic gear rule changes</a>
+                before staging the sandbox with
+                <a
+                  class="help-link button-link"
+                  href="#restoreRehearsalProceed"
+                  data-help-target="#restoreRehearsalProceed"
+                  data-help-highlight="#restoreRehearsalSection"
+                ><strong>Continue rehearsal restore</strong></a>
+                . If anything looks unexpected, press
+                <a
+                  class="help-link button-link"
+                  href="#restoreRehearsalAbort"
+                  data-help-target="#restoreRehearsalAbort"
+                  data-help-highlight="#restoreRehearsalSection"
+                ><strong>Abort rehearsal</strong></a>
+                to discard the sandbox safely; live data only changes after you finish with
                 <a class="help-link button-link" href="#restoreSettings" data-help-target="#restoreSettings"><strong>Restore</strong></a>
-                once everything lines up.
+                .
               </li>
               <li>
                 Combine the automatic layers with manual
@@ -3225,10 +3281,24 @@
                   data-help-target="#restoreRehearsalButton"
                   data-help-highlight="#restoreRehearsalSection"
                 ><strong>Restore rehearsal</strong></a>
-                first. Review the sandbox comparison, then run
+                first. Check the comparison table and automatic rule preview, stage clean rehearsals with
+                <a
+                  class="help-link button-link"
+                  href="#restoreRehearsalProceed"
+                  data-help-target="#restoreRehearsalProceed"
+                  data-help-highlight="#restoreRehearsalSection"
+                ><strong>Continue rehearsal restore</strong></a>
+                and cancel suspicious ones with
+                <a
+                  class="help-link button-link"
+                  href="#restoreRehearsalAbort"
+                  data-help-target="#restoreRehearsalAbort"
+                  data-help-highlight="#restoreRehearsalSection"
+                ><strong>Abort rehearsal</strong></a>
+                . Only run
                 <a class="help-link button-link" href="#restoreSettings" data-help-target="#restoreSettings"><strong>Restore</strong></a>
-                on the verified file; the planner still creates a fresh safety snapshot before applying anything so you can
-                revert instantly if needed. Log which backup you restored and where the validation copy lives.
+                once the sandbox checks out—the planner still creates a fresh safety snapshot beforehand so you can revert
+                instantly if needed. Log which backup you restored and where the validation copy lives.
               </li>
             </ol>
             <p class="help-callout-note">
