@@ -17444,6 +17444,28 @@ const featureList     = document.getElementById("featureList");
 const featureMap      = new Map();
 const normalizeSearchValue = value =>
   typeof value === 'string' ? value.trim().toLowerCase() : '';
+const FEATURE_SEARCH_EXTRA_SELECTOR = '[data-feature-search]';
+
+const getFeatureSearchLabel = element => {
+  if (!element) return '';
+  const { dataset } = element;
+  const dataLabel = dataset?.featureSearchLabel || element.getAttribute('data-feature-search-label');
+  if (dataLabel && dataLabel.trim()) return dataLabel.trim();
+  const ariaLabel = element.getAttribute('aria-label');
+  if (ariaLabel && ariaLabel.trim()) return ariaLabel.trim();
+  const title = element.getAttribute('title');
+  if (title && title.trim()) return title.trim();
+  const text = element.textContent;
+  return text && text.trim() ? text.trim() : '';
+};
+
+const getFeatureSearchKeywords = element => {
+  if (!element) return '';
+  const { dataset } = element;
+  const dataValue = dataset?.featureSearchKeywords || element.getAttribute('data-feature-search-keywords');
+  return dataValue && dataValue.trim() ? dataValue.trim() : '';
+};
+
 const updateFeatureSearchValue = (newValue, originalNormalized) => {
   if (!featureSearch || typeof newValue !== 'string') return;
   const trimmed = newValue.trim();
@@ -19305,6 +19327,24 @@ function populateFeatureSearch() {
         value: entry
       });
     });
+  document.querySelectorAll(FEATURE_SEARCH_EXTRA_SELECTOR).forEach(el => {
+    if (!el || (helpDialog && helpDialog.contains(el))) return;
+    const label = getFeatureSearchLabel(el);
+    if (!label) return;
+    const keywords = getFeatureSearchKeywords(el);
+    const entry = buildFeatureSearchEntry(el, { label, keywords });
+    if (!entry || !entry.key) return;
+    const display = entry.optionValue || entry.displayLabel || entry.baseLabel;
+    if (!display) return;
+    registerOption(display);
+    featureSearchEntries.push({
+      type: 'feature',
+      key: entry.key,
+      display,
+      tokens: Array.isArray(entry.tokens) ? entry.tokens : [],
+      value: entry
+    });
+  });
   if (helpDialog) {
     helpDialog.querySelectorAll('section[data-help-section]').forEach(section => {
       const heading = section.querySelector('h3');
