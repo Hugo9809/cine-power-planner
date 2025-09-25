@@ -4591,6 +4591,83 @@ const ARRAY_COMPARISON_KEY_LABEL_OVERRIDES = {
 
 const ARRAY_COMPARISON_KEY_LABEL_OMIT = new Set(['name', 'label', 'title']);
 
+function isDiffComparablePrimitive(value) {
+  if (value === null) {
+    return true;
+  }
+  const type = typeof value;
+  return type === 'string' || type === 'number' || type === 'boolean';
+}
+
+function arrayHasOnlyComparablePrimitives(array) {
+  if (!Array.isArray(array)) {
+    return false;
+  }
+  for (let i = 0; i < array.length; i += 1) {
+    if (!isDiffComparablePrimitive(array[i])) {
+      return false;
+    }
+  }
+  return true;
+}
+
+function createPrimitiveDiffKey(value) {
+  if (value === null) {
+    return 'primitive:null';
+  }
+  if (typeof value === 'number') {
+    if (Number.isNaN(value)) {
+      return 'primitive:number:NaN';
+    }
+    if (Object.is(value, -0)) {
+      return 'primitive:number:-0';
+    }
+    return `primitive:number:${value}`;
+  }
+  if (typeof value === 'string') {
+    return `primitive:string:${value}`;
+  }
+  if (typeof value === 'boolean') {
+    return `primitive:boolean:${value}`;
+  }
+  return `primitive:other:${String(value)}`;
+}
+
+function buildPrimitiveDiffIndex(array) {
+  const counts = new Map();
+  if (!Array.isArray(array)) {
+    return counts;
+  }
+  for (let i = 0; i < array.length; i += 1) {
+    const value = array[i];
+    if (!isDiffComparablePrimitive(value)) {
+      continue;
+    }
+    const key = createPrimitiveDiffKey(value);
+    if (!counts.has(key)) {
+      counts.set(key, { value, count: 0 });
+    }
+    const entry = counts.get(key);
+    entry.count += 1;
+  }
+  return counts;
+}
+
+function formatPrimitiveDiffPathValue(value) {
+  if (typeof value === 'number') {
+    if (Number.isNaN(value)) {
+      return 'NaN';
+    }
+    if (!Number.isFinite(value)) {
+      return value > 0 ? 'Infinity' : '-Infinity';
+    }
+    if (Object.is(value, -0)) {
+      return '-0';
+    }
+  }
+  return value;
+}
+
 function createKeyedDiffPathSegment(keyName, keyValue) {
   let serializedValue;
   try {
@@ -4836,6 +4913,61 @@ function computeSetupDiff(baseline, comparison) {
             entries.push({ type: 'removed', path: nextPath, before: baseEntry.value, after: undefined });
           } else if (baseEntry && compareEntry) {
             walk(baseEntry.value, compareEntry.value, nextPath);
+          }
+        });
+        return;
+      }
+
+      if (arrayHasOnlyComparablePrimitives(baseValue) && arrayHasOnlyComparablePrimitives(compareValue)) {
+        const baseIndex = buildPrimitiveDiffIndex(baseValue);
+        const compareIndex = buildPrimitiveDiffIndex(compareValue);
+        const combinedOrder = [];
+        const seenKeys = new Set();
+        const appendKey = key => {
+          if (!seenKeys.has(key)) {
+            seenKeys.add(key);
+            combinedOrder.push(key);
+          }
+        };
+        for (let i = 0; i < baseValue.length; i += 1) {
+          appendKey(createPrimitiveDiffKey(baseValue[i]));
+        }
+        for (let i = 0; i < compareValue.length; i += 1) {
+          appendKey(createPrimitiveDiffKey(compareValue[i]));
+        }
+
+        combinedOrder.forEach(key => {
+          const baseEntry = baseIndex.get(key) || null;
+          const compareEntry = compareIndex.get(key) || null;
+          const baseCount = baseEntry ? baseEntry.count : 0;
+          const compareCount = compareEntry ? compareEntry.count : 0;
+          if (compareCount > baseCount) {
+            const addValue = compareEntry ? compareEntry.value : undefined;
+            const diff = compareCount - baseCount;
+            for (let i = 0; i < diff; i += 1) {
+              entries.push({
+                type: 'added',
+                path: path.concat(
+                  createKeyedDiffPathSegment('value', formatPrimitiveDiffPathValue(addValue)),
+                ),
+                before: undefined,
+                after: addValue,
+              });
+            }
+          }
+          if (baseCount > compareCount) {
+            const removeValue = baseEntry ? baseEntry.value : undefined;
+            const diff = baseCount - compareCount;
+            for (let i = 0; i < diff; i += 1) {
+              entries.push({
+                type: 'removed',
+                path: path.concat(
+                  createKeyedDiffPathSegment('value', formatPrimitiveDiffPathValue(removeValue)),
+                ),
+                before: removeValue,
+                after: undefined,
+              });
+            }
           }
         });
         return;
