@@ -182,6 +182,8 @@ Cette routine prouve que sauvegarde, partage, import, backup et restauration fon
 ### Référence rapide
 
 - **Recherche globale** (`/`, `Ctrl+K`, `⌘K`) pour accéder à toute fonctionnalité, liste ou thème d’aide, même navigation repliée.
+  Les suggestions mettent désormais en avant les correspondances directes avec les fonctionnalités et appareils avant les sujets
+  d’aide pour que les parcours clavier atteignent d’abord les commandes essentielles.
 - **Centre d’aide** (`?`, `H`, `F1`, `Ctrl+/`) proposant guides, raccourcis, FAQ et mode aide au survol.
 - **Diagramme de projet** pour visualiser alimentation et signal ; maintenez Maj lors de l’export pour enregistrer un JPG.
 - **Comparateur de batteries** affichant les performances et alertant sur les surcharges.

@@ -18903,6 +18903,12 @@ const FEATURE_SEARCH_MATCH_PRIORITIES = {
   exactKey: 6
 };
 
+const FEATURE_SEARCH_TYPE_PRIORITIES = {
+  feature: 3,
+  device: 3,
+  help: 1
+};
+
 function scoreFeatureSearchEntry(entry, queryKey, queryTokens) {
   if (!entry || !entry.key) return null;
   const display = entry.display;
@@ -18915,6 +18921,10 @@ function scoreFeatureSearchEntry(entry, queryKey, queryTokens) {
   const tokenDetails = validQueryTokens.length
     ? computeTokenMatchDetails(entryTokens, validQueryTokens)
     : { score: 0, matched: 0 };
+  const entryType = entry.type || 'feature';
+  const queryTokenCount = validQueryTokens.length;
+  const allTokensMatched =
+    queryTokenCount > 0 && tokenDetails.matched >= queryTokenCount;
 
   let bestType = 'none';
   let bestPriority = FEATURE_SEARCH_MATCH_PRIORITIES.none;
@@ -18947,6 +18957,9 @@ function scoreFeatureSearchEntry(entry, queryKey, queryTokens) {
 
   return {
     entry,
+    entryType,
+    typePriority: FEATURE_SEARCH_TYPE_PRIORITIES[entryType] || 0,
+    allTokensMatched,
     matchType: bestType,
     priority: bestPriority,
     tokenScore: tokenDetails.score,
@@ -18989,8 +19002,12 @@ function updateFeatureSearchSuggestions(query) {
 
   const candidates = (meaningful.length > 0 ? meaningful : scored).sort((a, b) => {
     if (b.priority !== a.priority) return b.priority - a.priority;
+    if (Number(b.allTokensMatched) !== Number(a.allTokensMatched)) {
+      return Number(b.allTokensMatched) - Number(a.allTokensMatched);
+    }
     if (b.tokenScore !== a.tokenScore) return b.tokenScore - a.tokenScore;
     if (b.tokenMatches !== a.tokenMatches) return b.tokenMatches - a.tokenMatches;
+    if (b.typePriority !== a.typePriority) return b.typePriority - a.typePriority;
     if (a.keyDistance !== b.keyDistance) return a.keyDistance - b.keyDistance;
     if (a.keyLength !== b.keyLength) return a.keyLength - b.keyLength;
     return a.entry.display.localeCompare(b.entry.display, undefined, {
@@ -19006,6 +19023,7 @@ function updateFeatureSearchSuggestions(query) {
     seen.add(value);
     values.push(value);
   }
+
 
   if (values.length === 0) {
     restoreFeatureSearchDefaults();
