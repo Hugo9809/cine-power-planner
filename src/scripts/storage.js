@@ -1,5 +1,5 @@
 // storage.js - Handles reading from and writing to localStorage.
-/* global texts, currentLang, SAFE_LOCAL_STORAGE, __cineGlobal */
+/* global texts, currentLang, SAFE_LOCAL_STORAGE, __cineGlobal, LZString */
 
 const GLOBAL_SCOPE =
   typeof globalThis !== 'undefined'
@@ -156,6 +156,59 @@ const RAW_STORAGE_BACKUP_KEYS = new Set([
 ]);
 
 const MAX_MIGRATION_BACKUP_CLEANUP_STEPS = 10;
+const MIGRATION_BACKUP_COMPRESSION_ALGORITHM = 'lz-string';
+const MIGRATION_BACKUP_COMPRESSION_ENCODING = 'json-string';
+
+function canUseMigrationBackupCompression() {
+  return (
+    typeof LZString === 'object'
+    && LZString !== null
+    && typeof LZString.compressToUTF16 === 'function'
+    && typeof LZString.decompressFromUTF16 === 'function'
+  );
+}
+
+function tryCreateCompressedMigrationBackupCandidate(serializedPayload, createdAt) {
+  if (typeof serializedPayload !== 'string' || !serializedPayload) {
+    return null;
+  }
+  if (!canUseMigrationBackupCompression()) {
+    return null;
+  }
+
+  let compressed;
+  try {
+    compressed = LZString.compressToUTF16(serializedPayload);
+  } catch (compressionError) {
+    console.warn('Unable to compress migration backup payload', compressionError);
+    return null;
+  }
+
+  if (typeof compressed !== 'string' || !compressed || compressed.length >= serializedPayload.length) {
+    return null;
+  }
+
+  let serializedCompressedPayload;
+  try {
+    serializedCompressedPayload = JSON.stringify({
+      createdAt,
+      compression: MIGRATION_BACKUP_COMPRESSION_ALGORITHM,
+      encoding: MIGRATION_BACKUP_COMPRESSION_ENCODING,
+      data: compressed,
+      originalSize: serializedPayload.length,
+      compressedSize: compressed.length,
+    });
+  } catch (serializationError) {
+    console.warn('Unable to serialize compressed migration backup payload', serializationError);
+    return null;
+  }
+
+  return {
+    serialized: serializedCompressedPayload,
+    originalSize: serializedPayload.length,
+    compressedSize: compressed.length,
+  };
+}
 
 function parseMigrationBackupMetadata(raw) {
   if (typeof raw !== 'string' || !raw) {
@@ -257,7 +310,7 @@ function pruneMigrationBackupEntriesForCleanup(storage, excludeKey) {
   return removedKeys;
 }
 
-function attemptMigrationBackupQuotaRecovery(storage, key, backupKey, serialized) {
+function attemptMigrationBackupQuotaRecovery(storage, key, backupKey, tryWrite) {
   if (!storage || typeof storage.setItem !== 'function') {
     return { success: false, error: null };
   }
@@ -265,14 +318,22 @@ function attemptMigrationBackupQuotaRecovery(storage, key, backupKey, serialized
   const removedBackups = [];
   let lastError = null;
 
-  const tryWrite = () => {
-    try {
-      storage.setItem(backupKey, serialized);
-      return { success: true, quota: false };
-    } catch (error) {
-      lastError = error;
-      return { success: false, quota: isQuotaExceededError(error), error };
+  if (typeof tryWrite !== 'function') {
+    return { success: false, error: null };
+  }
+
+  const attemptWrite = () => {
+    const result = tryWrite();
+    if (result && typeof result === 'object' && 'error' in result && result.error) {
+      lastError = result.error;
     }
+    if (result && result.success) {
+      return { success: true, quota: false };
+    }
+    if (result && result.quota) {
+      return { success: false, quota: true, error: result.error || null };
+    }
+    return { success: false, quota: false, error: result && result.error ? result.error : null };
   };
 
   if (typeof clearUiCacheStorageEntries === 'function') {
@@ -285,7 +346,7 @@ function attemptMigrationBackupQuotaRecovery(storage, key, backupKey, serialized
     }
 
     if (cleared) {
-      const retryAfterClear = tryWrite();
+      const retryAfterClear = attemptWrite();
       if (retryAfterClear.success) {
         console.warn(`Cleared cached planner data to free storage before creating migration backup for ${key}.`);
         return { success: true, error: null };
@@ -302,7 +363,7 @@ function attemptMigrationBackupQuotaRecovery(storage, key, backupKey, serialized
       break;
     }
     removedBackups.push(...removed);
-    const retry = tryWrite();
+    const retry = attemptWrite();
     if (retry.success) {
       console.warn(
         `Removed ${removedBackups.length} older migration backup${removedBackups.length > 1 ? 's' : ''} to free up storage before creating migration backup for ${key}.`,
@@ -382,9 +443,10 @@ function createStorageMigrationBackup(storage, key, originalValue) {
   }
 
   let serialized;
+  const createdAt = new Date().toISOString();
   try {
     serialized = JSON.stringify({
-      createdAt: new Date().toISOString(),
+      createdAt,
       data: originalValue,
     });
   } catch (serializationError) {
@@ -392,20 +454,75 @@ function createStorageMigrationBackup(storage, key, originalValue) {
     return;
   }
 
-  try {
-    storage.setItem(backupKey, serialized);
-  } catch (writeError) {
-    if (isQuotaExceededError(writeError)) {
-      const recovery = attemptMigrationBackupQuotaRecovery(storage, key, backupKey, serialized);
-      if (recovery && recovery.success) {
-        return;
+  const tryStoreSerialized = (candidate, options = {}) => {
+    const { logCompression = false, info = null } = options || {};
+    try {
+      storage.setItem(backupKey, candidate.serialized);
+      if (logCompression && info && !tryStoreSerialized.compressionLogged) {
+        tryStoreSerialized.compressionLogged = true;
+        const savings = info.originalSize - info.compressedSize;
+        const percent = info.originalSize > 0 ? Math.round((savings / info.originalSize) * 100) : 0;
+        console.warn(
+          `Stored compressed migration backup for ${key} to reduce storage usage by ${savings} characters (${percent}%).`,
+        );
       }
-      const errorToReport = recovery && recovery.error ? recovery.error : writeError;
-      console.warn(`Unable to create migration backup for ${key}`, errorToReport);
-      alertStorageError('migration-backup-quota');
+      return { success: true, quota: false };
+    } catch (error) {
+      return { success: false, quota: isQuotaExceededError(error), error };
+    }
+  };
+  tryStoreSerialized.compressionLogged = tryStoreSerialized.compressionLogged || false;
+
+  const standardCandidate = { serialized };
+  const standardResult = tryStoreSerialized(standardCandidate);
+  if (standardResult.success) {
+    return;
+  }
+
+  const handleFailure = (error) => {
+    console.warn(`Unable to create migration backup for ${key}`, error);
+  };
+
+  if (!standardResult.quota) {
+    handleFailure(standardResult.error);
+    return;
+  }
+
+  const compressedCandidate = tryCreateCompressedMigrationBackupCandidate(serialized, createdAt);
+
+  const runRecoveryWith = (candidate, options, fallbackError) => {
+    const recovery = attemptMigrationBackupQuotaRecovery(storage, key, backupKey, () =>
+      tryStoreSerialized(candidate, options),
+    );
+    if (recovery && recovery.success) {
+      return true;
+    }
+    const errorToReport = recovery && recovery.error ? recovery.error : fallbackError;
+    handleFailure(errorToReport);
+    alertStorageError('migration-backup-quota');
+    return false;
+  };
+
+  if (compressedCandidate) {
+    const compressedResult = tryStoreSerialized(compressedCandidate, {
+      logCompression: true,
+      info: compressedCandidate,
+    });
+    if (compressedResult.success) {
       return;
     }
-    console.warn(`Unable to create migration backup for ${key}`, writeError);
+    if (!compressedResult.quota) {
+      handleFailure(compressedResult.error);
+      return;
+    }
+    if (runRecoveryWith(compressedCandidate, { logCompression: true, info: compressedCandidate }, compressedResult.error)) {
+      return;
+    }
+    return;
+  }
+
+  if (runRecoveryWith(standardCandidate, {}, standardResult.error)) {
+    return;
   }
 }
 
@@ -5005,8 +5122,38 @@ function extractSnapshotStoredValue(entry) {
   if (entry.type === 'migration-backup') {
     try {
       const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
-      if (parsed && typeof parsed === 'object' && Object.prototype.hasOwnProperty.call(parsed, 'data')) {
-        raw = parsed.data;
+      if (parsed && typeof parsed === 'object') {
+        if (
+          parsed.compression === MIGRATION_BACKUP_COMPRESSION_ALGORITHM
+          && parsed.encoding === MIGRATION_BACKUP_COMPRESSION_ENCODING
+          && typeof parsed.data === 'string'
+        ) {
+          if (canUseMigrationBackupCompression()) {
+            try {
+              const decompressed = LZString.decompressFromUTF16(parsed.data);
+              if (typeof decompressed === 'string' && decompressed) {
+                const decoded = JSON.parse(decompressed);
+                if (decoded && typeof decoded === 'object' && Object.prototype.hasOwnProperty.call(decoded, 'data')) {
+                  raw = decoded.data;
+                } else {
+                  raw = null;
+                }
+              } else {
+                raw = null;
+              }
+            } catch (decompressionError) {
+              console.warn('Unable to decompress migration backup entry during import', entry && entry.key, decompressionError);
+              raw = null;
+            }
+          } else {
+            console.warn('Compression support is unavailable while reading migration backup entry', entry && entry.key);
+            raw = null;
+          }
+        } else if (Object.prototype.hasOwnProperty.call(parsed, 'data')) {
+          raw = parsed.data;
+        } else {
+          raw = null;
+        }
       } else {
         raw = null;
       }

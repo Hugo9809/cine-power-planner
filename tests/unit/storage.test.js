@@ -16,6 +16,9 @@ if (!('sessionStorage' in global.window)) {
   });
 }
 
+const lzString = require('lz-string/libs/lz-string');
+global.LZString = lzString;
+
 const {
   loadDeviceData,
   saveDeviceData,
