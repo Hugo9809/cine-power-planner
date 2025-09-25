@@ -3568,12 +3568,19 @@ function closeSideMenu() {
   const menu = document.getElementById('sideMenu');
   const overlay = document.getElementById('menuOverlay');
   const toggle = document.getElementById('menuToggle');
+  const body = typeof document !== 'undefined' ? document.body : null;
   if (!menu || !overlay || !toggle) return;
   menu.classList.remove('open');
+  menu.scrollTop = 0;
   menu.setAttribute('hidden', '');
   overlay.classList.add('hidden');
+  const menuLabel = toggle.dataset?.menuLabel || 'Menu';
+  const menuHelp = toggle.dataset?.menuHelp || menuLabel;
   toggle.setAttribute('aria-expanded', 'false');
-  toggle.setAttribute('aria-label', 'Menu');
+  toggle.setAttribute('aria-label', menuLabel);
+  toggle.setAttribute('title', menuLabel);
+  toggle.setAttribute('data-help', menuHelp);
+  body?.classList.remove('menu-open');
 }
 
 /**
@@ -3583,13 +3590,26 @@ function openSideMenu() {
   const menu = document.getElementById('sideMenu');
   const overlay = document.getElementById('menuOverlay');
   const toggle = document.getElementById('menuToggle');
+  const closeButton = document.getElementById('closeMenuButton');
+  const body = typeof document !== 'undefined' ? document.body : null;
   if (!menu || !overlay || !toggle) return;
   if (menu.classList.contains('open')) return;
   menu.classList.add('open');
   menu.removeAttribute('hidden');
   overlay.classList.remove('hidden');
   toggle.setAttribute('aria-expanded', 'true');
-  toggle.setAttribute('aria-label', 'Close menu');
+  const closeLabel =
+    toggle.dataset?.closeLabel ||
+    closeButton?.getAttribute('aria-label') ||
+    'Close menu';
+  const closeHelp =
+    toggle.dataset?.closeHelp ||
+    closeButton?.getAttribute('data-help') ||
+    closeLabel;
+  toggle.setAttribute('aria-label', closeLabel);
+  toggle.setAttribute('title', closeLabel);
+  toggle.setAttribute('data-help', closeHelp);
+  body?.classList.add('menu-open');
 }
 
 /**
@@ -3599,6 +3619,7 @@ function setupSideMenu() {
   const toggle = document.getElementById('menuToggle');
   const menu = document.getElementById('sideMenu');
   const overlay = document.getElementById('menuOverlay');
+  const closeButton = document.getElementById('closeMenuButton');
   if (!toggle || !menu || !overlay) return;
 
   toggle.addEventListener('click', () => {
@@ -3610,6 +3631,18 @@ function setupSideMenu() {
   });
 
   overlay.addEventListener('click', closeSideMenu);
+  closeButton?.addEventListener('click', () => {
+    closeSideMenu();
+    toggle.focus();
+  });
+  if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
+    const mobileQuery = window.matchMedia('(max-width: 768px)');
+    mobileQuery.addEventListener('change', event => {
+      if (!event.matches && menu.classList.contains('open')) {
+        closeSideMenu();
+      }
+    });
+  }
   document.addEventListener('keydown', event => {
     if (event.key === 'Escape' && menu.classList.contains('open')) {
       closeSideMenu();
@@ -7085,10 +7118,20 @@ function setLanguage(lang) {
       texts.en?.menuToggleLabel ||
       menuToggle.getAttribute("aria-label") ||
       "Menu";
+    const closeLabel =
+      texts[lang].sideMenuClose ||
+      texts.en?.sideMenuClose ||
+      menuToggle.dataset.closeLabel ||
+      "Close menu";
+    const closeHelp = texts[lang].sideMenuCloseHelp || closeLabel;
     menuToggle.setAttribute("title", menuLabel);
     menuToggle.setAttribute("aria-label", menuLabel);
     const menuHelp = texts[lang].menuToggleHelp || menuLabel;
     menuToggle.setAttribute("data-help", menuHelp);
+    menuToggle.dataset.menuLabel = menuLabel;
+    menuToggle.dataset.menuHelp = menuHelp;
+    menuToggle.dataset.closeLabel = closeLabel;
+    menuToggle.dataset.closeHelp = closeHelp;
   }
   const sideMenu = document.getElementById("sideMenu");
   if (sideMenu) {
@@ -7097,6 +7140,35 @@ function setLanguage(lang) {
       sideMenu.setAttribute("data-help", sideMenuHelp);
     } else {
       sideMenu.removeAttribute("data-help");
+    }
+  }
+  const sideMenuTitle = document.getElementById("sideMenuTitle");
+  if (sideMenuTitle) {
+    const titleLabel =
+      texts[lang].sideMenuTitle ||
+      texts.en?.sideMenuTitle ||
+      sideMenuTitle.textContent;
+    sideMenuTitle.textContent = titleLabel;
+    const titleHelp =
+      texts[lang].sideMenuTitleHelp ||
+      texts[lang].sideMenuHelp ||
+      titleLabel;
+    sideMenuTitle.setAttribute("data-help", titleHelp);
+  }
+  const closeMenuButton = document.getElementById("closeMenuButton");
+  const closeMenuLabel = document.getElementById("closeMenuLabel");
+  if (closeMenuButton) {
+    const closeLabel =
+      texts[lang].sideMenuClose ||
+      texts.en?.sideMenuClose ||
+      closeMenuButton.getAttribute("aria-label") ||
+      "Close menu";
+    const closeHelp = texts[lang].sideMenuCloseHelp || closeLabel;
+    closeMenuButton.setAttribute("aria-label", closeLabel);
+    closeMenuButton.setAttribute("title", closeHelp);
+    closeMenuButton.setAttribute("data-help", closeHelp);
+    if (closeMenuLabel) {
+      closeMenuLabel.textContent = closeLabel;
     }
   }
   if (reloadButton) {

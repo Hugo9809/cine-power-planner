@@ -87,6 +87,12 @@ const texts = {
     menuToggleLabel: "Menu",
     menuToggleHelp:
       "Open the sidebar to jump between planner sections or reveal controls on smaller screens. Click again to close it.",
+    sideMenuTitle: "Planner sections",
+    sideMenuTitleHelp:
+      "Swipe up to explore planner sections and mobile controls. Your project keeps saving automatically while you browse.",
+    sideMenuClose: "Close navigation",
+    sideMenuCloseHelp:
+      "Close the navigation drawer and return to the planner. Your data stays saved and ready to restore if needed.",
     sideMenuHelp:
       "Sidebar navigation listing planner sections. Select a section to scroll there and the menu closes automatically.",
     featureSearchPlaceholder: "Search features or devices...",
@@ -1340,6 +1346,12 @@ const texts = {
     menuToggleLabel: "Menu",
     menuToggleHelp:
       "Apri la barra laterale per raggiungere rapidamente le sezioni dell’app o mostrare i controlli sugli schermi piccoli. Premi di nuovo per chiuderla.",
+    sideMenuTitle: "Sezioni del planner",
+    sideMenuTitleHelp:
+      "Scorri per esplorare le sezioni e i controlli del planner sul telefono. Il progetto viene salvato automaticamente mentre navighi.",
+    sideMenuClose: "Chiudi navigazione",
+    sideMenuCloseHelp:
+      "Chiudi il pannello di navigazione e torna al planner. I tuoi dati restano salvati e pronti per il ripristino.",
     sideMenuHelp:
       "Navigazione laterale con le sezioni dell’app. Seleziona una sezione per scorrere fino a essa e chiudere automaticamente il menu.",
     featureSearchPlaceholder: "Cerca funzionalità o dispositivi...",
@@ -2576,6 +2588,12 @@ const texts = {
     menuToggleLabel: "Menú",
     menuToggleHelp:
       "Abre la barra lateral para saltar entre las secciones del planificador o mostrar los controles en pantallas pequeñas. Pulsa de nuevo para cerrarla.",
+    sideMenuTitle: "Secciones del planificador",
+    sideMenuTitleHelp:
+      "Desliza para explorar las secciones y controles del planificador en el móvil. El proyecto se guarda automáticamente mientras navegas.",
+    sideMenuClose: "Cerrar navegación",
+    sideMenuCloseHelp:
+      "Cierra el panel de navegación y vuelve al planificador. Tus datos permanecen guardados y listos para restaurarse.",
     sideMenuHelp:
       "Navegación lateral con las secciones del planificador. Elige una sección para desplazarte allí y cerrar automáticamente el menú.",
     featureSearchPlaceholder: "Buscar funciones o dispositivos...",
@@ -3825,6 +3843,12 @@ const texts = {
     menuToggleLabel: "Menu",
     menuToggleHelp:
       "Ouvre la barre latérale pour passer rapidement d’une section du planificateur à l’autre ou afficher les commandes sur les petits écrans. Cliquez de nouveau pour la fermer.",
+    sideMenuTitle: "Sections du planificateur",
+    sideMenuTitleHelp:
+      "Balayez pour explorer les sections et commandes du planificateur sur mobile. Le projet est enregistré automatiquement pendant la navigation.",
+    sideMenuClose: "Fermer la navigation",
+    sideMenuCloseHelp:
+      "Fermez le tiroir de navigation et retournez au planificateur. Vos données restent enregistrées et prêtes à être restaurées.",
     sideMenuHelp:
       "Navigation latérale listant les sections du planificateur. Choisissez une section pour y faire défiler la page et fermer automatiquement le menu.",
     featureSearchPlaceholder: "Rechercher des fonctionnalités ou des appareils...",
@@ -5085,6 +5109,12 @@ const texts = {
     menuToggleLabel: "Menü",
     menuToggleHelp:
       "Öffnet die Seitenleiste, um schnell zwischen den Planerbereichen zu wechseln oder die Bedienelemente auf kleinen Bildschirmen einzublenden. Nochmal klicken schließt sie wieder.",
+    sideMenuTitle: "Planerbereiche",
+    sideMenuTitleHelp:
+      "Wische, um die Planerbereiche und Steuerungen auf dem Mobilgerät zu erkunden. Dein Projekt wird beim Navigieren automatisch gespeichert.",
+    sideMenuClose: "Navigation schließen",
+    sideMenuCloseHelp:
+      "Schließe den Navigationsbereich und kehre zum Planer zurück. Deine Daten bleiben gesichert und jederzeit wiederherstellbar.",
     sideMenuHelp:
       "Seitenleiste mit den Bereichen des Planers. Wähle einen Bereich aus, um dorthin zu scrollen; das Menü schließt sich dabei automatisch.",
     featureSearchPlaceholder: "Funktionen oder Geräte durchsuchen...",

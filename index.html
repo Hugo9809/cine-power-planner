@@ -68,7 +68,7 @@
       </span>
       <h1 id="mainTitle">Cine Power Planner</h1>
     </a>
-    <button id="menuToggle" aria-label="Menu" aria-expanded="false">
+    <button id="menuToggle" aria-label="Menu" aria-expanded="false" aria-controls="sideMenu">
       <span class="icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE198;</span>
     </button>
     <div class="feature-search">
@@ -158,7 +158,25 @@
     </nav>
   </header>
 
-  <nav id="sideMenu" class="side-menu" aria-label="Sidebar navigation" hidden>
+  <nav
+    id="sideMenu"
+    class="side-menu"
+    aria-label="Sidebar navigation"
+    aria-labelledby="sideMenuTitle"
+    hidden
+  >
+    <div class="sidebar-header">
+      <h2 id="sideMenuTitle">Planner sections</h2>
+      <button
+        type="button"
+        id="closeMenuButton"
+        class="sidebar-close"
+        aria-label="Close menu"
+      >
+        <span id="closeMenuLabel" class="visually-hidden">Close navigation</span>
+        <span class="icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xF131;</span>
+      </button>
+    </div>
     <div class="sidebar-controls"></div>
     <ul>
       <li><a href="#setup-manager" data-nav-key="setupManageHeading">Project Overview</a></li>
