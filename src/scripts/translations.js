@@ -293,7 +293,8 @@ const texts = {
     autoGearCameraWeightValueRequired: "Enter a camera weight threshold before saving.",
     autoGearMonitorLabel: "Onboard monitors",
     autoGearMonitorDefaultsHeading: "Monitor defaults",
-    autoGearMonitorDefaultsDescription: "Choose which monitors should be preselected for new gear lists.",
+    autoGearMonitorDefaultsDescription:
+      "Choose which monitors should be preselected for new gear lists.",
     autoGearDefaultFocusMonitorLabel: "Focus monitor",
     autoGearDefaultHandheldMonitorLabel: "7\" handheld monitor",
     autoGearDefaultComboMonitorLabel: "Combo monitor 15-21\"",
@@ -1117,11 +1118,11 @@ const texts = {
       "Video Operator": "Video Operator",
       "Key Gaffer": "Key Gaffer",
       "Gaffer": "Gaffer",
-      "Best Boy Electric": "Best Boy Electric",
+      "Best Boy Electric": "Oberbeleuchter-Assistent",
       "Electrician": "Electrician",
       "Rigging Gaffer": "Rigging Gaffer",
       "Key Grip": "Key Grip",
-      "Best Boy Grip": "Best Boy Grip",
+      "Best Boy Grip": "Key-Grip-Assistent",
       "Grip": "Grip",
       "Dolly Grip": "Dolly Grip",
       "Rigging Grip": "Rigging Grip"
@@ -1461,7 +1462,7 @@ const texts = {
     consumptionLabel: "Consumo (W):",
     capacityLabel: "Capacità (Wh):",
     pinLabel: "Pin massimo A:",
-    dtapLabel: "Max D-Tap A:",
+    dtapLabel: "D-Tap massimo A:",
     cameraWattLabel: "Potenza assorbita (W):",
     cameraVoltageLabel: "Intervallo di tensione:",
     cameraPortTypeLabel: "Tipo di porta:",
@@ -1924,21 +1925,22 @@ const texts = {
     autoGearCameraWeightValueLabel: "Soglia di peso (grammi)",
     autoGearCameraWeightValueRequired: "Inserisci una soglia di peso della camera prima di salvare.",
     autoGearMonitorLabel: "Monitor onboard",
-    autoGearMonitorDefaultsHeading: "Monitor defaults",
-    autoGearMonitorDefaultsDescription: "Choose which monitors should be preselected for new gear lists.",
-    autoGearDefaultFocusMonitorLabel: "Focus monitor",
-    autoGearDefaultHandheldMonitorLabel: "7\" handheld monitor",
-    autoGearDefaultComboMonitorLabel: "Combo monitor 15-21\"",
-    autoGearDefaultDirectorMonitorLabel: "Director monitor 15-21\"",
-    autoGearMonitorDefaultPlaceholder: "Use recommended automatically",
+    autoGearMonitorDefaultsHeading: "Predefiniti monitor",
+    autoGearMonitorDefaultsDescription:
+      "Scegli quali monitor devono essere preselezionati per le nuove liste attrezzatura.",
+    autoGearDefaultFocusMonitorLabel: "Monitor fuoco",
+    autoGearDefaultHandheldMonitorLabel: "Monitor portatile da 7\"",
+    autoGearDefaultComboMonitorLabel: "Monitor combo 15-21\"",
+    autoGearDefaultDirectorMonitorLabel: "Monitor regia 15-21\"",
+    autoGearMonitorDefaultPlaceholder: "Usa consigliato automaticamente",
     autoGearMonitorHelp:
       "Applica la regola quando sono selezionati questi monitor onboard.",
-    autoGearCrewPresentLabel: "Crew present",
+    autoGearCrewPresentLabel: "Troupe presente",
     autoGearCrewPresentHelp:
-      "Apply this rule when these crew roles are listed on the project.",
-    autoGearCrewAbsentLabel: "Crew absent",
+      "Applica questa regola quando questi ruoli di troupe sono elencati nel progetto.",
+    autoGearCrewAbsentLabel: "Troupe assente",
     autoGearCrewAbsentHelp:
-      "Apply this rule when these crew roles are not listed on the project.",
+      "Applica questa regola quando questi ruoli di troupe non compaiono nel progetto.",
     autoGearWirelessLabel: "Trasmettitori wireless",
     autoGearWirelessHelp:
       "Applica la regola quando sono selezionati questi trasmettitori wireless.",
@@ -2187,9 +2189,9 @@ const texts = {
     restoreRehearsalError:
       "Prova di ripristino non riuscita. Controlla il file e riprova.",
     restoreRehearsalBackupMismatch:
-      "File doesn't look like a full app backup. Double-check the source and try again.",
+      "Il file non sembra un backup completo dell'app. Verifica l'origine e riprova.",
     restoreRehearsalProjectMismatch:
-      "File doesn't look like a project bundle. Double-check the source and try again.",
+      "Il file non sembra un pacchetto di progetto. Verifica l'origine e riprova.",
     restoreRehearsalRuleHeading: "Modifiche alle regole automatiche",
     restoreRehearsalRuleIntro:
       "Confronta ogni regola automatica prima di caricare l'ambiente di prova. Le regole attive restano intatte.",
@@ -3136,21 +3138,22 @@ const texts = {
     autoGearCameraWeightValueLabel: "Umbral de peso (gramos)",
     autoGearCameraWeightValueRequired: "Introduce un umbral de peso de la cámara antes de guardar.",
     autoGearMonitorLabel: "Monitores a bordo",
-    autoGearMonitorDefaultsHeading: "Monitor defaults",
-    autoGearMonitorDefaultsDescription: "Choose which monitors should be preselected for new gear lists.",
-    autoGearDefaultFocusMonitorLabel: "Focus monitor",
-    autoGearDefaultHandheldMonitorLabel: "7\" handheld monitor",
-    autoGearDefaultComboMonitorLabel: "Combo monitor 15-21\"",
-    autoGearDefaultDirectorMonitorLabel: "Director monitor 15-21\"",
-    autoGearMonitorDefaultPlaceholder: "Use recommended automatically",
+    autoGearMonitorDefaultsHeading: "Valores predeterminados de monitores",
+    autoGearMonitorDefaultsDescription:
+      "Elige qué monitores deben preseleccionarse en las nuevas listas de equipo.",
+    autoGearDefaultFocusMonitorLabel: "Monitor de foco",
+    autoGearDefaultHandheldMonitorLabel: "Monitor portátil de 7\"",
+    autoGearDefaultComboMonitorLabel: "Monitor combo 15-21\"",
+    autoGearDefaultDirectorMonitorLabel: "Monitor de dirección 15-21\"",
+    autoGearMonitorDefaultPlaceholder: "Usar recomendado automáticamente",
     autoGearMonitorHelp:
       "Aplica la regla cuando se seleccionan estos monitores a bordo.",
-    autoGearCrewPresentLabel: "Crew present",
+    autoGearCrewPresentLabel: "Equipo presente",
     autoGearCrewPresentHelp:
-      "Apply this rule when these crew roles are listed on the project.",
-    autoGearCrewAbsentLabel: "Crew absent",
+      "Aplica esta regla cuando estos perfiles figuren en el proyecto.",
+    autoGearCrewAbsentLabel: "Equipo ausente",
     autoGearCrewAbsentHelp:
-      "Apply this rule when these crew roles are not listed on the project.",
+      "Aplica esta regla cuando estos perfiles no figuren en el proyecto.",
     autoGearWirelessLabel: "Transmisores inalámbricos",
     autoGearWirelessHelp:
       "Aplica la regla cuando se seleccionan estos transmisores inalámbricos.",
@@ -3399,9 +3402,9 @@ const texts = {
     restoreRehearsalError:
       "El ensayo de restauración falló. Revisa el archivo e inténtalo de nuevo.",
     restoreRehearsalBackupMismatch:
-      "File doesn't look like a full app backup. Double-check the source and try again.",
+      "El archivo no parece una copia completa de la aplicación. Comprueba el origen y vuelve a intentarlo.",
     restoreRehearsalProjectMismatch:
-      "File doesn't look like a project bundle. Double-check the source and try again.",
+      "El archivo no parece un paquete de proyecto. Comprueba el origen y vuelve a intentarlo.",
     restoreRehearsalRuleHeading: "Cambios en las reglas automáticas",
     restoreRehearsalRuleIntro:
       "Compara cada regla automática antes de cargar el entorno de ensayo. Las reglas en vivo se mantienen intactas.",
@@ -3878,8 +3881,8 @@ const texts = {
     deviceNameLabel: "Nom:",
     consumptionLabel: "Consommation (W):",
     capacityLabel: "Capacité (Wh):",
-    pinLabel: "Max Pin A:",
-    dtapLabel: "Max D-Tap A:",
+    pinLabel: "Intensité broches max (A) :",
+    dtapLabel: "Intensité D-Tap max (A) :",
     cameraWattLabel: "Puissance (W):",
     cameraVoltageLabel: "Plage de Tension:",
     cameraPortTypeLabel: "Type de Port:",
@@ -4350,21 +4353,22 @@ const texts = {
     autoGearCameraWeightValueLabel: "Seuil de poids (grammes)",
     autoGearCameraWeightValueRequired: "Saisissez un seuil de poids de la caméra avant d'enregistrer.",
     autoGearMonitorLabel: "Moniteurs embarqués",
-    autoGearMonitorDefaultsHeading: "Monitor defaults",
-    autoGearMonitorDefaultsDescription: "Choose which monitors should be preselected for new gear lists.",
-    autoGearDefaultFocusMonitorLabel: "Focus monitor",
-    autoGearDefaultHandheldMonitorLabel: "7\" handheld monitor",
-    autoGearDefaultComboMonitorLabel: "Combo monitor 15-21\"",
-    autoGearDefaultDirectorMonitorLabel: "Director monitor 15-21\"",
-    autoGearMonitorDefaultPlaceholder: "Use recommended automatically",
+    autoGearMonitorDefaultsHeading: "Valeurs par défaut des moniteurs",
+    autoGearMonitorDefaultsDescription:
+      "Choisissez quels moniteurs doivent être présélectionnés pour les nouvelles listes de matériel.",
+    autoGearDefaultFocusMonitorLabel: "Moniteur de point",
+    autoGearDefaultHandheldMonitorLabel: "Moniteur portatif 7\"",
+    autoGearDefaultComboMonitorLabel: "Moniteur combo 15-21\"",
+    autoGearDefaultDirectorMonitorLabel: "Moniteur réalisateur 15-21\"",
+    autoGearMonitorDefaultPlaceholder: "Utiliser la recommandation automatiquement",
     autoGearMonitorHelp:
       "Appliquez la règle lorsque ces moniteurs embarqués sont sélectionnés.",
-    autoGearCrewPresentLabel: "Crew present",
+    autoGearCrewPresentLabel: "Équipe présente",
     autoGearCrewPresentHelp:
-      "Apply this rule when these crew roles are listed on the project.",
-    autoGearCrewAbsentLabel: "Crew absent",
+      "Appliquez cette règle lorsque ces rôles d’équipe figurent dans le projet.",
+    autoGearCrewAbsentLabel: "Équipe absente",
     autoGearCrewAbsentHelp:
-      "Apply this rule when these crew roles are not listed on the project.",
+      "Appliquez cette règle lorsque ces rôles d’équipe ne figurent pas dans le projet.",
     autoGearWirelessLabel: "Émetteurs sans fil",
     autoGearWirelessHelp:
       "Appliquez la règle lorsque ces émetteurs sans fil sont sélectionnés.",
@@ -4621,9 +4625,9 @@ const texts = {
     restoreRehearsalError:
       "La simulation de restauration a échoué. Vérifiez le fichier et réessayez.",
     restoreRehearsalBackupMismatch:
-      "File doesn't look like a full app backup. Double-check the source and try again.",
+      "Ce fichier ne ressemble pas à une sauvegarde complète de l’application. Vérifiez la source puis réessayez.",
     restoreRehearsalProjectMismatch:
-      "File doesn't look like a project bundle. Double-check the source and try again.",
+      "Ce fichier ne ressemble pas à un paquet de projet. Vérifiez la source puis réessayez.",
     restoreRehearsalRuleHeading: "Modifications des règles automatiques",
     restoreRehearsalRuleIntro:
       "Comparez chaque règle d'ajout automatique avant de charger le bac à sable. Les règles actives restent inchangées.",
@@ -5104,8 +5108,8 @@ const texts = {
     deviceNameLabel: "Name:",
     consumptionLabel: "Verbrauch (W):",
     capacityLabel: "Kapazität (Wh):",
-    pinLabel: "Max Pin A:",
-    dtapLabel: "Max D-Tap A:",
+    pinLabel: "Max. Pin-Strom (A):",
+    dtapLabel: "Max. D-Tap-Strom (A):",
     cameraWattLabel: "Leistungsaufnahme (W):",
     cameraVoltageLabel: "Spannungsbereich:",
     cameraPortTypeLabel: "Anschlussart:",
@@ -5577,21 +5581,22 @@ const texts = {
     autoGearCameraWeightValueRequired:
       "Geben Sie vor dem Speichern einen Kameragewichts-Schwellenwert ein.",
     autoGearMonitorLabel: "Onboard-Monitore",
-    autoGearMonitorDefaultsHeading: "Monitor defaults",
-    autoGearMonitorDefaultsDescription: "Choose which monitors should be preselected for new gear lists.",
-    autoGearDefaultFocusMonitorLabel: "Focus monitor",
-    autoGearDefaultHandheldMonitorLabel: "7\" handheld monitor",
-    autoGearDefaultComboMonitorLabel: "Combo monitor 15-21\"",
-    autoGearDefaultDirectorMonitorLabel: "Director monitor 15-21\"",
-    autoGearMonitorDefaultPlaceholder: "Use recommended automatically",
+    autoGearMonitorDefaultsHeading: "Monitor-Vorgaben",
+    autoGearMonitorDefaultsDescription:
+      "Wähle, welche Monitore für neue Gear-Listen vorab ausgewählt werden sollen.",
+    autoGearDefaultFocusMonitorLabel: "Fokusmonitor",
+    autoGearDefaultHandheldMonitorLabel: "7\" Handmonitor",
+    autoGearDefaultComboMonitorLabel: "Combo-Monitor 15-21\"",
+    autoGearDefaultDirectorMonitorLabel: "Regie-Monitor 15-21\"",
+    autoGearMonitorDefaultPlaceholder: "Empfehlung automatisch verwenden",
     autoGearMonitorHelp:
       "Wende die Regel an, wenn diese Onboard-Monitore ausgewählt sind.",
-    autoGearCrewPresentLabel: "Crew present",
+    autoGearCrewPresentLabel: "Team vorhanden",
     autoGearCrewPresentHelp:
-      "Apply this rule when these crew roles are listed on the project.",
-    autoGearCrewAbsentLabel: "Crew absent",
+      "Wende diese Regel an, wenn diese Crew-Rollen im Projekt aufgeführt sind.",
+    autoGearCrewAbsentLabel: "Team fehlt",
     autoGearCrewAbsentHelp:
-      "Apply this rule when these crew roles are not listed on the project.",
+      "Wende diese Regel an, wenn diese Crew-Rollen im Projekt nicht aufgeführt sind.",
     autoGearWirelessLabel: "Funk-Sender",
     autoGearWirelessHelp:
       "Wende die Regel an, wenn diese Funk-Sender ausgewählt sind.",
@@ -5849,9 +5854,9 @@ const texts = {
     restoreRehearsalError:
       "Wiederherstellungsprobe fehlgeschlagen. Prüfe die Datei und versuche es erneut.",
     restoreRehearsalBackupMismatch:
-      "File doesn't look like a full app backup. Double-check the source and try again.",
+      "Diese Datei wirkt nicht wie ein vollständiges App-Backup. Prüfe die Quelle und versuche es erneut.",
     restoreRehearsalProjectMismatch:
-      "File doesn't look like a project bundle. Double-check the source and try again.",
+      "Diese Datei wirkt nicht wie ein Projektpaket. Prüfe die Quelle und versuche es erneut.",
     restoreRehearsalRuleHeading: "Änderungen an automatischen Regeln",
     restoreRehearsalRuleIntro:
       "Vergleichen Sie alle automatischen Regeln, bevor die Sandbox geladen wird. Die Live-Regeln bleiben unangetastet.",
