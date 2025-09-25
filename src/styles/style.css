@@ -2489,6 +2489,173 @@ body.high-contrast .settings-tab[aria-selected="true"] {
   outline-offset: 2px;
 }
 
+.auto-gear-summary {
+  margin-top: 16px;
+  margin-bottom: 16px;
+  padding: 16px;
+  border: 1px solid var(--panel-border);
+  border-radius: var(--border-radius);
+  background: var(--panel-bg);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: var(--panel-shadow);
+}
+
+.auto-gear-summary-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.auto-gear-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.auto-gear-summary-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 12px;
+  border: 1px solid color-mix(in srgb, var(--panel-border) 85%, transparent);
+  border-radius: var(--border-radius);
+  background: color-mix(in srgb, var(--surface-color) 92%, var(--accent-color) 8%);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  font: inherit;
+  text-align: left;
+  color: inherit;
+}
+
+.auto-gear-summary-card p {
+  margin: 0;
+}
+
+.auto-gear-summary-label {
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-sm));
+  color: var(--muted-text-color, #666);
+}
+
+.auto-gear-summary-value {
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-xl));
+  font-weight: var(--font-weight-semibold);
+}
+
+.auto-gear-summary-description {
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-xs));
+  color: var(--muted-text-color, #666);
+}
+
+.auto-gear-summary-action {
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.auto-gear-summary-action[disabled] {
+  cursor: default;
+  opacity: 0.65;
+  background: color-mix(in srgb, var(--surface-color) 96%, var(--muted-text-color, #666) 4%);
+}
+
+.auto-gear-summary-action[aria-pressed='true'] {
+  background: var(--accent-color);
+  color: var(--inverse-text-color);
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-color) 35%, transparent);
+}
+
+.auto-gear-summary-action[aria-pressed='true'] .auto-gear-summary-label,
+.auto-gear-summary-action[aria-pressed='true'] .auto-gear-summary-description {
+  color: inherit;
+}
+
+.auto-gear-summary-action:hover:not([disabled]),
+.auto-gear-summary-action:focus-visible:not([disabled]) {
+  background: var(--accent-color);
+  color: var(--inverse-text-color);
+  border-color: var(--accent-color);
+}
+
+.auto-gear-summary-action:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-color) 45%, transparent);
+}
+
+.auto-gear-summary-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.auto-gear-summary-detail-title {
+  margin: 0;
+  font-weight: var(--font-weight-semibold);
+}
+
+.auto-gear-summary-detail-text {
+  margin: 0;
+  color: var(--muted-text-color, #666);
+}
+
+.auto-gear-summary-list {
+  margin: 0;
+  padding-left: 1.2em;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.auto-gear-summary-list li {
+  margin: 0;
+}
+
+.auto-gear-summary-list button {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--link-color);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.auto-gear-summary-list button:hover,
+.auto-gear-summary-list button:focus-visible {
+  text-decoration: underline;
+}
+
+.auto-gear-summary-list button:focus-visible {
+  outline: none;
+}
+
+.auto-gear-summary-reset {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--link-color);
+  cursor: pointer;
+  font: inherit;
+}
+
+.auto-gear-summary-reset:hover,
+.auto-gear-summary-reset:focus-visible {
+  text-decoration: underline;
+}
+
+.auto-gear-summary-reset:focus-visible {
+  outline: none;
+}
+
+@media (max-width: 600px) {
+  .auto-gear-summary-grid {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  }
+}
+
 .auto-gear-rule {
   display: flex;
   justify-content: space-between;

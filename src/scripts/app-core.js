@@ -11207,6 +11207,11 @@ const autoGearSearchLabel = document.getElementById('autoGearSearchLabel');
 const autoGearFilterScenarioLabel = document.getElementById('autoGearFilterScenarioLabel');
 const autoGearFilterScenarioSelect = document.getElementById('autoGearFilterScenario');
 const autoGearFilterClearButton = document.getElementById('autoGearFilterClear');
+const autoGearSummarySection = document.getElementById('autoGearSummary');
+const autoGearSummaryHeadingElem = document.getElementById('autoGearSummaryHeading');
+const autoGearSummaryDescriptionElem = document.getElementById('autoGearSummaryDescription');
+const autoGearSummaryCards = document.getElementById('autoGearSummaryCards');
+const autoGearSummaryDetails = document.getElementById('autoGearSummaryDetails');
 const autoGearRulesList = document.getElementById('autoGearRulesList');
 const autoGearPresetDescription = document.getElementById('autoGearPresetDescription');
 const autoGearPresetLabel = document.getElementById('autoGearPresetLabel');
@@ -12038,6 +12043,8 @@ let autoGearEditorDraft = null;
 let autoGearEditorActiveItem = null;
 let autoGearDraftPendingWarnings = null;
 let autoGearSearchQuery = '';
+let autoGearSummaryFocus = 'all';
+let autoGearSummaryLast = null;
 let autoGearScenarioFilter = 'all';
 
 function setAutoGearSearchQuery(value) {
@@ -12057,6 +12064,7 @@ function setAutoGearScenarioFilter(value) {
 function clearAutoGearFilters() {
   autoGearSearchQuery = '';
   autoGearScenarioFilter = 'all';
+  autoGearSummaryFocus = 'all';
   if (autoGearSearchInput && autoGearSearchInput.value !== '') {
     autoGearSearchInput.value = '';
   }
@@ -14086,6 +14094,850 @@ function renderAutoGearBackupControls() {
   renderAutoGearBackupRetentionControls();
 }
 
+function extractAutoGearTriggers(rule) {
+  if (!rule || typeof rule !== 'object') {
+    return {
+      always: false,
+      scenarioLogic: 'all',
+      scenarioPrimary: '',
+      scenarioMultiplier: 1,
+      scenarios: [],
+      mattebox: [],
+      cameraHandle: [],
+      viewfinderExtension: [],
+      deliveryResolution: [],
+      videoDistribution: [],
+      camera: [],
+      monitor: [],
+      crewPresent: [],
+      crewAbsent: [],
+      wireless: [],
+      motors: [],
+      controllers: [],
+      distance: [],
+      shootingDays: null,
+    };
+  }
+  return {
+    always: Boolean(rule.always),
+    scenarioLogic: normalizeAutoGearScenarioLogic(rule.scenarioLogic),
+    scenarioPrimary: normalizeAutoGearScenarioPrimary(rule.scenarioPrimary),
+    scenarioMultiplier: normalizeAutoGearScenarioMultiplier(rule.scenarioMultiplier),
+    scenarios: Array.isArray(rule.scenarios) ? rule.scenarios.slice() : [],
+    mattebox: Array.isArray(rule.mattebox) ? rule.mattebox.slice() : [],
+    cameraHandle: Array.isArray(rule.cameraHandle) ? rule.cameraHandle.slice() : [],
+    viewfinderExtension: Array.isArray(rule.viewfinderExtension) ? rule.viewfinderExtension.slice() : [],
+    deliveryResolution: Array.isArray(rule.deliveryResolution) ? rule.deliveryResolution.slice() : [],
+    videoDistribution: Array.isArray(rule.videoDistribution) ? rule.videoDistribution.slice() : [],
+    camera: Array.isArray(rule.camera) ? rule.camera.slice() : [],
+    monitor: Array.isArray(rule.monitor) ? rule.monitor.slice() : [],
+    crewPresent: Array.isArray(rule.crewPresent) ? rule.crewPresent.slice() : [],
+    crewAbsent: Array.isArray(rule.crewAbsent) ? rule.crewAbsent.slice() : [],
+    wireless: Array.isArray(rule.wireless) ? rule.wireless.slice() : [],
+    motors: Array.isArray(rule.motors) ? rule.motors.slice() : [],
+    controllers: Array.isArray(rule.controllers) ? rule.controllers.slice() : [],
+    distance: Array.isArray(rule.distance) ? rule.distance.slice() : [],
+    shootingDays: rule.shootingDays ? normalizeAutoGearShootingDaysCondition(rule.shootingDays) : null,
+  };
+}
+
+function snapshotAutoGearRuleForSummary(rule, index) {
+  if (!rule || typeof rule !== 'object') return null;
+  const baseIndex = Number.isInteger(index) ? index : 0;
+  const id = typeof rule.id === 'string' && rule.id ? rule.id : `rule-${baseIndex + 1}`;
+  const label = typeof rule.label === 'string' ? rule.label : '';
+  const triggers = extractAutoGearTriggers(rule);
+  const add = Array.isArray(rule.add) ? rule.add.map(autoGearItemSnapshot).filter(Boolean) : [];
+  const remove = Array.isArray(rule.remove) ? rule.remove.map(autoGearItemSnapshot).filter(Boolean) : [];
+  return {
+    id,
+    label,
+    index: baseIndex,
+    position: baseIndex + 1,
+    add,
+    remove,
+    ...triggers,
+  };
+}
+
+function createAutoGearRuleReference(rule) {
+  if (!rule || typeof rule !== 'object') return null;
+  const index = Number.isInteger(rule.index) ? rule.index : 0;
+  const position = Number.isInteger(rule.position) ? rule.position : index + 1;
+  const id = typeof rule.id === 'string' && rule.id ? rule.id : `rule-${position}`;
+  const label = typeof rule.label === 'string' ? rule.label : '';
+  return { id, label, index, position };
+}
+
+function dedupeAutoGearRuleReferences(refs) {
+  const result = [];
+  const seen = new Set();
+  (Array.isArray(refs) ? refs : []).forEach(ref => {
+    if (!ref || typeof ref !== 'object') return;
+    const key = ref.id || `index-${ref.index}`;
+    if (seen.has(key)) return;
+    seen.add(key);
+    result.push({ ...ref });
+  });
+  return result;
+}
+
+function createAutoGearItemKey(item) {
+  const snapshot = autoGearItemSnapshot(item);
+  if (!snapshot) return '';
+  return stableStringify({
+    name: snapshot.name || '',
+    category: snapshot.category || '',
+    quantity: normalizeAutoGearQuantity(snapshot.quantity),
+    screenSize: snapshot.screenSize || '',
+    selectorType: snapshot.selectorType || 'none',
+    selectorDefault: snapshot.selectorDefault || '',
+    selectorEnabled: Boolean(snapshot.selectorEnabled),
+    notes: snapshot.notes || '',
+  });
+}
+
+function createAutoGearTriggerKeyForSummary(rule) {
+  const triggers = extractAutoGearTriggers(rule);
+  const sorted = {
+    ...triggers,
+    scenarios: triggers.scenarios.slice().sort(localeSort),
+    mattebox: triggers.mattebox.slice().sort(localeSort),
+    cameraHandle: triggers.cameraHandle.slice().sort(localeSort),
+    viewfinderExtension: triggers.viewfinderExtension.slice().sort(localeSort),
+    deliveryResolution: triggers.deliveryResolution.slice().sort(localeSort),
+    videoDistribution: triggers.videoDistribution.slice().sort(localeSort),
+    camera: triggers.camera.slice().sort(localeSort),
+    monitor: triggers.monitor.slice().sort(localeSort),
+    crewPresent: triggers.crewPresent.slice().sort(localeSort),
+    crewAbsent: triggers.crewAbsent.slice().sort(localeSort),
+    wireless: triggers.wireless.slice().sort(localeSort),
+    motors: triggers.motors.slice().sort(localeSort),
+    controllers: triggers.controllers.slice().sort(localeSort),
+    distance: triggers.distance.slice().sort(localeSort),
+    shootingDays: triggers.shootingDays
+      ? { mode: triggers.shootingDays.mode, value: triggers.shootingDays.value }
+      : null,
+  };
+  return stableStringify(sorted);
+}
+
+function collectAutoGearScenarioCatalog() {
+  if (typeof document === 'undefined') return [];
+  const select = document.getElementById('requiredScenarios');
+  if (!select) return [];
+  const map = new Map();
+  Array.from(select.options || []).forEach(option => {
+    const value = typeof option.value === 'string' ? option.value.trim() : '';
+    if (!value) return;
+    const normalized = normalizeAutoGearTriggerValue(value) || value;
+    if (map.has(normalized)) return;
+    map.set(normalized, {
+      value,
+      label: option.textContent || value,
+      normalized,
+    });
+  });
+  return Array.from(map.values()).sort((a, b) => localeSort(a.label, b.label));
+}
+
+function getAutoGearRuleCoverageSummary(options = {}) {
+  const sourceRules = Array.isArray(options.rules) ? options.rules : getAutoGearRules();
+  const snapshots = [];
+  (Array.isArray(sourceRules) ? sourceRules : []).forEach((rule, index) => {
+    const snapshot = snapshotAutoGearRuleForSummary(rule, index);
+    if (snapshot) {
+      snapshots.push(snapshot);
+    }
+  });
+  const summary = {
+    generatedAt: new Date().toISOString(),
+    totalRules: snapshots.length,
+  };
+
+  const catalog = collectAutoGearScenarioCatalog();
+  if (!snapshots.length) {
+    summary.duplicates = { totalGroups: 0, totalRules: 0, groups: [] };
+    summary.conflicts = { totalItems: 0, totalRules: 0, items: [] };
+    summary.net = {
+      addItems: 0,
+      addQuantity: 0,
+      removeItems: 0,
+      removeQuantity: 0,
+      netQuantity: 0,
+    };
+    summary.scenarios = {
+      catalog,
+      coverage: [],
+      uncovered: catalog.map(entry => ({
+        value: entry.value,
+        label: entry.label,
+        normalized: entry.normalized,
+      })),
+      overlaps: [],
+      rulesWithoutScenarios: [],
+    };
+    autoGearSummaryLast = summary;
+    return summary;
+  }
+
+  const duplicateMap = new Map();
+  const duplicateRuleIds = new Set();
+  snapshots.forEach(snapshot => {
+    const key = createAutoGearTriggerKeyForSummary(snapshot);
+    if (!duplicateMap.has(key)) {
+      duplicateMap.set(key, {
+        triggers: extractAutoGearTriggers(snapshot),
+        rules: [],
+      });
+    }
+    const ref = createAutoGearRuleReference(snapshot);
+    if (ref) {
+      duplicateMap.get(key).rules.push(ref);
+    }
+  });
+  const duplicateGroups = [];
+  duplicateMap.forEach(entry => {
+    const rules = dedupeAutoGearRuleReferences(entry.rules);
+    if (rules.length <= 1) return;
+    rules.forEach(ref => duplicateRuleIds.add(ref.id || `index-${ref.index}`));
+    duplicateGroups.push({
+      triggers: entry.triggers,
+      rules,
+    });
+  });
+  summary.duplicates = {
+    totalGroups: duplicateGroups.length,
+    totalRules: duplicateRuleIds.size,
+    groups: duplicateGroups,
+  };
+
+  const conflictMap = new Map();
+  const conflictRuleIds = new Set();
+  snapshots.forEach(snapshot => {
+    const ref = createAutoGearRuleReference(snapshot);
+    if (!ref) return;
+    snapshot.add.forEach(item => {
+      const key = createAutoGearItemKey(item);
+      if (!key) return;
+      if (!conflictMap.has(key)) {
+        conflictMap.set(key, { item, adds: [], removes: [] });
+      }
+      conflictMap.get(key).adds.push(ref);
+    });
+    snapshot.remove.forEach(item => {
+      const key = createAutoGearItemKey(item);
+      if (!key) return;
+      if (!conflictMap.has(key)) {
+        conflictMap.set(key, { item, adds: [], removes: [] });
+      }
+      conflictMap.get(key).removes.push(ref);
+    });
+  });
+  const conflictItems = [];
+  conflictMap.forEach(entry => {
+    const adds = dedupeAutoGearRuleReferences(entry.adds);
+    const removes = dedupeAutoGearRuleReferences(entry.removes);
+    if (!adds.length || !removes.length) return;
+    adds.forEach(ref => conflictRuleIds.add(ref.id || `index-${ref.index}`));
+    removes.forEach(ref => conflictRuleIds.add(ref.id || `index-${ref.index}`));
+    conflictItems.push({
+      item: entry.item,
+      adds,
+      removes,
+    });
+  });
+  summary.conflicts = {
+    totalItems: conflictItems.length,
+    totalRules: conflictRuleIds.size,
+    items: conflictItems,
+  };
+
+  let addItems = 0;
+  let addQuantity = 0;
+  let removeItems = 0;
+  let removeQuantity = 0;
+  snapshots.forEach(snapshot => {
+    snapshot.add.forEach(item => {
+      addItems += 1;
+      addQuantity += normalizeAutoGearQuantity(item.quantity);
+    });
+    snapshot.remove.forEach(item => {
+      removeItems += 1;
+      removeQuantity += normalizeAutoGearQuantity(item.quantity);
+    });
+  });
+  summary.net = {
+    addItems,
+    addQuantity,
+    removeItems,
+    removeQuantity,
+    netQuantity: addQuantity - removeQuantity,
+  };
+
+  const scenarioLabelMap = new Map();
+  catalog.forEach(entry => {
+    scenarioLabelMap.set(entry.normalized, entry.label);
+    scenarioLabelMap.set(entry.value, entry.label);
+  });
+  const coverageMap = new Map();
+  snapshots.forEach(snapshot => {
+    const ref = createAutoGearRuleReference(snapshot);
+    if (!ref) return;
+    const list = Array.isArray(snapshot.scenarios) ? snapshot.scenarios : [];
+    list.forEach(value => {
+      if (typeof value !== 'string') return;
+      const trimmed = value.trim();
+      if (!trimmed) return;
+      const normalized = normalizeAutoGearTriggerValue(trimmed) || trimmed;
+      if (!coverageMap.has(normalized)) {
+        coverageMap.set(normalized, {
+          value: trimmed,
+          normalized,
+          rules: [],
+        });
+      }
+      coverageMap.get(normalized).rules.push(ref);
+    });
+  });
+  const coverage = Array.from(coverageMap.values()).map(entry => {
+    const rules = dedupeAutoGearRuleReferences(entry.rules);
+    return {
+      value: entry.value,
+      normalized: entry.normalized,
+      label: scenarioLabelMap.get(entry.normalized) || scenarioLabelMap.get(entry.value) || entry.value,
+      rules,
+    };
+  }).sort((a, b) => localeSort(a.label, b.label));
+  const coveredKeys = new Set(coverage.map(entry => entry.normalized));
+  const uncovered = catalog
+    .filter(entry => !coveredKeys.has(entry.normalized))
+    .map(entry => ({ value: entry.value, label: entry.label, normalized: entry.normalized }));
+  uncovered.sort((a, b) => localeSort(a.label, b.label));
+  const overlaps = coverage.filter(entry => entry.rules.length > 1);
+  const rulesWithoutScenarios = dedupeAutoGearRuleReferences(
+    snapshots
+      .filter(rule => !rule.always && (!Array.isArray(rule.scenarios) || !rule.scenarios.length))
+      .map(createAutoGearRuleReference)
+      .filter(Boolean),
+  );
+
+  summary.scenarios = {
+    catalog,
+    coverage,
+    uncovered,
+    overlaps,
+    rulesWithoutScenarios,
+  };
+
+  autoGearSummaryLast = summary;
+  return summary;
+}
+
+function formatAutoGearRuleReference(ref, langTexts) {
+  if (!ref || typeof ref !== 'object') return '';
+  const baseLabel = ref.label || langTexts.autoGearRuleBadgeUnnamed
+    || texts.en?.autoGearRuleBadgeUnnamed
+    || 'Automatic rule';
+  const positionText = formatNumberForLang(currentLang, ref.position || 1);
+  if (ref.label) {
+    const template = langTexts.autoGearSummaryRuleReference
+      || texts.en?.autoGearSummaryRuleReference
+      || 'Rule {position}: {label}';
+    return template
+      .replace('{position}', positionText)
+      .replace('{label}', baseLabel);
+  }
+  const template = langTexts.autoGearSummaryRuleReferenceUntitled
+    || texts.en?.autoGearSummaryRuleReferenceUntitled
+    || 'Rule {position}';
+  return template.replace('{position}', positionText);
+}
+
+function formatAutoGearTriggerDescription(triggers, analysis, langTexts) {
+  if (!triggers) return '';
+  const parts = [];
+  if (triggers.always) {
+    parts.push(langTexts.autoGearAlwaysMeta || texts.en?.autoGearAlwaysMeta || 'Always active');
+  }
+  const scenarioMap = new Map();
+  (analysis?.scenarios?.catalog || []).forEach(entry => {
+    scenarioMap.set(entry.normalized, entry.label);
+    scenarioMap.set(entry.value, entry.label);
+  });
+  (analysis?.scenarios?.coverage || []).forEach(entry => {
+    scenarioMap.set(entry.normalized, entry.label);
+  });
+  const formatScenarioLabel = value => {
+    const normalized = normalizeAutoGearTriggerValue(value) || value;
+    return scenarioMap.get(normalized) || value;
+  };
+  if (Array.isArray(triggers.scenarios) && triggers.scenarios.length) {
+    const scenarioLabels = triggers.scenarios.map(formatScenarioLabel).filter(Boolean);
+    const label = langTexts.autoGearScenariosLabel || texts.en?.autoGearScenariosLabel || 'Required scenarios';
+    parts.push(`${label}: ${formatListForLang(currentLang, scenarioLabels)}`);
+  }
+  const scenarioLogic = normalizeAutoGearScenarioLogic(triggers.scenarioLogic);
+  if (scenarioLogic) {
+    const modeLabel = scenarioLogic === 'any'
+      ? langTexts.autoGearScenarioModeAny || texts.en?.autoGearScenarioModeAny || 'Match any selected scenario'
+      : scenarioLogic === 'multiplier'
+        ? langTexts.autoGearScenarioModeMultiplier || texts.en?.autoGearScenarioModeMultiplier || 'Multiply when combined'
+        : langTexts.autoGearScenarioModeAll || texts.en?.autoGearScenarioModeAll || 'Require every selected scenario';
+    const modeHeading = langTexts.autoGearScenarioModeLabel
+      || texts.en?.autoGearScenarioModeLabel
+      || 'Scenario matching';
+    let detail = modeLabel;
+    if (scenarioLogic === 'multiplier') {
+      const factorLabel = langTexts.autoGearScenarioFactorLabel
+        || texts.en?.autoGearScenarioFactorLabel
+        || 'Multiplier factor';
+      const multiplier = normalizeAutoGearScenarioMultiplier(triggers.scenarioMultiplier);
+      const multiplierText = formatNumberForLang(currentLang, multiplier || 1);
+      const baseScenario = triggers.scenarioPrimary
+        ? formatScenarioLabel(triggers.scenarioPrimary)
+        : (triggers.scenarios && triggers.scenarios.length
+          ? formatScenarioLabel(triggers.scenarios[0])
+          : '');
+      detail = baseScenario
+        ? `${modeLabel} (${factorLabel}: ×${multiplierText}, ${baseScenario})`
+        : `${modeLabel} (×${multiplierText})`;
+    }
+    parts.push(`${modeHeading}: ${detail}`);
+  }
+  const triggerConfigs = [
+    { key: 'mattebox', labelKey: 'autoGearMatteboxLabel' },
+    { key: 'cameraHandle', labelKey: 'autoGearCameraHandleLabel' },
+    { key: 'viewfinderExtension', labelKey: 'autoGearViewfinderExtensionLabel', formatter: getViewfinderFallbackLabel },
+    { key: 'deliveryResolution', labelKey: 'autoGearDeliveryResolutionLabel' },
+    { key: 'videoDistribution', labelKey: 'autoGearVideoDistributionLabel', formatter: getVideoDistributionFallbackLabel },
+    { key: 'camera', labelKey: 'autoGearCameraLabel' },
+    { key: 'monitor', labelKey: 'autoGearMonitorLabel' },
+    { key: 'crewPresent', labelKey: 'autoGearCrewPresentLabel' },
+    { key: 'crewAbsent', labelKey: 'autoGearCrewAbsentLabel' },
+    { key: 'wireless', labelKey: 'autoGearWirelessLabel' },
+    { key: 'motors', labelKey: 'autoGearMotorsLabel' },
+    { key: 'controllers', labelKey: 'autoGearControllersLabel' },
+    { key: 'distance', labelKey: 'autoGearDistanceLabel' },
+  ];
+  triggerConfigs.forEach(config => {
+    const values = Array.isArray(triggers[config.key]) ? triggers[config.key].filter(Boolean) : [];
+    if (!values.length) return;
+    const label = langTexts[config.labelKey] || texts.en?.[config.labelKey] || config.labelKey;
+    const formatted = values.map(value => {
+      if (!config.formatter) return value;
+      try {
+        return config.formatter(value);
+      } catch (error) {
+        void error;
+        return value;
+      }
+    }).filter(Boolean);
+    if (formatted.length) {
+      parts.push(`${label}: ${formatListForLang(currentLang, formatted)}`);
+    }
+  });
+  if (triggers.shootingDays && triggers.shootingDays.value) {
+    const label = langTexts.autoGearShootingDaysLabel
+      || texts.en?.autoGearShootingDaysLabel
+      || 'Shooting days condition';
+    const modeKey = triggers.shootingDays.mode === 'maximum'
+      ? 'autoGearShootingDaysModeMaximum'
+      : triggers.shootingDays.mode === 'every'
+        ? 'autoGearShootingDaysModeEvery'
+        : 'autoGearShootingDaysModeMinimum';
+    const modeLabel = langTexts[modeKey] || texts.en?.[modeKey] || triggers.shootingDays.mode;
+    const valueText = formatNumberForLang(currentLang, triggers.shootingDays.value);
+    parts.push(`${label}: ${modeLabel} ${valueText}`);
+  }
+  return parts.join('; ');
+}
+
+function renderAutoGearRuleSummary(analysis, context = {}) {
+  if (!autoGearSummarySection || !autoGearSummaryHeadingElem || !autoGearSummaryDescriptionElem || !autoGearSummaryCards || !autoGearSummaryDetails) {
+    return;
+  }
+  const langTexts = texts[currentLang] || texts.en || {};
+  const heading = langTexts.autoGearSummaryHeading
+    || texts.en?.autoGearSummaryHeading
+    || autoGearSummaryHeadingElem.textContent
+    || 'Rule coverage overview';
+  autoGearSummaryHeadingElem.textContent = heading;
+
+  if (!analysis || typeof analysis.totalRules !== 'number') {
+    autoGearSummarySection.hidden = true;
+    return;
+  }
+
+  autoGearSummarySection.hidden = false;
+  autoGearSummaryCards.innerHTML = '';
+  autoGearSummaryDetails.innerHTML = '';
+
+  const totalRules = analysis.totalRules;
+  const filteredRules = typeof context.filteredRules === 'number' ? context.filteredRules : totalRules;
+  const visibleRules = typeof context.visibleRules === 'number' ? context.visibleRules : filteredRules;
+  const focus = context.focus || autoGearSummaryFocus || 'all';
+  const hasSearchFilters = Boolean(context.hasSearchFilters);
+  const focusApplied = Boolean(context.focusApplied);
+
+  if (!totalRules) {
+    autoGearSummaryDescriptionElem.textContent = langTexts.autoGearSummaryEmpty
+      || texts.en?.autoGearSummaryEmpty
+      || 'Add a rule to unlock coverage insights.';
+    return;
+  }
+
+  if (hasSearchFilters || (focus !== 'all' && focus !== 'uncovered') || focusApplied) {
+    const template = langTexts.autoGearSummaryFilteredDescription
+      || texts.en?.autoGearSummaryFilteredDescription
+      || 'Showing {visible} of {total} rules after filters.';
+    autoGearSummaryDescriptionElem.textContent = template
+      .replace('{visible}', formatNumberForLang(currentLang, visibleRules))
+      .replace('{filtered}', formatNumberForLang(currentLang, filteredRules))
+      .replace('{total}', formatNumberForLang(currentLang, totalRules));
+  } else {
+    autoGearSummaryDescriptionElem.textContent = langTexts.autoGearSummaryDescription
+      || texts.en?.autoGearSummaryDescription
+      || 'Review duplicates, coverage gaps and conflicts before exporting or printing.';
+  }
+
+  const formatRulesCount = count => {
+    const template = count === 1
+      ? langTexts.autoGearRulesCountOne || texts.en?.autoGearRulesCountOne || '%s rule'
+      : langTexts.autoGearRulesCountOther || texts.en?.autoGearRulesCountOther || '%s rules';
+    return template.replace('%s', formatNumberForLang(currentLang, count));
+  };
+
+  const buildCard = (config) => {
+    const { label, value, description, focusKey } = config;
+    const isAction = Boolean(focusKey);
+    const element = document.createElement(isAction ? 'button' : 'div');
+    element.className = 'auto-gear-summary-card';
+    if (isAction) {
+      element.type = 'button';
+      element.classList.add('auto-gear-summary-action');
+      element.dataset.focus = focusKey;
+      element.setAttribute('aria-pressed', autoGearSummaryFocus === focusKey ? 'true' : 'false');
+    }
+    const labelElem = document.createElement('p');
+    labelElem.className = 'auto-gear-summary-label';
+    labelElem.textContent = label;
+    const valueElem = document.createElement('p');
+    valueElem.className = 'auto-gear-summary-value';
+    valueElem.textContent = value;
+    element.appendChild(labelElem);
+    element.appendChild(valueElem);
+    if (description) {
+      const descElem = document.createElement('p');
+      descElem.className = 'auto-gear-summary-description';
+      descElem.textContent = description;
+      element.appendChild(descElem);
+    }
+    autoGearSummaryCards.appendChild(element);
+  };
+
+  const netValue = `${formatNumberForLang(currentLang, analysis.net.addQuantity)} / −${formatNumberForLang(currentLang, analysis.net.removeQuantity)}`;
+  buildCard({
+    label: langTexts.autoGearSummaryTotalLabel || texts.en?.autoGearSummaryTotalLabel || 'Rules',
+    value: formatNumberForLang(currentLang, totalRules),
+    description: langTexts.autoGearSummaryTotalDescription
+      || texts.en?.autoGearSummaryTotalDescription
+      || 'Saved in this setup',
+  });
+  buildCard({
+    label: langTexts.autoGearSummaryNetLabel || texts.en?.autoGearSummaryNetLabel || 'Net change',
+    value: netValue,
+    description: (langTexts.autoGearSummaryNetDescription || texts.en?.autoGearSummaryNetDescription || 'Adds {adds} · Removes {removes}')
+      .replace('{adds}', formatNumberForLang(currentLang, analysis.net.addItems))
+      .replace('{removes}', formatNumberForLang(currentLang, analysis.net.removeItems)),
+  });
+  buildCard({
+    label: langTexts.autoGearSummaryDuplicatesLabel || texts.en?.autoGearSummaryDuplicatesLabel || 'Duplicated triggers',
+    value: formatNumberForLang(currentLang, analysis.duplicates.totalGroups),
+    description: analysis.duplicates.totalGroups
+      ? (langTexts.autoGearSummaryDuplicatesSome || texts.en?.autoGearSummaryDuplicatesSome || '{rules} across {groups} groups')
+        .replace('{rules}', formatRulesCount(analysis.duplicates.totalRules))
+        .replace('{groups}', formatNumberForLang(currentLang, analysis.duplicates.totalGroups))
+      : langTexts.autoGearSummaryDuplicatesNone || texts.en?.autoGearSummaryDuplicatesNone || 'No duplicate triggers.',
+    focusKey: 'duplicates',
+  });
+  buildCard({
+    label: langTexts.autoGearSummaryConflictsLabel || texts.en?.autoGearSummaryConflictsLabel || 'Potential conflicts',
+    value: formatNumberForLang(currentLang, analysis.conflicts.totalItems),
+    description: analysis.conflicts.totalItems
+      ? (langTexts.autoGearSummaryConflictsSome || texts.en?.autoGearSummaryConflictsSome || '{rules} affected across {items} items')
+        .replace('{rules}', formatRulesCount(analysis.conflicts.totalRules))
+        .replace('{items}', formatNumberForLang(currentLang, analysis.conflicts.totalItems))
+      : langTexts.autoGearSummaryConflictsNone || texts.en?.autoGearSummaryConflictsNone || 'No conflicting adds/removes.',
+    focusKey: 'conflicts',
+  });
+  buildCard({
+    label: langTexts.autoGearSummaryUncoveredLabel || texts.en?.autoGearSummaryUncoveredLabel || 'Uncovered scenarios',
+    value: formatNumberForLang(currentLang, analysis.scenarios.uncovered.length),
+    description: analysis.scenarios.uncovered.length
+      ? (langTexts.autoGearSummaryUncoveredSome || texts.en?.autoGearSummaryUncoveredSome || 'Review {count} scenario gaps')
+        .replace('{count}', formatNumberForLang(currentLang, analysis.scenarios.uncovered.length))
+      : langTexts.autoGearSummaryUncoveredNone || texts.en?.autoGearSummaryUncoveredNone || 'All required scenarios covered.',
+    focusKey: 'uncovered',
+  });
+
+  const detailsFragment = document.createDocumentFragment();
+  const intro = document.createElement('p');
+  intro.className = 'auto-gear-summary-detail-text';
+  intro.textContent = langTexts.autoGearSummaryDetailsIntro
+    || texts.en?.autoGearSummaryDetailsIntro
+    || 'Use the dashboard to audit coverage, overlaps and conflicts before exporting or printing.';
+  detailsFragment.appendChild(intro);
+
+  const appendRuleButtons = (container, rules) => {
+    const jumpHelp = langTexts.autoGearSummaryJumpToRule
+      || texts.en?.autoGearSummaryJumpToRule
+      || 'Show rule';
+    rules.forEach((ref, index) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.dataset.autoGearRule = ref.id;
+      button.textContent = formatAutoGearRuleReference(ref, langTexts);
+      button.setAttribute('title', jumpHelp);
+      container.appendChild(button);
+      if (index < rules.length - 1) {
+        container.appendChild(document.createTextNode(', '));
+      }
+    });
+  };
+
+  if (focus === 'duplicates') {
+    const headingElem = document.createElement('p');
+    headingElem.className = 'auto-gear-summary-detail-title';
+    headingElem.textContent = langTexts.autoGearSummaryDetailsDuplicatesHeading
+      || texts.en?.autoGearSummaryDetailsDuplicatesHeading
+      || 'Rules sharing the same triggers';
+    detailsFragment.appendChild(headingElem);
+    if (!analysis.duplicates.groups.length) {
+      const empty = document.createElement('p');
+      empty.className = 'auto-gear-summary-detail-text';
+      empty.textContent = langTexts.autoGearSummaryDuplicatesNone
+        || texts.en?.autoGearSummaryDuplicatesNone
+        || 'No duplicate triggers.';
+      detailsFragment.appendChild(empty);
+    } else {
+      analysis.duplicates.groups.forEach(group => {
+        const description = formatAutoGearTriggerDescription(group.triggers, analysis, langTexts);
+        const descriptionElem = document.createElement('p');
+        descriptionElem.className = 'auto-gear-summary-detail-text';
+        descriptionElem.textContent = (langTexts.autoGearSummaryDuplicateGroupTitle
+          || texts.en?.autoGearSummaryDuplicateGroupTitle
+          || 'Matching triggers') + (description ? ` — ${description}` : '');
+        detailsFragment.appendChild(descriptionElem);
+        if (group.rules.length) {
+          const list = document.createElement('ul');
+          list.className = 'auto-gear-summary-list';
+          const item = document.createElement('li');
+          appendRuleButtons(item, group.rules);
+          list.appendChild(item);
+          detailsFragment.appendChild(list);
+        }
+      });
+    }
+  } else if (focus === 'conflicts') {
+    const headingElem = document.createElement('p');
+    headingElem.className = 'auto-gear-summary-detail-title';
+    headingElem.textContent = langTexts.autoGearSummaryDetailsConflictsHeading
+      || texts.en?.autoGearSummaryDetailsConflictsHeading
+      || 'Gear touched by adds and removes';
+    detailsFragment.appendChild(headingElem);
+    if (!analysis.conflicts.items.length) {
+      const empty = document.createElement('p');
+      empty.className = 'auto-gear-summary-detail-text';
+      empty.textContent = langTexts.autoGearSummaryConflictsNone
+        || texts.en?.autoGearSummaryConflictsNone
+        || 'No conflicting adds/removes.';
+      detailsFragment.appendChild(empty);
+    } else {
+      analysis.conflicts.items.forEach(entry => {
+        const title = document.createElement('p');
+        title.className = 'auto-gear-summary-detail-text';
+        title.textContent = formatAutoGearItemSummary(entry.item);
+        detailsFragment.appendChild(title);
+        const list = document.createElement('ul');
+        list.className = 'auto-gear-summary-list';
+        const addsItem = document.createElement('li');
+        addsItem.textContent = (langTexts.autoGearSummaryConflictAddsLabel
+          || texts.en?.autoGearSummaryConflictAddsLabel
+          || 'Added by') + ': ';
+        appendRuleButtons(addsItem, entry.adds);
+        list.appendChild(addsItem);
+        const removesItem = document.createElement('li');
+        removesItem.textContent = (langTexts.autoGearSummaryConflictRemovesLabel
+          || texts.en?.autoGearSummaryConflictRemovesLabel
+          || 'Removed by') + ': ';
+        appendRuleButtons(removesItem, entry.removes);
+        list.appendChild(removesItem);
+        detailsFragment.appendChild(list);
+      });
+    }
+  } else if (focus === 'uncovered') {
+    const headingElem = document.createElement('p');
+    headingElem.className = 'auto-gear-summary-detail-title';
+    headingElem.textContent = langTexts.autoGearSummaryDetailsUncoveredHeading
+      || texts.en?.autoGearSummaryDetailsUncoveredHeading
+      || 'Scenarios without dedicated rules';
+    detailsFragment.appendChild(headingElem);
+    if (!analysis.scenarios.uncovered.length) {
+      const empty = document.createElement('p');
+      empty.className = 'auto-gear-summary-detail-text';
+      empty.textContent = langTexts.autoGearSummaryUncoveredNone
+        || texts.en?.autoGearSummaryUncoveredNone
+        || 'All required scenarios covered.';
+      detailsFragment.appendChild(empty);
+    } else {
+      const list = document.createElement('ul');
+      list.className = 'auto-gear-summary-list';
+      analysis.scenarios.uncovered.forEach(entry => {
+        const li = document.createElement('li');
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.dataset.autoGearScenario = entry.value;
+        button.textContent = entry.label;
+        button.setAttribute('title', (langTexts.autoGearSummarySetScenarioFilter || texts.en?.autoGearSummarySetScenarioFilter || 'Filter to scenario').replace('{scenario}', entry.label));
+        li.appendChild(button);
+        list.appendChild(li);
+      });
+      detailsFragment.appendChild(list);
+    }
+  } else {
+    if (analysis.scenarios.overlaps.length) {
+      const headingElem = document.createElement('p');
+      headingElem.className = 'auto-gear-summary-detail-title';
+      headingElem.textContent = langTexts.autoGearSummaryDetailsOverlapsHeading
+        || texts.en?.autoGearSummaryDetailsOverlapsHeading
+        || 'Scenarios with stacked rules';
+      detailsFragment.appendChild(headingElem);
+      const list = document.createElement('ul');
+      list.className = 'auto-gear-summary-list';
+      analysis.scenarios.overlaps.forEach(entry => {
+        const li = document.createElement('li');
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.dataset.autoGearScenario = entry.value;
+        button.textContent = `${entry.label} — ${formatRulesCount(entry.rules.length)}`;
+        button.setAttribute('title', (langTexts.autoGearSummarySetScenarioFilter || texts.en?.autoGearSummarySetScenarioFilter || 'Filter to scenario').replace('{scenario}', entry.label));
+        li.appendChild(button);
+        if (entry.rules.length) {
+          li.appendChild(document.createTextNode(' · '));
+          appendRuleButtons(li, entry.rules);
+        }
+        list.appendChild(li);
+      });
+      detailsFragment.appendChild(list);
+    } else {
+      const note = document.createElement('p');
+      note.className = 'auto-gear-summary-detail-text';
+      note.textContent = langTexts.autoGearSummaryDetailsOverlapsNone
+        || texts.en?.autoGearSummaryDetailsOverlapsNone
+        || 'No scenarios currently stack multiple rules.';
+      detailsFragment.appendChild(note);
+    }
+    if (analysis.scenarios.uncovered.length) {
+      const headingElem = document.createElement('p');
+      headingElem.className = 'auto-gear-summary-detail-title';
+      headingElem.textContent = langTexts.autoGearSummaryDetailsUncoveredHeading
+        || texts.en?.autoGearSummaryDetailsUncoveredHeading
+        || 'Scenarios without dedicated rules';
+      detailsFragment.appendChild(headingElem);
+      const list = document.createElement('ul');
+      list.className = 'auto-gear-summary-list';
+      analysis.scenarios.uncovered.forEach(entry => {
+        const li = document.createElement('li');
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.dataset.autoGearScenario = entry.value;
+        button.textContent = entry.label;
+        button.setAttribute('title', (langTexts.autoGearSummarySetScenarioFilter || texts.en?.autoGearSummarySetScenarioFilter || 'Filter to scenario').replace('{scenario}', entry.label));
+        li.appendChild(button);
+        list.appendChild(li);
+      });
+      detailsFragment.appendChild(list);
+    }
+    if (analysis.scenarios.rulesWithoutScenarios.length) {
+      const headingElem = document.createElement('p');
+      headingElem.className = 'auto-gear-summary-detail-title';
+      headingElem.textContent = langTexts.autoGearSummaryDetailsRulesWithoutScenariosHeading
+        || texts.en?.autoGearSummaryDetailsRulesWithoutScenariosHeading
+        || 'Always-on or unspecific rules';
+      detailsFragment.appendChild(headingElem);
+      const description = document.createElement('p');
+      description.className = 'auto-gear-summary-detail-text';
+      description.textContent = langTexts.autoGearSummaryDetailsRulesWithoutScenariosDescription
+        || texts.en?.autoGearSummaryDetailsRulesWithoutScenariosDescription
+        || 'These rules trigger without scenario filters.';
+      detailsFragment.appendChild(description);
+      const list = document.createElement('ul');
+      list.className = 'auto-gear-summary-list';
+      const li = document.createElement('li');
+      appendRuleButtons(li, analysis.scenarios.rulesWithoutScenarios);
+      list.appendChild(li);
+      detailsFragment.appendChild(list);
+    }
+  }
+
+  if (focus !== 'all') {
+    const resetButton = document.createElement('button');
+    resetButton.type = 'button';
+    resetButton.className = 'auto-gear-summary-reset';
+    resetButton.dataset.autoGearSummaryReset = 'true';
+    resetButton.textContent = langTexts.autoGearSummaryResetFocus
+      || texts.en?.autoGearSummaryResetFocus
+      || 'Clear dashboard filter';
+    detailsFragment.appendChild(resetButton);
+  } else if (!analysis.duplicates.groups.length && !analysis.conflicts.items.length && !analysis.scenarios.uncovered.length) {
+    const empty = document.createElement('p');
+    empty.className = 'auto-gear-summary-detail-text';
+    empty.textContent = langTexts.autoGearSummaryDetailsFocusEmpty
+      || texts.en?.autoGearSummaryDetailsFocusEmpty
+      || 'Everything looks covered—no overlaps or conflicts detected.';
+    detailsFragment.appendChild(empty);
+  }
+
+  autoGearSummaryDetails.appendChild(detailsFragment);
+}
+
+function setAutoGearSummaryFocus(value) {
+  const allowed = value === 'duplicates' || value === 'conflicts' || value === 'uncovered' ? value : 'all';
+  const next = autoGearSummaryFocus === allowed && allowed !== 'all' ? 'all' : allowed;
+  if (autoGearSummaryFocus === next) {
+    return;
+  }
+  autoGearSummaryFocus = next;
+  renderAutoGearRulesList();
+}
+
+function focusAutoGearRuleById(ruleId) {
+  if (!ruleId || !autoGearRulesList) return;
+  const candidates = Array.from(autoGearRulesList.querySelectorAll('[data-rule-id]'));
+  const target = candidates.find(element => element && element.dataset && element.dataset.ruleId === ruleId);
+  if (!target) return;
+  if (typeof target.scrollIntoView === 'function') {
+    try {
+      target.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    } catch (error) {
+      void error;
+      target.scrollIntoView(true);
+    }
+  }
+  const focusTarget = target.querySelector('.auto-gear-edit')
+    || target.querySelector('button')
+    || target;
+  if (focusTarget && typeof focusTarget.focus === 'function') {
+    try {
+      focusTarget.focus({ preventScroll: true });
+    } catch (error) {
+      void error;
+      focusTarget.focus();
+    }
+  }
+}
+
 function renderAutoGearRulesList() {
   if (!autoGearRulesList) return;
   if (autoGearEditor && !autoGearEditor.hidden && !autoGearEditorDraft) {
@@ -14093,6 +14945,7 @@ function renderAutoGearRulesList() {
   }
   autoGearRulesList.innerHTML = '';
   const rules = getAutoGearRules();
+  const analysis = getAutoGearRuleCoverageSummary({ rules });
   const scenarioFilter = refreshAutoGearScenarioFilterOptions(rules);
   const rawSearch = typeof autoGearSearchQuery === 'string' ? autoGearSearchQuery : '';
   const normalizedQuery = rawSearch.trim().toLowerCase();
@@ -14100,7 +14953,49 @@ function renderAutoGearRulesList() {
     autoGearRuleMatchesScenario(rule, scenarioFilter)
     && autoGearRuleMatchesSearch(rule, normalizedQuery)
   );
-  const hasFilters = Boolean(normalizedQuery) || scenarioFilter !== 'all';
+  const ruleIndexByObject = new Map();
+  rules.forEach((rule, index) => {
+    if (!rule || typeof rule !== 'object') return;
+    ruleIndexByObject.set(rule, index);
+  });
+  let activeFocus = autoGearSummaryFocus || 'all';
+  const focusRuleIds = (() => {
+    if (activeFocus === 'duplicates' && analysis?.duplicates?.groups?.length) {
+      const ids = new Set();
+      analysis.duplicates.groups.forEach(group => {
+        (group.rules || []).forEach(ref => {
+          if (!ref || typeof ref !== 'object') return;
+          if (ref.id) ids.add(ref.id);
+          ids.add(`index-${ref.index}`);
+        });
+      });
+      return ids.size ? ids : null;
+    }
+    if (activeFocus === 'conflicts' && analysis?.conflicts?.items?.length) {
+      const ids = new Set();
+      analysis.conflicts.items.forEach(item => {
+        (item.adds || []).forEach(ref => {
+          if (!ref || typeof ref !== 'object') return;
+          if (ref.id) ids.add(ref.id);
+          ids.add(`index-${ref.index}`);
+        });
+        (item.removes || []).forEach(ref => {
+          if (!ref || typeof ref !== 'object') return;
+          if (ref.id) ids.add(ref.id);
+          ids.add(`index-${ref.index}`);
+        });
+      });
+      return ids.size ? ids : null;
+    }
+    if (activeFocus !== 'all' && activeFocus !== 'uncovered') {
+      activeFocus = 'all';
+    }
+    return null;
+  })();
+  if (autoGearSummaryFocus !== activeFocus) {
+    autoGearSummaryFocus = activeFocus;
+  }
+  const hasFilters = Boolean(normalizedQuery) || scenarioFilter !== 'all' || activeFocus !== 'all';
   const allowSearch = rules.length > 0 || Boolean(rawSearch.trim());
 
   if (autoGearSearchInput) {
@@ -14121,13 +15016,36 @@ function renderAutoGearRulesList() {
     autoGearFilterClearButton.hidden = !hasFilters;
     autoGearFilterClearButton.disabled = !hasFilters;
   }
-  if (!filteredRules.length) {
+  const visibleRules = focusRuleIds
+    ? filteredRules.filter(rule => {
+      const id = typeof rule?.id === 'string' ? rule.id : '';
+      if (id && focusRuleIds.has(id)) return true;
+      const index = ruleIndexByObject.get(rule);
+      if (typeof index === 'number' && focusRuleIds.has(`index-${index}`)) return true;
+      return false;
+    })
+    : filteredRules;
+
+  renderAutoGearRuleSummary(analysis, {
+    focus: activeFocus,
+    totalRules: rules.length,
+    filteredRules: filteredRules.length,
+    visibleRules: visibleRules.length,
+    hasSearchFilters: Boolean(normalizedQuery) || scenarioFilter !== 'all',
+    focusApplied: Boolean(focusRuleIds),
+  });
+
+  if (!visibleRules.length) {
     const empty = document.createElement('p');
     empty.className = 'auto-gear-empty';
     if (!rules.length && !hasFilters) {
       empty.textContent = texts[currentLang]?.autoGearNoRules
         || texts.en?.autoGearNoRules
         || 'No custom rules yet.';
+    } else if (focusRuleIds && filteredRules.length) {
+      empty.textContent = texts[currentLang]?.autoGearNoFocusMatches
+        || texts.en?.autoGearNoFocusMatches
+        || 'No rules match the selected dashboard filter.';
     } else {
       empty.textContent = texts[currentLang]?.autoGearNoMatches
         || texts.en?.autoGearNoMatches
@@ -14137,7 +15055,7 @@ function renderAutoGearRulesList() {
     return;
   }
 
-  filteredRules.forEach(rule => {
+  visibleRules.forEach(rule => {
     const wrapper = document.createElement('div');
     wrapper.className = 'auto-gear-rule';
     wrapper.dataset.ruleId = rule.id;
@@ -15975,6 +16893,7 @@ function exportAutoGearRules() {
   try {
     const rules = getBaseAutoGearRules();
     const monitorDefaults = getAutoGearMonitorDefaultsSnapshot();
+    const coverage = getAutoGearRuleCoverageSummary({ rules });
     const payload = {
       type: 'camera-power-planner/auto-gear-rules',
       version: APP_VERSION,
@@ -15982,6 +16901,9 @@ function exportAutoGearRules() {
       rules,
       monitorDefaults,
     };
+    if (coverage) {
+      payload.coverage = coverage;
+    }
     const json = JSON.stringify(payload, null, 2);
     if (typeof Blob !== 'function' || !URL || typeof URL.createObjectURL !== 'function') {
       throw new Error('Blob or URL APIs unavailable');

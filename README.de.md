@@ -93,6 +93,7 @@ Folge `docs/translation-guide.md` für Details zur Lokalisierung.
 - **Backup-Vergleiche** – Wähle manuelle Saves oder Auto-Backups, prüfe Diffs, ergänze Vorfallnotizen und exportiere Protokolle, bevor du Änderungen zurückrollst oder Daten an die Post übergibst.
 - **Restore-Proben** – Lade komplette Backups oder Projekt-Bundles in eine isolierte Sandbox, um Inhalte gegen Live-Daten zu checken, ohne Produktionsprofile anzurühren.
 - **Automatische Gear-Regeln** – Definiere szenariobasierte Ergänzungen oder Entfernungen mit Import/Export-Kontrollen und zeitgesteuerten Backups.
+- **Regelabdeckungs-Dashboard** – Fasse doppelte Auslöser, Netto-Zu-/Abgänge, Konflikte und ungedeckte Szenarien direkt in den automatischen Gear-Regeln zusammen, setze Fokus-Filter offline und gib dieselben Einblicke in Exporten und Druckansichten weiter.
 - **Daten- & Speicher-Dashboard** – Prüfe gespeicherte Projekte, Gerätelisten, eigene Geräte, Favoriten und Laufzeitfeedback direkt in den Einstellungen und schätze die Backup-Größe.
 - **Autosave-Status-Overlay** – Spiegelt die letzte Autosave-Notiz im Einstellungsdialog, damit Teams Hintergrundaktivitäten während Recovery-Drills sehen.
 - **Monitoring-sensitiver Gear-Editor** – Blendet zusätzliche Monitor- und Videoverteilungsoptionen nur ein, wenn Szenarien sie verlangen.
@@ -287,6 +288,7 @@ Print-freundliche Versionen findest du in `docs/operations-checklist.md`; der Tr
 - **Geräteliste erzeugen** wandelt Auswahl und Anforderungen in kategorisierte Tabellen um; Aktualisierung erfolgt automatisch bei Änderungen.
 - Einträge gruppieren nach Kategorie, Duplikate werden zusammengeführt. Szenarien ergänzen passende Rigs, Wetter- oder Spezialzubehör.
 - Automatische Regeln laufen nach dem Generator und fügen szenariospezifische Anpassungen hinzu.
+- Abdeckungsnotizen aus dem Regel-Dashboard erscheinen in Druckansichten, Exporten und Bundles, damit Offline-Reviews identisch zum In-App-Status bleiben.
 - Objektivreihen enthalten Frontdurchmesser, Gewicht, Naheinstellgrenze, Rod-Anforderungen und Mattebox-Komponenten. Akkureihen berücksichtigen Rechnercounts und Hot-Swap-Hardware.
 - Crewdetails, Monitoring, Verteilung und Notizen erscheinen in Exporten.
 - Listen werden mit dem Projekt gespeichert, erscheinen in Overviews, Bundles und lassen sich mit **Geräteliste löschen** zurücksetzen.
@@ -298,7 +300,9 @@ Print-freundliche Versionen findest du in `docs/operations-checklist.md`; der Tr
 - Regeln nur aktivieren, wenn bestimmte **Pflichtszenarien** gewählt sind; optionale Labels erleichtern das Scannen.
 - Equipment mit Kategorie und Anzahl hinzufügen oder **Custom Additions** für Hinweise/Spezialkits verwenden. Entfernen-Regeln blenden bestimmte Zeilen aus.
 - Regeln laufen nach den Standardpaketen, greifen nahtlos in Gearlisten, Backups und Bundles ein.
+- Ein Dashboard zur Regelabdeckung hebt doppelte Auslöser, Netto-Zu-/Abgänge, Konflikte und ungedeckte Szenarien hervor. Fokus-Karten filtern die Liste, springen zu betroffenen Regeln und bleiben offline nutzbar.
 - Gespeicherte Listen behalten die aktive Regelmenge; beim Laden oder Import bleibt der Regelkontext erhalten.
+- Abdeckungsinformationen reisen als `coverage`-Objekt in Druckansichten, Backups, Projektexporten und Bundles mit, sodass nachgelagerte Audits exakt denselben Stand sehen.
 - Regelsets als JSON exportieren/importieren, auf Werkseinstellungen zurücksetzen oder auf die automatische Historie (alle zehn Minuten) zurückgreifen.
 
 ## Runtime-Intelligenz

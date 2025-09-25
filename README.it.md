@@ -93,6 +93,7 @@ Consulta `docs/translation-guide.md` per i dettagli sulla localizzazione.
 - **Confronto backup** – Seleziona salvataggi manuali o auto-backup, analizza i diff, aggiungi note e esporta un log prima di ripristinare o consegnare il materiale.
 - **Prove di ripristino** – Carica un backup completo o un bundle in una sandbox isolata per verificarne il contenuto senza toccare i profili di produzione.
 - **Regole automatiche per l’attrezzatura** – Definisci aggiunte o rimozioni attivate dagli scenari con controlli di import/export e backup programmati.
+- **Dashboard di copertura regole** – Riassume trigger duplicati, variazioni nette, conflitti e scenari scoperti nelle Regole automatiche, applica filtri di focus offline e condivide le stesse informazioni in export e stampe.
 - **Dashboard dati e archiviazione** – Audita progetti, liste, dispositivi personalizzati, preferiti e feedback sulle autonomie direttamente da Impostazioni e stima la dimensione del backup.
 - **Overlay stato auto-save** – Replica l’ultima nota di auto-save nel dialogo Impostazioni così la troupe vede l’attività in background durante gli esercizi.
 - **Editor sensibile al monitoring** – Mostra campi aggiuntivi per monitor e distribuzione video solo quando richiesti dagli scenari.
@@ -287,6 +288,7 @@ Queste routine mantengono progetti, backup e risorse offline sincronizzati su og
 - **Genera lista attrezzatura e requisiti** trasforma selezioni e requisiti in tabelle categorizzate che si aggiornano automaticamente.
 - Le voci sono raggruppate per categoria e i duplicati fusi. Gli scenari aggiungono rigging, protezioni meteo e accessori specialistici per rispecchiare il lavoro reale.
 - Le regole automatiche si eseguono dopo il generatore per aggiungere o rimuovere elementi specifici senza toccare il JSON.
+- Le annotazioni di copertura del pannello regole compaiono nelle stampe, negli export e nei bundle condivisi così le revisioni offline vedono lo stesso riepilogo.
 - Le righe obiettivi includono diametro frontale, peso, minima di fuoco, necessità di aste e componenti della matte box. Le righe batterie considerano quantità e hardware per l’hot swap.
 - Dettagli troupe, configurazioni di monitoraggio, distribuzione video e note personalizzate appaiono negli export.
 - Le liste vengono salvate con il progetto, compaiono nelle overview stampabili e nei bundle; puoi azzerarle con **Elimina lista attrezzatura**.
@@ -298,7 +300,9 @@ Da **Impostazioni → Regole automatiche** puoi affinare ogni lista senza modifi
 - Attiva regole solo quando determinati **Scenari obbligatori** sono selezionati; aggiungi etichette opzionali per riconoscerle a colpo d’occhio.
 - Aggiungi attrezzatura con categoria e quantità oppure usa **Aggiunte personalizzate** per promemoria, kit speciali o note. Le regole di rimozione nascondono righe che il generatore includerebbe.
 - Le regole girano dopo i pacchetti predefiniti così si integrano con la logica di base e confluiscono in liste, backup e bundle.
+- Un pannello dedicato mette in evidenza trigger duplicati, variazioni nette, conflitti e scenari scoperti. Le card di focus filtrano l’elenco, aprono le regole coinvolte e restano disponibili offline.
 - Salvare una lista memorizza l’insieme di regole attivo; caricando il progetto o importando un bundle si ripristina lo stesso perimetro.
+- Questi insight di copertura viaggiano come oggetto `coverage` in stampe, backup, export di progetto e bundle condivisi, così le verifiche successive trovano lo stesso stato.
 - Esporta/importa l’insieme in JSON, ripristina le impostazioni di fabbrica o usa la cronologia automatica (ogni dieci minuti) se un editing va storto.
 
 ## Intelligenza sulle autonomie
