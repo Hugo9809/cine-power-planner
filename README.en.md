@@ -304,7 +304,9 @@ The planner is a Progressive Web App and can be installed directly from your bro
 - **Android:** Open the browser menu and choose *Add to Home Screen*.
 - **iOS/iPadOS Safari:** Tap the *Share* button and select *Add to Home Screen*.
 
-Once installed, the app launches from your home screen, works offline and updates itself automatically.
+Once installed, the app launches from your home screen, works offline and updates itself automatically. Home Screen installs on
+iOS/iPadOS Safari start with a separate storage space—export a backup in the browser tab and restore it inside the installed copy
+using the **Keep your data when installing on iOS** workflow before switching for the first time.
 
 ## 📡 Offline Use & Data Storage
 

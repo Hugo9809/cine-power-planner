@@ -24,7 +24,8 @@ const texts = {
       "Tap the browser menu (⋮).",
       "Choose Add to Home Screen and confirm.",
     ],
-    installHelpNoteIos: "Once installed, launch Cine Power Planner from your Home Screen.",
+    installHelpNoteIos:
+      "Once installed, launch Cine Power Planner from your Home Screen. On iOS/iPadOS Safari the Home Screen app starts with separate storage—open Keep your data when installing on iOS from the help dialog to migrate your projects safely.",
     installHelpNoteAndroid:
       "Android keeps using the same storage for the browser and the installed app, so your projects stay available.",
     installHelpMigrationTitle: "Move your existing data into the app",
@@ -1181,7 +1182,8 @@ const texts = {
       "Tocca il menu del browser (⋮).",
       "Scegli Aggiungi alla schermata Home e conferma.",
     ],
-    installHelpNoteIos: "Dopo l'installazione, avvia Cine Power Planner dalla schermata Home.",
+    installHelpNoteIos:
+      "Dopo l'installazione, avvia Cine Power Planner dalla schermata Home. Su iOS/iPadOS Safari l'app aggiunta alla schermata Home usa uno spazio di archiviazione separato: apri \"Mantieni i tuoi dati dopo l’installazione su iOS\" dal centro assistenza per migrare in sicurezza i tuoi progetti.",
     installHelpNoteAndroid:
       "Android utilizza gli stessi dati sia nel browser sia nell'app installata, quindi i tuoi progetti restano disponibili.",
     installHelpMigrationTitle: "Trasferisci i tuoi dati nell'app",
@@ -2323,7 +2325,8 @@ const texts = {
       "Toca el menú del navegador (⋮).",
       "Elige Añadir a pantalla de inicio y confirma.",
     ],
-    installHelpNoteIos: "Después de la instalación, abre Cine Power Planner desde la pantalla de inicio.",
+    installHelpNoteIos:
+      "Después de la instalación, abre Cine Power Planner desde la pantalla de inicio. En iOS/iPadOS Safari la app de la pantalla de inicio utiliza un almacenamiento separado; abre \"Mantén tus datos al instalar en iOS\" desde la ayuda para migrar tus proyectos de forma segura.",
     installHelpNoteAndroid:
       "Android utiliza el mismo almacenamiento en el navegador y en la aplicación instalada, por lo que tus proyectos siguen disponibles.",
     installHelpMigrationTitle: "Traslada tus datos a la aplicación",
@@ -3479,7 +3482,8 @@ const texts = {
       "Touchez le menu du navigateur (⋮).",
       "Choisissez Ajouter à l’écran d’accueil et confirmez.",
     ],
-    installHelpNoteIos: "Une fois installée, lancez Cine Power Planner depuis l’écran d’accueil.",
+    installHelpNoteIos:
+      "Une fois installée, lancez Cine Power Planner depuis l’écran d’accueil. Sur iOS/iPadOS Safari, l’app ajoutée à l’écran d’accueil utilise un espace de stockage séparé : ouvrez \"Conservez vos données lors de l’installation sur iOS\" depuis l’aide pour migrer vos projets en toute sécurité.",
     installHelpNoteAndroid:
       "Android utilise le même stockage dans le navigateur et dans l’application installée, vos projets restent donc disponibles.",
     installHelpMigrationTitle: "Transférez vos données vers l’application",
@@ -4646,7 +4650,8 @@ const texts = {
       "Tippe auf das Browsermenü (⋮).",
       "Wähle Zum Startbildschirm hinzufügen und bestätige.",
     ],
-    installHelpNoteIos: "Nach der Installation startest du Cine Power Planner über den Home-Bildschirm.",
+    installHelpNoteIos:
+      "Nach der Installation startest du Cine Power Planner über den Home-Bildschirm. Unter iOS/iPadOS Safari verwendet die installierte App einen eigenen Speicherbereich – öffne \"So bleiben deine Daten nach der iOS-Installation erhalten\" über die Hilfe, um deine Projekte sicher zu migrieren.",
     installHelpNoteAndroid:
       "Android nutzt denselben Speicher im Browser und in der installierten App, daher bleiben deine Projekte verfügbar.",
     installHelpMigrationTitle: "Verschiebe deine vorhandenen Daten in die App",

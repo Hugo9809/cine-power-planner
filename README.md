@@ -718,7 +718,11 @@ Cine Power Planner is a Progressive Web App:
    - **Android:** Open the browser menu and choose *Add to Home screen*.
    - **iOS Safari:** Tap the share icon and select *Add to Home Screen*.
 3. Launch the app from your applications list. The installed version works
-   offline and updates automatically once you approve a refresh.
+   offline and updates automatically once you approve a refresh. Home Screen
+   installs on iOS/iPadOS Safari start with a separate storage space—export a
+   backup in the browser tab and restore it inside the installed copy using
+   the **Keep your data when installing on iOS** workflow before switching for
+   the first time.
 
 ## Device Data Workflow
 

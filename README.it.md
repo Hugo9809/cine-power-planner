@@ -278,7 +278,10 @@ Cine Power Planner è un’applicazione web progressiva installabile direttament
 - **Android:** apri il menu del browser e scegli *Aggiungi alla schermata Home*.
 - **iOS/iPadOS Safari:** tocca *Condividi* e seleziona *Aggiungi alla schermata Home*.
 
-Una volta installata, l’applicazione si avvia dalla schermata Home, funziona offline e si aggiorna automaticamente.
+Una volta installata, l’applicazione si avvia dalla schermata Home, funziona offline e si aggiorna automaticamente. Su iOS/iPadOS
+Safari, l’app della schermata Home usa uno spazio di archiviazione separato: esporta un backup nella scheda del browser e
+ripristinalo nella copia installata tramite il flusso **Mantieni i tuoi dati dopo l’installazione su iOS** prima di passare per
+la prima volta.
 
 ## 📡 Uso offline e archiviazione
 

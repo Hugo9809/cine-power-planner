@@ -279,7 +279,10 @@ Cine Power Planner est une application web progressive installable directement d
 - **Android :** ouvrez le menu du navigateur et choisissez *Ajouter à l’écran d’accueil*.
 - **iOS/iPadOS Safari :** touchez *Partager* puis *Ajouter à l’écran d’accueil*.
 
-Une fois installée, l’application se lance depuis l’écran d’accueil, fonctionne hors ligne et se met à jour automatiquement.
+Une fois installée, l’application se lance depuis l’écran d’accueil, fonctionne hors ligne et se met à jour automatiquement. Sur
+iOS/iPadOS Safari, l’app de l’écran d’accueil utilise un espace de stockage séparé : exportez une sauvegarde dans l’onglet du
+navigateur et restaurez-la dans la copie installée via le parcours **Conservez vos données lors de l’installation sur iOS** avant
+de basculer pour la première fois.
 
 ## 📡 Utilisation hors ligne & stockage
 

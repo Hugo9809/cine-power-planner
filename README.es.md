@@ -281,7 +281,10 @@ Cine Power Planner es una aplicación web progresiva y puede instalarse directam
 - **Android:** abre el menú del navegador y elige *Añadir a pantalla de inicio*.
 - **iOS/iPadOS Safari:** toca *Compartir* y selecciona *Añadir a pantalla de inicio*.
 
-Una vez instalada, la aplicación se abre desde la pantalla de inicio, funciona sin conexión y se actualiza automáticamente.
+Una vez instalada, la aplicación se abre desde la pantalla de inicio, funciona sin conexión y se actualiza automáticamente. En
+iOS/iPadOS Safari, la app del escritorio inicial usa un almacenamiento separado: exporta una copia de seguridad en la pestaña
+del navegador y restáurala en la versión instalada mediante el flujo **Mantén tus datos al instalar en iOS** antes de cambiar
+por primera vez.
 
 ## 📡 Uso sin conexión y almacenamiento
 

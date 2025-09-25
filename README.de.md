@@ -278,7 +278,10 @@ Cine Power Planner ist eine Progressive-Web-App und lässt sich direkt aus dem B
 - **Android:** Browsermenü öffnen und *Zum Startbildschirm hinzufügen* wählen.
 - **iOS/iPadOS Safari:** Auf *Teilen* tippen und *Zum Home-Bildschirm* auswählen.
 
-Nach der Installation startet die Anwendung vom Startbildschirm, funktioniert offline und aktualisiert sich automatisch.
+Nach der Installation startet die Anwendung vom Startbildschirm, funktioniert offline und aktualisiert sich automatisch. Unter
+iOS/iPadOS Safari erhält die Homescreen-App einen eigenen Speicherbereich – exportiere im Browser-Tab ein Backup und stelle es in
+der installierten Version über den Workflow **So bleiben deine Daten nach der iOS-Installation erhalten** wieder her, bevor du
+zum ersten Mal wechselst.
 
 ## 📡 Offline-Nutzung & Datenspeicherung
 
