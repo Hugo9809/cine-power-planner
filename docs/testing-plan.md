@@ -59,6 +59,10 @@ you prepare a release candidate or validate a workstation:
 5. **Simulate loss of connectivity.** While the verification profile stays
    offline, refresh the planner and make sure the offline indicator appears,
    cached assets render instantly and the restored project remains intact.
+6. **Document the outcome.** Note the timestamp, machine, browser version and
+   files inspected in your verification log. Include any checksum manifests so
+   release managers can trace which rehearsal proved the save → share → import
+   loop remained reliable.
 
 Document the drill results alongside your automated test logs so every release
 carries evidence that saving, sharing, importing, backup and restore routines

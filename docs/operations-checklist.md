@@ -40,6 +40,10 @@ update the repository or hand off a project at the end of the day.
 6. **Check draft impact preview.** Open the automatic gear rule editor, review
    the draft impact preview for quantity deltas and warnings, then cancel to
    confirm the live generator stays unchanged.
+7. **Log the drill.** Append a verification note (timestamp, machine, operator
+   and files inspected) to your archival log or create one beside the exports
+   if it does not exist yet. Pair the note with checksum manifests so every
+   crew member can prove when the save → share → import rehearsal succeeded.
 
 ## 3. Offline confidence checks
 
