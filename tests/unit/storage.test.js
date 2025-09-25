@@ -74,6 +74,7 @@ const AUTO_GEAR_PRESETS_KEY = 'cameraPowerPlanner_autoGearPresets';
 const AUTO_GEAR_ACTIVE_PRESET_KEY = 'cameraPowerPlanner_autoGearActivePreset';
 const AUTO_GEAR_AUTO_PRESET_KEY = 'cameraPowerPlanner_autoGearAutoPreset';
 const AUTO_GEAR_BACKUP_VISIBILITY_KEY = 'cameraPowerPlanner_autoGearShowBackups';
+const AUTO_GEAR_BACKUP_RETENTION_KEY = 'cameraPowerPlanner_autoGearBackupRetention';
 const AUTO_GEAR_MONITOR_DEFAULTS_KEY = 'cameraPowerPlanner_autoGearMonitorDefaults';
 const CUSTOM_FONT_KEY = 'cameraPowerPlanner_customFonts';
 const CUSTOM_LOGO_KEY = 'customLogo';
@@ -920,6 +921,21 @@ describe('automatic gear storage', () => {
     localStorage.setItem(AUTO_GEAR_BACKUPS_KEY, JSON.stringify('oops'));
     expect(loadAutoGearBackups()).toEqual(backups);
     expect(JSON.parse(localStorage.getItem(AUTO_GEAR_BACKUPS_KEY))).toEqual(backups);
+  });
+
+  test('saveAutoGearBackupRetention creates migration backup before overwriting existing values', () => {
+    localStorage.setItem(AUTO_GEAR_BACKUP_RETENTION_KEY, JSON.stringify(12));
+    expect(localStorage.getItem(migrationBackupKeyFor(AUTO_GEAR_BACKUP_RETENTION_KEY))).toBeNull();
+
+    saveAutoGearBackupRetention(18);
+
+    const backupRaw = localStorage.getItem(migrationBackupKeyFor(AUTO_GEAR_BACKUP_RETENTION_KEY));
+    expect(backupRaw).not.toBeNull();
+    const backup = JSON.parse(backupRaw);
+    expect(typeof backup.createdAt).toBe('string');
+    expect(backup.createdAt.length).toBeGreaterThan(0);
+    expect(backup.data).toBe(12);
+    expect(loadAutoGearBackupRetention()).toBe(18);
   });
 
   test('saveAutoGearSeedFlag toggles the persisted flag', () => {

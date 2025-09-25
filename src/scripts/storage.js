@@ -4161,6 +4161,7 @@ function loadAutoGearBackupRetention() {
 function saveAutoGearBackupRetention(retention) {
   const safeStorage = getSafeLocalStorage();
   const normalized = normalizeAutoGearBackupRetentionValue(retention);
+  ensurePreWriteMigrationBackup(safeStorage, AUTO_GEAR_BACKUP_RETENTION_STORAGE_KEY);
   saveJSONToStorage(
     safeStorage,
     AUTO_GEAR_BACKUP_RETENTION_STORAGE_KEY,
