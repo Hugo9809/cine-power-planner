@@ -46,6 +46,13 @@ You can run targeted suites while iterating if you only touched translation file
 npm run test:unit
 ```
 
+## Recent interface updates
+
+- Automatic Gear Rules now include an automatic backup timeline and a **Backup retention**
+  control with live warnings inside the help dialog. Translate the related labels in
+  `index.html` and the retention status strings in `translations.js` so crews understand how
+  many snapshots stay on each device.
+
 ## Step 5: Open a pull request
 
 Commit your changes, describe the new language in the pull request summary and mention any remaining untranslated phrases so maintainers can help. Linking to this guide from your PR helps other contributors follow the same process.

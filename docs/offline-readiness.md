@@ -46,7 +46,9 @@ connectivity:
    help dialog, legal pages and the device catalog.
 2. **Review current data.** Load active projects plus their latest `auto-backup-…`
    entries. Confirm gear lists, runtime dashboards, favorites and automatic gear rules all
-   match the production log.
+   match the production log. In **Settings → Automatic Gear Rules** reveal the automatic
+   backup timeline, review the retention summary and adjust the limit if you need a longer
+   runway of snapshots before travelling.
 3. **Generate redundancy.** Export a fresh planner backup and project bundle, then import
    both files into an isolated browser profile. Document the validation date, machine name
    and any notes about data changes since the last rehearsal. Include a standalone
