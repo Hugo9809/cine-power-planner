@@ -31,6 +31,12 @@
 /* global getDiagramManualPositions, setManualDiagramPositions,
           normalizeDiagramPositionsInput, ensureAutoBackupsFromProjects */
 
+const cineUi =
+  (typeof globalThis !== 'undefined' && globalThis.cineUi)
+  || (typeof window !== 'undefined' && window.cineUi)
+  || (typeof self !== 'undefined' && self.cineUi)
+  || null;
+
 const temperaturePreferenceStorageKey =
   typeof TEMPERATURE_STORAGE_KEY === 'string'
     ? TEMPERATURE_STORAGE_KEY
@@ -6275,277 +6281,338 @@ if (backupDiffSectionEl) {
   collapseBackupDiffSection();
 }
 
-if (restoreSettings && restoreSettingsInput) {
-  restoreSettings.addEventListener('click', () => restoreSettingsInput.click());
-  restoreSettingsInput.addEventListener('change', () => {
-    const file = restoreSettingsInput.files[0];
-    if (!file) return;
+function handleRestoreSettingsClick() {
+  if (restoreSettingsInput) {
+    restoreSettingsInput.click();
+  }
+}
 
-    const langTexts = texts[currentLang] || {};
-    const fallbackTexts = texts.en || {};
-    const restoreFailureMessage =
-      langTexts.restoreFailed
-      || fallbackTexts.restoreFailed
-      || 'Restore failed. Check the backup file and try again.';
+function handleRestoreSettingsInputChange() {
+  const file = restoreSettingsInput.files[0];
+  if (!file) return;
 
-    let backupFileName = null;
+  const langTexts = texts[currentLang] || {};
+  const fallbackTexts = texts.en || {};
+  const restoreFailureMessage =
+    langTexts.restoreFailed
+    || fallbackTexts.restoreFailed
+    || 'Restore failed. Check the backup file and try again.';
+
+  let backupFileName = null;
+  try {
+    backupFileName = createSettingsBackup(false, new Date());
+  } catch (error) {
+    console.error('Backup before restore failed', error);
+  }
+
+  if (!backupFileName) {
+    const failureMessage = langTexts.restoreBackupFailed
+      || fallbackTexts.restoreBackupFailed
+      || 'Backup failed. Restore cancelled.';
+    showNotification('error', failureMessage);
+    alert(failureMessage);
+    restoreSettingsInput.value = '';
+    return;
+  }
+
+  showNotification('success', 'Full app backup downloaded');
+
+  const safeStorage = resolveSafeLocalStorage();
+  const storedSettingsSnapshot = captureStorageSnapshot(safeStorage);
+  const storedSessionSnapshot = captureStorageSnapshot(
+    typeof sessionStorage !== 'undefined' ? sessionStorage : null,
+  );
+  const previousSelection = captureSetupSelection();
+  let restoreMutated = false;
+
+  const finalizeRestore = () => {
     try {
-      backupFileName = createSettingsBackup(false, new Date());
-    } catch (error) {
-      console.error('Backup before restore failed', error);
-    }
-
-    if (!backupFileName) {
-      const failureMessage = langTexts.restoreBackupFailed
-        || fallbackTexts.restoreBackupFailed
-        || 'Backup failed. Restore cancelled.';
-      showNotification('error', failureMessage);
-      alert(failureMessage);
       restoreSettingsInput.value = '';
-      return;
+    } catch (resetError) {
+      void resetError;
     }
+  };
 
-    showNotification('success', 'Full app backup downloaded');
-
-    const safeStorage = resolveSafeLocalStorage();
-    const storedSettingsSnapshot = captureStorageSnapshot(safeStorage);
-    const storedSessionSnapshot = captureStorageSnapshot(
-      typeof sessionStorage !== 'undefined' ? sessionStorage : null,
+  const revertAfterFailure = () => {
+    try {
+      restoreLocalStorageSnapshot(safeStorage, storedSettingsSnapshot);
+    } catch (restoreError) {
+      console.warn('Failed to restore localStorage snapshot after restore failure', restoreError);
+    }
+    try {
+      restoreSessionStorageSnapshot(storedSessionSnapshot);
+    } catch (sessionError) {
+      console.warn('Failed to restore sessionStorage snapshot after restore failure', sessionError);
+    }
+    try {
+      loadStoredLogoPreview();
+    } catch (logoError) {
+      console.warn('Failed to refresh logo preview after restore failure', logoError);
+    }
+    try {
+      syncAutoGearRulesFromStorage();
+    } catch (rulesError) {
+      console.warn('Failed to resync automatic gear rules after restore failure', rulesError);
+    }
+    const restoredPreferenceReader = createSafeStorageReader(
+      safeStorage,
+      'Failed to read restored storage key',
     );
-    const previousSelection = captureSetupSelection();
-    let restoreMutated = false;
-
-    const finalizeRestore = () => {
+    const restoredPreferences = applyPreferencesFromStorage(restoredPreferenceReader);
+    showAutoBackups = restoredPreferences.showAutoBackups;
+    try {
+      populateSetupSelect();
+    } catch (populateError) {
+      console.warn('Failed to repopulate setup selector after restore failure', populateError);
+    }
+    restoreSetupSelection(previousSelection, showAutoBackups);
+    if (settingsShowAutoBackups) {
       try {
-        restoreSettingsInput.value = '';
-      } catch (resetError) {
-        void resetError;
+        settingsShowAutoBackups.checked = showAutoBackups;
+      } catch (checkboxError) {
+        console.warn('Failed to restore automatic backup visibility toggle after restore failure', checkboxError);
       }
-    };
-
-    const revertAfterFailure = () => {
+    }
+    if (restoredPreferences.language) {
       try {
-        restoreLocalStorageSnapshot(safeStorage, storedSettingsSnapshot);
-      } catch (restoreError) {
-        console.warn('Failed to restore localStorage snapshot after restore failure', restoreError);
+        setLanguage(restoredPreferences.language);
+      } catch (languageError) {
+        console.warn('Failed to restore language after restore failure', languageError);
       }
-      try {
-        restoreSessionStorageSnapshot(storedSessionSnapshot);
-      } catch (sessionError) {
-        console.warn('Failed to restore sessionStorage snapshot after restore failure', sessionError);
+    }
+  };
+
+  const handleRestoreError = (error) => {
+    console.warn('Restore failed', error);
+    showNotification('error', restoreFailureMessage);
+    alert(restoreFailureMessage);
+    finalizeRestore();
+  };
+
+  const processBackupPayload = (rawPayload) => {
+    try {
+      const sanitizedPayload = sanitizeBackupPayload(rawPayload);
+      if (!sanitizedPayload || !sanitizedPayload.trim()) {
+        throw new Error('Backup payload empty');
+      }
+      const parsed = JSON.parse(sanitizedPayload);
+      const {
+        settings: restoredSettings,
+        sessionStorage: restoredSession,
+        data,
+        fileVersion,
+      } = extractBackupSections(parsed);
+
+      const hasSettings = restoredSettings && Object.keys(restoredSettings).length > 0;
+      const hasSessionEntries = restoredSession && Object.keys(restoredSession).length > 0;
+      const hasDataEntries = data && Object.keys(data).length > 0;
+      if (!hasSettings && !hasSessionEntries && !hasDataEntries) {
+        throw new Error('Backup missing recognized sections');
+      }
+      if (fileVersion !== APP_VERSION) {
+        const compatibilityMessage = buildRestoreVersionCompatibilityMessage({
+          langTexts,
+          fallbackTexts,
+          fileVersion,
+          targetVersion: APP_VERSION,
+          data,
+          settingsSnapshot: restoredSettings,
+          sessionSnapshot: restoredSession,
+          backupFileName,
+        });
+        alert(compatibilityMessage);
+      }
+      if (restoredSettings && typeof restoredSettings === 'object') {
+        if (safeStorage && typeof safeStorage.setItem === 'function') {
+          restoreMutated = true;
+          Object.entries(restoredSettings).forEach(([k, v]) => {
+            if (typeof k !== 'string') return;
+            try {
+              if (v === null || v === undefined) {
+                if (typeof safeStorage.removeItem === 'function') {
+                  safeStorage.removeItem(k);
+                }
+              } else {
+                safeStorage.setItem(k, String(v));
+              }
+            } catch (storageError) {
+              console.warn('Failed to restore storage entry', k, storageError);
+            }
+          });
+        }
+      }
+      if (restoredSession && typeof sessionStorage !== 'undefined') {
+        restoreMutated = true;
+        Object.entries(restoredSession).forEach(([key, value]) => {
+          try {
+            sessionStorage.setItem(key, value);
+          } catch (sessionError) {
+            console.warn('Failed to restore sessionStorage entry', key, sessionError);
+          }
+        });
       }
       try {
         loadStoredLogoPreview();
       } catch (logoError) {
-        console.warn('Failed to refresh logo preview after restore failure', logoError);
+        console.warn('Failed to refresh logo preview after restore', logoError);
+      }
+      if (data && typeof importAllData === 'function') {
+        restoreMutated = true;
+        importAllData(data);
       }
       try {
-        syncAutoGearRulesFromStorage();
+        syncAutoGearRulesFromStorage(data?.autoGearRules);
       } catch (rulesError) {
-        console.warn('Failed to resync automatic gear rules after restore failure', rulesError);
+        console.warn('Failed to sync automatic gear rules after restore', rulesError);
       }
-      const restoredPreferenceReader = createSafeStorageReader(
+      const preferenceReader = createSafeStorageReader(
         safeStorage,
         'Failed to read restored storage key',
       );
-      const restoredPreferences = applyPreferencesFromStorage(restoredPreferenceReader);
-      showAutoBackups = restoredPreferences.showAutoBackups;
-      try {
-        populateSetupSelect();
-      } catch (populateError) {
-        console.warn('Failed to repopulate setup selector after restore failure', populateError);
-      }
+      const restoredPreferenceState = applyPreferencesFromStorage(preferenceReader);
+      showAutoBackups = restoredPreferenceState.showAutoBackups;
+      populateSetupSelect();
       restoreSetupSelection(previousSelection, showAutoBackups);
       if (settingsShowAutoBackups) {
-        try {
-          settingsShowAutoBackups.checked = showAutoBackups;
-        } catch (checkboxError) {
-          console.warn('Failed to restore automatic backup visibility toggle after restore failure', checkboxError);
-        }
+        settingsShowAutoBackups.checked = showAutoBackups;
       }
-      if (restoredPreferences.language) {
-        try {
-          setLanguage(restoredPreferences.language);
-        } catch (languageError) {
-          console.warn('Failed to restore language after restore failure', languageError);
-        }
+      if (restoredPreferenceState.language) {
+        setLanguage(restoredPreferenceState.language);
       }
-    };
-
-    const handleRestoreError = (error) => {
-      console.warn('Restore failed', error);
-      showNotification('error', restoreFailureMessage);
-      alert(restoreFailureMessage);
-      finalizeRestore();
-    };
-
-    const processBackupPayload = (rawPayload) => {
-      try {
-        const sanitizedPayload = sanitizeBackupPayload(rawPayload);
-        if (!sanitizedPayload || !sanitizedPayload.trim()) {
-          throw new Error('Backup payload empty');
-        }
-        const parsed = JSON.parse(sanitizedPayload);
-        const {
-          settings: restoredSettings,
-          sessionStorage: restoredSession,
-          data,
-          fileVersion,
-        } = extractBackupSections(parsed);
-
-        const hasSettings = restoredSettings && Object.keys(restoredSettings).length > 0;
-        const hasSessionEntries = restoredSession && Object.keys(restoredSession).length > 0;
-        const hasDataEntries = data && Object.keys(data).length > 0;
-        if (!hasSettings && !hasSessionEntries && !hasDataEntries) {
-          throw new Error('Backup missing recognized sections');
-        }
-        if (fileVersion !== APP_VERSION) {
-          const compatibilityMessage = buildRestoreVersionCompatibilityMessage({
-            langTexts,
-            fallbackTexts,
-            fileVersion,
-            targetVersion: APP_VERSION,
-            data,
-            settingsSnapshot: restoredSettings,
-            sessionSnapshot: restoredSession,
-            backupFileName,
-          });
-          alert(compatibilityMessage);
-        }
-        if (restoredSettings && typeof restoredSettings === 'object') {
-          if (safeStorage && typeof safeStorage.setItem === 'function') {
-            restoreMutated = true;
-            Object.entries(restoredSettings).forEach(([k, v]) => {
-              if (typeof k !== 'string') return;
-              try {
-                if (v === null || v === undefined) {
-                  if (typeof safeStorage.removeItem === 'function') {
-                    safeStorage.removeItem(k);
-                  }
-                } else {
-                  safeStorage.setItem(k, String(v));
-                }
-              } catch (storageError) {
-                console.warn('Failed to restore storage entry', k, storageError);
-              }
-            });
-          }
-        }
-        if (restoredSession && typeof sessionStorage !== 'undefined') {
-          restoreMutated = true;
-          Object.entries(restoredSession).forEach(([key, value]) => {
-            try {
-              sessionStorage.setItem(key, value);
-            } catch (sessionError) {
-              console.warn('Failed to restore sessionStorage entry', key, sessionError);
-            }
-          });
-        }
-        try {
-          loadStoredLogoPreview();
-        } catch (logoError) {
-          console.warn('Failed to refresh logo preview after restore', logoError);
-        }
-        if (data && typeof importAllData === 'function') {
-          restoreMutated = true;
-          importAllData(data);
-        }
-        try {
-          syncAutoGearRulesFromStorage(data?.autoGearRules);
-        } catch (rulesError) {
-          console.warn('Failed to sync automatic gear rules after restore', rulesError);
-        }
-        const preferenceReader = createSafeStorageReader(
-          safeStorage,
-          'Failed to read restored storage key',
-        );
-        const restoredPreferenceState = applyPreferencesFromStorage(preferenceReader);
-        showAutoBackups = restoredPreferenceState.showAutoBackups;
-        populateSetupSelect();
-        restoreSetupSelection(previousSelection, showAutoBackups);
-        if (settingsShowAutoBackups) {
-          settingsShowAutoBackups.checked = showAutoBackups;
-        }
-        if (restoredPreferenceState.language) {
-          setLanguage(restoredPreferenceState.language);
-        }
-        if (restoredSession && typeof sessionStorage !== 'undefined') {
-          Object.entries(restoredSession).forEach(([key, value]) => {
-            try {
-              sessionStorage.setItem(key, value);
-            } catch (sessionError) {
-              console.warn('Failed to refresh sessionStorage entry after restore', key, sessionError);
-            }
-          });
-        }
-        alert(texts[currentLang].restoreSuccess);
-        finalizeRestore();
-      } catch (err) {
-        if (restoreMutated) {
+      if (restoredSession && typeof sessionStorage !== 'undefined') {
+        Object.entries(restoredSession).forEach(([key, value]) => {
           try {
-            revertAfterFailure();
-          } catch (revertError) {
-            console.warn('Failed to restore previous state after restore error', revertError);
+            sessionStorage.setItem(key, value);
+          } catch (sessionError) {
+            console.warn('Failed to refresh sessionStorage entry after restore', key, sessionError);
           }
+        });
+      }
+      alert(texts[currentLang].restoreSuccess);
+      finalizeRestore();
+    } catch (err) {
+      if (restoreMutated) {
+        try {
+          revertAfterFailure();
+        } catch (revertError) {
+          console.warn('Failed to restore previous state after restore error', revertError);
         }
-        handleRestoreError(err);
+      }
+      handleRestoreError(err);
+    }
+  };
+
+  const attemptTextFallback = (reason) => {
+    if (!file || typeof file.text !== 'function') {
+      return false;
+    }
+    if (reason) {
+      console.warn('FileReader unavailable for restore, using file.text()', reason);
+    } else {
+      console.warn('FileReader unavailable for restore, using file.text()');
+    }
+    Promise.resolve()
+      .then(() => file.text())
+      .then(processBackupPayload)
+      .catch(handleRestoreError);
+    return true;
+  };
+
+  let reader = null;
+  if (typeof FileReader === 'function') {
+    try {
+      reader = new FileReader();
+    } catch (readerError) {
+      console.warn('Failed to create FileReader for restore', readerError);
+      reader = null;
+    }
+  }
+
+  if (reader && typeof reader.readAsText === 'function') {
+    reader.onload = event => {
+      const result = event && event.target ? event.target.result : '';
+      processBackupPayload(result);
+    };
+    reader.onerror = () => {
+      const error = reader.error || new Error('Failed to read backup file');
+      console.warn('FileReader failed while reading restore file', error);
+      if (!attemptTextFallback(error)) {
+        handleRestoreError(error);
       }
     };
-
-    const attemptTextFallback = (reason) => {
-      if (!file || typeof file.text !== 'function') {
-        return false;
+    try {
+      reader.readAsText(file);
+      return;
+    } catch (readError) {
+      console.warn('Failed to read restore file', readError);
+      if (!attemptTextFallback(readError)) {
+        handleRestoreError(readError);
       }
-      if (reason) {
-        console.warn('FileReader unavailable for restore, using file.text()', reason);
-      } else {
-        console.warn('FileReader unavailable for restore, using file.text()');
-      }
-      Promise.resolve()
-        .then(() => file.text())
-        .then(processBackupPayload)
-        .catch(handleRestoreError);
-      return true;
-    };
-
-    let reader = null;
-    if (typeof FileReader === 'function') {
-      try {
-        reader = new FileReader();
-      } catch (readerError) {
-        console.warn('Failed to create FileReader for restore', readerError);
-        reader = null;
-      }
+      return;
     }
-
-    if (reader && typeof reader.readAsText === 'function') {
-      reader.onload = event => {
-        const result = event && event.target ? event.target.result : '';
-        processBackupPayload(result);
-      };
-      reader.onerror = () => {
-        const error = reader.error || new Error('Failed to read backup file');
-        console.warn('FileReader failed while reading restore file', error);
-        if (!attemptTextFallback(error)) {
-          handleRestoreError(error);
-        }
-      };
-      try {
-        reader.readAsText(file);
-        return;
-      } catch (readError) {
-        console.warn('Failed to read restore file', readError);
-        if (!attemptTextFallback(readError)) {
-          handleRestoreError(readError);
-        }
-        return;
-      }
-    }
+  }
 
   if (!attemptTextFallback()) {
-      handleRestoreError(new Error('No supported file reader available'));
+    handleRestoreError(new Error('No supported file reader available'));
+  }
+}
+
+if (restoreSettings && restoreSettingsInput) {
+  restoreSettings.addEventListener('click', handleRestoreSettingsClick);
+  restoreSettingsInput.addEventListener('change', handleRestoreSettingsInputChange);
+}
+
+if (cineUi) {
+  try {
+    if (cineUi.controllers && typeof cineUi.controllers.register === 'function') {
+      cineUi.controllers.register('backupSettings', {
+        execute: createSettingsBackup,
+      });
+
+      cineUi.controllers.register('restoreSettings', {
+        openPicker: handleRestoreSettingsClick,
+        processFile: handleRestoreSettingsInputChange,
+      });
     }
-  });
+  } catch (error) {
+    console.warn('cineUi controller registration (session) failed', error);
+  }
+
+  try {
+    if (cineUi.interactions && typeof cineUi.interactions.register === 'function') {
+      cineUi.interactions.register('performBackup', createSettingsBackup);
+      cineUi.interactions.register('openRestorePicker', handleRestoreSettingsClick);
+      cineUi.interactions.register('applyRestoreFile', handleRestoreSettingsInputChange);
+    }
+  } catch (error) {
+    console.warn('cineUi interaction registration (session) failed', error);
+  }
+
+  try {
+    if (cineUi.help && typeof cineUi.help.register === 'function') {
+      cineUi.help.register('backupSettings', () => {
+        const langTexts = texts[currentLang] || {};
+        const fallbackTexts = texts.en || {};
+        return (
+          langTexts.backupSettingsHelp
+          || fallbackTexts.backupSettingsHelp
+          || 'Create a full backup of every project and preference stored on this device.'
+        );
+      });
+
+      cineUi.help.register('restoreSettings', () => {
+        const langTexts = texts[currentLang] || {};
+        const fallbackTexts = texts.en || {};
+        return (
+          langTexts.restoreSettingsHelp
+          || fallbackTexts.restoreSettingsHelp
+          || 'Restore a full backup. The planner saves another backup automatically before importing.'
+        );
+      });
+    }
+  } catch (error) {
+    console.warn('cineUi help registration (session) failed', error);
+  }
 }
 
 if (restoreRehearsalButtonEl) {

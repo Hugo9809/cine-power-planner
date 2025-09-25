@@ -12,6 +12,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
   const vm = require('vm');
   const parts = [
     'modules/offline.js',
+    'modules/ui.js',
     'app-core-new-1.js',
     'app-core-new-2.js',
     'app-events.js',
