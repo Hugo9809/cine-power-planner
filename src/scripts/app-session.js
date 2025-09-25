@@ -171,6 +171,13 @@ const {
 
 let restoreRehearsalLastSnapshot = null;
 
+function createEmptyRestoreRehearsalCounts() {
+  return RESTORE_REHEARSAL_METRICS.reduce((acc, metric) => {
+    acc[metric.key] = 0;
+    return acc;
+  }, {});
+}
+
 function countProjectsFromSetups(setups) {
   if (Array.isArray(setups)) {
     return setups.length;
@@ -383,6 +390,7 @@ function summarizeProjectCollection(collection) {
 }
 
 function summarizeCountsFromData(data) {
+  const counts = createEmptyRestoreRehearsalCounts();
   const setups = isPlainObject(data) && isPlainObject(data.setups) ? data.setups : {};
   const rules = isPlainObject(data) && Array.isArray(data.autoGearRules)
     ? data.autoGearRules
@@ -400,14 +408,47 @@ function summarizeCountsFromData(data) {
   const projectDetails = Math.max(storedProjects.details, setupProjects.details);
   const projectCrew = Math.max(storedProjects.crew, setupProjects.crew);
   const projectSchedule = Math.max(storedProjects.schedule, setupProjects.schedule);
-  return {
-    projects: countProjectsFromSetups(setups),
-    projectDetails,
-    projectCrew,
-    projectSchedules: projectSchedule,
-    rules: rules.length,
-    favorites: countFavoritesEntries(favorites),
-  };
+  counts.projects = countProjectsFromSetups(setups);
+  counts.projectDetails = projectDetails;
+  counts.projectCrew = projectCrew;
+  counts.projectSchedules = projectSchedule;
+  counts.rules = rules.length;
+  counts.favorites = countFavoritesEntries(favorites);
+  counts.deviceLibrary = countRestoreRehearsalDeviceEntries(isPlainObject(data) ? data.devices : null);
+  const sessionState = isPlainObject(data) ? data.session : null;
+  counts.sessionSnapshots = isPlainObject(sessionState) && Object.keys(sessionState).length ? 1 : 0;
+  counts.feedbackDrafts = countRestoreRehearsalFeedbackDrafts(isPlainObject(data) ? data.feedback : null);
+  counts.autoGearPresets = Array.isArray(data?.autoGearPresets)
+    ? data.autoGearPresets.filter(Boolean).length
+    : 0;
+  counts.autoGearBackups = Array.isArray(data?.autoGearBackups)
+    ? data.autoGearBackups.filter(Boolean).length
+    : 0;
+  counts.fullBackupHistory = Array.isArray(data?.fullBackupHistory)
+    ? data.fullBackupHistory.filter(Boolean).length
+    : 0;
+  counts.customFonts = Array.isArray(data?.customFonts)
+    ? data.customFonts.filter((entry) => {
+      if (!entry) return false;
+      if (typeof entry === 'string') {
+        return entry.trim().length > 0;
+      }
+      if (isPlainObject(entry)) {
+        return Object.keys(entry).length > 0;
+      }
+      return false;
+    }).length
+    : 0;
+  counts.customLogo = typeof data?.customLogo === 'string' && data.customLogo.trim() ? 1 : 0;
+  const storedPreferences = isPlainObject(data?.preferences) ? data.preferences : null;
+  counts.storedPreferences = storedPreferences && Object.keys(storedPreferences).length ? 1 : 0;
+  const schemaCache = data?.schemaCache;
+  if (typeof schemaCache === 'string') {
+    counts.schemaCache = schemaCache.trim() ? 1 : 0;
+  } else if (isPlainObject(schemaCache)) {
+    counts.schemaCache = Object.keys(schemaCache).length ? 1 : 0;
+  }
+  return counts;
 }
 
 function bundleHasProject(bundle) {
@@ -451,6 +492,105 @@ const RESTORE_REHEARSAL_BACKUP_HINT_KEYS = [
   'preferences',
   'schemaCache',
   'fullBackupHistory',
+];
+
+const RESTORE_REHEARSAL_METRICS = [
+  {
+    key: 'projects',
+    translationKey: 'restoreRehearsalMetricProjects',
+    fallback: 'Projects',
+    modes: ['backup', 'project'],
+  },
+  {
+    key: 'projectDetails',
+    translationKey: 'restoreRehearsalMetricProjectDetails',
+    fallback: 'Project details',
+    modes: ['backup', 'project'],
+  },
+  {
+    key: 'projectCrew',
+    translationKey: 'restoreRehearsalMetricCrew',
+    fallback: 'Crew entries',
+    modes: ['backup', 'project'],
+  },
+  {
+    key: 'projectSchedules',
+    translationKey: 'restoreRehearsalMetricSchedule',
+    fallback: 'Schedule entries',
+    modes: ['backup', 'project'],
+  },
+  {
+    key: 'rules',
+    translationKey: 'restoreRehearsalMetricRules',
+    fallback: 'Rules',
+    modes: ['backup', 'project'],
+  },
+  {
+    key: 'favorites',
+    translationKey: 'restoreRehearsalMetricFavorites',
+    fallback: 'Favorites',
+    modes: ['backup', 'project'],
+  },
+  {
+    key: 'deviceLibrary',
+    translationKey: 'restoreRehearsalMetricDeviceLibrary',
+    fallback: 'Device library entries',
+    modes: ['backup'],
+  },
+  {
+    key: 'sessionSnapshots',
+    translationKey: 'restoreRehearsalMetricSession',
+    fallback: 'Stored session snapshot',
+    modes: ['backup'],
+  },
+  {
+    key: 'feedbackDrafts',
+    translationKey: 'restoreRehearsalMetricFeedback',
+    fallback: 'Feedback drafts',
+    modes: ['backup'],
+  },
+  {
+    key: 'autoGearPresets',
+    translationKey: 'restoreRehearsalMetricAutoPresets',
+    fallback: 'Automatic gear presets',
+    modes: ['backup'],
+  },
+  {
+    key: 'autoGearBackups',
+    translationKey: 'restoreRehearsalMetricAutoBackups',
+    fallback: 'Automatic gear backups',
+    modes: ['backup'],
+  },
+  {
+    key: 'fullBackupHistory',
+    translationKey: 'restoreRehearsalMetricBackupHistory',
+    fallback: 'Backup history entries',
+    modes: ['backup'],
+  },
+  {
+    key: 'customFonts',
+    translationKey: 'restoreRehearsalMetricCustomFonts',
+    fallback: 'Custom fonts',
+    modes: ['backup'],
+  },
+  {
+    key: 'customLogo',
+    translationKey: 'restoreRehearsalMetricCustomLogo',
+    fallback: 'Custom logo saved',
+    modes: ['backup'],
+  },
+  {
+    key: 'storedPreferences',
+    translationKey: 'restoreRehearsalMetricPreferences',
+    fallback: 'Stored preferences',
+    modes: ['backup'],
+  },
+  {
+    key: 'schemaCache',
+    translationKey: 'restoreRehearsalMetricSchemaCache',
+    fallback: 'Device schema cache',
+    modes: ['backup'],
+  },
 ];
 
 const RESTORE_REHEARSAL_PROJECT_HINT_KEYS = [
@@ -524,15 +664,9 @@ function looksLikeRestoreRehearsalBackupPayload(payload) {
 }
 
 function summarizeProjectBundle(bundle) {
+  const summary = createEmptyRestoreRehearsalCounts();
   if (!isPlainObject(bundle)) {
-    return {
-      projects: 0,
-      projectDetails: 0,
-      projectCrew: 0,
-      projectSchedules: 0,
-      rules: 0,
-      favorites: 0,
-    };
+    return summary;
   }
   const favorites = isPlainObject(bundle.favorites) ? bundle.favorites : {};
   let projectInfo = null;
@@ -542,14 +676,13 @@ function summarizeProjectBundle(bundle) {
     projectInfo = bundle.project.projectInfo;
   }
   const projectStats = summarizeProjectInfoStats(projectInfo);
-  return {
-    projects: bundleHasProject(bundle) ? 1 : 0,
-    projectDetails: projectStats.details,
-    projectCrew: projectStats.crew,
-    projectSchedules: projectStats.schedule,
-    rules: Array.isArray(bundle.autoGearRules) ? bundle.autoGearRules.length : 0,
-    favorites: countFavoritesEntries(favorites),
-  };
+  summary.projects = bundleHasProject(bundle) ? 1 : 0;
+  summary.projectDetails = projectStats.details;
+  summary.projectCrew = projectStats.crew;
+  summary.projectSchedules = projectStats.schedule;
+  summary.rules = Array.isArray(bundle.autoGearRules) ? bundle.autoGearRules.length : 0;
+  summary.favorites = countFavoritesEntries(favorites);
+  return summary;
 }
 
 function getRestoreRehearsalLiveCounts() {
@@ -565,17 +698,16 @@ function getSelectedRestoreRehearsalMode() {
   return selected && typeof selected.value === 'string' ? selected.value : 'backup';
 }
 
-function buildRestoreRehearsalRows(liveCounts, sandboxCounts) {
+function buildRestoreRehearsalRows(liveCounts, sandboxCounts, options = {}) {
   const lang = typeof currentLang === 'string' && texts[currentLang] ? currentLang : 'en';
   const langTexts = texts[lang] || texts.en || {};
-  const metrics = [
-    { key: 'projects', label: langTexts.restoreRehearsalMetricProjects || 'Projects' },
-    { key: 'projectDetails', label: langTexts.restoreRehearsalMetricProjectDetails || 'Project details' },
-    { key: 'projectCrew', label: langTexts.restoreRehearsalMetricCrew || 'Crew entries' },
-    { key: 'projectSchedules', label: langTexts.restoreRehearsalMetricSchedule || 'Schedule entries' },
-    { key: 'rules', label: langTexts.restoreRehearsalMetricRules || 'Rules' },
-    { key: 'favorites', label: langTexts.restoreRehearsalMetricFavorites || 'Favorites' },
-  ];
+  const mode = typeof options.mode === 'string' ? options.mode : 'backup';
+  const metrics = RESTORE_REHEARSAL_METRICS
+    .filter((metric) => metric.modes.includes(mode))
+    .map((metric) => ({
+      key: metric.key,
+      label: langTexts[metric.translationKey] || metric.fallback,
+    }));
   return metrics.map((metric) => {
     const live = typeof liveCounts[metric.key] === 'number' ? liveCounts[metric.key] : 0;
     const sandbox = typeof sandboxCounts[metric.key] === 'number' ? sandboxCounts[metric.key] : 0;
@@ -1247,6 +1379,68 @@ function renderRestoreRehearsalResults(rows, ruleDiff) {
   renderRestoreRehearsalRuleDiff(Array.isArray(ruleDiff) ? ruleDiff : []);
 }
 
+function countRestoreRehearsalDeviceEntries(devices) {
+  if (typeof countDeviceDatabaseEntries === 'function') {
+    try {
+      const direct = countDeviceDatabaseEntries(devices);
+      if (typeof direct === 'number' && Number.isFinite(direct)) {
+        return direct;
+      }
+    } catch (deviceCountError) {
+      console.warn('Primary device counting failed during restore rehearsal', deviceCountError);
+    }
+  }
+
+  const skipKeys = new Set(['filterOptions', 'None']);
+  const isEntryObject = (value) => {
+    if (!isPlainObject(value)) {
+      return false;
+    }
+    return Object.values(value).some((entry) => entry === null || typeof entry !== 'object' || Array.isArray(entry));
+  };
+
+  const fallbackCount = (collection) => {
+    if (!isPlainObject(collection)) {
+      return 0;
+    }
+    let total = 0;
+    Object.entries(collection).forEach(([name, value]) => {
+      if (!name || skipKeys.has(name)) {
+        return;
+      }
+      if (isEntryObject(value)) {
+        total += 1;
+        return;
+      }
+      total += fallbackCount(value);
+    });
+    return total;
+  };
+
+  return fallbackCount(devices);
+}
+
+function countRestoreRehearsalFeedbackDrafts(feedback) {
+  if (!isPlainObject(feedback)) {
+    return 0;
+  }
+  return Object.values(feedback).reduce((total, entry) => {
+    if (!entry) {
+      return total;
+    }
+    if (Array.isArray(entry)) {
+      return total + entry.filter(Boolean).length;
+    }
+    if (typeof entry === 'string') {
+      return entry.trim() ? total + 1 : total;
+    }
+    if (isPlainObject(entry)) {
+      return Object.keys(entry).length ? total + 1 : total;
+    }
+    return total + 1;
+  }, 0);
+}
+
 function runRestoreRehearsal(file) {
   if (!file) return;
   const lang = typeof currentLang === 'string' && texts[currentLang] ? currentLang : 'en';
@@ -1296,7 +1490,7 @@ function runRestoreRehearsal(file) {
       const liveSnapshot = getRestoreRehearsalLiveSnapshot();
       const liveCounts = liveSnapshot && isPlainObject(liveSnapshot.counts) ? liveSnapshot.counts : {};
       const liveRules = liveSnapshot && Array.isArray(liveSnapshot.rules) ? liveSnapshot.rules : [];
-      const rows = buildRestoreRehearsalRows(liveCounts, sandboxCounts);
+      const rows = buildRestoreRehearsalRows(liveCounts, sandboxCounts, { mode });
       const ruleDiff = buildRestoreRehearsalRuleDiff(liveRules, sandboxRules);
       renderRestoreRehearsalResults(rows, ruleDiff);
       restoreRehearsalLastSnapshot = {
