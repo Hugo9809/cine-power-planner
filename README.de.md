@@ -232,6 +232,7 @@ Dieser kurze Ablauf sollte bei neuen Teammitgliedern, frisch eingerichteten Work
 ## Daten- & Speicherübersicht
 
 - **Einstellungen → Daten & Speicher** listet gespeicherte Projekte, Auto-Backups, Gerätelisten, Custom-Geräte, Favoriten, Laufzeitfeedback und Session-Cache mit Live-Zahlen.
+- Eine **Speicherschutz**-Karte zeigt, ob der Browser dauerhaften Speicher gewährt hat und erlaubt eine erneute Anfrage, damit Teams den Schutz vor dem Offline-Einsatz absichern können.
 - Einträge erklären ihre Inhalte; leere Bereiche bleiben verborgen, damit du den Zustand sofort siehst.
 - Die Übersicht schätzt die Backup-Größe basierend auf dem jüngsten Export.
 

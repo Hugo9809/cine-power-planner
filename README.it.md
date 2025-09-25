@@ -232,6 +232,7 @@ Ripeti questa routine quando arriva un nuovo membro, allestisci una postazione o
 ## Panoramica dati e archiviazione
 
 - Apri **Impostazioni → Dati e archiviazione** per vedere progetti salvati, auto-backup, liste, dispositivi personalizzati, preferiti, feedback e cache di sessione con conteggi in tempo reale.
+- Una scheda **Protezione dell’archiviazione** indica se il browser ha concesso l’archiviazione persistente e permette di richiederla di nuovo quando serve approvazione, così il team mette al sicuro i dati prima di lavorare offline.
 - Ogni sezione descrive il proprio contenuto; quelle vuote restano nascoste per riconoscere subito lo stato del planner.
 - Il riepilogo stima la dimensione del backup basandosi sull’export più recente.
 

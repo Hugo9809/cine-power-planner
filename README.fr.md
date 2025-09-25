@@ -232,6 +232,7 @@ Cette routine prouve que sauvegarde, partage, import, backup et restauration fon
 ## Vue d’ensemble des données et du stockage
 
 - Ouvrez **Paramètres → Données & stockage** pour consulter projets, auto-backups, listes, équipements personnalisés, favoris, retours et cache de session avec des compteurs en temps réel.
+- Une carte **Protection du stockage** indique si le navigateur a accordé un stockage persistant et permet de renouveler la demande lorsque l’accès est en attente, afin de sécuriser les données avant de travailler hors ligne.
 - Chaque section précise son contenu ; les sections vides restent masquées pour identifier rapidement l’état du planner.
 - Le résumé estime la taille d’un backup à partir de la dernière exportation.
 

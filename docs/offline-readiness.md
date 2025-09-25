@@ -27,7 +27,8 @@ time:
    timestamped `auto-backup-…` snapshot once the autosave routine runs. Open **Settings →
    Backup & Restore** to confirm the autosave status overlay reflects the same timestamp,
    then review **Settings → Data & Storage** to verify project, backup and gear counts
-   updated as expected.
+   updated as expected. Confirm the **Storage protection** card reports a granted state
+   (or retry the request) so eviction-safe storage stays active for the trip.
 4. **Capture baseline exports.** While still offline, export both a planner backup
    (`planner-backup.json`) and a project bundle (`project-name.json`). Import the files into
    a private browser profile that also stays offline. Once you confirm the restore loop

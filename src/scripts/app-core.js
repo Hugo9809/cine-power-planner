@@ -1,5 +1,5 @@
 // script.js – Main logic for the Cine Power Planner app
-/* global texts, categoryNames, gearItems, loadSessionState, saveSessionState, loadProject, saveProject, deleteProject, renameSetup, registerDevice, loadFavorites, saveFavorites, exportAllData, importAllData, clearAllData, loadAutoGearRules, saveAutoGearRules, loadAutoGearBackups, saveAutoGearBackups, loadAutoGearSeedFlag, saveAutoGearSeedFlag, loadAutoGearPresets, saveAutoGearPresets, loadAutoGearActivePresetId, saveAutoGearActivePresetId, loadAutoGearAutoPresetId, saveAutoGearAutoPresetId, loadAutoGearBackupVisibility, saveAutoGearBackupVisibility, loadAutoGearBackupRetention, saveAutoGearBackupRetention, loadAutoGearMonitorDefaults, saveAutoGearMonitorDefaults, AUTO_GEAR_RULES_STORAGE_KEY, AUTO_GEAR_SEEDED_STORAGE_KEY, AUTO_GEAR_BACKUPS_STORAGE_KEY, AUTO_GEAR_PRESETS_STORAGE_KEY, AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, AUTO_GEAR_AUTO_PRESET_STORAGE_KEY, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY, AUTO_GEAR_BACKUP_RETENTION_STORAGE_KEY, AUTO_GEAR_MONITOR_DEFAULTS_STORAGE_KEY, SAFE_LOCAL_STORAGE, getSafeLocalStorage, CUSTOM_FONT_STORAGE_KEY, CUSTOM_FONT_STORAGE_KEY_NAME, TEMPERATURE_UNIT_STORAGE_KEY, updateAutoGearHighlightToggleButton, handlePinkModeIconPress */
+/* global texts, categoryNames, gearItems, loadSessionState, saveSessionState, loadProject, saveProject, deleteProject, renameSetup, registerDevice, loadFavorites, saveFavorites, exportAllData, importAllData, clearAllData, loadAutoGearRules, saveAutoGearRules, loadAutoGearBackups, saveAutoGearBackups, loadAutoGearSeedFlag, saveAutoGearSeedFlag, loadAutoGearPresets, saveAutoGearPresets, loadAutoGearActivePresetId, saveAutoGearActivePresetId, loadAutoGearAutoPresetId, saveAutoGearAutoPresetId, loadAutoGearBackupVisibility, saveAutoGearBackupVisibility, loadAutoGearBackupRetention, saveAutoGearBackupRetention, loadAutoGearMonitorDefaults, saveAutoGearMonitorDefaults, AUTO_GEAR_RULES_STORAGE_KEY, AUTO_GEAR_SEEDED_STORAGE_KEY, AUTO_GEAR_BACKUPS_STORAGE_KEY, AUTO_GEAR_PRESETS_STORAGE_KEY, AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY, AUTO_GEAR_AUTO_PRESET_STORAGE_KEY, AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY, AUTO_GEAR_BACKUP_RETENTION_STORAGE_KEY, AUTO_GEAR_MONITOR_DEFAULTS_STORAGE_KEY, SAFE_LOCAL_STORAGE, getSafeLocalStorage, CUSTOM_FONT_STORAGE_KEY, CUSTOM_FONT_STORAGE_KEY_NAME, TEMPERATURE_UNIT_STORAGE_KEY, updateAutoGearHighlightToggleButton, handlePinkModeIconPress, requestPersistentStorage, getPersistentStorageStatus */
 
 // Use `var` here instead of `let` because `index.html` loads the lz-string
 // library from a CDN which defines a global `LZString` variable. Using `let`
@@ -6850,6 +6850,40 @@ function setLanguage(lang) {
   if (storageSummaryEmpty) {
     storageSummaryEmpty.textContent = texts[lang].storageSummaryEmpty;
   }
+  if (storagePersistenceHeading) {
+    storagePersistenceHeading.textContent =
+      texts[lang].storagePersistenceHeading
+      || texts.en?.storagePersistenceHeading
+      || 'Storage protection';
+  }
+  if (storagePersistenceHelp) {
+    storagePersistenceHelp.textContent =
+      texts[lang].storagePersistenceHelp
+      || texts.en?.storagePersistenceHelp
+      || 'Persistent storage asks the browser not to clear planner data automatically.';
+  }
+  if (storagePersistenceRequestButton) {
+    const helpText =
+      texts[lang].storagePersistenceHelp
+      || texts.en?.storagePersistenceHelp
+      || texts[lang].storagePersistenceRequest
+      || texts.en?.storagePersistenceRequest
+      || 'Request persistent storage';
+    storagePersistenceRequestButton.setAttribute('data-help', helpText);
+  }
+  if (storagePersistenceSection) {
+    const strings = buildStoragePersistenceStrings(lang);
+    if (storagePersistenceLastResult) {
+      applyStoragePersistenceResult(storagePersistenceLastResult, { strings, store: false });
+    } else {
+      if (storagePersistenceStatus) {
+        setStoragePersistenceStatusText(strings.checking);
+      }
+      if (storagePersistenceRequestButton) {
+        setStoragePersistenceRequestButton(strings.request, false);
+      }
+    }
+  }
   const showAutoBackupsLabel = document.getElementById("settingsShowAutoBackupsLabel");
   if (showAutoBackupsLabel) {
     showAutoBackupsLabel.textContent = texts[lang].showAutoBackupsSetting;
@@ -12353,6 +12387,277 @@ const storageSummaryIntro = document.getElementById("storageSummaryIntro");
 const storageSummaryList = document.getElementById("storageSummaryList");
 const storageSummaryEmpty = document.getElementById("storageSummaryEmpty");
 const storageSummaryFootnote = document.getElementById("storageSummaryFootnote");
+const storagePersistenceSection = document.getElementById("storagePersistenceSection");
+const storagePersistenceHeading = document.getElementById("storagePersistenceHeading");
+const storagePersistenceStatus = document.getElementById("storagePersistenceStatus");
+const storagePersistenceHelp = document.getElementById("storagePersistenceHelp");
+const storagePersistenceRequestButton = document.getElementById("storagePersistenceRequest");
+
+const STORAGE_PERSISTENCE_STATE_CLASSES = [
+  'storage-persistence--granted',
+  'storage-persistence--warning',
+  'storage-persistence--error',
+  'storage-persistence--unsupported',
+];
+
+let storagePersistenceRefreshPromise = null;
+let storagePersistenceLastResult = null;
+
+function applyStoragePersistenceState(stateClass) {
+  if (!storagePersistenceSection) return;
+  STORAGE_PERSISTENCE_STATE_CLASSES.forEach(cls => {
+    storagePersistenceSection.classList.remove(cls);
+  });
+  if (stateClass) {
+    storagePersistenceSection.classList.add(stateClass);
+  }
+}
+
+function setStoragePersistenceStatusText(text) {
+  if (!storagePersistenceStatus) return;
+  storagePersistenceStatus.textContent = text;
+}
+
+function setStoragePersistenceRequestButton(text, disabled = false) {
+  if (!storagePersistenceRequestButton) return;
+  if (typeof text === 'string') {
+    storagePersistenceRequestButton.textContent = text;
+    storagePersistenceRequestButton.setAttribute('aria-label', text);
+  }
+  storagePersistenceRequestButton.disabled = Boolean(disabled);
+}
+
+function applyStoragePersistenceResult(result, { strings, forced = false, store = true } = {}) {
+  if (!storagePersistenceSection || !storagePersistenceStatus) {
+    storagePersistenceLastResult = result || null;
+    return;
+  }
+
+  const supported = Boolean(result && result.supported);
+  const canPersist = typeof (result && result.canPersist) === 'boolean'
+    ? result.canPersist
+    : supported;
+
+  if (!supported || !canPersist) {
+    applyStoragePersistenceState('storage-persistence--unsupported');
+    setStoragePersistenceStatusText(strings?.unsupported || 'Persistent storage is not supported on this browser.');
+    if (storagePersistenceRequestButton) {
+      storagePersistenceRequestButton.setAttribute('hidden', '');
+    }
+    storagePersistenceLastResult = result || null;
+    return;
+  }
+
+  if (storagePersistenceRequestButton) {
+    storagePersistenceRequestButton.removeAttribute('hidden');
+  }
+
+  const granted = Boolean(result && result.granted);
+  const hadError = Boolean(result && result.error);
+  const displayForced = Boolean(forced || (result && result.wasForced));
+
+  if (granted) {
+    applyStoragePersistenceState('storage-persistence--granted');
+    setStoragePersistenceStatusText(strings?.granted || 'Persistent storage is active.');
+    if (storagePersistenceRequestButton) {
+      setStoragePersistenceRequestButton(strings?.grantedButton || strings?.request || 'Request persistent storage', true);
+    }
+  } else if (hadError) {
+    applyStoragePersistenceState('storage-persistence--error');
+    setStoragePersistenceStatusText(strings?.error || 'Unable to confirm persistent storage.');
+    if (storagePersistenceRequestButton) {
+      setStoragePersistenceRequestButton(strings?.retry || strings?.request || 'Try again', false);
+    }
+  } else {
+    applyStoragePersistenceState('storage-persistence--warning');
+    const message = displayForced
+      ? (strings?.denied || strings?.prompt)
+      : strings?.prompt;
+    setStoragePersistenceStatusText(
+      message
+      || 'Request persistent storage so the browser keeps planner data safe.'
+    );
+    if (storagePersistenceRequestButton) {
+      const label = displayForced ? strings?.retry : strings?.request;
+      setStoragePersistenceRequestButton(label || 'Request persistent storage', false);
+    }
+  }
+
+  if (store) {
+    storagePersistenceLastResult = result ? { ...result } : null;
+  }
+}
+
+function buildStoragePersistenceStrings(lang) {
+  const langTexts = getLanguageTexts(lang);
+  const fallbackTexts = texts.en || {};
+  return {
+    checking:
+      langTexts.storagePersistenceStatusChecking
+      || fallbackTexts.storagePersistenceStatusChecking
+      || 'Checking storage protection…',
+    granted:
+      langTexts.storagePersistenceStatusGranted
+      || fallbackTexts.storagePersistenceStatusGranted
+      || 'Persistent storage is active. The browser keeps planner data even when space runs low.',
+    prompt:
+      langTexts.storagePersistenceStatusPrompt
+      || fallbackTexts.storagePersistenceStatusPrompt
+      || 'Request persistent storage so the browser keeps planner data safe from automatic clearing.',
+    denied:
+      langTexts.storagePersistenceStatusDenied
+      || fallbackTexts.storagePersistenceStatusDenied
+      || 'Persistent storage is unavailable or was declined. Keep manual backups and try again after freeing space.',
+    unsupported:
+      langTexts.storagePersistenceStatusUnsupported
+      || fallbackTexts.storagePersistenceStatusUnsupported
+      || 'This browser cannot lock planner data in persistent storage. Maintain external backups.',
+    error:
+      langTexts.storagePersistenceStatusError
+      || fallbackTexts.storagePersistenceStatusError
+      || 'Unable to confirm persistent storage. Keep manual backups and try again.',
+    request:
+      langTexts.storagePersistenceRequest
+      || fallbackTexts.storagePersistenceRequest
+      || 'Request persistent storage',
+    retry:
+      langTexts.storagePersistenceRequestRetry
+      || fallbackTexts.storagePersistenceRequestRetry
+      || 'Try again',
+    working:
+      langTexts.storagePersistenceRequestWorking
+      || fallbackTexts.storagePersistenceRequestWorking
+      || 'Requesting…',
+    grantedButton:
+      langTexts.storagePersistenceRequestGranted
+      || fallbackTexts.storagePersistenceRequestGranted
+      || (langTexts.storagePersistenceRequest
+        || fallbackTexts.storagePersistenceRequest
+        || 'Request persistent storage'),
+  };
+}
+
+function refreshStoragePersistenceStatus(options = {}) {
+  if (!storagePersistenceSection || !storagePersistenceStatus) {
+    return Promise.resolve(null);
+  }
+
+  const opts = typeof options === 'object' && options !== null ? options : {};
+  const force = Boolean(opts.force);
+  const showLoading = opts.showLoading !== false;
+  const lang = resolveLanguageCode(currentLang);
+  const strings = buildStoragePersistenceStrings(lang);
+
+  const storageManager = typeof navigator !== 'undefined'
+    && navigator
+    && typeof navigator.storage === 'object'
+    ? navigator.storage
+    : null;
+  const supported = Boolean(storageManager);
+  const canPersist = Boolean(storageManager && typeof storageManager.persist === 'function');
+
+  if (!supported || !canPersist) {
+    applyStoragePersistenceResult(
+      { supported, canPersist, granted: false },
+      { strings }
+    );
+    return Promise.resolve({ supported, canPersist, granted: false });
+  }
+
+  if (storagePersistenceRequestButton) {
+    storagePersistenceRequestButton.removeAttribute('hidden');
+  }
+
+  if (storagePersistenceRefreshPromise && !force) {
+    return storagePersistenceRefreshPromise;
+  }
+
+  if (!force && storagePersistenceLastResult && !showLoading) {
+    applyStoragePersistenceResult(storagePersistenceLastResult, { strings });
+  } else if (showLoading) {
+    applyStoragePersistenceState(null);
+    setStoragePersistenceStatusText(strings.checking);
+  }
+
+  if (storagePersistenceRequestButton) {
+    if (force) {
+      setStoragePersistenceRequestButton(strings.working, true);
+    } else if (storagePersistenceLastResult && storagePersistenceLastResult.granted) {
+      setStoragePersistenceRequestButton(strings.grantedButton, true);
+    } else {
+      setStoragePersistenceRequestButton(strings.request, false);
+    }
+  }
+
+  const promise = (async () => {
+    let status;
+    try {
+      if (typeof getPersistentStorageStatus === 'function') {
+        status = await getPersistentStorageStatus(force ? { force: true } : {});
+      } else {
+        status = await requestPersistentStorage(force ? { force: true } : {});
+      }
+    } catch (error) {
+      console.warn('Unable to refresh persistent storage status', error);
+      status = {
+        supported: true,
+        granted: false,
+        alreadyGranted: false,
+        error,
+      };
+    }
+
+    const base = typeof status === 'object' && status !== null ? status : {};
+    const normalized = {
+      supported: 'supported' in base ? Boolean(base.supported) : true,
+      granted: Boolean(base.granted),
+      alreadyGranted: Boolean(base.alreadyGranted),
+      canPersist: typeof base.canPersist === 'boolean' ? base.canPersist : true,
+      canQuery: typeof base.canQuery === 'boolean' ? base.canQuery : undefined,
+      error: base.error,
+      wasForced: false,
+    };
+
+    if (!normalized.supported || normalized.canPersist === false) {
+      normalized.canPersist = false;
+    }
+
+    normalized.wasForced = normalized.granted
+      ? false
+      : Boolean(force || (storagePersistenceLastResult && storagePersistenceLastResult.wasForced));
+
+    storagePersistenceLastResult = normalized;
+
+    if (!normalized.supported || normalized.canPersist === false) {
+      applyStoragePersistenceResult({
+        supported: normalized.supported,
+        canPersist: false,
+        granted: false,
+        wasForced: normalized.wasForced,
+      }, { strings, store: false });
+      return normalized;
+    }
+
+    if (normalized.granted) {
+      applyStoragePersistenceResult(normalized, { strings });
+      return normalized;
+    }
+
+    if (normalized.error) {
+      applyStoragePersistenceResult(normalized, { strings, forced: force, store: false });
+      return normalized;
+    }
+
+    applyStoragePersistenceResult(normalized, { strings, forced: force });
+    return normalized;
+  })();
+
+  storagePersistenceRefreshPromise = promise.finally(() => {
+    storagePersistenceRefreshPromise = null;
+  });
+
+  return promise;
+}
 
 if (autoGearBackupRetentionInput) {
   autoGearBackupRetentionInput.addEventListener('input', handleAutoGearBackupRetentionInput);
@@ -18823,6 +19128,8 @@ function updateStorageSummary() {
       storageSummaryEmpty.removeAttribute('hidden');
     }
   }
+
+  refreshStoragePersistenceStatus({ showLoading: false }).catch(() => {});
 }
 
 if (settingsLogo) {
@@ -18845,6 +19152,13 @@ if (settingsLogo) {
     reader.readAsDataURL(file);
   });
 }
+
+if (storagePersistenceRequestButton) {
+  storagePersistenceRequestButton.addEventListener('click', () => {
+    refreshStoragePersistenceStatus({ force: true, showLoading: true });
+  });
+}
+
 const settingsHighContrast = document.getElementById("settingsHighContrast");
 const settingsReduceMotion = document.getElementById("settingsReduceMotion");
 const settingsRelaxedSpacing = document.getElementById("settingsRelaxedSpacing");

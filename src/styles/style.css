@@ -3146,6 +3146,54 @@ body.pink-mode:not(.dark-mode) #settingsPanel-autoGear .auto-gear-rule-items-lab
   padding-left: 0;
 }
 
+.storage-persistence {
+  margin-top: 20px;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid var(--panel-border);
+  background: color-mix(in srgb, var(--surface-color) 94%, var(--panel-bg) 6%);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.storage-persistence-status {
+  margin: 0;
+  font-weight: var(--font-weight-medium);
+}
+
+.storage-persistence-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--cluster-gap);
+}
+
+.storage-persistence button[disabled] {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.storage-persistence--granted {
+  border-color: color-mix(in srgb, var(--success-color) 55%, var(--panel-border) 45%);
+  background: color-mix(in srgb, var(--surface-color) 88%, var(--success-color) 12%);
+}
+
+.storage-persistence--warning {
+  border-color: color-mix(in srgb, var(--warning-color) 55%, var(--panel-border) 45%);
+  background: color-mix(in srgb, var(--surface-color) 92%, var(--warning-color) 8%);
+}
+
+.storage-persistence--error {
+  border-color: color-mix(in srgb, var(--danger-color) 55%, var(--panel-border) 45%);
+  background: color-mix(in srgb, var(--surface-color) 90%, var(--danger-color) 10%);
+}
+
+.storage-persistence--unsupported {
+  border-style: dashed;
+  opacity: 0.85;
+}
+
 .settings-content .button-row {
   display: flex;
   gap: var(--cluster-gap);

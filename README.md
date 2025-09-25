@@ -485,6 +485,9 @@ Use Cine Power Planner end-to-end with the following routine:
   the current device—saved projects, timestamped auto backups, gear list
   snapshots, custom devices, favorites, runtime feedback and the unsaved session
   cache all appear with live counts.
+- A **Storage protection** card shows whether the browser granted persistent
+  storage and provides a retry button when approval is pending so crews can lock
+  data retention before going offline.
 - Each entry clarifies what it represents and, when relevant, lists affected
   categories or whether the session data is currently stored. Empty sections stay
   hidden so you know at a glance when the planner is pristine.

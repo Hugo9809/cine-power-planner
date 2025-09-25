@@ -232,6 +232,7 @@ Repite esta rutina cuando se incorpore personal, se prepare una estación nueva 
 ## Resumen de datos y almacenamiento
 
 - Abre **Configuración → Datos y almacenamiento** para revisar proyectos, auto-backups, listas, dispositivos personalizados, favoritos, comentarios y la caché de sesión con recuentos en vivo.
+- Una tarjeta de **Protección de almacenamiento** indica si el navegador concedió almacenamiento persistente y permite volver a solicitarlo cuando falta aprobación, de modo que el equipo asegure la retención antes de trabajar sin conexión.
 - Cada entrada explica qué representa; las secciones vacías permanecen ocultas para que identifiques el estado rápidamente.
 - El resumen estima el tamaño del backup usando la exportación más reciente.
 

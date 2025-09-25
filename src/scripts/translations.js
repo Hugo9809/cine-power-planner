@@ -636,6 +636,24 @@ const texts = {
     storageSummaryFootnote:
       "Backups download human-readable JSON with each entry.",
     storageSummaryEmpty: "No planner data is currently stored.",
+    storagePersistenceHeading: "Storage protection",
+    storagePersistenceHelp:
+      "Persistent storage asks the browser not to clear planner data automatically.",
+    storagePersistenceStatusChecking: "Checking storage protection…",
+    storagePersistenceStatusGranted:
+      "Persistent storage is active. The browser keeps planner data even when space runs low.",
+    storagePersistenceStatusPrompt:
+      "Request persistent storage so the browser keeps planner data safe from automatic clearing.",
+    storagePersistenceStatusDenied:
+      "Persistent storage is unavailable or was declined. Keep manual backups and try again after freeing space.",
+    storagePersistenceStatusUnsupported:
+      "This browser cannot lock planner data in persistent storage. Maintain external backups.",
+    storagePersistenceStatusError:
+      "Unable to confirm persistent storage. Keep manual backups and try again.",
+    storagePersistenceRequest: "Request persistent storage",
+    storagePersistenceRequestRetry: "Try again",
+    storagePersistenceRequestWorking: "Requesting…",
+    storagePersistenceRequestGranted: "Persistent storage granted",
     storageKeyProjects: "Saved projects",
     storageKeyProjectsDesc: "Configurations saved from Manage Project.",
     storageProjectsCountOne: "%s project",
@@ -2307,6 +2325,24 @@ const texts = {
     storageSummaryFootnote:
       "I backup scaricano ogni voce in JSON leggibile.",
     storageSummaryEmpty: "Nessun dato dell’app è attualmente salvato.",
+    storagePersistenceHeading: "Protezione dell’archiviazione",
+    storagePersistenceHelp:
+      "L’archiviazione persistente chiede al browser di non cancellare automaticamente i dati del planner.",
+    storagePersistenceStatusChecking: "Verifica della protezione dell’archiviazione…",
+    storagePersistenceStatusGranted:
+      "L’archiviazione persistente è attiva. Il browser conserva i dati del planner anche quando lo spazio libero è ridotto.",
+    storagePersistenceStatusPrompt:
+      "Richiedi l’archiviazione persistente per mantenere al sicuro i dati del planner da cancellazioni automatiche.",
+    storagePersistenceStatusDenied:
+      "L’archiviazione persistente non è disponibile o è stata rifiutata. Esegui backup manuali e riprova dopo aver liberato spazio.",
+    storagePersistenceStatusUnsupported:
+      "Questo browser non può bloccare i dati del planner in archiviazione persistente. Mantieni backup esterni.",
+    storagePersistenceStatusError:
+      "Impossibile confermare la protezione dell’archiviazione. Esegui backup manuali e riprova.",
+    storagePersistenceRequest: "Richiedi archiviazione persistente",
+    storagePersistenceRequestRetry: "Richiedi di nuovo",
+    storagePersistenceRequestWorking: "Richiesta in corso…",
+    storagePersistenceRequestGranted: "Archiviazione persistente concessa",
     storageKeyProjects: "Progetti salvati",
     storageKeyProjectsDesc: "Configurazioni salvate da Gestione progetto.",
     storageProjectsCountOne: "%s progetto",
@@ -3555,6 +3591,24 @@ const texts = {
     storageSummaryFootnote:
       "Las copias de seguridad descargan cada elemento en JSON legible.",
     storageSummaryEmpty: "No hay datos del planificador guardados actualmente.",
+    storagePersistenceHeading: "Protección de almacenamiento",
+    storagePersistenceHelp:
+      "El almacenamiento persistente pide al navegador que no borre los datos del planificador automáticamente.",
+    storagePersistenceStatusChecking: "Comprobando la protección de almacenamiento…",
+    storagePersistenceStatusGranted:
+      "El almacenamiento persistente está activo. El navegador conserva los datos del planificador incluso cuando queda poco espacio.",
+    storagePersistenceStatusPrompt:
+      "Solicita almacenamiento persistente para que el navegador mantenga los datos del planificador a salvo de borrados automáticos.",
+    storagePersistenceStatusDenied:
+      "El almacenamiento persistente no está disponible o fue rechazado. Haz copias de seguridad manuales y vuelve a intentarlo tras liberar espacio.",
+    storagePersistenceStatusUnsupported:
+      "Este navegador no puede bloquear los datos del planificador en almacenamiento persistente. Mantén copias de seguridad externas.",
+    storagePersistenceStatusError:
+      "No se pudo confirmar la protección de almacenamiento. Haz copias de seguridad manuales e inténtalo de nuevo.",
+    storagePersistenceRequest: "Solicitar almacenamiento persistente",
+    storagePersistenceRequestRetry: "Volver a solicitar",
+    storagePersistenceRequestWorking: "Solicitando…",
+    storagePersistenceRequestGranted: "Almacenamiento persistente concedido",
     storageKeyProjects: "Proyectos guardados",
     storageKeyProjectsDesc: "Configuraciones guardadas desde Gestionar proyecto.",
     storageProjectsCountOne: "%s proyecto",
@@ -4813,6 +4867,24 @@ const texts = {
     storageSummaryFootnote:
       "Les sauvegardes téléchargent chaque élément en JSON lisible.",
     storageSummaryEmpty: "Aucune donnée du planificateur n'est actuellement enregistrée.",
+    storagePersistenceHeading: "Protection du stockage",
+    storagePersistenceHelp:
+      "Le stockage persistant demande au navigateur de ne pas effacer automatiquement les données du planificateur.",
+    storagePersistenceStatusChecking: "Vérification de la protection du stockage…",
+    storagePersistenceStatusGranted:
+      "Le stockage persistant est actif. Le navigateur conserve les données du planificateur même lorsque l’espace libre diminue.",
+    storagePersistenceStatusPrompt:
+      "Demandez un stockage persistant pour éviter que le navigateur n’efface les données du planificateur.",
+    storagePersistenceStatusDenied:
+      "Le stockage persistant est indisponible ou a été refusé. Réalisez des sauvegardes manuelles et réessayez après avoir libéré de l’espace.",
+    storagePersistenceStatusUnsupported:
+      "Ce navigateur ne peut pas verrouiller les données du planificateur dans un stockage persistant. Conservez des sauvegardes externes.",
+    storagePersistenceStatusError:
+      "Impossible de confirmer la protection du stockage. Réalisez des sauvegardes manuelles puis réessayez.",
+    storagePersistenceRequest: "Demander le stockage persistant",
+    storagePersistenceRequestRetry: "Redemander",
+    storagePersistenceRequestWorking: "Demande en cours…",
+    storagePersistenceRequestGranted: "Stockage persistant accordé",
     storageKeyProjects: "Projets enregistrés",
     storageKeyProjectsDesc: "Configurations enregistrées depuis Gestion du projet.",
     storageProjectsCountOne: "%s projet",
@@ -6077,6 +6149,24 @@ const texts = {
     storageSummaryFootnote:
       "Backups laden jede Position als gut lesbares JSON herunter.",
     storageSummaryEmpty: "Derzeit sind keine Planer-Daten gespeichert.",
+    storagePersistenceHeading: "Speicherschutz",
+    storagePersistenceHelp:
+      "Dauerhafter Speicher sorgt dafür, dass der Browser Planerdaten nicht automatisch löscht.",
+    storagePersistenceStatusChecking: "Speicherschutz wird geprüft…",
+    storagePersistenceStatusGranted:
+      "Dauerhafter Speicher ist aktiv. Der Browser behält Planerdaten auch bei wenig freiem Speicher.",
+    storagePersistenceStatusPrompt:
+      "Fordern Sie dauerhaften Speicher an, damit der Browser Planerdaten vor automatischem Löschen schützt.",
+    storagePersistenceStatusDenied:
+      "Dauerhafter Speicher ist nicht verfügbar oder wurde abgelehnt. Erstellen Sie manuelle Sicherungen und versuchen Sie es nach etwas freiem Speicher erneut.",
+    storagePersistenceStatusUnsupported:
+      "Dieser Browser kann Planerdaten nicht dauerhaft speichern. Verlassen Sie sich auf externe Sicherungen.",
+    storagePersistenceStatusError:
+      "Speicherschutz konnte nicht bestätigt werden. Erstellen Sie manuelle Sicherungen und versuchen Sie es erneut.",
+    storagePersistenceRequest: "Dauerhaften Speicher anfordern",
+    storagePersistenceRequestRetry: "Erneut anfordern",
+    storagePersistenceRequestWorking: "Anfrage läuft…",
+    storagePersistenceRequestGranted: "Dauerhafter Speicher gewährt",
     storageKeyProjects: "Gespeicherte Projekte",
     storageKeyProjectsDesc: "Konfigurationen aus Projekt verwalten.",
     storageProjectsCountOne: "%s Projekt",

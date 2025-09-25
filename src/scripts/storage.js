@@ -1124,22 +1124,30 @@ updateGlobalSafeLocalStorageReference();
 
 let persistentStorageRequestPromise = null;
 
-function requestPersistentStorage() {
-  if (persistentStorageRequestPromise) {
+function requestPersistentStorage(options = {}) {
+  const force = Boolean(options && typeof options === 'object' && options.force);
+
+  if (!force && persistentStorageRequestPromise) {
     return persistentStorageRequestPromise;
   }
 
   const storageManager = getStorageManager();
-  if (!storageManager || typeof storageManager.persist !== 'function') {
-    persistentStorageRequestPromise = Promise.resolve({
-      supported: Boolean(storageManager),
+  const supported = Boolean(storageManager);
+  const canPersist = Boolean(storageManager && typeof storageManager.persist === 'function');
+
+  if (!supported || !canPersist) {
+    const result = Promise.resolve({
+      supported,
       granted: false,
       alreadyGranted: false,
+      canPersist,
+      canQuery: Boolean(storageManager && typeof storageManager.persisted === 'function'),
     });
-    return persistentStorageRequestPromise;
+    persistentStorageRequestPromise = result;
+    return result;
   }
 
-  persistentStorageRequestPromise = (async () => {
+  const requestPromise = (async () => {
     let alreadyGranted = false;
     const supportsPersistedCheck = typeof storageManager.persisted === 'function';
 
@@ -1169,6 +1177,8 @@ function requestPersistentStorage() {
               supported: true,
               granted: true,
               alreadyGranted: true,
+              canPersist: true,
+              canQuery: true,
             };
           }
         } catch (verifyError) {
@@ -1180,6 +1190,8 @@ function requestPersistentStorage() {
         supported: true,
         granted,
         alreadyGranted: false,
+        canPersist: true,
+        canQuery: supportsPersistedCheck,
       };
     } catch (error) {
       console.warn('Persistent storage request failed', error);
@@ -1187,16 +1199,101 @@ function requestPersistentStorage() {
         supported: true,
         granted: false,
         alreadyGranted: false,
+        canPersist: true,
+        canQuery: supportsPersistedCheck,
         error,
       };
     }
   })();
 
-  return persistentStorageRequestPromise;
+  persistentStorageRequestPromise = requestPromise;
+  return requestPromise;
 }
 
 if (typeof window !== 'undefined' && typeof navigator !== 'undefined') {
   requestPersistentStorage();
+}
+
+async function getPersistentStorageStatus(options = {}) {
+  const force = Boolean(options && typeof options === 'object' && options.force);
+  const storageManager = getStorageManager();
+  const supported = Boolean(storageManager);
+  const canPersist = Boolean(storageManager && typeof storageManager.persist === 'function');
+  const canQuery = Boolean(storageManager && typeof storageManager.persisted === 'function');
+
+  if (!supported) {
+    return {
+      supported: false,
+      granted: false,
+      alreadyGranted: false,
+      canPersist: false,
+      canQuery: false,
+    };
+  }
+
+  if (!canPersist) {
+    return {
+      supported: true,
+      granted: false,
+      alreadyGranted: false,
+      canPersist: false,
+      canQuery,
+    };
+  }
+
+  if (force) {
+    return requestPersistentStorage({ force: true });
+  }
+
+  if (canQuery) {
+    try {
+      const persisted = await storageManager.persisted();
+      if (persisted) {
+        return {
+          supported: true,
+          granted: true,
+          alreadyGranted: true,
+          canPersist: true,
+          canQuery: true,
+        };
+      }
+    } catch (error) {
+      console.warn('Unable to determine persistent storage state', error);
+    }
+  }
+
+  if (persistentStorageRequestPromise) {
+    try {
+      const result = await persistentStorageRequestPromise;
+      return {
+        supported: Boolean(result && result.supported),
+        granted: Boolean(result && result.granted),
+        alreadyGranted: Boolean(result && result.alreadyGranted),
+        canPersist: true,
+        canQuery,
+        error: result && result.error ? result.error : undefined,
+      };
+    } catch (error) {
+      return {
+        supported: true,
+        granted: false,
+        alreadyGranted: false,
+        canPersist: true,
+        canQuery,
+        error,
+      };
+    }
+  }
+
+  const result = await requestPersistentStorage();
+  return {
+    supported: Boolean(result && result.supported),
+    granted: Boolean(result && result.granted),
+    alreadyGranted: Boolean(result && result.alreadyGranted),
+    canPersist: true,
+    canQuery,
+    error: result && result.error ? result.error : undefined,
+  };
 }
 
 // Helper to check for plain objects
@@ -5806,6 +5903,7 @@ const STORAGE_API = {
   saveFullBackupHistory,
   recordFullBackupHistoryEntry,
   requestPersistentStorage,
+  getPersistentStorageStatus,
   clearUiCacheStorageEntries,
 };
 

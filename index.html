@@ -2088,6 +2088,29 @@
         </p>
         <ul id="storageSummaryList" class="storage-summary" aria-live="polite"></ul>
         <p id="storageSummaryEmpty" class="storage-summary-note" hidden>No planner data stored yet.</p>
+        <section
+          id="storagePersistenceSection"
+          class="storage-persistence"
+          aria-live="polite"
+        >
+          <h4 id="storagePersistenceHeading">Storage protection</h4>
+          <p id="storagePersistenceStatus" class="storage-persistence-status">
+            Checking storage protection…
+          </p>
+          <div class="storage-persistence-actions">
+            <button
+              type="button"
+              id="storagePersistenceRequest"
+              data-feature-search="true"
+              data-feature-search-keywords="storage persistent quota data eviction"
+            >
+              Request persistent storage
+            </button>
+          </div>
+          <p id="storagePersistenceHelp" class="storage-summary-note">
+            Persistent storage asks the browser not to clear planner data automatically.
+          </p>
+        </section>
         <p id="storageSummaryFootnote" class="storage-summary-note">
           Backups export each entry as human-readable JSON.
         </p>

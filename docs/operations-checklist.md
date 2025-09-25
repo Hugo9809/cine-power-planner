@@ -36,7 +36,9 @@ update the repository or hand off a project at the end of the day.
    removals and scenario scope changes are confirmed without touching live
    storage. Delete the temporary profile after confirmation.
 5. **Review data & storage dashboard.** Open **Settings → Data & Storage** to
-   ensure counts for projects, backups and custom devices match expectations.
+   ensure counts for projects, backups and custom devices match expectations and
+   confirm the **Storage protection** card is green or re-request persistence if
+   needed.
 6. **Check draft impact preview.** Open the automatic gear rule editor, review
    the draft impact preview for quantity deltas and warnings, then cancel to
    confirm the live generator stays unchanged.
