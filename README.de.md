@@ -38,6 +38,12 @@ Sämtliche Planungen, Eingaben und Exporte bleiben auf deinem Gerät. Spracheins
   Gear-Regeln enthalten.
 - **Alles sichern.** Vollständige Planner-Backups beinhalten Projekte, Favoriten, eigene Geräte, Laufzeitdaten und UI-Präferenzen,
   damit kein Kontext verloren geht.
+- **Verborgene Migrations-Backups.** Bevor gespeicherte Planner, Setups oder
+  Präferenzen überschrieben werden, bewahrt die App den vorherigen JSON-Snapshot
+  im geschützten Eintrag `__legacyMigrationBackup` auf. Schlägt ein Schreibvorgang
+  fehl oder entstehen beschädigte Daten, greifen die Wiederherstellungstools
+  automatisch auf diese Sicherheitskopie zurück, sodass keine Benutzerdaten
+  verloren gehen.
 
 ## Datensicherheit im Offline-Betrieb
 

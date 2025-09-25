@@ -487,6 +487,11 @@ Use Cine Power Planner end-to-end with the following routine:
   `planner-backup.json` with projects, custom devices, runtime feedback,
   favorites, automatic gear rules and UI state. Restores create a safety copy
   before importing and warn if the file was produced on another version.
+- **Hidden migration backups** – before overwriting stored planners, setups or
+  preferences, the app now preserves the previous JSON snapshot in a protected
+  `__legacyMigrationBackup` slot. If a write ever fails or produces corrupt
+  data, the recovery tools automatically fall back to that safety copy so no
+  user data disappears.
 - **Automatic gear snapshots** – rule changes trigger timestamped safety copies
   every 10 minutes in **Settings → Automatic Gear Rules**, and you can restore or
   export them if a customization misfires.

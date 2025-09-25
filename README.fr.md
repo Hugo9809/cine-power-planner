@@ -39,6 +39,12 @@ L’ensemble de la planification, des saisies et des exports reste sur votre app
   des règles automatiques de matériel.
 - **Sauvegarder l’ensemble.** Les sauvegardes complètes incluent projets, favoris, appareils personnalisés, données d’autonomie
   et préférences d’interface pour ne perdre aucun contexte.
+- **Sauvegardes de migration invisibles.** Avant d’écraser les planificateurs,
+  configurations ou préférences enregistrés, l’application conserve l’instantané
+  JSON précédent dans l’emplacement protégé `__legacyMigrationBackup`. Si une
+  écriture échoue ou produit des données corrompues, les outils de récupération
+  reviennent automatiquement à cette copie de sécurité afin qu’aucune donnée
+  utilisateur ne disparaisse.
 
 ## Protéger les données hors ligne
 
