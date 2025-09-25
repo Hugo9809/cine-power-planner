@@ -25,7 +25,7 @@
           loadFeedback, loadFavorites, loadAutoGearBackups,
           loadAutoGearPresets, loadAutoGearSeedFlag, loadAutoGearActivePresetId,
           loadAutoGearAutoPresetId, loadAutoGearBackupVisibility,
-          loadFullBackupHistory */
+          loadAutoGearBackupRetention, loadFullBackupHistory */
 /* global getDiagramManualPositions, setManualDiagramPositions,
           normalizeDiagramPositionsInput, ensureAutoBackupsFromProjects */
 
@@ -2560,6 +2560,34 @@ function applyHighContrast(enabled) {
   }
 }
 
+function applyReduceMotion(enabled) {
+  const root = typeof document !== 'undefined' ? document.documentElement : null;
+  const body = typeof document !== 'undefined' ? document.body : null;
+  if (root) {
+    root.classList.toggle('reduce-motion', Boolean(enabled));
+  }
+  if (body) {
+    body.classList.toggle('reduce-motion', Boolean(enabled));
+  }
+  if (typeof settingsReduceMotion !== 'undefined' && settingsReduceMotion) {
+    settingsReduceMotion.checked = Boolean(enabled);
+  }
+}
+
+function applyRelaxedSpacing(enabled) {
+  const root = typeof document !== 'undefined' ? document.documentElement : null;
+  const body = typeof document !== 'undefined' ? document.body : null;
+  if (root) {
+    root.classList.toggle('relaxed-spacing', Boolean(enabled));
+  }
+  if (body) {
+    body.classList.toggle('relaxed-spacing', Boolean(enabled));
+  }
+  if (typeof settingsRelaxedSpacing !== 'undefined' && settingsRelaxedSpacing) {
+    settingsRelaxedSpacing.checked = Boolean(enabled);
+  }
+}
+
 let highContrastEnabled = false;
 try {
   highContrastEnabled = localStorage.getItem("highContrast") === "true";
@@ -2882,6 +2910,14 @@ if (settingsButton && settingsDialog) {
     if (settingsDarkMode) settingsDarkMode.checked = document.body.classList.contains('dark-mode');
     if (settingsPinkMode) settingsPinkMode.checked = document.body.classList.contains('pink-mode');
     if (settingsHighContrast) settingsHighContrast.checked = document.body.classList.contains('high-contrast');
+    if (settingsReduceMotion) {
+      const reduceMotionActive = document.documentElement.classList.contains('reduce-motion');
+      settingsReduceMotion.checked = reduceMotionActive;
+    }
+    if (settingsRelaxedSpacing) {
+      const relaxedSpacingActive = document.documentElement.classList.contains('relaxed-spacing');
+      settingsRelaxedSpacing.checked = relaxedSpacingActive;
+    }
     if (settingsShowAutoBackups) settingsShowAutoBackups.checked = showAutoBackups;
     if (accentColorInput) {
       const stored = localStorage.getItem('accentColor');
@@ -2976,6 +3012,24 @@ if (settingsButton && settingsDialog) {
           localStorage.setItem('highContrast', enabled);
         } catch (e) {
           console.warn('Could not save high contrast preference', e);
+        }
+      }
+      if (settingsReduceMotion) {
+        const enabled = settingsReduceMotion.checked;
+        applyReduceMotion(enabled);
+        try {
+          localStorage.setItem('reduceMotion', enabled);
+        } catch (e) {
+          console.warn('Could not save reduce motion preference', e);
+        }
+      }
+      if (settingsRelaxedSpacing) {
+        const enabled = settingsRelaxedSpacing.checked;
+        applyRelaxedSpacing(enabled);
+        try {
+          localStorage.setItem('relaxedSpacing', enabled);
+        } catch (e) {
+          console.warn('Could not save relaxed spacing preference', e);
         }
       }
       if (settingsShowAutoBackups) {
@@ -3873,6 +3927,7 @@ const BACKUP_DATA_KEYS = [
   'autoGearActivePresetId',
   'autoGearAutoPresetId',
   'autoGearShowBackups',
+  'autoGearBackupRetention',
   'customLogo',
   'customFonts',
   'preferences',
@@ -4180,6 +4235,7 @@ function buildRestoreVersionCompatibilityMessage(options) {
     { keys: ['autoGearActivePresetId'], labelKey: 'restoreSectionAutoGearActivePreset', fallback: 'Selected automatic gear preset' },
     { keys: ['autoGearAutoPresetId'], labelKey: 'restoreSectionAutoGearAutoPreset', fallback: 'Automatic assignment preset' },
     { keys: ['autoGearShowBackups'], labelKey: 'restoreSectionAutoGearVisibility', fallback: 'Automatic backup visibility' },
+    { keys: ['autoGearBackupRetention'], labelKey: 'restoreSectionAutoGearBackupRetention', fallback: 'Automatic backup retention' },
     { keys: ['autoGearSeeded'], labelKey: 'restoreSectionAutoGearSeeded', fallback: 'Automatic gear seed state' },
     { keys: ['autoGearMonitorDefaults'], labelKey: 'restoreSectionAutoGearMonitorDefaults', fallback: 'Monitor defaults' },
     { keys: ['session'], labelKey: 'restoreSectionSession', fallback: 'Current planner session' },
@@ -5760,6 +5816,16 @@ function applyPreferencesFromStorage(safeGetItem) {
   } catch (error) {
     console.warn('Failed to apply restored high contrast preference', error);
   }
+  try {
+    applyReduceMotion(safeGetItem('reduceMotion') === 'true');
+  } catch (error) {
+    console.warn('Failed to apply restored reduce motion preference', error);
+  }
+  try {
+    applyRelaxedSpacing(safeGetItem('relaxedSpacing') === 'true');
+  } catch (error) {
+    console.warn('Failed to apply restored relaxed spacing preference', error);
+  }
 
   const showBackups = safeGetItem('showAutoBackups') === 'true';
   const color = safeGetItem('accentColor');
@@ -5901,6 +5967,14 @@ const backupFallbackLoaders = [
     isValid: value => typeof value === 'boolean',
     loader: () => (typeof loadAutoGearBackupVisibility === 'function'
       ? loadAutoGearBackupVisibility()
+      : undefined),
+  },
+  {
+    key: 'autoGearBackupRetention',
+    loaderName: 'loadAutoGearBackupRetention',
+    isValid: value => typeof value === 'number' && Number.isFinite(value),
+    loader: () => (typeof loadAutoGearBackupRetention === 'function'
+      ? loadAutoGearBackupRetention()
       : undefined),
   },
   {

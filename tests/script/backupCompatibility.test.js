@@ -69,6 +69,7 @@ describe('backup compatibility utilities', () => {
       fullBackupHistory: [{ createdAt: '2024-01-01T00:00:00.000Z', fileName: 'snapshot.json' }],
       fullBackups: [{ createdAt: '2023-12-31T00:00:00.000Z' }],
       schemaCache: '{"checksum":"abc123"}',
+      autoGearBackupRetention: '24',
     };
 
     const sections = extractBackupSections(legacyBackup);
@@ -78,6 +79,7 @@ describe('backup compatibility utilities', () => {
     ]);
     expect(sections.data.fullBackups).toEqual([{ createdAt: '2023-12-31T00:00:00.000Z' }]);
     expect(sections.data.schemaCache).toBe('{"checksum":"abc123"}');
+    expect(sections.data.autoGearBackupRetention).toBe('24');
   });
 
   test('extractBackupSections parses stringified data containers', () => {
