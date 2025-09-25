@@ -934,6 +934,20 @@ describe('automatic gear storage', () => {
     expect(loadAutoGearRules()).toEqual(rules);
   });
 
+  test('saveAutoGearRules preserves camera weight conditions', () => {
+    const rules = [{
+      id: 'weight-rule',
+      label: 'Heavy camera swap',
+      cameraWeight: { operator: 'greater', value: 2400 },
+      scenarios: [],
+      add: [],
+      remove: [],
+    }];
+    saveAutoGearRules(rules);
+    expect(JSON.parse(localStorage.getItem(AUTO_GEAR_RULES_KEY))).toEqual(rules);
+    expect(loadAutoGearRules()).toEqual(rules);
+  });
+
   test('loadAutoGearRules falls back to empty array when data malformed', () => {
     localStorage.setItem(AUTO_GEAR_RULES_KEY, JSON.stringify('oops'));
     expect(loadAutoGearRules()).toEqual([]);

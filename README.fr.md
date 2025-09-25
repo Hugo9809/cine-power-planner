@@ -296,6 +296,8 @@ Ces routines garantissent que projets, backups et ressources hors ligne restent 
 Via **Paramètres → Règles automatiques**, ajustez chaque liste sans éditer le JSON manuellement :
 
 - Déclenchez des règles uniquement lorsque des **Scénarios requis** spécifiques sont actifs ; ajoutez un libellé facultatif pour les identifier rapidement.
+- Réagissez automatiquement au poids de la caméra. Choisissez des seuils « plus lourde que »,
+  « plus légère que » ou exactement en grammes pour adapter le kit lorsque le boîtier change.
 - Ajoutez du matériel avec catégorie et quantité ou utilisez **Ajouts personnalisés** pour des rappels, kits spécialisés ou notes. Les règles de retrait masquent certaines lignes générées automatiquement.
 - Les règles s’exécutent après les packs intégrés pour se combiner proprement et sont incluses dans listes, backups et bundles.
 - Sauvegarder une liste conserve l’ensemble de règles actif ; charger le projet ou importer un bundle restaure son périmètre.

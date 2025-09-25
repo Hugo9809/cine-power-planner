@@ -1127,6 +1127,60 @@ function normalizeAutoGearShootingDaysCondition(setting) {
   return null;
 }
 
+const AUTO_GEAR_CAMERA_WEIGHT_OPERATORS = new Set(['greater', 'less', 'equal']);
+
+function normalizeAutoGearCameraWeightOperator(value) {
+  if (typeof value !== 'string') return 'greater';
+  const normalized = value.trim().toLowerCase();
+  if (!normalized) return 'greater';
+  if (['less', 'lt', '<', 'lighter', 'below'].includes(normalized)) return 'less';
+  if (['equal', 'equals', '=', 'exact', 'exactly'].includes(normalized)) return 'equal';
+  if (['greater', 'gt', '>', 'heavier', 'above'].includes(normalized)) return 'greater';
+  return AUTO_GEAR_CAMERA_WEIGHT_OPERATORS.has(normalized) ? normalized : 'greater';
+}
+
+function normalizeAutoGearCameraWeightValue(value) {
+  if (typeof value === 'number') {
+    return Number.isFinite(value) ? Math.round(value) : NaN;
+  }
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    if (!trimmed) return NaN;
+    const numeric = Number.parseFloat(trimmed.replace(/[^0-9.+-]/g, ''));
+    return Number.isFinite(numeric) ? Math.round(numeric) : NaN;
+  }
+  return NaN;
+}
+
+function normalizeAutoGearCameraWeightCondition(setting) {
+  if (!setting) return null;
+  if (Array.isArray(setting) && setting.length) {
+    return normalizeAutoGearCameraWeightCondition(setting[0]);
+  }
+  if (typeof setting === 'number' || (typeof setting === 'string' && setting.trim())) {
+    const value = normalizeAutoGearCameraWeightValue(setting);
+    return Number.isFinite(value) && value > 0
+      ? { operator: 'greater', value }
+      : null;
+  }
+  if (typeof setting !== 'object') return null;
+  const operatorSource = setting.operator
+    ?? setting.mode
+    ?? setting.comparison
+    ?? setting.condition;
+  const operator = normalizeAutoGearCameraWeightOperator(operatorSource);
+  const valueSource = setting.value
+    ?? setting.weight
+    ?? setting.threshold
+    ?? setting.grams
+    ?? setting.mass;
+  const value = normalizeAutoGearCameraWeightValue(valueSource);
+  if (!Number.isFinite(value) || value <= 0) {
+    return null;
+  }
+  return { operator, value };
+}
+
 function normalizeAutoGearRule(rule) {
   if (!rule || typeof rule !== 'object') return null;
   const id = typeof rule.id === 'string' && rule.id ? rule.id : generateAutoGearId('rule');
@@ -1185,6 +1239,7 @@ function normalizeAutoGearRule(rule) {
   const videoDistribution = normalizeVideoDistributionTriggerList(rule.videoDistribution)
     .sort((a, b) => a.localeCompare(b));
   const camera = normalizeAutoGearTriggerList(rule.camera).sort((a, b) => a.localeCompare(b));
+  const cameraWeight = normalizeAutoGearCameraWeightCondition(rule.cameraWeight);
   const monitor = normalizeAutoGearTriggerList(rule.monitor).sort((a, b) => a.localeCompare(b));
   const crewPresent = normalizeAutoGearTriggerList(rule.crewPresent).sort((a, b) => a.localeCompare(b));
   const crewAbsent = normalizeAutoGearTriggerList(rule.crewAbsent).sort((a, b) => a.localeCompare(b));
@@ -1203,6 +1258,7 @@ function normalizeAutoGearRule(rule) {
     && !deliveryResolution.length
     && !videoDistribution.length
     && !camera.length
+    && !cameraWeight
     && !monitor.length
     && !crewPresent.length
     && !crewAbsent.length
@@ -1228,6 +1284,7 @@ function normalizeAutoGearRule(rule) {
     deliveryResolution,
     videoDistribution,
     camera,
+    cameraWeight,
     monitor,
     crewPresent,
     crewAbsent,
@@ -2219,6 +2276,7 @@ function cloneAutoGearRule(rule) {
       ? rule.videoDistribution.slice()
       : [],
     camera: Array.isArray(rule.camera) ? rule.camera.slice() : [],
+    cameraWeight: normalizeAutoGearCameraWeightCondition(rule.cameraWeight),
     monitor: Array.isArray(rule.monitor) ? rule.monitor.slice() : [],
     crewPresent: Array.isArray(rule.crewPresent) ? rule.crewPresent.slice() : [],
     crewAbsent: Array.isArray(rule.crewAbsent) ? rule.crewAbsent.slice() : [],
@@ -6153,6 +6211,55 @@ function setLanguage(lang) {
     if (autoGearShootingDaysHelp) {
       autoGearShootingDaysHelp.textContent = help;
       autoGearShootingDaysHelp.setAttribute('data-help', help);
+    }
+  }
+  if (autoGearCameraWeightLabel) {
+    const label = texts[lang].autoGearCameraWeightLabel
+      || texts.en?.autoGearCameraWeightLabel
+      || autoGearCameraWeightLabel.textContent
+      || 'Camera weight condition';
+    const help = texts[lang].autoGearCameraWeightHelp
+      || texts.en?.autoGearCameraWeightHelp
+      || label;
+    const greaterLabel = texts[lang].autoGearCameraWeightOperatorGreater
+      || texts.en?.autoGearCameraWeightOperatorGreater
+      || 'Heavier than';
+    const lessLabel = texts[lang].autoGearCameraWeightOperatorLess
+      || texts.en?.autoGearCameraWeightOperatorLess
+      || 'Lighter than';
+    const equalLabel = texts[lang].autoGearCameraWeightOperatorEqual
+      || texts.en?.autoGearCameraWeightOperatorEqual
+      || 'Exactly';
+    const valueLabel = texts[lang].autoGearCameraWeightValueLabel
+      || texts.en?.autoGearCameraWeightValueLabel
+      || 'Camera weight threshold';
+    autoGearCameraWeightLabel.textContent = label;
+    autoGearCameraWeightLabel.setAttribute('data-help', help);
+    if (autoGearCameraWeightOperator) {
+      autoGearCameraWeightOperator.setAttribute('data-help', help);
+      autoGearCameraWeightOperator.setAttribute('aria-label', label);
+      Array.from(autoGearCameraWeightOperator.options || []).forEach(option => {
+        if (!option || typeof option.value !== 'string') return;
+        if (option.value === 'greater') {
+          option.textContent = greaterLabel;
+        } else if (option.value === 'less') {
+          option.textContent = lessLabel;
+        } else if (option.value === 'equal') {
+          option.textContent = equalLabel;
+        }
+      });
+    }
+    if (autoGearCameraWeightValueLabel) {
+      autoGearCameraWeightValueLabel.textContent = valueLabel;
+      autoGearCameraWeightValueLabel.setAttribute('data-help', help);
+    }
+    if (autoGearCameraWeightValueInput) {
+      autoGearCameraWeightValueInput.setAttribute('data-help', help);
+      autoGearCameraWeightValueInput.setAttribute('aria-label', valueLabel || label);
+    }
+    if (autoGearCameraWeightHelp) {
+      autoGearCameraWeightHelp.textContent = help;
+      autoGearCameraWeightHelp.setAttribute('data-help', help);
     }
   }
   if (autoGearMatteboxLabel) {
@@ -11233,6 +11340,7 @@ const autoGearConditionSections = {
   deliveryResolution: document.getElementById('autoGearCondition-deliveryResolution'),
   videoDistribution: document.getElementById('autoGearCondition-videoDistribution'),
   camera: document.getElementById('autoGearCondition-camera'),
+  cameraWeight: document.getElementById('autoGearCondition-cameraWeight'),
   monitor: document.getElementById('autoGearCondition-monitor'),
   crewPresent: document.getElementById('autoGearCondition-crewPresent'),
   crewAbsent: document.getElementById('autoGearCondition-crewAbsent'),
@@ -11252,6 +11360,7 @@ const autoGearConditionAddShortcuts = {
   deliveryResolution: autoGearConditionSections.deliveryResolution?.querySelector('.auto-gear-condition-add') || null,
   videoDistribution: autoGearConditionSections.videoDistribution?.querySelector('.auto-gear-condition-add') || null,
   camera: autoGearConditionSections.camera?.querySelector('.auto-gear-condition-add') || null,
+  cameraWeight: autoGearConditionSections.cameraWeight?.querySelector('.auto-gear-condition-add') || null,
   monitor: autoGearConditionSections.monitor?.querySelector('.auto-gear-condition-add') || null,
   crewPresent: autoGearConditionSections.crewPresent?.querySelector('.auto-gear-condition-add') || null,
   crewAbsent: autoGearConditionSections.crewAbsent?.querySelector('.auto-gear-condition-add') || null,
@@ -11271,6 +11380,7 @@ const autoGearConditionRemoveButtons = {
   deliveryResolution: autoGearConditionSections.deliveryResolution?.querySelector('.auto-gear-condition-remove') || null,
   videoDistribution: autoGearConditionSections.videoDistribution?.querySelector('.auto-gear-condition-remove') || null,
   camera: autoGearConditionSections.camera?.querySelector('.auto-gear-condition-remove') || null,
+  cameraWeight: autoGearConditionSections.cameraWeight?.querySelector('.auto-gear-condition-remove') || null,
   monitor: autoGearConditionSections.monitor?.querySelector('.auto-gear-condition-remove') || null,
   crewPresent: autoGearConditionSections.crewPresent?.querySelector('.auto-gear-condition-remove') || null,
   crewAbsent: autoGearConditionSections.crewAbsent?.querySelector('.auto-gear-condition-remove') || null,
@@ -11318,6 +11428,11 @@ const autoGearVideoDistributionSelect = document.getElementById('autoGearVideoDi
 const autoGearVideoDistributionLabel = document.getElementById('autoGearVideoDistributionLabel');
 const autoGearCameraSelect = document.getElementById('autoGearCamera');
 const autoGearCameraLabel = document.getElementById('autoGearCameraLabel');
+const autoGearCameraWeightOperator = document.getElementById('autoGearCameraWeightOperator');
+const autoGearCameraWeightValueInput = document.getElementById('autoGearCameraWeightValue');
+const autoGearCameraWeightLabel = document.getElementById('autoGearCameraWeightLabel');
+const autoGearCameraWeightHelp = document.getElementById('autoGearCameraWeightHelp');
+const autoGearCameraWeightValueLabel = document.getElementById('autoGearCameraWeightValueLabel');
 const autoGearMonitorSelect = document.getElementById('autoGearMonitor');
 const autoGearMonitorLabel = document.getElementById('autoGearMonitorLabel');
 const autoGearCrewPresentSelect = document.getElementById('autoGearCrewPresent');
@@ -11342,6 +11457,7 @@ const autoGearConditionLabels = {
   deliveryResolution: autoGearDeliveryResolutionLabel,
   videoDistribution: autoGearVideoDistributionLabel,
   camera: autoGearCameraLabel,
+  cameraWeight: autoGearCameraWeightLabel,
   monitor: autoGearMonitorLabel,
   crewPresent: autoGearCrewPresentLabel,
   crewAbsent: autoGearCrewAbsentLabel,
@@ -11360,6 +11476,7 @@ const autoGearConditionSelects = {
   deliveryResolution: autoGearDeliveryResolutionSelect,
   videoDistribution: autoGearVideoDistributionSelect,
   camera: autoGearCameraSelect,
+  cameraWeight: autoGearCameraWeightValueInput,
   monitor: autoGearMonitorSelect,
   crewPresent: autoGearCrewPresentSelect,
   crewAbsent: autoGearCrewAbsentSelect,
@@ -11378,6 +11495,7 @@ const AUTO_GEAR_CONDITION_KEYS = [
   'deliveryResolution',
   'videoDistribution',
   'camera',
+  'cameraWeight',
   'monitor',
   'crewPresent',
   'crewAbsent',
@@ -11396,6 +11514,7 @@ const AUTO_GEAR_CONDITION_FALLBACK_LABELS = {
   deliveryResolution: 'Delivery resolution',
   videoDistribution: 'Video distribution',
   camera: 'Camera',
+  cameraWeight: 'Camera weight',
   monitor: 'Onboard monitor',
   crewPresent: 'Crew present',
   crewAbsent: 'Crew absent',
@@ -11429,6 +11548,7 @@ const autoGearConditionRefreshers = {
   deliveryResolution: refreshAutoGearDeliveryResolutionOptions,
   videoDistribution: refreshAutoGearVideoDistributionOptions,
   camera: refreshAutoGearCameraOptions,
+  cameraWeight: refreshAutoGearCameraWeightCondition,
   monitor: refreshAutoGearMonitorOptions,
   crewPresent: selected => refreshAutoGearCrewOptions(autoGearCrewPresentSelect, selected, 'crewPresent'),
   crewAbsent: selected => refreshAutoGearCrewOptions(autoGearCrewAbsentSelect, selected, 'crewAbsent'),
@@ -11587,6 +11707,10 @@ function addAutoGearCondition(key, options = {}) {
       if (!autoGearEditorDraft.shootingDays) {
         autoGearEditorDraft.shootingDays = null;
       }
+    } else if (key === 'cameraWeight') {
+      if (!autoGearEditorDraft.cameraWeight) {
+        autoGearEditorDraft.cameraWeight = null;
+      }
     } else if (!Array.isArray(autoGearEditorDraft[key])) {
       autoGearEditorDraft[key] = [];
     }
@@ -11599,6 +11723,14 @@ function addAutoGearCondition(key, options = {}) {
       values = options.initialValues;
     } else if (autoGearEditorDraft?.shootingDays) {
       values = autoGearEditorDraft.shootingDays;
+    } else {
+      values = null;
+    }
+  } else if (key === 'cameraWeight') {
+    if (options.initialValues) {
+      values = options.initialValues;
+    } else if (autoGearEditorDraft?.cameraWeight) {
+      values = autoGearEditorDraft.cameraWeight;
     } else {
       values = null;
     }
@@ -11655,6 +11787,8 @@ function removeAutoGearCondition(key, options = {}) {
       autoGearEditorDraft.always = [];
     } else if (key === 'shootingDays') {
       autoGearEditorDraft.shootingDays = null;
+    } else if (key === 'cameraWeight') {
+      autoGearEditorDraft.cameraWeight = null;
     } else if (Array.isArray(autoGearEditorDraft[key])) {
       autoGearEditorDraft[key] = [];
     }
@@ -11664,6 +11798,9 @@ function removeAutoGearCondition(key, options = {}) {
       option.selected = false;
     });
     config.select.value = '';
+    if (key === 'cameraWeight' && autoGearCameraWeightOperator) {
+      autoGearCameraWeightOperator.value = 'greater';
+    }
   }
   if (key === 'shootingDays') {
     if (autoGearShootingDaysMode) {
@@ -11676,6 +11813,8 @@ function removeAutoGearCondition(key, options = {}) {
   const refresher = autoGearConditionRefreshers[key];
   if (typeof refresher === 'function') {
     if (key === 'shootingDays') {
+      refresher(null);
+    } else if (key === 'cameraWeight') {
       refresher(null);
     } else {
       refresher([]);
@@ -11707,6 +11846,8 @@ function clearAllAutoGearConditions(options = {}) {
         autoGearEditorDraft.always = [];
       } else if (key === 'shootingDays') {
         autoGearEditorDraft.shootingDays = null;
+      } else if (key === 'cameraWeight') {
+        autoGearEditorDraft.cameraWeight = null;
       } else if (Array.isArray(autoGearEditorDraft[key])) {
         autoGearEditorDraft[key] = [];
       }
@@ -11716,6 +11857,9 @@ function clearAllAutoGearConditions(options = {}) {
         option.selected = false;
       });
       config.select.value = '';
+      if (key === 'cameraWeight' && autoGearCameraWeightOperator) {
+        autoGearCameraWeightOperator.value = 'greater';
+      }
     }
     if (key === 'shootingDays') {
       if (autoGearShootingDaysMode) {
@@ -11729,6 +11873,9 @@ function clearAllAutoGearConditions(options = {}) {
     if (typeof refresher === 'function') {
       if (key === 'shootingDays') {
         const source = preserveDraft ? autoGearEditorDraft?.shootingDays : null;
+        refresher(source || null);
+      } else if (key === 'cameraWeight') {
+        const source = preserveDraft ? autoGearEditorDraft?.cameraWeight : null;
         refresher(source || null);
       } else {
         refresher(preserveDraft ? autoGearEditorDraft?.[key] : []);
@@ -11756,6 +11903,14 @@ function initializeAutoGearConditionsFromDraft() {
         values = condition;
         hasValue = true;
       }
+    } else if (key === 'cameraWeight') {
+      const condition = autoGearEditorDraft?.cameraWeight
+        ? normalizeAutoGearCameraWeightCondition(autoGearEditorDraft.cameraWeight)
+        : null;
+      if (condition) {
+        values = condition;
+        hasValue = true;
+      }
     } else if (Array.isArray(autoGearEditorDraft?.[key])) {
       values = autoGearEditorDraft[key].filter(value => {
         if (typeof value === 'number') {
@@ -11774,6 +11929,8 @@ function initializeAutoGearConditionsFromDraft() {
       const refresher = autoGearConditionRefreshers[key];
       if (typeof refresher === 'function') {
         if (key === 'shootingDays') {
+          refresher(null);
+        } else if (key === 'cameraWeight') {
           refresher(null);
         } else {
           refresher([]);
@@ -12143,6 +12300,32 @@ function autoGearRuleMatchesSearch(rule, query) {
       haystack.push(everyLabel);
     }
   }
+  const cameraWeightCondition = normalizeAutoGearCameraWeightCondition(rule?.cameraWeight);
+  if (cameraWeightCondition) {
+    const weightLabel = texts[currentLang]?.autoGearCameraWeightLabel
+      || texts.en?.autoGearCameraWeightLabel
+      || 'Camera weight';
+    const operatorLabels = {
+      greater: texts[currentLang]?.autoGearCameraWeightOperatorGreater
+        || texts.en?.autoGearCameraWeightOperatorGreater
+        || 'Heavier than',
+      less: texts[currentLang]?.autoGearCameraWeightOperatorLess
+        || texts.en?.autoGearCameraWeightOperatorLess
+        || 'Lighter than',
+      equal: texts[currentLang]?.autoGearCameraWeightOperatorEqual
+        || texts.en?.autoGearCameraWeightOperatorEqual
+        || 'Exactly',
+    };
+    if (weightLabel) {
+      haystack.push(weightLabel);
+    }
+    const opLabel = operatorLabels[cameraWeightCondition.operator] || '';
+    if (opLabel) {
+      haystack.push(opLabel);
+    }
+    haystack.push(String(cameraWeightCondition.value));
+    haystack.push(`${cameraWeightCondition.value}g`);
+  }
   const collectItems = items => {
     if (!Array.isArray(items)) return;
     items.forEach(item => {
@@ -12274,6 +12457,7 @@ function createAutoGearDraft(rule) {
       deliveryResolution: Array.isArray(rule.deliveryResolution) ? rule.deliveryResolution.slice() : [],
       videoDistribution: Array.isArray(rule.videoDistribution) ? rule.videoDistribution.slice() : [],
       camera: Array.isArray(rule.camera) ? rule.camera.slice() : [],
+      cameraWeight: normalizeAutoGearCameraWeightCondition(rule.cameraWeight),
       monitor: Array.isArray(rule.monitor) ? rule.monitor.slice() : [],
       crewPresent: Array.isArray(rule.crewPresent) ? rule.crewPresent.slice() : [],
       crewAbsent: Array.isArray(rule.crewAbsent) ? rule.crewAbsent.slice() : [],
@@ -12300,6 +12484,7 @@ function createAutoGearDraft(rule) {
     deliveryResolution: [],
     videoDistribution: [],
     camera: [],
+    cameraWeight: null,
     monitor: [],
     crewPresent: [],
     crewAbsent: [],
@@ -12333,6 +12518,33 @@ function refreshAutoGearShootingDaysValue(selected) {
   }
   const value = condition ? condition.value : '';
   autoGearShootingDaysInput.value = value ? String(value) : '';
+}
+
+function refreshAutoGearCameraWeightCondition(selected) {
+  const condition = (() => {
+    if (selected && typeof selected === 'object' && !Array.isArray(selected)) {
+      return normalizeAutoGearCameraWeightCondition(selected);
+    }
+    if (Array.isArray(selected) && selected.length) {
+      const candidate = selected[0];
+      if (candidate && typeof candidate === 'object') {
+        return normalizeAutoGearCameraWeightCondition(candidate);
+      }
+    }
+    if (autoGearEditorDraft?.cameraWeight) {
+      return normalizeAutoGearCameraWeightCondition(autoGearEditorDraft.cameraWeight);
+    }
+    return null;
+  })();
+  const operator = condition ? condition.operator : 'greater';
+  const value = condition ? condition.value : '';
+  if (autoGearCameraWeightOperator) {
+    const supported = ['greater', 'less', 'equal'];
+    autoGearCameraWeightOperator.value = supported.includes(operator) ? operator : 'greater';
+  }
+  if (autoGearCameraWeightValueInput) {
+    autoGearCameraWeightValueInput.value = value !== '' ? String(value) : '';
+  }
 }
 
 function refreshAutoGearScenarioOptions(selected) {
@@ -14154,6 +14366,7 @@ function renderAutoGearRulesList() {
     const videoDistributionDisplayList = videoDistributionList.map(getVideoDistributionFallbackLabel);
     const deliveryResolutionList = Array.isArray(rule.deliveryResolution) ? rule.deliveryResolution : [];
     const cameraList = Array.isArray(rule.camera) ? rule.camera : [];
+    const cameraWeightCondition = normalizeAutoGearCameraWeightCondition(rule.cameraWeight);
     const monitorList = Array.isArray(rule.monitor) ? rule.monitor : [];
     const crewPresentList = Array.isArray(rule.crewPresent) ? rule.crewPresent : [];
     const crewAbsentList = Array.isArray(rule.crewAbsent) ? rule.crewAbsent : [];
@@ -14165,8 +14378,24 @@ function renderAutoGearRulesList() {
     const shootingDaysDisplayList = shootingCondition
       ? [String(shootingCondition.value)]
       : [];
+    const cameraWeightOperatorLabels = {
+      greater: texts[currentLang]?.autoGearCameraWeightOperatorGreater
+        || texts.en?.autoGearCameraWeightOperatorGreater
+        || 'Heavier than',
+      less: texts[currentLang]?.autoGearCameraWeightOperatorLess
+        || texts.en?.autoGearCameraWeightOperatorLess
+        || 'Lighter than',
+      equal: texts[currentLang]?.autoGearCameraWeightOperatorEqual
+        || texts.en?.autoGearCameraWeightOperatorEqual
+        || 'Exactly',
+    };
+    const cameraWeightSummary = cameraWeightCondition
+      ? `${cameraWeightOperatorLabels[cameraWeightCondition.operator] || ''} ${cameraWeightCondition.value} g`.trim()
+      : '';
+    const cameraWeightDisplayList = cameraWeightSummary ? [cameraWeightSummary] : [];
     const fallbackCandidates = [
       cameraList,
+      cameraWeightDisplayList,
       monitorList,
       crewPresentList,
       crewAbsentList,
@@ -14213,6 +14442,16 @@ function renderAutoGearRulesList() {
       cameraMeta.className = 'auto-gear-rule-meta';
       cameraMeta.textContent = `${cameraLabelText}: ${cameraList.join(' + ')}`;
       info.appendChild(cameraMeta);
+    }
+    if (cameraWeightCondition) {
+      const weightLabelText = texts[currentLang]?.autoGearCameraWeightLabel
+        || texts.en?.autoGearCameraWeightLabel
+        || 'Camera weight';
+      const operatorText = cameraWeightOperatorLabels[cameraWeightCondition.operator] || '';
+      const cameraWeightMeta = document.createElement('p');
+      cameraWeightMeta.className = 'auto-gear-rule-meta';
+      cameraWeightMeta.textContent = `${weightLabelText}: ${operatorText} ${cameraWeightCondition.value} g`.trim();
+      info.appendChild(cameraWeightMeta);
     }
     if (monitorList.length) {
       const monitorLabelText = texts[currentLang]?.autoGearMonitorLabel
@@ -15233,6 +15472,15 @@ function saveAutoGearRuleFromEditor() {
         .map(option => option.value)
         .filter(value => typeof value === 'string' && value.trim())
     : [];
+  const cameraWeightCondition = (() => {
+    if (!isAutoGearConditionActive('cameraWeight')) return null;
+    const operatorValue = autoGearCameraWeightOperator ? autoGearCameraWeightOperator.value : 'greater';
+    const rawCondition = {
+      operator: operatorValue,
+      value: autoGearCameraWeightValueInput ? autoGearCameraWeightValueInput.value : '',
+    };
+    return normalizeAutoGearCameraWeightCondition(rawCondition);
+  })();
   const shootingDaysRequirement = (() => {
     if (!isAutoGearConditionActive('shootingDays')) return null;
     if (!autoGearShootingDaysInput) return null;
@@ -15241,6 +15489,13 @@ function saveAutoGearRuleFromEditor() {
     return normalizeAutoGearShootingDaysCondition(rawCondition);
   })();
   const alwaysActive = isAutoGearConditionActive('always');
+  if (isAutoGearConditionActive('cameraWeight') && !cameraWeightCondition) {
+    const message = texts[currentLang]?.autoGearCameraWeightRequired
+      || texts.en?.autoGearCameraWeightRequired
+      || 'Enter a camera weight threshold before saving.';
+    window.alert(message);
+    return;
+  }
   if (
     !alwaysActive
     && !scenarios.length
@@ -15250,6 +15505,7 @@ function saveAutoGearRuleFromEditor() {
     && !deliveryResolutionSelections.length
     && !videoDistributionSelections.length
     && !cameraSelections.length
+    && !cameraWeightCondition
     && !monitorSelections.length
     && !crewPresentSelections.length
     && !crewAbsentSelections.length
@@ -15281,6 +15537,7 @@ function saveAutoGearRuleFromEditor() {
   autoGearEditorDraft.deliveryResolution = deliveryResolutionSelections;
   autoGearEditorDraft.videoDistribution = videoDistributionSelections;
   autoGearEditorDraft.camera = cameraSelections;
+  autoGearEditorDraft.cameraWeight = cameraWeightCondition;
   autoGearEditorDraft.monitor = monitorSelections;
   autoGearEditorDraft.crewPresent = crewPresentSelections;
   autoGearEditorDraft.crewAbsent = crewAbsentSelections;

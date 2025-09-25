@@ -296,6 +296,8 @@ Rutinas repetibles para mantener proyectos, respaldos y recursos offline sincron
 Desde **Configuración → Reglas automáticas** puedes ajustar cada lista sin editar JSON manualmente:
 
 - Activa reglas sólo cuando ciertos **Escenarios requeridos** estén marcados; añade etiquetas opcionales para identificarlas rápidamente.
+- Responde automáticamente al peso de la cámara. Define umbrales de «más pesada que»,
+  «más ligera que» o exactamente en gramos para cambiar el equipo cuando cambie el cuerpo.
 - Agrega equipo con categoría y cantidad o utiliza **Adiciones personalizadas** para recordatorios, kits especiales o avisos. Las reglas de eliminación ocultan filas que el generador incluiría.
 - Las reglas se ejecutan después de los paquetes predeterminados para integrarse con la lógica base y fluyen a las listas, backups y paquetes.
 - Guardar una lista almacena el conjunto de reglas activo con el proyecto. Al cargarlo o importar un paquete, se recupera el alcance correcto.

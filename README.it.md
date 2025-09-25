@@ -296,6 +296,8 @@ Queste routine mantengono progetti, backup e risorse offline sincronizzati su og
 Da **Impostazioni → Regole automatiche** puoi affinare ogni lista senza modificare JSON a mano:
 
 - Attiva regole solo quando determinati **Scenari obbligatori** sono selezionati; aggiungi etichette opzionali per riconoscerle a colpo d’occhio.
+- Rispondi automaticamente al peso della camera. Imposta soglie «più pesante di»,
+  «più leggera di» o esattamente in grammi per cambiare il setup quando varia il corpo.
 - Aggiungi attrezzatura con categoria e quantità oppure usa **Aggiunte personalizzate** per promemoria, kit speciali o note. Le regole di rimozione nascondono righe che il generatore includerebbe.
 - Le regole girano dopo i pacchetti predefiniti così si integrano con la logica di base e confluiscono in liste, backup e bundle.
 - Salvare una lista memorizza l’insieme di regole attivo; caricando il progetto o importando un bundle si ripristina lo stesso perimetro.

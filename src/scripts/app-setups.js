@@ -1,6 +1,7 @@
 /* global getManualDownloadFallbackMessage, getDiagramManualPositions, normalizeAutoGearShootingDayValue,
           normalizeAutoGearShootingDaysCondition, getAutoGearMonitorDefault, getSetupNameState,
-          createProjectInfoSnapshotForStorage, getProjectAutoSaveOverrides */
+          createProjectInfoSnapshotForStorage, getProjectAutoSaveOverrides,
+          normalizeAutoGearCameraWeightCondition */
 
 // --- NEW SETUP MANAGEMENT FUNCTIONS ---
 
@@ -2177,6 +2178,10 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
       ? info.cameraSelection.trim()
       : '';
   const normalizedCameraSelection = normalizeAutoGearTriggerValue(rawCameraSelection);
+  const rawCameraWeight = info && typeof info.cameraWeightGrams === 'number'
+      ? info.cameraWeightGrams
+      : null;
+  const normalizedCameraWeight = Number.isFinite(rawCameraWeight) ? rawCameraWeight : null;
   const rawMonitorSelection = info && typeof info.monitorSelection === 'string'
       ? info.monitorSelection.trim()
       : '';
@@ -2314,6 +2319,17 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
           if (!normalizedTargets.length) return false;
           if (!normalizedCameraSelection) return false;
           if (!normalizedTargets.includes(normalizedCameraSelection)) return false;
+        }
+        const cameraWeightCondition = normalizeAutoGearCameraWeightCondition(rule.cameraWeight);
+        if (cameraWeightCondition) {
+          if (!Number.isFinite(normalizedCameraWeight)) return false;
+          if (cameraWeightCondition.operator === 'greater') {
+            if (!(normalizedCameraWeight > cameraWeightCondition.value)) return false;
+          } else if (cameraWeightCondition.operator === 'less') {
+            if (!(normalizedCameraWeight < cameraWeightCondition.value)) return false;
+          } else if (cameraWeightCondition.operator === 'equal') {
+            if (normalizedCameraWeight !== cameraWeightCondition.value) return false;
+          }
         }
         const monitorList = Array.isArray(rule.monitor) ? rule.monitor.filter(Boolean) : [];
         if (monitorList.length) {
@@ -2534,6 +2550,10 @@ function generateGearListHtml(info = {}) {
         cage: cageSelect && cageSelect.value && cageSelect.value !== 'None' ? getText(cageSelect) : '',
         battery: batterySelect && batterySelect.value && batterySelect.value !== 'None' ? getText(batterySelect) : ''
     };
+    const cameraDevice = devices && devices.cameras ? devices.cameras[selectedNames.camera] : null;
+    const selectedCameraWeight = cameraDevice && typeof cameraDevice.weight_g === 'number'
+        ? cameraDevice.weight_g
+        : null;
     const hasMotor = selectedNames.motors.length > 0;
     const videoDistPrefs = info.videoDistribution
         ? info.videoDistribution.split(',').map(s => s.trim()).filter(Boolean)
@@ -2646,8 +2666,7 @@ function generateGearListHtml(info = {}) {
             gimbalSelectionsFinal = gimbalSelections.map(g => (/Ronin RS4 Pro/i.test(g) && bigLens ? 'DJI Ronin 2' : g));
             if (gimbalSelectionsFinal.length === 1) selectedGimbal = gimbalSelectionsFinal[0];
         } else {
-            const cam = devices && devices.cameras && devices.cameras[selectedNames.camera];
-            const weight = cam && cam.weight_g;
+            const weight = selectedCameraWeight;
             const isSmall = weight != null ? weight < 2000 : /(FX3|FX6|R5)/i.test(selectedNames.camera);
             selectedGimbal = bigLens ? 'DJI Ronin 2' : (isSmall ? 'DJI Ronin RS4 Pro Combo' : 'DJI Ronin 2');
             gimbalSelectionsFinal = [selectedGimbal];
@@ -3673,6 +3692,7 @@ function generateGearListHtml(info = {}) {
     const infoForRules = {
         ...info,
         cameraSelection: selectedNames.camera,
+        cameraWeightGrams: selectedCameraWeight,
         monitorSelection: selectedNames.monitor,
         wirelessSelection: selectedNames.video,
         motorSelections: selectedNames.motors.slice(),

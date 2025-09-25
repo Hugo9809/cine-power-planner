@@ -324,7 +324,23 @@ setupSelect.addEventListener("change", function (event) {
   var autoSaveFlushed = false;
   if (typeof scheduleProjectAutoSave === 'function') {
     try {
-      scheduleProjectAutoSave(true);
+      var normalizeForOverride = typeof normalizeSetupName === 'function' ? normalizeSetupName : function (value) {
+        return typeof value === 'string' ? value.trim() : '';
+      };
+      var previousSelection = normalizeForOverride(typeof lastSetupName === 'string' ? lastSetupName : '');
+      var storageKeyOverride = normalizeForOverride(previousKey);
+      var overrides = {
+        setupNameState: {
+          typedName: typedName,
+          selectedName: previousSelection,
+          storageKey: storageKeyOverride,
+          renameInProgress: Boolean(previousSelection && typedName && typedName !== previousSelection)
+        }
+      };
+      scheduleProjectAutoSave({
+        immediate: true,
+        overrides: overrides
+      });
       autoSaveFlushed = true;
     } catch (error) {
       console.warn('Failed to flush project autosave before switching setups', error);
@@ -350,11 +366,11 @@ setupSelect.addEventListener("change", function (event) {
     }
     var previousProjectInfo = deriveProjectInfo(info);
     currentProjectInfo = previousProjectInfo;
-    var normalizeForOverride = typeof normalizeSetupName === 'function' ? normalizeSetupName : function (value) {
+    var _normalizeForOverride = typeof normalizeSetupName === 'function' ? normalizeSetupName : function (value) {
       return typeof value === 'string' ? value.trim() : '';
     };
-    var normalizedPreviousKey = normalizeForOverride(previousKey);
-    var normalizedTypedName = normalizeForOverride(typedName);
+    var normalizedPreviousKey = _normalizeForOverride(previousKey);
+    var normalizedTypedName = _normalizeForOverride(typedName);
     var renameInProgressForPrevious = Boolean(normalizedPreviousKey && normalizedTypedName && normalizedTypedName !== normalizedPreviousKey);
     var projectInfoForStorage = typeof createProjectInfoSnapshotForStorage === 'function' ? createProjectInfoSnapshotForStorage(previousProjectInfo, {
       projectNameOverride: renameInProgressForPrevious ? normalizedPreviousKey : undefined
@@ -1254,11 +1270,11 @@ addDeviceBtn.addEventListener("click", function () {
         dtapA: dtapA
       });
     }
-    Object.assign(targetCategory[name], collectDynamicFieldValues(category, categoryExcludedAttrs[category] || []));
+    applyDynamicFieldValues(targetCategory[name], category, categoryExcludedAttrs[category] || []);
   } else if (category === "accessories.cables") {
     var _existing = isEditing && originalDeviceData ? _objectSpread({}, originalDeviceData) : {};
-    var attrs = collectDynamicFieldValues("accessories.cables.".concat(subcategory), categoryExcludedAttrs["accessories.cables.".concat(subcategory)] || []);
-    targetCategory[name] = _objectSpread(_objectSpread({}, _existing), attrs);
+    targetCategory[name] = _objectSpread({}, _existing);
+    applyDynamicFieldValues(targetCategory[name], "accessories.cables.".concat(subcategory), categoryExcludedAttrs["accessories.cables.".concat(subcategory)] || []);
   } else if (category === "cameras") {
     var watt = parseFloat(cameraWattInput.value);
     if (isNaN(watt) || watt <= 0) {
@@ -1295,7 +1311,7 @@ addDeviceBtn.addEventListener("click", function () {
       lensMount: getLensMounts(),
       timecode: timecode
     };
-    Object.assign(targetCategory[name], collectDynamicFieldValues(category, categoryExcludedAttrs[category] || []));
+    applyDynamicFieldValues(targetCategory[name], category, categoryExcludedAttrs[category] || []);
   } else if (category === "monitors" || category === "directorMonitors") {
     var _watt = parseFloat(monitorWattInput.value);
     if (isNaN(_watt) || _watt <= 0) {
@@ -1325,7 +1341,7 @@ addDeviceBtn.addEventListener("click", function () {
         portType: monitorAudioOutputInput.value
       } : undefined
     };
-    Object.assign(targetCategory[name], collectDynamicFieldValues(category, categoryExcludedAttrs[category] || []));
+    applyDynamicFieldValues(targetCategory[name], category, categoryExcludedAttrs[category] || []);
   } else if (category === "viewfinders") {
     var _watt2 = parseFloat(viewfinderWattInput.value);
     if (isNaN(_watt2) || _watt2 <= 0) {
@@ -1352,7 +1368,7 @@ addDeviceBtn.addEventListener("click", function () {
       wirelessTx: viewfinderWirelessTxInput.checked,
       latencyMs: viewfinderWirelessTxInput.checked ? viewfinderLatencyInput.value : undefined
     };
-    Object.assign(targetCategory[name], collectDynamicFieldValues(category, categoryExcludedAttrs[category] || []));
+    applyDynamicFieldValues(targetCategory[name], category, categoryExcludedAttrs[category] || []);
   } else if (category === "video" || category === "wirelessReceivers" || category === "iosVideo") {
     var _watt3 = parseFloat(newWattInput.value);
     if (isNaN(_watt3) || _watt3 <= 0) {
@@ -1371,7 +1387,7 @@ addDeviceBtn.addEventListener("click", function () {
       frequency: videoFrequencyInput.value,
       latencyMs: videoLatencyInput.value
     };
-    Object.assign(targetCategory[name], collectDynamicFieldValues(category, categoryExcludedAttrs[category] || []));
+    applyDynamicFieldValues(targetCategory[name], category, categoryExcludedAttrs[category] || []);
   } else if (category === "fiz.motors") {
     var _watt4 = parseFloat(newWattInput.value);
     if (isNaN(_watt4) || _watt4 <= 0) {
@@ -1388,7 +1404,7 @@ addDeviceBtn.addEventListener("click", function () {
       }).filter(Boolean) : [],
       notes: motorNotesInput.value
     };
-    Object.assign(targetCategory[name], collectDynamicFieldValues(category, categoryExcludedAttrs[category] || []));
+    applyDynamicFieldValues(targetCategory[name], category, categoryExcludedAttrs[category] || []);
   } else if (category === "fiz.controllers") {
     var _watt5 = parseFloat(newWattInput.value);
     if (isNaN(_watt5) || _watt5 <= 0) {
@@ -1403,7 +1419,7 @@ addDeviceBtn.addEventListener("click", function () {
       connectivity: controllerConnectivityInput.value,
       notes: controllerNotesInput.value
     };
-    Object.assign(targetCategory[name], collectDynamicFieldValues(category, categoryExcludedAttrs[category] || []));
+    applyDynamicFieldValues(targetCategory[name], category, categoryExcludedAttrs[category] || []);
   } else if (category === "fiz.distance") {
     var _watt6 = parseFloat(newWattInput.value);
     if (isNaN(_watt6) || _watt6 <= 0) {
@@ -1419,7 +1435,7 @@ addDeviceBtn.addEventListener("click", function () {
       outputDisplay: distanceOutputInput.value,
       notes: distanceNotesInput.value
     };
-    Object.assign(targetCategory[name], collectDynamicFieldValues(category, categoryExcludedAttrs[category] || []));
+    applyDynamicFieldValues(targetCategory[name], category, categoryExcludedAttrs[category] || []);
   } else {
     var _watt7 = parseFloat(newWattInput.value);
     if (isNaN(_watt7) || _watt7 <= 0) {
@@ -1427,10 +1443,10 @@ addDeviceBtn.addEventListener("click", function () {
       return;
     }
     var _existing2 = editingSamePath && originalDeviceData ? _objectSpread({}, originalDeviceData) : {};
-    var _attrs = collectDynamicFieldValues(category, categoryExcludedAttrs[category] || []);
-    targetCategory[name] = _objectSpread(_objectSpread(_objectSpread({}, _existing2), _attrs), {}, {
+    targetCategory[name] = _objectSpread(_objectSpread({}, _existing2), {}, {
       powerDrawWatts: _watt7
     });
+    applyDynamicFieldValues(targetCategory[name], category, categoryExcludedAttrs[category] || []);
   }
   if (isEditing) {
     removeOriginalDeviceEntry(storedOriginalCategory, storedOriginalSubcategory, originalName, category, subcategory, name);

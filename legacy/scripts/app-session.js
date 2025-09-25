@@ -95,6 +95,14 @@ function createRestoreRehearsalRefs() {
       status: null,
       table: null,
       tableBody: null,
+      ruleSection: null,
+      ruleHeading: null,
+      ruleIntro: null,
+      ruleEmpty: null,
+      ruleList: null,
+      actions: null,
+      proceedButton: null,
+      abortButton: null,
       modeInputs: []
     };
   }
@@ -110,6 +118,14 @@ function createRestoreRehearsalRefs() {
     status: doc.getElementById('restoreRehearsalStatus'),
     table: doc.getElementById('restoreRehearsalTable'),
     tableBody: doc.getElementById('restoreRehearsalTableBody'),
+    ruleSection: doc.getElementById('restoreRehearsalRuleSection'),
+    ruleHeading: doc.getElementById('restoreRehearsalRuleHeading'),
+    ruleIntro: doc.getElementById('restoreRehearsalRuleIntro'),
+    ruleEmpty: doc.getElementById('restoreRehearsalRuleEmpty'),
+    ruleList: doc.getElementById('restoreRehearsalRuleList'),
+    actions: doc.getElementById('restoreRehearsalActions'),
+    proceedButton: doc.getElementById('restoreRehearsalProceed'),
+    abortButton: doc.getElementById('restoreRehearsalAbort'),
     modeInputs: modeInputs
   };
 }
@@ -124,7 +140,22 @@ var _createRestoreRehears = createRestoreRehearsalRefs(),
   restoreRehearsalStatusEl = _createRestoreRehears.status,
   restoreRehearsalTableEl = _createRestoreRehears.table,
   restoreRehearsalTableBodyEl = _createRestoreRehears.tableBody,
+  restoreRehearsalRuleSectionEl = _createRestoreRehears.ruleSection,
+  restoreRehearsalRuleHeadingEl = _createRestoreRehears.ruleHeading,
+  restoreRehearsalRuleIntroEl = _createRestoreRehears.ruleIntro,
+  restoreRehearsalRuleEmptyEl = _createRestoreRehears.ruleEmpty,
+  restoreRehearsalRuleListEl = _createRestoreRehears.ruleList,
+  restoreRehearsalActionsEl = _createRestoreRehears.actions,
+  restoreRehearsalProceedButtonEl = _createRestoreRehears.proceedButton,
+  restoreRehearsalAbortButtonEl = _createRestoreRehears.abortButton,
   restoreRehearsalModeInputs = _createRestoreRehears.modeInputs;
+var restoreRehearsalLastSnapshot = null;
+function createEmptyRestoreRehearsalCounts() {
+  return RESTORE_REHEARSAL_METRICS.reduce(function (acc, metric) {
+    acc[metric.key] = 0;
+    return acc;
+  }, {});
+}
 function countProjectsFromSetups(setups) {
   if (Array.isArray(setups)) {
     return setups.length;
@@ -328,6 +359,7 @@ function summarizeProjectCollection(collection) {
   return result;
 }
 function summarizeCountsFromData(data) {
+  var counts = createEmptyRestoreRehearsalCounts();
   var setups = isPlainObject(data) && isPlainObject(data.setups) ? data.setups : {};
   var rules = isPlainObject(data) && Array.isArray(data.autoGearRules) ? data.autoGearRules : [];
   var favorites = isPlainObject(data) && isPlainObject(data.favorites) ? data.favorites : {};
@@ -341,14 +373,39 @@ function summarizeCountsFromData(data) {
   var projectDetails = Math.max(storedProjects.details, setupProjects.details);
   var projectCrew = Math.max(storedProjects.crew, setupProjects.crew);
   var projectSchedule = Math.max(storedProjects.schedule, setupProjects.schedule);
-  return {
-    projects: countProjectsFromSetups(setups),
-    projectDetails: projectDetails,
-    projectCrew: projectCrew,
-    projectSchedules: projectSchedule,
-    rules: rules.length,
-    favorites: countFavoritesEntries(favorites)
-  };
+  counts.projects = countProjectsFromSetups(setups);
+  counts.projectDetails = projectDetails;
+  counts.projectCrew = projectCrew;
+  counts.projectSchedules = projectSchedule;
+  counts.rules = rules.length;
+  counts.favorites = countFavoritesEntries(favorites);
+  counts.deviceLibrary = countRestoreRehearsalDeviceEntries(isPlainObject(data) ? data.devices : null);
+  var sessionState = isPlainObject(data) ? data.session : null;
+  counts.sessionSnapshots = isPlainObject(sessionState) && Object.keys(sessionState).length ? 1 : 0;
+  counts.feedbackDrafts = countRestoreRehearsalFeedbackDrafts(isPlainObject(data) ? data.feedback : null);
+  counts.autoGearPresets = Array.isArray(data === null || data === void 0 ? void 0 : data.autoGearPresets) ? data.autoGearPresets.filter(Boolean).length : 0;
+  counts.autoGearBackups = Array.isArray(data === null || data === void 0 ? void 0 : data.autoGearBackups) ? data.autoGearBackups.filter(Boolean).length : 0;
+  counts.fullBackupHistory = Array.isArray(data === null || data === void 0 ? void 0 : data.fullBackupHistory) ? data.fullBackupHistory.filter(Boolean).length : 0;
+  counts.customFonts = Array.isArray(data === null || data === void 0 ? void 0 : data.customFonts) ? data.customFonts.filter(function (entry) {
+    if (!entry) return false;
+    if (typeof entry === 'string') {
+      return entry.trim().length > 0;
+    }
+    if (isPlainObject(entry)) {
+      return Object.keys(entry).length > 0;
+    }
+    return false;
+  }).length : 0;
+  counts.customLogo = typeof (data === null || data === void 0 ? void 0 : data.customLogo) === 'string' && data.customLogo.trim() ? 1 : 0;
+  var storedPreferences = isPlainObject(data === null || data === void 0 ? void 0 : data.preferences) ? data.preferences : null;
+  counts.storedPreferences = storedPreferences && Object.keys(storedPreferences).length ? 1 : 0;
+  var schemaCache = data === null || data === void 0 ? void 0 : data.schemaCache;
+  if (typeof schemaCache === 'string') {
+    counts.schemaCache = schemaCache.trim() ? 1 : 0;
+  } else if (isPlainObject(schemaCache)) {
+    counts.schemaCache = Object.keys(schemaCache).length ? 1 : 0;
+  }
+  return counts;
 }
 function bundleHasProject(bundle) {
   if (!isPlainObject(bundle)) return false;
@@ -368,6 +425,87 @@ function bundleHasProject(bundle) {
   return false;
 }
 var RESTORE_REHEARSAL_BACKUP_HINT_KEYS = ['data', 'payload', 'plannerData', 'allData', 'devices', 'setups', 'session', 'sessions', 'sessionStorage', 'sessionState', 'customLogo', 'customFonts', 'preferences', 'schemaCache', 'fullBackupHistory'];
+var RESTORE_REHEARSAL_METRICS = [{
+  key: 'projects',
+  translationKey: 'restoreRehearsalMetricProjects',
+  fallback: 'Projects',
+  modes: ['backup', 'project']
+}, {
+  key: 'projectDetails',
+  translationKey: 'restoreRehearsalMetricProjectDetails',
+  fallback: 'Project details',
+  modes: ['backup', 'project']
+}, {
+  key: 'projectCrew',
+  translationKey: 'restoreRehearsalMetricCrew',
+  fallback: 'Crew entries',
+  modes: ['backup', 'project']
+}, {
+  key: 'projectSchedules',
+  translationKey: 'restoreRehearsalMetricSchedule',
+  fallback: 'Schedule entries',
+  modes: ['backup', 'project']
+}, {
+  key: 'rules',
+  translationKey: 'restoreRehearsalMetricRules',
+  fallback: 'Rules',
+  modes: ['backup', 'project']
+}, {
+  key: 'favorites',
+  translationKey: 'restoreRehearsalMetricFavorites',
+  fallback: 'Favorites',
+  modes: ['backup', 'project']
+}, {
+  key: 'deviceLibrary',
+  translationKey: 'restoreRehearsalMetricDeviceLibrary',
+  fallback: 'Device library entries',
+  modes: ['backup']
+}, {
+  key: 'sessionSnapshots',
+  translationKey: 'restoreRehearsalMetricSession',
+  fallback: 'Stored session snapshot',
+  modes: ['backup']
+}, {
+  key: 'feedbackDrafts',
+  translationKey: 'restoreRehearsalMetricFeedback',
+  fallback: 'Feedback drafts',
+  modes: ['backup']
+}, {
+  key: 'autoGearPresets',
+  translationKey: 'restoreRehearsalMetricAutoPresets',
+  fallback: 'Automatic gear presets',
+  modes: ['backup']
+}, {
+  key: 'autoGearBackups',
+  translationKey: 'restoreRehearsalMetricAutoBackups',
+  fallback: 'Automatic gear backups',
+  modes: ['backup']
+}, {
+  key: 'fullBackupHistory',
+  translationKey: 'restoreRehearsalMetricBackupHistory',
+  fallback: 'Backup history entries',
+  modes: ['backup']
+}, {
+  key: 'customFonts',
+  translationKey: 'restoreRehearsalMetricCustomFonts',
+  fallback: 'Custom fonts',
+  modes: ['backup']
+}, {
+  key: 'customLogo',
+  translationKey: 'restoreRehearsalMetricCustomLogo',
+  fallback: 'Custom logo saved',
+  modes: ['backup']
+}, {
+  key: 'storedPreferences',
+  translationKey: 'restoreRehearsalMetricPreferences',
+  fallback: 'Stored preferences',
+  modes: ['backup']
+}, {
+  key: 'schemaCache',
+  translationKey: 'restoreRehearsalMetricSchemaCache',
+  fallback: 'Device schema cache',
+  modes: ['backup']
+}];
 var RESTORE_REHEARSAL_PROJECT_HINT_KEYS = ['setupName', 'camera', 'monitor', 'video', 'cage', 'distance', 'batteryPlate', 'battery', 'batteryHotswap', 'motors', 'controllers', 'project', 'projectInfo', 'projectHtml', 'gearList', 'gearSelectors', 'autoGearRules', 'favorites', 'feedback', 'changedDevices'];
 function hasAnyRestoreRehearsalKeys(source, keys) {
   if (!isPlainObject(source)) {
@@ -414,15 +552,9 @@ function looksLikeRestoreRehearsalBackupPayload(payload) {
   return false;
 }
 function summarizeProjectBundle(bundle) {
+  var summary = createEmptyRestoreRehearsalCounts();
   if (!isPlainObject(bundle)) {
-    return {
-      projects: 0,
-      projectDetails: 0,
-      projectCrew: 0,
-      projectSchedules: 0,
-      rules: 0,
-      favorites: 0
-    };
+    return summary;
   }
   var favorites = isPlainObject(bundle.favorites) ? bundle.favorites : {};
   var projectInfo = null;
@@ -432,18 +564,17 @@ function summarizeProjectBundle(bundle) {
     projectInfo = bundle.project.projectInfo;
   }
   var projectStats = summarizeProjectInfoStats(projectInfo);
-  return {
-    projects: bundleHasProject(bundle) ? 1 : 0,
-    projectDetails: projectStats.details,
-    projectCrew: projectStats.crew,
-    projectSchedules: projectStats.schedule,
-    rules: Array.isArray(bundle.autoGearRules) ? bundle.autoGearRules.length : 0,
-    favorites: countFavoritesEntries(favorites)
-  };
+  summary.projects = bundleHasProject(bundle) ? 1 : 0;
+  summary.projectDetails = projectStats.details;
+  summary.projectCrew = projectStats.crew;
+  summary.projectSchedules = projectStats.schedule;
+  summary.rules = Array.isArray(bundle.autoGearRules) ? bundle.autoGearRules.length : 0;
+  summary.favorites = countFavoritesEntries(favorites);
+  return summary;
 }
 function getRestoreRehearsalLiveCounts() {
-  var snapshot = typeof exportAllData === 'function' ? exportAllData() : {};
-  return summarizeCountsFromData(isPlainObject(snapshot) ? snapshot : {});
+  var snapshot = getRestoreRehearsalLiveSnapshot();
+  return snapshot && snapshot.counts ? snapshot.counts : {};
 }
 function getSelectedRestoreRehearsalMode() {
   if (!Array.isArray(restoreRehearsalModeInputs) || !restoreRehearsalModeInputs.length) {
@@ -455,27 +586,18 @@ function getSelectedRestoreRehearsalMode() {
   return selected && typeof selected.value === 'string' ? selected.value : 'backup';
 }
 function buildRestoreRehearsalRows(liveCounts, sandboxCounts) {
+  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
   var lang = typeof currentLang === 'string' && texts[currentLang] ? currentLang : 'en';
   var langTexts = texts[lang] || texts.en || {};
-  var metrics = [{
-    key: 'projects',
-    label: langTexts.restoreRehearsalMetricProjects || 'Projects'
-  }, {
-    key: 'projectDetails',
-    label: langTexts.restoreRehearsalMetricProjectDetails || 'Project details'
-  }, {
-    key: 'projectCrew',
-    label: langTexts.restoreRehearsalMetricCrew || 'Crew entries'
-  }, {
-    key: 'projectSchedules',
-    label: langTexts.restoreRehearsalMetricSchedule || 'Schedule entries'
-  }, {
-    key: 'rules',
-    label: langTexts.restoreRehearsalMetricRules || 'Rules'
-  }, {
-    key: 'favorites',
-    label: langTexts.restoreRehearsalMetricFavorites || 'Favorites'
-  }];
+  var mode = typeof options.mode === 'string' ? options.mode : 'backup';
+  var metrics = RESTORE_REHEARSAL_METRICS.filter(function (metric) {
+    return metric.modes.includes(mode);
+  }).map(function (metric) {
+    return {
+      key: metric.key,
+      label: langTexts[metric.translationKey] || metric.fallback
+    };
+  });
   return metrics.map(function (metric) {
     var live = typeof liveCounts[metric.key] === 'number' ? liveCounts[metric.key] : 0;
     var sandbox = typeof sandboxCounts[metric.key] === 'number' ? sandboxCounts[metric.key] : 0;
@@ -488,22 +610,453 @@ function buildRestoreRehearsalRows(liveCounts, sandboxCounts) {
     };
   });
 }
+function normalizeRestoreRehearsalScenarioLogic(value) {
+  if (typeof value !== 'string') {
+    return 'all';
+  }
+  var normalized = value.trim().toLowerCase();
+  if (!normalized) {
+    return 'all';
+  }
+  if (normalized === 'any' || normalized === 'or') {
+    return 'any';
+  }
+  if (normalized === 'multiplier' || normalized === 'multiply') {
+    return 'multiplier';
+  }
+  return 'all';
+}
+function normalizeRestoreRehearsalScenarioMultiplier(value) {
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return value;
+  }
+  if (typeof value === 'string') {
+    var trimmed = value.trim();
+    if (trimmed) {
+      var parsed = Number(trimmed);
+      if (Number.isFinite(parsed)) {
+        return parsed;
+      }
+    }
+  }
+  return 1;
+}
+function normalizeRestoreRehearsalRuleItems(items) {
+  if (!Array.isArray(items)) {
+    return [];
+  }
+  var normalizedItems = items.map(function (item) {
+    if (!isPlainObject(item)) return null;
+    var name = typeof item.name === 'string' ? item.name.trim() : '';
+    if (!name) return null;
+    var category = typeof item.category === 'string' ? item.category.trim() : '';
+    var quantity = 1;
+    if (typeof item.quantity === 'number' && Number.isFinite(item.quantity)) {
+      quantity = item.quantity;
+    } else if (typeof item.quantity === 'string') {
+      var trimmedQuantity = item.quantity.trim();
+      if (trimmedQuantity) {
+        var parsedQuantity = Number(trimmedQuantity);
+        if (Number.isFinite(parsedQuantity)) {
+          quantity = parsedQuantity;
+        }
+      }
+    }
+    var notes = typeof item.notes === 'string' ? item.notes.trim() : '';
+    var screenSize = typeof item.screenSize === 'string' ? item.screenSize.trim() : '';
+    var selectorType = typeof item.selectorType === 'string' ? item.selectorType.trim() : '';
+    var selectorDefault = typeof item.selectorDefault === 'string' ? item.selectorDefault.trim() : '';
+    var selectorEnabled = Boolean(item.selectorEnabled);
+    var contextNotes = Array.isArray(item.contextNotes) ? item.contextNotes.map(function (note) {
+      return typeof note === 'string' ? note.trim() : '';
+    }).filter(Boolean) : [];
+    contextNotes.sort(function (a, b) {
+      return a.localeCompare(b);
+    });
+    var normalized = {
+      id: typeof item.id === 'string' ? item.id : '',
+      name: name,
+      category: category,
+      quantity: quantity,
+      notes: notes,
+      screenSize: screenSize,
+      selectorType: selectorType,
+      selectorDefault: selectorDefault,
+      selectorEnabled: selectorEnabled,
+      contextNotes: contextNotes
+    };
+    var signatureSource = {
+      name: name,
+      category: category,
+      quantity: quantity,
+      notes: notes,
+      screenSize: screenSize,
+      selectorType: selectorType,
+      selectorDefault: selectorDefault,
+      selectorEnabled: selectorEnabled,
+      contextNotes: contextNotes
+    };
+    normalized.signature = JSON.stringify(signatureSource);
+    return normalized;
+  }).filter(Boolean);
+  normalizedItems.sort(function (a, b) {
+    var categoryA = a.category || '';
+    var categoryB = b.category || '';
+    if (categoryA !== categoryB) {
+      return categoryA.localeCompare(categoryB);
+    }
+    return a.name.localeCompare(b.name);
+  });
+  return normalizedItems;
+}
+function formatRestoreRehearsalRuleItem(item) {
+  if (!item) {
+    return '';
+  }
+  var quantity = item.quantity;
+  var hasQuantity = quantity !== undefined && quantity !== null && quantity !== 1;
+  var displayQuantity = hasQuantity ? " \xD7".concat(formatNumberForComparison(quantity)) : '';
+  var categorySuffix = item.category ? " (".concat(item.category, ")") : '';
+  var notesSuffix = item.notes ? " \u2014 ".concat(item.notes) : '';
+  var contextSuffix = Array.isArray(item.contextNotes) && item.contextNotes.length ? " (".concat(item.contextNotes.join(', '), ")") : '';
+  var screenSuffix = item.screenSize ? " [".concat(item.screenSize, "]") : '';
+  var selectorParts = [];
+  if (item.selectorType && item.selectorType !== 'none') {
+    selectorParts.push(item.selectorType);
+  }
+  if (item.selectorDefault) {
+    selectorParts.push(item.selectorDefault);
+  }
+  var selectorSuffix = selectorParts.length ? " {".concat(selectorParts.join(': '), "}") : '';
+  return "".concat(item.name).concat(categorySuffix).concat(displayQuantity).concat(notesSuffix).concat(contextSuffix).concat(screenSuffix).concat(selectorSuffix);
+}
+function normalizeRestoreRehearsalRule(rule, index, origin) {
+  if (!isPlainObject(rule)) {
+    return null;
+  }
+  var normalized = {
+    id: typeof rule.id === 'string' ? rule.id : '',
+    label: typeof rule.label === 'string' ? rule.label.trim() : '',
+    always: Boolean(rule.always)
+  };
+  normalized.scenarioLogic = normalizeRestoreRehearsalScenarioLogic(rule.scenarioLogic);
+  normalized.scenarioMultiplier = normalizeRestoreRehearsalScenarioMultiplier(rule.scenarioMultiplier);
+  if (normalized.scenarioLogic !== 'multiplier') {
+    normalized.scenarioMultiplier = 1;
+  }
+  normalized.scenarioPrimary = typeof rule.scenarioPrimary === 'string' ? rule.scenarioPrimary.trim() : '';
+  var scenarios = Array.isArray(rule.scenarios) ? rule.scenarios.map(function (value) {
+    return typeof value === 'string' ? value.trim() : '';
+  }).filter(Boolean) : [];
+  var scenarioSet = new Set(scenarios);
+  normalized.scenarios = Array.from(scenarioSet).sort(function (a, b) {
+    return a.localeCompare(b);
+  });
+  normalized.addItems = normalizeRestoreRehearsalRuleItems(rule.add);
+  normalized.removeItems = normalizeRestoreRehearsalRuleItems(rule.remove);
+  var addSignatures = normalized.addItems.map(function (item) {
+    return item.signature;
+  }).sort();
+  var removeSignatures = normalized.removeItems.map(function (item) {
+    return item.signature;
+  }).sort();
+  normalized.signature = JSON.stringify({
+    always: normalized.always,
+    scenarioLogic: normalized.scenarioLogic,
+    scenarioPrimary: normalized.scenarioPrimary,
+    scenarioMultiplier: normalized.scenarioMultiplier,
+    scenarios: normalized.scenarios,
+    add: addSignatures,
+    remove: removeSignatures
+  });
+  var fallbackParts = [normalized.label.toLowerCase(), normalized.scenarios.join('|').toLowerCase(), normalized.addItems.map(function (item) {
+    return item.name.toLowerCase();
+  }).join('|'), normalized.removeItems.map(function (item) {
+    return item.name.toLowerCase();
+  }).join('|')].filter(Boolean);
+  var fallbackSignature = fallbackParts.join('::');
+  normalized.matchKey = normalized.id ? "id:".concat(normalized.id) : fallbackSignature ? "fallback:".concat(fallbackSignature) : "index:".concat(origin, ":").concat(index);
+  normalized.entryKey = "".concat(normalized.matchKey, "|").concat(origin, "|").concat(index);
+  if (normalized.label) {
+    normalized.displayName = normalized.label;
+  } else if (normalized.scenarios.length) {
+    normalized.displayName = normalized.scenarios.join(' + ');
+  } else if (normalized.id) {
+    normalized.displayName = normalized.id;
+  } else {
+    normalized.displayName = "Rule ".concat(index + 1);
+  }
+  return normalized;
+}
+function normalizeRestoreRehearsalRules(value) {
+  var origin = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'sandbox';
+  if (!Array.isArray(value)) {
+    return [];
+  }
+  return value.map(function (rule, index) {
+    return normalizeRestoreRehearsalRule(rule, index, origin);
+  }).filter(Boolean);
+}
+function indexRestoreRehearsalRules(rules) {
+  var map = new Map();
+  if (!Array.isArray(rules)) {
+    return map;
+  }
+  rules.forEach(function (rule) {
+    if (!rule || !rule.matchKey) return;
+    var bucket = map.get(rule.matchKey);
+    if (bucket) {
+      bucket.push(rule);
+    } else {
+      map.set(rule.matchKey, [rule]);
+    }
+  });
+  return map;
+}
+function buildRestoreRehearsalRuleDiff(liveRules, sandboxRules) {
+  var liveList = Array.isArray(liveRules) ? liveRules : [];
+  var sandboxList = Array.isArray(sandboxRules) ? sandboxRules : [];
+  var liveIndex = indexRestoreRehearsalRules(liveList);
+  var unmatchedLive = new Set(liveList.filter(Boolean));
+  var differences = [];
+  sandboxList.forEach(function (sandboxRule) {
+    if (!sandboxRule) return;
+    var liveRule = null;
+    var bucket = sandboxRule.matchKey ? liveIndex.get(sandboxRule.matchKey) : null;
+    if (bucket && bucket.length) {
+      liveRule = bucket.shift();
+      if (!bucket.length) {
+        liveIndex.delete(sandboxRule.matchKey);
+      }
+    }
+    if (liveRule) {
+      unmatchedLive.delete(liveRule);
+      if (liveRule.signature !== sandboxRule.signature) {
+        differences.push({
+          status: 'changed',
+          label: sandboxRule.displayName || liveRule.displayName,
+          live: liveRule,
+          sandbox: sandboxRule,
+          key: "changed:".concat(sandboxRule.entryKey)
+        });
+      }
+    } else {
+      differences.push({
+        status: 'added',
+        label: sandboxRule.displayName,
+        live: null,
+        sandbox: sandboxRule,
+        key: "added:".concat(sandboxRule.entryKey)
+      });
+    }
+  });
+  unmatchedLive.forEach(function (liveRule) {
+    if (!liveRule) return;
+    differences.push({
+      status: 'removed',
+      label: liveRule.displayName,
+      live: liveRule,
+      sandbox: null,
+      key: "removed:".concat(liveRule.entryKey)
+    });
+  });
+  var compareStrings = typeof localeSort === 'function' ? function (a, b) {
+    return localeSort(a, b);
+  } : function (a, b) {
+    return a.localeCompare(b);
+  };
+  var statusPriority = {
+    changed: 0,
+    removed: 1,
+    added: 2
+  };
+  return differences.sort(function (a, b) {
+    var _statusPriority$a$sta, _statusPriority$b$sta;
+    var priorityA = (_statusPriority$a$sta = statusPriority[a.status]) !== null && _statusPriority$a$sta !== void 0 ? _statusPriority$a$sta : Number.MAX_SAFE_INTEGER;
+    var priorityB = (_statusPriority$b$sta = statusPriority[b.status]) !== null && _statusPriority$b$sta !== void 0 ? _statusPriority$b$sta : Number.MAX_SAFE_INTEGER;
+    if (priorityA !== priorityB) {
+      return priorityA - priorityB;
+    }
+    return compareStrings(a.label || '', b.label || '');
+  });
+}
+function formatRestoreRehearsalRuleScenarioLines(rule, langTexts) {
+  var _texts$currentLang, _fallbackTexts$projec;
+  if (!rule) {
+    return [];
+  }
+  var fallbackTexts = texts.en || {};
+  var logicLabel = langTexts.restoreRehearsalRuleLogicLabel || fallbackTexts.restoreRehearsalRuleLogicLabel || 'Scenario logic';
+  var baseLabel = langTexts.restoreRehearsalRuleBaseLabel || fallbackTexts.restoreRehearsalRuleBaseLabel || 'Base scenario';
+  var multiplierLabel = langTexts.restoreRehearsalRuleMultiplierLabel || fallbackTexts.restoreRehearsalRuleMultiplierLabel || 'Multiplier';
+  var requiredLabel = langTexts.restoreRehearsalRuleRequiredLabel || ((_texts$currentLang = texts[currentLang]) === null || _texts$currentLang === void 0 || (_texts$currentLang = _texts$currentLang.projectFields) === null || _texts$currentLang === void 0 ? void 0 : _texts$currentLang.requiredScenarios) || ((_fallbackTexts$projec = fallbackTexts.projectFields) === null || _fallbackTexts$projec === void 0 ? void 0 : _fallbackTexts$projec.requiredScenarios) || 'Required scenarios';
+  var alwaysLabel = langTexts.restoreRehearsalRuleAlwaysLabel || fallbackTexts.restoreRehearsalRuleAlwaysLabel || 'Always active';
+  var noneLabel = langTexts.restoreRehearsalRuleNone || fallbackTexts.restoreRehearsalRuleNone || 'None';
+  var logicText = fallbackTexts.autoGearScenarioModeAll || 'Require every selected scenario';
+  if (rule.scenarioLogic === 'any') {
+    var _texts$currentLang2;
+    logicText = ((_texts$currentLang2 = texts[currentLang]) === null || _texts$currentLang2 === void 0 ? void 0 : _texts$currentLang2.autoGearScenarioModeAny) || fallbackTexts.autoGearScenarioModeAny || 'Match any selected scenario';
+  } else if (rule.scenarioLogic === 'multiplier') {
+    var _texts$currentLang3;
+    logicText = ((_texts$currentLang3 = texts[currentLang]) === null || _texts$currentLang3 === void 0 ? void 0 : _texts$currentLang3.autoGearScenarioModeMultiplier) || fallbackTexts.autoGearScenarioModeMultiplier || 'Multiply when combined';
+  } else {
+    var _texts$currentLang4;
+    logicText = ((_texts$currentLang4 = texts[currentLang]) === null || _texts$currentLang4 === void 0 ? void 0 : _texts$currentLang4.autoGearScenarioModeAll) || fallbackTexts.autoGearScenarioModeAll || 'Require every selected scenario';
+  }
+  var lines = ["".concat(logicLabel, ": ").concat(logicText)];
+  if (rule.scenarioPrimary) {
+    lines.push("".concat(baseLabel, ": ").concat(rule.scenarioPrimary));
+  }
+  if (rule.scenarioLogic === 'multiplier' && rule.scenarioMultiplier !== 1) {
+    lines.push("".concat(multiplierLabel, ": \xD7").concat(formatNumberForComparison(rule.scenarioMultiplier)));
+  }
+  if (rule.scenarios && rule.scenarios.length) {
+    lines.push("".concat(requiredLabel, ": ").concat(rule.scenarios.join(' + ')));
+  } else {
+    lines.push("".concat(requiredLabel, ": ").concat(noneLabel));
+  }
+  if (rule.always) {
+    lines.push(alwaysLabel);
+  }
+  return lines;
+}
+function createRestoreRehearsalRuleList(entries, emptyText) {
+  var list = document.createElement('ul');
+  list.className = 'restore-rehearsal-rule-list';
+  var lines = Array.isArray(entries) ? entries.filter(function (line) {
+    return typeof line === 'string' && line.trim();
+  }) : [];
+  if (!lines.length) {
+    var emptyItem = document.createElement('li');
+    emptyItem.textContent = emptyText;
+    list.appendChild(emptyItem);
+    return list;
+  }
+  lines.forEach(function (line) {
+    var item = document.createElement('li');
+    item.textContent = line;
+    list.appendChild(item);
+  });
+  return list;
+}
+function createRestoreRehearsalRuleSection(label, entries, emptyText) {
+  var section = document.createElement('div');
+  section.className = 'restore-rehearsal-rule-section';
+  var heading = document.createElement('span');
+  heading.className = 'restore-rehearsal-rule-section-label';
+  heading.textContent = label;
+  section.appendChild(heading);
+  section.appendChild(createRestoreRehearsalRuleList(entries, emptyText));
+  return section;
+}
+function createRestoreRehearsalRuleColumn(title, rule, variant, langTexts, emptyText) {
+  var _texts$en, _texts$en2, _texts$en3;
+  var column = document.createElement('div');
+  column.className = 'restore-rehearsal-rule-column';
+  if (variant) {
+    column.classList.add("restore-rehearsal-rule-column--".concat(variant));
+  }
+  var heading = document.createElement('div');
+  heading.className = 'restore-rehearsal-rule-column-title';
+  heading.textContent = title;
+  column.appendChild(heading);
+  var additions = rule ? rule.addItems.map(function (item) {
+    return formatRestoreRehearsalRuleItem(item);
+  }).filter(Boolean) : [];
+  column.appendChild(createRestoreRehearsalRuleSection(langTexts.restoreRehearsalRuleAddsLabel || ((_texts$en = texts.en) === null || _texts$en === void 0 ? void 0 : _texts$en.restoreRehearsalRuleAddsLabel) || 'Automatic additions', additions, emptyText));
+  var removals = rule ? rule.removeItems.map(function (item) {
+    return formatRestoreRehearsalRuleItem(item);
+  }).filter(Boolean) : [];
+  column.appendChild(createRestoreRehearsalRuleSection(langTexts.restoreRehearsalRuleRemovesLabel || ((_texts$en2 = texts.en) === null || _texts$en2 === void 0 ? void 0 : _texts$en2.restoreRehearsalRuleRemovesLabel) || 'Automatic removals', removals, emptyText));
+  var scenarioLines = formatRestoreRehearsalRuleScenarioLines(rule, langTexts);
+  column.appendChild(createRestoreRehearsalRuleSection(langTexts.restoreRehearsalRuleScenariosLabel || ((_texts$en3 = texts.en) === null || _texts$en3 === void 0 ? void 0 : _texts$en3.restoreRehearsalRuleScenariosLabel) || 'Scenario scope', scenarioLines, emptyText));
+  return column;
+}
+function renderRestoreRehearsalRuleDiff(differences) {
+  var _texts$en5, _texts$en6, _texts$en7;
+  if (!restoreRehearsalRuleSectionEl || !restoreRehearsalRuleListEl || !restoreRehearsalRuleEmptyEl) {
+    return;
+  }
+  var lang = typeof currentLang === 'string' && texts[currentLang] ? currentLang : 'en';
+  var langTexts = texts[lang] || texts.en || {};
+  restoreRehearsalRuleListEl.innerHTML = '';
+  var hasDifferences = Array.isArray(differences) && differences.length > 0;
+  if (!hasDifferences) {
+    if (restoreRehearsalRuleEmptyEl) {
+      var _texts$en4;
+      restoreRehearsalRuleEmptyEl.textContent = langTexts.restoreRehearsalRuleEmpty || ((_texts$en4 = texts.en) === null || _texts$en4 === void 0 ? void 0 : _texts$en4.restoreRehearsalRuleEmpty) || 'No automatic gear rule differences found.';
+      restoreRehearsalRuleEmptyEl.removeAttribute('hidden');
+    }
+    restoreRehearsalRuleSectionEl.removeAttribute('hidden');
+    if (restoreRehearsalActionsEl) {
+      restoreRehearsalActionsEl.removeAttribute('hidden');
+    }
+    return;
+  }
+  restoreRehearsalRuleEmptyEl.setAttribute('hidden', '');
+  var liveTitle = langTexts.restoreRehearsalLiveColumn || ((_texts$en5 = texts.en) === null || _texts$en5 === void 0 ? void 0 : _texts$en5.restoreRehearsalLiveColumn) || 'Live profile';
+  var sandboxTitle = langTexts.restoreRehearsalSandboxColumn || ((_texts$en6 = texts.en) === null || _texts$en6 === void 0 ? void 0 : _texts$en6.restoreRehearsalSandboxColumn) || 'Sandbox import';
+  var emptyText = langTexts.restoreRehearsalRuleNone || ((_texts$en7 = texts.en) === null || _texts$en7 === void 0 ? void 0 : _texts$en7.restoreRehearsalRuleNone) || 'None';
+  differences.forEach(function (entry) {
+    var _entry$sandbox, _entry$live, _texts$en8;
+    if (!entry) return;
+    var item = document.createElement('li');
+    var typeClass = entry.status ? " diff-".concat(entry.status) : '';
+    item.className = "diff-entry".concat(typeClass);
+    var header = document.createElement('div');
+    header.className = 'diff-entry-header';
+    var path = document.createElement('div');
+    path.className = 'diff-path';
+    var fallbackLabel = entry.label || ((_entry$sandbox = entry.sandbox) === null || _entry$sandbox === void 0 ? void 0 : _entry$sandbox.displayName) || ((_entry$live = entry.live) === null || _entry$live === void 0 ? void 0 : _entry$live.displayName) || langTexts.restoreRehearsalRuleFallback || ((_texts$en8 = texts.en) === null || _texts$en8 === void 0 ? void 0 : _texts$en8.restoreRehearsalRuleFallback) || 'Automatic rule change';
+    path.textContent = fallbackLabel;
+    header.appendChild(path);
+    header.appendChild(createDiffStatusBadge(entry.status || 'changed'));
+    item.appendChild(header);
+    var columns = document.createElement('div');
+    columns.className = 'restore-rehearsal-rule-columns';
+    if (entry.status === 'changed') {
+      columns.classList.add('restore-rehearsal-rule-columns--split');
+    }
+    if (entry.live) {
+      var variant = entry.status === 'added' ? null : 'removed';
+      columns.appendChild(createRestoreRehearsalRuleColumn(liveTitle, entry.live, variant, langTexts, emptyText));
+    }
+    if (entry.sandbox) {
+      var _variant = entry.status === 'removed' ? null : 'added';
+      columns.appendChild(createRestoreRehearsalRuleColumn(sandboxTitle, entry.sandbox, _variant, langTexts, emptyText));
+    }
+    item.appendChild(columns);
+    restoreRehearsalRuleListEl.appendChild(item);
+  });
+  restoreRehearsalRuleSectionEl.removeAttribute('hidden');
+  if (restoreRehearsalActionsEl) {
+    restoreRehearsalActionsEl.removeAttribute('hidden');
+  }
+}
+function getRestoreRehearsalLiveSnapshot() {
+  var snapshot = typeof exportAllData === 'function' ? exportAllData() : {};
+  var data = isPlainObject(snapshot) ? snapshot : {};
+  return {
+    counts: summarizeCountsFromData(data),
+    rules: normalizeRestoreRehearsalRules(data.autoGearRules, 'live')
+  };
+}
 function resetRestoreRehearsalState() {
   var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   var _ref3 = options || {},
     _ref3$keepStatus = _ref3.keepStatus,
     keepStatus = _ref3$keepStatus === void 0 ? false : _ref3$keepStatus;
   if (restoreRehearsalFileNameEl) {
-    var _texts$en, _texts$lang;
+    var _texts$en9, _texts$lang;
     var lang = typeof currentLang === 'string' && texts[currentLang] ? currentLang : 'en';
-    var fallback = ((_texts$en = texts.en) === null || _texts$en === void 0 ? void 0 : _texts$en.restoreRehearsalNoFile) || 'No file selected yet.';
+    var fallback = ((_texts$en9 = texts.en) === null || _texts$en9 === void 0 ? void 0 : _texts$en9.restoreRehearsalNoFile) || 'No file selected yet.';
     var message = ((_texts$lang = texts[lang]) === null || _texts$lang === void 0 ? void 0 : _texts$lang.restoreRehearsalNoFile) || fallback;
     restoreRehearsalFileNameEl.textContent = message;
   }
   if (!keepStatus && restoreRehearsalStatusEl) {
-    var _texts$en2, _texts$_lang;
+    var _texts$en0, _texts$_lang;
     var _lang = typeof currentLang === 'string' && texts[currentLang] ? currentLang : 'en';
-    var _fallback = ((_texts$en2 = texts.en) === null || _texts$en2 === void 0 ? void 0 : _texts$en2.restoreRehearsalReady) || '';
+    var _fallback = ((_texts$en0 = texts.en) === null || _texts$en0 === void 0 ? void 0 : _texts$en0.restoreRehearsalReady) || '';
     restoreRehearsalStatusEl.textContent = ((_texts$_lang = texts[_lang]) === null || _texts$_lang === void 0 ? void 0 : _texts$_lang.restoreRehearsalReady) || _fallback;
   }
   if (restoreRehearsalTableEl) {
@@ -514,6 +1067,19 @@ function resetRestoreRehearsalState() {
       restoreRehearsalTableBodyEl.removeChild(restoreRehearsalTableBodyEl.firstChild);
     }
   }
+  if (restoreRehearsalRuleSectionEl) {
+    restoreRehearsalRuleSectionEl.setAttribute('hidden', '');
+  }
+  if (restoreRehearsalRuleListEl) {
+    restoreRehearsalRuleListEl.innerHTML = '';
+  }
+  if (restoreRehearsalRuleEmptyEl) {
+    restoreRehearsalRuleEmptyEl.setAttribute('hidden', '');
+  }
+  if (restoreRehearsalActionsEl) {
+    restoreRehearsalActionsEl.setAttribute('hidden', '');
+  }
+  restoreRehearsalLastSnapshot = null;
   if (restoreRehearsalInputEl) {
     restoreRehearsalInputEl.value = '';
   }
@@ -563,7 +1129,7 @@ function readFileAsText(file) {
   });
 }
 function formatRestoreRehearsalSummary(rows) {
-  var _texts$en4;
+  var _texts$en10;
   var lang = typeof currentLang === 'string' && texts[currentLang] ? currentLang : 'en';
   var langTexts = texts[lang] || texts.en || {};
   var joiner = langTexts.restoreRehearsalDifferenceListJoin || ', ';
@@ -573,35 +1139,35 @@ function formatRestoreRehearsalSummary(rows) {
     return "".concat(row.label, " (").concat(row.diff > 0 ? '+' : '−').concat(Math.abs(row.diff), ")");
   });
   if (!diffs.length) {
-    var _texts$en3;
-    return langTexts.restoreRehearsalMatch || ((_texts$en3 = texts.en) === null || _texts$en3 === void 0 ? void 0 : _texts$en3.restoreRehearsalMatch) || 'All counts match. The sandbox was cleared automatically.';
+    var _texts$en1;
+    return langTexts.restoreRehearsalMatch || ((_texts$en1 = texts.en) === null || _texts$en1 === void 0 ? void 0 : _texts$en1.restoreRehearsalMatch) || 'All counts match. The sandbox was cleared automatically.';
   }
-  var template = langTexts.restoreRehearsalMismatch || ((_texts$en4 = texts.en) === null || _texts$en4 === void 0 ? void 0 : _texts$en4.restoreRehearsalMismatch) || 'Differences detected: %s. The sandbox was cleared automatically.';
+  var template = langTexts.restoreRehearsalMismatch || ((_texts$en10 = texts.en) === null || _texts$en10 === void 0 ? void 0 : _texts$en10.restoreRehearsalMismatch) || 'Differences detected: %s. The sandbox was cleared automatically.';
   return template.replace('%s', diffs.join(joiner));
 }
 function applyRestoreRehearsalDifferenceCell(cell, label, diff) {
-  var _texts$en6, _texts$en7;
+  var _texts$en12, _texts$en13;
   if (!cell) return;
   var lang = typeof currentLang === 'string' && texts[currentLang] ? currentLang : 'en';
   var langTexts = texts[lang] || texts.en || {};
   cell.textContent = '';
   cell.classList.remove('restore-rehearsal-diff-match', 'restore-rehearsal-diff-positive', 'restore-rehearsal-diff-negative');
   if (diff === 0) {
-    var _texts$en5;
-    var text = langTexts.restoreRehearsalMatchLabel || ((_texts$en5 = texts.en) === null || _texts$en5 === void 0 ? void 0 : _texts$en5.restoreRehearsalMatchLabel) || 'Match';
+    var _texts$en11;
+    var text = langTexts.restoreRehearsalMatchLabel || ((_texts$en11 = texts.en) === null || _texts$en11 === void 0 ? void 0 : _texts$en11.restoreRehearsalMatchLabel) || 'Match';
     cell.textContent = text;
     cell.classList.add('restore-rehearsal-diff-match');
     cell.setAttribute('aria-label', "".concat(label, " ").concat(text));
     return;
   }
   var abs = Math.abs(diff);
-  var template = diff > 0 ? langTexts.restoreRehearsalIncreaseLabel || ((_texts$en6 = texts.en) === null || _texts$en6 === void 0 ? void 0 : _texts$en6.restoreRehearsalIncreaseLabel) || 'Sandbox includes %d more %s.' : langTexts.restoreRehearsalDecreaseLabel || ((_texts$en7 = texts.en) === null || _texts$en7 === void 0 ? void 0 : _texts$en7.restoreRehearsalDecreaseLabel) || 'Sandbox includes %d fewer %s.';
+  var template = diff > 0 ? langTexts.restoreRehearsalIncreaseLabel || ((_texts$en12 = texts.en) === null || _texts$en12 === void 0 ? void 0 : _texts$en12.restoreRehearsalIncreaseLabel) || 'Sandbox includes %d more %s.' : langTexts.restoreRehearsalDecreaseLabel || ((_texts$en13 = texts.en) === null || _texts$en13 === void 0 ? void 0 : _texts$en13.restoreRehearsalDecreaseLabel) || 'Sandbox includes %d fewer %s.';
   var display = "".concat(diff > 0 ? '+' : '−').concat(abs);
   cell.textContent = display;
   cell.setAttribute('aria-label', template.replace('%d', abs).replace('%s', label));
   cell.classList.add(diff > 0 ? 'restore-rehearsal-diff-positive' : 'restore-rehearsal-diff-negative');
 }
-function renderRestoreRehearsalResults(rows) {
+function renderRestoreRehearsalResults(rows, ruleDiff) {
   if (!restoreRehearsalTableBodyEl || !restoreRehearsalStatusEl) return;
   while (restoreRehearsalTableBodyEl.firstChild) {
     restoreRehearsalTableBodyEl.removeChild(restoreRehearsalTableBodyEl.firstChild);
@@ -627,19 +1193,83 @@ function renderRestoreRehearsalResults(rows) {
     restoreRehearsalTableEl.removeAttribute('hidden');
   }
   restoreRehearsalStatusEl.textContent = formatRestoreRehearsalSummary(rows);
+  renderRestoreRehearsalRuleDiff(Array.isArray(ruleDiff) ? ruleDiff : []);
+}
+function countRestoreRehearsalDeviceEntries(devices) {
+  if (typeof countDeviceDatabaseEntries === 'function') {
+    try {
+      var direct = countDeviceDatabaseEntries(devices);
+      if (typeof direct === 'number' && Number.isFinite(direct)) {
+        return direct;
+      }
+    } catch (deviceCountError) {
+      console.warn('Primary device counting failed during restore rehearsal', deviceCountError);
+    }
+  }
+  var skipKeys = new Set(['filterOptions', 'None']);
+  var isEntryObject = function isEntryObject(value) {
+    if (!isPlainObject(value)) {
+      return false;
+    }
+    return Object.values(value).some(function (entry) {
+      return entry === null || _typeof(entry) !== 'object' || Array.isArray(entry);
+    });
+  };
+  var _fallbackCount = function fallbackCount(collection) {
+    if (!isPlainObject(collection)) {
+      return 0;
+    }
+    var total = 0;
+    Object.entries(collection).forEach(function (_ref4) {
+      var _ref5 = _slicedToArray(_ref4, 2),
+        name = _ref5[0],
+        value = _ref5[1];
+      if (!name || skipKeys.has(name)) {
+        return;
+      }
+      if (isEntryObject(value)) {
+        total += 1;
+        return;
+      }
+      total += _fallbackCount(value);
+    });
+    return total;
+  };
+  return _fallbackCount(devices);
+}
+function countRestoreRehearsalFeedbackDrafts(feedback) {
+  if (!isPlainObject(feedback)) {
+    return 0;
+  }
+  return Object.values(feedback).reduce(function (total, entry) {
+    if (!entry) {
+      return total;
+    }
+    if (Array.isArray(entry)) {
+      return total + entry.filter(Boolean).length;
+    }
+    if (typeof entry === 'string') {
+      return entry.trim() ? total + 1 : total;
+    }
+    if (isPlainObject(entry)) {
+      return Object.keys(entry).length ? total + 1 : total;
+    }
+    return total + 1;
+  }, 0);
 }
 function runRestoreRehearsal(file) {
   if (!file) return;
   var lang = typeof currentLang === 'string' && texts[currentLang] ? currentLang : 'en';
   var langTexts = texts[lang] || texts.en || {};
   if (restoreRehearsalStatusEl) {
-    var _texts$en8;
-    var processingText = langTexts.restoreRehearsalProcessing || ((_texts$en8 = texts.en) === null || _texts$en8 === void 0 ? void 0 : _texts$en8.restoreRehearsalProcessing) || 'Loading file in an isolated sandbox…';
+    var _texts$en14;
+    var processingText = langTexts.restoreRehearsalProcessing || ((_texts$en14 = texts.en) === null || _texts$en14 === void 0 ? void 0 : _texts$en14.restoreRehearsalProcessing) || 'Loading file in an isolated sandbox…';
     restoreRehearsalStatusEl.textContent = processingText;
   }
   readFileAsText(file).then(function (raw) {
     var mode = getSelectedRestoreRehearsalMode();
     var sandboxCounts;
+    var sandboxRules = [];
     if (mode === 'project') {
       var sanitizedPayload = sanitizeBackupPayload(raw);
       if (!sanitizedPayload || !sanitizedPayload.trim()) {
@@ -654,6 +1284,7 @@ function runRestoreRehearsal(file) {
         throw _mismatchError;
       }
       sandboxCounts = summarizeProjectBundle(parsed);
+      sandboxRules = normalizeRestoreRehearsalRules(parsed.autoGearRules, 'sandbox');
     } else {
       var _sanitizedPayload = sanitizeBackupPayload(raw);
       if (!_sanitizedPayload || !_sanitizedPayload.trim()) {
@@ -667,33 +1298,61 @@ function runRestoreRehearsal(file) {
       }
       var _extractBackupSection = extractBackupSections(_parsed),
         data = _extractBackupSection.data;
-      sandboxCounts = summarizeCountsFromData(isPlainObject(data) ? data : {});
+      var normalizedData = isPlainObject(data) ? data : {};
+      sandboxCounts = summarizeCountsFromData(normalizedData);
+      sandboxRules = normalizeRestoreRehearsalRules(normalizedData.autoGearRules, 'sandbox');
     }
-    var liveCounts = getRestoreRehearsalLiveCounts();
-    var rows = buildRestoreRehearsalRows(liveCounts, sandboxCounts);
-    renderRestoreRehearsalResults(rows);
+    var liveSnapshot = getRestoreRehearsalLiveSnapshot();
+    var liveCounts = liveSnapshot && isPlainObject(liveSnapshot.counts) ? liveSnapshot.counts : {};
+    var liveRules = liveSnapshot && Array.isArray(liveSnapshot.rules) ? liveSnapshot.rules : [];
+    var rows = buildRestoreRehearsalRows(liveCounts, sandboxCounts, {
+      mode: mode
+    });
+    var ruleDiff = buildRestoreRehearsalRuleDiff(liveRules, sandboxRules);
+    renderRestoreRehearsalResults(rows, ruleDiff);
+    restoreRehearsalLastSnapshot = {
+      fileName: typeof file.name === 'string' ? file.name : '',
+      mode: mode,
+      processedAt: Date.now(),
+      live: {
+        counts: liveCounts,
+        rules: liveRules
+      },
+      sandbox: {
+        counts: sandboxCounts,
+        rules: sandboxRules
+      },
+      diff: ruleDiff
+    };
     if (restoreRehearsalInputEl) {
       restoreRehearsalInputEl.value = '';
     }
   }).catch(function (error) {
     console.warn('Restore rehearsal failed', error);
+    restoreRehearsalLastSnapshot = null;
     if (restoreRehearsalStatusEl) {
       var failureMessage;
       if (error && error.code === 'restore-rehearsal-project-mismatch') {
-        var _texts$en9;
-        failureMessage = langTexts.restoreRehearsalProjectMismatch || ((_texts$en9 = texts.en) === null || _texts$en9 === void 0 ? void 0 : _texts$en9.restoreRehearsalProjectMismatch);
+        var _texts$en15;
+        failureMessage = langTexts.restoreRehearsalProjectMismatch || ((_texts$en15 = texts.en) === null || _texts$en15 === void 0 ? void 0 : _texts$en15.restoreRehearsalProjectMismatch);
       } else if (error && error.code === 'restore-rehearsal-backup-mismatch') {
-        var _texts$en0;
-        failureMessage = langTexts.restoreRehearsalBackupMismatch || ((_texts$en0 = texts.en) === null || _texts$en0 === void 0 ? void 0 : _texts$en0.restoreRehearsalBackupMismatch);
+        var _texts$en16;
+        failureMessage = langTexts.restoreRehearsalBackupMismatch || ((_texts$en16 = texts.en) === null || _texts$en16 === void 0 ? void 0 : _texts$en16.restoreRehearsalBackupMismatch);
       }
       if (!failureMessage) {
-        var _texts$en1;
-        failureMessage = langTexts.restoreRehearsalError || ((_texts$en1 = texts.en) === null || _texts$en1 === void 0 ? void 0 : _texts$en1.restoreRehearsalError) || 'Restore rehearsal failed. Check the file and try again.';
+        var _texts$en17;
+        failureMessage = langTexts.restoreRehearsalError || ((_texts$en17 = texts.en) === null || _texts$en17 === void 0 ? void 0 : _texts$en17.restoreRehearsalError) || 'Restore rehearsal failed. Check the file and try again.';
       }
       restoreRehearsalStatusEl.textContent = failureMessage;
     }
     if (restoreRehearsalTableEl) {
       restoreRehearsalTableEl.setAttribute('hidden', '');
+    }
+    if (restoreRehearsalRuleSectionEl) {
+      restoreRehearsalRuleSectionEl.setAttribute('hidden', '');
+    }
+    if (restoreRehearsalActionsEl) {
+      restoreRehearsalActionsEl.setAttribute('hidden', '');
     }
   }).finally(function () {
     if (restoreRehearsalInputEl) {
@@ -704,6 +1363,52 @@ function runRestoreRehearsal(file) {
       }
     }
   });
+}
+function handleRestoreRehearsalProceed() {
+  var _texts$en19;
+  var lang = typeof currentLang === 'string' && texts[currentLang] ? currentLang : 'en';
+  var langTexts = texts[lang] || texts.en || {};
+  if (!restoreRehearsalLastSnapshot) {
+    if (restoreRehearsalStatusEl) {
+      var _texts$en18;
+      var readyText = langTexts.restoreRehearsalReady || ((_texts$en18 = texts.en) === null || _texts$en18 === void 0 ? void 0 : _texts$en18.restoreRehearsalReady) || '';
+      restoreRehearsalStatusEl.textContent = readyText;
+    }
+    return;
+  }
+  var message = langTexts.restoreRehearsalProceedMessage || ((_texts$en19 = texts.en) === null || _texts$en19 === void 0 ? void 0 : _texts$en19.restoreRehearsalProceedMessage) || 'Sandbox snapshot staged. Live data remains untouched until you perform a full restore.';
+  if (restoreRehearsalStatusEl) {
+    restoreRehearsalStatusEl.textContent = message;
+  }
+  if (typeof document !== 'undefined' && typeof document.dispatchEvent === 'function') {
+    try {
+      var _restoreRehearsalLast;
+      document.dispatchEvent(new CustomEvent('restoreRehearsalProceed', {
+        detail: {
+          fileName: restoreRehearsalLastSnapshot.fileName,
+          mode: restoreRehearsalLastSnapshot.mode,
+          processedAt: restoreRehearsalLastSnapshot.processedAt,
+          sandboxCounts: ((_restoreRehearsalLast = restoreRehearsalLastSnapshot.sandbox) === null || _restoreRehearsalLast === void 0 ? void 0 : _restoreRehearsalLast.counts) || {},
+          ruleChanges: Array.isArray(restoreRehearsalLastSnapshot.diff) ? restoreRehearsalLastSnapshot.diff.length : 0
+        }
+      }));
+    } catch (eventError) {
+      console.warn('Restore rehearsal proceed notification failed', eventError);
+    }
+  }
+}
+function handleRestoreRehearsalAbort() {
+  var _texts$en20;
+  var lang = typeof currentLang === 'string' && texts[currentLang] ? currentLang : 'en';
+  var langTexts = texts[lang] || texts.en || {};
+  var message = langTexts.restoreRehearsalAbortMessage || ((_texts$en20 = texts.en) === null || _texts$en20 === void 0 ? void 0 : _texts$en20.restoreRehearsalAbortMessage) || 'Rehearsal sandbox cleared. Live data remains untouched.';
+  restoreRehearsalLastSnapshot = null;
+  resetRestoreRehearsalState({
+    keepStatus: true
+  });
+  if (restoreRehearsalStatusEl) {
+    restoreRehearsalStatusEl.textContent = message;
+  }
 }
 function saveCurrentSession() {
   var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -794,6 +1499,34 @@ var projectAutoSaveTimer = null;
 var projectAutoSaveFailureCount = 0;
 var projectAutoSavePendingWhileRestoring = null;
 var factoryResetInProgress = false;
+var projectAutoSaveOverrides = null;
+function setProjectAutoSaveOverrides(overrides) {
+  if (!overrides || _typeof(overrides) !== 'object') {
+    projectAutoSaveOverrides = null;
+    return;
+  }
+  var context = {};
+  if (overrides.setupNameState && _typeof(overrides.setupNameState) === 'object') {
+    var state = overrides.setupNameState;
+    var typedName = typeof state.typedName === 'string' ? state.typedName : '';
+    var selectedName = typeof state.selectedName === 'string' ? state.selectedName : '';
+    var storageKey = typeof state.storageKey === 'string' ? state.storageKey : '';
+    var renameInProgress = typeof state.renameInProgress === 'boolean' ? state.renameInProgress : Boolean(selectedName && typedName && typedName !== selectedName);
+    context.setupNameState = {
+      typedName: typedName,
+      selectedName: selectedName,
+      storageKey: storageKey,
+      renameInProgress: renameInProgress
+    };
+  }
+  projectAutoSaveOverrides = context.setupNameState ? context : null;
+}
+function getProjectAutoSaveOverrides() {
+  return projectAutoSaveOverrides;
+}
+function clearProjectAutoSaveOverrides() {
+  projectAutoSaveOverrides = null;
+}
 function getProjectAutoSaveDelay() {
   if (projectAutoSaveFailureCount <= 0) {
     return PROJECT_AUTOSAVE_BASE_DELAY_MS;
@@ -807,6 +1540,7 @@ function runProjectAutoSave() {
       clearTimeout(projectAutoSaveTimer);
       projectAutoSaveTimer = null;
     }
+    clearProjectAutoSaveOverrides();
     return;
   }
   if (restoringSession) {
@@ -854,17 +1588,32 @@ function runProjectAutoSave() {
     } else if (projectAutoSaveFailureCount === PROJECT_AUTOSAVE_MAX_RETRIES) {
       console.warn('Project autosave retries have been paused after repeated failures.');
     }
+    clearProjectAutoSaveOverrides();
     return;
   }
   projectAutoSaveFailureCount = 0;
+  clearProjectAutoSaveOverrides();
 }
 function scheduleProjectAutoSave() {
-  var immediate = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+  var immediateOrOptions = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+  var immediate = false;
+  var overrides;
+  if (_typeof(immediateOrOptions) === 'object' && immediateOrOptions !== null) {
+    immediate = Boolean(immediateOrOptions.immediate);
+    overrides = immediateOrOptions.overrides;
+  } else {
+    immediate = Boolean(immediateOrOptions);
+    overrides = undefined;
+  }
+  if (overrides !== undefined) {
+    setProjectAutoSaveOverrides(overrides);
+  }
   if (factoryResetInProgress) {
     if (projectAutoSaveTimer) {
       clearTimeout(projectAutoSaveTimer);
       projectAutoSaveTimer = null;
     }
+    clearProjectAutoSaveOverrides();
     return;
   }
   if (restoringSession) {
@@ -1018,6 +1767,9 @@ function restoreSessionState() {
     }
     setSelectValue(batterySelect, state.battery);
     setSelectValue(hotswapSelect, state.batteryHotswap);
+    if (state && typeof state.battery === 'string' && state.battery.trim() || state && typeof state.batteryHotswap === 'string' && state.batteryHotswap.trim()) {
+      updateBatteryOptions();
+    }
     setSelectValue(setupSelect, state.setupSelect);
     currentProjectInfo = state.projectInfo || null;
     if (projectForm) populateProjectForm(currentProjectInfo || {});
@@ -1223,6 +1975,9 @@ function applySharedSetup(shared) {
     }
     setSelectValue(batterySelect, decoded.battery);
     setSelectValue(hotswapSelect, decoded.batteryHotswap);
+    if (typeof decoded.battery === 'string' && decoded.battery.trim() || typeof decoded.batteryHotswap === 'string' && decoded.batteryHotswap.trim()) {
+      updateBatteryOptions();
+    }
     if (typeof setManualDiagramPositions === 'function') {
       var sharedDiagramPositions = {};
       if (typeof normalizeDiagramPositionsInput === 'function' && decoded.diagramPositions) {
@@ -1650,9 +2405,9 @@ function triggerPinkModeIconAnimation() {
   });
 }
 function applyPinkModeIcon(iconConfig) {
-  var _ref4 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-    _ref4$animate = _ref4.animate,
-    animate = _ref4$animate === void 0 ? false : _ref4$animate;
+  var _ref6 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+    _ref6$animate = _ref6.animate,
+    animate = _ref6$animate === void 0 ? false : _ref6$animate;
   if (!iconConfig) return;
   if (pinkModeToggle) {
     setToggleIcon(pinkModeToggle, iconConfig);
@@ -2283,6 +3038,41 @@ var createAccentTint = function createAccentTint() {
   if (!rgb) return null;
   return "rgba(".concat(rgb.r, ", ").concat(rgb.g, ", ").concat(rgb.b, ", ").concat(alpha, ")");
 };
+var getNotificationAccentColor = function getNotificationAccentColor() {
+  var fallback = typeof accentColor === 'string' && accentColor ? accentColor : DEFAULT_ACCENT_COLOR;
+  var resolved = getCssVariableValue('--accent-color', fallback);
+  return resolved || fallback;
+};
+var getNotificationTextColor = function getNotificationTextColor(backgroundColor) {
+  try {
+    if (typeof computeRelativeLuminance === 'function') {
+      var rgb = parseColorToRgb(backgroundColor);
+      if (rgb) {
+        var luminance = computeRelativeLuminance(rgb);
+        return luminance > 0.55 ? '#000000' : '#ffffff';
+      }
+    }
+  } catch (colorError) {
+    console.warn('Failed to determine notification text color', colorError);
+  }
+  return '#ffffff';
+};
+var getNotificationTopOffset = function getNotificationTopOffset() {
+  var baseOffset = 16;
+  var offset = baseOffset;
+  try {
+    var topBar = document.getElementById('topBar');
+    if (topBar && typeof topBar.getBoundingClientRect === 'function') {
+      var rect = topBar.getBoundingClientRect();
+      if (rect && typeof rect.bottom === 'number' && rect.bottom > 0) {
+        offset = Math.max(offset, rect.bottom + baseOffset);
+      }
+    }
+  } catch (measureError) {
+    console.warn('Failed to measure top bar for notifications', measureError);
+  }
+  return "".concat(Math.ceil(offset), "px");
+};
 function showNotification(type, message) {
   if (typeof document === 'undefined') return;
   var id = 'backupNotificationContainer';
@@ -2291,11 +3081,12 @@ function showNotification(type, message) {
     container = document.createElement('div');
     container.id = id;
     container.style.position = 'fixed';
-    container.style.top = '1rem';
+    container.style.top = getNotificationTopOffset();
     container.style.right = '1rem';
     container.style.zIndex = '10000';
     document.body.appendChild(container);
   }
+  container.style.top = getNotificationTopOffset();
   var note = document.createElement('div');
   note.textContent = message;
   note.style.padding = '0.75rem 1.25rem';
@@ -2303,18 +3094,8 @@ function showNotification(type, message) {
   note.style.borderRadius = '0.75rem';
   note.style.border = 'none';
   note.style.boxShadow = '0 0.75rem 2.5rem rgba(0, 0, 0, 0.14)';
-  var background;
-  var textColor;
-  if (type === 'error' || type === 'warning') {
-    var backgroundVar = type === 'error' ? '--status-error-bg' : '--status-warning-bg';
-    var fallbackBackground = type === 'error' ? '#fdd' : '#ffd';
-    background = getCssVariableValue(backgroundVar, fallbackBackground);
-    var textColorVar = type === 'error' ? '--status-error-text-color' : '--status-warning-text-color';
-    textColor = getCssVariableValue(textColorVar, '#000');
-  } else {
-    background = createAccentTint() || getCssVariableValue('--status-success-bg', '#dfd');
-    textColor = getCssVariableValue('--status-success-text-color', '#000');
-  }
+  var background = getNotificationAccentColor();
+  var textColor = getNotificationTextColor(background);
   note.style.background = background;
   note.style.color = textColor;
   container.appendChild(note);
@@ -2519,9 +3300,9 @@ function restoreSessionStorageSnapshot(snapshot) {
     return;
   }
   var entries = snapshot && _typeof(snapshot) === 'object' ? Object.entries(snapshot) : [];
-  var retainedKeys = new Set(entries.map(function (_ref5) {
-    var _ref6 = _slicedToArray(_ref5, 1),
-      key = _ref6[0];
+  var retainedKeys = new Set(entries.map(function (_ref7) {
+    var _ref8 = _slicedToArray(_ref7, 1),
+      key = _ref8[0];
     return key;
   }));
   var keysToRemove = [];
@@ -2545,10 +3326,10 @@ function restoreSessionStorageSnapshot(snapshot) {
       console.warn('Failed to remove sessionStorage key during restore rollback', key, removeError);
     }
   });
-  entries.forEach(function (_ref7) {
-    var _ref8 = _slicedToArray(_ref7, 2),
-      key = _ref8[0],
-      value = _ref8[1];
+  entries.forEach(function (_ref9) {
+    var _ref0 = _slicedToArray(_ref9, 2),
+      key = _ref0[0],
+      value = _ref0[1];
     if (typeof key !== 'string') return;
     try {
       sessionStorage.setItem(key, typeof value === 'string' ? value : String(value));
@@ -2646,8 +3427,8 @@ function convertLegacyDataEntriesToObject(entries) {
       }
     }
     if (value === undefined) {
-      var _ref9, _ref0, _ref1, _ref10, _ref11, _ref12, _ref13, _ref14, _entry$value;
-      value = (_ref9 = (_ref0 = (_ref1 = (_ref10 = (_ref11 = (_ref12 = (_ref13 = (_ref14 = (_entry$value = entry.value) !== null && _entry$value !== void 0 ? _entry$value : entry.data) !== null && _ref14 !== void 0 ? _ref14 : entry.content) !== null && _ref13 !== void 0 ? _ref13 : entry.payload) !== null && _ref12 !== void 0 ? _ref12 : entry.entries) !== null && _ref11 !== void 0 ? _ref11 : entry.items) !== null && _ref10 !== void 0 ? _ref10 : entry.snapshot) !== null && _ref1 !== void 0 ? _ref1 : entry.state) !== null && _ref0 !== void 0 ? _ref0 : entry.values) !== null && _ref9 !== void 0 ? _ref9 : entry.settings;
+      var _ref1, _ref10, _ref11, _ref12, _ref13, _ref14, _ref15, _ref16, _entry$value;
+      value = (_ref1 = (_ref10 = (_ref11 = (_ref12 = (_ref13 = (_ref14 = (_ref15 = (_ref16 = (_entry$value = entry.value) !== null && _entry$value !== void 0 ? _entry$value : entry.data) !== null && _ref16 !== void 0 ? _ref16 : entry.content) !== null && _ref15 !== void 0 ? _ref15 : entry.payload) !== null && _ref14 !== void 0 ? _ref14 : entry.entries) !== null && _ref13 !== void 0 ? _ref13 : entry.items) !== null && _ref12 !== void 0 ? _ref12 : entry.snapshot) !== null && _ref11 !== void 0 ? _ref11 : entry.state) !== null && _ref10 !== void 0 ? _ref10 : entry.values) !== null && _ref1 !== void 0 ? _ref1 : entry.settings;
     }
     if (value === undefined) {
       return;
@@ -2698,10 +3479,10 @@ function mergeBackupDataSections(base, additions) {
     return base ? _objectSpread({}, base) : null;
   }
   var target = base ? _objectSpread({}, base) : {};
-  Object.entries(additions).forEach(function (_ref15) {
-    var _ref16 = _slicedToArray(_ref15, 2),
-      key = _ref16[0],
-      value = _ref16[1];
+  Object.entries(additions).forEach(function (_ref17) {
+    var _ref18 = _slicedToArray(_ref17, 2),
+      key = _ref18[0],
+      value = _ref18[1];
     if (typeof key !== 'string') return;
     if (Object.prototype.hasOwnProperty.call(target, key)) return;
     target[key] = normalizeBackupDataValue(key, value);
@@ -2764,13 +3545,13 @@ function convertEntriesToSnapshot(section) {
       }
       if (_typeof(entry) === 'object') {
         if (typeof entry.key === 'string') {
-          var _ref17, _ref18, _ref19, _entry$value2;
-          assignEntry(entry.key, (_ref17 = (_ref18 = (_ref19 = (_entry$value2 = entry.value) !== null && _entry$value2 !== void 0 ? _entry$value2 : entry.val) !== null && _ref19 !== void 0 ? _ref19 : entry.data) !== null && _ref18 !== void 0 ? _ref18 : entry.content) !== null && _ref17 !== void 0 ? _ref17 : entry.string);
+          var _ref19, _ref20, _ref21, _entry$value2;
+          assignEntry(entry.key, (_ref19 = (_ref20 = (_ref21 = (_entry$value2 = entry.value) !== null && _entry$value2 !== void 0 ? _entry$value2 : entry.val) !== null && _ref21 !== void 0 ? _ref21 : entry.data) !== null && _ref20 !== void 0 ? _ref20 : entry.content) !== null && _ref19 !== void 0 ? _ref19 : entry.string);
           return;
         }
         if (typeof entry.name === 'string') {
-          var _ref20, _ref21, _ref22, _entry$value3;
-          assignEntry(entry.name, (_ref20 = (_ref21 = (_ref22 = (_entry$value3 = entry.value) !== null && _entry$value3 !== void 0 ? _entry$value3 : entry.val) !== null && _ref22 !== void 0 ? _ref22 : entry.data) !== null && _ref21 !== void 0 ? _ref21 : entry.content) !== null && _ref20 !== void 0 ? _ref20 : entry.string);
+          var _ref22, _ref23, _ref24, _entry$value3;
+          assignEntry(entry.name, (_ref22 = (_ref23 = (_ref24 = (_entry$value3 = entry.value) !== null && _entry$value3 !== void 0 ? _entry$value3 : entry.val) !== null && _ref24 !== void 0 ? _ref24 : entry.data) !== null && _ref23 !== void 0 ? _ref23 : entry.content) !== null && _ref22 !== void 0 ? _ref22 : entry.string);
           return;
         }
         if (Array.isArray(entry.entry)) {
@@ -2779,10 +3560,10 @@ function convertEntriesToSnapshot(section) {
       }
     });
   } else if (isPlainObject(source)) {
-    Object.entries(source).forEach(function (_ref23) {
-      var _ref24 = _slicedToArray(_ref23, 2),
-        key = _ref24[0],
-        value = _ref24[1];
+    Object.entries(source).forEach(function (_ref25) {
+      var _ref26 = _slicedToArray(_ref25, 2),
+        key = _ref26[0],
+        value = _ref26[1];
       assignEntry(key, value);
     });
   } else {
@@ -2832,9 +3613,9 @@ function restoreLocalStorageSnapshot(storage, snapshot) {
     return;
   }
   var entries = snapshot && _typeof(snapshot) === 'object' ? Object.entries(snapshot) : [];
-  var targetKeys = new Set(entries.map(function (_ref25) {
-    var _ref26 = _slicedToArray(_ref25, 1),
-      key = _ref26[0];
+  var targetKeys = new Set(entries.map(function (_ref27) {
+    var _ref28 = _slicedToArray(_ref27, 1),
+      key = _ref28[0];
     return key;
   }));
   var keysToRemove = [];
@@ -2857,10 +3638,10 @@ function restoreLocalStorageSnapshot(storage, snapshot) {
       console.warn('Failed to remove storage key during restore rollback', key, removeError);
     }
   });
-  entries.forEach(function (_ref27) {
-    var _ref28 = _slicedToArray(_ref27, 2),
-      key = _ref28[0],
-      value = _ref28[1];
+  entries.forEach(function (_ref29) {
+    var _ref30 = _slicedToArray(_ref29, 2),
+      key = _ref30[0],
+      value = _ref30[1];
     if (typeof key !== 'string') return;
     try {
       if (value === null || value === undefined) {
@@ -2876,10 +3657,10 @@ function restoreLocalStorageSnapshot(storage, snapshot) {
 function buildLegacyStorageFromRoot(source, metadataKeys) {
   if (!isPlainObject(source)) return null;
   var snapshot = Object.create(null);
-  Object.entries(source).forEach(function (_ref29) {
-    var _ref30 = _slicedToArray(_ref29, 2),
-      key = _ref30[0],
-      value = _ref30[1];
+  Object.entries(source).forEach(function (_ref31) {
+    var _ref32 = _slicedToArray(_ref31, 2),
+      key = _ref32[0],
+      value = _ref32[1];
     if (metadataKeys.has(key)) return;
     if (!looksLikeStoredSettingKey(key)) return;
     snapshot[key] = normalizeStoredValue(value);
@@ -2943,15 +3724,15 @@ function hasAnyDataKey(data, keys) {
   return false;
 }
 function buildRestoreVersionCompatibilityMessage(options) {
-  var _ref31 = options || {},
-    langTexts = _ref31.langTexts,
-    fallbackTexts = _ref31.fallbackTexts,
-    fileVersion = _ref31.fileVersion,
-    targetVersion = _ref31.targetVersion,
-    data = _ref31.data,
-    settingsSnapshot = _ref31.settingsSnapshot,
-    sessionSnapshot = _ref31.sessionSnapshot,
-    backupFileName = _ref31.backupFileName;
+  var _ref33 = options || {},
+    langTexts = _ref33.langTexts,
+    fallbackTexts = _ref33.fallbackTexts,
+    fileVersion = _ref33.fileVersion,
+    targetVersion = _ref33.targetVersion,
+    data = _ref33.data,
+    settingsSnapshot = _ref33.settingsSnapshot,
+    sessionSnapshot = _ref33.sessionSnapshot,
+    backupFileName = _ref33.backupFileName;
   var translation = function translation(key, fallback) {
     return resolveRestoreTranslation(langTexts, fallbackTexts, key, fallback);
   };
@@ -3174,10 +3955,10 @@ function encodeBackupDataUrl(payload) {
 }
 function getManualDownloadFallbackMessage() {
   if ((typeof texts === "undefined" ? "undefined" : _typeof(texts)) === 'object' && texts) {
-    var _texts$en10;
+    var _texts$en21;
     var lang = typeof currentLang === 'string' && texts[currentLang] ? currentLang : 'en';
     var langTexts = texts[lang] || texts.en || {};
-    var fallback = langTexts.manualDownloadFallback || ((_texts$en10 = texts.en) === null || _texts$en10 === void 0 ? void 0 : _texts$en10.manualDownloadFallback);
+    var fallback = langTexts.manualDownloadFallback || ((_texts$en21 = texts.en) === null || _texts$en21 === void 0 ? void 0 : _texts$en21.manualDownloadFallback);
     if (fallback) {
       return fallback;
     }
@@ -3186,10 +3967,10 @@ function getManualDownloadFallbackMessage() {
 }
 function getManualDownloadCopyHint() {
   if ((typeof texts === "undefined" ? "undefined" : _typeof(texts)) === 'object' && texts) {
-    var _texts$en11;
+    var _texts$en22;
     var lang = typeof currentLang === 'string' && texts[currentLang] ? currentLang : 'en';
     var langTexts = texts[lang] || texts.en || {};
-    var fallback = langTexts.manualDownloadCopyHint || ((_texts$en11 = texts.en) === null || _texts$en11 === void 0 ? void 0 : _texts$en11.manualDownloadCopyHint);
+    var fallback = langTexts.manualDownloadCopyHint || ((_texts$en22 = texts.en) === null || _texts$en22 === void 0 ? void 0 : _texts$en22.manualDownloadCopyHint);
     if (fallback) {
       return fallback;
     }
@@ -3548,10 +4329,10 @@ function collectBackupDiffOptions() {
         }
       }
       return localeSort(a.label, b.label);
-    }).map(function (_ref32) {
-      var parsed = _ref32.parsed,
-        timestamp = _ref32.timestamp,
-        option = _objectWithoutProperties(_ref32, _excluded);
+    }).map(function (_ref34) {
+      var parsed = _ref34.parsed,
+        timestamp = _ref34.timestamp,
+        option = _objectWithoutProperties(_ref34, _excluded);
       return option;
     });
     options.push.apply(options, _toConsumableArray(setupOptions));
@@ -3634,6 +4415,81 @@ var ARRAY_COMPARISON_KEY_LABEL_OVERRIDES = {
   uuid: 'UUID'
 };
 var ARRAY_COMPARISON_KEY_LABEL_OMIT = new Set(['name', 'label', 'title']);
+function isDiffComparablePrimitive(value) {
+  if (value === null) {
+    return true;
+  }
+  var type = _typeof(value);
+  return type === 'string' || type === 'number' || type === 'boolean';
+}
+function arrayHasOnlyComparablePrimitives(array) {
+  if (!Array.isArray(array)) {
+    return false;
+  }
+  for (var i = 0; i < array.length; i += 1) {
+    if (!isDiffComparablePrimitive(array[i])) {
+      return false;
+    }
+  }
+  return true;
+}
+function createPrimitiveDiffKey(value) {
+  if (value === null) {
+    return 'primitive:null';
+  }
+  if (typeof value === 'number') {
+    if (Number.isNaN(value)) {
+      return 'primitive:number:NaN';
+    }
+    if (Object.is(value, -0)) {
+      return 'primitive:number:-0';
+    }
+    return "primitive:number:".concat(value);
+  }
+  if (typeof value === 'string') {
+    return "primitive:string:".concat(value);
+  }
+  if (typeof value === 'boolean') {
+    return "primitive:boolean:".concat(value);
+  }
+  return "primitive:other:".concat(String(value));
+}
+function buildPrimitiveDiffIndex(array) {
+  var counts = new Map();
+  if (!Array.isArray(array)) {
+    return counts;
+  }
+  for (var i = 0; i < array.length; i += 1) {
+    var value = array[i];
+    if (!isDiffComparablePrimitive(value)) {
+      continue;
+    }
+    var key = createPrimitiveDiffKey(value);
+    if (!counts.has(key)) {
+      counts.set(key, {
+        value: value,
+        count: 0
+      });
+    }
+    var entry = counts.get(key);
+    entry.count += 1;
+  }
+  return counts;
+}
+function formatPrimitiveDiffPathValue(value) {
+  if (typeof value === 'number') {
+    if (Number.isNaN(value)) {
+      return 'NaN';
+    }
+    if (!Number.isFinite(value)) {
+      return value > 0 ? 'Infinity' : '-Infinity';
+    }
+    if (Object.is(value, -0)) {
+      return '-0';
+    }
+  }
+  return value;
+}
 function createKeyedDiffPathSegment(keyName, keyValue) {
   var serializedValue;
   try {
@@ -3909,6 +4765,55 @@ function computeSetupDiff(baseline, comparison) {
         });
         return;
       }
+      if (arrayHasOnlyComparablePrimitives(baseValue) && arrayHasOnlyComparablePrimitives(compareValue)) {
+        var _baseIndex = buildPrimitiveDiffIndex(baseValue);
+        var _compareIndex = buildPrimitiveDiffIndex(compareValue);
+        var _combinedOrder = [];
+        var _seenKeys = new Set();
+        var _appendKey = function _appendKey(key) {
+          if (!_seenKeys.has(key)) {
+            _seenKeys.add(key);
+            _combinedOrder.push(key);
+          }
+        };
+        for (var i = 0; i < baseValue.length; i += 1) {
+          _appendKey(createPrimitiveDiffKey(baseValue[i]));
+        }
+        for (var _i3 = 0; _i3 < compareValue.length; _i3 += 1) {
+          _appendKey(createPrimitiveDiffKey(compareValue[_i3]));
+        }
+        _combinedOrder.forEach(function (key) {
+          var baseEntry = _baseIndex.get(key) || null;
+          var compareEntry = _compareIndex.get(key) || null;
+          var baseCount = baseEntry ? baseEntry.count : 0;
+          var compareCount = compareEntry ? compareEntry.count : 0;
+          if (compareCount > baseCount) {
+            var addValue = compareEntry ? compareEntry.value : undefined;
+            var diff = compareCount - baseCount;
+            for (var _i4 = 0; _i4 < diff; _i4 += 1) {
+              entries.push({
+                type: 'added',
+                path: path.concat(createKeyedDiffPathSegment('value', formatPrimitiveDiffPathValue(addValue))),
+                before: undefined,
+                after: addValue
+              });
+            }
+          }
+          if (baseCount > compareCount) {
+            var removeValue = baseEntry ? baseEntry.value : undefined;
+            var _diff = baseCount - compareCount;
+            for (var _i5 = 0; _i5 < _diff; _i5 += 1) {
+              entries.push({
+                type: 'removed',
+                path: path.concat(createKeyedDiffPathSegment('value', formatPrimitiveDiffPathValue(removeValue))),
+                before: removeValue,
+                after: undefined
+              });
+            }
+          }
+        });
+        return;
+      }
       var maxLength = Math.max(baseValue.length, compareValue.length);
       for (var index = 0; index < maxLength; index += 1) {
         var hasBase = index < baseValue.length;
@@ -4067,9 +4972,9 @@ function renderBackupDiffEntries(entries) {
   }
   backupDiffListContainerEl.hidden = false;
   var decoratedEntries = sortDiffEntries(entries);
-  decoratedEntries.forEach(function (_ref33) {
-    var entry = _ref33.entry,
-      pathText = _ref33.pathText;
+  decoratedEntries.forEach(function (_ref35) {
+    var entry = _ref35.entry,
+      pathText = _ref35.pathText;
     if (!entry) {
       return;
     }
@@ -4620,11 +5525,11 @@ function applyBackupFallbacks(target, diagnostics) {
   if (!target || _typeof(target) !== 'object') {
     return;
   }
-  backupFallbackLoaders.forEach(function (_ref34) {
-    var key = _ref34.key,
-      loader = _ref34.loader,
-      loaderName = _ref34.loaderName,
-      isValid = _ref34.isValid;
+  backupFallbackLoaders.forEach(function (_ref36) {
+    var key = _ref36.key,
+      loader = _ref36.loader,
+      loaderName = _ref36.loaderName,
+      isValid = _ref36.isValid;
     var currentValue = target[key];
     if (isValid(currentValue)) {
       return;
@@ -4998,10 +5903,10 @@ if (restoreSettings && restoreSettingsInput) {
         if (restoredSettings && _typeof(restoredSettings) === 'object') {
           if (safeStorage && typeof safeStorage.setItem === 'function') {
             restoreMutated = true;
-            Object.entries(restoredSettings).forEach(function (_ref35) {
-              var _ref36 = _slicedToArray(_ref35, 2),
-                k = _ref36[0],
-                v = _ref36[1];
+            Object.entries(restoredSettings).forEach(function (_ref37) {
+              var _ref38 = _slicedToArray(_ref37, 2),
+                k = _ref38[0],
+                v = _ref38[1];
               if (typeof k !== 'string') return;
               try {
                 if (v === null || v === undefined) {
@@ -5019,10 +5924,10 @@ if (restoreSettings && restoreSettingsInput) {
         }
         if (restoredSession && typeof sessionStorage !== 'undefined') {
           restoreMutated = true;
-          Object.entries(restoredSession).forEach(function (_ref37) {
-            var _ref38 = _slicedToArray(_ref37, 2),
-              key = _ref38[0],
-              value = _ref38[1];
+          Object.entries(restoredSession).forEach(function (_ref39) {
+            var _ref40 = _slicedToArray(_ref39, 2),
+              key = _ref40[0],
+              value = _ref40[1];
             try {
               sessionStorage.setItem(key, value);
             } catch (sessionError) {
@@ -5056,10 +5961,10 @@ if (restoreSettings && restoreSettingsInput) {
           setLanguage(restoredPreferenceState.language);
         }
         if (restoredSession && typeof sessionStorage !== 'undefined') {
-          Object.entries(restoredSession).forEach(function (_ref39) {
-            var _ref40 = _slicedToArray(_ref39, 2),
-              key = _ref40[0],
-              value = _ref40[1];
+          Object.entries(restoredSession).forEach(function (_ref41) {
+            var _ref42 = _slicedToArray(_ref41, 2),
+              key = _ref42[0],
+              value = _ref42[1];
             try {
               sessionStorage.setItem(key, value);
             } catch (sessionError) {
@@ -5144,6 +6049,16 @@ if (restoreRehearsalCloseButtonEl) {
 if (restoreRehearsalBrowseButtonEl && restoreRehearsalInputEl) {
   restoreRehearsalBrowseButtonEl.addEventListener('click', function () {
     restoreRehearsalInputEl.click();
+  });
+}
+if (restoreRehearsalProceedButtonEl) {
+  restoreRehearsalProceedButtonEl.addEventListener('click', function () {
+    handleRestoreRehearsalProceed();
+  });
+}
+if (restoreRehearsalAbortButtonEl) {
+  restoreRehearsalAbortButtonEl.addEventListener('click', function () {
+    handleRestoreRehearsalAbort();
   });
 }
 if (restoreRehearsalInputEl) {
@@ -5543,9 +6458,9 @@ function collectFallbackUiCacheStorages() {
       label: '__cineGlobal'
     });
   }
-  scopeCandidates.forEach(function (_ref41) {
-    var scope = _ref41.scope,
-      label = _ref41.label;
+  scopeCandidates.forEach(function (_ref43) {
+    var scope = _ref43.scope,
+      label = _ref43.label;
     _inspectScope(scope, label);
   });
   if (typeof localStorage !== 'undefined') {
@@ -6066,10 +6981,10 @@ if (helpButton && helpDialog) {
       return;
     }
     var hasVisible = false;
-    helpQuickLinkItems.forEach(function (_ref42) {
-      var section = _ref42.section,
-        listItem = _ref42.listItem,
-        button = _ref42.button;
+    helpQuickLinkItems.forEach(function (_ref44) {
+      var section = _ref44.section,
+        listItem = _ref44.listItem,
+        button = _ref44.button;
       if (section && !section.hasAttribute('hidden')) {
         listItem.removeAttribute('hidden');
         hasVisible = true;
@@ -6101,9 +7016,9 @@ if (helpButton && helpDialog) {
       helpQuickLinksNav.removeAttribute('data-help');
     }
     var template = langTexts.helpQuickLinkButtonHelp || fallbackTexts.helpQuickLinkButtonHelp;
-    helpQuickLinkItems.forEach(function (_ref43) {
-      var button = _ref43.button,
-        label = _ref43.label;
+    helpQuickLinkItems.forEach(function (_ref45) {
+      var button = _ref45.button,
+        label = _ref45.label;
       if (!button) return;
       if (template) {
         var helpText = template.replace('%s', label);
@@ -6300,11 +7215,11 @@ if (helpButton && helpDialog) {
     return "(".concat(parts.join(''), ")");
   };
   updateHelpResultsSummaryText = function updateHelpResultsSummaryText() {
-    var _ref44 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-      totalCount = _ref44.totalCount,
-      visibleCount = _ref44.visibleCount,
-      hasQuery = _ref44.hasQuery,
-      queryText = _ref44.queryText;
+    var _ref46 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+      totalCount = _ref46.totalCount,
+      visibleCount = _ref46.visibleCount,
+      hasQuery = _ref46.hasQuery,
+      queryText = _ref46.queryText;
     if (!helpResultsSummary) return;
     if (typeof totalCount === 'number' && Number.isFinite(totalCount)) {
       helpResultsSummary.dataset.totalCount = String(totalCount);
@@ -6532,9 +7447,9 @@ if (helpButton && helpDialog) {
       if (!parts.includes(trimmed)) parts.push(trimmed);
     };
     var addTextFromElement = function addTextFromElement(element) {
-      var _ref45 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-        _ref45$includeTextCon = _ref45.includeTextContent,
-        includeTextContent = _ref45$includeTextCon === void 0 ? false : _ref45$includeTextCon;
+      var _ref47 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+        _ref47$includeTextCon = _ref47.includeTextContent,
+        includeTextContent = _ref47$includeTextCon === void 0 ? false : _ref47$includeTextCon;
       if (!element) return;
       addText(element.getAttribute('data-help'));
       addText(element.getAttribute('aria-label'));
@@ -7104,7 +8019,7 @@ function populateLensDropdown() {
     lensSelect.appendChild(emptyOpt);
   }
   Object.keys(lensData).sort(localeSort).forEach(function (name) {
-    var _ref46, _lens$minFocusMeters;
+    var _ref48, _lens$minFocusMeters;
     var opt = document.createElement('option');
     opt.value = name;
     var lens = lensData[name] || {};
@@ -7115,7 +8030,7 @@ function populateLensDropdown() {
     } else if (lens.clampOn === false) {
       attrs.push('no clamp-on');
     }
-    var minFocus = (_ref46 = (_lens$minFocusMeters = lens.minFocusMeters) !== null && _lens$minFocusMeters !== void 0 ? _lens$minFocusMeters : lens.minFocus) !== null && _ref46 !== void 0 ? _ref46 : lens.minFocusCm ? lens.minFocusCm / 100 : null;
+    var minFocus = (_ref48 = (_lens$minFocusMeters = lens.minFocusMeters) !== null && _lens$minFocusMeters !== void 0 ? _lens$minFocusMeters : lens.minFocus) !== null && _ref48 !== void 0 ? _ref48 : lens.minFocusCm ? lens.minFocusCm / 100 : null;
     if (minFocus) attrs.push("".concat(minFocus, "m min focus"));
     opt.textContent = attrs.length ? "".concat(name, " (").concat(attrs.join(', '), ")") : name;
     lensSelect.appendChild(opt);
@@ -7361,11 +8276,11 @@ function resolveFilterDisplayInfo(type) {
 function buildFilterGearEntries() {
   var filters = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
   var entries = [];
-  filters.forEach(function (_ref47) {
-    var type = _ref47.type,
-      _ref47$size = _ref47.size,
-      size = _ref47$size === void 0 ? DEFAULT_FILTER_SIZE : _ref47$size,
-      values = _ref47.values;
+  filters.forEach(function (_ref49) {
+    var type = _ref49.type,
+      _ref49$size = _ref49.size,
+      size = _ref49$size === void 0 ? DEFAULT_FILTER_SIZE : _ref49$size,
+      values = _ref49.values;
     if (!type) return;
     var sizeValue = size || DEFAULT_FILTER_SIZE;
     var idBase = "filter-".concat(filterId(type));
@@ -7847,8 +8762,8 @@ function buildFilterSelectHtml() {
 function collectFilterAccessories() {
   var filters = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
   var items = [];
-  filters.forEach(function (_ref48) {
-    var type = _ref48.type;
+  filters.forEach(function (_ref50) {
+    var type = _ref50.type;
     switch (type) {
       case 'ND Grad HE':
       case 'ND Grad SE':

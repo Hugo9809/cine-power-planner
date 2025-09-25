@@ -220,6 +220,14 @@ const texts = {
     autoGearShootingDaysModeMaximum: "Maximum",
     autoGearShootingDaysModeEvery: "Every",
     autoGearShootingDaysValueLabel: "Shooting days value",
+    autoGearCameraWeightLabel: "Camera weight condition",
+    autoGearCameraWeightHelp:
+      "Activate this rule when the selected camera is heavier, lighter or exactly the weight you specify.",
+    autoGearCameraWeightOperatorGreater: "Heavier than",
+    autoGearCameraWeightOperatorLess: "Lighter than",
+    autoGearCameraWeightOperatorEqual: "Exactly",
+    autoGearCameraWeightValueLabel: "Camera weight threshold",
+    autoGearCameraWeightRequired: "Enter a camera weight threshold before saving.",
     autoGearMatteboxLabel: "Mattebox options",
     autoGearMatteboxHelp:
       "Apply this rule when these mattebox choices are selected.",
@@ -1805,6 +1813,14 @@ const texts = {
     autoGearShootingDaysModeMaximum: "Massimo",
     autoGearShootingDaysModeEvery: "Ogni",
     autoGearShootingDaysValueLabel: "Valore giorni di ripresa",
+    autoGearCameraWeightLabel: "Condizione sul peso della camera",
+    autoGearCameraWeightHelp:
+      "Attiva questa regola quando la camera selezionata è più pesante, più leggera o esattamente il peso che imposti.",
+    autoGearCameraWeightOperatorGreater: "Più pesante di",
+    autoGearCameraWeightOperatorLess: "Più leggera di",
+    autoGearCameraWeightOperatorEqual: "Esattamente",
+    autoGearCameraWeightValueLabel: "Soglia di peso della camera",
+    autoGearCameraWeightRequired: "Inserisci una soglia di peso della camera prima di salvare.",
     autoGearMatteboxLabel: "Opzioni matte box",
     autoGearMatteboxHelp:
       "Applica la regola quando sono selezionate queste opzioni di matte box.",
@@ -2970,6 +2986,14 @@ const texts = {
     autoGearShootingDaysModeMaximum: "Máximo",
     autoGearShootingDaysModeEvery: "Cada",
     autoGearShootingDaysValueLabel: "Valor de días de rodaje",
+    autoGearCameraWeightLabel: "Condición de peso de la cámara",
+    autoGearCameraWeightHelp:
+      "Activa esta regla cuando la cámara seleccionada sea más pesada, más ligera o exactamente el peso que indiques.",
+    autoGearCameraWeightOperatorGreater: "Más pesada que",
+    autoGearCameraWeightOperatorLess: "Más ligera que",
+    autoGearCameraWeightOperatorEqual: "Exactamente",
+    autoGearCameraWeightValueLabel: "Umbral de peso de la cámara",
+    autoGearCameraWeightRequired: "Introduce un umbral de peso de la cámara antes de guardar.",
     autoGearMatteboxLabel: "Opciones de matte box",
     autoGearMatteboxHelp:
       "Aplica la regla cuando se eligen estas opciones de matte box.",
@@ -4137,6 +4161,14 @@ const texts = {
     autoGearShootingDaysModeMaximum: "Maximum",
     autoGearShootingDaysModeEvery: "Chaque",
     autoGearShootingDaysValueLabel: "Valeur de jours de tournage",
+    autoGearCameraWeightLabel: "Condition sur le poids de la caméra",
+    autoGearCameraWeightHelp:
+      "Activez cette règle lorsque la caméra sélectionnée est plus lourde, plus légère ou exactement le poids que vous indiquez.",
+    autoGearCameraWeightOperatorGreater: "Plus lourde que",
+    autoGearCameraWeightOperatorLess: "Plus légère que",
+    autoGearCameraWeightOperatorEqual: "Exactement",
+    autoGearCameraWeightValueLabel: "Seuil de poids de la caméra",
+    autoGearCameraWeightRequired: "Saisissez un seuil de poids de la caméra avant d'enregistrer.",
     autoGearMatteboxLabel: "Options de matte box",
     autoGearMatteboxHelp:
       "Appliquer la règle lorsque ces options de matte box sont sélectionnées.",
@@ -5316,6 +5348,14 @@ const texts = {
     autoGearShootingDaysModeMaximum: "Maximum",
     autoGearShootingDaysModeEvery: "Alle",
     autoGearShootingDaysValueLabel: "Drehtage-Wert",
+    autoGearCameraWeightLabel: "Bedingung für Kameragewicht",
+    autoGearCameraWeightHelp:
+      "Aktiviere diese Regel, wenn die ausgewählte Kamera schwerer, leichter oder genau so schwer ist wie der eingestellte Wert.",
+    autoGearCameraWeightOperatorGreater: "Schwerer als",
+    autoGearCameraWeightOperatorLess: "Leichter als",
+    autoGearCameraWeightOperatorEqual: "Genau",
+    autoGearCameraWeightValueLabel: "Schwelle für das Kameragewicht",
+    autoGearCameraWeightRequired: "Gib vor dem Speichern eine Schwelle für das Kameragewicht ein.",
     autoGearMatteboxLabel: "Mattebox-Optionen",
     autoGearMatteboxHelp:
       "Regel anwenden, wenn diese Mattebox-Optionen gewählt sind.",

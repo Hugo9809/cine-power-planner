@@ -652,6 +652,8 @@ list without editing JSON exports manually:
 
 - Build rules that only trigger when selected **Required Scenarios** are active.
   Each rule can have an optional label for quick scanning in the settings list.
+- Respond to camera weight automatically. Pick heavier-than, lighter-than or exact
+  gram thresholds to swap rigs when the selected body changes.
 - Add equipment with explicit category and quantity values or pick **Custom
   Additions** for reminders, specialty kits or callouts. Matching remove rules
   hide specific rows the generator would normally include.

@@ -2693,6 +2693,35 @@ body.pink-mode:not(.dark-mode) #settingsPanel-autoGear .auto-gear-rule-items-lab
   min-width: 100px;
 }
 
+.auto-gear-camera-weight-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.auto-gear-camera-weight-group select {
+  flex: 1 1 160px;
+  min-width: 140px;
+}
+
+.auto-gear-camera-weight-input {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 1 160px;
+  min-width: 120px;
+}
+
+.auto-gear-camera-weight-input input[type="number"] {
+  flex: 1 1 120px;
+  min-width: 100px;
+}
+
+.auto-gear-camera-weight-unit {
+  font-weight: 600;
+}
+
 .auto-gear-editor-columns {
   display: flex;
   flex-direction: column;

@@ -2285,6 +2285,8 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
   var videoDistributionSet = new Set(normalizedVideoDistribution);
   var rawCameraSelection = info && typeof info.cameraSelection === 'string' ? info.cameraSelection.trim() : '';
   var normalizedCameraSelection = normalizeAutoGearTriggerValue(rawCameraSelection);
+  var rawCameraWeight = info && typeof info.cameraWeightGrams === 'number' ? info.cameraWeightGrams : null;
+  var normalizedCameraWeight = Number.isFinite(rawCameraWeight) ? rawCameraWeight : null;
   var rawMonitorSelection = info && typeof info.monitorSelection === 'string' ? info.monitorSelection.trim() : '';
   var normalizedMonitorSelection = normalizeAutoGearTriggerValue(rawMonitorSelection);
   var rawWirelessSelection = info && typeof info.wirelessSelection === 'string' ? info.wirelessSelection.trim() : '';
@@ -2403,6 +2405,17 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
       if (!_normalizedTargets.length) return false;
       if (!normalizedCameraSelection) return false;
       if (!_normalizedTargets.includes(normalizedCameraSelection)) return false;
+    }
+    var cameraWeightCondition = normalizeAutoGearCameraWeightCondition(rule.cameraWeight);
+    if (cameraWeightCondition) {
+      if (!Number.isFinite(normalizedCameraWeight)) return false;
+      if (cameraWeightCondition.operator === 'greater') {
+        if (!(normalizedCameraWeight > cameraWeightCondition.value)) return false;
+      } else if (cameraWeightCondition.operator === 'less') {
+        if (!(normalizedCameraWeight < cameraWeightCondition.value)) return false;
+      } else if (cameraWeightCondition.operator === 'equal') {
+        if (normalizedCameraWeight !== cameraWeightCondition.value) return false;
+      }
     }
     var monitorList = Array.isArray(rule.monitor) ? rule.monitor.filter(Boolean) : [];
     if (monitorList.length) {
@@ -2618,6 +2631,8 @@ function generateGearListHtml() {
     cage: cageSelect && cageSelect.value && cageSelect.value !== 'None' ? getText(cageSelect) : '',
     battery: batterySelect && batterySelect.value && batterySelect.value !== 'None' ? getText(batterySelect) : ''
   };
+  var cameraDevice = devices && devices.cameras ? devices.cameras[selectedNames.camera] : null;
+  var selectedCameraWeight = cameraDevice && typeof cameraDevice.weight_g === 'number' ? cameraDevice.weight_g : null;
   var hasMotor = selectedNames.motors.length > 0;
   var videoDistPrefs = info.videoDistribution ? info.videoDistribution.split(',').map(function (s) {
     return s.trim();
@@ -2764,8 +2779,7 @@ function generateGearListHtml() {
       });
       if (gimbalSelectionsFinal.length === 1) selectedGimbal = gimbalSelectionsFinal[0];
     } else {
-      var _cam = devices && devices.cameras && devices.cameras[selectedNames.camera];
-      var weight = _cam && _cam.weight_g;
+      var weight = selectedCameraWeight;
       var isSmall = weight != null ? weight < 2000 : /(FX3|FX6|R5)/i.test(selectedNames.camera);
       selectedGimbal = bigLens ? 'DJI Ronin 2' : isSmall ? 'DJI Ronin RS4 Pro Combo' : 'DJI Ronin 2';
       gimbalSelectionsFinal = [selectedGimbal];
@@ -3843,6 +3857,7 @@ function generateGearListHtml() {
   var tableHtml = '<table class="gear-table">' + categoryGroups.join('') + '</table>';
   var infoForRules = _objectSpread(_objectSpread({}, info), {}, {
     cameraSelection: selectedNames.camera,
+    cameraWeightGrams: selectedCameraWeight,
     monitorSelection: selectedNames.monitor,
     wirelessSelection: selectedNames.video,
     motorSelections: selectedNames.motors.slice(),
@@ -4086,6 +4101,25 @@ function saveCurrentGearList() {
   var gearSelectors = cloneGearListSelectors(gearSelectorsRaw);
   var hasGearSelectors = Object.keys(gearSelectors).length > 0;
   var nameState = typeof getSetupNameState === 'function' ? getSetupNameState() : null;
+  if (typeof getProjectAutoSaveOverrides === 'function') {
+    var overrides = getProjectAutoSaveOverrides();
+    if (overrides && _typeof(overrides) === 'object' && overrides.setupNameState && _typeof(overrides.setupNameState) === 'object') {
+      var normalize = function normalize(value) {
+        return typeof value === 'string' ? value.trim() : '';
+      };
+      var rawOverride = overrides.setupNameState;
+      var overrideTyped = normalize(rawOverride.typedName);
+      var overrideSelected = normalize(rawOverride.selectedName);
+      var overrideStorage = normalize(typeof rawOverride.storageKey === 'string' ? rawOverride.storageKey : overrideSelected || overrideTyped);
+      var renameOverride = typeof rawOverride.renameInProgress === 'boolean' ? rawOverride.renameInProgress : Boolean(overrideSelected && overrideTyped && overrideTyped !== overrideSelected);
+      nameState = {
+        typedName: overrideTyped,
+        selectedName: overrideSelected,
+        storageKey: overrideStorage,
+        renameInProgress: renameOverride
+      };
+    }
+  }
   var fallbackNormalize = function fallbackNormalize(value) {
     if (typeof value !== 'string') return '';
     return value.trim();
