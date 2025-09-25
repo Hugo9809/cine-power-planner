@@ -1,6 +1,6 @@
 /* global getManualDownloadFallbackMessage, getDiagramManualPositions, normalizeAutoGearShootingDayValue,
           normalizeAutoGearShootingDaysCondition, getAutoGearMonitorDefault, getSetupNameState,
-          createProjectInfoSnapshotForStorage, getProjectAutoSaveOverrides */
+          createProjectInfoSnapshotForStorage, getProjectAutoSaveOverrides, getAutoGearRuleCoverageSummary */
 
 // --- NEW SETUP MANAGEMENT FUNCTIONS ---
 
@@ -157,6 +157,10 @@ function downloadSharedProject(shareFileName, includeAutoGear) {
   const hasAutoGearRules = Array.isArray(rulesForShare) && rulesForShare.length > 0;
   if (includeAutoGear && hasAutoGearRules) {
     currentSetup.autoGearRules = rulesForShare;
+    const coverage = getAutoGearRuleCoverageSummary({ rules: rulesForShare });
+    if (coverage) {
+      currentSetup.autoGearCoverage = coverage;
+    }
   }
   const notifyShareFailure = error => {
     if (error) {

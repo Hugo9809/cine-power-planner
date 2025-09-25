@@ -151,6 +151,9 @@ localization steps.
 - **Automatic gear rules** – design scenario-triggered additions or removals
   that apply after the generator runs, complete with import/export controls
   and timed backups.
+- **Rule coverage dashboard** – summarize duplicates, net adds/removes,
+  conflicts and uncovered scenarios inside Automatic Gear Rules, apply focus
+  filters offline and share the same insights through exports and printouts.
 - **Data & storage dashboard** – audit stored projects, gear lists, custom
   devices, favorites and runtime feedback, and review approximate backup size
   without leaving the Settings dialog.
@@ -636,6 +639,8 @@ data.
 - Automatic gear rules execute after the generator finishes, inserting
   scenario-specific additions or removals so exports reflect bespoke crew
   preferences without editing JSON by hand.
+- Coverage annotations from the automatic gear dashboard appear in print views,
+  exports and shareable bundles so offline reviews match the in-app summary.
 - Lens rows include front diameter, weight, minimum focus, rod requirements and
   matte box components. Battery rows account for calculator counts and required
   hot-swap hardware.
@@ -658,9 +663,15 @@ list without editing JSON exports manually:
 - Rules run after built-in accessory packs so they stack cleanly with default
   planner logic and flow through to printable gear lists, project backups and
   shareable bundles.
+- A rule coverage dashboard highlights duplicate triggers, net add/remove
+  totals, conflicts and uncovered scenarios. Focus cards filter the list,
+  jump to affected rules and keep coverage reviews available offline.
 - Saving a gear list stores the active rule set with the project. Loading that
   project—or importing a bundle—restores its rule scope so scenario tweaks stay
   attached to the plan.
+- Coverage insights travel with printable views, backups, project exports and
+  share bundles as a `coverage` object so downstream audits see the exact same
+  snapshot that crews reviewed in the app.
 - Export or import the rule set as JSON, reset to the factory additions when you
   need a clean baseline and fall back to the automatic history captured every 10
   minutes if edits go sideways.

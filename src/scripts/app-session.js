@@ -6,6 +6,8 @@
           autoGearSearchInput, setAutoGearSearchQuery,
           autoGearFilterScenarioSelect, setAutoGearScenarioFilter,
           autoGearFilterClearButton, clearAutoGearFilters,
+          autoGearSummaryCards, autoGearSummaryDetails,
+          setAutoGearSummaryFocus, focusAutoGearRuleById,
           autoGearConditionSelect, updateAutoGearConditionAddButtonState,
           autoGearConditionAddButton, addAutoGearConditionFromPicker,
           autoGearConditionList, removeAutoGearCondition,
@@ -3162,6 +3164,40 @@ if (autoGearFilterScenarioSelect) {
 }
 if (autoGearFilterClearButton) {
   autoGearFilterClearButton.addEventListener('click', clearAutoGearFilters);
+}
+if (autoGearSummaryCards) {
+  autoGearSummaryCards.addEventListener('click', event => {
+    const target = event.target instanceof HTMLElement
+      ? event.target.closest('.auto-gear-summary-action')
+      : null;
+    if (!target || target.disabled) return;
+    const focus = target.dataset.focus || 'all';
+    setAutoGearSummaryFocus(focus);
+  });
+}
+if (autoGearSummaryDetails) {
+  autoGearSummaryDetails.addEventListener('click', event => {
+    const element = event.target instanceof HTMLElement ? event.target : null;
+    if (!element) return;
+    const scenarioButton = element.closest('button[data-auto-gear-scenario]');
+    if (scenarioButton) {
+      const scenario = scenarioButton.dataset.autoGearScenario || '';
+      if (scenario) {
+        setAutoGearSummaryFocus('all');
+        setAutoGearScenarioFilter(scenario);
+      }
+      return;
+    }
+    const ruleButton = element.closest('button[data-auto-gear-rule]');
+    if (ruleButton) {
+      focusAutoGearRuleById(ruleButton.dataset.autoGearRule || '');
+      return;
+    }
+    const resetButton = element.closest('button[data-auto-gear-summary-reset]');
+    if (resetButton) {
+      setAutoGearSummaryFocus('all');
+    }
+  });
 }
 if (autoGearPresetSelect) {
   autoGearPresetSelect.addEventListener('change', handleAutoGearPresetSelection);

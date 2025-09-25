@@ -93,6 +93,7 @@ Consulta `docs/translation-guide.md` para más detalles sobre la localización.
 - **Comparación de copias de seguridad** – Selecciona guardados manuales o auto-backups, revisa diferencias, añade notas de incidente y exporta un registro antes de revertir cambios o entregar material a postproducción.
 - **Ensayos de restauración** – Carga copias completas o paquetes de proyectos en un entorno aislado para comprobar su contenido sin tocar perfiles de producción.
 - **Reglas automáticas de equipo** – Define añadidos o retiradas activados por escenarios, con controles de importación/exportación y copias temporizadas.
+- **Panel de cobertura de reglas** – Resume disparadores duplicados, cambios netos, conflictos y escenarios sin cubrir dentro de Reglas automáticas de equipo, aplica filtros de foco sin conexión y comparte los mismos datos en exportaciones e impresiones.
 - **Panel de datos y almacenamiento** – Audita proyectos, listas, equipos personalizados, favoritos y comentarios de autonomía desde Configuración y estima el tamaño del backup.
 - **Superposición de estado de auto-guardado** – Refleja la nota más reciente dentro del diálogo de ajustes para que el equipo vea la actividad de fondo durante los ensayos.
 - **Editor sensible al monitoreo** – Sólo muestra campos extra de monitores y distribución cuando el escenario lo requiere.
@@ -287,6 +288,7 @@ Rutinas repetibles para mantener proyectos, respaldos y recursos offline sincron
 - **Generar lista de equipo y requisitos** crea tablas categorizadas que se actualizan automáticamente cuando cambian los datos.
 - Los elementos se agrupan por categoría y fusionan duplicados. Los escenarios añaden rigging, protección climática y accesorios especializados para reflejar la realidad del rodaje.
 - Las reglas automáticas se ejecutan tras el generador para añadir o quitar elementos específicos sin editar JSON a mano.
+- Las anotaciones de cobertura del panel de reglas aparecen en vistas impresas, exportaciones y paquetes compartidos para que las revisiones offline reflejen el mismo resumen.
 - Las filas de lentes incluyen diámetro frontal, peso, mínimo enfoque, necesidad de varillas y componentes de matte box. Las filas de baterías consideran cantidades y hardware para hot-swap.
 - Detalles del equipo, configuraciones de monitoreo, preferencias de distribución de vídeo y notas personalizadas aparecen en las exportaciones.
 - Las listas se guardan con el proyecto, aparecen en las vistas imprimibles y en los paquetes; puedes reiniciarlas con **Eliminar lista de equipo**.
@@ -298,7 +300,9 @@ Desde **Configuración → Reglas automáticas** puedes ajustar cada lista sin e
 - Activa reglas sólo cuando ciertos **Escenarios requeridos** estén marcados; añade etiquetas opcionales para identificarlas rápidamente.
 - Agrega equipo con categoría y cantidad o utiliza **Adiciones personalizadas** para recordatorios, kits especiales o avisos. Las reglas de eliminación ocultan filas que el generador incluiría.
 - Las reglas se ejecutan después de los paquetes predeterminados para integrarse con la lógica base y fluyen a las listas, backups y paquetes.
+- Un panel de cobertura resalta disparadores duplicados, totales netos de añadidos/eliminados, conflictos y escenarios sin cubrir. Las tarjetas de foco filtran la lista, saltan a las reglas implicadas y funcionan sin conexión.
 - Guardar una lista almacena el conjunto de reglas activo con el proyecto. Al cargarlo o importar un paquete, se recupera el alcance correcto.
+- Estas perspectivas de cobertura viajan como objeto `coverage` en vistas impresas, copias de seguridad, exportaciones de proyectos y paquetes compartidos, de modo que las auditorías posteriores vean el mismo estado.
 - Exporta o importa el conjunto como JSON, restablécelo a los valores de fábrica cuando necesites un punto limpio y recurre al historial automático (cada diez minutos) si un ajuste falla.
 
 ## Inteligencia de autonomía

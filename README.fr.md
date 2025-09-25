@@ -93,6 +93,7 @@ Consultez `docs/translation-guide.md` pour le guide de localisation.
 - **Comparaison de sauvegardes** – Sélectionnez un enregistrement manuel ou un auto-backup, analysez les différences, ajoutez des notes d’incident et exportez un rapport avant toute restauration ou remise au montage.
 - **Simulations de restauration** – Chargez un backup complet ou un bundle projet dans une sandbox isolée pour vérifier le contenu sans toucher aux profils de production.
 - **Règles automatiques de matériel** – Définissez des ajouts/suppressions déclenchés par scénario avec contrôle d’import/export et backups horodatés.
+- **Tableau de couverture des règles** – Résume déclencheurs dupliqués, bilans nets, conflits et scénarios non couverts depuis Règles automatiques, applique des filtres de focus hors ligne et partage les mêmes informations via exports et impressions.
 - **Tableau de bord données & stockage** – Auditez projets, listes, matériels personnalisés, favoris et retours d’autonomie directement depuis Paramètres et estimez la taille du backup.
 - **Superposition d’état d’autosave** – Réplique la dernière note d’autosave dans la boîte de dialogue des paramètres afin que les équipes voient l’activité de fond pendant les exercices.
 - **Éditeur sensible au monitoring** – Affiche les champs de monitoring supplémentaires uniquement lorsque les scénarios l’exigent pour garder la création de règles focalisée.
@@ -287,6 +288,7 @@ Ces routines garantissent que projets, backups et ressources hors ligne restent 
 - **Générer la liste de matériel et des exigences** transforme la sélection et les exigences en tableaux catégorisés qui se mettent à jour automatiquement.
 - Les entrées sont regroupées par catégorie et les doublons fusionnés. Les scénarios ajoutent rigging, protections météo et accessoires spécifiques pour refléter la réalité terrain.
 - Les règles automatiques s’exécutent après le générateur pour ajouter ou retirer des éléments sans modifier le JSON à la main.
+- Les annotations de couverture du tableau des règles apparaissent dans les vues imprimables, les exports et les bundles partagés afin que les revues hors ligne reflètent le même résumé.
 - Les lignes d’objectifs incluent diamètre frontal, poids, mise au point minimale, besoin de rods et composants matte box. Les lignes batteries tiennent compte du nombre et du matériel de bascule à chaud.
 - Détails de l’équipe, configurations de monitoring, distribution vidéo et notes personnalisées apparaissent dans les exports.
 - Les listes sont sauvegardées avec le projet, visibles dans les aperçus imprimables et incluses dans les bundles ; utilisez **Supprimer la liste** pour repartir de zéro.
@@ -298,7 +300,9 @@ Via **Paramètres → Règles automatiques**, ajustez chaque liste sans éditer 
 - Déclenchez des règles uniquement lorsque des **Scénarios requis** spécifiques sont actifs ; ajoutez un libellé facultatif pour les identifier rapidement.
 - Ajoutez du matériel avec catégorie et quantité ou utilisez **Ajouts personnalisés** pour des rappels, kits spécialisés ou notes. Les règles de retrait masquent certaines lignes générées automatiquement.
 - Les règles s’exécutent après les packs intégrés pour se combiner proprement et sont incluses dans listes, backups et bundles.
+- Un tableau dédié met en avant déclencheurs dupliqués, bilans nets, conflits et scénarios non couverts. Les cartes de focus filtrent la liste, renvoient vers les règles concernées et restent opérationnelles hors ligne.
 - Sauvegarder une liste conserve l’ensemble de règles actif ; charger le projet ou importer un bundle restaure son périmètre.
+- Ces informations de couverture voyagent comme objet `coverage` dans les aperçus imprimables, backups, exports de projet et bundles partagés pour que les audits ultérieurs voient le même instantané.
 - Exporte/importez l’ensemble en JSON, revenez aux paramètres d’usine ou utilisez l’historique automatique (toutes les dix minutes) si une modification pose problème.
 
 ## Intelligence d’autonomie
