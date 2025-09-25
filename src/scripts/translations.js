@@ -308,6 +308,23 @@ const texts = {
     autoGearImportConfirm: "Replace your automatic gear rules with the imported file?",
     autoGearImportSuccess: "Automatic gear rules imported.",
     autoGearImportError: "Import failed. Please choose a valid automatic gear rules file.",
+    autoGearImportSchemaError:
+      "Import failed. The file does not match the automatic gear rules export format.",
+    autoGearImportMetadataLabelType: "type marker",
+    autoGearImportMetadataLabelVersion: "version",
+    autoGearImportMetadataLabelTimestamp: "timestamp",
+    autoGearImportMissingMetadataWarning:
+      "Imported rules are missing required metadata: {fields}. Confirm the file comes from a trusted export before saving.",
+    autoGearImportInvalidMetadataWarning:
+      "Imported rules include invalid metadata: {fields}. Confirm the file comes from a trusted export before saving.",
+    autoGearImportNewerVersionWarning:
+      "Imported rules were created with version {importVersion}, which is newer than this build ({appVersion}). Double-check compatibility before relying on them.",
+    autoGearImportOlderVersionWarning:
+      "Imported rules were created with version {importVersion}, which is older than this build ({appVersion}). Review them to confirm they still match your workflow.",
+    autoGearImportInvalidVersionWarning:
+      "Imported rules report version \"{value}\", which is not a valid semantic version string.",
+    autoGearImportInvalidTimestampWarning:
+      "The import timestamp \"{value}\" could not be verified. Confirm the file has not been modified.",
     autoGearBackupsHeading: "Automatic backups",
     autoGearBackupsDescription:
       "Backups save your rules every 10 minutes when changes occur. Restore a snapshot if something goes wrong.",
@@ -1811,6 +1828,23 @@ const texts = {
     autoGearImportSuccess: "Regole automatiche dell'equipaggiamento importate.",
     autoGearImportError:
       "Importazione non riuscita. Scegli un file valido di regole automatiche dell'equipaggiamento.",
+    autoGearImportSchemaError:
+      "Importazione non riuscita. Il file non corrisponde al formato di esportazione delle regole automatiche dell'equipaggiamento.",
+    autoGearImportMetadataLabelType: "indicatore di tipo",
+    autoGearImportMetadataLabelVersion: "versione",
+    autoGearImportMetadataLabelTimestamp: "timestamp",
+    autoGearImportMissingMetadataWarning:
+      "Le regole importate non includono tutti i metadati richiesti: {fields}. Assicurati che il file provenga da un'esportazione affidabile prima di salvarlo.",
+    autoGearImportInvalidMetadataWarning:
+      "Le regole importate contengono metadati non validi: {fields}. Assicurati che il file provenga da un'esportazione affidabile prima di salvarlo.",
+    autoGearImportNewerVersionWarning:
+      "Le regole importate sono state create con la versione {importVersion}, più recente rispetto a questa build ({appVersion}). Verifica la compatibilità prima di usarle.",
+    autoGearImportOlderVersionWarning:
+      "Le regole importate sono state create con la versione {importVersion}, più vecchia rispetto a questa build ({appVersion}). Controlla che siano ancora adatte al tuo flusso di lavoro.",
+    autoGearImportInvalidVersionWarning:
+      "Le regole importate indicano la versione \"{value}\", che non è una versione semantica valida.",
+    autoGearImportInvalidTimestampWarning:
+      "Il timestamp di importazione \"{value}\" non può essere verificato. Assicurati che il file non sia stato modificato.",
     autoGearBackupsHeading: "Backup automatici",
     autoGearBackupsDescription:
       "Viene salvato un backup ogni 10 minuti quando ci sono modifiche. Ripristina una versione se qualcosa va storto.",
@@ -2893,6 +2927,23 @@ const texts = {
     autoGearImportSuccess: "Reglas automáticas de equipo importadas.",
     autoGearImportError:
       "La importación falló. Elige un archivo válido de reglas automáticas de equipo.",
+    autoGearImportSchemaError:
+      "La importación falló. El archivo no coincide con el formato de exportación de las reglas automáticas de equipo.",
+    autoGearImportMetadataLabelType: "marcador de tipo",
+    autoGearImportMetadataLabelVersion: "versión",
+    autoGearImportMetadataLabelTimestamp: "marca de tiempo",
+    autoGearImportMissingMetadataWarning:
+      "Las reglas importadas no incluyen todos los metadatos requeridos: {fields}. Asegúrate de que el archivo provenga de una exportación de confianza antes de guardarlo.",
+    autoGearImportInvalidMetadataWarning:
+      "Las reglas importadas incluyen metadatos no válidos: {fields}. Asegúrate de que el archivo provenga de una exportación de confianza antes de guardarlo.",
+    autoGearImportNewerVersionWarning:
+      "Las reglas importadas se crearon con la versión {importVersion}, que es más reciente que esta compilación ({appVersion}). Comprueba la compatibilidad antes de utilizarlas.",
+    autoGearImportOlderVersionWarning:
+      "Las reglas importadas se crearon con la versión {importVersion}, que es anterior a esta compilación ({appVersion}). Revisa que sigan encajando con tu flujo de trabajo.",
+    autoGearImportInvalidVersionWarning:
+      "Las reglas importadas indican la versión \"{value}\", que no es una versión semántica válida.",
+    autoGearImportInvalidTimestampWarning:
+      "No se pudo verificar la marca de tiempo de importación \"{value}\". Asegúrate de que el archivo no haya sido modificado.",
     autoGearBackupsHeading: "Copias de seguridad automáticas",
     autoGearBackupsDescription:
       "Guarda una copia cada 10 minutos cuando hay cambios. Restaura una versión si algo sale mal.",
@@ -3977,6 +4028,23 @@ const texts = {
     autoGearImportSuccess: "Règles automatiques d’équipement importées.",
     autoGearImportError:
       "Échec de l'import. Choisissez un fichier de règles automatiques d’équipement valide.",
+    autoGearImportSchemaError:
+      "Échec de l’import. Le fichier ne correspond pas au format d’export des règles automatiques d’équipement.",
+    autoGearImportMetadataLabelType: "identifiant de type",
+    autoGearImportMetadataLabelVersion: "version",
+    autoGearImportMetadataLabelTimestamp: "horodatage",
+    autoGearImportMissingMetadataWarning:
+      "Les règles importées n’incluent pas toutes les métadonnées requises : {fields}. Assurez-vous que le fichier provient d’une exportation de confiance avant d’enregistrer.",
+    autoGearImportInvalidMetadataWarning:
+      "Les règles importées contiennent des métadonnées invalides : {fields}. Assurez-vous que le fichier provient d’une exportation de confiance avant d’enregistrer.",
+    autoGearImportNewerVersionWarning:
+      "Les règles importées ont été créées avec la version {importVersion}, plus récente que cette version ({appVersion}). Vérifiez la compatibilité avant de les utiliser.",
+    autoGearImportOlderVersionWarning:
+      "Les règles importées ont été créées avec la version {importVersion}, plus ancienne que cette version ({appVersion}). Vérifiez qu’elles correspondent toujours à votre flux de travail.",
+    autoGearImportInvalidVersionWarning:
+      "Les règles importées indiquent la version \"{value}\", qui n’est pas une version sémantique valide.",
+    autoGearImportInvalidTimestampWarning:
+      "L’horodatage d’import \"{value}\" n’a pas pu être vérifié. Assurez-vous que le fichier n’a pas été modifié.",
     autoGearBackupsHeading: "Sauvegardes automatiques",
     autoGearBackupsDescription:
       "Une sauvegarde est créée toutes les 10 minutes en cas de changement. Restaurez une version si nécessaire.",
@@ -5064,6 +5132,23 @@ const texts = {
     autoGearImportSuccess: "Automatische Gear-Regeln importiert.",
     autoGearImportError:
       "Import fehlgeschlagen. Bitte wähle eine gültige Datei für automatische Gear-Regeln.",
+    autoGearImportSchemaError:
+      "Import fehlgeschlagen. Die Datei entspricht nicht dem Exportformat für automatische Gear-Regeln.",
+    autoGearImportMetadataLabelType: "Typ-Markierung",
+    autoGearImportMetadataLabelVersion: "Version",
+    autoGearImportMetadataLabelTimestamp: "Zeitstempel",
+    autoGearImportMissingMetadataWarning:
+      "Die importierten Regeln enthalten nicht alle erforderlichen Metadaten: {fields}. Stelle sicher, dass die Datei aus einem vertrauenswürdigen Export stammt, bevor du sie speicherst.",
+    autoGearImportInvalidMetadataWarning:
+      "Die importierten Regeln enthalten ungültige Metadaten: {fields}. Stelle sicher, dass die Datei aus einem vertrauenswürdigen Export stammt, bevor du sie speicherst.",
+    autoGearImportNewerVersionWarning:
+      "Die importierten Regeln wurden mit Version {importVersion} erstellt, die neuer ist als dieser Build ({appVersion}). Prüfe die Kompatibilität, bevor du sie verwendest.",
+    autoGearImportOlderVersionWarning:
+      "Die importierten Regeln wurden mit Version {importVersion} erstellt, die älter ist als dieser Build ({appVersion}). Prüfe, ob sie weiterhin zu deinem Ablauf passen.",
+    autoGearImportInvalidVersionWarning:
+      "Die importierten Regeln geben die Version \"{value}\" an, die kein gültiges semantisches Versionsformat ist.",
+    autoGearImportInvalidTimestampWarning:
+      "Der Import-Zeitstempel \"{value}\" konnte nicht verifiziert werden. Stelle sicher, dass die Datei nicht verändert wurde.",
     autoGearBackupsHeading: "Automatische Sicherungen",
     autoGearBackupsDescription:
       "Alle 10 Minuten wird bei Änderungen eine Sicherung erstellt. Stelle eine Version wieder her, falls etwas schiefgeht.",
