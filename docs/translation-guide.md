@@ -18,7 +18,7 @@ Create a localized README so newcomers can discover the project in their languag
 
 ## Step 2: Provide UI strings
 
-All interface labels live in [`translations.js`](../translations.js). Each top-level key inside `texts` corresponds to a language code. Duplicate the English block, paste it under a new key (for example `pt` for Portuguese) and translate every string.
+All interface labels live in [`translations.js`](../translations.js). Each top-level key inside `texts` corresponds to a language code and the planner automatically treats every listed language as supported. Duplicate the English block, paste it under a new key (for example `pt` for Portuguese) and translate every string.
 
 - Preserve placeholders such as `%s` and keep array structures (`installHelpStepsIos`, `installHelpStepsAndroid`, etc.) intact.
 - The comment `// NEW TEXTS FOR SETUP MANAGEMENT END HERE` marks the current end of the translation set. New interface features append to this object, so review recent additions when updating an existing language.
@@ -26,7 +26,7 @@ All interface labels live in [`translations.js`](../translations.js). Each top-l
   - `gearItems` contains human-friendly labels used in generated gear lists.
   - `categoryNames` provides the singular form shown in dropdowns.
 
-If you cannot translate a string immediately, copy the English text so the UI still renders legibly. Avoid deleting keys—tests expect every language to expose the same shape.
+If you cannot translate a string immediately, copy the English text so the UI still renders legibly. Avoid deleting keys—tests expect every language to expose the same shape and will now fail if a locale misses entries found in English.
 
 ## Step 3: Update language selectors
 
@@ -34,7 +34,7 @@ The Settings dialog and the top navigation both render language options directly
 
 ## Step 4: Verify the result
 
-Run the test suite to confirm the new language satisfies existing checks and that the dataset still loads correctly:
+Run the test suite to confirm the new language satisfies existing checks and that the dataset still loads correctly. Translation coverage tests ensure each locale provides the same keys as English across UI text, category names and gear item labels:
 
 ```bash
 npm test

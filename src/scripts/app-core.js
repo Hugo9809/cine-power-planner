@@ -4803,24 +4803,48 @@ if (typeof texts === 'undefined') {
 }
 
 
+const DEFAULT_LANGUAGE = "en";
+const SUPPORTED_LANGUAGES =
+  typeof texts === "object" && texts !== null
+    ? Object.keys(texts)
+    : [DEFAULT_LANGUAGE];
+
+function resolveLanguagePreference(candidate) {
+  if (!candidate) {
+    return { language: DEFAULT_LANGUAGE, matched: false };
+  }
+
+  const normalized = String(candidate).toLowerCase();
+  if (SUPPORTED_LANGUAGES.includes(normalized)) {
+    return { language: normalized, matched: true };
+  }
+
+  const short = normalized.slice(0, 2);
+  if (SUPPORTED_LANGUAGES.includes(short)) {
+    return { language: short, matched: true };
+  }
+
+  return { language: DEFAULT_LANGUAGE, matched: false };
+}
+
 // Determine initial language (default English)
-let currentLang = "en";
+let currentLang = DEFAULT_LANGUAGE;
 let updateHelpQuickLinksForLanguage;
 let updateHelpResultsSummaryText;
 let lastRuntimeHours = null;
 try {
   const savedLang = localStorage.getItem("language");
-  const supported = ["en", "de", "es", "fr", "it"];
-  if (savedLang && supported.includes(savedLang)) {
-    currentLang = savedLang;
+  const resolvedSaved = resolveLanguagePreference(savedLang);
+  if (savedLang && resolvedSaved.matched) {
+    currentLang = resolvedSaved.language;
   } else if (typeof navigator !== "undefined") {
     const navLangs = Array.isArray(navigator.languages)
       ? navigator.languages
       : [navigator.language];
     for (const lang of navLangs) {
-      const short = String(lang).slice(0, 2).toLowerCase();
-      if (supported.includes(short)) {
-        currentLang = short;
+      const resolvedNavigator = resolveLanguagePreference(lang);
+      if (resolvedNavigator.matched) {
+        currentLang = resolvedNavigator.language;
         break;
       }
     }
@@ -4831,6 +4855,27 @@ try {
 
 // Helper to apply translations to all UI text
 function setLanguage(lang) {
+  const requested = typeof lang === "string" ? lang : "";
+  const resolved = resolveLanguagePreference(requested);
+  let normalizedLang = resolved.language;
+  if (!texts[normalizedLang]) {
+    console.warn(
+      `Missing translation bundle for "${normalizedLang}". Falling back to ${DEFAULT_LANGUAGE}.`
+    );
+    normalizedLang = DEFAULT_LANGUAGE;
+  }
+  if (
+    requested &&
+    normalizedLang === DEFAULT_LANGUAGE &&
+    !resolved.matched &&
+    requested.slice(0, 2).toLowerCase() !== DEFAULT_LANGUAGE
+  ) {
+    console.warn(
+      `Unsupported language preference "${requested}". Falling back to ${DEFAULT_LANGUAGE}.`
+    );
+  }
+
+  lang = normalizedLang;
   currentLang = lang;
   // persist selected language
   try {
