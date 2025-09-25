@@ -153,6 +153,65 @@ describe('shared project gear list handling', () => {
     expect(gearListOutput.textContent).toContain('Safe Item');
   });
 
+  test('applySharedSetupFromUrl creates safety backup before applying data', () => {
+    const { utils, globals } = env;
+    globals.autoBackup.mockImplementation(() => 'auto-backup-shared-import');
+
+    const sharedData = {
+      setupName: 'Safety Project',
+      projectInfo: { projectName: 'Safety Project' },
+      gearList: '<div id="gearList">Shared Gear</div>'
+    };
+
+    const encoded = utils.encodeSharedSetup(sharedData);
+    const compressed = LZString.compressToEncodedURIComponent(JSON.stringify(encoded));
+    const encodedSharedValue = encodeURIComponent(compressed);
+
+    const originalHref = window.location.href;
+
+    window.history.replaceState(null, '', `?shared=${encodedSharedValue}`);
+
+    utils.applySharedSetupFromUrl();
+
+    expect(globals.autoBackup).toHaveBeenCalledTimes(1);
+    const backupArgs = globals.autoBackup.mock.calls[0][0];
+    expect(backupArgs).toMatchObject({
+      suppressSuccess: true,
+      suppressError: true,
+      triggerAutoSaveNotification: false,
+    });
+    expect(backupArgs.projectNameOverride).toContain('Safety Project');
+    expect(globals.saveProject).toHaveBeenCalled();
+
+    window.history.replaceState(null, '', originalHref);
+  });
+
+  test('applySharedSetupFromUrl aborts when safety backup fails', () => {
+    const { utils, globals } = env;
+    globals.autoBackup.mockImplementation(() => null);
+
+    const sharedData = {
+      setupName: 'Blocked Project',
+      projectInfo: { projectName: 'Blocked Project' },
+      gearList: '<div id="gearList">Shared Gear</div>'
+    };
+
+    const encoded = utils.encodeSharedSetup(sharedData);
+    const compressed = LZString.compressToEncodedURIComponent(JSON.stringify(encoded));
+    const encodedSharedValue = encodeURIComponent(compressed);
+
+    const originalHref = window.location.href;
+
+    window.history.replaceState(null, '', `?shared=${encodedSharedValue}`);
+
+    utils.applySharedSetupFromUrl();
+
+    expect(globals.autoBackup).toHaveBeenCalledTimes(1);
+    expect(globals.saveProject).not.toHaveBeenCalled();
+
+    window.history.replaceState(null, '', originalHref);
+  });
+
   test('applySharedSetupFromUrl falls back when URLSearchParams is unavailable', () => {
     const { utils, globals } = env;
     const sharedData = {
@@ -163,9 +222,6 @@ describe('shared project gear list handling', () => {
 
     const encoded = utils.encodeSharedSetup(sharedData);
     const compressed = LZString.compressToEncodedURIComponent(JSON.stringify(encoded));
-
-    globals.saveProject.mockClear();
-    globals.updateCalculations.mockClear();
 
     const originalHref = window.location.href;
     const expectedPathname = window.location.pathname;
@@ -181,6 +237,7 @@ describe('shared project gear list handling', () => {
     try {
       utils.applySharedSetupFromUrl();
 
+      expect(globals.autoBackup).toHaveBeenCalledTimes(1);
       expect(globals.saveProject).toHaveBeenCalled();
       const lastCall = globals.saveProject.mock.calls[globals.saveProject.mock.calls.length - 1];
       expect(lastCall[1]).toEqual(expect.objectContaining({

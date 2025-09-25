@@ -2093,6 +2093,98 @@ function restoreSessionState() {
   }
 }
 
+function ensureSharedImportSafetyBackup(sharedData) {
+  const langTexts = texts[currentLang] || {};
+  const fallbackTexts = texts.en || {};
+  const successMessage = langTexts.sharedImportAutoBackupSuccess
+    || fallbackTexts.sharedImportAutoBackupSuccess
+    || 'Safety auto-backup saved before applying the shared project.';
+  const failureMessage = langTexts.sharedImportAutoBackupFailed
+    || fallbackTexts.sharedImportAutoBackupFailed
+    || 'Automatic backup failed. The shared project was not applied.';
+  const skippedMessage = langTexts.sharedImportAutoBackupSkipped
+    || fallbackTexts.sharedImportAutoBackupSkipped
+    || failureMessage;
+  const backupLabel = langTexts.sharedImportAutoBackupName
+    || fallbackTexts.sharedImportAutoBackupName
+    || 'shared import safety copy';
+
+  const scopeCandidates = [];
+  if (typeof globalThis !== 'undefined') scopeCandidates.push(globalThis);
+  if (typeof window !== 'undefined') scopeCandidates.push(window);
+  if (typeof global !== 'undefined') scopeCandidates.push(global);
+  if (typeof self !== 'undefined') scopeCandidates.push(self);
+
+  let autoBackupFn = null;
+  for (let index = 0; index < scopeCandidates.length; index += 1) {
+    const scope = scopeCandidates[index];
+    if (scope && typeof scope.autoBackup === 'function') {
+      autoBackupFn = scope.autoBackup;
+      break;
+    }
+  }
+
+  if (!autoBackupFn) {
+    showNotification('error', failureMessage);
+    return { status: 'error', reason: 'auto-backup-unavailable' };
+  }
+
+  const backupOptions = {
+    suppressSuccess: true,
+    suppressError: true,
+    triggerAutoSaveNotification: false,
+  };
+
+  const sharedName = sharedData && typeof sharedData.setupName === 'string'
+    ? sharedData.setupName.trim()
+    : '';
+
+  const nameParts = [];
+  if (sharedName) {
+    nameParts.push(sharedName);
+  }
+  if (backupLabel) {
+    nameParts.push(backupLabel);
+  }
+  const overrideName = nameParts.join(' ').trim() || backupLabel;
+  if (overrideName) {
+    backupOptions.projectNameOverride = overrideName;
+  }
+
+  let backupResult;
+  try {
+    backupResult = autoBackupFn(backupOptions);
+  } catch (error) {
+    console.error('Automatic backup before applying shared setup failed', error);
+    backupResult = null;
+  }
+
+  if (backupResult && typeof backupResult === 'object' && backupResult.status === 'skipped') {
+    showNotification('error', skippedMessage);
+    return { status: 'error', reason: 'backup-skipped' };
+  }
+
+  let backupName = '';
+  if (typeof backupResult === 'string' && backupResult) {
+    backupName = backupResult;
+  } else if (
+    backupResult
+    && typeof backupResult === 'object'
+    && typeof backupResult.name === 'string'
+    && backupResult.name
+  ) {
+    backupName = backupResult.name;
+  }
+
+  if (!backupName) {
+    showNotification('error', failureMessage);
+    return { status: 'error', reason: 'backup-failed' };
+  }
+
+  showNotification('success', successMessage);
+  return { status: 'success', name: backupName };
+}
+
 function applySharedSetup(shared, options = {}) {
   try {
     const decoded = decodeSharedSetup(
@@ -2346,7 +2438,25 @@ function applySharedSetupFromUrl() {
   const shared = getQueryParam(search, 'shared');
   if (!shared) return;
   try {
-    const data = JSON.parse(LZString.decompressFromEncodedURIComponent(shared));
+    const rawPayload = JSON.parse(LZString.decompressFromEncodedURIComponent(shared));
+    let decodedForBackup = rawPayload;
+    if (typeof decodeSharedSetup === 'function') {
+      try {
+        decodedForBackup = decodeSharedSetup(
+          typeof rawPayload === 'string' ? JSON.parse(rawPayload) : rawPayload
+        );
+      } catch (decodeError) {
+        console.warn('Failed to decode shared setup while preparing safety backup', decodeError);
+        decodedForBackup = rawPayload;
+      }
+    }
+
+    const backupOutcome = ensureSharedImportSafetyBackup(decodedForBackup);
+    if (!backupOutcome || backupOutcome.status !== 'success') {
+      return;
+    }
+
+    const data = rawPayload;
     applySharedSetup(data);
     if (typeof updateCalculations === 'function') {
       updateCalculations();
@@ -9691,6 +9801,7 @@ if (typeof module !== "undefined" && module.exports) {
     encodeSharedSetup,
     decodeSharedSetup,
     applySharedSetupFromUrl,
+    ensureSharedImportSafetyBackup,
     applySharedSetup,
     updateBatteryPlateVisibility,
     updateBatteryOptions,

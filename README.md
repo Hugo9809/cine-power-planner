@@ -340,6 +340,10 @@ Use Cine Power Planner end-to-end with the following routine:
   backup of your current environment first. After choosing the bundle file, the
   planner validates its JSON schema, merges new devices and places the restored
   project at the top of the selector.
+- **Shared links trigger a safety auto-backup.** Opening a shared project URL or
+  importing a bundle creates a timestamped auto-backup before any existing
+  setups or gear lists change. If the backup fails, the import is cancelled so
+  nothing overwrites your work.
 - **Cross-device workflows stay offline.** To move a plan to a workstation with
   no connectivity, copy `index.html`, `script.js`, `devices/` and your backup or
   bundle files onto removable media. Launch from disk, import the bundle and

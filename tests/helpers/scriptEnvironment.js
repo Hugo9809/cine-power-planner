@@ -122,7 +122,8 @@ function setupScriptEnvironment(options = {}) {
     loadSetup: jest.fn(),
     deleteSetup: jest.fn(),
     loadFavorites: jest.fn(() => ({})),
-    saveFavorites: jest.fn()
+    saveFavorites: jest.fn(),
+    autoBackup: jest.fn(() => 'auto-backup-test')
   };
 
   if (options.devices) {

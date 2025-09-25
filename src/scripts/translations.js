@@ -772,6 +772,13 @@ const texts = {
     sharedImportDialogMessage: "Choose how to apply the shared automatic gear rules from this project.",
     sharedImportDialogConfirm: "Apply",
     sharedImportDialogCancel: "Cancel",
+    sharedImportAutoBackupName: "shared import safety copy",
+    sharedImportAutoBackupSuccess:
+      "Saved a safety auto-backup before applying the shared project. Restore it anytime from Saved Projects.",
+    sharedImportAutoBackupFailed:
+      "Automatic backup failed, so the shared project was not applied. Save a manual backup and try again.",
+    sharedImportAutoBackupSkipped:
+      "Safety auto-backup skipped. Switch away from an auto-backup project and try again.",
 
     cameraLabel: "Camera:",
     monitorLabel: "Monitor:",
@@ -1191,9 +1198,9 @@ const texts = {
     shareSetupHelp:
       "Download a JSON file of the current project to share with others.",
     applySharedLinkHelp:
-      "Load the configuration from the selected project file.",
+      "Load the configuration from the selected project file. Cine Power Planner saves a safety auto-backup before applying it so you can undo the import instantly.",
     sharedLinkHelp:
-      "Choose a previously saved project JSON file to load.",
+      "Choose a previously saved project JSON file to load. A safety auto-backup is created before the shared project replaces your current data.",
     cameraSelectHelp: "Choose the camera body that anchors your rig.",
     monitorSelectHelp: "Choose an on-board or wireless monitor to include.",
     videoSelectHelp: "Choose a transmitter/receiver pair or other wireless video link.",
@@ -1375,6 +1382,13 @@ const texts = {
     sharedImportDialogMessage: "Scegli come applicare le regole automatiche condivise di questo progetto.",
     sharedImportDialogConfirm: "Applica",
     sharedImportDialogCancel: "Annulla",
+    sharedImportAutoBackupName: "copia di sicurezza importazione condivisa",
+    sharedImportAutoBackupSuccess:
+      "Backup di sicurezza salvato prima di applicare il progetto condiviso. Puoi ripristinarlo in qualsiasi momento da Progetti salvati.",
+    sharedImportAutoBackupFailed:
+      "Il backup automatico non è riuscito, quindi il progetto condiviso non è stato applicato. Salva un backup manuale e riprova.",
+    sharedImportAutoBackupSkipped:
+      "Backup di sicurezza saltato. Esci da un progetto auto-backup e riprova.",
     cameraLabel: "Telecamera:",
     monitorLabel: "Monitor:",
     videoLabel: "Trasmettitore wireless:",
@@ -2399,9 +2413,10 @@ const texts = {
       "Genera una tabella categorizzata che combina l'attrezzatura selezionata con i requisiti del progetto. L'elenco si aggiorna a ogni modifica, unisce i duplicati con un conteggio e aggiunge automaticamente cavi, rigging, supporti lente, componenti matte box, conteggi batteria con hotswap, monitor predefiniti per ogni ruolo e accessori specifici per gli scenari. Gli elementi sono ordinati alfabeticamente e includono descrizioni al passaggio del mouse.",
     shareSetupHelp:
       "Scarica un file JSON del progetto corrente per condividerlo.",
-    applySharedLinkHelp: "Carica la configurazione dal file di progetto selezionato.",
+    applySharedLinkHelp:
+      "Carica la configurazione dal file di progetto selezionato. Cine Power Planner salva un backup di sicurezza prima di applicarlo così puoi annullare subito l'importazione.",
     sharedLinkHelp:
-      "Seleziona un file JSON di progetto condiviso da caricare.",
+      "Seleziona un file JSON di progetto salvato da caricare. Viene creata una copia di sicurezza prima che il progetto condiviso sostituisca i tuoi dati attuali.",
     cameraSelectHelp: "Seleziona la fotocamera per la tua configurazione.",
     monitorSelectHelp: "Seleziona un monitor da includere.",
     videoSelectHelp: "Seleziona un sistema video wireless da includere.",
@@ -2580,6 +2595,13 @@ const texts = {
     sharedImportDialogMessage: "Elige cómo aplicar las reglas automáticas compartidas de este proyecto.",
     sharedImportDialogConfirm: "Aplicar",
     sharedImportDialogCancel: "Cancelar",
+    sharedImportAutoBackupName: "copia de seguridad importación compartida",
+    sharedImportAutoBackupSuccess:
+      "Copia de seguridad guardada antes de aplicar el proyecto compartido. Puedes restaurarla en cualquier momento desde Proyectos guardados.",
+    sharedImportAutoBackupFailed:
+      "El respaldo automático falló, por lo que el proyecto compartido no se aplicó. Guarda un respaldo manual y vuelve a intentarlo.",
+    sharedImportAutoBackupSkipped:
+      "Copia de seguridad omitida. Sal de un proyecto de auto-respaldo y vuelve a intentarlo.",
 
     cameraLabel: "Cámara:",
     monitorLabel: "Monitor:",
@@ -3617,9 +3639,10 @@ const texts = {
       "Genera una tabla categorizada que combina el equipo seleccionado con los requisitos del proyecto. La lista se actualiza con cada cambio, fusiona duplicados con sus cantidades y añade automáticamente cables, rigging, soportes de lente, piezas de matte box, recuentos de baterías con hotswap, monitores predeterminados para cada rol y accesorios específicos de los escenarios. Los elementos se ordenan alfabéticamente e incluyen descripciones al pasar el cursor.",
     shareSetupHelp:
       "Descarga un archivo JSON del proyecto actual para compartirlo.",
-    applySharedLinkHelp: "Carga la configuración desde el archivo de proyecto seleccionado.",
+    applySharedLinkHelp:
+      "Carga la configuración desde el archivo de proyecto seleccionado. Cine Power Planner guarda una copia de seguridad antes de aplicarla para que puedas deshacer la importación al instante.",
     sharedLinkHelp:
-      "Selecciona un archivo JSON de proyecto compartido para cargarlo.",
+      "Selecciona un archivo JSON de proyecto guardado para cargarlo. Se crea una copia de seguridad antes de que el proyecto compartido reemplace tus datos actuales.",
     cameraSelectHelp: "Selecciona la cámara para tu configuración.",
     monitorSelectHelp: "Selecciona un monitor para incluir.",
     videoSelectHelp: "Selecciona un sistema de video inalámbrico para incluir.",
@@ -3799,6 +3822,13 @@ const texts = {
     sharedImportDialogMessage: "Choisissez comment appliquer les règles automatiques partagées de ce projet.",
     sharedImportDialogConfirm: "Appliquer",
     sharedImportDialogCancel: "Annuler",
+    sharedImportAutoBackupName: "copie de sécurité importation partagée",
+    sharedImportAutoBackupSuccess:
+      "Sauvegarde de sécurité enregistrée avant d’appliquer le projet partagé. Vous pouvez la restaurer à tout moment depuis Projets enregistrés.",
+    sharedImportAutoBackupFailed:
+      "La sauvegarde automatique a échoué, le projet partagé n’a pas été appliqué. Enregistrez une sauvegarde manuelle puis réessayez.",
+    sharedImportAutoBackupSkipped:
+      "Sauvegarde de sécurité ignorée. Quittez un projet d’auto-sauvegarde puis réessayez.",
 
     cameraLabel: "Caméra:",
     monitorLabel: "Moniteur:",
@@ -4845,9 +4875,10 @@ const texts = {
       "Génère un tableau catégorisé combinant le matériel sélectionné et les exigences du projet. La liste se met à jour à chaque changement, fusionne les doublons avec leur quantité et ajoute automatiquement câbles, rigging, supports d'objectif, éléments de matte box, nombre de batteries avec matériel de hotswap, moniteurs par rôle et accessoires spécifiques aux scénarios. Chaque entrée est triée alphabétiquement et offre une description au survol.",
     shareSetupHelp:
       "Téléchargez un fichier JSON du projet actuel pour le partager.",
-    applySharedLinkHelp: "Chargez la configuration depuis le fichier projet sélectionné.",
+    applySharedLinkHelp:
+      "Chargez la configuration depuis le fichier projet sélectionné. Cine Power Planner enregistre une sauvegarde de sécurité avant de l’appliquer pour annuler l’importation instantanément.",
     sharedLinkHelp:
-      "Choisissez un fichier JSON de projet partagé à charger.",
+      "Choisissez un fichier JSON de projet enregistré à charger. Une sauvegarde de sécurité est créée avant que le projet partagé ne remplace vos données actuelles.",
     cameraSelectHelp: "Sélectionnez la caméra pour votre configuration.",
     monitorSelectHelp: "Sélectionnez un moniteur à inclure.",
     videoSelectHelp: "Sélectionnez un système vidéo sans fil à inclure.",
@@ -5030,6 +5061,13 @@ const texts = {
     sharedImportDialogMessage: "Wähle, wie die geteilten automatischen Gear-Regeln für dieses Projekt übernommen werden sollen.",
     sharedImportDialogConfirm: "Übernehmen",
     sharedImportDialogCancel: "Abbrechen",
+    sharedImportAutoBackupName: "geteilte Import-Sicherheitskopie",
+    sharedImportAutoBackupSuccess:
+      "Sicherheits-Autobackup wurde vor dem Übernehmen des geteilten Projekts gespeichert. Du findest es jederzeit unter Gespeicherte Projekte.",
+    sharedImportAutoBackupFailed:
+      "Das automatische Backup ist fehlgeschlagen, daher wurde das geteilte Projekt nicht übernommen. Erstelle ein manuelles Backup und versuche es erneut.",
+    sharedImportAutoBackupSkipped:
+      "Sicherheits-Backup übersprungen. Wechsle von einem Auto-Backup-Projekt weg und versuche es erneut.",
 
     cameraLabel: "Kamera:",
     monitorLabel: "Monitor:",
@@ -6079,9 +6117,10 @@ const texts = {
       "Erstellt eine kategorisierte Tabelle aus ausgewähltem Equipment und Projektanforderungen. Die Liste aktualisiert sich bei jeder Änderung, fasst doppelte Einträge mit Anzahl zusammen und ergänzt automatisch benötigte Kabel, Rigging, Linsensupports, Matte-Box-Bauteile, Batteriezahlen mit Hotswap-Hardware, Standardmonitore pro Rolle sowie szenariospezifisches Zubehör. Alle Posten sind alphabetisch sortiert und zeigen beim Überfahren eine Beschreibung.",
     shareSetupHelp:
       "Lädt eine JSON-Datei des aktuellen Projekts zum Teilen herunter.",
-    applySharedLinkHelp: "Lädt die Konfiguration aus der ausgewählten Projektdatei.",
+    applySharedLinkHelp:
+      "Lädt die Konfiguration aus der ausgewählten Projektdatei. Cine Power Planner speichert vorher ein Sicherheits-Backup, damit du den Import sofort rückgängig machen kannst.",
     sharedLinkHelp:
-      "Wähle eine zuvor geteilte Projektdatei aus, um sie zu laden.",
+      "Wähle eine gespeicherte Projekt-JSON-Datei zum Laden. Vor dem Ersetzen deiner aktuellen Daten durch das geteilte Projekt wird ein Sicherheits-Backup erstellt.",
     cameraSelectHelp: "Wähle die Kamera für dein Setup.",
     monitorSelectHelp: "Wähle einen Monitor, der enthalten sein soll.",
     videoSelectHelp: "Wähle ein drahtloses Videosystem aus.",
