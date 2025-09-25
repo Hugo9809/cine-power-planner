@@ -1245,11 +1245,11 @@ const texts = {
       "Confronta le autonomie di tutte le batterie compatibili.",
     setupDiagramHeadingHelp:
       "Mostra un diagramma visivo di come i dispositivi selezionati si collegano.",
-    setupDiagramPlaceholder: "Seleziona i dispositivi per visualizzare l'installazione.",
+    setupDiagramPlaceholder: "Seleziona i dispositivi per visualizzare la configurazione.",
     diagramLegendPower: "Energia",
     diagramLegendVideo: "Video",
     diagramLegendFIZ: "FIZ",
-    downloadDiagramBtn: "Scarica diagramma",
+    downloadDiagramBtn: "Scarica il diagramma",
     gridSnapToggle: "Aggancia alla griglia",
     existingDevicesHeading: "Dispositivi esistenti",
     darkModeLabel: "Attiva modalità scura",
@@ -2402,7 +2402,7 @@ const texts = {
     diagramLegendPower: "Energía",
     diagramLegendVideo: "Vídeo",
     diagramLegendFIZ: "FIZ",
-    downloadDiagramBtn: "Descargar Diagrama",
+    downloadDiagramBtn: "Descargar el diagrama",
     gridSnapToggle: "Ajustar a la cuadrícula",
     existingDevicesHeading: "Dispositivos Existentes",
     darkModeLabel: "Alternar modo oscuro",
@@ -3471,10 +3471,10 @@ const texts = {
     batteryHotswapSelectHelp: "Selecciona el módulo de hotswap que mantiene la alimentación durante el cambio de baterías.",
     runtimeFeedbackBtnHelp:
       "Envía la duración de funcionamiento medida para esta configuración.",
-    zoomOutHelp: "Alejar el diagrama de configuración.",
-    zoomInHelp: "Acercar el diagrama de configuración.",
+    zoomOutHelp: "Aleja el diagrama de la configuración.",
+    zoomInHelp: "Acerca el diagrama de la configuración.",
     downloadDiagramHelp:
-      "Descarga el diagrama de configuración como imagen.",
+      "Descarga el diagrama de la configuración como imagen.",
     gridSnapToggleHelp:
       "Activa o desactiva el ajuste a la cuadrícula de los nodos del diagrama.",
     resetViewBtn: "Restablecer vista",
