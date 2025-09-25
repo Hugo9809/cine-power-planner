@@ -120,4 +120,40 @@ describe('version comparison helpers', () => {
 
     expect(key).toBe('name');
   });
+
+  test('ignores reorder-only changes for primitive arrays', () => {
+    const baseline = { tags: ['alpha', 'bravo', 'charlie'] };
+    const comparison = { tags: ['charlie', 'alpha', 'bravo'] };
+
+    const diff = computeSetupDiff(baseline, comparison);
+
+    expect(diff).toHaveLength(0);
+  });
+
+  test('records primitive additions and removals without relying on order', () => {
+    const baseline = { tags: ['alpha', 'bravo'] };
+    const comparison = { tags: ['bravo', 'charlie', 'charlie'] };
+
+    const diff = computeSetupDiff(baseline, comparison);
+
+    expect(diff).toHaveLength(3);
+    expect(diff).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        type: 'removed',
+        path: ['tags', '[value="alpha"]'],
+        before: 'alpha',
+        after: undefined,
+      }),
+      expect.objectContaining({
+        type: 'added',
+        path: ['tags', '[value="charlie"]'],
+        before: undefined,
+        after: 'charlie',
+      }),
+    ]));
+    const addedCharlies = diff.filter(
+      entry => entry.type === 'added' && entry.after === 'charlie',
+    );
+    expect(addedCharlies).toHaveLength(2);
+  });
 });
