@@ -85,7 +85,8 @@ describe('script.js modular runtime', () => {
     const parts = extractRuntimeParts();
 
     expect(parts).toEqual([
-      'app-core.js',
+      'app-core-new-1.js',
+      'app-core-new-2.js',
       'app-events.js',
       'app-setups.js',
       'app-session.js',

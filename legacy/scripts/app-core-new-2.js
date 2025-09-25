@@ -1,0 +1,13075 @@
+function refreshAutoGearCrewOptions(selectElement, selected, key) {
+  if (!selectElement) return;
+  var selectedValues = collectAutoGearSelectedValues(selected, key);
+  selectElement.innerHTML = '';
+  selectElement.multiple = true;
+  var entries = getCrewRoleEntries();
+  var seen = new Set();
+  var appendOption = function appendOption(value, label) {
+    if (!value || seen.has(value)) return;
+    var option = document.createElement('option');
+    option.value = value;
+    option.textContent = label;
+    if (selectedValues.includes(value)) {
+      option.selected = true;
+    }
+    selectElement.appendChild(option);
+    seen.add(value);
+  };
+  entries.forEach(function (entry) {
+    return appendOption(entry.value, entry.label);
+  });
+  selectedValues.forEach(function (value) {
+    if (!seen.has(value)) {
+      appendOption(value, value);
+    }
+  });
+  var selectableOptions = Array.from(selectElement.options || []).filter(function (option) {
+    return !option.disabled;
+  });
+  selectElement.size = computeAutoGearMultiSelectSize(selectableOptions.length, {
+    minRows: AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS
+  });
+}
+function getCrewRoleLabel(value) {
+  var _texts$en229;
+  if (typeof value !== 'string') return '';
+  var trimmed = value.trim();
+  if (!trimmed) return '';
+  var langTexts = texts[currentLang] || texts.en || {};
+  var crewRoleMap = langTexts.crewRoles || ((_texts$en229 = texts.en) === null || _texts$en229 === void 0 ? void 0 : _texts$en229.crewRoles) || {};
+  return (crewRoleMap === null || crewRoleMap === void 0 ? void 0 : crewRoleMap[trimmed]) || trimmed;
+}
+function refreshAutoGearCameraOptions(selected) {
+  if (!autoGearCameraSelect) return;
+  var selectedValues = collectAutoGearSelectedValues(selected, 'camera');
+  autoGearCameraSelect.innerHTML = '';
+  autoGearCameraSelect.multiple = true;
+  var seen = new Set();
+  var addOption = function addOption(value) {
+    if (!value || seen.has(value)) return;
+    var option = document.createElement('option');
+    option.value = value;
+    option.textContent = value;
+    if (selectedValues.includes(value)) {
+      option.selected = true;
+    }
+    autoGearCameraSelect.appendChild(option);
+    seen.add(value);
+  };
+  if (cameraSelect) {
+    Array.from(cameraSelect.options || []).forEach(function (opt) {
+      if (!opt || !opt.value || opt.value === 'None') return;
+      var label = (opt.textContent || opt.value || '').trim();
+      if (!label) return;
+      addOption(label);
+    });
+  }
+  selectedValues.forEach(function (value) {
+    if (!seen.has(value)) addOption(value);
+  });
+  var visibleCount = Array.from(autoGearCameraSelect.options || []).filter(function (option) {
+    return !option.disabled;
+  }).length;
+  autoGearCameraSelect.size = computeAutoGearMultiSelectSize(visibleCount);
+}
+function refreshAutoGearCameraWeightCondition(selected) {
+  var source = function (_autoGearEditorDraft20) {
+    if (selected && _typeof(selected) === 'object' && !Array.isArray(selected)) {
+      return selected;
+    }
+    if (Array.isArray(selected) && selected.length) {
+      if (selected.length >= 2) {
+        return {
+          operator: selected[0],
+          value: selected[1]
+        };
+      }
+      return {
+        value: selected[0]
+      };
+    }
+    if ((_autoGearEditorDraft20 = autoGearEditorDraft) !== null && _autoGearEditorDraft20 !== void 0 && _autoGearEditorDraft20.cameraWeight) {
+      return autoGearEditorDraft.cameraWeight;
+    }
+    return null;
+  }();
+  var operator = normalizeAutoGearWeightOperator(source === null || source === void 0 ? void 0 : source.operator);
+  if (autoGearCameraWeightOperator) {
+    autoGearCameraWeightOperator.value = operator;
+  }
+  var normalized = normalizeAutoGearCameraWeightCondition(source);
+  if (autoGearCameraWeightValueInput) {
+    if (normalized) {
+      autoGearCameraWeightValueInput.value = String(normalized.value);
+    } else if (source && typeof (source === null || source === void 0 ? void 0 : source.value) === 'string') {
+      autoGearCameraWeightValueInput.value = source.value;
+    } else if (source && typeof (source === null || source === void 0 ? void 0 : source.value) === 'number' && Number.isFinite(source.value)) {
+      autoGearCameraWeightValueInput.value = String(Math.round(source.value));
+    } else {
+      autoGearCameraWeightValueInput.value = '';
+    }
+  }
+}
+function updateAutoGearCameraWeightDraft() {
+  if (!autoGearEditorDraft) return;
+  if (!isAutoGearConditionActive('cameraWeight')) {
+    autoGearEditorDraft.cameraWeight = null;
+    return;
+  }
+  var operatorValue = autoGearCameraWeightOperator ? autoGearCameraWeightOperator.value : '';
+  var thresholdValue = autoGearCameraWeightValueInput ? autoGearCameraWeightValueInput.value : '';
+  var normalized = normalizeAutoGearCameraWeightCondition({
+    operator: operatorValue,
+    value: thresholdValue
+  });
+  if (normalized) {
+    autoGearEditorDraft.cameraWeight = _objectSpread({}, normalized);
+  } else if (operatorValue) {
+    autoGearEditorDraft.cameraWeight = {
+      operator: normalizeAutoGearWeightOperator(operatorValue),
+      value: null
+    };
+  } else {
+    autoGearEditorDraft.cameraWeight = null;
+  }
+}
+function refreshAutoGearMonitorOptions(selected) {
+  if (!autoGearMonitorSelect) return;
+  var selectedValues = collectAutoGearSelectedValues(selected, 'monitor');
+  autoGearMonitorSelect.innerHTML = '';
+  autoGearMonitorSelect.multiple = true;
+  var seen = new Set();
+  var addOption = function addOption(value) {
+    if (!value || seen.has(value)) return;
+    var option = document.createElement('option');
+    option.value = value;
+    option.textContent = value;
+    if (selectedValues.includes(value)) {
+      option.selected = true;
+    }
+    autoGearMonitorSelect.appendChild(option);
+    seen.add(value);
+  };
+  if (monitorSelect) {
+    Array.from(monitorSelect.options || []).forEach(function (opt) {
+      if (!opt || !opt.value || opt.value === 'None') return;
+      var label = (opt.textContent || opt.value || '').trim();
+      if (!label) return;
+      addOption(label);
+    });
+  }
+  selectedValues.forEach(function (value) {
+    if (!seen.has(value)) addOption(value);
+  });
+  var visibleCount = Array.from(autoGearMonitorSelect.options || []).filter(function (option) {
+    return !option.disabled;
+  }).length;
+  autoGearMonitorSelect.size = computeAutoGearMultiSelectSize(visibleCount);
+}
+function refreshAutoGearWirelessOptions(selected) {
+  if (!autoGearWirelessSelect) return;
+  var selectedValues = collectAutoGearSelectedValues(selected, 'wireless');
+  autoGearWirelessSelect.innerHTML = '';
+  autoGearWirelessSelect.multiple = true;
+  var seen = new Set();
+  var addOption = function addOption(value) {
+    if (!value || seen.has(value)) return;
+    var option = document.createElement('option');
+    option.value = value;
+    option.textContent = value;
+    if (selectedValues.includes(value)) {
+      option.selected = true;
+    }
+    autoGearWirelessSelect.appendChild(option);
+    seen.add(value);
+  };
+  if (videoSelect) {
+    Array.from(videoSelect.options || []).forEach(function (opt) {
+      if (!opt || !opt.value || opt.value === 'None') return;
+      var label = (opt.textContent || opt.value || '').trim();
+      if (!label) return;
+      addOption(label);
+    });
+  }
+  selectedValues.forEach(function (value) {
+    if (!seen.has(value)) addOption(value);
+  });
+  var visibleCount = Array.from(autoGearWirelessSelect.options || []).filter(function (option) {
+    return !option.disabled;
+  }).length;
+  autoGearWirelessSelect.size = computeAutoGearMultiSelectSize(visibleCount);
+}
+function refreshAutoGearMotorsOptions(selected) {
+  if (!autoGearMotorsSelect) return;
+  var selectedValues = collectAutoGearSelectedValues(selected, 'motors');
+  autoGearMotorsSelect.innerHTML = '';
+  autoGearMotorsSelect.multiple = true;
+  var seen = new Set();
+  var addOption = function addOption(value) {
+    if (!value || seen.has(value)) return;
+    var option = document.createElement('option');
+    option.value = value;
+    option.textContent = value;
+    if (selectedValues.includes(value)) {
+      option.selected = true;
+    }
+    autoGearMotorsSelect.appendChild(option);
+    seen.add(value);
+  };
+  var sourceSelects = Array.isArray(motorSelects) ? motorSelects : [];
+  sourceSelects.forEach(function (sel) {
+    Array.from((sel === null || sel === void 0 ? void 0 : sel.options) || []).forEach(function (opt) {
+      if (!opt || !opt.value || opt.value === 'None') return;
+      var label = (opt.textContent || opt.value || '').trim();
+      if (!label) return;
+      addOption(label);
+    });
+  });
+  selectedValues.forEach(function (value) {
+    if (!seen.has(value)) addOption(value);
+  });
+  var visibleCount = Array.from(autoGearMotorsSelect.options || []).filter(function (option) {
+    return !option.disabled;
+  }).length;
+  autoGearMotorsSelect.size = computeAutoGearMultiSelectSize(visibleCount);
+}
+function refreshAutoGearControllersOptions(selected) {
+  if (!autoGearControllersSelect) return;
+  var selectedValues = collectAutoGearSelectedValues(selected, 'controllers');
+  autoGearControllersSelect.innerHTML = '';
+  autoGearControllersSelect.multiple = true;
+  var seen = new Set();
+  var addOption = function addOption(value) {
+    if (!value || seen.has(value)) return;
+    var option = document.createElement('option');
+    option.value = value;
+    option.textContent = value;
+    if (selectedValues.includes(value)) {
+      option.selected = true;
+    }
+    autoGearControllersSelect.appendChild(option);
+    seen.add(value);
+  };
+  var sourceSelects = Array.isArray(controllerSelects) ? controllerSelects : [];
+  sourceSelects.forEach(function (sel) {
+    Array.from((sel === null || sel === void 0 ? void 0 : sel.options) || []).forEach(function (opt) {
+      if (!opt || !opt.value || opt.value === 'None') return;
+      var label = (opt.textContent || opt.value || '').trim();
+      if (!label) return;
+      addOption(label);
+    });
+  });
+  selectedValues.forEach(function (value) {
+    if (!seen.has(value)) addOption(value);
+  });
+  var visibleCount = Array.from(autoGearControllersSelect.options || []).filter(function (option) {
+    return !option.disabled;
+  }).length;
+  autoGearControllersSelect.size = computeAutoGearMultiSelectSize(visibleCount);
+}
+function refreshAutoGearDistanceOptions(selected) {
+  if (!autoGearDistanceSelect) return;
+  var selectedValues = collectAutoGearSelectedValues(selected, 'distance');
+  autoGearDistanceSelect.innerHTML = '';
+  autoGearDistanceSelect.multiple = true;
+  var seen = new Set();
+  var addOption = function addOption(value) {
+    if (!value || seen.has(value)) return;
+    var option = document.createElement('option');
+    option.value = value;
+    option.textContent = value;
+    if (selectedValues.includes(value)) {
+      option.selected = true;
+    }
+    autoGearDistanceSelect.appendChild(option);
+    seen.add(value);
+  };
+  if (distanceSelect) {
+    Array.from(distanceSelect.options || []).forEach(function (opt) {
+      if (!opt || !opt.value || opt.value === 'None') return;
+      var label = (opt.textContent || opt.value || '').trim();
+      if (!label) return;
+      addOption(label);
+    });
+  }
+  selectedValues.forEach(function (value) {
+    if (!seen.has(value)) addOption(value);
+  });
+  var visibleCount = Array.from(autoGearDistanceSelect.options || []).filter(function (option) {
+    return !option.disabled;
+  }).length;
+  autoGearDistanceSelect.size = computeAutoGearMultiSelectSize(visibleCount, {
+    minRows: AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS
+  });
+}
+function populateAutoGearCategorySelect(select, currentValue) {
+  var _texts$currentLang29, _texts$en230;
+  if (!select) return;
+  var current = typeof currentValue === 'string' ? currentValue : '';
+  select.innerHTML = '';
+  GEAR_LIST_CATEGORIES.forEach(function (cat) {
+    var opt = document.createElement('option');
+    opt.value = cat;
+    opt.textContent = cat;
+    if (current === cat) opt.selected = true;
+    select.appendChild(opt);
+  });
+  var customOpt = document.createElement('option');
+  customOpt.value = AUTO_GEAR_CUSTOM_CATEGORY;
+  customOpt.textContent = ((_texts$currentLang29 = texts[currentLang]) === null || _texts$currentLang29 === void 0 ? void 0 : _texts$currentLang29.autoGearCustomCategory) || ((_texts$en230 = texts.en) === null || _texts$en230 === void 0 ? void 0 : _texts$en230.autoGearCustomCategory) || 'Custom Additions';
+  if (!current) customOpt.selected = true;
+  select.appendChild(customOpt);
+}
+function updateAutoGearCatalogOptions() {
+  if (!autoGearItemCatalog) return;
+  var names = collectAutoGearCatalogNames();
+  autoGearItemCatalog.innerHTML = '';
+  names.forEach(function (name) {
+    var option = document.createElement('option');
+    option.value = name;
+    autoGearItemCatalog.appendChild(option);
+  });
+  updateAutoGearMonitorCatalogOptions();
+  updateAutoGearMonitorDefaultOptions();
+}
+function updateAutoGearMonitorDefaultOptions() {
+  var targets = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : autoGearMonitorDefaultControls;
+  var controls = Array.isArray(targets) ? targets : [targets];
+  var placeholder = getAutoGearMonitorDefaultPlaceholder();
+  controls.forEach(function (control) {
+    if (!control || !control.select || !Object.prototype.hasOwnProperty.call(AUTO_GEAR_MONITOR_DEFAULT_TYPES, control.key)) {
+      return;
+    }
+    var select = control.select;
+    var type = AUTO_GEAR_MONITOR_DEFAULT_TYPES[control.key];
+    var names = collectAutoGearMonitorNames(type === 'directorMonitor' ? 'directorMonitor' : 'monitor');
+    var previousValue = select.value || '';
+    select.innerHTML = '';
+    var placeholderOption = document.createElement('option');
+    placeholderOption.value = '';
+    placeholderOption.textContent = placeholder;
+    select.appendChild(placeholderOption);
+    var added = new Set(['']);
+    names.forEach(function (name) {
+      if (!name) return;
+      var key = name.toLowerCase();
+      if (added.has(key)) return;
+      var option = document.createElement('option');
+      option.value = name;
+      option.textContent = formatAutoGearSelectorValue(type, name);
+      select.appendChild(option);
+      added.add(key);
+    });
+    var currentValue = getAutoGearMonitorDefault(control.key);
+    var normalizedValue = '';
+    if (currentValue) {
+      var match = names.find(function (name) {
+        return name.toLowerCase() === currentValue.toLowerCase();
+      });
+      if (match) {
+        normalizedValue = match;
+      } else {
+        var option = document.createElement('option');
+        option.value = currentValue;
+        option.textContent = formatAutoGearSelectorValue(type, currentValue);
+        select.appendChild(option);
+        normalizedValue = currentValue;
+      }
+    }
+    select.value = normalizedValue;
+    if (!normalizedValue && previousValue && select.value !== previousValue && select.querySelector("option[value=\"".concat(previousValue, "\"]"))) {
+      select.value = previousValue;
+    }
+    select.disabled = names.length === 0 && !normalizedValue;
+  });
+}
+function renderAutoGearMonitorDefaultsControls() {
+  autoGearMonitorDefaultControls.forEach(function (control) {
+    if (!control || !control.select || !Object.prototype.hasOwnProperty.call(AUTO_GEAR_MONITOR_DEFAULT_TYPES, control.key)) {
+      return;
+    }
+    var select = control.select;
+    var type = AUTO_GEAR_MONITOR_DEFAULT_TYPES[control.key];
+    var currentValue = getAutoGearMonitorDefault(control.key);
+    if (currentValue && !Array.from(select.options || []).some(function (option) {
+      return option.value === currentValue;
+    })) {
+      var option = document.createElement('option');
+      option.value = currentValue;
+      option.textContent = formatAutoGearSelectorValue(type, currentValue);
+      select.appendChild(option);
+    }
+    var normalizedValue = currentValue || '';
+    if (select.value !== normalizedValue) {
+      select.value = normalizedValue;
+    }
+  });
+}
+function formatAutoGearCount(count, singularKey, pluralKey) {
+  var _texts$en232;
+  var langTexts = texts[currentLang] || texts.en || {};
+  if (count === 1) {
+    var _texts$en231;
+    var _template = langTexts[singularKey] || ((_texts$en231 = texts.en) === null || _texts$en231 === void 0 ? void 0 : _texts$en231[singularKey]);
+    return _template ? _template.replace('%s', '1') : '1';
+  }
+  var template = langTexts[pluralKey] || ((_texts$en232 = texts.en) === null || _texts$en232 === void 0 ? void 0 : _texts$en232[pluralKey]);
+  return template ? template.replace('%s', String(count)) : String(count);
+}
+function formatAutoGearItemSummary(item) {
+  var _texts$en233;
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  if (!item || _typeof(item) !== 'object') return '';
+  var normalized = normalizeAutoGearItem(item);
+  if (!normalized) return '';
+  var quantity = normalized.quantity,
+    name = normalized.name,
+    category = normalized.category,
+    screenSize = normalized.screenSize,
+    selectorType = normalized.selectorType,
+    selectorDefault = normalized.selectorDefault,
+    selectorEnabled = normalized.selectorEnabled,
+    notes = normalized.notes;
+  var langTexts = texts[currentLang] || texts.en || {};
+  var includeSign = !!options.includeSign;
+  var listType = options.listType || (options.includeSign ? 'add' : '');
+  var includeCategory = options.includeCategory !== false;
+  var baseQuantity = normalizeAutoGearQuantity(quantity);
+  var signPrefix = includeSign ? listType === 'remove' ? '−' : '+' : '';
+  var quantityText = signPrefix ? "".concat(signPrefix).concat(baseQuantity) : String(baseQuantity);
+  var nameText = name || '';
+  if (!nameText) return quantityText;
+  var categoryLabel = category ? category : langTexts.autoGearCustomCategory || ((_texts$en233 = texts.en) === null || _texts$en233 === void 0 ? void 0 : _texts$en233.autoGearCustomCategory) || '';
+  var summary;
+  if (includeCategory && categoryLabel) {
+    var _texts$en234;
+    var withCategoryTemplate = langTexts.autoGearItemSummaryWithCategory || ((_texts$en234 = texts.en) === null || _texts$en234 === void 0 ? void 0 : _texts$en234.autoGearItemSummaryWithCategory) || '%s × %s (%s)';
+    summary = formatWithPlaceholders(withCategoryTemplate, quantityText, nameText, categoryLabel);
+  } else {
+    var _texts$en235;
+    var baseTemplate = langTexts.autoGearItemSummary || ((_texts$en235 = texts.en) === null || _texts$en235 === void 0 ? void 0 : _texts$en235.autoGearItemSummary) || '%s × %s';
+    summary = formatWithPlaceholders(baseTemplate, quantityText, nameText);
+  }
+  var details = [];
+  if (screenSize) {
+    details.push(screenSize);
+  }
+  if (selectorType && selectorType !== 'none') {
+    var selectorLabel = getAutoGearSelectorLabel(selectorType);
+    var formattedDefault = selectorDefault ? formatAutoGearSelectorValue(selectorType, selectorDefault) : '';
+    if (selectorEnabled) {
+      var _texts$en236, _texts$en237;
+      var selectorTemplate = formattedDefault ? langTexts.autoGearSelectorSummaryWithDefault || ((_texts$en236 = texts.en) === null || _texts$en236 === void 0 ? void 0 : _texts$en236.autoGearSelectorSummaryWithDefault) || '%s selector (default: %s)' : langTexts.autoGearSelectorSummary || ((_texts$en237 = texts.en) === null || _texts$en237 === void 0 ? void 0 : _texts$en237.autoGearSelectorSummary) || '%s selector';
+      var selectorText = formattedDefault ? formatWithPlaceholders(selectorTemplate, selectorLabel, formattedDefault) : formatWithPlaceholders(selectorTemplate, selectorLabel);
+      details.push(selectorText);
+    } else if (formattedDefault) {
+      var _texts$en238;
+      var defaultTemplate = langTexts.autoGearSelectorSummaryNoSelector || ((_texts$en238 = texts.en) === null || _texts$en238 === void 0 ? void 0 : _texts$en238.autoGearSelectorSummaryNoSelector) || '%s default: %s';
+      details.push(formatWithPlaceholders(defaultTemplate, selectorLabel, formattedDefault));
+    } else if (selectorLabel) {
+      details.push(selectorLabel);
+    }
+  }
+  if (notes) {
+    details.push(notes);
+  }
+  if (details.length) {
+    summary += " \u2013 ".concat(details.join(' – '));
+  }
+  return summary;
+}
+function formatWithPlaceholders(template) {
+  for (var _len = arguments.length, values = new Array(_len > 1 ? _len - 1 : 0), _key5 = 1; _key5 < _len; _key5++) {
+    values[_key5 - 1] = arguments[_key5];
+  }
+  if (typeof template !== 'string') {
+    return values.join(' ');
+  }
+  return values.reduce(function (acc, value) {
+    return acc.replace('%s', value);
+  }, template);
+}
+function formatAutoGearRuleCount(count) {
+  var _texts$en240;
+  var langTexts = texts[currentLang] || texts.en || {};
+  if (count === 1) {
+    var _texts$en239;
+    var _template2 = langTexts.autoGearRulesCountOne || ((_texts$en239 = texts.en) === null || _texts$en239 === void 0 ? void 0 : _texts$en239.autoGearRulesCountOne);
+    return _template2 ? _template2.replace('%s', '1') : '1';
+  }
+  var template = langTexts.autoGearRulesCountOther || ((_texts$en240 = texts.en) === null || _texts$en240 === void 0 ? void 0 : _texts$en240.autoGearRulesCountOther);
+  return template ? template.replace('%s', String(count)) : String(count);
+}
+function formatAutoGearBackupCount(count) {
+  var langTexts = texts[currentLang] || texts.en || {};
+  var fallbackTexts = texts.en || {};
+  if (count === 1) {
+    var _template3 = langTexts.storageAutoBackupsCountOne || fallbackTexts.storageAutoBackupsCountOne;
+    if (typeof _template3 === 'string' && _template3.includes('%s')) {
+      return _template3.replace('%s', '1');
+    }
+    return '1 auto backup';
+  }
+  var template = langTexts.storageAutoBackupsCountOther || fallbackTexts.storageAutoBackupsCountOther;
+  if (typeof template === 'string' && template.includes('%s')) {
+    return template.replace('%s', String(count));
+  }
+  return "".concat(count, " auto backups");
+}
+function formatAutoGearBackupTime(isoString) {
+  if (typeof isoString !== 'string') return '';
+  var date = new Date(isoString);
+  if (Number.isNaN(date.valueOf())) return isoString;
+  if (autoGearBackupDateFormatter) {
+    try {
+      return autoGearBackupDateFormatter.format(date);
+    } catch (error) {
+      console.warn('Failed to format automatic gear backup timestamp', error);
+    }
+  }
+  if (typeof date.toLocaleString === 'function') {
+    return date.toLocaleString();
+  }
+  return date.toISOString();
+}
+function formatAutoGearBackupMeta(backup) {
+  var _texts$en241, _texts$en242;
+  if (!backup) return '';
+  var langTexts = texts[currentLang] || texts.en || {};
+  var timeLabel = formatAutoGearBackupTime(backup.createdAt);
+  var ruleCount = Array.isArray(backup.rules) ? backup.rules.length : 0;
+  var rulesLabel = ruleCount === 0 ? langTexts.autoGearBackupClearsRules || ((_texts$en241 = texts.en) === null || _texts$en241 === void 0 ? void 0 : _texts$en241.autoGearBackupClearsRules) || 'Clears all rules' : formatAutoGearRuleCount(ruleCount);
+  var template = langTexts.autoGearBackupMeta || ((_texts$en242 = texts.en) === null || _texts$en242 === void 0 ? void 0 : _texts$en242.autoGearBackupMeta);
+  var baseSummary = template && template.includes('%s') ? formatWithPlaceholders(template, timeLabel, rulesLabel) : "".concat(timeLabel, " \xB7 ").concat(rulesLabel);
+  var note = typeof backup.note === 'string' ? backup.note.trim() : '';
+  if (note) {
+    return "".concat(baseSummary, " \u2013 ").concat(note);
+  }
+  return baseSummary;
+}
+function getAutoGearBackupSelectPlaceholder() {
+  var _texts$currentLang30, _texts$en243;
+  return ((_texts$currentLang30 = texts[currentLang]) === null || _texts$currentLang30 === void 0 ? void 0 : _texts$currentLang30.autoGearBackupSelectPlaceholder) || ((_texts$en243 = texts.en) === null || _texts$en243 === void 0 ? void 0 : _texts$en243.autoGearBackupSelectPlaceholder) || 'Select a backup to restore';
+}
+function updateAutoGearBackupRestoreButtonState() {
+  if (!autoGearBackupRestoreButton) return;
+  var hasSelection = Boolean(autoGearBackupSelect && autoGearBackupSelect.value);
+  autoGearBackupRestoreButton.disabled = !hasSelection;
+}
+function updateAutoGearBackupRetentionWarning() {
+  var message = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+  autoGearBackupRetentionWarningText = typeof message === 'string' ? message : '';
+  if (!autoGearBackupRetentionWarning) {
+    return;
+  }
+  if (autoGearBackupRetentionWarningText) {
+    autoGearBackupRetentionWarning.textContent = autoGearBackupRetentionWarningText;
+    autoGearBackupRetentionWarning.hidden = false;
+  } else {
+    autoGearBackupRetentionWarning.textContent = '';
+    autoGearBackupRetentionWarning.hidden = true;
+  }
+}
+function renderAutoGearBackupRetentionControls() {
+  var limitValue = clampAutoGearBackupRetentionLimit(autoGearBackupRetention);
+  if (autoGearBackupRetentionInput) {
+    autoGearBackupRetentionInput.setAttribute('min', String(AUTO_GEAR_BACKUP_RETENTION_MIN_VALUE));
+    autoGearBackupRetentionInput.setAttribute('max', String(AUTO_GEAR_BACKUP_RETENTION_MAX));
+    if (autoGearBackupRetentionInput.value !== String(limitValue)) {
+      autoGearBackupRetentionInput.value = String(limitValue);
+    }
+  }
+  if (autoGearBackupRetentionSummary) {
+    var _texts$currentLang31, _texts$en244;
+    var template = ((_texts$currentLang31 = texts[currentLang]) === null || _texts$currentLang31 === void 0 ? void 0 : _texts$currentLang31.autoGearBackupRetentionSummary) || ((_texts$en244 = texts.en) === null || _texts$en244 === void 0 ? void 0 : _texts$en244.autoGearBackupRetentionSummary) || 'Keeping the latest {limit}. Currently {stored} stored.';
+    var limitLabel = formatAutoGearBackupCount(limitValue);
+    var storedLabel = formatAutoGearBackupCount(autoGearBackups.length);
+    var summary = template.replace('{limit}', limitLabel).replace('{stored}', storedLabel);
+    autoGearBackupRetentionSummary.textContent = summary;
+  }
+  updateAutoGearBackupRetentionWarning(autoGearBackupRetentionWarningText);
+}
+function getAutoGearPresetById(presetId) {
+  if (!presetId) return null;
+  return autoGearPresets.find(function (preset) {
+    return preset.id === presetId;
+  }) || null;
+}
+function getAutoGearAutoPresetLabel() {
+  var _texts$en245;
+  var langTexts = texts[currentLang] || texts.en || {};
+  return langTexts.autoGearAutoPresetLabel || ((_texts$en245 = texts.en) === null || _texts$en245 === void 0 ? void 0 : _texts$en245.autoGearAutoPresetLabel) || 'Autosaved rules';
+}
+function setAutoGearAutoPresetId(presetId) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  var normalized = typeof presetId === 'string' ? presetId : '';
+  var persist = options.persist !== false;
+  var skipRender = options.skipRender === true;
+  if (autoGearAutoPresetId === normalized) {
+    if (!skipRender) renderAutoGearPresetsControls();
+    return;
+  }
+  autoGearAutoPresetId = normalized;
+  if (persist) {
+    persistAutoGearAutoPresetId(autoGearAutoPresetId);
+  }
+  if (!skipRender) {
+    renderAutoGearPresetsControls();
+  }
+}
+function reconcileAutoGearAutoPresetState() {
+  var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  if (!autoGearAutoPresetId) {
+    if (options.persist !== false) {
+      persistAutoGearAutoPresetId('');
+    }
+    return false;
+  }
+  var managedExists = autoGearPresets.some(function (preset) {
+    return preset.id === autoGearAutoPresetId;
+  });
+  var otherExists = autoGearPresets.some(function (preset) {
+    return preset.id !== autoGearAutoPresetId;
+  });
+  if (!managedExists || otherExists) {
+    setAutoGearAutoPresetId('', {
+      persist: options.persist !== false,
+      skipRender: options.skipRender === true
+    });
+    return true;
+  }
+  return false;
+}
+function syncAutoGearAutoPreset(rules) {
+  var normalizedRules = Array.isArray(rules) ? rules : [];
+  reconcileAutoGearAutoPresetState({
+    persist: true,
+    skipRender: true
+  });
+  if (!autoGearAutoPresetId) {
+    if (autoGearPresets.length > 0) {
+      return false;
+    }
+    var label = getAutoGearAutoPresetLabel();
+    var normalizedPreset = normalizeAutoGearPreset({
+      id: generateAutoGearId('preset'),
+      label: label,
+      rules: normalizedRules
+    });
+    if (!normalizedPreset) {
+      return false;
+    }
+    autoGearPresets.push(normalizedPreset);
+    autoGearPresets = sortAutoGearPresets(autoGearPresets.slice());
+    persistAutoGearPresets(autoGearPresets);
+    setAutoGearAutoPresetId(normalizedPreset.id, {
+      persist: true,
+      skipRender: true
+    });
+    setActiveAutoGearPresetId(normalizedPreset.id, {
+      persist: true,
+      skipRender: true
+    });
+    return true;
+  }
+  var managedIndex = autoGearPresets.findIndex(function (preset) {
+    return preset.id === autoGearAutoPresetId;
+  });
+  if (managedIndex === -1) {
+    setAutoGearAutoPresetId('', {
+      persist: true,
+      skipRender: true
+    });
+    return false;
+  }
+  if (autoGearPresets.length > 1) {
+    setAutoGearAutoPresetId('', {
+      persist: true,
+      skipRender: true
+    });
+    return false;
+  }
+  var managedPreset = autoGearPresets[managedIndex];
+  var updatedPreset = normalizeAutoGearPreset({
+    id: managedPreset.id,
+    label: managedPreset.label,
+    rules: normalizedRules
+  });
+  if (!updatedPreset) {
+    autoGearPresets.splice(managedIndex, 1);
+    autoGearPresets = sortAutoGearPresets(autoGearPresets.slice());
+    persistAutoGearPresets(autoGearPresets);
+    setAutoGearAutoPresetId('', {
+      persist: true,
+      skipRender: true
+    });
+    setActiveAutoGearPresetId('', {
+      persist: true,
+      skipRender: true
+    });
+    return true;
+  }
+  if (managedPreset.fingerprint !== updatedPreset.fingerprint) {
+    autoGearPresets[managedIndex] = updatedPreset;
+    autoGearPresets = sortAutoGearPresets(autoGearPresets.slice());
+    persistAutoGearPresets(autoGearPresets);
+  }
+  setActiveAutoGearPresetId(updatedPreset.id, {
+    persist: true,
+    skipRender: true
+  });
+  return managedPreset.fingerprint !== updatedPreset.fingerprint;
+}
+function setActiveAutoGearPresetId(presetId) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  var normalized = typeof presetId === 'string' ? presetId : '';
+  var persist = options.persist !== false;
+  var skipRender = options.skipRender === true;
+  if (activeAutoGearPresetId === normalized) {
+    if (!skipRender) renderAutoGearPresetsControls();
+    return;
+  }
+  activeAutoGearPresetId = normalized;
+  if (persist) {
+    persistActiveAutoGearPresetId(activeAutoGearPresetId);
+  }
+  if (!skipRender) {
+    renderAutoGearPresetsControls();
+  }
+}
+function alignActiveAutoGearPreset() {
+  var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  var skipRender = options.skipRender === true;
+  var fingerprint = createAutoGearRulesFingerprint(baseAutoGearRules);
+  var matching = autoGearPresets.find(function (preset) {
+    return preset.fingerprint === fingerprint;
+  }) || null;
+  if (matching) {
+    setActiveAutoGearPresetId(matching.id, {
+      persist: true,
+      skipRender: true
+    });
+  } else if (activeAutoGearPresetId) {
+    setActiveAutoGearPresetId('', {
+      persist: true,
+      skipRender: true
+    });
+  }
+  if (!skipRender) {
+    renderAutoGearPresetsControls();
+  }
+}
+function renderAutoGearPresetsControls() {
+  var _texts$currentLang32, _texts$en246;
+  if (!autoGearPresetSelect) return;
+  var placeholderText = ((_texts$currentLang32 = texts[currentLang]) === null || _texts$currentLang32 === void 0 ? void 0 : _texts$currentLang32.autoGearPresetPlaceholder) || ((_texts$en246 = texts.en) === null || _texts$en246 === void 0 ? void 0 : _texts$en246.autoGearPresetPlaceholder) || 'Custom rules';
+  var presets = sortAutoGearPresets(autoGearPresets.slice());
+  autoGearPresets = presets;
+  autoGearPresetSelect.innerHTML = '';
+  var placeholderOption = document.createElement('option');
+  placeholderOption.value = '';
+  placeholderOption.textContent = placeholderText;
+  autoGearPresetSelect.appendChild(placeholderOption);
+  presets.forEach(function (preset) {
+    var option = document.createElement('option');
+    option.value = preset.id;
+    option.textContent = preset.label;
+    autoGearPresetSelect.appendChild(option);
+  });
+  var targetValue = activeAutoGearPresetId || '';
+  autoGearPresetSelect.value = targetValue;
+  if (!targetValue) {
+    placeholderOption.selected = true;
+  }
+  autoGearPresetSelect.disabled = presets.length === 0;
+  autoGearPresetSelect.setAttribute('aria-disabled', presets.length === 0 ? 'true' : 'false');
+  if (autoGearDeletePresetButton) {
+    autoGearDeletePresetButton.disabled = !activeAutoGearPresetId;
+  }
+}
+function applyAutoGearBackupVisibility() {
+  var show = !!autoGearBackupsVisible;
+  if (autoGearShowBackupsCheckbox) {
+    autoGearShowBackupsCheckbox.checked = show;
+    autoGearShowBackupsCheckbox.setAttribute('aria-pressed', show ? 'true' : 'false');
+  }
+  if (autoGearBackupsSection) {
+    autoGearBackupsSection.classList.toggle('auto-gear-backups-collapsed', !show);
+    autoGearBackupsSection.setAttribute('aria-expanded', show ? 'true' : 'false');
+  }
+  if (autoGearBackupControls) {
+    autoGearBackupControls.hidden = !show;
+    autoGearBackupControls.setAttribute('aria-hidden', show ? 'false' : 'true');
+  }
+  if (autoGearBackupsHiddenNotice) {
+    autoGearBackupsHiddenNotice.hidden = show;
+  }
+  if (!show) {
+    if (autoGearBackupSelect) autoGearBackupSelect.disabled = true;
+    if (autoGearBackupRestoreButton) autoGearBackupRestoreButton.disabled = true;
+  } else {
+    updateAutoGearBackupRestoreButtonState();
+  }
+}
+function setAutoGearBackupsVisible(show) {
+  var next = !!show;
+  if (autoGearBackupsVisible === next) {
+    applyAutoGearBackupVisibility();
+    return;
+  }
+  autoGearBackupsVisible = next;
+  persistAutoGearBackupVisibility(autoGearBackupsVisible);
+  if (autoGearBackupsVisible) {
+    renderAutoGearBackupControls();
+  } else {
+    applyAutoGearBackupVisibility();
+  }
+}
+function handleAutoGearPresetSelection(event) {
+  var _texts$currentLang33, _texts$en247, _texts$currentLang34, _texts$en248;
+  if (!event || !autoGearPresetSelect) return;
+  if (sharedImportProjectPresetActive) {
+    sharedImportProjectPresetActive = false;
+    sharedImportPreviousPresetId = '';
+  }
+  var presetId = event.target.value;
+  if (!presetId) {
+    setActiveAutoGearPresetId('', {
+      persist: true
+    });
+    return;
+  }
+  var preset = getAutoGearPresetById(presetId);
+  if (!preset) {
+    setActiveAutoGearPresetId('', {
+      persist: true
+    });
+    renderAutoGearPresetsControls();
+    return;
+  }
+  var confirmTemplate = ((_texts$currentLang33 = texts[currentLang]) === null || _texts$currentLang33 === void 0 ? void 0 : _texts$currentLang33.autoGearPresetApplyConfirm) || ((_texts$en247 = texts.en) === null || _texts$en247 === void 0 ? void 0 : _texts$en247.autoGearPresetApplyConfirm) || "Replace your automatic gear rules with the preset \"".concat(preset.label, "\"?");
+  var confirmMessage = confirmTemplate.includes('%s') ? formatWithPlaceholders(confirmTemplate, preset.label) : confirmTemplate;
+  var confirmed = true;
+  if (typeof window !== 'undefined' && typeof window.confirm === 'function') {
+    confirmed = window.confirm(confirmMessage);
+  }
+  if (!confirmed) {
+    autoGearPresetSelect.value = activeAutoGearPresetId || '';
+    return;
+  }
+  setAutoGearRules(preset.rules);
+  updateAutoGearCatalogOptions();
+  renderAutoGearRulesList();
+  var appliedMessage = ((_texts$currentLang34 = texts[currentLang]) === null || _texts$currentLang34 === void 0 ? void 0 : _texts$currentLang34.autoGearPresetApplied) || ((_texts$en248 = texts.en) === null || _texts$en248 === void 0 ? void 0 : _texts$en248.autoGearPresetApplied) || 'Preset applied.';
+  showNotification('success', appliedMessage);
+}
+function handleAutoGearSavePreset() {
+  var _texts$currentLang35, _texts$en249, _texts$currentLang40, _texts$en254;
+  var rules = getAutoGearRules();
+  var activePreset = getAutoGearPresetById(activeAutoGearPresetId);
+  var promptTemplate = ((_texts$currentLang35 = texts[currentLang]) === null || _texts$currentLang35 === void 0 ? void 0 : _texts$currentLang35.autoGearPresetNamePrompt) || ((_texts$en249 = texts.en) === null || _texts$en249 === void 0 ? void 0 : _texts$en249.autoGearPresetNamePrompt) || 'Name this preset';
+  var defaultName = activePreset ? activePreset.label : '';
+  if (typeof window === 'undefined' || typeof window.prompt !== 'function') {
+    var _texts$currentLang36, _texts$en250;
+    var requiredMessage = ((_texts$currentLang36 = texts[currentLang]) === null || _texts$currentLang36 === void 0 ? void 0 : _texts$currentLang36.autoGearPresetNameRequired) || ((_texts$en250 = texts.en) === null || _texts$en250 === void 0 ? void 0 : _texts$en250.autoGearPresetNameRequired) || 'Enter a preset name to continue.';
+    if (typeof window !== 'undefined' && typeof window.alert === 'function') {
+      window.alert(requiredMessage);
+    }
+    return;
+  }
+  var response = window.prompt(promptTemplate, defaultName);
+  if (response === null) return;
+  var trimmed = response.trim();
+  if (!trimmed) {
+    var _texts$currentLang37, _texts$en251;
+    var _requiredMessage = ((_texts$currentLang37 = texts[currentLang]) === null || _texts$currentLang37 === void 0 ? void 0 : _texts$currentLang37.autoGearPresetNameRequired) || ((_texts$en251 = texts.en) === null || _texts$en251 === void 0 ? void 0 : _texts$en251.autoGearPresetNameRequired) || 'Enter a preset name to continue.';
+    if (typeof window.alert === 'function') {
+      window.alert(_requiredMessage);
+    }
+    return;
+  }
+  var normalizedName = trimmed;
+  var existingByName = autoGearPresets.find(function (preset) {
+    return preset.label.toLowerCase() === normalizedName.toLowerCase();
+  });
+  var targetId = (activePreset === null || activePreset === void 0 ? void 0 : activePreset.id) || '';
+  if (existingByName && existingByName.id !== targetId) {
+    var _texts$currentLang38, _texts$en252;
+    var overwriteTemplate = ((_texts$currentLang38 = texts[currentLang]) === null || _texts$currentLang38 === void 0 ? void 0 : _texts$currentLang38.autoGearPresetOverwriteConfirm) || ((_texts$en252 = texts.en) === null || _texts$en252 === void 0 ? void 0 : _texts$en252.autoGearPresetOverwriteConfirm) || "Replace the existing preset \"".concat(normalizedName, "\"?");
+    var overwriteMessage = overwriteTemplate.includes('%s') ? formatWithPlaceholders(overwriteTemplate, normalizedName) : overwriteTemplate;
+    var overwriteConfirmed = true;
+    if (typeof window.confirm === 'function') {
+      overwriteConfirmed = window.confirm(overwriteMessage);
+    }
+    if (!overwriteConfirmed) {
+      return;
+    }
+    targetId = existingByName.id;
+  }
+  var presetId = targetId || generateAutoGearId('preset');
+  var normalizedPreset = normalizeAutoGearPreset({
+    id: presetId,
+    label: normalizedName,
+    rules: rules
+  });
+  if (!normalizedPreset) {
+    var _texts$currentLang39, _texts$en253;
+    var _requiredMessage2 = ((_texts$currentLang39 = texts[currentLang]) === null || _texts$currentLang39 === void 0 ? void 0 : _texts$currentLang39.autoGearPresetNameRequired) || ((_texts$en253 = texts.en) === null || _texts$en253 === void 0 ? void 0 : _texts$en253.autoGearPresetNameRequired) || 'Enter a preset name to continue.';
+    if (typeof window.alert === 'function') {
+      window.alert(_requiredMessage2);
+    }
+    return;
+  }
+  if (autoGearAutoPresetId) {
+    setAutoGearAutoPresetId('', {
+      persist: true,
+      skipRender: true
+    });
+  }
+  var existingIndex = autoGearPresets.findIndex(function (preset) {
+    return preset.id === normalizedPreset.id;
+  });
+  if (existingIndex >= 0) {
+    autoGearPresets[existingIndex] = normalizedPreset;
+  } else {
+    autoGearPresets.push(normalizedPreset);
+  }
+  autoGearPresets = sortAutoGearPresets(autoGearPresets.slice());
+  persistAutoGearPresets(autoGearPresets);
+  setActiveAutoGearPresetId(normalizedPreset.id, {
+    persist: true,
+    skipRender: true
+  });
+  renderAutoGearPresetsControls();
+  var savedMessage = ((_texts$currentLang40 = texts[currentLang]) === null || _texts$currentLang40 === void 0 ? void 0 : _texts$currentLang40.autoGearPresetSaved) || ((_texts$en254 = texts.en) === null || _texts$en254 === void 0 ? void 0 : _texts$en254.autoGearPresetSaved) || 'Automatic gear preset saved.';
+  showNotification('success', savedMessage);
+}
+function handleAutoGearDeletePreset() {
+  var _texts$currentLang41, _texts$en255, _texts$currentLang42, _texts$en256;
+  if (!activeAutoGearPresetId) return;
+  var preset = getAutoGearPresetById(activeAutoGearPresetId);
+  var label = preset ? preset.label : '';
+  var confirmTemplate = ((_texts$currentLang41 = texts[currentLang]) === null || _texts$currentLang41 === void 0 ? void 0 : _texts$currentLang41.autoGearPresetDeleteConfirm) || ((_texts$en255 = texts.en) === null || _texts$en255 === void 0 ? void 0 : _texts$en255.autoGearPresetDeleteConfirm) || 'Delete this preset?';
+  var confirmMessage = label && confirmTemplate.includes('%s') ? formatWithPlaceholders(confirmTemplate, label) : confirmTemplate;
+  var confirmed = true;
+  if (typeof window !== 'undefined' && typeof window.confirm === 'function') {
+    confirmed = window.confirm(confirmMessage);
+  }
+  if (!confirmed) return;
+  if (autoGearAutoPresetId && autoGearAutoPresetId === activeAutoGearPresetId) {
+    setAutoGearAutoPresetId('', {
+      persist: true,
+      skipRender: true
+    });
+  }
+  autoGearPresets = autoGearPresets.filter(function (entry) {
+    return entry.id !== activeAutoGearPresetId;
+  });
+  autoGearPresets = sortAutoGearPresets(autoGearPresets.slice());
+  persistAutoGearPresets(autoGearPresets);
+  setActiveAutoGearPresetId('', {
+    persist: true,
+    skipRender: true
+  });
+  renderAutoGearPresetsControls();
+  var deletedMessage = ((_texts$currentLang42 = texts[currentLang]) === null || _texts$currentLang42 === void 0 ? void 0 : _texts$currentLang42.autoGearPresetDeleted) || ((_texts$en256 = texts.en) === null || _texts$en256 === void 0 ? void 0 : _texts$en256.autoGearPresetDeleted) || 'Automatic gear preset deleted.';
+  showNotification('success', deletedMessage);
+}
+function handleAutoGearShowBackupsToggle() {
+  if (!autoGearShowBackupsCheckbox) return;
+  setAutoGearBackupsVisible(autoGearShowBackupsCheckbox.checked);
+}
+function handleAutoGearBackupRetentionInput() {
+  if (!autoGearBackupRetentionInput) return;
+  if (autoGearBackupRetentionWarningText) {
+    updateAutoGearBackupRetentionWarning('');
+  }
+}
+function handleAutoGearBackupRetentionBlur() {
+  setTimeout(function () {
+    if (!autoGearBackupRetentionWarningText) {
+      updateAutoGearBackupRetentionWarning('');
+    }
+  }, 0);
+}
+function handleAutoGearBackupRetentionChange() {
+  var _texts$currentLang53, _texts$en267;
+  if (!autoGearBackupRetentionInput) return;
+  var rawValue = autoGearBackupRetentionInput.value;
+  var parsed = Number(rawValue);
+  if (!Number.isFinite(parsed)) {
+    autoGearBackupRetentionInput.value = String(autoGearBackupRetention);
+    updateAutoGearBackupRetentionWarning('');
+    renderAutoGearBackupRetentionControls();
+    return;
+  }
+  var normalized = clampAutoGearBackupRetentionLimit(parsed);
+  if (normalized === autoGearBackupRetention) {
+    updateAutoGearBackupRetentionWarning('');
+    renderAutoGearBackupRetentionControls();
+    return;
+  }
+  var previousLimit = autoGearBackupRetention;
+  if (normalized < previousLimit) {
+    var _texts$currentLang43, _texts$en257, _texts$currentLang44, _texts$en258, _texts$currentLang45, _texts$en259, _texts$currentLang46, _texts$en260, _texts$currentLang48, _texts$en262, _texts$currentLang50, _texts$en264, _texts$currentLang51, _texts$en265;
+    var trimmedEstimate = Math.max(0, autoGearBackups.length - normalized);
+    var warningTemplate = ((_texts$currentLang43 = texts[currentLang]) === null || _texts$currentLang43 === void 0 ? void 0 : _texts$currentLang43.autoGearBackupRetentionWarning) || ((_texts$en257 = texts.en) === null || _texts$en257 === void 0 ? void 0 : _texts$en257.autoGearBackupRetentionWarning) || 'Lowering to {limit} will remove {trimmed}. A safety snapshot will be saved first.';
+    var warningMessage = warningTemplate.replace('{limit}', formatAutoGearBackupCount(normalized)).replace('{trimmed}', formatAutoGearBackupCount(Math.max(trimmedEstimate, 1)));
+    updateAutoGearBackupRetentionWarning(warningMessage);
+    var confirmTemplate = ((_texts$currentLang44 = texts[currentLang]) === null || _texts$currentLang44 === void 0 ? void 0 : _texts$currentLang44.autoGearBackupRetentionConfirm) || ((_texts$en258 = texts.en) === null || _texts$en258 === void 0 ? void 0 : _texts$en258.autoGearBackupRetentionConfirm) || 'Save a safety snapshot and trim older backups now?';
+    var confirmMessage = confirmTemplate.replace('{limit}', formatAutoGearBackupCount(normalized)).replace('{trimmed}', formatAutoGearBackupCount(Math.max(trimmedEstimate, 1)));
+    var confirmed = typeof window !== 'undefined' && typeof window.confirm === 'function' ? window.confirm(confirmMessage) : true;
+    if (!confirmed) {
+      autoGearBackupRetentionInput.value = String(autoGearBackupRetention);
+      updateAutoGearBackupRetentionWarning('');
+      renderAutoGearBackupRetentionControls();
+      return;
+    }
+    var safetyBase = ((_texts$currentLang45 = texts[currentLang]) === null || _texts$currentLang45 === void 0 ? void 0 : _texts$currentLang45.autoGearBackupRetentionSafetyNote) || ((_texts$en259 = texts.en) === null || _texts$en259 === void 0 ? void 0 : _texts$en259.autoGearBackupRetentionSafetyNote) || 'Retention lowered to {limit}.';
+    var safetyTrimmed = ((_texts$currentLang46 = texts[currentLang]) === null || _texts$currentLang46 === void 0 ? void 0 : _texts$currentLang46.autoGearBackupRetentionSafetyNoteTrimmed) || ((_texts$en260 = texts.en) === null || _texts$en260 === void 0 ? void 0 : _texts$en260.autoGearBackupRetentionSafetyNoteTrimmed) || 'Retention lowered to {limit}. Removed {trimmed} in this change.';
+    var safetyTemplate = trimmedEstimate > 0 ? safetyTrimmed : safetyBase;
+    var safetyNote = safetyTemplate.replace('{limit}', formatAutoGearBackupCount(normalized)).replace('{trimmed}', formatAutoGearBackupCount(Math.max(trimmedEstimate, 1)));
+    var safetyResult = captureAutoGearBackupSnapshot({
+      force: true,
+      notifySuccess: false,
+      note: safetyNote
+    });
+    if (safetyResult.status !== 'created') {
+      var _texts$currentLang47, _texts$en261;
+      var failureMessage = ((_texts$currentLang47 = texts[currentLang]) === null || _texts$currentLang47 === void 0 ? void 0 : _texts$currentLang47.autoGearBackupRetentionSafetyFailed) || ((_texts$en261 = texts.en) === null || _texts$en261 === void 0 ? void 0 : _texts$en261.autoGearBackupRetentionSafetyFailed) || 'Safety snapshot failed. Retention was not changed.';
+      showNotification('error', failureMessage);
+      autoGearBackupRetentionInput.value = String(autoGearBackupRetention);
+      updateAutoGearBackupRetentionWarning('');
+      renderAutoGearBackupControls();
+      renderAutoGearBackupRetentionControls();
+      return;
+    }
+    var safetySavedMessage = ((_texts$currentLang48 = texts[currentLang]) === null || _texts$currentLang48 === void 0 ? void 0 : _texts$currentLang48.autoGearBackupRetentionSafetySaved) || ((_texts$en262 = texts.en) === null || _texts$en262 === void 0 ? void 0 : _texts$en262.autoGearBackupRetentionSafetySaved) || 'Safety snapshot captured before trimming backups.';
+    showNotification('success', safetySavedMessage);
+    var trimResult = enforceAutoGearBackupRetentionLimit(normalized);
+    if (!trimResult.success) {
+      var _texts$currentLang49, _texts$en263;
+      var _failureMessage = ((_texts$currentLang49 = texts[currentLang]) === null || _texts$currentLang49 === void 0 ? void 0 : _texts$currentLang49.autoGearBackupRetentionUpdateFailed) || ((_texts$en263 = texts.en) === null || _texts$en263 === void 0 ? void 0 : _texts$en263.autoGearBackupRetentionUpdateFailed) || 'Could not apply the new retention limit.';
+      showNotification('error', _failureMessage);
+      autoGearBackupRetentionInput.value = String(autoGearBackupRetention);
+      updateAutoGearBackupRetentionWarning('');
+      return;
+    }
+    var trimmedCount = trimResult.trimmed.length;
+    var _successTemplate = trimmedCount > 0 ? ((_texts$currentLang50 = texts[currentLang]) === null || _texts$currentLang50 === void 0 ? void 0 : _texts$currentLang50.autoGearBackupRetentionUpdated) || ((_texts$en264 = texts.en) === null || _texts$en264 === void 0 ? void 0 : _texts$en264.autoGearBackupRetentionUpdated) || 'Retention updated to {limit}. Removed {trimmed}.' : ((_texts$currentLang51 = texts[currentLang]) === null || _texts$currentLang51 === void 0 ? void 0 : _texts$currentLang51.autoGearBackupRetentionUpdatedNoTrim) || ((_texts$en265 = texts.en) === null || _texts$en265 === void 0 ? void 0 : _texts$en265.autoGearBackupRetentionUpdatedNoTrim) || 'Retention updated to {limit}. No backups were removed.';
+    var _successMessage = _successTemplate.replace('{limit}', formatAutoGearBackupCount(normalized)).replace('{trimmed}', formatAutoGearBackupCount(Math.max(trimmedCount, 1)));
+    showNotification('success', _successMessage);
+    updateAutoGearBackupRetentionWarning('');
+    return;
+  }
+  var increaseResult = enforceAutoGearBackupRetentionLimit(normalized);
+  if (!increaseResult.success) {
+    var _texts$currentLang52, _texts$en266;
+    var _failureMessage2 = ((_texts$currentLang52 = texts[currentLang]) === null || _texts$currentLang52 === void 0 ? void 0 : _texts$currentLang52.autoGearBackupRetentionUpdateFailed) || ((_texts$en266 = texts.en) === null || _texts$en266 === void 0 ? void 0 : _texts$en266.autoGearBackupRetentionUpdateFailed) || 'Could not apply the new retention limit.';
+    showNotification('error', _failureMessage2);
+    autoGearBackupRetentionInput.value = String(autoGearBackupRetention);
+    updateAutoGearBackupRetentionWarning('');
+    return;
+  }
+  var successTemplate = ((_texts$currentLang53 = texts[currentLang]) === null || _texts$currentLang53 === void 0 ? void 0 : _texts$currentLang53.autoGearBackupRetentionExpanded) || ((_texts$en267 = texts.en) === null || _texts$en267 === void 0 ? void 0 : _texts$en267.autoGearBackupRetentionExpanded) || 'Retention updated to {limit}.';
+  var successMessage = successTemplate.replace('{limit}', formatAutoGearBackupCount(normalized));
+  showNotification('success', successMessage);
+  updateAutoGearBackupRetentionWarning('');
+}
+function renderAutoGearBackupControls() {
+  if (!autoGearBackupSelect || !autoGearBackupEmptyMessage) return;
+  var previousValue = autoGearBackupSelect.value;
+  var placeholderText = getAutoGearBackupSelectPlaceholder();
+  autoGearBackupSelect.innerHTML = '';
+  var placeholder = document.createElement('option');
+  placeholder.value = '';
+  placeholder.textContent = placeholderText;
+  placeholder.disabled = true;
+  autoGearBackupSelect.appendChild(placeholder);
+  var availableIds = new Set(autoGearBackups.map(function (backup) {
+    return backup.id;
+  }));
+  var retainSelection = previousValue && availableIds.has(previousValue);
+  autoGearBackups.forEach(function (backup) {
+    var option = document.createElement('option');
+    option.value = backup.id;
+    option.textContent = formatAutoGearBackupMeta(backup);
+    if (backup.createdAt) {
+      option.title = backup.createdAt;
+    }
+    if (retainSelection && backup.id === previousValue) {
+      option.selected = true;
+    }
+    autoGearBackupSelect.appendChild(option);
+  });
+  if (!autoGearBackups.length) {
+    placeholder.selected = true;
+    autoGearBackupSelect.value = '';
+    autoGearBackupSelect.disabled = true;
+    autoGearBackupEmptyMessage.hidden = false;
+  } else {
+    autoGearBackupSelect.disabled = false;
+    autoGearBackupEmptyMessage.hidden = true;
+    if (retainSelection) {
+      placeholder.selected = false;
+      autoGearBackupSelect.value = previousValue;
+    } else {
+      placeholder.selected = true;
+      autoGearBackupSelect.value = '';
+    }
+  }
+  updateAutoGearBackupRestoreButtonState();
+  applyAutoGearBackupVisibility();
+  renderAutoGearBackupRetentionControls();
+}
+function extractAutoGearTriggers(rule) {
+  if (!rule || _typeof(rule) !== 'object') {
+    return {
+      always: false,
+      scenarioLogic: 'all',
+      scenarioPrimary: '',
+      scenarioMultiplier: 1,
+      scenarios: [],
+      mattebox: [],
+      cameraHandle: [],
+      viewfinderExtension: [],
+      deliveryResolution: [],
+      videoDistribution: [],
+      camera: [],
+      monitor: [],
+      crewPresent: [],
+      crewAbsent: [],
+      wireless: [],
+      motors: [],
+      controllers: [],
+      distance: [],
+      shootingDays: null
+    };
+  }
+  return {
+    always: Boolean(rule.always),
+    scenarioLogic: normalizeAutoGearScenarioLogic(rule.scenarioLogic),
+    scenarioPrimary: normalizeAutoGearScenarioPrimary(rule.scenarioPrimary),
+    scenarioMultiplier: normalizeAutoGearScenarioMultiplier(rule.scenarioMultiplier),
+    scenarios: Array.isArray(rule.scenarios) ? rule.scenarios.slice() : [],
+    mattebox: Array.isArray(rule.mattebox) ? rule.mattebox.slice() : [],
+    cameraHandle: Array.isArray(rule.cameraHandle) ? rule.cameraHandle.slice() : [],
+    viewfinderExtension: Array.isArray(rule.viewfinderExtension) ? rule.viewfinderExtension.slice() : [],
+    deliveryResolution: Array.isArray(rule.deliveryResolution) ? rule.deliveryResolution.slice() : [],
+    videoDistribution: Array.isArray(rule.videoDistribution) ? rule.videoDistribution.slice() : [],
+    camera: Array.isArray(rule.camera) ? rule.camera.slice() : [],
+    monitor: Array.isArray(rule.monitor) ? rule.monitor.slice() : [],
+    crewPresent: Array.isArray(rule.crewPresent) ? rule.crewPresent.slice() : [],
+    crewAbsent: Array.isArray(rule.crewAbsent) ? rule.crewAbsent.slice() : [],
+    wireless: Array.isArray(rule.wireless) ? rule.wireless.slice() : [],
+    motors: Array.isArray(rule.motors) ? rule.motors.slice() : [],
+    controllers: Array.isArray(rule.controllers) ? rule.controllers.slice() : [],
+    distance: Array.isArray(rule.distance) ? rule.distance.slice() : [],
+    shootingDays: rule.shootingDays ? normalizeAutoGearShootingDaysCondition(rule.shootingDays) : null
+  };
+}
+function snapshotAutoGearRuleForSummary(rule, index) {
+  if (!rule || _typeof(rule) !== 'object') return null;
+  var baseIndex = Number.isInteger(index) ? index : 0;
+  var id = typeof rule.id === 'string' && rule.id ? rule.id : "rule-".concat(baseIndex + 1);
+  var label = typeof rule.label === 'string' ? rule.label : '';
+  var triggers = extractAutoGearTriggers(rule);
+  var add = Array.isArray(rule.add) ? rule.add.map(autoGearItemSnapshot).filter(Boolean) : [];
+  var remove = Array.isArray(rule.remove) ? rule.remove.map(autoGearItemSnapshot).filter(Boolean) : [];
+  return _objectSpread({
+    id: id,
+    label: label,
+    index: baseIndex,
+    position: baseIndex + 1,
+    add: add,
+    remove: remove
+  }, triggers);
+}
+function createAutoGearRuleReference(rule) {
+  if (!rule || _typeof(rule) !== 'object') return null;
+  var index = Number.isInteger(rule.index) ? rule.index : 0;
+  var position = Number.isInteger(rule.position) ? rule.position : index + 1;
+  var id = typeof rule.id === 'string' && rule.id ? rule.id : "rule-".concat(position);
+  var label = typeof rule.label === 'string' ? rule.label : '';
+  return {
+    id: id,
+    label: label,
+    index: index,
+    position: position
+  };
+}
+function dedupeAutoGearRuleReferences(refs) {
+  var result = [];
+  var seen = new Set();
+  (Array.isArray(refs) ? refs : []).forEach(function (ref) {
+    if (!ref || _typeof(ref) !== 'object') return;
+    var key = ref.id || "index-".concat(ref.index);
+    if (seen.has(key)) return;
+    seen.add(key);
+    result.push(_objectSpread({}, ref));
+  });
+  return result;
+}
+function createAutoGearItemKey(item) {
+  var snapshot = autoGearItemSnapshot(item);
+  if (!snapshot) return '';
+  return stableStringify({
+    name: snapshot.name || '',
+    category: snapshot.category || '',
+    quantity: normalizeAutoGearQuantity(snapshot.quantity),
+    screenSize: snapshot.screenSize || '',
+    selectorType: snapshot.selectorType || 'none',
+    selectorDefault: snapshot.selectorDefault || '',
+    selectorEnabled: Boolean(snapshot.selectorEnabled),
+    notes: snapshot.notes || ''
+  });
+}
+function createAutoGearTriggerKeyForSummary(rule) {
+  var triggers = extractAutoGearTriggers(rule);
+  var sorted = _objectSpread(_objectSpread({}, triggers), {}, {
+    scenarios: triggers.scenarios.slice().sort(localeSort),
+    mattebox: triggers.mattebox.slice().sort(localeSort),
+    cameraHandle: triggers.cameraHandle.slice().sort(localeSort),
+    viewfinderExtension: triggers.viewfinderExtension.slice().sort(localeSort),
+    deliveryResolution: triggers.deliveryResolution.slice().sort(localeSort),
+    videoDistribution: triggers.videoDistribution.slice().sort(localeSort),
+    camera: triggers.camera.slice().sort(localeSort),
+    monitor: triggers.monitor.slice().sort(localeSort),
+    crewPresent: triggers.crewPresent.slice().sort(localeSort),
+    crewAbsent: triggers.crewAbsent.slice().sort(localeSort),
+    wireless: triggers.wireless.slice().sort(localeSort),
+    motors: triggers.motors.slice().sort(localeSort),
+    controllers: triggers.controllers.slice().sort(localeSort),
+    distance: triggers.distance.slice().sort(localeSort),
+    shootingDays: triggers.shootingDays ? {
+      mode: triggers.shootingDays.mode,
+      value: triggers.shootingDays.value
+    } : null
+  });
+  return stableStringify(sorted);
+}
+function collectAutoGearScenarioCatalog() {
+  if (typeof document === 'undefined') return [];
+  var select = document.getElementById('requiredScenarios');
+  if (!select) return [];
+  var map = new Map();
+  Array.from(select.options || []).forEach(function (option) {
+    var value = typeof option.value === 'string' ? option.value.trim() : '';
+    if (!value) return;
+    var normalized = normalizeAutoGearTriggerValue(value) || value;
+    if (map.has(normalized)) return;
+    map.set(normalized, {
+      value: value,
+      label: option.textContent || value,
+      normalized: normalized
+    });
+  });
+  return Array.from(map.values()).sort(function (a, b) {
+    return localeSort(a.label, b.label);
+  });
+}
+function getAutoGearRuleCoverageSummary() {
+  var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  var sourceRules = Array.isArray(options.rules) ? options.rules : getAutoGearRules();
+  var snapshots = [];
+  (Array.isArray(sourceRules) ? sourceRules : []).forEach(function (rule, index) {
+    var snapshot = snapshotAutoGearRuleForSummary(rule, index);
+    if (snapshot) {
+      snapshots.push(snapshot);
+    }
+  });
+  var summary = {
+    generatedAt: new Date().toISOString(),
+    totalRules: snapshots.length
+  };
+  var catalog = collectAutoGearScenarioCatalog();
+  if (!snapshots.length) {
+    summary.duplicates = {
+      totalGroups: 0,
+      totalRules: 0,
+      groups: []
+    };
+    summary.conflicts = {
+      totalItems: 0,
+      totalRules: 0,
+      items: []
+    };
+    summary.net = {
+      addItems: 0,
+      addQuantity: 0,
+      removeItems: 0,
+      removeQuantity: 0,
+      netQuantity: 0
+    };
+    summary.scenarios = {
+      catalog: catalog,
+      coverage: [],
+      uncovered: catalog.map(function (entry) {
+        return {
+          value: entry.value,
+          label: entry.label,
+          normalized: entry.normalized
+        };
+      }),
+      overlaps: [],
+      rulesWithoutScenarios: []
+    };
+    autoGearSummaryLast = summary;
+    return summary;
+  }
+  var duplicateMap = new Map();
+  var duplicateRuleIds = new Set();
+  snapshots.forEach(function (snapshot) {
+    var key = createAutoGearTriggerKeyForSummary(snapshot);
+    if (!duplicateMap.has(key)) {
+      duplicateMap.set(key, {
+        triggers: extractAutoGearTriggers(snapshot),
+        rules: []
+      });
+    }
+    var ref = createAutoGearRuleReference(snapshot);
+    if (ref) {
+      duplicateMap.get(key).rules.push(ref);
+    }
+  });
+  var duplicateGroups = [];
+  duplicateMap.forEach(function (entry) {
+    var rules = dedupeAutoGearRuleReferences(entry.rules);
+    if (rules.length <= 1) return;
+    rules.forEach(function (ref) {
+      return duplicateRuleIds.add(ref.id || "index-".concat(ref.index));
+    });
+    duplicateGroups.push({
+      triggers: entry.triggers,
+      rules: rules
+    });
+  });
+  summary.duplicates = {
+    totalGroups: duplicateGroups.length,
+    totalRules: duplicateRuleIds.size,
+    groups: duplicateGroups
+  };
+  var conflictMap = new Map();
+  var conflictRuleIds = new Set();
+  snapshots.forEach(function (snapshot) {
+    var ref = createAutoGearRuleReference(snapshot);
+    if (!ref) return;
+    snapshot.add.forEach(function (item) {
+      var key = createAutoGearItemKey(item);
+      if (!key) return;
+      if (!conflictMap.has(key)) {
+        conflictMap.set(key, {
+          item: item,
+          adds: [],
+          removes: []
+        });
+      }
+      conflictMap.get(key).adds.push(ref);
+    });
+    snapshot.remove.forEach(function (item) {
+      var key = createAutoGearItemKey(item);
+      if (!key) return;
+      if (!conflictMap.has(key)) {
+        conflictMap.set(key, {
+          item: item,
+          adds: [],
+          removes: []
+        });
+      }
+      conflictMap.get(key).removes.push(ref);
+    });
+  });
+  var conflictItems = [];
+  conflictMap.forEach(function (entry) {
+    var adds = dedupeAutoGearRuleReferences(entry.adds);
+    var removes = dedupeAutoGearRuleReferences(entry.removes);
+    if (!adds.length || !removes.length) return;
+    adds.forEach(function (ref) {
+      return conflictRuleIds.add(ref.id || "index-".concat(ref.index));
+    });
+    removes.forEach(function (ref) {
+      return conflictRuleIds.add(ref.id || "index-".concat(ref.index));
+    });
+    conflictItems.push({
+      item: entry.item,
+      adds: adds,
+      removes: removes
+    });
+  });
+  summary.conflicts = {
+    totalItems: conflictItems.length,
+    totalRules: conflictRuleIds.size,
+    items: conflictItems
+  };
+  var addItems = 0;
+  var addQuantity = 0;
+  var removeItems = 0;
+  var removeQuantity = 0;
+  snapshots.forEach(function (snapshot) {
+    snapshot.add.forEach(function (item) {
+      addItems += 1;
+      addQuantity += normalizeAutoGearQuantity(item.quantity);
+    });
+    snapshot.remove.forEach(function (item) {
+      removeItems += 1;
+      removeQuantity += normalizeAutoGearQuantity(item.quantity);
+    });
+  });
+  summary.net = {
+    addItems: addItems,
+    addQuantity: addQuantity,
+    removeItems: removeItems,
+    removeQuantity: removeQuantity,
+    netQuantity: addQuantity - removeQuantity
+  };
+  var scenarioLabelMap = new Map();
+  catalog.forEach(function (entry) {
+    scenarioLabelMap.set(entry.normalized, entry.label);
+    scenarioLabelMap.set(entry.value, entry.label);
+  });
+  var coverageMap = new Map();
+  snapshots.forEach(function (snapshot) {
+    var ref = createAutoGearRuleReference(snapshot);
+    if (!ref) return;
+    var list = Array.isArray(snapshot.scenarios) ? snapshot.scenarios : [];
+    list.forEach(function (value) {
+      if (typeof value !== 'string') return;
+      var trimmed = value.trim();
+      if (!trimmed) return;
+      var normalized = normalizeAutoGearTriggerValue(trimmed) || trimmed;
+      if (!coverageMap.has(normalized)) {
+        coverageMap.set(normalized, {
+          value: trimmed,
+          normalized: normalized,
+          rules: []
+        });
+      }
+      coverageMap.get(normalized).rules.push(ref);
+    });
+  });
+  var coverage = Array.from(coverageMap.values()).map(function (entry) {
+    var rules = dedupeAutoGearRuleReferences(entry.rules);
+    return {
+      value: entry.value,
+      normalized: entry.normalized,
+      label: scenarioLabelMap.get(entry.normalized) || scenarioLabelMap.get(entry.value) || entry.value,
+      rules: rules
+    };
+  }).sort(function (a, b) {
+    return localeSort(a.label, b.label);
+  });
+  var coveredKeys = new Set(coverage.map(function (entry) {
+    return entry.normalized;
+  }));
+  var uncovered = catalog.filter(function (entry) {
+    return !coveredKeys.has(entry.normalized);
+  }).map(function (entry) {
+    return {
+      value: entry.value,
+      label: entry.label,
+      normalized: entry.normalized
+    };
+  });
+  uncovered.sort(function (a, b) {
+    return localeSort(a.label, b.label);
+  });
+  var overlaps = coverage.filter(function (entry) {
+    return entry.rules.length > 1;
+  });
+  var rulesWithoutScenarios = dedupeAutoGearRuleReferences(snapshots.filter(function (rule) {
+    return !rule.always && (!Array.isArray(rule.scenarios) || !rule.scenarios.length);
+  }).map(createAutoGearRuleReference).filter(Boolean));
+  summary.scenarios = {
+    catalog: catalog,
+    coverage: coverage,
+    uncovered: uncovered,
+    overlaps: overlaps,
+    rulesWithoutScenarios: rulesWithoutScenarios
+  };
+  autoGearSummaryLast = summary;
+  return summary;
+}
+function formatAutoGearRuleReference(ref, langTexts) {
+  var _texts$en268, _texts$en270;
+  if (!ref || _typeof(ref) !== 'object') return '';
+  var baseLabel = ref.label || langTexts.autoGearRuleBadgeUnnamed || ((_texts$en268 = texts.en) === null || _texts$en268 === void 0 ? void 0 : _texts$en268.autoGearRuleBadgeUnnamed) || 'Automatic rule';
+  var positionText = formatNumberForLang(currentLang, ref.position || 1);
+  if (ref.label) {
+    var _texts$en269;
+    var _template4 = langTexts.autoGearSummaryRuleReference || ((_texts$en269 = texts.en) === null || _texts$en269 === void 0 ? void 0 : _texts$en269.autoGearSummaryRuleReference) || 'Rule {position}: {label}';
+    return _template4.replace('{position}', positionText).replace('{label}', baseLabel);
+  }
+  var template = langTexts.autoGearSummaryRuleReferenceUntitled || ((_texts$en270 = texts.en) === null || _texts$en270 === void 0 ? void 0 : _texts$en270.autoGearSummaryRuleReferenceUntitled) || 'Rule {position}';
+  return template.replace('{position}', positionText);
+}
+function formatAutoGearTriggerDescription(triggers, analysis, langTexts) {
+  var _analysis$scenarios, _analysis$scenarios2;
+  if (!triggers) return '';
+  var parts = [];
+  if (triggers.always) {
+    var _texts$en271;
+    parts.push(langTexts.autoGearAlwaysMeta || ((_texts$en271 = texts.en) === null || _texts$en271 === void 0 ? void 0 : _texts$en271.autoGearAlwaysMeta) || 'Always active');
+  }
+  var scenarioMap = new Map();
+  ((analysis === null || analysis === void 0 || (_analysis$scenarios = analysis.scenarios) === null || _analysis$scenarios === void 0 ? void 0 : _analysis$scenarios.catalog) || []).forEach(function (entry) {
+    scenarioMap.set(entry.normalized, entry.label);
+    scenarioMap.set(entry.value, entry.label);
+  });
+  ((analysis === null || analysis === void 0 || (_analysis$scenarios2 = analysis.scenarios) === null || _analysis$scenarios2 === void 0 ? void 0 : _analysis$scenarios2.coverage) || []).forEach(function (entry) {
+    scenarioMap.set(entry.normalized, entry.label);
+  });
+  var formatScenarioLabel = function formatScenarioLabel(value) {
+    var normalized = normalizeAutoGearTriggerValue(value) || value;
+    return scenarioMap.get(normalized) || value;
+  };
+  if (Array.isArray(triggers.scenarios) && triggers.scenarios.length) {
+    var _texts$en272;
+    var scenarioLabels = triggers.scenarios.map(formatScenarioLabel).filter(Boolean);
+    var label = langTexts.autoGearScenariosLabel || ((_texts$en272 = texts.en) === null || _texts$en272 === void 0 ? void 0 : _texts$en272.autoGearScenariosLabel) || 'Required scenarios';
+    parts.push("".concat(label, ": ").concat(formatListForLang(currentLang, scenarioLabels)));
+  }
+  var scenarioLogic = normalizeAutoGearScenarioLogic(triggers.scenarioLogic);
+  if (scenarioLogic) {
+    var _texts$en273, _texts$en274, _texts$en275, _texts$en276;
+    var modeLabel = scenarioLogic === 'any' ? langTexts.autoGearScenarioModeAny || ((_texts$en273 = texts.en) === null || _texts$en273 === void 0 ? void 0 : _texts$en273.autoGearScenarioModeAny) || 'Match any selected scenario' : scenarioLogic === 'multiplier' ? langTexts.autoGearScenarioModeMultiplier || ((_texts$en274 = texts.en) === null || _texts$en274 === void 0 ? void 0 : _texts$en274.autoGearScenarioModeMultiplier) || 'Multiply when combined' : langTexts.autoGearScenarioModeAll || ((_texts$en275 = texts.en) === null || _texts$en275 === void 0 ? void 0 : _texts$en275.autoGearScenarioModeAll) || 'Require every selected scenario';
+    var modeHeading = langTexts.autoGearScenarioModeLabel || ((_texts$en276 = texts.en) === null || _texts$en276 === void 0 ? void 0 : _texts$en276.autoGearScenarioModeLabel) || 'Scenario matching';
+    var detail = modeLabel;
+    if (scenarioLogic === 'multiplier') {
+      var _texts$en277;
+      var factorLabel = langTexts.autoGearScenarioFactorLabel || ((_texts$en277 = texts.en) === null || _texts$en277 === void 0 ? void 0 : _texts$en277.autoGearScenarioFactorLabel) || 'Multiplier factor';
+      var multiplier = normalizeAutoGearScenarioMultiplier(triggers.scenarioMultiplier);
+      var multiplierText = formatNumberForLang(currentLang, multiplier || 1);
+      var baseScenario = triggers.scenarioPrimary ? formatScenarioLabel(triggers.scenarioPrimary) : triggers.scenarios && triggers.scenarios.length ? formatScenarioLabel(triggers.scenarios[0]) : '';
+      detail = baseScenario ? "".concat(modeLabel, " (").concat(factorLabel, ": \xD7").concat(multiplierText, ", ").concat(baseScenario, ")") : "".concat(modeLabel, " (\xD7").concat(multiplierText, ")");
+    }
+    parts.push("".concat(modeHeading, ": ").concat(detail));
+  }
+  var triggerConfigs = [{
+    key: 'mattebox',
+    labelKey: 'autoGearMatteboxLabel'
+  }, {
+    key: 'cameraHandle',
+    labelKey: 'autoGearCameraHandleLabel'
+  }, {
+    key: 'viewfinderExtension',
+    labelKey: 'autoGearViewfinderExtensionLabel',
+    formatter: getViewfinderFallbackLabel
+  }, {
+    key: 'deliveryResolution',
+    labelKey: 'autoGearDeliveryResolutionLabel'
+  }, {
+    key: 'videoDistribution',
+    labelKey: 'autoGearVideoDistributionLabel',
+    formatter: getVideoDistributionFallbackLabel
+  }, {
+    key: 'camera',
+    labelKey: 'autoGearCameraLabel'
+  }, {
+    key: 'monitor',
+    labelKey: 'autoGearMonitorLabel'
+  }, {
+    key: 'crewPresent',
+    labelKey: 'autoGearCrewPresentLabel'
+  }, {
+    key: 'crewAbsent',
+    labelKey: 'autoGearCrewAbsentLabel'
+  }, {
+    key: 'wireless',
+    labelKey: 'autoGearWirelessLabel'
+  }, {
+    key: 'motors',
+    labelKey: 'autoGearMotorsLabel'
+  }, {
+    key: 'controllers',
+    labelKey: 'autoGearControllersLabel'
+  }, {
+    key: 'distance',
+    labelKey: 'autoGearDistanceLabel'
+  }];
+  triggerConfigs.forEach(function (config) {
+    var _texts$en278;
+    var values = Array.isArray(triggers[config.key]) ? triggers[config.key].filter(Boolean) : [];
+    if (!values.length) return;
+    var label = langTexts[config.labelKey] || ((_texts$en278 = texts.en) === null || _texts$en278 === void 0 ? void 0 : _texts$en278[config.labelKey]) || config.labelKey;
+    var formatted = values.map(function (value) {
+      if (!config.formatter) return value;
+      try {
+        return config.formatter(value);
+      } catch (error) {
+        void error;
+        return value;
+      }
+    }).filter(Boolean);
+    if (formatted.length) {
+      parts.push("".concat(label, ": ").concat(formatListForLang(currentLang, formatted)));
+    }
+  });
+  if (triggers.shootingDays && triggers.shootingDays.value) {
+    var _texts$en279, _texts$en280;
+    var _label62 = langTexts.autoGearShootingDaysLabel || ((_texts$en279 = texts.en) === null || _texts$en279 === void 0 ? void 0 : _texts$en279.autoGearShootingDaysLabel) || 'Shooting days condition';
+    var modeKey = triggers.shootingDays.mode === 'maximum' ? 'autoGearShootingDaysModeMaximum' : triggers.shootingDays.mode === 'every' ? 'autoGearShootingDaysModeEvery' : 'autoGearShootingDaysModeMinimum';
+    var _modeLabel = langTexts[modeKey] || ((_texts$en280 = texts.en) === null || _texts$en280 === void 0 ? void 0 : _texts$en280[modeKey]) || triggers.shootingDays.mode;
+    var valueText = formatNumberForLang(currentLang, triggers.shootingDays.value);
+    parts.push("".concat(_label62, ": ").concat(_modeLabel, " ").concat(valueText));
+  }
+  return parts.join('; ');
+}
+function renderAutoGearRuleSummary(analysis) {
+  var _texts$en281, _texts$en287, _texts$en288, _texts$en289, _texts$en290, _texts$en291, _texts$en292, _texts$en293, _texts$en294, _texts$en295, _texts$en296, _texts$en297, _texts$en298, _texts$en299, _texts$en300;
+  var context = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  if (!autoGearSummarySection || !autoGearSummaryHeadingElem || !autoGearSummaryDescriptionElem || !autoGearSummaryCards || !autoGearSummaryDetails) {
+    return;
+  }
+  var langTexts = texts[currentLang] || texts.en || {};
+  var heading = langTexts.autoGearSummaryHeading || ((_texts$en281 = texts.en) === null || _texts$en281 === void 0 ? void 0 : _texts$en281.autoGearSummaryHeading) || autoGearSummaryHeadingElem.textContent || 'Rule coverage overview';
+  autoGearSummaryHeadingElem.textContent = heading;
+  if (!analysis || typeof analysis.totalRules !== 'number') {
+    autoGearSummarySection.hidden = true;
+    return;
+  }
+  autoGearSummarySection.hidden = false;
+  autoGearSummaryCards.innerHTML = '';
+  autoGearSummaryDetails.innerHTML = '';
+  var totalRules = analysis.totalRules;
+  var filteredRules = typeof context.filteredRules === 'number' ? context.filteredRules : totalRules;
+  var visibleRules = typeof context.visibleRules === 'number' ? context.visibleRules : filteredRules;
+  var focus = context.focus || autoGearSummaryFocus || 'all';
+  var hasSearchFilters = Boolean(context.hasSearchFilters);
+  var focusApplied = Boolean(context.focusApplied);
+  if (!totalRules) {
+    var _texts$en282;
+    autoGearSummaryDescriptionElem.textContent = langTexts.autoGearSummaryEmpty || ((_texts$en282 = texts.en) === null || _texts$en282 === void 0 ? void 0 : _texts$en282.autoGearSummaryEmpty) || 'Add a rule to unlock coverage insights.';
+    return;
+  }
+  if (hasSearchFilters || focus !== 'all' && focus !== 'uncovered' || focusApplied) {
+    var _texts$en283;
+    var template = langTexts.autoGearSummaryFilteredDescription || ((_texts$en283 = texts.en) === null || _texts$en283 === void 0 ? void 0 : _texts$en283.autoGearSummaryFilteredDescription) || 'Showing {visible} of {total} rules after filters.';
+    autoGearSummaryDescriptionElem.textContent = template.replace('{visible}', formatNumberForLang(currentLang, visibleRules)).replace('{filtered}', formatNumberForLang(currentLang, filteredRules)).replace('{total}', formatNumberForLang(currentLang, totalRules));
+  } else {
+    var _texts$en284;
+    autoGearSummaryDescriptionElem.textContent = langTexts.autoGearSummaryDescription || ((_texts$en284 = texts.en) === null || _texts$en284 === void 0 ? void 0 : _texts$en284.autoGearSummaryDescription) || 'Review duplicates, coverage gaps and conflicts before exporting or printing.';
+  }
+  var formatRulesCount = function formatRulesCount(count) {
+    var _texts$en285, _texts$en286;
+    var template = count === 1 ? langTexts.autoGearRulesCountOne || ((_texts$en285 = texts.en) === null || _texts$en285 === void 0 ? void 0 : _texts$en285.autoGearRulesCountOne) || '%s rule' : langTexts.autoGearRulesCountOther || ((_texts$en286 = texts.en) === null || _texts$en286 === void 0 ? void 0 : _texts$en286.autoGearRulesCountOther) || '%s rules';
+    return template.replace('%s', formatNumberForLang(currentLang, count));
+  };
+  var buildCard = function buildCard(config) {
+    var label = config.label,
+      value = config.value,
+      description = config.description,
+      focusKey = config.focusKey;
+    var isAction = Boolean(focusKey);
+    var element = document.createElement(isAction ? 'button' : 'div');
+    element.className = 'auto-gear-summary-card';
+    if (isAction) {
+      element.type = 'button';
+      element.classList.add('auto-gear-summary-action');
+      element.dataset.focus = focusKey;
+      element.setAttribute('aria-pressed', autoGearSummaryFocus === focusKey ? 'true' : 'false');
+    }
+    var labelElem = document.createElement('p');
+    labelElem.className = 'auto-gear-summary-label';
+    labelElem.textContent = label;
+    var valueElem = document.createElement('p');
+    valueElem.className = 'auto-gear-summary-value';
+    valueElem.textContent = value;
+    element.appendChild(labelElem);
+    element.appendChild(valueElem);
+    if (description) {
+      var descElem = document.createElement('p');
+      descElem.className = 'auto-gear-summary-description';
+      descElem.textContent = description;
+      element.appendChild(descElem);
+    }
+    autoGearSummaryCards.appendChild(element);
+  };
+  var netValue = "".concat(formatNumberForLang(currentLang, analysis.net.addQuantity), " / \u2212").concat(formatNumberForLang(currentLang, analysis.net.removeQuantity));
+  buildCard({
+    label: langTexts.autoGearSummaryTotalLabel || ((_texts$en287 = texts.en) === null || _texts$en287 === void 0 ? void 0 : _texts$en287.autoGearSummaryTotalLabel) || 'Rules',
+    value: formatNumberForLang(currentLang, totalRules),
+    description: langTexts.autoGearSummaryTotalDescription || ((_texts$en288 = texts.en) === null || _texts$en288 === void 0 ? void 0 : _texts$en288.autoGearSummaryTotalDescription) || 'Saved in this setup'
+  });
+  buildCard({
+    label: langTexts.autoGearSummaryNetLabel || ((_texts$en289 = texts.en) === null || _texts$en289 === void 0 ? void 0 : _texts$en289.autoGearSummaryNetLabel) || 'Net change',
+    value: netValue,
+    description: (langTexts.autoGearSummaryNetDescription || ((_texts$en290 = texts.en) === null || _texts$en290 === void 0 ? void 0 : _texts$en290.autoGearSummaryNetDescription) || 'Adds {adds} · Removes {removes}').replace('{adds}', formatNumberForLang(currentLang, analysis.net.addItems)).replace('{removes}', formatNumberForLang(currentLang, analysis.net.removeItems))
+  });
+  buildCard({
+    label: langTexts.autoGearSummaryDuplicatesLabel || ((_texts$en291 = texts.en) === null || _texts$en291 === void 0 ? void 0 : _texts$en291.autoGearSummaryDuplicatesLabel) || 'Duplicated triggers',
+    value: formatNumberForLang(currentLang, analysis.duplicates.totalGroups),
+    description: analysis.duplicates.totalGroups ? (langTexts.autoGearSummaryDuplicatesSome || ((_texts$en292 = texts.en) === null || _texts$en292 === void 0 ? void 0 : _texts$en292.autoGearSummaryDuplicatesSome) || '{rules} across {groups} groups').replace('{rules}', formatRulesCount(analysis.duplicates.totalRules)).replace('{groups}', formatNumberForLang(currentLang, analysis.duplicates.totalGroups)) : langTexts.autoGearSummaryDuplicatesNone || ((_texts$en293 = texts.en) === null || _texts$en293 === void 0 ? void 0 : _texts$en293.autoGearSummaryDuplicatesNone) || 'No duplicate triggers.',
+    focusKey: 'duplicates'
+  });
+  buildCard({
+    label: langTexts.autoGearSummaryConflictsLabel || ((_texts$en294 = texts.en) === null || _texts$en294 === void 0 ? void 0 : _texts$en294.autoGearSummaryConflictsLabel) || 'Potential conflicts',
+    value: formatNumberForLang(currentLang, analysis.conflicts.totalItems),
+    description: analysis.conflicts.totalItems ? (langTexts.autoGearSummaryConflictsSome || ((_texts$en295 = texts.en) === null || _texts$en295 === void 0 ? void 0 : _texts$en295.autoGearSummaryConflictsSome) || '{rules} affected across {items} items').replace('{rules}', formatRulesCount(analysis.conflicts.totalRules)).replace('{items}', formatNumberForLang(currentLang, analysis.conflicts.totalItems)) : langTexts.autoGearSummaryConflictsNone || ((_texts$en296 = texts.en) === null || _texts$en296 === void 0 ? void 0 : _texts$en296.autoGearSummaryConflictsNone) || 'No conflicting adds/removes.',
+    focusKey: 'conflicts'
+  });
+  buildCard({
+    label: langTexts.autoGearSummaryUncoveredLabel || ((_texts$en297 = texts.en) === null || _texts$en297 === void 0 ? void 0 : _texts$en297.autoGearSummaryUncoveredLabel) || 'Uncovered scenarios',
+    value: formatNumberForLang(currentLang, analysis.scenarios.uncovered.length),
+    description: analysis.scenarios.uncovered.length ? (langTexts.autoGearSummaryUncoveredSome || ((_texts$en298 = texts.en) === null || _texts$en298 === void 0 ? void 0 : _texts$en298.autoGearSummaryUncoveredSome) || 'Review {count} scenario gaps').replace('{count}', formatNumberForLang(currentLang, analysis.scenarios.uncovered.length)) : langTexts.autoGearSummaryUncoveredNone || ((_texts$en299 = texts.en) === null || _texts$en299 === void 0 ? void 0 : _texts$en299.autoGearSummaryUncoveredNone) || 'All required scenarios covered.',
+    focusKey: 'uncovered'
+  });
+  var detailsFragment = document.createDocumentFragment();
+  var intro = document.createElement('p');
+  intro.className = 'auto-gear-summary-detail-text';
+  intro.textContent = langTexts.autoGearSummaryDetailsIntro || ((_texts$en300 = texts.en) === null || _texts$en300 === void 0 ? void 0 : _texts$en300.autoGearSummaryDetailsIntro) || 'Use the dashboard to audit coverage, overlaps and conflicts before exporting or printing.';
+  detailsFragment.appendChild(intro);
+  var appendRuleButtons = function appendRuleButtons(container, rules) {
+    var _texts$en301;
+    var jumpHelp = langTexts.autoGearSummaryJumpToRule || ((_texts$en301 = texts.en) === null || _texts$en301 === void 0 ? void 0 : _texts$en301.autoGearSummaryJumpToRule) || 'Show rule';
+    rules.forEach(function (ref, index) {
+      var button = document.createElement('button');
+      button.type = 'button';
+      button.dataset.autoGearRule = ref.id;
+      button.textContent = formatAutoGearRuleReference(ref, langTexts);
+      button.setAttribute('title', jumpHelp);
+      container.appendChild(button);
+      if (index < rules.length - 1) {
+        container.appendChild(document.createTextNode(', '));
+      }
+    });
+  };
+  if (focus === 'duplicates') {
+    var _texts$en302;
+    var headingElem = document.createElement('p');
+    headingElem.className = 'auto-gear-summary-detail-title';
+    headingElem.textContent = langTexts.autoGearSummaryDetailsDuplicatesHeading || ((_texts$en302 = texts.en) === null || _texts$en302 === void 0 ? void 0 : _texts$en302.autoGearSummaryDetailsDuplicatesHeading) || 'Rules sharing the same triggers';
+    detailsFragment.appendChild(headingElem);
+    if (!analysis.duplicates.groups.length) {
+      var _texts$en303;
+      var empty = document.createElement('p');
+      empty.className = 'auto-gear-summary-detail-text';
+      empty.textContent = langTexts.autoGearSummaryDuplicatesNone || ((_texts$en303 = texts.en) === null || _texts$en303 === void 0 ? void 0 : _texts$en303.autoGearSummaryDuplicatesNone) || 'No duplicate triggers.';
+      detailsFragment.appendChild(empty);
+    } else {
+      analysis.duplicates.groups.forEach(function (group) {
+        var _texts$en304;
+        var description = formatAutoGearTriggerDescription(group.triggers, analysis, langTexts);
+        var descriptionElem = document.createElement('p');
+        descriptionElem.className = 'auto-gear-summary-detail-text';
+        descriptionElem.textContent = (langTexts.autoGearSummaryDuplicateGroupTitle || ((_texts$en304 = texts.en) === null || _texts$en304 === void 0 ? void 0 : _texts$en304.autoGearSummaryDuplicateGroupTitle) || 'Matching triggers') + (description ? " \u2014 ".concat(description) : '');
+        detailsFragment.appendChild(descriptionElem);
+        if (group.rules.length) {
+          var list = document.createElement('ul');
+          list.className = 'auto-gear-summary-list';
+          var item = document.createElement('li');
+          appendRuleButtons(item, group.rules);
+          list.appendChild(item);
+          detailsFragment.appendChild(list);
+        }
+      });
+    }
+  } else if (focus === 'conflicts') {
+    var _texts$en305;
+    var _headingElem = document.createElement('p');
+    _headingElem.className = 'auto-gear-summary-detail-title';
+    _headingElem.textContent = langTexts.autoGearSummaryDetailsConflictsHeading || ((_texts$en305 = texts.en) === null || _texts$en305 === void 0 ? void 0 : _texts$en305.autoGearSummaryDetailsConflictsHeading) || 'Gear touched by adds and removes';
+    detailsFragment.appendChild(_headingElem);
+    if (!analysis.conflicts.items.length) {
+      var _texts$en306;
+      var _empty = document.createElement('p');
+      _empty.className = 'auto-gear-summary-detail-text';
+      _empty.textContent = langTexts.autoGearSummaryConflictsNone || ((_texts$en306 = texts.en) === null || _texts$en306 === void 0 ? void 0 : _texts$en306.autoGearSummaryConflictsNone) || 'No conflicting adds/removes.';
+      detailsFragment.appendChild(_empty);
+    } else {
+      analysis.conflicts.items.forEach(function (entry) {
+        var _texts$en307, _texts$en308;
+        var title = document.createElement('p');
+        title.className = 'auto-gear-summary-detail-text';
+        title.textContent = formatAutoGearItemSummary(entry.item);
+        detailsFragment.appendChild(title);
+        var list = document.createElement('ul');
+        list.className = 'auto-gear-summary-list';
+        var addsItem = document.createElement('li');
+        addsItem.textContent = (langTexts.autoGearSummaryConflictAddsLabel || ((_texts$en307 = texts.en) === null || _texts$en307 === void 0 ? void 0 : _texts$en307.autoGearSummaryConflictAddsLabel) || 'Added by') + ': ';
+        appendRuleButtons(addsItem, entry.adds);
+        list.appendChild(addsItem);
+        var removesItem = document.createElement('li');
+        removesItem.textContent = (langTexts.autoGearSummaryConflictRemovesLabel || ((_texts$en308 = texts.en) === null || _texts$en308 === void 0 ? void 0 : _texts$en308.autoGearSummaryConflictRemovesLabel) || 'Removed by') + ': ';
+        appendRuleButtons(removesItem, entry.removes);
+        list.appendChild(removesItem);
+        detailsFragment.appendChild(list);
+      });
+    }
+  } else if (focus === 'uncovered') {
+    var _texts$en309;
+    var _headingElem2 = document.createElement('p');
+    _headingElem2.className = 'auto-gear-summary-detail-title';
+    _headingElem2.textContent = langTexts.autoGearSummaryDetailsUncoveredHeading || ((_texts$en309 = texts.en) === null || _texts$en309 === void 0 ? void 0 : _texts$en309.autoGearSummaryDetailsUncoveredHeading) || 'Scenarios without dedicated rules';
+    detailsFragment.appendChild(_headingElem2);
+    if (!analysis.scenarios.uncovered.length) {
+      var _texts$en310;
+      var _empty2 = document.createElement('p');
+      _empty2.className = 'auto-gear-summary-detail-text';
+      _empty2.textContent = langTexts.autoGearSummaryUncoveredNone || ((_texts$en310 = texts.en) === null || _texts$en310 === void 0 ? void 0 : _texts$en310.autoGearSummaryUncoveredNone) || 'All required scenarios covered.';
+      detailsFragment.appendChild(_empty2);
+    } else {
+      var list = document.createElement('ul');
+      list.className = 'auto-gear-summary-list';
+      analysis.scenarios.uncovered.forEach(function (entry) {
+        var _texts$en311;
+        var li = document.createElement('li');
+        var button = document.createElement('button');
+        button.type = 'button';
+        button.dataset.autoGearScenario = entry.value;
+        button.textContent = entry.label;
+        button.setAttribute('title', (langTexts.autoGearSummarySetScenarioFilter || ((_texts$en311 = texts.en) === null || _texts$en311 === void 0 ? void 0 : _texts$en311.autoGearSummarySetScenarioFilter) || 'Filter to scenario').replace('{scenario}', entry.label));
+        li.appendChild(button);
+        list.appendChild(li);
+      });
+      detailsFragment.appendChild(list);
+    }
+  } else {
+    if (analysis.scenarios.overlaps.length) {
+      var _texts$en312;
+      var _headingElem3 = document.createElement('p');
+      _headingElem3.className = 'auto-gear-summary-detail-title';
+      _headingElem3.textContent = langTexts.autoGearSummaryDetailsOverlapsHeading || ((_texts$en312 = texts.en) === null || _texts$en312 === void 0 ? void 0 : _texts$en312.autoGearSummaryDetailsOverlapsHeading) || 'Scenarios with stacked rules';
+      detailsFragment.appendChild(_headingElem3);
+      var _list = document.createElement('ul');
+      _list.className = 'auto-gear-summary-list';
+      analysis.scenarios.overlaps.forEach(function (entry) {
+        var _texts$en313;
+        var li = document.createElement('li');
+        var button = document.createElement('button');
+        button.type = 'button';
+        button.dataset.autoGearScenario = entry.value;
+        button.textContent = "".concat(entry.label, " \u2014 ").concat(formatRulesCount(entry.rules.length));
+        button.setAttribute('title', (langTexts.autoGearSummarySetScenarioFilter || ((_texts$en313 = texts.en) === null || _texts$en313 === void 0 ? void 0 : _texts$en313.autoGearSummarySetScenarioFilter) || 'Filter to scenario').replace('{scenario}', entry.label));
+        li.appendChild(button);
+        if (entry.rules.length) {
+          li.appendChild(document.createTextNode(' · '));
+          appendRuleButtons(li, entry.rules);
+        }
+        _list.appendChild(li);
+      });
+      detailsFragment.appendChild(_list);
+    } else {
+      var _texts$en314;
+      var note = document.createElement('p');
+      note.className = 'auto-gear-summary-detail-text';
+      note.textContent = langTexts.autoGearSummaryDetailsOverlapsNone || ((_texts$en314 = texts.en) === null || _texts$en314 === void 0 ? void 0 : _texts$en314.autoGearSummaryDetailsOverlapsNone) || 'No scenarios currently stack multiple rules.';
+      detailsFragment.appendChild(note);
+    }
+    if (analysis.scenarios.uncovered.length) {
+      var _texts$en315;
+      var _headingElem4 = document.createElement('p');
+      _headingElem4.className = 'auto-gear-summary-detail-title';
+      _headingElem4.textContent = langTexts.autoGearSummaryDetailsUncoveredHeading || ((_texts$en315 = texts.en) === null || _texts$en315 === void 0 ? void 0 : _texts$en315.autoGearSummaryDetailsUncoveredHeading) || 'Scenarios without dedicated rules';
+      detailsFragment.appendChild(_headingElem4);
+      var _list2 = document.createElement('ul');
+      _list2.className = 'auto-gear-summary-list';
+      analysis.scenarios.uncovered.forEach(function (entry) {
+        var _texts$en316;
+        var li = document.createElement('li');
+        var button = document.createElement('button');
+        button.type = 'button';
+        button.dataset.autoGearScenario = entry.value;
+        button.textContent = entry.label;
+        button.setAttribute('title', (langTexts.autoGearSummarySetScenarioFilter || ((_texts$en316 = texts.en) === null || _texts$en316 === void 0 ? void 0 : _texts$en316.autoGearSummarySetScenarioFilter) || 'Filter to scenario').replace('{scenario}', entry.label));
+        li.appendChild(button);
+        _list2.appendChild(li);
+      });
+      detailsFragment.appendChild(_list2);
+    }
+    if (analysis.scenarios.rulesWithoutScenarios.length) {
+      var _texts$en317, _texts$en318;
+      var _headingElem5 = document.createElement('p');
+      _headingElem5.className = 'auto-gear-summary-detail-title';
+      _headingElem5.textContent = langTexts.autoGearSummaryDetailsRulesWithoutScenariosHeading || ((_texts$en317 = texts.en) === null || _texts$en317 === void 0 ? void 0 : _texts$en317.autoGearSummaryDetailsRulesWithoutScenariosHeading) || 'Always-on or unspecific rules';
+      detailsFragment.appendChild(_headingElem5);
+      var description = document.createElement('p');
+      description.className = 'auto-gear-summary-detail-text';
+      description.textContent = langTexts.autoGearSummaryDetailsRulesWithoutScenariosDescription || ((_texts$en318 = texts.en) === null || _texts$en318 === void 0 ? void 0 : _texts$en318.autoGearSummaryDetailsRulesWithoutScenariosDescription) || 'These rules trigger without scenario filters.';
+      detailsFragment.appendChild(description);
+      var _list3 = document.createElement('ul');
+      _list3.className = 'auto-gear-summary-list';
+      var li = document.createElement('li');
+      appendRuleButtons(li, analysis.scenarios.rulesWithoutScenarios);
+      _list3.appendChild(li);
+      detailsFragment.appendChild(_list3);
+    }
+  }
+  if (focus !== 'all') {
+    var _texts$en319;
+    var resetButton = document.createElement('button');
+    resetButton.type = 'button';
+    resetButton.className = 'auto-gear-summary-reset';
+    resetButton.dataset.autoGearSummaryReset = 'true';
+    resetButton.textContent = langTexts.autoGearSummaryResetFocus || ((_texts$en319 = texts.en) === null || _texts$en319 === void 0 ? void 0 : _texts$en319.autoGearSummaryResetFocus) || 'Clear dashboard filter';
+    detailsFragment.appendChild(resetButton);
+  } else if (!analysis.duplicates.groups.length && !analysis.conflicts.items.length && !analysis.scenarios.uncovered.length) {
+    var _texts$en320;
+    var _empty3 = document.createElement('p');
+    _empty3.className = 'auto-gear-summary-detail-text';
+    _empty3.textContent = langTexts.autoGearSummaryDetailsFocusEmpty || ((_texts$en320 = texts.en) === null || _texts$en320 === void 0 ? void 0 : _texts$en320.autoGearSummaryDetailsFocusEmpty) || 'Everything looks covered—no overlaps or conflicts detected.';
+    detailsFragment.appendChild(_empty3);
+  }
+  autoGearSummaryDetails.appendChild(detailsFragment);
+}
+function setAutoGearSummaryFocus(value) {
+  var allowed = value === 'duplicates' || value === 'conflicts' || value === 'uncovered' ? value : 'all';
+  var next = autoGearSummaryFocus === allowed && allowed !== 'all' ? 'all' : allowed;
+  if (autoGearSummaryFocus === next) {
+    return;
+  }
+  autoGearSummaryFocus = next;
+  renderAutoGearRulesList();
+}
+function focusAutoGearRuleById(ruleId) {
+  if (!ruleId || !autoGearRulesList) return;
+  var candidates = Array.from(autoGearRulesList.querySelectorAll('[data-rule-id]'));
+  var target = candidates.find(function (element) {
+    return element && element.dataset && element.dataset.ruleId === ruleId;
+  });
+  if (!target) return;
+  if (typeof target.scrollIntoView === 'function') {
+    try {
+      target.scrollIntoView({
+        block: 'center',
+        behavior: 'smooth'
+      });
+    } catch (error) {
+      void error;
+      target.scrollIntoView(true);
+    }
+  }
+  var focusTarget = target.querySelector('.auto-gear-edit') || target.querySelector('button') || target;
+  if (focusTarget && typeof focusTarget.focus === 'function') {
+    try {
+      focusTarget.focus({
+        preventScroll: true
+      });
+    } catch (error) {
+      void error;
+      focusTarget.focus();
+    }
+  }
+}
+function renderAutoGearRulesList() {
+  if (!autoGearRulesList) return;
+  if (autoGearEditor && !autoGearEditor.hidden && !autoGearEditorDraft) {
+    closeAutoGearEditor();
+  }
+  autoGearRulesList.innerHTML = '';
+  var rules = getAutoGearRules();
+  var analysis = getAutoGearRuleCoverageSummary({
+    rules: rules
+  });
+  var scenarioFilter = refreshAutoGearScenarioFilterOptions(rules);
+  var rawSearch = typeof autoGearSearchQuery === 'string' ? autoGearSearchQuery : '';
+  var normalizedQuery = rawSearch.trim().toLowerCase();
+  var filteredRules = rules.filter(function (rule) {
+    return autoGearRuleMatchesScenario(rule, scenarioFilter) && autoGearRuleMatchesSearch(rule, normalizedQuery);
+  });
+  var ruleIndexByObject = new Map();
+  rules.forEach(function (rule, index) {
+    if (!rule || _typeof(rule) !== 'object') return;
+    ruleIndexByObject.set(rule, index);
+  });
+  var activeFocus = autoGearSummaryFocus || 'all';
+  var focusRuleIds = function (_analysis$duplicates, _analysis$conflicts) {
+    if (activeFocus === 'duplicates' && analysis !== null && analysis !== void 0 && (_analysis$duplicates = analysis.duplicates) !== null && _analysis$duplicates !== void 0 && (_analysis$duplicates = _analysis$duplicates.groups) !== null && _analysis$duplicates !== void 0 && _analysis$duplicates.length) {
+      var ids = new Set();
+      analysis.duplicates.groups.forEach(function (group) {
+        (group.rules || []).forEach(function (ref) {
+          if (!ref || _typeof(ref) !== 'object') return;
+          if (ref.id) ids.add(ref.id);
+          ids.add("index-".concat(ref.index));
+        });
+      });
+      return ids.size ? ids : null;
+    }
+    if (activeFocus === 'conflicts' && analysis !== null && analysis !== void 0 && (_analysis$conflicts = analysis.conflicts) !== null && _analysis$conflicts !== void 0 && (_analysis$conflicts = _analysis$conflicts.items) !== null && _analysis$conflicts !== void 0 && _analysis$conflicts.length) {
+      var _ids = new Set();
+      analysis.conflicts.items.forEach(function (item) {
+        (item.adds || []).forEach(function (ref) {
+          if (!ref || _typeof(ref) !== 'object') return;
+          if (ref.id) _ids.add(ref.id);
+          _ids.add("index-".concat(ref.index));
+        });
+        (item.removes || []).forEach(function (ref) {
+          if (!ref || _typeof(ref) !== 'object') return;
+          if (ref.id) _ids.add(ref.id);
+          _ids.add("index-".concat(ref.index));
+        });
+      });
+      return _ids.size ? _ids : null;
+    }
+    if (activeFocus !== 'all' && activeFocus !== 'uncovered') {
+      activeFocus = 'all';
+    }
+    return null;
+  }();
+  if (autoGearSummaryFocus !== activeFocus) {
+    autoGearSummaryFocus = activeFocus;
+  }
+  var hasFilters = Boolean(normalizedQuery) || scenarioFilter !== 'all' || activeFocus !== 'all';
+  var allowSearch = rules.length > 0 || Boolean(rawSearch.trim());
+  if (autoGearSearchInput) {
+    if (autoGearSearchInput.value !== rawSearch) {
+      autoGearSearchInput.value = rawSearch;
+    }
+    autoGearSearchInput.disabled = !allowSearch;
+  }
+  if (autoGearFilterScenarioSelect) {
+    autoGearFilterScenarioSelect.value = autoGearScenarioFilter;
+    if (autoGearFilterScenarioSelect.disabled) {
+      autoGearFilterScenarioSelect.setAttribute('aria-disabled', 'true');
+    } else {
+      autoGearFilterScenarioSelect.removeAttribute('aria-disabled');
+    }
+  }
+  if (autoGearFilterClearButton) {
+    autoGearFilterClearButton.hidden = !hasFilters;
+    autoGearFilterClearButton.disabled = !hasFilters;
+  }
+  var visibleRules = focusRuleIds ? filteredRules.filter(function (rule) {
+    var id = typeof (rule === null || rule === void 0 ? void 0 : rule.id) === 'string' ? rule.id : '';
+    if (id && focusRuleIds.has(id)) return true;
+    var index = ruleIndexByObject.get(rule);
+    if (typeof index === 'number' && focusRuleIds.has("index-".concat(index))) return true;
+    return false;
+  }) : filteredRules;
+  renderAutoGearRuleSummary(analysis, {
+    focus: activeFocus,
+    totalRules: rules.length,
+    filteredRules: filteredRules.length,
+    visibleRules: visibleRules.length,
+    hasSearchFilters: Boolean(normalizedQuery) || scenarioFilter !== 'all',
+    focusApplied: Boolean(focusRuleIds)
+  });
+  if (!visibleRules.length) {
+    var empty = document.createElement('p');
+    empty.className = 'auto-gear-empty';
+    if (!rules.length && !hasFilters) {
+      var _texts$currentLang54, _texts$en321;
+      empty.textContent = ((_texts$currentLang54 = texts[currentLang]) === null || _texts$currentLang54 === void 0 ? void 0 : _texts$currentLang54.autoGearNoRules) || ((_texts$en321 = texts.en) === null || _texts$en321 === void 0 ? void 0 : _texts$en321.autoGearNoRules) || 'No custom rules yet.';
+    } else if (focusRuleIds && filteredRules.length) {
+      var _texts$currentLang55, _texts$en322;
+      empty.textContent = ((_texts$currentLang55 = texts[currentLang]) === null || _texts$currentLang55 === void 0 ? void 0 : _texts$currentLang55.autoGearNoFocusMatches) || ((_texts$en322 = texts.en) === null || _texts$en322 === void 0 ? void 0 : _texts$en322.autoGearNoFocusMatches) || 'No rules match the selected dashboard filter.';
+    } else {
+      var _texts$currentLang56, _texts$en323;
+      empty.textContent = ((_texts$currentLang56 = texts[currentLang]) === null || _texts$currentLang56 === void 0 ? void 0 : _texts$currentLang56.autoGearNoMatches) || ((_texts$en323 = texts.en) === null || _texts$en323 === void 0 ? void 0 : _texts$en323.autoGearNoMatches) || 'No rules match your filters.';
+    }
+    autoGearRulesList.appendChild(empty);
+    return;
+  }
+  visibleRules.forEach(function (rule) {
+    var _texts$currentLang78, _texts$en345, _texts$currentLang79, _texts$en346, _texts$currentLang80, _texts$en347;
+    var wrapper = document.createElement('div');
+    wrapper.className = 'auto-gear-rule';
+    wrapper.dataset.ruleId = rule.id;
+    var info = document.createElement('div');
+    info.className = 'auto-gear-rule-info';
+    var title = document.createElement('p');
+    title.className = 'auto-gear-rule-title';
+    var scenarioList = Array.isArray(rule.scenarios) ? rule.scenarios : [];
+    var matteboxList = Array.isArray(rule.mattebox) ? rule.mattebox : [];
+    var cameraHandleList = Array.isArray(rule.cameraHandle) ? rule.cameraHandle : [];
+    var rawViewfinderList = Array.isArray(rule.viewfinderExtension) ? rule.viewfinderExtension : [];
+    var viewfinderDisplayList = rawViewfinderList.map(getViewfinderFallbackLabel);
+    var videoDistributionList = Array.isArray(rule.videoDistribution) ? rule.videoDistribution : [];
+    var videoDistributionDisplayList = videoDistributionList.map(getVideoDistributionFallbackLabel);
+    var deliveryResolutionList = Array.isArray(rule.deliveryResolution) ? rule.deliveryResolution : [];
+    var cameraList = Array.isArray(rule.camera) ? rule.camera : [];
+    var cameraWeightCondition = normalizeAutoGearCameraWeightCondition(rule.cameraWeight);
+    var monitorList = Array.isArray(rule.monitor) ? rule.monitor : [];
+    var crewPresentList = Array.isArray(rule.crewPresent) ? rule.crewPresent : [];
+    var crewAbsentList = Array.isArray(rule.crewAbsent) ? rule.crewAbsent : [];
+    var wirelessList = Array.isArray(rule.wireless) ? rule.wireless : [];
+    var motorsList = Array.isArray(rule.motors) ? rule.motors : [];
+    var controllersList = Array.isArray(rule.controllers) ? rule.controllers : [];
+    var distanceList = Array.isArray(rule.distance) ? rule.distance : [];
+    var shootingCondition = normalizeAutoGearShootingDaysCondition(rule.shootingDays);
+    var shootingDaysDisplayList = shootingCondition ? [String(shootingCondition.value)] : [];
+    var langTexts = texts[currentLang] || texts.en || {};
+    var cameraWeightDisplay = cameraWeightCondition ? formatAutoGearCameraWeight(cameraWeightCondition, langTexts) : '';
+    var cameraWeightDisplayList = cameraWeightDisplay ? [cameraWeightDisplay] : [];
+    var fallbackCandidates = [cameraList, cameraWeightDisplayList, monitorList, crewPresentList, crewAbsentList, wirelessList, motorsList, controllersList, distanceList, matteboxList, cameraHandleList, viewfinderDisplayList, deliveryResolutionList, videoDistributionDisplayList, shootingDaysDisplayList];
+    var fallbackSource = scenarioList.length ? scenarioList : fallbackCandidates.find(function (list) {
+      return Array.isArray(list) && list.length;
+    }) || [];
+    var fallbackTitle = fallbackSource.length ? fallbackSource.join(' + ') : '';
+    title.textContent = rule.label || fallbackTitle;
+    info.appendChild(title);
+    if (rule.always) {
+      var _texts$currentLang57, _texts$en324;
+      var alwaysLabel = ((_texts$currentLang57 = texts[currentLang]) === null || _texts$currentLang57 === void 0 ? void 0 : _texts$currentLang57.autoGearAlwaysMeta) || ((_texts$en324 = texts.en) === null || _texts$en324 === void 0 ? void 0 : _texts$en324.autoGearAlwaysMeta) || 'Always active';
+      var alwaysMeta = document.createElement('p');
+      alwaysMeta.className = 'auto-gear-rule-meta';
+      alwaysMeta.textContent = alwaysLabel;
+      info.appendChild(alwaysMeta);
+    }
+    if (scenarioList.length) {
+      var _texts$currentLang58, _texts$en325;
+      var scenarioLabel = ((_texts$currentLang58 = texts[currentLang]) === null || _texts$currentLang58 === void 0 || (_texts$currentLang58 = _texts$currentLang58.projectFields) === null || _texts$currentLang58 === void 0 ? void 0 : _texts$currentLang58.requiredScenarios) || ((_texts$en325 = texts.en) === null || _texts$en325 === void 0 || (_texts$en325 = _texts$en325.projectFields) === null || _texts$en325 === void 0 ? void 0 : _texts$en325.requiredScenarios) || 'Required Scenarios';
+      var scenarioMeta = document.createElement('p');
+      scenarioMeta.className = 'auto-gear-rule-meta';
+      scenarioMeta.textContent = "".concat(scenarioLabel, ": ").concat(scenarioList.join(' + '));
+      info.appendChild(scenarioMeta);
+    }
+    if (cameraList.length) {
+      var _texts$currentLang59, _texts$en326;
+      var cameraLabelText = ((_texts$currentLang59 = texts[currentLang]) === null || _texts$currentLang59 === void 0 ? void 0 : _texts$currentLang59.autoGearCameraLabel) || ((_texts$en326 = texts.en) === null || _texts$en326 === void 0 ? void 0 : _texts$en326.autoGearCameraLabel) || 'Camera selection';
+      var cameraMeta = document.createElement('p');
+      cameraMeta.className = 'auto-gear-rule-meta';
+      cameraMeta.textContent = "".concat(cameraLabelText, ": ").concat(cameraList.join(' + '));
+      info.appendChild(cameraMeta);
+    }
+    if (cameraWeightCondition && cameraWeightDisplay) {
+      var _texts$currentLang60, _texts$en327;
+      var weightLabelText = ((_texts$currentLang60 = texts[currentLang]) === null || _texts$currentLang60 === void 0 ? void 0 : _texts$currentLang60.autoGearCameraWeightLabel) || ((_texts$en327 = texts.en) === null || _texts$en327 === void 0 ? void 0 : _texts$en327.autoGearCameraWeightLabel) || 'Camera weight';
+      var weightMeta = document.createElement('p');
+      weightMeta.className = 'auto-gear-rule-meta';
+      weightMeta.textContent = "".concat(weightLabelText, ": ").concat(cameraWeightDisplay);
+      info.appendChild(weightMeta);
+    }
+    if (monitorList.length) {
+      var _texts$currentLang61, _texts$en328;
+      var monitorLabelText = ((_texts$currentLang61 = texts[currentLang]) === null || _texts$currentLang61 === void 0 ? void 0 : _texts$currentLang61.autoGearMonitorLabel) || ((_texts$en328 = texts.en) === null || _texts$en328 === void 0 ? void 0 : _texts$en328.autoGearMonitorLabel) || 'Onboard monitors';
+      var monitorMeta = document.createElement('p');
+      monitorMeta.className = 'auto-gear-rule-meta';
+      monitorMeta.textContent = "".concat(monitorLabelText, ": ").concat(monitorList.join(' + '));
+      info.appendChild(monitorMeta);
+    }
+    if (crewPresentList.length) {
+      var _texts$currentLang62, _texts$en329;
+      var crewPresentLabelText = ((_texts$currentLang62 = texts[currentLang]) === null || _texts$currentLang62 === void 0 ? void 0 : _texts$currentLang62.autoGearCrewPresentLabel) || ((_texts$en329 = texts.en) === null || _texts$en329 === void 0 ? void 0 : _texts$en329.autoGearCrewPresentLabel) || 'Crew present';
+      var crewMeta = document.createElement('p');
+      crewMeta.className = 'auto-gear-rule-meta';
+      var labels = crewPresentList.map(function (value) {
+        return getCrewRoleLabel(value);
+      }).filter(Boolean);
+      crewMeta.textContent = "".concat(crewPresentLabelText, ": ").concat(labels.join(' + '));
+      info.appendChild(crewMeta);
+    }
+    if (crewAbsentList.length) {
+      var _texts$currentLang63, _texts$en330;
+      var crewAbsentLabelText = ((_texts$currentLang63 = texts[currentLang]) === null || _texts$currentLang63 === void 0 ? void 0 : _texts$currentLang63.autoGearCrewAbsentLabel) || ((_texts$en330 = texts.en) === null || _texts$en330 === void 0 ? void 0 : _texts$en330.autoGearCrewAbsentLabel) || 'Crew absent';
+      var crewAbsentMeta = document.createElement('p');
+      crewAbsentMeta.className = 'auto-gear-rule-meta';
+      var _labels = crewAbsentList.map(function (value) {
+        return getCrewRoleLabel(value);
+      }).filter(Boolean);
+      crewAbsentMeta.textContent = "".concat(crewAbsentLabelText, ": ").concat(_labels.join(' + '));
+      info.appendChild(crewAbsentMeta);
+    }
+    if (wirelessList.length) {
+      var _texts$currentLang64, _texts$en331;
+      var wirelessLabelText = ((_texts$currentLang64 = texts[currentLang]) === null || _texts$currentLang64 === void 0 ? void 0 : _texts$currentLang64.autoGearWirelessLabel) || ((_texts$en331 = texts.en) === null || _texts$en331 === void 0 ? void 0 : _texts$en331.autoGearWirelessLabel) || 'Wireless transmitters';
+      var wirelessMeta = document.createElement('p');
+      wirelessMeta.className = 'auto-gear-rule-meta';
+      wirelessMeta.textContent = "".concat(wirelessLabelText, ": ").concat(wirelessList.join(' + '));
+      info.appendChild(wirelessMeta);
+    }
+    if (motorsList.length) {
+      var _texts$currentLang65, _texts$en332;
+      var motorsLabelText = ((_texts$currentLang65 = texts[currentLang]) === null || _texts$currentLang65 === void 0 ? void 0 : _texts$currentLang65.autoGearMotorsLabel) || ((_texts$en332 = texts.en) === null || _texts$en332 === void 0 ? void 0 : _texts$en332.autoGearMotorsLabel) || 'FIZ motors';
+      var motorsMeta = document.createElement('p');
+      motorsMeta.className = 'auto-gear-rule-meta';
+      motorsMeta.textContent = "".concat(motorsLabelText, ": ").concat(motorsList.join(' + '));
+      info.appendChild(motorsMeta);
+    }
+    if (controllersList.length) {
+      var _texts$currentLang66, _texts$en333;
+      var controllersLabelText = ((_texts$currentLang66 = texts[currentLang]) === null || _texts$currentLang66 === void 0 ? void 0 : _texts$currentLang66.autoGearControllersLabel) || ((_texts$en333 = texts.en) === null || _texts$en333 === void 0 ? void 0 : _texts$en333.autoGearControllersLabel) || 'FIZ controllers';
+      var controllersMeta = document.createElement('p');
+      controllersMeta.className = 'auto-gear-rule-meta';
+      controllersMeta.textContent = "".concat(controllersLabelText, ": ").concat(controllersList.join(' + '));
+      info.appendChild(controllersMeta);
+    }
+    if (distanceList.length) {
+      var _texts$currentLang67, _texts$en334;
+      var distanceLabelText = ((_texts$currentLang67 = texts[currentLang]) === null || _texts$currentLang67 === void 0 ? void 0 : _texts$currentLang67.autoGearDistanceLabel) || ((_texts$en334 = texts.en) === null || _texts$en334 === void 0 ? void 0 : _texts$en334.autoGearDistanceLabel) || 'FIZ distance devices';
+      var distanceMeta = document.createElement('p');
+      distanceMeta.className = 'auto-gear-rule-meta';
+      distanceMeta.textContent = "".concat(distanceLabelText, ": ").concat(distanceList.join(' + '));
+      info.appendChild(distanceMeta);
+    }
+    if (shootingCondition) {
+      var _texts$currentLang68, _texts$en335, _texts$currentLang69, _texts$en336, _texts$currentLang70, _texts$en337, _texts$currentLang71, _texts$en338;
+      var shootingLabelText = ((_texts$currentLang68 = texts[currentLang]) === null || _texts$currentLang68 === void 0 ? void 0 : _texts$currentLang68.autoGearShootingDaysLabel) || ((_texts$en335 = texts.en) === null || _texts$en335 === void 0 ? void 0 : _texts$en335.autoGearShootingDaysLabel) || 'Shooting days condition';
+      var minimumLabel = ((_texts$currentLang69 = texts[currentLang]) === null || _texts$currentLang69 === void 0 ? void 0 : _texts$currentLang69.autoGearShootingDaysModeMinimum) || ((_texts$en336 = texts.en) === null || _texts$en336 === void 0 ? void 0 : _texts$en336.autoGearShootingDaysModeMinimum) || 'Minimum';
+      var maximumLabel = ((_texts$currentLang70 = texts[currentLang]) === null || _texts$currentLang70 === void 0 ? void 0 : _texts$currentLang70.autoGearShootingDaysModeMaximum) || ((_texts$en337 = texts.en) === null || _texts$en337 === void 0 ? void 0 : _texts$en337.autoGearShootingDaysModeMaximum) || 'Maximum';
+      var everyLabel = ((_texts$currentLang71 = texts[currentLang]) === null || _texts$currentLang71 === void 0 ? void 0 : _texts$currentLang71.autoGearShootingDaysModeEvery) || ((_texts$en338 = texts.en) === null || _texts$en338 === void 0 ? void 0 : _texts$en338.autoGearShootingDaysModeEvery) || 'Every';
+      var shootingMeta = document.createElement('p');
+      shootingMeta.className = 'auto-gear-rule-meta';
+      var formattedValue = String(shootingCondition.value);
+      if (shootingCondition.mode === 'minimum') {
+        formattedValue = "\u2265 ".concat(shootingCondition.value);
+        shootingMeta.textContent = "".concat(shootingLabelText, ": ").concat(minimumLabel, " ").concat(formattedValue.replace('≥ ', ''));
+      } else if (shootingCondition.mode === 'maximum') {
+        formattedValue = "\u2264 ".concat(shootingCondition.value);
+        shootingMeta.textContent = "".concat(shootingLabelText, ": ").concat(maximumLabel, " ").concat(formattedValue.replace('≤ ', ''));
+      } else if (shootingCondition.mode === 'every') {
+        shootingMeta.textContent = "".concat(shootingLabelText, ": ").concat(everyLabel, " ").concat(shootingCondition.value);
+      } else {
+        shootingMeta.textContent = "".concat(shootingLabelText, ": ").concat(formattedValue);
+      }
+      info.appendChild(shootingMeta);
+    }
+    if (matteboxList.length) {
+      var _texts$currentLang72, _texts$en339;
+      var matteboxLabelText = ((_texts$currentLang72 = texts[currentLang]) === null || _texts$currentLang72 === void 0 ? void 0 : _texts$currentLang72.autoGearMatteboxLabel) || ((_texts$en339 = texts.en) === null || _texts$en339 === void 0 ? void 0 : _texts$en339.autoGearMatteboxLabel) || 'Mattebox options';
+      var matteboxMeta = document.createElement('p');
+      matteboxMeta.className = 'auto-gear-rule-meta';
+      matteboxMeta.textContent = "".concat(matteboxLabelText, ": ").concat(matteboxList.join(' + '));
+      info.appendChild(matteboxMeta);
+    }
+    if (cameraHandleList.length) {
+      var _texts$currentLang73, _texts$en340;
+      var cameraHandleLabelText = ((_texts$currentLang73 = texts[currentLang]) === null || _texts$currentLang73 === void 0 ? void 0 : _texts$currentLang73.autoGearCameraHandleLabel) || ((_texts$en340 = texts.en) === null || _texts$en340 === void 0 ? void 0 : _texts$en340.autoGearCameraHandleLabel) || 'Camera handles';
+      var cameraHandleMeta = document.createElement('p');
+      cameraHandleMeta.className = 'auto-gear-rule-meta';
+      cameraHandleMeta.textContent = "".concat(cameraHandleLabelText, ": ").concat(cameraHandleList.join(' + '));
+      info.appendChild(cameraHandleMeta);
+    }
+    if (rawViewfinderList.length) {
+      var _texts$currentLang74, _texts$en341;
+      var viewfinderLabelText = ((_texts$currentLang74 = texts[currentLang]) === null || _texts$currentLang74 === void 0 ? void 0 : _texts$currentLang74.autoGearViewfinderExtensionLabel) || ((_texts$en341 = texts.en) === null || _texts$en341 === void 0 ? void 0 : _texts$en341.autoGearViewfinderExtensionLabel) || 'Viewfinder extension';
+      var viewfinderMeta = document.createElement('p');
+      viewfinderMeta.className = 'auto-gear-rule-meta';
+      viewfinderMeta.textContent = "".concat(viewfinderLabelText, ": ").concat(viewfinderDisplayList.join(' + '));
+      info.appendChild(viewfinderMeta);
+    }
+    if (videoDistributionDisplayList.length) {
+      var _texts$currentLang75, _texts$en342;
+      var videoDistLabelText = ((_texts$currentLang75 = texts[currentLang]) === null || _texts$currentLang75 === void 0 ? void 0 : _texts$currentLang75.autoGearVideoDistributionLabel) || ((_texts$en342 = texts.en) === null || _texts$en342 === void 0 ? void 0 : _texts$en342.autoGearVideoDistributionLabel) || 'Video distribution';
+      var videoDistMeta = document.createElement('p');
+      videoDistMeta.className = 'auto-gear-rule-meta';
+      videoDistMeta.textContent = "".concat(videoDistLabelText, ": ").concat(videoDistributionDisplayList.join(' + '));
+      info.appendChild(videoDistMeta);
+    }
+    if (deliveryResolutionList.length) {
+      var _texts$currentLang76, _texts$en343;
+      var deliveryLabelText = ((_texts$currentLang76 = texts[currentLang]) === null || _texts$currentLang76 === void 0 ? void 0 : _texts$currentLang76.autoGearDeliveryResolutionLabel) || ((_texts$en343 = texts.en) === null || _texts$en343 === void 0 ? void 0 : _texts$en343.autoGearDeliveryResolutionLabel) || 'Delivery resolution';
+      var deliveryMeta = document.createElement('p');
+      deliveryMeta.className = 'auto-gear-rule-meta';
+      deliveryMeta.textContent = "".concat(deliveryLabelText, ": ").concat(deliveryResolutionList.join(' + '));
+      info.appendChild(deliveryMeta);
+    }
+    var addSummary = formatAutoGearCount(rule.add.length, 'autoGearAddsCountOne', 'autoGearAddsCountOther');
+    var removeSummary = formatAutoGearCount(rule.remove.length, 'autoGearRemovalsCountOne', 'autoGearRemovalsCountOther');
+    var countsMeta = document.createElement('p');
+    countsMeta.className = 'auto-gear-rule-meta';
+    countsMeta.textContent = "".concat(addSummary, " \xB7 ").concat(removeSummary);
+    info.appendChild(countsMeta);
+    if (rule.add.length) {
+      var _texts$currentLang77, _texts$en344;
+      var addsLabel = document.createElement('p');
+      addsLabel.className = 'auto-gear-rule-meta auto-gear-rule-items-label';
+      addsLabel.textContent = ((_texts$currentLang77 = texts[currentLang]) === null || _texts$currentLang77 === void 0 ? void 0 : _texts$currentLang77.autoGearAddsListLabel) || ((_texts$en344 = texts.en) === null || _texts$en344 === void 0 ? void 0 : _texts$en344.autoGearAddsListLabel) || 'Adds';
+      info.appendChild(addsLabel);
+      var addList = document.createElement('ul');
+      addList.className = 'auto-gear-rule-items';
+      rule.add.forEach(function (item) {
+        var listItem = document.createElement('li');
+        listItem.className = 'auto-gear-rule-item';
+        listItem.textContent = formatAutoGearItemSummary(item);
+        addList.appendChild(listItem);
+      });
+      info.appendChild(addList);
+    }
+    wrapper.appendChild(info);
+    var actions = document.createElement('div');
+    actions.className = 'auto-gear-rule-actions';
+    var editBtn = document.createElement('button');
+    editBtn.type = 'button';
+    editBtn.className = 'auto-gear-edit';
+    editBtn.dataset.ruleId = rule.id;
+    var editLabel = ((_texts$currentLang78 = texts[currentLang]) === null || _texts$currentLang78 === void 0 ? void 0 : _texts$currentLang78.editBtn) || ((_texts$en345 = texts.en) === null || _texts$en345 === void 0 ? void 0 : _texts$en345.editBtn) || 'Edit';
+    editBtn.textContent = editLabel;
+    editBtn.setAttribute('data-help', editLabel);
+    actions.appendChild(editBtn);
+    var duplicateBtn = document.createElement('button');
+    duplicateBtn.type = 'button';
+    duplicateBtn.className = 'auto-gear-duplicate';
+    duplicateBtn.dataset.ruleId = rule.id;
+    var duplicateLabel = ((_texts$currentLang79 = texts[currentLang]) === null || _texts$currentLang79 === void 0 ? void 0 : _texts$currentLang79.autoGearDuplicateRule) || ((_texts$en346 = texts.en) === null || _texts$en346 === void 0 ? void 0 : _texts$en346.autoGearDuplicateRule) || 'Duplicate';
+    duplicateBtn.textContent = duplicateLabel;
+    duplicateBtn.setAttribute('data-help', duplicateLabel);
+    actions.appendChild(duplicateBtn);
+    var deleteBtn = document.createElement('button');
+    deleteBtn.type = 'button';
+    deleteBtn.className = 'auto-gear-delete';
+    deleteBtn.dataset.ruleId = rule.id;
+    var deleteLabel = ((_texts$currentLang80 = texts[currentLang]) === null || _texts$currentLang80 === void 0 ? void 0 : _texts$currentLang80.autoGearDeleteRule) || ((_texts$en347 = texts.en) === null || _texts$en347 === void 0 ? void 0 : _texts$en347.autoGearDeleteRule) || 'Delete';
+    deleteBtn.textContent = deleteLabel;
+    deleteBtn.setAttribute('data-help', deleteLabel);
+    actions.appendChild(deleteBtn);
+    wrapper.appendChild(actions);
+    autoGearRulesList.appendChild(wrapper);
+  });
+}
+function resetAutoGearDraftInputs(type) {
+  var normalizedType = type === 'remove' ? 'remove' : 'add';
+  var isAdd = normalizedType === 'add';
+  var nameInput = isAdd ? autoGearAddNameInput : autoGearRemoveNameInput;
+  var quantityInput = isAdd ? autoGearAddQuantityInput : autoGearRemoveQuantityInput;
+  var screenSizeInput = isAdd ? autoGearAddScreenSizeInput : autoGearRemoveScreenSizeInput;
+  var selectorTypeSelect = isAdd ? autoGearAddSelectorTypeSelect : autoGearRemoveSelectorTypeSelect;
+  var selectorDefaultInput = isAdd ? autoGearAddSelectorDefaultInput : autoGearRemoveSelectorDefaultInput;
+  var notesInput = isAdd ? autoGearAddNotesInput : autoGearRemoveNotesInput;
+  if (nameInput) nameInput.value = '';
+  if (quantityInput) quantityInput.value = '1';
+  if (screenSizeInput) screenSizeInput.value = '';
+  if (selectorTypeSelect) selectorTypeSelect.value = 'none';
+  if (selectorDefaultInput) selectorDefaultInput.value = '';
+  if (selectorDefaultInput && Object.prototype.hasOwnProperty.call(selectorDefaultInput.dataset, 'autoGearPreferredDefault')) {
+    delete selectorDefaultInput.dataset.autoGearPreferredDefault;
+  }
+  if (notesInput) notesInput.value = '';
+  var selectorTypeValue = selectorTypeSelect ? selectorTypeSelect.value : 'none';
+  updateAutoGearMonitorCatalogOptions(selectorTypeValue, selectorDefaultInput);
+}
+function updateAutoGearItemButtonState(type) {
+  var _autoGearEditorActive, _texts$en348, _texts$en349;
+  var normalizedType = type === 'remove' ? 'remove' : 'add';
+  var button = normalizedType === 'remove' ? autoGearRemoveItemButton : autoGearAddItemButton;
+  if (!button) return;
+  var langTexts = texts[currentLang] || texts.en || {};
+  var isEditing = ((_autoGearEditorActive = autoGearEditorActiveItem) === null || _autoGearEditorActive === void 0 ? void 0 : _autoGearEditorActive.listType) === normalizedType;
+  var defaultKey = normalizedType === 'remove' ? 'autoGearRemoveItemButton' : 'autoGearAddItemButton';
+  var defaultLabel = langTexts[defaultKey] || ((_texts$en348 = texts.en) === null || _texts$en348 === void 0 ? void 0 : _texts$en348[defaultKey]) || button.textContent || '';
+  var updateLabel = langTexts.autoGearUpdateItemButton || ((_texts$en349 = texts.en) === null || _texts$en349 === void 0 ? void 0 : _texts$en349.autoGearUpdateItemButton) || defaultLabel;
+  var label = isEditing ? updateLabel : defaultLabel;
+  var glyph = isEditing ? ICON_GLYPHS.save : normalizedType === 'remove' ? ICON_GLYPHS.minus : ICON_GLYPHS.add;
+  setButtonLabelWithIcon(button, label, glyph);
+  button.setAttribute('data-help', label);
+}
+function updateAutoGearDraftActionState() {
+  updateAutoGearItemButtonState('add');
+  updateAutoGearItemButtonState('remove');
+}
+function getAutoGearDraftList(type) {
+  if (!autoGearEditorDraft) return null;
+  var normalizedType = type === 'remove' ? 'remove' : 'add';
+  return normalizedType === 'remove' ? autoGearEditorDraft.remove : autoGearEditorDraft.add;
+}
+function populateAutoGearDraftForm(type, item) {
+  if (!item) return;
+  var normalizedType = type === 'remove' ? 'remove' : 'add';
+  var snapshot = autoGearItemSnapshot(item);
+  if (!snapshot) return;
+  var isAdd = normalizedType === 'add';
+  var nameInput = isAdd ? autoGearAddNameInput : autoGearRemoveNameInput;
+  var categorySelect = isAdd ? autoGearAddCategorySelect : autoGearRemoveCategorySelect;
+  var quantityInput = isAdd ? autoGearAddQuantityInput : autoGearRemoveQuantityInput;
+  var screenSizeInput = isAdd ? autoGearAddScreenSizeInput : autoGearRemoveScreenSizeInput;
+  var selectorTypeSelect = isAdd ? autoGearAddSelectorTypeSelect : autoGearRemoveSelectorTypeSelect;
+  var selectorDefaultInput = isAdd ? autoGearAddSelectorDefaultInput : autoGearRemoveSelectorDefaultInput;
+  var notesInput = isAdd ? autoGearAddNotesInput : autoGearRemoveNotesInput;
+  if (nameInput) nameInput.value = snapshot.name || '';
+  if (quantityInput) quantityInput.value = String(normalizeAutoGearQuantity(snapshot.quantity));
+  if (categorySelect) {
+    var targetCategory = snapshot.category || AUTO_GEAR_CUSTOM_CATEGORY;
+    var matched = false;
+    Array.from(categorySelect.options || []).forEach(function (option) {
+      if (option && option.value === targetCategory) {
+        matched = true;
+      }
+    });
+    categorySelect.value = matched ? targetCategory : AUTO_GEAR_CUSTOM_CATEGORY;
+  }
+  var activeCategory = categorySelect ? categorySelect.value : snapshot.category;
+  var isMonitoring = isAutoGearMonitoringCategory(activeCategory);
+  if (screenSizeInput) {
+    screenSizeInput.value = isMonitoring ? snapshot.screenSize || '' : '';
+  }
+  if (selectorTypeSelect) {
+    var selectorValue = isMonitoring ? snapshot.selectorType || 'none' : 'none';
+    selectorTypeSelect.value = selectorValue;
+    if (selectorDefaultInput) {
+      selectorDefaultInput.dataset.autoGearPreferredDefault = isMonitoring ? snapshot.selectorDefault || '' : '';
+    }
+    updateAutoGearMonitorCatalogOptions(selectorValue, selectorDefaultInput);
+    if (selectorDefaultInput) {
+      selectorDefaultInput.value = isMonitoring ? snapshot.selectorDefault || '' : '';
+    }
+  } else if (selectorDefaultInput) {
+    selectorDefaultInput.value = isMonitoring ? snapshot.selectorDefault || '' : '';
+  }
+  if (notesInput) notesInput.value = snapshot.notes || '';
+  syncAutoGearMonitorFieldVisibility();
+  if (nameInput) {
+    try {
+      nameInput.focus({
+        preventScroll: true
+      });
+      if (typeof nameInput.select === 'function') {
+        nameInput.select();
+      }
+    } catch (_unused14) {
+      nameInput.focus();
+    }
+  }
+}
+function clearAutoGearDraftItemEdit(type) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  var normalizedType = type === 'remove' ? 'remove' : 'add';
+  var _options$skipRender = options.skipRender,
+    skipRender = _options$skipRender === void 0 ? false : _options$skipRender;
+  if (autoGearEditorActiveItem && autoGearEditorActiveItem.listType === normalizedType) {
+    autoGearEditorActiveItem = null;
+  }
+  resetAutoGearDraftInputs(normalizedType);
+  syncAutoGearMonitorFieldVisibility();
+  updateAutoGearDraftActionState();
+  if (!skipRender) {
+    renderAutoGearDraftLists();
+  }
+}
+function beginAutoGearDraftItemEdit(listType, itemId) {
+  if (!autoGearEditorDraft || !itemId) return;
+  var normalizedType = listType === 'remove' ? 'remove' : 'add';
+  var list = getAutoGearDraftList(normalizedType);
+  if (!Array.isArray(list)) return;
+  if (autoGearEditorActiveItem && autoGearEditorActiveItem.listType === normalizedType && autoGearEditorActiveItem.itemId === itemId) {
+    clearAutoGearDraftItemEdit(normalizedType);
+    return;
+  }
+  var target = list.find(function (entry) {
+    return entry && entry.id === itemId;
+  });
+  if (!target) return;
+  autoGearEditorActiveItem = {
+    listType: normalizedType,
+    itemId: itemId
+  };
+  populateAutoGearDraftForm(normalizedType, target);
+  updateAutoGearDraftActionState();
+  renderAutoGearDraftLists();
+}
+function getAutoGearItemIdentityData(item) {
+  var normalized = normalizeAutoGearItem(item);
+  if (!normalized) return null;
+  var contexts = Array.isArray(normalized.contextNotes) ? normalized.contextNotes.map(function (value) {
+    return typeof value === 'string' ? value.trim() : '';
+  }).filter(Boolean).sort(function (a, b) {
+    return a.localeCompare(b);
+  }) : [];
+  var identity = [normalized.name || '', normalized.category || '', normalized.screenSize || '', normalized.selectorType || 'none', normalized.selectorDefault || '', normalized.selectorEnabled ? '1' : '0', normalized.notes || '', contexts.join('|')].join('||');
+  return {
+    identity: identity,
+    item: _objectSpread(_objectSpread({}, normalized), {}, {
+      contextNotes: contexts.slice()
+    })
+  };
+}
+function aggregateAutoGearRuleItems(rules) {
+  var aggregate = new Map();
+  var list = Array.isArray(rules) ? rules : [];
+  list.forEach(function (rule) {
+    var normalizedRule = normalizeAutoGearRule(rule);
+    if (!normalizedRule) return;
+    var ruleId = typeof normalizedRule.id === 'string' ? normalizedRule.id : '';
+    normalizedRule.add.forEach(function (entry) {
+      var identityData = getAutoGearItemIdentityData(entry);
+      if (!identityData) return;
+      var identity = identityData.identity,
+        item = identityData.item;
+      var quantity = normalizeAutoGearQuantity(item.quantity);
+      if (!Number.isFinite(quantity)) return;
+      var existing = aggregate.get(identity) || {
+        item: item,
+        add: 0,
+        remove: 0,
+        addRules: new Set(),
+        removeRules: new Set()
+      };
+      existing.add += quantity;
+      if (ruleId) existing.addRules.add(ruleId);
+      aggregate.set(identity, existing);
+    });
+    normalizedRule.remove.forEach(function (entry) {
+      var identityData = getAutoGearItemIdentityData(entry);
+      if (!identityData) return;
+      var identity = identityData.identity,
+        item = identityData.item;
+      var quantity = normalizeAutoGearQuantity(item.quantity);
+      if (!Number.isFinite(quantity)) return;
+      var existing = aggregate.get(identity) || {
+        item: item,
+        add: 0,
+        remove: 0,
+        addRules: new Set(),
+        removeRules: new Set()
+      };
+      existing.remove += quantity;
+      if (ruleId) existing.removeRules.add(ruleId);
+      aggregate.set(identity, existing);
+    });
+  });
+  return aggregate;
+}
+function computeAutoGearDraftImpactState() {
+  if (!autoGearEditorDraft) {
+    return {
+      available: false,
+      entries: [],
+      warnings: null
+    };
+  }
+  var draftRule = normalizeAutoGearRule(autoGearEditorDraft);
+  if (!draftRule) {
+    return {
+      available: false,
+      entries: [],
+      warnings: null
+    };
+  }
+  var baseRules = getAutoGearRules();
+  var previewRules = baseRules.slice();
+  var matchIndex = previewRules.findIndex(function (rule) {
+    return rule && rule.id === draftRule.id;
+  });
+  if (matchIndex >= 0) {
+    previewRules[matchIndex] = draftRule;
+  } else {
+    previewRules.push(draftRule);
+  }
+  var baseAggregate = aggregateAutoGearRuleItems(baseRules);
+  var previewAggregate = aggregateAutoGearRuleItems(previewRules);
+  var keys = new Set([].concat(_toConsumableArray(baseAggregate.keys()), _toConsumableArray(previewAggregate.keys())));
+  var entries = [];
+  var warnings = {
+    critical: [],
+    conflict: [],
+    redundant: []
+  };
+  keys.forEach(function (identity) {
+    var baseEntry = baseAggregate.get(identity);
+    var previewEntry = previewAggregate.get(identity);
+    if (!baseEntry && !previewEntry) return;
+    var itemSource = (previewEntry === null || previewEntry === void 0 ? void 0 : previewEntry.item) || (baseEntry === null || baseEntry === void 0 ? void 0 : baseEntry.item);
+    if (!itemSource) return;
+    var item = cloneAutoGearDraftItem(itemSource);
+    var baseNet = baseEntry ? baseEntry.add - baseEntry.remove : 0;
+    var previewNet = previewEntry ? previewEntry.add - previewEntry.remove : 0;
+    var delta = previewNet - baseNet;
+    var addRulesCount = previewEntry ? previewEntry.addRules.size : 0;
+    var removeRulesCount = previewEntry ? previewEntry.removeRules.size : 0;
+    var baseAddRulesCount = baseEntry ? baseEntry.addRules.size : 0;
+    var conflict = previewEntry ? previewEntry.add > 0 && previewEntry.remove > 0 : false;
+    var stacked = addRulesCount > 1;
+    var shouldDisplay = delta !== 0 || stacked || conflict;
+    if (!shouldDisplay) return;
+    entries.push({
+      identity: identity,
+      item: item,
+      baseNet: baseNet,
+      previewNet: previewNet,
+      delta: delta,
+      addRulesCount: addRulesCount,
+      removeRulesCount: removeRulesCount,
+      conflict: conflict,
+      stacked: stacked
+    });
+    if (baseNet > 0 && previewNet <= 0) {
+      warnings.critical.push({
+        item: item,
+        baseNet: baseNet,
+        previewNet: previewNet
+      });
+    }
+    if (conflict) {
+      warnings.conflict.push({
+        item: item,
+        addRulesCount: addRulesCount,
+        removeRulesCount: removeRulesCount
+      });
+    }
+    var newAddRules = addRulesCount - baseAddRulesCount;
+    if (newAddRules > 0 && previewNet <= baseNet) {
+      warnings.redundant.push({
+        item: item,
+        addRulesCount: addRulesCount,
+        baseAddRulesCount: baseAddRulesCount
+      });
+    }
+  });
+  entries.sort(function (a, b) {
+    var deltaDiff = Math.abs(b.delta) - Math.abs(a.delta);
+    if (deltaDiff !== 0) return deltaDiff;
+    var previewDiff = Math.abs(b.previewNet) - Math.abs(a.previewNet);
+    if (previewDiff !== 0) return previewDiff;
+    return (a.item.name || '').localeCompare(b.item.name || '');
+  });
+  return {
+    available: true,
+    entries: entries,
+    warnings: warnings
+  };
+}
+function formatAutoGearImpactNumber(value) {
+  if (!Number.isFinite(value)) return '0';
+  var rounded = Math.round(value);
+  if (typeof Intl !== 'undefined' && typeof Intl.NumberFormat === 'function') {
+    try {
+      return new Intl.NumberFormat().format(rounded);
+    } catch (_unused15) {}
+  }
+  return String(rounded);
+}
+function formatAutoGearImpactSigned(value) {
+  if (!Number.isFinite(value) || value === 0) return '0';
+  var rounded = Math.round(value);
+  var absValue = Math.abs(rounded);
+  var formattedAbs = formatAutoGearImpactNumber(absValue);
+  return rounded > 0 ? "+".concat(formattedAbs) : "\u2212".concat(formattedAbs);
+}
+function formatAutoGearDraftItemLabel(item, quantity) {
+  var snapshot = autoGearItemSnapshot(item);
+  if (!snapshot) return '';
+  var normalizedQuantity = Number.isFinite(quantity) && quantity !== 0 ? Math.abs(Math.round(quantity)) : normalizeAutoGearQuantity(snapshot.quantity) || 1;
+  var summaryItem = _objectSpread(_objectSpread({}, snapshot), {}, {
+    quantity: normalizedQuantity > 0 ? normalizedQuantity : 1
+  });
+  return formatAutoGearItemSummary(summaryItem, {
+    includeSign: false
+  });
+}
+function hasAutoGearDraftWarnings(warnings) {
+  if (!warnings) return false;
+  return Boolean(Array.isArray(warnings.critical) && warnings.critical.length || Array.isArray(warnings.conflict) && warnings.conflict.length || Array.isArray(warnings.redundant) && warnings.redundant.length);
+}
+function buildAutoGearDraftWarningMessages(warnings, langTexts) {
+  if (!warnings) return [];
+  var messages = [];
+  var fallback = texts.en || {};
+  var addMessage = function addMessage(key, label) {
+    var template = langTexts[key] || fallback[key];
+    if (template) {
+      messages.push(formatWithPlaceholders(template, label));
+    } else if (label) {
+      messages.push(label);
+    }
+  };
+  (Array.isArray(warnings.critical) ? warnings.critical : []).forEach(function (entry) {
+    var label = formatAutoGearDraftItemLabel(entry.item, entry.baseNet);
+    addMessage('autoGearDraftWarningCritical', label);
+  });
+  (Array.isArray(warnings.conflict) ? warnings.conflict : []).forEach(function (entry) {
+    var label = formatAutoGearDraftItemLabel(entry.item, entry.addRulesCount || entry.removeRulesCount || 1);
+    addMessage('autoGearDraftWarningConflict', label);
+  });
+  (Array.isArray(warnings.redundant) ? warnings.redundant : []).forEach(function (entry) {
+    var label = formatAutoGearDraftItemLabel(entry.item, entry.addRulesCount || 1);
+    addMessage('autoGearDraftWarningRedundant', label);
+  });
+  return Array.from(new Set(messages));
+}
+function renderAutoGearDraftImpact() {
+  if (!autoGearDraftImpactList) return;
+  var langTexts = texts[currentLang] || texts.en || {};
+  autoGearDraftImpactList.innerHTML = '';
+  if (autoGearDraftWarningList) {
+    autoGearDraftWarningList.innerHTML = '';
+  }
+  autoGearDraftPendingWarnings = null;
+  if (!autoGearEditorDraft) {
+    var _texts$en350;
+    var message = langTexts.autoGearDraftImpactUnavailable || ((_texts$en350 = texts.en) === null || _texts$en350 === void 0 ? void 0 : _texts$en350.autoGearDraftImpactUnavailable) || '';
+    if (message) {
+      var empty = document.createElement('li');
+      empty.className = 'auto-gear-impact-empty';
+      empty.textContent = message;
+      autoGearDraftImpactList.appendChild(empty);
+    }
+    if (autoGearDraftWarningContainer) {
+      autoGearDraftWarningContainer.hidden = true;
+    }
+    return;
+  }
+  var impact = computeAutoGearDraftImpactState();
+  autoGearDraftPendingWarnings = impact.available ? impact.warnings : null;
+  if (!impact.available) {
+    var _texts$en351;
+    var _message = langTexts.autoGearDraftImpactUnavailable || ((_texts$en351 = texts.en) === null || _texts$en351 === void 0 ? void 0 : _texts$en351.autoGearDraftImpactUnavailable) || '';
+    if (_message) {
+      var _empty4 = document.createElement('li');
+      _empty4.className = 'auto-gear-impact-empty';
+      _empty4.textContent = _message;
+      autoGearDraftImpactList.appendChild(_empty4);
+    }
+    if (autoGearDraftWarningContainer) {
+      autoGearDraftWarningContainer.hidden = true;
+    }
+    return;
+  }
+  if (!impact.entries.length) {
+    var _texts$en352;
+    var _message2 = langTexts.autoGearDraftImpactEmpty || ((_texts$en352 = texts.en) === null || _texts$en352 === void 0 ? void 0 : _texts$en352.autoGearDraftImpactEmpty) || '';
+    if (_message2) {
+      var _empty5 = document.createElement('li');
+      _empty5.className = 'auto-gear-impact-empty';
+      _empty5.textContent = _message2;
+      autoGearDraftImpactList.appendChild(_empty5);
+    }
+  } else {
+    var _texts$en353, _texts$en354;
+    var totalsTemplate = langTexts.autoGearDraftImpactTotals || ((_texts$en353 = texts.en) === null || _texts$en353 === void 0 ? void 0 : _texts$en353.autoGearDraftImpactTotals) || 'Current total: %s → After save: %s';
+    var changeTemplate = langTexts.autoGearDraftImpactChange || ((_texts$en354 = texts.en) === null || _texts$en354 === void 0 ? void 0 : _texts$en354.autoGearDraftImpactChange) || 'Change: %s';
+    impact.entries.forEach(function (entry) {
+      var li = document.createElement('li');
+      li.className = 'auto-gear-impact-item';
+      if (entry.delta > 0) {
+        li.classList.add('auto-gear-impact-positive');
+      } else if (entry.delta < 0) {
+        li.classList.add('auto-gear-impact-negative');
+      }
+      var summary = document.createElement('div');
+      summary.className = 'auto-gear-impact-summary';
+      summary.textContent = formatAutoGearDraftItemLabel(entry.item, entry.previewNet || entry.baseNet || entry.delta);
+      li.appendChild(summary);
+      var totals = document.createElement('div');
+      totals.className = 'auto-gear-impact-totals';
+      totals.textContent = formatWithPlaceholders(totalsTemplate, formatAutoGearImpactNumber(entry.baseNet), formatAutoGearImpactNumber(entry.previewNet));
+      li.appendChild(totals);
+      var delta = document.createElement('div');
+      delta.className = 'auto-gear-impact-delta';
+      delta.textContent = formatWithPlaceholders(changeTemplate, formatAutoGearImpactSigned(entry.delta));
+      li.appendChild(delta);
+      var metaTexts = [];
+      if (entry.stacked) {
+        var _texts$en355;
+        var stackKey = entry.addRulesCount === 1 ? 'autoGearDraftImpactStackedOne' : 'autoGearDraftImpactStackedOther';
+        var stackTemplate = langTexts[stackKey] || ((_texts$en355 = texts.en) === null || _texts$en355 === void 0 ? void 0 : _texts$en355[stackKey]);
+        if (stackTemplate) {
+          metaTexts.push(formatWithPlaceholders(stackTemplate, formatAutoGearImpactNumber(entry.addRulesCount)));
+        }
+      }
+      if (entry.conflict && entry.removeRulesCount > 0) {
+        var _texts$en356;
+        var conflictKey = entry.removeRulesCount === 1 ? 'autoGearDraftImpactConflictOne' : 'autoGearDraftImpactConflictOther';
+        var conflictTemplate = langTexts[conflictKey] || ((_texts$en356 = texts.en) === null || _texts$en356 === void 0 ? void 0 : _texts$en356[conflictKey]);
+        if (conflictTemplate) {
+          metaTexts.push(formatWithPlaceholders(conflictTemplate, formatAutoGearImpactNumber(entry.removeRulesCount)));
+        }
+      }
+      if (metaTexts.length) {
+        var meta = document.createElement('div');
+        meta.className = 'auto-gear-impact-meta';
+        meta.textContent = metaTexts.join(' ');
+        li.appendChild(meta);
+      }
+      autoGearDraftImpactList.appendChild(li);
+    });
+  }
+  if (autoGearDraftWarningContainer) {
+    var warningMessages = buildAutoGearDraftWarningMessages(autoGearDraftPendingWarnings, langTexts);
+    if (warningMessages.length) {
+      autoGearDraftWarningContainer.hidden = false;
+      if (autoGearDraftWarningList) {
+        warningMessages.forEach(function (message) {
+          var item = document.createElement('li');
+          item.className = 'auto-gear-impact-warning-item';
+          item.textContent = message;
+          autoGearDraftWarningList.appendChild(item);
+        });
+      }
+    } else {
+      autoGearDraftWarningContainer.hidden = true;
+    }
+  }
+}
+function renderAutoGearDraftLists() {
+  updateAutoGearDraftActionState();
+  if (!autoGearEditorDraft) {
+    if (autoGearAddList) autoGearAddList.innerHTML = '';
+    if (autoGearRemoveList) autoGearRemoveList.innerHTML = '';
+    renderAutoGearDraftImpact();
+    return;
+  }
+  var renderList = function renderList(element, items, type) {
+    if (!element) return;
+    element.innerHTML = '';
+    if (!items.length) {
+      var _texts$currentLang81, _texts$en357;
+      var empty = document.createElement('li');
+      empty.className = 'auto-gear-empty';
+      empty.textContent = ((_texts$currentLang81 = texts[currentLang]) === null || _texts$currentLang81 === void 0 ? void 0 : _texts$currentLang81.autoGearEmptyList) || ((_texts$en357 = texts.en) === null || _texts$en357 === void 0 ? void 0 : _texts$en357.autoGearEmptyList) || 'No items yet.';
+      element.appendChild(empty);
+      return;
+    }
+    items.forEach(function (item) {
+      var _texts$currentLang82, _texts$en358, _texts$currentLang83, _texts$en359;
+      var li = document.createElement('li');
+      li.className = 'auto-gear-item';
+      if (autoGearEditorActiveItem && autoGearEditorActiveItem.listType === type && autoGearEditorActiveItem.itemId === item.id) {
+        li.classList.add('auto-gear-item-editing');
+      }
+      var span = document.createElement('span');
+      span.textContent = formatAutoGearItemSummary(item, {
+        includeSign: true,
+        listType: type
+      });
+      li.appendChild(span);
+      var actions = document.createElement('span');
+      actions.className = 'auto-gear-item-actions';
+      var editBtn = document.createElement('button');
+      editBtn.type = 'button';
+      editBtn.className = 'auto-gear-edit-entry';
+      editBtn.dataset.listType = type;
+      editBtn.dataset.itemId = item.id;
+      var editLabel = ((_texts$currentLang82 = texts[currentLang]) === null || _texts$currentLang82 === void 0 ? void 0 : _texts$currentLang82.autoGearListEdit) || ((_texts$en358 = texts.en) === null || _texts$en358 === void 0 ? void 0 : _texts$en358.autoGearListEdit) || 'Edit';
+      editBtn.textContent = editLabel;
+      editBtn.setAttribute('data-help', editLabel);
+      editBtn.setAttribute('aria-pressed', autoGearEditorActiveItem && autoGearEditorActiveItem.listType === type && autoGearEditorActiveItem.itemId === item.id ? 'true' : 'false');
+      actions.appendChild(editBtn);
+      var removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'auto-gear-remove-entry';
+      removeBtn.dataset.listType = type;
+      removeBtn.dataset.itemId = item.id;
+      var removeLabel = ((_texts$currentLang83 = texts[currentLang]) === null || _texts$currentLang83 === void 0 ? void 0 : _texts$currentLang83.autoGearListRemove) || ((_texts$en359 = texts.en) === null || _texts$en359 === void 0 ? void 0 : _texts$en359.autoGearListRemove) || 'Remove';
+      removeBtn.textContent = removeLabel;
+      removeBtn.setAttribute('data-help', removeLabel);
+      actions.appendChild(removeBtn);
+      li.appendChild(actions);
+      element.appendChild(li);
+    });
+  };
+  renderList(autoGearAddList, autoGearEditorDraft.add, 'add');
+  renderList(autoGearRemoveList, autoGearEditorDraft.remove, 'remove');
+  renderAutoGearDraftImpact();
+}
+function openAutoGearEditor(ruleId) {
+  var _autoGearEditorDraft$, _autoGearEditorDraft$2;
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  if (!autoGearEditor) return;
+  var initialDraft = options.initialDraft,
+    _options$highlightLab = options.highlightLabel,
+    highlightLabel = _options$highlightLab === void 0 ? false : _options$highlightLab;
+  var rules = getAutoGearRules();
+  var source = initialDraft ? initialDraft : ruleId ? rules.find(function (rule) {
+    return rule.id === ruleId;
+  }) : null;
+  autoGearEditorDraft = createAutoGearDraft(source);
+  autoGearEditorActiveItem = null;
+  autoGearEditor.hidden = false;
+  autoGearEditor.setAttribute('aria-hidden', 'false');
+  if (autoGearAddRuleBtn) {
+    autoGearAddRuleBtn.setAttribute('aria-expanded', 'true');
+  }
+  if (autoGearRuleNameInput) {
+    autoGearRuleNameInput.value = autoGearEditorDraft.label || '';
+  }
+  initializeAutoGearConditionsFromDraft();
+  populateAutoGearCategorySelect(autoGearAddCategorySelect, ((_autoGearEditorDraft$ = autoGearEditorDraft.add[0]) === null || _autoGearEditorDraft$ === void 0 ? void 0 : _autoGearEditorDraft$.category) || '');
+  populateAutoGearCategorySelect(autoGearRemoveCategorySelect, ((_autoGearEditorDraft$2 = autoGearEditorDraft.remove[0]) === null || _autoGearEditorDraft$2 === void 0 ? void 0 : _autoGearEditorDraft$2.category) || '');
+  resetAutoGearDraftInputs('add');
+  resetAutoGearDraftInputs('remove');
+  syncAutoGearMonitorFieldVisibility();
+  updateAutoGearDraftActionState();
+  renderAutoGearDraftLists();
+  if (autoGearRuleNameInput) {
+    autoGearRuleNameInput.focus();
+    if (highlightLabel && typeof autoGearRuleNameInput.select === 'function' && autoGearRuleNameInput.value) {
+      try {
+        autoGearRuleNameInput.select();
+      } catch (_unused16) {}
+    }
+  }
+}
+function closeAutoGearEditor() {
+  if (!autoGearEditor) return;
+  autoGearEditor.hidden = true;
+  autoGearEditor.setAttribute('aria-hidden', 'true');
+  if (autoGearAddRuleBtn) {
+    autoGearAddRuleBtn.setAttribute('aria-expanded', 'false');
+  }
+  autoGearEditorDraft = null;
+  autoGearEditorActiveItem = null;
+  if (autoGearRuleNameInput) autoGearRuleNameInput.value = '';
+  clearAllAutoGearConditions();
+  resetAutoGearDraftInputs('add');
+  resetAutoGearDraftInputs('remove');
+  syncAutoGearMonitorFieldVisibility();
+  updateAutoGearDraftActionState();
+  renderAutoGearDraftLists();
+}
+function addAutoGearDraftItem(type) {
+  if (!autoGearEditorDraft) return;
+  var normalizedType = type === 'remove' ? 'remove' : 'add';
+  var isAdd = normalizedType === 'add';
+  var nameInput = isAdd ? autoGearAddNameInput : autoGearRemoveNameInput;
+  var categorySelect = isAdd ? autoGearAddCategorySelect : autoGearRemoveCategorySelect;
+  var quantityInput = isAdd ? autoGearAddQuantityInput : autoGearRemoveQuantityInput;
+  var screenSizeInput = isAdd ? autoGearAddScreenSizeInput : autoGearRemoveScreenSizeInput;
+  var selectorTypeSelect = isAdd ? autoGearAddSelectorTypeSelect : autoGearRemoveSelectorTypeSelect;
+  var selectorDefaultInput = isAdd ? autoGearAddSelectorDefaultInput : autoGearRemoveSelectorDefaultInput;
+  var notesInput = isAdd ? autoGearAddNotesInput : autoGearRemoveNotesInput;
+  if (!nameInput || !categorySelect || !quantityInput) return;
+  var parsedNames = parseAutoGearDraftNames(nameInput.value);
+  if (!parsedNames.length) {
+    var _texts$currentLang84, _texts$en360;
+    var message = ((_texts$currentLang84 = texts[currentLang]) === null || _texts$currentLang84 === void 0 ? void 0 : _texts$currentLang84.autoGearItemNameRequired) || ((_texts$en360 = texts.en) === null || _texts$en360 === void 0 ? void 0 : _texts$en360.autoGearItemNameRequired) || 'Enter an item name first.';
+    window.alert(message);
+    return;
+  }
+  var baseValues = {
+    category: categorySelect.value || '',
+    quantity: normalizeAutoGearQuantity(quantityInput.value),
+    screenSize: screenSizeInput ? screenSizeInput.value : '',
+    selectorType: selectorTypeSelect ? selectorTypeSelect.value : 'none',
+    selectorDefault: selectorDefaultInput ? selectorDefaultInput.value : '',
+    notes: notesInput ? notesInput.value : ''
+  };
+  if (isAutoGearMonitoringCategory(baseValues.category)) {
+    baseValues.selectorEnabled = baseValues.selectorType !== 'none';
+  } else {
+    baseValues.screenSize = '';
+    baseValues.selectorType = 'none';
+    baseValues.selectorDefault = '';
+    baseValues.selectorEnabled = false;
+  }
+  var editingTarget = autoGearEditorActiveItem && autoGearEditorActiveItem.listType === normalizedType ? autoGearEditorActiveItem : null;
+  if (editingTarget) {
+    if (parsedNames.length !== 1) {
+      var _texts$currentLang85, _texts$en361;
+      var warning = ((_texts$currentLang85 = texts[currentLang]) === null || _texts$currentLang85 === void 0 ? void 0 : _texts$currentLang85.autoGearEditSingleItemWarning) || ((_texts$en361 = texts.en) === null || _texts$en361 === void 0 ? void 0 : _texts$en361.autoGearEditSingleItemWarning) || 'Edit one item at a time.';
+      window.alert(warning);
+      return;
+    }
+    var entry = parsedNames[0];
+    var quantity = Object.prototype.hasOwnProperty.call(entry, 'quantity') ? normalizeAutoGearQuantity(entry.quantity) : baseValues.quantity;
+    var list = getAutoGearDraftList(normalizedType);
+    if (!Array.isArray(list)) return;
+    var index = list.findIndex(function (item) {
+      return item && item.id === editingTarget.itemId;
+    });
+    if (index < 0) {
+      clearAutoGearDraftItemEdit(normalizedType, {
+        skipRender: true
+      });
+      renderAutoGearDraftLists();
+      updateAutoGearCatalogOptions();
+      return;
+    }
+    var itemData = normalizeAutoGearItem({
+      id: editingTarget.itemId,
+      name: entry.name,
+      category: baseValues.category,
+      quantity: quantity,
+      screenSize: baseValues.screenSize,
+      selectorType: baseValues.selectorType,
+      selectorDefault: baseValues.selectorDefault,
+      selectorEnabled: baseValues.selectorEnabled,
+      notes: baseValues.notes
+    });
+    if (itemData) {
+      list[index] = itemData;
+    } else {
+      list.splice(index, 1);
+    }
+    clearAutoGearDraftItemEdit(normalizedType, {
+      skipRender: true
+    });
+    renderAutoGearDraftLists();
+    updateAutoGearCatalogOptions();
+    return;
+  }
+  parsedNames.forEach(function (entry) {
+    var quantity = Object.prototype.hasOwnProperty.call(entry, 'quantity') ? normalizeAutoGearQuantity(entry.quantity) : baseValues.quantity;
+    var targetType = entry.listType || (isAdd ? 'add' : 'remove');
+    var targetList = targetType === 'remove' ? autoGearEditorDraft.remove : autoGearEditorDraft.add;
+    var itemData = normalizeAutoGearItem({
+      id: generateAutoGearId('item'),
+      name: entry.name,
+      category: baseValues.category,
+      quantity: quantity,
+      screenSize: baseValues.screenSize,
+      selectorType: baseValues.selectorType,
+      selectorDefault: baseValues.selectorDefault,
+      selectorEnabled: baseValues.selectorEnabled,
+      notes: baseValues.notes
+    });
+    if (itemData) {
+      targetList.push(itemData);
+    }
+  });
+  resetAutoGearDraftInputs(normalizedType);
+  syncAutoGearMonitorFieldVisibility();
+  renderAutoGearDraftLists();
+  updateAutoGearCatalogOptions();
+}
+function saveAutoGearRuleFromEditor() {
+  var _texts$currentLang90, _texts$en367;
+  if (!autoGearEditorDraft) return;
+  var scenarios = isAutoGearConditionActive('scenarios') && autoGearScenariosSelect ? Array.from(autoGearScenariosSelect.selectedOptions || []).map(function (option) {
+    return option.value;
+  }).filter(Boolean) : [];
+  var rawScenarioMode = autoGearScenarioModeSelect ? normalizeAutoGearScenarioLogic(autoGearScenarioModeSelect.value) : 'all';
+  var multiplierInputValue = autoGearScenarioFactorInput ? autoGearScenarioFactorInput.value : '1';
+  var normalizedMultiplier = normalizeAutoGearScenarioMultiplier(multiplierInputValue);
+  var scenarioMode = rawScenarioMode;
+  if (scenarioMode === 'multiplier' && scenarios.length < 2) {
+    scenarioMode = 'all';
+  }
+  var baseSelection = autoGearScenarioBaseSelect ? autoGearScenarioBaseSelect.value : '';
+  var scenarioBase = scenarioMode === 'multiplier' ? normalizeAutoGearScenarioPrimary(baseSelection) : '';
+  if (scenarioMode === 'multiplier' && scenarioBase && !scenarios.includes(scenarioBase)) {
+    scenarios.push(scenarioBase);
+  }
+  var matteboxSelections = isAutoGearConditionActive('mattebox') && autoGearMatteboxSelect ? Array.from(autoGearMatteboxSelect.selectedOptions || []).map(function (option) {
+    return option.value;
+  }).filter(Boolean) : [];
+  var cameraHandleSelections = isAutoGearConditionActive('cameraHandle') && autoGearCameraHandleSelect ? Array.from(autoGearCameraHandleSelect.selectedOptions || []).map(function (option) {
+    return option.value;
+  }).filter(Boolean) : [];
+  var viewfinderSelections = isAutoGearConditionActive('viewfinderExtension') && autoGearViewfinderExtensionSelect ? Array.from(autoGearViewfinderExtensionSelect.selectedOptions || []).map(function (option) {
+    return option.value;
+  }).filter(function (value) {
+    return typeof value === 'string' && value.trim();
+  }) : [];
+  var deliveryResolutionSelections = isAutoGearConditionActive('deliveryResolution') && autoGearDeliveryResolutionSelect ? Array.from(autoGearDeliveryResolutionSelect.selectedOptions || []).map(function (option) {
+    return option.value;
+  }).filter(function (value) {
+    return typeof value === 'string' && value.trim();
+  }) : [];
+  var videoDistributionSelections = isAutoGearConditionActive('videoDistribution') && autoGearVideoDistributionSelect ? Array.from(autoGearVideoDistributionSelect.selectedOptions || []).map(function (option) {
+    return option.value;
+  }).filter(Boolean) : [];
+  if (videoDistributionSelections.includes('__none__') && videoDistributionSelections.length > 1) {
+    videoDistributionSelections = videoDistributionSelections.filter(function (value) {
+      return value !== '__none__';
+    });
+  }
+  var cameraSelections = isAutoGearConditionActive('camera') && autoGearCameraSelect ? Array.from(autoGearCameraSelect.selectedOptions || []).map(function (option) {
+    return option.value;
+  }).filter(function (value) {
+    return typeof value === 'string' && value.trim();
+  }) : [];
+  var cameraWeightCondition = function () {
+    if (!isAutoGearConditionActive('cameraWeight')) return null;
+    var operatorValue = autoGearCameraWeightOperator ? autoGearCameraWeightOperator.value : '';
+    var thresholdValue = autoGearCameraWeightValueInput ? autoGearCameraWeightValueInput.value : '';
+    var normalizedCondition = normalizeAutoGearCameraWeightCondition({
+      operator: operatorValue,
+      value: thresholdValue
+    });
+    if (normalizedCondition) return normalizedCondition;
+    var normalizedOperator = normalizeAutoGearWeightOperator(operatorValue);
+    return normalizedOperator ? {
+      operator: normalizedOperator,
+      value: null
+    } : null;
+  }();
+  var monitorSelections = isAutoGearConditionActive('monitor') && autoGearMonitorSelect ? Array.from(autoGearMonitorSelect.selectedOptions || []).map(function (option) {
+    return option.value;
+  }).filter(function (value) {
+    return typeof value === 'string' && value.trim();
+  }) : [];
+  var crewPresentSelections = isAutoGearConditionActive('crewPresent') && autoGearCrewPresentSelect ? Array.from(autoGearCrewPresentSelect.selectedOptions || []).map(function (option) {
+    return option.value;
+  }).filter(function (value) {
+    return typeof value === 'string' && value.trim();
+  }) : [];
+  var crewAbsentSelections = isAutoGearConditionActive('crewAbsent') && autoGearCrewAbsentSelect ? Array.from(autoGearCrewAbsentSelect.selectedOptions || []).map(function (option) {
+    return option.value;
+  }).filter(function (value) {
+    return typeof value === 'string' && value.trim();
+  }) : [];
+  var wirelessSelections = isAutoGearConditionActive('wireless') && autoGearWirelessSelect ? Array.from(autoGearWirelessSelect.selectedOptions || []).map(function (option) {
+    return option.value;
+  }).filter(function (value) {
+    return typeof value === 'string' && value.trim();
+  }) : [];
+  var motorSelections = isAutoGearConditionActive('motors') && autoGearMotorsSelect ? Array.from(autoGearMotorsSelect.selectedOptions || []).map(function (option) {
+    return option.value;
+  }).filter(function (value) {
+    return typeof value === 'string' && value.trim();
+  }) : [];
+  var controllerSelections = isAutoGearConditionActive('controllers') && autoGearControllersSelect ? Array.from(autoGearControllersSelect.selectedOptions || []).map(function (option) {
+    return option.value;
+  }).filter(function (value) {
+    return typeof value === 'string' && value.trim();
+  }) : [];
+  var distanceSelections = isAutoGearConditionActive('distance') && autoGearDistanceSelect ? Array.from(autoGearDistanceSelect.selectedOptions || []).map(function (option) {
+    return option.value;
+  }).filter(function (value) {
+    return typeof value === 'string' && value.trim();
+  }) : [];
+  var shootingDaysRequirement = function () {
+    if (!isAutoGearConditionActive('shootingDays')) return null;
+    if (!autoGearShootingDaysInput) return null;
+    var modeValue = autoGearShootingDaysMode ? autoGearShootingDaysMode.value : 'minimum';
+    var rawCondition = {
+      mode: modeValue,
+      value: autoGearShootingDaysInput.value
+    };
+    return normalizeAutoGearShootingDaysCondition(rawCondition);
+  }();
+  var alwaysActive = isAutoGearConditionActive('always');
+  if (!alwaysActive && !scenarios.length && !matteboxSelections.length && !cameraHandleSelections.length && !viewfinderSelections.length && !deliveryResolutionSelections.length && !videoDistributionSelections.length && !cameraSelections.length && !cameraWeightCondition && !monitorSelections.length && !crewPresentSelections.length && !crewAbsentSelections.length && !wirelessSelections.length && !motorSelections.length && !controllerSelections.length && !distanceSelections.length && !shootingDaysRequirement) {
+    var _texts$currentLang86, _texts$en362, _texts$currentLang87, _texts$en363;
+    var message = ((_texts$currentLang86 = texts[currentLang]) === null || _texts$currentLang86 === void 0 ? void 0 : _texts$currentLang86.autoGearRuleConditionRequired) || ((_texts$en362 = texts.en) === null || _texts$en362 === void 0 ? void 0 : _texts$en362.autoGearRuleConditionRequired) || ((_texts$currentLang87 = texts[currentLang]) === null || _texts$currentLang87 === void 0 ? void 0 : _texts$currentLang87.autoGearRuleScenarioRequired) || ((_texts$en363 = texts.en) === null || _texts$en363 === void 0 ? void 0 : _texts$en363.autoGearRuleScenarioRequired) || 'Select at least one scenario, mattebox option, camera handle, viewfinder extension, delivery resolution or video distribution before saving.';
+    window.alert(message);
+    return;
+  }
+  if (isAutoGearConditionActive('cameraWeight') && (!cameraWeightCondition || !Number.isFinite(cameraWeightCondition.value))) {
+    var _texts$currentLang88, _texts$en364;
+    var _message3 = ((_texts$currentLang88 = texts[currentLang]) === null || _texts$currentLang88 === void 0 ? void 0 : _texts$currentLang88.autoGearCameraWeightValueRequired) || ((_texts$en364 = texts.en) === null || _texts$en364 === void 0 ? void 0 : _texts$en364.autoGearCameraWeightValueRequired) || 'Enter a camera weight threshold before saving.';
+    window.alert(_message3);
+    if (autoGearCameraWeightValueInput) {
+      try {
+        autoGearCameraWeightValueInput.focus({
+          preventScroll: true
+        });
+      } catch (_unused17) {
+        autoGearCameraWeightValueInput.focus();
+      }
+    }
+    return;
+  }
+  if (autoGearRuleNameInput) {
+    autoGearEditorDraft.label = autoGearRuleNameInput.value.trim();
+  }
+  autoGearEditorDraft.always = alwaysActive ? ['always'] : [];
+  autoGearEditorDraft.scenarioLogic = scenarioMode;
+  autoGearEditorDraft.scenarioMultiplier = scenarioMode === 'multiplier' ? normalizedMultiplier : 1;
+  autoGearEditorDraft.scenarioPrimary = scenarioMode === 'multiplier' ? scenarioBase : '';
+  autoGearEditorDraft.scenarios = scenarios;
+  autoGearEditorDraft.mattebox = matteboxSelections;
+  autoGearEditorDraft.cameraHandle = cameraHandleSelections;
+  autoGearEditorDraft.viewfinderExtension = viewfinderSelections;
+  autoGearEditorDraft.deliveryResolution = deliveryResolutionSelections;
+  autoGearEditorDraft.videoDistribution = videoDistributionSelections;
+  autoGearEditorDraft.camera = cameraSelections;
+  autoGearEditorDraft.cameraWeight = cameraWeightCondition ? _objectSpread({}, cameraWeightCondition) : null;
+  autoGearEditorDraft.monitor = monitorSelections;
+  autoGearEditorDraft.crewPresent = crewPresentSelections;
+  autoGearEditorDraft.crewAbsent = crewAbsentSelections;
+  autoGearEditorDraft.wireless = wirelessSelections;
+  autoGearEditorDraft.motors = motorSelections;
+  autoGearEditorDraft.controllers = controllerSelections;
+  autoGearEditorDraft.distance = distanceSelections;
+  autoGearEditorDraft.shootingDays = shootingDaysRequirement;
+  if (!autoGearEditorDraft.add.length && !autoGearEditorDraft.remove.length) {
+    var _texts$currentLang89, _texts$en365;
+    var _message4 = ((_texts$currentLang89 = texts[currentLang]) === null || _texts$currentLang89 === void 0 ? void 0 : _texts$currentLang89.autoGearRuleNeedsItems) || ((_texts$en365 = texts.en) === null || _texts$en365 === void 0 ? void 0 : _texts$en365.autoGearRuleNeedsItems) || 'Add at least one item to add or remove.';
+    window.alert(_message4);
+    return;
+  }
+  renderAutoGearDraftImpact();
+  var draftRule = normalizeAutoGearRule(autoGearEditorDraft);
+  if (!draftRule) return;
+  var langTexts = texts[currentLang] || texts.en || {};
+  var warningMessages = buildAutoGearDraftWarningMessages(autoGearDraftPendingWarnings, langTexts);
+  if (warningMessages.length && typeof window.confirm === 'function') {
+    var _texts$en366;
+    var confirmBase = langTexts.autoGearDraftWarningConfirm || ((_texts$en366 = texts.en) === null || _texts$en366 === void 0 ? void 0 : _texts$en366.autoGearDraftWarningConfirm) || 'Save anyway? Review the impact warnings below before confirming.';
+    var details = warningMessages.map(function (message) {
+      return "\u2022 ".concat(message);
+    }).join('\n');
+    var confirmMessage = "".concat(confirmBase, "\n\n").concat(details);
+    if (!window.confirm(confirmMessage)) {
+      return;
+    }
+  }
+  var rules = getAutoGearRules();
+  var index = rules.findIndex(function (rule) {
+    return rule.id === draftRule.id;
+  });
+  if (index >= 0) {
+    rules[index] = draftRule;
+  } else {
+    rules.push(draftRule);
+  }
+  setAutoGearRules(rules);
+  updateAutoGearCatalogOptions();
+  renderAutoGearRulesList();
+  var successMessage = ((_texts$currentLang90 = texts[currentLang]) === null || _texts$currentLang90 === void 0 ? void 0 : _texts$currentLang90.autoGearRuleSaved) || ((_texts$en367 = texts.en) === null || _texts$en367 === void 0 ? void 0 : _texts$en367.autoGearRuleSaved) || 'Automatic gear rule saved.';
+  showNotification('success', successMessage);
+  closeAutoGearEditor();
+}
+function duplicateAutoGearRule(ruleId) {
+  var _texts$en368;
+  if (!ruleId) return;
+  var rules = getAutoGearRules();
+  var original = rules.find(function (rule) {
+    return rule && rule.id === ruleId;
+  });
+  if (!original) return;
+  var langTexts = texts[currentLang] || texts.en || {};
+  var suffixBase = typeof langTexts.autoGearDuplicateSuffix === 'string' ? langTexts.autoGearDuplicateSuffix.trim() : '';
+  var fallbackSuffix = typeof ((_texts$en368 = texts.en) === null || _texts$en368 === void 0 ? void 0 : _texts$en368.autoGearDuplicateSuffix) === 'string' ? texts.en.autoGearDuplicateSuffix.trim() : '';
+  var suffix = suffixBase || fallbackSuffix || 'Copy';
+  var baseLabel = typeof original.label === 'string' ? original.label.trim() : '';
+  var existingLabels = new Set(rules.map(function (rule) {
+    return typeof (rule === null || rule === void 0 ? void 0 : rule.label) === 'string' ? rule.label.trim().toLowerCase() : '';
+  }).filter(Boolean));
+  var formatCandidate = function formatCandidate(index) {
+    if (baseLabel) {
+      return index === 1 ? "".concat(baseLabel, " (").concat(suffix, ")") : "".concat(baseLabel, " (").concat(suffix, " ").concat(index, ")");
+    }
+    return index === 1 ? suffix : "".concat(suffix, " ").concat(index);
+  };
+  var attempt = 1;
+  var labelCandidate = formatCandidate(attempt);
+  while (existingLabels.has(labelCandidate.trim().toLowerCase())) {
+    attempt += 1;
+    labelCandidate = formatCandidate(attempt);
+  }
+  var duplicateRule = {
+    id: generateAutoGearId('rule'),
+    label: labelCandidate,
+    scenarioLogic: normalizeAutoGearScenarioLogic(original.scenarioLogic),
+    scenarioPrimary: normalizeAutoGearScenarioPrimary(original.scenarioPrimary),
+    scenarioMultiplier: normalizeAutoGearScenarioMultiplier(original.scenarioMultiplier),
+    scenarios: Array.isArray(original.scenarios) ? original.scenarios.slice() : [],
+    mattebox: Array.isArray(original.mattebox) ? original.mattebox.slice() : [],
+    cameraHandle: Array.isArray(original.cameraHandle) ? original.cameraHandle.slice() : [],
+    viewfinderExtension: Array.isArray(original.viewfinderExtension) ? original.viewfinderExtension.slice() : [],
+    videoDistribution: Array.isArray(original.videoDistribution) ? original.videoDistribution.slice() : [],
+    camera: Array.isArray(original.camera) ? original.camera.slice() : [],
+    cameraWeight: normalizeAutoGearCameraWeightCondition(original.cameraWeight),
+    monitor: Array.isArray(original.monitor) ? original.monitor.slice() : [],
+    wireless: Array.isArray(original.wireless) ? original.wireless.slice() : [],
+    motors: Array.isArray(original.motors) ? original.motors.slice() : [],
+    controllers: Array.isArray(original.controllers) ? original.controllers.slice() : [],
+    distance: Array.isArray(original.distance) ? original.distance.slice() : [],
+    shootingDays: normalizeAutoGearShootingDaysCondition(original.shootingDays),
+    add: Array.isArray(original.add) ? original.add.map(function (item) {
+      return _objectSpread(_objectSpread({}, item), {}, {
+        id: generateAutoGearId('item')
+      });
+    }) : [],
+    remove: Array.isArray(original.remove) ? original.remove.map(function (item) {
+      return _objectSpread(_objectSpread({}, item), {}, {
+        id: generateAutoGearId('item')
+      });
+    }) : []
+  };
+  openAutoGearEditor(null, {
+    initialDraft: duplicateRule,
+    highlightLabel: true
+  });
+}
+function deleteAutoGearRule(ruleId) {
+  var _texts$currentLang91, _texts$en369;
+  var rules = getAutoGearRules();
+  var index = rules.findIndex(function (rule) {
+    return rule.id === ruleId;
+  });
+  if (index < 0) return;
+  var confirmation = ((_texts$currentLang91 = texts[currentLang]) === null || _texts$currentLang91 === void 0 ? void 0 : _texts$currentLang91.autoGearDeleteConfirm) || ((_texts$en369 = texts.en) === null || _texts$en369 === void 0 ? void 0 : _texts$en369.autoGearDeleteConfirm) || 'Delete this rule?';
+  if (!window.confirm(confirmation)) return;
+  var backupName = ensureAutoBackupBeforeDeletion('delete automatic gear rule');
+  if (!backupName) return;
+  rules.splice(index, 1);
+  setAutoGearRules(rules);
+  updateAutoGearCatalogOptions();
+  renderAutoGearRulesList();
+  if (autoGearEditorDraft && autoGearEditorDraft.id === ruleId) {
+    closeAutoGearEditor();
+  }
+}
+function normalizeAutoGearPayloadMetadata(candidate) {
+  if (!candidate || _typeof(candidate) !== 'object') return null;
+  var metadata = {};
+  var assignIfString = function assignIfString(key, value) {
+    if (typeof value !== 'string') return;
+    var trimmed = value.trim();
+    if (!trimmed) return;
+    if (!Object.prototype.hasOwnProperty.call(metadata, key) || !metadata[key]) {
+      metadata[key] = trimmed;
+    }
+  };
+  assignIfString('type', candidate.type);
+  assignIfString('version', candidate.version);
+  var timestampFields = [['createdAt', 'createdAt'], ['created_at', 'createdAt'], ['created', 'createdAt'], ['timestamp', 'timestamp'], ['exportedAt', 'exportedAt'], ['exported_at', 'exportedAt'], ['savedAt', 'savedAt'], ['saved_at', 'savedAt'], ['updatedAt', 'updatedAt'], ['updated_at', 'updatedAt'], ['modifiedAt', 'updatedAt'], ['modified_at', 'updatedAt']];
+  timestampFields.forEach(function (_ref51) {
+    var _ref52 = _slicedToArray(_ref51, 2),
+      prop = _ref52[0],
+      target = _ref52[1];
+    if (metadata[target]) return;
+    assignIfString(target, candidate[prop]);
+  });
+  if (!metadata.timestamp) {
+    var orderedKeys = ['createdAt', 'timestamp', 'exportedAt', 'savedAt', 'updatedAt'];
+    for (var i = 0; i < orderedKeys.length; i += 1) {
+      var _key6 = orderedKeys[i];
+      if (metadata[_key6]) {
+        metadata.timestamp = metadata[_key6];
+        metadata.timestampSource = _key6;
+        break;
+      }
+    }
+  }
+  if (metadata.timestamp && !metadata.timestampSource) {
+    metadata.timestampSource = 'timestamp';
+  }
+  return Object.keys(metadata).length ? metadata : null;
+}
+function collectAutoGearPayloadMetadata() {
+  var queue = [];
+  var visited = new Set();
+  var metadata = {};
+  var enqueue = function enqueue(value) {
+    if (!value || _typeof(value) !== 'object') return;
+    if (visited.has(value)) return;
+    visited.add(value);
+    queue.push(value);
+  };
+  for (var _len2 = arguments.length, sources = new Array(_len2), _key7 = 0; _key7 < _len2; _key7++) {
+    sources[_key7] = arguments[_key7];
+  }
+  sources.forEach(function (source) {
+    return enqueue(source);
+  });
+  var _loop2 = function _loop2() {
+    var candidate = queue.shift();
+    var normalized = normalizeAutoGearPayloadMetadata(candidate);
+    if (normalized) {
+      ['type', 'version', 'createdAt', 'exportedAt', 'savedAt', 'updatedAt', 'timestamp', 'timestampSource'].forEach(function (key) {
+        if (!normalized[key]) return;
+        if (!Object.prototype.hasOwnProperty.call(metadata, key) || !metadata[key]) {
+          metadata[key] = normalized[key];
+        }
+      });
+    }
+    if (candidate.meta && _typeof(candidate.meta) === 'object') {
+      enqueue(candidate.meta);
+    }
+    if (candidate.metadata && _typeof(candidate.metadata) === 'object') {
+      enqueue(candidate.metadata);
+    }
+  };
+  while (queue.length) {
+    _loop2();
+  }
+  return Object.keys(metadata).length ? metadata : null;
+}
+function parseAutoGearImportPayload(data) {
+  var extractMonitorDefaults = function extractMonitorDefaults(source) {
+    if (!source || _typeof(source) !== 'object') return null;
+    if (source.monitorDefaults && _typeof(source.monitorDefaults) === 'object') {
+      return source.monitorDefaults;
+    }
+    if (source.autoGearMonitorDefaults && _typeof(source.autoGearMonitorDefaults) === 'object') {
+      return source.autoGearMonitorDefaults;
+    }
+    return null;
+  };
+  var _resolveValue = function resolveValue(value) {
+    if (typeof value !== 'string') return value;
+    var trimmed = value.trim();
+    if (!trimmed) return value;
+    try {
+      var parsed = JSON.parse(trimmed);
+      if (parsed === value) return parsed;
+      return _resolveValue(parsed);
+    } catch (_unused18) {
+      return value;
+    }
+  };
+  var visited = new Set();
+  var queue = [];
+  var enqueue = function enqueue(rawValue, parent, root, key) {
+    var value = _resolveValue(rawValue);
+    if (!value || _typeof(value) !== 'object') {
+      return;
+    }
+    if (visited.has(value)) {
+      return;
+    }
+    visited.add(value);
+    queue.push({
+      value: value,
+      parent: parent && _typeof(parent) === 'object' ? parent : null,
+      root: root && _typeof(root) === 'object' ? root : null,
+      key: typeof key === 'string' ? key : ''
+    });
+  };
+  var initialValue = _resolveValue(data);
+  if (Array.isArray(initialValue)) {
+    var metadata = collectAutoGearPayloadMetadata(initialValue);
+    return {
+      rules: initialValue,
+      monitorDefaults: null,
+      metadata: metadata
+    };
+  }
+  if (!initialValue || _typeof(initialValue) !== 'object') {
+    return null;
+  }
+  var initialRoot = !Array.isArray(initialValue) ? initialValue : null;
+  enqueue(initialValue, null, initialRoot, '');
+  var _loop3 = function _loop3() {
+      var _queue$shift = queue.shift(),
+        value = _queue$shift.value,
+        parent = _queue$shift.parent,
+        root = _queue$shift.root,
+        key = _queue$shift.key;
+      var baseRoot = root || (value && _typeof(value) === 'object' && !Array.isArray(value) ? value : null);
+      if (Array.isArray(value)) {
+        var treatAsRules = !parent || key === 'rules' || key === 'autoGearRules';
+        if (treatAsRules) {
+          var monitorDefaults = (parent ? extractMonitorDefaults(parent) : null) || (root ? extractMonitorDefaults(root) : null) || null;
+          var _metadata = collectAutoGearPayloadMetadata(parent, value, root, baseRoot);
+          return {
+            v: {
+              rules: value,
+              monitorDefaults: monitorDefaults,
+              metadata: _metadata
+            }
+          };
+        }
+        value.forEach(function (item) {
+          if (item && _typeof(item) === 'object') {
+            enqueue(item, parent, baseRoot, '');
+          }
+        });
+        return 0;
+      }
+      if (!value || _typeof(value) !== 'object') {
+        return 0;
+      }
+      var monitorDefaultsFromValue = extractMonitorDefaults(value);
+      var monitorDefaultsFromParent = parent ? extractMonitorDefaults(parent) : null;
+      var monitorDefaultsFromRoot = root ? extractMonitorDefaults(root) : null;
+      var fallbackDefaults = monitorDefaultsFromValue || monitorDefaultsFromParent || monitorDefaultsFromRoot || null;
+      var rawAutoGearRules = Object.prototype.hasOwnProperty.call(value, 'autoGearRules') ? _resolveValue(value.autoGearRules) : null;
+      if (Array.isArray(rawAutoGearRules)) {
+        var _metadata2 = collectAutoGearPayloadMetadata(value, parent, root, baseRoot);
+        return {
+          v: {
+            rules: rawAutoGearRules,
+            monitorDefaults: fallbackDefaults,
+            metadata: _metadata2
+          }
+        };
+      }
+      var rawRules = Object.prototype.hasOwnProperty.call(value, 'rules') ? _resolveValue(value.rules) : null;
+      if (Array.isArray(rawRules)) {
+        var _metadata3 = collectAutoGearPayloadMetadata(value, parent, root, baseRoot);
+        return {
+          v: {
+            rules: rawRules,
+            monitorDefaults: fallbackDefaults,
+            metadata: _metadata3
+          }
+        };
+      }
+      if (rawRules && _typeof(rawRules) === 'object') {
+        var nestedAutoGearRules = Object.prototype.hasOwnProperty.call(rawRules, 'autoGearRules') ? _resolveValue(rawRules.autoGearRules) : null;
+        if (Array.isArray(nestedAutoGearRules)) {
+          var nestedDefaults = extractMonitorDefaults(rawRules) || fallbackDefaults;
+          var _metadata4 = collectAutoGearPayloadMetadata(rawRules, value, parent, root, baseRoot);
+          return {
+            v: {
+              rules: nestedAutoGearRules,
+              monitorDefaults: nestedDefaults,
+              metadata: _metadata4
+            }
+          };
+        }
+      }
+      var containerEntries = [{
+        value: value.data,
+        key: 'data'
+      }, {
+        value: value.payload,
+        key: 'payload'
+      }, {
+        value: value.bundle,
+        key: 'bundle'
+      }, {
+        value: value.project,
+        key: 'project'
+      }, {
+        value: value.config,
+        key: 'config'
+      }, {
+        value: value.settings,
+        key: 'settings'
+      }, {
+        value: value.content,
+        key: 'content'
+      }, {
+        value: value.body,
+        key: 'body'
+      }, {
+        value: value.autoGear,
+        key: 'autoGear'
+      }, {
+        value: value.rules,
+        key: 'rules'
+      }, {
+        value: value.autoGearRules,
+        key: 'autoGearRules'
+      }, {
+        value: value.meta,
+        key: 'meta'
+      }, {
+        value: value.metadata,
+        key: 'metadata'
+      }];
+      containerEntries.forEach(function (entry) {
+        if (!entry.value) return;
+        enqueue(entry.value, value, baseRoot, entry.key);
+      });
+      Object.keys(value).forEach(function (prop) {
+        if (!Object.prototype.hasOwnProperty.call(value, prop)) return;
+        if (prop === 'monitorDefaults' || prop === 'autoGearMonitorDefaults') return;
+        if (prop === 'rules' || prop === 'autoGearRules') return;
+        var child = value[prop];
+        if (!child || typeof child === 'function') return;
+        if (_typeof(child) === 'object') {
+          enqueue(child, value, baseRoot, prop);
+        } else if (typeof child === 'string') {
+          var resolvedChild = _resolveValue(child);
+          if (resolvedChild && resolvedChild !== child && _typeof(resolvedChild) === 'object') {
+            enqueue(resolvedChild, value, baseRoot, prop);
+          }
+        }
+      });
+    },
+    _ret2;
+  while (queue.length) {
+    _ret2 = _loop3();
+    if (_ret2 === 0) continue;
+    if (_ret2) return _ret2.v;
+  }
+  return null;
+}
+function parseSemanticVersion(version) {
+  if (typeof version !== 'string') return null;
+  var trimmed = version.trim();
+  if (!trimmed) return null;
+  var match = trimmed.match(/^(\d+)\.(\d+)\.(\d+)(?:[-+].*)?$/);
+  if (!match) return null;
+  return {
+    major: Number.parseInt(match[1], 10),
+    minor: Number.parseInt(match[2], 10),
+    patch: Number.parseInt(match[3], 10),
+    raw: trimmed
+  };
+}
+function compareSemanticVersions(a, b) {
+  if (!a || !b) return null;
+  if (a.major !== b.major) {
+    return a.major > b.major ? 1 : -1;
+  }
+  if (a.minor !== b.minor) {
+    return a.minor > b.minor ? 1 : -1;
+  }
+  if (a.patch !== b.patch) {
+    return a.patch > b.patch ? 1 : -1;
+  }
+  return 0;
+}
+function isValidIsoTimestamp(value) {
+  if (typeof value !== 'string') return false;
+  var trimmed = value.trim();
+  if (!trimmed) return false;
+  var parsed = Date.parse(trimmed);
+  if (Number.isNaN(parsed)) return false;
+  return Number.isFinite(parsed);
+}
+function validateAutoGearImportPayload(parsed) {
+  var initialMetadata = parsed !== null && parsed !== void 0 && parsed.metadata && _typeof(parsed.metadata) === 'object' ? _objectSpread({}, parsed.metadata) : {};
+  var validation = {
+    metadata: initialMetadata,
+    warnings: [],
+    errors: []
+  };
+  if (!parsed || !Array.isArray(parsed.rules)) {
+    validation.errors.push({
+      code: 'invalid-rules'
+    });
+    return validation;
+  }
+  var metadata = validation.metadata;
+  var expectedType = 'camera-power-planner/auto-gear-rules';
+  var typeValue = typeof metadata.type === 'string' ? metadata.type.trim() : '';
+  if (!typeValue) {
+    validation.warnings.push({
+      code: 'missing-metadata',
+      field: 'type'
+    });
+  } else if (typeValue !== expectedType) {
+    validation.errors.push({
+      code: 'type-mismatch',
+      expected: expectedType,
+      actual: typeValue
+    });
+  } else {
+    metadata.type = typeValue;
+  }
+  var versionValue = '';
+  if (typeof metadata.version === 'string') {
+    versionValue = metadata.version.trim();
+    if (!versionValue) {
+      validation.warnings.push({
+        code: 'missing-metadata',
+        field: 'version'
+      });
+    }
+  } else if (metadata.version != null) {
+    validation.warnings.push({
+      code: 'invalid-metadata',
+      field: 'version'
+    });
+  } else {
+    validation.warnings.push({
+      code: 'missing-metadata',
+      field: 'version'
+    });
+  }
+  var parsedVersion = parseSemanticVersion(versionValue);
+  if (versionValue && !parsedVersion) {
+    validation.warnings.push({
+      code: 'invalid-version-format',
+      value: versionValue
+    });
+  }
+  metadata.version = versionValue;
+  var timestampValue = typeof metadata.timestamp === 'string' ? metadata.timestamp.trim() : '';
+  if (!timestampValue) {
+    validation.warnings.push({
+      code: 'missing-metadata',
+      field: 'timestamp'
+    });
+  } else if (!isValidIsoTimestamp(timestampValue)) {
+    validation.warnings.push({
+      code: 'invalid-timestamp',
+      value: timestampValue
+    });
+  }
+  metadata.timestamp = timestampValue;
+  var localVersion = typeof APP_VERSION === 'string' ? parseSemanticVersion(APP_VERSION) : null;
+  if (parsedVersion && localVersion) {
+    var comparison = compareSemanticVersions(parsedVersion, localVersion);
+    if (comparison > 0) {
+      validation.warnings.push({
+        code: 'newer-version',
+        importedVersion: parsedVersion.raw,
+        currentVersion: localVersion.raw
+      });
+    } else if (comparison < 0) {
+      validation.warnings.push({
+        code: 'older-version',
+        importedVersion: parsedVersion.raw,
+        currentVersion: localVersion.raw
+      });
+    }
+  }
+  if (!metadata.type && !metadata.version && !metadata.timestamp) {
+    validation.metadata = null;
+  }
+  return validation;
+}
+function getAutoGearImportMetadataFieldLabel(field) {
+  var localeTexts = getLanguageTexts(currentLang);
+  var englishTexts = getLanguageTexts('en');
+  var key = field === 'timestamp' ? 'autoGearImportMetadataLabelTimestamp' : field === 'version' ? 'autoGearImportMetadataLabelVersion' : 'autoGearImportMetadataLabelType';
+  return (localeTexts === null || localeTexts === void 0 ? void 0 : localeTexts[key]) || (englishTexts === null || englishTexts === void 0 ? void 0 : englishTexts[key]) || field;
+}
+function formatAutoGearImportWarningMessage(warning, metadata) {
+  var localeTexts = getLanguageTexts(currentLang);
+  var englishTexts = getLanguageTexts('en');
+  switch (warning.code) {
+    case 'newer-version':
+      {
+        var template = (localeTexts === null || localeTexts === void 0 ? void 0 : localeTexts.autoGearImportNewerVersionWarning) || (englishTexts === null || englishTexts === void 0 ? void 0 : englishTexts.autoGearImportNewerVersionWarning) || 'Imported rules were created with version {importVersion}, which is newer than this build ({appVersion}).';
+        return template.replace('{importVersion}', warning.importedVersion || (metadata === null || metadata === void 0 ? void 0 : metadata.version) || '').replace('{appVersion}', warning.currentVersion || APP_VERSION || '');
+      }
+    case 'older-version':
+      {
+        var _template5 = (localeTexts === null || localeTexts === void 0 ? void 0 : localeTexts.autoGearImportOlderVersionWarning) || (englishTexts === null || englishTexts === void 0 ? void 0 : englishTexts.autoGearImportOlderVersionWarning) || 'Imported rules were created with version {importVersion}, which is older than this build ({appVersion}).';
+        return _template5.replace('{importVersion}', warning.importedVersion || (metadata === null || metadata === void 0 ? void 0 : metadata.version) || '').replace('{appVersion}', warning.currentVersion || APP_VERSION || '');
+      }
+    case 'invalid-version-format':
+      {
+        var _template6 = (localeTexts === null || localeTexts === void 0 ? void 0 : localeTexts.autoGearImportInvalidVersionWarning) || (englishTexts === null || englishTexts === void 0 ? void 0 : englishTexts.autoGearImportInvalidVersionWarning) || 'Imported rules report version "{value}", which is not a valid semantic version string.';
+        return _template6.replace('{value}', warning.value || (metadata === null || metadata === void 0 ? void 0 : metadata.version) || '');
+      }
+    case 'invalid-timestamp':
+      {
+        var _template7 = (localeTexts === null || localeTexts === void 0 ? void 0 : localeTexts.autoGearImportInvalidTimestampWarning) || (englishTexts === null || englishTexts === void 0 ? void 0 : englishTexts.autoGearImportInvalidTimestampWarning) || 'The import timestamp "{value}" could not be verified.';
+        return _template7.replace('{value}', warning.value || (metadata === null || metadata === void 0 ? void 0 : metadata.timestamp) || '');
+      }
+    default:
+      return '';
+  }
+}
+function displayAutoGearImportWarnings(warnings, metadata) {
+  if (!Array.isArray(warnings) || !warnings.length) return;
+  var missingFields = [];
+  var invalidFields = [];
+  warnings.forEach(function (warning) {
+    if (!warning || _typeof(warning) !== 'object') return;
+    if (warning.code === 'missing-metadata' && warning.field) {
+      if (!missingFields.includes(warning.field)) {
+        missingFields.push(warning.field);
+      }
+    } else if (warning.code === 'invalid-metadata' && warning.field) {
+      if (!invalidFields.includes(warning.field)) {
+        invalidFields.push(warning.field);
+      }
+    } else {
+      var message = formatAutoGearImportWarningMessage(warning, metadata);
+      if (message) {
+        showNotification('warning', message);
+      }
+    }
+  });
+  var localeTexts = getLanguageTexts(currentLang);
+  var englishTexts = getLanguageTexts('en');
+  if (missingFields.length) {
+    var labels = missingFields.map(function (field) {
+      return getAutoGearImportMetadataFieldLabel(field);
+    });
+    var labelList = formatListForLang(currentLang, labels);
+    var template = (localeTexts === null || localeTexts === void 0 ? void 0 : localeTexts.autoGearImportMissingMetadataWarning) || (englishTexts === null || englishTexts === void 0 ? void 0 : englishTexts.autoGearImportMissingMetadataWarning) || 'Imported rules are missing required metadata: {fields}.';
+    showNotification('warning', template.replace('{fields}', labelList));
+  }
+  if (invalidFields.length) {
+    var _labels2 = invalidFields.map(function (field) {
+      return getAutoGearImportMetadataFieldLabel(field);
+    });
+    var _labelList = formatListForLang(currentLang, _labels2);
+    var _template8 = (localeTexts === null || localeTexts === void 0 ? void 0 : localeTexts.autoGearImportInvalidMetadataWarning) || (englishTexts === null || englishTexts === void 0 ? void 0 : englishTexts.autoGearImportInvalidMetadataWarning) || 'Imported rules include invalid metadata: {fields}.';
+    showNotification('warning', _template8.replace('{fields}', _labelList));
+  }
+}
+function importAutoGearRulesFromData(data) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  var previousRules = getAutoGearRules();
+  var previousMonitorDefaults = getAutoGearMonitorDefaultsSnapshot();
+  var parsed = parseAutoGearImportPayload(data);
+  if (!parsed || !Array.isArray(parsed.rules)) {
+    var _texts$currentLang92, _texts$en370;
+    var error = new Error('Invalid automatic gear rules import payload');
+    error.userMessage = ((_texts$currentLang92 = texts[currentLang]) === null || _texts$currentLang92 === void 0 ? void 0 : _texts$currentLang92.autoGearImportSchemaError) || ((_texts$en370 = texts.en) === null || _texts$en370 === void 0 ? void 0 : _texts$en370.autoGearImportSchemaError) || 'Import failed. The file does not match the automatic gear rules export format.';
+    error.validationWarnings = [];
+    error.validationMetadata = null;
+    throw error;
+  }
+  var validation = validateAutoGearImportPayload(parsed);
+  if (validation.errors.length) {
+    var _texts$currentLang93, _texts$en371;
+    var message = ((_texts$currentLang93 = texts[currentLang]) === null || _texts$currentLang93 === void 0 ? void 0 : _texts$currentLang93.autoGearImportSchemaError) || ((_texts$en371 = texts.en) === null || _texts$en371 === void 0 ? void 0 : _texts$en371.autoGearImportSchemaError) || 'Import failed. The file does not match the automatic gear rules export format.';
+    var _error = new Error(message);
+    _error.userMessage = message;
+    _error.validationErrors = validation.errors;
+    _error.validationWarnings = validation.warnings;
+    _error.validationMetadata = validation.metadata;
+    throw _error;
+  }
+  try {
+    setAutoGearRules(parsed.rules);
+    if (parsed.monitorDefaults && _typeof(parsed.monitorDefaults) === 'object') {
+      setAutoGearMonitorDefaults(parsed.monitorDefaults);
+    } else {
+      updateAutoGearMonitorDefaultOptions();
+      renderAutoGearMonitorDefaultsControls();
+    }
+    closeAutoGearEditor();
+    renderAutoGearRulesList();
+    updateAutoGearCatalogOptions();
+    if (typeof refreshGearListIfVisible === 'function') {
+      refreshGearListIfVisible();
+    }
+  } catch (error) {
+    setAutoGearRules(previousRules);
+    setAutoGearMonitorDefaults(previousMonitorDefaults, {
+      skipRender: true,
+      skipRefresh: true
+    });
+    renderAutoGearRulesList();
+    updateAutoGearCatalogOptions();
+    renderAutoGearMonitorDefaultsControls();
+    if (typeof refreshGearListIfVisible === 'function') {
+      refreshGearListIfVisible();
+    }
+    throw error;
+  }
+  if (!options.silent) {
+    var _texts$currentLang94, _texts$en372;
+    var _message5 = ((_texts$currentLang94 = texts[currentLang]) === null || _texts$currentLang94 === void 0 ? void 0 : _texts$currentLang94.autoGearImportSuccess) || ((_texts$en372 = texts.en) === null || _texts$en372 === void 0 ? void 0 : _texts$en372.autoGearImportSuccess) || 'Automatic gear rules imported.';
+    showNotification('success', _message5);
+  }
+  displayAutoGearImportWarnings(validation.warnings, validation.metadata);
+  return getAutoGearRules();
+}
+function formatAutoGearExportFilename(date) {
+  var _formatFullBackupFile = formatFullBackupFilename(date),
+    iso = _formatFullBackupFile.iso;
+  var safeIso = iso.replace(/[:]/g, '-');
+  return "".concat(safeIso, " auto gear rules.json");
+}
+function exportAutoGearRules() {
+  if (typeof document === 'undefined') return null;
+  try {
+    var _texts$currentLang95, _texts$en373;
+    var rules = getBaseAutoGearRules();
+    var monitorDefaults = getAutoGearMonitorDefaultsSnapshot();
+    var coverage = getAutoGearRuleCoverageSummary({
+      rules: rules
+    });
+    var payload = {
+      type: 'camera-power-planner/auto-gear-rules',
+      version: APP_VERSION,
+      createdAt: new Date().toISOString(),
+      rules: rules,
+      monitorDefaults: monitorDefaults
+    };
+    if (coverage) {
+      payload.coverage = coverage;
+    }
+    var json = JSON.stringify(payload, null, 2);
+    if (typeof Blob !== 'function' || !URL || typeof URL.createObjectURL !== 'function') {
+      throw new Error('Blob or URL APIs unavailable');
+    }
+    var blob = new Blob([json], {
+      type: 'application/json'
+    });
+    var url = URL.createObjectURL(blob);
+    var anchor = document.createElement('a');
+    anchor.href = url;
+    var fileName = formatAutoGearExportFilename(new Date());
+    anchor.download = fileName;
+    document.body.appendChild(anchor);
+    anchor.click();
+    document.body.removeChild(anchor);
+    if (typeof URL.revokeObjectURL === 'function') {
+      URL.revokeObjectURL(url);
+    }
+    var message = ((_texts$currentLang95 = texts[currentLang]) === null || _texts$currentLang95 === void 0 ? void 0 : _texts$currentLang95.autoGearExportSuccess) || ((_texts$en373 = texts.en) === null || _texts$en373 === void 0 ? void 0 : _texts$en373.autoGearExportSuccess) || 'Automatic gear rules downloaded.';
+    showNotification('success', message);
+    return fileName;
+  } catch (error) {
+    var _texts$currentLang96, _texts$en374;
+    console.warn('Automatic gear rules export failed', error);
+    var _message6 = ((_texts$currentLang96 = texts[currentLang]) === null || _texts$currentLang96 === void 0 ? void 0 : _texts$currentLang96.autoGearExportError) || ((_texts$en374 = texts.en) === null || _texts$en374 === void 0 ? void 0 : _texts$en374.autoGearExportError) || 'Automatic gear rules export failed.';
+    showNotification('error', _message6);
+    return null;
+  }
+}
+function captureAutoGearBackupSnapshot() {
+  var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  var config = _typeof(options) === 'object' && options !== null ? options : {};
+  var force = config.force === true;
+  var notifySuccess = config.notifySuccess !== false;
+  var notifyFailure = config.notifyFailure !== false;
+  var note = typeof config.note === 'string' ? config.note.trim() : '';
+  if (!force && !autoGearRulesDirtySinceBackup) {
+    return {
+      status: 'skipped',
+      reason: 'clean'
+    };
+  }
+  var rules = getBaseAutoGearRules();
+  var monitorDefaultsSnapshot = getAutoGearMonitorDefaultsSnapshot();
+  var signature = getAutoGearConfigurationSignature(rules, monitorDefaultsSnapshot);
+  if (!force && signature === autoGearRulesLastBackupSignature) {
+    autoGearRulesDirtySinceBackup = false;
+    return {
+      status: 'skipped',
+      reason: 'unchanged'
+    };
+  }
+  var entry = {
+    id: generateAutoGearId('backup'),
+    createdAt: new Date().toISOString(),
+    rules: rules,
+    monitorDefaults: monitorDefaultsSnapshot
+  };
+  if (note) {
+    entry.note = note;
+  }
+  var retentionLimit = clampAutoGearBackupRetentionLimit(autoGearBackupRetention);
+  var effectiveLimit = Math.max(1, retentionLimit);
+  var updatedBackups = [entry].concat(_toConsumableArray(autoGearBackups)).slice(0, effectiveLimit);
+  try {
+    persistAutoGearBackups(updatedBackups);
+    autoGearBackups = updatedBackups;
+    autoGearRulesLastBackupSignature = signature;
+    autoGearRulesLastPersistedSignature = signature;
+    autoGearRulesDirtySinceBackup = false;
+    renderAutoGearBackupControls();
+    renderAutoGearBackupRetentionControls();
+    if (notifySuccess) {
+      var _texts$currentLang97, _texts$en375;
+      var message = ((_texts$currentLang97 = texts[currentLang]) === null || _texts$currentLang97 === void 0 ? void 0 : _texts$currentLang97.autoGearBackupSaved) || ((_texts$en375 = texts.en) === null || _texts$en375 === void 0 ? void 0 : _texts$en375.autoGearBackupSaved) || 'Automatic gear backup saved.';
+      showNotification('success', message);
+    }
+    return {
+      status: 'created',
+      entry: entry
+    };
+  } catch (error) {
+    console.warn('Automatic gear backup failed', error);
+    autoGearRulesDirtySinceBackup = true;
+    if (notifyFailure) {
+      var _texts$currentLang98, _texts$en376;
+      var _message7 = ((_texts$currentLang98 = texts[currentLang]) === null || _texts$currentLang98 === void 0 ? void 0 : _texts$currentLang98.autoGearBackupFailed) || ((_texts$en376 = texts.en) === null || _texts$en376 === void 0 ? void 0 : _texts$en376.autoGearBackupFailed) || 'Automatic gear backup failed.';
+      showNotification('error', _message7);
+    }
+    return {
+      status: 'error',
+      error: error
+    };
+  }
+}
+function createAutoGearBackup() {
+  var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  var result = captureAutoGearBackupSnapshot(options);
+  return result.status === 'created';
+}
+function restoreAutoGearBackup(backupId) {
+  var _texts$currentLang99, _texts$en377;
+  if (!backupId) return false;
+  var backup = autoGearBackups.find(function (entry) {
+    return entry.id === backupId;
+  });
+  if (!backup) return false;
+  var confirmation = ((_texts$currentLang99 = texts[currentLang]) === null || _texts$currentLang99 === void 0 ? void 0 : _texts$currentLang99.autoGearBackupRestoreConfirm) || ((_texts$en377 = texts.en) === null || _texts$en377 === void 0 ? void 0 : _texts$en377.autoGearBackupRestoreConfirm) || 'Replace your automatic gear rules with this backup?';
+  if (typeof window !== 'undefined' && typeof window.confirm === 'function') {
+    if (!window.confirm(confirmation)) return false;
+  }
+  try {
+    var _texts$currentLang100, _texts$en378;
+    setAutoGearRules(Array.isArray(backup.rules) ? backup.rules : []);
+    if (backup.monitorDefaults) {
+      setAutoGearMonitorDefaults(backup.monitorDefaults, {
+        skipRefresh: true
+      });
+    }
+    closeAutoGearEditor();
+    renderAutoGearRulesList();
+    updateAutoGearCatalogOptions();
+    renderAutoGearMonitorDefaultsControls();
+    if (typeof refreshGearListIfVisible === 'function') {
+      refreshGearListIfVisible();
+    }
+    autoGearRulesLastBackupSignature = getAutoGearConfigurationSignature(backup.rules, backup.monitorDefaults);
+    autoGearRulesLastPersistedSignature = autoGearRulesLastBackupSignature;
+    autoGearRulesDirtySinceBackup = false;
+    var message = ((_texts$currentLang100 = texts[currentLang]) === null || _texts$currentLang100 === void 0 ? void 0 : _texts$currentLang100.autoGearBackupRestoreSuccess) || ((_texts$en378 = texts.en) === null || _texts$en378 === void 0 ? void 0 : _texts$en378.autoGearBackupRestoreSuccess) || 'Automatic gear backup restored.';
+    showNotification('success', message);
+    return true;
+  } catch (error) {
+    var _texts$currentLang101, _texts$en379;
+    console.warn('Failed to restore automatic gear backup', error);
+    var _message8 = ((_texts$currentLang101 = texts[currentLang]) === null || _texts$currentLang101 === void 0 ? void 0 : _texts$currentLang101.autoGearBackupRestoreError) || ((_texts$en379 = texts.en) === null || _texts$en379 === void 0 ? void 0 : _texts$en379.autoGearBackupRestoreError) || 'Automatic gear backup restore failed.';
+    showNotification('error', _message8);
+    return false;
+  }
+}
+function handleAutoGearImportSelection(event) {
+  var _texts$currentLang102, _texts$en380;
+  var input = event === null || event === void 0 ? void 0 : event.target;
+  var file = input && input.files && input.files[0];
+  if (!file) return;
+  var confirmation = ((_texts$currentLang102 = texts[currentLang]) === null || _texts$currentLang102 === void 0 ? void 0 : _texts$currentLang102.autoGearImportConfirm) || ((_texts$en380 = texts.en) === null || _texts$en380 === void 0 ? void 0 : _texts$en380.autoGearImportConfirm) || 'Replace your automatic gear rules with the imported file?';
+  if (typeof window !== 'undefined' && typeof window.confirm === 'function') {
+    if (!window.confirm(confirmation)) {
+      if (input) input.value = '';
+      return;
+    }
+  }
+  if (typeof FileReader === 'undefined') {
+    var _texts$currentLang103, _texts$en381;
+    var errorMsg = ((_texts$currentLang103 = texts[currentLang]) === null || _texts$currentLang103 === void 0 ? void 0 : _texts$currentLang103.autoGearImportError) || ((_texts$en381 = texts.en) === null || _texts$en381 === void 0 ? void 0 : _texts$en381.autoGearImportError) || 'Import failed. Please choose a valid automatic gear rules file.';
+    showNotification('error', errorMsg);
+    if (input) input.value = '';
+    return;
+  }
+  var reader = new FileReader();
+  reader.onload = function (e) {
+    try {
+      var _e$target;
+      var text = e === null || e === void 0 || (_e$target = e.target) === null || _e$target === void 0 ? void 0 : _e$target.result;
+      var parsed = JSON.parse(typeof text === 'string' ? text : '');
+      importAutoGearRulesFromData(parsed);
+    } catch (error) {
+      var _texts$currentLang104, _texts$en382;
+      console.warn('Automatic gear rules import failed', error);
+      if (Array.isArray(error === null || error === void 0 ? void 0 : error.validationWarnings) && error.validationWarnings.length) {
+        displayAutoGearImportWarnings(error.validationWarnings, error.validationMetadata || null);
+      }
+      var fallbackErrorMsg = ((_texts$currentLang104 = texts[currentLang]) === null || _texts$currentLang104 === void 0 ? void 0 : _texts$currentLang104.autoGearImportError) || ((_texts$en382 = texts.en) === null || _texts$en382 === void 0 ? void 0 : _texts$en382.autoGearImportError) || 'Import failed. Please choose a valid automatic gear rules file.';
+      var _errorMsg = typeof (error === null || error === void 0 ? void 0 : error.userMessage) === 'string' && error.userMessage.trim() ? error.userMessage : fallbackErrorMsg;
+      showNotification('error', _errorMsg);
+    } finally {
+      if (input) input.value = '';
+    }
+  };
+  reader.onerror = function () {
+    var _texts$currentLang105, _texts$en383;
+    var errorMsg = ((_texts$currentLang105 = texts[currentLang]) === null || _texts$currentLang105 === void 0 ? void 0 : _texts$currentLang105.autoGearImportError) || ((_texts$en383 = texts.en) === null || _texts$en383 === void 0 ? void 0 : _texts$en383.autoGearImportError) || 'Import failed. Please choose a valid automatic gear rules file.';
+    showNotification('error', errorMsg);
+    if (input) input.value = '';
+  };
+  reader.readAsText(file);
+}
+var lastActiveBeforeIosHelp = null;
+var lastActiveBeforeInstallGuide = null;
+var currentInstallGuidePlatform = null;
+function isIosDevice() {
+  if (typeof navigator === 'undefined') return false;
+  var ua = navigator.userAgent || '';
+  var platform = navigator.platform || '';
+  var hasTouch = typeof navigator.maxTouchPoints === 'number' && navigator.maxTouchPoints > 1;
+  return /iphone|ipad|ipod/i.test(ua) || platform === 'MacIntel' && hasTouch;
+}
+function isAndroidDevice() {
+  if (typeof navigator === 'undefined') return false;
+  var ua = navigator.userAgent || '';
+  var vendor = navigator.vendor || '';
+  return /android/i.test(ua) || /android/i.test(vendor);
+}
+function isStandaloneDisplayMode() {
+  if (typeof window === 'undefined') return false;
+  if (typeof window.matchMedia === 'function') {
+    try {
+      if (window.matchMedia('(display-mode: standalone)').matches) {
+        return true;
+      }
+    } catch (error) {
+      console.warn('matchMedia display-mode check failed', error);
+    }
+  }
+  if (typeof navigator !== 'undefined' && typeof navigator.standalone === 'boolean') {
+    return navigator.standalone;
+  }
+  return false;
+}
+function hasDismissedIosPwaHelp() {
+  try {
+    return localStorage.getItem(IOS_PWA_HELP_STORAGE_KEY) === '1';
+  } catch (error) {
+    console.warn('Could not read iOS PWA help dismissal flag', error);
+    return false;
+  }
+}
+function markIosPwaHelpDismissed() {
+  try {
+    localStorage.setItem(IOS_PWA_HELP_STORAGE_KEY, '1');
+  } catch (error) {
+    console.warn('Could not store iOS PWA help dismissal', error);
+  }
+}
+function hasDismissedInstallBanner() {
+  if (installBannerDismissedInSession) return true;
+  if (typeof localStorage === 'undefined') return false;
+  try {
+    var storedValue = localStorage.getItem(INSTALL_BANNER_DISMISSED_KEY);
+    var dismissed = storedValue === '1';
+    if (dismissed) {
+      installBannerDismissedInSession = true;
+    }
+    return dismissed;
+  } catch (error) {
+    console.warn('Could not read install banner dismissal flag', error);
+    return installBannerDismissedInSession;
+  }
+}
+function markInstallBannerDismissed() {
+  installBannerDismissedInSession = true;
+  if (typeof localStorage === 'undefined') return;
+  try {
+    localStorage.setItem(INSTALL_BANNER_DISMISSED_KEY, '1');
+  } catch (error) {
+    console.warn('Could not store install banner dismissal', error);
+  }
+}
+function shouldShowInstallBanner() {
+  if (!installPromptBanner) return false;
+  if (isStandaloneDisplayMode()) return false;
+  if (hasDismissedInstallBanner()) return false;
+  return isIosDevice() || isAndroidDevice();
+}
+function updateInstallBannerVisibility() {
+  if (!installPromptBanner) return;
+  var shouldShow = shouldShowInstallBanner();
+  var root = typeof document !== 'undefined' ? document.documentElement : null;
+  if (root && typeof root.classList !== 'undefined') {
+    root.classList.toggle('install-banner-visible', shouldShow);
+  }
+  if (shouldShow) {
+    installPromptBanner.removeAttribute('hidden');
+    updateInstallBannerColors();
+    updateInstallBannerPosition();
+  } else {
+    installPromptBanner.setAttribute('hidden', '');
+    setInstallBannerOffset(0);
+    installPromptBanner.style.removeProperty('top');
+  }
+}
+function updateInstallBannerColors() {
+  if (!installPromptBanner) return;
+  if (typeof window === 'undefined' || typeof window.getComputedStyle !== 'function') {
+    return;
+  }
+  try {
+    var root = document.documentElement;
+    if (!root) return;
+    var computed = window.getComputedStyle(root);
+    var accentValue = computed.getPropertyValue('--accent-color').trim();
+    if (!accentValue) {
+      installPromptBanner.style.removeProperty('--install-banner-text-color');
+      return;
+    }
+    var rgb = parseColorToRgb(accentValue);
+    if (!rgb) return;
+    var luminance = computeRelativeLuminance(rgb);
+    var textColor = luminance > 0.55 ? '#000000' : '#ffffff';
+    installPromptBanner.style.setProperty('--install-banner-text-color', textColor);
+  } catch (error) {
+    console.warn('Unable to update install banner colors', error);
+  }
+}
+function renderInstallGuideContent(platform) {
+  var lang = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : currentLang;
+  if (!installGuideDialog) return;
+  var fallbackTexts = texts.en || {};
+  var langTexts = texts[lang] || fallbackTexts;
+  var isIos = platform === 'ios';
+  var titleKey = isIos ? 'installHelpTitleIos' : 'installHelpTitleAndroid';
+  var introKey = isIos ? 'installHelpIntroIos' : 'installHelpIntroAndroid';
+  var stepsKey = isIos ? 'installHelpStepsIos' : 'installHelpStepsAndroid';
+  var noteKey = isIos ? 'installHelpNoteIos' : 'installHelpNoteAndroid';
+  var title = langTexts[titleKey] || fallbackTexts[titleKey] || '';
+  if (installGuideTitle) installGuideTitle.textContent = title;
+  var intro = langTexts[introKey] || fallbackTexts[introKey] || '';
+  if (installGuideIntro) installGuideIntro.textContent = intro;
+  var stepsSource = langTexts[stepsKey];
+  var fallbackStepsSource = fallbackTexts[stepsKey];
+  var toArray = function toArray(value) {
+    if (!value) return [];
+    return Array.isArray(value) ? value : [value];
+  };
+  var steps = toArray(stepsSource);
+  var fallbackSteps = toArray(fallbackStepsSource);
+  var effectiveSteps = steps.length ? steps : fallbackSteps;
+  if (installGuideSteps) {
+    installGuideSteps.textContent = '';
+    effectiveSteps.forEach(function (step) {
+      if (!step) return;
+      var li = document.createElement('li');
+      li.textContent = step;
+      installGuideSteps.appendChild(li);
+    });
+  }
+  var note = langTexts[noteKey] || fallbackTexts[noteKey] || '';
+  if (installGuideNote) installGuideNote.textContent = note;
+  if (installGuideDialog) {
+    installGuideDialog.setAttribute('data-platform', platform);
+  }
+  if (!installGuideMigration || !installGuideMigrationTitle || !installGuideMigrationIntro || !installGuideMigrationSteps || !installGuideMigrationNote) {
+    return;
+  }
+  if (isIos) {
+    installGuideMigration.removeAttribute('hidden');
+    var migrationTitle = langTexts.installHelpMigrationTitle || fallbackTexts.installHelpMigrationTitle || '';
+    installGuideMigrationTitle.textContent = migrationTitle;
+    var migrationIntro = langTexts.iosPwaHelpIntro || fallbackTexts.iosPwaHelpIntro || '';
+    installGuideMigrationIntro.textContent = migrationIntro;
+    var migrationSteps = [langTexts.iosPwaHelpStep1 || fallbackTexts.iosPwaHelpStep1, langTexts.iosPwaHelpStep2 || fallbackTexts.iosPwaHelpStep2, langTexts.iosPwaHelpStep3 || fallbackTexts.iosPwaHelpStep3, langTexts.iosPwaHelpStep4 || fallbackTexts.iosPwaHelpStep4].filter(Boolean);
+    installGuideMigrationSteps.textContent = '';
+    migrationSteps.forEach(function (step) {
+      var li = document.createElement('li');
+      li.textContent = step;
+      installGuideMigrationSteps.appendChild(li);
+    });
+    var migrationNote = langTexts.iosPwaHelpNote || fallbackTexts.iosPwaHelpNote || '';
+    installGuideMigrationNote.textContent = migrationNote;
+  } else {
+    installGuideMigration.setAttribute('hidden', '');
+    installGuideMigrationTitle.textContent = '';
+    installGuideMigrationIntro.textContent = '';
+    installGuideMigrationSteps.textContent = '';
+    installGuideMigrationNote.textContent = '';
+  }
+}
+function openInstallGuide(platform) {
+  if (!installGuideDialog) return;
+  currentInstallGuidePlatform = platform;
+  lastActiveBeforeInstallGuide = document.activeElement;
+  renderInstallGuideContent(platform);
+  installGuideDialog.removeAttribute('hidden');
+  var focusTarget = installGuideClose || installGuideDialog.querySelector('button, [href], [tabindex]:not([tabindex="-1"])');
+  if (focusTarget && typeof focusTarget.focus === 'function') {
+    focusTarget.focus();
+  }
+}
+function closeInstallGuide() {
+  if (!installGuideDialog) return;
+  installGuideDialog.setAttribute('hidden', '');
+  currentInstallGuidePlatform = null;
+  if (lastActiveBeforeInstallGuide && typeof lastActiveBeforeInstallGuide.focus === 'function') {
+    lastActiveBeforeInstallGuide.focus();
+  }
+}
+function setupInstallBanner() {
+  if (!installPromptBanner) return;
+  if (installPromptBannerIcon) {
+    applyIconGlyph(installPromptBannerIcon, ICON_GLYPHS.installApp);
+  }
+  if (installPromptBannerAction) {
+    installPromptBannerAction.addEventListener('click', function (event) {
+      event.preventDefault();
+      var platform = isIosDevice() ? 'ios' : 'android';
+      openInstallGuide(platform);
+    });
+  }
+  if (installPromptBannerDismiss) {
+    installPromptBannerDismiss.addEventListener('click', function (event) {
+      event.preventDefault();
+      event.stopPropagation();
+      markInstallBannerDismissed();
+      updateInstallBannerVisibility();
+    });
+  }
+  if (installGuideClose) {
+    installGuideClose.addEventListener('click', closeInstallGuide);
+  }
+  if (installGuideDialog) {
+    installGuideDialog.addEventListener('click', function (event) {
+      if (event.target === installGuideDialog) {
+        closeInstallGuide();
+      }
+    });
+  }
+  applyInstallTexts(currentLang);
+  updateInstallBannerColors();
+  updateInstallBannerVisibility();
+  updateInstallBannerPosition();
+  if (typeof window !== 'undefined') {
+    window.addEventListener('resize', updateInstallBannerPosition);
+    window.addEventListener('appinstalled', updateInstallBannerVisibility);
+    if (typeof window.matchMedia === 'function') {
+      try {
+        var media = window.matchMedia('(display-mode: standalone)');
+        var handleChange = function handleChange() {
+          return updateInstallBannerVisibility();
+        };
+        if (typeof media.addEventListener === 'function') {
+          media.addEventListener('change', handleChange);
+        } else if (typeof media.addListener === 'function') {
+          media.addListener(handleChange);
+        }
+      } catch (error) {
+        console.warn('matchMedia display-mode listener failed', error);
+      }
+    }
+  }
+}
+function applyInstallTexts(lang) {
+  var fallbackTexts = texts.en || {};
+  var langTexts = texts[lang] || fallbackTexts;
+  var bannerText = langTexts.installBannerText || fallbackTexts.installBannerText;
+  if (installPromptBannerText && bannerText) {
+    installPromptBannerText.textContent = bannerText;
+  }
+  if (installPromptBanner) {
+    if (bannerText) {
+      installPromptBanner.setAttribute('aria-label', bannerText);
+      installPromptBanner.setAttribute('title', bannerText);
+    } else {
+      installPromptBanner.removeAttribute('aria-label');
+      installPromptBanner.removeAttribute('title');
+    }
+  }
+  if (installPromptBannerAction) {
+    if (bannerText) {
+      installPromptBannerAction.setAttribute('aria-label', bannerText);
+      installPromptBannerAction.setAttribute('title', bannerText);
+    } else {
+      installPromptBannerAction.removeAttribute('aria-label');
+      installPromptBannerAction.removeAttribute('title');
+    }
+  }
+  var closeLabel = langTexts.installHelpClose || fallbackTexts.installHelpClose;
+  var dismissLabel = langTexts.installBannerDismiss || fallbackTexts.installBannerDismiss || closeLabel || '';
+  if (installPromptBannerDismiss) {
+    var labelText = dismissLabel || '';
+    setButtonLabelWithIcon(installPromptBannerDismiss, '', ICON_GLYPHS.circleX);
+    if (labelText) {
+      installPromptBannerDismiss.setAttribute('aria-label', labelText);
+      installPromptBannerDismiss.setAttribute('title', labelText);
+      var hiddenLabel = document.createElement('span');
+      hiddenLabel.className = 'visually-hidden';
+      hiddenLabel.textContent = labelText;
+      installPromptBannerDismiss.appendChild(hiddenLabel);
+    } else {
+      installPromptBannerDismiss.removeAttribute('aria-label');
+      installPromptBannerDismiss.removeAttribute('title');
+    }
+  }
+  if (installGuideClose && closeLabel) {
+    setButtonLabelWithIcon(installGuideClose, closeLabel, ICON_GLYPHS.circleX);
+    installGuideClose.setAttribute('aria-label', closeLabel);
+    installGuideClose.setAttribute('title', closeLabel);
+  }
+  if (installGuideDialog && !installGuideDialog.hasAttribute('hidden') && currentInstallGuidePlatform) {
+    renderInstallGuideContent(currentInstallGuidePlatform, lang);
+  }
+  updateInstallBannerPosition();
+}
+function shouldShowIosPwaHelp() {
+  return !!iosPwaHelpDialog && isIosDevice() && isStandaloneDisplayMode() && !hasDismissedIosPwaHelp();
+}
+function openIosPwaHelp() {
+  if (!iosPwaHelpDialog) return;
+  if (!shouldShowIosPwaHelp()) return;
+  lastActiveBeforeIosHelp = document.activeElement;
+  iosPwaHelpDialog.removeAttribute('hidden');
+  var focusTarget = iosPwaHelpClose || iosPwaHelpDialog.querySelector('button, [href], [tabindex]:not([tabindex="-1"])');
+  if (focusTarget && typeof focusTarget.focus === 'function') {
+    focusTarget.focus();
+  }
+}
+function closeIosPwaHelp() {
+  var storeDismissal = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+  if (!iosPwaHelpDialog) return;
+  iosPwaHelpDialog.setAttribute('hidden', '');
+  if (storeDismissal) {
+    markIosPwaHelpDismissed();
+  }
+  if (lastActiveBeforeIosHelp && typeof lastActiveBeforeIosHelp.focus === 'function') {
+    lastActiveBeforeIosHelp.focus();
+  }
+}
+function maybeShowIosPwaHelp() {
+  openIosPwaHelp();
+}
+if (iosPwaHelpClose) {
+  iosPwaHelpClose.addEventListener('click', function () {
+    return closeIosPwaHelp(true);
+  });
+}
+if (iosPwaHelpDialog) {
+  iosPwaHelpDialog.addEventListener('click', function (event) {
+    if (event.target === iosPwaHelpDialog) {
+      closeIosPwaHelp(true);
+    }
+  });
+}
+document.addEventListener('keydown', function (event) {
+  if (event.key !== 'Escape' && event.key !== 'Esc') return;
+  var handled = false;
+  if (iosPwaHelpDialog && !iosPwaHelpDialog.hasAttribute('hidden')) {
+    closeIosPwaHelp(true);
+    handled = true;
+  }
+  if (installGuideDialog && !installGuideDialog.hasAttribute('hidden')) {
+    closeInstallGuide();
+    handled = true;
+  }
+  if (handled) {
+    event.preventDefault();
+  }
+});
+function renderSettingsLogoPreview(dataUrl) {
+  if (!settingsLogoPreview) return;
+  if (dataUrl) {
+    settingsLogoPreview.textContent = '';
+    var img = document.createElement('img');
+    img.src = dataUrl;
+    img.alt = '';
+    settingsLogoPreview.appendChild(img);
+    settingsLogoPreview.removeAttribute('hidden');
+  } else {
+    settingsLogoPreview.textContent = '';
+    settingsLogoPreview.setAttribute('hidden', '');
+  }
+}
+function loadStoredLogoPreview() {
+  if (!settingsLogoPreview || typeof localStorage === 'undefined') return;
+  var stored = null;
+  try {
+    stored = localStorage.getItem('customLogo');
+  } catch (e) {
+    console.warn('Could not load custom logo preview', e);
+  }
+  renderSettingsLogoPreview(stored);
+}
+var isPlainObjectValue = function isPlainObjectValue(val) {
+  return val !== null && _typeof(val) === 'object' && !Array.isArray(val);
+};
+var REQUIRED_DEVICE_CATEGORIES = ['cameras', 'monitors', 'video', 'viewfinders', 'directorMonitors', 'iosVideo', 'videoAssist', 'media', 'lenses', 'fiz', 'batteries', 'batteryHotswaps', 'wirelessReceivers', 'accessories'];
+var DEFAULT_FIZ_COLLECTIONS = ['motors', 'handUnits', 'controllers', 'distance'];
+var DEFAULT_ACCESSORY_COLLECTIONS = ['chargers', 'cages', 'powerPlates', 'cameraSupport', 'matteboxes', 'filters', 'rigging', 'batteries', 'cables', 'videoAssist', 'media', 'tripodHeads', 'tripods', 'sliders', 'cameraStabiliser', 'grip', 'carts'];
+var MAX_DEVICE_IMPORT_ERRORS = 5;
+function isDeviceEntryObject(value) {
+  if (!isPlainObjectValue(value)) {
+    return false;
+  }
+  return Object.values(value).some(function (entry) {
+    return entry === null || _typeof(entry) !== 'object' || Array.isArray(entry);
+  });
+}
+function countDeviceDatabaseEntries(collection) {
+  if (!isPlainObjectValue(collection)) {
+    return 0;
+  }
+  var total = 0;
+  for (var _i16 = 0, _Object$entries0 = Object.entries(collection); _i16 < _Object$entries0.length; _i16++) {
+    var _Object$entries0$_i = _slicedToArray(_Object$entries0[_i16], 2),
+      name = _Object$entries0$_i[0],
+      _value4 = _Object$entries0$_i[1];
+    if (name === 'filterOptions' || name === 'None') {
+      continue;
+    }
+    if (!isPlainObjectValue(_value4)) {
+      continue;
+    }
+    if (isDeviceEntryObject(_value4)) {
+      total += 1;
+    } else {
+      total += countDeviceDatabaseEntries(_value4);
+    }
+  }
+  return total;
+}
+function looksLikeDeviceDatabase(candidate) {
+  if (!isPlainObjectValue(candidate)) {
+    return false;
+  }
+  var matched = 0;
+  for (var _i17 = 0, _REQUIRED_DEVICE_CATE = REQUIRED_DEVICE_CATEGORIES; _i17 < _REQUIRED_DEVICE_CATE.length; _i17++) {
+    var _key8 = _REQUIRED_DEVICE_CATE[_i17];
+    if (Object.prototype.hasOwnProperty.call(candidate, _key8)) {
+      matched += 1;
+    }
+  }
+  return matched >= 3;
+}
+function collectReferenceFizKeys() {
+  var reference = typeof globalThis !== 'undefined' && isPlainObjectValue(globalThis.defaultDevices) ? globalThis.defaultDevices : typeof globalThis !== 'undefined' && isPlainObjectValue(globalThis.devices) ? globalThis.devices : null;
+  if (reference && isPlainObjectValue(reference.fiz)) {
+    var keys = Object.keys(reference.fiz).filter(Boolean);
+    if (keys.length) {
+      return keys;
+    }
+  }
+  return DEFAULT_FIZ_COLLECTIONS;
+}
+function collectReferenceAccessoryKeys() {
+  var reference = typeof globalThis !== 'undefined' && isPlainObjectValue(globalThis.defaultDevices) ? globalThis.defaultDevices : typeof globalThis !== 'undefined' && isPlainObjectValue(globalThis.devices) ? globalThis.devices : null;
+  if (reference && isPlainObjectValue(reference.accessories)) {
+    var keys = Object.keys(reference.accessories).filter(Boolean);
+    if (keys.length) {
+      return keys;
+    }
+  }
+  return DEFAULT_ACCESSORY_COLLECTIONS;
+}
+function validateDeviceDatabaseStructure(candidate) {
+  if (!isPlainObjectValue(candidate)) {
+    return {
+      devices: null,
+      errors: ['Imported data must be a JSON object.']
+    };
+  }
+  var errors = [];
+  var missing = [];
+  for (var _i18 = 0, _REQUIRED_DEVICE_CATE2 = REQUIRED_DEVICE_CATEGORIES; _i18 < _REQUIRED_DEVICE_CATE2.length; _i18++) {
+    var category = _REQUIRED_DEVICE_CATE2[_i18];
+    if (category === 'fiz') {
+      if (!isPlainObjectValue(candidate.fiz)) {
+        missing.push('fiz');
+        continue;
+      }
+      var expectedFizKeys = collectReferenceFizKeys();
+      var missingFiz = expectedFizKeys.filter(function (key) {
+        return !isPlainObjectValue(candidate.fiz[key]);
+      });
+      if (missingFiz.length) {
+        errors.push("Missing FIZ categories: ".concat(missingFiz.join(', ')));
+      }
+      continue;
+    }
+    if (category === 'accessories') {
+      if (!isPlainObjectValue(candidate.accessories)) {
+        missing.push('accessories');
+        continue;
+      }
+      var expectedAccessoryKeys = collectReferenceAccessoryKeys();
+      var missingAccessories = expectedAccessoryKeys.filter(function (key) {
+        return !isPlainObjectValue(candidate.accessories[key]);
+      });
+      if (missingAccessories.length) {
+        errors.push("Missing accessory categories: ".concat(missingAccessories.join(', ')));
+      }
+      continue;
+    }
+    if (!isPlainObjectValue(candidate[category])) {
+      missing.push(category);
+    }
+  }
+  if (missing.length) {
+    errors.push("Missing categories: ".concat(missing.join(', ')));
+  }
+  if (candidate.accessories !== undefined) {
+    if (!isPlainObjectValue(candidate.accessories)) {
+      errors.push('Accessory collections must be objects.');
+    } else {
+      for (var _i19 = 0, _Object$entries1 = Object.entries(candidate.accessories); _i19 < _Object$entries1.length; _i19++) {
+        var _Object$entries1$_i = _slicedToArray(_Object$entries1[_i19], 2),
+          subKey = _Object$entries1$_i[0],
+          subValue = _Object$entries1$_i[1];
+        if (!isPlainObjectValue(subValue)) {
+          errors.push("Accessory category \"".concat(subKey, "\" must be an object."));
+        }
+      }
+    }
+  }
+  if (candidate.filterOptions !== undefined && !Array.isArray(candidate.filterOptions)) {
+    errors.push('Filter options must be provided as an array.');
+  }
+  if (candidate.fiz && isPlainObjectValue(candidate.fiz)) {
+    for (var _i20 = 0, _Object$entries10 = Object.entries(candidate.fiz); _i20 < _Object$entries10.length; _i20++) {
+      var _Object$entries10$_i = _slicedToArray(_Object$entries10[_i20], 2),
+        _subKey = _Object$entries10$_i[0],
+        _subValue = _Object$entries10$_i[1];
+      if (_subValue !== undefined && !isPlainObjectValue(_subValue)) {
+        errors.push("FIZ category \"".concat(_subKey, "\" must be an object."));
+      }
+    }
+  }
+  var structureErrors = [];
+  var _inspectCollections = function inspectCollections(collection) {
+    var path = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+    if (!isPlainObjectValue(collection)) {
+      return;
+    }
+    for (var _i21 = 0, _Object$entries11 = Object.entries(collection); _i21 < _Object$entries11.length; _i21++) {
+      var _Object$entries11$_i = _slicedToArray(_Object$entries11[_i21], 2),
+        name = _Object$entries11$_i[0],
+        _value5 = _Object$entries11$_i[1];
+      if (name === 'None' || name === 'filterOptions') {
+        continue;
+      }
+      var nextPath = path.concat(name);
+      if (!isPlainObjectValue(_value5)) {
+        if (!Array.isArray(_value5)) {
+          structureErrors.push("".concat(nextPath.join('.'), " must be an object."));
+        }
+      } else if (!isDeviceEntryObject(_value5)) {
+        _inspectCollections(_value5, nextPath);
+      }
+      if (structureErrors.length >= MAX_DEVICE_IMPORT_ERRORS) {
+        return;
+      }
+    }
+  };
+  _inspectCollections(candidate);
+  errors.push.apply(errors, structureErrors);
+  var deviceCount = countDeviceDatabaseEntries(candidate);
+  if (!deviceCount) {
+    errors.push('The imported database does not contain any devices.');
+  }
+  var uniqueErrors = [];
+  for (var _i22 = 0, _errors = errors; _i22 < _errors.length; _i22++) {
+    var message = _errors[_i22];
+    if (message && !uniqueErrors.includes(message)) {
+      uniqueErrors.push(message);
+    }
+    if (uniqueErrors.length >= MAX_DEVICE_IMPORT_ERRORS) {
+      break;
+    }
+  }
+  return {
+    devices: uniqueErrors.length ? null : candidate,
+    errors: uniqueErrors
+  };
+}
+function parseDeviceDatabaseImport(rawData) {
+  if (Array.isArray(rawData)) {
+    return {
+      devices: null,
+      errors: ['Import file must contain a JSON object, but found an array.']
+    };
+  }
+  if (!isPlainObjectValue(rawData)) {
+    return {
+      devices: null,
+      errors: ['Import file must contain a JSON object.']
+    };
+  }
+  if (Object.prototype.hasOwnProperty.call(rawData, 'devices') && !isPlainObjectValue(rawData.devices)) {
+    return {
+      devices: null,
+      errors: ['The "devices" property must be an object.']
+    };
+  }
+  var candidate = Object.prototype.hasOwnProperty.call(rawData, 'devices') && isPlainObjectValue(rawData.devices) ? rawData.devices : looksLikeDeviceDatabase(rawData) ? rawData : null;
+  if (!candidate) {
+    return {
+      devices: null,
+      errors: ['Could not find a device database in the selected file.']
+    };
+  }
+  return validateDeviceDatabaseStructure(candidate);
+}
+function formatDeviceImportErrors(errors) {
+  if (!Array.isArray(errors) || !errors.length) {
+    return '';
+  }
+  var lines = errors.slice(0, MAX_DEVICE_IMPORT_ERRORS).map(function (message) {
+    return "- ".concat(message);
+  });
+  return lines.join('\n');
+}
+function resolveLanguageCode(lang) {
+  if (lang && texts && Object.prototype.hasOwnProperty.call(texts, lang)) {
+    return lang;
+  }
+  return 'en';
+}
+function getLanguageTexts(lang) {
+  var resolved = resolveLanguageCode(lang);
+  return texts && texts[resolved] || texts.en || {};
+}
+var DEFAULT_INTL_CACHE_KEY = '__default__';
+var numberFormatCache = new Map();
+var pluralRulesCache = new Map();
+var listFormatCache = new Map();
+var LIST_FORMAT_OPTIONS = Object.freeze({
+  style: 'long',
+  type: 'conjunction'
+});
+function serializeIntlOptions(options) {
+  if (!options || _typeof(options) !== 'object') {
+    return options == null ? DEFAULT_INTL_CACHE_KEY : String(options);
+  }
+  var entries = [];
+  for (var _i23 = 0, _Object$entries12 = Object.entries(options); _i23 < _Object$entries12.length; _i23++) {
+    var _Object$entries12$_i = _slicedToArray(_Object$entries12[_i23], 2),
+      _key9 = _Object$entries12$_i[0],
+      _value6 = _Object$entries12$_i[1];
+    if (typeof _value6 === 'undefined') continue;
+    var normalizedValue = void 0;
+    if (_value6 && _typeof(_value6) === 'object') {
+      normalizedValue = serializeIntlOptions(_value6);
+    } else {
+      normalizedValue = String(_value6);
+    }
+    entries.push("".concat(_key9, ":").concat(normalizedValue));
+  }
+  if (!entries.length) {
+    return DEFAULT_INTL_CACHE_KEY;
+  }
+  return entries.sort().join('|');
+}
+function getCachedIntlObject(cache, locale, options, factory) {
+  var key = serializeIntlOptions(options);
+  var localeCache = cache.get(locale);
+  if (!localeCache) {
+    localeCache = new Map();
+    cache.set(locale, localeCache);
+  }
+  if (localeCache.has(key)) {
+    return localeCache.get(key);
+  }
+  try {
+    var instance = factory(locale, options);
+    localeCache.set(key, instance);
+    return instance;
+  } catch (error) {
+    localeCache.delete(key);
+    throw error;
+  }
+}
+function getNumberFormatter(locale, options) {
+  return getCachedIntlObject(numberFormatCache, locale, options, function (loc, opts) {
+    return new Intl.NumberFormat(loc, opts);
+  });
+}
+function getPluralRules(locale) {
+  return getCachedIntlObject(pluralRulesCache, locale, undefined, function (loc) {
+    return new Intl.PluralRules(loc);
+  });
+}
+function getListFormatter(locale) {
+  return getCachedIntlObject(listFormatCache, locale, LIST_FORMAT_OPTIONS, function (loc) {
+    return new Intl.ListFormat(loc, LIST_FORMAT_OPTIONS);
+  });
+}
+function formatNumberForLang(lang, value, options) {
+  var resolved = resolveLanguageCode(lang);
+  try {
+    return getNumberFormatter(resolved, options).format(value);
+  } catch (firstError) {
+    if (resolved !== 'en') {
+      try {
+        return getNumberFormatter('en', options).format(value);
+      } catch (fallbackError) {
+        console.warn('Number formatting failed', firstError, fallbackError);
+        return String(value);
+      }
+    }
+    console.warn('Number formatting failed', firstError);
+    return String(value);
+  }
+}
+function formatCountText(lang, langTexts, baseKey, count) {
+  var resolved = resolveLanguageCode(lang);
+  var localeTexts = langTexts || getLanguageTexts(resolved);
+  var englishTexts = getLanguageTexts('en');
+  var suffix = 'Other';
+  try {
+    var plural = getPluralRules(resolved).select(count);
+    if (plural === 'one' && (localeTexts["".concat(baseKey, "One")] || englishTexts["".concat(baseKey, "One")])) {
+      suffix = 'One';
+    }
+  } catch (firstError) {
+    if (resolved !== 'en') {
+      try {
+        var fallbackPlural = getPluralRules('en').select(count);
+        if (fallbackPlural === 'one' && (localeTexts["".concat(baseKey, "One")] || englishTexts["".concat(baseKey, "One")])) {
+          suffix = 'One';
+        }
+      } catch (fallbackError) {
+        console.warn('Plural rules failed', firstError, fallbackError);
+        if (count === 1 && (localeTexts["".concat(baseKey, "One")] || englishTexts["".concat(baseKey, "One")])) {
+          suffix = 'One';
+        }
+      }
+    } else if (count === 1 && (localeTexts["".concat(baseKey, "One")] || englishTexts["".concat(baseKey, "One")])) {
+      suffix = 'One';
+    }
+  }
+  var key = "".concat(baseKey).concat(suffix);
+  var template = localeTexts[key] || englishTexts[key] || '%s';
+  var formatted = formatNumberForLang(resolved, count);
+  return template.replace('%s', formatted);
+}
+function formatListForLang(lang, items) {
+  var resolved = resolveLanguageCode(lang);
+  if (!Array.isArray(items) || !items.length) return '';
+  try {
+    return getListFormatter(resolved).format(items);
+  } catch (firstError) {
+    if (resolved !== 'en') {
+      try {
+        return getListFormatter('en').format(items);
+      } catch (fallbackError) {
+        console.warn('List formatting failed', firstError, fallbackError);
+        return items.join(', ');
+      }
+    }
+    console.warn('List formatting failed', firstError);
+    return items.join(', ');
+  }
+}
+function normalizeTemperatureUnit(unit) {
+  if (typeof unit === 'string') {
+    var normalized = unit.trim().toLowerCase();
+    if (normalized === TEMPERATURE_UNITS.fahrenheit) {
+      return TEMPERATURE_UNITS.fahrenheit;
+    }
+    if (normalized === TEMPERATURE_UNITS.celsius) {
+      return TEMPERATURE_UNITS.celsius;
+    }
+  }
+  if (unit === TEMPERATURE_UNITS.fahrenheit) {
+    return TEMPERATURE_UNITS.fahrenheit;
+  }
+  return TEMPERATURE_UNITS.celsius;
+}
+function convertCelsiusToUnit(value) {
+  var unit = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : temperatureUnit;
+  var numeric = Number(value);
+  if (!Number.isFinite(numeric)) {
+    return Number.NaN;
+  }
+  var resolvedUnit = normalizeTemperatureUnit(unit);
+  if (resolvedUnit === TEMPERATURE_UNITS.fahrenheit) {
+    return numeric * 9 / 5 + 32;
+  }
+  return numeric;
+}
+function getTemperatureUnitSymbolForLang() {
+  var lang = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : currentLang;
+  var unit = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : temperatureUnit;
+  var resolvedUnit = normalizeTemperatureUnit(unit);
+  var textsForLang = getLanguageTexts(lang);
+  var fallbackTexts = getLanguageTexts('en');
+  var key = resolvedUnit === TEMPERATURE_UNITS.fahrenheit ? 'temperatureUnitSymbolFahrenheit' : 'temperatureUnitSymbolCelsius';
+  return textsForLang[key] || fallbackTexts[key] || (resolvedUnit === TEMPERATURE_UNITS.fahrenheit ? '°F' : '°C');
+}
+function getTemperatureUnitLabelForLang() {
+  var lang = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : currentLang;
+  var unit = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : temperatureUnit;
+  var resolvedUnit = normalizeTemperatureUnit(unit);
+  var textsForLang = getLanguageTexts(lang);
+  var fallbackTexts = getLanguageTexts('en');
+  var key = resolvedUnit === TEMPERATURE_UNITS.fahrenheit ? 'temperatureUnitFahrenheit' : 'temperatureUnitCelsius';
+  return textsForLang[key] || fallbackTexts[key] || (resolvedUnit === TEMPERATURE_UNITS.fahrenheit ? 'Fahrenheit (°F)' : 'Celsius (°C)');
+}
+function getTemperatureColumnLabelForLang() {
+  var lang = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : currentLang;
+  var unit = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : temperatureUnit;
+  var textsForLang = getLanguageTexts(lang);
+  var fallbackTexts = getLanguageTexts('en');
+  var baseLabel = textsForLang.temperatureLabel || fallbackTexts.temperatureLabel || 'Temperature';
+  var symbol = getTemperatureUnitSymbolForLang(lang, unit);
+  return "".concat(baseLabel, " (").concat(symbol, ")");
+}
+function formatTemperatureForDisplay(celsius) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  var _ref53 = options || {},
+    _ref53$unit = _ref53.unit,
+    unit = _ref53$unit === void 0 ? temperatureUnit : _ref53$unit,
+    _ref53$lang = _ref53.lang,
+    lang = _ref53$lang === void 0 ? currentLang : _ref53$lang,
+    _ref53$includeSign = _ref53.includeSign,
+    includeSign = _ref53$includeSign === void 0 ? true : _ref53$includeSign;
+  var resolvedUnit = normalizeTemperatureUnit(unit);
+  var converted = convertCelsiusToUnit(celsius, resolvedUnit);
+  if (!Number.isFinite(converted)) {
+    return '';
+  }
+  if (Math.abs(converted) < 1e-6) {
+    converted = 0;
+  }
+  var isNegative = converted < 0;
+  var isPositive = converted > 0;
+  var absolute = Math.abs(converted);
+  var isInteger = Math.abs(absolute - Math.round(absolute)) < 1e-6;
+  var fractionDigits = resolvedUnit === TEMPERATURE_UNITS.fahrenheit && !isInteger ? 1 : 0;
+  var formatted = formatNumberForLang(lang, absolute, {
+    minimumFractionDigits: fractionDigits,
+    maximumFractionDigits: fractionDigits
+  });
+  var prefix = '';
+  if (includeSign === 'none') {
+    prefix = '';
+  } else if (includeSign === false || includeSign === 'negative') {
+    if (isNegative) {
+      prefix = "\u2013";
+    }
+  } else {
+    if (isPositive) {
+      prefix = '+';
+    } else if (isNegative) {
+      prefix = "\u2013";
+    }
+  }
+  var symbol = getTemperatureUnitSymbolForLang(lang, resolvedUnit);
+  return "".concat(prefix).concat(formatted, " ").concat(symbol);
+}
+function summarizeCustomDevices() {
+  if (typeof getDeviceChanges !== 'function') {
+    return {
+      total: 0,
+      categories: []
+    };
+  }
+  var diff = getDeviceChanges();
+  if (!diff || _typeof(diff) !== 'object') {
+    return {
+      total: 0,
+      categories: []
+    };
+  }
+  var categories = [];
+  var total = 0;
+  Object.entries(diff).forEach(function (_ref54) {
+    var _ref55 = _slicedToArray(_ref54, 2),
+      cat = _ref55[0],
+      entries = _ref55[1];
+    if (!isPlainObjectValue(entries)) return;
+    if (cat === 'fiz') {
+      Object.entries(entries).forEach(function (_ref56) {
+        var _ref57 = _slicedToArray(_ref56, 2),
+          sub = _ref57[0],
+          subEntries = _ref57[1];
+        if (!isPlainObjectValue(subEntries)) return;
+        var keys = Object.keys(subEntries);
+        if (!keys.length) return;
+        categories.push({
+          key: "fiz.".concat(sub),
+          count: keys.length
+        });
+        total += keys.length;
+      });
+    } else {
+      var keys = Object.keys(entries);
+      if (!keys.length) return;
+      categories.push({
+        key: cat,
+        count: keys.length
+      });
+      total += keys.length;
+    }
+  });
+  return {
+    total: total,
+    categories: categories
+  };
+}
+function hasGearListContent(entry) {
+  if (!entry) return false;
+  if (typeof entry === 'string') {
+    return entry.trim().length > 0;
+  }
+  if (!isPlainObjectValue(entry)) {
+    return false;
+  }
+  if (typeof entry.gearList === 'string') {
+    return entry.gearList.trim().length > 0;
+  }
+  if (isPlainObjectValue(entry.gearList)) {
+    return Object.values(entry.gearList).some(function (value) {
+      return typeof value === 'string' && value.trim().length > 0;
+    });
+  }
+  var legacyProjectHtml = typeof entry.projectHtml === 'string' && entry.projectHtml.trim().length > 0;
+  var legacyGearHtml = typeof entry.gearHtml === 'string' && entry.gearHtml.trim().length > 0;
+  if (legacyProjectHtml || legacyGearHtml) {
+    return true;
+  }
+  return false;
+}
+function computeGearListCount(projectData, setupsData) {
+  var count = 0;
+  var countedNames = new Set();
+  var addCount = function addCount(name, candidate) {
+    if (!hasGearListContent(candidate)) {
+      return;
+    }
+    var normalizedName = typeof name === 'string' ? name : '';
+    if (countedNames.has(normalizedName)) {
+      return;
+    }
+    countedNames.add(normalizedName);
+    count += 1;
+  };
+  if (typeof projectData === 'string') {
+    addCount('', projectData);
+  } else if (Array.isArray(projectData)) {
+    projectData.forEach(function (entry, index) {
+      var key = isPlainObjectValue(entry) && typeof entry.name === 'string' ? entry.name : "legacy-".concat(index);
+      addCount(key, entry);
+    });
+  } else if (isPlainObjectValue(projectData)) {
+    Object.entries(projectData).forEach(function (_ref58) {
+      var _ref59 = _slicedToArray(_ref58, 2),
+        name = _ref59[0],
+        entry = _ref59[1];
+      addCount(name, entry);
+    });
+  } else {
+    addCount('', projectData);
+  }
+  if (isPlainObjectValue(setupsData)) {
+    Object.entries(setupsData).forEach(function (_ref60) {
+      var _ref61 = _slicedToArray(_ref60, 2),
+        name = _ref61[0],
+        setup = _ref61[1];
+      addCount(name, setup);
+    });
+  }
+  return count;
+}
+function computeFavoritesCount(favorites) {
+  if (!isPlainObjectValue(favorites)) return 0;
+  return Object.values(favorites).reduce(function (count, entry) {
+    if (Array.isArray(entry)) {
+      return count + entry.length;
+    }
+    return count;
+  }, 0);
+}
+function computeFeedbackCount(feedback) {
+  if (!isPlainObjectValue(feedback)) return 0;
+  return Object.values(feedback).reduce(function (count, entry) {
+    if (Array.isArray(entry)) {
+      return count + entry.length;
+    }
+    if (isPlainObjectValue(entry) && Array.isArray(entry.entries)) {
+      return count + entry.entries.length;
+    }
+    return count;
+  }, 0);
+}
+function estimateBackupSize(data) {
+  if (typeof localStorage === 'undefined') return 0;
+  try {
+    var snapshot = {};
+    for (var i = 0; i < localStorage.length; i += 1) {
+      var _key0 = localStorage.key(i);
+      if (typeof _key0 !== 'string') continue;
+      snapshot[_key0] = localStorage.getItem(_key0);
+    }
+    var payload = {
+      version: typeof APP_VERSION !== 'undefined' ? APP_VERSION : '',
+      generatedAt: new Date().toISOString(),
+      settings: snapshot,
+      data: data
+    };
+    var json = JSON.stringify(payload);
+    if (typeof TextEncoder !== 'undefined') {
+      return new TextEncoder().encode(json).length;
+    }
+    return json.length;
+  } catch (err) {
+    console.warn('Could not calculate backup size preview', err);
+    return 0;
+  }
+}
+function formatSizeText(lang, langTexts, bytes) {
+  var _texts$en385;
+  var resolved = resolveLanguageCode(lang);
+  if (!Number.isFinite(bytes) || bytes <= 0) {
+    var _texts$en384;
+    var zero = formatNumberForLang(resolved, 0, {
+      maximumFractionDigits: 0
+    });
+    var _template9 = langTexts.storageTotalSizeValue || ((_texts$en384 = texts.en) === null || _texts$en384 === void 0 ? void 0 : _texts$en384.storageTotalSizeValue) || '~%s KB';
+    return _template9.replace('%s', zero);
+  }
+  var kilobytes = bytes / 1024;
+  var options;
+  if (kilobytes >= 100) {
+    options = {
+      maximumFractionDigits: 0
+    };
+  } else if (kilobytes >= 10) {
+    options = {
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 1
+    };
+  } else {
+    options = {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    };
+  }
+  var formatted = formatNumberForLang(resolved, kilobytes, options);
+  var template = langTexts.storageTotalSizeValue || ((_texts$en385 = texts.en) === null || _texts$en385 === void 0 ? void 0 : _texts$en385.storageTotalSizeValue) || '~%s KB';
+  return template.replace('%s', formatted);
+}
+function formatDeviceCategories(lang, categories) {
+  if (!Array.isArray(categories) || !categories.length) return '';
+  var resolved = resolveLanguageCode(lang);
+  var lookup = typeof categoryNames !== 'undefined' && categoryNames || {};
+  var localized = lookup[resolved] || lookup.en || {};
+  var fallback = lookup.en || {};
+  var items = categories.map(function (_ref62) {
+    var key = _ref62.key,
+      count = _ref62.count;
+    var label = localized[key] || fallback[key] || key;
+    var formattedCount = formatNumberForLang(resolved, count, {
+      maximumFractionDigits: 0
+    });
+    return {
+      label: label,
+      text: "".concat(label, " (").concat(formattedCount, ")")
+    };
+  }).sort(function (a, b) {
+    return a.label.localeCompare(b.label, resolved, {
+      sensitivity: 'base'
+    });
+  }).map(function (entry) {
+    return entry.text;
+  });
+  return formatListForLang(resolved, items);
+}
+function createSummaryItemElement(item) {
+  var li = document.createElement('li');
+  li.className = 'storage-summary-item';
+  var header = document.createElement('div');
+  header.className = 'storage-summary-header';
+  var label = document.createElement('span');
+  label.className = 'storage-summary-label';
+  label.textContent = item.label;
+  header.appendChild(label);
+  if (item.storageKey) {
+    var code = document.createElement('code');
+    code.className = 'storage-summary-key';
+    code.textContent = item.storageKey;
+    header.appendChild(code);
+  }
+  li.appendChild(header);
+  if (item.value) {
+    var valueElem = document.createElement('p');
+    valueElem.className = 'storage-summary-value';
+    valueElem.textContent = item.value;
+    li.appendChild(valueElem);
+  }
+  if (item.description) {
+    var desc = document.createElement('p');
+    desc.className = 'storage-summary-description';
+    desc.textContent = item.description;
+    li.appendChild(desc);
+  }
+  if (item.extra) {
+    var extras = Array.isArray(item.extra) ? item.extra : [item.extra];
+    extras.filter(Boolean).forEach(function (text) {
+      var extraElem = document.createElement('p');
+      extraElem.className = 'storage-summary-extra';
+      extraElem.textContent = text;
+      li.appendChild(extraElem);
+    });
+  }
+  return li;
+}
+function updateStorageSummary() {
+  var _texts$en386, _texts$en387, _texts$en388;
+  if (!storageSummaryList) return;
+  while (storageSummaryList.firstChild) {
+    storageSummaryList.removeChild(storageSummaryList.firstChild);
+  }
+  var lang = resolveLanguageCode(currentLang);
+  var langTexts = getLanguageTexts(lang);
+  var exportedData = typeof exportAllData === 'function' ? exportAllData() : null;
+  var data = isPlainObjectValue(exportedData) ? exportedData : {};
+  var setups = isPlainObjectValue(data.setups) ? data.setups : {};
+  var projectNames = Object.keys(setups);
+  var totalProjects = projectNames.length;
+  var autoBackups = projectNames.filter(function (name) {
+    return typeof name === 'string' && name.startsWith('auto-backup-');
+  }).length;
+  var gearListCount = computeGearListCount(data.project, setups);
+  var favoritesCount = computeFavoritesCount(data.favorites);
+  var feedbackCount = computeFeedbackCount(data.feedback);
+  var sessionData = data.session;
+  var hasSession = Boolean(isPlainObjectValue(sessionData) && Object.keys(sessionData).length || Array.isArray(sessionData) && sessionData.length || typeof sessionData === 'string' && sessionData.trim());
+  var deviceSummary = summarizeCustomDevices();
+  var approxBytes = estimateBackupSize(data);
+  var rawFullBackups = Array.isArray(data.fullBackupHistory) ? data.fullBackupHistory : Array.isArray(data.fullBackups) ? data.fullBackups : [];
+  var fullBackupCount = rawFullBackups.reduce(function (count, entry) {
+    if (!entry) return count;
+    if (typeof entry === 'string') {
+      return entry.trim() ? count + 1 : count;
+    }
+    if (_typeof(entry) === 'object') {
+      var createdAt = typeof entry.createdAt === 'string' ? entry.createdAt.trim() : '';
+      var iso = typeof entry.iso === 'string' ? entry.iso.trim() : '';
+      var timestamp = typeof entry.timestamp === 'string' ? entry.timestamp.trim() : '';
+      if (createdAt || iso || timestamp) {
+        return count + 1;
+      }
+    }
+    return count;
+  }, 0);
+  var items = [{
+    storageKey: 'cameraPowerPlanner_setups',
+    label: langTexts.storageKeyProjects || 'Saved projects',
+    value: formatCountText(lang, langTexts, 'storageProjectsCount', totalProjects),
+    description: langTexts.storageKeyProjectsDesc || ''
+  }, {
+    label: langTexts.storageKeyAutoBackups || 'Auto backups',
+    value: formatCountText(lang, langTexts, 'storageAutoBackupsCount', autoBackups),
+    description: langTexts.storageKeyAutoBackupsDesc || ''
+  }, {
+    storageKey: 'cameraPowerPlanner_project',
+    label: langTexts.storageKeyGearLists || 'Gear list snapshots',
+    value: formatCountText(lang, langTexts, 'storageGearListsCount', gearListCount),
+    description: langTexts.storageKeyGearListsDesc || ''
+  }, {
+    storageKey: 'cameraPowerPlanner_devices',
+    label: langTexts.storageKeyDevices || 'Custom or modified devices',
+    value: formatCountText(lang, langTexts, 'storageDevicesCount', deviceSummary.total),
+    description: langTexts.storageKeyDevicesDesc || '',
+    extra: deviceSummary.total > 0 && deviceSummary.categories.length ? (langTexts.storageDeviceCategories || ((_texts$en386 = texts.en) === null || _texts$en386 === void 0 ? void 0 : _texts$en386.storageDeviceCategories) || 'Affected categories: %s').replace('%s', formatDeviceCategories(lang, deviceSummary.categories)) : null
+  }, {
+    storageKey: 'cameraPowerPlanner_favorites',
+    label: langTexts.storageKeyFavorites || 'Pinned favorites',
+    value: formatCountText(lang, langTexts, 'storageFavoritesCount', favoritesCount),
+    description: langTexts.storageKeyFavoritesDesc || ''
+  }, {
+    storageKey: 'cameraPowerPlanner_feedback',
+    label: langTexts.storageKeyFeedback || 'Runtime feedback',
+    value: formatCountText(lang, langTexts, 'storageFeedbackCount', feedbackCount),
+    description: langTexts.storageKeyFeedbackDesc || ''
+  }, {
+    storageKey: 'cameraPowerPlanner_session',
+    label: langTexts.storageKeySession || 'Unsaved session',
+    value: hasSession ? langTexts.storageSessionStored || ((_texts$en387 = texts.en) === null || _texts$en387 === void 0 ? void 0 : _texts$en387.storageSessionStored) || 'Stored' : langTexts.storageSessionNotStored || ((_texts$en388 = texts.en) === null || _texts$en388 === void 0 ? void 0 : _texts$en388.storageSessionNotStored) || 'Not stored',
+    description: langTexts.storageKeySessionDesc || ''
+  }, {
+    storageKey: 'cameraPowerPlanner_fullBackups',
+    label: langTexts.storageKeyFullBackups || 'Full app backups',
+    value: formatCountText(lang, langTexts, 'storageFullBackupsCount', fullBackupCount),
+    description: langTexts.storageKeyFullBackupsDesc || ''
+  }, {
+    storageKey: 'localStorage',
+    label: langTexts.storageKeyTotalSize || 'Approximate backup size',
+    value: formatSizeText(lang, langTexts, approxBytes),
+    description: langTexts.storageKeyTotalSizeDesc || ''
+  }];
+  items.forEach(function (item) {
+    storageSummaryList.appendChild(createSummaryItemElement(item));
+  });
+  if (storageSummaryEmpty) {
+    var hasData = Boolean(totalProjects || gearListCount || deviceSummary.total || favoritesCount || feedbackCount || hasSession || fullBackupCount);
+    if (hasData) {
+      storageSummaryEmpty.setAttribute('hidden', '');
+    } else {
+      storageSummaryEmpty.removeAttribute('hidden');
+    }
+  }
+}
+if (settingsLogo) {
+  settingsLogo.addEventListener('change', function () {
+    var file = settingsLogo.files && settingsLogo.files[0];
+    if (!file) {
+      loadStoredLogoPreview();
+      return;
+    }
+    if (file.type !== 'image/svg+xml' && !file.name.toLowerCase().endsWith('.svg')) {
+      showNotification('error', texts[currentLang].logoFormatError || 'Unsupported logo format');
+      settingsLogo.value = '';
+      loadStoredLogoPreview();
+      return;
+    }
+    var reader = new FileReader();
+    reader.onload = function () {
+      renderSettingsLogoPreview(reader.result);
+    };
+    reader.readAsDataURL(file);
+  });
+}
+var settingsHighContrast = document.getElementById("settingsHighContrast");
+var settingsReduceMotion = document.getElementById("settingsReduceMotion");
+var settingsRelaxedSpacing = document.getElementById("settingsRelaxedSpacing");
+var backupSettings = document.getElementById("backupSettings");
+var restoreSettings = document.getElementById("restoreSettings");
+var factoryResetButton = document.getElementById("factoryResetButton");
+var restoreSettingsInput = document.getElementById("restoreSettingsInput");
+var restoreRehearsalButton = document.getElementById("restoreRehearsalButton");
+var restoreRehearsalSection = document.getElementById("restoreRehearsalSection");
+var restoreRehearsalHeading = document.getElementById("restoreRehearsalHeading");
+var restoreRehearsalIntro = document.getElementById("restoreRehearsalIntro");
+var restoreRehearsalModeLabel = document.getElementById("restoreRehearsalModeLabel");
+var restoreRehearsalModeBackupText = document.getElementById("restoreRehearsalModeBackupText");
+var restoreRehearsalModeProjectText = document.getElementById("restoreRehearsalModeProjectText");
+var restoreRehearsalFileLabel = document.getElementById("restoreRehearsalFileLabel");
+var restoreRehearsalBrowse = document.getElementById("restoreRehearsalBrowse");
+var restoreRehearsalFileName = document.getElementById("restoreRehearsalFileName");
+var restoreRehearsalStatus = document.getElementById("restoreRehearsalStatus");
+var restoreRehearsalRuleHeading = document.getElementById("restoreRehearsalRuleHeading");
+var restoreRehearsalRuleIntro = document.getElementById("restoreRehearsalRuleIntro");
+var restoreRehearsalRuleEmpty = document.getElementById("restoreRehearsalRuleEmpty");
+var restoreRehearsalProceedButton = document.getElementById("restoreRehearsalProceed");
+var restoreRehearsalAbortButton = document.getElementById("restoreRehearsalAbort");
+var restoreRehearsalTable = document.getElementById("restoreRehearsalTable");
+var restoreRehearsalTableCaption = document.getElementById("restoreRehearsalTableCaption");
+var restoreRehearsalMetricHeader = document.getElementById("restoreRehearsalMetricHeader");
+var restoreRehearsalLiveHeader = document.getElementById("restoreRehearsalLiveHeader");
+var restoreRehearsalSandboxHeader = document.getElementById("restoreRehearsalSandboxHeader");
+var restoreRehearsalDifferenceHeader = document.getElementById("restoreRehearsalDifferenceHeader");
+var restoreRehearsalCloseButton = document.getElementById("restoreRehearsalClose");
+var projectBackupsHeading = document.getElementById("projectBackupsHeading");
+var projectBackupsDescription = document.getElementById("projectBackupsDescription");
+var settingsShowAutoBackups = document.getElementById("settingsShowAutoBackups");
+var backupDiffToggleButton = document.getElementById("backupDiffToggleButton");
+var backupDiffSection = document.getElementById("backupDiffSection");
+var backupDiffHeading = document.getElementById("backupDiffHeading");
+var backupDiffIntro = document.getElementById("backupDiffIntro");
+var backupDiffPrimaryLabel = document.getElementById("backupDiffPrimaryLabel");
+var backupDiffSecondaryLabel = document.getElementById("backupDiffSecondaryLabel");
+var backupDiffPrimarySelect = document.getElementById("backupDiffPrimary");
+var backupDiffSecondarySelect = document.getElementById("backupDiffSecondary");
+var backupDiffEmptyState = document.getElementById("backupDiffEmptyState");
+var backupDiffSummary = document.getElementById("backupDiffSummary");
+var backupDiffList = document.getElementById("backupDiffList");
+var backupDiffListContainer = document.getElementById("backupDiffListContainer");
+var backupDiffNotesLabel = document.getElementById("backupDiffNotesLabel");
+var backupDiffNotes = document.getElementById("backupDiffNotes");
+var backupDiffExportButton = document.getElementById("backupDiffExport");
+var backupDiffCloseButton = document.getElementById("backupDiffClose");
+var aboutVersionElem = document.getElementById("aboutVersion");
+var supportLink = document.getElementById("supportLink");
+var settingsSave = document.getElementById("settingsSave");
+var settingsCancel = document.getElementById("settingsCancel");
+var featureSearch = document.getElementById("featureSearch");
+var featureList = document.getElementById("featureList");
+var featureMap = new Map();
+var normalizeSearchValue = function normalizeSearchValue(value) {
+  return typeof value === 'string' ? value.trim().toLowerCase() : '';
+};
+var FEATURE_SEARCH_EXTRA_SELECTOR = '[data-feature-search]';
+var getFeatureSearchLabel = function getFeatureSearchLabel(element) {
+  if (!element) return '';
+  var dataset = element.dataset;
+  var dataLabel = (dataset === null || dataset === void 0 ? void 0 : dataset.featureSearchLabel) || element.getAttribute('data-feature-search-label');
+  if (dataLabel && dataLabel.trim()) return dataLabel.trim();
+  var ariaLabel = element.getAttribute('aria-label');
+  if (ariaLabel && ariaLabel.trim()) return ariaLabel.trim();
+  var title = element.getAttribute('title');
+  if (title && title.trim()) return title.trim();
+  var text = element.textContent;
+  return text && text.trim() ? text.trim() : '';
+};
+var getFeatureSearchKeywords = function getFeatureSearchKeywords(element) {
+  if (!element) return '';
+  var dataset = element.dataset;
+  var dataValue = (dataset === null || dataset === void 0 ? void 0 : dataset.featureSearchKeywords) || element.getAttribute('data-feature-search-keywords');
+  return dataValue && dataValue.trim() ? dataValue.trim() : '';
+};
+var updateFeatureSearchValue = function updateFeatureSearchValue(newValue, originalNormalized) {
+  if (!featureSearch || typeof newValue !== 'string') return;
+  var trimmed = newValue.trim();
+  if (!trimmed) {
+    featureSearch.value = '';
+    restoreFeatureSearchDefaults();
+    return;
+  }
+  if (originalNormalized && trimmed.toLowerCase() === originalNormalized) {
+    return;
+  }
+  featureSearch.value = newValue;
+  restoreFeatureSearchDefaults();
+};
+var helpMap = new Map();
+var deviceMap = new Map();
+var runFeatureSearch = function runFeatureSearch() {};
+var featureSearchEntries = [];
+var featureSearchDefaultOptions = [];
+var renderFeatureListOptions = function renderFeatureListOptions(values) {
+  if (!featureList || !Array.isArray(values)) return;
+  var fragment = document.createDocumentFragment();
+  var _iterator15 = _createForOfIteratorHelper(values),
+    _step15;
+  try {
+    for (_iterator15.s(); !(_step15 = _iterator15.n()).done;) {
+      var _value7 = _step15.value;
+      if (!_value7) continue;
+      var option = document.createElement('option');
+      option.value = _value7;
+      fragment.appendChild(option);
+    }
+  } catch (err) {
+    _iterator15.e(err);
+  } finally {
+    _iterator15.f();
+  }
+  featureList.innerHTML = '';
+  featureList.appendChild(fragment);
+};
+function restoreFeatureSearchDefaults() {
+  renderFeatureListOptions(featureSearchDefaultOptions);
+}
+var FEATURE_SEARCH_MATCH_PRIORITIES = {
+  none: 1,
+  partial: 2,
+  keySubset: 3,
+  keyPrefix: 4,
+  token: 5,
+  exactKey: 6
+};
+var FEATURE_SEARCH_TYPE_PRIORITIES = {
+  feature: 3,
+  device: 3,
+  help: 1
+};
+function scoreFeatureSearchEntry(entry, queryKey, queryTokens) {
+  if (!entry || !entry.key) return null;
+  var display = entry.display;
+  if (!display) return null;
+  var entryKey = entry.key;
+  var entryTokens = Array.isArray(entry.tokens) ? entry.tokens : [];
+  var validQueryTokens = Array.isArray(queryTokens) ? queryTokens.filter(Boolean) : [];
+  var tokenDetails = validQueryTokens.length ? computeTokenMatchDetails(entryTokens, validQueryTokens) : {
+    score: 0,
+    matched: 0
+  };
+  var entryType = entry.type || 'feature';
+  var queryTokenCount = validQueryTokens.length;
+  var allTokensMatched = queryTokenCount > 0 && tokenDetails.matched >= queryTokenCount;
+  var bestType = 'none';
+  var bestPriority = FEATURE_SEARCH_MATCH_PRIORITIES.none;
+  var updateType = function updateType(type) {
+    var priority = FEATURE_SEARCH_MATCH_PRIORITIES[type] || FEATURE_SEARCH_MATCH_PRIORITIES.none;
+    if (priority > bestPriority) {
+      bestType = type;
+      bestPriority = priority;
+    }
+  };
+  if (queryKey) {
+    if (entryKey === queryKey) {
+      updateType('exactKey');
+    }
+    if (entryKey.startsWith(queryKey)) {
+      updateType('keyPrefix');
+    }
+    if (queryKey.startsWith(entryKey)) {
+      updateType('keySubset');
+    }
+    if (entryKey.includes(queryKey) || queryKey.includes(entryKey)) {
+      updateType('partial');
+    }
+  }
+  if (tokenDetails.score > 0) {
+    updateType('token');
+  }
+  return {
+    entry: entry,
+    entryType: entryType,
+    typePriority: FEATURE_SEARCH_TYPE_PRIORITIES[entryType] || 0,
+    allTokensMatched: allTokensMatched,
+    matchType: bestType,
+    priority: bestPriority,
+    tokenScore: tokenDetails.score,
+    tokenMatches: tokenDetails.matched,
+    keyDistance: queryKey ? Math.abs(entryKey.length - queryKey.length) : Number.POSITIVE_INFINITY,
+    keyLength: entryKey.length
+  };
+}
+function updateFeatureSearchSuggestions(query) {
+  if (!featureList) return;
+  var trimmed = typeof query === 'string' ? query.trim() : '';
+  if (!trimmed) {
+    restoreFeatureSearchDefaults();
+    return;
+  }
+  var queryKey = searchKey(trimmed);
+  var queryTokens = searchTokens(trimmed);
+  if (!queryKey && (!Array.isArray(queryTokens) || queryTokens.length === 0)) {
+    restoreFeatureSearchDefaults();
+    return;
+  }
+  var scored = featureSearchEntries.map(function (entry) {
+    return scoreFeatureSearchEntry(entry, queryKey, queryTokens);
+  }).filter(Boolean);
+  if (scored.length === 0) {
+    restoreFeatureSearchDefaults();
+    return;
+  }
+  var meaningful = scored.filter(function (item) {
+    return item.priority > FEATURE_SEARCH_MATCH_PRIORITIES.none || item.tokenScore > 0;
+  });
+  var candidates = (meaningful.length > 0 ? meaningful : scored).sort(function (a, b) {
+    if (b.priority !== a.priority) return b.priority - a.priority;
+    if (Number(b.allTokensMatched) !== Number(a.allTokensMatched)) {
+      return Number(b.allTokensMatched) - Number(a.allTokensMatched);
+    }
+    if (b.tokenScore !== a.tokenScore) return b.tokenScore - a.tokenScore;
+    if (b.tokenMatches !== a.tokenMatches) return b.tokenMatches - a.tokenMatches;
+    if (b.typePriority !== a.typePriority) return b.typePriority - a.typePriority;
+    if (a.keyDistance !== b.keyDistance) return a.keyDistance - b.keyDistance;
+    if (a.keyLength !== b.keyLength) return a.keyLength - b.keyLength;
+    return a.entry.display.localeCompare(b.entry.display, undefined, {
+      sensitivity: 'base'
+    });
+  });
+  var values = [];
+  var seen = new Set();
+  var _iterator16 = _createForOfIteratorHelper(candidates.slice(0, 25)),
+    _step16;
+  try {
+    for (_iterator16.s(); !(_step16 = _iterator16.n()).done;) {
+      var item = _step16.value;
+      var _value8 = item.entry.display;
+      if (!_value8 || seen.has(_value8)) continue;
+      seen.add(_value8);
+      values.push(_value8);
+    }
+  } catch (err) {
+    _iterator16.e(err);
+  } finally {
+    _iterator16.f();
+  }
+  if (values.length === 0) {
+    restoreFeatureSearchDefaults();
+    return;
+  }
+  renderFeatureListOptions(values);
+}
+var ROMAN_NUMERAL_VALUES = {
+  i: 1,
+  v: 5,
+  x: 10,
+  l: 50,
+  c: 100,
+  d: 500,
+  m: 1000
+};
+var ROMAN_NUMERAL_PATTERN = /^[ivxlcdm]+$/;
+var parseMarkSuffix = function parseMarkSuffix(value) {
+  if (!value) {
+    return {
+      cleaned: '',
+      number: null
+    };
+  }
+  var cleaned = value.replace(/[^a-z0-9]+/g, '');
+  if (!cleaned) {
+    return {
+      cleaned: '',
+      number: null
+    };
+  }
+  var number = null;
+  if (/^\d+$/.test(cleaned)) {
+    number = parseInt(cleaned, 10);
+  } else if (ROMAN_NUMERAL_PATTERN.test(cleaned)) {
+    var total = 0;
+    var prev = 0;
+    for (var i = cleaned.length - 1; i >= 0; i -= 1) {
+      var char = cleaned[i];
+      var current = ROMAN_NUMERAL_VALUES[char];
+      if (!current) {
+        total = 0;
+        break;
+      }
+      if (current < prev) {
+        total -= current;
+      } else {
+        total += current;
+        prev = current;
+      }
+    }
+    if (total > 0) {
+      number = total;
+    }
+  }
+  return {
+    cleaned: cleaned,
+    number: number
+  };
+};
+var normaliseMarkVariants = function normaliseMarkVariants(str) {
+  return str.replace(/\b(mark|mk)[\s-]*(\d+|[ivxlcdm]+)\b/g, function (_match, _prefix, rawValue) {
+    var _parseMarkSuffix = parseMarkSuffix(rawValue),
+      cleaned = _parseMarkSuffix.cleaned,
+      number = _parseMarkSuffix.number;
+    if (!cleaned) return 'mk';
+    var suffix = number != null ? String(number) : cleaned;
+    return "mk".concat(suffix);
+  });
+};
+var UNICODE_FRACTIONS = new Map([['¼', '1/4'], ['½', '1/2'], ['¾', '3/4'], ['⅓', '1/3'], ['⅔', '2/3'], ['⅕', '1/5'], ['⅖', '2/5'], ['⅗', '3/5'], ['⅘', '4/5'], ['⅙', '1/6'], ['⅚', '5/6'], ['⅛', '1/8'], ['⅜', '3/8'], ['⅝', '5/8'], ['⅞', '7/8'], ['⅑', '1/9'], ['⅒', '1/10'], ['⅐', '1/7']]);
+var UNICODE_FRACTION_PATTERN = UNICODE_FRACTIONS.size > 0 ? new RegExp("[".concat(Array.from(UNICODE_FRACTIONS.keys()).join(''), "]"), 'g') : null;
+var normalizeUnicodeFractions = function normalizeUnicodeFractions(str) {
+  if (!UNICODE_FRACTION_PATTERN || typeof str !== 'string' || !str) {
+    return str;
+  }
+  return str.replace(UNICODE_FRACTION_PATTERN, function (match) {
+    return UNICODE_FRACTIONS.get(match) || match;
+  });
+};
+var NUMBER_WORD_ONES = new Map([['zero', 0], ['one', 1], ['two', 2], ['three', 3], ['four', 4], ['five', 5], ['six', 6], ['seven', 7], ['eight', 8], ['nine', 9]]);
+var NUMBER_WORD_TEENS = new Map([['ten', 10], ['eleven', 11], ['twelve', 12], ['thirteen', 13], ['fourteen', 14], ['fifteen', 15], ['sixteen', 16], ['seventeen', 17], ['eighteen', 18], ['nineteen', 19]]);
+var NUMBER_WORD_TENS = new Map([['twenty', 20], ['thirty', 30], ['forty', 40], ['fifty', 50], ['sixty', 60], ['seventy', 70], ['eighty', 80], ['ninety', 90]]);
+var NUMBER_WORD_BASE = new Map([].concat(_toConsumableArray(NUMBER_WORD_ONES), _toConsumableArray(NUMBER_WORD_TEENS), _toConsumableArray(NUMBER_WORD_TENS)));
+var NUMBER_WORD_BASE_KEYS = Array.from(NUMBER_WORD_BASE.keys()).sort(function (a, b) {
+  return b.length - a.length;
+});
+var NUMBER_WORD_ONES_KEYS = Array.from(NUMBER_WORD_ONES.keys()).sort(function (a, b) {
+  return b.length - a.length;
+});
+var NUMBER_WORD_PATTERN = NUMBER_WORD_BASE.size > 0 ? new RegExp("\\b(?:".concat(NUMBER_WORD_BASE_KEYS.join('|'), ")(?:[\\s-](?:").concat(NUMBER_WORD_ONES_KEYS.join('|'), "))?\\b"), 'g') : null;
+var normalizeNumberWords = function normalizeNumberWords(str) {
+  if (!NUMBER_WORD_PATTERN || typeof str !== 'string' || !str) {
+    return str;
+  }
+  return str.replace(NUMBER_WORD_PATTERN, function (match) {
+    var lower = match.toLowerCase();
+    if (NUMBER_WORD_BASE.has(lower)) {
+      return String(NUMBER_WORD_BASE.get(lower));
+    }
+    var parts = lower.split(/[\s-]+/).filter(Boolean);
+    if (parts.length === 2) {
+      var tens = NUMBER_WORD_TENS.get(parts[0]);
+      var ones = NUMBER_WORD_ONES.get(parts[1]);
+      if (typeof tens === 'number' && typeof ones === 'number') {
+        return String(tens + ones);
+      }
+    }
+    return match;
+  });
+};
+var SPELLING_VARIANTS = new Map([['analyse', 'analyze'], ['analysed', 'analyzed'], ['analyses', 'analyzes'], ['analysing', 'analyzing'], ['behaviour', 'behavior'], ['behaviours', 'behaviors'], ['behavioural', 'behavioral'], ['behaviourally', 'behaviorally'], ['centre', 'center'], ['centres', 'centers'], ['colour', 'color'], ['colourful', 'colorful'], ['colouring', 'coloring'], ['colourings', 'colorings'], ['colourless', 'colorless'], ['colours', 'colors'], ['customisation', 'customization'], ['customisations', 'customizations'], ['customise', 'customize'], ['customised', 'customized'], ['customises', 'customizes'], ['customising', 'customizing'], ['defence', 'defense'], ['defences', 'defenses'], ['favour', 'favor'], ['favourable', 'favorable'], ['favourably', 'favorably'], ['favoured', 'favored'], ['favourite', 'favorite'], ['favourites', 'favorites'], ['favouring', 'favoring'], ['favours', 'favors'], ['licence', 'license'], ['licences', 'licenses'], ['localisation', 'localization'], ['localisations', 'localizations'], ['localise', 'localize'], ['localised', 'localized'], ['localises', 'localizes'], ['localising', 'localizing'], ['modelling', 'modeling'], ['modeller', 'modeler'], ['modellers', 'modelers'], ['optimisation', 'optimization'], ['optimisations', 'optimizations'], ['optimise', 'optimize'], ['optimised', 'optimized'], ['optimises', 'optimizes'], ['optimising', 'optimizing'], ['organisation', 'organization'], ['organisations', 'organizations'], ['organise', 'organize'], ['organised', 'organized'], ['organises', 'organizes'], ['organising', 'organizing'], ['personalisation', 'personalization'], ['personalisations', 'personalizations'], ['personalise', 'personalize'], ['personalised', 'personalized'], ['personalises', 'personalizes'], ['personalising', 'personalizing'], ['practise', 'practice'], ['practised', 'practiced'], ['practises', 'practices'], ['practising', 'practicing'], ['theatre', 'theater'], ['theatres', 'theaters'], ['traveller', 'traveler'], ['travellers', 'travelers'], ['travelling', 'traveling']]);
+var SPELLING_VARIANT_PATTERN = SPELLING_VARIANTS.size > 0 ? new RegExp("\\b(".concat(Array.from(SPELLING_VARIANTS.keys()).join('|'), ")\\b"), 'g') : null;
+var normalizeSpellingVariants = function normalizeSpellingVariants(str) {
+  if (!SPELLING_VARIANT_PATTERN) return str;
+  return str.replace(SPELLING_VARIANT_PATTERN, function (match) {
+    return SPELLING_VARIANTS.get(match) || match;
+  });
+};
+var searchKey = function searchKey(str) {
+  if (!str) return '';
+  var value = String(str);
+  var normalized = value.toLowerCase();
+  if (typeof normalized.normalize === 'function') {
+    normalized = normalized.normalize('NFD');
+  }
+  normalized = normalized.replace(/[\u0300-\u036f]/g, '').replace(/ß/g, 'ss').replace(/æ/g, 'ae').replace(/œ/g, 'oe').replace(/ø/g, 'o').replace(/&/g, 'and').replace(/\+/g, 'plus').replace(/[°º˚]/g, 'deg').replace(/\bdegrees?\b/g, 'deg').replace(/[×✕✖✗✘]/g, 'x');
+  normalized = normalizeUnicodeFractions(normalized);
+  normalized = normalizeNumberWords(normalized);
+  normalized = normalizeSpellingVariants(normalized);
+  normalized = normaliseMarkVariants(normalized);
+  var simplified = normalized.replace(/[^a-z0-9]+/g, '');
+  if (simplified) return simplified;
+  return value.toLowerCase().replace(/\s+/g, '');
+};
+var searchTokens = function searchTokens(str) {
+  if (!str) return [];
+  var normalized = String(str).toLowerCase();
+  if (typeof normalized.normalize === 'function') {
+    normalized = normalized.normalize('NFD');
+  }
+  normalized = normalized.replace(/[\u0300-\u036f]/g, '').replace(/ß/g, 'ss').replace(/æ/g, 'ae').replace(/œ/g, 'oe').replace(/ø/g, 'o').replace(/&/g, ' and ').replace(/\+/g, ' plus ').replace(/[°º˚]/g, ' deg ').replace(/\bdegrees?\b/g, ' deg ').replace(/[×✕✖✗✘]/g, ' x by ');
+  normalized = normalizeUnicodeFractions(normalized);
+  var numberNormalized = normalizeNumberWords(normalized);
+  var tokens = new Set();
+  var initialWords = [];
+  var addToken = function addToken(token) {
+    if (!token) return;
+    var cleaned = token.replace(/[^a-z0-9]+/g, '');
+    if (cleaned) tokens.add(cleaned);
+  };
+  var isAlpha = function isAlpha(value) {
+    return /^[a-z]+$/.test(value);
+  };
+  var isNumeric = function isNumeric(value) {
+    return /^\d+$/.test(value);
+  };
+  var addAlphaNumericVariants = function addAlphaNumericVariants(segment) {
+    if (!segment) return;
+    var groups = segment.match(/[a-z]+|\d+/g);
+    if (!groups || groups.length <= 1) return;
+    groups.forEach(function (part) {
+      if (isNumeric(part) || part.length > 1) {
+        addToken(part);
+      }
+    });
+    for (var index = 0; index < groups.length - 1; index += 1) {
+      var current = groups[index];
+      var next = groups[index + 1];
+      if (!current || !next) continue;
+      var combined = "".concat(current).concat(next);
+      if (!combined || combined === segment) continue;
+      if (isAlpha(current) && isNumeric(next) || isNumeric(current) && isAlpha(next) || current.length > 1 && next.length > 1) {
+        addToken(combined);
+      }
+    }
+  };
+  var processParts = function processParts(strToProcess) {
+    var collectInitials = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+    strToProcess.split(/\s+/).forEach(function (part) {
+      if (!part) return;
+      addToken(part);
+      part.split(/[^a-z0-9]+/).filter(Boolean).forEach(function (segment) {
+        addToken(segment);
+        addAlphaNumericVariants(segment);
+        if (collectInitials && /^[a-z]/.test(segment)) {
+          initialWords.push(segment);
+        }
+      });
+    });
+  };
+  processParts(normalized, true);
+  if (numberNormalized !== normalized) {
+    processParts(numberNormalized);
+  }
+  var spellingNormalized = normalizeSpellingVariants(numberNormalized);
+  if (spellingNormalized !== numberNormalized) {
+    processParts(spellingNormalized);
+  }
+  var markNormalized = normaliseMarkVariants(spellingNormalized);
+  if (markNormalized !== spellingNormalized) {
+    processParts(markNormalized);
+  }
+  if (initialWords.length >= 2) {
+    var MAX_INITIALISM_LENGTH = 6;
+    var initials = initialWords.map(function (word) {
+      return word[0];
+    }).filter(Boolean);
+    var limit = Math.min(initials.length, MAX_INITIALISM_LENGTH);
+    for (var start = 0; start < limit; start++) {
+      var current = '';
+      for (var index = start; index < limit; index++) {
+        current += initials[index];
+        if (current.length >= 2) {
+          addToken(current);
+        }
+      }
+    }
+  }
+  var markPattern = /\b(mark|mk)[\s-]*(\d+|[ivxlcdm]+)\b/g;
+  var match;
+  var variantSource = spellingNormalized || normalized;
+  while ((match = markPattern.exec(variantSource)) !== null) {
+    var prefix = match[1];
+    var rawValue = match[2];
+    var _parseMarkSuffix2 = parseMarkSuffix(rawValue),
+      cleaned = _parseMarkSuffix2.cleaned,
+      number = _parseMarkSuffix2.number;
+    if (!cleaned) continue;
+    var altPrefix = prefix === 'mk' ? 'mark' : 'mk';
+    addToken(prefix);
+    addToken(altPrefix);
+    addToken(cleaned);
+    addToken("".concat(prefix).concat(cleaned));
+    addToken("".concat(altPrefix).concat(cleaned));
+    if (number != null) {
+      var numberToken = String(number);
+      addToken(numberToken);
+      addToken("".concat(prefix).concat(numberToken));
+      addToken("".concat(altPrefix).concat(numberToken));
+    }
+  }
+  return Array.from(tokens);
+};
+var FEATURE_CONTEXT_LIMIT = 3;
+var toTitleCase = function toTitleCase(str) {
+  return str.replace(/\b([a-z])/g, function (_, ch) {
+    return ch.toUpperCase();
+  });
+};
+var idToContextLabel = function idToContextLabel(id) {
+  if (!id) return '';
+  var spaced = id.replace(/[-_]+/g, ' ').replace(/([a-z\d])([A-Z])/g, '$1 $2').replace(/\s+/g, ' ').trim();
+  if (!spaced) return '';
+  return toTitleCase(spaced);
+};
+var addUniqueContext = function addUniqueContext(contexts, seen, value, baseLabelLower) {
+  if (!value) return;
+  var trimmed = value.trim();
+  if (!trimmed) return;
+  var normalized = trimmed.toLowerCase();
+  if (normalized === baseLabelLower || seen.has(normalized)) return;
+  contexts.push(trimmed);
+  seen.add(normalized);
+};
+var collectFeatureContexts = function collectFeatureContexts(element, baseLabelLower) {
+  if (!element || !element.parentElement) return [];
+  var contexts = [];
+  var seen = new Set();
+  var current = element.parentElement;
+  while (current && contexts.length < FEATURE_CONTEXT_LIMIT) {
+    var _current$dataset;
+    if (typeof ((_current$dataset = current.dataset) === null || _current$dataset === void 0 ? void 0 : _current$dataset.featureContext) === 'string') {
+      current.dataset.featureContext.split(',').map(function (part) {
+        return part.trim();
+      }).filter(Boolean).forEach(function (value) {
+        return addUniqueContext(contexts, seen, value, baseLabelLower);
+      });
+    }
+    var labelledBy = current.getAttribute('aria-labelledby');
+    if (labelledBy) {
+      labelledBy.split(/\s+/).map(function (id) {
+        return id && document.getElementById(id);
+      }).filter(function (labelEl) {
+        return labelEl && labelEl !== element;
+      }).forEach(function (labelEl) {
+        addUniqueContext(contexts, seen, labelEl.textContent || '', baseLabelLower);
+      });
+    }
+    var heading = current.querySelector(':scope > h1, :scope > h2, :scope > h3, :scope > h4, :scope > legend');
+    if (heading && heading !== element) {
+      addUniqueContext(contexts, seen, heading.textContent || '', baseLabelLower);
+    }
+    if (current.id) {
+      addUniqueContext(contexts, seen, idToContextLabel(current.id), baseLabelLower);
+    }
+    current = current.parentElement;
+  }
+  return contexts.reverse();
+};
+var buildFeatureSearchEntry = function buildFeatureSearchEntry(element, _ref63) {
+  var label = _ref63.label,
+    _ref63$keywords = _ref63.keywords,
+    keywords = _ref63$keywords === void 0 ? '' : _ref63$keywords;
+  if (!element || !label) return null;
+  var baseLabel = label.trim();
+  if (!baseLabel) return null;
+  var baseKey = searchKey(baseLabel);
+  if (!baseKey) return null;
+  var baseLabelLower = baseLabel.toLowerCase();
+  var contextLabels = collectFeatureContexts(element, baseLabelLower);
+  var combinedLabel = baseLabel;
+  if (contextLabels.length) {
+    combinedLabel = "".concat(baseLabel, " (").concat(contextLabels.join(' › '), ")");
+  }
+  var combinedKeywords = [baseLabel, contextLabels.join(' '), keywords].filter(Boolean).join(' ');
+  var entry = {
+    element: element,
+    label: baseLabel,
+    baseLabel: baseLabel,
+    displayLabel: combinedLabel,
+    context: contextLabels,
+    tokens: searchTokens(combinedKeywords),
+    key: baseKey,
+    optionValue: combinedLabel
+  };
+  var existing = featureMap.get(baseKey);
+  if (!existing) {
+    featureMap.set(baseKey, entry);
+  } else if (Array.isArray(existing)) {
+    if (!existing.some(function (item) {
+      return item && item.element === element;
+    })) {
+      existing.push(entry);
+    }
+  } else if (existing.element !== element) {
+    featureMap.set(baseKey, [existing, entry]);
+  }
+  return entry;
+};
+var computeTokenMatchDetails = function computeTokenMatchDetails() {
+  var entryTokens = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+  var queryTokens = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+  if (!Array.isArray(entryTokens) || entryTokens.length === 0) {
+    return {
+      score: 0,
+      matched: 0
+    };
+  }
+  var validQueryTokens = Array.isArray(queryTokens) ? queryTokens.filter(Boolean) : [];
+  if (validQueryTokens.length === 0) {
+    return {
+      score: 0,
+      matched: 0
+    };
+  }
+  var total = 0;
+  var matched = 0;
+  var _iterator17 = _createForOfIteratorHelper(validQueryTokens),
+    _step17;
+  try {
+    for (_iterator17.s(); !(_step17 = _iterator17.n()).done;) {
+      var token = _step17.value;
+      var best = 0;
+      var _iterator18 = _createForOfIteratorHelper(entryTokens),
+        _step18;
+      try {
+        for (_iterator18.s(); !(_step18 = _iterator18.n()).done;) {
+          var entryToken = _step18.value;
+          if (!entryToken) continue;
+          if (entryToken === token) {
+            best = 3;
+            break;
+          }
+          if (entryToken.startsWith(token) || token.startsWith(entryToken)) {
+            best = Math.max(best, 2);
+          } else if (entryToken.includes(token) || token.includes(entryToken)) {
+            best = Math.max(best, 1);
+          }
+        }
+      } catch (err) {
+        _iterator18.e(err);
+      } finally {
+        _iterator18.f();
+      }
+      if (best > 0) {
+        matched += 1;
+        total += best;
+      }
+    }
+  } catch (err) {
+    _iterator17.e(err);
+  } finally {
+    _iterator17.f();
+  }
+  if (matched === 0) {
+    return {
+      score: 0,
+      matched: 0
+    };
+  }
+  return {
+    score: total,
+    matched: matched
+  };
+};
+function findBestSearchMatch(map, key) {
+  var tokens = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+  var queryTokens = Array.isArray(tokens) ? tokens.filter(Boolean) : [];
+  var hasKey = Boolean(key);
+  if (!hasKey && queryTokens.length === 0) return null;
+  var toResult = function toResult(entryKey, entryValue, matchType) {
+    var score = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
+    var matchedCount = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 0;
+    return {
+      key: entryKey,
+      value: entryValue,
+      matchType: matchType,
+      score: score,
+      matchedCount: matchedCount
+    };
+  };
+  var flattened = [];
+  var _iterator19 = _createForOfIteratorHelper(map.entries()),
+    _step19;
+  try {
+    for (_iterator19.s(); !(_step19 = _iterator19.n()).done;) {
+      var _step19$value = _slicedToArray(_step19.value, 2),
+        _entryKey = _step19$value[0],
+        _entryValue2 = _step19$value[1];
+      if (!_entryValue2) continue;
+      if (Array.isArray(_entryValue2)) {
+        var _iterator21 = _createForOfIteratorHelper(_entryValue2),
+          _step21;
+        try {
+          for (_iterator21.s(); !(_step21 = _iterator21.n()).done;) {
+            var _value9 = _step21.value;
+            if (_value9) flattened.push([_entryKey, _value9]);
+          }
+        } catch (err) {
+          _iterator21.e(err);
+        } finally {
+          _iterator21.f();
+        }
+      } else {
+        flattened.push([_entryKey, _entryValue2]);
+      }
+    }
+  } catch (err) {
+    _iterator19.e(err);
+  } finally {
+    _iterator19.f();
+  }
+  if (hasKey) {
+    var exactCandidates = flattened.filter(function (_ref64) {
+      var _ref65 = _slicedToArray(_ref64, 1),
+        entryKey = _ref65[0];
+      return entryKey === key;
+    });
+    if (exactCandidates.length) {
+      var _bestEntry;
+      var bestEntry = exactCandidates[0][1];
+      var bestDetails = queryTokens.length > 0 ? computeTokenMatchDetails(((_bestEntry = bestEntry) === null || _bestEntry === void 0 ? void 0 : _bestEntry.tokens) || [], queryTokens) : {
+        score: Number.POSITIVE_INFINITY,
+        matched: queryTokens.length
+      };
+      var _iterator20 = _createForOfIteratorHelper(exactCandidates.slice(1)),
+        _step20;
+      try {
+        for (_iterator20.s(); !(_step20 = _iterator20.n()).done;) {
+          var _step20$value = _slicedToArray(_step20.value, 2),
+            entryValue = _step20$value[1];
+          if (!queryTokens.length) break;
+          var details = computeTokenMatchDetails((entryValue === null || entryValue === void 0 ? void 0 : entryValue.tokens) || [], queryTokens);
+          if (details.score > bestDetails.score || details.score === bestDetails.score && details.matched > bestDetails.matched) {
+            bestDetails = details;
+            bestEntry = entryValue;
+          }
+        }
+      } catch (err) {
+        _iterator20.e(err);
+      } finally {
+        _iterator20.f();
+      }
+      return toResult(key, bestEntry, 'exactKey', bestDetails.score, bestDetails.matched);
+    }
+  }
+  var bestTokenMatch = null;
+  var bestTokenScore = 0;
+  var bestTokenMatched = 0;
+  var bestTokenKeyDistance = Number.POSITIVE_INFINITY;
+  var bestPrefixMatch = null;
+  var bestPrefixScore = Number.NEGATIVE_INFINITY;
+  var bestPrefixMatched = 0;
+  var bestPrefixLength = Number.POSITIVE_INFINITY;
+  var bestSubsetMatch = null;
+  var bestSubsetScore = Number.NEGATIVE_INFINITY;
+  var bestSubsetMatched = 0;
+  var bestSubsetLength = -1;
+  var bestPartialMatch = null;
+  var bestPartialScore = Number.NEGATIVE_INFINITY;
+  var bestPartialMatched = 0;
+  var keyLength = hasKey ? key.length : 0;
+  for (var _i24 = 0, _flattened = flattened; _i24 < _flattened.length; _i24++) {
+    var _flattened$_i = _slicedToArray(_flattened[_i24], 2),
+      entryKey = _flattened$_i[0],
+      _entryValue = _flattened$_i[1];
+    if (!_entryValue) continue;
+    var entryTokens = (_entryValue === null || _entryValue === void 0 ? void 0 : _entryValue.tokens) || [];
+    var tokenDetails = queryTokens.length ? computeTokenMatchDetails(entryTokens, queryTokens) : {
+      score: 0,
+      matched: 0
+    };
+    if (hasKey && entryKey.startsWith(key)) {
+      var score = queryTokens.length > 0 ? tokenDetails.score : Number.POSITIVE_INFINITY;
+      var candidate = toResult(entryKey, _entryValue, 'keyPrefix', score, tokenDetails.matched);
+      if (!bestPrefixMatch || score > bestPrefixScore || score === bestPrefixScore && (tokenDetails.matched > bestPrefixMatched || tokenDetails.matched === bestPrefixMatched && entryKey.length < bestPrefixLength)) {
+        bestPrefixMatch = candidate;
+        bestPrefixScore = score;
+        bestPrefixMatched = tokenDetails.matched;
+        bestPrefixLength = entryKey.length;
+      }
+    }
+    if (queryTokens.length) {
+      var distance = hasKey ? Math.abs(entryKey.length - keyLength) : Number.POSITIVE_INFINITY;
+      if (tokenDetails.score > bestTokenScore || tokenDetails.score === bestTokenScore && (tokenDetails.matched > bestTokenMatched || tokenDetails.matched === bestTokenMatched && distance < bestTokenKeyDistance)) {
+        bestTokenMatch = toResult(entryKey, _entryValue, 'token', tokenDetails.score, tokenDetails.matched);
+        bestTokenScore = tokenDetails.score;
+        bestTokenMatched = tokenDetails.matched;
+        bestTokenKeyDistance = distance;
+      }
+    }
+    if (hasKey && key.startsWith(entryKey)) {
+      var _score = queryTokens.length > 0 ? tokenDetails.score : Number.POSITIVE_INFINITY;
+      var _candidate = toResult(entryKey, _entryValue, 'keySubset', _score, tokenDetails.matched);
+      if (!bestSubsetMatch || _score > bestSubsetScore || _score === bestSubsetScore && (entryKey.length > bestSubsetLength || tokenDetails.matched > bestSubsetMatched)) {
+        bestSubsetMatch = _candidate;
+        bestSubsetScore = _score;
+        bestSubsetMatched = tokenDetails.matched;
+        bestSubsetLength = entryKey.length;
+      }
+    } else if (hasKey && (entryKey.includes(key) || key.includes(entryKey))) {
+      var _candidate2 = toResult(entryKey, _entryValue, 'partial', tokenDetails.score, tokenDetails.matched);
+      if (!bestPartialMatch || tokenDetails.score > bestPartialScore || tokenDetails.score === bestPartialScore && tokenDetails.matched > bestPartialMatched) {
+        bestPartialMatch = _candidate2;
+        bestPartialScore = tokenDetails.score;
+        bestPartialMatched = tokenDetails.matched;
+      }
+    }
+  }
+  if (bestTokenMatch && bestTokenScore > 0) {
+    return bestTokenMatch;
+  }
+  if (bestPrefixMatch) {
+    return bestPrefixMatch;
+  }
+  if (bestSubsetMatch) {
+    return bestSubsetMatch;
+  }
+  if (bestPartialMatch) {
+    return bestPartialMatch;
+  }
+  return null;
+}
+var STRONG_SEARCH_MATCH_TYPES = new Set(['exactKey', 'keyPrefix', 'keySubset']);
+var existingDevicesHeading = document.getElementById("existingDevicesHeading");
+var batteryComparisonSection = document.getElementById("batteryComparison");
+var batteryTableElem = document.getElementById("batteryTable");
+var breakdownListElem = document.getElementById("breakdownList");
+var runtimeFeedbackBtn = document.getElementById("runtimeFeedbackBtn");
+var generateGearListBtn = document.getElementById("generateGearListBtn");
+var deleteGearListProjectBtn = document.getElementById('deleteGearListProjectBtn');
+var gearListOutput = document.getElementById("gearListOutput");
+var projectRequirementsOutput = document.getElementById("projectRequirementsOutput");
+var DEFAULT_ACCENT_COLOR = '#001589';
+var accentColor = DEFAULT_ACCENT_COLOR;
+var prevAccentColor = accentColor;
+var HIGH_CONTRAST_ACCENT_COLOR = '#ffffff';
+var DEFAULT_ACCENT_NORMALIZED = DEFAULT_ACCENT_COLOR.toLowerCase();
+var normalizeAccentValue = function normalizeAccentValue(value) {
+  return typeof value === 'string' ? value.trim().toLowerCase() : '';
+};
+var updateAccentColorResetButtonState = function updateAccentColorResetButtonState() {
+  if (!accentColorResetButton) return;
+  var body = typeof document !== 'undefined' ? document.body : null;
+  var pinkModeActive = !!(body && body.classList.contains('pink-mode'));
+  var inputDisabled = !accentColorInput || accentColorInput.disabled;
+  var currentValue = accentColorInput ? normalizeAccentValue(accentColorInput.value || '') : '';
+  var isDefaultSelection = !currentValue || currentValue === DEFAULT_ACCENT_NORMALIZED;
+  var shouldDisable = pinkModeActive || inputDisabled || isDefaultSelection;
+  accentColorResetButton.disabled = shouldDisable;
+  if (shouldDisable) {
+    accentColorResetButton.setAttribute('aria-disabled', 'true');
+  } else {
+    accentColorResetButton.removeAttribute('aria-disabled');
+  }
+};
+var DARK_MODE_ACCENT_BOOST_CLASS = 'dark-accent-boost';
+var PINK_REFERENCE_COLOR = '#ff69b4';
+var PINK_LUMINANCE_TOLERANCE = 0.06;
+var BRIGHT_ACCENT_LUMINANCE_THRESHOLD = 0.6;
+var BRIGHT_ACCENT_MIN_SATURATION = 0.35;
+function parseRgbComponent(value) {
+  var trimmed = value.trim();
+  if (!trimmed) return null;
+  if (trimmed.endsWith('%')) {
+    var percent = Number.parseFloat(trimmed.slice(0, -1));
+    if (Number.isNaN(percent)) return null;
+    return Math.max(0, Math.min(255, Math.round(percent / 100 * 255)));
+  }
+  var numeric = Number.parseFloat(trimmed);
+  if (Number.isNaN(numeric)) return null;
+  return Math.max(0, Math.min(255, Math.round(numeric)));
+}
+function parseColorToRgb(color) {
+  if (typeof color !== 'string') return null;
+  var trimmed = color.trim();
+  if (!trimmed) return null;
+  var hexMatch = trimmed.match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i);
+  if (hexMatch) {
+    var hex = hexMatch[1];
+    if (hex.length === 3) {
+      return {
+        r: Number.parseInt(hex[0] + hex[0], 16),
+        g: Number.parseInt(hex[1] + hex[1], 16),
+        b: Number.parseInt(hex[2] + hex[2], 16)
+      };
+    }
+    return {
+      r: Number.parseInt(hex.slice(0, 2), 16),
+      g: Number.parseInt(hex.slice(2, 4), 16),
+      b: Number.parseInt(hex.slice(4, 6), 16)
+    };
+  }
+  var rgbMatch = trimmed.match(/^rgba?\(([^)]+)\)$/i);
+  if (rgbMatch) {
+    var parts = rgbMatch[1].split(',');
+    if (parts.length < 3) return null;
+    var _parts = _slicedToArray(parts, 3),
+      r = _parts[0],
+      g = _parts[1],
+      b = _parts[2];
+    var red = parseRgbComponent(r);
+    var green = parseRgbComponent(g);
+    var blue = parseRgbComponent(b);
+    if ([red, green, blue].some(function (component) {
+      return component === null;
+    })) return null;
+    return {
+      r: red,
+      g: green,
+      b: blue
+    };
+  }
+  return null;
+}
+function computeRelativeLuminance(rgb) {
+  if (!rgb || _typeof(rgb) !== 'object') return 0;
+  var clamp = function clamp(component) {
+    var numeric = Number(component);
+    if (!Number.isFinite(numeric)) return 0;
+    return Math.min(1, Math.max(0, numeric / 255));
+  };
+  var transform = function transform(value) {
+    return value <= 0.03928 ? value / 12.92 : Math.pow((value + 0.055) / 1.055, 2.4);
+  };
+  var red = transform(clamp(rgb.r));
+  var green = transform(clamp(rgb.g));
+  var blue = transform(clamp(rgb.b));
+  return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+}
+function computeSaturation(rgb) {
+  if (!rgb || _typeof(rgb) !== 'object') return 0;
+  var normalize = function normalize(component) {
+    var numeric = Number(component);
+    if (!Number.isFinite(numeric)) return 0;
+    return Math.max(0, Math.min(1, numeric / 255));
+  };
+  var r = normalize(rgb.r);
+  var g = normalize(rgb.g);
+  var b = normalize(rgb.b);
+  var max = Math.max(r, g, b);
+  var min = Math.min(r, g, b);
+  if (max === 0) return 0;
+  if (max === min) return 0;
+  return (max - min) / max;
+}
+var PINK_REFERENCE_LUMINANCE = function () {
+  var pinkRgb = parseColorToRgb(PINK_REFERENCE_COLOR);
+  if (!pinkRgb) return 0.35;
+  return computeRelativeLuminance(pinkRgb);
+}();
+function shouldEnableDarkModeAccentBoost() {
+  var _ref66 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+    color = _ref66.color,
+    highContrast = _ref66.highContrast;
+  if (typeof document === 'undefined') return false;
+  if (!document.body || !document.body.classList.contains('dark-mode')) return false;
+  if (document.body.classList.contains('pink-mode')) return false;
+  if (highContrast) return false;
+  if (typeof color !== 'string' || !color) return false;
+  var rgb = parseColorToRgb(color);
+  if (!rgb) return false;
+  var luminance = computeRelativeLuminance(rgb);
+  if (Math.abs(luminance - PINK_REFERENCE_LUMINANCE) <= PINK_LUMINANCE_TOLERANCE) {
+    return true;
+  }
+  var saturation = computeSaturation(rgb);
+  return luminance >= BRIGHT_ACCENT_LUMINANCE_THRESHOLD && saturation >= BRIGHT_ACCENT_MIN_SATURATION;
+}
+function refreshDarkModeAccentBoost() {
+  var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  if (typeof document === 'undefined' || !document.body) return;
+  var shouldEnable = shouldEnableDarkModeAccentBoost(options);
+  document.body.classList.toggle(DARK_MODE_ACCENT_BOOST_CLASS, shouldEnable);
+  updateInstallBannerColors();
+}
+var isHighContrastActive = function isHighContrastActive() {
+  return typeof document !== 'undefined' && (document.documentElement.classList.contains('high-contrast') || document.body && document.body.classList.contains('high-contrast'));
+};
+var hasCustomAccentSelection = function hasCustomAccentSelection() {
+  var normalized = normalizeAccentValue(accentColor);
+  return normalized && normalized !== DEFAULT_ACCENT_NORMALIZED;
+};
+var shouldPreserveAccentInPinkMode = function shouldPreserveAccentInPinkMode() {
+  return false;
+};
+var applyAccentColor = function applyAccentColor(color) {
+  var highContrast = isHighContrastActive();
+  var accentValue = highContrast ? HIGH_CONTRAST_ACCENT_COLOR : color;
+  var rootStyle = document.documentElement.style;
+  rootStyle.setProperty('--accent-color', accentValue);
+  if (highContrast) {
+    rootStyle.removeProperty('--link-color');
+  } else {
+    rootStyle.setProperty('--link-color', color);
+  }
+  if (document.body) {
+    var bodyStyle = document.body.style;
+    bodyStyle.setProperty('--accent-color', accentValue);
+    if (highContrast) {
+      bodyStyle.removeProperty('--link-color');
+    } else {
+      bodyStyle.setProperty('--link-color', color);
+    }
+  }
+  refreshDarkModeAccentBoost({
+    color: accentValue,
+    highContrast: highContrast
+  });
+};
+var clearAccentColorOverrides = function clearAccentColorOverrides() {
+  var root = document.documentElement;
+  var rootStyle = root && root.style;
+  if (rootStyle) {
+    rootStyle.removeProperty('--accent-color');
+    rootStyle.removeProperty('--link-color');
+  }
+  if (document.body) {
+    var bodyStyle = document.body.style;
+    bodyStyle.removeProperty('--accent-color');
+    bodyStyle.removeProperty('--link-color');
+  }
+  refreshDarkModeAccentBoost({
+    color: null,
+    highContrast: isHighContrastActive()
+  });
+};
+try {
+  var storedAccent = localStorage.getItem('accentColor');
+  if (storedAccent) {
+    accentColor = storedAccent;
+    applyAccentColor(accentColor);
+  }
+} catch (e) {
+  console.warn('Could not load accent color', e);
+}
+prevAccentColor = accentColor;
+updateAccentColorResetButtonState();
+if (accentColorInput) {
+  accentColorInput.addEventListener('input', function () {
+    if (typeof document !== 'undefined' && document.body && document.body.classList.contains('pink-mode')) {
+      updateAccentColorResetButtonState();
+      return;
+    }
+    var color = accentColorInput.value;
+    applyAccentColor(color);
+    updateAccentColorResetButtonState();
+  });
+}
+if (accentColorResetButton && accentColorInput) {
+  accentColorResetButton.addEventListener('click', function () {
+    if (accentColorResetButton.disabled || accentColorInput.disabled) return;
+    if (typeof document !== 'undefined' && document.body && document.body.classList.contains('pink-mode')) {
+      updateAccentColorResetButtonState();
+      return;
+    }
+    var currentValue = normalizeAccentValue(accentColorInput.value || '');
+    if (currentValue === DEFAULT_ACCENT_NORMALIZED) {
+      updateAccentColorResetButtonState();
+      return;
+    }
+    accentColorInput.value = DEFAULT_ACCENT_COLOR;
+    var eventHandled = false;
+    try {
+      var inputEvent = new Event('input', {
+        bubbles: true
+      });
+      eventHandled = accentColorInput.dispatchEvent(inputEvent);
+    } catch (error) {
+      void error;
+      if (typeof document !== 'undefined' && document.createEvent) {
+        var legacyEvent = document.createEvent('Event');
+        legacyEvent.initEvent('input', true, true);
+        eventHandled = accentColorInput.dispatchEvent(legacyEvent);
+      }
+    }
+    if (!eventHandled) {
+      applyAccentColor(DEFAULT_ACCENT_COLOR);
+    }
+    updateAccentColorResetButtonState();
+  });
+}
+var fontSize = '16';
+var fontFamily = "'Ubuntu', sans-serif";
+var uiScaleRoot = document.documentElement;
+var defaultUIScaleValues = {
+  '--page-padding': 20,
+  '--gap-size': 10,
+  '--button-size': 24,
+  '--border-radius': 5,
+  '--form-label-width': 150,
+  '--form-label-min-width': 120,
+  '--form-action-width': 110
+};
+var uiScaleProperties = Object.keys(defaultUIScaleValues);
+var baseUIScaleValues = _objectSpread({}, defaultUIScaleValues);
+var baseFontSize = 16;
+if (uiScaleRoot) {
+  try {
+    var computedStyle = getComputedStyle(uiScaleRoot);
+    var computedFontSize = parseFloat(computedStyle.fontSize);
+    if (Number.isFinite(computedFontSize) && computedFontSize > 0) {
+      baseFontSize = computedFontSize;
+    }
+    var _iterator22 = _createForOfIteratorHelper(uiScaleProperties),
+      _step22;
+    try {
+      for (_iterator22.s(); !(_step22 = _iterator22.n()).done;) {
+        var prop = _step22.value;
+        var _value0 = parseFloat(computedStyle.getPropertyValue(prop));
+        if (Number.isFinite(_value0) && _value0 > 0) {
+          baseUIScaleValues[prop] = _value0;
+        }
+      }
+    } catch (err) {
+      _iterator22.e(err);
+    } finally {
+      _iterator22.f();
+    }
+  } catch (error) {
+    console.warn('Unable to read computed styles for UI scaling', error);
+  }
+}
+var customFontStorageKeyName = typeof CUSTOM_FONT_STORAGE_KEY_NAME !== 'undefined' ? CUSTOM_FONT_STORAGE_KEY_NAME : typeof CUSTOM_FONT_STORAGE_KEY !== 'undefined' ? CUSTOM_FONT_STORAGE_KEY : 'cameraPowerPlanner_customFonts';
+var customFontEntries = new Map();
+var SUPPORTED_FONT_TYPES = new Set(['font/ttf', 'font/otf', 'font/woff', 'font/woff2', 'application/font-woff', 'application/font-woff2', 'application/x-font-ttf', 'application/x-font-opentype']);
+var SUPPORTED_FONT_EXTENSIONS = ['.ttf', '.otf', '.ttc', '.woff', '.woff2'];
+function loadCustomFontMetadataFromStorage() {
+  if (typeof localStorage === 'undefined') return [];
+  try {
+    var raw = localStorage.getItem(customFontStorageKeyName);
+    if (!raw) return [];
+    var parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return parsed.map(function (entry) {
+      return {
+        id: entry && typeof entry.id === 'string' ? entry.id : null,
+        name: entry && typeof entry.name === 'string' ? entry.name : '',
+        data: entry && typeof entry.data === 'string' ? entry.data : ''
+      };
+    }).filter(function (entry) {
+      return entry.id && entry.name && entry.data;
+    });
+  } catch (error) {
+    console.warn('Failed to load stored custom fonts', error);
+    return [];
+  }
+}
+function persistCustomFontsToStorage() {
+  if (typeof localStorage === 'undefined') return true;
+  try {
+    var payload = Array.from(customFontEntries.values()).map(function (entry) {
+      return {
+        id: entry.id,
+        name: entry.name,
+        data: entry.data
+      };
+    });
+    localStorage.setItem(customFontStorageKeyName, JSON.stringify(payload));
+    return true;
+  } catch (error) {
+    console.warn('Could not save custom fonts', error);
+    return false;
+  }
+}
+function sanitizeCustomFontName(name) {
+  if (!name) return 'Custom Font';
+  var trimmed = String(name).trim();
+  if (!trimmed) return 'Custom Font';
+  return trimmed.replace(/\s+/g, ' ').slice(0, 80);
+}
+function deriveFontNameFromFile(file) {
+  if (!file) return 'Custom Font';
+  var rawName = typeof file.name === 'string' ? file.name : '';
+  if (!rawName) return 'Custom Font';
+  var withoutExtension = rawName.replace(/\.[^.]+$/, '');
+  var candidate = withoutExtension || rawName;
+  return sanitizeCustomFontName(candidate);
+}
+function ensureUniqueCustomFontName(baseName) {
+  var sanitizedBase = sanitizeCustomFontName(baseName);
+  if (!settingsFontFamily) return sanitizedBase;
+  var candidate = sanitizedBase;
+  var suffix = 2;
+  while (Array.from(settingsFontFamily.options).some(function (opt) {
+    return opt.value === buildFontFamilyValue(candidate);
+  })) {
+    candidate = "".concat(sanitizedBase, " ").concat(suffix);
+    suffix += 1;
+  }
+  return candidate;
+}
+function cssEscapeFontName(name) {
+  if (typeof CSS !== 'undefined' && CSS && typeof CSS.escape === 'function') {
+    return CSS.escape(name);
+  }
+  return String(name).replace(/['"\\]/g, function (match) {
+    return "\\".concat(match);
+  });
+}
+function registerCustomFontSource(_x, _x2, _x3) {
+  return _registerCustomFontSource.apply(this, arguments);
+}
+function _registerCustomFontSource() {
+  _registerCustomFontSource = _asyncToGenerator(_regenerator().m(function _callee6(name, dataUrl, id) {
+    var loaded, fontFace, safeId, styleId, styleElement, escapedName, _t5, _t6;
+    return _regenerator().w(function (_context6) {
+      while (1) switch (_context6.p = _context6.n) {
+        case 0:
+          if (!(!name || !dataUrl || typeof document === 'undefined')) {
+            _context6.n = 1;
+            break;
+          }
+          return _context6.a(2, false);
+        case 1:
+          loaded = false;
+          if (!(typeof FontFace === 'function' && document.fonts && typeof document.fonts.add === 'function')) {
+            _context6.n = 5;
+            break;
+          }
+          _context6.p = 2;
+          fontFace = new FontFace(name, "url(".concat(dataUrl, ")"));
+          _context6.n = 3;
+          return fontFace.load();
+        case 3:
+          document.fonts.add(fontFace);
+          loaded = true;
+          _context6.n = 5;
+          break;
+        case 4:
+          _context6.p = 4;
+          _t5 = _context6.v;
+          console.warn('Failed to load custom font via FontFace', _t5);
+        case 5:
+          if (loaded) {
+            _context6.n = 8;
+            break;
+          }
+          _context6.p = 6;
+          safeId = id || cssEscapeFontName(name).replace(/[^a-z0-9_-]+/gi, '-');
+          styleId = "customFontStyle-".concat(safeId);
+          styleElement = document.getElementById(styleId);
+          if (!styleElement) {
+            styleElement = document.createElement('style');
+            styleElement.id = styleId;
+            if (document.head) {
+              document.head.appendChild(styleElement);
+            } else {
+              document.body.appendChild(styleElement);
+            }
+          }
+          escapedName = cssEscapeFontName(name);
+          styleElement.textContent = "@font-face { font-family: '".concat(escapedName, "'; src: url(").concat(dataUrl, "); font-display: swap; }");
+          loaded = true;
+          _context6.n = 8;
+          break;
+        case 7:
+          _context6.p = 7;
+          _t6 = _context6.v;
+          console.warn('Failed to inject custom font style', _t6);
+          return _context6.a(2, false);
+        case 8:
+          return _context6.a(2, loaded);
+      }
+    }, _callee6, null, [[6, 7], [2, 4]]);
+  }));
+  return _registerCustomFontSource.apply(this, arguments);
+}
+function applyStoredCustomFont(_x4) {
+  return _applyStoredCustomFont.apply(this, arguments);
+}
+function _applyStoredCustomFont() {
+  _applyStoredCustomFont = _asyncToGenerator(_regenerator().m(function _callee7(entry) {
+    var value, _ensureFontFamilyOpti, option;
+    return _regenerator().w(function (_context7) {
+      while (1) switch (_context7.n) {
+        case 0:
+          if (!(!entry || !entry.id)) {
+            _context7.n = 1;
+            break;
+          }
+          return _context7.a(2, null);
+        case 1:
+          value = buildFontFamilyValue(entry.name);
+          _ensureFontFamilyOpti = ensureFontFamilyOption(value, entry.name, localFontsGroup, 'uploaded'), option = _ensureFontFamilyOpti.option;
+          if (option) {
+            option.dataset.fontId = entry.id;
+          }
+          _context7.n = 2;
+          return registerCustomFontSource(entry.name, entry.data, entry.id);
+        case 2:
+          return _context7.a(2, value);
+      }
+    }, _callee7);
+  }));
+  return _applyStoredCustomFont.apply(this, arguments);
+}
+function loadStoredCustomFonts() {
+  return _loadStoredCustomFonts.apply(this, arguments);
+}
+function _loadStoredCustomFonts() {
+  _loadStoredCustomFonts = _asyncToGenerator(_regenerator().m(function _callee8() {
+    var stored, _iterator26, _step26, entry, normalized, _t7, _t8;
+    return _regenerator().w(function (_context8) {
+      while (1) switch (_context8.p = _context8.n) {
+        case 0:
+          stored = loadCustomFontMetadataFromStorage();
+          if (stored.length) {
+            _context8.n = 1;
+            break;
+          }
+          return _context8.a(2);
+        case 1:
+          _iterator26 = _createForOfIteratorHelper(stored);
+          _context8.p = 2;
+          _iterator26.s();
+        case 3:
+          if ((_step26 = _iterator26.n()).done) {
+            _context8.n = 8;
+            break;
+          }
+          entry = _step26.value;
+          normalized = {
+            id: entry.id,
+            name: sanitizeCustomFontName(entry.name),
+            data: entry.data
+          };
+          customFontEntries.set(normalized.id, normalized);
+          _context8.p = 4;
+          _context8.n = 5;
+          return applyStoredCustomFont(normalized);
+        case 5:
+          _context8.n = 7;
+          break;
+        case 6:
+          _context8.p = 6;
+          _t7 = _context8.v;
+          console.warn('Failed to restore custom font', normalized.name, _t7);
+        case 7:
+          _context8.n = 3;
+          break;
+        case 8:
+          _context8.n = 10;
+          break;
+        case 9:
+          _context8.p = 9;
+          _t8 = _context8.v;
+          _iterator26.e(_t8);
+        case 10:
+          _context8.p = 10;
+          _iterator26.f();
+          return _context8.f(10);
+        case 11:
+          return _context8.a(2);
+      }
+    }, _callee8, null, [[4, 6], [2, 9, 10, 11]]);
+  }));
+  return _loadStoredCustomFonts.apply(this, arguments);
+}
+function resetCustomFontsForFactoryReset() {
+  var hadEntries = customFontEntries && typeof customFontEntries.size === 'number' ? customFontEntries.size > 0 : false;
+  if (customFontEntries && typeof customFontEntries.clear === 'function') {
+    customFontEntries.clear();
+  }
+  var removedUploadedOption = false;
+  if (settingsFontFamily && settingsFontFamily.options) {
+    var options = Array.from(settingsFontFamily.options || []);
+    options.forEach(function (option) {
+      if (!option || !option.dataset || option.dataset.source !== 'uploaded') {
+        return;
+      }
+      removedUploadedOption = true;
+      var fontId = option.dataset.fontId || '';
+      if (option.parentNode && typeof option.parentNode.removeChild === 'function') {
+        option.parentNode.removeChild(option);
+      } else if (typeof settingsFontFamily.removeChild === 'function') {
+        settingsFontFamily.removeChild(option);
+      }
+      if (fontId && typeof document !== 'undefined') {
+        var styleId = "customFontStyle-".concat(fontId);
+        var styleNode = document.getElementById(styleId);
+        if (styleNode && styleNode.parentNode) {
+          styleNode.parentNode.removeChild(styleNode);
+        }
+      }
+    });
+    var hasCurrentSelection = options.some(function (option) {
+      return option && option.value === settingsFontFamily.value;
+    });
+    if (!hasCurrentSelection) {
+      if (settingsFontFamily.options.length) {
+        settingsFontFamily.selectedIndex = 0;
+      } else {
+        settingsFontFamily.value = '';
+      }
+    }
+  }
+  if (typeof document !== 'undefined' && document.querySelectorAll) {
+    var inlineStyles = document.querySelectorAll('style[id^="customFontStyle-"]');
+    inlineStyles.forEach(function (styleNode) {
+      if (styleNode && styleNode.parentNode) {
+        styleNode.parentNode.removeChild(styleNode);
+      }
+    });
+  }
+  if (typeof setLocalFontsStatus === 'function' && (hadEntries || removedUploadedOption)) {
+    setLocalFontsStatus(null);
+  }
+}
+function isSupportedFontFile(file) {
+  if (!file) return false;
+  var type = typeof file.type === 'string' ? file.type.toLowerCase() : '';
+  if (type && SUPPORTED_FONT_TYPES.has(type)) {
+    return true;
+  }
+  var name = typeof file.name === 'string' ? file.name.toLowerCase() : '';
+  return SUPPORTED_FONT_EXTENSIONS.some(function (ext) {
+    return name.endsWith(ext);
+  });
+}
+function readFileAsDataURL(file) {
+  return new Promise(function (resolve, reject) {
+    if (typeof FileReader !== 'function') {
+      reject(new Error('FileReader is unavailable'));
+      return;
+    }
+    var reader = new FileReader();
+    reader.onload = function () {
+      return resolve(reader.result);
+    };
+    reader.onerror = function () {
+      return reject(reader.error || new Error('Failed to read file'));
+    };
+    try {
+      reader.readAsDataURL(file);
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+function addCustomFontFromData(_x5, _x6) {
+  return _addCustomFontFromData.apply(this, arguments);
+}
+function _addCustomFontFromData() {
+  _addCustomFontFromData = _asyncToGenerator(_regenerator().m(function _callee9(name, dataUrl) {
+    var _ref90,
+      _ref90$persist,
+      persist,
+      uniqueName,
+      value,
+      _ensureFontFamilyOpti2,
+      option,
+      entryId,
+      entry,
+      persisted,
+      _args9 = arguments;
+    return _regenerator().w(function (_context9) {
+      while (1) switch (_context9.n) {
+        case 0:
+          _ref90 = _args9.length > 2 && _args9[2] !== undefined ? _args9[2] : {}, _ref90$persist = _ref90.persist, persist = _ref90$persist === void 0 ? true : _ref90$persist;
+          uniqueName = ensureUniqueCustomFontName(name);
+          value = buildFontFamilyValue(uniqueName);
+          _ensureFontFamilyOpti2 = ensureFontFamilyOption(value, uniqueName, localFontsGroup, 'uploaded'), option = _ensureFontFamilyOpti2.option;
+          if (option) {
+            _context9.n = 1;
+            break;
+          }
+          return _context9.a(2, {
+            name: uniqueName,
+            value: value,
+            persisted: false
+          });
+        case 1:
+          entryId = option.dataset.fontId;
+          if (!entryId) {
+            entryId = "custom-font-".concat(Date.now(), "-").concat(Math.random().toString(36).slice(2));
+            option.dataset.fontId = entryId;
+          }
+          entry = {
+            id: entryId,
+            name: uniqueName,
+            data: dataUrl
+          };
+          customFontEntries.set(entryId, entry);
+          _context9.n = 2;
+          return registerCustomFontSource(uniqueName, dataUrl, entryId);
+        case 2:
+          persisted = true;
+          if (persist && !persistCustomFontsToStorage()) {
+            persisted = false;
+          }
+          return _context9.a(2, {
+            name: uniqueName,
+            value: value,
+            persisted: persisted
+          });
+      }
+    }, _callee9);
+  }));
+  return _addCustomFontFromData.apply(this, arguments);
+}
+function handleLocalFontFiles(_x7) {
+  return _handleLocalFontFiles.apply(this, arguments);
+}
+function _handleLocalFontFiles() {
+  _handleLocalFontFiles = _asyncToGenerator(_regenerator().m(function _callee0(fileList) {
+    var added, unsupported, failed, persistFailure, _i27, _Array$from, file, dataUrl, result, message, _message9, _message0, _t9;
+    return _regenerator().w(function (_context0) {
+      while (1) switch (_context0.p = _context0.n) {
+        case 0:
+          if (!(!fileList || fileList.length === 0)) {
+            _context0.n = 1;
+            break;
+          }
+          setLocalFontsStatus('localFontsNoFonts');
+          return _context0.a(2);
+        case 1:
+          if (localFontsButton) {
+            localFontsButton.disabled = true;
+          }
+          added = [];
+          unsupported = [];
+          failed = [];
+          persistFailure = false;
+          _i27 = 0, _Array$from = Array.from(fileList);
+        case 2:
+          if (!(_i27 < _Array$from.length)) {
+            _context0.n = 9;
+            break;
+          }
+          file = _Array$from[_i27];
+          if (isSupportedFontFile(file)) {
+            _context0.n = 3;
+            break;
+          }
+          unsupported.push(file && typeof file.name === 'string' ? file.name : '');
+          return _context0.a(3, 8);
+        case 3:
+          _context0.p = 3;
+          _context0.n = 4;
+          return readFileAsDataURL(file);
+        case 4:
+          dataUrl = _context0.v;
+          if (dataUrl) {
+            _context0.n = 5;
+            break;
+          }
+          failed.push(file && file.name ? file.name : '');
+          return _context0.a(3, 8);
+        case 5:
+          _context0.n = 6;
+          return addCustomFontFromData(deriveFontNameFromFile(file), dataUrl);
+        case 6:
+          result = _context0.v;
+          added.push(result);
+          if (!result.persisted) {
+            persistFailure = true;
+          }
+          _context0.n = 8;
+          break;
+        case 7:
+          _context0.p = 7;
+          _t9 = _context0.v;
+          console.warn('Failed to import custom font', _t9);
+          failed.push(file && typeof file.name === 'string' ? file.name : '');
+        case 8:
+          _i27++;
+          _context0.n = 2;
+          break;
+        case 9:
+          if (added.length > 0) {
+            if (settingsFontFamily) {
+              settingsFontFamily.value = added[0].value;
+            }
+            setLocalFontsStatus('localFontsAdded', added.map(function (item) {
+              return item.name;
+            }).join(', '));
+          } else if (unsupported.length > 0) {
+            setLocalFontsStatus('localFontsUnsupportedFiles', unsupported.join(', '));
+          } else if (failed.length > 0) {
+            setLocalFontsStatus('localFontsError');
+          } else {
+            setLocalFontsStatus('localFontsNoFonts');
+          }
+          if (persistFailure) {
+            message = getLocalizedText('localFontsSaveError');
+            if (message) {
+              showNotification('warning', message);
+            }
+          }
+          if (unsupported.length > 0 && added.length > 0) {
+            _message9 = getLocalizedText('localFontsUnsupportedFiles');
+            if (_message9) {
+              showNotification('warning', _message9.replace('%s', unsupported.join(', ')));
+            }
+          }
+          if (failed.length > 0) {
+            _message0 = getLocalizedText('localFontsError');
+            if (_message0) {
+              showNotification('error', _message0);
+            }
+          }
+          if (localFontsButton) {
+            localFontsButton.disabled = false;
+          }
+        case 10:
+          return _context0.a(2);
+      }
+    }, _callee0, null, [[3, 7]]);
+  }));
+  return _handleLocalFontFiles.apply(this, arguments);
+}
+function normalizeFontResults(_x8) {
+  return _normalizeFontResults.apply(this, arguments);
+}
+function _normalizeFontResults() {
+  _normalizeFontResults = _asyncToGenerator(_regenerator().m(function _callee1(result) {
+    var hasSymbol, asyncIteratorSymbol, fonts, _iteratorAbruptCompletion, _didIteratorError, _iteratorError, _iterator, _step, font, iteratorSymbol, _t0;
+    return _regenerator().w(function (_context1) {
+      while (1) switch (_context1.p = _context1.n) {
+        case 0:
+          if (result) {
+            _context1.n = 1;
+            break;
+          }
+          return _context1.a(2, []);
+        case 1:
+          if (!Array.isArray(result)) {
+            _context1.n = 2;
+            break;
+          }
+          return _context1.a(2, result);
+        case 2:
+          hasSymbol = typeof Symbol === 'function';
+          asyncIteratorSymbol = hasSymbol && Symbol.asyncIterator;
+          if (!(asyncIteratorSymbol && typeof result[asyncIteratorSymbol] === 'function')) {
+            _context1.n = 15;
+            break;
+          }
+          fonts = [];
+          _iteratorAbruptCompletion = false;
+          _didIteratorError = false;
+          _context1.p = 3;
+          _iterator = _asyncIterator(result);
+        case 4:
+          _context1.n = 5;
+          return _iterator.next();
+        case 5:
+          if (!(_iteratorAbruptCompletion = !(_step = _context1.v).done)) {
+            _context1.n = 7;
+            break;
+          }
+          font = _step.value;
+          fonts.push(font);
+        case 6:
+          _iteratorAbruptCompletion = false;
+          _context1.n = 4;
+          break;
+        case 7:
+          _context1.n = 9;
+          break;
+        case 8:
+          _context1.p = 8;
+          _t0 = _context1.v;
+          _didIteratorError = true;
+          _iteratorError = _t0;
+        case 9:
+          _context1.p = 9;
+          _context1.p = 10;
+          if (!(_iteratorAbruptCompletion && _iterator.return != null)) {
+            _context1.n = 11;
+            break;
+          }
+          _context1.n = 11;
+          return _iterator.return();
+        case 11:
+          _context1.p = 11;
+          if (!_didIteratorError) {
+            _context1.n = 12;
+            break;
+          }
+          throw _iteratorError;
+        case 12:
+          return _context1.f(11);
+        case 13:
+          return _context1.f(9);
+        case 14:
+          return _context1.a(2, fonts);
+        case 15:
+          iteratorSymbol = hasSymbol && Symbol.iterator;
+          if (!(iteratorSymbol && typeof result[iteratorSymbol] === 'function')) {
+            _context1.n = 16;
+            break;
+          }
+          return _context1.a(2, Array.from(result));
+        case 16:
+          return _context1.a(2, []);
+      }
+    }, _callee1, null, [[10,, 11, 13], [3, 8, 9, 14]]);
+  }));
+  return _normalizeFontResults.apply(this, arguments);
+}
+var queryAvailableLocalFonts = function () {
+  if (typeof window === 'undefined') return null;
+  if (typeof window.queryLocalFonts === 'function') {
+    return function () {
+      var _ref67 = _asyncToGenerator(_regenerator().m(function _callee(options) {
+        var _t;
+        return _regenerator().w(function (_context) {
+          while (1) switch (_context.n) {
+            case 0:
+              _t = normalizeFontResults;
+              _context.n = 1;
+              return window.queryLocalFonts(options);
+            case 1:
+              return _context.a(2, _t(_context.v));
+          }
+        }, _callee);
+      }));
+      return function (_x9) {
+        return _ref67.apply(this, arguments);
+      };
+    }();
+  }
+  if (typeof navigator !== 'undefined' && navigator && navigator.fonts && typeof navigator.fonts.query === 'function') {
+    var _navigator = navigator,
+      fonts = _navigator.fonts;
+    return function () {
+      var _ref68 = _asyncToGenerator(_regenerator().m(function _callee2(options) {
+        var _t2;
+        return _regenerator().w(function (_context2) {
+          while (1) switch (_context2.n) {
+            case 0:
+              _t2 = normalizeFontResults;
+              _context2.n = 1;
+              return fonts.query.call(fonts, options);
+            case 1:
+              return _context2.a(2, _t2(_context2.v));
+          }
+        }, _callee2);
+      }));
+      return function (_x0) {
+        return _ref68.apply(this, arguments);
+      };
+    }();
+  }
+  return null;
+}();
+var supportsLocalFonts = typeof queryAvailableLocalFonts === 'function';
+var canUploadFontFiles = !!(localFontsInput && typeof window !== 'undefined' && typeof window.FileReader === 'function' && typeof localFontsInput.click === 'function');
+function getLocalizedText(key) {
+  if (texts[currentLang] && texts[currentLang][key]) return texts[currentLang][key];
+  if (texts.en && texts.en[key]) return texts.en[key];
+  return '';
+}
+function guessFontFallback(name) {
+  if (!name) return 'sans-serif';
+  var lower = name.toLowerCase();
+  if (/(mono|code|console|courier|menlo|fixed|inconsolata|monaco)/.test(lower)) {
+    return 'monospace';
+  }
+  if (/(serif|times|garamond|georgia|baskerville|roman|palatino|bodoni|bookman)/.test(lower)) {
+    return 'serif';
+  }
+  if (/(script|hand|brush|cursive|callig|marker)/.test(lower)) {
+    return 'cursive';
+  }
+  return 'sans-serif';
+}
+function buildFontFamilyValue(name) {
+  if (!name) return fontFamily;
+  var escaped = name.replace(/\\/g, '\\').replace(/'/g, "\\'");
+  return "'".concat(escaped, "', ").concat(guessFontFallback(name));
+}
+function extractFontLabel(value) {
+  if (!value) return '';
+  var trimmed = value.trim();
+  if (!trimmed) return '';
+  var firstChar = trimmed[0];
+  if (firstChar === "'" || firstChar === '"') {
+    var result = '';
+    for (var i = 1; i < trimmed.length; i += 1) {
+      var ch = trimmed[i];
+      if (ch === '\\') {
+        if (i + 1 < trimmed.length) {
+          result += trimmed[i + 1];
+          i += 1;
+        }
+      } else if (ch === firstChar) {
+        return result;
+      } else {
+        result += ch;
+      }
+    }
+    return result;
+  }
+  var commaIdx = trimmed.indexOf(',');
+  if (commaIdx !== -1) return trimmed.slice(0, commaIdx).trim();
+  return trimmed;
+}
+function ensureFontFamilyOption(value, label, targetGroup, source) {
+  if (!settingsFontFamily || !value) {
+    return {
+      option: null,
+      created: false
+    };
+  }
+  var existing = Array.from(settingsFontFamily.options).find(function (opt) {
+    return opt.value === value;
+  });
+  if (existing) {
+    if (source) existing.dataset.source = source;
+    if (label && !existing.textContent.trim()) existing.textContent = label;
+    return {
+      option: existing,
+      created: false
+    };
+  }
+  var option = document.createElement('option');
+  option.value = value;
+  option.textContent = label || extractFontLabel(value);
+  if (source) option.dataset.source = source;
+  var container = targetGroup && typeof targetGroup.appendChild === 'function' ? targetGroup : settingsFontFamily;
+  container.appendChild(option);
+  return {
+    option: option,
+    created: true
+  };
+}
+function setLocalFontsStatus(key, replacement) {
+  if (!localFontsStatus || !key) {
+    if (localFontsStatus) {
+      localFontsStatus.textContent = '';
+      localFontsStatus.setAttribute('hidden', '');
+      delete localFontsStatus.dataset.statusKey;
+      delete localFontsStatus.dataset.statusArg;
+    }
+    return;
+  }
+  var template = getLocalizedText(key);
+  var hasReplacement = replacement !== undefined && replacement !== null;
+  var message = template;
+  if (hasReplacement) {
+    var replacementText = String(replacement);
+    message = template ? template.replace('%s', replacementText) : replacementText;
+    localFontsStatus.dataset.statusArg = replacementText;
+  } else {
+    delete localFontsStatus.dataset.statusArg;
+  }
+  localFontsStatus.dataset.statusKey = key;
+  localFontsStatus.textContent = message;
+  localFontsStatus.removeAttribute('hidden');
+}
+function requestLocalFonts() {
+  return _requestLocalFonts.apply(this, arguments);
+}
+function _requestLocalFonts() {
+  _requestLocalFonts = _asyncToGenerator(_regenerator().m(function _callee10() {
+    var fonts, added, duplicates, seenValues, _iterator27, _step27, font, rawName, name, _value11, _ensureFontFamilyOpti3, option, created, _t1, _t10;
+    return _regenerator().w(function (_context10) {
+      while (1) switch (_context10.p = _context10.n) {
+        case 0:
+          if (!(!supportsLocalFonts || !localFontsButton || !queryAvailableLocalFonts)) {
+            _context10.n = 1;
+            break;
+          }
+          return _context10.a(2);
+        case 1:
+          localFontsButton.disabled = true;
+          _context10.p = 2;
+          _context10.n = 3;
+          return queryAvailableLocalFonts();
+        case 3:
+          fonts = _context10.v;
+          if (!(!Array.isArray(fonts) || fonts.length === 0)) {
+            _context10.n = 4;
+            break;
+          }
+          setLocalFontsStatus('localFontsNoFonts');
+          return _context10.a(2);
+        case 4:
+          added = [];
+          duplicates = [];
+          seenValues = new Set();
+          _iterator27 = _createForOfIteratorHelper(fonts);
+          _context10.p = 5;
+          _iterator27.s();
+        case 6:
+          if ((_step27 = _iterator27.n()).done) {
+            _context10.n = 11;
+            break;
+          }
+          font = _step27.value;
+          rawName = font && (font.family || font.fullName || font.postscriptName);
+          name = rawName ? String(rawName).trim() : '';
+          if (name) {
+            _context10.n = 7;
+            break;
+          }
+          return _context10.a(3, 10);
+        case 7:
+          _value11 = buildFontFamilyValue(name);
+          if (!seenValues.has(_value11)) {
+            _context10.n = 8;
+            break;
+          }
+          duplicates.push(name);
+          return _context10.a(3, 10);
+        case 8:
+          _ensureFontFamilyOpti3 = ensureFontFamilyOption(_value11, name, localFontsGroup, 'local'), option = _ensureFontFamilyOpti3.option, created = _ensureFontFamilyOpti3.created;
+          if (option) {
+            _context10.n = 9;
+            break;
+          }
+          return _context10.a(3, 10);
+        case 9:
+          seenValues.add(option.value);
+          if (created) {
+            added.push({
+              name: name,
+              value: option.value
+            });
+          } else {
+            duplicates.push(name);
+          }
+        case 10:
+          _context10.n = 6;
+          break;
+        case 11:
+          _context10.n = 13;
+          break;
+        case 12:
+          _context10.p = 12;
+          _t1 = _context10.v;
+          _iterator27.e(_t1);
+        case 13:
+          _context10.p = 13;
+          _iterator27.f();
+          return _context10.f(13);
+        case 14:
+          if (added.length > 0) {
+            if (settingsFontFamily) {
+              settingsFontFamily.value = added[0].value;
+            }
+            setLocalFontsStatus('localFontsAdded', added.map(function (item) {
+              return item.name;
+            }).join(', '));
+          } else if (duplicates.length > 0) {
+            setLocalFontsStatus('localFontsAlreadyAdded', duplicates.join(', '));
+          } else {
+            setLocalFontsStatus('localFontsNoFonts');
+          }
+          _context10.n = 16;
+          break;
+        case 15:
+          _context10.p = 15;
+          _t10 = _context10.v;
+          console.error('Could not access local fonts', _t10);
+          if (_t10 && (_t10.name === 'NotAllowedError' || _t10.name === 'SecurityError') && canUploadFontFiles) {
+            setLocalFontsStatus('localFontsPermissionNeeded');
+          } else {
+            setLocalFontsStatus('localFontsError');
+          }
+        case 16:
+          _context10.p = 16;
+          localFontsButton.disabled = false;
+          return _context10.f(16);
+        case 17:
+          return _context10.a(2);
+      }
+    }, _callee10, null, [[5, 12, 13, 14], [2, 15, 16, 17]]);
+  }));
+  return _requestLocalFonts.apply(this, arguments);
+}
+if (localFontsButton) {
+  if (supportsLocalFonts || canUploadFontFiles) {
+    localFontsButton.removeAttribute('hidden');
+    localFontsButton.addEventListener('click', function () {
+      if (supportsLocalFonts) {
+        requestLocalFonts();
+      } else if (canUploadFontFiles && localFontsInput) {
+        localFontsInput.click();
+      }
+    });
+    if (!supportsLocalFonts && canUploadFontFiles) {
+      setLocalFontsStatus('localFontsFileFallback');
+    }
+  } else {
+    setLocalFontsStatus('localFontsUnsupported');
+  }
+}
+if (localFontsInput) {
+  localFontsInput.addEventListener('change', function () {
+    if (localFontsInput.files && localFontsInput.files.length > 0) {
+      handleLocalFontFiles(localFontsInput.files);
+    } else {
+      setLocalFontsStatus('localFontsNoFonts');
+    }
+    try {
+      localFontsInput.value = '';
+    } catch (_unused19) {}
+  });
+}
+loadStoredCustomFonts().catch(function (error) {
+  console.warn('Unable to restore stored custom fonts', error);
+});
+function applyFontSize(size) {
+  var numericSize = parseFloat(size);
+  if (!Number.isFinite(numericSize) || numericSize <= 0) {
+    return;
+  }
+  document.documentElement.style.fontSize = "".concat(numericSize, "px");
+  if (!Number.isFinite(baseFontSize) || baseFontSize <= 0) {
+    return;
+  }
+  var scale = numericSize / baseFontSize;
+  var _iterator23 = _createForOfIteratorHelper(uiScaleProperties),
+    _step23;
+  try {
+    for (_iterator23.s(); !(_step23 = _iterator23.n()).done;) {
+      var _prop = _step23.value;
+      var baseValue = baseUIScaleValues[_prop];
+      if (!Number.isFinite(baseValue) || baseValue <= 0) continue;
+      document.documentElement.style.setProperty(_prop, "".concat(baseValue * scale, "px"));
+    }
+  } catch (err) {
+    _iterator23.e(err);
+  } finally {
+    _iterator23.f();
+  }
+  document.documentElement.style.setProperty('--ui-scale', String(scale));
+}
+function applyFontFamily(family) {
+  document.documentElement.style.setProperty('--font-family', family);
+}
+try {
+  var storedSize = localStorage.getItem('fontSize');
+  if (storedSize) {
+    fontSize = storedSize;
+    applyFontSize(fontSize);
+  }
+  var storedFamily = localStorage.getItem('fontFamily');
+  if (storedFamily) {
+    fontFamily = storedFamily;
+    applyFontFamily(fontFamily);
+  }
+} catch (e) {
+  console.warn('Could not load font preferences', e);
+}
+if (settingsFontSize) settingsFontSize.value = fontSize;
+if (settingsFontFamily) {
+  var hasStoredOption = Array.from(settingsFontFamily.options).some(function (opt) {
+    return opt.value === fontFamily;
+  });
+  if (!hasStoredOption && fontFamily) {
+    ensureFontFamilyOption(fontFamily, extractFontLabel(fontFamily), localFontsGroup, 'local');
+  }
+  settingsFontFamily.value = fontFamily;
+}
+var revertAccentColor = function revertAccentColor() {
+  if (document.body && document.body.classList.contains('pink-mode')) {
+    if (shouldPreserveAccentInPinkMode()) {
+      applyAccentColor(prevAccentColor);
+    } else {
+      clearAccentColorOverrides();
+    }
+    return;
+  }
+  applyAccentColor(prevAccentColor);
+};
+function populateFeatureSearch() {
+  if (!featureList) return;
+  featureMap.clear();
+  helpMap.clear();
+  deviceMap.clear();
+  featureSearchEntries = [];
+  featureSearchDefaultOptions = [];
+  var registerOption = function registerOption(value) {
+    if (value) featureSearchDefaultOptions.push(value);
+  };
+  document.querySelectorAll('h2[id], legend[id], h3[id], h4[id]').forEach(function (el) {
+    var _el$dataset;
+    if (helpDialog && helpDialog.contains(el)) return;
+    var name = el.textContent.trim();
+    if (!name) return;
+    var keywords = ((_el$dataset = el.dataset) === null || _el$dataset === void 0 ? void 0 : _el$dataset.searchKeywords) || el.getAttribute('data-search-keywords') || '';
+    var entry = buildFeatureSearchEntry(el, {
+      label: name,
+      keywords: keywords
+    });
+    if (!entry || !entry.key) return;
+    var display = entry.optionValue || entry.displayLabel || entry.baseLabel;
+    if (!display) return;
+    registerOption(display);
+    featureSearchEntries.push({
+      type: 'feature',
+      key: entry.key,
+      display: display,
+      tokens: Array.isArray(entry.tokens) ? entry.tokens : [],
+      value: entry
+    });
+  });
+  document.querySelectorAll(FEATURE_SEARCH_EXTRA_SELECTOR).forEach(function (el) {
+    if (!el || helpDialog && helpDialog.contains(el)) return;
+    var label = getFeatureSearchLabel(el);
+    if (!label) return;
+    var keywords = getFeatureSearchKeywords(el);
+    var entry = buildFeatureSearchEntry(el, {
+      label: label,
+      keywords: keywords
+    });
+    if (!entry || !entry.key) return;
+    var display = entry.optionValue || entry.displayLabel || entry.baseLabel;
+    if (!display) return;
+    registerOption(display);
+    featureSearchEntries.push({
+      type: 'feature',
+      key: entry.key,
+      display: display,
+      tokens: Array.isArray(entry.tokens) ? entry.tokens : [],
+      value: entry
+    });
+  });
+  if (helpDialog) {
+    helpDialog.querySelectorAll('section[data-help-section]').forEach(function (section) {
+      var heading = section.querySelector('h3');
+      if (!heading) return;
+      var label = heading.textContent.trim();
+      if (!label) return;
+      var keywords = section.dataset.helpKeywords || '';
+      var key = searchKey(label);
+      var tokens = searchTokens("".concat(label, " ").concat(keywords).trim());
+      var helpEntry = {
+        section: section,
+        label: label,
+        tokens: tokens
+      };
+      helpMap.set(key, helpEntry);
+      var optionValue = "".concat(label, " (help)");
+      registerOption(optionValue);
+      featureSearchEntries.push({
+        type: 'help',
+        key: key,
+        display: optionValue,
+        tokens: tokens,
+        value: helpEntry
+      });
+    });
+  }
+  document.querySelectorAll('select').forEach(function (sel) {
+    sel.querySelectorAll('option').forEach(function (opt) {
+      var name = opt.textContent.trim();
+      if (!name || opt.value === 'None') return;
+      var key = searchKey(name);
+      if (!deviceMap.has(key)) {
+        var _opt$dataset, _sel$dataset;
+        var keywords = ((_opt$dataset = opt.dataset) === null || _opt$dataset === void 0 ? void 0 : _opt$dataset.searchKeywords) || opt.getAttribute('data-search-keywords') || ((_sel$dataset = sel.dataset) === null || _sel$dataset === void 0 ? void 0 : _sel$dataset.searchKeywords) || sel.getAttribute('data-search-keywords') || '';
+        var tokens = searchTokens("".concat(name, " ").concat(keywords).trim());
+        var deviceEntry = {
+          select: sel,
+          value: opt.value,
+          label: name,
+          tokens: tokens
+        };
+        deviceMap.set(key, deviceEntry);
+        registerOption(name);
+        featureSearchEntries.push({
+          type: 'device',
+          key: key,
+          display: name,
+          tokens: tokens,
+          value: deviceEntry
+        });
+      }
+    });
+  });
+  renderFeatureListOptions(featureSearchDefaultOptions);
+  if (featureSearch && featureSearch.value) {
+    updateFeatureSearchSuggestions(featureSearch.value);
+  }
+}
+function setEditProjectBtnText() {
+  var btn = document.getElementById('editProjectBtn');
+  if (btn) {
+    btn.textContent = texts[currentLang].editProjectBtn;
+    btn.setAttribute('title', texts[currentLang].editProjectBtn);
+    btn.setAttribute('data-help', texts[currentLang].editProjectBtn);
+  }
+}
+function ensureEditProjectButton() {
+  var container = null;
+  if (projectRequirementsOutput && !projectRequirementsOutput.classList.contains('hidden')) {
+    container = projectRequirementsOutput;
+  } else if (gearListOutput && !gearListOutput.classList.contains('hidden')) {
+    container = gearListOutput;
+  }
+  if (!container) return;
+  var btn = document.getElementById('editProjectBtn');
+  if (!btn) {
+    btn = document.createElement('button');
+    btn.id = 'editProjectBtn';
+  }
+  var legacyButtonParent = btn.parentElement;
+  if (legacyButtonParent && legacyButtonParent !== container && legacyButtonParent.id !== 'editProjectBtn') {
+    legacyButtonParent.removeChild(btn);
+  }
+  if (!btn.dataset.editProjectBound) {
+    btn.type = 'button';
+    btn.addEventListener('click', function () {
+      var infoForDialog = currentProjectInfo ? _objectSpread({}, currentProjectInfo) : projectForm ? collectProjectFormData() : {};
+      if (projectForm) {
+        populateProjectForm(infoForDialog || {});
+      }
+      openDialog(projectDialog);
+    });
+    btn.dataset.editProjectBound = 'true';
+  }
+  var title = container.querySelector('h2');
+  if (title && btn.parentElement !== container) {
+    title.insertAdjacentElement('afterend', btn);
+  } else if (!title && btn.parentElement !== container) {
+    container.prepend(btn);
+  }
+  btn.type = 'button';
+  setEditProjectBtnText();
+}
+function updateGearListButtonVisibility() {
+  var hasGear = gearListOutput && !gearListOutput.classList.contains('hidden') && gearListOutput.innerHTML.trim() !== '';
+  if (hasGear) {
+    generateGearListBtn.classList.add('hidden');
+    if (deleteGearListProjectBtn) {
+      deleteGearListProjectBtn.classList.remove('hidden');
+    }
+    ensureEditProjectButton();
+  } else {
+    generateGearListBtn.classList.remove('hidden');
+    if (deleteGearListProjectBtn) {
+      deleteGearListProjectBtn.classList.add('hidden');
+    }
+    var btn = document.getElementById('editProjectBtn');
+    if (btn) btn.remove();
+  }
+}
+function ensureGearTableCategoryGrouping(table) {
+  if (!table) return;
+  var doc = table.ownerDocument || (typeof document !== 'undefined' ? document : null);
+  if (!doc) return;
+  var existingCategoryGroups = table.querySelectorAll('tbody.category-group');
+  if (existingCategoryGroups.length) {
+    existingCategoryGroups.forEach(function (group) {
+      if (!group.classList.contains('category-group')) {
+        group.classList.add('category-group');
+      }
+    });
+    table.querySelectorAll('tbody').forEach(function (group) {
+      if (group.querySelector('tr.category-row')) {
+        group.classList.add('category-group');
+      }
+    });
+    return;
+  }
+  var rows = Array.from(table.rows || []);
+  if (!rows.length) return;
+  var newGroups = [];
+  var currentGroup = null;
+  rows.forEach(function (row) {
+    if (row.classList.contains('category-row')) {
+      currentGroup = doc.createElement('tbody');
+      currentGroup.className = 'category-group';
+      currentGroup.appendChild(row);
+      newGroups.push(currentGroup);
+    } else {
+      if (!currentGroup) {
+        currentGroup = doc.createElement('tbody');
+        currentGroup.className = 'category-group';
+        newGroups.push(currentGroup);
+      }
+      currentGroup.appendChild(row);
+    }
+  });
+  Array.from(table.tBodies || []).forEach(function (body) {
+    if (!body.rows.length || !body.classList.contains('category-group')) {
+      body.remove();
+    }
+  });
+  newGroups.forEach(function (group) {
+    if (group.rows.length) table.appendChild(group);
+  });
+}
+var overviewTitleCandidatesCache = null;
+function getOverviewTitleCandidates() {
+  if (overviewTitleCandidatesCache && overviewTitleCandidatesCache.length) {
+    return overviewTitleCandidatesCache;
+  }
+  var variants = new Set();
+  if ((typeof texts === "undefined" ? "undefined" : _typeof(texts)) === 'object' && texts !== null) {
+    Object.values(texts).forEach(function (lang) {
+      var label = lang && typeof lang.overviewTitle === 'string' ? lang.overviewTitle.trim() : '';
+      if (label) variants.add(label);
+    });
+  }
+  variants.add('Project Overview and Gear List');
+  variants.add('Project Overview');
+  overviewTitleCandidatesCache = Array.from(variants).filter(Boolean).sort(function (a, b) {
+    return b.length - a.length;
+  });
+  return overviewTitleCandidatesCache;
+}
+function extractProjectNameFromHeading(titleElement) {
+  if (!titleElement) return '';
+  if (typeof titleElement.getAttribute === 'function') {
+    var attrName = titleElement.getAttribute('data-project-name');
+    if (typeof attrName === 'string') {
+      var trimmed = attrName.trim();
+      if (trimmed) return trimmed;
+    }
+  }
+  var textValue = typeof titleElement.textContent === 'string' ? titleElement.textContent.replace(/\s+/g, ' ').trim() : '';
+  if (!textValue) return '';
+  var quoteMatch = textValue.match(/[“"']([^“”"']+)[”"']/);
+  if (quoteMatch && quoteMatch[1] && quoteMatch[1].trim()) {
+    return quoteMatch[1].trim();
+  }
+  var guillemetMatch = textValue.match(/[«‹]([^»›]+)[»›]/);
+  if (guillemetMatch && guillemetMatch[1] && guillemetMatch[1].trim()) {
+    return guillemetMatch[1].trim();
+  }
+  var overviewCandidates = getOverviewTitleCandidates();
+  var lowerText = textValue.toLowerCase();
+  var _iterator24 = _createForOfIteratorHelper(overviewCandidates),
+    _step24;
+  try {
+    for (_iterator24.s(); !(_step24 = _iterator24.n()).done;) {
+      var label = _step24.value;
+      var normalizedLabel = label.trim();
+      if (!normalizedLabel) continue;
+      var lowerLabel = normalizedLabel.toLowerCase();
+      if (lowerText.startsWith(lowerLabel)) {
+        var remainder = textValue.slice(normalizedLabel.length).trim();
+        if (!remainder) return '';
+        remainder = remainder.replace(/^(?:for|pour|für|per|para)\b\s*/i, '').trim();
+        remainder = remainder.replace(/^(?:the|le|la|les|den|die|das|el|los|las)\b\s*/i, '').trim();
+        remainder = remainder.replace(/^[–—:-]+/, '').trim();
+        remainder = remainder.replace(/^["'“”«»‹›]+/, '').replace(/["'“”«»‹›]+$/, '').trim();
+        if (remainder) return remainder;
+        return '';
+      }
+    }
+  } catch (err) {
+    _iterator24.e(err);
+  } finally {
+    _iterator24.f();
+  }
+  if (overviewCandidates.some(function (label) {
+    return lowerText === label.toLowerCase();
+  })) {
+    return '';
+  }
+  var stripped = textValue.replace(/^["'“”«»‹›]+/, '').replace(/["'“”«»‹›]+$/, '').trim();
+  if (stripped && stripped !== textValue) {
+    return stripped;
+  }
+  return textValue;
+}
+function splitGearListHtml(html) {
+  if (!html) return {
+    projectHtml: '',
+    gearHtml: ''
+  };
+  if (_typeof(html) === 'object') {
+    var legacyProject = html.projectHtml || html.project || '';
+    var legacyGear = html.gearHtml || html.gear || '';
+    if (legacyProject || legacyGear) {
+      return {
+        projectHtml: legacyProject,
+        gearHtml: legacyGear
+      };
+    }
+    html = html.gearList || '';
+  }
+  var doc = new DOMParser().parseFromString(html, 'text/html');
+  var title = doc.querySelector('h2');
+  var reqGrid = doc.querySelector('.requirements-grid');
+  var titleHtml = title ? title.outerHTML : '';
+  var headingHtml = '';
+  var headingNodeUsed = null;
+  if (reqGrid) {
+    var isHeadingTag = function isHeadingTag(element) {
+      return Boolean(element && /^H[1-6]$/i.test(element.tagName));
+    };
+    var headingIsProjectTitle = function headingIsProjectTitle(element) {
+      return Boolean(title && element && typeof element.isSameNode === 'function' && element.isSameNode(title));
+    };
+    var headingBeforeGrid = function headingBeforeGrid(element) {
+      if (!element || typeof element.compareDocumentPosition !== 'function') return false;
+      return Boolean(element.compareDocumentPosition(reqGrid) & Node.DOCUMENT_POSITION_FOLLOWING);
+    };
+    var headingNode = null;
+    var sibling = reqGrid.previousElementSibling;
+    while (sibling) {
+      if (isHeadingTag(sibling) && !headingIsProjectTitle(sibling) && headingBeforeGrid(sibling)) {
+        headingNode = sibling;
+        break;
+      }
+      sibling = sibling.previousElementSibling;
+    }
+    if (!headingNode) {
+      var parent = reqGrid.parentElement;
+      if (parent) {
+        var candidates = Array.from(parent.querySelectorAll('h1, h2, h3, h4, h5, h6'));
+        for (var i = candidates.length - 1; i >= 0; i -= 1) {
+          var candidate = candidates[i];
+          if (!isHeadingTag(candidate)) continue;
+          if (headingIsProjectTitle(candidate)) continue;
+          if (headingBeforeGrid(candidate)) {
+            headingNode = candidate;
+            break;
+          }
+        }
+      }
+    }
+    if (headingNode) {
+      headingNodeUsed = headingNode;
+      headingHtml = headingNode.outerHTML;
+    } else {
+      var fallbackLabel = reqGrid.getAttribute('data-heading') || 'Project Requirements';
+      headingHtml = "<h3>".concat(escapeHtml(fallbackLabel), "</h3>");
+    }
+  }
+  var projectHtml = reqGrid ? titleHtml + headingHtml + reqGrid.outerHTML : '';
+  var projectName = extractProjectNameFromHeading(title);
+  var table = doc.querySelector('.gear-table');
+  if (!table) {
+    var tables = Array.from(doc.querySelectorAll('table'));
+    if (tables.length === 1) {
+      table = tables[0];
+    } else if (tables.length > 1) {
+      var tableAfterGearHeading = tables.find(function (tbl) {
+        var prev = tbl.previousElementSibling;
+        return prev && prev.matches('h3') && /gear list/i.test(prev.textContent || '');
+      });
+      table = tableAfterGearHeading || tables[0];
+    }
+  }
+  var gearHeadingHtml = projectName ? "<h2>Gear List: \u201C".concat(escapeHtml(projectName), "\u201D</h2>") : '';
+  var gearHtml = '';
+  if (table) {
+    ensureGearTableCategoryGrouping(table);
+    gearHtml = gearHeadingHtml + table.outerHTML;
+  }
+  if (!gearHtml) {
+    var bodyClone = doc.body ? doc.body.cloneNode(true) : null;
+    var bodyHtml = doc.body ? doc.body.innerHTML.trim() : '';
+    if (bodyClone) {
+      if (title) {
+        var cloneTitle = bodyClone.querySelector('h2');
+        if (cloneTitle) cloneTitle.remove();
+      }
+      if (headingNodeUsed) {
+        var headingTag = headingNodeUsed.tagName ? headingNodeUsed.tagName.toLowerCase() : '';
+        var headingText = headingNodeUsed.textContent ? headingNodeUsed.textContent.trim() : '';
+        var cloneHeading = headingTag ? bodyClone.querySelector(headingTag) : null;
+        if (cloneHeading && (!headingText || (cloneHeading.textContent || '').trim() === headingText)) {
+          cloneHeading.remove();
+        }
+      } else {
+        var _cloneHeading = bodyClone.querySelector('h3');
+        if (_cloneHeading && /project requirements/i.test(_cloneHeading.textContent || '')) {
+          _cloneHeading.remove();
+        }
+      }
+      if (reqGrid) {
+        var cloneGrid = bodyClone.querySelector('.requirements-grid');
+        if (cloneGrid) cloneGrid.remove();
+      }
+      var fallbackHtml = bodyClone.innerHTML.trim();
+      if (fallbackHtml) {
+        gearHtml = fallbackHtml;
+      } else if (bodyHtml) {
+        gearHtml = bodyHtml;
+      }
+    } else if (bodyHtml) {
+      gearHtml = bodyHtml;
+    }
+  }
+  return {
+    projectHtml: projectHtml,
+    gearHtml: gearHtml
+  };
+}
+if (typeof global !== 'undefined') {
+  global.splitGearListHtml = splitGearListHtml;
+}
+function describeRequirement(field, value) {
+  var val = value || '';
+  var parts = [];
+  if (field === 'requiredScenarios') {
+    var scenarios = val.split(',').map(function (s) {
+      return s.trim();
+    });
+    if (scenarios.includes('Rain Machine') || scenarios.includes('Extreme rain')) {
+      parts.push('Adds rain deflector and cables for rain use.');
+    }
+    if (scenarios.includes('Trinity') || scenarios.includes('Steadicam')) {
+      parts.push('Includes D-Tap splitters and extension cables for Steadicam/Trinity rigs.');
+    }
+    if (scenarios.includes('Gimbal')) {
+      parts.push('Adds gimbal rigging and power accessories.');
+    }
+  } else if (field === 'mattebox') {
+    var v = val.toLowerCase();
+    if (v.includes('swing')) {
+      parts.push('Adds ARRI LMB 4x5 Pro Set and accessories.');
+    } else if (v.includes('rod')) {
+      parts.push('Adds ARRI LMB 4x5 15mm LWS Set and accessories.');
+    } else if (v.includes('clamp')) {
+      parts.push('Adds ARRI LMB 4x5 Clamp-On Set with adapter rings.');
+    }
+  } else if (field === 'cameraHandle') {
+    var selections = val.split(',').map(function (s) {
+      return s.trim();
+    });
+    if (selections.includes('Hand Grips')) {
+      parts.push('Adds SHAPE Telescopic Handle kit.');
+    }
+    if (selections.includes('Handle Extension')) {
+      parts.push('Adds ARRI HEX-3 handle extension.');
+    }
+    if (selections.includes('L-Handle')) {
+      parts.push('Adds ARRI Handle Extension Set.');
+    }
+  } else if (field === 'viewfinderExtension') {
+    if (val) parts.push('Adds viewfinder extension to support accessories.');
+  } else if (field === 'gimbal') {
+    if (val) parts.push('Includes selected gimbal and support accessories.');
+  } else if (field === 'easyrig') {
+    if (val && val !== 'no further stabilisation') {
+      parts.push('Adds selected stabiliser to gear list.');
+    }
+  } else if (field === 'codec') {
+    if (val) parts.push('Notes chosen codec for post-production reference.');
+  } else if (field === 'monitoringConfiguration') {
+    if (val) parts.push('Adds default monitors and cable sets for each role.');
+  } else if (field === 'videoDistribution') {
+    if (val) parts.push('Includes distribution hardware for the selected method.');
+  }
+  return parts.join(' ');
+}
+var GEAR_TABLE_CATEGORY_META = Object.freeze({
+  Camera: {
+    summary: 'Primary camera body chosen for the current setup.',
+    logic: 'Always included so the crew preps the selected camera package.'
+  },
+  'Camera Support': {
+    summary: 'Baseplates, cages and handle accessories for mounting the camera.',
+    logic: 'Matched to your camera body, selected handles and any scenario add-ons.'
+  },
+  Media: {
+    summary: 'Recording media that works with the selected camera.',
+    logic: 'Picks capacities that cover the camera codecs without running out of space.'
+  },
+  Lens: {
+    summary: 'Optics selected in the project requirements.',
+    logic: 'Pulled directly from your lens choices so they travel with the kit.'
+  },
+  'Lens Support': {
+    summary: 'Lens support brackets, rails and rings sized for your glass.',
+    logic: 'Added automatically when lenses or matte box setups require additional support.'
+  },
+  'Matte box + filter': {
+    summary: 'Matte boxes, trays and filter packs.',
+    logic: 'Generated from your matte box preference and filter selections, including required adapters.'
+  },
+  'LDS (FIZ)': {
+    summary: 'Focus, iris and zoom control hardware.',
+    logic: 'Reflects the motors and controllers picked in the wireless FIZ section.'
+  },
+  'Camera Batteries': {
+    summary: 'Batteries dedicated to powering the camera body.',
+    logic: 'Sized from the camera power draw, runtime targets and hot-swap rules.'
+  },
+  'Monitoring Batteries': {
+    summary: 'Power for handheld and field monitors.',
+    logic: 'Ensures each monitor package includes enough charged batteries for the day.'
+  },
+  Chargers: {
+    summary: 'Charging stations for included battery systems.',
+    logic: 'Adds compatible chargers so battery rotations stay balanced during the shoot.'
+  },
+  Monitoring: {
+    summary: 'On-set monitoring packages for the crew.',
+    logic: 'Derived from monitoring configuration and distribution preferences in project details.'
+  },
+  'Monitoring support': {
+    summary: 'Stands, brackets, straps and cages supporting monitors.',
+    logic: 'Auto-matched to monitor sizes and usage (handheld, stand or cart setups).'
+  },
+  Rigging: {
+    summary: 'Arms, clamps and mounting hardware for accessories.',
+    logic: 'Includes core rigging plus extras triggered by scenarios like Steadicam or gimbal use.'
+  },
+  Power: {
+    summary: 'Power distribution cables and adapters.',
+    logic: 'Covers how accessories receive power from the main battery ecosystem.'
+  },
+  Grip: {
+    summary: 'Support gear like sliders, stabilisers and Easyrig options.',
+    logic: 'Reflects stabilisation preferences and active shooting scenarios.'
+  },
+  'Carts and Transportation': {
+    summary: 'Carts, cases and transport aids for the camera department.',
+    logic: 'Included so the crew can move, stage and secure the package efficiently.'
+  },
+  Miscellaneous: {
+    summary: 'Utility items that keep the crew efficient and comfortable.',
+    logic: 'Adds weather protection and helpful tools based on scenarios and best practices.'
+  },
+  Consumables: {
+    summary: 'Expendables such as tapes, wipes and covers.',
+    logic: 'Scaled to shoot length and weather needs so consumables never run short.'
+  }
+});
+var DEFAULT_GEAR_TABLE_CATEGORY_META = Object.freeze({
+  summary: 'Automatically generated grouping of related equipment.',
+  logic: 'Filled using your project requirements, selections and saved auto gear rules.'
+});
+var getGearTableCategoryMeta = function getGearTableCategoryMeta(category) {
+  if (!category) return DEFAULT_GEAR_TABLE_CATEGORY_META;
+  return GEAR_TABLE_CATEGORY_META[category] || DEFAULT_GEAR_TABLE_CATEGORY_META;
+};
+var buildGearTableCategoryHelp = function buildGearTableCategoryHelp(category) {
+  var meta = getGearTableCategoryMeta(category);
+  var parts = [];
+  if (category) parts.push("".concat(category, " \u2013 ").concat(meta.summary));else parts.push(meta.summary);
+  if (meta.logic) parts.push("Logic: ".concat(meta.logic));
+  return parts.join(' ');
+};
+var formatDeviceCategoryLabel = function formatDeviceCategoryLabel(category) {
+  if (typeof category !== 'string' || !category.trim()) return '';
+  return category.replace(/[_-]+/g, ' ').replace(/([a-z])([A-Z])/g, '$1 $2').split(/\s+/).filter(Boolean).map(function (word) {
+    return word.charAt(0).toUpperCase() + word.slice(1);
+  }).join(' ');
+};
+var formatDeviceCategoryPath = function formatDeviceCategoryPath(path) {
+  if (!Array.isArray(path) || !path.length) return '';
+  return path.map(function (part) {
+    return formatDeviceCategoryLabel(part);
+  }).filter(Boolean).join(' › ');
+};
+var DANGEROUS_SHARED_TAGS = new Set(['script', 'style', 'template', 'iframe', 'object', 'embed', 'link', 'meta', 'base']);
+var DANGEROUS_SHARED_ATTRS = new Set(['formaction', 'action', 'srcdoc']);
+function isSafeSharedUrl(value) {
+  if (typeof value !== 'string') {
+    return false;
+  }
+  var trimmed = value.trim();
+  if (!trimmed) {
+    return true;
+  }
+  if (trimmed.startsWith('#')) {
+    return true;
+  }
+  if (/^(?:javascript|vbscript|data):/i.test(trimmed)) {
+    return false;
+  }
+  try {
+    var base = typeof window !== 'undefined' && window.location ? window.location.href : 'https://localhost';
+    var url = new URL(trimmed, base);
+    if (/^(?:javascript|vbscript|data):/i.test(url.protocol)) {
+      return false;
+    }
+    if (typeof window !== 'undefined' && window.location && window.location.origin) {
+      return url.origin === window.location.origin;
+    }
+    if (!/^[a-z][a-z0-9+.-]*:/i.test(trimmed)) {
+      return true;
+    }
+  } catch (error) {
+    if (!/^[a-z][a-z0-9+.-]*:/i.test(trimmed)) {
+      return true;
+    }
+  }
+  return false;
+}
+function sanitizeSharedHtml(html) {
+  if (!html) {
+    return '';
+  }
+  if (typeof html !== 'string') {
+    return sanitizeSharedHtml(String(html));
+  }
+  var doc;
+  try {
+    doc = new DOMParser().parseFromString(html, 'text/html');
+  } catch (error) {
+    console.warn('Failed to parse shared HTML for sanitization', error);
+    return '';
+  }
+  if (!doc || !doc.body) {
+    return '';
+  }
+  DANGEROUS_SHARED_TAGS.forEach(function (tag) {
+    doc.body.querySelectorAll(tag).forEach(function (node) {
+      node.remove();
+    });
+  });
+  doc.body.querySelectorAll('*').forEach(function (element) {
+    Array.from(element.attributes).forEach(function (attribute) {
+      var name = attribute.name.toLowerCase();
+      if (name.startsWith('on')) {
+        element.removeAttribute(attribute.name);
+        return;
+      }
+      if (name === 'style') {
+        element.removeAttribute(attribute.name);
+        return;
+      }
+      if (DANGEROUS_SHARED_ATTRS.has(name)) {
+        element.removeAttribute(attribute.name);
+        return;
+      }
+      if (name === 'href' || name === 'xlink:href' || name === 'src' || name === 'srcset') {
+        var _value1 = attribute.value || '';
+        var parts = name === 'srcset' ? _value1.split(',').map(function (part) {
+          return part.trim().split(/\s+/)[0];
+        }).filter(Boolean) : [_value1];
+        if (!parts.every(isSafeSharedUrl)) {
+          element.removeAttribute(attribute.name);
+        }
+        return;
+      }
+      if (name === 'target') {
+        element.removeAttribute(attribute.name);
+      }
+    });
+  });
+  return doc.body.innerHTML;
+}
+function displayGearAndRequirements(html) {
+  var _splitGearListHtml = splitGearListHtml(html),
+    projectHtml = _splitGearListHtml.projectHtml,
+    gearHtml = _splitGearListHtml.gearHtml;
+  var safeProjectHtml = sanitizeSharedHtml(projectHtml);
+  var safeGearHtml = sanitizeSharedHtml(gearHtml);
+  if (projectRequirementsOutput) {
+    if (safeProjectHtml) {
+      projectRequirementsOutput.innerHTML = safeProjectHtml;
+      projectRequirementsOutput.classList.remove('hidden');
+      projectRequirementsOutput.querySelectorAll('.requirement-box').forEach(function (box) {
+        var _box$querySelector, _box$querySelector2;
+        var label = ((_box$querySelector = box.querySelector('.req-label')) === null || _box$querySelector === void 0 ? void 0 : _box$querySelector.textContent) || '';
+        var value = ((_box$querySelector2 = box.querySelector('.req-value')) === null || _box$querySelector2 === void 0 ? void 0 : _box$querySelector2.textContent) || '';
+        var field = box.getAttribute('data-field') || '';
+        var baseDesc = value ? "".concat(label, ": ").concat(value) : label;
+        var logic = describeRequirement(field, value);
+        var desc = logic ? "".concat(baseDesc, " \u2013 ").concat(logic) : baseDesc;
+        box.setAttribute('title', desc);
+        box.setAttribute('data-help', desc);
+        box.querySelectorAll('.req-label, .req-value').forEach(function (el) {
+          el.setAttribute('title', desc);
+          el.setAttribute('data-help', desc);
+        });
+      });
+      adjustGearListSelectWidths(projectRequirementsOutput);
+    } else {
+      projectRequirementsOutput.innerHTML = '';
+      projectRequirementsOutput.classList.add('hidden');
+    }
+  }
+  if (gearListOutput) {
+    if (safeGearHtml) {
+      gearListOutput.innerHTML = safeGearHtml;
+      gearListOutput.classList.remove('hidden');
+      applyFilterSelectionsToGearList();
+      renderFilterDetails();
+      var findDevice = function findDevice(name) {
+        if (typeof name !== 'string' || !name.trim()) {
+          return {
+            info: null,
+            category: '',
+            categoryPath: []
+          };
+        }
+        var visited = new Set();
+        var _search = function search(node, path) {
+          if (!isPlainObjectValue(node) || visited.has(node)) return null;
+          visited.add(node);
+          if (Object.prototype.hasOwnProperty.call(node, name) && isPlainObjectValue(node[name])) {
+            return {
+              info: node[name],
+              categoryPath: path
+            };
+          }
+          for (var _i25 = 0, _Object$entries13 = Object.entries(node); _i25 < _Object$entries13.length; _i25++) {
+            var _Object$entries13$_i = _slicedToArray(_Object$entries13[_i25], 2),
+              _key1 = _Object$entries13$_i[0],
+              _value10 = _Object$entries13$_i[1];
+            if (!isPlainObjectValue(_value10)) continue;
+            var _result = _search(_value10, path.concat(_key1));
+            if (_result) return _result;
+          }
+          return null;
+        };
+        var result = _search(devices, []);
+        if (result) {
+          return {
+            info: result.info,
+            category: formatDeviceCategoryPath(result.categoryPath),
+            categoryPath: result.categoryPath
+          };
+        }
+        return {
+          info: null,
+          category: '',
+          categoryPath: []
+        };
+      };
+      var buildGearItemHelp = function buildGearItemHelp(_ref69) {
+        var name = _ref69.name,
+          countText = _ref69.countText,
+          deviceInfo = _ref69.deviceInfo,
+          libraryCategory = _ref69.libraryCategory,
+          tableCategory = _ref69.tableCategory;
+        var parts = [];
+        var label = "".concat(countText || '').concat(name).trim();
+        if (label) parts.push(label);
+        var meta = getGearTableCategoryMeta(tableCategory);
+        var categoryParts = [];
+        if (tableCategory) categoryParts.push("Gear list section: ".concat(tableCategory));
+        if (meta.summary) categoryParts.push(meta.summary);
+        if (meta.logic) categoryParts.push("Logic: ".concat(meta.logic));
+        if (!tableCategory && !categoryParts.length) {
+          var fallback = getGearTableCategoryMeta('');
+          if (fallback.summary) categoryParts.push(fallback.summary);
+          if (fallback.logic) categoryParts.push("Logic: ".concat(fallback.logic));
+        }
+        if (categoryParts.length) parts.push(categoryParts.join(' – '));
+        if (libraryCategory) parts.push("Device library category: ".concat(libraryCategory));
+        if (deviceInfo) {
+          var summary = safeGenerateConnectorSummary(deviceInfo);
+          summary = summary ? summary.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim() : '';
+          if (deviceInfo.notes) summary = summary ? "".concat(summary, "; Notes: ").concat(deviceInfo.notes) : deviceInfo.notes;
+          if (summary) parts.push(summary);
+        }
+        return parts.join(' – ');
+      };
+      gearListOutput.querySelectorAll('tbody.category-group').forEach(function (group) {
+        var headingCell = group.querySelector('.category-row td');
+        if (!headingCell) return;
+        var tableCategory = headingCell.textContent.trim();
+        group.setAttribute('data-gear-table-category', tableCategory);
+        var helpText = buildGearTableCategoryHelp(tableCategory);
+        headingCell.setAttribute('title', helpText);
+        headingCell.setAttribute('data-help', helpText);
+      });
+      gearListOutput.querySelectorAll('.gear-item').forEach(function (span) {
+        var _span$closest;
+        var name = span.getAttribute('data-gear-name') || span.textContent.trim();
+        var _findDevice = findDevice(name),
+          info = _findDevice.info,
+          category = _findDevice.category;
+        var countMatch = span.textContent.trim().match(/^(\d+)x\s+/);
+        var count = countMatch ? "".concat(countMatch[1], "x ") : '';
+        var tableCategory = (_span$closest = span.closest('tbody.category-group')) === null || _span$closest === void 0 ? void 0 : _span$closest.getAttribute('data-gear-table-category');
+        var desc = buildGearItemHelp({
+          name: name,
+          countText: count,
+          deviceInfo: info,
+          libraryCategory: category,
+          tableCategory: tableCategory || ''
+        });
+        span.setAttribute('title', desc);
+        span.setAttribute('data-help', desc);
+        span.querySelectorAll('select').forEach(function (sel) {
+          sel.setAttribute('title', desc);
+          sel.setAttribute('data-help', desc);
+          initFavoritableSelect(sel);
+        });
+      });
+      gearListOutput.querySelectorAll('select').forEach(function (sel) {
+        var _sel$closest;
+        if (sel.getAttribute('data-help')) return;
+        var selected = sel.selectedOptions && sel.selectedOptions[0];
+        var name = selected ? selected.textContent.trim() : sel.value;
+        var _findDevice2 = findDevice(name),
+          info = _findDevice2.info,
+          category = _findDevice2.category;
+        var tableCategory = (_sel$closest = sel.closest('tbody.category-group')) === null || _sel$closest === void 0 ? void 0 : _sel$closest.getAttribute('data-gear-table-category');
+        var desc = buildGearItemHelp({
+          name: name,
+          countText: '1x ',
+          deviceInfo: info,
+          libraryCategory: category,
+          tableCategory: tableCategory || ''
+        });
+        sel.setAttribute('title', desc);
+        sel.setAttribute('data-help', desc);
+        initFavoritableSelect(sel);
+      });
+      adjustGearListSelectWidths(gearListOutput);
+    } else {
+      gearListOutput.innerHTML = '';
+      gearListOutput.classList.add('hidden');
+    }
+    if (typeof ensureGearListActions === 'function') {
+      ensureGearListActions();
+    } else if (!gearListOutput.querySelector('#gearListActions')) {
+      var actions = document.createElement('div');
+      actions.id = 'gearListActions';
+      var note = document.createElement('p');
+      note.id = 'gearListAutosaveNote';
+      note.className = 'gear-list-autosave-note';
+      note.hidden = true;
+      note.setAttribute('hidden', '');
+      actions.appendChild(note);
+      gearListOutput.appendChild(actions);
+    }
+  }
+  if (loadedSetupState) {
+    setSliderBowlValue(loadedSetupState.sliderBowl || '');
+    setEasyrigValue(loadedSetupState.easyrig || '');
+  }
+  var combinedHtmlSnapshot = "".concat(safeProjectHtml || '').concat(safeGearHtml || '').trim();
+  if (combinedHtmlSnapshot && typeof globalThis !== 'undefined') {
+    globalThis.__cineLastGearListHtml = combinedHtmlSnapshot;
+  }
+  updateGearListButtonVisibility();
+  if (typeof updateAutoGearHighlightToggleButton === 'function') {
+    updateAutoGearHighlightToggleButton();
+  }
+}
+function getSliderBowlSelect() {
+  return gearListOutput ? gearListOutput.querySelector('#gearListSliderBowl') : null;
+}
+function getSliderBowlValue() {
+  var sel = getSliderBowlSelect();
+  if (sel) return sel.value;
+  return loadedSetupState && loadedSetupState.sliderBowl ? loadedSetupState.sliderBowl : '';
+}
+function setSliderBowlValue(val) {
+  var sel = getSliderBowlSelect();
+  if (sel && val && Array.from(sel.options).some(function (opt) {
+    return opt.value === val;
+  })) {
+    sel.value = val;
+    adjustGearListSelectWidth(sel);
+  }
+}
+function getEasyrigSelect() {
+  return gearListOutput ? gearListOutput.querySelector('#gearListEasyrig') : null;
+}
+function getEasyrigValue() {
+  var sel = getEasyrigSelect();
+  if (sel) return sel.value;
+  return loadedSetupState && loadedSetupState.easyrig ? loadedSetupState.easyrig : '';
+}
+function setEasyrigValue(val) {
+  var sel = getEasyrigSelect();
+  if (sel && val && Array.from(sel.options).some(function (opt) {
+    return opt.value === val;
+  })) {
+    sel.value = val;
+    adjustGearListSelectWidth(sel);
+  }
+}
+var currentProjectInfo = null;
+var loadedSetupState = null;
+var loadedSetupStateSignature = '';
+var restoringSession = false;
+var skipNextGearListRefresh = false;
+var defaultProjectInfoSnapshot = null;
+function sanitizeProjectInfoValue(value) {
+  if (value === null || value === undefined) return undefined;
+  if (typeof value === 'string') {
+    var trimmed = value.trim();
+    return trimmed ? trimmed : undefined;
+  }
+  if (typeof value === 'number') {
+    return Number.isNaN(value) ? undefined : value;
+  }
+  if (typeof value === 'boolean') {
+    return value ? value : undefined;
+  }
+  if (Array.isArray(value)) {
+    var sanitized = value.map(function (item) {
+      return sanitizeProjectInfoValue(item);
+    }).filter(function (item) {
+      return item !== undefined;
+    });
+    return sanitized.length ? sanitized : undefined;
+  }
+  if (_typeof(value) === 'object') {
+    var sanitizedObj = sanitizeProjectInfo(value);
+    return sanitizedObj || undefined;
+  }
+  return undefined;
+}
+function sanitizeProjectInfo(info) {
+  if (!info || _typeof(info) !== 'object') return null;
+  var result = {};
+  Object.entries(info).forEach(function (_ref70) {
+    var _ref71 = _slicedToArray(_ref70, 2),
+      key = _ref71[0],
+      value = _ref71[1];
+    var sanitized = sanitizeProjectInfoValue(value);
+    if (sanitized !== undefined) {
+      result[key] = sanitized;
+    }
+  });
+  return Object.keys(result).length > 0 ? result : null;
+}
+function hasProjectInfoData(value) {
+  if (value === null || value === undefined) return false;
+  if (typeof value === 'string') {
+    return value.trim().length > 0;
+  }
+  if (typeof value === 'number') {
+    return !Number.isNaN(value);
+  }
+  if (typeof value === 'boolean') {
+    return value;
+  }
+  if (Array.isArray(value)) {
+    return value.some(function (item) {
+      return hasProjectInfoData(item);
+    });
+  }
+  if (_typeof(value) === 'object') {
+    return Object.keys(value).some(function (key) {
+      return hasProjectInfoData(value[key]);
+    });
+  }
+  return false;
+}
+function projectInfoEquals(a, b) {
+  if (a === b) return true;
+  if (!a || !b) return false;
+  if (Array.isArray(a) && Array.isArray(b)) {
+    if (a.length !== b.length) return false;
+    for (var i = 0; i < a.length; i += 1) {
+      if (!projectInfoEquals(a[i], b[i])) return false;
+    }
+    return true;
+  }
+  if (_typeof(a) === 'object' && _typeof(b) === 'object') {
+    var aKeys = Object.keys(a);
+    var bKeys = Object.keys(b);
+    if (aKeys.length !== bKeys.length) return false;
+    return aKeys.every(function (key) {
+      return projectInfoEquals(a[key], b[key]);
+    });
+  }
+  return false;
+}
+function ensureDefaultProjectInfoSnapshot() {
+  if (defaultProjectInfoSnapshot !== null) return;
+  defaultProjectInfoSnapshot = {};
+}
+function deriveProjectInfo(info) {
+  ensureDefaultProjectInfoSnapshot();
+  var sanitized = sanitizeProjectInfo(info);
+  if (!sanitized) {
+    if (hasProjectInfoData(info) && hasProjectInfoData(currentProjectInfo)) {
+      return currentProjectInfo;
+    }
+    return null;
+  }
+  if (defaultProjectInfoSnapshot && projectInfoEquals(sanitized, defaultProjectInfoSnapshot)) {
+    return null;
+  }
+  return sanitized;
+}
+function setCurrentProjectInfo(info) {
+  currentProjectInfo = info;
+}
+function getCurrentProjectInfo() {
+  return currentProjectInfo;
+}
+function stableStringify(value) {
+  if (value === null) return 'null';
+  if (value === undefined) return 'undefined';
+  if (Array.isArray(value)) {
+    return "[".concat(value.map(function (item) {
+      return stableStringify(item);
+    }).join(','), "]");
+  }
+  if (_typeof(value) === 'object') {
+    var keys = Object.keys(value).sort();
+    var entries = keys.map(function (key) {
+      return "".concat(JSON.stringify(key), ":").concat(stableStringify(value[key]));
+    });
+    return "{".concat(entries.join(','), "}");
+  }
+  return JSON.stringify(value);
+}
+function computeSetupSignature(state) {
+  if (!state) return '';
+  return [state.camera || '', state.monitor || '', state.video || '', state.cage || '', stableStringify(state.motors || []), stableStringify(state.controllers || []), state.distance || '', state.batteryPlate || '', state.battery || '', state.batteryHotswap || '', state.sliderBowl || '', state.easyrig || '', stableStringify(state.projectInfo || null), stableStringify(state.autoGearRules || null), stableStringify(state.diagramPositions || null)].join('||');
+}
+function storeLoadedSetupState(state) {
+  loadedSetupState = state;
+  loadedSetupStateSignature = computeSetupSignature(state);
+}
+function getCurrentSetupState() {
+  var info = projectForm ? collectProjectFormData() : {};
+  info.sliderBowl = getSliderBowlValue();
+  info.easyrig = getEasyrigValue();
+  var projectInfo = deriveProjectInfo(info);
+  var state = {
+    camera: cameraSelect.value,
+    monitor: monitorSelect.value,
+    video: videoSelect.value,
+    cage: cageSelect.value,
+    motors: motorSelects.map(function (sel) {
+      return sel.value;
+    }),
+    controllers: controllerSelects.map(function (sel) {
+      return sel.value;
+    }),
+    distance: distanceSelect.value,
+    batteryPlate: batteryPlateSelect.value,
+    battery: batterySelect.value,
+    batteryHotswap: hotswapSelect.value,
+    sliderBowl: info.sliderBowl,
+    easyrig: info.easyrig,
+    projectInfo: projectInfo
+  };
+  state.batteryPlate = normalizeBatteryPlateValue(state.batteryPlate, state.battery);
+  var projectRules = getProjectScopedAutoGearRules();
+  if (projectRules && projectRules.length) {
+    state.autoGearRules = projectRules;
+  }
+  var diagramPositions = getDiagramManualPositions();
+  if (Object.keys(diagramPositions).length) {
+    state.diagramPositions = diagramPositions;
+  }
+  return state;
+}
+function hasAnyDeviceSelection(state) {
+  if (!state) return false;
+  var _isMeaningfulSelection = function isMeaningfulSelection(value) {
+    if (Array.isArray(value)) {
+      return value.some(function (item) {
+        return _isMeaningfulSelection(item);
+      });
+    }
+    if (value == null) return false;
+    var normalized = typeof value === 'string' ? value.trim() : value;
+    if (!normalized) return false;
+    if (typeof normalized === 'string' && normalized.toLowerCase() === 'none') {
+      return false;
+    }
+    return true;
+  };
+  var primarySelections = [state.camera, state.monitor, state.video, state.cage, state.batteryPlate, state.battery, state.batteryHotswap];
+  if (primarySelections.some(function (value) {
+    return _isMeaningfulSelection(value);
+  })) {
+    return true;
+  }
+  if (_isMeaningfulSelection(state.motors)) {
+    return true;
+  }
+  if (_isMeaningfulSelection(state.controllers)) {
+    return true;
+  }
+  return false;
+}
+function checkSetupChanged() {
+  if (!saveSetupBtn) return;
+  var langTexts = texts[currentLang] || {};
+  var fallbackTexts = texts.en || {};
+  var saveLabel = langTexts.saveSetupBtn || fallbackTexts.saveSetupBtn || '';
+  var updateLabel = langTexts.updateSetupBtn || fallbackTexts.updateSetupBtn || saveLabel;
+  var typedName = setupNameInput && typeof setupNameInput.value === 'string' ? setupNameInput.value.trim() : '';
+  var selectedName = setupSelect && typeof setupSelect.value === 'string' ? setupSelect.value : '';
+  if (selectedName && typedName && typedName !== selectedName) {
+    setButtonLabelWithIcon(saveSetupBtn, updateLabel);
+    return;
+  }
+  if (loadedSetupState && selectedName && typedName === selectedName) {
+    var currentSignature = computeSetupSignature(getCurrentSetupState());
+    if (currentSignature !== loadedSetupStateSignature) {
+      setButtonLabelWithIcon(saveSetupBtn, updateLabel);
+      return;
+    }
+  }
+  setButtonLabelWithIcon(saveSetupBtn, saveLabel);
+}
+var projectDialog = document.getElementById("projectDialog");
+var projectForm = document.getElementById("projectForm");
+var filterSelectElem = document.getElementById('filter');
+var filterDetailsStorage = document.getElementById('filterDetails');
+var matteboxSelect = document.getElementById('mattebox');
+var projectCancelBtn = document.getElementById("projectCancel");
+var feedbackDialog = document.getElementById("feedbackDialog");
+var feedbackForm = document.getElementById("feedbackForm");
+var feedbackCancelBtn = document.getElementById("fbCancel");
+var feedbackUseLocationBtn = document.getElementById("fbUseLocationBtn");
+var feedbackSubmitBtn = document.getElementById("fbSubmit");
+if (feedbackCancelBtn) {
+  var _feedbackCancelBtn$te, _texts$currentLang106, _texts$en389;
+  var cancelLabel = ((_feedbackCancelBtn$te = feedbackCancelBtn.textContent) === null || _feedbackCancelBtn$te === void 0 ? void 0 : _feedbackCancelBtn$te.trim()) || ((_texts$currentLang106 = texts[currentLang]) === null || _texts$currentLang106 === void 0 ? void 0 : _texts$currentLang106.cancelEditBtn) || ((_texts$en389 = texts.en) === null || _texts$en389 === void 0 ? void 0 : _texts$en389.cancelEditBtn) || 'Cancel';
+  setButtonLabelWithIcon(feedbackCancelBtn, cancelLabel, ICON_GLYPHS.circleX);
+}
+if (feedbackUseLocationBtn) {
+  var _feedbackUseLocationB;
+  var locationLabel = ((_feedbackUseLocationB = feedbackUseLocationBtn.textContent) === null || _feedbackUseLocationB === void 0 ? void 0 : _feedbackUseLocationB.trim()) || 'Use Current Location';
+  setButtonLabelWithIcon(feedbackUseLocationBtn, locationLabel, ICON_GLYPHS.pin);
+}
+if (feedbackSubmitBtn) {
+  var _feedbackSubmitBtn$te, _texts$currentLang107, _texts$en390;
+  var submitLabel = ((_feedbackSubmitBtn$te = feedbackSubmitBtn.textContent) === null || _feedbackSubmitBtn$te === void 0 ? void 0 : _feedbackSubmitBtn$te.trim()) || ((_texts$currentLang107 = texts[currentLang]) === null || _texts$currentLang107 === void 0 ? void 0 : _texts$currentLang107.feedbackSubmit) || ((_texts$en390 = texts.en) === null || _texts$en390 === void 0 ? void 0 : _texts$en390.feedbackSubmit) || 'Save & Submit';
+  setButtonLabelWithIcon(feedbackSubmitBtn, submitLabel, ICON_GLYPHS.paperPlane);
+}
+var loadFeedbackSafe = typeof loadFeedback === 'function' ? loadFeedback : function () {
+  return {};
+};
+var saveFeedbackSafe = typeof saveFeedback === 'function' ? saveFeedback : function () {};
+var setupDiagramContainer = document.getElementById("diagramArea");
+var diagramLegend = document.getElementById("diagramLegend");
+var downloadDiagramBtn = document.getElementById("downloadDiagram");
+var zoomInBtn = document.getElementById("zoomIn");
+var zoomOutBtn = document.getElementById("zoomOut");
+var resetViewBtn = document.getElementById("resetView");
+var gridSnapToggleBtn = document.getElementById("gridSnapToggle");
+var diagramHint = document.getElementById("diagramHint");
+var manualPositions = {};
+var lastDiagramPositions = {};
+function normalizeDiagramPositionsInput(positions) {
+  if (!positions || _typeof(positions) !== 'object') {
+    return {};
+  }
+  var normalized = {};
+  Object.entries(positions).forEach(function (_ref72) {
+    var _ref73 = _slicedToArray(_ref72, 2),
+      id = _ref73[0],
+      value = _ref73[1];
+    if (!value || _typeof(value) !== 'object') return;
+    var x = Number(value.x);
+    var y = Number(value.y);
+    if (!Number.isFinite(x) || !Number.isFinite(y)) return;
+    normalized[id] = {
+      x: x,
+      y: y
+    };
+  });
+  return normalized;
+}
+function getDiagramManualPositions() {
+  return normalizeDiagramPositionsInput(manualPositions);
+}
+function setManualDiagramPositions(positions) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  manualPositions = normalizeDiagramPositionsInput(positions);
+  if (options && options.render === false) {
+    return;
+  }
+  if (typeof renderSetupDiagram === 'function') {
+    renderSetupDiagram();
+  }
+}
+var gridSnap = false;
+var cleanupDiagramInteractions = null;
+var diagramCssLight = "\n.node-box{fill:#f0f0f0;stroke:none;}\n.node-box.first-fiz{stroke:none;}\n.first-fiz-highlight{stroke:url(#firstFizGrad);stroke-width:1px;fill:none;}\n.node-icon{font-size:var(--font-size-diagram-icon, 24px);font-family:'UiconsThinStraightV2',system-ui,sans-serif;font-style:normal;}\n.node-icon[data-icon-font='essential']{font-family:'EssentialIconsV2',system-ui,sans-serif;}\n.conn{stroke:none;}\n.conn.red{fill:#d33;}\n.conn.blue{fill:#369;}\n.conn.green{fill:#090;}\ntext{font-family:system-ui,sans-serif;}\n.edge-label{font-size:var(--font-size-diagram-label, 11px);}\nline{stroke:#333;stroke-width:2px;}\npath.edge-path{stroke:#333;stroke-width:2px;fill:none;}\npath.power{stroke:#d33;}\npath.video{stroke:#369;}\npath.fiz{stroke:#090;}\n.diagram-placeholder{font-style:italic;color:#666;margin:0;}\n";
+var diagramCssDark = "\n.node-box{fill:#444;stroke:none;}\n.node-box.first-fiz{stroke:none;}\n.first-fiz-highlight{stroke:url(#firstFizGrad);}\n.node-icon{font-size:var(--font-size-diagram-icon, 24px);font-family:'UiconsThinStraightV2',system-ui,sans-serif;font-style:normal;}\n.node-icon[data-icon-font='essential']{font-family:'EssentialIconsV2',system-ui,sans-serif;}\ntext{fill:#fff;font-family:system-ui,sans-serif;}\n.edge-label{font-size:var(--font-size-diagram-label, 11px);}\nline{stroke:#fff;}\npath.edge-path{stroke:#fff;}\npath.power{stroke:#ff6666;}\npath.video{stroke:#7ec8ff;}\npath.fiz{stroke:#6f6;}\n.conn.red{fill:#ff6666;}\n.conn.blue{fill:#7ec8ff;}\n.conn.green{fill:#6f6;}\n.diagram-placeholder{color:#bbb;}\n";
+function getDiagramCss() {
+  var includeDark = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+  return diagramCssLight + (includeDark ? "@media (prefers-color-scheme: dark){".concat(diagramCssDark, "}") : '');
+}
+var DIAGRAM_BATTERY_ICON = iconGlyph("\uE1A6");
+var DIAGRAM_CAMERA_ICON = iconGlyph("\uE333");
+var DIAGRAM_MONITOR_ICON = iconGlyph("\uEFFC");
+var DIAGRAM_VIEWFINDER_ICON = iconGlyph("\uE338");
+var DIAGRAM_VIDEO_ICON = iconGlyph("\uF42A");
+var DIAGRAM_WIRELESS_ICON = iconGlyph("\uF4AC");
+var DIAGRAM_MOTORS_ICON = iconGlyph("\uE8AF", ICON_FONT_KEYS.UICONS);
+var DIAGRAM_CONTROLLER_ICON = iconGlyph("\uE52A");
+var DIAGRAM_DISTANCE_ICON = iconGlyph("\uEFB9");
+var DIAGRAM_POWER_OUTPUT_ICON = iconGlyph("\uE212");
+var DIAGRAM_POWER_INPUT_ICON = iconGlyph("\uEE71");
+var DIAGRAM_TIMECODE_ICON = iconGlyph("\uE46F");
+var DIAGRAM_AUDIO_IN_ICON = iconGlyph("\uE6B7");
+var DIAGRAM_AUDIO_OUT_ICON = iconGlyph("\uECB5");
+var DIAGRAM_AUDIO_IO_ICON = iconGlyph("\uF487");
+var diagramConnectorIcons = Object.freeze({
+  powerOut: DIAGRAM_POWER_OUTPUT_ICON,
+  powerIn: DIAGRAM_POWER_INPUT_ICON,
+  fiz: DIAGRAM_MOTORS_ICON,
+  video: DIAGRAM_VIDEO_ICON,
+  timecode: DIAGRAM_TIMECODE_ICON,
+  audioIn: DIAGRAM_AUDIO_IN_ICON,
+  audioOut: DIAGRAM_AUDIO_OUT_ICON,
+  audioIo: DIAGRAM_AUDIO_IO_ICON,
+  torque: DIAGRAM_MOTORS_ICON,
+  controller: DIAGRAM_CONTROLLER_ICON,
+  powerSpec: DIAGRAM_POWER_OUTPUT_ICON,
+  powerSource: DIAGRAM_POWER_INPUT_ICON
+});
+var diagramIcons = {
+  battery: DIAGRAM_BATTERY_ICON,
+  camera: DIAGRAM_CAMERA_ICON,
+  monitor: DIAGRAM_MONITOR_ICON,
+  viewfinder: DIAGRAM_VIEWFINDER_ICON,
+  video: DIAGRAM_WIRELESS_ICON,
+  motors: DIAGRAM_MOTORS_ICON,
+  controllers: DIAGRAM_CONTROLLER_ICON,
+  handle: DIAGRAM_CONTROLLER_ICON,
+  distance: DIAGRAM_DISTANCE_ICON
+};
+var overviewSectionIcons = {
+  category_batteries: diagramIcons.battery,
+  category_batteryHotswaps: diagramIcons.battery,
+  category_cameras: diagramIcons.camera,
+  category_viewfinders: diagramIcons.viewfinder,
+  category_monitors: diagramIcons.monitor,
+  category_video: diagramIcons.video,
+  category_fiz_motors: diagramIcons.motors,
+  category_fiz_controllers: diagramIcons.controllers,
+  category_fiz_distance: diagramIcons.distance
+};
+var cameraProjectLegendIcon = document.getElementById('cameraProjectLegendIcon');
+if (cameraProjectLegendIcon) {
+  applyIconGlyph(cameraProjectLegendIcon, DIAGRAM_CAMERA_ICON);
+}
+var generateOverviewBtn = document.getElementById('generateOverviewBtn');
+var videoOutputOptions = ['3G-SDI', '6G-SDI', '12G-SDI', 'Mini BNC', 'HDMI', 'Mini HDMI', 'Micro HDMI'];
+function getAllFizConnectorTypes() {
+  var types = new Set();
+  Object.values(devices.cameras).forEach(function (cam) {
+    if (Array.isArray(cam.fizConnectors)) {
+      cam.fizConnectors.forEach(function (fc) {
+        if (fc && fc.type) types.add(fc.type);
+      });
+    }
+  });
+  return Array.from(types).sort(localeSort);
+}
+var fizConnectorOptions = getAllFizConnectorTypes();
+function updateFizConnectorOptions() {
+  fizConnectorOptions = getAllFizConnectorTypes();
+  document.querySelectorAll('.fiz-connector-select').forEach(function (sel) {
+    var current = sel.value;
+    sel.innerHTML = '';
+    addEmptyOption(sel);
+    fizConnectorOptions.forEach(function (optVal) {
+      var opt = document.createElement('option');
+      opt.value = optVal;
+      opt.textContent = optVal;
+      sel.appendChild(opt);
+    });
+    if (fizConnectorOptions.includes(current)) {
+      sel.value = current;
+    }
+  });
+}
+function getAllMotorConnectorTypes() {
+  var _devices$fiz12;
+  var types = new Set();
+  Object.values(((_devices$fiz12 = devices.fiz) === null || _devices$fiz12 === void 0 ? void 0 : _devices$fiz12.motors) || {}).forEach(function (m) {
+    if (m && m.fizConnector) types.add(m.fizConnector);
+  });
+  return Array.from(types).filter(Boolean).sort(localeSort);
+}
+var motorConnectorOptions = getAllMotorConnectorTypes();
+function updateMotorConnectorOptions() {
+  motorConnectorOptions = getAllMotorConnectorTypes();
+  if (motorConnectorInput) {
+    var cur = motorConnectorInput.value;
+    motorConnectorInput.innerHTML = '';
+    addEmptyOption(motorConnectorInput);
+    motorConnectorOptions.forEach(function (optVal) {
+      var opt = document.createElement('option');
+      opt.value = optVal;
+      opt.textContent = optVal;
+      motorConnectorInput.appendChild(opt);
+    });
+    if (motorConnectorOptions.includes(cur)) motorConnectorInput.value = cur;
+  }
+}
+function getAllControllerConnectors() {
+  var _devices$fiz13;
+  var types = new Set();
+  Object.values(((_devices$fiz13 = devices.fiz) === null || _devices$fiz13 === void 0 ? void 0 : _devices$fiz13.controllers) || {}).forEach(function (c) {
+    if (c && Array.isArray(c.fizConnectors)) {
+      c.fizConnectors.forEach(function (fc) {
+        if (fc && fc.type) types.add(fc.type);
+      });
+    }
+  });
+  return Array.from(types).filter(Boolean).sort(localeSort);
+}
+function getAllControllerPowerSources() {
+  var _devices$fiz14;
+  var types = new Set();
+  Object.values(((_devices$fiz14 = devices.fiz) === null || _devices$fiz14 === void 0 ? void 0 : _devices$fiz14.controllers) || {}).forEach(function (c) {
+    if (c && c.powerSource) types.add(c.powerSource);
+  });
+  return Array.from(types).filter(Boolean).sort(localeSort);
+}
+function getAllControllerBatteryTypes() {
+  var _devices$fiz15;
+  var types = new Set();
+  Object.values(((_devices$fiz15 = devices.fiz) === null || _devices$fiz15 === void 0 ? void 0 : _devices$fiz15.controllers) || {}).forEach(function (c) {
+    if (c && c.batteryType) types.add(c.batteryType);
+  });
+  return Array.from(types).filter(Boolean).sort(localeSort);
+}
+function getAllControllerConnectivity() {
+  var _devices$fiz16;
+  var types = new Set();
+  Object.values(((_devices$fiz16 = devices.fiz) === null || _devices$fiz16 === void 0 ? void 0 : _devices$fiz16.controllers) || {}).forEach(function (c) {
+    if (c && c.connectivity) types.add(c.connectivity);
+  });
+  return Array.from(types).filter(Boolean).sort(localeSort);
+}
+var controllerConnectorOptions = getAllControllerConnectors();
+var controllerPowerOptions = getAllControllerPowerSources();
+var controllerBatteryOptions = getAllControllerBatteryTypes();
+var controllerConnectivityOptions = getAllControllerConnectivity();
+function updateControllerConnectorOptions() {
+  controllerConnectorOptions = getAllControllerConnectors();
+  if (controllerConnectorInput) {
+    var cur = controllerConnectorInput.value;
+    controllerConnectorInput.innerHTML = '';
+    addEmptyOption(controllerConnectorInput);
+    controllerConnectorOptions.forEach(function (optVal) {
+      var opt = document.createElement('option');
+      opt.value = optVal;
+      opt.textContent = optVal;
+      controllerConnectorInput.appendChild(opt);
+    });
+    if (controllerConnectorOptions.includes(cur)) controllerConnectorInput.value = cur;
+  }
+}
+function updateControllerPowerOptions() {
+  controllerPowerOptions = getAllControllerPowerSources();
+  if (controllerPowerInput) {
+    var cur = controllerPowerInput.value;
+    controllerPowerInput.innerHTML = '';
+    addEmptyOption(controllerPowerInput);
+    controllerPowerOptions.forEach(function (optVal) {
+      var opt = document.createElement('option');
+      opt.value = optVal;
+      opt.textContent = optVal;
+      controllerPowerInput.appendChild(opt);
+    });
+    if (controllerPowerOptions.includes(cur)) controllerPowerInput.value = cur;
+  }
+}
+function updateControllerBatteryOptions() {
+  controllerBatteryOptions = getAllControllerBatteryTypes();
+  if (controllerBatteryInput) {
+    var cur = controllerBatteryInput.value;
+    controllerBatteryInput.innerHTML = '';
+    addEmptyOption(controllerBatteryInput);
+    controllerBatteryOptions.forEach(function (optVal) {
+      var opt = document.createElement('option');
+      opt.value = optVal;
+      opt.textContent = optVal;
+      controllerBatteryInput.appendChild(opt);
+    });
+    if (controllerBatteryOptions.includes(cur)) controllerBatteryInput.value = cur;
+  }
+}
+function updateControllerConnectivityOptions() {
+  controllerConnectivityOptions = getAllControllerConnectivity();
+  if (controllerConnectivityInput) {
+    var cur = controllerConnectivityInput.value;
+    controllerConnectivityInput.innerHTML = '';
+    addEmptyOption(controllerConnectivityInput);
+    controllerConnectivityOptions.forEach(function (optVal) {
+      var opt = document.createElement('option');
+      opt.value = optVal;
+      opt.textContent = optVal;
+      controllerConnectivityInput.appendChild(opt);
+    });
+    if (controllerConnectivityOptions.includes(cur)) controllerConnectivityInput.value = cur;
+  }
+}
+function getAllDistanceConnections() {
+  var _devices$fiz17;
+  var types = new Set();
+  Object.values(((_devices$fiz17 = devices.fiz) === null || _devices$fiz17 === void 0 ? void 0 : _devices$fiz17.distance) || {}).forEach(function (d) {
+    if (d && d.connectionCompatibility) types.add(d.connectionCompatibility);
+  });
+  return Array.from(types).filter(Boolean).sort(localeSort);
+}
+function getAllDistanceMethods() {
+  var _devices$fiz18;
+  var types = new Set();
+  Object.values(((_devices$fiz18 = devices.fiz) === null || _devices$fiz18 === void 0 ? void 0 : _devices$fiz18.distance) || {}).forEach(function (d) {
+    if (d && d.measurementMethod) types.add(d.measurementMethod);
+  });
+  return Array.from(types).filter(Boolean).sort(localeSort);
+}
+function getAllDistanceDisplays() {
+  var _devices$fiz19;
+  var types = new Set();
+  Object.values(((_devices$fiz19 = devices.fiz) === null || _devices$fiz19 === void 0 ? void 0 : _devices$fiz19.distance) || {}).forEach(function (d) {
+    if (d && d.outputDisplay) types.add(d.outputDisplay);
+  });
+  return Array.from(types).filter(Boolean).sort(localeSort);
+}
+var distanceConnectionOptions = getAllDistanceConnections();
+var distanceMethodOptions = getAllDistanceMethods();
+var distanceDisplayOptions = getAllDistanceDisplays();
+function updateDistanceConnectionOptions() {
+  distanceConnectionOptions = getAllDistanceConnections();
+  if (distanceConnectionInput) {
+    var cur = distanceConnectionInput.value;
+    distanceConnectionInput.innerHTML = '';
+    addEmptyOption(distanceConnectionInput);
+    distanceConnectionOptions.forEach(function (optVal) {
+      var opt = document.createElement('option');
+      opt.value = optVal;
+      opt.textContent = optVal;
+      distanceConnectionInput.appendChild(opt);
+    });
+    if (distanceConnectionOptions.includes(cur)) distanceConnectionInput.value = cur;
+  }
+}
+function updateDistanceMethodOptions() {
+  distanceMethodOptions = getAllDistanceMethods();
+  if (distanceMethodInput) {
+    var cur = distanceMethodInput.value;
+    distanceMethodInput.innerHTML = '';
+    addEmptyOption(distanceMethodInput);
+    distanceMethodOptions.forEach(function (optVal) {
+      var opt = document.createElement('option');
+      opt.value = optVal;
+      opt.textContent = optVal;
+      distanceMethodInput.appendChild(opt);
+    });
+    if (distanceMethodOptions.includes(cur)) distanceMethodInput.value = cur;
+  }
+}
+function updateDistanceDisplayOptions() {
+  distanceDisplayOptions = getAllDistanceDisplays();
+  if (distanceOutputInput) {
+    var cur = distanceOutputInput.value;
+    distanceOutputInput.innerHTML = '';
+    addEmptyOption(distanceOutputInput);
+    distanceDisplayOptions.forEach(function (optVal) {
+      var opt = document.createElement('option');
+      opt.value = optVal;
+      opt.textContent = optVal;
+      distanceOutputInput.appendChild(opt);
+    });
+    if (distanceDisplayOptions.includes(cur)) distanceOutputInput.value = cur;
+  }
+}
+function createFieldWithLabel(el, label) {
+  var wrapper = document.createElement('div');
+  wrapper.className = 'field-with-label';
+  wrapper.dataset.label = label;
+  var fieldId = ensureElementId(el, label);
+  var hiddenLabel = createHiddenLabel(fieldId, label);
+  wrapper.appendChild(hiddenLabel);
+  wrapper.appendChild(el);
+  return wrapper;
+}
+function addEmptyOption() {}
+function filterNoneEntries(list) {
+  var prop = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'type';
+  if (!Array.isArray(list)) return [];
+  return list.filter(function (item) {
+    if (typeof item === 'string') {
+      return item && item !== 'None';
+    }
+    if (item && Object.prototype.hasOwnProperty.call(item, prop)) {
+      var val = item[prop];
+      return val !== undefined && val !== null && val !== '' && val !== 'None';
+    }
+    return true;
+  });
+}
+function createVideoOutputRow() {
+  var value = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+  var row = document.createElement('div');
+  row.className = 'form-row';
+  var select = document.createElement('select');
+  select.className = 'video-output-select';
+  select.name = 'videoOutput';
+  addEmptyOption(select);
+  videoOutputOptions.forEach(function (optVal) {
+    var opt = document.createElement('option');
+    opt.value = optVal;
+    opt.textContent = optVal;
+    select.appendChild(opt);
+  });
+  select.value = value;
+  row.appendChild(createFieldWithLabel(select, 'Type'));
+  var addBtn = document.createElement('button');
+  addBtn.type = 'button';
+  configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+    contextPaths: ['videoOutputsHeading', ['cameraVideoOutputsLabel']],
+    fallbackContext: 'Video Outputs',
+    actionKey: 'addEntry'
+  });
+  addBtn.addEventListener('click', function () {
+    row.after(createVideoOutputRow());
+  });
+  row.appendChild(addBtn);
+  var removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+    contextPaths: ['videoOutputsHeading', ['cameraVideoOutputsLabel']],
+    fallbackContext: 'Video Outputs',
+    actionKey: 'removeEntry'
+  });
+  removeBtn.addEventListener('click', function () {
+    if (videoOutputsContainer.children.length > 1) row.remove();
+  });
+  row.appendChild(removeBtn);
+  return row;
+}
+function setVideoOutputs(list) {
+  videoOutputsContainer.innerHTML = '';
+  var filtered = filterNoneEntries(list);
+  if (filtered.length) {
+    filtered.forEach(function (item) {
+      var t = typeof item === 'string' ? item : item.type;
+      videoOutputsContainer.appendChild(createVideoOutputRow(t));
+    });
+  } else {
+    videoOutputsContainer.appendChild(createVideoOutputRow());
+  }
+}
+function getVideoOutputs() {
+  return Array.from(videoOutputsContainer.querySelectorAll('select')).map(function (sel) {
+    return {
+      type: sel.value
+    };
+  }).filter(function (vo) {
+    return vo.type && vo.type !== 'None';
+  });
+}
+function clearVideoOutputs() {
+  setVideoOutputs([]);
+}
+function createMonitorVideoInputRow() {
+  var value = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+  var row = document.createElement('div');
+  row.className = 'form-row';
+  var select = document.createElement('select');
+  select.className = 'monitor-video-input-select';
+  select.name = 'monitorVideoInput';
+  addEmptyOption(select);
+  videoOutputOptions.forEach(function (optVal) {
+    var opt = document.createElement('option');
+    opt.value = optVal;
+    opt.textContent = optVal;
+    select.appendChild(opt);
+  });
+  select.value = value;
+  row.appendChild(createFieldWithLabel(select, 'Type'));
+  var addBtn = document.createElement('button');
+  addBtn.type = 'button';
+  configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+    contextPaths: ['monitorVideoInputsHeading', ['monitorVideoInputsLabel']],
+    fallbackContext: 'Video Inputs',
+    actionKey: 'addEntry'
+  });
+  addBtn.addEventListener('click', function () {
+    row.after(createMonitorVideoInputRow());
+  });
+  row.appendChild(addBtn);
+  var removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+    contextPaths: ['monitorVideoInputsHeading', ['monitorVideoInputsLabel']],
+    fallbackContext: 'Video Inputs',
+    actionKey: 'removeEntry'
+  });
+  removeBtn.addEventListener('click', function () {
+    if (monitorVideoInputsContainer.children.length > 1) row.remove();
+  });
+  row.appendChild(removeBtn);
+  return row;
+}
+function setMonitorVideoInputs(list) {
+  monitorVideoInputsContainer.innerHTML = '';
+  var filtered = filterNoneEntries(list, 'type');
+  if (filtered.length) {
+    filtered.forEach(function (item) {
+      var t = typeof item === 'string' ? item : item.type || item.portType;
+      monitorVideoInputsContainer.appendChild(createMonitorVideoInputRow(t));
+    });
+  } else {
+    monitorVideoInputsContainer.appendChild(createMonitorVideoInputRow());
+  }
+}
+function getMonitorVideoInputs() {
+  return Array.from(monitorVideoInputsContainer.querySelectorAll('select')).map(function (sel) {
+    return {
+      type: sel.value
+    };
+  }).filter(function (v) {
+    return v.type && v.type !== 'None';
+  });
+}
+function clearMonitorVideoInputs() {
+  setMonitorVideoInputs([]);
+}
+function createMonitorVideoOutputRow() {
+  var value = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+  var row = document.createElement('div');
+  row.className = 'form-row';
+  var select = document.createElement('select');
+  select.className = 'monitor-video-output-select';
+  select.name = 'monitorVideoOutput';
+  addEmptyOption(select);
+  videoOutputOptions.forEach(function (optVal) {
+    var opt = document.createElement('option');
+    opt.value = optVal;
+    opt.textContent = optVal;
+    select.appendChild(opt);
+  });
+  select.value = value;
+  row.appendChild(createFieldWithLabel(select, 'Type'));
+  var addBtn = document.createElement('button');
+  addBtn.type = 'button';
+  configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+    contextPaths: ['monitorVideoOutputsHeading', ['monitorVideoOutputsLabel']],
+    fallbackContext: 'Video Outputs',
+    actionKey: 'addEntry'
+  });
+  addBtn.addEventListener('click', function () {
+    row.after(createMonitorVideoOutputRow());
+  });
+  row.appendChild(addBtn);
+  var removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+    contextPaths: ['monitorVideoOutputsHeading', ['monitorVideoOutputsLabel']],
+    fallbackContext: 'Video Outputs',
+    actionKey: 'removeEntry'
+  });
+  removeBtn.addEventListener('click', function () {
+    if (monitorVideoOutputsContainer.children.length > 1) row.remove();
+  });
+  row.appendChild(removeBtn);
+  return row;
+}
+function setMonitorVideoOutputs(list) {
+  monitorVideoOutputsContainer.innerHTML = '';
+  var filtered = filterNoneEntries(list, 'type');
+  if (filtered.length) {
+    filtered.forEach(function (item) {
+      var t = typeof item === 'string' ? item : item.type || item.portType;
+      monitorVideoOutputsContainer.appendChild(createMonitorVideoOutputRow(t));
+    });
+  } else {
+    monitorVideoOutputsContainer.appendChild(createMonitorVideoOutputRow());
+  }
+}
+function getMonitorVideoOutputs() {
+  return Array.from(monitorVideoOutputsContainer.querySelectorAll('select')).map(function (sel) {
+    return {
+      type: sel.value
+    };
+  }).filter(function (v) {
+    return v.type && v.type !== 'None';
+  });
+}
+function clearMonitorVideoOutputs() {
+  setMonitorVideoOutputs([]);
+}
+function createViewfinderVideoInputRow() {
+  var value = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+  var row = document.createElement('div');
+  row.className = 'form-row';
+  var select = document.createElement('select');
+  select.className = 'viewfinder-video-input-select';
+  select.name = 'viewfinderVideoInput';
+  addEmptyOption(select);
+  videoOutputOptions.forEach(function (optVal) {
+    var opt = document.createElement('option');
+    opt.value = optVal;
+    opt.textContent = optVal;
+    select.appendChild(opt);
+  });
+  select.value = value;
+  row.appendChild(createFieldWithLabel(select, 'Type'));
+  var addBtn = document.createElement('button');
+  addBtn.type = 'button';
+  configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+    contextPaths: ['viewfinderVideoInputsHeading', ['viewfinderVideoInputsLabel']],
+    fallbackContext: 'Video Inputs',
+    actionKey: 'addEntry'
+  });
+  addBtn.addEventListener('click', function () {
+    row.after(createViewfinderVideoInputRow());
+  });
+  row.appendChild(addBtn);
+  var removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+    contextPaths: ['viewfinderVideoInputsHeading', ['viewfinderVideoInputsLabel']],
+    fallbackContext: 'Video Inputs',
+    actionKey: 'removeEntry'
+  });
+  removeBtn.addEventListener('click', function () {
+    if (viewfinderVideoInputsContainer && viewfinderVideoInputsContainer.children.length > 1) row.remove();
+  });
+  row.appendChild(removeBtn);
+  return row;
+}
+function setViewfinderVideoInputs(list) {
+  if (!viewfinderVideoInputsContainer) return;
+  viewfinderVideoInputsContainer.innerHTML = '';
+  var filtered = filterNoneEntries(list, 'type');
+  if (filtered.length) {
+    filtered.forEach(function (item) {
+      var t = typeof item === 'string' ? item : item.type || item.portType;
+      viewfinderVideoInputsContainer.appendChild(createViewfinderVideoInputRow(t));
+    });
+  } else {
+    viewfinderVideoInputsContainer.appendChild(createViewfinderVideoInputRow());
+  }
+}
+function getViewfinderVideoInputs() {
+  if (!viewfinderVideoInputsContainer) return [];
+  return Array.from(viewfinderVideoInputsContainer.querySelectorAll('select')).map(function (sel) {
+    return {
+      type: sel.value
+    };
+  }).filter(function (v) {
+    return v.type && v.type !== 'None';
+  });
+}
+function clearViewfinderVideoInputs() {
+  setViewfinderVideoInputs([]);
+}
+function createViewfinderVideoOutputRow() {
+  var value = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+  var row = document.createElement('div');
+  row.className = 'form-row';
+  var select = document.createElement('select');
+  select.className = 'viewfinder-video-output-select';
+  select.name = 'viewfinderVideoOutput';
+  addEmptyOption(select);
+  videoOutputOptions.forEach(function (optVal) {
+    var opt = document.createElement('option');
+    opt.value = optVal;
+    opt.textContent = optVal;
+    select.appendChild(opt);
+  });
+  select.value = value;
+  row.appendChild(createFieldWithLabel(select, 'Type'));
+  var addBtn = document.createElement('button');
+  addBtn.type = 'button';
+  configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+    contextPaths: ['viewfinderVideoOutputsHeading', ['viewfinderVideoOutputsLabel']],
+    fallbackContext: 'Video Outputs',
+    actionKey: 'addEntry'
+  });
+  addBtn.addEventListener('click', function () {
+    row.after(createViewfinderVideoOutputRow());
+  });
+  row.appendChild(addBtn);
+  var removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+    contextPaths: ['viewfinderVideoOutputsHeading', ['viewfinderVideoOutputsLabel']],
+    fallbackContext: 'Video Outputs',
+    actionKey: 'removeEntry'
+  });
+  removeBtn.addEventListener('click', function () {
+    if (viewfinderVideoOutputsContainer && viewfinderVideoOutputsContainer.children.length > 1) row.remove();
+  });
+  row.appendChild(removeBtn);
+  return row;
+}
+function setViewfinderVideoOutputs(list) {
+  if (!viewfinderVideoOutputsContainer) return;
+  viewfinderVideoOutputsContainer.innerHTML = '';
+  var filtered = filterNoneEntries(list, 'type');
+  if (filtered.length) {
+    filtered.forEach(function (item) {
+      var t = typeof item === 'string' ? item : item.type || item.portType;
+      viewfinderVideoOutputsContainer.appendChild(createViewfinderVideoOutputRow(t));
+    });
+  } else {
+    viewfinderVideoOutputsContainer.appendChild(createViewfinderVideoOutputRow());
+  }
+}
+function getViewfinderVideoOutputs() {
+  if (!viewfinderVideoOutputsContainer) return [];
+  return Array.from(viewfinderVideoOutputsContainer.querySelectorAll('select')).map(function (sel) {
+    return {
+      type: sel.value
+    };
+  }).filter(function (v) {
+    return v.type && v.type !== 'None';
+  });
+}
+function clearViewfinderVideoOutputs() {
+  setViewfinderVideoOutputs([]);
+}
+setViewfinderVideoInputs([]);
+setViewfinderVideoOutputs([]);
+function createVideoInputRow() {
+  var value = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+  var row = document.createElement('div');
+  row.className = 'form-row';
+  var select = document.createElement('select');
+  select.className = 'video-input-select';
+  select.name = 'videoInput';
+  addEmptyOption(select);
+  videoOutputOptions.forEach(function (optVal) {
+    var opt = document.createElement('option');
+    opt.value = optVal;
+    opt.textContent = optVal;
+    select.appendChild(opt);
+  });
+  select.value = value;
+  row.appendChild(createFieldWithLabel(select, 'Type'));
+  var addBtn = document.createElement('button');
+  addBtn.type = 'button';
+  configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+    contextPaths: ['videoVideoInputsHeading', ['videoVideoInputsLabel']],
+    fallbackContext: 'Video Inputs',
+    actionKey: 'addEntry'
+  });
+  addBtn.addEventListener('click', function () {
+    row.after(createVideoInputRow());
+  });
+  row.appendChild(addBtn);
+  var removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+    contextPaths: ['videoVideoInputsHeading', ['videoVideoInputsLabel']],
+    fallbackContext: 'Video Inputs',
+    actionKey: 'removeEntry'
+  });
+  removeBtn.addEventListener('click', function () {
+    if (videoVideoInputsContainer.children.length > 1) row.remove();
+  });
+  row.appendChild(removeBtn);
+  return row;
+}
+function setVideoInputs(list) {
+  videoVideoInputsContainer.innerHTML = '';
+  var filtered = filterNoneEntries(list, 'type');
+  if (filtered.length) {
+    filtered.forEach(function (item) {
+      var t = typeof item === 'string' ? item : item.type || item.portType;
+      videoVideoInputsContainer.appendChild(createVideoInputRow(t));
+    });
+  } else {
+    videoVideoInputsContainer.appendChild(createVideoInputRow());
+  }
+}
+function getVideoInputs() {
+  return Array.from(videoVideoInputsContainer.querySelectorAll('select')).map(function (sel) {
+    return {
+      type: sel.value
+    };
+  }).filter(function (v) {
+    return v.type && v.type !== 'None';
+  });
+}
+function clearVideoInputs() {
+  setVideoInputs([]);
+}
+function createVideoIOOutputRow() {
+  var value = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+  var row = document.createElement('div');
+  row.className = 'form-row';
+  var select = document.createElement('select');
+  select.className = 'video-output-select-io';
+  select.name = 'videoIOOutput';
+  addEmptyOption(select);
+  videoOutputOptions.forEach(function (optVal) {
+    var opt = document.createElement('option');
+    opt.value = optVal;
+    opt.textContent = optVal;
+    select.appendChild(opt);
+  });
+  select.value = value;
+  row.appendChild(createFieldWithLabel(select, 'Type'));
+  var addBtn = document.createElement('button');
+  addBtn.type = 'button';
+  configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+    contextPaths: ['videoVideoOutputsHeading', ['videoVideoOutputsLabel']],
+    fallbackContext: 'Video Outputs',
+    actionKey: 'addEntry'
+  });
+  addBtn.addEventListener('click', function () {
+    row.after(createVideoIOOutputRow());
+  });
+  row.appendChild(addBtn);
+  var removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+    contextPaths: ['videoVideoOutputsHeading', ['videoVideoOutputsLabel']],
+    fallbackContext: 'Video Outputs',
+    actionKey: 'removeEntry'
+  });
+  removeBtn.addEventListener('click', function () {
+    if (videoVideoOutputsContainer.children.length > 1) row.remove();
+  });
+  row.appendChild(removeBtn);
+  return row;
+}
+function setVideoOutputsIO(list) {
+  videoVideoOutputsContainer.innerHTML = '';
+  var filtered = filterNoneEntries(list, 'type');
+  if (filtered.length) {
+    filtered.forEach(function (item) {
+      var t = typeof item === 'string' ? item : item.type || item.portType;
+      videoVideoOutputsContainer.appendChild(createVideoIOOutputRow(t));
+    });
+  } else {
+    videoVideoOutputsContainer.appendChild(createVideoIOOutputRow());
+  }
+}
+function getVideoOutputsIO() {
+  return Array.from(videoVideoOutputsContainer.querySelectorAll('select')).map(function (sel) {
+    return {
+      type: sel.value
+    };
+  }).filter(function (v) {
+    return v.type && v.type !== 'None';
+  });
+}
+function clearVideoOutputsIO() {
+  setVideoOutputsIO([]);
+}
+function createFizConnectorRow() {
+  var value = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+  var row = document.createElement('div');
+  row.className = 'form-row';
+  var select = document.createElement('select');
+  select.className = 'fiz-connector-select';
+  select.name = 'fizConnector';
+  addEmptyOption(select);
+  fizConnectorOptions.forEach(function (optVal) {
+    var opt = document.createElement('option');
+    opt.value = optVal;
+    opt.textContent = optVal;
+    select.appendChild(opt);
+  });
+  select.value = value;
+  row.appendChild(createFieldWithLabel(select, 'Type'));
+  var addBtn = document.createElement('button');
+  addBtn.type = 'button';
+  configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+    contextPaths: ['fizConnectorHeading', ['cameraFIZConnectorLabel']],
+    fallbackContext: 'FIZ Connector',
+    actionKey: 'addEntry'
+  });
+  addBtn.addEventListener('click', function () {
+    row.after(createFizConnectorRow());
+  });
+  row.appendChild(addBtn);
+  var removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+    contextPaths: ['fizConnectorHeading', ['cameraFIZConnectorLabel']],
+    fallbackContext: 'FIZ Connector',
+    actionKey: 'removeEntry'
+  });
+  removeBtn.addEventListener('click', function () {
+    if (fizConnectorContainer.children.length > 1) row.remove();
+  });
+  row.appendChild(removeBtn);
+  return row;
+}
+function setFizConnectors(list) {
+  fizConnectorContainer.innerHTML = '';
+  var filtered = filterNoneEntries(list);
+  if (filtered.length) {
+    filtered.forEach(function (item) {
+      var t = typeof item === 'string' ? item : item.type;
+      fizConnectorContainer.appendChild(createFizConnectorRow(t));
+    });
+  } else {
+    fizConnectorContainer.appendChild(createFizConnectorRow());
+  }
+}
+function getFizConnectors() {
+  return Array.from(fizConnectorContainer.querySelectorAll('select')).map(function (sel) {
+    return {
+      type: sel.value
+    };
+  }).filter(function (fc) {
+    return fc.type && fc.type !== 'None';
+  });
+}
+function clearFizConnectors() {
+  setFizConnectors([]);
+}
+function getAllRecordingMedia() {
+  var media = new Set();
+  Object.values(devices.cameras).forEach(function (cam) {
+    if (Array.isArray(cam.recordingMedia)) {
+      cam.recordingMedia.forEach(function (m) {
+        if (m && m.type) media.add(m.type);
+      });
+    }
+  });
+  return Array.from(media).sort(localeSort);
+}
+var recordingMediaOptions = getAllRecordingMedia();
+function updateRecordingMediaOptions() {
+  recordingMediaOptions = getAllRecordingMedia();
+  document.querySelectorAll('.recording-media-select').forEach(function (sel) {
+    var cur = sel.value;
+    sel.innerHTML = '';
+    addEmptyOption(sel);
+    recordingMediaOptions.forEach(function (optVal) {
+      var opt = document.createElement('option');
+      opt.value = optVal;
+      opt.textContent = optVal;
+      sel.appendChild(opt);
+    });
+    if (recordingMediaOptions.includes(cur)) sel.value = cur;
+  });
+}
+function createRecordingMediaRow() {
+  var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+  var notes = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+  var row = document.createElement('div');
+  row.className = 'form-row';
+  var select = document.createElement('select');
+  select.className = 'recording-media-select';
+  select.name = 'recordingMediaType';
+  addEmptyOption(select);
+  recordingMediaOptions.forEach(function (optVal) {
+    var opt = document.createElement('option');
+    opt.value = optVal;
+    opt.textContent = optVal;
+    select.appendChild(opt);
+  });
+  if (type) {
+    if (!recordingMediaOptions.includes(type)) {
+      var opt = document.createElement('option');
+      opt.value = type;
+      opt.textContent = type;
+      select.appendChild(opt);
+    }
+    select.value = type;
+  }
+  row.appendChild(createFieldWithLabel(select, 'Type'));
+  var notesInput = document.createElement('input');
+  notesInput.type = 'text';
+  notesInput.placeholder = 'Notes';
+  notesInput.name = 'recordingMediaNotes';
+  notesInput.value = notes;
+  row.appendChild(createFieldWithLabel(notesInput, 'Notes'));
+  var addBtn = document.createElement('button');
+  addBtn.type = 'button';
+  configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+    contextPaths: ['mediaHeading', ['cameraMediaLabel']],
+    fallbackContext: 'Recording Media',
+    actionKey: 'addEntry'
+  });
+  addBtn.addEventListener('click', function () {
+    row.after(createRecordingMediaRow());
+  });
+  row.appendChild(addBtn);
+  var removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+    contextPaths: ['mediaHeading', ['cameraMediaLabel']],
+    fallbackContext: 'Recording Media',
+    actionKey: 'removeEntry'
+  });
+  removeBtn.addEventListener('click', function () {
+    if (cameraMediaContainer.children.length > 1) row.remove();
+  });
+  row.appendChild(removeBtn);
+  return row;
+}
+function setRecordingMedia(list) {
+  cameraMediaContainer.innerHTML = '';
+  var filtered = filterNoneEntries(list);
+  if (filtered.length) {
+    filtered.forEach(function (item) {
+      var _ref74 = item || {},
+        _ref74$type = _ref74.type,
+        type = _ref74$type === void 0 ? '' : _ref74$type,
+        _ref74$notes = _ref74.notes,
+        notes = _ref74$notes === void 0 ? '' : _ref74$notes;
+      cameraMediaContainer.appendChild(createRecordingMediaRow(type, notes));
+    });
+  } else {
+    cameraMediaContainer.appendChild(createRecordingMediaRow());
+  }
+}
+function getRecordingMedia() {
+  return Array.from(cameraMediaContainer.querySelectorAll('.form-row')).map(function (row) {
+    var _row$querySelectorAll = row.querySelectorAll('select, input'),
+      _row$querySelectorAll2 = _slicedToArray(_row$querySelectorAll, 2),
+      sel = _row$querySelectorAll2[0],
+      notesInput = _row$querySelectorAll2[1];
+    return {
+      type: sel.value,
+      notes: notesInput.value
+    };
+  }).filter(function (m) {
+    return m.type && m.type !== 'None';
+  });
+}
+function clearRecordingMedia() {
+  setRecordingMedia([]);
+}
+function powerInputTypes(dev) {
+  var _dev$power3;
+  var out = [];
+  if (!dev) return out;
+  var add = function add(t) {
+    normalizePowerPortType(t).forEach(function (pt) {
+      return out.push(pt);
+    });
+  };
+  if (dev.powerInput) {
+    String(dev.powerInput).split('/').forEach(function (t) {
+      if (t.trim()) add(t.trim());
+    });
+  }
+  var inp = (_dev$power3 = dev.power) === null || _dev$power3 === void 0 ? void 0 : _dev$power3.input;
+  if (Array.isArray(inp)) {
+    inp.forEach(function (i) {
+      var typeVal = i && (i.type || i.portType);
+      if (typeVal) add(typeVal);
+    });
+  } else if (inp) {
+    var typeVal = inp.type || inp.portType;
+    if (typeVal) add(typeVal);
+  }
+  return out;
+}
+function firstPowerInputType(dev) {
+  var list = powerInputTypes(dev);
+  return list.length ? list[0] : '';
+}
+function getAllPowerPortTypes() {
+  var _devices$fiz20, _devices$fiz21, _devices$fiz22;
+  var types = new Set();
+  Object.values(devices.cameras).forEach(function (cam) {
+    return powerInputTypes(cam).forEach(function (t) {
+      return types.add(t);
+    });
+  });
+  Object.values(devices.viewfinders || {}).forEach(function (vf) {
+    return powerInputTypes(vf).forEach(function (t) {
+      return types.add(t);
+    });
+  });
+  Object.values(devices.monitors || {}).forEach(function (mon) {
+    return powerInputTypes(mon).forEach(function (t) {
+      return types.add(t);
+    });
+  });
+  Object.values(devices.video || {}).forEach(function (vd) {
+    return powerInputTypes(vd).forEach(function (t) {
+      return types.add(t);
+    });
+  });
+  Object.values(((_devices$fiz20 = devices.fiz) === null || _devices$fiz20 === void 0 ? void 0 : _devices$fiz20.motors) || {}).forEach(function (m) {
+    return powerInputTypes(m).forEach(function (t) {
+      return types.add(t);
+    });
+  });
+  Object.values(((_devices$fiz21 = devices.fiz) === null || _devices$fiz21 === void 0 ? void 0 : _devices$fiz21.controllers) || {}).forEach(function (c) {
+    return powerInputTypes(c).forEach(function (t) {
+      return types.add(t);
+    });
+  });
+  Object.values(((_devices$fiz22 = devices.fiz) === null || _devices$fiz22 === void 0 ? void 0 : _devices$fiz22.distance) || {}).forEach(function (d) {
+    return powerInputTypes(d).forEach(function (t) {
+      return types.add(t);
+    });
+  });
+  return Array.from(types).sort(localeSort);
+}
+var powerPortOptions = getAllPowerPortTypes();
+function updatePowerPortOptions() {
+  powerPortOptions = getAllPowerPortTypes();
+  var current = cameraPortTypeInput.value;
+  cameraPortTypeInput.innerHTML = '';
+  addEmptyOption(cameraPortTypeInput);
+  powerPortOptions.forEach(function (optVal) {
+    var opt = document.createElement('option');
+    opt.value = optVal;
+    opt.textContent = optVal;
+    cameraPortTypeInput.appendChild(opt);
+  });
+  if (powerPortOptions.includes(current)) cameraPortTypeInput.value = current;
+  if (monitorPortTypeInput) {
+    var curMon = monitorPortTypeInput.value;
+    monitorPortTypeInput.innerHTML = '';
+    addEmptyOption(monitorPortTypeInput);
+    powerPortOptions.forEach(function (optVal) {
+      var opt = document.createElement('option');
+      opt.value = optVal;
+      opt.textContent = optVal;
+      monitorPortTypeInput.appendChild(opt);
+    });
+    if (powerPortOptions.includes(curMon)) monitorPortTypeInput.value = curMon;
+  }
+}
+function getAllPlateTypes() {
+  var types = new Set();
+  Object.values(devices.cameras).forEach(function (cam) {
+    var _cam$power3;
+    var list = (_cam$power3 = cam.power) === null || _cam$power3 === void 0 ? void 0 : _cam$power3.batteryPlateSupport;
+    if (Array.isArray(list)) {
+      list.forEach(function (bp) {
+        if (bp && bp.type) types.add(bp.type);
+      });
+    }
+  });
+  return Array.from(types).sort(localeSort);
+}
+var plateTypeOptions = getAllPlateTypes();
+function updatePlateTypeOptions() {
+  plateTypeOptions = getAllPlateTypes();
+  document.querySelectorAll('.battery-plate-type-select').forEach(function (sel) {
+    var current = sel.value;
+    sel.innerHTML = '';
+    addEmptyOption(sel);
+    plateTypeOptions.forEach(function (pt) {
+      var opt = document.createElement('option');
+      opt.value = pt;
+      opt.textContent = pt;
+      sel.appendChild(opt);
+    });
+    if (plateTypeOptions.includes(current)) sel.value = current;
+  });
+}
+function createBatteryPlateRow() {
+  var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+  var mount = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'native';
+  var notes = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
+  var row = document.createElement('div');
+  row.className = 'form-row';
+  var typeSelect = document.createElement('select');
+  typeSelect.className = 'battery-plate-type-select';
+  typeSelect.name = 'batteryPlateType';
+  addEmptyOption(typeSelect);
+  plateTypeOptions.forEach(function (pt) {
+    var opt = document.createElement('option');
+    opt.value = pt;
+    opt.textContent = pt;
+    typeSelect.appendChild(opt);
+  });
+  if (type && !plateTypeOptions.includes(type)) {
+    var opt = document.createElement('option');
+    opt.value = type;
+    opt.textContent = type;
+    typeSelect.appendChild(opt);
+  }
+  typeSelect.value = type;
+  row.appendChild(createFieldWithLabel(typeSelect, 'Type'));
+  var mountSelect = document.createElement('select');
+  addEmptyOption(mountSelect);
+  mountSelect.name = 'batteryPlateMount';
+  ['native', 'adapted'].forEach(function (m) {
+    var opt = document.createElement('option');
+    opt.value = m;
+    opt.textContent = m;
+    mountSelect.appendChild(opt);
+  });
+  mountSelect.value = mount || '';
+  row.appendChild(createFieldWithLabel(mountSelect, 'Mount'));
+  var notesInput = document.createElement('input');
+  notesInput.type = 'text';
+  notesInput.placeholder = 'Notes';
+  notesInput.value = notes;
+  notesInput.name = 'batteryPlateNotes';
+  row.appendChild(createFieldWithLabel(notesInput, 'Notes'));
+  var addBtn = document.createElement('button');
+  addBtn.type = 'button';
+  configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+    contextPaths: ['cameraPlatesLabel', ['powerInputsHeading']],
+    fallbackContext: 'Battery Plates',
+    actionKey: 'addEntry'
+  });
+  addBtn.addEventListener('click', function () {
+    row.after(createBatteryPlateRow());
+  });
+  row.appendChild(addBtn);
+  var removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+    contextPaths: ['cameraPlatesLabel', ['powerInputsHeading']],
+    fallbackContext: 'Battery Plates',
+    actionKey: 'removeEntry'
+  });
+  removeBtn.addEventListener('click', function () {
+    if (batteryPlatesContainer.children.length > 1) row.remove();
+  });
+  row.appendChild(removeBtn);
+  return row;
+}
+function setBatteryPlates(list) {
+  batteryPlatesContainer.innerHTML = '';
+  var filtered = filterNoneEntries(list);
+  if (filtered.length) {
+    filtered.forEach(function (item) {
+      var _ref75 = item || {},
+        _ref75$type = _ref75.type,
+        type = _ref75$type === void 0 ? '' : _ref75$type,
+        _ref75$mount = _ref75.mount,
+        mount = _ref75$mount === void 0 ? 'native' : _ref75$mount,
+        _ref75$notes = _ref75.notes,
+        notes = _ref75$notes === void 0 ? '' : _ref75$notes;
+      batteryPlatesContainer.appendChild(createBatteryPlateRow(type, mount, notes));
+    });
+  } else {
+    batteryPlatesContainer.appendChild(createBatteryPlateRow());
+  }
+}
+function getBatteryPlates() {
+  return Array.from(batteryPlatesContainer.querySelectorAll('.form-row')).map(function (row) {
+    var _row$querySelectorAll3 = row.querySelectorAll('select, input'),
+      _row$querySelectorAll4 = _slicedToArray(_row$querySelectorAll3, 3),
+      typeSel = _row$querySelectorAll4[0],
+      mountSel = _row$querySelectorAll4[1],
+      notesInput = _row$querySelectorAll4[2];
+    return {
+      type: typeSel.value,
+      mount: mountSel.value,
+      notes: notesInput.value
+    };
+  }).filter(function (bp) {
+    return bp.type && bp.type !== 'None';
+  });
+}
+function clearBatteryPlates() {
+  setBatteryPlates([]);
+}
+function getAllViewfinderTypes() {
+  var types = new Set();
+  Object.values(devices.cameras).forEach(function (cam) {
+    if (Array.isArray(cam.viewfinder)) {
+      cam.viewfinder.forEach(function (vf) {
+        if (vf && vf.type) types.add(vf.type);
+      });
+    }
+  });
+  return Array.from(types).sort(localeSort);
+}
+function getAllViewfinderConnectors() {
+  var conns = new Set();
+  Object.values(devices.cameras).forEach(function (cam) {
+    if (Array.isArray(cam.viewfinder)) {
+      cam.viewfinder.forEach(function (vf) {
+        if (vf && vf.connector) conns.add(vf.connector);
+      });
+    }
+  });
+  return Array.from(conns).filter(function (c) {
+    return c;
+  }).sort(localeSort);
+}
+var viewfinderTypeOptions = getAllViewfinderTypes();
+var viewfinderConnectorOptions = getAllViewfinderConnectors();
+function createViewfinderRow() {
+  var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+  var resolution = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+  var connector = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
+  var notes = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : '';
+  var row = document.createElement('div');
+  row.className = 'form-row';
+  var typeSelect = document.createElement('select');
+  typeSelect.className = 'viewfinder-type-select';
+  typeSelect.name = 'viewfinderType';
+  addEmptyOption(typeSelect);
+  viewfinderTypeOptions.forEach(function (optVal) {
+    var opt = document.createElement('option');
+    opt.value = optVal;
+    opt.textContent = optVal;
+    typeSelect.appendChild(opt);
+  });
+  if (type && !viewfinderTypeOptions.includes(type)) {
+    var opt = document.createElement('option');
+    opt.value = type;
+    opt.textContent = type;
+    typeSelect.appendChild(opt);
+  }
+  typeSelect.value = type;
+  row.appendChild(createFieldWithLabel(typeSelect, 'Type'));
+  var resInput = document.createElement('input');
+  resInput.type = 'text';
+  resInput.placeholder = 'Resolution';
+  resInput.value = resolution;
+  resInput.name = 'viewfinderResolution';
+  row.appendChild(createFieldWithLabel(resInput, 'Resolution'));
+  var connSelect = document.createElement('select');
+  connSelect.className = 'viewfinder-connector-select';
+  addEmptyOption(connSelect);
+  connSelect.name = 'viewfinderConnector';
+  viewfinderConnectorOptions.forEach(function (optVal) {
+    var opt = document.createElement('option');
+    opt.value = optVal;
+    opt.textContent = optVal;
+    connSelect.appendChild(opt);
+  });
+  if (connector && !viewfinderConnectorOptions.includes(connector)) {
+    var _opt4 = document.createElement('option');
+    _opt4.value = connector;
+    _opt4.textContent = connector;
+    connSelect.appendChild(_opt4);
+  }
+  connSelect.value = connector;
+  row.appendChild(createFieldWithLabel(connSelect, 'Connector'));
+  var notesInput = document.createElement('input');
+  notesInput.type = 'text';
+  notesInput.placeholder = 'Notes';
+  notesInput.value = notes;
+  notesInput.name = 'viewfinderNotes';
+  row.appendChild(createFieldWithLabel(notesInput, 'Notes'));
+  var addBtn = document.createElement('button');
+  addBtn.type = 'button';
+  configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+    contextPaths: ['viewfinderHeading', ['cameraViewfinderLabel']],
+    fallbackContext: 'Viewfinder',
+    actionKey: 'addEntry'
+  });
+  addBtn.addEventListener('click', function () {
+    row.after(createViewfinderRow());
+  });
+  row.appendChild(addBtn);
+  var removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+    contextPaths: ['viewfinderHeading', ['cameraViewfinderLabel']],
+    fallbackContext: 'Viewfinder',
+    actionKey: 'removeEntry'
+  });
+  removeBtn.addEventListener('click', function () {
+    if (viewfinderContainer.children.length > 1) row.remove();
+  });
+  row.appendChild(removeBtn);
+  return row;
+}
+function setViewfinders(list) {
+  viewfinderContainer.innerHTML = '';
+  var filtered = filterNoneEntries(list);
+  if (filtered.length) {
+    filtered.forEach(function (item) {
+      var _ref76 = item || {},
+        _ref76$type = _ref76.type,
+        type = _ref76$type === void 0 ? '' : _ref76$type,
+        _ref76$resolution = _ref76.resolution,
+        resolution = _ref76$resolution === void 0 ? '' : _ref76$resolution,
+        _ref76$connector = _ref76.connector,
+        connector = _ref76$connector === void 0 ? '' : _ref76$connector,
+        _ref76$notes = _ref76.notes,
+        notes = _ref76$notes === void 0 ? '' : _ref76$notes;
+      viewfinderContainer.appendChild(createViewfinderRow(type, resolution, connector, notes));
+    });
+  } else {
+    viewfinderContainer.appendChild(createViewfinderRow());
+  }
+}
+function getViewfinders() {
+  return Array.from(viewfinderContainer.querySelectorAll('.form-row')).map(function (row) {
+    var _row$querySelectorAll5 = row.querySelectorAll('select, input'),
+      _row$querySelectorAll6 = _slicedToArray(_row$querySelectorAll5, 4),
+      typeSelect = _row$querySelectorAll6[0],
+      resInput = _row$querySelectorAll6[1],
+      connSelect = _row$querySelectorAll6[2],
+      notesInput = _row$querySelectorAll6[3];
+    return {
+      type: typeSelect.value,
+      resolution: resInput.value,
+      connector: connSelect.value,
+      notes: notesInput.value
+    };
+  }).filter(function (vf) {
+    return vf.type && vf.type !== 'None';
+  });
+}
+function clearViewfinders() {
+  setViewfinders([]);
+}
+function getAllMountTypes() {
+  var types = new Set();
+  Object.values(devices.cameras).forEach(function (cam) {
+    if (Array.isArray(cam.lensMount)) {
+      cam.lensMount.forEach(function (lm) {
+        if (lm && lm.type) types.add(lm.type);
+      });
+    }
+  });
+  return Array.from(types).sort(localeSort);
+}
+var mountTypeOptions = getAllMountTypes();
+function updateMountTypeOptions() {
+  mountTypeOptions = getAllMountTypes();
+  document.querySelectorAll('.lens-mount-type-select').forEach(function (sel) {
+    var current = sel.value;
+    sel.innerHTML = '';
+    addEmptyOption(sel);
+    mountTypeOptions.forEach(function (optVal) {
+      var opt = document.createElement('option');
+      opt.value = optVal;
+      opt.textContent = optVal;
+      sel.appendChild(opt);
+    });
+    if (mountTypeOptions.includes(current)) sel.value = current;
+  });
+}
+function createLensMountRow() {
+  var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+  var mount = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'native';
+  var row = document.createElement('div');
+  row.className = 'form-row';
+  var typeSelect = document.createElement('select');
+  typeSelect.className = 'lens-mount-type-select';
+  typeSelect.name = 'lensMountType';
+  addEmptyOption(typeSelect);
+  mountTypeOptions.forEach(function (optVal) {
+    var opt = document.createElement('option');
+    opt.value = optVal;
+    opt.textContent = optVal;
+    typeSelect.appendChild(opt);
+  });
+  if (type && !mountTypeOptions.includes(type)) {
+    var opt = document.createElement('option');
+    opt.value = type;
+    opt.textContent = type;
+    typeSelect.appendChild(opt);
+  }
+  typeSelect.value = type;
+  row.appendChild(createFieldWithLabel(typeSelect, 'Type'));
+  var mountSelect = document.createElement('select');
+  addEmptyOption(mountSelect);
+  mountSelect.name = 'lensMount';
+  ['native', 'adapted'].forEach(function (m) {
+    var opt = document.createElement('option');
+    opt.value = m;
+    opt.textContent = m;
+    mountSelect.appendChild(opt);
+  });
+  mountSelect.value = mount || '';
+  row.appendChild(createFieldWithLabel(mountSelect, 'Mount'));
+  var addBtn = document.createElement('button');
+  addBtn.type = 'button';
+  configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+    contextPaths: ['lensMountHeading', ['cameraLensMountLabel']],
+    fallbackContext: 'Lens Mount',
+    actionKey: 'addEntry'
+  });
+  addBtn.addEventListener('click', function () {
+    row.after(createLensMountRow());
+  });
+  row.appendChild(addBtn);
+  var removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+    contextPaths: ['lensMountHeading', ['cameraLensMountLabel']],
+    fallbackContext: 'Lens Mount',
+    actionKey: 'removeEntry'
+  });
+  removeBtn.addEventListener('click', function () {
+    if (lensMountContainer.children.length > 1) row.remove();
+  });
+  row.appendChild(removeBtn);
+  return row;
+}
+function setLensMounts(list) {
+  lensMountContainer.innerHTML = '';
+  var filtered = filterNoneEntries(list);
+  if (filtered.length) {
+    filtered.forEach(function (item) {
+      var _ref77 = item || {},
+        _ref77$type = _ref77.type,
+        type = _ref77$type === void 0 ? '' : _ref77$type,
+        _ref77$mount = _ref77.mount,
+        mount = _ref77$mount === void 0 ? 'native' : _ref77$mount;
+      lensMountContainer.appendChild(createLensMountRow(type, mount));
+    });
+  } else {
+    lensMountContainer.appendChild(createLensMountRow());
+  }
+}
+function getLensMounts() {
+  return Array.from(lensMountContainer.querySelectorAll('.form-row')).map(function (row) {
+    var _row$querySelectorAll7 = row.querySelectorAll('select'),
+      _row$querySelectorAll8 = _slicedToArray(_row$querySelectorAll7, 2),
+      typeSel = _row$querySelectorAll8[0],
+      mountSel = _row$querySelectorAll8[1];
+    return {
+      type: typeSel.value,
+      mount: mountSel.value
+    };
+  }).filter(function (lm) {
+    return lm.type && lm.type !== 'None';
+  });
+}
+function clearLensMounts() {
+  setLensMounts([]);
+}
+function getAllPowerDistTypes() {
+  var types = new Set();
+  Object.values(devices.cameras).forEach(function (cam) {
+    var _cam$power4;
+    var list = (_cam$power4 = cam.power) === null || _cam$power4 === void 0 ? void 0 : _cam$power4.powerDistributionOutputs;
+    if (Array.isArray(list)) {
+      list.forEach(function (pd) {
+        if (pd && pd.type) types.add(pd.type);
+      });
+    }
+  });
+  return Array.from(types).sort(localeSort);
+}
+var powerDistTypeOptions = getAllPowerDistTypes();
+function getAllPowerDistVoltages() {
+  var volts = new Set();
+  Object.values(devices.cameras).forEach(function (cam) {
+    var _cam$power5;
+    var list = (_cam$power5 = cam.power) === null || _cam$power5 === void 0 ? void 0 : _cam$power5.powerDistributionOutputs;
+    if (Array.isArray(list)) {
+      list.forEach(function (pd) {
+        if (pd && pd.voltage) volts.add(pd.voltage);
+      });
+    }
+  });
+  return Array.from(volts).filter(function (v) {
+    return v;
+  }).sort(localeSort);
+}
+function getAllPowerDistCurrents() {
+  var currents = new Set();
+  Object.values(devices.cameras).forEach(function (cam) {
+    var _cam$power6;
+    var list = (_cam$power6 = cam.power) === null || _cam$power6 === void 0 ? void 0 : _cam$power6.powerDistributionOutputs;
+    if (Array.isArray(list)) {
+      list.forEach(function (pd) {
+        if (pd && pd.current) currents.add(pd.current);
+      });
+    }
+  });
+  return Array.from(currents).filter(function (c) {
+    return c;
+  }).sort(localeSort);
+}
+var powerDistVoltageOptions = getAllPowerDistVoltages();
+var powerDistCurrentOptions = getAllPowerDistCurrents();
+function updatePowerDistVoltageOptions() {
+  powerDistVoltageOptions = getAllPowerDistVoltages();
+  document.querySelectorAll('.power-dist-voltage-select').forEach(function (sel) {
+    var cur = sel.value;
+    sel.innerHTML = '';
+    addEmptyOption(sel);
+    powerDistVoltageOptions.forEach(function (optVal) {
+      var opt = document.createElement('option');
+      opt.value = optVal;
+      opt.textContent = optVal;
+      sel.appendChild(opt);
+    });
+    if (powerDistVoltageOptions.includes(cur)) sel.value = cur;
+  });
+}
+function updatePowerDistCurrentOptions() {
+  powerDistCurrentOptions = getAllPowerDistCurrents();
+  document.querySelectorAll('.power-dist-current-select').forEach(function (sel) {
+    var cur = sel.value;
+    sel.innerHTML = '';
+    addEmptyOption(sel);
+    powerDistCurrentOptions.forEach(function (optVal) {
+      var opt = document.createElement('option');
+      opt.value = optVal;
+      opt.textContent = optVal;
+      sel.appendChild(opt);
+    });
+    if (powerDistCurrentOptions.includes(cur)) sel.value = cur;
+  });
+}
+function updatePowerDistTypeOptions() {
+  powerDistTypeOptions = getAllPowerDistTypes();
+  document.querySelectorAll('.power-dist-type-select').forEach(function (sel) {
+    var cur = sel.value;
+    sel.innerHTML = '';
+    addEmptyOption(sel);
+    powerDistTypeOptions.forEach(function (optVal) {
+      var opt = document.createElement('option');
+      opt.value = optVal;
+      opt.textContent = optVal;
+      sel.appendChild(opt);
+    });
+    if (powerDistTypeOptions.includes(cur)) sel.value = cur;
+  });
+}
+function createPowerDistRow() {
+  var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+  var voltage = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+  var current = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
+  var wattage = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : '';
+  var notes = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : '';
+  var row = document.createElement('div');
+  row.className = 'form-row';
+  var typeSelect = document.createElement('select');
+  typeSelect.className = 'power-dist-type-select';
+  typeSelect.name = 'powerDistType';
+  addEmptyOption(typeSelect);
+  powerDistTypeOptions.forEach(function (optVal) {
+    var opt = document.createElement('option');
+    opt.value = optVal;
+    opt.textContent = optVal;
+    typeSelect.appendChild(opt);
+  });
+  if (type && !powerDistTypeOptions.includes(type)) {
+    var opt = document.createElement('option');
+    opt.value = type;
+    opt.textContent = type;
+    typeSelect.appendChild(opt);
+  }
+  typeSelect.value = type;
+  row.appendChild(createFieldWithLabel(typeSelect, 'Type'));
+  var voltSelect = document.createElement('select');
+  voltSelect.className = 'power-dist-voltage-select';
+  addEmptyOption(voltSelect);
+  voltSelect.name = 'powerDistVoltage';
+  powerDistVoltageOptions.forEach(function (optVal) {
+    var opt = document.createElement('option');
+    opt.value = optVal;
+    opt.textContent = optVal;
+    voltSelect.appendChild(opt);
+  });
+  if (voltage && !powerDistVoltageOptions.includes(voltage)) {
+    var _opt5 = document.createElement('option');
+    _opt5.value = voltage;
+    _opt5.textContent = voltage;
+    voltSelect.appendChild(_opt5);
+  }
+  voltSelect.value = voltage;
+  row.appendChild(createFieldWithLabel(voltSelect, 'Voltage'));
+  var currSelect = document.createElement('select');
+  currSelect.className = 'power-dist-current-select';
+  addEmptyOption(currSelect);
+  currSelect.name = 'powerDistCurrent';
+  powerDistCurrentOptions.forEach(function (optVal) {
+    var opt = document.createElement('option');
+    opt.value = optVal;
+    opt.textContent = optVal;
+    currSelect.appendChild(opt);
+  });
+  if (current && !powerDistCurrentOptions.includes(current)) {
+    var _opt6 = document.createElement('option');
+    _opt6.value = current;
+    _opt6.textContent = current;
+    currSelect.appendChild(_opt6);
+  }
+  currSelect.value = current;
+  row.appendChild(createFieldWithLabel(currSelect, 'Current'));
+  var wattInput = document.createElement('input');
+  wattInput.type = 'number';
+  wattInput.step = '0.1';
+  wattInput.placeholder = 'W';
+  wattInput.value = wattage === null || wattage === undefined ? '' : wattage;
+  wattInput.name = 'powerDistWatt';
+  row.appendChild(createFieldWithLabel(wattInput, 'W'));
+  var notesInput = document.createElement('input');
+  notesInput.type = 'text';
+  notesInput.placeholder = 'Notes';
+  notesInput.value = notes;
+  notesInput.name = 'powerDistNotes';
+  row.appendChild(createFieldWithLabel(notesInput, 'Notes'));
+  var addBtn = document.createElement('button');
+  addBtn.type = 'button';
+  configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+    contextPaths: ['powerDistributionHeading', ['cameraPowerDistLabel']],
+    fallbackContext: 'Power Distribution',
+    actionKey: 'addEntry'
+  });
+  addBtn.addEventListener('click', function () {
+    row.after(createPowerDistRow());
+  });
+  row.appendChild(addBtn);
+  var removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+    contextPaths: ['powerDistributionHeading', ['cameraPowerDistLabel']],
+    fallbackContext: 'Power Distribution',
+    actionKey: 'removeEntry'
+  });
+  removeBtn.addEventListener('click', function () {
+    if (powerDistContainer.children.length > 1) row.remove();
+  });
+  row.appendChild(removeBtn);
+  return row;
+}
+function setPowerDistribution(list) {
+  powerDistContainer.innerHTML = '';
+  var filtered = filterNoneEntries(list);
+  if (filtered.length) {
+    filtered.forEach(function (item) {
+      var _ref78 = item || {},
+        _ref78$type = _ref78.type,
+        type = _ref78$type === void 0 ? '' : _ref78$type,
+        _ref78$voltage = _ref78.voltage,
+        voltage = _ref78$voltage === void 0 ? '' : _ref78$voltage,
+        _ref78$current = _ref78.current,
+        current = _ref78$current === void 0 ? '' : _ref78$current,
+        _ref78$wattage = _ref78.wattage,
+        wattage = _ref78$wattage === void 0 ? '' : _ref78$wattage,
+        _ref78$notes = _ref78.notes,
+        notes = _ref78$notes === void 0 ? '' : _ref78$notes;
+      powerDistContainer.appendChild(createPowerDistRow(type, voltage, current, wattage, notes));
+    });
+  } else {
+    powerDistContainer.appendChild(createPowerDistRow());
+  }
+}
+function getPowerDistribution() {
+  return Array.from(powerDistContainer.querySelectorAll('.form-row')).map(function (row) {
+    var _row$querySelectorAll9 = row.querySelectorAll('select, input'),
+      _row$querySelectorAll0 = _slicedToArray(_row$querySelectorAll9, 5),
+      typeSel = _row$querySelectorAll0[0],
+      voltSel = _row$querySelectorAll0[1],
+      currSel = _row$querySelectorAll0[2],
+      wattInput = _row$querySelectorAll0[3],
+      notesInput = _row$querySelectorAll0[4];
+    return {
+      type: typeSel.value,
+      voltage: voltSel.value,
+      current: currSel.value,
+      wattage: wattInput.value ? parseFloat(wattInput.value) : null,
+      notes: notesInput.value
+    };
+  }).filter(function (pd) {
+    return pd.type && pd.type !== 'None';
+  });
+}
+function clearPowerDistribution() {
+  setPowerDistribution([]);
+}
+function getAllTimecodeTypes() {
+  var types = new Set();
+  Object.values(devices.cameras).forEach(function (cam) {
+    var list = cam.timecode;
+    if (Array.isArray(list)) {
+      list.forEach(function (tc) {
+        if (tc && tc.type) types.add(tc.type);
+      });
+    }
+  });
+  return Array.from(types).sort(localeSort);
+}
+var timecodeTypeOptions = getAllTimecodeTypes();
+function updateTimecodeTypeOptions() {
+  timecodeTypeOptions = getAllTimecodeTypes();
+  document.querySelectorAll('.timecode-type-select').forEach(function (sel) {
+    var cur = sel.value;
+    sel.innerHTML = '';
+    addEmptyOption(sel);
+    timecodeTypeOptions.forEach(function (optVal) {
+      var opt = document.createElement('option');
+      opt.value = optVal;
+      opt.textContent = optVal;
+      sel.appendChild(opt);
+    });
+    if (timecodeTypeOptions.includes(cur)) sel.value = cur;
+  });
+}
+function createTimecodeRow() {
+  var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+  var notes = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+  var row = document.createElement('div');
+  row.className = 'form-row';
+  var typeSelect = document.createElement('select');
+  typeSelect.className = 'timecode-type-select';
+  typeSelect.name = 'timecodeType';
+  addEmptyOption(typeSelect);
+  timecodeTypeOptions.forEach(function (optVal) {
+    var opt = document.createElement('option');
+    opt.value = optVal;
+    opt.textContent = optVal;
+    typeSelect.appendChild(opt);
+  });
+  if (type && !timecodeTypeOptions.includes(type)) {
+    var opt = document.createElement('option');
+    opt.value = type;
+    opt.textContent = type;
+    typeSelect.appendChild(opt);
+  }
+  typeSelect.value = type;
+  row.appendChild(createFieldWithLabel(typeSelect, 'Type'));
+  var notesInput = document.createElement('input');
+  notesInput.type = 'text';
+  notesInput.placeholder = 'Notes';
+  notesInput.value = notes;
+  notesInput.name = 'timecodeNotes';
+  row.appendChild(createFieldWithLabel(notesInput, 'Notes'));
+  var addBtn = document.createElement('button');
+  addBtn.type = 'button';
+  configureIconOnlyButton(addBtn, ICON_GLYPHS.add, {
+    contextPaths: ['timecodeHeading', ['cameraTimecodeLabel']],
+    fallbackContext: 'Timecode',
+    actionKey: 'addEntry'
+  });
+  addBtn.addEventListener('click', function () {
+    row.after(createTimecodeRow());
+  });
+  row.appendChild(addBtn);
+  var removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  configureIconOnlyButton(removeBtn, ICON_GLYPHS.minus, {
+    contextPaths: ['timecodeHeading', ['cameraTimecodeLabel']],
+    fallbackContext: 'Timecode',
+    actionKey: 'removeEntry'
+  });
+  removeBtn.addEventListener('click', function () {
+    if (timecodeContainer.children.length > 1) row.remove();
+  });
+  row.appendChild(removeBtn);
+  return row;
+}
+function setTimecodes(list) {
+  timecodeContainer.innerHTML = '';
+  var filtered = filterNoneEntries(list);
+  if (filtered.length) {
+    filtered.forEach(function (item) {
+      var _ref79 = item || {},
+        _ref79$type = _ref79.type,
+        type = _ref79$type === void 0 ? '' : _ref79$type,
+        _ref79$notes = _ref79.notes,
+        notes = _ref79$notes === void 0 ? '' : _ref79$notes;
+      timecodeContainer.appendChild(createTimecodeRow(type, notes));
+    });
+  } else {
+    timecodeContainer.appendChild(createTimecodeRow());
+  }
+}
+function getTimecodes() {
+  return Array.from(timecodeContainer.querySelectorAll('.form-row')).map(function (row) {
+    var _row$querySelectorAll1 = row.querySelectorAll('select, input'),
+      _row$querySelectorAll10 = _slicedToArray(_row$querySelectorAll1, 2),
+      typeSel = _row$querySelectorAll10[0],
+      notesInput = _row$querySelectorAll10[1];
+    return {
+      type: typeSel.value,
+      notes: notesInput.value
+    };
+  }).filter(function (tc) {
+    return tc.type && tc.type !== 'None';
+  });
+}
+function clearTimecodes() {
+  setTimecodes([]);
+}
+function getFavoriteValues(id) {
+  var favs = loadFavorites();
+  return Array.isArray(favs[id]) ? favs[id] : [];
+}
+function applyFavoritesToSelect(selectElem) {
+  if (!selectElem || !selectElem.id) return;
+  var favVals = getFavoriteValues(selectElem.id);
+  if (!favVals.length) return;
+  var opts = Array.from(selectElem.options);
+  var noneOpt = opts.find(function (o) {
+    return o.value === 'None';
+  });
+  var others = opts.filter(function (o) {
+    return o !== noneOpt;
+  });
+  var favOpts = [];
+  var restOpts = [];
+  others.forEach(function (o) {
+    return favVals.includes(o.value) ? favOpts.push(o) : restOpts.push(o);
+  });
+  favOpts.sort(function (a, b) {
+    return localeSort(a.textContent, b.textContent);
+  });
+  restOpts.sort(function (a, b) {
+    return localeSort(a.textContent, b.textContent);
+  });
+  selectElem.innerHTML = '';
+  if (noneOpt) selectElem.appendChild(noneOpt);
+  favOpts.forEach(function (o) {
+    return selectElem.appendChild(o);
+  });
+  restOpts.forEach(function (o) {
+    return selectElem.appendChild(o);
+  });
+}
+function updateFavoriteButton(selectElem) {
+  if (!selectElem || !selectElem._favButton) return;
+  var favVals = getFavoriteValues(selectElem.id);
+  var val = selectElem.value;
+  var isFav = favVals.includes(val);
+  selectElem._favButton.innerHTML = iconMarkup(ICON_GLYPHS.star, 'favorite-icon');
+  selectElem._favButton.classList.toggle('favorited', isFav);
+  selectElem._favButton.disabled = val === 'None';
+  selectElem._favButton.setAttribute('aria-pressed', isFav ? 'true' : 'false');
+}
+function toggleFavorite(selectElem) {
+  if (!selectElem || !selectElem.id) return;
+  var val = selectElem.value;
+  if (val === 'None') return;
+  var favs = loadFavorites();
+  var list = Array.isArray(favs[selectElem.id]) ? favs[selectElem.id] : [];
+  var idx = list.indexOf(val);
+  if (idx === -1) list.push(val);else list.splice(idx, 1);
+  if (list.length) favs[selectElem.id] = list;else delete favs[selectElem.id];
+  saveFavorites(favs);
+  applyFavoritesToSelect(selectElem);
+  updateFavoriteButton(selectElem);
+  adjustGearListSelectWidth(selectElem);
+}
+var selectWidthMeasureElement = null;
+function getSelectWidthMeasureElement() {
+  if (selectWidthMeasureElement && selectWidthMeasureElement.isConnected) {
+    return selectWidthMeasureElement;
+  }
+  var span = document.createElement('span');
+  span.className = 'gear-select-width-measure';
+  Object.assign(span.style, {
+    position: 'absolute',
+    visibility: 'hidden',
+    whiteSpace: 'pre',
+    pointerEvents: 'none',
+    top: '-9999px',
+    left: '-9999px',
+    padding: '0',
+    margin: '0',
+    border: '0'
+  });
+  var parent = document.body || document.documentElement;
+  parent.appendChild(span);
+  selectWidthMeasureElement = span;
+  return span;
+}
+function measureSelectTextWidth(selectElem, text, styles) {
+  var content = text && text.length ? text : "\xA0";
+  var computedStyles = styles || window.getComputedStyle(selectElem);
+  if (!computedStyles) {
+    return content.length * 8;
+  }
+  var measureElem = getSelectWidthMeasureElement();
+  var parent = document.body || document.documentElement;
+  if (measureElem.parentElement !== parent) parent.appendChild(measureElem);
+  if (computedStyles.font && computedStyles.font !== 'normal normal normal medium/normal serif') {
+    measureElem.style.font = computedStyles.font;
+  } else {
+    measureElem.style.fontStyle = computedStyles.fontStyle || 'normal';
+    measureElem.style.fontVariant = computedStyles.fontVariant || 'normal';
+    measureElem.style.fontWeight = computedStyles.fontWeight || '400';
+    measureElem.style.fontStretch = computedStyles.fontStretch || 'normal';
+    measureElem.style.fontSize = computedStyles.fontSize || '16px';
+    measureElem.style.fontFamily = computedStyles.fontFamily || 'sans-serif';
+    measureElem.style.lineHeight = computedStyles.lineHeight || 'normal';
+  }
+  measureElem.style.letterSpacing = computedStyles.letterSpacing || 'normal';
+  measureElem.style.textTransform = computedStyles.textTransform || 'none';
+  measureElem.textContent = content;
+  return measureElem.getBoundingClientRect().width;
+}
+function adjustGearListSelectWidth(selectElem) {
+  if (!selectElem || selectElem.multiple || selectElem.size > 1) return;
+  var container = selectElem.closest('#gearListOutput, #projectRequirementsOutput');
+  if (!container) return;
+  var styles = window.getComputedStyle(selectElem);
+  if (!styles || styles.display === 'none') {
+    selectElem.style.removeProperty('--gear-select-width');
+    return;
+  }
+  var selectedOption = selectElem.selectedOptions && selectElem.selectedOptions[0];
+  var optionText = selectedOption ? selectedOption.textContent.trim() : selectElem.value || '';
+  var textWidth = measureSelectTextWidth(selectElem, optionText, styles);
+  var paddingLeft = parseFloat(styles.paddingLeft) || 0;
+  var paddingRight = parseFloat(styles.paddingRight) || 0;
+  var borderLeft = parseFloat(styles.borderLeftWidth) || 0;
+  var borderRight = parseFloat(styles.borderRightWidth) || 0;
+  var fontSize = parseFloat(styles.fontSize) || 16;
+  var arrowReserve = Math.max(fontSize * 0.5, 10);
+  var minWidth = Math.max(fontSize * 4, 56);
+  var widthPx = Math.max(Math.ceil(textWidth + paddingLeft + paddingRight + borderLeft + borderRight + arrowReserve), minWidth);
+  selectElem.style.setProperty('--gear-select-width', "".concat(widthPx, "px"));
+}
+function adjustGearListSelectWidths(container) {
+  if (!container) return;
+  container.querySelectorAll('select').forEach(function (selectElem) {
+    return adjustGearListSelectWidth(selectElem);
+  });
+}
+function ensureSelectWrapper(selectElem) {
+  if (!selectElem) return null;
+  var wrapper = selectElem.parentElement;
+  if (!wrapper || !wrapper.classList.contains('select-wrapper')) {
+    if (wrapper && wrapper.tagName === 'LABEL') {
+      var label = wrapper;
+      wrapper = document.createElement('div');
+      wrapper.className = 'select-wrapper';
+      label.parentElement.insertBefore(wrapper, label.nextSibling);
+      wrapper.appendChild(selectElem);
+    } else {
+      wrapper = document.createElement('div');
+      wrapper.className = 'select-wrapper';
+      selectElem.insertAdjacentElement('beforebegin', wrapper);
+      wrapper.appendChild(selectElem);
+    }
+  }
+  return wrapper;
+}
+function initFavoritableSelect(selectElem) {
+  if (!selectElem || !selectElem.id || selectElem.multiple || selectElem.hidden) return;
+  var wrapper = ensureSelectWrapper(selectElem);
+  var gearItem = selectElem.closest('.gear-item');
+  function cleanupFavoriteButton(btn) {
+    if (!btn) return;
+    if (btn._favListener) {
+      btn.removeEventListener('click', btn._favListener);
+      btn._favListener = null;
+    }
+    btn.remove();
+  }
+  var favoriteButton = selectElem._favButton && selectElem._favButton.isConnected ? selectElem._favButton : null;
+  if (wrapper) {
+    var wrapperButtons = Array.from(wrapper.querySelectorAll('.favorite-toggle'));
+    if (favoriteButton && !wrapperButtons.includes(favoriteButton)) {
+      favoriteButton = null;
+    }
+    if (!favoriteButton && wrapperButtons.length > 0) {
+      favoriteButton = wrapperButtons[0];
+    }
+    wrapperButtons.forEach(function (btn) {
+      if (btn !== favoriteButton) cleanupFavoriteButton(btn);
+    });
+  }
+  if (gearItem) {
+    Array.from(gearItem.querySelectorAll('.favorite-toggle')).filter(function (btn) {
+      return btn !== favoriteButton && btn.getAttribute('data-fav-select-id') === selectElem.id;
+    }).forEach(cleanupFavoriteButton);
+  }
+  if (!favoriteButton) {
+    favoriteButton = document.createElement('button');
+    if (wrapper) {
+      wrapper.appendChild(favoriteButton);
+    } else {
+      selectElem.after(favoriteButton);
+    }
+  } else if (wrapper && favoriteButton.parentElement !== wrapper) {
+    wrapper.appendChild(favoriteButton);
+  }
+  if (favoriteButton._favListener) {
+    favoriteButton.removeEventListener('click', favoriteButton._favListener);
+  }
+  favoriteButton.type = 'button';
+  favoriteButton.className = 'favorite-toggle';
+  favoriteButton.innerHTML = iconMarkup(ICON_GLYPHS.star, 'favorite-icon');
+  favoriteButton.setAttribute('aria-pressed', 'false');
+  favoriteButton.setAttribute('data-fav-select-id', selectElem.id);
+  var clickHandler = function clickHandler() {
+    return toggleFavorite(selectElem);
+  };
+  favoriteButton.addEventListener('click', clickHandler);
+  favoriteButton._favListener = clickHandler;
+  if (!selectElem._favChangeListener) {
+    var changeListener = function changeListener() {
+      return updateFavoriteButton(selectElem);
+    };
+    selectElem.addEventListener('change', changeListener);
+    selectElem._favChangeListener = changeListener;
+  }
+  selectElem._favButton = favoriteButton;
+  selectElem._favInit = true;
+  if (selectElem._favButton) {
+    selectElem._favButton.setAttribute('data-fav-select-id', selectElem.id);
+    selectElem._favButton.setAttribute('aria-label', texts[currentLang].favoriteToggleLabel);
+    selectElem._favButton.setAttribute('title', texts[currentLang].favoriteToggleLabel);
+    selectElem._favButton.setAttribute('data-help', texts[currentLang].favoriteToggleHelp || texts[currentLang].favoriteToggleLabel);
+  }
+  applyFavoritesToSelect(selectElem);
+  updateFavoriteButton(selectElem);
+  adjustGearListSelectWidth(selectElem);
+}
+function populateSelect(selectElem) {
+  var optionsObj = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  var includeNone = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+  if (!selectElem) return;
+  var opts = optionsObj && _typeof(optionsObj) === "object" ? optionsObj : {};
+  selectElem.innerHTML = "";
+  if (includeNone) {
+    var noneOpt = document.createElement("option");
+    noneOpt.value = "None";
+    var noneMap = {
+      de: "Keine Auswahl",
+      es: "Ninguno",
+      fr: "Aucun"
+    };
+    noneOpt.textContent = noneMap[currentLang] || "None";
+    selectElem.appendChild(noneOpt);
+  }
+  Object.keys(opts).filter(function (name) {
+    return name !== "None";
+  }).sort(localeSort).forEach(function (name) {
+    var opt = document.createElement("option");
+    opt.value = name;
+    opt.textContent = name;
+    selectElem.appendChild(opt);
+  });
+  initFavoritableSelect(selectElem);
+}
+function populateMonitorSelect() {
+  var filtered = Object.fromEntries(Object.entries(devices.monitors || {}).filter(function (_ref80) {
+    var _ref81 = _slicedToArray(_ref80, 2),
+      data = _ref81[1];
+    return !(data.wirelessRX && !data.wirelessTx);
+  }));
+  populateSelect(monitorSelect, filtered, true);
+}
+function getCompatibleCagesForCamera(cameraName) {
+  var _devices7;
+  var allCages = ((_devices7 = devices) === null || _devices7 === void 0 || (_devices7 = _devices7.accessories) === null || _devices7 === void 0 ? void 0 : _devices7.cages) || {};
+  if (!cameraName || cameraName === 'None') {
+    return allCages;
+  }
+  return Object.fromEntries(Object.entries(allCages).filter(function (_ref82) {
+    var _ref83 = _slicedToArray(_ref82, 2),
+      cage = _ref83[1];
+    if (!cage || _typeof(cage) !== 'object') {
+      return true;
+    }
+    var compat = cage.compatible;
+    if (Array.isArray(compat)) {
+      return compat.includes(cameraName);
+    }
+    if (typeof compat === 'string' && compat) {
+      return compat === cameraName;
+    }
+    return !compat;
+  }));
+}
+function applyCageSelectValue(value) {
+  if (!cageSelect) return;
+  if (typeof setSelectValue === 'function') {
+    setSelectValue(cageSelect, value);
+    return;
+  }
+  if (typeof value === 'string') {
+    cageSelect.value = value;
+    if (cageSelect.value !== value) {
+      if (value === 'None') {
+        cageSelect.value = 'None';
+      } else {
+        cageSelect.selectedIndex = -1;
+      }
+    }
+    return;
+  }
+  cageSelect.value = '';
+}
+function updateCageSelectOptions(preferredValue) {
+  if (!cageSelect) return;
+  var cameraName = cameraSelect ? cameraSelect.value : '';
+  var compatibleCages = getCompatibleCagesForCamera(cameraName);
+  var desiredValue = typeof preferredValue === 'string' ? preferredValue : cageSelect.value;
+  populateSelect(cageSelect, compatibleCages, true);
+  var hasDesired = desiredValue && desiredValue !== 'None' && Object.prototype.hasOwnProperty.call(compatibleCages, desiredValue);
+  if (hasDesired) {
+    applyCageSelectValue(desiredValue);
+    return;
+  }
+  var options = Array.from(cageSelect.options || []);
+  var noneOption = options.find(function (opt) {
+    return opt.value === 'None';
+  });
+  if (desiredValue === 'None' && noneOption) {
+    applyCageSelectValue('None');
+    return;
+  }
+  if (noneOption) {
+    applyCageSelectValue('None');
+    return;
+  }
+  var firstOption = options.find(function (opt) {
+    return opt.value && opt.value !== 'None';
+  });
+  applyCageSelectValue(firstOption ? firstOption.value : '');
+}
+function filterSelect(selectElem, filterValue) {
+  var text = filterValue.toLowerCase();
+  Array.from(selectElem.options).forEach(function (opt) {
+    if (opt.value === "None" || text === "" || opt.textContent.toLowerCase().includes(text)) {
+      opt.hidden = false;
+      opt.disabled = false;
+    } else {
+      opt.hidden = true;
+      opt.disabled = true;
+    }
+  });
+}
+function filterDeviceList(listElem, filterValue) {
+  var text = filterValue.toLowerCase();
+  Array.from(listElem.querySelectorAll('li')).forEach(function (li) {
+    var nameSpan = li.querySelector('.device-summary span');
+    var name = nameSpan ? nameSpan.textContent.toLowerCase() : '';
+    if (text === '' || name.includes(text)) {
+      li.style.display = '';
+    } else {
+      li.style.display = 'none';
+    }
+  });
+}
+function attachSelectSearch(selectElem) {
+  var searchStr = "";
+  var timer;
+  selectElem.addEventListener('keydown', function (e) {
+    if (e.key === 'Backspace') {
+      searchStr = searchStr.slice(0, -1);
+      filterSelect(selectElem, searchStr);
+      e.preventDefault();
+    } else if (e.key === 'Escape') {
+      searchStr = "";
+      filterSelect(selectElem, searchStr);
+    } else if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      searchStr += e.key.toLowerCase();
+      filterSelect(selectElem, searchStr);
+      e.preventDefault();
+    } else {
+      return;
+    }
+    clearTimeout(timer);
+    timer = setTimeout(function () {
+      searchStr = "";
+    }, 1000);
+    if (typeof timer.unref === 'function') {
+      timer.unref();
+    }
+  });
+  selectElem.addEventListener('blur', function () {
+    searchStr = "";
+    filterSelect(selectElem, "");
+  });
+}
+function bindFilterInput(inputElem, callback) {
+  if (!inputElem) {
+    return;
+  }
+  inputElem.addEventListener("input", callback);
+  inputElem.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") {
+      inputElem.value = "";
+      callback();
+    }
+  });
+  addInputClearButton(inputElem, callback);
+}
+function addInputClearButton(inputElem, callback) {
+  var label = texts[currentLang] && texts[currentLang].clearFilter || "Clear filter";
+  var btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "clear-input-btn";
+  btn.innerHTML = iconMarkup(ICON_GLYPHS.circleX, 'clear-icon');
+  btn.setAttribute("aria-label", label);
+  btn.title = label;
+  btn.hidden = true;
+  btn.addEventListener("click", function () {
+    inputElem.value = "";
+    callback();
+    inputElem.focus();
+  });
+  inputElem.insertAdjacentElement("afterend", btn);
+  var toggle = function toggle() {
+    btn.hidden = !inputElem.value;
+  };
+  inputElem.addEventListener("input", toggle);
+  toggle();
+}
+function applyFilters() {
+  deviceManagerLists.forEach(function (_ref84) {
+    var list = _ref84.list,
+      filterInput = _ref84.filterInput;
+    if (!list) return;
+    var value = filterInput ? filterInput.value : '';
+    filterDeviceList(list, value);
+  });
+}
+populateSelect(cameraSelect, devices.cameras, true);
+populateMonitorSelect();
+populateSelect(videoSelect, devices.video, true);
+updateCageSelectOptions();
+motorSelects.forEach(function (sel) {
+  return populateSelect(sel, devices.fiz.motors, true);
+});
+controllerSelects.forEach(function (sel) {
+  return populateSelect(sel, devices.fiz.controllers, true);
+});
+populateSelect(distanceSelect, devices.fiz.distance, true);
+populateSelect(batterySelect, devices.batteries, true);
+populateSelect(hotswapSelect, devices.batteryHotswaps || {}, true);
+updateBatteryPlateVisibility();
+updateBatteryOptions();
+[cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, hotswapSelect, lensSelect].forEach(function (sel) {
+  return attachSelectSearch(sel);
+});
+motorSelects.forEach(function (sel) {
+  return attachSelectSearch(sel);
+});
+controllerSelects.forEach(function (sel) {
+  return attachSelectSearch(sel);
+});
+applyFilters();
+setVideoOutputs([]);
+setMonitorVideoInputs([]);
+setMonitorVideoOutputs([]);
+setViewfinderVideoInputs([]);
+setViewfinderVideoOutputs([]);
+setFizConnectors([]);
+updateFizConnectorOptions();
+updateMotorConnectorOptions();
+updateControllerConnectorOptions();
+updateControllerPowerOptions();
+updateControllerBatteryOptions();
+updateControllerConnectivityOptions();
+updateDistanceConnectionOptions();
+updateDistanceMethodOptions();
+updateDistanceDisplayOptions();
+setViewfinders([]);
+setBatteryPlates([]);
+setRecordingMedia([]);
+updateRecordingMediaOptions();
+updatePlateTypeOptions();
+setLensMounts([]);
+updateMountTypeOptions();
+updatePowerPortOptions();
+setPowerDistribution([]);
+updatePowerDistTypeOptions();
+updatePowerDistVoltageOptions();
+updatePowerDistCurrentOptions();
+setTimecodes([]);
+updateTimecodeTypeOptions();
+updateDistanceConnectionOptions();
+updateDistanceMethodOptions();
+updateDistanceDisplayOptions();
+var noneCameraOption = Array.from(cameraSelect.options).find(function (opt) {
+  return opt.value === "None";
+});
+if (noneCameraOption) {
+  cameraSelect.value = "None";
+} else {
+  cameraSelect.selectedIndex = 0;
+}
+[monitorSelect, videoSelect, distanceSelect, batterySelect].forEach(function (sel) {
+  var noneOption = Array.from(sel.options).find(function (opt) {
+    return opt.value === "None";
+  });
+  if (noneOption) {
+    sel.value = "None";
+  } else {
+    sel.selectedIndex = 0;
+  }
+});
+motorSelects.forEach(function (sel) {
+  if (sel.options.length) sel.value = "None";
+});
+controllerSelects.forEach(function (sel) {
+  if (sel.options.length) sel.value = "None";
+});
+function renderTemperatureNote(baseHours) {
+  var container = document.getElementById("temperatureNote");
+  if (!container) return;
+  var heading = texts[currentLang].temperatureNoteHeading;
+  var html = "<p>".concat(heading, "</p>");
+  if (!baseHours || !isFinite(baseHours)) {
+    container.innerHTML = html;
+    return;
+  }
+  var temperatureHeader = getTemperatureColumnLabelForLang(currentLang, temperatureUnit);
+  html += "<table><tr><th>".concat(temperatureHeader, "</th><th>").concat(texts[currentLang].runtimeLabel, "</th><th>").concat(texts[currentLang].batteryCountTempLabel, "</th></tr>");
+  TEMPERATURE_SCENARIOS.forEach(function (scenario) {
+    var runtime = baseHours * scenario.factor;
+    var runtimeCell = Number.isFinite(runtime) ? runtime.toFixed(2) : '0.00';
+    var batteries = '–';
+    if (Number.isFinite(runtime) && runtime > 0) {
+      batteries = Math.ceil(10 / runtime);
+    }
+    var temperatureCell = formatTemperatureForDisplay(scenario.celsius);
+    html += "<tr><td style=\"color:".concat(scenario.color, "\">").concat(temperatureCell, "</td><td>").concat(runtimeCell, "</td><td>").concat(batteries, "</td></tr>");
+  });
+  html += "</table>";
+  container.innerHTML = html;
+}
+function ensureFeedbackTemperatureOptions(select) {
+  if (!select) return;
+  var expectedOptions = FEEDBACK_TEMPERATURE_MAX - FEEDBACK_TEMPERATURE_MIN + 2;
+  if (select.options.length === expectedOptions) {
+    return;
+  }
+  var previousValue = select.value;
+  select.innerHTML = '';
+  var emptyOpt = document.createElement('option');
+  emptyOpt.value = '';
+  emptyOpt.textContent = '';
+  select.appendChild(emptyOpt);
+  for (var temp = FEEDBACK_TEMPERATURE_MIN; temp <= FEEDBACK_TEMPERATURE_MAX; temp += 1) {
+    var opt = document.createElement('option');
+    opt.value = String(temp);
+    select.appendChild(opt);
+  }
+  if (previousValue) {
+    select.value = previousValue;
+  }
+}
+function updateFeedbackTemperatureOptions() {
+  var lang = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : currentLang;
+  var unit = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : temperatureUnit;
+  var tempSelect = document.getElementById('fbTemperature');
+  if (!tempSelect) return;
+  ensureFeedbackTemperatureOptions(tempSelect);
+  Array.from(tempSelect.options).forEach(function (option) {
+    if (!option) return;
+    if (option.value === '') {
+      option.textContent = '';
+      return;
+    }
+    var celsiusValue = Number(option.value);
+    if (!Number.isFinite(celsiusValue)) return;
+    option.textContent = formatTemperatureForDisplay(celsiusValue, {
+      lang: lang,
+      unit: unit,
+      includeSign: 'negative'
+    });
+  });
+}
+function updateFeedbackTemperatureLabel() {
+  var lang = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : currentLang;
+  var unit = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : temperatureUnit;
+  var labelTextElem = document.getElementById('fbTemperatureLabelText');
+  var labelElem = document.getElementById('fbTemperatureLabel');
+  var label = "".concat(getTemperatureColumnLabelForLang(lang, unit), ":");
+  if (labelTextElem) {
+    labelTextElem.textContent = label;
+  } else if (labelElem) {
+    labelElem.textContent = label;
+  }
+}
+function applyTemperatureUnitPreference(unit) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  var normalized = normalizeTemperatureUnit(unit);
+  var _ref85 = options || {},
+    _ref85$persist = _ref85.persist,
+    persist = _ref85$persist === void 0 ? true : _ref85$persist,
+    _ref85$reRender = _ref85.reRender,
+    reRender = _ref85$reRender === void 0 ? true : _ref85$reRender,
+    _ref85$forceUpdate = _ref85.forceUpdate,
+    forceUpdate = _ref85$forceUpdate === void 0 ? false : _ref85$forceUpdate;
+  if (!forceUpdate && temperatureUnit === normalized) {
+    return;
+  }
+  temperatureUnit = normalized;
+  if (persist && typeof localStorage !== 'undefined') {
+    try {
+      localStorage.setItem(TEMPERATURE_STORAGE_KEY, temperatureUnit);
+    } catch (error) {
+      console.warn('Could not save temperature unit preference', error);
+    }
+  }
+  if (typeof settingsTemperatureUnit !== 'undefined' && settingsTemperatureUnit) {
+    settingsTemperatureUnit.value = temperatureUnit;
+  }
+  if (reRender) {
+    updateFeedbackTemperatureLabel();
+    updateFeedbackTemperatureOptions();
+    renderTemperatureNote(lastRuntimeHours);
+  }
+}
+function updateCalculations() {
+  var camera = cameraSelect.value;
+  var monitor = monitorSelect.value;
+  var video = videoSelect.value;
+  var motors = motorSelects.map(function (sel) {
+    return sel.value;
+  });
+  var controllers = controllerSelects.map(function (sel) {
+    return sel.value;
+  });
+  var distance = distanceSelect.value;
+  var battery = batterySelect.value;
+  var cameraW = 0;
+  if (devices.cameras[camera] !== undefined) {
+    var camData = devices.cameras[camera];
+    cameraW = _typeof(camData) === 'object' ? camData.powerDrawWatts || 0 : camData;
+  }
+  var monitorW = 0;
+  if (devices.monitors[monitor] !== undefined) {
+    var mData = devices.monitors[monitor];
+    monitorW = _typeof(mData) === 'object' ? mData.powerDrawWatts || 0 : mData;
+  }
+  var videoW = 0;
+  if (devices.video[video] !== undefined) {
+    var vData = devices.video[video];
+    videoW = _typeof(vData) === 'object' ? vData.powerDrawWatts || 0 : vData;
+  }
+  var motorsW = 0;
+  motors.forEach(function (m) {
+    if (devices.fiz.motors[m] !== undefined) {
+      var d = devices.fiz.motors[m];
+      motorsW += _typeof(d) === 'object' ? d.powerDrawWatts || 0 : d;
+    }
+  });
+  var controllersW = 0;
+  controllers.forEach(function (c) {
+    if (devices.fiz.controllers[c] !== undefined) {
+      var d = devices.fiz.controllers[c];
+      controllersW += _typeof(d) === 'object' ? d.powerDrawWatts || 0 : d;
+    }
+  });
+  var distanceW = 0;
+  if (devices.fiz.distance[distance] !== undefined) {
+    var d = devices.fiz.distance[distance];
+    distanceW = _typeof(d) === 'object' ? d.powerDrawWatts || 0 : d;
+  }
+  var totalWatt = cameraW + monitorW + videoW + motorsW + controllersW + distanceW;
+  totalPowerElem.textContent = totalWatt.toFixed(1);
+  var segments = [{
+    power: cameraW,
+    className: "camera",
+    label: texts[currentLang].cameraLabel
+  }, {
+    power: monitorW,
+    className: "monitor",
+    label: texts[currentLang].monitorLabel
+  }, {
+    power: videoW,
+    className: "video",
+    label: texts[currentLang].videoLabel
+  }, {
+    power: motorsW,
+    className: "motors",
+    label: texts[currentLang].fizMotorsLabel
+  }, {
+    power: controllersW,
+    className: "controllers",
+    label: texts[currentLang].fizControllersLabel
+  }, {
+    power: distanceW,
+    className: "distance",
+    label: texts[currentLang].distanceLabel
+  }].filter(function (s) {
+    return s.power > 0;
+  });
+  breakdownListElem.innerHTML = "";
+  if (cameraW > 0) {
+    var li = document.createElement("li");
+    li.innerHTML = "<strong>".concat(texts[currentLang].cameraLabel, "</strong> ").concat(cameraW.toFixed(1), " W");
+    breakdownListElem.appendChild(li);
+  }
+  if (monitorW > 0) {
+    var _li = document.createElement("li");
+    _li.innerHTML = "<strong>".concat(texts[currentLang].monitorLabel, "</strong> ").concat(monitorW.toFixed(1), " W");
+    breakdownListElem.appendChild(_li);
+  }
+  if (videoW > 0) {
+    var _li2 = document.createElement("li");
+    _li2.innerHTML = "<strong>".concat(texts[currentLang].videoLabel, "</strong> ").concat(videoW.toFixed(1), " W");
+    breakdownListElem.appendChild(_li2);
+  }
+  if (motorsW > 0) {
+    var _li3 = document.createElement("li");
+    _li3.innerHTML = "<strong>".concat(texts[currentLang].fizMotorsLabel, "</strong> ").concat(motorsW.toFixed(1), " W");
+    breakdownListElem.appendChild(_li3);
+  }
+  if (controllersW > 0) {
+    var _li4 = document.createElement("li");
+    _li4.innerHTML = "<strong>".concat(texts[currentLang].fizControllersLabel, "</strong> ").concat(controllersW.toFixed(1), " W");
+    breakdownListElem.appendChild(_li4);
+  }
+  if (distanceW > 0) {
+    var _li5 = document.createElement("li");
+    _li5.innerHTML = "<strong>".concat(texts[currentLang].distanceLabel, "</strong> ").concat(distanceW.toFixed(1), " W");
+    breakdownListElem.appendChild(_li5);
+  }
+  var bMountCam = getSelectedPlate() === 'B-Mount';
+  var highV = bMountCam ? 33.6 : 14.4;
+  var lowV = bMountCam ? 21.6 : 12.0;
+  var totalCurrentHigh = 0;
+  var totalCurrentLow = 0;
+  if (totalWatt > 0) {
+    totalCurrentHigh = totalWatt / highV;
+    totalCurrentLow = totalWatt / lowV;
+  }
+  var currentHighLabel = document.getElementById("totalCurrent144Label");
+  currentHighLabel.textContent = bMountCam ? texts[currentLang].totalCurrent336Label : texts[currentLang].totalCurrent144Label;
+  currentHighLabel.setAttribute("data-help", bMountCam ? texts[currentLang].totalCurrent336Help : texts[currentLang].totalCurrent144Help);
+  var currentLowLabel = document.getElementById("totalCurrent12Label");
+  currentLowLabel.textContent = bMountCam ? texts[currentLang].totalCurrent216Label : texts[currentLang].totalCurrent12Label;
+  currentLowLabel.setAttribute("data-help", bMountCam ? texts[currentLang].totalCurrent216Help : texts[currentLang].totalCurrent12Help);
+  totalCurrent144Elem.textContent = totalCurrentHigh.toFixed(2);
+  totalCurrent12Elem.textContent = totalCurrentLow.toFixed(2);
+  updateBatteryOptions();
+  battery = batterySelect.value;
+  var hours = null;
+  if (!battery || battery === "None" || !devices.batteries[battery]) {
+    batteryLifeElem.textContent = "–";
+    batteryCountElem.textContent = "–";
+    setStatusMessage(pinWarnElem, '');
+    setStatusLevel(pinWarnElem, null);
+    setStatusMessage(dtapWarnElem, '');
+    setStatusLevel(dtapWarnElem, null);
+    if (hotswapWarnElem) {
+      setStatusMessage(hotswapWarnElem, '');
+      setStatusLevel(hotswapWarnElem, null);
+    }
+    closePowerWarningDialog();
+    lastRuntimeHours = null;
+    drawPowerDiagram(0, segments, 0);
+  } else {
+    var battData = devices.batteries[battery];
+    var hsName = hotswapSelect.value;
+    var hsData = devices.batteryHotswaps && devices.batteryHotswaps[hsName];
+    var capacityWh = battData.capacity + ((hsData === null || hsData === void 0 ? void 0 : hsData.capacity) || 0);
+    var maxPinA = battData.pinA;
+    var maxDtapA = battData.dtapA;
+    if (hsData && typeof hsData.pinA === 'number') {
+      if (hsData.pinA < maxPinA) {
+        setStatusMessage(hotswapWarnElem, texts[currentLang].warnHotswapLower.replace("{max}", hsData.pinA).replace("{batt}", battData.pinA));
+        setStatusLevel(hotswapWarnElem, 'warning');
+        maxPinA = hsData.pinA;
+      } else {
+        setStatusMessage(hotswapWarnElem, '');
+        setStatusLevel(hotswapWarnElem, null);
+      }
+    } else {
+      if (hotswapWarnElem) {
+        setStatusMessage(hotswapWarnElem, '');
+        setStatusLevel(hotswapWarnElem, null);
+      }
+    }
+    var availableWatt = maxPinA * lowV;
+    drawPowerDiagram(availableWatt, segments, maxPinA);
+    totalCurrent144Elem.textContent = totalCurrentHigh.toFixed(2);
+    totalCurrent12Elem.textContent = totalCurrentLow.toFixed(2);
+    if (totalWatt === 0) {
+      hours = Infinity;
+      batteryLifeElem.textContent = "∞";
+    } else {
+      hours = capacityWh / totalWatt;
+      batteryLifeElem.textContent = hours.toFixed(2);
+    }
+    lastRuntimeHours = hours;
+    var batteriesNeeded = 1;
+    if (Number.isFinite(hours) && hours > 0) {
+      batteriesNeeded = Math.max(1, Math.ceil(10 / hours));
+    }
+    batteryCountElem.textContent = batteriesNeeded.toString();
+    setStatusMessage(pinWarnElem, '');
+    setStatusMessage(dtapWarnElem, '');
+    var pinSeverity = "";
+    var dtapSeverity = "";
+    if (totalCurrentLow > maxPinA) {
+      setStatusMessage(pinWarnElem, texts[currentLang].warnPinExceeded.replace("{current}", totalCurrentLow.toFixed(2)).replace("{max}", maxPinA));
+      pinSeverity = 'danger';
+    } else if (totalCurrentLow > maxPinA * 0.8) {
+      setStatusMessage(pinWarnElem, texts[currentLang].warnPinNear.replace("{current}", totalCurrentLow.toFixed(2)).replace("{max}", maxPinA));
+      pinSeverity = 'warning';
+    }
+    if (!bMountCam) {
+      if (totalCurrentLow > maxDtapA) {
+        setStatusMessage(dtapWarnElem, texts[currentLang].warnDTapExceeded.replace("{current}", totalCurrentLow.toFixed(2)).replace("{max}", maxDtapA));
+        dtapSeverity = 'danger';
+      } else if (totalCurrentLow > maxDtapA * 0.8) {
+        setStatusMessage(dtapWarnElem, texts[currentLang].warnDTapNear.replace("{current}", totalCurrentLow.toFixed(2)).replace("{max}", maxDtapA));
+        dtapSeverity = 'warning';
+      }
+    }
+    var hasPinLimit = typeof maxPinA === 'number' && maxPinA > 0;
+    var pinsInsufficient = !hasPinLimit || totalCurrentLow > maxPinA;
+    var hasDtapRating = typeof maxDtapA === 'number' && maxDtapA > 0;
+    var dtapAllowed = !bMountCam && hasDtapRating;
+    var dtapInsufficient = !dtapAllowed || hasDtapRating && totalCurrentLow > maxDtapA;
+    if (totalCurrentLow > 0 && pinsInsufficient && dtapInsufficient) {
+      var option = batterySelect && batterySelect.options ? batterySelect.options[batterySelect.selectedIndex] : null;
+      var labelText = option && typeof option.textContent === 'string' ? option.textContent.trim() : String(battery || '');
+      showPowerWarningDialog({
+        batteryName: labelText,
+        current: totalCurrentLow,
+        hasPinLimit: hasPinLimit,
+        pinLimit: hasPinLimit ? maxPinA : null,
+        hasDtapRating: hasDtapRating,
+        dtapLimit: hasDtapRating ? maxDtapA : null,
+        dtapAllowed: dtapAllowed
+      });
+    } else {
+      closePowerWarningDialog();
+    }
+    if (pinWarnElem.textContent === "") {
+      setStatusMessage(pinWarnElem, texts[currentLang].pinOk.replace("{max}", maxPinA));
+      setStatusLevel(pinWarnElem, 'success');
+    } else {
+      setStatusLevel(pinWarnElem, pinSeverity || 'warning');
+    }
+    if (!bMountCam) {
+      if (dtapWarnElem.textContent === "") {
+        setStatusMessage(dtapWarnElem, texts[currentLang].dtapOk.replace("{max}", maxDtapA));
+        setStatusLevel(dtapWarnElem, 'success');
+      } else {
+        setStatusLevel(dtapWarnElem, dtapSeverity || 'warning');
+      }
+    } else {
+      setStatusMessage(dtapWarnElem, '');
+      setStatusLevel(dtapWarnElem, null);
+    }
+  }
+  if (totalWatt > 0) {
+    var selectedBatteryName = batterySelect.value;
+    var camName = cameraSelect.value;
+    var plateFilter = getSelectedPlate();
+    var supportsB = supportsBMountCamera(camName);
+    var supportsGold = supportsGoldMountCamera(camName);
+    var selectedCandidate = null;
+    if (selectedBatteryName && selectedBatteryName !== "None" && devices.batteries[selectedBatteryName]) {
+      var selData = devices.batteries[selectedBatteryName];
+      if ((!plateFilter || selData.mount_type === plateFilter) && (supportsB || selData.mount_type !== 'B-Mount') && (supportsGold || selData.mount_type !== 'Gold-Mount')) {
+        var pinOK_sel = totalCurrentLow <= selData.pinA;
+        var dtapOK_sel = !bMountCam && totalCurrentLow <= selData.dtapA;
+        if (pinOK_sel || dtapOK_sel) {
+          var selHours = selData.capacity / totalWatt;
+          var selMethod;
+          if (pinOK_sel && dtapOK_sel) selMethod = "both pins and D-Tap";else if (pinOK_sel) selMethod = "pins";else selMethod = "dtap";
+          selectedCandidate = {
+            name: selectedBatteryName,
+            hours: selHours,
+            method: selMethod
+          };
+        }
+      }
+    }
+    var pinsCandidates = [];
+    var dtapCandidates = [];
+    for (var battName in devices.batteries) {
+      if (battName === "None") continue;
+      if (selectedCandidate && battName === selectedCandidate.name) continue;
+      var _battData = devices.batteries[battName];
+      if (plateFilter && _battData.mount_type !== plateFilter) continue;
+      if (!plateFilter && !supportsB && _battData.mount_type === 'B-Mount') continue;
+      if (!plateFilter && !supportsGold && _battData.mount_type === 'Gold-Mount') continue;
+      var canPin = totalCurrentLow <= _battData.pinA;
+      var canDTap = !bMountCam && totalCurrentLow <= _battData.dtapA;
+      if (canPin) {
+        var _hours = _battData.capacity / totalWatt;
+        var method = canDTap ? "both pins and D-Tap" : "pins";
+        pinsCandidates.push({
+          name: battName,
+          hours: _hours,
+          method: method
+        });
+      } else if (canDTap) {
+        var _hours2 = _battData.capacity / totalWatt;
+        dtapCandidates.push({
+          name: battName,
+          hours: _hours2,
+          method: "dtap"
+        });
+      }
+    }
+    var sortByHoursThenName = function sortByHoursThenName(a, b) {
+      var diff = b.hours - a.hours;
+      return diff !== 0 ? diff : collator.compare(a.name, b.name);
+    };
+    pinsCandidates.sort(sortByHoursThenName);
+    dtapCandidates.sort(sortByHoursThenName);
+    var tableHtml = "<tr><th>".concat(texts[currentLang].batteryTableLabel, "</th><th>").concat(texts[currentLang].runtimeLabel, "</th><th></th></tr>");
+    if ((selectedCandidate ? 1 : 0) + pinsCandidates.length + dtapCandidates.length === 0) {
+      tableHtml += "<tr><td colspan=\"3\">".concat(texts[currentLang].noBatterySupports, "</td></tr>");
+    } else {
+      var allCandidatesForMax = (selectedCandidate ? [selectedCandidate] : []).concat(pinsCandidates, dtapCandidates);
+      var maxHours = Math.max.apply(Math, _toConsumableArray(allCandidatesForMax.map(function (c) {
+        return c.hours;
+      }))) || 1;
+      var getBarClass = function getBarClass(method) {
+        return method === "pins" ? "bar bar-pins-only" : "bar";
+      };
+      var getMethodLabel = function getMethodLabel(method) {
+        var colorMap = {
+          pins: {
+            var: '--warning-color',
+            fallback: '#FF9800',
+            text: texts[currentLang].methodPinsOnly
+          },
+          'both pins and D-Tap': {
+            var: '--success-color',
+            fallback: '#4CAF50',
+            text: texts[currentLang].methodPinsAndDTap
+          },
+          infinite: {
+            var: '--info-color',
+            fallback: '#007bff',
+            text: texts[currentLang].methodInfinite
+          }
+        };
+        var entry = colorMap[method];
+        if (entry) {
+          var color = getCssVariableValue(entry.var, entry.fallback);
+          return "<span style=\"color:".concat(color, ";\">").concat(entry.text, "</span>");
+        }
+        return method;
+      };
+      if (selectedCandidate) {
+        tableHtml += "<tr class=\"selectedBatteryRow\">\n                        <td>".concat(escapeHtml(selectedCandidate.name), "</td>\n                        <td>").concat(selectedCandidate.hours.toFixed(2), "h (").concat(getMethodLabel(selectedCandidate.method), ")</td>\n                        <td>\n                          <div class=\"barContainer\">\n                            <div class=\"").concat(getBarClass(selectedCandidate.method), "\" style=\"width: ").concat(selectedCandidate.hours / maxHours * 100, "%;\"></div>\n                          </div>\n                        </td>\n                      </tr>");
+      }
+      pinsCandidates.forEach(function (candidate) {
+        if (selectedCandidate && candidate.name === selectedCandidate.name) return;
+        tableHtml += "<tr>\n                        <td>".concat(escapeHtml(candidate.name), "</td>\n                        <td>").concat(candidate.hours.toFixed(2), "h (").concat(getMethodLabel(candidate.method), ")</td>\n                        <td>\n                          <div class=\"barContainer\">\n                            <div class=\"").concat(getBarClass(candidate.method), "\" style=\"width: ").concat(candidate.hours / maxHours * 100, "%;\"></div>\n                          </div>\n                        </td>\n                      </tr>");
+      });
+      dtapCandidates.forEach(function (candidate) {
+        if (selectedCandidate && candidate.name === selectedCandidate.name) return;
+        var alreadyInPins = pinsCandidates.some(function (p) {
+          return p.name === candidate.name;
+        });
+        if (!alreadyInPins) {
+          tableHtml += "<tr>\n                            <td>".concat(escapeHtml(candidate.name), "</td>\n                            <td>").concat(candidate.hours.toFixed(2), "h (").concat(getMethodLabel(candidate.method), ")</td>\n                            <td>\n                              <div class=\"barContainer\">\n                                <div class=\"").concat(getBarClass(candidate.method), "\" style=\"width: ").concat(candidate.hours / maxHours * 100, "%;\"></div>\n                              </div>\n                            </td>\n                          </tr>");
+        }
+      });
+    }
+    batteryTableElem.innerHTML = tableHtml;
+    batteryComparisonSection.style.display = "block";
+  } else {
+    batteryComparisonSection.style.display = "none";
+  }
+  var feedback = renderFeedbackTable(getCurrentSetupKey());
+  if (feedback !== null) {
+    var combinedRuntime = feedback.runtime;
+    if (Number.isFinite(hours)) {
+      combinedRuntime = (feedback.runtime * feedback.weight + hours) / (feedback.weight + 1);
+    }
+    batteryLifeElem.textContent = combinedRuntime.toFixed(2);
+    lastRuntimeHours = combinedRuntime;
+    if (batteryLifeLabelElem) {
+      var label = texts[currentLang].batteryLifeLabel;
+      var userNote = texts[currentLang].runtimeUserCountNote.replace('{count}', feedback.count);
+      var idx = label.indexOf(')');
+      if (idx !== -1) {
+        label = "".concat(label.slice(0, idx), ", ").concat(userNote).concat(label.slice(idx));
+      }
+      batteryLifeLabelElem.textContent = label;
+      batteryLifeLabelElem.setAttribute("data-help", texts[currentLang].batteryLifeHelp);
+    }
+    if (runtimeAverageNoteElem) {
+      runtimeAverageNoteElem.textContent = feedback.count > 4 ? texts[currentLang].runtimeAverageNote : '';
+    }
+    var _batteriesNeeded = 1;
+    if (Number.isFinite(combinedRuntime) && combinedRuntime > 0) {
+      _batteriesNeeded = Math.max(1, Math.ceil(10 / combinedRuntime));
+    }
+    batteryCountElem.textContent = _batteriesNeeded.toString();
+  } else {
+    if (batteryLifeLabelElem) {
+      batteryLifeLabelElem.textContent = texts[currentLang].batteryLifeLabel;
+      batteryLifeLabelElem.setAttribute("data-help", texts[currentLang].batteryLifeHelp);
+    }
+    if (runtimeAverageNoteElem) {
+      runtimeAverageNoteElem.textContent = '';
+    }
+  }
+  renderTemperatureNote(lastRuntimeHours);
+  checkFizCompatibility();
+  checkFizController();
+  checkArriCompatibility();
+  if (setupDiagramContainer) renderSetupDiagram();
+  refreshGearListIfVisible();
+}
+function getCurrentSetupKey() {
+  var camera = cameraSelect.value || '';
+  var monitor = monitorSelect.value || '';
+  var video = videoSelect.value || '';
+  var cage = cageSelect ? cageSelect.value : '';
+  var motors = motorSelects.map(function (sel) {
+    return sel.value;
+  }).filter(function (v) {
+    return v && v !== 'None';
+  }).sort().join(',');
+  var controllers = controllerSelects.map(function (sel) {
+    return sel.value;
+  }).filter(function (v) {
+    return v && v !== 'None';
+  }).sort().join(',');
+  var distance = distanceSelect.value || '';
+  var battery = batterySelect.value || '';
+  var hotswap = hotswapSelect.value || '';
+  var plate = getSelectedPlate() || '';
+  return [camera, monitor, video, cage, motors, controllers, distance, battery, hotswap, plate].join('|');
+}
+function deleteFeedbackEntry(key, index) {
+  var feedbackData = loadFeedbackSafe();
+  if (feedbackData[key]) {
+    feedbackData[key].splice(index, 1);
+    if (!feedbackData[key].length) {
+      delete feedbackData[key];
+    }
+    saveFeedbackSafe(feedbackData);
+    updateCalculations();
+  }
+}
+function renderFeedbackTable(currentKey) {
+  var _devices8, _devices9, _devices0, _devices11, _devices12, _texts$currentLang108, _texts$en391;
+  var container = document.getElementById('feedbackTableContainer');
+  var table = document.getElementById('userFeedbackTable');
+  var feedbackData = loadFeedbackSafe();
+  var entries = (feedbackData[currentKey] || []).map(function (entry) {
+    var rest = _objectSpread({}, entry);
+    delete rest.location;
+    return rest;
+  });
+  if (!entries.length) {
+    if (table) {
+      table.innerHTML = '';
+      table.classList.add('hidden');
+    }
+    if (container) container.classList.add('hidden');
+    return null;
+  }
+  var columns = [{
+    key: 'username',
+    label: 'User'
+  }, {
+    key: 'date',
+    label: 'Date'
+  }, {
+    key: 'cameraWifi',
+    label: 'WIFI'
+  }, {
+    key: 'resolution',
+    label: 'Res'
+  }, {
+    key: 'codec',
+    label: 'Codec'
+  }, {
+    key: 'framerate',
+    label: 'FPS'
+  }, {
+    key: 'firmware',
+    label: 'Firmware'
+  }, {
+    key: 'batteryAge',
+    label: 'Battery Age'
+  }, {
+    key: 'monitorBrightness',
+    label: 'Monitor Brightness'
+  }, {
+    key: 'temperature',
+    label: 'temp'
+  }, {
+    key: 'charging',
+    label: 'Charging'
+  }, {
+    key: 'runtime',
+    label: 'runtime'
+  }, {
+    key: 'batteriesPerDay',
+    label: 'batteries a day'
+  }, {
+    key: 'weighting',
+    label: 'weight'
+  }];
+  var parseResolution = function parseResolution(str) {
+    if (!str) return null;
+    var s = String(str).toLowerCase();
+    var kMatch = s.match(/(\d+(?:\.\d+)?)\s*k/);
+    if (kMatch) return parseFloat(kMatch[1]) * 1000;
+    var pMatch = s.match(/(\d{3,4})p/);
+    if (pMatch) return parseInt(pMatch[1], 10);
+    var xMatch = s.match(/x\s*(\d{3,4})/);
+    if (xMatch) return parseInt(xMatch[1], 10);
+    var numMatch = s.match(/(\d{3,4})/);
+    return numMatch ? parseInt(numMatch[1], 10) : null;
+  };
+  var parseFramerate = function parseFramerate(str) {
+    if (!str) return null;
+    var m = String(str).match(/\d+(?:\.\d+)?/);
+    return m ? parseFloat(m[0]) : null;
+  };
+  var tempFactor = function tempFactor(temp) {
+    if (Number.isNaN(temp)) return 1;
+    if (temp >= 25) return 1;
+    if (temp >= 0) return 1 + (25 - temp) * 0.01;
+    if (temp >= -10) return 1.25 + -temp * 0.035;
+    if (temp >= -20) return 1.6 + (-10 - temp) * 0.04;
+    return 2;
+  };
+  var resolutionWeight = function resolutionWeight(res) {
+    if (res >= 12000) return 3;
+    if (res >= 8000) return 2;
+    if (res >= 4000) return 1.5;
+    if (res >= 1080) return 1;
+    return res / 1080;
+  };
+  var codecWeight = function codecWeight(codec) {
+    if (!codec) return 1;
+    var c = String(codec).toLowerCase();
+    if (/(prores\s*raw|braw|arriraw|r3d|redcode|cinema\s*dng|cdng|canon\s*raw|x-ocn|raw)/.test(c)) return 1;
+    if (/prores/.test(c)) return 1.1;
+    if (/dnx|avid/.test(c)) return 1.2;
+    if (/\ball[\s-]?i\b|all\s*intra|intra/.test(c)) return 1.3;
+    if (/h265|h\.265|hevc|xavc\s*hs|xhevc/.test(c)) return 1.7;
+    if (/h264|h\.264|avc|xavc|avchd|mpeg-4/.test(c)) return 1.5;
+    return 1;
+  };
+  var camPower = ((_devices8 = devices) === null || _devices8 === void 0 || (_devices8 = _devices8.cameras) === null || _devices8 === void 0 || (_devices8 = _devices8[cameraSelect === null || cameraSelect === void 0 ? void 0 : cameraSelect.value]) === null || _devices8 === void 0 ? void 0 : _devices8.powerDrawWatts) || 0;
+  var monitorPower = ((_devices9 = devices) === null || _devices9 === void 0 || (_devices9 = _devices9.monitors) === null || _devices9 === void 0 || (_devices9 = _devices9[monitorSelect === null || monitorSelect === void 0 ? void 0 : monitorSelect.value]) === null || _devices9 === void 0 ? void 0 : _devices9.powerDrawWatts) || 0;
+  var videoPower = ((_devices0 = devices) === null || _devices0 === void 0 || (_devices0 = _devices0.video) === null || _devices0 === void 0 || (_devices0 = _devices0[videoSelect === null || videoSelect === void 0 ? void 0 : videoSelect.value]) === null || _devices0 === void 0 ? void 0 : _devices0.powerDrawWatts) || 0;
+  var motorPower = motorSelects.reduce(function (sum, sel) {
+    var _devices1;
+    return sum + (((_devices1 = devices) === null || _devices1 === void 0 || (_devices1 = _devices1.fiz) === null || _devices1 === void 0 || (_devices1 = _devices1.motors) === null || _devices1 === void 0 || (_devices1 = _devices1[sel.value]) === null || _devices1 === void 0 ? void 0 : _devices1.powerDrawWatts) || 0);
+  }, 0);
+  var controllerPower = controllerSelects.reduce(function (sum, sel) {
+    var _devices10;
+    return sum + (((_devices10 = devices) === null || _devices10 === void 0 || (_devices10 = _devices10.fiz) === null || _devices10 === void 0 || (_devices10 = _devices10.controllers) === null || _devices10 === void 0 || (_devices10 = _devices10[sel.value]) === null || _devices10 === void 0 ? void 0 : _devices10.powerDrawWatts) || 0);
+  }, 0);
+  var distancePower = ((_devices11 = devices) === null || _devices11 === void 0 || (_devices11 = _devices11.fiz) === null || _devices11 === void 0 || (_devices11 = _devices11.distance) === null || _devices11 === void 0 || (_devices11 = _devices11[distanceSelect === null || distanceSelect === void 0 ? void 0 : distanceSelect.value]) === null || _devices11 === void 0 ? void 0 : _devices11.powerDrawWatts) || 0;
+  var otherPower = videoPower + motorPower + controllerPower + distancePower;
+  var totalPower = camPower + monitorPower + otherPower;
+  var specBrightness = (_devices12 = devices) === null || _devices12 === void 0 || (_devices12 = _devices12.monitors) === null || _devices12 === void 0 || (_devices12 = _devices12[monitorSelect === null || monitorSelect === void 0 ? void 0 : monitorSelect.value]) === null || _devices12 === void 0 ? void 0 : _devices12.brightnessNits;
+  var weightedSum = 0;
+  var weightTotal = 0;
+  var count = 0;
+  var breakdown = entries.map(function (e) {
+    var rt = parseFloat(e.runtime);
+    if (Number.isNaN(rt)) return null;
+    var camFactor = 1;
+    var monitorFactor = 1;
+    var res = parseResolution(e.resolution);
+    if (res) camFactor *= resolutionWeight(res);
+    var fps = parseFramerate(e.framerate);
+    if (fps) camFactor *= fps / 24;
+    var wifi = (e.cameraWifi || '').toLowerCase();
+    if (wifi.includes('on')) camFactor *= 1.1;
+    var codec = e.codec;
+    if (codec) camFactor *= codecWeight(codec);
+    var entryBrightness = parseFloat(e.monitorBrightness);
+    if (!Number.isNaN(entryBrightness) && specBrightness) {
+      var ratio = entryBrightness / specBrightness;
+      if (ratio < 1) monitorFactor *= ratio;
+    }
+    var weight = 1;
+    if (totalPower > 0) {
+      weight = (camFactor * camPower + monitorFactor * monitorPower + otherPower) / totalPower;
+    }
+    var temp = parseFloat(e.temperature);
+    var tempMul = tempFactor(temp);
+    var adjustedRuntime = rt * tempMul;
+    weightedSum += adjustedRuntime * weight;
+    weightTotal += weight;
+    count++;
+    return {
+      temperature: tempMul,
+      resolution: res ? resolutionWeight(res) : 1,
+      framerate: fps ? fps / 24 : 1,
+      wifi: wifi.includes('on') ? 1.1 : 1,
+      codec: codec ? codecWeight(codec) : 1,
+      monitor: monitorFactor,
+      weight: weight
+    };
+  });
+  var maxWeight = Math.max.apply(Math, _toConsumableArray(breakdown.filter(Boolean).map(function (b) {
+    return b.weight;
+  })).concat([0]));
+  var html = '<tr>' + columns.map(function (c) {
+    return "<th>".concat(escapeHtml(c.label), "</th>");
+  }).join('') + '<th></th></tr>';
+  var deleteFeedbackLabel = ((_texts$currentLang108 = texts[currentLang]) === null || _texts$currentLang108 === void 0 ? void 0 : _texts$currentLang108.deleteSetupBtn) || ((_texts$en391 = texts.en) === null || _texts$en391 === void 0 ? void 0 : _texts$en391.deleteSetupBtn) || 'Delete';
+  entries.forEach(function (entry, index) {
+    html += '<tr>';
+    columns.forEach(function (c) {
+      if (c.key === 'weighting') {
+        var b = breakdown[index];
+        if (b) {
+          var percent = maxWeight ? b.weight / maxWeight * 100 : 0;
+          var share = b.weight * 100;
+          var tooltip = "Temp \xD7".concat(b.temperature.toFixed(2), "\n") + "Res \xD7".concat(b.resolution.toFixed(2), "\n") + "FPS \xD7".concat(b.framerate.toFixed(2), "\n") + "Codec \xD7".concat(b.codec.toFixed(2), "\n") + "Wi-Fi \xD7".concat(b.wifi.toFixed(2), "\n") + "Monitor \xD7".concat(b.monitor.toFixed(2), "\n") + "Share ".concat(share.toFixed(1), "%");
+          html += "<td><div class=\"weightingRow\"><div class=\"barContainer\"><div class=\"weightBar\" style=\"width:".concat(percent, "%\" title=\"").concat(escapeHtml(tooltip), "\"></div></div><span class=\"weightingPercent\">").concat(share.toFixed(1), "%</span></div></td>");
+        } else {
+          html += '<td></td>';
+        }
+      } else if (c.key === 'date') {
+        html += "<td>".concat(escapeHtml(formatDateString(entry[c.key])), "</td>");
+      } else {
+        html += "<td>".concat(escapeHtml(entry[c.key] || ''), "</td>");
+      }
+    });
+    html += "<td><button data-key=\"".concat(encodeURIComponent(currentKey), "\" data-index=\"").concat(index, "\" class=\"deleteFeedbackBtn\">").concat(iconMarkup(ICON_GLYPHS.trash, 'btn-icon')).concat(escapeHtml(deleteFeedbackLabel), "</button></td>");
+    html += '</tr>';
+  });
+  table.innerHTML = html;
+  table.classList.remove('hidden');
+  if (container) container.classList.remove('hidden');
+  table.querySelectorAll('.deleteFeedbackBtn').forEach(function (btn) {
+    btn.setAttribute('aria-label', deleteFeedbackLabel);
+    btn.setAttribute('title', deleteFeedbackLabel);
+    btn.addEventListener('click', function () {
+      var key = decodeURIComponent(btn.dataset.key);
+      var idx = parseInt(btn.dataset.index, 10);
+      deleteFeedbackEntry(key, idx);
+    });
+  });
+  if (count >= 3 && weightTotal > 0) {
+    return {
+      runtime: weightedSum / weightTotal,
+      count: count,
+      weight: weightTotal
+    };
+  }
+  return null;
+}
+function getDeviceChanges() {
+  if (!window.defaultDevices) return {};
+  var diff = {};
+  var record = function record(cat, name, val, sub) {
+    if (sub) {
+      diff.fiz = diff.fiz || {};
+      diff.fiz[sub] = diff.fiz[sub] || {};
+      diff.fiz[sub][name] = val;
+    } else {
+      diff[cat] = diff[cat] || {};
+      diff[cat][name] = val;
+    }
+  };
+  var compare = function compare(cat, defCat, curCat, sub) {
+    Object.keys(curCat).forEach(function (name) {
+      var cur = curCat[name];
+      var def = defCat[name];
+      if (!def || JSON.stringify(cur) !== JSON.stringify(def)) {
+        record(cat, name, cur, sub);
+      }
+    });
+    Object.keys(defCat).forEach(function (name) {
+      if (!curCat[name]) record(cat, name, null, sub);
+    });
+  };
+  compare('cameras', window.defaultDevices.cameras || {}, devices.cameras || {});
+  compare('viewfinders', window.defaultDevices.viewfinders || {}, devices.viewfinders || {});
+  compare('monitors', window.defaultDevices.monitors || {}, devices.monitors || {});
+  compare('video', window.defaultDevices.video || {}, devices.video || {});
+  compare('batteries', window.defaultDevices.batteries || {}, devices.batteries || {});
+  compare('batteryHotswaps', window.defaultDevices.batteryHotswaps || {}, devices.batteryHotswaps || {});
+  ['motors', 'controllers', 'distance'].forEach(function (sub) {
+    var defCat = window.defaultDevices.fiz ? window.defaultDevices.fiz[sub] || {} : {};
+    var curCat = devices.fiz ? devices.fiz[sub] || {} : {};
+    compare('fiz', defCat, curCat, sub);
+    if (diff.fiz && diff.fiz[sub] && !Object.keys(diff.fiz[sub]).length) {
+      delete diff.fiz[sub];
+    }
+  });
+  if (diff.fiz && !Object.keys(diff.fiz).length) delete diff.fiz;
+  Object.keys(diff).forEach(function (cat) {
+    if (cat !== 'fiz' && !Object.keys(diff[cat]).length) delete diff[cat];
+  });
+  return diff;
+}
+function applyDeviceChanges(changes) {
+  if (!changes || _typeof(changes) !== 'object') return;
+  var applyToCategory = function applyToCategory(target, delta) {
+    Object.keys(delta).forEach(function (name) {
+      var val = delta[name];
+      if (val === null) {
+        delete target[name];
+      } else {
+        target[name] = val;
+      }
+    });
+  };
+  Object.keys(changes).forEach(function (cat) {
+    if (cat === 'fiz') {
+      Object.keys(changes.fiz || {}).forEach(function (sub) {
+        devices.fiz[sub] = devices.fiz[sub] || {};
+        applyToCategory(devices.fiz[sub], changes.fiz[sub]);
+      });
+    } else {
+      devices[cat] = devices[cat] || {};
+      applyToCategory(devices[cat], changes[cat]);
+    }
+  });
+  unifyDevices(devices);
+  storeDevices(devices);
+  refreshDeviceLists();
+  populateSelect(cameraSelect, devices.cameras, true);
+  populateMonitorSelect();
+  populateSelect(videoSelect, devices.video, true);
+  updateCageSelectOptions();
+  motorSelects.forEach(function (sel) {
+    return populateSelect(sel, devices.fiz.motors, true);
+  });
+  controllerSelects.forEach(function (sel) {
+    return populateSelect(sel, devices.fiz.controllers, true);
+  });
+  populateSelect(distanceSelect, devices.fiz.distance, true);
+  populateSelect(batterySelect, devices.batteries, true);
+  updateFizConnectorOptions();
+  updateMotorConnectorOptions();
+  updateControllerConnectorOptions();
+  updateControllerPowerOptions();
+  updateControllerBatteryOptions();
+  updateControllerConnectivityOptions();
+  updateDistanceConnectionOptions();
+  updateDistanceMethodOptions();
+  updateDistanceDisplayOptions();
+}
+function renderSetupDiagram() {
+  var _devices$batteries$ba2, _cam$videoOutputs;
+  if (!setupDiagramContainer) return;
+  var isTouchDevice = (navigator.maxTouchPoints || 0) > 0;
+  var camName = cameraSelect.value;
+  var cam = devices.cameras[camName];
+  var monitorName = monitorSelect.value;
+  var monitor = devices.monitors[monitorName];
+  var videoName = videoSelect.value;
+  var video = devices.video[videoName];
+  var batteryName = batterySelect.value;
+  var distanceName = distanceSelect.value;
+  var motors = motorSelects.map(function (sel) {
+    return sel.value;
+  }).filter(function (v) {
+    return v && v !== 'None';
+  });
+  motors.sort(function (a, b) {
+    return motorPriority(a) - motorPriority(b);
+  });
+  var internalIdx = motors.findIndex(function (name) {
+    var _devices$fiz23;
+    return (_devices$fiz23 = devices.fiz) === null || _devices$fiz23 === void 0 || (_devices$fiz23 = _devices$fiz23.motors) === null || _devices$fiz23 === void 0 || (_devices$fiz23 = _devices$fiz23[name]) === null || _devices$fiz23 === void 0 ? void 0 : _devices$fiz23.internalController;
+  });
+  var hasInternalMotor = internalIdx !== -1;
+  if (hasInternalMotor && internalIdx > 0) {
+    var _motors$splice3 = motors.splice(internalIdx, 1),
+      _motors$splice4 = _slicedToArray(_motors$splice3, 1),
+      m = _motors$splice4[0];
+    motors.unshift(m);
+  }
+  var controllers = controllerSelects.map(function (sel) {
+    return sel.value;
+  }).filter(function (v) {
+    return v && v !== 'None';
+  });
+  controllers.sort(function (a, b) {
+    return controllerPriority(a) - controllerPriority(b);
+  });
+  var inlineControllers = controllers;
+  var nodes = [];
+  var pos = {};
+  var nodeMap = {};
+  var step = 300;
+  var VIDEO_LABEL_SPACING = 10;
+  var EDGE_LABEL_GAP = 12;
+  var EDGE_LABEL_VERTICAL_GAP = 8;
+  var EDGE_ROUTE_LABEL_GAP = 10;
+  var baseY = 220;
+  var x = 80;
+  if (batteryName && batteryName !== 'None') {
+    var _devices$batteries$ba, _cam$power7;
+    var batteryLabel = batteryName;
+    var _battMount = (_devices$batteries$ba = devices.batteries[batteryName]) === null || _devices$batteries$ba === void 0 ? void 0 : _devices$batteries$ba.mount_type;
+    if (cam && _battMount && (_cam$power7 = cam.power) !== null && _cam$power7 !== void 0 && (_cam$power7 = _cam$power7.batteryPlateSupport) !== null && _cam$power7 !== void 0 && _cam$power7.some(function (bp) {
+      return bp.type === _battMount && bp.mount === 'native';
+    })) {
+      batteryLabel += " on native ".concat(_battMount, " plate via Pins");
+    }
+    pos.battery = {
+      x: x,
+      y: baseY,
+      label: batteryLabel
+    };
+    nodes.push('battery');
+    nodeMap.battery = {
+      category: 'batteries',
+      name: batteryName
+    };
+    x += step;
+  }
+  if (camName && camName !== 'None') {
+    pos.camera = {
+      x: x,
+      y: baseY,
+      label: camName
+    };
+    nodes.push('camera');
+    nodeMap.camera = {
+      category: 'cameras',
+      name: camName
+    };
+    x += step;
+  }
+  var controllerIds = controllers.map(function (_, idx) {
+    return "controller".concat(idx);
+  });
+  var motorIds = motors.map(function (_, idx) {
+    return "motor".concat(idx);
+  });
+  var controllerNameMap = new Map();
+  controllerIds.forEach(function (id, idx) {
+    controllerNameMap.set(id, inlineControllers[idx] || controllers[idx]);
+  });
+  var motorNameMap = new Map();
+  motorIds.forEach(function (id, idx) {
+    motorNameMap.set(id, motors[idx]);
+  });
+  var hasMainCtrl = controllers.some(function (n) {
+    return controllerPriority(n) === 0;
+  });
+  var useMotorFirst = !hasMainCtrl && hasInternalMotor || !controllerIds.length && motorIds.length && motorPriority(motors[0]) === 0;
+  var addNode = function addNode(id, category, label) {
+    pos[id] = {
+      x: x,
+      y: baseY,
+      label: label
+    };
+    nodes.push(id);
+    nodeMap[id] = {
+      category: category,
+      name: label
+    };
+    x += step;
+  };
+  if (useMotorFirst && motorIds.length) {
+    addNode(motorIds[0], 'fiz.motors', motors[0]);
+    controllerIds.forEach(function (id, idx) {
+      addNode(id, 'fiz.controllers', inlineControllers[idx]);
+    });
+    motorIds.slice(1).forEach(function (id, idx) {
+      addNode(id, 'fiz.motors', motors[idx + 1]);
+    });
+  } else {
+    controllerIds.forEach(function (id, idx) {
+      addNode(id, 'fiz.controllers', inlineControllers[idx]);
+    });
+    motorIds.forEach(function (id, idx) {
+      addNode(id, 'fiz.motors', motors[idx]);
+    });
+  }
+  if (monitorName && monitorName !== 'None') {
+    pos.monitor = {
+      x: pos.camera ? pos.camera.x : 60,
+      y: baseY - step,
+      label: monitorName
+    };
+    nodes.push('monitor');
+    nodeMap.monitor = {
+      category: 'monitors',
+      name: monitorName
+    };
+  }
+  if (videoName && videoName !== 'None') {
+    pos.video = {
+      x: pos.camera ? pos.camera.x : 60,
+      y: baseY + step,
+      label: videoName
+    };
+    nodes.push('video');
+    nodeMap.video = {
+      category: 'video',
+      name: videoName
+    };
+  }
+  var inlineDistance = false;
+  var dedicatedDistance = false;
+  if (distanceName && distanceName !== 'None') {
+    var attach = inlineControllers.length ? controllerIds[0] : motorIds[0];
+    if (attach) {
+      var arriDevices = [].concat(_toConsumableArray(inlineControllers), _toConsumableArray(motors)).some(function (n) {
+        return isArri(n);
+      });
+      var hasDedicatedPort = inlineControllers.some(function (n) {
+        return /RIA-1/i.test(n) || /UMC-4/i.test(n);
+      });
+      dedicatedDistance = hasDedicatedPort && arriDevices;
+      inlineDistance = arriDevices && !hasDedicatedPort && inlineControllers.length;
+      if (inlineDistance && motorIds.length) {
+        var nextId = motorIds[0];
+        pos.distance = {
+          x: (pos[attach].x + pos[nextId].x) / 2,
+          y: baseY - step,
+          label: distanceName
+        };
+      } else {
+        pos.distance = {
+          x: pos[attach].x,
+          y: baseY - step,
+          label: distanceName
+        };
+      }
+      nodes.push('distance');
+      nodeMap.distance = {
+        category: 'fiz.distance',
+        name: distanceName
+      };
+    }
+  }
+  Object.keys(manualPositions).forEach(function (id) {
+    if (!pos[id]) delete manualPositions[id];
+  });
+  Object.entries(pos).forEach(function (_ref86) {
+    var _ref87 = _slicedToArray(_ref86, 2),
+      id = _ref87[0],
+      p = _ref87[1];
+    if (manualPositions[id]) {
+      p.x = manualPositions[id].x;
+      p.y = manualPositions[id].y;
+    }
+  });
+  var firstFizId;
+  if (hasInternalMotor && motorIds.length && !hasMainCtrl) {
+    firstFizId = motorIds[0];
+  } else {
+    firstFizId = controllerIds.length ? controllerIds[0] : motorIds[0];
+  }
+  var DEFAULT_NODE_H = 120;
+  var DEFAULT_NODE_W = 120;
+  var nodeHeights = {};
+  var nodeWidths = {};
+  var diagramLabelFontSize = 'var(--font-size-diagram-label, 11px)';
+  var diagramTextFontSize = 'var(--font-size-diagram-text, 13px)';
+  var DIAGRAM_LABEL_LINE_HEIGHT = 13;
+  var DIAGRAM_ICON_TEXT_GAP = 8;
+  var DEFAULT_DIAGRAM_ICON_SIZE = 24;
+  nodes.forEach(function (id) {
+    var label = pos[id].label || id;
+    var lines = wrapLabel(label);
+    var hasIcon = diagramIcons[id] || id.startsWith('controller') || id.startsWith('motor');
+    nodeHeights[id] = Math.max(DEFAULT_NODE_H, lines.length * DIAGRAM_LABEL_LINE_HEIGHT + (hasIcon ? 30 : 20));
+    var longest = lines.reduce(function (m, l) {
+      return Math.max(m, l.length);
+    }, 0);
+    nodeWidths[id] = Math.max(DEFAULT_NODE_W, longest * 9 + 20);
+  });
+  var NODE_W = Math.max.apply(Math, _toConsumableArray(Object.values(nodeWidths)).concat([DEFAULT_NODE_W]));
+  var NODE_H = Math.max.apply(Math, _toConsumableArray(Object.values(nodeHeights)).concat([DEFAULT_NODE_H]));
+  var getNodeHeight = function getNodeHeight(id) {
+    return nodeHeights[id] || NODE_H;
+  };
+  var viewWidth;
+  var chain = [];
+  var edges = [];
+  var usedConns = {};
+  var markUsed = function markUsed(id, side) {
+    usedConns["".concat(id, "|").concat(side)] = true;
+  };
+  var isUsed = function isUsed(id, side) {
+    return usedConns["".concat(id, "|").concat(side)];
+  };
+  var pushEdge = function pushEdge(edge, type) {
+    if (!edge.fromSide || !edge.toSide) {
+      var pair = closestConnectorPair(edge.from, edge.to, usedConns);
+      if (pair) {
+        if (!edge.fromSide) edge.fromSide = pair.fromSide;
+        if (!edge.toSide) edge.toSide = pair.toSide;
+      }
+    } else {
+      if (isUsed(edge.from, edge.fromSide) || isUsed(edge.to, edge.toSide)) return;
+    }
+    markUsed(edge.from, edge.fromSide);
+    markUsed(edge.to, edge.toSide);
+    edges.push(_objectSpread(_objectSpread({}, edge), {}, {
+      type: type
+    }));
+  };
+  var battMount = (_devices$batteries$ba2 = devices.batteries[batteryName]) === null || _devices$batteries$ba2 === void 0 ? void 0 : _devices$batteries$ba2.mount_type;
+  if (cam && batteryName && batteryName !== 'None') {
+    var plateType = getSelectedPlate();
+    var nativePlate = plateType && isSelectedPlateNative(camName);
+    var camPort = firstPowerInputType(cam);
+    var inLabel = camPort || plateType;
+    var label = nativePlate ? '' : formatConnLabel(battMount, inLabel);
+    pushEdge({
+      from: 'battery',
+      to: 'camera',
+      label: label,
+      fromSide: 'right',
+      toSide: 'left'
+    }, 'power');
+  }
+  if (monitor && firstPowerInputType(monitor)) {
+    var mPort = firstPowerInputType(monitor);
+    if (batteryName && batteryName !== 'None') {
+      pushEdge({
+        from: 'battery',
+        to: 'monitor',
+        label: formatConnLabel(battMount, mPort),
+        fromSide: 'top',
+        toSide: 'left'
+      }, 'power');
+    }
+  }
+  if (video && firstPowerInputType(video)) {
+    var pPort = firstPowerInputType(video);
+    if (batteryName && batteryName !== 'None') {
+      pushEdge({
+        from: 'battery',
+        to: 'video',
+        label: formatConnLabel(battMount, pPort),
+        fromSide: 'bottom',
+        toSide: 'left'
+      }, 'power');
+    }
+  }
+  if (cam && (_cam$videoOutputs = cam.videoOutputs) !== null && _cam$videoOutputs !== void 0 && _cam$videoOutputs.length) {
+    var _monitor$video, _monitor$videoInputs, _video$videoInputs;
+    var camOut = cam.videoOutputs[0].type;
+    var monInObj = monitor && (((_monitor$video = monitor.video) === null || _monitor$video === void 0 || (_monitor$video = _monitor$video.inputs) === null || _monitor$video === void 0 ? void 0 : _monitor$video[0]) || ((_monitor$videoInputs = monitor.videoInputs) === null || _monitor$videoInputs === void 0 ? void 0 : _monitor$videoInputs[0]));
+    var vidInObj = video && (((_video$videoInputs = video.videoInputs) === null || _video$videoInputs === void 0 ? void 0 : _video$videoInputs[0]) || (video.video ? video.video.inputs[0] : null));
+    if (monitor && monInObj) {
+      var monIn = monInObj.portType || monInObj.type || monInObj;
+      pushEdge({
+        from: 'camera',
+        to: 'monitor',
+        label: connectionLabel(camOut, monIn),
+        fromSide: 'top',
+        toSide: 'bottom',
+        labelSpacing: VIDEO_LABEL_SPACING
+      }, 'video');
+    }
+    if (video && vidInObj) {
+      var vidIn = vidInObj.portType || vidInObj.type || vidInObj;
+      pushEdge({
+        from: 'camera',
+        to: 'video',
+        label: connectionLabel(camOut, vidIn),
+        fromSide: 'bottom',
+        toSide: 'top',
+        labelSpacing: VIDEO_LABEL_SPACING
+      }, 'video');
+    }
+  }
+  useMotorFirst = !hasMainCtrl && hasInternalMotor || !controllerIds.length && motorIds.length && motorPriority(motors[0]) === 0;
+  var distanceSelected = distanceName && distanceName !== 'None';
+  var distanceInChain = distanceSelected && !dedicatedDistance;
+  var firstController = false;
+  var firstMotor = false;
+  if (useMotorFirst && motorIds.length) {
+    chain.push(motorIds[0]);
+    firstMotor = true;
+  } else if (controllerIds.length) {
+    chain.push(controllerIds[0]);
+    firstController = true;
+  } else if (motorIds.length) {
+    chain.push(motorIds[0]);
+    firstMotor = true;
+  }
+  if (distanceInChain) chain.push('distance');
+  if (controllerIds.length) chain = chain.concat(controllerIds.slice(firstController ? 1 : 0));
+  if (motorIds.length) chain = chain.concat(motorIds.slice(firstMotor ? 1 : 0));
+  if (cam && chain.length) {
+    var first = chain[0];
+    if (first === 'distance' && chain.length > 1 && (controllerIds.length || hasInternalMotor)) {
+      first = chain[1];
+    }
+    var firstName = null;
+    if (first.startsWith('controller')) {
+      firstName = controllerNameMap.get(first);
+    } else if (first.startsWith('motor')) {
+      firstName = motorNameMap.get(first);
+    }
+    var port = first === 'distance' ? 'LBUS' : controllerCamPort(firstName);
+    var _camPort = cameraFizPort(camName, port, firstName);
+    pushEdge({
+      from: 'camera',
+      to: first,
+      label: formatConnLabel(_camPort, port),
+      noArrow: true
+    }, 'fiz');
+  } else if (motorIds.length && cam) {
+    var _camPort2 = cameraFizPort(camName, motorFizPort(motors[0]), motors[0]);
+    pushEdge({
+      from: 'camera',
+      to: motorIds[0],
+      label: formatConnLabel(_camPort2, motorFizPort(motors[0])),
+      noArrow: true
+    }, 'fiz');
+  }
+  for (var i = 0; i < chain.length - 1; i++) {
+    var a = chain[i];
+    var b = chain[i + 1];
+    var fromName = null,
+      toName = null;
+    if (a.startsWith('controller')) fromName = controllerNameMap.get(a);else if (a.startsWith('motor')) fromName = motorNameMap.get(a);
+    if (b.startsWith('controller')) toName = controllerNameMap.get(b);else if (b.startsWith('motor')) toName = motorNameMap.get(b);
+    pushEdge({
+      from: a,
+      to: b,
+      label: formatConnLabel(fizPort(fromName), fizPort(toName)),
+      noArrow: true
+    }, 'fiz');
+  }
+  if (dedicatedDistance && controllerIds.length && distanceSelected) {
+    var ctrlName = inlineControllers[0] || controllers[0];
+    var distPort = controllerDistancePort(ctrlName);
+    var portLabel = formatConnLabel(fizPort(ctrlName), distPort);
+    pushEdge({
+      from: controllerIds[0],
+      to: 'distance',
+      label: portLabel,
+      noArrow: true,
+      toSide: 'bottom-right'
+    }, 'fiz');
+  }
+  var fizList = [];
+  controllerIds.forEach(function (id, idx) {
+    fizList.push({
+      id: id,
+      name: inlineControllers[idx] || controllers[idx]
+    });
+  });
+  motorIds.forEach(function (id, idx) {
+    fizList.push({
+      id: id,
+      name: motors[idx]
+    });
+  });
+  var isMainCtrl = function isMainCtrl(name) {
+    return /RIA-1/i.test(name) || /UMC-4/i.test(name) || /cforce.*rf/i.test(name);
+  };
+  var powerTarget = null;
+  var main = fizList.find(function (d) {
+    return isMainCtrl(d.name);
+  });
+  if (main) {
+    powerTarget = main;
+  } else {
+    powerTarget = fizList.find(function (d) {
+      return fizNeedsPower(d.name);
+    });
+  }
+  if (powerTarget && fizNeedsPower(powerTarget.name)) {
+    var _powerTarget = powerTarget,
+      fizId = _powerTarget.id,
+      name = _powerTarget.name;
+    var powerSrc = batteryName && batteryName !== 'None' ? 'battery' : null;
+    var _label63 = formatConnLabel('D-Tap', fizPowerPort(name));
+    var skipBatt = isArri(camName) && isArriOrCmotion(name);
+    if (powerSrc && !skipBatt) {
+      pushEdge({
+        from: powerSrc,
+        to: fizId,
+        label: _label63,
+        fromSide: 'bottom-left',
+        toSide: 'bottom',
+        route: 'down-right-up'
+      }, 'power');
+    }
+  }
+  if (nodes.length === 0) {
+    setupDiagramContainer.innerHTML = "<p class=\"diagram-placeholder\">".concat(texts[currentLang].setupDiagramPlaceholder, "</p>");
+    return;
+  }
+  var xs = Object.values(pos).map(function (p) {
+    return p.x;
+  });
+  var minX = Math.min.apply(Math, _toConsumableArray(xs));
+  var maxX = Math.max.apply(Math, _toConsumableArray(xs));
+  var contentWidth = maxX - minX;
+  var baseViewWidth = Math.max(500, contentWidth + NODE_W);
+  if (Object.keys(manualPositions).length === 0) {
+    var shiftX = baseViewWidth / 2 - (minX + maxX) / 2;
+    Object.values(pos).forEach(function (p) {
+      p.x += shiftX;
+    });
+    xs = Object.values(pos).map(function (p) {
+      return p.x;
+    });
+    minX = Math.min.apply(Math, _toConsumableArray(xs));
+    maxX = Math.max.apply(Math, _toConsumableArray(xs));
+  }
+  var ys = Object.values(pos).map(function (p) {
+    return p.y;
+  });
+  var minY = Math.min.apply(Math, _toConsumableArray(ys));
+  var maxY = Math.max.apply(Math, _toConsumableArray(ys));
+  var HORIZONTAL_MARGIN = Math.max(40, NODE_W * 0.25);
+  var TOP_MARGIN = Math.max(40, NODE_H * 0.25);
+  var BOTTOM_MARGIN = Math.max(120, NODE_H * 0.4);
+  var minBoundX = minX - NODE_W / 2 - HORIZONTAL_MARGIN;
+  var maxBoundX = maxX + NODE_W / 2 + HORIZONTAL_MARGIN;
+  var minBoundY = minY - NODE_H / 2 - TOP_MARGIN;
+  var maxBoundY = maxY + NODE_H / 2 + BOTTOM_MARGIN;
+  var viewBoxX = Math.floor(Math.min(0, minBoundX));
+  var viewBoxY = Math.floor(minBoundY);
+  viewWidth = Math.max(baseViewWidth, Math.ceil(maxBoundX - viewBoxX));
+  var baseViewHeight = maxY - minY + NODE_H + TOP_MARGIN + BOTTOM_MARGIN;
+  var viewHeight = Math.max(Math.ceil(baseViewHeight), Math.ceil(maxBoundY - viewBoxY));
+  function computePath(fromId, toId) {
+    var labelSpacing = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+    var opts = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+    var from = connectorPos(fromId, opts.fromSide);
+    var to = connectorPos(toId, opts.toSide);
+    var path,
+      lx,
+      ly,
+      angle = 0;
+    if (opts.route === 'down-right-up') {
+      var bottomY = maxY + NODE_H;
+      path = "M ".concat(from.x, " ").concat(from.y, " V ").concat(bottomY, " H ").concat(to.x, " V ").concat(to.y);
+      lx = (from.x + to.x) / 2;
+      ly = bottomY - EDGE_ROUTE_LABEL_GAP - labelSpacing;
+    } else {
+      path = "M ".concat(from.x, " ").concat(from.y, " L ").concat(to.x, " ").concat(to.y);
+      var dx = to.x - from.x;
+      var dy = to.y - from.y;
+      angle = Math.atan2(dy, dx) * 180 / Math.PI;
+      var midX = (from.x + to.x) / 2;
+      var midY = (from.y + to.y) / 2;
+      var len = Math.hypot(dx, dy) || 1;
+      var baseGap = Math.abs(dx) < Math.abs(dy) ? EDGE_LABEL_VERTICAL_GAP : EDGE_LABEL_GAP;
+      var off = baseGap + labelSpacing;
+      var perpX = dy / len * off;
+      var perpY = -dx / len * off;
+      lx = midX + perpX;
+      ly = midY + perpY;
+    }
+    return {
+      path: path,
+      labelX: lx,
+      labelY: ly,
+      angle: angle
+    };
+  }
+  var EDGE_LABEL_WRAP = 18;
+  function wrapLabel(text) {
+    var maxLen = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 16;
+    var words = text.split(' ');
+    var lines = [];
+    var line = '';
+    words.forEach(function (w) {
+      if ((line + ' ' + w).trim().length > maxLen && line) {
+        lines.push(line.trim());
+        line = w;
+      } else {
+        line += " ".concat(w);
+      }
+    });
+    if (line.trim()) lines.push(line.trim());
+    return lines;
+  }
+  var svg = "<svg viewBox=\"".concat(viewBoxX, " ").concat(viewBoxY, " ").concat(viewWidth, " ").concat(viewHeight, "\" xmlns=\"http://www.w3.org/2000/svg\">");
+  svg += "<defs>\n    <linearGradient id=\"firstFizGrad\" x1=\"0%\" y1=\"0%\" x2=\"0%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#090\" />\n      <stop offset=\"100%\" stop-color=\"#d33\" />\n    </linearGradient>\n  </defs>";
+  svg += "<g id=\"diagramRoot\">";
+  edges.forEach(function (e) {
+    if (!pos[e.from] || !pos[e.to]) return;
+    var _computePath = computePath(e.from, e.to, e.labelSpacing || 0, e),
+      path = _computePath.path,
+      labelX = _computePath.labelX,
+      labelY = _computePath.labelY,
+      angle = _computePath.angle;
+    if (!path) return;
+    var cls = e.type ? "edge-path ".concat(e.type) : 'edge-path';
+    svg += "<path class=\"".concat(cls, "\" d=\"").concat(path, "\" />");
+    if (e.label) {
+      var rot = " transform=\"rotate(".concat(angle, " ").concat(labelX, " ").concat(labelY, ")\"");
+      var lines = wrapLabel(e.label, EDGE_LABEL_WRAP);
+      if (lines.length <= 1) {
+        svg += "<text class=\"edge-label\" x=\"".concat(labelX, "\" y=\"").concat(labelY, "\" text-anchor=\"middle\" dominant-baseline=\"middle\"").concat(rot, ">").concat(escapeHtml(e.label), "</text>");
+      } else {
+        var lineHeight = 12;
+        var startDy = -((lines.length - 1) * lineHeight) / 2;
+        svg += "<text class=\"edge-label\" x=\"".concat(labelX, "\" y=\"").concat(labelY, "\" text-anchor=\"middle\" dominant-baseline=\"middle\"").concat(rot, ">");
+        lines.forEach(function (line, i) {
+          var dy = i === 0 ? startDy : lineHeight;
+          svg += "<tspan x=\"".concat(labelX, "\" dy=\"").concat(dy, "\">").concat(escapeHtml(line), "</tspan>");
+        });
+        svg += "</text>";
+      }
+    }
+  });
+  function connectorsFor(id) {
+    switch (id) {
+      case 'battery':
+        return [{
+          side: 'top',
+          color: 'red'
+        }, {
+          side: 'right',
+          color: 'red'
+        }, {
+          side: 'bottom',
+          color: 'red'
+        }, {
+          side: 'bottom-left',
+          color: 'red'
+        }];
+      case 'monitor':
+        return [{
+          side: 'left',
+          color: 'red'
+        }, {
+          side: 'bottom',
+          color: 'blue'
+        }];
+      case 'video':
+        return [{
+          side: 'left',
+          color: 'red'
+        }, {
+          side: 'top',
+          color: 'blue'
+        }];
+      case 'camera':
+        return [{
+          side: 'left',
+          color: 'red'
+        }, {
+          side: 'top',
+          color: 'blue'
+        }, {
+          side: 'bottom',
+          color: 'blue'
+        }, {
+          side: 'right',
+          color: 'green'
+        }];
+      case 'distance':
+        return [{
+          side: 'bottom',
+          color: 'green'
+        }, {
+          side: 'bottom-right',
+          color: 'green'
+        }];
+      default:
+        if (id.startsWith('controller') || id.startsWith('motor')) {
+          if (firstFizId && id === firstFizId) {
+            return [{
+              side: 'top',
+              color: 'green'
+            }, {
+              side: 'left',
+              color: 'green'
+            }, {
+              side: 'right',
+              color: 'green'
+            }, {
+              side: 'bottom',
+              color: 'red'
+            }];
+          }
+          return [{
+            side: 'left',
+            color: 'green'
+          }, {
+            side: 'right',
+            color: 'green'
+          }];
+        }
+    }
+    return [];
+  }
+  function connectorPos(nodeId, side) {
+    var p = pos[nodeId];
+    if (!p) return {
+      x: 0,
+      y: 0
+    };
+    var h = getNodeHeight(nodeId);
+    switch (side) {
+      case 'top':
+        return {
+          x: p.x,
+          y: p.y - h / 2
+        };
+      case 'bottom':
+        return {
+          x: p.x,
+          y: p.y + h / 2
+        };
+      case 'bottom-left':
+        return {
+          x: p.x - NODE_W / 2 + NODE_W / 3,
+          y: p.y + h / 2
+        };
+      case 'bottom-right':
+        return {
+          x: p.x + NODE_W / 2 - NODE_W / 3,
+          y: p.y + h / 2
+        };
+      case 'left':
+        return {
+          x: p.x - NODE_W / 2,
+          y: p.y
+        };
+      case 'right':
+        return {
+          x: p.x + NODE_W / 2,
+          y: p.y
+        };
+      default:
+        return {
+          x: p.x,
+          y: p.y
+        };
+    }
+  }
+  function closestConnectorPair(idA, idB) {
+    var used = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    var aConns = connectorsFor(idA);
+    var bConns = connectorsFor(idB);
+    var best = null;
+    var bestDist = Infinity;
+    aConns.forEach(function (ac) {
+      if (used["".concat(idA, "|").concat(ac.side)]) return;
+      var ap = connectorPos(idA, ac.side);
+      bConns.forEach(function (bc) {
+        if (ac.color !== bc.color) return;
+        if (used["".concat(idB, "|").concat(bc.side)]) return;
+        var bp = connectorPos(idB, bc.side);
+        var d = Math.hypot(ap.x - bp.x, ap.y - bp.y);
+        if (d < bestDist) {
+          bestDist = d;
+          best = {
+            fromSide: ac.side,
+            toSide: bc.side
+          };
+        }
+      });
+    });
+    return best;
+  }
+  nodes.forEach(function (id) {
+    var p = pos[id];
+    if (!p) return;
+    var h = getNodeHeight(id);
+    var nodeCls = id === firstFizId ? 'diagram-node first-fiz' : 'diagram-node';
+    var rectCls = id === firstFizId ? 'node-box first-fiz' : 'node-box';
+    svg += "<g class=\"".concat(nodeCls, "\" data-node=\"").concat(id, "\">");
+    svg += "<rect class=\"".concat(rectCls, "\" x=\"").concat(p.x - NODE_W / 2, "\" y=\"").concat(p.y - h / 2, "\" width=\"").concat(NODE_W, "\" height=\"").concat(h, "\" rx=\"4\" ry=\"4\" />");
+    if (id === firstFizId) {
+      var xLeft = p.x - NODE_W / 2;
+      var yBottom = p.y + h / 2;
+      var r = 4;
+      var highlight = "M ".concat(xLeft, " ").concat(p.y, " L ").concat(xLeft, " ").concat(yBottom - r, " A ").concat(r, " ").concat(r, " 0 0 1 ").concat(xLeft + r, " ").concat(yBottom, " L ").concat(p.x, " ").concat(yBottom);
+      svg += "<path class=\"first-fiz-highlight\" d=\"".concat(highlight, "\" />");
+    }
+    var conns = connectorsFor(id);
+    conns.forEach(function (c) {
+      var cx = p.x,
+        cy = p.y;
+      if (c.side === 'top') {
+        cx = p.x;
+        cy = p.y - h / 2;
+      } else if (c.side === 'bottom') {
+        cx = p.x;
+        cy = p.y + h / 2;
+      } else if (c.side === 'bottom-left') {
+        cx = p.x - NODE_W / 2 + NODE_W / 3;
+        cy = p.y + h / 2;
+      } else if (c.side === 'bottom-right') {
+        cx = p.x + NODE_W / 2 - NODE_W / 3;
+        cy = p.y + h / 2;
+      } else if (c.side === 'left') {
+        cx = p.x - NODE_W / 2;
+        cy = p.y;
+      } else if (c.side === 'right') {
+        cx = p.x + NODE_W / 2;
+        cy = p.y;
+      }
+      svg += "<circle class=\"conn ".concat(c.color, "\" cx=\"").concat(cx, "\" cy=\"").concat(cy, "\" r=\"4\" />");
+    });
+    var icon = diagramIcons[id];
+    if (!icon) {
+      if (id.startsWith('motor')) {
+        icon = diagramIcons.motors;
+      } else if (id.startsWith('controller')) {
+        var _nodeMap$id;
+        var _name = (((_nodeMap$id = nodeMap[id]) === null || _nodeMap$id === void 0 ? void 0 : _nodeMap$id.name) || '').toLowerCase();
+        if (/handle|grip/.test(_name)) icon = diagramIcons.handle;else icon = diagramIcons.controllers;
+      } else if (id === 'distance') {
+        icon = diagramIcons.distance;
+      }
+    }
+    var lines = wrapLabel(p.label || id);
+    var resolvedIcon = icon ? resolveIconGlyph(icon) : null;
+    var hasIconGlyph = Boolean(resolvedIcon && (resolvedIcon.markup || resolvedIcon.char));
+    var iconSize = hasIconGlyph && Number.isFinite(resolvedIcon.size) ? resolvedIcon.size : DEFAULT_DIAGRAM_ICON_SIZE;
+    var iconHeight = hasIconGlyph ? iconSize : 0;
+    var textLineCount = lines.length;
+    var textHeight = textLineCount ? textLineCount * DIAGRAM_LABEL_LINE_HEIGHT : 0;
+    var iconGap = hasIconGlyph && textLineCount ? DIAGRAM_ICON_TEXT_GAP : 0;
+    var contentHeight = iconHeight + iconGap + textHeight;
+    var contentTop = p.y - contentHeight / 2;
+    var centerX = formatSvgCoordinate(p.x);
+    if (hasIconGlyph) {
+      var iconCenterY = contentTop + iconHeight / 2;
+      if (resolvedIcon.markup) {
+        var positioned = positionSvgMarkup(ensureSvgHasAriaHidden(resolvedIcon.markup), p.x, iconCenterY, iconSize);
+        if (positioned.markup) {
+          var wrapperClasses = ['node-icon-svg'];
+          if (resolvedIcon.className) wrapperClasses.push(resolvedIcon.className);
+          svg += "<g class=\"".concat(wrapperClasses.join(' '), "\" transform=\"translate(").concat(positioned.x, ", ").concat(positioned.y, ")\">").concat(positioned.markup, "</g>");
+        }
+      } else if (resolvedIcon.char) {
+        var fontAttr = " data-icon-font=\"".concat(resolvedIcon.font, "\"");
+        svg += "<text class=\"node-icon\"".concat(fontAttr, " x=\"").concat(centerX, "\" y=\"").concat(formatSvgCoordinate(iconCenterY), "\" text-anchor=\"middle\" dominant-baseline=\"middle\">").concat(resolvedIcon.char, "</text>");
+      }
+    }
+    if (textLineCount) {
+      var textTop = contentTop + iconHeight + iconGap;
+      var textY = formatSvgCoordinate(textTop);
+      var _fontSize = hasIconGlyph ? diagramLabelFontSize : diagramTextFontSize;
+      svg += "<text x=\"".concat(centerX, "\" y=\"").concat(textY, "\" text-anchor=\"middle\" dominant-baseline=\"hanging\" style=\"font-size: ").concat(_fontSize, ";\">");
+      lines.forEach(function (line, i) {
+        var dyAttr = i === 0 ? '' : " dy=\"".concat(DIAGRAM_LABEL_LINE_HEIGHT, "\"");
+        svg += "<tspan x=\"".concat(centerX, "\"").concat(dyAttr, ">").concat(escapeHtml(line), "</tspan>");
+      });
+      svg += "</text>";
+    }
+    svg += "</g>";
+  });
+  svg += '</g></svg>';
+  var popup = document.getElementById('diagramPopup');
+  if (!popup) {
+    popup = document.createElement('div');
+    popup.id = 'diagramPopup';
+    popup.className = 'diagram-popup';
+  }
+  setupDiagramContainer.innerHTML = '';
+  setupDiagramContainer.appendChild(popup);
+  setupDiagramContainer.insertAdjacentHTML('beforeend', svg);
+  var svgEl = setupDiagramContainer.querySelector('svg');
+  if (svgEl) {
+    var _setupDiagramContaine;
+    svgEl.style.width = '100%';
+    svgEl.style.overflow = 'visible';
+    svgEl.setAttribute('overflow', 'visible');
+    var containerRect = setupDiagramContainer.getBoundingClientRect();
+    var parentRect = (_setupDiagramContaine = setupDiagramContainer.parentElement) === null || _setupDiagramContaine === void 0 ? void 0 : _setupDiagramContaine.getBoundingClientRect();
+    var containerWidth = (containerRect === null || containerRect === void 0 ? void 0 : containerRect.width) || setupDiagramContainer.clientWidth || 0;
+    var parentWidth = (parentRect === null || parentRect === void 0 ? void 0 : parentRect.width) || 0;
+    var maxWidthPx = 0;
+    if (!isTouchDevice) {
+      var bodyFontSize = parseFloat(getComputedStyle(document.body).fontSize) || 16;
+      var diagramFontSizePx = Number.NaN;
+      if (document.body) {
+        var measureEl = document.createElement('span');
+        measureEl.style.position = 'absolute';
+        measureEl.style.visibility = 'hidden';
+        measureEl.style.fontSize = 'var(--font-size-diagram-text)';
+        measureEl.textContent = 'M';
+        document.body.appendChild(measureEl);
+        diagramFontSizePx = parseFloat(getComputedStyle(measureEl).fontSize);
+        measureEl.remove();
+      }
+      var DEFAULT_MAX_NODE_FONT = 13;
+      var referenceFontSize = Number.isFinite(diagramFontSizePx) && diagramFontSizePx > 0 ? diagramFontSizePx : DEFAULT_MAX_NODE_FONT;
+      var maxAutoScale = bodyFontSize / referenceFontSize;
+      var scaleFactor = Math.max(1, maxAutoScale);
+      maxWidthPx = viewWidth * scaleFactor;
+    } else {
+      maxWidthPx = viewWidth;
+    }
+    var minTarget = Math.max(containerWidth, parentWidth);
+    if (minTarget > 0 && (!Number.isFinite(maxWidthPx) || maxWidthPx < minTarget)) {
+      maxWidthPx = minTarget;
+    }
+    if (Number.isFinite(maxWidthPx) && maxWidthPx > 0) {
+      svgEl.style.maxWidth = "".concat(maxWidthPx, "px");
+    } else {
+      svgEl.style.maxWidth = '100%';
+    }
+    var rootEl = svgEl.querySelector('#diagramRoot');
+    if (rootEl && typeof rootEl.getBBox === 'function') {
+      var _svgEl$viewBox, _setupDiagramContaine2;
+      var viewBox = (_svgEl$viewBox = svgEl.viewBox) === null || _svgEl$viewBox === void 0 ? void 0 : _svgEl$viewBox.baseVal;
+      var viewBoxWidth = (viewBox === null || viewBox === void 0 ? void 0 : viewBox.width) || viewWidth || svgEl.getBoundingClientRect().width || 1;
+      var viewBoxHeight = (viewBox === null || viewBox === void 0 ? void 0 : viewBox.height) || svgEl.getBoundingClientRect().height || 1;
+      var _viewBoxX = (viewBox === null || viewBox === void 0 ? void 0 : viewBox.x) || 0;
+      var _viewBoxY = (viewBox === null || viewBox === void 0 ? void 0 : viewBox.y) || 0;
+      var bbox = rootEl.getBBox();
+      var svgRect = svgEl.getBoundingClientRect();
+      var renderedWidth = svgRect.width || svgEl.clientWidth || viewBoxWidth;
+      var widthCandidates = [renderedWidth];
+      var _parentRect = (_setupDiagramContaine2 = setupDiagramContainer.parentElement) === null || _setupDiagramContaine2 === void 0 ? void 0 : _setupDiagramContaine2.getBoundingClientRect();
+      if (_parentRect && _parentRect.width > 0) widthCandidates.push(_parentRect.width - 32);
+      if (typeof window !== 'undefined' && Number.isFinite(window.innerWidth) && window.innerWidth > 0) {
+        widthCandidates.push(window.innerWidth - 80);
+      }
+      var positiveWidths = widthCandidates.filter(function (v) {
+        return Number.isFinite(v) && v > 0;
+      });
+      var maxAvailable = positiveWidths.length ? Math.max.apply(Math, _toConsumableArray(positiveWidths)) : renderedWidth;
+      var minAvailable = positiveWidths.length ? Math.min.apply(Math, _toConsumableArray(positiveWidths)) : renderedWidth;
+      var MAX_TARGET_WIDTH = 1400;
+      var desiredWidth = Math.max(minAvailable, Math.min(MAX_TARGET_WIDTH, maxAvailable));
+      var baseScale = viewBoxWidth > 0 ? renderedWidth / viewBoxWidth : 1;
+      var currentRootWidth = bbox.width * baseScale;
+      var desiredScale = currentRootWidth > 0 ? desiredWidth / currentRootWidth : 1;
+      if (!Number.isFinite(desiredScale) || desiredScale <= 0) desiredScale = 1;
+      if (!isTouchDevice && desiredScale > 1) {
+        var DESKTOP_SCALE_RELAXATION = 0.3;
+        var DESKTOP_MAX_AUTO_SCALE = 1.2;
+        desiredScale = 1 + (desiredScale - 1) * DESKTOP_SCALE_RELAXATION;
+        if (desiredScale > DESKTOP_MAX_AUTO_SCALE) desiredScale = DESKTOP_MAX_AUTO_SCALE;
+        var DESKTOP_AUTO_FILL_RATIO = 0.88;
+        var MIN_DESKTOP_AUTO_SCALE = 0.82;
+        var adjustedScale = desiredScale * DESKTOP_AUTO_FILL_RATIO;
+        desiredScale = Math.max(MIN_DESKTOP_AUTO_SCALE, adjustedScale);
+      }
+      var MIN_AUTO_SCALE = isTouchDevice ? 0.4 : 0.35;
+      var MAX_INITIAL_SCALE = isTouchDevice ? 3 : 1.6;
+      var safeDesiredScale = Number.isFinite(desiredScale) && desiredScale > 0 ? desiredScale : 1;
+      var initialScale = Math.min(MAX_INITIAL_SCALE, Math.max(MIN_AUTO_SCALE, safeDesiredScale));
+      var centerX = bbox.x + bbox.width / 2;
+      var centerY = bbox.y + bbox.height / 2;
+      var targetCenterX = _viewBoxX + viewBoxWidth / 2;
+      var targetCenterY = _viewBoxY + viewBoxHeight / 2;
+      var initialPanX = targetCenterX / initialScale - centerX;
+      var initialPanY = targetCenterY / initialScale - centerY;
+      var roundedScale = Math.round(initialScale * 1000) / 1000;
+      var roundedPan = {
+        x: Math.round(initialPanX * 1000) / 1000,
+        y: Math.round(initialPanY * 1000) / 1000
+      };
+      if (Number.isFinite(roundedScale) && roundedScale > 0) {
+        setupDiagramContainer.dataset.initialScale = String(roundedScale);
+      } else {
+        delete setupDiagramContainer.dataset.initialScale;
+      }
+      if (Number.isFinite(roundedPan.x) && Number.isFinite(roundedPan.y)) {
+        setupDiagramContainer.dataset.initialPan = JSON.stringify(roundedPan);
+      } else {
+        delete setupDiagramContainer.dataset.initialPan;
+      }
+    } else {
+      delete setupDiagramContainer.dataset.initialScale;
+      delete setupDiagramContainer.dataset.initialPan;
+    }
+  }
+  lastDiagramPositions = JSON.parse(JSON.stringify(pos));
+  attachDiagramPopups(nodeMap);
+  enableDiagramInteractions();
+}
+function attachDiagramPopups(map) {
+  if (!setupDiagramContainer) return;
+  var popup = document.getElementById('diagramPopup');
+  if (!popup) return;
+  popup.style.display = 'none';
+  var isTouchDevice = (navigator.maxTouchPoints || 0) > 0;
+  setupDiagramContainer.querySelectorAll('.diagram-node').forEach(function (node) {
+    var id = node.getAttribute('data-node');
+    var info = map[id];
+    if (!info) return;
+    var deviceData;
+    if (info.category === 'fiz.controllers') {
+      var _devices$fiz24;
+      deviceData = (_devices$fiz24 = devices.fiz) === null || _devices$fiz24 === void 0 || (_devices$fiz24 = _devices$fiz24.controllers) === null || _devices$fiz24 === void 0 ? void 0 : _devices$fiz24[info.name];
+    } else if (info.category === 'fiz.motors') {
+      var _devices$fiz25;
+      deviceData = (_devices$fiz25 = devices.fiz) === null || _devices$fiz25 === void 0 || (_devices$fiz25 = _devices$fiz25.motors) === null || _devices$fiz25 === void 0 ? void 0 : _devices$fiz25[info.name];
+    } else if (info.category === 'fiz.distance') {
+      var _devices$fiz26;
+      deviceData = (_devices$fiz26 = devices.fiz) === null || _devices$fiz26 === void 0 || (_devices$fiz26 = _devices$fiz26.distance) === null || _devices$fiz26 === void 0 ? void 0 : _devices$fiz26[info.name];
+    } else {
+      var _devices$info$categor;
+      deviceData = (_devices$info$categor = devices[info.category]) === null || _devices$info$categor === void 0 ? void 0 : _devices$info$categor[info.name];
+    }
+    var connectors = safeGenerateConnectorSummary(deviceData);
+    var infoHtml = (deviceData && deviceData.latencyMs ? "<div class=\"info-box video-conn\"><strong>Latency:</strong> ".concat(escapeHtml(String(deviceData.latencyMs)), "</div>") : '') + (deviceData && deviceData.frequency ? "<div class=\"info-box video-conn\"><strong>Frequency:</strong> ".concat(escapeHtml(String(deviceData.frequency)), "</div>") : '');
+    var html = "<strong>".concat(escapeHtml(info.name), "</strong>") + connectors + infoHtml;
+    var show = function show(e) {
+      var _window$visualViewpor, _document$documentEle, _window$visualViewpor2, _document$documentEle2;
+      e.stopPropagation();
+      var pointer = e.touches && e.touches[0] ? e.touches[0] : e;
+      popup.innerHTML = html;
+      popup.style.display = 'block';
+      var offset = 12;
+      var viewportWidth = ((_window$visualViewpor = window.visualViewport) === null || _window$visualViewpor === void 0 ? void 0 : _window$visualViewpor.width) || window.innerWidth || ((_document$documentEle = document.documentElement) === null || _document$documentEle === void 0 ? void 0 : _document$documentEle.clientWidth) || 0;
+      var viewportHeight = ((_window$visualViewpor2 = window.visualViewport) === null || _window$visualViewpor2 === void 0 ? void 0 : _window$visualViewpor2.height) || window.innerHeight || ((_document$documentEle2 = document.documentElement) === null || _document$documentEle2 === void 0 ? void 0 : _document$documentEle2.clientHeight) || 0;
+      var popupWidth = popup.offsetWidth || 0;
+      var popupHeight = popup.offsetHeight || 0;
+      var pointerX = pointer.clientX;
+      var pointerY = pointer.clientY;
+      var left = pointerX + offset;
+      if (viewportWidth > 0 && popupWidth > 0 && left + popupWidth + offset > viewportWidth) {
+        left = Math.max(offset, pointerX - popupWidth - offset);
+      }
+      var top = pointerY + offset;
+      if (viewportHeight > 0 && popupHeight > 0 && top + popupHeight + offset > viewportHeight) {
+        top = Math.max(offset, pointerY - popupHeight - offset);
+      }
+      var maxLeft = viewportWidth > 0 && popupWidth > 0 ? Math.max(offset, viewportWidth - popupWidth - offset) : left;
+      var maxTop = viewportHeight > 0 && popupHeight > 0 ? Math.max(offset, viewportHeight - popupHeight - offset) : top;
+      popup.style.left = "".concat(Math.max(offset, Math.min(left, maxLeft)), "px");
+      popup.style.top = "".concat(Math.max(offset, Math.min(top, maxTop)), "px");
+    };
+    var hide = function hide() {
+      popup.style.display = 'none';
+    };
+    if (isTouchDevice) {
+      node.addEventListener('touchstart', show);
+      node.addEventListener('click', show);
+    } else {
+      node.addEventListener('mousemove', show);
+      node.addEventListener('mouseout', hide);
+      node.addEventListener('click', show);
+    }
+  });
+  if (!setupDiagramContainer.dataset.popupOutsideListeners) {
+    var hideOnOutside = function hideOnOutside(e) {
+      if (!e.target.closest('.diagram-node')) popup.style.display = 'none';
+    };
+    if (isTouchDevice) {
+      setupDiagramContainer.addEventListener('touchstart', hideOnOutside);
+    } else {
+      setupDiagramContainer.addEventListener('click', hideOnOutside);
+    }
+    setupDiagramContainer.dataset.popupOutsideListeners = 'true';
+  }
+}
+function enableDiagramInteractions() {
+  if (!setupDiagramContainer) return;
+  var svg = setupDiagramContainer.querySelector('svg');
+  if (!svg) return;
+  if (cleanupDiagramInteractions) cleanupDiagramInteractions();
+  var root = svg.querySelector('#diagramRoot') || svg;
+  var isTouchDevice = (navigator.maxTouchPoints || 0) > 0;
+  var MAX_SCALE = isTouchDevice ? Infinity : 3;
+  var BASE_MIN_SCALE = isTouchDevice ? 0.55 : 0.6;
+  var MIN_AUTO_SCALE = isTouchDevice ? 0.4 : 0.35;
+  var dataScaleRaw = parseFloat(setupDiagramContainer.dataset.initialScale || '');
+  var fallbackScale = isTouchDevice ? 0.95 : 0.85;
+  var initialScaleRaw = Number.isFinite(dataScaleRaw) && dataScaleRaw > 0 ? dataScaleRaw : fallbackScale;
+  var MIN_SCALE = Math.max(MIN_AUTO_SCALE, Math.min(BASE_MIN_SCALE, initialScaleRaw));
+  var clampScale = function clampScale(value) {
+    if (!Number.isFinite(value) || value <= 0) return MIN_SCALE;
+    if (value > MAX_SCALE) return MAX_SCALE;
+    if (value < MIN_SCALE) return MIN_SCALE;
+    return value;
+  };
+  var INITIAL_SCALE = clampScale(initialScaleRaw);
+  var initialPan = {
+    x: 0,
+    y: 0
+  };
+  if (setupDiagramContainer.dataset.initialPan) {
+    try {
+      var parsed = JSON.parse(setupDiagramContainer.dataset.initialPan);
+      if (parsed && Number.isFinite(parsed.x) && Number.isFinite(parsed.y)) {
+        initialPan = {
+          x: parsed.x,
+          y: parsed.y
+        };
+      }
+    } catch (err) {}
+  }
+  var pan = _objectSpread({}, initialPan);
+  var scale = INITIAL_SCALE;
+  var panning = false;
+  var panStart = _objectSpread({}, pan);
+  var panPointerStart = null;
+  var getPos = function getPos(e) {
+    if (e.touches && e.touches[0]) return {
+      x: e.touches[0].clientX,
+      y: e.touches[0].clientY
+    };
+    if (e.changedTouches && e.changedTouches[0]) return {
+      x: e.changedTouches[0].clientX,
+      y: e.changedTouches[0].clientY
+    };
+    return {
+      x: e.clientX,
+      y: e.clientY
+    };
+  };
+  var getMetrics = function getMetrics() {
+    var _svg$viewBox, _svg$width, _svg$height;
+    var rect = typeof svg.getBoundingClientRect === 'function' ? svg.getBoundingClientRect() : null;
+    var viewBox = (_svg$viewBox = svg.viewBox) === null || _svg$viewBox === void 0 ? void 0 : _svg$viewBox.baseVal;
+    var viewBoxWidth = viewBox && Number.isFinite(viewBox.width) && viewBox.width > 0 ? viewBox.width : ((_svg$width = svg.width) === null || _svg$width === void 0 || (_svg$width = _svg$width.baseVal) === null || _svg$width === void 0 ? void 0 : _svg$width.value) || (rect === null || rect === void 0 ? void 0 : rect.width) || 1;
+    var viewBoxHeight = viewBox && Number.isFinite(viewBox.height) && viewBox.height > 0 ? viewBox.height : ((_svg$height = svg.height) === null || _svg$height === void 0 || (_svg$height = _svg$height.baseVal) === null || _svg$height === void 0 ? void 0 : _svg$height.value) || (rect === null || rect === void 0 ? void 0 : rect.height) || 1;
+    var rectWidth = rect && Number.isFinite(rect.width) && rect.width > 0 ? rect.width : viewBoxWidth;
+    var rectHeight = rect && Number.isFinite(rect.height) && rect.height > 0 ? rect.height : viewBoxHeight;
+    var viewPerPxX = rectWidth > 0 ? viewBoxWidth / rectWidth : 1;
+    var viewPerPxY = rectHeight > 0 ? viewBoxHeight / rectHeight : 1;
+    return {
+      rect: rect,
+      viewPerPxX: viewPerPxX,
+      viewPerPxY: viewPerPxY
+    };
+  };
+  var convertPointerDeltaToView = function convertPointerDeltaToView(dxPx, dyPx) {
+    var _getMetrics = getMetrics(),
+      viewPerPxX = _getMetrics.viewPerPxX,
+      viewPerPxY = _getMetrics.viewPerPxY;
+    return {
+      x: (Number.isFinite(dxPx) ? dxPx : 0) * viewPerPxX / (scale || 1),
+      y: (Number.isFinite(dyPx) ? dyPx : 0) * viewPerPxY / (scale || 1)
+    };
+  };
+  var apply = function apply() {
+    scale = clampScale(scale);
+    root.setAttribute('transform', "translate(".concat(pan.x, ",").concat(pan.y, ") scale(").concat(scale, ")"));
+  };
+  var zoomWithCenter = function zoomWithCenter(factor) {
+    var currentScale = scale;
+    if (!Number.isFinite(currentScale) || currentScale <= 0) return;
+    var targetScale = clampScale(currentScale * factor);
+    if (!Number.isFinite(targetScale) || targetScale <= 0 || targetScale === currentScale) {
+      scale = targetScale;
+      apply();
+      return;
+    }
+    var _getMetrics2 = getMetrics(),
+      rect = _getMetrics2.rect,
+      viewPerPxX = _getMetrics2.viewPerPxX,
+      viewPerPxY = _getMetrics2.viewPerPxY;
+    if (rect && Number.isFinite(rect.width) && Number.isFinite(rect.height) && rect.width > 0 && rect.height > 0) {
+      var centerX = rect.width / 2;
+      var centerY = rect.height / 2;
+      var inverseCurrent = 1 / currentScale;
+      var inverseTarget = 1 / targetScale;
+      pan.x += centerX * viewPerPxX * (inverseTarget - inverseCurrent);
+      pan.y += centerY * viewPerPxY * (inverseTarget - inverseCurrent);
+    }
+    scale = targetScale;
+    apply();
+  };
+  if (zoomInBtn) {
+    zoomInBtn.onclick = function () {
+      zoomWithCenter(1.1);
+    };
+  }
+  if (zoomOutBtn) {
+    zoomOutBtn.onclick = function () {
+      zoomWithCenter(0.9);
+    };
+  }
+  if (resetViewBtn) {
+    resetViewBtn.onclick = function () {
+      pan = _objectSpread({}, initialPan);
+      scale = INITIAL_SCALE;
+      apply();
+      manualPositions = {};
+      renderSetupDiagram();
+      if (typeof scheduleProjectAutoSave === 'function') {
+        scheduleProjectAutoSave();
+      } else if (typeof saveCurrentSession === 'function') {
+        saveCurrentSession();
+      }
+      if (typeof checkSetupChanged === 'function') {
+        checkSetupChanged();
+      }
+    };
+  }
+  var onSvgMouseDown = function onSvgMouseDown(e) {
+    if (e.target.closest('.diagram-node')) return;
+    var pos = getPos(e);
+    panning = true;
+    panPointerStart = pos;
+    panStart = _objectSpread({}, pan);
+    if (e.touches) e.preventDefault();
+  };
+  var onPanMove = function onPanMove(e) {
+    if (!panning || !panPointerStart) return;
+    var pos = getPos(e);
+    var delta = convertPointerDeltaToView(pos.x - panPointerStart.x, pos.y - panPointerStart.y);
+    pan.x = panStart.x + delta.x;
+    pan.y = panStart.y + delta.y;
+    apply();
+    if (e.touches) e.preventDefault();
+  };
+  var stopPanning = function stopPanning() {
+    panning = false;
+    panPointerStart = null;
+  };
+  var dragId = null;
+  var dragPointerStart = null;
+  var dragNode = null;
+  var onDragStart = function onDragStart(e) {
+    var node = e.target.closest('.diagram-node');
+    if (!node) return;
+    dragId = node.getAttribute('data-node');
+    dragNode = node;
+    dragPointerStart = getPos(e);
+    if (e.touches) e.preventDefault();
+    e.stopPropagation();
+  };
+  var onDragMove = function onDragMove(e) {
+    if (!dragId || !dragPointerStart) return;
+    var start = lastDiagramPositions[dragId];
+    if (!start) return;
+    var pos = getPos(e);
+    var delta = convertPointerDeltaToView(pos.x - dragPointerStart.x, pos.y - dragPointerStart.y);
+    var dx = delta.x;
+    var dy = delta.y;
+    var newX = start.x + dx;
+    var newY = start.y + dy;
+    if (gridSnap) {
+      var g = 20;
+      newX = Math.round(newX / g) * g;
+      newY = Math.round(newY / g) * g;
+    }
+    var tx = newX - start.x;
+    var ty = newY - start.y;
+    if (dragNode) dragNode.setAttribute('transform', "translate(".concat(tx, ",").concat(ty, ")"));
+    if (e.touches) e.preventDefault();
+  };
+  var onDragEnd = function onDragEnd(e) {
+    if (!dragId || !dragPointerStart) return;
+    var start = lastDiagramPositions[dragId];
+    if (start) {
+      var pos = getPos(e);
+      var delta = convertPointerDeltaToView(pos.x - dragPointerStart.x, pos.y - dragPointerStart.y);
+      var dx = delta.x;
+      var dy = delta.y;
+      var newX = start.x + dx;
+      var newY = start.y + dy;
+      if (gridSnap) {
+        var g = 20;
+        newX = Math.round(newX / g) * g;
+        newY = Math.round(newY / g) * g;
+      }
+      manualPositions[dragId] = {
+        x: newX,
+        y: newY
+      };
+    }
+    dragId = null;
+    dragNode = null;
+    dragPointerStart = null;
+    renderSetupDiagram();
+    if (typeof scheduleProjectAutoSave === 'function') {
+      scheduleProjectAutoSave();
+    } else if (typeof saveCurrentSession === 'function') {
+      saveCurrentSession();
+    }
+    if (typeof checkSetupChanged === 'function') {
+      checkSetupChanged();
+    }
+    if (e.touches) e.preventDefault();
+  };
+  svg.addEventListener('mousedown', onSvgMouseDown);
+  svg.addEventListener('touchstart', onSvgMouseDown, {
+    passive: false
+  });
+  window.addEventListener('mousemove', onPanMove);
+  window.addEventListener('touchmove', onPanMove, {
+    passive: false
+  });
+  window.addEventListener('mouseup', stopPanning);
+  window.addEventListener('touchend', stopPanning);
+  svg.addEventListener('mousedown', onDragStart);
+  svg.addEventListener('touchstart', onDragStart, {
+    passive: false
+  });
+  window.addEventListener('mousemove', onDragMove);
+  window.addEventListener('touchmove', onDragMove, {
+    passive: false
+  });
+  window.addEventListener('mouseup', onDragEnd);
+  window.addEventListener('touchend', onDragEnd);
+  cleanupDiagramInteractions = function cleanupDiagramInteractions() {
+    svg.removeEventListener('mousedown', onSvgMouseDown);
+    svg.removeEventListener('touchstart', onSvgMouseDown);
+    window.removeEventListener('mousemove', onPanMove);
+    window.removeEventListener('touchmove', onPanMove);
+    window.removeEventListener('mouseup', stopPanning);
+    window.removeEventListener('touchend', stopPanning);
+    svg.removeEventListener('mousedown', onDragStart);
+    svg.removeEventListener('touchstart', onDragStart);
+    window.removeEventListener('mousemove', onDragMove);
+    window.removeEventListener('touchmove', onDragMove);
+    window.removeEventListener('mouseup', onDragEnd);
+    window.removeEventListener('touchend', onDragEnd);
+  };
+  apply();
+}
+function updateDiagramLegend() {
+  if (!diagramLegend) return;
+  var legendItems = [{
+    cls: 'power',
+    text: texts[currentLang].diagramLegendPower
+  }, {
+    cls: 'video',
+    text: texts[currentLang].diagramLegendVideo
+  }, {
+    cls: 'fiz',
+    text: texts[currentLang].diagramLegendFIZ
+  }];
+  diagramLegend.innerHTML = legendItems.map(function (_ref88) {
+    var cls = _ref88.cls,
+      text = _ref88.text;
+    return "<span><span class=\"swatch ".concat(cls, "\"></span>").concat(text, "</span>");
+  }).join('');
+}
+function humanizeKey(key) {
+  var map = {
+    powerDrawWatts: 'Power (W)',
+    capacity: 'Capacity (Wh)',
+    pinA: 'Pin A',
+    dtapA: 'D-Tap A',
+    mount_type: 'Mount',
+    screenSizeInches: 'Screen Size (in)',
+    brightnessNits: 'Brightness (nits)',
+    torqueNm: 'Torque (Nm)',
+    internalController: 'Internal Controller',
+    powerSource: 'Power Source',
+    batteryType: 'Battery Type',
+    connectivity: 'Connectivity'
+  };
+  if (map[key]) return map[key];
+  return key.replace(/_/g, ' ').replace(/([A-Z])/g, ' $1').replace(/^./, function (c) {
+    return c.toUpperCase();
+  });
+}
+function formatValue(value) {
+  if (Array.isArray(value)) {
+    return value.map(function (v) {
+      return formatValue(v);
+    }).join('; ');
+  }
+  if (value && _typeof(value) === 'object') {
+    var parts = [];
+    for (var k in value) {
+      if (value[k] === '' || value[k] === null || value[k] === undefined) continue;
+      parts.push("".concat(humanizeKey(k), ": ").concat(formatValue(value[k])));
+    }
+    return "{ ".concat(parts.join(', '), " }");
+  }
+  if (typeof value === 'boolean') return value ? 'Yes' : 'No';
+  return String(value);
+}
+function createDeviceDetailsList(deviceData) {
+  var list = document.createElement('ul');
+  list.className = 'device-detail-list';
+  var appendItem = function appendItem(key, value, parent) {
+    if (value === '' || value === null || value === undefined) return;
+    var li = document.createElement('li');
+    var label = document.createElement('strong');
+    label.textContent = humanizeKey(key) + ':';
+    li.appendChild(label);
+    if (Array.isArray(value)) {
+      if (value.length && _typeof(value[0]) === 'object') {
+        var subList = document.createElement('ul');
+        subList.className = 'device-detail-list';
+        value.forEach(function (v) {
+          var subLi = document.createElement('li');
+          subLi.appendChild(createDeviceDetailsList(v));
+          subList.appendChild(subLi);
+        });
+        li.appendChild(subList);
+      } else {
+        li.appendChild(document.createTextNode(value.map(function (v) {
+          return formatValue(v);
+        }).join(', ')));
+      }
+    } else if (value && _typeof(value) === 'object') {
+      li.appendChild(createDeviceDetailsList(value));
+    } else {
+      li.appendChild(document.createTextNode(formatValue(value)));
+    }
+    parent.appendChild(li);
+  };
+  if (_typeof(deviceData) !== 'object') {
+    appendItem('powerDrawWatts', deviceData, list);
+  } else {
+    Object.keys(deviceData).forEach(function (k) {
+      return appendItem(k, deviceData[k], list);
+    });
+  }
+  return list;
+}
+function formatDateString(val) {
+  if (!val) return '';
+  var d = new Date(val);
+  if (Number.isNaN(d.getTime())) return String(val);
+  return d.toISOString().split('T')[0];
+}
+function renderDeviceList(categoryKey, ulElement) {
+  ulElement.innerHTML = "";
+  var categoryDevices = devices[categoryKey];
+  if (categoryKey.includes('.')) {
+    var _categoryKey$split3 = categoryKey.split('.'),
+      _categoryKey$split4 = _slicedToArray(_categoryKey$split3, 2),
+      mainCat = _categoryKey$split4[0],
+      subCat = _categoryKey$split4[1];
+    categoryDevices = devices[mainCat] && devices[mainCat][subCat];
+  }
+  if (!categoryDevices) return;
+  var buildItem = function buildItem(name, deviceData, subcategory) {
+    if (name === "None") return;
+    var li = document.createElement("li");
+    var header = document.createElement("div");
+    header.className = "device-summary";
+    var nameSpan = document.createElement("span");
+    nameSpan.textContent = name;
+    var summary = safeGenerateConnectorSummary(deviceData);
+    summary = summary ? summary.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim() : '';
+    if (deviceData.notes) {
+      summary = summary ? "".concat(summary, "; Notes: ").concat(deviceData.notes) : deviceData.notes;
+    }
+    if (summary) {
+      nameSpan.setAttribute('title', summary);
+      nameSpan.setAttribute('data-help', summary);
+    }
+    header.appendChild(nameSpan);
+    var toggleBtn = document.createElement("button");
+    toggleBtn.className = "detail-toggle";
+    toggleBtn.type = "button";
+    toggleBtn.setAttribute("aria-expanded", "false");
+    toggleBtn.textContent = texts[currentLang].showDetails;
+    toggleBtn.setAttribute('data-help', texts[currentLang].showDetails);
+    header.appendChild(toggleBtn);
+    var editBtn = document.createElement("button");
+    editBtn.className = "edit-btn";
+    editBtn.dataset.name = name;
+    editBtn.dataset.category = categoryKey;
+    if (subcategory) editBtn.dataset.subcategory = subcategory;
+    editBtn.textContent = texts[currentLang].editBtn;
+    editBtn.setAttribute('data-help', texts[currentLang].editBtnHelp || texts[currentLang].editBtn);
+    header.appendChild(editBtn);
+    var deleteBtn = document.createElement("button");
+    deleteBtn.className = "delete-btn";
+    deleteBtn.dataset.name = name;
+    deleteBtn.dataset.category = categoryKey;
+    if (subcategory) deleteBtn.dataset.subcategory = subcategory;
+    deleteBtn.textContent = texts[currentLang].deleteDeviceBtn;
+    deleteBtn.setAttribute('data-help', texts[currentLang].deleteDeviceBtnHelp || texts[currentLang].deleteDeviceBtn);
+    header.appendChild(deleteBtn);
+    li.appendChild(header);
+    var detailsDiv = document.createElement("div");
+    detailsDiv.className = "device-details";
+    detailsDiv.style.display = "none";
+    detailsDiv.appendChild(createDeviceDetailsList(deviceData));
+    li.appendChild(detailsDiv);
+    ulElement.appendChild(li);
+  };
+  if (categoryKey === "accessories.cables") {
+    for (var _i26 = 0, _Object$entries14 = Object.entries(categoryDevices); _i26 < _Object$entries14.length; _i26++) {
+      var _Object$entries14$_i = _slicedToArray(_Object$entries14[_i26], 2),
+        subcat = _Object$entries14$_i[0],
+        devs = _Object$entries14$_i[1];
+      for (var name in devs) {
+        buildItem(name, devs[name], subcat);
+      }
+    }
+  } else {
+    for (var _name2 in categoryDevices) {
+      buildItem(_name2, categoryDevices[_name2]);
+    }
+  }
+}
+function refreshDeviceLists() {
+  syncDeviceManagerCategories();
+  deviceManagerLists.forEach(function (_ref89, categoryKey) {
+    var list = _ref89.list,
+      filterInput = _ref89.filterInput;
+    if (!list) return;
+    renderDeviceList(categoryKey, list);
+    var filterValue = filterInput ? filterInput.value : '';
+    filterDeviceList(list, filterValue);
+  });
+}
+refreshDeviceLists();
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    normalizeAutoGearCameraWeightCondition: normalizeAutoGearCameraWeightCondition,
+    normalizeAutoGearWeightOperator: normalizeAutoGearWeightOperator,
+    formatAutoGearCameraWeight: formatAutoGearCameraWeight,
+    getAutoGearCameraWeightOperatorLabel: getAutoGearCameraWeightOperatorLabel
+  };
