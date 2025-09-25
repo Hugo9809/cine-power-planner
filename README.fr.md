@@ -1,321 +1,352 @@
-# 🎥 Cine Power Planner
+# Cine Power Planner
 
-Cet outil basé sur le navigateur aide à planifier des projets caméra professionnels alimentés par des batteries V‑Mount, B‑Mount ou Gold-Mount. Il calcule la **consommation totale**, l’**intensité demandée** (à 14,4 V et 12 V) et l’**autonomie estimée**, tout en vérifiant que la batterie peut fournir la puissance requise en toute sécurité.
+![Icône Cine Power Planner](src/icons/app-icon.svg)
 
-L’ensemble de la planification, des saisies et des exports reste sur votre appareil. La langue, les projets, les appareils personnalisés, les favoris et les retours d’autonomie sont stockés dans votre navigateur, et les mises à jour du service worker proviennent directement de ce dépôt. Lancez Cine Power Planner hors ligne depuis le disque ou hébergez-le en interne pour que chaque département exploite la même version auditée.
+Cine Power Planner est une application web autonome pour créer, auditer et partager des plans d’alimentation professionnels qui ne quittent jamais votre machine. Configurez des rigs V‑Mount, B‑Mount ou Gold-Mount, modélisez les autonomies, consignez les exigences du projet et exportez des lots partageables, entièrement dans le navigateur, même hors ligne. Toutes les dépendances résident dans ce dépôt, garantissant la même expérience sur un poste de plateau, un ordinateur portable de tournage ou un disque isolé.
 
-## En bref
+## En résumé
 
-- **Planifiez sans réseau.** Toutes les icônes, polices et scripts d’assistance sont fournis dans ce dépôt ; ouvrez simplement
-  `index.html` pour travailler hors ligne.
-- **Les projets restent sur l’appareil.** Sauvegardes, retours d’autonomie, appareils personnalisés, favoris et listes de
-  matériel demeurent locaux ; les sauvegardes et paquets partageables sont des JSON lisibles.
-- **Gardez la main sur les mises à jour.** Le service worker ne se met à jour qu’après avoir cliqué sur **Forcer le rechargement**,
-  maintenant l’équipe sur une version fiable en déplacement.
-- **Filets de sécurité en cascade.** Sauvegardes manuelles, enregistrements automatiques et copies horodatées facilitent les
-  exercices de restauration avant le tournage.
+- **Planification hors ligne en priorité.** Concevez des configurations V‑Mount, B‑Mount ou Gold-Mount directement dans le navigateur. Tous les Uicons, polices et scripts auxiliaires sont fournis localement, sans dépendre de CDNs ni du réseau. Clonez le dépôt, débranchez le câble et l’interface reste identique.
+- **Données conservées sur l’appareil.** Projets, retours d’autonomie, favoris, équipements personnalisés, listes et préférences restent locaux. Les sauvegardes et lots partageables sont des fichiers JSON lisibles.
+- **Réseaux de sécurité éprouvés.** Sauvegardes manuelles, enregistrements automatiques en arrière-plan et backups horodatés se complètent pour répéter la boucle Sauvegarder → Backup → Bundle → Restaurer dès la première utilisation.
+- **Mises à jour sous contrôle.** Le service worker attend votre validation avant d’actualiser afin que les équipes restent sur une version vérifiée, même en déplacement ou avec une connectivité limitée.
 
-## Démarrage rapide
+## Vue d’ensemble
 
-1. Téléchargez ou clonez le dépôt et ouvrez `index.html` dans un navigateur moderne.
-2. (Optionnel) Servez le dossier en local (par exemple avec `npx http-server` ou `python -m http.server`) pour que le service
-   worker s’enregistre et mette en cache les ressources pour l’usage hors ligne.
-3. Chargez le planner une fois, fermez l’onglet, coupez la connexion et rouvrez `index.html`. L’indicateur hors ligne doit
-   clignoter brièvement pendant le chargement de l’interface en cache.
-4. Créez un projet, appuyez sur **Entrée** (ou **Ctrl+S**/`⌘S`) pour sauvegarder et surveillez la sauvegarde automatique qui
-   apparaît dans le sélecteur après quelques minutes.
-5. Exportez **Paramètres → Sauvegarde & Restauration → Sauvegarder**, importez le fichier dans un profil de navigation privé et
-   confirmez que projets, favoris et appareils personnalisés se restaurent correctement.
-6. Entraînez-vous à exporter un paquet `.cpproject` et à l’importer sur un autre appareil ou profil pour valider la chaîne
-   sauvegarde → partage → import avant d’arriver sur le plateau.
+### Pensé pour les équipes
 
-## Flux de travail essentiels
+Le planner a été conçu pour les 1ers assistants caméra, data managers et chefs opérateurs. À chaque ajout de corps caméra, plaque batterie, lien sans fil ou accessoire, la consommation totale et les estimations d’autonomie se mettent à jour instantanément. Des alertes signalent les packs surchargés et les listes d’équipement restent liées au contexte du projet pour éviter toute perte lors du passage de relais.
 
-- **Planifier un rig.** Combinez caméras, plaques, liaisons sans fil, moniteurs, moteurs et accessoires tout en suivant en temps
-  réel la consommation et les estimations d’autonomie.
-- **Sauvegarder des versions.** Conservez des instantanés explicites et laissez les sauvegardes automatiques horodatées capturer
-  le travail en cours toutes les 10 minutes.
-- **Partager en toute sécurité.** Exportez des paquets `.cpproject` hors ligne qui valident le schéma à l’import et peuvent inclure
-  des règles automatiques de matériel.
-- **Sauvegarder l’ensemble.** Les sauvegardes complètes incluent projets, favoris, appareils personnalisés, données d’autonomie
-  et préférences d’interface pour ne perdre aucun contexte.
-- **Sauvegardes de migration invisibles.** Avant d’écraser les planificateurs,
-  configurations ou préférences enregistrés, l’application conserve l’instantané
-  JSON précédent dans l’emplacement protégé `__legacyMigrationBackup`. Si une
-  écriture échoue ou produit des données corrompues, les outils de récupération
-  reviennent automatiquement à cette copie de sécurité afin qu’aucune donnée
-  utilisateur ne disparaisse.
+### Prêt à voyager
 
-## Protéger les données hors ligne
+Ouvrez `index.html` directement depuis le disque ou hébergez le dépôt sur votre réseau interne, sans build, serveur ni compte. Un service worker garde l’application disponible hors ligne, mémorise les préférences et n’applique les mises à jour que sur validation. Sauvegarde, partage, import, backup et restauration restent locaux pour protéger les données utilisateur.
 
-- Vérifiez régulièrement la préparation hors ligne : chargez l’application, coupez la connexion, actualisez et assurez-vous que
-  vos projets restent accessibles.
-- Conservez des sauvegardes redondantes sur des supports étiquetés et réimportez-les dans un deuxième profil après chaque export.
-- Avant toute mise à jour ou modification importante, créez une sauvegarde manuelle et vérifiez que la restauration est propre.
+### Pourquoi l’offline-first est crucial
 
----
+Les plateaux disposent rarement d’une connectivité fiable et les studios exigent souvent des outils déconnectés. Cine Power Planner offre les mêmes capacités avec ou sans réseau : chaque ressource est incluse, chaque workflow fonctionne localement et chaque sauvegarde crée des artefacts que vous pouvez archiver sur des supports redondants. Vérifier ces workflows avant le tournage fait partie de la checklist pour ne dépendre d’aucun service externe en pleine production.
 
-## 🌍 Langues
+### Piliers fonctionnels
+
+- **Planifier en confiance.** Calculez la consommation à 14,4 V/12 V (et 33,6 V/21,6 V pour le B‑Mount), comparez les batteries compatibles et visualisez l’impact dans un tableau de bord pondéré.
+- **Rester prêt pour la production.** Les projets capturent équipements, exigences, scénarios, détails d’équipe et listes ; backups automatiques, bundles et mises à jour contrôlées gardent les données à jour sans sacrifier la stabilité.
+- **Travailler à votre manière.** Détection de langue, thèmes sombre, rose et contraste élevé, contrôles typographiques, logos personnalisés et aide contextuelle rendent l’interface accessible en préparation comme sur le plateau.
+
+## Principes fondamentaux
+
+- **Toujours hors ligne.** L’application complète — icônes, pages légales et outils — est livrée dans le dépôt. Ouvrez `index.html` depuis le disque ou un intranet privé et le service worker synchronise les ressources sans imposer de connexion.
+- **Pas de chemins cachés.** Sauvegardes, bundles, imports, backups et restaurations se déroulent intégralement dans le navigateur. Rien ne quitte la machine sauf export explicite.
+- **Filets redondants.** Sauvegardes manuelles, autosaves en arrière-plan, backups périodiques, sauvegardes forcées avant restauration et exports lisibles empêchent toute disparition silencieuse.
+- **Mises à jour prévisibles.** Elles ne s’appliquent que sur votre action. Les versions en cache restent disponibles jusqu’à ce que vous confirmiez **Forcer le rechargement**.
+- **Présentation cohérente.** Uicons locaux, ressources OpenMoji et polices intégrées garantissent la même apparence en studio ou sur un poste déconnecté.
+
+## Table des matières
+
+- [En résumé](#en-résumé)
+- [Vue d’ensemble](#vue-densemble)
+- [Principes fondamentaux](#principes-fondamentaux)
+- [Traductions](#traductions)
+- [Nouveautés](#nouveautés)
+- [Démarrage rapide](#démarrage-rapide)
+- [Prérequis système et navigateurs](#prérequis-système-et-navigateurs)
+- [Exercice sauvegarde/partage/import](#exercice-sauvegardepartageimport)
+- [Routine quotidienne](#routine-quotidienne)
+- [Sauvegarde et gestion de projet](#sauvegarde-et-gestion-de-projet)
+- [Partage et imports](#partage-et-imports)
+- [Formats de fichiers](#formats-de-fichiers)
+- [Visite de l’interface](#visite-de-linterface)
+- [Personnalisation et accessibilité](#personnalisation-et-accessibilité)
+- [Sécurité des données et mode hors ligne](#sécurité-des-données-et-mode-hors-ligne)
+- [Vue d’ensemble des données et du stockage](#vue-densemble-des-données-et-du-stockage)
+- [Gestion des quotas et maintenance](#gestion-des-quotas-et-maintenance)
+- [Backup et restauration](#backup-et-restauration)
+- [Exercices d’intégrité](#exercices-dintégrité)
+- [Check-lists opérationnelles](#check-lists-opérationnelles)
+- [Plan de récupération d’urgence](#plan-de-récupération-durgence)
+- [Listes de matériel et rapports](#listes-de-matériel-et-rapports)
+- [Règles automatiques](#règles-automatiques)
+- [Intelligence d’autonomie](#intelligence-dautonomie)
+- [Raccourcis clavier](#raccourcis-clavier)
+- [Localisation](#localisation)
+- [Installer comme application](#installer-comme-application)
+- [Flux de données matériel](#flux-de-données-matériel)
+- [Développement](#développement)
+- [Dépannage](#dépannage)
+- [Retours et support](#retours-et-support)
+- [Contribuer](#contribuer)
+- [Remerciements](#remerciements)
+- [Licence](#licence)
+
+## Traductions
+
+La documentation existe en plusieurs langues. L’application détecte automatiquement celle du navigateur lors du premier lancement et vous pouvez la modifier à tout moment depuis le menu en haut à droite ou via **Paramètres**.
+
 - 🇬🇧 [English](README.en.md)
 - 🇩🇪 [Deutsch](README.de.md)
 - 🇪🇸 [Español](README.es.md)
 - 🇮🇹 [Italiano](README.it.md)
 - 🇫🇷 [Français](README.fr.md)
 
-L’application adopte automatiquement la langue de votre navigateur lors de la première visite. Vous pouvez ensuite changer de langue à tout moment depuis l’angle supérieur droit, et le choix est mémorisé pour la prochaine session.
+Consultez `docs/translation-guide.md` pour le guide de localisation.
 
----
+## Nouveautés
 
-## 🆕 Nouveautés
-- Les comparaisons de versions de sauvegarde permettent de sélectionner n’importe quel enregistrement manuel ou sauvegarde automatique horodatée pour analyser les différences, ajouter des notes d’incident et exporter un journal avant un retour arrière ou une remise d’images à la post-production.
-- Les sauvegardes normalisent désormais les anciens paquets de données enregistrés en chaînes JSON ou en tableaux d’entrées afin que les exports historiques se restaurent correctement.
-- Les répétitions de restauration chargent une sauvegarde complète de l’application ou un bundle de projet dans un bac à sable isolé pour confirmer que son contenu correspond aux données actives sans toucher aux profils de production.
-- Les règles automatiques d’équipement ajoutent ou retirent du matériel selon le scénario, avec export/import aux côtés des bundles partagés.
-- Le tableau de bord Données & stockage audite projets enregistrés, listes de matériel, appareils personnalisés, favoris et retours d’autonomie depuis les Réglages et affiche la taille approximative des sauvegardes.
-- Une superposition d’état d’enregistrement automatique reflète la dernière note dans Paramètres afin que les équipes visualisent l’activité en arrière-plan pendant les exercices de récupération.
-- Un éditeur d’équipement sensible au monitoring affiche des accessoires supplémentaires de monitoring et de vidéo uniquement lorsque les scénarios l’exigent, pour garder la conception des règles focalisée.
-- Les réglages d’accent et de typographie dans Paramètres permettent d’ajuster couleur d’accent, taille de base et famille de police, aux côtés des thèmes sombre, rose et à fort contraste.
-- Les raccourcis clavier de la recherche globale placent le focus sur le champ instantanément avec / ou Ctrl+K (⌘K sur macOS), même lorsqu’il se trouve dans le menu latéral replié.
-- Le bouton **Forcer le rechargement** vide les fichiers mis en cache par le service worker afin de mettre à jour l’application hors ligne sans effacer projets ou appareils.
-- Les icônes en forme d’étoile fixent caméras, batteries et accessoires favoris en haut des listes et les incluent dans les sauvegardes.
-- Le flux de **Réinitialisation d’usine** télécharge automatiquement une sauvegarde avant de supprimer projets, appareils et paramètres stockés.
-- La liste de matériel et l’aperçu imprimable affichent le nom du projet pour une référence immédiate.
-- Importez un logo personnalisé pour les aperçus imprimables et les sauvegardes.
-- Les sauvegardes incluent les favoris et génèrent une copie automatique avant chaque restauration.
-- Les fiches équipe disposent désormais d’un champ e-mail.
-- Nouveau thème à fort contraste pour améliorer la lisibilité.
-- Les formulaires d’appareils complètent les catégories dynamiquement à partir du schéma.
-- Interface repensée avec contraste renforcé et espacements plus généreux pour une expérience plus nette sur tout appareil.
-- Partage simplifié : téléchargez un fichier JSON regroupant sélections, exigences, liste de matériel, retours d’autonomie et appareils personnalisés, puis importez-le pour tout restaurer. Activez l’option **Inclure les règles automatiques d’équipement** si vous souhaitez embarquer vos automatisations ou laissez-la désactivée pour les conserver en local.
-- Des icônes dédiées pour les scénarios obligatoires mettent en évidence les contraintes du projet.
-- Diagramme de projet interactif pour déplacer les appareils, zoomer, aligner sur la grille et exporter en SVG ou JPG.
-- Thème rose ludique qui persiste entre les visites.
-- Boîte d’aide avec recherche, sections guidées et FAQ ; ouvrez-la avec ?, H, F1 ou Ctrl+/.
-- Aides contextuelles au survol des boutons, champs, menus et en-têtes.
-- Barre de recherche globale pour rejoindre rapidement fonctionnalités, sélecteurs ou rubriques d’aide.
-- Compatibilité avec les caméras équipées de plaques V‑, B‑ ou Gold-Mount.
-- Soumettez des retours d’autonomie avec la température pour affiner les estimations.
-- Tableau de pondération visuel pour analyser l’impact des réglages sur chaque mesure, trié par poids avec pourcentages précis.
-- Générateur de liste de matériel qui agrège équipements choisis et exigences du projet.
-- Les exigences de projet sont sauvegardées avec chaque configuration pour conserver tout le contexte.
-- Les boutons en forme de fourche dupliquent désormais instantanément les entrées personnalisées dans les formulaires de liste de matériel.
+- **Comparaison de sauvegardes** – Sélectionnez un enregistrement manuel ou un auto-backup, analysez les différences, ajoutez des notes d’incident et exportez un rapport avant toute restauration ou remise au montage.
+- **Simulations de restauration** – Chargez un backup complet ou un bundle projet dans une sandbox isolée pour vérifier le contenu sans toucher aux profils de production.
+- **Règles automatiques de matériel** – Définissez des ajouts/suppressions déclenchés par scénario avec contrôle d’import/export et backups horodatés.
+- **Tableau de bord données & stockage** – Auditez projets, listes, matériels personnalisés, favoris et retours d’autonomie directement depuis Paramètres et estimez la taille du backup.
+- **Superposition d’état d’autosave** – Réplique la dernière note d’autosave dans la boîte de dialogue des paramètres afin que les équipes voient l’activité de fond pendant les exercices.
+- **Éditeur sensible au monitoring** – Affiche les champs de monitoring supplémentaires uniquement lorsque les scénarios l’exigent pour garder la création de règles focalisée.
+- **Contrôles d’accent et typographie** – Ajustez couleur d’accent, taille et famille de police ; les thèmes sombre, rose et contraste élevé persistent entre les sessions.
+- **Raccourcis de recherche globale** – Pressez `/` ou `Ctrl+K` (`⌘K` sur macOS) pour cibler la recherche instantanément, même avec la navigation mobile repliée.
+- **Bouton Forcer le rechargement** – Rafraîchit les ressources du service worker sans effacer projets ni appareils.
+- **Favoris épinglés** – Étoile les entrées pour garder caméras, batteries et accessoires préférés en tête de liste et inclus dans les backups.
+- **Réinitialisation usine sécurisée** – Télécharge automatiquement un backup avant toute suppression de projets, appareils ou préférences.
 
----
+Voir les README traduits pour les notes locales.
 
-## 🔧 Fonctionnalités
+## Démarrage rapide
 
-### ✨ Points forts détaillés
+Appliquez cette checklist lors de l’installation ou après une mise à jour pour prouver que sauvegarde, partage, import, backup et restauration fonctionnent en ligne comme hors ligne.
 
-- **Construisez des rigs complexes sans tâtonner.** Combinez caméras, plaques batteries, liaisons sans fil, moniteurs, moteurs et accessoires tout en visualisant la consommation totale à 14,4 V/12 V (et 33,6 V/21,6 V pour B‑Mount) avec des autonomies réalistes issues de données terrain pondérées. Le panneau de comparaison des batteries signale les surcharges avant le départ du matériel.
-- **Gardez chaque département aligné.** Enregistrez plusieurs projets avec exigences, contacts équipe, scénarios et notes. Les listes imprimables regroupent le matériel par catégorie, fusionnent les doublons, affichent les métadonnées techniques et ajoutent les accessoires dictés par les scénarios pour que caméra, lumière et machinerie restent synchronisées.
-- **Travaillez sereinement partout.** Ouvrez `index.html` directement ou servez le dossier via HTTPS pour activer le service worker. La mise en cache hors ligne conserve langue, thèmes, favoris et projets, et **Forcer le rechargement** actualise les fichiers sans toucher aux données.
-- **Adaptez l’outil à votre équipe.** Basculez instantanément entre français, anglais, allemand, espagnol et italien, ajustez taille et police, choisissez une couleur d’accent personnalisée, importez un logo d’impression et alternez thème clair, sombre, rose ou à fort contraste. Menus filtrables, favoris épinglés, boutons de duplication et aides contextuelles gardent un rythme rapide sur le plateau.
+1. Téléchargez ou clonez le dépôt.
+2. Ouvrez `index.html` dans un navigateur moderne.
+3. (Optionnel) Servez le dossier en HTTP(S) pour installer le service worker :
+   ```bash
+   npx http-server
+   # ou
+   python -m http.server
+   ```
+   L’application se met ensuite en cache pour un usage hors ligne et n’applique les mises à jour qu’après validation.
+4. Chargez le planner, fermez l’onglet, coupez la connexion (ou activez le mode avion) puis rouvrez `index.html`. L’indicateur hors ligne doit clignoter brièvement pendant le chargement des ressources mises en cache, y compris les Uicons locaux.
+5. Créez un projet, appuyez sur **Entrée** (ou **Ctrl+S**/`⌘S`) pour déclencher une sauvegarde manuelle et vérifiez l’apparition de l’auto-backup horodaté dans le sélecteur après quelques minutes.
+6. Exportez **Paramètres → Backup & Restauration → Backup** et importez le fichier `planner-backup.json` dans un profil privé. Cette vérification garantit qu’aucune sauvegarde ne reste isolée et démontre le backup forcé avant restauration.
+7. Entraînez-vous à exporter un bundle (`project-name.json`) puis à l’importer sur une seconde machine ou profil pour valider la chaîne Sauvegarder → Partager → Importer et s’assurer que les ressources locales suivent le projet hors ligne.
+8. Archivez le backup vérifié et le bundle avec la copie du dépôt. Les flux restent synchronisés et vous disposez de médias redondants pour les déplacements.
 
-### ✅ Gestion de projet
-- Enregistrez, chargez et supprimez plusieurs projets caméra (appuyez sur Entrée ou Ctrl+S/⌘S pour sauvegarder rapidement ; le bouton reste inactif tant qu’aucun nom n’est saisi).
-- Des instantanés automatiques se créent toutes les 10 minutes tant que Cine Power Planner est ouvert, et la boîte de dialogue Paramètres peut déclencher des exports de sauvegarde horaires en guise de rappel.
-- Téléchargez un fichier JSON qui regroupe sélections, exigences, liste de matériel, retours d’autonomie et appareils personnalisés ; importez-le via le sélecteur de projet pour tout restaurer d’un coup.
-- Les données se stockent localement via `localStorage` et les favoris sont inclus dans les sauvegardes ; utilisez l’option **Réinitialisation d’usine** pour enregistrer automatiquement une copie avant d’effacer projets et modifications d’appareils.
-- Générez des aperçus imprimables pour chaque projet et ajoutez un logo personnalisé afin d’aligner exports et sauvegardes sur l’identité de votre production.
-- Les exigences de projet sont enregistrées avec chaque projet afin que la liste de matériel conserve l’intégralité du contexte.
-- Fonctionne intégralement hors ligne grâce au service worker : langue, thème, données d’appareil et favoris persistent entre les sessions.
-- Mise en page responsive qui s’adapte aux ordinateurs, tablettes et téléphones.
-- Sur les caméras compatibles, choisissez des plaques **V‑Mount**, **B‑Mount** ou **Gold-Mount** ; la liste des batteries se met à jour automatiquement.
+## Prérequis système et navigateurs
 
-### 🧭 Aperçu de l’interface
-- **Rappel express :**
-  - **Recherche globale** (`/` ou `Ctrl+K`/`⌘K`) rejoint fonctionnalités, sélecteurs ou rubriques d’aide même avec le menu replié.
-  - **Centre d’aide** (`?`, `H`, `F1` ou `Ctrl+/`) propose des guides filtrables, une FAQ, des raccourcis et le mode d’aide contextuelle.
-  - **Diagramme de projet** visualise les connexions ; maintenez Maj au téléchargement pour obtenir un JPG plutôt qu’un SVG et afficher les alertes de compatibilité.
-  - **Comparateur de batteries** montre les performances des packs compatibles et met en évidence les risques de surcharge.
-  - **Générateur de liste** crée des tableaux catégorisés avec métadonnées, e-mails de l’équipe et compléments liés aux scénarios prêts pour l’impression.
-  - **Badge hors ligne et Forcer le rechargement** reflètent l’état de la connexion et renouvellent les fichiers en cache sans supprimer les projets.
-- Un lien d’évitement et un indicateur hors ligne maintiennent l’interface accessible au clavier et au tactile ; le badge apparaît dès que la connexion tombe.
-- La barre de recherche globale permet d’atteindre fonctionnalités, sélecteurs ou rubriques d’aide ; appuyez sur Entrée pour valider le résultat en surbrillance, utilisez / ou Ctrl+K (⌘K sur macOS) pour focaliser le champ instantanément (le menu latéral s’ouvre automatiquement sur petit écran) et appuyez sur Échap ou × pour effacer la requête.
-- Les commandes supérieures offrent le changement de langue, les thèmes sombre et rose, ainsi qu’un dialogue Paramètres avec couleur d’accent, taille et famille de police, mode à fort contraste et import de logo, sans oublier les outils de sauvegarde, restauration et Réinitialisation d’usine qui créent une copie avant effacement.
-- Le bouton Aide ouvre une boîte de dialogue recherchable avec sections pas à pas, raccourcis clavier, FAQ et mode d’aide contextuelle optionnel ; vous pouvez aussi l’ouvrir avec ?, H, F1 ou Ctrl+/ même pendant la saisie.
-- Le bouton de rechargement forcé (🔄) efface les fichiers du service worker en cache pour mettre à jour l’application hors ligne sans perdre projets ni appareils.
-- Sur petits écrans, un menu latéral repliable reflète chaque section principale pour une navigation rapide.
+- **Navigateurs modernes.** Validé sur les dernières versions de Chromium, Firefox et Safari. Activez service workers, IndexedDB et stockage persistant.
+- **Appareils adaptés au hors ligne.** Laptops et tablettes doivent autoriser le stockage persistant. Lancez l’application une fois en ligne pour mettre en cache toutes les ressources puis répétez la procédure de rechargement hors ligne avant le départ.
+- **Espace local suffisant.** Les productions importantes accumulent projets, backups et listes. Surveillez l’espace disponible du profil navigateur et exportez régulièrement vers des supports redondants.
+- **Aucune dépendance externe.** Tous les icônes, polices et scripts sont fournis. Copiez également `animated icons 3/` et les Uicons locaux lors du transfert du dossier.
 
-### ♿ Personnalisation et accessibilité
-- Les thèmes incluent mode sombre, accent rose ludique et interrupteur dédié à fort contraste pour une meilleure lisibilité.
-- Les modifications de couleur d’accent, taille de police et typographie s’appliquent instantanément et restent mémorisées dans le navigateur – idéal pour respecter charte graphique ou besoins d’accessibilité.
-- Les raccourcis intégrés couvrent recherche globale (/ ou Ctrl+K/⌘K), aide ( ?, H, F1, Ctrl+/ ), enregistrement (Entrée ou Ctrl+S/⌘S), mode sombre (D) et mode rose (P).
-- Le mode d’aide au survol transforme chaque bouton, champ, menu et en-tête en infobulle à la demande pour accélérer l’apprentissage.
-- Les champs avec recherche incrémentale, les styles visibles au focus et les icônes étoilées facilitent le filtrage des longues listes et l’épinglage des favoris.
-- Importez un logo d’impression, définissez des rôles de monitoring par défaut et ajustez les préréglages d’exigences afin que les exports restent conformes à l’identité de production.
-- Les boutons de duplication dupliquent instantanément les lignes de formulaire, et les favoris épinglés maintiennent le matériel clé en tête de liste – pratique quand le temps est compté.
+## Exercice sauvegarde/partage/import
 
-### 📋 Liste de matériel
-Le générateur transforme vos sélections en une liste de préparation classée par catégorie :
+Cette routine prouve que sauvegarde, partage, import, backup et restauration fonctionnent hors ligne lorsqu’un nouveau membre rejoint l’équipe, qu’un poste est préparé ou qu’une mise à jour majeure arrive.
 
-- Cliquez sur **Générer la liste de matériel** pour compiler équipement choisi et exigences du projet dans un tableau.
-- Le tableau se met à jour dès que sélections ou exigences évoluent.
-- Les éléments sont regroupés par catégorie (caméra, optique, alimentation, monitoring, rigging, machinerie, accessoires, consommables) et les doublons sont fusionnés avec leur quantité.
-- Câbles, structures et accessoires requis pour moniteurs, moteurs, gimbals et scénarios météo sont ajoutés automatiquement.
-- Les scénarios sélectionnés ajoutent l’équipement associé :
-  - *Handheld* + *Easyrig* ajoute une poignée télescopique pour un soutien stable.
-  - *Gimbal* ajoute le gimbal choisi, des bras articulés, des spigots et des pare-soleil ou kits de filtres.
-  - *Outdoor* fournit spigots, parapluies et housses de pluie CapIt.
-  - Les scénarios *Vehicle* et *Steadicam* ajoutent fixations, bras isolants et ventouses selon le besoin.
-- Les sélections d’optique incluent diamètre frontal, poids, données de rods et mise au point minimale, ajoutent supports d’objectif et adaptateurs de matte box, et signalent les standards incompatibles.
-- Les lignes de batteries reprennent les quantités calculées et incluent plaques ou appareils de hotswap lorsque nécessaire.
-- Les préférences de monitoring attribuent des moniteurs par défaut pour chaque rôle (réalisateur, DoP, pointeur, etc.) avec jeux de câbles et récepteurs sans fil.
-- Le formulaire **Exigences du projet** alimente la liste :
-  - **Nom du projet**, **société de production**, **loueur** et **DoP** apparaissent dans l’en-tête des exigences imprimées.
-  - Les entrées **Équipe** collectent noms, rôles et adresses e-mail pour que les contacts suivent le projet.
-  - **Jours de préparation** et **jours de tournage** fournissent des notes de calendrier et, associés à des scénarios extérieurs, suggèrent l’équipement météo.
-  - Les **scénarios requis** ajoutent rigging, gimbals et protections climatiques adaptés.
-  - **Poignée caméra** et **extension viseur** ajoutent les composants sélectionnés ou leurs supports.
-  - Les options de **matte box** et de **filtres** ajoutent le système choisi avec plateaux, adaptateurs à collier ou filtres nécessaires.
-  - Les réglages de **monitoring**, **distribution vidéo** et **viseur** ajoutent moniteurs, câbles et incrustations pour chaque rôle.
-  - Les sélections de **boutons utilisateur** et **préférences trépied** sont listées pour référence rapide.
-- Les éléments de chaque catégorie sont triés alphabétiquement et affichent une info-bulle au survol.
-- La liste de matériel est incluse dans les aperçus imprimables et les fichiers de projet exportés.
-- Les listes sont enregistrées automatiquement avec le projet et incluses dans exports et sauvegardes.
-- **Supprimer la liste de matériel** efface la liste enregistrée et masque la sortie.
-- Les formulaires fournissent des boutons en forme de fourche pour dupliquer instantanément les entrées.
+1. **Sauvegarde de base.** Ouvrez le projet courant, effectuez une sauvegarde manuelle et notez l’horodatage. Un auto-backup doit apparaître en moins de dix minutes.
+2. **Export redondant.** Produisez un backup du planner et un bundle projet. Renommez-le en `.cpproject` si nécessaire et stockez les deux sur des supports distincts.
+3. **Répétition de restauration.** Passez sur un profil privé (ou une seconde machine), importez d’abord le backup complet, puis le bundle. Vérifiez listes, tableaux de bord, règles et favoris.
+4. **Vérification hors ligne.** Sur le profil d’essai, coupez la connexion et rechargez `index.html`. Confirmez l’affichage de l’indicateur hors ligne et le chargement des Uicons et scripts locaux.
+5. **Archivage.** Supprimez le profil de test après validation et étiquetez les exports selon le protocole de production.
 
-### 📦 Catégories d’appareils
-- **Caméra** (1)
-- **Moniteur** (optionnel)
-- **Transmetteur sans fil** (optionnel)
-- **Moteurs FIZ** (0–4)
-- **Contrôleurs FIZ** (0–4)
-- **Capteur de distance** (0–1)
-- **Plaque batterie** (sur les caméras compatibles V‑ ou B‑Mount)
-- **Batterie V‑Mount** (0–1)
+## Routine quotidienne
 
-### ⚙️ Calculs de puissance
-- Consommation totale en watts
-- Intensité à 14,4 V et 12 V
-- Autonomie estimée en heures via la moyenne pondérée des retours
-- Nombre de batteries nécessaire pour un tournage de 10 h
-- Note de température pour ajuster l’autonomie par temps chaud ou froid
+1. **Créer ou charger un projet.** Saisissez un nom et appuyez sur **Entrée**/**Sauvegarder**. Le nom actif apparaît dans les listes et exports.
+2. **Ajouter caméras, alimentation et accessoires.** Sélectionnez les équipements via des menus catégorisés. Recherche incrémentale, favoris et raccourci `/` (`Ctrl+K`/`⌘K`) accélèrent la sélection.
+3. **Contrôler puissance et autonomie.** Surveillez les alertes, comparez les batteries et consultez le tableau de bord d’autonomie pour comprendre l’impact de la température, du codec, de la cadence, etc.
+4. **Rassembler les exigences.** Renseignez équipe, scénarios, poignées, matte box et configuration de monitoring. Les boutons dupliquer accélèrent la saisie. Utilisez **Paramètres → Règles automatiques** pour ajouter/retraiter du matériel spécifique avant export.
+5. **Exporter ou archiver.** Générez la liste de matériel, exportez un backup ou téléchargez un bundle avant de partir sur le plateau. Les backups incluent équipements personnalisés, retours et favoris.
+6. **Valider la préparation hors ligne.** Coupez le réseau, rechargez l’application et vérifiez que projets, réglages et listes restent accessibles. Restaurez le dernier backup en cas d’écart.
 
-### 🔋 Vérification de la sortie batterie
-- Avertit si l’intensité dépasse la sortie de la batterie (pin ou D‑Tap)
-- Indique lorsque la consommation se rapproche de la limite (80 % d’utilisation)
+## Sauvegarde et gestion de projet
 
-### 📊 Comparaison des batteries (optionnel)
-- Compare les estimations d’autonomie de toutes les batteries
-- Graphiques à barres pour une lecture immédiate
+- **Sauvegardes manuelles pour des versions explicites.** Entrez le nom et appuyez sur **Entrée**/**Sauvegarder**. Chaque version conserve équipements, exigences, listes, favoris, schémas et observations.
+- **Autosaves pour le travail en cours.** Tant qu’un projet est ouvert, l’application écrit les changements en arrière-plan. Des entrées `auto-backup-…` apparaissent toutes les dix minutes.
+- **Afficher les auto-backups à la demande.** Activez **Paramètres → Backup & Restauration → Afficher les auto-backups** pour visualiser les horodatages.
+- **Renommer crée une branche.** Modifier le nom puis valider duplique le projet — pratique pour comparer des variantes.
+- **Changer de projet n’efface rien.** Sélectionnez un autre élément dans le menu ; la position et les saisies non sauvegardées se propagent.
+- **Suppression avec confirmation.** L’icône corbeille demande toujours une validation avant d’effacer.
 
-### 🖼 Diagramme du projet
-- Visualise les connexions d’alimentation et de vidéo des appareils sélectionnés
-- Signale les marques FIZ incompatibles
-- Faites glisser les nœuds pour réorganiser le schéma, zoomez avec les boutons et exportez le diagramme en SVG ou JPG
-- Maintenez Shift enfoncé lors du clic sur Télécharger pour exporter une image JPG plutôt qu’un SVG
-- Survolez ou touchez un appareil pour afficher ses détails
-- Utilise les icônes OpenMoji lorsqu’une connexion est disponible et se replie sur les emoji : 🔋 batterie, 🎥 caméra, 🖥️ moniteur, 📡 vidéo, ⚙️ moteur, 🎮 contrôleur, 📐 distance, 🎮 poignée et 🔌 plaque batterie
+## Partage et imports
 
-### 🧮 Pondération des données d’autonomie
-- Les autonomies remontées par les utilisateurs affinent l’estimation
-- Chaque mesure est ajustée selon la température, en passant de ×1 à 25 °C à :
-  - ×1,25 à 0 °C
-  - ×1,6 à −10 °C
-  - ×2 à −20 °C
-- Les réglages caméra influencent la pondération :
-  - Multiplicateurs de résolution : ≥12K ×3, ≥8K ×2, ≥4K ×1,5, ≥1080p ×1 ; les résolutions inférieures sont ramenées à 1080p
-  - La cadence est pondérée linéairement à partir de 24 i/s (par ex. 48 i/s = ×2)
-  - Le Wi-Fi activé ajoute 10 %
-  - Facteurs codecs : RAW/BRAW/ARRIRAW/R3D/CinemaDNG/Canon RAW/X‑OCN ×1 ; ProRes ×1,1 ; DNx/AVID ×1,2 ; All‑Intra ×1,3 ; H.264/AVC ×1,5 ; H.265/HEVC ×1,7
-  - Les entrées moniteur en dessous de la luminosité spécifiée sont pondérées selon leur ratio de luminosité
-- La pondération finale reflète la part de consommation de chaque appareil, de sorte que les projets similaires comptent davantage
-- La moyenne pondérée est utilisée dès que trois entrées minimum sont disponibles
-- Un tableau de bord classe les mesures par poids et affiche le pourcentage associé pour comparer d’un coup d’œil
+- **Bundles compacts.** **Exporter le projet** télécharge `project-name.json` avec le projet actif, les favoris et les équipements personnalisés. Renommez-le en `.cpproject` si votre flux le requiert.
+- **Règles automatiques incluses.** Activez **Inclure les règles automatiques** pour qu’elles voyagent ; à l’import, vos collègues peuvent les ignorer, les appliquer uniquement au projet ou les fusionner au jeu global.
+- **Imports validés hors ligne.** Lors de l’import d’un `auto-gear-rules-*.json`, le planner vérifie type, version sémantique et métadonnées avant d’écraser vos règles. Les fichiers provenant d’une autre version déclenchent des avertissements et l’ancienne capture est restaurée automatiquement en cas d’échec.
+- **Restaurations double tampon.** Avant tout import, une sauvegarde du contexte courant est demandée. Une fois le bundle validé, le projet restauré apparaît en tête du sélecteur.
+- **Workflows inter-appareils hors ligne.** Copiez `index.html`, `script.js`, `devices/` et vos fichiers de backup/bundle sur un support amovible, lancez depuis le disque et continuez sans connexion.
+- **Exporter en conscience.** Relisez le JSON avant partage pour vérifier le contenu. Le format étant lisible, vous pouvez supprimer ou dupliquer les entrées nécessaires.
+- **Synchroniser avec les check-lists.** Lorsqu’un collaborateur vous envoie un bundle mis à jour, importez-le, vérifiez les horodatages `Mis à jour` et archivez le JSON précédent pour garder l’historique.
+- **Partager sans perdre le contexte.** Les bundles mémorisent langue, thème, logo et préférences pour que le destinataire retrouve un environnement familier même hors ligne.
 
-### 🔍 Recherche et filtrage
-- Tapez dans les menus déroulants pour trouver rapidement une entrée
-- Filtrez les listes d’appareils via un champ de recherche
-- Utilisez la barre de recherche globale pour rejoindre fonctionnalités, appareils ou sujets d’aide ; appuyez sur Entrée pour naviguer, / ou Ctrl+K (⌘K sur macOS) pour focaliser instantanément et Échap ou × pour effacer
-- Appuyez sur « / » ou Ctrl+F (⌘F sur macOS) pour atteindre immédiatement le champ de recherche le plus proche
-- Cliquez sur l’étoile à côté d’un sélecteur pour épingler vos favoris et les synchroniser avec les sauvegardes
+## Formats de fichiers
 
-### 🛠 Éditeur de la base d’appareils
-- Ajoutez, modifiez ou supprimez des appareils dans toutes les catégories
-- Importez ou exportez la base complète au format JSON
-- Revenez à la base par défaut depuis `src/data/index.js`
+- **`project-name.json` (bundle).** Contient un projet, les favoris et équipements personnalisés. Renommer en `.cpproject` ne change rien à l’import.
+- **`planner-backup.json` (backup complet).** Généré via **Paramètres → Backup & Restauration → Backup**, il capture projets, auto-backups, favoris, retours, règles, préférences, polices et éléments de branding.
+- **`auto-gear-rules-*.json` (règles).** Export optionnel depuis **Règles automatiques** avec métadonnées de type, version et horodatage pour validation hors ligne. Stockez-les avec les backups complets.
 
-### 🌓 Mode sombre
-- Activez-le via le bouton lune près du sélecteur de langue
-- La préférence est mémorisée dans votre navigateur
+## Visite de l’interface
 
-### 🦄 Mode rose
-- Cliquez sur le bouton licorne (le mode rose fait défiler des icônes toutes les 30 secondes avec une douce animation pop et revient au cheval quand vous quittez le thème) ou appuyez sur **P** pour activer un accent rose ludique
-- Fonctionne avec les thèmes clair et sombre et persiste entre les visites
+### Référence rapide
 
-### ⚫ Mode à fort contraste
-- Active un thème à contraste élevé pour améliorer la lisibilité
+- **Recherche globale** (`/`, `Ctrl+K`, `⌘K`) pour accéder à toute fonctionnalité, liste ou thème d’aide, même navigation repliée.
+- **Centre d’aide** (`?`, `H`, `F1`, `Ctrl+/`) proposant guides, raccourcis, FAQ et mode aide au survol.
+- **Diagramme de projet** pour visualiser alimentation et signal ; maintenez Maj lors de l’export pour enregistrer un JPG.
+- **Comparateur de batteries** affichant les performances et alertant sur les surcharges.
+- **Générateur de listes** qui produit des tableaux catégorisés avec métadonnées, emails et accessoires liés aux scénarios.
+- **Indicateur hors ligne et Forcer le rechargement** montrant l’état de connexion et rafraîchissant les ressources sans toucher aux données.
 
-### 📝 Retours d’autonomie
-- Cliquez sur <strong>Soumettre un retour d’autonomie</strong> sous l’autonomie pour ajouter votre mesure
-- Ajoutez la température pour une pondération plus précise
-- Les entrées sont sauvegardées dans votre navigateur et améliorent les estimations futures
-- Un tableau de bord classe les retours selon leur poids, affiche les pourcentages de contribution et met en évidence les valeurs atypiques pour une analyse rapide
+### Barre supérieure
 
-### ❓ Aide avec recherche
-- Ouvrez-la via le bouton <strong>?</strong> ou avec <kbd>?</kbd>, <kbd>H</kbd>, <kbd>F1</kbd> ou <kbd>Ctrl+/</kbd>
-- Utilisez le champ de recherche pour filtrer instantanément les sujets ; la requête est réinitialisée à la fermeture
-- Fermez avec <kbd>Échap</kbd> ou en cliquant hors de la boîte de dialogue
+- Lien d’évitement, indicateur hors ligne et branding responsive assurent l’accessibilité.
+- La recherche se focalise avec `/` ou `Ctrl+K` (`⌘K`), ouvre la navigation sur mobile et se vide avec Échap.
+- Les contrôles de langue, thèmes sombre/rose et le dialogue Paramètres permettent d’ajuster couleur d’accent, taille et police, contraste élevé, logo personnalisé ainsi que d’accéder aux outils de backup, restauration et réinitialisation (avec sauvegarde automatique).
+- Le bouton d’aide ouvre un dialogue consultable et répond à `?`, `H`, `F1` ou `Ctrl+/` à tout moment.
+- Le bouton 🔄 supprime les ressources mises en cache et recharge l’application sans effacer les projets ou données d’autonomie.
 
----
+### Navigation et recherche
 
-## ▶️ Guide d’utilisation
-1. **Lancez l’application :** ouvrez `index.html` dans un navigateur moderne – aucun serveur requis.
-2. **Explorez la barre supérieure :** changez de langue, activez les thèmes sombre ou rose, ouvrez Paramètres pour régler accent et typographie et lancez l’aide avec ? ou Ctrl+/.
-3. **Sélectionnez les appareils :** choisissez l’équipement par catégorie via les menus déroulants ; saisissez pour filtrer, épinglez vos favoris et laissez les scénarios préconfigurés ajouter automatiquement les accessoires.
-4. **Consultez les calculs :** dès qu’une batterie est sélectionnée, consommation, intensité et autonomie apparaissent ; des alertes signalent les limites dépassées.
-5. **Enregistrez et exportez les projets :** nommez et sauvegardez votre configuration, les sauvegardes automatiques capturent des instantanés et le bouton Exporter télécharge un bundle JSON tandis qu’Importer le restaure.
-6. **Générez la liste de matériel :** cliquez sur **Générer la liste de matériel** pour transformer les exigences en liste catégorisée avec infobulles et accessoires.
-7. **Gérez les données d’appareils :** sélectionnez « Modifier les données d’appareils… » pour ouvrir l’éditeur, ajuster les appareils, exporter/importer du JSON ou revenir aux valeurs par défaut.
-8. **Soumettez des retours d’autonomie :** utilisez « Soumettre un retour d’autonomie » pour enregistrer vos mesures terrain et enrichir la pondération.
+- Sur petits écrans, un menu latéral pliable réplique les sections principales.
+- Chaque liste et éditeur propose une recherche inline et un filtrage instantané. `/` ou `Ctrl+F` (`⌘F`) ciblent le champ le plus proche.
+- Les icônes étoile épinglent les favoris en tête de liste et les conservent dans les sauvegardes.
 
-## 📱 Installer l’application
+## Personnalisation et accessibilité
 
-Cine Power Planner est une application web progressive installable directement depuis le navigateur :
+- Basculez entre thèmes clair, sombre, rose et contraste élevé ; couleur d’accent, taille et typographie persistent hors ligne.
+- Lien d’évitement, focus visibles et mise en page responsive facilitent la navigation clavier, tablette et mobile.
+- Raccourcis couverts : recherche (`/`, `Ctrl+K`, `⌘K`), aide (`?`, `H`, `F1`, `Ctrl+/`), sauvegarde (`Entrée`, `Ctrl+S`, `⌘S`), mode sombre (`D`) et thème rose (`P`).
+- Le mode aide au survol transforme boutons, champs, menus et titres en infobulles à la demande.
+- Téléchargez un logo personnalisé pour les impressions, définissez des valeurs de monitoring et des préréglages d’exigences.
+- Les boutons dupliquer accélèrent la saisie et les favoris conservent les équipements récurrents à portée.
 
-- **Chrome/Edge (bureau) :** cliquez sur l’icône d’installation dans la barre d’adresse.
-- **Android :** ouvrez le menu du navigateur et choisissez *Ajouter à l’écran d’accueil*.
-- **iOS/iPadOS Safari :** touchez *Partager* puis *Ajouter à l’écran d’accueil*.
+## Sécurité des données et mode hors ligne
 
-Une fois installée, l’application se lance depuis l’écran d’accueil, fonctionne hors ligne et se met à jour automatiquement.
+- Le service worker met en cache chaque ressource pour une utilisation hors ligne et n’applique les mises à jour qu’après **Forcer le rechargement**.
+- Projets, retours d’autonomie, favoris, équipements personnalisés, thèmes et listes résident dans le stockage du navigateur. Une demande de persistance est effectuée pour réduire le risque d’éviction.
+- Ouvrir le dépôt depuis le disque ou un réseau interne évite toute fuite vers l’extérieur. Les exports JSON sont lisibles pour audit.
+- L’en-tête affiche un indicateur hors ligne lorsqu’il n’y a pas de connexion ; **Forcer le rechargement** rafraîchit les fichiers sans toucher aux sauvegardes.
+- **Réinitialisation usine** ou nettoyage des données ne s’exécutent qu’après génération d’un backup automatique.
+- Les mises à jour du service worker se téléchargent en tâche de fond et attendent votre accord. À l’apparition de **Mise à jour prête**, terminez vos modifications, créez un backup puis cliquez sur **Forcer le rechargement**.
+- Le stockage principal est IndexedDB, avec préférences légères reflétées dans `localStorage`. Les outils développeur peuvent inspecter ou exporter les enregistrements avant nettoyage.
 
-## 📡 Utilisation hors ligne & stockage
+## Vue d’ensemble des données et du stockage
 
-Servir l’application via HTTP(S) installe un service worker qui met en cache chaque fichier pour que Cine Power Planner fonctionne totalement hors ligne et se mette à jour en arrière-plan. Projets, retours d’autonomie et préférences (langue, thème, mode rose et listes enregistrées) sont stockés dans le `localStorage` du navigateur. Effacer les données du site supprime toutes les informations, et la boîte de dialogue Paramètres propose un flux de **Réinitialisation d’usine** qui sauvegarde automatiquement une copie avant le nettoyage complet. L’en-tête affiche un badge hors ligne dès que la connexion tombe, et l’action 🔄 **Forcer le rechargement** actualise les fichiers en cache sans toucher aux projets enregistrés.
+- Ouvrez **Paramètres → Données & stockage** pour consulter projets, auto-backups, listes, équipements personnalisés, favoris, retours et cache de session avec des compteurs en temps réel.
+- Chaque section précise son contenu ; les sections vides restent masquées pour identifier rapidement l’état du planner.
+- Le résumé estime la taille d’un backup à partir de la dernière exportation.
 
----
+## Gestion des quotas et maintenance
 
-## 🗂️ Structure des fichiers
-```bash
-index.html                 # Mise en page HTML principale
-src/styles/style.css       # Styles et mise en page
-src/styles/overview.css    # Styles de l’aperçu imprimable
-src/styles/overview-print.css # Ajustements d’impression pour l’aperçu
-src/scripts/script.js        # Logique applicative
-src/scripts/storage.js       # Helpers LocalStorage
-src/scripts/static-theme.js  # Logique de thème partagée pour les pages légales
-src/data/index.js       # Liste d’appareils par défaut
-src/data/devices/       # Catalogues d’appareils par catégorie
-src/data/schema.json    # Schéma généré pour les sélecteurs
-src/vendor/             # Bibliothèques tierces incluses
-legal/                     # Pages légales hors ligne
-tools/                     # Scripts de maintenance des données
-tests/                     # Suite de tests Jest
-```
-Les polices sont intégrées localement via `fonts.css`, ce qui permet à l’application de fonctionner entièrement hors ligne une fois les ressources en cache.
+- **Valider l’accès au stockage persistant.** Vérifiez le statut sur chaque poste. Si le navigateur refuse, refaites la demande ou planifiez plus d’exports manuels.
+- **Surveiller la marge disponible.** Utilisez le tableau de bord ou l’inspecteur du navigateur. En cas de place limitée, archivez les backups anciens, supprimez les entrées `auto-backup-…` redondantes et vérifiez que les nouveaux exports aboutissent.
+- **Recharger les caches après mise à jour.** Après **Forcer le rechargement**, ouvrez le centre d’aide, les pages légales et les écrans les plus utilisés pour recharger Uicons, OpenMoji et polices.
+- **Documenter l’état du stockage.** Ajoutez ces vérifications à vos rapports de préparation et de clôture : statut de persistance, espace restant et emplacement des derniers backups.
 
-## 🛠️ Développement
-Nécessite Node.js 18 ou version ultérieure.
+## Backup et restauration
 
-```bash
-npm install
-npm run lint     # exécute uniquement ESLint
-npm test         # lance le linting, les vérifications de données et les tests Jest
-```
+- **Instantanés enregistrés** – Le sélecteur conserve chaque sauvegarde manuelle et crée un `auto-backup-…` toutes les dix minutes.
+- **Backups complets** – **Paramètres → Backup & Restauration → Backup** télécharge `planner-backup.json` avec projets, équipements personnalisés, retours, favoris, règles automatiques et état UI. Les restaurations créent une copie de sécurité et avertissent si le fichier provient d’une autre version.
+- **Backups de migration cachés** – Avant d’écraser planners, configurations ou préférences, l’application enregistre le JSON précédent dans `__legacyMigrationBackup`. En cas d’échec, les outils de récupération reviennent automatiquement à cette copie.
+- **Snapshots automatiques des règles** – Les modifications dans **Règles automatiques** génèrent des copies horodatées toutes les dix minutes.
+- **Réinitialisation usine** – Efface les données uniquement après téléchargement d’un backup.
+- **Rappels horaires** – Une tâche de fond invite à créer un backup toutes les heures pour disposer d’une capture récente.
+- **Boucle de vérification** – Après chaque backup critique, importez-le dans un profil séparé pour confirmer le résultat avant de supprimer l’instance de test.
+- **Habitudes de stockage sécurisées** – Étiquetez les backups avec nom de projet et horodatage puis stockez-les sur des supports redondants (RAID, clé chiffrée, disque optique).
+- **Comparer avant d’écraser** – Téléchargez un backup du contexte actuel avant toute restauration et examinez les différences avec un outil diff JSON pour fusionner manuellement si besoin.
 
-Après modification des données d’appareils, régénérez la base normalisée :
+## Exercices d’intégrité
+
+- **Validation pré-vol (quotidienne ou avant changements majeurs).** Sauvegardez manuellement, exportez un backup complet et un bundle, importez-les dans un profil privé, vérifiez projets, règles, favoris et tableaux puis supprimez le profil.
+- **Répétition hors ligne (hebdomadaire ou avant déplacement).** Lancez le planner, déclenchez un backup, coupez tout réseau et rechargez `index.html`. Vérifiez l’indicateur, la netteté des Uicons et l’ouverture du projet vérifié.
+- **Contrôle de changement (après mise à jour des données ou scripts).** Exécutez `npm test` puis répétez la validation pré-vol. Archivez le backup validé avec une note de changement.
+- **Rotation de redondance (mensuelle ou avant archivage).** Stockez le backup le plus récent, un bundle vérifié (renommé `.cpproject` si besoin) et une archive ZIP du dépôt sur au moins deux supports. Alternez celui que vous testez pour détecter toute dégradation.
+
+## Check-lists opérationnelles
+
+Ces routines garantissent que projets, backups et ressources hors ligne restent synchronisés sur chaque machine utilisant Cine Power Planner. Une version imprimable se trouve dans `docs/operations-checklist.md` et le guide de déplacement `docs/offline-readiness.md` détaille les étapes supplémentaires pour les opérations prolongées sans connexion.
+
+### Préparation avant tournage
+
+1. **Valider la bonne révision.** Ouvrez `index.html`, cliquez sur **Forcer le rechargement** et vérifiez la version dans **Paramètres → À propos**. Ouvrez les pages légales pour précharger Uicons, OpenMoji et polices.
+2. **Charger les projets critiques.** Ouvrez le plan en cours et un `auto-backup-…` récent. Vérifiez listes, retours et favoris dans les deux cas.
+3. **Tester la chaîne de sauvegarde.** Apportez une modification, sauvegardez avec `Entrée` ou `Ctrl+S`/`⌘S`, exportez `planner-backup.json`, importez-le dans un profil privé et comparez le sélecteur.
+4. **Valider le partage.** Exportez `project-name.json`, importez-le, vérifiez règles automatiques, équipements personnalisés et indicateur hors ligne. Supprimez ensuite le profil.
+5. **Simuler l’absence de réseau.** Coupez la connexion ou activez le mode avion, rechargez le planner et vérifiez l’indicateur, la netteté des icônes et l’accès aux projets.
+6. **Archiver les artefacts de validation.** Conservez le backup vérifié, le bundle et une archive du dépôt sur des supports redondants pour reconstruire l’environnement sans Internet.
+
+### Handoff de fin de journée
+
+1. **Capturer un backup final.** Avec le projet ouvert, exportez `planner-backup.json` et le dernier `project-name.json` (renommé `.cpproject` si besoin) et étiquetez-les (date, lieu, journée).
+2. **Valider les imports.** Restaurez les deux fichiers sur une machine de vérification hors ligne pour détecter toute corruption.
+3. **Consigner les changements.** Notez quels auto-backups ont été promus, quels équipements personnalisés ont été ajoutés et quelles règles ont changé. Archivez ces notes avec les backups.
+4. **Actualiser les caches volontairement.** Après archivage, cliquez sur **Forcer le rechargement**, ouvrez le centre d’aide et les pages légales pour recharger les ressources avant la prochaine session hors ligne.
+5. **Transmettre les supports redondants.** Fournissez des copies chiffrées à l’équipe stockage et conservez un second jeu selon la politique de rétention.
+
+## Plan de récupération d’urgence
+
+1. **Mettre en pause et préserver l’état.** Laissez l’onglet ouvert, coupez la connexion si possible et notez l’heure ainsi que l’état de l’indicateur hors ligne. Évitez de recharger.
+2. **Exporter l’existant.** Lancez **Paramètres → Backup & Restauration → Backup** et téléchargez `planner-backup.json`. Même si la liste semble incorrecte, ce fichier capture auto-backups, favoris, retours et règles pour analyse.
+3. **Dupliquer les auto-backups.** Affichez les entrées `auto-backup-…`, promouvez les snapshots récents en sauvegardes manuelles et renommez-les avec un identifiant d’incident ou l’horodatage.
+4. **Examiner le bundle de vérification.** Importez le dernier `project-name.json`/`.cpproject` validé dans un profil privé ou une machine secondaire hors ligne pour vérifier projets, listes et paramètres.
+5. **Restaurer avec soin.** Après validation, restaurez le backup récent sur la machine principale. Le processus crée d’abord une copie de sécurité, ce qui permet de comparer avec un diff JSON si nécessaire.
+6. **Réhydrater et documenter.** Une fois la récupération terminée, cliquez sur **Forcer le rechargement**, ouvrez le centre d’aide et les pages légales pour réchauffer les caches, puis consignez l’incident (symptômes, fichiers exportés, emplacements, machine de vérification). Archivez ce rapport avec le backup.
+
+## Listes de matériel et rapports
+
+- **Générer la liste de matériel et des exigences** transforme la sélection et les exigences en tableaux catégorisés qui se mettent à jour automatiquement.
+- Les entrées sont regroupées par catégorie et les doublons fusionnés. Les scénarios ajoutent rigging, protections météo et accessoires spécifiques pour refléter la réalité terrain.
+- Les règles automatiques s’exécutent après le générateur pour ajouter ou retirer des éléments sans modifier le JSON à la main.
+- Les lignes d’objectifs incluent diamètre frontal, poids, mise au point minimale, besoin de rods et composants matte box. Les lignes batteries tiennent compte du nombre et du matériel de bascule à chaud.
+- Détails de l’équipe, configurations de monitoring, distribution vidéo et notes personnalisées apparaissent dans les exports.
+- Les listes sont sauvegardées avec le projet, visibles dans les aperçus imprimables et incluses dans les bundles ; utilisez **Supprimer la liste** pour repartir de zéro.
+
+## Règles automatiques
+
+Via **Paramètres → Règles automatiques**, ajustez chaque liste sans éditer le JSON manuellement :
+
+- Déclenchez des règles uniquement lorsque des **Scénarios requis** spécifiques sont actifs ; ajoutez un libellé facultatif pour les identifier rapidement.
+- Ajoutez du matériel avec catégorie et quantité ou utilisez **Ajouts personnalisés** pour des rappels, kits spécialisés ou notes. Les règles de retrait masquent certaines lignes générées automatiquement.
+- Les règles s’exécutent après les packs intégrés pour se combiner proprement et sont incluses dans listes, backups et bundles.
+- Sauvegarder une liste conserve l’ensemble de règles actif ; charger le projet ou importer un bundle restaure son périmètre.
+- Exporte/importez l’ensemble en JSON, revenez aux paramètres d’usine ou utilisez l’historique automatique (toutes les dix minutes) si une modification pose problème.
+
+## Intelligence d’autonomie
+
+Les autonomies remontées par les utilisateurs alimentent un modèle pondéré reflétant l’expérience terrain :
+
+- Ajustements de température : ×1 à 25 °C, ×1,25 à 0 °C, ×1,6 à −10 °C, ×2 à −20 °C.
+- Résolution : ≥12K ×3, ≥8K ×2, ≥4K ×1,5, ≥1080p ×1, valeurs inférieures proportionnelles.
+- Cadence : échelle linéaire à partir de 24 fps (48 fps = ×2).
+- Wi‑Fi activé : +10 %.
+- Codecs : RAW/BRAW/ARRIRAW/R3D/CinemaDNG/Canon RAW/X‑OCN ×1 ; ProRes ×1,1 ; DNx/AVID ×1,2 ; All-Intra ×1,3 ; H.264/AVC ×1,5 ; H.265/HEVC ×1,7.
+- Les moniteurs sont pondérés selon le ratio de luminosité.
+- Le poids final reflète la contribution de chaque composant afin que des rigs similaires influencent davantage le modèle.
+- Un tableau de bord trie par poids, affiche les pourcentages et souligne les valeurs atypiques.
+
+## Raccourcis clavier
+
+| Raccourci | Action | Notes |
+| --- | --- | --- |
+| `/`, `Ctrl+K`, `⌘K` | Focaliser la recherche globale | Fonctionne même navigation repliée ; `Échap` efface |
+| `Entrée`, `Ctrl+S`, `⌘S` | Sauvegarder le projet actif | Le bouton reste inactif tant qu’aucun nom n’est saisi |
+| `?`, `H`, `F1`, `Ctrl+/` | Ouvrir l’aide | La boîte de dialogue reste consultable |
+| `D` | Basculer en mode sombre | Aussi disponible dans **Paramètres → Thèmes** |
+| `P` | Activer le thème rose | Compatible avec clair, sombre ou contraste élevé |
+| 🔄 | Recharger les ressources en cache | Également via **Paramètres → Forcer le rechargement** |
+
+## Localisation
+
+Prévisualisez immédiatement de nouvelles langues :
+
+1. Dupliquez le README le plus proche en `README.<lang>.md` et traduisez-le.
+2. Ajoutez les chaînes dans `translations.js` en conservant les placeholders (`%s`).
+3. Copiez et traduisez les pages statiques (confidentialité, mentions légales).
+4. Exécutez `npm test` avant de soumettre une pull request.
+
+## Installer comme application
+
+Cine Power Planner est une Progressive Web App :
+
+1. Ouvrez `index.html` dans un navigateur compatible.
+2. Utilisez l’option **Installer** ou **Ajouter à l’écran d’accueil**.
+   - **Chrome/Edge (desktop)** : icône d’installation dans la barre d’adresse.
+   - **Android** : menu du navigateur → *Ajouter à l’écran d’accueil*.
+   - **Safari iOS** : bouton partager → *Ajouter à l’écran d’accueil*.
+3. Lancez l’application depuis votre liste de programmes. La version installée fonctionne hors ligne et se met à jour automatiquement après validation.
+
+## Flux de données matériel
+
+Les catalogues se trouvent dans `devices/`. Chaque fichier regroupe des équipements associés pour faciliter l’audit. Avant de valider une modification, exécutez :
 
 ```bash
 npm run normalize
@@ -324,9 +355,75 @@ npm run check-consistency
 npm run generate-schema
 ```
 
-Ajoutez `--help` à l’un de ces scripts pour afficher les options disponibles.
+`npm run normalize` nettoie les noms de connecteurs, `npm run unify-ports` unifie les libellés, `npm run check-consistency` vérifie les champs requis et `npm run generate-schema` régénère `schema.json`. Pour itérer sur les données :
 
-Exécutez `npm run help` pour obtenir un rappel rapide des scripts de maintenance et de l’ordre recommandé.
+```bash
+npm run test:data
+```
 
-## 🤝 Contribuer
-Les contributions sont les bienvenues ! Ouvrez un ticket ou proposez une pull request. Lors de corrections de données, joignez des sauvegardes de projet ou des mesures d’autonomie pour aider à maintenir un catalogue fiable pour tous.
+Ajoutez `--help` à n’importe quelle commande pour obtenir de l’aide et consultez les diffs générés avant d’ouvrir une pull request. `npm run help` récapitule les scripts disponibles.
+
+## Développement
+
+Installez Node.js 18 ou supérieur. Après clonage :
+
+```bash
+npm install
+npm run lint
+npm test
+```
+
+`npm test` exécute ESLint, les vérifications de données et Jest séquentiellement (`--runInBand`, `maxWorkers=1`). Pendant l’itération, lancez des suites ciblées :
+
+```bash
+npm run test:unit
+npm run test:data
+npm run test:dom
+npm run test:script
+```
+
+### Bundle pour navigateurs anciens
+
+Après modification de `src/scripts/` ou `src/data/`, lancez `npm run build:legacy` pour régénérer le bundle ES5 servi aux navigateurs plus anciens et maintenir les polyfills locaux à jour.
+
+### Structure des fichiers
+
+```
+index.html
+src/styles/style.css
+src/styles/overview.css
+src/styles/overview-print.css
+src/scripts/script.js
+src/scripts/storage.js
+src/scripts/static-theme.js
+src/data/index.js
+src/data/devices/
+src/data/schema.json
+src/vendor/
+legal/
+tools/
+tests/
+```
+
+## Dépannage
+
+- **Service worker bloqué sur une ancienne version ?** Cliquez sur **Forcer le rechargement** ou faites un hard reload via les outils développeur.
+- **Données manquantes après fermeture d’onglet ?** Vérifiez l’accès au stockage ; la navigation privée peut le bloquer.
+- **Téléchargements bloqués ?** Autorisez les téléchargements multiples pour sauvegardes et bundles.
+- **Scripts en ligne de commande en échec ?** Assurez-vous d’utiliser Node.js 18+, exécutez `npm install` et relancez. En cas d’erreur mémoire, ciblez une suite plus légère (`npm run test:unit`).
+
+## Retours et support
+
+Ouvrez une issue si vous rencontrez un problème, avez une question ou souhaitez proposer une fonctionnalité. Joindre des exports ou des exemples d’autonomie aide à maintenir un catalogue précis.
+
+## Contribuer
+
+Les contributions sont bienvenues ! Lisez `CONTRIBUTING.md`, puis ouvrez une issue ou soumettez une pull request. Lancez `npm test` avant envoi.
+
+## Remerciements
+
+Le planner inclut des Uicons locaux, des ressources OpenMoji et d’autres visuels empaquetés pour disposer d’icônes hors ligne, et utilise lz-string pour stocker les projets de façon compacte dans les URLs et backups.
+
+## Licence
+
+Distribué sous licence ISC. Voir `package.json` pour les détails.
