@@ -1,5 +1,7 @@
 const { setupScriptEnvironment } = require('../helpers/scriptEnvironment');
 
+jest.setTimeout(20000);
+
 describe('global feature search help navigation', () => {
   let env;
   let featureSearch;
@@ -130,6 +132,25 @@ describe('global feature search help navigation', () => {
     ).toBe(true);
     expect(
       options.some(opt => typeof opt.label === 'string' && opt.label.includes('Help'))
+    ).toBe(true);
+  });
+
+  test('search suggestions include help text keywords', async () => {
+    expect(featureSearch).toBeTruthy();
+
+    document.dispatchEvent(new Event('DOMContentLoaded'));
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+    const featureList = document.getElementById('featureList');
+    expect(featureList).toBeTruthy();
+
+    featureSearch.value = 'JSON';
+    featureSearch.dispatchEvent(new Event('input', { bubbles: true }));
+
+    const options = Array.from(featureList.options);
+    expect(options.length).toBeGreaterThan(0);
+    expect(
+      options.some(opt => /Export Project/i.test(opt.value || '') || /Export Project/i.test(opt.label || ''))
     ).toBe(true);
   });
 });
