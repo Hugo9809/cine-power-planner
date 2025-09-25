@@ -5,6 +5,10 @@ offline manuals and translations must reflect the current behavior of the app so
 trust every save, share, import, backup and restore workflow even when they are far from an
 internet connection. Use this guide whenever you add, remove or adjust functionality.
 
+All persistence-facing documentation should now reference the consolidated
+`cinePersistence` module so that future refactors maintain a single, lossless contract for
+saving, sharing, backups and restores.【F:src/scripts/modules/persistence.js†L1-L125】
+
 ## 1. Identify every surface that needs an update
 
 1. **Help dialog topics.** Review contextual help entries, FAQ answers and hover-help copy in
