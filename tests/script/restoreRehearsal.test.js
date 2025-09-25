@@ -174,4 +174,91 @@ describe('restore rehearsal safeguards', () => {
 
     delete input.files;
   });
+
+  test('surfaces rule-by-rule diffs and allows aborting the rehearsal', async () => {
+    loadApp();
+
+    global.exportAllData.mockImplementation(() => ({
+      autoGearRules: [
+        {
+          id: 'rule-rain',
+          label: 'Rain cover',
+          add: [{ name: 'Rain slicker', category: 'Grip', quantity: 1 }],
+          remove: [],
+          scenarios: ['Rain'],
+        },
+      ],
+    }));
+
+    const input = document.getElementById('restoreRehearsalInput');
+    expect(input).not.toBeNull();
+
+    const backupPayload = {
+      data: {
+        autoGearRules: [
+          {
+            id: 'rule-rain',
+            label: 'Rain cover',
+            add: [{ name: 'Rain slicker', category: 'Grip', quantity: 2 }],
+            remove: [],
+            scenarios: ['Rain', 'Storm'],
+          },
+          {
+            id: 'rule-gimbal',
+            label: 'Gimbal prep',
+            add: [{ name: 'Gimbal batteries', category: 'Power', quantity: 4 }],
+            remove: [],
+            scenarios: ['Gimbal'],
+          },
+        ],
+      },
+    };
+
+    const fakeFile = {
+      name: 'rules-backup.json',
+      text: () => Promise.resolve(JSON.stringify(backupPayload)),
+    };
+
+    Object.defineProperty(input, 'files', {
+      configurable: true,
+      get: () => [fakeFile],
+    });
+
+    input.dispatchEvent(new Event('change'));
+
+    await flushPromises();
+    await flushPromises();
+
+    const ruleSection = document.getElementById('restoreRehearsalRuleSection');
+    const ruleList = document.getElementById('restoreRehearsalRuleList');
+    const actions = document.getElementById('restoreRehearsalActions');
+    const status = document.getElementById('restoreRehearsalStatus');
+
+    expect(ruleSection).not.toBeNull();
+    expect(ruleList).not.toBeNull();
+    expect(actions).not.toBeNull();
+    expect(status).not.toBeNull();
+
+    expect(ruleSection.hasAttribute('hidden')).toBe(false);
+    expect(actions.hasAttribute('hidden')).toBe(false);
+
+    const entries = ruleList.querySelectorAll('li.diff-entry');
+    expect(entries.length).toBe(2);
+    expect(entries[0].textContent).toContain('Rain cover');
+    expect(entries[1].textContent).toContain('Gimbal prep');
+
+    const abortButton = document.getElementById('restoreRehearsalAbort');
+    expect(abortButton).not.toBeNull();
+    abortButton.click();
+
+    await flushPromises();
+
+    expect(ruleSection.hasAttribute('hidden')).toBe(true);
+    const textsByLang = window.texts || {};
+    const expectedAbortMessage = textsByLang.en?.restoreRehearsalAbortMessage
+      || 'Rehearsal sandbox cleared. Live data remains untouched.';
+    expect(status.textContent).toBe(expectedAbortMessage);
+
+    delete input.files;
+  });
 });
