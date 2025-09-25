@@ -136,11 +136,41 @@ const AUTO_GEAR_MONITOR_DEFAULTS_KEY =
     : 'cameraPowerPlanner_autoGearMonitorDefaults';
 const AUTO_GEAR_BACKUP_INTERVAL_MS = 10 * 60 * 1000;
 const AUTO_GEAR_BACKUP_RETENTION_DEFAULT = 12;
-const AUTO_GEAR_BACKUP_RETENTION_MIN = 1;
+const AUTO_GEAR_BACKUP_RETENTION_MIN_VALUE = resolveAutoGearBackupRetentionMin();
 const AUTO_GEAR_BACKUP_RETENTION_MAX = 50;
 const AUTO_GEAR_MULTI_SELECT_MIN_ROWS = 8;
 const AUTO_GEAR_MULTI_SELECT_MAX_ROWS = 12;
 const AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS = 1;
+function resolveAutoGearBackupRetentionMin() {
+  const fallback = 1;
+  const scopeCandidates = [];
+
+  if (typeof globalThis !== 'undefined') scopeCandidates.push(globalThis);
+  if (typeof window !== 'undefined') scopeCandidates.push(window);
+  if (typeof global !== 'undefined') scopeCandidates.push(global);
+  if (typeof self !== 'undefined') scopeCandidates.push(self);
+
+  for (const scope of scopeCandidates) {
+    if (scope && typeof scope.AUTO_GEAR_BACKUP_RETENTION_MIN === 'number') {
+      return scope.AUTO_GEAR_BACKUP_RETENTION_MIN;
+    }
+  }
+
+  for (const scope of scopeCandidates) {
+    if (!scope) continue;
+    try {
+      scope.AUTO_GEAR_BACKUP_RETENTION_MIN = fallback;
+      return fallback;
+    } catch (error) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Unable to persist auto gear backup retention minimum to scope.', error);
+      }
+    }
+  }
+
+  return fallback;
+}
+
 function resolveTemperatureStorageKey() {
   const scope =
     typeof globalThis !== 'undefined'
@@ -1583,8 +1613,8 @@ function clampAutoGearBackupRetentionLimit(value) {
   if (!Number.isFinite(rounded)) {
     return AUTO_GEAR_BACKUP_RETENTION_DEFAULT;
   }
-  if (rounded < AUTO_GEAR_BACKUP_RETENTION_MIN) {
-    return AUTO_GEAR_BACKUP_RETENTION_MIN;
+  if (rounded < AUTO_GEAR_BACKUP_RETENTION_MIN_VALUE) {
+    return AUTO_GEAR_BACKUP_RETENTION_MIN_VALUE;
   }
   if (rounded > AUTO_GEAR_BACKUP_RETENTION_MAX) {
     return AUTO_GEAR_BACKUP_RETENTION_MAX;
@@ -13386,7 +13416,7 @@ function updateAutoGearBackupRetentionWarning(message = '') {
 function renderAutoGearBackupRetentionControls() {
   const limitValue = clampAutoGearBackupRetentionLimit(autoGearBackupRetention);
   if (autoGearBackupRetentionInput) {
-    autoGearBackupRetentionInput.setAttribute('min', String(AUTO_GEAR_BACKUP_RETENTION_MIN));
+    autoGearBackupRetentionInput.setAttribute('min', String(AUTO_GEAR_BACKUP_RETENTION_MIN_VALUE));
     autoGearBackupRetentionInput.setAttribute('max', String(AUTO_GEAR_BACKUP_RETENTION_MAX));
     if (autoGearBackupRetentionInput.value !== String(limitValue)) {
       autoGearBackupRetentionInput.value = String(limitValue);

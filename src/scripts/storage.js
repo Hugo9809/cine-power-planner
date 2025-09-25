@@ -117,6 +117,16 @@ const MAX_FULL_BACKUP_HISTORY_ENTRIES = 200;
 const AUTO_GEAR_BACKUP_RETENTION_DEFAULT = 12;
 const AUTO_GEAR_BACKUP_RETENTION_MIN = 1;
 
+if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.AUTO_GEAR_BACKUP_RETENTION_MIN !== 'number') {
+  try {
+    GLOBAL_SCOPE.AUTO_GEAR_BACKUP_RETENTION_MIN = AUTO_GEAR_BACKUP_RETENTION_MIN;
+  } catch (error) {
+    if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+      console.warn('Unable to expose auto gear backup retention minimum globally.', error);
+    }
+  }
+}
+
 const STORAGE_BACKUP_SUFFIX = '__backup';
 const MAX_SAVE_ATTEMPTS = 3;
 const MAX_QUOTA_RECOVERY_STEPS = 100;
