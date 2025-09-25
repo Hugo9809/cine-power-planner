@@ -114,18 +114,36 @@ const STORAGE_AUTO_BACKUP_DELETION_PREFIX = 'auto-backup-before-delete-';
 const MAX_AUTO_BACKUPS = 50;
 const MAX_DELETION_BACKUPS = 20;
 const MAX_FULL_BACKUP_HISTORY_ENTRIES = 200;
-const AUTO_GEAR_BACKUP_RETENTION_DEFAULT = 12;
+const AUTO_GEAR_BACKUP_RETENTION_DEFAULT_VALUE = 12;
 const AUTO_GEAR_BACKUP_RETENTION_MIN = 1;
 
-if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.AUTO_GEAR_BACKUP_RETENTION_MIN !== 'number') {
-  try {
-    GLOBAL_SCOPE.AUTO_GEAR_BACKUP_RETENTION_MIN = AUTO_GEAR_BACKUP_RETENTION_MIN;
-  } catch (error) {
-    if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-      console.warn('Unable to expose auto gear backup retention minimum globally.', error);
+function ensureGlobalAutoGearBackupDefaults() {
+  if (!GLOBAL_SCOPE || typeof GLOBAL_SCOPE !== 'object') {
+    return;
+  }
+
+  if (typeof GLOBAL_SCOPE.AUTO_GEAR_BACKUP_RETENTION_DEFAULT !== 'number') {
+    try {
+      GLOBAL_SCOPE.AUTO_GEAR_BACKUP_RETENTION_DEFAULT = AUTO_GEAR_BACKUP_RETENTION_DEFAULT_VALUE;
+    } catch (error) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Unable to expose auto gear backup retention default globally.', error);
+      }
+    }
+  }
+
+  if (typeof GLOBAL_SCOPE.AUTO_GEAR_BACKUP_RETENTION_MIN !== 'number') {
+    try {
+      GLOBAL_SCOPE.AUTO_GEAR_BACKUP_RETENTION_MIN = AUTO_GEAR_BACKUP_RETENTION_MIN;
+    } catch (error) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Unable to expose auto gear backup retention minimum globally.', error);
+      }
     }
   }
 }
+
+ensureGlobalAutoGearBackupDefaults();
 
 const STORAGE_BACKUP_SUFFIX = '__backup';
 const MAX_SAVE_ATTEMPTS = 3;
@@ -4075,11 +4093,11 @@ function saveAutoGearBackupVisibility(flag) {
 function clampAutoGearBackupRetention(value) {
   const numeric = Number(value);
   if (!Number.isFinite(numeric)) {
-    return AUTO_GEAR_BACKUP_RETENTION_DEFAULT;
+    return getAutoGearBackupRetentionDefault();
   }
   const rounded = Math.round(numeric);
   if (!Number.isFinite(rounded)) {
-    return AUTO_GEAR_BACKUP_RETENTION_DEFAULT;
+    return getAutoGearBackupRetentionDefault();
   }
   if (rounded < AUTO_GEAR_BACKUP_RETENTION_MIN) {
     return AUTO_GEAR_BACKUP_RETENTION_MIN;
@@ -4090,7 +4108,17 @@ function clampAutoGearBackupRetention(value) {
   return rounded;
 }
 
-function normalizeAutoGearBackupRetentionValue(value, fallback = AUTO_GEAR_BACKUP_RETENTION_DEFAULT) {
+function getAutoGearBackupRetentionDefault() {
+  if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.AUTO_GEAR_BACKUP_RETENTION_DEFAULT === 'number') {
+    const candidate = GLOBAL_SCOPE.AUTO_GEAR_BACKUP_RETENTION_DEFAULT;
+    if (Number.isFinite(candidate) && candidate >= AUTO_GEAR_BACKUP_RETENTION_MIN) {
+      return Math.min(Math.max(Math.round(candidate), AUTO_GEAR_BACKUP_RETENTION_MIN), MAX_AUTO_BACKUPS);
+    }
+  }
+  return AUTO_GEAR_BACKUP_RETENTION_DEFAULT_VALUE;
+}
+
+function normalizeAutoGearBackupRetentionValue(value, fallback = getAutoGearBackupRetentionDefault()) {
   if (value === null || value === undefined) {
     return fallback;
   }
@@ -4145,7 +4173,7 @@ function loadAutoGearBackupRetention() {
     safeStorage,
     AUTO_GEAR_BACKUP_RETENTION_STORAGE_KEY,
     "Error loading automatic gear backup retention from localStorage:",
-    AUTO_GEAR_BACKUP_RETENTION_DEFAULT,
+    getAutoGearBackupRetentionDefault(),
     {
       validate: (value) =>
         value === null
@@ -5229,6 +5257,7 @@ const STORAGE_API = {
   saveAutoGearBackupVisibility,
   loadAutoGearBackupRetention,
   saveAutoGearBackupRetention,
+  getAutoGearBackupRetentionDefault,
   loadFullBackupHistory,
   saveFullBackupHistory,
   recordFullBackupHistoryEntry,
