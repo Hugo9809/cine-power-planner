@@ -1884,6 +1884,34 @@ describe('migration backups before overwriting data', () => {
   });
 });
 
+describe('storage snapshot conversion', () => {
+  beforeEach(() => {
+    localStorage.clear();
+    sessionStorage.clear();
+  });
+
+  test('imports preferences stored under simple keys from a snapshot object', () => {
+    const { importAllData, exportAllData } = require('../../src/scripts/storage');
+
+    const snapshot = {
+      darkMode: 'true',
+      accentColor: 'Ocean',
+      customLogo: 'data:image/png;base64,AAA',
+    };
+
+    importAllData(snapshot);
+
+    const exported = exportAllData();
+    expect(exported.preferences).toEqual(
+      expect.objectContaining({
+        darkMode: true,
+        accentColor: 'Ocean',
+      }),
+    );
+    expect(exported.customLogo).toBe('data:image/png;base64,AAA');
+  });
+});
+
 afterAll(() => {
   localStorage.clear();
   sessionStorage.clear();
