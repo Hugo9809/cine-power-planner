@@ -16136,7 +16136,12 @@ function shouldShowInstallBanner() {
 
 function updateInstallBannerVisibility() {
   if (!installPromptBanner) return;
-  if (shouldShowInstallBanner()) {
+  const shouldShow = shouldShowInstallBanner();
+  const root = typeof document !== 'undefined' ? document.documentElement : null;
+  if (root && typeof root.classList !== 'undefined') {
+    root.classList.toggle('install-banner-visible', shouldShow);
+  }
+  if (shouldShow) {
     installPromptBanner.removeAttribute('hidden');
     updateInstallBannerColors();
     updateInstallBannerPosition();
