@@ -43,6 +43,8 @@ const {
   saveAutoGearSeedFlag,
   loadAutoGearBackups,
   saveAutoGearBackups,
+  loadAutoGearBackupRetention,
+  saveAutoGearBackupRetention,
   loadAutoGearPresets,
   saveAutoGearPresets,
   loadAutoGearActivePresetId,
@@ -1128,6 +1130,7 @@ describe('export/import all data', () => {
     saveAutoGearActivePresetId('preset-1');
     saveAutoGearAutoPresetId('preset-auto');
     saveAutoGearBackupVisibility(true);
+    saveAutoGearBackupRetention(20);
     expect(exportAllData()).toEqual({
       devices: validDeviceData,
       setups: { A: { foo: 1 } },
@@ -1141,6 +1144,7 @@ describe('export/import all data', () => {
       autoGearPresets: presets,
       autoGearActivePresetId: 'preset-1',
       autoGearAutoPresetId: 'preset-auto',
+      autoGearBackupRetention: 20,
       autoGearShowBackups: true,
       fullBackupHistory: [],
       preferences: {
@@ -1232,6 +1236,7 @@ describe('export/import all data', () => {
         ],
         autoGearActivePresetId: 'preset-restore',
         autoGearAutoPresetId: 'preset-restore',
+        autoGearBackupRetention: 18,
         autoGearShowBackups: true,
         preferences: {
           darkMode: true,
@@ -1265,6 +1270,7 @@ describe('export/import all data', () => {
     expect(loadAutoGearPresets()).toEqual(data.autoGearPresets);
     expect(loadAutoGearActivePresetId()).toBe('preset-restore');
     expect(loadAutoGearAutoPresetId()).toBe('preset-restore');
+    expect(loadAutoGearBackupRetention()).toBe(18);
       expect(loadAutoGearBackupVisibility()).toBe(true);
       expect(localStorage.getItem('customLogo')).toBe('data:image/svg+xml;base64,PE1PQ0s+');
       expect(localStorage.getItem('darkMode')).toBe('true');
