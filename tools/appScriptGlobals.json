@@ -634,6 +634,7 @@
     "openDialog",
     "openSideMenu",
     "parseColorToRgb",
+    "computeRelativeLuminance",
     "parseDeviceDatabaseImport",
     "pendingSharedLinkListener",
     "pinkModeHelpIcon",
