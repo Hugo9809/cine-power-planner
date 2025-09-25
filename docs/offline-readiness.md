@@ -46,7 +46,10 @@ connectivity:
    match the production log.
 3. **Generate redundancy.** Export a fresh planner backup and project bundle, then import
    both files into an isolated browser profile. Document the validation date, machine name
-   and any notes about data changes since the last rehearsal.
+   and any notes about data changes since the last rehearsal. Include a standalone
+   `auto-gear-rules-*.json` export in this drill—the import flow now verifies the file
+   type, semantic version and timestamp metadata entirely offline, warning you about
+   mismatches and restoring the pre-import snapshot automatically if validation fails.
 4. **Simulate outages.** With the verification profile still offline, reload the planner
    and navigate the interface. Confirm locally stored Uicons, fonts and helper scripts stay
    available and that autosave warnings do not appear.
@@ -83,7 +86,9 @@ this triage list:
    saves. This protects data from automated cleanup.
 3. **Validate in isolation.** Import the suspect project bundle into a private profile that
    stays offline. Compare its contents against the production machine to confirm which data
-   diverged.
+   diverged. Re-run the latest automatic gear rules export as well; the validator highlights
+   missing metadata or version drift and protects the existing rules by rolling back
+   automatically if the payload cannot be trusted.
 4. **Restore with safeguards.** After validation, restore the fresh backup on the primary
    machine. The app captures a pre-restore snapshot automatically, so retain it for diffing
    if you need to merge notes.

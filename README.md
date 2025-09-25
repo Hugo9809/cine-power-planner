@@ -318,6 +318,12 @@ Use Cine Power Planner end-to-end with the following routine:
   gear rules** toggle during export to decide whether your automations ship with
   the bundle; teammates who import the file can ignore them, apply them only to
   the imported project or merge them into their global ruleset.
+- **Standalone rule imports validate metadata offline.** When you import an
+  `auto-gear-rules-*.json` file, the planner now checks the file type, semantic
+  version and timestamp metadata before touching your saved rules—even without
+  connectivity. You’ll see a warning if the payload came from an older or newer
+  build or if required fields were removed, and the previous snapshot is restored
+  automatically if validation fails.
 - **Restores are double-buffered.** Importing a bundle prompts you to save a
   backup of your current environment first. After choosing the bundle file, the
   planner validates its JSON schema, merges new devices and places the restored
@@ -350,8 +356,10 @@ Use Cine Power Planner end-to-end with the following routine:
   font and branding asset so a restore never loses context.
 - **`auto-gear-rules-*.json` (rule exports).** Optional downloads from
   **Automatic Gear Rules** provide timestamped copies of your automation setup.
-  Store them alongside full backups so custom presets never disappear during
-  cross-team handoffs.
+  They now embed file type, semantic version and timestamp metadata so the
+  importer can validate payloads offline. Store them alongside full backups so
+  custom presets never disappear during cross-team handoffs, and keep an eye on
+  import warnings if you restore them on a different build.
 
 ## Interface Tour
 

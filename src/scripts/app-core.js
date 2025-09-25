@@ -14814,6 +14814,98 @@ function deleteAutoGearRule(ruleId) {
   }
 }
 
+function normalizeAutoGearPayloadMetadata(candidate) {
+  if (!candidate || typeof candidate !== 'object') return null;
+  const metadata = {};
+
+  const assignIfString = (key, value) => {
+    if (typeof value !== 'string') return;
+    const trimmed = value.trim();
+    if (!trimmed) return;
+    if (!Object.prototype.hasOwnProperty.call(metadata, key) || !metadata[key]) {
+      metadata[key] = trimmed;
+    }
+  };
+
+  assignIfString('type', candidate.type);
+  assignIfString('version', candidate.version);
+
+  const timestampFields = [
+    ['createdAt', 'createdAt'],
+    ['created_at', 'createdAt'],
+    ['created', 'createdAt'],
+    ['timestamp', 'timestamp'],
+    ['exportedAt', 'exportedAt'],
+    ['exported_at', 'exportedAt'],
+    ['savedAt', 'savedAt'],
+    ['saved_at', 'savedAt'],
+    ['updatedAt', 'updatedAt'],
+    ['updated_at', 'updatedAt'],
+    ['modifiedAt', 'updatedAt'],
+    ['modified_at', 'updatedAt'],
+  ];
+
+  timestampFields.forEach(([prop, target]) => {
+    if (metadata[target]) return;
+    assignIfString(target, candidate[prop]);
+  });
+
+  if (!metadata.timestamp) {
+    const orderedKeys = ['createdAt', 'timestamp', 'exportedAt', 'savedAt', 'updatedAt'];
+    for (let i = 0; i < orderedKeys.length; i += 1) {
+      const key = orderedKeys[i];
+      if (metadata[key]) {
+        metadata.timestamp = metadata[key];
+        metadata.timestampSource = key;
+        break;
+      }
+    }
+  }
+
+  if (metadata.timestamp && !metadata.timestampSource) {
+    metadata.timestampSource = 'timestamp';
+  }
+
+  return Object.keys(metadata).length ? metadata : null;
+}
+
+function collectAutoGearPayloadMetadata(...sources) {
+  const queue = [];
+  const visited = new Set();
+  const metadata = {};
+
+  const enqueue = value => {
+    if (!value || typeof value !== 'object') return;
+    if (visited.has(value)) return;
+    visited.add(value);
+    queue.push(value);
+  };
+
+  sources.forEach(source => enqueue(source));
+
+  while (queue.length) {
+    const candidate = queue.shift();
+    const normalized = normalizeAutoGearPayloadMetadata(candidate);
+    if (normalized) {
+      ['type', 'version', 'createdAt', 'exportedAt', 'savedAt', 'updatedAt', 'timestamp', 'timestampSource'].forEach(key => {
+        if (!normalized[key]) return;
+        if (!Object.prototype.hasOwnProperty.call(metadata, key) || !metadata[key]) {
+          metadata[key] = normalized[key];
+        }
+      });
+    }
+
+    if (candidate.meta && typeof candidate.meta === 'object') {
+      enqueue(candidate.meta);
+    }
+    if (candidate.metadata && typeof candidate.metadata === 'object') {
+      enqueue(candidate.metadata);
+    }
+  }
+
+  return Object.keys(metadata).length ? metadata : null;
+}
+
 function parseAutoGearImportPayload(data) {
   const extractMonitorDefaults = source => {
     if (!source || typeof source !== 'object') return null;
@@ -14861,7 +14953,8 @@ function parseAutoGearImportPayload(data) {
 
   const initialValue = resolveValue(data);
   if (Array.isArray(initialValue)) {
-    return { rules: initialValue, monitorDefaults: null };
+    const metadata = collectAutoGearPayloadMetadata(initialValue);
+    return { rules: initialValue, monitorDefaults: null, metadata };
   }
   if (!initialValue || typeof initialValue !== 'object') {
     return null;
@@ -14880,7 +14973,13 @@ function parseAutoGearImportPayload(data) {
         const monitorDefaults = (parent ? extractMonitorDefaults(parent) : null)
           || (root ? extractMonitorDefaults(root) : null)
           || null;
-        return { rules: value, monitorDefaults };
+        const metadata = collectAutoGearPayloadMetadata(
+          parent,
+          value,
+          root,
+          baseRoot,
+        );
+        return { rules: value, monitorDefaults, metadata };
       }
       value.forEach(item => {
         if (item && typeof item === 'object') {
@@ -14906,14 +15005,26 @@ function parseAutoGearImportPayload(data) {
       ? resolveValue(value.autoGearRules)
       : null;
     if (Array.isArray(rawAutoGearRules)) {
-      return { rules: rawAutoGearRules, monitorDefaults: fallbackDefaults };
+      const metadata = collectAutoGearPayloadMetadata(
+        value,
+        parent,
+        root,
+        baseRoot,
+      );
+      return { rules: rawAutoGearRules, monitorDefaults: fallbackDefaults, metadata };
     }
 
     const rawRules = Object.prototype.hasOwnProperty.call(value, 'rules')
       ? resolveValue(value.rules)
       : null;
     if (Array.isArray(rawRules)) {
-      return { rules: rawRules, monitorDefaults: fallbackDefaults };
+      const metadata = collectAutoGearPayloadMetadata(
+        value,
+        parent,
+        root,
+        baseRoot,
+      );
+      return { rules: rawRules, monitorDefaults: fallbackDefaults, metadata };
     }
     if (rawRules && typeof rawRules === 'object') {
       const nestedAutoGearRules = Object.prototype.hasOwnProperty.call(rawRules, 'autoGearRules')
@@ -14921,9 +15032,17 @@ function parseAutoGearImportPayload(data) {
         : null;
       if (Array.isArray(nestedAutoGearRules)) {
         const nestedDefaults = extractMonitorDefaults(rawRules) || fallbackDefaults;
+        const metadata = collectAutoGearPayloadMetadata(
+          rawRules,
+          value,
+          parent,
+          root,
+          baseRoot,
+        );
         return {
           rules: nestedAutoGearRules,
           monitorDefaults: nestedDefaults,
+          metadata,
         };
       }
     }
@@ -14940,6 +15059,8 @@ function parseAutoGearImportPayload(data) {
       { value: value.autoGear, key: 'autoGear' },
       { value: value.rules, key: 'rules' },
       { value: value.autoGearRules, key: 'autoGearRules' },
+      { value: value.meta, key: 'meta' },
+      { value: value.metadata, key: 'metadata' },
     ];
     containerEntries.forEach(entry => {
       if (!entry.value) return;
@@ -14966,27 +15087,277 @@ function parseAutoGearImportPayload(data) {
   return null;
 }
 
+function parseSemanticVersion(version) {
+  if (typeof version !== 'string') return null;
+  const trimmed = version.trim();
+  if (!trimmed) return null;
+  const match = trimmed.match(/^(\d+)\.(\d+)\.(\d+)(?:[-+].*)?$/);
+  if (!match) return null;
+  return {
+    major: Number.parseInt(match[1], 10),
+    minor: Number.parseInt(match[2], 10),
+    patch: Number.parseInt(match[3], 10),
+    raw: trimmed,
+  };
+}
+
+function compareSemanticVersions(a, b) {
+  if (!a || !b) return null;
+  if (a.major !== b.major) {
+    return a.major > b.major ? 1 : -1;
+  }
+  if (a.minor !== b.minor) {
+    return a.minor > b.minor ? 1 : -1;
+  }
+  if (a.patch !== b.patch) {
+    return a.patch > b.patch ? 1 : -1;
+  }
+  return 0;
+}
+
+function isValidIsoTimestamp(value) {
+  if (typeof value !== 'string') return false;
+  const trimmed = value.trim();
+  if (!trimmed) return false;
+  const parsed = Date.parse(trimmed);
+  if (Number.isNaN(parsed)) return false;
+  return Number.isFinite(parsed);
+}
+
+function validateAutoGearImportPayload(parsed) {
+  const initialMetadata = parsed?.metadata && typeof parsed.metadata === 'object'
+    ? { ...parsed.metadata }
+    : {};
+  const validation = {
+    metadata: initialMetadata,
+    warnings: [],
+    errors: [],
+  };
+
+  if (!parsed || !Array.isArray(parsed.rules)) {
+    validation.errors.push({ code: 'invalid-rules' });
+    return validation;
+  }
+
+  const metadata = validation.metadata;
+  const expectedType = 'camera-power-planner/auto-gear-rules';
+  const typeValue = typeof metadata.type === 'string' ? metadata.type.trim() : '';
+  if (!typeValue) {
+    validation.warnings.push({ code: 'missing-metadata', field: 'type' });
+  } else if (typeValue !== expectedType) {
+    validation.errors.push({ code: 'type-mismatch', expected: expectedType, actual: typeValue });
+  } else {
+    metadata.type = typeValue;
+  }
+
+  let versionValue = '';
+  if (typeof metadata.version === 'string') {
+    versionValue = metadata.version.trim();
+    if (!versionValue) {
+      validation.warnings.push({ code: 'missing-metadata', field: 'version' });
+    }
+  } else if (metadata.version != null) {
+    validation.warnings.push({ code: 'invalid-metadata', field: 'version' });
+  } else {
+    validation.warnings.push({ code: 'missing-metadata', field: 'version' });
+  }
+
+  const parsedVersion = parseSemanticVersion(versionValue);
+  if (versionValue && !parsedVersion) {
+    validation.warnings.push({ code: 'invalid-version-format', value: versionValue });
+  }
+  metadata.version = versionValue;
+
+  const timestampValue = typeof metadata.timestamp === 'string' ? metadata.timestamp.trim() : '';
+  if (!timestampValue) {
+    validation.warnings.push({ code: 'missing-metadata', field: 'timestamp' });
+  } else if (!isValidIsoTimestamp(timestampValue)) {
+    validation.warnings.push({ code: 'invalid-timestamp', value: timestampValue });
+  }
+  metadata.timestamp = timestampValue;
+
+  const localVersion = typeof APP_VERSION === 'string' ? parseSemanticVersion(APP_VERSION) : null;
+  if (parsedVersion && localVersion) {
+    const comparison = compareSemanticVersions(parsedVersion, localVersion);
+    if (comparison > 0) {
+      validation.warnings.push({
+        code: 'newer-version',
+        importedVersion: parsedVersion.raw,
+        currentVersion: localVersion.raw,
+      });
+    } else if (comparison < 0) {
+      validation.warnings.push({
+        code: 'older-version',
+        importedVersion: parsedVersion.raw,
+        currentVersion: localVersion.raw,
+      });
+    }
+  }
+
+  if (!metadata.type && !metadata.version && !metadata.timestamp) {
+    validation.metadata = null;
+  }
+
+  return validation;
+}
+
+function getAutoGearImportMetadataFieldLabel(field) {
+  const localeTexts = getLanguageTexts(currentLang);
+  const englishTexts = getLanguageTexts('en');
+  const key = field === 'timestamp'
+    ? 'autoGearImportMetadataLabelTimestamp'
+    : field === 'version'
+      ? 'autoGearImportMetadataLabelVersion'
+      : 'autoGearImportMetadataLabelType';
+  return localeTexts?.[key]
+    || englishTexts?.[key]
+    || field;
+}
+
+function formatAutoGearImportWarningMessage(warning, metadata) {
+  const localeTexts = getLanguageTexts(currentLang);
+  const englishTexts = getLanguageTexts('en');
+
+  switch (warning.code) {
+    case 'newer-version': {
+      const template = localeTexts?.autoGearImportNewerVersionWarning
+        || englishTexts?.autoGearImportNewerVersionWarning
+        || 'Imported rules were created with version {importVersion}, which is newer than this build ({appVersion}).';
+      return template
+        .replace('{importVersion}', warning.importedVersion || metadata?.version || '')
+        .replace('{appVersion}', warning.currentVersion || APP_VERSION || '');
+    }
+    case 'older-version': {
+      const template = localeTexts?.autoGearImportOlderVersionWarning
+        || englishTexts?.autoGearImportOlderVersionWarning
+        || 'Imported rules were created with version {importVersion}, which is older than this build ({appVersion}).';
+      return template
+        .replace('{importVersion}', warning.importedVersion || metadata?.version || '')
+        .replace('{appVersion}', warning.currentVersion || APP_VERSION || '');
+    }
+    case 'invalid-version-format': {
+      const template = localeTexts?.autoGearImportInvalidVersionWarning
+        || englishTexts?.autoGearImportInvalidVersionWarning
+        || 'Imported rules report version "{value}", which is not a valid semantic version string.';
+      return template.replace('{value}', warning.value || metadata?.version || '');
+    }
+    case 'invalid-timestamp': {
+      const template = localeTexts?.autoGearImportInvalidTimestampWarning
+        || englishTexts?.autoGearImportInvalidTimestampWarning
+        || 'The import timestamp "{value}" could not be verified.';
+      return template.replace('{value}', warning.value || metadata?.timestamp || '');
+    }
+    default:
+      return '';
+  }
+}
+
+function displayAutoGearImportWarnings(warnings, metadata) {
+  if (!Array.isArray(warnings) || !warnings.length) return;
+  const missingFields = [];
+  const invalidFields = [];
+
+  warnings.forEach(warning => {
+    if (!warning || typeof warning !== 'object') return;
+    if (warning.code === 'missing-metadata' && warning.field) {
+      if (!missingFields.includes(warning.field)) {
+        missingFields.push(warning.field);
+      }
+    } else if (warning.code === 'invalid-metadata' && warning.field) {
+      if (!invalidFields.includes(warning.field)) {
+        invalidFields.push(warning.field);
+      }
+    } else {
+      const message = formatAutoGearImportWarningMessage(warning, metadata);
+      if (message) {
+        showNotification('warning', message);
+      }
+    }
+  });
+
+  const localeTexts = getLanguageTexts(currentLang);
+  const englishTexts = getLanguageTexts('en');
+
+  if (missingFields.length) {
+    const labels = missingFields.map(field => getAutoGearImportMetadataFieldLabel(field));
+    const labelList = formatListForLang(currentLang, labels);
+    const template = localeTexts?.autoGearImportMissingMetadataWarning
+      || englishTexts?.autoGearImportMissingMetadataWarning
+      || 'Imported rules are missing required metadata: {fields}.';
+    showNotification('warning', template.replace('{fields}', labelList));
+  }
+
+  if (invalidFields.length) {
+    const labels = invalidFields.map(field => getAutoGearImportMetadataFieldLabel(field));
+    const labelList = formatListForLang(currentLang, labels);
+    const template = localeTexts?.autoGearImportInvalidMetadataWarning
+      || englishTexts?.autoGearImportInvalidMetadataWarning
+      || 'Imported rules include invalid metadata: {fields}.';
+    showNotification('warning', template.replace('{fields}', labelList));
+  }
+}
+
 function importAutoGearRulesFromData(data, options = {}) {
+  const previousRules = getAutoGearRules();
+  const previousMonitorDefaults = getAutoGearMonitorDefaultsSnapshot();
   const parsed = parseAutoGearImportPayload(data);
   if (!parsed || !Array.isArray(parsed.rules)) {
-    throw new Error('Invalid automatic gear rules import payload');
+    const error = new Error('Invalid automatic gear rules import payload');
+    error.userMessage = texts[currentLang]?.autoGearImportSchemaError
+      || texts.en?.autoGearImportSchemaError
+      || 'Import failed. The file does not match the automatic gear rules export format.';
+    error.validationWarnings = [];
+    error.validationMetadata = null;
+    throw error;
   }
-  setAutoGearRules(parsed.rules);
-  if (parsed.monitorDefaults && typeof parsed.monitorDefaults === 'object') {
-    setAutoGearMonitorDefaults(parsed.monitorDefaults);
-  } else {
-    updateAutoGearMonitorDefaultOptions();
+
+  const validation = validateAutoGearImportPayload(parsed);
+  if (validation.errors.length) {
+    const message = texts[currentLang]?.autoGearImportSchemaError
+      || texts.en?.autoGearImportSchemaError
+      || 'Import failed. The file does not match the automatic gear rules export format.';
+    const error = new Error(message);
+    error.userMessage = message;
+    error.validationErrors = validation.errors;
+    error.validationWarnings = validation.warnings;
+    error.validationMetadata = validation.metadata;
+    throw error;
+  }
+
+  try {
+    setAutoGearRules(parsed.rules);
+    if (parsed.monitorDefaults && typeof parsed.monitorDefaults === 'object') {
+      setAutoGearMonitorDefaults(parsed.monitorDefaults);
+    } else {
+      updateAutoGearMonitorDefaultOptions();
+      renderAutoGearMonitorDefaultsControls();
+    }
+    closeAutoGearEditor();
+    renderAutoGearRulesList();
+    updateAutoGearCatalogOptions();
+    if (typeof refreshGearListIfVisible === 'function') {
+      refreshGearListIfVisible();
+    }
+  } catch (error) {
+    setAutoGearRules(previousRules);
+    setAutoGearMonitorDefaults(previousMonitorDefaults, { skipRender: true, skipRefresh: true });
+    renderAutoGearRulesList();
+    updateAutoGearCatalogOptions();
     renderAutoGearMonitorDefaultsControls();
+    if (typeof refreshGearListIfVisible === 'function') {
+      refreshGearListIfVisible();
+    }
+    throw error;
   }
-  closeAutoGearEditor();
-  renderAutoGearRulesList();
-  updateAutoGearCatalogOptions();
+
   if (!options.silent) {
     const message = texts[currentLang]?.autoGearImportSuccess
       || texts.en?.autoGearImportSuccess
       || 'Automatic gear rules imported.';
     showNotification('success', message);
   }
+
+  displayAutoGearImportWarnings(validation.warnings, validation.metadata);
   return getAutoGearRules();
 }
 
@@ -15175,9 +15546,15 @@ function handleAutoGearImportSelection(event) {
       importAutoGearRulesFromData(parsed);
     } catch (error) {
       console.warn('Automatic gear rules import failed', error);
-      const errorMsg = texts[currentLang]?.autoGearImportError
+      if (Array.isArray(error?.validationWarnings) && error.validationWarnings.length) {
+        displayAutoGearImportWarnings(error.validationWarnings, error.validationMetadata || null);
+      }
+      const fallbackErrorMsg = texts[currentLang]?.autoGearImportError
         || texts.en?.autoGearImportError
         || 'Import failed. Please choose a valid automatic gear rules file.';
+      const errorMsg = typeof error?.userMessage === 'string' && error.userMessage.trim()
+        ? error.userMessage
+        : fallbackErrorMsg;
       showNotification('error', errorMsg);
     } finally {
       if (input) input.value = '';
