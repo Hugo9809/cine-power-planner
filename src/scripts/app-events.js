@@ -5,6 +5,30 @@
           normalizeSetupName, createProjectInfoSnapshotForStorage,
           applyDynamicFieldValues, applyBatteryPlateSelectionFromBattery */
 
+const AUTO_BACKUP_RENAMED_FLAG =
+  (typeof globalThis !== 'undefined' && globalThis.__CINE_AUTO_BACKUP_RENAMED_FLAG)
+    ? globalThis.__CINE_AUTO_BACKUP_RENAMED_FLAG
+    : '__cineAutoBackupRenamed';
+
+function markAutoBackupDataAsRenamed(value) {
+  if (!value || typeof value !== 'object') {
+    return;
+  }
+  try {
+    value[AUTO_BACKUP_RENAMED_FLAG] = true;
+  } catch (assignmentError) {
+    void assignmentError;
+  }
+  const info = value.projectInfo;
+  if (info && typeof info === 'object') {
+    try {
+      info[AUTO_BACKUP_RENAMED_FLAG] = true;
+    } catch (infoError) {
+      void infoError;
+    }
+  }
+}
+
 // Language selection
 languageSelect.addEventListener("change", (event) => {
   setLanguage(event.target.value);
@@ -47,6 +71,9 @@ saveSetupBtn.addEventListener("click", () => {
 
   const selectedName = setupSelect ? setupSelect.value : '';
   const renamingExisting = Boolean(selectedName && typedName && selectedName !== typedName);
+  const renamingAutoBackup = renamingExisting
+    && typeof selectedName === 'string'
+    && selectedName.startsWith('auto-backup-');
   let setups = getSetups();
   let finalName = typedName;
   let storedProjectSnapshot = null;
@@ -77,11 +104,19 @@ saveSetupBtn.addEventListener("click", () => {
     }
   }
 
+  const finalIsAutoBackup = typeof finalName === 'string' && finalName.startsWith('auto-backup-');
+  if (renamingAutoBackup && finalIsAutoBackup) {
+    markAutoBackupDataAsRenamed(currentSetup);
+  }
+
   setups[finalName] = currentSetup;
   storeSetups(setups);
 
   if (renamingExisting && storedProjectSnapshot && typeof saveProject === 'function') {
     try {
+      if (renamingAutoBackup && finalIsAutoBackup) {
+        markAutoBackupDataAsRenamed(storedProjectSnapshot);
+      }
       saveProject(finalName, storedProjectSnapshot);
     } catch (error) {
       console.warn('Failed to preserve project data during setup rename', error);

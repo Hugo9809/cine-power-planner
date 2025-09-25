@@ -88,6 +88,10 @@ const BACKUP_SUFFIX = '__backup';
 const MIGRATION_BACKUP_SUFFIX = '__legacyMigrationBackup';
 const backupKeyFor = (key) => `${key}${BACKUP_SUFFIX}`;
 const migrationBackupKeyFor = (key) => `${key}${MIGRATION_BACKUP_SUFFIX}`;
+const AUTO_BACKUP_RENAMED_FLAG =
+  (typeof globalThis !== 'undefined' && globalThis.__CINE_AUTO_BACKUP_RENAMED_FLAG)
+    ? globalThis.__CINE_AUTO_BACKUP_RENAMED_FLAG
+    : '__cineAutoBackupRenamed';
 
 const validDeviceData = {
   cameras: {},
@@ -494,6 +498,35 @@ describe('setup storage', () => {
     expect(autoKeys.length).toBe(50);
     expect(autoKeys[0]).toBe('auto-backup-2024-01-01-00-10');
     expect(autoKeys[autoKeys.length - 1]).toBe('auto-backup-2024-01-01-00-59');
+  });
+
+  test('renameSetup marks auto backups renamed within the automatic namespace', () => {
+    const originalKey = 'auto-backup-2024-01-01-00-00-Project Alpha';
+    const setups = { [originalKey]: { camera: 'A' } };
+    localStorage.setItem(SETUP_KEY, JSON.stringify(setups));
+
+    const renamedKey = 'auto-backup-2024-01-01-00-00-Project Alpha Notes';
+    const result = renameSetup(originalKey, renamedKey);
+
+    expect(result).toBe(renamedKey);
+
+    const stored = JSON.parse(localStorage.getItem(SETUP_KEY));
+    expect(stored[renamedKey][AUTO_BACKUP_RENAMED_FLAG]).toBe(true);
+  });
+
+  test('saveSetups keeps renamed auto backups when a new snapshot shares the label', () => {
+    const renamedKey = 'auto-backup-2024-01-01-00-00-Project Alpha';
+    const newKey = 'auto-backup-2024-02-01-00-00-Project Alpha';
+    const setups = {
+      [renamedKey]: { camera: 'A', [AUTO_BACKUP_RENAMED_FLAG]: true },
+      [newKey]: { camera: 'A' },
+    };
+
+    saveSetups(setups);
+
+    const stored = JSON.parse(localStorage.getItem(SETUP_KEY));
+    expect(stored[renamedKey]).toBeDefined();
+    expect(stored[newKey]).toBeDefined();
   });
 
   test('saveSetup adds and persists single setup', () => {
