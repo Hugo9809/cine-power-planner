@@ -374,10 +374,12 @@ Use Cine Power Planner end-to-end with the following routine:
 
 ### Quick reference
 
-- **Global search** (`/`, `Ctrl+K`, `⌘K`) jumps to any feature, selector or help
-  topic—even when the side navigation is hidden on smaller screens. Suggestions
-  surface direct feature and device matches before help topics so keyboard-first
-  workflows land on primary controls.
+- **Global search** (`/`, `Ctrl+K`, `⌘K`) jumps to any feature, selector,
+  saved setup or help topic—even when the side navigation is hidden on smaller
+  screens. Suggestions surface direct feature and device matches before help
+  topics so keyboard-first workflows land on primary controls, and typing the
+  name of a saved setup immediately loads it (including auto backups when
+  visible).
 - **Help center** (`?`, `H`, `F1`, `Ctrl+/`) provides searchable guides,
   shortcuts, FAQs and an optional hover-help mode so every control explains
   itself.
@@ -400,7 +402,8 @@ Use Cine Power Planner end-to-end with the following routine:
 - A keyboard-friendly skip link, offline indicator and responsive branding keep
   navigation accessible across devices.
 - The global search bar focuses with `/` or `Ctrl+K` (`⌘K` on macOS), opens the
-  side menu on mobile and clears with Escape.
+  side menu on mobile, clears with Escape and loads saved setups or auto backups
+  the moment you press Enter on a matching name.
 - Language, dark mode and pink mode toggles sit beside the Settings dialog,
   which exposes accent color, font size, font family, high-contrast mode, custom
   logo uploads plus backup, restore and factory reset tools that always save a

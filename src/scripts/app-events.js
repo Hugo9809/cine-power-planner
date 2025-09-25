@@ -3,7 +3,8 @@
           ensureAutoBackupsFromProjects, getDiagramManualPositions,
           setManualDiagramPositions, normalizeDiagramPositionsInput,
           normalizeSetupName, createProjectInfoSnapshotForStorage,
-          applyDynamicFieldValues, applyBatteryPlateSelectionFromBattery */
+          applyDynamicFieldValues, applyBatteryPlateSelectionFromBattery,
+          scheduleFeatureSearchRefresh */
 
 const AUTO_BACKUP_RENAMED_FLAG =
   (typeof globalThis !== 'undefined' && globalThis.__CINE_AUTO_BACKUP_RENAMED_FLAG)
@@ -639,6 +640,13 @@ function populateSetupSelect() {
     opt.value = name;
     opt.textContent = name;
     setupSelect.appendChild(opt);
+  }
+  if (typeof scheduleFeatureSearchRefresh === 'function') {
+    try {
+      scheduleFeatureSearchRefresh();
+    } catch (error) {
+      console.warn('Failed to refresh feature search after populating setups', error);
+    }
   }
 }
 populateSetupSelect(); // Initial populate of setups

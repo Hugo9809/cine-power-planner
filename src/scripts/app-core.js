@@ -18924,6 +18924,7 @@ const updateFeatureSearchValue = (newValue, originalNormalized) => {
 };
 const helpMap         = new Map();
 const deviceMap       = new Map();
+const setupMap        = new Map();
 let runFeatureSearch = () => {};
 
 let featureSearchEntries = [];
@@ -18956,9 +18957,97 @@ const FEATURE_SEARCH_MATCH_PRIORITIES = {
 };
 
 const FEATURE_SEARCH_TYPE_PRIORITIES = {
+  setup: 4,
   feature: 3,
   device: 3,
   help: 1
+};
+
+const SETUP_SEARCH_SKIP_KEYS = new Set([
+  'gearList',
+  'diagramPositions',
+  'gearSelectors',
+  'autoGearRules',
+  '__html',
+  'html'
+]);
+
+const SETUP_SEARCH_KEYWORD_LIMIT = 60;
+const SETUP_SEARCH_MAX_VALUE_LENGTH = 160;
+
+const getFeatureSearchText = (key, fallback = '') => {
+  const langTexts = texts?.[currentLang];
+  const english = texts?.en;
+  if (langTexts && typeof langTexts[key] === 'string') {
+    return langTexts[key];
+  }
+  if (english && typeof english[key] === 'string') {
+    return english[key];
+  }
+  return fallback;
+};
+
+const addSetupKeyword = (collector, value) => {
+  if (!collector || collector.size >= SETUP_SEARCH_KEYWORD_LIMIT) return;
+  if (value === null || value === undefined) return;
+  let stringValue = '';
+  if (typeof value === 'string') {
+    stringValue = value;
+  } else if (typeof value === 'number') {
+    stringValue = String(value);
+  }
+  if (!stringValue) return;
+  const normalized = stringValue.replace(/\s+/g, ' ').trim();
+  if (!normalized) return;
+  const truncated = normalized.length > SETUP_SEARCH_MAX_VALUE_LENGTH
+    ? normalized.slice(0, SETUP_SEARCH_MAX_VALUE_LENGTH)
+    : normalized;
+  collector.add(truncated);
+};
+
+const collectSetupSearchStrings = (value, collector, visited = new Set()) => {
+  if (!collector || collector.size >= SETUP_SEARCH_KEYWORD_LIMIT) return;
+  if (value === null || value === undefined) return;
+  if (typeof value === 'string' || typeof value === 'number') {
+    addSetupKeyword(collector, value);
+    return;
+  }
+  if (typeof value === 'boolean') {
+    if (value) addSetupKeyword(collector, 'yes');
+    return;
+  }
+  if (Array.isArray(value)) {
+    for (const item of value) {
+      if (collector.size >= SETUP_SEARCH_KEYWORD_LIMIT) break;
+      collectSetupSearchStrings(item, collector, visited);
+    }
+    return;
+  }
+  if (!isPlainObjectValue(value) || visited.has(value)) return;
+  visited.add(value);
+  for (const [key, nested] of Object.entries(value)) {
+    if (SETUP_SEARCH_SKIP_KEYS.has(key)) continue;
+    collectSetupSearchStrings(nested, collector, visited);
+    if (collector.size >= SETUP_SEARCH_KEYWORD_LIMIT) break;
+  }
+};
+
+const registerSetupMapEntry = (key, entry) => {
+  if (!key || !entry) return;
+  const existing = setupMap.get(key);
+  if (!existing) {
+    setupMap.set(key, entry);
+    return;
+  }
+  if (Array.isArray(existing)) {
+    if (!existing.some(item => item && item.name === entry.name)) {
+      existing.push(entry);
+    }
+    return;
+  }
+  if (!existing.name || existing.name !== entry.name) {
+    setupMap.set(key, [existing, entry]);
+  }
 };
 
 function scoreFeatureSearchEntry(entry, queryKey, queryTokens) {
@@ -20762,11 +20851,95 @@ function populateFeatureSearch() {
   featureMap.clear();
   helpMap.clear();
   deviceMap.clear();
+  setupMap.clear();
   featureSearchEntries = [];
   featureSearchDefaultOptions = [];
   const registerOption = value => {
     if (value) featureSearchDefaultOptions.push(value);
   };
+  const setupSelectElement = document.getElementById('setupSelect');
+  const savedSetupTypeLabel = getFeatureSearchText('restoreSectionSetups', 'Saved setups');
+  const autoBackupTypeLabel = getFeatureSearchText('versionCompareAutoLabel', 'Auto backup');
+  const autoBackupDeleteLabel = getFeatureSearchText(
+    'versionCompareAutoDeleteLabel',
+    'Auto backup before delete'
+  );
+  let setupsData = null;
+  if (typeof getSetups === 'function') {
+    try {
+      setupsData = getSetups();
+    } catch (error) {
+      console.warn('Failed to read saved setups for feature search', error);
+    }
+  }
+  const registerSetupEntry = (name, label, isAutoBackup, typeLabel, optionElement) => {
+    if (!name) return;
+    const keys = [];
+    const nameKey = searchKey(name);
+    if (nameKey) keys.push(nameKey);
+    const labelKey = searchKey(label);
+    if (labelKey && !keys.includes(labelKey)) keys.push(labelKey);
+    if (keys.length === 0) return;
+    const keywords = new Set();
+    addSetupKeyword(keywords, name);
+    if (label && label !== name) {
+      addSetupKeyword(keywords, label);
+    }
+    if (typeLabel) {
+      addSetupKeyword(keywords, typeLabel);
+    }
+    const setupDetails =
+      setupsData && typeof setupsData === 'object' ? setupsData[name] : null;
+    if (setupDetails) {
+      try {
+        if (isPlainObjectValue(setupDetails) || Array.isArray(setupDetails)) {
+          collectSetupSearchStrings(setupDetails, keywords);
+        } else if (typeof setupDetails === 'string') {
+          addSetupKeyword(keywords, setupDetails);
+        }
+      } catch (error) {
+        console.warn('Failed to extract saved setup keywords for feature search', error);
+      }
+    }
+    const keywordsText = Array.from(keywords).join(' ');
+    const tokens = searchTokens(keywordsText);
+    const display = typeLabel ? `${label} — ${typeLabel}` : label;
+    registerOption(display);
+    const entryValue = {
+      name,
+      label,
+      display,
+      select: setupSelectElement,
+      option: optionElement || null,
+      isAutoBackup,
+      tokens
+    };
+    featureSearchEntries.push({
+      type: 'setup',
+      key: keys[0],
+      display,
+      tokens,
+      value: entryValue
+    });
+    for (const key of keys) {
+      registerSetupMapEntry(key, entryValue);
+    }
+  };
+
+  if (setupSelectElement && setupSelectElement.options) {
+    Array.from(setupSelectElement.options).forEach(option => {
+      const rawValue = typeof option.value === 'string' ? option.value.trim() : '';
+      if (!rawValue) return;
+      const label = option.textContent?.trim() || rawValue;
+      const isDeletionBackup = rawValue.startsWith(AUTO_BACKUP_DELETION_PREFIX);
+      const isAutoBackup = isDeletionBackup || rawValue.startsWith(AUTO_BACKUP_NAME_PREFIX);
+      const typeLabel = isAutoBackup
+        ? (isDeletionBackup ? autoBackupDeleteLabel : autoBackupTypeLabel)
+        : savedSetupTypeLabel;
+      registerSetupEntry(rawValue, label, isAutoBackup, typeLabel, option);
+    });
+  }
+
   document
     .querySelectorAll('h2[id], legend[id], h3[id], h4[id]')
     .forEach(el => {
@@ -20866,6 +21039,28 @@ function populateFeatureSearch() {
   renderFeatureListOptions(featureSearchDefaultOptions);
   if (featureSearch && featureSearch.value) {
     updateFeatureSearchSuggestions(featureSearch.value);
+  }
+}
+
+let featureSearchRefreshScheduled = false;
+
+function scheduleFeatureSearchRefresh() {
+  if (featureSearchRefreshScheduled) return;
+  featureSearchRefreshScheduled = true;
+  const run = () => {
+    featureSearchRefreshScheduled = false;
+    try {
+      populateFeatureSearch();
+    } catch (error) {
+      console.warn('Failed to refresh feature search entries', error);
+    }
+  };
+  if (typeof requestAnimationFrame === 'function') {
+    requestAnimationFrame(run);
+  } else if (typeof queueMicrotask === 'function') {
+    queueMicrotask(run);
+  } else {
+    setTimeout(run, 0);
   }
 }
 

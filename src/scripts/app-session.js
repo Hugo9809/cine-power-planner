@@ -8478,6 +8478,52 @@ if (helpButton && helpDialog) {
     featureSearch.showPicker?.();
   };
 
+  const FEATURE_SEARCH_TYPE_ORDER = {
+    setup: 0,
+    device: 1,
+    feature: 2
+  };
+
+  const FEATURE_SEARCH_MATCH_PRIORITY = {
+    exactKey: 6,
+    token: 5,
+    keyPrefix: 4,
+    keySubset: 3,
+    partial: 2,
+    none: 1
+  };
+
+  const createSearchCandidate = (match, type) => {
+    if (!match) return null;
+    const matchType = match.matchType || 'none';
+    return {
+      type,
+      match,
+      strong: STRONG_SEARCH_MATCH_TYPES.has(matchType),
+      score: typeof match.score === 'number' ? match.score : 0,
+      matchedCount: typeof match.matchedCount === 'number' ? match.matchedCount : 0,
+      matchPriority: FEATURE_SEARCH_MATCH_PRIORITY[matchType] || 0
+    };
+  };
+
+  const compareSearchCandidates = (a, b) => {
+    if (!a && !b) return 0;
+    if (!a) return 1;
+    if (!b) return -1;
+    if (a.strong !== b.strong) return Number(b.strong) - Number(a.strong);
+    if (a.matchPriority !== b.matchPriority) return b.matchPriority - a.matchPriority;
+    if (a.score !== b.score) return b.score - a.score;
+    if (a.matchedCount !== b.matchedCount) return b.matchedCount - a.matchedCount;
+    const orderA = Object.prototype.hasOwnProperty.call(FEATURE_SEARCH_TYPE_ORDER, a.type)
+      ? FEATURE_SEARCH_TYPE_ORDER[a.type]
+      : Number.POSITIVE_INFINITY;
+    const orderB = Object.prototype.hasOwnProperty.call(FEATURE_SEARCH_TYPE_ORDER, b.type)
+      ? FEATURE_SEARCH_TYPE_ORDER[b.type]
+      : Number.POSITIVE_INFINITY;
+    if (orderA !== orderB) return orderA - orderB;
+    return 0;
+  };
+
   runFeatureSearch = query => {
     const rawQuery = typeof query === 'string' ? query : featureSearch?.value || '';
     const originalNormalized = normalizeSearchValue(rawQuery);
@@ -8490,59 +8536,86 @@ if (helpButton && helpDialog) {
     const cleanTokens = searchTokens(clean);
 
     const helpMatch = findBestSearchMatch(helpMap, cleanKey, cleanTokens);
+    const setupMatch = findBestSearchMatch(setupMap, cleanKey, cleanTokens);
     const deviceMatch = findBestSearchMatch(deviceMap, cleanKey, cleanTokens);
     const featureMatch = findBestSearchMatch(featureMap, cleanKey, cleanTokens);
     const helpScore = helpMatch?.score || 0;
-    const deviceScore = deviceMatch?.score || 0;
-    const featureScore = featureMatch?.score || 0;
-    const deviceStrong = deviceMatch ? STRONG_SEARCH_MATCH_TYPES.has(deviceMatch.matchType) : false;
-    const featureStrong = featureMatch ? STRONG_SEARCH_MATCH_TYPES.has(featureMatch.matchType) : false;
-    const bestNonHelpScore = Math.max(deviceScore, featureScore);
-    const hasStrongNonHelp = deviceStrong || featureStrong;
+    const candidates = [
+      createSearchCandidate(setupMatch, 'setup'),
+      createSearchCandidate(deviceMatch, 'device'),
+      createSearchCandidate(featureMatch, 'feature')
+    ].filter(Boolean);
+    const bestNonHelpScore = candidates.reduce(
+      (max, item) => (item.score > max ? item.score : max),
+      0
+    );
+    const hasStrongNonHelp = candidates.some(item => item.strong);
     const preferHelp =
       !!helpMatch &&
       (isHelp || (!hasStrongNonHelp && helpScore > bestNonHelpScore));
 
-    if (!isHelp && !preferHelp) {
-      const shouldUseDevice =
-        !!deviceMatch &&
-        (!featureMatch ||
-          (deviceStrong && !featureStrong) ||
-          (deviceStrong === featureStrong &&
-            (deviceScore > featureScore ||
-              (deviceScore === featureScore && featureMatch?.matchType !== 'exactKey'))));
-      if (shouldUseDevice) {
-        const device = deviceMatch.value;
-        if (device && device.select) {
-          device.select.value = device.value;
-          device.select.dispatchEvent(new Event('change', { bubbles: true }));
-          if (device.label) {
-            updateFeatureSearchValue(device.label, originalNormalized);
+    if (!isHelp && !preferHelp && candidates.length) {
+      const ordered = candidates.slice().sort(compareSearchCandidates);
+      for (const candidate of ordered) {
+        if (!candidate) continue;
+        if (candidate.type === 'setup') {
+          const entry = candidate.match?.value;
+          const select = entry?.select;
+          const setupName = entry?.name;
+          if (select && setupName) {
+            select.value = setupName;
+            try {
+              select.dispatchEvent(new Event('change', { bubbles: true }));
+            } catch (error) {
+              console.warn('Failed to dispatch change event for setup selection', error);
+            }
+            if (entry.label) {
+              updateFeatureSearchValue(entry.label, originalNormalized);
+            }
+            focusFeatureElement(select);
+            const highlightTargets = [
+              select,
+              ...findAssociatedLabelElements(select)
+            ];
+            highlightFeatureSearchTargets(highlightTargets);
+            return;
           }
-          focusFeatureElement(device.select);
-          const highlightTargets = [
-            device.select,
-            ...findAssociatedLabelElements(device.select)
-          ];
-          highlightFeatureSearchTargets(highlightTargets);
-          return;
+          continue;
         }
-      }
-      if (featureMatch) {
-        const feature = featureMatch.value;
-        const featureEl = feature?.element || feature;
-        if (featureEl) {
-          const label = feature?.label || featureEl.textContent?.trim();
-          if (label) {
-            updateFeatureSearchValue(label, originalNormalized);
+        if (candidate.type === 'device') {
+          const device = candidate.match.value;
+          if (device && device.select) {
+            device.select.value = device.value;
+            device.select.dispatchEvent(new Event('change', { bubbles: true }));
+            if (device.label) {
+              updateFeatureSearchValue(device.label, originalNormalized);
+            }
+            focusFeatureElement(device.select);
+            const highlightTargets = [
+              device.select,
+              ...findAssociatedLabelElements(device.select)
+            ];
+            highlightFeatureSearchTargets(highlightTargets);
+            return;
           }
-          focusFeatureElement(featureEl);
-          const highlightTargets = [
-            featureEl,
-            ...findAssociatedLabelElements(featureEl)
-          ];
-          highlightFeatureSearchTargets(highlightTargets);
-          return;
+          continue;
+        }
+        if (candidate.type === 'feature') {
+          const feature = candidate.match.value;
+          const featureEl = feature?.element || feature;
+          if (featureEl) {
+            const label = feature?.label || featureEl.textContent?.trim();
+            if (label) {
+              updateFeatureSearchValue(label, originalNormalized);
+            }
+            focusFeatureElement(featureEl);
+            const highlightTargets = [
+              featureEl,
+              ...findAssociatedLabelElements(featureEl)
+            ];
+            highlightFeatureSearchTargets(highlightTargets);
+            return;
+          }
         }
       }
     }
@@ -9700,12 +9773,14 @@ if (typeof module !== "undefined" && module.exports) {
       featureMap,
       deviceMap,
       helpMap,
+      setupMap,
       featureSearchEntries,
       featureSearchDefaultOptions,
       featureSearchInput: featureSearch,
       featureListElement: featureList,
       restoreFeatureSearchDefaults,
       updateFeatureSearchSuggestions,
+      scheduleRefresh: scheduleFeatureSearchRefresh,
     },
     __customFontInternals: {
       addFromData: (name, dataUrl, options) => addCustomFontFromData(name, dataUrl, options),
