@@ -1171,7 +1171,7 @@ const texts = {
       "Scroll to the “%s” section in the help dialog.",
     hoverHelpButtonLabel: "Hover for help",
     hoverHelpButtonHelp:
-      "Activate hover help so moving the cursor over buttons, fields, dropdowns or headers reveals brief explanations. You can open Settings while hover help is active to explore preferences without leaving this mode. Hovered controls are outlined and the tooltip shows their title alongside any available details.",
+      "Activate hover help so moving the cursor over buttons, fields, dropdowns or headers reveals brief explanations. You can open Settings while hover help is active to explore preferences without leaving this mode. Hovered controls are outlined and the tooltip shows their title alongside any available details. Longer descriptions are automatically broken into readable steps or bullet lists when available.",
     setupSelectHelp:
       "Pick a previously saved configuration or select '-- New Project --' to start from scratch.",
     setupNameHelp:
@@ -2379,7 +2379,7 @@ const texts = {
       "Scorri fino alla sezione “%s” all'interno della guida.",
     hoverHelpButtonLabel: "Aiuto al passaggio",
     hoverHelpButtonHelp:
-      "Attiva i suggerimenti al passaggio del mouse: spostando il cursore su pulsanti, campi, menu a discesa o intestazioni compaiono brevi spiegazioni. Puoi aprire Impostazioni mentre la modalità è attiva per esplorare le preferenze senza uscirne. Gli elementi sotto il cursore vengono evidenziati e il tooltip mostra il titolo insieme ai dettagli disponibili.",
+      "Attiva i suggerimenti al passaggio del mouse: spostando il cursore su pulsanti, campi, menu a discesa o intestazioni compaiono brevi spiegazioni. Puoi aprire Impostazioni mentre la modalità è attiva per esplorare le preferenze senza uscirne. Gli elementi sotto il cursore vengono evidenziati e il tooltip mostra il titolo insieme ai dettagli disponibili. Le descrizioni più lunghe vengono suddivise automaticamente in passaggi leggibili o elenchi puntati quando disponibili.",
     setupSelectHelp:
       "Scegli una configurazione salvata da caricare o inizia una nuova.",
     setupNameHelp: "Inserisci un nome per la configurazione corrente.",
@@ -3593,7 +3593,7 @@ const texts = {
       "Desplázate a la sección “%s” dentro de la guía.",
     hoverHelpButtonLabel: "Ayuda al pasar el cursor",
     hoverHelpButtonHelp:
-      "Activa la ayuda al pasar el cursor para que, al moverlo sobre botones, campos, menús desplegables o encabezados, aparezcan explicaciones breves. Puedes abrir Ajustes mientras el modo está activo para explorar las preferencias sin salir de él. Los controles bajo el cursor se resaltan y la información emergente muestra el título junto con los detalles disponibles.",
+      "Activa la ayuda al pasar el cursor para que, al moverlo sobre botones, campos, menús desplegables o encabezados, aparezcan explicaciones breves. Puedes abrir Ajustes mientras el modo está activo para explorar las preferencias sin salir de él. Los controles bajo el cursor se resaltan y la información emergente muestra el título junto con los detalles disponibles. Las descripciones más largas se dividen automáticamente en pasos legibles o listas con viñetas cuando están disponibles.",
     setupSelectHelp:
       "Elige una configuración guardada para cargarla o comienza una nueva.",
     setupNameHelp: "Introduce un nombre para la configuración actual.",
@@ -4817,7 +4817,7 @@ const texts = {
       "Faites défiler jusqu'à la section « %s » dans la fenêtre d'aide.",
     hoverHelpButtonLabel: "Aide au survol",
     hoverHelpButtonHelp:
-      "Activez l'aide contextuelle au survol : en déplaçant le curseur sur les boutons, champs, menus déroulants ou en-têtes, de brèves explications apparaissent. Vous pouvez ouvrir Paramètres pendant que le mode est actif afin d'explorer les préférences sans quitter cette vue. Les commandes survolées sont mises en évidence et l'infobulle affiche leur titre ainsi que les détails disponibles.",
+      "Activez l'aide contextuelle au survol : en déplaçant le curseur sur les boutons, champs, menus déroulants ou en-têtes, de brèves explications apparaissent. Vous pouvez ouvrir Paramètres pendant que le mode est actif afin d'explorer les préférences sans quitter cette vue. Les commandes survolées sont mises en évidence et l'infobulle affiche leur titre ainsi que les détails disponibles. Les descriptions plus longues sont automatiquement découpées en étapes lisibles ou en listes à puces lorsque c'est possible.",
     setupSelectHelp:
       "Choisissez une configuration enregistrée à charger ou commencez-en une nouvelle.",
     setupNameHelp: "Saisissez un nom pour la configuration actuelle.",
@@ -6047,7 +6047,7 @@ const texts = {
       "Zum Abschnitt „%s“ im Hilfedialog scrollen.",
     hoverHelpButtonLabel: "Hover-Hilfe aktivieren",
     hoverHelpButtonHelp:
-      "Aktiviere die Hover-Hilfe: Beim Überfahren von Schaltflächen, Feldern, Dropdowns oder Überschriften erscheinen kurze Erklärungen. Du kannst die Einstellungen öffnen, während der Modus aktiv ist, um Optionen zu erkunden, ohne ihn zu verlassen. Überfahrene Elemente werden hervorgehoben und das Tooltip zeigt ihren Titel zusammen mit allen verfügbaren Details.",
+      "Aktiviere die Hover-Hilfe: Beim Überfahren von Schaltflächen, Feldern, Dropdowns oder Überschriften erscheinen kurze Erklärungen. Du kannst die Einstellungen öffnen, während der Modus aktiv ist, um Optionen zu erkunden, ohne ihn zu verlassen. Überfahrene Elemente werden hervorgehoben und das Tooltip zeigt ihren Titel zusammen mit allen verfügbaren Details. Längere Beschreibungen werden automatisch in gut lesbare Schritte oder Aufzählungslisten unterteilt, sobald sie verfügbar sind.",
     setupSelectHelp:
       "Wähle ein gespeichertes Projekt zum Laden oder starte ein neues.",
     setupNameHelp: "Gib einen Namen für das aktuelle Projekt ein.",

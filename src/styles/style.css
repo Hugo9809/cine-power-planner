@@ -3778,6 +3778,25 @@ body.pink-mode .favorite-toggle.favorited:active {
 #hoverHelpTooltip .hover-help-details {
   line-height: 1.35;
   font-size: calc(var(--font-size-base) * var(--font-scale-compact));
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+#hoverHelpTooltip .hover-help-details p {
+  margin: 0;
+}
+
+#hoverHelpTooltip .hover-help-details ul {
+  margin: 0;
+  padding-inline-start: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+#hoverHelpTooltip .hover-help-details li {
+  margin: 0;
 }
 
 .hover-help-highlight {
