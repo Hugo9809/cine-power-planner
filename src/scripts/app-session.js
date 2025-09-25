@@ -3077,6 +3077,46 @@ const createAccentTint = (alpha = 0.16) => {
   return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})`;
 };
 
+const getNotificationAccentColor = () => {
+  const fallback = typeof accentColor === 'string' && accentColor
+    ? accentColor
+    : DEFAULT_ACCENT_COLOR;
+  const resolved = getCssVariableValue('--accent-color', fallback);
+  return resolved || fallback;
+};
+
+const getNotificationTextColor = (backgroundColor) => {
+  try {
+    if (typeof computeRelativeLuminance === 'function') {
+      const rgb = parseColorToRgb(backgroundColor);
+      if (rgb) {
+        const luminance = computeRelativeLuminance(rgb);
+        return luminance > 0.55 ? '#000000' : '#ffffff';
+      }
+    }
+  } catch (colorError) {
+    console.warn('Failed to determine notification text color', colorError);
+  }
+  return '#ffffff';
+};
+
+const getNotificationTopOffset = () => {
+  const baseOffset = 16;
+  let offset = baseOffset;
+  try {
+    const topBar = document.getElementById('topBar');
+    if (topBar && typeof topBar.getBoundingClientRect === 'function') {
+      const rect = topBar.getBoundingClientRect();
+      if (rect && typeof rect.bottom === 'number' && rect.bottom > 0) {
+        offset = Math.max(offset, rect.bottom + baseOffset);
+      }
+    }
+  } catch (measureError) {
+    console.warn('Failed to measure top bar for notifications', measureError);
+  }
+  return `${Math.ceil(offset)}px`;
+};
+
 function showNotification(type, message) {
   if (typeof document === 'undefined') return;
   const id = 'backupNotificationContainer';
@@ -3085,11 +3125,12 @@ function showNotification(type, message) {
     container = document.createElement('div');
     container.id = id;
     container.style.position = 'fixed';
-    container.style.top = '1rem';
+    container.style.top = getNotificationTopOffset();
     container.style.right = '1rem';
     container.style.zIndex = '10000';
     document.body.appendChild(container);
   }
+  container.style.top = getNotificationTopOffset();
   const note = document.createElement('div');
   note.textContent = message;
   note.style.padding = '0.75rem 1.25rem';
@@ -3097,18 +3138,8 @@ function showNotification(type, message) {
   note.style.borderRadius = '0.75rem';
   note.style.border = 'none';
   note.style.boxShadow = '0 0.75rem 2.5rem rgba(0, 0, 0, 0.14)';
-  let background;
-  let textColor;
-  if (type === 'error' || type === 'warning') {
-    const backgroundVar = type === 'error' ? '--status-error-bg' : '--status-warning-bg';
-    const fallbackBackground = type === 'error' ? '#fdd' : '#ffd';
-    background = getCssVariableValue(backgroundVar, fallbackBackground);
-    const textColorVar = type === 'error' ? '--status-error-text-color' : '--status-warning-text-color';
-    textColor = getCssVariableValue(textColorVar, '#000');
-  } else {
-    background = createAccentTint() || getCssVariableValue('--status-success-bg', '#dfd');
-    textColor = getCssVariableValue('--status-success-text-color', '#000');
-  }
+  const background = getNotificationAccentColor();
+  const textColor = getNotificationTextColor(background);
   note.style.background = background;
   note.style.color = textColor;
   container.appendChild(note);
