@@ -135,8 +135,8 @@ const AUTO_GEAR_MONITOR_DEFAULTS_KEY =
     ? AUTO_GEAR_MONITOR_DEFAULTS_STORAGE_KEY
     : 'cameraPowerPlanner_autoGearMonitorDefaults';
 const AUTO_GEAR_BACKUP_INTERVAL_MS = 10 * 60 * 1000;
-const AUTO_GEAR_BACKUP_RETENTION_DEFAULT = 12;
 const AUTO_GEAR_BACKUP_RETENTION_MIN_VALUE = resolveAutoGearBackupRetentionMin();
+const AUTO_GEAR_BACKUP_RETENTION_DEFAULT = resolveAutoGearBackupRetentionDefault();
 const AUTO_GEAR_BACKUP_RETENTION_MAX = 50;
 const AUTO_GEAR_MULTI_SELECT_MIN_ROWS = 8;
 const AUTO_GEAR_MULTI_SELECT_MAX_ROWS = 12;
@@ -169,6 +169,56 @@ function resolveAutoGearBackupRetentionMin() {
   }
 
   return fallback;
+}
+
+function resolveAutoGearBackupRetentionDefault() {
+  const fallback = 12;
+  const min = AUTO_GEAR_BACKUP_RETENTION_MIN_VALUE || 1;
+  const max = 50;
+  const normalizedFallback = Math.min(Math.max(Math.round(fallback), min), max);
+  const scopeCandidates = [];
+
+  if (typeof globalThis !== 'undefined') scopeCandidates.push(globalThis);
+  if (typeof window !== 'undefined') scopeCandidates.push(window);
+  if (typeof global !== 'undefined') scopeCandidates.push(global);
+  if (typeof self !== 'undefined') scopeCandidates.push(self);
+
+  for (const scope of scopeCandidates) {
+    if (!scope || typeof scope.AUTO_GEAR_BACKUP_RETENTION_DEFAULT !== 'number') {
+      continue;
+    }
+    const candidate = scope.AUTO_GEAR_BACKUP_RETENTION_DEFAULT;
+    if (!Number.isFinite(candidate)) {
+      continue;
+    }
+    const normalized = Math.min(Math.max(Math.round(candidate), min), max);
+    if (normalized !== candidate) {
+      try {
+        scope.AUTO_GEAR_BACKUP_RETENTION_DEFAULT = normalized;
+      } catch (error) {
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn('Unable to normalize auto gear backup retention default globally.', error);
+        }
+      }
+    }
+    return normalized;
+  }
+
+  for (const scope of scopeCandidates) {
+    if (!scope) {
+      continue;
+    }
+    try {
+      scope.AUTO_GEAR_BACKUP_RETENTION_DEFAULT = normalizedFallback;
+      return normalizedFallback;
+    } catch (error) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Unable to persist auto gear backup retention default to scope.', error);
+      }
+    }
+  }
+
+  return normalizedFallback;
 }
 
 function resolveTemperatureStorageKey() {
