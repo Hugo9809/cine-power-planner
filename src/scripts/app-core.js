@@ -18779,6 +18779,8 @@ if (settingsLogo) {
   });
 }
 const settingsHighContrast = document.getElementById("settingsHighContrast");
+const settingsReduceMotion = document.getElementById("settingsReduceMotion");
+const settingsRelaxedSpacing = document.getElementById("settingsRelaxedSpacing");
 const backupSettings = document.getElementById("backupSettings");
 const restoreSettings = document.getElementById("restoreSettings");
 const factoryResetButton = document.getElementById("factoryResetButton");
