@@ -857,7 +857,20 @@ function buildRestoreRehearsalRuleDiff(liveRules, sandboxRules) {
     ? (a, b) => localeSort(a, b)
     : (a, b) => a.localeCompare(b);
 
-  return differences.sort((a, b) => compareStrings(a.label || '', b.label || ''));
+  const statusPriority = {
+    changed: 0,
+    removed: 1,
+    added: 2,
+  };
+
+  return differences.sort((a, b) => {
+    const priorityA = statusPriority[a.status] ?? Number.MAX_SAFE_INTEGER;
+    const priorityB = statusPriority[b.status] ?? Number.MAX_SAFE_INTEGER;
+    if (priorityA !== priorityB) {
+      return priorityA - priorityB;
+    }
+    return compareStrings(a.label || '', b.label || '');
+  });
 }
 
 function formatRestoreRehearsalRuleScenarioLines(rule, langTexts) {
