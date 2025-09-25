@@ -4456,10 +4456,26 @@ input[type="file"]:disabled::-webkit-file-upload-button {
 #topBar #logo {
   width: 32px;
   height: 32px;
+  display: inline-flex;
 }
 
-body.pink-mode #topBar #logo .logo-center {
-  fill: var(--logo-center-color) !important;
+#topBar #logo .logo-img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+}
+
+#topBar #logo .logo-pink {
+  display: none;
+}
+
+body.pink-mode #topBar #logo .logo-default {
+  display: none;
+}
+
+body.pink-mode #topBar #logo .logo-pink {
+  display: block;
 }
 
 #topBar .feature-search {
