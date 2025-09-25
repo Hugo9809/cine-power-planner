@@ -29,7 +29,7 @@ Los rodajes raramente tienen conectividad garantizada y muchos estudios exigen h
 
 - **Planifica con confianza.** Calcula la demanda a 14,4 V/12 V (y 33,6 V/21,6 V para B‑Mount), compara baterías compatibles y visualiza el impacto en un panel ponderado de retroalimentación.
 - **Mantente listo para producción.** Los proyectos capturan dispositivos, requisitos, escenarios, detalles de equipo y listas; los auto-backups, paquetes y actualizaciones controladas mantienen la información vigente sin perder estabilidad.
-- **Trabaja como prefieras.** Detección de idioma, temas oscuro, rosa y de alto contraste, controles tipográficos, logotipos personalizados y ayuda contextual hacen que la interfaz sea cómoda en rodajes y en preparación.
+- **Trabaja como prefieras.** Detección de idioma, temas oscuro, rosa y de alto contraste, controles tipográficos, logotipos personalizados y ayuda contextual hacen que la interfaz sea cómoda en rodajes y en preparación. La ayuda contextual ahora completa automáticamente descripciones para cada botón, campo y menú, de modo que cada control se explica por sí mismo incluso sin conexión.
 
 ## Principios clave
 

@@ -29,7 +29,7 @@ Les plateaux disposent rarement d’une connectivité fiable et les studios exig
 
 - **Planifier en confiance.** Calculez la consommation à 14,4 V/12 V (et 33,6 V/21,6 V pour le B‑Mount), comparez les batteries compatibles et visualisez l’impact dans un tableau de bord pondéré.
 - **Rester prêt pour la production.** Les projets capturent équipements, exigences, scénarios, détails d’équipe et listes ; backups automatiques, bundles et mises à jour contrôlées gardent les données à jour sans sacrifier la stabilité.
-- **Travailler à votre manière.** Détection de langue, thèmes sombre, rose et contraste élevé, contrôles typographiques, logos personnalisés et aide contextuelle rendent l’interface accessible en préparation comme sur le plateau.
+- **Travailler à votre manière.** Détection de langue, thèmes sombre, rose et contraste élevé, contrôles typographiques, logos personnalisés et aide contextuelle rendent l’interface accessible en préparation comme sur le plateau. L’aide contextuelle renseigne désormais automatiquement des descriptions pour chaque bouton, champ et menu afin que chaque commande s’explique, même hors connexion.
 
 ## Principes fondamentaux
 
