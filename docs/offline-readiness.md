@@ -24,7 +24,10 @@ time:
    cached assets render exactly as they did online.
 3. **Exercise persistence.** Create a dummy project, trigger a manual save, then refresh
    the app while still offline. The project selector should show the saved entry and the
-   timestamped `auto-backup-…` snapshot once the autosave routine runs.
+   timestamped `auto-backup-…` snapshot once the autosave routine runs. Open **Settings →
+   Backup & Restore** to confirm the autosave status overlay reflects the same timestamp,
+   then review **Settings → Data & Storage** to verify project, backup and gear counts
+   updated as expected.
 4. **Capture baseline exports.** While still offline, export both a planner backup
    (`planner-backup.json`) and a project bundle (`project-name.json`). Import the files into
    a private browser profile that also stays offline. Once you confirm the restore loop
@@ -63,7 +66,8 @@ Re-run these checks each morning and evening while you are on location:
 
 1. **Morning warm-up.** Before editing anything, open the help dialog and legal pages to
    keep caches fresh, then load the day’s project and confirm the timestamp of the latest
-   `auto-backup-…` entry.
+   `auto-backup-…` entry. Open **Settings → Backup & Restore** so the autosave status
+   overlay proves background saves are healthy.
 2. **During the day.** When significant edits land, trigger a manual save and export a
    planner backup. Label the file with the project name, location, operator and time so it
    is easy to trace.
