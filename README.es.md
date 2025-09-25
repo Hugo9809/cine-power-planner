@@ -186,6 +186,8 @@ Repite esta rutina cuando se incorpore personal, se prepare una estación nueva 
 - **Diagrama de proyecto** visualiza rutas de energía y señal; mantén Shift al exportar para guardar JPG.
 - **Panel de comparación de baterías** muestra rendimiento de packs compatibles y alerta sobre sobrecargas.
 - **Generador de listas** crea tablas categorizadas con metadatos, correos de equipo y accesorios según escenarios.
+- **Comparación de versiones** (**Configuración → Copia de seguridad y restauración → Comparar versiones**) resalta cambios entre guardados manuales o auto-backups, permite tomar notas del incidente y exportar registros antes de archivar.
+- **Ensayo de restauración** carga respaldos en un entorno aislado para validar cada registro sin conexión antes de restaurar los datos de producción.
 - **Indicador offline y Forzar recarga** muestran el estado de conexión y actualizan recursos sin tocar los datos.
 
 ### Controles superiores
@@ -215,6 +217,10 @@ Repite esta rutina cuando se incorpore personal, se prepare una estación nueva 
 
 - Un service worker almacena todos los recursos, ejecuta la app sin conexión y aplica actualizaciones sólo tras **Forzar recarga**.
 - Proyectos, comentarios, favoritos, dispositivos, temas y listas viven en el almacenamiento del navegador. Se solicita persistencia cuando está disponible para reducir riesgos de expulsión.
+- Las copias automáticas encadenan instantáneas de proyectos cada diez minutos, descargas completas cada hora y archivos de reglas automáticas en segundo plano. Activa **Configuración → Copia de seguridad y restauración → Mostrar auto-backups en la lista** para ver la línea de tiempo, ajustar la retención y recuperar instantáneas sin conectividad.
+- Si el navegador bloquea descargas, la app abre una pestaña de **Descarga manual** con el JSON para que lo copies en un archivo `.json` y lo guardes en medios offline de confianza antes de cerrarla.
+- Usa **Configuración → Copia de seguridad y restauración → Comparar versiones** para diferenciar dos guardados, anotar contexto en **Notas del incidente** y exportar un registro para el traspaso.
+- Ejecuta **Ensayo de restauración** desde **Configuración → Copia de seguridad y restauración** para cargar un backup en un espacio desechable, revisar la tabla comparativa y confirmar que está íntegro antes de aplicar **Restaurar** sobre los datos activos.
 - Ejecutar la app desde disco o una red interna mantiene los datos sensibles fuera de servicios externos. Las exportaciones en JSON son auditables.
 - La cabecera muestra el indicador offline cuando cae la conexión; **Forzar recarga** actualiza archivos sin tocar el trabajo guardado.
 - **Restablecer fábrica** o borrar datos del sitio sólo se permite tras generar automáticamente una copia.

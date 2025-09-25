@@ -383,6 +383,11 @@ Use Cine Power Planner end-to-end with the following routine:
   flags overload risks before you leave prep.
 - **Gear list generator** turns selections into categorized tables with tooltips
   for specs, crew emails and scenario-driven accessories.
+- **Version comparison** (**Settings → Backup & Restore → Compare versions**)
+  highlights changes between manual saves or automatic backups, captures
+  incident notes and exports audit logs before you archive revisions.
+- **Restore rehearsal** loads backups into a sandbox so you can verify every
+  record offline before running a full restore on production data.
 - **Offline indicator and Force reload** badges show connectivity status and
   refresh cached assets without touching saved data.
 
@@ -434,6 +439,19 @@ Use Cine Power Planner end-to-end with the following routine:
 - Projects, runtime submissions, favorites, custom devices, theme selections and
   gear lists live in browser storage. Browsers that support persistent storage
   receive an automatic retention request to reduce eviction risk.
+- Automatic safety copies layer 10-minute project snapshots, hourly full-app
+  downloads and background auto-gear archives. Enable **Settings → Backup &
+  Restore → Show auto backups in project list** to surface the timeline, tune
+  retention and restore snapshots without connectivity.
+- If a browser blocks downloads, the planner opens a **Manual download** tab
+  with the JSON payload so you can copy it into a `.json` file and store it on
+  trusted offline media before closing the tab.
+- Use **Settings → Backup & Restore → Compare versions** to diff two saves,
+  record context in **Incident notes** and export an audit log for your
+  handover records.
+- Run **Restore rehearsal** from **Settings → Backup & Restore** to load a
+  backup inside a disposable sandbox, review the comparison table for changes
+  and confirm the archive is healthy before applying **Restore** to live data.
 - Opening the repository directly from disk or serving it internally keeps
   sensitive data off external networks. All exports are human-readable JSON so
   you can audit what leaves the machine.
