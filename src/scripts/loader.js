@@ -230,6 +230,27 @@
     return false;
   }
 
+  function detectOptionalChainingSupport() {
+    if (typeof Function !== 'function') {
+      return null;
+    }
+
+    try {
+      var evaluator = Function('"use strict"; return ({ a: { b: 1 } })?.a?.b ?? 2 === 1;');
+      return evaluator() === true;
+    } catch (error) {
+      if (isSyntaxErrorEvent(error)) {
+        return false;
+      }
+
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Optional chaining detection via Function constructor failed unexpectedly. Falling back to module-based check.', error);
+      }
+
+      return null;
+    }
+  }
+
   function supportsModernFeatures(callback) {
     var cb = typeof callback === 'function' ? callback : function () {};
 
@@ -267,6 +288,17 @@
     }
 
     if (typeof stringProto.includes !== 'function' || typeof stringProto.startsWith !== 'function') {
+      cb(false);
+      return;
+    }
+
+    var optionalSupport = detectOptionalChainingSupport();
+    if (optionalSupport === true) {
+      cb(true);
+      return;
+    }
+
+    if (optionalSupport === false) {
       cb(false);
       return;
     }
