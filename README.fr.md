@@ -125,7 +125,7 @@ Appliquez cette checklist lors de l’installation ou après une mise à jour po
 
 ## Prérequis système et navigateurs
 
-- **Navigateurs modernes.** Validé sur les dernières versions de Chromium, Firefox et Safari. Activez service workers, IndexedDB et stockage persistant.
+- **Navigateurs modernes.** Validé sur les dernières versions de Chromium, Firefox et Safari. Activez service workers, l’accès à `localStorage` (stockage du site) et le stockage persistant.
 - **Appareils adaptés au hors ligne.** Laptops et tablettes doivent autoriser le stockage persistant. Lancez l’application une fois en ligne pour mettre en cache toutes les ressources puis répétez la procédure de rechargement hors ligne avant le départ.
 - **Espace local suffisant.** Les productions importantes accumulent projets, backups et listes. Surveillez l’espace disponible du profil navigateur et exportez régulièrement vers des supports redondants.
 - **Aucune dépendance externe.** Tous les icônes, polices et scripts sont fournis. Copiez également `animated icons 3/` et les Uicons locaux lors du transfert du dossier.
@@ -218,7 +218,7 @@ Cette routine prouve que sauvegarde, partage, import, backup et restauration fon
 - L’en-tête affiche un indicateur hors ligne lorsqu’il n’y a pas de connexion ; **Forcer le rechargement** rafraîchit les fichiers sans toucher aux sauvegardes.
 - **Réinitialisation usine** ou nettoyage des données ne s’exécutent qu’après génération d’un backup automatique.
 - Les mises à jour du service worker se téléchargent en tâche de fond et attendent votre accord. À l’apparition de **Mise à jour prête**, terminez vos modifications, créez un backup puis cliquez sur **Forcer le rechargement**.
-- Le stockage principal est IndexedDB, avec préférences légères reflétées dans `localStorage`. Les outils développeur peuvent inspecter ou exporter les enregistrements avant nettoyage.
+- Les données résident dans un `localStorage` renforcé ; les profils restreints basculent sur `sessionStorage`. Chaque écriture crée un instantané `__legacyMigrationBackup` pour restaurer sans perte en cas d’erreur de quota ou de schéma. Les outils développeur peuvent inspecter ou exporter les enregistrements avant de vider les caches ou de lancer des tests.
 
 ## Vue d’ensemble des données et du stockage
 

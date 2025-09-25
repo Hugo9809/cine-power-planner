@@ -216,8 +216,8 @@ same online or offline.
 
 - **Modern evergreen browsers.** The planner is validated on the latest
   releases of Chromium, Firefox and Safari on desktop and mobile. Enable
-  service workers, IndexedDB and persistent storage to unlock the full offline
-  workflow.
+  service workers, `localStorage` (site storage) access and persistent storage
+  to unlock the full offline workflow.
 - **Offline-friendly devices.** Laptops and tablets must allow persistent
   storage so backups and auto-saves stay available. When running from removable
   media or a field workstation, launch the planner once while online so the
@@ -443,9 +443,11 @@ Use Cine Power Planner end-to-end with the following routine:
   When the **Update ready** toast appears, finish your current edits, trigger a
   manual backup, then click **Force reload** so fresh assets load alongside your
   preserved data.
-- Storage lives inside IndexedDB with small preferences mirrored to
-  `localStorage`. Use your browser’s developer tools to inspect or export raw
-  records before making experimental changes or clearing caches.
+- Storage lives inside hardened `localStorage` with a `sessionStorage` fallback
+  when browsers restrict long-term writes. Every save also creates a
+  `__legacyMigrationBackup` snapshot so you can recover even if the browser
+  reports a quota or schema error. Use your browser’s storage inspector to
+  export or audit records before clearing caches or experimenting with data.
 
 ## Data & Storage Overview
 

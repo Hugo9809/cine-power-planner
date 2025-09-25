@@ -125,7 +125,7 @@ Führe diese Checkliste beim ersten Setup oder nach Updates aus. Sie beweist, da
 
 ## Systemanforderungen & Browser-Support
 
-- **Moderne Evergreen-Browser.** Validiert mit aktuellen Chromium-, Firefox- und Safari-Versionen. Service Worker, IndexedDB und persistenter Speicher müssen aktiv sein.
+- **Moderne Evergreen-Browser.** Validiert mit aktuellen Chromium-, Firefox- und Safari-Versionen. Service Worker, Zugriff auf `localStorage` (Website-Speicher) und persistenter Speicher müssen aktiv sein.
 - **Offline-freundliche Geräte.** Laptops/Tablets sollten dauerhaften Speicher erlauben. Starte die App einmal online, damit der Service Worker alle Assets cacht, und übe den Offline-Reload vor der Reise.
 - **Ausreichender lokaler Speicher.** Große Produktionen erzeugen viele Projekte, Backups und Gerätelisten. Beobachte den Speicherplatz deines Browserprofils und exportiere regelmäßig auf redundante Medien.
 - **Keine externen Abhängigkeiten.** Alle Icons, Fonts und Hilfsskripte liegen im Repository. Kopiere Ordner wie `animated icons 3/` und lokale Uicons mit, damit Optik und Scripts identisch bleiben.
@@ -218,7 +218,7 @@ Dieser kurze Ablauf sollte bei neuen Teammitgliedern, frisch eingerichteten Work
 - Kopfzeile zeigt Offline-Indikator, Force-Reload aktualisiert Assets ohne Saves anzutasten.
 - **Werkseinstellungen** oder das Löschen der Website-Daten erfolgt erst nach einem automatischen Backup.
 - Service-Worker-Updates laden im Hintergrund und warten auf deine Bestätigung. Bei **Update bereit**: Änderungen abschließen, Backup erstellen, dann **Neu laden erzwingen**.
-- Speicherung erfolgt in IndexedDB, kleine Präferenzen spiegeln nach `localStorage`. Entwickler-Tools können Rohdaten exportieren.
+- Daten liegen in gehärtetem `localStorage`; gesperrte Profile weichen auf `sessionStorage` aus. Jeder Schreibvorgang legt zusätzlich einen `__legacyMigrationBackup`-Schnappschuss an, damit sich Quota- oder Schemafehler verlustfrei beheben lassen. Entwickler-Tools können Rohdaten exportieren, bevor Caches geleert oder Tests gefahren werden.
 
 ## Daten- & Speicherübersicht
 
