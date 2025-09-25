@@ -55,7 +55,7 @@ function resolveCineUi() {
   return null;
 }
 
-const cineUi = resolveCineUi();
+const eventsCineUi = resolveCineUi();
 
 // Language selection
 languageSelect.addEventListener("change", (event) => {
@@ -958,10 +958,10 @@ if (toggleDeviceBtn) {
   toggleDeviceBtn.addEventListener('click', toggleDeviceManagerSection);
 }
 
-if (cineUi) {
+if (eventsCineUi) {
   try {
-    if (cineUi.controllers && typeof cineUi.controllers.register === 'function') {
-      cineUi.controllers.register('deviceManagerSection', {
+    if (eventsCineUi.controllers && typeof eventsCineUi.controllers.register === 'function') {
+      eventsCineUi.controllers.register('deviceManagerSection', {
         show: showDeviceManagerSection,
         hide: hideDeviceManagerSection,
         toggle: toggleDeviceManagerSection,
@@ -972,17 +972,17 @@ if (cineUi) {
   }
 
   try {
-    if (cineUi.interactions && typeof cineUi.interactions.register === 'function') {
-      cineUi.interactions.register('saveSetup', handleSaveSetupClick);
-      cineUi.interactions.register('deleteSetup', handleDeleteSetupClick);
+    if (eventsCineUi.interactions && typeof eventsCineUi.interactions.register === 'function') {
+      eventsCineUi.interactions.register('saveSetup', handleSaveSetupClick);
+      eventsCineUi.interactions.register('deleteSetup', handleDeleteSetupClick);
     }
   } catch (error) {
     console.warn('cineUi interaction registration failed', error);
   }
 
   try {
-    if (cineUi.help && typeof cineUi.help.register === 'function') {
-      cineUi.help.register('saveSetup', () => {
+    if (eventsCineUi.help && typeof eventsCineUi.help.register === 'function') {
+      eventsCineUi.help.register('saveSetup', () => {
         const langTexts = texts[currentLang] || {};
         const fallbackTexts = texts.en || {};
         return (
@@ -992,7 +992,7 @@ if (cineUi) {
         );
       });
 
-      cineUi.help.register('autoBackupBeforeDeletion', () => {
+      eventsCineUi.help.register('autoBackupBeforeDeletion', () => {
         const langTexts = texts[currentLang] || {};
         const fallbackTexts = texts.en || {};
         return (

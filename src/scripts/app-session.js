@@ -31,7 +31,7 @@
 /* global getDiagramManualPositions, setManualDiagramPositions,
           normalizeDiagramPositionsInput, ensureAutoBackupsFromProjects */
 
-const cineUi =
+const sessionCineUi =
   (typeof globalThis !== 'undefined' && globalThis.cineUi)
   || (typeof window !== 'undefined' && window.cineUi)
   || (typeof self !== 'undefined' && self.cineUi)
@@ -6562,14 +6562,14 @@ if (restoreSettings && restoreSettingsInput) {
   restoreSettingsInput.addEventListener('change', handleRestoreSettingsInputChange);
 }
 
-if (cineUi) {
+if (sessionCineUi) {
   try {
-    if (cineUi.controllers && typeof cineUi.controllers.register === 'function') {
-      cineUi.controllers.register('backupSettings', {
+    if (sessionCineUi.controllers && typeof sessionCineUi.controllers.register === 'function') {
+      sessionCineUi.controllers.register('backupSettings', {
         execute: createSettingsBackup,
       });
 
-      cineUi.controllers.register('restoreSettings', {
+      sessionCineUi.controllers.register('restoreSettings', {
         openPicker: handleRestoreSettingsClick,
         processFile: handleRestoreSettingsInputChange,
       });
@@ -6579,18 +6579,18 @@ if (cineUi) {
   }
 
   try {
-    if (cineUi.interactions && typeof cineUi.interactions.register === 'function') {
-      cineUi.interactions.register('performBackup', createSettingsBackup);
-      cineUi.interactions.register('openRestorePicker', handleRestoreSettingsClick);
-      cineUi.interactions.register('applyRestoreFile', handleRestoreSettingsInputChange);
+    if (sessionCineUi.interactions && typeof sessionCineUi.interactions.register === 'function') {
+      sessionCineUi.interactions.register('performBackup', createSettingsBackup);
+      sessionCineUi.interactions.register('openRestorePicker', handleRestoreSettingsClick);
+      sessionCineUi.interactions.register('applyRestoreFile', handleRestoreSettingsInputChange);
     }
   } catch (error) {
     console.warn('cineUi interaction registration (session) failed', error);
   }
 
   try {
-    if (cineUi.help && typeof cineUi.help.register === 'function') {
-      cineUi.help.register('backupSettings', () => {
+    if (sessionCineUi.help && typeof sessionCineUi.help.register === 'function') {
+      sessionCineUi.help.register('backupSettings', () => {
         const langTexts = texts[currentLang] || {};
         const fallbackTexts = texts.en || {};
         return (
@@ -6600,7 +6600,7 @@ if (cineUi) {
         );
       });
 
-      cineUi.help.register('restoreSettings', () => {
+      sessionCineUi.help.register('restoreSettings', () => {
         const langTexts = texts[currentLang] || {};
         const fallbackTexts = texts.en || {};
         return (

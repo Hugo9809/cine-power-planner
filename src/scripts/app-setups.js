@@ -6,7 +6,7 @@
 
 // --- NEW SETUP MANAGEMENT FUNCTIONS ---
 
-const cineUi =
+const setupsCineUi =
   (typeof globalThis !== 'undefined' && globalThis.cineUi)
   || (typeof window !== 'undefined' && window.cineUi)
   || (typeof self !== 'undefined' && self.cineUi)
@@ -434,17 +434,17 @@ if (sharedImportDialog) {
   sharedImportDialog.addEventListener('cancel', handleSharedImportDialogCancel);
 }
 
-if (cineUi) {
+if (setupsCineUi) {
   try {
-    if (cineUi.controllers && typeof cineUi.controllers.register === 'function') {
-      cineUi.controllers.register('shareDialog', {
+    if (setupsCineUi.controllers && typeof setupsCineUi.controllers.register === 'function') {
+      setupsCineUi.controllers.register('shareDialog', {
         open: handleShareSetupClick,
         submit: handleShareFormSubmit,
         cancel: handleShareCancelClick,
         dismiss: handleShareDialogCancel,
       });
 
-      cineUi.controllers.register('sharedImportDialog', {
+      setupsCineUi.controllers.register('sharedImportDialog', {
         submit: handleSharedImportSubmit,
         cancel: handleSharedImportCancel,
         dismiss: handleSharedImportDialogCancel,
@@ -456,22 +456,22 @@ if (cineUi) {
   }
 
   try {
-    if (cineUi.interactions && typeof cineUi.interactions.register === 'function') {
-      cineUi.interactions.register('shareOpen', handleShareSetupClick);
-      cineUi.interactions.register('shareSubmit', handleShareFormSubmit);
-      cineUi.interactions.register('shareCancel', handleShareCancelClick);
-      cineUi.interactions.register('shareApplyFile', handleApplySharedLinkClick);
-      cineUi.interactions.register('shareInputChange', handleSharedLinkInputChange);
-      cineUi.interactions.register('sharedImportSubmit', handleSharedImportSubmit);
-      cineUi.interactions.register('sharedImportCancel', handleSharedImportCancel);
+    if (setupsCineUi.interactions && typeof setupsCineUi.interactions.register === 'function') {
+      setupsCineUi.interactions.register('shareOpen', handleShareSetupClick);
+      setupsCineUi.interactions.register('shareSubmit', handleShareFormSubmit);
+      setupsCineUi.interactions.register('shareCancel', handleShareCancelClick);
+      setupsCineUi.interactions.register('shareApplyFile', handleApplySharedLinkClick);
+      setupsCineUi.interactions.register('shareInputChange', handleSharedLinkInputChange);
+      setupsCineUi.interactions.register('sharedImportSubmit', handleSharedImportSubmit);
+      setupsCineUi.interactions.register('sharedImportCancel', handleSharedImportCancel);
     }
   } catch (error) {
     console.warn('cineUi interaction registration (setups) failed', error);
   }
 
   try {
-    if (cineUi.help && typeof cineUi.help.register === 'function') {
-      cineUi.help.register('shareProject', () => {
+    if (setupsCineUi.help && typeof setupsCineUi.help.register === 'function') {
+      setupsCineUi.help.register('shareProject', () => {
         const langTexts = texts[currentLang] || {};
         const fallbackTexts = texts.en || {};
         return (
@@ -481,7 +481,7 @@ if (cineUi) {
         );
       });
 
-      cineUi.help.register('sharedImport', () => {
+      setupsCineUi.help.register('sharedImport', () => {
         const langTexts = texts[currentLang] || {};
         const fallbackTexts = texts.en || {};
         return (
