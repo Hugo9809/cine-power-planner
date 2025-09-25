@@ -884,7 +884,24 @@ if (typeof window !== 'undefined' && typeof navigator !== 'undefined') {
 
 // Helper to check for plain objects
 function isPlainObject(val) {
-  return val !== null && typeof val === 'object' && !Array.isArray(val);
+  if (val === null || typeof val !== 'object') {
+    return false;
+  }
+  let prototype;
+  try {
+    prototype = Object.getPrototypeOf(val);
+  } catch {
+    return false;
+  }
+  if (prototype === null || prototype === Object.prototype) {
+    return true;
+  }
+  const secondLevel = Object.getPrototypeOf(prototype);
+  if (secondLevel === null && typeof prototype.constructor === 'function') {
+    const name = prototype.constructor.name;
+    return name === 'Object' || name === '';
+  }
+  return false;
 }
 
 function parseAutoBackupKey(name) {
@@ -980,6 +997,13 @@ function createStableValueSignature(value) {
   }
   if (Array.isArray(value)) {
     return `[${value.map(item => createStableValueSignature(item)).join(',')}]`;
+  }
+  if (value instanceof Date) {
+    const timestamp = value.getTime();
+    if (Number.isNaN(timestamp)) {
+      return 'date:invalid';
+    }
+    return `date:${timestamp}`;
   }
   if (isPlainObject(value)) {
     const keys = Object.keys(value).sort();

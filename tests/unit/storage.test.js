@@ -406,6 +406,45 @@ describe('setup storage', () => {
     expect(stored[betaKey]).toEqual(shared);
   });
 
+  test('saveSetups keeps auto backups with distinct Date values for the same label', () => {
+    const setups = {};
+
+    for (let index = 0; index < 46; index += 1) {
+      const minute = String(index).padStart(2, '0');
+      const key = `auto-backup-2024-01-01-00-${minute}-Filler-${index}`;
+      setups[key] = { camera: `Camera ${index}` };
+    }
+
+    const alphaOldKey = 'auto-backup-2024-02-01-10-00-Project Alpha';
+    const alphaNewKey = 'auto-backup-2024-02-01-10-01-Project Alpha';
+    setups[alphaOldKey] = { metadata: { createdAt: new Date('2024-02-01T10:00:00Z') } };
+    setups[alphaNewKey] = { metadata: { createdAt: new Date('2024-02-01T10:01:00Z') } };
+
+    const betaOldKey = 'auto-backup-2024-03-01-00-00-Project Beta';
+    const betaNewKey = 'auto-backup-2024-03-01-00-01-Project Beta';
+    const betaValue = { camera: 'Shared Camera', notes: ['beta'] };
+    setups[betaOldKey] = betaValue;
+    setups[betaNewKey] = betaValue;
+
+    const gammaOldKey = 'auto-backup-2024-04-01-00-00-Project Gamma';
+    const gammaNewKey = 'auto-backup-2024-04-01-00-01-Project Gamma';
+    const gammaValue = { camera: 'Shared Camera', notes: ['gamma'] };
+    setups[gammaOldKey] = gammaValue;
+    setups[gammaNewKey] = gammaValue;
+
+    saveSetups(setups);
+
+    const stored = JSON.parse(localStorage.getItem(SETUP_KEY));
+    const storedKeys = Object.keys(stored).filter((name) => name.startsWith('auto-backup-'));
+    expect(storedKeys.length).toBeLessThanOrEqual(50);
+    expect(stored[alphaOldKey]).toBeDefined();
+    expect(stored[alphaNewKey]).toBeDefined();
+    expect(stored[betaOldKey]).toBeUndefined();
+    expect(stored[betaNewKey]).toEqual(betaValue);
+    expect(stored[gammaOldKey]).toBeUndefined();
+    expect(stored[gammaNewKey]).toEqual(gammaValue);
+  });
+
   test('saveSetups keeps the newest auto backup for each project label when trimming', () => {
     const setups = {};
     for (let index = 0; index < 60; index += 1) {
