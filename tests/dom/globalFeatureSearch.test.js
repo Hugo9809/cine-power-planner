@@ -79,4 +79,30 @@ describe('global feature search help navigation', () => {
     expect(resultsHeading).toBeTruthy();
     expect(document.activeElement).toBe(resultsHeading);
   });
+
+  test('suggestions rank feature results ahead of help topics', async () => {
+    expect(featureSearch).toBeTruthy();
+
+    document.dispatchEvent(new Event('DOMContentLoaded'));
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+    const featureList = document.getElementById('featureList');
+    expect(featureList).toBeTruthy();
+
+    featureSearch.value = 'Power Summary';
+    featureSearch.dispatchEvent(new Event('input', { bubbles: true }));
+
+    const options = Array.from(featureList.options).map(opt => opt.value);
+    const featureIndex = options.findIndex(value =>
+      value.startsWith('Power Summary') && !value.trim().endsWith('(help)')
+    );
+    const helpIndex = options.findIndex(value =>
+      value.startsWith('Power Summary') && value.trim().endsWith('(help)')
+    );
+
+    expect(featureIndex).toBeGreaterThanOrEqual(0);
+    if (helpIndex >= 0) {
+      expect(helpIndex).toBeGreaterThan(featureIndex);
+    }
+  });
 });

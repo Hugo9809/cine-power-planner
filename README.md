@@ -375,7 +375,9 @@ Use Cine Power Planner end-to-end with the following routine:
 ### Quick reference
 
 - **Global search** (`/`, `Ctrl+K`, `⌘K`) jumps to any feature, selector or help
-  topic—even when the side navigation is hidden on smaller screens.
+  topic—even when the side navigation is hidden on smaller screens. Suggestions
+  surface direct feature and device matches before help topics so keyboard-first
+  workflows land on primary controls.
 - **Help center** (`?`, `H`, `F1`, `Ctrl+/`) provides searchable guides,
   shortcuts, FAQs and an optional hover-help mode so every control explains
   itself.

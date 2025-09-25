@@ -92,7 +92,7 @@ const texts = {
     featureSearchPlaceholder: "Search features or devices...",
     featureSearchLabel: "Search features, devices and help",
     featureSearchHelp:
-      "Type to jump to features, devices, quick actions like Save or Backup, or help topics. Press Enter to navigate, / or Ctrl+K (Cmd+K on Mac) to focus the search from anywhere, and use Escape or × to clear the query.",
+      "Type to jump to features, devices, quick actions like Save or Backup, or help topics. Suggestions prioritize direct feature and device matches before help topics so navigation lands on controls first. Press Enter to navigate, / or Ctrl+K (Cmd+K on Mac) to focus the search from anywhere, and use Escape or × to clear the query.",
     featureSearchClear: "Clear search",
     featureSearchClearHelp: "Clear the search box and show all results again. Press Escape to clear quickly.",
     darkModeHelp:
@@ -1310,7 +1310,7 @@ const texts = {
     featureSearchPlaceholder: "Cerca funzionalità o dispositivi...",
     featureSearchLabel: "Cerca funzionalità, dispositivi e aiuto",
     featureSearchHelp:
-      "Digita per andare alle funzionalità, ai dispositivi, alle azioni rapide come Salva o Backup o aprire gli argomenti di aiuto correlati. Premi Invio per navigare, / o Ctrl+K (Cmd+K su Mac) per mettere a fuoco la ricerca ovunque e usa Esc o × per cancellare la ricerca.",
+      "Digita per andare alle funzionalità, ai dispositivi, alle azioni rapide come Salva o Backup o aprire gli argomenti di aiuto correlati. I suggerimenti ora danno priorità alle corrispondenze dirette di funzionalità e dispositivi prima degli argomenti di aiuto, così raggiungi subito i controlli. Premi Invio per navigare, / o Ctrl+K (Cmd+K su Mac) per mettere a fuoco la ricerca ovunque e usa Esc o × per cancellare la ricerca.",
     featureSearchClear: "Cancella ricerca",
     featureSearchClearHelp: "Cancella il campo di ricerca e mostra di nuovo tutti i risultati. Premi Esc per cancellare rapidamente.",
     darkModeHelp:
@@ -2511,7 +2511,7 @@ const texts = {
     featureSearchPlaceholder: "Buscar funciones o dispositivos...",
     featureSearchLabel: "Buscar funciones, dispositivos y ayuda",
     featureSearchHelp:
-      "Escribe para ir a funciones, dispositivos, acciones rápidas como Guardar o Copia de seguridad, o temas de ayuda relacionados. Pulsa Enter para navegar, / o Ctrl+K (Cmd+K en Mac) para enfocar la búsqueda desde cualquier lugar y usa Esc o × para borrar la búsqueda.",
+      "Escribe para ir a funciones, dispositivos, acciones rápidas como Guardar o Copia de seguridad, o temas de ayuda relacionados. Las sugerencias ahora dan prioridad a las coincidencias directas de funciones y dispositivos antes que a los temas de ayuda, para llevarte primero a los controles. Pulsa Enter para navegar, / o Ctrl+K (Cmd+K en Mac) para enfocar la búsqueda desde cualquier lugar y usa Esc o × para borrar la búsqueda.",
     featureSearchClear: "Borrar búsqueda",
     featureSearchClearHelp: "Limpia el campo de búsqueda y muestra todos los resultados de nuevo. Pulsa Esc para borrar rápidamente.",
     darkModeHelp:
@@ -3725,7 +3725,7 @@ const texts = {
     featureSearchPlaceholder: "Rechercher des fonctionnalités ou des appareils...",
     featureSearchLabel: "Rechercher des fonctionnalités, des appareils et de l’aide",
     featureSearchHelp:
-      "Saisissez du texte pour retrouver des fonctionnalités, des appareils, des actions rapides comme Enregistrer ou Sauvegarder et les sujets d’aide associés. Appuyez sur Entrée pour ouvrir l’élément sélectionné, sur / ou Ctrl+K (Cmd+K sur Mac) pour activer la recherche à tout moment, puis sur Échap ou × pour effacer la requête.",
+      "Saisissez du texte pour retrouver des fonctionnalités, des appareils, des actions rapides comme Enregistrer ou Sauvegarder et les sujets d’aide associés. Les suggestions privilégient désormais les correspondances directes avec les fonctionnalités et les appareils avant les sujets d’aide afin de vous amener en priorité sur les commandes. Appuyez sur Entrée pour ouvrir l’élément sélectionné, sur / ou Ctrl+K (Cmd+K sur Mac) pour activer la recherche à tout moment, puis sur Échap ou × pour effacer la requête.",
     featureSearchClear: "Effacer la recherche",
     featureSearchClearHelp: "Efface le champ de recherche et affiche à nouveau tous les résultats. Appuyez sur Échap pour effacer rapidement.",
     darkModeHelp:
@@ -4950,7 +4950,7 @@ const texts = {
     featureSearchPlaceholder: "Funktionen oder Geräte durchsuchen...",
     featureSearchLabel: "Funktionen, Geräte und Hilfe durchsuchen",
     featureSearchHelp:
-      "Tippen, um zu Funktionen, Geräten, Schnellaktionen wie Speichern oder Backup oder zu passenden Hilfethemen zu springen. Drücke Enter zum Navigieren, / oder Strg+K (Cmd+K auf dem Mac), um die Suche überall zu fokussieren, und verwende Esc oder ×, um die Eingabe zu löschen.",
+      "Tippen, um zu Funktionen, Geräten, Schnellaktionen wie Speichern oder Backup oder zu passenden Hilfethemen zu springen. Vorschläge priorisieren jetzt direkte Treffer für Funktionen und Geräte vor Hilfethemen, damit du zuerst bei den Bedienelementen landest. Drücke Enter zum Navigieren, / oder Strg+K (Cmd+K auf dem Mac), um die Suche überall zu fokussieren, und verwende Esc oder ×, um die Eingabe zu löschen.",
     featureSearchClear: "Suche löschen",
     featureSearchClearHelp: "Suchfeld leeren und alle Ergebnisse wieder anzeigen. Drücke Esc, um schnell zu löschen.",
     darkModeHelp:
