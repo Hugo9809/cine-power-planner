@@ -1334,12 +1334,11 @@ function createStableValueSignature(value) {
   return `${typeof value}:${String(value)}`;
 }
 
-function removeDuplicateAutoBackupEntries(container, entries) {
+function removeSingleDuplicateAutoBackupEntry(container, entries) {
   if (!isPlainObject(container) || !Array.isArray(entries) || entries.length < 2) {
-    return [];
+    return null;
   }
 
-  const removedKeys = [];
   const seenSignaturesByLabel = new Map();
 
   for (let index = entries.length - 1; index >= 0; index -= 1) {
@@ -1356,13 +1355,24 @@ function removeDuplicateAutoBackupEntries(container, entries) {
     if (labelSignatures.has(signature)) {
       delete container[entry.key];
       entries.splice(index, 1);
-      removedKeys.push(entry.key);
-      continue;
+      return entry.key;
     }
     labelSignatures.add(signature);
     seenSignaturesByLabel.set(labelKey, labelSignatures);
   }
 
+  return null;
+}
+
+function removeDuplicateAutoBackupEntries(container, entries) {
+  const removedKeys = [];
+  while (true) {
+    const removedKey = removeSingleDuplicateAutoBackupEntry(container, entries);
+    if (!removedKey) {
+      break;
+    }
+    removedKeys.push(removedKey);
+  }
   return removedKeys;
 }
 
@@ -1455,6 +1465,10 @@ function removeOldestAutoBackupEntry(container) {
   }
 
   const autoBackups = collectAutoBackupEntries(container, STORAGE_AUTO_BACKUP_NAME_PREFIX);
+  const duplicateAutoBackupKey = removeSingleDuplicateAutoBackupEntry(container, autoBackups);
+  if (duplicateAutoBackupKey) {
+    return duplicateAutoBackupKey;
+  }
   if (autoBackups.length > 0) {
     const oldest = autoBackups.shift();
     if (oldest) {
@@ -1464,6 +1478,10 @@ function removeOldestAutoBackupEntry(container) {
   }
 
   const deletionBackups = collectAutoBackupEntries(container, STORAGE_AUTO_BACKUP_DELETION_PREFIX);
+  const duplicateDeletionBackupKey = removeSingleDuplicateAutoBackupEntry(container, deletionBackups);
+  if (duplicateDeletionBackupKey) {
+    return duplicateDeletionBackupKey;
+  }
   if (deletionBackups.length > 0) {
     const oldest = deletionBackups.shift();
     if (oldest) {
