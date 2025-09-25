@@ -3353,6 +3353,42 @@ body.pink-mode:not(.dark-mode) #settingsPanel-autoGear .auto-gear-rule-items-lab
   text-decoration: underline;
 }
 
+.help-link.button-link,
+.help-link.button-link:visited {
+  display: inline;
+  min-height: 0;
+  padding: 0;
+  background: none;
+  color: var(--accent-color);
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: var(--font-weight-regular);
+  line-height: inherit;
+  text-decoration: none;
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 0.12em;
+  transform: none;
+}
+
+.help-link.button-link:hover,
+.help-link.button-link:focus-visible {
+  background: none;
+  color: var(--accent-color);
+  text-decoration: underline;
+  transform: none;
+}
+
+.help-link.button-link:active {
+  background: none;
+  color: var(--accent-color);
+  transform: none;
+}
+
+.help-link.button-link:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
+}
+
 .help-inline-links {
   margin: 0.75rem 0 0;
   line-height: 1.6;
