@@ -3799,6 +3799,51 @@ body.pink-mode .favorite-toggle.favorited:active {
   margin: 0;
 }
 
+#hoverHelpTooltip .hover-help-shortcuts {
+  border-top: 1px solid color-mix(in srgb, var(--accent-color) 40%, transparent);
+  padding-top: 4px;
+  margin-top: 2px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+#hoverHelpTooltip .hover-help-shortcuts-heading {
+  font-weight: 600;
+  font-size: calc(var(--font-size-base) * var(--font-scale-compact));
+  letter-spacing: 0.01em;
+}
+
+#hoverHelpTooltip .hover-help-shortcuts-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+#hoverHelpTooltip .hover-help-shortcut {
+  background: color-mix(in srgb, var(--accent-color) 18%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent-color) 45%, transparent);
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-family: var(--font-family-mono, var(--font-family));
+  font-size: calc(var(--font-size-base) * 0.78);
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+body.dark-mode #hoverHelpTooltip .hover-help-shortcut {
+  background: color-mix(in srgb, var(--accent-color) 35%, rgba(0, 0, 0, 0.45));
+  border-color: color-mix(in srgb, var(--accent-color) 60%, transparent);
+}
+
+body.high-contrast #hoverHelpTooltip .hover-help-shortcut {
+  background: color-mix(in srgb, var(--surface-color) 70%, transparent);
+  border-color: currentColor;
+}
+
 .hover-help-highlight {
   outline: 2px solid color-mix(in srgb, var(--accent-color) 75%, transparent);
   outline-offset: 3px;
