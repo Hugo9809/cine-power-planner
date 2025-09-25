@@ -65,6 +65,9 @@ Al primo avvio l’applicazione adotta la lingua del browser; puoi cambiarla dal
 - I backup ora normalizzano i pacchetti di dati legacy salvati come stringhe JSON o array di voci, così gli export storici si ripristinano correttamente.
 - Le prove di ripristino caricano un backup completo dell’app o un bundle di progetto in una sandbox isolata così puoi confermare che il contenuto corrisponde ai dati live senza toccare i profili di produzione.
 - Le regole automatiche dell'attrezzatura consentono di definire aggiunte o rimozioni guidate dallo scenario, esportarle e ripristinarle insieme ai bundle condivisi.
+- Una dashboard di copertura evidenzia trigger duplicati, aggiunte e rimozioni
+  nette, scenari non coperti e conflitti potenziali. I filtri funzionano anche
+  offline e i riepiloghi viaggiano con export e backup automatici.
 - Il cruscotto Dati e archiviazione controlla progetti salvati, elenchi, dispositivi personalizzati, preferiti e feedback sulle autonomie direttamente nelle Impostazioni e mostra la dimensione approssimativa del backup.
 - Un overlay di stato dell'autosalvataggio riporta l’ultima nota di autosalvataggio dentro alle Impostazioni così le squadre vedono l’attività in background mentre provano le procedure di recupero.
 - Un editor dell'attrezzatura sensibile al monitoraggio mette in evidenza accessori aggiuntivi per monitor e video solo quando gli scenari lo richiedono, mantenendo la creazione delle regole concentrata.

@@ -65,6 +65,10 @@ L’application adopte automatiquement la langue de votre navigateur lors de la 
 - Les sauvegardes normalisent désormais les anciens paquets de données enregistrés en chaînes JSON ou en tableaux d’entrées afin que les exports historiques se restaurent correctement.
 - Les répétitions de restauration chargent une sauvegarde complète de l’application ou un bundle de projet dans un bac à sable isolé pour confirmer que son contenu correspond aux données actives sans toucher aux profils de production.
 - Les règles automatiques d’équipement ajoutent ou retirent du matériel selon le scénario, avec export/import aux côtés des bundles partagés.
+- Un tableau de bord de couverture met en évidence les déclencheurs doublons,
+  les ajouts et retraits nets, les scénarios non couverts et les conflits
+  potentiels. Les filtres restent utilisables hors ligne et les résumés
+  accompagnent exports et sauvegardes automatiques.
 - Le tableau de bord Données & stockage audite projets enregistrés, listes de matériel, appareils personnalisés, favoris et retours d’autonomie depuis les Réglages et affiche la taille approximative des sauvegardes.
 - Une superposition d’état d’enregistrement automatique reflète la dernière note dans Paramètres afin que les équipes visualisent l’activité en arrière-plan pendant les exercices de récupération.
 - Un éditeur d’équipement sensible au monitoring affiche des accessoires supplémentaires de monitoring et de vidéo uniquement lorsque les scénarios l’exigent, pour garder la conception des règles focalisée.

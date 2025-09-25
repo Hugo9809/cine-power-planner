@@ -64,6 +64,11 @@ Beim ersten Start übernimmt die Anwendung automatisch die Sprache deines Browse
 - Backups normalisieren jetzt ältere Datenpakete, die als JSON-Zeichenketten oder Eintragsarrays gespeichert wurden, damit alte Exporte zuverlässig wiederhergestellt werden.
 - Wiederherstellungsproben laden ein komplettes App-Backup oder Projekt-Bundle in eine isolierte Sandbox, damit du Inhalte mit den Live-Daten abgleichen kannst, ohne Produktionsprofile anzutasten.
 - Die neuen automatischen Gear-Regeln fügen szenariobasierte Ergänzungen oder Entfernungen hinzu, lassen sich exportieren und gemeinsam mit Bundles wiederherstellen.
+- Die neuen automatischen Gear-Regeln fügen szenariobasierte Ergänzungen oder Entfernungen hinzu, lassen sich exportieren und gemeinsam mit Bundles wiederherstellen.
+- Ein Dashboard zeigt doppelte Auslöser, Netto-Ergänzungen und -Entfernungen,
+  unbelegte Szenarien und mögliche Konflikte. Die Filter funktionieren
+  offline, und die Zusammenfassungen reisen in Exporten und automatischen
+  Sicherungen mit.
 - Das Daten- & Speicher-Dashboard prüft gespeicherte Projekte, Gerätelisten, eigene Geräte, Favoriten und Laufzeit-Feedback direkt in den Einstellungen und zeigt die geschätzte Backup-Größe an.
 - Ein Overlay für den Auto-Save-Status spiegelt die letzte Auto-Save-Notiz im Einstellungsdialog, damit Teams Hintergrundaktivität während Wiederherstellungsübungen sehen.
 - Ein monitoring-sensitiver Gerätemanager blendet zusätzliche Monitor- und Videozubehörfelder nur ein, wenn Szenarien sie verlangen, damit Regeln fokussiert bleiben.

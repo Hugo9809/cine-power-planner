@@ -649,6 +649,10 @@ list without editing JSON exports manually:
 - Export or import the rule set as JSON, reset to the factory additions when you
   need a clean baseline and fall back to the automatic history captured every 10
   minutes if edits go sideways.
+- Audit coverage with the built-in dashboard. It highlights duplicate triggers,
+  net additions and removals, uncovered scenarios and potential conflicts.
+  Filters stay offline-ready, and the summaries travel with exports and
+  automatic backups for printing or sharing.
 
 ## Runtime Intelligence
 

@@ -1084,6 +1084,38 @@
             <p id="autoGearBackupEmpty" class="auto-gear-backup-empty" hidden>No automatic backups yet.</p>
           </div>
         </div>
+        <section
+          id="autoGearCoveragePanel"
+          class="auto-gear-coverage"
+          aria-labelledby="autoGearCoverageHeading"
+        >
+          <div class="auto-gear-coverage-header">
+            <h4 id="autoGearCoverageHeading">Rule coverage overview</h4>
+            <div class="auto-gear-coverage-filters">
+              <div class="auto-gear-coverage-field">
+                <label for="autoGearCoverageScenario" id="autoGearCoverageScenarioLabel">Focus scenario</label>
+                <select id="autoGearCoverageScenario" class="auto-gear-coverage-select"></select>
+              </div>
+              <div class="auto-gear-coverage-toggles">
+                <label class="auto-gear-coverage-toggle">
+                  <input type="checkbox" id="autoGearCoverageOnlyDuplicates" />
+                  <span id="autoGearCoverageOnlyDuplicatesLabel">Only overlaps</span>
+                </label>
+                <label class="auto-gear-coverage-toggle">
+                  <input type="checkbox" id="autoGearCoverageOnlyConflicts" />
+                  <span id="autoGearCoverageOnlyConflictsLabel">Only conflicts</span>
+                </label>
+                <label class="auto-gear-coverage-toggle">
+                  <input type="checkbox" id="autoGearCoverageOnlyUncovered" />
+                  <span id="autoGearCoverageOnlyUncoveredLabel">Only uncovered</span>
+                </label>
+              </div>
+            </div>
+          </div>
+          <div id="autoGearCoverageSummary" class="auto-gear-coverage-summary" aria-live="polite"></div>
+          <div id="autoGearCoverageDuplicates" class="auto-gear-coverage-duplicates" aria-live="polite"></div>
+          <div id="autoGearCoverageConflicts" class="auto-gear-coverage-conflicts" aria-live="polite"></div>
+        </section>
         <div id="autoGearFilters" class="auto-gear-filters" role="search">
           <div class="auto-gear-action-row">
             <button type="button" id="autoGearAddRule">Add rule</button>

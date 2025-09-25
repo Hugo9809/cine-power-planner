@@ -67,6 +67,9 @@ La aplicación adopta automáticamente el idioma de tu navegador en la primera v
 - Las copias de seguridad ahora normalizan los paquetes de datos heredados guardados como cadenas JSON o como matrices de entradas para que los archivos antiguos se restauren correctamente.
 - Los ensayos de restauración cargan una copia completa de la aplicación o un paquete de proyecto en un entorno aislado para confirmar que su contenido coincide con los datos en vivo sin tocar los perfiles de producción.
 - Las reglas automáticas de equipo permiten diseñar adiciones o retiradas según el escenario, exportar la configuración y restaurarla junto con los paquetes de proyecto.
+- Un panel de cobertura resalta disparadores duplicados, añadidos y retiradas netas,
+  escenarios sin cobertura y posibles conflictos. Los filtros funcionan sin
+  conexión y los resúmenes viajan con exportaciones y respaldos automáticos.
 - El panel Datos y almacenamiento audita proyectos guardados, listas de equipo, dispositivos personalizados, favoritos y comentarios de autonomía directamente desde Ajustes y muestra el tamaño aproximado del respaldo.
 - La superposición del estado de auto-guardado refleja la nota más reciente dentro de Ajustes para que los equipos vean la actividad en segundo plano mientras practican los ejercicios de recuperación.
 - El editor de equipo consciente del monitoreo muestra accesorios adicionales de monitor y video solo cuando los escenarios lo requieren para mantener enfocado el diseño de reglas.
