@@ -1964,6 +1964,10 @@ function restoreSessionState() {
     }
     setSelectValue(batterySelect, state.battery);
     setSelectValue(hotswapSelect, state.batteryHotswap);
+    if ((state && typeof state.battery === 'string' && state.battery.trim())
+      || (state && typeof state.batteryHotswap === 'string' && state.batteryHotswap.trim())) {
+      updateBatteryOptions();
+    }
     setSelectValue(setupSelect, state.setupSelect);
     currentProjectInfo = state.projectInfo || null;
     if (projectForm) populateProjectForm(currentProjectInfo || {});
@@ -2179,6 +2183,10 @@ function applySharedSetup(shared, options = {}) {
     }
     setSelectValue(batterySelect, decoded.battery);
     setSelectValue(hotswapSelect, decoded.batteryHotswap);
+    if ((typeof decoded.battery === 'string' && decoded.battery.trim())
+      || (typeof decoded.batteryHotswap === 'string' && decoded.batteryHotswap.trim())) {
+      updateBatteryOptions();
+    }
     if (typeof setManualDiagramPositions === 'function') {
       let sharedDiagramPositions = {};
       if (typeof normalizeDiagramPositionsInput === 'function' && decoded.diagramPositions) {
