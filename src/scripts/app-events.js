@@ -22,6 +22,8 @@ if (skipLink) {
 
 
 
+const AUTO_BACKUP_MANUAL_RENAME_FLAG = '__cineManualAutoBackupRename';
+
 // Setup management
 saveSetupBtn.addEventListener("click", () => {
   const typedName = setupNameInput.value.trim();
@@ -47,6 +49,9 @@ saveSetupBtn.addEventListener("click", () => {
 
   const selectedName = setupSelect ? setupSelect.value : '';
   const renamingExisting = Boolean(selectedName && typedName && selectedName !== typedName);
+  const renamedAutoBackup = renamingExisting
+    && typeof selectedName === 'string'
+    && selectedName.startsWith('auto-backup-');
   let setups = getSetups();
   let finalName = typedName;
   let storedProjectSnapshot = null;
@@ -71,16 +76,25 @@ saveSetupBtn.addEventListener("click", () => {
       }
       setups = getSetups();
     } else if (Object.prototype.hasOwnProperty.call(setups, selectedName)) {
+      if (renamedAutoBackup && setups[selectedName] && typeof setups[selectedName] === 'object') {
+        setups[selectedName][AUTO_BACKUP_MANUAL_RENAME_FLAG] = true;
+      }
       setups[typedName] = setups[selectedName];
       delete setups[selectedName];
       finalName = typedName;
     }
   }
 
+  if (renamedAutoBackup && currentSetup && typeof currentSetup === 'object') {
+    currentSetup[AUTO_BACKUP_MANUAL_RENAME_FLAG] = true;
+  }
   setups[finalName] = currentSetup;
   storeSetups(setups);
 
   if (renamingExisting && storedProjectSnapshot && typeof saveProject === 'function') {
+    if (renamedAutoBackup && typeof storedProjectSnapshot === 'object') {
+      storedProjectSnapshot[AUTO_BACKUP_MANUAL_RENAME_FLAG] = true;
+    }
     try {
       saveProject(finalName, storedProjectSnapshot);
     } catch (error) {

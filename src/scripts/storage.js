@@ -112,6 +112,7 @@ const FULL_BACKUP_HISTORY_STORAGE_KEY = 'cameraPowerPlanner_fullBackups';
 const STORAGE_AUTO_BACKUP_NAME_PREFIX = 'auto-backup-';
 const STORAGE_AUTO_BACKUP_DELETION_PREFIX = 'auto-backup-before-delete-';
 const MAX_AUTO_BACKUPS = 50;
+const AUTO_BACKUP_MANUAL_RENAME_FLAG = '__cineManualAutoBackupRename';
 const MAX_DELETION_BACKUPS = 20;
 const MAX_FULL_BACKUP_HISTORY_ENTRIES = 200;
 const AUTO_GEAR_BACKUP_RETENTION_DEFAULT_VALUE = 12;
@@ -1334,6 +1335,38 @@ function createStableValueSignature(value) {
   return `${typeof value}:${String(value)}`;
 }
 
+function isManualAutoBackupEntry(container, key) {
+  if (!isPlainObject(container) || typeof key !== 'string') {
+    return false;
+  }
+
+  if (!Object.prototype.hasOwnProperty.call(container, key)) {
+    return false;
+  }
+
+  const value = container[key];
+  if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
+    return false;
+  }
+
+  return Boolean(value[AUTO_BACKUP_MANUAL_RENAME_FLAG]);
+}
+
+function applyManualAutoBackupRenameFlag(entry, flagged) {
+  if (!flagged || !entry || typeof entry !== 'object' || Array.isArray(entry)) {
+    return entry;
+  }
+
+  if (
+    Object.prototype.hasOwnProperty.call(entry, AUTO_BACKUP_MANUAL_RENAME_FLAG)
+    && entry[AUTO_BACKUP_MANUAL_RENAME_FLAG]
+  ) {
+    return entry;
+  }
+
+  return { ...entry, [AUTO_BACKUP_MANUAL_RENAME_FLAG]: true };
+}
+
 function removeDuplicateAutoBackupEntries(container, entries) {
   if (!isPlainObject(container) || !Array.isArray(entries) || entries.length < 2) {
     return [];
@@ -1345,6 +1378,9 @@ function removeDuplicateAutoBackupEntries(container, entries) {
   for (let index = entries.length - 1; index >= 0; index -= 1) {
     const entry = entries[index];
     if (!entry || typeof entry.key !== 'string') {
+      continue;
+    }
+    if (isManualAutoBackupEntry(container, entry.key)) {
       continue;
     }
     const labelKey = getAutoBackupLabelKey(entry);
@@ -1390,7 +1426,12 @@ function pruneAutoBackupEntries(container, entries, limit, removedKeys) {
     }
     const labelKey = getAutoBackupLabelKey(entry);
     const count = labelCounts.get(labelKey) || 0;
+    const manual = isManualAutoBackupEntry(container, entry.key);
     if (labelKey && count > 1) {
+      if (manual) {
+        index += 1;
+        continue;
+      }
       delete container[entry.key];
       entries.splice(index, 1);
       labelCounts.set(labelKey, count - 1);
@@ -1404,19 +1445,28 @@ function pruneAutoBackupEntries(container, entries, limit, removedKeys) {
     return;
   }
 
-  index = 0;
-  while (entries.length > limit && index < entries.length) {
-    const entry = entries[index];
-    if (!entry || typeof entry.key !== 'string') {
-      index += 1;
-      continue;
+  let pass = 0;
+  while (entries.length > limit && pass < 2) {
+    index = 0;
+    while (entries.length > limit && index < entries.length) {
+      const entry = entries[index];
+      if (!entry || typeof entry.key !== 'string') {
+        index += 1;
+        continue;
+      }
+      const manual = isManualAutoBackupEntry(container, entry.key);
+      if (pass === 0 && manual) {
+        index += 1;
+        continue;
+      }
+      const labelKey = getAutoBackupLabelKey(entry);
+      const count = labelCounts.get(labelKey) || 0;
+      delete container[entry.key];
+      entries.splice(index, 1);
+      labelCounts.set(labelKey, Math.max(0, count - 1));
+      removedKeys.push(entry.key);
     }
-    const labelKey = getAutoBackupLabelKey(entry);
-    const count = labelCounts.get(labelKey) || 0;
-    delete container[entry.key];
-    entries.splice(index, 1);
-    labelCounts.set(labelKey, Math.max(0, count - 1));
-    removedKeys.push(entry.key);
+    pass += 1;
   }
 }
 
@@ -2750,7 +2800,13 @@ function renameSetup(oldName, newName) {
     const used = new Set(Object.keys(setups));
     used.delete(oldName);
     const target = generateUniqueName(sanitized, used);
-    setups[target] = setups[oldName];
+    const existing = setups[oldName];
+    const wasAutoBackup = typeof oldName === 'string'
+      && oldName.startsWith(STORAGE_AUTO_BACKUP_NAME_PREFIX);
+    if (wasAutoBackup && isPlainObject(existing)) {
+      existing[AUTO_BACKUP_MANUAL_RENAME_FLAG] = true;
+    }
+    setups[target] = existing;
     delete setups[oldName];
     return { result: target, changed: true };
   });
@@ -3278,15 +3334,27 @@ function cloneProjectGearSelectors(selectors) {
 }
 
 function normalizeProject(data) {
+  let manualRenameFlagged = false;
+  if (isPlainObject(data) && data[AUTO_BACKUP_MANUAL_RENAME_FLAG]) {
+    manualRenameFlagged = true;
+  } else if (
+    isPlainObject(data)
+    && isPlainObject(data.project)
+    && data.project[AUTO_BACKUP_MANUAL_RENAME_FLAG]
+  ) {
+    manualRenameFlagged = true;
+  }
+
   if (typeof data === "string") {
     const parsed = tryParseJSONLike(data);
     if (parsed.success) {
       const normalized = normalizeProject(parsed.parsed);
       if (normalized) {
-        return normalized;
+        return applyManualAutoBackupRenameFlag(normalized, manualRenameFlagged);
       }
     }
-    return { gearList: data, projectInfo: null };
+    const fallback = { gearList: data, projectInfo: null };
+    return applyManualAutoBackupRenameFlag(fallback, manualRenameFlagged);
   }
   if (isPlainObject(data)) {
     // New format { gearList, projectInfo }
@@ -3458,27 +3526,28 @@ function normalizeProject(data) {
       if (normalizedGearSelectors && Object.keys(normalizedGearSelectors).length) {
         normalized.gearSelectors = normalizedGearSelectors;
       }
-      return normalized;
+      return applyManualAutoBackupRenameFlag(normalized, manualRenameFlagged);
     }
     // Legacy format { projectHtml, gearHtml }
     if (Object.prototype.hasOwnProperty.call(data, "projectHtml") || Object.prototype.hasOwnProperty.call(data, "gearHtml")) {
-      return {
+      const legacy = {
         gearList: { projectHtml: data.projectHtml || "", gearHtml: data.gearHtml || "" },
         projectInfo: null,
       };
+      return applyManualAutoBackupRenameFlag(legacy, manualRenameFlagged);
     }
 
     if (isPlainObject(data.project)) {
       const nested = normalizeProject(data.project);
       if (nested) {
-        return nested;
+        return applyManualAutoBackupRenameFlag(nested, manualRenameFlagged);
       }
     } else if (typeof data.project === "string") {
       const parsedProject = tryParseJSONLike(data.project);
       if (parsedProject.success) {
         const nested = normalizeProject(parsedProject.parsed);
         if (nested) {
-          return nested;
+          return applyManualAutoBackupRenameFlag(nested, manualRenameFlagged);
         }
       }
     }
@@ -3500,6 +3569,7 @@ const NORMALIZED_PROJECT_KEYS = new Set([
   "autoGearRules",
   "diagramPositions",
   "gearSelectors",
+  AUTO_BACKUP_MANUAL_RENAME_FLAG,
 ]);
 
 function isNormalizedProjectEntry(entry) {
