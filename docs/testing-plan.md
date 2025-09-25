@@ -19,6 +19,9 @@ exploratory testing without risking data loss.
 * **Critical DOM flows** – The DOM project still executes tests that exercise
   autosave, sharing, deleting, and loading project data to ensure users never lose their
   work, even while offline.
+* **Runtime integration guard** – `tests/dom/runtimeIntegration.test.js` boots the modular
+  runtime and verifies that `cineOffline`, `cinePersistence` and `cineUi` expose the
+  workflows required for saving, sharing, importing, backing up and restoring data.
 * **Runtime and backup automation (opt-in)** – Heavyweight script-level tests are now
   opt-in. Setting `RUN_HEAVY_TESTS=true` before invoking Jest will re-enable the
   integration suite that exercises the modular runtime loader, backup/restore flows,

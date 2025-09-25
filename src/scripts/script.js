@@ -62,6 +62,18 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
       || this;
   wrapper.call(globalScope, module.exports, require, module, __filename, __dirname, globalScope);
 
+  const ensureModule = relativePath => {
+    const resolvedPath = path.join(__dirname, relativePath);
+    const moduleId = require.resolve(resolvedPath);
+    if (require.cache[moduleId]) {
+      delete require.cache[moduleId];
+    }
+    return require(resolvedPath);
+  };
+
+  ensureModule('modules/persistence.js');
+  ensureModule('modules/runtime.js');
+
   const aggregatedExports = module.exports;
   const combinedAppVersion = aggregatedExports && aggregatedExports.APP_VERSION;
   const APP_VERSION = "1.0.9"; // Version marker for consistency checks
