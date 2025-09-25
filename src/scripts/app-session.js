@@ -8311,6 +8311,71 @@ if (helpButton && helpDialog) {
     clearHoverHelpHighlight();
   };
 
+  const createHoverHelpDetailsFragment = detailText => {
+    const fragment = document.createDocumentFragment();
+    if (!Array.isArray(detailText) || detailText.length === 0) {
+      return fragment;
+    }
+
+    const addParagraph = text => {
+      if (!text) return;
+      const paragraph = document.createElement('p');
+      paragraph.textContent = text;
+      fragment.appendChild(paragraph);
+    };
+
+    let listBuffer = [];
+
+    const flushList = () => {
+      if (!listBuffer.length) return;
+      const list = document.createElement('ul');
+      listBuffer.forEach(itemText => {
+        const item = document.createElement('li');
+        item.textContent = itemText;
+        list.appendChild(item);
+      });
+      fragment.appendChild(list);
+      listBuffer = [];
+    };
+
+    const addListItem = text => {
+      if (!text) return;
+      listBuffer.push(text);
+    };
+
+    detailText.forEach(part => {
+      if (typeof part !== 'string') return;
+      const normalisedPart = part
+        .replace(/\r\n/g, '\n')
+        .replace(/\s*[•‣▪◦⋅·]\s*/g, '\n• ');
+      const lines = normalisedPart
+        .split(/\n+/)
+        .map(line => line.trim())
+        .filter(Boolean);
+
+      lines.forEach(line => {
+        const bulletMatch = line.match(/^[•\-–—]\s*(.+)$/);
+        if (bulletMatch) {
+          addListItem(bulletMatch[1].trim());
+          return;
+        }
+
+        flushList();
+        addParagraph(line);
+      });
+
+      flushList();
+    });
+
+    flushList();
+
+    if (!fragment.childElementCount) {
+      addParagraph(detailText.filter(Boolean).join(' '));
+    }
+
+    return fragment;
+  };
+
   const updateHoverHelpTooltip = target => {
     hoverHelpCurrentTarget = target || null;
     setHoverHelpHighlight(target || null);
@@ -8335,7 +8400,7 @@ if (helpButton && helpDialog) {
     if (detailText.length) {
       const bodyEl = document.createElement('div');
       bodyEl.className = 'hover-help-details';
-      bodyEl.textContent = detailText.join(' ');
+      bodyEl.appendChild(createHoverHelpDetailsFragment(detailText));
       hoverHelpTooltip.appendChild(bodyEl);
     }
     const wasHidden = hoverHelpTooltip.hasAttribute('hidden');
