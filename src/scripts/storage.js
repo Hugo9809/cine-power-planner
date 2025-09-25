@@ -364,6 +364,7 @@ function createStorageMigrationBackup(storage, key, originalValue) {
   }
 
   const backupKey = `${key}${STORAGE_MIGRATION_BACKUP_SUFFIX}`;
+  const fallbackKey = `${key}${STORAGE_BACKUP_SUFFIX}`;
   let hasExistingBackup = false;
 
   if (typeof storage.getItem === 'function') {
@@ -400,7 +401,74 @@ function createStorageMigrationBackup(storage, key, originalValue) {
       if (recovery && recovery.success) {
         return;
       }
-      const errorToReport = recovery && recovery.error ? recovery.error : writeError;
+      let errorToReport = recovery && recovery.error ? recovery.error : writeError;
+
+      if (isQuotaExceededError(errorToReport)) {
+        let fallbackValue = null;
+        let hasFallbackValue = false;
+        if (typeof storage.getItem === 'function') {
+          try {
+            const rawFallbackValue = storage.getItem(fallbackKey);
+            if (rawFallbackValue !== null && rawFallbackValue !== undefined) {
+              fallbackValue = typeof rawFallbackValue === 'string'
+                ? rawFallbackValue
+                : String(rawFallbackValue);
+              hasFallbackValue = true;
+            }
+          } catch (fallbackReadError) {
+            console.warn(`Unable to inspect existing backup entry while recovering migration backup for ${key}`, fallbackReadError);
+          }
+        }
+
+        if (hasFallbackValue) {
+          let fallbackRemoved = false;
+          try {
+            storage.removeItem(fallbackKey);
+            fallbackRemoved = true;
+          } catch (fallbackRemoveError) {
+            console.warn(`Unable to clear backup entry before repurposing migration backup for ${key}`, fallbackRemoveError);
+          }
+
+          if (fallbackRemoved) {
+            try {
+              storage.setItem(backupKey, serialized);
+              console.warn(
+                `Repurposed ${fallbackKey} to preserve migration backup for ${key} after quota exhaustion.`,
+              );
+              return;
+            } catch (repurposeSerializedError) {
+              let repurposeError = repurposeSerializedError;
+              let rawRepurposed = false;
+
+              try {
+                storage.setItem(backupKey, fallbackValue);
+                rawRepurposed = true;
+              } catch (rawFallbackError) {
+                repurposeError = rawFallbackError;
+              }
+
+              if (rawRepurposed) {
+                console.warn(
+                  `Repurposed ${fallbackKey} to preserve migration backup for ${key} using raw payload after quota exhaustion.`,
+                );
+                return;
+              }
+
+              console.warn(`Unable to repurpose backup entry for migration backup of ${key}`, repurposeError);
+              try {
+                storage.setItem(fallbackKey, fallbackValue);
+              } catch (restoreFallbackError) {
+                console.warn(
+                  `Unable to restore backup entry for ${key} after failed migration backup repurpose attempt`,
+                  restoreFallbackError,
+                );
+              }
+              errorToReport = repurposeError;
+            }
+          }
+        }
+      }
+
       console.warn(`Unable to create migration backup for ${key}`, errorToReport);
       alertStorageError('migration-backup-quota');
       return;
@@ -5470,6 +5538,10 @@ const STORAGE_API = {
   requestPersistentStorage,
   clearUiCacheStorageEntries,
 };
+
+if (typeof process !== 'undefined' && process && process.env && process.env.NODE_ENV === 'test') {
+  STORAGE_API.__testCreateStorageMigrationBackup = createStorageMigrationBackup;
+}
 
 if (typeof module !== "undefined" && module.exports) {
   module.exports = STORAGE_API;

@@ -58,6 +58,7 @@ const {
   loadFullBackupHistory,
   saveFullBackupHistory,
   recordFullBackupHistoryEntry,
+  __testCreateStorageMigrationBackup,
 } = require('../../src/scripts/storage');
 
 const DEVICE_KEY = 'cameraPowerPlanner_devices';
@@ -1878,6 +1879,62 @@ describe('migration backups before overwriting data', () => {
 
     const backupData = readMigrationBackupData(PROJECT_KEY);
     expect(backupData).toEqual(initialProjects);
+  });
+
+  test('repurposes existing backup entry when migration backup encounters quota limits', () => {
+    expect(typeof __testCreateStorageMigrationBackup).toBe('function');
+
+    const initialSetups = { Legacy: { name: 'Legacy', items: [] } };
+    const migrationKey = migrationBackupKeyFor(SETUP_KEY);
+    const backupKey = backupKeyFor(SETUP_KEY);
+
+    const store = new Map();
+
+    const baseSetItem = function setItem(key, value) {
+      store.set(key, String(value));
+    };
+
+    const fakeStorage = {
+      getItem(key) {
+        return store.has(key) ? store.get(key) : null;
+      },
+      setItem: baseSetItem,
+      removeItem(key) {
+        store.delete(key);
+      },
+    };
+
+    fakeStorage.setItem(SETUP_KEY, JSON.stringify(initialSetups));
+    fakeStorage.setItem(backupKey, JSON.stringify(initialSetups));
+
+    const originalSetItem = fakeStorage.setItem;
+    let quotaTriggered = 0;
+
+    fakeStorage.setItem = jest.fn((key, value) => {
+      if (key === migrationKey && quotaTriggered < 2) {
+        quotaTriggered += 1;
+        const error = new Error('Quota exceeded');
+        error.name = 'QuotaExceededError';
+        throw error;
+      }
+      return originalSetItem.call(fakeStorage, key, value);
+    });
+
+    __testCreateStorageMigrationBackup(fakeStorage, SETUP_KEY, initialSetups);
+
+    expect(quotaTriggered).toBe(2);
+
+    const migrationBackupRaw = fakeStorage.getItem(migrationKey);
+    expect(migrationBackupRaw).not.toBeNull();
+    const migrationBackup = JSON.parse(migrationBackupRaw);
+    if (Object.prototype.hasOwnProperty.call(migrationBackup, 'data')) {
+      expect(typeof migrationBackup.createdAt).toBe('string');
+      expect(migrationBackup.data).toEqual(initialSetups);
+    } else {
+      expect(migrationBackup).toEqual(initialSetups);
+    }
+
+    expect(fakeStorage.getItem(backupKey)).toBeNull();
   });
 });
 
