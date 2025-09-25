@@ -1120,7 +1120,7 @@ main.legal-content {
   #setup-config .form-row:not(.form-row-actions) > button:not(.clear-input-btn):not(.favorite-toggle) {
     flex: 1 0 100%;
     width: 100%;
-    margin: 5px 0 0 0;
+    margin: var(--gap-size) 0 0 0;
   }
   #setup-manager .form-row.form-row-actions {
     flex-direction: column;
@@ -5690,12 +5690,12 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .settings-content.modal-surface
 
   .form-row > button {
     width: 100%;
-    margin: 5px 0 0 0;
+    margin: var(--gap-size) 0 0 0;
   }
 
   .form-row > button + button {
     margin-left: 0;
-    margin-top: 5px;
+    margin-top: var(--gap-size);
   }
 
   .share-import-group {
