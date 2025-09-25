@@ -1144,6 +1144,8 @@ describe('export/import all data', () => {
       { id: 'preset-1', label: 'Outdoor tweaks', rules }
     ];
     saveAutoGearPresets(presets);
+    const monitorDefaults = { waveform: 'RGB', lut: 'False Color' };
+    saveAutoGearMonitorDefaults(monitorDefaults);
     saveAutoGearActivePresetId('preset-1');
     saveAutoGearAutoPresetId('preset-auto');
     saveAutoGearBackupVisibility(true);
@@ -1159,6 +1161,7 @@ describe('export/import all data', () => {
       autoGearBackups: backups,
       autoGearSeeded: true,
       autoGearPresets: presets,
+      autoGearMonitorDefaults: monitorDefaults,
       autoGearActivePresetId: 'preset-1',
       autoGearAutoPresetId: 'preset-auto',
       autoGearBackupRetention: 20,
