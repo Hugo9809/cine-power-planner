@@ -8007,6 +8007,7 @@ if (helpButton && helpDialog) {
   let hoverHelpActive = false;
   let hoverHelpTooltip;
   let hoverHelpCurrentTarget = null;
+  let hoverHelpHighlightedTarget = null;
 
   const HOVER_HELP_TARGET_SELECTOR =
     '[data-help], [aria-label], [title], [aria-labelledby], [alt], [aria-describedby]';
@@ -8020,54 +8021,99 @@ if (helpButton && helpDialog) {
     return el;
   };
 
-  const collectHoverHelpText = el => {
-    if (!el) return [];
-    const parts = [];
-    const addText = value => {
+  const collectHoverHelpContent = el => {
+    if (!el) {
+      return { label: '', details: [] };
+    }
+
+    const seen = new Set();
+    const labelParts = [];
+    const detailParts = [];
+
+    const addUnique = (value, bucket) => {
       if (typeof value !== 'string') return;
       const trimmed = value.trim();
-      if (!trimmed) return;
-      if (!parts.includes(trimmed)) parts.push(trimmed);
+      if (!trimmed || seen.has(trimmed)) return;
+      seen.add(trimmed);
+      bucket.push(trimmed);
     };
 
-    const addTextFromElement = (element, { includeTextContent = false } = {}) => {
+    const addLabelText = value => addUnique(value, labelParts);
+    const addDetailText = value => addUnique(value, detailParts);
+
+    const addTextFromElement = (
+      element,
+      { includeTextContent = false, preferTextAsLabel = false } = {}
+    ) => {
       if (!element) return;
-      addText(element.getAttribute('data-help'));
-      addText(element.getAttribute('aria-label'));
-      addText(element.getAttribute('aria-description'));
-      addText(element.getAttribute('title'));
+      addDetailText(element.getAttribute('data-help'));
+      addDetailText(element.getAttribute('aria-description'));
+      addDetailText(element.getAttribute('title'));
+      addLabelText(element.getAttribute('aria-label'));
+      addLabelText(element.getAttribute('alt'));
       if (includeTextContent) {
-        addText(element.textContent);
+        const text = element.textContent;
+        if (preferTextAsLabel) {
+          addLabelText(text);
+        } else {
+          addDetailText(text);
+        }
       }
     };
 
-    addTextFromElement(el);
+    addTextFromElement(el, { preferTextAsLabel: true });
 
-    const applyFromIds = ids => {
+    const applyFromIds = (ids, { preferTextAsLabel = false } = {}) => {
       if (!ids) return;
       ids
         .split(/\s+/)
+        .map(id => id.trim())
         .filter(Boolean)
         .forEach(id => {
           const ref = document.getElementById(id);
           if (!ref) return;
-          addTextFromElement(ref, { includeTextContent: true });
+          addTextFromElement(ref, {
+            includeTextContent: true,
+            preferTextAsLabel
+          });
         });
     };
 
-    applyFromIds(el.getAttribute('aria-labelledby'));
-    addText(el.getAttribute('alt'));
+    applyFromIds(el.getAttribute('aria-labelledby'), { preferTextAsLabel: true });
     applyFromIds(el.getAttribute('aria-describedby'));
 
     findAssociatedLabelElements(el).forEach(labelEl => {
-      addTextFromElement(labelEl, { includeTextContent: true });
+      addTextFromElement(labelEl, { includeTextContent: true, preferTextAsLabel: true });
     });
 
-    if (!parts.length) {
-      addText(el.textContent);
+    if (!labelParts.length) {
+      addLabelText(el.textContent);
     }
 
-    return parts;
+    if (!detailParts.length && labelParts.length > 1) {
+      labelParts.slice(1).forEach(text => addDetailText(text));
+    }
+
+    return {
+      label: labelParts[0] || '',
+      details: detailParts
+    };
+  };
+
+  const clearHoverHelpHighlight = () => {
+    if (hoverHelpHighlightedTarget && hoverHelpHighlightedTarget.classList) {
+      hoverHelpHighlightedTarget.classList.remove('hover-help-highlight');
+    }
+    hoverHelpHighlightedTarget = null;
+  };
+
+  const setHoverHelpHighlight = target => {
+    if (hoverHelpHighlightedTarget === target) return;
+    clearHoverHelpHighlight();
+    if (target && target.classList && typeof target.classList.add === 'function') {
+      target.classList.add('hover-help-highlight');
+      hoverHelpHighlightedTarget = target;
+    }
   };
 
   const positionHoverHelpTooltip = target => {
@@ -8134,20 +8180,36 @@ if (helpButton && helpDialog) {
     if (!hoverHelpTooltip) return;
     hoverHelpTooltip.setAttribute('hidden', '');
     hoverHelpTooltip.style.removeProperty('visibility');
+    clearHoverHelpHighlight();
   };
 
   const updateHoverHelpTooltip = target => {
     hoverHelpCurrentTarget = target || null;
+    setHoverHelpHighlight(target || null);
     if (!hoverHelpActive || !hoverHelpTooltip || !target) {
       hideHoverHelpTooltip();
       return;
     }
-    const textParts = collectHoverHelpText(target);
-    if (!textParts.length) {
+    const { label, details } = collectHoverHelpContent(target);
+    const hasLabel = typeof label === 'string' && label.trim().length > 0;
+    const detailText = Array.isArray(details) ? details.filter(Boolean) : [];
+    if (!hasLabel && detailText.length === 0) {
       hideHoverHelpTooltip();
       return;
     }
-    hoverHelpTooltip.textContent = textParts.join(' ');
+    hoverHelpTooltip.textContent = '';
+    if (hasLabel) {
+      const titleEl = document.createElement('div');
+      titleEl.className = 'hover-help-heading';
+      titleEl.textContent = label.trim();
+      hoverHelpTooltip.appendChild(titleEl);
+    }
+    if (detailText.length) {
+      const bodyEl = document.createElement('div');
+      bodyEl.className = 'hover-help-details';
+      bodyEl.textContent = detailText.join(' ');
+      hoverHelpTooltip.appendChild(bodyEl);
+    }
     const wasHidden = hoverHelpTooltip.hasAttribute('hidden');
     if (wasHidden) {
       hoverHelpTooltip.style.visibility = 'hidden';
@@ -8173,6 +8235,7 @@ if (helpButton && helpDialog) {
       hoverHelpTooltip.remove();
       hoverHelpTooltip = null;
     }
+    clearHoverHelpHighlight();
     document.body.style.cursor = '';
     document.body.classList.remove('hover-help-active');
   };
@@ -8184,6 +8247,7 @@ if (helpButton && helpDialog) {
     closeHelp();
     document.body.style.cursor = 'help';
     document.body.classList.add('hover-help-active');
+    clearHoverHelpHighlight();
     hoverHelpTooltip = document.createElement('div');
     hoverHelpTooltip.id = 'hoverHelpTooltip';
     hoverHelpTooltip.setAttribute('role', 'tooltip');
