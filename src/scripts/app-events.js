@@ -1086,12 +1086,17 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
 
 // Handle "Edit" and "Delete" buttons in device lists (event delegation)
 deviceManagerSection.addEventListener("click", (event) => {
-  if (event.target.classList.contains("detail-toggle")) {
-    toggleDeviceDetails(event.target);
-  } else if (event.target.classList.contains("edit-btn")) {
-    const name = event.target.dataset.name;
-    const categoryKey = event.target.dataset.category;
-    const subcategory = event.target.dataset.subcategory;
+  const button = event.target.closest('button');
+  if (!button || !deviceManagerSection.contains(button)) {
+    return;
+  }
+
+  if (button.classList.contains("detail-toggle")) {
+    toggleDeviceDetails(button);
+  } else if (button.classList.contains("edit-btn")) {
+    const name = button.dataset.name;
+    const categoryKey = button.dataset.category;
+    const subcategory = button.dataset.subcategory;
 
     // Ensure category exists in selector
     if (!Array.from(newCategorySelect.options).some(opt => opt.value === categoryKey)) {
@@ -1135,10 +1140,10 @@ deviceManagerSection.addEventListener("click", (event) => {
     cancelEditBtn.setAttribute('data-help', texts[currentLang].cancelEditBtnHelp);
     showFormSection(cancelEditBtn);
     document.getElementById("addDeviceHeading").scrollIntoView({ behavior: "smooth", block: "start" });
-  } else if (event.target.classList.contains("delete-btn")) {
-    const name = event.target.dataset.name;
-    const categoryKey = event.target.dataset.category;
-    const subcategory = event.target.dataset.subcategory;
+  } else if (button.classList.contains("delete-btn")) {
+    const name = button.dataset.name;
+    const categoryKey = button.dataset.category;
+    const subcategory = button.dataset.subcategory;
     if (confirm(texts[currentLang].confirmDeleteDevice.replace("{name}", name))) {
       if (categoryKey === "accessories.cables") {
         delete devices.accessories.cables[subcategory][name];
