@@ -125,7 +125,7 @@ Ejecuta esta lista tras instalar o actualizar el planner. Confirma que guardado,
 
 ## Requisitos del sistema y navegadores
 
-- **Navegadores modernos.** Validado en las últimas versiones de Chromium, Firefox y Safari. Activa service workers, IndexedDB y almacenamiento persistente.
+- **Navegadores modernos.** Validado en las últimas versiones de Chromium, Firefox y Safari. Activa service workers, acceso a `localStorage` (almacenamiento del sitio) y almacenamiento persistente.
 - **Dispositivos orientados a offline.** Portátiles y tabletas deben permitir almacenamiento persistente. Ejecuta la app una vez en línea para que el service worker almacene todos los recursos y practica la recarga offline antes de viajar.
 - **Espacio local suficiente.** Las producciones grandes acumulan proyectos, backups y listas. Vigila el espacio del perfil y exporta regularmente a medios redundantes.
 - **Sin dependencias externas.** Todos los iconos, fuentes y scripts se entregan con el repositorio. Copia también `animated icons 3/` y los Uicons locales al mover la carpeta.
@@ -218,7 +218,7 @@ Repite esta rutina cuando se incorpore personal, se prepare una estación nueva 
 - La cabecera muestra el indicador offline cuando cae la conexión; **Forzar recarga** actualiza archivos sin tocar el trabajo guardado.
 - **Restablecer fábrica** o borrar datos del sitio sólo se permite tras generar automáticamente una copia.
 - Las actualizaciones del service worker se descargan en segundo plano y esperan tu aprobación. Al ver **Actualización lista**, termina los cambios, crea un backup y pulsa **Forzar recarga**.
-- El almacenamiento reside en IndexedDB con preferencias pequeñas reflejadas en `localStorage`. Usa las herramientas del navegador para inspeccionar o exportar datos antes de limpiar cachés.
+- Los datos residen en un `localStorage` reforzado; los perfiles restringidos recurren a `sessionStorage`. Cada escritura genera una instantánea `__legacyMigrationBackup` para recuperarse sin pérdidas si aparece un error de cuota o de esquema. Usa las herramientas del navegador para inspeccionar o exportar datos antes de limpiar cachés o realizar pruebas.
 
 ## Resumen de datos y almacenamiento
 

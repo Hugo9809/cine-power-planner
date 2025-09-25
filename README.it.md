@@ -125,7 +125,7 @@ Segui questa checklist all’installazione o dopo un aggiornamento: dimostra che
 
 ## Requisiti di sistema e browser
 
-- **Browser moderni.** Validato sulle ultime versioni di Chromium, Firefox e Safari. Attiva service worker, IndexedDB e archiviazione persistente.
+- **Browser moderni.** Validato sulle ultime versioni di Chromium, Firefox e Safari. Attiva service worker, accesso a `localStorage` (archiviazione del sito) e archiviazione persistente.
 - **Dispositivi orientati all’offline.** Laptop e tablet devono consentire storage persistente. Avvia l’app una volta online per mettere in cache tutte le risorse e ripeti la procedura di ricarica offline prima di partire.
 - **Spazio locale adeguato.** Produzioni grandi accumulano progetti, backup e liste. Monitora lo spazio del profilo e esporta regolarmente su supporti ridondanti.
 - **Zero dipendenze esterne.** Tutte le icone, i font e gli script sono inclusi. Copia anche `animated icons 3/` e gli Uicons locali quando trasferisci la cartella.
@@ -218,7 +218,7 @@ Ripeti questa routine quando arriva un nuovo membro, allestisci una postazione o
 - L’header mostra l’indicatore offline quando manca connessione; **Forza ricarica** aggiorna gli asset senza toccare i salvataggi.
 - **Ripristino impostazioni di fabbrica** o pulizia dei dati del sito avviene solo dopo aver generato automaticamente un backup.
 - Gli aggiornamenti del service worker vengono scaricati in background e attendono la tua approvazione. Quando compare **Aggiornamento pronto**, completa le modifiche, crea un backup e poi premi **Forza ricarica**.
-- Lo storage principale è IndexedDB, con preferenze leggere replicate in `localStorage`. Usa gli strumenti del browser per ispezionare o esportare i record prima di cancellare cache.
+- I dati risiedono in un `localStorage` rinforzato; i profili bloccati ricadono su `sessionStorage`. Ogni scrittura crea anche uno snapshot `__legacyMigrationBackup` per recuperare senza perdite eventuali errori di quota o di schema. Usa gli strumenti del browser per ispezionare o esportare i record prima di svuotare cache o fare prove.
 
 ## Panoramica dati e archiviazione
 
