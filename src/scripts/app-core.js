@@ -29,56 +29,58 @@ try {
   // overview generation not needed in test environments without module support
 }
 
-let cachedConnectorSummaryGenerator = null;
-let connectorSummaryCachePrimed = false;
-
-function resolveConnectorSummaryGenerator() {
-  if (connectorSummaryCachePrimed && typeof cachedConnectorSummaryGenerator === 'function') {
-    return cachedConnectorSummaryGenerator;
-  }
-
-  const scopes = [];
-  if (typeof globalThis !== 'undefined') scopes.push(globalThis);
-  if (typeof window !== 'undefined') scopes.push(window);
-  if (typeof global !== 'undefined') scopes.push(global);
-  if (typeof self !== 'undefined') scopes.push(self);
-
-  for (const scope of scopes) {
-    if (scope && typeof scope.generateConnectorSummary === 'function') {
-      cachedConnectorSummaryGenerator = scope.generateConnectorSummary;
-      connectorSummaryCachePrimed = true;
-      return cachedConnectorSummaryGenerator;
-    }
-  }
-
-  if (typeof generateConnectorSummary === 'function') {
-    cachedConnectorSummaryGenerator = generateConnectorSummary;
-    connectorSummaryCachePrimed = true;
-    return cachedConnectorSummaryGenerator;
-  }
-
-  return null;
-}
-
-function safeGenerateConnectorSummary(device) {
-  if (!device) {
-    return '';
-  }
-
-  const generator = resolveConnectorSummaryGenerator();
-  if (typeof generator !== 'function') {
-    return '';
-  }
+let connectorSummaryHelpers = null;
+if (typeof require === 'function') {
   try {
-    const summary = generator(device);
-    return summary || '';
+    connectorSummaryHelpers = require('./connector-summary.js');
   } catch (error) {
-    if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-      console.warn('Unable to generate connector summary', error);
-    }
-    return '';
+    void error;
   }
 }
+
+const connectorSummaryGlobalSource =
+  (typeof globalThis !== 'undefined' && globalThis.__cineConnectorSummary)
+    || (typeof window !== 'undefined' && window.__cineConnectorSummary)
+    || (typeof global !== 'undefined' && global.__cineConnectorSummary)
+    || (typeof self !== 'undefined' && self.__cineConnectorSummary)
+    || null;
+
+const connectorSummaryExports =
+  (connectorSummaryHelpers && typeof connectorSummaryHelpers === 'object')
+    ? connectorSummaryHelpers
+    : (connectorSummaryGlobalSource && typeof connectorSummaryGlobalSource === 'object')
+      ? connectorSummaryGlobalSource
+      : null;
+
+const resolveConnectorSummaryGenerator =
+  (connectorSummaryExports && typeof connectorSummaryExports.resolveConnectorSummaryGenerator === 'function')
+    ? connectorSummaryExports.resolveConnectorSummaryGenerator
+    : function resolveConnectorSummaryGenerator() {
+        return null;
+      };
+
+const safeGenerateConnectorSummary =
+  (connectorSummaryExports && typeof connectorSummaryExports.safeGenerateConnectorSummary === 'function')
+    ? connectorSummaryExports.safeGenerateConnectorSummary
+    : function safeGenerateConnectorSummary(device) {
+        if (!device) {
+          return '';
+        }
+
+        const generator = resolveConnectorSummaryGenerator();
+        if (typeof generator !== 'function') {
+          return '';
+        }
+        try {
+          const summary = generator(device);
+          return summary || '';
+        } catch (error) {
+          if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+            console.warn('Unable to generate connector summary', error);
+          }
+          return '';
+        }
+      };
 
 let autoGearWeightHelpers = null;
 if (typeof require === 'function') {
