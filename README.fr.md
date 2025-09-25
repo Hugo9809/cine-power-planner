@@ -186,6 +186,8 @@ Cette routine prouve que sauvegarde, partage, import, backup et restauration fon
 - **Diagramme de projet** pour visualiser alimentation et signal ; maintenez Maj lors de l’export pour enregistrer un JPG.
 - **Comparateur de batteries** affichant les performances et alertant sur les surcharges.
 - **Générateur de listes** qui produit des tableaux catégorisés avec métadonnées, emails et accessoires liés aux scénarios.
+- **Comparaison de versions** (**Paramètres → Sauvegarde & Restauration → Comparer les versions**) met en évidence les écarts entre sauvegardes manuelles ou automatiques, permet de consigner l’incident et d’exporter un journal avant archivage.
+- **Répétition de restauration** charge les sauvegardes dans un bac à sable pour vérifier chaque enregistrement hors ligne avant de restaurer les données de production.
 - **Indicateur hors ligne et Forcer le rechargement** montrant l’état de connexion et rafraîchissant les ressources sans toucher aux données.
 
 ### Barre supérieure
@@ -215,6 +217,10 @@ Cette routine prouve que sauvegarde, partage, import, backup et restauration fon
 
 - Le service worker met en cache chaque ressource pour une utilisation hors ligne et n’applique les mises à jour qu’après **Forcer le rechargement**.
 - Projets, retours d’autonomie, favoris, équipements personnalisés, thèmes et listes résident dans le stockage du navigateur. Une demande de persistance est effectuée pour réduire le risque d’éviction.
+- Les sauvegardes automatiques enchaînent des instantanés de projet toutes les dix minutes, des archives complètes horaires et des copies des règles automatiques en arrière-plan. Activez **Paramètres → Sauvegarde & Restauration → Afficher les auto-sauvegardes dans la liste** pour afficher la chronologie, ajuster la rétention et restaurer des instantanés sans connexion.
+- Si le navigateur bloque les téléchargements, l’application ouvre un onglet **Téléchargement manuel** contenant le JSON afin de le copier dans un fichier `.json` et de le stocker sur un support hors ligne de confiance avant de fermer l’onglet.
+- Utilisez **Paramètres → Sauvegarde & Restauration → Comparer les versions** pour confronter deux sauvegardes, consigner le contexte dans **Notes d’incident** et exporter un journal pour vos transmissions.
+- Lancez **Répétition de restauration** depuis **Paramètres → Sauvegarde & Restauration** pour charger une sauvegarde dans un bac à sable jetable, revoir le tableau comparatif et confirmer son intégrité avant d’appliquer **Restaurer** aux données actives.
 - Ouvrir le dépôt depuis le disque ou un réseau interne évite toute fuite vers l’extérieur. Les exports JSON sont lisibles pour audit.
 - L’en-tête affiche un indicateur hors ligne lorsqu’il n’y a pas de connexion ; **Forcer le rechargement** rafraîchit les fichiers sans toucher aux sauvegardes.
 - **Réinitialisation usine** ou nettoyage des données ne s’exécutent qu’après génération d’un backup automatique.

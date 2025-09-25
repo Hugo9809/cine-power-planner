@@ -186,6 +186,8 @@ Ripeti questa routine quando arriva un nuovo membro, allestisci una postazione o
 - **Diagramma di progetto** per visualizzare alimentazione e segnali; tieni premuto Shift durante l’export per salvare un JPG.
 - **Confronto batterie** che mostra le prestazioni dei pack compatibili e avvisa in caso di sovraccarichi.
 - **Generatore di liste** che produce tabelle categorizzate con metadati, email e accessori basati sugli scenari.
+- **Confronto versioni** (**Impostazioni → Backup e ripristino → Confronta versioni**) evidenzia le differenze tra salvataggi manuali o auto-backup, permette di annotare l’incidente ed esporta i log prima dell’archiviazione.
+- **Prova di ripristino** carica i backup in un ambiente isolato così da verificare ogni record offline prima di ripristinare i dati di produzione.
 - **Indicatore offline e Forza ricarica** per mostrare lo stato e aggiornare le risorse senza toccare i dati.
 
 ### Barra superiore
@@ -215,6 +217,10 @@ Ripeti questa routine quando arriva un nuovo membro, allestisci una postazione o
 
 - Un service worker mette in cache ogni risorsa per l’uso offline e applica gli aggiornamenti solo dopo **Forza ricarica**.
 - Progetti, feedback runtime, preferiti, dispositivi personalizzati, temi e liste vivono nello storage del browser. Quando possibile viene richiesta la persistenza per ridurre i rischi di cancellazione.
+- Le copie automatiche concatenano snapshot di progetto ogni dieci minuti, backup completi ogni ora e archivi delle regole automatiche in background. Attiva **Impostazioni → Backup e ripristino → Mostra auto-backup nell’elenco** per vedere la timeline, regolare la conservazione e ripristinare le istantanee senza connessione.
+- Se il browser blocca i download, l’app apre una scheda **Download manuale** con il JSON da copiare in un file `.json` e salvare su supporti offline affidabili prima di chiuderla.
+- Usa **Impostazioni → Backup e ripristino → Confronta versioni** per confrontare due salvataggi, annotare il contesto nelle **Note sull’incidente** ed esportare un registro per il passaggio di consegne.
+- Avvia **Prova di ripristino** da **Impostazioni → Backup e ripristino** per caricare un backup in un’area temporanea, rivedere la tabella di confronto e confermare che sia integro prima di applicare **Ripristina** ai dati attivi.
 - Aprire il repository dal disco o da una rete interna mantiene i dati sensibili lontani da servizi esterni. Gli export JSON sono leggibili e auditabili.
 - L’header mostra l’indicatore offline quando manca connessione; **Forza ricarica** aggiorna gli asset senza toccare i salvataggi.
 - **Ripristino impostazioni di fabbrica** o pulizia dei dati del sito avviene solo dopo aver generato automaticamente un backup.

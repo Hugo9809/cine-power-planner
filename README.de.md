@@ -186,6 +186,8 @@ Dieser kurze Ablauf sollte bei neuen Teammitgliedern, frisch eingerichteten Work
 - **Projektdiagramm** visualisiert Strom- und Signalpfade; mit gedrückter Umschalttaste als JPG exportieren.
 - **Akkuvergleich** zeigt Leistung kompatibler Packs und warnt vor Überlast.
 - **Gerätelistengenerator** erstellt kategorisierte Tabellen mit Metadaten, Crew-E-Mails und Szenario-Zubehör.
+- **Versionsvergleich** (**Einstellungen → Backup & Wiederherstellung → Versionen vergleichen**) hebt Unterschiede zwischen manuellen Saves oder Auto-Backups hervor, erlaubt Vorfallsnotizen und exportiert Prüfprotokolle vor der Archivierung.
+- **Wiederherstellungsprobe** lädt Backups in eine Sandbox, damit du jeden Datensatz offline prüfen kannst, bevor Live-Daten überschrieben werden.
 - **Offline-Badge & Neu laden erzwingen** zeigen Verbindungsstatus und aktualisieren Assets ohne Datenverlust.
 
 ### Top-Bar-Steuerung
@@ -215,6 +217,10 @@ Dieser kurze Ablauf sollte bei neuen Teammitgliedern, frisch eingerichteten Work
 
 - Service Worker cached alle Assets, Updates warten auf deine Freigabe via **Neu laden erzwingen**.
 - Projekte, Laufzeitdaten, Favoriten, Custom-Geräte, Themes und Listen liegen im Browser-Speicher. Unterstützte Browser erhalten Persistenz-Anfragen, um Löschrisiken zu mindern.
+- Automatische Sicherungen stapeln Projektsnapshots alle zehn Minuten, stündliche Voll-Backups und Hintergrundarchive der Auto-Gear-Regeln. Aktiviere **Einstellungen → Backup & Wiederherstellung → Auto-Backups in Projektliste anzeigen**, um die Timeline einzublenden, die Aufbewahrung zu steuern und Snapshots ohne Verbindung wiederherzustellen.
+- Blockiert der Browser Downloads, öffnet die App einen Tab **Manueller Download** mit dem JSON, damit du es in eine `.json`-Datei kopierst und auf vertrauenswürdigen Offline-Medien ablegst.
+- Nutze **Einstellungen → Backup & Wiederherstellung → Versionen vergleichen**, um zwei Stände zu vergleichen, Kontext in **Vorfallsnotizen** festzuhalten und ein Prüfprotokoll für Übergaben zu exportieren.
+- Starte **Wiederherstellungsprobe** in **Einstellungen → Backup & Wiederherstellung**, lade das Backup in eine Wegwerf-Sandbox, prüfe die Vergleichstabelle und bestätige die Integrität, bevor du **Wiederherstellen** auf die Live-Daten anwendest.
 - Repository lokal öffnen oder intern hosten, damit sensible Daten nicht nach außen gelangen. Exporte sind menschenlesbar und auditierbar.
 - Kopfzeile zeigt Offline-Indikator, Force-Reload aktualisiert Assets ohne Saves anzutasten.
 - **Werkseinstellungen** oder das Löschen der Website-Daten erfolgt erst nach einem automatischen Backup.
