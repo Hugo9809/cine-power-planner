@@ -1,14 +1,13 @@
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 (function initAutoGearWeightHelpers(globalScope) {
-  if (!globalScope || typeof globalScope !== 'object') {
+  if (!globalScope || _typeof(globalScope) !== 'object') {
     globalScope = {};
   }
-
   var operatorLookup = {
     greater: true,
     less: true,
     equal: true
   };
-
   function normalizeAutoGearWeightOperator(value) {
     if (typeof value !== 'string') return 'greater';
     var normalized = value.trim().toLowerCase();
@@ -19,20 +18,11 @@
     if (normalized === '<' || normalized === 'lt' || normalized === 'lessthan' || normalized === 'below' || normalized === 'under') {
       return 'less';
     }
-    if (
-      normalized === '=' ||
-      normalized === '==' ||
-      normalized === 'equal' ||
-      normalized === 'equals' ||
-      normalized === 'exactly' ||
-      normalized === 'match' ||
-      normalized === 'matches'
-    ) {
+    if (normalized === '=' || normalized === '==' || normalized === 'equal' || normalized === 'equals' || normalized === 'exactly' || normalized === 'match' || normalized === 'matches') {
       return 'equal';
     }
     return operatorLookup[normalized] ? normalized : 'greater';
   }
-
   function normalizeAutoGearWeightValue(value) {
     if (typeof value === 'number' && Number.isFinite(value)) {
       var roundedNumber = Math.round(value);
@@ -50,45 +40,43 @@
     }
     return null;
   }
-
   function normalizeAutoGearCameraWeightCondition(setting) {
     if (!setting) return null;
     if (Array.isArray(setting)) {
       if (setting.length >= 2) {
-        return normalizeAutoGearCameraWeightCondition({ operator: setting[0], value: setting[1] });
+        return normalizeAutoGearCameraWeightCondition({
+          operator: setting[0],
+          value: setting[1]
+        });
       }
       if (setting.length === 1) {
-        return normalizeAutoGearCameraWeightCondition({ value: setting[0] });
+        return normalizeAutoGearCameraWeightCondition({
+          value: setting[0]
+        });
       }
       return null;
     }
-    if (typeof setting === 'object') {
-      var operatorSource =
-        setting.operator !== undefined ? setting.operator :
-        setting.comparison !== undefined ? setting.comparison :
-        setting.type !== undefined ? setting.type :
-        setting.mode !== undefined ? setting.mode :
-        setting.condition;
+    if (_typeof(setting) === 'object') {
+      var operatorSource = setting.operator !== undefined ? setting.operator : setting.comparison !== undefined ? setting.comparison : setting.type !== undefined ? setting.type : setting.mode !== undefined ? setting.mode : setting.condition;
       var operator = normalizeAutoGearWeightOperator(operatorSource);
-      var valueSource =
-        setting.value !== undefined ? setting.value :
-        setting.weight !== undefined ? setting.weight :
-        setting.threshold !== undefined ? setting.threshold :
-        setting.grams !== undefined ? setting.grams :
-        setting.g !== undefined ? setting.g :
-        setting.amount;
+      var valueSource = setting.value !== undefined ? setting.value : setting.weight !== undefined ? setting.weight : setting.threshold !== undefined ? setting.threshold : setting.grams !== undefined ? setting.grams : setting.g !== undefined ? setting.g : setting.amount;
       var normalizedValue = normalizeAutoGearWeightValue(valueSource);
       if (normalizedValue == null) return null;
-      return { operator: operator, value: normalizedValue };
+      return {
+        operator: operator,
+        value: normalizedValue
+      };
     }
     if (typeof setting === 'number' || typeof setting === 'string') {
       var normalized = normalizeAutoGearWeightValue(setting);
       if (normalized == null) return null;
-      return { operator: 'greater', value: normalized };
+      return {
+        operator: 'greater',
+        value: normalized
+      };
     }
     return null;
   }
-
   function formatAutoGearWeight(value) {
     if (!Number.isFinite(value)) return '';
     try {
@@ -100,12 +88,11 @@
     }
     return String(value);
   }
-
   function getAutoGearCameraWeightOperatorLabel(operator, langTexts) {
-    var textsForLang = langTexts && typeof langTexts === 'object' ? langTexts : {};
-    var globalTexts = globalScope && globalScope.texts && typeof globalScope.texts === 'object'
-      ? globalScope.texts
-      : { en: {} };
+    var textsForLang = langTexts && _typeof(langTexts) === 'object' ? langTexts : {};
+    var globalTexts = globalScope && globalScope.texts && _typeof(globalScope.texts) === 'object' ? globalScope.texts : {
+      en: {}
+    };
     var fallback = globalTexts.en || {};
     var normalized = normalizeAutoGearWeightOperator(operator);
     if (normalized === 'less') {
@@ -116,14 +103,12 @@
     }
     return textsForLang.autoGearCameraWeightOperatorGreater || fallback.autoGearCameraWeightOperatorGreater || 'Heavier than';
   }
-
   function formatAutoGearCameraWeight(condition, langTexts) {
     if (!condition || !Number.isFinite(condition.value)) return '';
     var label = getAutoGearCameraWeightOperatorLabel(condition.operator, langTexts);
     var formattedValue = formatAutoGearWeight(condition.value);
     return label + ' ' + formattedValue + ' g';
   }
-
   function evaluateAutoGearCameraWeightCondition(condition, selectedCameraWeight) {
     if (!condition || !Number.isFinite(condition.value)) return false;
     if (!Number.isFinite(selectedCameraWeight)) return false;
@@ -136,7 +121,6 @@
     }
     return selectedCameraWeight > condition.value;
   }
-
   var exported = {
     normalizeAutoGearWeightOperator: normalizeAutoGearWeightOperator,
     normalizeAutoGearWeightValue: normalizeAutoGearWeightValue,
@@ -146,22 +130,12 @@
     formatAutoGearCameraWeight: formatAutoGearCameraWeight,
     evaluateAutoGearCameraWeightCondition: evaluateAutoGearCameraWeightCondition
   };
-
   for (var key in exported) {
     if (Object.prototype.hasOwnProperty.call(exported, key)) {
       globalScope[key] = exported[key];
     }
   }
-
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = exported;
   }
-})(typeof globalThis !== 'undefined'
-  ? globalThis
-  : typeof self !== 'undefined'
-    ? self
-    : typeof window !== 'undefined'
-      ? window
-      : typeof global !== 'undefined'
-        ? global
-        : {});
+})(typeof globalThis !== 'undefined' ? globalThis : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : {});

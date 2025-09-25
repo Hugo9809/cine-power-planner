@@ -5,12 +5,31 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
 function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
-function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
 function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+var AUTO_BACKUP_RENAMED_FLAG = typeof globalThis !== 'undefined' && globalThis.__CINE_AUTO_BACKUP_RENAMED_FLAG ? globalThis.__CINE_AUTO_BACKUP_RENAMED_FLAG : '__cineAutoBackupRenamed';
+function markAutoBackupDataAsRenamed(value) {
+  if (!value || _typeof(value) !== 'object') {
+    return;
+  }
+  try {
+    value[AUTO_BACKUP_RENAMED_FLAG] = true;
+  } catch (assignmentError) {
+    void assignmentError;
+  }
+  var info = value.projectInfo;
+  if (info && _typeof(info) === 'object') {
+    try {
+      info[AUTO_BACKUP_RENAMED_FLAG] = true;
+    } catch (infoError) {
+      void infoError;
+    }
+  }
+}
 languageSelect.addEventListener("change", function (event) {
   setLanguage(event.target.value);
 });
@@ -40,6 +59,7 @@ saveSetupBtn.addEventListener("click", function () {
   }
   var selectedName = setupSelect ? setupSelect.value : '';
   var renamingExisting = Boolean(selectedName && typedName && selectedName !== typedName);
+  var renamingAutoBackup = renamingExisting && typeof selectedName === 'string' && selectedName.startsWith('auto-backup-');
   var setups = getSetups();
   var finalName = typedName;
   var storedProjectSnapshot = null;
@@ -67,10 +87,17 @@ saveSetupBtn.addEventListener("click", function () {
       finalName = typedName;
     }
   }
+  var finalIsAutoBackup = typeof finalName === 'string' && finalName.startsWith('auto-backup-');
+  if (renamingAutoBackup && finalIsAutoBackup) {
+    markAutoBackupDataAsRenamed(currentSetup);
+  }
   setups[finalName] = currentSetup;
   storeSetups(setups);
   if (renamingExisting && storedProjectSnapshot && typeof saveProject === 'function') {
     try {
+      if (renamingAutoBackup && finalIsAutoBackup) {
+        markAutoBackupDataAsRenamed(storedProjectSnapshot);
+      }
       saveProject(finalName, storedProjectSnapshot);
     } catch (error) {
       console.warn('Failed to preserve project data during setup rename', error);
@@ -324,7 +351,23 @@ setupSelect.addEventListener("change", function (event) {
   var autoSaveFlushed = false;
   if (typeof scheduleProjectAutoSave === 'function') {
     try {
-      scheduleProjectAutoSave(true);
+      var normalizeForOverride = typeof normalizeSetupName === 'function' ? normalizeSetupName : function (value) {
+        return typeof value === 'string' ? value.trim() : '';
+      };
+      var previousSelection = normalizeForOverride(typeof lastSetupName === 'string' ? lastSetupName : '');
+      var storageKeyOverride = normalizeForOverride(previousKey);
+      var overrides = {
+        setupNameState: {
+          typedName: typedName,
+          selectedName: previousSelection,
+          storageKey: storageKeyOverride,
+          renameInProgress: Boolean(previousSelection && typedName && typedName !== previousSelection)
+        }
+      };
+      scheduleProjectAutoSave({
+        immediate: true,
+        overrides: overrides
+      });
       autoSaveFlushed = true;
     } catch (error) {
       console.warn('Failed to flush project autosave before switching setups', error);
@@ -350,11 +393,11 @@ setupSelect.addEventListener("change", function (event) {
     }
     var previousProjectInfo = deriveProjectInfo(info);
     currentProjectInfo = previousProjectInfo;
-    var normalizeForOverride = typeof normalizeSetupName === 'function' ? normalizeSetupName : function (value) {
+    var _normalizeForOverride = typeof normalizeSetupName === 'function' ? normalizeSetupName : function (value) {
       return typeof value === 'string' ? value.trim() : '';
     };
-    var normalizedPreviousKey = normalizeForOverride(previousKey);
-    var normalizedTypedName = normalizeForOverride(typedName);
+    var normalizedPreviousKey = _normalizeForOverride(previousKey);
+    var normalizedTypedName = _normalizeForOverride(typedName);
     var renameInProgressForPrevious = Boolean(normalizedPreviousKey && normalizedTypedName && normalizedTypedName !== normalizedPreviousKey);
     var projectInfoForStorage = typeof createProjectInfoSnapshotForStorage === 'function' ? createProjectInfoSnapshotForStorage(previousProjectInfo, {
       projectNameOverride: renameInProgressForPrevious ? normalizedPreviousKey : undefined
@@ -399,6 +442,7 @@ setupSelect.addEventListener("change", function (event) {
       cameraSelect.value = setup.camera;
       updateBatteryPlateVisibility();
       batteryPlateSelect.value = setup.batteryPlate || batteryPlateSelect.value;
+      applyBatteryPlateSelectionFromBattery(setup.battery, batteryPlateSelect.value);
       monitorSelect.value = setup.monitor;
       videoSelect.value = setup.video;
       if (typeof updateCageSelectOptions === 'function') {
@@ -414,6 +458,7 @@ setupSelect.addEventListener("change", function (event) {
       });
       distanceSelect.value = setup.distance;
       batterySelect.value = setup.battery;
+      applyBatteryPlateSelectionFromBattery(setup.battery, batteryPlateSelect ? batteryPlateSelect.value : '');
       hotswapSelect.value = setup.batteryHotswap || hotswapSelect.value;
       setSliderBowlValue(setup.sliderBowl || '');
       setEasyrigValue(setup.easyrig || '');
@@ -1254,11 +1299,11 @@ addDeviceBtn.addEventListener("click", function () {
         dtapA: dtapA
       });
     }
-    Object.assign(targetCategory[name], collectDynamicFieldValues(category, categoryExcludedAttrs[category] || []));
+    applyDynamicFieldValues(targetCategory[name], category, categoryExcludedAttrs[category] || []);
   } else if (category === "accessories.cables") {
     var _existing = isEditing && originalDeviceData ? _objectSpread({}, originalDeviceData) : {};
-    var attrs = collectDynamicFieldValues("accessories.cables.".concat(subcategory), categoryExcludedAttrs["accessories.cables.".concat(subcategory)] || []);
-    targetCategory[name] = _objectSpread(_objectSpread({}, _existing), attrs);
+    targetCategory[name] = _objectSpread({}, _existing);
+    applyDynamicFieldValues(targetCategory[name], "accessories.cables.".concat(subcategory), categoryExcludedAttrs["accessories.cables.".concat(subcategory)] || []);
   } else if (category === "cameras") {
     var watt = parseFloat(cameraWattInput.value);
     if (isNaN(watt) || watt <= 0) {
@@ -1295,7 +1340,7 @@ addDeviceBtn.addEventListener("click", function () {
       lensMount: getLensMounts(),
       timecode: timecode
     };
-    Object.assign(targetCategory[name], collectDynamicFieldValues(category, categoryExcludedAttrs[category] || []));
+    applyDynamicFieldValues(targetCategory[name], category, categoryExcludedAttrs[category] || []);
   } else if (category === "monitors" || category === "directorMonitors") {
     var _watt = parseFloat(monitorWattInput.value);
     if (isNaN(_watt) || _watt <= 0) {
@@ -1325,7 +1370,7 @@ addDeviceBtn.addEventListener("click", function () {
         portType: monitorAudioOutputInput.value
       } : undefined
     };
-    Object.assign(targetCategory[name], collectDynamicFieldValues(category, categoryExcludedAttrs[category] || []));
+    applyDynamicFieldValues(targetCategory[name], category, categoryExcludedAttrs[category] || []);
   } else if (category === "viewfinders") {
     var _watt2 = parseFloat(viewfinderWattInput.value);
     if (isNaN(_watt2) || _watt2 <= 0) {
@@ -1352,7 +1397,7 @@ addDeviceBtn.addEventListener("click", function () {
       wirelessTx: viewfinderWirelessTxInput.checked,
       latencyMs: viewfinderWirelessTxInput.checked ? viewfinderLatencyInput.value : undefined
     };
-    Object.assign(targetCategory[name], collectDynamicFieldValues(category, categoryExcludedAttrs[category] || []));
+    applyDynamicFieldValues(targetCategory[name], category, categoryExcludedAttrs[category] || []);
   } else if (category === "video" || category === "wirelessReceivers" || category === "iosVideo") {
     var _watt3 = parseFloat(newWattInput.value);
     if (isNaN(_watt3) || _watt3 <= 0) {
@@ -1371,7 +1416,7 @@ addDeviceBtn.addEventListener("click", function () {
       frequency: videoFrequencyInput.value,
       latencyMs: videoLatencyInput.value
     };
-    Object.assign(targetCategory[name], collectDynamicFieldValues(category, categoryExcludedAttrs[category] || []));
+    applyDynamicFieldValues(targetCategory[name], category, categoryExcludedAttrs[category] || []);
   } else if (category === "fiz.motors") {
     var _watt4 = parseFloat(newWattInput.value);
     if (isNaN(_watt4) || _watt4 <= 0) {
@@ -1388,7 +1433,7 @@ addDeviceBtn.addEventListener("click", function () {
       }).filter(Boolean) : [],
       notes: motorNotesInput.value
     };
-    Object.assign(targetCategory[name], collectDynamicFieldValues(category, categoryExcludedAttrs[category] || []));
+    applyDynamicFieldValues(targetCategory[name], category, categoryExcludedAttrs[category] || []);
   } else if (category === "fiz.controllers") {
     var _watt5 = parseFloat(newWattInput.value);
     if (isNaN(_watt5) || _watt5 <= 0) {
@@ -1403,7 +1448,7 @@ addDeviceBtn.addEventListener("click", function () {
       connectivity: controllerConnectivityInput.value,
       notes: controllerNotesInput.value
     };
-    Object.assign(targetCategory[name], collectDynamicFieldValues(category, categoryExcludedAttrs[category] || []));
+    applyDynamicFieldValues(targetCategory[name], category, categoryExcludedAttrs[category] || []);
   } else if (category === "fiz.distance") {
     var _watt6 = parseFloat(newWattInput.value);
     if (isNaN(_watt6) || _watt6 <= 0) {
@@ -1419,7 +1464,7 @@ addDeviceBtn.addEventListener("click", function () {
       outputDisplay: distanceOutputInput.value,
       notes: distanceNotesInput.value
     };
-    Object.assign(targetCategory[name], collectDynamicFieldValues(category, categoryExcludedAttrs[category] || []));
+    applyDynamicFieldValues(targetCategory[name], category, categoryExcludedAttrs[category] || []);
   } else {
     var _watt7 = parseFloat(newWattInput.value);
     if (isNaN(_watt7) || _watt7 <= 0) {
@@ -1427,10 +1472,10 @@ addDeviceBtn.addEventListener("click", function () {
       return;
     }
     var _existing2 = editingSamePath && originalDeviceData ? _objectSpread({}, originalDeviceData) : {};
-    var _attrs = collectDynamicFieldValues(category, categoryExcludedAttrs[category] || []);
-    targetCategory[name] = _objectSpread(_objectSpread(_objectSpread({}, _existing2), _attrs), {}, {
+    targetCategory[name] = _objectSpread(_objectSpread({}, _existing2), {}, {
       powerDrawWatts: _watt7
     });
+    applyDynamicFieldValues(targetCategory[name], category, categoryExcludedAttrs[category] || []);
   }
   if (isEditing) {
     removeOriginalDeviceEntry(storedOriginalCategory, storedOriginalSubcategory, originalName, category, subcategory, name);

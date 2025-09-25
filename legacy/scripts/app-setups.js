@@ -110,7 +110,7 @@ function downloadSharedProject(shareFileName, includeAutoGear) {
       return sel.value;
     }),
     distance: distanceSelect.value,
-    batteryPlate: batteryPlateSelect.value,
+    batteryPlate: normalizeBatteryPlateValue(batteryPlateSelect.value, batterySelect.value),
     battery: batterySelect.value,
     batteryHotswap: hotswapSelect.value
   };
@@ -155,6 +155,12 @@ function downloadSharedProject(shareFileName, includeAutoGear) {
   var hasAutoGearRules = Array.isArray(rulesForShare) && rulesForShare.length > 0;
   if (includeAutoGear && hasAutoGearRules) {
     currentSetup.autoGearRules = rulesForShare;
+    var coverage = getAutoGearRuleCoverageSummary({
+      rules: rulesForShare
+    });
+    if (coverage) {
+      currentSetup.autoGearCoverage = coverage;
+    }
   }
   var notifyShareFailure = function notifyShareFailure(error) {
     if (error) {
@@ -2424,13 +2430,13 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
       if (!normalizedTargets.includes(normalizedMattebox)) return false;
     }
     var cameraList = Array.isArray(rule.camera) ? rule.camera.filter(Boolean) : [];
+    var cameraWeightCondition = normalizeAutoGearCameraWeightCondition(rule.cameraWeight);
     if (cameraList.length) {
       var _normalizedTargets = cameraList.map(normalizeAutoGearTriggerValue).filter(Boolean);
       if (!_normalizedTargets.length) return false;
       if (!normalizedCameraSelection) return false;
       if (!_normalizedTargets.includes(normalizedCameraSelection)) return false;
     }
-    var cameraWeightCondition = normalizeAutoGearCameraWeightCondition(rule.cameraWeight);
     if (cameraWeightCondition) {
       if (!Number.isFinite(selectedCameraWeight)) return false;
       if (!evaluateAutoGearCameraWeightCondition(cameraWeightCondition, selectedCameraWeight)) {
@@ -4119,6 +4125,25 @@ function saveCurrentGearList() {
   var gearSelectors = cloneGearListSelectors(gearSelectorsRaw);
   var hasGearSelectors = Object.keys(gearSelectors).length > 0;
   var nameState = typeof getSetupNameState === 'function' ? getSetupNameState() : null;
+  if (typeof getProjectAutoSaveOverrides === 'function') {
+    var overrides = getProjectAutoSaveOverrides();
+    if (overrides && _typeof(overrides) === 'object' && overrides.setupNameState && _typeof(overrides.setupNameState) === 'object') {
+      var normalize = function normalize(value) {
+        return typeof value === 'string' ? value.trim() : '';
+      };
+      var rawOverride = overrides.setupNameState;
+      var overrideTyped = normalize(rawOverride.typedName);
+      var overrideSelected = normalize(rawOverride.selectedName);
+      var overrideStorage = normalize(typeof rawOverride.storageKey === 'string' ? rawOverride.storageKey : overrideSelected || overrideTyped);
+      var renameOverride = typeof rawOverride.renameInProgress === 'boolean' ? rawOverride.renameInProgress : Boolean(overrideSelected && overrideTyped && overrideTyped !== overrideSelected);
+      nameState = {
+        typedName: overrideTyped,
+        selectedName: overrideSelected,
+        storageKey: overrideStorage,
+        renameInProgress: renameOverride
+      };
+    }
+  }
   var fallbackNormalize = function fallbackNormalize(value) {
     if (typeof value !== 'string') return '';
     return value.trim();
@@ -4293,7 +4318,7 @@ function deleteCurrentGearList() {
       return sel ? sel.value : '';
     }),
     distance: distanceSelect ? distanceSelect.value : '',
-    batteryPlate: batteryPlateSelect ? batteryPlateSelect.value : '',
+    batteryPlate: normalizeBatteryPlateValue(batteryPlateSelect ? batteryPlateSelect.value : '', batterySelect ? batterySelect.value : ''),
     battery: batterySelect ? batterySelect.value : '',
     batteryHotswap: hotswapSelect ? hotswapSelect.value : '',
     sliderBowl: getSliderBowlValue(),
