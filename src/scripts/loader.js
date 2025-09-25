@@ -143,6 +143,8 @@
       { legacy: legacyPrefix + 'autoGearActivePreset', modern: 'cameraPowerPlanner_autoGearActivePreset' },
       { legacy: legacyPrefix + 'autoGearAutoPreset', modern: 'cameraPowerPlanner_autoGearAutoPreset' },
       { legacy: legacyPrefix + 'autoGearShowBackups', modern: 'cameraPowerPlanner_autoGearShowBackups' },
+      { legacy: legacyPrefix + 'autoGearBackupRetention', modern: 'cameraPowerPlanner_autoGearBackupRetention' },
+      { legacy: legacyPrefix + 'autoGearMonitorDefaults', modern: 'cameraPowerPlanner_autoGearMonitorDefaults' },
       { legacy: legacyPrefix + 'customFonts', modern: 'cameraPowerPlanner_customFonts', updateFontKey: true }
     ];
 
