@@ -476,6 +476,12 @@ const RESTORE_REHEARSAL_PROJECT_HINT_KEYS = [
   'changedDevices',
 ];
 
+const RESTORE_REHEARSAL_RULE_STATUS_PRIORITY = {
+  changed: 0,
+  removed: 1,
+  added: 2,
+};
+
 function hasAnyRestoreRehearsalKeys(source, keys) {
   if (!isPlainObject(source)) {
     return false;
@@ -857,7 +863,25 @@ function buildRestoreRehearsalRuleDiff(liveRules, sandboxRules) {
     ? (a, b) => localeSort(a, b)
     : (a, b) => a.localeCompare(b);
 
-  return differences.sort((a, b) => compareStrings(a.label || '', b.label || ''));
+  const getStatusPriority = (entry) => {
+    if (!entry || typeof entry.status !== 'string') {
+      return Number.POSITIVE_INFINITY;
+    }
+    const normalized = entry.status.toLowerCase();
+    if (Object.prototype.hasOwnProperty.call(RESTORE_REHEARSAL_RULE_STATUS_PRIORITY, normalized)) {
+      return RESTORE_REHEARSAL_RULE_STATUS_PRIORITY[normalized];
+    }
+    return Number.POSITIVE_INFINITY;
+  };
+
+  return differences.sort((a, b) => {
+    const priorityA = getStatusPriority(a);
+    const priorityB = getStatusPriority(b);
+    if (priorityA !== priorityB) {
+      return priorityA < priorityB ? -1 : 1;
+    }
+    return compareStrings(a.label || '', b.label || '');
+  });
 }
 
 function formatRestoreRehearsalRuleScenarioLines(rule, langTexts) {

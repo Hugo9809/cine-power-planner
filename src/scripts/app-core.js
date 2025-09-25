@@ -4725,6 +4725,22 @@ if (typeof texts === 'undefined') {
 
 // Determine initial language (default English)
 let currentLang = "en";
+let lastAppliedLanguage = null;
+if (typeof document !== 'undefined') {
+  const initialLanguageSelect =
+    typeof document.getElementById === 'function'
+      ? document.getElementById('languageSelect')
+      : null;
+  if (initialLanguageSelect && typeof initialLanguageSelect.value === 'string' && initialLanguageSelect.value) {
+    lastAppliedLanguage = initialLanguageSelect.value.toLowerCase();
+  } else if (document.documentElement) {
+    const initialLang = document.documentElement.lang || document.documentElement.getAttribute('lang');
+    if (initialLang) {
+      lastAppliedLanguage = initialLang.toLowerCase();
+    }
+  }
+}
+let hasAppliedLanguage = false;
 let updateHelpQuickLinksForLanguage;
 let updateHelpResultsSummaryText;
 let lastRuntimeHours = null;
@@ -4751,91 +4767,132 @@ try {
 
 // Helper to apply translations to all UI text
 function setLanguage(lang) {
-  currentLang = lang;
+  const normalizedLang = typeof lang === 'string' && lang ? lang.toLowerCase() : 'en';
+  currentLang = normalizedLang;
+  // Align downstream lookups that still rely on the original parameter.
+  lang = normalizedLang;
   // persist selected language
   try {
-    localStorage.setItem("language", lang);
+    localStorage.setItem("language", normalizedLang);
   } catch (e) {
     console.warn("Could not save language to localStorage", e);
   }
   // ensure dropdown reflects the active language
   if (languageSelect) {
-    languageSelect.value = lang;
+    languageSelect.value = normalizedLang;
   }
   if (settingsLanguage) {
-    settingsLanguage.value = lang;
+    settingsLanguage.value = normalizedLang;
   }
   // update html lang attribute for better persistence
-  document.documentElement.lang = lang;
+  document.documentElement.lang = normalizedLang;
+
+  if (!hasAppliedLanguage && lastAppliedLanguage === normalizedLang) {
+    hasAppliedLanguage = true;
+    lastAppliedLanguage = normalizedLang;
+    if (typeof updateHelpQuickLinksForLanguage === 'function') {
+      try {
+        updateHelpQuickLinksForLanguage(normalizedLang);
+      } catch (error) {
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn('Unable to refresh help quick links for cached language.', error);
+        }
+      }
+    }
+    if (typeof updateHelpResultsSummaryText === 'function') {
+      try {
+        updateHelpResultsSummaryText();
+      } catch (error) {
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn('Unable to refresh help summary text for cached language.', error);
+        }
+      }
+    }
+    try {
+      populateFeatureSearch();
+    } catch (error) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Unable to refresh feature search options for cached language.', error);
+      }
+    }
+    return;
+  }
+
+  if (hasAppliedLanguage && lastAppliedLanguage === normalizedLang) {
+    return;
+  }
+
+  hasAppliedLanguage = true;
+  lastAppliedLanguage = normalizedLang;
   // Document title and main heading share the same text
-  document.title = texts[lang].appTitle;
-  document.getElementById("mainTitle").textContent = texts[lang].appTitle;
-  document.getElementById("tagline").textContent = texts[lang].tagline;
-  if (skipLink) skipLink.textContent = texts[lang].skipToContent;
+  document.title = texts[normalizedLang].appTitle;
+  document.getElementById("mainTitle").textContent = texts[normalizedLang].appTitle;
+  document.getElementById("tagline").textContent = texts[normalizedLang].tagline;
+  if (skipLink) skipLink.textContent = texts[normalizedLang].skipToContent;
   const offlineElem = document.getElementById("offlineIndicator");
   if (offlineElem) {
-    offlineElem.textContent = texts[lang].offlineIndicator;
+    offlineElem.textContent = texts[normalizedLang].offlineIndicator;
     const offlineHelp =
-      texts[lang].offlineIndicatorHelp || texts[lang].offlineIndicator;
+      texts[normalizedLang].offlineIndicatorHelp || texts[normalizedLang].offlineIndicator;
     offlineElem.setAttribute("data-help", offlineHelp);
   }
-  applyInstallTexts(lang);
-  const legalLinks = LEGAL_LINKS[lang] || LEGAL_LINKS.en;
+  applyInstallTexts(normalizedLang);
+  const legalLinks = LEGAL_LINKS[normalizedLang] || LEGAL_LINKS.en;
   const impressumElem = document.getElementById("impressumLink");
   if (impressumElem) {
-    impressumElem.textContent = texts[lang].impressum;
+    impressumElem.textContent = texts[normalizedLang].impressum;
     if (legalLinks?.imprint) {
       impressumElem.setAttribute("href", legalLinks.imprint);
     }
   }
   const privacyElem = document.getElementById("privacyLink");
   if (privacyElem) {
-    privacyElem.textContent = texts[lang].privacy;
+    privacyElem.textContent = texts[normalizedLang].privacy;
     if (legalLinks?.privacy) {
       privacyElem.setAttribute("href", legalLinks.privacy);
     }
   }
   // Section headings with descriptive hover help
   const setupManageHeadingElem = document.getElementById("setupManageHeading");
-  setupManageHeadingElem.textContent = texts[lang].setupManageHeading;
+  setupManageHeadingElem.textContent = texts[normalizedLang].setupManageHeading;
   setupManageHeadingElem.setAttribute(
     "data-help",
-    texts[lang].setupManageHeadingHelp
+    texts[normalizedLang].setupManageHeadingHelp
   );
 
   const deviceSelectionHeadingElem = document.getElementById("deviceSelectionHeading");
-  deviceSelectionHeadingElem.textContent = texts[lang].deviceSelectionHeading;
+  deviceSelectionHeadingElem.textContent = texts[normalizedLang].deviceSelectionHeading;
   deviceSelectionHeadingElem.setAttribute(
     "data-help",
-    texts[lang].deviceSelectionHeadingHelp
+    texts[normalizedLang].deviceSelectionHeadingHelp
   );
 
   const resultsHeadingElem = document.getElementById("resultsHeading");
-  resultsHeadingElem.textContent = texts[lang].resultsHeading; // Fixed typo here
+  resultsHeadingElem.textContent = texts[normalizedLang].resultsHeading; // Fixed typo here
   resultsHeadingElem.setAttribute(
     "data-help",
-    texts[lang].resultsHeadingHelp
+    texts[normalizedLang].resultsHeadingHelp
   );
 
   const deviceManagerHeadingElem = document.getElementById("deviceManagerHeading");
-  deviceManagerHeadingElem.textContent = texts[lang].deviceManagerHeading;
+  deviceManagerHeadingElem.textContent = texts[normalizedLang].deviceManagerHeading;
   deviceManagerHeadingElem.setAttribute(
     "data-help",
-    texts[lang].deviceManagerHeadingHelp
+    texts[normalizedLang].deviceManagerHeadingHelp
   );
 
   const batteryComparisonHeadingElem = document.getElementById("batteryComparisonHeading");
-  batteryComparisonHeadingElem.textContent = texts[lang].batteryComparisonHeading;
+  batteryComparisonHeadingElem.textContent = texts[normalizedLang].batteryComparisonHeading;
   batteryComparisonHeadingElem.setAttribute(
     "data-help",
-    texts[lang].batteryComparisonHeadingHelp
+    texts[normalizedLang].batteryComparisonHeadingHelp
   );
 
   const setupDiagramHeadingElem = document.getElementById("setupDiagramHeading");
-  setupDiagramHeadingElem.textContent = texts[lang].setupDiagramHeading;
+  setupDiagramHeadingElem.textContent = texts[normalizedLang].setupDiagramHeading;
   setupDiagramHeadingElem.setAttribute(
     "data-help",
-    texts[lang].setupDiagramHeadingHelp
+    texts[normalizedLang].setupDiagramHeadingHelp
   );
 
   const sideMenuLinks = document.querySelectorAll("#sideMenu [data-nav-key]");
@@ -4844,13 +4901,13 @@ function setLanguage(lang) {
     if (!navKey) {
       return;
     }
-    const label = texts[lang][navKey];
+    const label = texts[normalizedLang][navKey];
     if (label) {
       link.textContent = label;
       link.setAttribute("aria-label", label);
     }
     const helpKey = `${navKey}Help`;
-    const helpText = texts[lang][helpKey];
+    const helpText = texts[normalizedLang][helpKey];
     if (helpText) {
       link.setAttribute("title", helpText);
       link.setAttribute("data-help", helpText);
@@ -4861,41 +4918,41 @@ function setLanguage(lang) {
   });
   // Setup manager labels and buttons
   const savedSetupsLabelElem = document.getElementById("savedSetupsLabel");
-  savedSetupsLabelElem.textContent = texts[lang].savedSetupsLabel;
-  savedSetupsLabelElem.setAttribute("data-help", texts[lang].setupSelectHelp);
+  savedSetupsLabelElem.textContent = texts[normalizedLang].savedSetupsLabel;
+  savedSetupsLabelElem.setAttribute("data-help", texts[normalizedLang].setupSelectHelp);
   const setupNameLabelElem = document.getElementById("setupNameLabel");
-  setupNameLabelElem.textContent = texts[lang].setupNameLabel;
-  setupNameLabelElem.setAttribute("data-help", texts[lang].setupNameHelp);
-  setButtonLabelWithIcon(deleteSetupBtn, texts[lang].deleteSetupBtn, ICON_GLYPHS.trash);
+  setupNameLabelElem.textContent = texts[normalizedLang].setupNameLabel;
+  setupNameLabelElem.setAttribute("data-help", texts[normalizedLang].setupNameHelp);
+  setButtonLabelWithIcon(deleteSetupBtn, texts[normalizedLang].deleteSetupBtn, ICON_GLYPHS.trash);
   const sharedLinkLabelElem = document.getElementById("sharedLinkLabel");
-  sharedLinkLabelElem.textContent = texts[lang].sharedLinkLabel;
-  sharedLinkLabelElem.setAttribute("data-help", texts[lang].sharedLinkHelp);
+  sharedLinkLabelElem.textContent = texts[normalizedLang].sharedLinkLabel;
+  sharedLinkLabelElem.setAttribute("data-help", texts[normalizedLang].sharedLinkHelp);
   setButtonLabelWithIcon(
     applySharedLinkBtn,
-    texts[lang].loadSharedLinkBtn,
+    texts[normalizedLang].loadSharedLinkBtn,
     ICON_GLYPHS.fileImport
   );
 
   // Descriptive hover help for setup management controls
-  setupSelect.setAttribute("data-help", texts[lang].setupSelectHelp);
-  setupNameInput.setAttribute("data-help", texts[lang].setupNameHelp);
+  setupSelect.setAttribute("data-help", texts[normalizedLang].setupSelectHelp);
+  setupNameInput.setAttribute("data-help", texts[normalizedLang].setupNameHelp);
 
-  deleteSetupBtn.setAttribute("title", texts[lang].deleteSetupHelp);
-  deleteSetupBtn.setAttribute("aria-label", texts[lang].deleteSetupHelp);
-  deleteSetupBtn.setAttribute("data-help", texts[lang].deleteSetupHelp);
+  deleteSetupBtn.setAttribute("title", texts[normalizedLang].deleteSetupHelp);
+  deleteSetupBtn.setAttribute("aria-label", texts[normalizedLang].deleteSetupHelp);
+  deleteSetupBtn.setAttribute("data-help", texts[normalizedLang].deleteSetupHelp);
 
-  saveSetupBtn.setAttribute("title", texts[lang].saveSetupHelp);
-  saveSetupBtn.setAttribute("aria-label", texts[lang].saveSetupHelp);
-  saveSetupBtn.setAttribute("data-help", texts[lang].saveSetupHelp);
+  saveSetupBtn.setAttribute("title", texts[normalizedLang].saveSetupHelp);
+  saveSetupBtn.setAttribute("aria-label", texts[normalizedLang].saveSetupHelp);
+  saveSetupBtn.setAttribute("data-help", texts[normalizedLang].saveSetupHelp);
 
-  generateOverviewBtn.setAttribute("title", texts[lang].generateOverviewBtn);
-  generateOverviewBtn.setAttribute("data-help", texts[lang].generateOverviewHelp);
+  generateOverviewBtn.setAttribute("title", texts[normalizedLang].generateOverviewBtn);
+  generateOverviewBtn.setAttribute("data-help", texts[normalizedLang].generateOverviewHelp);
 
-  generateGearListBtn.setAttribute("title", texts[lang].generateGearListBtn);
-  generateGearListBtn.setAttribute("data-help", texts[lang].generateGearListHelp);
+  generateGearListBtn.setAttribute("title", texts[normalizedLang].generateGearListBtn);
+  generateGearListBtn.setAttribute("data-help", texts[normalizedLang].generateGearListHelp);
 
   const deleteGearListHelp =
-    texts[lang].deleteGearListBtnHelp || texts[lang].deleteGearListBtn;
+    texts[normalizedLang].deleteGearListBtnHelp || texts[normalizedLang].deleteGearListBtn;
   if (deleteGearListProjectBtn) {
     setButtonLabelWithIcon(
       deleteGearListProjectBtn,
