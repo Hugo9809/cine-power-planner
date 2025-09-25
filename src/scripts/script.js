@@ -10,7 +10,13 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
   const fs = require('fs');
   const path = require('path');
   const vm = require('vm');
-  const parts = ['app-core.js', 'app-events.js', 'app-setups.js', 'app-session.js'];
+  const parts = [
+    'app-core-new-1.js',
+    'app-core-new-2.js',
+    'app-events.js',
+    'app-setups.js',
+    'app-session.js'
+  ];
   const nodePrelude = [
     "var __cineGlobal = typeof globalThis !== 'undefined' ? globalThis : (typeof global !== 'undefined' ? global : this);",
     "var window = __cineGlobal.window || __cineGlobal;",
