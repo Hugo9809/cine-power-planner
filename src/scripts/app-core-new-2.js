@@ -30,8 +30,15 @@ const CORE_SHARED_LOCAL =
     ? CORE_SHARED
     : resolveCoreSharedPart2() || {};
 
-const CORE_BOOT_QUEUE_KEY = '__coreRuntimeBootQueue';
-const CORE_BOOT_QUEUE = (() => {
+var CORE_BOOT_QUEUE_KEY = typeof CORE_BOOT_QUEUE_KEY !== 'undefined'
+  ? CORE_BOOT_QUEUE_KEY
+  : '__coreRuntimeBootQueue';
+
+var CORE_BOOT_QUEUE = (function bootstrapCoreBootQueuePart2(existingQueue) {
+  if (Array.isArray(existingQueue)) {
+    return existingQueue;
+  }
+
   if (CORE_SHARED_LOCAL && typeof CORE_SHARED_LOCAL === 'object') {
     if (!Array.isArray(CORE_SHARED_LOCAL[CORE_BOOT_QUEUE_KEY])) {
       CORE_SHARED_LOCAL[CORE_BOOT_QUEUE_KEY] = [];
@@ -48,7 +55,11 @@ const CORE_BOOT_QUEUE = (() => {
   }
 
   return [];
-})();
+})(CORE_SHARED_SCOPE_PART2 && CORE_SHARED_SCOPE_PART2.CORE_BOOT_QUEUE);
+
+if (CORE_SHARED_SCOPE_PART2 && CORE_SHARED_SCOPE_PART2.CORE_BOOT_QUEUE !== CORE_BOOT_QUEUE) {
+  CORE_SHARED_SCOPE_PART2.CORE_BOOT_QUEUE = CORE_BOOT_QUEUE;
+}
 
 function flushCoreBootQueue() {
   if (!Array.isArray(CORE_BOOT_QUEUE) || CORE_BOOT_QUEUE.length === 0) {
