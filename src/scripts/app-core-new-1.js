@@ -133,6 +133,41 @@ function enqueueCoreBootTask(task) {
   }
 }
 
+function callCoreFunctionIfAvailable(functionName, args = [], options = {}) {
+  const scope =
+    CORE_GLOBAL_SCOPE ||
+    (typeof globalThis !== 'undefined' ? globalThis : null) ||
+    (typeof window !== 'undefined' ? window : null) ||
+    (typeof self !== 'undefined' ? self : null) ||
+    (typeof global !== 'undefined' ? global : null);
+
+  const target =
+    typeof functionName === 'string'
+      ? scope && scope[functionName]
+      : functionName;
+
+  if (typeof target === 'function') {
+    try {
+      return target.apply(scope, args);
+    } catch (invokeError) {
+      if (typeof console !== 'undefined' && typeof console.error === 'function') {
+        console.error(`Failed to invoke ${functionName}`, invokeError);
+      }
+    }
+    return undefined;
+  }
+
+  if (options && options.defer === true) {
+    enqueueCoreBootTask(() => {
+      callCoreFunctionIfAvailable(functionName, args, { ...options, defer: false });
+    });
+  }
+
+  return typeof options !== 'undefined' && Object.prototype.hasOwnProperty.call(options, 'defaultValue')
+    ? options.defaultValue
+    : undefined;
+}
+
 function fallbackStableStringify(value) {
   if (value === null) return 'null';
   if (value === undefined) return 'undefined';
@@ -2025,7 +2060,7 @@ function enforceAutoGearBackupRetentionLimit(limit) {
   const normalized = clampAutoGearBackupRetentionLimit(limit);
   const previousLimit = autoGearBackupRetention;
   if (normalized === previousLimit) {
-    renderAutoGearBackupRetentionControls();
+    callCoreFunctionIfAvailable('renderAutoGearBackupRetentionControls', [], { defer: true });
     return { success: true, trimmed: [], previousLimit };
   }
 
@@ -2035,7 +2070,7 @@ function enforceAutoGearBackupRetentionLimit(limit) {
   const retentionPersisted = persistAutoGearBackupRetention(normalized);
   if (!retentionPersisted) {
     autoGearBackupRetentionInput && (autoGearBackupRetentionInput.value = String(autoGearBackupRetention));
-    renderAutoGearBackupRetentionControls();
+    callCoreFunctionIfAvailable('renderAutoGearBackupRetentionControls', [], { defer: true });
     return { success: false, error: new Error('retention-persist-failed'), previousLimit };
   }
 
@@ -2057,14 +2092,14 @@ function enforceAutoGearBackupRetentionLimit(limit) {
         console.warn('Failed to restore automatic gear backups after trim error', restoreError);
       }
       autoGearBackups = readAutoGearBackupsFromStorage(previousLimit);
-      renderAutoGearBackupControls();
-      renderAutoGearBackupRetentionControls();
+      callCoreFunctionIfAvailable('renderAutoGearBackupControls', [], { defer: true });
+      callCoreFunctionIfAvailable('renderAutoGearBackupRetentionControls', [], { defer: true });
       return { success: false, error, previousLimit };
     }
   }
 
-  renderAutoGearBackupControls();
-  renderAutoGearBackupRetentionControls();
+  callCoreFunctionIfAvailable('renderAutoGearBackupControls', [], { defer: true });
+  callCoreFunctionIfAvailable('renderAutoGearBackupRetentionControls', [], { defer: true });
   return { success: true, trimmed: trimmedEntries, previousLimit };
 }
 
@@ -2133,8 +2168,12 @@ let autoGearRulesDirtySinceBackup =
   autoGearRulesLastPersistedSignature !== autoGearRulesLastBackupSignature;
 
 enqueueCoreBootTask(() => {
-  reconcileAutoGearAutoPresetState({ persist: true, skipRender: true });
-  alignActiveAutoGearPreset({ skipRender: true });
+  callCoreFunctionIfAvailable(
+    'reconcileAutoGearAutoPresetState',
+    [{ persist: true, skipRender: true }],
+    { defer: true }
+  );
+  callCoreFunctionIfAvailable('alignActiveAutoGearPreset', [{ skipRender: true }], { defer: true });
 });
 
 function assignAutoGearRules(rules) {
@@ -2193,16 +2232,16 @@ function setAutoGearMonitorDefaults(defaults, { skipRender = false, skipRefresh 
   });
   if (!changed) {
     if (!skipRender) {
-      updateAutoGearMonitorDefaultOptions();
-      renderAutoGearMonitorDefaultsControls();
+      callCoreFunctionIfAvailable('updateAutoGearMonitorDefaultOptions', [], { defer: true });
+      callCoreFunctionIfAvailable('renderAutoGearMonitorDefaultsControls', [], { defer: true });
     }
     return autoGearMonitorDefaults;
   }
   autoGearMonitorDefaults = persistAutoGearMonitorDefaults(normalized);
   syncBaseAutoGearRulesState();
   if (!skipRender) {
-    updateAutoGearMonitorDefaultOptions();
-    renderAutoGearMonitorDefaultsControls();
+    callCoreFunctionIfAvailable('updateAutoGearMonitorDefaultOptions', [], { defer: true });
+    callCoreFunctionIfAvailable('renderAutoGearMonitorDefaultsControls', [], { defer: true });
   }
   if (!skipRefresh && typeof refreshGearListIfVisible === 'function') {
     refreshGearListIfVisible();
@@ -2221,8 +2260,8 @@ function setAutoGearMonitorDefault(key, value, options = {}) {
   );
   if (current === normalizedValue) {
     if (!options.skipRender) {
-      updateAutoGearMonitorDefaultOptions();
-      renderAutoGearMonitorDefaultsControls();
+      callCoreFunctionIfAvailable('updateAutoGearMonitorDefaultOptions', [], { defer: true });
+      callCoreFunctionIfAvailable('renderAutoGearMonitorDefaultsControls', [], { defer: true });
     }
     return normalizedValue;
   }
@@ -2237,9 +2276,9 @@ function setAutoGearRules(rules) {
   projectScopedAutoGearRules = null;
   persistAutoGearRules();
   syncBaseAutoGearRulesState();
-  alignActiveAutoGearPreset({ skipRender: true });
-  syncAutoGearAutoPreset(normalized);
-  renderAutoGearPresetsControls();
+  callCoreFunctionIfAvailable('alignActiveAutoGearPreset', [{ skipRender: true }], { defer: true });
+  callCoreFunctionIfAvailable('syncAutoGearAutoPreset', [normalized], { defer: true });
+  callCoreFunctionIfAvailable('renderAutoGearPresetsControls', [], { defer: true });
 }
 
 function getAutoGearRules() {
@@ -2267,15 +2306,19 @@ function syncAutoGearRulesFromStorage(rules) {
     : getAutoGearConfigurationSignature();
   autoGearRulesLastPersistedSignature = getAutoGearConfigurationSignature();
   autoGearRulesDirtySinceBackup = autoGearRulesLastPersistedSignature !== autoGearRulesLastBackupSignature;
-  reconcileAutoGearAutoPresetState({ persist: true, skipRender: true });
-  syncAutoGearAutoPreset(baseAutoGearRules);
-  alignActiveAutoGearPreset({ skipRender: true });
-  renderAutoGearBackupControls();
-  renderAutoGearPresetsControls();
-  closeAutoGearEditor();
-  renderAutoGearRulesList();
-  updateAutoGearCatalogOptions();
-  renderAutoGearMonitorDefaultsControls();
+  callCoreFunctionIfAvailable(
+    'reconcileAutoGearAutoPresetState',
+    [{ persist: true, skipRender: true }],
+    { defer: true }
+  );
+  callCoreFunctionIfAvailable('syncAutoGearAutoPreset', [baseAutoGearRules], { defer: true });
+  callCoreFunctionIfAvailable('alignActiveAutoGearPreset', [{ skipRender: true }], { defer: true });
+  callCoreFunctionIfAvailable('renderAutoGearBackupControls', [], { defer: true });
+  callCoreFunctionIfAvailable('renderAutoGearPresetsControls', [], { defer: true });
+  callCoreFunctionIfAvailable('closeAutoGearEditor', [], { defer: true });
+  callCoreFunctionIfAvailable('renderAutoGearRulesList', [], { defer: true });
+  callCoreFunctionIfAvailable('updateAutoGearCatalogOptions', [], { defer: true });
+  callCoreFunctionIfAvailable('renderAutoGearMonitorDefaultsControls', [], { defer: true });
 }
 
 function useProjectAutoGearRules(rules) {
@@ -3323,11 +3366,11 @@ function resetAutoGearRulesToFactoryAdditions() {
       clearAutoGearDefaultsSeeded();
       setFactoryAutoGearRulesSnapshot([]);
     }
-    closeAutoGearEditor();
-    const updatedRules = appliedRules.length ? appliedRules : getAutoGearRules();
-    renderAutoGearRulesList();
-    renderAutoGearDraftLists();
-    updateAutoGearCatalogOptions();
+      callCoreFunctionIfAvailable('closeAutoGearEditor', [], { defer: true });
+      const updatedRules = appliedRules.length ? appliedRules : getAutoGearRules();
+      callCoreFunctionIfAvailable('renderAutoGearRulesList', [], { defer: true });
+      callCoreFunctionIfAvailable('renderAutoGearDraftLists', [], { defer: true });
+      callCoreFunctionIfAvailable('updateAutoGearCatalogOptions', [], { defer: true });
     const messageKey = updatedRules.length
       ? 'autoGearResetFactoryDone'
       : 'autoGearResetFactoryEmpty';
@@ -6180,8 +6223,8 @@ function setLanguage(lang) {
       control.select.setAttribute('data-help', labelText);
     }
   });
-  updateAutoGearMonitorDefaultOptions();
-  renderAutoGearMonitorDefaultsControls();
+    callCoreFunctionIfAvailable('updateAutoGearMonitorDefaultOptions', [], { defer: true });
+    callCoreFunctionIfAvailable('renderAutoGearMonitorDefaultsControls', [], { defer: true });
   if (autoGearPresetDescription) {
     autoGearPresetDescription.textContent = texts[lang].autoGearPresetDescription
       || texts.en?.autoGearPresetDescription
@@ -6349,9 +6392,9 @@ function setLanguage(lang) {
       autoGearBackupRetentionInput.setAttribute('title', label);
     }
   }
-  if (autoGearBackupRetentionSummary) {
-    renderAutoGearBackupRetentionControls();
-  }
+    if (autoGearBackupRetentionSummary) {
+      callCoreFunctionIfAvailable('renderAutoGearBackupRetentionControls', [], { defer: true });
+    }
   if (autoGearBackupSelectLabel) {
     const label = texts[lang].autoGearBackupSelectLabel
       || texts.en?.autoGearBackupSelectLabel
@@ -6376,9 +6419,9 @@ function setLanguage(lang) {
       || autoGearBackupEmptyMessage.textContent;
     autoGearBackupEmptyMessage.textContent = emptyText;
   }
-  if (autoGearBackupSelect) {
-    renderAutoGearBackupControls();
-  }
+    if (autoGearBackupSelect) {
+      callCoreFunctionIfAvailable('renderAutoGearBackupControls', [], { defer: true });
+    }
   if (autoGearRuleNameLabel) {
     const label = texts[lang].autoGearRuleNameLabel || texts.en?.autoGearRuleNameLabel || autoGearRuleNameLabel.textContent;
     autoGearRuleNameLabel.textContent = label;
@@ -6968,10 +7011,10 @@ function setLanguage(lang) {
     refreshAutoGearVideoDistributionOptions(autoGearEditorDraft?.videoDistribution);
   }
   seedAutoGearRulesFromCurrentProject();
-  renderAutoGearRulesList();
-  renderAutoGearDraftLists();
-  updateAutoGearCatalogOptions();
-  renderAutoGearPresetsControls();
+  callCoreFunctionIfAvailable('renderAutoGearRulesList', [], { defer: true });
+  callCoreFunctionIfAvailable('renderAutoGearDraftLists', [], { defer: true });
+  callCoreFunctionIfAvailable('updateAutoGearCatalogOptions', [], { defer: true });
+  callCoreFunctionIfAvailable('renderAutoGearPresetsControls', [], { defer: true });
   applyAutoGearBackupVisibility();
   const contrastLabel = document.getElementById("settingsHighContrastLabel");
   if (contrastLabel) {
@@ -10046,10 +10089,14 @@ function resetSharedImportStateForFactoryReset() {
 function deactivateSharedImportProjectPreset() {
   if (!sharedImportProjectPresetActive) return;
   const targetPresetId = sharedImportPreviousPresetId || '';
-  setActiveAutoGearPresetId(targetPresetId, { persist: false, skipRender: true });
+  callCoreFunctionIfAvailable(
+    'setActiveAutoGearPresetId',
+    [targetPresetId, { persist: false, skipRender: true }],
+    { defer: true }
+  );
   sharedImportProjectPresetActive = false;
   sharedImportPreviousPresetId = '';
-  renderAutoGearPresetsControls();
+  callCoreFunctionIfAvailable('renderAutoGearPresetsControls', [], { defer: true });
 }
 
 function activateSharedImportProjectPreset(presetId) {
@@ -10058,8 +10105,12 @@ function activateSharedImportProjectPreset(presetId) {
     sharedImportPreviousPresetId = activeAutoGearPresetId || '';
   }
   sharedImportProjectPresetActive = true;
-  setActiveAutoGearPresetId(presetId, { persist: false, skipRender: true });
-  renderAutoGearPresetsControls();
+  callCoreFunctionIfAvailable(
+    'setActiveAutoGearPresetId',
+    [presetId, { persist: false, skipRender: true }],
+    { defer: true }
+  );
+  callCoreFunctionIfAvailable('renderAutoGearPresetsControls', [], { defer: true });
 }
 
 function getSharedImportProjectName(sharedData) {
@@ -10110,7 +10161,7 @@ function ensureSharedAutoGearPreset(rules, sharedData) {
       autoGearPresets = autoGearPresets.map(entry => (entry.id === preset.id ? preset : entry));
       autoGearPresets = sortAutoGearPresets(autoGearPresets.slice());
       persistAutoGearPresets(autoGearPresets);
-      renderAutoGearPresetsControls();
+      callCoreFunctionIfAvailable('renderAutoGearPresetsControls', [], { defer: true });
     }
     return preset;
   }
@@ -10124,9 +10175,13 @@ function ensureSharedAutoGearPreset(rules, sharedData) {
   autoGearPresets = sortAutoGearPresets(autoGearPresets.slice());
   persistAutoGearPresets(autoGearPresets);
   if (autoGearAutoPresetId) {
-    setAutoGearAutoPresetId('', { persist: true, skipRender: true });
+    callCoreFunctionIfAvailable(
+      'setAutoGearAutoPresetId',
+      ['', { persist: true, skipRender: true }],
+      { defer: true }
+    );
   }
-  renderAutoGearPresetsControls();
+  callCoreFunctionIfAvailable('renderAutoGearPresetsControls', [], { defer: true });
   return normalizedPreset;
 }
 
@@ -12368,7 +12423,7 @@ configureAutoGearConditionButtons();
 if (autoGearCameraWeightOperator) {
   const handleCameraWeightOperatorChange = () => {
     updateAutoGearCameraWeightDraft();
-    renderAutoGearDraftImpact();
+    callCoreFunctionIfAvailable('renderAutoGearDraftImpact', [], { defer: true });
   };
   autoGearCameraWeightOperator.addEventListener('input', handleCameraWeightOperatorChange);
   autoGearCameraWeightOperator.addEventListener('change', handleCameraWeightOperatorChange);
@@ -12376,7 +12431,7 @@ if (autoGearCameraWeightOperator) {
 if (autoGearCameraWeightValueInput) {
   const handleCameraWeightValueInput = () => {
     updateAutoGearCameraWeightDraft();
-    renderAutoGearDraftImpact();
+    callCoreFunctionIfAvailable('renderAutoGearDraftImpact', [], { defer: true });
   };
   autoGearCameraWeightValueInput.addEventListener('input', handleCameraWeightValueInput);
   autoGearCameraWeightValueInput.addEventListener('change', handleCameraWeightValueInput);
@@ -12612,14 +12667,14 @@ function setAutoGearSearchQuery(value) {
   const nextValue = typeof value === 'string' ? value : '';
   if (autoGearSearchQuery === nextValue) return;
   autoGearSearchQuery = nextValue;
-  renderAutoGearRulesList();
+  callCoreFunctionIfAvailable('renderAutoGearRulesList', [], { defer: true });
 }
 
 function setAutoGearScenarioFilter(value) {
   const nextValue = typeof value === 'string' && value !== 'all' ? value : 'all';
   if (autoGearScenarioFilter === nextValue) return;
   autoGearScenarioFilter = nextValue;
-  renderAutoGearRulesList();
+  callCoreFunctionIfAvailable('renderAutoGearRulesList', [], { defer: true });
 }
 
 function clearAutoGearFilters() {
@@ -12632,7 +12687,7 @@ function clearAutoGearFilters() {
   if (autoGearFilterScenarioSelect && autoGearFilterScenarioSelect.value !== 'all') {
     autoGearFilterScenarioSelect.value = 'all';
   }
-  renderAutoGearRulesList();
+  callCoreFunctionIfAvailable('renderAutoGearRulesList', [], { defer: true });
   if (autoGearSearchInput && typeof autoGearSearchInput.focus === 'function') {
     try {
       autoGearSearchInput.focus({ preventScroll: true });
