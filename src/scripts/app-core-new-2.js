@@ -11296,6 +11296,31 @@ function addInputClearButton(inputElem, callback) {
   toggle();
 }
 
+const filterHelperScope =
+  (typeof globalThis !== 'undefined' && globalThis)
+  || (typeof window !== 'undefined' && window)
+  || (typeof self !== 'undefined' && self)
+  || (typeof global !== 'undefined' && global)
+  || null;
+
+if (filterHelperScope) {
+  if (typeof filterHelperScope.filterSelect !== 'function') {
+    filterHelperScope.filterSelect = filterSelect;
+  }
+  if (typeof filterHelperScope.filterDeviceList !== 'function') {
+    filterHelperScope.filterDeviceList = filterDeviceList;
+  }
+  if (typeof filterHelperScope.attachSelectSearch !== 'function') {
+    filterHelperScope.attachSelectSearch = attachSelectSearch;
+  }
+  if (typeof filterHelperScope.bindFilterInput !== 'function') {
+    filterHelperScope.bindFilterInput = bindFilterInput;
+  }
+  if (typeof filterHelperScope.addInputClearButton !== 'function') {
+    filterHelperScope.addInputClearButton = addInputClearButton;
+  }
+}
+
 function applyFilters() {
   deviceManagerLists.forEach(({ list, filterInput }) => {
     if (!list) return;
