@@ -1,3 +1,10 @@
+// Declare shared helpers upfront so assignments inside try/catch blocks never
+// trigger strict-mode ReferenceErrors when the module executes in isolation.
+// The runtime still prefers the globally shared implementations once they are
+// attached in the first core bundle.
+var stableStringify;
+var humanizeKey;
+
 const SHARED_GLOBAL_SCOPE =
   typeof globalThis !== 'undefined'
     ? globalThis
@@ -69,7 +76,6 @@ if (SHARED_GLOBAL_SCOPE) {
 
 try {
   if (typeof stableStringify !== 'function') {
-    // eslint-disable-next-line no-global-assign
     stableStringify = SHARED_GLOBAL_SCOPE?.stableStringify || fallbackStableStringify;
   }
 } catch (error) {
@@ -78,7 +84,6 @@ try {
 
 try {
   if (typeof humanizeKey !== 'function') {
-    // eslint-disable-next-line no-global-assign
     humanizeKey = SHARED_GLOBAL_SCOPE?.humanizeKey || fallbackHumanizeKey;
   }
 } catch (error) {

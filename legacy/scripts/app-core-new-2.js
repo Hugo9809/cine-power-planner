@@ -1,3 +1,9 @@
+// Mirror the shared helper declarations for the legacy bundle so runtime
+// wrappers that run under strict evaluation can still assign to these
+// fallbacks without tripping ReferenceErrors before the globals are ready.
+var stableStringify;
+var humanizeKey;
+
 var SHARED_GLOBAL_SCOPE =
   typeof globalThis !== 'undefined'
     ? globalThis

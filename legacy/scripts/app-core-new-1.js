@@ -80,6 +80,13 @@
  * Do not trim these notes unless the tooling issue has been resolved.
  */
 
+// Legacy bundle hoists these helpers to keep strict-mode environments from
+// throwing before the globals are patched in. Without explicit declarations the
+// assignments inside the compatibility shims fail under module evaluation and
+// risk breaking persistence flows during offline restores.
+var stableStringify;
+var humanizeKey;
+
 (function ensureSharedCoreUtilitiesLegacy() {
   var GLOBAL_SCOPE =
     typeof globalThis !== 'undefined'
@@ -145,7 +152,6 @@
 
   try {
     if (typeof stableStringify !== 'function') {
-      // eslint-disable-next-line no-global-assign
       stableStringify = GLOBAL_SCOPE.stableStringify;
     }
   } catch (error) {
@@ -154,7 +160,6 @@
 
   try {
     if (typeof humanizeKey !== 'function') {
-      // eslint-disable-next-line no-global-assign
       humanizeKey = GLOBAL_SCOPE.humanizeKey;
     }
   } catch (error) {

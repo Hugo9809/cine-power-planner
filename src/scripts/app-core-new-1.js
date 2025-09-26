@@ -80,6 +80,14 @@
  * Do not trim these notes unless the tooling issue has been resolved.
  */
 
+// Hoist shared helpers so both halves of the split runtime can safely assign
+// to them even when the scripts are evaluated in strict or module contexts.
+// Without these declarations browsers that treat the files as modules throw a
+// ReferenceError before the fallback wiring attaches the helpers to the global
+// scope, which breaks autosave and offline persistence.
+var stableStringify;
+var humanizeKey;
+
 (function ensureSharedCoreUtilities() {
   const GLOBAL_SCOPE =
     typeof globalThis !== 'undefined'
@@ -143,7 +151,6 @@
 
   try {
     if (typeof stableStringify !== 'function') {
-      // eslint-disable-next-line no-global-assign
       stableStringify = GLOBAL_SCOPE.stableStringify;
     }
   } catch (error) {
@@ -152,7 +159,6 @@
 
   try {
     if (typeof humanizeKey !== 'function') {
-      // eslint-disable-next-line no-global-assign
       humanizeKey = GLOBAL_SCOPE.humanizeKey;
     }
   } catch (error) {
