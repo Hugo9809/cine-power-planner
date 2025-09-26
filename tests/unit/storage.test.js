@@ -788,6 +788,62 @@ describe('project storage', () => {
     expect(localStorage.getItem(PROJECT_KEY)).toBeNull();
   });
 
+  test('saveProject creates an automatic backup before overwriting existing data', () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date('2024-05-01T10:20:00Z'));
+
+    const original = { gearList: '<ul>Initial</ul>', projectInfo: { notes: 'original' } };
+    saveProject('Overwrite Demo', original);
+
+    jest.setSystemTime(new Date('2024-05-01T10:21:30Z'));
+
+    const updated = { gearList: '<ul>Updated</ul>', projectInfo: { notes: 'updated' } };
+    saveProject('Overwrite Demo', updated);
+
+    const stored = JSON.parse(localStorage.getItem(PROJECT_KEY));
+    const backupKeys = Object.keys(stored).filter(key => key.startsWith('auto-backup-'));
+    expect(backupKeys).toHaveLength(1);
+    expect(backupKeys[0]).toBe('auto-backup-2024-05-01-10-21-30-Overwrite Demo');
+    expect(stored[backupKeys[0]]).toEqual({ gearList: '<ul>Initial</ul>', projectInfo: { notes: 'original' } });
+    expect(stored['Overwrite Demo']).toEqual({ gearList: '<ul>Updated</ul>', projectInfo: { notes: 'updated' } });
+
+    jest.useRealTimers();
+  });
+
+  test('saveProject skips creating backups when data has not changed', () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date('2024-05-02T08:00:00Z'));
+
+    saveProject('No Change', { gearList: '<ul>Same</ul>', projectInfo: null });
+
+    jest.setSystemTime(new Date('2024-05-02T08:05:00Z'));
+    saveProject('No Change', { gearList: '<ul>Same</ul>', projectInfo: null });
+
+    const stored = JSON.parse(localStorage.getItem(PROJECT_KEY));
+    expect(Object.keys(stored).filter(key => key.startsWith('auto-backup-'))).toHaveLength(0);
+    expect(stored['No Change']).toEqual({ gearList: '<ul>Same</ul>', projectInfo: null });
+
+    jest.useRealTimers();
+  });
+
+  test('saveProject does not create nested backups when updating auto backup entries', () => {
+    jest.useFakeTimers();
+    const autoKey = 'auto-backup-2024-05-03-09-15-00-Reference';
+
+    saveProject(autoKey, { gearList: '<ul>Initial</ul>', projectInfo: null });
+
+    jest.setSystemTime(new Date('2024-05-03T09:16:00Z'));
+    saveProject(autoKey, { gearList: '<ul>Updated</ul>', projectInfo: null });
+
+    const stored = JSON.parse(localStorage.getItem(PROJECT_KEY));
+    const autoBackupKeys = Object.keys(stored).filter(key => key.startsWith('auto-backup-'));
+    expect(autoBackupKeys).toHaveLength(1);
+    expect(autoBackupKeys[0]).toBe(autoKey);
+    expect(stored[autoKey]).toEqual({ gearList: '<ul>Updated</ul>', projectInfo: null });
+
+    jest.useRealTimers();
+  });
+
   test('loadProject returns normalized map of projects when name omitted', () => {
     const stored = {
       NewFormat: { gearList: '<ul>New</ul>', projectInfo: { notes: 'ok' } },

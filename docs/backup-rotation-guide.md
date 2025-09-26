@@ -7,6 +7,11 @@ known-good snapshot. Pair these routines with the [Operational Checklist](operat
 and the [Offline Readiness Runbook](offline-readiness.md) so every workstation ships with
 a validated recovery plan.
 
+Every time you overwrite an existing project the planner now captures a timestamped
+`auto-backup-…` snapshot of the previous state before committing the new data. These
+automatic backups follow the same retention rules described below, ensuring that even
+manual saves keep an additional recovery point without requiring operator action.
+
 ## 1. Naming conventions that survive handoffs
 
 Adopt a predictable naming scheme before creating your first backup or bundle. Consistent
