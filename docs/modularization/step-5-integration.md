@@ -11,6 +11,10 @@ future refactors catch mismatches immediately.
   Jest + jsdom environment. The test asserts that `cineOffline`, `cinePersistence` and
   `cineUi` are all exposed with the APIs needed to reload the planner, persist projects,
   create backups and apply shared setups.【F:tests/dom/runtimeIntegration.test.js†L1-L64】
+* `tests/script/scriptIntegrity.test.js` now verifies that the Node bundle stitches together the
+  offline and UI modules before executing the core runtime halves, keeping the five-step repair
+  plan on track by ensuring the offline cache controls and UI registries are always available to
+  tests and automation.【F:tests/script/scriptIntegrity.test.js†L1-L112】
 * The integration suite also confirms that the Node-oriented bundle (`script.js`) continues to
   export the helpers used by existing tests (`collectProjectFormData`, backup utilities and
   sharing helpers). This guards the split core from accidentally dropping functionality when
