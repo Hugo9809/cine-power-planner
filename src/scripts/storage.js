@@ -3896,6 +3896,53 @@ function maybeCreateProjectDeletionBackup(projects, key) {
   return { status: 'created', backupName };
 }
 
+function generateOverwriteBackupMetadata(projectName, projects) {
+  const timestamp = formatAutoBackupTimestamp(new Date());
+  const sanitizedName = sanitizeProjectNameForBackup(projectName);
+  const baseName = sanitizedName
+    ? `${STORAGE_AUTO_BACKUP_NAME_PREFIX}${timestamp}-${sanitizedName}`
+    : `${STORAGE_AUTO_BACKUP_NAME_PREFIX}${timestamp}`;
+  const usedNames = new Set(Object.keys(projects));
+  if (!usedNames.has(baseName)) {
+    return { name: baseName };
+  }
+  let suffix = 2;
+  let candidate = `${baseName}-${suffix}`;
+  while (usedNames.has(candidate)) {
+    suffix += 1;
+    candidate = `${baseName}-${suffix}`;
+  }
+  return { name: candidate };
+}
+
+function maybeCreateProjectOverwriteBackup(projects, key) {
+  if (!isPlainObject(projects) || typeof key !== 'string') {
+    return { status: 'invalid' };
+  }
+  if (!Object.prototype.hasOwnProperty.call(projects, key)) {
+    return { status: 'missing' };
+  }
+  if (
+    key.startsWith(STORAGE_AUTO_BACKUP_NAME_PREFIX)
+    || key.startsWith(STORAGE_AUTO_BACKUP_DELETION_PREFIX)
+  ) {
+    return { status: 'skipped' };
+  }
+
+  const backupSource = cloneProjectEntryForBackup(projects[key]);
+  if (backupSource === undefined) {
+    return { status: 'failed' };
+  }
+
+  const { name: backupName } = generateOverwriteBackupMetadata(key, projects);
+  if (!backupName) {
+    return { status: 'failed' };
+  }
+
+  projects[backupName] = backupSource;
+  return { status: 'created', backupName };
+}
+
 function saveProject(name, project) {
   if (!isPlainObject(project)) return;
   const normalized = normalizeProject(project) || { gearList: "", projectInfo: null };
@@ -3906,7 +3953,23 @@ function saveProject(name, project) {
       createStorageMigrationBackup(safeStorage, PROJECT_STORAGE_KEY, originalValue);
     }
   }
-  projects[name || ""] = normalized;
+
+  const key = name || "";
+  const hasExistingEntry = Object.prototype.hasOwnProperty.call(projects, key);
+  if (hasExistingEntry) {
+    const existingSignature = createStableValueSignature(projects[key]);
+    const nextSignature = createStableValueSignature(normalized);
+    if (existingSignature !== nextSignature) {
+      const backupOutcome = maybeCreateProjectOverwriteBackup(projects, key);
+      if (backupOutcome.status === 'failed') {
+        console.warn(
+          `Automatic backup before overwriting project "${key}" failed. Proceeding with save.`,
+        );
+      }
+    }
+  }
+
+  projects[key] = normalized;
   persistAllProjects(projects);
 }
 
