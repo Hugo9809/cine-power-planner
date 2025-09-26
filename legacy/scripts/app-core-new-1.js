@@ -41,6 +41,28 @@ function resolveCoreShared() {
   return null;
 }
 var CORE_SHARED = resolveCoreShared() || {};
+var CORE_BOOT_QUEUE_KEY = '__coreRuntimeBootQueue';
+var CORE_BOOT_QUEUE = function () {
+  if (CORE_SHARED && _typeof(CORE_SHARED) === 'object') {
+    if (!Array.isArray(CORE_SHARED[CORE_BOOT_QUEUE_KEY])) {
+      CORE_SHARED[CORE_BOOT_QUEUE_KEY] = [];
+    }
+    return CORE_SHARED[CORE_BOOT_QUEUE_KEY];
+  }
+  if (CORE_GLOBAL_SCOPE) {
+    var shared = CORE_GLOBAL_SCOPE.cineCoreShared || (CORE_GLOBAL_SCOPE.cineCoreShared = {});
+    if (!Array.isArray(shared[CORE_BOOT_QUEUE_KEY])) {
+      shared[CORE_BOOT_QUEUE_KEY] = [];
+    }
+    return shared[CORE_BOOT_QUEUE_KEY];
+  }
+  return [];
+}();
+function enqueueCoreBootTask(task) {
+  if (typeof task === 'function') {
+    CORE_BOOT_QUEUE.push(task);
+  }
+}
 function fallbackStableStringify(value) {
   if (value === null) return 'null';
   if (value === undefined) return 'undefined';
@@ -1879,12 +1901,14 @@ var initialAutoGearRulesSignature = getAutoGearConfigurationSignature(autoGearRu
 var autoGearRulesLastBackupSignature = autoGearBackups.length ? getAutoGearConfigurationSignature(autoGearBackups[0].rules, autoGearBackups[0].monitorDefaults) : initialAutoGearRulesSignature;
 var autoGearRulesLastPersistedSignature = initialAutoGearRulesSignature;
 var autoGearRulesDirtySinceBackup = autoGearRulesLastPersistedSignature !== autoGearRulesLastBackupSignature;
-reconcileAutoGearAutoPresetState({
-  persist: true,
-  skipRender: true
-});
-alignActiveAutoGearPreset({
-  skipRender: true
+enqueueCoreBootTask(function () {
+  reconcileAutoGearAutoPresetState({
+    persist: true,
+    skipRender: true
+  });
+  alignActiveAutoGearPreset({
+    skipRender: true
+  });
 });
 function assignAutoGearRules(rules) {
   autoGearRules = Array.isArray(rules) ? rules.map(normalizeAutoGearRule).filter(Boolean) : [];
