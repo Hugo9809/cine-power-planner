@@ -1263,6 +1263,22 @@ describe('export/import all data', () => {
     });
   });
 
+  test('exportAllData normalizes stored boolean preference strings', () => {
+    localStorage.setItem('darkMode', ' TRUE ');
+    localStorage.setItem('pinkMode', 'false');
+    localStorage.setItem('highContrast', 'Yes');
+    localStorage.setItem('reduceMotion', ' OFF ');
+
+    const exported = exportAllData();
+
+    expect(exported.preferences).toEqual({
+      darkMode: true,
+      pinkMode: false,
+      highContrast: true,
+      reduceMotion: false,
+    });
+  });
+
   test('exportAllData filters invalid custom font entries', () => {
     const invalidEntries = [
       { id: 'font-keep', name: 'Keep', data: 'data:font/woff;base64,AAAA' },
