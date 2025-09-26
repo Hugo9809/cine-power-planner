@@ -2203,6 +2203,13 @@ persistAutoGearBackupRetention(autoGearBackupRetention);
 let factoryAutoGearRulesSnapshot = null;
 let factoryAutoGearSeedContext = null;
 let autoGearBackupRetentionWarningText = '';
+var autoGearEditorDraft = null;
+var autoGearEditorActiveItem = null;
+let autoGearDraftPendingWarnings = null;
+let autoGearSearchQuery = '';
+let autoGearSummaryFocus = 'all';
+let autoGearSummaryLast = null;
+let autoGearScenarioFilter = 'all';
 function getAutoGearBackupEntrySignature(entry) {
   if (!entry || typeof entry !== 'object') return '';
   return stableStringify({
@@ -12769,14 +12776,6 @@ function computeAutoGearMultiSelectSize(optionCount, {
   const boundedMax = Number.isFinite(maxRows) && maxRows >= minRows ? maxRows : minRows;
   return Math.max(minRows, Math.min(optionCount, boundedMax));
 }
-
-var autoGearEditorDraft = null;
-var autoGearEditorActiveItem = null;
-let autoGearDraftPendingWarnings = null;
-let autoGearSearchQuery = '';
-let autoGearSummaryFocus = 'all';
-let autoGearSummaryLast = null;
-let autoGearScenarioFilter = 'all';
 
 function setAutoGearSearchQuery(value) {
   const nextValue = typeof value === 'string' ? value : '';
