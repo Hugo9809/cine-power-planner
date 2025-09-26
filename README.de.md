@@ -92,9 +92,11 @@ Folge `docs/translation-guide.md` für Details zur Lokalisierung.
 
 - **Backup-Vergleiche** – Wähle manuelle Saves oder Auto-Backups, prüfe Diffs, ergänze Vorfallnotizen und exportiere Protokolle, bevor du Änderungen zurückrollst oder Daten an die Post übergibst.
 - **Restore-Proben** – Lade komplette Backups oder Projekt-Bundles in eine isolierte Sandbox, um Inhalte gegen Live-Daten zu checken, ohne Produktionsprofile anzurühren.
+- **Backup-Verlaufsprotokoll** – Jeder Vollbackup-Download speichert Zeitstempel und Dateinamen lokal. In **Einstellungen → Daten & Speicher** kannst du die Zählung prüfen oder das Protokoll zusammen mit deinen Archiven exportieren, um Offline-Aufbewahrung nachzuweisen.
 - **Automatische Gear-Regeln** – Definiere szenariobasierte Ergänzungen oder Entfernungen mit Import/Export-Kontrollen und zeitgesteuerten Backups.
 - **Regelabdeckungs-Dashboard** – Fasse doppelte Auslöser, Netto-Zu-/Abgänge, Konflikte und ungedeckte Szenarien direkt in den automatischen Gear-Regeln zusammen, setze Fokus-Filter offline und gib dieselben Einblicke in Exporten und Druckansichten weiter.
 - **Daten- & Speicher-Dashboard** – Prüfe gespeicherte Projekte, Gerätelisten, eigene Geräte, Favoriten und Laufzeitfeedback direkt in den Einstellungen und schätze die Backup-Größe.
+- **Runtime-Schutzprüfung** – Das Runtime-Bundle protokolliert Prüfergebnisse unter `window.__cineRuntimeIntegrity` und stellt `window.cineRuntime.verifyCriticalFlows()` bereit, damit Teams Speicher-, Teil- und Restore-Pfade vor der Abreise bestätigen können.
 - **Autosave-Status-Overlay** – Spiegelt die letzte Autosave-Notiz im Einstellungsdialog, damit Teams Hintergrundaktivitäten während Recovery-Drills sehen.
 - **Monitoring-sensitiver Gear-Editor** – Blendet zusätzliche Monitor- und Videoverteilungsoptionen nur ein, wenn Szenarien sie verlangen.
 - **Akzent- & Typografie-Regler** – Passe Akzentfarbe, Schriftgröße und Schriftart an; Dark-, Pink- und High-Contrast-Themes bleiben zwischen Besuchen erhalten.
@@ -122,7 +124,8 @@ Führe diese Checkliste beim ersten Setup oder nach Updates aus. Sie beweist, da
 5. Erstes Projekt anlegen, **Enter** (oder **Strg+S**/`⌘S`) drücken und im Projektmenü das zeitgestempelte Auto-Backup prüfen, das nach wenigen Minuten erscheint.
 6. **Einstellungen → Backup & Wiederherstellung → Backup** exportieren und die `planner-backup.json` in einem privaten Profil importieren. So stellst du sicher, dass keine Sicherung auf einem Gerät festsitzt und der erzwungene Pre-Restore-Export funktioniert.
 7. Projekt-Bundle exportieren (`project-name.json`) und auf einem zweiten Gerät/Profil importieren. Das trainiert die komplette Kette Speichern → Teilen → Importieren und stellt sicher, dass Uicons, Fonts und Scripts offline mitreisen.
-8. Verifiziertes Backup und Projekt-Bundle zusammen mit der Repository-Kopie archivieren. So bleiben alle Workflows synchron und du hast redundante Medien für Reisen.
+8. Verifiziertes Backup und Projekt-Bundle zusammen mit der Repository-Kopie archivieren. Datum, Rechner und Operator protokollieren, damit nachvollziehbar bleibt, wann der Drill erfolgreich war und alle Workflows synchron blieben.
+9. Entwicklerkonsole öffnen und einen Screenshot von `window.__cineRuntimeIntegrity` festhalten (oder `window.cineRuntime.verifyCriticalFlows()` erneut ausführen und das Protokoll speichern). So dokumentierst du, dass die Runtime-Wache die Speicher-/Teilen-/Restore-Wege während der Offline-Probe bestätigt hat.
 
 ## Systemanforderungen & Browser-Support
 
@@ -140,6 +143,7 @@ Dieser kurze Ablauf sollte bei neuen Teammitgliedern, frisch eingerichteten Work
 3. **Restore-Generalprobe.** In einem privaten Profil oder zweiten Gerät Backup importieren, danach das Bundle. Gerätelisten, Dashboards, Regeln und Favoriten prüfen.
 4. **Offline-Verifikation.** Im Testprofil Netzwerk trennen, `index.html` neu laden und prüfen, ob Offline-Indikator, Uicons und Hilfsskripte sauber geladen werden.
 5. **Archivieren.** Testprofil löschen, Exporte beschriften und in die Produktions-Checkliste aufnehmen.
+6. **Runtime protokollieren.** Im Testprofil die Entwicklerkonsole öffnen, `window.__cineRuntimeIntegrity.ok` auf `true` prüfen und bei Bedarf `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })` ausführen. Das Ergebnis zusammen mit den Drill-Notizen archivieren.
 
 ## Täglicher Ablauf
 
@@ -234,6 +238,7 @@ Dieser kurze Ablauf sollte bei neuen Teammitgliedern, frisch eingerichteten Work
 - **Einstellungen → Daten & Speicher** listet gespeicherte Projekte, Auto-Backups, Gerätelisten, Custom-Geräte, Favoriten, Laufzeitfeedback und Session-Cache mit Live-Zahlen.
 - Einträge erklären ihre Inhalte; leere Bereiche bleiben verborgen, damit du den Zustand sofort siehst.
 - Die Übersicht schätzt die Backup-Größe basierend auf dem jüngsten Export.
+- Vollbackups zeigen ihre aktuelle Anzahl und speisen das Backup-Protokoll, damit du vor dem Archivieren kontrollieren kannst, ob die stündlichen Sicherungen erfasst wurden.
 
 ## Speicherbudget & Wartung
 
@@ -246,10 +251,12 @@ Dieser kurze Ablauf sollte bei neuen Teammitgliedern, frisch eingerichteten Work
 
 - **Gespeicherte Projektsnapshots** – Projektliste speichert alle Saves und erzeugt alle zehn Minuten `auto-backup-…`.
 - **Vollbackups** – **Einstellungen → Backup & Wiederherstellung → Backup** erstellt `planner-backup.json` inkl. aller Projekte, Geräte, Regeln und UI-States; vor jeder Wiederherstellung wird ein Sicherheitsbackup angelegt.
+- **Backup-Verlauf** – Jede Vollsicherung schreibt einen Eintrag, der sich in **Einstellungen → Daten & Speicher** prüfen oder zusammen mit dem Archiv exportieren lässt. Zeitstempel und Dateinamen bleiben so auch offline nachvollziehbar.
 - **Verborgene Migrations-Backups** – Vor Überschreibungen wird der vorige JSON-Snapshot im geschützten `__legacyMigrationBackup` abgelegt und bei Fehlern automatisch wiederhergestellt.
 - **Automatische Regel-Snapshots** – Änderungen in **Automatische Gear-Regeln** erzeugen alle zehn Minuten Sicherheitskopien.
 - **Factory Reset** – löscht Daten erst nach automatischem Backup.
 - **Stündliche Erinnerungen** – Hintergrundroutine fordert stündlich zu Backups auf.
+- **Runtime-Integritätswache** – Vor Abfahrt in der Konsole `window.__cineRuntimeIntegrity.ok` auf `true` prüfen oder `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })` ausführen. Der Bericht bestätigt, dass Speichern/Teilen/Wiederherstellen offline geschützt ist.
 - **Verifikation** – Nach jedem kritischen Backup Import in einem Testprofil prüfen.
 - **Sichere Aufbewahrung** – Backups mit Projektname/Zeitstempel beschriften und auf redundanten Medien lagern.
 - **Vor Überschreiben vergleichen** – Vor Restores frisches Backup ziehen und Unterschiede prüfen.

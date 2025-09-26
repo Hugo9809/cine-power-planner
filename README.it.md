@@ -92,9 +92,11 @@ Consulta `docs/translation-guide.md` per i dettagli sulla localizzazione.
 
 - **Confronto backup** – Seleziona salvataggi manuali o auto-backup, analizza i diff, aggiungi note e esporta un log prima di ripristinare o consegnare il materiale.
 - **Prove di ripristino** – Carica un backup completo o un bundle in una sandbox isolata per verificarne il contenuto senza toccare i profili di produzione.
+- **Registro storico dei backup** – Ogni download del backup completo salva localmente timestamp e nome file. Controllalo in **Impostazioni → Dati e archiviazione** o esporta il registro insieme agli archivi per dimostrare la conservazione offline.
 - **Regole automatiche per l’attrezzatura** – Definisci aggiunte o rimozioni attivate dagli scenari con controlli di import/export e backup programmati.
 - **Dashboard di copertura regole** – Riassume trigger duplicati, variazioni nette, conflitti e scenari scoperti nelle Regole automatiche, applica filtri di focus offline e condivide le stesse informazioni in export e stampe.
 - **Dashboard dati e archiviazione** – Audita progetti, liste, dispositivi personalizzati, preferiti e feedback sulle autonomie direttamente da Impostazioni e stima la dimensione del backup.
+- **Ispettore di salvaguardia runtime** – Il bundle runtime registra il risultato su `window.__cineRuntimeIntegrity` ed espone `window.cineRuntime.verifyCriticalFlows()` così la troupe può confermare i percorsi di salvataggio/condivisione/ripristino prima di partire.
 - **Overlay stato auto-save** – Replica l’ultima nota di auto-save nel dialogo Impostazioni così la troupe vede l’attività in background durante gli esercizi.
 - **Editor sensibile al monitoring** – Mostra campi aggiuntivi per monitor e distribuzione video solo quando richiesti dagli scenari.
 - **Controlli di accento e tipografia** – Regola colore di accento, dimensione e famiglia di font; i temi scuro, rosa e alto contrasto restano attivi tra le sessioni.
@@ -122,7 +124,8 @@ Segui questa checklist all’installazione o dopo un aggiornamento: dimostra che
 5. Crea un progetto, premi **Invio** (o **Ctrl+S**/`⌘S`) per un salvataggio manuale e controlla che nel selettore compaia il backup automatico con timestamp dopo pochi minuti.
 6. Esporta **Impostazioni → Backup e ripristino → Backup** e importa il file `planner-backup.json` in un profilo privato. Così verifichi che nessuna copia resti isolata e che il backup forzato prima del ripristino funzioni.
 7. Esercitati a esportare un bundle (`project-name.json`) e importarlo su un altro dispositivo o profilo per collaudare il flusso Salva → Condividi → Importa e assicurarti che risorse locali seguano il progetto.
-8. Archivia backup e bundle verificati insieme alla copia del repository utilizzato. In questo modo mantieni sincronizzati i flussi e hai supporti ridondanti in viaggio.
+8. Archivia backup e bundle verificati insieme alla copia del repository utilizzato. Annota data, macchina e operatore per documentare quando l’esercizio è stato convalidato e mantenere i flussi sincronizzati fin dalla prima sessione.
+9. Apri la console del browser e acquisisci `window.__cineRuntimeIntegrity` (oppure riesegui `window.cineRuntime.verifyCriticalFlows()` e salva il report). In questo modo dimostri che la sentinella runtime ha validato i percorsi di salvataggio/condivisione/ripristino durante la prova offline.
 
 ## Requisiti di sistema e browser
 
@@ -140,6 +143,7 @@ Ripeti questa routine quando arriva un nuovo membro, allestisci una postazione o
 3. **Prova di ripristino.** Passa a un profilo privato (o seconda macchina), importa il backup completo e poi il bundle. Controlla liste, dashboard, regole e preferiti.
 4. **Verifica offline.** Nel profilo di test, disconnetti la rete e ricarica `index.html`. Assicurati che l’indicatore offline appaia e che Uicons e script locali si carichino correttamente.
 5. **Archiviazione sicura.** Elimina il profilo di test dopo la verifica e etichetta gli export secondo la procedura di produzione.
+6. **Registra la sentinella runtime.** Nello stesso profilo apri la console, verifica che `window.__cineRuntimeIntegrity.ok` sia `true` e, se serve un report aggiornato, esegui `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })`, archiviando l’output con le note dell’esercizio.
 
 ## Flusso quotidiano
 
@@ -234,6 +238,7 @@ Ripeti questa routine quando arriva un nuovo membro, allestisci una postazione o
 - Apri **Impostazioni → Dati e archiviazione** per vedere progetti salvati, auto-backup, liste, dispositivi personalizzati, preferiti, feedback e cache di sessione con conteggi in tempo reale.
 - Ogni sezione descrive il proprio contenuto; quelle vuote restano nascoste per riconoscere subito lo stato del planner.
 - Il riepilogo stima la dimensione del backup basandosi sull’export più recente.
+- I backup completi mostrano il totale corrente e alimentano il registro storico, così puoi verificare che le copie orarie siano state registrate prima di archiviare offline.
 
 ## Gestione quote e manutenzione
 
@@ -246,10 +251,12 @@ Ripeti questa routine quando arriva un nuovo membro, allestisci una postazione o
 
 - **Snapshot salvati** – Il selettore conserva ogni salvataggio manuale e crea `auto-backup-…` ogni dieci minuti mentre l’app è aperta.
 - **Backup completi** – **Impostazioni → Backup e ripristino → Backup** scarica `planner-backup.json` con progetti, dispositivi, feedback, preferiti, regole automatiche e stato UI. I ripristini creano un backup di sicurezza e avvisano se il file proviene da un’altra versione.
+- **Registro storico** – Ogni backup completo aggiunge una voce consultabile in **Impostazioni → Dati e archiviazione** o esportabile insieme al file. Mantiene timestamp e nomi allineati alla documentazione anche offline.
 - **Backup di migrazione nascosti** – Prima di sovrascrivere planner, setup o preferenze, l’app salva il precedente JSON in `__legacyMigrationBackup`. In caso di errore, gli strumenti di recupero tornano automaticamente a quella copia.
 - **Snapshot automatici delle regole** – Le modifiche in **Regole automatiche** generano copie con timestamp ogni dieci minuti.
 - **Ripristino impostazioni di fabbrica** – Cancella i dati solo dopo aver scaricato un backup.
 - **Promemoria orari** – Una routine in background suggerisce un backup aggiuntivo ogni ora per avere sempre una copia recente.
+- **Sentinella di integrità runtime** – Prima di partire, apri la console e assicurati che `window.__cineRuntimeIntegrity.ok` sia `true` (o esegui `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })`). Il report dimostra che i percorsi di salvataggio/condivisione/ripristino restano protetti offline.
 - **Loop di verifica** – Dopo ogni backup critico, importalo in un profilo separato per confermare il risultato prima di eliminare l’istanza di test.
 - **Abitudini di archiviazione sicura** – Etichetta backup con nome progetto e orario, poi conserva su supporti ridondanti (RAID, USB cifrato, disco ottico).
 - **Confronta prima di sovrascrivere** – Scarica un backup dello stato corrente prima di ripristinare e confronta le differenze con un diff JSON per eventuali fusioni manuali.
