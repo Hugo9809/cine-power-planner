@@ -1,3 +1,90 @@
+const SHARED_GLOBAL_SCOPE =
+  typeof globalThis !== 'undefined'
+    ? globalThis
+    : typeof window !== 'undefined'
+      ? window
+      : typeof self !== 'undefined'
+        ? self
+        : typeof global !== 'undefined'
+          ? global
+          : null;
+
+function fallbackStableStringify(value) {
+  if (value === null) return 'null';
+  if (value === undefined) return 'undefined';
+  if (Array.isArray(value)) {
+    return `[${value.map(item => fallbackStableStringify(item)).join(',')}]`;
+  }
+  if (typeof value === 'object') {
+    const keys = Object.keys(value).sort();
+    const entries = keys.map(key => `${JSON.stringify(key)}:${fallbackStableStringify(value[key])}`);
+    return `{${entries.join(',')}}`;
+  }
+  return JSON.stringify(value);
+}
+
+const HUMANIZE_OVERRIDES = {
+  powerDrawWatts: 'Power (W)',
+  capacity: 'Capacity (Wh)',
+  pinA: 'Pin A',
+  dtapA: 'D-Tap A',
+  mount_type: 'Mount',
+  screenSizeInches: 'Screen Size (in)',
+  brightnessNits: 'Brightness (nits)',
+  torqueNm: 'Torque (Nm)',
+  internalController: 'Internal Controller',
+  powerSource: 'Power Source',
+  batteryType: 'Battery Type',
+  connectivity: 'Connectivity'
+};
+
+function fallbackHumanizeKey(key) {
+  if (key && Object.prototype.hasOwnProperty.call(HUMANIZE_OVERRIDES, key)) {
+    return HUMANIZE_OVERRIDES[key];
+  }
+
+  const stringValue = typeof key === 'string' ? key : String(key || '');
+  return stringValue
+    .replace(/_/g, ' ')
+    .replace(/([A-Z])/g, ' $1')
+    .replace(/^./, (c) => c.toUpperCase());
+}
+
+if (SHARED_GLOBAL_SCOPE) {
+  if (typeof SHARED_GLOBAL_SCOPE.stableStringify !== 'function') {
+    try {
+      SHARED_GLOBAL_SCOPE.stableStringify = fallbackStableStringify;
+    } catch (error) {
+      void error;
+    }
+  }
+  if (typeof SHARED_GLOBAL_SCOPE.humanizeKey !== 'function') {
+    try {
+      SHARED_GLOBAL_SCOPE.humanizeKey = fallbackHumanizeKey;
+    } catch (error) {
+      void error;
+    }
+  }
+}
+
+try {
+  if (typeof stableStringify !== 'function') {
+    // eslint-disable-next-line no-global-assign
+    stableStringify = SHARED_GLOBAL_SCOPE?.stableStringify || fallbackStableStringify;
+  }
+} catch (error) {
+  void error;
+}
+
+try {
+  if (typeof humanizeKey !== 'function') {
+    // eslint-disable-next-line no-global-assign
+    humanizeKey = SHARED_GLOBAL_SCOPE?.humanizeKey || fallbackHumanizeKey;
+  }
+} catch (error) {
+  void error;
+}
+
 function refreshAutoGearCrewOptions(selectElement, selected, key) {
   if (!selectElement) return;
 
@@ -8682,20 +8769,6 @@ function getCurrentProjectInfo() {
   return currentProjectInfo;
 }
 
-function stableStringify(value) {
-  if (value === null) return 'null';
-  if (value === undefined) return 'undefined';
-  if (Array.isArray(value)) {
-    return `[${value.map(item => stableStringify(item)).join(',')}]`;
-  }
-  if (typeof value === 'object') {
-    const keys = Object.keys(value).sort();
-    const entries = keys.map(key => `${JSON.stringify(key)}:${stableStringify(value[key])}`);
-    return `{${entries.join(',')}}`;
-  }
-  return JSON.stringify(value);
-}
-
 function computeSetupSignature(state) {
   if (!state) return '';
   return [
@@ -13262,29 +13335,6 @@ function updateDiagramLegend() {
   diagramLegend.innerHTML = legendItems
     .map(({ cls, text }) => `<span><span class="swatch ${cls}"></span>${text}</span>`)
     .join('');
-}
-
-// Convert a camelCase or underscore key to a human friendly label
-function humanizeKey(key) {
-  const map = {
-    powerDrawWatts: 'Power (W)',
-    capacity: 'Capacity (Wh)',
-    pinA: 'Pin A',
-    dtapA: 'D-Tap A',
-    mount_type: 'Mount',
-    screenSizeInches: 'Screen Size (in)',
-    brightnessNits: 'Brightness (nits)',
-    torqueNm: 'Torque (Nm)',
-    internalController: 'Internal Controller',
-    powerSource: 'Power Source',
-    batteryType: 'Battery Type',
-    connectivity: 'Connectivity'
-  };
-  if (map[key]) return map[key];
-  return key
-    .replace(/_/g, ' ')
-    .replace(/([A-Z])/g, ' $1')
-    .replace(/^./, (c) => c.toUpperCase());
 }
 
 function formatValue(value) {

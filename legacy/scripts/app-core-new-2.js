@@ -1,3 +1,90 @@
+var SHARED_GLOBAL_SCOPE =
+  typeof globalThis !== 'undefined'
+    ? globalThis
+    : typeof window !== 'undefined'
+      ? window
+      : typeof self !== 'undefined'
+        ? self
+        : typeof global !== 'undefined'
+          ? global
+          : null;
+
+function fallbackStableStringify(value) {
+  if (value === null) return 'null';
+  if (typeof value === 'undefined') return 'undefined';
+  if (Array.isArray(value)) {
+    return '[' + value.map(function (item) { return fallbackStableStringify(item); }).join(',') + ']';
+  }
+  if (value && typeof value === 'object') {
+    var keys = Object.keys(value).sort();
+    var entries = keys.map(function (key) {
+      return JSON.stringify(key) + ':' + fallbackStableStringify(value[key]);
+    });
+    return '{' + entries.join(',') + '}';
+  }
+  return JSON.stringify(value);
+}
+
+var HUMANIZE_OVERRIDES = {
+  powerDrawWatts: 'Power (W)',
+  capacity: 'Capacity (Wh)',
+  pinA: 'Pin A',
+  dtapA: 'D-Tap A',
+  mount_type: 'Mount',
+  screenSizeInches: 'Screen Size (in)',
+  brightnessNits: 'Brightness (nits)',
+  torqueNm: 'Torque (Nm)',
+  internalController: 'Internal Controller',
+  powerSource: 'Power Source',
+  batteryType: 'Battery Type',
+  connectivity: 'Connectivity'
+};
+
+function fallbackHumanizeKey(key) {
+  if (key && Object.prototype.hasOwnProperty.call(HUMANIZE_OVERRIDES, key)) {
+    return HUMANIZE_OVERRIDES[key];
+  }
+
+  var stringValue = typeof key === 'string' ? key : String(key || '');
+  return stringValue
+    .replace(/_/g, ' ')
+    .replace(/([A-Z])/g, ' $1')
+    .replace(/^./, function (c) { return c.toUpperCase(); });
+}
+
+if (SHARED_GLOBAL_SCOPE) {
+  if (typeof SHARED_GLOBAL_SCOPE.stableStringify !== 'function') {
+    try {
+      SHARED_GLOBAL_SCOPE.stableStringify = fallbackStableStringify;
+    } catch (error) {
+      void error;
+    }
+  }
+  if (typeof SHARED_GLOBAL_SCOPE.humanizeKey !== 'function') {
+    try {
+      SHARED_GLOBAL_SCOPE.humanizeKey = fallbackHumanizeKey;
+    } catch (error) {
+      void error;
+    }
+  }
+}
+
+try {
+  if (typeof stableStringify !== 'function') {
+    stableStringify = (SHARED_GLOBAL_SCOPE && SHARED_GLOBAL_SCOPE.stableStringify) || fallbackStableStringify;
+  }
+} catch (error) {
+  void error;
+}
+
+try {
+  if (typeof humanizeKey !== 'function') {
+    humanizeKey = (SHARED_GLOBAL_SCOPE && SHARED_GLOBAL_SCOPE.humanizeKey) || fallbackHumanizeKey;
+  }
+} catch (error) {
+  void error;
+}
+
 function refreshAutoGearCrewOptions(selectElement, selected, key) {
   if (!selectElement) return;
   var selectedValues = collectAutoGearSelectedValues(selected, key);
@@ -8297,23 +8384,6 @@ function setCurrentProjectInfo(info) {
 function getCurrentProjectInfo() {
   return currentProjectInfo;
 }
-function stableStringify(value) {
-  if (value === null) return 'null';
-  if (value === undefined) return 'undefined';
-  if (Array.isArray(value)) {
-    return "[".concat(value.map(function (item) {
-      return stableStringify(item);
-    }).join(','), "]");
-  }
-  if (_typeof(value) === 'object') {
-    var keys = Object.keys(value).sort();
-    var entries = keys.map(function (key) {
-      return "".concat(JSON.stringify(key), ":").concat(stableStringify(value[key]));
-    });
-    return "{".concat(entries.join(','), "}");
-  }
-  return JSON.stringify(value);
-}
 function computeSetupSignature(state) {
   if (!state) return '';
   return [state.camera || '', state.monitor || '', state.video || '', state.cage || '', stableStringify(state.motors || []), stableStringify(state.controllers || []), state.distance || '', state.batteryPlate || '', state.battery || '', state.batteryHotswap || '', state.sliderBowl || '', state.easyrig || '', stableStringify(state.projectInfo || null), stableStringify(state.autoGearRules || null), stableStringify(state.diagramPositions || null)].join('||');
@@ -12896,26 +12966,6 @@ function updateDiagramLegend() {
       text = _ref88.text;
     return "<span><span class=\"swatch ".concat(cls, "\"></span>").concat(text, "</span>");
   }).join('');
-}
-function humanizeKey(key) {
-  var map = {
-    powerDrawWatts: 'Power (W)',
-    capacity: 'Capacity (Wh)',
-    pinA: 'Pin A',
-    dtapA: 'D-Tap A',
-    mount_type: 'Mount',
-    screenSizeInches: 'Screen Size (in)',
-    brightnessNits: 'Brightness (nits)',
-    torqueNm: 'Torque (Nm)',
-    internalController: 'Internal Controller',
-    powerSource: 'Power Source',
-    batteryType: 'Battery Type',
-    connectivity: 'Connectivity'
-  };
-  if (map[key]) return map[key];
-  return key.replace(/_/g, ' ').replace(/([A-Z])/g, ' $1').replace(/^./, function (c) {
-    return c.toUpperCase();
-  });
 }
 function formatValue(value) {
   if (Array.isArray(value)) {

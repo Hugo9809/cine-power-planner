@@ -79,6 +79,88 @@
  * keeping the similarity score below Git's rename detection threshold.
  * Do not trim these notes unless the tooling issue has been resolved.
  */
+
+(function ensureSharedCoreUtilitiesLegacy() {
+  var GLOBAL_SCOPE =
+    typeof globalThis !== 'undefined'
+      ? globalThis
+      : typeof window !== 'undefined'
+        ? window
+        : typeof self !== 'undefined'
+          ? self
+          : typeof global !== 'undefined'
+            ? global
+            : null;
+
+  if (!GLOBAL_SCOPE) {
+    return;
+  }
+
+  if (typeof GLOBAL_SCOPE.stableStringify !== 'function') {
+    GLOBAL_SCOPE.stableStringify = function stableStringify(value) {
+      if (value === null) return 'null';
+      if (typeof value === 'undefined') return 'undefined';
+      if (Array.isArray(value)) {
+        return '[' + value.map(function (item) { return GLOBAL_SCOPE.stableStringify(item); }).join(',') + ']';
+      }
+      if (value && typeof value === 'object') {
+        var keys = Object.keys(value).sort();
+        var entries = keys.map(function (key) {
+          return JSON.stringify(key) + ':' + GLOBAL_SCOPE.stableStringify(value[key]);
+        });
+        return '{' + entries.join(',') + '}';
+      }
+      return JSON.stringify(value);
+    };
+  }
+
+  if (typeof GLOBAL_SCOPE.humanizeKey !== 'function') {
+    var HUMANIZE_OVERRIDES = {
+      powerDrawWatts: 'Power (W)',
+      capacity: 'Capacity (Wh)',
+      pinA: 'Pin A',
+      dtapA: 'D-Tap A',
+      mount_type: 'Mount',
+      screenSizeInches: 'Screen Size (in)',
+      brightnessNits: 'Brightness (nits)',
+      torqueNm: 'Torque (Nm)',
+      internalController: 'Internal Controller',
+      powerSource: 'Power Source',
+      batteryType: 'Battery Type',
+      connectivity: 'Connectivity'
+    };
+
+    GLOBAL_SCOPE.humanizeKey = function humanizeKey(key) {
+      if (key && Object.prototype.hasOwnProperty.call(HUMANIZE_OVERRIDES, key)) {
+        return HUMANIZE_OVERRIDES[key];
+      }
+
+      var stringValue = typeof key === 'string' ? key : String(key || '');
+      return stringValue
+        .replace(/_/g, ' ')
+        .replace(/([A-Z])/g, ' $1')
+        .replace(/^./, function (c) { return c.toUpperCase(); });
+    };
+  }
+
+  try {
+    if (typeof stableStringify !== 'function') {
+      // eslint-disable-next-line no-global-assign
+      stableStringify = GLOBAL_SCOPE.stableStringify;
+    }
+  } catch (error) {
+    void error;
+  }
+
+  try {
+    if (typeof humanizeKey !== 'function') {
+      // eslint-disable-next-line no-global-assign
+      humanizeKey = GLOBAL_SCOPE.humanizeKey;
+    }
+  } catch (error) {
+    void error;
+  }
+})();
 var _settingsButton$query, _autoGearConditionSec, _autoGearConditionSec2, _autoGearConditionSec3, _autoGearConditionSec4, _autoGearConditionSec5, _autoGearConditionSec6, _autoGearConditionSec7, _autoGearConditionSec8, _autoGearConditionSec9, _autoGearConditionSec0, _autoGearConditionSec1, _autoGearConditionSec10, _autoGearConditionSec11, _autoGearConditionSec12, _autoGearConditionSec13, _autoGearConditionSec14, _autoGearConditionSec15, _autoGearConditionSec16, _autoGearConditionSec17, _autoGearConditionSec18, _autoGearConditionSec19, _autoGearConditionSec20, _autoGearConditionSec21, _autoGearConditionSec22, _autoGearConditionSec23, _autoGearConditionSec24, _autoGearConditionSec25, _autoGearConditionSec26, _autoGearConditionSec27, _autoGearConditionSec28, _autoGearConditionSec29, _autoGearConditionSec30, _autoGearConditionSec31, _autoGearConditionSec32;
 var _excluded = ["portType", "type"],
   _excluded2 = ["count"],
