@@ -26,6 +26,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
 function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t.return && (u = t.return(), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+var sessionCineUi = typeof globalThis !== 'undefined' && globalThis.cineUi || typeof window !== 'undefined' && window.cineUi || typeof self !== 'undefined' && self.cineUi || null;
 var temperaturePreferenceStorageKey = typeof TEMPERATURE_STORAGE_KEY === 'string' ? TEMPERATURE_STORAGE_KEY : typeof resolveTemperatureStorageKey === 'function' ? resolveTemperatureStorageKey() : 'cameraPowerPlanner_temperatureUnit';
 var recordFullBackupHistoryEntryFn = function recordFullBackupHistoryEntryFn() {};
 try {
@@ -5895,259 +5896,303 @@ if (backupDiffNotesEl) {
 if (backupDiffSectionEl) {
   collapseBackupDiffSection();
 }
-if (restoreSettings && restoreSettingsInput) {
-  restoreSettings.addEventListener('click', function () {
-    return restoreSettingsInput.click();
-  });
-  restoreSettingsInput.addEventListener('change', function () {
-    var file = restoreSettingsInput.files[0];
-    if (!file) return;
-    var langTexts = texts[currentLang] || {};
-    var fallbackTexts = texts.en || {};
-    var restoreFailureMessage = langTexts.restoreFailed || fallbackTexts.restoreFailed || 'Restore failed. Check the backup file and try again.';
-    var backupFileName = null;
+function handleRestoreSettingsClick() {
+  if (restoreSettingsInput) {
+    restoreSettingsInput.click();
+  }
+}
+function handleRestoreSettingsInputChange() {
+  var file = restoreSettingsInput.files[0];
+  if (!file) return;
+  var langTexts = texts[currentLang] || {};
+  var fallbackTexts = texts.en || {};
+  var restoreFailureMessage = langTexts.restoreFailed || fallbackTexts.restoreFailed || 'Restore failed. Check the backup file and try again.';
+  var backupFileName = null;
+  try {
+    backupFileName = createSettingsBackup(false, new Date());
+  } catch (error) {
+    console.error('Backup before restore failed', error);
+  }
+  if (!backupFileName) {
+    var failureMessage = langTexts.restoreBackupFailed || fallbackTexts.restoreBackupFailed || 'Backup failed. Restore cancelled.';
+    showNotification('error', failureMessage);
+    alert(failureMessage);
+    restoreSettingsInput.value = '';
+    return;
+  }
+  showNotification('success', 'Full app backup downloaded');
+  var safeStorage = resolveSafeLocalStorage();
+  var storedSettingsSnapshot = captureStorageSnapshot(safeStorage);
+  var storedSessionSnapshot = captureStorageSnapshot(typeof sessionStorage !== 'undefined' ? sessionStorage : null);
+  var previousSelection = captureSetupSelection();
+  var restoreMutated = false;
+  var finalizeRestore = function finalizeRestore() {
     try {
-      backupFileName = createSettingsBackup(false, new Date());
-    } catch (error) {
-      console.error('Backup before restore failed', error);
-    }
-    if (!backupFileName) {
-      var failureMessage = langTexts.restoreBackupFailed || fallbackTexts.restoreBackupFailed || 'Backup failed. Restore cancelled.';
-      showNotification('error', failureMessage);
-      alert(failureMessage);
       restoreSettingsInput.value = '';
-      return;
+    } catch (resetError) {
+      void resetError;
     }
-    showNotification('success', 'Full app backup downloaded');
-    var safeStorage = resolveSafeLocalStorage();
-    var storedSettingsSnapshot = captureStorageSnapshot(safeStorage);
-    var storedSessionSnapshot = captureStorageSnapshot(typeof sessionStorage !== 'undefined' ? sessionStorage : null);
-    var previousSelection = captureSetupSelection();
-    var restoreMutated = false;
-    var finalizeRestore = function finalizeRestore() {
+  };
+  var revertAfterFailure = function revertAfterFailure() {
+    try {
+      restoreLocalStorageSnapshot(safeStorage, storedSettingsSnapshot);
+    } catch (restoreError) {
+      console.warn('Failed to restore localStorage snapshot after restore failure', restoreError);
+    }
+    try {
+      restoreSessionStorageSnapshot(storedSessionSnapshot);
+    } catch (sessionError) {
+      console.warn('Failed to restore sessionStorage snapshot after restore failure', sessionError);
+    }
+    try {
+      loadStoredLogoPreview();
+    } catch (logoError) {
+      console.warn('Failed to refresh logo preview after restore failure', logoError);
+    }
+    try {
+      syncAutoGearRulesFromStorage();
+    } catch (rulesError) {
+      console.warn('Failed to resync automatic gear rules after restore failure', rulesError);
+    }
+    var restoredPreferenceReader = createSafeStorageReader(safeStorage, 'Failed to read restored storage key');
+    var restoredPreferences = applyPreferencesFromStorage(restoredPreferenceReader);
+    showAutoBackups = restoredPreferences.showAutoBackups;
+    try {
+      populateSetupSelect();
+    } catch (populateError) {
+      console.warn('Failed to repopulate setup selector after restore failure', populateError);
+    }
+    restoreSetupSelection(previousSelection, showAutoBackups);
+    if (settingsShowAutoBackups) {
       try {
-        restoreSettingsInput.value = '';
-      } catch (resetError) {
-        void resetError;
+        settingsShowAutoBackups.checked = showAutoBackups;
+      } catch (checkboxError) {
+        console.warn('Failed to restore automatic backup visibility toggle after restore failure', checkboxError);
       }
-    };
-    var revertAfterFailure = function revertAfterFailure() {
+    }
+    if (restoredPreferences.language) {
       try {
-        restoreLocalStorageSnapshot(safeStorage, storedSettingsSnapshot);
-      } catch (restoreError) {
-        console.warn('Failed to restore localStorage snapshot after restore failure', restoreError);
+        setLanguage(restoredPreferences.language);
+      } catch (languageError) {
+        console.warn('Failed to restore language after restore failure', languageError);
       }
-      try {
-        restoreSessionStorageSnapshot(storedSessionSnapshot);
-      } catch (sessionError) {
-        console.warn('Failed to restore sessionStorage snapshot after restore failure', sessionError);
+    }
+  };
+  var handleRestoreError = function handleRestoreError(error) {
+    console.warn('Restore failed', error);
+    showNotification('error', restoreFailureMessage);
+    alert(restoreFailureMessage);
+    finalizeRestore();
+  };
+  var processBackupPayload = function processBackupPayload(rawPayload) {
+    try {
+      var sanitizedPayload = sanitizeBackupPayload(rawPayload);
+      if (!sanitizedPayload || !sanitizedPayload.trim()) {
+        throw new Error('Backup payload empty');
+      }
+      var parsed = JSON.parse(sanitizedPayload);
+      var _extractBackupSection2 = extractBackupSections(parsed),
+        restoredSettings = _extractBackupSection2.settings,
+        restoredSession = _extractBackupSection2.sessionStorage,
+        data = _extractBackupSection2.data,
+        fileVersion = _extractBackupSection2.fileVersion;
+      var hasSettings = restoredSettings && Object.keys(restoredSettings).length > 0;
+      var hasSessionEntries = restoredSession && Object.keys(restoredSession).length > 0;
+      var hasDataEntries = data && Object.keys(data).length > 0;
+      if (!hasSettings && !hasSessionEntries && !hasDataEntries) {
+        throw new Error('Backup missing recognized sections');
+      }
+      if (fileVersion !== APP_VERSION) {
+        var compatibilityMessage = buildRestoreVersionCompatibilityMessage({
+          langTexts: langTexts,
+          fallbackTexts: fallbackTexts,
+          fileVersion: fileVersion,
+          targetVersion: APP_VERSION,
+          data: data,
+          settingsSnapshot: restoredSettings,
+          sessionSnapshot: restoredSession,
+          backupFileName: backupFileName
+        });
+        alert(compatibilityMessage);
+      }
+      if (restoredSettings && _typeof(restoredSettings) === 'object') {
+        if (safeStorage && typeof safeStorage.setItem === 'function') {
+          restoreMutated = true;
+          Object.entries(restoredSettings).forEach(function (_ref37) {
+            var _ref38 = _slicedToArray(_ref37, 2),
+              k = _ref38[0],
+              v = _ref38[1];
+            if (typeof k !== 'string') return;
+            try {
+              if (v === null || v === undefined) {
+                if (typeof safeStorage.removeItem === 'function') {
+                  safeStorage.removeItem(k);
+                }
+              } else {
+                safeStorage.setItem(k, String(v));
+              }
+            } catch (storageError) {
+              console.warn('Failed to restore storage entry', k, storageError);
+            }
+          });
+        }
+      }
+      if (restoredSession && typeof sessionStorage !== 'undefined') {
+        restoreMutated = true;
+        Object.entries(restoredSession).forEach(function (_ref39) {
+          var _ref40 = _slicedToArray(_ref39, 2),
+            key = _ref40[0],
+            value = _ref40[1];
+          try {
+            sessionStorage.setItem(key, value);
+          } catch (sessionError) {
+            console.warn('Failed to restore sessionStorage entry', key, sessionError);
+          }
+        });
       }
       try {
         loadStoredLogoPreview();
       } catch (logoError) {
-        console.warn('Failed to refresh logo preview after restore failure', logoError);
+        console.warn('Failed to refresh logo preview after restore', logoError);
+      }
+      if (data && typeof importAllData === 'function') {
+        restoreMutated = true;
+        importAllData(data);
       }
       try {
-        syncAutoGearRulesFromStorage();
+        syncAutoGearRulesFromStorage(data === null || data === void 0 ? void 0 : data.autoGearRules);
       } catch (rulesError) {
-        console.warn('Failed to resync automatic gear rules after restore failure', rulesError);
+        console.warn('Failed to sync automatic gear rules after restore', rulesError);
       }
-      var restoredPreferenceReader = createSafeStorageReader(safeStorage, 'Failed to read restored storage key');
-      var restoredPreferences = applyPreferencesFromStorage(restoredPreferenceReader);
-      showAutoBackups = restoredPreferences.showAutoBackups;
-      try {
-        populateSetupSelect();
-      } catch (populateError) {
-        console.warn('Failed to repopulate setup selector after restore failure', populateError);
-      }
+      var preferenceReader = createSafeStorageReader(safeStorage, 'Failed to read restored storage key');
+      var restoredPreferenceState = applyPreferencesFromStorage(preferenceReader);
+      showAutoBackups = restoredPreferenceState.showAutoBackups;
+      populateSetupSelect();
       restoreSetupSelection(previousSelection, showAutoBackups);
       if (settingsShowAutoBackups) {
-        try {
-          settingsShowAutoBackups.checked = showAutoBackups;
-        } catch (checkboxError) {
-          console.warn('Failed to restore automatic backup visibility toggle after restore failure', checkboxError);
-        }
+        settingsShowAutoBackups.checked = showAutoBackups;
       }
-      if (restoredPreferences.language) {
-        try {
-          setLanguage(restoredPreferences.language);
-        } catch (languageError) {
-          console.warn('Failed to restore language after restore failure', languageError);
-        }
+      if (restoredPreferenceState.language) {
+        setLanguage(restoredPreferenceState.language);
       }
-    };
-    var handleRestoreError = function handleRestoreError(error) {
-      console.warn('Restore failed', error);
-      showNotification('error', restoreFailureMessage);
-      alert(restoreFailureMessage);
-      finalizeRestore();
-    };
-    var processBackupPayload = function processBackupPayload(rawPayload) {
-      try {
-        var sanitizedPayload = sanitizeBackupPayload(rawPayload);
-        if (!sanitizedPayload || !sanitizedPayload.trim()) {
-          throw new Error('Backup payload empty');
-        }
-        var parsed = JSON.parse(sanitizedPayload);
-        var _extractBackupSection2 = extractBackupSections(parsed),
-          restoredSettings = _extractBackupSection2.settings,
-          restoredSession = _extractBackupSection2.sessionStorage,
-          data = _extractBackupSection2.data,
-          fileVersion = _extractBackupSection2.fileVersion;
-        var hasSettings = restoredSettings && Object.keys(restoredSettings).length > 0;
-        var hasSessionEntries = restoredSession && Object.keys(restoredSession).length > 0;
-        var hasDataEntries = data && Object.keys(data).length > 0;
-        if (!hasSettings && !hasSessionEntries && !hasDataEntries) {
-          throw new Error('Backup missing recognized sections');
-        }
-        if (fileVersion !== APP_VERSION) {
-          var compatibilityMessage = buildRestoreVersionCompatibilityMessage({
-            langTexts: langTexts,
-            fallbackTexts: fallbackTexts,
-            fileVersion: fileVersion,
-            targetVersion: APP_VERSION,
-            data: data,
-            settingsSnapshot: restoredSettings,
-            sessionSnapshot: restoredSession,
-            backupFileName: backupFileName
-          });
-          alert(compatibilityMessage);
-        }
-        if (restoredSettings && _typeof(restoredSettings) === 'object') {
-          if (safeStorage && typeof safeStorage.setItem === 'function') {
-            restoreMutated = true;
-            Object.entries(restoredSettings).forEach(function (_ref37) {
-              var _ref38 = _slicedToArray(_ref37, 2),
-                k = _ref38[0],
-                v = _ref38[1];
-              if (typeof k !== 'string') return;
-              try {
-                if (v === null || v === undefined) {
-                  if (typeof safeStorage.removeItem === 'function') {
-                    safeStorage.removeItem(k);
-                  }
-                } else {
-                  safeStorage.setItem(k, String(v));
-                }
-              } catch (storageError) {
-                console.warn('Failed to restore storage entry', k, storageError);
-              }
-            });
-          }
-        }
-        if (restoredSession && typeof sessionStorage !== 'undefined') {
-          restoreMutated = true;
-          Object.entries(restoredSession).forEach(function (_ref39) {
-            var _ref40 = _slicedToArray(_ref39, 2),
-              key = _ref40[0],
-              value = _ref40[1];
-            try {
-              sessionStorage.setItem(key, value);
-            } catch (sessionError) {
-              console.warn('Failed to restore sessionStorage entry', key, sessionError);
-            }
-          });
-        }
-        try {
-          loadStoredLogoPreview();
-        } catch (logoError) {
-          console.warn('Failed to refresh logo preview after restore', logoError);
-        }
-        if (data && typeof importAllData === 'function') {
-          restoreMutated = true;
-          importAllData(data);
-        }
-        try {
-          syncAutoGearRulesFromStorage(data === null || data === void 0 ? void 0 : data.autoGearRules);
-        } catch (rulesError) {
-          console.warn('Failed to sync automatic gear rules after restore', rulesError);
-        }
-        var preferenceReader = createSafeStorageReader(safeStorage, 'Failed to read restored storage key');
-        var restoredPreferenceState = applyPreferencesFromStorage(preferenceReader);
-        showAutoBackups = restoredPreferenceState.showAutoBackups;
-        populateSetupSelect();
-        restoreSetupSelection(previousSelection, showAutoBackups);
-        if (settingsShowAutoBackups) {
-          settingsShowAutoBackups.checked = showAutoBackups;
-        }
-        if (restoredPreferenceState.language) {
-          setLanguage(restoredPreferenceState.language);
-        }
-        if (restoredSession && typeof sessionStorage !== 'undefined') {
-          Object.entries(restoredSession).forEach(function (_ref41) {
-            var _ref42 = _slicedToArray(_ref41, 2),
-              key = _ref42[0],
-              value = _ref42[1];
-            try {
-              sessionStorage.setItem(key, value);
-            } catch (sessionError) {
-              console.warn('Failed to refresh sessionStorage entry after restore', key, sessionError);
-            }
-          });
-        }
-        alert(texts[currentLang].restoreSuccess);
-        finalizeRestore();
-      } catch (err) {
-        if (restoreMutated) {
+      if (restoredSession && typeof sessionStorage !== 'undefined') {
+        Object.entries(restoredSession).forEach(function (_ref41) {
+          var _ref42 = _slicedToArray(_ref41, 2),
+            key = _ref42[0],
+            value = _ref42[1];
           try {
-            revertAfterFailure();
-          } catch (revertError) {
-            console.warn('Failed to restore previous state after restore error', revertError);
+            sessionStorage.setItem(key, value);
+          } catch (sessionError) {
+            console.warn('Failed to refresh sessionStorage entry after restore', key, sessionError);
           }
+        });
+      }
+      alert(texts[currentLang].restoreSuccess);
+      finalizeRestore();
+    } catch (err) {
+      if (restoreMutated) {
+        try {
+          revertAfterFailure();
+        } catch (revertError) {
+          console.warn('Failed to restore previous state after restore error', revertError);
         }
-        handleRestoreError(err);
+      }
+      handleRestoreError(err);
+    }
+  };
+  var attemptTextFallback = function attemptTextFallback(reason) {
+    if (!file || typeof file.text !== 'function') {
+      return false;
+    }
+    if (reason) {
+      console.warn('FileReader unavailable for restore, using file.text()', reason);
+    } else {
+      console.warn('FileReader unavailable for restore, using file.text()');
+    }
+    Promise.resolve().then(function () {
+      return file.text();
+    }).then(processBackupPayload).catch(handleRestoreError);
+    return true;
+  };
+  var reader = null;
+  if (typeof FileReader === 'function') {
+    try {
+      reader = new FileReader();
+    } catch (readerError) {
+      console.warn('Failed to create FileReader for restore', readerError);
+      reader = null;
+    }
+  }
+  if (reader && typeof reader.readAsText === 'function') {
+    reader.onload = function (event) {
+      var result = event && event.target ? event.target.result : '';
+      processBackupPayload(result);
+    };
+    reader.onerror = function () {
+      var error = reader.error || new Error('Failed to read backup file');
+      console.warn('FileReader failed while reading restore file', error);
+      if (!attemptTextFallback(error)) {
+        handleRestoreError(error);
       }
     };
-    var attemptTextFallback = function attemptTextFallback(reason) {
-      if (!file || typeof file.text !== 'function') {
-        return false;
+    try {
+      reader.readAsText(file);
+      return;
+    } catch (readError) {
+      console.warn('Failed to read restore file', readError);
+      if (!attemptTextFallback(readError)) {
+        handleRestoreError(readError);
       }
-      if (reason) {
-        console.warn('FileReader unavailable for restore, using file.text()', reason);
-      } else {
-        console.warn('FileReader unavailable for restore, using file.text()');
-      }
-      Promise.resolve().then(function () {
-        return file.text();
-      }).then(processBackupPayload).catch(handleRestoreError);
-      return true;
-    };
-    var reader = null;
-    if (typeof FileReader === 'function') {
-      try {
-        reader = new FileReader();
-      } catch (readerError) {
-        console.warn('Failed to create FileReader for restore', readerError);
-        reader = null;
-      }
+      return;
     }
-    if (reader && typeof reader.readAsText === 'function') {
-      reader.onload = function (event) {
-        var result = event && event.target ? event.target.result : '';
-        processBackupPayload(result);
-      };
-      reader.onerror = function () {
-        var error = reader.error || new Error('Failed to read backup file');
-        console.warn('FileReader failed while reading restore file', error);
-        if (!attemptTextFallback(error)) {
-          handleRestoreError(error);
-        }
-      };
-      try {
-        reader.readAsText(file);
-        return;
-      } catch (readError) {
-        console.warn('Failed to read restore file', readError);
-        if (!attemptTextFallback(readError)) {
-          handleRestoreError(readError);
-        }
-        return;
-      }
+  }
+  if (!attemptTextFallback()) {
+    handleRestoreError(new Error('No supported file reader available'));
+  }
+}
+if (restoreSettings && restoreSettingsInput) {
+  restoreSettings.addEventListener('click', handleRestoreSettingsClick);
+  restoreSettingsInput.addEventListener('change', handleRestoreSettingsInputChange);
+}
+if (sessionCineUi) {
+  try {
+    if (sessionCineUi.controllers && typeof sessionCineUi.controllers.register === 'function') {
+      sessionCineUi.controllers.register('backupSettings', {
+        execute: createSettingsBackup
+      });
+      sessionCineUi.controllers.register('restoreSettings', {
+        openPicker: handleRestoreSettingsClick,
+        processFile: handleRestoreSettingsInputChange
+      });
     }
-    if (!attemptTextFallback()) {
-      handleRestoreError(new Error('No supported file reader available'));
+  } catch (error) {
+    console.warn('cineUi controller registration (session) failed', error);
+  }
+  try {
+    if (sessionCineUi.interactions && typeof sessionCineUi.interactions.register === 'function') {
+      sessionCineUi.interactions.register('performBackup', createSettingsBackup);
+      sessionCineUi.interactions.register('openRestorePicker', handleRestoreSettingsClick);
+      sessionCineUi.interactions.register('applyRestoreFile', handleRestoreSettingsInputChange);
     }
-  });
+  } catch (error) {
+    console.warn('cineUi interaction registration (session) failed', error);
+  }
+  try {
+    if (sessionCineUi.help && typeof sessionCineUi.help.register === 'function') {
+      sessionCineUi.help.register('backupSettings', function () {
+        var langTexts = texts[currentLang] || {};
+        var fallbackTexts = texts.en || {};
+        return langTexts.backupSettingsHelp || fallbackTexts.backupSettingsHelp || 'Create a full backup of every project and preference stored on this device.';
+      });
+      sessionCineUi.help.register('restoreSettings', function () {
+        var langTexts = texts[currentLang] || {};
+        var fallbackTexts = texts.en || {};
+        return langTexts.restoreSettingsHelp || fallbackTexts.restoreSettingsHelp || 'Restore a full backup. The planner saves another backup automatically before importing.';
+      });
+    }
+  } catch (error) {
+    console.warn('cineUi help registration (session) failed', error);
+  }
 }
 if (restoreRehearsalButtonEl) {
   restoreRehearsalButtonEl.addEventListener('click', function () {
@@ -6610,23 +6655,28 @@ function clearUiCacheEntriesFallback() {
   });
 }
 function clearCachesAndReload() {
-  var offlineModule = typeof globalThis !== 'undefined' && globalThis && globalThis.cineOffline ? globalThis.cineOffline : typeof window !== 'undefined' && window && window.cineOffline ? window.cineOffline : null;
-  if (offlineModule && typeof offlineModule.reloadApp === 'function') {
-    return offlineModule.reloadApp({
-      window: typeof window !== 'undefined' ? window : undefined,
-      navigator: typeof navigator !== 'undefined' ? navigator : undefined,
-      caches: typeof caches !== 'undefined' ? caches : undefined
-    });
-  }
-
   return _clearCachesAndReload.apply(this, arguments);
 }
 function _clearCachesAndReload() {
   _clearCachesAndReload = _asyncToGenerator(_regenerator().m(function _callee() {
-    var uiCacheCleared, registrations, _navigator, serviceWorker, regs, reg, readyReg, keys, _window, location, hasReplace, hasReload, navigationTriggered, paramName, timestamp, href, hash, hashIndex, pattern, replacement, _t, _t2, _t3;
+    var offlineModule, uiCacheCleared, registrations, _navigator, serviceWorker, regs, reg, readyReg, keys, _window, location, hasReplace, hasReload, navigationTriggered, paramName, timestamp, href, hash, hashIndex, pattern, replacement, _t, _t2, _t3;
     return _regenerator().w(function (_context) {
       while (1) switch (_context.p = _context.n) {
         case 0:
+          offlineModule = typeof globalThis !== 'undefined' && globalThis && globalThis.cineOffline || typeof window !== 'undefined' && window && window.cineOffline || null;
+          if (!(offlineModule && typeof offlineModule.reloadApp === 'function')) {
+            _context.n = 2;
+            break;
+          }
+          _context.n = 1;
+          return offlineModule.reloadApp({
+            window: window,
+            navigator: typeof navigator !== 'undefined' ? navigator : undefined,
+            caches: typeof caches !== 'undefined' ? caches : undefined
+          });
+        case 1:
+          return _context.a(2);
+        case 2:
           uiCacheCleared = false;
           try {
             if (typeof clearUiCacheStorageEntries === 'function') {
@@ -6644,75 +6694,75 @@ function _clearCachesAndReload() {
               console.warn('Fallback UI cache clear failed', fallbackError);
             }
           }
-          _context.p = 1;
+          _context.p = 3;
           if (!(typeof navigator !== 'undefined' && navigator.serviceWorker)) {
-            _context.n = 13;
+            _context.n = 15;
             break;
           }
           registrations = [];
           _navigator = navigator, serviceWorker = _navigator.serviceWorker;
-          _context.p = 2;
+          _context.p = 4;
           if (!(typeof serviceWorker.getRegistrations === 'function')) {
-            _context.n = 4;
+            _context.n = 6;
             break;
           }
-          _context.n = 3;
+          _context.n = 5;
           return serviceWorker.getRegistrations();
-        case 3:
+        case 5:
           regs = _context.v;
           if (Array.isArray(regs)) {
             regs.forEach(function (reg) {
               return registrations.push(reg);
             });
           }
-          _context.n = 10;
+          _context.n = 12;
           break;
-        case 4:
+        case 6:
           if (!(typeof serviceWorker.getRegistration === 'function')) {
-            _context.n = 6;
+            _context.n = 8;
             break;
           }
-          _context.n = 5;
+          _context.n = 7;
           return serviceWorker.getRegistration();
-        case 5:
+        case 7:
           reg = _context.v;
           if (reg) {
             registrations.push(reg);
           }
-          _context.n = 10;
+          _context.n = 12;
           break;
-        case 6:
+        case 8:
           if (!(serviceWorker.ready && typeof serviceWorker.ready.then === 'function')) {
-            _context.n = 10;
+            _context.n = 12;
             break;
           }
-          _context.p = 7;
-          _context.n = 8;
+          _context.p = 9;
+          _context.n = 10;
           return serviceWorker.ready;
-        case 8:
+        case 10:
           readyReg = _context.v;
           if (readyReg) {
             registrations.push(readyReg);
           }
-          _context.n = 10;
-          break;
-        case 9:
-          _context.p = 9;
-          _t = _context.v;
-          console.warn('Failed to await active service worker', _t);
-        case 10:
           _context.n = 12;
           break;
         case 11:
           _context.p = 11;
+          _t = _context.v;
+          console.warn('Failed to await active service worker', _t);
+        case 12:
+          _context.n = 14;
+          break;
+        case 13:
+          _context.p = 13;
           _t2 = _context.v;
           console.warn('Failed to query service worker registrations', _t2);
-        case 12:
+        case 14:
           if (!registrations.length) {
-            _context.n = 13;
+            _context.n = 15;
             break;
           }
-          _context.n = 13;
+          _context.n = 15;
           return Promise.all(registrations.map(function (reg) {
             if (!reg || typeof reg.unregister !== 'function') {
               return Promise.resolve();
@@ -6721,16 +6771,16 @@ function _clearCachesAndReload() {
               console.warn('Service worker unregister failed', unregisterError);
             });
           }));
-        case 13:
+        case 15:
           if (!(typeof caches !== 'undefined' && caches && typeof caches.keys === 'function')) {
-            _context.n = 15;
+            _context.n = 17;
             break;
           }
-          _context.n = 14;
+          _context.n = 16;
           return caches.keys();
-        case 14:
+        case 16:
           keys = _context.v;
-          _context.n = 15;
+          _context.n = 17;
           return Promise.all(keys.map(function (key) {
             if (!key || typeof caches.delete !== 'function') {
               return Promise.resolve(false);
@@ -6740,15 +6790,15 @@ function _clearCachesAndReload() {
               return false;
             });
           }));
-        case 15:
-          _context.n = 17;
+        case 17:
+          _context.n = 19;
           break;
-        case 16:
-          _context.p = 16;
+        case 18:
+          _context.p = 18;
           _t3 = _context.v;
           console.warn('Cache clear failed', _t3);
-        case 17:
-          _context.p = 17;
+        case 19:
+          _context.p = 19;
           try {
             if (typeof window !== 'undefined' && window.location) {
               _window = window, location = _window.location;
@@ -6787,11 +6837,11 @@ function _clearCachesAndReload() {
               window.location.reload();
             }
           }
-          return _context.f(17);
-        case 18:
+          return _context.f(19);
+        case 20:
           return _context.a(2);
       }
-    }, _callee, null, [[7, 9], [2, 11], [1, 16, 17, 18]]);
+    }, _callee, null, [[9, 11], [4, 13], [3, 18, 19, 20]]);
   }));
   return _clearCachesAndReload.apply(this, arguments);
 }
@@ -7562,6 +7612,212 @@ if (helpButton && helpDialog) {
     }
     return el;
   };
+  var HOVER_HELP_SHORTCUT_TOKEN_MAP = {
+    control: 'Ctrl',
+    ctrl: 'Ctrl',
+    meta: 'Cmd',
+    cmd: 'Cmd',
+    command: 'Cmd',
+    option: 'Alt',
+    alt: 'Alt',
+    shift: 'Shift',
+    enter: 'Enter',
+    return: 'Enter',
+    escape: 'Esc',
+    esc: 'Esc',
+    space: 'Space',
+    spacebar: 'Space',
+    tab: 'Tab',
+    slash: '/',
+    question: '?',
+    backslash: '\\',
+    minus: '−',
+    dash: '−',
+    plus: '+',
+    period: '.',
+    comma: ',',
+    semicolon: ';',
+    colon: ':',
+    arrowup: '↑',
+    arrowdown: '↓',
+    arrowleft: '←',
+    arrowright: '→',
+    pageup: 'Page Up',
+    pagedown: 'Page Down',
+    home: 'Home',
+    end: 'End',
+    delete: 'Delete',
+    backspace: 'Backspace',
+    insert: 'Insert'
+  };
+  var formatHoverHelpShortcutToken = function formatHoverHelpShortcutToken(token) {
+    if (typeof token !== 'string') return '';
+    var clean = token.trim();
+    if (!clean) return '';
+    var lower = clean.toLowerCase();
+    if (HOVER_HELP_SHORTCUT_TOKEN_MAP[lower]) {
+      return HOVER_HELP_SHORTCUT_TOKEN_MAP[lower];
+    }
+    if (/^f\d{1,2}$/i.test(clean)) {
+      return clean.toUpperCase();
+    }
+    if (/^key[a-z]$/i.test(clean)) {
+      return clean.slice(3).toUpperCase();
+    }
+    if (/^digit\d$/i.test(clean)) {
+      return clean.slice(5);
+    }
+    if (/^numpad\d$/i.test(clean)) {
+      return "Numpad ".concat(clean.slice(6));
+    }
+    if (/^numpad(add|subtract|multiply|divide)$/i.test(lower)) {
+      var op = lower.slice(6);
+      var symbolMap = {
+        add: '+',
+        subtract: '−',
+        multiply: '×',
+        divide: '÷'
+      };
+      return "Numpad ".concat(symbolMap[op] || op);
+    }
+    if (clean.length === 1) {
+      return clean.toUpperCase();
+    }
+    return clean.replace(/^[a-z]/, function (c) {
+      return c.toUpperCase();
+    });
+  };
+  var formatHoverHelpShortcut = function formatHoverHelpShortcut(shortcut) {
+    if (typeof shortcut !== 'string') return '';
+    var parts = shortcut.split('+').map(formatHoverHelpShortcutToken).filter(Boolean);
+    if (!parts.length) {
+      return '';
+    }
+    return parts.join(' + ');
+  };
+  var splitHoverHelpShortcutList = function splitHoverHelpShortcutList(value) {
+    if (typeof value !== 'string') return [];
+    return value.split(/[;,\n\u2022\u2027\u00b7]+/).map(function (part) {
+      return part.trim();
+    }).filter(Boolean);
+  };
+  var gatherHoverHelpShortcuts = function gatherHoverHelpShortcuts(element) {
+    if (!element) return [];
+    var shortcuts = [];
+    var attrValues = [element.getAttribute('data-shortcut'), element.getAttribute('data-shortcuts'), element.getAttribute('data-help-shortcut'), element.getAttribute('data-help-shortcuts')];
+    attrValues.forEach(function (value) {
+      splitHoverHelpShortcutList(value).forEach(function (item) {
+        if (item) shortcuts.push(item);
+      });
+    });
+    var ariaShortcuts = element.getAttribute('aria-keyshortcuts');
+    if (ariaShortcuts) {
+      ariaShortcuts.split(/\s+/).map(formatHoverHelpShortcut).filter(Boolean).forEach(function (item) {
+        return shortcuts.push(item);
+      });
+    }
+    return shortcuts;
+  };
+  var getHoverHelpLocaleValue = function getHoverHelpLocaleValue(key) {
+    if (!texts || (typeof texts === "undefined" ? "undefined" : _typeof(texts)) !== 'object') return '';
+    var fallback = _typeof(texts.en) === 'object' ? texts.en[key] : '';
+    if (typeof currentLang === 'string' && texts[currentLang]) {
+      var value = texts[currentLang][key];
+      if (typeof value === 'string' && value.trim()) {
+        return value;
+      }
+    }
+    return typeof fallback === 'string' ? fallback : '';
+  };
+  var getHoverHelpFallbackKeys = function getHoverHelpFallbackKeys(element) {
+    var _element$matches, _element$matches2, _element$matches3;
+    if (!element) return [];
+    var keys = [];
+    var push = function push(key) {
+      if (!key || keys.includes(key)) return;
+      keys.push(key);
+    };
+    var role = (element.getAttribute('role') || '').toLowerCase();
+    var tagName = element.tagName ? element.tagName.toLowerCase() : '';
+    var typeAttr = (element.getAttribute('type') || '').toLowerCase();
+    var elementType = typeof element.type === 'string' ? element.type.toLowerCase() : '';
+    var inputType = typeAttr || elementType;
+    var ariaHasPopup = (element.getAttribute('aria-haspopup') || '').toLowerCase();
+    var ariaPressed = (element.getAttribute('aria-pressed') || '').toLowerCase();
+    if (role === 'dialog') {
+      push('hoverHelpFallbackDialog');
+    }
+    if (role === 'tablist') {
+      push('hoverHelpFallbackTablist');
+    }
+    if (role === 'tab') {
+      push('hoverHelpFallbackTab');
+    }
+    if (role === 'menu') {
+      push('hoverHelpFallbackMenu');
+    }
+    if (role === 'menuitem') {
+      push('hoverHelpFallbackMenu');
+    }
+    if (role === 'progressbar') {
+      push('hoverHelpFallbackProgress');
+    }
+    if (role === 'status') {
+      push('hoverHelpFallbackStatus');
+    }
+    if (role === 'alert') {
+      push('hoverHelpFallbackAlert');
+    }
+    if (role === 'switch') {
+      push('hoverHelpFallbackSwitch');
+    }
+    if (role === 'combobox') {
+      push('hoverHelpFallbackSelect');
+    }
+    if (tagName === 'button' || role === 'button' || (_element$matches = element.matches) !== null && _element$matches !== void 0 && _element$matches.call(element, "input[type='button']") || (_element$matches2 = element.matches) !== null && _element$matches2 !== void 0 && _element$matches2.call(element, "input[type='submit']") || (_element$matches3 = element.matches) !== null && _element$matches3 !== void 0 && _element$matches3.call(element, "input[type='reset']")) {
+      if (ariaHasPopup && ariaHasPopup !== 'false') {
+        push('hoverHelpFallbackMenuButton');
+      }
+      if (ariaPressed === 'true' || ariaPressed === 'mixed' || ariaPressed === 'false') {
+        push('hoverHelpFallbackToggleButton');
+      }
+      push('hoverHelpFallbackButton');
+    } else if (tagName === 'a' && element.hasAttribute('href')) {
+      push('hoverHelpFallbackLink');
+    } else if (tagName === 'select') {
+      push('hoverHelpFallbackSelect');
+    } else if (tagName === 'textarea') {
+      push('hoverHelpFallbackTextarea');
+    } else if (tagName === 'details') {
+      push('hoverHelpFallbackDetails');
+    } else if (tagName === 'input') {
+      switch (inputType) {
+        case 'checkbox':
+          push('hoverHelpFallbackCheckbox');
+          break;
+        case 'radio':
+          push('hoverHelpFallbackRadio');
+          break;
+        case 'range':
+          push('hoverHelpFallbackSlider');
+          break;
+        case 'number':
+          push('hoverHelpFallbackNumberInput');
+          break;
+        case 'file':
+          push('hoverHelpFallbackFileInput');
+          break;
+        case 'color':
+          push('hoverHelpFallbackColorInput');
+          break;
+        default:
+          push('hoverHelpFallbackTextInput');
+          break;
+      }
+    }
+    push('hoverHelpFallbackGeneric');
+    return keys;
+  };
   var collectHoverHelpContent = function collectHoverHelpContent(el) {
     if (!el) {
       return {
@@ -7572,9 +7828,10 @@ if (helpButton && helpDialog) {
     var seen = new Set();
     var labelParts = [];
     var detailParts = [];
+    var shortcutParts = [];
     var addUnique = function addUnique(value, bucket) {
       if (typeof value !== 'string') return;
-      var trimmed = value.trim();
+      var trimmed = value.replace(/\s+/g, ' ').trim();
       if (!trimmed || seen.has(trimmed)) return;
       seen.add(trimmed);
       bucket.push(trimmed);
@@ -7584,6 +7841,9 @@ if (helpButton && helpDialog) {
     };
     var addDetailText = function addDetailText(value) {
       return addUnique(value, detailParts);
+    };
+    var addShortcutText = function addShortcutText(value) {
+      return addUnique(value, shortcutParts);
     };
     var addTextFromElement = function addTextFromElement(element) {
       var _ref47 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
@@ -7595,8 +7855,23 @@ if (helpButton && helpDialog) {
       addDetailText(element.getAttribute('data-help'));
       addDetailText(element.getAttribute('aria-description'));
       addDetailText(element.getAttribute('title'));
+      addDetailText(element.getAttribute('aria-placeholder'));
       addLabelText(element.getAttribute('aria-label'));
       addLabelText(element.getAttribute('alt'));
+      var placeholderAttr = element.getAttribute('placeholder');
+      addDetailText(placeholderAttr);
+      if (element.placeholder && element.placeholder !== placeholderAttr) {
+        addDetailText(element.placeholder);
+      }
+      var roleDescription = element.getAttribute('aria-roledescription');
+      if (roleDescription) {
+        if (preferTextAsLabel) {
+          addLabelText(roleDescription);
+        } else {
+          addDetailText(roleDescription);
+        }
+      }
+      gatherHoverHelpShortcuts(element).forEach(addShortcutText);
       if (includeTextContent) {
         var text = element.textContent;
         if (preferTextAsLabel) {
@@ -7643,9 +7918,23 @@ if (helpButton && helpDialog) {
         return addDetailText(text);
       });
     }
+    if (!detailParts.length) {
+      var fallbackKeys = getHoverHelpFallbackKeys(el);
+      var addedFallback = false;
+      fallbackKeys.forEach(function (key) {
+        var text = getHoverHelpLocaleValue(key);
+        if (!text) return;
+        addedFallback = true;
+        addDetailText(text);
+      });
+      if (!addedFallback) {
+        addDetailText(getHoverHelpLocaleValue('hoverHelpFallbackGeneric'));
+      }
+    }
     return {
       label: labelParts[0] || '',
-      details: detailParts
+      details: detailParts,
+      shortcuts: shortcutParts
     };
   };
   var clearHoverHelpHighlight = function clearHoverHelpHighlight() {
@@ -7751,6 +8040,56 @@ if (helpButton && helpDialog) {
     hoverHelpPointerClientY = null;
     clearHoverHelpHighlight();
   };
+  var createHoverHelpDetailsFragment = function createHoverHelpDetailsFragment(detailText) {
+    var fragment = document.createDocumentFragment();
+    if (!Array.isArray(detailText) || detailText.length === 0) {
+      return fragment;
+    }
+    var addParagraph = function addParagraph(text) {
+      if (!text) return;
+      var paragraph = document.createElement('p');
+      paragraph.textContent = text;
+      fragment.appendChild(paragraph);
+    };
+    var listBuffer = [];
+    var flushList = function flushList() {
+      if (!listBuffer.length) return;
+      var list = document.createElement('ul');
+      listBuffer.forEach(function (itemText) {
+        var item = document.createElement('li');
+        item.textContent = itemText;
+        list.appendChild(item);
+      });
+      fragment.appendChild(list);
+      listBuffer = [];
+    };
+    var addListItem = function addListItem(text) {
+      if (!text) return;
+      listBuffer.push(text);
+    };
+    detailText.forEach(function (part) {
+      if (typeof part !== 'string') return;
+      var normalisedPart = part.replace(/\r\n/g, '\n').replace(/\s*[•‣▪◦⋅·]\s*/g, '\n• ');
+      var lines = normalisedPart.split(/\n+/).map(function (line) {
+        return line.trim();
+      }).filter(Boolean);
+      lines.forEach(function (line) {
+        var bulletMatch = line.match(/^[•\-–—]\s*(.+)$/);
+        if (bulletMatch) {
+          addListItem(bulletMatch[1].trim());
+          return;
+        }
+        flushList();
+        addParagraph(line);
+      });
+      flushList();
+    });
+    flushList();
+    if (!fragment.childElementCount) {
+      addParagraph(detailText.filter(Boolean).join(' '));
+    }
+    return fragment;
+  };
   var updateHoverHelpTooltip = function updateHoverHelpTooltip(target) {
     hoverHelpCurrentTarget = target || null;
     setHoverHelpHighlight(target || null);
@@ -7760,10 +8099,12 @@ if (helpButton && helpDialog) {
     }
     var _collectHoverHelpCont = collectHoverHelpContent(target),
       label = _collectHoverHelpCont.label,
-      details = _collectHoverHelpCont.details;
+      details = _collectHoverHelpCont.details,
+      shortcuts = _collectHoverHelpCont.shortcuts;
     var hasLabel = typeof label === 'string' && label.trim().length > 0;
     var detailText = Array.isArray(details) ? details.filter(Boolean) : [];
-    if (!hasLabel && detailText.length === 0) {
+    var shortcutList = Array.isArray(shortcuts) ? shortcuts.filter(Boolean) : [];
+    if (!hasLabel && detailText.length === 0 && shortcutList.length === 0) {
       hideHoverHelpTooltip();
       return;
     }
@@ -7777,8 +8118,32 @@ if (helpButton && helpDialog) {
     if (detailText.length) {
       var bodyEl = document.createElement('div');
       bodyEl.className = 'hover-help-details';
-      bodyEl.textContent = detailText.join(' ');
+      bodyEl.appendChild(createHoverHelpDetailsFragment(detailText));
       hoverHelpTooltip.appendChild(bodyEl);
+    }
+    if (shortcutList.length) {
+      var shortcutsWrapper = document.createElement('div');
+      shortcutsWrapper.className = 'hover-help-shortcuts';
+      var headingText = getHoverHelpLocaleValue('hoverHelpShortcutsHeading');
+      if (headingText) {
+        var headingEl = document.createElement('div');
+        headingEl.className = 'hover-help-shortcuts-heading';
+        headingEl.textContent = headingText;
+        shortcutsWrapper.appendChild(headingEl);
+      }
+      var listEl = document.createElement('ul');
+      listEl.className = 'hover-help-shortcuts-list';
+      shortcutList.forEach(function (shortcutText) {
+        if (!shortcutText) return;
+        var item = document.createElement('li');
+        item.className = 'hover-help-shortcut';
+        item.textContent = shortcutText;
+        listEl.appendChild(item);
+      });
+      if (listEl.childElementCount) {
+        shortcutsWrapper.appendChild(listEl);
+        hoverHelpTooltip.appendChild(shortcutsWrapper);
+      }
     }
     var wasHidden = hoverHelpTooltip.hasAttribute('hidden');
     if (wasHidden) {

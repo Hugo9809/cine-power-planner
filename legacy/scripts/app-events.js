@@ -11,25 +11,47 @@ function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
-var AUTO_BACKUP_RENAMED_FLAG = typeof globalThis !== 'undefined' && globalThis.__CINE_AUTO_BACKUP_RENAMED_FLAG ? globalThis.__CINE_AUTO_BACKUP_RENAMED_FLAG : '__cineAutoBackupRenamed';
+var APP_EVENTS_AUTO_BACKUP_RENAMED_FLAG = typeof globalThis !== 'undefined' && globalThis.__CINE_AUTO_BACKUP_RENAMED_FLAG ? globalThis.__CINE_AUTO_BACKUP_RENAMED_FLAG : '__cineAutoBackupRenamed';
 function markAutoBackupDataAsRenamed(value) {
   if (!value || _typeof(value) !== 'object') {
     return;
   }
   try {
-    value[AUTO_BACKUP_RENAMED_FLAG] = true;
+    value[APP_EVENTS_AUTO_BACKUP_RENAMED_FLAG] = true;
   } catch (assignmentError) {
     void assignmentError;
   }
   var info = value.projectInfo;
   if (info && _typeof(info) === 'object') {
     try {
-      info[AUTO_BACKUP_RENAMED_FLAG] = true;
+      info[APP_EVENTS_AUTO_BACKUP_RENAMED_FLAG] = true;
     } catch (infoError) {
       void infoError;
     }
   }
 }
+function resolveCineUi() {
+  var scopes = [];
+  if (typeof globalThis !== 'undefined') scopes.push(globalThis);
+  if (typeof window !== 'undefined') scopes.push(window);
+  if (typeof self !== 'undefined') scopes.push(self);
+  if (typeof global !== 'undefined') scopes.push(global);
+  for (var index = 0; index < scopes.length; index += 1) {
+    var scope = scopes[index];
+    if (!scope || _typeof(scope) !== 'object') {
+      continue;
+    }
+    try {
+      if (scope.cineUi && _typeof(scope.cineUi) === 'object') {
+        return scope.cineUi;
+      }
+    } catch (error) {
+      void error;
+    }
+  }
+  return null;
+}
+var eventsCineUi = resolveCineUi();
 languageSelect.addEventListener("change", function (event) {
   setLanguage(event.target.value);
 });
@@ -39,7 +61,7 @@ if (skipLink) {
     if (main) main.focus();
   });
 }
-saveSetupBtn.addEventListener("click", function () {
+function handleSaveSetupClick() {
   var typedName = setupNameInput.value.trim();
   if (!typedName) {
     alert(texts[currentLang].alertSetupName);
@@ -133,8 +155,9 @@ saveSetupBtn.addEventListener("click", function () {
     saveSetupBtn.disabled = !setupNameInput.value.trim();
   }
   alert(texts[currentLang].alertSetupSaved.replace("{name}", finalName));
-});
-deleteSetupBtn.addEventListener("click", function () {
+}
+saveSetupBtn.addEventListener("click", handleSaveSetupClick);
+function handleDeleteSetupClick() {
   var setupName = setupSelect.value;
   if (!setupName) {
     alert(texts[currentLang].alertNoSetupSelected);
@@ -202,7 +225,8 @@ deleteSetupBtn.addEventListener("click", function () {
     }
     alert(texts[currentLang].alertSetupDeleted.replace("{name}", setupName));
   }
-});
+}
+deleteSetupBtn.addEventListener("click", handleDeleteSetupClick);
 function resetSetupStateToDefaults() {
   var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   var config = _typeof(options) === 'object' && options !== null ? options : {};
@@ -803,14 +827,53 @@ function hideDeviceManagerSection() {
   toggleDeviceBtn.setAttribute('data-help', texts[currentLang].toggleDeviceManagerHelp);
   toggleDeviceBtn.setAttribute('aria-expanded', 'false');
 }
+function toggleDeviceManagerSection() {
+  if (!deviceManagerSection || !toggleDeviceBtn) return;
+  if (deviceManagerSection.classList.contains('hidden')) {
+    showDeviceManagerSection();
+  } else {
+    hideDeviceManagerSection();
+  }
+}
 if (toggleDeviceBtn) {
-  toggleDeviceBtn.addEventListener('click', function () {
-    if (deviceManagerSection.classList.contains('hidden')) {
-      showDeviceManagerSection();
-    } else {
-      hideDeviceManagerSection();
+  toggleDeviceBtn.addEventListener('click', toggleDeviceManagerSection);
+}
+if (eventsCineUi) {
+  try {
+    if (eventsCineUi.controllers && typeof eventsCineUi.controllers.register === 'function') {
+      eventsCineUi.controllers.register('deviceManagerSection', {
+        show: showDeviceManagerSection,
+        hide: hideDeviceManagerSection,
+        toggle: toggleDeviceManagerSection
+      });
     }
-  });
+  } catch (error) {
+    console.warn('cineUi controller registration failed', error);
+  }
+  try {
+    if (eventsCineUi.interactions && typeof eventsCineUi.interactions.register === 'function') {
+      eventsCineUi.interactions.register('saveSetup', handleSaveSetupClick);
+      eventsCineUi.interactions.register('deleteSetup', handleDeleteSetupClick);
+    }
+  } catch (error) {
+    console.warn('cineUi interaction registration failed', error);
+  }
+  try {
+    if (eventsCineUi.help && typeof eventsCineUi.help.register === 'function') {
+      eventsCineUi.help.register('saveSetup', function () {
+        var langTexts = texts[currentLang] || {};
+        var fallbackTexts = texts.en || {};
+        return langTexts.saveSetupHelp || fallbackTexts.saveSetupHelp || 'Store the current project so it is never lost. Press Enter or Ctrl+S to save instantly.';
+      });
+      eventsCineUi.help.register('autoBackupBeforeDeletion', function () {
+        var langTexts = texts[currentLang] || {};
+        var fallbackTexts = texts.en || {};
+        return langTexts.preDeleteBackupSuccess || fallbackTexts.preDeleteBackupSuccess || 'Automatic backup saved. Restore it anytime from Saved Projects.';
+      });
+    }
+  } catch (error) {
+    console.warn('cineUi help registration failed', error);
+  }
 }
 function toggleDeviceDetails(button) {
   var details = button.closest('li').querySelector('.device-details');
@@ -971,12 +1034,16 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
   }
 }
 deviceManagerSection.addEventListener("click", function (event) {
-  if (event.target.classList.contains("detail-toggle")) {
-    toggleDeviceDetails(event.target);
-  } else if (event.target.classList.contains("edit-btn")) {
-    var name = event.target.dataset.name;
-    var categoryKey = event.target.dataset.category;
-    var subcategory = event.target.dataset.subcategory;
+  var button = event.target.closest('button');
+  if (!button || !deviceManagerSection.contains(button)) {
+    return;
+  }
+  if (button.classList.contains("detail-toggle")) {
+    toggleDeviceDetails(button);
+  } else if (button.classList.contains("edit-btn")) {
+    var name = button.dataset.name;
+    var categoryKey = button.dataset.category;
+    var subcategory = button.dataset.subcategory;
     if (!Array.from(newCategorySelect.options).some(function (opt) {
       return opt.value === categoryKey;
     })) {
@@ -1020,10 +1087,10 @@ deviceManagerSection.addEventListener("click", function (event) {
       behavior: "smooth",
       block: "start"
     });
-  } else if (event.target.classList.contains("delete-btn")) {
-    var _name = event.target.dataset.name;
-    var _categoryKey = event.target.dataset.category;
-    var _subcategory = event.target.dataset.subcategory;
+  } else if (button.classList.contains("delete-btn")) {
+    var _name = button.dataset.name;
+    var _categoryKey = button.dataset.category;
+    var _subcategory = button.dataset.subcategory;
     if (confirm(texts[currentLang].confirmDeleteDevice.replace("{name}", _name))) {
       if (_categoryKey === "accessories.cables") {
         delete devices.accessories.cables[_subcategory][_name];

@@ -86,6 +86,7 @@ describe('script.js modular runtime', () => {
 
     expect(parts).toEqual([
       'modules/offline.js',
+      'modules/core-shared.js',
       'modules/ui.js',
       'app-core-new-1.js',
       'app-core-new-2.js',
