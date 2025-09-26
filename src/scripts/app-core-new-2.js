@@ -5705,13 +5705,13 @@ if (settingsLogo) {
     reader.readAsDataURL(file);
   });
 }
-const settingsHighContrast = document.getElementById("settingsHighContrast");
+var settingsHighContrast = document.getElementById("settingsHighContrast");
 const settingsReduceMotion = document.getElementById("settingsReduceMotion");
 const settingsRelaxedSpacing = document.getElementById("settingsRelaxedSpacing");
-const backupSettings = document.getElementById("backupSettings");
-const restoreSettings = document.getElementById("restoreSettings");
-const factoryResetButton = document.getElementById("factoryResetButton");
-const restoreSettingsInput = document.getElementById("restoreSettingsInput");
+var backupSettings = document.getElementById("backupSettings");
+var restoreSettings = document.getElementById("restoreSettings");
+var factoryResetButton = document.getElementById("factoryResetButton");
+var restoreSettingsInput = document.getElementById("restoreSettingsInput");
 const restoreRehearsalButton = document.getElementById("restoreRehearsalButton");
 const restoreRehearsalSection = document.getElementById("restoreRehearsalSection");
 const restoreRehearsalHeading = document.getElementById("restoreRehearsalHeading");
@@ -5737,31 +5737,31 @@ const restoreRehearsalDifferenceHeader = document.getElementById("restoreRehears
 const restoreRehearsalCloseButton = document.getElementById("restoreRehearsalClose");
 const projectBackupsHeading = document.getElementById("projectBackupsHeading");
 const projectBackupsDescription = document.getElementById("projectBackupsDescription");
-const settingsShowAutoBackups = document.getElementById("settingsShowAutoBackups");
-const backupDiffToggleButton = document.getElementById("backupDiffToggleButton");
-const backupDiffSection = document.getElementById("backupDiffSection");
-const backupDiffHeading = document.getElementById("backupDiffHeading");
-const backupDiffIntro = document.getElementById("backupDiffIntro");
-const backupDiffPrimaryLabel = document.getElementById("backupDiffPrimaryLabel");
-const backupDiffSecondaryLabel = document.getElementById("backupDiffSecondaryLabel");
-const backupDiffPrimarySelect = document.getElementById("backupDiffPrimary");
-const backupDiffSecondarySelect = document.getElementById("backupDiffSecondary");
-const backupDiffEmptyState = document.getElementById("backupDiffEmptyState");
-const backupDiffSummary = document.getElementById("backupDiffSummary");
-const backupDiffList = document.getElementById("backupDiffList");
-const backupDiffListContainer = document.getElementById("backupDiffListContainer");
-const backupDiffNotesLabel = document.getElementById("backupDiffNotesLabel");
-const backupDiffNotes = document.getElementById("backupDiffNotes");
-const backupDiffExportButton = document.getElementById("backupDiffExport");
-const backupDiffCloseButton = document.getElementById("backupDiffClose");
+var settingsShowAutoBackups = document.getElementById("settingsShowAutoBackups");
+var backupDiffToggleButton = document.getElementById("backupDiffToggleButton");
+var backupDiffSection = document.getElementById("backupDiffSection");
+var backupDiffHeading = document.getElementById("backupDiffHeading");
+var backupDiffIntro = document.getElementById("backupDiffIntro");
+var backupDiffPrimaryLabel = document.getElementById("backupDiffPrimaryLabel");
+var backupDiffSecondaryLabel = document.getElementById("backupDiffSecondaryLabel");
+var backupDiffPrimarySelect = document.getElementById("backupDiffPrimary");
+var backupDiffSecondarySelect = document.getElementById("backupDiffSecondary");
+var backupDiffEmptyState = document.getElementById("backupDiffEmptyState");
+var backupDiffSummary = document.getElementById("backupDiffSummary");
+var backupDiffList = document.getElementById("backupDiffList");
+var backupDiffListContainer = document.getElementById("backupDiffListContainer");
+var backupDiffNotesLabel = document.getElementById("backupDiffNotesLabel");
+var backupDiffNotes = document.getElementById("backupDiffNotes");
+var backupDiffExportButton = document.getElementById("backupDiffExport");
+var backupDiffCloseButton = document.getElementById("backupDiffClose");
 const aboutVersionElem = document.getElementById("aboutVersion");
 const supportLink = document.getElementById("supportLink");
-const settingsSave    = document.getElementById("settingsSave");
-const settingsCancel  = document.getElementById("settingsCancel");
-const featureSearch   = document.getElementById("featureSearch");
-const featureList     = document.getElementById("featureList");
-const featureMap      = new Map();
-const normalizeSearchValue = value =>
+var settingsSave    = document.getElementById("settingsSave");
+var settingsCancel  = document.getElementById("settingsCancel");
+var featureSearch   = document.getElementById("featureSearch");
+var featureList     = document.getElementById("featureList");
+var featureMap      = new Map();
+var normalizeSearchValue = value =>
   typeof value === 'string' ? value.trim().toLowerCase() : '';
 const FEATURE_SEARCH_EXTRA_SELECTOR = '[data-feature-search]';
 
@@ -5814,7 +5814,7 @@ const getFeatureSearchKeywords = element => {
   return dataValue && dataValue.trim() ? dataValue.trim() : '';
 };
 
-const updateFeatureSearchValue = (newValue, originalNormalized) => {
+var updateFeatureSearchValue = (newValue, originalNormalized) => {
   if (!featureSearch || typeof newValue !== 'string') return;
   const trimmed = newValue.trim();
   if (!trimmed) {
@@ -5828,12 +5828,12 @@ const updateFeatureSearchValue = (newValue, originalNormalized) => {
   featureSearch.value = newValue;
   restoreFeatureSearchDefaults();
 };
-const helpMap         = new Map();
-const deviceMap       = new Map();
-let runFeatureSearch = () => {};
+var helpMap         = new Map();
+var deviceMap       = new Map();
+var runFeatureSearch = () => {};
 
-let featureSearchEntries = [];
-let featureSearchDefaultOptions = [];
+var featureSearchEntries = [];
+var featureSearchDefaultOptions = [];
 
 const buildFeatureSearchOptionData = entry => {
   if (!entry) return null;
@@ -6076,7 +6076,7 @@ const parseMarkSuffix = value => {
   return { cleaned, number };
 };
 
-const normaliseMarkVariants = str =>
+var normaliseMarkVariants = str =>
   str.replace(/\b(mark|mk)[\s-]*(\d+|[ivxlcdm]+)\b/g, (_match, _prefix, rawValue) => {
     const { cleaned, number } = parseMarkSuffix(rawValue);
     if (!cleaned) return 'mk';
@@ -6278,12 +6278,12 @@ const SPELLING_VARIANT_PATTERN =
     ? new RegExp(`\\b(${Array.from(SPELLING_VARIANTS.keys()).join('|')})\\b`, 'g')
     : null;
 
-const normalizeSpellingVariants = (str) => {
+var normalizeSpellingVariants = (str) => {
   if (!SPELLING_VARIANT_PATTERN) return str;
   return str.replace(SPELLING_VARIANT_PATTERN, match => SPELLING_VARIANTS.get(match) || match);
 };
 
-const searchKey       = str => {
+var searchKey       = str => {
   if (!str) return '';
   const value = String(str);
   let normalized = value.toLowerCase();
@@ -6310,7 +6310,7 @@ const searchKey       = str => {
   return value.toLowerCase().replace(/\s+/g, '');
 };
 
-const searchTokens = str => {
+var searchTokens = str => {
   if (!str) return [];
   let normalized = String(str).toLowerCase();
   if (typeof normalized.normalize === 'function') {
@@ -6794,22 +6794,22 @@ function findBestSearchMatch(map, key, tokens = []) {
   return null;
 }
 
-const STRONG_SEARCH_MATCH_TYPES = new Set(['exactKey', 'keyPrefix', 'keySubset']);
+var STRONG_SEARCH_MATCH_TYPES = new Set(['exactKey', 'keyPrefix', 'keySubset']);
 const existingDevicesHeading = document.getElementById("existingDevicesHeading");
 const batteryComparisonSection = document.getElementById("batteryComparison");
 const batteryTableElem = document.getElementById("batteryTable");
 const breakdownListElem = document.getElementById("breakdownList");
-const runtimeFeedbackBtn = document.getElementById("runtimeFeedbackBtn");
-const generateGearListBtn = document.getElementById("generateGearListBtn");
-const deleteGearListProjectBtn = document.getElementById('deleteGearListProjectBtn');
-const gearListOutput = document.getElementById("gearListOutput");
-const projectRequirementsOutput = document.getElementById("projectRequirementsOutput");
+var runtimeFeedbackBtn = document.getElementById("runtimeFeedbackBtn");
+var generateGearListBtn = document.getElementById("generateGearListBtn");
+var deleteGearListProjectBtn = document.getElementById('deleteGearListProjectBtn');
+var gearListOutput = document.getElementById("gearListOutput");
+var projectRequirementsOutput = document.getElementById("projectRequirementsOutput");
 
 // Load accent color from localStorage
-const DEFAULT_ACCENT_COLOR = '#001589';
-let accentColor = DEFAULT_ACCENT_COLOR;
-let prevAccentColor = accentColor;
-const HIGH_CONTRAST_ACCENT_COLOR = '#ffffff';
+var DEFAULT_ACCENT_COLOR = '#001589';
+var accentColor = DEFAULT_ACCENT_COLOR;
+var prevAccentColor = accentColor;
+var HIGH_CONTRAST_ACCENT_COLOR = '#ffffff';
 const DEFAULT_ACCENT_NORMALIZED = DEFAULT_ACCENT_COLOR.toLowerCase();
 
 const normalizeAccentValue = value =>
@@ -6952,19 +6952,19 @@ function refreshDarkModeAccentBoost(options = {}) {
   updateInstallBannerColors();
 }
 
-const isHighContrastActive = () =>
+var isHighContrastActive = () =>
   typeof document !== 'undefined' &&
   (document.documentElement.classList.contains('high-contrast') ||
     (document.body && document.body.classList.contains('high-contrast')));
 
-const hasCustomAccentSelection = () => {
+var hasCustomAccentSelection = () => {
   const normalized = normalizeAccentValue(accentColor);
   return normalized && normalized !== DEFAULT_ACCENT_NORMALIZED;
 };
 
-const shouldPreserveAccentInPinkMode = () => false;
+var shouldPreserveAccentInPinkMode = () => false;
 
-const applyAccentColor = (color) => {
+var applyAccentColor = (color) => {
   const highContrast = isHighContrastActive();
   const accentValue = highContrast ? HIGH_CONTRAST_ACCENT_COLOR : color;
   const rootStyle = document.documentElement.style;
@@ -6986,7 +6986,7 @@ const applyAccentColor = (color) => {
   refreshDarkModeAccentBoost({ color: accentValue, highContrast });
 };
 
-const clearAccentColorOverrides = () => {
+var clearAccentColorOverrides = () => {
   const root = document.documentElement;
   const rootStyle = root && root.style;
   if (rootStyle) {
@@ -7066,8 +7066,8 @@ if (accentColorResetButton && accentColorInput) {
 }
 
 // Font preferences
-let fontSize = '16';
-let fontFamily = "'Ubuntu', sans-serif";
+var fontSize = '16';
+var fontFamily = "'Ubuntu', sans-serif";
 
 const uiScaleRoot = document.documentElement;
 const defaultUIScaleValues = {
@@ -7107,7 +7107,7 @@ const customFontStorageKeyName =
     : typeof CUSTOM_FONT_STORAGE_KEY !== 'undefined'
       ? CUSTOM_FONT_STORAGE_KEY
       : 'cameraPowerPlanner_customFonts';
-const customFontEntries = new Map();
+var customFontEntries = new Map();
 
 const SUPPORTED_FONT_TYPES = new Set([
   'font/ttf',
@@ -7752,7 +7752,7 @@ if (settingsFontFamily) {
   settingsFontFamily.value = fontFamily;
 }
 
-const revertAccentColor = () => {
+var revertAccentColor = () => {
   if (document.body && document.body.classList.contains('pink-mode')) {
     if (shouldPreserveAccentInPinkMode()) {
       applyAccentColor(prevAccentColor);
@@ -8714,11 +8714,11 @@ function setEasyrigValue(val) {
   }
 }
 
-let currentProjectInfo = null;
+var currentProjectInfo = null;
 let loadedSetupState = null;
 let loadedSetupStateSignature = '';
-let restoringSession = false;
-let skipNextGearListRefresh = false;
+var restoringSession = false;
+var skipNextGearListRefresh = false;
 
 let defaultProjectInfoSnapshot = null;
 
@@ -8960,16 +8960,16 @@ function checkSetupChanged() {
   setButtonLabelWithIcon(saveSetupBtn, saveLabel);
 }
 
-const projectDialog = document.getElementById("projectDialog");
-const projectForm = document.getElementById("projectForm");
-const filterSelectElem = document.getElementById('filter');
-const filterDetailsStorage = document.getElementById('filterDetails');
-const matteboxSelect = document.getElementById('mattebox');
-const projectCancelBtn = document.getElementById("projectCancel");
-const feedbackDialog = document.getElementById("feedbackDialog");
-const feedbackForm = document.getElementById("feedbackForm");
-const feedbackCancelBtn = document.getElementById("fbCancel");
-const feedbackUseLocationBtn = document.getElementById("fbUseLocationBtn");
+var projectDialog = document.getElementById("projectDialog");
+var projectForm = document.getElementById("projectForm");
+var filterSelectElem = document.getElementById('filter');
+var filterDetailsStorage = document.getElementById('filterDetails');
+var matteboxSelect = document.getElementById('mattebox');
+var projectCancelBtn = document.getElementById("projectCancel");
+var feedbackDialog = document.getElementById("feedbackDialog");
+var feedbackForm = document.getElementById("feedbackForm");
+var feedbackCancelBtn = document.getElementById("fbCancel");
+var feedbackUseLocationBtn = document.getElementById("fbUseLocationBtn");
 const feedbackSubmitBtn = document.getElementById("fbSubmit");
 if (feedbackCancelBtn) {
   const cancelLabel =
@@ -8991,15 +8991,15 @@ if (feedbackSubmitBtn) {
     'Save & Submit';
   setButtonLabelWithIcon(feedbackSubmitBtn, submitLabel, ICON_GLYPHS.paperPlane);
 }
-const loadFeedbackSafe = typeof loadFeedback === 'function' ? loadFeedback : () => ({});
-const saveFeedbackSafe = typeof saveFeedback === 'function' ? saveFeedback : () => {};
-const setupDiagramContainer = document.getElementById("diagramArea");
+var loadFeedbackSafe = typeof loadFeedback === 'function' ? loadFeedback : () => ({});
+var saveFeedbackSafe = typeof saveFeedback === 'function' ? saveFeedback : () => {};
+var setupDiagramContainer = document.getElementById("diagramArea");
 const diagramLegend = document.getElementById("diagramLegend");
-const downloadDiagramBtn = document.getElementById("downloadDiagram");
+var downloadDiagramBtn = document.getElementById("downloadDiagram");
 const zoomInBtn = document.getElementById("zoomIn");
 const zoomOutBtn = document.getElementById("zoomOut");
 const resetViewBtn = document.getElementById("resetView");
-const gridSnapToggleBtn = document.getElementById("gridSnapToggle");
+var gridSnapToggleBtn = document.getElementById("gridSnapToggle");
 const diagramHint = document.getElementById("diagramHint");
 
 let manualPositions = {};
@@ -9033,7 +9033,7 @@ function setManualDiagramPositions(positions, options = {}) {
     renderSetupDiagram();
   }
 }
-let gridSnap = false;
+var gridSnap = false;
 let cleanupDiagramInteractions = null;
 
 // CSS used when exporting the setup diagram
@@ -9082,7 +9082,7 @@ function getDiagramCss(includeDark = true) {
 // Dedicated Uicons for the setup diagram.
 const DIAGRAM_BATTERY_ICON = iconGlyph('\uE1A6');
 const DIAGRAM_CAMERA_ICON = iconGlyph('\uE333');
-const DIAGRAM_MONITOR_ICON = iconGlyph('\uEFFC');
+var DIAGRAM_MONITOR_ICON = iconGlyph('\uEFFC');
 const DIAGRAM_VIEWFINDER_ICON = iconGlyph('\uE338');
 const DIAGRAM_VIDEO_ICON = iconGlyph('\uF42A');
 const DIAGRAM_WIRELESS_ICON = iconGlyph('\uF4AC');
@@ -9096,7 +9096,7 @@ const DIAGRAM_AUDIO_IN_ICON = iconGlyph('\uE6B7');
 const DIAGRAM_AUDIO_OUT_ICON = iconGlyph('\uECB5');
 const DIAGRAM_AUDIO_IO_ICON = iconGlyph('\uF487');
 
-const diagramConnectorIcons = Object.freeze({
+var diagramConnectorIcons = Object.freeze({
   powerOut: DIAGRAM_POWER_OUTPUT_ICON,
   powerIn: DIAGRAM_POWER_INPUT_ICON,
   fiz: DIAGRAM_MOTORS_ICON,
@@ -9146,7 +9146,7 @@ if (cameraProjectLegendIcon) {
 // List filters for existing device categories
 
 // NEW SETUP MANAGEMENT DOM ELEMENTS
-const generateOverviewBtn = document.getElementById('generateOverviewBtn');
+var generateOverviewBtn = document.getElementById('generateOverviewBtn');
 
 const videoOutputOptions = [
   '3G-SDI',
@@ -10276,8 +10276,8 @@ function getAllViewfinderConnectors() {
   return Array.from(conns).filter(c => c).sort(localeSort);
 }
 
-let viewfinderTypeOptions = getAllViewfinderTypes();
-let viewfinderConnectorOptions = getAllViewfinderConnectors();
+var viewfinderTypeOptions = getAllViewfinderTypes();
+var viewfinderConnectorOptions = getAllViewfinderConnectors();
 
 // Build a viewfinder configuration row used in the camera editor.
 function createViewfinderRow(type = '', resolution = '', connector = '', notes = '') {

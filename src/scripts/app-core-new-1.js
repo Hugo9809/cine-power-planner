@@ -273,7 +273,7 @@ function fallbackHumanizeKey(key) {
     .replace(/^./, (c) => c.toUpperCase());
 }
 
-const stableStringify = typeof CORE_SHARED.stableStringify === 'function'
+var stableStringify = typeof CORE_SHARED.stableStringify === 'function'
   ? CORE_SHARED.stableStringify
   : fallbackStableStringify;
 
@@ -445,7 +445,7 @@ try {
   // overview generation not needed in test environments without module support
 }
 
-const APP_VERSION = typeof CORE_SHARED.APP_VERSION === 'string' ? CORE_SHARED.APP_VERSION : '1.0.9';
+var APP_VERSION = typeof CORE_SHARED.APP_VERSION === 'string' ? CORE_SHARED.APP_VERSION : '1.0.9';
 
 if (typeof window !== 'undefined') {
   const lottie = window.lottie;
@@ -457,7 +457,7 @@ if (typeof window !== 'undefined') {
     }
   }
 }
-const IOS_PWA_HELP_STORAGE_KEY = 'iosPwaHelpShown';
+var IOS_PWA_HELP_STORAGE_KEY = 'iosPwaHelpShown';
 const INSTALL_BANNER_DISMISSED_KEY = 'installPromptDismissed';
 let installBannerDismissedInSession = false;
 
@@ -499,7 +499,7 @@ const AUTO_GEAR_MONITOR_DEFAULTS_KEY =
   typeof AUTO_GEAR_MONITOR_DEFAULTS_STORAGE_KEY !== 'undefined'
     ? AUTO_GEAR_MONITOR_DEFAULTS_STORAGE_KEY
     : 'cameraPowerPlanner_autoGearMonitorDefaults';
-const AUTO_GEAR_BACKUP_INTERVAL_MS = 10 * 60 * 1000;
+var AUTO_GEAR_BACKUP_INTERVAL_MS = 10 * 60 * 1000;
 const AUTO_GEAR_BACKUP_RETENTION_MIN_VALUE = resolveAutoGearBackupRetentionMin();
 const AUTO_GEAR_BACKUP_RETENTION_DEFAULT = resolveAutoGearBackupRetentionDefault();
 const AUTO_GEAR_BACKUP_RETENTION_MAX = 50;
@@ -627,7 +627,7 @@ const TEMPERATURE_SCENARIOS = [
 ];
 
 const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
-const localeSort = (a, b) => collator.compare(a, b);
+var localeSort = (a, b) => collator.compare(a, b);
 
 const DEVICE_GLOBAL_SCOPE =
   typeof globalThis !== 'undefined'
@@ -693,29 +693,29 @@ var devices = initializeDeviceDatabase();
 
 const FEEDBACK_TEMPERATURE_MIN = -20;
 const FEEDBACK_TEMPERATURE_MAX = 50;
-let temperatureUnit = TEMPERATURE_UNITS.celsius;
+var temperatureUnit = TEMPERATURE_UNITS.celsius;
 const autoGearBackupDateFormatter =
   typeof Intl !== 'undefined' && typeof Intl.DateTimeFormat === 'function'
     ? new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' })
     : null;
 
-let newCategorySelect;
-let newSubcategorySelect;
-let subcategoryFieldDiv;
-let newNameInput;
-let newWattInput;
-let wattFieldDiv;
+var newCategorySelect;
+var newSubcategorySelect;
+var subcategoryFieldDiv;
+var newNameInput;
+var newWattInput;
+var wattFieldDiv;
 let dynamicFieldsDiv;
-let cameraFieldsDiv;
-let cameraWattInput;
-let cameraVoltageInput;
-let cameraPortTypeInput;
-let monitorFieldsDiv;
-let monitorScreenSizeInput;
-let monitorBrightnessInput;
-let monitorWattInput;
-let monitorVoltageInput;
-let monitorPortTypeInput;
+var cameraFieldsDiv;
+var cameraWattInput;
+var cameraVoltageInput;
+var cameraPortTypeInput;
+var monitorFieldsDiv;
+var monitorScreenSizeInput;
+var monitorBrightnessInput;
+var monitorWattInput;
+var monitorVoltageInput;
+var monitorPortTypeInput;
 let monitorVideoInputsContainer;
 
 try {
@@ -830,7 +830,7 @@ function finalizeDeviceSchemaLoad(candidate) {
 
 const cachedDeviceSchema = loadCachedDeviceSchema();
 
-let deviceSchema;
+var deviceSchema;
 try {
   deviceSchema = require('../data/schema.json');
 } catch {
@@ -894,7 +894,7 @@ const LEGAL_LINKS = {
   },
 };
 
-const AUTO_GEAR_CUSTOM_CATEGORY = '';
+var AUTO_GEAR_CUSTOM_CATEGORY = '';
 const GEAR_LIST_CATEGORIES = [
   'Camera',
   'Camera Support',
@@ -2189,7 +2189,7 @@ function readAutoGearRulesFromStorage() {
   return stored.map(normalizeAutoGearRule).filter(Boolean);
 }
 
-let autoGearRules = readAutoGearRulesFromStorage();
+var autoGearRules = readAutoGearRulesFromStorage();
 let baseAutoGearRules = autoGearRules.slice();
 let projectScopedAutoGearRules = null;
 let autoGearBackupRetention = readAutoGearBackupRetentionFromStorage();
@@ -2228,7 +2228,7 @@ let autoGearRulesLastBackupSignature = autoGearBackups.length
   ? getAutoGearConfigurationSignature(autoGearBackups[0].rules, autoGearBackups[0].monitorDefaults)
   : initialAutoGearRulesSignature;
 let autoGearRulesLastPersistedSignature = initialAutoGearRulesSignature;
-let autoGearRulesDirtySinceBackup =
+var autoGearRulesDirtySinceBackup =
   autoGearRulesLastPersistedSignature !== autoGearRulesLastBackupSignature;
 
 enqueueCoreBootTask(() => {
@@ -3674,7 +3674,7 @@ function updateAutoGearMonitorCatalogOptions(type = autoGearMonitorCatalogMode, 
   });
 }
 
-const getCssVariableValue = (name, fallback = '') => {
+var getCssVariableValue = (name, fallback = '') => {
   if (typeof document === 'undefined') return fallback;
   const root = document.documentElement;
   if (!root) return fallback;
@@ -4020,11 +4020,11 @@ const VIDEO_OUTPUT_TYPES = new Set([
   'DisplayPort'
 ]);
 
-const DEFAULT_FILTER_SIZE = '4x5.65';
+var DEFAULT_FILTER_SIZE = '4x5.65';
 const AUTO_BACKUP_NAME_PREFIX = 'auto-backup-';
 const AUTO_BACKUP_DELETION_PREFIX = 'auto-backup-before-delete-';
 
-let showAutoBackups = false;
+var showAutoBackups = false;
 try {
   if (typeof localStorage !== 'undefined') {
     showAutoBackups = localStorage.getItem('showAutoBackups') === 'true';
@@ -4239,7 +4239,7 @@ const VIDEO_TYPE_PATTERNS = [
   { needles: ['dp'], value: 'DisplayPort' }
 ];
 
-const normalizeVideoType = memoizeNormalization((_, key) => {
+var normalizeVideoType = memoizeNormalization((_, key) => {
   const match = VIDEO_TYPE_PATTERNS.find(({ needles }) =>
     needles.every(n => key.includes(n))
   );
@@ -4283,7 +4283,7 @@ function createMapNormalizer(map) {
   return memoizeNormalization((str, key) => map[key] || str);
 }
 
-const normalizeFizConnectorType = createMapNormalizer(FIZ_CONNECTOR_MAP);
+var normalizeFizConnectorType = createMapNormalizer(FIZ_CONNECTOR_MAP);
 
 const VIEWFINDER_TYPE_MAP = {
   'dsmc3 red touch 7" lcd (optional)': 'RED Touch 7" LCD (Optional)',
@@ -4308,7 +4308,7 @@ const VIEWFINDER_TYPE_MAP = {
   'lemo 26 pin': 'LEMO 26-pin port'
 };
 
-const normalizeViewfinderType = createMapNormalizer(VIEWFINDER_TYPE_MAP);
+var normalizeViewfinderType = createMapNormalizer(VIEWFINDER_TYPE_MAP);
 
 const POWER_PORT_TYPE_MAP = {
   'lemo 8-pin (dc in / bat)': 'Bat LEMO 8-pin',
@@ -5273,7 +5273,7 @@ function checkArriCompatibility() {
   }
 }
 
-let gearItemTranslations = {};
+var gearItemTranslations = {};
 // Load translations when not already present (mainly for tests)
 if (typeof texts === 'undefined') {
   try {
@@ -5315,9 +5315,9 @@ function resolveLanguagePreference(candidate) {
 }
 
 // Determine initial language (default English)
-let currentLang = DEFAULT_LANGUAGE;
-let updateHelpQuickLinksForLanguage;
-let updateHelpResultsSummaryText;
+var currentLang = DEFAULT_LANGUAGE;
+var updateHelpQuickLinksForLanguage;
+var updateHelpResultsSummaryText;
 let lastRuntimeHours = null;
 try {
   const savedLang = localStorage.getItem("language");
@@ -7733,43 +7733,43 @@ function setLanguage(lang) {
 }
 
 // Reference elements (DOM Elements)
-const cameraSelect    = document.getElementById("cameraSelect");
-const monitorSelect   = document.getElementById("monitorSelect");
-const videoSelect     = document.getElementById("videoSelect");
-const videoDistributionSelect = document.getElementById("videoDistribution");
-const cageSelect      = document.getElementById("cageSelect");
-const motorSelects    = [
+var cameraSelect    = document.getElementById("cameraSelect");
+var monitorSelect   = document.getElementById("monitorSelect");
+var videoSelect     = document.getElementById("videoSelect");
+var videoDistributionSelect = document.getElementById("videoDistribution");
+var cageSelect      = document.getElementById("cageSelect");
+var motorSelects    = [
   document.getElementById("motor1Select"),
   document.getElementById("motor2Select"),
   document.getElementById("motor3Select"),
   document.getElementById("motor4Select")
 ];
-const controllerSelects = [
+var controllerSelects = [
   document.getElementById("controller1Select"),
   document.getElementById("controller2Select"),
   document.getElementById("controller3Select"),
   document.getElementById("controller4Select")
 ];
-const distanceSelect = document.getElementById("distanceSelect");
-const batterySelect  = document.getElementById("batterySelect");
-const hotswapSelect  = document.getElementById("batteryHotswapSelect");
-const lensSelect     = document.getElementById("lenses");
-const requiredScenariosSelect = document.getElementById("requiredScenarios");
-const requiredScenariosSummary = document.getElementById("requiredScenariosSummary");
-const remoteHeadOption = requiredScenariosSelect ?
+var distanceSelect = document.getElementById("distanceSelect");
+var batterySelect  = document.getElementById("batterySelect");
+var hotswapSelect  = document.getElementById("batteryHotswapSelect");
+var lensSelect     = document.getElementById("lenses");
+var requiredScenariosSelect = document.getElementById("requiredScenarios");
+var requiredScenariosSummary = document.getElementById("requiredScenariosSummary");
+var remoteHeadOption = requiredScenariosSelect ?
   requiredScenariosSelect.querySelector('option[value="Remote Head"]') : null;
-const tripodPreferencesSection = document.getElementById("tripodPreferencesSection");
-const tripodPreferencesRow = document.getElementById("tripodPreferencesRow");
-const tripodPreferencesHeading = document.getElementById("tripodPreferencesHeading");
-const tripodHeadBrandSelect = document.getElementById("tripodHeadBrand");
-const tripodBowlSelect = document.getElementById("tripodBowl");
-const tripodTypesSelect = document.getElementById("tripodTypes");
-const tripodSpreaderSelect = document.getElementById("tripodSpreader");
-const monitoringConfigurationSelect = document.getElementById("monitoringConfiguration");
+var tripodPreferencesSection = document.getElementById("tripodPreferencesSection");
+var tripodPreferencesRow = document.getElementById("tripodPreferencesRow");
+var tripodPreferencesHeading = document.getElementById("tripodPreferencesHeading");
+var tripodHeadBrandSelect = document.getElementById("tripodHeadBrand");
+var tripodBowlSelect = document.getElementById("tripodBowl");
+var tripodTypesSelect = document.getElementById("tripodTypes");
+var tripodSpreaderSelect = document.getElementById("tripodSpreader");
+var monitoringConfigurationSelect = document.getElementById("monitoringConfiguration");
 const viewfinderSettingsRow = document.getElementById("viewfinderSettingsRow");
 const viewfinderExtensionRow = document.getElementById("viewfinderExtensionRow");
 const projectDialogHeading = document.getElementById("projectDialogHeading");
-const projectDialogCloseBtn = document.getElementById("projectDialogClose");
+var projectDialogCloseBtn = document.getElementById("projectDialogClose");
 const projectNameLabel = document.getElementById("projectNameLabel");
 const productionCompanyLabel = document.getElementById("productionCompanyLabel");
 const rentalHouseLabel = document.getElementById("rentalHouseLabel");
@@ -7808,16 +7808,16 @@ const tripodBowlLabel = document.getElementById("tripodBowlLabel");
 const tripodTypesLabel = document.getElementById("tripodTypesLabel");
 const tripodSpreaderLabel = document.getElementById("tripodSpreaderLabel");
 const projectSubmitBtn = document.getElementById("projectSubmit");
-const crewContainer = document.getElementById("crewContainer");
+var crewContainer = document.getElementById("crewContainer");
 const addPersonBtn = document.getElementById("addPersonBtn");
-const prepContainer = document.getElementById("prepContainer");
+var prepContainer = document.getElementById("prepContainer");
 const addPrepBtn = document.getElementById("addPrepBtn");
-const shootContainer = document.getElementById("shootContainer");
+var shootContainer = document.getElementById("shootContainer");
 const addShootBtn = document.getElementById("addShootBtn");
 
-let monitoringConfigurationUserChanged = false;
+var monitoringConfigurationUserChanged = false;
 
-const crewRoles = [
+var crewRoles = [
   // Production
   'Producer',
   'Production Manager',
@@ -7851,7 +7851,7 @@ const crewRoles = [
   'Rigging Grip'
 ];
 
-const ICON_FONT_KEYS = Object.freeze({
+var ICON_FONT_KEYS = Object.freeze({
   ESSENTIAL: 'essential',
   FILM: 'film',
   GADGET: 'gadget',
@@ -7986,7 +7986,7 @@ const STAR_ICON_SVG = `
   </svg>
 `.trim();
 
-const ICON_GLYPHS = Object.freeze({
+var ICON_GLYPHS = Object.freeze({
   batteryBolt: iconGlyph('\uE1A6', ICON_FONT_KEYS.UICONS),
   batteryFull: iconGlyph('\uE1A9', ICON_FONT_KEYS.UICONS),
   bolt: iconGlyph('\uF1F8', ICON_FONT_KEYS.ESSENTIAL),
@@ -8172,7 +8172,7 @@ const PINK_MODE_ICON_RAIN_MAX_ACTIVE = 48;
 const PINK_MODE_ICON_RAIN_COOLDOWN_MS = 12000;
 const PINK_MODE_ICON_RAIN_DELAY_SPREAD_MS = 960;
 
-const pinkModeIcons = {
+var pinkModeIcons = {
   off: Object.freeze({
     className: 'icon-svg pink-mode-icon',
     markup: HORSE_ICON_SVG
@@ -8180,8 +8180,8 @@ const pinkModeIcons = {
   onSequence: Object.freeze([])
 };
 
-let pinkModeIconRotationTimer = null;
-let pinkModeIconIndex = 0;
+var pinkModeIconRotationTimer = null;
+var pinkModeIconIndex = 0;
 
 const PINK_MODE_ANIMATED_ICON_MIN_INTERVAL_MS = 14800;
 const PINK_MODE_ANIMATED_ICON_MAX_INTERVAL_MS = 23800;
@@ -9472,11 +9472,11 @@ if (pinkModeReduceMotionQuery) {
   }
 }
 
-const PINK_MODE_ICON_INTERVAL_MS = 30000;
-const PINK_MODE_ICON_ANIMATION_CLASS = 'pink-mode-icon-pop';
-const PINK_MODE_ICON_ANIMATION_RESET_DELAY = 450;
+var PINK_MODE_ICON_INTERVAL_MS = 30000;
+var PINK_MODE_ICON_ANIMATION_CLASS = 'pink-mode-icon-pop';
+var PINK_MODE_ICON_ANIMATION_RESET_DELAY = 450;
 
-const projectFieldIcons = {
+var projectFieldIcons = {
   productionCompany: PRODUCTION_COMPANY_ICON,
   rentalHouse: RENTAL_HOUSE_ICON,
   crew: iconGlyph('\uF404', ICON_FONT_KEYS.UICONS),
@@ -9798,11 +9798,11 @@ function updateTripodOptions() {
 
 const totalPowerElem      = document.getElementById("totalPower");
 const totalCurrent144Elem = document.getElementById("totalCurrent144");
-const totalCurrent12Elem  = document.getElementById("totalCurrent12");
+var totalCurrent12Elem  = document.getElementById("totalCurrent12");
 const batteryLifeElem     = document.getElementById("batteryLife");
 const batteryLifeLabelElem = document.getElementById("batteryLifeLabel");
 const runtimeAverageNoteElem = document.getElementById("runtimeAverageNote");
-const batteryCountElem    = document.getElementById("batteryCount");
+var batteryCountElem    = document.getElementById("batteryCount");
 const pinWarnElem         = document.getElementById("pinWarning");
 const dtapWarnElem        = document.getElementById("dtapWarning");
 const hotswapWarnElem     = document.getElementById("hotswapWarning");
@@ -9981,15 +9981,15 @@ function drawPowerDiagram(availableWatt, segments, maxPinA) {
   setStatusLevel(maxPowerTextElem, total > availableWatt ? 'danger' : null);
 }
 
-const setupSelect     = document.getElementById("setupSelect");
-const setupNameInput  = document.getElementById("setupName");
-const saveSetupBtn    = document.getElementById("saveSetupBtn");
-const deleteSetupBtn  = document.getElementById("deleteSetupBtn");
-const shareSetupBtn   = document.getElementById("shareSetupBtn");
-const sharedLinkRow   = document.getElementById("sharedLinkRow");
-const sharedLinkInput = document.getElementById("sharedLinkInput");
-const shareLinkMessage = document.getElementById("shareLinkMessage");
-const shareIncludeAutoGearCheckbox = document.getElementById("shareIncludeAutoGear");
+var setupSelect     = document.getElementById("setupSelect");
+var setupNameInput  = document.getElementById("setupName");
+var saveSetupBtn    = document.getElementById("saveSetupBtn");
+var deleteSetupBtn  = document.getElementById("deleteSetupBtn");
+var shareSetupBtn   = document.getElementById("shareSetupBtn");
+var sharedLinkRow   = document.getElementById("sharedLinkRow");
+var sharedLinkInput = document.getElementById("sharedLinkInput");
+var shareLinkMessage = document.getElementById("shareLinkMessage");
+var shareIncludeAutoGearCheckbox = document.getElementById("shareIncludeAutoGear");
 
 function sanitizeShareFilename(name) {
   if (!name) return '';
@@ -10049,41 +10049,41 @@ function confirmAutoGearSelection(defaultInclude) {
   }
   return !!defaultInclude;
 }
-const shareDialog = document.getElementById("shareDialog");
-const shareForm = document.getElementById("shareForm");
+var shareDialog = document.getElementById("shareDialog");
+var shareForm = document.getElementById("shareForm");
 const shareDialogHeadingElem = document.getElementById("shareDialogHeading");
-const shareFilenameInput = document.getElementById("shareFilename");
+var shareFilenameInput = document.getElementById("shareFilename");
 const shareFilenameLabelElem = document.getElementById("shareFilenameLabel");
-const shareFilenameMessage = document.getElementById("shareFilenameMessage");
-const shareCancelBtn = document.getElementById("shareCancelBtn");
+var shareFilenameMessage = document.getElementById("shareFilenameMessage");
+var shareCancelBtn = document.getElementById("shareCancelBtn");
 const shareConfirmBtn = document.getElementById("shareConfirmBtn");
 const shareIncludeAutoGearText = document.getElementById("shareIncludeAutoGearText");
-const shareIncludeAutoGearLabelElem = document.getElementById("shareIncludeAutoGearLabel");
+var shareIncludeAutoGearLabelElem = document.getElementById("shareIncludeAutoGearLabel");
 if (shareFilenameInput && shareFilenameMessage) {
   shareFilenameInput.setAttribute('aria-describedby', 'shareFilenameMessage');
 }
-const sharedImportDialog = document.getElementById("sharedImportDialog");
-const sharedImportForm = document.getElementById("sharedImportForm");
+var sharedImportDialog = document.getElementById("sharedImportDialog");
+var sharedImportForm = document.getElementById("sharedImportForm");
 const sharedImportDialogHeading = document.getElementById("sharedImportDialogHeading");
 const sharedImportDialogMessage = document.getElementById("sharedImportDialogMessage");
 const sharedImportOptions = document.getElementById("sharedImportOptions");
 const sharedImportLegend = document.getElementById("sharedImportLegend");
-const sharedImportModeSelect = document.getElementById("sharedImportModeSelect");
+var sharedImportModeSelect = document.getElementById("sharedImportModeSelect");
 const sharedImportModeNoneOption = document.getElementById("sharedImportModeNoneOption");
 const sharedImportModeProjectOption = document.getElementById("sharedImportModeProjectOption");
 const sharedImportModeGlobalOption = document.getElementById("sharedImportModeGlobalOption");
 const sharedImportConfirmBtn = document.getElementById("sharedImportConfirmBtn");
-const sharedImportCancelBtn = document.getElementById("sharedImportCancelBtn");
+var sharedImportCancelBtn = document.getElementById("sharedImportCancelBtn");
 if (sharedImportModeSelect) {
   Array.from(sharedImportModeSelect.options || []).forEach(option => {
     if (option.value === "none") return;
     option.disabled = true;
   });
 }
-let sharedImportPromptActive = false;
-let pendingSharedLinkListener = null;
-let lastSetupName = setupSelect ? setupSelect.value : '';
-const applySharedLinkBtn = document.getElementById("applySharedLinkBtn");
+var sharedImportPromptActive = false;
+var pendingSharedLinkListener = null;
+var lastSetupName = setupSelect ? setupSelect.value : '';
+var applySharedLinkBtn = document.getElementById("applySharedLinkBtn");
 const sharedKeyMap = {
   setupName: "s",
   camera: "c",
@@ -10106,10 +10106,10 @@ const sharedKeyMap = {
   diagramPositions: "y"
 };
 
-let lastSharedSetupData = null;
-let lastSharedAutoGearRules = null;
-let sharedImportPreviousPresetId = '';
-let sharedImportProjectPresetActive = false;
+var lastSharedSetupData = null;
+var lastSharedAutoGearRules = null;
+var sharedImportPreviousPresetId = '';
+var sharedImportProjectPresetActive = false;
 let sharedImportPreparedForImport = false;
 
 function cloneSharedImportValue(value) {
@@ -10448,8 +10448,8 @@ function decodeSharedSetup(setup) {
   });
   return out;
 }
-const deviceManagerSection = document.getElementById("device-manager");
-const toggleDeviceBtn = document.getElementById("toggleDeviceManager");
+var deviceManagerSection = document.getElementById("device-manager");
+var toggleDeviceBtn = document.getElementById("toggleDeviceManager");
 const deviceListContainer = document.getElementById("deviceListContainer");
 const deviceManagerLists = new Map();
 const deviceManagerPreferredOrder = [
@@ -10912,25 +10912,25 @@ function removeOriginalDeviceEntry(originalCategory, originalSubcategory, origin
   }
 }
 const monitorVideoOutputsContainer = document.getElementById("monitorVideoOutputsContainer");
-const monitorWirelessTxInput = document.getElementById("monitorWirelessTx");
-const monitorLatencyInput = document.getElementById("monitorLatency");
-const monitorAudioOutputInput = document.getElementById("monitorAudioOutput");
-const viewfinderFieldsDiv = document.getElementById("viewfinderFields");
-const viewfinderScreenSizeInput = document.getElementById("viewfinderScreenSize");
-const viewfinderBrightnessInput = document.getElementById("viewfinderBrightness");
-const viewfinderWattInput = document.getElementById("viewfinderWatt");
-const viewfinderVoltageInput = document.getElementById("viewfinderVoltage");
-const viewfinderPortTypeInput = document.getElementById("viewfinderPortType");
+var monitorWirelessTxInput = document.getElementById("monitorWirelessTx");
+var monitorLatencyInput = document.getElementById("monitorLatency");
+var monitorAudioOutputInput = document.getElementById("monitorAudioOutput");
+var viewfinderFieldsDiv = document.getElementById("viewfinderFields");
+var viewfinderScreenSizeInput = document.getElementById("viewfinderScreenSize");
+var viewfinderBrightnessInput = document.getElementById("viewfinderBrightness");
+var viewfinderWattInput = document.getElementById("viewfinderWatt");
+var viewfinderVoltageInput = document.getElementById("viewfinderVoltage");
+var viewfinderPortTypeInput = document.getElementById("viewfinderPortType");
 const viewfinderVideoInputsContainer = document.getElementById("viewfinderVideoInputsContainer");
 const viewfinderVideoOutputsContainer = document.getElementById("viewfinderVideoOutputsContainer");
-const viewfinderWirelessTxInput = document.getElementById("viewfinderWirelessTx");
-const viewfinderLatencyInput = document.getElementById("viewfinderLatency");
-const videoFieldsDiv = document.getElementById("videoFields");
-const videoPowerInput = document.getElementById("videoPower");
+var viewfinderWirelessTxInput = document.getElementById("viewfinderWirelessTx");
+var viewfinderLatencyInput = document.getElementById("viewfinderLatency");
+var videoFieldsDiv = document.getElementById("videoFields");
+var videoPowerInput = document.getElementById("videoPower");
 const videoVideoInputsContainer = document.getElementById("videoVideoInputsContainer");
 const videoVideoOutputsContainer = document.getElementById("videoVideoOutputsContainer");
-const videoFrequencyInput = document.getElementById("videoFrequency");
-const videoLatencyInput = document.getElementById("videoLatency");
+var videoFrequencyInput = document.getElementById("videoFrequency");
+var videoLatencyInput = document.getElementById("videoLatency");
 
 function showFormSection(section) {
   if (!section) return;
@@ -10965,25 +10965,25 @@ function placeWattField(category, data) {
     addDeviceForm.insertBefore(wattFieldDiv, cameraFieldsDiv);
   }
 }
-const motorFieldsDiv = document.getElementById("motorFields");
-const motorConnectorInput = document.getElementById("motorConnector");
-const motorInternalInput = document.getElementById("motorInternal");
-const motorTorqueInput = document.getElementById("motorTorque");
-const motorGearInput = document.getElementById("motorGearTypes");
-const motorNotesInput = document.getElementById("motorNotes");
-const controllerFieldsDiv = document.getElementById("controllerFields");
-const controllerConnectorInput = document.getElementById("controllerConnector");
-const controllerPowerInput = document.getElementById("controllerPower");
-const controllerBatteryInput = document.getElementById("controllerBattery");
-const controllerConnectivityInput = document.getElementById("controllerConnectivity");
-const controllerNotesInput = document.getElementById("controllerNotes");
-const distanceFieldsDiv = document.getElementById("distanceFields");
-const distanceConnectionInput = document.getElementById("distanceConnection");
-const distanceMethodInput = document.getElementById("distanceMethod");
-const distanceRangeInput = document.getElementById("distanceRange");
-const distanceAccuracyInput = document.getElementById("distanceAccuracy");
-const distanceOutputInput = document.getElementById("distanceOutput");
-const distanceNotesInput = document.getElementById("distanceNotes");
+var motorFieldsDiv = document.getElementById("motorFields");
+var motorConnectorInput = document.getElementById("motorConnector");
+var motorInternalInput = document.getElementById("motorInternal");
+var motorTorqueInput = document.getElementById("motorTorque");
+var motorGearInput = document.getElementById("motorGearTypes");
+var motorNotesInput = document.getElementById("motorNotes");
+var controllerFieldsDiv = document.getElementById("controllerFields");
+var controllerConnectorInput = document.getElementById("controllerConnector");
+var controllerPowerInput = document.getElementById("controllerPower");
+var controllerBatteryInput = document.getElementById("controllerBattery");
+var controllerConnectivityInput = document.getElementById("controllerConnectivity");
+var controllerNotesInput = document.getElementById("controllerNotes");
+var distanceFieldsDiv = document.getElementById("distanceFields");
+var distanceConnectionInput = document.getElementById("distanceConnection");
+var distanceMethodInput = document.getElementById("distanceMethod");
+var distanceRangeInput = document.getElementById("distanceRange");
+var distanceAccuracyInput = document.getElementById("distanceAccuracy");
+var distanceOutputInput = document.getElementById("distanceOutput");
+var distanceNotesInput = document.getElementById("distanceNotes");
 const batteryPlatesContainer = document.getElementById("batteryPlatesContainer");
 const cameraMediaContainer = document.getElementById("cameraMediaContainer");
 const lensMountContainer = document.getElementById("lensMountContainer");
@@ -10992,22 +10992,22 @@ const videoOutputsContainer = document.getElementById("videoOutputsContainer");
 const fizConnectorContainer = document.getElementById("fizConnectorContainer");
 const viewfinderContainer = document.getElementById("viewfinderContainer");
 const timecodeContainer = document.getElementById("timecodeContainer");
-const batteryFieldsDiv = document.getElementById("batteryFields");
+var batteryFieldsDiv = document.getElementById("batteryFields");
 const batteryPlateRow = document.getElementById("batteryPlateRow");
-const batteryPlateSelect = document.getElementById("batteryPlateSelect");
-const newCapacityInput = document.getElementById("newCapacity");
-const newPinAInput    = document.getElementById("newPinA");
-const newDtapAInput   = document.getElementById("newDtapA");
-const dtapRow         = newDtapAInput ? newDtapAInput.parentElement : null;
-const addDeviceBtn    = document.getElementById("addDeviceBtn");
-const cancelEditBtn  = document.getElementById("cancelEditBtn");
-const exportBtn       = document.getElementById("exportDataBtn");
-const exportOutput    = document.getElementById("exportOutput");
-const importFileInput = document.getElementById("importFileInput");
-const importDataBtn   = document.getElementById("importDataBtn");
-const skipLink       = document.getElementById("skipLink");
+var batteryPlateSelect = document.getElementById("batteryPlateSelect");
+var newCapacityInput = document.getElementById("newCapacity");
+var newPinAInput    = document.getElementById("newPinA");
+var newDtapAInput   = document.getElementById("newDtapA");
+var dtapRow         = newDtapAInput ? newDtapAInput.parentElement : null;
+var addDeviceBtn    = document.getElementById("addDeviceBtn");
+var cancelEditBtn  = document.getElementById("cancelEditBtn");
+var exportBtn       = document.getElementById("exportDataBtn");
+var exportOutput    = document.getElementById("exportOutput");
+var importFileInput = document.getElementById("importFileInput");
+var importDataBtn   = document.getElementById("importDataBtn");
+var skipLink       = document.getElementById("skipLink");
 
-const categoryExcludedAttrs = {
+var categoryExcludedAttrs = {
   batteries: ["capacity", "pinA", "dtapA"],
   batteryHotswaps: ["capacity", "pinA"],
   "accessories.batteries": ["capacity", "pinA"],
@@ -11410,22 +11410,22 @@ function applyDynamicFieldValues(target, category, exclude = []) {
   removeClearedDynamicAttributes(target, attrs, values);
   return values;
 }
-const languageSelect  = document.getElementById("languageSelect");
-const pinkModeToggle  = document.getElementById("pinkModeToggle");
-const pinkModeHelpIcon = document.getElementById("pinkModeHelpIcon");
-const darkModeToggle  = document.getElementById("darkModeToggle");
-const helpButton      = document.getElementById("helpButton");
-const reloadButton    = document.getElementById("reloadButton");
-const helpDialog      = document.getElementById("helpDialog");
-const closeHelpBtn    = document.getElementById("closeHelp");
-const helpSearch      = document.getElementById("helpSearch");
-const helpNoResults   = document.getElementById("helpNoResults");
-const helpResultsSummary = document.getElementById("helpResultsSummary");
-const helpSearchClear = document.getElementById("helpSearchClear");
-const helpSectionsContainer = document.getElementById("helpSections");
-const helpQuickLinksNav = document.getElementById("helpQuickLinks");
-const helpQuickLinksHeading = document.getElementById("helpQuickLinksHeading");
-const helpQuickLinksList = document.getElementById("helpQuickLinksList");
+var languageSelect  = document.getElementById("languageSelect");
+var pinkModeToggle  = document.getElementById("pinkModeToggle");
+var pinkModeHelpIcon = document.getElementById("pinkModeHelpIcon");
+var darkModeToggle  = document.getElementById("darkModeToggle");
+var helpButton      = document.getElementById("helpButton");
+var reloadButton    = document.getElementById("reloadButton");
+var helpDialog      = document.getElementById("helpDialog");
+var closeHelpBtn    = document.getElementById("closeHelp");
+var helpSearch      = document.getElementById("helpSearch");
+var helpNoResults   = document.getElementById("helpNoResults");
+var helpResultsSummary = document.getElementById("helpResultsSummary");
+var helpSearchClear = document.getElementById("helpSearchClear");
+var helpSectionsContainer = document.getElementById("helpSections");
+var helpQuickLinksNav = document.getElementById("helpQuickLinks");
+var helpQuickLinksHeading = document.getElementById("helpQuickLinksHeading");
+var helpQuickLinksList = document.getElementById("helpQuickLinksList");
 const installPromptBanner = document.getElementById("installPromptBanner");
 const installPromptBannerText = document.getElementById("installPromptBannerText");
 const installPromptBannerAction = document.getElementById("installPromptBannerAction");
@@ -11457,10 +11457,10 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
 const iosPwaHelpStep4 = document.getElementById("iosPwaHelpStep4");
 const iosPwaHelpNote = document.getElementById("iosPwaHelpNote");
 const iosPwaHelpClose = document.getElementById("iosPwaHelpClose");
-const hoverHelpButton = document.getElementById("hoverHelpButton");
-const settingsButton  = document.getElementById("settingsButton");
+var hoverHelpButton = document.getElementById("hoverHelpButton");
+var settingsButton  = document.getElementById("settingsButton");
 const settingsButtonIcon = settingsButton?.querySelector?.('.settings-button-icon');
-const settingsDialog  = document.getElementById("settingsDialog");
+var settingsDialog  = document.getElementById("settingsDialog");
 if (settingsButton) {
   settingsButton.setAttribute('data-allow-hover-help', '');
 }
@@ -11664,23 +11664,23 @@ settingsTabIconAssignments.forEach(([button, glyph]) => {
   iconElement.setAttribute('aria-hidden', 'true');
 });
 const generalSettingsHeading = document.getElementById('generalSettingsHeading');
-const settingsLanguage = document.getElementById("settingsLanguage");
-const settingsDarkMode = document.getElementById("settingsDarkMode");
-const settingsPinkMode = document.getElementById("settingsPinkMode");
-const accentColorInput = document.getElementById("accentColorInput");
+var settingsLanguage = document.getElementById("settingsLanguage");
+var settingsDarkMode = document.getElementById("settingsDarkMode");
+var settingsPinkMode = document.getElementById("settingsPinkMode");
+var accentColorInput = document.getElementById("accentColorInput");
 const accentColorResetButton = document.getElementById("accentColorReset");
-const settingsTemperatureUnit = document.getElementById('settingsTemperatureUnit');
-const settingsFontSize = document.getElementById("settingsFontSize");
-const settingsFontFamily = document.getElementById("settingsFontFamily");
+var settingsTemperatureUnit = document.getElementById('settingsTemperatureUnit');
+var settingsFontSize = document.getElementById("settingsFontSize");
+var settingsFontFamily = document.getElementById("settingsFontFamily");
 const localFontsButton = document.getElementById("localFontsButton");
 const localFontsInput = document.getElementById("localFontsInput");
 const localFontsStatus = document.getElementById("localFontsStatus");
 const localFontsGroup = document.getElementById("localFontsGroup");
 const bundledFontGroup = document.getElementById("bundledFontOptions");
-const settingsLogo = document.getElementById("settingsLogo");
-const settingsLogoPreview = document.getElementById("settingsLogoPreview");
+var settingsLogo = document.getElementById("settingsLogo");
+var settingsLogoPreview = document.getElementById("settingsLogoPreview");
 
-let activeSettingsTabId = '';
+var activeSettingsTabId = '';
 if (settingsTabButtons.length) {
   const initiallySelected = settingsTabButtons.find(button => button.getAttribute('aria-selected') === 'true');
   activeSettingsTabId = initiallySelected?.id || settingsTabButtons[0].id;
@@ -11839,20 +11839,20 @@ const autoGearSummaryHeadingElem = document.getElementById('autoGearSummaryHeadi
 const autoGearSummaryDescriptionElem = document.getElementById('autoGearSummaryDescription');
 const autoGearSummaryCards = document.getElementById('autoGearSummaryCards');
 const autoGearSummaryDetails = document.getElementById('autoGearSummaryDetails');
-const autoGearRulesList = document.getElementById('autoGearRulesList');
+var autoGearRulesList = document.getElementById('autoGearRulesList');
 const autoGearPresetDescription = document.getElementById('autoGearPresetDescription');
 const autoGearPresetLabel = document.getElementById('autoGearPresetLabel');
-const autoGearPresetSelect = document.getElementById('autoGearPresetSelect');
-const autoGearSavePresetButton = document.getElementById('autoGearSavePreset');
-const autoGearDeletePresetButton = document.getElementById('autoGearDeletePreset');
-const autoGearAddRuleBtn = document.getElementById('autoGearAddRule');
-const autoGearResetFactoryButton = document.getElementById('autoGearResetFactory');
-const autoGearEditor = document.getElementById('autoGearEditor');
+var autoGearPresetSelect = document.getElementById('autoGearPresetSelect');
+var autoGearSavePresetButton = document.getElementById('autoGearSavePreset');
+var autoGearDeletePresetButton = document.getElementById('autoGearDeletePreset');
+var autoGearAddRuleBtn = document.getElementById('autoGearAddRule');
+var autoGearResetFactoryButton = document.getElementById('autoGearResetFactory');
+var autoGearEditor = document.getElementById('autoGearEditor');
 const autoGearConditionControls = document.getElementById('autoGearConditionControls');
 const autoGearConditionSelectLabel = document.getElementById('autoGearConditionSelectLabel');
-const autoGearConditionSelect = document.getElementById('autoGearConditionSelect');
-const autoGearConditionAddButton = document.getElementById('autoGearConditionAdd');
-const autoGearConditionList = document.getElementById('autoGearConditionList');
+var autoGearConditionSelect = document.getElementById('autoGearConditionSelect');
+var autoGearConditionAddButton = document.getElementById('autoGearConditionAdd');
+var autoGearConditionList = document.getElementById('autoGearConditionList');
 const autoGearAlwaysLabel = document.getElementById('autoGearAlwaysLabel');
 const autoGearAlwaysHelp = document.getElementById('autoGearAlwaysHelp');
 const autoGearCameraWeightSection = document.getElementById('autoGearCondition-cameraWeight');
@@ -12516,13 +12516,13 @@ const autoGearAddSelectorTypeLabel = document.getElementById('autoGearAddSelecto
 const autoGearAddSelectorDefaultLabel = document.getElementById('autoGearAddSelectorDefaultLabel');
 const autoGearAddNotesLabel = document.getElementById('autoGearAddNotesLabel');
 const autoGearAddNameInput = document.getElementById('autoGearAddName');
-const autoGearAddCategorySelect = document.getElementById('autoGearAddCategory');
+var autoGearAddCategorySelect = document.getElementById('autoGearAddCategory');
 const autoGearAddQuantityInput = document.getElementById('autoGearAddQuantity');
 const autoGearAddScreenSizeInput = document.getElementById('autoGearAddScreenSize');
-const autoGearAddSelectorTypeSelect = document.getElementById('autoGearAddSelectorType');
-const autoGearAddSelectorDefaultInput = document.getElementById('autoGearAddSelectorDefault');
+var autoGearAddSelectorTypeSelect = document.getElementById('autoGearAddSelectorType');
+var autoGearAddSelectorDefaultInput = document.getElementById('autoGearAddSelectorDefault');
 const autoGearAddNotesInput = document.getElementById('autoGearAddNotes');
-const autoGearAddItemButton = document.getElementById('autoGearAddItemButton');
+var autoGearAddItemButton = document.getElementById('autoGearAddItemButton');
 const autoGearAddList = document.getElementById('autoGearAddList');
 const autoGearRemoveItemsHeading = document.getElementById('autoGearRemoveItemsHeading');
 const autoGearRemoveItemLabel = document.getElementById('autoGearRemoveItemLabel');
@@ -12533,13 +12533,13 @@ const autoGearRemoveSelectorTypeLabel = document.getElementById('autoGearRemoveS
 const autoGearRemoveSelectorDefaultLabel = document.getElementById('autoGearRemoveSelectorDefaultLabel');
 const autoGearRemoveNotesLabel = document.getElementById('autoGearRemoveNotesLabel');
 const autoGearRemoveNameInput = document.getElementById('autoGearRemoveName');
-const autoGearRemoveCategorySelect = document.getElementById('autoGearRemoveCategory');
+var autoGearRemoveCategorySelect = document.getElementById('autoGearRemoveCategory');
 const autoGearRemoveQuantityInput = document.getElementById('autoGearRemoveQuantity');
 const autoGearRemoveScreenSizeInput = document.getElementById('autoGearRemoveScreenSize');
-const autoGearRemoveSelectorTypeSelect = document.getElementById('autoGearRemoveSelectorType');
-const autoGearRemoveSelectorDefaultInput = document.getElementById('autoGearRemoveSelectorDefault');
+var autoGearRemoveSelectorTypeSelect = document.getElementById('autoGearRemoveSelectorType');
+var autoGearRemoveSelectorDefaultInput = document.getElementById('autoGearRemoveSelectorDefault');
 const autoGearRemoveNotesInput = document.getElementById('autoGearRemoveNotes');
-const autoGearRemoveItemButton = document.getElementById('autoGearRemoveItemButton');
+var autoGearRemoveItemButton = document.getElementById('autoGearRemoveItemButton');
 const autoGearRemoveList = document.getElementById('autoGearRemoveList');
 const autoGearDraftImpactContainer = document.getElementById('autoGearDraftImpact');
 const autoGearDraftImpactHeading = document.getElementById('autoGearDraftImpactHeading');
@@ -12548,8 +12548,8 @@ const autoGearDraftImpactList = document.getElementById('autoGearDraftImpactList
 const autoGearDraftWarningContainer = document.getElementById('autoGearDraftWarningContainer');
 const autoGearDraftWarningHeading = document.getElementById('autoGearDraftWarningHeading');
 const autoGearDraftWarningList = document.getElementById('autoGearDraftWarningList');
-const autoGearSaveRuleButton = document.getElementById('autoGearSaveRule');
-const autoGearCancelEditButton = document.getElementById('autoGearCancelEdit');
+var autoGearSaveRuleButton = document.getElementById('autoGearSaveRule');
+var autoGearCancelEditButton = document.getElementById('autoGearCancelEdit');
 const autoGearItemCatalog = document.getElementById('autoGearItemCatalog');
 
 function enableAutoGearMultiSelectToggle(select) {
@@ -12680,22 +12680,22 @@ function syncAutoGearMonitorFieldVisibility() {
   updateAutoGearMonitorFieldGroup(autoGearAddMonitorFieldGroup);
   updateAutoGearMonitorFieldGroup(autoGearRemoveMonitorFieldGroup);
 }
-const autoGearExportButton = document.getElementById('autoGearExport');
-const autoGearImportButton = document.getElementById('autoGearImport');
-const autoGearImportInput = document.getElementById('autoGearImportInput');
+var autoGearExportButton = document.getElementById('autoGearExport');
+var autoGearImportButton = document.getElementById('autoGearImport');
+var autoGearImportInput = document.getElementById('autoGearImportInput');
 const autoGearBackupsSection = document.getElementById('autoGearBackupsSection');
 const autoGearBackupsHeading = document.getElementById('autoGearBackupsHeading');
 const autoGearBackupsDescription = document.getElementById('autoGearBackupsDescription');
 const autoGearBackupSelectLabel = document.getElementById('autoGearBackupSelectLabel');
-const autoGearBackupSelect = document.getElementById('autoGearBackupSelect');
-const autoGearBackupRestoreButton = document.getElementById('autoGearBackupRestore');
+var autoGearBackupSelect = document.getElementById('autoGearBackupSelect');
+var autoGearBackupRestoreButton = document.getElementById('autoGearBackupRestore');
 const autoGearBackupControls = document.getElementById('autoGearBackupControls');
 const autoGearBackupEmptyMessage = document.getElementById('autoGearBackupEmpty');
 const autoGearBackupRetentionLabel = document.getElementById('autoGearBackupRetentionLabel');
 const autoGearBackupRetentionInput = document.getElementById('autoGearBackupRetention');
 const autoGearBackupRetentionSummary = document.getElementById('autoGearBackupRetentionSummary');
 const autoGearBackupRetentionWarning = document.getElementById('autoGearBackupRetentionWarning');
-const autoGearShowBackupsCheckbox = document.getElementById('autoGearShowBackups');
+var autoGearShowBackupsCheckbox = document.getElementById('autoGearShowBackups');
 const autoGearShowBackupsLabel = document.getElementById('autoGearShowBackupsLabel');
 const autoGearBackupsHiddenNotice = document.getElementById('autoGearBackupsHidden');
 const dataHeading = document.getElementById("dataHeading");
@@ -12725,8 +12725,8 @@ function computeAutoGearMultiSelectSize(optionCount, {
   return Math.max(minRows, Math.min(optionCount, boundedMax));
 }
 
-let autoGearEditorDraft = null;
-let autoGearEditorActiveItem = null;
+var autoGearEditorDraft = null;
+var autoGearEditorActiveItem = null;
 let autoGearDraftPendingWarnings = null;
 let autoGearSearchQuery = '';
 let autoGearSummaryFocus = 'all';
