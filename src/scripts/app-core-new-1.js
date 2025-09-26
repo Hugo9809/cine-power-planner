@@ -79,6 +79,86 @@
  * keeping the similarity score below Git's rename detection threshold.
  * Do not trim these notes unless the tooling issue has been resolved.
  */
+
+(function ensureSharedCoreUtilities() {
+  const GLOBAL_SCOPE =
+    typeof globalThis !== 'undefined'
+      ? globalThis
+      : typeof window !== 'undefined'
+        ? window
+        : typeof self !== 'undefined'
+          ? self
+          : typeof global !== 'undefined'
+            ? global
+            : null;
+
+  if (!GLOBAL_SCOPE) {
+    return;
+  }
+
+  if (typeof GLOBAL_SCOPE.stableStringify !== 'function') {
+    GLOBAL_SCOPE.stableStringify = function stableStringify(value) {
+      if (value === null) return 'null';
+      if (value === undefined) return 'undefined';
+      if (Array.isArray(value)) {
+        return `[${value.map(item => GLOBAL_SCOPE.stableStringify(item)).join(',')}]`;
+      }
+      if (typeof value === 'object') {
+        const keys = Object.keys(value).sort();
+        const entries = keys.map(key => `${JSON.stringify(key)}:${GLOBAL_SCOPE.stableStringify(value[key])}`);
+        return `{${entries.join(',')}}`;
+      }
+      return JSON.stringify(value);
+    };
+  }
+
+  if (typeof GLOBAL_SCOPE.humanizeKey !== 'function') {
+    const HUMANIZE_OVERRIDES = {
+      powerDrawWatts: 'Power (W)',
+      capacity: 'Capacity (Wh)',
+      pinA: 'Pin A',
+      dtapA: 'D-Tap A',
+      mount_type: 'Mount',
+      screenSizeInches: 'Screen Size (in)',
+      brightnessNits: 'Brightness (nits)',
+      torqueNm: 'Torque (Nm)',
+      internalController: 'Internal Controller',
+      powerSource: 'Power Source',
+      batteryType: 'Battery Type',
+      connectivity: 'Connectivity'
+    };
+
+    GLOBAL_SCOPE.humanizeKey = function humanizeKey(key) {
+      if (key && Object.prototype.hasOwnProperty.call(HUMANIZE_OVERRIDES, key)) {
+        return HUMANIZE_OVERRIDES[key];
+      }
+
+      const stringValue = typeof key === 'string' ? key : String(key || '');
+      return stringValue
+        .replace(/_/g, ' ')
+        .replace(/([A-Z])/g, ' $1')
+        .replace(/^./, (c) => c.toUpperCase());
+    };
+  }
+
+  try {
+    if (typeof stableStringify !== 'function') {
+      // eslint-disable-next-line no-global-assign
+      stableStringify = GLOBAL_SCOPE.stableStringify;
+    }
+  } catch (error) {
+    void error;
+  }
+
+  try {
+    if (typeof humanizeKey !== 'function') {
+      // eslint-disable-next-line no-global-assign
+      humanizeKey = GLOBAL_SCOPE.humanizeKey;
+    }
+  } catch (error) {
+    void error;
+  }
+})();
 // Use `var` here instead of `let` because `index.html` loads the lz-string
 // library from a CDN which defines a global `LZString` variable. Using `let`
 // would attempt to create a new lexical binding and throw a SyntaxError in
