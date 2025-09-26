@@ -3,7 +3,8 @@
           ensureAutoBackupsFromProjects, getDiagramManualPositions,
           setManualDiagramPositions, normalizeDiagramPositionsInput,
           normalizeSetupName, createProjectInfoSnapshotForStorage,
-          applyDynamicFieldValues, applyBatteryPlateSelectionFromBattery */
+          applyDynamicFieldValues, applyBatteryPlateSelectionFromBattery,
+          getPowerSelectionSnapshot, applyStoredPowerSelection */
 
 const APP_EVENTS_AUTO_BACKUP_RENAMED_FLAG =
   (typeof globalThis !== 'undefined' && globalThis.__CINE_AUTO_BACKUP_RENAMED_FLAG)
@@ -501,10 +502,16 @@ setupSelect.addEventListener("change", (event) => {
         projectNameOverride: renameInProgressForPrevious ? normalizedPreviousKey : undefined,
       })
       : previousProjectInfo;
+    const previousPowerSelection = typeof getPowerSelectionSnapshot === 'function'
+      ? getPowerSelectionSnapshot()
+      : null;
     const previousPayload = {
       projectInfo: projectInfoForStorage,
       gearList: getCurrentGearListHtml()
     };
+    if (previousPowerSelection) {
+      previousPayload.powerSelection = previousPowerSelection;
+    }
     if (typeof getDiagramManualPositions === 'function') {
       const diagramPositions = getDiagramManualPositions();
       if (diagramPositions && Object.keys(diagramPositions).length) {
@@ -564,8 +571,21 @@ setupSelect.addEventListener("change", (event) => {
       hotswapSelect.value = setup.batteryHotswap || hotswapSelect.value;
       setSliderBowlValue(setup.sliderBowl || '');
       setEasyrigValue(setup.easyrig || '');
-      updateBatteryOptions();
+      let storedPowerApplied = false;
+      if (setup.powerSelection && typeof applyStoredPowerSelection === 'function') {
+        storedPowerApplied = applyStoredPowerSelection(setup.powerSelection);
+      }
       const storedProject = typeof loadProject === 'function' ? loadProject(setupName) : null;
+      if (!storedPowerApplied && storedProject && typeof applyStoredPowerSelection === 'function' && storedProject.powerSelection) {
+        storedPowerApplied = applyStoredPowerSelection(storedProject.powerSelection);
+      }
+      updateBatteryOptions();
+      if (!storedPowerApplied && storedProject && typeof applyStoredPowerSelection === 'function' && storedProject.powerSelection) {
+        storedPowerApplied = applyStoredPowerSelection(storedProject.powerSelection);
+        if (storedPowerApplied) {
+          updateBatteryOptions();
+        }
+      }
       const html = setup.gearList || storedProject?.gearList || '';
       if (html && typeof globalThis !== 'undefined') {
         globalThis.__cineLastGearListHtml = html;
@@ -609,6 +629,12 @@ setupSelect.addEventListener("change", (event) => {
             projectInfo: currentProjectInfo,
             gearList: html
           };
+          const currentPowerSelection = typeof getPowerSelectionSnapshot === 'function'
+            ? getPowerSelectionSnapshot()
+            : null;
+          if (currentPowerSelection) {
+            payload.powerSelection = currentPowerSelection;
+          }
           if (typeof getDiagramManualPositions === 'function') {
             const diagramPositions = getDiagramManualPositions();
             if (diagramPositions && Object.keys(diagramPositions).length) {
@@ -623,12 +649,38 @@ setupSelect.addEventListener("change", (event) => {
         }
       }
     } else {
-      currentProjectInfo = null;
-      if (projectForm) populateProjectForm({});
-      displayGearAndRequirements('');
+      const storedProject = typeof loadProject === 'function' ? loadProject(setupName) : null;
+      if (storedProject && typeof applyStoredPowerSelection === 'function' && storedProject.powerSelection) {
+        const applied = applyStoredPowerSelection(storedProject.powerSelection, { preferExisting: false });
+        if (applied) {
+          updateBatteryOptions();
+        }
+      } else {
+        updateBatteryOptions();
+      }
+      currentProjectInfo = storedProject?.projectInfo || null;
+      if (projectForm) populateProjectForm(currentProjectInfo || {});
+      if (gearListOutput) {
+        const html = storedProject?.gearList || '';
+        displayGearAndRequirements(html);
+        if (html) {
+          ensureGearListActions();
+          bindGearListCageListener();
+          bindGearListEasyrigListener();
+          bindGearListSliderBowlListener();
+          bindGearListEyeLeatherListener();
+          bindGearListProGaffTapeListener();
+          bindGearListDirectorMonitorListener();
+        }
+      } else {
+        displayGearAndRequirements('');
+      }
       clearProjectAutoGearRules();
       if (typeof setManualDiagramPositions === 'function') {
-        setManualDiagramPositions({}, { render: false });
+        const normalizedDiagram = storedProject?.diagramPositions && typeof normalizeDiagramPositionsInput === 'function'
+          ? normalizeDiagramPositionsInput(storedProject.diagramPositions)
+          : {};
+        setManualDiagramPositions(normalizedDiagram || {}, { render: false });
       }
     }
     storeLoadedSetupState(getCurrentSetupState());

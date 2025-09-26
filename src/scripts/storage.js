@@ -3425,6 +3425,46 @@ function cloneProjectGearSelectors(selectors) {
   return Object.keys(clone).length ? clone : null;
 }
 
+function normalizeProjectPowerSelection(raw) {
+  if (raw == null) {
+    return null;
+  }
+  const normalizeString = (value) => {
+    if (typeof value === "string") {
+      return value.trim();
+    }
+    if (value === null || value === undefined) {
+      return "";
+    }
+    if (typeof value === "number" || typeof value === "boolean") {
+      return String(value);
+    }
+    return "";
+  };
+  if (!isPlainObject(raw)) {
+    return null;
+  }
+  const normalized = {
+    batteryPlate: normalizeString(raw.batteryPlate),
+    battery: normalizeString(raw.battery),
+    batteryHotswap: normalizeString(raw.batteryHotswap),
+  };
+  const hasValue = Object.keys(normalized).some((key) => normalized[key]);
+  return hasValue ? normalized : null;
+}
+
+function cloneProjectPowerSelection(selection) {
+  const normalized = normalizeProjectPowerSelection(selection);
+  if (!normalized) {
+    return null;
+  }
+  return {
+    batteryPlate: normalized.batteryPlate,
+    battery: normalized.battery,
+    batteryHotswap: normalized.batteryHotswap,
+  };
+}
+
 function normalizeProject(data) {
   if (typeof data === "string") {
     const parsed = tryParseJSONLike(data);
@@ -3497,6 +3537,7 @@ function normalizeProject(data) {
           : "";
 
       let normalizedGearSelectors = null;
+      let normalizedPowerSelection = normalizeProjectPowerSelection(data.powerSelection);
       if (isPlainObject(data.gearSelectors)) {
         normalizedGearSelectors = cloneProjectGearSelectors(data.gearSelectors);
       } else if (typeof data.gearSelectors === "string") {
@@ -3504,6 +3545,9 @@ function normalizeProject(data) {
         if (parsedSelectors.success && isPlainObject(parsedSelectors.parsed)) {
           normalizedGearSelectors = cloneProjectGearSelectors(parsedSelectors.parsed);
         }
+      }
+      if (!normalizedPowerSelection && isPlainObject(data.powerSelection)) {
+        normalizedPowerSelection = normalizeProjectPowerSelection(data.powerSelection);
       }
 
       if (typeof normalizedGearList === "string") {
@@ -3524,6 +3568,9 @@ function normalizeProject(data) {
             }
             if (!normalizedGearSelectors && isPlainObject(nested.gearSelectors)) {
               normalizedGearSelectors = cloneProjectGearSelectors(nested.gearSelectors);
+            }
+            if (!normalizedPowerSelection && isPlainObject(nested.powerSelection)) {
+              normalizedPowerSelection = normalizeProjectPowerSelection(nested.powerSelection);
             }
           } else if (
             typeof parsedGear.parsed === "string"
@@ -3581,6 +3628,9 @@ function normalizeProject(data) {
       if (!normalizedGearSelectors && isPlainObject(normalizedGearList) && isPlainObject(normalizedGearList.gearSelectors)) {
         normalizedGearSelectors = cloneProjectGearSelectors(normalizedGearList.gearSelectors);
       }
+      if (!normalizedPowerSelection && isPlainObject(data.project) && isPlainObject(data.project.powerSelection)) {
+        normalizedPowerSelection = normalizeProjectPowerSelection(data.project.powerSelection);
+      }
       if (!normalizedProjectInfo) {
         for (let i = 0; i < htmlSources.length; i += 1) {
           const recovered = extractProjectInfoFromHtml(htmlSources[i]);
@@ -3605,6 +3655,9 @@ function normalizeProject(data) {
       }
       if (normalizedGearSelectors && Object.keys(normalizedGearSelectors).length) {
         normalized.gearSelectors = normalizedGearSelectors;
+      }
+      if (normalizedPowerSelection) {
+        normalized.powerSelection = cloneProjectPowerSelection(normalizedPowerSelection);
       }
       return normalized;
     }
@@ -3640,6 +3693,7 @@ const LEGACY_PROJECT_ROOT_KEYS = new Set([
   "projectHtml",
   "gearHtml",
   "autoGearRules",
+  "powerSelection",
 ]);
 
 const NORMALIZED_PROJECT_KEYS = new Set([
@@ -3648,6 +3702,7 @@ const NORMALIZED_PROJECT_KEYS = new Set([
   "autoGearRules",
   "diagramPositions",
   "gearSelectors",
+  "powerSelection",
 ]);
 
 function isNormalizedProjectEntry(entry) {
@@ -3685,6 +3740,14 @@ function isNormalizedProjectEntry(entry) {
     && !isPlainObject(entry.gearSelectors)
   ) {
     return false;
+  }
+  if (
+    Object.prototype.hasOwnProperty.call(entry, "powerSelection")
+  ) {
+    const powerSelection = entry.powerSelection;
+    if (!isPlainObject(powerSelection)) {
+      return false;
+    }
   }
   return true;
 }
