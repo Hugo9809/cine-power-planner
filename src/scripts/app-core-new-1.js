@@ -10602,7 +10602,20 @@ function createDeviceCategorySection(categoryKey) {
   }
   section.appendChild(list);
   deviceListContainer.appendChild(section);
-  bindFilterInput(filterInput, () => filterDeviceList(list, filterInput.value));
+
+  const attachFilterBinding = () => {
+    if (typeof bindFilterInput !== 'function') {
+      return false;
+    }
+    bindFilterInput(filterInput, () => filterDeviceList(list, filterInput.value));
+    return true;
+  };
+
+  if (!attachFilterBinding()) {
+    enqueueCoreBootTask(() => {
+      attachFilterBinding();
+    });
+  }
   const entry = { section, heading, filterInput, filterLabel, list, sanitizedId };
   deviceManagerLists.set(categoryKey, entry);
   return entry;
