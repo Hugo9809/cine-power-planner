@@ -21,7 +21,11 @@ time:
    scripts, then close the browser.
 2. **Confirm offline startup.** Disconnect from all networks, reopen `index.html` and wait
    for the offline indicator to appear. Open the help dialog and legal pages to confirm
-   cached assets render exactly as they did online.
+   cached assets render exactly as they did online. While still offline, visit
+   **Settings → Backup & Restore** so the autosave overlay loads—this exercises the split
+   `app-core` bundles (`app-core-new-1.js`, `app-core-new-2.js` and their helpers) and
+   proves the service worker cached the runtime, session and setup controllers that power
+   saves, shares and restores without network access.
 3. **Exercise persistence.** Create a dummy project, trigger a manual save, then refresh
    the app while still offline. The project selector should show the saved entry and the
    timestamped `auto-backup-…` snapshot once the autosave routine runs. Open **Settings →
