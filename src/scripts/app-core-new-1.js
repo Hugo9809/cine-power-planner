@@ -107,8 +107,15 @@ function resolveCoreShared() {
 
 const CORE_SHARED = resolveCoreShared() || {};
 
-const CORE_BOOT_QUEUE_KEY = '__coreRuntimeBootQueue';
-const CORE_BOOT_QUEUE = (() => {
+var CORE_BOOT_QUEUE_KEY = typeof CORE_BOOT_QUEUE_KEY !== 'undefined'
+  ? CORE_BOOT_QUEUE_KEY
+  : '__coreRuntimeBootQueue';
+
+var CORE_BOOT_QUEUE = (function bootstrapCoreBootQueue(existingQueue) {
+  if (Array.isArray(existingQueue)) {
+    return existingQueue;
+  }
+
   if (CORE_SHARED && typeof CORE_SHARED === 'object') {
     if (!Array.isArray(CORE_SHARED[CORE_BOOT_QUEUE_KEY])) {
       CORE_SHARED[CORE_BOOT_QUEUE_KEY] = [];
@@ -125,7 +132,11 @@ const CORE_BOOT_QUEUE = (() => {
   }
 
   return [];
-})();
+})(CORE_GLOBAL_SCOPE && CORE_GLOBAL_SCOPE.CORE_BOOT_QUEUE);
+
+if (CORE_GLOBAL_SCOPE && CORE_GLOBAL_SCOPE.CORE_BOOT_QUEUE !== CORE_BOOT_QUEUE) {
+  CORE_GLOBAL_SCOPE.CORE_BOOT_QUEUE = CORE_BOOT_QUEUE;
+}
 
 function enqueueCoreBootTask(task) {
   if (typeof task === 'function') {
