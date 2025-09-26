@@ -38,6 +38,25 @@ describe('shared project gear list handling', () => {
     expect(decoded.projectInfo).toEqual(payload.projectInfo);
   });
 
+  test('encodeSharedSetup preserves auto gear coverage snapshots', () => {
+    const { utils } = env;
+    const payload = {
+      autoGearCoverage: {
+        summary: { totalRules: 3, duplicates: 1 },
+        categories: [
+          { id: 'camera', coverage: ['cameraSelect'], rules: ['rule-1'] },
+          { id: 'monitor', coverage: ['monitorSelect'], rules: ['rule-2', 'rule-3'] }
+        ]
+      }
+    };
+
+    const encoded = utils.encodeSharedSetup(payload);
+    expect(encoded.z).toEqual(payload.autoGearCoverage);
+
+    const decoded = utils.decodeSharedSetup(encoded);
+    expect(decoded.autoGearCoverage).toEqual(payload.autoGearCoverage);
+  });
+
   test('applySharedSetup persists imported gear list', () => {
     const { utils } = env;
     const sharedData = {
