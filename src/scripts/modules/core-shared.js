@@ -132,8 +132,8 @@
       }
     }
 
-    if (typeof generateConnectorSummary === 'function') {
-      cachedConnectorSummaryGenerator = generateConnectorSummary;
+    if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.generateConnectorSummary === 'function') {
+      cachedConnectorSummaryGenerator = GLOBAL_SCOPE.generateConnectorSummary;
       connectorSummaryCachePrimed = true;
       return cachedConnectorSummaryGenerator;
     }

@@ -30,43 +30,60 @@ const CORE_SHARED_LOCAL =
     ? CORE_SHARED
     : resolveCoreSharedPart2() || {};
 
-var CORE_BOOT_QUEUE_KEY = typeof CORE_BOOT_QUEUE_KEY !== 'undefined'
-  ? CORE_BOOT_QUEUE_KEY
-  : '__coreRuntimeBootQueue';
+const CORE_BOOT_QUEUE_KEY_PART2 = (function resolveBootQueueKeyPart2(scope) {
+  if (scope && typeof scope === 'object') {
+    const existingPublic = scope.CORE_BOOT_QUEUE_KEY;
+    const existingHidden = scope.__cineCoreBootQueueKey;
 
-var CORE_BOOT_QUEUE = (function bootstrapCoreBootQueuePart2(existingQueue) {
+    if (typeof existingPublic === 'string' && existingPublic) {
+      return existingPublic;
+    }
+
+    if (typeof existingHidden === 'string' && existingHidden) {
+      return existingHidden;
+    }
+  }
+
+  return '__coreRuntimeBootQueue';
+})(CORE_SHARED_SCOPE_PART2);
+
+const CORE_BOOT_QUEUE_PART2 = (function bootstrapCoreBootQueuePart2(existingQueue) {
   if (Array.isArray(existingQueue)) {
     return existingQueue;
   }
 
-  if (CORE_SHARED_LOCAL && typeof CORE_SHARED_LOCAL === 'object') {
-    if (!Array.isArray(CORE_SHARED_LOCAL[CORE_BOOT_QUEUE_KEY])) {
-      CORE_SHARED_LOCAL[CORE_BOOT_QUEUE_KEY] = [];
+  if (CORE_SHARED_SCOPE_PART2 && typeof CORE_SHARED_SCOPE_PART2 === 'object') {
+    const shared = CORE_SHARED_SCOPE_PART2.cineCoreShared;
+    if (shared && typeof shared === 'object') {
+      const sharedQueue = shared[CORE_BOOT_QUEUE_KEY_PART2];
+      if (Array.isArray(sharedQueue)) {
+        return sharedQueue;
+      }
+      if (Object.isExtensible(shared)) {
+        shared[CORE_BOOT_QUEUE_KEY_PART2] = [];
+        return shared[CORE_BOOT_QUEUE_KEY_PART2];
+      }
     }
-    return CORE_SHARED_LOCAL[CORE_BOOT_QUEUE_KEY];
-  }
 
-  if (CORE_SHARED_SCOPE_PART2) {
-    const shared = CORE_SHARED_SCOPE_PART2.cineCoreShared || (CORE_SHARED_SCOPE_PART2.cineCoreShared = {});
-    if (!Array.isArray(shared[CORE_BOOT_QUEUE_KEY])) {
-      shared[CORE_BOOT_QUEUE_KEY] = [];
+    if (!Array.isArray(CORE_SHARED_SCOPE_PART2.CORE_BOOT_QUEUE)) {
+      CORE_SHARED_SCOPE_PART2.CORE_BOOT_QUEUE = [];
     }
-    return shared[CORE_BOOT_QUEUE_KEY];
+    return CORE_SHARED_SCOPE_PART2.CORE_BOOT_QUEUE;
   }
 
   return [];
 })(CORE_SHARED_SCOPE_PART2 && CORE_SHARED_SCOPE_PART2.CORE_BOOT_QUEUE);
 
-if (CORE_SHARED_SCOPE_PART2 && CORE_SHARED_SCOPE_PART2.CORE_BOOT_QUEUE !== CORE_BOOT_QUEUE) {
-  CORE_SHARED_SCOPE_PART2.CORE_BOOT_QUEUE = CORE_BOOT_QUEUE;
+if (CORE_SHARED_SCOPE_PART2 && CORE_SHARED_SCOPE_PART2.CORE_BOOT_QUEUE !== CORE_BOOT_QUEUE_PART2) {
+  CORE_SHARED_SCOPE_PART2.CORE_BOOT_QUEUE = CORE_BOOT_QUEUE_PART2;
 }
 
 function flushCoreBootQueue() {
-  if (!Array.isArray(CORE_BOOT_QUEUE) || CORE_BOOT_QUEUE.length === 0) {
+  if (!Array.isArray(CORE_BOOT_QUEUE_PART2) || CORE_BOOT_QUEUE_PART2.length === 0) {
     return;
   }
 
-  const pending = CORE_BOOT_QUEUE.splice(0, CORE_BOOT_QUEUE.length);
+  const pending = CORE_BOOT_QUEUE_PART2.splice(0, CORE_BOOT_QUEUE_PART2.length);
   for (let index = 0; index < pending.length; index += 1) {
     const task = pending[index];
     if (typeof task !== 'function') {

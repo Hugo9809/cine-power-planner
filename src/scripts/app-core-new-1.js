@@ -107,28 +107,81 @@ function resolveCoreShared() {
 
 const CORE_SHARED = resolveCoreShared() || {};
 
-var CORE_BOOT_QUEUE_KEY = typeof CORE_BOOT_QUEUE_KEY !== 'undefined'
-  ? CORE_BOOT_QUEUE_KEY
-  : '__coreRuntimeBootQueue';
+const CORE_BOOT_QUEUE_KEY = (function resolveCoreBootQueueKey(scope) {
+  const fallbackKey = '__coreRuntimeBootQueue';
 
-var CORE_BOOT_QUEUE = (function bootstrapCoreBootQueue(existingQueue) {
+  if (scope && typeof scope === 'object') {
+    const existingHidden = scope.__cineCoreBootQueueKey;
+    const existingPublic = scope.CORE_BOOT_QUEUE_KEY;
+
+    if (typeof existingPublic === 'string' && existingPublic) {
+      try {
+        scope.__cineCoreBootQueueKey = existingPublic;
+      } catch (syncError) {
+        void syncError;
+        scope.__cineCoreBootQueueKey = existingPublic;
+      }
+      return existingPublic;
+    }
+
+    if (typeof existingHidden === 'string' && existingHidden) {
+      if (typeof scope.CORE_BOOT_QUEUE_KEY !== 'string' || !scope.CORE_BOOT_QUEUE_KEY) {
+        try {
+          scope.CORE_BOOT_QUEUE_KEY = existingHidden;
+        } catch (shadowError) {
+          void shadowError;
+          scope.CORE_BOOT_QUEUE_KEY = existingHidden;
+        }
+      }
+      return existingHidden;
+    }
+  }
+
+  const resolvedKey = fallbackKey;
+
+  if (scope && typeof scope === 'object') {
+    try {
+      scope.__cineCoreBootQueueKey = resolvedKey;
+    } catch (hiddenAssignError) {
+      void hiddenAssignError;
+      scope.__cineCoreBootQueueKey = resolvedKey;
+    }
+
+    if (typeof scope.CORE_BOOT_QUEUE_KEY !== 'string' || !scope.CORE_BOOT_QUEUE_KEY) {
+      try {
+        scope.CORE_BOOT_QUEUE_KEY = resolvedKey;
+      } catch (publicAssignError) {
+        void publicAssignError;
+        scope.CORE_BOOT_QUEUE_KEY = resolvedKey;
+      }
+    }
+  }
+
+  return resolvedKey;
+})(CORE_GLOBAL_SCOPE);
+
+const CORE_BOOT_QUEUE = (function bootstrapCoreBootQueue(existingQueue) {
   if (Array.isArray(existingQueue)) {
     return existingQueue;
   }
 
-  if (CORE_SHARED && typeof CORE_SHARED === 'object') {
-    if (!Array.isArray(CORE_SHARED[CORE_BOOT_QUEUE_KEY])) {
-      CORE_SHARED[CORE_BOOT_QUEUE_KEY] = [];
+  if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object') {
+    const shared = CORE_GLOBAL_SCOPE.cineCoreShared;
+    if (shared && typeof shared === 'object') {
+      const sharedQueue = shared[CORE_BOOT_QUEUE_KEY];
+      if (Array.isArray(sharedQueue)) {
+        return sharedQueue;
+      }
+      if (Object.isExtensible(shared)) {
+        shared[CORE_BOOT_QUEUE_KEY] = [];
+        return shared[CORE_BOOT_QUEUE_KEY];
+      }
     }
-    return CORE_SHARED[CORE_BOOT_QUEUE_KEY];
-  }
 
-  if (CORE_GLOBAL_SCOPE) {
-    const shared = CORE_GLOBAL_SCOPE.cineCoreShared || (CORE_GLOBAL_SCOPE.cineCoreShared = {});
-    if (!Array.isArray(shared[CORE_BOOT_QUEUE_KEY])) {
-      shared[CORE_BOOT_QUEUE_KEY] = [];
+    if (!Array.isArray(CORE_GLOBAL_SCOPE.CORE_BOOT_QUEUE)) {
+      CORE_GLOBAL_SCOPE.CORE_BOOT_QUEUE = [];
     }
-    return shared[CORE_BOOT_QUEUE_KEY];
+    return CORE_GLOBAL_SCOPE.CORE_BOOT_QUEUE;
   }
 
   return [];
@@ -7578,14 +7631,20 @@ function setLanguage(lang) {
       if (noneLabel) viewfinderExtensionSelect.options[0].textContent = noneLabel;
       if (yesLabel) viewfinderExtensionSelect.options[1].textContent = yesLabel;
     }
-    const cancelText =
-      projectFormTexts.cancel ||
-      fallbackProjectForm.cancel ||
-      (projectCancelBtn ? projectCancelBtn.textContent : projectDialogCloseBtn?.getAttribute('aria-label')) ||
-      'Cancel';
-    if (projectCancelBtn) {
-      setButtonLabelWithIcon(projectCancelBtn, cancelText, ICON_GLYPHS.circleX);
-    }
+      const projectCancelButton =
+        typeof document !== 'undefined'
+          ? document.getElementById('projectCancel')
+          : null;
+      const cancelText =
+        projectFormTexts.cancel ||
+        fallbackProjectForm.cancel ||
+        (projectCancelButton
+          ? projectCancelButton.textContent
+          : projectDialogCloseBtn?.getAttribute('aria-label')) ||
+        'Cancel';
+      if (projectCancelButton) {
+        setButtonLabelWithIcon(projectCancelButton, cancelText, ICON_GLYPHS.circleX);
+      }
     if (projectDialogCloseBtn) {
       projectDialogCloseBtn.innerHTML = iconMarkup(ICON_GLYPHS.circleX, 'btn-icon');
       projectDialogCloseBtn.setAttribute('aria-label', cancelText);

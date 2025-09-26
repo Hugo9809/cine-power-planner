@@ -36,28 +36,51 @@ function resolveCoreSharedPart2() {
   return null;
 }
 var CORE_SHARED_LOCAL = typeof CORE_SHARED !== 'undefined' && CORE_SHARED ? CORE_SHARED : resolveCoreSharedPart2() || {};
-var CORE_BOOT_QUEUE_KEY = '__coreRuntimeBootQueue';
-var CORE_BOOT_QUEUE = function () {
-  if (CORE_SHARED_LOCAL && _typeof(CORE_SHARED_LOCAL) === 'object') {
-    if (!Array.isArray(CORE_SHARED_LOCAL[CORE_BOOT_QUEUE_KEY])) {
-      CORE_SHARED_LOCAL[CORE_BOOT_QUEUE_KEY] = [];
+var CORE_BOOT_QUEUE_KEY_PART2 = function resolveLegacyBootQueueKeyPart2(scope) {
+  if (scope && _typeof(scope) === 'object') {
+    var existingPublic = scope.CORE_BOOT_QUEUE_KEY;
+    var existingHidden = scope.__cineCoreBootQueueKey;
+
+    if (typeof existingPublic === 'string' && existingPublic) {
+      return existingPublic;
     }
-    return CORE_SHARED_LOCAL[CORE_BOOT_QUEUE_KEY];
+
+    if (typeof existingHidden === 'string' && existingHidden) {
+      return existingHidden;
+    }
   }
-  if (CORE_SHARED_SCOPE_PART2) {
-    var shared = CORE_SHARED_SCOPE_PART2.cineCoreShared || (CORE_SHARED_SCOPE_PART2.cineCoreShared = {});
-    if (!Array.isArray(shared[CORE_BOOT_QUEUE_KEY])) {
-      shared[CORE_BOOT_QUEUE_KEY] = [];
+
+  return '__coreRuntimeBootQueue';
+}(CORE_SHARED_SCOPE_PART2);
+var CORE_BOOT_QUEUE_PART2 = function () {
+  if (CORE_SHARED_SCOPE_PART2 && _typeof(CORE_SHARED_SCOPE_PART2) === 'object') {
+    var shared = CORE_SHARED_SCOPE_PART2.cineCoreShared;
+    if (shared && _typeof(shared) === 'object') {
+      var sharedQueue = shared[CORE_BOOT_QUEUE_KEY_PART2];
+      if (Array.isArray(sharedQueue)) {
+        return sharedQueue;
+      }
+      var sharedExtensible = typeof Object.isExtensible === 'function' ? Object.isExtensible(shared) : true;
+      if (sharedExtensible) {
+        shared[CORE_BOOT_QUEUE_KEY_PART2] = [];
+        return shared[CORE_BOOT_QUEUE_KEY_PART2];
+      }
     }
-    return shared[CORE_BOOT_QUEUE_KEY];
+    if (!Array.isArray(CORE_SHARED_SCOPE_PART2.CORE_BOOT_QUEUE)) {
+      CORE_SHARED_SCOPE_PART2.CORE_BOOT_QUEUE = [];
+    }
+    return CORE_SHARED_SCOPE_PART2.CORE_BOOT_QUEUE;
   }
   return [];
 }();
+if (CORE_SHARED_SCOPE_PART2 && CORE_SHARED_SCOPE_PART2.CORE_BOOT_QUEUE !== CORE_BOOT_QUEUE_PART2) {
+  CORE_SHARED_SCOPE_PART2.CORE_BOOT_QUEUE = CORE_BOOT_QUEUE_PART2;
+}
 function flushCoreBootQueue() {
-  if (!Array.isArray(CORE_BOOT_QUEUE) || !CORE_BOOT_QUEUE.length) {
+  if (!Array.isArray(CORE_BOOT_QUEUE_PART2) || !CORE_BOOT_QUEUE_PART2.length) {
     return;
   }
-  var pending = CORE_BOOT_QUEUE.splice(0, CORE_BOOT_QUEUE.length);
+  var pending = CORE_BOOT_QUEUE_PART2.splice(0, CORE_BOOT_QUEUE_PART2.length);
   for (var index = 0; index < pending.length; index += 1) {
     var task = pending[index];
     if (typeof task !== 'function') {
