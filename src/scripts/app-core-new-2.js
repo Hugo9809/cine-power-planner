@@ -13619,6 +13619,46 @@ flushCoreBootQueue();
 // Initial render of device lists
 refreshDeviceLists();
 
+const CORE_PART2_GLOBAL_EXPORTS = {
+  refreshAutoGearCameraOptions,
+  refreshAutoGearCameraWeightCondition,
+  refreshAutoGearMonitorOptions,
+  refreshAutoGearWirelessOptions,
+  refreshAutoGearMotorsOptions,
+  refreshAutoGearControllersOptions,
+  refreshAutoGearDistanceOptions,
+  updateAutoGearCameraWeightDraft,
+};
+
+const CORE_PART2_GLOBAL_SCOPE =
+  CORE_SHARED_SCOPE_PART2 ||
+  (typeof globalThis !== 'undefined' ? globalThis : null) ||
+  (typeof window !== 'undefined' ? window : null) ||
+  (typeof self !== 'undefined' ? self : null) ||
+  (typeof global !== 'undefined' ? global : null);
+
+const CORE_PART2_RUNTIME = (function resolvePart2Runtime(scope) {
+  if (!scope || typeof scope !== 'object') return null;
+  if (scope.cineCoreRuntime && typeof scope.cineCoreRuntime === 'object') {
+    return scope.cineCoreRuntime;
+  }
+  if (Object.isExtensible(scope)) {
+    scope.cineCoreRuntime = {};
+    return scope.cineCoreRuntime;
+  }
+  return null;
+})(CORE_PART2_GLOBAL_SCOPE);
+
+Object.entries(CORE_PART2_GLOBAL_EXPORTS).forEach(([name, fn]) => {
+  if (typeof fn !== 'function') return;
+  if (CORE_PART2_GLOBAL_SCOPE && Object.isExtensible(CORE_PART2_GLOBAL_SCOPE)) {
+    CORE_PART2_GLOBAL_SCOPE[name] = fn;
+  }
+  if (CORE_PART2_RUNTIME && Object.isExtensible(CORE_PART2_RUNTIME)) {
+    CORE_PART2_RUNTIME[name] = fn;
+  }
+});
+
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
     normalizeAutoGearCameraWeightCondition,
