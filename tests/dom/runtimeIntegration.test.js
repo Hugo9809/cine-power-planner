@@ -54,4 +54,11 @@ describe('critical workflow integration', () => {
     expect(typeof utils.downloadSharedProject).toBe('function');
     expect(typeof utils.autoBackup).toBe('function');
   });
+
+  test('records runtime integrity results for diagnostics', () => {
+    const integrity = global.__cineRuntimeIntegrity;
+    expect(integrity).toBeDefined();
+    expect(integrity.ok).toBe(true);
+    expect(Array.isArray(integrity.missing)).toBe(true);
+  });
 });

@@ -10,11 +10,14 @@ future refactors catch mismatches immediately.
 * `tests/dom/runtimeIntegration.test.js` boots the application runtime inside the
   Jest + jsdom environment. The test asserts that `cineOffline`, `cinePersistence` and
   `cineUi` are all exposed with the APIs needed to reload the planner, persist projects,
-  create backups and apply shared setups.【F:tests/dom/runtimeIntegration.test.js†L1-L51】
+  create backups and apply shared setups.【F:tests/dom/runtimeIntegration.test.js†L1-L64】
 * The integration suite also confirms that the Node-oriented bundle (`script.js`) continues to
   export the helpers used by existing tests (`collectProjectFormData`, backup utilities and
   sharing helpers). This guards the split core from accidentally dropping functionality when
-  the bundling strategy evolves.【F:tests/dom/runtimeIntegration.test.js†L35-L51】【F:tests/helpers/runtimeLoader.js†L1-L36】
+  the bundling strategy evolves.【F:tests/dom/runtimeIntegration.test.js†L50-L63】【F:tests/helpers/runtimeLoader.js†L1-L36】
+* During startup the bundle now captures the `cineRuntime.verifyCriticalFlows()` result on
+  `__cineRuntimeIntegrity` so regressions surface immediately in both automated logs and
+  manual offline rehearsals.【F:src/scripts/script.js†L92-L183】
 
 ## Documentation updates
 

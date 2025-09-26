@@ -17,7 +17,12 @@ dialog names documented in code.【F:src/scripts/modules/ui.js†L1-L192】
 The new integration suite (`tests/dom/runtimeIntegration.test.js`) ensures these modules
 continue to cooperate. When updating help text or translations, keep the assertions in that
 test in mind—they describe the critical APIs (`cineOffline`, `cinePersistence`, `cineUi`) that
-must remain available to avoid data loss.【F:tests/dom/runtimeIntegration.test.js†L1-L51】
+must remain available to avoid data loss.【F:tests/dom/runtimeIntegration.test.js†L1-L64】
+
+The runtime bundle also stores the most recent verification result on
+`__cineRuntimeIntegrity`, giving documentation reviewers a quick signal that the
+save/share/import safeguards initialised correctly before they start editing
+copy offline.【F:src/scripts/script.js†L92-L183】
 
 ## 1. Identify every surface that needs an update
 
