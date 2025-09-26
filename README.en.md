@@ -98,6 +98,7 @@ production day.
 - [Translations](#translations)
 - [What’s New](#whats-new)
 - [Quick Start](#quick-start)
+- [Key Workflow Reference](#key-workflow-reference)
 - [System Requirements & Browser Support](#system-requirements--browser-support)
 - [Save, Share & Import Drill](#save-share--import-drill)
 - [Everyday Workflow](#everyday-workflow)
@@ -120,6 +121,7 @@ production day.
 - [Localization](#localization)
 - [Install as an App](#install-as-an-app)
 - [Device Data Workflow](#device-data-workflow)
+- [Repository Layout & Offline Assets](#repository-layout--offline-assets)
 - [Development](#development)
 - [Troubleshooting](#troubleshooting)
 - [Feedback & Support](#feedback--support)
@@ -216,6 +218,23 @@ same online or offline.
    you opened. This keeps save, share, import, backup and restore workflows
    provably in sync from the first session and gives you redundant recovery
    media for travel days.
+
+## Key Workflow Reference
+
+Keep this table nearby when rehearsing or teaching the planner. It consolidates
+the core save, share, import, backup and restore paths, what each captures and
+the safety nets that protect user data even when you stay offline.
+
+| Workflow | How to trigger | Data captured | Offline behavior | Built-in safeguards |
+| --- | --- | --- | --- | --- |
+| Manual save | Press **Enter**, click **Save** or use `Ctrl+S`/`⌘S` while a project is open. | Active project state including devices, requirements, diagrams, favorites and runtime feedback. | Writes directly to local storage—no connectivity required. | Creates a named entry in the selector so you can branch, rename or export it at any time. |
+| Background auto-save & auto-backup | Runs every few minutes while you edit. | Incremental project snapshots promoted to timestamped `auto-backup-…` entries. | Continues in airplane mode and resumes instantly after reload. | Auto backups stay hidden until needed and can be restored or exported without overwriting manual saves. |
+| Planner backup | **Settings → Backup & Restore → Backup**. | Every project, auto-backup, automatic gear rule, custom device, favorite, runtime note and UI preference. | Downloads a human-readable `planner-backup.json` file locally. | Forced pre-restore backups plus hidden migration snapshots prevent data loss during restores. |
+| Project bundle export | **Export Project** while the desired project is active. | One project plus referenced custom devices, favorites and (optionally) automatic gear rules. | Generates a portable JSON bundle that never leaves your machine unless you share it. | Import validation checks file metadata, schema version and timestamps before merging. |
+| Restore or import | Choose **Import Backup**, **Import Project** or restore from the selector. | Applies planner backups, project bundles or auto-backups into the live environment. | Runs entirely in the browser with the same offline guarantees as saving. | Captures a safety backup before applying changes and isolates sandbox rehearsals so production data stays intact. |
+
+Revisit this reference during training, audits and documentation updates so the
+entire crew repeats the same offline-first routines on every workstation.
 
 ## System Requirements & Browser Support
 
@@ -787,6 +806,42 @@ npm run test:data
 Add `--help` to any helper command for usage notes and review generated JSON
 diffs before opening a pull request. `npm run help` prints a summary of all
 available scripts.
+
+## Repository Layout & Offline Assets
+
+Every asset the planner needs to run offline lives in this repository. When you
+copy it to a workstation, keep the directory structure intact so the service
+worker can cache icons, fonts, legal pages and helper scripts without touching
+external networks.
+
+### Directory highlights
+
+- **`index.html`** – Entrypoint that wires the offline service worker, local
+  storage bootstrapper and global navigation. Open it directly from disk to run
+  the app without a build step.
+- **`service-worker.js`** and **`manifest.webmanifest`** – Power the Progressive
+  Web App install flow, cache busting and offline availability. Update these in
+  tandem with UI assets so refresh prompts remain accurate.
+- **`src/icons/`, `'animated icons 3'/`, `'Icon Bluenew.svg'`, `'Icon Pinknew.svg'`** –
+  Local icon sets, Uicons and animated assets used throughout the UI. Never
+  replace them with remote CDNs; copy the folders as-is when moving machines.
+- **`src/vendor/`** – Bundled third-party libraries pinned for offline use.
+  Audit and update them intentionally so caches remain deterministic.
+- **`src/data/` and `src/data/devices/`** – Canonical device catalogs and schema
+  definitions consumed by the planner and validation scripts.
+- **`legal/`** – Offline legal documents that match the in-app help center.
+- **`docs/`** – Operational runbooks, translation instructions and backup
+  policies that must stay in sync with each release.
+- **`tools/`** – Maintenance scripts for datasets, schema generation and
+  integrity checks. Use them before committing any change that touches saved
+  data paths.
+- **`tests/`** – Jest suites covering storage helpers, offline logic and dataset
+  expectations so regressions cannot threaten user data.
+
+When distributing updates or archiving a release, include the entire repository
+alongside recent `planner-backup.json` and `project-name.json` bundles. This
+guarantees crews inherit the exact same offline assets, icons and storage
+behavior on every workstation.
 
 ## Development
 
