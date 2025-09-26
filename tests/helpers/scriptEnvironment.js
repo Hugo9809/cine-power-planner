@@ -154,6 +154,11 @@ function setupScriptEnvironment(options = {}) {
       delete global[key];
     }
     delete window.defaultDevices;
+    try {
+      delete global.__cineRuntimeIntegrity;
+    } catch (error) {
+      void error;
+    }
     jest.clearAllMocks();
     document.body.innerHTML = '';
   };

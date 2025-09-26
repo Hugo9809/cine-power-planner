@@ -22,6 +22,9 @@ exploratory testing without risking data loss.
 * **Runtime integration guard** – `tests/dom/runtimeIntegration.test.js` boots the modular
   runtime and verifies that `cineOffline`, `cinePersistence` and `cineUi` expose the
   workflows required for saving, sharing, importing, backing up and restoring data.
+  The startup bundle now records the verification outcome on
+  `__cineRuntimeIntegrity`, making it easy to audit the integrity status during
+  manual rehearsals or when reviewing automated logs.【F:src/scripts/script.js†L92-L183】
 * **Runtime and backup automation (opt-in)** – Heavyweight script-level tests are now
   opt-in. Setting `RUN_HEAVY_TESTS=true` before invoking Jest will re-enable the
   integration suite that exercises the modular runtime loader, backup/restore flows,

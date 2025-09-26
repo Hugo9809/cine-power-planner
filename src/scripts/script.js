@@ -88,3 +88,96 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     aggregatedExports.APP_VERSION = APP_VERSION;
   }
 }
+
+const GLOBAL_RUNTIME_SCOPE =
+  (typeof globalThis !== 'undefined' && globalThis)
+  || (typeof window !== 'undefined' && window)
+  || (typeof self !== 'undefined' && self)
+  || (typeof global !== 'undefined' && global)
+  || null;
+
+(function ensureRuntimeIntegrity(scope) {
+  if (!scope) {
+    return;
+  }
+
+  function safeError(message, detail) {
+    if (typeof console === 'undefined' || typeof console.error !== 'function') {
+      return;
+    }
+
+    try {
+      if (typeof detail === 'undefined') {
+        console.error(message);
+      } else {
+        console.error(message, detail);
+      }
+    } catch (loggingError) {
+      void loggingError;
+    }
+  }
+
+  function attachIntegrity(result) {
+    try {
+      Object.defineProperty(scope, '__cineRuntimeIntegrity', {
+        configurable: true,
+        enumerable: false,
+        value: result,
+        writable: false,
+      });
+    } catch (error) {
+      void error;
+      scope.__cineRuntimeIntegrity = result;
+    }
+  }
+
+  let runtime = null;
+
+  try {
+    runtime = scope.cineRuntime;
+  } catch (runtimeError) {
+    void runtimeError;
+    runtime = null;
+  }
+
+  if (!runtime && typeof require === 'function') {
+    try {
+      runtime = require('./modules/runtime.js');
+    } catch (requireError) {
+      void requireError;
+      runtime = null;
+    }
+  }
+
+  if (!runtime || typeof runtime.verifyCriticalFlows !== 'function') {
+    return;
+  }
+
+  let result;
+
+  try {
+    result = runtime.verifyCriticalFlows({ warnOnFailure: true });
+  } catch (verificationError) {
+    attachIntegrity(Object.freeze({ ok: false, error: verificationError }));
+    safeError('cineRuntime.verifyCriticalFlows() threw during startup.', verificationError);
+    if (typeof require === 'function') {
+      throw verificationError;
+    }
+    return;
+  }
+
+  if (result && typeof result === 'object') {
+    attachIntegrity(result);
+  } else {
+    attachIntegrity(Object.freeze({ ok: false }));
+  }
+
+  if (!result || result.ok !== true) {
+    const integrityError = new Error('cineRuntime integrity verification failed during startup.');
+    integrityError.details = result || null;
+    safeError(integrityError.message, integrityError);
+    if (typeof require === 'function') {
+      throw integrityError;
+    }
+  }
+})(GLOBAL_RUNTIME_SCOPE);
