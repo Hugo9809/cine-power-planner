@@ -12093,6 +12093,9 @@ const autoGearConditionConfigs = AUTO_GEAR_CONDITION_KEYS.reduce((acc, key) => {
   }
   return acc;
 }, {});
+const createDeferredAutoGearRefresher = functionName => selected =>
+  callCoreFunctionIfAvailable(functionName, [selected], { defer: true });
+
 const autoGearConditionRefreshers = {
   always: null,
   scenarios: refreshAutoGearScenarioOptions,
@@ -12102,15 +12105,15 @@ const autoGearConditionRefreshers = {
   viewfinderExtension: refreshAutoGearViewfinderExtensionOptions,
   deliveryResolution: refreshAutoGearDeliveryResolutionOptions,
   videoDistribution: refreshAutoGearVideoDistributionOptions,
-  camera: selected => callCoreFunctionIfAvailable('refreshAutoGearCameraOptions', [selected], { defer: true }),
+  camera: createDeferredAutoGearRefresher('refreshAutoGearCameraOptions'),
   cameraWeight: refreshAutoGearCameraWeightCondition,
-  monitor: refreshAutoGearMonitorOptions,
+  monitor: createDeferredAutoGearRefresher('refreshAutoGearMonitorOptions'),
   crewPresent: selected => refreshAutoGearCrewOptions(autoGearCrewPresentSelect, selected, 'crewPresent'),
   crewAbsent: selected => refreshAutoGearCrewOptions(autoGearCrewAbsentSelect, selected, 'crewAbsent'),
-  wireless: refreshAutoGearWirelessOptions,
-  motors: refreshAutoGearMotorsOptions,
-  controllers: refreshAutoGearControllersOptions,
-  distance: refreshAutoGearDistanceOptions,
+  wireless: createDeferredAutoGearRefresher('refreshAutoGearWirelessOptions'),
+  motors: createDeferredAutoGearRefresher('refreshAutoGearMotorsOptions'),
+  controllers: createDeferredAutoGearRefresher('refreshAutoGearControllersOptions'),
+  distance: createDeferredAutoGearRefresher('refreshAutoGearDistanceOptions'),
 };
 const autoGearActiveConditions = new Set();
 

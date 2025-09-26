@@ -10959,6 +10959,12 @@ var autoGearConditionConfigs = AUTO_GEAR_CONDITION_KEYS.reduce(function (acc, ke
   }
   return acc;
 }, {});
+function createDeferredAutoGearRefresher(functionName) {
+  return function (selected) {
+    return callCoreFunctionIfAvailable(functionName, [selected], { defer: true });
+  };
+}
+
 var autoGearConditionRefreshers = {
   always: null,
   scenarios: refreshAutoGearScenarioOptions,
@@ -10968,21 +10974,19 @@ var autoGearConditionRefreshers = {
   viewfinderExtension: refreshAutoGearViewfinderExtensionOptions,
   deliveryResolution: refreshAutoGearDeliveryResolutionOptions,
   videoDistribution: refreshAutoGearVideoDistributionOptions,
-  camera: function camera(selected) {
-    return callCoreFunctionIfAvailable('refreshAutoGearCameraOptions', [selected], { defer: true });
-  },
+  camera: createDeferredAutoGearRefresher('refreshAutoGearCameraOptions'),
   cameraWeight: refreshAutoGearCameraWeightCondition,
-  monitor: refreshAutoGearMonitorOptions,
+  monitor: createDeferredAutoGearRefresher('refreshAutoGearMonitorOptions'),
   crewPresent: function crewPresent(selected) {
     return refreshAutoGearCrewOptions(autoGearCrewPresentSelect, selected, 'crewPresent');
   },
   crewAbsent: function crewAbsent(selected) {
     return refreshAutoGearCrewOptions(autoGearCrewAbsentSelect, selected, 'crewAbsent');
   },
-  wireless: refreshAutoGearWirelessOptions,
-  motors: refreshAutoGearMotorsOptions,
-  controllers: refreshAutoGearControllersOptions,
-  distance: refreshAutoGearDistanceOptions
+  wireless: createDeferredAutoGearRefresher('refreshAutoGearWirelessOptions'),
+  motors: createDeferredAutoGearRefresher('refreshAutoGearMotorsOptions'),
+  controllers: createDeferredAutoGearRefresher('refreshAutoGearControllersOptions'),
+  distance: createDeferredAutoGearRefresher('refreshAutoGearDistanceOptions')
 };
 var autoGearActiveConditions = new Set();
 function getAutoGearConditionConfig(key) {
