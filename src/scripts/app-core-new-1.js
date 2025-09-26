@@ -12740,9 +12740,19 @@ const storageSummaryEmpty = document.getElementById("storageSummaryEmpty");
 const storageSummaryFootnote = document.getElementById("storageSummaryFootnote");
 
 if (autoGearBackupRetentionInput) {
-  autoGearBackupRetentionInput.addEventListener('input', handleAutoGearBackupRetentionInput);
-  autoGearBackupRetentionInput.addEventListener('blur', handleAutoGearBackupRetentionBlur);
-  autoGearBackupRetentionInput.addEventListener('change', handleAutoGearBackupRetentionChange);
+  const queueAutoGearRetentionHandler = handlerName => {
+    callCoreFunctionIfAvailable(handlerName, [], { defer: true });
+  };
+
+  autoGearBackupRetentionInput.addEventListener('input', () => {
+    queueAutoGearRetentionHandler('handleAutoGearBackupRetentionInput');
+  });
+  autoGearBackupRetentionInput.addEventListener('blur', () => {
+    queueAutoGearRetentionHandler('handleAutoGearBackupRetentionBlur');
+  });
+  autoGearBackupRetentionInput.addEventListener('change', () => {
+    queueAutoGearRetentionHandler('handleAutoGearBackupRetentionChange');
+  });
 }
 
 function computeAutoGearMultiSelectSize(optionCount, {
