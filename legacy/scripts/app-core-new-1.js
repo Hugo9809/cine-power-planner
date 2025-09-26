@@ -11570,9 +11570,19 @@ var storageSummaryList = document.getElementById("storageSummaryList");
 var storageSummaryEmpty = document.getElementById("storageSummaryEmpty");
 var storageSummaryFootnote = document.getElementById("storageSummaryFootnote");
 if (autoGearBackupRetentionInput) {
-  autoGearBackupRetentionInput.addEventListener('input', handleAutoGearBackupRetentionInput);
-  autoGearBackupRetentionInput.addEventListener('blur', handleAutoGearBackupRetentionBlur);
-  autoGearBackupRetentionInput.addEventListener('change', handleAutoGearBackupRetentionChange);
+  var queueAutoGearRetentionHandler = function queueAutoGearRetentionHandler(handlerName) {
+    callCoreFunctionIfAvailable(handlerName, [], { defer: true });
+  };
+
+  autoGearBackupRetentionInput.addEventListener('input', function handleAutoGearRetentionInputEvent() {
+    queueAutoGearRetentionHandler('handleAutoGearBackupRetentionInput');
+  });
+  autoGearBackupRetentionInput.addEventListener('blur', function handleAutoGearRetentionBlurEvent() {
+    queueAutoGearRetentionHandler('handleAutoGearBackupRetentionBlur');
+  });
+  autoGearBackupRetentionInput.addEventListener('change', function handleAutoGearRetentionChangeEvent() {
+    queueAutoGearRetentionHandler('handleAutoGearBackupRetentionChange');
+  });
 }
 function computeAutoGearMultiSelectSize(optionCount) {
   var _ref45 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
