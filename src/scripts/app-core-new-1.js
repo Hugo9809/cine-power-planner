@@ -10603,11 +10603,22 @@ function createDeviceCategorySection(categoryKey) {
   section.appendChild(list);
   deviceListContainer.appendChild(section);
 
+  const resolveFilterScope = () => {
+    if (typeof globalThis !== 'undefined') return globalThis;
+    if (typeof window !== 'undefined') return window;
+    if (typeof self !== 'undefined') return self;
+    if (typeof global !== 'undefined') return global;
+    return null;
+  };
+
   const attachFilterBinding = () => {
-    if (typeof bindFilterInput !== 'function') {
+    const scope = resolveFilterScope();
+    const bindFn = scope && scope.bindFilterInput;
+    const filterFn = scope && scope.filterDeviceList;
+    if (typeof bindFn !== 'function' || typeof filterFn !== 'function') {
       return false;
     }
-    bindFilterInput(filterInput, () => filterDeviceList(list, filterInput.value));
+    bindFn(filterInput, () => filterFn(list, filterInput.value));
     return true;
   };
 
