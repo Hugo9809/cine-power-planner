@@ -48,6 +48,27 @@ function ensureTestDom() {
   }
 }
 
+function stubReadyState(value) {
+  const descriptor = Object.getOwnPropertyDescriptor(document, 'readyState');
+  try {
+    Object.defineProperty(document, 'readyState', {
+      configurable: true,
+      get: () => value,
+    });
+  } catch (error) {
+    void error;
+  }
+  return descriptor || null;
+}
+
+function restoreReadyState(descriptor) {
+  if (descriptor) {
+    Object.defineProperty(document, 'readyState', descriptor);
+  } else {
+    delete document.readyState;
+  }
+}
+
 function loadApp() {
   jest.resetModules();
   ensureTestDom();
@@ -83,7 +104,12 @@ function loadApp() {
   global.showNotification = jest.fn();
 
   const { loadRuntime } = require('../../helpers/runtimeLoader');
-  return loadRuntime();
+  const descriptor = stubReadyState('loading');
+  try {
+    return loadRuntime();
+  } finally {
+    restoreReadyState(descriptor);
+  }
 }
 
 module.exports = {
