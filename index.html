@@ -2271,6 +2271,16 @@
               reading immediately.
             </li>
             <li>
+              Check the
+              <a
+                class="help-link button-link"
+                href="#offlineIndicator"
+                data-help-target="#offlineIndicator"
+              >Offline indicator</a>
+              in the header before disconnecting—when it glows, all locally stored Uicons, fonts and help articles are cached
+              and every save, share, backup and restore workflow is ready for use without a connection.
+            </li>
+            <li>
               Select
               <a class="help-link button-link" href="#hoverHelpButton" data-help-target="#hoverHelpButton"
                 >Hover for help</a
@@ -4359,6 +4369,12 @@
                 matches common keywords and alternate spellings, so queries like “favourites” still highlight the Favorites tips.
               </li>
               <li>
+                The
+                <a class="help-link" href="#helpResultsSummary" data-help-target="#helpResultsSummary">results summary</a>
+                above the topics reports how many sections match your search so you can confirm nothing is hiding off-screen.
+                It appears automatically once you start filtering and disappears again when every topic is visible.
+              </li>
+              <li>
                 Close the dialog with <kbd>Escape</kbd>, by clicking outside or by pressing
                 <a class="help-link button-link" href="#closeHelp" data-help-target="#closeHelp">Close</a>.
               </li>
@@ -4425,6 +4441,63 @@
               —both actions prompt you to save a safety backup first.
             </li>
           </ul>
+          <div
+            id="rapidRecoveryDrill"
+            class="help-callout"
+            role="note"
+            aria-label="Rapid recovery drill"
+          >
+            <h4>Rapid recovery drill</h4>
+            <ol>
+              <li>
+                Open
+                <a class="help-link button-link" href="#settingsButton" data-help-target="#settingsButton">Settings</a>
+                →
+                <a
+                  class="help-link"
+                  href="#settingsDialog"
+                  data-help-target="#settingsShowAutoBackups"
+                  data-help-highlight="#settingsDialog"
+                ><em>Backup &amp; Restore</em></a>
+                and enable
+                <a
+                  class="help-link"
+                  href="#settingsDialog"
+                  data-help-target="#settingsShowAutoBackups"
+                  data-help-highlight="#settingsDialog"
+                >Show auto backups in project list</a>
+                so the latest safety snapshots surface beside your manual saves.
+              </li>
+              <li>
+                Download a fresh
+                <a class="help-link button-link" href="#shareSetupBtn" data-help-target="#shareSetupBtn"><strong>Export project</strong></a>
+                and full-app
+                <a class="help-link button-link" href="#backupSettings" data-help-target="#backupSettings"><strong>Backup</strong></a>
+                , then copy both files to redundant storage (for example, two SSDs) before clearing caches or switching devices.
+              </li>
+              <li>
+                Verify the files without risking your live data by running a
+                <a
+                  class="help-link button-link"
+                  href="#restoreRehearsalButton"
+                  data-help-target="#restoreRehearsalButton"
+                  data-help-highlight="#restoreRehearsalSection"
+                ><strong>Restore rehearsal</strong></a>
+                . Review the
+                <a
+                  class="help-link"
+                  href="#restoreRehearsalTable"
+                  data-help-target="#restoreRehearsalTable"
+                  data-help-highlight="#restoreRehearsalSection"
+                >comparison table</a>
+                and keep the automatically generated safety snapshot until the rehearsal confirms everything looks correct.
+              </li>
+            </ol>
+            <p class="help-callout-note">
+              Tip: Log where the verified copies live and keep one drive offline—future restore checks are faster when you can
+              retrace the audit trail instantly.
+            </p>
+          </div>
         </section>
         <section
           data-help-section
