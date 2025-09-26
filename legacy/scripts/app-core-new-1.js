@@ -120,6 +120,39 @@ function enqueueCoreBootTask(task) {
     CORE_BOOT_QUEUE.push(task);
   }
 }
+function callCoreFunctionIfAvailable(functionName, args, options) {
+  var scope =
+    CORE_GLOBAL_SCOPE ||
+    (typeof globalThis !== 'undefined' ? globalThis : null) ||
+    (typeof window !== 'undefined' ? window : null) ||
+    (typeof self !== 'undefined' ? self : null) ||
+    (typeof global !== 'undefined' ? global : null);
+  var callArgs = Array.isArray(args) ? args : [];
+  var target = typeof functionName === 'string' ? scope && scope[functionName] : functionName;
+  if (typeof target === 'function') {
+    try {
+      return target.apply(scope, callArgs);
+    } catch (invokeError) {
+      if (typeof console !== 'undefined' && typeof console.error === 'function') {
+        console.error("Failed to invoke ".concat(functionName), invokeError);
+      }
+    }
+    return void 0;
+  }
+  if (options && options.defer === true) {
+    var deferredOptions = { defer: false };
+    if (options && Object.prototype.hasOwnProperty.call(options, 'defaultValue')) {
+      deferredOptions.defaultValue = options.defaultValue;
+    }
+    enqueueCoreBootTask(function () {
+      callCoreFunctionIfAvailable(functionName, callArgs, deferredOptions);
+    });
+  }
+  if (options && Object.prototype.hasOwnProperty.call(options, 'defaultValue')) {
+    return options.defaultValue;
+  }
+  return void 0;
+}
 function fallbackStableStringify(value) {
   if (value === null) return 'null';
   if (value === undefined) return 'undefined';
@@ -10935,7 +10968,9 @@ var autoGearConditionRefreshers = {
   viewfinderExtension: refreshAutoGearViewfinderExtensionOptions,
   deliveryResolution: refreshAutoGearDeliveryResolutionOptions,
   videoDistribution: refreshAutoGearVideoDistributionOptions,
-  camera: refreshAutoGearCameraOptions,
+  camera: function camera(selected) {
+    return callCoreFunctionIfAvailable('refreshAutoGearCameraOptions', [selected], { defer: true });
+  },
   cameraWeight: refreshAutoGearCameraWeightCondition,
   monitor: refreshAutoGearMonitorOptions,
   crewPresent: function crewPresent(selected) {

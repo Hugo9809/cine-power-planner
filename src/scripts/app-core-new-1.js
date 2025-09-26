@@ -3489,10 +3489,10 @@ function normalizeAutoGearMonitorCatalogMode(value) {
   return 'none';
 }
 
-let autoGearMonitorCatalogMode = 'none';
-let autoGearMonitorDefaultGroups = [];
-let autoGearAddMonitorFieldGroup = null;
-let autoGearRemoveMonitorFieldGroup = null;
+var autoGearMonitorCatalogMode = 'none';
+var autoGearMonitorDefaultGroups = [];
+var autoGearAddMonitorFieldGroup = null;
+var autoGearRemoveMonitorFieldGroup = null;
 
 function collectAutoGearMonitorNames(type = autoGearMonitorCatalogMode) {
   const mode = normalizeAutoGearMonitorCatalogMode(type);
@@ -12102,7 +12102,7 @@ const autoGearConditionRefreshers = {
   viewfinderExtension: refreshAutoGearViewfinderExtensionOptions,
   deliveryResolution: refreshAutoGearDeliveryResolutionOptions,
   videoDistribution: refreshAutoGearVideoDistributionOptions,
-  camera: selected => callCoreFunctionIfAvailable('refreshAutoGearCameraOptions', [selected]),
+  camera: selected => callCoreFunctionIfAvailable('refreshAutoGearCameraOptions', [selected], { defer: true }),
   cameraWeight: refreshAutoGearCameraWeightCondition,
   monitor: refreshAutoGearMonitorOptions,
   crewPresent: selected => refreshAutoGearCrewOptions(autoGearCrewPresentSelect, selected, 'crewPresent'),
