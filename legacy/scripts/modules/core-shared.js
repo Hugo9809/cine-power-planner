@@ -108,8 +108,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         return cachedConnectorSummaryGenerator;
       }
     }
-    if (typeof generateConnectorSummary === 'function') {
-      cachedConnectorSummaryGenerator = generateConnectorSummary;
+    if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.generateConnectorSummary === 'function') {
+      cachedConnectorSummaryGenerator = GLOBAL_SCOPE.generateConnectorSummary;
       connectorSummaryCachePrimed = true;
       return cachedConnectorSummaryGenerator;
     }

@@ -41,23 +41,80 @@ function resolveCoreShared() {
   return null;
 }
 var CORE_SHARED = resolveCoreShared() || {};
-var CORE_BOOT_QUEUE_KEY = '__coreRuntimeBootQueue';
-var CORE_BOOT_QUEUE = function () {
-  if (CORE_SHARED && _typeof(CORE_SHARED) === 'object') {
-    if (!Array.isArray(CORE_SHARED[CORE_BOOT_QUEUE_KEY])) {
-      CORE_SHARED[CORE_BOOT_QUEUE_KEY] = [];
+var CORE_BOOT_QUEUE_KEY = function resolveLegacyCoreBootQueueKey(scope) {
+  var fallbackKey = '__coreRuntimeBootQueue';
+
+  if (scope && _typeof(scope) === 'object') {
+    var existingPublic = scope.CORE_BOOT_QUEUE_KEY;
+    var existingHidden = scope.__cineCoreBootQueueKey;
+
+    if (typeof existingPublic === 'string' && existingPublic) {
+      try {
+        scope.__cineCoreBootQueueKey = existingPublic;
+      } catch (syncError) {
+        void syncError;
+        scope.__cineCoreBootQueueKey = existingPublic;
+      }
+      return existingPublic;
     }
-    return CORE_SHARED[CORE_BOOT_QUEUE_KEY];
+
+    if (typeof existingHidden === 'string' && existingHidden) {
+      if (typeof scope.CORE_BOOT_QUEUE_KEY !== 'string' || !scope.CORE_BOOT_QUEUE_KEY) {
+        try {
+          scope.CORE_BOOT_QUEUE_KEY = existingHidden;
+        } catch (shadowError) {
+          void shadowError;
+          scope.CORE_BOOT_QUEUE_KEY = existingHidden;
+        }
+      }
+      return existingHidden;
+    }
   }
-  if (CORE_GLOBAL_SCOPE) {
-    var shared = CORE_GLOBAL_SCOPE.cineCoreShared || (CORE_GLOBAL_SCOPE.cineCoreShared = {});
-    if (!Array.isArray(shared[CORE_BOOT_QUEUE_KEY])) {
-      shared[CORE_BOOT_QUEUE_KEY] = [];
+
+  if (scope && _typeof(scope) === 'object') {
+    try {
+      scope.__cineCoreBootQueueKey = fallbackKey;
+    } catch (hiddenAssignError) {
+      void hiddenAssignError;
+      scope.__cineCoreBootQueueKey = fallbackKey;
     }
-    return shared[CORE_BOOT_QUEUE_KEY];
+
+    if (typeof scope.CORE_BOOT_QUEUE_KEY !== 'string' || !scope.CORE_BOOT_QUEUE_KEY) {
+      try {
+        scope.CORE_BOOT_QUEUE_KEY = fallbackKey;
+      } catch (publicAssignError) {
+        void publicAssignError;
+        scope.CORE_BOOT_QUEUE_KEY = fallbackKey;
+      }
+    }
+  }
+
+  return fallbackKey;
+}(CORE_GLOBAL_SCOPE);
+var CORE_BOOT_QUEUE = function () {
+  if (CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object') {
+    var shared = CORE_GLOBAL_SCOPE.cineCoreShared;
+    if (shared && _typeof(shared) === 'object') {
+      var sharedQueue = shared[CORE_BOOT_QUEUE_KEY];
+      if (Array.isArray(sharedQueue)) {
+        return sharedQueue;
+      }
+      var sharedExtensible = typeof Object.isExtensible === 'function' ? Object.isExtensible(shared) : true;
+      if (sharedExtensible) {
+        shared[CORE_BOOT_QUEUE_KEY] = [];
+        return shared[CORE_BOOT_QUEUE_KEY];
+      }
+    }
+    if (!Array.isArray(CORE_GLOBAL_SCOPE.CORE_BOOT_QUEUE)) {
+      CORE_GLOBAL_SCOPE.CORE_BOOT_QUEUE = [];
+    }
+    return CORE_GLOBAL_SCOPE.CORE_BOOT_QUEUE;
   }
   return [];
 }();
+if (CORE_GLOBAL_SCOPE && CORE_GLOBAL_SCOPE.CORE_BOOT_QUEUE !== CORE_BOOT_QUEUE) {
+  CORE_GLOBAL_SCOPE.CORE_BOOT_QUEUE = CORE_BOOT_QUEUE;
+}
 function enqueueCoreBootTask(task) {
   if (typeof task === 'function') {
     CORE_BOOT_QUEUE.push(task);
@@ -6766,9 +6823,10 @@ function setLanguage(lang) {
       if (_noneLabel2) viewfinderExtensionSelect.options[0].textContent = _noneLabel2;
       if (yesLabel) viewfinderExtensionSelect.options[1].textContent = yesLabel;
     }
-    var cancelText = projectFormTexts.cancel || fallbackProjectForm.cancel || (projectCancelBtn ? projectCancelBtn.textContent : projectDialogCloseBtn === null || projectDialogCloseBtn === void 0 ? void 0 : projectDialogCloseBtn.getAttribute('aria-label')) || 'Cancel';
-    if (projectCancelBtn) {
-      setButtonLabelWithIcon(projectCancelBtn, cancelText, ICON_GLYPHS.circleX);
+    var projectCancelButton = typeof document !== 'undefined' ? document.getElementById('projectCancel') : null;
+    var cancelText = projectFormTexts.cancel || fallbackProjectForm.cancel || (projectCancelButton ? projectCancelButton.textContent : projectDialogCloseBtn === null || projectDialogCloseBtn === void 0 ? void 0 : projectDialogCloseBtn.getAttribute('aria-label')) || 'Cancel';
+    if (projectCancelButton) {
+      setButtonLabelWithIcon(projectCancelButton, cancelText, ICON_GLYPHS.circleX);
     }
     if (projectDialogCloseBtn) {
       projectDialogCloseBtn.innerHTML = iconMarkup(ICON_GLYPHS.circleX, 'btn-icon');

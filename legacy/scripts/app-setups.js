@@ -57,15 +57,16 @@ if (deleteGearListProjectBtn) {
     deleteCurrentGearList();
   });
 }
-if (projectCancelBtn) {
-  projectCancelBtn.addEventListener('click', function () {
+var projectCancelBtnRef = typeof projectCancelBtn !== 'undefined' ? projectCancelBtn : null;
+if (projectCancelBtnRef) {
+  projectCancelBtnRef.addEventListener('click', function () {
     closeDialog(projectDialog);
   });
 }
 if (projectDialogCloseBtn) {
   projectDialogCloseBtn.addEventListener('click', function () {
-    if (projectCancelBtn) {
-      projectCancelBtn.click();
+    if (projectCancelBtnRef) {
+      projectCancelBtnRef.click();
     } else {
       closeDialog(projectDialog);
     }

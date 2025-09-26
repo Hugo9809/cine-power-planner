@@ -64,16 +64,17 @@ if (deleteGearListProjectBtn) {
     });
 }
 
-if (projectCancelBtn) {
-    projectCancelBtn.addEventListener('click', () => {
+const projectCancelBtnRef = typeof projectCancelBtn !== 'undefined' ? projectCancelBtn : null;
+if (projectCancelBtnRef) {
+    projectCancelBtnRef.addEventListener('click', () => {
         closeDialog(projectDialog);
     });
 }
 
 if (projectDialogCloseBtn) {
     projectDialogCloseBtn.addEventListener('click', () => {
-        if (projectCancelBtn) {
-            projectCancelBtn.click();
+        if (projectCancelBtnRef) {
+            projectCancelBtnRef.click();
         } else {
             closeDialog(projectDialog);
         }
