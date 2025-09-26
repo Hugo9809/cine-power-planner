@@ -4833,9 +4833,40 @@ function clearAllData() {
   }
 
   function parseStoredBoolean(value) {
-    if (value === null) return null;
-    if (value === 'true' || value === '1') return true;
-    if (value === 'false' || value === '0') return false;
+    if (value === null || value === undefined) {
+      return null;
+    }
+
+    if (typeof value === 'boolean') {
+      return value;
+    }
+
+    if (typeof value === 'number') {
+      if (Number.isNaN(value)) {
+        return null;
+      }
+      return value !== 0;
+    }
+
+    const normalized = String(value).trim().toLowerCase();
+    if (!normalized) {
+      return null;
+    }
+
+    if (normalized === 'true'
+        || normalized === '1'
+        || normalized === 'yes'
+        || normalized === 'on') {
+      return true;
+    }
+
+    if (normalized === 'false'
+        || normalized === '0'
+        || normalized === 'no'
+        || normalized === 'off') {
+      return false;
+    }
+
     return null;
   }
 
