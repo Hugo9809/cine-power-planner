@@ -156,6 +156,42 @@ const coreHumanizeKey = typeof CORE_SHARED_LOCAL.humanizeKey === 'function'
   ? CORE_SHARED_LOCAL.humanizeKey
   : fallbackHumanizeKey;
 
+function callCoreFunctionFromPart2(functionName, args = [], options = {}) {
+  if (typeof callCoreFunctionIfAvailable === 'function') {
+    return callCoreFunctionIfAvailable(functionName, args, options);
+  }
+
+  const scope =
+    CORE_SHARED_SCOPE_PART2 ||
+    (typeof globalThis !== 'undefined' ? globalThis : null) ||
+    (typeof window !== 'undefined' ? window : null) ||
+    (typeof self !== 'undefined' ? self : null) ||
+    (typeof global !== 'undefined' ? global : null);
+
+  const target = typeof functionName === 'string' ? scope && scope[functionName] : functionName;
+
+  if (typeof target === 'function') {
+    try {
+      return target.apply(scope, args);
+    } catch (invokeError) {
+      if (typeof console !== 'undefined' && typeof console.error === 'function') {
+        console.error(`Failed to invoke ${functionName}`, invokeError);
+      }
+    }
+    return undefined;
+  }
+
+  if (options && options.defer === true && Array.isArray(CORE_BOOT_QUEUE_PART2)) {
+    CORE_BOOT_QUEUE_PART2.push(() => {
+      callCoreFunctionFromPart2(functionName, args, { ...options, defer: false });
+    });
+  }
+
+  return options && Object.prototype.hasOwnProperty.call(options, 'defaultValue')
+    ? options.defaultValue
+    : undefined;
+}
+
 function refreshAutoGearCrewOptions(selectElement, selected, key) {
   if (!selectElement) return;
 
@@ -8687,9 +8723,7 @@ function displayGearAndRequirements(html) {
     globalThis.__cineLastGearListHtml = combinedHtmlSnapshot;
   }
   updateGearListButtonVisibility();
-  if (typeof updateAutoGearHighlightToggleButton === 'function') {
-    updateAutoGearHighlightToggleButton();
-  }
+  callCoreFunctionFromPart2('updateAutoGearHighlightToggleButton', [], { defer: true });
 }
 function getSliderBowlSelect() {
   return gearListOutput ? gearListOutput.querySelector('#gearListSliderBowl') : null;

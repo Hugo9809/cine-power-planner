@@ -21,7 +21,7 @@
           updateAutoGearHighlightToggleButton,
           clearUiCacheStorageEntries, __cineGlobal, humanizeKey,
           normalizeBatteryPlateValue, applyBatteryPlateSelectionFromBattery,
-          settingsReduceMotion, settingsRelaxedSpacing */
+          settingsReduceMotion, settingsRelaxedSpacing, callCoreFunctionIfAvailable */
 /* eslint-enable no-redeclare */
 /* global triggerPinkModeIconRain, loadDeviceData, loadSetups, loadSessionState,
           loadFeedback, loadFavorites, loadAutoGearBackups,
@@ -36,6 +36,44 @@ const sessionCineUi =
   || (typeof window !== 'undefined' && window.cineUi)
   || (typeof self !== 'undefined' && self.cineUi)
   || null;
+
+function callSessionCoreFunction(functionName, args = [], options = {}) {
+  if (typeof callCoreFunctionIfAvailable === 'function') {
+    return callCoreFunctionIfAvailable(functionName, args, options);
+  }
+
+  const scope =
+    (typeof globalThis !== 'undefined' ? globalThis : null)
+    || (typeof window !== 'undefined' ? window : null)
+    || (typeof self !== 'undefined' ? self : null)
+    || (typeof global !== 'undefined' ? global : null);
+
+  const target = typeof functionName === 'string' ? scope && scope[functionName] : functionName;
+
+  if (typeof target === 'function') {
+    try {
+      return target.apply(scope, args);
+    } catch (invokeError) {
+      if (typeof console !== 'undefined' && typeof console.error === 'function') {
+        console.error(`Failed to invoke ${functionName}`, invokeError);
+      }
+    }
+    return undefined;
+  }
+
+  if (options && options.defer === true) {
+    const queue = scope && Array.isArray(scope.CORE_BOOT_QUEUE) ? scope.CORE_BOOT_QUEUE : null;
+    if (queue) {
+      queue.push(() => {
+        callSessionCoreFunction(functionName, args, { ...options, defer: false });
+      });
+    }
+  }
+
+  return options && Object.prototype.hasOwnProperty.call(options, 'defaultValue')
+    ? options.defaultValue
+    : undefined;
+}
 
 const temperaturePreferenceStorageKey =
   typeof TEMPERATURE_STORAGE_KEY === 'string'
@@ -2083,9 +2121,7 @@ function restoreSessionState() {
     setAutoGearHighlightEnabled(highlightPreference);
   } else if (gearListOutput && gearListOutput.classList) {
     gearListOutput.classList.toggle('show-auto-gear-highlight', highlightPreference);
-    if (typeof updateAutoGearHighlightToggleButton === 'function') {
-      updateAutoGearHighlightToggleButton();
-    }
+    callSessionCoreFunction('updateAutoGearHighlightToggleButton', [], { defer: true });
   }
   lastSetupName = setupSelect ? setupSelect.value : '';
   restoringSession = false;
@@ -2953,7 +2989,7 @@ if (settingsButton && settingsDialog) {
       refreshAutoGearCameraHandleOptions();
       refreshAutoGearViewfinderExtensionOptions();
       refreshAutoGearVideoDistributionOptions();
-      refreshAutoGearCameraOptions();
+      callSessionCoreFunction('refreshAutoGearCameraOptions', [], { defer: true });
       refreshAutoGearMonitorOptions();
       refreshAutoGearWirelessOptions();
       refreshAutoGearMotorsOptions();

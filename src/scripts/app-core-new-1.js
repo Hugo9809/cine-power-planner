@@ -3490,6 +3490,9 @@ function normalizeAutoGearMonitorCatalogMode(value) {
 }
 
 let autoGearMonitorCatalogMode = 'none';
+let autoGearMonitorDefaultGroups = [];
+let autoGearAddMonitorFieldGroup = null;
+let autoGearRemoveMonitorFieldGroup = null;
 
 function collectAutoGearMonitorNames(type = autoGearMonitorCatalogMode) {
   const mode = normalizeAutoGearMonitorCatalogMode(type);
@@ -12099,7 +12102,7 @@ const autoGearConditionRefreshers = {
   viewfinderExtension: refreshAutoGearViewfinderExtensionOptions,
   deliveryResolution: refreshAutoGearDeliveryResolutionOptions,
   videoDistribution: refreshAutoGearVideoDistributionOptions,
-  camera: refreshAutoGearCameraOptions,
+  camera: selected => callCoreFunctionIfAvailable('refreshAutoGearCameraOptions', [selected]),
   cameraWeight: refreshAutoGearCameraWeightCondition,
   monitor: refreshAutoGearMonitorOptions,
   crewPresent: selected => refreshAutoGearCrewOptions(autoGearCrewPresentSelect, selected, 'crewPresent'),
@@ -12669,7 +12672,7 @@ const autoGearRemoveSelectorDefaultField = autoGearRemoveSelectorDefaultInput?.c
   || autoGearRemoveSelectorDefaultLabel?.closest('.auto-gear-field')
   || null;
 
-const autoGearAddMonitorFieldGroup = {
+autoGearAddMonitorFieldGroup = {
   select: autoGearAddCategorySelect,
   screenSizeField: autoGearAddScreenSizeField,
   screenSizeInput: autoGearAddScreenSizeInput,
@@ -12679,7 +12682,7 @@ const autoGearAddMonitorFieldGroup = {
   selectorDefaultInput: autoGearAddSelectorDefaultInput,
 };
 
-const autoGearRemoveMonitorFieldGroup = {
+autoGearRemoveMonitorFieldGroup = {
   select: autoGearRemoveCategorySelect,
   screenSizeField: autoGearRemoveScreenSizeField,
   screenSizeInput: autoGearRemoveScreenSizeInput,
@@ -12689,7 +12692,7 @@ const autoGearRemoveMonitorFieldGroup = {
   selectorDefaultInput: autoGearRemoveSelectorDefaultInput,
 };
 
-const autoGearMonitorDefaultGroups = [
+autoGearMonitorDefaultGroups = [
   {
     selectorTypeSelect: autoGearAddSelectorTypeSelect,
     selectorDefaultInput: autoGearAddSelectorDefaultInput,
@@ -12701,8 +12704,12 @@ const autoGearMonitorDefaultGroups = [
 ].filter(group => group.selectorDefaultInput);
 
 function syncAutoGearMonitorFieldVisibility() {
-  updateAutoGearMonitorFieldGroup(autoGearAddMonitorFieldGroup);
-  updateAutoGearMonitorFieldGroup(autoGearRemoveMonitorFieldGroup);
+  if (autoGearAddMonitorFieldGroup) {
+    updateAutoGearMonitorFieldGroup(autoGearAddMonitorFieldGroup);
+  }
+  if (autoGearRemoveMonitorFieldGroup) {
+    updateAutoGearMonitorFieldGroup(autoGearRemoveMonitorFieldGroup);
+  }
 }
 var autoGearExportButton = document.getElementById('autoGearExport');
 var autoGearImportButton = document.getElementById('autoGearImport');
