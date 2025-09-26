@@ -94,20 +94,20 @@ var AUTO_GEAR_BACKUP_RETENTION_STORAGE_KEY = 'cameraPowerPlanner_autoGearBackupR
 var FULL_BACKUP_HISTORY_STORAGE_KEY = 'cameraPowerPlanner_fullBackups';
 var STORAGE_AUTO_BACKUP_NAME_PREFIX = 'auto-backup-';
 var STORAGE_AUTO_BACKUP_DELETION_PREFIX = 'auto-backup-before-delete-';
-var AUTO_BACKUP_RENAMED_FLAG = '__cineAutoBackupRenamed';
+var STORAGE_AUTO_BACKUP_RENAMED_FLAG = '__cineAutoBackupRenamed';
 if (GLOBAL_SCOPE && _typeof(GLOBAL_SCOPE) === 'object') {
   try {
     if (!Object.prototype.hasOwnProperty.call(GLOBAL_SCOPE, '__CINE_AUTO_BACKUP_RENAMED_FLAG')) {
       Object.defineProperty(GLOBAL_SCOPE, '__CINE_AUTO_BACKUP_RENAMED_FLAG', {
         configurable: true,
         writable: false,
-        value: AUTO_BACKUP_RENAMED_FLAG
+        value: STORAGE_AUTO_BACKUP_RENAMED_FLAG
       });
     }
   } catch (error) {
     void error;
     try {
-      GLOBAL_SCOPE.__CINE_AUTO_BACKUP_RENAMED_FLAG = AUTO_BACKUP_RENAMED_FLAG;
+      GLOBAL_SCOPE.__CINE_AUTO_BACKUP_RENAMED_FLAG = STORAGE_AUTO_BACKUP_RENAMED_FLAG;
     } catch (assignmentError) {
       void assignmentError;
     }
@@ -1167,11 +1167,11 @@ function markAutoBackupValueAsRenamed(value) {
     return;
   }
   try {
-    value[AUTO_BACKUP_RENAMED_FLAG] = true;
+    value[STORAGE_AUTO_BACKUP_RENAMED_FLAG] = true;
   } catch (assignmentError) {
     void assignmentError;
     try {
-      Object.defineProperty(value, AUTO_BACKUP_RENAMED_FLAG, {
+      Object.defineProperty(value, STORAGE_AUTO_BACKUP_RENAMED_FLAG, {
         configurable: true,
         enumerable: true,
         writable: true,
@@ -1183,7 +1183,7 @@ function markAutoBackupValueAsRenamed(value) {
   }
   if (isPlainObject(value.projectInfo)) {
     try {
-      value.projectInfo[AUTO_BACKUP_RENAMED_FLAG] = true;
+      value.projectInfo[STORAGE_AUTO_BACKUP_RENAMED_FLAG] = true;
     } catch (infoError) {
       void infoError;
     }
@@ -1193,10 +1193,10 @@ function isAutoBackupValueRenamed(value) {
   if (!value || _typeof(value) !== 'object') {
     return false;
   }
-  if (value[AUTO_BACKUP_RENAMED_FLAG] === true) {
+  if (value[STORAGE_AUTO_BACKUP_RENAMED_FLAG] === true) {
     return true;
   }
-  if (isPlainObject(value.projectInfo) && value.projectInfo[AUTO_BACKUP_RENAMED_FLAG] === true) {
+  if (isPlainObject(value.projectInfo) && value.projectInfo[STORAGE_AUTO_BACKUP_RENAMED_FLAG] === true) {
     return true;
   }
   return false;

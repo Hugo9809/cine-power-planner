@@ -1,13 +1,34 @@
-const SHARED_GLOBAL_SCOPE =
-  typeof globalThis !== 'undefined'
-    ? globalThis
-    : typeof window !== 'undefined'
-      ? window
-      : typeof self !== 'undefined'
-        ? self
-        : typeof global !== 'undefined'
-          ? global
-          : null;
+const CORE_SHARED_SCOPE_PART2 =
+  typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE
+    ? CORE_GLOBAL_SCOPE
+    : typeof globalThis !== 'undefined'
+      ? globalThis
+      : typeof window !== 'undefined'
+        ? window
+        : typeof self !== 'undefined'
+          ? self
+          : typeof global !== 'undefined'
+            ? global
+            : null;
+
+function resolveCoreSharedPart2() {
+  if (CORE_SHARED_SCOPE_PART2 && CORE_SHARED_SCOPE_PART2.cineCoreShared) {
+    return CORE_SHARED_SCOPE_PART2.cineCoreShared;
+  }
+  if (typeof require === 'function') {
+    try {
+      return require('./modules/core-shared.js');
+    } catch (error) {
+      void error;
+    }
+  }
+  return null;
+}
+
+const CORE_SHARED_LOCAL =
+  typeof CORE_SHARED !== 'undefined' && CORE_SHARED
+    ? CORE_SHARED
+    : resolveCoreSharedPart2() || {};
 
 function fallbackStableStringify(value) {
   if (value === null) return 'null';
@@ -23,7 +44,7 @@ function fallbackStableStringify(value) {
   return JSON.stringify(value);
 }
 
-const HUMANIZE_OVERRIDES = {
+const FALLBACK_HUMANIZE_OVERRIDES_PART2 = {
   powerDrawWatts: 'Power (W)',
   capacity: 'Capacity (Wh)',
   pinA: 'Pin A',
@@ -39,8 +60,8 @@ const HUMANIZE_OVERRIDES = {
 };
 
 function fallbackHumanizeKey(key) {
-  if (key && Object.prototype.hasOwnProperty.call(HUMANIZE_OVERRIDES, key)) {
-    return HUMANIZE_OVERRIDES[key];
+  if (key && Object.prototype.hasOwnProperty.call(FALLBACK_HUMANIZE_OVERRIDES_PART2, key)) {
+    return FALLBACK_HUMANIZE_OVERRIDES_PART2[key];
   }
 
   const stringValue = typeof key === 'string' ? key : String(key || '');
@@ -50,40 +71,13 @@ function fallbackHumanizeKey(key) {
     .replace(/^./, (c) => c.toUpperCase());
 }
 
-if (SHARED_GLOBAL_SCOPE) {
-  if (typeof SHARED_GLOBAL_SCOPE.stableStringify !== 'function') {
-    try {
-      SHARED_GLOBAL_SCOPE.stableStringify = fallbackStableStringify;
-    } catch (error) {
-      void error;
-    }
-  }
-  if (typeof SHARED_GLOBAL_SCOPE.humanizeKey !== 'function') {
-    try {
-      SHARED_GLOBAL_SCOPE.humanizeKey = fallbackHumanizeKey;
-    } catch (error) {
-      void error;
-    }
-  }
-}
+const coreStableStringify = typeof CORE_SHARED_LOCAL.stableStringify === 'function'
+  ? CORE_SHARED_LOCAL.stableStringify
+  : fallbackStableStringify;
 
-try {
-  if (typeof stableStringify !== 'function') {
-    // eslint-disable-next-line no-global-assign
-    stableStringify = SHARED_GLOBAL_SCOPE?.stableStringify || fallbackStableStringify;
-  }
-} catch (error) {
-  void error;
-}
-
-try {
-  if (typeof humanizeKey !== 'function') {
-    // eslint-disable-next-line no-global-assign
-    humanizeKey = SHARED_GLOBAL_SCOPE?.humanizeKey || fallbackHumanizeKey;
-  }
-} catch (error) {
-  void error;
-}
+const coreHumanizeKey = typeof CORE_SHARED_LOCAL.humanizeKey === 'function'
+  ? CORE_SHARED_LOCAL.humanizeKey
+  : fallbackHumanizeKey;
 
 function refreshAutoGearCrewOptions(selectElement, selected, key) {
   if (!selectElement) return;
@@ -1377,7 +1371,7 @@ function dedupeAutoGearRuleReferences(refs) {
 function createAutoGearItemKey(item) {
   const snapshot = autoGearItemSnapshot(item);
   if (!snapshot) return '';
-  return stableStringify({
+  return coreStableStringify({
     name: snapshot.name || '',
     category: snapshot.category || '',
     quantity: normalizeAutoGearQuantity(snapshot.quantity),
@@ -1411,7 +1405,7 @@ function createAutoGearTriggerKeyForSummary(rule) {
       ? { mode: triggers.shootingDays.mode, value: triggers.shootingDays.value }
       : null,
   };
-  return stableStringify(sorted);
+  return coreStableStringify(sorted);
 }
 
 function collectAutoGearScenarioCatalog() {
@@ -8776,17 +8770,17 @@ function computeSetupSignature(state) {
     state.monitor || '',
     state.video || '',
     state.cage || '',
-    stableStringify(state.motors || []),
-    stableStringify(state.controllers || []),
+    coreStableStringify(state.motors || []),
+    coreStableStringify(state.controllers || []),
     state.distance || '',
     state.batteryPlate || '',
     state.battery || '',
     state.batteryHotswap || '',
     state.sliderBowl || '',
     state.easyrig || '',
-    stableStringify(state.projectInfo || null),
-    stableStringify(state.autoGearRules || null),
-    stableStringify(state.diagramPositions || null)
+    coreStableStringify(state.projectInfo || null),
+    coreStableStringify(state.autoGearRules || null),
+    coreStableStringify(state.diagramPositions || null)
   ].join('||');
 }
 
@@ -13345,7 +13339,7 @@ function formatValue(value) {
     const parts = [];
     for (const k in value) {
       if (value[k] === '' || value[k] === null || value[k] === undefined) continue;
-      parts.push(`${humanizeKey(k)}: ${formatValue(value[k])}`);
+      parts.push(`${coreHumanizeKey(k)}: ${formatValue(value[k])}`);
     }
     return `{ ${parts.join(', ')} }`;
   }
@@ -13361,7 +13355,7 @@ function createDeviceDetailsList(deviceData) {
     if (value === '' || value === null || value === undefined) return;
     const li = document.createElement('li');
     const label = document.createElement('strong');
-    label.textContent = humanizeKey(key) + ':';
+    label.textContent = coreHumanizeKey(key) + ':';
     li.appendChild(label);
 
     if (Array.isArray(value)) {
