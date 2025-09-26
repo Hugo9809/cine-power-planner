@@ -28,11 +28,16 @@ time:
    Backup & Restore** to confirm the autosave status overlay reflects the same timestamp,
    then review **Settings → Data & Storage** to verify project, backup and gear counts
    updated as expected.
-4. **Capture baseline exports.** While still offline, export both a planner backup
+4. **Check the runtime guard.** Open the browser console and inspect
+   `window.__cineRuntimeIntegrity`. It should report `{ ok: true }` with an empty
+   `missing` list. Run `window.cineRuntime.verifyCriticalFlows()` if you need a fresh
+   report—the output lists every persistence, offline and UI safeguard that must stay
+   available before crews rely on the workstation.
+5. **Capture baseline exports.** While still offline, export both a planner backup
    (`planner-backup.json`) and a project bundle (`project-name.json`). Import the files into
    a private browser profile that also stays offline. Once you confirm the restore loop
    works end-to-end, delete the verification profile to prevent stale caches.
-5. **Archive the reference set.** Store the verified backup, bundle and a ZIP of the
+6. **Archive the reference set.** Store the verified backup, bundle and a ZIP of the
    repository on redundant encrypted media alongside a checksum manifest. These artifacts
    become your gold-standard comparison point during future audits.
 
@@ -55,10 +60,15 @@ connectivity:
    `auto-gear-rules-*.json` export in this drill—the import flow now verifies the file
    type, semantic version and timestamp metadata entirely offline, warning you about
    mismatches and restoring the pre-import snapshot automatically if validation fails.
-4. **Simulate outages.** With the verification profile still offline, reload the planner
+4. **Confirm safeguards stayed intact.** In the main profile, review
+   `window.__cineRuntimeIntegrity` or rerun
+   `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })` to ensure no
+   controller, share helper or backup routine dropped out between rehearsals. If the
+   report lists anything in `missing`, rehearse exports again before travelling.
+5. **Simulate outages.** With the verification profile still offline, reload the planner
    and navigate the interface. Confirm locally stored Uicons, fonts and helper scripts stay
    available and that autosave warnings do not appear.
-5. **Pack verified media.** Copy the newly validated exports plus the repository snapshot
+6. **Pack verified media.** Copy the newly validated exports plus the repository snapshot
    onto at least two encrypted drives that travel separately. Update your inventory list so
    every crew member knows where the redundant copies live.
 
