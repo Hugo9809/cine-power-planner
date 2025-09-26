@@ -107,6 +107,32 @@ function resolveCoreShared() {
 
 const CORE_SHARED = resolveCoreShared() || {};
 
+const CORE_BOOT_QUEUE_KEY = '__coreRuntimeBootQueue';
+const CORE_BOOT_QUEUE = (() => {
+  if (CORE_SHARED && typeof CORE_SHARED === 'object') {
+    if (!Array.isArray(CORE_SHARED[CORE_BOOT_QUEUE_KEY])) {
+      CORE_SHARED[CORE_BOOT_QUEUE_KEY] = [];
+    }
+    return CORE_SHARED[CORE_BOOT_QUEUE_KEY];
+  }
+
+  if (CORE_GLOBAL_SCOPE) {
+    const shared = CORE_GLOBAL_SCOPE.cineCoreShared || (CORE_GLOBAL_SCOPE.cineCoreShared = {});
+    if (!Array.isArray(shared[CORE_BOOT_QUEUE_KEY])) {
+      shared[CORE_BOOT_QUEUE_KEY] = [];
+    }
+    return shared[CORE_BOOT_QUEUE_KEY];
+  }
+
+  return [];
+})();
+
+function enqueueCoreBootTask(task) {
+  if (typeof task === 'function') {
+    CORE_BOOT_QUEUE.push(task);
+  }
+}
+
 function fallbackStableStringify(value) {
   if (value === null) return 'null';
   if (value === undefined) return 'undefined';
@@ -2106,8 +2132,10 @@ let autoGearRulesLastPersistedSignature = initialAutoGearRulesSignature;
 let autoGearRulesDirtySinceBackup =
   autoGearRulesLastPersistedSignature !== autoGearRulesLastBackupSignature;
 
-reconcileAutoGearAutoPresetState({ persist: true, skipRender: true });
-alignActiveAutoGearPreset({ skipRender: true });
+enqueueCoreBootTask(() => {
+  reconcileAutoGearAutoPresetState({ persist: true, skipRender: true });
+  alignActiveAutoGearPreset({ skipRender: true });
+});
 
 function assignAutoGearRules(rules) {
   autoGearRules = Array.isArray(rules)

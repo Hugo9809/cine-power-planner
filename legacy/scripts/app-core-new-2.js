@@ -36,6 +36,42 @@ function resolveCoreSharedPart2() {
   return null;
 }
 var CORE_SHARED_LOCAL = typeof CORE_SHARED !== 'undefined' && CORE_SHARED ? CORE_SHARED : resolveCoreSharedPart2() || {};
+var CORE_BOOT_QUEUE_KEY = '__coreRuntimeBootQueue';
+var CORE_BOOT_QUEUE = function () {
+  if (CORE_SHARED_LOCAL && _typeof(CORE_SHARED_LOCAL) === 'object') {
+    if (!Array.isArray(CORE_SHARED_LOCAL[CORE_BOOT_QUEUE_KEY])) {
+      CORE_SHARED_LOCAL[CORE_BOOT_QUEUE_KEY] = [];
+    }
+    return CORE_SHARED_LOCAL[CORE_BOOT_QUEUE_KEY];
+  }
+  if (CORE_SHARED_SCOPE_PART2) {
+    var shared = CORE_SHARED_SCOPE_PART2.cineCoreShared || (CORE_SHARED_SCOPE_PART2.cineCoreShared = {});
+    if (!Array.isArray(shared[CORE_BOOT_QUEUE_KEY])) {
+      shared[CORE_BOOT_QUEUE_KEY] = [];
+    }
+    return shared[CORE_BOOT_QUEUE_KEY];
+  }
+  return [];
+}();
+function flushCoreBootQueue() {
+  if (!Array.isArray(CORE_BOOT_QUEUE) || !CORE_BOOT_QUEUE.length) {
+    return;
+  }
+  var pending = CORE_BOOT_QUEUE.splice(0, CORE_BOOT_QUEUE.length);
+  for (var index = 0; index < pending.length; index += 1) {
+    var task = pending[index];
+    if (typeof task !== 'function') {
+      continue;
+    }
+    try {
+      task();
+    } catch (taskError) {
+      if (typeof console !== 'undefined' && typeof console.error === 'function') {
+        console.error('Core boot task failed', taskError);
+      }
+    }
+  }
+}
 function fallbackStableStringify(value) {
   if (value === null) return 'null';
   if (value === undefined) return 'undefined';
@@ -13237,6 +13273,7 @@ function refreshDeviceLists() {
     filterDeviceList(list, filterValue);
   });
 }
+flushCoreBootQueue();
 refreshDeviceLists();
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
