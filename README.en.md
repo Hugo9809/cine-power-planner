@@ -152,6 +152,10 @@ localization steps.
 - **Restore rehearsals** – load a full-app backup or project bundle into an
   isolated sandbox to confirm its contents match live data without touching
   production profiles.
+- **Backup history ledger** – every full-app backup download records its
+  timestamp and filename locally. Review counts in **Settings → Data & Storage**
+  or export the log alongside your archives so you can prove retention while
+  staying offline.
 - **Automatic gear rules** – design scenario-triggered additions or removals
   that apply after the generator runs, complete with import/export controls
   and timed backups.
@@ -161,6 +165,10 @@ localization steps.
 - **Data & storage dashboard** – audit stored projects, gear lists, custom
   devices, favorites and runtime feedback, and review approximate backup size
   without leaving the Settings dialog.
+- **Runtime safeguard inspector** – the runtime bundle now records verification
+  results on `window.__cineRuntimeIntegrity` and exposes
+  `window.cineRuntime.verifyCriticalFlows()` so crews can confirm save/share/
+  restore gateways before leaving for set.
 - **Autosave status overlay** – mirror the latest autosave note inside the
   settings dialog so crews see background activity while rehearsing recovery
   drills.
@@ -215,9 +223,13 @@ same online or offline.
    offline workflows are airtight and that locally stored Uicons, fonts and
    helper scripts follow the project.
 8. Archive the verified backup and project bundle alongside the repository copy
-   you opened. This keeps save, share, import, backup and restore workflows
-   provably in sync from the first session and gives you redundant recovery
-   media for travel days.
+   you opened. Log the verification date, machine name and operator so crews can
+   prove when the drill succeeded, keeping save, share, import, backup and
+   restore workflows provably in sync from the first session.
+9. Capture a console screenshot of `window.__cineRuntimeIntegrity` (or rerun
+   `window.cineRuntime.verifyCriticalFlows()` and store the report) to document
+   that the runtime guard validated every save/share/restore gateway while you
+   rehearsed offline.
 
 ## Key Workflow Reference
 
@@ -279,6 +291,10 @@ access.
 5. **Archive with confidence.** Delete the rehearsal profile after confirming
    everything restored cleanly, then label and file the verified exports with
    your production’s archival checklist.
+6. **Log the runtime guard.** In the same profile, open the developer console
+   and confirm `window.__cineRuntimeIntegrity.ok` is `true`. If you need a fresh
+   report, run `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })`
+   and archive the output alongside your rehearsal notes.
 
 ## Everyday Workflow
 
@@ -504,6 +520,9 @@ Use Cine Power Planner end-to-end with the following routine:
   hidden so you know at a glance when the planner is pristine.
 - The summary also estimates backup size using the most recent export, giving you
   a quick check that archives will fit on the storage you bring to set.
+- Full-app backups report their running total and feed the backup history ledger
+  so you can confirm hourly safety copies are captured before archiving them
+  offline.
 
 ## Storage Quota & Maintenance
 
@@ -537,6 +556,10 @@ Use Cine Power Planner end-to-end with the following routine:
   `planner-backup.json` with projects, custom devices, runtime feedback,
   favorites, automatic gear rules and UI state. Restores create a safety copy
   before importing and warn if the file was produced on another version.
+- **Backup history ledger** – each full-app backup writes an entry that you can
+  audit from **Settings → Data & Storage** or export with the archive. It keeps
+  timestamps and filenames aligned with your paper trail even when you rotate
+  media offline.
 - **Hidden migration backups** – before overwriting stored planners, setups or
   preferences, the app now preserves the previous JSON snapshot in a protected
   `__legacyMigrationBackup` slot. If a write ever fails or produces corrupt
@@ -549,6 +572,10 @@ Use Cine Power Planner end-to-end with the following routine:
   when you need a clean slate.
 - **Hourly reminders** – a background routine prompts an additional backup each
   hour so crews always have a recent snapshot ready to archive.
+- **Runtime integrity guard** – open the developer console and confirm
+  `window.__cineRuntimeIntegrity.ok` is `true` (or rerun
+  `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })`) before
+  travel. The report proves the offline save/share/restore gateways are intact.
 - **Verification loop** – after every critical backup, re-import it into a
   separate browser profile or private window, confirm projects and gear lists
   match expectations, then delete the temporary profile. This routine catches

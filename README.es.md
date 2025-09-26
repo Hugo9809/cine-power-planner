@@ -92,9 +92,11 @@ Consulta `docs/translation-guide.md` para más detalles sobre la localización.
 
 - **Comparación de copias de seguridad** – Selecciona guardados manuales o auto-backups, revisa diferencias, añade notas de incidente y exporta un registro antes de revertir cambios o entregar material a postproducción.
 - **Ensayos de restauración** – Carga copias completas o paquetes de proyectos en un entorno aislado para comprobar su contenido sin tocar perfiles de producción.
+- **Libro de historial de copias** – Cada descarga de copia completa registra su marca de tiempo y nombre de archivo localmente. Revísalo en **Configuración → Datos y almacenamiento** o exporta el registro junto con tus archivos para demostrar retención sin conexión.
 - **Reglas automáticas de equipo** – Define añadidos o retiradas activados por escenarios, con controles de importación/exportación y copias temporizadas.
 - **Panel de cobertura de reglas** – Resume disparadores duplicados, cambios netos, conflictos y escenarios sin cubrir dentro de Reglas automáticas de equipo, aplica filtros de foco sin conexión y comparte los mismos datos en exportaciones e impresiones.
 - **Panel de datos y almacenamiento** – Audita proyectos, listas, equipos personalizados, favoritos y comentarios de autonomía desde Configuración y estima el tamaño del backup.
+- **Inspector de salvaguardas en tiempo de ejecución** – El runtime guarda el resultado en `window.__cineRuntimeIntegrity` y ofrece `window.cineRuntime.verifyCriticalFlows()` para que el equipo confirme las rutas de guardado/compartido/restauración antes de viajar.
 - **Superposición de estado de auto-guardado** – Refleja la nota más reciente dentro del diálogo de ajustes para que el equipo vea la actividad de fondo durante los ensayos.
 - **Editor sensible al monitoreo** – Sólo muestra campos extra de monitores y distribución cuando el escenario lo requiere.
 - **Controles de acento y tipografía** – Ajusta color de acento, tamaño y familia de fuente; los temas oscuro, rosa y alto contraste persisten entre sesiones.
@@ -122,7 +124,8 @@ Ejecuta esta lista tras instalar o actualizar el planner. Confirma que guardado,
 5. Crea un proyecto, pulsa **Enter** (o **Ctrl+S**/`⌘S`) para guardar manualmente y revisa el selector para ver el auto-backup con sello horario que aparece a los pocos minutos.
 6. Exporta **Configuración → Copia de seguridad y restauración → Copia de seguridad** e importa el archivo `planner-backup.json` en un perfil privado. Verificar la ruta de restauración demuestra que ninguna copia queda atrapada y que la salvaguarda previa funciona.
 7. Practica la exportación de un paquete (`project-name.json`) y su importación en otro equipo o perfil. Ensayar el flujo Guardar → Compartir → Importar asegura que los recursos locales acompañan al proyecto.
-8. Archiva la copia verificada y el paquete junto a la versión del repositorio usada. Así mantienes sincronizados los flujos y tienes medios redundantes para viajar.
+8. Archiva la copia verificada y el paquete junto a la versión del repositorio usada. Registra fecha, equipo y operador para dejar constancia de cuándo se validó el ensayo y mantener los flujos sincronizados desde la primera sesión.
+9. Abre la consola del navegador y captura `window.__cineRuntimeIntegrity` (o vuelve a ejecutar `window.cineRuntime.verifyCriticalFlows()` y guarda el informe). Ese registro demuestra que la guarda en tiempo de ejecución validó las rutas de guardado/compartido/restauración durante la práctica offline.
 
 ## Requisitos del sistema y navegadores
 
@@ -140,6 +143,7 @@ Repite esta rutina cuando se incorpore personal, se prepare una estación nueva 
 3. **Ensayo de restauración.** Cambia a un perfil privado (o segunda máquina), importa la copia completa y después el paquete. Comprueba listas, paneles, reglas y favoritos.
 4. **Verificación offline.** En el perfil de ensayo, desconecta la red y recarga `index.html`. Confirma que aparece el indicador offline y que los Uicons y scripts locales cargan correctamente.
 5. **Archiva con confianza.** Borra el perfil de ensayo tras confirmar la restauración y etiqueta los archivos verificados según el protocolo del proyecto.
+6. **Registra la guarda runtime.** En el mismo perfil, abre la consola y confirma que `window.__cineRuntimeIntegrity.ok` vale `true`. Si necesitas un informe nuevo, ejecuta `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })` y guarda el resultado junto con tus notas.
 
 ## Flujo cotidiano
 
@@ -234,6 +238,7 @@ Repite esta rutina cuando se incorpore personal, se prepare una estación nueva 
 - Abre **Configuración → Datos y almacenamiento** para revisar proyectos, auto-backups, listas, dispositivos personalizados, favoritos, comentarios y la caché de sesión con recuentos en vivo.
 - Cada entrada explica qué representa; las secciones vacías permanecen ocultas para que identifiques el estado rápidamente.
 - El resumen estima el tamaño del backup usando la exportación más reciente.
+- Las copias completas muestran su total acumulado y alimentan el registro de historial, así puedes confirmar que las copias horarias quedaron capturadas antes de archivarlas sin conexión.
 
 ## Cuotas y mantenimiento
 
@@ -246,10 +251,12 @@ Repite esta rutina cuando se incorpore personal, se prepare una estación nueva 
 
 - **Instantáneas guardadas** – El selector conserva cada plan manual y crea `auto-backup-…` cada diez minutos mientras la app está abierta.
 - **Copias completas** – **Configuración → Copia de seguridad y restauración → Copia de seguridad** descarga `planner-backup.json` con proyectos, dispositivos, comentarios, reglas y estado de UI. Antes de restaurar se crea un respaldo de seguridad y se muestran avisos si el archivo proviene de otra versión.
+- **Libro de historial** – Cada copia completa añade una entrada que puedes auditar en **Configuración → Datos y almacenamiento** o exportar junto al archivo. Mantiene sellos horarios y nombres alineados con tu bitácora aunque trabajes sin conexión.
 - **Resguardos ocultos de migración** – Antes de sobrescribir planners, configuraciones o preferencias, la app guarda el JSON anterior en `__legacyMigrationBackup`. Si algo falla, la recuperación vuelve automáticamente a esa copia.
 - **Historial automático de reglas** – Los cambios en **Reglas automáticas** generan copias con sello horario cada diez minutos.
 - **Restablecimiento de fábrica** – Borra datos sólo después de descargar un backup.
 - **Recordatorios por hora** – Una rutina en segundo plano sugiere realizar una copia adicional cada hora.
+- **Guardia de integridad runtime** – Antes de viajar, abre la consola y verifica que `window.__cineRuntimeIntegrity.ok` sea `true` (o ejecuta `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })`). El informe demuestra que los caminos de guardado/compartido/restauración siguen protegidos offline.
 - **Bucle de verificación** – Tras cada backup crítico, impórtalo en un perfil separado y confirma que coincide antes de eliminar el perfil.
 - **Hábitos de almacenamiento seguro** – Etiqueta los archivos con nombre del proyecto y fecha y guárdalos en medios redundantes (RAID, USB cifrado, disco óptico).
 - **Compara antes de sobrescribir** – Descarga un backup nuevo antes de restaurar y revisa diferencias con una herramienta de diff JSON.

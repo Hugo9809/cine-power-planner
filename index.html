@@ -3148,6 +3148,17 @@
                 edits, preferences, favorites and runtime logs so you can copy them to external storage for offline safekeeping.
               </li>
               <li>
+                <strong>Backup history ledger</strong> tracks every full-app download inside
+                <a
+                  class="help-link"
+                  href="#dataHeading"
+                  data-help-target="#dataHeading"
+                  data-help-highlight="#settingsPanel-data"
+                >Settings → Data &amp; Storage</a>
+                . Export the log alongside your archives so audit trails show the same timestamps even when you rotate media
+                offline.
+              </li>
+              <li>
                 <strong>Restore safeguards</strong> always create a brand-new safety backup before applying the file you choose,
                 giving you an immediate rollback point if you need to undo the
                 <a class="help-link button-link" href="#restoreSettings" data-help-target="#restoreSettings"><strong>Restore</strong></a>
@@ -3328,6 +3339,12 @@
                 <a class="help-link button-link" href="#restoreSettings" data-help-target="#restoreSettings"><strong>Restore</strong></a>
                 once the sandbox checks out—the planner still creates a fresh safety snapshot beforehand so you can revert
                 instantly if needed. Log which backup you restored and where the validation copy lives.
+              </li>
+              <li>
+                Capture the runtime guard during every rehearsal. Open the developer console, confirm
+                <code>window.__cineRuntimeIntegrity.ok</code> is <code>true</code> (or rerun
+                <code>window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })</code>) and store the output with your
+                verification notes so the audit trail proves every save/share/restore gateway stayed online-free.
               </li>
             </ol>
             <p class="help-callout-note">
