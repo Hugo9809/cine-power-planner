@@ -21,6 +21,7 @@
           updateAutoGearHighlightToggleButton,
           clearUiCacheStorageEntries, __cineGlobal, humanizeKey,
           normalizeBatteryPlateValue, applyBatteryPlateSelectionFromBattery,
+          getPowerSelectionSnapshot, applyStoredPowerSelection,
           settingsReduceMotion, settingsRelaxedSpacing, callCoreFunctionIfAvailable */
 /* eslint-enable no-redeclare */
 /* global triggerPinkModeIconRain, loadDeviceData, loadSetups, loadSessionState,
@@ -2041,7 +2042,7 @@ function restoreSessionState() {
         ? loadProject(name)
         : null;
     const hasProjectPayload = project =>
-      project && (project.gearList || project.projectInfo);
+      project && (project.gearList || project.projectInfo || project.powerSelection);
     const candidateNames = [];
     if (typedName) {
       candidateNames.push(typedName);
@@ -2068,6 +2069,16 @@ function restoreSessionState() {
       }
     }
     if (hasProjectPayload(storedProject)) {
+      if (
+        storedProject
+        && storedProject.powerSelection
+        && typeof applyStoredPowerSelection === 'function'
+      ) {
+        const applied = applyStoredPowerSelection(storedProject.powerSelection);
+        if (applied) {
+          updateBatteryOptions();
+        }
+      }
       const mergedInfo = {
         ...(storedProject.projectInfo || {}),
         ...(currentProjectInfo || {})
@@ -2235,8 +2246,14 @@ function applySharedSetup(shared, options = {}) {
     setSelectValue(batterySelect, decoded.battery);
     applyBatteryPlateSelectionFromBattery(decoded.battery, batteryPlateSelect ? batteryPlateSelect.value : '');
     setSelectValue(hotswapSelect, decoded.batteryHotswap);
+    let sharedPowerApplied = false;
+    if (decoded.powerSelection && typeof applyStoredPowerSelection === 'function') {
+      sharedPowerApplied = applyStoredPowerSelection(decoded.powerSelection);
+    }
     if ((typeof decoded.battery === 'string' && decoded.battery.trim())
       || (typeof decoded.batteryHotswap === 'string' && decoded.batteryHotswap.trim())) {
+      updateBatteryOptions();
+    } else if (sharedPowerApplied) {
       updateBatteryOptions();
     }
     if (typeof setManualDiagramPositions === 'function') {
@@ -10110,6 +10127,8 @@ if (typeof module !== "undefined" && module.exports) {
     getCurrentSetupKey,
     renderFeedbackTable,
     saveCurrentGearList,
+    getPowerSelectionSnapshot,
+    applyStoredPowerSelection,
     getGearListSelectors,
     applyGearListSelectors,
     setSelectValue,

@@ -2,7 +2,7 @@
           normalizeAutoGearShootingDaysCondition, normalizeAutoGearCameraWeightCondition, evaluateAutoGearCameraWeightCondition,
           getAutoGearMonitorDefault, getSetupNameState,
           createProjectInfoSnapshotForStorage, getProjectAutoSaveOverrides, getAutoGearRuleCoverageSummary,
-          normalizeBatteryPlateValue */
+          normalizeBatteryPlateValue, setSelectValue, applyBatteryPlateSelectionFromBattery */
 
 // --- NEW SETUP MANAGEMENT FUNCTIONS ---
 
@@ -11,6 +11,93 @@ const setupsCineUi =
   || (typeof window !== 'undefined' && window.cineUi)
   || (typeof self !== 'undefined' && self.cineUi)
   || null;
+
+function hasMeaningfulPowerSelection(value) {
+    if (typeof value !== 'string') return false;
+    const trimmed = value.trim();
+    if (!trimmed) return false;
+    return trimmed.toLowerCase() !== 'none';
+}
+
+function normalizePowerSelectionString(value) {
+    if (typeof value === 'string') return value.trim();
+    if (value === null || value === undefined) return '';
+    return String(value);
+}
+
+function assignSelectValue(select, value) {
+    if (!select) return;
+    if (typeof setSelectValue === 'function') {
+        setSelectValue(select, value);
+    } else if (value === undefined) {
+        select.selectedIndex = -1;
+    } else {
+        select.value = value;
+    }
+}
+
+function getPowerSelectionSnapshot() {
+    if (!batterySelect && !batteryPlateSelect && !hotswapSelect) return null;
+    const rawBattery = batterySelect ? normalizePowerSelectionString(batterySelect.value) : '';
+    const rawPlate = batteryPlateSelect ? normalizePowerSelectionString(batteryPlateSelect.value) : '';
+    const rawHotswap = hotswapSelect ? normalizePowerSelectionString(hotswapSelect.value) : '';
+    const normalizedPlate = typeof normalizeBatteryPlateValue === 'function'
+        ? normalizeBatteryPlateValue(rawPlate, rawBattery)
+        : rawPlate;
+    const snapshot = {
+        batteryPlate: normalizedPlate || '',
+        battery: rawBattery || '',
+        batteryHotswap: rawHotswap || ''
+    };
+    if (!snapshot.batteryPlate && !snapshot.battery && !snapshot.batteryHotswap) {
+        return null;
+    }
+    return snapshot;
+}
+
+function applyStoredPowerSelection(selection, { preferExisting = true } = {}) {
+    if (!selection || typeof selection !== 'object') return false;
+    const target = {
+        batteryPlate: normalizePowerSelectionString(selection.batteryPlate),
+        battery: normalizePowerSelectionString(selection.battery),
+        batteryHotswap: normalizePowerSelectionString(selection.batteryHotswap)
+    };
+    const shouldOverwriteBattery = !preferExisting
+        || !hasMeaningfulPowerSelection(batterySelect && batterySelect.value);
+    const shouldOverwritePlate = !preferExisting
+        || !hasMeaningfulPowerSelection(batteryPlateSelect && batteryPlateSelect.value);
+    const shouldOverwriteHotswap = !preferExisting
+        || !hasMeaningfulPowerSelection(hotswapSelect && hotswapSelect.value);
+    let applied = false;
+    if (batterySelect && target.battery && shouldOverwriteBattery) {
+        assignSelectValue(batterySelect, target.battery);
+        applied = true;
+    } else if (batterySelect && !target.battery && !preferExisting) {
+        assignSelectValue(batterySelect, '');
+        applied = true;
+    }
+    if (batteryPlateSelect && target.batteryPlate && shouldOverwritePlate) {
+        assignSelectValue(batteryPlateSelect, target.batteryPlate);
+        applied = true;
+    } else if (batteryPlateSelect && !target.batteryPlate && !preferExisting) {
+        assignSelectValue(batteryPlateSelect, '');
+        applied = true;
+    }
+    if (typeof applyBatteryPlateSelectionFromBattery === 'function') {
+        applyBatteryPlateSelectionFromBattery(
+            batterySelect ? batterySelect.value : target.battery,
+            batteryPlateSelect ? batteryPlateSelect.value : target.batteryPlate
+        );
+    }
+    if (hotswapSelect && target.batteryHotswap && shouldOverwriteHotswap) {
+        assignSelectValue(hotswapSelect, target.batteryHotswap);
+        applied = true;
+    } else if (hotswapSelect && !target.batteryHotswap && !preferExisting) {
+        assignSelectValue(hotswapSelect, '');
+        applied = true;
+    }
+    return applied;
+}
 
 // Generate a printable overview of the current selected setup in a new tab
 generateOverviewBtn.addEventListener('click', () => {
@@ -125,6 +212,10 @@ function downloadSharedProject(shareFileName, includeAutoGear) {
     battery: batterySelect.value,
     batteryHotswap: hotswapSelect.value
   };
+  const sharedPowerSelection = getPowerSelectionSnapshot();
+  if (sharedPowerSelection) {
+    currentSetup.powerSelection = sharedPowerSelection;
+  }
   if (typeof getDiagramManualPositions === 'function') {
     const diagramPositions = getDiagramManualPositions();
     if (diagramPositions && Object.keys(diagramPositions).length) {
@@ -4046,6 +4137,7 @@ function saveCurrentGearList() {
     info.sliderBowl = getSliderBowlValue();
     info.easyrig = getEasyrigValue();
     currentProjectInfo = deriveProjectInfo(info);
+    const powerSelectionSnapshot = getPowerSelectionSnapshot();
     const gearSelectorsRaw = getGearListSelectors();
     const gearSelectors = cloneGearListSelectors(gearSelectorsRaw);
     const hasGearSelectors = Object.keys(gearSelectors).length > 0;
@@ -4116,6 +4208,9 @@ function saveCurrentGearList() {
             projectInfo: projectInfoSnapshot,
             gearList: html
         };
+        if (powerSelectionSnapshot) {
+            payload.powerSelection = powerSelectionSnapshot;
+        }
         if (hasGearSelectors) {
             payload.gearSelectors = gearSelectors;
         }
@@ -4197,6 +4292,17 @@ function saveCurrentGearList() {
         delete setup.gearSelectors;
         changed = true;
     }
+    const existingPowerSelectionSig = setup.powerSelection ? stableStringify(setup.powerSelection) : '';
+    const newPowerSelectionSig = powerSelectionSnapshot ? stableStringify(powerSelectionSnapshot) : '';
+    if (newPowerSelectionSig) {
+        if (existingPowerSelectionSig !== newPowerSelectionSig) {
+            setup.powerSelection = powerSelectionSnapshot;
+            changed = true;
+        }
+    } else if (Object.prototype.hasOwnProperty.call(setup, 'powerSelection')) {
+        delete setup.powerSelection;
+        changed = true;
+    }
 
     if (!existing) {
         setups[selectedStorageKey] = setup;
@@ -4237,6 +4343,10 @@ function deleteCurrentGearList() {
             }
             if (Object.prototype.hasOwnProperty.call(existingSetup, 'diagramPositions')) {
                 delete existingSetup.diagramPositions;
+                changed = true;
+            }
+            if (Object.prototype.hasOwnProperty.call(existingSetup, 'powerSelection')) {
+                delete existingSetup.powerSelection;
                 changed = true;
             }
             if (changed) {

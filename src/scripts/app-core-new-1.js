@@ -4058,6 +4058,14 @@ function cloneProjectEntryForSetup(projectEntry) {
       snapshot.projectInfo = projectInfo;
     }
   }
+  if (projectEntry && typeof projectEntry.powerSelection === 'object') {
+    try {
+      snapshot.powerSelection = JSON.parse(JSON.stringify(projectEntry.powerSelection));
+    } catch (error) {
+      console.warn('Failed to clone project power selection for auto backup import', error);
+      snapshot.powerSelection = projectEntry.powerSelection;
+    }
+  }
 
   if (typeof gearList === 'string' && gearList.trim()) {
     snapshot.gearList = gearList;
@@ -10370,6 +10378,7 @@ const sharedKeyMap = {
   batteryPlate: "p",
   battery: "b",
   batteryHotswap: "h",
+  powerSelection: "w",
   projectInfo: "i",
   projectHtml: "q",
   gearSelectors: "e",
