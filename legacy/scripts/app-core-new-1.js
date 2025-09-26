@@ -9020,6 +9020,7 @@ var sharedKeyMap = {
   changedDevices: "x",
   feedback: "f",
   autoGearRules: "a",
+  autoGearCoverage: "z",
   diagramPositions: "y"
 };
 var lastSharedSetupData = null;

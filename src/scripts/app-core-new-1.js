@@ -10377,6 +10377,7 @@ const sharedKeyMap = {
   changedDevices: "x",
   feedback: "f",
   autoGearRules: "a",
+  autoGearCoverage: "z",
   diagramPositions: "y"
 };
 
