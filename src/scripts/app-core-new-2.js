@@ -30,6 +30,14 @@ const CORE_SHARED_LOCAL =
     ? CORE_SHARED
     : resolveCoreSharedPart2() || {};
 
+var currentProjectInfo = null;
+let loadedSetupState = null;
+let loadedSetupStateSignature = '';
+var restoringSession = false;
+var skipNextGearListRefresh = false;
+
+let defaultProjectInfoSnapshot = null;
+
 const CORE_BOOT_QUEUE_KEY_PART2 = (function resolveBootQueueKeyPart2(scope) {
   if (scope && typeof scope === 'object') {
     const existingPublic = scope.CORE_BOOT_QUEUE_KEY;
@@ -8713,14 +8721,6 @@ function setEasyrigValue(val) {
     adjustGearListSelectWidth(sel);
   }
 }
-
-var currentProjectInfo = null;
-let loadedSetupState = null;
-let loadedSetupStateSignature = '';
-var restoringSession = false;
-var skipNextGearListRefresh = false;
-
-let defaultProjectInfoSnapshot = null;
 
 function sanitizeProjectInfoValue(value) {
   if (value === null || value === undefined) return undefined;
