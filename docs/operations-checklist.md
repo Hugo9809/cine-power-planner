@@ -35,12 +35,17 @@ update the repository or hand off a project at the end of the day.
    review the rule-by-rule diff before you load the snapshot so additions,
    removals and scenario scope changes are confirmed without touching live
    storage. Delete the temporary profile after confirmation.
-5. **Review data & storage dashboard.** Open **Settings → Data & Storage** to
+5. **Inspect the runtime guard.** Back in the primary profile, open the
+   developer console and check `window.__cineRuntimeIntegrity`. It should show
+   `{ ok: true }` with no missing safeguards. When in doubt, run
+   `window.cineRuntime.verifyCriticalFlows()` for a fresh report and confirm the
+   persistence, offline and UI sections all pass before you archive exports.
+6. **Review data & storage dashboard.** Open **Settings → Data & Storage** to
    ensure counts for projects, backups and custom devices match expectations.
-6. **Check draft impact preview.** Open the automatic gear rule editor, review
+7. **Check draft impact preview.** Open the automatic gear rule editor, review
    the draft impact preview for quantity deltas and warnings, then cancel to
    confirm the live generator stays unchanged.
-7. **Log the drill.** Append a verification note (timestamp, machine, operator
+8. **Log the drill.** Append a verification note (timestamp, machine, operator
    and files inspected) to your archival log or create one beside the exports
    if it does not exist yet. Pair the note with checksum manifests so every
    crew member can prove when the save → share → import rehearsal succeeded.

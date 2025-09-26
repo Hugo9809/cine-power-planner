@@ -61,4 +61,28 @@ describe('critical workflow integration', () => {
     expect(integrity.ok).toBe(true);
     expect(Array.isArray(integrity.missing)).toBe(true);
   });
+
+  test('exposes the runtime guard so crews can audit safeguards', () => {
+    const { cineRuntime } = global;
+    expect(cineRuntime).toBeDefined();
+    expect(typeof cineRuntime.verifyCriticalFlows).toBe('function');
+
+    const report = cineRuntime.verifyCriticalFlows();
+    expect(report).toBeDefined();
+    expect(report.ok).toBe(true);
+    expect(Array.isArray(report.missing)).toBe(true);
+    expect(report.missing.length).toBe(0);
+
+    expect(report.modules).toEqual(
+      expect.objectContaining({
+        cinePersistence: true,
+        cineOffline: true,
+        cineUi: true,
+      })
+    );
+
+    expect(report.details['cinePersistence.storage.saveProject']).toBe(true);
+    expect(report.details['cineOffline.registerServiceWorker']).toBe(true);
+    expect(report.details['cineUi.controllers.backupSettings']).toBe(true);
+  });
 });
