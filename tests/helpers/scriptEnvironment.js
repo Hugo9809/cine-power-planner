@@ -159,6 +159,17 @@ function setupScriptEnvironment(options = {}) {
     } catch (error) {
       void error;
     }
+    try {
+      delete global.cineRuntime;
+      if (typeof globalThis !== 'undefined') {
+        delete globalThis.cineRuntime;
+      }
+      if (typeof window !== 'undefined') {
+        delete window.cineRuntime;
+      }
+    } catch (runtimeCleanupError) {
+      void runtimeCleanupError;
+    }
     jest.clearAllMocks();
     document.body.innerHTML = '';
   };
