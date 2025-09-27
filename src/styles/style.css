@@ -4611,6 +4611,7 @@ body.pink-mode #topBar #logo .logo-pink {
   height: var(--select-height);
   margin: 0;
   font-size: var(--font-size-relative-base);
+  font-weight: var(--font-weight-light);
   padding: 2px 4px;
   text-align: center;
   text-align-last: center;
@@ -4651,7 +4652,7 @@ body.light-mode #topBar .controls button:focus-visible {
 
 body.light-mode #topBar select {
   color: var(--accent-color);
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-light);
 }
 
 body.light-mode #topBar select:hover,
