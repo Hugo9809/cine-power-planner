@@ -3061,6 +3061,12 @@ function buildAlwaysAutoGearRule() {
     ['Securing Straps (25mm wide)', 'Carts and Transportation', 10],
     ['Loading Ramp (pair, 420kg)', 'Carts and Transportation', 1],
     ['Ring Fitting for Airline Rails', 'Carts and Transportation', 20],
+    ['Power Cable Drum 25-50 m', 'Power', 1],
+    ['Power Cable 10 m', 'Power', 2],
+    ['Power Cable 5 m', 'Power', 2],
+    ['Power Strip', 'Power', 3],
+    ['Power Three Way Splitter', 'Power', 3],
+    ['PRCD-S (Portable Residual Current Device-Safety)', 'Power', 3],
   ].forEach(([name, category, quantity]) => pushItem(name, category, quantity));
 
   if (!additions.length) return null;
