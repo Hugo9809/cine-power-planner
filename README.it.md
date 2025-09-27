@@ -188,7 +188,9 @@ Ripeti questa routine quando arriva un nuovo membro, allestisci una postazione o
 - **Ricerca globale** (`/`, `Ctrl+K`, `⌘K`) per saltare a funzioni, menu o argomenti di aiuto anche con navigazione nascosta. I
   suggerimenti mostrano prima le corrispondenze dirette di funzionalità e dispositivi rispetto ai temi di aiuto, così i flussi da
   tastiera raggiungono subito i controlli principali.
-- **Centro assistenza** (`?`, `H`, `F1`, `Ctrl+/`) con guide, scorciatoie, FAQ e modalità aiuto al passaggio.
+- **Centro assistenza** (`?`, `H`, `F1`, `Ctrl+/`) con guide, scorciatoie, FAQ e modalità aiuto al passaggio. La checklist «Inizia
+  qui» ora spiega come preparare l’indicatore offline, salvare esportazioni ridondanti e provare un’esercitazione di ripristino
+  così la troupe verifica i backup prima della produzione.
 - **Diagramma di progetto** per visualizzare alimentazione e segnali; tieni premuto Shift durante l’export per salvare un JPG.
 - **Confronto batterie** che mostra le prestazioni dei pack compatibili e avvisa in caso di sovraccarichi.
 - **Generatore di liste** che produce tabelle categorizzate con metadati, email e accessori basati sugli scenari.
