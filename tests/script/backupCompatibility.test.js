@@ -35,6 +35,23 @@ describe('backup compatibility utilities', () => {
     expect(sanitized).toBe('{"version":"1.0.0"}');
   });
 
+  test('sanitizeBackupPayload decodes binary payload sources', () => {
+    const { sanitizeBackupPayload } = loadApp();
+
+    const sample = '\ufeff{"version":"1.0.0"}';
+    const expected = '{"version":"1.0.0"}';
+    const nodeBuffer = Buffer.from(sample, 'utf8');
+    const arrayBuffer = nodeBuffer.buffer.slice(
+      nodeBuffer.byteOffset,
+      nodeBuffer.byteOffset + nodeBuffer.byteLength,
+    );
+    const typedArray = new Uint8Array(arrayBuffer);
+
+    expect(sanitizeBackupPayload(arrayBuffer)).toBe(expected);
+    expect(sanitizeBackupPayload(typedArray)).toBe(expected);
+    expect(sanitizeBackupPayload(nodeBuffer)).toBe(expected);
+  });
+
   test('extractBackupSections parses stringified storage snapshots', () => {
     const { extractBackupSections } = loadApp();
 
