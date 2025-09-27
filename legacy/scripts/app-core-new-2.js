@@ -11619,24 +11619,29 @@ function updateCalculations() {
   refreshGearListIfVisible();
 }
 function getCurrentSetupKey() {
-  var camera = cameraSelect.value || '';
-  var monitor = monitorSelect.value || '';
-  var video = videoSelect.value || '';
-  var cage = cageSelect ? cageSelect.value : '';
-  var motors = motorSelects.map(function (sel) {
-    return sel.value;
-  }).filter(function (v) {
-    return v && v !== 'None';
-  }).sort().join(',');
-  var controllers = controllerSelects.map(function (sel) {
-    return sel.value;
-  }).filter(function (v) {
-    return v && v !== 'None';
-  }).sort().join(',');
-  var distance = distanceSelect.value || '';
-  var battery = batterySelect.value || '';
-  var hotswap = hotswapSelect.value || '';
-  var plate = getSelectedPlate() || '';
+  var safeSelectValue = function (select) {
+    return select && typeof select.value === 'string' ? select.value : '';
+  };
+
+  var safeListValues = function (list) {
+    if (!Array.isArray(list)) return '';
+    return list.map(function (sel) {
+      return safeSelectValue(sel);
+    }).filter(function (value) {
+      return value && value !== 'None';
+    }).sort().join(',');
+  };
+
+  var camera = safeSelectValue(cameraSelect);
+  var monitor = safeSelectValue(monitorSelect);
+  var video = safeSelectValue(videoSelect);
+  var cage = safeSelectValue(cageSelect);
+  var motors = safeListValues(motorSelects);
+  var controllers = safeListValues(controllerSelects);
+  var distance = safeSelectValue(distanceSelect);
+  var battery = safeSelectValue(batterySelect);
+  var hotswap = safeSelectValue(hotswapSelect);
+  var plate = typeof getSelectedPlate === 'function' ? (getSelectedPlate() || '') : '';
   return [camera, monitor, video, cage, motors, controllers, distance, battery, hotswap, plate].join('|');
 }
 function deleteFeedbackEntry(key, index) {

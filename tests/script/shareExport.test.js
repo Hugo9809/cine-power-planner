@@ -342,6 +342,61 @@ describe('project sharing helpers', () => {
     }
   });
 
+  test('downloadSharedProject handles missing power selectors gracefully', () => {
+    env = setupScriptEnvironment();
+    const { downloadSharedProject } = env.utils;
+
+    const originalBatterySelect = global.batterySelect;
+    const originalBatteryPlateSelect = global.batteryPlateSelect;
+    const originalHotswapSelect = global.hotswapSelect;
+
+    global.batterySelect = null;
+    global.batteryPlateSelect = null;
+    global.hotswapSelect = null;
+
+    const capturedPayloads = [];
+    const OriginalBlob = global.Blob;
+    global.Blob = function MockBlob(parts, options) {
+      this.parts = parts;
+      this.options = options || {};
+    };
+
+    const clickSpy = jest
+      .spyOn(window.HTMLAnchorElement.prototype, 'click')
+      .mockImplementation(() => {});
+    const createSpy = jest
+      .spyOn(window.URL, 'createObjectURL')
+      .mockImplementation((blob) => {
+        const serialized = blob && Array.isArray(blob.parts) ? blob.parts.join('') : '';
+        if (serialized) {
+          capturedPayloads.push({ payload: JSON.parse(serialized), name: 'shared.json' });
+        }
+        return 'blob:missing-power';
+      });
+    const revokeSpy = jest
+      .spyOn(window.URL, 'revokeObjectURL')
+      .mockImplementation(() => {});
+
+    expect(() => downloadSharedProject('shared.json', false)).not.toThrow();
+    expect(capturedPayloads[0]).toBeDefined();
+    expect(capturedPayloads[0].payload.battery).toBe('');
+    expect(capturedPayloads[0].payload.batteryPlate).toBe('');
+    expect(capturedPayloads[0].payload.batteryHotswap).toBe('');
+    expect(capturedPayloads[0].payload).not.toHaveProperty('powerSelection');
+
+    clickSpy.mockRestore();
+    createSpy.mockRestore();
+    revokeSpy.mockRestore();
+    if (OriginalBlob) {
+      global.Blob = OriginalBlob;
+    } else {
+      delete global.Blob;
+    }
+    global.batterySelect = originalBatterySelect;
+    global.batteryPlateSelect = originalBatteryPlateSelect;
+    global.hotswapSelect = originalHotswapSelect;
+  });
+
   test('downloadSharedProject reports errors when no download method is available', () => {
     env = setupScriptEnvironment();
     const { downloadSharedProject } = env.utils;
