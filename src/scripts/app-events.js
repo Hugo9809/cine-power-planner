@@ -573,15 +573,15 @@ setupSelect.addEventListener("change", (event) => {
       setEasyrigValue(setup.easyrig || '');
       let storedPowerApplied = false;
       if (setup.powerSelection && typeof applyStoredPowerSelection === 'function') {
-        storedPowerApplied = applyStoredPowerSelection(setup.powerSelection);
+        storedPowerApplied = applyStoredPowerSelection(setup.powerSelection, { preferExisting: false });
       }
       const storedProject = typeof loadProject === 'function' ? loadProject(setupName) : null;
       if (!storedPowerApplied && storedProject && typeof applyStoredPowerSelection === 'function' && storedProject.powerSelection) {
-        storedPowerApplied = applyStoredPowerSelection(storedProject.powerSelection);
+        storedPowerApplied = applyStoredPowerSelection(storedProject.powerSelection, { preferExisting: false });
       }
       updateBatteryOptions();
       if (!storedPowerApplied && storedProject && typeof applyStoredPowerSelection === 'function' && storedProject.powerSelection) {
-        storedPowerApplied = applyStoredPowerSelection(storedProject.powerSelection);
+        storedPowerApplied = applyStoredPowerSelection(storedProject.powerSelection, { preferExisting: false });
         if (storedPowerApplied) {
           updateBatteryOptions();
         }
