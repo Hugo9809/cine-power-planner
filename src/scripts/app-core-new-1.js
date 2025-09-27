@@ -10727,19 +10727,55 @@ function encodeSharedSetup(setup) {
 function decodeSharedSetup(setup) {
   if (!setup || typeof setup !== "object") return {};
 
+  let hasLongKeys = false;
+  let hasShortKeys = false;
+  let needsMerge = false;
+
   for (let index = 0; index < sharedKeyMapKeys.length; index += 1) {
     const key = sharedKeyMapKeys[index];
-    if (Object.prototype.hasOwnProperty.call(setup, key)) {
-      return setup;
+    const hasLongKey = Object.prototype.hasOwnProperty.call(setup, key);
+    const short = sharedKeyMap[key];
+    const hasShortKey = Object.prototype.hasOwnProperty.call(setup, short);
+
+    if (hasLongKey) {
+      hasLongKeys = true;
+    }
+    if (hasShortKey) {
+      hasShortKeys = true;
+      if (!hasLongKey && setup[short] != null) {
+        needsMerge = true;
+      }
     }
   }
 
-  const out = {};
+  if (!hasLongKeys && !hasShortKeys) {
+    return {};
+  }
+
+  if (!hasLongKeys) {
+    const out = {};
+    sharedKeyMapKeys.forEach(key => {
+      const short = sharedKeyMap[key];
+      if (setup[short] != null) out[key] = setup[short];
+    });
+    return out;
+  }
+
+  if (!needsMerge) {
+    return setup;
+  }
+
+  const merged = { ...setup };
   sharedKeyMapKeys.forEach(key => {
+    if (Object.prototype.hasOwnProperty.call(merged, key)) {
+      return;
+    }
     const short = sharedKeyMap[key];
-    if (setup[short] != null) out[key] = setup[short];
+    if (setup[short] != null) {
+      merged[key] = setup[short];
+    }
   });
-  return out;
+  return merged;
 }
 var deviceManagerSection = document.getElementById("device-manager");
 var toggleDeviceBtn = document.getElementById("toggleDeviceManager");
