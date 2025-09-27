@@ -3761,15 +3761,99 @@ function sanitizeBackupPayload(raw) {
     return '';
   }
 
+  const decodeBinaryPayload = (value) => {
+    if (typeof value !== 'object' || value === null) {
+      return null;
+    }
+
+    const isNodeBuffer =
+      typeof Buffer !== 'undefined'
+      && typeof Buffer.isBuffer === 'function'
+      && Buffer.isBuffer(value);
+
+    const isArrayBuffer =
+      typeof ArrayBuffer !== 'undefined'
+      && value instanceof ArrayBuffer;
+
+    const isArrayBufferView =
+      typeof ArrayBuffer !== 'undefined'
+      && typeof ArrayBuffer.isView === 'function'
+      && ArrayBuffer.isView(value);
+
+    if (!isNodeBuffer && !isArrayBuffer && !isArrayBufferView) {
+      return null;
+    }
+
+    const toUint8Array = () => {
+      if (isNodeBuffer) {
+        return new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
+      }
+      if (isArrayBuffer) {
+        return new Uint8Array(value);
+      }
+      return new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
+    };
+
+    const decodeWithTextDecoder = (array) => {
+      if (typeof TextDecoder !== 'function') {
+        return null;
+      }
+      try {
+        const decoder = new TextDecoder('utf-8', { fatal: false });
+        return decoder.decode(array);
+      } catch (error) {
+        console.warn('Failed to decode backup payload with TextDecoder', error);
+        return null;
+      }
+    };
+
+    const decodeWithBuffer = () => {
+      if (!isNodeBuffer) {
+        return null;
+      }
+      try {
+        return value.toString('utf8');
+      } catch (error) {
+        console.warn('Failed to decode backup payload with Buffer', error);
+        return null;
+      }
+    };
+
+    const decodeManually = (array) => {
+      try {
+        let result = '';
+        const CHUNK_SIZE = 0x8000;
+        for (let index = 0; index < array.length; index += CHUNK_SIZE) {
+          const slice = array.subarray(index, index + CHUNK_SIZE);
+          result += String.fromCharCode.apply(null, slice);
+        }
+        return result;
+      } catch (error) {
+        console.warn('Failed to manually decode backup payload', error);
+        return null;
+      }
+    };
+
+    const array = toUint8Array();
+    return decodeWithTextDecoder(array)
+      || decodeWithBuffer()
+      || decodeManually(array);
+  };
+
   let text;
   if (typeof raw === 'string') {
     text = raw;
   } else {
-    try {
-      text = String(raw);
-    } catch (error) {
-      console.warn('Failed to stringify backup payload', error);
-      text = '';
+    const decoded = decodeBinaryPayload(raw);
+    if (typeof decoded === 'string') {
+      text = decoded;
+    } else {
+      try {
+        text = String(raw);
+      } catch (error) {
+        console.warn('Failed to stringify backup payload', error);
+        text = '';
+      }
     }
   }
 
@@ -3777,8 +3861,8 @@ function sanitizeBackupPayload(raw) {
     return '';
   }
 
-  if (text.startsWith('\uFEFF')) {
-    return text.replace(/^\uFEFF/, '');
+  if (text.charCodeAt(0) === 0xFEFF) {
+    return text.slice(1);
   }
 
   return text;
