@@ -68,20 +68,46 @@ function applyStoredPowerSelection(selection, { preferExisting = true } = {}) {
         || !hasMeaningfulPowerSelection(batteryPlateSelect && batteryPlateSelect.value);
     const shouldOverwriteHotswap = !preferExisting
         || !hasMeaningfulPowerSelection(hotswapSelect && hotswapSelect.value);
-    let applied = false;
+
+    const matchesTarget = (select, desired) => {
+        if (!select) return false;
+        if (desired === '') {
+            return !select.value || select.value === 'None' || select.selectedIndex === -1;
+        }
+        return select.value === desired;
+    };
+
+    let anyMatch = false;
+    let anyPending = false;
     if (batterySelect && target.battery && shouldOverwriteBattery) {
         assignSelectValue(batterySelect, target.battery);
-        applied = true;
+        if (matchesTarget(batterySelect, target.battery)) {
+            anyMatch = true;
+        } else {
+            anyPending = true;
+        }
     } else if (batterySelect && !target.battery && !preferExisting) {
         assignSelectValue(batterySelect, '');
-        applied = true;
+        if (matchesTarget(batterySelect, '')) {
+            anyMatch = true;
+        } else {
+            anyPending = true;
+        }
     }
     if (batteryPlateSelect && target.batteryPlate && shouldOverwritePlate) {
         assignSelectValue(batteryPlateSelect, target.batteryPlate);
-        applied = true;
+        if (matchesTarget(batteryPlateSelect, target.batteryPlate)) {
+            anyMatch = true;
+        } else {
+            anyPending = true;
+        }
     } else if (batteryPlateSelect && !target.batteryPlate && !preferExisting) {
         assignSelectValue(batteryPlateSelect, '');
-        applied = true;
+        if (matchesTarget(batteryPlateSelect, '')) {
+            anyMatch = true;
+        } else {
+            anyPending = true;
+        }
     }
     if (typeof applyBatteryPlateSelectionFromBattery === 'function') {
         applyBatteryPlateSelectionFromBattery(
@@ -91,12 +117,20 @@ function applyStoredPowerSelection(selection, { preferExisting = true } = {}) {
     }
     if (hotswapSelect && target.batteryHotswap && shouldOverwriteHotswap) {
         assignSelectValue(hotswapSelect, target.batteryHotswap);
-        applied = true;
+        if (matchesTarget(hotswapSelect, target.batteryHotswap)) {
+            anyMatch = true;
+        } else {
+            anyPending = true;
+        }
     } else if (hotswapSelect && !target.batteryHotswap && !preferExisting) {
         assignSelectValue(hotswapSelect, '');
-        applied = true;
+        if (matchesTarget(hotswapSelect, '')) {
+            anyMatch = true;
+        } else {
+            anyPending = true;
+        }
     }
-    return applied;
+    return anyPending ? false : anyMatch;
 }
 
 // Generate a printable overview of the current selected setup in a new tab
