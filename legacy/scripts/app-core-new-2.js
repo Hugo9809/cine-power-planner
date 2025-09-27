@@ -1452,7 +1452,9 @@ function getAutoGearRuleCoverageSummary() {
         };
       }),
       overlaps: [],
-      rulesWithoutScenarios: []
+      rulesWithoutScenarios: [],
+      total: catalog.length,
+      coveredCount: 0
     };
     autoGearSummaryLast = summary;
     return summary;
@@ -1624,7 +1626,9 @@ function getAutoGearRuleCoverageSummary() {
     coverage: coverage,
     uncovered: uncovered,
     overlaps: overlaps,
-    rulesWithoutScenarios: rulesWithoutScenarios
+    rulesWithoutScenarios: rulesWithoutScenarios,
+    total: catalog.length,
+    coveredCount: coverage.length
   };
   autoGearSummaryLast = summary;
   return summary;
@@ -1776,6 +1780,14 @@ function renderAutoGearRuleSummary(analysis) {
   var focus = context.focus || autoGearSummaryFocus || 'all';
   var hasSearchFilters = Boolean(context.hasSearchFilters);
   var focusApplied = Boolean(context.focusApplied);
+  var scenarioData = analysis.scenarios || {};
+  var scenarioCatalogLength = Array.isArray(scenarioData.catalog) ? scenarioData.catalog.length : 0;
+  var scenarioTotal = typeof scenarioData.total === 'number' ? scenarioData.total : scenarioCatalogLength;
+  var coverageListLength = Array.isArray(scenarioData.coverage) ? scenarioData.coverage.length : 0;
+  var scenarioCovered = typeof scenarioData.coveredCount === 'number' ? scenarioData.coveredCount : coverageListLength;
+  var overlapCount = Array.isArray(scenarioData.overlaps) ? scenarioData.overlaps.length : 0;
+  var hasScenarioCatalog = scenarioTotal > 0;
+  var coveragePercent = hasScenarioCatalog && scenarioTotal ? Math.round(scenarioCovered / scenarioTotal * 100) : 0;
   if (!totalRules) {
     var _texts$en52;
     autoGearSummaryDescriptionElem.textContent = langTexts.autoGearSummaryEmpty || ((_texts$en52 = texts.en) === null || _texts$en52 === void 0 ? void 0 : _texts$en52.autoGearSummaryEmpty) || 'Add a rule to unlock coverage insights.';
@@ -1794,6 +1806,8 @@ function renderAutoGearRuleSummary(analysis) {
     var template = count === 1 ? langTexts.autoGearRulesCountOne || ((_texts$en55 = texts.en) === null || _texts$en55 === void 0 ? void 0 : _texts$en55.autoGearRulesCountOne) || '%s rule' : langTexts.autoGearRulesCountOther || ((_texts$en56 = texts.en) === null || _texts$en56 === void 0 ? void 0 : _texts$en56.autoGearRulesCountOther) || '%s rules';
     return template.replace('%s', formatNumberForLang(currentLang, count));
   };
+  var coverageValue = hasScenarioCatalog ? "".concat(formatNumberForLang(currentLang, coveragePercent), "%") : formatNumberForLang(currentLang, scenarioCovered);
+  var coverageDescription = hasScenarioCatalog ? (langTexts.autoGearSummaryCoverageDescription || (texts.en && texts.en.autoGearSummaryCoverageDescription) || '{covered} of {total} scenarios covered').replace('{covered}', formatNumberForLang(currentLang, scenarioCovered)).replace('{total}', formatNumberForLang(currentLang, scenarioTotal)) : langTexts.autoGearSummaryCoverageEmpty || (texts.en && texts.en.autoGearSummaryCoverageEmpty) || 'Add scenarios to measure coverage.';
   var buildCard = function buildCard(config) {
     var label = config.label,
       value = config.value,
@@ -1831,6 +1845,11 @@ function renderAutoGearRuleSummary(analysis) {
     description: langTexts.autoGearSummaryTotalDescription || ((_texts$en58 = texts.en) === null || _texts$en58 === void 0 ? void 0 : _texts$en58.autoGearSummaryTotalDescription) || 'Saved in this setup'
   });
   buildCard({
+    label: langTexts.autoGearSummaryCoverageLabel || (texts.en && texts.en.autoGearSummaryCoverageLabel) || 'Scenario coverage',
+    value: coverageValue,
+    description: coverageDescription
+  });
+  buildCard({
     label: langTexts.autoGearSummaryNetLabel || ((_texts$en59 = texts.en) === null || _texts$en59 === void 0 ? void 0 : _texts$en59.autoGearSummaryNetLabel) || 'Net change',
     value: netValue,
     description: (langTexts.autoGearSummaryNetDescription || ((_texts$en60 = texts.en) === null || _texts$en60 === void 0 ? void 0 : _texts$en60.autoGearSummaryNetDescription) || 'Adds {adds} · Removes {removes}').replace('{adds}', formatNumberForLang(currentLang, analysis.net.addItems)).replace('{removes}', formatNumberForLang(currentLang, analysis.net.removeItems))
@@ -1846,6 +1865,12 @@ function renderAutoGearRuleSummary(analysis) {
     value: formatNumberForLang(currentLang, analysis.conflicts.totalItems),
     description: analysis.conflicts.totalItems ? (langTexts.autoGearSummaryConflictsSome || ((_texts$en65 = texts.en) === null || _texts$en65 === void 0 ? void 0 : _texts$en65.autoGearSummaryConflictsSome) || '{rules} affected across {items} items').replace('{rules}', formatRulesCount(analysis.conflicts.totalRules)).replace('{items}', formatNumberForLang(currentLang, analysis.conflicts.totalItems)) : langTexts.autoGearSummaryConflictsNone || ((_texts$en66 = texts.en) === null || _texts$en66 === void 0 ? void 0 : _texts$en66.autoGearSummaryConflictsNone) || 'No conflicting adds/removes.',
     focusKey: 'conflicts'
+  });
+  buildCard({
+    label: langTexts.autoGearSummaryOverlapsLabel || (texts.en && texts.en.autoGearSummaryOverlapsLabel) || 'Stacked scenarios',
+    value: formatNumberForLang(currentLang, overlapCount),
+    description: overlapCount ? (langTexts.autoGearSummaryOverlapsSome || (texts.en && texts.en.autoGearSummaryOverlapsSome) || '{count} scenarios touched by multiple rules').replace('{count}', formatNumberForLang(currentLang, overlapCount)) : langTexts.autoGearSummaryOverlapsNone || (texts.en && texts.en.autoGearSummaryOverlapsNone) || 'No scenarios currently stack multiple rules.',
+    focusKey: 'overlaps'
   });
   buildCard({
     label: langTexts.autoGearSummaryUncoveredLabel || ((_texts$en67 = texts.en) === null || _texts$en67 === void 0 ? void 0 : _texts$en67.autoGearSummaryUncoveredLabel) || 'Uncovered scenarios',
@@ -1934,6 +1959,37 @@ function renderAutoGearRuleSummary(analysis) {
         list.appendChild(removesItem);
         detailsFragment.appendChild(list);
       });
+    }
+  } else if (focus === 'overlaps') {
+    var _texts$en77;
+    var _headingElem2 = document.createElement('p');
+    _headingElem2.className = 'auto-gear-summary-detail-title';
+    _headingElem2.textContent = langTexts.autoGearSummaryDetailsOverlapsHeading || ((_texts$en77 = texts.en) === null || _texts$en77 === void 0 ? void 0 : _texts$en77.autoGearSummaryDetailsOverlapsHeading) || 'Scenarios with stacked rules';
+    detailsFragment.appendChild(_headingElem2);
+    if (!analysis.scenarios.overlaps.length) {
+      var _texts$en78;
+      var _empty2 = document.createElement('p');
+      _empty2.className = 'auto-gear-summary-detail-text';
+      _empty2.textContent = langTexts.autoGearSummaryDetailsOverlapsNone || ((_texts$en78 = texts.en) === null || _texts$en78 === void 0 ? void 0 : _texts$en78.autoGearSummaryDetailsOverlapsNone) || 'No scenarios currently stack multiple rules.';
+      detailsFragment.appendChild(_empty2);
+    } else {
+      var _list2 = document.createElement('ul');
+      _list2.className = 'auto-gear-summary-list';
+      analysis.scenarios.overlaps.forEach(function (entry) {
+        var li = document.createElement('li');
+        var button = document.createElement('button');
+        button.type = 'button';
+        button.dataset.autoGearScenario = entry.value;
+        button.textContent = "".concat(entry.label, " \u2014 ").concat(formatRulesCount(entry.rules.length));
+        button.setAttribute('title', (langTexts.autoGearSummarySetScenarioFilter || (texts.en && texts.en.autoGearSummarySetScenarioFilter) || 'Filter to scenario').replace('{scenario}', entry.label));
+        li.appendChild(button);
+        if (entry.rules.length) {
+          li.appendChild(document.createTextNode(' · '));
+          appendRuleButtons(li, entry.rules);
+        }
+        _list2.appendChild(li);
+      });
+      detailsFragment.appendChild(_list2);
     }
   } else if (focus === 'uncovered') {
     var _texts$en79;
@@ -2052,7 +2108,7 @@ function renderAutoGearRuleSummary(analysis) {
   autoGearSummaryDetails.appendChild(detailsFragment);
 }
 function setAutoGearSummaryFocus(value) {
-  var allowed = value === 'duplicates' || value === 'conflicts' || value === 'uncovered' ? value : 'all';
+  var allowed = value === 'duplicates' || value === 'conflicts' || value === 'overlaps' || value === 'uncovered' ? value : 'all';
   var next = autoGearSummaryFocus === allowed && allowed !== 'all' ? 'all' : allowed;
   if (autoGearSummaryFocus === next) {
     return;

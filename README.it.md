@@ -94,7 +94,7 @@ Consulta `docs/translation-guide.md` per i dettagli sulla localizzazione.
 - **Prove di ripristino** – Carica un backup completo o un bundle in una sandbox isolata per verificarne il contenuto senza toccare i profili di produzione.
 - **Registro storico dei backup** – Ogni download del backup completo salva localmente timestamp e nome file. Controllalo in **Impostazioni → Dati e archiviazione** o esporta il registro insieme agli archivi per dimostrare la conservazione offline.
 - **Regole automatiche per l’attrezzatura** – Definisci aggiunte o rimozioni attivate dagli scenari con controlli di import/export e backup programmati.
-- **Dashboard di copertura regole** – Riassume trigger duplicati, variazioni nette, conflitti e scenari scoperti nelle Regole automatiche, applica filtri di focus offline e condivide le stesse informazioni in export e stampe.
+- **Dashboard di copertura regole** – Riassume la copertura per scenario, i trigger duplicati, le variazioni nette, gli scenari sovrapposti, i conflitti e i requisiti non coperti nelle Regole automatiche, applica filtri di focus offline e condivide le stesse informazioni in export e stampe.
 - **Dashboard dati e archiviazione** – Audita progetti, liste, dispositivi personalizzati, preferiti e feedback sulle autonomie direttamente da Impostazioni e stima la dimensione del backup.
 - **Ispettore di salvaguardia runtime** – Il bundle runtime registra il risultato su `window.__cineRuntimeIntegrity` ed espone `window.cineRuntime.verifyCriticalFlows()` così la troupe può confermare i percorsi di salvataggio/condivisione/ripristino prima di partire.
 - **Overlay stato auto-save** – Replica l’ultima nota di auto-save nel dialogo Impostazioni così la troupe vede l’attività in background durante gli esercizi.

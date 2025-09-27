@@ -161,8 +161,8 @@ localization steps.
 - **Automatic gear rules** – design scenario-triggered additions or removals
   that apply after the generator runs, complete with import/export controls
   and timed backups.
-- **Rule coverage dashboard** – summarize duplicates, net adds/removes,
-  conflicts and uncovered scenarios inside Automatic Gear Rules, apply focus
+- **Rule coverage dashboard** – summarize scenario coverage, duplicates, net adds/removes,
+  stacked scenarios, conflicts and uncovered requirements inside Automatic Gear Rules, apply focus
   filters offline and share the same insights through exports and printouts.
 - **Data & storage dashboard** – audit stored projects, gear lists, custom
   devices, favorites and runtime feedback, and review approximate backup size
