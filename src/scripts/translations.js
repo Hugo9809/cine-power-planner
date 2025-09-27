@@ -173,6 +173,87 @@ const texts = {
       "Adjust which Project Requirements scenarios automatically add or remove gear items.",
     autoGearDescription:
       "Create scenario-based rules that tweak the generated gear list. Rules apply after the default planner suggestions.",
+    autoGearRuleOptions: {
+      heading: "Factory rule templates",
+      intro:
+        "Use these ready-made rule ideas to replace the legacy automatic additions without losing coverage.",
+      groups: [
+        {
+          title: "Scenario-specific catalogue",
+          summary:
+            "Diff each required scenario against the baseline gear list to turn its additions and removals into a dedicated rule.",
+          details: [
+            "Add combo rules for Handheld + Easyrig and Slider + Undersling mode so their shared gear is only counted once.",
+            "Include a removal-only overlap for Extreme rain + Rain Machine to keep matte box rain accessories unique.",
+          ],
+        },
+        {
+          title: "Camera handle variations",
+          summary:
+            "Trigger rules by camera-handle selection so switching handles adds or removes the correct support brackets.",
+          details: [
+            "Compare each handle option against the baseline to capture the accessories it adds.",
+            "Reuse the same diff when a handle is deselected so its dedicated parts are removed.",
+          ],
+        },
+        {
+          title: "Viewfinder extension coverage",
+          summary:
+            "Create rules for every viewfinder extension so each selection brings its cabling and mounting hardware.",
+          details: [
+            "Diff the gear list with and without each extension to capture the matching additions and removals.",
+          ],
+        },
+        {
+          title: "Video distribution presets",
+          summary:
+            "Mirror the video distribution selector with per-option rules that reproduce the diffed add and remove lists.",
+          details: [
+            "Record payloads for Teradek, QTAKE or similar options directly from the rendered gear list diff.",
+            "Provide a fallback that seeds iOS monitoring gear when an option exists but rendered no diff.",
+          ],
+        },
+        {
+          title: "Onboard monitor rigging",
+          summary:
+            "Guarantee each onboard monitor adds its ULCS arm and rigging notes whenever the monitor is selected.",
+          details: [
+            "Generate a rule per monitor option so the correct arm and notes appear automatically.",
+          ],
+        },
+        {
+          title: "FIZ motor support kit",
+          summary:
+            "When any motor is present, pull in the stands, adapters, cabling and power needed to support it.",
+          details: [
+            "Key the rule to the special \"Any motor selected\" trigger so it fires for every motor combination.",
+          ],
+        },
+        {
+          title: "Always-on essentials",
+          summary:
+            "Keep standard cables, rigging aids and transport helpers active in every project.",
+          details: [
+            "Mark the rule as always active so the essentials stay in place even with no scenarios selected.",
+          ],
+        },
+        {
+          title: "Five-day consumables rotation",
+          summary: "Top up expendables on a five-day cadence to keep wipes, tape and sticks stocked.",
+          details: [
+            "Schedule the rule for every five shooting days so consumables automatically refresh during long shoots.",
+          ],
+        },
+        {
+          title: "Matte box templates",
+          summary:
+            "Offer ready-made templates for Swing Away, Rod based and Clamp On matte boxes.",
+          details: [
+            "Preload each template with the matching ARRI LMB kits and accessories so planners can pick the right build quickly.",
+          ],
+        },
+      ],
+    },
     autoGearPresetDescription:
       "Save and reuse complete sets of automatic gear rules.",
     autoGearPresetLabel: "Preset",
@@ -1875,6 +1956,88 @@ const texts = {
       "Decidi quali scenari del modulo aggiungono o rimuovono automaticamente elementi dalla lista.",
     autoGearDescription:
       "Crea regole basate sugli scenari per rifinire la lista generata dopo i suggerimenti predefiniti.",
+    autoGearRuleOptions: {
+      heading: "Modelli di regole predefinite",
+      intro:
+        "Usa queste idee già pronte per sostituire le vecchie aggiunte automatiche senza perdere copertura.",
+      groups: [
+        {
+          title: "Catalogo specifico per scenario",
+          summary:
+            "Confronta ogni scenario richiesto con la lista di base per trasformare aggiunte e rimozioni in una regola dedicata.",
+          details: [
+            "Aggiungi regole combinate per Handheld + Easyrig e Slider + Modalità underslung così l'attrezzatura condivisa viene conteggiata una sola volta.",
+            "Includi una regola solo rimozioni per Extreme rain + Rain Machine per mantenere unici gli accessori antipioggia del matte box.",
+          ],
+        },
+        {
+          title: "Varianti di maniglia camera",
+          summary:
+            "Attiva le regole in base alla maniglia scelta così il cambio di maniglia aggiunge o rimuove i supporti corretti.",
+          details: [
+            "Confronta ogni opzione di maniglia con la configurazione base per catturare gli accessori che aggiunge.",
+            "Riutilizza lo stesso diff quando una maniglia viene rimossa così i suoi componenti dedicati vengono eliminati.",
+          ],
+        },
+        {
+          title: "Copertura delle estensioni viewfinder",
+          summary:
+            "Crea regole per ogni estensione del mirino così ogni scelta porta con sé cablaggi e staffe.",
+          details: [
+            "Confronta la lista con e senza ciascuna estensione per raccogliere le rispettive aggiunte e rimozioni.",
+          ],
+        },
+        {
+          title: "Preset di distribuzione video",
+          summary:
+            "Rispecchia il selettore di distribuzione video con regole per opzione che riproducono gli elenchi di aggiunte e rimozioni.",
+          details: [
+            "Registra i payload per opzioni come Teradek o QTAKE direttamente dal diff della lista generata.",
+            "Prevedi un fallback che carica il kit di monitoraggio iOS quando un'opzione esiste ma non genera differenze.",
+          ],
+        },
+        {
+          title: "Rigging monitor onboard",
+          summary:
+            "Garantisci che ogni monitor onboard aggiunga il braccio ULCS e le note di rigging quando è selezionato.",
+          details: [
+            "Genera una regola per ogni monitor in modo che il braccio corretto e le note compaiano automaticamente.",
+          ],
+        },
+        {
+          title: "Kit supporto motori FIZ",
+          summary:
+            "Quando è presente un motore, aggiungi cavalletti, adattatori, cablaggi e alimentazione necessari.",
+          details: [
+            "Collega la regola al trigger speciale \"Qualsiasi motore\" così si attiva con ogni combinazione di motori.",
+          ],
+        },
+        {
+          title: "Essenziali sempre attivi",
+          summary:
+            "Mantieni cavi standard, accessori di rigging e supporti al trasporto in ogni progetto.",
+          details: [
+            "Segna la regola come sempre attiva così gli elementi essenziali restano anche senza scenari selezionati.",
+          ],
+        },
+        {
+          title: "Rotazione consumabili ogni cinque giorni",
+          summary:
+            "Rifornisci i consumabili con una cadenza di cinque giorni per avere salviette, nastro e ciak sempre pronti.",
+          details: [
+            "Programma la regola ogni cinque giorni di riprese così i consumabili si aggiornano automaticamente durante i set lunghi.",
+          ],
+        },
+        {
+          title: "Template per matte box",
+          summary:
+            "Offri template pronti per matte box Swing Away, su barre e clamp-on.",
+          details: [
+            "Precarica ogni template con i kit ARRI LMB e gli accessori corrispondenti per scegliere rapidamente l'allestimento giusto.",
+          ],
+        },
+      ],
+    },
     autoGearPresetDescription:
       "Salva e riutilizza insiemi completi di regole automatiche.",
     autoGearPresetLabel: "Preimpostazione",
@@ -3161,6 +3324,88 @@ const texts = {
       "Configura qué escenarios de requisitos agregan o quitan equipo automáticamente.",
     autoGearDescription:
       "Crea reglas basadas en escenarios para ajustar la lista generada después de las sugerencias predeterminadas.",
+    autoGearRuleOptions: {
+      heading: "Plantillas de reglas predefinidas",
+      intro:
+        "Utiliza estas ideas listas para sustituir las antiguas adiciones automáticas sin perder cobertura.",
+      groups: [
+        {
+          title: "Catálogo específico por escenario",
+          summary:
+            "Compara cada escenario requerido con la lista base para convertir sus altas y bajas en una regla dedicada.",
+          details: [
+            "Añade reglas combinadas para Handheld + Easyrig y Slider + modo underslung para contar el equipo compartido solo una vez.",
+            "Incluye una regla solo de retiradas para Extreme rain + Rain Machine y así mantener únicos los accesorios de lluvia del matte box.",
+          ],
+        },
+        {
+          title: "Variaciones de empuñadura de cámara",
+          summary:
+            "Activa las reglas según la empuñadura elegida para que cambiarla añada o quite los soportes correctos.",
+          details: [
+            "Compara cada opción de empuñadura con la configuración base para capturar los accesorios que incorpora.",
+            "Reutiliza el mismo diff cuando se retira una empuñadura para eliminar sus piezas dedicadas.",
+          ],
+        },
+        {
+          title: "Cobertura de extensiones de visor",
+          summary:
+            "Crea reglas para cada extensión del visor y así cada elección lleve su cableado y herrajes.",
+          details: [
+            "Compara la lista con y sin cada extensión para recoger las altas y bajas correspondientes.",
+          ],
+        },
+        {
+          title: "Preajustes de distribución de vídeo",
+          summary:
+            "Refleja el selector de distribución de vídeo con reglas por opción que reproduzcan las listas de altas y bajas.",
+          details: [
+            "Registra las cargas de opciones como Teradek o QTAKE directamente del diff de la lista generada.",
+            "Añade un respaldo que cargue el kit de monitorización iOS cuando existe la opción pero no genera diferencias.",
+          ],
+        },
+        {
+          title: "Rigging de monitor onboard",
+          summary:
+            "Garantiza que cada monitor onboard añada su brazo ULCS y notas de rigging cuando se seleccione.",
+          details: [
+            "Genera una regla por monitor para insertar automáticamente el brazo correcto y las notas.",
+          ],
+        },
+        {
+          title: "Kit de soporte para motores FIZ",
+          summary:
+            "Cuando haya un motor, suma los trípodes, adaptadores, cables y energía necesarios.",
+          details: [
+            "Vincula la regla al disparador especial \"Cualquier motor\" para que se active con cualquier combinación.",
+          ],
+        },
+        {
+          title: "Elementos esenciales siempre activos",
+          summary:
+            "Mantén cables estándar, ayudas de rigging y soportes de transporte en cada proyecto.",
+          details: [
+            "Marca la regla como siempre activa para conservar los esenciales incluso sin escenarios seleccionados.",
+          ],
+        },
+        {
+          title: "Rotación de consumibles cada cinco días",
+          summary:
+            "Reabastece los consumibles cada cinco días de rodaje para tener toallitas, cinta y claquetas listas.",
+          details: [
+            "Programa la regla cada cinco días de rodaje para que los consumibles se renueven automáticamente en rodajes largos.",
+          ],
+        },
+        {
+          title: "Plantillas de matte box",
+          summary:
+            "Ofrece plantillas listas para Swing Away, de barras y clamp-on.",
+          details: [
+            "Precarga cada plantilla con los kits ARRI LMB y accesorios correspondientes para elegir rápidamente el montaje adecuado.",
+          ],
+        },
+      ],
+    },
     autoGearPresetDescription:
       "Guarda y reutiliza conjuntos completos de reglas automáticas de equipo.",
     autoGearPresetLabel: "Preajuste",
@@ -4448,6 +4693,88 @@ const texts = {
       "Définissez quels scénarios du formulaire ajoutent ou retirent automatiquement du matériel.",
     autoGearDescription:
       "Créez des règles basées sur des scénarios pour ajuster la liste générée après les suggestions par défaut.",
+    autoGearRuleOptions: {
+      heading: "Modèles de règles intégrés",
+      intro:
+        "Utilisez ces idées prêtes à l'emploi pour remplacer les anciens ajouts automatiques sans perdre de couverture.",
+      groups: [
+        {
+          title: "Catalogue spécifique aux scénarios",
+          summary:
+            "Comparez chaque scénario requis à la liste de base pour transformer ses ajouts et retraits en règle dédiée.",
+          details: [
+            "Ajoutez des règles combinées pour Handheld + Easyrig et Slider + mode underslung afin de compter l’équipement partagé une seule fois.",
+            "Incluez une règle uniquement en retrait pour Extreme rain + Rain Machine afin de garder uniques les accessoires pluie du matte box.",
+          ],
+        },
+        {
+          title: "Variations de poignée caméra",
+          summary:
+            "Déclenchez les règles selon la poignée choisie pour qu’un changement ajoute ou retire les bons supports.",
+          details: [
+            "Comparez chaque poignée à la configuration de base pour capter les accessoires ajoutés.",
+            "Réutilisez le même diff lorsque la poignée est retirée afin de supprimer ses pièces dédiées.",
+          ],
+        },
+        {
+          title: "Couverture des rallonges de viseur",
+          summary:
+            "Créez des règles pour chaque rallonge de viseur afin que chaque choix apporte son câblage et sa fixation.",
+          details: [
+            "Comparez la liste avec et sans chaque rallonge pour récupérer ajouts et retraits correspondants.",
+          ],
+        },
+        {
+          title: "Préréglages de distribution vidéo",
+          summary:
+            "Reflétez le sélecteur de distribution vidéo avec des règles par option qui reproduisent les listes d’ajouts et de retraits.",
+          details: [
+            "Enregistrez les charges pour des options comme Teradek ou QTAKE directement depuis le diff de la liste générée.",
+            "Prévoyez un secours qui ajoute le kit de monitoring iOS lorsqu’une option existe mais ne génère pas de diff.",
+          ],
+        },
+        {
+          title: "Rigging du moniteur embarqué",
+          summary:
+            "Assurez-vous que chaque moniteur embarqué ajoute son bras ULCS et ses notes de montage lorsqu’il est sélectionné.",
+          details: [
+            "Générez une règle par moniteur afin que le bras approprié et les notes apparaissent automatiquement.",
+          ],
+        },
+        {
+          title: "Kit de support moteurs FIZ",
+          summary:
+            "Dès qu’un moteur est présent, ajoutez pieds, adaptateurs, câbles et alimentation nécessaires.",
+          details: [
+            "Associez la règle au déclencheur spécial \"N'importe quel moteur\" pour qu’elle s’exécute avec chaque combinaison.",
+          ],
+        },
+        {
+          title: "Essentiels toujours actifs",
+          summary:
+            "Maintenez câbles standard, aides de rigging et accessoires de transport dans chaque projet.",
+          details: [
+            "Marquez la règle comme toujours active pour conserver ces essentiels même sans scénario sélectionné.",
+          ],
+        },
+        {
+          title: "Rotation des consommables tous les cinq jours",
+          summary:
+            "Réapprovisionnez les consommables tous les cinq jours de tournage pour garder lingettes, gaffer et clap prêts.",
+          details: [
+            "Planifiez la règle tous les cinq jours de tournage afin que les consommables se renouvellent automatiquement sur les longs tournages.",
+          ],
+        },
+        {
+          title: "Modèles de matte box",
+          summary:
+            "Proposez des modèles prêts pour Swing Away, sur tiges et clamp-on.",
+          details: [
+            "Préchargez chaque modèle avec les kits ARRI LMB et accessoires correspondants pour choisir rapidement le montage adapté.",
+          ],
+        },
+      ],
+    },
     autoGearPresetDescription:
       "Enregistrez et réutilisez des ensembles complets de règles automatiques d’équipement.",
     autoGearPresetLabel: "Préréglage",
@@ -5747,6 +6074,88 @@ const texts = {
       "Lege fest, welche Projektanforderungen automatisch Geräte hinzufügen oder entfernen.",
     autoGearDescription:
       "Erstelle szenariobasierte Regeln, um die erzeugte Packliste nach den Standardvorschlägen anzupassen.",
+    autoGearRuleOptions: {
+      heading: "Vorlagen für automatische Regeln",
+      intro:
+        "Nutze diese vorbereiteten Ideen, um die alten automatischen Ergänzungen zu ersetzen, ohne Abdeckung zu verlieren.",
+      groups: [
+        {
+          title: "Szenario-spezifischer Katalog",
+          summary:
+            "Vergleiche jedes benötigte Szenario mit der Basistabelle, um seine Ergänzungen und Entnahmen in eine eigene Regel zu verwandeln.",
+          details: [
+            "Füge Kombi-Regeln für Handheld + Easyrig sowie Slider + Undersling-Modus hinzu, damit geteiltes Equipment nur einmal gezählt wird.",
+            "Ergänze eine reine Entnahme-Regel für Extreme rain + Rain Machine, damit die Matte-Box-Regenaccessoires eindeutig bleiben.",
+          ],
+        },
+        {
+          title: "Varianten der Kameragriffe",
+          summary:
+            "Löse Regeln über die gewählte Kameragriff-Option aus, damit ein Wechsel die passenden Halterungen ergänzt oder entfernt.",
+          details: [
+            "Vergleiche jede Griffoption mit der Basis, um die zusätzlichen Zubehörteile zu erfassen.",
+            "Nutze den gleichen Diff, wenn ein Griff abgewählt wird, damit seine speziellen Teile entfernt werden.",
+          ],
+        },
+        {
+          title: "Sucher-Erweiterungen abdecken",
+          summary:
+            "Erzeuge Regeln für jede Sucher-Erweiterung, damit jede Auswahl die zugehörigen Kabel und Halter mitbringt.",
+          details: [
+            "Vergleiche die Liste mit und ohne die Erweiterung, um passende Ergänzungen und Entnahmen zu erfassen.",
+          ],
+        },
+        {
+          title: "Videoverteilungs-Presets",
+          summary:
+            "Spiegele den Videoverteilungs-Selector mit Regeln pro Option, die die Listen aus Ergänzungen und Entnahmen nachbilden.",
+          details: [
+            "Übernimm Payloads für Optionen wie Teradek oder QTAKE direkt aus dem Differenzvergleich der erzeugten Liste.",
+            "Hinterlege ein Fallback, das iOS-Monitoring-Equipment hinzufügt, wenn eine Option existiert, aber keine Differenz liefert.",
+          ],
+        },
+        {
+          title: "Onboard-Monitor-Rigging",
+          summary:
+            "Stelle sicher, dass jeder Onboard-Monitor seinen ULCS-Arm und Rigging-Hinweise ergänzt, sobald er gewählt ist.",
+          details: [
+            "Erzeuge pro Monitor eine Regel, damit Arm und Hinweise automatisch eingefügt werden.",
+          ],
+        },
+        {
+          title: "FIZ-Motorsupport-Kit",
+          summary:
+            "Sobald ein Motor vorhanden ist, ergänze Stative, Adapter, Kabel und Stromversorgung.",
+          details: [
+            "Verknüpfe die Regel mit dem speziellen Trigger \"Beliebiger Motor\", damit sie für jede Motor-Kombination greift.",
+          ],
+        },
+        {
+          title: "Immer aktive Essentials",
+          summary:
+            "Halte Standardkabel, Rigging-Hilfen und Transportzubehör in jedem Projekt aktiv.",
+          details: [
+            "Markiere die Regel als immer aktiv, damit die Essentials auch ohne Szenarien erhalten bleiben.",
+          ],
+        },
+        {
+          title: "Verbrauchsmaterial im Fünf-Tage-Rhythmus",
+          summary:
+            "Fülle Verbrauchsmaterial alle fünf Drehtage nach, damit Tücher, Tape und Klappen bereitstehen.",
+          details: [
+            "Plane die Regel alle fünf Drehtage ein, damit Verbrauchsgüter auf langen Drehs automatisch erneuert werden.",
+          ],
+        },
+        {
+          title: "Matte-Box-Templates",
+          summary:
+            "Biete fertige Vorlagen für Swing-Away-, Rod-basierte und Clamp-On-Matte-Boxen.",
+          details: [
+            "Lade jede Vorlage mit den passenden ARRI-LMB-Kits und Zubehör vor, um schnell die richtige Variante zu wählen.",
+          ],
+        },
+      ],
+    },
     autoGearPresetDescription:
       "Speichere komplette Sets automatischer Gear-Regeln zur Wiederverwendung.",
     autoGearPresetLabel: "Voreinstellung",

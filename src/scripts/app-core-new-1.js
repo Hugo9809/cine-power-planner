@@ -5539,6 +5539,10 @@ function resolveLanguagePreference(candidate) {
 
 const autoGearHeadingElem = document.getElementById('autoGearHeading');
 const autoGearDescriptionElem = document.getElementById('autoGearDescription');
+const autoGearRuleOptionsSection = document.getElementById('autoGearRuleOptions');
+const autoGearRuleOptionsHeading = document.getElementById('autoGearRuleOptionsHeading');
+const autoGearRuleOptionsIntro = document.getElementById('autoGearRuleOptionsIntro');
+const autoGearRuleOptionsList = document.getElementById('autoGearRuleOptionsList');
 const autoGearMonitorDefaultsSection = document.getElementById('autoGearMonitorDefaultsSection');
 const autoGearMonitorDefaultsHeading = document.getElementById('autoGearMonitorDefaultsHeading');
 const autoGearMonitorDefaultsDescription = document.getElementById('autoGearMonitorDefaultsDescription');
@@ -5578,6 +5582,90 @@ autoGearMonitorDefaultControls.forEach(control => {
     setAutoGearMonitorDefault(control.key, event.target.value);
   });
 });
+
+function renderAutoGearRuleOptionsContent(lang) {
+  if (!autoGearRuleOptionsSection || !autoGearRuleOptionsList) {
+    return;
+  }
+
+  const fallbackBundle = texts.en && texts.en.autoGearRuleOptions
+    ? texts.en.autoGearRuleOptions
+    : null;
+  const langBundle = texts[lang] && texts[lang].autoGearRuleOptions
+    ? texts[lang].autoGearRuleOptions
+    : null;
+
+  const bundle = langBundle || fallbackBundle;
+  const groups = Array.isArray(bundle?.groups) && bundle.groups.length
+    ? bundle.groups
+    : Array.isArray(fallbackBundle?.groups) && fallbackBundle.groups.length
+      ? fallbackBundle.groups
+      : [];
+
+  const headingText = bundle?.heading || fallbackBundle?.heading || '';
+  if (autoGearRuleOptionsHeading) {
+    autoGearRuleOptionsHeading.textContent = headingText;
+    if (headingText) {
+      autoGearRuleOptionsHeading.setAttribute('data-help', headingText);
+    } else {
+      autoGearRuleOptionsHeading.removeAttribute('data-help');
+    }
+  }
+
+  const introText = bundle?.intro || fallbackBundle?.intro || '';
+  if (autoGearRuleOptionsIntro) {
+    autoGearRuleOptionsIntro.textContent = introText;
+    autoGearRuleOptionsIntro.hidden = !introText;
+  }
+
+  autoGearRuleOptionsList.innerHTML = '';
+
+  groups.forEach(group => {
+    if (!group || typeof group !== 'object') return;
+    const title = typeof group.title === 'string' ? group.title.trim() : '';
+    const summary = typeof group.summary === 'string' ? group.summary.trim() : '';
+    const details = Array.isArray(group.details)
+      ? group.details
+          .map(detail => (typeof detail === 'string' ? detail.trim() : ''))
+          .filter(Boolean)
+      : [];
+
+    if (!title && !summary && !details.length) return;
+
+    const item = document.createElement('li');
+    item.className = 'auto-gear-rule-options-item';
+
+    if (title) {
+      const titleElem = document.createElement('strong');
+      titleElem.className = 'auto-gear-rule-option-title';
+      titleElem.textContent = title;
+      item.appendChild(titleElem);
+    }
+
+    if (summary) {
+      const summaryElem = document.createElement('p');
+      summaryElem.className = 'auto-gear-rule-option-summary settings-hint';
+      summaryElem.textContent = summary;
+      item.appendChild(summaryElem);
+    }
+
+    if (details.length) {
+      const detailsList = document.createElement('ul');
+      detailsList.className = 'auto-gear-rule-option-details';
+      details.forEach(detailText => {
+        const detailItem = document.createElement('li');
+        detailItem.textContent = detailText;
+        detailsList.appendChild(detailItem);
+      });
+      item.appendChild(detailsList);
+    }
+
+    autoGearRuleOptionsList.appendChild(item);
+  });
+
+  const hasItems = autoGearRuleOptionsList.children.length > 0;
+  autoGearRuleOptionsSection.hidden = !hasItems;
+}
 const autoGearSearchInput = document.getElementById('autoGearSearch');
 const autoGearSearchLabel = document.getElementById('autoGearSearchLabel');
 const autoGearFilterScenarioLabel = document.getElementById('autoGearFilterScenarioLabel');
@@ -6761,6 +6849,7 @@ function setLanguage(lang) {
   if (autoGearDescriptionElem) {
     autoGearDescriptionElem.textContent = texts[lang].autoGearDescription || texts.en?.autoGearDescription || '';
   }
+  renderAutoGearRuleOptionsContent(lang);
   if (autoGearMonitorDefaultsHeading) {
     const heading = texts[lang].autoGearMonitorDefaultsHeading
       || texts.en?.autoGearMonitorDefaultsHeading
