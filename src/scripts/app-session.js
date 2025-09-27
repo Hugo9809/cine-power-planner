@@ -31,6 +31,12 @@
           loadAutoGearBackupRetention, loadFullBackupHistory */
 /* global getDiagramManualPositions, setManualDiagramPositions,
           normalizeDiagramPositionsInput, ensureAutoBackupsFromProjects */
+/* global getMountVoltagePreferencesClone, mountVoltageResetButton,
+          resetMountVoltagePreferences, updateMountVoltageInputsFromState,
+          applyMountVoltagePreferences, MOUNT_VOLTAGE_STORAGE_KEY,
+          MOUNT_VOLTAGE_STORAGE_BACKUP_KEY,
+          parseStoredMountVoltages, SUPPORTED_MOUNT_VOLTAGE_TYPES,
+          DEFAULT_MOUNT_VOLTAGES, mountVoltageInputs, parseVoltageValue */
 
 const sessionCineUi =
   (typeof globalThis !== 'undefined' && globalThis.cineUi)
@@ -2818,6 +2824,7 @@ let settingsInitialPinkMode = isPinkModeActive();
 let settingsInitialTemperatureUnit =
   typeof temperatureUnit === 'string' ? temperatureUnit : 'celsius';
 let settingsInitialShowAutoBackups = Boolean(showAutoBackups);
+let settingsInitialMountVoltages = getMountVoltagePreferencesClone();
 
 function persistPinkModePreference(enabled) {
   pinkModeEnabled = !!enabled;
@@ -2946,6 +2953,7 @@ applyPinkMode(pinkModeEnabled);
 rememberSettingsPinkModeBaseline();
 rememberSettingsTemperatureUnitBaseline();
 rememberSettingsShowAutoBackupsBaseline();
+rememberSettingsMountVoltagesBaseline();
 
 if (pinkModeToggle) {
   pinkModeToggle.addEventListener("click", event => {
@@ -2976,12 +2984,32 @@ if (settingsTemperatureUnit) {
   });
 }
 
+const mountVoltageInputNodes = Array.from(
+  typeof document !== 'undefined'
+    ? document.querySelectorAll('.mount-voltage-input')
+    : []
+);
+
+mountVoltageInputNodes.forEach(input => {
+  input.addEventListener('change', handleMountVoltageInputChange);
+  input.addEventListener('blur', handleMountVoltageInputChange);
+});
+
+if (mountVoltageResetButton) {
+  mountVoltageResetButton.addEventListener('click', () => {
+    resetMountVoltagePreferences({ persist: false, triggerUpdate: true });
+    updateMountVoltageInputsFromState();
+  });
+}
+
 if (settingsButton && settingsDialog) {
   settingsButton.addEventListener('click', () => {
     prevAccentColor = accentColor;
     rememberSettingsPinkModeBaseline();
     rememberSettingsTemperatureUnitBaseline();
     rememberSettingsShowAutoBackupsBaseline();
+    rememberSettingsMountVoltagesBaseline();
+    updateMountVoltageInputsFromState();
     if (settingsLanguage) settingsLanguage.value = currentLang;
     if (settingsDarkMode) settingsDarkMode.checked = document.body.classList.contains('dark-mode');
     if (settingsPinkMode) settingsPinkMode.checked = document.body.classList.contains('pink-mode');
@@ -3054,6 +3082,8 @@ if (settingsButton && settingsDialog) {
       rememberSettingsTemperatureUnitBaseline();
       revertSettingsShowAutoBackupsIfNeeded();
       rememberSettingsShowAutoBackupsBaseline();
+      revertSettingsMountVoltagesIfNeeded();
+      rememberSettingsMountVoltagesBaseline();
       revertAccentColor();
       if (settingsLogo) settingsLogo.value = '';
       if (settingsLogoPreview) loadStoredLogoPreview();
@@ -3135,6 +3165,11 @@ if (settingsButton && settingsDialog) {
         applyTemperatureUnitPreference(settingsTemperatureUnit.value);
         rememberSettingsTemperatureUnitBaseline();
       }
+      applyMountVoltagePreferences(collectMountVoltageFormValues(), {
+        persist: true,
+        triggerUpdate: true
+      });
+      rememberSettingsMountVoltagesBaseline();
       if (settingsFontSize) {
         const size = settingsFontSize.value;
         applyFontSize(size);
@@ -3179,6 +3214,7 @@ if (settingsButton && settingsDialog) {
       rememberSettingsPinkModeBaseline();
       rememberSettingsTemperatureUnitBaseline();
       rememberSettingsShowAutoBackupsBaseline();
+      rememberSettingsMountVoltagesBaseline();
       closeDialog(settingsDialog);
       settingsDialog.setAttribute('hidden', '');
     });
@@ -3192,6 +3228,8 @@ if (settingsButton && settingsDialog) {
       rememberSettingsTemperatureUnitBaseline();
       revertSettingsShowAutoBackupsIfNeeded();
       rememberSettingsShowAutoBackupsBaseline();
+      revertSettingsMountVoltagesIfNeeded();
+      rememberSettingsMountVoltagesBaseline();
       revertAccentColor();
       if (settingsLogo) settingsLogo.value = '';
       if (settingsLogoPreview) loadStoredLogoPreview();
@@ -3210,6 +3248,8 @@ if (settingsButton && settingsDialog) {
     rememberSettingsTemperatureUnitBaseline();
     revertSettingsShowAutoBackupsIfNeeded();
     rememberSettingsShowAutoBackupsBaseline();
+    revertSettingsMountVoltagesIfNeeded();
+    rememberSettingsMountVoltagesBaseline();
     revertAccentColor();
     if (settingsLogo) settingsLogo.value = '';
     if (settingsLogoPreview) loadStoredLogoPreview();
@@ -6008,6 +6048,35 @@ function applyPreferencesFromStorage(safeGetItem) {
 
   const language = safeGetItem('language');
 
+  try {
+    const storedVoltages = safeGetItem(MOUNT_VOLTAGE_STORAGE_KEY);
+    let parsedVoltages = parseStoredMountVoltages(storedVoltages);
+    let shouldPersistVoltages = false;
+
+    if (!parsedVoltages) {
+      const backupKey =
+        typeof MOUNT_VOLTAGE_STORAGE_BACKUP_KEY === 'string'
+          ? MOUNT_VOLTAGE_STORAGE_BACKUP_KEY
+          : `${MOUNT_VOLTAGE_STORAGE_KEY}__backup`;
+      const backupVoltages = safeGetItem(backupKey);
+      if (backupVoltages !== undefined && backupVoltages !== null) {
+        const parsedBackupVoltages = parseStoredMountVoltages(backupVoltages);
+        if (parsedBackupVoltages) {
+          parsedVoltages = parsedBackupVoltages;
+          shouldPersistVoltages = true;
+        }
+      }
+    }
+
+    if (parsedVoltages) {
+      applyMountVoltagePreferences(parsedVoltages, { persist: shouldPersistVoltages, triggerUpdate: true });
+      updateMountVoltageInputsFromState();
+      rememberSettingsMountVoltagesBaseline();
+    }
+  } catch (voltageError) {
+    console.warn('Failed to apply restored mount voltage preferences', voltageError);
+  }
+
   return {
     showAutoBackups: showBackups,
     accentColor: color || null,
@@ -7100,6 +7169,13 @@ if (factoryResetButton) {
         }
       } catch (accentError) {
         console.warn('Failed to reset accent color during factory reset', accentError);
+      }
+      try {
+        resetMountVoltagePreferences({ persist: true, triggerUpdate: true });
+        updateMountVoltageInputsFromState();
+        rememberSettingsMountVoltagesBaseline();
+      } catch (voltageResetError) {
+        console.warn('Failed to reset mount voltages during factory reset', voltageResetError);
       }
       try {
         fontSize = '16';
@@ -10360,3 +10436,46 @@ if (typeof module !== "undefined" && module.exports) {
     },
   };
 }
+function rememberSettingsMountVoltagesBaseline() {
+  settingsInitialMountVoltages = getMountVoltagePreferencesClone();
+}
+
+function revertSettingsMountVoltagesIfNeeded() {
+  const baseline = settingsInitialMountVoltages || getMountVoltagePreferencesClone();
+  const current = getMountVoltagePreferencesClone();
+  const changed = SUPPORTED_MOUNT_VOLTAGE_TYPES.some(type => {
+    const baselineEntry = baseline[type] || DEFAULT_MOUNT_VOLTAGES[type];
+    const currentEntry = current[type] || DEFAULT_MOUNT_VOLTAGES[type];
+    return (
+      Number(baselineEntry.high) !== Number(currentEntry.high)
+      || Number(baselineEntry.low) !== Number(currentEntry.low)
+    );
+  });
+  if (changed) {
+    applyMountVoltagePreferences(baseline, { persist: true, triggerUpdate: true });
+  } else {
+    updateMountVoltageInputsFromState();
+  }
+}
+
+function collectMountVoltageFormValues() {
+  const updated = getMountVoltagePreferencesClone();
+  SUPPORTED_MOUNT_VOLTAGE_TYPES.forEach(type => {
+    const fields = mountVoltageInputs?.[type];
+    if (!fields) return;
+    const baselineEntry = updated[type] || DEFAULT_MOUNT_VOLTAGES[type];
+    if (fields.high) {
+      updated[type].high = parseVoltageValue(fields.high.value, baselineEntry.high);
+    }
+    if (fields.low) {
+      updated[type].low = parseVoltageValue(fields.low.value, baselineEntry.low);
+    }
+  });
+  return updated;
+}
+
+function handleMountVoltageInputChange() {
+  const values = collectMountVoltageFormValues();
+  applyMountVoltagePreferences(values, { persist: false, triggerUpdate: true });
+}
+

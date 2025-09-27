@@ -542,6 +542,304 @@ try {
 } catch (error) {
   console.warn('Could not load temperature unit preference', error);
 }
+var SUPPORTED_MOUNT_VOLTAGE_TYPES = ['V-Mount', 'Gold-Mount', 'B-Mount'];
+var MOUNT_VOLTAGE_STORAGE_KEY = 'cameraPowerPlanner_mountVoltages';
+var MOUNT_VOLTAGE_STORAGE_BACKUP_KEY = "".concat(MOUNT_VOLTAGE_STORAGE_KEY, '__backup');
+try {
+  if (CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object') {
+    if (typeof CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_KEY !== 'string') {
+      CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_KEY = MOUNT_VOLTAGE_STORAGE_KEY;
+    }
+    if (typeof CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_BACKUP_KEY !== 'string') {
+      CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_BACKUP_KEY = MOUNT_VOLTAGE_STORAGE_BACKUP_KEY;
+    }
+  }
+} catch (exposeMountVoltageError) {
+  console.warn('Unable to expose mount voltage storage keys globally', exposeMountVoltageError);
+}
+var DEFAULT_MOUNT_VOLTAGES = Object.freeze({
+  'V-Mount': Object.freeze({ high: 14.4, low: 12 }),
+  'Gold-Mount': Object.freeze({ high: 14.4, low: 12 }),
+  'B-Mount': Object.freeze({ high: 33.6, low: 21.6 })
+});
+var TOTAL_CURRENT_LABEL_FALLBACK = 'Total Current (at {voltage}V):';
+var TOTAL_CURRENT_HELP_HIGH_FALLBACK = 'Current draw at the battery\'s main output ({voltage}V).';
+var TOTAL_CURRENT_HELP_LOW_FALLBACK = 'Current draw at auxiliary outputs ({voltage}V).';
+var mountVoltagePreferences = cloneMountVoltageMap(DEFAULT_MOUNT_VOLTAGES);
+var mountVoltageInputs = null;
+var mountVoltageSectionElem = null;
+var mountVoltageHeadingElem = null;
+var mountVoltageDescriptionElem = null;
+var mountVoltageNoteElem = null;
+var mountVoltageResetButton = null;
+var mountVoltageTitleElems = null;
+function parseVoltageValue(value, fallback) {
+  var numeric = Number.NaN;
+  if (typeof value === 'number') {
+    numeric = value;
+  } else if (typeof value === 'string') {
+    numeric = Number.parseFloat(value.replace(',', '.'));
+  }
+  if (!Number.isFinite(numeric) || numeric <= 0) {
+    return fallback;
+  }
+  var clamped = Math.min(1000, Math.max(0.1, numeric));
+  return Math.round(clamped * 100) / 100;
+}
+function cloneMountVoltageMap(source) {
+  var result = {};
+  SUPPORTED_MOUNT_VOLTAGE_TYPES.forEach(function (type) {
+    var entry = source && source[type] ? source[type] : DEFAULT_MOUNT_VOLTAGES[type];
+    var high = parseVoltageValue(entry && entry.high, DEFAULT_MOUNT_VOLTAGES[type].high);
+    var low = parseVoltageValue(entry && entry.low, DEFAULT_MOUNT_VOLTAGES[type].low);
+    result[type] = { high: high, low: low };
+  });
+  return result;
+}
+function normalizeMountVoltageSource(source) {
+  if (!source || typeof source !== 'object') {
+    return cloneMountVoltageMap(DEFAULT_MOUNT_VOLTAGES);
+  }
+  return cloneMountVoltageMap(source);
+}
+function parseStoredMountVoltages(raw) {
+  if (!raw) {
+    return null;
+  }
+  try {
+    if (typeof raw === 'string') {
+      var parsed = JSON.parse(raw);
+      return normalizeMountVoltageSource(parsed);
+    }
+    return normalizeMountVoltageSource(raw);
+  } catch (error) {
+    console.warn('Could not parse stored mount voltages', error);
+    return null;
+  }
+}
+function getDefaultMountKey(mount) {
+  return SUPPORTED_MOUNT_VOLTAGE_TYPES.indexOf(mount) !== -1 ? mount : 'V-Mount';
+}
+function getMountVoltageConfig(mount) {
+  var key = getDefaultMountKey(mount);
+  var entry = mountVoltagePreferences[key] || DEFAULT_MOUNT_VOLTAGES[key];
+  return {
+    high: parseVoltageValue(entry && entry.high, DEFAULT_MOUNT_VOLTAGES[key].high),
+    low: parseVoltageValue(entry && entry.low, DEFAULT_MOUNT_VOLTAGES[key].low)
+  };
+}
+function getActiveMountVoltageConfig() {
+  var plate = getSelectedPlate();
+  return getMountVoltageConfig(plate);
+}
+function formatVoltageForDisplay(voltage, lang) {
+  var numeric = Number(voltage);
+  if (!Number.isFinite(numeric)) {
+    return '';
+  }
+  var locale = lang || currentLang;
+  var options = {
+    maximumFractionDigits: 2,
+    minimumFractionDigits: numeric % 1 === 0 ? 0 : 1
+  };
+  if (typeof formatNumberForLang === 'function') {
+    try {
+      return formatNumberForLang(locale, numeric, options);
+    } catch (error) {
+      console.warn('formatNumberForLang failed for voltage display', error);
+    }
+  }
+  try {
+    return new Intl.NumberFormat(locale, options).format(numeric);
+  } catch (intlError) {
+    void intlError;
+  }
+  return numeric.toFixed(options.minimumFractionDigits);
+}
+function getMountVoltagePreferencesClone() {
+  return cloneMountVoltageMap(mountVoltagePreferences);
+}
+function persistMountVoltagePreferences(preferences) {
+  if (typeof localStorage === 'undefined') {
+    return;
+  }
+  var serialized;
+  try {
+    serialized = JSON.stringify(preferences);
+  } catch (serializationError) {
+    console.warn('Could not serialize mount voltage preferences', serializationError);
+    return;
+  }
+  try {
+    localStorage.setItem(MOUNT_VOLTAGE_STORAGE_KEY, serialized);
+  } catch (storageError) {
+    console.warn('Could not save mount voltage preferences', storageError);
+  }
+  try {
+    localStorage.setItem(MOUNT_VOLTAGE_STORAGE_BACKUP_KEY, serialized);
+  } catch (backupError) {
+    console.warn('Could not save mount voltage backup copy', backupError);
+  }
+}
+function applyMountVoltagePreferences(preferences, options) {
+  var opts = options || {};
+  var persist = typeof opts.persist === 'boolean' ? opts.persist : true;
+  var triggerUpdate = typeof opts.triggerUpdate === 'boolean' ? opts.triggerUpdate : true;
+  mountVoltagePreferences = normalizeMountVoltageSource(preferences);
+  if (persist) {
+    persistMountVoltagePreferences(mountVoltagePreferences);
+  }
+  if (triggerUpdate) {
+    updateMountVoltageInputsFromState();
+    refreshTotalCurrentLabels(currentLang);
+    if (typeof updateCalculations === 'function') {
+      try {
+        updateCalculations();
+      } catch (calcError) {
+        console.warn('Failed to refresh calculations after voltage change', calcError);
+      }
+    }
+  }
+}
+function resetMountVoltagePreferences(options) {
+  applyMountVoltagePreferences(DEFAULT_MOUNT_VOLTAGES, options);
+}
+function formatVoltageInputValue(value) {
+  return Number.isFinite(value) ? String(Math.round(Number(value) * 100) / 100) : '';
+}
+function updateMountVoltageInputsFromState() {
+  if (!mountVoltageInputs) {
+    return;
+  }
+  var preferences = mountVoltagePreferences || DEFAULT_MOUNT_VOLTAGES;
+  SUPPORTED_MOUNT_VOLTAGE_TYPES.forEach(function (type) {
+    var fields = mountVoltageInputs[type];
+    if (!fields) return;
+    var entry = preferences[type] || DEFAULT_MOUNT_VOLTAGES[type];
+    if (fields.high) {
+      fields.high.value = formatVoltageInputValue(entry && entry.high);
+    }
+    if (fields.low) {
+      fields.low.value = formatVoltageInputValue(entry && entry.low);
+    }
+  });
+}
+function getTemplateString(lang, key, fallback) {
+  var localeTexts = texts && texts[lang] ? texts[lang] : null;
+  var defaultTexts = texts && texts.en ? texts.en : null;
+  if (localeTexts && typeof localeTexts[key] === 'string') {
+    return localeTexts[key];
+  }
+  if (defaultTexts && typeof defaultTexts[key] === 'string') {
+    return defaultTexts[key];
+  }
+  return fallback;
+}
+function renderVoltageTemplate(template, voltage, lang, fallback) {
+  var formatted = formatVoltageForDisplay(voltage, lang);
+  var source = typeof template === 'string' && template.indexOf('{voltage}') !== -1 ? template : fallback;
+  if (typeof source !== 'string') {
+    return formatted ? "".concat(formatted, " V") : '';
+  }
+  return source.replace('{voltage}', formatted);
+}
+function refreshTotalCurrentLabels(lang, mount, voltages) {
+  if (typeof document === 'undefined') {
+    return;
+  }
+  var highLabelElem = document.getElementById('totalCurrent144Label');
+  var lowLabelElem = document.getElementById('totalCurrent12Label');
+  if (!highLabelElem || !lowLabelElem) {
+    return;
+  }
+  var effectiveLang = lang || currentLang;
+  var effectiveMount = mount || getSelectedPlate();
+  var config = voltages || getMountVoltageConfig(effectiveMount);
+  var highTemplate = getTemplateString(effectiveLang, 'totalCurrentHighLabelTemplate', TOTAL_CURRENT_LABEL_FALLBACK);
+  var lowTemplate = getTemplateString(effectiveLang, 'totalCurrentLowLabelTemplate', TOTAL_CURRENT_LABEL_FALLBACK);
+  var highHelpTemplate = getTemplateString(effectiveLang, 'totalCurrentHighHelpTemplate', TOTAL_CURRENT_HELP_HIGH_FALLBACK);
+  var lowHelpTemplate = getTemplateString(effectiveLang, 'totalCurrentLowHelpTemplate', TOTAL_CURRENT_HELP_LOW_FALLBACK);
+  highLabelElem.textContent = renderVoltageTemplate(highTemplate, config.high, effectiveLang, TOTAL_CURRENT_LABEL_FALLBACK);
+  lowLabelElem.textContent = renderVoltageTemplate(lowTemplate, config.low, effectiveLang, TOTAL_CURRENT_LABEL_FALLBACK);
+  highLabelElem.setAttribute('data-help', renderVoltageTemplate(highHelpTemplate, config.high, effectiveLang, TOTAL_CURRENT_HELP_HIGH_FALLBACK));
+  lowLabelElem.setAttribute('data-help', renderVoltageTemplate(lowHelpTemplate, config.low, effectiveLang, TOTAL_CURRENT_HELP_LOW_FALLBACK));
+}
+function updateMountVoltageSettingLabels(lang) {
+  var effectiveLang = lang || currentLang;
+  var localeTexts = texts && texts[effectiveLang] ? texts[effectiveLang] : texts.en;
+  if (!localeTexts) return;
+  if (mountVoltageHeadingElem) {
+    mountVoltageHeadingElem.textContent = localeTexts.mountVoltageSettingsHeading || (texts.en ? texts.en.mountVoltageSettingsHeading : 'Battery mount voltages');
+    var helpText = localeTexts.mountVoltageSettingsHelp || (texts.en ? texts.en.mountVoltageSettingsHelp : '');
+    if (helpText) {
+      mountVoltageHeadingElem.setAttribute('data-help', helpText);
+    }
+  }
+  if (mountVoltageDescriptionElem) {
+    mountVoltageDescriptionElem.textContent = localeTexts.mountVoltageDescription || (texts.en ? texts.en.mountVoltageDescription : '');
+  }
+  if (mountVoltageNoteElem) {
+    mountVoltageNoteElem.textContent = localeTexts.mountVoltageNote || (texts.en ? texts.en.mountVoltageNote : '');
+  }
+  if (mountVoltageResetButton) {
+    mountVoltageResetButton.textContent = localeTexts.mountVoltageReset || (texts.en ? texts.en.mountVoltageReset : 'Restore defaults');
+    var resetHelp = localeTexts.mountVoltageResetHelp || (texts.en ? texts.en.mountVoltageResetHelp : '');
+    if (resetHelp) {
+      mountVoltageResetButton.setAttribute('data-help', resetHelp);
+    }
+  }
+  if (mountVoltageTitleElems) {
+    if (mountVoltageTitleElems.V) {
+      mountVoltageTitleElems.V.textContent = localeTexts.mountVoltageCardLabelV || (texts.en ? texts.en.mountVoltageCardLabelV : 'V-Mount');
+    }
+    if (mountVoltageTitleElems.Gold) {
+      mountVoltageTitleElems.Gold.textContent = localeTexts.mountVoltageCardLabelGold || (texts.en ? texts.en.mountVoltageCardLabelGold : 'Gold Mount');
+    }
+    if (mountVoltageTitleElems.B) {
+      mountVoltageTitleElems.B.textContent = localeTexts.mountVoltageCardLabelB || (texts.en ? texts.en.mountVoltageCardLabelB : 'B-Mount');
+    }
+  }
+  if (mountVoltageInputs) {
+    SUPPORTED_MOUNT_VOLTAGE_TYPES.forEach(function (type) {
+      var fields = mountVoltageInputs[type];
+      if (!fields) return;
+      if (fields.highLabel) {
+        fields.highLabel.textContent = localeTexts.mountVoltageHighLabel || (texts.en ? texts.en.mountVoltageHighLabel : 'High-voltage output');
+        var highHelp = localeTexts.mountVoltageHighHelp || (texts.en ? texts.en.mountVoltageHighHelp : '');
+        if (highHelp) {
+          fields.highLabel.setAttribute('data-help', highHelp);
+          if (fields.high) fields.high.setAttribute('data-help', highHelp);
+        }
+      }
+      if (fields.lowLabel) {
+        fields.lowLabel.textContent = localeTexts.mountVoltageLowLabel || (texts.en ? texts.en.mountVoltageLowLabel : 'Low-voltage output');
+        var lowHelp = localeTexts.mountVoltageLowHelp || (texts.en ? texts.en.mountVoltageLowHelp : '');
+        if (lowHelp) {
+          fields.lowLabel.setAttribute('data-help', lowHelp);
+          if (fields.low) fields.low.setAttribute('data-help', lowHelp);
+        }
+      }
+    });
+  }
+}
+try {
+  if (typeof localStorage !== 'undefined') {
+    var storedVoltages = localStorage.getItem(MOUNT_VOLTAGE_STORAGE_KEY);
+    var parsedVoltages = parseStoredMountVoltages(storedVoltages);
+    if (parsedVoltages) {
+      mountVoltagePreferences = parsedVoltages;
+    } else {
+      var backupVoltages = localStorage.getItem(MOUNT_VOLTAGE_STORAGE_BACKUP_KEY);
+      var parsedBackupVoltages = parseStoredMountVoltages(backupVoltages);
+      if (parsedBackupVoltages) {
+        mountVoltagePreferences = parsedBackupVoltages;
+        persistMountVoltagePreferences(parsedBackupVoltages);
+      }
+    }
+  }
+} catch (error) {
+  console.warn('Could not load mount voltage preferences', error);
+}
 var schemaStorage = function () {
   if (typeof window === 'undefined') return null;
   try {
@@ -5383,12 +5681,8 @@ function setLanguage(lang) {
   var totalPowerLabelElem = document.getElementById("totalPowerLabel");
   totalPowerLabelElem.textContent = texts[lang].totalPowerLabel;
   totalPowerLabelElem.setAttribute("data-help", texts[lang].totalPowerHelp);
-  var totalCurrent144LabelElem = document.getElementById("totalCurrent144Label");
-  totalCurrent144LabelElem.textContent = texts[lang].totalCurrent144Label;
-  totalCurrent144LabelElem.setAttribute("data-help", texts[lang].totalCurrent144Help);
-  var totalCurrent12LabelElem = document.getElementById("totalCurrent12Label");
-  totalCurrent12LabelElem.textContent = texts[lang].totalCurrent12Label;
-  totalCurrent12LabelElem.setAttribute("data-help", texts[lang].totalCurrent12Help);
+  refreshTotalCurrentLabels(lang);
+  updateMountVoltageSettingLabels(lang);
   var batteryCountLabelElem = document.getElementById("batteryCountLabel");
   batteryCountLabelElem.textContent = texts[lang].batteryCountLabel;
   batteryCountLabelElem.setAttribute("data-help", texts[lang].batteryCountHelp);
@@ -10581,6 +10875,38 @@ var iosPwaHelpDialog = document.getElementById("iosPwaHelpDialog");
 var iosPwaHelpTitle = document.getElementById("iosPwaHelpTitle");
 var iosPwaHelpIntro = document.getElementById("iosPwaHelpIntro");
 var iosPwaHelpStep1 = document.getElementById("iosPwaHelpStep1");
+mountVoltageSectionElem = document.getElementById('mountVoltageSettings');
+mountVoltageHeadingElem = document.getElementById('mountVoltageHeading');
+mountVoltageDescriptionElem = document.getElementById('mountVoltageDescription');
+mountVoltageNoteElem = document.getElementById('mountVoltageNote');
+mountVoltageResetButton = document.getElementById('mountVoltageReset');
+mountVoltageTitleElems = {
+  V: document.getElementById('mountVoltageVTitle'),
+  Gold: document.getElementById('mountVoltageGoldTitle'),
+  B: document.getElementById('mountVoltageBTitle')
+};
+mountVoltageInputs = {
+  'V-Mount': {
+    high: document.getElementById('mountVoltageVHigh'),
+    low: document.getElementById('mountVoltageVLow'),
+    highLabel: document.getElementById('mountVoltageVHighLabel'),
+    lowLabel: document.getElementById('mountVoltageVLowLabel')
+  },
+  'Gold-Mount': {
+    high: document.getElementById('mountVoltageGoldHigh'),
+    low: document.getElementById('mountVoltageGoldLow'),
+    highLabel: document.getElementById('mountVoltageGoldHighLabel'),
+    lowLabel: document.getElementById('mountVoltageGoldLowLabel')
+  },
+  'B-Mount': {
+    high: document.getElementById('mountVoltageBHigh'),
+    low: document.getElementById('mountVoltageBLow'),
+    highLabel: document.getElementById('mountVoltageBHighLabel'),
+    lowLabel: document.getElementById('mountVoltageBLowLabel')
+  }
+};
+updateMountVoltageInputsFromState();
+updateMountVoltageSettingLabels(currentLang);
 var iosPwaHelpStep2 = document.getElementById("iosPwaHelpStep2");
 var iosPwaHelpStep3 = document.getElementById("iosPwaHelpStep3");
 setPinkModeIconSequence(PINK_MODE_ICON_FALLBACK_MARKUP);

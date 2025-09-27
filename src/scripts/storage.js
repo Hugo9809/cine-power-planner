@@ -1,5 +1,7 @@
 // storage.js - Handles reading from and writing to localStorage.
-/* global texts, currentLang, SAFE_LOCAL_STORAGE, __cineGlobal, LZString */
+/* global texts, currentLang, SAFE_LOCAL_STORAGE, __cineGlobal, LZString,
+          applyMountVoltagePreferences, parseStoredMountVoltages,
+          resetMountVoltagePreferences */
 
 const GLOBAL_SCOPE =
   typeof globalThis !== 'undefined'
@@ -21,6 +23,7 @@ const FAVORITES_STORAGE_KEY = 'cameraPowerPlanner_favorites';
 const DEVICE_SCHEMA_CACHE_KEY = 'cameraPowerPlanner_schemaCache';
 const LEGACY_SCHEMA_CACHE_KEY = 'cinePowerPlanner_schemaCache';
 const CUSTOM_FONT_STORAGE_KEY_DEFAULT = 'cameraPowerPlanner_customFonts';
+const MOUNT_VOLTAGE_STORAGE_KEY = 'cameraPowerPlanner_mountVoltages';
 
 function ensureCustomFontStorageKeyName() {
   if (!GLOBAL_SCOPE) {
@@ -173,6 +176,7 @@ const RAW_STORAGE_BACKUP_KEYS = new Set([
   getCustomFontStorageKeyName(),
   CUSTOM_LOGO_STORAGE_KEY,
   DEVICE_SCHEMA_CACHE_KEY,
+  MOUNT_VOLTAGE_STORAGE_KEY,
 ]);
 
 const MAX_MIGRATION_BACKUP_CLEANUP_STEPS = 10;
@@ -5049,6 +5053,16 @@ function clearAllData() {
       preferences.language = language;
     }
 
+    const mountVoltages = readLocalStorageValue(MOUNT_VOLTAGE_STORAGE_KEY);
+    if (mountVoltages) {
+      try {
+        preferences.mountVoltages = JSON.parse(mountVoltages);
+      } catch (voltageParseError) {
+        console.warn('Failed to parse stored mount voltages for backup', voltageParseError);
+        preferences.mountVoltages = mountVoltages;
+      }
+    }
+
     const iosPwaHelpShown = parseStoredBoolean(readLocalStorageValue('iosPwaHelpShown'));
     if (iosPwaHelpShown !== null) {
       preferences.iosPwaHelpShown = iosPwaHelpShown;
@@ -5574,6 +5588,7 @@ function convertStorageSnapshotToData(snapshot) {
   const simpleSnapshotKeys = new Set([
     CUSTOM_LOGO_STORAGE_KEY,
     ...preferenceKeys,
+    MOUNT_VOLTAGE_STORAGE_KEY,
   ]);
 
   const booleanPreferenceKeys = new Set([
@@ -5727,6 +5742,16 @@ function convertStorageSnapshotToData(snapshot) {
     }
   }
 
+  const mountVoltageEntry = readSnapshotEntry(snapshot, MOUNT_VOLTAGE_STORAGE_KEY);
+  if (mountVoltageEntry) {
+    markSnapshotEntry(mountVoltageEntry);
+    const storedVoltages = parseSnapshotJSONValue(mountVoltageEntry);
+    if (storedVoltages !== undefined) {
+      preferences.mountVoltages = storedVoltages;
+      hasAssignments = true;
+    }
+  }
+
   if (Object.keys(preferences).length > 0) {
     data.preferences = preferences;
   }
@@ -5805,6 +5830,36 @@ function importAllData(allData, options = {}) {
         }
       } else if (unit === null) {
         safeSetLocalStorage(TEMPERATURE_UNIT_STORAGE_KEY_NAME, null);
+      }
+    }
+    if (Object.prototype.hasOwnProperty.call(prefs, 'mountVoltages')) {
+      const rawVoltages = prefs.mountVoltages;
+      if (rawVoltages && typeof rawVoltages === 'object') {
+        try {
+          safeSetLocalStorage(MOUNT_VOLTAGE_STORAGE_KEY, JSON.stringify(rawVoltages));
+        } catch (voltStoreError) {
+          console.warn('Unable to store imported mount voltages', voltStoreError);
+        }
+        if (typeof applyMountVoltagePreferences === 'function') {
+          applyMountVoltagePreferences(rawVoltages, { persist: false, triggerUpdate: true });
+        }
+      } else if (typeof rawVoltages === 'string') {
+        safeSetLocalStorage(MOUNT_VOLTAGE_STORAGE_KEY, rawVoltages);
+        if (typeof parseStoredMountVoltages === 'function') {
+          try {
+            const parsedVoltages = parseStoredMountVoltages(rawVoltages);
+            if (parsedVoltages && typeof applyMountVoltagePreferences === 'function') {
+              applyMountVoltagePreferences(parsedVoltages, { persist: false, triggerUpdate: true });
+            }
+          } catch (voltParseError) {
+            console.warn('Unable to parse imported mount voltages', voltParseError);
+          }
+        }
+      } else if (rawVoltages === null) {
+        safeSetLocalStorage(MOUNT_VOLTAGE_STORAGE_KEY, null);
+        if (typeof resetMountVoltagePreferences === 'function') {
+          resetMountVoltagePreferences({ persist: false, triggerUpdate: true });
+        }
       }
     }
   }

@@ -2211,6 +2211,62 @@ body.high-contrast .settings-tab[aria-selected="true"] {
   font-weight: var(--font-weight-light);
 }
 
+.mount-voltage-settings {
+  margin-top: 8px;
+  padding: 16px;
+  border: 1px solid var(--panel-border);
+  border-radius: var(--border-radius);
+  background: var(--panel-bg);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mount-voltage-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.mount-voltage-header h4 {
+  margin: 0;
+  font-weight: var(--font-weight-semibold);
+}
+
+.mount-voltage-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.mount-voltage-card {
+  border: 1px solid var(--panel-border);
+  border-radius: var(--border-radius);
+  padding: 12px;
+  background: var(--panel-bg);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mount-voltage-card h5 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: var(--font-weight-semibold);
+}
+
+.mount-voltage-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mount-voltage-input {
+  width: 100%;
+}
+
 .settings-panel .button-row {
   justify-content: flex-start;
   flex-wrap: wrap;

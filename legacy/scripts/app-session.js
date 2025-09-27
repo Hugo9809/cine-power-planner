@@ -2519,6 +2519,7 @@ var pinkModeEnabled = false;
 var settingsInitialPinkMode = isPinkModeActive();
 var settingsInitialTemperatureUnit = typeof temperatureUnit === 'string' ? temperatureUnit : 'celsius';
 var settingsInitialShowAutoBackups = Boolean(showAutoBackups);
+var settingsInitialMountVoltages = getMountVoltagePreferencesClone();
 function persistPinkModePreference(enabled) {
   pinkModeEnabled = !!enabled;
   applyPinkMode(pinkModeEnabled);
@@ -2619,6 +2620,52 @@ function revertSettingsShowAutoBackupsIfNeeded() {
     settingsShowAutoBackups.checked = baseline;
   }
 }
+
+function rememberSettingsMountVoltagesBaseline() {
+  settingsInitialMountVoltages = getMountVoltagePreferencesClone();
+}
+
+function revertSettingsMountVoltagesIfNeeded() {
+  var baseline = settingsInitialMountVoltages || getMountVoltagePreferencesClone();
+  var current = getMountVoltagePreferencesClone();
+  var changed = SUPPORTED_MOUNT_VOLTAGE_TYPES.some(function (type) {
+    var baselineEntry = baseline[type] || DEFAULT_MOUNT_VOLTAGES[type];
+    var currentEntry = current[type] || DEFAULT_MOUNT_VOLTAGES[type];
+    return Number(baselineEntry.high) !== Number(currentEntry.high) || Number(baselineEntry.low) !== Number(currentEntry.low);
+  });
+  if (changed) {
+    applyMountVoltagePreferences(baseline, {
+      persist: true,
+      triggerUpdate: true
+    });
+  } else {
+    updateMountVoltageInputsFromState();
+  }
+}
+
+function collectMountVoltageFormValues() {
+  var updated = getMountVoltagePreferencesClone();
+  SUPPORTED_MOUNT_VOLTAGE_TYPES.forEach(function (type) {
+    var fields = mountVoltageInputs && mountVoltageInputs[type];
+    if (!fields) return;
+    var baselineEntry = updated[type] || DEFAULT_MOUNT_VOLTAGES[type];
+    if (fields.high) {
+      updated[type].high = parseVoltageValue(fields.high.value, baselineEntry.high);
+    }
+    if (fields.low) {
+      updated[type].low = parseVoltageValue(fields.low.value, baselineEntry.low);
+    }
+  });
+  return updated;
+}
+
+function handleMountVoltageInputChange() {
+  var values = collectMountVoltageFormValues();
+  applyMountVoltagePreferences(values, {
+    persist: false,
+    triggerUpdate: true
+  });
+}
 try {
   pinkModeEnabled = localStorage.getItem('pinkMode') === 'true';
 } catch (e) {
@@ -2628,6 +2675,7 @@ applyPinkMode(pinkModeEnabled);
 rememberSettingsPinkModeBaseline();
 rememberSettingsTemperatureUnitBaseline();
 rememberSettingsShowAutoBackupsBaseline();
+rememberSettingsMountVoltagesBaseline();
 if (pinkModeToggle) {
   pinkModeToggle.addEventListener("click", function (event) {
     if (event && event.isTrusted) {
@@ -2653,12 +2701,30 @@ if (settingsTemperatureUnit) {
     });
   });
 }
+
+var mountVoltageInputNodes = Array.from(typeof document !== 'undefined' ? document.querySelectorAll('.mount-voltage-input') : []);
+mountVoltageInputNodes.forEach(function (input) {
+  input.addEventListener('change', handleMountVoltageInputChange);
+  input.addEventListener('blur', handleMountVoltageInputChange);
+});
+
+if (mountVoltageResetButton) {
+  mountVoltageResetButton.addEventListener('click', function () {
+    resetMountVoltagePreferences({
+      persist: false,
+      triggerUpdate: true
+    });
+    updateMountVoltageInputsFromState();
+  });
+}
 if (settingsButton && settingsDialog) {
   settingsButton.addEventListener('click', function () {
     prevAccentColor = accentColor;
     rememberSettingsPinkModeBaseline();
     rememberSettingsTemperatureUnitBaseline();
     rememberSettingsShowAutoBackupsBaseline();
+    rememberSettingsMountVoltagesBaseline();
+    updateMountVoltageInputsFromState();
     if (settingsLanguage) settingsLanguage.value = currentLang;
     if (settingsDarkMode) settingsDarkMode.checked = document.body.classList.contains('dark-mode');
     if (settingsPinkMode) settingsPinkMode.checked = document.body.classList.contains('pink-mode');
@@ -2731,6 +2797,8 @@ if (settingsButton && settingsDialog) {
       rememberSettingsTemperatureUnitBaseline();
       revertSettingsShowAutoBackupsIfNeeded();
       rememberSettingsShowAutoBackupsBaseline();
+      revertSettingsMountVoltagesIfNeeded();
+      rememberSettingsMountVoltagesBaseline();
       revertAccentColor();
       if (settingsLogo) settingsLogo.value = '';
       if (settingsLogoPreview) loadStoredLogoPreview();
@@ -2811,6 +2879,11 @@ if (settingsButton && settingsDialog) {
         applyTemperatureUnitPreference(settingsTemperatureUnit.value);
         rememberSettingsTemperatureUnitBaseline();
       }
+      applyMountVoltagePreferences(collectMountVoltageFormValues(), {
+        persist: true,
+        triggerUpdate: true
+      });
+      rememberSettingsMountVoltagesBaseline();
       if (settingsFontSize) {
         var size = settingsFontSize.value;
         applyFontSize(size);
@@ -2855,6 +2928,7 @@ if (settingsButton && settingsDialog) {
       rememberSettingsPinkModeBaseline();
       rememberSettingsTemperatureUnitBaseline();
       rememberSettingsShowAutoBackupsBaseline();
+      rememberSettingsMountVoltagesBaseline();
       closeDialog(settingsDialog);
       settingsDialog.setAttribute('hidden', '');
     });
@@ -2867,6 +2941,8 @@ if (settingsButton && settingsDialog) {
       rememberSettingsTemperatureUnitBaseline();
       revertSettingsShowAutoBackupsIfNeeded();
       rememberSettingsShowAutoBackupsBaseline();
+      revertSettingsMountVoltagesIfNeeded();
+      rememberSettingsMountVoltagesBaseline();
       revertAccentColor();
       if (settingsLogo) settingsLogo.value = '';
       if (settingsLogoPreview) loadStoredLogoPreview();
@@ -2884,6 +2960,8 @@ if (settingsButton && settingsDialog) {
     rememberSettingsTemperatureUnitBaseline();
     revertSettingsShowAutoBackupsIfNeeded();
     rememberSettingsShowAutoBackupsBaseline();
+    revertSettingsMountVoltagesIfNeeded();
+    rememberSettingsMountVoltagesBaseline();
     revertAccentColor();
     if (settingsLogo) settingsLogo.value = '';
     if (settingsLogoPreview) loadStoredLogoPreview();
@@ -5426,6 +5504,32 @@ function applyPreferencesFromStorage(safeGetItem) {
       updateAccentColorResetButtonState();
     }
   }
+  try {
+    var storedVoltages = safeGetItem(MOUNT_VOLTAGE_STORAGE_KEY);
+    var parsedVoltages = parseStoredMountVoltages(storedVoltages);
+    var shouldPersistVoltages = false;
+    if (!parsedVoltages) {
+      var backupKey = typeof MOUNT_VOLTAGE_STORAGE_BACKUP_KEY === 'string' ? MOUNT_VOLTAGE_STORAGE_BACKUP_KEY : "".concat(MOUNT_VOLTAGE_STORAGE_KEY, '__backup');
+      var backupVoltages = safeGetItem(backupKey);
+      if (backupVoltages !== undefined && backupVoltages !== null) {
+        var parsedBackupVoltages = parseStoredMountVoltages(backupVoltages);
+        if (parsedBackupVoltages) {
+          parsedVoltages = parsedBackupVoltages;
+          shouldPersistVoltages = true;
+        }
+      }
+    }
+    if (parsedVoltages) {
+      applyMountVoltagePreferences(parsedVoltages, {
+        persist: shouldPersistVoltages,
+        triggerUpdate: true
+      });
+      updateMountVoltageInputsFromState();
+      rememberSettingsMountVoltagesBaseline();
+    }
+  } catch (voltageError) {
+    console.warn('Failed to apply restored mount voltage preferences', voltageError);
+  }
   var language = safeGetItem('language');
   return {
     showAutoBackups: showBackups,
@@ -6485,6 +6589,16 @@ if (factoryResetButton) {
         }
       } catch (accentError) {
         console.warn('Failed to reset accent color during factory reset', accentError);
+      }
+      try {
+        resetMountVoltagePreferences({
+          persist: true,
+          triggerUpdate: true
+        });
+        updateMountVoltageInputsFromState();
+        rememberSettingsMountVoltagesBaseline();
+      } catch (voltageResetError) {
+        console.warn('Failed to reset mount voltages during factory reset', voltageResetError);
       }
       try {
         fontSize = '16';

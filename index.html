@@ -1018,6 +1018,126 @@
             <option value="fahrenheit">Fahrenheit (°F)</option>
           </select>
         </div>
+        <section
+          id="mountVoltageSettings"
+          class="mount-voltage-settings"
+          aria-labelledby="mountVoltageHeading"
+        >
+          <div class="mount-voltage-header">
+            <h4 id="mountVoltageHeading">Battery mount voltages</h4>
+            <button type="button" id="mountVoltageReset">Restore defaults</button>
+          </div>
+          <p id="mountVoltageDescription" class="settings-hint">
+            Customize the high and low voltages used for current draw calculations.
+          </p>
+          <div class="mount-voltage-grid">
+            <section
+              class="mount-voltage-card"
+              aria-labelledby="mountVoltageVTitle"
+            >
+              <h5 id="mountVoltageVTitle">V-Mount</h5>
+              <div class="mount-voltage-field">
+                <label for="mountVoltageVHigh" id="mountVoltageVHighLabel">
+                  High-voltage output
+                </label>
+                <input
+                  type="number"
+                  id="mountVoltageVHigh"
+                  class="mount-voltage-input"
+                  step="0.1"
+                  min="0"
+                  inputmode="decimal"
+                  autocomplete="off"
+                />
+              </div>
+              <div class="mount-voltage-field">
+                <label for="mountVoltageVLow" id="mountVoltageVLowLabel">
+                  Low-voltage output
+                </label>
+                <input
+                  type="number"
+                  id="mountVoltageVLow"
+                  class="mount-voltage-input"
+                  step="0.1"
+                  min="0"
+                  inputmode="decimal"
+                  autocomplete="off"
+                />
+              </div>
+            </section>
+            <section
+              class="mount-voltage-card"
+              aria-labelledby="mountVoltageGoldTitle"
+            >
+              <h5 id="mountVoltageGoldTitle">Gold Mount</h5>
+              <div class="mount-voltage-field">
+                <label for="mountVoltageGoldHigh" id="mountVoltageGoldHighLabel">
+                  High-voltage output
+                </label>
+                <input
+                  type="number"
+                  id="mountVoltageGoldHigh"
+                  class="mount-voltage-input"
+                  step="0.1"
+                  min="0"
+                  inputmode="decimal"
+                  autocomplete="off"
+                />
+              </div>
+              <div class="mount-voltage-field">
+                <label for="mountVoltageGoldLow" id="mountVoltageGoldLowLabel">
+                  Low-voltage output
+                </label>
+                <input
+                  type="number"
+                  id="mountVoltageGoldLow"
+                  class="mount-voltage-input"
+                  step="0.1"
+                  min="0"
+                  inputmode="decimal"
+                  autocomplete="off"
+                />
+              </div>
+            </section>
+            <section
+              class="mount-voltage-card"
+              aria-labelledby="mountVoltageBTitle"
+            >
+              <h5 id="mountVoltageBTitle">B-Mount</h5>
+              <div class="mount-voltage-field">
+                <label for="mountVoltageBHigh" id="mountVoltageBHighLabel">
+                  High-voltage output
+                </label>
+                <input
+                  type="number"
+                  id="mountVoltageBHigh"
+                  class="mount-voltage-input"
+                  step="0.1"
+                  min="0"
+                  inputmode="decimal"
+                  autocomplete="off"
+                />
+              </div>
+              <div class="mount-voltage-field">
+                <label for="mountVoltageBLow" id="mountVoltageBLowLabel">
+                  Low-voltage output
+                </label>
+                <input
+                  type="number"
+                  id="mountVoltageBLow"
+                  class="mount-voltage-input"
+                  step="0.1"
+                  min="0"
+                  inputmode="decimal"
+                  autocomplete="off"
+                />
+              </div>
+            </section>
+          </div>
+          <p id="mountVoltageNote" class="settings-hint">
+            These voltages update the totals in the power summary and pin warnings.
+          </p>
+        </section>
         <div class="form-row">
           <label for="settingsFontSize" id="settingsFontSizeLabel">Font size</label>
           <select id="settingsFontSize">
