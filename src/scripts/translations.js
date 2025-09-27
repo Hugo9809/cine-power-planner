@@ -4052,7 +4052,7 @@ const texts = {
     restoreVersionTip: "Guardamos una copia de seguridad de tus datos antes de importar.",
     restoreVersionFooter: "Puedes continuar y recrear manualmente los elementos faltantes después.",
     restoreVersionUnknownVersion: "versión desconocida",
-    restoreVersionBackupLabel: "Copia de seguridad segura guardada antes de restaurar: {fileName}",
+    restoreVersionBackupLabel: "Copia de seguridad preventiva guardada antes de restaurar: {fileName}",
     restoreSectionDevices: "Biblioteca de dispositivos",
     restoreSectionSetups: "Configuraciones guardadas",
     restoreSectionProjects: "Proyectos",
