@@ -485,9 +485,6 @@ body.dark-mode #overviewDialogContent .requirement-box {
 
 #overviewDialogContent .requirements-grid .requirement-box .req-icon {
   --req-icon-size: 1.15rem;
-  padding: 0.2em;
-  border-radius: 0.5em;
-  background: var(--panel-bg);
   margin-bottom: 0.15em;
 }
 
