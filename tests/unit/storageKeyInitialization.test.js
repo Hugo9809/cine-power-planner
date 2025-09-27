@@ -97,4 +97,53 @@ describe('storage key initialization', () => {
     expect(exported.preferences).toBeDefined();
     expect(exported.preferences.temperatureUnit).toBe('kelvin');
   });
+
+  test('falls back to defineProperty when temperature key assignment fails', () => {
+    const setter = jest.fn(() => {
+      throw new Error('blocked');
+    });
+
+    Object.defineProperty(global, 'TEMPERATURE_UNIT_STORAGE_KEY', {
+      configurable: true,
+      get() {
+        return { key: 'blocked' };
+      },
+      set: setter,
+    });
+
+    const warnSpy = jest
+      .spyOn(console, 'warn')
+      .mockImplementation(() => {});
+
+    const storage = require('../../src/scripts/storage');
+    const descriptor = Object.getOwnPropertyDescriptor(
+      global,
+      'TEMPERATURE_UNIT_STORAGE_KEY',
+    );
+
+    expect(setter).toHaveBeenCalledTimes(1);
+    expect(setter).toHaveBeenCalledWith('cameraPowerPlanner_temperatureUnit');
+    expect(descriptor).toMatchObject({
+      configurable: true,
+      writable: true,
+      value: 'cameraPowerPlanner_temperatureUnit',
+    });
+
+    const safeStorage = storage.getSafeLocalStorage();
+    safeStorage.clear();
+    safeStorage.setItem(global.TEMPERATURE_UNIT_STORAGE_KEY, 'celsius');
+
+    const exported = storage.exportAllData();
+
+    expect(exported.preferences).toBeDefined();
+    expect(exported.preferences.temperatureUnit).toBe('celsius');
+
+    const warnCalls = warnSpy.mock.calls.filter(
+      ([message]) => message === 'Unable to assign temperature unit storage key globally.',
+    );
+    expect(warnCalls).toHaveLength(1);
+    expect(warnCalls[0][1]).toBeInstanceOf(Error);
+
+    warnSpy.mockRestore();
+  });
 });
