@@ -4683,10 +4683,19 @@ function applyBatteryPlateSelectionFromBattery(batteryName, currentPlateValue) {
 }
 
 function getSelectedPlate() {
-  const camName = cameraSelect.value;
-  const plates = getAvailableBatteryPlates(camName);
-  if (!plates.length) return null;
-  return batteryPlateSelect.value || (plates.includes('V-Mount') ? 'V-Mount' : plates[0]);
+  const camName = typeof cameraSelect?.value === 'string' ? cameraSelect.value : '';
+  const plates = typeof getAvailableBatteryPlates === 'function'
+    ? getAvailableBatteryPlates(camName)
+    : [];
+  if (!Array.isArray(plates) || !plates.length) return null;
+  const plateValue = typeof batteryPlateSelect?.value === 'string' ? batteryPlateSelect.value : '';
+  if (plateValue) {
+    return plateValue;
+  }
+  if (plates.includes('V-Mount')) {
+    return 'V-Mount';
+  }
+  return plates[0];
 }
 
 function isSelectedPlateNative(camName) {

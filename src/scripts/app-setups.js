@@ -199,6 +199,16 @@ if (projectForm) {
 function downloadSharedProject(shareFileName, includeAutoGear) {
   if (!shareFileName) return;
   const setupName = getCurrentProjectName();
+  const readPowerSelectValue = (select) => (
+    select && typeof select.value === 'string'
+      ? normalizePowerSelectionString(select.value)
+      : ''
+  );
+
+  const normalizedBattery = readPowerSelectValue(batterySelect);
+  const normalizedPlate = readPowerSelectValue(batteryPlateSelect);
+  const normalizedHotswap = readPowerSelectValue(hotswapSelect);
+
   const currentSetup = {
     setupName,
     camera: cameraSelect.value,
@@ -208,13 +218,17 @@ function downloadSharedProject(shareFileName, includeAutoGear) {
     motors: motorSelects.map(sel => sel.value),
     controllers: controllerSelects.map(sel => sel.value),
     distance: distanceSelect.value,
-    batteryPlate: normalizeBatteryPlateValue(batteryPlateSelect.value, batterySelect.value),
-    battery: batterySelect.value,
-    batteryHotswap: hotswapSelect.value
+    batteryPlate: normalizeBatteryPlateValue(normalizedPlate, normalizedBattery),
+    battery: normalizedBattery,
+    batteryHotswap: normalizedHotswap
   };
+
   const sharedPowerSelection = getPowerSelectionSnapshot();
   if (sharedPowerSelection) {
     currentSetup.powerSelection = sharedPowerSelection;
+    currentSetup.battery = sharedPowerSelection.battery || '';
+    currentSetup.batteryPlate = sharedPowerSelection.batteryPlate || '';
+    currentSetup.batteryHotswap = sharedPowerSelection.batteryHotswap || '';
   }
   if (typeof getDiagramManualPositions === 'function') {
     const diagramPositions = getDiagramManualPositions();

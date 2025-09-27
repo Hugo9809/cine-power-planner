@@ -12485,16 +12485,33 @@ if (!battery || battery === "None" || !devices.batteries[battery]) {
 }
 
 function getCurrentSetupKey() {
-  const camera = cameraSelect.value || '';
-  const monitor = monitorSelect.value || '';
-  const video = videoSelect.value || '';
-  const cage = cageSelect ? cageSelect.value : '';
-  const motors = motorSelects.map(sel => sel.value).filter(v => v && v !== 'None').sort().join(',');
-  const controllers = controllerSelects.map(sel => sel.value).filter(v => v && v !== 'None').sort().join(',');
-  const distance = distanceSelect.value || '';
-  const battery = batterySelect.value || '';
-  const hotswap = hotswapSelect.value || '';
-  const plate = getSelectedPlate() || '';
+  const safeSelectValue = (select) => (
+    select && typeof select.value === 'string'
+      ? select.value
+      : ''
+  );
+
+  const safeListValues = (list) => (
+    Array.isArray(list)
+      ? list
+          .map(sel => safeSelectValue(sel))
+          .filter(value => value && value !== 'None')
+          .sort()
+          .join(',')
+      : ''
+  );
+
+  const camera = safeSelectValue(cameraSelect);
+  const monitor = safeSelectValue(monitorSelect);
+  const video = safeSelectValue(videoSelect);
+  const cage = safeSelectValue(cageSelect);
+  const motors = safeListValues(motorSelects);
+  const controllers = safeListValues(controllerSelects);
+  const distance = safeSelectValue(distanceSelect);
+  const battery = safeSelectValue(batterySelect);
+  const hotswap = safeSelectValue(hotswapSelect);
+  const plate = typeof getSelectedPlate === 'function' ? (getSelectedPlate() || '') : '';
+
   return [camera, monitor, video, cage, motors, controllers, distance, battery, hotswap, plate].join('|');
 }
 
