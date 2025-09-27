@@ -107,6 +107,12 @@ th { background-color: var(--control-bg); font-weight: var(--font-weight-bold); 
   page-break-after: avoid;
 }
 
+.gear-table .category-group[data-gear-table-category="Monitoring"] tr:not(.category-row) td,
+.gear-table .category-group[data-gear-table-category="Monitoring Batteries"] tr:not(.category-row) td,
+.gear-table .category-group[data-gear-table-category="Monitoring support"] tr:not(.category-row) td {
+  color: var(--text-color);
+}
+
 .dark-mode .gear-table .category-row td {
   font-weight: var(--font-weight-medium);
 }
