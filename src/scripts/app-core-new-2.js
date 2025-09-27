@@ -3618,6 +3618,62 @@ function saveAutoGearRuleFromEditor() {
         .map(option => option.value)
         .filter(value => typeof value === 'string' && value.trim())
     : [];
+  const draftConditionLogic = {};
+  if (scenarioMode !== 'all') {
+    draftConditionLogic.scenarios = scenarioMode;
+  }
+  const matteboxLogic = autoGearMatteboxModeSelect
+    ? normalizeAutoGearConditionLogic(autoGearMatteboxModeSelect.value)
+    : 'all';
+  const cameraHandleLogic = autoGearCameraHandleModeSelect
+    ? normalizeAutoGearConditionLogic(autoGearCameraHandleModeSelect.value)
+    : 'all';
+  const viewfinderLogic = autoGearViewfinderExtensionModeSelect
+    ? normalizeAutoGearConditionLogic(autoGearViewfinderExtensionModeSelect.value)
+    : 'all';
+  const deliveryLogic = autoGearDeliveryResolutionModeSelect
+    ? normalizeAutoGearConditionLogic(autoGearDeliveryResolutionModeSelect.value)
+    : 'all';
+  const videoDistributionLogic = autoGearVideoDistributionModeSelect
+    ? normalizeAutoGearConditionLogic(autoGearVideoDistributionModeSelect.value)
+    : 'all';
+  const cameraLogic = autoGearCameraModeSelect
+    ? normalizeAutoGearConditionLogic(autoGearCameraModeSelect.value)
+    : 'all';
+  const monitorLogic = autoGearMonitorModeSelect
+    ? normalizeAutoGearConditionLogic(autoGearMonitorModeSelect.value)
+    : 'all';
+  const crewPresentLogic = autoGearCrewPresentModeSelect
+    ? normalizeAutoGearConditionLogic(autoGearCrewPresentModeSelect.value)
+    : 'all';
+  const crewAbsentLogic = autoGearCrewAbsentModeSelect
+    ? normalizeAutoGearConditionLogic(autoGearCrewAbsentModeSelect.value)
+    : 'all';
+  const wirelessLogic = autoGearWirelessModeSelect
+    ? normalizeAutoGearConditionLogic(autoGearWirelessModeSelect.value)
+    : 'all';
+  const motorsLogic = autoGearMotorsModeSelect
+    ? normalizeAutoGearConditionLogic(autoGearMotorsModeSelect.value)
+    : 'all';
+  const controllersLogic = autoGearControllersModeSelect
+    ? normalizeAutoGearConditionLogic(autoGearControllersModeSelect.value)
+    : 'all';
+  const distanceLogic = autoGearDistanceModeSelect
+    ? normalizeAutoGearConditionLogic(autoGearDistanceModeSelect.value)
+    : 'all';
+  if (matteboxLogic !== 'all') draftConditionLogic.mattebox = matteboxLogic;
+  if (cameraHandleLogic !== 'all') draftConditionLogic.cameraHandle = cameraHandleLogic;
+  if (viewfinderLogic !== 'all') draftConditionLogic.viewfinderExtension = viewfinderLogic;
+  if (deliveryLogic !== 'all') draftConditionLogic.deliveryResolution = deliveryLogic;
+  if (videoDistributionLogic !== 'all') draftConditionLogic.videoDistribution = videoDistributionLogic;
+  if (cameraLogic !== 'all') draftConditionLogic.camera = cameraLogic;
+  if (monitorLogic !== 'all') draftConditionLogic.monitor = monitorLogic;
+  if (crewPresentLogic !== 'all') draftConditionLogic.crewPresent = crewPresentLogic;
+  if (crewAbsentLogic !== 'all') draftConditionLogic.crewAbsent = crewAbsentLogic;
+  if (wirelessLogic !== 'all') draftConditionLogic.wireless = wirelessLogic;
+  if (motorsLogic !== 'all') draftConditionLogic.motors = motorsLogic;
+  if (controllersLogic !== 'all') draftConditionLogic.controllers = controllersLogic;
+  if (distanceLogic !== 'all') draftConditionLogic.distance = distanceLogic;
   const shootingDaysRequirement = (() => {
     if (!isAutoGearConditionActive('shootingDays')) return null;
     if (!autoGearShootingDaysInput) return null;
@@ -3692,6 +3748,20 @@ function saveAutoGearRuleFromEditor() {
   autoGearEditorDraft.motors = motorSelections;
   autoGearEditorDraft.controllers = controllerSelections;
   autoGearEditorDraft.distance = distanceSelections;
+  autoGearEditorDraft.matteboxLogic = matteboxLogic;
+  autoGearEditorDraft.cameraHandleLogic = cameraHandleLogic;
+  autoGearEditorDraft.viewfinderExtensionLogic = viewfinderLogic;
+  autoGearEditorDraft.deliveryResolutionLogic = deliveryLogic;
+  autoGearEditorDraft.videoDistributionLogic = videoDistributionLogic;
+  autoGearEditorDraft.cameraLogic = cameraLogic;
+  autoGearEditorDraft.monitorLogic = monitorLogic;
+  autoGearEditorDraft.crewPresentLogic = crewPresentLogic;
+  autoGearEditorDraft.crewAbsentLogic = crewAbsentLogic;
+  autoGearEditorDraft.wirelessLogic = wirelessLogic;
+  autoGearEditorDraft.motorsLogic = motorsLogic;
+  autoGearEditorDraft.controllersLogic = controllersLogic;
+  autoGearEditorDraft.distanceLogic = distanceLogic;
+  autoGearEditorDraft.conditionLogic = draftConditionLogic;
   autoGearEditorDraft.shootingDays = shootingDaysRequirement;
   if (!autoGearEditorDraft.add.length && !autoGearEditorDraft.remove.length) {
     const message = texts[currentLang]?.autoGearRuleNeedsItems

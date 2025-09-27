@@ -272,6 +272,11 @@ const texts = {
     autoGearConditionPlaceholder: "Choose a condition",
     autoGearConditionAddShortcut: "Add another condition",
     autoGearConditionRemove: "Remove this condition",
+    autoGearConditionLogicLabel: "Match behavior",
+    autoGearConditionLogicHelp: "Choose how the selected values interact before the rule activates.",
+    autoGearConditionLogicAll: "Require every selected value",
+    autoGearConditionLogicAny: "Match any selected value",
+    autoGearConditionLogicMultiplier: "Multiply by matched values",
     autoGearConditionRepeatHint:
       "Condition already added. Existing inputs for {condition} are highlighted so you can add more selections.",
     autoGearAlwaysLabel: "Always include",
@@ -1997,6 +2002,12 @@ const texts = {
     autoGearConditionPlaceholder: "Scegli una condizione",
     autoGearConditionAddShortcut: "Aggiungi un'altra condizione",
     autoGearConditionRemove: "Rimuovi questa condizione",
+    autoGearConditionLogicLabel: "Comportamento di corrispondenza",
+    autoGearConditionLogicHelp:
+      "Scegli come interagiscono i valori selezionati prima di attivare la regola.",
+    autoGearConditionLogicAll: "Richiedi tutti i valori selezionati",
+    autoGearConditionLogicAny: "Abbina qualsiasi valore selezionato",
+    autoGearConditionLogicMultiplier: "Moltiplica in base ai valori corrispondenti",
     autoGearConditionRepeatHint:
       "Condizione già aggiunta. I campi esistenti per {condition} vengono evidenziati per permetterti di aggiungere altre selezioni.",
     autoGearAlwaysLabel: "Includi sempre",
@@ -3305,6 +3316,12 @@ const texts = {
     autoGearConditionPlaceholder: "Elige una condición",
     autoGearConditionAddShortcut: "Añadir otra condición",
     autoGearConditionRemove: "Eliminar esta condición",
+    autoGearConditionLogicLabel: "Comportamiento de coincidencia",
+    autoGearConditionLogicHelp:
+      "Elige cómo interactúan los valores seleccionados antes de que se active la regla.",
+    autoGearConditionLogicAll: "Requerir todos los valores seleccionados",
+    autoGearConditionLogicAny: "Coincidir con cualquier valor seleccionado",
+    autoGearConditionLogicMultiplier: "Multiplicar por los valores coincidentes",
     autoGearConditionRepeatHint:
       "Condición ya añadida. Resaltamos los campos existentes de {condition} para que puedas añadir más selecciones.",
     autoGearAlwaysLabel: "Incluir siempre",
@@ -4615,6 +4632,12 @@ const texts = {
     autoGearConditionPlaceholder: "Choisissez une condition",
     autoGearConditionAddShortcut: "Ajouter une autre condition",
     autoGearConditionRemove: "Supprimer cette condition",
+    autoGearConditionLogicLabel: "Comportement de correspondance",
+    autoGearConditionLogicHelp:
+      "Choisissez comment les valeurs sélectionnées interagissent avant l’activation de la règle.",
+    autoGearConditionLogicAll: "Exiger toutes les valeurs sélectionnées",
+    autoGearConditionLogicAny: "Correspondre à n’importe quelle valeur sélectionnée",
+    autoGearConditionLogicMultiplier: "Multiplier selon les valeurs correspondantes",
     autoGearConditionRepeatHint:
       "Condition déjà ajoutée. Les champs existants pour {condition} sont mis en évidence pour vous permettre d'ajouter d'autres sélections.",
     autoGearAlwaysLabel: "Toujours inclure",
@@ -5936,6 +5959,12 @@ const texts = {
     autoGearConditionPlaceholder: "Wähle eine Bedingung",
     autoGearConditionAddShortcut: "Weitere Bedingung hinzufügen",
     autoGearConditionRemove: "Diese Bedingung entfernen",
+    autoGearConditionLogicLabel: "Abgleichsverhalten",
+    autoGearConditionLogicHelp:
+      "Legt fest, wie die ausgewählten Werte zusammenwirken, bevor die Regel aktiv wird.",
+    autoGearConditionLogicAll: "Alle ausgewählten Werte erforderlich",
+    autoGearConditionLogicAny: "Beliebiger ausgewählter Wert genügt",
+    autoGearConditionLogicMultiplier: "Mit passenden Werten multiplizieren",
     autoGearConditionRepeatHint:
       "Bedingung bereits hinzugefügt. Die vorhandenen Eingaben für {condition} sind markiert, damit du weitere Auswahlmöglichkeiten setzen kannst.",
     autoGearAlwaysLabel: "Immer einschließen",

@@ -1466,20 +1466,28 @@
                 >
                   <div class="auto-gear-condition-header">
                     <label for="autoGearMattebox" id="autoGearMatteboxLabel">Mattebox options</label>
-                    <div class="auto-gear-condition-actions">
-                      <button type="button" class="auto-gear-condition-add" data-action="add">Add</button>
-                      <button
-                        type="button"
-                        class="auto-gear-condition-remove"
-                        data-action="remove"
-                        data-condition="mattebox"
-                      >Remove</button>
-                    </div>
+                  <div class="auto-gear-condition-actions">
+                    <button type="button" class="auto-gear-condition-add" data-action="add">Add</button>
+                    <button
+                      type="button"
+                      class="auto-gear-condition-remove"
+                      data-action="remove"
+                      data-condition="mattebox"
+                    >Remove</button>
                   </div>
-                  <select
-                    id="autoGearMattebox"
-                    class="auto-gear-mattebox auto-gear-multiselect"
-                    multiple
+                </div>
+                <div class="auto-gear-condition-mode">
+                  <label for="autoGearMatteboxMode" id="autoGearMatteboxModeLabel">Match behavior</label>
+                  <select id="autoGearMatteboxMode">
+                    <option value="all" selected>Require every selected value</option>
+                    <option value="any">Match any selected value</option>
+                    <option value="multiplier">Multiply by matched values</option>
+                  </select>
+                </div>
+                <select
+                  id="autoGearMattebox"
+                  class="auto-gear-mattebox auto-gear-multiselect"
+                  multiple
                     size="10"
                   ></select>
                 </section>
@@ -1492,20 +1500,28 @@
                 >
                   <div class="auto-gear-condition-header">
                     <label for="autoGearCameraHandle" id="autoGearCameraHandleLabel">Camera handles</label>
-                    <div class="auto-gear-condition-actions">
-                      <button type="button" class="auto-gear-condition-add" data-action="add">Add</button>
-                      <button
-                        type="button"
-                        class="auto-gear-condition-remove"
-                        data-action="remove"
-                        data-condition="cameraHandle"
-                      >Remove</button>
-                    </div>
+                  <div class="auto-gear-condition-actions">
+                    <button type="button" class="auto-gear-condition-add" data-action="add">Add</button>
+                    <button
+                      type="button"
+                      class="auto-gear-condition-remove"
+                      data-action="remove"
+                      data-condition="cameraHandle"
+                    >Remove</button>
                   </div>
-                  <select
-                    id="autoGearCameraHandle"
-                    class="auto-gear-camera-handle auto-gear-multiselect"
-                    multiple
+                </div>
+                <div class="auto-gear-condition-mode">
+                  <label for="autoGearCameraHandleMode" id="autoGearCameraHandleModeLabel">Match behavior</label>
+                  <select id="autoGearCameraHandleMode">
+                    <option value="all" selected>Require every selected value</option>
+                    <option value="any">Match any selected value</option>
+                    <option value="multiplier">Multiply by matched values</option>
+                  </select>
+                </div>
+                <select
+                  id="autoGearCameraHandle"
+                  class="auto-gear-camera-handle auto-gear-multiselect"
+                  multiple
                     size="10"
                   ></select>
                 </section>
@@ -1520,20 +1536,30 @@
                     <label for="autoGearViewfinderExtension" id="autoGearViewfinderExtensionLabel">
                       Viewfinder extension
                     </label>
-                    <div class="auto-gear-condition-actions">
-                      <button type="button" class="auto-gear-condition-add" data-action="add">Add</button>
-                      <button
-                        type="button"
-                        class="auto-gear-condition-remove"
-                        data-action="remove"
-                        data-condition="viewfinderExtension"
-                      >Remove</button>
-                    </div>
+                  <div class="auto-gear-condition-actions">
+                    <button type="button" class="auto-gear-condition-add" data-action="add">Add</button>
+                    <button
+                      type="button"
+                      class="auto-gear-condition-remove"
+                      data-action="remove"
+                      data-condition="viewfinderExtension"
+                    >Remove</button>
                   </div>
-                  <select
-                    id="autoGearViewfinderExtension"
-                    class="auto-gear-viewfinder-extension auto-gear-multiselect"
-                    multiple
+                </div>
+                <div class="auto-gear-condition-mode">
+                  <label for="autoGearViewfinderExtensionMode" id="autoGearViewfinderExtensionModeLabel">
+                    Match behavior
+                  </label>
+                  <select id="autoGearViewfinderExtensionMode">
+                    <option value="all" selected>Require every selected value</option>
+                    <option value="any">Match any selected value</option>
+                    <option value="multiplier">Multiply by matched values</option>
+                  </select>
+                </div>
+                <select
+                  id="autoGearViewfinderExtension"
+                  class="auto-gear-viewfinder-extension auto-gear-multiselect"
+                  multiple
                     size="10"
                   ></select>
                 </section>
@@ -1548,20 +1574,30 @@
                     <label for="autoGearDeliveryResolution" id="autoGearDeliveryResolutionLabel"
                       >Delivery resolution</label
                     >
-                    <div class="auto-gear-condition-actions">
-                      <button type="button" class="auto-gear-condition-add" data-action="add">Add</button>
-                      <button
-                        type="button"
-                        class="auto-gear-condition-remove"
-                        data-action="remove"
-                        data-condition="deliveryResolution"
-                      >Remove</button>
-                    </div>
+                  <div class="auto-gear-condition-actions">
+                    <button type="button" class="auto-gear-condition-add" data-action="add">Add</button>
+                    <button
+                      type="button"
+                      class="auto-gear-condition-remove"
+                      data-action="remove"
+                      data-condition="deliveryResolution"
+                    >Remove</button>
                   </div>
-                  <select
-                    id="autoGearDeliveryResolution"
-                    class="auto-gear-delivery-resolution auto-gear-multiselect"
-                    multiple
+                </div>
+                <div class="auto-gear-condition-mode">
+                  <label for="autoGearDeliveryResolutionMode" id="autoGearDeliveryResolutionModeLabel">
+                    Match behavior
+                  </label>
+                  <select id="autoGearDeliveryResolutionMode">
+                    <option value="all" selected>Require every selected value</option>
+                    <option value="any">Match any selected value</option>
+                    <option value="multiplier">Multiply by matched values</option>
+                  </select>
+                </div>
+                <select
+                  id="autoGearDeliveryResolution"
+                  class="auto-gear-delivery-resolution auto-gear-multiselect"
+                  multiple
                     size="10"
                   ></select>
                 </section>
@@ -1574,19 +1610,27 @@
                 >
                   <div class="auto-gear-condition-header">
                     <label for="autoGearVideoDistribution" id="autoGearVideoDistributionLabel">Video distribution</label>
-                    <div class="auto-gear-condition-actions">
-                      <button type="button" class="auto-gear-condition-add" data-action="add">Add</button>
-                      <button
-                        type="button"
-                        class="auto-gear-condition-remove"
-                        data-action="remove"
-                        data-condition="videoDistribution"
-                      >Remove</button>
-                    </div>
+                  <div class="auto-gear-condition-actions">
+                    <button type="button" class="auto-gear-condition-add" data-action="add">Add</button>
+                    <button
+                      type="button"
+                      class="auto-gear-condition-remove"
+                      data-action="remove"
+                      data-condition="videoDistribution"
+                    >Remove</button>
                   </div>
-                  <select
-                    id="autoGearVideoDistribution"
-                    class="auto-gear-video-distribution auto-gear-multiselect"
+                </div>
+                <div class="auto-gear-condition-mode">
+                  <label for="autoGearVideoDistributionMode" id="autoGearVideoDistributionModeLabel">Match behavior</label>
+                  <select id="autoGearVideoDistributionMode">
+                    <option value="all" selected>Require every selected value</option>
+                    <option value="any">Match any selected value</option>
+                    <option value="multiplier">Multiply by matched values</option>
+                  </select>
+                </div>
+                <select
+                  id="autoGearVideoDistribution"
+                  class="auto-gear-video-distribution auto-gear-multiselect"
                     multiple
                     size="10"
                   ></select>
@@ -1600,20 +1644,28 @@
                 >
                   <div class="auto-gear-condition-header">
                     <label for="autoGearCamera" id="autoGearCameraLabel">Camera</label>
-                    <div class="auto-gear-condition-actions">
-                      <button type="button" class="auto-gear-condition-add" data-action="add">Add</button>
-                      <button
-                        type="button"
-                        class="auto-gear-condition-remove"
-                        data-action="remove"
-                        data-condition="camera"
-                      >Remove</button>
-                    </div>
+                  <div class="auto-gear-condition-actions">
+                    <button type="button" class="auto-gear-condition-add" data-action="add">Add</button>
+                    <button
+                      type="button"
+                      class="auto-gear-condition-remove"
+                      data-action="remove"
+                      data-condition="camera"
+                    >Remove</button>
                   </div>
-                  <select
-                    id="autoGearCamera"
-                    class="auto-gear-camera auto-gear-multiselect auto-gear-device-multiselect"
-                    multiple
+                </div>
+                <div class="auto-gear-condition-mode">
+                  <label for="autoGearCameraMode" id="autoGearCameraModeLabel">Match behavior</label>
+                  <select id="autoGearCameraMode">
+                    <option value="all" selected>Require every selected value</option>
+                    <option value="any">Match any selected value</option>
+                    <option value="multiplier">Multiply by matched values</option>
+                  </select>
+                </div>
+                <select
+                  id="autoGearCamera"
+                  class="auto-gear-camera auto-gear-multiselect auto-gear-device-multiselect"
+                  multiple
                     size="10"
                   ></select>
                 </section>
@@ -1663,19 +1715,27 @@
                 >
                   <div class="auto-gear-condition-header">
                     <label for="autoGearMonitor" id="autoGearMonitorLabel">Onboard monitor</label>
-                    <div class="auto-gear-condition-actions">
-                      <button type="button" class="auto-gear-condition-add" data-action="add">Add</button>
-                      <button
-                        type="button"
-                        class="auto-gear-condition-remove"
-                        data-action="remove"
-                        data-condition="monitor"
-                      >Remove</button>
-                    </div>
+                  <div class="auto-gear-condition-actions">
+                    <button type="button" class="auto-gear-condition-add" data-action="add">Add</button>
+                    <button
+                      type="button"
+                      class="auto-gear-condition-remove"
+                      data-action="remove"
+                      data-condition="monitor"
+                    >Remove</button>
                   </div>
-                  <select
-                    id="autoGearMonitor"
-                    class="auto-gear-monitor auto-gear-multiselect auto-gear-device-multiselect"
+                </div>
+                <div class="auto-gear-condition-mode">
+                  <label for="autoGearMonitorMode" id="autoGearMonitorModeLabel">Match behavior</label>
+                  <select id="autoGearMonitorMode">
+                    <option value="all" selected>Require every selected value</option>
+                    <option value="any">Match any selected value</option>
+                    <option value="multiplier">Multiply by matched values</option>
+                  </select>
+                </div>
+                <select
+                  id="autoGearMonitor"
+                  class="auto-gear-monitor auto-gear-multiselect auto-gear-device-multiselect"
                     multiple
                     size="10"
                   ></select>
@@ -1689,20 +1749,28 @@
                 >
                   <div class="auto-gear-condition-header">
                     <label for="autoGearCrewPresent" id="autoGearCrewPresentLabel">Crew present</label>
-                    <div class="auto-gear-condition-actions">
-                      <button type="button" class="auto-gear-condition-add" data-action="add">Add</button>
-                      <button
-                        type="button"
-                        class="auto-gear-condition-remove"
-                        data-action="remove"
-                        data-condition="crewPresent"
-                      >Remove</button>
-                    </div>
+                  <div class="auto-gear-condition-actions">
+                    <button type="button" class="auto-gear-condition-add" data-action="add">Add</button>
+                    <button
+                      type="button"
+                      class="auto-gear-condition-remove"
+                      data-action="remove"
+                      data-condition="crewPresent"
+                    >Remove</button>
                   </div>
-                  <select
-                    id="autoGearCrewPresent"
-                    class="auto-gear-crew auto-gear-multiselect"
-                    multiple
+                </div>
+                <div class="auto-gear-condition-mode">
+                  <label for="autoGearCrewPresentMode" id="autoGearCrewPresentModeLabel">Match behavior</label>
+                  <select id="autoGearCrewPresentMode">
+                    <option value="all" selected>Require every selected value</option>
+                    <option value="any">Match any selected value</option>
+                    <option value="multiplier">Multiply by matched values</option>
+                  </select>
+                </div>
+                <select
+                  id="autoGearCrewPresent"
+                  class="auto-gear-crew auto-gear-multiselect"
+                  multiple
                     size="10"
                   ></select>
                 </section>
@@ -1715,20 +1783,28 @@
                 >
                   <div class="auto-gear-condition-header">
                     <label for="autoGearCrewAbsent" id="autoGearCrewAbsentLabel">Crew absent</label>
-                    <div class="auto-gear-condition-actions">
-                      <button type="button" class="auto-gear-condition-add" data-action="add">Add</button>
-                      <button
-                        type="button"
-                        class="auto-gear-condition-remove"
-                        data-action="remove"
-                        data-condition="crewAbsent"
-                      >Remove</button>
-                    </div>
+                  <div class="auto-gear-condition-actions">
+                    <button type="button" class="auto-gear-condition-add" data-action="add">Add</button>
+                    <button
+                      type="button"
+                      class="auto-gear-condition-remove"
+                      data-action="remove"
+                      data-condition="crewAbsent"
+                    >Remove</button>
                   </div>
-                  <select
-                    id="autoGearCrewAbsent"
-                    class="auto-gear-crew auto-gear-multiselect"
-                    multiple
+                </div>
+                <div class="auto-gear-condition-mode">
+                  <label for="autoGearCrewAbsentMode" id="autoGearCrewAbsentModeLabel">Match behavior</label>
+                  <select id="autoGearCrewAbsentMode">
+                    <option value="all" selected>Require every selected value</option>
+                    <option value="any">Match any selected value</option>
+                    <option value="multiplier">Multiply by matched values</option>
+                  </select>
+                </div>
+                <select
+                  id="autoGearCrewAbsent"
+                  class="auto-gear-crew auto-gear-multiselect"
+                  multiple
                     size="10"
                   ></select>
                 </section>
@@ -1741,19 +1817,27 @@
                 >
                   <div class="auto-gear-condition-header">
                     <label for="autoGearWireless" id="autoGearWirelessLabel">Wireless transmitter</label>
-                    <div class="auto-gear-condition-actions">
-                      <button type="button" class="auto-gear-condition-add" data-action="add">Add</button>
-                      <button
-                        type="button"
-                        class="auto-gear-condition-remove"
-                        data-action="remove"
-                        data-condition="wireless"
-                      >Remove</button>
-                    </div>
+                  <div class="auto-gear-condition-actions">
+                    <button type="button" class="auto-gear-condition-add" data-action="add">Add</button>
+                    <button
+                      type="button"
+                      class="auto-gear-condition-remove"
+                      data-action="remove"
+                      data-condition="wireless"
+                    >Remove</button>
                   </div>
-                  <select
-                    id="autoGearWireless"
-                    class="auto-gear-wireless auto-gear-multiselect auto-gear-device-multiselect"
+                </div>
+                <div class="auto-gear-condition-mode">
+                  <label for="autoGearWirelessMode" id="autoGearWirelessModeLabel">Match behavior</label>
+                  <select id="autoGearWirelessMode">
+                    <option value="all" selected>Require every selected value</option>
+                    <option value="any">Match any selected value</option>
+                    <option value="multiplier">Multiply by matched values</option>
+                  </select>
+                </div>
+                <select
+                  id="autoGearWireless"
+                  class="auto-gear-wireless auto-gear-multiselect auto-gear-device-multiselect"
                     multiple
                     size="10"
                   ></select>
@@ -1767,19 +1851,27 @@
                 >
                   <div class="auto-gear-condition-header">
                     <label for="autoGearMotors" id="autoGearMotorsLabel">FIZ motors</label>
-                    <div class="auto-gear-condition-actions">
-                      <button type="button" class="auto-gear-condition-add" data-action="add">Add</button>
-                      <button
-                        type="button"
-                        class="auto-gear-condition-remove"
-                        data-action="remove"
-                        data-condition="motors"
-                      >Remove</button>
-                    </div>
+                  <div class="auto-gear-condition-actions">
+                    <button type="button" class="auto-gear-condition-add" data-action="add">Add</button>
+                    <button
+                      type="button"
+                      class="auto-gear-condition-remove"
+                      data-action="remove"
+                      data-condition="motors"
+                    >Remove</button>
                   </div>
-                  <select
-                    id="autoGearMotors"
-                    class="auto-gear-motors auto-gear-multiselect auto-gear-device-multiselect"
+                </div>
+                <div class="auto-gear-condition-mode">
+                  <label for="autoGearMotorsMode" id="autoGearMotorsModeLabel">Match behavior</label>
+                  <select id="autoGearMotorsMode">
+                    <option value="all" selected>Require every selected value</option>
+                    <option value="any">Match any selected value</option>
+                    <option value="multiplier">Multiply by matched values</option>
+                  </select>
+                </div>
+                <select
+                  id="autoGearMotors"
+                  class="auto-gear-motors auto-gear-multiselect auto-gear-device-multiselect"
                     multiple
                     size="10"
                   ></select>
@@ -1793,19 +1885,27 @@
                 >
                   <div class="auto-gear-condition-header">
                     <label for="autoGearControllers" id="autoGearControllersLabel">FIZ controllers</label>
-                    <div class="auto-gear-condition-actions">
-                      <button type="button" class="auto-gear-condition-add" data-action="add">Add</button>
-                      <button
-                        type="button"
-                        class="auto-gear-condition-remove"
-                        data-action="remove"
-                        data-condition="controllers"
-                      >Remove</button>
-                    </div>
+                  <div class="auto-gear-condition-actions">
+                    <button type="button" class="auto-gear-condition-add" data-action="add">Add</button>
+                    <button
+                      type="button"
+                      class="auto-gear-condition-remove"
+                      data-action="remove"
+                      data-condition="controllers"
+                    >Remove</button>
                   </div>
-                  <select
-                    id="autoGearControllers"
-                    class="auto-gear-controllers auto-gear-multiselect auto-gear-device-multiselect"
+                </div>
+                <div class="auto-gear-condition-mode">
+                  <label for="autoGearControllersMode" id="autoGearControllersModeLabel">Match behavior</label>
+                  <select id="autoGearControllersMode">
+                    <option value="all" selected>Require every selected value</option>
+                    <option value="any">Match any selected value</option>
+                    <option value="multiplier">Multiply by matched values</option>
+                  </select>
+                </div>
+                <select
+                  id="autoGearControllers"
+                  class="auto-gear-controllers auto-gear-multiselect auto-gear-device-multiselect"
                     multiple
                     size="10"
                   ></select>
@@ -1819,20 +1919,28 @@
                 >
                   <div class="auto-gear-condition-header">
                     <label for="autoGearDistance" id="autoGearDistanceLabel">FIZ distance devices</label>
-                    <div class="auto-gear-condition-actions">
-                      <button type="button" class="auto-gear-condition-add" data-action="add">Add</button>
-                      <button
-                        type="button"
-                        class="auto-gear-condition-remove"
-                        data-action="remove"
-                        data-condition="distance"
-                      >Remove</button>
-                    </div>
+                  <div class="auto-gear-condition-actions">
+                    <button type="button" class="auto-gear-condition-add" data-action="add">Add</button>
+                    <button
+                      type="button"
+                      class="auto-gear-condition-remove"
+                      data-action="remove"
+                      data-condition="distance"
+                    >Remove</button>
                   </div>
-                  <select
-                    id="autoGearDistance"
-                    class="auto-gear-distance auto-gear-multiselect"
-                    multiple
+                </div>
+                <div class="auto-gear-condition-mode">
+                  <label for="autoGearDistanceMode" id="autoGearDistanceModeLabel">Match behavior</label>
+                  <select id="autoGearDistanceMode">
+                    <option value="all" selected>Require every selected value</option>
+                    <option value="any">Match any selected value</option>
+                    <option value="multiplier">Multiply by matched values</option>
+                  </select>
+                </div>
+                <select
+                  id="autoGearDistance"
+                  class="auto-gear-distance auto-gear-multiselect"
+                  multiple
                     size="10"
                   ></select>
                 </section>
