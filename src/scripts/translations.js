@@ -1919,7 +1919,7 @@ const texts = {
     autoGearSummaryDetailsOverlapsNone: "Nessun requisito sovrapposto rilevato.",
     autoGearSummaryDetailsRulesWithoutScenariosHeading: "Regole senza scenari",
     autoGearSummaryDetailsRulesWithoutScenariosDescription:
-      "Queste regole non vengono mai eseguite perché mancano gli scenari richiesti.",
+      "Queste regole si attivano senza filtri scenario.",
     autoGearSummaryResetFocus: "Mostra tutta la copertura",
     autoGearSummaryDetailsFocusEmpty: "Nessun dettaglio di copertura corrisponde al focus attuale.",
     autoGearSummaryJumpToRule: "Vai alla regola",
@@ -3196,7 +3196,7 @@ const texts = {
     autoGearSummaryDetailsOverlapsNone: "No se detectaron requisitos solapados.",
     autoGearSummaryDetailsRulesWithoutScenariosHeading: "Reglas sin escenarios",
     autoGearSummaryDetailsRulesWithoutScenariosDescription:
-      "Estas reglas nunca se ejecutan porque faltan escenarios requeridos.",
+      "Estas reglas se activan sin filtros de escenario.",
     autoGearSummaryResetFocus: "Mostrar toda la cobertura",
     autoGearSummaryDetailsFocusEmpty: "Ningún detalle de cobertura coincide con el enfoque actual.",
     autoGearSummaryJumpToRule: "Ir a la regla",
@@ -4475,7 +4475,7 @@ const texts = {
     autoGearSummaryDetailsOverlapsNone: "Aucun besoin qui se recoupe détecté.",
     autoGearSummaryDetailsRulesWithoutScenariosHeading: "Règles sans scénarios",
     autoGearSummaryDetailsRulesWithoutScenariosDescription:
-      "Ces règles ne s'exécutent jamais car il manque des scénarios requis.",
+      "Ces règles se déclenchent sans filtres de scénario.",
     autoGearSummaryResetFocus: "Afficher toute la couverture",
     autoGearSummaryDetailsFocusEmpty: "Aucun détail de couverture ne correspond au focus actuel.",
     autoGearSummaryJumpToRule: "Aller à la règle",
@@ -5765,7 +5765,7 @@ const texts = {
     autoGearSummaryDetailsOverlapsNone: "Keine überschneidenden Anforderungen gefunden.",
     autoGearSummaryDetailsRulesWithoutScenariosHeading: "Regeln ohne Szenarien",
     autoGearSummaryDetailsRulesWithoutScenariosDescription:
-      "Diese Regeln werden nie ausgeführt, da erforderliche Szenarien fehlen.",
+      "Diese Regeln werden ohne Szenariofilter ausgelöst.",
     autoGearSummaryResetFocus: "Gesamtabdeckung anzeigen",
     autoGearSummaryDetailsFocusEmpty: "Keine Abdeckungsdetails passen zum aktuellen Fokus.",
     autoGearSummaryJumpToRule: "Zur Regel springen",
