@@ -13382,6 +13382,55 @@ function refreshDeviceLists() {
     filterDeviceList(list, filterValue);
   });
 }
+var CORE_PART2_GLOBAL_EXPORTS = {
+  refreshAutoGearCameraOptions: refreshAutoGearCameraOptions,
+  refreshAutoGearCameraWeightCondition: refreshAutoGearCameraWeightCondition,
+  refreshAutoGearMonitorOptions: refreshAutoGearMonitorOptions,
+  refreshAutoGearWirelessOptions: refreshAutoGearWirelessOptions,
+  refreshAutoGearMotorsOptions: refreshAutoGearMotorsOptions,
+  refreshAutoGearControllersOptions: refreshAutoGearControllersOptions,
+  refreshAutoGearDistanceOptions: refreshAutoGearDistanceOptions,
+  updateAutoGearCameraWeightDraft: updateAutoGearCameraWeightDraft
+};
+var CORE_PART2_GLOBAL_SCOPE = CORE_SHARED_SCOPE_PART2 || (typeof globalThis !== 'undefined' ? globalThis : null) || (typeof window !== 'undefined' ? window : null) || (typeof self !== 'undefined' ? self : null) || (typeof global !== 'undefined' ? global : null);
+var CORE_PART2_RUNTIME = function resolveLegacyPart2Runtime(scope) {
+  if (!scope || _typeof(scope) !== 'object') return null;
+  if (scope.cineCoreRuntime && _typeof(scope.cineCoreRuntime) === 'object') {
+    return scope.cineCoreRuntime;
+  }
+  var scopeExtensible = typeof Object.isExtensible === 'function' ? Object.isExtensible(scope) : true;
+  if (scopeExtensible) {
+    scope.cineCoreRuntime = {};
+    return scope.cineCoreRuntime;
+  }
+  return null;
+}(CORE_PART2_GLOBAL_SCOPE);
+Object.entries(CORE_PART2_GLOBAL_EXPORTS).forEach(function (_ref38) {
+  var _ref39 = _slicedToArray(_ref38, 2),
+    name = _ref39[0],
+    fn = _ref39[1];
+  if (typeof fn !== 'function') return;
+  var assignToScope = CORE_PART2_GLOBAL_SCOPE && (typeof Object.isExtensible === 'function' ? Object.isExtensible(CORE_PART2_GLOBAL_SCOPE) : true);
+  if (assignToScope && CORE_PART2_GLOBAL_SCOPE) {
+    CORE_PART2_GLOBAL_SCOPE[name] = fn;
+  } else if (CORE_PART2_GLOBAL_SCOPE) {
+    try {
+      CORE_PART2_GLOBAL_SCOPE[name] = fn;
+    } catch (assignError) {
+      void assignError;
+    }
+  }
+  var assignToRuntime = CORE_PART2_RUNTIME && (typeof Object.isExtensible === 'function' ? Object.isExtensible(CORE_PART2_RUNTIME) : true);
+  if (assignToRuntime && CORE_PART2_RUNTIME) {
+    CORE_PART2_RUNTIME[name] = fn;
+  } else if (CORE_PART2_RUNTIME) {
+    try {
+      CORE_PART2_RUNTIME[name] = fn;
+    } catch (runtimeAssignError) {
+      void runtimeAssignError;
+    }
+  }
+});
 flushCoreBootQueue();
 refreshDeviceLists();
 if (typeof module !== 'undefined' && module.exports) {

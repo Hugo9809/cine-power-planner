@@ -14103,12 +14103,6 @@ function refreshDeviceLists() {
   });
 }
 
-// Ensure deferred boot tasks from the first runtime segment execute before final renders
-flushCoreBootQueue();
-
-// Initial render of device lists
-refreshDeviceLists();
-
 const CORE_PART2_GLOBAL_EXPORTS = {
   refreshAutoGearCameraOptions,
   refreshAutoGearCameraWeightCondition,
@@ -14149,6 +14143,12 @@ Object.entries(CORE_PART2_GLOBAL_EXPORTS).forEach(([name, fn]) => {
     CORE_PART2_RUNTIME[name] = fn;
   }
 });
+
+// Ensure deferred boot tasks from the first runtime segment execute before final renders
+flushCoreBootQueue();
+
+// Initial render of device lists
+refreshDeviceLists();
 
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
