@@ -188,7 +188,9 @@ Dieser kurze Ablauf sollte bei neuen Teammitgliedern, frisch eingerichteten Work
 - **Globale Suche** (`/`, `Strg+K`, `⌘K`) springt zu Features, Selektoren oder Hilfethemen – selbst bei versteckter Navigation.
   Vorschläge zeigen direkte Treffer für Funktionen und Geräte vor Hilfethemen, damit Tastaturabläufe zuerst bei Bedienelementen
   landen.
-- **Help-Center** (`?`, `H`, `F1`, `Strg+/`) liefert Guides, Shortcuts, FAQs und Hover-Hilfe.
+- **Help-Center** (`?`, `H`, `F1`, `Strg+/`) liefert Guides, Shortcuts, FAQs und Hover-Hilfe. Die Start-hier-Checkliste beschreibt
+  jetzt, wie du den Offline-Indikator vorbereitest, doppelte Exporte sicherst und eine Wiederherstellungsprobe durchläufst,
+  damit Teams Backups vor dem Einsatz prüfen.
 - **Projektdiagramm** visualisiert Strom- und Signalpfade; mit gedrückter Umschalttaste als JPG exportieren.
 - **Akkuvergleich** zeigt Leistung kompatibler Packs und warnt vor Überlast.
 - **Gerätelistengenerator** erstellt kategorisierte Tabellen mit Metadaten, Crew-E-Mails und Szenario-Zubehör.

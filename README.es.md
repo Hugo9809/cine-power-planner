@@ -188,7 +188,9 @@ Repite esta rutina cuando se incorpore personal, se prepare una estación nueva 
 - **Búsqueda global** (`/`, `Ctrl+K`, `⌘K`) salta a funciones, selectores o temas de ayuda, incluso con navegación oculta. Las
   sugerencias muestran primero coincidencias directas de funciones y dispositivos antes que los temas de ayuda para que los flujos
   con teclado lleguen a los controles principales.
-- **Centro de ayuda** (`?`, `H`, `F1`, `Ctrl+/`) ofrece guías, atajos, preguntas frecuentes y modo de ayuda flotante.
+- **Centro de ayuda** (`?`, `H`, `F1`, `Ctrl+/`) ofrece guías, atajos, preguntas frecuentes y modo de ayuda flotante. La lista
+  «Comienza aquí» ahora cubre cómo preparar el indicador sin conexión, guardar exportaciones redundantes y repasar un simulacro
+  de restauración para que el equipo verifique las copias de seguridad antes de salir a rodaje.
 - **Diagrama de proyecto** visualiza rutas de energía y señal; mantén Shift al exportar para guardar JPG.
 - **Panel de comparación de baterías** muestra rendimiento de packs compatibles y alerta sobre sobrecargas.
 - **Generador de listas** crea tablas categorizadas con metadatos, correos de equipo y accesorios según escenarios.

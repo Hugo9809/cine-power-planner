@@ -2670,6 +2670,32 @@
                 ><em>Backup &amp; Restore</em></a>
                 panel.
               </li>
+              <li>
+                Confirm the
+                <a
+                  class="help-link button-link"
+                  href="#offlineIndicator"
+                  data-help-target="#offlineIndicator"
+                >offline indicator</a>
+                glows before disconnecting and, if an update is pending, trigger a
+                <a
+                  class="help-link button-link"
+                  href="#reloadButton"
+                  data-help-target="#reloadButton"
+                ><em>Force reload</em></a>
+                while you are still online so the latest locally stored Uicons, fonts and help articles finish caching.
+              </li>
+              <li>
+                Once your exports are saved to two destinations, open
+                <a
+                  class="help-link button-link"
+                  href="#restoreRehearsalButton"
+                  data-help-target="#restoreRehearsalButton"
+                  data-help-highlight="#restoreRehearsalSection"
+                ><strong>Restore rehearsal</strong></a>
+                to load the bundle in a sandbox, verify every project, rule and device matches the live profile, then close the
+                rehearsal so the production data stays untouched.
+              </li>
             </ol>
             <p class="help-callout-note">
               Tip: Keep backups on separate drives when travelling—
@@ -2747,11 +2773,89 @@
                 ><strong>Restore</strong></a>
                 panel while you still have the originals.
               </li>
+              <li>
+                Before approving an update toast or running
+                <a
+                  class="help-link button-link"
+                  href="#reloadButton"
+                  data-help-target="#reloadButton"
+                ><em>Force reload</em></a>, capture a fresh
+                <a
+                  class="help-link button-link"
+                  href="#backupSettings"
+                  data-help-target="#backupSettings"
+                  data-help-highlight="#settingsDialog"
+                >manual backup</a>
+                and store the download alongside your project exports so no data is lost if a cache clears mid-update.
+              </li>
             </ul>
             <p class="help-callout-note">
               Manual backups bundle a timestamped copy of every saved project, favorite, rule and preference. Restores make a
               safety snapshot first so you can undo any mistake without losing data.
             </p>
+            <h5 id="helpRestoreDrillHeading">Restore rehearsal drill</h5>
+            <ol>
+              <li>
+                Open
+                <a
+                  class="help-link button-link"
+                  href="#settingsButton"
+                  data-help-target="#settingsButton"
+                >Settings</a>
+                →
+                <a
+                  class="help-link button-link"
+                  href="#restoreRehearsalButton"
+                  data-help-target="#restoreRehearsalButton"
+                  data-help-highlight="#restoreRehearsalSection"
+                ><strong>Restore rehearsal</strong></a>
+                and choose whether you're testing a full-app backup or a shared project bundle.
+              </li>
+              <li>
+                Use
+                <a
+                  class="help-link button-link"
+                  href="#restoreRehearsalBrowse"
+                  data-help-target="#restoreRehearsalBrowse"
+                  data-help-highlight="#restoreRehearsalSection"
+                ><strong>Select file</strong></a>
+                to load the JSON export from your offline media. The sandbox keeps the live profile read-only while it inspects the contents.
+              </li>
+              <li>
+                Review the
+                <a
+                  class="help-link button-link"
+                  href="#restoreRehearsalTable"
+                  data-help-target="#restoreRehearsalTable"
+                  data-help-highlight="#restoreRehearsalSection"
+                >comparison table</a>
+                and
+                <a
+                  class="help-link button-link"
+                  href="#restoreRehearsalRuleSection"
+                  data-help-target="#restoreRehearsalRuleSection"
+                  data-help-highlight="#restoreRehearsalSection"
+                >automatic gear diff</a>
+                for discrepancies. Investigate anything unexpected before promoting the backup.
+              </li>
+              <li>
+                When the rehearsal looks correct, exit with
+                <a
+                  class="help-link button-link"
+                  href="#restoreRehearsalAbort"
+                  data-help-target="#restoreRehearsalAbort"
+                  data-help-highlight="#restoreRehearsalSection"
+                >Abort rehearsal</a>
+                or, if you're ready to apply it, proceed with
+                <a
+                  class="help-link button-link"
+                  href="#restoreRehearsalProceed"
+                  data-help-target="#restoreRehearsalProceed"
+                  data-help-highlight="#restoreRehearsalSection"
+                ><strong>Continue rehearsal restore</strong></a>
+                knowing the system already captured a safety snapshot you can roll back to.
+              </li>
+            </ol>
           </div>
           <div
             id="helpKeyboardShortcuts"

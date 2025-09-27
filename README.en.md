@@ -415,7 +415,9 @@ Use Cine Power Planner end-to-end with the following routine:
   workflows land on primary controls.
 - **Help center** (`?`, `H`, `F1`, `Ctrl+/`) provides searchable guides,
   shortcuts, FAQs and an optional hover-help mode so every control explains
-  itself.
+  itself. The Start Here checklist now covers priming the offline indicator,
+  capturing redundant exports and walking through a restore rehearsal drill so
+  crews verify backups before field use.
 - **Project diagram** visualizes power and signal paths. Hold Shift while
   exporting to save a JPG snapshot instead of SVG.
 - **Battery comparison panel** reveals how each compatible pack performs and
