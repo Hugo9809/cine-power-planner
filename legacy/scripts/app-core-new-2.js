@@ -11329,21 +11329,18 @@ function updateCalculations() {
     _li5.innerHTML = "<strong>".concat(texts[currentLang].distanceLabel, "</strong> ").concat(distanceW.toFixed(1), " W");
     breakdownListElem.appendChild(_li5);
   }
-  var bMountCam = getSelectedPlate() === 'B-Mount';
-  var highV = bMountCam ? 33.6 : 14.4;
-  var lowV = bMountCam ? 21.6 : 12.0;
+  var selectedPlate = getSelectedPlate();
+  var mountVoltages = getMountVoltageConfig(selectedPlate);
+  var bMountCam = selectedPlate === 'B-Mount';
+  var highV = Number.isFinite(mountVoltages.high) ? mountVoltages.high : bMountCam ? 33.6 : 14.4;
+  var lowV = Number.isFinite(mountVoltages.low) ? mountVoltages.low : bMountCam ? 21.6 : 12.0;
   var totalCurrentHigh = 0;
   var totalCurrentLow = 0;
   if (totalWatt > 0) {
     totalCurrentHigh = totalWatt / highV;
     totalCurrentLow = totalWatt / lowV;
   }
-  var currentHighLabel = document.getElementById("totalCurrent144Label");
-  currentHighLabel.textContent = bMountCam ? texts[currentLang].totalCurrent336Label : texts[currentLang].totalCurrent144Label;
-  currentHighLabel.setAttribute("data-help", bMountCam ? texts[currentLang].totalCurrent336Help : texts[currentLang].totalCurrent144Help);
-  var currentLowLabel = document.getElementById("totalCurrent12Label");
-  currentLowLabel.textContent = bMountCam ? texts[currentLang].totalCurrent216Label : texts[currentLang].totalCurrent12Label;
-  currentLowLabel.setAttribute("data-help", bMountCam ? texts[currentLang].totalCurrent216Help : texts[currentLang].totalCurrent12Help);
+  refreshTotalCurrentLabels(currentLang, selectedPlate, mountVoltages);
   totalCurrent144Elem.textContent = totalCurrentHigh.toFixed(2);
   totalCurrent12Elem.textContent = totalCurrentLow.toFixed(2);
   updateBatteryOptions();

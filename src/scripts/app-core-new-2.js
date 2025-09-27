@@ -12125,35 +12125,18 @@ function updateCalculations() {
   }
 
   // Calculate currents depending on battery type
-  const bMountCam = getSelectedPlate() === 'B-Mount';
-  let highV = bMountCam ? 33.6 : 14.4;
-  let lowV = bMountCam ? 21.6 : 12.0;
+  const selectedPlate = getSelectedPlate();
+  const mountVoltages = getMountVoltageConfig(selectedPlate);
+  const bMountCam = selectedPlate === 'B-Mount';
+  const highV = Number.isFinite(mountVoltages.high) ? mountVoltages.high : (bMountCam ? 33.6 : 14.4);
+  const lowV = Number.isFinite(mountVoltages.low) ? mountVoltages.low : (bMountCam ? 21.6 : 12.0);
   let totalCurrentHigh = 0;
   let totalCurrentLow = 0;
   if (totalWatt > 0) {
     totalCurrentHigh = totalWatt / highV;
     totalCurrentLow = totalWatt / lowV;
   }
-  const currentHighLabel = document.getElementById("totalCurrent144Label");
-  currentHighLabel.textContent = bMountCam
-    ? texts[currentLang].totalCurrent336Label
-    : texts[currentLang].totalCurrent144Label;
-  currentHighLabel.setAttribute(
-    "data-help",
-    bMountCam
-      ? texts[currentLang].totalCurrent336Help
-      : texts[currentLang].totalCurrent144Help
-  );
-  const currentLowLabel = document.getElementById("totalCurrent12Label");
-  currentLowLabel.textContent = bMountCam
-    ? texts[currentLang].totalCurrent216Label
-    : texts[currentLang].totalCurrent12Label;
-  currentLowLabel.setAttribute(
-    "data-help",
-    bMountCam
-      ? texts[currentLang].totalCurrent216Help
-      : texts[currentLang].totalCurrent12Help
-  );
+  refreshTotalCurrentLabels(currentLang, selectedPlate, mountVoltages);
   totalCurrent144Elem.textContent = totalCurrentHigh.toFixed(2);
   totalCurrent12Elem.textContent = totalCurrentLow.toFixed(2);
 

@@ -137,6 +137,28 @@ const texts = {
     temperatureUnitSetting: "Temperature unit",
     temperatureUnitSettingHelp:
       "Choose whether temperatures are shown in Celsius or Fahrenheit throughout the app.",
+    mountVoltageSettingsHeading: "Battery mount voltages",
+    mountVoltageSettingsHelp:
+      "Adjust the voltages used for current draw calculations across B-Mount, V-Mount and Gold Mount setups.",
+    mountVoltageDescription:
+      "Set the default high and low voltages for each battery mount so the planner matches your hardware.",
+    mountVoltageReset: "Restore defaults",
+    mountVoltageResetHelp: "Reset all mount voltages to their factory defaults.",
+    mountVoltageHighLabel: "High-voltage output",
+    mountVoltageLowLabel: "Low-voltage output",
+    mountVoltageHighHelp:
+      "Used to calculate total current at the battery's main output such as the high-voltage pins.",
+    mountVoltageLowHelp:
+      "Used to calculate total current at auxiliary outputs such as D-Tap ports or B-Mount low-voltage pins.",
+    mountVoltageNote:
+      "These voltages update the totals in the power summary, runtime estimates and pin warnings.",
+    mountVoltageCardLabelV: "V-Mount",
+    mountVoltageCardLabelGold: "Gold Mount",
+    mountVoltageCardLabelB: "B-Mount",
+    totalCurrentHighLabelTemplate: "Total Current (at {voltage}V):",
+    totalCurrentLowLabelTemplate: "Total Current (at {voltage}V):",
+    totalCurrentHighHelpTemplate: "Current draw at the battery's main output ({voltage}V).",
+    totalCurrentLowHelpTemplate: "Current draw at auxiliary outputs ({voltage}V).",
     temperatureUnitCelsius: "Celsius (°C)",
     temperatureUnitFahrenheit: "Fahrenheit (°F)",
     temperatureUnitSymbolCelsius: "°C",
@@ -1838,6 +1860,28 @@ const texts = {
     temperatureUnitSetting: "Unità di temperatura",
     temperatureUnitSettingHelp:
       "Scegli se mostrare le temperature in Celsius o Fahrenheit in tutta l'app.",
+    mountVoltageSettingsHeading: "Tensioni dei battery mount",
+    mountVoltageSettingsHelp:
+      "Regola le tensioni usate nei calcoli della corrente per configurazioni B-Mount, V-Mount e Gold Mount.",
+    mountVoltageDescription:
+      "Imposta le tensioni alta e bassa predefinite per ogni attacco batteria così che il planner rispecchi il tuo hardware.",
+    mountVoltageReset: "Ripristina predefiniti",
+    mountVoltageResetHelp: "Ripristina le tensioni dei mount ai valori di fabbrica.",
+    mountVoltageHighLabel: "Uscita ad alta tensione",
+    mountVoltageLowLabel: "Uscita a bassa tensione",
+    mountVoltageHighHelp:
+      "Usata per calcolare la corrente totale sull'uscita principale della batteria, ad esempio i pin ad alta tensione.",
+    mountVoltageLowHelp:
+      "Usata per calcolare la corrente totale sulle uscite ausiliarie come porte D-Tap o pin B-Mount a bassa tensione.",
+    mountVoltageNote:
+      "Queste tensioni aggiornano i totali nel riepilogo potenza, le stime di autonomia e gli avvisi sui pin.",
+    mountVoltageCardLabelV: "V-Mount",
+    mountVoltageCardLabelGold: "Gold Mount",
+    mountVoltageCardLabelB: "B-Mount",
+    totalCurrentHighLabelTemplate: "Corrente totale (a {voltage}V):",
+    totalCurrentLowLabelTemplate: "Corrente totale (a {voltage}V):",
+    totalCurrentHighHelpTemplate: "Corrente assorbita dall'uscita principale della batteria ({voltage}V).",
+    totalCurrentLowHelpTemplate: "Corrente assorbita dalle uscite ausiliarie ({voltage}V).",
     temperatureUnitCelsius: "Celsius (°C)",
     temperatureUnitFahrenheit: "Fahrenheit (°F)",
     temperatureUnitSymbolCelsius: "°C",
@@ -3123,6 +3167,28 @@ const texts = {
     temperatureUnitSetting: "Unidad de temperatura",
     temperatureUnitSettingHelp:
       "Elige si mostrar las temperaturas en grados Celsius o Fahrenheit en toda la aplicación.",
+    mountVoltageSettingsHeading: "Tensiones de los soportes de batería",
+    mountVoltageSettingsHelp:
+      "Ajusta las tensiones utilizadas en los cálculos de corriente para configuraciones B-Mount, V-Mount y Gold Mount.",
+    mountVoltageDescription:
+      "Define las tensiones alta y baja predeterminadas de cada soporte para que el planificador coincida con tu hardware.",
+    mountVoltageReset: "Restaurar valores predeterminados",
+    mountVoltageResetHelp: "Restablece las tensiones de los soportes a los valores de fábrica.",
+    mountVoltageHighLabel: "Salida de alta tensión",
+    mountVoltageLowLabel: "Salida de baja tensión",
+    mountVoltageHighHelp:
+      "Se utiliza para calcular la corriente total en la salida principal de la batería, como los pines de alta tensión.",
+    mountVoltageLowHelp:
+      "Se utiliza para calcular la corriente total en salidas auxiliares como conectores D-Tap o pines B-Mount de baja tensión.",
+    mountVoltageNote:
+      "Estas tensiones actualizan los totales del resumen de potencia, las estimaciones de autonomía y las alertas de pines.",
+    mountVoltageCardLabelV: "V-Mount",
+    mountVoltageCardLabelGold: "Gold Mount",
+    mountVoltageCardLabelB: "B-Mount",
+    totalCurrentHighLabelTemplate: "Corriente total (a {voltage}V):",
+    totalCurrentLowLabelTemplate: "Corriente total (a {voltage}V):",
+    totalCurrentHighHelpTemplate: "Corriente en la salida principal de la batería ({voltage}V).",
+    totalCurrentLowHelpTemplate: "Corriente en las salidas auxiliares ({voltage}V).",
     temperatureUnitCelsius: "Celsius (°C)",
     temperatureUnitFahrenheit: "Fahrenheit (°F)",
     temperatureUnitSymbolCelsius: "°C",
@@ -4409,6 +4475,28 @@ const texts = {
     temperatureUnitSetting: "Unité de température",
     temperatureUnitSettingHelp:
       "Choisissez d'afficher les températures en Celsius ou en Fahrenheit dans toute l'application.",
+    mountVoltageSettingsHeading: "Tensions des supports de batterie",
+    mountVoltageSettingsHelp:
+      "Ajustez les tensions utilisées pour les calculs de courant avec les configurations B-Mount, V-Mount et Gold Mount.",
+    mountVoltageDescription:
+      "Définissez les tensions haute et basse par défaut pour chaque support afin d'aligner le planificateur sur votre matériel.",
+    mountVoltageReset: "Restaurer les valeurs par défaut",
+    mountVoltageResetHelp: "Rétablit les tensions des supports à leurs valeurs d'usine.",
+    mountVoltageHighLabel: "Sortie haute tension",
+    mountVoltageLowLabel: "Sortie basse tension",
+    mountVoltageHighHelp:
+      "Utilisée pour calculer le courant total sur la sortie principale de la batterie, par exemple les broches haute tension.",
+    mountVoltageLowHelp:
+      "Utilisée pour calculer le courant total sur les sorties auxiliaires comme les ports D-Tap ou les broches B-Mount basse tension.",
+    mountVoltageNote:
+      "Ces tensions mettent à jour les totaux du résumé de puissance, les estimations d'autonomie et les alertes de broches.",
+    mountVoltageCardLabelV: "V-Mount",
+    mountVoltageCardLabelGold: "Gold Mount",
+    mountVoltageCardLabelB: "B-Mount",
+    totalCurrentHighLabelTemplate: "Courant total (à {voltage}V) :",
+    totalCurrentLowLabelTemplate: "Courant total (à {voltage}V) :",
+    totalCurrentHighHelpTemplate: "Courant sur la sortie principale de la batterie ({voltage}V).",
+    totalCurrentLowHelpTemplate: "Courant sur les sorties auxiliaires ({voltage}V).",
     temperatureUnitCelsius: "Celsius (°C)",
     temperatureUnitFahrenheit: "Fahrenheit (°F)",
     temperatureUnitSymbolCelsius: "°C",
@@ -5707,6 +5795,28 @@ const texts = {
     temperatureUnitSetting: "Temperatureinheit",
     temperatureUnitSettingHelp:
       "Wählen Sie, ob Temperaturen in Celsius oder Fahrenheit in der gesamten App angezeigt werden.",
+    mountVoltageSettingsHeading: "Batterie-Mount-Spannungen",
+    mountVoltageSettingsHelp:
+      "Passen Sie die Spannungen an, die für die Stromberechnung bei B-Mount-, V-Mount- und Gold-Mount-Konfigurationen verwendet werden.",
+    mountVoltageDescription:
+      "Legen Sie die Standardwerte für Hoch- und Niederspannung jedes Mounts fest, damit der Planer zu Ihrer Hardware passt.",
+    mountVoltageReset: "Auf Standard zurücksetzen",
+    mountVoltageResetHelp: "Setzt alle Mount-Spannungen auf die Werkseinstellungen zurück.",
+    mountVoltageHighLabel: "Hochspannungs-Ausgang",
+    mountVoltageLowLabel: "Niederspannungs-Ausgang",
+    mountVoltageHighHelp:
+      "Wird für die Berechnung des Gesamtstroms am Hauptausgang der Batterie verwendet, z. B. an den Hochspannungspins.",
+    mountVoltageLowHelp:
+      "Wird für die Berechnung des Gesamtstroms an Nebenanschlüssen wie D-Tap-Buchsen oder B-Mount-Niedervolt-Pins verwendet.",
+    mountVoltageNote:
+      "Diese Spannungen aktualisieren die Summen in der Leistungsübersicht, die Laufzeitabschätzungen und die Pin-Warnungen.",
+    mountVoltageCardLabelV: "V-Mount",
+    mountVoltageCardLabelGold: "Gold Mount",
+    mountVoltageCardLabelB: "B-Mount",
+    totalCurrentHighLabelTemplate: "Gesamtstrom (bei {voltage}V):",
+    totalCurrentLowLabelTemplate: "Gesamtstrom (bei {voltage}V):",
+    totalCurrentHighHelpTemplate: "Stromaufnahme am Hauptausgang der Batterie ({voltage}V).",
+    totalCurrentLowHelpTemplate: "Stromaufnahme an Nebenanschlüssen ({voltage}V).",
     temperatureUnitCelsius: "Celsius (°C)",
     temperatureUnitFahrenheit: "Fahrenheit (°F)",
     temperatureUnitSymbolCelsius: "°C",
