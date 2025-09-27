@@ -3091,6 +3091,60 @@ function buildAlwaysAutoGearRule() {
   };
 }
 
+function buildFiveDayConsumablesAutoGearRule() {
+  const createItem = (name, category, quantity = 1, options = {}) => {
+    if (!name || !category || quantity <= 0) return null;
+    return {
+      id: generateAutoGearId('item'),
+      name,
+      category,
+      quantity,
+      screenSize: typeof options.screenSize === 'string' ? options.screenSize : '',
+      selectorType: typeof options.selectorType === 'string' ? options.selectorType : 'none',
+      selectorDefault: typeof options.selectorDefault === 'string' ? options.selectorDefault : '',
+      selectorEnabled: options.selectorEnabled === true,
+      notes: typeof options.notes === 'string' ? options.notes : '',
+    };
+  };
+
+  const additions = [];
+  const pushItem = (name, category, quantity, options) => {
+    const item = createItem(name, category, quantity, options);
+    if (item) additions.push(item);
+  };
+
+  pushItem('Bluestar eye leather made of microfiber oval, large', 'Consumables', 4);
+  pushItem('Pro Gaff Tape', 'Consumables', 2, { notes: 'Primary color roll' });
+  pushItem('Pro Gaff Tape', 'Consumables', 2, { notes: 'Secondary color roll' });
+  pushItem('Clapper Stick', 'Rigging', 4);
+  pushItem('Kimtech Wipes', 'Consumables', 2);
+  pushItem('Sprigs Red 1/4"', 'Consumables', 1);
+
+  if (!additions.length) return null;
+
+  return {
+    id: generateAutoGearId('rule'),
+    label: 'Every 5 shooting days',
+    scenarios: [],
+    mattebox: [],
+    cameraHandle: [],
+    viewfinderExtension: [],
+    deliveryResolution: [],
+    videoDistribution: [],
+    camera: [],
+    monitor: [],
+    crewPresent: [],
+    crewAbsent: [],
+    wireless: [],
+    motors: [],
+    controllers: [],
+    distance: [],
+    shootingDays: { mode: 'every', value: 5 },
+    add: additions,
+    remove: [],
+  };
+}
+
 function ensureDefaultMatteboxAutoGearRules() {
   const defaults = buildDefaultMatteboxAutoGearRules();
   if (!defaults.length) return false;
@@ -3307,6 +3361,11 @@ function buildAutoGearRulesFromBaseInfo(baseInfo, scenarioValues) {
   const alwaysRule = buildAlwaysAutoGearRule();
   if (alwaysRule) {
     rules.push(alwaysRule);
+  }
+
+  const fiveDayRule = buildFiveDayConsumablesAutoGearRule();
+  if (fiveDayRule) {
+    rules.push(fiveDayRule);
   }
 
   buildDefaultMatteboxAutoGearRules().forEach(rule => rules.push(rule));

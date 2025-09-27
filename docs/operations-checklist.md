@@ -46,7 +46,10 @@ update the repository or hand off a project at the end of the day.
    **Quick safeguards** to capture a fresh full backup if anything looks stale.
 7. **Check draft impact preview.** Open the automatic gear rule editor, review
    the draft impact preview for quantity deltas and warnings, then cancel to
-   confirm the live generator stays unchanged.
+   confirm the live generator stays unchanged. Adjust the shooting-day counter
+   long enough to verify the factory “every five shooting days” consumables rule
+   multiplies Bluestar eye leathers, Pro Gaff rolls, clapper sticks, Kimtech
+   wipes and Sprigs to cover longer schedules automatically.
 8. **Log the drill.** Append a verification note (timestamp, machine, operator
    and files inspected) to your archival log or create one beside the exports
    if it does not exist yet. Pair the note with checksum manifests so every
