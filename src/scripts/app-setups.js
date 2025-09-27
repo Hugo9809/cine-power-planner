@@ -156,7 +156,7 @@ generateOverviewBtn.addEventListener('click', () => {
         alert(texts[currentLang].alertSelectSetupForOverview);
         return;
     }
-    generatePrintableOverview();
+    generatePrintableOverview({ autoPrint: true });
 });
 
 function batteryPinsSufficient() {

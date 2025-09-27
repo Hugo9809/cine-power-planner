@@ -1275,7 +1275,7 @@ const texts = {
     saveSetupHelp:
       "Store the devices and battery you have selected so the project can be recalled later. Press Enter or Ctrl+S (Cmd+S on Mac) to save quickly; the Save button stays disabled until a name is entered.",
     generateOverviewHelp:
-      "Generate a print-ready summary of any saved project, including power and connection details.",
+      "Rebuilds the print-ready summary for the selected saved project and automatically opens the print dialog with power and connection details.",
     generateGearListHelp:
       "Build a categorized table that combines selected gear with project requirements. The list refreshes on every change, merges duplicate items with counts and auto-adds required cables, rigging, lens supports, matte box parts, battery counts with hotswap hardware, default monitors for each role and scenario-specific accessories. Entries are sorted alphabetically and include hover descriptions.",
     shareSetupHelp:
@@ -2573,7 +2573,7 @@ const texts = {
     deleteSetupHelp: "Elimina la configurazione salvata selezionata.",
     saveSetupHelp: "Salva la configurazione corrente. Premi Invio o Ctrl+S (Cmd+S su Mac) per salvare rapidamente; il pulsante Salva rimane disabilitato finché non viene inserito un nome.",
     generateOverviewHelp:
-      "Crea un riepilogo stampabile delle configurazioni salvate.",
+      "Ricostruisce il riepilogo pronto per la stampa del progetto salvato selezionato e apre automaticamente la finestra di stampa.",
     generateGearListHelp:
       "Genera una tabella categorizzata che combina l'attrezzatura selezionata con i requisiti del progetto. L'elenco si aggiorna a ogni modifica, unisce i duplicati con un conteggio e aggiunge automaticamente cavi, rigging, supporti lente, componenti matte box, conteggi batteria con hotswap, monitor predefiniti per ogni ruolo e accessori specifici per gli scenari. Gli elementi sono ordinati alfabeticamente e includono descrizioni al passaggio del mouse.",
     shareSetupHelp:
@@ -3881,7 +3881,7 @@ const texts = {
     deleteSetupHelp: "Elimina la configuración guardada seleccionada.",
     saveSetupHelp: "Guarda la configuración actual. Pulsa Intro o Ctrl+S (Cmd+S en Mac) para guardar rápidamente; el botón Guardar permanece desactivado hasta que se introduce un nombre.",
     generateOverviewHelp:
-      "Crea un resumen imprimible de las configuraciones guardadas.",
+      "Reconstruye el resumen listo para imprimir del proyecto guardado seleccionado y abre automáticamente el cuadro de diálogo de impresión.",
     generateGearListHelp:
       "Genera una tabla categorizada que combina el equipo seleccionado con los requisitos del proyecto. La lista se actualiza con cada cambio, fusiona duplicados con sus cantidades y añade automáticamente cables, rigging, soportes de lente, piezas de matte box, recuentos de baterías con hotswap, monitores predeterminados para cada rol y accesorios específicos de los escenarios. Los elementos se ordenan alfabéticamente e incluyen descripciones al pasar el cursor.",
     shareSetupHelp:
@@ -5199,7 +5199,7 @@ const texts = {
     deleteSetupHelp: "Supprime la configuration enregistrée sélectionnée.",
     saveSetupHelp: "Enregistre la configuration actuelle. Appuyez sur Entrée ou Ctrl+S (Cmd+S sur Mac) pour enregistrer rapidement ; le bouton Enregistrer reste désactivé tant qu'aucun nom n'est saisi.",
     generateOverviewHelp:
-      "Crée un aperçu imprimable des configurations enregistrées.",
+      "Reconstruit le résumé prêt à l'impression du projet enregistré sélectionné et ouvre automatiquement la boîte de dialogue d'impression.",
     generateGearListHelp:
       "Génère un tableau catégorisé combinant le matériel sélectionné et les exigences du projet. La liste se met à jour à chaque changement, fusionne les doublons avec leur quantité et ajoute automatiquement câbles, rigging, supports d'objectif, éléments de matte box, nombre de batteries avec matériel de hotswap, moniteurs par rôle et accessoires spécifiques aux scénarios. Chaque entrée est triée alphabétiquement et offre une description au survol.",
     shareSetupHelp:
@@ -6522,7 +6522,7 @@ const texts = {
     deleteSetupHelp: "Löscht das ausgewählte gespeicherte Projekt.",
     saveSetupHelp: "Speichert das aktuelle Projekt. Drücke Eingabe oder Strg+S (Cmd+S auf dem Mac), um schnell zu speichern; der Speichern-Button bleibt deaktiviert, bis ein Name eingegeben ist.",
     generateOverviewHelp:
-      "Erstellt eine druckbare Übersicht eines gespeicherten Projekts.",
+      "Erstellt die druckfertige Übersicht für das ausgewählte gespeicherte Projekt neu und öffnet automatisch den Druckdialog.",
     generateGearListHelp:
       "Erstellt eine kategorisierte Tabelle aus ausgewähltem Equipment und Projektanforderungen. Die Liste aktualisiert sich bei jeder Änderung, fasst doppelte Einträge mit Anzahl zusammen und ergänzt automatisch benötigte Kabel, Rigging, Linsensupports, Matte-Box-Bauteile, Batteriezahlen mit Hotswap-Hardware, Standardmonitore pro Rolle sowie szenariospezifisches Zubehör. Alle Posten sind alphabetisch sortiert und zeigen beim Überfahren eine Beschreibung.",
     shareSetupHelp:
