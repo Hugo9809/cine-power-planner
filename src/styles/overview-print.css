@@ -435,17 +435,24 @@ table, th, td {
   box-shadow: var(--panel-shadow);
 }
 
+#overviewDialogContent .project-requirements-section h3 {
+  page-break-after: avoid;
+  break-after: avoid-page;
+}
+
 #overviewDialogContent .requirements-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.35cm;
+  gap: 0.3cm;
   align-items: stretch;
+  page-break-before: avoid;
+  break-before: avoid-page;
   page-break-inside: avoid;
   break-inside: avoid;
 }
 
 #overviewDialogContent .requirements-grid .requirement-box {
-  padding: 0.65em 0.85em;
+  padding: 0.55em 0.75em;
   font-size: var(--font-size-base);
   border-radius: 0.6em;
   display: flex;
@@ -462,9 +469,11 @@ table, th, td {
 #overviewDialogContent .requirements-grid .requirement-box,
 #overviewDialogContent.dark-mode .requirements-grid .requirement-box,
 body.dark-mode #overviewDialogContent .requirements-grid .requirement-box {
-  background: var(--overview-requirements-print-bg, #f0f1f4) !important;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+  background: var(--overview-requirements-print-bg, #e2e3e7) !important;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
 }
 
 #overviewDialogContent .requirement-box,
@@ -475,11 +484,11 @@ body.dark-mode #overviewDialogContent .requirement-box {
 }
 
 #overviewDialogContent .requirements-grid .requirement-box .req-icon {
-  --req-icon-size: 1.45rem;
-  padding: 0.25em;
-  border-radius: 0.55em;
+  --req-icon-size: 1.15rem;
+  padding: 0.2em;
+  border-radius: 0.5em;
   background: var(--panel-bg);
-  margin-bottom: 0.2em;
+  margin-bottom: 0.15em;
 }
 
 #overviewDialogContent .requirements-grid .requirement-box .req-label {
