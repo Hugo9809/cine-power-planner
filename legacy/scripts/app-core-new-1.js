@@ -2765,6 +2765,58 @@ function buildAlwaysAutoGearRule() {
     remove: []
   };
 }
+
+function buildFiveDayConsumablesAutoGearRule() {
+  var createItem = function createItem(name, category) {
+    var quantity = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1;
+    var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+    if (!name || !category || quantity <= 0) return null;
+    return {
+      id: generateAutoGearId('item'),
+      name: name,
+      category: category,
+      quantity: quantity,
+      screenSize: typeof options.screenSize === 'string' ? options.screenSize : '',
+      selectorType: typeof options.selectorType === 'string' ? options.selectorType : 'none',
+      selectorDefault: typeof options.selectorDefault === 'string' ? options.selectorDefault : '',
+      selectorEnabled: options.selectorEnabled === true,
+      notes: typeof options.notes === 'string' ? options.notes : ''
+    };
+  };
+  var additions = [];
+  var pushItem = function pushItem(name, category, quantity, options) {
+    var item = createItem(name, category, quantity, options);
+    if (item) additions.push(item);
+  };
+  pushItem('Bluestar eye leather made of microfiber oval, large', 'Consumables', 4);
+  pushItem('Pro Gaff Tape', 'Consumables', 2, { notes: 'Primary color roll' });
+  pushItem('Pro Gaff Tape', 'Consumables', 2, { notes: 'Secondary color roll' });
+  pushItem('Clapper Stick', 'Rigging', 4);
+  pushItem('Kimtech Wipes', 'Consumables', 2);
+  pushItem('Sprigs Red 1/4"', 'Consumables', 1);
+  if (!additions.length) return null;
+  return {
+    id: generateAutoGearId('rule'),
+    label: 'Every 5 shooting days',
+    scenarios: [],
+    mattebox: [],
+    cameraHandle: [],
+    viewfinderExtension: [],
+    deliveryResolution: [],
+    videoDistribution: [],
+    camera: [],
+    monitor: [],
+    crewPresent: [],
+    crewAbsent: [],
+    wireless: [],
+    motors: [],
+    controllers: [],
+    distance: [],
+    shootingDays: { mode: 'every', value: 5 },
+    add: additions,
+    remove: []
+  };
+}
 function ensureDefaultMatteboxAutoGearRules() {
   var defaults = buildDefaultMatteboxAutoGearRules();
   if (!defaults.length) return false;
@@ -2985,6 +3037,10 @@ function buildAutoGearRulesFromBaseInfo(baseInfo, scenarioValues) {
   var alwaysRule = buildAlwaysAutoGearRule();
   if (alwaysRule) {
     rules.push(alwaysRule);
+  }
+  var fiveDayRule = buildFiveDayConsumablesAutoGearRule();
+  if (fiveDayRule) {
+    rules.push(fiveDayRule);
   }
   buildDefaultMatteboxAutoGearRules().forEach(function (rule) {
     return rules.push(rule);
