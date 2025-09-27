@@ -753,6 +753,7 @@
     "updateAutoGearBackupRestoreButtonState",
     "updateAutoGearCatalogOptions",
     "updateAutoGearCameraWeightDraft",
+    "updateAutoGearShootingDaysDraft",
     "updateAutoGearMonitorCatalogOptions",
     "updateBatteryOptions",
     "updateBatteryPlateVisibility",

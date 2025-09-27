@@ -12583,6 +12583,23 @@ function initializeAutoGearConditionsFromDraft() {
 refreshAutoGearConditionPicker();
 updateAutoGearConditionAddButtonState();
 configureAutoGearConditionButtons();
+if (autoGearShootingDaysMode) {
+  const handleShootingDaysModeChange = () => {
+    updateAutoGearShootingDaysDraft();
+    callCoreFunctionIfAvailable('renderAutoGearDraftImpact', [], { defer: true });
+  };
+  autoGearShootingDaysMode.addEventListener('input', handleShootingDaysModeChange);
+  autoGearShootingDaysMode.addEventListener('change', handleShootingDaysModeChange);
+}
+if (autoGearShootingDaysInput) {
+  const handleShootingDaysValueInput = () => {
+    updateAutoGearShootingDaysDraft();
+    callCoreFunctionIfAvailable('renderAutoGearDraftImpact', [], { defer: true });
+  };
+  autoGearShootingDaysInput.addEventListener('input', handleShootingDaysValueInput);
+  autoGearShootingDaysInput.addEventListener('change', handleShootingDaysValueInput);
+  autoGearShootingDaysInput.addEventListener('blur', handleShootingDaysValueInput);
+}
 if (autoGearCameraWeightOperator) {
   const handleCameraWeightOperatorChange = () => {
     updateAutoGearCameraWeightDraft();
