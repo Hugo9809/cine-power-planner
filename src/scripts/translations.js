@@ -640,8 +640,30 @@ const texts = {
     storageSummaryIntro:
       "Everything below stays in this browser unless you export or clear it.",
     storageSummaryFootnote:
-      "Backups download human-readable JSON with each entry.",
+      "Backups download human-readable JSON with each entry—Quick safeguards keep fresh copies one click away.",
     storageSummaryEmpty: "No planner data is currently stored.",
+    storageActionsHeading: "Quick safeguards",
+    storageActionsHeadingHelp:
+      "Download full backups or jump straight to restore tools from here.",
+    storageActionsIntro:
+      "Capture a fresh full backup or open restore utilities without leaving this tab.",
+    storageBackupNow: "Download full backup",
+    storageBackupNowHelp:
+      "Exports the entire planner snapshot, including projects, auto backups and preferences.",
+    storageOpenBackupTab: "Open Backup & Restore",
+    storageOpenBackupTabHelp:
+      "Switch to the Backup & Restore tab for rehearsal, restore and factory reset tools.",
+    storageStatusHeading: "Latest activity",
+    storageStatusHeadingHelp:
+      "Review the most recent saves and backups at a glance.",
+    storageStatusLastProjectLabel: "Latest project save",
+    storageStatusLastAutoBackupLabel: "Latest auto backup",
+    storageStatusLastFullBackupLabel: "Latest full app backup",
+    storageStatusNever: "Not captured yet.",
+    storageStatusStoredWithoutTimestamp: "Stored (timestamp not recorded).",
+    storageStatusTimestamp: "Captured {relative} ({absolute}).",
+    storageStatusTimestampAbsolute: "Captured {absolute}.",
+    storageStatusWithName: "{name} — {time}",
     storageKeyProjects: "Saved projects",
     storageKeyProjectsDesc: "Configurations saved from Manage Project.",
     storageProjectsCountOne: "%s project",
@@ -2318,8 +2340,30 @@ const texts = {
     storageSummaryIntro:
       "Tutto ciò che segue rimane in questo browser finché non lo esporti o lo elimini.",
     storageSummaryFootnote:
-      "I backup scaricano ogni voce in JSON leggibile.",
+      "I backup scaricano ogni voce in JSON leggibile—le Azioni rapide di sicurezza mantengono copie aggiornate sempre pronte.",
     storageSummaryEmpty: "Nessun dato dell’app è attualmente salvato.",
+    storageActionsHeading: "Azioni rapide di sicurezza",
+    storageActionsHeadingHelp:
+      "Scarica backup completi o apri subito gli strumenti di ripristino da qui.",
+    storageActionsIntro:
+      "Genera un backup completo o apri gli strumenti di ripristino senza lasciare questa scheda.",
+    storageBackupNow: "Scarica backup completo",
+    storageBackupNowHelp:
+      "Esporta l’istantanea completa del planner con progetti, backup automatici e preferenze.",
+    storageOpenBackupTab: "Apri Backup e Ripristino",
+    storageOpenBackupTabHelp:
+      "Passa alla scheda Backup e Ripristino per prove, ripristini e strumenti di reset.",
+    storageStatusHeading: "Attività recenti",
+    storageStatusHeadingHelp:
+      "Controlla a colpo d’occhio gli ultimi salvataggi e backup.",
+    storageStatusLastProjectLabel: "Ultimo salvataggio progetto",
+    storageStatusLastAutoBackupLabel: "Ultimo backup automatico",
+    storageStatusLastFullBackupLabel: "Ultimo backup completo dell’app",
+    storageStatusNever: "Nessuna cattura registrata.",
+    storageStatusStoredWithoutTimestamp: "Dati presenti (nessuna data registrata).",
+    storageStatusTimestamp: "Registrato {relative} ({absolute}).",
+    storageStatusTimestampAbsolute: "Registrato {absolute}.",
+    storageStatusWithName: "{name} — {time}",
     storageKeyProjects: "Progetti salvati",
     storageKeyProjectsDesc: "Configurazioni salvate da Gestione progetto.",
     storageProjectsCountOne: "%s progetto",
@@ -3573,8 +3617,30 @@ const texts = {
     storageSummaryIntro:
       "Todo lo siguiente permanece en este navegador hasta que lo exportes o lo elimines.",
     storageSummaryFootnote:
-      "Las copias de seguridad descargan cada elemento en JSON legible.",
+      "Las copias de seguridad descargan cada elemento en JSON legible—las Protecciones rápidas mantienen copias actualizadas al alcance de un clic.",
     storageSummaryEmpty: "No hay datos del planificador guardados actualmente.",
+    storageActionsHeading: "Protecciones rápidas",
+    storageActionsHeadingHelp:
+      "Descarga copias completas o abre de inmediato las herramientas de restauración desde aquí.",
+    storageActionsIntro:
+      "Genera un respaldo completo o abre las herramientas de restauración sin salir de esta pestaña.",
+    storageBackupNow: "Descargar respaldo completo",
+    storageBackupNowHelp:
+      "Exporta toda la instantánea del planificador, incluidos proyectos, respaldos automáticos y preferencias.",
+    storageOpenBackupTab: "Abrir Copia y Restauración",
+    storageOpenBackupTabHelp:
+      "Ir a la pestaña Copia y Restauración para ensayar, restaurar o usar el restablecimiento.",
+    storageStatusHeading: "Actividad reciente",
+    storageStatusHeadingHelp:
+      "Revisa de un vistazo los guardados y respaldos más recientes.",
+    storageStatusLastProjectLabel: "Último guardado de proyecto",
+    storageStatusLastAutoBackupLabel: "Último respaldo automático",
+    storageStatusLastFullBackupLabel: "Último respaldo completo de la app",
+    storageStatusNever: "Aún no se ha registrado.",
+    storageStatusStoredWithoutTimestamp: "Guardado (sin marca de tiempo).",
+    storageStatusTimestamp: "Registrado {relative} ({absolute}).",
+    storageStatusTimestampAbsolute: "Registrado {absolute}.",
+    storageStatusWithName: "{name} — {time}",
     storageKeyProjects: "Proyectos guardados",
     storageKeyProjectsDesc: "Configuraciones guardadas desde Gestionar proyecto.",
     storageProjectsCountOne: "%s proyecto",
@@ -4838,8 +4904,30 @@ const texts = {
     storageSummaryIntro:
       "Tout ce qui suit reste dans ce navigateur jusqu'à exportation ou suppression.",
     storageSummaryFootnote:
-      "Les sauvegardes téléchargent chaque élément en JSON lisible.",
+      "Les sauvegardes téléchargent chaque élément en JSON lisible—les Actions de sécurité rapides gardent des copies à jour prêtes à l’emploi.",
     storageSummaryEmpty: "Aucune donnée du planificateur n'est actuellement enregistrée.",
+    storageActionsHeading: "Actions de sécurité rapides",
+    storageActionsHeadingHelp:
+      "Téléchargez des sauvegardes complètes ou ouvrez immédiatement les outils de restauration depuis ici.",
+    storageActionsIntro:
+      "Créez une sauvegarde complète ou ouvrez les outils de restauration sans quitter cet onglet.",
+    storageBackupNow: "Télécharger la sauvegarde complète",
+    storageBackupNowHelp:
+      "Exporte l’instantané complet du planificateur, y compris projets, sauvegardes automatiques et préférences.",
+    storageOpenBackupTab: "Ouvrir Sauvegarde et Restauration",
+    storageOpenBackupTabHelp:
+      "Accédez à l’onglet Sauvegarde et Restauration pour répétitions, restaurations et outils de réinitialisation.",
+    storageStatusHeading: "Activité récente",
+    storageStatusHeadingHelp:
+      "Passez en revue en un coup d’œil les derniers enregistrements et sauvegardes.",
+    storageStatusLastProjectLabel: "Dernier enregistrement de projet",
+    storageStatusLastAutoBackupLabel: "Dernière sauvegarde automatique",
+    storageStatusLastFullBackupLabel: "Dernière sauvegarde complète de l’application",
+    storageStatusNever: "Pas encore enregistré.",
+    storageStatusStoredWithoutTimestamp: "Données présentes (horodatage non enregistré).",
+    storageStatusTimestamp: "Enregistré {relative} ({absolute}).",
+    storageStatusTimestampAbsolute: "Enregistré {absolute}.",
+    storageStatusWithName: "{name} — {time}",
     storageKeyProjects: "Projets enregistrés",
     storageKeyProjectsDesc: "Configurations enregistrées depuis Gestion du projet.",
     storageProjectsCountOne: "%s projet",
@@ -6108,8 +6196,30 @@ const texts = {
     storageSummaryIntro:
       "Alles unten bleibt in diesem Browser, bis du es exportierst oder löschst.",
     storageSummaryFootnote:
-      "Backups laden jede Position als gut lesbares JSON herunter.",
+      "Backups laden jede Position als gut lesbares JSON herunter—die schnellen Schutzmaßnahmen halten aktuelle Kopien jederzeit bereit.",
     storageSummaryEmpty: "Derzeit sind keine Planer-Daten gespeichert.",
+    storageActionsHeading: "Schnelle Schutzmaßnahmen",
+    storageActionsHeadingHelp:
+      "Lade vollständige Backups herunter oder öffne sofort die Wiederherstellungswerkzeuge.",
+    storageActionsIntro:
+      "Erstelle ein vollständiges Backup oder öffne die Wiederherstellungswerkzeuge, ohne diesen Tab zu verlassen.",
+    storageBackupNow: "Vollständiges Backup herunterladen",
+    storageBackupNowHelp:
+      "Exportiert den kompletten Planner-Snapshot einschließlich Projekte, Auto-Backups und Einstellungen.",
+    storageOpenBackupTab: "Backup & Wiederherstellung öffnen",
+    storageOpenBackupTabHelp:
+      "Wechsle zum Tab Backup & Wiederherstellung für Proben, Wiederherstellung und Zurücksetzen.",
+    storageStatusHeading: "Aktuelle Aktivität",
+    storageStatusHeadingHelp:
+      "Überblick über die letzten Speicherungen und Backups.",
+    storageStatusLastProjectLabel: "Letztes Projekt-Speichern",
+    storageStatusLastAutoBackupLabel: "Letztes Auto-Backup",
+    storageStatusLastFullBackupLabel: "Letztes vollständiges App-Backup",
+    storageStatusNever: "Noch nicht erfasst.",
+    storageStatusStoredWithoutTimestamp: "Gespeichert (ohne Zeitstempel).",
+    storageStatusTimestamp: "Erfasst {relative} ({absolute}).",
+    storageStatusTimestampAbsolute: "Erfasst {absolute}.",
+    storageStatusWithName: "{name} — {time}",
     storageKeyProjects: "Gespeicherte Projekte",
     storageKeyProjectsDesc: "Konfigurationen aus Projekt verwalten.",
     storageProjectsCountOne: "%s Projekt",

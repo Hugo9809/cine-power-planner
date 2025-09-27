@@ -2106,6 +2106,47 @@
         </p>
         <ul id="storageSummaryList" class="storage-summary" aria-live="polite"></ul>
         <p id="storageSummaryEmpty" class="storage-summary-note" hidden>No planner data stored yet.</p>
+        <section id="storageActions" class="storage-actions" aria-labelledby="storageActionsHeading">
+          <h4 id="storageActionsHeading">Quick safeguards</h4>
+          <p id="storageActionsIntro" class="storage-summary-note">
+            Capture a fresh full backup or open restore tools without leaving this tab.
+          </p>
+          <div class="button-row storage-actions-buttons">
+            <button
+              type="button"
+              id="storageBackupNow"
+              data-feature-search="true"
+              data-feature-search-keywords="backup download full data storage"
+            >
+              Download full backup
+            </button>
+            <button
+              type="button"
+              id="storageOpenBackupTab"
+              data-feature-search="true"
+              data-feature-search-keywords="open backup restore settings data storage"
+            >
+              Open Backup &amp; Restore
+            </button>
+          </div>
+        </section>
+        <section id="storageStatus" class="storage-status" aria-labelledby="storageStatusHeading">
+          <h4 id="storageStatusHeading">Latest activity</h4>
+          <dl class="storage-status-list">
+            <div class="storage-status-item">
+              <dt id="storageStatusLastProjectLabel">Latest project save</dt>
+              <dd id="storageStatusLastProjectValue">Not captured yet.</dd>
+            </div>
+            <div class="storage-status-item">
+              <dt id="storageStatusLastAutoBackupLabel">Latest auto backup</dt>
+              <dd id="storageStatusLastAutoBackupValue">Not captured yet.</dd>
+            </div>
+            <div class="storage-status-item">
+              <dt id="storageStatusLastFullBackupLabel">Latest full app backup</dt>
+              <dd id="storageStatusLastFullBackupValue">Not captured yet.</dd>
+            </div>
+          </dl>
+        </section>
         <p id="storageSummaryFootnote" class="storage-summary-note">
           Backups export each entry as human-readable JSON.
         </p>
@@ -3148,15 +3189,15 @@
                 edits, preferences, favorites and runtime logs so you can copy them to external storage for offline safekeeping.
               </li>
               <li>
-                <strong>Backup history ledger</strong> tracks every full-app download inside
+                <strong>Backup history ledger</strong> and the <em>Latest activity</em> board live inside
                 <a
                   class="help-link"
                   href="#dataHeading"
                   data-help-target="#dataHeading"
                   data-help-highlight="#settingsPanel-data"
                 >Settings → Data &amp; Storage</a>
-                . Export the log alongside your archives so audit trails show the same timestamps even when you rotate media
-                offline.
+                . Use the <em>Quick safeguards</em> buttons there to trigger a full backup without switching tabs, then export the
+                ledger alongside your archives so audit trails show the same timestamps even when you rotate media offline.
               </li>
               <li>
                 <strong>Restore safeguards</strong> always create a brand-new safety backup before applying the file you choose,

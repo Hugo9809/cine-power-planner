@@ -7426,6 +7426,80 @@ function setLanguage(lang) {
   if (storageSummaryEmpty) {
     storageSummaryEmpty.textContent = texts[lang].storageSummaryEmpty;
   }
+  if (storageActionsHeading) {
+    const headingText = texts[lang].storageActionsHeading
+      || texts.en?.storageActionsHeading
+      || storageActionsHeading.textContent;
+    storageActionsHeading.textContent = headingText;
+    const headingHelp = texts[lang].storageActionsHeadingHelp
+      || texts.en?.storageActionsHeadingHelp
+      || headingText;
+    storageActionsHeading.setAttribute('data-help', headingHelp);
+  }
+  if (storageActionsIntro) {
+    storageActionsIntro.textContent = texts[lang].storageActionsIntro
+      || texts.en?.storageActionsIntro
+      || storageActionsIntro.textContent;
+  }
+  if (storageBackupNowButton) {
+    const backupLabel = texts[lang].storageBackupNow
+      || texts.en?.storageBackupNow
+      || storageBackupNowButton.textContent;
+    setButtonLabelWithIcon(storageBackupNowButton, backupLabel, ICON_GLYPHS.fileExport);
+    const backupHelp = texts[lang].storageBackupNowHelp
+      || texts.en?.storageBackupNowHelp
+      || backupLabel;
+    storageBackupNowButton.setAttribute('data-help', backupHelp);
+    storageBackupNowButton.setAttribute('title', backupHelp);
+  }
+  if (storageOpenBackupTabButton) {
+    const openLabel = texts[lang].storageOpenBackupTab
+      || texts.en?.storageOpenBackupTab
+      || storageOpenBackupTabButton.textContent;
+    setButtonLabelWithIcon(storageOpenBackupTabButton, openLabel, ICON_GLYPHS.settingsBackup);
+    const openHelp = texts[lang].storageOpenBackupTabHelp
+      || texts.en?.storageOpenBackupTabHelp
+      || openLabel;
+    storageOpenBackupTabButton.setAttribute('data-help', openHelp);
+    storageOpenBackupTabButton.setAttribute('title', openHelp);
+  }
+  if (storageStatusHeading) {
+    const statusHeading = texts[lang].storageStatusHeading
+      || texts.en?.storageStatusHeading
+      || storageStatusHeading.textContent;
+    storageStatusHeading.textContent = statusHeading;
+    const statusHelp = texts[lang].storageStatusHeadingHelp
+      || texts.en?.storageStatusHeadingHelp
+      || statusHeading;
+    storageStatusHeading.setAttribute('data-help', statusHelp);
+  }
+  if (storageStatusLastProjectLabel) {
+    storageStatusLastProjectLabel.textContent = texts[lang].storageStatusLastProjectLabel
+      || texts.en?.storageStatusLastProjectLabel
+      || storageStatusLastProjectLabel.textContent;
+  }
+  if (storageStatusLastAutoBackupLabel) {
+    storageStatusLastAutoBackupLabel.textContent = texts[lang].storageStatusLastAutoBackupLabel
+      || texts.en?.storageStatusLastAutoBackupLabel
+      || storageStatusLastAutoBackupLabel.textContent;
+  }
+  if (storageStatusLastFullBackupLabel) {
+    storageStatusLastFullBackupLabel.textContent = texts[lang].storageStatusLastFullBackupLabel
+      || texts.en?.storageStatusLastFullBackupLabel
+      || storageStatusLastFullBackupLabel.textContent;
+  }
+  const statusDefaultText = texts[lang].storageStatusNever
+    || texts.en?.storageStatusNever
+    || (storageStatusLastProjectValue ? storageStatusLastProjectValue.textContent : '');
+  if (storageStatusLastProjectValue) {
+    storageStatusLastProjectValue.textContent = statusDefaultText;
+  }
+  if (storageStatusLastAutoBackupValue) {
+    storageStatusLastAutoBackupValue.textContent = statusDefaultText;
+  }
+  if (storageStatusLastFullBackupValue) {
+    storageStatusLastFullBackupValue.textContent = statusDefaultText;
+  }
   const showAutoBackupsLabel = document.getElementById("settingsShowAutoBackupsLabel");
   if (showAutoBackupsLabel) {
     showAutoBackupsLabel.textContent = texts[lang].showAutoBackupsSetting;
@@ -12105,6 +12179,20 @@ if (settingsTabButtons.length) {
   });
 }
 
+if (storageOpenBackupTabButton) {
+  storageOpenBackupTabButton.addEventListener('click', () => {
+    activateSettingsTab('settingsTab-backup', { focusTab: true });
+    const backupButton = document.getElementById('backupSettings');
+    if (backupButton && typeof backupButton.focus === 'function') {
+      try {
+        backupButton.focus({ preventScroll: true });
+      } catch {
+        backupButton.focus();
+      }
+    }
+  });
+}
+
 const autoGearConditionConfigs = AUTO_GEAR_CONDITION_KEYS.reduce((acc, key) => {
   const section = autoGearConditionSections[key] || null;
   acc[key] = {
@@ -12764,6 +12852,17 @@ const storageSummaryIntro = document.getElementById("storageSummaryIntro");
 const storageSummaryList = document.getElementById("storageSummaryList");
 const storageSummaryEmpty = document.getElementById("storageSummaryEmpty");
 const storageSummaryFootnote = document.getElementById("storageSummaryFootnote");
+var storageActionsHeading = document.getElementById('storageActionsHeading');
+var storageActionsIntro = document.getElementById('storageActionsIntro');
+var storageBackupNowButton = document.getElementById('storageBackupNow');
+var storageOpenBackupTabButton = document.getElementById('storageOpenBackupTab');
+var storageStatusHeading = document.getElementById('storageStatusHeading');
+var storageStatusLastProjectLabel = document.getElementById('storageStatusLastProjectLabel');
+var storageStatusLastProjectValue = document.getElementById('storageStatusLastProjectValue');
+var storageStatusLastAutoBackupLabel = document.getElementById('storageStatusLastAutoBackupLabel');
+var storageStatusLastAutoBackupValue = document.getElementById('storageStatusLastAutoBackupValue');
+var storageStatusLastFullBackupLabel = document.getElementById('storageStatusLastFullBackupLabel');
+var storageStatusLastFullBackupValue = document.getElementById('storageStatusLastFullBackupValue');
 
 if (autoGearBackupRetentionInput) {
   const queueAutoGearRetentionHandler = handlerName => {

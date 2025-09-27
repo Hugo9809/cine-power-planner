@@ -6307,6 +6307,12 @@ function createSettingsBackup(notify = true, timestamp = new Date()) {
 if (backupSettings) {
   backupSettings.addEventListener('click', createSettingsBackup);
 }
+const storageBackupNowControl = typeof document !== 'undefined'
+  ? document.getElementById('storageBackupNow')
+  : null;
+if (storageBackupNowControl) {
+  storageBackupNowControl.addEventListener('click', createSettingsBackup);
+}
 
 if (backupDiffToggleButtonEl) {
   backupDiffToggleButtonEl.addEventListener('click', handleBackupDiffToggle);

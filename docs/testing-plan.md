@@ -56,8 +56,10 @@ you prepare a release candidate or validate a workstation:
    **Settings → Backup & Restore** and ensure the autosave status overlay mirrors
    the same timestamp before continuing.
 3. **Inspect data inventory.** Visit **Settings → Data & Storage** to confirm
-   project, backup, gear list and custom device counts match expectations. This
-   step catches storage issues before they risk user data.
+   project, backup, gear list and custom device counts match expectations, scan
+   the **Latest activity** summary to ensure recent saves appear, and trigger a
+   **Quick safeguards** backup if you need an additional offline copy. This step
+   catches storage issues before they risk user data.
 4. **Exercise backups and bundles.** Export a planner backup and a
    `project-name.json` bundle, import both into an offline private profile and
    review gear lists, automatic gear rules, runtime dashboards and favorites for

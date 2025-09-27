@@ -5560,6 +5560,331 @@ function formatDeviceCategories(lang, categories) {
   return formatListForLang(resolved, items);
 }
 
+const STORAGE_SUMMARY_AUTO_BACKUP_PREFIX = 'auto-backup-';
+const STORAGE_SUMMARY_AUTO_BACKUP_DELETION_PREFIX = 'auto-backup-before-delete-';
+const STORAGE_TIMESTAMP_KEYS = new Set([
+  'timestamp',
+  'createdat',
+  'created_at',
+  'savedat',
+  'saved_at',
+  'updatedat',
+  'updated_at',
+  'generatedat',
+  'generated_at',
+  'generatedon',
+  'generated_on',
+  'exportedat',
+  'exported_at',
+  'modifiedat',
+  'modified_at',
+  'iso',
+]);
+const ISO_TIMESTAMP_PATTERN = /^(\d{4})-(\d{2})-(\d{2})(?:[T\s](\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{1,3}))?)?)?(?:Z|[+-]\d{2}:\d{2})?$/;
+
+function isAutomaticBackupName(name) {
+  if (typeof name !== 'string') return false;
+  return (
+    name.startsWith(STORAGE_SUMMARY_AUTO_BACKUP_PREFIX)
+    || name.startsWith(STORAGE_SUMMARY_AUTO_BACKUP_DELETION_PREFIX)
+  );
+}
+
+function parseAutoBackupTimestamp(name) {
+  if (typeof name !== 'string') return null;
+  let remainder = '';
+  if (name.startsWith(STORAGE_SUMMARY_AUTO_BACKUP_PREFIX)) {
+    remainder = name.slice(STORAGE_SUMMARY_AUTO_BACKUP_PREFIX.length);
+  } else if (name.startsWith(STORAGE_SUMMARY_AUTO_BACKUP_DELETION_PREFIX)) {
+    remainder = name.slice(STORAGE_SUMMARY_AUTO_BACKUP_DELETION_PREFIX.length);
+  } else {
+    return null;
+  }
+  const parts = remainder.split('-');
+  if (parts.length < 6) {
+    return null;
+  }
+  const values = parts.slice(0, 6).map(part => parseInt(part, 10));
+  if (values.some(value => Number.isNaN(value))) {
+    return null;
+  }
+  const [year, month, day, hour, minute, second] = values;
+  const date = new Date(year, month - 1, day, hour, minute, second);
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
+  return date;
+}
+
+function extractTimestampFromValue(value) {
+  if (!value) return null;
+  const visited = new Set();
+  const queue = [value];
+  let latest = null;
+
+  const considerDate = (candidate) => {
+    if (!(candidate instanceof Date)) return;
+    if (Number.isNaN(candidate.getTime())) return;
+    if (!latest || candidate > latest) {
+      latest = candidate;
+    }
+  };
+
+  while (queue.length) {
+    const current = queue.shift();
+    if (current === null || current === undefined) {
+      continue;
+    }
+    if (typeof current === 'string') {
+      const trimmed = current.trim();
+      if (!trimmed) {
+        continue;
+      }
+      if (ISO_TIMESTAMP_PATTERN.test(trimmed)) {
+        considerDate(new Date(trimmed));
+      }
+      continue;
+    }
+    if (typeof current !== 'object') {
+      continue;
+    }
+    if (visited.has(current)) {
+      continue;
+    }
+    visited.add(current);
+    if (Array.isArray(current)) {
+      current.forEach((item) => {
+        if (item && typeof item === 'object') {
+          queue.push(item);
+        } else if (typeof item === 'string') {
+          queue.push(item);
+        }
+      });
+      continue;
+    }
+    Object.entries(current).forEach(([key, val]) => {
+      const normalizedKey = typeof key === 'string' ? key.toLowerCase() : '';
+      if (typeof val === 'string') {
+        const trimmed = val.trim();
+        if (!trimmed) {
+          return;
+        }
+        if (STORAGE_TIMESTAMP_KEYS.has(normalizedKey) || ISO_TIMESTAMP_PATTERN.test(trimmed)) {
+          considerDate(new Date(trimmed));
+        }
+        return;
+      }
+      if (val && typeof val === 'object') {
+        queue.push(val);
+      }
+    });
+  }
+
+  return latest;
+}
+
+function extractLatestManualSetupInfo(setups) {
+  const result = { hasAny: false, date: null, name: '' };
+  if (!isPlainObjectValue(setups)) {
+    return result;
+  }
+  Object.entries(setups).forEach(([name, entry]) => {
+    if (!name || typeof name !== 'string') {
+      return;
+    }
+    if (isAutomaticBackupName(name)) {
+      return;
+    }
+    result.hasAny = true;
+    const timestamp = extractTimestampFromValue(entry);
+    if (timestamp && (!result.date || timestamp > result.date)) {
+      result.date = timestamp;
+      result.name = name;
+    }
+  });
+  return result;
+}
+
+function extractLatestAutoBackupInfo(names) {
+  const result = { hasAny: Array.isArray(names) && names.length > 0, date: null, name: '' };
+  if (!Array.isArray(names)) {
+    return result;
+  }
+  names.forEach((name) => {
+    const timestamp = parseAutoBackupTimestamp(name);
+    if (timestamp && (!result.date || timestamp > result.date)) {
+      result.date = timestamp;
+      result.name = name;
+    }
+  });
+  return result;
+}
+
+function extractLatestFullBackupInfo(entries) {
+  const result = { hasAny: Array.isArray(entries) && entries.length > 0, date: null, name: '' };
+  if (!Array.isArray(entries)) {
+    return result;
+  }
+  entries.forEach((entry) => {
+    if (!entry) {
+      return;
+    }
+    if (typeof entry === 'string') {
+      const trimmed = entry.trim();
+      if (!trimmed) {
+        return;
+      }
+      const timestamp = new Date(trimmed);
+      if (Number.isNaN(timestamp.getTime())) {
+        return;
+      }
+      if (!result.date || timestamp > result.date) {
+        result.date = timestamp;
+        result.name = trimmed;
+      }
+      return;
+    }
+    if (typeof entry === 'object') {
+      const timestamp = extractTimestampFromValue(entry);
+      if (!timestamp) {
+        return;
+      }
+      if (!result.date || timestamp > result.date) {
+        result.date = timestamp;
+        if (typeof entry.fileName === 'string' && entry.fileName.trim()) {
+          result.name = entry.fileName.trim();
+        } else if (typeof entry.name === 'string' && entry.name.trim()) {
+          result.name = entry.name.trim();
+        } else if (typeof entry.createdAt === 'string' && entry.createdAt.trim()) {
+          result.name = entry.createdAt.trim();
+        } else if (typeof entry.iso === 'string' && entry.iso.trim()) {
+          result.name = entry.iso.trim();
+        } else if (typeof entry.timestamp === 'string' && entry.timestamp.trim()) {
+          result.name = entry.timestamp.trim();
+        } else {
+          result.name = '';
+        }
+      }
+    }
+  });
+  return result;
+}
+
+function formatAbsoluteTimestamp(date, lang) {
+  if (!(date instanceof Date) || Number.isNaN(date.getTime())) {
+    return '';
+  }
+  const resolved = resolveLanguageCode(lang || currentLang);
+  if (typeof Intl !== 'undefined' && typeof Intl.DateTimeFormat === 'function') {
+    try {
+      return new Intl.DateTimeFormat(resolved, { dateStyle: 'medium', timeStyle: 'short' }).format(date);
+    } catch (error) {
+      console.warn('Failed to format absolute timestamp', error);
+    }
+  }
+  return date.toISOString().replace('T', ' ').replace(/Z$/, ' UTC');
+}
+
+function formatRelativeTimestamp(date, lang) {
+  if (!(date instanceof Date) || Number.isNaN(date.getTime())) {
+    return '';
+  }
+  if (typeof Intl === 'undefined' || typeof Intl.RelativeTimeFormat !== 'function') {
+    return '';
+  }
+  const resolved = resolveLanguageCode(lang || currentLang);
+  const diffMs = date.getTime() - Date.now();
+  const absDiff = Math.abs(diffMs);
+  let unit = 'minute';
+  let divisor = 60000;
+  if (absDiff >= 86400000) {
+    unit = 'day';
+    divisor = 86400000;
+  } else if (absDiff >= 3600000) {
+    unit = 'hour';
+    divisor = 3600000;
+  } else if (absDiff < 60000) {
+    unit = 'second';
+    divisor = 1000;
+  }
+  const formatter = new Intl.RelativeTimeFormat(resolved, { numeric: 'auto' });
+  const value = Math.round(diffMs / divisor);
+  try {
+    return formatter.format(value, unit);
+  } catch (error) {
+    console.warn('Failed to format relative timestamp', error);
+    return '';
+  }
+}
+
+function formatStatusTimestamp(date, lang, langTexts) {
+  if (!(date instanceof Date) || Number.isNaN(date.getTime())) {
+    return '';
+  }
+  const absolute = formatAbsoluteTimestamp(date, lang);
+  const relative = formatRelativeTimestamp(date, lang);
+  if (relative) {
+    const template = langTexts.storageStatusTimestamp
+      || texts.en?.storageStatusTimestamp
+      || '{relative} ({absolute})';
+    return template.replace('{relative}', relative).replace('{absolute}', absolute);
+  }
+  const fallbackTemplate = langTexts.storageStatusTimestampAbsolute
+    || texts.en?.storageStatusTimestampAbsolute
+    || '{absolute}';
+  return fallbackTemplate.replace('{absolute}', absolute);
+}
+
+function applyStorageStatus(element, info, lang, langTexts, hasAny) {
+  if (!element) return;
+  if (info && info.date instanceof Date && !Number.isNaN(info.date.getTime())) {
+    const timeText = formatStatusTimestamp(info.date, lang, langTexts);
+    const display = info.name
+      ? (langTexts.storageStatusWithName || texts.en?.storageStatusWithName || '{name} — {time}')
+          .replace('{name}', info.name)
+          .replace('{time}', timeText)
+      : timeText;
+    element.textContent = display;
+    if (display) {
+      element.setAttribute('data-help', display);
+    } else {
+      element.removeAttribute('data-help');
+    }
+    const absolute = formatAbsoluteTimestamp(info.date, lang);
+    if (absolute) {
+      element.setAttribute('title', absolute);
+    } else {
+      element.removeAttribute('title');
+    }
+    return;
+  }
+  if (hasAny) {
+    const fallback = langTexts.storageStatusStoredWithoutTimestamp
+      || texts.en?.storageStatusStoredWithoutTimestamp
+      || langTexts.storageStatusNever
+      || texts.en?.storageStatusNever
+      || '';
+    element.textContent = fallback;
+    if (fallback) {
+      element.setAttribute('data-help', fallback);
+    } else {
+      element.removeAttribute('data-help');
+    }
+    element.removeAttribute('title');
+    return;
+  }
+  const emptyText = langTexts.storageStatusNever
+    || texts.en?.storageStatusNever
+    || '';
+  element.textContent = emptyText;
+  if (emptyText) {
+    element.setAttribute('data-help', emptyText);
+  } else {
+    element.removeAttribute('data-help');
+  }
+  element.removeAttribute('title');
+}
+
 function createSummaryItemElement(item) {
   const li = document.createElement('li');
   li.className = 'storage-summary-item';
@@ -5612,7 +5937,9 @@ function updateStorageSummary() {
   const setups = isPlainObjectValue(data.setups) ? data.setups : {};
   const projectNames = Object.keys(setups);
   const totalProjects = projectNames.length;
-  const autoBackups = projectNames.filter((name) => typeof name === 'string' && name.startsWith('auto-backup-')).length;
+  const autoBackupNames = projectNames.filter((name) => isAutomaticBackupName(name));
+  const autoBackups = autoBackupNames.length;
+  const manualProjectNames = projectNames.filter((name) => typeof name === 'string' && !isAutomaticBackupName(name));
   const gearListCount = computeGearListCount(data.project, setups);
   const favoritesCount = computeFavoritesCount(data.favorites);
   const feedbackCount = computeFeedbackCount(data.feedback);
@@ -5644,6 +5971,10 @@ function updateStorageSummary() {
     }
     return count;
   }, 0);
+
+  const manualInfo = extractLatestManualSetupInfo(setups);
+  const autoInfo = extractLatestAutoBackupInfo(autoBackupNames);
+  const fullBackupInfo = extractLatestFullBackupInfo(rawFullBackups);
 
   const items = [
     {
@@ -5710,6 +6041,28 @@ function updateStorageSummary() {
   items.forEach((item) => {
     storageSummaryList.appendChild(createSummaryItemElement(item));
   });
+
+  applyStorageStatus(
+    storageStatusLastProjectValue,
+    manualInfo,
+    lang,
+    langTexts,
+    manualProjectNames.length > 0,
+  );
+  applyStorageStatus(
+    storageStatusLastAutoBackupValue,
+    autoInfo,
+    lang,
+    langTexts,
+    autoBackupNames.length > 0,
+  );
+  applyStorageStatus(
+    storageStatusLastFullBackupValue,
+    fullBackupInfo,
+    lang,
+    langTexts,
+    fullBackupCount > 0,
+  );
 
   if (storageSummaryEmpty) {
     const hasData = Boolean(
