@@ -167,6 +167,69 @@ describe('project sharing helpers', () => {
     expect(resolveSharedImportMode([])).toBe('none');
   });
 
+  test('encodeSharedSetup maps known fields and preserves falsy values', () => {
+    env = setupScriptEnvironment();
+    const { encodeSharedSetup } = env.utils;
+
+    const encoded = encodeSharedSetup({
+      setupName: 'Studio Plan',
+      camera: 'alexalfa',
+      monitor: '',
+      batteryPlate: null,
+      gearList: undefined,
+      powerSelection: { manual: false },
+      autoGearCoverage: 0,
+    });
+
+    expect(encoded).toEqual({
+      s: 'Studio Plan',
+      c: 'alexalfa',
+      m: '',
+      w: { manual: false },
+      z: 0,
+    });
+    expect(encoded).not.toHaveProperty('p');
+    expect(encoded).not.toHaveProperty('l');
+  });
+
+  test('decodeSharedSetup expands compact payloads without mutating input', () => {
+    env = setupScriptEnvironment();
+    const { decodeSharedSetup } = env.utils;
+
+    const compact = {
+      s: 'Run and Gun',
+      c: 'fx6',
+      w: { manual: true },
+      f: [],
+    };
+
+    const decoded = decodeSharedSetup(compact);
+
+    expect(decoded).toEqual({
+      setupName: 'Run and Gun',
+      camera: 'fx6',
+      powerSelection: { manual: true },
+      feedback: [],
+    });
+    expect(compact).toEqual({
+      s: 'Run and Gun',
+      c: 'fx6',
+      w: { manual: true },
+      f: [],
+    });
+  });
+
+  test('decodeSharedSetup returns original object when already expanded', () => {
+    env = setupScriptEnvironment();
+    const { decodeSharedSetup } = env.utils;
+
+    const expanded = { setupName: 'Existing', camera: 'ursa', s: 'ignored' };
+    const result = decodeSharedSetup(expanded);
+
+    expect(result).toBe(expanded);
+    expect(result).toEqual({ setupName: 'Existing', camera: 'ursa', s: 'ignored' });
+  });
+
   test('downloadSharedProject falls back to a data URL when object URLs fail', () => {
     env = setupScriptEnvironment();
     const { downloadSharedProject } = env.utils;
