@@ -521,9 +521,24 @@ body:not(.light-mode) .gear-table .category-row {
 #overviewDialogContent .gear-table .gear-item[data-gear-name^="ND Grad HE Filter Set"],
 #overviewDialogContent .gear-table .gear-item[data-gear-name^="ND Grad SE Filter Set"] {
   padding: 0.15em 0.45em;
-  border: 1px solid var(--nd-grad-border-color, var(--accent-color));
+  border: 1px solid var(--accent-color);
   border-radius: calc(var(--border-radius) * 0.75);
-  background-color: color-mix(in srgb, var(--panel-bg) 88%, transparent);
+  background-color: color-mix(in srgb, var(--accent-color) 18%, white 82%);
+  color: color-mix(in srgb, var(--accent-color) 72%, black 28%);
+}
+
+#overviewDialogContent .gear-table .gear-item[data-gear-name^="ND Grad HE Filter Set"] select,
+#overviewDialogContent .gear-table .gear-item[data-gear-name^="ND Grad SE Filter Set"] select {
+  background-color: color-mix(in srgb, var(--accent-color) 18%, white 82%);
+  border-color: color-mix(in srgb, var(--accent-color) 65%, black 35%);
+  color: inherit;
+  box-shadow: none;
+}
+
+#overviewDialogContent .gear-table .gear-item[data-gear-name^="ND Grad HE Filter Set"] select:focus-visible,
+#overviewDialogContent .gear-table .gear-item[data-gear-name^="ND Grad SE Filter Set"] select:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 0.05em;
 }
 
 #overviewDialogContent .gear-table .auto-gear-item,
