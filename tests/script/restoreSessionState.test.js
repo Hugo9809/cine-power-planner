@@ -223,6 +223,74 @@ describe('restoreSessionState', () => {
     env.cleanup();
   });
 
+  test('restores B-Mount battery selections from session state even without an explicit plate', () => {
+    const sessionState = {
+      setupName: 'B-Mount Setup',
+      setupSelect: 'B-Mount Setup',
+      camera: 'ARRI Alexa 35',
+      monitor: '',
+      video: '',
+      cage: '',
+      distance: '',
+      motors: [],
+      controllers: [],
+      batteryPlate: '',
+      battery: 'Bebob B155cine (B-Mount)',
+      batteryHotswap: 'SWIT KA-B30B B-mount to B-mount Hot-Swap Plate',
+      sliderBowl: '',
+      easyrig: '',
+      projectInfo: {}
+    };
+
+    const devices = {
+      cameras: {
+        'ARRI Alexa 35': {
+          power: {
+            batteryPlateSupport: [
+              { type: 'B-Mount', mount: 'native' },
+              { type: 'V-Mount', mount: 'adapted' }
+            ],
+            input: []
+          },
+          videoOutputs: [],
+          viewfinder: [],
+          recordingMedia: [],
+          lensMount: []
+        }
+      },
+      batteries: {
+        'Bebob B155cine (B-Mount)': { mount_type: 'B-Mount', pinA: 20 },
+        'Bebob V155cine (V-Mount)': { mount_type: 'V-Mount', pinA: 12 }
+      },
+      batteryHotswaps: {
+        'SWIT KA-B30B B-mount to B-mount Hot-Swap Plate': { mount_type: 'B-Mount', pinA: 7.14 }
+      }
+    };
+
+    const loadSessionStateMock = jest.fn(() => sessionState);
+
+    const env = setupScriptEnvironment({
+      readyState: 'complete',
+      devices,
+      globals: {
+        loadSessionState: loadSessionStateMock,
+        loadProject: jest.fn(() => null),
+        saveProject: jest.fn(),
+        saveSessionState: jest.fn(),
+        deleteProject: jest.fn()
+      }
+    });
+
+    const batterySelect = document.getElementById('batterySelect');
+    const batteryPlateSelect = document.getElementById('batteryPlateSelect');
+
+    expect(loadSessionStateMock).toHaveBeenCalled();
+    expect(batterySelect.value).toBe('Bebob B155cine (B-Mount)');
+    expect(batteryPlateSelect.value).toBe('B-Mount');
+
+    env.cleanup();
+  });
+
   test('restores partially completed crew entries to the project form', () => {
     const partialInfo = { people: [{ name: 'Jamie', phone: '555-1212' }] };
     const loadSessionStateMock = jest.fn(() => ({

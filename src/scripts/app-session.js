@@ -1979,7 +1979,16 @@ function resetSelectsToNone(selects) {
 
 function restoreSessionState() {
   restoringSession = true;
-  const state = loadSession();
+  const loadedState = loadSession();
+  const state = (loadedState && typeof loadedState === 'object') ? { ...loadedState } : null;
+  if (state) {
+    const savedBattery = typeof state.battery === 'string' ? state.battery : '';
+    const savedPlate = typeof state.batteryPlate === 'string' ? state.batteryPlate : '';
+    const derivedPlate = typeof normalizeBatteryPlateValue === 'function'
+      ? normalizeBatteryPlateValue(savedPlate, savedBattery)
+      : savedPlate;
+    state.batteryPlate = derivedPlate;
+  }
   storeLoadedSetupState(state || null);
   let sessionDiagramPositions = {};
   if (state && typeof state.diagramPositions === 'object' && typeof normalizeDiagramPositionsInput === 'function') {
