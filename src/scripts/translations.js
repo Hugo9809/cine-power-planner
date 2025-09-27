@@ -6569,4 +6569,72 @@ const categoryNames = {
   },
 };
 
+function ensureLanguageAlignment(
+  dataset,
+  { datasetName = 'dataset', referenceLang = 'en', expectedLanguages } = {}
+) {
+  const reference = dataset[referenceLang];
+  if (!reference || typeof reference !== 'object') {
+    throw new Error(
+      `${datasetName} translations are missing the reference language "${referenceLang}".`
+    );
+  }
+
+  const languages = expectedLanguages ? [...expectedLanguages] : Object.keys(dataset);
+  const languageSet = new Set(languages);
+  const referenceKeys = new Set(Object.keys(reference));
+
+  languages.forEach(lang => {
+    if (
+      !Object.prototype.hasOwnProperty.call(dataset, lang) ||
+      typeof dataset[lang] !== 'object' ||
+      dataset[lang] === null
+    ) {
+      dataset[lang] = {};
+    }
+  });
+
+  languages.forEach(lang => {
+    if (lang === referenceLang) {
+      return;
+    }
+
+    const translations = dataset[lang];
+
+    referenceKeys.forEach(key => {
+      if (!Object.prototype.hasOwnProperty.call(translations, key)) {
+        translations[key] = reference[key];
+      }
+    });
+
+    Object.keys(translations).forEach(key => {
+      if (!referenceKeys.has(key)) {
+        delete translations[key];
+      }
+    });
+  });
+
+  if (expectedLanguages) {
+    Object.keys(dataset).forEach(lang => {
+      if (!languageSet.has(lang)) {
+        delete dataset[lang];
+      }
+    });
+  }
+}
+
+const supportedLanguages = Object.keys(texts);
+
+ensureLanguageAlignment(texts, { datasetName: 'texts', referenceLang: 'en' });
+ensureLanguageAlignment(categoryNames, {
+  datasetName: 'categoryNames',
+  referenceLang: 'en',
+  expectedLanguages: supportedLanguages,
+});
+ensureLanguageAlignment(gearItems, {
+  datasetName: 'gearItems',
+  referenceLang: 'en',
+  expectedLanguages: supportedLanguages,
+});
+
 if (typeof module !== 'undefined' && module.exports) { module.exports = { texts, categoryNames, gearItems }; }
