@@ -13070,9 +13070,28 @@ function renderSetupDiagram() {
       }
       const MIN_AUTO_SCALE = isTouchDevice ? 0.4 : 0.35;
       const MAX_INITIAL_SCALE = isTouchDevice ? 3 : 1.6;
-      const safeDesiredScale = Number.isFinite(desiredScale) && desiredScale > 0
+      let safeDesiredScale = Number.isFinite(desiredScale) && desiredScale > 0
         ? desiredScale
         : 1;
+      if (isTouchDevice) {
+        let viewportWidth = 0;
+        if (typeof window !== 'undefined') {
+          if (window.visualViewport && Number.isFinite(window.visualViewport.width) && window.visualViewport.width > 0) {
+            viewportWidth = window.visualViewport.width;
+          } else if (Number.isFinite(window.innerWidth) && window.innerWidth > 0) {
+            viewportWidth = window.innerWidth;
+          }
+        }
+        if (!viewportWidth && typeof document !== 'undefined' && document.documentElement) {
+          const docWidth = document.documentElement.clientWidth;
+          if (Number.isFinite(docWidth) && docWidth > 0) {
+            viewportWidth = docWidth;
+          }
+        }
+        if (viewportWidth && viewportWidth <= 600) {
+          safeDesiredScale = Math.min(safeDesiredScale, 1);
+        }
+      }
       const initialScale = Math.min(
         MAX_INITIAL_SCALE,
         Math.max(MIN_AUTO_SCALE, safeDesiredScale)
