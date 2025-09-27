@@ -226,11 +226,6 @@ body.pink-mode,
   font-weight: var(--font-weight-bold, 500);
 }
 
-#overviewDialogContent .gear-table strong,
-#overviewDialogContent .gear-table b {
-  color: inherit !important;
-}
-
 #overviewDialogContent .device-category h3 {
   display: flex;
   align-items: center;
