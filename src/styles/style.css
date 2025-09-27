@@ -6439,7 +6439,7 @@ body.dark-mode .requirement-box,
 body.light-mode .gear-table strong,
 #gearListOutput:not(.dark-mode) .gear-table strong,
 #overviewDialogContent:not(.dark-mode) .gear-table strong {
-  color: var(--accent-color);
+  color: inherit;
 }
 
 .dark-mode .gear-table td {
