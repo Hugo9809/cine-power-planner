@@ -8007,6 +8007,19 @@ function updateGearListButtonVisibility() {
   }
 }
 
+function annotateGearTableCategoryGroups(table) {
+  if (!table) return;
+  const groups = table.querySelectorAll('tbody.category-group');
+  groups.forEach(group => {
+    const headingCell = group.querySelector('.category-row td');
+    if (!headingCell) return;
+    const label = headingCell.textContent ? headingCell.textContent.trim() : '';
+    if (!label) return;
+    if (group.getAttribute('data-gear-table-category') === label) return;
+    group.setAttribute('data-gear-table-category', label);
+  });
+}
+
 function ensureGearTableCategoryGrouping(table) {
   if (!table) return;
   const doc = table.ownerDocument || (typeof document !== 'undefined' ? document : null);
@@ -8023,6 +8036,7 @@ function ensureGearTableCategoryGrouping(table) {
         group.classList.add('category-group');
       }
     });
+    annotateGearTableCategoryGroups(table);
     return;
   }
   const rows = Array.from(table.rows || []);
@@ -8052,6 +8066,7 @@ function ensureGearTableCategoryGrouping(table) {
   newGroups.forEach(group => {
     if (group.rows.length) table.appendChild(group);
   });
+  annotateGearTableCategoryGroups(table);
 }
 
 let overviewTitleCandidatesCache = null;

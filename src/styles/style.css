@@ -6294,6 +6294,21 @@ body.dark-mode .requirement-box,
   page-break-after: avoid;
 }
 
+.gear-table .category-group[data-gear-table-category="Monitoring"] tr:not(.category-row) td,
+.gear-table .category-group[data-gear-table-category="Monitoring Batteries"] tr:not(.category-row) td,
+.gear-table .category-group[data-gear-table-category="Monitoring support"] tr:not(.category-row) td {
+  color: var(--text-color);
+}
+
+#gearListOutput.show-auto-gear-highlight .category-group[data-gear-table-category="Monitoring"] .auto-gear-item,
+#gearListOutput.show-auto-gear-highlight .category-group[data-gear-table-category="Monitoring Batteries"] .auto-gear-item,
+#gearListOutput.show-auto-gear-highlight .category-group[data-gear-table-category="Monitoring support"] .auto-gear-item,
+#gearListOutput.show-auto-gear-highlight .category-group[data-gear-table-category="Monitoring"] .auto-gear-item select,
+#gearListOutput.show-auto-gear-highlight .category-group[data-gear-table-category="Monitoring Batteries"] .auto-gear-item select,
+#gearListOutput.show-auto-gear-highlight .category-group[data-gear-table-category="Monitoring support"] .auto-gear-item select {
+  color: var(--text-color);
+}
+
 .gear-item[data-gear-name^="ND Grad HE Filter Set"],
 .gear-item[data-gear-name^="ND Grad SE Filter Set"] {
   display: inline-flex;

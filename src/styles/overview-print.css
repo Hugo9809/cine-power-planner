@@ -614,6 +614,18 @@ body:not(.light-mode) .gear-table .category-row td {
   font-weight: var(--font-weight-medium);
 }
 
+#overviewDialogContent .gear-table .category-group[data-gear-table-category="Monitoring"] tr:not(.category-row) td,
+#overviewDialogContent .gear-table .category-group[data-gear-table-category="Monitoring Batteries"] tr:not(.category-row) td,
+#overviewDialogContent .gear-table .category-group[data-gear-table-category="Monitoring support"] tr:not(.category-row) td,
+#overviewDialogContent.dark-mode .gear-table .category-group[data-gear-table-category="Monitoring"] tr:not(.category-row) td,
+#overviewDialogContent.dark-mode .gear-table .category-group[data-gear-table-category="Monitoring Batteries"] tr:not(.category-row) td,
+#overviewDialogContent.dark-mode .gear-table .category-group[data-gear-table-category="Monitoring support"] tr:not(.category-row) td,
+body:not(.light-mode) .gear-table .category-group[data-gear-table-category="Monitoring"] tr:not(.category-row) td,
+body:not(.light-mode) .gear-table .category-group[data-gear-table-category="Monitoring Batteries"] tr:not(.category-row) td,
+body:not(.light-mode) .gear-table .category-group[data-gear-table-category="Monitoring support"] tr:not(.category-row) td {
+  color: var(--text-color);
+}
+
 
 .device-category {
   background: var(--panel-bg) !important;
