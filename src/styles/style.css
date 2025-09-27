@@ -3402,6 +3402,10 @@ body.pink-mode:not(.dark-mode) #settingsPanel-autoGear .auto-gear-rule-items-lab
   text-decoration-thickness: 0.12em;
 }
 
+.help-link {
+  font-weight: var(--font-weight-regular);
+}
+
 .help-link:not(.button-link):visited {
   color: var(--accent-color);
 }
@@ -3409,6 +3413,11 @@ body.pink-mode:not(.dark-mode) #settingsPanel-autoGear .auto-gear-rule-items-lab
 .help-link:not(.button-link):hover,
 .help-link:not(.button-link):focus-visible {
   text-decoration: underline;
+}
+
+.help-link strong,
+.help-link b {
+  font-weight: inherit;
 }
 
 .help-link.button-link,
