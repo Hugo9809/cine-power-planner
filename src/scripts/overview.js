@@ -1,6 +1,8 @@
 /* global currentLang, texts, devices, escapeHtml, generateConnectorSummary, cameraSelect, monitorSelect, videoSelect, distanceSelect, motorSelects, controllerSelects, batterySelect, hotswapSelect, overviewSectionIcons, breakdownListElem, totalPowerElem, totalCurrent144Elem, totalCurrent12Elem, batteryLifeElem, batteryCountElem, pinWarnElem, dtapWarnElem, getCurrentGearListHtml, currentProjectInfo, generateGearListHtml, setupDiagramContainer, diagramLegend, diagramHint, getDiagramCss, openDialog, closeDialog, splitGearListHtml, iconMarkup, ICON_GLYPHS, deleteCurrentGearList */
 
-function generatePrintableOverview() {
+function generatePrintableOverview(config = {}) {
+    const safeConfig = (config && typeof config === 'object') ? config : {};
+    const { autoPrint = false } = safeConfig;
     const escapeHtmlSafe = (value) => (typeof escapeHtml === 'function' ? escapeHtml(value) : String(value ?? ''));
     const summarizeConnectors = (device) => (typeof generateConnectorSummary === 'function' ? generateConnectorSummary(device) : '');
     const setupNameField = typeof document !== 'undefined' ? document.getElementById('setupName') : null;
@@ -644,6 +646,13 @@ function generatePrintableOverview() {
         });
     }
     openDialog(overviewDialog);
+
+    if (autoPrint) {
+        const printed = triggerPrintWorkflow({ reason: 'generate' });
+        if (!printed) {
+            console.error('Unable to open the print dialog. Please check your browser settings and try again.');
+        }
+    }
 
     if (typeof window.matchMedia === 'function') {
         const mql = window.matchMedia('print');

@@ -5,7 +5,9 @@ function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Sym
 function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
-function generatePrintableOverview() {
+function generatePrintableOverview(config) {
+  var safeConfig = config && _typeof(config) === 'object' ? config : {};
+  var autoPrint = !!safeConfig.autoPrint;
   var escapeHtmlSafe = function escapeHtmlSafe(value) {
     return typeof escapeHtml === 'function' ? escapeHtml(value) : String(value !== null && value !== void 0 ? value : '');
   };
@@ -548,6 +550,14 @@ function generatePrintableOverview() {
     });
   }
   openDialog(overviewDialog);
+  if (autoPrint) {
+    var printed = triggerPrintWorkflow({
+      reason: 'generate'
+    });
+    if (!printed) {
+      console.error('Unable to open the print dialog. Please check your browser settings and try again.');
+    }
+  }
   if (typeof window.matchMedia === 'function') {
     var mql = window.matchMedia('print');
     var mqlListener = function mqlListener(e) {

@@ -21,7 +21,7 @@ generateOverviewBtn.addEventListener('click', function () {
     alert(texts[currentLang].alertSelectSetupForOverview);
     return;
   }
-  generatePrintableOverview();
+  generatePrintableOverview({ autoPrint: true });
 });
 function batteryPinsSufficient() {
   var batt = batterySelect && batterySelect.value;
