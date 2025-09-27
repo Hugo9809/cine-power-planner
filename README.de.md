@@ -187,7 +187,7 @@ Dieser kurze Ablauf sollte bei neuen Teammitgliedern, frisch eingerichteten Work
 
 - **Globale Suche** (`/`, `Strg+K`, `⌘K`) springt zu Features, Selektoren oder Hilfethemen – selbst bei versteckter Navigation.
   Vorschläge zeigen direkte Treffer für Funktionen und Geräte vor Hilfethemen, damit Tastaturabläufe zuerst bei Bedienelementen
-  landen.
+  landen. Kleine Tippfehler werden verziehen, damit auch fast richtige Suchbegriffe beim gewünschten Ziel landen.
 - **Help-Center** (`?`, `H`, `F1`, `Strg+/`) liefert Guides, Shortcuts, FAQs und Hover-Hilfe.
 - **Projektdiagramm** visualisiert Strom- und Signalpfade; mit gedrückter Umschalttaste als JPG exportieren.
 - **Akkuvergleich** zeigt Leistung kompatibler Packs und warnt vor Überlast.
@@ -199,7 +199,8 @@ Dieser kurze Ablauf sollte bei neuen Teammitgliedern, frisch eingerichteten Work
 ### Top-Bar-Steuerung
 
 - Skip-Link, Offline-Indikator und responsive Branding halten die Navigation zugänglich.
-- Globale Suche fokussiert mit `/` oder `Strg+K` (`⌘K`), öffnet auf Mobilgeräten das Menü und lässt sich mit Escape leeren.
+- Globale Suche fokussiert mit `/` oder `Strg+K` (`⌘K`), gleicht kleine Tippfehler automatisch aus, öffnet auf Mobilgeräten das
+  Menü und lässt sich mit Escape leeren.
 - Sprachwechsel, Dark/Pink-Theme und Einstellungen sitzen in der Kopfleiste; dort lassen sich Akzentfarbe, Schriftgröße, Schriftart, High-Contrast, Custom-Logo sowie Backup-, Restore- und Factory-Reset-Tools (immer mit Sicherung) steuern.
 - Hilfe-Button öffnet den Suchdialog und reagiert jederzeit auf `?`, `H`, `F1` oder `Strg+/`.
 - Der 🔄-Button entfernt gecachte Assets und lädt die App ohne Projektdaten zu löschen.

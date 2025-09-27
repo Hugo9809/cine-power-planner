@@ -182,7 +182,8 @@ localization steps.
 - **Global search shortcuts** – press `/` or `Ctrl+K` (`⌘K` on macOS) to focus
   the feature search instantly, even when the mobile navigation is collapsed.
   Suggestions now show whether they lead to a feature, action, device or help
-  topic so you always know what will open before pressing **Enter**.
+  topic so you always know what will open before pressing **Enter**, and small
+  typos are forgiven so near-miss queries still land on the right control.
 - **Force reload button** – refresh cached service worker assets without
   deleting projects or devices.
 - **Pinned favorites** – star dropdown entries to keep go-to cameras, batteries
@@ -417,7 +418,8 @@ Use Cine Power Planner end-to-end with the following routine:
 - **Global search** (`/`, `Ctrl+K`, `⌘K`) jumps to any feature, selector or help
   topic—even when the side navigation is hidden on smaller screens. Suggestions
   surface direct feature and device matches before help topics so keyboard-first
-  workflows land on primary controls.
+  workflows land on primary controls, and the matcher forgives small typos so
+  near-miss spellings still land on the intended destination.
 - **Help center** (`?`, `H`, `F1`, `Ctrl+/`) provides searchable guides,
   shortcuts, FAQs and an optional hover-help mode so every control explains
   itself.

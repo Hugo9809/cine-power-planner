@@ -85,6 +85,22 @@ describe('global feature search help navigation', () => {
     expect(document.activeElement).toBe(resultsHeading);
   });
 
+  test('minor typos still focus the intended feature result', async () => {
+    expect(featureSearch).toBeTruthy();
+
+    document.dispatchEvent(new Event('DOMContentLoaded'));
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+    triggerFeatureSearch('Power Summry');
+
+    expect(helpDialog.hasAttribute('hidden')).toBe(true);
+    expect(featureSearch.value).toBe('Power Summary');
+
+    const resultsHeading = document.getElementById('resultsHeading');
+    expect(resultsHeading).toBeTruthy();
+    expect(document.activeElement).toBe(resultsHeading);
+  });
+
   test('suggestions rank feature results ahead of help topics', async () => {
     expect(featureSearch).toBeTruthy();
 

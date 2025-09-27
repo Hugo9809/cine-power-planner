@@ -187,7 +187,7 @@ Repite esta rutina cuando se incorpore personal, se prepare una estación nueva 
 
 - **Búsqueda global** (`/`, `Ctrl+K`, `⌘K`) salta a funciones, selectores o temas de ayuda, incluso con navegación oculta. Las
   sugerencias muestran primero coincidencias directas de funciones y dispositivos antes que los temas de ayuda para que los flujos
-  con teclado lleguen a los controles principales.
+  con teclado lleguen a los controles principales. También tolera pequeños errores tipográficos para que las búsquedas casi correctas lleguen al destino adecuado.
 - **Centro de ayuda** (`?`, `H`, `F1`, `Ctrl+/`) ofrece guías, atajos, preguntas frecuentes y modo de ayuda flotante.
 - **Diagrama de proyecto** visualiza rutas de energía y señal; mantén Shift al exportar para guardar JPG.
 - **Panel de comparación de baterías** muestra rendimiento de packs compatibles y alerta sobre sobrecargas.
@@ -199,7 +199,8 @@ Repite esta rutina cuando se incorpore personal, se prepare una estación nueva 
 ### Controles superiores
 
 - Un enlace para saltar, el indicador offline y la marca responsiva mantienen la navegación accesible.
-- La barra de búsqueda se enfoca con `/` o `Ctrl+K` (`⌘K`), abre el menú lateral en móviles y se limpia con Escape.
+- La barra de búsqueda se enfoca con `/` o `Ctrl+K` (`⌘K`), corrige pequeñas erratas automáticamente, abre el menú lateral en
+  móviles y se limpia con Escape.
 - El cambio de idioma, los modos oscuro/rosa y el diálogo de Configuración permiten ajustar color de acento, tamaño y familia de fuente, alto contraste, logotipo personalizado y acceder a herramientas de respaldo, restauración y restablecimiento (siempre con copia previa).
 - El botón de ayuda abre el diálogo buscable y responde a `?`, `H`, `F1` o `Ctrl+/` en cualquier momento.
 - El botón 🔄 elimina recursos en caché y recarga la app sin borrar proyectos ni datos de autonomía.

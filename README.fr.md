@@ -187,7 +187,8 @@ Cette routine prouve que sauvegarde, partage, import, backup et restauration fon
 
 - **Recherche globale** (`/`, `Ctrl+K`, `⌘K`) pour accéder à toute fonctionnalité, liste ou thème d’aide, même navigation repliée.
   Les suggestions mettent désormais en avant les correspondances directes avec les fonctionnalités et appareils avant les sujets
-  d’aide pour que les parcours clavier atteignent d’abord les commandes essentielles.
+  d’aide pour que les parcours clavier atteignent d’abord les commandes essentielles. Les petites fautes de frappe sont tolérées
+  afin que les requêtes approximatives mènent tout de même au bon endroit.
 - **Centre d’aide** (`?`, `H`, `F1`, `Ctrl+/`) proposant guides, raccourcis, FAQ et mode aide au survol.
 - **Diagramme de projet** pour visualiser alimentation et signal ; maintenez Maj lors de l’export pour enregistrer un JPG.
 - **Comparateur de batteries** affichant les performances et alertant sur les surcharges.
@@ -199,7 +200,8 @@ Cette routine prouve que sauvegarde, partage, import, backup et restauration fon
 ### Barre supérieure
 
 - Lien d’évitement, indicateur hors ligne et branding responsive assurent l’accessibilité.
-- La recherche se focalise avec `/` ou `Ctrl+K` (`⌘K`), ouvre la navigation sur mobile et se vide avec Échap.
+- La recherche se focalise avec `/` ou `Ctrl+K` (`⌘K`), corrige les petites fautes automatiquement, ouvre la navigation sur
+  mobile et se vide avec Échap.
 - Les contrôles de langue, thèmes sombre/rose et le dialogue Paramètres permettent d’ajuster couleur d’accent, taille et police, contraste élevé, logo personnalisé ainsi que d’accéder aux outils de backup, restauration et réinitialisation (avec sauvegarde automatique).
 - Le bouton d’aide ouvre un dialogue consultable et répond à `?`, `H`, `F1` ou `Ctrl+/` à tout moment.
 - Le bouton 🔄 supprime les ressources mises en cache et recharge l’application sans effacer les projets ou données d’autonomie.

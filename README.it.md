@@ -187,7 +187,8 @@ Ripeti questa routine quando arriva un nuovo membro, allestisci una postazione o
 
 - **Ricerca globale** (`/`, `Ctrl+K`, `⌘K`) per saltare a funzioni, menu o argomenti di aiuto anche con navigazione nascosta. I
   suggerimenti mostrano prima le corrispondenze dirette di funzionalità e dispositivi rispetto ai temi di aiuto, così i flussi da
-  tastiera raggiungono subito i controlli principali.
+  tastiera raggiungono subito i controlli principali. Perdona i piccoli errori di battitura, quindi anche le ricerche quasi
+  corrette arrivano comunque al controllo giusto.
 - **Centro assistenza** (`?`, `H`, `F1`, `Ctrl+/`) con guide, scorciatoie, FAQ e modalità aiuto al passaggio.
 - **Diagramma di progetto** per visualizzare alimentazione e segnali; tieni premuto Shift durante l’export per salvare un JPG.
 - **Confronto batterie** che mostra le prestazioni dei pack compatibili e avvisa in caso di sovraccarichi.
@@ -199,7 +200,8 @@ Ripeti questa routine quando arriva un nuovo membro, allestisci una postazione o
 ### Barra superiore
 
 - Link di salto, indicatore offline e branding responsive garantiscono accessibilità.
-- La ricerca si focalizza con `/` o `Ctrl+K` (`⌘K`), apre il menu laterale su mobile e si azzera con Esc.
+- La ricerca si focalizza con `/` o `Ctrl+K` (`⌘K`), corregge automaticamente le piccole imprecisioni, apre il menu laterale su
+  mobile e si azzera con Esc.
 - Switch lingua, temi scuro/rosa e dialogo Impostazioni consentono di regolare colore di accento, dimensione e font, modalità alto contrasto, logo personalizzato e accedere a backup, ripristino e reset (sempre preceduti da backup automatico).
 - Il pulsante Aiuto apre un dialogo ricercabile e risponde a `?`, `H`, `F1` o `Ctrl+/` in qualsiasi momento.
 - Il pulsante 🔄 cancella le risorse in cache e ricarica l’app senza eliminare progetti o dati runtime.

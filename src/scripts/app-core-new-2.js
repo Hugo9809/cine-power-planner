@@ -6497,17 +6497,106 @@ function restoreFeatureSearchDefaults() {
 const FEATURE_SEARCH_MATCH_PRIORITIES = {
   none: 1,
   partial: 2,
-  keySubset: 3,
-  keyPrefix: 4,
-  token: 5,
-  exactKey: 6
+  fuzzy: 3,
+  keySubset: 4,
+  keyPrefix: 5,
+  token: 6,
+  exactKey: 7
 };
+
+const FEATURE_SEARCH_FUZZY_MAX_DISTANCE = 2;
 
 const FEATURE_SEARCH_TYPE_PRIORITIES = {
   feature: 3,
   action: 4,
   device: 3,
   help: 1
+};
+
+const damerauLevenshteinLimited = (a, b, maxDistance = FEATURE_SEARCH_FUZZY_MAX_DISTANCE) => {
+  if (typeof a !== 'string' || typeof b !== 'string') {
+    return Number.POSITIVE_INFINITY;
+  }
+  if (a === b) return 0;
+  const lenA = a.length;
+  const lenB = b.length;
+  if (lenA === 0) {
+    return lenB <= maxDistance ? lenB : Number.POSITIVE_INFINITY;
+  }
+  if (lenB === 0) {
+    return lenA <= maxDistance ? lenA : Number.POSITIVE_INFINITY;
+  }
+  if (Math.abs(lenA - lenB) > maxDistance) {
+    return Number.POSITIVE_INFINITY;
+  }
+  let prevPrev = null;
+  let prev = new Array(lenB + 1);
+  let curr = new Array(lenB + 1);
+  for (let j = 0; j <= lenB; j += 1) {
+    prev[j] = j;
+  }
+  for (let i = 1; i <= lenA; i += 1) {
+    curr[0] = i;
+    let rowMin = curr[0];
+    const charA = a[i - 1];
+    const prevCharA = i > 1 ? a[i - 2] : '';
+    for (let j = 1; j <= lenB; j += 1) {
+      const charB = b[j - 1];
+      const prevCharB = j > 1 ? b[j - 2] : '';
+      const cost = charA === charB ? 0 : 1;
+      let val = Math.min(
+        prev[j] + 1,
+        curr[j - 1] + 1,
+        prev[j - 1] + cost
+      );
+      if (
+        cost > 0 &&
+        i > 1 &&
+        j > 1 &&
+        charA === prevCharB &&
+        prevCharA === charB &&
+        prevPrev &&
+        typeof prevPrev[j - 2] === 'number'
+      ) {
+        const transposition = prevPrev[j - 2] + 1;
+        if (transposition < val) {
+          val = transposition;
+        }
+      }
+      curr[j] = val;
+      if (val < rowMin) {
+        rowMin = val;
+      }
+    }
+    if (rowMin > maxDistance) {
+      return Number.POSITIVE_INFINITY;
+    }
+    const finishedRow = curr;
+    curr = new Array(lenB + 1);
+    prevPrev = prev;
+    prev = finishedRow;
+  }
+  const distance = prev[lenB];
+  return distance <= maxDistance ? distance : Number.POSITIVE_INFINITY;
+};
+
+const computeFuzzyKeyMatch = (entryKey, queryKey) => {
+  if (!entryKey || !queryKey) {
+    return { distance: Number.POSITIVE_INFINITY, similarity: 0 };
+  }
+  if (entryKey === queryKey) {
+    return { distance: 0, similarity: 1 };
+  }
+  if (queryKey.length < 3 || entryKey.length < 3) {
+    return { distance: Number.POSITIVE_INFINITY, similarity: 0 };
+  }
+  const distance = damerauLevenshteinLimited(entryKey, queryKey);
+  if (!Number.isFinite(distance)) {
+    return { distance: Number.POSITIVE_INFINITY, similarity: 0 };
+  }
+  const maxLen = Math.max(entryKey.length, queryKey.length) || 1;
+  const similarity = 1 - distance / maxLen;
+  return { distance, similarity };
 };
 
 function scoreFeatureSearchEntry(entry, queryKey, queryTokens) {
@@ -6556,6 +6645,18 @@ function scoreFeatureSearchEntry(entry, queryKey, queryTokens) {
     updateType('token');
   }
 
+  const fuzzyMatch = queryKey
+    ? computeFuzzyKeyMatch(entryKey, queryKey)
+    : { distance: Number.POSITIVE_INFINITY, similarity: 0 };
+  const fuzzyDistance = fuzzyMatch.distance;
+  const fuzzySimilarity = fuzzyMatch.similarity;
+  const fuzzyScore = Number.isFinite(fuzzyDistance)
+    ? Math.max(1, FEATURE_SEARCH_FUZZY_MAX_DISTANCE - fuzzyDistance + 1)
+    : 0;
+  if (fuzzyScore > 0) {
+    updateType('fuzzy');
+  }
+
   return {
     entry,
     entryType,
@@ -6565,6 +6666,9 @@ function scoreFeatureSearchEntry(entry, queryKey, queryTokens) {
     priority: bestPriority,
     tokenScore: tokenDetails.score,
     tokenMatches: tokenDetails.matched,
+    fuzzyScore,
+    fuzzyDistance,
+    fuzzySimilarity,
     keyDistance: queryKey
       ? Math.abs(entryKey.length - queryKey.length)
       : Number.POSITIVE_INFINITY,
@@ -6608,6 +6712,18 @@ function updateFeatureSearchSuggestions(query) {
     }
     if (b.tokenScore !== a.tokenScore) return b.tokenScore - a.tokenScore;
     if (b.tokenMatches !== a.tokenMatches) return b.tokenMatches - a.tokenMatches;
+    const aHasFuzzy = Number.isFinite(a.fuzzyDistance);
+    const bHasFuzzy = Number.isFinite(b.fuzzyDistance);
+    if (aHasFuzzy !== bHasFuzzy) {
+      return aHasFuzzy ? -1 : 1;
+    }
+    if (aHasFuzzy && bHasFuzzy) {
+      if (a.fuzzyScore !== b.fuzzyScore) return b.fuzzyScore - a.fuzzyScore;
+      if (a.fuzzyDistance !== b.fuzzyDistance) return a.fuzzyDistance - b.fuzzyDistance;
+      if (a.fuzzySimilarity !== b.fuzzySimilarity) {
+        return b.fuzzySimilarity - a.fuzzySimilarity;
+      }
+    }
     if (b.typePriority !== a.typePriority) return b.typePriority - a.typePriority;
     if (a.keyDistance !== b.keyDistance) return a.keyDistance - b.keyDistance;
     if (a.keyLength !== b.keyLength) return a.keyLength - b.keyLength;
@@ -7259,12 +7375,20 @@ function findBestSearchMatch(map, key, tokens = []) {
   const hasKey = Boolean(key);
   if (!hasKey && queryTokens.length === 0) return null;
 
-  const toResult = (entryKey, entryValue, matchType, score = 0, matchedCount = 0) => ({
+  const toResult = (
+    entryKey,
+    entryValue,
+    matchType,
+    score = 0,
+    matchedCount = 0,
+    extra = {}
+  ) => ({
     key: entryKey,
     value: entryValue,
     matchType,
     score,
-    matchedCount
+    matchedCount,
+    ...extra
   });
 
   const flattened = [];
@@ -7313,6 +7437,10 @@ function findBestSearchMatch(map, key, tokens = []) {
   let bestSubsetScore = Number.NEGATIVE_INFINITY;
   let bestSubsetMatched = 0;
   let bestSubsetLength = -1;
+  let bestFuzzyMatch = null;
+  let bestFuzzyScore = Number.NEGATIVE_INFINITY;
+  let bestFuzzyDistance = Number.POSITIVE_INFINITY;
+  let bestFuzzySimilarity = 0;
   let bestPartialMatch = null;
   let bestPartialScore = Number.NEGATIVE_INFINITY;
   let bestPartialMatched = 0;
@@ -7387,6 +7515,34 @@ function findBestSearchMatch(map, key, tokens = []) {
         bestPartialMatched = tokenDetails.matched;
       }
     }
+
+    if (hasKey) {
+      const fuzzy = computeFuzzyKeyMatch(entryKey, key);
+      if (Number.isFinite(fuzzy.distance)) {
+        const fuzzyScoreContribution = tokenDetails.score > 0
+          ? tokenDetails.score
+          : Math.max(1, FEATURE_SEARCH_FUZZY_MAX_DISTANCE - fuzzy.distance + 1);
+        if (
+          !bestFuzzyMatch ||
+          fuzzyScoreContribution > bestFuzzyScore ||
+          (fuzzyScoreContribution === bestFuzzyScore &&
+            (fuzzy.distance < bestFuzzyDistance ||
+              (fuzzy.distance === bestFuzzyDistance && fuzzy.similarity > bestFuzzySimilarity)))
+        ) {
+          bestFuzzyMatch = toResult(
+            entryKey,
+            entryValue,
+            'fuzzy',
+            fuzzyScoreContribution,
+            tokenDetails.matched,
+            { fuzzyDistance: fuzzy.distance, fuzzySimilarity: fuzzy.similarity }
+          );
+          bestFuzzyScore = fuzzyScoreContribution;
+          bestFuzzyDistance = fuzzy.distance;
+          bestFuzzySimilarity = fuzzy.similarity;
+        }
+      }
+    }
   }
 
   if (bestTokenMatch && bestTokenScore > 0) {
@@ -7398,13 +7554,16 @@ function findBestSearchMatch(map, key, tokens = []) {
   if (bestSubsetMatch) {
     return bestSubsetMatch;
   }
+  if (bestFuzzyMatch) {
+    return bestFuzzyMatch;
+  }
   if (bestPartialMatch) {
     return bestPartialMatch;
   }
   return null;
 }
 
-var STRONG_SEARCH_MATCH_TYPES = new Set(['exactKey', 'keyPrefix', 'keySubset']);
+var STRONG_SEARCH_MATCH_TYPES = new Set(['exactKey', 'keyPrefix', 'keySubset', 'fuzzy']);
 const existingDevicesHeading = document.getElementById("existingDevicesHeading");
 const batteryComparisonSection = document.getElementById("batteryComparison");
 const batteryTableElem = document.getElementById("batteryTable");
