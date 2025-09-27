@@ -3069,6 +3069,12 @@ body.pink-mode:not(.dark-mode) #settingsPanel-autoGear .auto-gear-rule-items-lab
 
 .auto-gear-scenario-settings .auto-gear-field {
   flex: 1 1 220px;
+  gap: 2px;
+}
+
+.auto-gear-scenario-settings .auto-gear-field select,
+.auto-gear-scenario-settings .auto-gear-field input {
+  flex: 0 0 auto;
 }
 
 .auto-gear-scenario-multiplier {
