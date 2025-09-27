@@ -377,7 +377,7 @@ table, th, td {
 
   #overviewDialogContent #setupDiagram svg {
     width: 100% !important;
-    max-width: var(--print-diagram-max-width, 20cm) !important;
+    max-width: var(--print-diagram-max-width, 24cm) !important;
   }
 }
 
@@ -386,10 +386,10 @@ table, th, td {
   body.dark-mode {
     --font-size-base: 10pt;
     --line-height-base: 1.65;
-    --print-diagram-max-width: 24cm;
-    --print-diagram-icon-scale: 1.05;
-    --print-diagram-text-scale: 1.07;
-    --print-diagram-label-scale: 1.06;
+    --print-diagram-max-width: 28cm;
+    --print-diagram-icon-scale: 1.08;
+    --print-diagram-text-scale: 1.1;
+    --print-diagram-label-scale: 1.08;
   }
 
   #overviewDialogContent {
@@ -402,10 +402,10 @@ table, th, td {
   body.dark-mode {
     --font-size-base: 10pt;
     --line-height-base: 1.7;
-    --print-diagram-max-width: 28cm;
-    --print-diagram-icon-scale: 1.1;
-    --print-diagram-text-scale: 1.12;
-    --print-diagram-label-scale: 1.1;
+    --print-diagram-max-width: 32cm;
+    --print-diagram-icon-scale: 1.14;
+    --print-diagram-text-scale: 1.16;
+    --print-diagram-label-scale: 1.14;
   }
 
   #overviewDialogContent {
