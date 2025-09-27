@@ -98,4 +98,50 @@ describe('requestPersistentStorage', () => {
     expect(result.alreadyGranted).toBe(false);
     expect(result.error).toBe(error);
   });
+
+  test('retries when persistent storage support becomes available later', async () => {
+    const { requestPersistentStorage } = require('../../src/scripts/storage');
+    const first = await requestPersistentStorage();
+    expect(first.supported).toBe(false);
+    expect(first.granted).toBe(false);
+
+    const persisted = jest.fn(() => Promise.resolve(false));
+    const persist = jest.fn(() => Promise.resolve(true));
+    global.navigator = {
+      storage: {
+        persisted,
+        persist,
+      },
+    };
+
+    const second = await requestPersistentStorage();
+    expect(persist).toHaveBeenCalledTimes(1);
+    expect(second.supported).toBe(true);
+    expect(second.granted).toBe(true);
+    expect(second.alreadyGranted).toBe(false);
+  });
+
+  test('allows retry after a denied persistent storage request', async () => {
+    const persisted = jest.fn(() => Promise.resolve(false));
+    const persist = jest.fn(() => Promise.resolve(false));
+    global.navigator = {
+      storage: {
+        persisted,
+        persist,
+      },
+    };
+
+    const { requestPersistentStorage } = require('../../src/scripts/storage');
+    const first = await requestPersistentStorage();
+    expect(persist).toHaveBeenCalledTimes(1);
+    expect(first.granted).toBe(false);
+    expect(first.alreadyGranted).toBe(false);
+
+    persist.mockImplementationOnce(() => Promise.resolve(true));
+
+    const second = await requestPersistentStorage();
+    expect(persist).toHaveBeenCalledTimes(2);
+    expect(second.granted).toBe(true);
+    expect(second.alreadyGranted).toBe(false);
+  });
 });
