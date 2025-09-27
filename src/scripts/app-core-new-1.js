@@ -2833,6 +2833,57 @@ function buildVideoDistributionAutoRules(baseInfo, baselineMap) {
   return rules;
 }
 
+function buildOnboardMonitorRiggingAutoGearRules() {
+  const select = typeof monitorSelect !== 'undefined' ? monitorSelect : null;
+  if (!select || !select.options) {
+    return [];
+  }
+
+  const rules = [];
+  const seen = new Set();
+
+  Array.from(select.options).forEach(option => {
+    if (!option) return;
+    const rawValue = typeof option.value === 'string' ? option.value.trim() : '';
+    if (!rawValue || rawValue === 'None') return;
+    const label = typeof option.textContent === 'string' ? option.textContent.trim() : '';
+    if (!label) return;
+    const normalized = normalizeAutoGearTriggerValue(label);
+    if (!normalized || seen.has(normalized)) return;
+    seen.add(normalized);
+
+    rules.push({
+      id: generateAutoGearId('rule'),
+      label: `Onboard monitor: ${label}`,
+      scenarios: [],
+      mattebox: [],
+      cameraHandle: [],
+      viewfinderExtension: [],
+      videoDistribution: [],
+      camera: [],
+      monitor: [label],
+      crewPresent: [],
+      crewAbsent: [],
+      wireless: [],
+      motors: [],
+      controllers: [],
+      distance: [],
+      add: [
+        {
+          id: generateAutoGearId('item'),
+          name: 'ULCS Arm mit 3/8" und 1/4" double',
+          category: 'Rigging',
+          quantity: 1,
+          contextNotes: [`Onboard monitor: ${label}`],
+        },
+      ],
+      remove: [],
+    });
+  });
+
+  return rules;
+}
+
 function buildDefaultVideoDistributionAutoGearRules(baseInfo = {}) {
   if (typeof generateGearListHtml !== 'function' || typeof parseGearTableForAutoRules !== 'function') {
     return [];
@@ -3342,20 +3393,26 @@ function buildAutoGearRulesFromBaseInfo(baseInfo, scenarioValues) {
     buildViewfinderExtensionAutoRules(baseInfo, baselineMap).forEach(rule => rules.push(rule));
     buildVideoDistributionAutoRules(baseInfo, baselineMap).forEach(rule => rules.push(rule));
 
-    const defaultVideoDistributionRules = buildDefaultVideoDistributionAutoGearRules(baseInfo);
-    if (defaultVideoDistributionRules.length) {
-      const existingSignatures = new Set(
-        rules
-          .map(autoGearRuleSignature)
-          .filter(signature => typeof signature === 'string' && signature)
-      );
-      defaultVideoDistributionRules.forEach(rule => {
+    const existingSignatures = new Set(
+      rules
+        .map(autoGearRuleSignature)
+        .filter(signature => typeof signature === 'string' && signature)
+    );
+
+    const appendUniqueRules = additionalRules => {
+      if (!Array.isArray(additionalRules) || !additionalRules.length) {
+        return;
+      }
+      additionalRules.forEach(rule => {
         const signature = autoGearRuleSignature(rule);
         if (!signature || existingSignatures.has(signature)) return;
         rules.push(rule);
         existingSignatures.add(signature);
       });
-    }
+    };
+
+    appendUniqueRules(buildDefaultVideoDistributionAutoGearRules(baseInfo));
+    appendUniqueRules(buildOnboardMonitorRiggingAutoGearRules());
   }
 
   const alwaysRule = buildAlwaysAutoGearRule();
