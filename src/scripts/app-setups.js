@@ -319,13 +319,20 @@ function downloadSharedProject(shareFileName, includeAutoGear) {
     return;
   }
 
+  const successMessage =
+    (typeof getLocalizedText === 'function' && getLocalizedText('shareLinkCopied'))
+    || (texts?.en?.shareLinkCopied)
+    || 'Project file downloaded.';
+
   if (shareLinkMessage) {
-    shareLinkMessage.textContent = texts[currentLang].shareLinkCopied;
+    shareLinkMessage.textContent = successMessage;
     setStatusLevel(shareLinkMessage, 'success');
     shareLinkMessage.classList.remove('hidden');
     if (typeof setTimeout === 'function') {
       setTimeout(() => shareLinkMessage.classList.add('hidden'), 4000);
     }
+  } else if (typeof alert === 'function') {
+    alert(successMessage);
   }
 }
 

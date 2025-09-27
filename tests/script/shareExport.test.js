@@ -205,6 +205,80 @@ describe('project sharing helpers', () => {
     }
   });
 
+  test('downloadSharedProject alerts when status element is unavailable', () => {
+    const originalGetElementById = document.getElementById;
+    document.getElementById = jest.fn(function getElementByIdOverride(id) {
+      if (id === 'shareLinkMessage') {
+        return null;
+      }
+      return originalGetElementById.call(this, id);
+    });
+
+    env = setupScriptEnvironment();
+    document.getElementById = originalGetElementById;
+
+    const { downloadSharedProject } = env.utils;
+
+    window.alert = jest.fn();
+
+    const originalCreate = window.URL.createObjectURL;
+    const originalRevoke = window.URL.revokeObjectURL;
+    if (typeof originalCreate !== 'function') {
+      window.URL.createObjectURL = () => 'blob:placeholder';
+    }
+    if (typeof originalRevoke !== 'function') {
+      window.URL.revokeObjectURL = () => {};
+    }
+
+    const OriginalBlob = global.Blob;
+    if (typeof Blob !== 'function') {
+      global.Blob = function MockBlob(parts, options) {
+        this.parts = parts;
+        this.options = options;
+      };
+    }
+
+    const clickSpy = jest
+      .spyOn(window.HTMLAnchorElement.prototype, 'click')
+      .mockImplementation(() => {});
+    const createSpy = jest
+      .spyOn(window.URL, 'createObjectURL')
+      .mockReturnValue('blob:shared-project');
+    const revokeSpy = jest
+      .spyOn(window.URL, 'revokeObjectURL')
+      .mockImplementation(() => {});
+
+    downloadSharedProject('shared.json', false);
+
+    const expectedMessage =
+      (window.texts && window.texts.en && window.texts.en.shareLinkCopied)
+      || 'Project file downloaded.';
+
+    expect(clickSpy).toHaveBeenCalled();
+    expect(window.alert).toHaveBeenCalledWith(expectedMessage);
+
+    clickSpy.mockRestore();
+    createSpy.mockRestore();
+    revokeSpy.mockRestore();
+
+    if (originalCreate) {
+      window.URL.createObjectURL = originalCreate;
+    } else {
+      delete window.URL.createObjectURL;
+    }
+    if (originalRevoke) {
+      window.URL.revokeObjectURL = originalRevoke;
+    } else {
+      delete window.URL.revokeObjectURL;
+    }
+
+    if (OriginalBlob) {
+      global.Blob = OriginalBlob;
+    } else {
+      delete global.Blob;
+    }
+  });
+
   test('downloadSharedProject reports errors when no download method is available', () => {
     env = setupScriptEnvironment();
     const { downloadSharedProject } = env.utils;
