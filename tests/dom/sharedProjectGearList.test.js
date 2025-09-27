@@ -52,6 +52,24 @@ describe('shared project gear list handling', () => {
     expect(decoded.gearList).toBe(payload.gearList);
   });
 
+  test('decodeSharedSetup fills missing modern fields from encoded keys', () => {
+    const { utils } = env;
+    const payload = {
+      setupName: 'Mixed Payload',
+      l: '<div>Encoded Gear</div>',
+      a: [{ id: 'rule-1' }]
+    };
+
+    const decoded = utils.decodeSharedSetup(payload);
+    expect(decoded).not.toBe(payload);
+    expect(decoded.setupName).toBe('Mixed Payload');
+    expect(decoded.gearList).toBe('<div>Encoded Gear</div>');
+    expect(Array.isArray(decoded.autoGearRules)).toBe(true);
+    expect(decoded.autoGearRules).toEqual([{ id: 'rule-1' }]);
+    expect(payload.gearList).toBeUndefined();
+    expect(payload.autoGearRules).toBeUndefined();
+  });
+
   test('encodeSharedSetup preserves auto gear coverage snapshots', () => {
     const { utils } = env;
     const payload = {
