@@ -2169,7 +2169,7 @@ function renderAutoGearRuleSummary(analysis, context = {}) {
       description.className = 'auto-gear-summary-detail-text';
       description.textContent = langTexts.autoGearSummaryDetailsRulesWithoutScenariosDescription
         || texts.en?.autoGearSummaryDetailsRulesWithoutScenariosDescription
-        || 'These rules trigger without scenario filters.';
+        || 'These rules stay inactive until all required project inputs are provided.';
       detailsFragment.appendChild(description);
       const list = document.createElement('ul');
       list.className = 'auto-gear-summary-list';

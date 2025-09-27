@@ -220,7 +220,7 @@ const texts = {
     autoGearSummaryDetailsOverlapsNone: "No overlapping requirements detected.",
     autoGearSummaryDetailsRulesWithoutScenariosHeading: "Rules without scenarios",
     autoGearSummaryDetailsRulesWithoutScenariosDescription:
-      "These rules never run because they are missing required scenarios.",
+      "These rules are inactive because the project details are missing required inputs for their conditions.",
     autoGearSummaryResetFocus: "Show all coverage",
     autoGearSummaryDetailsFocusEmpty: "No coverage details match the current focus.",
     autoGearSummaryJumpToRule: "Jump to rule",
@@ -1891,7 +1891,7 @@ const texts = {
     autoGearSummaryDetailsOverlapsNone: "Nessun requisito sovrapposto rilevato.",
     autoGearSummaryDetailsRulesWithoutScenariosHeading: "Regole senza scenari",
     autoGearSummaryDetailsRulesWithoutScenariosDescription:
-      "Queste regole non vengono mai eseguite perché mancano gli scenari richiesti.",
+      "Queste regole sono inattive perché ai dettagli del progetto mancano gli input richiesti per le loro condizioni.",
     autoGearSummaryResetFocus: "Mostra tutta la copertura",
     autoGearSummaryDetailsFocusEmpty: "Nessun dettaglio di copertura corrisponde al focus attuale.",
     autoGearSummaryJumpToRule: "Vai alla regola",
@@ -3146,7 +3146,7 @@ const texts = {
     autoGearSummaryDetailsOverlapsNone: "No se detectaron requisitos solapados.",
     autoGearSummaryDetailsRulesWithoutScenariosHeading: "Reglas sin escenarios",
     autoGearSummaryDetailsRulesWithoutScenariosDescription:
-      "Estas reglas nunca se ejecutan porque faltan escenarios requeridos.",
+      "Estas reglas están inactivas porque en los detalles del proyecto faltan los datos requeridos para sus condiciones.",
     autoGearSummaryResetFocus: "Mostrar toda la cobertura",
     autoGearSummaryDetailsFocusEmpty: "Ningún detalle de cobertura coincide con el enfoque actual.",
     autoGearSummaryJumpToRule: "Ir a la regla",
@@ -4403,7 +4403,7 @@ const texts = {
     autoGearSummaryDetailsOverlapsNone: "Aucun besoin qui se recoupe détecté.",
     autoGearSummaryDetailsRulesWithoutScenariosHeading: "Règles sans scénarios",
     autoGearSummaryDetailsRulesWithoutScenariosDescription:
-      "Ces règles ne s'exécutent jamais car il manque des scénarios requis.",
+      "Ces règles sont inactives car les détails du projet n'incluent pas encore toutes les données requises pour leurs conditions.",
     autoGearSummaryResetFocus: "Afficher toute la couverture",
     autoGearSummaryDetailsFocusEmpty: "Aucun détail de couverture ne correspond au focus actuel.",
     autoGearSummaryJumpToRule: "Aller à la règle",
@@ -5671,7 +5671,7 @@ const texts = {
     autoGearSummaryDetailsOverlapsNone: "Keine überschneidenden Anforderungen gefunden.",
     autoGearSummaryDetailsRulesWithoutScenariosHeading: "Regeln ohne Szenarien",
     autoGearSummaryDetailsRulesWithoutScenariosDescription:
-      "Diese Regeln werden nie ausgeführt, da erforderliche Szenarien fehlen.",
+      "Diese Regeln sind inaktiv, weil in den Projektdetails die für ihre Bedingungen erforderlichen Angaben fehlen.",
     autoGearSummaryResetFocus: "Gesamtabdeckung anzeigen",
     autoGearSummaryDetailsFocusEmpty: "Keine Abdeckungsdetails passen zum aktuellen Fokus.",
     autoGearSummaryJumpToRule: "Zur Regel springen",

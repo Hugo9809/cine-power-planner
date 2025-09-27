@@ -2024,7 +2024,7 @@ function renderAutoGearRuleSummary(analysis) {
       detailsFragment.appendChild(_headingElem5);
       var description = document.createElement('p');
       description.className = 'auto-gear-summary-detail-text';
-      description.textContent = langTexts.autoGearSummaryDetailsRulesWithoutScenariosDescription || ((_texts$en88 = texts.en) === null || _texts$en88 === void 0 ? void 0 : _texts$en88.autoGearSummaryDetailsRulesWithoutScenariosDescription) || 'These rules trigger without scenario filters.';
+      description.textContent = langTexts.autoGearSummaryDetailsRulesWithoutScenariosDescription || ((_texts$en88 = texts.en) === null || _texts$en88 === void 0 ? void 0 : _texts$en88.autoGearSummaryDetailsRulesWithoutScenariosDescription) || 'These rules stay inactive until all required project inputs are provided.';
       detailsFragment.appendChild(description);
       var _list3 = document.createElement('ul');
       _list3.className = 'auto-gear-summary-list';
