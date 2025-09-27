@@ -332,6 +332,29 @@ function updateAutoGearCameraWeightDraft() {
   }
 }
 
+function updateAutoGearShootingDaysDraft() {
+  if (!autoGearEditorDraft) return;
+  if (!isAutoGearConditionActive('shootingDays')) {
+    autoGearEditorDraft.shootingDays = null;
+    return;
+  }
+  const modeValue = autoGearShootingDaysMode ? autoGearShootingDaysMode.value : 'minimum';
+  const valueSource = autoGearShootingDaysInput ? autoGearShootingDaysInput.value : '';
+  const normalized = normalizeAutoGearShootingDaysCondition({ mode: modeValue, value: valueSource });
+  if (normalized) {
+    autoGearEditorDraft.shootingDays = { ...normalized };
+    return;
+  }
+  const fallbackMode = typeof normalizeAutoGearShootingDayMode === 'function'
+    ? normalizeAutoGearShootingDayMode(modeValue)
+    : (typeof modeValue === 'string' && modeValue ? modeValue.trim().toLowerCase() : 'minimum');
+  if (fallbackMode) {
+    autoGearEditorDraft.shootingDays = { mode: fallbackMode, value: null };
+  } else {
+    autoGearEditorDraft.shootingDays = null;
+  }
+}
+
 function refreshAutoGearMonitorOptions(selected) {
   if (!autoGearMonitorSelect) return;
 
@@ -14095,6 +14118,7 @@ const CORE_PART2_GLOBAL_EXPORTS = {
   refreshAutoGearControllersOptions,
   refreshAutoGearDistanceOptions,
   updateAutoGearCameraWeightDraft,
+  updateAutoGearShootingDaysDraft,
 };
 
 const CORE_PART2_GLOBAL_SCOPE =

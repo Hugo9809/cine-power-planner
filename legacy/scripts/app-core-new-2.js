@@ -273,6 +273,36 @@ function updateAutoGearCameraWeightDraft() {
     autoGearEditorDraft.cameraWeight = null;
   }
 }
+function updateAutoGearShootingDaysDraft() {
+  if (!autoGearEditorDraft) return;
+  if (!isAutoGearConditionActive('shootingDays')) {
+    autoGearEditorDraft.shootingDays = null;
+    return;
+  }
+  var modeValue = autoGearShootingDaysMode ? autoGearShootingDaysMode.value : 'minimum';
+  var valueSource = autoGearShootingDaysInput ? autoGearShootingDaysInput.value : '';
+  var normalized = normalizeAutoGearShootingDaysCondition({
+    mode: modeValue,
+    value: valueSource
+  });
+  if (normalized) {
+    autoGearEditorDraft.shootingDays = _objectSpread({}, normalized);
+    return;
+  }
+  var fallbackMode = typeof normalizeAutoGearShootingDayMode === 'function'
+    ? normalizeAutoGearShootingDayMode(modeValue)
+    : typeof modeValue === 'string' && modeValue
+      ? modeValue.trim().toLowerCase()
+      : 'minimum';
+  if (fallbackMode) {
+    autoGearEditorDraft.shootingDays = {
+      mode: fallbackMode,
+      value: null
+    };
+  } else {
+    autoGearEditorDraft.shootingDays = null;
+  }
+}
 function refreshAutoGearMonitorOptions(selected) {
   if (!autoGearMonitorSelect) return;
   var selectedValues = collectAutoGearSelectedValues(selected, 'monitor');
