@@ -10389,6 +10389,7 @@ const sharedKeyMap = {
   autoGearCoverage: "z",
   diagramPositions: "y"
 };
+const sharedKeyMapKeys = Object.keys(sharedKeyMap);
 
 var lastSharedSetupData = null;
 var lastSharedAutoGearRules = null;
@@ -10717,16 +10718,24 @@ function resolveSharedImportMode(sharedRules) {
 
 function encodeSharedSetup(setup) {
   const out = {};
-  Object.keys(sharedKeyMap).forEach(key => {
+  sharedKeyMapKeys.forEach(key => {
     if (setup[key] != null) out[sharedKeyMap[key]] = setup[key];
   });
   return out;
 }
 
 function decodeSharedSetup(setup) {
-  if (setup.setupName || setup.camera) return setup;
+  if (!setup || typeof setup !== "object") return {};
+
+  for (let index = 0; index < sharedKeyMapKeys.length; index += 1) {
+    const key = sharedKeyMapKeys[index];
+    if (Object.prototype.hasOwnProperty.call(setup, key)) {
+      return setup;
+    }
+  }
+
   const out = {};
-  Object.keys(sharedKeyMap).forEach(key => {
+  sharedKeyMapKeys.forEach(key => {
     const short = sharedKeyMap[key];
     if (setup[short] != null) out[key] = setup[short];
   });
