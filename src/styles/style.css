@@ -1923,6 +1923,16 @@ html.install-banner-visible .app-modal[open] {
   width: min(95vw, 900px);
 }
 
+body.dark-mode:not(.pink-mode) .help-content a {
+  color: #fff;
+  text-decoration: underline;
+  text-decoration-color: currentColor;
+}
+
+body.dark-mode:not(.pink-mode) .help-content a:visited {
+  color: #fff;
+}
+
 .help-content h3 {
   display: flex;
   align-items: center;
