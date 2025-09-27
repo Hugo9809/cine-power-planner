@@ -2923,11 +2923,24 @@ function getAutoGearItemIdentityData(item) {
   };
 }
 
-function aggregateAutoGearRuleItems(rules) {
+function normalizeAutoGearRuleForPreview(rule) {
+  if (!rule || typeof rule !== 'object') return null;
+  const add = Array.isArray(rule.add) ? rule.add.map(normalizeAutoGearItem).filter(Boolean) : [];
+  const remove = Array.isArray(rule.remove) ? rule.remove.map(normalizeAutoGearItem).filter(Boolean) : [];
+  if (!add.length && !remove.length) return null;
+  const id = typeof rule.id === 'string' && rule.id ? rule.id : '';
+  return { id, add, remove };
+}
+
+function aggregateAutoGearRuleItems(rules, options = {}) {
+  const allowDraftPreviewRules = Boolean(options.allowDraftPreviewRules);
   const aggregate = new Map();
   const list = Array.isArray(rules) ? rules : [];
   list.forEach(rule => {
-    const normalizedRule = normalizeAutoGearRule(rule);
+    let normalizedRule = normalizeAutoGearRule(rule);
+    if (!normalizedRule && allowDraftPreviewRules) {
+      normalizedRule = normalizeAutoGearRuleForPreview(rule);
+    }
     if (!normalizedRule) return;
     const ruleId = typeof normalizedRule.id === 'string' ? normalizedRule.id : '';
     normalizedRule.add.forEach(entry => {
@@ -2972,20 +2985,26 @@ function computeAutoGearDraftImpactState() {
   if (!autoGearEditorDraft) {
     return { available: false, entries: [], warnings: null };
   }
+  const baseRules = getAutoGearRules();
   const draftRule = normalizeAutoGearRule(autoGearEditorDraft);
-  if (!draftRule) {
+  let previewRule = draftRule;
+  let allowDraftPreviewRules = false;
+  if (!previewRule) {
+    previewRule = normalizeAutoGearRuleForPreview(autoGearEditorDraft);
+    allowDraftPreviewRules = Boolean(previewRule);
+  }
+  if (!previewRule) {
     return { available: false, entries: [], warnings: null };
   }
-  const baseRules = getAutoGearRules();
   const previewRules = baseRules.slice();
-  const matchIndex = previewRules.findIndex(rule => rule && rule.id === draftRule.id);
+  const matchIndex = previewRules.findIndex(rule => rule && rule.id === previewRule.id);
   if (matchIndex >= 0) {
-    previewRules[matchIndex] = draftRule;
+    previewRules[matchIndex] = previewRule;
   } else {
-    previewRules.push(draftRule);
+    previewRules.push(previewRule);
   }
   const baseAggregate = aggregateAutoGearRuleItems(baseRules);
-  const previewAggregate = aggregateAutoGearRuleItems(previewRules);
+  const previewAggregate = aggregateAutoGearRuleItems(previewRules, { allowDraftPreviewRules });
   const keys = new Set([...baseAggregate.keys(), ...previewAggregate.keys()]);
   const entries = [];
   const warnings = { critical: [], conflict: [], redundant: [] };
