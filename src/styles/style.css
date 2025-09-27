@@ -162,6 +162,22 @@
     padding-bottom: 0.3em;
   }
 }
+
+@media (max-width: 768px) {
+  :root {
+    --font-scale-diagram-text: 0.7;
+    --font-scale-diagram-label: 0.6;
+    --font-scale-icon-lg: 1.35;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --font-scale-diagram-text: 0.6;
+    --font-scale-diagram-label: 0.5;
+    --font-scale-icon-lg: 1.2;
+  }
+}
 html.pink-mode,
 body.pink-mode {
   --accent-color: #ff69b4;
