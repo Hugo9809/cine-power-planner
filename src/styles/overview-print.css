@@ -273,6 +273,7 @@ h2, h3, table, .device-block, .device-category, .requirement-box {
 #overviewDialogContent .print-section {
   break-inside: avoid;
   page-break-inside: avoid;
+  background-color: #ffffff;
 }
 
 #overviewDialogContent .print-section > * {
