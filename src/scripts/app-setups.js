@@ -79,34 +79,42 @@ function applyStoredPowerSelection(selection, { preferExisting = true } = {}) {
 
     let anyMatch = false;
     let anyPending = false;
-    if (batterySelect && target.battery && shouldOverwriteBattery) {
-        assignSelectValue(batterySelect, target.battery);
-        if (matchesTarget(batterySelect, target.battery)) {
+    if (batterySelect) {
+        if (target.battery && shouldOverwriteBattery) {
+            assignSelectValue(batterySelect, target.battery);
+            if (matchesTarget(batterySelect, target.battery)) {
+                anyMatch = true;
+            } else {
+                anyPending = true;
+            }
+        } else if (!target.battery && !preferExisting) {
+            assignSelectValue(batterySelect, '');
+            if (matchesTarget(batterySelect, '')) {
+                anyMatch = true;
+            } else {
+                anyPending = true;
+            }
+        } else if (matchesTarget(batterySelect, target.battery)) {
             anyMatch = true;
-        } else {
-            anyPending = true;
-        }
-    } else if (batterySelect && !target.battery && !preferExisting) {
-        assignSelectValue(batterySelect, '');
-        if (matchesTarget(batterySelect, '')) {
-            anyMatch = true;
-        } else {
-            anyPending = true;
         }
     }
-    if (batteryPlateSelect && target.batteryPlate && shouldOverwritePlate) {
-        assignSelectValue(batteryPlateSelect, target.batteryPlate);
-        if (matchesTarget(batteryPlateSelect, target.batteryPlate)) {
+    if (batteryPlateSelect) {
+        if (target.batteryPlate && shouldOverwritePlate) {
+            assignSelectValue(batteryPlateSelect, target.batteryPlate);
+            if (matchesTarget(batteryPlateSelect, target.batteryPlate)) {
+                anyMatch = true;
+            } else {
+                anyPending = true;
+            }
+        } else if (!target.batteryPlate && !preferExisting) {
+            assignSelectValue(batteryPlateSelect, '');
+            if (matchesTarget(batteryPlateSelect, '')) {
+                anyMatch = true;
+            } else {
+                anyPending = true;
+            }
+        } else if (matchesTarget(batteryPlateSelect, target.batteryPlate)) {
             anyMatch = true;
-        } else {
-            anyPending = true;
-        }
-    } else if (batteryPlateSelect && !target.batteryPlate && !preferExisting) {
-        assignSelectValue(batteryPlateSelect, '');
-        if (matchesTarget(batteryPlateSelect, '')) {
-            anyMatch = true;
-        } else {
-            anyPending = true;
         }
     }
     if (typeof applyBatteryPlateSelectionFromBattery === 'function') {
@@ -115,19 +123,23 @@ function applyStoredPowerSelection(selection, { preferExisting = true } = {}) {
             batteryPlateSelect ? batteryPlateSelect.value : target.batteryPlate
         );
     }
-    if (hotswapSelect && target.batteryHotswap && shouldOverwriteHotswap) {
-        assignSelectValue(hotswapSelect, target.batteryHotswap);
-        if (matchesTarget(hotswapSelect, target.batteryHotswap)) {
+    if (hotswapSelect) {
+        if (target.batteryHotswap && shouldOverwriteHotswap) {
+            assignSelectValue(hotswapSelect, target.batteryHotswap);
+            if (matchesTarget(hotswapSelect, target.batteryHotswap)) {
+                anyMatch = true;
+            } else {
+                anyPending = true;
+            }
+        } else if (!target.batteryHotswap && !preferExisting) {
+            assignSelectValue(hotswapSelect, '');
+            if (matchesTarget(hotswapSelect, '')) {
+                anyMatch = true;
+            } else {
+                anyPending = true;
+            }
+        } else if (matchesTarget(hotswapSelect, target.batteryHotswap)) {
             anyMatch = true;
-        } else {
-            anyPending = true;
-        }
-    } else if (hotswapSelect && !target.batteryHotswap && !preferExisting) {
-        assignSelectValue(hotswapSelect, '');
-        if (matchesTarget(hotswapSelect, '')) {
-            anyMatch = true;
-        } else {
-            anyPending = true;
         }
     }
     return anyPending ? false : anyMatch;
