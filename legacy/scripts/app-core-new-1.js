@@ -2553,6 +2553,56 @@ function buildVideoDistributionAutoRules(baseInfo, baselineMap) {
   });
   return rules;
 }
+
+function buildOnboardMonitorRiggingAutoGearRules() {
+  var select = typeof monitorSelect !== 'undefined' ? monitorSelect : null;
+  if (!select || !select.options) {
+    return [];
+  }
+
+  var rules = [];
+  var seen = new Set();
+
+  Array.from(select.options).forEach(function (option) {
+    if (!option) return;
+    var rawValue = typeof option.value === 'string' ? option.value.trim() : '';
+    if (!rawValue || rawValue === 'None') return;
+    var label = typeof option.textContent === 'string' ? option.textContent.trim() : '';
+    if (!label) return;
+    var normalized = normalizeAutoGearTriggerValue(label);
+    if (!normalized || seen.has(normalized)) return;
+    seen.add(normalized);
+
+    rules.push({
+      id: generateAutoGearId('rule'),
+      label: "Onboard monitor: ".concat(label),
+      scenarios: [],
+      mattebox: [],
+      cameraHandle: [],
+      viewfinderExtension: [],
+      videoDistribution: [],
+      camera: [],
+      monitor: [label],
+      crewPresent: [],
+      crewAbsent: [],
+      wireless: [],
+      motors: [],
+      controllers: [],
+      distance: [],
+      add: [{
+        id: generateAutoGearId('item'),
+        name: 'ULCS Arm mit 3/8" und 1/4" double',
+        category: 'Rigging',
+        quantity: 1,
+        contextNotes: ["Onboard monitor: ".concat(label)]
+      }],
+      remove: []
+    });
+  });
+
+  return rules;
+}
+
 function buildDefaultVideoDistributionAutoGearRules() {
   var baseInfo = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   if (typeof generateGearListHtml !== 'function' || typeof parseGearTableForAutoRules !== 'function') {
@@ -3021,18 +3071,24 @@ function buildAutoGearRulesFromBaseInfo(baseInfo, scenarioValues) {
     buildVideoDistributionAutoRules(baseInfo, baselineMap).forEach(function (rule) {
       return rules.push(rule);
     });
-    var defaultVideoDistributionRules = buildDefaultVideoDistributionAutoGearRules(baseInfo);
-    if (defaultVideoDistributionRules.length) {
-      var existingSignatures = new Set(rules.map(autoGearRuleSignature).filter(function (signature) {
-        return typeof signature === 'string' && signature;
-      }));
-      defaultVideoDistributionRules.forEach(function (rule) {
+    var existingSignatures = new Set(rules.map(autoGearRuleSignature).filter(function (signature) {
+      return typeof signature === 'string' && signature;
+    }));
+
+    var appendUniqueRules = function appendUniqueRules(additionalRules) {
+      if (!Array.isArray(additionalRules) || !additionalRules.length) {
+        return;
+      }
+      additionalRules.forEach(function (rule) {
         var signature = autoGearRuleSignature(rule);
         if (!signature || existingSignatures.has(signature)) return;
         rules.push(rule);
         existingSignatures.add(signature);
       });
-    }
+    };
+
+    appendUniqueRules(buildDefaultVideoDistributionAutoGearRules(baseInfo));
+    appendUniqueRules(buildOnboardMonitorRiggingAutoGearRules());
   }
   var alwaysRule = buildAlwaysAutoGearRule();
   if (alwaysRule) {
