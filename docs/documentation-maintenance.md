@@ -33,12 +33,16 @@ copy offline.【F:src/scripts/script.js†L92-L183】
    project root. Ensure new workflows appear in the *Save, Share & Import Drill*, *Backup &
    Recovery* and *Emergency Recovery Playbook* sections so every language documents the same
    safety routines.
-3. **Operations manuals.** Confirm `docs/offline-readiness.md`,
+3. **Save, Share, Import, Backup & Restore Reference.** Keep `docs/save-share-restore-reference.md`
+   synchronized with UI labels, keyboard shortcuts and verification logging guidance so crews
+   rehearse the exact workflows the code exposes through `cinePersistence`, `cineUi` and the
+   runtime guard.
+4. **Operations manuals.** Confirm `docs/offline-readiness.md`,
    `docs/operations-checklist.md`, `docs/backup-rotation-guide.md` and `docs/testing-plan.md`
    include the new logic. These printable guides travel with field kits, so add or update
    drills that prove autosave, backup rotation and restore rehearsals still behave exactly
    as the latest build.
-4. **In-app legal and static pages.** If the change surfaces on legal disclosures or other
+5. **In-app legal and static pages.** If the change surfaces on legal disclosures or other
    static pages in `legal/`, mirror the update in every localized HTML file so offline
    references stay consistent.
 
