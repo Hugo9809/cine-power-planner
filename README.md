@@ -900,6 +900,9 @@ coverage and recovery instructions. Each update should:
   indicators match the live build.
 - Mirror the same adjustments in every localized README and static legal page, preserving
   guidance on saving, sharing, importing, backing up and restoring.
+- Keep the [Save, Share, Import, Backup & Restore Reference](docs/save-share-restore-reference.md)
+  aligned with UI labels, keyboard shortcuts and verification drills so crews rehearse the
+  exact workflows enforced in code when they validate documentation changes.
 - Keep the **Key Workflow Reference** table and **Repository Layout & Offline Assets** notes synchronized across each
   localized README so every crew references the same offline-first procedures and directory expectations.
 - Update translation keys and selectors so language options stay synchronized with the UI
