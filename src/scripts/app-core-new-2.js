@@ -1575,6 +1575,8 @@ function getAutoGearRuleCoverageSummary(options = {}) {
       })),
       overlaps: [],
       rulesWithoutScenarios: [],
+      total: catalog.length,
+      coveredCount: 0,
     };
     autoGearSummaryLast = summary;
     return summary;
@@ -1727,6 +1729,8 @@ function getAutoGearRuleCoverageSummary(options = {}) {
     uncovered,
     overlaps,
     rulesWithoutScenarios,
+    total: catalog.length,
+    coveredCount: coverage.length,
   };
 
   autoGearSummaryLast = summary;
@@ -1878,6 +1882,23 @@ function renderAutoGearRuleSummary(analysis, context = {}) {
   const focus = context.focus || autoGearSummaryFocus || 'all';
   const hasSearchFilters = Boolean(context.hasSearchFilters);
   const focusApplied = Boolean(context.focusApplied);
+  const scenarioTotal = typeof analysis.scenarios?.total === 'number'
+    ? analysis.scenarios.total
+    : Array.isArray(analysis.scenarios?.catalog)
+      ? analysis.scenarios.catalog.length
+      : 0;
+  const scenarioCovered = typeof analysis.scenarios?.coveredCount === 'number'
+    ? analysis.scenarios.coveredCount
+    : Array.isArray(analysis.scenarios?.coverage)
+      ? analysis.scenarios.coverage.length
+      : 0;
+  const overlapCount = Array.isArray(analysis.scenarios?.overlaps)
+    ? analysis.scenarios.overlaps.length
+    : 0;
+  const hasScenarioCatalog = scenarioTotal > 0;
+  const coveragePercent = hasScenarioCatalog && scenarioTotal
+    ? Math.round((scenarioCovered / scenarioTotal) * 100)
+    : 0;
 
   if (!totalRules) {
     autoGearSummaryDescriptionElem.textContent = langTexts.autoGearSummaryEmpty
@@ -1906,6 +1927,18 @@ function renderAutoGearRuleSummary(analysis, context = {}) {
       : langTexts.autoGearRulesCountOther || texts.en?.autoGearRulesCountOther || '%s rules';
     return template.replace('%s', formatNumberForLang(currentLang, count));
   };
+  const coverageValue = hasScenarioCatalog
+    ? `${formatNumberForLang(currentLang, coveragePercent)}%`
+    : formatNumberForLang(currentLang, scenarioCovered);
+  const coverageDescription = hasScenarioCatalog
+    ? (langTexts.autoGearSummaryCoverageDescription
+      || texts.en?.autoGearSummaryCoverageDescription
+      || '{covered} of {total} scenarios covered')
+      .replace('{covered}', formatNumberForLang(currentLang, scenarioCovered))
+      .replace('{total}', formatNumberForLang(currentLang, scenarioTotal))
+    : langTexts.autoGearSummaryCoverageEmpty
+      || texts.en?.autoGearSummaryCoverageEmpty
+      || 'Add scenarios to measure coverage.';
 
   const buildCard = (config) => {
     const { label, value, description, focusKey } = config;
@@ -1944,6 +1977,11 @@ function renderAutoGearRuleSummary(analysis, context = {}) {
       || 'Saved in this setup',
   });
   buildCard({
+    label: langTexts.autoGearSummaryCoverageLabel || texts.en?.autoGearSummaryCoverageLabel || 'Scenario coverage',
+    value: coverageValue,
+    description: coverageDescription,
+  });
+  buildCard({
     label: langTexts.autoGearSummaryNetLabel || texts.en?.autoGearSummaryNetLabel || 'Net change',
     value: netValue,
     description: (langTexts.autoGearSummaryNetDescription || texts.en?.autoGearSummaryNetDescription || 'Adds {adds} · Removes {removes}')
@@ -1956,7 +1994,7 @@ function renderAutoGearRuleSummary(analysis, context = {}) {
     description: analysis.duplicates.totalGroups
       ? (langTexts.autoGearSummaryDuplicatesSome || texts.en?.autoGearSummaryDuplicatesSome || '{rules} across {groups} groups')
         .replace('{rules}', formatRulesCount(analysis.duplicates.totalRules))
-        .replace('{groups}', formatNumberForLang(currentLang, analysis.duplicates.totalGroups))
+      .replace('{groups}', formatNumberForLang(currentLang, analysis.duplicates.totalGroups))
       : langTexts.autoGearSummaryDuplicatesNone || texts.en?.autoGearSummaryDuplicatesNone || 'No duplicate triggers.',
     focusKey: 'duplicates',
   });
@@ -1969,6 +2007,15 @@ function renderAutoGearRuleSummary(analysis, context = {}) {
         .replace('{items}', formatNumberForLang(currentLang, analysis.conflicts.totalItems))
       : langTexts.autoGearSummaryConflictsNone || texts.en?.autoGearSummaryConflictsNone || 'No conflicting adds/removes.',
     focusKey: 'conflicts',
+  });
+  buildCard({
+    label: langTexts.autoGearSummaryOverlapsLabel || texts.en?.autoGearSummaryOverlapsLabel || 'Stacked scenarios',
+    value: formatNumberForLang(currentLang, overlapCount),
+    description: overlapCount
+      ? (langTexts.autoGearSummaryOverlapsSome || texts.en?.autoGearSummaryOverlapsSome || '{count} scenarios touched by multiple rules')
+        .replace('{count}', formatNumberForLang(currentLang, overlapCount))
+      : langTexts.autoGearSummaryOverlapsNone || texts.en?.autoGearSummaryOverlapsNone || 'No scenarios currently stack multiple rules.',
+    focusKey: 'overlaps',
   });
   buildCard({
     label: langTexts.autoGearSummaryUncoveredLabel || texts.en?.autoGearSummaryUncoveredLabel || 'Uncovered scenarios',
@@ -2074,6 +2121,39 @@ function renderAutoGearRuleSummary(analysis, context = {}) {
         list.appendChild(removesItem);
         detailsFragment.appendChild(list);
       });
+    }
+  } else if (focus === 'overlaps') {
+    const headingElem = document.createElement('p');
+    headingElem.className = 'auto-gear-summary-detail-title';
+    headingElem.textContent = langTexts.autoGearSummaryDetailsOverlapsHeading
+      || texts.en?.autoGearSummaryDetailsOverlapsHeading
+      || 'Scenarios with stacked rules';
+    detailsFragment.appendChild(headingElem);
+    if (!analysis.scenarios.overlaps.length) {
+      const empty = document.createElement('p');
+      empty.className = 'auto-gear-summary-detail-text';
+      empty.textContent = langTexts.autoGearSummaryDetailsOverlapsNone
+        || texts.en?.autoGearSummaryDetailsOverlapsNone
+        || 'No scenarios currently stack multiple rules.';
+      detailsFragment.appendChild(empty);
+    } else {
+      const list = document.createElement('ul');
+      list.className = 'auto-gear-summary-list';
+      analysis.scenarios.overlaps.forEach(entry => {
+        const li = document.createElement('li');
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.dataset.autoGearScenario = entry.value;
+        button.textContent = `${entry.label} — ${formatRulesCount(entry.rules.length)}`;
+        button.setAttribute('title', (langTexts.autoGearSummarySetScenarioFilter || texts.en?.autoGearSummarySetScenarioFilter || 'Filter to scenario').replace('{scenario}', entry.label));
+        li.appendChild(button);
+        if (entry.rules.length) {
+          li.appendChild(document.createTextNode(' · '));
+          appendRuleButtons(li, entry.rules);
+        }
+        list.appendChild(li);
+      });
+      detailsFragment.appendChild(list);
     }
   } else if (focus === 'uncovered') {
     const headingElem = document.createElement('p');
@@ -2202,7 +2282,7 @@ function renderAutoGearRuleSummary(analysis, context = {}) {
 }
 
 function setAutoGearSummaryFocus(value) {
-  const allowed = value === 'duplicates' || value === 'conflicts' || value === 'uncovered' ? value : 'all';
+  const allowed = value === 'duplicates' || value === 'conflicts' || value === 'overlaps' || value === 'uncovered' ? value : 'all';
   const next = autoGearSummaryFocus === allowed && allowed !== 'all' ? 'all' : allowed;
   if (autoGearSummaryFocus === next) {
     return;

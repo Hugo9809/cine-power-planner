@@ -52,9 +52,11 @@ npm run test:unit
   control with live warnings inside the help dialog. Translate the related labels in
   `index.html` and the retention status strings in `translations.js` so crews understand how
   many snapshots stay on each device.
-- The rule coverage dashboard adds `autoGearSummary*`, `autoGearSummaryRuleReference*` and
-  `autoGearNoFocusMatches` strings plus documentation callouts in every README. Localize the
-  new keys, keep placeholders such as `{adds}` or `{visible}` intact and update the language
+- The rule coverage dashboard adds `autoGearSummary*`, including the new
+  `autoGearSummaryCoverage*` and `autoGearSummaryOverlaps*` families, plus
+  `autoGearSummaryRuleReference*` and `autoGearNoFocusMatches` strings alongside
+  documentation callouts in every README. Localize the new keys, keep
+  placeholders such as `{adds}` or `{visible}` intact and update the language
   guides so offline reviewers see the same coverage insights.
 
 ## Step 5: Open a pull request
