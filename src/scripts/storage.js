@@ -1129,21 +1129,23 @@ updateGlobalSafeLocalStorageReference();
 let persistentStorageRequestPromise = null;
 
 function requestPersistentStorage() {
-  if (persistentStorageRequestPromise) {
-    return persistentStorageRequestPromise;
-  }
-
   const storageManager = getStorageManager();
-  if (!storageManager || typeof storageManager.persist !== 'function') {
-    persistentStorageRequestPromise = Promise.resolve({
+  const supportsPersist =
+    storageManager && typeof storageManager.persist === 'function';
+
+  if (!supportsPersist) {
+    return Promise.resolve({
       supported: Boolean(storageManager),
       granted: false,
       alreadyGranted: false,
     });
+  }
+
+  if (persistentStorageRequestPromise) {
     return persistentStorageRequestPromise;
   }
 
-  persistentStorageRequestPromise = (async () => {
+  const requestPromise = (async () => {
     let alreadyGranted = false;
     const supportsPersistedCheck = typeof storageManager.persisted === 'function';
 
@@ -1196,7 +1198,21 @@ function requestPersistentStorage() {
     }
   })();
 
-  return persistentStorageRequestPromise;
+  const trackedPromise = requestPromise.then(
+    (result) => {
+      if (!result || result.granted !== true) {
+        persistentStorageRequestPromise = null;
+      }
+      return result;
+    },
+    (error) => {
+      persistentStorageRequestPromise = null;
+      throw error;
+    },
+  );
+
+  persistentStorageRequestPromise = trackedPromise;
+  return trackedPromise;
 }
 
 if (typeof window !== 'undefined' && typeof navigator !== 'undefined') {
