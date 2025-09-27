@@ -8717,13 +8717,27 @@ if (helpButton && helpDialog) {
 
     const pointerAnchored = usingPointerAnchor();
 
-    const preferLeftSide = (() => {
-      if (!tooltipWidth) return false;
+    const pointerClientX = (() => {
       if (pointerAnchored && typeof hoverHelpPointerClientX === 'number') {
-        return hoverHelpPointerClientX >= viewportWidth / 2;
+        return hoverHelpPointerClientX;
       }
-      const elementMidpoint = safeLeft + (rect.width || 0) / 2;
-      return elementMidpoint >= viewportWidth / 2;
+      if (Number.isFinite(rect.left)) {
+        return safeLeft + (rect.width || 0) / 2;
+      }
+      return viewportWidth / 2;
+    })();
+
+    const preferLeftSide = (() => {
+      if (tooltipWidth) {
+        const requiredSpace = tooltipWidth + horizontalOffset + viewportPadding;
+        const availableRight = viewportWidth - pointerClientX;
+        const availableLeft = pointerClientX;
+        if (availableRight < requiredSpace && availableLeft >= requiredSpace) {
+          return true;
+        }
+      }
+      const rightSideThreshold = viewportWidth * 0.6;
+      return pointerClientX >= rightSideThreshold;
     })();
 
     let top = pointerAnchored
