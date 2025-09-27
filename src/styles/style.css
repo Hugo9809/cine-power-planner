@@ -5033,7 +5033,7 @@ body.light-mode #topBar select:focus-visible {
   box-shadow: var(--panel-shadow);
   z-index: 10;
   max-width: 320px;
-  max-height: min(70vh, 480px);
+  max-height: min(85vh, calc(100vh - 32px));
   overflow: auto;
 }
 
