@@ -83,7 +83,7 @@ body.dark-mode {
   --status-warning-text-color: #000000;
   --status-error-text-color: #000;
   --nd-grad-border-color: var(--accent-color);
-  --font-size-base: 11pt;
+  --font-size-base: 10pt;
   --font-size-h1: calc(var(--font-size-base) * 1.8);
   --font-size-h2: calc(var(--font-size-base) * 1.35);
   --font-size-h3: calc(var(--font-size-base) * 1.15);
@@ -384,7 +384,7 @@ table, th, td {
 @media print and (min-width: 240mm) {
   body,
   body.dark-mode {
-    --font-size-base: 12pt;
+    --font-size-base: 10pt;
     --line-height-base: 1.65;
     --print-diagram-max-width: 24cm;
     --print-diagram-icon-scale: 1.05;
@@ -400,7 +400,7 @@ table, th, td {
 @media print and (min-width: 297mm) {
   body,
   body.dark-mode {
-    --font-size-base: 13pt;
+    --font-size-base: 10pt;
     --line-height-base: 1.7;
     --print-diagram-max-width: 28cm;
     --print-diagram-icon-scale: 1.1;
@@ -437,7 +437,7 @@ table, th, td {
 
 #overviewDialogContent .requirements-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.35cm;
   align-items: stretch;
   page-break-inside: avoid;
@@ -480,6 +480,32 @@ body.dark-mode #overviewDialogContent .requirement-box {
 
 #overviewDialogContent .requirements-grid .requirement-box .req-value {
   font-size: var(--font-size-base);
+}
+
+#overviewDialogContent .requirements-grid .requirement-box[data-field="requiredScenarios"],
+#overviewDialogContent .requirements-grid .requirement-box[data-field="shootingScenarios"],
+#overviewDialogContent .requirements-grid .requirement-box[data-field="shootingScenario"] {
+  grid-column: span 3;
+}
+
+#overviewDialogContent .project-requirements-section,
+#overviewDialogContent .requirements-grid,
+#overviewDialogContent .requirements-grid .requirement-box {
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+#overviewDialogContent a,
+#overviewDialogContent a:link,
+#overviewDialogContent a:visited {
+  color: #000 !important;
+  text-decoration: underline;
+}
+
+#overviewDialogContent a[href^="tel"],
+#overviewDialogContent a[href^="mailto"] {
+  color: #000 !important;
+  font-weight: var(--font-weight-medium);
 }
 #overviewDialogContent .gear-table td,
 #overviewDialogContent.dark-mode .gear-table td,
