@@ -5576,6 +5576,22 @@ const AUTO_GEAR_CONDITION_KEYS = [
   'controllers',
   'distance',
 ];
+const AUTO_GEAR_REPEATABLE_CONDITIONS = new Set([
+  'scenarios',
+  'mattebox',
+  'cameraHandle',
+  'viewfinderExtension',
+  'deliveryResolution',
+  'videoDistribution',
+  'camera',
+  'monitor',
+  'crewPresent',
+  'crewAbsent',
+  'wireless',
+  'motors',
+  'controllers',
+  'distance',
+]);
 const AUTO_GEAR_CONDITION_FALLBACK_LABELS = {
   always: 'Always include',
   scenarios: 'Required scenarios',
@@ -12307,7 +12323,12 @@ function refreshAutoGearConditionPicker() {
   placeholder.value = '';
   placeholder.textContent = placeholderLabel;
   autoGearConditionSelect.appendChild(placeholder);
-  const available = AUTO_GEAR_CONDITION_KEYS.filter(key => !autoGearActiveConditions.has(key));
+  const available = AUTO_GEAR_CONDITION_KEYS.filter(key => {
+    if (!autoGearActiveConditions.has(key)) {
+      return true;
+    }
+    return AUTO_GEAR_REPEATABLE_CONDITIONS.has(key);
+  });
   available.forEach(key => {
     const option = document.createElement('option');
     option.value = key;
@@ -12328,7 +12349,12 @@ function updateAutoGearConditionAddButtonState() {
   if (autoGearConditionAddButton) {
     autoGearConditionAddButton.disabled = !hasSelection || disabledPicker;
   }
-  const hasAvailable = AUTO_GEAR_CONDITION_KEYS.some(key => !autoGearActiveConditions.has(key));
+  const hasAvailable = AUTO_GEAR_CONDITION_KEYS.some(key => {
+    if (!autoGearActiveConditions.has(key)) {
+      return true;
+    }
+    return AUTO_GEAR_REPEATABLE_CONDITIONS.has(key);
+  });
   AUTO_GEAR_CONDITION_KEYS.forEach(key => {
     const shortcut = autoGearConditionAddShortcuts[key];
     if (shortcut) {
@@ -12344,6 +12370,57 @@ function focusAutoGearConditionPicker() {
     } catch {
       autoGearConditionSelect.focus();
     }
+  }
+}
+
+function focusAutoGearConditionSection(key, options = {}) {
+  const config = getAutoGearConditionConfig(key);
+  if (!config || !config.section) {
+    return;
+  }
+  const { section, select } = config;
+  const { flash = false } = options || {};
+  if (section.hidden) {
+    section.hidden = false;
+    section.setAttribute('aria-hidden', 'false');
+  }
+  if (flash && section.classList) {
+    section.classList.add('auto-gear-condition-flash');
+    const schedule = typeof window !== 'undefined' && typeof window.setTimeout === 'function'
+      ? window.setTimeout
+      : setTimeout;
+    schedule(() => {
+      section.classList.remove('auto-gear-condition-flash');
+    }, 1200);
+  }
+  const target = select || section.querySelector('select, input, button');
+  if (!target) return;
+  try {
+    target.focus({ preventScroll: true });
+  } catch {
+    target.focus();
+  }
+}
+
+function notifyAutoGearConditionRepeat(key) {
+  if (typeof showNotification !== 'function') {
+    return;
+  }
+  const template = texts[currentLang]?.autoGearConditionRepeatHint
+    || texts.en?.autoGearConditionRepeatHint
+    || '';
+  if (!template) return;
+  const label = getAutoGearConditionLabel(key);
+  let message;
+  if (label) {
+    message = template.replace('{condition}', label);
+  } else if (template.includes(' {condition}')) {
+    message = template.replace(' {condition}', '');
+  } else {
+    message = template.replace('{condition}', '');
+  }
+  if (message) {
+    showNotification('info', message);
   }
 }
 
@@ -12395,6 +12472,11 @@ function addAutoGearCondition(key, options = {}) {
   const config = getAutoGearConditionConfig(key);
   if (!config) return false;
   if (autoGearActiveConditions.has(key)) {
+    if (AUTO_GEAR_REPEATABLE_CONDITIONS.has(key)) {
+      focusAutoGearConditionSection(key, { flash: true });
+      notifyAutoGearConditionRepeat(key);
+      return true;
+    }
     if (options.focus !== false && config.select) {
       try {
         config.select.focus({ preventScroll: true });

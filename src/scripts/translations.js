@@ -250,6 +250,8 @@ const texts = {
     autoGearConditionPlaceholder: "Choose a condition",
     autoGearConditionAddShortcut: "Add another condition",
     autoGearConditionRemove: "Remove this condition",
+    autoGearConditionRepeatHint:
+      "Condition already added. Existing inputs for {condition} are highlighted so you can add more selections.",
     autoGearAlwaysLabel: "Always include",
     autoGearAlwaysHelp: "Apply this rule to every gear list.",
     autoGearAlwaysMeta: "Always active",
@@ -1944,6 +1946,8 @@ const texts = {
     autoGearConditionPlaceholder: "Scegli una condizione",
     autoGearConditionAddShortcut: "Aggiungi un'altra condizione",
     autoGearConditionRemove: "Rimuovi questa condizione",
+    autoGearConditionRepeatHint:
+      "Condizione già aggiunta. I campi esistenti per {condition} vengono evidenziati per permetterti di aggiungere altre selezioni.",
     autoGearAlwaysLabel: "Includi sempre",
     autoGearAlwaysHelp: "Applica questa regola a ogni lista attrezzatura.",
     autoGearAlwaysMeta: "Sempre attiva",
@@ -3221,6 +3225,8 @@ const texts = {
     autoGearConditionPlaceholder: "Elige una condición",
     autoGearConditionAddShortcut: "Añadir otra condición",
     autoGearConditionRemove: "Eliminar esta condición",
+    autoGearConditionRepeatHint:
+      "Condición ya añadida. Resaltamos los campos existentes de {condition} para que puedas añadir más selecciones.",
     autoGearAlwaysLabel: "Incluir siempre",
     autoGearAlwaysHelp: "Aplica esta regla a todas las listas de equipo.",
     autoGearAlwaysMeta: "Siempre activa",
@@ -4500,6 +4506,8 @@ const texts = {
     autoGearConditionPlaceholder: "Choisissez une condition",
     autoGearConditionAddShortcut: "Ajouter une autre condition",
     autoGearConditionRemove: "Supprimer cette condition",
+    autoGearConditionRepeatHint:
+      "Condition déjà ajoutée. Les champs existants pour {condition} sont mis en évidence pour vous permettre d'ajouter d'autres sélections.",
     autoGearAlwaysLabel: "Toujours inclure",
     autoGearAlwaysHelp: "Applique cette règle à chaque liste de matériel.",
     autoGearAlwaysMeta: "Toujours active",
@@ -5790,6 +5798,8 @@ const texts = {
     autoGearConditionPlaceholder: "Wähle eine Bedingung",
     autoGearConditionAddShortcut: "Weitere Bedingung hinzufügen",
     autoGearConditionRemove: "Diese Bedingung entfernen",
+    autoGearConditionRepeatHint:
+      "Bedingung bereits hinzugefügt. Die vorhandenen Eingaben für {condition} sind markiert, damit du weitere Auswahlmöglichkeiten setzen kannst.",
     autoGearAlwaysLabel: "Immer einschließen",
     autoGearAlwaysHelp: "Wendet diese Regel auf jede Geräteliste an.",
     autoGearAlwaysMeta: "Immer aktiv",
