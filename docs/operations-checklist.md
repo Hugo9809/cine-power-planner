@@ -41,7 +41,9 @@ update the repository or hand off a project at the end of the day.
    `window.cineRuntime.verifyCriticalFlows()` for a fresh report and confirm the
    persistence, offline and UI sections all pass before you archive exports.
 6. **Review data & storage dashboard.** Open **Settings → Data & Storage** to
-   ensure counts for projects, backups and custom devices match expectations.
+   ensure counts for projects, backups and custom devices match expectations,
+   confirm the **Latest activity** board lists recent saves and backups, and use
+   **Quick safeguards** to capture a fresh full backup if anything looks stale.
 7. **Check draft impact preview.** Open the automatic gear rule editor, review
    the draft impact preview for quantity deltas and warnings, then cancel to
    confirm the live generator stays unchanged.

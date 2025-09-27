@@ -31,7 +31,8 @@ time:
    timestamped `auto-backup-…` snapshot once the autosave routine runs. Open **Settings →
    Backup & Restore** to confirm the autosave status overlay reflects the same timestamp,
    then review **Settings → Data & Storage** to verify project, backup and gear counts
-   updated as expected.
+   updated as expected, check the **Latest activity** board for the new save entries and
+   capture a backup through **Quick safeguards** if you need an extra offline copy.
 4. **Check the runtime guard.** Open the browser console and inspect
    `window.__cineRuntimeIntegrity`. It should report `{ ok: true }` with an empty
    `missing` list. Run `window.cineRuntime.verifyCriticalFlows()` if you need a fresh
