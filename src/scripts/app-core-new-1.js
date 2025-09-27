@@ -467,6 +467,10 @@ const AUTO_GEAR_RULES_KEY =
   typeof AUTO_GEAR_RULES_STORAGE_KEY !== 'undefined'
     ? AUTO_GEAR_RULES_STORAGE_KEY
     : 'cameraPowerPlanner_autoGearRules';
+const AUTO_GEAR_ANY_MOTOR_TOKEN = '__any__';
+if (typeof globalThis !== 'undefined') {
+  globalThis.AUTO_GEAR_ANY_MOTOR_TOKEN = AUTO_GEAR_ANY_MOTOR_TOKEN;
+}
 const AUTO_GEAR_SEEDED_KEY =
   typeof AUTO_GEAR_SEEDED_STORAGE_KEY !== 'undefined'
     ? AUTO_GEAR_SEEDED_STORAGE_KEY
@@ -3073,6 +3077,67 @@ function buildDefaultMatteboxAutoGearRules() {
   ];
 }
 
+function buildAutoGearAnyMotorRule() {
+  if (typeof captureSetupSelectValues !== 'function') return null;
+  const setupValues = captureSetupSelectValues();
+  const selectedMotors = Array.isArray(setupValues?.motors)
+    ? setupValues.motors.filter(value => typeof value === 'string' && value && value !== 'None')
+    : [];
+  if (!selectedMotors.length) return null;
+
+  const createItem = (name, category, quantity = 1) => {
+    if (!name || !category || quantity <= 0) return null;
+    return {
+      id: generateAutoGearId('item'),
+      name,
+      category,
+      quantity,
+      screenSize: '',
+      selectorType: 'none',
+      selectorDefault: '',
+      selectorEnabled: false,
+      notes: '',
+    };
+  };
+
+  const additions = [];
+  const pushItem = (name, category, quantity = 1) => {
+    const item = createItem(name, category, quantity);
+    if (item) additions.push(item);
+  };
+
+  pushItem('Avenger C-Stand Sliding Leg 20" (Focus)', 'Grip');
+  pushItem('Steelfingers Wheel C-Stand 3er Set (Focus)', 'Grip');
+  pushItem('Lite-Tite Swivel Aluminium Umbrella Adapter (Focus)', 'Grip');
+  pushItem('Tennis ball', 'Grip', 3);
+  pushItem('D-Tap to Mini XLR 3-pin Cable 0,3m (Focus)', 'Monitoring support', 2);
+  pushItem('Ultraslim BNC Cable 0.3 m (Focus)', 'Monitoring support', 2);
+  pushItem('Bebob V150micro (V-Mount) (Focus)', 'Monitoring Batteries', 3);
+
+  if (!additions.length) return null;
+
+  return {
+    id: generateAutoGearId('rule'),
+    label: 'FIZ motor support kit',
+    scenarios: [],
+    mattebox: [],
+    cameraHandle: [],
+    viewfinderExtension: [],
+    deliveryResolution: [],
+    videoDistribution: [],
+    camera: [],
+    monitor: [],
+    crewPresent: [],
+    crewAbsent: [],
+    wireless: [],
+    motors: [AUTO_GEAR_ANY_MOTOR_TOKEN],
+    controllers: [],
+    distance: [],
+    add: additions,
+    remove: [],
+  };
+}
+
 function buildAlwaysAutoGearRule() {
   const createItem = (name, category, quantity = 1, options = {}) => {
     if (!name || !category || quantity <= 0) return null;
@@ -3413,6 +3478,15 @@ function buildAutoGearRulesFromBaseInfo(baseInfo, scenarioValues) {
 
     appendUniqueRules(buildDefaultVideoDistributionAutoGearRules(baseInfo));
     appendUniqueRules(buildOnboardMonitorRiggingAutoGearRules());
+  }
+
+  const anyMotorRule = buildAutoGearAnyMotorRule();
+  if (anyMotorRule) {
+    const targetSignature = autoGearRuleSignature(anyMotorRule);
+    const exists = rules.some(rule => autoGearRuleSignature(rule) === targetSignature);
+    if (!exists) {
+      rules.push(anyMotorRule);
+    }
   }
 
   const alwaysRule = buildAlwaysAutoGearRule();

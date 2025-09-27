@@ -330,6 +330,7 @@ const texts = {
     autoGearWirelessHelp:
       "Apply this rule when these wireless transmitters are selected.",
     autoGearMotorsLabel: "FIZ motors",
+    autoGearMotorsAny: "Any motor selected",
     autoGearMotorsHelp:
       "Apply this rule when these FIZ motors are selected.",
     autoGearControllersLabel: "FIZ controllers",
@@ -2035,6 +2036,7 @@ const texts = {
     autoGearWirelessHelp:
       "Applica la regola quando sono selezionati questi trasmettitori wireless.",
     autoGearMotorsLabel: "Motori FIZ",
+    autoGearMotorsAny: "Qualsiasi motore selezionato",
     autoGearMotorsHelp:
       "Applica la regola quando sono selezionati questi motori FIZ.",
     autoGearControllersLabel: "Controller FIZ",
@@ -3320,6 +3322,7 @@ const texts = {
     autoGearWirelessHelp:
       "Aplica la regla cuando se seleccionan estos transmisores inalámbricos.",
     autoGearMotorsLabel: "Motores FIZ",
+    autoGearMotorsAny: "Cualquier motor seleccionado",
     autoGearMotorsHelp:
       "Aplica la regla cuando se seleccionan estos motores FIZ.",
     autoGearControllersLabel: "Controladores FIZ",
@@ -4607,6 +4610,7 @@ const texts = {
     autoGearWirelessHelp:
       "Appliquez la règle lorsque ces émetteurs sans fil sont sélectionnés.",
     autoGearMotorsLabel: "Moteurs FIZ",
+    autoGearMotorsAny: "N'importe quel moteur sélectionné",
     autoGearMotorsHelp:
       "Appliquez la règle lorsque ces moteurs FIZ sont sélectionnés.",
     autoGearControllersLabel: "Contrôleurs FIZ",
@@ -5906,6 +5910,7 @@ const texts = {
     autoGearWirelessHelp:
       "Wende die Regel an, wenn diese Funk-Sender ausgewählt sind.",
     autoGearMotorsLabel: "FIZ Motoren",
+    autoGearMotorsAny: "Beliebiger Motor ausgewählt",
     autoGearMotorsHelp:
       "Wende die Regel an, wenn diese FIZ Motoren ausgewählt sind.",
     autoGearControllersLabel: "FIZ Controller",

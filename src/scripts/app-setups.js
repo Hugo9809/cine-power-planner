@@ -4,6 +4,11 @@
           createProjectInfoSnapshotForStorage, getProjectAutoSaveOverrides, getAutoGearRuleCoverageSummary,
           normalizeBatteryPlateValue, setSelectValue, applyBatteryPlateSelectionFromBattery */
 
+const AUTO_GEAR_ANY_MOTOR_TOKEN_FALLBACK =
+    (typeof globalThis !== 'undefined' && globalThis.AUTO_GEAR_ANY_MOTOR_TOKEN)
+        ? globalThis.AUTO_GEAR_ANY_MOTOR_TOKEN
+        : '__any__';
+
 // --- NEW SETUP MANAGEMENT FUNCTIONS ---
 
 const setupsCineUi =
@@ -2646,7 +2651,10 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
             .map(normalizeAutoGearTriggerValue)
             .filter(Boolean);
           if (!normalizedTargets.length) return false;
-          if (!normalizedTargets.every(target => normalizedMotorSet.has(target))) return false;
+          const requiresAnyMotor = normalizedTargets.includes(AUTO_GEAR_ANY_MOTOR_TOKEN_FALLBACK);
+          const specificTargets = normalizedTargets.filter(target => target !== AUTO_GEAR_ANY_MOTOR_TOKEN_FALLBACK);
+          if (requiresAnyMotor && normalizedMotorSet.size === 0) return false;
+          if (specificTargets.length && !specificTargets.every(target => normalizedMotorSet.has(target))) return false;
         }
         const controllersList = Array.isArray(rule.controllers) ? rule.controllers.filter(Boolean) : [];
         if (controllersList.length) {
@@ -2985,14 +2993,6 @@ function generateGearListHtml(info = {}) {
         );
     };
     largeMonitorPrefs.forEach(p => addLargeMonitorCables(`${p.role} 15-21"`));
-    if (hasMotor) {
-        monitoringSupportAcc.push(
-            'D-Tap to Mini XLR 3-pin Cable 0,3m (Focus)',
-            'D-Tap to Mini XLR 3-pin Cable 0,3m (Focus)',
-            'Ultraslim BNC Cable 0.3 m (Focus)',
-            'Ultraslim BNC Cable 0.3 m (Focus)'
-        );
-    }
     const handleName = 'SHAPE Telescopic Handle ARRI Rosette Kit 12"';
     const addHandle = () => {
         if (!supportAccNoCages.includes(handleName)) {
@@ -3647,10 +3647,6 @@ function generateGearListHtml(info = {}) {
     handheldPrefs.forEach(p => {
         for (let i = 0; i < 3; i++) monitoringBatteryItems.push(`${bebob98} (${p.role} handheld)`);
     });
-    if (hasMotor) {
-        const bebob150 = Object.keys(devices.batteries || {}).find(n => /V150micro/i.test(n)) || 'Bebob V150micro';
-        for (let i = 0; i < 3; i++) monitoringBatteryItems.push(`${bebob150} (Focus)`);
-    }
     const bebob290 = Object.keys(devices.batteries || {}).find(n => /V290RM-Cine/i.test(n)) || 'Bebob V290RM-Cine';
     largeMonitorPrefs.forEach(p => {
         monitoringBatteryItems.push(`${bebob290} (${p.role} 15-21")`, `${bebob290} (${p.role} 15-21")`);
@@ -3686,11 +3682,6 @@ function generateGearListHtml(info = {}) {
         riggingAcc.push(`D-Tap Splitter (${p.role} 15-21")`);
         riggingAcc.push(`D-Tap Splitter (${p.role} 15-21")`);
     });
-    if (hasMotor) {
-        gripItems.push('Avenger C-Stand Sliding Leg 20" (Focus)');
-        gripItems.push('Steelfingers Wheel C-Stand 3er Set (Focus)');
-        gripItems.push('Lite-Tite Swivel Aluminium Umbrella Adapter (Focus)');
-    }
     if (isScenarioActive('Easyrig')) {
         const stabiliser = devices && devices.accessories && devices.accessories.cameraStabiliser && devices.accessories.cameraStabiliser['Easyrig 5 Vario'];
         const opts = stabiliser && Array.isArray(stabiliser.options) ? stabiliser.options : [];

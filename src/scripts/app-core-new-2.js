@@ -136,6 +136,11 @@ const FALLBACK_HUMANIZE_OVERRIDES_PART2 = {
   connectivity: 'Connectivity'
 };
 
+const AUTO_GEAR_ANY_MOTOR_TOKEN_LOCAL =
+  (typeof globalThis !== 'undefined' && globalThis.AUTO_GEAR_ANY_MOTOR_TOKEN)
+    ? globalThis.AUTO_GEAR_ANY_MOTOR_TOKEN
+    : '__any__';
+
 function fallbackHumanizeKey(key) {
   if (key && Object.prototype.hasOwnProperty.call(FALLBACK_HUMANIZE_OVERRIDES_PART2, key)) {
     return FALLBACK_HUMANIZE_OVERRIDES_PART2[key];
@@ -435,6 +440,7 @@ function refreshAutoGearMotorsOptions(selected) {
   if (!autoGearMotorsSelect) return;
 
   const selectedValues = collectAutoGearSelectedValues(selected, 'motors');
+  const langTexts = texts[currentLang] || texts.en || {};
 
   autoGearMotorsSelect.innerHTML = '';
   autoGearMotorsSelect.multiple = true;
@@ -444,7 +450,7 @@ function refreshAutoGearMotorsOptions(selected) {
     if (!value || seen.has(value)) return;
     const option = document.createElement('option');
     option.value = value;
-    option.textContent = value;
+    option.textContent = formatAutoGearMotorValue(value, langTexts);
     if (selectedValues.includes(value)) {
       option.selected = true;
     }
@@ -1780,6 +1786,20 @@ function formatAutoGearRuleReference(ref, langTexts) {
   return template.replace('{position}', positionText);
 }
 
+function getAutoGearAnyMotorLabelForLang(langTexts) {
+  const fallbackTexts = texts.en || {};
+  const source = langTexts || fallbackTexts;
+  return source.autoGearMotorsAny || fallbackTexts.autoGearMotorsAny || 'Any motor selected';
+}
+
+function formatAutoGearMotorValue(value, langTexts) {
+  const normalized = typeof value === 'string' ? value.trim().toLowerCase() : '';
+  if (normalized === AUTO_GEAR_ANY_MOTOR_TOKEN_LOCAL) {
+    return getAutoGearAnyMotorLabelForLang(langTexts);
+  }
+  return value;
+}
+
 function formatAutoGearTriggerDescription(triggers, analysis, langTexts) {
   if (!triggers) return '';
   const parts = [];
@@ -1842,7 +1862,7 @@ function formatAutoGearTriggerDescription(triggers, analysis, langTexts) {
     { key: 'crewPresent', labelKey: 'autoGearCrewPresentLabel' },
     { key: 'crewAbsent', labelKey: 'autoGearCrewAbsentLabel' },
     { key: 'wireless', labelKey: 'autoGearWirelessLabel' },
-    { key: 'motors', labelKey: 'autoGearMotorsLabel' },
+    { key: 'motors', labelKey: 'autoGearMotorsLabel', formatter: value => formatAutoGearMotorValue(value, langTexts) },
     { key: 'controllers', labelKey: 'autoGearControllersLabel' },
     { key: 'distance', labelKey: 'autoGearDistanceLabel' },
   ];
@@ -2480,13 +2500,14 @@ function renderAutoGearRulesList() {
     const crewAbsentList = Array.isArray(rule.crewAbsent) ? rule.crewAbsent : [];
     const wirelessList = Array.isArray(rule.wireless) ? rule.wireless : [];
     const motorsList = Array.isArray(rule.motors) ? rule.motors : [];
+    const langTexts = texts[currentLang] || texts.en || {};
+    const motorsDisplayList = motorsList.map(value => formatAutoGearMotorValue(value, langTexts));
     const controllersList = Array.isArray(rule.controllers) ? rule.controllers : [];
     const distanceList = Array.isArray(rule.distance) ? rule.distance : [];
     const shootingCondition = normalizeAutoGearShootingDaysCondition(rule.shootingDays);
     const shootingDaysDisplayList = shootingCondition
       ? [String(shootingCondition.value)]
       : [];
-    const langTexts = texts[currentLang] || texts.en || {};
     const cameraWeightDisplay = cameraWeightCondition
       ? formatAutoGearCameraWeight(cameraWeightCondition, langTexts)
       : '';
@@ -2498,7 +2519,7 @@ function renderAutoGearRulesList() {
       crewPresentList,
       crewAbsentList,
       wirelessList,
-      motorsList,
+      motorsDisplayList,
       controllersList,
       distanceList,
       matteboxList,
@@ -2594,7 +2615,7 @@ function renderAutoGearRulesList() {
         || 'FIZ motors';
       const motorsMeta = document.createElement('p');
       motorsMeta.className = 'auto-gear-rule-meta';
-      motorsMeta.textContent = `${motorsLabelText}: ${motorsList.join(' + ')}`;
+      motorsMeta.textContent = `${motorsLabelText}: ${motorsDisplayList.join(' + ')}`;
       info.appendChild(motorsMeta);
     }
     if (controllersList.length) {
