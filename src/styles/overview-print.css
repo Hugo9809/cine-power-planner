@@ -459,6 +459,14 @@ table, th, td {
   break-inside: avoid;
 }
 
+#overviewDialogContent .requirements-grid .requirement-box,
+#overviewDialogContent.dark-mode .requirements-grid .requirement-box,
+body.dark-mode #overviewDialogContent .requirements-grid .requirement-box {
+  background: var(--overview-requirements-print-bg, #f0f1f4) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+}
+
 #overviewDialogContent .requirement-box,
 #overviewDialogContent.dark-mode .requirement-box,
 body.dark-mode #overviewDialogContent .requirement-box {

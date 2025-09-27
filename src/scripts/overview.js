@@ -315,12 +315,11 @@ function generatePrintableOverview() {
             gearSectionHtml = `<section id="gearListOutput" class="gear-list-section">${parts.gearHtml}</section>`;
         }
     }
-    const gearListHtmlCombined = projectSectionHtml || gearSectionHtml
-        ? `${projectSectionHtml || ''}${gearSectionHtml || ''}`
-        : '';
+    const projectRequirementsHtml = projectSectionHtml || '';
+    const gearListHtml = gearSectionHtml || '';
     const deleteGearListLabel = t.deleteGearListBtn || 'Delete Gear List';
     const deleteGearListHelp = t.deleteGearListBtnHelp || deleteGearListLabel;
-    const gearListActionsHtml = gearListHtmlCombined
+    const gearListActionsHtml = gearListHtml
         ? `<div class="overview-gear-actions"><button id="overviewDeleteGearListBtn" class="overview-delete-gear-btn" title="${escapeHtmlSafe(deleteGearListHelp)}" data-help="${escapeHtmlSafe(deleteGearListHelp)}"><span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="essential">&#xF254;</span>${escapeHtmlSafe(deleteGearListLabel)}</button></div>`
         : '';
 
@@ -350,6 +349,8 @@ function generatePrintableOverview() {
             <p><strong>${t.setupNameLabel}</strong> ${safeSetupName}</p>
             <p><em>${generatedOnDisplay}</em></p>
 
+            ${projectRequirementsHtml}
+
             <h2>${t.overviewDeviceSelectionHeading || t.deviceSelectionHeading}</h2>
             ${deviceListHtml}
 
@@ -357,7 +358,7 @@ function generatePrintableOverview() {
 
             ${diagramSectionHtml}
 
-            ${gearListHtmlCombined}
+            ${gearListHtml}
             ${gearListActionsHtml}
             ${batteryComparisonHtml}
         </div>
