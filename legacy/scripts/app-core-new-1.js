@@ -9023,6 +9023,7 @@ var sharedKeyMap = {
   autoGearCoverage: "z",
   diagramPositions: "y"
 };
+var sharedKeyMapKeys = Object.keys(sharedKeyMap);
 var lastSharedSetupData = null;
 var lastSharedAutoGearRules = null;
 var sharedImportPreviousPresetId = '';
@@ -9321,15 +9322,23 @@ function resolveSharedImportMode(sharedRules) {
 }
 function encodeSharedSetup(setup) {
   var out = {};
-  Object.keys(sharedKeyMap).forEach(function (key) {
+  sharedKeyMapKeys.forEach(function (key) {
     if (setup[key] != null) out[sharedKeyMap[key]] = setup[key];
   });
   return out;
 }
 function decodeSharedSetup(setup) {
-  if (setup.setupName || setup.camera) return setup;
+  if (!setup || _typeof(setup) !== "object") return {};
+
+  for (var index = 0; index < sharedKeyMapKeys.length; index += 1) {
+    var key = sharedKeyMapKeys[index];
+    if (Object.prototype.hasOwnProperty.call(setup, key)) {
+      return setup;
+    }
+  }
+
   var out = {};
-  Object.keys(sharedKeyMap).forEach(function (key) {
+  sharedKeyMapKeys.forEach(function (key) {
     var short = sharedKeyMap[key];
     if (setup[short] != null) out[key] = setup[short];
   });

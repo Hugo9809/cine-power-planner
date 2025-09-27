@@ -38,6 +38,20 @@ describe('shared project gear list handling', () => {
     expect(decoded.projectInfo).toEqual(payload.projectInfo);
   });
 
+  test('decodeSharedSetup preserves modern payloads with empty setup names', () => {
+    const { utils } = env;
+    const payload = {
+      setupName: '',
+      gearList: '<section>Gear</section>',
+      projectInfo: { projectName: 'Untitled' }
+    };
+
+    const decoded = utils.decodeSharedSetup(payload);
+    expect(decoded).toBe(payload);
+    expect(decoded.projectInfo).toEqual(payload.projectInfo);
+    expect(decoded.gearList).toBe(payload.gearList);
+  });
+
   test('encodeSharedSetup preserves auto gear coverage snapshots', () => {
     const { utils } = env;
     const payload = {
