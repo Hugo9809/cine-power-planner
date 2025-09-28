@@ -56,7 +56,45 @@ function resolveCineUi() {
   return null;
 }
 
-const eventsCineUi = resolveCineUi();
+let eventsCineUiRegistered = false;
+
+function enqueueCineUiRegistration(callback) {
+  const scope =
+    (typeof globalThis !== 'undefined' && globalThis)
+    || (typeof window !== 'undefined' && window)
+    || (typeof self !== 'undefined' && self)
+    || (typeof global !== 'undefined' && global)
+    || null;
+
+  if (!scope || typeof callback !== 'function') {
+    return;
+  }
+
+  try {
+    const existing = scope.cineUi && typeof scope.cineUi === 'object'
+      ? scope.cineUi
+      : null;
+
+    if (existing) {
+      callback(existing);
+      return;
+    }
+  } catch (callbackError) {
+    if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+      console.warn('cineUi registration callback failed', callbackError);
+    }
+    return;
+  }
+
+  const key = '__cineUiReadyQueue';
+  if (!Array.isArray(scope[key])) {
+    scope[key] = [];
+  }
+
+  scope[key].push(callback);
+}
+
+enqueueCineUiRegistration(registerEventsCineUiInternal);
 
 // Language selection
 languageSelect.addEventListener("change", (event) => {
@@ -1010,10 +1048,16 @@ if (toggleDeviceBtn) {
   toggleDeviceBtn.addEventListener('click', toggleDeviceManagerSection);
 }
 
-if (eventsCineUi) {
+function registerEventsCineUiInternal(cineUi) {
+  if (!cineUi || eventsCineUiRegistered) {
+    return;
+  }
+
+  eventsCineUiRegistered = true;
+
   try {
-    if (eventsCineUi.controllers && typeof eventsCineUi.controllers.register === 'function') {
-      eventsCineUi.controllers.register('deviceManagerSection', {
+    if (cineUi.controllers && typeof cineUi.controllers.register === 'function') {
+      cineUi.controllers.register('deviceManagerSection', {
         show: showDeviceManagerSection,
         hide: hideDeviceManagerSection,
         toggle: toggleDeviceManagerSection,
@@ -1024,17 +1068,17 @@ if (eventsCineUi) {
   }
 
   try {
-    if (eventsCineUi.interactions && typeof eventsCineUi.interactions.register === 'function') {
-      eventsCineUi.interactions.register('saveSetup', handleSaveSetupClick);
-      eventsCineUi.interactions.register('deleteSetup', handleDeleteSetupClick);
+    if (cineUi.interactions && typeof cineUi.interactions.register === 'function') {
+      cineUi.interactions.register('saveSetup', handleSaveSetupClick);
+      cineUi.interactions.register('deleteSetup', handleDeleteSetupClick);
     }
   } catch (error) {
     console.warn('cineUi interaction registration failed', error);
   }
 
   try {
-    if (eventsCineUi.help && typeof eventsCineUi.help.register === 'function') {
-      eventsCineUi.help.register('saveSetup', () => {
+    if (cineUi.help && typeof cineUi.help.register === 'function') {
+      cineUi.help.register('saveSetup', () => {
         const langTexts = texts[currentLang] || {};
         const fallbackTexts = texts.en || {};
         return (
@@ -1044,7 +1088,7 @@ if (eventsCineUi) {
         );
       });
 
-      eventsCineUi.help.register('autoBackupBeforeDeletion', () => {
+      cineUi.help.register('autoBackupBeforeDeletion', () => {
         const langTexts = texts[currentLang] || {};
         const fallbackTexts = texts.en || {};
         return (
@@ -1058,6 +1102,18 @@ if (eventsCineUi) {
     console.warn('cineUi help registration failed', error);
   }
 }
+
+function registerEventsCineUi() {
+  const cineUi = resolveCineUi();
+  if (!cineUi) {
+    return false;
+  }
+
+  registerEventsCineUiInternal(cineUi);
+  return true;
+}
+
+registerEventsCineUi();
 
 
 function toggleDeviceDetails(button) {
