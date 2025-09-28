@@ -99,8 +99,6 @@ function attemptRegistryBackfill(scope) {
     return;
   }
 
-  let registry = null;
-
   const registryCandidates = [];
   if (scope && typeof scope.cineModules === 'object') {
     registryCandidates.push(scope.cineModules);
@@ -116,15 +114,24 @@ function attemptRegistryBackfill(scope) {
     }
   }
 
+  const registries = [];
+  const seen = new Set();
+
   for (let index = 0; index < registryCandidates.length; index += 1) {
     const candidate = registryCandidates[index];
-    if (candidate && typeof candidate.register === 'function' && typeof candidate.has === 'function') {
-      registry = candidate;
-      break;
+    if (!candidate || typeof candidate.register !== 'function' || typeof candidate.has !== 'function') {
+      continue;
     }
+
+    if (seen.has(candidate)) {
+      continue;
+    }
+
+    seen.add(candidate);
+    registries.push(candidate);
   }
 
-  if (!registry) {
+  if (registries.length === 0) {
     return;
   }
 
@@ -173,10 +180,6 @@ function attemptRegistryBackfill(scope) {
 
   for (let index = 0; index < descriptors.length; index += 1) {
     const descriptor = descriptors[index];
-    if (registry.has(descriptor.name)) {
-      continue;
-    }
-
     let moduleValue = null;
     try {
       moduleValue = descriptor.resolve();
@@ -189,13 +192,21 @@ function attemptRegistryBackfill(scope) {
       continue;
     }
 
-    try {
-      registry.register(descriptor.name, moduleValue, {
-        category: descriptor.category,
-        description: descriptor.description,
-      });
-    } catch (error) {
-      void error;
+    for (let registryIndex = 0; registryIndex < registries.length; registryIndex += 1) {
+      const registry = registries[registryIndex];
+      try {
+        if (registry.has(descriptor.name)) {
+          continue;
+        }
+
+        registry.register(descriptor.name, moduleValue, {
+          category: descriptor.category,
+          description: descriptor.description,
+          replace: true,
+        });
+      } catch (error) {
+        void error;
+      }
     }
   }
 }
