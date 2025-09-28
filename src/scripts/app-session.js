@@ -38,7 +38,98 @@
           parseStoredMountVoltages, SUPPORTED_MOUNT_VOLTAGE_TYPES,
           DEFAULT_MOUNT_VOLTAGES, mountVoltageInputs, parseVoltageValue */
 
-let sessionCineUiRegistered = false;
+function getGlobalCineUi() {
+  const scope =
+    (typeof globalThis !== 'undefined' && globalThis)
+    || (typeof window !== 'undefined' && window)
+    || (typeof self !== 'undefined' && self)
+    || (typeof global !== 'undefined' && global)
+    || null;
+
+  if (!scope || typeof scope !== 'object') {
+    return null;
+  }
+
+  try {
+    const candidate = scope.cineUi;
+    return candidate && typeof candidate === 'object' ? candidate : null;
+  } catch (error) {
+    void error;
+    return null;
+  }
+}
+
+function isCineUiEntryRegistered(registry, name) {
+  if (!registry || typeof registry !== 'object') {
+    return false;
+  }
+
+  if (typeof registry.get === 'function') {
+    try {
+      return Boolean(registry.get(name));
+    } catch (error) {
+      void error;
+    }
+  }
+
+  if (typeof registry.list === 'function') {
+    try {
+      const entries = registry.list();
+      return Array.isArray(entries) && entries.indexOf(name) !== -1;
+    } catch (error) {
+      void error;
+    }
+  }
+
+  return false;
+}
+
+function registerCineUiEntries(registry, entries, warningMessage) {
+  if (!registry || typeof registry.register !== 'function') {
+    return;
+  }
+
+  for (let index = 0; index < entries.length; index += 1) {
+    const entry = entries[index];
+    if (!entry || typeof entry.name !== 'string') {
+      continue;
+    }
+
+    if (isCineUiEntryRegistered(registry, entry.name)) {
+      continue;
+    }
+
+    try {
+      registry.register(entry.name, entry.value);
+    } catch (error) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn(warningMessage, error);
+      }
+    }
+  }
+}
+
+function areSessionEntriesRegistered(cineUi) {
+  if (!cineUi || typeof cineUi !== 'object') {
+    return false;
+  }
+
+  const controllers = cineUi.controllers;
+  const interactions = cineUi.interactions;
+  const help = cineUi.help;
+
+  return (
+    isCineUiEntryRegistered(controllers, 'backupSettings')
+    && isCineUiEntryRegistered(controllers, 'restoreSettings')
+    && isCineUiEntryRegistered(interactions, 'performBackup')
+    && isCineUiEntryRegistered(interactions, 'openRestorePicker')
+    && isCineUiEntryRegistered(interactions, 'applyRestoreFile')
+    && isCineUiEntryRegistered(help, 'backupSettings')
+    && isCineUiEntryRegistered(help, 'restoreSettings')
+  );
+}
+
+let sessionCineUiRegistered = areSessionEntriesRegistered(getGlobalCineUi());
 
 function enqueueCineUiRegistration(callback) {
   const scope =
@@ -6950,56 +7041,66 @@ function registerSessionCineUiInternal(cineUi) {
     return;
   }
 
-  sessionCineUiRegistered = true;
+  registerCineUiEntries(
+    cineUi.controllers,
+    [
+      {
+        name: 'backupSettings',
+        value: {
+          execute: createSettingsBackup,
+        },
+      },
+      {
+        name: 'restoreSettings',
+        value: {
+          openPicker: handleRestoreSettingsClick,
+          processFile: handleRestoreSettingsInputChange,
+        },
+      },
+    ],
+    'cineUi controller registration (session) failed'
+  );
 
-  try {
-    if (cineUi.controllers && typeof cineUi.controllers.register === 'function') {
-      cineUi.controllers.register('backupSettings', {
-        execute: createSettingsBackup,
-      });
+  registerCineUiEntries(
+    cineUi.interactions,
+    [
+      { name: 'performBackup', value: createSettingsBackup },
+      { name: 'openRestorePicker', value: handleRestoreSettingsClick },
+      { name: 'applyRestoreFile', value: handleRestoreSettingsInputChange },
+    ],
+    'cineUi interaction registration (session) failed'
+  );
 
-      cineUi.controllers.register('restoreSettings', {
-        openPicker: handleRestoreSettingsClick,
-        processFile: handleRestoreSettingsInputChange,
-      });
-    }
-  } catch (error) {
-    console.warn('cineUi controller registration (session) failed', error);
-  }
+  registerCineUiEntries(
+    cineUi.help,
+    [
+      {
+        name: 'backupSettings',
+        value: () => {
+          const { langTexts, fallbackTexts } = getSessionLanguageTexts();
+          return (
+            langTexts.backupSettingsHelp
+            || fallbackTexts.backupSettingsHelp
+            || 'Create a full backup of every project and preference stored on this device.'
+          );
+        },
+      },
+      {
+        name: 'restoreSettings',
+        value: () => {
+          const { langTexts, fallbackTexts } = getSessionLanguageTexts();
+          return (
+            langTexts.restoreSettingsHelp
+            || fallbackTexts.restoreSettingsHelp
+            || 'Restore a full backup. The planner saves another backup automatically before importing.'
+          );
+        },
+      },
+    ],
+    'cineUi help registration (session) failed'
+  );
 
-  try {
-    if (cineUi.interactions && typeof cineUi.interactions.register === 'function') {
-      cineUi.interactions.register('performBackup', createSettingsBackup);
-      cineUi.interactions.register('openRestorePicker', handleRestoreSettingsClick);
-      cineUi.interactions.register('applyRestoreFile', handleRestoreSettingsInputChange);
-    }
-  } catch (error) {
-    console.warn('cineUi interaction registration (session) failed', error);
-  }
-
-  try {
-    if (cineUi.help && typeof cineUi.help.register === 'function') {
-      cineUi.help.register('backupSettings', () => {
-        const { langTexts, fallbackTexts } = getSessionLanguageTexts();
-        return (
-          langTexts.backupSettingsHelp
-          || fallbackTexts.backupSettingsHelp
-          || 'Create a full backup of every project and preference stored on this device.'
-        );
-      });
-
-      cineUi.help.register('restoreSettings', () => {
-        const { langTexts, fallbackTexts } = getSessionLanguageTexts();
-        return (
-          langTexts.restoreSettingsHelp
-          || fallbackTexts.restoreSettingsHelp
-          || 'Restore a full backup. The planner saves another backup automatically before importing.'
-        );
-      });
-    }
-  } catch (error) {
-    console.warn('cineUi help registration (session) failed', error);
-  }
+  sessionCineUiRegistered = areSessionEntriesRegistered(cineUi);
 }
 
 function registerSessionCineUi() {
