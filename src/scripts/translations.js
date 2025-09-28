@@ -404,6 +404,22 @@ const texts = {
     autoGearVideoDistributionHelp:
       "Apply this rule when these video distribution preferences are selected.",
     autoGearVideoDistributionPlaceholder: "Select video distribution options",
+    autoGearTripodHeadBrandLabel: "Tripod head brand",
+    autoGearTripodHeadBrandHelp:
+      "Apply this rule when the tripod head preferences include these brands.",
+    autoGearTripodHeadBrandPlaceholder: "Select tripod head brands",
+    autoGearTripodBowlLabel: "Tripod bowl size",
+    autoGearTripodBowlHelp:
+      "Apply this rule when the tripod head preferences include these bowl sizes.",
+    autoGearTripodBowlPlaceholder: "Select tripod bowl sizes",
+    autoGearTripodTypesLabel: "Tripod types",
+    autoGearTripodTypesHelp:
+      "Apply this rule when the tripod preferences include these tripod types.",
+    autoGearTripodTypesPlaceholder: "Select tripod types",
+    autoGearTripodSpreaderLabel: "Tripod spreader",
+    autoGearTripodSpreaderHelp:
+      "Apply this rule when the tripod preferences include these spreader options.",
+    autoGearTripodSpreaderPlaceholder: "Select tripod spreaders",
     autoGearVideoDistributionNone: "No video distribution selected",
     autoGearCameraLabel: "Camera selection",
     autoGearCameraHelp:
@@ -2220,6 +2236,22 @@ const texts = {
     autoGearVideoDistributionHelp:
       "Applica la regola quando sono selezionate queste preferenze di distribuzione video.",
     autoGearVideoDistributionPlaceholder: "Seleziona opzioni di distribuzione video",
+    autoGearTripodHeadBrandLabel: "Marca della testa del treppiede",
+    autoGearTripodHeadBrandHelp:
+      "Applica questa regola quando le preferenze della testa del treppiede includono queste marche.",
+    autoGearTripodHeadBrandPlaceholder: "Seleziona marche di teste per treppiede",
+    autoGearTripodBowlLabel: "Dimensione della semisfera del treppiede",
+    autoGearTripodBowlHelp:
+      "Applica questa regola quando le preferenze della testa del treppiede includono queste dimensioni di semisfera.",
+    autoGearTripodBowlPlaceholder: "Seleziona dimensioni della semisfera",
+    autoGearTripodTypesLabel: "Tipi di treppiede",
+    autoGearTripodTypesHelp:
+      "Applica questa regola quando le preferenze del treppiede includono questi tipi di treppiede.",
+    autoGearTripodTypesPlaceholder: "Seleziona tipi di treppiede",
+    autoGearTripodSpreaderLabel: "Spreader del treppiede",
+    autoGearTripodSpreaderHelp:
+      "Applica questa regola quando le preferenze del treppiede includono queste opzioni di spreader.",
+    autoGearTripodSpreaderPlaceholder: "Seleziona spreader per treppiede",
     autoGearVideoDistributionNone: "Nessuna distribuzione video selezionata",
     autoGearCameraLabel: "Selezione telecamera",
     autoGearCameraHelp:
@@ -3616,6 +3648,22 @@ const texts = {
     autoGearVideoDistributionHelp:
       "Aplica la regla cuando se eligen estas preferencias de distribución de vídeo.",
     autoGearVideoDistributionPlaceholder: "Selecciona opciones de distribución de vídeo",
+    autoGearTripodHeadBrandLabel: "Marca de la cabeza de trípode",
+    autoGearTripodHeadBrandHelp:
+      "Aplica esta regla cuando las preferencias de cabeza de trípode incluyan estas marcas.",
+    autoGearTripodHeadBrandPlaceholder: "Selecciona marcas de cabezas de trípode",
+    autoGearTripodBowlLabel: "Tamaño de semiesfera del trípode",
+    autoGearTripodBowlHelp:
+      "Aplica esta regla cuando las preferencias de cabeza de trípode incluyan estos tamaños de semiesfera.",
+    autoGearTripodBowlPlaceholder: "Selecciona tamaños de semiesfera",
+    autoGearTripodTypesLabel: "Tipos de trípode",
+    autoGearTripodTypesHelp:
+      "Aplica esta regla cuando las preferencias de trípode incluyan estos tipos de trípode.",
+    autoGearTripodTypesPlaceholder: "Selecciona tipos de trípode",
+    autoGearTripodSpreaderLabel: "Spreader del trípode",
+    autoGearTripodSpreaderHelp:
+      "Aplica esta regla cuando las preferencias de trípode incluyan estas opciones de spreader.",
+    autoGearTripodSpreaderPlaceholder: "Selecciona spreaders de trípode",
     autoGearVideoDistributionNone: "Sin distribución de vídeo seleccionada",
     autoGearCameraLabel: "Selección de cámara",
     autoGearCameraHelp:
@@ -5014,6 +5062,22 @@ const texts = {
     autoGearVideoDistributionHelp:
       "Appliquer la règle lorsque ces préférences de distribution vidéo sont sélectionnées.",
     autoGearVideoDistributionPlaceholder: "Sélectionnez des options de distribution vidéo",
+    autoGearTripodHeadBrandLabel: "Marque de la tête de trépied",
+    autoGearTripodHeadBrandHelp:
+      "Appliquez cette règle lorsque les préférences de tête de trépied incluent ces marques.",
+    autoGearTripodHeadBrandPlaceholder: "Sélectionnez des marques de têtes de trépied",
+    autoGearTripodBowlLabel: "Taille de bol du trépied",
+    autoGearTripodBowlHelp:
+      "Appliquez cette règle lorsque les préférences de tête de trépied incluent ces tailles de bol.",
+    autoGearTripodBowlPlaceholder: "Sélectionnez des tailles de bol de trépied",
+    autoGearTripodTypesLabel: "Types de trépied",
+    autoGearTripodTypesHelp:
+      "Appliquez cette règle lorsque les préférences de trépied incluent ces types de trépied.",
+    autoGearTripodTypesPlaceholder: "Sélectionnez des types de trépied",
+    autoGearTripodSpreaderLabel: "Écarteur de trépied",
+    autoGearTripodSpreaderHelp:
+      "Appliquez cette règle lorsque les préférences de trépied incluent ces options d'écarteur.",
+    autoGearTripodSpreaderPlaceholder: "Sélectionnez des écarteurs de trépied",
     autoGearVideoDistributionNone: "Aucune distribution vidéo sélectionnée",
     autoGearCameraLabel: "Sélection de caméra",
     autoGearCameraHelp:
@@ -6423,6 +6487,22 @@ const texts = {
     autoGearVideoDistributionHelp:
       "Regel anwenden, wenn diese Videoverteilungsoptionen ausgewählt sind.",
     autoGearVideoDistributionPlaceholder: "Videoverteilungsoptionen auswählen",
+    autoGearTripodHeadBrandLabel: "Stativkopf-Marke",
+    autoGearTripodHeadBrandHelp:
+      "Regel anwenden, wenn die Stativkopf-Voreinstellungen diese Marken enthalten.",
+    autoGearTripodHeadBrandPlaceholder: "Stativkopf-Marken auswählen",
+    autoGearTripodBowlLabel: "Stativ-Halbschalengröße",
+    autoGearTripodBowlHelp:
+      "Regel anwenden, wenn die Stativkopf-Voreinstellungen diese Halbschalengrößen enthalten.",
+    autoGearTripodBowlPlaceholder: "Stativ-Halbschalengrößen auswählen",
+    autoGearTripodTypesLabel: "Stativtypen",
+    autoGearTripodTypesHelp:
+      "Regel anwenden, wenn die Stativvoreinstellungen diese Stativtypen enthalten.",
+    autoGearTripodTypesPlaceholder: "Stativtypen auswählen",
+    autoGearTripodSpreaderLabel: "Stativspreizer",
+    autoGearTripodSpreaderHelp:
+      "Regel anwenden, wenn die Stativvoreinstellungen diese Spreizer-Optionen enthalten.",
+    autoGearTripodSpreaderPlaceholder: "Stativspreizer auswählen",
     autoGearVideoDistributionNone: "Keine Videoverteilung ausgewählt",
     autoGearCameraLabel: "Kameraauswahl",
     autoGearCameraHelp:

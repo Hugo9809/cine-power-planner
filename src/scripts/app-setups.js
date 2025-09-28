@@ -2474,6 +2474,28 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
       ? info.wirelessSelection.trim()
       : '';
   const normalizedWirelessSelection = normalizeAutoGearTriggerValue(rawWirelessSelection);
+  const rawTripodHeadBrand = info && typeof info.tripodHeadBrand === 'string'
+      ? info.tripodHeadBrand.trim()
+      : '';
+  const normalizedTripodHeadBrand = normalizeAutoGearTriggerValue(rawTripodHeadBrand);
+  const rawTripodBowl = info && typeof info.tripodBowl === 'string'
+      ? info.tripodBowl.trim()
+      : '';
+  const normalizedTripodBowl = normalizeAutoGearTriggerValue(rawTripodBowl);
+  const tripodTypeValues = Array.isArray(info?.tripodTypes)
+      ? info.tripodTypes
+      : typeof info?.tripodTypes === 'string'
+        ? info.tripodTypes.split(',').map(s => s.trim()).filter(Boolean)
+        : [];
+  const normalizedTripodTypesSet = new Set(
+    tripodTypeValues
+      .map(value => normalizeAutoGearTriggerValue(value))
+      .filter(Boolean)
+  );
+  const rawTripodSpreader = info && typeof info.tripodSpreader === 'string'
+      ? info.tripodSpreader.trim()
+      : '';
+  const normalizedTripodSpreader = normalizeAutoGearTriggerValue(rawTripodSpreader);
   const crewRoleSet = new Set(
     Array.isArray(info?.people)
       ? info.people
@@ -2619,6 +2641,41 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
           if (!normalizedTargets.length) return false;
           if (!normalizedMonitorSelection) return false;
           if (!normalizedTargets.includes(normalizedMonitorSelection)) return false;
+        }
+        const tripodHeadList = Array.isArray(rule.tripodHeadBrand) ? rule.tripodHeadBrand.filter(Boolean) : [];
+        if (tripodHeadList.length) {
+          const normalizedTargets = tripodHeadList
+            .map(normalizeAutoGearTriggerValue)
+            .filter(Boolean);
+          if (!normalizedTargets.length) return false;
+          if (!normalizedTripodHeadBrand) return false;
+          if (!normalizedTargets.includes(normalizedTripodHeadBrand)) return false;
+        }
+        const tripodBowlList = Array.isArray(rule.tripodBowl) ? rule.tripodBowl.filter(Boolean) : [];
+        if (tripodBowlList.length) {
+          const normalizedTargets = tripodBowlList
+            .map(normalizeAutoGearTriggerValue)
+            .filter(Boolean);
+          if (!normalizedTargets.length) return false;
+          if (!normalizedTripodBowl) return false;
+          if (!normalizedTargets.includes(normalizedTripodBowl)) return false;
+        }
+        const tripodTypesList = Array.isArray(rule.tripodTypes) ? rule.tripodTypes.filter(Boolean) : [];
+        if (tripodTypesList.length) {
+          const normalizedTargets = tripodTypesList
+            .map(normalizeAutoGearTriggerValue)
+            .filter(Boolean);
+          if (!normalizedTargets.length) return false;
+          if (!normalizedTargets.every(target => normalizedTripodTypesSet.has(target))) return false;
+        }
+        const tripodSpreaderList = Array.isArray(rule.tripodSpreader) ? rule.tripodSpreader.filter(Boolean) : [];
+        if (tripodSpreaderList.length) {
+          const normalizedTargets = tripodSpreaderList
+            .map(normalizeAutoGearTriggerValue)
+            .filter(Boolean);
+          if (!normalizedTargets.length) return false;
+          if (!normalizedTripodSpreader) return false;
+          if (!normalizedTargets.includes(normalizedTripodSpreader)) return false;
         }
         const crewPresentList = Array.isArray(rule.crewPresent) ? rule.crewPresent.filter(Boolean) : [];
         if (crewPresentList.length) {

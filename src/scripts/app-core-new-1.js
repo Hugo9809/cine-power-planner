@@ -1590,6 +1590,7 @@ function matchesTripodCategory(value) {
   const normalized = typeof value === 'string' ? value.trim().toLowerCase() : '';
   if (!normalized) return false;
   if (normalized === 'camera support') return true;
+  if (normalized === 'grip') return true;
   return normalized.includes('tripod');
 }
 
@@ -1746,6 +1747,10 @@ const AUTO_GEAR_CONDITION_LOGIC_FIELDS = {
   videoDistribution: 'videoDistributionLogic',
   camera: 'cameraLogic',
   monitor: 'monitorLogic',
+  tripodHeadBrand: 'tripodHeadBrandLogic',
+  tripodBowl: 'tripodBowlLogic',
+  tripodTypes: 'tripodTypesLogic',
+  tripodSpreader: 'tripodSpreaderLogic',
   crewPresent: 'crewPresentLogic',
   crewAbsent: 'crewAbsentLogic',
   wireless: 'wirelessLogic',
@@ -1963,6 +1968,10 @@ function normalizeAutoGearRule(rule) {
   const camera = normalizeAutoGearTriggerList(rule.camera).sort((a, b) => a.localeCompare(b));
   const cameraWeight = normalizeAutoGearCameraWeightCondition(rule.cameraWeight);
   const monitor = normalizeAutoGearTriggerList(rule.monitor).sort((a, b) => a.localeCompare(b));
+  const tripodHeadBrand = normalizeAutoGearTriggerList(rule.tripodHeadBrand).sort((a, b) => a.localeCompare(b));
+  const tripodBowl = normalizeAutoGearTriggerList(rule.tripodBowl).sort((a, b) => a.localeCompare(b));
+  const tripodTypes = normalizeAutoGearTriggerList(rule.tripodTypes).sort((a, b) => a.localeCompare(b));
+  const tripodSpreader = normalizeAutoGearTriggerList(rule.tripodSpreader).sort((a, b) => a.localeCompare(b));
   const crewPresent = normalizeAutoGearTriggerList(rule.crewPresent).sort((a, b) => a.localeCompare(b));
   const crewAbsent = normalizeAutoGearTriggerList(rule.crewAbsent).sort((a, b) => a.localeCompare(b));
   const wireless = normalizeAutoGearTriggerList(rule.wireless).sort((a, b) => a.localeCompare(b));
@@ -1977,6 +1986,10 @@ function normalizeAutoGearRule(rule) {
   const videoDistributionLogic = readAutoGearConditionLogic(rule, 'videoDistribution');
   const cameraLogic = readAutoGearConditionLogic(rule, 'camera');
   const monitorLogic = readAutoGearConditionLogic(rule, 'monitor');
+  const tripodHeadBrandLogic = readAutoGearConditionLogic(rule, 'tripodHeadBrand');
+  const tripodBowlLogic = readAutoGearConditionLogic(rule, 'tripodBowl');
+  const tripodTypesLogic = readAutoGearConditionLogic(rule, 'tripodTypes');
+  const tripodSpreaderLogic = readAutoGearConditionLogic(rule, 'tripodSpreader');
   const crewPresentLogic = readAutoGearConditionLogic(rule, 'crewPresent');
   const crewAbsentLogic = readAutoGearConditionLogic(rule, 'crewAbsent');
   const wirelessLogic = readAutoGearConditionLogic(rule, 'wireless');
@@ -2000,6 +2013,18 @@ function normalizeAutoGearRule(rule) {
   }
   if (cameraLogic && cameraLogic !== 'all') conditionLogic.camera = cameraLogic;
   if (monitorLogic && monitorLogic !== 'all') conditionLogic.monitor = monitorLogic;
+  if (tripodHeadBrandLogic && tripodHeadBrandLogic !== 'all') {
+    conditionLogic.tripodHeadBrand = tripodHeadBrandLogic;
+  }
+  if (tripodBowlLogic && tripodBowlLogic !== 'all') {
+    conditionLogic.tripodBowl = tripodBowlLogic;
+  }
+  if (tripodTypesLogic && tripodTypesLogic !== 'all') {
+    conditionLogic.tripodTypes = tripodTypesLogic;
+  }
+  if (tripodSpreaderLogic && tripodSpreaderLogic !== 'all') {
+    conditionLogic.tripodSpreader = tripodSpreaderLogic;
+  }
   if (crewPresentLogic && crewPresentLogic !== 'all') conditionLogic.crewPresent = crewPresentLogic;
   if (crewAbsentLogic && crewAbsentLogic !== 'all') conditionLogic.crewAbsent = crewAbsentLogic;
   if (wirelessLogic && wirelessLogic !== 'all') conditionLogic.wireless = wirelessLogic;
@@ -2018,6 +2043,10 @@ function normalizeAutoGearRule(rule) {
     && !camera.length
     && !cameraWeight
     && !monitor.length
+    && !tripodHeadBrand.length
+    && !tripodBowl.length
+    && !tripodTypes.length
+    && !tripodSpreader.length
     && !crewPresent.length
     && !crewAbsent.length
     && !wireless.length
@@ -2044,6 +2073,10 @@ function normalizeAutoGearRule(rule) {
     camera,
     cameraWeight,
     monitor,
+    tripodHeadBrand,
+    tripodBowl,
+    tripodTypes,
+    tripodSpreader,
     crewPresent,
     crewAbsent,
     wireless,
@@ -2058,6 +2091,10 @@ function normalizeAutoGearRule(rule) {
     videoDistributionLogic,
     cameraLogic,
     monitorLogic,
+    tripodHeadBrandLogic,
+    tripodBowlLogic,
+    tripodTypesLogic,
+    tripodSpreaderLogic,
     crewPresentLogic,
     crewAbsentLogic,
     wirelessLogic,
@@ -2139,6 +2176,10 @@ function snapshotAutoGearRuleForFingerprint(rule) {
       ? { operator: normalized.cameraWeight.operator, value: normalized.cameraWeight.value }
       : null,
     monitor: normalized.monitor.slice().sort((a, b) => a.localeCompare(b)),
+    tripodHeadBrand: normalized.tripodHeadBrand.slice().sort((a, b) => a.localeCompare(b)),
+    tripodBowl: normalized.tripodBowl.slice().sort((a, b) => a.localeCompare(b)),
+    tripodTypes: normalized.tripodTypes.slice().sort((a, b) => a.localeCompare(b)),
+    tripodSpreader: normalized.tripodSpreader.slice().sort((a, b) => a.localeCompare(b)),
     crewPresent: normalized.crewPresent.slice().sort((a, b) => a.localeCompare(b)),
     crewAbsent: normalized.crewAbsent.slice().sort((a, b) => a.localeCompare(b)),
     wireless: normalized.wireless.slice().sort((a, b) => a.localeCompare(b)),
@@ -2153,6 +2194,10 @@ function snapshotAutoGearRuleForFingerprint(rule) {
     videoDistributionLogic: normalizeAutoGearConditionLogic(normalized.videoDistributionLogic),
     cameraLogic: normalizeAutoGearConditionLogic(normalized.cameraLogic),
     monitorLogic: normalizeAutoGearConditionLogic(normalized.monitorLogic),
+    tripodHeadBrandLogic: normalizeAutoGearConditionLogic(normalized.tripodHeadBrandLogic),
+    tripodBowlLogic: normalizeAutoGearConditionLogic(normalized.tripodBowlLogic),
+    tripodTypesLogic: normalizeAutoGearConditionLogic(normalized.tripodTypesLogic),
+    tripodSpreaderLogic: normalizeAutoGearConditionLogic(normalized.tripodSpreaderLogic),
     crewPresentLogic: normalizeAutoGearConditionLogic(normalized.crewPresentLogic),
     crewAbsentLogic: normalizeAutoGearConditionLogic(normalized.crewAbsentLogic),
     wirelessLogic: normalizeAutoGearConditionLogic(normalized.wirelessLogic),
@@ -2184,6 +2229,10 @@ function autoGearRuleSortKey(rule) {
     ? `${cameraWeightCondition.operator}:${cameraWeightCondition.value}`
     : '';
   const monitorKey = Array.isArray(rule.monitor) ? rule.monitor.join('|') : '';
+  const tripodHeadBrandKey = Array.isArray(rule.tripodHeadBrand) ? rule.tripodHeadBrand.join('|') : '';
+  const tripodBowlKey = Array.isArray(rule.tripodBowl) ? rule.tripodBowl.join('|') : '';
+  const tripodTypesKey = Array.isArray(rule.tripodTypes) ? rule.tripodTypes.join('|') : '';
+  const tripodSpreaderKey = Array.isArray(rule.tripodSpreader) ? rule.tripodSpreader.join('|') : '';
   const crewPresentKey = Array.isArray(rule.crewPresent) ? rule.crewPresent.join('|') : '';
   const crewAbsentKey = Array.isArray(rule.crewAbsent) ? rule.crewAbsent.join('|') : '';
   const wirelessKey = Array.isArray(rule.wireless) ? rule.wireless.join('|') : '';
@@ -2201,6 +2250,10 @@ function autoGearRuleSortKey(rule) {
   const videoDistributionLogicKey = normalizeAutoGearConditionLogic(rule?.videoDistributionLogic);
   const cameraLogicKey = normalizeAutoGearConditionLogic(rule?.cameraLogic);
   const monitorLogicKey = normalizeAutoGearConditionLogic(rule?.monitorLogic);
+  const tripodHeadBrandLogicKey = normalizeAutoGearConditionLogic(rule?.tripodHeadBrandLogic);
+  const tripodBowlLogicKey = normalizeAutoGearConditionLogic(rule?.tripodBowlLogic);
+  const tripodTypesLogicKey = normalizeAutoGearConditionLogic(rule?.tripodTypesLogic);
+  const tripodSpreaderLogicKey = normalizeAutoGearConditionLogic(rule?.tripodSpreaderLogic);
   const crewPresentLogicKey = normalizeAutoGearConditionLogic(rule?.crewPresentLogic);
   const crewAbsentLogicKey = normalizeAutoGearConditionLogic(rule?.crewAbsentLogic);
   const wirelessLogicKey = normalizeAutoGearConditionLogic(rule?.wirelessLogic);
@@ -2209,7 +2262,7 @@ function autoGearRuleSortKey(rule) {
   const distanceLogicKey = normalizeAutoGearConditionLogic(rule?.distanceLogic);
   const addKey = Array.isArray(rule.add) ? rule.add.map(autoGearItemSortKey).join('|') : '';
   const removeKey = Array.isArray(rule.remove) ? rule.remove.map(autoGearItemSortKey).join('|') : '';
-  return `${alwaysKey}|${scenarioKey}|${matteboxKey}|${cameraHandleKey}|${viewfinderKey}|${deliveryResolutionKey}|${videoDistributionKey}|${cameraKey}|${cameraWeightKey}|${monitorKey}|${crewPresentKey}|${crewAbsentKey}|${wirelessKey}|${motorsKey}|${controllersKey}|${distanceKey}|${shootingDaysKey}|${matteboxLogicKey}|${cameraHandleLogicKey}|${viewfinderLogicKey}|${deliveryResolutionLogicKey}|${videoDistributionLogicKey}|${cameraLogicKey}|${monitorLogicKey}|${crewPresentLogicKey}|${crewAbsentLogicKey}|${wirelessLogicKey}|${motorsLogicKey}|${controllersLogicKey}|${distanceLogicKey}|${rule.label || ''}|${addKey}|${removeKey}`;
+  return `${alwaysKey}|${scenarioKey}|${matteboxKey}|${cameraHandleKey}|${viewfinderKey}|${deliveryResolutionKey}|${videoDistributionKey}|${cameraKey}|${cameraWeightKey}|${monitorKey}|${tripodHeadBrandKey}|${tripodBowlKey}|${tripodTypesKey}|${tripodSpreaderKey}|${crewPresentKey}|${crewAbsentKey}|${wirelessKey}|${motorsKey}|${controllersKey}|${distanceKey}|${shootingDaysKey}|${matteboxLogicKey}|${cameraHandleLogicKey}|${viewfinderLogicKey}|${deliveryResolutionLogicKey}|${videoDistributionLogicKey}|${cameraLogicKey}|${monitorLogicKey}|${tripodHeadBrandLogicKey}|${tripodBowlLogicKey}|${tripodTypesLogicKey}|${tripodSpreaderLogicKey}|${crewPresentLogicKey}|${crewAbsentLogicKey}|${wirelessLogicKey}|${motorsLogicKey}|${controllersLogicKey}|${distanceLogicKey}|${rule.label || ''}|${addKey}|${removeKey}`;
 }
 
 function createAutoGearRulesFingerprint(rules) {
@@ -3105,6 +3158,10 @@ function cloneAutoGearRule(rule) {
       : [],
     camera: Array.isArray(rule.camera) ? rule.camera.slice() : [],
     monitor: Array.isArray(rule.monitor) ? rule.monitor.slice() : [],
+    tripodHeadBrand: Array.isArray(rule.tripodHeadBrand) ? rule.tripodHeadBrand.slice() : [],
+    tripodBowl: Array.isArray(rule.tripodBowl) ? rule.tripodBowl.slice() : [],
+    tripodTypes: Array.isArray(rule.tripodTypes) ? rule.tripodTypes.slice() : [],
+    tripodSpreader: Array.isArray(rule.tripodSpreader) ? rule.tripodSpreader.slice() : [],
     crewPresent: Array.isArray(rule.crewPresent) ? rule.crewPresent.slice() : [],
     crewAbsent: Array.isArray(rule.crewAbsent) ? rule.crewAbsent.slice() : [],
     wireless: Array.isArray(rule.wireless) ? rule.wireless.slice() : [],
@@ -3376,6 +3433,86 @@ function buildOnboardMonitorRiggingAutoGearRules() {
   });
 
   return rules;
+}
+
+function buildTripodPreferenceAutoGearRules(baseInfo = {}) {
+  const brand = typeof baseInfo.tripodHeadBrand === 'string' ? baseInfo.tripodHeadBrand.trim() : '';
+  const bowl = typeof baseInfo.tripodBowl === 'string' ? baseInfo.tripodBowl.trim() : '';
+  if (!brand || !bowl) return [];
+
+  const normalizedBrand = normalizeAutoGearTriggerValue(brand);
+  const normalizedBowl = normalizeAutoGearTriggerValue(bowl);
+  if (!normalizedBrand || !normalizedBowl) return [];
+
+  const combos = [
+    {
+      brand: "O'Connor",
+      entries: [
+        { bowl: '100mm bowl', item: "O'Connor Ultimate 1040 Fluid-Head 100mm bowl" },
+        { bowl: '150mm bowl', item: "O'Connor Ultimate 2560 Fluid-Head 150mm bowl" },
+        { bowl: 'Mitchell Mount', item: "O'Connor Ultimate 2560 Fluid-Head Mitchell Mount" },
+      ],
+    },
+    {
+      brand: 'Sachtler',
+      entries: [
+        { bowl: '75mm bowl', item: 'Sachtler aktiv8 head 75mm bowl' },
+        { bowl: '100mm bowl', item: 'Sachtler aktiv18T head 100mm bowl' },
+        { bowl: '150mm bowl', item: 'Sachtler Cine 30 head 150mm bowl' },
+        { bowl: 'Mitchell Mount', item: 'Sachtler Cine 30 head Mitchell mount' },
+      ],
+    },
+  ];
+
+  const matchedBrand = combos.find(entry => normalizeAutoGearTriggerValue(entry.brand) === normalizedBrand);
+  if (!matchedBrand) return [];
+
+  const matchingEntries = matchedBrand.entries.filter(entry => {
+    return normalizeAutoGearTriggerValue(entry.bowl) === normalizedBowl;
+  });
+  if (!matchingEntries.length) return [];
+
+  return matchingEntries.map(entry => {
+    const itemName = entry.item;
+    const contextNotes = ['Tripod preferences'];
+    return {
+      id: generateAutoGearId('rule'),
+      label: `Tripod head: ${itemName}`,
+      scenarios: [],
+      mattebox: [],
+      cameraHandle: [],
+      viewfinderExtension: [],
+      deliveryResolution: [],
+      videoDistribution: [],
+      camera: [],
+      cameraWeight: null,
+      monitor: [],
+      tripodHeadBrand: [matchedBrand.brand],
+      tripodBowl: [entry.bowl],
+      tripodTypes: [],
+      tripodSpreader: [],
+      crewPresent: [],
+      crewAbsent: [],
+      wireless: [],
+      motors: [],
+      controllers: [],
+      distance: [],
+      shootingDays: null,
+      add: [{
+        id: generateAutoGearId('item'),
+        name: itemName,
+        category: 'Grip',
+        quantity: 1,
+        screenSize: '',
+        selectorType: 'tripodHeadBrand',
+        selectorDefault: itemName,
+        selectorEnabled: true,
+        notes: '',
+        contextNotes,
+      }],
+      remove: [],
+    };
+  });
 }
 
 function buildDefaultVideoDistributionAutoGearRules(baseInfo = {}) {
@@ -3968,6 +4105,7 @@ function buildAutoGearRulesFromBaseInfo(baseInfo, scenarioValues) {
 
     appendUniqueRules(buildDefaultVideoDistributionAutoGearRules(baseInfo));
     appendUniqueRules(buildOnboardMonitorRiggingAutoGearRules());
+    appendUniqueRules(buildTripodPreferenceAutoGearRules(baseInfo));
   }
 
   const anyMotorRule = buildAutoGearAnyMotorRule();
@@ -6196,6 +6334,10 @@ const autoGearConditionSections = {
   camera: document.getElementById('autoGearCondition-camera'),
   cameraWeight: autoGearCameraWeightSection,
   monitor: document.getElementById('autoGearCondition-monitor'),
+  tripodHeadBrand: document.getElementById('autoGearCondition-tripodHeadBrand'),
+  tripodBowl: document.getElementById('autoGearCondition-tripodBowl'),
+  tripodTypes: document.getElementById('autoGearCondition-tripodTypes'),
+  tripodSpreader: document.getElementById('autoGearCondition-tripodSpreader'),
   crewPresent: document.getElementById('autoGearCondition-crewPresent'),
   crewAbsent: document.getElementById('autoGearCondition-crewAbsent'),
   wireless: document.getElementById('autoGearCondition-wireless'),
@@ -6216,6 +6358,10 @@ const autoGearConditionAddShortcuts = {
   camera: autoGearConditionSections.camera?.querySelector('.auto-gear-condition-add') || null,
   cameraWeight: autoGearConditionSections.cameraWeight?.querySelector('.auto-gear-condition-add') || null,
   monitor: autoGearConditionSections.monitor?.querySelector('.auto-gear-condition-add') || null,
+  tripodHeadBrand: autoGearConditionSections.tripodHeadBrand?.querySelector('.auto-gear-condition-add') || null,
+  tripodBowl: autoGearConditionSections.tripodBowl?.querySelector('.auto-gear-condition-add') || null,
+  tripodTypes: autoGearConditionSections.tripodTypes?.querySelector('.auto-gear-condition-add') || null,
+  tripodSpreader: autoGearConditionSections.tripodSpreader?.querySelector('.auto-gear-condition-add') || null,
   crewPresent: autoGearConditionSections.crewPresent?.querySelector('.auto-gear-condition-add') || null,
   crewAbsent: autoGearConditionSections.crewAbsent?.querySelector('.auto-gear-condition-add') || null,
   wireless: autoGearConditionSections.wireless?.querySelector('.auto-gear-condition-add') || null,
@@ -6236,6 +6382,10 @@ const autoGearConditionRemoveButtons = {
   camera: autoGearConditionSections.camera?.querySelector('.auto-gear-condition-remove') || null,
   cameraWeight: autoGearConditionSections.cameraWeight?.querySelector('.auto-gear-condition-remove') || null,
   monitor: autoGearConditionSections.monitor?.querySelector('.auto-gear-condition-remove') || null,
+  tripodHeadBrand: autoGearConditionSections.tripodHeadBrand?.querySelector('.auto-gear-condition-remove') || null,
+  tripodBowl: autoGearConditionSections.tripodBowl?.querySelector('.auto-gear-condition-remove') || null,
+  tripodTypes: autoGearConditionSections.tripodTypes?.querySelector('.auto-gear-condition-remove') || null,
+  tripodSpreader: autoGearConditionSections.tripodSpreader?.querySelector('.auto-gear-condition-remove') || null,
   crewPresent: autoGearConditionSections.crewPresent?.querySelector('.auto-gear-condition-remove') || null,
   crewAbsent: autoGearConditionSections.crewAbsent?.querySelector('.auto-gear-condition-remove') || null,
   wireless: autoGearConditionSections.wireless?.querySelector('.auto-gear-condition-remove') || null,
@@ -6304,6 +6454,22 @@ const autoGearMonitorSelect = document.getElementById('autoGearMonitor');
 const autoGearMonitorLabel = document.getElementById('autoGearMonitorLabel');
 const autoGearMonitorModeLabel = document.getElementById('autoGearMonitorModeLabel');
 const autoGearMonitorModeSelect = document.getElementById('autoGearMonitorMode');
+const autoGearTripodHeadBrandSelect = document.getElementById('autoGearTripodHeadBrand');
+const autoGearTripodHeadBrandLabel = document.getElementById('autoGearTripodHeadBrandLabel');
+const autoGearTripodHeadBrandModeLabel = document.getElementById('autoGearTripodHeadBrandModeLabel');
+const autoGearTripodHeadBrandModeSelect = document.getElementById('autoGearTripodHeadBrandMode');
+const autoGearTripodBowlSelect = document.getElementById('autoGearTripodBowl');
+const autoGearTripodBowlLabel = document.getElementById('autoGearTripodBowlLabel');
+const autoGearTripodBowlModeLabel = document.getElementById('autoGearTripodBowlModeLabel');
+const autoGearTripodBowlModeSelect = document.getElementById('autoGearTripodBowlMode');
+const autoGearTripodTypesSelect = document.getElementById('autoGearTripodTypes');
+const autoGearTripodTypesLabel = document.getElementById('autoGearTripodTypesLabel');
+const autoGearTripodTypesModeLabel = document.getElementById('autoGearTripodTypesModeLabel');
+const autoGearTripodTypesModeSelect = document.getElementById('autoGearTripodTypesMode');
+const autoGearTripodSpreaderSelect = document.getElementById('autoGearTripodSpreader');
+const autoGearTripodSpreaderLabel = document.getElementById('autoGearTripodSpreaderLabel');
+const autoGearTripodSpreaderModeLabel = document.getElementById('autoGearTripodSpreaderModeLabel');
+const autoGearTripodSpreaderModeSelect = document.getElementById('autoGearTripodSpreaderMode');
 const autoGearCrewPresentSelect = document.getElementById('autoGearCrewPresent');
 const autoGearCrewPresentLabel = document.getElementById('autoGearCrewPresentLabel');
 const autoGearCrewPresentModeLabel = document.getElementById('autoGearCrewPresentModeLabel');
@@ -6340,6 +6506,10 @@ const autoGearConditionLabels = {
   camera: autoGearCameraLabel,
   cameraWeight: autoGearCameraWeightLabel,
   monitor: autoGearMonitorLabel,
+  tripodHeadBrand: autoGearTripodHeadBrandLabel,
+  tripodBowl: autoGearTripodBowlLabel,
+  tripodTypes: autoGearTripodTypesLabel,
+  tripodSpreader: autoGearTripodSpreaderLabel,
   crewPresent: autoGearCrewPresentLabel,
   crewAbsent: autoGearCrewAbsentLabel,
   wireless: autoGearWirelessLabel,
@@ -6359,6 +6529,10 @@ const autoGearConditionSelects = {
   camera: autoGearCameraSelect,
   cameraWeight: autoGearCameraWeightValueInput,
   monitor: autoGearMonitorSelect,
+  tripodHeadBrand: autoGearTripodHeadBrandSelect,
+  tripodBowl: autoGearTripodBowlSelect,
+  tripodTypes: autoGearTripodTypesSelect,
+  tripodSpreader: autoGearTripodSpreaderSelect,
   crewPresent: autoGearCrewPresentSelect,
   crewAbsent: autoGearCrewAbsentSelect,
   wireless: autoGearWirelessSelect,
@@ -6374,6 +6548,10 @@ const autoGearConditionLogicLabels = {
   videoDistribution: autoGearVideoDistributionModeLabel,
   camera: autoGearCameraModeLabel,
   monitor: autoGearMonitorModeLabel,
+  tripodHeadBrand: autoGearTripodHeadBrandModeLabel,
+  tripodBowl: autoGearTripodBowlModeLabel,
+  tripodTypes: autoGearTripodTypesModeLabel,
+  tripodSpreader: autoGearTripodSpreaderModeLabel,
   crewPresent: autoGearCrewPresentModeLabel,
   crewAbsent: autoGearCrewAbsentModeLabel,
   wireless: autoGearWirelessModeLabel,
@@ -6389,6 +6567,10 @@ const autoGearConditionLogicSelects = {
   videoDistribution: autoGearVideoDistributionModeSelect,
   camera: autoGearCameraModeSelect,
   monitor: autoGearMonitorModeSelect,
+  tripodHeadBrand: autoGearTripodHeadBrandModeSelect,
+  tripodBowl: autoGearTripodBowlModeSelect,
+  tripodTypes: autoGearTripodTypesModeSelect,
+  tripodSpreader: autoGearTripodSpreaderModeSelect,
   crewPresent: autoGearCrewPresentModeSelect,
   crewAbsent: autoGearCrewAbsentModeSelect,
   wireless: autoGearWirelessModeSelect,
@@ -6411,6 +6593,10 @@ const AUTO_GEAR_CONDITION_KEYS = [
   'camera',
   'cameraWeight',
   'monitor',
+  'tripodHeadBrand',
+  'tripodBowl',
+  'tripodTypes',
+  'tripodSpreader',
   'crewPresent',
   'crewAbsent',
   'wireless',
@@ -6427,6 +6613,10 @@ const AUTO_GEAR_REPEATABLE_CONDITIONS = new Set([
   'videoDistribution',
   'camera',
   'monitor',
+  'tripodHeadBrand',
+  'tripodBowl',
+  'tripodTypes',
+  'tripodSpreader',
   'crewPresent',
   'crewAbsent',
   'wireless',
@@ -6446,6 +6636,10 @@ const AUTO_GEAR_CONDITION_FALLBACK_LABELS = {
   camera: 'Camera',
   cameraWeight: 'Camera weight',
   monitor: 'Onboard monitor',
+  tripodHeadBrand: 'Tripod head brand',
+  tripodBowl: 'Tripod bowl size',
+  tripodTypes: 'Tripod types',
+  tripodSpreader: 'Tripod spreader',
   crewPresent: 'Crew present',
   crewAbsent: 'Crew absent',
   wireless: 'Wireless transmitter',
@@ -7905,6 +8099,62 @@ function setLanguage(lang) {
     if (autoGearMonitorSelect) {
       autoGearMonitorSelect.setAttribute('data-help', help);
       autoGearMonitorSelect.setAttribute('aria-label', label);
+    }
+  }
+  if (autoGearTripodHeadBrandLabel) {
+    const label = texts[lang].autoGearTripodHeadBrandLabel
+      || texts.en?.autoGearTripodHeadBrandLabel
+      || autoGearTripodHeadBrandLabel.textContent;
+    autoGearTripodHeadBrandLabel.textContent = label;
+    const help = texts[lang].autoGearTripodHeadBrandHelp
+      || texts.en?.autoGearTripodHeadBrandHelp
+      || label;
+    autoGearTripodHeadBrandLabel.setAttribute('data-help', help);
+    if (autoGearTripodHeadBrandSelect) {
+      autoGearTripodHeadBrandSelect.setAttribute('data-help', help);
+      autoGearTripodHeadBrandSelect.setAttribute('aria-label', label);
+    }
+  }
+  if (autoGearTripodBowlLabel) {
+    const label = texts[lang].autoGearTripodBowlLabel
+      || texts.en?.autoGearTripodBowlLabel
+      || autoGearTripodBowlLabel.textContent;
+    autoGearTripodBowlLabel.textContent = label;
+    const help = texts[lang].autoGearTripodBowlHelp
+      || texts.en?.autoGearTripodBowlHelp
+      || label;
+    autoGearTripodBowlLabel.setAttribute('data-help', help);
+    if (autoGearTripodBowlSelect) {
+      autoGearTripodBowlSelect.setAttribute('data-help', help);
+      autoGearTripodBowlSelect.setAttribute('aria-label', label);
+    }
+  }
+  if (autoGearTripodTypesLabel) {
+    const label = texts[lang].autoGearTripodTypesLabel
+      || texts.en?.autoGearTripodTypesLabel
+      || autoGearTripodTypesLabel.textContent;
+    autoGearTripodTypesLabel.textContent = label;
+    const help = texts[lang].autoGearTripodTypesHelp
+      || texts.en?.autoGearTripodTypesHelp
+      || label;
+    autoGearTripodTypesLabel.setAttribute('data-help', help);
+    if (autoGearTripodTypesSelect) {
+      autoGearTripodTypesSelect.setAttribute('data-help', help);
+      autoGearTripodTypesSelect.setAttribute('aria-label', label);
+    }
+  }
+  if (autoGearTripodSpreaderLabel) {
+    const label = texts[lang].autoGearTripodSpreaderLabel
+      || texts.en?.autoGearTripodSpreaderLabel
+      || autoGearTripodSpreaderLabel.textContent;
+    autoGearTripodSpreaderLabel.textContent = label;
+    const help = texts[lang].autoGearTripodSpreaderHelp
+      || texts.en?.autoGearTripodSpreaderHelp
+      || label;
+    autoGearTripodSpreaderLabel.setAttribute('data-help', help);
+    if (autoGearTripodSpreaderSelect) {
+      autoGearTripodSpreaderSelect.setAttribute('data-help', help);
+      autoGearTripodSpreaderSelect.setAttribute('aria-label', label);
     }
   }
   if (autoGearCrewPresentLabel) {
@@ -13173,6 +13423,10 @@ const autoGearConditionRefreshers = {
   camera: createDeferredAutoGearRefresher('refreshAutoGearCameraOptions'),
   cameraWeight: createDeferredAutoGearRefresher('refreshAutoGearCameraWeightCondition'),
   monitor: createDeferredAutoGearRefresher('refreshAutoGearMonitorOptions'),
+  tripodHeadBrand: createDeferredAutoGearRefresher('refreshAutoGearTripodHeadOptions'),
+  tripodBowl: createDeferredAutoGearRefresher('refreshAutoGearTripodBowlOptions'),
+  tripodTypes: createDeferredAutoGearRefresher('refreshAutoGearTripodTypesOptions'),
+  tripodSpreader: createDeferredAutoGearRefresher('refreshAutoGearTripodSpreaderOptions'),
   crewPresent: selected => refreshAutoGearCrewOptions(autoGearCrewPresentSelect, selected, 'crewPresent'),
   crewAbsent: selected => refreshAutoGearCrewOptions(autoGearCrewAbsentSelect, selected, 'crewAbsent'),
   wireless: createDeferredAutoGearRefresher('refreshAutoGearWirelessOptions'),
