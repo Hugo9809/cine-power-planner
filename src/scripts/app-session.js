@@ -6817,6 +6817,36 @@ if (restoreSettings && restoreSettingsInput) {
   restoreSettingsInput.addEventListener('change', handleRestoreSettingsInputChange);
 }
 
+function getSessionLanguageTexts() {
+  const scope =
+    (typeof globalThis !== 'undefined' && globalThis)
+    || (typeof window !== 'undefined' && window)
+    || (typeof self !== 'undefined' && self)
+    || (typeof global !== 'undefined' && global)
+    || null;
+
+  const allTexts =
+    (typeof texts !== 'undefined' && texts)
+    || (scope && typeof scope.texts === 'object' ? scope.texts : null);
+
+  const resolvedLang =
+    typeof currentLang === 'string'
+    && allTexts
+    && typeof allTexts[currentLang] === 'object'
+      ? currentLang
+      : 'en';
+
+  const langTexts =
+    (allTexts && typeof allTexts[resolvedLang] === 'object' && allTexts[resolvedLang])
+    || {};
+
+  const fallbackTexts =
+    (allTexts && typeof allTexts.en === 'object' && allTexts.en)
+    || {};
+
+  return { langTexts, fallbackTexts };
+}
+
 function registerSessionCineUiInternal(cineUi) {
   if (!cineUi || sessionCineUiRegistered) {
     return;
@@ -6852,8 +6882,7 @@ function registerSessionCineUiInternal(cineUi) {
   try {
     if (cineUi.help && typeof cineUi.help.register === 'function') {
       cineUi.help.register('backupSettings', () => {
-        const langTexts = texts[currentLang] || {};
-        const fallbackTexts = texts.en || {};
+        const { langTexts, fallbackTexts } = getSessionLanguageTexts();
         return (
           langTexts.backupSettingsHelp
           || fallbackTexts.backupSettingsHelp
@@ -6862,8 +6891,7 @@ function registerSessionCineUiInternal(cineUi) {
       });
 
       cineUi.help.register('restoreSettings', () => {
-        const langTexts = texts[currentLang] || {};
-        const fallbackTexts = texts.en || {};
+        const { langTexts, fallbackTexts } = getSessionLanguageTexts();
         return (
           langTexts.restoreSettingsHelp
           || fallbackTexts.restoreSettingsHelp

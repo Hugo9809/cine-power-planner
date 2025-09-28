@@ -1048,6 +1048,36 @@ if (toggleDeviceBtn) {
   toggleDeviceBtn.addEventListener('click', toggleDeviceManagerSection);
 }
 
+function getEventsLanguageTexts() {
+  const scope =
+    (typeof globalThis !== 'undefined' && globalThis)
+    || (typeof window !== 'undefined' && window)
+    || (typeof self !== 'undefined' && self)
+    || (typeof global !== 'undefined' && global)
+    || null;
+
+  const allTexts =
+    (typeof texts !== 'undefined' && texts)
+    || (scope && typeof scope.texts === 'object' ? scope.texts : null);
+
+  const resolvedLang =
+    typeof currentLang === 'string'
+    && allTexts
+    && typeof allTexts[currentLang] === 'object'
+      ? currentLang
+      : 'en';
+
+  const langTexts =
+    (allTexts && typeof allTexts[resolvedLang] === 'object' && allTexts[resolvedLang])
+    || {};
+
+  const fallbackTexts =
+    (allTexts && typeof allTexts.en === 'object' && allTexts.en)
+    || {};
+
+  return { langTexts, fallbackTexts };
+}
+
 function registerEventsCineUiInternal(cineUi) {
   if (!cineUi || eventsCineUiRegistered) {
     return;
@@ -1079,8 +1109,7 @@ function registerEventsCineUiInternal(cineUi) {
   try {
     if (cineUi.help && typeof cineUi.help.register === 'function') {
       cineUi.help.register('saveSetup', () => {
-        const langTexts = texts[currentLang] || {};
-        const fallbackTexts = texts.en || {};
+        const { langTexts, fallbackTexts } = getEventsLanguageTexts();
         return (
           langTexts.saveSetupHelp
           || fallbackTexts.saveSetupHelp
@@ -1089,8 +1118,7 @@ function registerEventsCineUiInternal(cineUi) {
       });
 
       cineUi.help.register('autoBackupBeforeDeletion', () => {
-        const langTexts = texts[currentLang] || {};
-        const fallbackTexts = texts.en || {};
+        const { langTexts, fallbackTexts } = getEventsLanguageTexts();
         return (
           langTexts.preDeleteBackupSuccess
           || fallbackTexts.preDeleteBackupSuccess
