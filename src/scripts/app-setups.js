@@ -35,7 +35,102 @@ function assignSelectValue(select, value) {
     }
 }
 
-let setupsCineUiRegistered = false;
+function getGlobalCineUi() {
+    const scope =
+        (typeof globalThis !== 'undefined' && globalThis)
+        || (typeof window !== 'undefined' && window)
+        || (typeof self !== 'undefined' && self)
+        || (typeof global !== 'undefined' && global)
+        || null;
+
+    if (!scope || typeof scope !== 'object') {
+        return null;
+    }
+
+    try {
+        const candidate = scope.cineUi;
+        return candidate && typeof candidate === 'object' ? candidate : null;
+    } catch (error) {
+        void error;
+        return null;
+    }
+}
+
+function isCineUiEntryRegistered(registry, name) {
+    if (!registry || typeof registry !== 'object') {
+        return false;
+    }
+
+    if (typeof registry.get === 'function') {
+        try {
+            return Boolean(registry.get(name));
+        } catch (error) {
+            void error;
+        }
+    }
+
+    if (typeof registry.list === 'function') {
+        try {
+            const entries = registry.list();
+            return Array.isArray(entries) && entries.indexOf(name) !== -1;
+        } catch (error) {
+            void error;
+        }
+    }
+
+    return false;
+}
+
+function registerCineUiEntries(registry, entries, warningMessage) {
+    if (!registry || typeof registry.register !== 'function') {
+        return;
+    }
+
+    for (let index = 0; index < entries.length; index += 1) {
+        const entry = entries[index];
+        if (!entry || typeof entry.name !== 'string') {
+            continue;
+        }
+
+        if (isCineUiEntryRegistered(registry, entry.name)) {
+            continue;
+        }
+
+        try {
+            registry.register(entry.name, entry.value);
+        } catch (error) {
+            if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+                console.warn(warningMessage, error);
+            }
+        }
+    }
+}
+
+function areSetupsEntriesRegistered(cineUi) {
+    if (!cineUi || typeof cineUi !== 'object') {
+        return false;
+    }
+
+    const controllers = cineUi.controllers;
+    const interactions = cineUi.interactions;
+    const help = cineUi.help;
+
+    return (
+        isCineUiEntryRegistered(controllers, 'shareDialog')
+        && isCineUiEntryRegistered(controllers, 'sharedImportDialog')
+        && isCineUiEntryRegistered(interactions, 'shareOpen')
+        && isCineUiEntryRegistered(interactions, 'shareSubmit')
+        && isCineUiEntryRegistered(interactions, 'shareCancel')
+        && isCineUiEntryRegistered(interactions, 'shareApplyFile')
+        && isCineUiEntryRegistered(interactions, 'shareInputChange')
+        && isCineUiEntryRegistered(interactions, 'sharedImportSubmit')
+        && isCineUiEntryRegistered(interactions, 'sharedImportCancel')
+        && isCineUiEntryRegistered(help, 'shareProject')
+        && isCineUiEntryRegistered(help, 'sharedImport')
+    );
+}
+
+let setupsCineUiRegistered = areSetupsEntriesRegistered(getGlobalCineUi());
 
 function enqueueCineUiRegistration(callback) {
     const scope =
@@ -667,65 +762,75 @@ function registerSetupsCineUiInternal(cineUi) {
     return;
   }
 
-  setupsCineUiRegistered = true;
+  registerCineUiEntries(
+    cineUi.controllers,
+    [
+      {
+        name: 'shareDialog',
+        value: {
+          open: handleShareSetupClick,
+          submit: handleShareFormSubmit,
+          cancel: handleShareCancelClick,
+          dismiss: handleShareDialogCancel,
+        },
+      },
+      {
+        name: 'sharedImportDialog',
+        value: {
+          submit: handleSharedImportSubmit,
+          cancel: handleSharedImportCancel,
+          dismiss: handleSharedImportDialogCancel,
+          changeMode: handleSharedImportModeChange,
+        },
+      },
+    ],
+    'cineUi controller registration (setups) failed'
+  );
 
-  try {
-    if (cineUi.controllers && typeof cineUi.controllers.register === 'function') {
-      cineUi.controllers.register('shareDialog', {
-        open: handleShareSetupClick,
-        submit: handleShareFormSubmit,
-        cancel: handleShareCancelClick,
-        dismiss: handleShareDialogCancel,
-      });
+  registerCineUiEntries(
+    cineUi.interactions,
+    [
+      { name: 'shareOpen', value: handleShareSetupClick },
+      { name: 'shareSubmit', value: handleShareFormSubmit },
+      { name: 'shareCancel', value: handleShareCancelClick },
+      { name: 'shareApplyFile', value: handleApplySharedLinkClick },
+      { name: 'shareInputChange', value: handleSharedLinkInputChange },
+      { name: 'sharedImportSubmit', value: handleSharedImportSubmit },
+      { name: 'sharedImportCancel', value: handleSharedImportCancel },
+    ],
+    'cineUi interaction registration (setups) failed'
+  );
 
-      cineUi.controllers.register('sharedImportDialog', {
-        submit: handleSharedImportSubmit,
-        cancel: handleSharedImportCancel,
-        dismiss: handleSharedImportDialogCancel,
-        changeMode: handleSharedImportModeChange,
-      });
-    }
-  } catch (error) {
-    console.warn('cineUi controller registration (setups) failed', error);
-  }
+  registerCineUiEntries(
+    cineUi.help,
+    [
+      {
+        name: 'shareProject',
+        value: () => {
+          const { langTexts, fallbackTexts } = getSafeLanguageTexts();
+          return (
+            langTexts.shareSetupHelp
+            || fallbackTexts.shareSetupHelp
+            || 'Download a JSON file of the current project to share with others.'
+          );
+        },
+      },
+      {
+        name: 'sharedImport',
+        value: () => {
+          const { langTexts, fallbackTexts } = getSafeLanguageTexts();
+          return (
+            langTexts.applySharedLinkHelp
+            || fallbackTexts.applySharedLinkHelp
+            || 'Load the configuration from the selected project file.'
+          );
+        },
+      },
+    ],
+    'cineUi help registration (setups) failed'
+  );
 
-  try {
-    if (cineUi.interactions && typeof cineUi.interactions.register === 'function') {
-      cineUi.interactions.register('shareOpen', handleShareSetupClick);
-      cineUi.interactions.register('shareSubmit', handleShareFormSubmit);
-      cineUi.interactions.register('shareCancel', handleShareCancelClick);
-      cineUi.interactions.register('shareApplyFile', handleApplySharedLinkClick);
-      cineUi.interactions.register('shareInputChange', handleSharedLinkInputChange);
-      cineUi.interactions.register('sharedImportSubmit', handleSharedImportSubmit);
-      cineUi.interactions.register('sharedImportCancel', handleSharedImportCancel);
-    }
-  } catch (error) {
-    console.warn('cineUi interaction registration (setups) failed', error);
-  }
-
-  try {
-    if (cineUi.help && typeof cineUi.help.register === 'function') {
-      cineUi.help.register('shareProject', () => {
-        const { langTexts, fallbackTexts } = getSafeLanguageTexts();
-        return (
-          langTexts.shareSetupHelp
-          || fallbackTexts.shareSetupHelp
-          || 'Download a JSON file of the current project to share with others.'
-        );
-      });
-
-      cineUi.help.register('sharedImport', () => {
-        const { langTexts, fallbackTexts } = getSafeLanguageTexts();
-        return (
-          langTexts.applySharedLinkHelp
-          || fallbackTexts.applySharedLinkHelp
-          || 'Load the configuration from the selected project file.'
-        );
-      });
-    }
-  } catch (error) {
-    console.warn('cineUi help registration (setups) failed', error);
-  }
+  setupsCineUiRegistered = areSetupsEntriesRegistered(cineUi);
 }
 
 function registerSetupsCineUi() {
