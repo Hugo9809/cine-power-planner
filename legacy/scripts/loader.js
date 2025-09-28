@@ -382,23 +382,23 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       finalize(supported);
     };
     optionalCheckScript.onerror = function (event) {
-      var supported = !isSyntaxErrorEvent(event);
-      if (!supported) {
-        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+      var syntaxError = isSyntaxErrorEvent(event);
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        if (syntaxError) {
           console.warn('Modern support check failed due to syntax error. Falling back to legacy bundle.', event);
+        } else {
+          console.warn('Modern support check could not be loaded safely. Falling back to legacy bundle.', event);
         }
-      } else if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-        console.warn('Modern support check could not be loaded. Assuming modern feature support.', event);
       }
-      finalize(supported);
+      finalize(false);
     };
     try {
       head.appendChild(optionalCheckScript);
     } catch (appendError) {
       if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-        console.warn('Unable to append modern support check script.', appendError);
+        console.warn('Unable to append modern support check script. Falling back to legacy bundle.', appendError);
       }
-      finalize(true);
+      finalize(false);
     }
   }
   function loadScriptsSequentially(urls) {
