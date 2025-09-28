@@ -543,6 +543,7 @@
       MODULE_REGISTRY.register('cineRuntime', runtimeAPI, {
         category: 'runtime',
         description: 'Runtime orchestrator ensuring persistence, offline, and UI safeguards stay intact.',
+        replace: true,
       });
     } catch (error) {
       safeWarn('Unable to register cineRuntime module.', error);

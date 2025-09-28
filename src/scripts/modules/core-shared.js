@@ -388,6 +388,7 @@
       MODULE_REGISTRY.register('cineCoreShared', shared, {
         category: 'shared',
         description: 'Shared helpers for deterministic stringification, weights, and version markers.',
+        replace: true,
       });
     } catch (error) {
       void error;
