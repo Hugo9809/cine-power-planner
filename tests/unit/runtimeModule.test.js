@@ -5,6 +5,7 @@ describe('cineRuntime module', () => {
   let persistenceStub;
   let offlineStub;
   let uiStub;
+  let registry;
 
   function buildPersistenceStub() {
     const noop = () => {};
@@ -192,9 +193,16 @@ describe('cineRuntime module', () => {
 
   beforeEach(() => {
     jest.resetModules();
+    registry = require(path.join('..', '..', 'src', 'scripts', 'modules', 'registry.js'));
+    registry.__internalResetForTests({ force: true });
+
     persistenceStub = buildPersistenceStub();
     offlineStub = buildOfflineStub();
     uiStub = buildUiStub();
+
+    registry.register('cinePersistence', persistenceStub, { category: 'persistence', description: 'test' });
+    registry.register('cineOffline', offlineStub, { category: 'offline', description: 'test' });
+    registry.register('cineUi', uiStub, { category: 'ui', description: 'test' });
 
     global.cinePersistence = persistenceStub;
     global.cineOffline = offlineStub;
@@ -208,6 +216,10 @@ describe('cineRuntime module', () => {
     delete global.cineOffline;
     delete global.cineUi;
     delete global.cineRuntime;
+    if (registry && typeof registry.__internalResetForTests === 'function') {
+      registry.__internalResetForTests({ force: true });
+    }
+    registry = null;
   });
 
   test('exposes frozen runtime API and module getters', () => {
@@ -215,6 +227,7 @@ describe('cineRuntime module', () => {
     expect(runtime.getPersistence()).toBe(persistenceStub);
     expect(runtime.getOffline()).toBe(offlineStub);
     expect(runtime.getUi()).toBe(uiStub);
+    expect(runtime.getModuleRegistry()).toBeTruthy();
   });
 
   test('lists critical checks across persistence, offline and UI layers', () => {
@@ -235,6 +248,11 @@ describe('cineRuntime module', () => {
       cinePersistence: true,
       cineOffline: true,
       cineUi: true,
+      registry: {
+        cinePersistence: true,
+        cineOffline: true,
+        cineUi: true,
+      },
     });
   });
 
@@ -245,6 +263,7 @@ describe('cineRuntime module', () => {
       ...persistenceStub,
       storage: Object.freeze(mutated),
     });
+    registry.register('cinePersistence', global.cinePersistence, { replace: true, category: 'persistence', description: 'mutated' });
 
     const result = runtime.verifyCriticalFlows();
     expect(result.ok).toBe(false);

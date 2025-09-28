@@ -931,6 +931,17 @@ npm run test:dom    # lightweight DOM utilities (1.5 GB heap cap)
 npm run test:script # reduced smoke checks for script.js (3 GB heap cap)
 ```
 
+### Module registry
+
+The runtime registers every critical bundle (`cinePersistence`, `cineOffline`,
+`cineUi`, `cineRuntime`, shared helpers and more) with the global
+`cineModules` registry. Each module entry is frozen by default, documented with
+metadata and verified during startup so save, share, import, backup and restore
+flows cannot run without their safeguards. See
+[`docs/architecture/module-registry.md`](docs/architecture/module-registry.md)
+for the full contract and guidance on adding new modules while keeping offline
+guarantees, documentation and translations aligned.
+
 ### Legacy browser bundle
 
 Run `npm run build:legacy` after modifying files in `src/scripts/` or `src/data/`
@@ -948,6 +959,7 @@ src/styles/overview-print.css # Print overrides for the overview dialog
 src/scripts/script.js        # Application logic
 src/scripts/storage.js       # Local storage helpers
 src/scripts/static-theme.js  # Shared theme logic for legal pages
+src/scripts/modules/        # Frozen runtime modules registered in cineModules
 src/data/index.js       # Default device list
 src/data/devices/       # Device catalogs by category
 src/data/schema.json    # Schema used for validation

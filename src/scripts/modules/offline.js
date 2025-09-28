@@ -10,6 +10,43 @@
             ? global
             : {};
 
+  function tryRequire(modulePath) {
+    if (typeof require !== 'function') {
+      return null;
+    }
+
+    try {
+      return require(modulePath);
+    } catch (error) {
+      void error;
+      return null;
+    }
+  }
+
+  function resolveModuleRegistry() {
+    const required = tryRequire('./registry.js');
+    if (required && typeof required === 'object') {
+      return required;
+    }
+
+    const scopes = [GLOBAL_SCOPE];
+    if (typeof globalThis !== 'undefined' && scopes.indexOf(globalThis) === -1) scopes.push(globalThis);
+    if (typeof window !== 'undefined' && scopes.indexOf(window) === -1) scopes.push(window);
+    if (typeof self !== 'undefined' && scopes.indexOf(self) === -1) scopes.push(self);
+    if (typeof global !== 'undefined' && scopes.indexOf(global) === -1) scopes.push(global);
+
+    for (let index = 0; index < scopes.length; index += 1) {
+      const scope = scopes[index];
+      if (scope && typeof scope.cineModules === 'object') {
+        return scope.cineModules;
+      }
+    }
+
+    return null;
+  }
+
+  const MODULE_REGISTRY = resolveModuleRegistry();
+
   const UI_CACHE_STORAGE_KEYS_FOR_RELOAD = [
     'cameraPowerPlanner_schemaCache',
     'cinePowerPlanner_schemaCache',
@@ -571,6 +608,17 @@
   };
 
   freezeDeep(offlineAPI);
+
+  if (MODULE_REGISTRY && typeof MODULE_REGISTRY.register === 'function') {
+    try {
+      MODULE_REGISTRY.register('cineOffline', offlineAPI, {
+        category: 'offline',
+        description: 'Offline helpers for service worker registration and cache recovery.',
+      });
+    } catch (error) {
+      safeWarn('Unable to register cineOffline in module registry.', error);
+    }
+  }
 
   if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE === 'object') {
     try {

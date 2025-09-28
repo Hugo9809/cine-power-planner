@@ -9,7 +9,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
   var fs = require('fs');
   var path = require('path');
   var vm = require('vm');
-  var parts = ['modules/offline.js', 'modules/core-shared.js', 'modules/ui.js', 'app-core-new-1.js', 'app-core-new-2.js', 'app-events.js', 'app-setups.js', 'app-session.js'];
+  var parts = ['modules/registry.js', 'modules/offline.js', 'modules/core-shared.js', 'modules/ui.js', 'app-core-new-1.js', 'app-core-new-2.js', 'app-events.js', 'app-setups.js', 'app-session.js'];
   var nodePrelude = ["var __cineGlobal = typeof globalThis !== 'undefined' ? globalThis : (typeof global !== 'undefined' ? global : this);", "var window = __cineGlobal.window || __cineGlobal;", "if (!__cineGlobal.window) __cineGlobal.window = window;", "var self = __cineGlobal.self || window;", "if (!__cineGlobal.self) __cineGlobal.self = self;", "var document = __cineGlobal.document || (window && window.document) || undefined;", "if (document && !window.document) window.document = document;", "if (!__cineGlobal.document && document) __cineGlobal.document = document;", "var navigator = __cineGlobal.navigator || (window && window.navigator) || undefined;", "if (navigator && !window.navigator) window.navigator = navigator;", "if (!__cineGlobal.navigator && navigator) __cineGlobal.navigator = navigator;", "var localStorage = __cineGlobal.localStorage || (window && window.localStorage) || undefined;", "if (localStorage && !window.localStorage) window.localStorage = localStorage;", "if (!__cineGlobal.localStorage && localStorage) __cineGlobal.localStorage = localStorage;", "var sessionStorage = __cineGlobal.sessionStorage || (window && window.sessionStorage) || undefined;", "if (sessionStorage && !window.sessionStorage) window.sessionStorage = sessionStorage;", "if (!__cineGlobal.sessionStorage && sessionStorage) __cineGlobal.sessionStorage = sessionStorage;", "var location = __cineGlobal.location || (window && window.location) || undefined;", "if (location && !window.location) window.location = location;", "if (!__cineGlobal.location && location) __cineGlobal.location = location;", "var caches = __cineGlobal.caches || (window && window.caches) || undefined;", "if (caches && !window.caches) window.caches = caches;", "if (!__cineGlobal.caches && caches) __cineGlobal.caches = caches;"].join('\n');
   var combinedSource = [nodePrelude].concat(_toConsumableArray(parts.map(function (part) {
     return fs.readFileSync(path.join(__dirname, part), 'utf8');
@@ -28,8 +28,11 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     }
     return require(resolvedPath);
   };
+  ensureModule('modules/registry.js');
   ensureModule('modules/persistence.js');
   ensureModule('modules/runtime.js');
+
+  attemptRegistryBackfill(globalScope);
   var aggregatedExports = module.exports;
   var combinedAppVersion = aggregatedExports && aggregatedExports.APP_VERSION;
   var APP_VERSION = "1.0.9";
@@ -40,7 +43,111 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     aggregatedExports.APP_VERSION = APP_VERSION;
   }
 }
+function attemptRegistryBackfill(scope) {
+  if (!scope || typeof scope !== 'object' && typeof scope !== 'function') {
+    return;
+  }
+
+  var registry = null;
+  var registryCandidates = [];
+
+  if (scope && typeof scope.cineModules === 'object') {
+    registryCandidates.push(scope.cineModules);
+  }
+
+  if (typeof require === 'function') {
+    try {
+      var required = require('./modules/registry.js');
+      if (required && typeof required === 'object') {
+        registryCandidates.push(required);
+      }
+    } catch (error) {
+      void error;
+    }
+  }
+
+  for (var index = 0; index < registryCandidates.length; index += 1) {
+    var candidate = registryCandidates[index];
+    if (candidate && typeof candidate.register === 'function' && typeof candidate.has === 'function') {
+      registry = candidate;
+      break;
+    }
+  }
+
+  if (!registry) {
+    return;
+  }
+
+  var descriptors = [{
+    name: 'cineCoreShared',
+    category: 'shared',
+    description: 'Shared helpers for deterministic stringification, weights, and version markers.',
+    resolve: function resolve() {
+      return scope.cineCoreShared || null;
+    }
+  }, {
+    name: 'cinePersistence',
+    category: 'persistence',
+    description: 'Data integrity facade for storage, autosave, backups, restore, and share flows.',
+    resolve: function resolve() {
+      return scope.cinePersistence || null;
+    }
+  }, {
+    name: 'cineOffline',
+    category: 'offline',
+    description: 'Offline helpers for service worker registration and cache recovery.',
+    resolve: function resolve() {
+      return scope.cineOffline || null;
+    }
+  }, {
+    name: 'cineUi',
+    category: 'ui',
+    description: 'UI controller registry for dialogs, interactions, orchestration, and help copy.',
+    resolve: function resolve() {
+      return scope.cineUi || null;
+    }
+  }, {
+    name: 'cineRuntime',
+    category: 'runtime',
+    description: 'Runtime orchestrator ensuring persistence, offline, and UI safeguards stay intact.',
+    resolve: function resolve() {
+      return scope.cineRuntime || null;
+    }
+  }];
+
+  for (var descriptorIndex = 0; descriptorIndex < descriptors.length; descriptorIndex += 1) {
+    var descriptor = descriptors[descriptorIndex];
+    if (registry.has(descriptor.name)) {
+      continue;
+    }
+
+    var moduleValue = null;
+
+    try {
+      moduleValue = descriptor.resolve();
+    } catch (error) {
+      void error;
+      moduleValue = null;
+    }
+
+    if (!moduleValue) {
+      continue;
+    }
+
+    try {
+      registry.register(descriptor.name, moduleValue, {
+        category: descriptor.category,
+        description: descriptor.description
+      });
+    } catch (error) {
+      void error;
+    }
+  }
+}
+
 var GLOBAL_RUNTIME_SCOPE = typeof globalThis !== 'undefined' && globalThis || typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || typeof global !== 'undefined' && global || null;
+
+attemptRegistryBackfill(GLOBAL_RUNTIME_SCOPE);
 (function ensureRuntimeIntegrity(scope) {
   if (!scope) {
     return;

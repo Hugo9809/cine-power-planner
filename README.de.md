@@ -405,6 +405,18 @@ npm run test:dom
 npm run test:script
 ```
 
+### Modul-Registry
+
+Alle kritischen Bundles (`cinePersistence`, `cineOffline`, `cineUi`,
+`cineRuntime` sowie gemeinsame Helfer) werden in der globalen
+`cineModules`-Registrierung abgelegt. Jedes Modul ist standardmäßig eingefroren,
+mit Metadaten dokumentiert und wird beim Start geprüft, damit Speichern,
+Teilen, Importieren, Backups und Wiederherstellungen nie ohne Schutzpfade
+laufen. Die Anforderungen stehen in
+[`docs/architecture/module-registry.md`](docs/architecture/module-registry.md);
+bitte vor neuen Modulen lesen, damit Offline-Garantien, Dokumentation und
+Übersetzungen synchron bleiben.
+
 ### Legacy-Browser-Bundle
 
 Nach Änderungen in `src/scripts/` oder `src/data/` `npm run build:legacy` ausführen. Dadurch wird das ES5-Bundle unter `legacy/` neu erzeugt und lokale Polyfills bleiben aktuell.
@@ -419,6 +431,7 @@ src/styles/overview-print.css
 src/scripts/script.js
 src/scripts/storage.js
 src/scripts/static-theme.js
+src/scripts/modules/        # Eingefrorene Laufzeitmodule im cineModules-Register
 src/data/index.js
 src/data/devices/
 src/data/schema.json

@@ -405,6 +405,18 @@ npm run test:dom
 npm run test:script
 ```
 
+### Registre des modules
+
+Le runtime enregistre chaque bundle critique (`cinePersistence`, `cineOffline`,
+`cineUi`, `cineRuntime` et les utilitaires partagés) dans le registre global
+`cineModules`. Chaque module est figé par défaut, décrit par des métadonnées et
+contrôlé au démarrage afin que la sauvegarde, le partage, l’import, la
+sauvegarde et la restauration ne fonctionnent jamais sans leurs garde-fous.
+Consultez
+[`docs/architecture/module-registry.md`](docs/architecture/module-registry.md)
+avant d’ajouter de nouveaux modules pour garder alignées les garanties hors
+ligne, la documentation et les traductions.
+
 ### Bundle pour navigateurs anciens
 
 Après modification de `src/scripts/` ou `src/data/`, lancez `npm run build:legacy` pour régénérer le bundle ES5 servi aux navigateurs plus anciens et maintenir les polyfills locaux à jour.
@@ -419,6 +431,7 @@ src/styles/overview-print.css
 src/scripts/script.js
 src/scripts/storage.js
 src/scripts/static-theme.js
+src/scripts/modules/        # Modules figés enregistrés dans cineModules
 src/data/index.js
 src/data/devices/
 src/data/schema.json
