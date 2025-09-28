@@ -189,6 +189,7 @@
       MODULE_REGISTRY.register('cinePersistence', persistenceAPI, {
         category: 'persistence',
         description: 'Data integrity facade for storage, autosave, backups, restore, and share flows.',
+        replace: true,
       });
     } catch (error) {
       void error;

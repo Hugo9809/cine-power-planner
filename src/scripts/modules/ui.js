@@ -321,6 +321,7 @@
       MODULE_REGISTRY.register('cineUi', uiAPI, {
         category: 'ui',
         description: 'UI controller registry for dialogs, interactions, orchestration, and help copy.',
+        replace: true,
       });
     } catch (error) {
       safeWarn('Unable to register cineUi module.', error);

@@ -614,6 +614,7 @@
       MODULE_REGISTRY.register('cineOffline', offlineAPI, {
         category: 'offline',
         description: 'Offline helpers for service worker registration and cache recovery.',
+        replace: true,
       });
     } catch (error) {
       safeWarn('Unable to register cineOffline in module registry.', error);
