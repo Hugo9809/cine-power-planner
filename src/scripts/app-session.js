@@ -2445,6 +2445,102 @@ function getQueryParam(search, key) {
   return null;
 }
 
+function buildSearchWithoutShared(search) {
+  if (typeof search !== 'string' || search.length === 0) {
+    return '';
+  }
+
+  const query = search.charAt(0) === '?' ? search.slice(1) : search;
+  if (!query) {
+    return '';
+  }
+
+  const preserved = [];
+  const pairs = query.split('&');
+  for (let index = 0; index < pairs.length; index += 1) {
+    const pair = pairs[index];
+    if (!pair) {
+      continue;
+    }
+
+    const [rawName] = pair.split('=');
+    if (!rawName) {
+      preserved.push(pair);
+      continue;
+    }
+
+    let decodedName;
+    try {
+      decodedName = decodeURIComponent(rawName.replace(/\+/g, ' '));
+    } catch (error) {
+      if (!manualQueryParamWarningShown && typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Unable to decode query parameter name', rawName, error);
+      }
+      manualQueryParamWarningShown = true;
+      decodedName = rawName;
+    }
+
+    if (decodedName === 'shared') {
+      continue;
+    }
+
+    preserved.push(pair);
+  }
+
+  if (preserved.length === 0) {
+    return '';
+  }
+
+  return `?${preserved.join('&')}`;
+}
+
+function removeSharedQueryParamFromLocation() {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  const { location, history } = window;
+  if (!location || !history || typeof history.replaceState !== 'function') {
+    return;
+  }
+
+  const pathname = typeof location.pathname === 'string' && location.pathname ? location.pathname : '/';
+  const search = typeof location.search === 'string' ? location.search : '';
+  const hash = typeof location.hash === 'string' ? location.hash : '';
+
+  let updatedSearch = '';
+  let handledWithNativeApi = false;
+
+  if (typeof URLSearchParams === 'function') {
+    try {
+      const params = new URLSearchParams(search);
+      params.delete('shared');
+      const serialized = params.toString();
+      updatedSearch = serialized ? `?${serialized}` : '';
+      handledWithNativeApi = true;
+    } catch (error) {
+      if (!manualQueryParamWarningShown && typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Unable to rewrite query string with URLSearchParams', error);
+      }
+      manualQueryParamWarningShown = true;
+    }
+  }
+
+  if (!handledWithNativeApi) {
+    updatedSearch = buildSearchWithoutShared(search);
+  }
+
+  const currentSearch = search || '';
+  const nextSearch = typeof updatedSearch === 'string' ? updatedSearch : '';
+
+  const currentUrl = `${pathname}${currentSearch}${hash}`;
+  const nextUrl = `${pathname}${nextSearch}${hash}`;
+
+  if (currentUrl !== nextUrl) {
+    history.replaceState(null, '', nextUrl);
+  }
+}
+
 function applySharedSetupFromUrl() {
   const hasSearch =
     typeof window !== 'undefined'
@@ -2454,14 +2550,16 @@ function applySharedSetupFromUrl() {
   const shared = getQueryParam(search, 'shared');
   if (!shared) return;
   try {
-    const data = JSON.parse(LZString.decompressFromEncodedURIComponent(shared));
+    const decompressed = LZString.decompressFromEncodedURIComponent(shared);
+    if (typeof decompressed !== 'string') {
+      throw new Error('Shared payload could not be decompressed');
+    }
+    const data = JSON.parse(decompressed);
     applySharedSetup(data);
     if (typeof updateCalculations === 'function') {
       updateCalculations();
     }
-    if (window.history && window.history.replaceState) {
-      history.replaceState(null, '', window.location.pathname);
-    }
+    removeSharedQueryParamFromLocation();
   } catch (e) {
     console.error('Failed to apply shared setup from URL', e);
   }

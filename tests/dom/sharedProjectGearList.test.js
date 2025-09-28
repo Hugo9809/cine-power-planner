@@ -237,7 +237,7 @@ describe('shared project gear list handling', () => {
       expect(lastCall[1]).toEqual(expect.objectContaining({
         projectInfo: expect.objectContaining({ projectName: 'Imported URL Project' })
       }));
-      expect(replaceSpy).toHaveBeenCalledWith(null, '', expectedPathname);
+      expect(replaceSpy).toHaveBeenCalledWith(null, '', `${expectedPathname}?lang=en`);
     } finally {
       replaceSpy.mockRestore();
       if (typeof originalURLSearchParams === 'undefined') {
@@ -245,6 +245,39 @@ describe('shared project gear list handling', () => {
       } else {
         global.URLSearchParams = originalURLSearchParams;
       }
+      window.history.replaceState(null, '', originalHref);
+    }
+  });
+
+  test('applySharedSetupFromUrl preserves other query parameters and hash', () => {
+    const { utils, globals } = env;
+    const sharedData = {
+      setupName: 'URL Project',
+      projectInfo: { projectName: 'URL Project' },
+      gearList: '<div id="gearList">Shared Gear</div>'
+    };
+
+    const encoded = utils.encodeSharedSetup(sharedData);
+    const compressed = LZString.compressToEncodedURIComponent(JSON.stringify(encoded));
+
+    globals.saveProject.mockClear();
+    globals.updateCalculations.mockClear();
+
+    const originalHref = window.location.href;
+    const expectedPathname = window.location.pathname;
+
+    const encodedSharedValue = encodeURIComponent(compressed);
+    window.history.replaceState(null, '', `${expectedPathname}?lang=fr&shared=${encodedSharedValue}#section-2`);
+
+    const replaceSpy = jest.spyOn(window.history, 'replaceState').mockImplementation(() => {});
+
+    try {
+      utils.applySharedSetupFromUrl();
+
+      expect(globals.saveProject).toHaveBeenCalled();
+      expect(replaceSpy).toHaveBeenCalledWith(null, '', `${expectedPathname}?lang=fr#section-2`);
+    } finally {
+      replaceSpy.mockRestore();
       window.history.replaceState(null, '', originalHref);
     }
   });
