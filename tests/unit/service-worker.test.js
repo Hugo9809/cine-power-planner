@@ -10,6 +10,7 @@ describe('service worker configuration', () => {
       expect.arrayContaining([
         './src/scripts/globalthis-polyfill.js',
         './src/scripts/modern-support-check.mjs',
+        './src/scripts/modules/registry.js',
         './src/scripts/modules/offline.js',
         './src/scripts/modules/ui.js',
         './src/data/devices/batteryHotswaps.js',
@@ -26,6 +27,7 @@ describe('service worker configuration', () => {
         './legacy/scripts/script.js',
         './legacy/scripts/auto-gear-monitoring.js',
         './legacy/scripts/autosave-overlay.js',
+        './legacy/scripts/modules/registry.js',
         './legacy/scripts/modern-support-check.js',
       ]),
     );

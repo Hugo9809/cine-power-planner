@@ -405,6 +405,18 @@ npm run test:dom
 npm run test:script
 ```
 
+### Registro de módulos
+
+El runtime registra cada paquete crítico (`cinePersistence`, `cineOffline`,
+`cineUi`, `cineRuntime` y utilidades compartidas) en el registro global
+`cineModules`. Cada módulo queda congelado por defecto, documentado con
+metadatos y verificado durante el arranque para que guardar, compartir,
+importar, hacer copias de seguridad y restaurar nunca se ejecuten sin sus
+salvaguardas. Consulta
+[`docs/architecture/module-registry.md`](docs/architecture/module-registry.md)
+antes de añadir nuevos módulos para mantener alineadas las garantías offline,
+la documentación y las traducciones.
+
 ### Bundle para navegadores legacy
 
 Después de modificar `src/scripts/` o `src/data/`, ejecuta `npm run build:legacy` para regenerar el bundle ES5 que sirve a navegadores antiguos. El comando también actualiza los polyfills locales para preservar la experiencia offline.
@@ -419,6 +431,7 @@ src/styles/overview-print.css
 src/scripts/script.js
 src/scripts/storage.js
 src/scripts/static-theme.js
+src/scripts/modules/        # Módulos congelados registrados en cineModules
 src/data/index.js
 src/data/devices/
 src/data/schema.json

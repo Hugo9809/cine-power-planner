@@ -11,6 +11,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
   const path = require('path');
   const vm = require('vm');
   const parts = [
+    'modules/registry.js',
     'modules/offline.js',
     'modules/core-shared.js',
     'modules/ui.js',
@@ -72,8 +73,11 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     return require(resolvedPath);
   };
 
+  ensureModule('modules/registry.js');
   ensureModule('modules/persistence.js');
   ensureModule('modules/runtime.js');
+
+  attemptRegistryBackfill(globalScope);
 
   const aggregatedExports = module.exports;
   const combinedAppVersion = aggregatedExports && aggregatedExports.APP_VERSION;
@@ -90,12 +94,120 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
   }
 }
 
+function attemptRegistryBackfill(scope) {
+  if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+    return;
+  }
+
+  let registry = null;
+
+  const registryCandidates = [];
+  if (scope && typeof scope.cineModules === 'object') {
+    registryCandidates.push(scope.cineModules);
+  }
+  if (typeof require === 'function') {
+    try {
+      const required = require('./modules/registry.js');
+      if (required && typeof required === 'object') {
+        registryCandidates.push(required);
+      }
+    } catch (error) {
+      void error;
+    }
+  }
+
+  for (let index = 0; index < registryCandidates.length; index += 1) {
+    const candidate = registryCandidates[index];
+    if (candidate && typeof candidate.register === 'function' && typeof candidate.has === 'function') {
+      registry = candidate;
+      break;
+    }
+  }
+
+  if (!registry) {
+    return;
+  }
+
+  const descriptors = [
+    {
+      name: 'cineCoreShared',
+      category: 'shared',
+      description: 'Shared helpers for deterministic stringification, weights, and version markers.',
+      resolve() {
+        return scope.cineCoreShared || null;
+      },
+    },
+    {
+      name: 'cinePersistence',
+      category: 'persistence',
+      description: 'Data integrity facade for storage, autosave, backups, restore, and share flows.',
+      resolve() {
+        return scope.cinePersistence || null;
+      },
+    },
+    {
+      name: 'cineOffline',
+      category: 'offline',
+      description: 'Offline helpers for service worker registration and cache recovery.',
+      resolve() {
+        return scope.cineOffline || null;
+      },
+    },
+    {
+      name: 'cineUi',
+      category: 'ui',
+      description: 'UI controller registry for dialogs, interactions, orchestration, and help copy.',
+      resolve() {
+        return scope.cineUi || null;
+      },
+    },
+    {
+      name: 'cineRuntime',
+      category: 'runtime',
+      description: 'Runtime orchestrator ensuring persistence, offline, and UI safeguards stay intact.',
+      resolve() {
+        return scope.cineRuntime || null;
+      },
+    },
+  ];
+
+  for (let index = 0; index < descriptors.length; index += 1) {
+    const descriptor = descriptors[index];
+    if (registry.has(descriptor.name)) {
+      continue;
+    }
+
+    let moduleValue = null;
+    try {
+      moduleValue = descriptor.resolve();
+    } catch (error) {
+      void error;
+      moduleValue = null;
+    }
+
+    if (!moduleValue) {
+      continue;
+    }
+
+    try {
+      registry.register(descriptor.name, moduleValue, {
+        category: descriptor.category,
+        description: descriptor.description,
+      });
+    } catch (error) {
+      void error;
+    }
+  }
+}
+
 const GLOBAL_RUNTIME_SCOPE =
   (typeof globalThis !== 'undefined' && globalThis)
   || (typeof window !== 'undefined' && window)
   || (typeof self !== 'undefined' && self)
   || (typeof global !== 'undefined' && global)
   || null;
+
+attemptRegistryBackfill(GLOBAL_RUNTIME_SCOPE);
 
 (function ensureRuntimeIntegrity(scope) {
   if (!scope) {

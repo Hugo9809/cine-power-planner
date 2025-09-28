@@ -134,6 +134,30 @@
     }
   }
 
+  function resolveModuleRegistry() {
+    const required = tryRequire('./registry.js');
+    if (required && typeof required === 'object') {
+      return required;
+    }
+
+    const scopes = [GLOBAL_SCOPE];
+    if (typeof globalThis !== 'undefined' && scopes.indexOf(globalThis) === -1) scopes.push(globalThis);
+    if (typeof window !== 'undefined' && scopes.indexOf(window) === -1) scopes.push(window);
+    if (typeof self !== 'undefined' && scopes.indexOf(self) === -1) scopes.push(self);
+    if (typeof global !== 'undefined' && scopes.indexOf(global) === -1) scopes.push(global);
+
+    for (let index = 0; index < scopes.length; index += 1) {
+      const scope = scopes[index];
+      if (scope && typeof scope.cineModules === 'object') {
+        return scope.cineModules;
+      }
+    }
+
+    return null;
+  }
+
+  const MODULE_REGISTRY = resolveModuleRegistry();
+
   function freezeDeep(value, seen = new WeakSet()) {
     if (!value || typeof value !== 'object') {
       return value;
@@ -161,6 +185,17 @@
   function resolveModule(name) {
     if (!name || !MODULE_NAMES.includes(name)) {
       throw new TypeError(`cineRuntime cannot resolve unknown module "${name}".`);
+    }
+
+    if (MODULE_REGISTRY && typeof MODULE_REGISTRY.get === 'function') {
+      try {
+        const registered = MODULE_REGISTRY.get(name);
+        if (registered) {
+          return registered;
+        }
+      } catch (error) {
+        void error;
+      }
     }
 
     if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE === 'object') {
@@ -373,6 +408,15 @@
     const missing = [];
     const detailMap = {};
 
+    let registrySnapshot = null;
+    if (MODULE_REGISTRY && typeof MODULE_REGISTRY.assertRegistered === 'function') {
+      try {
+        registrySnapshot = MODULE_REGISTRY.assertRegistered(MODULE_NAMES);
+      } catch (error) {
+        safeWarn('cineRuntime.verifyCriticalFlows() could not inspect cineModules registry.', error);
+      }
+    }
+
     const persistence = resolveModule('cinePersistence');
     const offline = resolveModule('cineOffline');
     const ui = resolveModule('cineUi');
@@ -382,6 +426,22 @@
       cineOffline: !!offline,
       cineUi: !!ui,
     };
+
+    if (registrySnapshot && registrySnapshot.detail) {
+      const registryDetail = {};
+      const detailKeys = Object.keys(registrySnapshot.detail);
+      for (let index = 0; index < detailKeys.length; index += 1) {
+        const key = detailKeys[index];
+        const registered = !!registrySnapshot.detail[key];
+        registryDetail[key] = registered;
+        detailMap[`${key}.registered`] = registered;
+        if (!registered) {
+          missing.push(`${key} (not registered)`);
+        }
+      }
+
+      modulePresence.registry = registryDetail;
+    }
 
     if (!persistence) {
       missing.push('cinePersistence');
@@ -437,6 +497,7 @@
       missing: missing.slice(),
       modules: freezeDeep(modulePresence),
       details: freezeDeep(detailMap),
+      registry: registrySnapshot ? freezeDeep(registrySnapshot) : null,
       checks: listCriticalChecks(),
     });
 
@@ -464,14 +525,29 @@
     getUi(options) {
       return ensureModule('cineUi', options);
     },
+    getModuleRegistry() {
+      return MODULE_REGISTRY || null;
+    },
     listCriticalChecks,
     verifyCriticalFlows,
     __internal: freezeDeep({
       resolveModule,
       ensureModule,
       listCriticalChecks,
+      moduleRegistry: MODULE_REGISTRY || null,
     }),
   });
+
+  if (MODULE_REGISTRY && typeof MODULE_REGISTRY.register === 'function') {
+    try {
+      MODULE_REGISTRY.register('cineRuntime', runtimeAPI, {
+        category: 'runtime',
+        description: 'Runtime orchestrator ensuring persistence, offline, and UI safeguards stay intact.',
+      });
+    } catch (error) {
+      safeWarn('Unable to register cineRuntime module.', error);
+    }
+  }
 
   if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE === 'object') {
     try {
