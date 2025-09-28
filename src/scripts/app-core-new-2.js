@@ -6495,7 +6495,8 @@ function restoreFeatureSearchDefaults() {
 }
 
 const FEATURE_SEARCH_MATCH_PRIORITIES = {
-  none: 1,
+  none: 0,
+  fuzzy: 1,
   partial: 2,
   keySubset: 3,
   keyPrefix: 4,
@@ -6529,6 +6530,7 @@ function scoreFeatureSearchEntry(entry, queryKey, queryTokens) {
 
   let bestType = 'none';
   let bestPriority = FEATURE_SEARCH_MATCH_PRIORITIES.none;
+  let fuzzyDistance = Number.POSITIVE_INFINITY;
   const updateType = type => {
     const priority = FEATURE_SEARCH_MATCH_PRIORITIES[type] || FEATURE_SEARCH_MATCH_PRIORITIES.none;
     if (priority > bestPriority) {
@@ -6556,6 +6558,14 @@ function scoreFeatureSearchEntry(entry, queryKey, queryTokens) {
     updateType('token');
   }
 
+  if (bestPriority === FEATURE_SEARCH_MATCH_PRIORITIES.none && queryKey && entryKey) {
+    const distance = computeLevenshteinDistance(entryKey, queryKey);
+    if (isAcceptableFuzzyMatch(entryKey, queryKey, distance)) {
+      fuzzyDistance = distance;
+      updateType('fuzzy');
+    }
+  }
+
   return {
     entry,
     entryType,
@@ -6565,6 +6575,7 @@ function scoreFeatureSearchEntry(entry, queryKey, queryTokens) {
     priority: bestPriority,
     tokenScore: tokenDetails.score,
     tokenMatches: tokenDetails.matched,
+    fuzzyDistance,
     keyDistance: queryKey
       ? Math.abs(entryKey.length - queryKey.length)
       : Number.POSITIVE_INFINITY,
@@ -6609,6 +6620,13 @@ function updateFeatureSearchSuggestions(query) {
     if (b.tokenScore !== a.tokenScore) return b.tokenScore - a.tokenScore;
     if (b.tokenMatches !== a.tokenMatches) return b.tokenMatches - a.tokenMatches;
     if (b.typePriority !== a.typePriority) return b.typePriority - a.typePriority;
+    if (
+      a.priority === FEATURE_SEARCH_MATCH_PRIORITIES.fuzzy &&
+      b.priority === FEATURE_SEARCH_MATCH_PRIORITIES.fuzzy &&
+      a.fuzzyDistance !== b.fuzzyDistance
+    ) {
+      return a.fuzzyDistance - b.fuzzyDistance;
+    }
     if (a.keyDistance !== b.keyDistance) return a.keyDistance - b.keyDistance;
     if (a.keyLength !== b.keyLength) return a.keyLength - b.keyLength;
     return a.entry.display.localeCompare(b.entry.display, undefined, {
@@ -7254,17 +7272,74 @@ const computeTokenMatchDetails = (entryTokens = [], queryTokens = []) => {
   return { score: total, matched };
 };
 
+const computeLevenshteinDistance = (a, b) => {
+  if (a === b) return 0;
+  if (typeof a !== 'string' || typeof b !== 'string') {
+    return Number.POSITIVE_INFINITY;
+  }
+  const aLen = a.length;
+  const bLen = b.length;
+  if (aLen === 0) return bLen;
+  if (bLen === 0) return aLen;
+  const prev = new Array(bLen + 1);
+  const curr = new Array(bLen + 1);
+  for (let j = 0; j <= bLen; j += 1) {
+    prev[j] = j;
+  }
+  for (let i = 1; i <= aLen; i += 1) {
+    curr[0] = i;
+    const aCode = a.charCodeAt(i - 1);
+    for (let j = 1; j <= bLen; j += 1) {
+      const cost = aCode === b.charCodeAt(j - 1) ? 0 : 1;
+      const deletion = prev[j] + 1;
+      const insertion = curr[j - 1] + 1;
+      const substitution = prev[j - 1] + cost;
+      curr[j] = Math.min(deletion, insertion, substitution);
+    }
+    for (let j = 0; j <= bLen; j += 1) {
+      prev[j] = curr[j];
+    }
+  }
+  return prev[bLen];
+};
+
+const isAcceptableFuzzyMatch = (entryKey, queryKey, distance) => {
+  if (!Number.isFinite(distance) || distance <= 0) {
+    return false;
+  }
+  if (typeof entryKey !== 'string' || typeof queryKey !== 'string') {
+    return false;
+  }
+  const maxLength = Math.max(entryKey.length, queryKey.length);
+  if (maxLength === 0) return false;
+  if (maxLength <= 3) {
+    return distance <= 1;
+  }
+  if (maxLength <= 6) {
+    return distance <= 2;
+  }
+  return distance <= 3 && distance / maxLength <= 0.4;
+};
+
 function findBestSearchMatch(map, key, tokens = []) {
   const queryTokens = Array.isArray(tokens) ? tokens.filter(Boolean) : [];
   const hasKey = Boolean(key);
   if (!hasKey && queryTokens.length === 0) return null;
 
-  const toResult = (entryKey, entryValue, matchType, score = 0, matchedCount = 0) => ({
+  const toResult = (
+    entryKey,
+    entryValue,
+    matchType,
+    score = 0,
+    matchedCount = 0,
+    extras = {}
+  ) => ({
     key: entryKey,
     value: entryValue,
     matchType,
     score,
-    matchedCount
+    matchedCount,
+    ...extras
   });
 
   const flattened = [];
@@ -7316,6 +7391,9 @@ function findBestSearchMatch(map, key, tokens = []) {
   let bestPartialMatch = null;
   let bestPartialScore = Number.NEGATIVE_INFINITY;
   let bestPartialMatched = 0;
+  let bestFuzzyMatch = null;
+  let bestFuzzyDistance = Number.POSITIVE_INFINITY;
+  let bestFuzzyLength = Number.POSITIVE_INFINITY;
 
   const keyLength = hasKey ? key.length : 0;
 
@@ -7387,6 +7465,23 @@ function findBestSearchMatch(map, key, tokens = []) {
         bestPartialMatched = tokenDetails.matched;
       }
     }
+
+    if (hasKey && entryKey) {
+      const fuzzyDistance = computeLevenshteinDistance(entryKey, key);
+      if (isAcceptableFuzzyMatch(entryKey, key, fuzzyDistance)) {
+        if (
+          !bestFuzzyMatch ||
+          fuzzyDistance < bestFuzzyDistance ||
+          (fuzzyDistance === bestFuzzyDistance && entryKey.length < bestFuzzyLength)
+        ) {
+          bestFuzzyMatch = toResult(entryKey, entryValue, 'fuzzy', tokenDetails.score, tokenDetails.matched, {
+            fuzzyDistance
+          });
+          bestFuzzyDistance = fuzzyDistance;
+          bestFuzzyLength = entryKey.length;
+        }
+      }
+    }
   }
 
   if (bestTokenMatch && bestTokenScore > 0) {
@@ -7400,6 +7495,9 @@ function findBestSearchMatch(map, key, tokens = []) {
   }
   if (bestPartialMatch) {
     return bestPartialMatch;
+  }
+  if (bestFuzzyMatch) {
+    return bestFuzzyMatch;
   }
   return null;
 }
