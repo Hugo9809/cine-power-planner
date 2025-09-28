@@ -398,6 +398,103 @@ function refreshAutoGearMonitorOptions(selected) {
   autoGearMonitorSelect.size = computeAutoGearMultiSelectSize(visibleCount);
 }
 
+function refreshAutoGearTripodOptions(select, selected, key, placeholderKey, selectorType) {
+  if (!select) return;
+
+  const selectedValues = collectAutoGearSelectedValues(selected, key);
+  select.innerHTML = '';
+  select.multiple = true;
+
+  const langTexts = texts[currentLang] || texts.en || {};
+  const placeholder = langTexts[placeholderKey]
+    || texts.en?.[placeholderKey]
+    || 'Select options';
+  const entries = collectAutoGearTripodNames(selectorType)
+    .map(entry => (typeof entry === 'string' ? { value: entry, label: entry } : entry))
+    .filter(Boolean);
+  const seen = new Set();
+  const addOption = (value, label) => {
+    if (typeof value !== 'string') return;
+    const trimmed = value.trim();
+    if (!trimmed) return;
+    const keyValue = trimmed.toLowerCase();
+    if (seen.has(keyValue)) return;
+    const option = document.createElement('option');
+    option.value = trimmed;
+    option.textContent = label || formatAutoGearSelectorValue(selectorType, trimmed);
+    if (selectedValues.includes(trimmed)) {
+      option.selected = true;
+    }
+    select.appendChild(option);
+    seen.add(keyValue);
+  };
+
+  entries.forEach(entry => {
+    if (!entry) return;
+    addOption(entry.value, entry.label);
+  });
+
+  selectedValues.forEach(value => {
+    if (!value) return;
+    const keyValue = value.trim().toLowerCase();
+    if (keyValue && !seen.has(keyValue)) {
+      addOption(value, formatAutoGearSelectorValue(selectorType, value));
+    }
+  });
+
+  if (!select.options.length) {
+    const option = document.createElement('option');
+    option.value = '';
+    option.textContent = placeholder;
+    option.disabled = true;
+    option.selected = true;
+    select.appendChild(option);
+  }
+
+  const visibleCount = Array.from(select.options || []).filter(option => !option.disabled).length;
+  select.size = computeAutoGearMultiSelectSize(visibleCount, { minRows: AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS });
+}
+
+function refreshAutoGearTripodHeadOptions(selected) {
+  refreshAutoGearTripodOptions(
+    autoGearTripodHeadBrandSelect,
+    selected,
+    'tripodHeadBrand',
+    'autoGearTripodHeadBrandPlaceholder',
+    'tripodHeadBrand'
+  );
+}
+
+function refreshAutoGearTripodBowlOptions(selected) {
+  refreshAutoGearTripodOptions(
+    autoGearTripodBowlSelect,
+    selected,
+    'tripodBowl',
+    'autoGearTripodBowlPlaceholder',
+    'tripodBowl'
+  );
+}
+
+function refreshAutoGearTripodTypesOptions(selected) {
+  refreshAutoGearTripodOptions(
+    autoGearTripodTypesSelect,
+    selected,
+    'tripodTypes',
+    'autoGearTripodTypesPlaceholder',
+    'tripodTypes'
+  );
+}
+
+function refreshAutoGearTripodSpreaderOptions(selected) {
+  refreshAutoGearTripodOptions(
+    autoGearTripodSpreaderSelect,
+    selected,
+    'tripodSpreader',
+    'autoGearTripodSpreaderPlaceholder',
+    'tripodSpreader'
+  );
+}
+
 function refreshAutoGearWirelessOptions(selected) {
   if (!autoGearWirelessSelect) return;
 
@@ -14315,6 +14412,10 @@ const CORE_PART2_GLOBAL_EXPORTS = {
   refreshAutoGearCameraOptions,
   refreshAutoGearCameraWeightCondition,
   refreshAutoGearMonitorOptions,
+  refreshAutoGearTripodHeadOptions,
+  refreshAutoGearTripodBowlOptions,
+  refreshAutoGearTripodTypesOptions,
+  refreshAutoGearTripodSpreaderOptions,
   refreshAutoGearWirelessOptions,
   refreshAutoGearMotorsOptions,
   refreshAutoGearControllersOptions,

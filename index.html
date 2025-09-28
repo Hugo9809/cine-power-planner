@@ -1343,6 +1343,10 @@
                     <option value="camera">Camera</option>
                     <option value="cameraWeight">Camera weight</option>
                     <option value="monitor">Onboard monitor</option>
+                    <option value="tripodHeadBrand">Tripod head brand</option>
+                    <option value="tripodBowl">Tripod bowl size</option>
+                    <option value="tripodTypes">Tripod types</option>
+                    <option value="tripodSpreader">Tripod spreader</option>
                     <option value="crewPresent">Crew present</option>
                     <option value="crewAbsent">Crew absent</option>
                     <option value="wireless">Wireless transmitter</option>
@@ -1746,6 +1750,142 @@
                 <select
                   id="autoGearMonitor"
                   class="auto-gear-monitor auto-gear-multiselect auto-gear-device-multiselect"
+                    multiple
+                    size="10"
+                  ></select>
+                </section>
+                <section
+                  id="autoGearCondition-tripodHeadBrand"
+                  class="auto-gear-condition"
+                  data-condition="tripodHeadBrand"
+                  hidden
+                  aria-hidden="true"
+                >
+                  <div class="auto-gear-condition-header">
+                    <label for="autoGearTripodHeadBrand" id="autoGearTripodHeadBrandLabel">Tripod head brand</label>
+                    <div class="auto-gear-condition-actions">
+                      <button type="button" class="auto-gear-condition-add" data-action="add">Add</button>
+                      <button
+                        type="button"
+                        class="auto-gear-condition-remove"
+                        data-action="remove"
+                        data-condition="tripodHeadBrand"
+                      >Remove</button>
+                    </div>
+                  </div>
+                  <div class="auto-gear-condition-mode">
+                    <label for="autoGearTripodHeadBrandMode" id="autoGearTripodHeadBrandModeLabel">Match behavior</label>
+                    <select id="autoGearTripodHeadBrandMode">
+                      <option value="all" selected>Require every selected value</option>
+                      <option value="any">Match any selected value</option>
+                      <option value="multiplier">Multiply by matched values</option>
+                    </select>
+                  </div>
+                  <select
+                    id="autoGearTripodHeadBrand"
+                    class="auto-gear-tripod-head auto-gear-multiselect"
+                    multiple
+                    size="10"
+                  ></select>
+                </section>
+                <section
+                  id="autoGearCondition-tripodBowl"
+                  class="auto-gear-condition"
+                  data-condition="tripodBowl"
+                  hidden
+                  aria-hidden="true"
+                >
+                  <div class="auto-gear-condition-header">
+                    <label for="autoGearTripodBowl" id="autoGearTripodBowlLabel">Tripod bowl size</label>
+                    <div class="auto-gear-condition-actions">
+                      <button type="button" class="auto-gear-condition-add" data-action="add">Add</button>
+                      <button
+                        type="button"
+                        class="auto-gear-condition-remove"
+                        data-action="remove"
+                        data-condition="tripodBowl"
+                      >Remove</button>
+                    </div>
+                  </div>
+                  <div class="auto-gear-condition-mode">
+                    <label for="autoGearTripodBowlMode" id="autoGearTripodBowlModeLabel">Match behavior</label>
+                    <select id="autoGearTripodBowlMode">
+                      <option value="all" selected>Require every selected value</option>
+                      <option value="any">Match any selected value</option>
+                      <option value="multiplier">Multiply by matched values</option>
+                    </select>
+                  </div>
+                  <select
+                    id="autoGearTripodBowl"
+                    class="auto-gear-tripod-bowl auto-gear-multiselect"
+                    multiple
+                    size="10"
+                  ></select>
+                </section>
+                <section
+                  id="autoGearCondition-tripodTypes"
+                  class="auto-gear-condition"
+                  data-condition="tripodTypes"
+                  hidden
+                  aria-hidden="true"
+                >
+                  <div class="auto-gear-condition-header">
+                    <label for="autoGearTripodTypes" id="autoGearTripodTypesLabel">Tripod types</label>
+                    <div class="auto-gear-condition-actions">
+                      <button type="button" class="auto-gear-condition-add" data-action="add">Add</button>
+                      <button
+                        type="button"
+                        class="auto-gear-condition-remove"
+                        data-action="remove"
+                        data-condition="tripodTypes"
+                      >Remove</button>
+                    </div>
+                  </div>
+                  <div class="auto-gear-condition-mode">
+                    <label for="autoGearTripodTypesMode" id="autoGearTripodTypesModeLabel">Match behavior</label>
+                    <select id="autoGearTripodTypesMode">
+                      <option value="all" selected>Require every selected value</option>
+                      <option value="any">Match any selected value</option>
+                      <option value="multiplier">Multiply by matched values</option>
+                    </select>
+                  </div>
+                  <select
+                    id="autoGearTripodTypes"
+                    class="auto-gear-tripod-types auto-gear-multiselect"
+                    multiple
+                    size="10"
+                  ></select>
+                </section>
+                <section
+                  id="autoGearCondition-tripodSpreader"
+                  class="auto-gear-condition"
+                  data-condition="tripodSpreader"
+                  hidden
+                  aria-hidden="true"
+                >
+                  <div class="auto-gear-condition-header">
+                    <label for="autoGearTripodSpreader" id="autoGearTripodSpreaderLabel">Tripod spreader</label>
+                    <div class="auto-gear-condition-actions">
+                      <button type="button" class="auto-gear-condition-add" data-action="add">Add</button>
+                      <button
+                        type="button"
+                        class="auto-gear-condition-remove"
+                        data-action="remove"
+                        data-condition="tripodSpreader"
+                      >Remove</button>
+                    </div>
+                  </div>
+                  <div class="auto-gear-condition-mode">
+                    <label for="autoGearTripodSpreaderMode" id="autoGearTripodSpreaderModeLabel">Match behavior</label>
+                    <select id="autoGearTripodSpreaderMode">
+                      <option value="all" selected>Require every selected value</option>
+                      <option value="any">Match any selected value</option>
+                      <option value="multiplier">Multiply by matched values</option>
+                    </select>
+                  </div>
+                  <select
+                    id="autoGearTripodSpreader"
+                    class="auto-gear-tripod-spreader auto-gear-multiselect"
                     multiple
                     size="10"
                   ></select>
