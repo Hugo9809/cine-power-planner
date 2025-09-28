@@ -342,6 +342,95 @@
     }
   }
 
+  function flushRegistrationQueue() {
+    if (!GLOBAL_SCOPE || typeof GLOBAL_SCOPE !== 'object') {
+      return;
+    }
+
+    const queueKey = '__cineUiReadyQueue';
+    const queueRef = Array.isArray(GLOBAL_SCOPE[queueKey]) ? GLOBAL_SCOPE[queueKey] : null;
+    if (!queueRef || queueRef.length === 0) {
+      return;
+    }
+
+    const queue = queueRef.slice();
+    queueRef.length = 0;
+
+    for (let index = 0; index < queue.length; index += 1) {
+      const entry = queue[index];
+      if (typeof entry !== 'function') {
+        continue;
+      }
+
+      try {
+        entry(uiAPI);
+      } catch (callbackError) {
+        safeWarn('cineUi registration callback failed.', callbackError);
+      }
+    }
+  }
+
+  flushRegistrationQueue();
+
+  function dispatchReadyEvent() {
+    const targets = [];
+    if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.dispatchEvent === 'function') {
+      targets.push(GLOBAL_SCOPE);
+    }
+    if (
+      typeof window !== 'undefined'
+      && window
+      && typeof window.dispatchEvent === 'function'
+      && targets.indexOf(window) === -1
+    ) {
+      targets.push(window);
+    }
+
+    if (!targets.length) {
+      return;
+    }
+
+    for (let index = 0; index < targets.length; index += 1) {
+      const target = targets[index];
+      let readyEvent = null;
+
+      if (typeof Event === 'function') {
+        try {
+          readyEvent = new Event('cine-ui-ready');
+        } catch (eventError) {
+          void eventError;
+          readyEvent = null;
+        }
+      }
+
+      if (!readyEvent) {
+        const doc = target && target.document;
+        if (doc && typeof doc.createEvent === 'function') {
+          try {
+            const legacyEvent = doc.createEvent('Event');
+            legacyEvent.initEvent('cine-ui-ready', false, false);
+            readyEvent = legacyEvent;
+          } catch (legacyError) {
+            void legacyError;
+            readyEvent = null;
+          }
+        }
+      }
+
+      if (!readyEvent) {
+        continue;
+      }
+
+      try {
+        target.dispatchEvent(readyEvent);
+      } catch (dispatchError) {
+        safeWarn('Unable to dispatch cine-ui-ready event.', dispatchError);
+      }
+    }
+  }
+
+  dispatchReadyEvent();
+
   if (typeof module !== 'undefined' && module && module.exports) {
     module.exports = uiAPI;
   }
