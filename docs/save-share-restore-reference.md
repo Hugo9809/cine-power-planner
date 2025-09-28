@@ -16,6 +16,8 @@ The application exposes these routines through the frozen `cinePersistence` gate
 | Full restore | **Settings → Backup & Restore → Restore** after rehearsal succeeds | App reloads with restored data, pre-restore snapshot stored automatically | Archive restored backup, pre-restore snapshot ID and post-restore verification notes |
 | Share link/application | **Share → Copy share link** or **Share → Apply shared setup** | Import prompt validates payload, offers rollback on mismatch | Note validation message, keep copy of imported payload for incident review |
 
+Applying a shared setup removes only the `shared` query flag from the URL, preserving any other query parameters or hash fragments so language overrides and anchored navigation stay intact after import.【F:src/scripts/app-session.js†L2375-L2453】
+
 ## Console & script checks
 
 Run these quick inspections while documenting or rehearsing the workflows above:
