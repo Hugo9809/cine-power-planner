@@ -3927,29 +3927,29 @@ const texts = {
       "Prueba una copia de seguridad o un paquete de proyecto en una sandbox desechable antes de restaurar tus datos activos.",
     restoreRehearsalHeading: "Ensayo de restauración",
     restoreRehearsalIntro:
-      "Carga una copia de seguridad o un paquete de proyecto en un espacio temporal. Comparamos los recuentos clave con tu perfil en vivo y eliminamos la sandbox automáticamente.",
+      "Carga una copia de seguridad o un paquete de proyecto en un espacio temporal desechable. Comparamos los recuentos clave con tu perfil en vivo y limpiamos el entorno de ensayo automáticamente.",
     restoreRehearsalModeLabel: "Elige el origen del ensayo",
     restoreRehearsalModeBackup: "Copia de seguridad completa (.json)",
     restoreRehearsalModeProject: "Paquete de proyecto (.json)",
     restoreRehearsalFileLabel: "Seleccionar archivo",
     restoreRehearsalFileButton: "Elegir archivo",
     restoreRehearsalNoFile: "Todavía no se ha seleccionado archivo.",
-    restoreRehearsalReady: "Sandbox lista. Elige un archivo JSON para revisar.",
-    restoreRehearsalProcessing: "Cargando archivo en una sandbox aislada…",
+    restoreRehearsalReady: "Entorno de ensayo listo. Elige un archivo JSON para revisar.",
+    restoreRehearsalProcessing: "Cargando el archivo en un entorno aislado…",
     restoreRehearsalMatch:
-      "Todos los recuentos coinciden. La sandbox se eliminó automáticamente.",
+      "Todos los recuentos coinciden. El entorno de ensayo se limpió automáticamente.",
     restoreRehearsalMismatch:
-      "Se detectaron diferencias: %s. La sandbox se eliminó automáticamente.",
+      "Se detectaron diferencias: %s. El entorno de ensayo se limpió automáticamente.",
     restoreRehearsalError:
       "El ensayo de restauración falló. Revisa el archivo e inténtalo de nuevo.",
     restoreRehearsalBackupMismatch:
       "El archivo no parece una copia completa de la aplicación. Comprueba el origen y vuelve a intentarlo.",
     restoreRehearsalProjectMismatch:
       "El archivo no parece un paquete de proyecto. Comprueba el origen y vuelve a intentarlo.",
-    restoreRehearsalRuleHeading: "Cambios en las reglas automáticas",
+    restoreRehearsalRuleHeading: "Cambios en las reglas automáticas de equipo",
     restoreRehearsalRuleIntro:
-      "Compara cada regla automática antes de cargar el entorno de ensayo. Las reglas en vivo se mantienen intactas.",
-    restoreRehearsalRuleEmpty: "No se encontraron diferencias en las reglas automáticas.",
+      "Compara cada regla de equipo automática antes de cargar el entorno de ensayo. Las reglas en vivo se mantienen intactas.",
+    restoreRehearsalRuleEmpty: "No se encontraron diferencias en las reglas automáticas de equipo.",
     restoreRehearsalRuleAddsLabel: "Adiciones automáticas",
     restoreRehearsalRuleRemovesLabel: "Eliminaciones automáticas",
     restoreRehearsalRuleScenariosLabel: "Alcance de escenarios",
@@ -3962,18 +3962,18 @@ const texts = {
     restoreRehearsalRuleFallback: "Cambio de regla automática",
     restoreRehearsalProceed: "Continuar ensayo de restauración",
     restoreRehearsalProceedHelp:
-      "Preparar la instantánea del entorno aislado para seguir con el ensayo.",
+      "Prepara la instantánea del entorno aislado para continuar con el ensayo.",
     restoreRehearsalProceedMessage:
       "Instantánea del entorno de ensayo preparada. Los datos en vivo permanecen intactos hasta ejecutar una restauración completa.",
     restoreRehearsalAbort: "Abortar ensayo",
     restoreRehearsalAbortHelp:
-      "Descartar la instantánea del entorno de ensayo y mantener los datos en vivo.",
+      "Descarta la instantánea del entorno de ensayo y conserva los datos en vivo.",
     restoreRehearsalAbortMessage:
-      "Entorno de ensayo borrado. Los datos en vivo permanecen sin cambios.",
+      "Entorno de ensayo eliminado. Los datos en vivo permanecen sin cambios.",
     restoreRehearsalTableCaption: "Comparación del ensayo de restauración",
     restoreRehearsalMetricColumn: "Tipo de dato",
     restoreRehearsalLiveColumn: "Perfil en vivo",
-    restoreRehearsalSandboxColumn: "Importación en sandbox",
+    restoreRehearsalSandboxColumn: "Importación en entorno de ensayo",
     restoreRehearsalDifferenceColumn: "Diferencia",
     restoreRehearsalClose: "Cerrar ensayo",
     restoreRehearsalMetricProjects: "Proyectos",
