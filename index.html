@@ -3876,6 +3876,39 @@
               offline.
             </p>
           </div>
+          <div
+            id="helpConsoleVerification"
+            class="help-callout"
+            role="note"
+            aria-label="Console verification commands"
+          >
+            <h4>Console verification commands</h4>
+            <ul>
+              <li>
+                Open the developer console and inspect <code>window.__cineRuntimeIntegrity</code>. The guard should report
+                <code>{ ok: true }</code> with an empty <code>missing</code> list before you rely on local saves, shares or
+                restores.
+              </li>
+              <li>
+                Run <code>window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })</code> whenever you finish a rehearsal
+                or incident review. The refreshed report confirms every persistence, offline and UI safeguard stayed available
+                without connectivity.
+              </li>
+              <li>
+                Use <code>window.cinePersistence.storage.exportAllData()</code> to preview the exact JSON captured by planner
+                backups. Compare project counts, timestamps and file size before archiving exports to redundant media.
+              </li>
+              <li>
+                Validate incoming bundles with <code>window.cinePersistence.share.decodeSharedSetup(payload)</code> before you
+                import them on production data. Pair it with <code>window.cinePersistence.share.applySharedSetup()</code> inside a
+                rehearsal profile to rehearse restores without touching live saves.
+              </li>
+            </ul>
+            <p class="help-callout-note">
+              Tip: Capture the console output alongside your backup filenames so audits prove which commands you checked before
+              travelling or rotating media.
+            </p>
+          </div>
         </section>
         <section
           data-help-section

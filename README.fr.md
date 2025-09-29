@@ -190,7 +190,11 @@ Cette routine prouve que sauvegarde, partage, import, backup et restauration fon
   d’aide pour que les parcours clavier atteignent d’abord les commandes essentielles.
 - **Centre d’aide** (`?`, `H`, `F1`, `Ctrl+/`) proposant guides, raccourcis, FAQ et mode aide au survol. La liste «Commencer ici»
   explique désormais comment préparer l’indicateur hors ligne, sécuriser des exports redondants et suivre un exercice de
-  restauration afin que l’équipe valide les sauvegardes avant le tournage.
+  restauration afin que l’équipe valide les sauvegardes avant le tournage. Un
+  encadré « Vérification console » liste
+  `window.__cineRuntimeIntegrity`, `window.cineRuntime.verifyCriticalFlows()`
+  et les aides `cinePersistence` pour consigner vos répétitions hors ligne sans
+  quitter le dialogue.
 - **Diagramme de projet** pour visualiser alimentation et signal ; maintenez Maj lors de l’export pour enregistrer un JPG.
 - **Comparateur de batteries** affichant les performances et alertant sur les surcharges.
 - **Générateur de listes** qui produit des tableaux catégorisés avec métadonnées, emails et accessoires liés aux scénarios.

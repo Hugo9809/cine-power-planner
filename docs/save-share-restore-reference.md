@@ -27,6 +27,8 @@ Run these quick inspections while documenting or rehearsing the workflows above:
 3. `window.cinePersistence.storage.exportAllData()` – returns the same payload used for planner backups so you can sanity-check file size, project counts and timestamps without triggering a download.【F:src/scripts/modules/persistence.js†L90-L145】
 4. `window.cinePersistence.share.decodeSharedSetup(payload)` – validates bundle text before you import it into production data. Pair it with `window.cinePersistence.share.applySharedSetup()` inside a disposable profile to confirm recovery paths stay healthy.【F:src/scripts/modules/persistence.js†L152-L157】
 
+The Help Center’s console verification callout mirrors these commands so crews have the checklist available directly inside the offline dialog alongside export and rehearsal guidance.【F:index.html†L3899-L3920】
+
 Record the outputs (or screenshots) in your verification log, and store them alongside the exported files so any teammate can confirm the same safeguards were present.
 
 ## When to run this checklist

@@ -29,6 +29,9 @@ copy offline.【F:src/scripts/script.js†L92-L183】
 1. **Help dialog topics.** Review contextual help entries, FAQ answers and hover-help copy in
    `src/scripts/help/` before landing a feature change. Update screenshots, keyboard
    shortcuts and workflow descriptions so crews see accurate instructions while offline.
+   Keep the console verification callout in `index.html` aligned with the commands documented
+   in the save/share reference so operators can rehearse data audits directly inside the help
+   dialog.【F:index.html†L3899-L3920】【F:docs/save-share-restore-reference.md†L28-L35】
 2. **README family.** Revise the primary `README.md` plus each localized README under the
    project root. Ensure new workflows appear in the *Save, Share & Import Drill*, *Backup &
    Recovery* and *Emergency Recovery Playbook* sections so every language documents the same
