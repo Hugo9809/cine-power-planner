@@ -4546,6 +4546,9 @@ function saveCurrentGearList() {
             setup.gearList = html;
             changed = true;
         }
+    } else if (Object.prototype.hasOwnProperty.call(setup, 'gearList')) {
+        delete setup.gearList;
+        changed = true;
     }
 
     if (projectInfoSignature) {
