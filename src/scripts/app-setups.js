@@ -280,13 +280,15 @@ function applyStoredPowerSelection(selection, { preferExisting = true } = {}) {
 }
 
 // Generate a printable overview of the current selected setup in a new tab
-generateOverviewBtn.addEventListener('click', () => {
-    if (!setupSelect.value) { // Ensure a setup is selected
-        alert(texts[currentLang].alertSelectSetupForOverview);
-        return;
-    }
-    generatePrintableOverview({ autoPrint: true });
-});
+if (typeof generateOverviewBtn !== 'undefined' && generateOverviewBtn) {
+    generateOverviewBtn.addEventListener('click', () => {
+        if (!setupSelect.value) { // Ensure a setup is selected
+            alert(texts[currentLang].alertSelectSetupForOverview);
+            return;
+        }
+        generatePrintableOverview({ autoPrint: true });
+    });
+}
 
 function batteryPinsSufficient() {
     const batt = batterySelect && batterySelect.value;
