@@ -190,7 +190,9 @@ Repite esta rutina cuando se incorpore personal, se prepare una estación nueva 
   con teclado lleguen a los controles principales.
 - **Centro de ayuda** (`?`, `H`, `F1`, `Ctrl+/`) ofrece guías, atajos, preguntas frecuentes y modo de ayuda flotante. La lista
   «Comienza aquí» ahora cubre cómo preparar el indicador sin conexión, guardar exportaciones redundantes y repasar un simulacro
-  de restauración para que el equipo verifique las copias de seguridad antes de salir a rodaje.
+  de restauración para que el equipo verifique las copias de seguridad antes de salir a rodaje. Un recuadro de verificación en
+  consola enumera `window.__cineRuntimeIntegrity`, `window.cineRuntime.verifyCriticalFlows()` y las utilidades de
+  `cinePersistence` para registrar ensayos sin conexión sin salir del diálogo.
 - **Diagrama de proyecto** visualiza rutas de energía y señal; mantén Shift al exportar para guardar JPG.
 - **Panel de comparación de baterías** muestra rendimiento de packs compatibles y alerta sobre sobrecargas.
 - **Generador de listas** crea tablas categorizadas con metadatos, correos de equipo y accesorios según escenarios.

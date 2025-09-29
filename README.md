@@ -422,7 +422,10 @@ Use Cine Power Planner end-to-end with the following routine:
   shortcuts, FAQs and an optional hover-help mode so every control explains
   itself. The Start Here checklist now covers priming the offline indicator,
   capturing redundant exports and walking through a restore rehearsal drill so
-  crews verify backups before field use.
+  crews verify backups before field use. A console verification callout lists
+  `window.__cineRuntimeIntegrity`, `window.cineRuntime.verifyCriticalFlows()`
+  and the `cinePersistence` helpers so you can log offline rehearsals without
+  leaving the dialog.
 - **Project diagram** visualizes power and signal paths. Hold Shift while
   exporting to save a JPG snapshot instead of SVG.
 - **Battery comparison panel** reveals how each compatible pack performs and

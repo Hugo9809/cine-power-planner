@@ -190,7 +190,10 @@ Dieser kurze Ablauf sollte bei neuen Teammitgliedern, frisch eingerichteten Work
   landen.
 - **Help-Center** (`?`, `H`, `F1`, `Strg+/`) liefert Guides, Shortcuts, FAQs und Hover-Hilfe. Die Start-hier-Checkliste beschreibt
   jetzt, wie du den Offline-Indikator vorbereitest, doppelte Exporte sicherst und eine Wiederherstellungsprobe durchläufst,
-  damit Teams Backups vor dem Einsatz prüfen.
+  damit Teams Backups vor dem Einsatz prüfen. Ein Konsolen-Schnellcheck listet
+  `window.__cineRuntimeIntegrity`, `window.cineRuntime.verifyCriticalFlows()`
+  und die `cinePersistence`-Hilfsfunktionen, damit du Offline-Proben direkt im
+  Dialog protokollierst.
 - **Projektdiagramm** visualisiert Strom- und Signalpfade; mit gedrückter Umschalttaste als JPG exportieren.
 - **Akkuvergleich** zeigt Leistung kompatibler Packs und warnt vor Überlast.
 - **Gerätelistengenerator** erstellt kategorisierte Tabellen mit Metadaten, Crew-E-Mails und Szenario-Zubehör.
