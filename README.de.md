@@ -187,7 +187,7 @@ Dieser kurze Ablauf sollte bei neuen Teammitgliedern, frisch eingerichteten Work
 
 - **Globale Suche** (`/`, `Strg+K`, `⌘K`) springt zu Features, Selektoren oder Hilfethemen – selbst bei versteckter Navigation.
   Vorschläge zeigen direkte Treffer für Funktionen und Geräte vor Hilfethemen, damit Tastaturabläufe zuerst bei Bedienelementen
-  landen.
+  landen. Leer das Feld, erscheinen zuletzt genutzte Treffer oben und Crew-Routinen lassen sich ohne Umwege wiederholen.
 - **Help-Center** (`?`, `H`, `F1`, `Strg+/`) liefert Guides, Shortcuts, FAQs und Hover-Hilfe. Die Start-hier-Checkliste beschreibt
   jetzt, wie du den Offline-Indikator vorbereitest, doppelte Exporte sicherst und eine Wiederherstellungsprobe durchläufst,
   damit Teams Backups vor dem Einsatz prüfen. Ein Konsolen-Schnellcheck listet

@@ -179,6 +179,8 @@ localization steps.
   typeface while dark, pink and high-contrast themes persist between visits.
 - **Global search shortcuts** – press `/` or `Ctrl+K` (`⌘K` on macOS) to focus
   the feature search instantly, even when the mobile navigation is collapsed.
+  Clearing the field bubbles your most recent matches to the top so repeating
+  frequent crew workflows stays lightning fast.
 - **Force reload button** – refresh cached service worker assets without
   deleting projects or devices.
 - **Pinned favorites** – star dropdown entries to keep go-to cameras, batteries

@@ -6468,6 +6468,181 @@ var settingsCancel  = document.getElementById("settingsCancel");
 var featureSearch   = document.getElementById("featureSearch");
 var featureList     = document.getElementById("featureList");
 var featureMap      = new Map();
+const featureSearchEntryIndex = new Map();
+const FEATURE_SEARCH_HISTORY_STORAGE_KEY = 'featureSearchHistory';
+const MAX_FEATURE_SEARCH_HISTORY = 50;
+const MAX_FEATURE_SEARCH_RECENTS = 5;
+let featureSearchHistoryLoaded = false;
+const featureSearchHistory = new Map();
+let featureSearchHistorySaveTimer = null;
+
+const getFeatureSearchHistoryStorage = () => {
+  try {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      return window.localStorage;
+    }
+    if (typeof globalThis !== 'undefined' && globalThis.localStorage) {
+      return globalThis.localStorage;
+    }
+  } catch (err) {
+    console.warn('Feature search history storage unavailable', err);
+  }
+  return null;
+};
+
+const buildFeatureSearchHistoryKey = (id, type = 'feature') => {
+  if (!id) return '';
+  return `${type}:${id}`;
+};
+
+const scheduleFeatureSearchHistorySave = () => {
+  if (featureSearchHistorySaveTimer != null) {
+    return;
+  }
+  const storage = getFeatureSearchHistoryStorage();
+  if (!storage || typeof storage.setItem !== 'function') {
+    return;
+  }
+  featureSearchHistorySaveTimer = setTimeout(() => {
+    featureSearchHistorySaveTimer = null;
+    try {
+      const data = Array.from(featureSearchHistory.values())
+        .slice()
+        .sort((a, b) => b.lastUsed - a.lastUsed)
+        .map(item => ({
+          key: item.id,
+          type: item.type,
+          count: item.count,
+          lastUsed: item.lastUsed,
+          label: item.label,
+        }));
+      storage.setItem(FEATURE_SEARCH_HISTORY_STORAGE_KEY, JSON.stringify(data));
+    } catch (error) {
+      console.warn('Could not persist feature search history', error);
+    }
+  }, 200);
+};
+
+const trimFeatureSearchHistory = () => {
+  if (featureSearchHistory.size <= MAX_FEATURE_SEARCH_HISTORY) return;
+  const entries = Array.from(featureSearchHistory.entries()).sort((a, b) => a[1].lastUsed - b[1].lastUsed);
+  const excess = entries.length - MAX_FEATURE_SEARCH_HISTORY;
+  for (let i = 0; i < excess; i += 1) {
+    featureSearchHistory.delete(entries[i][0]);
+  }
+};
+
+const loadFeatureSearchHistory = () => {
+  if (featureSearchHistoryLoaded) return;
+  featureSearchHistoryLoaded = true;
+  const storage = getFeatureSearchHistoryStorage();
+  if (!storage || typeof storage.getItem !== 'function') {
+    return;
+  }
+  let raw = null;
+  try {
+    raw = storage.getItem(FEATURE_SEARCH_HISTORY_STORAGE_KEY);
+  } catch (err) {
+    console.warn('Could not read feature search history', err);
+    return;
+  }
+  if (!raw) return;
+  let parsed = null;
+  try {
+    parsed = JSON.parse(raw);
+  } catch (err) {
+    console.warn('Invalid feature search history payload', err);
+    return;
+  }
+  if (!Array.isArray(parsed)) return;
+  parsed.forEach(item => {
+    if (!item || typeof item !== 'object') return;
+    const id = typeof item.id === 'string'
+      ? item.id
+      : typeof item.key === 'string'
+        ? item.key
+        : null;
+    const type = typeof item.type === 'string' ? item.type : 'feature';
+    const combinedKey = buildFeatureSearchHistoryKey(id, type);
+    if (!combinedKey) return;
+    const count = Number.isFinite(item.count) && item.count > 0
+      ? Math.min(Math.floor(item.count), 1_000_000)
+      : 0;
+    const lastUsed = Number.isFinite(item.lastUsed) ? item.lastUsed : 0;
+    const label = typeof item.label === 'string' ? item.label : '';
+    featureSearchHistory.set(combinedKey, {
+      key: combinedKey,
+      id,
+      type,
+      count,
+      lastUsed,
+      label,
+    });
+  });
+  trimFeatureSearchHistory();
+};
+
+const cleanupFeatureSearchHistory = () => {
+  let changed = false;
+  for (const key of featureSearchHistory.keys()) {
+    if (!featureSearchEntryIndex.has(key)) {
+      featureSearchHistory.delete(key);
+      changed = true;
+    }
+  }
+  if (changed) {
+    scheduleFeatureSearchHistorySave();
+  }
+};
+
+const getFeatureSearchHistoryData = (key, type) => {
+  if (!key) return null;
+  loadFeatureSearchHistory();
+  const combinedKey = buildFeatureSearchHistoryKey(key, type);
+  return featureSearchHistory.get(combinedKey) || null;
+};
+
+const registerFeatureSearchUsage = (id, type = 'feature', label = '') => {
+  if (!id) return;
+  loadFeatureSearchHistory();
+  const normalizedType = typeof type === 'string' && type ? type : 'feature';
+  const combinedKey = buildFeatureSearchHistoryKey(id, normalizedType);
+  const now = Date.now ? Date.now() : new Date().getTime();
+  const existing = featureSearchHistory.get(combinedKey);
+  const next = {
+    key: combinedKey,
+    id,
+    type: normalizedType,
+    count: existing ? Math.min(existing.count + 1, 1_000_000) : 1,
+    lastUsed: now,
+    label: label || existing?.label || '',
+  };
+  featureSearchHistory.set(combinedKey, next);
+  trimFeatureSearchHistory();
+  scheduleFeatureSearchHistorySave();
+};
+
+const resolveRecentFeatureSearchOptions = () => {
+  loadFeatureSearchHistory();
+  if (!featureSearchHistory.size) return [];
+  const entries = Array.from(featureSearchHistory.values())
+    .slice()
+    .sort((a, b) => b.lastUsed - a.lastUsed);
+  const options = [];
+  const seen = new Set();
+  for (const item of entries) {
+    if (!item || !item.key) continue;
+    const entry = featureSearchEntryIndex.get(item.key);
+    if (!entry) continue;
+    const option = buildFeatureSearchOptionData(entry);
+    if (!option || !option.value || seen.has(option.value)) continue;
+    seen.add(option.value);
+    options.push(option);
+    if (options.length >= MAX_FEATURE_SEARCH_RECENTS) break;
+  }
+  return options;
+};
+
 var normalizeSearchValue = value =>
   typeof value === 'string' ? value.trim().toLowerCase() : '';
 const FEATURE_SEARCH_EXTRA_SELECTOR = '[data-feature-search]';
@@ -6541,6 +6716,9 @@ var runFeatureSearch = () => {};
 
 var featureSearchEntries = [];
 var featureSearchDefaultOptions = [];
+var recordFeatureSearchUsage = (id, type, label) => {
+  registerFeatureSearchUsage(id, type, label);
+};
 
 const buildFeatureSearchOptionData = entry => {
   if (!entry) return null;
@@ -6588,7 +6766,21 @@ const renderFeatureListOptions = values => {
 };
 
 function restoreFeatureSearchDefaults() {
-  renderFeatureListOptions(featureSearchDefaultOptions);
+  if (!featureList) return;
+  const values = [];
+  const seen = new Set();
+  const recentOptions = resolveRecentFeatureSearchOptions();
+  for (const option of recentOptions) {
+    if (!option || !option.value || seen.has(option.value)) continue;
+    seen.add(option.value);
+    values.push(option);
+  }
+  for (const option of featureSearchDefaultOptions) {
+    if (!option || !option.value || seen.has(option.value)) continue;
+    seen.add(option.value);
+    values.push(option);
+  }
+  renderFeatureListOptions(values.length ? values : featureSearchDefaultOptions);
 }
 
 const FEATURE_SEARCH_MATCH_PRIORITIES = {
@@ -6621,6 +6813,9 @@ function scoreFeatureSearchEntry(entry, queryKey, queryTokens) {
     ? computeTokenMatchDetails(entryTokens, validQueryTokens)
     : { score: 0, matched: 0 };
   const entryType = entry.type || 'feature';
+  const history = getFeatureSearchHistoryData(entryKey, entryType);
+  const historyCount = history?.count || 0;
+  const historyLastUsed = history?.lastUsed || 0;
   const queryTokenCount = validQueryTokens.length;
   const allTokensMatched =
     queryTokenCount > 0 && tokenDetails.matched >= queryTokenCount;
@@ -6676,7 +6871,9 @@ function scoreFeatureSearchEntry(entry, queryKey, queryTokens) {
     keyDistance: queryKey
       ? Math.abs(entryKey.length - queryKey.length)
       : Number.POSITIVE_INFINITY,
-    keyLength: entryKey.length
+    keyLength: entryKey.length,
+    historyCount,
+    historyLastUsed
   };
 }
 
@@ -6717,6 +6914,10 @@ function updateFeatureSearchSuggestions(query) {
     if (b.tokenScore !== a.tokenScore) return b.tokenScore - a.tokenScore;
     if (b.tokenMatches !== a.tokenMatches) return b.tokenMatches - a.tokenMatches;
     if (b.typePriority !== a.typePriority) return b.typePriority - a.typePriority;
+    if (b.historyCount !== a.historyCount) return b.historyCount - a.historyCount;
+    if (b.historyLastUsed !== a.historyLastUsed) {
+      return b.historyLastUsed - a.historyLastUsed;
+    }
     if (
       a.priority === FEATURE_SEARCH_MATCH_PRIORITIES.fuzzy &&
       b.priority === FEATURE_SEARCH_MATCH_PRIORITIES.fuzzy &&
@@ -7317,7 +7518,8 @@ const buildFeatureSearchEntry = (element, { label, keywords = '' }) => {
     tokens: searchTokens(combinedKeywords),
     key: baseKey,
     optionValue: combinedLabel,
-    helpTexts
+    helpTexts,
+    entryType: getFeatureSearchEntryType(element)
   };
   const existing = featureMap.get(baseKey);
   if (!existing) {
@@ -8576,6 +8778,7 @@ function populateFeatureSearch() {
   deviceMap.clear();
   featureSearchEntries = [];
   featureSearchDefaultOptions = [];
+  featureSearchEntryIndex.clear();
   const defaultOptionValues = new Set();
   const registerOption = entry => {
     const optionData = buildFeatureSearchOptionData(entry);
@@ -8690,6 +8893,14 @@ function populateFeatureSearch() {
       }
     });
   });
+  featureSearchEntries.forEach(entry => {
+    if (!entry || !entry.key) return;
+    const type = entry.type || 'feature';
+    const mapKey = buildFeatureSearchHistoryKey(entry.key, type);
+    featureSearchEntryIndex.set(mapKey, entry);
+  });
+  loadFeatureSearchHistory();
+  cleanupFeatureSearchHistory();
   renderFeatureListOptions(featureSearchDefaultOptions);
   if (featureSearch && featureSearch.value) {
     updateFeatureSearchSuggestions(featureSearch.value);
