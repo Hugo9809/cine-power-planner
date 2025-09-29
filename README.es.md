@@ -187,7 +187,8 @@ Repite esta rutina cuando se incorpore personal, se prepare una estación nueva 
 
 - **Búsqueda global** (`/`, `Ctrl+K`, `⌘K`) salta a funciones, selectores o temas de ayuda, incluso con navegación oculta. Las
   sugerencias muestran primero coincidencias directas de funciones y dispositivos antes que los temas de ayuda para que los flujos
-  con teclado lleguen a los controles principales.
+  con teclado lleguen a los controles principales. Al vaciar el campo, las coincidencias usadas recientemente aparecen arriba para
+  repetir rutinas del equipo sin perder tiempo.
 - **Centro de ayuda** (`?`, `H`, `F1`, `Ctrl+/`) ofrece guías, atajos, preguntas frecuentes y modo de ayuda flotante. La lista
   «Comienza aquí» ahora cubre cómo preparar el indicador sin conexión, guardar exportaciones redundantes y repasar un simulacro
   de restauración para que el equipo verifique las copias de seguridad antes de salir a rodaje.

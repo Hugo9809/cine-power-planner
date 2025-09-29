@@ -29,6 +29,7 @@
           loadAutoGearPresets, loadAutoGearSeedFlag, loadAutoGearActivePresetId,
           loadAutoGearAutoPresetId, loadAutoGearBackupVisibility,
           loadAutoGearBackupRetention, loadFullBackupHistory */
+/* global recordFeatureSearchUsage */
 /* global getDiagramManualPositions, setManualDiagramPositions,
           normalizeDiagramPositionsInput, ensureAutoBackupsFromProjects */
 /* global getMountVoltagePreferencesClone, mountVoltageResetButton,
@@ -9480,6 +9481,16 @@ if (helpButton && helpDialog) {
           if (device.label) {
             updateFeatureSearchValue(device.label, originalNormalized);
           }
+          if (typeof recordFeatureSearchUsage === 'function') {
+            let deviceLabel = device.label;
+            if (!deviceLabel && device.select) {
+              const selectedOption = Array.from(device.select.options || []).find(opt => opt.value === device.value);
+              if (selectedOption && selectedOption.textContent) {
+                deviceLabel = selectedOption.textContent.trim();
+              }
+            }
+            recordFeatureSearchUsage(deviceMatch.key, 'device', deviceLabel);
+          }
           focusFeatureElement(device.select);
           const highlightTargets = [
             device.select,
@@ -9497,6 +9508,10 @@ if (helpButton && helpDialog) {
           if (label) {
             updateFeatureSearchValue(label, originalNormalized);
           }
+          if (typeof recordFeatureSearchUsage === 'function') {
+            const type = feature?.entryType || 'feature';
+            recordFeatureSearchUsage(featureMatch.key, type, label);
+          }
           focusFeatureElement(featureEl);
           const highlightTargets = [
             featureEl,
@@ -9510,6 +9525,9 @@ if (helpButton && helpDialog) {
     if (helpMatch) {
       const helpEntry = helpMatch.value || {};
       const section = helpEntry.section;
+      if (typeof recordFeatureSearchUsage === 'function') {
+        recordFeatureSearchUsage(helpMatch.key, 'help', helpEntry.label);
+      }
       openHelp();
       if (helpSearch) {
         helpSearch.value = clean;
