@@ -10,6 +10,8 @@
             ? global
             : {};
 
+  const PENDING_QUEUE_KEY = '__cinePendingModuleRegistrations__';
+
   let moduleMap = Object.create(null);
   let metadataMap = Object.create(null);
 
@@ -153,6 +155,38 @@
     return true;
   }
 
+  function flushPendingRegistrations(scope) {
+    if (!scope || typeof scope !== 'object') {
+      return;
+    }
+
+    const queue = scope[PENDING_QUEUE_KEY];
+    if (!Array.isArray(queue) || queue.length === 0) {
+      return;
+    }
+
+    const pending = queue.slice();
+    queue.length = 0;
+
+    for (let index = 0; index < pending.length; index += 1) {
+      const entry = pending[index];
+      if (!entry || typeof entry !== 'object') {
+        continue;
+      }
+
+      const name = entry.name;
+      const api = entry.api;
+      const options = entry.options || {};
+
+      try {
+        registry.register(name, api, options);
+      } catch (error) {
+        void error;
+        queue.push(entry);
+      }
+    }
+  }
+
   const registry = Object.freeze({
     register,
     get,
@@ -176,21 +210,25 @@
     }
 
     const existing = scope.cineModules;
-    if (existing === registry) {
-      continue;
+    if (existing !== registry) {
+      try {
+        Object.defineProperty(scope, 'cineModules', {
+          configurable: false,
+          enumerable: false,
+          value: registry,
+          writable: false,
+        });
+      } catch (error) {
+        void error;
+        try {
+          scope.cineModules = registry;
+        } catch (assignmentError) {
+          void assignmentError;
+        }
+      }
     }
 
-    try {
-      Object.defineProperty(scope, 'cineModules', {
-        configurable: false,
-        enumerable: false,
-        value: registry,
-        writable: false,
-      });
-    } catch (error) {
-      void error;
-      scope.cineModules = registry;
-    }
+    flushPendingRegistrations(scope);
   }
 
   if (typeof module !== 'undefined' && module && module.exports) {
