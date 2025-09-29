@@ -15,6 +15,40 @@ describe('cineModules registry', () => {
     }
   });
 
+  test('processes pending module registrations queued before load', () => {
+    const pendingKey = '__cinePendingModuleRegistrations__';
+
+    registry.__internalResetForTests({ force: true });
+    jest.resetModules();
+
+    Object.defineProperty(global, pendingKey, {
+      configurable: true,
+      enumerable: false,
+      writable: true,
+      value: [
+        Object.freeze({
+          name: 'cineLate',
+          api: { ready: true },
+          options: Object.freeze({ replace: true, freeze: false, category: 'late', description: 'Queued module' }),
+        }),
+      ],
+    });
+
+    const freshRegistry = require(path.join('..', '..', 'src', 'scripts', 'modules', 'registry.js'));
+    const retrieved = freshRegistry.get('cineLate');
+
+    expect(retrieved).toEqual({ ready: true });
+    expect(Object.isFrozen(retrieved)).toBe(false);
+
+    const queue = global[pendingKey];
+    expect(Array.isArray(queue)).toBe(true);
+    expect(queue.length).toBe(0);
+
+    freshRegistry.__internalResetForTests({ force: true });
+    registry = freshRegistry;
+    delete global[pendingKey];
+  });
+
   test('register freezes modules by default and exposes metadata', () => {
     const sample = { ready: () => true };
     const registered = registry.register('cineExample', sample, {

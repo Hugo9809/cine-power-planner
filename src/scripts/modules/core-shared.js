@@ -47,6 +47,71 @@
 
   const MODULE_REGISTRY = resolveModuleRegistry();
 
+  const PENDING_QUEUE_KEY = '__cinePendingModuleRegistrations__';
+
+  function queueModuleRegistration(name, api, options) {
+    if (!GLOBAL_SCOPE || typeof GLOBAL_SCOPE !== 'object') {
+      return false;
+    }
+
+    const payload = Object.freeze({
+      name,
+      api,
+      options: Object.freeze({ ...(options || {}) }),
+    });
+
+    let queue = GLOBAL_SCOPE[PENDING_QUEUE_KEY];
+    if (!Array.isArray(queue)) {
+      try {
+        Object.defineProperty(GLOBAL_SCOPE, PENDING_QUEUE_KEY, {
+          configurable: true,
+          enumerable: false,
+          writable: true,
+          value: [],
+        });
+        queue = GLOBAL_SCOPE[PENDING_QUEUE_KEY];
+      } catch (error) {
+        void error;
+        try {
+          if (!Array.isArray(GLOBAL_SCOPE[PENDING_QUEUE_KEY])) {
+            GLOBAL_SCOPE[PENDING_QUEUE_KEY] = [];
+          }
+          queue = GLOBAL_SCOPE[PENDING_QUEUE_KEY];
+        } catch (assignmentError) {
+          void assignmentError;
+          return false;
+        }
+      }
+    }
+
+    try {
+      queue.push(payload);
+    } catch (error) {
+      void error;
+      queue[queue.length] = payload;
+    }
+
+    return true;
+  }
+
+  function registerOrQueueModule(name, api, options, onError) {
+    if (MODULE_REGISTRY && typeof MODULE_REGISTRY.register === 'function') {
+      try {
+        MODULE_REGISTRY.register(name, api, options);
+        return true;
+      } catch (error) {
+        if (typeof onError === 'function') {
+          onError(error);
+        } else {
+          void error;
+        }
+      }
+    }
+
+    queueModuleRegistration(name, api, options);
+    return false;
+  }
+
   function freezeDeep(value, seen = new WeakSet()) {
     if (!value || typeof value !== 'object') {
       return value;
@@ -383,17 +448,11 @@
     },
   });
 
-  if (MODULE_REGISTRY && typeof MODULE_REGISTRY.register === 'function') {
-    try {
-      MODULE_REGISTRY.register('cineCoreShared', shared, {
-        category: 'shared',
-        description: 'Shared helpers for deterministic stringification, weights, and version markers.',
-        replace: true,
-      });
-    } catch (error) {
-      void error;
-    }
-  }
+  registerOrQueueModule('cineCoreShared', shared, {
+    category: 'shared',
+    description: 'Shared helpers for deterministic stringification, weights, and version markers.',
+    replace: true,
+  });
 
   if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE === 'object') {
     try {
