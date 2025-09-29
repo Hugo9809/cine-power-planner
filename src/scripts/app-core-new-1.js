@@ -734,20 +734,32 @@ try {
 }
 
 const SUPPORTED_MOUNT_VOLTAGE_TYPES = ['V-Mount', 'Gold-Mount', 'B-Mount'];
-const MOUNT_VOLTAGE_STORAGE_KEY = 'cameraPowerPlanner_mountVoltages';
-const MOUNT_VOLTAGE_STORAGE_BACKUP_KEY = `${MOUNT_VOLTAGE_STORAGE_KEY}__backup`;
-try {
-  if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object') {
-    if (typeof CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_KEY !== 'string') {
-      CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_KEY = MOUNT_VOLTAGE_STORAGE_KEY;
+const {
+  resolvedMountVoltageKey: MOUNT_VOLTAGE_STORAGE_KEY_RESOLVED,
+  resolvedMountVoltageBackupKey: MOUNT_VOLTAGE_STORAGE_BACKUP_KEY
+} = (() => {
+  const fallbackKey =
+    typeof MOUNT_VOLTAGE_STORAGE_KEY === 'string'
+      ? MOUNT_VOLTAGE_STORAGE_KEY
+      : 'cameraPowerPlanner_mountVoltages';
+  const backupKey = `${fallbackKey}__backup`;
+  try {
+    if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object') {
+      if (typeof CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_KEY !== 'string') {
+        CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_KEY = fallbackKey;
+      }
+      if (typeof CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_BACKUP_KEY !== 'string') {
+        CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_BACKUP_KEY = backupKey;
+      }
     }
-    if (typeof CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_BACKUP_KEY !== 'string') {
-      CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_BACKUP_KEY = MOUNT_VOLTAGE_STORAGE_BACKUP_KEY;
-    }
+  } catch (exposeMountVoltageError) {
+    console.warn('Unable to expose mount voltage storage keys globally', exposeMountVoltageError);
   }
-} catch (exposeMountVoltageError) {
-  console.warn('Unable to expose mount voltage storage keys globally', exposeMountVoltageError);
-}
+  return {
+    resolvedMountVoltageKey: fallbackKey,
+    resolvedMountVoltageBackupKey: backupKey
+  };
+})();
 const DEFAULT_MOUNT_VOLTAGES = Object.freeze({
   'V-Mount': Object.freeze({ high: 14.4, low: 12 }),
   'Gold-Mount': Object.freeze({ high: 14.4, low: 12 }),
@@ -882,7 +894,7 @@ function persistMountVoltagePreferences(preferences) {
   }
 
   try {
-    localStorage.setItem(MOUNT_VOLTAGE_STORAGE_KEY, serialized);
+    localStorage.setItem(MOUNT_VOLTAGE_STORAGE_KEY_RESOLVED, serialized);
   } catch (storageError) {
     console.warn('Could not save mount voltage preferences', storageError);
   }
@@ -1075,7 +1087,7 @@ function updateMountVoltageSettingLabels(lang = currentLang) {
 
 try {
   if (typeof localStorage !== 'undefined') {
-    const storedVoltages = localStorage.getItem(MOUNT_VOLTAGE_STORAGE_KEY);
+    const storedVoltages = localStorage.getItem(MOUNT_VOLTAGE_STORAGE_KEY_RESOLVED);
     const parsedVoltages = parseStoredMountVoltages(storedVoltages);
     if (parsedVoltages) {
       mountVoltagePreferences = parsedVoltages;
@@ -13257,7 +13269,7 @@ var settingsLanguage = document.getElementById("settingsLanguage");
 var settingsDarkMode = document.getElementById("settingsDarkMode");
 var settingsPinkMode = document.getElementById("settingsPinkMode");
 var accentColorInput = document.getElementById("accentColorInput");
-const accentColorResetButton = document.getElementById("accentColorReset");
+var accentColorResetButton = document.getElementById("accentColorReset");
 var settingsTemperatureUnit = document.getElementById('settingsTemperatureUnit');
 var settingsFontSize = document.getElementById("settingsFontSize");
 var settingsFontFamily = document.getElementById("settingsFontFamily");

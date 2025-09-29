@@ -2659,7 +2659,16 @@ function applySharedSetupFromUrl() {
 // --- EVENT LISTENERS FÜR NEUBERECHNUNG ---
 
 // Sicherstellen, dass Änderungen an den Selects auch neu berechnen
-[cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, hotswapSelect, batteryPlateSelect]
+[
+  cameraSelect,
+  monitorSelect,
+  videoSelect,
+  cageSelect,
+  distanceSelect,
+  batterySelect,
+  typeof hotswapSelect === 'undefined' ? null : hotswapSelect,
+  batteryPlateSelect
+]
   .forEach(sel => { if (sel) sel.addEventListener("change", updateCalculations); });
 if (cameraSelect) {
   cameraSelect.addEventListener('change', () => {

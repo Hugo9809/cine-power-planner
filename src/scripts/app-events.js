@@ -729,7 +729,14 @@ setupSelect.addEventListener("change", (event) => {
 
 
 function populateSetupSelect() {
-  const setups = getSetups();
+  const setupsProvider =
+    typeof getSetups === 'function'
+      ? getSetups
+      : null;
+  if (!setupsProvider) {
+    console.warn('populateSetupSelect: getSetups is unavailable, using empty setup list');
+  }
+  const setups = setupsProvider ? setupsProvider() || {} : {};
   setupSelect.innerHTML = `<option value="">${texts[currentLang].newSetupOption}</option>`;
   let includeAutoBackups = false;
   if (typeof showAutoBackups === 'boolean') {
