@@ -23,23 +23,24 @@ function _asyncIterator(r) { var n, t, o, e = 2; for ("undefined" != typeof Symb
 function AsyncFromSyncIterator(r) { function AsyncFromSyncIteratorContinuation(r) { if (Object(r) !== r) return Promise.reject(new TypeError(r + " is not an object.")); var n = r.done; return Promise.resolve(r.value).then(function (r) { return { value: r, done: n }; }); } return AsyncFromSyncIterator = function AsyncFromSyncIterator(r) { this.s = r, this.n = r.next; }, AsyncFromSyncIterator.prototype = { s: null, n: null, next: function next() { return AsyncFromSyncIteratorContinuation(this.n.apply(this.s, arguments)); }, return: function _return(r) { var n = this.s.return; return void 0 === n ? Promise.resolve({ value: r, done: !0 }) : AsyncFromSyncIteratorContinuation(n.apply(this.s, arguments)); }, throw: function _throw(r) { var n = this.s.return; return void 0 === n ? Promise.reject(r) : AsyncFromSyncIteratorContinuation(n.apply(this.s, arguments)); } }, new AsyncFromSyncIterator(r); }
 var CORE_PART2_RUNTIME_SCOPE = typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE ? CORE_GLOBAL_SCOPE : typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : typeof global !== 'undefined' ? global : null;
 
-if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initialized) {
+var CORE_PART2_RUNTIME_ALREADY_INITIALIZED = !!(CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initialized);
+
+if (CORE_PART2_RUNTIME_ALREADY_INITIALIZED) {
   if (typeof console !== 'undefined' && typeof console.warn === 'function') {
     console.warn('Cine Power Planner core runtime (part 2) already initialized. Skipping duplicate load.');
   }
-} else {
-  if (CORE_PART2_RUNTIME_SCOPE) {
-    try {
-      Object.defineProperty(CORE_PART2_RUNTIME_SCOPE, '__cineCorePart2Initialized', {
-        configurable: true,
-        writable: true,
-        value: true
-      });
-    } catch (corePart2InitError) {
-      CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initialized = true;
-      void corePart2InitError;
-    }
+} else if (CORE_PART2_RUNTIME_SCOPE) {
+  try {
+    Object.defineProperty(CORE_PART2_RUNTIME_SCOPE, '__cineCorePart2Initialized', {
+      configurable: true,
+      writable: true,
+      value: true
+    });
+  } catch (corePart2InitError) {
+    CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initialized = true;
+    void corePart2InitError;
   }
+}
 
 var CORE_SHARED_SCOPE_PART2 = CORE_PART2_RUNTIME_SCOPE;
 function resolveCoreSharedPart2() {

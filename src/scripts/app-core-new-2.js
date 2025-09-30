@@ -11,23 +11,25 @@ var CORE_PART2_RUNTIME_SCOPE =
             ? global
             : null;
 
-if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initialized) {
+var CORE_PART2_RUNTIME_ALREADY_INITIALIZED =
+  !!(CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initialized);
+
+if (CORE_PART2_RUNTIME_ALREADY_INITIALIZED) {
   if (typeof console !== 'undefined' && typeof console.warn === 'function') {
     console.warn('Cine Power Planner core runtime (part 2) already initialized. Skipping duplicate load.');
   }
-} else {
-  if (CORE_PART2_RUNTIME_SCOPE) {
-    try {
-      Object.defineProperty(CORE_PART2_RUNTIME_SCOPE, '__cineCorePart2Initialized', {
-        configurable: true,
-        writable: true,
-        value: true,
-      });
-    } catch (corePart2InitError) {
-      CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initialized = true;
-      void corePart2InitError;
-    }
+} else if (CORE_PART2_RUNTIME_SCOPE) {
+  try {
+    Object.defineProperty(CORE_PART2_RUNTIME_SCOPE, '__cineCorePart2Initialized', {
+      configurable: true,
+      writable: true,
+      value: true,
+    });
+  } catch (corePart2InitError) {
+    CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initialized = true;
+    void corePart2InitError;
   }
+}
 
 const CORE_SHARED_SCOPE_PART2 = CORE_PART2_RUNTIME_SCOPE;
 
@@ -15387,6 +15389,4 @@ if (typeof module !== 'undefined' && module.exports) {
     formatAutoGearCameraWeight,
     getAutoGearCameraWeightOperatorLabel,
   };
-}
-
 }
