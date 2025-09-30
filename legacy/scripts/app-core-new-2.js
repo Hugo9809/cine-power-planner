@@ -163,6 +163,31 @@ function fallbackHumanizeKey(key) {
 }
 var coreStableStringify = typeof CORE_SHARED_LOCAL.stableStringify === 'function' ? CORE_SHARED_LOCAL.stableStringify : fallbackStableStringify;
 var coreHumanizeKey = typeof CORE_SHARED_LOCAL.humanizeKey === 'function' ? CORE_SHARED_LOCAL.humanizeKey : fallbackHumanizeKey;
+var sharedDeviceManagerLists = function () {
+  var candidates = [CORE_PART2_RUNTIME_SCOPE && _typeof(CORE_PART2_RUNTIME_SCOPE) === 'object' ? CORE_PART2_RUNTIME_SCOPE : null, typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object' ? CORE_GLOBAL_SCOPE : null, typeof globalThis !== 'undefined' && _typeof(globalThis) === 'object' ? globalThis : null, typeof window !== 'undefined' && _typeof(window) === 'object' ? window : null, typeof self !== 'undefined' && _typeof(self) === 'object' ? self : null, typeof global !== 'undefined' && _typeof(global) === 'object' ? global : null].filter(Boolean);
+
+  for (var index = 0; index < candidates.length; index += 1) {
+    var scope = candidates[index];
+    if (scope && scope.deviceManagerLists instanceof Map) {
+      return scope.deviceManagerLists;
+    }
+  }
+
+  var fallback = new Map();
+  var assignTarget = candidates.find(function (scope) {
+    return scope && Object.isExtensible(scope);
+  });
+  if (assignTarget) {
+    try {
+      assignTarget.deviceManagerLists = fallback;
+    } catch (assignError) {
+      void assignError;
+      assignTarget.deviceManagerLists = fallback;
+    }
+  }
+  return fallback;
+}();
+var deviceManagerLists = sharedDeviceManagerLists;
 function callCoreFunctionFromPart2(functionName) {
   var args = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
   var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};

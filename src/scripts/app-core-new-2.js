@@ -215,6 +215,8 @@ const sharedDeviceManagerLists = (() => {
   return fallback;
 })();
 
+const deviceManagerLists = sharedDeviceManagerLists;
+
 function callCoreFunctionFromPart2(functionName, args = [], options = {}) {
   if (typeof callCoreFunctionIfAvailable === 'function') {
     return callCoreFunctionIfAvailable(functionName, args, options);
