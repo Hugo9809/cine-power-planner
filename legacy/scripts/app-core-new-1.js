@@ -14217,6 +14217,50 @@ function getCrewRoleEntries() {
   });
 }
 
+var coreGlobalExportNames = function () {
+  var scopeCandidates = [CORE_GLOBAL_SCOPE, CORE_SHARED];
+  for (var index = 0; index < scopeCandidates.length; index += 1) {
+    var scope = scopeCandidates[index];
+    if (scope && Array.isArray(scope.__cineAppCoreGlobalExportNames)) {
+      return scope.__cineAppCoreGlobalExportNames;
+    }
+  }
+  var fallbackScopes = [typeof globalThis !== 'undefined' ? globalThis : null, typeof window !== 'undefined' ? window : null, typeof self !== 'undefined' ? self : null, typeof global !== 'undefined' ? global : null];
+  for (var _index = 0; _index < fallbackScopes.length; _index += 1) {
+    var _scope = fallbackScopes[_index];
+    if (_scope && Array.isArray(_scope.__cineAppCoreGlobalExportNames)) {
+      return _scope.__cineAppCoreGlobalExportNames;
+    }
+  }
+  return [];
+}();
+
+if (Array.isArray(coreGlobalExportNames) && coreGlobalExportNames.length) {
+  var resolvedGlobalValues = {};
+  for (var nameIndex = 0; nameIndex < coreGlobalExportNames.length; nameIndex += 1) {
+    var globalNameCandidate = coreGlobalExportNames[nameIndex];
+    if (typeof globalNameCandidate !== 'string' || !globalNameCandidate) {
+      continue;
+    }
+    var globalValue;
+    try {
+      globalValue = eval(globalNameCandidate);
+    } catch (error) {
+      globalValue = void 0;
+    }
+    if (typeof globalValue === 'undefined') {
+      continue;
+    }
+    resolvedGlobalValues[globalNameCandidate] = globalValue;
+  }
+  for (var globalName in resolvedGlobalValues) {
+    if (!Object.prototype.hasOwnProperty.call(resolvedGlobalValues, globalName)) {
+      continue;
+    }
+    exposeCoreRuntimeConstant(globalName, resolvedGlobalValues[globalName]);
+  }
+}
+
 exposeCoreRuntimeConstants({
   CORE_GLOBAL_SCOPE: CORE_GLOBAL_SCOPE,
   CORE_BOOT_QUEUE_KEY: CORE_BOOT_QUEUE_KEY,

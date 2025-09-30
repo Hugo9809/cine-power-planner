@@ -15487,7 +15487,82 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         filterDeviceList(list, filterValue);
       });
     }
-    
+
+    const corePart2GlobalNames = (() => {
+      const scopedCandidates = [
+        CORE_SHARED_SCOPE_PART2,
+        CORE_PART2_RUNTIME_SCOPE,
+      ];
+
+      for (let index = 0; index < scopedCandidates.length; index += 1) {
+        const scope = scopedCandidates[index];
+        if (scope && Array.isArray(scope.__cineAppCoreGlobalExportNames)) {
+          return scope.__cineAppCoreGlobalExportNames;
+        }
+      }
+
+      const fallbackScopes = [
+        typeof globalThis !== 'undefined' ? globalThis : null,
+        typeof window !== 'undefined' ? window : null,
+        typeof self !== 'undefined' ? self : null,
+        typeof global !== 'undefined' ? global : null,
+      ];
+
+      for (let index = 0; index < fallbackScopes.length; index += 1) {
+        const scope = fallbackScopes[index];
+        if (scope && Array.isArray(scope.__cineAppCoreGlobalExportNames)) {
+          return scope.__cineAppCoreGlobalExportNames;
+        }
+      }
+
+      return [];
+    })();
+
+    const resolvedCorePart2Globals = {};
+
+    for (let index = 0; index < corePart2GlobalNames.length; index += 1) {
+      const name = corePart2GlobalNames[index];
+      if (typeof name !== 'string' || !name) {
+        continue;
+      }
+
+      let value;
+      try {
+        value = eval(name);
+      } catch (error) {
+        value = undefined;
+      }
+
+      if (typeof value === 'undefined') {
+        continue;
+      }
+
+      resolvedCorePart2Globals[name] = value;
+    }
+
+    function assignPart2Globals(target) {
+      if (!target || typeof target !== 'object') {
+        return;
+      }
+
+      const isExtensible = typeof Object.isExtensible === 'function'
+        ? Object.isExtensible(target)
+        : true;
+
+      if (!isExtensible) {
+        return;
+      }
+
+      Object.keys(resolvedCorePart2Globals).forEach(globalName => {
+        const value = resolvedCorePart2Globals[globalName];
+        try {
+          target[globalName] = value;
+        } catch (error) {
+          void error;
+        }
+      });
+    }
+
     const CORE_PART2_GLOBAL_EXPORTS = {
       refreshAutoGearCameraOptions,
       refreshAutoGearCameraWeightCondition,
@@ -15510,7 +15585,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       (typeof window !== 'undefined' ? window : null) ||
       (typeof self !== 'undefined' ? self : null) ||
       (typeof global !== 'undefined' ? global : null);
-    
+
     const CORE_PART2_RUNTIME = (function resolvePart2Runtime(scope) {
       if (!scope || typeof scope !== 'object') return null;
       if (scope.cineCoreRuntime && typeof scope.cineCoreRuntime === 'object') {
@@ -15522,7 +15597,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return null;
     })(CORE_PART2_GLOBAL_SCOPE);
-    
+
+    assignPart2Globals(CORE_PART2_GLOBAL_SCOPE);
+    assignPart2Globals(CORE_PART2_RUNTIME);
+
     Object.entries(CORE_PART2_GLOBAL_EXPORTS).forEach(([name, fn]) => {
       if (typeof fn !== 'function') return;
       if (CORE_PART2_GLOBAL_SCOPE && Object.isExtensible(CORE_PART2_GLOBAL_SCOPE)) {

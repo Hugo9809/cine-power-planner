@@ -28,6 +28,7 @@ const ASSETS = [
   './src/scripts/autosave-overlay.js',
   './src/scripts/globalthis-polyfill.js',
   './src/scripts/loader.js',
+  './src/scripts/app-core-global-names.js',
   './src/scripts/modules/core-shared.js',
   './src/scripts/modules/registry.js',
   './src/scripts/modules/offline.js',

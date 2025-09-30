@@ -15628,6 +15628,60 @@ function getCrewRoleEntries() {
   return entries.sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: 'base' }));
 }
 
+const coreGlobalExportNames = (() => {
+  const scopeCandidates = [CORE_GLOBAL_SCOPE, CORE_SHARED];
+  for (let index = 0; index < scopeCandidates.length; index += 1) {
+    const scope = scopeCandidates[index];
+    if (scope && Array.isArray(scope.__cineAppCoreGlobalExportNames)) {
+      return scope.__cineAppCoreGlobalExportNames;
+    }
+  }
+
+  const fallbackScopes = [
+    typeof globalThis !== 'undefined' ? globalThis : null,
+    typeof window !== 'undefined' ? window : null,
+    typeof self !== 'undefined' ? self : null,
+    typeof global !== 'undefined' ? global : null,
+  ];
+
+  for (let index = 0; index < fallbackScopes.length; index += 1) {
+    const scope = fallbackScopes[index];
+    if (scope && Array.isArray(scope.__cineAppCoreGlobalExportNames)) {
+      return scope.__cineAppCoreGlobalExportNames;
+    }
+  }
+
+  return [];
+})();
+
+if (Array.isArray(coreGlobalExportNames) && coreGlobalExportNames.length) {
+  const resolvedGlobalValues = {};
+
+  for (let index = 0; index < coreGlobalExportNames.length; index += 1) {
+    const name = coreGlobalExportNames[index];
+    if (typeof name !== 'string' || !name) {
+      continue;
+    }
+
+    let value;
+    try {
+      value = eval(name);
+    } catch (error) {
+      value = undefined;
+    }
+
+    if (typeof value === 'undefined') {
+      continue;
+    }
+
+    resolvedGlobalValues[name] = value;
+  }
+
+  Object.keys(resolvedGlobalValues).forEach(globalName => {
+    exposeCoreRuntimeConstant(globalName, resolvedGlobalValues[globalName]);
+  });
+}
+
 exposeCoreRuntimeConstants({
   CORE_GLOBAL_SCOPE,
   CORE_BOOT_QUEUE_KEY,

@@ -14882,6 +14882,65 @@ function refreshDeviceLists() {
     filterDeviceList(list, filterValue);
   });
 }
+var corePart2GlobalNames = function () {
+  var scopedCandidates = [CORE_SHARED_SCOPE_PART2, CORE_PART2_RUNTIME_SCOPE];
+  for (var index = 0; index < scopedCandidates.length; index += 1) {
+    var scope = scopedCandidates[index];
+    if (scope && Array.isArray(scope.__cineAppCoreGlobalExportNames)) {
+      return scope.__cineAppCoreGlobalExportNames;
+    }
+  }
+  var fallbackScopes = [
+    typeof globalThis !== 'undefined' ? globalThis : null,
+    typeof window !== 'undefined' ? window : null,
+    typeof self !== 'undefined' ? self : null,
+    typeof global !== 'undefined' ? global : null
+  ];
+  for (var _index = 0; _index < fallbackScopes.length; _index += 1) {
+    var _scope = fallbackScopes[_index];
+    if (_scope && Array.isArray(_scope.__cineAppCoreGlobalExportNames)) {
+      return _scope.__cineAppCoreGlobalExportNames;
+    }
+  }
+  return [];
+}();
+var resolvedCorePart2Globals = {};
+for (var nameIndex = 0; nameIndex < corePart2GlobalNames.length; nameIndex += 1) {
+  var globalNameCandidate = corePart2GlobalNames[nameIndex];
+  if (typeof globalNameCandidate !== 'string' || !globalNameCandidate) {
+    continue;
+  }
+  var globalValue;
+  try {
+    globalValue = eval(globalNameCandidate);
+  } catch (error) {
+    globalValue = void 0;
+  }
+  if (typeof globalValue === 'undefined') {
+    continue;
+  }
+  resolvedCorePart2Globals[globalNameCandidate] = globalValue;
+}
+function assignPart2Globals(target) {
+  if (!target || _typeof(target) !== 'object') {
+    return;
+  }
+  var isExtensible = typeof Object.isExtensible === 'function' ? Object.isExtensible(target) : true;
+  if (!isExtensible) {
+    return;
+  }
+  for (var globalName in resolvedCorePart2Globals) {
+    if (!Object.prototype.hasOwnProperty.call(resolvedCorePart2Globals, globalName)) {
+      continue;
+    }
+    var value = resolvedCorePart2Globals[globalName];
+    try {
+      target[globalName] = value;
+    } catch (error) {
+      void error;
+    }
+  }
+}
 var CORE_PART2_GLOBAL_EXPORTS = {
   refreshAutoGearCameraOptions: refreshAutoGearCameraOptions,
   refreshAutoGearCameraWeightCondition: refreshAutoGearCameraWeightCondition,
@@ -14909,6 +14968,8 @@ var CORE_PART2_RUNTIME = function resolvePart2Runtime(scope) {
   }
   return null;
 }(CORE_PART2_GLOBAL_SCOPE);
+assignPart2Globals(CORE_PART2_GLOBAL_SCOPE);
+assignPart2Globals(CORE_PART2_RUNTIME);
 Object.entries(CORE_PART2_GLOBAL_EXPORTS).forEach(function (_ref42) {
   var _ref43 = _slicedToArray(_ref42, 2),
     name = _ref43[0],
