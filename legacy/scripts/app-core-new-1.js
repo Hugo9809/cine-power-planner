@@ -543,15 +543,29 @@ try {
   console.warn('Could not load temperature unit preference', error);
 }
 var SUPPORTED_MOUNT_VOLTAGE_TYPES = ['V-Mount', 'Gold-Mount', 'B-Mount'];
-var MOUNT_VOLTAGE_STORAGE_KEY = 'cameraPowerPlanner_mountVoltages';
-var MOUNT_VOLTAGE_STORAGE_BACKUP_KEY = "".concat(MOUNT_VOLTAGE_STORAGE_KEY, '__backup');
+function resolveLegacyMountVoltageStorageKey() {
+  var fallback = 'cameraPowerPlanner_mountVoltages';
+  if (typeof resolveMountVoltageStorageKeyName === 'function') {
+    try {
+      return resolveMountVoltageStorageKeyName();
+    } catch (resolverError) {
+      void resolverError;
+    }
+  }
+  if (CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object' && typeof CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_KEY === 'string') {
+    return CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_KEY;
+  }
+  return fallback;
+}
+var LEGACY_MOUNT_VOLTAGE_STORAGE_KEY = resolveLegacyMountVoltageStorageKey();
+var LEGACY_MOUNT_VOLTAGE_STORAGE_BACKUP_KEY = "".concat(LEGACY_MOUNT_VOLTAGE_STORAGE_KEY, '__backup');
 try {
   if (CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object') {
     if (typeof CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_KEY !== 'string') {
-      CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_KEY = MOUNT_VOLTAGE_STORAGE_KEY;
+      CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_KEY = LEGACY_MOUNT_VOLTAGE_STORAGE_KEY;
     }
     if (typeof CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_BACKUP_KEY !== 'string') {
-      CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_BACKUP_KEY = MOUNT_VOLTAGE_STORAGE_BACKUP_KEY;
+      CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_BACKUP_KEY = LEGACY_MOUNT_VOLTAGE_STORAGE_BACKUP_KEY;
     }
   }
 } catch (exposeMountVoltageError) {
@@ -671,12 +685,12 @@ function persistMountVoltagePreferences(preferences) {
     return;
   }
   try {
-    localStorage.setItem(MOUNT_VOLTAGE_STORAGE_KEY, serialized);
+    localStorage.setItem(LEGACY_MOUNT_VOLTAGE_STORAGE_KEY, serialized);
   } catch (storageError) {
     console.warn('Could not save mount voltage preferences', storageError);
   }
   try {
-    localStorage.setItem(MOUNT_VOLTAGE_STORAGE_BACKUP_KEY, serialized);
+    localStorage.setItem(LEGACY_MOUNT_VOLTAGE_STORAGE_BACKUP_KEY, serialized);
   } catch (backupError) {
     console.warn('Could not save mount voltage backup copy', backupError);
   }
@@ -824,12 +838,12 @@ function updateMountVoltageSettingLabels(lang) {
 }
 try {
   if (typeof localStorage !== 'undefined') {
-    var storedVoltages = localStorage.getItem(MOUNT_VOLTAGE_STORAGE_KEY);
+    var storedVoltages = localStorage.getItem(LEGACY_MOUNT_VOLTAGE_STORAGE_KEY);
     var parsedVoltages = parseStoredMountVoltages(storedVoltages);
     if (parsedVoltages) {
       mountVoltagePreferences = parsedVoltages;
     } else {
-      var backupVoltages = localStorage.getItem(MOUNT_VOLTAGE_STORAGE_BACKUP_KEY);
+      var backupVoltages = localStorage.getItem(LEGACY_MOUNT_VOLTAGE_STORAGE_BACKUP_KEY);
       var parsedBackupVoltages = parseStoredMountVoltages(backupVoltages);
       if (parsedBackupVoltages) {
         mountVoltagePreferences = parsedBackupVoltages;

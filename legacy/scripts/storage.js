@@ -28,7 +28,30 @@ var FAVORITES_STORAGE_KEY = 'cameraPowerPlanner_favorites';
 var DEVICE_SCHEMA_CACHE_KEY = 'cameraPowerPlanner_schemaCache';
 var LEGACY_SCHEMA_CACHE_KEY = 'cinePowerPlanner_schemaCache';
 var CUSTOM_FONT_STORAGE_KEY_DEFAULT = 'cameraPowerPlanner_customFonts';
-var MOUNT_VOLTAGE_STORAGE_KEY = 'cameraPowerPlanner_mountVoltages';
+function resolveMountVoltageStorageKeyName() {
+  var fallback = 'cameraPowerPlanner_mountVoltages';
+  if (!GLOBAL_SCOPE || _typeof(GLOBAL_SCOPE) !== 'object') {
+    return fallback;
+  }
+  var existing = typeof GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_KEY === 'string' ? GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_KEY : fallback;
+  if (existing !== GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_KEY) {
+    try {
+      GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_KEY = existing;
+    } catch (assignError) {
+      try {
+        Object.defineProperty(GLOBAL_SCOPE, 'MOUNT_VOLTAGE_STORAGE_KEY', {
+          configurable: true,
+          writable: true,
+          value: existing
+        });
+      } catch (defineError) {
+        void defineError;
+      }
+    }
+  }
+  return existing;
+}
+var MOUNT_VOLTAGE_STORAGE_KEY_NAME = resolveMountVoltageStorageKeyName();
 function ensureCustomFontStorageKeyName() {
   if (!GLOBAL_SCOPE) {
     return CUSTOM_FONT_STORAGE_KEY_DEFAULT;
@@ -147,7 +170,7 @@ var STORAGE_BACKUP_SUFFIX = '__backup';
 var MAX_SAVE_ATTEMPTS = 3;
 var MAX_QUOTA_RECOVERY_STEPS = 100;
 var STORAGE_MIGRATION_BACKUP_SUFFIX = '__legacyMigrationBackup';
-var RAW_STORAGE_BACKUP_KEYS = new Set([getCustomFontStorageKeyName(), CUSTOM_LOGO_STORAGE_KEY, DEVICE_SCHEMA_CACHE_KEY, MOUNT_VOLTAGE_STORAGE_KEY]);
+var RAW_STORAGE_BACKUP_KEYS = new Set([getCustomFontStorageKeyName(), CUSTOM_LOGO_STORAGE_KEY, DEVICE_SCHEMA_CACHE_KEY, MOUNT_VOLTAGE_STORAGE_KEY_NAME]);
 var MAX_MIGRATION_BACKUP_CLEANUP_STEPS = 10;
 var MIGRATION_BACKUP_COMPRESSION_ALGORITHM = 'lz-string';
 var MIGRATION_BACKUP_COMPRESSION_ENCODING = 'json-string';
