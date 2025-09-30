@@ -5252,49 +5252,50 @@
           >
             <summary>How do I save a project?</summary>
             <p>
-              Enter a name in the
+              Cine Power Planner autosaves every change to protected local storage. The status dot beside the
               <a
                 class="help-link"
                 href="#setup-manager"
                 data-help-target="#setupName"
                 data-help-highlight="#setup-manager"
               >Project Name</a>
-              field and click
-              <a
-                class="help-link button-link"
-                href="#setup-manager"
-                data-help-target="#saveSetupBtn"
-                data-help-highlight="#setup-manager"
-              >Save</a>.
-              It will then appear in the
-              <a
-                class="help-link"
-                href="#setup-manager"
-                data-help-target="#setupSelect"
-                data-help-highlight="#setup-manager"
-              >Saved Projects</a>
-              list. Selecting an entry loads it instantly; tweak the setup and press
-              <a
-                class="help-link button-link"
-                href="#setup-manager"
-                data-help-target="#saveSetupBtn"
-                data-help-highlight="#setup-manager"
-              >Save</a>
-              again to update it, use
-              <a
-                class="help-link button-link"
-                href="#setup-manager"
-                data-help-target="#deleteSetupBtn"
-                data-help-highlight="#setup-manager"
-              >Delete</a>
-              to remove it entirely or pick
-              <a
-                class="help-link"
-                href="#setup-manager"
-                data-help-target="#setupSelect"
-                data-help-highlight="#setup-manager"
-              >-- New Project --</a>
-              to start fresh without touching saved copies.
+              field glows while that happens so you always know the latest update was captured. For a named snapshot:
+            </p>
+            <ol>
+              <li>
+                Enter a descriptive name and click
+                <a
+                  class="help-link button-link"
+                  href="#setup-manager"
+                  data-help-target="#saveSetupBtn"
+                  data-help-highlight="#setup-manager"
+                >Save</a>
+                or press <kbd>Enter</kbd> / <kbd>Ctrl</kbd>+<kbd>S</kbd> (<kbd>⌘</kbd>+<kbd>S</kbd> on macOS).
+              </li>
+              <li>
+                Confirm it appears in the
+                <a
+                  class="help-link"
+                  href="#setup-manager"
+                  data-help-target="#setupSelect"
+                  data-help-highlight="#setup-manager"
+                >Saved Projects</a>
+                list. Loading another entry brings it back instantly while leaving the autosaved draft untouched.
+              </li>
+              <li>
+                Repeat the save action any time to update the snapshot, or choose
+                <a
+                  class="help-link"
+                  href="#setup-manager"
+                  data-help-target="#setupSelect"
+                  data-help-highlight="#setup-manager"
+                >-- New Project --</a>
+                when you want to start fresh without deleting earlier saves.
+              </li>
+            </ol>
+            <p>
+              Saved entries stay offline on your device, sync into manual exports and can always be restored, so no project data
+              is lost between sessions.
             </p>
           </details>
           <details
@@ -5303,28 +5304,47 @@
           >
             <summary>How do I share or back up a project?</summary>
             <p>
-              Click
-              <a
-                class="help-link button-link"
-                href="#setup-manager"
-                data-help-target="#shareSetupBtn"
-                data-help-highlight="#setup-manager"
-              ><em>Export Project</em></a>
-              to open the export dialog. Choose a file name and optionally include automatic gear rules before downloading a JSON bundle with your selections, project requirements, gear list, runtime feedback and any custom devices. Send the file to collaborators or keep it as a backup, then choose it in the
-              <a
-                class="help-link button-link"
-                href="#setup-manager"
-                data-help-target="#applySharedLinkBtn"
-                data-help-highlight="#setup-manager"
-              ><em>Import Project</em></a>
-              field and press
-              <a
-                class="help-link button-link"
-                href="#setup-manager"
-                data-help-target="#applySharedLinkBtn"
-                data-help-highlight="#setup-manager"
-              ><em>Import</em></a>
-              to restore it. When the file contains automatic gear rules you'll be asked whether to apply them only to the current project or add them to all projects before continuing.
+              Use the exporter to create portable archives that protect every configuration detail:
+            </p>
+            <ol>
+              <li>
+                Click
+                <a
+                  class="help-link button-link"
+                  href="#setup-manager"
+                  data-help-target="#shareSetupBtn"
+                  data-help-highlight="#setup-manager"
+                ><em>Export Project</em></a>
+                and choose a secure file name. Include automatic gear rules when collaborators should inherit your automation
+                presets.
+              </li>
+              <li>
+                Store the downloaded JSON bundle wherever you keep backups or send it to teammates. It contains the project
+                requirements, gear list, runtime analysis, linked auto-backups and any custom devices needed to rebuild the
+                setup.
+              </li>
+              <li>
+                To restore, paste or select the file inside the
+                <a
+                  class="help-link button-link"
+                  href="#setup-manager"
+                  data-help-target="#applySharedLinkBtn"
+                  data-help-highlight="#setup-manager"
+                ><em>Import Project</em></a>
+                field and press
+                <a
+                  class="help-link button-link"
+                  href="#setup-manager"
+                  data-help-target="#applySharedLinkBtn"
+                  data-help-highlight="#setup-manager"
+                ><em>Import</em></a>.
+                The planner validates the bundle and asks how to apply gear rules so nothing overwrites your library without
+                approval.
+              </li>
+            </ol>
+            <p>
+              Keep regular exports as part of your backup rotation; imports never delete existing saves, so you can maintain as
+              many restore points as you need.
             </p>
           </details>
           <details
