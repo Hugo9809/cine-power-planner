@@ -34,8 +34,8 @@
           normalizeDiagramPositionsInput, ensureAutoBackupsFromProjects */
 /* global getMountVoltagePreferencesClone, mountVoltageResetButton,
           resetMountVoltagePreferences, updateMountVoltageInputsFromState,
-          applyMountVoltagePreferences, MOUNT_VOLTAGE_STORAGE_KEY,
-          MOUNT_VOLTAGE_STORAGE_BACKUP_KEY,
+          applyMountVoltagePreferences, getMountVoltageStorageKeyName,
+          getMountVoltageStorageBackupKeyName, MOUNT_VOLTAGE_STORAGE_BACKUP_KEY,
           parseStoredMountVoltages, SUPPORTED_MOUNT_VOLTAGE_TYPES,
           DEFAULT_MOUNT_VOLTAGES, mountVoltageInputs, parseVoltageValue */
 
@@ -6282,7 +6282,11 @@ function applyPreferencesFromStorage(safeGetItem) {
   const language = safeGetItem('language');
 
   try {
-    const storedVoltages = safeGetItem(MOUNT_VOLTAGE_STORAGE_KEY);
+    const mountVoltageKeyName =
+      typeof getMountVoltageStorageKeyName === 'function'
+        ? getMountVoltageStorageKeyName()
+        : 'cameraPowerPlanner_mountVoltages';
+    const storedVoltages = safeGetItem(mountVoltageKeyName);
     let parsedVoltages = parseStoredMountVoltages(storedVoltages);
     let shouldPersistVoltages = false;
 
@@ -6290,7 +6294,9 @@ function applyPreferencesFromStorage(safeGetItem) {
       const backupKey =
         typeof MOUNT_VOLTAGE_STORAGE_BACKUP_KEY === 'string'
           ? MOUNT_VOLTAGE_STORAGE_BACKUP_KEY
-          : `${MOUNT_VOLTAGE_STORAGE_KEY}__backup`;
+          : typeof getMountVoltageStorageBackupKeyName === 'function'
+            ? getMountVoltageStorageBackupKeyName()
+            : `${mountVoltageKeyName}__backup`;
       const backupVoltages = safeGetItem(backupKey);
       if (backupVoltages !== undefined && backupVoltages !== null) {
         const parsedBackupVoltages = parseStoredMountVoltages(backupVoltages);

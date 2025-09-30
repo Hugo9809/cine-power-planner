@@ -738,10 +738,22 @@ const {
   resolvedMountVoltageKey: MOUNT_VOLTAGE_STORAGE_KEY_RESOLVED,
   resolvedMountVoltageBackupKey: MOUNT_VOLTAGE_STORAGE_BACKUP_KEY
 } = (() => {
-  const fallbackKey =
-    typeof MOUNT_VOLTAGE_STORAGE_KEY === 'string'
-      ? MOUNT_VOLTAGE_STORAGE_KEY
-      : 'cameraPowerPlanner_mountVoltages';
+  let fallbackKey = 'cameraPowerPlanner_mountVoltages';
+  if (typeof getMountVoltageStorageKeyName === 'function') {
+    try {
+      const resolvedKey = getMountVoltageStorageKeyName();
+      if (typeof resolvedKey === 'string' && resolvedKey) {
+        fallbackKey = resolvedKey;
+      }
+    } catch (mountVoltageKeyError) {
+      console.warn('Unable to resolve mount voltage storage key name', mountVoltageKeyError);
+    }
+  } else if (
+    typeof MOUNT_VOLTAGE_STORAGE_KEY_NAME === 'string' &&
+    MOUNT_VOLTAGE_STORAGE_KEY_NAME
+  ) {
+    fallbackKey = MOUNT_VOLTAGE_STORAGE_KEY_NAME;
+  }
   const backupKey = `${fallbackKey}__backup`;
   try {
     if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object') {
