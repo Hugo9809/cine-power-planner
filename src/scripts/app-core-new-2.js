@@ -7240,11 +7240,15 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (!display) return null;
       const entryKey = entry.key;
       const entryTokens = Array.isArray(entry.tokens) ? entry.tokens : [];
+      const primaryTokens = Array.isArray(entry.primaryTokens) ? entry.primaryTokens : [];
       const validQueryTokens = Array.isArray(queryTokens)
         ? queryTokens.filter(Boolean)
         : [];
       const tokenDetails = validQueryTokens.length
         ? computeTokenMatchDetails(entryTokens, validQueryTokens)
+        : { score: 0, matched: 0 };
+      const primaryTokenDetails = validQueryTokens.length
+        ? computeTokenMatchDetails(primaryTokens, validQueryTokens)
         : { score: 0, matched: 0 };
       const entryType = entry.type || 'feature';
       const history = getFeatureSearchHistoryData(entryKey, entryType);
@@ -7301,6 +7305,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         priority: bestPriority,
         tokenScore: tokenDetails.score,
         tokenMatches: tokenDetails.matched,
+        primaryTokenScore: primaryTokenDetails.score,
+        primaryTokenMatches: primaryTokenDetails.matched,
         fuzzyDistance,
         keyDistance: queryKey
           ? Math.abs(entryKey.length - queryKey.length)
@@ -7318,6 +7324,16 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (b.priority !== a.priority) return b.priority - a.priority;
       if (Number(b.allTokensMatched) !== Number(a.allTokensMatched)) {
         return Number(b.allTokensMatched) - Number(a.allTokensMatched);
+      }
+      const aPrimaryScore = typeof a.primaryTokenScore === 'number' ? a.primaryTokenScore : 0;
+      const bPrimaryScore = typeof b.primaryTokenScore === 'number' ? b.primaryTokenScore : 0;
+      if (bPrimaryScore !== aPrimaryScore) {
+        return bPrimaryScore - aPrimaryScore;
+      }
+      const aPrimaryMatches = typeof a.primaryTokenMatches === 'number' ? a.primaryTokenMatches : 0;
+      const bPrimaryMatches = typeof b.primaryTokenMatches === 'number' ? b.primaryTokenMatches : 0;
+      if (bPrimaryMatches !== aPrimaryMatches) {
+        return bPrimaryMatches - aPrimaryMatches;
       }
       if (b.tokenScore !== a.tokenScore) return b.tokenScore - a.tokenScore;
       if (b.tokenMatches !== a.tokenMatches) return b.tokenMatches - a.tokenMatches;
@@ -7428,7 +7444,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       const meaningful = trimmed
         ? scored.filter(
             item =>
-              item.priority > FEATURE_SEARCH_MATCH_PRIORITIES.none || item.tokenScore > 0
+              item.priority > FEATURE_SEARCH_MATCH_PRIORITIES.none ||
+              item.tokenScore > 0 ||
+              item.primaryTokenScore > 0
           )
         : [];
     
@@ -8210,6 +8228,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (contextLabels.length) {
         combinedLabel = `${baseLabel} (${contextLabels.join(' › ')})`;
       }
+      const primaryTokenSource = [baseLabel, contextLabels.join(' ')]
+        .filter(Boolean)
+        .join(' ');
       const combinedKeywords = [
         baseLabel,
         contextLabels.join(' '),
@@ -8218,12 +8239,14 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       ]
         .filter(Boolean)
         .join(' ');
+      const primaryTokens = searchTokens(primaryTokenSource);
       const entry = {
         element,
         label: baseLabel,
         baseLabel,
         displayLabel: combinedLabel,
         context: contextLabels,
+        primaryTokens,
         tokens: searchTokens(combinedKeywords),
         key: baseKey,
         optionValue: combinedLabel,
@@ -9512,6 +9535,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             key: entry.key,
             display,
             tokens: Array.isArray(entry.tokens) ? entry.tokens : [],
+            primaryTokens: Array.isArray(entry.primaryTokens) ? entry.primaryTokens : [],
             value: entry,
             optionLabel: entry.displayLabel || entry.baseLabel || display,
             detail: buildFeatureEntryDetailText(entry)
@@ -9534,6 +9558,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           key: entry.key,
           display,
           tokens: Array.isArray(entry.tokens) ? entry.tokens : [],
+          primaryTokens: Array.isArray(entry.primaryTokens) ? entry.primaryTokens : [],
           value: entry,
           optionLabel: entry.displayLabel || entry.baseLabel || display,
           detail: buildFeatureEntryDetailText(entry)
@@ -9550,6 +9575,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           const keywords = section.dataset.helpKeywords || '';
           const key = searchKey(label);
           const tokens = searchTokens(`${label} ${keywords}`.trim());
+          const primaryTokens = searchTokens(label);
           const helpEntry = {
             section,
             label,
@@ -9562,6 +9588,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             key,
             display: optionValue,
             tokens,
+            primaryTokens,
             value: helpEntry,
             optionLabel: label,
             detail: buildHelpSectionDetailText(section)
@@ -9584,6 +9611,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
               sel.getAttribute('data-search-keywords') ||
               '';
             const tokens = searchTokens(`${name} ${keywords}`.trim());
+            const primaryTokens = searchTokens(name);
             const deviceEntry = {
               select: sel,
               value: opt.value,
@@ -9596,6 +9624,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
               key,
               display: name,
               tokens,
+              primaryTokens,
               value: deviceEntry,
               optionLabel: name,
               detail: buildDeviceEntryDetailText(deviceEntry)
