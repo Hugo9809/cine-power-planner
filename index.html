@@ -72,18 +72,28 @@
       <span class="icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE198;</span>
     </button>
     <div class="feature-search">
-      <div id="featureSearchContainer">
-        <input
-          type="search"
-          id="featureSearch"
-          list="featureList"
-          placeholder="Search features or devices..."
-          aria-label="Search features, devices and help"
-          data-shortcuts="/"
-          aria-keyshortcuts="Slash"
-        />
+      <div id="featureSearchWrapper">
+        <div id="featureSearchContainer">
+          <input
+            type="search"
+            id="featureSearch"
+            list="featureList"
+            placeholder="Search features or devices..."
+            aria-label="Search features, devices and help"
+            data-shortcuts="/"
+            aria-keyshortcuts="Slash"
+          />
+        </div>
+        <datalist id="featureList"></datalist>
+        <div
+          id="featureSearchSuggestions"
+          class="feature-search-suggestions"
+          role="listbox"
+          aria-hidden="true"
+          aria-live="polite"
+          hidden
+        ></div>
       </div>
-      <datalist id="featureList"></datalist>
     </div>
     <nav class="controls" aria-label="Main controls">
       <select id="languageSelect" aria-label="Select language">

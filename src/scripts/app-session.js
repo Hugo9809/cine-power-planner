@@ -23,7 +23,9 @@
           normalizeBatteryPlateValue, applyBatteryPlateSelectionFromBattery,
           getPowerSelectionSnapshot, applyStoredPowerSelection,
           settingsReduceMotion, settingsRelaxedSpacing, callCoreFunctionIfAvailable,
-          recordFeatureSearchUsage, helpResultsSummary, helpResultsAssist */
+          recordFeatureSearchUsage, helpResultsSummary, helpResultsAssist,
+          hideFeatureSearchSuggestions, moveFeatureSearchActiveSuggestion,
+          commitFeatureSearchSuggestion, getFeatureSearchSuggestionCount */
 /* eslint-enable no-redeclare */
 /* global triggerPinkModeIconRain, loadDeviceData, loadSetups, loadSessionState,
           loadFeedback, loadFavorites, loadAutoGearBackups,
@@ -9606,16 +9608,42 @@ if (helpButton && helpDialog) {
     featureSearch.addEventListener('change', handle);
     featureSearch.addEventListener('input', () => {
       updateFeatureSearchSuggestions(featureSearch.value);
-      safeShowPicker(featureSearch);
+    });
+    featureSearch.addEventListener('focus', () => {
+      if (featureSearch.value) {
+        updateFeatureSearchSuggestions(featureSearch.value);
+      } else {
+        restoreFeatureSearchDefaults();
+      }
+    });
+    featureSearch.addEventListener('blur', () => {
+      hideFeatureSearchSuggestions();
     });
     featureSearch.addEventListener('keydown', e => {
-      if (e.key === 'Enter') {
-        handle();
-      } else if (e.key === 'Escape' && featureSearch.value) {
-        featureSearch.value = '';
-        restoreFeatureSearchDefaults();
-        safeShowPicker(featureSearch);
-        e.preventDefault();
+      if (e.key === 'ArrowDown') {
+        if (moveFeatureSearchActiveSuggestion(1)) {
+          e.preventDefault();
+        }
+      } else if (e.key === 'ArrowUp') {
+        if (moveFeatureSearchActiveSuggestion(-1)) {
+          e.preventDefault();
+        }
+      } else if (e.key === 'Enter') {
+        if (commitFeatureSearchSuggestion()) {
+          e.preventDefault();
+        } else {
+          handle();
+        }
+      } else if (e.key === 'Escape') {
+        if (featureSearch.value) {
+          featureSearch.value = '';
+          restoreFeatureSearchDefaults();
+          e.preventDefault();
+        } else {
+          hideFeatureSearchSuggestions();
+        }
+      } else if (e.key === 'Tab') {
+        hideFeatureSearchSuggestions();
       }
     });
   }
@@ -10727,6 +10755,10 @@ if (typeof module !== "undefined" && module.exports) {
       featureListElement: featureList,
       restoreFeatureSearchDefaults,
       updateFeatureSearchSuggestions,
+      hideFeatureSearchSuggestions,
+      moveFeatureSearchActiveSuggestion,
+      commitFeatureSearchSuggestion,
+      getFeatureSearchSuggestionCount,
     },
     __customFontInternals: {
       addFromData: (name, dataUrl, options) => addCustomFontFromData(name, dataUrl, options),

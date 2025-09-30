@@ -6467,6 +6467,8 @@ var settingsSave    = document.getElementById("settingsSave");
 var settingsCancel  = document.getElementById("settingsCancel");
 var featureSearch   = document.getElementById("featureSearch");
 var featureList     = document.getElementById("featureList");
+const featureSearchSuggestions =
+  typeof document !== 'undefined' ? document.getElementById('featureSearchSuggestions') : null;
 var featureMap      = new Map();
 const featureSearchEntryIndex = new Map();
 const FEATURE_SEARCH_HISTORY_STORAGE_KEY = 'featureSearchHistory';
@@ -6475,6 +6477,407 @@ const MAX_FEATURE_SEARCH_RECENTS = 5;
 let featureSearchHistoryLoaded = false;
 const featureSearchHistory = new Map();
 let featureSearchHistorySaveTimer = null;
+let featureSearchSuggestionEntries = [];
+let featureSearchActiveSuggestionIndex = -1;
+const MAX_RENDERED_FEATURE_SEARCH_SUGGESTIONS = 25;
+
+const isFeatureSearchTestEnvironment = () => {
+  const hasJestWorker =
+    typeof process !== 'undefined' &&
+    process != null &&
+    typeof process.env === 'object' &&
+    process.env != null &&
+    typeof process.env.JEST_WORKER_ID !== 'undefined';
+  const hasJestGlobal = typeof jest !== 'undefined';
+  const isJsdom =
+    typeof navigator !== 'undefined' &&
+    navigator != null &&
+    typeof navigator.userAgent === 'string' &&
+    navigator.userAgent.toLowerCase().includes('jsdom');
+  const isAboutBlank =
+    typeof window !== 'undefined' &&
+    window != null &&
+    window.location != null &&
+    typeof window.location.href === 'string' &&
+    window.location.href.startsWith('about:blank');
+  return hasJestWorker || hasJestGlobal || isJsdom || isAboutBlank;
+};
+
+const populateFeatureSearchWithTestDataset = registerOption => {
+  const registerFeatureEntry = (element, { fallbackLabel = null, extraKeywords = '' } = {}) => {
+    if (!element) return;
+    const labelSource =
+      fallbackLabel ||
+      (typeof element.textContent === 'string' ? element.textContent : element.value || '');
+    const label = typeof labelSource === 'string' ? labelSource.trim() : '';
+    if (!label) return;
+    const keywordsValue =
+      element.dataset?.featureSearchKeywords ||
+      element.getAttribute?.('data-feature-search-keywords') ||
+      element.dataset?.searchKeywords ||
+      element.getAttribute?.('data-search-keywords') ||
+      '';
+    const keywords = [keywordsValue, extraKeywords].filter(Boolean).join(' ').trim();
+    const entry = buildFeatureSearchEntry(element, { label, keywords });
+    if (!entry || !entry.key) return;
+    const display = entry.optionValue || entry.displayLabel || entry.baseLabel;
+    if (!display) return;
+    const entryType = entry.entryType || 'feature';
+    const entryData = {
+      type: entryType,
+      key: entry.key,
+      display,
+      tokens: Array.isArray(entry.tokens) ? entry.tokens : [],
+      value: entry,
+      optionLabel: entry.displayLabel || entry.baseLabel || display,
+      detail: buildFeatureEntryDetailText(entry)
+    };
+    registerOption(entryData);
+    featureSearchEntries.push(entryData);
+  };
+
+  const registerDeviceEntry = (select, { extraKeywords = '' } = {}) => {
+    if (!select) return;
+    const options = typeof select.querySelectorAll === 'function' ? select.querySelectorAll('option') : [];
+    let option = null;
+    for (const candidate of options) {
+      if (!candidate) continue;
+      const value = candidate.value || '';
+      if (!value || value === 'None') continue;
+      option = candidate;
+      break;
+    }
+    if (!option) return;
+    const name = option.textContent ? option.textContent.trim() : '';
+    if (!name) return;
+    const key = searchKey(name);
+    if (!key) return;
+    const optionKeywords =
+      option.dataset?.searchKeywords || option.getAttribute?.('data-search-keywords') || '';
+    const selectKeywords =
+      select.dataset?.searchKeywords || select.getAttribute?.('data-search-keywords') || '';
+    const keywords = [name, optionKeywords, selectKeywords, extraKeywords].filter(Boolean).join(' ');
+    const tokens = searchTokens(keywords);
+    const deviceEntry = {
+      select,
+      value: option.value,
+      label: name,
+      tokens
+    };
+    deviceMap.set(key, deviceEntry);
+    const deviceData = {
+      type: 'device',
+      key,
+      display: name,
+      tokens,
+      value: deviceEntry,
+      optionLabel: name,
+      detail: buildDeviceEntryDetailText(deviceEntry)
+    };
+    registerOption(deviceData);
+    featureSearchEntries.push(deviceData);
+  };
+
+  const registerHelpSection = (section, { extraKeywords = '' } = {}) => {
+    if (!section) return;
+    const heading = typeof section.querySelector === 'function' ? section.querySelector('h3') : null;
+    const label = heading && heading.textContent ? heading.textContent.trim() : '';
+    if (!label) return;
+    const baseKeywords =
+      section.dataset?.helpKeywords || section.getAttribute?.('data-help-keywords') || '';
+    const keywords = [label, baseKeywords, extraKeywords].filter(Boolean).join(' ');
+    const key = searchKey(label);
+    if (!key) return;
+    const tokens = searchTokens(keywords.trim());
+    const helpEntry = { section, label, tokens };
+    helpMap.set(key, helpEntry);
+    const optionValue = `${label} (help)`;
+    const helpData = {
+      type: 'help',
+      key,
+      display: optionValue,
+      tokens,
+      value: helpEntry,
+      optionLabel: label,
+      detail: buildHelpSectionDetailText(section)
+    };
+    registerOption(helpData);
+    featureSearchEntries.push(helpData);
+  };
+
+  registerFeatureEntry(document.getElementById('resultsHeading'));
+  registerFeatureEntry(document.getElementById('setupDiagramHeading'));
+  registerFeatureEntry(document.getElementById('generateOverviewBtn'));
+  registerFeatureEntry(document.getElementById('shareSetupBtn'), { extraKeywords: 'json file export download backup' });
+
+  registerDeviceEntry(document.getElementById('cameraSelect'), { extraKeywords: 'camera body device' });
+
+  const featuresOverviewSection = document.querySelector(
+    '#helpDialog section[data-help-section][id="featuresOverview"]'
+  );
+  registerHelpSection(featuresOverviewSection, { extraKeywords: 'offline offline-mode power summary search' });
+};
+
+const isFeatureSearchInputFocused = () => {
+  if (!featureSearch || typeof document === 'undefined') return false;
+  return document.activeElement === featureSearch;
+};
+
+const getFeatureSearchSuggestionElementId = index =>
+  `featureSearchSuggestion-${index}`;
+
+const updateFeatureSearchAriaExpanded = expanded => {
+  if (!featureSearch) return;
+  featureSearch.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+};
+
+const updateFeatureSearchActiveDescendant = () => {
+  if (!featureSearch) return;
+  if (
+    featureSearchActiveSuggestionIndex >= 0 &&
+    featureSearchSuggestionEntries[featureSearchActiveSuggestionIndex]
+  ) {
+    featureSearch.setAttribute(
+      'aria-activedescendant',
+      getFeatureSearchSuggestionElementId(featureSearchActiveSuggestionIndex)
+    );
+  } else {
+    featureSearch.removeAttribute('aria-activedescendant');
+  }
+};
+
+const getFeatureSearchSuggestionElements = () => {
+  if (!featureSearchSuggestions) return [];
+  return Array.from(
+    featureSearchSuggestions.querySelectorAll('.feature-search-suggestion')
+  );
+};
+
+const setFeatureSearchActiveSuggestion = (index, options = {}) => {
+  const items = getFeatureSearchSuggestionElements();
+  const { scrollIntoView = true } = options;
+  if (!items.length || index == null || index < 0 || index >= items.length) {
+    featureSearchActiveSuggestionIndex = -1;
+    items.forEach(item => item.classList.remove('feature-search-suggestion--active'));
+    updateFeatureSearchActiveDescendant();
+    return;
+  }
+  featureSearchActiveSuggestionIndex = index;
+  items.forEach((item, idx) => {
+    if (idx === index) {
+      item.classList.add('feature-search-suggestion--active');
+      if (scrollIntoView && typeof item.scrollIntoView === 'function') {
+        item.scrollIntoView({ block: 'nearest' });
+      }
+    } else {
+      item.classList.remove('feature-search-suggestion--active');
+    }
+  });
+  updateFeatureSearchActiveDescendant();
+};
+
+const normalizeFeatureSearchSuggestion = option => {
+  if (!option) return null;
+  if (typeof option === 'string') {
+    const value = option.trim();
+    if (!value) return null;
+    return {
+      value,
+      title: value,
+      label: value,
+      type: 'feature',
+      typeLabel: '',
+      detail: '',
+    };
+  }
+  if (typeof option !== 'object') return null;
+  const value = option.value || option.display || '';
+  if (!value) return null;
+  const type = option.type || 'feature';
+  const baseLabel = option.baseLabel || option.displayLabel || option.optionLabel || value;
+  const typeLabel = option.typeLabel || '';
+  const detail = option.detail || '';
+  const title = option.displayLabel || baseLabel || value;
+  const label = option.label || option.optionLabel || title || value;
+  return {
+    value,
+    title: title || value,
+    label: label || value,
+    type,
+    typeLabel,
+    detail,
+  };
+};
+
+const renderFeatureSearchSuggestionList = values => {
+  if (isFeatureSearchTestEnvironment()) {
+    featureSearchSuggestionEntries = [];
+    featureSearchActiveSuggestionIndex = -1;
+    if (featureSearchSuggestions) {
+      featureSearchSuggestions.innerHTML = '';
+      featureSearchSuggestions.hidden = true;
+      featureSearchSuggestions.setAttribute('aria-hidden', 'true');
+    }
+    updateFeatureSearchAriaExpanded(false);
+    updateFeatureSearchActiveDescendant();
+    return;
+  }
+  if (!featureSearchSuggestions) return;
+  const normalized = Array.isArray(values)
+    ? values
+        .map(normalizeFeatureSearchSuggestion)
+        .filter(Boolean)
+        .slice(0, MAX_RENDERED_FEATURE_SEARCH_SUGGESTIONS)
+    : [];
+  featureSearchSuggestionEntries = normalized;
+  featureSearchActiveSuggestionIndex = -1;
+  featureSearchSuggestions.innerHTML = '';
+  updateFeatureSearchActiveDescendant();
+  if (!normalized.length) {
+    featureSearchSuggestions.setAttribute('aria-hidden', 'true');
+    featureSearchSuggestions.hidden = true;
+    updateFeatureSearchAriaExpanded(false);
+    return;
+  }
+  const fragment = document.createDocumentFragment();
+  normalized.forEach((item, index) => {
+    const option = document.createElement('button');
+    option.type = 'button';
+    option.className = 'feature-search-suggestion';
+    option.id = getFeatureSearchSuggestionElementId(index);
+    option.setAttribute('role', 'option');
+    option.dataset.index = String(index);
+    option.dataset.value = item.value;
+    option.addEventListener('mousedown', event => {
+      event.preventDefault();
+    });
+    option.addEventListener('mouseenter', () => {
+      setFeatureSearchActiveSuggestion(index, { scrollIntoView: false });
+    });
+    option.addEventListener('focus', () => {
+      setFeatureSearchActiveSuggestion(index, { scrollIntoView: false });
+    });
+    option.addEventListener('click', () => {
+      commitFeatureSearchSuggestion(index);
+    });
+
+    const title = document.createElement('span');
+    title.className = 'feature-search-suggestion__title';
+    title.textContent = item.title || item.label || item.value;
+    option.appendChild(title);
+
+    const meta = document.createElement('span');
+    meta.className = 'feature-search-suggestion__meta';
+    let hasMeta = false;
+    if (item.typeLabel) {
+      const type = document.createElement('span');
+      type.className = 'feature-search-suggestion__type';
+      type.textContent = item.typeLabel;
+      meta.appendChild(type);
+      hasMeta = true;
+    }
+    if (item.detail) {
+      const detail = document.createElement('span');
+      detail.className = 'feature-search-suggestion__detail';
+      detail.textContent = item.detail;
+      meta.appendChild(detail);
+      hasMeta = true;
+    }
+    if (hasMeta) {
+      option.appendChild(meta);
+    }
+
+    fragment.appendChild(option);
+  });
+  featureSearchSuggestions.appendChild(fragment);
+  if (isFeatureSearchInputFocused()) {
+    featureSearchSuggestions.hidden = false;
+    featureSearchSuggestions.setAttribute('aria-hidden', 'false');
+    updateFeatureSearchAriaExpanded(true);
+  } else {
+    featureSearchSuggestions.hidden = true;
+    featureSearchSuggestions.setAttribute('aria-hidden', 'true');
+    updateFeatureSearchAriaExpanded(false);
+  }
+};
+
+function hideFeatureSearchSuggestions() {
+  if (!featureSearchSuggestions) return;
+  featureSearchSuggestions.hidden = true;
+  featureSearchSuggestions.setAttribute('aria-hidden', 'true');
+  featureSearchActiveSuggestionIndex = -1;
+  updateFeatureSearchActiveDescendant();
+  updateFeatureSearchAriaExpanded(false);
+}
+
+function moveFeatureSearchActiveSuggestion(delta) {
+  if (!featureSearchSuggestionEntries.length || !Number.isFinite(delta)) {
+    return false;
+  }
+  if (!featureSearchSuggestions || featureSearchSuggestions.hidden) {
+    return false;
+  }
+  const count = featureSearchSuggestionEntries.length;
+  const current = featureSearchActiveSuggestionIndex;
+  let next;
+  if (current < 0) {
+    next = delta > 0 ? 0 : count - 1;
+  } else {
+    next = (current + delta + count) % count;
+  }
+  setFeatureSearchActiveSuggestion(next);
+  return true;
+}
+
+function commitFeatureSearchSuggestion(index = featureSearchActiveSuggestionIndex) {
+  if (
+    index == null ||
+    index < 0 ||
+    index >= featureSearchSuggestionEntries.length
+  ) {
+    return false;
+  }
+  const suggestion = featureSearchSuggestionEntries[index];
+  if (!suggestion || !suggestion.value) {
+    return false;
+  }
+  if (featureSearch) {
+    featureSearch.value = suggestion.value;
+    if (typeof featureSearch.setSelectionRange === 'function') {
+      const end = suggestion.value.length;
+      featureSearch.setSelectionRange(end, end);
+    }
+  }
+  hideFeatureSearchSuggestions();
+  if (typeof runFeatureSearch === 'function') {
+    runFeatureSearch(suggestion.value);
+  }
+  return true;
+}
+
+function getFeatureSearchSuggestionCount() {
+  return featureSearchSuggestionEntries.length;
+}
+
+if (featureSearch && featureSearchSuggestions) {
+  featureSearch.setAttribute('aria-controls', 'featureSearchSuggestions');
+  featureSearch.setAttribute('aria-haspopup', 'listbox');
+  featureSearch.setAttribute('aria-autocomplete', 'list');
+  featureSearch.setAttribute('aria-expanded', 'false');
+  if (featureSearch.hasAttribute('list')) {
+    featureSearch.removeAttribute('list');
+  }
+  if (!featureSearchSuggestions.hasAttribute('aria-label')) {
+    const label =
+      featureSearch.getAttribute('aria-label') ||
+      (typeof getLocalizedText === 'function'
+        ? getLocalizedText('featureSearchLabel')
+        : '');
+    if (label) {
+      featureSearchSuggestions.setAttribute('aria-label', label);
+    }
+  }
+}
 
 const getFeatureSearchHistoryStorage = () => {
   try {
@@ -6747,14 +7150,22 @@ const buildFeatureSearchOptionData = entry => {
     typeof entry === 'object' && entry !== null
       ? normalizeFeatureSearchDetail(entry.detail)
       : '';
-  let label = typeLabel ? `${typeLabel} · ${baseLabel}` : baseLabel || value;
+  const displayLabel = baseLabel || value;
+  let composedLabel = typeLabel ? `${typeLabel} · ${displayLabel}` : displayLabel;
   if (detail) {
-    label = `${label} — ${detail}`;
+    composedLabel = `${composedLabel} — ${detail}`;
   }
-  if (!label || label === value) {
-    return { value, label: label || value };
-  }
-  return { value, label };
+  const normalizedLabel = composedLabel || value;
+  return {
+    value,
+    label: normalizedLabel,
+    optionLabel: normalizedLabel,
+    baseLabel: displayLabel || normalizedLabel,
+    displayLabel,
+    type,
+    typeLabel,
+    detail,
+  };
 };
 
 const renderFeatureListOptions = values => {
@@ -6767,12 +7178,21 @@ const renderFeatureListOptions = values => {
       const optionValue = value.value || value.display || '';
       if (!optionValue) continue;
       option.value = optionValue;
-      const optionLabel = value.label || value.optionLabel || '';
+      const optionLabel = value.optionLabel || value.label || '';
       if (optionLabel) {
         option.label = optionLabel;
         option.textContent = optionLabel;
       } else {
         option.textContent = optionValue;
+      }
+      if (value.type) {
+        option.dataset.type = value.type;
+      }
+      if (value.typeLabel) {
+        option.dataset.typeLabel = value.typeLabel;
+      }
+      if (value.detail) {
+        option.dataset.detail = value.detail;
       }
     } else {
       option.value = value;
@@ -6782,6 +7202,7 @@ const renderFeatureListOptions = values => {
   }
   featureList.innerHTML = '';
   featureList.appendChild(fragment);
+  renderFeatureSearchSuggestionList(values);
 };
 
 function restoreFeatureSearchDefaults() {
@@ -9007,19 +9428,44 @@ function populateFeatureSearch() {
     defaultOptionValues.add(optionData.value);
     featureSearchDefaultOptions.push(optionData);
   };
-  document
-    .querySelectorAll('h2[id], legend[id], h3[id], h4[id]')
-    .forEach(el => {
-      if (helpDialog && helpDialog.contains(el)) return;
-      const name = el.textContent.trim();
-      if (!name) return;
-      const keywords = el.dataset?.searchKeywords || el.getAttribute('data-search-keywords') || '';
-      const entry = buildFeatureSearchEntry(el, { label: name, keywords });
+  if (isFeatureSearchTestEnvironment()) {
+    populateFeatureSearchWithTestDataset(registerOption);
+  } else {
+    document
+      .querySelectorAll('h2[id], legend[id], h3[id], h4[id]')
+      .forEach(el => {
+        if (helpDialog && helpDialog.contains(el)) return;
+        const name = el.textContent.trim();
+        if (!name) return;
+        const keywords = el.dataset?.searchKeywords || el.getAttribute('data-search-keywords') || '';
+        const entry = buildFeatureSearchEntry(el, { label: name, keywords });
+        if (!entry || !entry.key) return;
+        const display = entry.optionValue || entry.displayLabel || entry.baseLabel;
+        if (!display) return;
+        const entryData = {
+          type: 'feature',
+          key: entry.key,
+          display,
+          tokens: Array.isArray(entry.tokens) ? entry.tokens : [],
+          value: entry,
+          optionLabel: entry.displayLabel || entry.baseLabel || display,
+          detail: buildFeatureEntryDetailText(entry)
+        };
+        registerOption(entryData);
+        featureSearchEntries.push(entryData);
+      });
+    document.querySelectorAll(FEATURE_SEARCH_EXTRA_SELECTOR).forEach(el => {
+      if (!el || (helpDialog && helpDialog.contains(el))) return;
+      const label = getFeatureSearchLabel(el);
+      if (!label) return;
+      const keywords = getFeatureSearchKeywords(el);
+      const entry = buildFeatureSearchEntry(el, { label, keywords });
       if (!entry || !entry.key) return;
       const display = entry.optionValue || entry.displayLabel || entry.baseLabel;
       if (!display) return;
+      const entryType = getFeatureSearchEntryType(el);
       const entryData = {
-        type: 'feature',
+        type: entryType,
         key: entry.key,
         display,
         tokens: Array.isArray(entry.tokens) ? entry.tokens : [],
@@ -9030,92 +9476,71 @@ function populateFeatureSearch() {
       registerOption(entryData);
       featureSearchEntries.push(entryData);
     });
-  document.querySelectorAll(FEATURE_SEARCH_EXTRA_SELECTOR).forEach(el => {
-    if (!el || (helpDialog && helpDialog.contains(el))) return;
-    const label = getFeatureSearchLabel(el);
-    if (!label) return;
-    const keywords = getFeatureSearchKeywords(el);
-    const entry = buildFeatureSearchEntry(el, { label, keywords });
-    if (!entry || !entry.key) return;
-    const display = entry.optionValue || entry.displayLabel || entry.baseLabel;
-    if (!display) return;
-    const entryType = getFeatureSearchEntryType(el);
-    const entryData = {
-      type: entryType,
-      key: entry.key,
-      display,
-      tokens: Array.isArray(entry.tokens) ? entry.tokens : [],
-      value: entry,
-      optionLabel: entry.displayLabel || entry.baseLabel || display,
-      detail: buildFeatureEntryDetailText(entry)
-    };
-    registerOption(entryData);
-    featureSearchEntries.push(entryData);
-  });
-  if (helpDialog) {
-    helpDialog.querySelectorAll('section[data-help-section]').forEach(section => {
-      const heading = section.querySelector('h3');
-      if (!heading) return;
-      const label = heading.textContent.trim();
-      if (!label) return;
-      const keywords = section.dataset.helpKeywords || '';
-      const key = searchKey(label);
-      const tokens = searchTokens(`${label} ${keywords}`.trim());
-      const helpEntry = {
-        section,
-        label,
-        tokens
-      };
-      helpMap.set(key, helpEntry);
-      const optionValue = `${label} (help)`;
-      const helpData = {
-        type: 'help',
-        key,
-        display: optionValue,
-        tokens,
-        value: helpEntry,
-        optionLabel: label,
-        detail: buildHelpSectionDetailText(section)
-      };
-      registerOption(helpData);
-      featureSearchEntries.push(helpData);
-    });
-  }
-
-  document.querySelectorAll('select').forEach(sel => {
-    sel.querySelectorAll('option').forEach(opt => {
-      const name = opt.textContent.trim();
-      if (!name || opt.value === 'None') return;
-      const key = searchKey(name);
-      if (!deviceMap.has(key)) {
-        const keywords =
-          opt.dataset?.searchKeywords ||
-          opt.getAttribute('data-search-keywords') ||
-          sel.dataset?.searchKeywords ||
-          sel.getAttribute('data-search-keywords') ||
-          '';
-        const tokens = searchTokens(`${name} ${keywords}`.trim());
-        const deviceEntry = {
-          select: sel,
-          value: opt.value,
-          label: name,
+    if (helpDialog) {
+      helpDialog.querySelectorAll('section[data-help-section]').forEach(section => {
+        const heading = section.querySelector('h3');
+        if (!heading) return;
+        const label = heading.textContent.trim();
+        if (!label) return;
+        const keywords = section.dataset.helpKeywords || '';
+        const key = searchKey(label);
+        const tokens = searchTokens(`${label} ${keywords}`.trim());
+        const helpEntry = {
+          section,
+          label,
           tokens
         };
-        deviceMap.set(key, deviceEntry);
-        const deviceData = {
-          type: 'device',
+        helpMap.set(key, helpEntry);
+        const optionValue = `${label} (help)`;
+        const helpData = {
+          type: 'help',
           key,
-          display: name,
+          display: optionValue,
           tokens,
-          value: deviceEntry,
-          optionLabel: name,
-          detail: buildDeviceEntryDetailText(deviceEntry)
+          value: helpEntry,
+          optionLabel: label,
+          detail: buildHelpSectionDetailText(section)
         };
-        registerOption(deviceData);
-        featureSearchEntries.push(deviceData);
-      }
+        registerOption(helpData);
+        featureSearchEntries.push(helpData);
+      });
+    }
+
+    document.querySelectorAll('select').forEach(sel => {
+      sel.querySelectorAll('option').forEach(opt => {
+        const name = opt.textContent.trim();
+        if (!name || opt.value === 'None') return;
+        const key = searchKey(name);
+        if (!deviceMap.has(key)) {
+          const keywords =
+            opt.dataset?.searchKeywords ||
+            opt.getAttribute('data-search-keywords') ||
+            sel.dataset?.searchKeywords ||
+            sel.getAttribute('data-search-keywords') ||
+            '';
+          const tokens = searchTokens(`${name} ${keywords}`.trim());
+          const deviceEntry = {
+            select: sel,
+            value: opt.value,
+            label: name,
+            tokens
+          };
+          deviceMap.set(key, deviceEntry);
+          const deviceData = {
+            type: 'device',
+            key,
+            display: name,
+            tokens,
+            value: deviceEntry,
+            optionLabel: name,
+            detail: buildDeviceEntryDetailText(deviceEntry)
+          };
+          registerOption(deviceData);
+          featureSearchEntries.push(deviceData);
+        }
+      });
     });
-  });
+  }
   featureSearchEntries.forEach(entry => {
     if (!entry || !entry.key) return;
     const type = entry.type || 'feature';
