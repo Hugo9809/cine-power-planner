@@ -236,32 +236,21 @@ function runCoreRuntimeSegment(executor) {
     return false;
   }
 
-  let source = '';
+  const scope =
+    (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object')
+      ? CORE_GLOBAL_SCOPE
+      : typeof globalThis !== 'undefined'
+        ? globalThis
+        : typeof window !== 'undefined'
+          ? window
+          : typeof self !== 'undefined'
+            ? self
+            : typeof global !== 'undefined'
+              ? global
+              : null;
 
   try {
-    source = Function.prototype.toString.call(executor);
-  } catch (stringifyError) {
-    void stringifyError;
-    return false;
-  }
-
-  if (typeof source !== 'string' || !source.trim()) {
-    return false;
-  }
-
-  if (!CORE_PART1_VALID_IDENTIFIER.test(executor.name || '')) {
-    // Preserve backwards compatibility by still attempting execution even
-    // when the function name is minified. The identifier test avoids
-    // accidentally evaluating malicious strings while still allowing our
-    // trusted runtime function to run.
-    // The function body remains unchanged because we evaluate the entire
-    // source, not just the identifier.
-  }
-
-  const wrappedSource = `(${source}).call(CORE_GLOBAL_SCOPE || this);`;
-
-  try {
-    eval(wrappedSource);
+    executor.call(scope || this);
     return true;
   } catch (executionError) {
     if (typeof console !== 'undefined' && typeof console.error === 'function') {
