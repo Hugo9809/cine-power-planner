@@ -79,10 +79,20 @@
           list="featureList"
           placeholder="Search features or devices..."
           aria-label="Search features, devices and help"
+          aria-controls="featureSearchDropdown"
           data-shortcuts="/"
           aria-keyshortcuts="Slash"
+          data-skip-native-picker="true"
         />
       </div>
+      <div
+        id="featureSearchDropdown"
+        class="feature-search-dropdown"
+        role="listbox"
+        aria-labelledby="featureSearch"
+        hidden
+        data-count="0"
+      ></div>
       <datalist id="featureList"></datalist>
     </div>
     <nav class="controls" aria-label="Main controls">

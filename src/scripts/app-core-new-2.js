@@ -6465,8 +6465,12 @@ const aboutVersionElem = document.getElementById("aboutVersion");
 const supportLink = document.getElementById("supportLink");
 var settingsSave    = document.getElementById("settingsSave");
 var settingsCancel  = document.getElementById("settingsCancel");
-var featureSearch   = document.getElementById("featureSearch");
-var featureList     = document.getElementById("featureList");
+var featureSearch =
+  typeof document !== 'undefined' ? document.getElementById("featureSearch") : null;
+var featureList =
+  typeof document !== 'undefined' ? document.getElementById("featureList") : null;
+var featureSearchDropdown =
+  typeof document !== 'undefined' ? document.getElementById("featureSearchDropdown") : null;
 var featureMap      = new Map();
 const featureSearchEntryIndex = new Map();
 const FEATURE_SEARCH_HISTORY_STORAGE_KEY = 'featureSearchHistory';
@@ -6757,31 +6761,130 @@ const buildFeatureSearchOptionData = entry => {
   return { value, label };
 };
 
+const normalizeFeatureSearchOption = value => {
+  if (!value) return null;
+  if (typeof value === 'object') {
+    const optionValue = value.value || value.display || '';
+    if (!optionValue) return null;
+    const optionLabel = value.label || value.optionLabel || optionValue;
+    return { value: optionValue, label: optionLabel };
+  }
+  if (typeof value === 'string') {
+    return { value, label: value };
+  }
+  return null;
+};
+
+const getFeatureSearchContainer = () => {
+  if (!featureSearchDropdown || typeof featureSearchDropdown.closest !== 'function') {
+    return null;
+  }
+  return featureSearchDropdown.closest('.feature-search');
+};
+
+const setFeatureSearchDropdownOpenClass = open => {
+  const container = getFeatureSearchContainer();
+  if (!container) return;
+  if (open) {
+    container.classList.add('feature-search-open');
+  } else {
+    container.classList.remove('feature-search-open');
+  }
+};
+
+const renderFeatureSearchDropdown = options => {
+  if (!featureSearchDropdown) return;
+  featureSearchDropdown.innerHTML = '';
+
+  if (!Array.isArray(options) || options.length === 0) {
+    featureSearchDropdown.dataset.count = '0';
+    featureSearchDropdown.dataset.open = 'false';
+    featureSearchDropdown.hidden = true;
+    featureSearchDropdown.setAttribute('aria-expanded', 'false');
+    setFeatureSearchDropdownOpenClass(false);
+    return;
+  }
+
+  const list = document.createElement('div');
+  list.className = 'feature-search-dropdown-list';
+
+  options.forEach((option, index) => {
+    if (!option || !option.value) return;
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'feature-search-option';
+    button.setAttribute('role', 'option');
+    button.setAttribute('tabindex', index === 0 ? '0' : '-1');
+    button.setAttribute('data-value', option.value);
+    button.setAttribute('aria-label', option.label || option.value);
+
+    const labelSpan = document.createElement('span');
+    labelSpan.className = 'feature-search-option-label';
+    labelSpan.textContent = option.label || option.value;
+    button.appendChild(labelSpan);
+
+    const normalizedLabel = (option.label || '').trim().toLowerCase();
+    const normalizedValue = option.value.trim().toLowerCase();
+    if (normalizedValue && normalizedLabel && normalizedValue !== normalizedLabel) {
+      const valueSpan = document.createElement('span');
+      valueSpan.className = 'feature-search-option-value';
+      valueSpan.textContent = option.value;
+      button.appendChild(valueSpan);
+    }
+
+    list.appendChild(button);
+  });
+
+  featureSearchDropdown.appendChild(list);
+  featureSearchDropdown.dataset.count = String(options.length);
+  featureSearchDropdown.dataset.activeIndex = '';
+
+  if (featureSearchDropdown.dataset.open === 'true') {
+    featureSearchDropdown.hidden = false;
+    featureSearchDropdown.setAttribute('aria-expanded', 'true');
+    setFeatureSearchDropdownOpenClass(true);
+  } else {
+    featureSearchDropdown.hidden = true;
+    featureSearchDropdown.setAttribute('aria-expanded', 'false');
+    setFeatureSearchDropdownOpenClass(false);
+  }
+};
+
 const renderFeatureListOptions = values => {
-  if (!featureList || !Array.isArray(values)) return;
-  const fragment = document.createDocumentFragment();
+  if (!Array.isArray(values)) {
+    if (featureList) {
+      featureList.innerHTML = '';
+    }
+    renderFeatureSearchDropdown([]);
+    return;
+  }
+
+  const normalized = [];
+  const fragment = featureList ? document.createDocumentFragment() : null;
+
   for (const value of values) {
-    if (!value) continue;
+    const optionData = normalizeFeatureSearchOption(value);
+    if (!optionData || !optionData.value) continue;
+    normalized.push(optionData);
+    if (!fragment) continue;
     const option = document.createElement('option');
-    if (typeof value === 'object') {
-      const optionValue = value.value || value.display || '';
-      if (!optionValue) continue;
-      option.value = optionValue;
-      const optionLabel = value.label || value.optionLabel || '';
-      if (optionLabel) {
-        option.label = optionLabel;
-        option.textContent = optionLabel;
-      } else {
-        option.textContent = optionValue;
-      }
+    option.value = optionData.value;
+    const optionLabel = optionData.label || '';
+    if (optionLabel) {
+      option.label = optionLabel;
+      option.textContent = optionLabel;
     } else {
-      option.value = value;
-      option.textContent = value;
+      option.textContent = optionData.value;
     }
     fragment.appendChild(option);
   }
-  featureList.innerHTML = '';
-  featureList.appendChild(fragment);
+
+  if (featureList) {
+    featureList.innerHTML = '';
+    featureList.appendChild(fragment);
+  }
+
+  renderFeatureSearchDropdown(normalized);
 };
 
 function restoreFeatureSearchDefaults() {
