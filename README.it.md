@@ -38,6 +38,7 @@ Sul set la connettività non è garantita e molti studi richiedono strumenti iso
 - **Reti ridondanti.** Salvataggi manuali, auto-save, backup periodici, backup forzati prima dei ripristini ed export leggibili lavorano insieme per evitare perdite silenziose.
 - **Aggiornamenti prevedibili.** Si applicano solo quando li attivi. Le versioni in cache restano disponibili finché non confermi **Forza ricarica**.
 - **Presentazione coerente.** Uicons locali, risorse OpenMoji e font inclusi garantiscono la stessa resa visiva in studio o su un portatile offline.
+- **Proteggi ogni modifica.** Prima di qualsiasi ripristino, il planner crea un backup forzato e conserva le revisioni precedenti così nessun import sovrascrive il tuo lavoro. I registri di verifica e le note di checksum viaggiano con ogni archivio per dimostrarne l’integrità anche offline.
 
 ## Indice
 
