@@ -3027,6 +3027,42 @@ body.pink-mode:not(.dark-mode) #settingsPanel-autoGear .auto-gear-rule-items-lab
   gap: 8px;
 }
 
+.auto-gear-condition-interaction {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px;
+  border: 1px solid var(--panel-border);
+  border-radius: var(--border-radius);
+  background: var(--surface-color);
+}
+
+.auto-gear-condition-interaction[hidden] {
+  display: none !important;
+}
+
+.auto-gear-condition-interaction select {
+  max-width: min(280px, 100%);
+}
+
+.auto-gear-condition-joiner {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: var(--border-radius);
+  background: var(--surface-subtle, var(--surface-color));
+  border: 1px dashed var(--panel-border);
+}
+
+.auto-gear-condition-joiner[hidden] {
+  display: none !important;
+}
+
+.auto-gear-condition-joiner select {
+  max-width: min(240px, 100%);
+}
+
 .auto-gear-condition-controls label {
   flex: 0 0 auto;
   min-width: 0;

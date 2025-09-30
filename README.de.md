@@ -321,6 +321,7 @@ Print-freundliche Versionen findest du in `docs/operations-checklist.md`; der Tr
 **Einstellungen → Automatische Gear-Regeln** ermöglicht Feintuning ohne JSON-Bearbeitung:
 
 - Regeln nur aktivieren, wenn bestimmte **Pflichtszenarien** gewählt sind; optionale Labels erleichtern das Scannen.
+- Mehrere Bedingungen über den Selektor **Standardmäßige Bedingungsinteraktion** kombinieren. Wähle **Alle – alle aktiven Bedingungen erforderlich**, **Beliebig – eine Bedingung genügt** oder **Oder – neue ODER-Gruppen standardmäßig starten**. Jede aktive Bedingung besitzt ein eigenes Verbindungs-Dropdown, sodass du festlegen kannst, wie benachbarte Bedingungen zusammenwirken, ohne die Wertelogik innerhalb der Bedingung zu ändern.
 - Regeln auch nach dem **Kameragewicht** steuern: Vergleiche den ausgewählten Body mit einem schwerer-, leichter- oder exakt-definierten Schwellenwert, bevor die Automatisierung greift.
 - Equipment mit Kategorie und Anzahl hinzufügen oder **Custom Additions** für Hinweise/Spezialkits verwenden. Entfernen-Regeln blenden bestimmte Zeilen aus.
 - Regeln laufen nach den Standardpaketen, greifen nahtlos in Gearlisten, Backups und Bundles ein.

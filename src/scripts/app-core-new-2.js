@@ -3778,6 +3778,34 @@ function saveAutoGearRuleFromEditor() {
     const rawCondition = { mode: modeValue, value: autoGearShootingDaysInput.value };
     return normalizeAutoGearShootingDaysCondition(rawCondition);
   })();
+  const activeConditionCount = (() => {
+    try {
+      return Array.from(autoGearActiveConditions || []).filter(key => key !== 'always').length;
+    } catch {
+      return 0;
+    }
+  })();
+  const interactionValue = autoGearConditionInteractionSelect
+    ? normalizeAutoGearConditionInteraction(autoGearConditionInteractionSelect.value)
+    : 'all';
+  const conditionInteraction = activeConditionCount >= 2 ? interactionValue : 'all';
+  const conditionJoiners = (() => {
+    if (!autoGearEditorDraft || activeConditionCount < 2) {
+      return {};
+    }
+    const overrides = {};
+    AUTO_GEAR_CONDITION_JOINER_KEYS.forEach(key => {
+      const select = autoGearConditionJoinerSelects[key];
+      if (!select || select.disabled) {
+        return;
+      }
+      const normalized = normalizeAutoGearConditionInteraction(select.value);
+      if (normalized !== conditionInteraction) {
+        overrides[key] = normalized;
+      }
+    });
+    return overrides;
+  })();
   const alwaysActive = isAutoGearConditionActive('always');
   if (
     !alwaysActive
@@ -3859,6 +3887,8 @@ function saveAutoGearRuleFromEditor() {
   autoGearEditorDraft.controllersLogic = controllersLogic;
   autoGearEditorDraft.distanceLogic = distanceLogic;
   autoGearEditorDraft.conditionLogic = draftConditionLogic;
+  autoGearEditorDraft.conditionInteraction = conditionInteraction;
+  autoGearEditorDraft.conditionJoiners = conditionJoiners;
   autoGearEditorDraft.shootingDays = shootingDaysRequirement;
   if (!autoGearEditorDraft.add.length && !autoGearEditorDraft.remove.length) {
     const message = texts[currentLang]?.autoGearRuleNeedsItems

@@ -1403,6 +1403,27 @@
                   <button type="button" id="autoGearConditionAdd">Add condition</button>
                 </div>
               </div>
+              <div
+                id="autoGearConditionInteractionContainer"
+                class="auto-gear-condition-interaction"
+                hidden
+                aria-hidden="true"
+              >
+                <label for="autoGearConditionInteraction" id="autoGearConditionInteractionLabel">
+                  Default condition interaction
+                </label>
+                <select id="autoGearConditionInteraction">
+                  <option value="all">All — require every active condition</option>
+                  <option value="any">Any — allow a single condition to match</option>
+                  <option value="or">Or — start new OR groups by default</option>
+                </select>
+                <p id="autoGearConditionInteractionHelp" class="auto-gear-condition-help">
+                  Set the default way conditions combine before the rule activates. Choose <strong>All</strong> to keep every
+                  match required, <strong>Any</strong> to allow one condition to satisfy the rule, or <strong>Or</strong> to begin
+                  fresh OR groups between blocks. Override the joiner beside each condition when you need a different
+                  relationship.
+                </p>
+              </div>
               <div id="autoGearConditionList" class="auto-gear-condition-list">
                 <section
                   id="autoGearCondition-always"
@@ -1537,11 +1558,11 @@
                   </div>
                 </div>
                 <div class="auto-gear-condition-mode">
-                  <label for="autoGearMatteboxMode" id="autoGearMatteboxModeLabel">Match behavior</label>
+                  <label for="autoGearMatteboxMode" id="autoGearMatteboxModeLabel">Value matching</label>
                   <select id="autoGearMatteboxMode">
-                    <option value="all" selected>Require every selected value</option>
-                    <option value="any">Match any selected value</option>
-                    <option value="multiplier">Multiply by matched values</option>
+                    <option value="all" selected>All — require every selected value</option>
+                    <option value="any">Any — allow any selected value to match</option>
+                    <option value="multiplier">Multiplier — repeat items for every match</option>
                   </select>
                 </div>
                 <select
@@ -1571,11 +1592,11 @@
                   </div>
                 </div>
                 <div class="auto-gear-condition-mode">
-                  <label for="autoGearCameraHandleMode" id="autoGearCameraHandleModeLabel">Match behavior</label>
+                  <label for="autoGearCameraHandleMode" id="autoGearCameraHandleModeLabel">Value matching</label>
                   <select id="autoGearCameraHandleMode">
-                    <option value="all" selected>Require every selected value</option>
-                    <option value="any">Match any selected value</option>
-                    <option value="multiplier">Multiply by matched values</option>
+                    <option value="all" selected>All — require every selected value</option>
+                    <option value="any">Any — allow any selected value to match</option>
+                    <option value="multiplier">Multiplier — repeat items for every match</option>
                   </select>
                 </div>
                 <select
@@ -1608,12 +1629,12 @@
                 </div>
                 <div class="auto-gear-condition-mode">
                   <label for="autoGearViewfinderExtensionMode" id="autoGearViewfinderExtensionModeLabel">
-                    Match behavior
+                    Value matching
                   </label>
                   <select id="autoGearViewfinderExtensionMode">
-                    <option value="all" selected>Require every selected value</option>
-                    <option value="any">Match any selected value</option>
-                    <option value="multiplier">Multiply by matched values</option>
+                    <option value="all" selected>All — require every selected value</option>
+                    <option value="any">Any — allow any selected value to match</option>
+                    <option value="multiplier">Multiplier — repeat items for every match</option>
                   </select>
                 </div>
                 <select
@@ -1646,12 +1667,12 @@
                 </div>
                 <div class="auto-gear-condition-mode">
                   <label for="autoGearDeliveryResolutionMode" id="autoGearDeliveryResolutionModeLabel">
-                    Match behavior
+                    Value matching
                   </label>
                   <select id="autoGearDeliveryResolutionMode">
-                    <option value="all" selected>Require every selected value</option>
-                    <option value="any">Match any selected value</option>
-                    <option value="multiplier">Multiply by matched values</option>
+                    <option value="all" selected>All — require every selected value</option>
+                    <option value="any">Any — allow any selected value to match</option>
+                    <option value="multiplier">Multiplier — repeat items for every match</option>
                   </select>
                 </div>
                 <select
@@ -1681,11 +1702,11 @@
                   </div>
                 </div>
                 <div class="auto-gear-condition-mode">
-                  <label for="autoGearVideoDistributionMode" id="autoGearVideoDistributionModeLabel">Match behavior</label>
+                  <label for="autoGearVideoDistributionMode" id="autoGearVideoDistributionModeLabel">Value matching</label>
                   <select id="autoGearVideoDistributionMode">
-                    <option value="all" selected>Require every selected value</option>
-                    <option value="any">Match any selected value</option>
-                    <option value="multiplier">Multiply by matched values</option>
+                    <option value="all" selected>All — require every selected value</option>
+                    <option value="any">Any — allow any selected value to match</option>
+                    <option value="multiplier">Multiplier — repeat items for every match</option>
                   </select>
                 </div>
                 <select
@@ -1715,11 +1736,11 @@
                   </div>
                 </div>
                 <div class="auto-gear-condition-mode">
-                  <label for="autoGearCameraMode" id="autoGearCameraModeLabel">Match behavior</label>
+                  <label for="autoGearCameraMode" id="autoGearCameraModeLabel">Value matching</label>
                   <select id="autoGearCameraMode">
-                    <option value="all" selected>Require every selected value</option>
-                    <option value="any">Match any selected value</option>
-                    <option value="multiplier">Multiply by matched values</option>
+                    <option value="all" selected>All — require every selected value</option>
+                    <option value="any">Any — allow any selected value to match</option>
+                    <option value="multiplier">Multiplier — repeat items for every match</option>
                   </select>
                 </div>
                 <select
@@ -1786,11 +1807,11 @@
                   </div>
                 </div>
                 <div class="auto-gear-condition-mode">
-                  <label for="autoGearMonitorMode" id="autoGearMonitorModeLabel">Match behavior</label>
+                  <label for="autoGearMonitorMode" id="autoGearMonitorModeLabel">Value matching</label>
                   <select id="autoGearMonitorMode">
-                    <option value="all" selected>Require every selected value</option>
-                    <option value="any">Match any selected value</option>
-                    <option value="multiplier">Multiply by matched values</option>
+                    <option value="all" selected>All — require every selected value</option>
+                    <option value="any">Any — allow any selected value to match</option>
+                    <option value="multiplier">Multiplier — repeat items for every match</option>
                   </select>
                 </div>
                 <select
@@ -1820,11 +1841,11 @@
                     </div>
                   </div>
                   <div class="auto-gear-condition-mode">
-                    <label for="autoGearTripodHeadBrandMode" id="autoGearTripodHeadBrandModeLabel">Match behavior</label>
+                    <label for="autoGearTripodHeadBrandMode" id="autoGearTripodHeadBrandModeLabel">Value matching</label>
                     <select id="autoGearTripodHeadBrandMode">
-                      <option value="all" selected>Require every selected value</option>
-                      <option value="any">Match any selected value</option>
-                      <option value="multiplier">Multiply by matched values</option>
+                      <option value="all" selected>All — require every selected value</option>
+                      <option value="any">Any — allow any selected value to match</option>
+                      <option value="multiplier">Multiplier — repeat items for every match</option>
                     </select>
                   </div>
                   <select
@@ -1854,11 +1875,11 @@
                     </div>
                   </div>
                   <div class="auto-gear-condition-mode">
-                    <label for="autoGearTripodBowlMode" id="autoGearTripodBowlModeLabel">Match behavior</label>
+                    <label for="autoGearTripodBowlMode" id="autoGearTripodBowlModeLabel">Value matching</label>
                     <select id="autoGearTripodBowlMode">
-                      <option value="all" selected>Require every selected value</option>
-                      <option value="any">Match any selected value</option>
-                      <option value="multiplier">Multiply by matched values</option>
+                      <option value="all" selected>All — require every selected value</option>
+                      <option value="any">Any — allow any selected value to match</option>
+                      <option value="multiplier">Multiplier — repeat items for every match</option>
                     </select>
                   </div>
                   <select
@@ -1888,11 +1909,11 @@
                     </div>
                   </div>
                   <div class="auto-gear-condition-mode">
-                    <label for="autoGearTripodTypesMode" id="autoGearTripodTypesModeLabel">Match behavior</label>
+                    <label for="autoGearTripodTypesMode" id="autoGearTripodTypesModeLabel">Value matching</label>
                     <select id="autoGearTripodTypesMode">
-                      <option value="all" selected>Require every selected value</option>
-                      <option value="any">Match any selected value</option>
-                      <option value="multiplier">Multiply by matched values</option>
+                      <option value="all" selected>All — require every selected value</option>
+                      <option value="any">Any — allow any selected value to match</option>
+                      <option value="multiplier">Multiplier — repeat items for every match</option>
                     </select>
                   </div>
                   <select
@@ -1922,11 +1943,11 @@
                     </div>
                   </div>
                   <div class="auto-gear-condition-mode">
-                    <label for="autoGearTripodSpreaderMode" id="autoGearTripodSpreaderModeLabel">Match behavior</label>
+                    <label for="autoGearTripodSpreaderMode" id="autoGearTripodSpreaderModeLabel">Value matching</label>
                     <select id="autoGearTripodSpreaderMode">
-                      <option value="all" selected>Require every selected value</option>
-                      <option value="any">Match any selected value</option>
-                      <option value="multiplier">Multiply by matched values</option>
+                      <option value="all" selected>All — require every selected value</option>
+                      <option value="any">Any — allow any selected value to match</option>
+                      <option value="multiplier">Multiplier — repeat items for every match</option>
                     </select>
                   </div>
                   <select
@@ -1956,11 +1977,11 @@
                   </div>
                 </div>
                 <div class="auto-gear-condition-mode">
-                  <label for="autoGearCrewPresentMode" id="autoGearCrewPresentModeLabel">Match behavior</label>
+                  <label for="autoGearCrewPresentMode" id="autoGearCrewPresentModeLabel">Value matching</label>
                   <select id="autoGearCrewPresentMode">
-                    <option value="all" selected>Require every selected value</option>
-                    <option value="any">Match any selected value</option>
-                    <option value="multiplier">Multiply by matched values</option>
+                    <option value="all" selected>All — require every selected value</option>
+                    <option value="any">Any — allow any selected value to match</option>
+                    <option value="multiplier">Multiplier — repeat items for every match</option>
                   </select>
                 </div>
                 <select
@@ -1990,11 +2011,11 @@
                   </div>
                 </div>
                 <div class="auto-gear-condition-mode">
-                  <label for="autoGearCrewAbsentMode" id="autoGearCrewAbsentModeLabel">Match behavior</label>
+                  <label for="autoGearCrewAbsentMode" id="autoGearCrewAbsentModeLabel">Value matching</label>
                   <select id="autoGearCrewAbsentMode">
-                    <option value="all" selected>Require every selected value</option>
-                    <option value="any">Match any selected value</option>
-                    <option value="multiplier">Multiply by matched values</option>
+                    <option value="all" selected>All — require every selected value</option>
+                    <option value="any">Any — allow any selected value to match</option>
+                    <option value="multiplier">Multiplier — repeat items for every match</option>
                   </select>
                 </div>
                 <select
@@ -2024,11 +2045,11 @@
                   </div>
                 </div>
                 <div class="auto-gear-condition-mode">
-                  <label for="autoGearWirelessMode" id="autoGearWirelessModeLabel">Match behavior</label>
+                  <label for="autoGearWirelessMode" id="autoGearWirelessModeLabel">Value matching</label>
                   <select id="autoGearWirelessMode">
-                    <option value="all" selected>Require every selected value</option>
-                    <option value="any">Match any selected value</option>
-                    <option value="multiplier">Multiply by matched values</option>
+                    <option value="all" selected>All — require every selected value</option>
+                    <option value="any">Any — allow any selected value to match</option>
+                    <option value="multiplier">Multiplier — repeat items for every match</option>
                   </select>
                 </div>
                 <select
@@ -2058,11 +2079,11 @@
                   </div>
                 </div>
                 <div class="auto-gear-condition-mode">
-                  <label for="autoGearMotorsMode" id="autoGearMotorsModeLabel">Match behavior</label>
+                  <label for="autoGearMotorsMode" id="autoGearMotorsModeLabel">Value matching</label>
                   <select id="autoGearMotorsMode">
-                    <option value="all" selected>Require every selected value</option>
-                    <option value="any">Match any selected value</option>
-                    <option value="multiplier">Multiply by matched values</option>
+                    <option value="all" selected>All — require every selected value</option>
+                    <option value="any">Any — allow any selected value to match</option>
+                    <option value="multiplier">Multiplier — repeat items for every match</option>
                   </select>
                 </div>
                 <select
@@ -2092,11 +2113,11 @@
                   </div>
                 </div>
                 <div class="auto-gear-condition-mode">
-                  <label for="autoGearControllersMode" id="autoGearControllersModeLabel">Match behavior</label>
+                  <label for="autoGearControllersMode" id="autoGearControllersModeLabel">Value matching</label>
                   <select id="autoGearControllersMode">
-                    <option value="all" selected>Require every selected value</option>
-                    <option value="any">Match any selected value</option>
-                    <option value="multiplier">Multiply by matched values</option>
+                    <option value="all" selected>All — require every selected value</option>
+                    <option value="any">Any — allow any selected value to match</option>
+                    <option value="multiplier">Multiplier — repeat items for every match</option>
                   </select>
                 </div>
                 <select
@@ -2126,11 +2147,11 @@
                   </div>
                 </div>
                 <div class="auto-gear-condition-mode">
-                  <label for="autoGearDistanceMode" id="autoGearDistanceModeLabel">Match behavior</label>
+                  <label for="autoGearDistanceMode" id="autoGearDistanceModeLabel">Value matching</label>
                   <select id="autoGearDistanceMode">
-                    <option value="all" selected>Require every selected value</option>
-                    <option value="any">Match any selected value</option>
-                    <option value="multiplier">Multiply by matched values</option>
+                    <option value="all" selected>All — require every selected value</option>
+                    <option value="any">Any — allow any selected value to match</option>
+                    <option value="multiplier">Multiplier — repeat items for every match</option>
                   </select>
                 </div>
                 <select

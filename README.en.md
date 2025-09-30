@@ -748,6 +748,11 @@ list without editing JSON exports manually:
 
 - Build rules that only trigger when selected **Required Scenarios** are active.
   Each rule can have an optional label for quick scanning in the settings list.
+- Combine multiple conditions with the **Default condition interaction**
+  selector. Choose **All — require every active condition**, **Any — allow a
+  single condition to match**, or **Or — start new OR groups by default**. Each
+  active condition exposes its own joiner dropdown so you can mix how pairs of
+  conditions relate without changing the value matching inside the condition.
 - Gate rules by **Camera weight**, comparing the selected body to a heavier-than,
   lighter-than or exact gram threshold before the automation fires. Weight
   thresholds accept grams, kilograms, pounds or ounces for fast data entry.

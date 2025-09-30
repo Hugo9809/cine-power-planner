@@ -1848,6 +1848,18 @@ function normalizeAutoGearScenarioLogic(value) {
   return AUTO_GEAR_SCENARIO_LOGIC_VALUES.has(normalized) ? normalized : 'all';
 }
 
+const AUTO_GEAR_CONDITION_INTERACTION_VALUES = new Set(['all', 'any', 'or']);
+
+function normalizeAutoGearConditionInteraction(value) {
+  if (typeof value !== 'string') return 'all';
+  const normalized = value.trim().toLowerCase();
+  if (!normalized) return 'all';
+  if (normalized === 'and' || normalized === 'all') return 'all';
+  if (normalized === 'or' || normalized === 'either' || normalized === 'group') return 'or';
+  if (normalized === 'any') return 'any';
+  return AUTO_GEAR_CONDITION_INTERACTION_VALUES.has(normalized) ? normalized : 'all';
+}
+
 const AUTO_GEAR_CONDITION_LOGIC_VALUES = new Set(['all', 'any', 'multiplier']);
 const AUTO_GEAR_CONDITION_LOGIC_FIELDS = {
   mattebox: 'matteboxLogic',
@@ -1869,6 +1881,29 @@ const AUTO_GEAR_CONDITION_LOGIC_FIELDS = {
   distance: 'distanceLogic',
 };
 
+const AUTO_GEAR_CONDITION_JOINER_KEYS = [
+  'scenarios',
+  'shootingDays',
+  'mattebox',
+  'cameraHandle',
+  'viewfinderExtension',
+  'deliveryResolution',
+  'videoDistribution',
+  'camera',
+  'cameraWeight',
+  'monitor',
+  'tripodHeadBrand',
+  'tripodBowl',
+  'tripodTypes',
+  'tripodSpreader',
+  'crewPresent',
+  'crewAbsent',
+  'wireless',
+  'motors',
+  'controllers',
+  'distance',
+];
+
 function normalizeAutoGearConditionLogic(value) {
   if (typeof value !== 'string') return 'all';
   const normalized = value.trim().toLowerCase();
@@ -1880,6 +1915,21 @@ function normalizeAutoGearConditionLogic(value) {
     return 'multiplier';
   }
   return AUTO_GEAR_CONDITION_LOGIC_VALUES.has(normalized) ? normalized : 'all';
+}
+
+function normalizeAutoGearConditionJoiners(value, defaultInteraction = 'all') {
+  const normalizedDefault = normalizeAutoGearConditionInteraction(defaultInteraction);
+  if (!value || typeof value !== 'object') return {};
+  const joiners = {};
+  AUTO_GEAR_CONDITION_JOINER_KEYS.forEach(key => {
+    const raw = value[key];
+    if (typeof raw !== 'string') return;
+    const normalized = normalizeAutoGearConditionInteraction(raw);
+    if (normalized !== normalizedDefault) {
+      joiners[key] = normalized;
+    }
+  });
+  return joiners;
 }
 
 function readAutoGearConditionLogic(rule, key) {
@@ -2141,6 +2191,20 @@ function normalizeAutoGearRule(rule) {
   if (motorsLogic && motorsLogic !== 'all') conditionLogic.motors = motorsLogic;
   if (controllersLogic && controllersLogic !== 'all') conditionLogic.controllers = controllersLogic;
   if (distanceLogic && distanceLogic !== 'all') conditionLogic.distance = distanceLogic;
+  const rawConditionInteraction = (() => {
+    if (typeof rule?.conditionInteraction === 'string') {
+      return rule.conditionInteraction;
+    }
+    if (rule && typeof rule.conditionLogic === 'object' && rule.conditionLogic) {
+      const interactionValue = rule.conditionLogic.interaction;
+      if (typeof interactionValue === 'string') {
+        return interactionValue;
+      }
+    }
+    return '';
+  })();
+  const conditionInteraction = normalizeAutoGearConditionInteraction(rawConditionInteraction);
+  const conditionJoiners = normalizeAutoGearConditionJoiners(rule.conditionJoiners, conditionInteraction);
   if (
     !always &&
     !scenarios.length
@@ -2212,6 +2276,8 @@ function normalizeAutoGearRule(rule) {
     controllersLogic,
     distanceLogic,
     conditionLogic,
+    conditionInteraction,
+    conditionJoiners,
     add,
     remove,
   };
@@ -2320,6 +2386,19 @@ function snapshotAutoGearRuleForFingerprint(rule) {
         return acc;
       }, {})
       : {},
+    conditionInteraction: normalizeAutoGearConditionInteraction(normalized.conditionInteraction),
+    conditionJoiners: (() => {
+      if (!normalized.conditionJoiners || typeof normalized.conditionJoiners !== 'object') {
+        return {};
+      }
+      return AUTO_GEAR_CONDITION_JOINER_KEYS.reduce((acc, key) => {
+        if (typeof normalized.conditionJoiners[key] !== 'string') {
+          return acc;
+        }
+        acc[key] = normalizeAutoGearConditionInteraction(normalized.conditionJoiners[key]);
+        return acc;
+      }, {});
+    })(),
     add: mapItems(normalized.add),
     remove: mapItems(normalized.remove),
   };
@@ -2370,9 +2449,14 @@ function autoGearRuleSortKey(rule) {
   const motorsLogicKey = normalizeAutoGearConditionLogic(rule?.motorsLogic);
   const controllersLogicKey = normalizeAutoGearConditionLogic(rule?.controllersLogic);
   const distanceLogicKey = normalizeAutoGearConditionLogic(rule?.distanceLogic);
+  const conditionInteractionKey = normalizeAutoGearConditionInteraction(rule?.conditionInteraction);
+  const conditionJoinerMap = normalizeAutoGearConditionJoiners(rule?.conditionJoiners, conditionInteractionKey);
+  const conditionJoinerKey = AUTO_GEAR_CONDITION_JOINER_KEYS
+    .map(key => `${key}:${conditionJoinerMap[key] || ''}`)
+    .join('|');
   const addKey = Array.isArray(rule.add) ? rule.add.map(autoGearItemSortKey).join('|') : '';
   const removeKey = Array.isArray(rule.remove) ? rule.remove.map(autoGearItemSortKey).join('|') : '';
-  return `${alwaysKey}|${scenarioKey}|${matteboxKey}|${cameraHandleKey}|${viewfinderKey}|${deliveryResolutionKey}|${videoDistributionKey}|${cameraKey}|${cameraWeightKey}|${monitorKey}|${tripodHeadBrandKey}|${tripodBowlKey}|${tripodTypesKey}|${tripodSpreaderKey}|${crewPresentKey}|${crewAbsentKey}|${wirelessKey}|${motorsKey}|${controllersKey}|${distanceKey}|${shootingDaysKey}|${matteboxLogicKey}|${cameraHandleLogicKey}|${viewfinderLogicKey}|${deliveryResolutionLogicKey}|${videoDistributionLogicKey}|${cameraLogicKey}|${monitorLogicKey}|${tripodHeadBrandLogicKey}|${tripodBowlLogicKey}|${tripodTypesLogicKey}|${tripodSpreaderLogicKey}|${crewPresentLogicKey}|${crewAbsentLogicKey}|${wirelessLogicKey}|${motorsLogicKey}|${controllersLogicKey}|${distanceLogicKey}|${rule.label || ''}|${addKey}|${removeKey}`;
+  return `${alwaysKey}|${scenarioKey}|${matteboxKey}|${cameraHandleKey}|${viewfinderKey}|${deliveryResolutionKey}|${videoDistributionKey}|${cameraKey}|${cameraWeightKey}|${monitorKey}|${tripodHeadBrandKey}|${tripodBowlKey}|${tripodTypesKey}|${tripodSpreaderKey}|${crewPresentKey}|${crewAbsentKey}|${wirelessKey}|${motorsKey}|${controllersKey}|${distanceKey}|${shootingDaysKey}|${matteboxLogicKey}|${cameraHandleLogicKey}|${viewfinderLogicKey}|${deliveryResolutionLogicKey}|${videoDistributionLogicKey}|${cameraLogicKey}|${monitorLogicKey}|${tripodHeadBrandLogicKey}|${tripodBowlLogicKey}|${tripodTypesLogicKey}|${tripodSpreaderLogicKey}|${crewPresentLogicKey}|${crewAbsentLogicKey}|${wirelessLogicKey}|${motorsLogicKey}|${controllersLogicKey}|${distanceLogicKey}|${conditionInteractionKey}|${conditionJoinerKey}|${rule.label || ''}|${addKey}|${removeKey}`;
 }
 
 function createAutoGearRulesFingerprint(rules) {
@@ -6428,9 +6512,15 @@ const autoGearConditionSelectLabel = document.getElementById('autoGearConditionS
 var autoGearConditionSelect = document.getElementById('autoGearConditionSelect');
 var autoGearConditionAddButton = document.getElementById('autoGearConditionAdd');
 var autoGearConditionList = document.getElementById('autoGearConditionList');
+const autoGearConditionInteractionContainer = document.getElementById('autoGearConditionInteractionContainer');
+const autoGearConditionInteractionLabel = document.getElementById('autoGearConditionInteractionLabel');
+const autoGearConditionInteractionHelp = document.getElementById('autoGearConditionInteractionHelp');
+var autoGearConditionInteractionSelect = document.getElementById('autoGearConditionInteraction');
 const autoGearAlwaysLabel = document.getElementById('autoGearAlwaysLabel');
 const autoGearAlwaysHelp = document.getElementById('autoGearAlwaysHelp');
 const autoGearCameraWeightSection = document.getElementById('autoGearCondition-cameraWeight');
+const autoGearConditionJoinerControls = {};
+const autoGearConditionJoinerSelects = {};
 
 const autoGearConditionSections = {
   always: document.getElementById('autoGearCondition-always'),
@@ -7980,6 +8070,92 @@ function setLanguage(lang) {
     autoGearConditionAddButton.setAttribute('aria-label', label);
     autoGearConditionAddButton.setAttribute('data-help', label);
   }
+  if (autoGearConditionInteractionLabel) {
+    const label = texts[lang].autoGearConditionInteractionLabel
+      || texts.en?.autoGearConditionInteractionLabel
+      || autoGearConditionInteractionLabel.textContent
+      || 'Default condition interaction';
+    const help = texts[lang].autoGearConditionInteractionHelp
+      || texts.en?.autoGearConditionInteractionHelp
+      || label;
+    autoGearConditionInteractionLabel.textContent = label;
+    autoGearConditionInteractionLabel.setAttribute('data-help', help);
+    if (autoGearConditionInteractionSelect) {
+      autoGearConditionInteractionSelect.setAttribute('aria-label', label);
+      autoGearConditionInteractionSelect.setAttribute('data-help', help);
+      Array.from(autoGearConditionInteractionSelect.options || []).forEach(option => {
+        if (option.value === 'all') {
+          const optionLabel = texts[lang].autoGearConditionInteractionAll
+            || texts.en?.autoGearConditionInteractionAll
+            || option.textContent;
+          option.textContent = optionLabel;
+        } else if (option.value === 'any') {
+          const optionLabel = texts[lang].autoGearConditionInteractionAny
+            || texts.en?.autoGearConditionInteractionAny
+            || option.textContent;
+          option.textContent = optionLabel;
+        } else if (option.value === 'or') {
+          const optionLabel = texts[lang].autoGearConditionInteractionOr
+            || texts.en?.autoGearConditionInteractionOr
+            || option.textContent;
+          option.textContent = optionLabel;
+        }
+      });
+    }
+    if (autoGearConditionInteractionHelp) {
+      autoGearConditionInteractionHelp.textContent = help;
+      autoGearConditionInteractionHelp.setAttribute('data-help', help);
+    }
+  }
+  (function updateAutoGearJoinerText() {
+    AUTO_GEAR_CONDITION_JOINER_KEYS.forEach(key => {
+      const control = buildAutoGearConditionJoiner(key);
+      if (!control) return;
+      const conditionLabel = getAutoGearConditionLabel(key);
+      const labelTemplate = texts[lang].autoGearConditionJoinerLabel
+        || texts.en?.autoGearConditionJoinerLabel
+        || control.label.textContent
+        || 'Combine with the previous condition';
+      const helpTemplate = texts[lang].autoGearConditionJoinerHelp
+        || texts.en?.autoGearConditionJoinerHelp
+        || control.help.textContent
+        || '';
+      const labelText = labelTemplate.includes('{condition}') && conditionLabel
+        ? labelTemplate.replace('{condition}', conditionLabel)
+        : labelTemplate;
+      const helpText = helpTemplate.includes('{condition}') && conditionLabel
+        ? helpTemplate.replace('{condition}', conditionLabel)
+        : helpTemplate;
+      control.label.textContent = labelText;
+      control.label.setAttribute('data-help', helpText || labelText);
+      control.select.setAttribute('aria-label', labelText);
+      control.select.setAttribute('data-help', helpText || labelText);
+      if (helpText) {
+        control.help.textContent = helpText;
+        control.help.setAttribute('data-help', helpText);
+      } else {
+        control.help.textContent = '';
+        control.help.removeAttribute('data-help');
+      }
+      const allLabel = texts[lang].autoGearConditionJoinerAll
+        || texts.en?.autoGearConditionJoinerAll
+        || control.options.all.textContent
+        || 'All — keep previous matches required';
+      const anyLabel = texts[lang].autoGearConditionJoinerAny
+        || texts.en?.autoGearConditionJoinerAny
+        || control.options.any.textContent
+        || 'Any — allow either condition to match';
+      const orLabel = texts[lang].autoGearConditionJoinerOr
+        || texts.en?.autoGearConditionJoinerOr
+        || control.options.or?.textContent
+        || 'Or — start a new OR group';
+      control.options.all.textContent = allLabel;
+      control.options.any.textContent = anyLabel;
+      if (control.options.or) {
+        control.options.or.textContent = orLabel;
+      }
+    });
+  })();
   if (autoGearAlwaysLabel) {
     const label = texts[lang].autoGearAlwaysLabel
       || texts.en?.autoGearAlwaysLabel
@@ -8365,20 +8541,20 @@ function setLanguage(lang) {
   }
   const logicLabelText = texts[lang].autoGearConditionLogicLabel
     || texts.en?.autoGearConditionLogicLabel
-    || 'Match behavior';
+    || 'Value matching';
   const logicHelpText = texts[lang].autoGearConditionLogicHelp
     || texts.en?.autoGearConditionLogicHelp
     || logicLabelText;
   const logicOptionTexts = {
     all: texts[lang]?.autoGearConditionLogicAll
       || texts.en?.autoGearConditionLogicAll
-      || 'Require every selected value',
+      || 'All — require every selected value',
     any: texts[lang]?.autoGearConditionLogicAny
       || texts.en?.autoGearConditionLogicAny
-      || 'Match any selected value',
+      || 'Any — allow any selected value to match',
     multiplier: texts[lang]?.autoGearConditionLogicMultiplier
       || texts.en?.autoGearConditionLogicMultiplier
-      || 'Multiply by matched values',
+      || 'Multiplier — repeat items for every match',
   };
   Object.entries(autoGearConditionLogicSelects).forEach(([key, select]) => {
     const label = autoGearConditionLogicLabels[key];
@@ -13545,6 +13721,7 @@ const autoGearConditionConfigs = AUTO_GEAR_CONDITION_KEYS.reduce((acc, key) => {
     removeButton: autoGearConditionRemoveButtons[key] || null,
     logicLabel: autoGearConditionLogicLabels[key] || null,
     logicSelect: autoGearConditionLogicSelects[key] || null,
+    joiner: null,
   };
   if (section) {
     section.setAttribute('aria-hidden', section.hidden ? 'true' : 'false');
@@ -13578,6 +13755,89 @@ const autoGearConditionRefreshers = {
   distance: createDeferredAutoGearRefresher('refreshAutoGearDistanceOptions'),
 };
 const autoGearActiveConditions = new Set();
+
+function buildAutoGearConditionJoiner(key) {
+  if (!key || autoGearConditionJoinerControls[key]) {
+    return autoGearConditionJoinerControls[key] || null;
+  }
+  const config = getAutoGearConditionConfig(key);
+  if (!config || !config.section) {
+    return null;
+  }
+  const container = document.createElement('div');
+  container.className = 'auto-gear-condition-joiner';
+  container.hidden = true;
+  container.setAttribute('aria-hidden', 'true');
+  const selectId = `autoGearConditionJoiner-${key}`;
+  const labelId = `autoGearConditionJoinerLabel-${key}`;
+  const helpId = `autoGearConditionJoinerHelp-${key}`;
+  const label = document.createElement('label');
+  label.id = labelId;
+  label.setAttribute('for', selectId);
+  const select = document.createElement('select');
+  select.id = selectId;
+  select.dataset.condition = key;
+  select.disabled = true;
+  const optionAll = document.createElement('option');
+  optionAll.value = 'all';
+  select.appendChild(optionAll);
+  const optionAny = document.createElement('option');
+  optionAny.value = 'any';
+  select.appendChild(optionAny);
+  const optionOr = document.createElement('option');
+  optionOr.value = 'or';
+  select.appendChild(optionOr);
+  const help = document.createElement('p');
+  help.className = 'auto-gear-condition-help';
+  help.id = helpId;
+  container.appendChild(label);
+  container.appendChild(select);
+  container.appendChild(help);
+  const header = config.section.querySelector('.auto-gear-condition-header');
+  if (header && typeof header.insertAdjacentElement === 'function') {
+    header.insertAdjacentElement('afterend', container);
+  } else {
+    config.section.appendChild(container);
+  }
+  const control = {
+    container,
+    label,
+    select,
+    help,
+    options: {
+      all: optionAll,
+      any: optionAny,
+      or: optionOr,
+    },
+  };
+  const handleJoinerChange = () => {
+    const normalized = normalizeAutoGearConditionInteraction(select.value);
+    select.value = normalized;
+    if (!autoGearEditorDraft) {
+      return;
+    }
+    if (!autoGearEditorDraft.conditionJoiners || typeof autoGearEditorDraft.conditionJoiners !== 'object') {
+      autoGearEditorDraft.conditionJoiners = {};
+    }
+    const defaultInteraction = normalizeAutoGearConditionInteraction(
+      autoGearEditorDraft.conditionInteraction,
+    );
+    if (normalized === defaultInteraction) {
+      delete autoGearEditorDraft.conditionJoiners[key];
+    } else {
+      autoGearEditorDraft.conditionJoiners[key] = normalized;
+    }
+    callCoreFunctionIfAvailable('renderAutoGearDraftImpact', [], { defer: true });
+  };
+  select.addEventListener('input', handleJoinerChange);
+  select.addEventListener('change', handleJoinerChange);
+  autoGearConditionJoinerControls[key] = control;
+  autoGearConditionJoinerSelects[key] = select;
+  config.joiner = control;
+  return control;
+}
+
+AUTO_GEAR_CONDITION_JOINER_KEYS.forEach(buildAutoGearConditionJoiner);
 
 function getAutoGearConditionConfig(key) {
   if (!key) return null;
@@ -13655,6 +13915,55 @@ function updateAutoGearConditionAddButtonState() {
     if (shortcut) {
       shortcut.disabled = !hasAvailable;
     }
+  });
+}
+
+function updateAutoGearConditionInteractionState() {
+  if (
+    !autoGearConditionInteractionSelect
+    && !autoGearConditionInteractionContainer
+    && !AUTO_GEAR_CONDITION_JOINER_KEYS.some(key => autoGearConditionJoinerControls[key])
+  ) {
+    return;
+  }
+  const interactiveConditions = AUTO_GEAR_CONDITION_JOINER_KEYS.filter(key => autoGearActiveConditions.has(key));
+  const defaultInteraction = autoGearEditorDraft
+    ? normalizeAutoGearConditionInteraction(autoGearEditorDraft.conditionInteraction)
+    : 'all';
+  const shouldShowDefault = interactiveConditions.length >= 2;
+  if (autoGearConditionInteractionContainer) {
+    autoGearConditionInteractionContainer.hidden = !shouldShowDefault;
+    autoGearConditionInteractionContainer.setAttribute('aria-hidden', shouldShowDefault ? 'false' : 'true');
+  }
+  if (autoGearConditionInteractionSelect) {
+    autoGearConditionInteractionSelect.disabled = !shouldShowDefault;
+    autoGearConditionInteractionSelect.value = defaultInteraction;
+  }
+  AUTO_GEAR_CONDITION_JOINER_KEYS.forEach(key => {
+    const control = buildAutoGearConditionJoiner(key);
+    if (!control) return;
+    const isActive = autoGearActiveConditions.has(key);
+    if (!isActive || !shouldShowDefault) {
+      control.container.hidden = true;
+      control.container.setAttribute('aria-hidden', 'true');
+      control.select.disabled = true;
+      control.select.value = defaultInteraction;
+      return;
+    }
+    const index = interactiveConditions.indexOf(key);
+    const shouldShowJoiner = index > 0;
+    control.container.hidden = !shouldShowJoiner;
+    control.container.setAttribute('aria-hidden', shouldShowJoiner ? 'false' : 'true');
+    control.select.disabled = !shouldShowJoiner;
+    const stored = autoGearEditorDraft
+      && autoGearEditorDraft.conditionJoiners
+      && typeof autoGearEditorDraft.conditionJoiners === 'object'
+      ? autoGearEditorDraft.conditionJoiners[key]
+      : undefined;
+    const resolved = stored
+      ? normalizeAutoGearConditionInteraction(stored)
+      : defaultInteraction;
+    control.select.value = resolved;
   });
 }
 
@@ -13830,6 +14139,7 @@ function addAutoGearCondition(key, options = {}) {
   }
   refreshAutoGearConditionPicker();
   updateAutoGearConditionAddButtonState();
+  updateAutoGearConditionInteractionState();
   if (options.focus !== false && config.select) {
     try {
       config.select.focus({ preventScroll: true });
@@ -13885,6 +14195,9 @@ function removeAutoGearCondition(key, options = {}) {
         delete autoGearEditorDraft.conditionLogic[key];
       }
     }
+    if (autoGearEditorDraft.conditionJoiners && typeof autoGearEditorDraft.conditionJoiners === 'object') {
+      delete autoGearEditorDraft.conditionJoiners[key];
+    }
   }
   if (config.select) {
     Array.from(config.select.options || []).forEach(option => {
@@ -13918,6 +14231,7 @@ function removeAutoGearCondition(key, options = {}) {
   }
   refreshAutoGearConditionPicker();
   updateAutoGearConditionAddButtonState();
+  updateAutoGearConditionInteractionState();
   if (options.focusPicker) {
     focusAutoGearConditionPicker();
   }
@@ -13953,6 +14267,11 @@ function clearAllAutoGearConditions(options = {}) {
         if (autoGearEditorDraft.conditionLogic && typeof autoGearEditorDraft.conditionLogic === 'object') {
           delete autoGearEditorDraft.conditionLogic[key];
         }
+      }
+      if (!autoGearEditorDraft.conditionJoiners || typeof autoGearEditorDraft.conditionJoiners !== 'object') {
+        autoGearEditorDraft.conditionJoiners = {};
+      } else {
+        delete autoGearEditorDraft.conditionJoiners[key];
       }
     }
     if (config.select) {
@@ -13992,6 +14311,9 @@ function clearAllAutoGearConditions(options = {}) {
     }
   });
   autoGearActiveConditions.clear();
+  if (!preserveDraft && autoGearEditorDraft) {
+    autoGearEditorDraft.conditionJoiners = {};
+  }
   refreshAutoGearConditionPicker();
   updateAutoGearConditionAddButtonState();
 }
@@ -14063,6 +14385,7 @@ function initializeAutoGearConditionsFromDraft() {
   });
   refreshAutoGearConditionPicker();
   updateAutoGearConditionAddButtonState();
+  updateAutoGearConditionInteractionState();
   if (autoGearScenarioModeSelect && autoGearEditorDraft) {
     autoGearScenarioModeSelect.value = normalizeAutoGearScenarioLogic(autoGearEditorDraft.scenarioLogic);
   }
@@ -14073,10 +14396,18 @@ function initializeAutoGearConditionsFromDraft() {
     autoGearScenarioFactorInput.value = String(storedMultiplier);
   }
   applyAutoGearScenarioSettings(getAutoGearScenarioSelectedValues());
+  if (autoGearConditionInteractionSelect) {
+    const storedInteraction = autoGearEditorDraft
+      ? normalizeAutoGearConditionInteraction(autoGearEditorDraft.conditionInteraction)
+      : 'all';
+    autoGearConditionInteractionSelect.value = storedInteraction;
+  }
+  updateAutoGearConditionInteractionState();
 }
 
 refreshAutoGearConditionPicker();
 updateAutoGearConditionAddButtonState();
+updateAutoGearConditionInteractionState();
 configureAutoGearConditionButtons();
 if (autoGearShootingDaysMode) {
   const handleShootingDaysModeChange = () => {
@@ -14117,6 +14448,27 @@ Object.entries(autoGearConditionLogicSelects).forEach(([key, select]) => {
   select.addEventListener('input', handleLogicChange);
   select.addEventListener('change', handleLogicChange);
 });
+if (autoGearConditionInteractionSelect) {
+  const handleConditionInteractionChange = () => {
+    const normalized = normalizeAutoGearConditionInteraction(autoGearConditionInteractionSelect.value);
+    autoGearConditionInteractionSelect.value = normalized;
+    if (autoGearEditorDraft) {
+      autoGearEditorDraft.conditionInteraction = normalized;
+      if (autoGearEditorDraft.conditionJoiners && typeof autoGearEditorDraft.conditionJoiners === 'object') {
+        Object.keys(autoGearEditorDraft.conditionJoiners).forEach(joinerKey => {
+          const value = autoGearEditorDraft.conditionJoiners[joinerKey];
+          if (normalizeAutoGearConditionInteraction(value) === normalized) {
+            delete autoGearEditorDraft.conditionJoiners[joinerKey];
+          }
+        });
+      }
+    }
+    callCoreFunctionIfAvailable('renderAutoGearDraftImpact', [], { defer: true });
+    updateAutoGearConditionInteractionState();
+  };
+  autoGearConditionInteractionSelect.addEventListener('input', handleConditionInteractionChange);
+  autoGearConditionInteractionSelect.addEventListener('change', handleConditionInteractionChange);
+}
 if (autoGearCameraWeightOperator) {
   const handleCameraWeightOperatorChange = () => {
     updateAutoGearCameraWeightDraft();
@@ -14668,6 +15020,11 @@ function createAutoGearDraft(rule) {
       controllersLogic,
       distanceLogic,
       conditionLogic: draftConditionLogic,
+      conditionInteraction: normalizeAutoGearConditionInteraction(rule.conditionInteraction),
+      conditionJoiners: normalizeAutoGearConditionJoiners(
+        rule.conditionJoiners,
+        normalizeAutoGearConditionInteraction(rule.conditionInteraction),
+      ),
     };
   }
   return {
@@ -14709,6 +15066,8 @@ function createAutoGearDraft(rule) {
     controllersLogic: 'all',
     distanceLogic: 'all',
     conditionLogic: {},
+    conditionInteraction: 'all',
+    conditionJoiners: {},
   };
 }
 

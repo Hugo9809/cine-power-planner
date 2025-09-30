@@ -323,6 +323,7 @@ Ces routines garantissent que projets, backups et ressources hors ligne restent 
 Via **Paramètres → Règles automatiques**, ajustez chaque liste sans éditer le JSON manuellement :
 
 - Déclenchez des règles uniquement lorsque des **Scénarios requis** spécifiques sont actifs ; ajoutez un libellé facultatif pour les identifier rapidement.
+- Combinez plusieurs conditions via le sélecteur **Interaction par défaut des conditions**. Choisissez **Toutes — exigent toutes les conditions actives**, **N’importe laquelle — autoriser qu’une condition suffise** ou **Ou — démarrer de nouveaux groupes OU par défaut**. Chaque condition active expose son propre menu déroulant pour définir la relation entre deux conditions sans modifier la logique interne des valeurs.
 - Ajoutez du matériel avec catégorie et quantité ou utilisez **Ajouts personnalisés** pour des rappels, kits spécialisés ou notes. Les règles de retrait masquent certaines lignes générées automatiquement.
 - Les règles s’exécutent après les packs intégrés pour se combiner proprement et sont incluses dans listes, backups et bundles.
 - Un tableau dédié met en avant déclencheurs dupliqués, bilans nets, conflits et scénarios non couverts. Les cartes de focus filtrent la liste, renvoient vers les règles concernées et restent opérationnelles hors ligne.

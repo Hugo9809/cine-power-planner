@@ -2532,6 +2532,55 @@ function normalizeAutoGearScenarioLogicValue(value) {
     return normalized === 'all' ? 'all' : 'all';
 }
 
+function normalizeAutoGearConditionInteraction(value) {
+    if (typeof value !== 'string') return 'all';
+    const normalized = value.trim().toLowerCase();
+    if (!normalized) return 'all';
+    if (normalized === 'and' || normalized === 'all') return 'all';
+    if (normalized === 'or' || normalized === 'either' || normalized === 'group') return 'or';
+    if (normalized === 'any') return 'any';
+    return normalized === 'or' ? 'or' : 'all';
+}
+
+const AUTO_GEAR_CONDITION_JOINER_KEYS = [
+    'scenarios',
+    'shootingDays',
+    'mattebox',
+    'cameraHandle',
+    'viewfinderExtension',
+    'deliveryResolution',
+    'videoDistribution',
+    'camera',
+    'cameraWeight',
+    'monitor',
+    'tripodHeadBrand',
+    'tripodBowl',
+    'tripodTypes',
+    'tripodSpreader',
+    'crewPresent',
+    'crewAbsent',
+    'wireless',
+    'motors',
+    'controllers',
+    'distance',
+];
+
+function normalizeAutoGearConditionJoiners(value, defaultInteraction = 'all') {
+    const normalizedDefault = normalizeAutoGearConditionInteraction(defaultInteraction);
+    if (!value || typeof value !== 'object') return {};
+    return AUTO_GEAR_CONDITION_JOINER_KEYS.reduce((acc, key) => {
+        const raw = value[key];
+        if (typeof raw !== 'string') {
+            return acc;
+        }
+        const normalized = normalizeAutoGearConditionInteraction(raw);
+        if (normalized !== normalizedDefault) {
+            acc[key] = normalized;
+        }
+        return acc;
+    }, {});
+}
+
 function normalizeAutoGearScenarioMultiplierValue(value) {
     const num = parseInt(value, 10);
     return Number.isFinite(num) && num > 1 ? num : 1;
@@ -2792,184 +2841,216 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
     const triggeredEntries = [];
     autoGearRules.forEach(rule => {
         if (!rule) return;
+        const interactionMode = normalizeAutoGearConditionInteraction(rule.conditionInteraction);
+        let invalidRule = false;
         let multiplier = 1;
-        if (rule.always) {
-            multiplier = 1;
-        } else {
-            const scenarioOutcome = computeAutoGearScenarioOutcome(rule, normalizedScenarioSet);
-            if (!scenarioOutcome.active) return;
-            multiplier = scenarioOutcome.multiplier || 1;
+        const conditionOutcomes = [];
+
+        const registerCondition = (conditionKey, matched, onMatch) => {
+            conditionOutcomes.push({ key: conditionKey, matched: Boolean(matched) });
+            if (matched) {
+                if (typeof onMatch === 'function') {
+                    try {
+                        onMatch();
+                    } catch (error) {
+                        void error;
+                    }
+                }
+            }
+        };
+
+        const evaluateSimpleTriggerList = (conditionKey, list, matcher) => {
+            if (!Array.isArray(list) || !list.length) {
+                return;
+            }
+            const normalizedTargets = list
+                .map(normalizeAutoGearTriggerValue)
+                .filter(Boolean);
+            if (!normalizedTargets.length) {
+                invalidRule = true;
+                return;
+            }
+            const matched = Boolean(matcher(normalizedTargets));
+            registerCondition(conditionKey, matched);
+        };
+
+        if (!rule.always) {
+            const scenarioTargets = Array.isArray(rule.scenarios) ? rule.scenarios.filter(Boolean) : [];
+            if (scenarioTargets.length) {
+                const outcome = computeAutoGearScenarioOutcome(rule, normalizedScenarioSet);
+                registerCondition('scenarios', Boolean(outcome.active), () => {
+                    const scenarioMultiplier = Number.isFinite(outcome.multiplier) && outcome.multiplier > 0
+                        ? outcome.multiplier
+                        : 1;
+                    multiplier *= scenarioMultiplier;
+                });
+            } else {
+                const outcome = computeAutoGearScenarioOutcome(rule, normalizedScenarioSet);
+                if (outcome && outcome.active) {
+                    const scenarioMultiplier = Number.isFinite(outcome.multiplier) && outcome.multiplier > 0
+                        ? outcome.multiplier
+                        : 1;
+                    multiplier *= scenarioMultiplier;
+                } else if (outcome && outcome.active === false) {
+                    registerCondition('scenarios', false);
+                }
+            }
         }
+
+        if (invalidRule) return;
+
         const matteboxList = Array.isArray(rule.mattebox) ? rule.mattebox.filter(Boolean) : [];
-        if (matteboxList.length) {
-          const normalizedTargets = matteboxList
-            .map(normalizeAutoGearTriggerValue)
-            .filter(Boolean);
-          if (!normalizedTargets.length) return false;
-          if (!normalizedMattebox) return false;
-          if (!normalizedTargets.includes(normalizedMattebox)) return false;
-        }
+        evaluateSimpleTriggerList('mattebox', matteboxList, normalizedTargets => normalizedMattebox && normalizedTargets.includes(normalizedMattebox));
+        if (invalidRule) return;
+
         const cameraList = Array.isArray(rule.camera) ? rule.camera.filter(Boolean) : [];
+        evaluateSimpleTriggerList('camera', cameraList, normalizedTargets => normalizedCameraSelection && normalizedTargets.includes(normalizedCameraSelection));
+        if (invalidRule) return;
+
         const cameraWeightCondition = normalizeAutoGearCameraWeightCondition(rule.cameraWeight);
-        if (cameraList.length) {
-          const normalizedTargets = cameraList
-            .map(normalizeAutoGearTriggerValue)
-            .filter(Boolean);
-          if (!normalizedTargets.length) return false;
-          if (!normalizedCameraSelection) return false;
-          if (!normalizedTargets.includes(normalizedCameraSelection)) return false;
-        }
         if (cameraWeightCondition) {
-          if (!Number.isFinite(selectedCameraWeight)) return false;
-          if (!evaluateAutoGearCameraWeightCondition(cameraWeightCondition, selectedCameraWeight)) {
-            return false;
-          }
+            const matched = Number.isFinite(selectedCameraWeight)
+                && evaluateAutoGearCameraWeightCondition(cameraWeightCondition, selectedCameraWeight);
+            registerCondition('cameraWeight', matched);
         }
+
         const monitorList = Array.isArray(rule.monitor) ? rule.monitor.filter(Boolean) : [];
-        if (monitorList.length) {
-          const normalizedTargets = monitorList
-            .map(normalizeAutoGearTriggerValue)
-            .filter(Boolean);
-          if (!normalizedTargets.length) return false;
-          if (!normalizedMonitorSelection) return false;
-          if (!normalizedTargets.includes(normalizedMonitorSelection)) return false;
-        }
+        evaluateSimpleTriggerList('monitor', monitorList, normalizedTargets => normalizedMonitorSelection && normalizedTargets.includes(normalizedMonitorSelection));
+        if (invalidRule) return;
+
         const tripodHeadList = Array.isArray(rule.tripodHeadBrand) ? rule.tripodHeadBrand.filter(Boolean) : [];
-        if (tripodHeadList.length) {
-          const normalizedTargets = tripodHeadList
-            .map(normalizeAutoGearTriggerValue)
-            .filter(Boolean);
-          if (!normalizedTargets.length) return false;
-          if (!normalizedTripodHeadBrand) return false;
-          if (!normalizedTargets.includes(normalizedTripodHeadBrand)) return false;
-        }
+        evaluateSimpleTriggerList('tripodHeadBrand', tripodHeadList, normalizedTargets => normalizedTripodHeadBrand && normalizedTargets.includes(normalizedTripodHeadBrand));
+        if (invalidRule) return;
+
         const tripodBowlList = Array.isArray(rule.tripodBowl) ? rule.tripodBowl.filter(Boolean) : [];
-        if (tripodBowlList.length) {
-          const normalizedTargets = tripodBowlList
-            .map(normalizeAutoGearTriggerValue)
-            .filter(Boolean);
-          if (!normalizedTargets.length) return false;
-          if (!normalizedTripodBowl) return false;
-          if (!normalizedTargets.includes(normalizedTripodBowl)) return false;
-        }
+        evaluateSimpleTriggerList('tripodBowl', tripodBowlList, normalizedTargets => normalizedTripodBowl && normalizedTargets.includes(normalizedTripodBowl));
+        if (invalidRule) return;
+
         const tripodTypesList = Array.isArray(rule.tripodTypes) ? rule.tripodTypes.filter(Boolean) : [];
-        if (tripodTypesList.length) {
-          const normalizedTargets = tripodTypesList
-            .map(normalizeAutoGearTriggerValue)
-            .filter(Boolean);
-          if (!normalizedTargets.length) return false;
-          if (!normalizedTargets.every(target => normalizedTripodTypesSet.has(target))) return false;
-        }
+        evaluateSimpleTriggerList('tripodTypes', tripodTypesList, normalizedTargets => normalizedTargets.every(target => normalizedTripodTypesSet.has(target)));
+        if (invalidRule) return;
+
         const tripodSpreaderList = Array.isArray(rule.tripodSpreader) ? rule.tripodSpreader.filter(Boolean) : [];
-        if (tripodSpreaderList.length) {
-          const normalizedTargets = tripodSpreaderList
-            .map(normalizeAutoGearTriggerValue)
-            .filter(Boolean);
-          if (!normalizedTargets.length) return false;
-          if (!normalizedTripodSpreader) return false;
-          if (!normalizedTargets.includes(normalizedTripodSpreader)) return false;
-        }
+        evaluateSimpleTriggerList('tripodSpreader', tripodSpreaderList, normalizedTargets => normalizedTripodSpreader && normalizedTargets.includes(normalizedTripodSpreader));
+        if (invalidRule) return;
+
         const crewPresentList = Array.isArray(rule.crewPresent) ? rule.crewPresent.filter(Boolean) : [];
-        if (crewPresentList.length) {
-          const normalizedTargets = crewPresentList
-            .map(normalizeAutoGearTriggerValue)
-            .filter(Boolean);
-          if (!normalizedTargets.length) return false;
-          if (!normalizedTargets.every(target => crewRoleSet.has(target))) return false;
-        }
+        evaluateSimpleTriggerList('crewPresent', crewPresentList, normalizedTargets => normalizedTargets.every(target => crewRoleSet.has(target)));
+        if (invalidRule) return;
+
         const crewAbsentList = Array.isArray(rule.crewAbsent) ? rule.crewAbsent.filter(Boolean) : [];
-        if (crewAbsentList.length) {
-          const normalizedTargets = crewAbsentList
-            .map(normalizeAutoGearTriggerValue)
-            .filter(Boolean);
-          if (!normalizedTargets.length) return false;
-          if (normalizedTargets.some(target => crewRoleSet.has(target))) return false;
-        }
+        evaluateSimpleTriggerList('crewAbsent', crewAbsentList, normalizedTargets => normalizedTargets.every(target => !crewRoleSet.has(target)));
+        if (invalidRule) return;
+
         const wirelessList = Array.isArray(rule.wireless) ? rule.wireless.filter(Boolean) : [];
-        if (wirelessList.length) {
-          const normalizedTargets = wirelessList
-            .map(normalizeAutoGearTriggerValue)
-            .filter(Boolean);
-          if (!normalizedTargets.length) return false;
-          if (!normalizedWirelessSelection) return false;
-          if (!normalizedTargets.includes(normalizedWirelessSelection)) return false;
-        }
+        evaluateSimpleTriggerList('wireless', wirelessList, normalizedTargets => normalizedWirelessSelection && normalizedTargets.includes(normalizedWirelessSelection));
+        if (invalidRule) return;
+
         const motorsList = Array.isArray(rule.motors) ? rule.motors.filter(Boolean) : [];
         if (motorsList.length) {
-          const normalizedTargets = motorsList
-            .map(normalizeAutoGearTriggerValue)
-            .filter(Boolean);
-          if (!normalizedTargets.length) return false;
-          const requiresAnyMotor = normalizedTargets.includes(AUTO_GEAR_ANY_MOTOR_TOKEN_FALLBACK);
-          const specificTargets = normalizedTargets.filter(target => target !== AUTO_GEAR_ANY_MOTOR_TOKEN_FALLBACK);
-          if (requiresAnyMotor && normalizedMotorSet.size === 0) return false;
-          if (specificTargets.length && !specificTargets.every(target => normalizedMotorSet.has(target))) return false;
+            const normalizedTargets = motorsList
+                .map(normalizeAutoGearTriggerValue)
+                .filter(Boolean);
+            if (!normalizedTargets.length) {
+                invalidRule = true;
+                return;
+            }
+            const requiresAnyMotor = normalizedTargets.includes(AUTO_GEAR_ANY_MOTOR_TOKEN_FALLBACK);
+            const specificTargets = normalizedTargets.filter(target => target !== AUTO_GEAR_ANY_MOTOR_TOKEN_FALLBACK);
+            const matched = (() => {
+                if (requiresAnyMotor && normalizedMotorSet.size === 0) {
+                    return false;
+                }
+                if (specificTargets.length && !specificTargets.every(target => normalizedMotorSet.has(target))) {
+                    return false;
+                }
+                return requiresAnyMotor || specificTargets.length > 0;
+            })();
+            registerCondition('motors', matched);
         }
+
+        if (invalidRule) return;
+
         const controllersList = Array.isArray(rule.controllers) ? rule.controllers.filter(Boolean) : [];
-        if (controllersList.length) {
-          const normalizedTargets = controllersList
-            .map(normalizeAutoGearTriggerValue)
-            .filter(Boolean);
-          if (!normalizedTargets.length) return false;
-          if (!normalizedTargets.every(target => normalizedControllerSet.has(target))) return false;
-        }
+        evaluateSimpleTriggerList('controllers', controllersList, normalizedTargets => normalizedTargets.every(target => normalizedControllerSet.has(target)));
+        if (invalidRule) return;
+
         const distanceList = Array.isArray(rule.distance) ? rule.distance.filter(Boolean) : [];
-        if (distanceList.length) {
-          const normalizedTargets = distanceList
-            .map(normalizeAutoGearTriggerValue)
-            .filter(Boolean);
-          if (!normalizedTargets.length) return false;
-          if (!normalizedDistanceSelection) return false;
-          if (!normalizedTargets.includes(normalizedDistanceSelection)) return false;
-        }
+        evaluateSimpleTriggerList('distance', distanceList, normalizedTargets => normalizedDistanceSelection && normalizedTargets.includes(normalizedDistanceSelection));
+        if (invalidRule) return;
+
         const shootingCondition = normalizeAutoGearShootingDaysCondition(rule.shootingDays);
         if (shootingCondition && Number.isFinite(shootingCondition.value) && shootingCondition.value > 0) {
-          if (shootingCondition.mode === 'minimum') {
-            if (totalShootingDays < shootingCondition.value) return false;
-          } else if (shootingCondition.mode === 'maximum') {
-            if (totalShootingDays > shootingCondition.value) return false;
-          } else if (shootingCondition.mode === 'every') {
-            const interval = shootingCondition.value;
-            const occurrences = interval > 0 ? Math.floor(totalShootingDays / interval) : 0;
-            if (occurrences < 1) return false;
-            multiplier *= occurrences;
-          }
+            if (shootingCondition.mode === 'minimum') {
+                registerCondition('shootingDays', totalShootingDays >= shootingCondition.value);
+            } else if (shootingCondition.mode === 'maximum') {
+                registerCondition('shootingDays', totalShootingDays <= shootingCondition.value);
+            } else if (shootingCondition.mode === 'every') {
+                const interval = shootingCondition.value;
+                const occurrences = interval > 0 ? Math.floor(totalShootingDays / interval) : 0;
+                registerCondition('shootingDays', occurrences >= 1, () => {
+                    const safeOccurrences = occurrences > 0 ? occurrences : 1;
+                    multiplier *= safeOccurrences;
+                });
+            }
         }
+
         const cameraHandleList = Array.isArray(rule.cameraHandle) ? rule.cameraHandle.filter(Boolean) : [];
-        if (cameraHandleList.length) {
-          const normalizedTargets = cameraHandleList
-            .map(normalizeAutoGearTriggerValue)
-            .filter(Boolean);
-            if (!normalizedTargets.length) return false;
-            if (!normalizedTargets.every(target => cameraHandleSet.has(target))) return false;
-        }
+        evaluateSimpleTriggerList('cameraHandle', cameraHandleList, normalizedTargets => normalizedTargets.every(target => cameraHandleSet.has(target)));
+        if (invalidRule) return;
+
         const viewfinderList = Array.isArray(rule.viewfinderExtension) ? rule.viewfinderExtension.filter(Boolean) : [];
-        if (viewfinderList.length) {
-            const normalizedTargets = viewfinderList
-                .map(value => normalizeAutoGearTriggerValue(value))
-                .filter(Boolean);
-            if (!normalizedTargets.length) return false;
-            if (!normalizedViewfinderExtension) return false;
-            if (!normalizedTargets.includes(normalizedViewfinderExtension)) return false;
-        }
+        evaluateSimpleTriggerList('viewfinderExtension', viewfinderList, normalizedTargets => normalizedViewfinderExtension && normalizedTargets.includes(normalizedViewfinderExtension));
+        if (invalidRule) return;
+
         const deliveryList = Array.isArray(rule.deliveryResolution) ? rule.deliveryResolution.filter(Boolean) : [];
-        if (deliveryList.length) {
-          const normalizedTargets = deliveryList
-            .map(normalizeAutoGearTriggerValue)
-            .filter(Boolean);
-          if (!normalizedTargets.length) return false;
-          if (!normalizedDeliveryResolution) return false;
-          if (!normalizedTargets.includes(normalizedDeliveryResolution)) return false;
-        }
+        evaluateSimpleTriggerList('deliveryResolution', deliveryList, normalizedTargets => normalizedDeliveryResolution && normalizedTargets.includes(normalizedDeliveryResolution));
+        if (invalidRule) return;
+
         const videoDistList = Array.isArray(rule.videoDistribution) ? rule.videoDistribution.filter(Boolean) : [];
         if (videoDistList.length) {
             const normalizedTargets = videoDistList
                 .map(value => normalizeVideoDistributionOptionValue(value))
                 .map(value => (value === '__none__' ? '' : normalizeAutoGearTriggerValue(value)))
                 .filter(Boolean);
-            if (!normalizedTargets.length) return false;
-            if (!normalizedTargets.every(target => videoDistributionSet.has(target))) return false;
+            if (!normalizedTargets.length) {
+                invalidRule = true;
+            } else {
+                const matched = normalizedTargets.every(target => videoDistributionSet.has(target));
+                registerCondition('videoDistribution', matched);
+            }
         }
+
+        if (invalidRule) return;
+
+        const conditionJoiners = normalizeAutoGearConditionJoiners(rule.conditionJoiners, interactionMode);
+        const shouldApply = (() => {
+            if (invalidRule) return false;
+            if (!conditionOutcomes.length) return true;
+            let groupedResult = null;
+            let groupAccumulator = conditionOutcomes[0].matched;
+            for (let index = 1; index < conditionOutcomes.length; index += 1) {
+                const outcome = conditionOutcomes[index];
+                const joinerMode = conditionJoiners[outcome.key] || interactionMode;
+                if (joinerMode === 'or') {
+                    groupedResult = groupedResult === null
+                        ? groupAccumulator
+                        : (groupedResult || groupAccumulator);
+                    groupAccumulator = outcome.matched;
+                } else if (joinerMode === 'any') {
+                    groupAccumulator = groupAccumulator || outcome.matched;
+                } else {
+                    groupAccumulator = groupAccumulator && outcome.matched;
+                }
+            }
+            if (groupedResult === null) {
+                return groupAccumulator;
+            }
+            return groupedResult || groupAccumulator;
+        })();
+
+        if (!shouldApply) return;
+
         triggeredEntries.push({ rule, multiplier });
     });
     if (!triggeredEntries.length) return tableHtml;

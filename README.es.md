@@ -321,6 +321,12 @@ Rutinas repetibles para mantener proyectos, respaldos y recursos offline sincron
 Desde **Configuración → Reglas automáticas** puedes ajustar cada lista sin editar JSON manualmente:
 
 - Activa reglas sólo cuando ciertos **Escenarios requeridos** estén marcados; añade etiquetas opcionales para identificarlas rápidamente.
+- Combina varias condiciones con el selector **Interacción predeterminada de condiciones**.
+  Elige **Todas — exige todas las condiciones activas**, **Cualquiera — permite
+  que baste una condición** o **O — inicia nuevos grupos OR de forma
+  predeterminada**. Cada condición activa ofrece su propio desplegable de unión
+  para ajustar cómo se relacionan los pares sin cambiar la lógica interna de
+  valores.
 - Controla las reglas por **peso de la cámara**, comparando el cuerpo seleccionado con un umbral en gramos (más pesada, más ligera o exactamente igual) antes de ejecutar la automatización.
 - Agrega equipo con categoría y cantidad o utiliza **Adiciones personalizadas** para recordatorios, kits especiales o avisos. Las reglas de eliminación ocultan filas que el generador incluiría.
 - Las reglas se ejecutan después de los paquetes predeterminados para integrarse con la lógica base y fluyen a las listas, backups y paquetes.

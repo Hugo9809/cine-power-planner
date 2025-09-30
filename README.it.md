@@ -323,6 +323,7 @@ Queste routine mantengono progetti, backup e risorse offline sincronizzati su og
 Da **Impostazioni → Regole automatiche** puoi affinare ogni lista senza modificare JSON a mano:
 
 - Attiva regole solo quando determinati **Scenari obbligatori** sono selezionati; aggiungi etichette opzionali per riconoscerle a colpo d’occhio.
+- Combina più condizioni con il selettore **Interazione predefinita delle condizioni**. Scegli **Tutte — richiede tutte le condizioni attive**, **Qualsiasi — consente che basti una condizione** oppure **Oppure — avvia nuovi gruppi OR per impostazione predefinita**. Ogni condizione attiva mostra un proprio menu a discesa per definire come interagiscono le condizioni adiacenti senza cambiare la logica dei valori.
 - Aggiungi attrezzatura con categoria e quantità oppure usa **Aggiunte personalizzate** per promemoria, kit speciali o note. Le regole di rimozione nascondono righe che il generatore includerebbe.
 - Le regole girano dopo i pacchetti predefiniti così si integrano con la logica di base e confluiscono in liste, backup e bundle.
 - Un pannello dedicato mette in evidenza trigger duplicati, variazioni nette, conflitti e scenari scoperti. Le card di focus filtrano l’elenco, aprono le regole coinvolte e restano disponibili offline.
