@@ -1744,19 +1744,20 @@ body.high-contrast .diff-value-changed {
 }
 
 .app-modal[open] {
+  --modal-frame-padding: clamp(16px, 4vw, 24px);
   position: fixed;
   inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: var(--modal-frame-padding);
   z-index: 200;
   overflow: hidden;
   overscroll-behavior: contain;
 }
 
 html.install-banner-visible .app-modal[open] {
-  padding-top: calc(20px + var(--install-banner-offset, 0px));
+  padding-top: calc(var(--modal-frame-padding) + var(--install-banner-offset, 0px));
 }
 
 .modal-surface {
@@ -1861,6 +1862,12 @@ html.install-banner-visible .app-modal[open] {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
+}
+
+@supports (height: 100dvh) {
+  .modal-surface-scrollable {
+    max-height: min(92dvh, calc(100dvh - 2 * var(--modal-frame-padding, 20px)), 960px);
+  }
 }
 
 #installGuideDialog {
@@ -2000,11 +2007,18 @@ body.dark-mode:not(.pink-mode) .help-content a:visited {
 
 
 .settings-content {
-  padding: 20px;
-  width: min(95vw, 960px);
+  padding: clamp(16px, 4vw, 24px);
+  width: min(960px, calc(100vw - 2 * var(--modal-frame-padding, 20px)));
+  max-width: 100%;
   display: flex;
   flex-direction: column;
   gap: 20px;
+}
+
+@supports (width: 100dvw) {
+  .settings-content {
+    width: min(960px, calc(100dvw - 2 * var(--modal-frame-padding, 20px)));
+  }
 }
 
 .settings-layout {
@@ -2041,6 +2055,7 @@ body.dark-mode:not(.pink-mode) .help-content a:visited {
   scrollbar-width: thin;
   -webkit-overflow-scrolling: touch;
   scrollbar-gutter: stable both-edges;
+  scroll-snap-type: x proximity;
 }
 
 .settings-tab {
@@ -2055,6 +2070,7 @@ body.dark-mode:not(.pink-mode) .help-content a:visited {
   letter-spacing: normal;
   transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease,
     transform 0.2s ease;
+  scroll-snap-align: start;
 }
 
 .settings-tab:hover,
@@ -2132,27 +2148,39 @@ body.high-contrast .settings-tab[aria-selected="true"] {
   box-shadow: none;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 899.98px) {
+  .settings-tabs {
+    padding-bottom: 4px;
+    gap: clamp(12px, 3vw, 20px);
+  }
+
   .settings-tab {
-    flex-basis: 100%;
+    flex: 0 0 auto;
+    flex-basis: auto;
+    min-width: clamp(136px, 56vw, 220px);
   }
 }
 
-@media (max-width: 720px) {
-  .settings-content {
-    width: min(100vw, 960px);
-    padding: clamp(16px, 4vw, 20px);
+@media (max-width: 600px) {
+  .app-modal[open] {
+    align-items: stretch;
   }
 
+  .settings-content {
+    border-radius: 0;
+  }
+}
+
+@media (min-width: 900px) {
   .settings-layout {
     flex-direction: row;
     align-items: stretch;
-    gap: 16px;
+    gap: 20px;
   }
 
   .settings-sidebar {
-    flex: 0 0 clamp(140px, 38vw, 220px);
-    max-width: clamp(140px, 38vw, 240px);
+    flex: 0 0 clamp(180px, 28%, 240px);
+    max-width: clamp(180px, 30%, 260px);
   }
 
   .settings-tabs {
@@ -2160,7 +2188,7 @@ body.high-contrast .settings-tab[aria-selected="true"] {
     align-items: stretch;
     overflow-x: hidden;
     overflow-y: auto;
-    max-height: min(60vh, 420px);
+    max-height: min(68vh, 520px);
     padding-right: 4px;
   }
 
