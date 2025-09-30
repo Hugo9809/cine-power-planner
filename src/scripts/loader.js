@@ -435,32 +435,69 @@
     }
   }
 
-  function loadScriptsSequentially(urls) {
-    var head = document.head || document.getElementsByTagName('head')[0] || document.documentElement;
+  function loadScriptsSequentially(urls, options) {
+    var head =
+      document.head || document.getElementsByTagName('head')[0] || document.documentElement;
     var index = 0;
+    var aborted = false;
+    var settings = options || {};
 
     function next() {
-      if (index >= urls.length) {
+      if (aborted || index >= urls.length) {
         return;
       }
 
+      var currentIndex = index;
+      var currentUrl = urls[currentIndex];
       var script = document.createElement('script');
-      script.src = urls[index];
+      script.src = currentUrl;
       script.async = false;
       script.defer = false;
       script.onload = function () {
-        index += 1;
+        if (aborted) {
+          return;
+        }
+        index = currentIndex + 1;
         next();
       };
       script.onerror = function (event) {
-        console.error('Failed to load script:', urls[index], event && event.error);
-        index += 1;
+        console.error('Failed to load script:', currentUrl, event && event.error);
+
+        var shouldAbort = false;
+        if (typeof settings.onError === 'function') {
+          try {
+            shouldAbort = settings.onError({
+              event: event,
+              url: currentUrl,
+              index: currentIndex,
+            }) === true;
+          } catch (callbackError) {
+            console.error('Loader error callback failed', callbackError);
+          }
+        }
+
+        if (shouldAbort) {
+          aborted = true;
+          return;
+        }
+
+        if (aborted) {
+          return;
+        }
+
+        index = currentIndex + 1;
         next();
       };
       head.appendChild(script);
     }
 
     next();
+
+    return {
+      cancel: function cancelSequentialLoader() {
+        aborted = true;
+      },
+    };
   }
 
   var modernScripts = [
@@ -543,7 +580,30 @@
         window.__CINE_POWER_LEGACY_BUNDLE__ = true;
       }
 
-      loadScriptsSequentially(scriptsToLoad);
+      var fallbackScripts = supportsModern ? legacyScripts : null;
+      var fallbackTriggered = false;
+
+      loadScriptsSequentially(scriptsToLoad, {
+        onError: function handleLoaderError(context) {
+          if (!supportsModern || !fallbackScripts || fallbackTriggered) {
+            return false;
+          }
+
+          fallbackTriggered = true;
+
+          if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+            console.warn(
+              'Loader switching to legacy bundle after failing to load modern script:',
+              context && context.url,
+              context && context.event && context.event.error
+            );
+          }
+
+          window.__CINE_POWER_LEGACY_BUNDLE__ = true;
+          loadScriptsSequentially(fallbackScripts);
+          return true;
+        },
+      });
     });
   }
 
