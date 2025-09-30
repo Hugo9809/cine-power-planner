@@ -14895,7 +14895,21 @@ var CORE_PART2_GLOBAL_EXPORTS = {
   refreshAutoGearControllersOptions: refreshAutoGearControllersOptions,
   refreshAutoGearDistanceOptions: refreshAutoGearDistanceOptions,
   updateAutoGearCameraWeightDraft: updateAutoGearCameraWeightDraft,
-  updateAutoGearShootingDaysDraft: updateAutoGearShootingDaysDraft
+  updateAutoGearShootingDaysDraft: updateAutoGearShootingDaysDraft,
+  alignActiveAutoGearPreset: alignActiveAutoGearPreset,
+  closeAutoGearEditor: closeAutoGearEditor,
+  reconcileAutoGearAutoPresetState: reconcileAutoGearAutoPresetState,
+  renderAutoGearBackupControls: renderAutoGearBackupControls,
+  renderAutoGearBackupRetentionControls: renderAutoGearBackupRetentionControls,
+  renderAutoGearDraftImpact: renderAutoGearDraftImpact,
+  renderAutoGearDraftLists: renderAutoGearDraftLists,
+  renderAutoGearMonitorDefaultsControls: renderAutoGearMonitorDefaultsControls,
+  renderAutoGearPresetsControls: renderAutoGearPresetsControls,
+  renderAutoGearRulesList: renderAutoGearRulesList,
+  setAutoGearAutoPresetId: setAutoGearAutoPresetId,
+  syncAutoGearAutoPreset: syncAutoGearAutoPreset,
+  updateAutoGearCatalogOptions: updateAutoGearCatalogOptions,
+  updateAutoGearMonitorDefaultOptions: updateAutoGearMonitorDefaultOptions
 };
 var CORE_PART2_GLOBAL_SCOPE = CORE_SHARED_SCOPE_PART2 || (typeof globalThis !== 'undefined' ? globalThis : null) || (typeof window !== 'undefined' ? window : null) || (typeof self !== 'undefined' ? self : null) || (typeof global !== 'undefined' ? global : null);
 var CORE_PART2_RUNTIME = function resolvePart2Runtime(scope) {
