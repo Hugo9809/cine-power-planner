@@ -320,7 +320,7 @@ try {
   var _require = require('./overview.js');
   generatePrintableOverview = _require.generatePrintableOverview;
 } catch (_unused) {}
-var APP_VERSION = typeof CORE_SHARED.APP_VERSION === 'string' ? CORE_SHARED.APP_VERSION : '1.0.9';
+var APP_VERSION = typeof CORE_SHARED.APP_VERSION === 'string' ? CORE_SHARED.APP_VERSION : '1.0.10';
 if (typeof window !== 'undefined') {
   var lottie = window.lottie;
   if (lottie && typeof lottie.useWebWorker === 'function') {
