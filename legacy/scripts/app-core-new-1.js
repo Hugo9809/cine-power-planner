@@ -110,6 +110,62 @@ function exposeCoreRuntimeConstants(constants) {
     exposeCoreRuntimeConstant(key, constants[key]);
   });
 }
+
+function exposeCoreRuntimeBindings(bindings) {
+  if (!bindings || _typeof(bindings) !== 'object') {
+    return;
+  }
+
+  var scope = CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object'
+    ? CORE_GLOBAL_SCOPE
+    : typeof globalThis !== 'undefined'
+      ? globalThis
+      : typeof window !== 'undefined'
+        ? window
+        : typeof self !== 'undefined'
+          ? self
+          : typeof global !== 'undefined'
+            ? global
+            : null;
+
+  if (!scope || _typeof(scope) !== 'object') {
+    return;
+  }
+
+  Object.entries(bindings).forEach(function (_ref2) {
+    var name = _ref2[0];
+    var descriptor = _ref2[1];
+
+    if (typeof name !== 'string' || !name) {
+      return;
+    }
+
+    var getter = descriptor && typeof descriptor.get === 'function' ? descriptor.get : null;
+    var setter = descriptor && typeof descriptor.set === 'function' ? descriptor.set : null;
+
+    if (!getter) {
+      return;
+    }
+
+    try {
+      Object.defineProperty(scope, name, {
+        configurable: !0,
+        enumerable: !1,
+        get: getter,
+        set: setter || undefined
+      });
+      return;
+    } catch (defineError) {
+      void defineError;
+    }
+
+    try {
+      scope[name] = getter();
+    } catch (assignError) {
+      void assignError;
+    }
+  });
+}
 function resolveCoreShared() {
   if (CORE_GLOBAL_SCOPE && CORE_GLOBAL_SCOPE.cineCoreShared) {
     return CORE_GLOBAL_SCOPE.cineCoreShared;
@@ -14178,6 +14234,49 @@ exposeCoreRuntimeConstants({
   TEMPERATURE_SCENARIOS: TEMPERATURE_SCENARIOS,
   FEEDBACK_TEMPERATURE_MIN: FEEDBACK_TEMPERATURE_MIN,
   FEEDBACK_TEMPERATURE_MAX: FEEDBACK_TEMPERATURE_MAX
+});
+
+exposeCoreRuntimeBindings({
+  safeGenerateConnectorSummary: {
+    get: function get() {
+      return safeGenerateConnectorSummary;
+    },
+    set: function set(value) {
+      if (typeof value === 'function') {
+        safeGenerateConnectorSummary = value;
+      }
+    }
+  },
+  baseAutoGearRules: {
+    get: function get() {
+      return baseAutoGearRules;
+    },
+    set: function set(value) {
+      if (Array.isArray(value)) {
+        baseAutoGearRules = value;
+      }
+    }
+  },
+  autoGearAutoPresetId: {
+    get: function get() {
+      return autoGearAutoPresetId;
+    },
+    set: function set(value) {
+      if (typeof value === 'string') {
+        autoGearAutoPresetId = value;
+      } else if (value === null || typeof value === 'undefined') {
+        autoGearAutoPresetId = '';
+      }
+    }
+  },
+  autoGearScenarioModeSelect: {
+    get: function get() {
+      return autoGearScenarioModeSelect;
+    },
+    set: function set(value) {
+      autoGearScenarioModeSelect = value || null;
+    }
+  }
 });
 
 }
