@@ -1,4 +1,4 @@
-const CORE_SHARED_SCOPE_PART2 =
+var CORE_PART2_RUNTIME_SCOPE =
   typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE
     ? CORE_GLOBAL_SCOPE
     : typeof globalThis !== 'undefined'
@@ -10,6 +10,26 @@ const CORE_SHARED_SCOPE_PART2 =
           : typeof global !== 'undefined'
             ? global
             : null;
+
+if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initialized) {
+  if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+    console.warn('Cine Power Planner core runtime (part 2) already initialized. Skipping duplicate load.');
+  }
+} else {
+  if (CORE_PART2_RUNTIME_SCOPE) {
+    try {
+      Object.defineProperty(CORE_PART2_RUNTIME_SCOPE, '__cineCorePart2Initialized', {
+        configurable: true,
+        writable: true,
+        value: true,
+      });
+    } catch (corePart2InitError) {
+      CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initialized = true;
+      void corePart2InitError;
+    }
+  }
+
+const CORE_SHARED_SCOPE_PART2 = CORE_PART2_RUNTIME_SCOPE;
 
 function resolveCoreSharedPart2() {
   if (CORE_SHARED_SCOPE_PART2 && CORE_SHARED_SCOPE_PART2.cineCoreShared) {
@@ -15278,3 +15298,4 @@ if (typeof module !== 'undefined' && module.exports) {
   };
 }
 
+}

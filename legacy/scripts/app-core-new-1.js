@@ -26,7 +26,27 @@ function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
-var CORE_GLOBAL_SCOPE = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : typeof global !== 'undefined' ? global : null;
+var CORE_PART1_RUNTIME_SCOPE = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : typeof global !== 'undefined' ? global : null;
+
+if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initialized) {
+  if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+    console.warn('Cine Power Planner core runtime (part 1) already initialized. Skipping duplicate load.');
+  }
+} else {
+  if (CORE_PART1_RUNTIME_SCOPE) {
+    try {
+      Object.defineProperty(CORE_PART1_RUNTIME_SCOPE, '__cineCorePart1Initialized', {
+        configurable: true,
+        writable: true,
+        value: true
+      });
+    } catch (corePart1InitError) {
+      CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initialized = true;
+      void corePart1InitError;
+    }
+  }
+
+var CORE_GLOBAL_SCOPE = CORE_PART1_RUNTIME_SCOPE;
 function resolveCoreShared() {
   if (CORE_GLOBAL_SCOPE && CORE_GLOBAL_SCOPE.cineCoreShared) {
     return CORE_GLOBAL_SCOPE.cineCoreShared;
@@ -14039,4 +14059,6 @@ function getCrewRoleEntries() {
       sensitivity: 'base'
     });
   });
+}
+
 }
