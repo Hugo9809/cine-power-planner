@@ -63,10 +63,15 @@ runtime dashboard for accuracy.
 3. **Import project bundle.** Load the bundle, confirm scenarios, custom devices, runtime
    feedback and timestamped auto backups match the production machine. Run the gear list
    generator to ensure automatic gear rules execute correctly.
-4. **Exercise offline UI.** While still offline, open the help dialog, legal pages and device
+4. **Export a diff log.** Back in the primary profile, open **Settings → Backup & Restore →
+   Compare versions**, set the candidate manual save as the baseline and the newest auto backup
+   as the comparison, review the highlights, add context in **Incident notes** and export the
+   JSON. Store the file beside the candidate so the rotation documents what changed since the
+   last generation.
+5. **Exercise offline UI.** While still offline, open the help dialog, legal pages and device
    catalog so you know locally stored Uicons and typography files are bundled correctly in
-the repository zip.
-5. **Log the result.** Update the verification log with the operator name, machine, browser
+   the repository zip.
+6. **Log the result.** Update the verification log with the operator name, machine, browser
    version, validation timestamp, files inspected and any anomalies discovered. Store the log
    with the candidate artifacts.
 
@@ -99,7 +104,10 @@ warnings—treat the moment as its own archive tier:
    immediately.
 3. **Validate separately.** Import the incident exports into an offline profile. If they pass,
    keep them quarantined so investigators can review the exact data that triggered the issue.
-4. **Resume rotation cautiously.** Only after the incident is documented, backups are
+4. **Capture the comparison.** Diff the affected manual save against the newest auto backup in
+   **Settings → Backup & Restore → Compare versions** and export the log. File it with the
+   incident folder so future audits can replay the exact changes.
+5. **Resume rotation cautiously.** Only after the incident is documented, backups are
    verified and the environment is stable should you merge the recovered data back into the
    standard rotation cadence.
 

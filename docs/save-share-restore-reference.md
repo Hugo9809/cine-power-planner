@@ -17,8 +17,11 @@ A dedicated storage guardian runs on every launch to mirror each critical key in
 | Restore rehearsal | **Settings → Backup & Restore → Restore rehearsal** → load chosen backup | Sandbox diff shows expected changes, proceed restores data without touching live profile | Console log of rehearsal result, note pre-restore snapshot filename |
 | Full restore | **Settings → Backup & Restore → Restore** after rehearsal succeeds | App reloads with restored data, pre-restore snapshot stored automatically | Archive restored backup, pre-restore snapshot ID and post-restore verification notes |
 | Share link/application | **Share → Copy share link** or **Share → Apply shared setup** | Import prompt validates payload, offers rollback on mismatch | Note validation message, keep copy of imported payload for incident review |
+| Version comparison audit | **Settings → Backup & Restore → Compare versions** | Diff summary matches expected edits and nothing unexpected appears in the detailed list | Exported JSON log stored with backups plus verification note referencing the compared versions |
 
 Applying a shared setup removes only the `shared` query flag from the URL, preserving any other query parameters or hash fragments so language overrides and anchored navigation stay intact after import.【F:src/scripts/app-session.js†L2375-L2453】
+
+Version comparisons create a documented paper trail before archives rotate. Launch **Settings → Backup & Restore → Compare versions**, pick a baseline manual save plus the latest auto backup, confirm the summary mirrors your expectations, review each list entry for unexpected additions or removals, then record context in **Incident notes** before exporting the log. Store the JSON alongside your backups and reference the filename in your verification ledger so future audits can replay the diff offline.【F:index.html†L3684-L3754】【F:src/scripts/translations.js†L620-L657】
 
 ## Console & script checks
 

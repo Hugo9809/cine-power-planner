@@ -143,8 +143,9 @@ Repite esta rutina cuando se incorpore personal, se prepare una estación nueva 
 2. **Exporta redundancias.** Genera una copia completa y un paquete del proyecto. Renómbralo a `.cpproject` si lo requiere tu flujo y guarda ambos en medios distintos.
 3. **Ensayo de restauración.** Cambia a un perfil privado (o segunda máquina), importa la copia completa y después el paquete. Comprueba listas, paneles, reglas y favoritos.
 4. **Verificación offline.** En el perfil de ensayo, desconecta la red y recarga `index.html`. Confirma que aparece el indicador offline y que los Uicons y scripts locales cargan correctamente.
-5. **Archiva con confianza.** Borra el perfil de ensayo tras confirmar la restauración y etiqueta los archivos verificados según el protocolo del proyecto.
-6. **Registra la guarda runtime.** En el mismo perfil, abre la consola y confirma que `window.__cineRuntimeIntegrity.ok` vale `true`. Si necesitas un informe nuevo, ejecuta `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })` y guarda el resultado junto con tus notas.
+5. **Registra un diff.** De vuelta en el perfil principal abre **Configuración → Copia de seguridad y restauración → Comparar versiones**, selecciona el último guardado manual y el auto-backup más reciente, revisa los cambios resaltados, añade contexto en **Notas de incidente** y exporta el JSON. Guarda el archivo junto a los artefactos del ensayo para que auditorías futuras puedan revisar el historial sin conexión.
+6. **Archiva con confianza.** Borra el perfil de ensayo tras confirmar la restauración y etiqueta los archivos verificados según el protocolo del proyecto.
+7. **Registra la guarda runtime.** En el mismo perfil, abre la consola y confirma que `window.__cineRuntimeIntegrity.ok` vale `true`. Si necesitas un informe nuevo, ejecuta `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })` y guarda el resultado junto con tus notas.
 
 ## Flujo cotidiano
 

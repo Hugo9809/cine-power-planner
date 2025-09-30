@@ -143,8 +143,9 @@ Cette routine prouve que sauvegarde, partage, import, backup et restauration fon
 2. **Export redondant.** Produisez un backup du planner et un bundle projet. Renommez-le en `.cpproject` si nécessaire et stockez les deux sur des supports distincts.
 3. **Répétition de restauration.** Passez sur un profil privé (ou une seconde machine), importez d’abord le backup complet, puis le bundle. Vérifiez listes, tableaux de bord, règles et favoris.
 4. **Vérification hors ligne.** Sur le profil d’essai, coupez la connexion et rechargez `index.html`. Confirmez l’affichage de l’indicateur hors ligne et le chargement des Uicons et scripts locaux.
-5. **Archivage.** Supprimez le profil de test après validation et étiquetez les exports selon le protocole de production.
-6. **Consignez la sentinelle runtime.** Dans le même profil, ouvrez la console et vérifiez que `window.__cineRuntimeIntegrity.ok` vaut `true`. Si besoin d’un nouveau rapport, exécutez `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })` et archivez le résultat avec vos notes.
+5. **Consigner un diff.** De retour sur le profil principal, ouvrez **Paramètres → Sauvegarde & restauration → Comparer les versions**, sélectionnez la dernière sauvegarde manuelle et l’auto-backup le plus récent, examinez les changements mis en évidence, ajoutez du contexte dans **Notes d’incident** et exportez le JSON. Archivez-le avec les artefacts de la répétition pour que les audits hors ligne retrouvent l’historique.
+6. **Archivage.** Supprimez le profil de test après validation et étiquetez les exports selon le protocole de production.
+7. **Consignez la sentinelle runtime.** Dans le même profil, ouvrez la console et vérifiez que `window.__cineRuntimeIntegrity.ok` vaut `true`. Si besoin d’un nouveau rapport, exécutez `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })` et archivez le résultat avec vos notes.
 
 ## Routine quotidienne
 

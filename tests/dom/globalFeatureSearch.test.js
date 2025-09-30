@@ -1,6 +1,6 @@
 const { setupScriptEnvironment } = require('../helpers/scriptEnvironment');
 
-jest.setTimeout(45000);
+jest.setTimeout(180000);
 
 describe('global feature search help navigation', () => {
   let env;

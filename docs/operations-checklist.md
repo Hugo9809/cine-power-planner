@@ -35,22 +35,27 @@ update the repository or hand off a project at the end of the day.
    review the rule-by-rule diff before you load the snapshot so additions,
    removals and scenario scope changes are confirmed without touching live
    storage. Delete the temporary profile after confirmation.
-5. **Inspect the runtime guard.** Back in the primary profile, open the
+5. **Record a version diff.** In the primary profile, open **Settings → Backup &
+   Restore → Compare versions**, choose the newest manual save plus the latest
+   auto backup, review the highlighted differences, add context in **Incident
+   notes** and export the log. File the JSON beside your rehearsal exports so
+   future audits can replay the change history offline.
+6. **Inspect the runtime guard.** Back in the primary profile, open the
    developer console and check `window.__cineRuntimeIntegrity`. It should show
    `{ ok: true }` with no missing safeguards. When in doubt, run
    `window.cineRuntime.verifyCriticalFlows()` for a fresh report and confirm the
    persistence, offline and UI sections all pass before you archive exports.
-6. **Review data & storage dashboard.** Open **Settings → Data & Storage** to
+7. **Review data & storage dashboard.** Open **Settings → Data & Storage** to
    ensure counts for projects, backups and custom devices match expectations,
    confirm the **Latest activity** board lists recent saves and backups, and use
    **Quick safeguards** to capture a fresh full backup if anything looks stale.
-7. **Check draft impact preview.** Open the automatic gear rule editor, review
+8. **Check draft impact preview.** Open the automatic gear rule editor, review
    the draft impact preview for quantity deltas and warnings, then cancel to
    confirm the live generator stays unchanged. Adjust the shooting-day counter
    long enough to verify the factory “every five shooting days” consumables rule
    multiplies Bluestar eye leathers, Pro Gaff rolls, clapper sticks, Kimtech
    wipes and Sprigs to cover longer schedules automatically.
-8. **Log the drill.** Append a verification note (timestamp, machine, operator
+9. **Log the drill.** Append a verification note (timestamp, machine, operator
    and files inspected) to your archival log or create one beside the exports
    if it does not exist yet. Pair the note with checksum manifests so every
    crew member can prove when the save → share → import rehearsal succeeded.
@@ -75,9 +80,13 @@ update the repository or hand off a project at the end of the day.
 3. **Document changes.** Update your production log with notes about new devices,
    modified automatic gear rules or additional runtime submissions captured that
    day.
-4. **Store redundantly.** Copy backups, bundles and the repository ZIP to at
+4. **Archive a diff log.** Run **Settings → Backup & Restore → Compare versions**
+   on the day’s final manual save versus the newest auto backup, export the JSON
+   and attach it to the production log entry so the rotation shows exactly what
+   changed.
+5. **Store redundantly.** Copy backups, bundles and the repository ZIP to at
    least two encrypted destinations per your organization’s retention policy.
-5. **Reset caches on purpose.** Once archives are secure, trigger **Force reload**
+6. **Reset caches on purpose.** Once archives are secure, trigger **Force reload**
    and reopen the help dialog and legal pages to prime caches for the next
    session before disconnecting again.
 
@@ -103,6 +112,10 @@ appears, stabilize the environment before attempting to fix it:
    freshly captured backup on the main machine. Compare the automatic pre-restore
    snapshot against the restored data and document what happened, where exports
    are stored and which workstation verified the recovery.
+6. **Export the diff log.** After the restore, run **Settings → Backup &
+   Restore → Compare versions** between the pre-incident manual save and the
+   restored state. Save the log into the incident folder so reviewers can trace
+   the resolution path offline.
 
 Following this routine ensures no user data is lost, offline capabilities remain
 healthy and every team member who launches Cine Power Planner inherits a verified
