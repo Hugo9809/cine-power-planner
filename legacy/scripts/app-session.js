@@ -2893,11 +2893,12 @@ mountVoltageInputNodes.forEach(function (input) {
   input.addEventListener('blur', handleMountVoltageInputChange);
 });
 var mountVoltageResetButtonRef = function () {
-  var candidates = [typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object' ? CORE_GLOBAL_SCOPE : null, typeof globalThis !== 'undefined' && _typeof(globalThis) === 'object' ? globalThis : null, typeof window !== 'undefined' && _typeof(window) === 'object' ? window : null, typeof self !== 'undefined' && _typeof(self) === 'object' ? self : null, typeof global !== 'undefined' && _typeof(global) === 'object' ? global : null].filter(Boolean);
-  for (var index = 0; index < candidates.length; index += 1) {
-    var scope = candidates[index];
-    if (scope && scope.mountVoltageResetButton) {
-      return scope.mountVoltageResetButton;
+  var candidateScopes = [typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && (typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' ? CORE_GLOBAL_SCOPE : null, typeof globalThis !== 'undefined' && (typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object' ? globalThis : null, typeof window !== 'undefined' && (typeof window === "undefined" ? "undefined" : _typeof(window)) === 'object' ? window : null, typeof self !== 'undefined' && (typeof self === "undefined" ? "undefined" : _typeof(self)) === 'object' ? self : null, typeof global !== 'undefined' && (typeof global === "undefined" ? "undefined" : _typeof(global)) === 'object' ? global : null].filter(Boolean);
+  for (var index = 0; index < candidateScopes.length; index += 1) {
+    var scope = candidateScopes[index];
+    var button = scope && scope.mountVoltageResetButton;
+    if (button) {
+      return button;
     }
   }
   return null;
@@ -4154,6 +4155,79 @@ function resolveRestoreTranslation(langTexts, fallbackTexts, key, defaultText) {
     return fallbackTexts[key];
   }
   return defaultText;
+}
+var restoreVerificationApi = null;
+var restoreVerificationResolutionAttempted = false;
+function resolveRestoreVerificationApi() {
+  if (restoreVerificationResolutionAttempted) {
+    return restoreVerificationApi;
+  }
+  restoreVerificationResolutionAttempted = true;
+  if (typeof require === 'function') {
+    try {
+      var moduleApi = require('./restore-verification.js');
+      if (moduleApi && typeof moduleApi.buildReport === 'function') {
+        restoreVerificationApi = moduleApi;
+        return restoreVerificationApi;
+      }
+    } catch (requireError) {
+      void requireError;
+    }
+  }
+  var scope = typeof globalThis !== 'undefined' && globalThis || typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || typeof global !== 'undefined' && global || null;
+  if (scope && _typeof(scope.__cineRestoreVerification) === 'object') {
+    restoreVerificationApi = scope.__cineRestoreVerification;
+  }
+  return restoreVerificationApi;
+}
+function verifyRestoredBackupIntegrity(importedData) {
+  var api = resolveRestoreVerificationApi();
+  if (!api || typeof api.buildReport !== 'function') {
+    return null;
+  }
+  var _getSessionLanguageTe = getSessionLanguageTexts(),
+    langTexts = _getSessionLanguageTe.langTexts,
+    fallbackTexts = _getSessionLanguageTe.fallbackTexts;
+  var translation = function translation(key, fallback) {
+    return resolveRestoreTranslation(langTexts, fallbackTexts, key, fallback);
+  };
+  var safeImportedData = isPlainObject(importedData) ? importedData : {};
+  var liveData = {};
+  try {
+    var snapshot = collectFullBackupData();
+    if (snapshot && snapshot.data && isPlainObject(snapshot.data)) {
+      liveData = snapshot.data;
+    }
+  } catch (snapshotError) {
+    console.warn('Restore verification failed to collect live snapshot', snapshotError);
+    if (typeof api.buildFailureReport === 'function') {
+      return api.buildFailureReport({
+        translation: translation,
+        error: snapshotError
+      });
+    }
+    return null;
+  }
+  try {
+    var liveCounts = summarizeCountsFromData(liveData);
+    var expectedCounts = summarizeCountsFromData(safeImportedData);
+    var rows = buildRestoreRehearsalRows(liveCounts, expectedCounts, {
+      mode: 'backup'
+    });
+    return api.buildReport({
+      rows: rows,
+      translation: translation
+    });
+  } catch (reportError) {
+    console.warn('Restore verification report failed', reportError);
+    if (typeof api.buildFailureReport === 'function') {
+      return api.buildFailureReport({
+        translation: translation,
+        error: reportError
+      });
+    }
+    return null;
+  }
 }
 function hasAnyDataKey(data, keys) {
   if (!data || _typeof(data) !== 'object') {
@@ -6471,7 +6545,22 @@ function handleRestoreSettingsInputChange() {
           }
         });
       }
-      alert(texts[currentLang].restoreSuccess);
+      var verificationResult = null;
+      try {
+        verificationResult = verifyRestoredBackupIntegrity(data);
+      } catch (verificationError) {
+        console.warn('Restore verification execution failed', verificationError);
+        verificationResult = null;
+      }
+      if (verificationResult && verificationResult.notificationType && verificationResult.notificationMessage) {
+        showNotification(verificationResult.notificationType, verificationResult.notificationMessage);
+      }
+      var successMessage = texts[currentLang].restoreSuccess;
+      var alertSegments = [successMessage];
+      if (verificationResult && verificationResult.alertMessage) {
+        alertSegments.push(verificationResult.alertMessage);
+      }
+      alert(alertSegments.join('\n\n'));
       finalizeRestore();
     } catch (err) {
       if (restoreMutated) {
@@ -6578,17 +6667,17 @@ function registerSessionCineUiInternal(cineUi) {
   registerCineUiEntries(cineUi.help, [{
     name: 'backupSettings',
     value: function value() {
-      var _getSessionLanguageTe = getSessionLanguageTexts(),
-        langTexts = _getSessionLanguageTe.langTexts,
-        fallbackTexts = _getSessionLanguageTe.fallbackTexts;
+      var _getSessionLanguageTe2 = getSessionLanguageTexts(),
+        langTexts = _getSessionLanguageTe2.langTexts,
+        fallbackTexts = _getSessionLanguageTe2.fallbackTexts;
       return langTexts.backupSettingsHelp || fallbackTexts.backupSettingsHelp || 'Create a full backup of every project and preference stored on this device.';
     }
   }, {
     name: 'restoreSettings',
     value: function value() {
-      var _getSessionLanguageTe2 = getSessionLanguageTexts(),
-        langTexts = _getSessionLanguageTe2.langTexts,
-        fallbackTexts = _getSessionLanguageTe2.fallbackTexts;
+      var _getSessionLanguageTe3 = getSessionLanguageTexts(),
+        langTexts = _getSessionLanguageTe3.langTexts,
+        fallbackTexts = _getSessionLanguageTe3.fallbackTexts;
       return langTexts.restoreSettingsHelp || fallbackTexts.restoreSettingsHelp || 'Restore a full backup. The planner saves another backup automatically before importing.';
     }
   }], 'cineUi help registration (session) failed');
@@ -8054,14 +8143,13 @@ if (helpButton && helpDialog) {
     }).filter(Boolean);
   };
   var getHoverHelpReferenceElements = function getHoverHelpReferenceElements(element) {
-    if (!element || typeof document === 'undefined' || typeof document.querySelector !== 'function') return [];
+    var _document;
+    if (!element || !((_document = document) !== null && _document !== void 0 && _document.querySelector)) return [];
     var references = [];
     var seen = new Set();
     var addCandidate = function addCandidate(candidate) {
-      if (!candidate || typeof candidate !== 'object') return;
+      if (!candidate || !(candidate instanceof Element)) return;
       if (candidate === element) return;
-      var isElement = typeof Element !== 'undefined' && candidate instanceof Element;
-      if (!isElement && candidate.nodeType !== 1) return;
       if (seen.has(candidate)) return;
       seen.add(candidate);
       references.push(candidate);
@@ -8071,7 +8159,7 @@ if (helpButton && helpDialog) {
         try {
           var match = document.querySelector(selector);
           addCandidate(match);
-        } catch (_unused10) {}
+        } catch (_unused11) {}
       });
     };
     var addFromIds = function addFromIds(raw) {
@@ -8415,10 +8503,10 @@ if (helpButton && helpDialog) {
       includeTextContent: false
     }];
     while (queue.length) {
-      var currentConfig = queue.shift();
-      var current = currentConfig.element;
-      var preferTextAsLabel = currentConfig.preferTextAsLabel;
-      var includeTextContent = currentConfig.includeTextContent;
+      var _queue$shift = queue.shift(),
+        current = _queue$shift.element,
+        preferTextAsLabel = _queue$shift.preferTextAsLabel,
+        includeTextContent = _queue$shift.includeTextContent;
       if (!current || visitedElements.has(current)) {
         continue;
       }
@@ -8809,7 +8897,7 @@ if (helpButton && helpDialog) {
       featureSearch.focus({
         preventScroll: true
       });
-    } catch (_unused11) {
+    } catch (_unused12) {
       featureSearch.focus();
     }
     if (typeof featureSearch.select === 'function') {
@@ -9008,7 +9096,7 @@ if (helpButton && helpDialog) {
         featureSearch.focus({
           preventScroll: true
         });
-      } catch (_unused12) {
+      } catch (_unused13) {
         featureSearch.focus();
       }
       (_featureSearch$setSel = (_featureSearch2 = featureSearch).setSelectionRange) === null || _featureSearch$setSel === void 0 || _featureSearch$setSel.call(_featureSearch2, value.length, value.length);
