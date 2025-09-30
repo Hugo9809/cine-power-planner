@@ -33,7 +33,7 @@
           loadAutoGearBackupRetention, loadFullBackupHistory */
 /* global getDiagramManualPositions, setManualDiagramPositions,
           normalizeDiagramPositionsInput, ensureAutoBackupsFromProjects */
-/* global getMountVoltagePreferencesClone, mountVoltageResetButton,
+/* global getMountVoltagePreferencesClone, mountVoltageResetButton, CORE_GLOBAL_SCOPE,
           resetMountVoltagePreferences, updateMountVoltageInputsFromState,
           applyMountVoltagePreferences, getMountVoltageStorageKeyName,
           getMountVoltageStorageBackupKeyName,
@@ -3240,8 +3240,30 @@ mountVoltageInputNodes.forEach(input => {
   input.addEventListener('blur', handleMountVoltageInputChange);
 });
 
-if (mountVoltageResetButton) {
-  mountVoltageResetButton.addEventListener('click', () => {
+const mountVoltageResetButtonRef = (() => {
+  if (typeof mountVoltageResetButton !== 'undefined' && mountVoltageResetButton) {
+    return mountVoltageResetButton;
+  }
+  const scope =
+    (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE)
+      ? CORE_GLOBAL_SCOPE
+      : (typeof globalThis !== 'undefined' && globalThis)
+        ? globalThis
+        : (typeof window !== 'undefined' && window)
+          ? window
+          : (typeof self !== 'undefined' && self)
+            ? self
+            : (typeof global !== 'undefined' && global)
+              ? global
+              : null;
+  if (scope && scope.mountVoltageResetButton) {
+    return scope.mountVoltageResetButton;
+  }
+  return null;
+})();
+
+if (mountVoltageResetButtonRef) {
+  mountVoltageResetButtonRef.addEventListener('click', () => {
     resetMountVoltagePreferences({ persist: false, triggerUpdate: true });
     updateMountVoltageInputsFromState();
   });

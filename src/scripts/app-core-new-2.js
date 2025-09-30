@@ -181,6 +181,40 @@ const coreHumanizeKey = typeof CORE_SHARED_LOCAL.humanizeKey === 'function'
   ? CORE_SHARED_LOCAL.humanizeKey
   : fallbackHumanizeKey;
 
+const sharedDeviceManagerLists = (() => {
+  const candidates = [
+    CORE_PART2_RUNTIME_SCOPE && typeof CORE_PART2_RUNTIME_SCOPE === 'object'
+      ? CORE_PART2_RUNTIME_SCOPE
+      : null,
+    (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object')
+      ? CORE_GLOBAL_SCOPE
+      : null,
+    (typeof globalThis !== 'undefined' && typeof globalThis === 'object') ? globalThis : null,
+    (typeof window !== 'undefined' && typeof window === 'object') ? window : null,
+    (typeof self !== 'undefined' && typeof self === 'object') ? self : null,
+    (typeof global !== 'undefined' && typeof global === 'object') ? global : null,
+  ].filter(Boolean);
+
+  for (let index = 0; index < candidates.length; index += 1) {
+    const scope = candidates[index];
+    if (scope && scope.deviceManagerLists instanceof Map) {
+      return scope.deviceManagerLists;
+    }
+  }
+
+  const fallback = new Map();
+  const assignTarget = candidates.find(scope => scope && Object.isExtensible(scope));
+  if (assignTarget) {
+    try {
+      assignTarget.deviceManagerLists = fallback;
+    } catch (assignError) {
+      void assignError;
+      assignTarget.deviceManagerLists = fallback;
+    }
+  }
+  return fallback;
+})();
+
 function callCoreFunctionFromPart2(functionName, args = [], options = {}) {
   if (typeof callCoreFunctionIfAvailable === 'function') {
     return callCoreFunctionIfAvailable(functionName, args, options);
@@ -12962,7 +12996,7 @@ if (filterHelperScope) {
 }
 
 function applyFilters() {
-  deviceManagerLists.forEach(({ list, filterInput }) => {
+  sharedDeviceManagerLists.forEach(({ list, filterInput }) => {
     if (!list) return;
     const value = filterInput ? filterInput.value : '';
     filterDeviceList(list, value);
@@ -15230,7 +15264,7 @@ function renderDeviceList(categoryKey, ulElement) {
 
 function refreshDeviceLists() {
   syncDeviceManagerCategories();
-  deviceManagerLists.forEach(({ list, filterInput }, categoryKey) => {
+  sharedDeviceManagerLists.forEach(({ list, filterInput }, categoryKey) => {
     if (!list) return;
     renderDeviceList(categoryKey, list);
     const filterValue = filterInput ? filterInput.value : '';
