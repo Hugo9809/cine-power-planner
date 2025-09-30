@@ -175,6 +175,60 @@ function exposeCoreRuntimeConstants(constants) {
   });
 }
 
+function exposeCoreRuntimeBindings(bindings) {
+  if (!bindings || typeof bindings !== 'object') {
+    return;
+  }
+
+  const scope =
+    (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object')
+      ? CORE_GLOBAL_SCOPE
+      : typeof globalThis !== 'undefined'
+        ? globalThis
+        : typeof window !== 'undefined'
+          ? window
+          : typeof self !== 'undefined'
+            ? self
+            : typeof global !== 'undefined'
+              ? global
+              : null;
+
+  if (!scope || typeof scope !== 'object') {
+    return;
+  }
+
+  Object.entries(bindings).forEach(([name, descriptor]) => {
+    if (typeof name !== 'string' || !name) {
+      return;
+    }
+
+    const getter = descriptor && typeof descriptor.get === 'function' ? descriptor.get : null;
+    const setter = descriptor && typeof descriptor.set === 'function' ? descriptor.set : null;
+
+    if (!getter) {
+      return;
+    }
+
+    try {
+      Object.defineProperty(scope, name, {
+        configurable: true,
+        enumerable: false,
+        get: getter,
+        set: setter || undefined,
+      });
+      return;
+    } catch (defineError) {
+      void defineError;
+    }
+
+    try {
+      scope[name] = getter();
+    } catch (assignError) {
+      void assignError;
+    }
+  });
+}
+
 const CORE_PART1_VALID_IDENTIFIER = /^[A-Za-z_$][A-Za-z0-9_$]*$/;
 
 function runCoreRuntimeSegment(executor) {
@@ -15591,6 +15645,41 @@ exposeCoreRuntimeConstants({
   TEMPERATURE_SCENARIOS,
   FEEDBACK_TEMPERATURE_MIN,
   FEEDBACK_TEMPERATURE_MAX,
+});
+
+exposeCoreRuntimeBindings({
+  safeGenerateConnectorSummary: {
+    get: () => safeGenerateConnectorSummary,
+    set: value => {
+      if (typeof value === 'function') {
+        safeGenerateConnectorSummary = value;
+      }
+    },
+  },
+  baseAutoGearRules: {
+    get: () => baseAutoGearRules,
+    set: value => {
+      if (Array.isArray(value)) {
+        baseAutoGearRules = value;
+      }
+    },
+  },
+  autoGearAutoPresetId: {
+    get: () => autoGearAutoPresetId,
+    set: value => {
+      if (typeof value === 'string') {
+        autoGearAutoPresetId = value;
+      } else if (value === null || typeof value === 'undefined') {
+        autoGearAutoPresetId = '';
+      }
+    },
+  },
+  autoGearScenarioModeSelect: {
+    get: () => autoGearScenarioModeSelect,
+    set: value => {
+      autoGearScenarioModeSelect = value || null;
+    },
+  },
 });
 
 }
