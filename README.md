@@ -89,6 +89,10 @@ production day.
 - **Consistent presentation.** Locally bundled Uicons, OpenMoji assets and
   typography files guarantee identical visuals whether you run the planner on a
   stage workstation or a field laptop with no connectivity.
+- **Guard every change.** Before any restore, the planner captures a forced
+  backup and preserves earlier revisions so no import overwrites your work.
+  Verification logs and checksum notes travel with every archive to prove
+  integrity even when you stay offline.
 
 ## Table of Contents
 

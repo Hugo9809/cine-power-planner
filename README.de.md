@@ -38,6 +38,7 @@ Filmsets haben selten garantierte Konnektivität, Studios verlangen häufig luft
 - **Redundante Sicherheitsnetze.** Manuelle Saves, Hintergrund-Auto-Saves, periodische Auto-Backups, erzwungene Pre-Restore-Backups und menschenlesbare Exporte sorgen dafür, dass Benutzerdaten nicht verschwinden.
 - **Vorhersehbare Updates.** Aktualisierungen greifen nur nach deinem Trigger. Zwischengespeicherte Versionen bleiben verfügbar, bis du **Neu laden erzwingen** bestätigst.
 - **Konstante Darstellung.** Gebündelte Uicons, OpenMoji und Typografie-Dateien garantieren identische Optik – egal ob im Studio oder im Feld ohne Netz.
+- **Jede Änderung absichern.** Vor jeder Wiederherstellung legt der Planner ein erzwungenes Backup an und bewahrt frühere Revisionen, damit kein Import deine Arbeit überschreibt. Prüfprotokolle und Checksum-Notizen reisen mit jedem Archiv, um die Integrität auch offline nachzuweisen.
 
 ## Inhaltsverzeichnis
 

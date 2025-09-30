@@ -38,6 +38,7 @@ Les plateaux disposent rarement d’une connectivité fiable et les studios exig
 - **Filets redondants.** Sauvegardes manuelles, autosaves en arrière-plan, backups périodiques, sauvegardes forcées avant restauration et exports lisibles empêchent toute disparition silencieuse.
 - **Mises à jour prévisibles.** Elles ne s’appliquent que sur votre action. Les versions en cache restent disponibles jusqu’à ce que vous confirmiez **Forcer le rechargement**.
 - **Présentation cohérente.** Uicons locaux, ressources OpenMoji et polices intégrées garantissent la même apparence en studio ou sur un poste déconnecté.
+- **Sécuriser chaque modification.** Avant toute restauration, le planner crée une sauvegarde forcée et conserve les versions précédentes afin qu’aucun import ne remplace ton travail. Les journaux de vérification et les notes de checksum accompagnent chaque archive pour prouver l’intégrité même hors ligne.
 
 ## Table des matières
 

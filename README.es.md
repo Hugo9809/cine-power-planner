@@ -38,6 +38,7 @@ Los rodajes raramente tienen conectividad garantizada y muchos estudios exigen h
 - **Redes redundantes.** Guardados manuales, auto-guardados en segundo plano, copias periódicas, respaldos previos a la restauración y exportaciones legibles garantizan que ningún dato desaparezca.
 - **Actualizaciones previsibles.** Sólo se aplican cuando tú las activas. Las versiones en caché siguen disponibles hasta que confirmas **Forzar recarga**.
 - **Presentación consistente.** Uicons locales, recursos OpenMoji y tipografías integradas aseguran la misma apariencia en un estudio o en un portátil desconectado.
+- **Proteger cada cambio.** Antes de cualquier restauración, el planner genera una copia de seguridad forzada y conserva las revisiones anteriores para que ninguna importación sobrescriba tu trabajo. Los registros de verificación y las notas de checksum acompañan a cada archivo para demostrar la integridad incluso sin conexión.
 
 ## Tabla de contenidos
 
