@@ -53,6 +53,98 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       typeof CORE_SHARED !== 'undefined' && CORE_SHARED
         ? CORE_SHARED
         : resolveCoreSharedPart2() || {};
+
+    const CORE_BINDING_SCOPE =
+      CORE_SHARED_SCOPE_PART2 && typeof CORE_SHARED_SCOPE_PART2 === 'object'
+        ? CORE_SHARED_SCOPE_PART2
+        : typeof globalThis !== 'undefined'
+          ? globalThis
+          : typeof window !== 'undefined'
+            ? window
+            : typeof self !== 'undefined'
+              ? self
+              : typeof global !== 'undefined'
+                ? global
+                : null;
+
+    function readCoreBinding(name, fallback) {
+      if (!name) {
+        return fallback;
+      }
+
+      if (!CORE_BINDING_SCOPE || typeof CORE_BINDING_SCOPE !== 'object') {
+        return fallback;
+      }
+
+      try {
+        const value = CORE_BINDING_SCOPE[name];
+        return typeof value === 'undefined' ? fallback : value;
+      } catch (bindingReadError) {
+        void bindingReadError;
+        return fallback;
+      }
+    }
+
+    function writeCoreBinding(name, value) {
+      if (!name) {
+        return value;
+      }
+
+      if (!CORE_BINDING_SCOPE || typeof CORE_BINDING_SCOPE !== 'object') {
+        return value;
+      }
+
+      try {
+        CORE_BINDING_SCOPE[name] = value;
+      } catch (bindingWriteError) {
+        void bindingWriteError;
+      }
+
+      return readCoreBinding(name, value);
+    }
+
+    function getAutoGearAutoPresetIdBinding() {
+      const value = readCoreBinding('autoGearAutoPresetId', '');
+      return typeof value === 'string' ? value : '';
+    }
+
+    function setAutoGearAutoPresetIdBinding(value) {
+      const normalized = typeof value === 'string' ? value : '';
+      const result = writeCoreBinding('autoGearAutoPresetId', normalized);
+      return typeof result === 'string' ? result : normalized;
+    }
+
+    function getBaseAutoGearRulesBinding() {
+      const rules = readCoreBinding('baseAutoGearRules', []);
+      return Array.isArray(rules) ? rules : [];
+    }
+
+    function getSafeGenerateConnectorSummaryBinding() {
+      const generator = readCoreBinding('safeGenerateConnectorSummary', null);
+      return typeof generator === 'function' ? generator : null;
+    }
+
+    function getAutoGearScenarioModeSelectBinding() {
+      const element = readCoreBinding('autoGearScenarioModeSelect', null);
+      return element || null;
+    }
+
+    function runSafeGenerateConnectorSummary(device) {
+      const generator = getSafeGenerateConnectorSummaryBinding();
+      if (typeof generator !== 'function') {
+        return '';
+      }
+
+      try {
+        const summary = generator(device);
+        return typeof summary === 'string' ? summary : '';
+      } catch (generatorError) {
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn('Unable to generate connector summary', generatorError);
+        }
+        return '';
+      }
+    }
     
     var currentProjectInfo = null;
     let loadedSetupState = null;
@@ -1093,13 +1185,14 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       const normalized = typeof presetId === 'string' ? presetId : '';
       const persist = options.persist !== false;
       const skipRender = options.skipRender === true;
-      if (autoGearAutoPresetId === normalized) {
+      const currentAutoPresetId = getAutoGearAutoPresetIdBinding();
+      if (currentAutoPresetId === normalized) {
         if (!skipRender) renderAutoGearPresetsControls();
         return;
       }
-      autoGearAutoPresetId = normalized;
+      const nextAutoPresetId = setAutoGearAutoPresetIdBinding(normalized);
       if (persist) {
-        persistAutoGearAutoPresetId(autoGearAutoPresetId);
+        persistAutoGearAutoPresetId(nextAutoPresetId);
       }
       if (!skipRender) {
         renderAutoGearPresetsControls();
@@ -1107,14 +1200,15 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     
     function reconcileAutoGearAutoPresetState(options = {}) {
-      if (!autoGearAutoPresetId) {
+      const currentAutoPresetId = getAutoGearAutoPresetIdBinding();
+      if (!currentAutoPresetId) {
         if (options.persist !== false) {
           persistAutoGearAutoPresetId('');
         }
         return false;
       }
-      const managedExists = autoGearPresets.some(preset => preset.id === autoGearAutoPresetId);
-      const otherExists = autoGearPresets.some(preset => preset.id !== autoGearAutoPresetId);
+      const managedExists = autoGearPresets.some(preset => preset.id === currentAutoPresetId);
+      const otherExists = autoGearPresets.some(preset => preset.id !== currentAutoPresetId);
       if (!managedExists || otherExists) {
         setAutoGearAutoPresetId('', {
           persist: options.persist !== false,
@@ -1128,7 +1222,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     function syncAutoGearAutoPreset(rules) {
       const normalizedRules = Array.isArray(rules) ? rules : [];
       reconcileAutoGearAutoPresetState({ persist: true, skipRender: true });
-      if (!autoGearAutoPresetId) {
+      let currentAutoPresetId = getAutoGearAutoPresetIdBinding();
+      if (!currentAutoPresetId) {
         if (autoGearPresets.length > 0) {
           return false;
         }
@@ -1148,7 +1243,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         setActiveAutoGearPresetId(normalizedPreset.id, { persist: true, skipRender: true });
         return true;
       }
-      const managedIndex = autoGearPresets.findIndex(preset => preset.id === autoGearAutoPresetId);
+      currentAutoPresetId = getAutoGearAutoPresetIdBinding();
+      const managedIndex = autoGearPresets.findIndex(preset => preset.id === currentAutoPresetId);
       if (managedIndex === -1) {
         setAutoGearAutoPresetId('', { persist: true, skipRender: true });
         return false;
@@ -1199,7 +1295,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     
     function alignActiveAutoGearPreset(options = {}) {
       const skipRender = options.skipRender === true;
-      const fingerprint = createAutoGearRulesFingerprint(baseAutoGearRules);
+      const baseRules = getBaseAutoGearRulesBinding();
+      const fingerprint = createAutoGearRulesFingerprint(baseRules);
       const matching = autoGearPresets.find(preset => preset.fingerprint === fingerprint) || null;
       if (matching) {
         setActiveAutoGearPresetId(matching.id, { persist: true, skipRender: true });
@@ -1232,7 +1329,23 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         option.textContent = preset.label;
         autoGearPresetSelect.appendChild(option);
       });
-    
+
+      const currentAutoPresetId = getAutoGearAutoPresetIdBinding();
+      if (currentAutoPresetId) {
+        const autoPreset = getAutoGearPresetById(currentAutoPresetId);
+        if (autoPreset) {
+          const hasOption = Array.from(autoGearPresetSelect.options).some(
+            option => option.value === autoPreset.id
+          );
+          if (!hasOption) {
+            const option = document.createElement('option');
+            option.value = autoPreset.id;
+            option.textContent = autoPreset.label;
+            autoGearPresetSelect.appendChild(option);
+          }
+        }
+      }
+
       const targetValue = activeAutoGearPresetId || '';
       autoGearPresetSelect.value = targetValue;
       if (!targetValue) {
@@ -1245,7 +1358,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (autoGearDeletePresetButton) {
         autoGearDeletePresetButton.disabled = !activeAutoGearPresetId;
       }
-    
+
+      const autoPresetId = getAutoGearAutoPresetIdBinding();
+      if (autoPresetId && autoPresetId === activeAutoGearPresetId) {
+        autoGearPresetSelect.value = autoGearPresetSelect.value || '';
+      }
+
     }
     
     function applyAutoGearBackupVisibility() {
@@ -1386,7 +1504,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
         return;
       }
-      if (autoGearAutoPresetId) {
+      if (getAutoGearAutoPresetIdBinding()) {
         setAutoGearAutoPresetId('', { persist: true, skipRender: true });
       }
       const existingIndex = autoGearPresets.findIndex(preset => preset.id === normalizedPreset.id);
@@ -1420,7 +1538,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         confirmed = window.confirm(confirmMessage);
       }
       if (!confirmed) return;
-      if (autoGearAutoPresetId && autoGearAutoPresetId === activeAutoGearPresetId) {
+      const autoPresetId = getAutoGearAutoPresetIdBinding();
+      if (autoPresetId && autoPresetId === activeAutoGearPresetId) {
         setAutoGearAutoPresetId('', { persist: true, skipRender: true });
       }
       autoGearPresets = autoGearPresets.filter(entry => entry.id !== activeAutoGearPresetId);
@@ -3715,8 +3834,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             .map(option => option.value)
             .filter(Boolean)
         : [];
-      const rawScenarioMode = autoGearScenarioModeSelect
-        ? normalizeAutoGearScenarioLogic(autoGearScenarioModeSelect.value)
+      const scenarioModeSelect = getAutoGearScenarioModeSelectBinding();
+      const rawScenarioMode = scenarioModeSelect
+        ? normalizeAutoGearScenarioLogic(scenarioModeSelect.value)
         : 'all';
       const multiplierInputValue = autoGearScenarioFactorInput ? autoGearScenarioFactorInput.value : '1';
       const normalizedMultiplier = normalizeAutoGearScenarioMultiplier(multiplierInputValue);
@@ -10357,7 +10477,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             if (categoryParts.length) parts.push(categoryParts.join(' – '));
             if (libraryCategory) parts.push(`Device library category: ${libraryCategory}`);
             if (deviceInfo) {
-              let summary = safeGenerateConnectorSummary(deviceInfo);
+              let summary = runSafeGenerateConnectorSummary(deviceInfo);
               summary = summary
                 ? summary.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim()
                 : '';
@@ -14881,7 +15001,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         } else {
           deviceData = devices[info.category]?.[info.name];
         }
-        const connectors = safeGenerateConnectorSummary(deviceData);
+        const connectors = runSafeGenerateConnectorSummary(deviceData);
         const infoHtml =
           (deviceData && deviceData.latencyMs ?
             `<div class="info-box video-conn"><strong>Latency:</strong> ${escapeHtml(String(deviceData.latencyMs))}</div>` : '') +
@@ -15290,7 +15410,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     
         const nameSpan = document.createElement("span");
         nameSpan.textContent = name;
-        let summary = safeGenerateConnectorSummary(deviceData);
+        let summary = runSafeGenerateConnectorSummary(deviceData);
         summary = summary ? summary.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim() : '';
         if (deviceData.notes) {
           summary = summary ? `${summary}; Notes: ${deviceData.notes}` : deviceData.notes;
