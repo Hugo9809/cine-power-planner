@@ -80,7 +80,7 @@
  * Do not trim these notes unless the tooling issue has been resolved.
  */
 
-const CORE_GLOBAL_SCOPE =
+var CORE_PART1_RUNTIME_SCOPE =
   typeof globalThis !== 'undefined'
     ? globalThis
     : typeof window !== 'undefined'
@@ -90,6 +90,26 @@ const CORE_GLOBAL_SCOPE =
         : typeof global !== 'undefined'
           ? global
           : null;
+
+if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initialized) {
+  if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+    console.warn('Cine Power Planner core runtime (part 1) already initialized. Skipping duplicate load.');
+  }
+} else {
+  if (CORE_PART1_RUNTIME_SCOPE) {
+    try {
+      Object.defineProperty(CORE_PART1_RUNTIME_SCOPE, '__cineCorePart1Initialized', {
+        configurable: true,
+        writable: true,
+        value: true,
+      });
+    } catch (corePart1InitError) {
+      CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initialized = true;
+      void corePart1InitError;
+    }
+  }
+
+const CORE_GLOBAL_SCOPE = CORE_PART1_RUNTIME_SCOPE;
 
 function resolveCoreShared() {
   if (CORE_GLOBAL_SCOPE && CORE_GLOBAL_SCOPE.cineCoreShared) {
@@ -15337,5 +15357,7 @@ function getCrewRoleEntries() {
     entries.push({ value: trimmedValue, label: displayLabel });
   });
   return entries.sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: 'base' }));
+}
+
 }
 
