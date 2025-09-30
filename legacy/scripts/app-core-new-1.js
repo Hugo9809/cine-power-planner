@@ -47,6 +47,69 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
 
 var CORE_GLOBAL_SCOPE = CORE_PART1_RUNTIME_SCOPE;
+
+function exposeCoreRuntimeConstant(name, value) {
+  if (typeof name !== 'string' || !name) {
+    return;
+  }
+
+  var scope = CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object'
+    ? CORE_GLOBAL_SCOPE
+    : typeof globalThis !== 'undefined'
+      ? globalThis
+      : typeof window !== 'undefined'
+        ? window
+        : typeof self !== 'undefined'
+          ? self
+          : typeof global !== 'undefined'
+            ? global
+            : null;
+
+  if (!scope || _typeof(scope) !== 'object') {
+    return;
+  }
+
+  var descriptor = null;
+  try {
+    descriptor = Object.getOwnPropertyDescriptor(scope, name);
+  } catch (descriptorError) {
+    descriptor = null;
+    void descriptorError;
+  }
+
+  if (descriptor && descriptor.configurable === !1 && descriptor.writable === !1) {
+    return;
+  }
+
+  try {
+    scope[name] = value;
+    return;
+  } catch (assignError) {
+    void assignError;
+  }
+
+  try {
+    Object.defineProperty(scope, name, {
+      configurable: !0,
+      writable: !0,
+      value: value
+    });
+  } catch (defineError) {
+    if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+      console.warn("Unable to expose " + name + " globally", defineError);
+    }
+  }
+}
+
+function exposeCoreRuntimeConstants(constants) {
+  if (!constants || _typeof(constants) !== 'object') {
+    return;
+  }
+
+  Object.keys(constants).forEach(function (key) {
+    exposeCoreRuntimeConstant(key, constants[key]);
+  });
+}
 function resolveCoreShared() {
   if (CORE_GLOBAL_SCOPE && CORE_GLOBAL_SCOPE.cineCoreShared) {
     return CORE_GLOBAL_SCOPE.cineCoreShared;
@@ -14097,5 +14160,24 @@ function getCrewRoleEntries() {
     });
   });
 }
+
+exposeCoreRuntimeConstants({
+  CORE_GLOBAL_SCOPE: CORE_GLOBAL_SCOPE,
+  CORE_BOOT_QUEUE_KEY: CORE_BOOT_QUEUE_KEY,
+  CORE_BOOT_QUEUE: CORE_BOOT_QUEUE,
+  CORE_SHARED: CORE_SHARED,
+  INSTALL_BANNER_DISMISSED_KEY: INSTALL_BANNER_DISMISSED_KEY,
+  AUTO_GEAR_ANY_MOTOR_TOKEN: AUTO_GEAR_ANY_MOTOR_TOKEN,
+  AUTO_GEAR_BACKUP_RETENTION_MIN_VALUE: AUTO_GEAR_BACKUP_RETENTION_MIN_VALUE,
+  AUTO_GEAR_BACKUP_RETENTION_MAX: AUTO_GEAR_BACKUP_RETENTION_MAX,
+  AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS: AUTO_GEAR_FLEX_MULTI_SELECT_MIN_ROWS,
+  AUTO_GEAR_MONITOR_DEFAULT_TYPES: AUTO_GEAR_MONITOR_DEFAULT_TYPES,
+  GEAR_LIST_CATEGORIES: GEAR_LIST_CATEGORIES,
+  TEMPERATURE_STORAGE_KEY: TEMPERATURE_STORAGE_KEY,
+  TEMPERATURE_UNITS: TEMPERATURE_UNITS,
+  TEMPERATURE_SCENARIOS: TEMPERATURE_SCENARIOS,
+  FEEDBACK_TEMPERATURE_MIN: FEEDBACK_TEMPERATURE_MIN,
+  FEEDBACK_TEMPERATURE_MAX: FEEDBACK_TEMPERATURE_MAX
+});
 
 }
