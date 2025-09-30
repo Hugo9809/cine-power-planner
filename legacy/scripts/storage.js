@@ -19,11 +19,28 @@ function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 var GLOBAL_SCOPE = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : null;
-if (GLOBAL_SCOPE && GLOBAL_SCOPE.__cineStorageInitialized) {
+var __cineIsTestEnvironment = typeof jest !== 'undefined' || typeof process !== 'undefined' && process && typeof process.env === 'object' && process.env && (process.env.NODE_ENV === 'test' || process.env.JEST_WORKER_ID);
+if (GLOBAL_SCOPE && GLOBAL_SCOPE.__cineStorageInitialized && !__cineIsTestEnvironment) {
   if (typeof module !== 'undefined' && module && module.exports && GLOBAL_SCOPE.__cineStorageApi && typeof GLOBAL_SCOPE.__cineStorageApi === 'object') {
     module.exports = GLOBAL_SCOPE.__cineStorageApi;
   }
 } else {
+  if (GLOBAL_SCOPE && GLOBAL_SCOPE.__cineStorageInitialized && __cineIsTestEnvironment) {
+    try {
+      delete GLOBAL_SCOPE.__cineStorageInitialized;
+    } catch (resetInitFlagError) {
+      GLOBAL_SCOPE.__cineStorageInitialized = false;
+      void resetInitFlagError;
+    }
+    try {
+      if (Object.prototype.hasOwnProperty.call(GLOBAL_SCOPE, '__cineStorageApi')) {
+        delete GLOBAL_SCOPE.__cineStorageApi;
+      }
+    } catch (resetApiError) {
+      GLOBAL_SCOPE.__cineStorageApi = null;
+      void resetApiError;
+    }
+  }
   try {
     Object.defineProperty(GLOBAL_SCOPE, '__cineStorageInitialized', { configurable: true, writable: true, value: true });
   } catch (storageInitFlagError) {

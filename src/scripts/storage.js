@@ -16,16 +16,47 @@
             ? self
             : null;
 
+  var isTestEnvironment =
+    (typeof process !== 'undefined' &&
+      process &&
+      typeof process.env === 'object' &&
+      process.env &&
+      (process.env.NODE_ENV === 'test' || process.env.JEST_WORKER_ID)) ||
+    typeof jest !== 'undefined';
+
   if (GLOBAL_SCOPE && GLOBAL_SCOPE.__cineStorageInitialized) {
-    if (
-      typeof module !== 'undefined' &&
-      module.exports &&
-      GLOBAL_SCOPE.__cineStorageApi &&
-      typeof GLOBAL_SCOPE.__cineStorageApi === 'object'
-    ) {
-      module.exports = GLOBAL_SCOPE.__cineStorageApi;
+    if (isTestEnvironment) {
+      try {
+        delete GLOBAL_SCOPE.__cineStorageInitialized;
+      } catch (resetInitFlagError) {
+        GLOBAL_SCOPE.__cineStorageInitialized = false;
+        void resetInitFlagError;
+      }
+
+      try {
+        if (
+          Object.prototype.hasOwnProperty.call(
+            GLOBAL_SCOPE,
+            '__cineStorageApi',
+          )
+        ) {
+          delete GLOBAL_SCOPE.__cineStorageApi;
+        }
+      } catch (resetApiError) {
+        GLOBAL_SCOPE.__cineStorageApi = null;
+        void resetApiError;
+      }
+    } else {
+      if (
+        typeof module !== 'undefined' &&
+        module.exports &&
+        GLOBAL_SCOPE.__cineStorageApi &&
+        typeof GLOBAL_SCOPE.__cineStorageApi === 'object'
+      ) {
+        module.exports = GLOBAL_SCOPE.__cineStorageApi;
+      }
+      return;
     }
-    return;
   }
 
   if (GLOBAL_SCOPE) {
