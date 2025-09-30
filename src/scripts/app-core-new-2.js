@@ -6720,6 +6720,18 @@ var recordFeatureSearchUsage = (id, type, label) => {
   registerFeatureSearchUsage(id, type, label);
 };
 
+const FEATURE_SEARCH_DETAIL_MAX_LENGTH = 140;
+
+const normalizeFeatureSearchDetail = text => {
+  if (typeof text !== 'string') return '';
+  const normalized = text.replace(/\s+/g, ' ').trim();
+  if (!normalized) return '';
+  if (normalized.length <= FEATURE_SEARCH_DETAIL_MAX_LENGTH) {
+    return normalized;
+  }
+  return `${normalized.slice(0, FEATURE_SEARCH_DETAIL_MAX_LENGTH - 1).trimEnd()}…`;
+};
+
 const buildFeatureSearchOptionData = entry => {
   if (!entry) return null;
   const value = typeof entry === 'string' ? entry : entry.display;
@@ -6731,7 +6743,14 @@ const buildFeatureSearchOptionData = entry => {
   const type = typeof entry === 'string' ? 'feature' : entry.type || 'feature';
   const typeKey = FEATURE_SEARCH_TYPE_LABEL_KEYS[type];
   const typeLabel = typeKey ? getLocalizedText(typeKey) : '';
-  const label = typeLabel ? `${typeLabel} · ${baseLabel}` : baseLabel || value;
+  const detail =
+    typeof entry === 'object' && entry !== null
+      ? normalizeFeatureSearchDetail(entry.detail)
+      : '';
+  let label = typeLabel ? `${typeLabel} · ${baseLabel}` : baseLabel || value;
+  if (detail) {
+    label = `${label} — ${detail}`;
+  }
   if (!label || label === value) {
     return { value, label: label || value };
   }
@@ -7484,6 +7503,79 @@ const collectFeatureSearchHelpTexts = element => {
   }
 
   return Array.from(texts);
+};
+
+const buildFeatureEntryDetailText = entry => {
+  if (!entry || typeof entry !== 'object') return '';
+  const base = normalizeFeatureSearchDetail(
+    entry.displayLabel || entry.baseLabel || entry.label || ''
+  ).toLowerCase();
+  const helpCandidates = [];
+  if (Array.isArray(entry.helpTexts) && entry.helpTexts.length) {
+    helpCandidates.push(...entry.helpTexts);
+  }
+  if (entry.element) {
+    collectFeatureSearchHelpTexts(entry.element).forEach(text => {
+      helpCandidates.push(text);
+    });
+  }
+  for (const candidate of helpCandidates) {
+    const detail = normalizeFeatureSearchDetail(candidate);
+    if (detail && (!base || detail.toLowerCase() !== base)) {
+      return detail;
+    }
+  }
+  return '';
+};
+
+const buildHelpSectionDetailText = section => {
+  if (!section) return '';
+  const candidates = [];
+  const summaryAttr = section.getAttribute('data-help-summary');
+  if (summaryAttr) candidates.push(summaryAttr);
+  const summaryEl = section.querySelector('[data-help-summary]');
+  if (summaryEl && summaryEl.textContent) {
+    candidates.push(summaryEl.textContent);
+  }
+  const ariaLabel = section.getAttribute('aria-label');
+  if (ariaLabel) candidates.push(ariaLabel);
+  const firstParagraph = section.querySelector('p');
+  if (firstParagraph && firstParagraph.textContent) {
+    candidates.push(firstParagraph.textContent);
+  }
+  if (!firstParagraph) {
+    const firstListItem = section.querySelector('li');
+    if (firstListItem && firstListItem.textContent) {
+      candidates.push(firstListItem.textContent);
+    }
+  }
+  for (const candidate of candidates) {
+    const detail = normalizeFeatureSearchDetail(candidate);
+    if (detail) return detail;
+  }
+  return '';
+};
+
+const buildDeviceEntryDetailText = entry => {
+  if (!entry || typeof entry !== 'object') return '';
+  const select = entry.select;
+  if (!select) return '';
+  const base = normalizeFeatureSearchDetail(entry.label || '').toLowerCase();
+  const helpTexts = collectFeatureSearchHelpTexts(select);
+  for (const text of helpTexts) {
+    const detail = normalizeFeatureSearchDetail(text);
+    if (detail && (!base || detail.toLowerCase() !== base)) {
+      return detail;
+    }
+  }
+  const contexts = collectFeatureContexts(select, base);
+  if (contexts.length) {
+    const contextDetail = normalizeFeatureSearchDetail(contexts.join(' › '));
+    if (contextDetail && (!base || contextDetail.toLowerCase() !== base)) {
+      return contextDetail;
+    }
+  }
+  return '';
 };
 
 const buildFeatureSearchEntry = (element, { label, keywords = '' }) => {
@@ -8805,7 +8897,8 @@ function populateFeatureSearch() {
         display,
         tokens: Array.isArray(entry.tokens) ? entry.tokens : [],
         value: entry,
-        optionLabel: entry.displayLabel || entry.baseLabel || display
+        optionLabel: entry.displayLabel || entry.baseLabel || display,
+        detail: buildFeatureEntryDetailText(entry)
       };
       registerOption(entryData);
       featureSearchEntries.push(entryData);
@@ -8826,7 +8919,8 @@ function populateFeatureSearch() {
       display,
       tokens: Array.isArray(entry.tokens) ? entry.tokens : [],
       value: entry,
-      optionLabel: entry.displayLabel || entry.baseLabel || display
+      optionLabel: entry.displayLabel || entry.baseLabel || display,
+      detail: buildFeatureEntryDetailText(entry)
     };
     registerOption(entryData);
     featureSearchEntries.push(entryData);
@@ -8853,7 +8947,8 @@ function populateFeatureSearch() {
         display: optionValue,
         tokens,
         value: helpEntry,
-        optionLabel: label
+        optionLabel: label,
+        detail: buildHelpSectionDetailText(section)
       };
       registerOption(helpData);
       featureSearchEntries.push(helpData);
@@ -8886,7 +8981,8 @@ function populateFeatureSearch() {
           display: name,
           tokens,
           value: deviceEntry,
-          optionLabel: name
+          optionLabel: name,
+          detail: buildDeviceEntryDetailText(deviceEntry)
         };
         registerOption(deviceData);
         featureSearchEntries.push(deviceData);
