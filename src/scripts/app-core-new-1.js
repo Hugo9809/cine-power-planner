@@ -321,7 +321,7 @@ const resolveConnectorSummaryGenerator = typeof CORE_SHARED.resolveConnectorSumm
   ? CORE_SHARED.resolveConnectorSummaryGenerator
   : fallbackResolveConnectorSummaryGenerator;
 
-const safeGenerateConnectorSummary = typeof CORE_SHARED.safeGenerateConnectorSummary === 'function'
+var safeGenerateConnectorSummary = typeof CORE_SHARED.safeGenerateConnectorSummary === 'function'
   ? CORE_SHARED.safeGenerateConnectorSummary
   : function safeGenerateConnectorSummary(device) {
       if (!device) {
@@ -718,7 +718,7 @@ var devices = initializeDeviceDatabase();
 const FEEDBACK_TEMPERATURE_MIN = -20;
 const FEEDBACK_TEMPERATURE_MAX = 50;
 var temperatureUnit = TEMPERATURE_UNITS.celsius;
-const autoGearBackupDateFormatter =
+var autoGearBackupDateFormatter =
   typeof Intl !== 'undefined' && typeof Intl.DateTimeFormat === 'function'
     ? new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' })
     : null;
@@ -2928,26 +2928,26 @@ function readAutoGearRulesFromStorage() {
 }
 
 var autoGearRules = readAutoGearRulesFromStorage();
-let baseAutoGearRules = autoGearRules.slice();
-let projectScopedAutoGearRules = null;
-let autoGearBackupRetention = readAutoGearBackupRetentionFromStorage();
-let autoGearBackups = readAutoGearBackupsFromStorage(autoGearBackupRetention);
-let autoGearPresets = readAutoGearPresetsFromStorage();
-let activeAutoGearPresetId = readActiveAutoGearPresetIdFromStorage();
-let autoGearAutoPresetId = readAutoGearAutoPresetIdFromStorage();
-let autoGearBackupsVisible = readAutoGearBackupVisibilityFromStorage();
-let autoGearMonitorDefaults = readAutoGearMonitorDefaultsFromStorage();
+var baseAutoGearRules = autoGearRules.slice();
+var projectScopedAutoGearRules = null;
+var autoGearBackupRetention = readAutoGearBackupRetentionFromStorage();
+var autoGearBackups = readAutoGearBackupsFromStorage(autoGearBackupRetention);
+var autoGearPresets = readAutoGearPresetsFromStorage();
+var activeAutoGearPresetId = readActiveAutoGearPresetIdFromStorage();
+var autoGearAutoPresetId = readAutoGearAutoPresetIdFromStorage();
+var autoGearBackupsVisible = readAutoGearBackupVisibilityFromStorage();
+var autoGearMonitorDefaults = readAutoGearMonitorDefaultsFromStorage();
 persistAutoGearBackupRetention(autoGearBackupRetention);
-let factoryAutoGearRulesSnapshot = null;
-let factoryAutoGearSeedContext = null;
-let autoGearBackupRetentionWarningText = '';
+var factoryAutoGearRulesSnapshot = null;
+var factoryAutoGearSeedContext = null;
+var autoGearBackupRetentionWarningText = '';
 var autoGearEditorDraft = null;
 var autoGearEditorActiveItem = null;
-let autoGearDraftPendingWarnings = null;
-let autoGearSearchQuery = '';
-let autoGearSummaryFocus = 'all';
-let autoGearSummaryLast = null;
-let autoGearScenarioFilter = 'all';
+var autoGearDraftPendingWarnings = null;
+var autoGearSearchQuery = '';
+var autoGearSummaryFocus = 'all';
+var autoGearSummaryLast = null;
+var autoGearScenarioFilter = 'all';
 function getAutoGearBackupEntrySignature(entry) {
   if (!entry || typeof entry !== 'object') return '';
   return stableStringify({
@@ -2969,10 +2969,10 @@ function getAutoGearMonitorDefaultsSnapshot() {
 }
 
 const initialAutoGearRulesSignature = getAutoGearConfigurationSignature(autoGearRules, autoGearMonitorDefaults);
-let autoGearRulesLastBackupSignature = autoGearBackups.length
+var autoGearRulesLastBackupSignature = autoGearBackups.length
   ? getAutoGearConfigurationSignature(autoGearBackups[0].rules, autoGearBackups[0].monitorDefaults)
   : initialAutoGearRulesSignature;
-let autoGearRulesLastPersistedSignature = initialAutoGearRulesSignature;
+var autoGearRulesLastPersistedSignature = initialAutoGearRulesSignature;
 var autoGearRulesDirtySinceBackup =
   autoGearRulesLastPersistedSignature !== autoGearRulesLastBackupSignature;
 
@@ -6356,24 +6356,24 @@ function resolveLanguagePreference(candidate) {
   return { language: DEFAULT_LANGUAGE, matched: false };
 }
 
-const autoGearHeadingElem = document.getElementById('autoGearHeading');
-const autoGearDescriptionElem = document.getElementById('autoGearDescription');
-const autoGearRuleOptionsSection = document.getElementById('autoGearRuleOptions');
-const autoGearRuleOptionsHeading = document.getElementById('autoGearRuleOptionsHeading');
-const autoGearRuleOptionsIntro = document.getElementById('autoGearRuleOptionsIntro');
-const autoGearRuleOptionsList = document.getElementById('autoGearRuleOptionsList');
-const autoGearMonitorDefaultsSection = document.getElementById('autoGearMonitorDefaultsSection');
-const autoGearMonitorDefaultsHeading = document.getElementById('autoGearMonitorDefaultsHeading');
-const autoGearMonitorDefaultsDescription = document.getElementById('autoGearMonitorDefaultsDescription');
-const autoGearDefaultFocusMonitorSelect = document.getElementById('autoGearDefaultFocusMonitor');
-const autoGearDefaultHandheldMonitorSelect = document.getElementById('autoGearDefaultHandheldMonitor');
-const autoGearDefaultComboMonitorSelect = document.getElementById('autoGearDefaultComboMonitor');
-const autoGearDefaultDirectorMonitorSelect = document.getElementById('autoGearDefaultDirectorMonitor');
-const autoGearDefaultFocusMonitorLabel = document.getElementById('autoGearDefaultFocusMonitorLabel');
-const autoGearDefaultHandheldMonitorLabel = document.getElementById('autoGearDefaultHandheldMonitorLabel');
-const autoGearDefaultComboMonitorLabel = document.getElementById('autoGearDefaultComboMonitorLabel');
-const autoGearDefaultDirectorMonitorLabel = document.getElementById('autoGearDefaultDirectorMonitorLabel');
-const autoGearMonitorDefaultControls = [
+var autoGearHeadingElem = document.getElementById('autoGearHeading');
+var autoGearDescriptionElem = document.getElementById('autoGearDescription');
+var autoGearRuleOptionsSection = document.getElementById('autoGearRuleOptions');
+var autoGearRuleOptionsHeading = document.getElementById('autoGearRuleOptionsHeading');
+var autoGearRuleOptionsIntro = document.getElementById('autoGearRuleOptionsIntro');
+var autoGearRuleOptionsList = document.getElementById('autoGearRuleOptionsList');
+var autoGearMonitorDefaultsSection = document.getElementById('autoGearMonitorDefaultsSection');
+var autoGearMonitorDefaultsHeading = document.getElementById('autoGearMonitorDefaultsHeading');
+var autoGearMonitorDefaultsDescription = document.getElementById('autoGearMonitorDefaultsDescription');
+var autoGearDefaultFocusMonitorSelect = document.getElementById('autoGearDefaultFocusMonitor');
+var autoGearDefaultHandheldMonitorSelect = document.getElementById('autoGearDefaultHandheldMonitor');
+var autoGearDefaultComboMonitorSelect = document.getElementById('autoGearDefaultComboMonitor');
+var autoGearDefaultDirectorMonitorSelect = document.getElementById('autoGearDefaultDirectorMonitor');
+var autoGearDefaultFocusMonitorLabel = document.getElementById('autoGearDefaultFocusMonitorLabel');
+var autoGearDefaultHandheldMonitorLabel = document.getElementById('autoGearDefaultHandheldMonitorLabel');
+var autoGearDefaultComboMonitorLabel = document.getElementById('autoGearDefaultComboMonitorLabel');
+var autoGearDefaultDirectorMonitorLabel = document.getElementById('autoGearDefaultDirectorMonitorLabel');
+var autoGearMonitorDefaultControls = [
   {
     key: 'focus',
     select: autoGearDefaultFocusMonitorSelect,
@@ -6485,35 +6485,35 @@ function renderAutoGearRuleOptionsContent(lang) {
   const hasItems = autoGearRuleOptionsList.children.length > 0;
   autoGearRuleOptionsSection.hidden = !hasItems;
 }
-const autoGearSearchInput = document.getElementById('autoGearSearch');
-const autoGearSearchLabel = document.getElementById('autoGearSearchLabel');
-const autoGearFilterScenarioLabel = document.getElementById('autoGearFilterScenarioLabel');
-const autoGearFilterScenarioSelect = document.getElementById('autoGearFilterScenario');
-const autoGearFilterClearButton = document.getElementById('autoGearFilterClear');
-const autoGearSummarySection = document.getElementById('autoGearSummary');
-const autoGearSummaryHeadingElem = document.getElementById('autoGearSummaryHeading');
-const autoGearSummaryDescriptionElem = document.getElementById('autoGearSummaryDescription');
-const autoGearSummaryCards = document.getElementById('autoGearSummaryCards');
-const autoGearSummaryDetails = document.getElementById('autoGearSummaryDetails');
+var autoGearSearchInput = document.getElementById('autoGearSearch');
+var autoGearSearchLabel = document.getElementById('autoGearSearchLabel');
+var autoGearFilterScenarioLabel = document.getElementById('autoGearFilterScenarioLabel');
+var autoGearFilterScenarioSelect = document.getElementById('autoGearFilterScenario');
+var autoGearFilterClearButton = document.getElementById('autoGearFilterClear');
+var autoGearSummarySection = document.getElementById('autoGearSummary');
+var autoGearSummaryHeadingElem = document.getElementById('autoGearSummaryHeading');
+var autoGearSummaryDescriptionElem = document.getElementById('autoGearSummaryDescription');
+var autoGearSummaryCards = document.getElementById('autoGearSummaryCards');
+var autoGearSummaryDetails = document.getElementById('autoGearSummaryDetails');
 var autoGearRulesList = document.getElementById('autoGearRulesList');
-const autoGearPresetDescription = document.getElementById('autoGearPresetDescription');
-const autoGearPresetLabel = document.getElementById('autoGearPresetLabel');
+var autoGearPresetDescription = document.getElementById('autoGearPresetDescription');
+var autoGearPresetLabel = document.getElementById('autoGearPresetLabel');
 var autoGearPresetSelect = document.getElementById('autoGearPresetSelect');
 var autoGearSavePresetButton = document.getElementById('autoGearSavePreset');
 var autoGearDeletePresetButton = document.getElementById('autoGearDeletePreset');
 var autoGearAddRuleBtn = document.getElementById('autoGearAddRule');
 var autoGearResetFactoryButton = document.getElementById('autoGearResetFactory');
 var autoGearEditor = document.getElementById('autoGearEditor');
-const autoGearConditionControls = document.getElementById('autoGearConditionControls');
-const autoGearConditionSelectLabel = document.getElementById('autoGearConditionSelectLabel');
+var autoGearConditionControls = document.getElementById('autoGearConditionControls');
+var autoGearConditionSelectLabel = document.getElementById('autoGearConditionSelectLabel');
 var autoGearConditionSelect = document.getElementById('autoGearConditionSelect');
 var autoGearConditionAddButton = document.getElementById('autoGearConditionAdd');
 var autoGearConditionList = document.getElementById('autoGearConditionList');
-const autoGearAlwaysLabel = document.getElementById('autoGearAlwaysLabel');
-const autoGearAlwaysHelp = document.getElementById('autoGearAlwaysHelp');
-const autoGearCameraWeightSection = document.getElementById('autoGearCondition-cameraWeight');
+var autoGearAlwaysLabel = document.getElementById('autoGearAlwaysLabel');
+var autoGearAlwaysHelp = document.getElementById('autoGearAlwaysHelp');
+var autoGearCameraWeightSection = document.getElementById('autoGearCondition-cameraWeight');
 
-const autoGearConditionSections = {
+var autoGearConditionSections = {
   always: document.getElementById('autoGearCondition-always'),
   scenarios: document.getElementById('autoGearCondition-scenarios'),
   shootingDays: document.getElementById('autoGearCondition-shootingDays'),
@@ -6537,7 +6537,7 @@ const autoGearConditionSections = {
   distance: document.getElementById('autoGearCondition-distance'),
 };
 
-const autoGearConditionAddShortcuts = {
+var autoGearConditionAddShortcuts = {
   always: autoGearConditionSections.always?.querySelector('.auto-gear-condition-add') || null,
   scenarios: autoGearConditionSections.scenarios?.querySelector('.auto-gear-condition-add') || null,
   shootingDays: autoGearConditionSections.shootingDays?.querySelector('.auto-gear-condition-add') || null,
@@ -6561,7 +6561,7 @@ const autoGearConditionAddShortcuts = {
   distance: autoGearConditionSections.distance?.querySelector('.auto-gear-condition-add') || null,
 };
 
-const autoGearConditionRemoveButtons = {
+var autoGearConditionRemoveButtons = {
   always: autoGearConditionSections.always?.querySelector('.auto-gear-condition-remove') || null,
   scenarios: autoGearConditionSections.scenarios?.querySelector('.auto-gear-condition-remove') || null,
   shootingDays: autoGearConditionSections.shootingDays?.querySelector('.auto-gear-condition-remove') || null,
@@ -6595,97 +6595,97 @@ if (autoGearAddRuleBtn) {
 if (autoGearEditor) {
   autoGearEditor.setAttribute('aria-hidden', autoGearEditor.hidden ? 'true' : 'false');
 }
-const autoGearRuleNameInput = document.getElementById('autoGearRuleName');
-const autoGearRuleNameLabel = document.getElementById('autoGearRuleNameLabel');
-const autoGearScenariosSelect = document.getElementById('autoGearScenarios');
-const autoGearScenariosLabel = document.getElementById('autoGearScenariosLabel');
-const autoGearScenarioModeSelect = document.getElementById('autoGearScenarioMode');
-const autoGearScenarioModeLabel = document.getElementById('autoGearScenarioModeLabel');
-const autoGearScenarioMultiplierContainer = document.getElementById('autoGearScenarioMultiplierContainer');
-const autoGearScenarioBaseSelect = document.getElementById('autoGearScenarioBase');
-const autoGearScenarioBaseLabel = document.getElementById('autoGearScenarioBaseLabel');
-const autoGearScenarioFactorInput = document.getElementById('autoGearScenarioFactor');
-const autoGearScenarioFactorLabel = document.getElementById('autoGearScenarioFactorLabel');
-const autoGearShootingDaysMode = document.getElementById('autoGearShootingDaysMode');
-const autoGearShootingDaysInput = document.getElementById('autoGearShootingDays');
-const autoGearShootingDaysLabel = document.getElementById('autoGearShootingDaysLabel');
-const autoGearShootingDaysHelp = document.getElementById('autoGearShootingDaysHelp');
-const autoGearShootingDaysValueLabel = document.getElementById('autoGearShootingDaysCountLabel');
-const autoGearMatteboxSelect = document.getElementById('autoGearMattebox');
-const autoGearMatteboxLabel = document.getElementById('autoGearMatteboxLabel');
-const autoGearMatteboxModeLabel = document.getElementById('autoGearMatteboxModeLabel');
-const autoGearMatteboxModeSelect = document.getElementById('autoGearMatteboxMode');
-const autoGearCameraHandleSelect = document.getElementById('autoGearCameraHandle');
-const autoGearCameraHandleLabel = document.getElementById('autoGearCameraHandleLabel');
-const autoGearCameraHandleModeLabel = document.getElementById('autoGearCameraHandleModeLabel');
-const autoGearCameraHandleModeSelect = document.getElementById('autoGearCameraHandleMode');
-const autoGearViewfinderExtensionSelect = document.getElementById('autoGearViewfinderExtension');
-const autoGearViewfinderExtensionLabel = document.getElementById('autoGearViewfinderExtensionLabel');
-const autoGearViewfinderExtensionModeLabel = document.getElementById('autoGearViewfinderExtensionModeLabel');
-const autoGearViewfinderExtensionModeSelect = document.getElementById('autoGearViewfinderExtensionMode');
-const autoGearDeliveryResolutionSelect = document.getElementById('autoGearDeliveryResolution');
-const autoGearDeliveryResolutionLabel = document.getElementById('autoGearDeliveryResolutionLabel');
-const autoGearDeliveryResolutionModeLabel = document.getElementById('autoGearDeliveryResolutionModeLabel');
-const autoGearDeliveryResolutionModeSelect = document.getElementById('autoGearDeliveryResolutionMode');
-const autoGearVideoDistributionSelect = document.getElementById('autoGearVideoDistribution');
-const autoGearVideoDistributionLabel = document.getElementById('autoGearVideoDistributionLabel');
-const autoGearVideoDistributionModeLabel = document.getElementById('autoGearVideoDistributionModeLabel');
-const autoGearVideoDistributionModeSelect = document.getElementById('autoGearVideoDistributionMode');
-const autoGearCameraSelect = document.getElementById('autoGearCamera');
-const autoGearCameraLabel = document.getElementById('autoGearCameraLabel');
-const autoGearCameraModeLabel = document.getElementById('autoGearCameraModeLabel');
-const autoGearCameraModeSelect = document.getElementById('autoGearCameraMode');
-const autoGearCameraWeightLabel = document.getElementById('autoGearCameraWeightLabel');
-const autoGearCameraWeightOperator = document.getElementById('autoGearCameraWeightOperator');
-const autoGearCameraWeightOperatorLabel = document.getElementById('autoGearCameraWeightOperatorLabel');
-const autoGearCameraWeightValueInput = document.getElementById('autoGearCameraWeightValue');
-const autoGearCameraWeightValueLabel = document.getElementById('autoGearCameraWeightValueLabel');
-const autoGearCameraWeightHelp = document.getElementById('autoGearCameraWeightHelp');
-const autoGearMonitorSelect = document.getElementById('autoGearMonitor');
-const autoGearMonitorLabel = document.getElementById('autoGearMonitorLabel');
-const autoGearMonitorModeLabel = document.getElementById('autoGearMonitorModeLabel');
-const autoGearMonitorModeSelect = document.getElementById('autoGearMonitorMode');
-const autoGearTripodHeadBrandSelect = document.getElementById('autoGearTripodHeadBrand');
-const autoGearTripodHeadBrandLabel = document.getElementById('autoGearTripodHeadBrandLabel');
-const autoGearTripodHeadBrandModeLabel = document.getElementById('autoGearTripodHeadBrandModeLabel');
-const autoGearTripodHeadBrandModeSelect = document.getElementById('autoGearTripodHeadBrandMode');
-const autoGearTripodBowlSelect = document.getElementById('autoGearTripodBowl');
-const autoGearTripodBowlLabel = document.getElementById('autoGearTripodBowlLabel');
-const autoGearTripodBowlModeLabel = document.getElementById('autoGearTripodBowlModeLabel');
-const autoGearTripodBowlModeSelect = document.getElementById('autoGearTripodBowlMode');
-const autoGearTripodTypesSelect = document.getElementById('autoGearTripodTypes');
-const autoGearTripodTypesLabel = document.getElementById('autoGearTripodTypesLabel');
-const autoGearTripodTypesModeLabel = document.getElementById('autoGearTripodTypesModeLabel');
-const autoGearTripodTypesModeSelect = document.getElementById('autoGearTripodTypesMode');
-const autoGearTripodSpreaderSelect = document.getElementById('autoGearTripodSpreader');
-const autoGearTripodSpreaderLabel = document.getElementById('autoGearTripodSpreaderLabel');
-const autoGearTripodSpreaderModeLabel = document.getElementById('autoGearTripodSpreaderModeLabel');
-const autoGearTripodSpreaderModeSelect = document.getElementById('autoGearTripodSpreaderMode');
-const autoGearCrewPresentSelect = document.getElementById('autoGearCrewPresent');
-const autoGearCrewPresentLabel = document.getElementById('autoGearCrewPresentLabel');
-const autoGearCrewPresentModeLabel = document.getElementById('autoGearCrewPresentModeLabel');
-const autoGearCrewPresentModeSelect = document.getElementById('autoGearCrewPresentMode');
-const autoGearCrewAbsentSelect = document.getElementById('autoGearCrewAbsent');
-const autoGearCrewAbsentLabel = document.getElementById('autoGearCrewAbsentLabel');
-const autoGearCrewAbsentModeLabel = document.getElementById('autoGearCrewAbsentModeLabel');
-const autoGearCrewAbsentModeSelect = document.getElementById('autoGearCrewAbsentMode');
-const autoGearWirelessSelect = document.getElementById('autoGearWireless');
-const autoGearWirelessLabel = document.getElementById('autoGearWirelessLabel');
-const autoGearWirelessModeLabel = document.getElementById('autoGearWirelessModeLabel');
-const autoGearWirelessModeSelect = document.getElementById('autoGearWirelessMode');
-const autoGearMotorsSelect = document.getElementById('autoGearMotors');
-const autoGearMotorsLabel = document.getElementById('autoGearMotorsLabel');
-const autoGearMotorsModeLabel = document.getElementById('autoGearMotorsModeLabel');
-const autoGearMotorsModeSelect = document.getElementById('autoGearMotorsMode');
-const autoGearControllersSelect = document.getElementById('autoGearControllers');
-const autoGearControllersLabel = document.getElementById('autoGearControllersLabel');
-const autoGearControllersModeLabel = document.getElementById('autoGearControllersModeLabel');
-const autoGearControllersModeSelect = document.getElementById('autoGearControllersMode');
-const autoGearDistanceSelect = document.getElementById('autoGearDistance');
-const autoGearDistanceLabel = document.getElementById('autoGearDistanceLabel');
-const autoGearDistanceModeLabel = document.getElementById('autoGearDistanceModeLabel');
-const autoGearDistanceModeSelect = document.getElementById('autoGearDistanceMode');
-const autoGearConditionLabels = {
+var autoGearRuleNameInput = document.getElementById('autoGearRuleName');
+var autoGearRuleNameLabel = document.getElementById('autoGearRuleNameLabel');
+var autoGearScenariosSelect = document.getElementById('autoGearScenarios');
+var autoGearScenariosLabel = document.getElementById('autoGearScenariosLabel');
+var autoGearScenarioModeSelect = document.getElementById('autoGearScenarioMode');
+var autoGearScenarioModeLabel = document.getElementById('autoGearScenarioModeLabel');
+var autoGearScenarioMultiplierContainer = document.getElementById('autoGearScenarioMultiplierContainer');
+var autoGearScenarioBaseSelect = document.getElementById('autoGearScenarioBase');
+var autoGearScenarioBaseLabel = document.getElementById('autoGearScenarioBaseLabel');
+var autoGearScenarioFactorInput = document.getElementById('autoGearScenarioFactor');
+var autoGearScenarioFactorLabel = document.getElementById('autoGearScenarioFactorLabel');
+var autoGearShootingDaysMode = document.getElementById('autoGearShootingDaysMode');
+var autoGearShootingDaysInput = document.getElementById('autoGearShootingDays');
+var autoGearShootingDaysLabel = document.getElementById('autoGearShootingDaysLabel');
+var autoGearShootingDaysHelp = document.getElementById('autoGearShootingDaysHelp');
+var autoGearShootingDaysValueLabel = document.getElementById('autoGearShootingDaysCountLabel');
+var autoGearMatteboxSelect = document.getElementById('autoGearMattebox');
+var autoGearMatteboxLabel = document.getElementById('autoGearMatteboxLabel');
+var autoGearMatteboxModeLabel = document.getElementById('autoGearMatteboxModeLabel');
+var autoGearMatteboxModeSelect = document.getElementById('autoGearMatteboxMode');
+var autoGearCameraHandleSelect = document.getElementById('autoGearCameraHandle');
+var autoGearCameraHandleLabel = document.getElementById('autoGearCameraHandleLabel');
+var autoGearCameraHandleModeLabel = document.getElementById('autoGearCameraHandleModeLabel');
+var autoGearCameraHandleModeSelect = document.getElementById('autoGearCameraHandleMode');
+var autoGearViewfinderExtensionSelect = document.getElementById('autoGearViewfinderExtension');
+var autoGearViewfinderExtensionLabel = document.getElementById('autoGearViewfinderExtensionLabel');
+var autoGearViewfinderExtensionModeLabel = document.getElementById('autoGearViewfinderExtensionModeLabel');
+var autoGearViewfinderExtensionModeSelect = document.getElementById('autoGearViewfinderExtensionMode');
+var autoGearDeliveryResolutionSelect = document.getElementById('autoGearDeliveryResolution');
+var autoGearDeliveryResolutionLabel = document.getElementById('autoGearDeliveryResolutionLabel');
+var autoGearDeliveryResolutionModeLabel = document.getElementById('autoGearDeliveryResolutionModeLabel');
+var autoGearDeliveryResolutionModeSelect = document.getElementById('autoGearDeliveryResolutionMode');
+var autoGearVideoDistributionSelect = document.getElementById('autoGearVideoDistribution');
+var autoGearVideoDistributionLabel = document.getElementById('autoGearVideoDistributionLabel');
+var autoGearVideoDistributionModeLabel = document.getElementById('autoGearVideoDistributionModeLabel');
+var autoGearVideoDistributionModeSelect = document.getElementById('autoGearVideoDistributionMode');
+var autoGearCameraSelect = document.getElementById('autoGearCamera');
+var autoGearCameraLabel = document.getElementById('autoGearCameraLabel');
+var autoGearCameraModeLabel = document.getElementById('autoGearCameraModeLabel');
+var autoGearCameraModeSelect = document.getElementById('autoGearCameraMode');
+var autoGearCameraWeightLabel = document.getElementById('autoGearCameraWeightLabel');
+var autoGearCameraWeightOperator = document.getElementById('autoGearCameraWeightOperator');
+var autoGearCameraWeightOperatorLabel = document.getElementById('autoGearCameraWeightOperatorLabel');
+var autoGearCameraWeightValueInput = document.getElementById('autoGearCameraWeightValue');
+var autoGearCameraWeightValueLabel = document.getElementById('autoGearCameraWeightValueLabel');
+var autoGearCameraWeightHelp = document.getElementById('autoGearCameraWeightHelp');
+var autoGearMonitorSelect = document.getElementById('autoGearMonitor');
+var autoGearMonitorLabel = document.getElementById('autoGearMonitorLabel');
+var autoGearMonitorModeLabel = document.getElementById('autoGearMonitorModeLabel');
+var autoGearMonitorModeSelect = document.getElementById('autoGearMonitorMode');
+var autoGearTripodHeadBrandSelect = document.getElementById('autoGearTripodHeadBrand');
+var autoGearTripodHeadBrandLabel = document.getElementById('autoGearTripodHeadBrandLabel');
+var autoGearTripodHeadBrandModeLabel = document.getElementById('autoGearTripodHeadBrandModeLabel');
+var autoGearTripodHeadBrandModeSelect = document.getElementById('autoGearTripodHeadBrandMode');
+var autoGearTripodBowlSelect = document.getElementById('autoGearTripodBowl');
+var autoGearTripodBowlLabel = document.getElementById('autoGearTripodBowlLabel');
+var autoGearTripodBowlModeLabel = document.getElementById('autoGearTripodBowlModeLabel');
+var autoGearTripodBowlModeSelect = document.getElementById('autoGearTripodBowlMode');
+var autoGearTripodTypesSelect = document.getElementById('autoGearTripodTypes');
+var autoGearTripodTypesLabel = document.getElementById('autoGearTripodTypesLabel');
+var autoGearTripodTypesModeLabel = document.getElementById('autoGearTripodTypesModeLabel');
+var autoGearTripodTypesModeSelect = document.getElementById('autoGearTripodTypesMode');
+var autoGearTripodSpreaderSelect = document.getElementById('autoGearTripodSpreader');
+var autoGearTripodSpreaderLabel = document.getElementById('autoGearTripodSpreaderLabel');
+var autoGearTripodSpreaderModeLabel = document.getElementById('autoGearTripodSpreaderModeLabel');
+var autoGearTripodSpreaderModeSelect = document.getElementById('autoGearTripodSpreaderMode');
+var autoGearCrewPresentSelect = document.getElementById('autoGearCrewPresent');
+var autoGearCrewPresentLabel = document.getElementById('autoGearCrewPresentLabel');
+var autoGearCrewPresentModeLabel = document.getElementById('autoGearCrewPresentModeLabel');
+var autoGearCrewPresentModeSelect = document.getElementById('autoGearCrewPresentMode');
+var autoGearCrewAbsentSelect = document.getElementById('autoGearCrewAbsent');
+var autoGearCrewAbsentLabel = document.getElementById('autoGearCrewAbsentLabel');
+var autoGearCrewAbsentModeLabel = document.getElementById('autoGearCrewAbsentModeLabel');
+var autoGearCrewAbsentModeSelect = document.getElementById('autoGearCrewAbsentMode');
+var autoGearWirelessSelect = document.getElementById('autoGearWireless');
+var autoGearWirelessLabel = document.getElementById('autoGearWirelessLabel');
+var autoGearWirelessModeLabel = document.getElementById('autoGearWirelessModeLabel');
+var autoGearWirelessModeSelect = document.getElementById('autoGearWirelessMode');
+var autoGearMotorsSelect = document.getElementById('autoGearMotors');
+var autoGearMotorsLabel = document.getElementById('autoGearMotorsLabel');
+var autoGearMotorsModeLabel = document.getElementById('autoGearMotorsModeLabel');
+var autoGearMotorsModeSelect = document.getElementById('autoGearMotorsMode');
+var autoGearControllersSelect = document.getElementById('autoGearControllers');
+var autoGearControllersLabel = document.getElementById('autoGearControllersLabel');
+var autoGearControllersModeLabel = document.getElementById('autoGearControllersModeLabel');
+var autoGearControllersModeSelect = document.getElementById('autoGearControllersMode');
+var autoGearDistanceSelect = document.getElementById('autoGearDistance');
+var autoGearDistanceLabel = document.getElementById('autoGearDistanceLabel');
+var autoGearDistanceModeLabel = document.getElementById('autoGearDistanceModeLabel');
+var autoGearDistanceModeSelect = document.getElementById('autoGearDistanceMode');
+var autoGearConditionLabels = {
   always: autoGearAlwaysLabel,
   scenarios: autoGearScenariosLabel,
   shootingDays: autoGearShootingDaysLabel,
@@ -6708,7 +6708,7 @@ const autoGearConditionLabels = {
   controllers: autoGearControllersLabel,
   distance: autoGearDistanceLabel,
 };
-const autoGearConditionSelects = {
+var autoGearConditionSelects = {
   always: null,
   scenarios: autoGearScenariosSelect,
   shootingDays: autoGearShootingDaysInput,
@@ -6731,7 +6731,7 @@ const autoGearConditionSelects = {
   controllers: autoGearControllersSelect,
   distance: autoGearDistanceSelect,
 };
-const autoGearConditionLogicLabels = {
+var autoGearConditionLogicLabels = {
   mattebox: autoGearMatteboxModeLabel,
   cameraHandle: autoGearCameraHandleModeLabel,
   viewfinderExtension: autoGearViewfinderExtensionModeLabel,
@@ -6750,7 +6750,7 @@ const autoGearConditionLogicLabels = {
   controllers: autoGearControllersModeLabel,
   distance: autoGearDistanceModeLabel,
 };
-const autoGearConditionLogicSelects = {
+var autoGearConditionLogicSelects = {
   mattebox: autoGearMatteboxModeSelect,
   cameraHandle: autoGearCameraHandleModeSelect,
   viewfinderExtension: autoGearViewfinderExtensionModeSelect,
@@ -13648,7 +13648,7 @@ if (storageOpenBackupTabButton) {
   });
 }
 
-const autoGearConditionConfigs = AUTO_GEAR_CONDITION_KEYS.reduce((acc, key) => {
+var autoGearConditionConfigs = AUTO_GEAR_CONDITION_KEYS.reduce((acc, key) => {
   const section = autoGearConditionSections[key] || null;
   acc[key] = {
     key,
@@ -13668,7 +13668,7 @@ const autoGearConditionConfigs = AUTO_GEAR_CONDITION_KEYS.reduce((acc, key) => {
 const createDeferredAutoGearRefresher = functionName => selected =>
   callCoreFunctionIfAvailable(functionName, [selected], { defer: true });
 
-const autoGearConditionRefreshers = {
+var autoGearConditionRefreshers = {
   always: null,
   scenarios: refreshAutoGearScenarioOptions,
   shootingDays: refreshAutoGearShootingDaysValue,
@@ -13691,7 +13691,7 @@ const autoGearConditionRefreshers = {
   controllers: createDeferredAutoGearRefresher('refreshAutoGearControllersOptions'),
   distance: createDeferredAutoGearRefresher('refreshAutoGearDistanceOptions'),
 };
-const autoGearActiveConditions = new Set();
+var autoGearActiveConditions = new Set();
 
 function getAutoGearConditionConfig(key) {
   if (!key) return null;
@@ -14248,50 +14248,50 @@ if (autoGearCameraWeightValueInput) {
   autoGearCameraWeightValueInput.addEventListener('change', handleCameraWeightValueInput);
   autoGearCameraWeightValueInput.addEventListener('blur', handleCameraWeightValueInput);
 }
-const autoGearAddItemsHeading = document.getElementById('autoGearAddItemsHeading');
-const autoGearAddItemLabel = document.getElementById('autoGearAddItemLabel');
-const autoGearAddCategoryLabel = document.getElementById('autoGearAddCategoryLabel');
-const autoGearAddQuantityLabel = document.getElementById('autoGearAddQuantityLabel');
-const autoGearAddScreenSizeLabel = document.getElementById('autoGearAddScreenSizeLabel');
-const autoGearAddSelectorTypeLabel = document.getElementById('autoGearAddSelectorTypeLabel');
-const autoGearAddSelectorDefaultLabel = document.getElementById('autoGearAddSelectorDefaultLabel');
-const autoGearAddNotesLabel = document.getElementById('autoGearAddNotesLabel');
-const autoGearAddNameInput = document.getElementById('autoGearAddName');
+var autoGearAddItemsHeading = document.getElementById('autoGearAddItemsHeading');
+var autoGearAddItemLabel = document.getElementById('autoGearAddItemLabel');
+var autoGearAddCategoryLabel = document.getElementById('autoGearAddCategoryLabel');
+var autoGearAddQuantityLabel = document.getElementById('autoGearAddQuantityLabel');
+var autoGearAddScreenSizeLabel = document.getElementById('autoGearAddScreenSizeLabel');
+var autoGearAddSelectorTypeLabel = document.getElementById('autoGearAddSelectorTypeLabel');
+var autoGearAddSelectorDefaultLabel = document.getElementById('autoGearAddSelectorDefaultLabel');
+var autoGearAddNotesLabel = document.getElementById('autoGearAddNotesLabel');
+var autoGearAddNameInput = document.getElementById('autoGearAddName');
 var autoGearAddCategorySelect = document.getElementById('autoGearAddCategory');
-const autoGearAddQuantityInput = document.getElementById('autoGearAddQuantity');
-const autoGearAddScreenSizeInput = document.getElementById('autoGearAddScreenSize');
+var autoGearAddQuantityInput = document.getElementById('autoGearAddQuantity');
+var autoGearAddScreenSizeInput = document.getElementById('autoGearAddScreenSize');
 var autoGearAddSelectorTypeSelect = document.getElementById('autoGearAddSelectorType');
 var autoGearAddSelectorDefaultInput = document.getElementById('autoGearAddSelectorDefault');
-const autoGearAddNotesInput = document.getElementById('autoGearAddNotes');
+var autoGearAddNotesInput = document.getElementById('autoGearAddNotes');
 var autoGearAddItemButton = document.getElementById('autoGearAddItemButton');
-const autoGearAddList = document.getElementById('autoGearAddList');
-const autoGearRemoveItemsHeading = document.getElementById('autoGearRemoveItemsHeading');
-const autoGearRemoveItemLabel = document.getElementById('autoGearRemoveItemLabel');
-const autoGearRemoveCategoryLabel = document.getElementById('autoGearRemoveCategoryLabel');
-const autoGearRemoveQuantityLabel = document.getElementById('autoGearRemoveQuantityLabel');
-const autoGearRemoveScreenSizeLabel = document.getElementById('autoGearRemoveScreenSizeLabel');
-const autoGearRemoveSelectorTypeLabel = document.getElementById('autoGearRemoveSelectorTypeLabel');
-const autoGearRemoveSelectorDefaultLabel = document.getElementById('autoGearRemoveSelectorDefaultLabel');
-const autoGearRemoveNotesLabel = document.getElementById('autoGearRemoveNotesLabel');
-const autoGearRemoveNameInput = document.getElementById('autoGearRemoveName');
+var autoGearAddList = document.getElementById('autoGearAddList');
+var autoGearRemoveItemsHeading = document.getElementById('autoGearRemoveItemsHeading');
+var autoGearRemoveItemLabel = document.getElementById('autoGearRemoveItemLabel');
+var autoGearRemoveCategoryLabel = document.getElementById('autoGearRemoveCategoryLabel');
+var autoGearRemoveQuantityLabel = document.getElementById('autoGearRemoveQuantityLabel');
+var autoGearRemoveScreenSizeLabel = document.getElementById('autoGearRemoveScreenSizeLabel');
+var autoGearRemoveSelectorTypeLabel = document.getElementById('autoGearRemoveSelectorTypeLabel');
+var autoGearRemoveSelectorDefaultLabel = document.getElementById('autoGearRemoveSelectorDefaultLabel');
+var autoGearRemoveNotesLabel = document.getElementById('autoGearRemoveNotesLabel');
+var autoGearRemoveNameInput = document.getElementById('autoGearRemoveName');
 var autoGearRemoveCategorySelect = document.getElementById('autoGearRemoveCategory');
-const autoGearRemoveQuantityInput = document.getElementById('autoGearRemoveQuantity');
-const autoGearRemoveScreenSizeInput = document.getElementById('autoGearRemoveScreenSize');
+var autoGearRemoveQuantityInput = document.getElementById('autoGearRemoveQuantity');
+var autoGearRemoveScreenSizeInput = document.getElementById('autoGearRemoveScreenSize');
 var autoGearRemoveSelectorTypeSelect = document.getElementById('autoGearRemoveSelectorType');
 var autoGearRemoveSelectorDefaultInput = document.getElementById('autoGearRemoveSelectorDefault');
-const autoGearRemoveNotesInput = document.getElementById('autoGearRemoveNotes');
+var autoGearRemoveNotesInput = document.getElementById('autoGearRemoveNotes');
 var autoGearRemoveItemButton = document.getElementById('autoGearRemoveItemButton');
-const autoGearRemoveList = document.getElementById('autoGearRemoveList');
-const autoGearDraftImpactContainer = document.getElementById('autoGearDraftImpact');
-const autoGearDraftImpactHeading = document.getElementById('autoGearDraftImpactHeading');
-const autoGearDraftImpactDescription = document.getElementById('autoGearDraftImpactDescription');
-const autoGearDraftImpactList = document.getElementById('autoGearDraftImpactList');
-const autoGearDraftWarningContainer = document.getElementById('autoGearDraftWarningContainer');
-const autoGearDraftWarningHeading = document.getElementById('autoGearDraftWarningHeading');
-const autoGearDraftWarningList = document.getElementById('autoGearDraftWarningList');
+var autoGearRemoveList = document.getElementById('autoGearRemoveList');
+var autoGearDraftImpactContainer = document.getElementById('autoGearDraftImpact');
+var autoGearDraftImpactHeading = document.getElementById('autoGearDraftImpactHeading');
+var autoGearDraftImpactDescription = document.getElementById('autoGearDraftImpactDescription');
+var autoGearDraftImpactList = document.getElementById('autoGearDraftImpactList');
+var autoGearDraftWarningContainer = document.getElementById('autoGearDraftWarningContainer');
+var autoGearDraftWarningHeading = document.getElementById('autoGearDraftWarningHeading');
+var autoGearDraftWarningList = document.getElementById('autoGearDraftWarningList');
 var autoGearSaveRuleButton = document.getElementById('autoGearSaveRule');
 var autoGearCancelEditButton = document.getElementById('autoGearCancelEdit');
-const autoGearItemCatalog = document.getElementById('autoGearItemCatalog');
+var autoGearItemCatalog = document.getElementById('autoGearItemCatalog');
 
 function enableAutoGearMultiSelectToggle(select) {
   if (!select || !select.multiple) return;
@@ -14367,22 +14367,22 @@ function enableAutoGearMultiSelectToggle(select) {
   autoGearDistanceSelect,
 ].forEach(enableAutoGearMultiSelectToggle);
 
-const autoGearAddScreenSizeField = autoGearAddScreenSizeInput?.closest('.auto-gear-field')
+var autoGearAddScreenSizeField = autoGearAddScreenSizeInput?.closest('.auto-gear-field')
   || autoGearAddScreenSizeLabel?.closest('.auto-gear-field')
   || null;
-const autoGearAddSelectorTypeField = autoGearAddSelectorTypeSelect?.closest('.auto-gear-field')
+var autoGearAddSelectorTypeField = autoGearAddSelectorTypeSelect?.closest('.auto-gear-field')
   || autoGearAddSelectorTypeLabel?.closest('.auto-gear-field')
   || null;
-const autoGearAddSelectorDefaultField = autoGearAddSelectorDefaultInput?.closest('.auto-gear-field')
+var autoGearAddSelectorDefaultField = autoGearAddSelectorDefaultInput?.closest('.auto-gear-field')
   || autoGearAddSelectorDefaultLabel?.closest('.auto-gear-field')
   || null;
-const autoGearRemoveScreenSizeField = autoGearRemoveScreenSizeInput?.closest('.auto-gear-field')
+var autoGearRemoveScreenSizeField = autoGearRemoveScreenSizeInput?.closest('.auto-gear-field')
   || autoGearRemoveScreenSizeLabel?.closest('.auto-gear-field')
   || null;
-const autoGearRemoveSelectorTypeField = autoGearRemoveSelectorTypeSelect?.closest('.auto-gear-field')
+var autoGearRemoveSelectorTypeField = autoGearRemoveSelectorTypeSelect?.closest('.auto-gear-field')
   || autoGearRemoveSelectorTypeLabel?.closest('.auto-gear-field')
   || null;
-const autoGearRemoveSelectorDefaultField = autoGearRemoveSelectorDefaultInput?.closest('.auto-gear-field')
+var autoGearRemoveSelectorDefaultField = autoGearRemoveSelectorDefaultInput?.closest('.auto-gear-field')
   || autoGearRemoveSelectorDefaultLabel?.closest('.auto-gear-field')
   || null;
 
@@ -14428,21 +14428,21 @@ function syncAutoGearMonitorFieldVisibility() {
 var autoGearExportButton = document.getElementById('autoGearExport');
 var autoGearImportButton = document.getElementById('autoGearImport');
 var autoGearImportInput = document.getElementById('autoGearImportInput');
-const autoGearBackupsSection = document.getElementById('autoGearBackupsSection');
-const autoGearBackupsHeading = document.getElementById('autoGearBackupsHeading');
-const autoGearBackupsDescription = document.getElementById('autoGearBackupsDescription');
-const autoGearBackupSelectLabel = document.getElementById('autoGearBackupSelectLabel');
+var autoGearBackupsSection = document.getElementById('autoGearBackupsSection');
+var autoGearBackupsHeading = document.getElementById('autoGearBackupsHeading');
+var autoGearBackupsDescription = document.getElementById('autoGearBackupsDescription');
+var autoGearBackupSelectLabel = document.getElementById('autoGearBackupSelectLabel');
 var autoGearBackupSelect = document.getElementById('autoGearBackupSelect');
 var autoGearBackupRestoreButton = document.getElementById('autoGearBackupRestore');
-const autoGearBackupControls = document.getElementById('autoGearBackupControls');
-const autoGearBackupEmptyMessage = document.getElementById('autoGearBackupEmpty');
-const autoGearBackupRetentionLabel = document.getElementById('autoGearBackupRetentionLabel');
-const autoGearBackupRetentionInput = document.getElementById('autoGearBackupRetention');
-const autoGearBackupRetentionSummary = document.getElementById('autoGearBackupRetentionSummary');
-const autoGearBackupRetentionWarning = document.getElementById('autoGearBackupRetentionWarning');
+var autoGearBackupControls = document.getElementById('autoGearBackupControls');
+var autoGearBackupEmptyMessage = document.getElementById('autoGearBackupEmpty');
+var autoGearBackupRetentionLabel = document.getElementById('autoGearBackupRetentionLabel');
+var autoGearBackupRetentionInput = document.getElementById('autoGearBackupRetention');
+var autoGearBackupRetentionSummary = document.getElementById('autoGearBackupRetentionSummary');
+var autoGearBackupRetentionWarning = document.getElementById('autoGearBackupRetentionWarning');
 var autoGearShowBackupsCheckbox = document.getElementById('autoGearShowBackups');
-const autoGearShowBackupsLabel = document.getElementById('autoGearShowBackupsLabel');
-const autoGearBackupsHiddenNotice = document.getElementById('autoGearBackupsHidden');
+var autoGearShowBackupsLabel = document.getElementById('autoGearShowBackupsLabel');
+var autoGearBackupsHiddenNotice = document.getElementById('autoGearBackupsHidden');
 const dataHeading = document.getElementById("dataHeading");
 const storageSummaryIntro = document.getElementById("storageSummaryIntro");
 const storageSummaryList = document.getElementById("storageSummaryList");
