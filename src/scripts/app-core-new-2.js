@@ -6796,6 +6796,102 @@ var recordFeatureSearchUsage = (id, type, label) => {
   registerFeatureSearchUsage(id, type, label);
 };
 
+let featureSearchHighlightTokens = [];
+
+const sanitizeFeatureSearchHighlightTokens = tokens => {
+  if (!Array.isArray(tokens) || tokens.length === 0) {
+    return [];
+  }
+  const seen = new Set();
+  const sanitized = [];
+  tokens.forEach(token => {
+    if (typeof token !== 'string') return;
+    const trimmed = token.trim().toLowerCase();
+    if (!trimmed) return;
+    if (trimmed.length < 2 && !/^\d+$/.test(trimmed)) return;
+    if (seen.has(trimmed)) return;
+    seen.add(trimmed);
+    sanitized.push(trimmed);
+  });
+  return sanitized;
+};
+
+const updateFeatureSearchHighlightTokens = tokens => {
+  featureSearchHighlightTokens = sanitizeFeatureSearchHighlightTokens(tokens);
+};
+
+const collectFeatureSearchHighlightRanges = (text, tokens) => {
+  if (!text || !tokens.length) {
+    return [];
+  }
+  const lower = text.toLowerCase();
+  const ranges = [];
+  tokens.forEach(token => {
+    const length = token.length;
+    if (!length) return;
+    let index = 0;
+    while (index < lower.length) {
+      const found = lower.indexOf(token, index);
+      if (found === -1) break;
+      ranges.push({ start: found, end: found + length });
+      index = found + length;
+    }
+  });
+  if (!ranges.length) {
+    return [];
+  }
+  ranges.sort((a, b) => (a.start - b.start) || (b.end - a.end));
+  const merged = [];
+  for (const range of ranges) {
+    const last = merged[merged.length - 1];
+    if (last && range.start <= last.end) {
+      last.end = Math.max(last.end, range.end);
+    } else {
+      merged.push({ start: range.start, end: range.end });
+    }
+  }
+  return merged;
+};
+
+const applyFeatureSearchHighlight = (element, text) => {
+  if (!element) return;
+  const content = typeof text === 'string' ? text : '';
+  if (!content) {
+    element.textContent = '';
+    return;
+  }
+  const tokens = featureSearchHighlightTokens;
+  if (!Array.isArray(tokens) || tokens.length === 0) {
+    element.textContent = content;
+    return;
+  }
+  const ranges = collectFeatureSearchHighlightRanges(content, tokens);
+  if (!ranges.length) {
+    element.textContent = content;
+    return;
+  }
+  const doc = element.ownerDocument || (typeof document !== 'undefined' ? document : null);
+  if (!doc) {
+    element.textContent = content;
+    return;
+  }
+  element.textContent = '';
+  let position = 0;
+  ranges.forEach(range => {
+    if (range.start > position) {
+      element.appendChild(doc.createTextNode(content.slice(position, range.start)));
+    }
+    const mark = doc.createElement('mark');
+    mark.className = 'feature-search-highlight';
+    mark.textContent = content.slice(range.start, range.end);
+    element.appendChild(mark);
+    position = range.end;
+  });
+  if (position < content.length) {
+    element.appendChild(doc.createTextNode(content.slice(position)));
+  }
+};
+
 const FEATURE_SEARCH_DETAIL_MAX_LENGTH = 140;
 
 const normalizeFeatureSearchDetail = text => {
@@ -6892,15 +6988,16 @@ const renderFeatureSearchDropdown = options => {
 
     const labelSpan = document.createElement('span');
     labelSpan.className = 'feature-search-option-label';
-    labelSpan.textContent = option.label || option.value;
+    const labelText = option.label || option.value;
+    applyFeatureSearchHighlight(labelSpan, labelText);
     button.appendChild(labelSpan);
 
-    const normalizedLabel = (option.label || '').trim().toLowerCase();
+    const normalizedLabel = (labelText || '').trim().toLowerCase();
     const normalizedValue = option.value.trim().toLowerCase();
     if (normalizedValue && normalizedLabel && normalizedValue !== normalizedLabel) {
       const valueSpan = document.createElement('span');
       valueSpan.className = 'feature-search-option-value';
-      valueSpan.textContent = option.value;
+      applyFeatureSearchHighlight(valueSpan, option.value);
       button.appendChild(valueSpan);
     }
 
@@ -6962,6 +7059,7 @@ const renderFeatureListOptions = values => {
 const FEATURE_SEARCH_MAX_RESULTS = 40;
 
 function restoreFeatureSearchDefaults() {
+  updateFeatureSearchHighlightTokens([]);
   const values = [];
   const seen = new Set();
   const recentOptions = resolveRecentFeatureSearchOptions();
@@ -7202,6 +7300,12 @@ function updateFeatureSearchSuggestions(query) {
     return;
   }
 
+  const highlightSegments = trimmed
+    ? trimmed.split(/[^a-z0-9]+/i).filter(Boolean)
+    : [];
+  const queryKey = trimmed ? searchKey(trimmed) : '';
+  const queryTokens = trimmed ? searchTokens(trimmed) : [];
+  updateFeatureSearchHighlightTokens([...highlightSegments, ...queryTokens]);
   const entries = filterType
     ? featureSearchEntries.filter(entry => (entry?.type || 'feature') === filterType)
     : featureSearchEntries;
@@ -7210,9 +7314,6 @@ function updateFeatureSearchSuggestions(query) {
     renderFeatureListOptions([]);
     return;
   }
-
-  const queryKey = trimmed ? searchKey(trimmed) : '';
-  const queryTokens = trimmed ? searchTokens(trimmed) : [];
   if (!queryKey && (!Array.isArray(queryTokens) || queryTokens.length === 0) && !filterType) {
     restoreFeatureSearchDefaults();
     return;

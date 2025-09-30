@@ -153,4 +153,23 @@ describe('global feature search help navigation', () => {
       options.some(opt => /Export Project/i.test(opt.value || '') || /Export Project/i.test(opt.label || ''))
     ).toBe(true);
   });
+
+  test('search suggestions highlight matching tokens', async () => {
+    expect(featureSearch).toBeTruthy();
+
+    document.dispatchEvent(new Event('DOMContentLoaded'));
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+    const dropdown = document.getElementById('featureSearchDropdown');
+    expect(dropdown).toBeTruthy();
+
+    featureSearch.value = 'backup';
+    featureSearch.dispatchEvent(new Event('input', { bubbles: true }));
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+    const highlights = dropdown.querySelectorAll('.feature-search-highlight');
+    expect(highlights.length).toBeGreaterThan(0);
+    const highlightedText = Array.from(highlights).map(el => el.textContent.trim().toLowerCase());
+    expect(highlightedText.some(text => text.includes('backup'))).toBe(true);
+  });
 });

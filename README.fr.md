@@ -217,6 +217,7 @@ Cette routine prouve que sauvegarde, partage, import, backup et restauration fon
 
 - Sur petits écrans, un menu latéral pliable réplique les sections principales.
 - Chaque liste et éditeur propose une recherche inline et un filtrage instantané. `/` ou `Ctrl+F` (`⌘F`) ciblent le champ le plus proche.
+- Les suggestions de recherche mettent en évidence les mots clés correspondants pour confirmer le bon résultat avant de poursuivre.
 - Les icônes étoile épinglent les favoris en tête de liste et les conservent dans les sauvegardes.
 
 ## Personnalisation et accessibilité

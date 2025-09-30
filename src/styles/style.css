@@ -5011,6 +5011,23 @@ body.pink-mode #topBar #logo .logo-pink {
   word-break: break-word;
 }
 
+.feature-search-option mark.feature-search-highlight {
+  background: color-mix(in srgb, var(--accent-color) 25%, transparent);
+  color: inherit;
+  padding: 0 2px;
+  border-radius: 4px;
+  font-weight: inherit;
+}
+
+body.dark-mode .feature-search-option mark.feature-search-highlight {
+  background: color-mix(in srgb, var(--accent-color) 40%, transparent);
+}
+
+body.high-contrast .feature-search-option mark.feature-search-highlight {
+  background: var(--control-active-bg);
+  outline: 1px solid currentColor;
+}
+
 .feature-search.feature-search-open #featureSearch {
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
