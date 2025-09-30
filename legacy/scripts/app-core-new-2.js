@@ -21,11 +21,63 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _asyncIterator(r) { var n, t, o, e = 2; for ("undefined" != typeof Symbol && (t = Symbol.asyncIterator, o = Symbol.iterator); e--;) { if (t && null != (n = r[t])) return n.call(r); if (o && null != (n = r[o])) return new AsyncFromSyncIterator(n.call(r)); t = "@@asyncIterator", o = "@@iterator"; } throw new TypeError("Object is not async iterable"); }
 function AsyncFromSyncIterator(r) { function AsyncFromSyncIteratorContinuation(r) { if (Object(r) !== r) return Promise.reject(new TypeError(r + " is not an object.")); var n = r.done; return Promise.resolve(r.value).then(function (r) { return { value: r, done: n }; }); } return AsyncFromSyncIterator = function AsyncFromSyncIterator(r) { this.s = r, this.n = r.next; }, AsyncFromSyncIterator.prototype = { s: null, n: null, next: function next() { return AsyncFromSyncIteratorContinuation(this.n.apply(this.s, arguments)); }, return: function _return(r) { var n = this.s.return; return void 0 === n ? Promise.resolve({ value: r, done: !0 }) : AsyncFromSyncIteratorContinuation(n.apply(this.s, arguments)); }, throw: function _throw(r) { var n = this.s.return; return void 0 === n ? Promise.reject(r) : AsyncFromSyncIteratorContinuation(n.apply(this.s, arguments)); } }, new AsyncFromSyncIterator(r); }
-var autoGearAutoPresetId;
-var baseAutoGearRules;
-var autoGearScenarioModeSelect;
-var safeGenerateConnectorSummary;
 var CORE_PART2_RUNTIME_SCOPE = typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE ? CORE_GLOBAL_SCOPE : typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : typeof global !== 'undefined' ? global : null;
+function createFallbackSafeGenerateConnectorSummary() {
+  return function safeGenerateConnectorSummary(device) {
+    if (!device || _typeof(device) !== 'object') {
+      return '';
+    }
+
+    if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+      console.warn('Using fallback connector summary generator. Core bindings may have failed to initialise.');
+    }
+
+    try {
+      var keys = Object.keys(device);
+      if (!keys.length) {
+        return '';
+      }
+
+      var primaryKey = keys[0];
+      var value = device[primaryKey];
+      var label = typeof primaryKey === 'string' ? primaryKey.replace(/_/g, ' ') : 'connector';
+      return value ? label + ': ' + value : label;
+    } catch (fallbackError) {
+      void fallbackError;
+      return '';
+    }
+  };
+}
+function resolveInitialPart2Value(name) {
+  var candidates = [CORE_PART2_RUNTIME_SCOPE && _typeof(CORE_PART2_RUNTIME_SCOPE) === 'object' ? CORE_PART2_RUNTIME_SCOPE : null, typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object' ? CORE_GLOBAL_SCOPE : null, typeof globalThis !== 'undefined' && _typeof(globalThis) === 'object' ? globalThis : null, typeof window !== 'undefined' && _typeof(window) === 'object' ? window : null, typeof self !== 'undefined' && _typeof(self) === 'object' ? self : null, typeof global !== 'undefined' && _typeof(global) === 'object' ? global : null].filter(Boolean);
+  for (var index = 0; index < candidates.length; index += 1) {
+    var scope = candidates[index];
+    if (!scope || _typeof(scope) !== 'object') {
+      continue;
+    }
+
+    try {
+      if (name in scope) {
+        var value = scope[name];
+        if (typeof value !== 'undefined') {
+          return value;
+        }
+      }
+    } catch (readError) {
+      void readError;
+    }
+  }
+
+  return undefined;
+}
+var autoGearAutoPresetIdSeed = resolveInitialPart2Value('autoGearAutoPresetId');
+var autoGearAutoPresetId = typeof autoGearAutoPresetIdSeed === 'string' ? autoGearAutoPresetIdSeed : '';
+var baseAutoGearRulesSeed = resolveInitialPart2Value('baseAutoGearRules');
+var baseAutoGearRules = Array.isArray(baseAutoGearRulesSeed) ? baseAutoGearRulesSeed : [];
+var autoGearScenarioModeSelectSeed = resolveInitialPart2Value('autoGearScenarioModeSelect');
+var autoGearScenarioModeSelect = autoGearScenarioModeSelectSeed && _typeof(autoGearScenarioModeSelectSeed) === 'object' ? autoGearScenarioModeSelectSeed : null;
+var safeGenerateConnectorSummarySeed = resolveInitialPart2Value('safeGenerateConnectorSummary');
+var safeGenerateConnectorSummary = typeof safeGenerateConnectorSummarySeed === 'function' ? safeGenerateConnectorSummarySeed : createFallbackSafeGenerateConnectorSummary();
 if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initialized) {
   if (typeof console !== 'undefined' && typeof console.warn === 'function') {
     console.warn('Cine Power Planner core runtime (part 2) already initialized. Skipping duplicate load.');
@@ -144,27 +196,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return null;
     });
     safeGenerateConnectorSummary = declareCoreFallbackBinding('safeGenerateConnectorSummary', function () {
-      return function safeGenerateConnectorSummary(device) {
-        if (!device || _typeof(device) !== 'object') {
-          return '';
-        }
-        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-          console.warn('Using fallback connector summary generator. Core bindings may have failed to initialise.');
-        }
-        try {
-          var keys = Object.keys(device);
-          if (!keys.length) {
-            return '';
-          }
-          var primaryKey = keys[0];
-          var value = device[primaryKey];
-          var label = typeof primaryKey === 'string' ? primaryKey.replace(/_/g, ' ') : 'connector';
-          return value ? "".concat(label, ": ").concat(value) : label;
-        } catch (fallbackError) {
-          void fallbackError;
-          return '';
-        }
-      };
+      return createFallbackSafeGenerateConnectorSummary();
     });
     var currentProjectInfo = null;
     var loadedSetupState = null;
