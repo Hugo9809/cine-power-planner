@@ -733,50 +733,136 @@ try {
   console.warn('Could not load temperature unit preference', error);
 }
 
-const SUPPORTED_MOUNT_VOLTAGE_TYPES = ['V-Mount', 'Gold-Mount', 'B-Mount'];
-const {
-  resolvedMountVoltageKey: MOUNT_VOLTAGE_STORAGE_KEY_RESOLVED,
-  resolvedMountVoltageBackupKey: MOUNT_VOLTAGE_STORAGE_BACKUP_KEY
-} = (() => {
-  let fallbackKey = 'cameraPowerPlanner_mountVoltages';
-  if (typeof getMountVoltageStorageKeyName === 'function') {
+var SUPPORTED_MOUNT_VOLTAGE_TYPES = (function resolveSupportedMounts() {
+  if (
+    CORE_GLOBAL_SCOPE &&
+    Array.isArray(CORE_GLOBAL_SCOPE.SUPPORTED_MOUNT_VOLTAGE_TYPES) &&
+    CORE_GLOBAL_SCOPE.SUPPORTED_MOUNT_VOLTAGE_TYPES.length > 0
+  ) {
+    return CORE_GLOBAL_SCOPE.SUPPORTED_MOUNT_VOLTAGE_TYPES;
+  }
+
+  const created = Object.freeze(['V-Mount', 'Gold-Mount', 'B-Mount']);
+  if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object') {
+    try {
+      CORE_GLOBAL_SCOPE.SUPPORTED_MOUNT_VOLTAGE_TYPES = created;
+    } catch (assignError) {
+      void assignError;
+    }
+  }
+  return created;
+})();
+
+var MOUNT_VOLTAGE_STORAGE_KEY_RESOLVED = (function resolveMountVoltageStorageKey() {
+  let existing = null;
+  if (
+    CORE_GLOBAL_SCOPE &&
+    typeof CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_KEY === 'string' &&
+    CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_KEY
+  ) {
+    existing = CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_KEY;
+  }
+
+  if (!existing && CORE_GLOBAL_SCOPE) {
+    const scopedResolved = CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_KEY_RESOLVED;
+    if (typeof scopedResolved === 'string' && scopedResolved) {
+      existing = scopedResolved;
+    }
+  }
+
+  if (!existing && typeof getMountVoltageStorageKeyName === 'function') {
     try {
       const resolvedKey = getMountVoltageStorageKeyName();
       if (typeof resolvedKey === 'string' && resolvedKey) {
-        fallbackKey = resolvedKey;
+        existing = resolvedKey;
       }
     } catch (mountVoltageKeyError) {
       console.warn('Unable to resolve mount voltage storage key name', mountVoltageKeyError);
     }
-  } else if (
-    typeof MOUNT_VOLTAGE_STORAGE_KEY_NAME === 'string' &&
-    MOUNT_VOLTAGE_STORAGE_KEY_NAME
-  ) {
-    fallbackKey = MOUNT_VOLTAGE_STORAGE_KEY_NAME;
   }
-  const backupKey = `${fallbackKey}__backup`;
-  try {
-    if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object') {
-      if (typeof CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_KEY !== 'string') {
-        CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_KEY = fallbackKey;
-      }
-      if (typeof CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_BACKUP_KEY !== 'string') {
-        CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_BACKUP_KEY = backupKey;
-      }
+
+  if (!existing && typeof MOUNT_VOLTAGE_STORAGE_KEY_NAME === 'string' && MOUNT_VOLTAGE_STORAGE_KEY_NAME) {
+    existing = MOUNT_VOLTAGE_STORAGE_KEY_NAME;
+  }
+
+  const resolved = existing || 'cameraPowerPlanner_mountVoltages';
+
+  if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object') {
+    try {
+      CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_KEY = resolved;
+    } catch (assignError) {
+      console.warn('Unable to expose mount voltage storage key globally', assignError);
     }
-  } catch (exposeMountVoltageError) {
-    console.warn('Unable to expose mount voltage storage keys globally', exposeMountVoltageError);
+    try {
+      CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_KEY_RESOLVED = resolved;
+    } catch (exposeResolvedError) {
+      void exposeResolvedError;
+    }
   }
-  return {
-    resolvedMountVoltageKey: fallbackKey,
-    resolvedMountVoltageBackupKey: backupKey
-  };
+
+  return resolved;
 })();
-const DEFAULT_MOUNT_VOLTAGES = Object.freeze({
-  'V-Mount': Object.freeze({ high: 14.4, low: 12 }),
-  'Gold-Mount': Object.freeze({ high: 14.4, low: 12 }),
-  'B-Mount': Object.freeze({ high: 33.6, low: 21.6 }),
-});
+
+var MOUNT_VOLTAGE_STORAGE_BACKUP_KEY = (function resolveMountVoltageBackupKey() {
+  if (
+    CORE_GLOBAL_SCOPE &&
+    typeof CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_BACKUP_KEY === 'string' &&
+    CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_BACKUP_KEY
+  ) {
+    return CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_BACKUP_KEY;
+  }
+
+  if (
+    CORE_GLOBAL_SCOPE &&
+    typeof CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_BACKUP_KEY_RESOLVED === 'string' &&
+    CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_BACKUP_KEY_RESOLVED
+  ) {
+    return CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_BACKUP_KEY_RESOLVED;
+  }
+
+  const backupKey = `${MOUNT_VOLTAGE_STORAGE_KEY_RESOLVED}__backup`;
+
+  if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object') {
+    try {
+      CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_BACKUP_KEY = backupKey;
+    } catch (assignError) {
+      console.warn('Unable to expose mount voltage storage backup key globally', assignError);
+    }
+    try {
+      CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_BACKUP_KEY_RESOLVED = backupKey;
+    } catch (exposeResolvedError) {
+      void exposeResolvedError;
+    }
+  }
+
+  return backupKey;
+})();
+
+var DEFAULT_MOUNT_VOLTAGES = (function resolveDefaultMountVoltages() {
+  if (
+    CORE_GLOBAL_SCOPE &&
+    CORE_GLOBAL_SCOPE.DEFAULT_MOUNT_VOLTAGES &&
+    typeof CORE_GLOBAL_SCOPE.DEFAULT_MOUNT_VOLTAGES === 'object'
+  ) {
+    return CORE_GLOBAL_SCOPE.DEFAULT_MOUNT_VOLTAGES;
+  }
+
+  const defaults = Object.freeze({
+    'V-Mount': Object.freeze({ high: 14.4, low: 12 }),
+    'Gold-Mount': Object.freeze({ high: 14.4, low: 12 }),
+    'B-Mount': Object.freeze({ high: 33.6, low: 21.6 }),
+  });
+
+  if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object') {
+    try {
+      CORE_GLOBAL_SCOPE.DEFAULT_MOUNT_VOLTAGES = defaults;
+    } catch (assignError) {
+      void assignError;
+    }
+  }
+
+  return defaults;
+})();
 const TOTAL_CURRENT_LABEL_FALLBACK = 'Total Current (at {voltage}V):';
 const TOTAL_CURRENT_HELP_HIGH_FALLBACK = 'Current draw at the battery\'s main output ({voltage}V).';
 const TOTAL_CURRENT_HELP_LOW_FALLBACK = 'Current draw at auxiliary outputs ({voltage}V).';
