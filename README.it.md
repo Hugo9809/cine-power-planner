@@ -143,8 +143,9 @@ Ripeti questa routine quando arriva un nuovo membro, allestisci una postazione o
 2. **Export ridondanti.** Crea un backup completo e un bundle di progetto. Rinominalo in `.cpproject` se richiesto e salva entrambi su supporti diversi.
 3. **Prova di ripristino.** Passa a un profilo privato (o seconda macchina), importa il backup completo e poi il bundle. Controlla liste, dashboard, regole e preferiti.
 4. **Verifica offline.** Nel profilo di test, disconnetti la rete e ricarica `index.html`. Assicurati che l’indicatore offline appaia e che Uicons e script locali si carichino correttamente.
-5. **Archiviazione sicura.** Elimina il profilo di test dopo la verifica e etichetta gli export secondo la procedura di produzione.
-6. **Registra la sentinella runtime.** Nello stesso profilo apri la console, verifica che `window.__cineRuntimeIntegrity.ok` sia `true` e, se serve un report aggiornato, esegui `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })`, archiviando l’output con le note dell’esercizio.
+5. **Registra un diff.** Torna nel profilo principale, apri **Impostazioni → Backup e ripristino → Confronta versioni**, seleziona l’ultimo salvataggio manuale e l’auto-backup più recente, rivedi le differenze evidenziate, annota il contesto in **Note sull’incidente** ed esporta il JSON. Archivia il file con gli artefatti della prova così gli audit offline possono ricostruire la cronologia.
+6. **Archiviazione sicura.** Elimina il profilo di test dopo la verifica e etichetta gli export secondo la procedura di produzione.
+7. **Registra la sentinella runtime.** Nello stesso profilo apri la console, verifica che `window.__cineRuntimeIntegrity.ok` sia `true` e, se serve un report aggiornato, esegui `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })`, archiviando l’output con le note dell’esercizio.
 
 ## Flusso quotidiano
 

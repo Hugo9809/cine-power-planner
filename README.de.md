@@ -143,8 +143,9 @@ Dieser kurze Ablauf sollte bei neuen Teammitgliedern, frisch eingerichteten Work
 2. **Redundanz-Export.** Planner-Backup und Projekt-Bundle exportieren, ggf. `.cpproject`-Konvention nutzen, auf getrennten Medien sichern.
 3. **Restore-Generalprobe.** In einem privaten Profil oder zweiten Gerät Backup importieren, danach das Bundle. Gerätelisten, Dashboards, Regeln und Favoriten prüfen.
 4. **Offline-Verifikation.** Im Testprofil Netzwerk trennen, `index.html` neu laden und prüfen, ob Offline-Indikator, Uicons und Hilfsskripte sauber geladen werden.
-5. **Archivieren.** Testprofil löschen, Exporte beschriften und in die Produktions-Checkliste aufnehmen.
-6. **Runtime protokollieren.** Im Testprofil die Entwicklerkonsole öffnen, `window.__cineRuntimeIntegrity.ok` auf `true` prüfen und bei Bedarf `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })` ausführen. Das Ergebnis zusammen mit den Drill-Notizen archivieren.
+5. **Diff-Log erfassen.** Zurück im Primärprofil **Einstellungen → Backup & Wiederherstellung → Versionen vergleichen** öffnen, den neuesten manuellen Save und das aktuellste Auto-Backup auswählen, die markierten Änderungen prüfen, Kontext in **Vorfallsnotizen** festhalten und das JSON exportieren. Die Datei gemeinsam mit den Drill-Artefakten ablegen, damit Audits die Historie offline nachvollziehen können.
+6. **Archivieren.** Testprofil löschen, Exporte beschriften und in die Produktions-Checkliste aufnehmen.
+7. **Runtime protokollieren.** Im Testprofil die Entwicklerkonsole öffnen, `window.__cineRuntimeIntegrity.ok` auf `true` prüfen und bei Bedarf `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })` ausführen. Das Ergebnis zusammen mit den Drill-Notizen archivieren.
 
 ## Täglicher Ablauf
 

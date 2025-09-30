@@ -294,10 +294,15 @@ access.
    from the network and reload `index.html`. Ensure the offline indicator shows,
    the interface matches the source machine and locally stored Uicons plus
    helper scripts load without flicker.
-5. **Archive with confidence.** Delete the rehearsal profile after confirming
+5. **Capture a diff log.** Back in the primary profile, open **Settings → Backup
+   & Restore → Compare versions**, choose the latest manual save plus the newest
+   auto backup, review the highlighted changes, add context in **Incident
+   notes** and export the JSON. Store the file with your rehearsal artifacts so
+   future audits can replay the change history offline.
+6. **Archive with confidence.** Delete the rehearsal profile after confirming
    everything restored cleanly, then label and file the verified exports with
    your production’s archival checklist.
-6. **Log the runtime guard.** In the same profile, open the developer console
+7. **Log the runtime guard.** In the same profile, open the developer console
    and confirm `window.__cineRuntimeIntegrity.ok` is `true`. If you need a fresh
    report, run `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })`
    and archive the output alongside your rehearsal notes.

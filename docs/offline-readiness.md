@@ -42,7 +42,12 @@ time:
    (`planner-backup.json`) and a project bundle (`project-name.json`). Import the files into
    a private browser profile that also stays offline. Once you confirm the restore loop
    works end-to-end, delete the verification profile to prevent stale caches.
-6. **Archive the reference set.** Store the verified backup, bundle and a ZIP of the
+6. **Review the diff workspace.** Back in the primary profile, open **Settings → Backup &
+   Restore → Compare versions**, set the manual save as the baseline and the latest auto
+   backup as the comparison, review the summary and detailed list for unexpected changes,
+   jot context in **Incident notes** and export the log. Pair the JSON with your baseline
+   verification notes so auditors can replay the diff offline later.
+7. **Archive the reference set.** Store the verified backup, bundle and a ZIP of the
    repository on redundant encrypted media alongside a checksum manifest. These artifacts
    become your gold-standard comparison point during future audits.
 
@@ -65,15 +70,19 @@ connectivity:
    `auto-gear-rules-*.json` export in this drill—the import flow now verifies the file
    type, semantic version and timestamp metadata entirely offline, warning you about
    mismatches and restoring the pre-import snapshot automatically if validation fails.
-4. **Confirm safeguards stayed intact.** In the main profile, review
+4. **Audit the latest saves.** Reopen **Settings → Backup & Restore → Compare versions**,
+   diff the most recent manual save against the newest auto backup, review highlights,
+   add incident notes that describe the edits since the last trip and export the log so the
+   travel kit carries a documented history of changes.
+5. **Confirm safeguards stayed intact.** In the main profile, review
    `window.__cineRuntimeIntegrity` or rerun
    `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })` to ensure no
    controller, share helper or backup routine dropped out between rehearsals. If the
    report lists anything in `missing`, rehearse exports again before travelling.
-5. **Simulate outages.** With the verification profile still offline, reload the planner
+6. **Simulate outages.** With the verification profile still offline, reload the planner
    and navigate the interface. Confirm locally stored Uicons, fonts and helper scripts stay
    available and that autosave warnings do not appear.
-6. **Pack verified media.** Copy the newly validated exports plus the repository snapshot
+7. **Pack verified media.** Copy the newly validated exports plus the repository snapshot
    onto at least two encrypted drives that travel separately. Update your inventory list so
    every crew member knows where the redundant copies live.
 
@@ -91,7 +100,10 @@ Re-run these checks each morning and evening while you are on location:
 3. **Evening wrap.** Export another planner backup and bundle, import both into an offline
    verification profile and confirm all data matches. Promote any important auto backups to
    manual saves before closing the day.
-4. **Redundant storage.** Copy the day’s verified exports to the primary archive drive and
+4. **Log a diff.** Before shutting down, compare the last manual save with the newest auto
+   backup in **Settings → Backup & Restore → Compare versions**. Export the log and attach
+   it to the day’s verification notes so the rotation shows exactly what changed.
+5. **Redundant storage.** Copy the day’s verified exports to the primary archive drive and
    a travel-safe duplicate. Note which copy was inspected so rotations catch potential
    media degradation early.
 
@@ -110,10 +122,14 @@ this triage list:
    diverged. Re-run the latest automatic gear rules export as well; the validator highlights
    missing metadata or version drift and protects the existing rules by rolling back
    automatically if the payload cannot be trusted.
-4. **Restore with safeguards.** After validation, restore the fresh backup on the primary
+4. **Diff suspicious saves.** Back on the production machine, open **Settings → Backup &
+   Restore → Compare versions** and load the affected manual save alongside the newest auto
+   backup. Export the log and attach it to the incident folder so investigators can trace
+   what changed and when.
+5. **Restore with safeguards.** After validation, restore the fresh backup on the primary
    machine. The app captures a pre-restore snapshot automatically, so retain it for diffing
    if you need to merge notes.
-5. **Re-prime caches.** Once stability returns, press **Force reload**, reopen the help
+6. **Re-prime caches.** Once stability returns, press **Force reload**, reopen the help
    dialog and legal pages and document the incident, including where backups and bundles are
    stored. File the log alongside your redundant archives.
 
@@ -131,6 +147,8 @@ exported artifacts if it does not already exist) with:
 - **Exports inspected.** List the filenames for the planner backup, project bundle and any
   automatic gear rule exports you validated. Include checksum values when available to
   make integrity checks trivial.
+- **Diff logs archived.** Reference the exported comparison JSON and the versions it
+  documented so future audits can replay the change history before rotating media.
 - **Share and restore results.** Record whether manual saves, autosaves, shareable bundles,
   imports and automatic rollbacks behaved as expected. Document anything that required a
   retry so auditors know what to watch during the next drill.
