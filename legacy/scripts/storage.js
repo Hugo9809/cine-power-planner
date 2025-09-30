@@ -37,15 +37,14 @@ function resolveMountVoltageStorageKeyName() {
   if (existing !== GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_KEY) {
     try {
       GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_KEY = existing;
+      var assigned = GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_KEY;
+      if (typeof assigned === 'string' && assigned) {
+        return assigned;
+      }
     } catch (assignError) {
-      try {
-        Object.defineProperty(GLOBAL_SCOPE, 'MOUNT_VOLTAGE_STORAGE_KEY', {
-          configurable: true,
-          writable: true,
-          value: existing
-        });
-      } catch (defineError) {
-        void defineError;
+      void assignError;
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Unable to expose mount voltage storage key globally. Using fallback only.', assignError);
       }
     }
   }
