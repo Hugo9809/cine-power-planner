@@ -209,9 +209,64 @@ const sharedDeviceManagerLists = (() => {
       assignTarget.deviceManagerLists = fallback;
     } catch (assignError) {
       void assignError;
-      assignTarget.deviceManagerLists = fallback;
+      try {
+        Object.defineProperty(assignTarget, 'deviceManagerLists', {
+          configurable: true,
+          writable: true,
+          value: fallback,
+        });
+      } catch (defineError) {
+        void defineError;
+      }
     }
   }
+  return fallback;
+})();
+
+const activeDeviceManagerLists = (() => {
+  const candidateScopes = [
+    CORE_PART2_RUNTIME_SCOPE && typeof CORE_PART2_RUNTIME_SCOPE === 'object' ? CORE_PART2_RUNTIME_SCOPE : null,
+    CORE_SHARED_SCOPE_PART2 && typeof CORE_SHARED_SCOPE_PART2 === 'object' ? CORE_SHARED_SCOPE_PART2 : null,
+    (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object')
+      ? CORE_GLOBAL_SCOPE
+      : null,
+    (typeof globalThis !== 'undefined' && typeof globalThis === 'object') ? globalThis : null,
+    (typeof window !== 'undefined' && typeof window === 'object') ? window : null,
+    (typeof self !== 'undefined' && typeof self === 'object') ? self : null,
+    (typeof global !== 'undefined' && typeof global === 'object') ? global : null,
+  ].filter(Boolean);
+
+  for (let index = 0; index < candidateScopes.length; index += 1) {
+    const scope = candidateScopes[index];
+    const existing = scope && scope.deviceManagerLists;
+    if (existing instanceof Map) {
+      return existing;
+    }
+  }
+
+  const fallback = sharedDeviceManagerLists instanceof Map ? sharedDeviceManagerLists : new Map();
+
+  for (let index = 0; index < candidateScopes.length; index += 1) {
+    const scope = candidateScopes[index];
+    if (!scope) continue;
+    const extensible = typeof Object.isExtensible === 'function' ? Object.isExtensible(scope) : true;
+    if (!extensible) continue;
+    try {
+      scope.deviceManagerLists = fallback;
+    } catch (assignError) {
+      void assignError;
+      try {
+        Object.defineProperty(scope, 'deviceManagerLists', {
+          configurable: true,
+          writable: true,
+          value: fallback,
+        });
+      } catch (defineError) {
+        void defineError;
+      }
+    }
+  }
+
   return fallback;
 })();
 
@@ -12996,7 +13051,8 @@ if (filterHelperScope) {
 }
 
 function applyFilters() {
-  sharedDeviceManagerLists.forEach(({ list, filterInput }) => {
+  if (!(activeDeviceManagerLists instanceof Map)) return;
+  activeDeviceManagerLists.forEach(({ list, filterInput }) => {
     if (!list) return;
     const value = filterInput ? filterInput.value : '';
     filterDeviceList(list, value);
@@ -15264,7 +15320,8 @@ function renderDeviceList(categoryKey, ulElement) {
 
 function refreshDeviceLists() {
   syncDeviceManagerCategories();
-  sharedDeviceManagerLists.forEach(({ list, filterInput }, categoryKey) => {
+  if (!(activeDeviceManagerLists instanceof Map)) return;
+  activeDeviceManagerLists.forEach(({ list, filterInput }, categoryKey) => {
     if (!list) return;
     renderDeviceList(categoryKey, list);
     const filterValue = filterInput ? filterInput.value : '';
