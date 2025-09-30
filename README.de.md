@@ -215,6 +215,7 @@ Dieser kurze Ablauf sollte bei neuen Teammitgliedern, frisch eingerichteten Work
 
 - Auf kleinen Bildschirmen spiegelt ein einklappbares Seitenmenü alle Hauptsektionen.
 - Dropdowns und Editorlisten unterstützen Inline-Suche und Tippen zum Filtern. `/` oder `Strg+F` (`⌘F`) fokussiert das nächste Suchfeld.
+- Suchvorschläge heben passende Schlüsselwörter hervor, damit du Treffer bestätigst, bevor du weiter navigierst oder Aktionen ausführst.
 - Sterne pinnen Favoriten in Selektoren und sichern sie in Backups.
 
 ## Anpassung & Barrierefreiheit

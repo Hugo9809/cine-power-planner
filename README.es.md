@@ -215,6 +215,7 @@ Repite esta rutina cuando se incorpore personal, se prepare una estación nueva 
 
 - En pantallas pequeñas, un menú lateral plegable replica las secciones principales.
 - Cada lista y desplegable permite buscar escribiendo y filtrar al vuelo. `/` o `Ctrl+F` (`⌘F`) enfocan el campo más cercano.
+- Las sugerencias de búsqueda resaltan las palabras clave coincidentes para que puedas confirmar el resultado antes de navegar o ejecutar una acción.
 - Los iconos de estrella fijan dispositivos favoritos en la parte superior y los preservan en las copias de seguridad.
 
 ## Personalización y accesibilidad

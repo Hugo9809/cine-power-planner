@@ -473,6 +473,8 @@ Use Cine Power Planner end-to-end with the following routine:
 - Every dropdown and editor list includes inline search and supports type-to-
   filter interactions. `/` or `Ctrl+F` (`⌘F` on macOS) focuses the nearest
   search field.
+- Search suggestions highlight matching keywords so you can confirm results
+  before committing to a navigation or action.
 - Star icons pin favorite devices so they stay at the top of selectors and
   persist across sessions and backups.
 
