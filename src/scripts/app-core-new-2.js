@@ -1,8 +1,3 @@
-var autoGearAutoPresetId;
-var baseAutoGearRules;
-var autoGearScenarioModeSelect;
-var safeGenerateConnectorSummary;
-
 var CORE_PART2_RUNTIME_SCOPE =
   typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE
     ? CORE_GLOBAL_SCOPE
@@ -15,6 +10,89 @@ var CORE_PART2_RUNTIME_SCOPE =
           : typeof global !== 'undefined'
             ? global
             : null;
+
+function createFallbackSafeGenerateConnectorSummary() {
+  return function safeGenerateConnectorSummary(device) {
+    if (!device || typeof device !== 'object') {
+      return '';
+    }
+
+    if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+      console.warn(
+        'Using fallback connector summary generator. Core bindings may have failed to initialise.',
+      );
+    }
+
+    try {
+      const keys = Object.keys(device);
+      if (!keys.length) {
+        return '';
+      }
+
+      const primaryKey = keys[0];
+      const value = device[primaryKey];
+      const label = typeof primaryKey === 'string' ? primaryKey.replace(/_/g, ' ') : 'connector';
+      return value ? `${label}: ${value}` : label;
+    } catch (fallbackError) {
+      void fallbackError;
+      return '';
+    }
+  };
+}
+
+function resolveInitialPart2Value(name) {
+  const candidates = [
+    CORE_PART2_RUNTIME_SCOPE && typeof CORE_PART2_RUNTIME_SCOPE === 'object'
+      ? CORE_PART2_RUNTIME_SCOPE
+      : null,
+    typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object'
+      ? CORE_GLOBAL_SCOPE
+      : null,
+    typeof globalThis !== 'undefined' && typeof globalThis === 'object' ? globalThis : null,
+    typeof window !== 'undefined' && typeof window === 'object' ? window : null,
+    typeof self !== 'undefined' && typeof self === 'object' ? self : null,
+    typeof global !== 'undefined' && typeof global === 'object' ? global : null,
+  ].filter(Boolean);
+
+  for (let index = 0; index < candidates.length; index += 1) {
+    const scope = candidates[index];
+    if (!scope || typeof scope !== 'object') {
+      continue;
+    }
+
+    try {
+      if (name in scope) {
+        const value = scope[name];
+        if (typeof value !== 'undefined') {
+          return value;
+        }
+      }
+    } catch (readError) {
+      void readError;
+    }
+  }
+
+  return undefined;
+}
+
+const autoGearAutoPresetIdSeed = resolveInitialPart2Value('autoGearAutoPresetId');
+var autoGearAutoPresetId =
+  typeof autoGearAutoPresetIdSeed === 'string' ? autoGearAutoPresetIdSeed : '';
+
+const baseAutoGearRulesSeed = resolveInitialPart2Value('baseAutoGearRules');
+var baseAutoGearRules = Array.isArray(baseAutoGearRulesSeed) ? baseAutoGearRulesSeed : [];
+
+const autoGearScenarioModeSelectSeed = resolveInitialPart2Value('autoGearScenarioModeSelect');
+var autoGearScenarioModeSelect =
+  autoGearScenarioModeSelectSeed && typeof autoGearScenarioModeSelectSeed === 'object'
+    ? autoGearScenarioModeSelectSeed
+    : null;
+
+const safeGenerateConnectorSummarySeed = resolveInitialPart2Value('safeGenerateConnectorSummary');
+var safeGenerateConnectorSummary =
+  typeof safeGenerateConnectorSummarySeed === 'function'
+    ? safeGenerateConnectorSummarySeed
+    : createFallbackSafeGenerateConnectorSummary();
 
 if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initialized) {
   if (typeof console !== 'undefined' && typeof console.warn === 'function') {
@@ -160,28 +238,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
 
     safeGenerateConnectorSummary = declareCoreFallbackBinding(
       'safeGenerateConnectorSummary',
-      () =>
-        function safeGenerateConnectorSummary(device) {
-          if (!device || typeof device !== 'object') {
-            return '';
-          }
-          if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-            console.warn('Using fallback connector summary generator. Core bindings may have failed to initialise.');
-          }
-          try {
-            const keys = Object.keys(device);
-            if (!keys.length) {
-              return '';
-            }
-            const primaryKey = keys[0];
-            const value = device[primaryKey];
-            const label = typeof primaryKey === 'string' ? primaryKey.replace(/_/g, ' ') : 'connector';
-            return value ? `${label}: ${value}` : label;
-          } catch (fallbackError) {
-            void fallbackError;
-            return '';
-          }
-        },
+      () => createFallbackSafeGenerateConnectorSummary(),
     );
     
     var currentProjectInfo = null;
