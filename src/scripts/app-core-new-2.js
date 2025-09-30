@@ -6819,6 +6819,54 @@ const FEATURE_SEARCH_TYPE_PRIORITIES = {
   help: 1
 };
 
+const FEATURE_SEARCH_FILTER_ALIASES = new Map([
+  ['feature', 'feature'],
+  ['features', 'feature'],
+  ['setting', 'feature'],
+  ['settings', 'feature'],
+  ['action', 'action'],
+  ['actions', 'action'],
+  ['command', 'action'],
+  ['commands', 'action'],
+  ['device', 'device'],
+  ['devices', 'device'],
+  ['gear', 'device'],
+  ['equipment', 'device'],
+  ['help', 'help'],
+  ['doc', 'help'],
+  ['docs', 'help'],
+  ['guide', 'help'],
+  ['guides', 'help'],
+  ['support', 'help']
+]);
+
+const FEATURE_SEARCH_FILTER_STRIP_PATTERN = /^[\s:> /=\-?,.]+/;
+
+const extractFeatureSearchFilter = query => {
+  if (typeof query !== 'string') {
+    return { filterType: null, queryText: '' };
+  }
+  const trimmed = query.trim();
+  if (!trimmed) {
+    return { filterType: null, queryText: '' };
+  }
+  const match = trimmed.match(/^([a-z]+)/i);
+  if (!match) {
+    return { filterType: null, queryText: trimmed };
+  }
+  const alias = match[1].toLowerCase();
+  const filterType = FEATURE_SEARCH_FILTER_ALIASES.get(alias) || null;
+  if (!filterType) {
+    return { filterType: null, queryText: trimmed };
+  }
+  const remainderRaw = trimmed.slice(match[0].length);
+  if (!remainderRaw) {
+    return { filterType, queryText: '' };
+  }
+  const remainder = remainderRaw.replace(FEATURE_SEARCH_FILTER_STRIP_PATTERN, '').trim();
+  return { filterType, queryText: remainder };
+};
+
 function scoreFeatureSearchEntry(entry, queryKey, queryTokens) {
   if (!entry || !entry.key) return null;
   const display = entry.display;
@@ -6896,64 +6944,130 @@ function scoreFeatureSearchEntry(entry, queryKey, queryTokens) {
   };
 }
 
+const compareFeatureSearchCandidates = (a, b) => {
+  if (!a && !b) return 0;
+  if (!a) return 1;
+  if (!b) return -1;
+  if (b.priority !== a.priority) return b.priority - a.priority;
+  if (Number(b.allTokensMatched) !== Number(a.allTokensMatched)) {
+    return Number(b.allTokensMatched) - Number(a.allTokensMatched);
+  }
+  if (b.tokenScore !== a.tokenScore) return b.tokenScore - a.tokenScore;
+  if (b.tokenMatches !== a.tokenMatches) return b.tokenMatches - a.tokenMatches;
+  if (b.typePriority !== a.typePriority) return b.typePriority - a.typePriority;
+  if (b.historyCount !== a.historyCount) return b.historyCount - a.historyCount;
+  if (b.historyLastUsed !== a.historyLastUsed) {
+    return b.historyLastUsed - a.historyLastUsed;
+  }
+  if (
+    a.priority === FEATURE_SEARCH_MATCH_PRIORITIES.fuzzy &&
+    b.priority === FEATURE_SEARCH_MATCH_PRIORITIES.fuzzy &&
+    a.fuzzyDistance !== b.fuzzyDistance
+  ) {
+    return a.fuzzyDistance - b.fuzzyDistance;
+  }
+  if (a.keyDistance !== b.keyDistance) return a.keyDistance - b.keyDistance;
+  if (a.keyLength !== b.keyLength) return a.keyLength - b.keyLength;
+  const aLabel = a.entry?.display || '';
+  const bLabel = b.entry?.display || '';
+  return aLabel.localeCompare(bLabel, undefined, { sensitivity: 'base' });
+};
+
+function renderFeatureSearchFilteredDefaults(filterType) {
+  if (!featureList || !filterType) return;
+  const filteredEntries = featureSearchEntries.filter(
+    entry => (entry?.type || 'feature') === filterType
+  );
+  if (!filteredEntries.length) {
+    renderFeatureListOptions([]);
+    return;
+  }
+  const scored = filteredEntries
+    .map(entry => scoreFeatureSearchEntry(entry, '', []))
+    .filter(Boolean)
+    .sort(compareFeatureSearchCandidates);
+  const values = [];
+  const seen = new Set();
+  for (const item of scored) {
+    if (values.length >= 25) break;
+    const optionData = buildFeatureSearchOptionData(item.entry);
+    if (!optionData || !optionData.value || seen.has(optionData.value)) continue;
+    seen.add(optionData.value);
+    values.push(optionData);
+  }
+  if (values.length === 0) {
+    const fallback = filteredEntries
+      .slice()
+      .sort((a, b) =>
+        (a.display || '').localeCompare(b.display || '', undefined, { sensitivity: 'base' })
+      );
+    for (const entry of fallback) {
+      if (values.length >= 25) break;
+      const optionData = buildFeatureSearchOptionData(entry);
+      if (!optionData || !optionData.value || seen.has(optionData.value)) continue;
+      seen.add(optionData.value);
+      values.push(optionData);
+    }
+  }
+  renderFeatureListOptions(values);
+}
+
 function updateFeatureSearchSuggestions(query) {
   if (!featureList) return;
-  const trimmed = typeof query === 'string' ? query.trim() : '';
-  if (!trimmed) {
+  const raw = typeof query === 'string' ? query : '';
+  const rawTrimmed = raw.trim();
+  const { filterType, queryText } = extractFeatureSearchFilter(rawTrimmed);
+  const trimmed = queryText.trim();
+
+  if (!trimmed && !filterType) {
     restoreFeatureSearchDefaults();
     return;
   }
 
-  const queryKey = searchKey(trimmed);
-  const queryTokens = searchTokens(trimmed);
-  if (!queryKey && (!Array.isArray(queryTokens) || queryTokens.length === 0)) {
+  const entries = filterType
+    ? featureSearchEntries.filter(entry => (entry?.type || 'feature') === filterType)
+    : featureSearchEntries;
+
+  if (entries.length === 0) {
+    renderFeatureListOptions([]);
+    return;
+  }
+
+  const queryKey = trimmed ? searchKey(trimmed) : '';
+  const queryTokens = trimmed ? searchTokens(trimmed) : [];
+  if (!queryKey && (!Array.isArray(queryTokens) || queryTokens.length === 0) && !filterType) {
     restoreFeatureSearchDefaults();
     return;
   }
 
-  const scored = featureSearchEntries
+  const scored = entries
     .map(entry => scoreFeatureSearchEntry(entry, queryKey, queryTokens))
     .filter(Boolean);
 
   if (scored.length === 0) {
-    restoreFeatureSearchDefaults();
+    if (filterType) {
+      renderFeatureSearchFilteredDefaults(filterType);
+    } else {
+      restoreFeatureSearchDefaults();
+    }
     return;
   }
 
-  const meaningful = scored.filter(
-    item =>
-      item.priority > FEATURE_SEARCH_MATCH_PRIORITIES.none || item.tokenScore > 0
-  );
+  const meaningful = trimmed
+    ? scored.filter(
+        item =>
+          item.priority > FEATURE_SEARCH_MATCH_PRIORITIES.none || item.tokenScore > 0
+      )
+    : [];
 
-  const candidates = (meaningful.length > 0 ? meaningful : scored).sort((a, b) => {
-    if (b.priority !== a.priority) return b.priority - a.priority;
-    if (Number(b.allTokensMatched) !== Number(a.allTokensMatched)) {
-      return Number(b.allTokensMatched) - Number(a.allTokensMatched);
-    }
-    if (b.tokenScore !== a.tokenScore) return b.tokenScore - a.tokenScore;
-    if (b.tokenMatches !== a.tokenMatches) return b.tokenMatches - a.tokenMatches;
-    if (b.typePriority !== a.typePriority) return b.typePriority - a.typePriority;
-    if (b.historyCount !== a.historyCount) return b.historyCount - a.historyCount;
-    if (b.historyLastUsed !== a.historyLastUsed) {
-      return b.historyLastUsed - a.historyLastUsed;
-    }
-    if (
-      a.priority === FEATURE_SEARCH_MATCH_PRIORITIES.fuzzy &&
-      b.priority === FEATURE_SEARCH_MATCH_PRIORITIES.fuzzy &&
-      a.fuzzyDistance !== b.fuzzyDistance
-    ) {
-      return a.fuzzyDistance - b.fuzzyDistance;
-    }
-    if (a.keyDistance !== b.keyDistance) return a.keyDistance - b.keyDistance;
-    if (a.keyLength !== b.keyLength) return a.keyLength - b.keyLength;
-    return a.entry.display.localeCompare(b.entry.display, undefined, {
-      sensitivity: 'base'
-    });
-  });
+  const candidates = (meaningful.length > 0 ? meaningful : scored).sort(
+    compareFeatureSearchCandidates
+  );
 
   const values = [];
   const seen = new Set();
-  for (const item of candidates.slice(0, 25)) {
+  for (const item of candidates) {
+    if (values.length >= 25) break;
     const optionData = buildFeatureSearchOptionData(item.entry);
     if (!optionData || !optionData.value || seen.has(optionData.value)) continue;
     seen.add(optionData.value);
@@ -6962,7 +7076,11 @@ function updateFeatureSearchSuggestions(query) {
 
 
   if (values.length === 0) {
-    restoreFeatureSearchDefaults();
+    if (filterType) {
+      renderFeatureSearchFilteredDefaults(filterType);
+    } else {
+      restoreFeatureSearchDefaults();
+    }
     return;
   }
 
