@@ -401,29 +401,56 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       finalize(false);
     }
   }
-  function loadScriptsSequentially(urls) {
+  function loadScriptsSequentially(urls, options) {
     var head = document.head || document.getElementsByTagName('head')[0] || document.documentElement;
     var index = 0;
+    var aborted = false;
+    var settings = options || {};
     function next() {
-      if (index >= urls.length) {
+      if (aborted || index >= urls.length) {
         return;
       }
+      var currentIndex = index;
+      var currentUrl = urls[currentIndex];
       var script = document.createElement('script');
-      script.src = urls[index];
+      script.src = currentUrl;
       script.async = false;
       script.defer = false;
       script.onload = function () {
-        index += 1;
+        if (aborted) {
+          return;
+        }
+        index = currentIndex + 1;
         next();
       };
       script.onerror = function (event) {
-        console.error('Failed to load script:', urls[index], event && event.error);
-        index += 1;
+        console.error('Failed to load script:', currentUrl, event && event.error);
+        var shouldAbort = false;
+        if (typeof settings.onError === 'function') {
+          try {
+            shouldAbort = settings.onError({ event: event, url: currentUrl, index: currentIndex }) === true;
+          } catch (callbackError) {
+            console.error('Loader error callback failed', callbackError);
+          }
+        }
+        if (shouldAbort) {
+          aborted = true;
+          return;
+        }
+        if (aborted) {
+          return;
+        }
+        index = currentIndex + 1;
         next();
       };
       head.appendChild(script);
     }
     next();
+    return {
+      cancel: function cancelSequentialLoader() {
+        aborted = true;
+      }
+    };
   }
   var modernScripts = ['src/scripts/globalthis-polyfill.js', 'src/data/devices/index.js', 'src/data/devices/cameras.js', 'src/data/devices/monitors.js', 'src/data/devices/video.js', 'src/data/devices/fiz.js', 'src/data/devices/batteries.js', 'src/data/devices/batteryHotswaps.js', 'src/data/devices/chargers.js', 'src/data/devices/cages.js', 'src/data/devices/gearList.js', 'src/data/devices/wirelessReceivers.js', 'src/scripts/storage.js', 'src/scripts/translations.js', 'src/vendor/lz-string.min.js', 'src/vendor/lottie-light.min.js', 'src/scripts/auto-gear-weight.js', 'src/scripts/modules/registry.js', 'src/scripts/modules/offline.js', 'src/scripts/modules/core-shared.js', 'src/scripts/modules/ui.js', 'src/scripts/app-core-new-1.js', 'src/scripts/app-core-new-2.js', 'src/scripts/app-events.js', 'src/scripts/app-setups.js', 'src/scripts/app-session.js', 'src/scripts/modules/persistence.js', 'src/scripts/modules/runtime.js', 'src/scripts/script.js', 'src/scripts/auto-gear-monitoring.js', 'src/scripts/overview.js', 'src/scripts/autosave-overlay.js'];
   var legacyScripts = ['legacy/polyfills/core-js-bundle.min.js', 'legacy/polyfills/regenerator-runtime.js', 'legacy/scripts/globalthis-polyfill.js', 'legacy/data/devices/index.js', 'legacy/data/devices/cameras.js', 'legacy/data/devices/monitors.js', 'legacy/data/devices/video.js', 'legacy/data/devices/fiz.js', 'legacy/data/devices/batteries.js', 'legacy/data/devices/batteryHotswaps.js', 'legacy/data/devices/chargers.js', 'legacy/data/devices/cages.js', 'legacy/data/devices/gearList.js', 'legacy/data/devices/wirelessReceivers.js', 'legacy/scripts/storage.js', 'legacy/scripts/translations.js', 'src/vendor/lz-string.min.js', 'src/vendor/lottie-light.min.js', 'legacy/scripts/auto-gear-weight.js', 'src/scripts/modules/registry.js', 'src/scripts/modules/offline.js', 'src/scripts/modules/core-shared.js', 'src/scripts/modules/ui.js', 'legacy/scripts/app-core-new-1.js', 'legacy/scripts/app-core-new-2.js', 'legacy/scripts/app-events.js', 'legacy/scripts/app-setups.js', 'legacy/scripts/app-session.js', 'legacy/scripts/modules/runtime.js', 'src/scripts/modules/persistence.js', 'legacy/scripts/script.js', 'legacy/scripts/auto-gear-monitoring.js', 'legacy/scripts/overview.js', 'legacy/scripts/autosave-overlay.js'];
@@ -433,7 +460,22 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (!supportsModern) {
         window.__CINE_POWER_LEGACY_BUNDLE__ = true;
       }
-      loadScriptsSequentially(scriptsToLoad);
+      var fallbackScripts = supportsModern ? legacyScripts : null;
+      var fallbackTriggered = false;
+      loadScriptsSequentially(scriptsToLoad, {
+        onError: function handleLoaderError(context) {
+          if (!supportsModern || !fallbackScripts || fallbackTriggered) {
+            return false;
+          }
+          fallbackTriggered = true;
+          if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+            console.warn('Loader switching to legacy bundle after failing to load modern script:', context && context.url, context && context.event && context.event.error);
+          }
+          window.__CINE_POWER_LEGACY_BUNDLE__ = true;
+          loadScriptsSequentially(fallbackScripts);
+          return true;
+        }
+      });
     });
   }
   try {
