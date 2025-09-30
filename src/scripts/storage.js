@@ -3,7 +3,7 @@
           applyMountVoltagePreferences, parseStoredMountVoltages,
           resetMountVoltagePreferences */
 
-const GLOBAL_SCOPE =
+var GLOBAL_SCOPE =
   typeof globalThis !== 'undefined'
     ? globalThis
     : typeof window !== 'undefined'
@@ -14,16 +14,16 @@ const GLOBAL_SCOPE =
           ? self
           : null;
 
-const DEVICE_STORAGE_KEY = 'cameraPowerPlanner_devices';
-const SETUP_STORAGE_KEY = 'cameraPowerPlanner_setups';
-const SESSION_STATE_KEY = 'cameraPowerPlanner_session';
-const FEEDBACK_STORAGE_KEY = 'cameraPowerPlanner_feedback';
-const PROJECT_STORAGE_KEY = 'cameraPowerPlanner_project';
-const FAVORITES_STORAGE_KEY = 'cameraPowerPlanner_favorites';
-const DEVICE_SCHEMA_CACHE_KEY = 'cameraPowerPlanner_schemaCache';
-const LEGACY_SCHEMA_CACHE_KEY = 'cinePowerPlanner_schemaCache';
-const CUSTOM_FONT_STORAGE_KEY_DEFAULT = 'cameraPowerPlanner_customFonts';
-const MOUNT_VOLTAGE_STORAGE_KEY = 'cameraPowerPlanner_mountVoltages';
+var DEVICE_STORAGE_KEY = 'cameraPowerPlanner_devices';
+var SETUP_STORAGE_KEY = 'cameraPowerPlanner_setups';
+var SESSION_STATE_KEY = 'cameraPowerPlanner_session';
+var FEEDBACK_STORAGE_KEY = 'cameraPowerPlanner_feedback';
+var PROJECT_STORAGE_KEY = 'cameraPowerPlanner_project';
+var FAVORITES_STORAGE_KEY = 'cameraPowerPlanner_favorites';
+var DEVICE_SCHEMA_CACHE_KEY = 'cameraPowerPlanner_schemaCache';
+var LEGACY_SCHEMA_CACHE_KEY = 'cinePowerPlanner_schemaCache';
+var CUSTOM_FONT_STORAGE_KEY_DEFAULT = 'cameraPowerPlanner_customFonts';
+var MOUNT_VOLTAGE_STORAGE_KEY = 'cameraPowerPlanner_mountVoltages';
 
 function ensureCustomFontStorageKeyName() {
   if (!GLOBAL_SCOPE) {
@@ -64,8 +64,8 @@ function getCustomFontStorageKeyName() {
 
 ensureCustomFontStorageKeyName();
 
-const CUSTOM_LOGO_STORAGE_KEY = 'customLogo';
-const TEMPERATURE_UNIT_STORAGE_KEY_DEFAULT = 'cameraPowerPlanner_temperatureUnit';
+var CUSTOM_LOGO_STORAGE_KEY = 'customLogo';
+var TEMPERATURE_UNIT_STORAGE_KEY_DEFAULT = 'cameraPowerPlanner_temperatureUnit';
 
 function resolveTemperatureUnitStorageKey() {
   if (!GLOBAL_SCOPE) {
@@ -101,20 +101,20 @@ function resolveTemperatureUnitStorageKey() {
   return existing;
 }
 
-const TEMPERATURE_UNIT_STORAGE_KEY_NAME = resolveTemperatureUnitStorageKey();
-const AUTO_GEAR_RULES_STORAGE_KEY = 'cameraPowerPlanner_autoGearRules';
-const AUTO_GEAR_SEEDED_STORAGE_KEY = 'cameraPowerPlanner_autoGearSeeded';
-const AUTO_GEAR_BACKUPS_STORAGE_KEY = 'cameraPowerPlanner_autoGearBackups';
-const AUTO_GEAR_PRESETS_STORAGE_KEY = 'cameraPowerPlanner_autoGearPresets';
-const AUTO_GEAR_MONITOR_DEFAULTS_STORAGE_KEY = 'cameraPowerPlanner_autoGearMonitorDefaults';
-const AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY = 'cameraPowerPlanner_autoGearActivePreset';
-const AUTO_GEAR_AUTO_PRESET_STORAGE_KEY = 'cameraPowerPlanner_autoGearAutoPreset';
-const AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY = 'cameraPowerPlanner_autoGearShowBackups';
-const AUTO_GEAR_BACKUP_RETENTION_STORAGE_KEY = 'cameraPowerPlanner_autoGearBackupRetention';
-const FULL_BACKUP_HISTORY_STORAGE_KEY = 'cameraPowerPlanner_fullBackups';
-const STORAGE_AUTO_BACKUP_NAME_PREFIX = 'auto-backup-';
-const STORAGE_AUTO_BACKUP_DELETION_PREFIX = 'auto-backup-before-delete-';
-const STORAGE_AUTO_BACKUP_RENAMED_FLAG = '__cineAutoBackupRenamed';
+var TEMPERATURE_UNIT_STORAGE_KEY_NAME = resolveTemperatureUnitStorageKey();
+var AUTO_GEAR_RULES_STORAGE_KEY = 'cameraPowerPlanner_autoGearRules';
+var AUTO_GEAR_SEEDED_STORAGE_KEY = 'cameraPowerPlanner_autoGearSeeded';
+var AUTO_GEAR_BACKUPS_STORAGE_KEY = 'cameraPowerPlanner_autoGearBackups';
+var AUTO_GEAR_PRESETS_STORAGE_KEY = 'cameraPowerPlanner_autoGearPresets';
+var AUTO_GEAR_MONITOR_DEFAULTS_STORAGE_KEY = 'cameraPowerPlanner_autoGearMonitorDefaults';
+var AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY = 'cameraPowerPlanner_autoGearActivePreset';
+var AUTO_GEAR_AUTO_PRESET_STORAGE_KEY = 'cameraPowerPlanner_autoGearAutoPreset';
+var AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY = 'cameraPowerPlanner_autoGearShowBackups';
+var AUTO_GEAR_BACKUP_RETENTION_STORAGE_KEY = 'cameraPowerPlanner_autoGearBackupRetention';
+var FULL_BACKUP_HISTORY_STORAGE_KEY = 'cameraPowerPlanner_fullBackups';
+var STORAGE_AUTO_BACKUP_NAME_PREFIX = 'auto-backup-';
+var STORAGE_AUTO_BACKUP_DELETION_PREFIX = 'auto-backup-before-delete-';
+var STORAGE_AUTO_BACKUP_RENAMED_FLAG = '__cineAutoBackupRenamed';
 
 if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE === 'object') {
   try {
@@ -134,11 +134,11 @@ if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE === 'object') {
     }
   }
 }
-const MAX_AUTO_BACKUPS = 50;
-const MAX_DELETION_BACKUPS = 20;
-const MAX_FULL_BACKUP_HISTORY_ENTRIES = 200;
-const AUTO_GEAR_BACKUP_RETENTION_DEFAULT_VALUE = 12;
-const AUTO_GEAR_BACKUP_RETENTION_MIN = 1;
+var MAX_AUTO_BACKUPS = 50;
+var MAX_DELETION_BACKUPS = 20;
+var MAX_FULL_BACKUP_HISTORY_ENTRIES = 200;
+var AUTO_GEAR_BACKUP_RETENTION_DEFAULT_VALUE = 12;
+var AUTO_GEAR_BACKUP_RETENTION_MIN = 1;
 
 function ensureGlobalAutoGearBackupDefaults() {
   if (!GLOBAL_SCOPE || typeof GLOBAL_SCOPE !== 'object') {
@@ -168,20 +168,20 @@ function ensureGlobalAutoGearBackupDefaults() {
 
 ensureGlobalAutoGearBackupDefaults();
 
-const STORAGE_BACKUP_SUFFIX = '__backup';
-const MAX_SAVE_ATTEMPTS = 3;
-const MAX_QUOTA_RECOVERY_STEPS = 100;
-const STORAGE_MIGRATION_BACKUP_SUFFIX = '__legacyMigrationBackup';
-const RAW_STORAGE_BACKUP_KEYS = new Set([
+var STORAGE_BACKUP_SUFFIX = '__backup';
+var MAX_SAVE_ATTEMPTS = 3;
+var MAX_QUOTA_RECOVERY_STEPS = 100;
+var STORAGE_MIGRATION_BACKUP_SUFFIX = '__legacyMigrationBackup';
+var RAW_STORAGE_BACKUP_KEYS = new Set([
   getCustomFontStorageKeyName(),
   CUSTOM_LOGO_STORAGE_KEY,
   DEVICE_SCHEMA_CACHE_KEY,
   MOUNT_VOLTAGE_STORAGE_KEY,
 ]);
 
-const MAX_MIGRATION_BACKUP_CLEANUP_STEPS = 10;
-const MIGRATION_BACKUP_COMPRESSION_ALGORITHM = 'lz-string';
-const MIGRATION_BACKUP_COMPRESSION_ENCODING = 'json-string';
+var MAX_MIGRATION_BACKUP_CLEANUP_STEPS = 10;
+var MIGRATION_BACKUP_COMPRESSION_ALGORITHM = 'lz-string';
+var MIGRATION_BACKUP_COMPRESSION_ENCODING = 'json-string';
 
 function canUseMigrationBackupCompression() {
   return (
@@ -550,7 +550,7 @@ function createStorageMigrationBackup(storage, key, originalValue) {
   }
 }
 
-const PRIMARY_STORAGE_KEYS = [
+var PRIMARY_STORAGE_KEYS = [
   DEVICE_STORAGE_KEY,
   SETUP_STORAGE_KEY,
   SESSION_STATE_KEY,
@@ -568,7 +568,7 @@ const PRIMARY_STORAGE_KEYS = [
   AUTO_GEAR_BACKUP_RETENTION_STORAGE_KEY,
 ];
 
-const SIMPLE_STORAGE_KEYS = [
+var SIMPLE_STORAGE_KEYS = [
   CUSTOM_LOGO_STORAGE_KEY,
   getCustomFontStorageKeyName(),
   'darkMode',
@@ -585,10 +585,10 @@ const SIMPLE_STORAGE_KEYS = [
   TEMPERATURE_UNIT_STORAGE_KEY_NAME,
 ];
 
-const STORAGE_ALERT_FLAG_NAME = '__cameraPowerPlannerStorageAlertShown';
-const SESSION_FALLBACK_ALERT_FLAG_NAME = '__cameraPowerPlannerSessionFallbackAlertShown';
+var STORAGE_ALERT_FLAG_NAME = '__cameraPowerPlannerStorageAlertShown';
+var SESSION_FALLBACK_ALERT_FLAG_NAME = '__cameraPowerPlannerSessionFallbackAlertShown';
 
-let storageErrorAlertShown = false;
+var storageErrorAlertShown = false;
 if (GLOBAL_SCOPE) {
   if (typeof GLOBAL_SCOPE[STORAGE_ALERT_FLAG_NAME] === 'boolean') {
     storageErrorAlertShown = GLOBAL_SCOPE[STORAGE_ALERT_FLAG_NAME];
@@ -597,7 +597,7 @@ if (GLOBAL_SCOPE) {
   }
 }
 
-let sessionFallbackAlertShown = false;
+var sessionFallbackAlertShown = false;
 if (GLOBAL_SCOPE) {
   if (typeof GLOBAL_SCOPE[SESSION_FALLBACK_ALERT_FLAG_NAME] === 'boolean') {
     sessionFallbackAlertShown = GLOBAL_SCOPE[SESSION_FALLBACK_ALERT_FLAG_NAME];
@@ -606,7 +606,7 @@ if (GLOBAL_SCOPE) {
   }
 }
 
-const DEVICE_COLLECTION_KEYS = [
+var DEVICE_COLLECTION_KEYS = [
   'cameras',
   'monitors',
   'video',
@@ -621,9 +621,9 @@ const DEVICE_COLLECTION_KEYS = [
   'wirelessReceivers',
 ];
 
-const FIZ_COLLECTION_KEYS = ['motors', 'handUnits', 'controllers', 'distance'];
+var FIZ_COLLECTION_KEYS = ['motors', 'handUnits', 'controllers', 'distance'];
 
-const ACCESSORY_COLLECTION_KEYS = [
+var ACCESSORY_COLLECTION_KEYS = [
   'chargers',
   'cages',
   'powerPlates',
@@ -643,7 +643,7 @@ const ACCESSORY_COLLECTION_KEYS = [
   'carts',
 ];
 
-const getStorageManager = () =>
+var getStorageManager = () =>
   typeof navigator !== 'undefined' &&
   navigator &&
   typeof navigator.storage === 'object'
@@ -656,14 +656,14 @@ const getStorageManager = () =>
 // tab. When neither storage option is available we fall back to a simple
 // in-memory store to avoid runtime errors even though the data will be lost on
 // reload.
-const STORAGE_TEST_KEY = '__storage_test__';
+var STORAGE_TEST_KEY = '__storage_test__';
 
-const QUOTA_ERROR_NAMES = new Set([
+var QUOTA_ERROR_NAMES = new Set([
   'QuotaExceededError',
   'NS_ERROR_DOM_QUOTA_REACHED',
 ]);
-const QUOTA_ERROR_CODES = new Set([22, 1014]);
-const QUOTA_ERROR_NUMBERS = new Set([22, 1014]);
+var QUOTA_ERROR_CODES = new Set([22, 1014]);
+var QUOTA_ERROR_NUMBERS = new Set([22, 1014]);
 
 function isQuotaExceededError(error) {
   if (!error || typeof error !== 'object') {
@@ -830,8 +830,8 @@ function initializeSafeLocalStorage() {
   return { storage: createMemoryStorage(), type: 'memory' };
 }
 
-let lastFailedUpgradeCandidate = null;
-let safeLocalStorageInfo = initializeSafeLocalStorage();
+var lastFailedUpgradeCandidate = null;
+var safeLocalStorageInfo = initializeSafeLocalStorage();
 
 function migrateSnapshotToStorage(snapshot, target) {
   const migratedKeys = [];
@@ -1126,7 +1126,7 @@ function getSafeLocalStorage() {
 
 updateGlobalSafeLocalStorageReference();
 
-let persistentStorageRequestPromise = null;
+var persistentStorageRequestPromise = null;
 
 function requestPersistentStorage() {
   const storageManager = getStorageManager();
@@ -2219,12 +2219,12 @@ function deleteFromStorage(storage, key, errorMessage, options = {}) {
   }
 }
 
-const UI_CACHE_STORAGE_KEYS = [
+var UI_CACHE_STORAGE_KEYS = [
   DEVICE_SCHEMA_CACHE_KEY,
   LEGACY_SCHEMA_CACHE_KEY,
 ];
 
-const UI_CACHE_STORAGE_ACCESS_WARNINGS = new Set();
+var UI_CACHE_STORAGE_ACCESS_WARNINGS = new Set();
 
 function collectUiCacheStorages() {
   const candidates = [];
@@ -2925,9 +2925,9 @@ function renameSetup(oldName, newName) {
 }
 
 // --- Project Storage ---
-const REQUIREMENT_FIELDS_KEEP_NEWLINES = new Set(['prepDays', 'shootingDays', 'crew']);
+var REQUIREMENT_FIELDS_KEEP_NEWLINES = new Set(['prepDays', 'shootingDays', 'crew']);
 
-const LEGACY_PROJECT_FIELD_LABELS = {
+var LEGACY_PROJECT_FIELD_LABELS = {
   productionCompany: [
     'Production Company',
     'Produktionsfirma',
@@ -3117,7 +3117,7 @@ const LEGACY_PROJECT_FIELD_LABELS = {
   ],
 };
 
-const LEGACY_PROJECT_LABEL_FIELD_MAP = (() => {
+var LEGACY_PROJECT_LABEL_FIELD_MAP = (() => {
   const map = new Map();
   const normalize = (label) => {
     if (typeof label !== 'string') return '';
@@ -3140,7 +3140,7 @@ const LEGACY_PROJECT_LABEL_FIELD_MAP = (() => {
   return map;
 })();
 
-const HTML_ENTITY_MAP = {
+var HTML_ENTITY_MAP = {
   amp: '&',
   lt: '<',
   gt: '>',
@@ -3707,7 +3707,7 @@ function normalizeProject(data) {
   return null;
 }
 
-const LEGACY_PROJECT_ROOT_KEYS = new Set([
+var LEGACY_PROJECT_ROOT_KEYS = new Set([
   "gearList",
   "projectInfo",
   "projectHtml",
@@ -3716,7 +3716,7 @@ const LEGACY_PROJECT_ROOT_KEYS = new Set([
   "powerSelection",
 ]);
 
-const NORMALIZED_PROJECT_KEYS = new Set([
+var NORMALIZED_PROJECT_KEYS = new Set([
   "gearList",
   "projectInfo",
   "autoGearRules",
@@ -4368,7 +4368,7 @@ function saveFullBackupHistory(entries) {
   );
 }
 
-const recordFullBackupHistoryEntry = entry => {
+var recordFullBackupHistoryEntry = entry => {
   const normalized = normalizeFullBackupHistoryEntry(entry);
   if (!normalized) {
     return loadFullBackupHistory();
@@ -5989,7 +5989,7 @@ function importAllData(allData, options = {}) {
   }
 }
 
-const STORAGE_API = {
+var STORAGE_API = {
   getSafeLocalStorage,
   loadDeviceData,
   saveDeviceData,
