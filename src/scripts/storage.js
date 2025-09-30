@@ -26,54 +26,97 @@ var LEGACY_SCHEMA_CACHE_KEY = 'cinePowerPlanner_schemaCache';
 var CUSTOM_FONT_STORAGE_KEY_DEFAULT = 'cameraPowerPlanner_customFonts';
 var MOUNT_VOLTAGE_STORAGE_KEY_FALLBACK = 'cameraPowerPlanner_mountVoltages';
 
+function readGlobalStringValue(scope, key) {
+  if (!scope || typeof scope !== 'object') {
+    return '';
+  }
+
+  var descriptor;
+  try {
+    descriptor = Object.getOwnPropertyDescriptor(scope, key);
+  } catch (descriptorError) {
+    descriptor = null;
+    void descriptorError;
+  }
+
+  if (
+    descriptor &&
+    Object.prototype.hasOwnProperty.call(descriptor, 'value') &&
+    typeof descriptor.value === 'string' &&
+    descriptor.value
+  ) {
+    return descriptor.value;
+  }
+
+  var directValue;
+  try {
+    directValue = scope[key];
+  } catch (readError) {
+    directValue = '';
+    void readError;
+  }
+
+  return typeof directValue === 'string' && directValue ? directValue : '';
+}
+
+function exposeGlobalStringValue(scope, key, value) {
+  if (!scope || typeof scope !== 'object') {
+    return '';
+  }
+
+  try {
+    Object.defineProperty(scope, key, {
+      configurable: true,
+      writable: true,
+      value: value
+    });
+  } catch (defineError) {
+    void defineError;
+    try {
+      scope[key] = value;
+    } catch (assignError) {
+      void assignError;
+      if (
+        typeof console !== 'undefined' &&
+        typeof console.warn === 'function'
+      ) {
+        console.warn(
+          'Unable to expose mount voltage storage key globally. Using fallback only.',
+          assignError
+        );
+      }
+      return '';
+    }
+  }
+
+  var assigned;
+  try {
+    assigned = scope[key];
+  } catch (verificationError) {
+    assigned = '';
+    void verificationError;
+  }
+
+  return typeof assigned === 'string' && assigned ? assigned : '';
+}
+
 function resolveMountVoltageStorageKeyName() {
   if (!GLOBAL_SCOPE || typeof GLOBAL_SCOPE !== 'object') {
     return MOUNT_VOLTAGE_STORAGE_KEY_FALLBACK;
   }
 
-  try {
-    var descriptor = Object.getOwnPropertyDescriptor(
-      GLOBAL_SCOPE,
-      'MOUNT_VOLTAGE_STORAGE_KEY'
-    );
-    if (
-      descriptor &&
-      Object.prototype.hasOwnProperty.call(descriptor, 'value') &&
-      typeof descriptor.value === 'string' &&
-      descriptor.value
-    ) {
-      return descriptor.value;
-    }
-  } catch (descriptorError) {
-    void descriptorError;
+  var existing = readGlobalStringValue(GLOBAL_SCOPE, 'MOUNT_VOLTAGE_STORAGE_KEY');
+  if (existing) {
+    return existing;
   }
 
-  try {
-    var existing = GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_KEY;
-    if (typeof existing === 'string' && existing) {
-      return existing;
-    }
-  } catch (existingReadError) {
-    void existingReadError;
-  }
-
-  try {
-    GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_KEY = MOUNT_VOLTAGE_STORAGE_KEY_FALLBACK;
-    var assigned = GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_KEY;
-    if (typeof assigned === 'string' && assigned) {
-      return assigned;
-    }
-  } catch (assignError) {
-    void assignError;
-    if (
-      typeof console !== 'undefined' &&
-      typeof console.warn === 'function'
-    ) {
-      console.warn(
-        'Unable to expose mount voltage storage key globally. Using fallback only.',
-        assignError
-      );
-    }
+  var exposed = exposeGlobalStringValue(
+    GLOBAL_SCOPE,
+    'MOUNT_VOLTAGE_STORAGE_KEY',
+    MOUNT_VOLTAGE_STORAGE_KEY_FALLBACK
+  );
+  if (exposed) {
+    return exposed;
   }
 
   return MOUNT_VOLTAGE_STORAGE_KEY_FALLBACK;
