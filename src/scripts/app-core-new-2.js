@@ -15511,6 +15511,20 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       checkSetupChanged,
       updateCalculations,
       feedbackCancelBtn,
+      alignActiveAutoGearPreset,
+      closeAutoGearEditor,
+      reconcileAutoGearAutoPresetState,
+      renderAutoGearBackupControls,
+      renderAutoGearBackupRetentionControls,
+      renderAutoGearDraftImpact,
+      renderAutoGearDraftLists,
+      renderAutoGearMonitorDefaultsControls,
+      renderAutoGearPresetsControls,
+      renderAutoGearRulesList,
+      setAutoGearAutoPresetId,
+      syncAutoGearAutoPreset,
+      updateAutoGearCatalogOptions,
+      updateAutoGearMonitorDefaultOptions,
     };
     
     const CORE_PART2_GLOBAL_SCOPE =
