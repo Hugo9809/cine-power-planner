@@ -56,6 +56,127 @@ function resolveCoreSharedPart2() {
   return null;
 }
 var CORE_SHARED_LOCAL = typeof CORE_SHARED !== 'undefined' && CORE_SHARED ? CORE_SHARED : resolveCoreSharedPart2() || {};
+var CORE_RUNTIME_SCOPE_CANDIDATES = [CORE_PART2_RUNTIME_SCOPE && _typeof(CORE_PART2_RUNTIME_SCOPE) === 'object' ? CORE_PART2_RUNTIME_SCOPE : null, typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object' ? CORE_GLOBAL_SCOPE : null, typeof globalThis !== 'undefined' && _typeof(globalThis) === 'object' ? globalThis : null, typeof window !== 'undefined' && _typeof(window) === 'object' ? window : null, typeof self !== 'undefined' && _typeof(self) === 'object' ? self : null, typeof global !== 'undefined' && _typeof(global) === 'object' ? global : null].filter(Boolean);
+
+function readCoreScopeValue(name) {
+  for (var index = 0; index < CORE_RUNTIME_SCOPE_CANDIDATES.length; index += 1) {
+    var scope = CORE_RUNTIME_SCOPE_CANDIDATES[index];
+    if (!scope || _typeof(scope) !== 'object') {
+      continue;
+    }
+    try {
+      if (name in scope) {
+        var value = scope[name];
+        if (typeof value !== 'undefined') {
+          return value;
+        }
+      }
+    } catch (readError) {
+      void readError;
+    }
+  }
+  return undefined;
+}
+
+function writeCoreScopeValue(name, value) {
+  for (var index = 0; index < CORE_RUNTIME_SCOPE_CANDIDATES.length; index += 1) {
+    var scope = CORE_RUNTIME_SCOPE_CANDIDATES[index];
+    if (!scope || _typeof(scope) !== 'object') {
+      continue;
+    }
+    try {
+      scope[name] = value;
+      return true;
+    } catch (assignError) {
+      void assignError;
+    }
+    try {
+      Object.defineProperty(scope, name, {
+        configurable: true,
+        writable: true,
+        value: value
+      });
+      return true;
+    } catch (defineError) {
+      void defineError;
+    }
+  }
+  return false;
+}
+
+function declareCoreFallbackBinding(name, factory) {
+  var existing = readCoreScopeValue(name);
+  if (typeof existing !== 'undefined') {
+    return existing;
+  }
+  var fallbackValue = typeof factory === 'function' ? factory() : factory;
+  writeCoreScopeValue(name, fallbackValue);
+  return fallbackValue;
+}
+
+if (typeof autoGearAutoPresetId === 'undefined') {
+  var autoGearAutoPresetId = declareCoreFallbackBinding('autoGearAutoPresetId', function () {
+    if (typeof loadAutoGearAutoPresetId === 'function') {
+      try {
+        var storedId = loadAutoGearAutoPresetId();
+        return typeof storedId === 'string' ? storedId : '';
+      } catch (error) {
+        if (typeof console !== 'undefined' && typeof console.error === 'function') {
+          console.error('Failed to recover automatic gear auto preset identifier from storage.', error);
+        }
+      }
+    }
+    return '';
+  });
+}
+
+if (typeof baseAutoGearRules === 'undefined') {
+  var baseAutoGearRules = declareCoreFallbackBinding('baseAutoGearRules', function () {
+    if (typeof loadAutoGearRules === 'function') {
+      try {
+        var storedRules = loadAutoGearRules();
+        return Array.isArray(storedRules) ? storedRules.slice() : [];
+      } catch (error) {
+        if (typeof console !== 'undefined' && typeof console.error === 'function') {
+          console.error('Failed to recover automatic gear rules from storage.', error);
+        }
+      }
+    }
+    return [];
+  });
+}
+
+if (typeof autoGearScenarioModeSelect === 'undefined') {
+  var autoGearScenarioModeSelect = declareCoreFallbackBinding('autoGearScenarioModeSelect', function () {
+    return null;
+  });
+}
+
+if (typeof safeGenerateConnectorSummary === 'undefined') {
+  var safeGenerateConnectorSummary = declareCoreFallbackBinding('safeGenerateConnectorSummary', function () {
+    return function safeGenerateConnectorSummary(device) {
+      if (!device || _typeof(device) !== 'object') {
+        return '';
+      }
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Using fallback connector summary generator. Core bindings may have failed to initialise.');
+      }
+      try {
+        var keys = Object.keys(device);
+        if (!keys.length) {
+          return '';
+        }
+        var primaryKey = keys[0];
+        var value = device[primaryKey];
+        var label = typeof primaryKey === 'string' ? primaryKey.replace(/_/g, ' ') : 'connector';
+        return value ? label + ': ' + value : label;
+      } catch (fallbackError) {
+        void fallbackError;
+        return '';
+      }
+    };
+  });
+}
 var currentProjectInfo = null;
 var loadedSetupState = null;
 var loadedSetupStateSignature = '';
