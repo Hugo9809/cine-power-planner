@@ -2830,9 +2830,11 @@ function applyDarkMode(enabled) {
       darkModeToggle.setAttribute("aria-pressed", "false");
     }
   }
-  const highContrast = isHighContrastActive();
+  const highContrast = typeof isHighContrastActive === 'function' ? isHighContrastActive() : false;
   const accentSource = highContrast ? HIGH_CONTRAST_ACCENT_COLOR : accentColor;
-  refreshDarkModeAccentBoost({ color: accentSource, highContrast });
+  if (typeof refreshDarkModeAccentBoost === 'function') {
+    refreshDarkModeAccentBoost({ color: accentSource, highContrast });
+  }
   updateThemeColor(enabled);
   if (settingsDarkMode) {
     settingsDarkMode.checked = enabled;

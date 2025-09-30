@@ -904,6 +904,11 @@ if (runtimeFeedbackBtn && feedbackDialog && feedbackForm) {
     });
   }
 
+  const feedbackUseLocationBtn =
+    (typeof globalThis !== 'undefined' && globalThis.feedbackUseLocationBtn)
+    || (typeof window !== 'undefined' && window.feedbackUseLocationBtn)
+    || document.getElementById('fbUseLocationBtn');
+
   if (feedbackUseLocationBtn) {
     feedbackUseLocationBtn.addEventListener('click', () => {
       const locationInput = document.getElementById('fbLocation');
