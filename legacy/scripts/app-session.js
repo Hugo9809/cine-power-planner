@@ -2893,12 +2893,12 @@ mountVoltageInputNodes.forEach(function (input) {
   input.addEventListener('blur', handleMountVoltageInputChange);
 });
 var mountVoltageResetButtonRef = function () {
-  if (typeof mountVoltageResetButton !== 'undefined' && mountVoltageResetButton) {
-    return mountVoltageResetButton;
-  }
-  var scope = typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE ? CORE_GLOBAL_SCOPE : typeof globalThis !== 'undefined' && globalThis ? globalThis : typeof window !== 'undefined' && window ? window : typeof self !== 'undefined' && self ? self : typeof global !== 'undefined' && global ? global : null;
-  if (scope && scope.mountVoltageResetButton) {
-    return scope.mountVoltageResetButton;
+  var candidates = [typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object' ? CORE_GLOBAL_SCOPE : null, typeof globalThis !== 'undefined' && _typeof(globalThis) === 'object' ? globalThis : null, typeof window !== 'undefined' && _typeof(window) === 'object' ? window : null, typeof self !== 'undefined' && _typeof(self) === 'object' ? self : null, typeof global !== 'undefined' && _typeof(global) === 'object' ? global : null].filter(Boolean);
+  for (var index = 0; index < candidates.length; index += 1) {
+    var scope = candidates[index];
+    if (scope && scope.mountVoltageResetButton) {
+      return scope.mountVoltageResetButton;
+    }
   }
   return null;
 }();

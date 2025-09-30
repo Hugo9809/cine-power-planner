@@ -3241,24 +3241,24 @@ mountVoltageInputNodes.forEach(input => {
 });
 
 const mountVoltageResetButtonRef = (() => {
-  if (typeof mountVoltageResetButton !== 'undefined' && mountVoltageResetButton) {
-    return mountVoltageResetButton;
-  }
-  const scope =
-    (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE)
+  const candidateScopes = [
+    (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object')
       ? CORE_GLOBAL_SCOPE
-      : (typeof globalThis !== 'undefined' && globalThis)
-        ? globalThis
-        : (typeof window !== 'undefined' && window)
-          ? window
-          : (typeof self !== 'undefined' && self)
-            ? self
-            : (typeof global !== 'undefined' && global)
-              ? global
-              : null;
-  if (scope && scope.mountVoltageResetButton) {
-    return scope.mountVoltageResetButton;
+      : null,
+    (typeof globalThis !== 'undefined' && typeof globalThis === 'object') ? globalThis : null,
+    (typeof window !== 'undefined' && typeof window === 'object') ? window : null,
+    (typeof self !== 'undefined' && typeof self === 'object') ? self : null,
+    (typeof global !== 'undefined' && typeof global === 'object') ? global : null,
+  ].filter(Boolean);
+
+  for (let index = 0; index < candidateScopes.length; index += 1) {
+    const scope = candidateScopes[index];
+    const button = scope && scope.mountVoltageResetButton;
+    if (button) {
+      return button;
+    }
   }
+
   return null;
 })();
 

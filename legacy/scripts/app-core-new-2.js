@@ -205,6 +205,40 @@ var sharedDeviceManagerLists = function () {
   return fallback;
 }();
 var deviceManagerLists = sharedDeviceManagerLists;
+function getDeviceManagerListsSafe() {
+  if (typeof deviceManagerLists !== 'undefined' && deviceManagerLists && typeof deviceManagerLists.forEach === 'function') {
+    return deviceManagerLists;
+  }
+  var candidates = [CORE_PART2_RUNTIME_SCOPE && _typeof(CORE_PART2_RUNTIME_SCOPE) === 'object' ? CORE_PART2_RUNTIME_SCOPE : null, CORE_SHARED_SCOPE_PART2 && _typeof(CORE_SHARED_SCOPE_PART2) === 'object' ? CORE_SHARED_SCOPE_PART2 : null, typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object' ? CORE_GLOBAL_SCOPE : null, typeof globalThis !== 'undefined' && _typeof(globalThis) === 'object' ? globalThis : null, typeof window !== 'undefined' && _typeof(window) === 'object' ? window : null, typeof self !== 'undefined' && _typeof(self) === 'object' ? self : null, typeof global !== 'undefined' && _typeof(global) === 'object' ? global : null].filter(Boolean);
+  for (var index = 0; index < candidates.length; index += 1) {
+    var scope = candidates[index];
+    if (scope && scope.deviceManagerLists instanceof Map) {
+      return scope.deviceManagerLists;
+    }
+  }
+  var fallback = sharedDeviceManagerLists instanceof Map ? sharedDeviceManagerLists : new Map();
+  for (var _index = 0; _index < candidates.length; _index += 1) {
+    var target = candidates[_index];
+    if (!target) continue;
+    var extensible = typeof Object.isExtensible === 'function' ? Object.isExtensible(target) : true;
+    if (!extensible) continue;
+    try {
+      target.deviceManagerLists = fallback;
+    } catch (assignError) {
+      void assignError;
+      try {
+        Object.defineProperty(target, 'deviceManagerLists', {
+          configurable: true,
+          writable: true,
+          value: fallback
+        });
+      } catch (defineError) {
+        void defineError;
+      }
+    }
+  }
+  return fallback;
+}
 function callCoreFunctionFromPart2(functionName) {
   var args = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
   var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
@@ -12356,7 +12390,9 @@ if (filterHelperScope) {
   }
 }
 function applyFilters() {
-  deviceManagerLists.forEach(function (_ref36) {
+  var lists = getDeviceManagerListsSafe();
+  if (!(lists instanceof Map)) return;
+  lists.forEach(function (_ref36) {
     var list = _ref36.list,
       filterInput = _ref36.filterInput;
     if (!list) return;
@@ -14721,7 +14757,9 @@ function renderDeviceList(categoryKey, ulElement) {
 }
 function refreshDeviceLists() {
   syncDeviceManagerCategories();
-  deviceManagerLists.forEach(function (_ref41, categoryKey) {
+  var lists = getDeviceManagerListsSafe();
+  if (!(lists instanceof Map)) return;
+  lists.forEach(function (_ref41, categoryKey) {
     var list = _ref41.list,
       filterInput = _ref41.filterInput;
     if (!list) return;
