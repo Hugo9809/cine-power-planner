@@ -119,6 +119,10 @@ const texts = {
     settingsTabGeneral: "General",
     settingsTabGeneralHelp:
       "Adjust language, theme, typography and branding preferences.",
+    generalSectionLanguageHeading: "Language & units",
+    generalSectionAppearanceHeading: "Appearance",
+    generalSectionTypographyHeading: "Typography",
+    generalSectionBrandingHeading: "Branding",
     languageSetting: "Language",
     settingsLanguageHelp:
       "Choose the interface language. Changes apply immediately and are remembered for next time.",
@@ -1947,6 +1951,10 @@ const texts = {
     settingsTabGeneral: "Generali",
     settingsTabGeneralHelp:
       "Regola lingua, tema, tipografia e branding.",
+    generalSectionLanguageHeading: "Lingua e unità",
+    generalSectionAppearanceHeading: "Aspetto",
+    generalSectionTypographyHeading: "Tipografia",
+    generalSectionBrandingHeading: "Branding e logo",
     languageSetting: "Lingua",
     settingsLanguageHelp:
       "Scegli la lingua dell'interfaccia. Le modifiche sono immediate e vengono ricordate alla visita successiva.",
@@ -3361,6 +3369,10 @@ const texts = {
     settingsTabGeneral: "General",
     settingsTabGeneralHelp:
       "Ajusta idioma, tema, tipografía y opciones de marca.",
+    generalSectionLanguageHeading: "Idioma y unidades",
+    generalSectionAppearanceHeading: "Apariencia",
+    generalSectionTypographyHeading: "Tipografía",
+    generalSectionBrandingHeading: "Marca y logotipo",
     languageSetting: "Idioma",
     settingsLanguageHelp:
       "Elige el idioma de la interfaz. Los cambios se aplican al instante y se recuerdan para la próxima visita.",
@@ -4776,6 +4788,10 @@ const texts = {
     settingsTabGeneral: "Général",
     settingsTabGeneralHelp:
       "Ajustez la langue, le thème, la typographie et l'identité visuelle.",
+    generalSectionLanguageHeading: "Langue et unités",
+    generalSectionAppearanceHeading: "Apparence",
+    generalSectionTypographyHeading: "Typographie",
+    generalSectionBrandingHeading: "Image de marque",
     languageSetting: "Langue",
     settingsLanguageHelp:
       "Choisissez la langue de l’interface. Les modifications sont instantanées et mémorisées pour la prochaine visite.",
@@ -6203,6 +6219,10 @@ const texts = {
     settingsTabGeneral: "Allgemein",
     settingsTabGeneralHelp:
       "Sprache, Erscheinungsbild, Typografie und Branding anpassen.",
+    generalSectionLanguageHeading: "Sprache & Einheiten",
+    generalSectionAppearanceHeading: "Darstellung & Farben",
+    generalSectionTypographyHeading: "Typografie",
+    generalSectionBrandingHeading: "Branding & Logo",
     languageSetting: "Sprache",
     settingsLanguageHelp:
       "Wähle die Oberflächensprache. Änderungen wirken sofort und werden gespeichert.",

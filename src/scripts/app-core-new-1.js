@@ -7474,6 +7474,34 @@ function setLanguage(lang) {
       generalSettingsHeading.textContent = generalLabel;
       generalSettingsHeading.setAttribute('data-help', generalHelp);
     }
+    if (generalLanguageHeading) {
+      const sectionHeading =
+        texts[lang].generalSectionLanguageHeading ||
+        texts.en?.generalSectionLanguageHeading ||
+        generalLanguageHeading.textContent;
+      generalLanguageHeading.textContent = sectionHeading;
+    }
+    if (generalAppearanceHeading) {
+      const sectionHeading =
+        texts[lang].generalSectionAppearanceHeading ||
+        texts.en?.generalSectionAppearanceHeading ||
+        generalAppearanceHeading.textContent;
+      generalAppearanceHeading.textContent = sectionHeading;
+    }
+    if (generalTypographyHeading) {
+      const sectionHeading =
+        texts[lang].generalSectionTypographyHeading ||
+        texts.en?.generalSectionTypographyHeading ||
+        generalTypographyHeading.textContent;
+      generalTypographyHeading.textContent = sectionHeading;
+    }
+    if (generalBrandingHeading) {
+      const sectionHeading =
+        texts[lang].generalSectionBrandingHeading ||
+        texts.en?.generalSectionBrandingHeading ||
+        generalBrandingHeading.textContent;
+      generalBrandingHeading.textContent = sectionHeading;
+    }
   }
   applySettingsTabLabel(
     settingsTabAutoGear,
@@ -13364,6 +13392,10 @@ settingsTabIconAssignments.forEach(([button, glyph]) => {
   iconElement.setAttribute('aria-hidden', 'true');
 });
 const generalSettingsHeading = document.getElementById('generalSettingsHeading');
+const generalLanguageHeading = document.getElementById('generalLanguageHeading');
+const generalAppearanceHeading = document.getElementById('generalAppearanceHeading');
+const generalTypographyHeading = document.getElementById('generalTypographyHeading');
+const generalBrandingHeading = document.getElementById('generalBrandingHeading');
 var settingsLanguage = document.getElementById("settingsLanguage");
 var settingsDarkMode = document.getElementById("settingsDarkMode");
 var settingsPinkMode = document.getElementById("settingsPinkMode");
