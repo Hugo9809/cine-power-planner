@@ -8873,6 +8873,66 @@ if (helpButton && helpDialog) {
   let hoverHelpPointerClientX = null;
   let hoverHelpPointerClientY = null;
 
+  const parseHoverHelpSelectorList = value => {
+    if (typeof value !== 'string') return [];
+    return value
+      .split(',')
+      .map(selector => selector.trim())
+      .filter(Boolean);
+  };
+
+  const parseHoverHelpIdList = value => {
+    if (typeof value !== 'string') return [];
+    return value
+      .split(/\s+/)
+      .map(id => id.trim())
+      .filter(Boolean);
+  };
+
+  const getHoverHelpReferenceElements = element => {
+    if (!element || !document?.querySelector) return [];
+
+    const references = [];
+    const seen = new Set();
+
+    const addCandidate = candidate => {
+      if (!candidate || !(candidate instanceof Element)) return;
+      if (candidate === element) return;
+      if (seen.has(candidate)) return;
+      seen.add(candidate);
+      references.push(candidate);
+    };
+
+    const addFromSelectors = raw => {
+      parseHoverHelpSelectorList(raw).forEach(selector => {
+        try {
+          const match = document.querySelector(selector);
+          addCandidate(match);
+        } catch {
+          // Ignore invalid selectors – hover help should continue gracefully.
+        }
+      });
+    };
+
+    const addFromIds = raw => {
+      parseHoverHelpIdList(raw).forEach(id => {
+        const match = document.getElementById(id);
+        addCandidate(match);
+      });
+    };
+
+    addFromSelectors(element.getAttribute('data-hover-help-target'));
+    addFromSelectors(element.getAttribute('data-hover-help-source'));
+
+    if (!element.hasAttribute('data-hover-help-skip-help-target')) {
+      addFromSelectors(element.getAttribute('data-help-target'));
+    }
+
+    addFromIds(element.getAttribute('data-hover-help-targets'));
+
+    return references;
+  };
+
   const HOVER_HELP_TARGET_SELECTOR =
     '[data-help], [aria-label], [title], [aria-labelledby], [alt], [aria-describedby]';
 
@@ -9029,8 +9089,11 @@ if (helpButton && helpDialog) {
     const ariaHasPopup = (element.getAttribute('aria-haspopup') || '').toLowerCase();
     const ariaPressed = (element.getAttribute('aria-pressed') || '').toLowerCase();
 
-    if (role === 'dialog') {
+    if (role === 'dialog' || role === 'alertdialog') {
       push('hoverHelpFallbackDialog');
+    }
+    if (role === 'alertdialog') {
+      push('hoverHelpFallbackAlert');
     }
     if (role === 'tablist') {
       push('hoverHelpFallbackTablist');
@@ -9044,6 +9107,12 @@ if (helpButton && helpDialog) {
     if (role === 'menuitem') {
       push('hoverHelpFallbackMenu');
     }
+    if (role === 'listbox') {
+      push('hoverHelpFallbackSelect');
+    }
+    if (role === 'link') {
+      push('hoverHelpFallbackLink');
+    }
     if (role === 'progressbar') {
       push('hoverHelpFallbackProgress');
     }
@@ -9055,6 +9124,21 @@ if (helpButton && helpDialog) {
     }
     if (role === 'switch') {
       push('hoverHelpFallbackSwitch');
+    }
+    if (role === 'checkbox' || role === 'menuitemcheckbox') {
+      push('hoverHelpFallbackCheckbox');
+    }
+    if (role === 'radio' || role === 'menuitemradio') {
+      push('hoverHelpFallbackRadio');
+    }
+    if (role === 'slider') {
+      push('hoverHelpFallbackSlider');
+    }
+    if (role === 'spinbutton') {
+      push('hoverHelpFallbackNumberInput');
+    }
+    if (role === 'textbox' || role === 'searchbox') {
+      push('hoverHelpFallbackTextInput');
     }
     if (role === 'combobox') {
       push('hoverHelpFallbackSelect');
@@ -9100,6 +9184,8 @@ if (helpButton && helpDialog) {
           push('hoverHelpFallbackTextInput');
           break;
       }
+    } else if (element.isContentEditable) {
+      push('hoverHelpFallbackTextarea');
     }
 
     push('hoverHelpFallbackGeneric');
@@ -9163,8 +9249,6 @@ if (helpButton && helpDialog) {
       }
     };
 
-    addTextFromElement(el, { preferTextAsLabel: true });
-
     const applyFromIds = (ids, { preferTextAsLabel = false } = {}) => {
       if (!ids) return;
       ids
@@ -9181,12 +9265,47 @@ if (helpButton && helpDialog) {
         });
     };
 
-    applyFromIds(el.getAttribute('aria-labelledby'), { preferTextAsLabel: true });
-    applyFromIds(el.getAttribute('aria-describedby'));
+    const visitedElements = new Set();
+    const queue = [
+      { element: el, preferTextAsLabel: true, includeTextContent: false }
+    ];
 
-    findAssociatedLabelElements(el).forEach(labelEl => {
-      addTextFromElement(labelEl, { includeTextContent: true, preferTextAsLabel: true });
-    });
+    while (queue.length) {
+      const {
+        element: current,
+        preferTextAsLabel,
+        includeTextContent
+      } = queue.shift();
+      if (!current || visitedElements.has(current)) {
+        continue;
+      }
+      visitedElements.add(current);
+
+      addTextFromElement(current, { includeTextContent, preferTextAsLabel });
+
+      applyFromIds(current.getAttribute('aria-labelledby'), {
+        preferTextAsLabel: true
+      });
+      applyFromIds(current.getAttribute('aria-describedby'));
+      applyFromIds(current.getAttribute('aria-details'));
+      applyFromIds(current.getAttribute('aria-errormessage'));
+      applyFromIds(current.getAttribute('aria-controls'));
+
+      findAssociatedLabelElements(current).forEach(labelEl => {
+        addTextFromElement(labelEl, {
+          includeTextContent: true,
+          preferTextAsLabel: true
+        });
+      });
+
+      getHoverHelpReferenceElements(current).forEach(proxyEl => {
+        queue.push({
+          element: proxyEl,
+          preferTextAsLabel: false,
+          includeTextContent: true
+        });
+      });
+    }
 
     if (!labelParts.length) {
       addLabelText(el.textContent);
@@ -9567,6 +9686,7 @@ if (helpButton && helpDialog) {
   };
 
   window.addEventListener('pointermove', updatePointerPosition, true);
+  window.addEventListener('pointerdown', updatePointerPosition, true);
 
   // Prevent interacting with controls like dropdowns while hover help is active
   document.addEventListener(

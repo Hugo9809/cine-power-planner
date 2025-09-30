@@ -34,6 +34,9 @@ copy offline.【F:src/scripts/script.js†L92-L183】
    dialog.【F:index.html†L3899-L3920】【F:docs/save-share-restore-reference.md†L28-L35】 Document
    any new navigation tips—like the quick-link keyboard guidance surfaced through
    `helpResultsAssist`—so translations and hover help mirror the latest behaviour.【F:index.html†L2641-L2663】【F:src/scripts/app-session.js†L8427-L8486】【F:src/scripts/translations.js†L1327-L1340】
+   Hover help now reads from linked selectors (`data-help-target`, `data-hover-help-target` and
+   ARIA reference IDs), so double-check that contextual copy stays accurate for every
+   referenced control when you update docs or UI labels.【F:src/scripts/app-session.js†L8896-L8996】
 2. **README family.** Revise the primary `README.md` plus each localized README under the
    project root. Ensure new workflows appear in the *Save, Share & Import Drill*, *Backup &
    Recovery* and *Emergency Recovery Playbook* sections so every language documents the same
