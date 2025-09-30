@@ -163,6 +163,48 @@ function fallbackHumanizeKey(key) {
 }
 var coreStableStringify = typeof CORE_SHARED_LOCAL.stableStringify === 'function' ? CORE_SHARED_LOCAL.stableStringify : fallbackStableStringify;
 var coreHumanizeKey = typeof CORE_SHARED_LOCAL.humanizeKey === 'function' ? CORE_SHARED_LOCAL.humanizeKey : fallbackHumanizeKey;
+var sharedDeviceManagerLists = function () {
+  var candidates = [];
+  candidates.push(CORE_PART2_RUNTIME_SCOPE && _typeof(CORE_PART2_RUNTIME_SCOPE) === 'object' ? CORE_PART2_RUNTIME_SCOPE : null);
+  candidates.push(typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object' ? CORE_GLOBAL_SCOPE : null);
+  candidates.push(typeof globalThis !== 'undefined' && _typeof(globalThis) === 'object' ? globalThis : null);
+  candidates.push(typeof window !== 'undefined' && _typeof(window) === 'object' ? window : null);
+  candidates.push(typeof self !== 'undefined' && _typeof(self) === 'object' ? self : null);
+  candidates.push(typeof global !== 'undefined' && _typeof(global) === 'object' ? global : null);
+  candidates = candidates.filter(Boolean);
+  var assignTarget = null;
+  for (var index = 0; index < candidates.length; index += 1) {
+    var scope = candidates[index];
+    if (scope && scope.deviceManagerLists instanceof Map) {
+      return scope.deviceManagerLists;
+    }
+    if (!assignTarget && scope) {
+      var extensible = typeof Object.isExtensible === 'function' ? Object.isExtensible(scope) : true;
+      if (extensible) {
+        assignTarget = scope;
+      }
+    }
+  }
+  var fallback = new Map();
+  if (assignTarget) {
+    try {
+      assignTarget.deviceManagerLists = fallback;
+    } catch (assignError) {
+      void assignError;
+      try {
+        Object.defineProperty(assignTarget, 'deviceManagerLists', {
+          configurable: true,
+          writable: true,
+          value: fallback
+        });
+      } catch (defineError) {
+        void defineError;
+      }
+    }
+  }
+  return fallback;
+}();
+var deviceManagerLists = sharedDeviceManagerLists;
 function callCoreFunctionFromPart2(functionName) {
   var args = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
   var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
