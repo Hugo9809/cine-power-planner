@@ -4848,6 +4848,18 @@ body.pink-mode #topBar #logo .logo-pink {
   word-break: break-word;
 }
 
+.feature-search-highlight {
+  background: color-mix(in srgb, var(--accent-color) 22%, transparent);
+  color: inherit;
+  font-weight: var(--font-weight-medium);
+  border-radius: 3px;
+  padding: 0 2px;
+}
+
+.dark-mode .feature-search-highlight {
+  background: color-mix(in srgb, var(--accent-color) 35%, rgba(255, 255, 255, 0.12));
+}
+
 .feature-search.feature-search-open #featureSearch {
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;

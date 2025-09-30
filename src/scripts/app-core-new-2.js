@@ -6724,6 +6724,104 @@ var recordFeatureSearchUsage = (id, type, label) => {
   registerFeatureSearchUsage(id, type, label);
 };
 
+const FEATURE_SEARCH_HIGHLIGHT_TOKEN_LIMIT = 8;
+let featureSearchHighlightSegments = [];
+let featureSearchHighlightSegmentsLower = [];
+
+const updateFeatureSearchHighlightState = (queryText, queryTokens) => {
+  const segments = [];
+  const seen = new Set();
+
+  if (typeof queryText === 'string') {
+    queryText
+      .split(/\s+/)
+      .map(part => part.trim())
+      .filter(Boolean)
+      .forEach(part => {
+        if (part.length < 2) return;
+        const lower = part.toLowerCase();
+        if (seen.has(lower)) return;
+        seen.add(lower);
+        segments.push(part);
+      });
+  }
+
+  if (Array.isArray(queryTokens)) {
+    for (const token of queryTokens) {
+      if (typeof token !== 'string') continue;
+      const trimmed = token.trim();
+      if (trimmed.length < 3) continue;
+      const lower = trimmed.toLowerCase();
+      if (seen.has(lower)) continue;
+      seen.add(lower);
+      segments.push(trimmed);
+      if (segments.length >= FEATURE_SEARCH_HIGHLIGHT_TOKEN_LIMIT) {
+        break;
+      }
+    }
+  }
+
+  featureSearchHighlightSegments = segments
+    .slice(0, FEATURE_SEARCH_HIGHLIGHT_TOKEN_LIMIT)
+    .sort((a, b) => b.length - a.length);
+  featureSearchHighlightSegmentsLower = featureSearchHighlightSegments.map(segment =>
+    typeof segment === 'string' ? segment.toLowerCase() : ''
+  );
+};
+
+const applyFeatureSearchHighlights = (element, text) => {
+  if (!element) return;
+  const value = typeof text === 'string' ? text : '';
+  if (!value) {
+    element.textContent = value;
+    return;
+  }
+  if (!Array.isArray(featureSearchHighlightSegments) || !featureSearchHighlightSegments.length) {
+    element.textContent = value;
+    return;
+  }
+
+  const lowerValue = value.toLowerCase();
+  const fragment = document.createDocumentFragment();
+  let cursor = 0;
+  let start = 0;
+
+  while (cursor < value.length) {
+    let bestLength = 0;
+    for (let index = 0; index < featureSearchHighlightSegmentsLower.length; index += 1) {
+      const segmentLower = featureSearchHighlightSegmentsLower[index];
+      if (!segmentLower) continue;
+      if (lowerValue.startsWith(segmentLower, cursor)) {
+        if (segmentLower.length > bestLength) {
+          bestLength = segmentLower.length;
+        }
+      }
+    }
+
+    if (bestLength > 0) {
+      if (cursor > start) {
+        fragment.appendChild(document.createTextNode(value.slice(start, cursor)));
+      }
+      const mark = document.createElement('mark');
+      mark.className = 'feature-search-highlight';
+      mark.textContent = value.slice(cursor, cursor + bestLength);
+      fragment.appendChild(mark);
+      cursor += bestLength;
+      start = cursor;
+      continue;
+    }
+
+    cursor += 1;
+  }
+
+  if (start < value.length) {
+    fragment.appendChild(document.createTextNode(value.slice(start)));
+  }
+
+  element.textContent = '';
+  element.appendChild(fragment);
+};
+
 const FEATURE_SEARCH_DETAIL_MAX_LENGTH = 140;
 
 const normalizeFeatureSearchDetail = text => {
@@ -6820,7 +6918,7 @@ const renderFeatureSearchDropdown = options => {
 
     const labelSpan = document.createElement('span');
     labelSpan.className = 'feature-search-option-label';
-    labelSpan.textContent = option.label || option.value;
+    applyFeatureSearchHighlights(labelSpan, option.label || option.value);
     button.appendChild(labelSpan);
 
     const normalizedLabel = (option.label || '').trim().toLowerCase();
@@ -6828,7 +6926,7 @@ const renderFeatureSearchDropdown = options => {
     if (normalizedValue && normalizedLabel && normalizedValue !== normalizedLabel) {
       const valueSpan = document.createElement('span');
       valueSpan.className = 'feature-search-option-value';
-      valueSpan.textContent = option.value;
+      applyFeatureSearchHighlights(valueSpan, option.value);
       button.appendChild(valueSpan);
     }
 
@@ -6889,6 +6987,7 @@ const renderFeatureListOptions = values => {
 
 function restoreFeatureSearchDefaults() {
   if (!featureList) return;
+  updateFeatureSearchHighlightState('', []);
   const values = [];
   const seen = new Set();
   const recentOptions = resolveRecentFeatureSearchOptions();
@@ -7123,6 +7222,7 @@ function updateFeatureSearchSuggestions(query) {
   const trimmed = queryText.trim();
 
   if (!trimmed && !filterType) {
+    updateFeatureSearchHighlightState('', []);
     restoreFeatureSearchDefaults();
     return;
   }
@@ -7138,6 +7238,7 @@ function updateFeatureSearchSuggestions(query) {
 
   const queryKey = trimmed ? searchKey(trimmed) : '';
   const queryTokens = trimmed ? searchTokens(trimmed) : [];
+  updateFeatureSearchHighlightState(trimmed, queryTokens);
   if (!queryKey && (!Array.isArray(queryTokens) || queryTokens.length === 0) && !filterType) {
     restoreFeatureSearchDefaults();
     return;
@@ -9345,6 +9446,7 @@ function populateFeatureSearch() {
   });
   loadFeatureSearchHistory();
   cleanupFeatureSearchHistory();
+  updateFeatureSearchHighlightState('', []);
   renderFeatureListOptions(featureSearchDefaultOptions);
   if (featureSearch && featureSearch.value) {
     updateFeatureSearchSuggestions(featureSearch.value);

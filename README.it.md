@@ -188,8 +188,9 @@ Ripeti questa routine quando arriva un nuovo membro, allestisci una postazione o
 
 - **Ricerca globale** (`/`, `Ctrl+K`, `⌘K`) per saltare a funzioni, menu o argomenti di aiuto anche con navigazione nascosta. I
   suggerimenti mostrano prima le corrispondenze dirette di funzionalità e dispositivi rispetto ai temi di aiuto, così i flussi da
-  tastiera raggiungono subito i controlli principali. Quando svuoti il campo, le corrispondenze usate più di recente salgono in cima
-  così ripeti i passaggi della troupe in un attimo.
+  tastiera raggiungono subito i controlli principali. Le parole corrispondenti vengono evidenziate nel menu a discesa così capisci
+  subito perché appare ogni risultato. Quando svuoti il campo, le corrispondenze usate più di recente salgono in cima così ripeti i
+  passaggi della troupe in un attimo.
 - **Centro assistenza** (`?`, `H`, `F1`, `Ctrl+/`) con guide, scorciatoie, FAQ e modalità aiuto al passaggio. La checklist «Inizia
   qui» ora spiega come preparare l’indicatore offline, salvare esportazioni ridondanti e provare un’esercitazione di ripristino
   così la troupe verifica i backup prima della produzione. Un riquadro di
