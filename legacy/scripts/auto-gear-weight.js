@@ -31,11 +31,33 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (typeof value === 'string') {
       var trimmed = value.trim();
       if (!trimmed) return null;
-      var sanitized = trimmed.replace(/[^0-9.,-]/g, '').replace(/,/g, '.');
+      var lowerCased = trimmed.toLowerCase();
+      var multiplier = 1;
+      var unitFragment = lowerCased.replace(/[-0-9.,]/g, ' ');
+      var unitTokens = unitFragment.split(/\s+/).map(function (token) {
+        return token.replace(/[^a-z]/g, '');
+      }).filter(Boolean);
+      for (var i = 0; i < unitTokens.length; i += 1) {
+        var token = unitTokens[i];
+        if (token === 'kg' || token === 'kilogram' || token === 'kilograms' || token === 'kilo' || token === 'kilos') {
+          multiplier = 1000;
+          break;
+        }
+        if (token === 'lb' || token === 'lbs' || token === 'pound' || token === 'pounds') {
+          multiplier = 453.59237;
+          break;
+        }
+        if (token === 'oz' || token === 'ounce' || token === 'ounces') {
+          multiplier = 28.349523125;
+          break;
+        }
+      }
+      var sanitized = lowerCased.replace(/[^0-9.,-]/g, '').replace(/,/g, '.');
       if (!sanitized) return null;
       var parsed = Number.parseFloat(sanitized);
       if (!Number.isFinite(parsed)) return null;
-      var roundedParsed = Math.round(parsed);
+      var converted = parsed * multiplier;
+      var roundedParsed = Math.round(converted);
       return roundedParsed >= 0 ? roundedParsed : null;
     }
     return null;

@@ -29,6 +29,13 @@ describe('auto gear camera weight helpers', () => {
     expect(normalizeAutoGearWeightValue('')).toBeNull();
   });
 
+  test('normalizes string values that include kilograms, pounds or ounces', () => {
+    expect(normalizeAutoGearWeightValue('2.5 kg')).toBe(2500);
+    expect(normalizeAutoGearWeightValue('2kg')).toBe(2000);
+    expect(normalizeAutoGearWeightValue('10 lb')).toBe(4536);
+    expect(normalizeAutoGearWeightValue('8 ounces')).toBe(227);
+  });
+
   test('evaluateAutoGearCameraWeightCondition compares correctly', () => {
     expect(
       evaluateAutoGearCameraWeightCondition({ operator: 'greater', value: 1500 }, 1600)
