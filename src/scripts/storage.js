@@ -64,37 +64,58 @@ function exposeGlobalStringValue(scope, key, value) {
     return '';
   }
 
+  var descriptor;
   try {
-    Object.defineProperty(scope, key, {
-      configurable: true,
-      writable: true,
-      value: value
-    });
-  } catch (defineError) {
-    void defineError;
+    descriptor = Object.getOwnPropertyDescriptor(scope, key);
+  } catch (descriptorError) {
+    descriptor = null;
+    void descriptorError;
+  }
+
+  if (
+    descriptor &&
+    Object.prototype.hasOwnProperty.call(descriptor, 'value') &&
+    typeof descriptor.value === 'string' &&
+    descriptor.value
+  ) {
+    return descriptor.value;
+  }
+
+  if (descriptor && descriptor.configurable === false && descriptor.writable === false) {
+    return '';
+  }
+
+  var assigned = '';
+
+  try {
+    scope[key] = value;
+    assigned = scope[key];
+  } catch (assignError) {
+    assigned = '';
+    void assignError;
+  }
+
+  if (typeof assigned !== 'string' || !assigned) {
     try {
-      scope[key] = value;
-    } catch (assignError) {
-      void assignError;
+      Object.defineProperty(scope, key, {
+        configurable: true,
+        writable: true,
+        value: value
+      });
+      assigned = scope[key];
+    } catch (defineError) {
+      void defineError;
       if (
         typeof console !== 'undefined' &&
         typeof console.warn === 'function'
       ) {
         console.warn(
           'Unable to expose mount voltage storage key globally. Using fallback only.',
-          assignError
+          defineError
         );
       }
       return '';
     }
-  }
-
-  var assigned;
-  try {
-    assigned = scope[key];
-  } catch (verificationError) {
-    assigned = '';
-    void verificationError;
   }
 
   return typeof assigned === 'string' && assigned ? assigned : '';
