@@ -4,16 +4,42 @@
           resetMountVoltagePreferences */
 /* exported getMountVoltageStorageKeyName, getMountVoltageStorageBackupKeyName */
 
-var GLOBAL_SCOPE =
-  typeof globalThis !== 'undefined'
-    ? globalThis
-    : typeof window !== 'undefined'
-      ? window
-      : typeof global !== 'undefined'
-        ? global
-        : typeof self !== 'undefined'
-          ? self
-          : null;
+(function initializeStorageModule() {
+  const GLOBAL_SCOPE =
+    typeof globalThis !== 'undefined'
+      ? globalThis
+      : typeof window !== 'undefined'
+        ? window
+        : typeof global !== 'undefined'
+          ? global
+          : typeof self !== 'undefined'
+            ? self
+            : null;
+
+  if (GLOBAL_SCOPE && GLOBAL_SCOPE.__cineStorageInitialized) {
+    if (
+      typeof module !== 'undefined' &&
+      module.exports &&
+      GLOBAL_SCOPE.__cineStorageApi &&
+      typeof GLOBAL_SCOPE.__cineStorageApi === 'object'
+    ) {
+      module.exports = GLOBAL_SCOPE.__cineStorageApi;
+    }
+    return;
+  }
+
+  if (GLOBAL_SCOPE) {
+    try {
+      Object.defineProperty(GLOBAL_SCOPE, '__cineStorageInitialized', {
+        configurable: true,
+        writable: true,
+        value: true,
+      });
+    } catch (storageInitFlagError) {
+      GLOBAL_SCOPE.__cineStorageInitialized = true;
+      void storageInitFlagError;
+    }
+  }
 
 var DEVICE_STORAGE_KEY = 'cameraPowerPlanner_devices';
 var SETUP_STORAGE_KEY = 'cameraPowerPlanner_setups';
@@ -6446,3 +6472,18 @@ if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE === 'object') {
     void ex;
   }
 }
+
+if (GLOBAL_SCOPE) {
+  try {
+    Object.defineProperty(GLOBAL_SCOPE, '__cineStorageApi', {
+      configurable: true,
+      writable: true,
+      value: STORAGE_API,
+    });
+  } catch (storageApiExposeError) {
+    GLOBAL_SCOPE.__cineStorageApi = STORAGE_API;
+    void storageApiExposeError;
+  }
+}
+
+})();
