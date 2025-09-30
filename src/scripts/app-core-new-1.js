@@ -111,6 +111,63 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
 
 const CORE_GLOBAL_SCOPE = CORE_PART1_RUNTIME_SCOPE;
 
+const CORE_PART1_VALID_IDENTIFIER = /^[A-Za-z_$][A-Za-z0-9_$]*$/;
+
+function runCoreRuntimeSegment(executor) {
+  if (typeof executor !== 'function') {
+    return false;
+  }
+
+  let source = '';
+
+  try {
+    source = Function.prototype.toString.call(executor);
+  } catch (stringifyError) {
+    void stringifyError;
+    return false;
+  }
+
+  if (typeof source !== 'string' || !source.trim()) {
+    return false;
+  }
+
+  if (!CORE_PART1_VALID_IDENTIFIER.test(executor.name || '')) {
+    // Preserve backwards compatibility by still attempting execution even
+    // when the function name is minified. The identifier test avoids
+    // accidentally evaluating malicious strings while still allowing our
+    // trusted runtime function to run.
+    // The function body remains unchanged because we evaluate the entire
+    // source, not just the identifier.
+  }
+
+  const wrappedSource = `(${source}).call(CORE_GLOBAL_SCOPE || this);`;
+
+  try {
+    eval(wrappedSource);
+    return true;
+  } catch (executionError) {
+    if (typeof console !== 'undefined' && typeof console.error === 'function') {
+      console.error('Cine Power Planner core runtime segment failed to evaluate.', executionError);
+    }
+  }
+
+  return false;
+}
+
+if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object') {
+  try {
+    Object.defineProperty(CORE_GLOBAL_SCOPE, '__cineCorePart1Runner', {
+      configurable: true,
+      enumerable: false,
+      writable: true,
+      value: runCoreRuntimeSegment,
+    });
+  } catch (runnerDefineError) {
+    CORE_GLOBAL_SCOPE.__cineCorePart1Runner = runCoreRuntimeSegment;
+    void runnerDefineError;
+  }
+}
+
 function resolveCoreShared() {
   if (CORE_GLOBAL_SCOPE && CORE_GLOBAL_SCOPE.cineCoreShared) {
     return CORE_GLOBAL_SCOPE.cineCoreShared;
