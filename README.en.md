@@ -470,6 +470,9 @@ Use Cine Power Planner end-to-end with the following routine:
   search field.
 - Search suggestions highlight matching keywords so you can confirm results
   before committing to a navigation or action.
+- Global search links save, share, backup, import and restore wording so
+  synonyms like “archive”, “download” or “recover” surface the right data
+  safety tools first.
 - Star icons pin favorite devices so they stay at the top of selectors and
   persist across sessions and backups.
 

@@ -218,6 +218,7 @@ Ripeti questa routine quando arriva un nuovo membro, allestisci una postazione o
 - Su schermi piccoli un menu laterale collassabile replica le sezioni principali.
 - Liste e editor supportano la ricerca inline e il filtraggio digitando. `/` o `Ctrl+F` (`⌘F`) mettono a fuoco il campo più vicino.
 - I suggerimenti di ricerca evidenziano le parole chiave corrispondenti così puoi confermare il risultato prima di procedere o avviare un'azione.
+- La ricerca globale collega ora i verbi salvare, condividere, backup, importare e ripristinare, così ricerche come “archivia”, “scarica” o “ripristina” mostrano subito gli strumenti di protezione dei dati.
 - Le icone a stella fissano i dispositivi preferiti in cima e li mantengono nei backup.
 
 ## Personalizzazione e accessibilità

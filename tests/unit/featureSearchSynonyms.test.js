@@ -62,5 +62,21 @@ describe('feature search token synonyms', () => {
     expectTokensToContain('exposure value', ['ev']);
     expectTokensToContain('ev', ['exposure']);
   });
+
+  test('data safety verbs surface save, backup, import and restore tools together', () => {
+    expectTokensToContain('backup footage', ['save', 'restore', 'import']);
+    expectTokensToContain('restore project', ['backup', 'save', 'import']);
+    expectTokensToContain('import bundle', ['save', 'restore']);
+  });
+
+  test('sharing language links export and download workflows', () => {
+    expectTokensToContain('share link', ['export', 'download']);
+    expectTokensToContain('download archive', ['share', 'export']);
+  });
+
+  test('sync and duplication keywords expand related matches', () => {
+    expectTokensToContain('sync presets', ['synchronize']);
+    expectTokensToContain('copy device', ['duplicate', 'clone']);
+  });
 });
 

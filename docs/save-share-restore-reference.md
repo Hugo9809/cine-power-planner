@@ -43,4 +43,12 @@ Record the outputs (or screenshots) in your verification log, and store them alo
 - **Post-update verification.** When documentation or translations change, run the matrix to confirm instructions still match the UI. Update help entries and localized READMEs if labels or button names shifted.
 - **Incident investigations.** If autosaves pause or imports warn about mismatches, perform each workflow in an isolated profile, export fresh backups, and attach the recorded outputs to your incident log before applying a restore.
 
+## Search cues for data workflows
+
+Global search connects every save, share, import, backup, restore, sync and duplicate control so data guardians can find the
+right safeguard even when they start with different verbs. Queries such as “archive”, “download”, “recover”, “upload”, “clone”
+or “sync” expand to the same token family, ensuring the planner highlights the matching UI controls, help topics and saved
+projects before anything unrelated. Encourage crews to rely on `/` or `Ctrl+K` (`⌘K`) when rehearsing this checklist so search
+results reinforce the same data-protection story documented here and nothing slips past when working offline.
+
 Keeping this reference near the workstation ensures crews rehearse the exact same offline workflows the application enforces in code, preserving user data at every step.

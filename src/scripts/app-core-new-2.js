@@ -7822,6 +7822,128 @@ const applySearchTokenSynonyms = (tokens, addToken) => {
     addAll(['mp', 'megapixel', 'megapixels']);
   }
 
+  const addSynonymGroup = values => {
+    if (hasAny(values)) {
+      addAll(values);
+    }
+  };
+
+  addSynonymGroup([
+    'save',
+    'saved',
+    'saving',
+    'autosave',
+    'autosaved',
+    'autosaving',
+    'store',
+    'stored',
+    'storing',
+    'backup',
+    'backups',
+    'backingup',
+    'backedup',
+    'archive',
+    'archives',
+    'archived',
+    'archiving',
+    'restore',
+    'restores',
+    'restoring',
+    'restored',
+    'recover',
+    'recovers',
+    'recovered',
+    'recovering',
+    'import',
+    'imports',
+    'imported',
+    'importing',
+    'ingest',
+    'ingests',
+    'ingested',
+    'ingesting',
+    'load',
+    'loads',
+    'loaded',
+    'loading',
+    'reload',
+    'reloads',
+    'reloaded',
+    'reloading',
+    'upload',
+    'uploads',
+    'uploaded',
+    'uploading'
+  ]);
+
+  addSynonymGroup([
+    'share',
+    'shares',
+    'sharing',
+    'shared',
+    'export',
+    'exports',
+    'exported',
+    'exporting',
+    'download',
+    'downloads',
+    'downloaded',
+    'downloading',
+    'send',
+    'sends',
+    'sent',
+    'sending',
+    'deliver',
+    'delivers',
+    'delivered',
+    'delivering',
+    'distribution',
+    'distribute',
+    'distributes',
+    'distributed',
+    'publishing',
+    'publish',
+    'published'
+  ]);
+
+  addSynonymGroup([
+    'sync',
+    'syncs',
+    'synced',
+    'syncing',
+    'resync',
+    'resyncs',
+    'resynced',
+    'resyncing',
+    'synchronize',
+    'synchronizes',
+    'synchronized',
+    'synchronizing',
+    'synchronise',
+    'synchronises',
+    'synchronised',
+    'synchronising'
+  ]);
+
+  addSynonymGroup([
+    'duplicate',
+    'duplicates',
+    'duplicated',
+    'duplicating',
+    'copy',
+    'copies',
+    'copied',
+    'copying',
+    'clone',
+    'clones',
+    'cloned',
+    'cloning',
+    'replicate',
+    'replicates',
+    'replicated',
+    'replicating'
+  ]);
+
   if (hasAny(['mm', 'millimeter', 'millimeters'])) {
     addAll(['mm', 'millimeter', 'millimeters']);
   }
