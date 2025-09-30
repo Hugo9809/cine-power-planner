@@ -6235,6 +6235,51 @@ function createSummaryItemElement(item) {
   return li;
 }
 
+function readCriticalStorageGuardResult() {
+  const tryInvoke = (fn) => {
+    if (typeof fn !== 'function') {
+      return null;
+    }
+    try {
+      return fn();
+    } catch (invokeError) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Unable to read critical storage guard result', invokeError);
+      }
+      return null;
+    }
+  };
+
+  const direct = (typeof getLastCriticalStorageGuardResult === 'function')
+    ? tryInvoke(() => getLastCriticalStorageGuardResult())
+    : null;
+  if (direct && typeof direct === 'object') {
+    return direct;
+  }
+
+  const scopeCandidates = [
+    CORE_SHARED_SCOPE_PART2,
+    CORE_SHARED_LOCAL,
+    typeof globalThis !== 'undefined' ? globalThis : null,
+    typeof window !== 'undefined' ? window : null,
+    typeof self !== 'undefined' ? self : null,
+    typeof global !== 'undefined' ? global : null,
+  ];
+
+  for (let index = 0; index < scopeCandidates.length; index += 1) {
+    const scope = scopeCandidates[index];
+    if (!scope || typeof scope !== 'object') {
+      continue;
+    }
+    const candidate = scope.__cineCriticalStorageGuard || scope.cineCriticalStorageGuard;
+    if (candidate && typeof candidate === 'object') {
+      return candidate;
+    }
+  }
+
+  return null;
+}
+
 function updateStorageSummary() {
   if (!storageSummaryList) return;
   while (storageSummaryList.firstChild) {
@@ -6285,6 +6330,28 @@ function updateStorageSummary() {
   const manualInfo = extractLatestManualSetupInfo(setups);
   const autoInfo = extractLatestAutoBackupInfo(autoBackupNames);
   const fullBackupInfo = extractLatestFullBackupInfo(rawFullBackups);
+  const guardResult = readCriticalStorageGuardResult();
+  let guardValue = langTexts.storageIntegrityGuardStatus || 'Active';
+  if (guardResult && typeof guardResult === 'object') {
+    const ensuredCount = Array.isArray(guardResult.ensured) ? guardResult.ensured.length : 0;
+    const errorCount = Array.isArray(guardResult.errors) ? guardResult.errors.length : 0;
+    const missingCount = Array.isArray(guardResult.skipped)
+      ? guardResult.skipped.filter((entry) => entry && entry.reason === 'missing').length
+      : 0;
+
+    if (errorCount > 0) {
+      guardValue = (langTexts.storageIntegrityGuardStatusIssue || '{count} issue(s) — check console')
+        .replace('{count}', String(errorCount));
+    } else if (ensuredCount > 0) {
+      guardValue = (langTexts.storageIntegrityGuardStatusCreated || 'Mirrored {count} key(s) this session')
+        .replace('{count}', String(ensuredCount));
+    } else if (missingCount > 0) {
+      guardValue = (langTexts.storageIntegrityGuardStatusMissing || 'Waiting for first save')
+        .replace('{count}', String(missingCount));
+    } else if (langTexts.storageIntegrityGuardStatus) {
+      guardValue = langTexts.storageIntegrityGuardStatus;
+    }
+  }
 
   const items = [
     {
@@ -6339,6 +6406,11 @@ function updateStorageSummary() {
       label: langTexts.storageKeyFullBackups || 'Full app backups',
       value: formatCountText(lang, langTexts, 'storageFullBackupsCount', fullBackupCount),
       description: langTexts.storageKeyFullBackupsDesc || '',
+    },
+    {
+      label: langTexts.storageKeyIntegrityGuard || 'Backup guardian',
+      value: guardValue,
+      description: langTexts.storageKeyIntegrityGuardDesc || '',
     },
     {
       storageKey: 'localStorage',

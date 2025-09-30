@@ -307,6 +307,225 @@ var RAW_STORAGE_BACKUP_KEYS = new Set([
   MOUNT_VOLTAGE_STORAGE_KEY_NAME,
 ]);
 
+var CRITICAL_BACKUP_KEY_PROVIDERS = [
+  () => ({ key: DEVICE_STORAGE_KEY }),
+  () => ({ key: SETUP_STORAGE_KEY }),
+  () => ({ key: SESSION_STATE_KEY }),
+  () => ({ key: FEEDBACK_STORAGE_KEY }),
+  () => ({ key: PROJECT_STORAGE_KEY }),
+  () => ({ key: FAVORITES_STORAGE_KEY }),
+  () => ({ key: DEVICE_SCHEMA_CACHE_KEY }),
+  () => ({ key: AUTO_GEAR_RULES_STORAGE_KEY }),
+  () => ({ key: AUTO_GEAR_SEEDED_STORAGE_KEY }),
+  () => ({ key: AUTO_GEAR_BACKUPS_STORAGE_KEY }),
+  () => ({ key: AUTO_GEAR_PRESETS_STORAGE_KEY }),
+  () => ({ key: AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY }),
+  () => ({ key: AUTO_GEAR_AUTO_PRESET_STORAGE_KEY }),
+  () => ({ key: AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY }),
+  () => ({ key: AUTO_GEAR_BACKUP_RETENTION_STORAGE_KEY }),
+  () => ({ key: AUTO_GEAR_MONITOR_DEFAULTS_STORAGE_KEY }),
+  () => ({ key: FULL_BACKUP_HISTORY_STORAGE_KEY }),
+  () => ({ key: CUSTOM_LOGO_STORAGE_KEY }),
+  () => ({ key: getCustomFontStorageKeyName() }),
+  () => ({ key: 'darkMode' }),
+  () => ({ key: 'pinkMode' }),
+  () => ({ key: 'highContrast' }),
+  () => ({ key: 'reduceMotion' }),
+  () => ({ key: 'relaxedSpacing' }),
+  () => ({ key: 'showAutoBackups' }),
+  () => ({ key: 'accentColor' }),
+  () => ({ key: 'fontSize' }),
+  () => ({ key: 'fontFamily' }),
+  () => ({ key: 'language' }),
+  () => ({ key: 'iosPwaHelpShown' }),
+  () => ({ key: TEMPERATURE_UNIT_STORAGE_KEY_NAME }),
+  () => ({ key: getMountVoltageStorageKeyName(), backupKey: getMountVoltageStorageBackupKeyName() }),
+];
+
+function createCriticalStorageEntry(candidate, options = {}) {
+  if (!candidate || typeof candidate !== 'object') {
+    return null;
+  }
+
+  const { key, backupKey, storage = null } = candidate;
+  if (typeof key !== 'string' || !key) {
+    return null;
+  }
+
+  const resolvedBackupKey = typeof backupKey === 'string' && backupKey
+    ? backupKey
+    : `${key}${STORAGE_BACKUP_SUFFIX}`;
+
+  return {
+    key,
+    backupKey: resolvedBackupKey,
+    storage,
+    label: typeof options.label === 'string' ? options.label : key,
+  };
+}
+
+function gatherCriticalStorageEntries(options = {}) {
+  const entries = [];
+  const seen = new Set();
+
+  const pushEntry = (entry) => {
+    if (!entry) {
+      return;
+    }
+    const storageId = entry.storage || null;
+    const id = `${entry.key}__${storageId ? String(storageId) : 'default'}`;
+    if (seen.has(id)) {
+      return;
+    }
+    seen.add(id);
+    entries.push(entry);
+  };
+
+  for (let i = 0; i < CRITICAL_BACKUP_KEY_PROVIDERS.length; i += 1) {
+    const provider = CRITICAL_BACKUP_KEY_PROVIDERS[i];
+    if (typeof provider !== 'function') {
+      continue;
+    }
+    let result;
+    try {
+      result = provider(options);
+    } catch (providerError) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Critical storage key provider failed', providerError);
+      }
+      continue;
+    }
+    const entry = createCriticalStorageEntry(result, options);
+    if (entry) {
+      pushEntry(entry);
+    }
+  }
+
+  return entries;
+}
+
+let lastCriticalStorageGuardResult = null;
+
+function registerCriticalStorageGuardResult(result) {
+  lastCriticalStorageGuardResult = result;
+  if (!GLOBAL_SCOPE || typeof GLOBAL_SCOPE !== 'object') {
+    return;
+  }
+
+  try {
+    GLOBAL_SCOPE.__cineCriticalStorageGuard = result;
+  } catch (exposeError) {
+    void exposeError;
+    try {
+      Object.defineProperty(GLOBAL_SCOPE, '__cineCriticalStorageGuard', {
+        configurable: true,
+        writable: true,
+        value: result,
+      });
+    } catch (definitionError) {
+      void definitionError;
+    }
+  }
+}
+
+function ensureCriticalStorageBackups(options = {}) {
+  let safeStorage = options && options.storage ? options.storage : null;
+  if (!safeStorage) {
+    try {
+      safeStorage = getSafeLocalStorage();
+    } catch (guardError) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Unable to resolve safe storage while ensuring backups', guardError);
+      }
+      safeStorage = null;
+    }
+  }
+
+  const summary = {
+    ensured: [],
+    skipped: [],
+    errors: [],
+    timestamp: new Date().toISOString(),
+    storageType: safeLocalStorageInfo && safeLocalStorageInfo.type ? safeLocalStorageInfo.type : 'unknown',
+  };
+
+  const entries = gatherCriticalStorageEntries(options);
+  const targetStorage = safeStorage && typeof safeStorage.getItem === 'function'
+    ? safeStorage
+    : null;
+
+  for (let index = 0; index < entries.length; index += 1) {
+    const entry = entries[index];
+    const storage = entry.storage && typeof entry.storage.getItem === 'function'
+      ? entry.storage
+      : targetStorage;
+
+    if (!storage || typeof storage.getItem !== 'function' || typeof storage.setItem !== 'function') {
+      summary.skipped.push({ key: entry.key, reason: 'unavailable-storage' });
+      continue;
+    }
+
+    let primaryValue;
+    try {
+      primaryValue = storage.getItem(entry.key);
+    } catch (readError) {
+      summary.errors.push({ key: entry.key, reason: 'read-failed', error: readError });
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn(`Critical storage guard could not inspect ${entry.key}`, readError);
+      }
+      continue;
+    }
+
+    if (primaryValue === null || primaryValue === undefined) {
+      summary.skipped.push({ key: entry.key, reason: 'missing' });
+      continue;
+    }
+
+    let backupValue;
+    try {
+      backupValue = storage.getItem(entry.backupKey);
+    } catch (backupReadError) {
+      summary.errors.push({ key: entry.key, reason: 'backup-read-failed', error: backupReadError });
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn(`Critical storage guard could not read backup for ${entry.key}`, backupReadError);
+      }
+      continue;
+    }
+
+    if (typeof backupValue === 'string') {
+      summary.skipped.push({ key: entry.key, reason: 'exists' });
+      continue;
+    }
+
+    try {
+      storage.setItem(entry.backupKey, primaryValue);
+      summary.ensured.push({ key: entry.key, backupKey: entry.backupKey });
+    } catch (writeError) {
+      summary.errors.push({ key: entry.key, reason: 'backup-write-failed', error: writeError });
+      if (typeof console !== 'undefined' && typeof console.error === 'function') {
+        console.error(`Critical storage guard could not mirror ${entry.key}`, writeError);
+      }
+    }
+  }
+
+  registerCriticalStorageGuardResult(summary);
+
+  if (summary.ensured.length && typeof console !== 'undefined' && typeof console.info === 'function') {
+    const mirroredKeys = summary.ensured.map((entry) => entry.key);
+    console.info('Critical storage guard mirrored backup copies for', mirroredKeys);
+  }
+
+  if (summary.errors.length && typeof console !== 'undefined' && typeof console.warn === 'function') {
+    console.warn('Critical storage guard encountered issues', summary.errors);
+  }
+
+  return summary;
+}
+
+function getLastCriticalStorageGuardResult() {
+  return lastCriticalStorageGuardResult;
+}
+
 var MAX_MIGRATION_BACKUP_CLEANUP_STEPS = 10;
 var MIGRATION_BACKUP_COMPRESSION_ALGORITHM = 'lz-string';
 var MIGRATION_BACKUP_COMPRESSION_ENCODING = 'json-string';
@@ -6163,6 +6382,8 @@ var STORAGE_API = {
   recordFullBackupHistoryEntry,
   requestPersistentStorage,
   clearUiCacheStorageEntries,
+  ensureCriticalStorageBackups,
+  getLastCriticalStorageGuardResult,
 };
 
 if (typeof module !== "undefined" && module.exports) {

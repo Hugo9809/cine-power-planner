@@ -240,6 +240,7 @@ Ripeti questa routine quando arriva un nuovo membro, allestisci una postazione o
 - **Ripristino impostazioni di fabbrica** o pulizia dei dati del sito avviene solo dopo aver generato automaticamente un backup.
 - Gli aggiornamenti del service worker vengono scaricati in background e attendono la tua approvazione. Quando compare **Aggiornamento pronto**, completa le modifiche, crea un backup e poi premi **Forza ricarica**.
 - I dati risiedono in un `localStorage` rinforzato; i profili bloccati ricadono su `sessionStorage`. Ogni scrittura crea anche uno snapshot `__legacyMigrationBackup` per recuperare senza perdite eventuali errori di quota o di schema. Usa gli strumenti del browser per ispezionare o esportare i record prima di svuotare cache o fare prove.
+- Un guardiano dell'archiviazione critica parte ad ogni avvio e duplica ogni chiave essenziale nello slot di backup prima di qualsiasi modifica, così anche i dati legacy mantengono sempre una copia ridondante pronta al ripristino.
 
 ## Panoramica dati e archiviazione
 

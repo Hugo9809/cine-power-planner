@@ -240,6 +240,7 @@ Cette routine prouve que sauvegarde, partage, import, backup et restauration fon
 - **Réinitialisation usine** ou nettoyage des données ne s’exécutent qu’après génération d’un backup automatique.
 - Les mises à jour du service worker se téléchargent en tâche de fond et attendent votre accord. À l’apparition de **Mise à jour prête**, terminez vos modifications, créez un backup puis cliquez sur **Forcer le rechargement**.
 - Les données résident dans un `localStorage` renforcé ; les profils restreints basculent sur `sessionStorage`. Chaque écriture crée un instantané `__legacyMigrationBackup` pour restaurer sans perte en cas d’erreur de quota ou de schéma. Les outils développeur peuvent inspecter ou exporter les enregistrements avant de vider les caches ou de lancer des tests.
+- Un gardien de stockage critique s’exécute désormais à chaque ouverture et duplique chaque clé essentielle dans sa sauvegarde avant toute modification, garantissant que les données héritées conservent toujours une copie redondante prête pour un retour arrière.
 
 ## Vue d’ensemble des données et du stockage
 

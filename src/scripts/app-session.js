@@ -217,8 +217,12 @@ const temperaturePreferenceStorageKey =
       : 'cameraPowerPlanner_temperatureUnit';
 
 let recordFullBackupHistoryEntryFn = () => {};
+let ensureCriticalStorageBackupsFn = () => ({ ensured: [], skipped: [], errors: [] });
 try {
-  ({ recordFullBackupHistoryEntry: recordFullBackupHistoryEntryFn } = require('./storage.js'));
+  ({
+    recordFullBackupHistoryEntry: recordFullBackupHistoryEntryFn,
+    ensureCriticalStorageBackups: ensureCriticalStorageBackupsFn,
+  } = require('./storage.js'));
 } catch (error) {
   if (
     typeof window !== 'undefined'
@@ -226,6 +230,13 @@ try {
     && typeof window.recordFullBackupHistoryEntry === 'function'
   ) {
     recordFullBackupHistoryEntryFn = window.recordFullBackupHistoryEntry;
+  }
+  if (
+    typeof window !== 'undefined'
+    && window
+    && typeof window.ensureCriticalStorageBackups === 'function'
+  ) {
+    ensureCriticalStorageBackupsFn = window.ensureCriticalStorageBackups;
   } else {
     void error;
   }
@@ -10045,6 +10056,13 @@ function updateRequiredScenariosSummary() {
 }
 
 function initApp() {
+  try {
+    ensureCriticalStorageBackupsFn();
+  } catch (criticalGuardError) {
+    if (typeof console !== 'undefined' && typeof console.error === 'function') {
+      console.error('Critical storage backup guard failed during initialization', criticalGuardError);
+    }
+  }
   if (sharedLinkRow) {
     sharedLinkRow.classList.remove('hidden');
   }

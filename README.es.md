@@ -238,6 +238,7 @@ Repite esta rutina cuando se incorpore personal, se prepare una estación nueva 
 - **Restablecer fábrica** o borrar datos del sitio sólo se permite tras generar automáticamente una copia.
 - Las actualizaciones del service worker se descargan en segundo plano y esperan tu aprobación. Al ver **Actualización lista**, termina los cambios, crea un backup y pulsa **Forzar recarga**.
 - Los datos residen en un `localStorage` reforzado; los perfiles restringidos recurren a `sessionStorage`. Cada escritura genera una instantánea `__legacyMigrationBackup` para recuperarse sin pérdidas si aparece un error de cuota o de esquema. Usa las herramientas del navegador para inspeccionar o exportar datos antes de limpiar cachés o realizar pruebas.
+- Un guardián de almacenamiento crítico se ejecuta en cada inicio y duplica cada clave esencial en su copia de seguridad antes de que hagas cambios, de modo que incluso los datos heredados conservan siempre una copia redundante lista para restaurar.
 
 ## Resumen de datos y almacenamiento
 

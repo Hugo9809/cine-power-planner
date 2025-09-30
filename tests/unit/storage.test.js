@@ -61,6 +61,7 @@ const {
   loadFullBackupHistory,
   saveFullBackupHistory,
   recordFullBackupHistoryEntry,
+  ensureCriticalStorageBackups,
 } = require('../../src/scripts/storage');
 
 const DEVICE_KEY = 'cameraPowerPlanner_devices';
@@ -2014,6 +2015,29 @@ describe('storage snapshot conversion', () => {
       }),
     );
     expect(exported.customLogo).toBe('data:image/png;base64,AAA');
+  });
+});
+
+describe('critical storage backup guard', () => {
+  beforeEach(() => {
+    localStorage.clear();
+    sessionStorage.clear();
+  });
+
+  test('creates backup copies for stored entries', () => {
+    localStorage.setItem(DEVICE_KEY, JSON.stringify(validDeviceData));
+    const result = ensureCriticalStorageBackups();
+    expect(localStorage.getItem(backupKeyFor(DEVICE_KEY))).toBe(JSON.stringify(validDeviceData));
+    expect(result.ensured).toEqual(expect.arrayContaining([
+      expect.objectContaining({ key: DEVICE_KEY }),
+    ]));
+  });
+
+  test('reports missing entries when nothing is stored', () => {
+    const result = ensureCriticalStorageBackups();
+    expect(result.skipped).toEqual(expect.arrayContaining([
+      expect.objectContaining({ key: DEVICE_KEY, reason: 'missing' }),
+    ]));
   });
 });
 

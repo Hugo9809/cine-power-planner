@@ -4,6 +4,8 @@ This reference condenses the critical workflows that protect user data in Cine P
 
 The application exposes these routines through the frozen `cinePersistence` gateway, which mirrors the storage, backup, restore and share helpers defined in code so browsers cannot mutate them accidentally.【F:src/scripts/modules/persistence.js†L90-L159】 A runtime guard records the most recent verification result on `window.__cineRuntimeIntegrity`, and the guard can be re-run manually through `window.cineRuntime.verifyCriticalFlows()` if you need a fresh report while auditing documentation or drills.【F:src/scripts/script.js†L93-L184】【F:tests/dom/runtimeIntegration.test.js†L58-L87】
 
+A dedicated storage guardian runs on every launch to mirror each critical key into its backup slot before the UI touches data, ensuring that even legacy entries have a redundant copy ready before rehearsals or imports begin.【F:src/scripts/storage.js†L247-L376】【F:src/scripts/app-session.js†L10017-L10024】 The latest guard report is exposed globally so you can confirm the mirroring state from diagnostics panels.【F:src/scripts/storage.js†L347-L358】【F:src/scripts/app-core-new-2.js†L6266-L6349】
+
 ## Workflow matrix
 
 | Workflow | Primary controls (UI/Keyboard) | What success looks like | Evidence to capture |
