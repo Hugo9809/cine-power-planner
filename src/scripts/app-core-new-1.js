@@ -921,8 +921,39 @@ let mountVoltageSectionElem = null;
 let mountVoltageHeadingElem = null;
 let mountVoltageDescriptionElem = null;
 let mountVoltageNoteElem = null;
-let mountVoltageResetButton = null;
+let mountVoltageResetButton =
+  (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && CORE_GLOBAL_SCOPE.mountVoltageResetButton)
+    ? CORE_GLOBAL_SCOPE.mountVoltageResetButton
+    : (typeof globalThis !== 'undefined' && globalThis && globalThis.mountVoltageResetButton)
+      ? globalThis.mountVoltageResetButton
+      : null;
 let mountVoltageTitleElems = null;
+
+function syncMountVoltageResetButtonGlobal(value) {
+  const targetScope =
+    (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE)
+      ? CORE_GLOBAL_SCOPE
+      : (typeof globalThis !== 'undefined' && globalThis)
+        ? globalThis
+        : (typeof window !== 'undefined' && window)
+          ? window
+          : (typeof self !== 'undefined' && self)
+            ? self
+            : (typeof global !== 'undefined' && global)
+              ? global
+              : null;
+  if (!targetScope || typeof targetScope !== 'object') {
+    return;
+  }
+  try {
+    targetScope.mountVoltageResetButton = value;
+  } catch (assignError) {
+    void assignError;
+    targetScope.mountVoltageResetButton = value;
+  }
+}
+
+syncMountVoltageResetButtonGlobal(mountVoltageResetButton);
 
 function parseVoltageValue(value, fallback) {
   let numeric = Number.NaN;
@@ -12172,7 +12203,39 @@ function decodeSharedSetup(setup) {
 var deviceManagerSection = document.getElementById("device-manager");
 var toggleDeviceBtn = document.getElementById("toggleDeviceManager");
 const deviceListContainer = document.getElementById("deviceListContainer");
-const deviceManagerLists = new Map();
+const deviceManagerLists = (() => {
+  const globalScope =
+    (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE)
+      ? CORE_GLOBAL_SCOPE
+      : (typeof globalThis !== 'undefined' && globalThis)
+        ? globalThis
+        : (typeof window !== 'undefined' && window)
+          ? window
+          : (typeof self !== 'undefined' && self)
+            ? self
+            : (typeof global !== 'undefined' && global)
+              ? global
+              : null;
+
+  if (
+    globalScope &&
+    globalScope.deviceManagerLists &&
+    globalScope.deviceManagerLists instanceof Map
+  ) {
+    return globalScope.deviceManagerLists;
+  }
+
+  const created = new Map();
+  if (globalScope && typeof globalScope === 'object') {
+    try {
+      globalScope.deviceManagerLists = created;
+    } catch (assignError) {
+      void assignError;
+      globalScope.deviceManagerLists = created;
+    }
+  }
+  return created;
+})();
 const deviceManagerPreferredOrder = [
   "cameras",
   "viewfinders",
@@ -13197,6 +13260,7 @@ mountVoltageHeadingElem = document.getElementById('mountVoltageHeading');
 mountVoltageDescriptionElem = document.getElementById('mountVoltageDescription');
 mountVoltageNoteElem = document.getElementById('mountVoltageNote');
 mountVoltageResetButton = document.getElementById('mountVoltageReset');
+syncMountVoltageResetButtonGlobal(mountVoltageResetButton);
 mountVoltageTitleElems = {
   V: document.getElementById('mountVoltageVTitle'),
   Gold: document.getElementById('mountVoltageGoldTitle'),
