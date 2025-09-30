@@ -416,6 +416,101 @@ function callCoreFunctionIfAvailable(functionName, args = [], options = {}) {
     : undefined;
 }
 
+(function ensureCoreRuntimePlaceholders() {
+  const scope =
+    CORE_GLOBAL_SCOPE ||
+    (typeof globalThis !== 'undefined' ? globalThis : null) ||
+    (typeof window !== 'undefined' ? window : null) ||
+    (typeof self !== 'undefined' ? self : null) ||
+    (typeof global !== 'undefined' ? global : null);
+
+  if (!scope || typeof scope !== 'object') {
+    return;
+  }
+
+  if (typeof scope.populateSelect !== 'function') {
+    const placeholder = function populateSelectPlaceholder(selectElem, optionsObj = {}, includeNone = true) {
+      if (!selectElem) {
+        return;
+      }
+
+      const opts = optionsObj && typeof optionsObj === 'object' ? optionsObj : {};
+
+      try {
+        selectElem.innerHTML = '';
+        if (includeNone) {
+          const noneOpt = document.createElement('option');
+          noneOpt.value = 'None';
+          const noneMap = { de: 'Keine Auswahl', es: 'Ninguno', fr: 'Aucun' };
+          const lang = typeof currentLang === 'string' ? currentLang : 'en';
+          noneOpt.textContent = noneMap[lang] || 'None';
+          selectElem.appendChild(noneOpt);
+        }
+
+        Object.keys(opts)
+          .filter(name => name !== 'None')
+          .sort(typeof localeSort === 'function' ? localeSort : undefined)
+          .forEach(name => {
+            const opt = document.createElement('option');
+            opt.value = name;
+            opt.textContent = name;
+            selectElem.appendChild(opt);
+          });
+      } catch (populateError) {
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn('populateSelect placeholder failed to render options immediately', populateError);
+        }
+      }
+
+      enqueueCoreBootTask(() => {
+        const realPopulate =
+          scope && typeof scope.populateSelect === 'function' && scope.populateSelect !== placeholder
+            ? scope.populateSelect
+            : null;
+        if (realPopulate) {
+          realPopulate(selectElem, optionsObj, includeNone);
+        }
+      });
+    };
+
+    try {
+      scope.populateSelect = placeholder;
+    } catch (assignError) {
+      void assignError;
+    }
+  }
+
+  const ensureFunctionPlaceholder = (name) => {
+    if (typeof name !== 'string' || !name) {
+      return;
+    }
+    if (typeof scope[name] === 'function') {
+      return;
+    }
+
+    const placeholder = function coreDeferredFunctionPlaceholder(...args) {
+      return callCoreFunctionIfAvailable(name, args, { defer: true });
+    };
+
+    try {
+      scope[name] = placeholder;
+    } catch (assignError) {
+      void assignError;
+    }
+  };
+
+  ensureFunctionPlaceholder('checkSetupChanged');
+  ensureFunctionPlaceholder('updateCalculations');
+
+  if (typeof scope.feedbackCancelBtn === 'undefined') {
+    try {
+      scope.feedbackCancelBtn = null;
+    } catch (assignError) {
+      void assignError;
+    }
+  }
+})();
+
 function fallbackStableStringify(value) {
   if (value === null) return 'null';
   if (value === undefined) return 'undefined';
