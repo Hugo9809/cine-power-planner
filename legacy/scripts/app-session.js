@@ -3612,23 +3612,135 @@ function sanitizeBackupPayload(raw) {
   if (raw === null || raw === undefined) {
     return '';
   }
+
+  var decodeBinaryPayload = function decodeBinaryPayload(value) {
+    if (typeof value !== 'object' || value === null) {
+      return null;
+    }
+
+    var isNodeBuffer =
+      typeof Buffer !== 'undefined'
+      && typeof Buffer.isBuffer === 'function'
+      && Buffer.isBuffer(value);
+
+    var objectTag = Object.prototype.toString.call(value);
+
+    var isArrayBuffer =
+      typeof ArrayBuffer !== 'undefined'
+      && (
+        value instanceof ArrayBuffer
+        || objectTag === '[object ArrayBuffer]'
+        || objectTag === '[object SharedArrayBuffer]'
+      );
+
+    var isArrayBufferView = function () {
+      if (typeof ArrayBuffer === 'undefined') {
+        return false;
+      }
+      if (typeof ArrayBuffer.isView === 'function' && ArrayBuffer.isView(value)) {
+        return true;
+      }
+      return Boolean(
+        value
+        && typeof value === 'object'
+        && typeof value.buffer === 'object'
+        && typeof value.byteLength === 'number'
+        && typeof value.BYTES_PER_ELEMENT === 'number'
+      );
+    }();
+
+    if (!isNodeBuffer && !isArrayBuffer && !isArrayBufferView) {
+      return null;
+    }
+
+    var toUint8Array = function toUint8Array() {
+      if (isNodeBuffer) {
+        return new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
+      }
+      if (isArrayBuffer) {
+        return new Uint8Array(value);
+      }
+      if (
+        typeof value.buffer === 'object'
+        && typeof value.byteLength === 'number'
+      ) {
+        var offset = typeof value.byteOffset === 'number' ? value.byteOffset : 0;
+        return new Uint8Array(value.buffer, offset, value.byteLength);
+      }
+      throw new TypeError('Unsupported binary payload type');
+    };
+
+    var decodeWithTextDecoder = function decodeWithTextDecoder(array) {
+      if (typeof TextDecoder !== 'function') {
+        return null;
+      }
+      try {
+        var decoder = new TextDecoder('utf-8', { fatal: false });
+        return decoder.decode(array);
+      } catch (error) {
+        console.warn('Failed to decode backup payload with TextDecoder', error);
+        return null;
+      }
+    };
+
+    var decodeWithBuffer = function decodeWithBuffer() {
+      if (!isNodeBuffer) {
+        return null;
+      }
+      try {
+        return value.toString('utf8');
+      } catch (error) {
+        console.warn('Failed to decode backup payload with Buffer', error);
+        return null;
+      }
+    };
+
+    var decodeManually = function decodeManually(array) {
+      try {
+        var result = '';
+        var CHUNK_SIZE = 0x8000;
+        for (var index = 0; index < array.length; index += CHUNK_SIZE) {
+          var slice = array.subarray(index, index + CHUNK_SIZE);
+          result += String.fromCharCode.apply(null, slice);
+        }
+        return result;
+      } catch (error) {
+        console.warn('Failed to manually decode backup payload', error);
+        return null;
+      }
+    };
+
+    var array = toUint8Array();
+    return decodeWithTextDecoder(array)
+      || decodeWithBuffer()
+      || decodeManually(array);
+  };
+
   var text;
   if (typeof raw === 'string') {
     text = raw;
   } else {
-    try {
-      text = String(raw);
-    } catch (error) {
-      console.warn('Failed to stringify backup payload', error);
-      text = '';
+    var decoded = decodeBinaryPayload(raw);
+    if (typeof decoded === 'string') {
+      text = decoded;
+    } else {
+      try {
+        text = String(raw);
+      } catch (error) {
+        console.warn('Failed to stringify backup payload', error);
+        text = '';
+      }
     }
   }
+
   if (typeof text !== 'string') {
     return '';
   }
-  if (text.startsWith("\uFEFF")) {
-    return text.replace(/^\uFEFF/, '');
+
+  if (text.charCodeAt(0) === 0xFEFF) {
+    return text.slice(1);
   }
+
   return text;
 }
 function parseBackupDataString(raw) {
