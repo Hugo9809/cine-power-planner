@@ -23,7 +23,8 @@
           normalizeBatteryPlateValue, applyBatteryPlateSelectionFromBattery,
           getPowerSelectionSnapshot, applyStoredPowerSelection,
           settingsReduceMotion, settingsRelaxedSpacing, callCoreFunctionIfAvailable,
-          recordFeatureSearchUsage, helpResultsSummary, helpResultsAssist */
+          recordFeatureSearchUsage, extractFeatureSearchFilter,
+          helpResultsSummary, helpResultsAssist */
 /* eslint-enable no-redeclare */
 /* global triggerPinkModeIconRain, loadDeviceData, loadSetups, loadSessionState,
           loadFeedback, loadFavorites, loadAutoGearBackups,
@@ -9473,9 +9474,28 @@ if (helpButton && helpDialog) {
     const originalNormalized = normalizeSearchValue(rawQuery);
     const value = rawQuery.trim();
     if (!value) return;
+    const hasFilterHelper = typeof extractFeatureSearchFilter === 'function';
+    const filterData = hasFilterHelper
+      ? extractFeatureSearchFilter(value)
+      : { filterType: null, queryText: value };
+    const filterType = filterData?.filterType || null;
+    const filteredQuery = filterType ? filterData.queryText : value;
+    const normalizedFiltered = typeof filteredQuery === 'string' ? filteredQuery.trim() : '';
     const lower = value.toLowerCase();
-    const isHelp = lower.endsWith(' (help)');
-    const clean = isHelp ? value.slice(0, -7).trim() : value;
+    const isHelpSuggestion = lower.endsWith(' (help)');
+    const cleanSource = isHelpSuggestion
+      ? value.slice(0, -7).trim()
+      : normalizedFiltered || (typeof filteredQuery === 'string' ? filteredQuery.trim() : '');
+    if (filterType === 'help' && !isHelpSuggestion && !cleanSource) {
+      openHelp();
+      if (helpSearch) {
+        helpSearch.value = '';
+        filterHelp();
+        helpSearch.focus();
+      }
+      return;
+    }
+    const clean = cleanSource || (filterType ? '' : value);
     const cleanKey = searchKey(clean);
     const cleanTokens = searchTokens(clean);
 
@@ -9491,16 +9511,17 @@ if (helpButton && helpDialog) {
     const hasStrongNonHelp = deviceStrong || featureStrong;
     const preferHelp =
       !!helpMatch &&
-      (isHelp || (!hasStrongNonHelp && helpScore > bestNonHelpScore));
+      (isHelpSuggestion || filterType === 'help' || (!hasStrongNonHelp && helpScore > bestNonHelpScore));
 
-    if (!isHelp && !preferHelp) {
+    if (!isHelpSuggestion && !preferHelp) {
       const shouldUseDevice =
-        !!deviceMatch &&
-        (!featureMatch ||
-          (deviceStrong && !featureStrong) ||
-          (deviceStrong === featureStrong &&
-            (deviceScore > featureScore ||
-              (deviceScore === featureScore && featureMatch?.matchType !== 'exactKey'))));
+        (!!deviceMatch &&
+          (!featureMatch ||
+            (deviceStrong && !featureStrong) ||
+            (deviceStrong === featureStrong &&
+              (deviceScore > featureScore ||
+                (deviceScore === featureScore && featureMatch?.matchType !== 'exactKey'))))) ||
+        (filterType === 'device' && !!deviceMatch);
       if (shouldUseDevice) {
         const device = deviceMatch.value;
         if (device && device.select) {
