@@ -128,61 +128,140 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return fallbackValue;
     }
 
-    autoGearAutoPresetId = declareCoreFallbackBinding('autoGearAutoPresetId', () => {
-      if (typeof loadAutoGearAutoPresetId === 'function') {
-        try {
-          const storedId = loadAutoGearAutoPresetId();
-          return typeof storedId === 'string' ? storedId : '';
-        } catch (error) {
-          if (typeof console !== 'undefined' && typeof console.error === 'function') {
-            console.error('Failed to recover automatic gear auto preset identifier from storage.', error);
-          }
-        }
+    const fallbackConnectorSummaryGenerator = device => {
+      if (!device || typeof device !== 'object') {
+        return '';
       }
-      return '';
-    });
-
-    baseAutoGearRules = declareCoreFallbackBinding('baseAutoGearRules', () => {
-      if (typeof loadAutoGearRules === 'function') {
-        try {
-          const storedRules = loadAutoGearRules();
-          return Array.isArray(storedRules) ? storedRules.slice() : [];
-        } catch (error) {
-          if (typeof console !== 'undefined' && typeof console.error === 'function') {
-            console.error('Failed to recover automatic gear rules from storage.', error);
-          }
-        }
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Using fallback connector summary generator. Core bindings may have failed to initialise.');
       }
-      return [];
-    });
+      try {
+        const keys = Object.keys(device);
+        if (!keys.length) {
+          return '';
+        }
+        const primaryKey = keys[0];
+        const value = device[primaryKey];
+        const label = typeof primaryKey === 'string' ? primaryKey.replace(/_/g, ' ') : 'connector';
+        return value ? `${label}: ${value}` : label;
+      } catch (fallbackError) {
+        void fallbackError;
+        return '';
+      }
+    };
 
-    autoGearScenarioModeSelect = declareCoreFallbackBinding('autoGearScenarioModeSelect', () => null);
-
-    safeGenerateConnectorSummary = declareCoreFallbackBinding(
-      'safeGenerateConnectorSummary',
-      () =>
-        function safeGenerateConnectorSummary(device) {
-          if (!device || typeof device !== 'object') {
-            return '';
-          }
-          if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-            console.warn('Using fallback connector summary generator. Core bindings may have failed to initialise.');
-          }
-          try {
-            const keys = Object.keys(device);
-            if (!keys.length) {
-              return '';
+    const resolvedAutoGearAutoPresetId =
+      typeof autoGearAutoPresetId !== 'undefined'
+        ? autoGearAutoPresetId
+        : declareCoreFallbackBinding('autoGearAutoPresetId', () => {
+            if (typeof loadAutoGearAutoPresetId === 'function') {
+              try {
+                const storedId = loadAutoGearAutoPresetId();
+                return typeof storedId === 'string' ? storedId : '';
+              } catch (error) {
+                if (typeof console !== 'undefined' && typeof console.error === 'function') {
+                  console.error('Failed to recover automatic gear auto preset identifier from storage.', error);
+                }
+              }
             }
-            const primaryKey = keys[0];
-            const value = device[primaryKey];
-            const label = typeof primaryKey === 'string' ? primaryKey.replace(/_/g, ' ') : 'connector';
-            return value ? `${label}: ${value}` : label;
-          } catch (fallbackError) {
-            void fallbackError;
             return '';
-          }
-        },
-    );
+          });
+
+    const resolvedBaseAutoGearRules =
+      typeof baseAutoGearRules !== 'undefined'
+        ? baseAutoGearRules
+        : declareCoreFallbackBinding('baseAutoGearRules', () => {
+            if (typeof loadAutoGearRules === 'function') {
+              try {
+                const storedRules = loadAutoGearRules();
+                return Array.isArray(storedRules) ? storedRules.slice() : [];
+              } catch (error) {
+                if (typeof console !== 'undefined' && typeof console.error === 'function') {
+                  console.error('Failed to recover automatic gear rules from storage.', error);
+                }
+              }
+            }
+            return [];
+          });
+
+    const resolvedAutoGearScenarioModeSelect =
+      typeof autoGearScenarioModeSelect !== 'undefined'
+        ? autoGearScenarioModeSelect
+        : declareCoreFallbackBinding('autoGearScenarioModeSelect', () => null);
+
+    const resolvedSafeGenerateConnectorSummary =
+      typeof safeGenerateConnectorSummary !== 'undefined'
+        ? safeGenerateConnectorSummary
+        : declareCoreFallbackBinding('safeGenerateConnectorSummary', () => fallbackConnectorSummaryGenerator);
+
+    let autoGearAutoPresetIdState =
+      typeof resolvedAutoGearAutoPresetId === 'string' ? resolvedAutoGearAutoPresetId : '';
+
+    let baseAutoGearRulesState = Array.isArray(resolvedBaseAutoGearRules)
+      ? resolvedBaseAutoGearRules.slice()
+      : [];
+
+    let autoGearScenarioModeSelectRef = resolvedAutoGearScenarioModeSelect || null;
+
+    let safeGenerateConnectorSummaryFn =
+      typeof resolvedSafeGenerateConnectorSummary === 'function'
+        ? resolvedSafeGenerateConnectorSummary
+        : fallbackConnectorSummaryGenerator;
+
+    function syncAutoGearAutoPresetIdState(value) {
+      autoGearAutoPresetIdState = typeof value === 'string' ? value : '';
+      if (typeof autoGearAutoPresetId !== 'undefined') {
+        try {
+          autoGearAutoPresetId = autoGearAutoPresetIdState;
+        } catch (assignError) {
+          void assignError;
+        }
+      }
+      writeCoreScopeValue('autoGearAutoPresetId', autoGearAutoPresetIdState);
+    }
+
+    function syncBaseAutoGearRulesState(rules) {
+      baseAutoGearRulesState = Array.isArray(rules) ? rules : [];
+      if (typeof baseAutoGearRules !== 'undefined') {
+        try {
+          baseAutoGearRules = baseAutoGearRulesState;
+        } catch (assignError) {
+          void assignError;
+        }
+      }
+      writeCoreScopeValue('baseAutoGearRules', baseAutoGearRulesState);
+    }
+
+    function syncAutoGearScenarioModeSelectRef(value) {
+      autoGearScenarioModeSelectRef = value || null;
+      if (typeof autoGearScenarioModeSelect !== 'undefined') {
+        try {
+          autoGearScenarioModeSelect = autoGearScenarioModeSelectRef;
+        } catch (assignError) {
+          void assignError;
+        }
+      }
+      writeCoreScopeValue('autoGearScenarioModeSelect', autoGearScenarioModeSelectRef);
+    }
+
+    function syncSafeGenerateConnectorSummaryFn(generator) {
+      safeGenerateConnectorSummaryFn = typeof generator === 'function'
+        ? generator
+        : fallbackConnectorSummaryGenerator;
+      if (typeof safeGenerateConnectorSummary !== 'undefined') {
+        try {
+          safeGenerateConnectorSummary = safeGenerateConnectorSummaryFn;
+        } catch (assignError) {
+          void assignError;
+        }
+      }
+      writeCoreScopeValue('safeGenerateConnectorSummary', safeGenerateConnectorSummaryFn);
+    }
+
+    syncAutoGearAutoPresetIdState(autoGearAutoPresetIdState);
+    syncBaseAutoGearRulesState(baseAutoGearRulesState);
+    syncAutoGearScenarioModeSelectRef(autoGearScenarioModeSelectRef);
+    syncSafeGenerateConnectorSummaryFn(safeGenerateConnectorSummaryFn);
     
     var currentProjectInfo = null;
     let loadedSetupState = null;
@@ -1223,29 +1302,28 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       const normalized = typeof presetId === 'string' ? presetId : '';
       const persist = options.persist !== false;
       const skipRender = options.skipRender === true;
-      if (autoGearAutoPresetId === normalized) {
+      if (autoGearAutoPresetIdState === normalized) {
         if (!skipRender) renderAutoGearPresetsControls();
         return;
       }
-      autoGearAutoPresetId = normalized;
-      writeCoreScopeValue('autoGearAutoPresetId', autoGearAutoPresetId);
+      syncAutoGearAutoPresetIdState(normalized);
       if (persist) {
-        persistAutoGearAutoPresetId(autoGearAutoPresetId);
+        persistAutoGearAutoPresetId(autoGearAutoPresetIdState);
       }
       if (!skipRender) {
         renderAutoGearPresetsControls();
       }
     }
-    
+
     function reconcileAutoGearAutoPresetState(options = {}) {
-      if (!autoGearAutoPresetId) {
+      if (!autoGearAutoPresetIdState) {
         if (options.persist !== false) {
           persistAutoGearAutoPresetId('');
         }
         return false;
       }
-      const managedExists = autoGearPresets.some(preset => preset.id === autoGearAutoPresetId);
-      const otherExists = autoGearPresets.some(preset => preset.id !== autoGearAutoPresetId);
+      const managedExists = autoGearPresets.some(preset => preset.id === autoGearAutoPresetIdState);
+      const otherExists = autoGearPresets.some(preset => preset.id !== autoGearAutoPresetIdState);
       if (!managedExists || otherExists) {
         setAutoGearAutoPresetId('', {
           persist: options.persist !== false,
@@ -1259,7 +1337,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     function syncAutoGearAutoPreset(rules) {
       const normalizedRules = Array.isArray(rules) ? rules : [];
       reconcileAutoGearAutoPresetState({ persist: true, skipRender: true });
-      if (!autoGearAutoPresetId) {
+      if (!autoGearAutoPresetIdState) {
         if (autoGearPresets.length > 0) {
           return false;
         }
@@ -1279,7 +1357,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         setActiveAutoGearPresetId(normalizedPreset.id, { persist: true, skipRender: true });
         return true;
       }
-      const managedIndex = autoGearPresets.findIndex(preset => preset.id === autoGearAutoPresetId);
+      const managedIndex = autoGearPresets.findIndex(preset => preset.id === autoGearAutoPresetIdState);
       if (managedIndex === -1) {
         setAutoGearAutoPresetId('', { persist: true, skipRender: true });
         return false;
@@ -1327,10 +1405,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         renderAutoGearPresetsControls();
       }
     }
-    
+
     function alignActiveAutoGearPreset(options = {}) {
       const skipRender = options.skipRender === true;
-      const fingerprint = createAutoGearRulesFingerprint(baseAutoGearRules);
+      const fingerprint = createAutoGearRulesFingerprint(baseAutoGearRulesState);
       const matching = autoGearPresets.find(preset => preset.fingerprint === fingerprint) || null;
       if (matching) {
         setActiveAutoGearPresetId(matching.id, { persist: true, skipRender: true });
@@ -1517,7 +1595,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
         return;
       }
-      if (autoGearAutoPresetId) {
+      if (autoGearAutoPresetIdState) {
         setAutoGearAutoPresetId('', { persist: true, skipRender: true });
       }
       const existingIndex = autoGearPresets.findIndex(preset => preset.id === normalizedPreset.id);
@@ -1551,7 +1629,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         confirmed = window.confirm(confirmMessage);
       }
       if (!confirmed) return;
-      if (autoGearAutoPresetId && autoGearAutoPresetId === activeAutoGearPresetId) {
+      if (autoGearAutoPresetIdState && autoGearAutoPresetIdState === activeAutoGearPresetId) {
         setAutoGearAutoPresetId('', { persist: true, skipRender: true });
       }
       autoGearPresets = autoGearPresets.filter(entry => entry.id !== activeAutoGearPresetId);
@@ -3846,8 +3924,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             .map(option => option.value)
             .filter(Boolean)
         : [];
-      const rawScenarioMode = autoGearScenarioModeSelect
-        ? normalizeAutoGearScenarioLogic(autoGearScenarioModeSelect.value)
+      const rawScenarioMode = autoGearScenarioModeSelectRef
+        ? normalizeAutoGearScenarioLogic(autoGearScenarioModeSelectRef.value)
         : 'all';
       const multiplierInputValue = autoGearScenarioFactorInput ? autoGearScenarioFactorInput.value : '1';
       const normalizedMultiplier = normalizeAutoGearScenarioMultiplier(multiplierInputValue);
@@ -10488,7 +10566,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             if (categoryParts.length) parts.push(categoryParts.join(' – '));
             if (libraryCategory) parts.push(`Device library category: ${libraryCategory}`);
             if (deviceInfo) {
-              let summary = safeGenerateConnectorSummary(deviceInfo);
+              let summary = safeGenerateConnectorSummaryFn(deviceInfo);
               summary = summary
                 ? summary.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim()
                 : '';
@@ -15012,7 +15090,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         } else {
           deviceData = devices[info.category]?.[info.name];
         }
-        const connectors = safeGenerateConnectorSummary(deviceData);
+        const connectors = safeGenerateConnectorSummaryFn(deviceData);
         const infoHtml =
           (deviceData && deviceData.latencyMs ?
             `<div class="info-box video-conn"><strong>Latency:</strong> ${escapeHtml(String(deviceData.latencyMs))}</div>` : '') +
@@ -15421,7 +15499,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     
         const nameSpan = document.createElement("span");
         nameSpan.textContent = name;
-        let summary = safeGenerateConnectorSummary(deviceData);
+        let summary = safeGenerateConnectorSummaryFn(deviceData);
         summary = summary ? summary.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim() : '';
         if (deviceData.notes) {
           summary = summary ? `${summary}; Notes: ${deviceData.notes}` : deviceData.notes;

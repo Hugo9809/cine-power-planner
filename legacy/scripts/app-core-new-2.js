@@ -119,61 +119,144 @@ function declareCoreFallbackBinding(name, factory) {
   return fallbackValue;
 }
 
-autoGearAutoPresetId = declareCoreFallbackBinding('autoGearAutoPresetId', function () {
-  if (typeof loadAutoGearAutoPresetId === 'function') {
-    try {
-      var storedId = loadAutoGearAutoPresetId();
-      return typeof storedId === 'string' ? storedId : '';
-    } catch (error) {
-      if (typeof console !== 'undefined' && typeof console.error === 'function') {
-        console.error('Failed to recover automatic gear auto preset identifier from storage.', error);
-      }
-    }
+var fallbackConnectorSummaryGenerator = function fallbackConnectorSummaryGenerator(device) {
+  if (!device || _typeof(device) !== 'object') {
+    return '';
   }
-  return '';
-});
-
-baseAutoGearRules = declareCoreFallbackBinding('baseAutoGearRules', function () {
-  if (typeof loadAutoGearRules === 'function') {
-    try {
-      var storedRules = loadAutoGearRules();
-      return Array.isArray(storedRules) ? storedRules.slice() : [];
-    } catch (error) {
-      if (typeof console !== 'undefined' && typeof console.error === 'function') {
-        console.error('Failed to recover automatic gear rules from storage.', error);
-      }
-    }
+  if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+    console.warn('Using fallback connector summary generator. Core bindings may have failed to initialise.');
   }
-  return [];
-});
-
-autoGearScenarioModeSelect = declareCoreFallbackBinding('autoGearScenarioModeSelect', function () {
-  return null;
-});
-
-safeGenerateConnectorSummary = declareCoreFallbackBinding('safeGenerateConnectorSummary', function () {
-  return function safeGenerateConnectorSummary(device) {
-    if (!device || _typeof(device) !== 'object') {
+  try {
+    var keys = Object.keys(device);
+    if (!keys.length) {
       return '';
     }
-    if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-      console.warn('Using fallback connector summary generator. Core bindings may have failed to initialise.');
-    }
-    try {
-      var keys = Object.keys(device);
-      if (!keys.length) {
+    var primaryKey = keys[0];
+    var value = device[primaryKey];
+    var label = typeof primaryKey === 'string' ? primaryKey.replace(/_/g, ' ') : 'connector';
+    return value ? label + ': ' + value : label;
+  } catch (fallbackError) {
+    void fallbackError;
+    return '';
+  }
+};
+
+var resolvedAutoGearAutoPresetId =
+  typeof autoGearAutoPresetId !== 'undefined'
+    ? autoGearAutoPresetId
+    : declareCoreFallbackBinding('autoGearAutoPresetId', function () {
+        if (typeof loadAutoGearAutoPresetId === 'function') {
+          try {
+            var storedId = loadAutoGearAutoPresetId();
+            return typeof storedId === 'string' ? storedId : '';
+          } catch (error) {
+            if (typeof console !== 'undefined' && typeof console.error === 'function') {
+              console.error('Failed to recover automatic gear auto preset identifier from storage.', error);
+            }
+          }
+        }
         return '';
-      }
-      var primaryKey = keys[0];
-      var value = device[primaryKey];
-      var label = typeof primaryKey === 'string' ? primaryKey.replace(/_/g, ' ') : 'connector';
-      return value ? label + ': ' + value : label;
-    } catch (fallbackError) {
-      void fallbackError;
-      return '';
+      });
+
+var resolvedBaseAutoGearRules =
+  typeof baseAutoGearRules !== 'undefined'
+    ? baseAutoGearRules
+    : declareCoreFallbackBinding('baseAutoGearRules', function () {
+        if (typeof loadAutoGearRules === 'function') {
+          try {
+            var storedRules = loadAutoGearRules();
+            return Array.isArray(storedRules) ? storedRules.slice() : [];
+          } catch (error) {
+            if (typeof console !== 'undefined' && typeof console.error === 'function') {
+              console.error('Failed to recover automatic gear rules from storage.', error);
+            }
+          }
+        }
+        return [];
+      });
+
+var resolvedAutoGearScenarioModeSelect =
+  typeof autoGearScenarioModeSelect !== 'undefined'
+    ? autoGearScenarioModeSelect
+    : declareCoreFallbackBinding('autoGearScenarioModeSelect', function () {
+        return null;
+      });
+
+var resolvedSafeGenerateConnectorSummary =
+  typeof safeGenerateConnectorSummary !== 'undefined'
+    ? safeGenerateConnectorSummary
+    : declareCoreFallbackBinding('safeGenerateConnectorSummary', function () {
+        return fallbackConnectorSummaryGenerator;
+      });
+
+var autoGearAutoPresetIdState =
+  typeof resolvedAutoGearAutoPresetId === 'string' ? resolvedAutoGearAutoPresetId : '';
+
+var baseAutoGearRulesState = Array.isArray(resolvedBaseAutoGearRules)
+  ? resolvedBaseAutoGearRules.slice()
+  : [];
+
+var autoGearScenarioModeSelectRef = resolvedAutoGearScenarioModeSelect || null;
+
+var safeGenerateConnectorSummaryFn =
+  typeof resolvedSafeGenerateConnectorSummary === 'function'
+    ? resolvedSafeGenerateConnectorSummary
+    : fallbackConnectorSummaryGenerator;
+
+function syncAutoGearAutoPresetIdState(value) {
+  autoGearAutoPresetIdState = typeof value === 'string' ? value : '';
+  if (typeof autoGearAutoPresetId !== 'undefined') {
+    try {
+      autoGearAutoPresetId = autoGearAutoPresetIdState;
+    } catch (assignError) {
+      void assignError;
     }
-  };
-});
+  }
+  writeCoreScopeValue('autoGearAutoPresetId', autoGearAutoPresetIdState);
+}
+
+function syncBaseAutoGearRulesState(rules) {
+  baseAutoGearRulesState = Array.isArray(rules) ? rules : [];
+  if (typeof baseAutoGearRules !== 'undefined') {
+    try {
+      baseAutoGearRules = baseAutoGearRulesState;
+    } catch (assignError) {
+      void assignError;
+    }
+  }
+  writeCoreScopeValue('baseAutoGearRules', baseAutoGearRulesState);
+}
+
+function syncAutoGearScenarioModeSelectRef(value) {
+  autoGearScenarioModeSelectRef = value || null;
+  if (typeof autoGearScenarioModeSelect !== 'undefined') {
+    try {
+      autoGearScenarioModeSelect = autoGearScenarioModeSelectRef;
+    } catch (assignError) {
+      void assignError;
+    }
+  }
+  writeCoreScopeValue('autoGearScenarioModeSelect', autoGearScenarioModeSelectRef);
+}
+
+function syncSafeGenerateConnectorSummaryFn(generator) {
+  safeGenerateConnectorSummaryFn = typeof generator === 'function'
+    ? generator
+    : fallbackConnectorSummaryGenerator;
+  if (typeof safeGenerateConnectorSummary !== 'undefined') {
+    try {
+      safeGenerateConnectorSummary = safeGenerateConnectorSummaryFn;
+    } catch (assignError) {
+      void assignError;
+    }
+  }
+  writeCoreScopeValue('safeGenerateConnectorSummary', safeGenerateConnectorSummaryFn);
+}
+
+syncAutoGearAutoPresetIdState(autoGearAutoPresetIdState);
+syncBaseAutoGearRulesState(baseAutoGearRulesState);
+syncAutoGearScenarioModeSelectRef(autoGearScenarioModeSelectRef);
+syncSafeGenerateConnectorSummaryFn(safeGenerateConnectorSummaryFn);
 var currentProjectInfo = null;
 var loadedSetupState = null;
 var loadedSetupStateSignature = '';
@@ -1087,14 +1170,13 @@ function setAutoGearAutoPresetId(presetId) {
   var normalized = typeof presetId === 'string' ? presetId : '';
   var persist = options.persist !== false;
   var skipRender = options.skipRender === true;
-  if (autoGearAutoPresetId === normalized) {
+  if (autoGearAutoPresetIdState === normalized) {
     if (!skipRender) renderAutoGearPresetsControls();
     return;
   }
-  autoGearAutoPresetId = normalized;
-  writeCoreScopeValue('autoGearAutoPresetId', autoGearAutoPresetId);
+  syncAutoGearAutoPresetIdState(normalized);
   if (persist) {
-    persistAutoGearAutoPresetId(autoGearAutoPresetId);
+    persistAutoGearAutoPresetId(autoGearAutoPresetIdState);
   }
   if (!skipRender) {
     renderAutoGearPresetsControls();
@@ -1102,17 +1184,17 @@ function setAutoGearAutoPresetId(presetId) {
 }
 function reconcileAutoGearAutoPresetState() {
   var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-  if (!autoGearAutoPresetId) {
+  if (!autoGearAutoPresetIdState) {
     if (options.persist !== false) {
       persistAutoGearAutoPresetId('');
     }
     return false;
   }
   var managedExists = autoGearPresets.some(function (preset) {
-    return preset.id === autoGearAutoPresetId;
+    return preset.id === autoGearAutoPresetIdState;
   });
   var otherExists = autoGearPresets.some(function (preset) {
-    return preset.id !== autoGearAutoPresetId;
+    return preset.id !== autoGearAutoPresetIdState;
   });
   if (!managedExists || otherExists) {
     setAutoGearAutoPresetId('', {
@@ -1129,7 +1211,7 @@ function syncAutoGearAutoPreset(rules) {
     persist: true,
     skipRender: true
   });
-  if (!autoGearAutoPresetId) {
+  if (!autoGearAutoPresetIdState) {
     if (autoGearPresets.length > 0) {
       return false;
     }
@@ -1156,7 +1238,7 @@ function syncAutoGearAutoPreset(rules) {
     return true;
   }
   var managedIndex = autoGearPresets.findIndex(function (preset) {
-    return preset.id === autoGearAutoPresetId;
+    return preset.id === autoGearAutoPresetIdState;
   });
   if (managedIndex === -1) {
     setAutoGearAutoPresetId('', {
@@ -1223,7 +1305,7 @@ function setActiveAutoGearPresetId(presetId) {
 function alignActiveAutoGearPreset() {
   var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   var skipRender = options.skipRender === true;
-  var fingerprint = createAutoGearRulesFingerprint(baseAutoGearRules);
+  var fingerprint = createAutoGearRulesFingerprint(baseAutoGearRulesState);
   var matching = autoGearPresets.find(function (preset) {
     return preset.fingerprint === fingerprint;
   }) || null;
@@ -1403,7 +1485,7 @@ function handleAutoGearSavePreset() {
     }
     return;
   }
-  if (autoGearAutoPresetId) {
+  if (autoGearAutoPresetIdState) {
     setAutoGearAutoPresetId('', {
       persist: true,
       skipRender: true
@@ -1439,7 +1521,7 @@ function handleAutoGearDeletePreset() {
     confirmed = window.confirm(confirmMessage);
   }
   if (!confirmed) return;
-  if (autoGearAutoPresetId && autoGearAutoPresetId === activeAutoGearPresetId) {
+  if (autoGearAutoPresetIdState && autoGearAutoPresetIdState === activeAutoGearPresetId) {
     setAutoGearAutoPresetId('', {
       persist: true,
       skipRender: true
@@ -3568,7 +3650,7 @@ function saveAutoGearRuleFromEditor() {
   var scenarios = isAutoGearConditionActive('scenarios') && autoGearScenariosSelect ? Array.from(autoGearScenariosSelect.selectedOptions || []).map(function (option) {
     return option.value;
   }).filter(Boolean) : [];
-  var rawScenarioMode = autoGearScenarioModeSelect ? normalizeAutoGearScenarioLogic(autoGearScenarioModeSelect.value) : 'all';
+  var rawScenarioMode = autoGearScenarioModeSelectRef ? normalizeAutoGearScenarioLogic(autoGearScenarioModeSelectRef.value) : 'all';
   var multiplierInputValue = autoGearScenarioFactorInput ? autoGearScenarioFactorInput.value : '1';
   var normalizedMultiplier = normalizeAutoGearScenarioMultiplier(multiplierInputValue);
   var scenarioMode = rawScenarioMode;
@@ -9883,7 +9965,7 @@ function displayGearAndRequirements(html) {
         if (categoryParts.length) parts.push(categoryParts.join(' – '));
         if (libraryCategory) parts.push("Device library category: ".concat(libraryCategory));
         if (deviceInfo) {
-          var summary = safeGenerateConnectorSummary(deviceInfo);
+          var summary = safeGenerateConnectorSummaryFn(deviceInfo);
           summary = summary ? summary.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim() : '';
           if (deviceInfo.notes) summary = summary ? "".concat(summary, "; Notes: ").concat(deviceInfo.notes) : deviceInfo.notes;
           if (summary) parts.push(summary);
@@ -14408,7 +14490,7 @@ function attachDiagramPopups(map) {
       var _devices$info$categor;
       deviceData = (_devices$info$categor = devices[info.category]) === null || _devices$info$categor === void 0 ? void 0 : _devices$info$categor[info.name];
     }
-    var connectors = safeGenerateConnectorSummary(deviceData);
+    var connectors = safeGenerateConnectorSummaryFn(deviceData);
     var infoHtml = (deviceData && deviceData.latencyMs ? "<div class=\"info-box video-conn\"><strong>Latency:</strong> ".concat(escapeHtml(String(deviceData.latencyMs)), "</div>") : '') + (deviceData && deviceData.frequency ? "<div class=\"info-box video-conn\"><strong>Frequency:</strong> ".concat(escapeHtml(String(deviceData.frequency)), "</div>") : '');
     var html = "<strong>".concat(escapeHtml(info.name), "</strong>") + connectors + infoHtml;
     var show = function show(e) {
@@ -14818,7 +14900,7 @@ function renderDeviceList(categoryKey, ulElement) {
     header.className = "device-summary";
     var nameSpan = document.createElement("span");
     nameSpan.textContent = name;
-    var summary = safeGenerateConnectorSummary(deviceData);
+    var summary = safeGenerateConnectorSummaryFn(deviceData);
     summary = summary ? summary.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim() : '';
     if (deviceData.notes) {
       summary = summary ? "".concat(summary, "; Notes: ").concat(deviceData.notes) : deviceData.notes;
