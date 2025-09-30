@@ -1,3 +1,8 @@
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 (function () {
   var GLOBAL_SCOPE = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : typeof global !== 'undefined' ? global : {};
@@ -46,6 +51,82 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return null;
     }
   }
+  function resolveModuleRegistry() {
+    var required = tryRequire('./registry.js');
+    if (required && _typeof(required) === 'object') {
+      return required;
+    }
+    var scopes = [GLOBAL_SCOPE];
+    if (typeof globalThis !== 'undefined' && scopes.indexOf(globalThis) === -1) scopes.push(globalThis);
+    if (typeof window !== 'undefined' && scopes.indexOf(window) === -1) scopes.push(window);
+    if (typeof self !== 'undefined' && scopes.indexOf(self) === -1) scopes.push(self);
+    if (typeof global !== 'undefined' && scopes.indexOf(global) === -1) scopes.push(global);
+    for (var index = 0; index < scopes.length; index += 1) {
+      var scope = scopes[index];
+      if (scope && _typeof(scope.cineModules) === 'object') {
+        return scope.cineModules;
+      }
+    }
+    return null;
+  }
+  var MODULE_REGISTRY = resolveModuleRegistry();
+  var PENDING_QUEUE_KEY = '__cinePendingModuleRegistrations__';
+  function queueModuleRegistration(name, api, options) {
+    if (!GLOBAL_SCOPE || _typeof(GLOBAL_SCOPE) !== 'object') {
+      return false;
+    }
+    var payload = Object.freeze({
+      name: name,
+      api: api,
+      options: Object.freeze(_objectSpread({}, options || {}))
+    });
+    var queue = GLOBAL_SCOPE[PENDING_QUEUE_KEY];
+    if (!Array.isArray(queue)) {
+      try {
+        Object.defineProperty(GLOBAL_SCOPE, PENDING_QUEUE_KEY, {
+          configurable: true,
+          enumerable: false,
+          writable: true,
+          value: []
+        });
+        queue = GLOBAL_SCOPE[PENDING_QUEUE_KEY];
+      } catch (error) {
+        void error;
+        try {
+          if (!Array.isArray(GLOBAL_SCOPE[PENDING_QUEUE_KEY])) {
+            GLOBAL_SCOPE[PENDING_QUEUE_KEY] = [];
+          }
+          queue = GLOBAL_SCOPE[PENDING_QUEUE_KEY];
+        } catch (assignmentError) {
+          void assignmentError;
+          return false;
+        }
+      }
+    }
+    try {
+      queue.push(payload);
+    } catch (error) {
+      void error;
+      queue[queue.length] = payload;
+    }
+    return true;
+  }
+  function registerOrQueueModule(name, api, options, onError) {
+    if (MODULE_REGISTRY && typeof MODULE_REGISTRY.register === 'function') {
+      try {
+        MODULE_REGISTRY.register(name, api, options);
+        return true;
+      } catch (error) {
+        if (typeof onError === 'function') {
+          onError(error);
+        } else {
+          void error;
+        }
+      }
+    }
+    queueModuleRegistration(name, api, options);
+    return false;
+  }
   function freezeDeep(value) {
     var seen = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new WeakSet();
     if (!value || _typeof(value) !== 'object') {
@@ -69,6 +150,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   function resolveModule(name) {
     if (!name || !MODULE_NAMES.includes(name)) {
       throw new TypeError("cineRuntime cannot resolve unknown module \"".concat(name, "\"."));
+    }
+    if (MODULE_REGISTRY && typeof MODULE_REGISTRY.get === 'function') {
+      try {
+        var registered = MODULE_REGISTRY.get(name);
+        if (registered) {
+          return registered;
+        }
+      } catch (error) {
+        void error;
+      }
     }
     if (GLOBAL_SCOPE && _typeof(GLOBAL_SCOPE) === 'object') {
       try {
@@ -251,6 +342,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var missing = [];
     var detailMap = {};
+    var registrySnapshot = null;
+    if (MODULE_REGISTRY && typeof MODULE_REGISTRY.assertRegistered === 'function') {
+      try {
+        registrySnapshot = MODULE_REGISTRY.assertRegistered(MODULE_NAMES);
+      } catch (error) {
+        safeWarn('cineRuntime.verifyCriticalFlows() could not inspect cineModules registry.', error);
+      }
+    }
     var persistence = resolveModule('cinePersistence');
     var offline = resolveModule('cineOffline');
     var ui = resolveModule('cineUi');
@@ -259,6 +358,20 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       cineOffline: !!offline,
       cineUi: !!ui
     };
+    if (registrySnapshot && registrySnapshot.detail) {
+      var registryDetail = {};
+      var detailKeys = Object.keys(registrySnapshot.detail);
+      for (var index = 0; index < detailKeys.length; index += 1) {
+        var key = detailKeys[index];
+        var registered = !!registrySnapshot.detail[key];
+        registryDetail[key] = registered;
+        detailMap["".concat(key, ".registered")] = registered;
+        if (!registered) {
+          missing.push("".concat(key, " (not registered)"));
+        }
+      }
+      modulePresence.registry = registryDetail;
+    }
     if (!persistence) {
       missing.push('cinePersistence');
       detailMap.cinePersistence = false;
@@ -270,8 +383,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       } else {
         detailMap['cinePersistence.frozen'] = true;
       }
-      for (var index = 0; index < REQUIRED_PERSISTENCE_FUNCTIONS.length; index += 1) {
-        inspectFunctionPath(persistence, REQUIRED_PERSISTENCE_FUNCTIONS[index], missing, detailMap, 'cinePersistence');
+      for (var _index = 0; _index < REQUIRED_PERSISTENCE_FUNCTIONS.length; _index += 1) {
+        inspectFunctionPath(persistence, REQUIRED_PERSISTENCE_FUNCTIONS[_index], missing, detailMap, 'cinePersistence');
       }
     }
     if (!offline) {
@@ -308,6 +421,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       missing: missing.slice(),
       modules: freezeDeep(modulePresence),
       details: freezeDeep(detailMap),
+      registry: registrySnapshot ? freezeDeep(registrySnapshot) : null,
       checks: listCriticalChecks()
     });
     if (!ok) {
@@ -332,13 +446,24 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     getUi: function getUi(options) {
       return ensureModule('cineUi', options);
     },
+    getModuleRegistry: function getModuleRegistry() {
+      return MODULE_REGISTRY || null;
+    },
     listCriticalChecks: listCriticalChecks,
     verifyCriticalFlows: verifyCriticalFlows,
     __internal: freezeDeep({
       resolveModule: resolveModule,
       ensureModule: ensureModule,
-      listCriticalChecks: listCriticalChecks
+      listCriticalChecks: listCriticalChecks,
+      moduleRegistry: MODULE_REGISTRY || null
     })
+  });
+  registerOrQueueModule('cineRuntime', runtimeAPI, {
+    category: 'runtime',
+    description: 'Runtime orchestrator ensuring persistence, offline, and UI safeguards stay intact.',
+    replace: true
+  }, function (error) {
+    safeWarn('Unable to register cineRuntime module.', error);
   });
   if (GLOBAL_SCOPE && _typeof(GLOBAL_SCOPE) === 'object') {
     try {

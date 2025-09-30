@@ -28,6 +28,7 @@ var FAVORITES_STORAGE_KEY = 'cameraPowerPlanner_favorites';
 var DEVICE_SCHEMA_CACHE_KEY = 'cameraPowerPlanner_schemaCache';
 var LEGACY_SCHEMA_CACHE_KEY = 'cinePowerPlanner_schemaCache';
 var CUSTOM_FONT_STORAGE_KEY_DEFAULT = 'cameraPowerPlanner_customFonts';
+var MOUNT_VOLTAGE_STORAGE_KEY_FALLBACK = 'cameraPowerPlanner_mountVoltages';
 var MOUNT_VOLTAGE_STORAGE_KEY_SYMBOL = typeof Symbol === 'function' ? Symbol.for('cinePowerPlanner.mountVoltageKey') : null;
 function readGlobalStringValue(scope, key) {
   if (!scope || _typeof(scope) !== 'object') {
@@ -43,20 +44,22 @@ function readGlobalStringValue(scope, key) {
       void symbolReadError;
     }
   }
-  var descriptor = null;
+  var descriptor;
   try {
     descriptor = Object.getOwnPropertyDescriptor(scope, key);
   } catch (descriptorError) {
     descriptor = null;
+    void descriptorError;
   }
   if (descriptor && Object.prototype.hasOwnProperty.call(descriptor, 'value') && typeof descriptor.value === 'string' && descriptor.value) {
     return descriptor.value;
   }
-  var directValue = '';
+  var directValue;
   try {
     directValue = scope[key];
   } catch (readError) {
     directValue = '';
+    void readError;
   }
   return typeof directValue === 'string' && directValue ? directValue : '';
 }
@@ -75,7 +78,7 @@ function exposeGlobalStringValue(scope, key, value) {
       void symbolExposeError;
     }
   }
-  var descriptor = null;
+  var descriptor;
   try {
     descriptor = Object.getOwnPropertyDescriptor(scope, key);
   } catch (descriptorError) {
@@ -105,21 +108,26 @@ function exposeGlobalStringValue(scope, key, value) {
   return '';
 }
 function resolveMountVoltageStorageKeyName() {
-  var fallback = 'cameraPowerPlanner_mountVoltages';
   if (!GLOBAL_SCOPE || _typeof(GLOBAL_SCOPE) !== 'object') {
-    return fallback;
+    return MOUNT_VOLTAGE_STORAGE_KEY_FALLBACK;
   }
   var existing = readGlobalStringValue(GLOBAL_SCOPE, 'MOUNT_VOLTAGE_STORAGE_KEY');
   if (existing) {
     return existing;
   }
-  var exposed = exposeGlobalStringValue(GLOBAL_SCOPE, 'MOUNT_VOLTAGE_STORAGE_KEY', fallback);
+  var exposed = exposeGlobalStringValue(GLOBAL_SCOPE, 'MOUNT_VOLTAGE_STORAGE_KEY', MOUNT_VOLTAGE_STORAGE_KEY_FALLBACK);
   if (exposed) {
     return exposed;
   }
-  return fallback;
+  return MOUNT_VOLTAGE_STORAGE_KEY_FALLBACK;
 }
 var MOUNT_VOLTAGE_STORAGE_KEY_NAME = resolveMountVoltageStorageKeyName();
+function getMountVoltageStorageKeyName() {
+  return MOUNT_VOLTAGE_STORAGE_KEY_NAME;
+}
+function getMountVoltageStorageBackupKeyName() {
+  return "".concat(MOUNT_VOLTAGE_STORAGE_KEY_NAME, "__backup");
+}
 function ensureCustomFontStorageKeyName() {
   if (!GLOBAL_SCOPE) {
     return CUSTOM_FONT_STORAGE_KEY_DEFAULT;
@@ -239,6 +247,320 @@ var MAX_SAVE_ATTEMPTS = 3;
 var MAX_QUOTA_RECOVERY_STEPS = 100;
 var STORAGE_MIGRATION_BACKUP_SUFFIX = '__legacyMigrationBackup';
 var RAW_STORAGE_BACKUP_KEYS = new Set([getCustomFontStorageKeyName(), CUSTOM_LOGO_STORAGE_KEY, DEVICE_SCHEMA_CACHE_KEY, MOUNT_VOLTAGE_STORAGE_KEY_NAME]);
+var CRITICAL_BACKUP_KEY_PROVIDERS = [function () {
+  return {
+    key: DEVICE_STORAGE_KEY
+  };
+}, function () {
+  return {
+    key: SETUP_STORAGE_KEY
+  };
+}, function () {
+  return {
+    key: SESSION_STATE_KEY
+  };
+}, function () {
+  return {
+    key: FEEDBACK_STORAGE_KEY
+  };
+}, function () {
+  return {
+    key: PROJECT_STORAGE_KEY
+  };
+}, function () {
+  return {
+    key: FAVORITES_STORAGE_KEY
+  };
+}, function () {
+  return {
+    key: DEVICE_SCHEMA_CACHE_KEY
+  };
+}, function () {
+  return {
+    key: AUTO_GEAR_RULES_STORAGE_KEY
+  };
+}, function () {
+  return {
+    key: AUTO_GEAR_SEEDED_STORAGE_KEY
+  };
+}, function () {
+  return {
+    key: AUTO_GEAR_BACKUPS_STORAGE_KEY
+  };
+}, function () {
+  return {
+    key: AUTO_GEAR_PRESETS_STORAGE_KEY
+  };
+}, function () {
+  return {
+    key: AUTO_GEAR_ACTIVE_PRESET_STORAGE_KEY
+  };
+}, function () {
+  return {
+    key: AUTO_GEAR_AUTO_PRESET_STORAGE_KEY
+  };
+}, function () {
+  return {
+    key: AUTO_GEAR_BACKUP_VISIBILITY_STORAGE_KEY
+  };
+}, function () {
+  return {
+    key: AUTO_GEAR_BACKUP_RETENTION_STORAGE_KEY
+  };
+}, function () {
+  return {
+    key: AUTO_GEAR_MONITOR_DEFAULTS_STORAGE_KEY
+  };
+}, function () {
+  return {
+    key: FULL_BACKUP_HISTORY_STORAGE_KEY
+  };
+}, function () {
+  return {
+    key: CUSTOM_LOGO_STORAGE_KEY
+  };
+}, function () {
+  return {
+    key: getCustomFontStorageKeyName()
+  };
+}, function () {
+  return {
+    key: 'darkMode'
+  };
+}, function () {
+  return {
+    key: 'pinkMode'
+  };
+}, function () {
+  return {
+    key: 'highContrast'
+  };
+}, function () {
+  return {
+    key: 'reduceMotion'
+  };
+}, function () {
+  return {
+    key: 'relaxedSpacing'
+  };
+}, function () {
+  return {
+    key: 'showAutoBackups'
+  };
+}, function () {
+  return {
+    key: 'accentColor'
+  };
+}, function () {
+  return {
+    key: 'fontSize'
+  };
+}, function () {
+  return {
+    key: 'fontFamily'
+  };
+}, function () {
+  return {
+    key: 'language'
+  };
+}, function () {
+  return {
+    key: 'iosPwaHelpShown'
+  };
+}, function () {
+  return {
+    key: TEMPERATURE_UNIT_STORAGE_KEY_NAME
+  };
+}, function () {
+  return {
+    key: getMountVoltageStorageKeyName(),
+    backupKey: getMountVoltageStorageBackupKeyName()
+  };
+}];
+function createCriticalStorageEntry(candidate) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  if (!candidate || _typeof(candidate) !== 'object') {
+    return null;
+  }
+  var key = candidate.key,
+    backupKey = candidate.backupKey,
+    _candidate$storage = candidate.storage,
+    storage = _candidate$storage === void 0 ? null : _candidate$storage;
+  if (typeof key !== 'string' || !key) {
+    return null;
+  }
+  var resolvedBackupKey = typeof backupKey === 'string' && backupKey ? backupKey : "".concat(key).concat(STORAGE_BACKUP_SUFFIX);
+  return {
+    key: key,
+    backupKey: resolvedBackupKey,
+    storage: storage,
+    label: typeof options.label === 'string' ? options.label : key
+  };
+}
+function gatherCriticalStorageEntries() {
+  var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  var entries = [];
+  var seen = new Set();
+  var pushEntry = function pushEntry(entry) {
+    if (!entry) {
+      return;
+    }
+    var storageId = entry.storage || null;
+    var id = "".concat(entry.key, "__").concat(storageId ? String(storageId) : 'default');
+    if (seen.has(id)) {
+      return;
+    }
+    seen.add(id);
+    entries.push(entry);
+  };
+  for (var i = 0; i < CRITICAL_BACKUP_KEY_PROVIDERS.length; i += 1) {
+    var provider = CRITICAL_BACKUP_KEY_PROVIDERS[i];
+    if (typeof provider !== 'function') {
+      continue;
+    }
+    var result = void 0;
+    try {
+      result = provider(options);
+    } catch (providerError) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Critical storage key provider failed', providerError);
+      }
+      continue;
+    }
+    var entry = createCriticalStorageEntry(result, options);
+    if (entry) {
+      pushEntry(entry);
+    }
+  }
+  return entries;
+}
+var lastCriticalStorageGuardResult = null;
+function registerCriticalStorageGuardResult(result) {
+  lastCriticalStorageGuardResult = result;
+  if (!GLOBAL_SCOPE || _typeof(GLOBAL_SCOPE) !== 'object') {
+    return;
+  }
+  try {
+    GLOBAL_SCOPE.__cineCriticalStorageGuard = result;
+  } catch (exposeError) {
+    void exposeError;
+    try {
+      Object.defineProperty(GLOBAL_SCOPE, '__cineCriticalStorageGuard', {
+        configurable: true,
+        writable: true,
+        value: result
+      });
+    } catch (definitionError) {
+      void definitionError;
+    }
+  }
+}
+function ensureCriticalStorageBackups() {
+  var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  var safeStorage = options && options.storage ? options.storage : null;
+  if (!safeStorage) {
+    try {
+      safeStorage = getSafeLocalStorage();
+    } catch (guardError) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Unable to resolve safe storage while ensuring backups', guardError);
+      }
+      safeStorage = null;
+    }
+  }
+  var summary = {
+    ensured: [],
+    skipped: [],
+    errors: [],
+    timestamp: new Date().toISOString(),
+    storageType: safeLocalStorageInfo && safeLocalStorageInfo.type ? safeLocalStorageInfo.type : 'unknown'
+  };
+  var entries = gatherCriticalStorageEntries(options);
+  var targetStorage = safeStorage && typeof safeStorage.getItem === 'function' ? safeStorage : null;
+  for (var index = 0; index < entries.length; index += 1) {
+    var entry = entries[index];
+    var storage = entry.storage && typeof entry.storage.getItem === 'function' ? entry.storage : targetStorage;
+    if (!storage || typeof storage.getItem !== 'function' || typeof storage.setItem !== 'function') {
+      summary.skipped.push({
+        key: entry.key,
+        reason: 'unavailable-storage'
+      });
+      continue;
+    }
+    var primaryValue = void 0;
+    try {
+      primaryValue = storage.getItem(entry.key);
+    } catch (readError) {
+      summary.errors.push({
+        key: entry.key,
+        reason: 'read-failed',
+        error: readError
+      });
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn("Critical storage guard could not inspect ".concat(entry.key), readError);
+      }
+      continue;
+    }
+    if (primaryValue === null || primaryValue === undefined) {
+      summary.skipped.push({
+        key: entry.key,
+        reason: 'missing'
+      });
+      continue;
+    }
+    var backupValue = void 0;
+    try {
+      backupValue = storage.getItem(entry.backupKey);
+    } catch (backupReadError) {
+      summary.errors.push({
+        key: entry.key,
+        reason: 'backup-read-failed',
+        error: backupReadError
+      });
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn("Critical storage guard could not read backup for ".concat(entry.key), backupReadError);
+      }
+      continue;
+    }
+    if (typeof backupValue === 'string') {
+      summary.skipped.push({
+        key: entry.key,
+        reason: 'exists'
+      });
+      continue;
+    }
+    try {
+      storage.setItem(entry.backupKey, primaryValue);
+      summary.ensured.push({
+        key: entry.key,
+        backupKey: entry.backupKey
+      });
+    } catch (writeError) {
+      summary.errors.push({
+        key: entry.key,
+        reason: 'backup-write-failed',
+        error: writeError
+      });
+      if (typeof console !== 'undefined' && typeof console.error === 'function') {
+        console.error("Critical storage guard could not mirror ".concat(entry.key), writeError);
+      }
+    }
+  }
+  registerCriticalStorageGuardResult(summary);
+  if (summary.ensured.length && typeof console !== 'undefined' && typeof console.info === 'function') {
+    var mirroredKeys = summary.ensured.map(function (entry) {
+      return entry.key;
+    });
+    console.info('Critical storage guard mirrored backup copies for', mirroredKeys);
+  }
+  if (summary.errors.length && typeof console !== 'undefined' && typeof console.warn === 'function') {
+    console.warn('Critical storage guard encountered issues', summary.errors);
+  }
+  return summary;
+}
+function getLastCriticalStorageGuardResult() {
+  return lastCriticalStorageGuardResult;
+}
 var MAX_MIGRATION_BACKUP_CLEANUP_STEPS = 10;
 var MIGRATION_BACKUP_COMPRESSION_ALGORITHM = 'lz-string';
 var MIGRATION_BACKUP_COMPRESSION_ENCODING = 'json-string';
@@ -1054,19 +1376,19 @@ function getSafeLocalStorage() {
 updateGlobalSafeLocalStorageReference();
 var persistentStorageRequestPromise = null;
 function requestPersistentStorage() {
-  if (persistentStorageRequestPromise) {
-    return persistentStorageRequestPromise;
-  }
   var storageManager = getStorageManager();
-  if (!storageManager || typeof storageManager.persist !== 'function') {
-    persistentStorageRequestPromise = Promise.resolve({
+  var supportsPersist = storageManager && typeof storageManager.persist === 'function';
+  if (!supportsPersist) {
+    return Promise.resolve({
       supported: Boolean(storageManager),
       granted: false,
       alreadyGranted: false
     });
+  }
+  if (persistentStorageRequestPromise) {
     return persistentStorageRequestPromise;
   }
-  persistentStorageRequestPromise = _asyncToGenerator(_regenerator().m(function _callee() {
+  var requestPromise = _asyncToGenerator(_regenerator().m(function _callee() {
     var alreadyGranted, supportsPersistedCheck, granted, persisted, _t, _t2, _t3;
     return _regenerator().w(function (_context) {
       while (1) switch (_context.p = _context.n) {
@@ -1148,7 +1470,17 @@ function requestPersistentStorage() {
       }
     }, _callee, null, [[7, 10], [5, 12], [1, 3]]);
   }))();
-  return persistentStorageRequestPromise;
+  var trackedPromise = requestPromise.then(function (result) {
+    if (!result || result.granted !== true) {
+      persistentStorageRequestPromise = null;
+    }
+    return result;
+  }, function (error) {
+    persistentStorageRequestPromise = null;
+    throw error;
+  });
+  persistentStorageRequestPromise = trackedPromise;
+  return trackedPromise;
 }
 if (typeof window !== 'undefined' && typeof navigator !== 'undefined') {
   requestPersistentStorage();
@@ -3037,6 +3369,46 @@ function cloneProjectGearSelectors(selectors) {
   });
   return Object.keys(clone).length ? clone : null;
 }
+function normalizeProjectPowerSelection(raw) {
+  if (raw == null) {
+    return null;
+  }
+  var normalizeString = function normalizeString(value) {
+    if (typeof value === "string") {
+      return value.trim();
+    }
+    if (value === null || value === undefined) {
+      return "";
+    }
+    if (typeof value === "number" || typeof value === "boolean") {
+      return String(value);
+    }
+    return "";
+  };
+  if (!isPlainObject(raw)) {
+    return null;
+  }
+  var normalized = {
+    batteryPlate: normalizeString(raw.batteryPlate),
+    battery: normalizeString(raw.battery),
+    batteryHotswap: normalizeString(raw.batteryHotswap)
+  };
+  var hasValue = Object.keys(normalized).some(function (key) {
+    return normalized[key];
+  });
+  return hasValue ? normalized : null;
+}
+function cloneProjectPowerSelection(selection) {
+  var normalized = normalizeProjectPowerSelection(selection);
+  if (!normalized) {
+    return null;
+  }
+  return {
+    batteryPlate: normalized.batteryPlate,
+    battery: normalized.battery,
+    batteryHotswap: normalized.batteryHotswap
+  };
+}
 function normalizeProject(data) {
   if (typeof data === "string") {
     var parsed = tryParseJSONLike(data);
@@ -3094,6 +3466,7 @@ function normalizeProject(data) {
       }
       var normalizedGearList = typeof gearListSource === "string" || gearListSource && _typeof(gearListSource) === "object" ? gearListSource : "";
       var normalizedGearSelectors = null;
+      var normalizedPowerSelection = normalizeProjectPowerSelection(data.powerSelection);
       if (isPlainObject(data.gearSelectors)) {
         normalizedGearSelectors = cloneProjectGearSelectors(data.gearSelectors);
       } else if (typeof data.gearSelectors === "string") {
@@ -3101,6 +3474,9 @@ function normalizeProject(data) {
         if (parsedSelectors.success && isPlainObject(parsedSelectors.parsed)) {
           normalizedGearSelectors = cloneProjectGearSelectors(parsedSelectors.parsed);
         }
+      }
+      if (!normalizedPowerSelection && isPlainObject(data.powerSelection)) {
+        normalizedPowerSelection = normalizeProjectPowerSelection(data.powerSelection);
       }
       if (typeof normalizedGearList === "string") {
         var parsedGear = tryParseJSONLike(normalizedGearList);
@@ -3116,6 +3492,9 @@ function normalizeProject(data) {
             }
             if (!normalizedGearSelectors && isPlainObject(nested.gearSelectors)) {
               normalizedGearSelectors = cloneProjectGearSelectors(nested.gearSelectors);
+            }
+            if (!normalizedPowerSelection && isPlainObject(nested.powerSelection)) {
+              normalizedPowerSelection = normalizeProjectPowerSelection(nested.powerSelection);
             }
           } else if (typeof parsedGear.parsed === "string" || isPlainObject(parsedGear.parsed) && Object.values(parsedGear.parsed).every(function (value) {
             return typeof value === "string";
@@ -3159,6 +3538,9 @@ function normalizeProject(data) {
       if (!normalizedGearSelectors && isPlainObject(normalizedGearList) && isPlainObject(normalizedGearList.gearSelectors)) {
         normalizedGearSelectors = cloneProjectGearSelectors(normalizedGearList.gearSelectors);
       }
+      if (!normalizedPowerSelection && isPlainObject(data.project) && isPlainObject(data.project.powerSelection)) {
+        normalizedPowerSelection = normalizeProjectPowerSelection(data.project.powerSelection);
+      }
       if (!normalizedProjectInfo) {
         for (var i = 0; i < htmlSources.length; i += 1) {
           var recovered = extractProjectInfoFromHtml(htmlSources[i]);
@@ -3183,6 +3565,9 @@ function normalizeProject(data) {
       }
       if (normalizedGearSelectors && Object.keys(normalizedGearSelectors).length) {
         _normalized2.gearSelectors = normalizedGearSelectors;
+      }
+      if (normalizedPowerSelection) {
+        _normalized2.powerSelection = cloneProjectPowerSelection(normalizedPowerSelection);
       }
       return _normalized2;
     }
@@ -3212,8 +3597,8 @@ function normalizeProject(data) {
   }
   return null;
 }
-var LEGACY_PROJECT_ROOT_KEYS = new Set(["gearList", "projectInfo", "projectHtml", "gearHtml", "autoGearRules"]);
-var NORMALIZED_PROJECT_KEYS = new Set(["gearList", "projectInfo", "autoGearRules", "diagramPositions", "gearSelectors"]);
+var LEGACY_PROJECT_ROOT_KEYS = new Set(["gearList", "projectInfo", "projectHtml", "gearHtml", "autoGearRules", "powerSelection"]);
+var NORMALIZED_PROJECT_KEYS = new Set(["gearList", "projectInfo", "autoGearRules", "diagramPositions", "gearSelectors", "powerSelection"]);
 function isNormalizedProjectEntry(entry) {
   if (!isPlainObject(entry)) {
     return false;
@@ -3244,6 +3629,12 @@ function isNormalizedProjectEntry(entry) {
   }
   if (Object.prototype.hasOwnProperty.call(entry, "gearSelectors") && !isPlainObject(entry.gearSelectors)) {
     return false;
+  }
+  if (Object.prototype.hasOwnProperty.call(entry, "powerSelection")) {
+    var powerSelection = entry.powerSelection;
+    if (!isPlainObject(powerSelection)) {
+      return false;
+    }
   }
   return true;
 }
@@ -3458,6 +3849,61 @@ function maybeCreateProjectDeletionBackup(projects, key) {
     backupName: backupName
   };
 }
+function generateOverwriteBackupMetadata(projectName, projects) {
+  var timestamp = formatAutoBackupTimestamp(new Date());
+  var sanitizedName = sanitizeProjectNameForBackup(projectName);
+  var baseName = sanitizedName ? "".concat(STORAGE_AUTO_BACKUP_NAME_PREFIX).concat(timestamp, "-").concat(sanitizedName) : "".concat(STORAGE_AUTO_BACKUP_NAME_PREFIX).concat(timestamp);
+  var usedNames = new Set(Object.keys(projects));
+  if (!usedNames.has(baseName)) {
+    return {
+      name: baseName
+    };
+  }
+  var suffix = 2;
+  var candidate = "".concat(baseName, "-").concat(suffix);
+  while (usedNames.has(candidate)) {
+    suffix += 1;
+    candidate = "".concat(baseName, "-").concat(suffix);
+  }
+  return {
+    name: candidate
+  };
+}
+function maybeCreateProjectOverwriteBackup(projects, key) {
+  if (!isPlainObject(projects) || typeof key !== 'string') {
+    return {
+      status: 'invalid'
+    };
+  }
+  if (!Object.prototype.hasOwnProperty.call(projects, key)) {
+    return {
+      status: 'missing'
+    };
+  }
+  if (key.startsWith(STORAGE_AUTO_BACKUP_NAME_PREFIX) || key.startsWith(STORAGE_AUTO_BACKUP_DELETION_PREFIX)) {
+    return {
+      status: 'skipped'
+    };
+  }
+  var backupSource = cloneProjectEntryForBackup(projects[key]);
+  if (backupSource === undefined) {
+    return {
+      status: 'failed'
+    };
+  }
+  var _generateOverwriteBac = generateOverwriteBackupMetadata(key, projects),
+    backupName = _generateOverwriteBac.name;
+  if (!backupName) {
+    return {
+      status: 'failed'
+    };
+  }
+  projects[backupName] = backupSource;
+  return {
+    status: 'created',
+    backupName: backupName
+  };
+}
 function saveProject(name, project) {
   if (!isPlainObject(project)) return;
   var normalized = normalizeProject(project) || {
@@ -3474,7 +3920,19 @@ function saveProject(name, project) {
       createStorageMigrationBackup(safeStorage, PROJECT_STORAGE_KEY, originalValue);
     }
   }
-  projects[name || ""] = normalized;
+  var key = name || "";
+  var hasExistingEntry = Object.prototype.hasOwnProperty.call(projects, key);
+  if (hasExistingEntry) {
+    var existingSignature = createStableValueSignature(projects[key]);
+    var nextSignature = createStableValueSignature(normalized);
+    if (existingSignature !== nextSignature) {
+      var backupOutcome = maybeCreateProjectOverwriteBackup(projects, key);
+      if (backupOutcome.status === 'failed') {
+        console.warn("Automatic backup before overwriting project \"".concat(key, "\" failed. Proceeding with save."));
+      }
+    }
+  }
+  projects[key] = normalized;
   persistAllProjects(projects);
 }
 function deleteProject(name) {
@@ -4206,9 +4664,28 @@ function readLocalStorageValue(key) {
   }
 }
 function parseStoredBoolean(value) {
-  if (value === null) return null;
-  if (value === 'true' || value === '1') return true;
-  if (value === 'false' || value === '0') return false;
+  if (value === null || value === undefined) {
+    return null;
+  }
+  if (typeof value === 'boolean') {
+    return value;
+  }
+  if (typeof value === 'number') {
+    if (Number.isNaN(value)) {
+      return null;
+    }
+    return value !== 0;
+  }
+  var normalized = String(value).trim().toLowerCase();
+  if (!normalized) {
+    return null;
+  }
+  if (normalized === 'true' || normalized === '1' || normalized === 'yes' || normalized === 'on') {
+    return true;
+  }
+  if (normalized === 'false' || normalized === '0' || normalized === 'no' || normalized === 'off') {
+    return false;
+  }
   return null;
 }
 function collectPreferenceSnapshot() {
@@ -4252,6 +4729,15 @@ function collectPreferenceSnapshot() {
   var language = readLocalStorageValue('language');
   if (language) {
     preferences.language = language;
+  }
+  var mountVoltages = readLocalStorageValue(MOUNT_VOLTAGE_STORAGE_KEY_NAME);
+  if (mountVoltages) {
+    try {
+      preferences.mountVoltages = JSON.parse(mountVoltages);
+    } catch (voltageParseError) {
+      console.warn('Failed to parse stored mount voltages for backup', voltageParseError);
+      preferences.mountVoltages = mountVoltages;
+    }
   }
   var iosPwaHelpShown = parseStoredBoolean(readLocalStorageValue('iosPwaHelpShown'));
   if (iosPwaHelpShown !== null) {
@@ -4709,7 +5195,7 @@ function convertStorageSnapshotToData(snapshot) {
   var hasAssignments = false;
   var hasSnapshotKeys = false;
   var preferenceKeys = ['darkMode', 'pinkMode', 'highContrast', 'reduceMotion', 'relaxedSpacing', 'showAutoBackups', 'accentColor', 'fontSize', 'fontFamily', 'language', 'iosPwaHelpShown'];
-  var simpleSnapshotKeys = new Set([CUSTOM_LOGO_STORAGE_KEY].concat(preferenceKeys));
+  var simpleSnapshotKeys = new Set([CUSTOM_LOGO_STORAGE_KEY].concat(preferenceKeys, [MOUNT_VOLTAGE_STORAGE_KEY_NAME]));
   var booleanPreferenceKeys = new Set(['darkMode', 'pinkMode', 'highContrast', 'reduceMotion', 'relaxedSpacing', 'showAutoBackups', 'iosPwaHelpShown']);
   var markSnapshotEntry = function markSnapshotEntry(entry) {
     if (!entry || typeof entry.key !== 'string') {
@@ -4833,6 +5319,15 @@ function convertStorageSnapshotToData(snapshot) {
       }
     }
   }
+  var mountVoltageEntry = readSnapshotEntry(snapshot, MOUNT_VOLTAGE_STORAGE_KEY_NAME);
+  if (mountVoltageEntry) {
+    markSnapshotEntry(mountVoltageEntry);
+    var storedVoltages = parseSnapshotJSONValue(mountVoltageEntry);
+    if (storedVoltages !== undefined) {
+      preferences.mountVoltages = storedVoltages;
+      hasAssignments = true;
+    }
+  }
   if (Object.keys(preferences).length > 0) {
     data.preferences = preferences;
   }
@@ -4902,6 +5397,45 @@ function importAllData(allData) {
         }
       } else if (unit === null) {
         safeSetLocalStorage(TEMPERATURE_UNIT_STORAGE_KEY_NAME, null);
+      }
+    }
+    if (Object.prototype.hasOwnProperty.call(prefs, 'mountVoltages')) {
+      var rawVoltages = prefs.mountVoltages;
+      if (rawVoltages && _typeof(rawVoltages) === 'object') {
+        try {
+          safeSetLocalStorage(MOUNT_VOLTAGE_STORAGE_KEY_NAME, JSON.stringify(rawVoltages));
+        } catch (voltStoreError) {
+          console.warn('Unable to store imported mount voltages', voltStoreError);
+        }
+        if (typeof applyMountVoltagePreferences === 'function') {
+          applyMountVoltagePreferences(rawVoltages, {
+            persist: false,
+            triggerUpdate: true
+          });
+        }
+      } else if (typeof rawVoltages === 'string') {
+        safeSetLocalStorage(MOUNT_VOLTAGE_STORAGE_KEY_NAME, rawVoltages);
+        if (typeof parseStoredMountVoltages === 'function') {
+          try {
+            var parsedVoltages = parseStoredMountVoltages(rawVoltages);
+            if (parsedVoltages && typeof applyMountVoltagePreferences === 'function') {
+              applyMountVoltagePreferences(parsedVoltages, {
+                persist: false,
+                triggerUpdate: true
+              });
+            }
+          } catch (voltParseError) {
+            console.warn('Unable to parse imported mount voltages', voltParseError);
+          }
+        }
+      } else if (rawVoltages === null) {
+        safeSetLocalStorage(MOUNT_VOLTAGE_STORAGE_KEY_NAME, null);
+        if (typeof resetMountVoltagePreferences === 'function') {
+          resetMountVoltagePreferences({
+            persist: false,
+            triggerUpdate: true
+          });
+        }
       }
     }
   }
@@ -5051,7 +5585,9 @@ var STORAGE_API = {
   saveFullBackupHistory: saveFullBackupHistory,
   recordFullBackupHistoryEntry: recordFullBackupHistoryEntry,
   requestPersistentStorage: requestPersistentStorage,
-  clearUiCacheStorageEntries: clearUiCacheStorageEntries
+  clearUiCacheStorageEntries: clearUiCacheStorageEntries,
+  ensureCriticalStorageBackups: ensureCriticalStorageBackups,
+  getLastCriticalStorageGuardResult: getLastCriticalStorageGuardResult
 };
 if (typeof module !== "undefined" && module.exports) {
   module.exports = STORAGE_API;

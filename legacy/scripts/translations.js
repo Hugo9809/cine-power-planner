@@ -1,3 +1,10 @@
+function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
+function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 var texts = {
   en: {
     appTitle: "Cine Power Planner",
@@ -68,7 +75,7 @@ var texts = {
     sideMenuHelp: "Sidebar navigation listing planner sections. Select a section to scroll there and the menu closes automatically.",
     featureSearchPlaceholder: "Search features or devices...",
     featureSearchLabel: "Search features, devices and help",
-    featureSearchHelp: "Type to jump to features, devices, quick actions like Save or Backup, or help topics. Suggestions prioritize direct feature and device matches before help topics so navigation lands on controls first. Each entry shows whether it opens a Feature, Action, Device or Help topic so you know what happens before pressing Enter. Search also reads the same tooltip and help text shown around controls, so words like \"JSON\" or \"autosave\" still land on the right button even if the label differs. Press Enter to navigate, / or Ctrl+K (Cmd+K on Mac) to focus the search from anywhere, and use Escape or × to clear the query.",
+    featureSearchHelp: "Type to jump to features, devices, quick actions like Save or Backup, or help topics. Suggestions prioritize direct feature and device matches before help topics so navigation lands on controls first. Each entry shows whether it opens a Feature, Action, Device or Help topic so you know what happens before pressing Enter. Every suggestion also includes a short description so you can confirm what it will do at a glance. Search also reads the same tooltip and help text shown around controls, so words like \"JSON\" or \"autosave\" still land on the right button even if the label differs. Small typos are forgiven too, so \"bakcup\" still finds Backup or Save. Press Enter to navigate, / or Ctrl+K (Cmd+K on Mac) to focus the search from anywhere, use Escape or × to clear the query, and notice how clearing the field floats your most recently used matches to the top for faster repeats. Prefix your query with \"feature\", \"action\", \"device\" or \"help\" (for example, \"help: battery\") to filter suggestions to that type.",
     featureSearchClear: "Clear search",
     featureSearchClearHelp: "Clear the search box and show all results again. Press Escape to clear quickly.",
     featureSearchTypeFeature: "Feature",
@@ -84,6 +91,10 @@ var texts = {
     settingsSectionsLabel: "Settings sections",
     settingsTabGeneral: "General",
     settingsTabGeneralHelp: "Adjust language, theme, typography and branding preferences.",
+    generalSectionLanguageHeading: "Language & units",
+    generalSectionAppearanceHeading: "Appearance",
+    generalSectionTypographyHeading: "Typography",
+    generalSectionBrandingHeading: "Branding",
     languageSetting: "Language",
     settingsLanguageHelp: "Choose the interface language. Changes apply immediately and are remembered for next time.",
     darkModeSetting: "Dark mode",
@@ -97,20 +108,15 @@ var texts = {
     temperatureUnitSetting: "Temperature unit",
     temperatureUnitSettingHelp: "Choose whether temperatures are shown in Celsius or Fahrenheit throughout the app.",
     mountVoltageSettingsHeading: "Battery mount voltages",
-    mountVoltageSettingsHelp:
-      "Adjust the voltages used for current draw calculations across B-Mount, V-Mount and Gold Mount setups.",
-    mountVoltageDescription:
-      "Set the default high and low voltages for each battery mount so the planner matches your hardware.",
+    mountVoltageSettingsHelp: "Adjust the voltages used for current draw calculations across B-Mount, V-Mount and Gold Mount setups.",
+    mountVoltageDescription: "Set the default high and low voltages for each battery mount so the planner matches your hardware.",
     mountVoltageReset: "Restore defaults",
     mountVoltageResetHelp: "Reset all mount voltages to their factory defaults.",
     mountVoltageHighLabel: "High-voltage output",
     mountVoltageLowLabel: "Low-voltage output",
-    mountVoltageHighHelp:
-      "Used to calculate total current at the battery's main output such as the high-voltage pins.",
-    mountVoltageLowHelp:
-      "Used to calculate total current at auxiliary outputs such as D-Tap ports or B-Mount low-voltage pins.",
-    mountVoltageNote:
-      "These voltages update the totals in the power summary, runtime estimates and pin warnings.",
+    mountVoltageHighHelp: "Used to calculate total current at the battery's main output such as the high-voltage pins.",
+    mountVoltageLowHelp: "Used to calculate total current at auxiliary outputs such as D-Tap ports or B-Mount low-voltage pins.",
+    mountVoltageNote: "These voltages update the totals in the power summary, runtime estimates and pin warnings.",
     mountVoltageCardLabelV: "V-Mount",
     mountVoltageCardLabelGold: "Gold Mount",
     mountVoltageCardLabelB: "B-Mount",
@@ -145,6 +151,47 @@ var texts = {
     autoGearHeading: "Automatic Gear Rules",
     autoGearHeadingHelp: "Adjust which Project Requirements scenarios automatically add or remove gear items.",
     autoGearDescription: "Create scenario-based rules that tweak the generated gear list. Rules apply after the default planner suggestions.",
+    autoGearRuleOptions: {
+      heading: "Factory rule templates",
+      intro: "Use these ready-made rule ideas to replace the legacy automatic additions without losing coverage.",
+      groups: [{
+        title: "Scenario-specific catalogue",
+        summary: "Diff each required scenario against the baseline gear list to turn its additions and removals into a dedicated rule.",
+        details: ["Add combo rules for Handheld + Easyrig and Slider + Undersling mode so their shared gear is only counted once.", "Include a removal-only overlap for Extreme rain + Rain Machine to keep matte box rain accessories unique."]
+      }, {
+        title: "Camera handle variations",
+        summary: "Trigger rules by camera-handle selection so switching handles adds or removes the correct support brackets.",
+        details: ["Compare each handle option against the baseline to capture the accessories it adds.", "Reuse the same diff when a handle is deselected so its dedicated parts are removed."]
+      }, {
+        title: "Viewfinder extension coverage",
+        summary: "Create rules for every viewfinder extension so each selection brings its cabling and mounting hardware.",
+        details: ["Diff the gear list with and without each extension to capture the matching additions and removals."]
+      }, {
+        title: "Video distribution presets",
+        summary: "Mirror the video distribution selector with per-option rules that reproduce the diffed add and remove lists.",
+        details: ["Record payloads for Teradek, QTAKE or similar options directly from the rendered gear list diff.", "Provide a fallback that seeds iOS monitoring gear when an option exists but rendered no diff."]
+      }, {
+        title: "Onboard monitor rigging",
+        summary: "Guarantee each onboard monitor adds its ULCS arm and rigging notes whenever the monitor is selected.",
+        details: ["Generate a rule per monitor option so the correct arm and notes appear automatically."]
+      }, {
+        title: "FIZ motor support kit",
+        summary: "When any motor is present, pull in the stands, adapters, cabling and power needed to support it.",
+        details: ["Key the rule to the special \"Any motor selected\" trigger so it fires for every motor combination."]
+      }, {
+        title: "Always-on essentials",
+        summary: "Keep standard cables, rigging aids and transport helpers active in every project.",
+        details: ["Mark the rule as always active so the essentials stay in place even with no scenarios selected."]
+      }, {
+        title: "Five-day consumables rotation",
+        summary: "Top up expendables on a five-day cadence to keep wipes, tape and sticks stocked.",
+        details: ["Schedule the rule for every five shooting days so consumables automatically refresh during long shoots."]
+      }, {
+        title: "Matte box templates",
+        summary: "Offer ready-made templates for Swing Away, Rod based and Clamp On matte boxes.",
+        details: ["Preload each template with the matching ARRI LMB kits and accessories so planners can pick the right build quickly."]
+      }]
+    },
     autoGearPresetDescription: "Save and reuse complete sets of automatic gear rules.",
     autoGearPresetLabel: "Preset",
     autoGearPresetPlaceholder: "Custom rules",
@@ -192,6 +239,7 @@ var texts = {
     autoGearSummaryConflictRemovesLabel: "Removes",
     autoGearSummaryDetailsOverlapsHeading: "Scenarios with stacked rules",
     autoGearSummaryDetailsOverlapsNone: "No scenarios currently stack multiple rules.",
+    autoGearSummaryDetailsUncoveredHeading: "Uncovered scenarios",
     autoGearSummaryDetailsRulesWithoutScenariosHeading: "Rules without scenarios",
     autoGearSummaryDetailsRulesWithoutScenariosDescription: "These rules trigger without scenario filters.",
     autoGearSummaryResetFocus: "Clear dashboard filter",
@@ -216,6 +264,12 @@ var texts = {
     autoGearConditionPlaceholder: "Choose a condition",
     autoGearConditionAddShortcut: "Add another condition",
     autoGearConditionRemove: "Remove this condition",
+    autoGearConditionLogicLabel: "Match behavior",
+    autoGearConditionLogicHelp: "Choose how the selected values interact before the rule activates.",
+    autoGearConditionLogicAll: "Require every selected value",
+    autoGearConditionLogicAny: "Match any selected value",
+    autoGearConditionLogicMultiplier: "Multiply by matched values",
+    autoGearConditionRepeatHint: "Condition already added. Existing inputs for {condition} are highlighted so you can add more selections.",
     autoGearAlwaysLabel: "Always include",
     autoGearAlwaysHelp: "Apply this rule to every gear list.",
     autoGearAlwaysMeta: "Always active",
@@ -253,6 +307,18 @@ var texts = {
     autoGearVideoDistributionLabel: "Video distribution",
     autoGearVideoDistributionHelp: "Apply this rule when these video distribution preferences are selected.",
     autoGearVideoDistributionPlaceholder: "Select video distribution options",
+    autoGearTripodHeadBrandLabel: "Tripod head brand",
+    autoGearTripodHeadBrandHelp: "Apply this rule when the tripod head preferences include these brands.",
+    autoGearTripodHeadBrandPlaceholder: "Select tripod head brands",
+    autoGearTripodBowlLabel: "Tripod bowl size",
+    autoGearTripodBowlHelp: "Apply this rule when the tripod head preferences include these bowl sizes.",
+    autoGearTripodBowlPlaceholder: "Select tripod bowl sizes",
+    autoGearTripodTypesLabel: "Tripod types",
+    autoGearTripodTypesHelp: "Apply this rule when the tripod preferences include these tripod types.",
+    autoGearTripodTypesPlaceholder: "Select tripod types",
+    autoGearTripodSpreaderLabel: "Tripod spreader",
+    autoGearTripodSpreaderHelp: "Apply this rule when the tripod preferences include these spreader options.",
+    autoGearTripodSpreaderPlaceholder: "Select tripod spreaders",
     autoGearVideoDistributionNone: "No video distribution selected",
     autoGearCameraLabel: "Camera selection",
     autoGearCameraHelp: "Apply this rule when these camera bodies are selected.",
@@ -280,6 +346,7 @@ var texts = {
     autoGearWirelessLabel: "Wireless transmitters",
     autoGearWirelessHelp: "Apply this rule when these wireless transmitters are selected.",
     autoGearMotorsLabel: "FIZ motors",
+    autoGearMotorsAny: "Any motor selected",
     autoGearMotorsHelp: "Apply this rule when these FIZ motors are selected.",
     autoGearControllersLabel: "FIZ controllers",
     autoGearControllersHelp: "Apply this rule when these FIZ controllers are selected.",
@@ -546,8 +613,25 @@ var texts = {
     dataHeading: "Data & Storage",
     dataHeadingHelp: "Review what the planner stores locally and how much space backups take.",
     storageSummaryIntro: "Everything below stays in this browser unless you export or clear it.",
-    storageSummaryFootnote: "Backups download human-readable JSON with each entry.",
+    storageSummaryFootnote: "Backups download human-readable JSON with each entry—Quick safeguards keep fresh copies one click away.",
     storageSummaryEmpty: "No planner data is currently stored.",
+    storageActionsHeading: "Quick safeguards",
+    storageActionsHeadingHelp: "Download full backups or jump straight to restore tools from here.",
+    storageActionsIntro: "Capture a fresh full backup or open restore utilities without leaving this tab.",
+    storageBackupNow: "Download full backup",
+    storageBackupNowHelp: "Exports the entire planner snapshot, including projects, auto backups and preferences.",
+    storageOpenBackupTab: "Open Backup & Restore",
+    storageOpenBackupTabHelp: "Switch to the Backup & Restore tab for rehearsal, restore and factory reset tools.",
+    storageStatusHeading: "Latest activity",
+    storageStatusHeadingHelp: "Review the most recent saves and backups at a glance.",
+    storageStatusLastProjectLabel: "Latest project save",
+    storageStatusLastAutoBackupLabel: "Latest auto backup",
+    storageStatusLastFullBackupLabel: "Latest full app backup",
+    storageStatusNever: "Not captured yet.",
+    storageStatusStoredWithoutTimestamp: "Stored (timestamp not recorded).",
+    storageStatusTimestamp: "Captured {relative} ({absolute}).",
+    storageStatusTimestampAbsolute: "Captured {absolute}.",
+    storageStatusWithName: "{name} — {time}",
     storageKeyProjects: "Saved projects",
     storageKeyProjectsDesc: "Configurations saved from Manage Project.",
     storageProjectsCountOne: "%s project",
@@ -583,6 +667,12 @@ var texts = {
     storageSessionNotStored: "Not stored",
     storageKeyTotalSize: "Approximate backup size",
     storageKeyTotalSizeDesc: "Based on the current backup export.",
+    storageKeyIntegrityGuard: "Backup guardian",
+    storageKeyIntegrityGuardDesc: "Mirrors every critical storage key into a backup slot before any edits.",
+    storageIntegrityGuardStatus: "Active",
+    storageIntegrityGuardStatusCreated: "Mirrored {count} key(s) this session",
+    storageIntegrityGuardStatusIssue: "{count} issue(s) — check console",
+    storageIntegrityGuardStatusMissing: "Waiting for first save",
     storageTotalSizeValue: "~%s KB",
     aboutHeading: "About & Support",
     aboutHeadingHelp: "Review version details and reach support resources.",
@@ -1039,6 +1129,7 @@ var texts = {
     helpSearchLabel: "Search help topics",
     helpResultsSummaryAll: "All %s help topics are shown.",
     helpResultsSummaryFiltered: "Showing %1$s of %2$s help topics for “%3$s”.",
+    helpResultsAssist: "Tip: Press Tab to move into the quick links, or press Enter to open the top visible topic.",
     helpNoResults: "No results found. Try shorter keywords or clear the search to browse all topics.",
     helpSearchClear: "Clear search",
     helpSearchHelp: "Type keywords or alternate spellings to instantly filter help topics. Quick links update as you type. Press '/' or Ctrl+F (Cmd+F on Mac) to focus the search box quickly.",
@@ -1173,7 +1264,7 @@ var texts = {
     sideMenuHelp: "Navigazione laterale con le sezioni dell’app. Seleziona una sezione per scorrere fino a essa e chiudere automaticamente il menu.",
     featureSearchPlaceholder: "Cerca funzionalità o dispositivi...",
     featureSearchLabel: "Cerca funzionalità, dispositivi e aiuto",
-    featureSearchHelp: "Digita per andare alle funzionalità, ai dispositivi, alle azioni rapide come Salva o Backup o aprire gli argomenti di aiuto correlati. I suggerimenti danno priorità alle corrispondenze dirette di funzionalità e dispositivi prima degli argomenti di aiuto, così raggiungi subito i controlli. Ogni voce indica se aprirà una Funzione, un'Azione, un Dispositivo o un argomento di Supporto, così sai cosa succede prima di premere Invio. La ricerca analizza anche gli stessi testi di aiuto mostrati nelle descrizioni, quindi termini come \"JSON\" o \"salvataggio automatico\" portano comunque al pulsante giusto anche se l'etichetta è diversa. Premi Invio per navigare, / o Ctrl+K (Cmd+K su Mac) per mettere a fuoco la ricerca ovunque e usa Esc o × per cancellare la ricerca.",
+    featureSearchHelp: "Digita per andare alle funzionalità, ai dispositivi, alle azioni rapide come Salva o Backup o aprire gli argomenti di aiuto correlati. I suggerimenti danno priorità alle corrispondenze dirette di funzionalità e dispositivi prima degli argomenti di aiuto, così raggiungi subito i controlli. Ogni voce indica se aprirà una Funzione, un'Azione, un Dispositivo o un argomento di Supporto, così sai cosa succede prima di premere Invio. Ogni suggerimento mostra anche una breve descrizione così sai subito cosa succederà prima di selezionarlo. La ricerca analizza anche gli stessi testi di aiuto mostrati nelle descrizioni, quindi termini come \"JSON\" o \"salvataggio automatico\" portano comunque al pulsante giusto anche se l'etichetta è diversa. Gli errori di battitura minimi vengono ignorati, quindi \"bakcup\" trova comunque Backup o Salva. Premi Invio per navigare, / o Ctrl+K (Cmd+K su Mac) per mettere a fuoco la ricerca ovunque, usa Esc o × per cancellare la ricerca e, quando svuoti il campo, i risultati usati più di recente salgono in cima così ripeti le azioni frequenti più velocemente. Anteponi \"feature\", \"action\", \"device\" o \"help\" alla ricerca (ad esempio \"help: battery\") per filtrare i risultati su quel tipo.",
     featureSearchClear: "Cancella ricerca",
     featureSearchClearHelp: "Cancella il campo di ricerca e mostra di nuovo tutti i risultati. Premi Esc per cancellare rapidamente.",
     featureSearchTypeFeature: "Funzione",
@@ -1266,7 +1357,7 @@ var texts = {
     hotswapWarningHelp: "Avvisa se l'hotswap limita la corrente disponibile.",
     methodPinsOnly: "solo pin!",
     methodPinsAndDTap: "sia pin che D-Tap",
-    methodInfinite: "infinito",
+    methodInfinite: "Infinito",
     pinOk: "I pin della batteria possono fornire fino a {max}A - assorbimento nei limiti.",
     dtapOk: "L'uscita D-Tap pu\xF2 fornire fino a {max}A - assorbimento nei limiti.",
     warnPinExceededLevel: "avvertimento",
@@ -1587,6 +1678,10 @@ var texts = {
     settingsSectionsLabel: "Sezioni impostazioni",
     settingsTabGeneral: "Generali",
     settingsTabGeneralHelp: "Regola lingua, tema, tipografia e branding.",
+    generalSectionLanguageHeading: "Lingua e unità",
+    generalSectionAppearanceHeading: "Aspetto",
+    generalSectionTypographyHeading: "Tipografia",
+    generalSectionBrandingHeading: "Branding e logo",
     languageSetting: "Lingua",
     settingsLanguageHelp: "Scegli la lingua dell'interfaccia. Le modifiche sono immediate e vengono ricordate alla visita successiva.",
     darkModeSetting: "Modalità scura",
@@ -1600,20 +1695,15 @@ var texts = {
     temperatureUnitSetting: "Unità di temperatura",
     temperatureUnitSettingHelp: "Scegli se mostrare le temperature in Celsius o Fahrenheit in tutta l'app.",
     mountVoltageSettingsHeading: "Tensioni dei battery mount",
-    mountVoltageSettingsHelp:
-      "Regola le tensioni usate nei calcoli della corrente per configurazioni B-Mount, V-Mount e Gold Mount.",
-    mountVoltageDescription:
-      "Imposta le tensioni alta e bassa predefinite per ogni attacco batteria così che il planner rispecchi il tuo hardware.",
+    mountVoltageSettingsHelp: "Regola le tensioni usate nei calcoli della corrente per configurazioni B-Mount, V-Mount e Gold Mount.",
+    mountVoltageDescription: "Imposta le tensioni alta e bassa predefinite per ogni attacco batteria così che il planner rispecchi il tuo hardware.",
     mountVoltageReset: "Ripristina predefiniti",
     mountVoltageResetHelp: "Ripristina le tensioni dei mount ai valori di fabbrica.",
     mountVoltageHighLabel: "Uscita ad alta tensione",
     mountVoltageLowLabel: "Uscita a bassa tensione",
-    mountVoltageHighHelp:
-      "Usata per calcolare la corrente totale sull'uscita principale della batteria, ad esempio i pin ad alta tensione.",
-    mountVoltageLowHelp:
-      "Usata per calcolare la corrente totale sulle uscite ausiliarie come porte D-Tap o pin B-Mount a bassa tensione.",
-    mountVoltageNote:
-      "Queste tensioni aggiornano i totali nel riepilogo potenza, le stime di autonomia e gli avvisi sui pin.",
+    mountVoltageHighHelp: "Usata per calcolare la corrente totale sull'uscita principale della batteria, ad esempio i pin ad alta tensione.",
+    mountVoltageLowHelp: "Usata per calcolare la corrente totale sulle uscite ausiliarie come porte D-Tap o pin B-Mount a bassa tensione.",
+    mountVoltageNote: "Queste tensioni aggiornano i totali nel riepilogo potenza, le stime di autonomia e gli avvisi sui pin.",
     mountVoltageCardLabelV: "V-Mount",
     mountVoltageCardLabelGold: "Gold Mount",
     mountVoltageCardLabelB: "B-Mount",
@@ -1648,6 +1738,47 @@ var texts = {
     autoGearHeading: "Regole automatiche per l'attrezzatura",
     autoGearHeadingHelp: "Decidi quali scenari del modulo aggiungono o rimuovono automaticamente elementi dalla lista.",
     autoGearDescription: "Crea regole basate sugli scenari per rifinire la lista generata dopo i suggerimenti predefiniti.",
+    autoGearRuleOptions: {
+      heading: "Modelli di regole predefinite",
+      intro: "Usa queste idee già pronte per sostituire le vecchie aggiunte automatiche senza perdere copertura.",
+      groups: [{
+        title: "Catalogo specifico per scenario",
+        summary: "Confronta ogni scenario richiesto con la lista di base per trasformare aggiunte e rimozioni in una regola dedicata.",
+        details: ["Aggiungi regole combinate per Handheld + Easyrig e Slider + Modalità underslung così l'attrezzatura condivisa viene conteggiata una sola volta.", "Includi una regola solo rimozioni per Extreme rain + Rain Machine per mantenere unici gli accessori antipioggia del matte box."]
+      }, {
+        title: "Varianti di maniglia camera",
+        summary: "Attiva le regole in base alla maniglia scelta così il cambio di maniglia aggiunge o rimuove i supporti corretti.",
+        details: ["Confronta ogni opzione di maniglia con la configurazione base per catturare gli accessori che aggiunge.", "Riutilizza lo stesso diff quando una maniglia viene rimossa così i suoi componenti dedicati vengono eliminati."]
+      }, {
+        title: "Copertura delle estensioni viewfinder",
+        summary: "Crea regole per ogni estensione del mirino così ogni scelta porta con sé cablaggi e staffe.",
+        details: ["Confronta la lista con e senza ciascuna estensione per raccogliere le rispettive aggiunte e rimozioni."]
+      }, {
+        title: "Preset di distribuzione video",
+        summary: "Rispecchia il selettore di distribuzione video con regole per opzione che riproducono gli elenchi di aggiunte e rimozioni.",
+        details: ["Registra i payload per opzioni come Teradek o QTAKE direttamente dal diff della lista generata.", "Prevedi un fallback che carica il kit di monitoraggio iOS quando un'opzione esiste ma non genera differenze."]
+      }, {
+        title: "Rigging monitor onboard",
+        summary: "Garantisci che ogni monitor onboard aggiunga il braccio ULCS e le note di rigging quando è selezionato.",
+        details: ["Genera una regola per ogni monitor in modo che il braccio corretto e le note compaiano automaticamente."]
+      }, {
+        title: "Kit supporto motori FIZ",
+        summary: "Quando è presente un motore, aggiungi cavalletti, adattatori, cablaggi e alimentazione necessari.",
+        details: ["Collega la regola al trigger speciale \"Qualsiasi motore\" così si attiva con ogni combinazione di motori."]
+      }, {
+        title: "Essenziali sempre attivi",
+        summary: "Mantieni cavi standard, accessori di rigging e supporti al trasporto in ogni progetto.",
+        details: ["Segna la regola come sempre attiva così gli elementi essenziali restano anche senza scenari selezionati."]
+      }, {
+        title: "Rotazione consumabili ogni cinque giorni",
+        summary: "Rifornisci i consumabili con una cadenza di cinque giorni per avere salviette, nastro e ciak sempre pronti.",
+        details: ["Programma la regola ogni cinque giorni di riprese così i consumabili si aggiornano automaticamente durante i set lunghi."]
+      }, {
+        title: "Template per matte box",
+        summary: "Offri template pronti per matte box Swing Away, su barre e clamp-on.",
+        details: ["Precarica ogni template con i kit ARRI LMB e gli accessori corrispondenti per scegliere rapidamente l'allestimento giusto."]
+      }]
+    },
     autoGearPresetDescription: "Salva e riutilizza insiemi completi di regole automatiche.",
     autoGearPresetLabel: "Preimpostazione",
     autoGearPresetPlaceholder: "Regole personalizzate",
@@ -1670,6 +1801,9 @@ var texts = {
     autoGearSummaryEmpty: "Aggiungi una regola per visualizzare le informazioni di copertura.",
     autoGearSummaryTotalLabel: "Regole monitorate",
     autoGearSummaryTotalDescription: "Regole salvate in questa configurazione.",
+    autoGearSummaryCoverageLabel: "Copertura scenari",
+    autoGearSummaryCoverageDescription: "{covered} di {total} scenari coperti",
+    autoGearSummaryCoverageEmpty: "Aggiungi scenari per misurare la copertura.",
     autoGearSummaryNetLabel: "Variazione netta",
     autoGearSummaryNetDescription: "Aggiunge {adds} · Rimuove {removes}",
     autoGearSummaryDuplicatesLabel: "Trigger duplicati",
@@ -1678,6 +1812,9 @@ var texts = {
     autoGearSummaryConflictsLabel: "Possibili conflitti",
     autoGearSummaryConflictsSome: "{rules} interessate su {items} elementi",
     autoGearSummaryConflictsNone: "Nessun aggiunta/rimozione in conflitto.",
+    autoGearSummaryOverlapsLabel: "Scenari sovrapposti",
+    autoGearSummaryOverlapsSome: "{count} scenari interessati da più regole",
+    autoGearSummaryOverlapsNone: "Nessuno scenario al momento combina più regole.",
     autoGearSummaryUncoveredLabel: "Scenari non coperti",
     autoGearSummaryUncoveredSome: "Controlla {count} scenari scoperti",
     autoGearSummaryUncoveredNone: "Tutti gli scenari richiesti sono coperti.",
@@ -1714,6 +1851,12 @@ var texts = {
     autoGearConditionPlaceholder: "Scegli una condizione",
     autoGearConditionAddShortcut: "Aggiungi un'altra condizione",
     autoGearConditionRemove: "Rimuovi questa condizione",
+    autoGearConditionLogicLabel: "Comportamento di corrispondenza",
+    autoGearConditionLogicHelp: "Scegli come interagiscono i valori selezionati prima di attivare la regola.",
+    autoGearConditionLogicAll: "Richiedi tutti i valori selezionati",
+    autoGearConditionLogicAny: "Abbina qualsiasi valore selezionato",
+    autoGearConditionLogicMultiplier: "Moltiplica in base ai valori corrispondenti",
+    autoGearConditionRepeatHint: "Condizione già aggiunta. I campi esistenti per {condition} vengono evidenziati per permetterti di aggiungere altre selezioni.",
     autoGearAlwaysLabel: "Includi sempre",
     autoGearAlwaysHelp: "Applica questa regola a ogni lista attrezzatura.",
     autoGearAlwaysMeta: "Sempre attiva",
@@ -1751,6 +1894,18 @@ var texts = {
     autoGearVideoDistributionLabel: "Distribuzione video",
     autoGearVideoDistributionHelp: "Applica la regola quando sono selezionate queste preferenze di distribuzione video.",
     autoGearVideoDistributionPlaceholder: "Seleziona opzioni di distribuzione video",
+    autoGearTripodHeadBrandLabel: "Marca della testa del treppiede",
+    autoGearTripodHeadBrandHelp: "Applica questa regola quando le preferenze della testa del treppiede includono queste marche.",
+    autoGearTripodHeadBrandPlaceholder: "Seleziona marche di teste per treppiede",
+    autoGearTripodBowlLabel: "Dimensione della semisfera del treppiede",
+    autoGearTripodBowlHelp: "Applica questa regola quando le preferenze della testa del treppiede includono queste dimensioni di semisfera.",
+    autoGearTripodBowlPlaceholder: "Seleziona dimensioni della semisfera",
+    autoGearTripodTypesLabel: "Tipi di treppiede",
+    autoGearTripodTypesHelp: "Applica questa regola quando le preferenze del treppiede includono questi tipi di treppiede.",
+    autoGearTripodTypesPlaceholder: "Seleziona tipi di treppiede",
+    autoGearTripodSpreaderLabel: "Spreader del treppiede",
+    autoGearTripodSpreaderHelp: "Applica questa regola quando le preferenze del treppiede includono queste opzioni di spreader.",
+    autoGearTripodSpreaderPlaceholder: "Seleziona spreader per treppiede",
     autoGearVideoDistributionNone: "Nessuna distribuzione video selezionata",
     autoGearCameraLabel: "Selezione telecamera",
     autoGearCameraHelp: "Applica la regola quando sono selezionati questi corpi macchina.",
@@ -1778,6 +1933,7 @@ var texts = {
     autoGearWirelessLabel: "Trasmettitori wireless",
     autoGearWirelessHelp: "Applica la regola quando sono selezionati questi trasmettitori wireless.",
     autoGearMotorsLabel: "Motori FIZ",
+    autoGearMotorsAny: "Qualsiasi motore selezionato",
     autoGearMotorsHelp: "Applica la regola quando sono selezionati questi motori FIZ.",
     autoGearControllersLabel: "Controller FIZ",
     autoGearControllersHelp: "Applica la regola quando sono selezionati questi controller FIZ.",
@@ -2044,8 +2200,25 @@ var texts = {
     dataHeading: "Dati e archiviazione",
     dataHeadingHelp: "Controlla quali dati vengono salvati localmente e quanto spazio occupano i backup.",
     storageSummaryIntro: "Tutto ciò che segue rimane in questo browser finché non lo esporti o lo elimini.",
-    storageSummaryFootnote: "I backup scaricano ogni voce in JSON leggibile.",
+    storageSummaryFootnote: "I backup scaricano ogni voce in JSON leggibile—le Azioni rapide di sicurezza mantengono copie aggiornate sempre pronte.",
     storageSummaryEmpty: "Nessun dato dell’app è attualmente salvato.",
+    storageActionsHeading: "Azioni rapide di sicurezza",
+    storageActionsHeadingHelp: "Scarica backup completi o apri subito gli strumenti di ripristino da qui.",
+    storageActionsIntro: "Genera un backup completo o apri gli strumenti di ripristino senza lasciare questa scheda.",
+    storageBackupNow: "Scarica backup completo",
+    storageBackupNowHelp: "Esporta l’istantanea completa del planner con progetti, backup automatici e preferenze.",
+    storageOpenBackupTab: "Apri Backup e Ripristino",
+    storageOpenBackupTabHelp: "Passa alla scheda Backup e Ripristino per prove, ripristini e strumenti di reset.",
+    storageStatusHeading: "Attività recenti",
+    storageStatusHeadingHelp: "Controlla a colpo d’occhio gli ultimi salvataggi e backup.",
+    storageStatusLastProjectLabel: "Ultimo salvataggio progetto",
+    storageStatusLastAutoBackupLabel: "Ultimo backup automatico",
+    storageStatusLastFullBackupLabel: "Ultimo backup completo dell’app",
+    storageStatusNever: "Nessuna cattura registrata.",
+    storageStatusStoredWithoutTimestamp: "Dati presenti (nessuna data registrata).",
+    storageStatusTimestamp: "Registrato {relative} ({absolute}).",
+    storageStatusTimestampAbsolute: "Registrato {absolute}.",
+    storageStatusWithName: "{name} — {time}",
     storageKeyProjects: "Progetti salvati",
     storageKeyProjectsDesc: "Configurazioni salvate da Gestione progetto.",
     storageProjectsCountOne: "%s progetto",
@@ -2081,6 +2254,12 @@ var texts = {
     storageSessionNotStored: "Non salvata",
     storageKeyTotalSize: "Dimensione approssimativa del backup",
     storageKeyTotalSizeDesc: "Calcolata dalla copia di backup attuale.",
+    storageKeyIntegrityGuard: "Guardian delle copie di sicurezza",
+    storageKeyIntegrityGuardDesc: "Duplica ogni chiave di archiviazione critica in un backup prima di qualsiasi modifica.",
+    storageIntegrityGuardStatus: "Attivo",
+    storageIntegrityGuardStatusCreated: "Duplica {count} chiavi in questa sessione",
+    storageIntegrityGuardStatusIssue: "{count} problemi — controlla la console",
+    storageIntegrityGuardStatusMissing: "In attesa del primo salvataggio",
     storageTotalSizeValue: "~%s KB",
     aboutHeading: "Informazioni e supporto",
     aboutHeadingHelp: "Consulta dettagli sulla versione e i collegamenti al supporto.",
@@ -2138,6 +2317,7 @@ var texts = {
     helpSearchLabel: "Cerca negli argomenti dell'aiuto",
     helpResultsSummaryAll: "Sono visualizzati tutti i %s argomenti dell'aiuto.",
     helpResultsSummaryFiltered: "Visualizzati %1$s argomenti dell'aiuto su %2$s per “%3$s”.",
+    helpResultsAssist: "Suggerimento: premi Tab per passare ai collegamenti rapidi oppure premi Invio per aprire il primo argomento visibile.",
     helpNoResults: "Nessun risultato trovato. Prova con parole chiave più brevi oppure cancella la ricerca per vedere tutti gli argomenti.",
     helpSearchClear: "Cancella ricerca",
     helpSearchHelp: "Digita parole chiave o grafie alternative per filtrare all'istante gli argomenti della guida. I collegamenti rapidi si aggiornano durante la digitazione. Premi '/' o Ctrl+F (Cmd+F su Mac) per spostare subito il focus sulla casella di ricerca.",
@@ -2230,14 +2410,14 @@ var texts = {
     iosPwaHelpClose: "Entendido",
     impressum: "Aviso legal",
     privacy: "Política de privacidad",
-    setupManageHeading: "Resumen del Proyecto",
-    deviceSelectionHeading: "Configurar Dispositivos",
-    overviewDeviceSelectionHeading: "Dispositivos de Configuración de Cámara",
-    resultsHeading: "Resumen de Potencia",
+    setupManageHeading: "Resumen del proyecto",
+    deviceSelectionHeading: "Configurar dispositivos",
+    overviewDeviceSelectionHeading: "Dispositivos de la configuración de cámara",
+    resultsHeading: "Resumen de potencia",
     pdfWarningsHeading: "Avisos",
-    deviceManagerHeading: "Biblioteca de Dispositivos",
-    batteryComparisonHeading: "Comparación de Baterías",
-    setupDiagramHeading: "Diagrama de Conexiones",
+    deviceManagerHeading: "Biblioteca de dispositivos",
+    batteryComparisonHeading: "Comparación de baterías",
+    setupDiagramHeading: "Diagrama de conexiones",
     diagramPdfNote: "El diagrama de conexiones no se incluye en la exportación PDF. Abre la vista de impresión para ver el diseño.",
     projectRequirementsNav: "Requisitos del proyecto",
     projectRequirementsNavHelp: "Ir a la salida Requisitos del proyecto cuando esté disponible.",
@@ -2272,7 +2452,7 @@ var texts = {
     sideMenuHelp: "Navegación lateral con las secciones del planificador. Elige una sección para desplazarte allí y cerrar automáticamente el menú.",
     featureSearchPlaceholder: "Buscar funciones o dispositivos...",
     featureSearchLabel: "Buscar funciones, dispositivos y ayuda",
-    featureSearchHelp: "Escribe para ir a funciones, dispositivos, acciones rápidas como Guardar o Copia de seguridad, o temas de ayuda relacionados. Las sugerencias dan prioridad a las coincidencias directas de funciones y dispositivos antes que a los temas de ayuda, para llevarte primero a los controles. Cada sugerencia indica si abre una Función, una Acción, un Dispositivo o un tema de Ayuda para que sepas qué ocurrirá antes de pulsar Enter. La búsqueda también tiene en cuenta los mismos textos de ayuda que aparecen en las descripciones emergentes, de modo que palabras como \"JSON\" o \"autoguardado\" te llevan igualmente al botón correcto aunque la etiqueta sea distinta. Pulsa Enter para navegar, / o Ctrl+K (Cmd+K en Mac) para enfocar la búsqueda desde cualquier lugar y usa Esc o × para borrar la búsqueda.",
+    featureSearchHelp: "Escribe para ir a funciones, dispositivos, acciones rápidas como Guardar o Copia de seguridad, o temas de ayuda relacionados. Las sugerencias dan prioridad a las coincidencias directas de funciones y dispositivos antes que a los temas de ayuda, para llevarte primero a los controles. Cada sugerencia indica si abre una Función, una Acción, un Dispositivo o un tema de Ayuda para que sepas qué ocurrirá antes de pulsar Enter. Cada sugerencia también incluye una breve descripción para que sepas qué ocurrirá antes de seleccionarla. La búsqueda también tiene en cuenta los mismos textos de ayuda que aparecen en las descripciones emergentes, de modo que palabras como \"JSON\" o \"autoguardado\" te llevan igualmente al botón correcto aunque la etiqueta sea distinta. Los errores tipográficos pequeños se pasan por alto, así que \"bakcup\" sigue encontrando Copia de seguridad o Guardar. Pulsa Enter para navegar, / o Ctrl+K (Cmd+K en Mac) para enfocar la búsqueda desde cualquier lugar, usa Esc o × para borrar la búsqueda y, al vaciar el campo, las coincidencias usadas recientemente aparecen primero para repetir tareas habituales más rápido. Antepon \"feature\", \"action\", \"device\" o \"help\" a la búsqueda (por ejemplo, \"help: battery\") para limitar los resultados a ese tipo.",
     featureSearchClear: "Borrar búsqueda",
     featureSearchClearHelp: "Limpia el campo de búsqueda y muestra todos los resultados de nuevo. Pulsa Esc para borrar rápidamente.",
     featureSearchTypeFeature: "Función",
@@ -2363,9 +2543,9 @@ var texts = {
     pinWarningHelp: "Advierte si la corriente supera lo que pueden entregar los pines de la batería.",
     dtapWarningHelp: "Advierte si la corriente supera lo que puede entregar el puerto D-Tap.",
     hotswapWarningHelp: "Advierte si el hotswap limita la corriente disponible.",
-    methodPinsOnly: "solo pines!",
-    methodPinsAndDTap: "pines y D-Tap",
-    methodInfinite: "infinito",
+    methodPinsOnly: "¡Solo pines!",
+    methodPinsAndDTap: "Pines y D-Tap",
+    methodInfinite: "Infinito",
     pinOk: "Los pines de la bater\xEDa pueden suministrar hasta {max}A \u2013 consumo dentro del l\xEDmite.",
     dtapOk: "La salida D-Tap puede suministrar hasta {max}A \u2013 consumo dentro del l\xEDmite.",
     warnPinExceededLevel: "advertencia",
@@ -2373,9 +2553,9 @@ var texts = {
     warnDTapExceededLevel: "advertencia",
     warnDTapNearLevel: "nota",
     warnPinExceeded: "ADVERTENCIA: la corriente ({current}A a ~12V) supera el límite principal ({max}A)!",
-    warnPinNear: "Nota: la corriente está cerca del límite ({current}A de {max}A).",
+    warnPinNear: "Nota: la corriente está cerca del límite: {current}A de {max}A disponibles.",
     warnDTapExceeded: "ADVERTENCIA: la corriente ({current}A) supera la salida D-Tap ({max}A)!",
-    warnDTapNear: "Nota: la corriente usa más del 80% de la capacidad D-Tap ({current}A de {max}A).",
+    warnDTapNear: "Nota: la corriente usa más del 80 % de la capacidad D-Tap ({current}A de {max}A).",
     warnHotswapLower: "ADVERTENCIA: el límite de corriente del hotswap ({max}A) es inferior al de la batería ({batt}A).",
     powerWarningTitle: "La batería no puede alimentar esta carga",
     powerWarningLimitsHeading: "Límites de salida",
@@ -2686,6 +2866,10 @@ var texts = {
     settingsSectionsLabel: "Secciones de configuración",
     settingsTabGeneral: "General",
     settingsTabGeneralHelp: "Ajusta idioma, tema, tipografía y opciones de marca.",
+    generalSectionLanguageHeading: "Idioma y unidades",
+    generalSectionAppearanceHeading: "Apariencia",
+    generalSectionTypographyHeading: "Tipografía",
+    generalSectionBrandingHeading: "Marca y logotipo",
     languageSetting: "Idioma",
     settingsLanguageHelp: "Elige el idioma de la interfaz. Los cambios se aplican al instante y se recuerdan para la próxima visita.",
     darkModeSetting: "Modo oscuro",
@@ -2699,20 +2883,15 @@ var texts = {
     temperatureUnitSetting: "Unidad de temperatura",
     temperatureUnitSettingHelp: "Elige si mostrar las temperaturas en grados Celsius o Fahrenheit en toda la aplicación.",
     mountVoltageSettingsHeading: "Tensiones de los soportes de batería",
-    mountVoltageSettingsHelp:
-      "Ajusta las tensiones utilizadas en los cálculos de corriente para configuraciones B-Mount, V-Mount y Gold Mount.",
-    mountVoltageDescription:
-      "Define las tensiones alta y baja predeterminadas de cada soporte para que el planificador coincida con tu hardware.",
+    mountVoltageSettingsHelp: "Ajusta las tensiones utilizadas en los cálculos de corriente para configuraciones B-Mount, V-Mount y Gold Mount.",
+    mountVoltageDescription: "Define las tensiones alta y baja predeterminadas de cada soporte para que el planificador coincida con tu hardware.",
     mountVoltageReset: "Restaurar valores predeterminados",
     mountVoltageResetHelp: "Restablece las tensiones de los soportes a los valores de fábrica.",
     mountVoltageHighLabel: "Salida de alta tensión",
     mountVoltageLowLabel: "Salida de baja tensión",
-    mountVoltageHighHelp:
-      "Se utiliza para calcular la corriente total en la salida principal de la batería, como los pines de alta tensión.",
-    mountVoltageLowHelp:
-      "Se utiliza para calcular la corriente total en salidas auxiliares como conectores D-Tap o pines B-Mount de baja tensión.",
-    mountVoltageNote:
-      "Estas tensiones actualizan los totales del resumen de potencia, las estimaciones de autonomía y las alertas de pines.",
+    mountVoltageHighHelp: "Se utiliza para calcular la corriente total en la salida principal de la batería, como los pines de alta tensión.",
+    mountVoltageLowHelp: "Se utiliza para calcular la corriente total en salidas auxiliares como conectores D-Tap o pines B-Mount de baja tensión.",
+    mountVoltageNote: "Estas tensiones actualizan los totales del resumen de potencia, las estimaciones de autonomía y las alertas de pines.",
     mountVoltageCardLabelV: "V-Mount",
     mountVoltageCardLabelGold: "Gold Mount",
     mountVoltageCardLabelB: "B-Mount",
@@ -2747,6 +2926,47 @@ var texts = {
     autoGearHeading: "Reglas automáticas de equipamiento",
     autoGearHeadingHelp: "Configura qué escenarios de requisitos agregan o quitan equipo automáticamente.",
     autoGearDescription: "Crea reglas basadas en escenarios para ajustar la lista generada después de las sugerencias predeterminadas.",
+    autoGearRuleOptions: {
+      heading: "Plantillas de reglas predefinidas",
+      intro: "Utiliza estas ideas listas para sustituir las antiguas adiciones automáticas sin perder cobertura.",
+      groups: [{
+        title: "Catálogo específico por escenario",
+        summary: "Compara cada escenario requerido con la lista base para convertir sus altas y bajas en una regla dedicada.",
+        details: ["Añade reglas combinadas para Handheld + Easyrig y Slider + modo underslung para contar el equipo compartido solo una vez.", "Incluye una regla solo de retiradas para Extreme rain + Rain Machine y así mantener únicos los accesorios de lluvia del matte box."]
+      }, {
+        title: "Variaciones de empuñadura de cámara",
+        summary: "Activa las reglas según la empuñadura elegida para que cambiarla añada o quite los soportes correctos.",
+        details: ["Compara cada opción de empuñadura con la configuración base para capturar los accesorios que incorpora.", "Reutiliza el mismo diff cuando se retira una empuñadura para eliminar sus piezas dedicadas."]
+      }, {
+        title: "Cobertura de extensiones de visor",
+        summary: "Crea reglas para cada extensión del visor y así cada elección lleve su cableado y herrajes.",
+        details: ["Compara la lista con y sin cada extensión para recoger las altas y bajas correspondientes."]
+      }, {
+        title: "Preajustes de distribución de vídeo",
+        summary: "Refleja el selector de distribución de vídeo con reglas por opción que reproduzcan las listas de altas y bajas.",
+        details: ["Registra las cargas de opciones como Teradek o QTAKE directamente del diff de la lista generada.", "Añade un respaldo que cargue el kit de monitorización iOS cuando existe la opción pero no genera diferencias."]
+      }, {
+        title: "Rigging de monitor onboard",
+        summary: "Garantiza que cada monitor onboard añada su brazo ULCS y notas de rigging cuando se seleccione.",
+        details: ["Genera una regla por monitor para insertar automáticamente el brazo correcto y las notas."]
+      }, {
+        title: "Kit de soporte para motores FIZ",
+        summary: "Cuando haya un motor, suma los trípodes, adaptadores, cables y energía necesarios.",
+        details: ["Vincula la regla al disparador especial \"Cualquier motor\" para que se active con cualquier combinación."]
+      }, {
+        title: "Elementos esenciales siempre activos",
+        summary: "Mantén cables estándar, ayudas de rigging y soportes de transporte en cada proyecto.",
+        details: ["Marca la regla como siempre activa para conservar los esenciales incluso sin escenarios seleccionados."]
+      }, {
+        title: "Rotación de consumibles cada cinco días",
+        summary: "Reabastece los consumibles cada cinco días de rodaje para tener toallitas, cinta y claquetas listas.",
+        details: ["Programa la regla cada cinco días de rodaje para que los consumibles se renueven automáticamente en rodajes largos."]
+      }, {
+        title: "Plantillas de matte box",
+        summary: "Ofrece plantillas listas para Swing Away, de barras y clamp-on.",
+        details: ["Precarga cada plantilla con los kits ARRI LMB y accesorios correspondientes para elegir rápidamente el montaje adecuado."]
+      }]
+    },
     autoGearPresetDescription: "Guarda y reutiliza conjuntos completos de reglas automáticas de equipo.",
     autoGearPresetLabel: "Preajuste",
     autoGearPresetPlaceholder: "Reglas personalizadas",
@@ -2769,6 +2989,9 @@ var texts = {
     autoGearSummaryEmpty: "Agrega una regla para ver los datos de cobertura.",
     autoGearSummaryTotalLabel: "Reglas registradas",
     autoGearSummaryTotalDescription: "Reglas guardadas en esta configuración.",
+    autoGearSummaryCoverageLabel: "Cobertura de escenarios",
+    autoGearSummaryCoverageDescription: "{covered} de {total} escenarios cubiertos",
+    autoGearSummaryCoverageEmpty: "Agrega escenarios para medir la cobertura.",
     autoGearSummaryNetLabel: "Cambio neto",
     autoGearSummaryNetDescription: "Añade {adds} · Quita {removes}",
     autoGearSummaryDuplicatesLabel: "Disparadores duplicados",
@@ -2777,6 +3000,9 @@ var texts = {
     autoGearSummaryConflictsLabel: "Conflictos potenciales",
     autoGearSummaryConflictsSome: "{rules} afectadas en {items} elementos",
     autoGearSummaryConflictsNone: "Sin añadidos/eliminaciones en conflicto.",
+    autoGearSummaryOverlapsLabel: "Escenarios acumulados",
+    autoGearSummaryOverlapsSome: "{count} escenarios afectados por varias reglas",
+    autoGearSummaryOverlapsNone: "Ningún escenario acumula varias reglas.",
     autoGearSummaryUncoveredLabel: "Escenarios sin cubrir",
     autoGearSummaryUncoveredSome: "Revisar {count} huecos de escenarios",
     autoGearSummaryUncoveredNone: "Todos los escenarios necesarios están cubiertos.",
@@ -2813,6 +3039,12 @@ var texts = {
     autoGearConditionPlaceholder: "Elige una condición",
     autoGearConditionAddShortcut: "Añadir otra condición",
     autoGearConditionRemove: "Eliminar esta condición",
+    autoGearConditionLogicLabel: "Comportamiento de coincidencia",
+    autoGearConditionLogicHelp: "Elige cómo interactúan los valores seleccionados antes de que se active la regla.",
+    autoGearConditionLogicAll: "Requerir todos los valores seleccionados",
+    autoGearConditionLogicAny: "Coincidir con cualquier valor seleccionado",
+    autoGearConditionLogicMultiplier: "Multiplicar por los valores coincidentes",
+    autoGearConditionRepeatHint: "Condición ya añadida. Resaltamos los campos existentes de {condition} para que puedas añadir más selecciones.",
     autoGearAlwaysLabel: "Incluir siempre",
     autoGearAlwaysHelp: "Aplica esta regla a todas las listas de equipo.",
     autoGearAlwaysMeta: "Siempre activa",
@@ -2850,6 +3082,18 @@ var texts = {
     autoGearVideoDistributionLabel: "Distribución de vídeo",
     autoGearVideoDistributionHelp: "Aplica la regla cuando se eligen estas preferencias de distribución de vídeo.",
     autoGearVideoDistributionPlaceholder: "Selecciona opciones de distribución de vídeo",
+    autoGearTripodHeadBrandLabel: "Marca de la cabeza de trípode",
+    autoGearTripodHeadBrandHelp: "Aplica esta regla cuando las preferencias de cabeza de trípode incluyan estas marcas.",
+    autoGearTripodHeadBrandPlaceholder: "Selecciona marcas de cabezas de trípode",
+    autoGearTripodBowlLabel: "Tamaño de semiesfera del trípode",
+    autoGearTripodBowlHelp: "Aplica esta regla cuando las preferencias de cabeza de trípode incluyan estos tamaños de semiesfera.",
+    autoGearTripodBowlPlaceholder: "Selecciona tamaños de semiesfera",
+    autoGearTripodTypesLabel: "Tipos de trípode",
+    autoGearTripodTypesHelp: "Aplica esta regla cuando las preferencias de trípode incluyan estos tipos de trípode.",
+    autoGearTripodTypesPlaceholder: "Selecciona tipos de trípode",
+    autoGearTripodSpreaderLabel: "Spreader del trípode",
+    autoGearTripodSpreaderHelp: "Aplica esta regla cuando las preferencias de trípode incluyan estas opciones de spreader.",
+    autoGearTripodSpreaderPlaceholder: "Selecciona spreaders de trípode",
     autoGearVideoDistributionNone: "Sin distribución de vídeo seleccionada",
     autoGearCameraLabel: "Selección de cámara",
     autoGearCameraHelp: "Aplica la regla cuando se seleccionan estos cuerpos de cámara.",
@@ -2877,6 +3121,7 @@ var texts = {
     autoGearWirelessLabel: "Transmisores inalámbricos",
     autoGearWirelessHelp: "Aplica la regla cuando se seleccionan estos transmisores inalámbricos.",
     autoGearMotorsLabel: "Motores FIZ",
+    autoGearMotorsAny: "Cualquier motor seleccionado",
     autoGearMotorsHelp: "Aplica la regla cuando se seleccionan estos motores FIZ.",
     autoGearControllersLabel: "Controladores FIZ",
     autoGearControllersHelp: "Aplica la regla cuando se seleccionan estos controladores FIZ.",
@@ -3069,23 +3314,23 @@ var texts = {
     restoreRehearsalButton: "Ensayo de restauración",
     restoreRehearsalButtonHelp: "Prueba una copia de seguridad o un paquete de proyecto en una sandbox desechable antes de restaurar tus datos activos.",
     restoreRehearsalHeading: "Ensayo de restauración",
-    restoreRehearsalIntro: "Carga una copia de seguridad o un paquete de proyecto en un espacio temporal. Comparamos los recuentos clave con tu perfil en vivo y eliminamos la sandbox automáticamente.",
+    restoreRehearsalIntro: "Carga una copia de seguridad o un paquete de proyecto en un espacio temporal desechable. Comparamos los recuentos clave con tu perfil en vivo y limpiamos el entorno de ensayo automáticamente.",
     restoreRehearsalModeLabel: "Elige el origen del ensayo",
     restoreRehearsalModeBackup: "Copia de seguridad completa (.json)",
     restoreRehearsalModeProject: "Paquete de proyecto (.json)",
     restoreRehearsalFileLabel: "Seleccionar archivo",
     restoreRehearsalFileButton: "Elegir archivo",
     restoreRehearsalNoFile: "Todavía no se ha seleccionado archivo.",
-    restoreRehearsalReady: "Sandbox lista. Elige un archivo JSON para revisar.",
-    restoreRehearsalProcessing: "Cargando archivo en una sandbox aislada…",
-    restoreRehearsalMatch: "Todos los recuentos coinciden. La sandbox se eliminó automáticamente.",
-    restoreRehearsalMismatch: "Se detectaron diferencias: %s. La sandbox se eliminó automáticamente.",
+    restoreRehearsalReady: "Entorno de ensayo listo. Elige un archivo JSON para revisar.",
+    restoreRehearsalProcessing: "Cargando el archivo en un entorno aislado…",
+    restoreRehearsalMatch: "Todos los recuentos coinciden. El entorno de ensayo se limpió automáticamente.",
+    restoreRehearsalMismatch: "Se detectaron diferencias: %s. El entorno de ensayo se limpió automáticamente.",
     restoreRehearsalError: "El ensayo de restauración falló. Revisa el archivo e inténtalo de nuevo.",
     restoreRehearsalBackupMismatch: "El archivo no parece una copia completa de la aplicación. Comprueba el origen y vuelve a intentarlo.",
     restoreRehearsalProjectMismatch: "El archivo no parece un paquete de proyecto. Comprueba el origen y vuelve a intentarlo.",
-    restoreRehearsalRuleHeading: "Cambios en las reglas automáticas",
-    restoreRehearsalRuleIntro: "Compara cada regla automática antes de cargar el entorno de ensayo. Las reglas en vivo se mantienen intactas.",
-    restoreRehearsalRuleEmpty: "No se encontraron diferencias en las reglas automáticas.",
+    restoreRehearsalRuleHeading: "Cambios en las reglas automáticas de equipo",
+    restoreRehearsalRuleIntro: "Compara cada regla de equipo automática antes de cargar el entorno de ensayo. Las reglas en vivo se mantienen intactas.",
+    restoreRehearsalRuleEmpty: "No se encontraron diferencias en las reglas automáticas de equipo.",
     restoreRehearsalRuleAddsLabel: "Adiciones automáticas",
     restoreRehearsalRuleRemovesLabel: "Eliminaciones automáticas",
     restoreRehearsalRuleScenariosLabel: "Alcance de escenarios",
@@ -3097,15 +3342,15 @@ var texts = {
     restoreRehearsalRuleAlwaysLabel: "Siempre activo",
     restoreRehearsalRuleFallback: "Cambio de regla automática",
     restoreRehearsalProceed: "Continuar ensayo de restauración",
-    restoreRehearsalProceedHelp: "Preparar la instantánea del entorno aislado para seguir con el ensayo.",
+    restoreRehearsalProceedHelp: "Prepara la instantánea del entorno aislado para continuar con el ensayo.",
     restoreRehearsalProceedMessage: "Instantánea del entorno de ensayo preparada. Los datos en vivo permanecen intactos hasta ejecutar una restauración completa.",
     restoreRehearsalAbort: "Abortar ensayo",
-    restoreRehearsalAbortHelp: "Descartar la instantánea del entorno de ensayo y mantener los datos en vivo.",
-    restoreRehearsalAbortMessage: "Entorno de ensayo borrado. Los datos en vivo permanecen sin cambios.",
+    restoreRehearsalAbortHelp: "Descarta la instantánea del entorno de ensayo y conserva los datos en vivo.",
+    restoreRehearsalAbortMessage: "Entorno de ensayo eliminado. Los datos en vivo permanecen sin cambios.",
     restoreRehearsalTableCaption: "Comparación del ensayo de restauración",
     restoreRehearsalMetricColumn: "Tipo de dato",
     restoreRehearsalLiveColumn: "Perfil en vivo",
-    restoreRehearsalSandboxColumn: "Importación en sandbox",
+    restoreRehearsalSandboxColumn: "Importación en entorno de ensayo",
     restoreRehearsalDifferenceColumn: "Diferencia",
     restoreRehearsalClose: "Cerrar ensayo",
     restoreRehearsalMetricProjects: "Proyectos",
@@ -3143,8 +3388,25 @@ var texts = {
     dataHeading: "Datos y almacenamiento",
     dataHeadingHelp: "Revisa qué guarda el planificador en este navegador y cuánto ocupan las copias de seguridad.",
     storageSummaryIntro: "Todo lo siguiente permanece en este navegador hasta que lo exportes o lo elimines.",
-    storageSummaryFootnote: "Las copias de seguridad descargan cada elemento en JSON legible.",
+    storageSummaryFootnote: "Las copias de seguridad descargan cada elemento en JSON legible—las Protecciones rápidas mantienen copias actualizadas al alcance de un clic.",
     storageSummaryEmpty: "No hay datos del planificador guardados actualmente.",
+    storageActionsHeading: "Protecciones rápidas",
+    storageActionsHeadingHelp: "Descarga copias completas o abre de inmediato las herramientas de restauración desde aquí.",
+    storageActionsIntro: "Genera un respaldo completo o abre las herramientas de restauración sin salir de esta pestaña.",
+    storageBackupNow: "Descargar respaldo completo",
+    storageBackupNowHelp: "Exporta toda la instantánea del planificador, incluidos proyectos, respaldos automáticos y preferencias.",
+    storageOpenBackupTab: "Abrir Copia y Restauración",
+    storageOpenBackupTabHelp: "Ir a la pestaña Copia y Restauración para ensayar, restaurar o usar el restablecimiento.",
+    storageStatusHeading: "Actividad reciente",
+    storageStatusHeadingHelp: "Revisa de un vistazo los guardados y respaldos más recientes.",
+    storageStatusLastProjectLabel: "Último guardado de proyecto",
+    storageStatusLastAutoBackupLabel: "Último respaldo automático",
+    storageStatusLastFullBackupLabel: "Último respaldo completo de la app",
+    storageStatusNever: "Aún no se ha registrado.",
+    storageStatusStoredWithoutTimestamp: "Guardado (sin marca de tiempo).",
+    storageStatusTimestamp: "Registrado {relative} ({absolute}).",
+    storageStatusTimestampAbsolute: "Registrado {absolute}.",
+    storageStatusWithName: "{name} — {time}",
     storageKeyProjects: "Proyectos guardados",
     storageKeyProjectsDesc: "Configuraciones guardadas desde Gestionar proyecto.",
     storageProjectsCountOne: "%s proyecto",
@@ -3180,6 +3442,12 @@ var texts = {
     storageSessionNotStored: "No guardada",
     storageKeyTotalSize: "Tamaño aproximado de la copia",
     storageKeyTotalSizeDesc: "Basado en la exportación de copia de seguridad actual.",
+    storageKeyIntegrityGuard: "Guardián de copias",
+    storageKeyIntegrityGuardDesc: "Duplica cada clave de almacenamiento crítica en una copia antes de que cambies los datos.",
+    storageIntegrityGuardStatus: "Activo",
+    storageIntegrityGuardStatusCreated: "Se duplicaron {count} claves en esta sesión",
+    storageIntegrityGuardStatusIssue: "{count} problema(s) — revisa la consola",
+    storageIntegrityGuardStatusMissing: "Esperando el primer guardado",
     storageTotalSizeValue: "~%s KB",
     aboutHeading: "Acerca de y soporte",
     aboutHeadingHelp: "Consulta la versión y accede a los recursos de soporte.",
@@ -3198,7 +3466,7 @@ var texts = {
     restoreVersionTip: "Guardamos una copia de seguridad de tus datos antes de importar.",
     restoreVersionFooter: "Puedes continuar y recrear manualmente los elementos faltantes después.",
     restoreVersionUnknownVersion: "versión desconocida",
-    restoreVersionBackupLabel: "Copia de seguridad segura guardada antes de restaurar: {fileName}",
+    restoreVersionBackupLabel: "Copia de seguridad preventiva guardada antes de restaurar: {fileName}",
     restoreSectionDevices: "Biblioteca de dispositivos",
     restoreSectionSetups: "Configuraciones guardadas",
     restoreSectionProjects: "Proyectos",
@@ -3237,6 +3505,7 @@ var texts = {
     helpSearchLabel: "Buscar temas de ayuda",
     helpResultsSummaryAll: "Se muestran los %s temas de ayuda.",
     helpResultsSummaryFiltered: "Mostrando %1$s de %2$s temas de ayuda para “%3$s”.",
+    helpResultsAssist: "Consejo: pulsa Tab para moverte a los accesos directos o pulsa Intro para abrir el primer tema visible.",
     helpNoResults: "No se encontraron resultados. Prueba con palabras clave más cortas o borra la búsqueda para ver todos los temas.",
     helpSearchClear: "Borrar búsqueda",
     helpSearchHelp: "Escribe palabras clave o variantes ortográficas para filtrar al instante los temas de ayuda. Los accesos directos se actualizan a medida que escribes. Pulsa '/' o Ctrl+F (Cmd+F en Mac) para llevar de inmediato el foco al campo de búsqueda.",
@@ -3371,7 +3640,7 @@ var texts = {
     sideMenuHelp: "Navigation latérale listant les sections du planificateur. Choisissez une section pour y faire défiler la page et fermer automatiquement le menu.",
     featureSearchPlaceholder: "Rechercher des fonctionnalités ou des appareils...",
     featureSearchLabel: "Rechercher des fonctionnalités, des appareils et de l’aide",
-    featureSearchHelp: "Saisissez du texte pour retrouver des fonctionnalités, des appareils, des actions rapides comme Enregistrer ou Sauvegarder et les sujets d’aide associés. Les suggestions privilégient les correspondances directes avec les fonctionnalités et les appareils avant les sujets d’aide afin de vous amener en priorité sur les commandes. Chaque suggestion précise s’il s’agit d’une Fonctionnalité, d’une Action, d’un Appareil ou d’un sujet d’Aide afin que vous sachiez ce qui s’ouvrira avant d’appuyer sur Entrée. La recherche lit aussi les mêmes textes d’aide affichés dans les info-bulles, ainsi des mots comme \"JSON\" ou \"sauvegarde auto\" mènent quand même au bon bouton même si son libellé est différent. Appuyez sur Entrée pour ouvrir l’élément sélectionné, sur / ou Ctrl+K (Cmd+K sur Mac) pour activer la recherche à tout moment, puis sur Échap ou × pour effacer la requête.",
+    featureSearchHelp: "Saisissez du texte pour retrouver des fonctionnalités, des appareils, des actions rapides comme Enregistrer ou Sauvegarder et les sujets d’aide associés. Les suggestions privilégient les correspondances directes avec les fonctionnalités et les appareils avant les sujets d’aide afin de vous amener en priorité sur les commandes. Chaque suggestion précise s’il s’agit d’une Fonctionnalité, d’une Action, d’un Appareil ou d’un sujet d’Aide afin que vous sachiez ce qui s’ouvrira avant d’appuyer sur Entrée. Chaque suggestion affiche également une courte description pour savoir ce qui se passera avant de la sélectionner. La recherche lit aussi les mêmes textes d’aide affichés dans les info-bulles, ainsi des mots comme \"JSON\" ou \"sauvegarde auto\" mènent quand même au bon bouton même si son libellé est différent. Les petites fautes de frappe sont également tolérées, donc \"bakcup\" retrouve quand même Sauvegarder ou Enregistrer. Appuyez sur Entrée pour ouvrir l’élément sélectionné, sur / ou Ctrl+K (Cmd+K sur Mac) pour activer la recherche à tout moment, puis sur Échap ou × pour effacer la requête, et en vidant le champ vos correspondances utilisées récemment remontent en tête pour répéter rapidement vos actions courantes. Précédez votre recherche de \"feature\", \"action\", \"device\" ou \"help\" (par exemple \"help: battery\") pour limiter les résultats à ce type.",
     featureSearchClear: "Effacer la recherche",
     featureSearchClearHelp: "Efface le champ de recherche et affiche à nouveau tous les résultats. Appuyez sur Échap pour effacer rapidement.",
     featureSearchTypeFeature: "Fonctionnalité",
@@ -3785,6 +4054,10 @@ var texts = {
     settingsSectionsLabel: "Sections des paramètres",
     settingsTabGeneral: "Général",
     settingsTabGeneralHelp: "Ajustez la langue, le thème, la typographie et l'identité visuelle.",
+    generalSectionLanguageHeading: "Langue et unités",
+    generalSectionAppearanceHeading: "Apparence",
+    generalSectionTypographyHeading: "Typographie",
+    generalSectionBrandingHeading: "Image de marque",
     languageSetting: "Langue",
     settingsLanguageHelp: "Choisissez la langue de l’interface. Les modifications sont instantanées et mémorisées pour la prochaine visite.",
     darkModeSetting: "Mode sombre",
@@ -3798,27 +4071,22 @@ var texts = {
     temperatureUnitSetting: "Unité de température",
     temperatureUnitSettingHelp: "Choisissez d'afficher les températures en Celsius ou en Fahrenheit dans toute l'application.",
     mountVoltageSettingsHeading: "Tensions des supports de batterie",
-    mountVoltageSettingsHelp:
-      "Ajustez les tensions utilisées dans les calculs d'intensité pour les configurations B-Mount, V-Mount et Gold Mount.",
-    mountVoltageDescription:
-      "Définissez les tensions haute et basse par défaut de chaque support pour aligner le planificateur sur votre matériel.",
+    mountVoltageSettingsHelp: "Ajustez les tensions utilisées pour les calculs de courant avec les configurations B-Mount, V-Mount et Gold Mount.",
+    mountVoltageDescription: "Définissez les tensions haute et basse par défaut pour chaque support afin d'aligner le planificateur sur votre matériel.",
     mountVoltageReset: "Restaurer les valeurs par défaut",
     mountVoltageResetHelp: "Rétablit les tensions des supports à leurs valeurs d'usine.",
     mountVoltageHighLabel: "Sortie haute tension",
     mountVoltageLowLabel: "Sortie basse tension",
-    mountVoltageHighHelp:
-      "Utilisée pour calculer l'intensité totale sur la sortie principale de la batterie comme les broches haute tension.",
-    mountVoltageLowHelp:
-      "Utilisée pour calculer l'intensité totale sur les sorties auxiliaires comme les D-Tap ou les broches basse tension B-Mount.",
-    mountVoltageNote:
-      "Ces tensions mettent à jour le résumé de puissance, les estimations d'autonomie et les alertes sur les broches.",
+    mountVoltageHighHelp: "Utilisée pour calculer le courant total sur la sortie principale de la batterie, par exemple les broches haute tension.",
+    mountVoltageLowHelp: "Utilisée pour calculer le courant total sur les sorties auxiliaires comme les ports D-Tap ou les broches B-Mount basse tension.",
+    mountVoltageNote: "Ces tensions mettent à jour les totaux du résumé de puissance, les estimations d'autonomie et les alertes de broches.",
     mountVoltageCardLabelV: "V-Mount",
     mountVoltageCardLabelGold: "Gold Mount",
     mountVoltageCardLabelB: "B-Mount",
-    totalCurrentHighLabelTemplate: "Courant total (à {voltage} V) :",
-    totalCurrentLowLabelTemplate: "Courant total (à {voltage} V) :",
-    totalCurrentHighHelpTemplate: "Courant sur la sortie principale de la batterie ({voltage} V).",
-    totalCurrentLowHelpTemplate: "Courant sur les sorties auxiliaires ({voltage} V).",
+    totalCurrentHighLabelTemplate: "Courant total (à {voltage}V) :",
+    totalCurrentLowLabelTemplate: "Courant total (à {voltage}V) :",
+    totalCurrentHighHelpTemplate: "Courant sur la sortie principale de la batterie ({voltage}V).",
+    totalCurrentLowHelpTemplate: "Courant sur les sorties auxiliaires ({voltage}V).",
     temperatureUnitCelsius: "Celsius (°C)",
     temperatureUnitFahrenheit: "Fahrenheit (°F)",
     temperatureUnitSymbolCelsius: "°C",
@@ -3846,6 +4114,47 @@ var texts = {
     autoGearHeading: "Règles automatiques d’équipement",
     autoGearHeadingHelp: "Définissez quels scénarios du formulaire ajoutent ou retirent automatiquement du matériel.",
     autoGearDescription: "Créez des règles basées sur des scénarios pour ajuster la liste générée après les suggestions par défaut.",
+    autoGearRuleOptions: {
+      heading: "Modèles de règles intégrés",
+      intro: "Utilisez ces idées prêtes à l'emploi pour remplacer les anciens ajouts automatiques sans perdre de couverture.",
+      groups: [{
+        title: "Catalogue spécifique aux scénarios",
+        summary: "Comparez chaque scénario requis à la liste de base pour transformer ses ajouts et retraits en règle dédiée.",
+        details: ["Ajoutez des règles combinées pour Handheld + Easyrig et Slider + mode underslung afin de compter l’équipement partagé une seule fois.", "Incluez une règle uniquement en retrait pour Extreme rain + Rain Machine afin de garder uniques les accessoires pluie du matte box."]
+      }, {
+        title: "Variations de poignée caméra",
+        summary: "Déclenchez les règles selon la poignée choisie pour qu’un changement ajoute ou retire les bons supports.",
+        details: ["Comparez chaque poignée à la configuration de base pour capter les accessoires ajoutés.", "Réutilisez le même diff lorsque la poignée est retirée afin de supprimer ses pièces dédiées."]
+      }, {
+        title: "Couverture des rallonges de viseur",
+        summary: "Créez des règles pour chaque rallonge de viseur afin que chaque choix apporte son câblage et sa fixation.",
+        details: ["Comparez la liste avec et sans chaque rallonge pour récupérer ajouts et retraits correspondants."]
+      }, {
+        title: "Préréglages de distribution vidéo",
+        summary: "Reflétez le sélecteur de distribution vidéo avec des règles par option qui reproduisent les listes d’ajouts et de retraits.",
+        details: ["Enregistrez les charges pour des options comme Teradek ou QTAKE directement depuis le diff de la liste générée.", "Prévoyez un secours qui ajoute le kit de monitoring iOS lorsqu’une option existe mais ne génère pas de diff."]
+      }, {
+        title: "Rigging du moniteur embarqué",
+        summary: "Assurez-vous que chaque moniteur embarqué ajoute son bras ULCS et ses notes de montage lorsqu’il est sélectionné.",
+        details: ["Générez une règle par moniteur afin que le bras approprié et les notes apparaissent automatiquement."]
+      }, {
+        title: "Kit de support moteurs FIZ",
+        summary: "Dès qu’un moteur est présent, ajoutez pieds, adaptateurs, câbles et alimentation nécessaires.",
+        details: ["Associez la règle au déclencheur spécial \"N'importe quel moteur\" pour qu’elle s’exécute avec chaque combinaison."]
+      }, {
+        title: "Essentiels toujours actifs",
+        summary: "Maintenez câbles standard, aides de rigging et accessoires de transport dans chaque projet.",
+        details: ["Marquez la règle comme toujours active pour conserver ces essentiels même sans scénario sélectionné."]
+      }, {
+        title: "Rotation des consommables tous les cinq jours",
+        summary: "Réapprovisionnez les consommables tous les cinq jours de tournage pour garder lingettes, gaffer et clap prêts.",
+        details: ["Planifiez la règle tous les cinq jours de tournage afin que les consommables se renouvellent automatiquement sur les longs tournages."]
+      }, {
+        title: "Modèles de matte box",
+        summary: "Proposez des modèles prêts pour Swing Away, sur tiges et clamp-on.",
+        details: ["Préchargez chaque modèle avec les kits ARRI LMB et accessoires correspondants pour choisir rapidement le montage adapté."]
+      }]
+    },
     autoGearPresetDescription: "Enregistrez et réutilisez des ensembles complets de règles automatiques d’équipement.",
     autoGearPresetLabel: "Préréglage",
     autoGearPresetPlaceholder: "Règles personnalisées",
@@ -3868,6 +4177,9 @@ var texts = {
     autoGearSummaryEmpty: "Ajoutez une règle pour afficher les informations de couverture.",
     autoGearSummaryTotalLabel: "Règles suivies",
     autoGearSummaryTotalDescription: "Règles enregistrées dans cette configuration.",
+    autoGearSummaryCoverageLabel: "Couverture des scénarios",
+    autoGearSummaryCoverageDescription: "{covered} sur {total} scénarios couverts",
+    autoGearSummaryCoverageEmpty: "Ajoutez des scénarios pour mesurer la couverture.",
     autoGearSummaryNetLabel: "Variation nette",
     autoGearSummaryNetDescription: "Ajoute {adds} · Retire {removes}",
     autoGearSummaryDuplicatesLabel: "Déclencheurs dupliqués",
@@ -3876,6 +4188,9 @@ var texts = {
     autoGearSummaryConflictsLabel: "Conflits potentiels",
     autoGearSummaryConflictsSome: "{rules} concernées sur {items} éléments",
     autoGearSummaryConflictsNone: "Aucun ajout/retrait en conflit.",
+    autoGearSummaryOverlapsLabel: "Scénarios empilés",
+    autoGearSummaryOverlapsSome: "{count} scénarios affectés par plusieurs règles",
+    autoGearSummaryOverlapsNone: "Aucun scénario n’empile plusieurs règles.",
     autoGearSummaryUncoveredLabel: "Scénarios non couverts",
     autoGearSummaryUncoveredSome: "Vérifier {count} lacunes de scénario",
     autoGearSummaryUncoveredNone: "Tous les scénarios requis sont couverts.",
@@ -3912,6 +4227,12 @@ var texts = {
     autoGearConditionPlaceholder: "Choisissez une condition",
     autoGearConditionAddShortcut: "Ajouter une autre condition",
     autoGearConditionRemove: "Supprimer cette condition",
+    autoGearConditionLogicLabel: "Comportement de correspondance",
+    autoGearConditionLogicHelp: "Choisissez comment les valeurs sélectionnées interagissent avant l’activation de la règle.",
+    autoGearConditionLogicAll: "Exiger toutes les valeurs sélectionnées",
+    autoGearConditionLogicAny: "Correspondre à n’importe quelle valeur sélectionnée",
+    autoGearConditionLogicMultiplier: "Multiplier selon les valeurs correspondantes",
+    autoGearConditionRepeatHint: "Condition déjà ajoutée. Les champs existants pour {condition} sont mis en évidence pour vous permettre d'ajouter d'autres sélections.",
     autoGearAlwaysLabel: "Toujours inclure",
     autoGearAlwaysHelp: "Applique cette règle à chaque liste de matériel.",
     autoGearAlwaysMeta: "Toujours active",
@@ -3949,6 +4270,18 @@ var texts = {
     autoGearVideoDistributionLabel: "Distribution vidéo",
     autoGearVideoDistributionHelp: "Appliquer la règle lorsque ces préférences de distribution vidéo sont sélectionnées.",
     autoGearVideoDistributionPlaceholder: "Sélectionnez des options de distribution vidéo",
+    autoGearTripodHeadBrandLabel: "Marque de la tête de trépied",
+    autoGearTripodHeadBrandHelp: "Appliquez cette règle lorsque les préférences de tête de trépied incluent ces marques.",
+    autoGearTripodHeadBrandPlaceholder: "Sélectionnez des marques de têtes de trépied",
+    autoGearTripodBowlLabel: "Taille de bol du trépied",
+    autoGearTripodBowlHelp: "Appliquez cette règle lorsque les préférences de tête de trépied incluent ces tailles de bol.",
+    autoGearTripodBowlPlaceholder: "Sélectionnez des tailles de bol de trépied",
+    autoGearTripodTypesLabel: "Types de trépied",
+    autoGearTripodTypesHelp: "Appliquez cette règle lorsque les préférences de trépied incluent ces types de trépied.",
+    autoGearTripodTypesPlaceholder: "Sélectionnez des types de trépied",
+    autoGearTripodSpreaderLabel: "Écarteur de trépied",
+    autoGearTripodSpreaderHelp: "Appliquez cette règle lorsque les préférences de trépied incluent ces options d'écarteur.",
+    autoGearTripodSpreaderPlaceholder: "Sélectionnez des écarteurs de trépied",
     autoGearVideoDistributionNone: "Aucune distribution vidéo sélectionnée",
     autoGearCameraLabel: "Sélection de caméra",
     autoGearCameraHelp: "Appliquez la règle lorsque ces boîtiers caméra sont sélectionnés.",
@@ -3976,6 +4309,7 @@ var texts = {
     autoGearWirelessLabel: "Émetteurs sans fil",
     autoGearWirelessHelp: "Appliquez la règle lorsque ces émetteurs sans fil sont sélectionnés.",
     autoGearMotorsLabel: "Moteurs FIZ",
+    autoGearMotorsAny: "N'importe quel moteur sélectionné",
     autoGearMotorsHelp: "Appliquez la règle lorsque ces moteurs FIZ sont sélectionnés.",
     autoGearControllersLabel: "Contrôleurs FIZ",
     autoGearControllersHelp: "Appliquez la règle lorsque ces contrôleurs FIZ sont sélectionnés.",
@@ -4242,8 +4576,25 @@ var texts = {
     dataHeading: "Données et stockage",
     dataHeadingHelp: "Consultez ce que le planificateur conserve localement et la taille des sauvegardes.",
     storageSummaryIntro: "Tout ce qui suit reste dans ce navigateur jusqu'à exportation ou suppression.",
-    storageSummaryFootnote: "Les sauvegardes téléchargent chaque élément en JSON lisible.",
+    storageSummaryFootnote: "Les sauvegardes téléchargent chaque élément en JSON lisible—les Actions de sécurité rapides gardent des copies à jour prêtes à l’emploi.",
     storageSummaryEmpty: "Aucune donnée du planificateur n'est actuellement enregistrée.",
+    storageActionsHeading: "Actions de sécurité rapides",
+    storageActionsHeadingHelp: "Téléchargez des sauvegardes complètes ou ouvrez immédiatement les outils de restauration depuis ici.",
+    storageActionsIntro: "Créez une sauvegarde complète ou ouvrez les outils de restauration sans quitter cet onglet.",
+    storageBackupNow: "Télécharger la sauvegarde complète",
+    storageBackupNowHelp: "Exporte l’instantané complet du planificateur, y compris projets, sauvegardes automatiques et préférences.",
+    storageOpenBackupTab: "Ouvrir Sauvegarde et Restauration",
+    storageOpenBackupTabHelp: "Accédez à l’onglet Sauvegarde et Restauration pour répétitions, restaurations et outils de réinitialisation.",
+    storageStatusHeading: "Activité récente",
+    storageStatusHeadingHelp: "Passez en revue en un coup d’œil les derniers enregistrements et sauvegardes.",
+    storageStatusLastProjectLabel: "Dernier enregistrement de projet",
+    storageStatusLastAutoBackupLabel: "Dernière sauvegarde automatique",
+    storageStatusLastFullBackupLabel: "Dernière sauvegarde complète de l’application",
+    storageStatusNever: "Pas encore enregistré.",
+    storageStatusStoredWithoutTimestamp: "Données présentes (horodatage non enregistré).",
+    storageStatusTimestamp: "Enregistré {relative} ({absolute}).",
+    storageStatusTimestampAbsolute: "Enregistré {absolute}.",
+    storageStatusWithName: "{name} — {time}",
     storageKeyProjects: "Projets enregistrés",
     storageKeyProjectsDesc: "Configurations enregistrées depuis Gestion du projet.",
     storageProjectsCountOne: "%s projet",
@@ -4279,6 +4630,12 @@ var texts = {
     storageSessionNotStored: "Non enregistrée",
     storageKeyTotalSize: "Taille approximative de la sauvegarde",
     storageKeyTotalSizeDesc: "Basée sur l’export de sauvegarde actuel.",
+    storageKeyIntegrityGuard: "Gardien des sauvegardes",
+    storageKeyIntegrityGuardDesc: "Duplique chaque clé de stockage critique dans une sauvegarde avant toute modification.",
+    storageIntegrityGuardStatus: "Actif",
+    storageIntegrityGuardStatusCreated: "{count} clé(s) dupliquée(s) cette session",
+    storageIntegrityGuardStatusIssue: "{count} incident(s) — vérifiez la console",
+    storageIntegrityGuardStatusMissing: "En attente d’un premier enregistrement",
     storageTotalSizeValue: "~%s KB",
     aboutHeading: "À propos et support",
     aboutHeadingHelp: "Consultez les informations de version et les ressources d’assistance.",
@@ -4336,6 +4693,7 @@ var texts = {
     helpSearchLabel: "Rechercher des sujets d'aide",
     helpResultsSummaryAll: "Tous les %s sujets d’aide sont affichés.",
     helpResultsSummaryFiltered: "Affichage de %1$s sujet(s) d’aide sur %2$s pour « %3$s ».",
+    helpResultsAssist: "Astuce : appuyez sur Tab pour rejoindre les raccourcis ou sur Entrée pour ouvrir le premier sujet visible.",
     helpNoResults: "Aucun résultat trouvé. Essayez avec des mots-clés plus courts ou effacez la recherche pour afficher tous les sujets.",
     helpSearchClear: "Effacer la recherche",
     helpSearchHelp: "Saisissez des mots-clés ou des variantes orthographiques pour filtrer instantanément les sujets d'aide. Les liens rapides se mettent à jour pendant la saisie. Appuyez sur '/' ou Ctrl+F (Cmd+F sur Mac) pour placer immédiatement le focus dans le champ de recherche.",
@@ -4470,7 +4828,7 @@ var texts = {
     sideMenuHelp: "Seitenleiste mit den Bereichen des Planers. Wähle einen Bereich aus, um dorthin zu scrollen; das Menü schließt sich dabei automatisch.",
     featureSearchPlaceholder: "Funktionen oder Geräte durchsuchen...",
     featureSearchLabel: "Funktionen, Geräte und Hilfe durchsuchen",
-    featureSearchHelp: "Tippe, um zu Funktionen, Geräten, Schnellaktionen wie Speichern oder Backup oder zu passenden Hilfethemen zu springen. Vorschläge priorisieren direkte Treffer für Funktionen und Geräte vor Hilfethemen, damit du zuerst bei den Bedienelementen landest. Jeder Vorschlag zeigt, ob er eine Funktion, Aktion, ein Gerät oder ein Hilfethema öffnet, damit du vor dem Drücken von Enter weißt, was passiert. Die Suche berücksichtigt außerdem die gleichen Hilfetexte aus Tooltips, sodass Begriffe wie \"JSON\" oder \"Autospeichern\" trotzdem zum richtigen Button führen, selbst wenn die Beschriftung anders lautet. Drücke Enter zum Navigieren, / oder Strg+K (Cmd+K auf dem Mac), um die Suche überall zu fokussieren, und verwende Esc oder ×, um die Eingabe zu löschen.",
+    featureSearchHelp: "Tippe, um zu Funktionen, Geräten, Schnellaktionen wie Speichern oder Backup oder zu passenden Hilfethemen zu springen. Vorschläge priorisieren direkte Treffer für Funktionen und Geräte vor Hilfethemen, damit du zuerst bei den Bedienelementen landest. Jeder Vorschlag zeigt, ob er eine Funktion, Aktion, ein Gerät oder ein Hilfethema öffnet, damit du vor dem Drücken von Enter weißt, was passiert. Jeder Vorschlag enthält außerdem eine kurze Beschreibung, damit du sofort erkennst, was beim Auswählen passiert. Die Suche berücksichtigt außerdem die gleichen Hilfetexte aus Tooltips, sodass Begriffe wie \"JSON\" oder \"Autospeichern\" trotzdem zum richtigen Button führen, selbst wenn die Beschriftung anders lautet. Kleine Tippfehler werden verziehen, sodass \"bakcup\" trotzdem Backup oder Speichern findet. Drücke Enter zum Navigieren, / oder Strg+K (Cmd+K auf dem Mac), um die Suche überall zu fokussieren, verwende Esc oder ×, um die Eingabe zu löschen, und wenn das Feld leer ist, erscheinen deine zuletzt genutzten Treffer oben für schnellere Wiederholungen. Stelle deiner Suche \"feature\", \"action\", \"device\" oder \"help\" vor (z. B. \"help: battery\"), um Vorschläge auf diesen Typ zu begrenzen.",
     featureSearchClear: "Suche löschen",
     featureSearchClearHelp: "Suchfeld leeren und alle Ergebnisse wieder anzeigen. Drücke Esc, um schnell zu löschen.",
     featureSearchTypeFeature: "Funktion",
@@ -4884,6 +5242,10 @@ var texts = {
     settingsSectionsLabel: "Einstellungsbereiche",
     settingsTabGeneral: "Allgemein",
     settingsTabGeneralHelp: "Sprache, Erscheinungsbild, Typografie und Branding anpassen.",
+    generalSectionLanguageHeading: "Sprache & Einheiten",
+    generalSectionAppearanceHeading: "Darstellung & Farben",
+    generalSectionTypographyHeading: "Typografie",
+    generalSectionBrandingHeading: "Branding & Logo",
     languageSetting: "Sprache",
     settingsLanguageHelp: "Wähle die Oberflächensprache. Änderungen wirken sofort und werden gespeichert.",
     darkModeSetting: "Dunkelmodus",
@@ -4897,27 +5259,22 @@ var texts = {
     temperatureUnitSetting: "Temperatureinheit",
     temperatureUnitSettingHelp: "Wählen Sie, ob Temperaturen in Celsius oder Fahrenheit in der gesamten App angezeigt werden.",
     mountVoltageSettingsHeading: "Batterie-Mount-Spannungen",
-    mountVoltageSettingsHelp:
-      "Passe die Spannungen für Stromberechnungen bei B-Mount-, V-Mount- und Gold-Mount-Setups an.",
-    mountVoltageDescription:
-      "Lege die Standard-Hoch- und Niederspannung für jeden Mount fest, damit der Planer zu deiner Hardware passt.",
+    mountVoltageSettingsHelp: "Passen Sie die Spannungen an, die für die Stromberechnung bei B-Mount-, V-Mount- und Gold-Mount-Konfigurationen verwendet werden.",
+    mountVoltageDescription: "Legen Sie die Standardwerte für Hoch- und Niederspannung jedes Mounts fest, damit der Planer zu Ihrer Hardware passt.",
     mountVoltageReset: "Auf Standard zurücksetzen",
     mountVoltageResetHelp: "Setzt alle Mount-Spannungen auf die Werkseinstellungen zurück.",
     mountVoltageHighLabel: "Hochspannungs-Ausgang",
     mountVoltageLowLabel: "Niederspannungs-Ausgang",
-    mountVoltageHighHelp:
-      "Wird zur Berechnung des Gesamtstroms am Hauptausgang der Batterie wie den Hochspannungs-Pins verwendet.",
-    mountVoltageLowHelp:
-      "Wird zur Berechnung des Gesamtstroms an Zusatzanschlüssen wie D-Tap-Ports oder B-Mount-Niederspannungspins verwendet.",
-    mountVoltageNote:
-      "Diese Spannungen aktualisieren die Leistungsübersicht, Laufzeitabschätzungen und Pin-Warnungen.",
+    mountVoltageHighHelp: "Wird für die Berechnung des Gesamtstroms am Hauptausgang der Batterie verwendet, z. B. an den Hochspannungspins.",
+    mountVoltageLowHelp: "Wird für die Berechnung des Gesamtstroms an Nebenanschlüssen wie D-Tap-Buchsen oder B-Mount-Niedervolt-Pins verwendet.",
+    mountVoltageNote: "Diese Spannungen aktualisieren die Summen in der Leistungsübersicht, die Laufzeitabschätzungen und die Pin-Warnungen.",
     mountVoltageCardLabelV: "V-Mount",
     mountVoltageCardLabelGold: "Gold Mount",
     mountVoltageCardLabelB: "B-Mount",
-    totalCurrentHighLabelTemplate: "Gesamtstrom (bei {voltage} V):",
-    totalCurrentLowLabelTemplate: "Gesamtstrom (bei {voltage} V):",
-    totalCurrentHighHelpTemplate: "Strom am Hauptausgang der Batterie ({voltage} V).",
-    totalCurrentLowHelpTemplate: "Strom an Zusatzanschlüssen ({voltage} V).",
+    totalCurrentHighLabelTemplate: "Gesamtstrom (bei {voltage}V):",
+    totalCurrentLowLabelTemplate: "Gesamtstrom (bei {voltage}V):",
+    totalCurrentHighHelpTemplate: "Stromaufnahme am Hauptausgang der Batterie ({voltage}V).",
+    totalCurrentLowHelpTemplate: "Stromaufnahme an Nebenanschlüssen ({voltage}V).",
     temperatureUnitCelsius: "Celsius (°C)",
     temperatureUnitFahrenheit: "Fahrenheit (°F)",
     temperatureUnitSymbolCelsius: "°C",
@@ -4945,6 +5302,47 @@ var texts = {
     autoGearHeading: "Automatische Gear-Regeln",
     autoGearHeadingHelp: "Lege fest, welche Projektanforderungen automatisch Geräte hinzufügen oder entfernen.",
     autoGearDescription: "Erstelle szenariobasierte Regeln, um die erzeugte Packliste nach den Standardvorschlägen anzupassen.",
+    autoGearRuleOptions: {
+      heading: "Vorlagen für automatische Regeln",
+      intro: "Nutze diese vorbereiteten Ideen, um die alten automatischen Ergänzungen zu ersetzen, ohne Abdeckung zu verlieren.",
+      groups: [{
+        title: "Szenario-spezifischer Katalog",
+        summary: "Vergleiche jedes benötigte Szenario mit der Basistabelle, um seine Ergänzungen und Entnahmen in eine eigene Regel zu verwandeln.",
+        details: ["Füge Kombi-Regeln für Handheld + Easyrig sowie Slider + Undersling-Modus hinzu, damit geteiltes Equipment nur einmal gezählt wird.", "Ergänze eine reine Entnahme-Regel für Extreme rain + Rain Machine, damit die Matte-Box-Regenaccessoires eindeutig bleiben."]
+      }, {
+        title: "Varianten der Kameragriffe",
+        summary: "Löse Regeln über die gewählte Kameragriff-Option aus, damit ein Wechsel die passenden Halterungen ergänzt oder entfernt.",
+        details: ["Vergleiche jede Griffoption mit der Basis, um die zusätzlichen Zubehörteile zu erfassen.", "Nutze den gleichen Diff, wenn ein Griff abgewählt wird, damit seine speziellen Teile entfernt werden."]
+      }, {
+        title: "Sucher-Erweiterungen abdecken",
+        summary: "Erzeuge Regeln für jede Sucher-Erweiterung, damit jede Auswahl die zugehörigen Kabel und Halter mitbringt.",
+        details: ["Vergleiche die Liste mit und ohne die Erweiterung, um passende Ergänzungen und Entnahmen zu erfassen."]
+      }, {
+        title: "Videoverteilungs-Presets",
+        summary: "Spiegele den Videoverteilungs-Selector mit Regeln pro Option, die die Listen aus Ergänzungen und Entnahmen nachbilden.",
+        details: ["Übernimm Payloads für Optionen wie Teradek oder QTAKE direkt aus dem Differenzvergleich der erzeugten Liste.", "Hinterlege ein Fallback, das iOS-Monitoring-Equipment hinzufügt, wenn eine Option existiert, aber keine Differenz liefert."]
+      }, {
+        title: "Onboard-Monitor-Rigging",
+        summary: "Stelle sicher, dass jeder Onboard-Monitor seinen ULCS-Arm und Rigging-Hinweise ergänzt, sobald er gewählt ist.",
+        details: ["Erzeuge pro Monitor eine Regel, damit Arm und Hinweise automatisch eingefügt werden."]
+      }, {
+        title: "FIZ-Motorsupport-Kit",
+        summary: "Sobald ein Motor vorhanden ist, ergänze Stative, Adapter, Kabel und Stromversorgung.",
+        details: ["Verknüpfe die Regel mit dem speziellen Trigger \"Beliebiger Motor\", damit sie für jede Motor-Kombination greift."]
+      }, {
+        title: "Immer aktive Essentials",
+        summary: "Halte Standardkabel, Rigging-Hilfen und Transportzubehör in jedem Projekt aktiv.",
+        details: ["Markiere die Regel als immer aktiv, damit die Essentials auch ohne Szenarien erhalten bleiben."]
+      }, {
+        title: "Verbrauchsmaterial im Fünf-Tage-Rhythmus",
+        summary: "Fülle Verbrauchsmaterial alle fünf Drehtage nach, damit Tücher, Tape und Klappen bereitstehen.",
+        details: ["Plane die Regel alle fünf Drehtage ein, damit Verbrauchsgüter auf langen Drehs automatisch erneuert werden."]
+      }, {
+        title: "Matte-Box-Templates",
+        summary: "Biete fertige Vorlagen für Swing-Away-, Rod-basierte und Clamp-On-Matte-Boxen.",
+        details: ["Lade jede Vorlage mit den passenden ARRI-LMB-Kits und Zubehör vor, um schnell die richtige Variante zu wählen."]
+      }]
+    },
     autoGearPresetDescription: "Speichere komplette Sets automatischer Gear-Regeln zur Wiederverwendung.",
     autoGearPresetLabel: "Voreinstellung",
     autoGearPresetPlaceholder: "Eigene Regeln",
@@ -4967,6 +5365,9 @@ var texts = {
     autoGearSummaryEmpty: "Füge eine Regel hinzu, um Abdeckungsstatistiken zu sehen.",
     autoGearSummaryTotalLabel: "Erfasste Regeln",
     autoGearSummaryTotalDescription: "Regeln, die in diesem Setup gespeichert sind.",
+    autoGearSummaryCoverageLabel: "Szenarioabdeckung",
+    autoGearSummaryCoverageDescription: "{covered} von {total} Szenarien abgedeckt",
+    autoGearSummaryCoverageEmpty: "Füge Szenarien hinzu, um die Abdeckung zu messen.",
     autoGearSummaryNetLabel: "Nettobestand",
     autoGearSummaryNetDescription: "Fügt {adds} hinzu · Entfernt {removes}",
     autoGearSummaryDuplicatesLabel: "Doppelte Auslöser",
@@ -4975,6 +5376,9 @@ var texts = {
     autoGearSummaryConflictsLabel: "Mögliche Konflikte",
     autoGearSummaryConflictsSome: "{rules} betroffen über {items} Elemente",
     autoGearSummaryConflictsNone: "Keine widersprüchlichen Hinzufügungen/Entfernungen.",
+    autoGearSummaryOverlapsLabel: "Gestapelte Szenarien",
+    autoGearSummaryOverlapsSome: "{count} Szenarien werden von mehreren Regeln beeinflusst",
+    autoGearSummaryOverlapsNone: "Keine Szenarien stapeln derzeit mehrere Regeln.",
     autoGearSummaryUncoveredLabel: "Ungedeckte Szenarien",
     autoGearSummaryUncoveredSome: "{count} Szenariolücken prüfen",
     autoGearSummaryUncoveredNone: "Alle benötigten Szenarien sind abgedeckt.",
@@ -5011,6 +5415,12 @@ var texts = {
     autoGearConditionPlaceholder: "Wähle eine Bedingung",
     autoGearConditionAddShortcut: "Weitere Bedingung hinzufügen",
     autoGearConditionRemove: "Diese Bedingung entfernen",
+    autoGearConditionLogicLabel: "Abgleichsverhalten",
+    autoGearConditionLogicHelp: "Legt fest, wie die ausgewählten Werte zusammenwirken, bevor die Regel aktiv wird.",
+    autoGearConditionLogicAll: "Alle ausgewählten Werte erforderlich",
+    autoGearConditionLogicAny: "Beliebiger ausgewählter Wert genügt",
+    autoGearConditionLogicMultiplier: "Mit passenden Werten multiplizieren",
+    autoGearConditionRepeatHint: "Bedingung bereits hinzugefügt. Die vorhandenen Eingaben für {condition} sind markiert, damit du weitere Auswahlmöglichkeiten setzen kannst.",
     autoGearAlwaysLabel: "Immer einschließen",
     autoGearAlwaysHelp: "Wendet diese Regel auf jede Geräteliste an.",
     autoGearAlwaysMeta: "Immer aktiv",
@@ -5048,6 +5458,18 @@ var texts = {
     autoGearVideoDistributionLabel: "Videoverteilung",
     autoGearVideoDistributionHelp: "Regel anwenden, wenn diese Videoverteilungsoptionen ausgewählt sind.",
     autoGearVideoDistributionPlaceholder: "Videoverteilungsoptionen auswählen",
+    autoGearTripodHeadBrandLabel: "Stativkopf-Marke",
+    autoGearTripodHeadBrandHelp: "Regel anwenden, wenn die Stativkopf-Voreinstellungen diese Marken enthalten.",
+    autoGearTripodHeadBrandPlaceholder: "Stativkopf-Marken auswählen",
+    autoGearTripodBowlLabel: "Stativ-Halbschalengröße",
+    autoGearTripodBowlHelp: "Regel anwenden, wenn die Stativkopf-Voreinstellungen diese Halbschalengrößen enthalten.",
+    autoGearTripodBowlPlaceholder: "Stativ-Halbschalengrößen auswählen",
+    autoGearTripodTypesLabel: "Stativtypen",
+    autoGearTripodTypesHelp: "Regel anwenden, wenn die Stativvoreinstellungen diese Stativtypen enthalten.",
+    autoGearTripodTypesPlaceholder: "Stativtypen auswählen",
+    autoGearTripodSpreaderLabel: "Stativspreizer",
+    autoGearTripodSpreaderHelp: "Regel anwenden, wenn die Stativvoreinstellungen diese Spreizer-Optionen enthalten.",
+    autoGearTripodSpreaderPlaceholder: "Stativspreizer auswählen",
     autoGearVideoDistributionNone: "Keine Videoverteilung ausgewählt",
     autoGearCameraLabel: "Kameraauswahl",
     autoGearCameraHelp: "Wende die Regel an, wenn diese Kamerabodys ausgewählt sind.",
@@ -5075,6 +5497,7 @@ var texts = {
     autoGearWirelessLabel: "Funk-Sender",
     autoGearWirelessHelp: "Wende die Regel an, wenn diese Funk-Sender ausgewählt sind.",
     autoGearMotorsLabel: "FIZ Motoren",
+    autoGearMotorsAny: "Beliebiger Motor ausgewählt",
     autoGearMotorsHelp: "Wende die Regel an, wenn diese FIZ Motoren ausgewählt sind.",
     autoGearControllersLabel: "FIZ Controller",
     autoGearControllersHelp: "Wende die Regel an, wenn diese FIZ Controller ausgewählt sind.",
@@ -5341,8 +5764,25 @@ var texts = {
     dataHeading: "Daten & Speicherung",
     dataHeadingHelp: "Zeigt, welche Planer-Daten lokal gespeichert sind und wie groß Sicherungen werden.",
     storageSummaryIntro: "Alles unten bleibt in diesem Browser, bis du es exportierst oder löschst.",
-    storageSummaryFootnote: "Backups laden jede Position als gut lesbares JSON herunter.",
+    storageSummaryFootnote: "Backups laden jede Position als gut lesbares JSON herunter—die schnellen Schutzmaßnahmen halten aktuelle Kopien jederzeit bereit.",
     storageSummaryEmpty: "Derzeit sind keine Planer-Daten gespeichert.",
+    storageActionsHeading: "Schnelle Schutzmaßnahmen",
+    storageActionsHeadingHelp: "Lade vollständige Backups herunter oder öffne sofort die Wiederherstellungswerkzeuge.",
+    storageActionsIntro: "Erstelle ein vollständiges Backup oder öffne die Wiederherstellungswerkzeuge, ohne diesen Tab zu verlassen.",
+    storageBackupNow: "Vollständiges Backup herunterladen",
+    storageBackupNowHelp: "Exportiert den kompletten Planner-Snapshot einschließlich Projekte, Auto-Backups und Einstellungen.",
+    storageOpenBackupTab: "Backup & Wiederherstellung öffnen",
+    storageOpenBackupTabHelp: "Wechsle zum Tab Backup & Wiederherstellung für Proben, Wiederherstellung und Zurücksetzen.",
+    storageStatusHeading: "Aktuelle Aktivität",
+    storageStatusHeadingHelp: "Überblick über die letzten Speicherungen und Backups.",
+    storageStatusLastProjectLabel: "Letztes Projekt-Speichern",
+    storageStatusLastAutoBackupLabel: "Letztes Auto-Backup",
+    storageStatusLastFullBackupLabel: "Letztes vollständiges App-Backup",
+    storageStatusNever: "Noch nicht erfasst.",
+    storageStatusStoredWithoutTimestamp: "Gespeichert (ohne Zeitstempel).",
+    storageStatusTimestamp: "Erfasst {relative} ({absolute}).",
+    storageStatusTimestampAbsolute: "Erfasst {absolute}.",
+    storageStatusWithName: "{name} — {time}",
     storageKeyProjects: "Gespeicherte Projekte",
     storageKeyProjectsDesc: "Konfigurationen aus Projekt verwalten.",
     storageProjectsCountOne: "%s Projekt",
@@ -5378,6 +5818,12 @@ var texts = {
     storageSessionNotStored: "Nicht gespeichert",
     storageKeyTotalSize: "Voraussichtliche Backup-Größe",
     storageKeyTotalSizeDesc: "Berechnet anhand des aktuellen Backups.",
+    storageKeyIntegrityGuard: "Backup-Wächter",
+    storageKeyIntegrityGuardDesc: "Spiegelt jede kritische Speicherschlüssel vor Änderungen in eine Sicherung.",
+    storageIntegrityGuardStatus: "Aktiv",
+    storageIntegrityGuardStatusCreated: "{count} Schlüssel in dieser Sitzung gespiegelt",
+    storageIntegrityGuardStatusIssue: "{count} Problem(e) – Konsole prüfen",
+    storageIntegrityGuardStatusMissing: "Wartet auf den ersten Speicherstand",
     storageTotalSizeValue: "~%s KB",
     aboutHeading: "Info & Support",
     aboutHeadingHelp: "Zeigt Versionsinfos und Links zum Support.",
@@ -5435,6 +5881,7 @@ var texts = {
     helpSearchLabel: "Hilfe-Themen durchsuchen",
     helpResultsSummaryAll: "Alle %s Hilfethemen werden angezeigt.",
     helpResultsSummaryFiltered: "Es werden %1$s von %2$s Hilfethemen für „%3$s“ angezeigt.",
+    helpResultsAssist: "Tipp: Drücke Tab, um zu den Schnelllinks zu wechseln, oder drücke Eingabe, um das erste sichtbare Thema zu öffnen.",
     helpNoResults: "Keine Ergebnisse gefunden. Verwende kürzere Suchbegriffe oder lösche die Suche, um alle Themen anzuzeigen.",
     helpSearchClear: "Suche löschen",
     helpSearchHelp: "Gib Stichwörter oder alternative Schreibweisen ein, um die Hilfethemen sofort zu filtern. Die Schnelllinks aktualisieren sich während der Eingabe. Drücke '/' oder Strg+F (Cmd+F auf dem Mac), um das Suchfeld sofort zu fokussieren.",
@@ -5649,6 +6096,64 @@ var categoryNames = {
     "filterOptions": "Filteroption"
   }
 };
+function ensureLanguageAlignment(dataset) {
+  var _ref = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+    _ref$datasetName = _ref.datasetName,
+    datasetName = _ref$datasetName === void 0 ? 'dataset' : _ref$datasetName,
+    _ref$referenceLang = _ref.referenceLang,
+    referenceLang = _ref$referenceLang === void 0 ? 'en' : _ref$referenceLang,
+    expectedLanguages = _ref.expectedLanguages;
+  var reference = dataset[referenceLang];
+  if (!reference || _typeof(reference) !== 'object') {
+    throw new Error("".concat(datasetName, " translations are missing the reference language \"").concat(referenceLang, "\"."));
+  }
+  var languages = expectedLanguages ? _toConsumableArray(expectedLanguages) : Object.keys(dataset);
+  var languageSet = new Set(languages);
+  var referenceKeys = new Set(Object.keys(reference));
+  languages.forEach(function (lang) {
+    if (!Object.prototype.hasOwnProperty.call(dataset, lang) || _typeof(dataset[lang]) !== 'object' || dataset[lang] === null) {
+      dataset[lang] = {};
+    }
+  });
+  languages.forEach(function (lang) {
+    if (lang === referenceLang) {
+      return;
+    }
+    var translations = dataset[lang];
+    referenceKeys.forEach(function (key) {
+      if (!Object.prototype.hasOwnProperty.call(translations, key)) {
+        translations[key] = reference[key];
+      }
+    });
+    Object.keys(translations).forEach(function (key) {
+      if (!referenceKeys.has(key)) {
+        delete translations[key];
+      }
+    });
+  });
+  if (expectedLanguages) {
+    Object.keys(dataset).forEach(function (lang) {
+      if (!languageSet.has(lang)) {
+        delete dataset[lang];
+      }
+    });
+  }
+}
+var supportedLanguages = Object.keys(texts);
+ensureLanguageAlignment(texts, {
+  datasetName: 'texts',
+  referenceLang: 'en'
+});
+ensureLanguageAlignment(categoryNames, {
+  datasetName: 'categoryNames',
+  referenceLang: 'en',
+  expectedLanguages: supportedLanguages
+});
+ensureLanguageAlignment(gearItems, {
+  datasetName: 'gearItems',
+  referenceLang: 'en',
+  expectedLanguages: supportedLanguages
+});
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
     texts: texts,

@@ -8,21 +8,235 @@ function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArra
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
 function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
-function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t.return && (u = t.return(), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
-var setupsCineUi = typeof globalThis !== 'undefined' && globalThis.cineUi || typeof window !== 'undefined' && window.cineUi || typeof self !== 'undefined' && self.cineUi || null;
-generateOverviewBtn.addEventListener('click', function () {
-  if (!setupSelect.value) {
-    alert(texts[currentLang].alertSelectSetupForOverview);
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+var AUTO_GEAR_ANY_MOTOR_TOKEN_FALLBACK = typeof globalThis !== 'undefined' && globalThis.AUTO_GEAR_ANY_MOTOR_TOKEN ? globalThis.AUTO_GEAR_ANY_MOTOR_TOKEN : '__any__';
+function hasMeaningfulPowerSelection(value) {
+  if (typeof value !== 'string') return false;
+  var trimmed = value.trim();
+  if (!trimmed) return false;
+  return trimmed.toLowerCase() !== 'none';
+}
+function normalizePowerSelectionString(value) {
+  if (typeof value === 'string') return value.trim();
+  if (value === null || value === undefined) return '';
+  return String(value);
+}
+function assignSelectValue(select, value) {
+  if (!select) return;
+  if (typeof setSelectValue === 'function') {
+    setSelectValue(select, value);
+  } else if (value === undefined) {
+    select.selectedIndex = -1;
+  } else {
+    select.value = value;
+  }
+}
+function getGlobalCineUi() {
+  var scope = typeof globalThis !== 'undefined' && globalThis || typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || typeof global !== 'undefined' && global || null;
+  if (!scope || _typeof(scope) !== 'object') {
+    return null;
+  }
+  try {
+    var candidate = scope.cineUi;
+    return candidate && _typeof(candidate) === 'object' ? candidate : null;
+  } catch (error) {
+    void error;
+    return null;
+  }
+}
+function isCineUiEntryRegistered(registry, name) {
+  if (!registry || _typeof(registry) !== 'object') {
+    return false;
+  }
+  if (typeof registry.get === 'function') {
+    try {
+      return Boolean(registry.get(name));
+    } catch (error) {
+      void error;
+    }
+  }
+  if (typeof registry.list === 'function') {
+    try {
+      var entries = registry.list();
+      return Array.isArray(entries) && entries.indexOf(name) !== -1;
+    } catch (error) {
+      void error;
+    }
+  }
+  return false;
+}
+function registerCineUiEntries(registry, entries, warningMessage) {
+  if (!registry || typeof registry.register !== 'function') {
     return;
   }
-  generatePrintableOverview({ autoPrint: true });
-});
+  for (var index = 0; index < entries.length; index += 1) {
+    var entry = entries[index];
+    if (!entry || typeof entry.name !== 'string') {
+      continue;
+    }
+    if (isCineUiEntryRegistered(registry, entry.name)) {
+      continue;
+    }
+    try {
+      registry.register(entry.name, entry.value);
+    } catch (error) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn(warningMessage, error);
+      }
+    }
+  }
+}
+function areSetupsEntriesRegistered(cineUi) {
+  if (!cineUi || _typeof(cineUi) !== 'object') {
+    return false;
+  }
+  var controllers = cineUi.controllers;
+  var interactions = cineUi.interactions;
+  var help = cineUi.help;
+  return isCineUiEntryRegistered(controllers, 'shareDialog') && isCineUiEntryRegistered(controllers, 'sharedImportDialog') && isCineUiEntryRegistered(interactions, 'shareOpen') && isCineUiEntryRegistered(interactions, 'shareSubmit') && isCineUiEntryRegistered(interactions, 'shareCancel') && isCineUiEntryRegistered(interactions, 'shareApplyFile') && isCineUiEntryRegistered(interactions, 'shareInputChange') && isCineUiEntryRegistered(interactions, 'sharedImportSubmit') && isCineUiEntryRegistered(interactions, 'sharedImportCancel') && isCineUiEntryRegistered(help, 'shareProject') && isCineUiEntryRegistered(help, 'sharedImport');
+}
+var setupsCineUiRegistered = areSetupsEntriesRegistered(getGlobalCineUi());
+function enqueueCineUiRegistration(callback) {
+  var scope = typeof globalThis !== 'undefined' && globalThis || typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || typeof global !== 'undefined' && global || null;
+  if (!scope || typeof callback !== 'function') {
+    return;
+  }
+  try {
+    var existing = scope.cineUi && _typeof(scope.cineUi) === 'object' ? scope.cineUi : null;
+    if (existing) {
+      callback(existing);
+      return;
+    }
+  } catch (callbackError) {
+    if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+      console.warn('cineUi registration callback (setups) failed', callbackError);
+    }
+    return;
+  }
+  var key = '__cineUiReadyQueue';
+  if (!Array.isArray(scope[key])) {
+    scope[key] = [];
+  }
+  scope[key].push(callback);
+}
+enqueueCineUiRegistration(registerSetupsCineUiInternal);
+function getPowerSelectionSnapshot() {
+  if (!batterySelect && !batteryPlateSelect && !hotswapSelect) return null;
+  var rawBattery = batterySelect ? normalizePowerSelectionString(batterySelect.value) : '';
+  var rawPlate = batteryPlateSelect ? normalizePowerSelectionString(batteryPlateSelect.value) : '';
+  var rawHotswap = hotswapSelect ? normalizePowerSelectionString(hotswapSelect.value) : '';
+  var normalizedPlate = typeof normalizeBatteryPlateValue === 'function' ? normalizeBatteryPlateValue(rawPlate, rawBattery) : rawPlate;
+  var snapshot = {
+    batteryPlate: normalizedPlate || '',
+    battery: rawBattery || '',
+    batteryHotswap: rawHotswap || ''
+  };
+  if (!snapshot.batteryPlate && !snapshot.battery && !snapshot.batteryHotswap) {
+    return null;
+  }
+  return snapshot;
+}
+function applyStoredPowerSelection(selection) {
+  var _ref = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+    _ref$preferExisting = _ref.preferExisting,
+    preferExisting = _ref$preferExisting === void 0 ? true : _ref$preferExisting;
+  if (!selection || _typeof(selection) !== 'object') return false;
+  var target = {
+    batteryPlate: normalizePowerSelectionString(selection.batteryPlate),
+    battery: normalizePowerSelectionString(selection.battery),
+    batteryHotswap: normalizePowerSelectionString(selection.batteryHotswap)
+  };
+  var shouldOverwriteBattery = !preferExisting || !hasMeaningfulPowerSelection(batterySelect && batterySelect.value);
+  var shouldOverwritePlate = !preferExisting || !hasMeaningfulPowerSelection(batteryPlateSelect && batteryPlateSelect.value);
+  var shouldOverwriteHotswap = !preferExisting || !hasMeaningfulPowerSelection(hotswapSelect && hotswapSelect.value);
+  var matchesTarget = function matchesTarget(select, desired) {
+    if (!select) return false;
+    if (desired === '') {
+      return !select.value || select.value === 'None' || select.selectedIndex === -1;
+    }
+    return select.value === desired;
+  };
+  var anyMatch = false;
+  var anyPending = false;
+  if (batterySelect) {
+    if (target.battery && shouldOverwriteBattery) {
+      assignSelectValue(batterySelect, target.battery);
+      if (matchesTarget(batterySelect, target.battery)) {
+        anyMatch = true;
+      } else {
+        anyPending = true;
+      }
+    } else if (!target.battery && !preferExisting) {
+      assignSelectValue(batterySelect, '');
+      if (matchesTarget(batterySelect, '')) {
+        anyMatch = true;
+      } else {
+        anyPending = true;
+      }
+    } else if (matchesTarget(batterySelect, target.battery)) {
+      anyMatch = true;
+    }
+  }
+  if (batteryPlateSelect) {
+    if (target.batteryPlate && shouldOverwritePlate) {
+      assignSelectValue(batteryPlateSelect, target.batteryPlate);
+      if (matchesTarget(batteryPlateSelect, target.batteryPlate)) {
+        anyMatch = true;
+      } else {
+        anyPending = true;
+      }
+    } else if (!target.batteryPlate && !preferExisting) {
+      assignSelectValue(batteryPlateSelect, '');
+      if (matchesTarget(batteryPlateSelect, '')) {
+        anyMatch = true;
+      } else {
+        anyPending = true;
+      }
+    } else if (matchesTarget(batteryPlateSelect, target.batteryPlate)) {
+      anyMatch = true;
+    }
+  }
+  if (typeof applyBatteryPlateSelectionFromBattery === 'function') {
+    applyBatteryPlateSelectionFromBattery(batterySelect ? batterySelect.value : target.battery, batteryPlateSelect ? batteryPlateSelect.value : target.batteryPlate);
+  }
+  if (hotswapSelect) {
+    if (target.batteryHotswap && shouldOverwriteHotswap) {
+      assignSelectValue(hotswapSelect, target.batteryHotswap);
+      if (matchesTarget(hotswapSelect, target.batteryHotswap)) {
+        anyMatch = true;
+      } else {
+        anyPending = true;
+      }
+    } else if (!target.batteryHotswap && !preferExisting) {
+      assignSelectValue(hotswapSelect, '');
+      if (matchesTarget(hotswapSelect, '')) {
+        anyMatch = true;
+      } else {
+        anyPending = true;
+      }
+    } else if (matchesTarget(hotswapSelect, target.batteryHotswap)) {
+      anyMatch = true;
+    }
+  }
+  return anyPending ? false : anyMatch;
+}
+if (typeof generateOverviewBtn !== 'undefined' && generateOverviewBtn) {
+  generateOverviewBtn.addEventListener('click', function () {
+    if (!setupSelect.value) {
+      alert(texts[currentLang].alertSelectSetupForOverview);
+      return;
+    }
+    generatePrintableOverview({
+      autoPrint: true
+    });
+  });
+}
 function batteryPinsSufficient() {
   var batt = batterySelect && batterySelect.value;
   if (!batt || batt === 'None' || !devices.batteries[batt]) return true;
@@ -97,8 +311,15 @@ if (projectForm) {
   });
 }
 function downloadSharedProject(shareFileName, includeAutoGear) {
+  var _texts;
   if (!shareFileName) return;
   var setupName = getCurrentProjectName();
+  var readPowerSelectValue = function readPowerSelectValue(select) {
+    return select && typeof select.value === 'string' ? normalizePowerSelectionString(select.value) : '';
+  };
+  var normalizedBattery = readPowerSelectValue(batterySelect);
+  var normalizedPlate = readPowerSelectValue(batteryPlateSelect);
+  var normalizedHotswap = readPowerSelectValue(hotswapSelect);
   var currentSetup = {
     setupName: setupName,
     camera: cameraSelect.value,
@@ -112,10 +333,17 @@ function downloadSharedProject(shareFileName, includeAutoGear) {
       return sel.value;
     }),
     distance: distanceSelect.value,
-    batteryPlate: normalizeBatteryPlateValue(batteryPlateSelect.value, batterySelect.value),
-    battery: batterySelect.value,
-    batteryHotswap: hotswapSelect.value
+    batteryPlate: normalizeBatteryPlateValue(normalizedPlate, normalizedBattery),
+    battery: normalizedBattery,
+    batteryHotswap: normalizedHotswap
   };
+  var sharedPowerSelection = getPowerSelectionSnapshot();
+  if (sharedPowerSelection) {
+    currentSetup.powerSelection = sharedPowerSelection;
+    currentSetup.battery = sharedPowerSelection.battery || '';
+    currentSetup.batteryPlate = sharedPowerSelection.batteryPlate || '';
+    currentSetup.batteryHotswap = sharedPowerSelection.batteryHotswap || '';
+  }
   if (typeof getDiagramManualPositions === 'function') {
     var diagramPositions = getDiagramManualPositions();
     if (diagramPositions && Object.keys(diagramPositions).length) {
@@ -216,8 +444,9 @@ function downloadSharedProject(shareFileName, includeAutoGear) {
     }
     return;
   }
+  var successMessage = typeof getLocalizedText === 'function' && getLocalizedText('shareLinkCopied') || ((_texts = texts) === null || _texts === void 0 || (_texts = _texts.en) === null || _texts === void 0 ? void 0 : _texts.shareLinkCopied) || 'Project file downloaded.';
   if (shareLinkMessage) {
-    shareLinkMessage.textContent = texts[currentLang].shareLinkCopied;
+    shareLinkMessage.textContent = successMessage;
     setStatusLevel(shareLinkMessage, 'success');
     shareLinkMessage.classList.remove('hidden');
     if (typeof setTimeout === 'function') {
@@ -225,6 +454,8 @@ function downloadSharedProject(shareFileName, includeAutoGear) {
         return shareLinkMessage.classList.add('hidden');
       }, 4000);
     }
+  } else if (typeof alert === 'function') {
+    alert(successMessage);
   }
 }
 function handleShareSetupClick() {
@@ -387,55 +618,88 @@ function handleSharedImportDialogCancel(event) {
 if (sharedImportDialog) {
   sharedImportDialog.addEventListener('cancel', handleSharedImportDialogCancel);
 }
-if (setupsCineUi) {
-  try {
-    if (setupsCineUi.controllers && typeof setupsCineUi.controllers.register === 'function') {
-      setupsCineUi.controllers.register('shareDialog', {
-        open: handleShareSetupClick,
-        submit: handleShareFormSubmit,
-        cancel: handleShareCancelClick,
-        dismiss: handleShareDialogCancel
-      });
-      setupsCineUi.controllers.register('sharedImportDialog', {
-        submit: handleSharedImportSubmit,
-        cancel: handleSharedImportCancel,
-        dismiss: handleSharedImportDialogCancel,
-        changeMode: handleSharedImportModeChange
-      });
-    }
-  } catch (error) {
-    console.warn('cineUi controller registration (setups) failed', error);
-  }
-  try {
-    if (setupsCineUi.interactions && typeof setupsCineUi.interactions.register === 'function') {
-      setupsCineUi.interactions.register('shareOpen', handleShareSetupClick);
-      setupsCineUi.interactions.register('shareSubmit', handleShareFormSubmit);
-      setupsCineUi.interactions.register('shareCancel', handleShareCancelClick);
-      setupsCineUi.interactions.register('shareApplyFile', handleApplySharedLinkClick);
-      setupsCineUi.interactions.register('shareInputChange', handleSharedLinkInputChange);
-      setupsCineUi.interactions.register('sharedImportSubmit', handleSharedImportSubmit);
-      setupsCineUi.interactions.register('sharedImportCancel', handleSharedImportCancel);
-    }
-  } catch (error) {
-    console.warn('cineUi interaction registration (setups) failed', error);
-  }
-  try {
-    if (setupsCineUi.help && typeof setupsCineUi.help.register === 'function') {
-      setupsCineUi.help.register('shareProject', function () {
-        var langTexts = texts[currentLang] || {};
-        var fallbackTexts = texts.en || {};
-        return langTexts.shareSetupHelp || fallbackTexts.shareSetupHelp || 'Download a JSON file of the current project to share with others.';
-      });
-      setupsCineUi.help.register('sharedImport', function () {
-        var langTexts = texts[currentLang] || {};
-        var fallbackTexts = texts.en || {};
-        return langTexts.applySharedLinkHelp || fallbackTexts.applySharedLinkHelp || 'Load the configuration from the selected project file.';
-      });
-    }
-  } catch (error) {
-    console.warn('cineUi help registration (setups) failed', error);
-  }
+function getSafeLanguageTexts() {
+  var scope = typeof globalThis !== 'undefined' && globalThis || typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || typeof global !== 'undefined' && global || null;
+  var allTexts = typeof texts !== 'undefined' && texts || (scope && _typeof(scope.texts) === 'object' ? scope.texts : null);
+  var resolvedLang = typeof currentLang === 'string' && allTexts && _typeof(allTexts[currentLang]) === 'object' ? currentLang : 'en';
+  var langTexts = allTexts && _typeof(allTexts[resolvedLang]) === 'object' && allTexts[resolvedLang] || {};
+  var fallbackTexts = allTexts && _typeof(allTexts.en) === 'object' && allTexts.en || {};
+  return {
+    langTexts: langTexts,
+    fallbackTexts: fallbackTexts
+  };
 }
+function registerSetupsCineUiInternal(cineUi) {
+  if (!cineUi || setupsCineUiRegistered) {
+    return;
+  }
+  registerCineUiEntries(cineUi.controllers, [{
+    name: 'shareDialog',
+    value: {
+      open: handleShareSetupClick,
+      submit: handleShareFormSubmit,
+      cancel: handleShareCancelClick,
+      dismiss: handleShareDialogCancel
+    }
+  }, {
+    name: 'sharedImportDialog',
+    value: {
+      submit: handleSharedImportSubmit,
+      cancel: handleSharedImportCancel,
+      dismiss: handleSharedImportDialogCancel,
+      changeMode: handleSharedImportModeChange
+    }
+  }], 'cineUi controller registration (setups) failed');
+  registerCineUiEntries(cineUi.interactions, [{
+    name: 'shareOpen',
+    value: handleShareSetupClick
+  }, {
+    name: 'shareSubmit',
+    value: handleShareFormSubmit
+  }, {
+    name: 'shareCancel',
+    value: handleShareCancelClick
+  }, {
+    name: 'shareApplyFile',
+    value: handleApplySharedLinkClick
+  }, {
+    name: 'shareInputChange',
+    value: handleSharedLinkInputChange
+  }, {
+    name: 'sharedImportSubmit',
+    value: handleSharedImportSubmit
+  }, {
+    name: 'sharedImportCancel',
+    value: handleSharedImportCancel
+  }], 'cineUi interaction registration (setups) failed');
+  registerCineUiEntries(cineUi.help, [{
+    name: 'shareProject',
+    value: function value() {
+      var _getSafeLanguageTexts = getSafeLanguageTexts(),
+        langTexts = _getSafeLanguageTexts.langTexts,
+        fallbackTexts = _getSafeLanguageTexts.fallbackTexts;
+      return langTexts.shareSetupHelp || fallbackTexts.shareSetupHelp || 'Download a JSON file of the current project to share with others.';
+    }
+  }, {
+    name: 'sharedImport',
+    value: function value() {
+      var _getSafeLanguageTexts2 = getSafeLanguageTexts(),
+        langTexts = _getSafeLanguageTexts2.langTexts,
+        fallbackTexts = _getSafeLanguageTexts2.fallbackTexts;
+      return langTexts.applySharedLinkHelp || fallbackTexts.applySharedLinkHelp || 'Load the configuration from the selected project file.';
+    }
+  }], 'cineUi help registration (setups) failed');
+  setupsCineUiRegistered = areSetupsEntriesRegistered(cineUi);
+}
+function registerSetupsCineUi() {
+  var cineUi = typeof globalThis !== 'undefined' && globalThis.cineUi || typeof window !== 'undefined' && window.cineUi || typeof self !== 'undefined' && self.cineUi || null;
+  if (!cineUi) {
+    return false;
+  }
+  registerSetupsCineUiInternal(cineUi);
+  return true;
+}
+registerSetupsCineUi();
 if (runtimeFeedbackBtn && feedbackDialog && feedbackForm) {
   runtimeFeedbackBtn.addEventListener('click', function () {
     var _devices, _cam$resolutions, _cam$recordingCodecs;
@@ -526,10 +790,10 @@ if (runtimeFeedbackBtn && feedbackDialog && feedbackForm) {
     feedback[key].push(entry);
     saveFeedbackSafe(feedback);
     var lines = [];
-    Object.entries(entry).forEach(function (_ref) {
-      var _ref2 = _slicedToArray(_ref, 2),
-        k = _ref2[0],
-        v = _ref2[1];
+    Object.entries(entry).forEach(function (_ref2) {
+      var _ref3 = _slicedToArray(_ref2, 2),
+        k = _ref3[0],
+        v = _ref3[1];
       lines.push("".concat(k, ": ").concat(v));
     });
     var subject = encodeURIComponent('Cine Power Planner Runtime Feedback');
@@ -559,10 +823,10 @@ function connectorBlocks(items, icon) {
   var dir = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : '';
   if (!Array.isArray(items) || items.length === 0) return '';
   var counts = summarizeByType(items);
-  var entries = Object.entries(counts).map(function (_ref3) {
-    var _ref4 = _slicedToArray(_ref3, 2),
-      type = _ref4[0],
-      count = _ref4[1];
+  var entries = Object.entries(counts).map(function (_ref4) {
+    var _ref5 = _slicedToArray(_ref4, 2),
+      type = _ref5[0],
+      count = _ref5[1];
     return "".concat(escapeHtml(type)).concat(count > 1 ? " \xD7".concat(count) : '');
   });
   if (!entries.length) return '';
@@ -954,11 +1218,11 @@ function suggestArriFizCables() {
 }
 function collectAccessories() {
   var _acc$cables, _acc$cables2;
-  var _ref5 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-    _ref5$hasMotor = _ref5.hasMotor,
-    hasMotor = _ref5$hasMotor === void 0 ? false : _ref5$hasMotor,
-    _ref5$videoDistPrefs = _ref5.videoDistPrefs,
-    videoDistPrefs = _ref5$videoDistPrefs === void 0 ? [] : _ref5$videoDistPrefs;
+  var _ref6 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+    _ref6$hasMotor = _ref6.hasMotor,
+    hasMotor = _ref6$hasMotor === void 0 ? false : _ref6$hasMotor,
+    _ref6$videoDistPrefs = _ref6.videoDistPrefs,
+    videoDistPrefs = _ref6$videoDistPrefs === void 0 ? [] : _ref6$videoDistPrefs;
   var cameraSupport = [];
   var misc = [];
   var monitoringSupport = [];
@@ -1439,10 +1703,10 @@ function populateProjectForm() {
     return t.type;
   }));
   renderFilterDetails();
-  filterTokens.forEach(function (_ref6) {
-    var type = _ref6.type,
-      size = _ref6.size,
-      values = _ref6.values;
+  filterTokens.forEach(function (_ref7) {
+    var type = _ref7.type,
+      size = _ref7.size,
+      values = _ref7.values;
     var sizeSel = document.getElementById("filter-size-".concat(filterId(type)));
     if (sizeSel) sizeSel.value = size;
     var valSel = document.getElementById("filter-values-".concat(filterId(type)));
@@ -1980,9 +2244,9 @@ function mergeAutoGearSpanContextNotes(span, contexts, quantity) {
 function renderAutoGearSpanContextNotes(span) {
   if (!span) return;
   var map = getAutoGearSpanContextMap(span);
-  var entries = Array.from(map.entries()).filter(function (_ref7) {
-    var _ref8 = _slicedToArray(_ref7, 2),
-      count = _ref8[1];
+  var entries = Array.from(map.entries()).filter(function (_ref8) {
+    var _ref9 = _slicedToArray(_ref8, 2),
+      count = _ref9[1];
     return Number.isFinite(count) && count > 0;
   });
   var contextNode = span.querySelector('.auto-gear-context-notes');
@@ -1992,22 +2256,22 @@ function renderAutoGearSpanContextNotes(span) {
     }
     return;
   }
-  var parts = entries.sort(function (_ref9, _ref0) {
+  var parts = entries.sort(function (_ref0, _ref1) {
     var _AUTO_GEAR_CONTEXT_SO, _AUTO_GEAR_CONTEXT_SO2;
-    var _ref1 = _slicedToArray(_ref9, 1),
-      a = _ref1[0];
     var _ref10 = _slicedToArray(_ref0, 1),
-      b = _ref10[0];
+      a = _ref10[0];
+    var _ref11 = _slicedToArray(_ref1, 1),
+      b = _ref11[0];
     var pa = (_AUTO_GEAR_CONTEXT_SO = AUTO_GEAR_CONTEXT_SORT_PRIORITY.get(a.trim().toLowerCase())) !== null && _AUTO_GEAR_CONTEXT_SO !== void 0 ? _AUTO_GEAR_CONTEXT_SO : Number.POSITIVE_INFINITY;
     var pb = (_AUTO_GEAR_CONTEXT_SO2 = AUTO_GEAR_CONTEXT_SORT_PRIORITY.get(b.trim().toLowerCase())) !== null && _AUTO_GEAR_CONTEXT_SO2 !== void 0 ? _AUTO_GEAR_CONTEXT_SO2 : Number.POSITIVE_INFINITY;
     if (pa !== pb) return pa - pb;
     return a.localeCompare(b, undefined, {
       sensitivity: 'base'
     });
-  }).map(function (_ref11) {
-    var _ref12 = _slicedToArray(_ref11, 2),
-      note = _ref12[0],
-      count = _ref12[1];
+  }).map(function (_ref12) {
+    var _ref13 = _slicedToArray(_ref12, 2),
+      note = _ref13[0],
+      count = _ref13[1];
     return "".concat(count, "x ").concat(note);
   });
   var text = " (".concat(parts.join(', '), ")");
@@ -2385,6 +2649,18 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
   var normalizedMonitorSelection = normalizeAutoGearTriggerValue(rawMonitorSelection);
   var rawWirelessSelection = info && typeof info.wirelessSelection === 'string' ? info.wirelessSelection.trim() : '';
   var normalizedWirelessSelection = normalizeAutoGearTriggerValue(rawWirelessSelection);
+  var rawTripodHeadBrand = info && typeof info.tripodHeadBrand === 'string' ? info.tripodHeadBrand.trim() : '';
+  var normalizedTripodHeadBrand = normalizeAutoGearTriggerValue(rawTripodHeadBrand);
+  var rawTripodBowl = info && typeof info.tripodBowl === 'string' ? info.tripodBowl.trim() : '';
+  var normalizedTripodBowl = normalizeAutoGearTriggerValue(rawTripodBowl);
+  var tripodTypeValues = Array.isArray(info === null || info === void 0 ? void 0 : info.tripodTypes) ? info.tripodTypes : typeof (info === null || info === void 0 ? void 0 : info.tripodTypes) === 'string' ? info.tripodTypes.split(',').map(function (s) {
+    return s.trim();
+  }).filter(Boolean) : [];
+  var normalizedTripodTypesSet = new Set(tripodTypeValues.map(function (value) {
+    return normalizeAutoGearTriggerValue(value);
+  }).filter(Boolean));
+  var rawTripodSpreader = info && typeof info.tripodSpreader === 'string' ? info.tripodSpreader.trim() : '';
+  var normalizedTripodSpreader = normalizeAutoGearTriggerValue(rawTripodSpreader);
   var crewRoleSet = new Set(Array.isArray(info === null || info === void 0 ? void 0 : info.people) ? info.people.map(function (entry) {
     return entry && typeof entry.role === 'string' ? entry.role.trim() : '';
   }).filter(Boolean).map(function (value) {
@@ -2514,51 +2790,85 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
       if (!normalizedMonitorSelection) return false;
       if (!_normalizedTargets2.includes(normalizedMonitorSelection)) return false;
     }
+    var tripodHeadList = Array.isArray(rule.tripodHeadBrand) ? rule.tripodHeadBrand.filter(Boolean) : [];
+    if (tripodHeadList.length) {
+      var _normalizedTargets3 = tripodHeadList.map(normalizeAutoGearTriggerValue).filter(Boolean);
+      if (!_normalizedTargets3.length) return false;
+      if (!normalizedTripodHeadBrand) return false;
+      if (!_normalizedTargets3.includes(normalizedTripodHeadBrand)) return false;
+    }
+    var tripodBowlList = Array.isArray(rule.tripodBowl) ? rule.tripodBowl.filter(Boolean) : [];
+    if (tripodBowlList.length) {
+      var _normalizedTargets4 = tripodBowlList.map(normalizeAutoGearTriggerValue).filter(Boolean);
+      if (!_normalizedTargets4.length) return false;
+      if (!normalizedTripodBowl) return false;
+      if (!_normalizedTargets4.includes(normalizedTripodBowl)) return false;
+    }
+    var tripodTypesList = Array.isArray(rule.tripodTypes) ? rule.tripodTypes.filter(Boolean) : [];
+    if (tripodTypesList.length) {
+      var _normalizedTargets5 = tripodTypesList.map(normalizeAutoGearTriggerValue).filter(Boolean);
+      if (!_normalizedTargets5.length) return false;
+      if (!_normalizedTargets5.every(function (target) {
+        return normalizedTripodTypesSet.has(target);
+      })) return false;
+    }
+    var tripodSpreaderList = Array.isArray(rule.tripodSpreader) ? rule.tripodSpreader.filter(Boolean) : [];
+    if (tripodSpreaderList.length) {
+      var _normalizedTargets6 = tripodSpreaderList.map(normalizeAutoGearTriggerValue).filter(Boolean);
+      if (!_normalizedTargets6.length) return false;
+      if (!normalizedTripodSpreader) return false;
+      if (!_normalizedTargets6.includes(normalizedTripodSpreader)) return false;
+    }
     var crewPresentList = Array.isArray(rule.crewPresent) ? rule.crewPresent.filter(Boolean) : [];
     if (crewPresentList.length) {
-      var _normalizedTargets3 = crewPresentList.map(normalizeAutoGearTriggerValue).filter(Boolean);
-      if (!_normalizedTargets3.length) return false;
-      if (!_normalizedTargets3.every(function (target) {
+      var _normalizedTargets7 = crewPresentList.map(normalizeAutoGearTriggerValue).filter(Boolean);
+      if (!_normalizedTargets7.length) return false;
+      if (!_normalizedTargets7.every(function (target) {
         return crewRoleSet.has(target);
       })) return false;
     }
     var crewAbsentList = Array.isArray(rule.crewAbsent) ? rule.crewAbsent.filter(Boolean) : [];
     if (crewAbsentList.length) {
-      var _normalizedTargets4 = crewAbsentList.map(normalizeAutoGearTriggerValue).filter(Boolean);
-      if (!_normalizedTargets4.length) return false;
-      if (_normalizedTargets4.some(function (target) {
+      var _normalizedTargets8 = crewAbsentList.map(normalizeAutoGearTriggerValue).filter(Boolean);
+      if (!_normalizedTargets8.length) return false;
+      if (_normalizedTargets8.some(function (target) {
         return crewRoleSet.has(target);
       })) return false;
     }
     var wirelessList = Array.isArray(rule.wireless) ? rule.wireless.filter(Boolean) : [];
     if (wirelessList.length) {
-      var _normalizedTargets5 = wirelessList.map(normalizeAutoGearTriggerValue).filter(Boolean);
-      if (!_normalizedTargets5.length) return false;
+      var _normalizedTargets9 = wirelessList.map(normalizeAutoGearTriggerValue).filter(Boolean);
+      if (!_normalizedTargets9.length) return false;
       if (!normalizedWirelessSelection) return false;
-      if (!_normalizedTargets5.includes(normalizedWirelessSelection)) return false;
+      if (!_normalizedTargets9.includes(normalizedWirelessSelection)) return false;
     }
     var motorsList = Array.isArray(rule.motors) ? rule.motors.filter(Boolean) : [];
     if (motorsList.length) {
-      var _normalizedTargets6 = motorsList.map(normalizeAutoGearTriggerValue).filter(Boolean);
-      if (!_normalizedTargets6.length) return false;
-      if (!_normalizedTargets6.every(function (target) {
+      var _normalizedTargets0 = motorsList.map(normalizeAutoGearTriggerValue).filter(Boolean);
+      if (!_normalizedTargets0.length) return false;
+      var requiresAnyMotor = _normalizedTargets0.includes(AUTO_GEAR_ANY_MOTOR_TOKEN_FALLBACK);
+      var specificTargets = _normalizedTargets0.filter(function (target) {
+        return target !== AUTO_GEAR_ANY_MOTOR_TOKEN_FALLBACK;
+      });
+      if (requiresAnyMotor && normalizedMotorSet.size === 0) return false;
+      if (specificTargets.length && !specificTargets.every(function (target) {
         return normalizedMotorSet.has(target);
       })) return false;
     }
     var controllersList = Array.isArray(rule.controllers) ? rule.controllers.filter(Boolean) : [];
     if (controllersList.length) {
-      var _normalizedTargets7 = controllersList.map(normalizeAutoGearTriggerValue).filter(Boolean);
-      if (!_normalizedTargets7.length) return false;
-      if (!_normalizedTargets7.every(function (target) {
+      var _normalizedTargets1 = controllersList.map(normalizeAutoGearTriggerValue).filter(Boolean);
+      if (!_normalizedTargets1.length) return false;
+      if (!_normalizedTargets1.every(function (target) {
         return normalizedControllerSet.has(target);
       })) return false;
     }
     var distanceList = Array.isArray(rule.distance) ? rule.distance.filter(Boolean) : [];
     if (distanceList.length) {
-      var _normalizedTargets8 = distanceList.map(normalizeAutoGearTriggerValue).filter(Boolean);
-      if (!_normalizedTargets8.length) return false;
+      var _normalizedTargets10 = distanceList.map(normalizeAutoGearTriggerValue).filter(Boolean);
+      if (!_normalizedTargets10.length) return false;
       if (!normalizedDistanceSelection) return false;
-      if (!_normalizedTargets8.includes(normalizedDistanceSelection)) return false;
+      if (!_normalizedTargets10.includes(normalizedDistanceSelection)) return false;
     }
     var shootingCondition = normalizeAutoGearShootingDaysCondition(rule.shootingDays);
     if (shootingCondition && Number.isFinite(shootingCondition.value) && shootingCondition.value > 0) {
@@ -2575,37 +2885,37 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
     }
     var cameraHandleList = Array.isArray(rule.cameraHandle) ? rule.cameraHandle.filter(Boolean) : [];
     if (cameraHandleList.length) {
-      var _normalizedTargets9 = cameraHandleList.map(normalizeAutoGearTriggerValue).filter(Boolean);
-      if (!_normalizedTargets9.length) return false;
-      if (!_normalizedTargets9.every(function (target) {
+      var _normalizedTargets11 = cameraHandleList.map(normalizeAutoGearTriggerValue).filter(Boolean);
+      if (!_normalizedTargets11.length) return false;
+      if (!_normalizedTargets11.every(function (target) {
         return cameraHandleSet.has(target);
       })) return false;
     }
     var viewfinderList = Array.isArray(rule.viewfinderExtension) ? rule.viewfinderExtension.filter(Boolean) : [];
     if (viewfinderList.length) {
-      var _normalizedTargets0 = viewfinderList.map(function (value) {
+      var _normalizedTargets12 = viewfinderList.map(function (value) {
         return normalizeAutoGearTriggerValue(value);
       }).filter(Boolean);
-      if (!_normalizedTargets0.length) return false;
+      if (!_normalizedTargets12.length) return false;
       if (!normalizedViewfinderExtension) return false;
-      if (!_normalizedTargets0.includes(normalizedViewfinderExtension)) return false;
+      if (!_normalizedTargets12.includes(normalizedViewfinderExtension)) return false;
     }
     var deliveryList = Array.isArray(rule.deliveryResolution) ? rule.deliveryResolution.filter(Boolean) : [];
     if (deliveryList.length) {
-      var _normalizedTargets1 = deliveryList.map(normalizeAutoGearTriggerValue).filter(Boolean);
-      if (!_normalizedTargets1.length) return false;
+      var _normalizedTargets13 = deliveryList.map(normalizeAutoGearTriggerValue).filter(Boolean);
+      if (!_normalizedTargets13.length) return false;
       if (!normalizedDeliveryResolution) return false;
-      if (!_normalizedTargets1.includes(normalizedDeliveryResolution)) return false;
+      if (!_normalizedTargets13.includes(normalizedDeliveryResolution)) return false;
     }
     var videoDistList = Array.isArray(rule.videoDistribution) ? rule.videoDistribution.filter(Boolean) : [];
     if (videoDistList.length) {
-      var _normalizedTargets10 = videoDistList.map(function (value) {
+      var _normalizedTargets14 = videoDistList.map(function (value) {
         return normalizeVideoDistributionOptionValue(value);
       }).map(function (value) {
         return value === '__none__' ? '' : normalizeAutoGearTriggerValue(value);
       }).filter(Boolean);
-      if (!_normalizedTargets10.length) return false;
-      if (!_normalizedTargets10.every(function (target) {
+      if (!_normalizedTargets14.length) return false;
+      if (!_normalizedTargets14.every(function (target) {
         return videoDistributionSet.has(target);
       })) return false;
     }
@@ -2616,8 +2926,8 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
   });
   if (!triggeredEntries.length) return tableHtml;
   if (normalizedMattebox) {
-    var filtered = triggeredEntries.filter(function (_ref13) {
-      var rule = _ref13.rule;
+    var filtered = triggeredEntries.filter(function (_ref14) {
+      var rule = _ref14.rule;
       if (!touchesMatteboxCategory(rule)) return true;
       var matteboxList = Array.isArray(rule.mattebox) ? rule.mattebox.filter(Boolean) : [];
       if (!matteboxList.length) return false;
@@ -2635,9 +2945,9 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
   container.innerHTML = tableHtml;
   var table = container.querySelector('.gear-table');
   if (!table) return tableHtml;
-  triggeredEntries.forEach(function (_ref14) {
-    var rule = _ref14.rule,
-      multiplier = _ref14.multiplier;
+  triggeredEntries.forEach(function (_ref15) {
+    var rule = _ref15.rule,
+      multiplier = _ref15.multiplier;
     var effectiveMultiplier = Math.max(1, Math.round(Number.isFinite(multiplier) ? multiplier : 1));
     rule.remove.forEach(function (item) {
       var remaining = normalizeAutoGearQuantity(item.quantity) * effectiveMultiplier;
@@ -2913,9 +3223,6 @@ function generateGearListHtml() {
   largeMonitorPrefs.forEach(function (p) {
     return addLargeMonitorCables("".concat(p.role, " 15-21\""));
   });
-  if (hasMotor) {
-    monitoringSupportAcc.push('D-Tap to Mini XLR 3-pin Cable 0,3m (Focus)', 'D-Tap to Mini XLR 3-pin Cable 0,3m (Focus)', 'Ultraslim BNC Cable 0.3 m (Focus)', 'Ultraslim BNC Cable 0.3 m (Focus)');
-  }
   var handleName = 'SHAPE Telescopic Handle ARRI Rosette Kit 12"';
   var addHandle = function addHandle() {
     if (!supportAccNoCages.includes(handleName)) {
@@ -3006,16 +3313,16 @@ function generateGearListHtml() {
   var projectLabels = ((_texts$currentLang3 = texts[currentLang]) === null || _texts$currentLang3 === void 0 ? void 0 : _texts$currentLang3.projectFields) || ((_texts$en6 = texts.en) === null || _texts$en6 === void 0 ? void 0 : _texts$en6.projectFields) || {};
   var projectFormTexts = ((_texts$currentLang4 = texts[currentLang]) === null || _texts$currentLang4 === void 0 ? void 0 : _texts$currentLang4.projectForm) || ((_texts$en7 = texts.en) === null || _texts$en7 === void 0 ? void 0 : _texts$en7.projectForm) || {};
   var excludedFields = new Set(['cameraHandle', 'viewfinderExtension', 'mattebox', 'videoDistribution', 'monitoringConfiguration', 'focusMonitor', 'tripodHeadBrand', 'tripodBowl', 'tripodTypes', 'tripodSpreader', 'sliderBowl', 'easyrig', 'lenses', 'viewfinderSettings', 'frameGuides', 'aspectMaskOpacity', 'filter', 'viewfinderEyeLeatherColor', 'directorMonitor', 'dopMonitor', 'gafferMonitor', 'directorMonitor15', 'comboMonitor15', 'dopMonitor15', 'proGaffColor1', 'proGaffWidth1', 'proGaffColor2', 'proGaffWidth2']);
-  var infoEntries = Object.entries(projectInfo).filter(function (_ref15) {
-    var _ref16 = _slicedToArray(_ref15, 2),
-      k = _ref16[0],
-      v = _ref16[1];
+  var infoEntries = Object.entries(projectInfo).filter(function (_ref16) {
+    var _ref17 = _slicedToArray(_ref16, 2),
+      k = _ref17[0],
+      v = _ref17[1];
     return v && k !== 'projectName' && !excludedFields.has(k) && !k.endsWith('Manual');
   });
-  var boxesHtml = infoEntries.length ? '<div class="requirements-grid">' + infoEntries.map(function (_ref17) {
-    var _ref18 = _slicedToArray(_ref17, 2),
-      k = _ref18[0],
-      v = _ref18[1];
+  var boxesHtml = infoEntries.length ? '<div class="requirements-grid">' + infoEntries.map(function (_ref18) {
+    var _ref19 = _slicedToArray(_ref18, 2),
+      k = _ref19[0],
+      v = _ref19[1];
     var value = formatRequirementValue(v);
     var label = projectLabels[k] || k;
     var iconHtml = iconMarkup(projectFieldIcons[k], {
@@ -3046,21 +3353,21 @@ function generateGearListHtml() {
       var current = counts[base].ctxCounts[ctx] || 0;
       counts[base].ctxCounts[ctx] = current + (Number.isFinite(quantity) && quantity > 0 ? quantity : 1);
     });
-    return Object.entries(counts).sort(function (_ref19, _ref20) {
-      var _ref21 = _slicedToArray(_ref19, 1),
-        a = _ref21[0];
+    return Object.entries(counts).sort(function (_ref20, _ref21) {
       var _ref22 = _slicedToArray(_ref20, 1),
-        b = _ref22[0];
+        a = _ref22[0];
+      var _ref23 = _slicedToArray(_ref21, 1),
+        b = _ref23[0];
       return a.localeCompare(b, undefined, {
         sensitivity: 'base'
       });
-    }).map(function (_ref23) {
+    }).map(function (_ref24) {
       var _gearItemTranslations;
-      var _ref24 = _slicedToArray(_ref23, 2),
-        base = _ref24[0],
-        _ref24$ = _ref24[1],
-        total = _ref24$.total,
-        ctxCounts = _ref24$.ctxCounts;
+      var _ref25 = _slicedToArray(_ref24, 2),
+        base = _ref25[0],
+        _ref25$ = _ref25[1],
+        total = _ref25$.total,
+        ctxCounts = _ref25$.ctxCounts;
       var ctxKeys = Object.keys(ctxCounts);
       var hasContext = ctxKeys.some(function (c) {
         return c;
@@ -3068,41 +3375,41 @@ function generateGearListHtml() {
       var ctxParts = [];
       if (hasContext) {
         if (base === 'sand bag') {
-          var realEntries = Object.entries(ctxCounts).filter(function (_ref25) {
-            var _ref26 = _slicedToArray(_ref25, 1),
-              c = _ref26[0];
+          var realEntries = Object.entries(ctxCounts).filter(function (_ref26) {
+            var _ref27 = _slicedToArray(_ref26, 1),
+              c = _ref27[0];
             return c && c.toLowerCase() !== 'spare';
-          }).sort(function (_ref27, _ref28) {
-            var _ref29 = _slicedToArray(_ref27, 1),
-              a = _ref29[0];
+          }).sort(function (_ref28, _ref29) {
             var _ref30 = _slicedToArray(_ref28, 1),
-              b = _ref30[0];
+              a = _ref30[0];
+            var _ref31 = _slicedToArray(_ref29, 1),
+              b = _ref31[0];
             return a.localeCompare(b, undefined, {
               sensitivity: 'base'
             });
           });
-          var usedCount = realEntries.reduce(function (sum, _ref31) {
-            var _ref32 = _slicedToArray(_ref31, 2),
-              count = _ref32[1];
+          var usedCount = realEntries.reduce(function (sum, _ref32) {
+            var _ref33 = _slicedToArray(_ref32, 2),
+              count = _ref33[1];
             return sum + count;
           }, 0);
           var spareCount = total - usedCount;
-          ctxParts = realEntries.map(function (_ref33) {
-            var _ref34 = _slicedToArray(_ref33, 2),
-              c = _ref34[0],
-              count = _ref34[1];
+          ctxParts = realEntries.map(function (_ref34) {
+            var _ref35 = _slicedToArray(_ref34, 2),
+              c = _ref35[0],
+              count = _ref35[1];
             return "".concat(count, "x ").concat(c);
           });
           if (spareCount > 0) ctxParts.push("".concat(spareCount, "x Spare"));
         } else if (base.startsWith('Bebob ')) {
-          var _realEntries = Object.entries(ctxCounts).filter(function (_ref35) {
-            var _ref36 = _slicedToArray(_ref35, 1),
-              c = _ref36[0];
+          var _realEntries = Object.entries(ctxCounts).filter(function (_ref36) {
+            var _ref37 = _slicedToArray(_ref36, 1),
+              c = _ref37[0];
             return c && c.toLowerCase() !== 'spare';
-          }).map(function (_ref37) {
-            var _ref38 = _slicedToArray(_ref37, 2),
-              c = _ref38[0],
-              count = _ref38[1];
+          }).map(function (_ref38) {
+            var _ref39 = _slicedToArray(_ref38, 2),
+              c = _ref39[0],
+              count = _ref39[1];
             var qtyMatch = c.match(/^(\d+)x\s+(.*)$/i);
             if (qtyMatch) {
               var _qtyMatch = _slicedToArray(qtyMatch, 3),
@@ -3114,63 +3421,63 @@ function generateGearListHtml() {
               }
             }
             return [c, count];
-          }).sort(function (_ref39, _ref40) {
-            var _ref41 = _slicedToArray(_ref39, 1),
-              a = _ref41[0];
+          }).sort(function (_ref40, _ref41) {
             var _ref42 = _slicedToArray(_ref40, 1),
-              b = _ref42[0];
+              a = _ref42[0];
+            var _ref43 = _slicedToArray(_ref41, 1),
+              b = _ref43[0];
             return a.localeCompare(b, undefined, {
               sensitivity: 'base'
             });
           });
-          var _usedCount = _realEntries.reduce(function (sum, _ref43) {
-            var _ref44 = _slicedToArray(_ref43, 2),
-              count = _ref44[1];
+          var _usedCount = _realEntries.reduce(function (sum, _ref44) {
+            var _ref45 = _slicedToArray(_ref44, 2),
+              count = _ref45[1];
             return sum + count;
           }, 0);
           var _spareCount = total - _usedCount;
-          ctxParts = _realEntries.map(function (_ref45) {
-            var _ref46 = _slicedToArray(_ref45, 2),
-              c = _ref46[0],
-              count = _ref46[1];
+          ctxParts = _realEntries.map(function (_ref46) {
+            var _ref47 = _slicedToArray(_ref46, 2),
+              c = _ref47[0],
+              count = _ref47[1];
             return "".concat(count, "x ").concat(c);
           });
           if (_spareCount > 0) ctxParts.push("".concat(_spareCount, "x Spare"));
         } else {
-          var _realEntries2 = Object.entries(ctxCounts).filter(function (_ref47) {
-            var _ref48 = _slicedToArray(_ref47, 1),
-              c = _ref48[0];
+          var _realEntries2 = Object.entries(ctxCounts).filter(function (_ref48) {
+            var _ref49 = _slicedToArray(_ref48, 1),
+              c = _ref49[0];
             return c && c.toLowerCase() !== 'spare';
-          }).sort(function (_ref49, _ref50) {
-            var _ref51 = _slicedToArray(_ref49, 1),
-              a = _ref51[0];
+          }).sort(function (_ref50, _ref51) {
             var _ref52 = _slicedToArray(_ref50, 1),
-              b = _ref52[0];
+              a = _ref52[0];
+            var _ref53 = _slicedToArray(_ref51, 1),
+              b = _ref53[0];
             return a.localeCompare(b, undefined, {
               sensitivity: 'base'
             });
           });
-          ctxParts = _realEntries2.map(function (_ref53) {
-            var _ref54 = _slicedToArray(_ref53, 2),
-              c = _ref54[0],
-              count = _ref54[1];
+          ctxParts = _realEntries2.map(function (_ref54) {
+            var _ref55 = _slicedToArray(_ref54, 2),
+              c = _ref55[0],
+              count = _ref55[1];
             return "".concat(count, "x ").concat(c);
           });
-          var _spareCount2 = Object.entries(ctxCounts).filter(function (_ref55) {
-            var _ref56 = _slicedToArray(_ref55, 1),
-              c = _ref56[0];
+          var _spareCount2 = Object.entries(ctxCounts).filter(function (_ref56) {
+            var _ref57 = _slicedToArray(_ref56, 1),
+              c = _ref57[0];
             return c && c.toLowerCase() === 'spare';
-          }).reduce(function (sum, _ref57) {
-            var _ref58 = _slicedToArray(_ref57, 2),
-              count = _ref58[1];
+          }).reduce(function (sum, _ref58) {
+            var _ref59 = _slicedToArray(_ref58, 2),
+              count = _ref59[1];
             return sum + count;
           }, 0);
           if (_spareCount2 > 0) {
             ctxParts.push("".concat(_spareCount2, "x Spare"));
           } else if (base === 'D-Tap Extension 50 cm') {
-            var _usedCount2 = _realEntries2.reduce(function (sum, _ref59) {
-              var _ref60 = _slicedToArray(_ref59, 2),
-                count = _ref60[1];
+            var _usedCount2 = _realEntries2.reduce(function (sum, _ref60) {
+              var _ref61 = _slicedToArray(_ref60, 2),
+                count = _ref61[1];
               return sum + count;
             }, 0);
             var remaining = total - _usedCount2;
@@ -3246,7 +3553,7 @@ function generateGearListHtml() {
   }
   addRow('Media', mediaItems);
   var lensDisplayNames = selectedLensNames.map(function (name) {
-    var _ref61, _lens$minFocusMeters;
+    var _ref62, _lens$minFocusMeters;
     var lens = devices.lenses && devices.lenses[name];
     var base = addArriKNumber(name);
     if (!lens) return base;
@@ -3257,7 +3564,7 @@ function generateGearListHtml() {
     } else if (lens.clampOn === false) {
       attrs.push('no clamp-on');
     }
-    var minFocus = (_ref61 = (_lens$minFocusMeters = lens.minFocusMeters) !== null && _lens$minFocusMeters !== void 0 ? _lens$minFocusMeters : lens.minFocus) !== null && _ref61 !== void 0 ? _ref61 : lens.minFocusCm ? lens.minFocusCm / 100 : null;
+    var minFocus = (_ref62 = (_lens$minFocusMeters = lens.minFocusMeters) !== null && _lens$minFocusMeters !== void 0 ? _lens$minFocusMeters : lens.minFocus) !== null && _ref62 !== void 0 ? _ref62 : lens.minFocusCm ? lens.minFocusCm / 100 : null;
     if (minFocus) attrs.push("".concat(minFocus, "m min focus"));
     return attrs.length ? "".concat(base, " (").concat(attrs.join(', '), ")") : base;
   });
@@ -3389,9 +3696,9 @@ function generateGearListHtml() {
     var sizeHtml = size ? "".concat(size, "&quot; - ") : '';
     monitoringItems += (monitoringItems ? '<br>' : '') + "1x <strong>Onboard Monitor</strong> - ".concat(sizeHtml).concat(escapeHtml(addArriKNumber(selectedNames.monitor)), " - incl. Sunhood");
   }
-  handheldPrefs.forEach(function (_ref62) {
-    var role = _ref62.role,
-      size = _ref62.size;
+  handheldPrefs.forEach(function (_ref63) {
+    var role = _ref63.role,
+      size = _ref63.size;
     var monitorsDb = devices && devices.monitors ? devices.monitors : {};
     var names = Object.keys(monitorsDb).filter(function (n) {
       return !monitorsDb[n].wirelessTx || monitorsDb[n].wirelessRX;
@@ -3470,9 +3777,9 @@ function generateGearListHtml() {
     monitoringItems += (monitoringItems ? '<br>' : '') + "1x <strong>".concat(labelRole, " Handheld Monitor</strong> - <span id=\"monitorSize").concat(idSuffix, "\">").concat(selectedSize, "&quot;</span> - ") + "<select id=\"gearList".concat(idSuffix, "Monitor\" data-auto-gear-manual=\"").concat(manualFlag ? 'true' : 'false', "\">").concat(opts, "</select> ") + 'incl. Directors cage, shoulder strap, sunhood, rigging for teradeks';
     if (selectedSize) monitorSizes.push(selectedSize);
   });
-  largeMonitorPrefs.forEach(function (_ref63) {
+  largeMonitorPrefs.forEach(function (_ref64) {
     var _dirDb$resolvedName, _dirDb$defaultName, _dirDb$candidate;
-    var role = _ref63.role;
+    var role = _ref64.role;
     var dirDb = devices && devices.directorMonitors ? devices.directorMonitors : {};
     var names = Object.keys(dirDb).filter(function (n) {
       return n !== 'None';
@@ -3625,12 +3932,6 @@ function generateGearListHtml() {
   handheldPrefs.forEach(function (p) {
     for (var _i15 = 0; _i15 < 3; _i15++) monitoringBatteryItems.push("".concat(bebob98, " (").concat(p.role, " handheld)"));
   });
-  if (hasMotor) {
-    var bebob150 = Object.keys(devices.batteries || {}).find(function (n) {
-      return /V150micro/i.test(n);
-    }) || 'Bebob V150micro';
-    for (var _i16 = 0; _i16 < 3; _i16++) monitoringBatteryItems.push("".concat(bebob150, " (Focus)"));
-  }
   var bebob290 = Object.keys(devices.batteries || {}).find(function (n) {
     return /V290RM-Cine/i.test(n);
   }) || 'Bebob V290RM-Cine';
@@ -3668,11 +3969,6 @@ function generateGearListHtml() {
     riggingAcc.push("D-Tap Splitter (".concat(p.role, " 15-21\")"));
     riggingAcc.push("D-Tap Splitter (".concat(p.role, " 15-21\")"));
   });
-  if (hasMotor) {
-    gripItems.push('Avenger C-Stand Sliding Leg 20" (Focus)');
-    gripItems.push('Steelfingers Wheel C-Stand 3er Set (Focus)');
-    gripItems.push('Lite-Tite Swivel Aluminium Umbrella Adapter (Focus)');
-  }
   if (isScenarioActive('Easyrig')) {
     var stabiliser = devices && devices.accessories && devices.accessories.cameraStabiliser && devices.accessories.cameraStabiliser['Easyrig 5 Vario'];
     var _opts = stabiliser && Array.isArray(stabiliser.options) ? stabiliser.options : [];
@@ -3857,15 +4153,15 @@ function generateGearListHtml() {
     multiplier = 2;
   }
   var klappenMultiplier = multiplier % 2 === 0 ? multiplier : Math.max(1, multiplier - 1);
-  for (var _i17 = 0, _baseConsumables = baseConsumables; _i17 < _baseConsumables.length; _i17++) {
-    var item = _baseConsumables[_i17];
+  for (var _i16 = 0, _baseConsumables = baseConsumables; _i16 < _baseConsumables.length; _i16++) {
+    var item = _baseConsumables[_i16];
     var _count2 = item.count;
     if (item.noScale) {} else if (item.klappen) {
       _count2 *= klappenMultiplier;
     } else {
       _count2 *= multiplier;
     }
-    for (var _i18 = 0; _i18 < _count2; _i18++) consumables.push(item.name);
+    for (var _i17 = 0; _i17 < _count2; _i17++) consumables.push(item.name);
   }
   if (eyeLeatherCount) eyeLeatherCount *= multiplier;
   var needsRainProtection = isAnyScenarioActive(['Outdoor', 'Extreme rain', 'Rain Machine']);
@@ -3889,10 +4185,10 @@ function generateGearListHtml() {
     var monitorsUnder10 = _monitorSizes.filter(function (s) {
       return s <= 10;
     }).length;
-    for (var _i19 = 0; _i19 < monitorsAbove10 + 2; _i19++) consumables.push('CapIt Large');
-    for (var _i20 = 0; _i20 < monitorsUnder10 + 3; _i20++) consumables.push('CapIt Medium');
-    for (var _i21 = 0; _i21 < 3; _i21++) consumables.push('CapIt Small');
-    for (var _i22 = 0; _i22 < 10; _i22++) consumables.push('Shower Cap');
+    for (var _i18 = 0; _i18 < monitorsAbove10 + 2; _i18++) consumables.push('CapIt Large');
+    for (var _i19 = 0; _i19 < monitorsUnder10 + 3; _i19++) consumables.push('CapIt Medium');
+    for (var _i20 = 0; _i20 < 3; _i20++) consumables.push('CapIt Small');
+    for (var _i21 = 0; _i21 < 10; _i21++) consumables.push('Shower Cap');
     consumables.push('Magliner Rain Cover Transparent');
   }
   var needsHairDryer = isWinterShoot && isScenarioActive('Outdoor') || isScenarioActive('Extreme cold (snow)');
@@ -3907,20 +4203,20 @@ function generateGearListHtml() {
   }
   if (needsHandAndFeetWarmers) {
     var warmersCount = Math.max(shootDays, 1) * 2;
-    for (var _i23 = 0; _i23 < warmersCount; _i23++) miscItems.push('Hand Warmers');
-    for (var _i24 = 0; _i24 < warmersCount; _i24++) miscItems.push('Feet Warmers');
+    for (var _i22 = 0; _i22 < warmersCount; _i22++) miscItems.push('Hand Warmers');
+    for (var _i23 = 0; _i23 < warmersCount; _i23++) miscItems.push('Feet Warmers');
   }
   var gaffColors = [['red', 'Red'], ['blue', 'Blue'], ['green', 'Green'], ['yellow', 'Yellow'], ['black', 'Black'], ['pink', 'Pink'], ['orange', 'Orange'], ['violette', 'Violette'], ['white', 'White']];
   var gaffWidths = ['6mm', '12mm', '19mm', '24mm', '48mm'];
   var proGaffCount = multiplier;
-  var proGaffHtml = gaffTapeSelections.map(function (_ref64) {
-    var id = _ref64.id,
-      color = _ref64.color,
-      width = _ref64.width;
-    var colorOpts = gaffColors.map(function (_ref65) {
-      var _ref66 = _slicedToArray(_ref65, 2),
-        val = _ref66[0],
-        label = _ref66[1];
+  var proGaffHtml = gaffTapeSelections.map(function (_ref65) {
+    var id = _ref65.id,
+      color = _ref65.color,
+      width = _ref65.width;
+    var colorOpts = gaffColors.map(function (_ref66) {
+      var _ref67 = _slicedToArray(_ref66, 2),
+        val = _ref67[0],
+        label = _ref67[1];
       return "<option value=\"".concat(val, "\"").concat(val === color ? ' selected' : '', ">").concat(label, "</option>");
     }).join('');
     var widthOpts = gaffWidths.map(function (val) {
@@ -3931,10 +4227,10 @@ function generateGearListHtml() {
   var eyeLeatherHtml = '';
   if (eyeLeatherCount) {
     var colors = [['red', 'Red'], ['blue', 'Blue'], ['natural', 'Natural'], ['green', 'Green'], ['purple', 'Purple'], ['orange', 'Orange'], ['gray', 'Gray'], ['yellow', 'Yellow'], ['jaguar', 'Jaguar'], ['killer bee', 'Killer Bee'], ['green rabbit', 'Green Rabbit'], ['black', 'Black']];
-    var _options3 = colors.map(function (_ref67) {
-      var _ref68 = _slicedToArray(_ref67, 2),
-        val = _ref68[0],
-        label = _ref68[1];
+    var _options3 = colors.map(function (_ref68) {
+      var _ref69 = _slicedToArray(_ref68, 2),
+        val = _ref69[0],
+        label = _ref69[1];
       return "<option value=\"".concat(val, "\"").concat(val === eyeLeatherColor ? ' selected' : '', ">").concat(label, "</option>");
     }).join('');
     eyeLeatherHtml = "<span class=\"gear-item\" data-gear-name=\"Bluestar eye leather made of microfiber oval, large\">".concat(eyeLeatherCount, "x Bluestar eye leather made of microfiber oval, large <select id=\"gearListEyeLeatherColor\">").concat(_options3, "</select></span>");
@@ -4110,10 +4406,10 @@ function getGearListSelectors() {
 function cloneGearListSelectors(selectors) {
   if (!selectors || _typeof(selectors) !== 'object') return {};
   var clone = {};
-  Object.entries(selectors).forEach(function (_ref69) {
-    var _ref70 = _slicedToArray(_ref69, 2),
-      id = _ref70[0],
-      value = _ref70[1];
+  Object.entries(selectors).forEach(function (_ref70) {
+    var _ref71 = _slicedToArray(_ref70, 2),
+      id = _ref71[0],
+      value = _ref71[1];
     if (!id || typeof id !== 'string') return;
     if (Array.isArray(value)) {
       clone[id] = value.map(function (item) {
@@ -4129,10 +4425,10 @@ function cloneGearListSelectors(selectors) {
 }
 function applyGearListSelectors(selectors) {
   if (!gearListOutput || !selectors) return;
-  Object.entries(selectors).forEach(function (_ref71) {
-    var _ref72 = _slicedToArray(_ref71, 2),
-      id = _ref72[0],
-      value = _ref72[1];
+  Object.entries(selectors).forEach(function (_ref72) {
+    var _ref73 = _slicedToArray(_ref72, 2),
+      id = _ref73[0],
+      value = _ref73[1];
     var sel = gearListOutput.querySelector("#".concat(id));
     if (sel) {
       if (sel.multiple) {
@@ -4185,6 +4481,7 @@ function saveCurrentGearList() {
   info.sliderBowl = getSliderBowlValue();
   info.easyrig = getEasyrigValue();
   currentProjectInfo = deriveProjectInfo(info);
+  var powerSelectionSnapshot = getPowerSelectionSnapshot();
   var gearSelectorsRaw = getGearListSelectors();
   var gearSelectors = cloneGearListSelectors(gearSelectorsRaw);
   var hasGearSelectors = Object.keys(gearSelectors).length > 0;
@@ -4235,6 +4532,9 @@ function saveCurrentGearList() {
       projectInfo: projectInfoSnapshot,
       gearList: html
     };
+    if (powerSelectionSnapshot) {
+      payload.powerSelection = powerSelectionSnapshot;
+    }
     if (hasGearSelectors) {
       payload.gearSelectors = gearSelectors;
     }
@@ -4259,6 +4559,9 @@ function saveCurrentGearList() {
       setup.gearList = html;
       changed = true;
     }
+  } else if (Object.prototype.hasOwnProperty.call(setup, 'gearList')) {
+    delete setup.gearList;
+    changed = true;
   }
   if (projectInfoSignature) {
     var existingInfo = setup.projectInfo;
@@ -4306,6 +4609,17 @@ function saveCurrentGearList() {
     delete setup.gearSelectors;
     changed = true;
   }
+  var existingPowerSelectionSig = setup.powerSelection ? stableStringify(setup.powerSelection) : '';
+  var newPowerSelectionSig = powerSelectionSnapshot ? stableStringify(powerSelectionSnapshot) : '';
+  if (newPowerSelectionSig) {
+    if (existingPowerSelectionSig !== newPowerSelectionSig) {
+      setup.powerSelection = powerSelectionSnapshot;
+      changed = true;
+    }
+  } else if (Object.prototype.hasOwnProperty.call(setup, 'powerSelection')) {
+    delete setup.powerSelection;
+    changed = true;
+  }
   if (!existing) {
     setups[selectedStorageKey] = setup;
     storeSetups(setups);
@@ -4347,6 +4661,10 @@ function deleteCurrentGearList() {
       }
       if (Object.prototype.hasOwnProperty.call(existingSetup, 'diagramPositions')) {
         delete existingSetup.diagramPositions;
+        changed = true;
+      }
+      if (Object.prototype.hasOwnProperty.call(existingSetup, 'powerSelection')) {
+        delete existingSetup.powerSelection;
         changed = true;
       }
       if (changed) {

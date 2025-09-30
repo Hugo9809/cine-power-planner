@@ -51,7 +51,31 @@ function resolveCineUi() {
   }
   return null;
 }
-var eventsCineUi = resolveCineUi();
+var eventsCineUiRegistered = false;
+function enqueueCineUiRegistration(callback) {
+  var scope = typeof globalThis !== 'undefined' && globalThis || typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || typeof global !== 'undefined' && global || null;
+  if (!scope || typeof callback !== 'function') {
+    return;
+  }
+  try {
+    var existing = scope.cineUi && _typeof(scope.cineUi) === 'object' ? scope.cineUi : null;
+    if (existing) {
+      callback(existing);
+      return;
+    }
+  } catch (callbackError) {
+    if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+      console.warn('cineUi registration callback failed', callbackError);
+    }
+    return;
+  }
+  var key = '__cineUiReadyQueue';
+  if (!Array.isArray(scope[key])) {
+    scope[key] = [];
+  }
+  scope[key].push(callback);
+}
+enqueueCineUiRegistration(registerEventsCineUiInternal);
 languageSelect.addEventListener("change", function (event) {
   setLanguage(event.target.value);
 });
@@ -426,10 +450,14 @@ setupSelect.addEventListener("change", function (event) {
     var projectInfoForStorage = typeof createProjectInfoSnapshotForStorage === 'function' ? createProjectInfoSnapshotForStorage(previousProjectInfo, {
       projectNameOverride: renameInProgressForPrevious ? normalizedPreviousKey : undefined
     }) : previousProjectInfo;
+    var previousPowerSelection = typeof getPowerSelectionSnapshot === 'function' ? getPowerSelectionSnapshot() : null;
     var previousPayload = {
       projectInfo: projectInfoForStorage,
       gearList: getCurrentGearListHtml()
     };
+    if (previousPowerSelection) {
+      previousPayload.powerSelection = previousPowerSelection;
+    }
     if (typeof getDiagramManualPositions === 'function') {
       var diagramPositions = getDiagramManualPositions();
       if (diagramPositions && Object.keys(diagramPositions).length) {
@@ -486,8 +514,27 @@ setupSelect.addEventListener("change", function (event) {
       hotswapSelect.value = setup.batteryHotswap || hotswapSelect.value;
       setSliderBowlValue(setup.sliderBowl || '');
       setEasyrigValue(setup.easyrig || '');
-      updateBatteryOptions();
+      var storedPowerApplied = false;
+      if (setup.powerSelection && typeof applyStoredPowerSelection === 'function') {
+        storedPowerApplied = applyStoredPowerSelection(setup.powerSelection, {
+          preferExisting: false
+        });
+      }
       var storedProject = typeof loadProject === 'function' ? loadProject(setupName) : null;
+      if (!storedPowerApplied && storedProject && typeof applyStoredPowerSelection === 'function' && storedProject.powerSelection) {
+        storedPowerApplied = applyStoredPowerSelection(storedProject.powerSelection, {
+          preferExisting: false
+        });
+      }
+      updateBatteryOptions();
+      if (!storedPowerApplied && storedProject && typeof applyStoredPowerSelection === 'function' && storedProject.powerSelection) {
+        storedPowerApplied = applyStoredPowerSelection(storedProject.powerSelection, {
+          preferExisting: false
+        });
+        if (storedPowerApplied) {
+          updateBatteryOptions();
+        }
+      }
       var html = setup.gearList || (storedProject === null || storedProject === void 0 ? void 0 : storedProject.gearList) || '';
       if (html && typeof globalThis !== 'undefined') {
         globalThis.__cineLastGearListHtml = html;
@@ -529,6 +576,10 @@ setupSelect.addEventListener("change", function (event) {
             projectInfo: currentProjectInfo,
             gearList: html
           };
+          var currentPowerSelection = typeof getPowerSelectionSnapshot === 'function' ? getPowerSelectionSnapshot() : null;
+          if (currentPowerSelection) {
+            payload.powerSelection = currentPowerSelection;
+          }
           if (typeof getDiagramManualPositions === 'function') {
             var _diagramPositions2 = getDiagramManualPositions();
             if (_diagramPositions2 && Object.keys(_diagramPositions2).length) {
@@ -543,12 +594,38 @@ setupSelect.addEventListener("change", function (event) {
         }
       }
     } else {
-      currentProjectInfo = null;
-      if (projectForm) populateProjectForm({});
-      displayGearAndRequirements('');
+      var _storedProject = typeof loadProject === 'function' ? loadProject(setupName) : null;
+      if (_storedProject && typeof applyStoredPowerSelection === 'function' && _storedProject.powerSelection) {
+        var applied = applyStoredPowerSelection(_storedProject.powerSelection, {
+          preferExisting: false
+        });
+        if (applied) {
+          updateBatteryOptions();
+        }
+      } else {
+        updateBatteryOptions();
+      }
+      currentProjectInfo = (_storedProject === null || _storedProject === void 0 ? void 0 : _storedProject.projectInfo) || null;
+      if (projectForm) populateProjectForm(currentProjectInfo || {});
+      if (gearListOutput) {
+        var _html = (_storedProject === null || _storedProject === void 0 ? void 0 : _storedProject.gearList) || '';
+        displayGearAndRequirements(_html);
+        if (_html) {
+          ensureGearListActions();
+          bindGearListCageListener();
+          bindGearListEasyrigListener();
+          bindGearListSliderBowlListener();
+          bindGearListEyeLeatherListener();
+          bindGearListProGaffTapeListener();
+          bindGearListDirectorMonitorListener();
+        }
+      } else {
+        displayGearAndRequirements('');
+      }
       clearProjectAutoGearRules();
       if (typeof setManualDiagramPositions === 'function') {
-        setManualDiagramPositions({}, {
+        var normalizedDiagram = _storedProject !== null && _storedProject !== void 0 && _storedProject.diagramPositions && typeof normalizeDiagramPositionsInput === 'function' ? normalizeDiagramPositionsInput(_storedProject.diagramPositions) : {};
+        setManualDiagramPositions(normalizedDiagram || {}, {
           render: false
         });
       }
@@ -558,7 +635,11 @@ setupSelect.addEventListener("change", function (event) {
   finalizeSetupSelection(setupName);
 });
 function populateSetupSelect() {
-  var setups = getSetups();
+  var setupsProvider = typeof getSetups === 'function' ? getSetups : null;
+  if (!setupsProvider) {
+    console.warn('populateSetupSelect: getSetups is unavailable, using empty setup list');
+  }
+  var setups = setupsProvider ? setupsProvider() || {} : {};
   setupSelect.innerHTML = "<option value=\"\">".concat(texts[currentLang].newSetupOption, "</option>");
   var includeAutoBackups = false;
   if (typeof showAutoBackups === 'boolean') {
@@ -838,10 +919,25 @@ function toggleDeviceManagerSection() {
 if (toggleDeviceBtn) {
   toggleDeviceBtn.addEventListener('click', toggleDeviceManagerSection);
 }
-if (eventsCineUi) {
+function getEventsLanguageTexts() {
+  var scope = typeof globalThis !== 'undefined' && globalThis || typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || typeof global !== 'undefined' && global || null;
+  var allTexts = typeof texts !== 'undefined' && texts || (scope && _typeof(scope.texts) === 'object' ? scope.texts : null);
+  var resolvedLang = typeof currentLang === 'string' && allTexts && _typeof(allTexts[currentLang]) === 'object' ? currentLang : 'en';
+  var langTexts = allTexts && _typeof(allTexts[resolvedLang]) === 'object' && allTexts[resolvedLang] || {};
+  var fallbackTexts = allTexts && _typeof(allTexts.en) === 'object' && allTexts.en || {};
+  return {
+    langTexts: langTexts,
+    fallbackTexts: fallbackTexts
+  };
+}
+function registerEventsCineUiInternal(cineUi) {
+  if (!cineUi || eventsCineUiRegistered) {
+    return;
+  }
+  eventsCineUiRegistered = true;
   try {
-    if (eventsCineUi.controllers && typeof eventsCineUi.controllers.register === 'function') {
-      eventsCineUi.controllers.register('deviceManagerSection', {
+    if (cineUi.controllers && typeof cineUi.controllers.register === 'function') {
+      cineUi.controllers.register('deviceManagerSection', {
         show: showDeviceManagerSection,
         hide: hideDeviceManagerSection,
         toggle: toggleDeviceManagerSection
@@ -851,23 +947,25 @@ if (eventsCineUi) {
     console.warn('cineUi controller registration failed', error);
   }
   try {
-    if (eventsCineUi.interactions && typeof eventsCineUi.interactions.register === 'function') {
-      eventsCineUi.interactions.register('saveSetup', handleSaveSetupClick);
-      eventsCineUi.interactions.register('deleteSetup', handleDeleteSetupClick);
+    if (cineUi.interactions && typeof cineUi.interactions.register === 'function') {
+      cineUi.interactions.register('saveSetup', handleSaveSetupClick);
+      cineUi.interactions.register('deleteSetup', handleDeleteSetupClick);
     }
   } catch (error) {
     console.warn('cineUi interaction registration failed', error);
   }
   try {
-    if (eventsCineUi.help && typeof eventsCineUi.help.register === 'function') {
-      eventsCineUi.help.register('saveSetup', function () {
-        var langTexts = texts[currentLang] || {};
-        var fallbackTexts = texts.en || {};
+    if (cineUi.help && typeof cineUi.help.register === 'function') {
+      cineUi.help.register('saveSetup', function () {
+        var _getEventsLanguageTex = getEventsLanguageTexts(),
+          langTexts = _getEventsLanguageTex.langTexts,
+          fallbackTexts = _getEventsLanguageTex.fallbackTexts;
         return langTexts.saveSetupHelp || fallbackTexts.saveSetupHelp || 'Store the current project so it is never lost. Press Enter or Ctrl+S to save instantly.';
       });
-      eventsCineUi.help.register('autoBackupBeforeDeletion', function () {
-        var langTexts = texts[currentLang] || {};
-        var fallbackTexts = texts.en || {};
+      cineUi.help.register('autoBackupBeforeDeletion', function () {
+        var _getEventsLanguageTex2 = getEventsLanguageTexts(),
+          langTexts = _getEventsLanguageTex2.langTexts,
+          fallbackTexts = _getEventsLanguageTex2.fallbackTexts;
         return langTexts.preDeleteBackupSuccess || fallbackTexts.preDeleteBackupSuccess || 'Automatic backup saved. Restore it anytime from Saved Projects.';
       });
     }
@@ -875,6 +973,15 @@ if (eventsCineUi) {
     console.warn('cineUi help registration failed', error);
   }
 }
+function registerEventsCineUi() {
+  var cineUi = resolveCineUi();
+  if (!cineUi) {
+    return false;
+  }
+  registerEventsCineUiInternal(cineUi);
+  return true;
+}
+registerEventsCineUi();
 function toggleDeviceDetails(button) {
   var details = button.closest('li').querySelector('.device-details');
   var expanded = button.getAttribute('aria-expanded') === 'true';
