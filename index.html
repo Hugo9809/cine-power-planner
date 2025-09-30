@@ -81,7 +81,17 @@
           aria-label="Search features, devices and help"
           data-shortcuts="/"
           aria-keyshortcuts="Slash"
+          aria-haspopup="listbox"
+          aria-controls="featureSearchSuggestions"
+          aria-expanded="false"
         />
+        <div
+          id="featureSearchSuggestions"
+          class="feature-search-suggestions"
+          role="listbox"
+          aria-labelledby="featureSearch"
+          hidden
+        ></div>
       </div>
       <datalist id="featureList"></datalist>
     </div>

@@ -23,7 +23,11 @@
           normalizeBatteryPlateValue, applyBatteryPlateSelectionFromBattery,
           getPowerSelectionSnapshot, applyStoredPowerSelection,
           settingsReduceMotion, settingsRelaxedSpacing, callCoreFunctionIfAvailable,
-          recordFeatureSearchUsage, helpResultsSummary, helpResultsAssist */
+          recordFeatureSearchUsage, helpResultsSummary, helpResultsAssist,
+          featureSearchSuggestionsContainer, ensureFeatureSearchSuggestionsOpen,
+          openFeatureSearchSuggestionsPanel, closeFeatureSearchSuggestionsPanel,
+          moveFeatureSearchActiveSuggestion, getFeatureSearchActiveSuggestionIndex,
+          commitFeatureSearchSuggestion, isFeatureSearchSuggestionsAvailable */
 /* eslint-enable no-redeclare */
 /* global triggerPinkModeIconRain, loadDeviceData, loadSetups, loadSessionState,
           loadFeedback, loadFavorites, loadAutoGearBackups,
@@ -9596,19 +9600,68 @@ if (helpButton && helpDialog) {
   };
 
   if (featureSearch) {
-    const handle = () => runFeatureSearch(featureSearch.value);
+    const handle = () => {
+      runFeatureSearch(featureSearch.value);
+      if (typeof closeFeatureSearchSuggestionsPanel === 'function') {
+        closeFeatureSearchSuggestionsPanel();
+      }
+    };
     featureSearch.addEventListener('change', handle);
     featureSearch.addEventListener('input', () => {
       updateFeatureSearchSuggestions(featureSearch.value);
+      if (typeof ensureFeatureSearchSuggestionsOpen === 'function') {
+        ensureFeatureSearchSuggestionsOpen();
+      }
       featureSearch.showPicker?.();
     });
-    featureSearch.addEventListener('keydown', e => {
-      if (e.key === 'Enter') {
-        handle();
-      } else if (e.key === 'Escape' && featureSearch.value) {
-        featureSearch.value = '';
+    featureSearch.addEventListener('focus', () => {
+      if (!featureSearch) return;
+      if (
+        typeof isFeatureSearchSuggestionsAvailable === 'function' &&
+        !isFeatureSearchSuggestionsAvailable()
+      ) {
         restoreFeatureSearchDefaults();
-        featureSearch.showPicker?.();
+      }
+      if (typeof openFeatureSearchSuggestionsPanel === 'function') {
+        openFeatureSearchSuggestionsPanel();
+      }
+    });
+    featureSearch.addEventListener('blur', () => {
+      if (typeof closeFeatureSearchSuggestionsPanel === 'function') {
+        closeFeatureSearchSuggestionsPanel();
+      }
+    });
+    featureSearch.addEventListener('keydown', e => {
+      if (e.key === 'ArrowDown') {
+        if (typeof moveFeatureSearchActiveSuggestion === 'function') {
+          moveFeatureSearchActiveSuggestion(1);
+          e.preventDefault();
+        }
+      } else if (e.key === 'ArrowUp') {
+        if (typeof moveFeatureSearchActiveSuggestion === 'function') {
+          moveFeatureSearchActiveSuggestion(-1);
+          e.preventDefault();
+        }
+      } else if (e.key === 'Enter') {
+        if (typeof getFeatureSearchActiveSuggestionIndex === 'function' &&
+            typeof commitFeatureSearchSuggestion === 'function') {
+          const activeIndex = getFeatureSearchActiveSuggestionIndex();
+          if (typeof activeIndex === 'number' && activeIndex >= 0) {
+            e.preventDefault();
+            commitFeatureSearchSuggestion(activeIndex);
+            return;
+          }
+        }
+        handle();
+      } else if (e.key === 'Escape') {
+        if (featureSearch.value) {
+          featureSearch.value = '';
+          restoreFeatureSearchDefaults();
+          featureSearch.showPicker?.();
+        }
+        if (typeof closeFeatureSearchSuggestionsPanel === 'function') {
+          closeFeatureSearchSuggestionsPanel();
+        }
         e.preventDefault();
       }
     });
@@ -10707,8 +10760,16 @@ if (typeof module !== "undefined" && module.exports) {
       featureSearchDefaultOptions,
       featureSearchInput: featureSearch,
       featureListElement: featureList,
+      featureSearchSuggestionsContainer,
       restoreFeatureSearchDefaults,
       updateFeatureSearchSuggestions,
+      ensureFeatureSearchSuggestionsOpen,
+      openFeatureSearchSuggestionsPanel,
+      closeFeatureSearchSuggestionsPanel,
+      moveFeatureSearchActiveSuggestion,
+      getFeatureSearchActiveSuggestionIndex,
+      commitFeatureSearchSuggestion,
+      isFeatureSearchSuggestionsAvailable,
     },
     __customFontInternals: {
       addFromData: (name, dataUrl, options) => addCustomFontFromData(name, dataUrl, options),

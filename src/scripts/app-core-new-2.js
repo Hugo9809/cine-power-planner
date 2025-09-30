@@ -6467,6 +6467,7 @@ var settingsSave    = document.getElementById("settingsSave");
 var settingsCancel  = document.getElementById("settingsCancel");
 var featureSearch   = document.getElementById("featureSearch");
 var featureList     = document.getElementById("featureList");
+const featureSearchSuggestionsContainer = document.getElementById('featureSearchSuggestions');
 var featureMap      = new Map();
 const featureSearchEntryIndex = new Map();
 const FEATURE_SEARCH_HISTORY_STORAGE_KEY = 'featureSearchHistory';
@@ -6475,6 +6476,10 @@ const MAX_FEATURE_SEARCH_RECENTS = 5;
 let featureSearchHistoryLoaded = false;
 const featureSearchHistory = new Map();
 let featureSearchHistorySaveTimer = null;
+const FEATURE_SEARCH_SUGGESTION_ID_PREFIX = 'featureSearchSuggestion-';
+let featureSearchSuggestionItems = [];
+let featureSearchActiveSuggestionIndex = -1;
+let featureSearchSuggestionsOpen = false;
 
 const getFeatureSearchHistoryStorage = () => {
   try {
@@ -6720,6 +6725,243 @@ var recordFeatureSearchUsage = (id, type, label) => {
   registerFeatureSearchUsage(id, type, label);
 };
 
+const getFeatureSearchSuggestionId = index =>
+  `${FEATURE_SEARCH_SUGGESTION_ID_PREFIX}${index}`;
+
+function setFeatureSearchExpandedState(expanded) {
+  if (!featureSearch) return;
+  featureSearch.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+  if (!expanded) {
+    featureSearch.removeAttribute('aria-activedescendant');
+  }
+}
+
+function isFeatureSearchSuggestionsAvailable() {
+  return (
+    !!featureSearchSuggestionsContainer &&
+    Array.isArray(featureSearchSuggestionItems) &&
+    featureSearchSuggestionItems.length > 0
+  );
+}
+
+function openFeatureSearchSuggestionsPanel() {
+  if (!isFeatureSearchSuggestionsAvailable()) return;
+  featureSearchSuggestionsContainer.removeAttribute('hidden');
+  featureSearchSuggestionsContainer.setAttribute('aria-hidden', 'false');
+  featureSearchSuggestionsOpen = true;
+  setFeatureSearchExpandedState(true);
+}
+
+function closeFeatureSearchSuggestionsPanel(options = {}) {
+  if (!featureSearchSuggestionsContainer) return;
+  featureSearchSuggestionsContainer.setAttribute('aria-hidden', 'true');
+  if (!featureSearchSuggestionsContainer.hasAttribute('hidden')) {
+    featureSearchSuggestionsContainer.setAttribute('hidden', '');
+  }
+  featureSearchSuggestionsOpen = false;
+  setFeatureSearchExpandedState(false);
+  if (options.resetActive !== false) {
+    updateFeatureSearchActiveSuggestion(-1, { scroll: false });
+  }
+}
+
+function ensureFeatureSearchSuggestionsOpen() {
+  if (featureSearchSuggestionsOpen) return;
+  openFeatureSearchSuggestionsPanel();
+}
+
+function getFeatureSearchSuggestionAt(index) {
+  if (!Array.isArray(featureSearchSuggestionItems)) return null;
+  if (index < 0 || index >= featureSearchSuggestionItems.length) return null;
+  return featureSearchSuggestionItems[index];
+}
+
+function getFeatureSearchActiveSuggestionIndex() {
+  return featureSearchActiveSuggestionIndex;
+}
+
+function updateFeatureSearchActiveSuggestion(index, { scroll = true } = {}) {
+  if (!featureSearchSuggestionsContainer) return;
+  const items = Array.from(
+    featureSearchSuggestionsContainer.querySelectorAll('.feature-search-suggestion')
+  );
+  if (!items.length) {
+    featureSearchActiveSuggestionIndex = -1;
+    featureSearch?.removeAttribute('aria-activedescendant');
+    return;
+  }
+  let nextIndex = typeof index === 'number' ? index : -1;
+  if (nextIndex < -1) nextIndex = -1;
+  if (nextIndex >= items.length) nextIndex = items.length - 1;
+  featureSearchActiveSuggestionIndex = nextIndex;
+  items.forEach((item, idx) => {
+    const selected = idx === nextIndex;
+    item.setAttribute('aria-selected', selected ? 'true' : 'false');
+    if (!selected) {
+      item.removeAttribute('data-active');
+      return;
+    }
+    item.setAttribute('data-active', 'true');
+    if (featureSearch && item.id) {
+      featureSearch.setAttribute('aria-activedescendant', item.id);
+    }
+    if (scroll) {
+      item.scrollIntoView({ block: 'nearest' });
+    }
+  });
+  if (featureSearchActiveSuggestionIndex < 0 && featureSearch) {
+    featureSearch.removeAttribute('aria-activedescendant');
+  }
+}
+
+function moveFeatureSearchActiveSuggestion(delta) {
+  if (!isFeatureSearchSuggestionsAvailable()) return;
+  if (!featureSearchSuggestionsOpen) {
+    openFeatureSearchSuggestionsPanel();
+  }
+  const length = featureSearchSuggestionItems.length;
+  if (!length) return;
+  const current = featureSearchActiveSuggestionIndex;
+  let nextIndex = typeof current === 'number' ? current + delta : delta;
+  if (Number.isNaN(nextIndex)) {
+    nextIndex = delta > 0 ? 0 : length - 1;
+  }
+  if (nextIndex < 0) {
+    nextIndex = length - 1;
+  } else if (nextIndex >= length) {
+    nextIndex = 0;
+  }
+  updateFeatureSearchActiveSuggestion(nextIndex);
+}
+
+function clearFeatureSearchSuggestions() {
+  featureSearchSuggestionItems = [];
+  featureSearchActiveSuggestionIndex = -1;
+  closeFeatureSearchSuggestionsPanel();
+}
+
+function normalizeFeatureSearchSuggestionValue(value) {
+  if (!value) return null;
+  if (typeof value === 'object') {
+    const optionValue = value.value || value.display || '';
+    if (!optionValue) return null;
+    const baseLabel = value.baseLabel || value.optionLabel || value.label || optionValue;
+    return {
+      value: optionValue,
+      label: value.label || value.optionLabel || optionValue,
+      baseLabel,
+      type: value.type || '',
+      typeLabel: value.typeLabel || '',
+      detail: value.detail || ''
+    };
+  }
+  return {
+    value: value,
+    label: value,
+    baseLabel: value,
+    type: '',
+    typeLabel: '',
+    detail: ''
+  };
+}
+
+function renderFeatureSearchSuggestionPanel(values) {
+  if (!featureSearchSuggestionsContainer) return;
+  const normalized = Array.isArray(values)
+    ? values.map(normalizeFeatureSearchSuggestionValue).filter(Boolean)
+    : [];
+  featureSearchSuggestionItems = normalized;
+  featureSearchSuggestionsContainer.innerHTML = '';
+  if (!normalized.length) {
+    clearFeatureSearchSuggestions();
+    return;
+  }
+  const list = document.createElement('ul');
+  list.className = 'feature-search-suggestions-list';
+  list.setAttribute('role', 'presentation');
+  normalized.forEach((item, index) => {
+    const option = document.createElement('li');
+    option.className = 'feature-search-suggestion';
+    option.id = getFeatureSearchSuggestionId(index);
+    option.dataset.index = String(index);
+    option.setAttribute('role', 'option');
+    option.setAttribute('aria-selected', 'false');
+
+    const primary = document.createElement('span');
+    primary.className = 'feature-search-suggestion-primary';
+    primary.textContent = item.baseLabel || item.label || item.value;
+    option.appendChild(primary);
+
+    if (item.typeLabel || item.detail) {
+      const meta = document.createElement('span');
+      meta.className = 'feature-search-suggestion-meta';
+      if (item.typeLabel) {
+        const type = document.createElement('span');
+        type.className = 'feature-search-suggestion-type';
+        type.textContent = item.typeLabel;
+        meta.appendChild(type);
+      }
+      if (item.detail) {
+        const detail = document.createElement('span');
+        detail.className = 'feature-search-suggestion-detail';
+        detail.textContent = item.detail;
+        meta.appendChild(detail);
+      }
+      option.appendChild(meta);
+    }
+    list.appendChild(option);
+  });
+  featureSearchSuggestionsContainer.appendChild(list);
+  featureSearchSuggestionsContainer.setAttribute('aria-hidden', 'true');
+  if (document.activeElement === featureSearch) {
+    openFeatureSearchSuggestionsPanel();
+  } else {
+    closeFeatureSearchSuggestionsPanel();
+  }
+}
+
+function commitFeatureSearchSuggestion(index) {
+  const suggestion = getFeatureSearchSuggestionAt(index);
+  if (!suggestion || !featureSearch) return;
+  featureSearch.value = suggestion.value;
+  closeFeatureSearchSuggestionsPanel();
+  if (typeof runFeatureSearch === 'function') {
+    runFeatureSearch(suggestion.value);
+  }
+}
+
+if (featureSearchSuggestionsContainer) {
+  featureSearchSuggestionsContainer.addEventListener('pointerdown', event => {
+    const option = event.target.closest('.feature-search-suggestion');
+    if (option) {
+      event.preventDefault();
+    }
+  });
+
+  featureSearchSuggestionsContainer.addEventListener('click', event => {
+    const option = event.target.closest('.feature-search-suggestion');
+    if (!option) return;
+    const index = Number.parseInt(option.dataset.index || '', 10);
+    if (Number.isNaN(index)) return;
+    commitFeatureSearchSuggestion(index);
+  });
+
+  featureSearchSuggestionsContainer.addEventListener('pointermove', event => {
+    if (event.pointerType && event.pointerType !== 'mouse' && event.pointerType !== 'pen') {
+      return;
+    }
+    const option = event.target.closest('.feature-search-suggestion');
+    if (!option) return;
+    const index = Number.parseInt(option.dataset.index || '', 10);
+    if (Number.isNaN(index)) return;
+    updateFeatureSearchActiveSuggestion(index, { scroll: false });
+  });
+
+  featureSearchSuggestionsContainer.addEventListener('pointerleave', () => {
+    updateFeatureSearchActiveSuggestion(-1, { scroll: false });
+  });
+}
+
 const FEATURE_SEARCH_DETAIL_MAX_LENGTH = 140;
 
 const normalizeFeatureSearchDetail = text => {
@@ -6751,37 +6993,46 @@ const buildFeatureSearchOptionData = entry => {
   if (detail) {
     label = `${label} — ${detail}`;
   }
-  if (!label || label === value) {
-    return { value, label: label || value };
-  }
-  return { value, label };
+  const normalizedBaseLabel = baseLabel || value;
+  const normalizedLabel = label || normalizedBaseLabel;
+  return {
+    value,
+    label: normalizedLabel,
+    baseLabel: normalizedBaseLabel,
+    type,
+    typeLabel,
+    detail
+  };
 };
 
 const renderFeatureListOptions = values => {
-  if (!featureList || !Array.isArray(values)) return;
-  const fragment = document.createDocumentFragment();
-  for (const value of values) {
-    if (!value) continue;
-    const option = document.createElement('option');
-    if (typeof value === 'object') {
-      const optionValue = value.value || value.display || '';
-      if (!optionValue) continue;
-      option.value = optionValue;
-      const optionLabel = value.label || value.optionLabel || '';
-      if (optionLabel) {
-        option.label = optionLabel;
-        option.textContent = optionLabel;
+  const listValues = Array.isArray(values) ? values.filter(Boolean) : [];
+  if (featureList) {
+    const fragment = document.createDocumentFragment();
+    for (const value of listValues) {
+      if (!value) continue;
+      const option = document.createElement('option');
+      if (typeof value === 'object') {
+        const optionValue = value.value || value.display || '';
+        if (!optionValue) continue;
+        option.value = optionValue;
+        const optionLabel = value.label || value.optionLabel || '';
+        if (optionLabel) {
+          option.label = optionLabel;
+          option.textContent = optionLabel;
+        } else {
+          option.textContent = optionValue;
+        }
       } else {
-        option.textContent = optionValue;
+        option.value = value;
+        option.textContent = value;
       }
-    } else {
-      option.value = value;
-      option.textContent = value;
+      fragment.appendChild(option);
     }
-    fragment.appendChild(option);
+    featureList.innerHTML = '';
+    featureList.appendChild(fragment);
   }
-  featureList.innerHTML = '';
-  featureList.appendChild(fragment);
+  renderFeatureSearchSuggestionPanel(listValues);
 };
 
 function restoreFeatureSearchDefaults() {
