@@ -995,201 +995,238 @@
             role="tabpanel"
             aria-labelledby="settingsTab-general generalSettingsHeading"
           >
-        <h3 id="generalSettingsHeading">General</h3>
-        <div class="form-row">
-          <label for="settingsLanguage" id="settingsLanguageLabel">Language</label>
-          <select id="settingsLanguage">
-            <option value="en">English</option>
-            <option value="de">Deutsch</option>
-            <option value="es">Español</option>
-            <option value="fr">Français</option>
-            <option value="it">Italiano</option>
-          </select>
-        </div>
-        <div class="form-row">
-          <label for="settingsDarkMode" id="settingsDarkModeLabel">Dark mode</label>
-          <input type="checkbox" id="settingsDarkMode" />
-        </div>
-        <div class="form-row">
-          <label for="settingsPinkMode" id="settingsPinkModeLabel">Pink mode</label>
-          <input type="checkbox" id="settingsPinkMode" />
-        </div>
-        <div class="form-row">
-          <label for="accentColorInput" id="accentColorLabel">Accent color</label>
-          <input type="color" id="accentColorInput" value="#001589" />
-          <button type="button" id="accentColorReset" class="inline-form-button">
-            Reset to default
-          </button>
-        </div>
-        <div class="form-row">
-          <label for="settingsTemperatureUnit" id="settingsTemperatureUnitLabel">Temperature unit</label>
-          <select id="settingsTemperatureUnit">
-            <option value="celsius">Celsius (°C)</option>
-            <option value="fahrenheit">Fahrenheit (°F)</option>
-          </select>
-        </div>
-        <section
-          id="mountVoltageSettings"
-          class="mount-voltage-settings"
-          aria-labelledby="mountVoltageHeading"
-        >
-          <div class="mount-voltage-header">
-            <h4 id="mountVoltageHeading">Battery mount voltages</h4>
-            <button type="button" id="mountVoltageReset">Restore defaults</button>
-          </div>
-          <p id="mountVoltageDescription" class="settings-hint">
-            Customize the high and low voltages used for current draw calculations.
-          </p>
-          <div class="mount-voltage-grid">
-            <section
-              class="mount-voltage-card"
-              aria-labelledby="mountVoltageVTitle"
-            >
-              <h5 id="mountVoltageVTitle">V-Mount</h5>
-              <div class="mount-voltage-field">
-                <label for="mountVoltageVHigh" id="mountVoltageVHighLabel">
-                  High-voltage output
-                </label>
-                <input
-                  type="number"
-                  id="mountVoltageVHigh"
-                  class="mount-voltage-input"
-                  step="0.1"
-                  min="0"
-                  inputmode="decimal"
-                  autocomplete="off"
-                />
-              </div>
-              <div class="mount-voltage-field">
-                <label for="mountVoltageVLow" id="mountVoltageVLowLabel">
-                  Low-voltage output
-                </label>
-                <input
-                  type="number"
-                  id="mountVoltageVLow"
-                  class="mount-voltage-input"
-                  step="0.1"
-                  min="0"
-                  inputmode="decimal"
-                  autocomplete="off"
-                />
-              </div>
-            </section>
-            <section
-              class="mount-voltage-card"
-              aria-labelledby="mountVoltageGoldTitle"
-            >
-              <h5 id="mountVoltageGoldTitle">Gold Mount</h5>
-              <div class="mount-voltage-field">
-                <label for="mountVoltageGoldHigh" id="mountVoltageGoldHighLabel">
-                  High-voltage output
-                </label>
-                <input
-                  type="number"
-                  id="mountVoltageGoldHigh"
-                  class="mount-voltage-input"
-                  step="0.1"
-                  min="0"
-                  inputmode="decimal"
-                  autocomplete="off"
-                />
-              </div>
-              <div class="mount-voltage-field">
-                <label for="mountVoltageGoldLow" id="mountVoltageGoldLowLabel">
-                  Low-voltage output
-                </label>
-                <input
-                  type="number"
-                  id="mountVoltageGoldLow"
-                  class="mount-voltage-input"
-                  step="0.1"
-                  min="0"
-                  inputmode="decimal"
-                  autocomplete="off"
-                />
-              </div>
-            </section>
-            <section
-              class="mount-voltage-card"
-              aria-labelledby="mountVoltageBTitle"
-            >
-              <h5 id="mountVoltageBTitle">B-Mount</h5>
-              <div class="mount-voltage-field">
-                <label for="mountVoltageBHigh" id="mountVoltageBHighLabel">
-                  High-voltage output
-                </label>
-                <input
-                  type="number"
-                  id="mountVoltageBHigh"
-                  class="mount-voltage-input"
-                  step="0.1"
-                  min="0"
-                  inputmode="decimal"
-                  autocomplete="off"
-                />
-              </div>
-              <div class="mount-voltage-field">
-                <label for="mountVoltageBLow" id="mountVoltageBLowLabel">
-                  Low-voltage output
-                </label>
-                <input
-                  type="number"
-                  id="mountVoltageBLow"
-                  class="mount-voltage-input"
-                  step="0.1"
-                  min="0"
-                  inputmode="decimal"
-                  autocomplete="off"
-                />
-              </div>
-            </section>
-          </div>
-          <p id="mountVoltageNote" class="settings-hint">
-            These voltages update the totals in the power summary and pin warnings.
-          </p>
-        </section>
-        <div class="form-row">
-          <label for="settingsFontSize" id="settingsFontSizeLabel">Font size</label>
-          <select id="settingsFontSize">
-            <option value="12">12px (Smaller)</option>
-            <option value="14">14px</option>
-            <option value="16">16px</option>
-            <option value="18">18px</option>
-            <option value="20">20px (Bigger)</option>
-          </select>
-        </div>
-        <div class="form-row">
-          <label for="settingsFontFamily" id="settingsFontFamilyLabel">Font</label>
-          <select id="settingsFontFamily">
-            <optgroup label="Bundled fonts" id="bundledFontOptions">
-              <option value="'Ubuntu', sans-serif">Ubuntu</option>
-              <option value="'Arial', sans-serif">Arial</option>
-              <option value="'Times New Roman', serif">Times New Roman</option>
-              <option value="'Courier New', monospace">Courier New</option>
-            </optgroup>
-            <optgroup label="Local fonts" id="localFontsGroup"></optgroup>
-          </select>
-          <button type="button" id="localFontsButton" class="inline-form-button" hidden>
-            Add local font…
-          </button>
-          <input
-            type="file"
-            id="localFontsInput"
-            class="visually-hidden"
-            accept=".woff2,.woff,.ttf,.otf,.ttc,application/font-woff,application/font-woff2,application/x-font-ttf,application/x-font-opentype,font/ttf,font/otf,font/woff,font/woff2"
-            multiple
-            hidden
-          />
-          <p id="localFontsStatus" class="settings-hint" role="status" aria-live="polite" hidden></p>
-        </div>
-        <div class="form-row">
-          <label for="settingsLogo" id="settingsLogoLabel">Logo (SVG)</label>
-          <div class="file-input-wrapper">
-            <input type="file" id="settingsLogo" accept="image/svg+xml" />
-            <div id="settingsLogoPreview" class="logo-preview" hidden aria-live="polite"></div>
-          </div>
-        </div>
-      </section>
+            <h3 id="generalSettingsHeading">General</h3>
+            <div class="settings-section-grid">
+              <section
+                class="settings-card"
+                aria-labelledby="generalLanguageHeading"
+              >
+                <h4 id="generalLanguageHeading">Language &amp; units</h4>
+                <div class="settings-card-body">
+                  <div class="settings-field">
+                    <label for="settingsLanguage" id="settingsLanguageLabel">Language</label>
+                    <select id="settingsLanguage">
+                      <option value="en">English</option>
+                      <option value="de">Deutsch</option>
+                      <option value="es">Español</option>
+                      <option value="fr">Français</option>
+                      <option value="it">Italiano</option>
+                    </select>
+                  </div>
+                  <div class="settings-field">
+                    <label for="settingsTemperatureUnit" id="settingsTemperatureUnitLabel">Temperature unit</label>
+                    <select id="settingsTemperatureUnit">
+                      <option value="celsius">Celsius (°C)</option>
+                      <option value="fahrenheit">Fahrenheit (°F)</option>
+                    </select>
+                  </div>
+                </div>
+              </section>
+              <section
+                class="settings-card"
+                aria-labelledby="generalAppearanceHeading"
+              >
+                <h4 id="generalAppearanceHeading">Appearance</h4>
+                <div class="settings-card-body">
+                  <div class="settings-field settings-field-toggle">
+                    <label for="settingsDarkMode" id="settingsDarkModeLabel">Dark mode</label>
+                    <input type="checkbox" id="settingsDarkMode" />
+                  </div>
+                  <div class="settings-field settings-field-toggle">
+                    <label for="settingsPinkMode" id="settingsPinkModeLabel">Pink mode</label>
+                    <input type="checkbox" id="settingsPinkMode" />
+                  </div>
+                  <div class="settings-field">
+                    <label for="accentColorInput" id="accentColorLabel">Accent color</label>
+                    <div class="settings-inline-controls">
+                      <input type="color" id="accentColorInput" value="#001589" />
+                      <button type="button" id="accentColorReset" class="inline-form-button">
+                        Reset to default
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </section>
+              <section
+                class="settings-card"
+                aria-labelledby="generalTypographyHeading"
+              >
+                <h4 id="generalTypographyHeading">Typography</h4>
+                <div class="settings-card-body">
+                  <div class="settings-field">
+                    <label for="settingsFontSize" id="settingsFontSizeLabel">Font size</label>
+                    <select id="settingsFontSize">
+                      <option value="12">12px (Smaller)</option>
+                      <option value="14">14px</option>
+                      <option value="16">16px</option>
+                      <option value="18">18px</option>
+                      <option value="20">20px (Bigger)</option>
+                    </select>
+                  </div>
+                  <div class="settings-field">
+                    <label for="settingsFontFamily" id="settingsFontFamilyLabel">Font</label>
+                    <select id="settingsFontFamily">
+                      <optgroup label="Bundled fonts" id="bundledFontOptions">
+                        <option value="'Ubuntu', sans-serif">Ubuntu</option>
+                        <option value="'Arial', sans-serif">Arial</option>
+                        <option value="'Times New Roman', serif">Times New Roman</option>
+                        <option value="'Courier New', monospace">Courier New</option>
+                      </optgroup>
+                      <optgroup label="Local fonts" id="localFontsGroup"></optgroup>
+                    </select>
+                    <div class="settings-inline-actions">
+                      <button type="button" id="localFontsButton" class="inline-form-button" hidden>
+                        Add local font…
+                      </button>
+                      <input
+                        type="file"
+                        id="localFontsInput"
+                        class="visually-hidden"
+                        accept=".woff2,.woff,.ttf,.otf,.ttc,application/font-woff,application/font-woff2,application/x-font-ttf,application/x-font-opentype,font/ttf,font/otf,font/woff,font/woff2"
+                        multiple
+                        hidden
+                      />
+                      <p id="localFontsStatus" class="settings-hint" role="status" aria-live="polite" hidden></p>
+                    </div>
+                  </div>
+                </div>
+              </section>
+              <section
+                class="settings-card"
+                aria-labelledby="generalBrandingHeading"
+              >
+                <h4 id="generalBrandingHeading">Branding</h4>
+                <div class="settings-card-body">
+                  <div class="settings-field">
+                    <label for="settingsLogo" id="settingsLogoLabel">Logo (SVG)</label>
+                    <div class="file-input-wrapper">
+                      <input type="file" id="settingsLogo" accept="image/svg+xml" />
+                      <div id="settingsLogoPreview" class="logo-preview" hidden aria-live="polite"></div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+              <section
+                id="mountVoltageSettings"
+                class="settings-card settings-card-wide mount-voltage-settings"
+                aria-labelledby="mountVoltageHeading"
+              >
+                <div class="mount-voltage-header">
+                  <h4 id="mountVoltageHeading">Battery mount voltages</h4>
+                  <button type="button" id="mountVoltageReset">Restore defaults</button>
+                </div>
+                <p id="mountVoltageDescription" class="settings-hint">
+                  Customize the high and low voltages used for current draw calculations.
+                </p>
+                <div class="mount-voltage-grid">
+                  <section
+                    class="mount-voltage-card"
+                    aria-labelledby="mountVoltageVTitle"
+                  >
+                    <h5 id="mountVoltageVTitle">V-Mount</h5>
+                    <div class="mount-voltage-field">
+                      <label for="mountVoltageVHigh" id="mountVoltageVHighLabel">
+                        High-voltage output
+                      </label>
+                      <input
+                        type="number"
+                        id="mountVoltageVHigh"
+                        class="mount-voltage-input"
+                        step="0.1"
+                        min="0"
+                        inputmode="decimal"
+                        autocomplete="off"
+                      />
+                    </div>
+                    <div class="mount-voltage-field">
+                      <label for="mountVoltageVLow" id="mountVoltageVLowLabel">
+                        Low-voltage output
+                      </label>
+                      <input
+                        type="number"
+                        id="mountVoltageVLow"
+                        class="mount-voltage-input"
+                        step="0.1"
+                        min="0"
+                        inputmode="decimal"
+                        autocomplete="off"
+                      />
+                    </div>
+                  </section>
+                  <section
+                    class="mount-voltage-card"
+                    aria-labelledby="mountVoltageGoldTitle"
+                  >
+                    <h5 id="mountVoltageGoldTitle">Gold Mount</h5>
+                    <div class="mount-voltage-field">
+                      <label for="mountVoltageGoldHigh" id="mountVoltageGoldHighLabel">
+                        High-voltage output
+                      </label>
+                      <input
+                        type="number"
+                        id="mountVoltageGoldHigh"
+                        class="mount-voltage-input"
+                        step="0.1"
+                        min="0"
+                        inputmode="decimal"
+                        autocomplete="off"
+                      />
+                    </div>
+                    <div class="mount-voltage-field">
+                      <label for="mountVoltageGoldLow" id="mountVoltageGoldLowLabel">
+                        Low-voltage output
+                      </label>
+                      <input
+                        type="number"
+                        id="mountVoltageGoldLow"
+                        class="mount-voltage-input"
+                        step="0.1"
+                        min="0"
+                        inputmode="decimal"
+                        autocomplete="off"
+                      />
+                    </div>
+                  </section>
+                  <section
+                    class="mount-voltage-card"
+                    aria-labelledby="mountVoltageBTitle"
+                  >
+                    <h5 id="mountVoltageBTitle">B-Mount</h5>
+                    <div class="mount-voltage-field">
+                      <label for="mountVoltageBHigh" id="mountVoltageBHighLabel">
+                        High-voltage output
+                      </label>
+                      <input
+                        type="number"
+                        id="mountVoltageBHigh"
+                        class="mount-voltage-input"
+                        step="0.1"
+                        min="0"
+                        inputmode="decimal"
+                        autocomplete="off"
+                      />
+                    </div>
+                    <div class="mount-voltage-field">
+                      <label for="mountVoltageBLow" id="mountVoltageBLowLabel">
+                        Low-voltage output
+                      </label>
+                      <input
+                        type="number"
+                        id="mountVoltageBLow"
+                        class="mount-voltage-input"
+                        step="0.1"
+                        min="0"
+                        inputmode="decimal"
+                        autocomplete="off"
+                      />
+                    </div>
+                  </section>
+                </div>
+                <p id="mountVoltageNote" class="settings-hint">
+                  These voltages update the totals in the power summary and pin warnings.
+                </p>
+              </section>
+            </div>
           </section>
           <section
             id="settingsPanel-autoGear"
