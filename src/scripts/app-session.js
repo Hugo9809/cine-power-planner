@@ -9459,7 +9459,7 @@ if (helpButton && helpDialog) {
     if (typeof featureSearch.select === 'function') {
       featureSearch.select();
     }
-    featureSearch.showPicker?.();
+    safeShowPicker(featureSearch);
   };
 
   runFeatureSearch = query => {
@@ -9600,7 +9600,7 @@ if (helpButton && helpDialog) {
     featureSearch.addEventListener('change', handle);
     featureSearch.addEventListener('input', () => {
       updateFeatureSearchSuggestions(featureSearch.value);
-      featureSearch.showPicker?.();
+      safeShowPicker(featureSearch);
     });
     featureSearch.addEventListener('keydown', e => {
       if (e.key === 'Enter') {
@@ -9608,7 +9608,7 @@ if (helpButton && helpDialog) {
       } else if (e.key === 'Escape' && featureSearch.value) {
         featureSearch.value = '';
         restoreFeatureSearchDefaults();
-        featureSearch.showPicker?.();
+        safeShowPicker(featureSearch);
         e.preventDefault();
       }
     });
@@ -9626,9 +9626,21 @@ if (helpButton && helpDialog) {
     }
   });
 
+  function safeShowPicker(input) {
+    if (!input || typeof input.showPicker !== 'function') return;
+    try {
+      input.showPicker();
+    } catch (err) {
+      if (err && err.name === 'NotAllowedError') return;
+      console.warn('Unable to show picker', err);
+    }
+  }
+
   document.addEventListener('keydown', e => {
     const tag = document.activeElement.tagName;
     const isTextField = tag === 'INPUT' || tag === 'TEXTAREA';
+    const key = typeof e.key === 'string' ? e.key : '';
+    const lowerKey = key.toLowerCase();
     // Keyboard shortcuts controlling the help dialog and hover-help mode
     if (hoverHelpActive && e.key === 'Escape') {
       // Escape exits hover-help mode
@@ -9664,25 +9676,25 @@ if (helpButton && helpDialog) {
       focusFeatureSearchInput();
     } else if (
       (e.key === '?' && !isTextField) ||
-      (e.key.toLowerCase() === 'h' && !isTextField)
+      (lowerKey === 'h' && !isTextField)
     ) {
       // Plain ? or H opens the dialog when not typing in a field
       e.preventDefault();
       toggleHelp();
     } else if (
       isDialogOpen(helpDialog) &&
-      ((e.key === '/' && !isTextField) || (e.key.toLowerCase() === 'f' && (e.ctrlKey || e.metaKey)))
+      ((e.key === '/' && !isTextField) || (lowerKey === 'f' && (e.ctrlKey || e.metaKey)))
     ) {
       // When the dialog is open, / or Ctrl+F moves focus to the search box
       e.preventDefault();
       if (helpSearch) helpSearch.focus();
-    } else if (e.key === ',' && (e.ctrlKey || e.metaKey)) {
+    } else if (key === ',' && (e.ctrlKey || e.metaKey)) {
       e.preventDefault();
       if (settingsButton) settingsButton.click();
-    } else if (e.key.toLowerCase() === 'k' && (e.ctrlKey || e.metaKey)) {
+    } else if (lowerKey === 'k' && (e.ctrlKey || e.metaKey)) {
       e.preventDefault();
       focusFeatureSearchInput();
-    } else if (e.key.toLowerCase() === 'd' && !isTextField) {
+    } else if (lowerKey === 'd' && !isTextField) {
       darkModeEnabled = !document.body.classList.contains('dark-mode');
       applyDarkMode(darkModeEnabled);
       try {
@@ -9690,12 +9702,12 @@ if (helpButton && helpDialog) {
       } catch (err) {
         console.warn('Could not save dark mode preference', err);
       }
-    } else if (e.key.toLowerCase() === 's' && (e.ctrlKey || e.metaKey)) {
+    } else if (lowerKey === 's' && (e.ctrlKey || e.metaKey)) {
       e.preventDefault();
       if (saveSetupBtn && !saveSetupBtn.disabled) {
         saveSetupBtn.click();
       }
-    } else if (e.key.toLowerCase() === 'p' && !isTextField) {
+    } else if (lowerKey === 'p' && !isTextField) {
       persistPinkModePreference(!document.body.classList.contains('pink-mode'));
     }
   });
