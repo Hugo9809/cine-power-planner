@@ -4045,14 +4045,27 @@ function sanitizeBackupPayload(raw) {
       && typeof Buffer.isBuffer === 'function'
       && Buffer.isBuffer(value);
 
+    const objectTag = Object.prototype.toString.call(value);
+
     const isArrayBuffer =
       typeof ArrayBuffer !== 'undefined'
-      && value instanceof ArrayBuffer;
+      && (value instanceof ArrayBuffer || objectTag === '[object ArrayBuffer]' || objectTag === '[object SharedArrayBuffer]');
 
-    const isArrayBufferView =
-      typeof ArrayBuffer !== 'undefined'
-      && typeof ArrayBuffer.isView === 'function'
-      && ArrayBuffer.isView(value);
+    const isArrayBufferView = (() => {
+      if (typeof ArrayBuffer === 'undefined') {
+        return false;
+      }
+      if (typeof ArrayBuffer.isView === 'function' && ArrayBuffer.isView(value)) {
+        return true;
+      }
+      return Boolean(
+        value
+        && typeof value === 'object'
+        && typeof value.buffer === 'object'
+        && typeof value.byteLength === 'number'
+        && typeof value.BYTES_PER_ELEMENT === 'number'
+      );
+    })();
 
     if (!isNodeBuffer && !isArrayBuffer && !isArrayBufferView) {
       return null;
@@ -4065,7 +4078,14 @@ function sanitizeBackupPayload(raw) {
       if (isArrayBuffer) {
         return new Uint8Array(value);
       }
-      return new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
+      if (
+        typeof value.buffer === 'object'
+        && typeof value.byteLength === 'number'
+      ) {
+        const offset = typeof value.byteOffset === 'number' ? value.byteOffset : 0;
+        return new Uint8Array(value.buffer, offset, value.byteLength);
+      }
+      throw new TypeError('Unsupported binary payload type');
     };
 
     const decodeWithTextDecoder = (array) => {
