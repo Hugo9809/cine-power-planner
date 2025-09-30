@@ -5776,7 +5776,7 @@ function applyPreferencesFromStorage(safeGetItem) {
     var parsedVoltages = parseStoredMountVoltages(storedVoltages);
     var shouldPersistVoltages = false;
     if (!parsedVoltages) {
-      var backupKey = typeof MOUNT_VOLTAGE_STORAGE_BACKUP_KEY === 'string' ? MOUNT_VOLTAGE_STORAGE_BACKUP_KEY : typeof getMountVoltageStorageBackupKeyName === 'function' ? getMountVoltageStorageBackupKeyName() : "".concat(mountVoltageKeyName, "__backup");
+      var backupKey = typeof getMountVoltageStorageBackupKeyName === 'function' ? getMountVoltageStorageBackupKeyName() : "".concat(mountVoltageKeyName, "__backup");
       var backupVoltages = safeGetItem(backupKey);
       if (backupVoltages !== undefined && backupVoltages !== null) {
         var parsedBackupVoltages = parseStoredMountVoltages(backupVoltages);

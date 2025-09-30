@@ -548,67 +548,102 @@ var SUPPORTED_MOUNT_VOLTAGE_TYPES = function resolveSupportedMounts() {
   }
   return created;
 }();
-var MOUNT_VOLTAGE_STORAGE_KEY_RESOLVED = function resolveMountVoltageStorageKey() {
-  var existing = null;
-  if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_KEY === 'string' && CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_KEY) {
-    existing = CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_KEY;
-  }
-  if (!existing && CORE_GLOBAL_SCOPE) {
-    var scopedResolved = CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_KEY_RESOLVED;
-    if (typeof scopedResolved === 'string' && scopedResolved) {
-      existing = scopedResolved;
+  var MOUNT_VOLTAGE_STORAGE_KEY_FALLBACK = 'cameraPowerPlanner_mountVoltages';
+  var cachedMountVoltagePrimaryKey = '';
+  var cachedMountVoltageBackupKey = '';
+  var mountVoltageKeysResolved = false;
+
+  function readGlobalMountVoltageKey(property) {
+    if (!CORE_GLOBAL_SCOPE || _typeof(CORE_GLOBAL_SCOPE) !== 'object') {
+      return '';
     }
+    var value = CORE_GLOBAL_SCOPE[property];
+    return typeof value === 'string' && value ? value : '';
   }
-  if (!existing && typeof getMountVoltageStorageKeyName === 'function') {
+
+  function assignGlobalMountVoltageKey(property, value) {
+    if (!CORE_GLOBAL_SCOPE || _typeof(CORE_GLOBAL_SCOPE) !== 'object') {
+      return;
+    }
+    if (typeof value !== 'string' || !value) {
+      return;
+    }
+    var descriptor = null;
     try {
-      var resolvedKey = getMountVoltageStorageKeyName();
-      if (typeof resolvedKey === 'string' && resolvedKey) {
-        existing = resolvedKey;
+      descriptor = Object.getOwnPropertyDescriptor(CORE_GLOBAL_SCOPE, property);
+    } catch (descriptorError) {
+      descriptor = null;
+      void descriptorError;
+    }
+    if (descriptor && descriptor.configurable === false && descriptor.writable === false) {
+      return;
+    }
+    try {
+      CORE_GLOBAL_SCOPE[property] = value;
+    } catch (assignError) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Unable to expose ' + property + ' globally', assignError);
       }
-    } catch (mountVoltageKeyError) {
-      console.warn('Unable to resolve mount voltage storage key name', mountVoltageKeyError);
     }
   }
-  if (!existing && typeof MOUNT_VOLTAGE_STORAGE_KEY_NAME === 'string' && MOUNT_VOLTAGE_STORAGE_KEY_NAME) {
-    existing = MOUNT_VOLTAGE_STORAGE_KEY_NAME;
-  }
-  var resolved = existing || 'cameraPowerPlanner_mountVoltages';
-  if (CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object') {
-    try {
-      CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_KEY = resolved;
-    } catch (assignError) {
-      console.warn('Unable to expose mount voltage storage key globally', assignError);
+
+  function resolveMountVoltageStorageKeys() {
+    if (mountVoltageKeysResolved) {
+      return;
     }
-    try {
-      CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_KEY_RESOLVED = resolved;
-    } catch (exposeResolvedError) {
-      void exposeResolvedError;
+    var resolvedPrimary = readGlobalMountVoltageKey('MOUNT_VOLTAGE_STORAGE_KEY') || readGlobalMountVoltageKey('MOUNT_VOLTAGE_STORAGE_KEY_RESOLVED');
+    if (!resolvedPrimary && typeof getMountVoltageStorageKeyName === 'function') {
+      try {
+        var resolvedKey = getMountVoltageStorageKeyName();
+        if (typeof resolvedKey === 'string' && resolvedKey) {
+          resolvedPrimary = resolvedKey;
+        }
+      } catch (mountVoltageKeyError) {
+        console.warn('Unable to resolve mount voltage storage key name', mountVoltageKeyError);
+      }
     }
-  }
-  return resolved;
-}();
-var MOUNT_VOLTAGE_STORAGE_BACKUP_KEY = function resolveMountVoltageBackupKey() {
-  if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_BACKUP_KEY === 'string' && CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_BACKUP_KEY) {
-    return CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_BACKUP_KEY;
-  }
-  if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_BACKUP_KEY_RESOLVED === 'string' && CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_BACKUP_KEY_RESOLVED) {
-    return CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_BACKUP_KEY_RESOLVED;
-  }
-  var backupKey = "".concat(MOUNT_VOLTAGE_STORAGE_KEY_RESOLVED, "__backup");
-  if (CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object') {
-    try {
-      CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_BACKUP_KEY = backupKey;
-    } catch (assignError) {
-      console.warn('Unable to expose mount voltage storage backup key globally', assignError);
+    if (!resolvedPrimary && typeof MOUNT_VOLTAGE_STORAGE_KEY_NAME === 'string' && MOUNT_VOLTAGE_STORAGE_KEY_NAME) {
+      resolvedPrimary = MOUNT_VOLTAGE_STORAGE_KEY_NAME;
     }
-    try {
-      CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_BACKUP_KEY_RESOLVED = backupKey;
-    } catch (exposeResolvedError) {
-      void exposeResolvedError;
+    if (!resolvedPrimary) {
+      resolvedPrimary = MOUNT_VOLTAGE_STORAGE_KEY_FALLBACK;
     }
+    var resolvedBackup = readGlobalMountVoltageKey('MOUNT_VOLTAGE_STORAGE_BACKUP_KEY') || readGlobalMountVoltageKey('MOUNT_VOLTAGE_STORAGE_BACKUP_KEY_RESOLVED');
+    if (!resolvedBackup && typeof getMountVoltageStorageBackupKeyName === 'function') {
+      try {
+        var backupKeyName = getMountVoltageStorageBackupKeyName();
+        if (typeof backupKeyName === 'string' && backupKeyName) {
+          resolvedBackup = backupKeyName;
+        }
+      } catch (backupKeyError) {
+        console.warn('Unable to resolve mount voltage storage backup key name', backupKeyError);
+      }
+    }
+    if (!resolvedBackup && resolvedPrimary) {
+      resolvedBackup = "".concat(resolvedPrimary, "__backup");
+    }
+    cachedMountVoltagePrimaryKey = resolvedPrimary || MOUNT_VOLTAGE_STORAGE_KEY_FALLBACK;
+    cachedMountVoltageBackupKey = resolvedBackup || "".concat(cachedMountVoltagePrimaryKey, "__backup");
+    mountVoltageKeysResolved = true;
+    assignGlobalMountVoltageKey('MOUNT_VOLTAGE_STORAGE_KEY', cachedMountVoltagePrimaryKey);
+    assignGlobalMountVoltageKey('MOUNT_VOLTAGE_STORAGE_KEY_RESOLVED', cachedMountVoltagePrimaryKey);
+    assignGlobalMountVoltageKey('MOUNT_VOLTAGE_STORAGE_BACKUP_KEY', cachedMountVoltageBackupKey);
+    assignGlobalMountVoltageKey('MOUNT_VOLTAGE_STORAGE_BACKUP_KEY_RESOLVED', cachedMountVoltageBackupKey);
   }
-  return backupKey;
-}();
+
+  function getMountVoltagePrimaryStorageKey() {
+    if (!mountVoltageKeysResolved) {
+      resolveMountVoltageStorageKeys();
+    }
+    return cachedMountVoltagePrimaryKey || MOUNT_VOLTAGE_STORAGE_KEY_FALLBACK;
+  }
+
+  function getMountVoltageBackupStorageKey() {
+    if (!mountVoltageKeysResolved) {
+      resolveMountVoltageStorageKeys();
+    }
+    return cachedMountVoltageBackupKey || "".concat(getMountVoltagePrimaryStorageKey(), "__backup");
+  }
 var DEFAULT_MOUNT_VOLTAGES = function resolveDefaultMountVoltages() {
   if (CORE_GLOBAL_SCOPE && CORE_GLOBAL_SCOPE.DEFAULT_MOUNT_VOLTAGES && _typeof(CORE_GLOBAL_SCOPE.DEFAULT_MOUNT_VOLTAGES) === 'object') {
     return CORE_GLOBAL_SCOPE.DEFAULT_MOUNT_VOLTAGES;
@@ -756,16 +791,18 @@ function persistMountVoltagePreferences(preferences) {
     console.warn('Could not serialize mount voltage preferences', serializationError);
     return;
   }
-  try {
-    localStorage.setItem(MOUNT_VOLTAGE_STORAGE_KEY_RESOLVED, serialized);
-  } catch (storageError) {
-    console.warn('Could not save mount voltage preferences', storageError);
-  }
-  try {
-    localStorage.setItem(MOUNT_VOLTAGE_STORAGE_BACKUP_KEY, serialized);
-  } catch (backupError) {
-    console.warn('Could not save mount voltage backup copy', backupError);
-  }
+    var primaryMountVoltageKey = getMountVoltagePrimaryStorageKey();
+    try {
+      localStorage.setItem(primaryMountVoltageKey, serialized);
+    } catch (storageError) {
+      console.warn('Could not save mount voltage preferences', storageError);
+    }
+    var backupMountVoltageKey = getMountVoltageBackupStorageKey();
+    try {
+      localStorage.setItem(backupMountVoltageKey, serialized);
+    } catch (backupError) {
+      console.warn('Could not save mount voltage backup copy', backupError);
+    }
 }
 function applyMountVoltagePreferences(preferences) {
   var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -927,12 +964,12 @@ function updateMountVoltageSettingLabels() {
 }
 try {
   if (typeof localStorage !== 'undefined') {
-    var storedVoltages = localStorage.getItem(MOUNT_VOLTAGE_STORAGE_KEY_RESOLVED);
+    var storedVoltages = localStorage.getItem(getMountVoltagePrimaryStorageKey());
     var parsedVoltages = parseStoredMountVoltages(storedVoltages);
     if (parsedVoltages) {
       mountVoltagePreferences = parsedVoltages;
     } else {
-      var backupVoltages = localStorage.getItem(MOUNT_VOLTAGE_STORAGE_BACKUP_KEY);
+      var backupVoltages = localStorage.getItem(getMountVoltageBackupStorageKey());
       var parsedBackupVoltages = parseStoredMountVoltages(backupVoltages);
       if (parsedBackupVoltages) {
         mountVoltagePreferences = parsedBackupVoltages;
