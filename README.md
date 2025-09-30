@@ -423,7 +423,9 @@ Use Cine Power Planner end-to-end with the following routine:
 - **Global search** (`/`, `Ctrl+K`, `⌘K`) jumps to any feature, selector or help
   topic—even when the side navigation is hidden on smaller screens. Suggestions
   surface direct feature and device matches before help topics so keyboard-first
-  workflows land on primary controls.
+  workflows land on primary controls. Backup and restore controls now respond to
+  plain-language keywords like “save”, “import”, “share” and “restore” so data
+  safety tasks are always one query away.
 - **Help center** (`?`, `H`, `F1`, `Ctrl+/`) provides searchable guides,
   shortcuts, FAQs and an optional hover-help mode so every control explains
   itself. The Start Here checklist now covers priming the offline indicator,

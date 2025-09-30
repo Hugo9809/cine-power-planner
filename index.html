@@ -1291,7 +1291,10 @@
         </div>
         <div id="autoGearBackupsSection" class="auto-gear-backups">
           <div class="auto-gear-backup-header">
-            <h4 id="autoGearBackupsHeading">Automatic backups</h4>
+            <h4
+              id="autoGearBackupsHeading"
+              data-feature-search-keywords="auto backup autosave gear retention history"
+            >Automatic backups</h4>
             <div class="auto-gear-backup-toggle-row">
               <input type="checkbox" id="autoGearShowBackups" />
               <label for="autoGearShowBackups" id="autoGearShowBackupsLabel">Show automatic backups</label>
@@ -1301,7 +1304,11 @@
           <p id="autoGearBackupsHidden" class="settings-hint" hidden></p>
           <div class="auto-gear-backup-retention">
             <div class="auto-gear-backup-retention-row">
-              <label for="autoGearBackupRetention" id="autoGearBackupRetentionLabel">Backup retention</label>
+              <label
+                for="autoGearBackupRetention"
+                id="autoGearBackupRetentionLabel"
+                data-feature-search-keywords="backup retention limit rotation policy"
+              >Backup retention</label>
               <input
                 type="number"
                 id="autoGearBackupRetention"
@@ -1320,12 +1327,27 @@
             ></p>
           </div>
           <div id="autoGearBackupControls" class="auto-gear-backup-controls" aria-live="polite">
-            <label for="autoGearBackupSelect" id="autoGearBackupSelectLabel">Choose a backup</label>
+            <label
+              for="autoGearBackupSelect"
+              id="autoGearBackupSelectLabel"
+              data-feature-search-keywords="gear backup restore select history"
+            >Choose a backup</label>
             <div class="auto-gear-backup-row">
-              <select id="autoGearBackupSelect" class="auto-gear-backup-select" disabled>
+              <select
+                id="autoGearBackupSelect"
+                class="auto-gear-backup-select"
+                disabled
+                data-feature-search-keywords="gear backup list history restore"
+              >
                 <option value="">Select a backup to restore</option>
               </select>
-              <button type="button" id="autoGearBackupRestore" disabled>Restore</button>
+              <button
+                type="button"
+                id="autoGearBackupRestore"
+                disabled
+                data-feature-search="true"
+                data-feature-search-keywords="restore gear backup recovery"
+              >Restore</button>
             </div>
             <p id="autoGearBackupEmpty" class="auto-gear-backup-empty" hidden>No automatic backups yet.</p>
           </div>
@@ -2303,14 +2325,20 @@
         aria-labelledby="settingsTab-backup backupHeading"
         hidden
       >
-        <h3 id="backupHeading">Backup &amp; Restore</h3>
+        <h3
+          id="backupHeading"
+          data-feature-search-keywords="backup restore save import export archive share sync"
+        >Backup &amp; Restore</h3>
         <section
           id="projectBackupsSection"
           class="project-backups"
           aria-labelledby="projectBackupsHeading"
           aria-describedby="projectBackupsDescription"
         >
-          <h4 id="projectBackupsHeading">Project Backups</h4>
+          <h4
+            id="projectBackupsHeading"
+            data-feature-search-keywords="project backup autosave history save rotation"
+          >Project Backups</h4>
           <p id="projectBackupsDescription" class="settings-hint">
             Manage automatic snapshots and compare saved versions before restoring changes.
           </p>
@@ -2338,7 +2366,10 @@
           aria-labelledby="backupDiffHeading"
           hidden
         >
-          <h4 id="backupDiffHeading">Version comparison</h4>
+          <h4
+            id="backupDiffHeading"
+            data-feature-search-keywords="backup compare diff audit change history"
+          >Version comparison</h4>
           <p id="backupDiffIntro" class="settings-hint">
             Pick two manual saves or automatic backups to inspect changes before archiving a log.
           </p>
@@ -2383,7 +2414,10 @@
           aria-labelledby="fullBackupHeading"
           aria-describedby="fullBackupDescription"
         >
-          <h4 id="fullBackupHeading">Full Backup and Restore</h4>
+          <h4
+            id="fullBackupHeading"
+            data-feature-search-keywords="full backup restore rehearsal import json safety"
+          >Full Backup and Restore</h4>
           <p id="fullBackupDescription" class="settings-hint">
             Create complete archives, rehearse restores in a sandbox, or reset the planner safely.
           </p>
