@@ -489,6 +489,7 @@
     'src/scripts/app-core-new-2.js',
     'src/scripts/app-events.js',
     'src/scripts/app-setups.js',
+    'src/scripts/restore-verification.js',
     'src/scripts/app-session.js',
     'src/scripts/modules/persistence.js',
     'src/scripts/modules/runtime.js',

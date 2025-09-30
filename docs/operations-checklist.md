@@ -109,9 +109,11 @@ appears, stabilize the environment before attempting to fix it:
    profile that stays offline. Confirm the project contents there before touching
    the production environment.
 5. **Restore with confidence.** Once the isolated import checks out, restore the
-   freshly captured backup on the main machine. Compare the automatic pre-restore
-   snapshot against the restored data and document what happened, where exports
-   are stored and which workstation verified the recovery.
+   freshly captured backup on the main machine. The app now surfaces an automatic
+   verification summary that compares live counts with the backup snapshot—log any
+   mismatches before proceeding. Compare the automatic pre-restore snapshot
+   against the restored data and document what happened, where exports are stored
+   and which workstation verified the recovery.
 6. **Export the diff log.** After the restore, run **Settings → Backup &
    Restore → Compare versions** between the pre-incident manual save and the
    restored state. Save the log into the incident folder so reviewers can trace

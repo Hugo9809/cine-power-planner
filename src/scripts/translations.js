@@ -850,6 +850,14 @@ const texts = {
     supportLinkHelp:
       "Open support documentation in a new tab.",
     restoreSuccess: "Settings restored. Reload to apply all changes.",
+    restoreVerificationMatch:
+      "Restore verification passed. Live data matches the backup snapshot.",
+    restoreVerificationMismatch:
+      "Restore verification found differences. Review the counts before continuing:",
+    restoreVerificationDifference: "{label}: backup {expected}, live {actual}",
+    restoreVerificationFailed:
+      "Restore verification could not confirm the imported data. Review the backup manually.",
+    restoreVerificationUnknownMetric: "Metric",
     restoreFailed: "Restore failed. Check the backup file and try again.",
     restoreVersionWarning: "Backup created with a different version. Some features might not transfer.",
     restoreVersionSummaryTitle: "Older backup detected",
@@ -2695,6 +2703,14 @@ const texts = {
     supportLinkHelp:
       "Apri la documentazione di supporto in una nuova scheda.",
     restoreSuccess: "Impostazioni ripristinate. Ricarica per applicare tutte le modifiche.",
+    restoreVerificationMatch:
+      "Verifica del ripristino completata. I dati attivi corrispondono al backup.",
+    restoreVerificationMismatch:
+      "La verifica del ripristino ha rilevato differenze. Controlla i conteggi prima di procedere:",
+    restoreVerificationDifference: "{label}: backup {expected}, attivo {actual}",
+    restoreVerificationFailed:
+      "La verifica del ripristino non ha potuto confermare i dati importati. Controlla manualmente il backup.",
+    restoreVerificationUnknownMetric: "Metrica",
     restoreFailed: "Ripristino non riuscito. Controlla il file di backup e riprova.",
     restoreVersionWarning: "Il backup è stato creato con una versione diversa. Alcune funzioni potrebbero non essere trasferite.",
     restoreVersionSummaryTitle: "Backup datato rilevato",
@@ -4117,6 +4133,14 @@ const texts = {
     supportLinkHelp:
       "Abre la documentación de soporte en una nueva pestaña.",
     restoreSuccess: "Ajustes restaurados. Recarga para aplicar todos los cambios.",
+    restoreVerificationMatch:
+      "Verificación de restauración completada. Los datos activos coinciden con la copia de seguridad.",
+    restoreVerificationMismatch:
+      "La verificación de restauración detectó diferencias. Revisa los conteos antes de continuar:",
+    restoreVerificationDifference: "{label}: copia de seguridad {expected}, activo {actual}",
+    restoreVerificationFailed:
+      "No se pudo confirmar la restauración. Revisa la copia de seguridad manualmente.",
+    restoreVerificationUnknownMetric: "Métrica",
     restoreFailed: "La restauración falló. Comprueba el archivo de copia de seguridad y vuelve a intentarlo.",
     restoreVersionWarning: "La copia se creó con otra versión. Algunas funciones podrían no transferirse.",
     restoreVersionSummaryTitle: "Copia de seguridad antigua detectada",
@@ -5549,6 +5573,14 @@ const texts = {
     supportLinkHelp:
       "Ouvrez la documentation d’assistance dans un nouvel onglet.",
     restoreSuccess: "Paramètres restaurés. Rechargez pour appliquer tous les changements.",
+    restoreVerificationMatch:
+      "Vérification de la restauration réussie. Les données actives correspondent à la sauvegarde.",
+    restoreVerificationMismatch:
+      "La vérification de la restauration a détecté des différences. Vérifiez les décomptes avant de continuer :",
+    restoreVerificationDifference: "{label} : sauvegarde {expected}, actif {actual}",
+    restoreVerificationFailed:
+      "La vérification de la restauration n'a pas pu confirmer les données importées. Vérifiez la sauvegarde manuellement.",
+    restoreVerificationUnknownMetric: "Métrique",
     restoreFailed: "La restauration a échoué. Vérifiez le fichier de sauvegarde et réessayez.",
     restoreVersionWarning: "La sauvegarde a été créée avec une autre version. Certaines fonctions peuvent ne pas être transférées.",
     restoreVersionSummaryTitle: "Sauvegarde ancienne détectée",
@@ -6986,6 +7018,14 @@ const texts = {
     supportLinkHelp:
       "Öffnet die Support-Dokumentation in einem neuen Tab.",
     restoreSuccess: "Einstellungen wiederhergestellt. Zum Anwenden Seite neu laden.",
+    restoreVerificationMatch:
+      "Wiederherstellungsprüfung bestanden. Die Live-Daten entsprechen der Sicherung.",
+    restoreVerificationMismatch:
+      "Die Wiederherstellungsprüfung hat Abweichungen gefunden. Prüfe die Zählwerte, bevor du fortfährst:",
+    restoreVerificationDifference: "{label}: Sicherung {expected}, Live {actual}",
+    restoreVerificationFailed:
+      "Die Wiederherstellungsprüfung konnte die importierten Daten nicht bestätigen. Überprüfe die Sicherung manuell.",
+    restoreVerificationUnknownMetric: "Kennzahl",
     restoreFailed: "Wiederherstellung fehlgeschlagen. Prüfe die Sicherungsdatei und versuche es erneut.",
     restoreVersionWarning: "Die Sicherung stammt aus einer anderen Version. Manche Funktionen werden eventuell nicht übernommen.",
     restoreVersionSummaryTitle: "Älteres Backup erkannt",

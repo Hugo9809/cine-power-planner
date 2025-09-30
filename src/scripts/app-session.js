@@ -4646,6 +4646,81 @@ function resolveRestoreTranslation(langTexts, fallbackTexts, key, defaultText) {
   return defaultText;
 }
 
+let restoreVerificationApi = null;
+let restoreVerificationResolutionAttempted = false;
+
+function resolveRestoreVerificationApi() {
+  if (restoreVerificationResolutionAttempted) {
+    return restoreVerificationApi;
+  }
+
+  restoreVerificationResolutionAttempted = true;
+
+  if (typeof require === 'function') {
+    try {
+      const moduleApi = require('./restore-verification.js');
+      if (moduleApi && typeof moduleApi.buildReport === 'function') {
+        restoreVerificationApi = moduleApi;
+        return restoreVerificationApi;
+      }
+    } catch (requireError) {
+      void requireError;
+    }
+  }
+
+  const scope =
+    (typeof globalThis !== 'undefined' && globalThis)
+    || (typeof window !== 'undefined' && window)
+    || (typeof self !== 'undefined' && self)
+    || (typeof global !== 'undefined' && global)
+    || null;
+
+  if (scope && typeof scope.__cineRestoreVerification === 'object') {
+    restoreVerificationApi = scope.__cineRestoreVerification;
+  }
+
+  return restoreVerificationApi;
+}
+
+function verifyRestoredBackupIntegrity(importedData) {
+  const api = resolveRestoreVerificationApi();
+  if (!api || typeof api.buildReport !== 'function') {
+    return null;
+  }
+
+  const { langTexts, fallbackTexts } = getSessionLanguageTexts();
+  const translation = (key, fallback) => resolveRestoreTranslation(langTexts, fallbackTexts, key, fallback);
+
+  const safeImportedData = isPlainObject(importedData) ? importedData : {};
+  let liveData = {};
+
+  try {
+    const snapshot = collectFullBackupData();
+    if (snapshot && snapshot.data && isPlainObject(snapshot.data)) {
+      liveData = snapshot.data;
+    }
+  } catch (snapshotError) {
+    console.warn('Restore verification failed to collect live snapshot', snapshotError);
+    if (typeof api.buildFailureReport === 'function') {
+      return api.buildFailureReport({ translation, error: snapshotError });
+    }
+    return null;
+  }
+
+  try {
+    const liveCounts = summarizeCountsFromData(liveData);
+    const expectedCounts = summarizeCountsFromData(safeImportedData);
+    const rows = buildRestoreRehearsalRows(liveCounts, expectedCounts, { mode: 'backup' });
+    return api.buildReport({ rows, translation });
+  } catch (reportError) {
+    console.warn('Restore verification report failed', reportError);
+    if (typeof api.buildFailureReport === 'function') {
+      return api.buildFailureReport({ translation, error: reportError });
+    }
+    return null;
+  }
+}
+
 function hasAnyDataKey(data, keys) {
   if (!data || typeof data !== 'object') {
     return false;
@@ -6980,7 +7055,29 @@ function handleRestoreSettingsInputChange() {
           }
         });
       }
-      alert(texts[currentLang].restoreSuccess);
+
+      let verificationResult = null;
+      try {
+        verificationResult = verifyRestoredBackupIntegrity(data);
+      } catch (verificationError) {
+        console.warn('Restore verification execution failed', verificationError);
+        verificationResult = null;
+      }
+
+      if (
+        verificationResult
+        && verificationResult.notificationType
+        && verificationResult.notificationMessage
+      ) {
+        showNotification(verificationResult.notificationType, verificationResult.notificationMessage);
+      }
+
+      const successMessage = texts[currentLang].restoreSuccess;
+      const alertSegments = [successMessage];
+      if (verificationResult && verificationResult.alertMessage) {
+        alertSegments.push(verificationResult.alertMessage);
+      }
+      alert(alertSegments.join('\n\n'));
       finalizeRestore();
     } catch (err) {
       if (restoreMutated) {
