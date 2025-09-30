@@ -15582,6 +15582,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       syncAutoGearAutoPreset,
       updateAutoGearCatalogOptions,
       updateAutoGearMonitorDefaultOptions,
+      applyFavoritesToSelect,
+      updateFavoriteButton,
+      toggleFavorite,
+      refreshDarkModeAccentBoost,
+      isHighContrastActive,
+      feedbackUseLocationBtn,
     };
     
     const CORE_PART2_GLOBAL_SCOPE =

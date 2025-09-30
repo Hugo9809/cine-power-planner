@@ -6314,11 +6314,27 @@ function updateBatteryOptions() {
   if (Array.from(batterySelect.options).some(o => o.value === current)) {
     batterySelect.value = current;
   }
-  updateFavoriteButton(batterySelect);
+  if (typeof updateFavoriteButton === 'function') {
+    updateFavoriteButton(batterySelect);
+  } else if (typeof enqueueCoreBootTask === 'function') {
+    enqueueCoreBootTask(() => {
+      if (typeof updateFavoriteButton === 'function') {
+        updateFavoriteButton(batterySelect);
+      }
+    });
+  }
   if (Array.from(hotswapSelect.options).some(o => o.value === currentSwap)) {
     hotswapSelect.value = currentSwap;
   }
-  updateFavoriteButton(hotswapSelect);
+  if (typeof updateFavoriteButton === 'function') {
+    updateFavoriteButton(hotswapSelect);
+  } else if (typeof enqueueCoreBootTask === 'function') {
+    enqueueCoreBootTask(() => {
+      if (typeof updateFavoriteButton === 'function') {
+        updateFavoriteButton(hotswapSelect);
+      }
+    });
+  }
   updateBatteryLabel();
 }
 
