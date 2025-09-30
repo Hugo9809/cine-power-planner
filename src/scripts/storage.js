@@ -2,6 +2,7 @@
 /* global texts, currentLang, SAFE_LOCAL_STORAGE, __cineGlobal, LZString,
           applyMountVoltagePreferences, parseStoredMountVoltages,
           resetMountVoltagePreferences */
+/* exported getMountVoltageStorageKeyName, getMountVoltageStorageBackupKeyName */
 
 var GLOBAL_SCOPE =
   typeof globalThis !== 'undefined'
@@ -23,7 +24,66 @@ var FAVORITES_STORAGE_KEY = 'cameraPowerPlanner_favorites';
 var DEVICE_SCHEMA_CACHE_KEY = 'cameraPowerPlanner_schemaCache';
 var LEGACY_SCHEMA_CACHE_KEY = 'cinePowerPlanner_schemaCache';
 var CUSTOM_FONT_STORAGE_KEY_DEFAULT = 'cameraPowerPlanner_customFonts';
-var MOUNT_VOLTAGE_STORAGE_KEY = 'cameraPowerPlanner_mountVoltages';
+var MOUNT_VOLTAGE_STORAGE_KEY_FALLBACK = 'cameraPowerPlanner_mountVoltages';
+
+function resolveMountVoltageStorageKeyName() {
+  if (!GLOBAL_SCOPE || typeof GLOBAL_SCOPE !== 'object') {
+    return MOUNT_VOLTAGE_STORAGE_KEY_FALLBACK;
+  }
+
+  try {
+    var descriptor = Object.getOwnPropertyDescriptor(
+      GLOBAL_SCOPE,
+      'MOUNT_VOLTAGE_STORAGE_KEY'
+    );
+    if (
+      descriptor &&
+      Object.prototype.hasOwnProperty.call(descriptor, 'value') &&
+      typeof descriptor.value === 'string' &&
+      descriptor.value
+    ) {
+      return descriptor.value;
+    }
+  } catch (descriptorError) {
+    void descriptorError;
+  }
+
+  try {
+    var existing = GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_KEY;
+    if (typeof existing === 'string' && existing) {
+      return existing;
+    }
+  } catch (existingReadError) {
+    void existingReadError;
+  }
+
+  try {
+    Object.defineProperty(GLOBAL_SCOPE, 'MOUNT_VOLTAGE_STORAGE_KEY', {
+      configurable: true,
+      writable: true,
+      value: MOUNT_VOLTAGE_STORAGE_KEY_FALLBACK
+    });
+  } catch (defineError) {
+    void defineError;
+    try {
+      GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_KEY = MOUNT_VOLTAGE_STORAGE_KEY_FALLBACK;
+    } catch (assignError) {
+      void assignError;
+    }
+  }
+
+  return MOUNT_VOLTAGE_STORAGE_KEY_FALLBACK;
+}
+
+var MOUNT_VOLTAGE_STORAGE_KEY_NAME = resolveMountVoltageStorageKeyName();
+
+function getMountVoltageStorageKeyName() {
+  return MOUNT_VOLTAGE_STORAGE_KEY_NAME;
+}
+
+function getMountVoltageStorageBackupKeyName() {
+  return `${MOUNT_VOLTAGE_STORAGE_KEY_NAME}__backup`;
+}
 
 function ensureCustomFontStorageKeyName() {
   if (!GLOBAL_SCOPE) {
@@ -176,7 +236,7 @@ var RAW_STORAGE_BACKUP_KEYS = new Set([
   getCustomFontStorageKeyName(),
   CUSTOM_LOGO_STORAGE_KEY,
   DEVICE_SCHEMA_CACHE_KEY,
-  MOUNT_VOLTAGE_STORAGE_KEY,
+  MOUNT_VOLTAGE_STORAGE_KEY_NAME,
 ]);
 
 var MAX_MIGRATION_BACKUP_CLEANUP_STEPS = 10;
@@ -5069,7 +5129,7 @@ function clearAllData() {
       preferences.language = language;
     }
 
-    const mountVoltages = readLocalStorageValue(MOUNT_VOLTAGE_STORAGE_KEY);
+    const mountVoltages = readLocalStorageValue(MOUNT_VOLTAGE_STORAGE_KEY_NAME);
     if (mountVoltages) {
       try {
         preferences.mountVoltages = JSON.parse(mountVoltages);
@@ -5604,7 +5664,7 @@ function convertStorageSnapshotToData(snapshot) {
   const simpleSnapshotKeys = new Set([
     CUSTOM_LOGO_STORAGE_KEY,
     ...preferenceKeys,
-    MOUNT_VOLTAGE_STORAGE_KEY,
+    MOUNT_VOLTAGE_STORAGE_KEY_NAME,
   ]);
 
   const booleanPreferenceKeys = new Set([
@@ -5758,7 +5818,7 @@ function convertStorageSnapshotToData(snapshot) {
     }
   }
 
-  const mountVoltageEntry = readSnapshotEntry(snapshot, MOUNT_VOLTAGE_STORAGE_KEY);
+  const mountVoltageEntry = readSnapshotEntry(snapshot, MOUNT_VOLTAGE_STORAGE_KEY_NAME);
   if (mountVoltageEntry) {
     markSnapshotEntry(mountVoltageEntry);
     const storedVoltages = parseSnapshotJSONValue(mountVoltageEntry);
@@ -5852,7 +5912,7 @@ function importAllData(allData, options = {}) {
       const rawVoltages = prefs.mountVoltages;
       if (rawVoltages && typeof rawVoltages === 'object') {
         try {
-          safeSetLocalStorage(MOUNT_VOLTAGE_STORAGE_KEY, JSON.stringify(rawVoltages));
+          safeSetLocalStorage(MOUNT_VOLTAGE_STORAGE_KEY_NAME, JSON.stringify(rawVoltages));
         } catch (voltStoreError) {
           console.warn('Unable to store imported mount voltages', voltStoreError);
         }
@@ -5860,7 +5920,7 @@ function importAllData(allData, options = {}) {
           applyMountVoltagePreferences(rawVoltages, { persist: false, triggerUpdate: true });
         }
       } else if (typeof rawVoltages === 'string') {
-        safeSetLocalStorage(MOUNT_VOLTAGE_STORAGE_KEY, rawVoltages);
+        safeSetLocalStorage(MOUNT_VOLTAGE_STORAGE_KEY_NAME, rawVoltages);
         if (typeof parseStoredMountVoltages === 'function') {
           try {
             const parsedVoltages = parseStoredMountVoltages(rawVoltages);
@@ -5872,7 +5932,7 @@ function importAllData(allData, options = {}) {
           }
         }
       } else if (rawVoltages === null) {
-        safeSetLocalStorage(MOUNT_VOLTAGE_STORAGE_KEY, null);
+        safeSetLocalStorage(MOUNT_VOLTAGE_STORAGE_KEY_NAME, null);
         if (typeof resetMountVoltagePreferences === 'function') {
           resetMountVoltagePreferences({ persist: false, triggerUpdate: true });
         }
