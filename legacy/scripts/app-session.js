@@ -28,6 +28,25 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 var sessionCineUi = typeof globalThis !== 'undefined' && globalThis.cineUi || typeof window !== 'undefined' && window.cineUi || typeof self !== 'undefined' && self.cineUi || null;
 var temperaturePreferenceStorageKey = typeof TEMPERATURE_STORAGE_KEY === 'string' ? TEMPERATURE_STORAGE_KEY : typeof resolveTemperatureStorageKey === 'function' ? resolveTemperatureStorageKey() : 'cameraPowerPlanner_temperatureUnit';
+function resolveSessionMountVoltageStorageKey() {
+  var fallback = 'cameraPowerPlanner_mountVoltages';
+  if (typeof resolveMountVoltageStorageKeyName === 'function') {
+    try {
+      return resolveMountVoltageStorageKeyName();
+    } catch (resolverError) {
+      void resolverError;
+    }
+  }
+  if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_KEY === 'string') {
+    return CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_KEY;
+  }
+  if (typeof globalThis !== 'undefined' && globalThis && typeof globalThis.MOUNT_VOLTAGE_STORAGE_KEY === 'string') {
+    return globalThis.MOUNT_VOLTAGE_STORAGE_KEY;
+  }
+  return fallback;
+}
+var sessionMountVoltageStorageKey = resolveSessionMountVoltageStorageKey();
+var sessionMountVoltageBackupKey = "".concat(sessionMountVoltageStorageKey, '__backup');
 var recordFullBackupHistoryEntryFn = function recordFullBackupHistoryEntryFn() {};
 try {
   var _require = require('./storage.js');
@@ -5587,11 +5606,11 @@ function applyPreferencesFromStorage(safeGetItem) {
     }
   }
   try {
-    var storedVoltages = safeGetItem(MOUNT_VOLTAGE_STORAGE_KEY);
+    var storedVoltages = safeGetItem(sessionMountVoltageStorageKey);
     var parsedVoltages = parseStoredMountVoltages(storedVoltages);
     var shouldPersistVoltages = false;
     if (!parsedVoltages) {
-      var backupKey = typeof MOUNT_VOLTAGE_STORAGE_BACKUP_KEY === 'string' ? MOUNT_VOLTAGE_STORAGE_BACKUP_KEY : "".concat(MOUNT_VOLTAGE_STORAGE_KEY, '__backup');
+      var backupKey = typeof MOUNT_VOLTAGE_STORAGE_BACKUP_KEY === 'string' ? MOUNT_VOLTAGE_STORAGE_BACKUP_KEY : sessionMountVoltageBackupKey;
       var backupVoltages = safeGetItem(backupKey);
       if (backupVoltages !== undefined && backupVoltages !== null) {
         var parsedBackupVoltages = parseStoredMountVoltages(backupVoltages);
