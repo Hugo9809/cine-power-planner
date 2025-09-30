@@ -5884,6 +5884,89 @@ var normalizeSpellingVariants = function normalizeSpellingVariants(str) {
     return SPELLING_VARIANTS.get(match) || match;
   });
 };
+var applySearchTokenSynonyms = function applySearchTokenSynonyms(tokens, addToken) {
+  if (!tokens || typeof addToken !== 'function') return;
+  var baseTokens = Array.isArray(tokens) ? tokens : Array.from(tokens);
+  if (!Array.isArray(baseTokens) || baseTokens.length === 0) return;
+  var tokenSet = new Set(baseTokens);
+  var hasAny = function hasAny(values) {
+    return values.some(function (value) {
+      return tokenSet.has(value);
+    });
+  };
+  var hasAllGroups = function hasAllGroups(groups) {
+    return groups.every(function (group) {
+      var list = Array.isArray(group) ? group : [group];
+      return list.some(function (value) {
+        return tokenSet.has(value);
+      });
+    });
+  };
+  var addAll = function addAll(values) {
+    values.forEach(function (value) {
+      addToken(value);
+    });
+  };
+  if (hasAny(['fps', 'framerate', 'framepersecond', 'framespersecond']) || hasAllGroups([
+    ['frame', 'frames'],
+    ['per', 'persecond', 'persec'],
+    ['second', 'seconds', 'sec']
+  ]) || hasAllGroups([
+    ['frame', 'frames'],
+    ['rate']
+  ])) {
+    addAll(['fps', 'framerate', 'framepersecond', 'framespersecond', 'frame', 'frames', 'second', 'seconds']);
+  }
+  if (hasAny(['wh', 'watthour', 'watthours'])) {
+    addAll(['wh', 'watthour', 'watthours', 'watt', 'watts', 'hour', 'hours']);
+  } else if (hasAllGroups([
+    ['watt', 'watts'],
+    ['hour', 'hours', 'hr', 'hrs']
+  ])) {
+    addAll(['wh', 'watthour', 'watthours']);
+  }
+  if (hasAny(['kwh', 'kilowatthour', 'kilowatthours'])) {
+    addAll(['kwh', 'kilowatthour', 'kilowatthours', 'kilowatt', 'kilowatts', 'watt', 'watts', 'hour', 'hours']);
+  } else if (hasAllGroups([
+    ['kilowatt', 'kilowatts', 'kw'],
+    ['hour', 'hours', 'hr', 'hrs']
+  ])) {
+    addAll(['kwh', 'kilowatthour', 'kilowatthours']);
+  }
+  if (hasAny(['ah', 'amphour', 'amphours'])) {
+    addAll(['ah', 'amphour', 'amphours', 'amp', 'amps', 'ampere', 'amperes', 'hour', 'hours']);
+  } else if (hasAllGroups([
+    ['amp', 'amps', 'ampere', 'amperes'],
+    ['hour', 'hours', 'hr', 'hrs']
+  ])) {
+    addAll(['ah', 'amphour', 'amphours']);
+  }
+  if (hasAny(['mah', 'milliamphour', 'milliamphours'])) {
+    addAll(['mah', 'milliamphour', 'milliamphours', 'milliamp', 'milliamps', 'milliampere', 'milliamperes', 'ma', 'hour', 'hours']);
+  } else if (hasAllGroups([
+    ['milliamp', 'milliamps', 'milliampere', 'milliamperes', 'ma'],
+    ['hour', 'hours', 'hr', 'hrs']
+  ])) {
+    addAll(['mah', 'milliamphour', 'milliamphours']);
+  }
+  if (hasAny(['mp', 'megapixel', 'megapixels'])) {
+    addAll(['mp', 'megapixel', 'megapixels']);
+  }
+  if (hasAny(['mm', 'millimeter', 'millimeters'])) {
+    addAll(['mm', 'millimeter', 'millimeters']);
+  }
+  if (hasAny(['cm', 'centimeter', 'centimeters'])) {
+    addAll(['cm', 'centimeter', 'centimeters']);
+  }
+  if (hasAny(['ev', 'exposurevalue'])) {
+    addAll(['ev', 'exposurevalue', 'exposure', 'value']);
+  } else if (hasAllGroups([
+    ['exposure'],
+    ['value']
+  ])) {
+    addAll(['ev', 'exposurevalue']);
+  }
+};
 var searchKey = function searchKey(str) {
   if (!str) return '';
   var value = String(str);
@@ -6007,6 +6090,7 @@ var searchTokens = function searchTokens(str) {
       addToken("".concat(altPrefix).concat(numberToken));
     }
   }
+  applySearchTokenSynonyms(tokens, addToken);
   return Array.from(tokens);
 };
 var FEATURE_CONTEXT_LIMIT = 3;
