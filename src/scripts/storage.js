@@ -25,10 +25,25 @@ var DEVICE_SCHEMA_CACHE_KEY = 'cameraPowerPlanner_schemaCache';
 var LEGACY_SCHEMA_CACHE_KEY = 'cinePowerPlanner_schemaCache';
 var CUSTOM_FONT_STORAGE_KEY_DEFAULT = 'cameraPowerPlanner_customFonts';
 var MOUNT_VOLTAGE_STORAGE_KEY_FALLBACK = 'cameraPowerPlanner_mountVoltages';
+var MOUNT_VOLTAGE_STORAGE_KEY_SYMBOL =
+  typeof Symbol === 'function'
+    ? Symbol.for('cinePowerPlanner.mountVoltageKey')
+    : null;
 
 function readGlobalStringValue(scope, key) {
   if (!scope || typeof scope !== 'object') {
     return '';
+  }
+
+  if (key === 'MOUNT_VOLTAGE_STORAGE_KEY' && MOUNT_VOLTAGE_STORAGE_KEY_SYMBOL) {
+    try {
+      const symbolValue = scope[MOUNT_VOLTAGE_STORAGE_KEY_SYMBOL];
+      if (typeof symbolValue === 'string' && symbolValue) {
+        return symbolValue;
+      }
+    } catch (symbolReadError) {
+      void symbolReadError;
+    }
   }
 
   var descriptor;
@@ -64,6 +79,18 @@ function exposeGlobalStringValue(scope, key, value) {
     return '';
   }
 
+  if (key === 'MOUNT_VOLTAGE_STORAGE_KEY' && MOUNT_VOLTAGE_STORAGE_KEY_SYMBOL) {
+    try {
+      scope[MOUNT_VOLTAGE_STORAGE_KEY_SYMBOL] = value;
+      const symbolAssigned = scope[MOUNT_VOLTAGE_STORAGE_KEY_SYMBOL];
+      if (typeof symbolAssigned === 'string' && symbolAssigned) {
+        return symbolAssigned;
+      }
+    } catch (symbolExposeError) {
+      void symbolExposeError;
+    }
+  }
+
   var descriptor;
   try {
     descriptor = Object.getOwnPropertyDescriptor(scope, key);
@@ -95,30 +122,21 @@ function exposeGlobalStringValue(scope, key, value) {
     void assignError;
   }
 
-  if (typeof assigned !== 'string' || !assigned) {
-    try {
-      Object.defineProperty(scope, key, {
-        configurable: true,
-        writable: true,
-        value: value
-      });
-      assigned = scope[key];
-    } catch (defineError) {
-      void defineError;
-      if (
-        typeof console !== 'undefined' &&
-        typeof console.warn === 'function'
-      ) {
-        console.warn(
-          'Unable to expose mount voltage storage key globally. Using fallback only.',
-          defineError
-        );
-      }
-      return '';
-    }
+  if (typeof assigned === 'string' && assigned) {
+    return assigned;
   }
 
-  return typeof assigned === 'string' && assigned ? assigned : '';
+  if (
+    key === 'MOUNT_VOLTAGE_STORAGE_KEY' &&
+    typeof console !== 'undefined' &&
+    typeof console.warn === 'function'
+  ) {
+    console.warn(
+      'Unable to expose mount voltage storage key globally. Using fallback only.'
+    );
+  }
+
+  return '';
 }
 
 function resolveMountVoltageStorageKeyName() {
