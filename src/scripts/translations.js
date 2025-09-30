@@ -833,6 +833,13 @@ const texts = {
     storageSessionNotStored: "Not stored",
     storageKeyTotalSize: "Approximate backup size",
     storageKeyTotalSizeDesc: "Based on the current backup export.",
+    storageKeyIntegrityGuard: "Backup guardian",
+    storageKeyIntegrityGuardDesc:
+      "Mirrors every critical storage key into a backup slot before any edits.",
+    storageIntegrityGuardStatus: "Active",
+    storageIntegrityGuardStatusCreated: "Mirrored {count} key(s) this session",
+    storageIntegrityGuardStatusIssue: "{count} issue(s) — check console",
+    storageIntegrityGuardStatusMissing: "Waiting for first save",
     storageTotalSizeValue: "~%s KB",
     aboutHeading: "About & Support",
     aboutHeadingHelp:
@@ -2670,6 +2677,13 @@ const texts = {
     storageSessionNotStored: "Non salvata",
     storageKeyTotalSize: "Dimensione approssimativa del backup",
     storageKeyTotalSizeDesc: "Calcolata dalla copia di backup attuale.",
+    storageKeyIntegrityGuard: "Guardian delle copie di sicurezza",
+    storageKeyIntegrityGuardDesc:
+      "Duplica ogni chiave di archiviazione critica in un backup prima di qualsiasi modifica.",
+    storageIntegrityGuardStatus: "Attivo",
+    storageIntegrityGuardStatusCreated: "Duplica {count} chiavi in questa sessione",
+    storageIntegrityGuardStatusIssue: "{count} problemi — controlla la console",
+    storageIntegrityGuardStatusMissing: "In attesa del primo salvataggio",
     storageTotalSizeValue: "~%s KB",
     aboutHeading: "Informazioni e supporto",
     aboutHeadingHelp:
@@ -4084,6 +4098,13 @@ const texts = {
     storageSessionNotStored: "No guardada",
     storageKeyTotalSize: "Tamaño aproximado de la copia",
     storageKeyTotalSizeDesc: "Basado en la exportación de copia de seguridad actual.",
+    storageKeyIntegrityGuard: "Guardián de copias",
+    storageKeyIntegrityGuardDesc:
+      "Duplica cada clave de almacenamiento crítica en una copia antes de que cambies los datos.",
+    storageIntegrityGuardStatus: "Activo",
+    storageIntegrityGuardStatusCreated: "Se duplicaron {count} claves en esta sesión",
+    storageIntegrityGuardStatusIssue: "{count} problema(s) — revisa la consola",
+    storageIntegrityGuardStatusMissing: "Esperando el primer guardado",
     storageTotalSizeValue: "~%s KB",
     aboutHeading: "Acerca de y soporte",
     aboutHeadingHelp:
@@ -5508,6 +5529,13 @@ const texts = {
     storageSessionNotStored: "Non enregistrée",
     storageKeyTotalSize: "Taille approximative de la sauvegarde",
     storageKeyTotalSizeDesc: "Basée sur l’export de sauvegarde actuel.",
+    storageKeyIntegrityGuard: "Gardien des sauvegardes",
+    storageKeyIntegrityGuardDesc:
+      "Duplique chaque clé de stockage critique dans une sauvegarde avant toute modification.",
+    storageIntegrityGuardStatus: "Actif",
+    storageIntegrityGuardStatusCreated: "{count} clé(s) dupliquée(s) cette session",
+    storageIntegrityGuardStatusIssue: "{count} incident(s) — vérifiez la console",
+    storageIntegrityGuardStatusMissing: "En attente d’un premier enregistrement",
     storageTotalSizeValue: "~%s KB",
     aboutHeading: "À propos et support",
     aboutHeadingHelp:
@@ -6937,6 +6965,13 @@ const texts = {
     storageSessionNotStored: "Nicht gespeichert",
     storageKeyTotalSize: "Voraussichtliche Backup-Größe",
     storageKeyTotalSizeDesc: "Berechnet anhand des aktuellen Backups.",
+    storageKeyIntegrityGuard: "Backup-Wächter",
+    storageKeyIntegrityGuardDesc:
+      "Spiegelt jede kritische Speicherschlüssel vor Änderungen in eine Sicherung.",
+    storageIntegrityGuardStatus: "Aktiv",
+    storageIntegrityGuardStatusCreated: "{count} Schlüssel in dieser Sitzung gespiegelt",
+    storageIntegrityGuardStatusIssue: "{count} Problem(e) – Konsole prüfen",
+    storageIntegrityGuardStatusMissing: "Wartet auf den ersten Speicherstand",
     storageTotalSizeValue: "~%s KB",
     aboutHeading: "Info & Support",
     aboutHeadingHelp:

@@ -238,6 +238,7 @@ Dieser kurze Ablauf sollte bei neuen Teammitgliedern, frisch eingerichteten Work
 - **Werkseinstellungen** oder das Löschen der Website-Daten erfolgt erst nach einem automatischen Backup.
 - Service-Worker-Updates laden im Hintergrund und warten auf deine Bestätigung. Bei **Update bereit**: Änderungen abschließen, Backup erstellen, dann **Neu laden erzwingen**.
 - Daten liegen in gehärtetem `localStorage`; gesperrte Profile weichen auf `sessionStorage` aus. Jeder Schreibvorgang legt zusätzlich einen `__legacyMigrationBackup`-Schnappschuss an, damit sich Quota- oder Schemafehler verlustfrei beheben lassen. Entwickler-Tools können Rohdaten exportieren, bevor Caches geleert oder Tests gefahren werden.
+- Ein kritischer Speicherwächter läuft bei jedem Start und spiegelt jeden wichtigen Schlüssel in sein Backup, bevor du Änderungen vornimmst. So bleibt auch bei Legacy-Daten stets eine redundante Kopie für Wiederherstellungen erhalten.
 
 ## Daten- & Speicherübersicht
 

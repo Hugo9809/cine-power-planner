@@ -519,6 +519,9 @@ Use Cine Power Planner end-to-end with the following routine:
   `__legacyMigrationBackup` snapshot so you can recover even if the browser
   reports a quota or schema error. Use your browser’s storage inspector to
   export or audit records before clearing caches or experimenting with data.
+- A critical storage guardian now runs on every launch to mirror each essential
+  key into its backup slot before you edit anything, ensuring both legacy and
+  modern entries always keep a redundant copy ready for restores.
 
 ## Data & Storage Overview
 
