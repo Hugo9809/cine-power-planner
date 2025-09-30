@@ -6887,8 +6887,9 @@ const renderFeatureListOptions = values => {
   renderFeatureSearchDropdown(normalized);
 };
 
+const FEATURE_SEARCH_MAX_RESULTS = 40;
+
 function restoreFeatureSearchDefaults() {
-  if (!featureList) return;
   const values = [];
   const seen = new Set();
   const recentOptions = resolveRecentFeatureSearchOptions();
@@ -7077,7 +7078,10 @@ const compareFeatureSearchCandidates = (a, b) => {
 };
 
 function renderFeatureSearchFilteredDefaults(filterType) {
-  if (!featureList || !filterType) return;
+  if (!filterType) {
+    restoreFeatureSearchDefaults();
+    return;
+  }
   const filteredEntries = featureSearchEntries.filter(
     entry => (entry?.type || 'feature') === filterType
   );
@@ -7092,7 +7096,7 @@ function renderFeatureSearchFilteredDefaults(filterType) {
   const values = [];
   const seen = new Set();
   for (const item of scored) {
-    if (values.length >= 25) break;
+    if (values.length >= FEATURE_SEARCH_MAX_RESULTS) break;
     const optionData = buildFeatureSearchOptionData(item.entry);
     if (!optionData || !optionData.value || seen.has(optionData.value)) continue;
     seen.add(optionData.value);
@@ -7105,7 +7109,7 @@ function renderFeatureSearchFilteredDefaults(filterType) {
         (a.display || '').localeCompare(b.display || '', undefined, { sensitivity: 'base' })
       );
     for (const entry of fallback) {
-      if (values.length >= 25) break;
+      if (values.length >= FEATURE_SEARCH_MAX_RESULTS) break;
       const optionData = buildFeatureSearchOptionData(entry);
       if (!optionData || !optionData.value || seen.has(optionData.value)) continue;
       seen.add(optionData.value);
@@ -7116,7 +7120,6 @@ function renderFeatureSearchFilteredDefaults(filterType) {
 }
 
 function updateFeatureSearchSuggestions(query) {
-  if (!featureList) return;
   const raw = typeof query === 'string' ? query : '';
   const rawTrimmed = raw.trim();
   const { filterType, queryText } = extractFeatureSearchFilter(rawTrimmed);
@@ -7170,7 +7173,7 @@ function updateFeatureSearchSuggestions(query) {
   const values = [];
   const seen = new Set();
   for (const item of candidates) {
-    if (values.length >= 25) break;
+    if (values.length >= FEATURE_SEARCH_MAX_RESULTS) break;
     const optionData = buildFeatureSearchOptionData(item.entry);
     if (!optionData || !optionData.value || seen.has(optionData.value)) continue;
     seen.add(optionData.value);
@@ -9212,7 +9215,6 @@ var revertAccentColor = () => {
 };
 
 function populateFeatureSearch() {
-  if (!featureList) return;
   featureMap.clear();
   helpMap.clear();
   deviceMap.clear();
