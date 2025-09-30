@@ -31,7 +31,6 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
   ensureModule('modules/registry.js');
   ensureModule('modules/persistence.js');
   ensureModule('modules/runtime.js');
-
   attemptRegistryBackfill(globalScope);
   var aggregatedExports = module.exports;
   var combinedAppVersion = aggregatedExports && aggregatedExports.APP_VERSION;
@@ -44,40 +43,39 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
   }
 }
 function attemptRegistryBackfill(scope) {
-  if (!scope || typeof scope !== 'object' && typeof scope !== 'function') {
+  if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
     return;
   }
-
-  var registry = null;
   var registryCandidates = [];
-
-  if (scope && typeof scope.cineModules === 'object') {
+  if (scope && _typeof(scope.cineModules) === 'object') {
     registryCandidates.push(scope.cineModules);
   }
-
   if (typeof require === 'function') {
     try {
       var required = require('./modules/registry.js');
-      if (required && typeof required === 'object') {
+      if (required && _typeof(required) === 'object') {
         registryCandidates.push(required);
       }
     } catch (error) {
       void error;
     }
   }
-
+  var registries = [];
+  var seen = new Set();
   for (var index = 0; index < registryCandidates.length; index += 1) {
     var candidate = registryCandidates[index];
-    if (candidate && typeof candidate.register === 'function' && typeof candidate.has === 'function') {
-      registry = candidate;
-      break;
+    if (!candidate || typeof candidate.register !== 'function' || typeof candidate.has !== 'function') {
+      continue;
     }
+    if (seen.has(candidate)) {
+      continue;
+    }
+    seen.add(candidate);
+    registries.push(candidate);
   }
-
-  if (!registry) {
+  if (registries.length === 0) {
     return;
   }
-
   var descriptors = [{
     name: 'cineCoreShared',
     category: 'shared',
@@ -114,39 +112,36 @@ function attemptRegistryBackfill(scope) {
       return scope.cineRuntime || null;
     }
   }];
-
-  for (var descriptorIndex = 0; descriptorIndex < descriptors.length; descriptorIndex += 1) {
-    var descriptor = descriptors[descriptorIndex];
-    if (registry.has(descriptor.name)) {
-      continue;
-    }
-
+  for (var _index = 0; _index < descriptors.length; _index += 1) {
+    var descriptor = descriptors[_index];
     var moduleValue = null;
-
     try {
       moduleValue = descriptor.resolve();
     } catch (error) {
       void error;
       moduleValue = null;
     }
-
     if (!moduleValue) {
       continue;
     }
-
-    try {
-      registry.register(descriptor.name, moduleValue, {
-        category: descriptor.category,
-        description: descriptor.description
-      });
-    } catch (error) {
-      void error;
+    for (var registryIndex = 0; registryIndex < registries.length; registryIndex += 1) {
+      var registry = registries[registryIndex];
+      try {
+        if (registry.has(descriptor.name)) {
+          continue;
+        }
+        registry.register(descriptor.name, moduleValue, {
+          category: descriptor.category,
+          description: descriptor.description,
+          replace: true
+        });
+      } catch (error) {
+        void error;
+      }
     }
   }
 }
-
 var GLOBAL_RUNTIME_SCOPE = typeof globalThis !== 'undefined' && globalThis || typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || typeof global !== 'undefined' && global || null;
-
 attemptRegistryBackfill(GLOBAL_RUNTIME_SCOPE);
 (function ensureRuntimeIntegrity(scope) {
   if (!scope) {

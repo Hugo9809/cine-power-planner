@@ -2,9 +2,101 @@ function _regenerator() { var e, t, r = "function" == typeof Symbol ? Symbol : {
 function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { i({}, "", {}); } catch (e) { i = 0; } _regeneratorDefine2 = function _regeneratorDefine(e, r, n, t) { if (r) i ? i(e, r, { value: n, enumerable: !t, configurable: !t, writable: !t }) : e[r] = n;else { function o(r, n) { _regeneratorDefine2(e, r, function (e) { return this._invoke(r, n, e); }); } o("next", 0), o("throw", 1), o("return", 2); } }, _regeneratorDefine2(e, r, n, t); }
 function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
 function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 (function () {
   var GLOBAL_SCOPE = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : typeof global !== 'undefined' ? global : {};
+  function tryRequire(modulePath) {
+    if (typeof require !== 'function') {
+      return null;
+    }
+    try {
+      return require(modulePath);
+    } catch (error) {
+      void error;
+      return null;
+    }
+  }
+  function resolveModuleRegistry() {
+    var required = tryRequire('./registry.js');
+    if (required && _typeof(required) === 'object') {
+      return required;
+    }
+    var scopes = [GLOBAL_SCOPE];
+    if (typeof globalThis !== 'undefined' && scopes.indexOf(globalThis) === -1) scopes.push(globalThis);
+    if (typeof window !== 'undefined' && scopes.indexOf(window) === -1) scopes.push(window);
+    if (typeof self !== 'undefined' && scopes.indexOf(self) === -1) scopes.push(self);
+    if (typeof global !== 'undefined' && scopes.indexOf(global) === -1) scopes.push(global);
+    for (var index = 0; index < scopes.length; index += 1) {
+      var scope = scopes[index];
+      if (scope && _typeof(scope.cineModules) === 'object') {
+        return scope.cineModules;
+      }
+    }
+    return null;
+  }
+  var MODULE_REGISTRY = resolveModuleRegistry();
+  var PENDING_QUEUE_KEY = '__cinePendingModuleRegistrations__';
+  function queueModuleRegistration(name, api, options) {
+    if (!GLOBAL_SCOPE || _typeof(GLOBAL_SCOPE) !== 'object') {
+      return false;
+    }
+    var payload = Object.freeze({
+      name: name,
+      api: api,
+      options: Object.freeze(_objectSpread({}, options || {}))
+    });
+    var queue = GLOBAL_SCOPE[PENDING_QUEUE_KEY];
+    if (!Array.isArray(queue)) {
+      try {
+        Object.defineProperty(GLOBAL_SCOPE, PENDING_QUEUE_KEY, {
+          configurable: true,
+          enumerable: false,
+          writable: true,
+          value: []
+        });
+        queue = GLOBAL_SCOPE[PENDING_QUEUE_KEY];
+      } catch (error) {
+        void error;
+        try {
+          if (!Array.isArray(GLOBAL_SCOPE[PENDING_QUEUE_KEY])) {
+            GLOBAL_SCOPE[PENDING_QUEUE_KEY] = [];
+          }
+          queue = GLOBAL_SCOPE[PENDING_QUEUE_KEY];
+        } catch (assignmentError) {
+          void assignmentError;
+          return false;
+        }
+      }
+    }
+    try {
+      queue.push(payload);
+    } catch (error) {
+      void error;
+      queue[queue.length] = payload;
+    }
+    return true;
+  }
+  function registerOrQueueModule(name, api, options, onError) {
+    if (MODULE_REGISTRY && typeof MODULE_REGISTRY.register === 'function') {
+      try {
+        MODULE_REGISTRY.register(name, api, options);
+        return true;
+      } catch (error) {
+        if (typeof onError === 'function') {
+          onError(error);
+        } else {
+          void error;
+        }
+      }
+    }
+    queueModuleRegistration(name, api, options);
+    return false;
+  }
   var UI_CACHE_STORAGE_KEYS_FOR_RELOAD = ['cameraPowerPlanner_schemaCache', 'cinePowerPlanner_schemaCache'];
   var UI_CACHE_STORAGE_SUFFIXES_FOR_RELOAD = ['', '__backup', '__legacyMigrationBackup'];
   var uiCacheFallbackWarningKeys = new Set();
@@ -605,6 +697,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
   };
   freezeDeep(offlineAPI);
+  registerOrQueueModule('cineOffline', offlineAPI, {
+    category: 'offline',
+    description: 'Offline helpers for service worker registration and cache recovery.',
+    replace: true
+  }, function (error) {
+    safeWarn('Unable to register cineOffline in module registry.', error);
+  });
   if (GLOBAL_SCOPE && _typeof(GLOBAL_SCOPE) === 'object') {
     try {
       if (GLOBAL_SCOPE.cineOffline !== offlineAPI) {
