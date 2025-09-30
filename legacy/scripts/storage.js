@@ -28,27 +28,71 @@ var FAVORITES_STORAGE_KEY = 'cameraPowerPlanner_favorites';
 var DEVICE_SCHEMA_CACHE_KEY = 'cameraPowerPlanner_schemaCache';
 var LEGACY_SCHEMA_CACHE_KEY = 'cinePowerPlanner_schemaCache';
 var CUSTOM_FONT_STORAGE_KEY_DEFAULT = 'cameraPowerPlanner_customFonts';
-function resolveMountVoltageStorageKeyName() {
-  var fallback = 'cameraPowerPlanner_mountVoltages';
-  if (!GLOBAL_SCOPE || _typeof(GLOBAL_SCOPE) !== 'object') {
-    return fallback;
+function readGlobalStringValue(scope, key) {
+  if (!scope || _typeof(scope) !== 'object') {
+    return '';
   }
-  var existing = typeof GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_KEY === 'string' ? GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_KEY : fallback;
-  if (existing !== GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_KEY) {
+  var descriptor = null;
+  try {
+    descriptor = Object.getOwnPropertyDescriptor(scope, key);
+  } catch (descriptorError) {
+    descriptor = null;
+  }
+  if (descriptor && Object.prototype.hasOwnProperty.call(descriptor, 'value') && typeof descriptor.value === 'string' && descriptor.value) {
+    return descriptor.value;
+  }
+  var directValue = '';
+  try {
+    directValue = scope[key];
+  } catch (readError) {
+    directValue = '';
+  }
+  return typeof directValue === 'string' && directValue ? directValue : '';
+}
+function exposeGlobalStringValue(scope, key, value) {
+  if (!scope || _typeof(scope) !== 'object') {
+    return '';
+  }
+  try {
+    Object.defineProperty(scope, key, {
+      configurable: true,
+      writable: true,
+      value: value
+    });
+  } catch (defineError) {
+    void defineError;
     try {
-      GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_KEY = existing;
-      var assigned = GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_KEY;
-      if (typeof assigned === 'string' && assigned) {
-        return assigned;
-      }
+      scope[key] = value;
     } catch (assignError) {
       void assignError;
       if (typeof console !== 'undefined' && typeof console.warn === 'function') {
         console.warn('Unable to expose mount voltage storage key globally. Using fallback only.', assignError);
       }
+      return '';
     }
   }
-  return existing;
+  var assigned = '';
+  try {
+    assigned = scope[key];
+  } catch (verificationError) {
+    assigned = '';
+  }
+  return typeof assigned === 'string' && assigned ? assigned : '';
+}
+function resolveMountVoltageStorageKeyName() {
+  var fallback = 'cameraPowerPlanner_mountVoltages';
+  if (!GLOBAL_SCOPE || _typeof(GLOBAL_SCOPE) !== 'object') {
+    return fallback;
+  }
+  var existing = readGlobalStringValue(GLOBAL_SCOPE, 'MOUNT_VOLTAGE_STORAGE_KEY');
+  if (existing) {
+    return existing;
+  }
+  var exposed = exposeGlobalStringValue(GLOBAL_SCOPE, 'MOUNT_VOLTAGE_STORAGE_KEY', fallback);
+  if (exposed) {
+    return exposed;
+  }
+  return fallback;
 }
 var MOUNT_VOLTAGE_STORAGE_KEY_NAME = resolveMountVoltageStorageKeyName();
 function ensureCustomFontStorageKeyName() {
