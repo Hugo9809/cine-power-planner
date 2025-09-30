@@ -2213,23 +2213,6 @@ function renderAutoGearRuleSummary(analysis) {
       });
       detailsFragment.appendChild(_list3);
     }
-    if (analysis.scenarios.rulesWithoutScenarios.length) {
-      var _texts$en97, _texts$en98;
-      var _headingElem6 = document.createElement('p');
-      _headingElem6.className = 'auto-gear-summary-detail-title';
-      _headingElem6.textContent = langTexts.autoGearSummaryDetailsRulesWithoutScenariosHeading || ((_texts$en97 = texts.en) === null || _texts$en97 === void 0 ? void 0 : _texts$en97.autoGearSummaryDetailsRulesWithoutScenariosHeading) || 'Always-on or unspecific rules';
-      detailsFragment.appendChild(_headingElem6);
-      var description = document.createElement('p');
-      description.className = 'auto-gear-summary-detail-text';
-      description.textContent = langTexts.autoGearSummaryDetailsRulesWithoutScenariosDescription || ((_texts$en98 = texts.en) === null || _texts$en98 === void 0 ? void 0 : _texts$en98.autoGearSummaryDetailsRulesWithoutScenariosDescription) || 'These rules trigger without scenario filters.';
-      detailsFragment.appendChild(description);
-      var _list4 = document.createElement('ul');
-      _list4.className = 'auto-gear-summary-list';
-      var li = document.createElement('li');
-      appendRuleButtons(li, analysis.scenarios.rulesWithoutScenarios);
-      _list4.appendChild(li);
-      detailsFragment.appendChild(_list4);
-    }
   }
   if (focus !== 'all') {
     var _texts$en99;

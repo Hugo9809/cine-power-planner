@@ -331,9 +331,6 @@ const texts = {
     autoGearSummaryDetailsOverlapsHeading: "Scenarios with stacked rules",
     autoGearSummaryDetailsOverlapsNone: "No scenarios currently stack multiple rules.",
     autoGearSummaryDetailsUncoveredHeading: "Uncovered scenarios",
-    autoGearSummaryDetailsRulesWithoutScenariosHeading: "Rules without scenarios",
-    autoGearSummaryDetailsRulesWithoutScenariosDescription:
-      "These rules trigger without scenario filters.",
     autoGearSummaryResetFocus: "Clear dashboard filter",
     autoGearSummaryDetailsFocusEmpty: "No coverage details match the current focus.",
     autoGearSummaryJumpToRule: "Jump to rule",
@@ -2171,9 +2168,6 @@ const texts = {
     autoGearSummaryDetailsUncoveredHeading: "Scenari non coperti",
     autoGearSummaryDetailsOverlapsHeading: "Sovrapposizioni di scenari",
     autoGearSummaryDetailsOverlapsNone: "Nessun requisito sovrapposto rilevato.",
-    autoGearSummaryDetailsRulesWithoutScenariosHeading: "Regole senza scenari",
-    autoGearSummaryDetailsRulesWithoutScenariosDescription:
-      "Queste regole si attivano senza filtri scenario.",
     autoGearSummaryResetFocus: "Mostra tutta la copertura",
     autoGearSummaryDetailsFocusEmpty: "Nessun dettaglio di copertura corrisponde al focus attuale.",
     autoGearSummaryJumpToRule: "Vai alla regola",
@@ -3596,9 +3590,6 @@ const texts = {
     autoGearSummaryDetailsUncoveredHeading: "Escenarios sin cubrir",
     autoGearSummaryDetailsOverlapsHeading: "Solapamientos de escenarios",
     autoGearSummaryDetailsOverlapsNone: "No se detectaron requisitos solapados.",
-    autoGearSummaryDetailsRulesWithoutScenariosHeading: "Reglas sin escenarios",
-    autoGearSummaryDetailsRulesWithoutScenariosDescription:
-      "Estas reglas se activan sin filtros de escenario.",
     autoGearSummaryResetFocus: "Mostrar toda la cobertura",
     autoGearSummaryDetailsFocusEmpty: "Ningún detalle de cobertura coincide con el enfoque actual.",
     autoGearSummaryJumpToRule: "Ir a la regla",
@@ -5023,9 +5014,6 @@ const texts = {
     autoGearSummaryDetailsUncoveredHeading: "Scénarios non couverts",
     autoGearSummaryDetailsOverlapsHeading: "Recouvrements de scénarios",
     autoGearSummaryDetailsOverlapsNone: "Aucun besoin qui se recoupe détecté.",
-    autoGearSummaryDetailsRulesWithoutScenariosHeading: "Règles sans scénarios",
-    autoGearSummaryDetailsRulesWithoutScenariosDescription:
-      "Ces règles se déclenchent sans filtres de scénario.",
     autoGearSummaryResetFocus: "Afficher toute la couverture",
     autoGearSummaryDetailsFocusEmpty: "Aucun détail de couverture ne correspond au focus actuel.",
     autoGearSummaryJumpToRule: "Aller à la règle",
@@ -6461,9 +6449,6 @@ const texts = {
     autoGearSummaryDetailsUncoveredHeading: "Ungedeckte Szenarien",
     autoGearSummaryDetailsOverlapsHeading: "Szenario-Überschneidungen",
     autoGearSummaryDetailsOverlapsNone: "Keine überschneidenden Anforderungen gefunden.",
-    autoGearSummaryDetailsRulesWithoutScenariosHeading: "Regeln ohne Szenarien",
-    autoGearSummaryDetailsRulesWithoutScenariosDescription:
-      "Diese Regeln werden ohne Szenariofilter ausgelöst.",
     autoGearSummaryResetFocus: "Gesamtabdeckung anzeigen",
     autoGearSummaryDetailsFocusEmpty: "Keine Abdeckungsdetails passen zum aktuellen Fokus.",
     autoGearSummaryJumpToRule: "Zur Regel springen",

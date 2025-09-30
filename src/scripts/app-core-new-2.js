@@ -2378,26 +2378,6 @@ function renderAutoGearRuleSummary(analysis, context = {}) {
       });
       detailsFragment.appendChild(list);
     }
-    if (analysis.scenarios.rulesWithoutScenarios.length) {
-      const headingElem = document.createElement('p');
-      headingElem.className = 'auto-gear-summary-detail-title';
-      headingElem.textContent = langTexts.autoGearSummaryDetailsRulesWithoutScenariosHeading
-        || texts.en?.autoGearSummaryDetailsRulesWithoutScenariosHeading
-        || 'Always-on or unspecific rules';
-      detailsFragment.appendChild(headingElem);
-      const description = document.createElement('p');
-      description.className = 'auto-gear-summary-detail-text';
-      description.textContent = langTexts.autoGearSummaryDetailsRulesWithoutScenariosDescription
-        || texts.en?.autoGearSummaryDetailsRulesWithoutScenariosDescription
-        || 'These rules trigger without scenario filters.';
-      detailsFragment.appendChild(description);
-      const list = document.createElement('ul');
-      list.className = 'auto-gear-summary-list';
-      const li = document.createElement('li');
-      appendRuleButtons(li, analysis.scenarios.rulesWithoutScenarios);
-      list.appendChild(li);
-      detailsFragment.appendChild(list);
-    }
   }
 
   if (focus !== 'all') {
