@@ -36,7 +36,7 @@
 /* global getMountVoltagePreferencesClone, mountVoltageResetButton,
           resetMountVoltagePreferences, updateMountVoltageInputsFromState,
           applyMountVoltagePreferences, getMountVoltageStorageKeyName,
-          getMountVoltageStorageBackupKeyName, MOUNT_VOLTAGE_STORAGE_BACKUP_KEY,
+          getMountVoltageStorageBackupKeyName,
           parseStoredMountVoltages, SUPPORTED_MOUNT_VOLTAGE_TYPES,
           DEFAULT_MOUNT_VOLTAGES, mountVoltageInputs, parseVoltageValue */
 
@@ -6324,11 +6324,9 @@ function applyPreferencesFromStorage(safeGetItem) {
 
     if (!parsedVoltages) {
       const backupKey =
-        typeof MOUNT_VOLTAGE_STORAGE_BACKUP_KEY === 'string'
-          ? MOUNT_VOLTAGE_STORAGE_BACKUP_KEY
-          : typeof getMountVoltageStorageBackupKeyName === 'function'
-            ? getMountVoltageStorageBackupKeyName()
-            : `${mountVoltageKeyName}__backup`;
+        typeof getMountVoltageStorageBackupKeyName === 'function'
+          ? getMountVoltageStorageBackupKeyName()
+          : `${mountVoltageKeyName}__backup`;
       const backupVoltages = safeGetItem(backupKey);
       if (backupVoltages !== undefined && backupVoltages !== null) {
         const parsedBackupVoltages = parseStoredMountVoltages(backupVoltages);
