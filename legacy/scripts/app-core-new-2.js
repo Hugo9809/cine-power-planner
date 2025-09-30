@@ -114,69 +114,61 @@ function declareCoreFallbackBinding(name, factory) {
   return fallbackValue;
 }
 
-if (typeof autoGearAutoPresetId === 'undefined') {
-  var autoGearAutoPresetId = declareCoreFallbackBinding('autoGearAutoPresetId', function () {
-    if (typeof loadAutoGearAutoPresetId === 'function') {
-      try {
-        var storedId = loadAutoGearAutoPresetId();
-        return typeof storedId === 'string' ? storedId : '';
-      } catch (error) {
-        if (typeof console !== 'undefined' && typeof console.error === 'function') {
-          console.error('Failed to recover automatic gear auto preset identifier from storage.', error);
-        }
+var autoGearAutoPresetId = declareCoreFallbackBinding('autoGearAutoPresetId', function () {
+  if (typeof loadAutoGearAutoPresetId === 'function') {
+    try {
+      var storedId = loadAutoGearAutoPresetId();
+      return typeof storedId === 'string' ? storedId : '';
+    } catch (error) {
+      if (typeof console !== 'undefined' && typeof console.error === 'function') {
+        console.error('Failed to recover automatic gear auto preset identifier from storage.', error);
       }
     }
-    return '';
-  });
-}
+  }
+  return '';
+});
 
-if (typeof baseAutoGearRules === 'undefined') {
-  var baseAutoGearRules = declareCoreFallbackBinding('baseAutoGearRules', function () {
-    if (typeof loadAutoGearRules === 'function') {
-      try {
-        var storedRules = loadAutoGearRules();
-        return Array.isArray(storedRules) ? storedRules.slice() : [];
-      } catch (error) {
-        if (typeof console !== 'undefined' && typeof console.error === 'function') {
-          console.error('Failed to recover automatic gear rules from storage.', error);
-        }
+var baseAutoGearRules = declareCoreFallbackBinding('baseAutoGearRules', function () {
+  if (typeof loadAutoGearRules === 'function') {
+    try {
+      var storedRules = loadAutoGearRules();
+      return Array.isArray(storedRules) ? storedRules.slice() : [];
+    } catch (error) {
+      if (typeof console !== 'undefined' && typeof console.error === 'function') {
+        console.error('Failed to recover automatic gear rules from storage.', error);
       }
     }
-    return [];
-  });
-}
+  }
+  return [];
+});
 
-if (typeof autoGearScenarioModeSelect === 'undefined') {
-  var autoGearScenarioModeSelect = declareCoreFallbackBinding('autoGearScenarioModeSelect', function () {
-    return null;
-  });
-}
+var autoGearScenarioModeSelect = declareCoreFallbackBinding('autoGearScenarioModeSelect', function () {
+  return null;
+});
 
-if (typeof safeGenerateConnectorSummary === 'undefined') {
-  var safeGenerateConnectorSummary = declareCoreFallbackBinding('safeGenerateConnectorSummary', function () {
-    return function safeGenerateConnectorSummary(device) {
-      if (!device || _typeof(device) !== 'object') {
+var safeGenerateConnectorSummary = declareCoreFallbackBinding('safeGenerateConnectorSummary', function () {
+  return function safeGenerateConnectorSummary(device) {
+    if (!device || _typeof(device) !== 'object') {
+      return '';
+    }
+    if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+      console.warn('Using fallback connector summary generator. Core bindings may have failed to initialise.');
+    }
+    try {
+      var keys = Object.keys(device);
+      if (!keys.length) {
         return '';
       }
-      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-        console.warn('Using fallback connector summary generator. Core bindings may have failed to initialise.');
-      }
-      try {
-        var keys = Object.keys(device);
-        if (!keys.length) {
-          return '';
-        }
-        var primaryKey = keys[0];
-        var value = device[primaryKey];
-        var label = typeof primaryKey === 'string' ? primaryKey.replace(/_/g, ' ') : 'connector';
-        return value ? label + ': ' + value : label;
-      } catch (fallbackError) {
-        void fallbackError;
-        return '';
-      }
-    };
-  });
-}
+      var primaryKey = keys[0];
+      var value = device[primaryKey];
+      var label = typeof primaryKey === 'string' ? primaryKey.replace(/_/g, ' ') : 'connector';
+      return value ? label + ': ' + value : label;
+    } catch (fallbackError) {
+      void fallbackError;
+      return '';
+    }
+  };
+});
 var currentProjectInfo = null;
 var loadedSetupState = null;
 var loadedSetupStateSignature = '';
@@ -1095,6 +1087,7 @@ function setAutoGearAutoPresetId(presetId) {
     return;
   }
   autoGearAutoPresetId = normalized;
+  writeCoreScopeValue('autoGearAutoPresetId', autoGearAutoPresetId);
   if (persist) {
     persistAutoGearAutoPresetId(autoGearAutoPresetId);
   }
