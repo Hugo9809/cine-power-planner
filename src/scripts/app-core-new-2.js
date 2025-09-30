@@ -1,3 +1,8 @@
+var autoGearAutoPresetId;
+var baseAutoGearRules;
+var autoGearScenarioModeSelect;
+var safeGenerateConnectorSummary;
+
 var CORE_PART2_RUNTIME_SCOPE =
   typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE
     ? CORE_GLOBAL_SCOPE
@@ -123,7 +128,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return fallbackValue;
     }
 
-    var autoGearAutoPresetId = declareCoreFallbackBinding('autoGearAutoPresetId', () => {
+    autoGearAutoPresetId = declareCoreFallbackBinding('autoGearAutoPresetId', () => {
       if (typeof loadAutoGearAutoPresetId === 'function') {
         try {
           const storedId = loadAutoGearAutoPresetId();
@@ -137,7 +142,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return '';
     });
 
-    var baseAutoGearRules = declareCoreFallbackBinding('baseAutoGearRules', () => {
+    baseAutoGearRules = declareCoreFallbackBinding('baseAutoGearRules', () => {
       if (typeof loadAutoGearRules === 'function') {
         try {
           const storedRules = loadAutoGearRules();
@@ -151,9 +156,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return [];
     });
 
-    var autoGearScenarioModeSelect = declareCoreFallbackBinding('autoGearScenarioModeSelect', () => null);
+    autoGearScenarioModeSelect = declareCoreFallbackBinding('autoGearScenarioModeSelect', () => null);
 
-    var safeGenerateConnectorSummary = declareCoreFallbackBinding(
+    safeGenerateConnectorSummary = declareCoreFallbackBinding(
       'safeGenerateConnectorSummary',
       () =>
         function safeGenerateConnectorSummary(device) {
