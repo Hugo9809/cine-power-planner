@@ -15489,6 +15489,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     
     const CORE_PART2_GLOBAL_EXPORTS = {
+      populateSelect,
       refreshAutoGearCameraOptions,
       refreshAutoGearCameraWeightCondition,
       refreshAutoGearMonitorOptions,
@@ -15502,6 +15503,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       refreshAutoGearDistanceOptions,
       updateAutoGearCameraWeightDraft,
       updateAutoGearShootingDaysDraft,
+      checkSetupChanged,
+      updateCalculations,
+      feedbackCancelBtn,
     };
     
     const CORE_PART2_GLOBAL_SCOPE =
@@ -15523,13 +15527,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return null;
     })(CORE_PART2_GLOBAL_SCOPE);
     
-    Object.entries(CORE_PART2_GLOBAL_EXPORTS).forEach(([name, fn]) => {
-      if (typeof fn !== 'function') return;
+    Object.entries(CORE_PART2_GLOBAL_EXPORTS).forEach(([name, value]) => {
       if (CORE_PART2_GLOBAL_SCOPE && Object.isExtensible(CORE_PART2_GLOBAL_SCOPE)) {
-        CORE_PART2_GLOBAL_SCOPE[name] = fn;
+        CORE_PART2_GLOBAL_SCOPE[name] = value;
       }
       if (CORE_PART2_RUNTIME && Object.isExtensible(CORE_PART2_RUNTIME)) {
-        CORE_PART2_RUNTIME[name] = fn;
+        CORE_PART2_RUNTIME[name] = value;
       }
     });
     
