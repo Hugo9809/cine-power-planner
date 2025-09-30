@@ -8041,6 +8041,53 @@ if (helpButton && helpDialog) {
   var hoverHelpHighlightedTarget = null;
   var hoverHelpPointerClientX = null;
   var hoverHelpPointerClientY = null;
+  var parseHoverHelpSelectorList = function parseHoverHelpSelectorList(value) {
+    if (typeof value !== 'string') return [];
+    return value.split(',').map(function (selector) {
+      return selector.trim();
+    }).filter(Boolean);
+  };
+  var parseHoverHelpIdList = function parseHoverHelpIdList(value) {
+    if (typeof value !== 'string') return [];
+    return value.split(/\s+/).map(function (id) {
+      return id.trim();
+    }).filter(Boolean);
+  };
+  var getHoverHelpReferenceElements = function getHoverHelpReferenceElements(element) {
+    if (!element || typeof document === 'undefined' || typeof document.querySelector !== 'function') return [];
+    var references = [];
+    var seen = new Set();
+    var addCandidate = function addCandidate(candidate) {
+      if (!candidate || typeof candidate !== 'object') return;
+      if (candidate === element) return;
+      var isElement = typeof Element !== 'undefined' && candidate instanceof Element;
+      if (!isElement && candidate.nodeType !== 1) return;
+      if (seen.has(candidate)) return;
+      seen.add(candidate);
+      references.push(candidate);
+    };
+    var addFromSelectors = function addFromSelectors(raw) {
+      parseHoverHelpSelectorList(raw).forEach(function (selector) {
+        try {
+          var match = document.querySelector(selector);
+          addCandidate(match);
+        } catch (_unused10) {}
+      });
+    };
+    var addFromIds = function addFromIds(raw) {
+      parseHoverHelpIdList(raw).forEach(function (id) {
+        var match = document.getElementById(id);
+        addCandidate(match);
+      });
+    };
+    addFromSelectors(element.getAttribute('data-hover-help-target'));
+    addFromSelectors(element.getAttribute('data-hover-help-source'));
+    if (!element.hasAttribute('data-hover-help-skip-help-target')) {
+      addFromSelectors(element.getAttribute('data-help-target'));
+    }
+    addFromIds(element.getAttribute('data-hover-help-targets'));
+    return references;
+  };
   var HOVER_HELP_TARGET_SELECTOR = '[data-help], [aria-label], [title], [aria-labelledby], [alt], [aria-describedby]';
   var findHoverHelpTarget = function findHoverHelpTarget(start) {
     if (!start) return null;
@@ -8182,8 +8229,11 @@ if (helpButton && helpDialog) {
     var inputType = typeAttr || elementType;
     var ariaHasPopup = (element.getAttribute('aria-haspopup') || '').toLowerCase();
     var ariaPressed = (element.getAttribute('aria-pressed') || '').toLowerCase();
-    if (role === 'dialog') {
+    if (role === 'dialog' || role === 'alertdialog') {
       push('hoverHelpFallbackDialog');
+    }
+    if (role === 'alertdialog') {
+      push('hoverHelpFallbackAlert');
     }
     if (role === 'tablist') {
       push('hoverHelpFallbackTablist');
@@ -8197,6 +8247,12 @@ if (helpButton && helpDialog) {
     if (role === 'menuitem') {
       push('hoverHelpFallbackMenu');
     }
+    if (role === 'listbox') {
+      push('hoverHelpFallbackSelect');
+    }
+    if (role === 'link') {
+      push('hoverHelpFallbackLink');
+    }
     if (role === 'progressbar') {
       push('hoverHelpFallbackProgress');
     }
@@ -8208,6 +8264,21 @@ if (helpButton && helpDialog) {
     }
     if (role === 'switch') {
       push('hoverHelpFallbackSwitch');
+    }
+    if (role === 'checkbox' || role === 'menuitemcheckbox') {
+      push('hoverHelpFallbackCheckbox');
+    }
+    if (role === 'radio' || role === 'menuitemradio') {
+      push('hoverHelpFallbackRadio');
+    }
+    if (role === 'slider') {
+      push('hoverHelpFallbackSlider');
+    }
+    if (role === 'spinbutton') {
+      push('hoverHelpFallbackNumberInput');
+    }
+    if (role === 'textbox' || role === 'searchbox') {
+      push('hoverHelpFallbackTextInput');
     }
     if (role === 'combobox') {
       push('hoverHelpFallbackSelect');
@@ -8252,6 +8323,8 @@ if (helpButton && helpDialog) {
           push('hoverHelpFallbackTextInput');
           break;
       }
+    } else if (element.isContentEditable) {
+      push('hoverHelpFallbackTextarea');
     }
     push('hoverHelpFallbackGeneric');
     return keys;
@@ -8319,9 +8392,6 @@ if (helpButton && helpDialog) {
         }
       }
     };
-    addTextFromElement(el, {
-      preferTextAsLabel: true
-    });
     var applyFromIds = function applyFromIds(ids) {
       var _ref48 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
         _ref48$preferTextAsLa = _ref48.preferTextAsLabel,
@@ -8338,16 +8408,46 @@ if (helpButton && helpDialog) {
         });
       });
     };
-    applyFromIds(el.getAttribute('aria-labelledby'), {
-      preferTextAsLabel: true
-    });
-    applyFromIds(el.getAttribute('aria-describedby'));
-    findAssociatedLabelElements(el).forEach(function (labelEl) {
-      addTextFromElement(labelEl, {
-        includeTextContent: true,
+    var visitedElements = new Set();
+    var queue = [{
+      element: el,
+      preferTextAsLabel: true,
+      includeTextContent: false
+    }];
+    while (queue.length) {
+      var currentConfig = queue.shift();
+      var current = currentConfig.element;
+      var preferTextAsLabel = currentConfig.preferTextAsLabel;
+      var includeTextContent = currentConfig.includeTextContent;
+      if (!current || visitedElements.has(current)) {
+        continue;
+      }
+      visitedElements.add(current);
+      addTextFromElement(current, {
+        includeTextContent: includeTextContent,
+        preferTextAsLabel: preferTextAsLabel
+      });
+      applyFromIds(current.getAttribute('aria-labelledby'), {
         preferTextAsLabel: true
       });
-    });
+      applyFromIds(current.getAttribute('aria-describedby'));
+      applyFromIds(current.getAttribute('aria-details'));
+      applyFromIds(current.getAttribute('aria-errormessage'));
+      applyFromIds(current.getAttribute('aria-controls'));
+      findAssociatedLabelElements(current).forEach(function (labelEl) {
+        addTextFromElement(labelEl, {
+          includeTextContent: true,
+          preferTextAsLabel: true
+        });
+      });
+      getHoverHelpReferenceElements(current).forEach(function (proxyEl) {
+        queue.push({
+          element: proxyEl,
+          preferTextAsLabel: false,
+          includeTextContent: true
+        });
+      });
+    }
     if (!labelParts.length) {
       addLabelText(el.textContent);
     }
@@ -8673,6 +8773,7 @@ if (helpButton && helpDialog) {
     }
   };
   window.addEventListener('pointermove', updatePointerPosition, true);
+  window.addEventListener('pointerdown', updatePointerPosition, true);
   document.addEventListener('mousedown', function (e) {
     if (hoverHelpActive && !canInteractDuringHoverHelp(e.target)) {
       e.preventDefault();
