@@ -2,7 +2,7 @@
           normalizeAutoGearShootingDaysCondition, normalizeAutoGearCameraWeightCondition, evaluateAutoGearCameraWeightCondition,
           getAutoGearMonitorDefault, getSetupNameState,
           createProjectInfoSnapshotForStorage, getProjectAutoSaveOverrides, getAutoGearRuleCoverageSummary,
-          normalizeBatteryPlateValue, setSelectValue, applyBatteryPlateSelectionFromBattery */
+          normalizeBatteryPlateValue, setSelectValue, applyBatteryPlateSelectionFromBattery, enqueueCoreBootTask */
 
 const AUTO_GEAR_ANY_MOTOR_TOKEN_FALLBACK =
     (typeof globalThis !== 'undefined' && globalThis.AUTO_GEAR_ANY_MOTOR_TOKEN)
@@ -877,9 +877,32 @@ if (runtimeFeedbackBtn && feedbackDialog && feedbackForm) {
     openDialog(feedbackDialog);
   });
 
-  feedbackCancelBtn.addEventListener('click', () => {
-    closeDialog(feedbackDialog);
-  });
+  const handleFeedbackCancel = targetBtn => {
+    if (!targetBtn || targetBtn.dataset.feedbackCancelBound === 'true') {
+      return;
+    }
+    targetBtn.dataset.feedbackCancelBound = 'true';
+    targetBtn.addEventListener('click', () => {
+      closeDialog(feedbackDialog);
+    });
+  };
+
+  const resolvedFeedbackCancelBtn =
+    (typeof feedbackCancelBtn !== 'undefined' && feedbackCancelBtn)
+    || document.getElementById('fbCancel');
+
+  if (resolvedFeedbackCancelBtn) {
+    handleFeedbackCancel(resolvedFeedbackCancelBtn);
+  } else if (typeof enqueueCoreBootTask === 'function') {
+    enqueueCoreBootTask(() => {
+      const nextBtn =
+        (typeof feedbackCancelBtn !== 'undefined' && feedbackCancelBtn)
+        || document.getElementById('fbCancel');
+      if (nextBtn) {
+        handleFeedbackCancel(nextBtn);
+      }
+    });
+  }
 
   if (feedbackUseLocationBtn) {
     feedbackUseLocationBtn.addEventListener('click', () => {
