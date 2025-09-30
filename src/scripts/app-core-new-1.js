@@ -12990,6 +12990,7 @@ var closeHelpBtn    = document.getElementById("closeHelp");
 var helpSearch      = document.getElementById("helpSearch");
 var helpNoResults   = document.getElementById("helpNoResults");
 var helpResultsSummary = document.getElementById("helpResultsSummary");
+var helpResultsAssist = document.getElementById("helpResultsAssist");
 var helpSearchClear = document.getElementById("helpSearchClear");
 var helpSectionsContainer = document.getElementById("helpSections");
 var helpQuickLinksNav = document.getElementById("helpQuickLinks");

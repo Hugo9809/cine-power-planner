@@ -22,14 +22,14 @@
           clearUiCacheStorageEntries, __cineGlobal, humanizeKey,
           normalizeBatteryPlateValue, applyBatteryPlateSelectionFromBattery,
           getPowerSelectionSnapshot, applyStoredPowerSelection,
-          settingsReduceMotion, settingsRelaxedSpacing, callCoreFunctionIfAvailable */
+          settingsReduceMotion, settingsRelaxedSpacing, callCoreFunctionIfAvailable,
+          recordFeatureSearchUsage, helpResultsSummary, helpResultsAssist */
 /* eslint-enable no-redeclare */
 /* global triggerPinkModeIconRain, loadDeviceData, loadSetups, loadSessionState,
           loadFeedback, loadFavorites, loadAutoGearBackups,
           loadAutoGearPresets, loadAutoGearSeedFlag, loadAutoGearActivePresetId,
           loadAutoGearAutoPresetId, loadAutoGearBackupVisibility,
           loadAutoGearBackupRetention, loadFullBackupHistory */
-/* global recordFeatureSearchUsage */
 /* global getDiagramManualPositions, setManualDiagramPositions,
           normalizeDiagramPositionsInput, ensureAutoBackupsFromProjects */
 /* global getMountVoltagePreferencesClone, mountVoltageResetButton,
@@ -8436,7 +8436,15 @@ if (helpButton && helpDialog) {
     hasQuery,
     queryText
   } = {}) => {
-    if (!helpResultsSummary) return;
+    const hideAssist = () => {
+      if (!helpResultsAssist) return;
+      helpResultsAssist.textContent = '';
+      helpResultsAssist.setAttribute('hidden', '');
+    };
+    if (!helpResultsSummary) {
+      hideAssist();
+      return;
+    }
     if (typeof totalCount === 'number' && Number.isFinite(totalCount)) {
       helpResultsSummary.dataset.totalCount = String(totalCount);
     }
@@ -8453,6 +8461,7 @@ if (helpButton && helpDialog) {
     if (!storedTotal) {
       helpResultsSummary.textContent = '';
       helpResultsSummary.setAttribute('hidden', '');
+      hideAssist();
       return;
     }
     const storedVisible = Number(
@@ -8489,6 +8498,19 @@ if (helpButton && helpDialog) {
     }
     helpResultsSummary.textContent = summaryText;
     helpResultsSummary.removeAttribute('hidden');
+    if (helpResultsAssist) {
+      if (storedVisible > 0) {
+        const assistTemplate =
+          langTexts.helpResultsAssist || fallbackTexts.helpResultsAssist;
+        const assistText =
+          assistTemplate ||
+          'Tip: Press Tab to move into the quick links, or press Enter to open the top visible topic.';
+        helpResultsAssist.textContent = assistText;
+        helpResultsAssist.removeAttribute('hidden');
+      } else {
+        hideAssist();
+      }
+    }
   };
 
   const filterHelp = () => {

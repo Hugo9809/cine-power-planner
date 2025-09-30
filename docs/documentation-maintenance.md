@@ -31,7 +31,9 @@ copy offline.【F:src/scripts/script.js†L92-L183】
    shortcuts and workflow descriptions so crews see accurate instructions while offline.
    Keep the console verification callout in `index.html` aligned with the commands documented
    in the save/share reference so operators can rehearse data audits directly inside the help
-   dialog.【F:index.html†L3899-L3920】【F:docs/save-share-restore-reference.md†L28-L35】
+   dialog.【F:index.html†L3899-L3920】【F:docs/save-share-restore-reference.md†L28-L35】 Document
+   any new navigation tips—like the quick-link keyboard guidance surfaced through
+   `helpResultsAssist`—so translations and hover help mirror the latest behaviour.【F:index.html†L2641-L2663】【F:src/scripts/app-session.js†L8427-L8486】【F:src/scripts/translations.js†L1327-L1340】
 2. **README family.** Revise the primary `README.md` plus each localized README under the
    project root. Ensure new workflows appear in the *Save, Share & Import Drill*, *Backup &
    Recovery* and *Emergency Recovery Playbook* sections so every language documents the same
