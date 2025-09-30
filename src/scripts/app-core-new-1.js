@@ -777,6 +777,15 @@ var MOUNT_VOLTAGE_STORAGE_KEY_RESOLVED = (function resolveMountVoltageStorageKey
   let existing = null;
   if (
     CORE_GLOBAL_SCOPE &&
+    typeof CORE_GLOBAL_SCOPE.__cineMountVoltageKey === 'string' &&
+    CORE_GLOBAL_SCOPE.__cineMountVoltageKey
+  ) {
+    existing = CORE_GLOBAL_SCOPE.__cineMountVoltageKey;
+  }
+
+  if (
+    !existing &&
+    CORE_GLOBAL_SCOPE &&
     typeof CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_KEY === 'string' &&
     CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_KEY
   ) {
@@ -809,7 +818,7 @@ var MOUNT_VOLTAGE_STORAGE_KEY_RESOLVED = (function resolveMountVoltageStorageKey
 
   if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object') {
     try {
-      CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_KEY = resolved;
+      CORE_GLOBAL_SCOPE.__cineMountVoltageKey = resolved;
     } catch (assignError) {
       console.warn('Unable to expose mount voltage storage key globally', assignError);
     }

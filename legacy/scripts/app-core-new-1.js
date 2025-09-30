@@ -570,7 +570,10 @@ var SUPPORTED_MOUNT_VOLTAGE_TYPES = function resolveSupportedMounts() {
 }();
 var MOUNT_VOLTAGE_STORAGE_KEY_RESOLVED = function resolveMountVoltageStorageKey() {
   var existing = null;
-  if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_KEY === 'string' && CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_KEY) {
+  if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE.__cineMountVoltageKey === 'string' && CORE_GLOBAL_SCOPE.__cineMountVoltageKey) {
+    existing = CORE_GLOBAL_SCOPE.__cineMountVoltageKey;
+  }
+  if (!existing && CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_KEY === 'string' && CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_KEY) {
     existing = CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_KEY;
   }
   if (!existing && CORE_GLOBAL_SCOPE) {
@@ -595,7 +598,7 @@ var MOUNT_VOLTAGE_STORAGE_KEY_RESOLVED = function resolveMountVoltageStorageKey(
   var resolved = existing || 'cameraPowerPlanner_mountVoltages';
   if (CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object') {
     try {
-      CORE_GLOBAL_SCOPE.MOUNT_VOLTAGE_STORAGE_KEY = resolved;
+      CORE_GLOBAL_SCOPE.__cineMountVoltageKey = resolved;
     } catch (assignError) {
       console.warn('Unable to expose mount voltage storage key globally', assignError);
     }

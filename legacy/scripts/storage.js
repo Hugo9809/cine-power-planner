@@ -43,6 +43,7 @@ var LEGACY_SCHEMA_CACHE_KEY = 'cinePowerPlanner_schemaCache';
 var CUSTOM_FONT_STORAGE_KEY_DEFAULT = 'cameraPowerPlanner_customFonts';
 var MOUNT_VOLTAGE_STORAGE_KEY_FALLBACK = 'cameraPowerPlanner_mountVoltages';
 var MOUNT_VOLTAGE_STORAGE_KEY_SYMBOL = typeof Symbol === 'function' ? Symbol.for('cinePowerPlanner.mountVoltageKey') : null;
+var MOUNT_VOLTAGE_STORAGE_KEY_PRIVATE = '__cineMountVoltageKey';
 function readGlobalStringValue(scope, key) {
   if (!scope || _typeof(scope) !== 'object') {
     return '';
@@ -76,11 +77,45 @@ function readGlobalStringValue(scope, key) {
   }
   return typeof directValue === 'string' && directValue ? directValue : '';
 }
-function exposeGlobalStringValue(scope, key, value) {
+function readPrivateMountVoltageKey(scope) {
   if (!scope || _typeof(scope) !== 'object') {
     return '';
   }
-  if (key === 'MOUNT_VOLTAGE_STORAGE_KEY' && MOUNT_VOLTAGE_STORAGE_KEY_SYMBOL) {
+  if (MOUNT_VOLTAGE_STORAGE_KEY_SYMBOL) {
+    try {
+      var symbolValue = scope[MOUNT_VOLTAGE_STORAGE_KEY_SYMBOL];
+      if (typeof symbolValue === 'string' && symbolValue) {
+        return symbolValue;
+      }
+    } catch (symbolReadError) {
+      void symbolReadError;
+    }
+  }
+  var privateValue = '';
+  try {
+    privateValue = scope[MOUNT_VOLTAGE_STORAGE_KEY_PRIVATE];
+  } catch (privateReadError) {
+    privateValue = '';
+    void privateReadError;
+  }
+  if (typeof privateValue === 'string' && privateValue) {
+    return privateValue;
+  }
+  var legacyValue = '';
+  try {
+    legacyValue = scope.MOUNT_VOLTAGE_STORAGE_KEY;
+  } catch (legacyReadError) {
+    legacyValue = '';
+    void legacyReadError;
+  }
+  return typeof legacyValue === 'string' && legacyValue ? legacyValue : '';
+}
+
+function writePrivateMountVoltageKey(scope, value) {
+  if (!scope || _typeof(scope) !== 'object' || typeof value !== 'string' || !value) {
+    return '';
+  }
+  if (MOUNT_VOLTAGE_STORAGE_KEY_SYMBOL) {
     try {
       scope[MOUNT_VOLTAGE_STORAGE_KEY_SYMBOL] = value;
       var symbolAssigned = scope[MOUNT_VOLTAGE_STORAGE_KEY_SYMBOL];
@@ -91,32 +126,23 @@ function exposeGlobalStringValue(scope, key, value) {
       void symbolExposeError;
     }
   }
-  var descriptor;
   try {
-    descriptor = Object.getOwnPropertyDescriptor(scope, key);
-  } catch (descriptorError) {
-    descriptor = null;
-    void descriptorError;
+    scope[MOUNT_VOLTAGE_STORAGE_KEY_PRIVATE] = value;
+    var privateAssigned = scope[MOUNT_VOLTAGE_STORAGE_KEY_PRIVATE];
+    if (typeof privateAssigned === 'string' && privateAssigned) {
+      return privateAssigned;
+    }
+  } catch (assignPrivateError) {
+    void assignPrivateError;
   }
-  if (descriptor && Object.prototype.hasOwnProperty.call(descriptor, 'value') && typeof descriptor.value === 'string' && descriptor.value) {
-    return descriptor.value;
-  }
-  if (descriptor && descriptor.configurable === false && descriptor.writable === false) {
-    return '';
-  }
-  var assigned = '';
   try {
-    scope[key] = value;
-    assigned = scope[key];
-  } catch (assignError) {
-    assigned = '';
-    void assignError;
-  }
-  if (typeof assigned === 'string' && assigned) {
-    return assigned;
-  }
-  if (key === 'MOUNT_VOLTAGE_STORAGE_KEY' && typeof console !== 'undefined' && typeof console.warn === 'function') {
-    console.warn('Unable to expose mount voltage storage key globally. Using fallback only.');
+    Object.defineProperty(scope, MOUNT_VOLTAGE_STORAGE_KEY_PRIVATE, { configurable: true, writable: true, value: value });
+    var definedPrivate = scope[MOUNT_VOLTAGE_STORAGE_KEY_PRIVATE];
+    if (typeof definedPrivate === 'string' && definedPrivate) {
+      return definedPrivate;
+    }
+  } catch (definePrivateError) {
+    void definePrivateError;
   }
   return '';
 }
@@ -124,13 +150,18 @@ function resolveMountVoltageStorageKeyName() {
   if (!GLOBAL_SCOPE || _typeof(GLOBAL_SCOPE) !== 'object') {
     return MOUNT_VOLTAGE_STORAGE_KEY_FALLBACK;
   }
-  var existing = readGlobalStringValue(GLOBAL_SCOPE, 'MOUNT_VOLTAGE_STORAGE_KEY');
+  var existing = readPrivateMountVoltageKey(GLOBAL_SCOPE);
   if (existing) {
     return existing;
   }
-  var exposed = exposeGlobalStringValue(GLOBAL_SCOPE, 'MOUNT_VOLTAGE_STORAGE_KEY', MOUNT_VOLTAGE_STORAGE_KEY_FALLBACK);
-  if (exposed) {
-    return exposed;
+  var legacyValue = readGlobalStringValue(GLOBAL_SCOPE, 'MOUNT_VOLTAGE_STORAGE_KEY');
+  if (legacyValue) {
+    var assignedLegacy = writePrivateMountVoltageKey(GLOBAL_SCOPE, legacyValue);
+    return assignedLegacy || legacyValue;
+  }
+  var assigned = writePrivateMountVoltageKey(GLOBAL_SCOPE, MOUNT_VOLTAGE_STORAGE_KEY_FALLBACK);
+  if (assigned) {
+    return assigned;
   }
   return MOUNT_VOLTAGE_STORAGE_KEY_FALLBACK;
 }
