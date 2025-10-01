@@ -34,6 +34,7 @@
           loadAutoGearPresets, loadAutoGearSeedFlag, loadAutoGearActivePresetId,
           loadAutoGearAutoPresetId, loadAutoGearBackupVisibility,
           loadAutoGearBackupRetention, loadFullBackupHistory */
+/* global FEEDBACK_TEMPERATURE_MIN: true, FEEDBACK_TEMPERATURE_MAX: true */
 /* global getDiagramManualPositions, setManualDiagramPositions,
           normalizeDiagramPositionsInput, ensureAutoBackupsFromProjects */
 /* global getMountVoltagePreferencesClone, mountVoltageResetButton, CORE_GLOBAL_SCOPE,
@@ -10654,11 +10655,67 @@ function initApp() {
   applyFilters();
 }
 
+function ensureFeedbackTemperatureOptionsSafe(select) {
+  if (!select) return;
+  if (typeof ensureFeedbackTemperatureOptions === 'function') {
+    ensureFeedbackTemperatureOptions(select);
+    return;
+  }
+
+  const minTemp = typeof FEEDBACK_TEMPERATURE_MIN === 'number' ? FEEDBACK_TEMPERATURE_MIN : -20;
+  const maxTemp = typeof FEEDBACK_TEMPERATURE_MAX === 'number' ? FEEDBACK_TEMPERATURE_MAX : 50;
+  const expectedOptions = maxTemp - minTemp + 2;
+  if (select.options.length === expectedOptions) {
+    return;
+  }
+
+  const previousValue = select.value;
+  select.innerHTML = '';
+  const emptyOpt = document.createElement('option');
+  emptyOpt.value = '';
+  emptyOpt.textContent = '';
+  select.appendChild(emptyOpt);
+
+  for (let temp = minTemp; temp <= maxTemp; temp += 1) {
+    const opt = document.createElement('option');
+    opt.value = String(temp);
+    opt.textContent = String(temp);
+    select.appendChild(opt);
+  }
+
+  if (previousValue) {
+    const previousOption = Array.from(select.options).find(option => option.value === previousValue);
+    if (previousOption) {
+      select.value = previousValue;
+    }
+  }
+}
+
+function updateFeedbackTemperatureOptionsSafe() {
+  if (typeof updateFeedbackTemperatureOptions === 'function') {
+    updateFeedbackTemperatureOptions();
+    return;
+  }
+
+  const tempSelect = document.getElementById('fbTemperature');
+  if (!tempSelect) return;
+
+  ensureFeedbackTemperatureOptionsSafe(tempSelect);
+  Array.from(tempSelect.options).forEach(option => {
+    if (!option) return;
+    if (option.value === '') {
+      option.textContent = '';
+      return;
+    }
+    option.textContent = `${option.value}°C`;
+  });
+}
+
 function populateEnvironmentDropdowns() {
   const tempSelect = document.getElementById('fbTemperature');
   if (tempSelect) {
-    ensureFeedbackTemperatureOptions(tempSelect);
-    updateFeedbackTemperatureOptions();
+    ensureFeedbackTemperatureOptionsSafe(tempSelect);
+    updateFeedbackTemperatureOptionsSafe();
   }
 
 }
