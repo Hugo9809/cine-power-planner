@@ -11,6 +11,20 @@ var CORE_PART2_RUNTIME_SCOPE =
             ? global
             : null;
 
+if (typeof autoGearAutoPresetId === 'undefined') {
+  var autoGearAutoPresetId = '';
+}
+
+if (typeof baseAutoGearRules === 'undefined') {
+  var baseAutoGearRules = [];
+} else if (!Array.isArray(baseAutoGearRules)) {
+  baseAutoGearRules = [];
+}
+
+if (typeof autoGearScenarioModeSelect === 'undefined') {
+  var autoGearScenarioModeSelect = null;
+}
+
 function createFallbackSafeGenerateConnectorSummary() {
   return function safeGenerateConnectorSummary(device) {
     if (!device || typeof device !== 'object') {
@@ -38,6 +52,12 @@ function createFallbackSafeGenerateConnectorSummary() {
       return '';
     }
   };
+}
+
+if (typeof safeGenerateConnectorSummary === 'undefined') {
+  var safeGenerateConnectorSummary = createFallbackSafeGenerateConnectorSummary();
+} else if (typeof safeGenerateConnectorSummary !== 'function') {
+  safeGenerateConnectorSummary = createFallbackSafeGenerateConnectorSummary();
 }
 
 function ensureCorePart2Placeholder(name, fallbackValue) {
