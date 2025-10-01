@@ -48,6 +48,18 @@ function ensureSessionRuntimePlaceholder(name, fallbackValue) {
 }
 
 ensureSessionRuntimePlaceholder('autoGearScenarioModeSelect', null);
+var gridSnapToggleBtn = ensureSessionRuntimePlaceholder('gridSnapToggleBtn', function () {
+  if (typeof document === 'undefined' || !document || typeof document.getElementById !== 'function') {
+    return null;
+  }
+
+  try {
+    return document.getElementById('gridSnapToggle');
+  } catch (resolveError) {
+    void resolveError;
+    return null;
+  }
+});
 function getGlobalCineUi() {
   var scope = typeof globalThis !== 'undefined' && globalThis || typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || typeof global !== 'undefined' && global || null;
   if (!scope || _typeof(scope) !== 'object') {
