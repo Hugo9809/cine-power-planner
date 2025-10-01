@@ -119,6 +119,40 @@ var autoGearScenarioModeSelectSeed = resolveInitialPart2Value('autoGearScenarioM
 var autoGearScenarioModeSelectRef = autoGearScenarioModeSelectSeed && _typeof(autoGearScenarioModeSelectSeed) === 'object' ? autoGearScenarioModeSelectSeed : null;
 var safeGenerateConnectorSummarySeed = resolveInitialPart2Value('safeGenerateConnectorSummary');
 var safeGenerateConnectorSummaryFn = typeof safeGenerateConnectorSummarySeed === 'function' ? safeGenerateConnectorSummarySeed : createFallbackSafeGenerateConnectorSummary();
+var connectorSummaryWarningIssued = false;
+function generateSafeConnectorSummary(device) {
+  var candidates = [];
+  if (typeof safeGenerateConnectorSummaryFn === 'function') {
+    candidates.push(safeGenerateConnectorSummaryFn);
+  }
+  if (typeof safeGenerateConnectorSummary === 'function') {
+    candidates.push(safeGenerateConnectorSummary);
+  }
+  if (typeof CORE_SHARED !== 'undefined' && CORE_SHARED && typeof CORE_SHARED.safeGenerateConnectorSummary === 'function') {
+    candidates.push(CORE_SHARED.safeGenerateConnectorSummary);
+  }
+  for (var index = 0; index < candidates.length; index += 1) {
+    var generator = candidates[index];
+    try {
+      var summary = generator(device);
+      if (typeof summary === 'string') {
+        return summary;
+      }
+      if (typeof summary === 'undefined' || summary === null) {
+        continue;
+      }
+      return String(summary);
+    } catch (error) {
+      if (!connectorSummaryWarningIssued) {
+        connectorSummaryWarningIssued = true;
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn('Failed to generate connector summary. Falling back to empty summary.', error);
+        }
+      }
+    }
+  }
+  return '';
+}
 if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initialized) {
   if (typeof console !== 'undefined' && typeof console.warn === 'function') {
     console.warn('Cine Power Planner core runtime (part 2) already initialized. Skipping duplicate load.');
@@ -10065,7 +10099,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             if (categoryParts.length) parts.push(categoryParts.join(' – '));
             if (libraryCategory) parts.push("Device library category: ".concat(libraryCategory));
             if (deviceInfo) {
-              var summary = safeGenerateConnectorSummaryFn(deviceInfo);
+              var summary = generateSafeConnectorSummary(deviceInfo);
               summary = summary ? summary.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim() : '';
               if (deviceInfo.notes) summary = summary ? "".concat(summary, "; Notes: ").concat(deviceInfo.notes) : deviceInfo.notes;
               if (summary) parts.push(summary);
@@ -14589,7 +14623,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           var _devices$info$categor;
           deviceData = (_devices$info$categor = devices[info.category]) === null || _devices$info$categor === void 0 ? void 0 : _devices$info$categor[info.name];
         }
-        var connectors = safeGenerateConnectorSummaryFn(deviceData);
+        var connectors = generateSafeConnectorSummary(deviceData);
         var infoHtml = (deviceData && deviceData.latencyMs ? "<div class=\"info-box video-conn\"><strong>Latency:</strong> ".concat(escapeHtml(String(deviceData.latencyMs)), "</div>") : '') + (deviceData && deviceData.frequency ? "<div class=\"info-box video-conn\"><strong>Frequency:</strong> ".concat(escapeHtml(String(deviceData.frequency)), "</div>") : '');
         var html = "<strong>".concat(escapeHtml(info.name), "</strong>") + connectors + infoHtml;
         var show = function show(e) {
@@ -14999,7 +15033,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         header.className = "device-summary";
         var nameSpan = document.createElement("span");
         nameSpan.textContent = name;
-        var summary = safeGenerateConnectorSummaryFn(deviceData);
+        var summary = generateSafeConnectorSummary(deviceData);
         summary = summary ? summary.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim() : '';
         if (deviceData.notes) {
           summary = summary ? "".concat(summary, "; Notes: ").concat(deviceData.notes) : deviceData.notes;
