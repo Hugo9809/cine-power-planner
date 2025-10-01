@@ -66,13 +66,13 @@ function resolveInitialPart2Value(name) {
   return undefined;
 }
 var autoGearAutoPresetIdSeed = resolveInitialPart2Value('autoGearAutoPresetId');
-var autoGearAutoPresetId = typeof autoGearAutoPresetIdSeed === 'string' ? autoGearAutoPresetIdSeed : '';
+var autoGearAutoPresetIdState = typeof autoGearAutoPresetIdSeed === 'string' ? autoGearAutoPresetIdSeed : '';
 var baseAutoGearRulesSeed = resolveInitialPart2Value('baseAutoGearRules');
-var baseAutoGearRules = Array.isArray(baseAutoGearRulesSeed) ? baseAutoGearRulesSeed : [];
+var baseAutoGearRulesState = Array.isArray(baseAutoGearRulesSeed) ? baseAutoGearRulesSeed : [];
 var autoGearScenarioModeSelectSeed = resolveInitialPart2Value('autoGearScenarioModeSelect');
-var autoGearScenarioModeSelect = autoGearScenarioModeSelectSeed && _typeof(autoGearScenarioModeSelectSeed) === 'object' ? autoGearScenarioModeSelectSeed : null;
+var autoGearScenarioModeSelectRef = autoGearScenarioModeSelectSeed && _typeof(autoGearScenarioModeSelectSeed) === 'object' ? autoGearScenarioModeSelectSeed : null;
 var safeGenerateConnectorSummarySeed = resolveInitialPart2Value('safeGenerateConnectorSummary');
-var safeGenerateConnectorSummary = typeof safeGenerateConnectorSummarySeed === 'function' ? safeGenerateConnectorSummarySeed : createFallbackSafeGenerateConnectorSummary();
+var safeGenerateConnectorSummaryFn = typeof safeGenerateConnectorSummarySeed === 'function' ? safeGenerateConnectorSummarySeed : createFallbackSafeGenerateConnectorSummary();
 if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initialized) {
   if (typeof console !== 'undefined' && typeof console.warn === 'function') {
     console.warn('Cine Power Planner core runtime (part 2) already initialized. Skipping duplicate load.');
@@ -161,7 +161,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       writeCoreScopeValue(name, fallbackValue);
       return fallbackValue;
     }
-    autoGearAutoPresetId = declareCoreFallbackBinding('autoGearAutoPresetId', function () {
+    autoGearAutoPresetIdState = declareCoreFallbackBinding('autoGearAutoPresetId', function () {
       if (typeof loadAutoGearAutoPresetId === 'function') {
         try {
           var storedId = loadAutoGearAutoPresetId();
@@ -174,7 +174,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return '';
     });
-    baseAutoGearRules = declareCoreFallbackBinding('baseAutoGearRules', function () {
+    baseAutoGearRulesState = declareCoreFallbackBinding('baseAutoGearRules', function () {
       if (typeof loadAutoGearRules === 'function') {
         try {
           var storedRules = loadAutoGearRules();
@@ -187,10 +187,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return [];
     });
-    autoGearScenarioModeSelect = declareCoreFallbackBinding('autoGearScenarioModeSelect', function () {
+    autoGearScenarioModeSelectRef = declareCoreFallbackBinding('autoGearScenarioModeSelect', function () {
       return null;
     });
-    safeGenerateConnectorSummary = declareCoreFallbackBinding('safeGenerateConnectorSummary', function () {
+    safeGenerateConnectorSummaryFn = declareCoreFallbackBinding('safeGenerateConnectorSummary', function () {
       return createFallbackSafeGenerateConnectorSummary();
     });
     var currentProjectInfo = null;
@@ -1092,14 +1092,14 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       var normalized = typeof presetId === 'string' ? presetId : '';
       var persist = options.persist !== false;
       var skipRender = options.skipRender === true;
-      if (autoGearAutoPresetId === normalized) {
+      if (autoGearAutoPresetIdState === normalized) {
         if (!skipRender) renderAutoGearPresetsControls();
         return;
       }
-      autoGearAutoPresetId = normalized;
-      writeCoreScopeValue('autoGearAutoPresetId', autoGearAutoPresetId);
+      autoGearAutoPresetIdState = normalized;
+      writeCoreScopeValue('autoGearAutoPresetId', autoGearAutoPresetIdState);
       if (persist) {
-        persistAutoGearAutoPresetId(autoGearAutoPresetId);
+        persistAutoGearAutoPresetId(autoGearAutoPresetIdState);
       }
       if (!skipRender) {
         renderAutoGearPresetsControls();
@@ -1107,17 +1107,17 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     function reconcileAutoGearAutoPresetState() {
       var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-      if (!autoGearAutoPresetId) {
+      if (!autoGearAutoPresetIdState) {
         if (options.persist !== false) {
           persistAutoGearAutoPresetId('');
         }
         return false;
       }
       var managedExists = autoGearPresets.some(function (preset) {
-        return preset.id === autoGearAutoPresetId;
+        return preset.id === autoGearAutoPresetIdState;
       });
       var otherExists = autoGearPresets.some(function (preset) {
-        return preset.id !== autoGearAutoPresetId;
+        return preset.id !== autoGearAutoPresetIdState;
       });
       if (!managedExists || otherExists) {
         setAutoGearAutoPresetId('', {
@@ -1134,7 +1134,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         persist: true,
         skipRender: true
       });
-      if (!autoGearAutoPresetId) {
+      if (!autoGearAutoPresetIdState) {
         if (autoGearPresets.length > 0) {
           return false;
         }
@@ -1161,7 +1161,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return true;
       }
       var managedIndex = autoGearPresets.findIndex(function (preset) {
-        return preset.id === autoGearAutoPresetId;
+        return preset.id === autoGearAutoPresetIdState;
       });
       if (managedIndex === -1) {
         setAutoGearAutoPresetId('', {
@@ -1228,7 +1228,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     function alignActiveAutoGearPreset() {
       var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
       var skipRender = options.skipRender === true;
-      var fingerprint = createAutoGearRulesFingerprint(baseAutoGearRules);
+      var fingerprint = createAutoGearRulesFingerprint(baseAutoGearRulesState);
       var matching = autoGearPresets.find(function (preset) {
         return preset.fingerprint === fingerprint;
       }) || null;
@@ -1408,7 +1408,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
         return;
       }
-      if (autoGearAutoPresetId) {
+      if (autoGearAutoPresetIdState) {
         setAutoGearAutoPresetId('', {
           persist: true,
           skipRender: true
@@ -1444,7 +1444,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         confirmed = window.confirm(confirmMessage);
       }
       if (!confirmed) return;
-      if (autoGearAutoPresetId && autoGearAutoPresetId === activeAutoGearPresetId) {
+      if (autoGearAutoPresetIdState && autoGearAutoPresetIdState === activeAutoGearPresetId) {
         setAutoGearAutoPresetId('', {
           persist: true,
           skipRender: true
@@ -3573,7 +3573,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       var scenarios = isAutoGearConditionActive('scenarios') && autoGearScenariosSelect ? Array.from(autoGearScenariosSelect.selectedOptions || []).map(function (option) {
         return option.value;
       }).filter(Boolean) : [];
-      var rawScenarioMode = autoGearScenarioModeSelect ? normalizeAutoGearScenarioLogic(autoGearScenarioModeSelect.value) : 'all';
+      var rawScenarioMode = autoGearScenarioModeSelectRef ? normalizeAutoGearScenarioLogic(autoGearScenarioModeSelectRef.value) : 'all';
       var multiplierInputValue = autoGearScenarioFactorInput ? autoGearScenarioFactorInput.value : '1';
       var normalizedMultiplier = normalizeAutoGearScenarioMultiplier(multiplierInputValue);
       var scenarioMode = rawScenarioMode;
@@ -10019,7 +10019,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             if (categoryParts.length) parts.push(categoryParts.join(' – '));
             if (libraryCategory) parts.push("Device library category: ".concat(libraryCategory));
             if (deviceInfo) {
-              var summary = safeGenerateConnectorSummary(deviceInfo);
+              var summary = safeGenerateConnectorSummaryFn(deviceInfo);
               summary = summary ? summary.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim() : '';
               if (deviceInfo.notes) summary = summary ? "".concat(summary, "; Notes: ").concat(deviceInfo.notes) : deviceInfo.notes;
               if (summary) parts.push(summary);
@@ -14543,7 +14543,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           var _devices$info$categor;
           deviceData = (_devices$info$categor = devices[info.category]) === null || _devices$info$categor === void 0 ? void 0 : _devices$info$categor[info.name];
         }
-        var connectors = safeGenerateConnectorSummary(deviceData);
+        var connectors = safeGenerateConnectorSummaryFn(deviceData);
         var infoHtml = (deviceData && deviceData.latencyMs ? "<div class=\"info-box video-conn\"><strong>Latency:</strong> ".concat(escapeHtml(String(deviceData.latencyMs)), "</div>") : '') + (deviceData && deviceData.frequency ? "<div class=\"info-box video-conn\"><strong>Frequency:</strong> ".concat(escapeHtml(String(deviceData.frequency)), "</div>") : '');
         var html = "<strong>".concat(escapeHtml(info.name), "</strong>") + connectors + infoHtml;
         var show = function show(e) {
@@ -14953,7 +14953,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         header.className = "device-summary";
         var nameSpan = document.createElement("span");
         nameSpan.textContent = name;
-        var summary = safeGenerateConnectorSummary(deviceData);
+        var summary = safeGenerateConnectorSummaryFn(deviceData);
         summary = summary ? summary.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim() : '';
         if (deviceData.notes) {
           summary = summary ? "".concat(summary, "; Notes: ").concat(deviceData.notes) : deviceData.notes;
