@@ -1,3 +1,58 @@
+/*
+ * Ensure critical core runtime globals always exist before the loader
+ * initialises the rest of the application. Some browsers, notably older
+ * WebKit builds, will throw "Can't find variable" errors when a script
+ * references a global that only exists as an object property (for example
+ * when a previous bundle assigned `window.autoGearAutoPresetId = ''`).
+ *
+ * Declaring these bindings up-front with `var` guarantees a proper global
+ * variable binding, while still allowing the later runtime segments to
+ * overwrite the values safely. The fallback values mirror the behaviour of
+ * the runtime initialisers so that any early access remains safe and
+ * side-effect free.
+ */
+
+if (typeof autoGearAutoPresetId === 'undefined') {
+  var autoGearAutoPresetId = '';
+}
+
+if (typeof baseAutoGearRules === 'undefined') {
+  var baseAutoGearRules = [];
+} else if (!Array.isArray(baseAutoGearRules)) {
+  baseAutoGearRules = [];
+}
+
+if (typeof autoGearScenarioModeSelect === 'undefined') {
+  var autoGearScenarioModeSelect = null;
+}
+
+function loaderFallbackSafeGenerateConnectorSummary(device) {
+  if (!device || typeof device !== 'object') {
+    return '';
+  }
+
+  try {
+    var keys = Object.keys(device);
+    if (!keys.length) {
+      return '';
+    }
+
+    var primaryKey = keys[0];
+    var value = device[primaryKey];
+    var label = typeof primaryKey === 'string' ? primaryKey.replace(/_/g, ' ') : 'connector';
+    return value ? label + ': ' + value : label;
+  } catch (fallbackError) {
+    void fallbackError;
+    return '';
+  }
+}
+
+if (typeof safeGenerateConnectorSummary === 'undefined') {
+  var safeGenerateConnectorSummary = loaderFallbackSafeGenerateConnectorSummary;
+} else if (typeof safeGenerateConnectorSummary !== 'function') {
+  safeGenerateConnectorSummary = loaderFallbackSafeGenerateConnectorSummary;
+}
+
 (function () {
   var OPTIONAL_CHAINING_FLAG = '__cinePowerOptionalChainingCheck__';
 
@@ -64,26 +119,7 @@
     }
 
     if (typeof scope.safeGenerateConnectorSummary === 'undefined') {
-      scope.safeGenerateConnectorSummary = function fallbackConnectorSummary(device) {
-        if (!device || typeof device !== 'object') {
-          return '';
-        }
-
-        try {
-          var keys = Object.keys(device);
-          if (!keys.length) {
-            return '';
-          }
-
-          var primaryKey = keys[0];
-          var value = device[primaryKey];
-          var label = typeof primaryKey === 'string' ? primaryKey.replace(/_/g, ' ') : 'connector';
-          return value ? label + ': ' + value : label;
-        } catch (error) {
-          void error;
-          return '';
-        }
-      };
+      scope.safeGenerateConnectorSummary = loaderFallbackSafeGenerateConnectorSummary;
     }
 
     if (typeof scope.autoGearScenarioModeSelect === 'undefined') {
