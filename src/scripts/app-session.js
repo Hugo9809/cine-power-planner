@@ -73,6 +73,26 @@ function ensureSessionRuntimePlaceholder(name, fallbackValue) {
 
 ensureSessionRuntimePlaceholder('autoGearScenarioModeSelect', null);
 
+const downloadDiagramButton = ensureSessionRuntimePlaceholder(
+  'downloadDiagramBtn',
+  () => {
+    if (
+      typeof document === 'undefined'
+      || !document
+      || typeof document.getElementById !== 'function'
+    ) {
+      return null;
+    }
+
+    try {
+      return document.getElementById('downloadDiagram');
+    } catch (resolveError) {
+      void resolveError;
+      return null;
+    }
+  },
+);
+
 function getGlobalCineUi() {
   const scope =
     (typeof globalThis !== 'undefined' && globalThis)
@@ -8274,8 +8294,8 @@ function copyTextToClipboardBestEffort(text) {
   }
 }
 
-if (downloadDiagramBtn) {
-  downloadDiagramBtn.addEventListener('click', (e) => {
+if (downloadDiagramButton) {
+  downloadDiagramButton.addEventListener('click', (e) => {
     const source = exportDiagramSvg();
     if (!source) return;
 

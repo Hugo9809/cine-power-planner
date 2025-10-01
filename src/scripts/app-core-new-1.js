@@ -9524,11 +9524,21 @@ function setLanguage(lang) {
     exportRevert.setAttribute('data-help', texts[lang].exportAndRevertBtnHelp);
   }
 
-  if (downloadDiagramBtn) {
-    downloadDiagramBtn.textContent = texts[lang].downloadDiagramBtn;
-    downloadDiagramBtn.setAttribute("title", texts[lang].downloadDiagramBtn);
-    downloadDiagramBtn.setAttribute("aria-label", texts[lang].downloadDiagramBtn);
-    downloadDiagramBtn.setAttribute("data-help", texts[lang].downloadDiagramHelp);
+  const downloadDiagramButton =
+    (typeof downloadDiagramBtn !== 'undefined' && downloadDiagramBtn)
+    || (
+      typeof document !== 'undefined'
+        && document
+        && typeof document.getElementById === 'function'
+          ? document.getElementById('downloadDiagram')
+          : null
+    );
+
+  if (downloadDiagramButton) {
+    downloadDiagramButton.textContent = texts[lang].downloadDiagramBtn;
+    downloadDiagramButton.setAttribute("title", texts[lang].downloadDiagramBtn);
+    downloadDiagramButton.setAttribute("aria-label", texts[lang].downloadDiagramBtn);
+    downloadDiagramButton.setAttribute("data-help", texts[lang].downloadDiagramHelp);
   }
   if (gridSnapToggleBtn) {
     setButtonLabelWithIcon(gridSnapToggleBtn, texts[lang].gridSnapToggle, ICON_GLYPHS.magnet);
