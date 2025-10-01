@@ -24,6 +24,25 @@ var CORE_PART2_GLOBAL_SCOPES = [
   typeof global !== 'undefined' && typeof global === 'object' ? global : null,
 ].filter(Boolean);
 
+function readGlobalScopeValue(name) {
+  for (let index = 0; index < CORE_PART2_GLOBAL_SCOPES.length; index += 1) {
+    const scope = CORE_PART2_GLOBAL_SCOPES[index];
+    if (!scope || typeof scope !== 'object') {
+      continue;
+    }
+
+    try {
+      if (name in scope) {
+        return scope[name];
+      }
+    } catch (readError) {
+      void readError;
+    }
+  }
+
+  return undefined;
+}
+
 function ensureGlobalFallback(name, fallbackValue) {
   var fallbackProvider =
     typeof fallbackValue === 'function'
@@ -236,12 +255,9 @@ function generateSafeConnectorSummary(device) {
   if (typeof safeGenerateConnectorSummaryFn === 'function') {
     candidates.push(safeGenerateConnectorSummaryFn);
   }
-  try {
-    if (typeof safeGenerateConnectorSummary === 'function') {
-      candidates.push(safeGenerateConnectorSummary);
-    }
-  } catch (referenceError) {
-    void referenceError;
+  const globalSafeSummary = readGlobalScopeValue('safeGenerateConnectorSummary');
+  if (typeof globalSafeSummary === 'function') {
+    candidates.push(globalSafeSummary);
   }
   if (
     typeof CORE_SHARED !== 'undefined' &&
