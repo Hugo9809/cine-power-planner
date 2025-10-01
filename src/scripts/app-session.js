@@ -93,6 +93,26 @@ const downloadDiagramButton = ensureSessionRuntimePlaceholder(
   },
 );
 
+const gridSnapToggleButton = ensureSessionRuntimePlaceholder(
+  'gridSnapToggleBtn',
+  () => {
+    if (
+      typeof document === 'undefined'
+      || !document
+      || typeof document.getElementById !== 'function'
+    ) {
+      return null;
+    }
+
+    try {
+      return document.getElementById('gridSnapToggle');
+    } catch (resolveError) {
+      void resolveError;
+      return null;
+    }
+  },
+);
+
 function getGlobalCineUi() {
   const scope =
     (typeof globalThis !== 'undefined' && globalThis)
@@ -8356,11 +8376,11 @@ if (downloadDiagramButton) {
   });
 }
 
-if (gridSnapToggleBtn) {
-  gridSnapToggleBtn.addEventListener('click', () => {
+if (gridSnapToggleButton) {
+  gridSnapToggleButton.addEventListener('click', () => {
     gridSnap = !gridSnap;
-    gridSnapToggleBtn.classList.toggle('active', gridSnap);
-    gridSnapToggleBtn.setAttribute('aria-pressed', gridSnap ? 'true' : 'false');
+    gridSnapToggleButton.classList.toggle('active', gridSnap);
+    gridSnapToggleButton.setAttribute('aria-pressed', gridSnap ? 'true' : 'false');
     if (setupDiagramContainer) {
       setupDiagramContainer.classList.toggle('grid-snap', gridSnap);
     }
