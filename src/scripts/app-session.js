@@ -3803,14 +3803,45 @@ if (autoGearConditionAddButton) {
     addAutoGearConditionFromPicker();
   });
 }
-const autoGearScenarioModeSelectHandle =
-  typeof autoGearScenarioModeSelect !== 'undefined'
-    ? autoGearScenarioModeSelect
-    : typeof globalThis !== 'undefined'
-        && globalThis
-        && typeof globalThis.autoGearScenarioModeSelect !== 'undefined'
-      ? globalThis.autoGearScenarioModeSelect
-      : null;
+const autoGearScenarioModeSelectHandle = (() => {
+  let resolvedHandle = null;
+
+  try {
+    if (typeof autoGearScenarioModeSelect !== 'undefined') {
+      resolvedHandle = autoGearScenarioModeSelect;
+    }
+  } catch (resolveAutoGearScenarioModeSelectError) {
+    void resolveAutoGearScenarioModeSelectError;
+  }
+
+  if (!resolvedHandle) {
+    const scope =
+      (typeof globalThis !== 'undefined' && globalThis)
+      || (typeof window !== 'undefined' && window)
+      || (typeof self !== 'undefined' && self)
+      || (typeof global !== 'undefined' && global)
+      || null;
+
+    if (scope && typeof scope === 'object' && 'autoGearScenarioModeSelect' in scope) {
+      resolvedHandle = scope.autoGearScenarioModeSelect || null;
+    }
+  }
+
+  if (
+    !resolvedHandle
+    && typeof document !== 'undefined'
+    && document
+    && typeof document.getElementById === 'function'
+  ) {
+    try {
+      resolvedHandle = document.getElementById('autoGearScenarioMode') || null;
+    } catch (resolveAutoGearScenarioModeSelectElementError) {
+      void resolveAutoGearScenarioModeSelectElementError;
+    }
+  }
+
+  return resolvedHandle;
+})();
 
 if (autoGearScenarioModeSelectHandle && typeof autoGearScenarioModeSelectHandle.addEventListener === 'function') {
   autoGearScenarioModeSelectHandle.addEventListener('change', () => {
