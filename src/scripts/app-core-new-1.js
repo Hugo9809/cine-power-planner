@@ -3187,13 +3187,13 @@ function readAutoGearRulesFromStorage() {
 }
 
 var autoGearRules = readAutoGearRulesFromStorage();
-let baseAutoGearRules = autoGearRules.slice();
+var baseAutoGearRules = autoGearRules.slice();
 var projectScopedAutoGearRules = null;
 var autoGearBackupRetention = readAutoGearBackupRetentionFromStorage();
 var autoGearBackups = readAutoGearBackupsFromStorage(autoGearBackupRetention);
 var autoGearPresets = readAutoGearPresetsFromStorage();
 var activeAutoGearPresetId = readActiveAutoGearPresetIdFromStorage();
-let autoGearAutoPresetId = readAutoGearAutoPresetIdFromStorage();
+var autoGearAutoPresetId = readAutoGearAutoPresetIdFromStorage();
 var autoGearBackupsVisible = readAutoGearBackupVisibilityFromStorage();
 var autoGearMonitorDefaults = readAutoGearMonitorDefaultsFromStorage();
 persistAutoGearBackupRetention(autoGearBackupRetention);
