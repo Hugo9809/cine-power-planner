@@ -15079,6 +15079,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       renderAutoGearMonitorDefaultsControls: renderAutoGearMonitorDefaultsControls,
       renderAutoGearPresetsControls: renderAutoGearPresetsControls,
       renderAutoGearRulesList: renderAutoGearRulesList,
+      saveAutoGearRuleFromEditor: saveAutoGearRuleFromEditor,
       handleAutoGearImportSelection: handleAutoGearImportSelection,
       setAutoGearAutoPresetId: setAutoGearAutoPresetId,
       syncAutoGearAutoPreset: syncAutoGearAutoPreset,
