@@ -15563,6 +15563,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       refreshAutoGearMotorsOptions,
       refreshAutoGearControllersOptions,
       refreshAutoGearDistanceOptions,
+      exportAutoGearRules,
       updateAutoGearCameraWeightDraft,
       updateAutoGearShootingDaysDraft,
       checkSetupChanged,
@@ -15603,6 +15604,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       refreshDarkModeAccentBoost,
       isHighContrastActive,
       feedbackUseLocationBtn,
+      getSliderBowlValue,
     };
     
     const CORE_PART2_GLOBAL_SCOPE =
