@@ -1309,14 +1309,27 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         renderAutoGearPresetsControls();
       }
     }
+    function resolveBaseAutoGearRulesSnapshot() {
+      if (Array.isArray(baseAutoGearRulesState)) {
+        return baseAutoGearRulesState;
+      }
+
+      var resolved = readCoreScopeValue('baseAutoGearRules');
+      if (Array.isArray(resolved)) {
+        return resolved;
+      }
+
+      if (typeof baseAutoGearRules !== 'undefined' && Array.isArray(baseAutoGearRules)) {
+        return baseAutoGearRules;
+      }
+
+      return [];
+    }
+
     function alignActiveAutoGearPreset() {
       var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
       var skipRender = options.skipRender === true;
-      var rulesSource = Array.isArray(baseAutoGearRulesState)
-        ? baseAutoGearRulesState
-        : typeof baseAutoGearRules !== 'undefined' && Array.isArray(baseAutoGearRules)
-          ? baseAutoGearRules
-          : [];
+      var rulesSource = resolveBaseAutoGearRulesSnapshot();
       var fingerprint = createAutoGearRulesFingerprint(rulesSource);
       var matching = autoGearPresets.find(function (preset) {
         return preset.fingerprint === fingerprint;

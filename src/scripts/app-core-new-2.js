@@ -1495,13 +1495,26 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
     }
     
+    function resolveBaseAutoGearRulesSnapshot() {
+      if (Array.isArray(baseAutoGearRulesState)) {
+        return baseAutoGearRulesState;
+      }
+
+      const resolved = readCoreScopeValue('baseAutoGearRules');
+      if (Array.isArray(resolved)) {
+        return resolved;
+      }
+
+      if (typeof baseAutoGearRules !== 'undefined' && Array.isArray(baseAutoGearRules)) {
+        return baseAutoGearRules;
+      }
+
+      return [];
+    }
+
     function alignActiveAutoGearPreset(options = {}) {
       const skipRender = options.skipRender === true;
-      const rulesSource = Array.isArray(baseAutoGearRulesState)
-        ? baseAutoGearRulesState
-        : typeof baseAutoGearRules !== 'undefined' && Array.isArray(baseAutoGearRules)
-          ? baseAutoGearRules
-          : [];
+      const rulesSource = resolveBaseAutoGearRulesSnapshot();
       const fingerprint = createAutoGearRulesFingerprint(rulesSource);
       const matching = autoGearPresets.find(preset => preset.fingerprint === fingerprint) || null;
       if (matching) {
