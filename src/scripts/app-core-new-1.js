@@ -580,7 +580,7 @@ const resolveConnectorSummaryGenerator = typeof CORE_SHARED.resolveConnectorSumm
   ? CORE_SHARED.resolveConnectorSummaryGenerator
   : fallbackResolveConnectorSummaryGenerator;
 
-var safeGenerateConnectorSummary = typeof CORE_SHARED.safeGenerateConnectorSummary === 'function'
+let sessionSafeGenerateConnectorSummary = typeof CORE_SHARED.safeGenerateConnectorSummary === 'function'
   ? CORE_SHARED.safeGenerateConnectorSummary
   : function safeGenerateConnectorSummary(device) {
       if (!device) {
@@ -3187,13 +3187,13 @@ function readAutoGearRulesFromStorage() {
 }
 
 var autoGearRules = readAutoGearRulesFromStorage();
-var baseAutoGearRules = autoGearRules.slice();
+let baseAutoGearRules = autoGearRules.slice();
 var projectScopedAutoGearRules = null;
 var autoGearBackupRetention = readAutoGearBackupRetentionFromStorage();
 var autoGearBackups = readAutoGearBackupsFromStorage(autoGearBackupRetention);
 var autoGearPresets = readAutoGearPresetsFromStorage();
 var activeAutoGearPresetId = readActiveAutoGearPresetIdFromStorage();
-var autoGearAutoPresetId = readAutoGearAutoPresetIdFromStorage();
+let autoGearAutoPresetId = readAutoGearAutoPresetIdFromStorage();
 var autoGearBackupsVisible = readAutoGearBackupVisibilityFromStorage();
 var autoGearMonitorDefaults = readAutoGearMonitorDefaultsFromStorage();
 persistAutoGearBackupRetention(autoGearBackupRetention);
@@ -15749,10 +15749,10 @@ exposeCoreRuntimeConstants({
 
 exposeCoreRuntimeBindings({
   safeGenerateConnectorSummary: {
-    get: () => safeGenerateConnectorSummary,
+    get: () => sessionSafeGenerateConnectorSummary,
     set: value => {
       if (typeof value === 'function') {
-        safeGenerateConnectorSummary = value;
+        sessionSafeGenerateConnectorSummary = value;
       }
     },
   },

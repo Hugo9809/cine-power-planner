@@ -411,7 +411,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     return null;
   }
   var resolveConnectorSummaryGenerator = typeof CORE_SHARED.resolveConnectorSummaryGenerator === 'function' ? CORE_SHARED.resolveConnectorSummaryGenerator : fallbackResolveConnectorSummaryGenerator;
-  var safeGenerateConnectorSummary = typeof CORE_SHARED.safeGenerateConnectorSummary === 'function' ? CORE_SHARED.safeGenerateConnectorSummary : function safeGenerateConnectorSummary(device) {
+  var sessionSafeGenerateConnectorSummary = typeof CORE_SHARED.safeGenerateConnectorSummary === 'function' ? CORE_SHARED.safeGenerateConnectorSummary : function safeGenerateConnectorSummary(device) {
     if (!device) {
       return '';
     }
@@ -2817,13 +2817,13 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     return stored.map(normalizeAutoGearRule).filter(Boolean);
   }
   var autoGearRules = readAutoGearRulesFromStorage();
-  var baseAutoGearRules = autoGearRules.slice();
+  var baseAutoGearRulesState = autoGearRules.slice();
   var projectScopedAutoGearRules = null;
   var autoGearBackupRetention = readAutoGearBackupRetentionFromStorage();
   var autoGearBackups = readAutoGearBackupsFromStorage(autoGearBackupRetention);
   var autoGearPresets = readAutoGearPresetsFromStorage();
   var activeAutoGearPresetId = readActiveAutoGearPresetIdFromStorage();
-  var autoGearAutoPresetId = readAutoGearAutoPresetIdFromStorage();
+  var autoGearAutoPresetIdState = readAutoGearAutoPresetIdFromStorage();
   var autoGearBackupsVisible = readAutoGearBackupVisibilityFromStorage();
   var autoGearMonitorDefaults = readAutoGearMonitorDefaultsFromStorage();
   persistAutoGearBackupRetention(autoGearBackupRetention);
@@ -2846,7 +2846,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     });
   }
   function getAutoGearConfigurationSignature() {
-    var rules = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : baseAutoGearRules;
+    var rules = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : baseAutoGearRulesState;
     var defaults = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : autoGearMonitorDefaults;
     return stableStringify({
       rules: Array.isArray(rules) ? rules : [],
@@ -2972,7 +2972,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
   function setAutoGearRules(rules) {
     var normalized = assignAutoGearRules(rules);
-    baseAutoGearRules = normalized.slice();
+    baseAutoGearRulesState = normalized.slice();
     projectScopedAutoGearRules = null;
     persistAutoGearRules();
     syncBaseAutoGearRulesState();
@@ -2995,16 +2995,16 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     if (Array.isArray(rules)) {
       setAutoGearRules(rules);
     } else {
-      baseAutoGearRules = readAutoGearRulesFromStorage();
+      baseAutoGearRulesState = readAutoGearRulesFromStorage();
       projectScopedAutoGearRules = null;
-      assignAutoGearRules(baseAutoGearRules);
+      assignAutoGearRules(baseAutoGearRulesState);
       syncBaseAutoGearRulesState();
     }
     autoGearBackupRetention = readAutoGearBackupRetentionFromStorage();
     autoGearBackups = readAutoGearBackupsFromStorage(autoGearBackupRetention);
     autoGearPresets = readAutoGearPresetsFromStorage();
     activeAutoGearPresetId = readActiveAutoGearPresetIdFromStorage();
-    autoGearAutoPresetId = readAutoGearAutoPresetIdFromStorage();
+    autoGearAutoPresetIdState = readAutoGearAutoPresetIdFromStorage();
     autoGearBackupsVisible = readAutoGearBackupVisibilityFromStorage();
     autoGearMonitorDefaults = readAutoGearMonitorDefaultsFromStorage();
     autoGearRulesLastBackupSignature = autoGearBackups.length ? getAutoGearConfigurationSignature(autoGearBackups[0].rules, autoGearBackups[0].monitorDefaults) : getAutoGearConfigurationSignature();
@@ -3016,7 +3016,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }], {
       defer: true
     });
-    callCoreFunctionIfAvailable('syncAutoGearAutoPreset', [baseAutoGearRules], {
+    callCoreFunctionIfAvailable('syncAutoGearAutoPreset', [baseAutoGearRulesState], {
       defer: true
     });
     callCoreFunctionIfAvailable('alignActiveAutoGearPreset', [{
@@ -3048,17 +3048,17 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       projectScopedAutoGearRules = assignAutoGearRules(rules).slice();
     } else {
       projectScopedAutoGearRules = null;
-      assignAutoGearRules(baseAutoGearRules);
+      assignAutoGearRules(baseAutoGearRulesState);
     }
   }
   function clearProjectAutoGearRules() {
     if (!projectScopedAutoGearRules || !projectScopedAutoGearRules.length) {
       projectScopedAutoGearRules = null;
-      assignAutoGearRules(baseAutoGearRules);
+      assignAutoGearRules(baseAutoGearRulesState);
       return;
     }
     projectScopedAutoGearRules = null;
-    assignAutoGearRules(baseAutoGearRules);
+    assignAutoGearRules(baseAutoGearRulesState);
   }
   function getProjectScopedAutoGearRules() {
     return projectScopedAutoGearRules ? projectScopedAutoGearRules.slice() : null;
@@ -3067,7 +3067,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     return Array.isArray(projectScopedAutoGearRules) && projectScopedAutoGearRules.length > 0;
   }
   function getBaseAutoGearRules() {
-    return baseAutoGearRules.slice();
+    return baseAutoGearRulesState.slice();
   }
   function autoGearRuleSignature(rule) {
     var snapshot = snapshotAutoGearRuleForFingerprint(rule);
@@ -4175,7 +4175,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var previousSelectValues = captureSetupSelectValues();
     var seededBeforeCompute = hasSeededAutoGearDefaults();
     var savedAutoGearRules = autoGearRules.slice();
-    var savedBaseAutoGearRules = baseAutoGearRules.slice();
+    var savedBaseAutoGearRules = baseAutoGearRulesState.slice();
     var savedProjectScopedRules = projectScopedAutoGearRules ? projectScopedAutoGearRules.slice() : null;
     var savedBackupSignature = autoGearRulesLastBackupSignature;
     var savedPersistedSignature = autoGearRulesLastPersistedSignature;
@@ -4185,7 +4185,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         clearAutoGearDefaultsSeeded();
       }
       assignAutoGearRules([]);
-      baseAutoGearRules = [];
+      baseAutoGearRulesState = [];
       projectScopedAutoGearRules = null;
       autoGearRulesLastBackupSignature = savedBackupSignature;
       autoGearRulesLastPersistedSignature = savedPersistedSignature;
@@ -4207,7 +4207,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     } finally {
       applySetupSelectValues(previousSelectValues);
       assignAutoGearRules(savedAutoGearRules);
-      baseAutoGearRules = savedBaseAutoGearRules.slice();
+      baseAutoGearRulesState = savedBaseAutoGearRules.slice();
       projectScopedAutoGearRules = savedProjectScopedRules ? savedProjectScopedRules.slice() : null;
       autoGearRulesLastBackupSignature = savedBackupSignature;
       autoGearRulesLastPersistedSignature = savedPersistedSignature;
@@ -10941,7 +10941,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     autoGearPresets.push(normalizedPreset);
     autoGearPresets = sortAutoGearPresets(autoGearPresets.slice());
     persistAutoGearPresets(autoGearPresets);
-    if (autoGearAutoPresetId) {
+    if (autoGearAutoPresetIdState) {
       callCoreFunctionIfAvailable('setAutoGearAutoPresetId', ['', {
         persist: true,
         skipRender: true
@@ -14352,33 +14352,33 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   exposeCoreRuntimeBindings({
     safeGenerateConnectorSummary: {
       get: function get() {
-        return safeGenerateConnectorSummary;
+        return sessionSafeGenerateConnectorSummary;
       },
       set: function set(value) {
         if (typeof value === 'function') {
-          safeGenerateConnectorSummary = value;
+          sessionSafeGenerateConnectorSummary = value;
         }
       }
     },
     baseAutoGearRules: {
       get: function get() {
-        return baseAutoGearRules;
+        return baseAutoGearRulesState;
       },
       set: function set(value) {
         if (Array.isArray(value)) {
-          baseAutoGearRules = value;
+          baseAutoGearRulesState = value;
         }
       }
     },
     autoGearAutoPresetId: {
       get: function get() {
-        return autoGearAutoPresetId;
+        return autoGearAutoPresetIdState;
       },
       set: function set(value) {
         if (typeof value === 'string') {
-          autoGearAutoPresetId = value;
+          autoGearAutoPresetIdState = value;
         } else if (value === null || typeof value === 'undefined') {
-          autoGearAutoPresetId = '';
+          autoGearAutoPresetIdState = '';
         }
       }
     },
