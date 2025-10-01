@@ -27,21 +27,18 @@ function createFallbackSafeGenerateConnectorSummary() {
     if (!device || _typeof(device) !== 'object') {
       return '';
     }
-
     if (typeof console !== 'undefined' && typeof console.warn === 'function') {
       console.warn('Using fallback connector summary generator. Core bindings may have failed to initialise.');
     }
-
     try {
       var keys = Object.keys(device);
       if (!keys.length) {
         return '';
       }
-
       var primaryKey = keys[0];
       var value = device[primaryKey];
       var label = typeof primaryKey === 'string' ? primaryKey.replace(/_/g, ' ') : 'connector';
-      return value ? label + ': ' + value : label;
+      return value ? "".concat(label, ": ").concat(value) : label;
     } catch (fallbackError) {
       void fallbackError;
       return '';
@@ -49,13 +46,12 @@ function createFallbackSafeGenerateConnectorSummary() {
   };
 }
 function resolveInitialPart2Value(name) {
-  var candidates = [CORE_PART2_RUNTIME_SCOPE && _typeof(CORE_PART2_RUNTIME_SCOPE) === 'object' ? CORE_PART2_RUNTIME_SCOPE : null, typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object' ? CORE_GLOBAL_SCOPE : null, typeof globalThis !== 'undefined' && _typeof(globalThis) === 'object' ? globalThis : null, typeof window !== 'undefined' && _typeof(window) === 'object' ? window : null, typeof self !== 'undefined' && _typeof(self) === 'object' ? self : null, typeof global !== 'undefined' && _typeof(global) === 'object' ? global : null].filter(Boolean);
+  var candidates = [CORE_PART2_RUNTIME_SCOPE && _typeof(CORE_PART2_RUNTIME_SCOPE) === 'object' ? CORE_PART2_RUNTIME_SCOPE : null, typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && (typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' ? CORE_GLOBAL_SCOPE : null, typeof globalThis !== 'undefined' && (typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object' ? globalThis : null, typeof window !== 'undefined' && (typeof window === "undefined" ? "undefined" : _typeof(window)) === 'object' ? window : null, typeof self !== 'undefined' && (typeof self === "undefined" ? "undefined" : _typeof(self)) === 'object' ? self : null, typeof global !== 'undefined' && (typeof global === "undefined" ? "undefined" : _typeof(global)) === 'object' ? global : null].filter(Boolean);
   for (var index = 0; index < candidates.length; index += 1) {
     var scope = candidates[index];
     if (!scope || _typeof(scope) !== 'object') {
       continue;
     }
-
     try {
       if (name in scope) {
         var value = scope[name];
@@ -67,7 +63,6 @@ function resolveInitialPart2Value(name) {
       void readError;
     }
   }
-
   return undefined;
 }
 var autoGearAutoPresetIdSeed = resolveInitialPart2Value('autoGearAutoPresetId');
@@ -15057,7 +15052,28 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       setAutoGearAutoPresetId: setAutoGearAutoPresetId,
       syncAutoGearAutoPreset: syncAutoGearAutoPreset,
       updateAutoGearCatalogOptions: updateAutoGearCatalogOptions,
-      updateAutoGearMonitorDefaultOptions: updateAutoGearMonitorDefaultOptions
+      updateAutoGearMonitorDefaultOptions: updateAutoGearMonitorDefaultOptions,
+      applyFavoritesToSelect: applyFavoritesToSelect,
+      updateFavoriteButton: updateFavoriteButton,
+      toggleFavorite: toggleFavorite,
+      accentColor: accentColor,
+      prevAccentColor: prevAccentColor,
+      DEFAULT_ACCENT_COLOR: DEFAULT_ACCENT_COLOR,
+      HIGH_CONTRAST_ACCENT_COLOR: HIGH_CONTRAST_ACCENT_COLOR,
+      applyAccentColor: applyAccentColor,
+      clearAccentColorOverrides: clearAccentColorOverrides,
+      updateAccentColorResetButtonState: updateAccentColorResetButtonState,
+      restoringSession: restoringSession,
+      currentProjectInfo: currentProjectInfo,
+      projectForm: projectForm,
+      filterSelectElem: filterSelectElem,
+      filterDetailsStorage: filterDetailsStorage,
+      loadFeedbackSafe: loadFeedbackSafe,
+      saveFeedbackSafe: saveFeedbackSafe,
+      skipNextGearListRefresh: skipNextGearListRefresh,
+      refreshDarkModeAccentBoost: refreshDarkModeAccentBoost,
+      isHighContrastActive: isHighContrastActive,
+      feedbackUseLocationBtn: feedbackUseLocationBtn
     };
     var CORE_PART2_GLOBAL_SCOPE = CORE_SHARED_SCOPE_PART2 || (typeof globalThis !== 'undefined' ? globalThis : null) || (typeof window !== 'undefined' ? window : null) || (typeof self !== 'undefined' ? self : null) || (typeof global !== 'undefined' ? global : null);
     var CORE_PART2_RUNTIME = function resolvePart2Runtime(scope) {
