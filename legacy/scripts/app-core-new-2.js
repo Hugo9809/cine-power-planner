@@ -1274,7 +1274,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     function alignActiveAutoGearPreset() {
       var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
       var skipRender = options.skipRender === true;
-      var fingerprint = createAutoGearRulesFingerprint(baseAutoGearRulesState);
+      var rulesSource = Array.isArray(baseAutoGearRulesState)
+        ? baseAutoGearRulesState
+        : typeof baseAutoGearRules !== 'undefined' && Array.isArray(baseAutoGearRules)
+          ? baseAutoGearRules
+          : [];
+      var fingerprint = createAutoGearRulesFingerprint(rulesSource);
       var matching = autoGearPresets.find(function (preset) {
         return preset.fingerprint === fingerprint;
       }) || null;
