@@ -6368,7 +6368,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   var autoGearRuleNameLabel = document.getElementById('autoGearRuleNameLabel');
   var autoGearScenariosSelect = document.getElementById('autoGearScenarios');
   var autoGearScenariosLabel = document.getElementById('autoGearScenariosLabel');
-  var autoGearScenarioModeSelect = document.getElementById('autoGearScenarioMode');
+  let autoGearScenarioModeSelect = document.getElementById('autoGearScenarioMode');
   var autoGearScenarioModeLabel = document.getElementById('autoGearScenarioModeLabel');
   var autoGearScenarioMultiplierContainer = document.getElementById('autoGearScenarioMultiplierContainer');
   var autoGearScenarioBaseSelect = document.getElementById('autoGearScenarioBase');
