@@ -389,6 +389,27 @@ function callSessionCoreFunction(functionName, args = [], options = {}) {
     : undefined;
 }
 
+function ensureSessionRuntimeFunction(functionName, options = {}) {
+  return ensureSessionRuntimePlaceholder(
+    functionName,
+    () => (...invocationArgs) => callSessionCoreFunction(functionName, invocationArgs, options),
+  );
+}
+
+const AUTO_GEAR_RUNTIME_HANDLERS = [
+  'handleAutoGearImportSelection',
+  'handleAutoGearPresetSelection',
+  'handleAutoGearSavePreset',
+  'handleAutoGearDeletePreset',
+  'handleAutoGearShowBackupsToggle',
+  'handleAutoGearConditionShortcut',
+];
+
+for (let index = 0; index < AUTO_GEAR_RUNTIME_HANDLERS.length; index += 1) {
+  const handlerName = AUTO_GEAR_RUNTIME_HANDLERS[index];
+  ensureSessionRuntimeFunction(handlerName, { defer: true });
+}
+
 function getSessionCoreValue(functionName, options = {}) {
   const defaultValue = Object.prototype.hasOwnProperty.call(options, 'defaultValue')
     ? options.defaultValue
