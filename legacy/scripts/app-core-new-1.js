@@ -246,17 +246,56 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       CORE_BOOT_QUEUE.push(task);
     }
   }
+  function isAutoGearAutoPresetReferenceError(error) {
+    if (!error || _typeof(error) !== 'object') {
+      return false;
+    }
+    var message = typeof error.message === 'string' ? error.message : '';
+    return error.name === 'ReferenceError' && message.indexOf('autoGearAutoPresetId') !== -1;
+  }
+
+  function repairAutoGearAutoPresetGlobal(scope) {
+    if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+      return;
+    }
+    if (typeof scope.autoGearAutoPresetId === 'undefined') {
+      try {
+        scope.autoGearAutoPresetId = '';
+      } catch (assignmentError) {
+        try {
+          Object.defineProperty(scope, 'autoGearAutoPresetId', {
+            configurable: true,
+            writable: true,
+            enumerable: false,
+            value: ''
+          });
+        } catch (defineError) {
+          void defineError;
+        }
+      }
+    }
+  }
+
   function callCoreFunctionIfAvailable(functionName) {
     var args = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
     var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     var scope = CORE_GLOBAL_SCOPE || (typeof globalThis !== 'undefined' ? globalThis : null) || (typeof window !== 'undefined' ? window : null) || (typeof self !== 'undefined' ? self : null) || (typeof global !== 'undefined' ? global : null);
     var target = typeof functionName === 'string' ? scope && scope[functionName] : functionName;
     if (typeof target === 'function') {
-      try {
-        return target.apply(scope, args);
-      } catch (invokeError) {
-        if (typeof console !== 'undefined' && typeof console.error === 'function') {
-          console.error("Failed to invoke ".concat(functionName), invokeError);
+      var attempt = 0;
+      while (attempt < 2) {
+        try {
+          return target.apply(scope, args);
+        } catch (invokeError) {
+          if (attempt === 0 && isAutoGearAutoPresetReferenceError(invokeError)) {
+            repairAutoGearAutoPresetGlobal(scope);
+            attempt += 1;
+            continue;
+          }
+          if (typeof console !== 'undefined' && typeof console.error === 'function') {
+            console.error("Failed to invoke ".concat(functionName), invokeError);
+          }
+          break;
         }
       }
       return undefined;

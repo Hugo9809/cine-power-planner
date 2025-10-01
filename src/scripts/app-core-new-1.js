@@ -381,6 +381,38 @@ function enqueueCoreBootTask(task) {
   }
 }
 
+function isAutoGearAutoPresetReferenceError(error) {
+  if (!error || typeof error !== 'object') {
+    return false;
+  }
+
+  const message = typeof error.message === 'string' ? error.message : '';
+  return error.name === 'ReferenceError' && message.includes('autoGearAutoPresetId');
+}
+
+function repairAutoGearAutoPresetGlobal(scope) {
+  if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+    return;
+  }
+
+  if (typeof scope.autoGearAutoPresetId === 'undefined') {
+    try {
+      scope.autoGearAutoPresetId = '';
+    } catch (assignmentError) {
+      try {
+        Object.defineProperty(scope, 'autoGearAutoPresetId', {
+          configurable: true,
+          writable: true,
+          enumerable: false,
+          value: '',
+        });
+      } catch (defineError) {
+        void defineError;
+      }
+    }
+  }
+}
+
 function callCoreFunctionIfAvailable(functionName, args = [], options = {}) {
   const scope =
     CORE_GLOBAL_SCOPE ||
@@ -395,11 +427,21 @@ function callCoreFunctionIfAvailable(functionName, args = [], options = {}) {
       : functionName;
 
   if (typeof target === 'function') {
-    try {
-      return target.apply(scope, args);
-    } catch (invokeError) {
-      if (typeof console !== 'undefined' && typeof console.error === 'function') {
-        console.error(`Failed to invoke ${functionName}`, invokeError);
+    let attempt = 0;
+    while (attempt < 2) {
+      try {
+        return target.apply(scope, args);
+      } catch (invokeError) {
+        if (attempt === 0 && isAutoGearAutoPresetReferenceError(invokeError)) {
+          repairAutoGearAutoPresetGlobal(scope);
+          attempt += 1;
+          continue;
+        }
+
+        if (typeof console !== 'undefined' && typeof console.error === 'function') {
+          console.error(`Failed to invoke ${functionName}`, invokeError);
+        }
+        break;
       }
     }
     return undefined;
