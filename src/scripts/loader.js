@@ -26,6 +26,20 @@ if (typeof autoGearScenarioModeSelect === 'undefined') {
   var autoGearScenarioModeSelect = null;
 }
 
+if (typeof autoGearRuleNameInput === 'undefined') {
+  var autoGearRuleNameInput = null;
+}
+
+if (typeof autoGearSummaryFocus === 'undefined' || typeof autoGearSummaryFocus !== 'string') {
+  var autoGearSummaryFocus = 'all';
+}
+
+if (typeof autoGearMonitorDefaultControls === 'undefined') {
+  var autoGearMonitorDefaultControls = [];
+} else if (!Array.isArray(autoGearMonitorDefaultControls)) {
+  autoGearMonitorDefaultControls = [];
+}
+
 function loaderFallbackSafeGenerateConnectorSummary(device) {
   if (!device || typeof device !== 'object') {
     return '';
