@@ -45,6 +45,36 @@ function createFallbackSafeGenerateConnectorSummary() {
     }
   };
 }
+function ensureCorePart2Placeholder(name, fallbackValue) {
+  var providers = [CORE_PART2_RUNTIME_SCOPE && _typeof(CORE_PART2_RUNTIME_SCOPE) === 'object' ? CORE_PART2_RUNTIME_SCOPE : null, typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && (typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' ? CORE_GLOBAL_SCOPE : null, typeof globalThis !== 'undefined' && (typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object' ? globalThis : null, typeof window !== 'undefined' && (typeof window === "undefined" ? "undefined" : _typeof(window)) === 'object' ? window : null, typeof self !== 'undefined' && (typeof self === "undefined" ? "undefined" : _typeof(self)) === 'object' ? self : null, typeof global !== 'undefined' && (typeof global === "undefined" ? "undefined" : _typeof(global)) === 'object' ? global : null].filter(Boolean);
+
+  var fallbackProvider = typeof fallbackValue === 'function' ? fallbackValue : function provideStaticFallback() {
+    return fallbackValue;
+  };
+
+  for (var index = 0; index < providers.length; index += 1) {
+    var scope = providers[index];
+    try {
+      if (typeof scope[name] === 'undefined') {
+        scope[name] = fallbackProvider();
+      }
+      return scope[name];
+    } catch (placeholderError) {
+      void placeholderError;
+    }
+  }
+
+  return fallbackProvider();
+}
+
+ensureCorePart2Placeholder('autoGearAutoPresetId', '');
+ensureCorePart2Placeholder('baseAutoGearRules', function () {
+  return [];
+});
+ensureCorePart2Placeholder('autoGearScenarioModeSelect', null);
+ensureCorePart2Placeholder('safeGenerateConnectorSummary', function () {
+  return createFallbackSafeGenerateConnectorSummary();
+});
 function resolveInitialPart2Value(name) {
   var candidates = [CORE_PART2_RUNTIME_SCOPE && _typeof(CORE_PART2_RUNTIME_SCOPE) === 'object' ? CORE_PART2_RUNTIME_SCOPE : null, typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && (typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' ? CORE_GLOBAL_SCOPE : null, typeof globalThis !== 'undefined' && (typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object' ? globalThis : null, typeof window !== 'undefined' && (typeof window === "undefined" ? "undefined" : _typeof(window)) === 'object' ? window : null, typeof self !== 'undefined' && (typeof self === "undefined" ? "undefined" : _typeof(self)) === 'object' ? self : null, typeof global !== 'undefined' && (typeof global === "undefined" ? "undefined" : _typeof(global)) === 'object' ? global : null].filter(Boolean);
   for (var index = 0; index < candidates.length; index += 1) {

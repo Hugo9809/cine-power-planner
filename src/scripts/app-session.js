@@ -43,6 +43,36 @@
           parseStoredMountVoltages, SUPPORTED_MOUNT_VOLTAGE_TYPES,
           DEFAULT_MOUNT_VOLTAGES, mountVoltageInputs, parseVoltageValue */
 
+function ensureSessionRuntimePlaceholder(name, fallbackValue) {
+  const scope =
+    (typeof globalThis !== 'undefined' && globalThis)
+    || (typeof window !== 'undefined' && window)
+    || (typeof self !== 'undefined' && self)
+    || (typeof global !== 'undefined' && global)
+    || null;
+
+  const fallbackProvider =
+    typeof fallbackValue === 'function'
+      ? fallbackValue
+      : () => fallbackValue;
+
+  if (!scope || typeof scope !== 'object') {
+    return fallbackProvider();
+  }
+
+  try {
+    if (typeof scope[name] === 'undefined') {
+      scope[name] = fallbackProvider();
+    }
+    return scope[name];
+  } catch (placeholderError) {
+    void placeholderError;
+    return fallbackProvider();
+  }
+}
+
+ensureSessionRuntimePlaceholder('autoGearScenarioModeSelect', null);
+
 function getGlobalCineUi() {
   const scope =
     (typeof globalThis !== 'undefined' && globalThis)

@@ -40,6 +40,51 @@ function createFallbackSafeGenerateConnectorSummary() {
   };
 }
 
+function ensureCorePart2Placeholder(name, fallbackValue) {
+  var providers = [
+    CORE_PART2_RUNTIME_SCOPE && typeof CORE_PART2_RUNTIME_SCOPE === 'object'
+      ? CORE_PART2_RUNTIME_SCOPE
+      : null,
+    typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object'
+      ? CORE_GLOBAL_SCOPE
+      : null,
+    typeof globalThis !== 'undefined' && typeof globalThis === 'object' ? globalThis : null,
+    typeof window !== 'undefined' && typeof window === 'object' ? window : null,
+    typeof self !== 'undefined' && typeof self === 'object' ? self : null,
+    typeof global !== 'undefined' && typeof global === 'object' ? global : null,
+  ].filter(Boolean);
+
+  var fallbackProvider =
+    typeof fallbackValue === 'function'
+      ? fallbackValue
+      : function provideStaticFallback() {
+          return fallbackValue;
+        };
+
+  for (var index = 0; index < providers.length; index += 1) {
+    var scope = providers[index];
+    try {
+      if (typeof scope[name] === 'undefined') {
+        scope[name] = fallbackProvider();
+      }
+      return scope[name];
+    } catch (placeholderError) {
+      void placeholderError;
+    }
+  }
+
+  return fallbackProvider();
+}
+
+ensureCorePart2Placeholder('autoGearAutoPresetId', '');
+ensureCorePart2Placeholder('baseAutoGearRules', function () {
+  return [];
+});
+ensureCorePart2Placeholder('autoGearScenarioModeSelect', null);
+ensureCorePart2Placeholder('safeGenerateConnectorSummary', function () {
+  return createFallbackSafeGenerateConnectorSummary();
+});
+
 function resolveInitialPart2Value(name) {
   const candidates = [
     CORE_PART2_RUNTIME_SCOPE && typeof CORE_PART2_RUNTIME_SCOPE === 'object'
