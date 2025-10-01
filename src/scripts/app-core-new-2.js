@@ -159,6 +159,47 @@ let safeGenerateConnectorSummaryFn =
     ? safeGenerateConnectorSummarySeed
     : createFallbackSafeGenerateConnectorSummary();
 
+let connectorSummaryWarningIssued = false;
+function generateSafeConnectorSummary(device) {
+  const candidates = [];
+  if (typeof safeGenerateConnectorSummaryFn === 'function') {
+    candidates.push(safeGenerateConnectorSummaryFn);
+  }
+  if (typeof safeGenerateConnectorSummary === 'function') {
+    candidates.push(safeGenerateConnectorSummary);
+  }
+  if (
+    typeof CORE_SHARED !== 'undefined' &&
+    CORE_SHARED &&
+    typeof CORE_SHARED.safeGenerateConnectorSummary === 'function'
+  ) {
+    candidates.push(CORE_SHARED.safeGenerateConnectorSummary);
+  }
+
+  for (let index = 0; index < candidates.length; index += 1) {
+    const generator = candidates[index];
+    try {
+      const summary = generator(device);
+      if (typeof summary === 'string') {
+        return summary;
+      }
+      if (typeof summary === 'undefined' || summary === null) {
+        continue;
+      }
+      return String(summary);
+    } catch (error) {
+      if (!connectorSummaryWarningIssued) {
+        connectorSummaryWarningIssued = true;
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn('Failed to generate connector summary. Falling back to empty summary.', error);
+        }
+      }
+    }
+  }
+
+  return '';
+}
+
 if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initialized) {
   if (typeof console !== 'undefined' && typeof console.warn === 'function') {
     console.warn('Cine Power Planner core runtime (part 2) already initialized. Skipping duplicate load.');
@@ -10615,7 +10656,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             if (categoryParts.length) parts.push(categoryParts.join(' – '));
             if (libraryCategory) parts.push(`Device library category: ${libraryCategory}`);
             if (deviceInfo) {
-              let summary = safeGenerateConnectorSummaryFn(deviceInfo);
+              let summary = generateSafeConnectorSummary(deviceInfo);
               summary = summary
                 ? summary.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim()
                 : '';
@@ -15139,7 +15180,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         } else {
           deviceData = devices[info.category]?.[info.name];
         }
-        const connectors = safeGenerateConnectorSummaryFn(deviceData);
+        const connectors = generateSafeConnectorSummary(deviceData);
         const infoHtml =
           (deviceData && deviceData.latencyMs ?
             `<div class="info-box video-conn"><strong>Latency:</strong> ${escapeHtml(String(deviceData.latencyMs))}</div>` : '') +
@@ -15548,7 +15589,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     
         const nameSpan = document.createElement("span");
         nameSpan.textContent = name;
-        let summary = safeGenerateConnectorSummaryFn(deviceData);
+        let summary = generateSafeConnectorSummary(deviceData);
         summary = summary ? summary.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim() : '';
         if (deviceData.notes) {
           summary = summary ? `${summary}; Notes: ${deviceData.notes}` : deviceData.notes;
