@@ -118,6 +118,24 @@ function resolveCineUi() {
   return null;
 }
 
+function getSetupSelectElement() {
+  if (typeof setupSelect !== 'undefined' && setupSelect) {
+    return setupSelect;
+  }
+  if (typeof document !== 'undefined' && document) {
+    const element = document.getElementById('setupSelect');
+    if (element) {
+      return element;
+    }
+  }
+  return null;
+}
+
+function addSafeEventListener(target, type, handler, options) {
+  if (!target || typeof target.addEventListener !== 'function') return;
+  target.addEventListener(type, handler, options);
+}
+
 let eventsCineUiRegistered = false;
 
 function enqueueCineUiRegistration(callback) {
@@ -159,16 +177,14 @@ function enqueueCineUiRegistration(callback) {
 enqueueCineUiRegistration(registerEventsCineUiInternal);
 
 // Language selection
-languageSelect.addEventListener("change", (event) => {
+addSafeEventListener(languageSelect, "change", (event) => {
   setLanguage(event.target.value);
 });
 
-if (skipLink) {
-  skipLink.addEventListener("click", () => {
-    const main = document.getElementById("mainContent");
-    if (main) main.focus();
-  });
-}
+addSafeEventListener(skipLink, "click", () => {
+  const main = document.getElementById("mainContent");
+  if (main) main.focus();
+});
 
 // Filtering inputs
 
@@ -198,7 +214,10 @@ function handleSaveSetupClick() {
     currentSetup.gearList = gearListHtml;
   }
 
-  const selectedName = setupSelect ? setupSelect.value : '';
+  const setupSelectElement = getSetupSelectElement();
+  const selectedName = setupSelectElement && typeof setupSelectElement.value === 'string'
+    ? setupSelectElement.value
+    : '';
   const renamingExisting = Boolean(selectedName && typedName && selectedName !== typedName);
   const renamingAutoBackup = renamingExisting
     && typeof selectedName === 'string'
@@ -254,7 +273,9 @@ function handleSaveSetupClick() {
 
   populateSetupSelect();
   setupNameInput.value = finalName;
-  setupSelect.value = finalName; // Select the saved setup (new or renamed)
+  if (setupSelectElement) {
+    setupSelectElement.value = finalName; // Select the saved setup (new or renamed)
+  }
   lastSetupName = finalName;
   saveCurrentSession(); // Persist selection so refreshes restore this setup
   storeLoadedSetupState(getCurrentSetupState());
@@ -286,10 +307,13 @@ function handleSaveSetupClick() {
   alert(texts[currentLang].alertSetupSaved.replace("{name}", finalName));
 }
 
-saveSetupBtn.addEventListener("click", handleSaveSetupClick);
+addSafeEventListener(saveSetupBtn, "click", handleSaveSetupClick);
 
 function handleDeleteSetupClick() {
-  const setupName = setupSelect.value;
+  const setupSelectElement = getSetupSelectElement();
+  const setupName = setupSelectElement && typeof setupSelectElement.value === 'string'
+    ? setupSelectElement.value
+    : '';
   if (!setupName) {
     alert(texts[currentLang].alertNoSetupSelected);
     return;
@@ -312,10 +336,10 @@ function handleDeleteSetupClick() {
     setupNameInput.value = ""; // Clear setup name input
 
     let selectionResetHandled = false;
-    if (setupSelect) {
+    if (setupSelectElement && typeof setupSelectElement.dispatchEvent === 'function') {
       lastSetupName = '';
-      setupSelect.value = "";
-      setupSelect.dispatchEvent(new Event('change'));
+      setupSelectElement.value = "";
+      setupSelectElement.dispatchEvent(new Event('change'));
       selectionResetHandled = true;
     }
 
@@ -358,7 +382,7 @@ function handleDeleteSetupClick() {
   }
 }
 
-deleteSetupBtn.addEventListener("click", handleDeleteSetupClick);
+addSafeEventListener(deleteSetupBtn, "click", handleDeleteSetupClick);
 
 function resetSetupStateToDefaults(options = {}) {
   const config = typeof options === 'object' && options !== null ? options : {};
@@ -522,8 +546,10 @@ function finalizeSetupSelection(nextSetupName) {
   lastSetupName = nextSetupName;
 }
 
-setupSelect.addEventListener("change", (event) => {
-  const setupName = event.target.value;
+const setupSelectTarget = getSetupSelectElement();
+
+addSafeEventListener(setupSelectTarget, "change", (event) => {
+    const setupName = event.target.value;
   const typedName =
     setupNameInput && typeof setupNameInput.value === 'string'
       ? setupNameInput.value.trim()
@@ -787,7 +813,7 @@ setupSelect.addEventListener("change", (event) => {
   }
 
   finalizeSetupSelection(setupName);
-});
+  });
 
 
 function populateSetupSelect() {
@@ -795,11 +821,24 @@ function populateSetupSelect() {
     typeof getSetups === 'function'
       ? getSetups
       : null;
+  const setupSelectTarget = getSetupSelectElement();
+  if (!setupSelectTarget) {
+    console.warn('populateSetupSelect: setup select element unavailable, aborting populate');
+    return;
+  }
+  const textBundle =
+    typeof texts === 'object' && texts
+      ? (texts[currentLang] || texts.en || {})
+      : {};
+  const newSetupOptionLabel =
+    typeof textBundle.newSetupOption === 'string' && textBundle.newSetupOption.trim()
+      ? textBundle.newSetupOption
+      : 'New setup';
   if (!setupsProvider) {
     console.warn('populateSetupSelect: getSetups is unavailable, using empty setup list');
   }
   const setups = setupsProvider ? setupsProvider() || {} : {};
-  setupSelect.innerHTML = `<option value="">${texts[currentLang].newSetupOption}</option>`;
+  setupSelectTarget.innerHTML = `<option value="">${newSetupOptionLabel}</option>`;
   let includeAutoBackups = false;
   if (typeof showAutoBackups === 'boolean') {
     includeAutoBackups = showAutoBackups;
@@ -829,7 +868,7 @@ function populateSetupSelect() {
     const opt = document.createElement("option");
     opt.value = name;
     opt.textContent = name;
-    setupSelect.appendChild(opt);
+    setupSelectTarget.appendChild(opt);
   }
 }
 populateSetupSelect(); // Initial populate of setups
@@ -875,7 +914,8 @@ function notifyAutoSaveFromBackup(message, backupName) {
 // selector but do not change the currently selected setup. Intervals are
 // unref'ed when possible so Node environments can exit cleanly.
 function autoBackup(options = {}) {
-  if (!setupSelect) return null;
+  const setupSelectElement = getSetupSelectElement();
+  if (!setupSelectElement) return null;
   const config = typeof options === 'object' && options !== null ? options : {};
   const suppressSuccess = Boolean(config.suppressSuccess);
   const suppressError = Boolean(config.suppressError);
@@ -899,8 +939,8 @@ function autoBackup(options = {}) {
   const overrideName = hasProjectNameOverride
     ? normalizeProjectName(config.projectNameOverride)
     : null;
-  const selectedName = setupSelect && typeof setupSelect.value === 'string'
-    ? setupSelect.value
+  const selectedName = typeof setupSelectElement.value === 'string'
+    ? setupSelectElement.value
     : '';
   const typedName = setupNameInput && typeof setupNameInput.value === 'string'
     ? setupNameInput.value
@@ -940,8 +980,8 @@ function autoBackup(options = {}) {
     const currentSetup = { ...getCurrentSetupState() };
     let gearListHtml = getCurrentGearListHtml();
     if (!gearListHtml) {
-      const activeName = (setupSelect && typeof setupSelect.value === 'string'
-        ? setupSelect.value.trim()
+      const activeName = (typeof setupSelectElement.value === 'string'
+        ? setupSelectElement.value.trim()
         : '')
         || (setupNameInput && typeof setupNameInput.value === 'string'
           ? setupNameInput.value.trim()
@@ -985,10 +1025,10 @@ function autoBackup(options = {}) {
         saveProject(backupName, payload);
       }
     }
-    const prevValue = setupSelect.value;
+    const prevValue = setupSelectElement.value;
     const prevName = setupNameInput ? setupNameInput.value : '';
     populateSetupSelect();
-    setupSelect.value = prevValue;
+    setupSelectElement.value = prevValue;
     if (setupNameInput) setupNameInput.value = prevName;
     if (!suppressSuccess) {
       showNotification('success', successMessage);
@@ -1113,9 +1153,7 @@ function toggleDeviceManagerSection() {
 }
 
 // Toggle device manager visibility
-if (toggleDeviceBtn) {
-  toggleDeviceBtn.addEventListener('click', toggleDeviceManagerSection);
-}
+addSafeEventListener(toggleDeviceBtn, 'click', toggleDeviceManagerSection);
 
 function getEventsLanguageTexts() {
   const scope =
@@ -1374,7 +1412,7 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
 }
 
 // Handle "Edit" and "Delete" buttons in device lists (event delegation)
-deviceManagerSection.addEventListener("click", (event) => {
+addSafeEventListener(deviceManagerSection, "click", (event) => {
   const button = event.target.closest('button');
   if (!button || !deviceManagerSection.contains(button)) {
     return;
@@ -1473,7 +1511,7 @@ deviceManagerSection.addEventListener("click", (event) => {
   }
 });
 
-deviceManagerSection.addEventListener('keydown', (event) => {
+addSafeEventListener(deviceManagerSection, 'keydown', (event) => {
   if (event.target.classList.contains('detail-toggle') && (event.key === 'Enter' || event.key === ' ')) {
     event.preventDefault();
     toggleDeviceDetails(event.target);
@@ -1481,7 +1519,7 @@ deviceManagerSection.addEventListener('keydown', (event) => {
 });
 
 // Category selection in add device form
-newCategorySelect.addEventListener("change", () => {
+addSafeEventListener(newCategorySelect, "change", () => {
   const wasEditing = addDeviceBtn?.dataset.mode === "edit";
   const previousName = newNameInput ? newNameInput.value : "";
   const val = newCategorySelect.value;
@@ -1622,7 +1660,7 @@ newCategorySelect.addEventListener("change", () => {
   }
 });
 
-newSubcategorySelect.addEventListener('change', () => {
+addSafeEventListener(newSubcategorySelect, 'change', () => {
   if (newCategorySelect.value === 'accessories.cables') {
     buildDynamicFields(`accessories.cables.${newSubcategorySelect.value}`, {}, categoryExcludedAttrs[`accessories.cables.${newSubcategorySelect.value}`] || []);
   }
@@ -1653,7 +1691,7 @@ function resetDeviceForm() {
 
 
 // Add/Update device logic
-addDeviceBtn.addEventListener("click", () => {
+addSafeEventListener(addDeviceBtn, "click", () => {
   const name = newNameInput.value.trim();
   const category = newCategorySelect.value;
   const isEditing = addDeviceBtn.dataset.mode === "edit";
@@ -1947,12 +1985,12 @@ addDeviceBtn.addEventListener("click", () => {
 });
 
 // Cancel editing and revert form to add mode
-cancelEditBtn.addEventListener("click", () => {
+addSafeEventListener(cancelEditBtn, "click", () => {
   resetDeviceForm();
 });
 
 // Export device data
-exportBtn.addEventListener("click", () => {
+addSafeEventListener(exportBtn, "click", () => {
   const dataStr = JSON.stringify(devices, null, 2);
   exportOutput.style.display = "block";
   exportOutput.value = dataStr;
@@ -1970,7 +2008,7 @@ exportBtn.addEventListener("click", () => {
 const exportAndRevertBtn = document.getElementById('exportAndRevertBtn'); 
 
 if (exportAndRevertBtn) {
-  exportAndRevertBtn.addEventListener('click', () => {
+  addSafeEventListener(exportAndRevertBtn, 'click', () => {
     // Step 1: Export the current database
     if (confirm(texts[currentLang].confirmExportAndRevert)) { // Confirmation for both actions
       // Reusing the export logic from the existing 'Export Database' button
@@ -2001,11 +2039,11 @@ if (exportAndRevertBtn) {
 }
 
 // Import device data
-importDataBtn.addEventListener("click", () => {
+  addSafeEventListener(importDataBtn, "click", () => {
   importFileInput.click(); // Trigger the file input click
 });
 
-importFileInput.addEventListener("change", (event) => {
+  addSafeEventListener(importFileInput, "change", (event) => {
   const file = event.target.files[0];
   if (!file) {
     return;

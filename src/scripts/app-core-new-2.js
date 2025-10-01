@@ -334,6 +334,134 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         ? CORE_SHARED
         : resolveCoreSharedPart2() || {};
 
+    function fallbackNormalizeAutoGearWeightOperator(value) {
+      if (typeof value !== 'string') return 'greater';
+      const normalized = value.trim().toLowerCase();
+      if (!normalized) return 'greater';
+      if (
+        normalized === '>' ||
+        normalized === 'gt' ||
+        normalized === 'greaterthan' ||
+        normalized === 'above' ||
+        normalized === 'over'
+      ) {
+        return 'greater';
+      }
+      if (
+        normalized === '<' ||
+        normalized === 'lt' ||
+        normalized === 'lessthan' ||
+        normalized === 'below' ||
+        normalized === 'under'
+      ) {
+        return 'less';
+      }
+      if (
+        normalized === '=' ||
+        normalized === '==' ||
+        normalized === 'equal' ||
+        normalized === 'equals' ||
+        normalized === 'exactly' ||
+        normalized === 'match' ||
+        normalized === 'matches'
+      ) {
+        return 'equal';
+      }
+      return 'greater';
+    }
+
+    function fallbackNormalizeAutoGearWeightValue(value) {
+      if (typeof value === 'number' && Number.isFinite(value)) {
+        const rounded = Math.round(value);
+        return rounded >= 0 ? rounded : null;
+      }
+      if (typeof value === 'string') {
+        const trimmed = value.trim();
+        if (!trimmed) return null;
+        const sanitized = trimmed.replace(/[^0-9.,-]/g, '').replace(/,/g, '.');
+        if (!sanitized) return null;
+        const parsed = Number.parseFloat(sanitized);
+        if (!Number.isFinite(parsed)) return null;
+        const rounded = Math.round(parsed);
+        return rounded >= 0 ? rounded : null;
+      }
+      return null;
+    }
+
+    function fallbackFormatAutoGearWeight(value) {
+      if (!Number.isFinite(value)) return '';
+      try {
+        if (typeof Intl !== 'undefined' && typeof Intl.NumberFormat === 'function') {
+          return new Intl.NumberFormat().format(value);
+        }
+      } catch (error) {
+        void error;
+      }
+      return String(value);
+    }
+
+    const normalizeAutoGearWeightOperator =
+      typeof CORE_SHARED_LOCAL.normalizeAutoGearWeightOperator === 'function'
+        ? CORE_SHARED_LOCAL.normalizeAutoGearWeightOperator
+        : fallbackNormalizeAutoGearWeightOperator;
+
+    const normalizeAutoGearWeightValue =
+      typeof CORE_SHARED_LOCAL.normalizeAutoGearWeightValue === 'function'
+        ? CORE_SHARED_LOCAL.normalizeAutoGearWeightValue
+        : fallbackNormalizeAutoGearWeightValue;
+
+    const normalizeAutoGearCameraWeightCondition =
+      typeof CORE_SHARED_LOCAL.normalizeAutoGearCameraWeightCondition === 'function'
+        ? CORE_SHARED_LOCAL.normalizeAutoGearCameraWeightCondition
+        : function normalizeAutoGearCameraWeightCondition() {
+            return null;
+          };
+
+    const formatAutoGearWeight =
+      typeof CORE_SHARED_LOCAL.formatAutoGearWeight === 'function'
+        ? CORE_SHARED_LOCAL.formatAutoGearWeight
+        : fallbackFormatAutoGearWeight;
+
+    const getAutoGearCameraWeightOperatorLabel =
+      typeof CORE_SHARED_LOCAL.getAutoGearCameraWeightOperatorLabel === 'function'
+        ? CORE_SHARED_LOCAL.getAutoGearCameraWeightOperatorLabel
+        : function getAutoGearCameraWeightOperatorLabel(operator, langTexts) {
+            const textsForLang = langTexts || {};
+            const fallbackTexts =
+              (CORE_GLOBAL_SCOPE && CORE_GLOBAL_SCOPE.texts && CORE_GLOBAL_SCOPE.texts.en)
+                || {};
+            const normalized = normalizeAutoGearWeightOperator(operator);
+            if (normalized === 'less') {
+              return (
+                textsForLang.autoGearCameraWeightOperatorLess
+                || fallbackTexts.autoGearCameraWeightOperatorLess
+                || 'Lighter than'
+              );
+            }
+            if (normalized === 'equal') {
+              return (
+                textsForLang.autoGearCameraWeightOperatorEqual
+                || fallbackTexts.autoGearCameraWeightOperatorEqual
+                || 'Exactly'
+              );
+            }
+            return (
+              textsForLang.autoGearCameraWeightOperatorGreater
+              || fallbackTexts.autoGearCameraWeightOperatorGreater
+              || 'Heavier than'
+            );
+          };
+
+    const formatAutoGearCameraWeight =
+      typeof CORE_SHARED_LOCAL.formatAutoGearCameraWeight === 'function'
+        ? CORE_SHARED_LOCAL.formatAutoGearCameraWeight
+        : function formatAutoGearCameraWeight(condition, langTexts) {
+            if (!condition || !Number.isFinite(condition.value)) return '';
+            const label = getAutoGearCameraWeightOperatorLabel(condition.operator, langTexts);
+            const formattedValue = formatAutoGearWeight(condition.value);
+            return `${label} ${formattedValue} g`;
+          };
+
     const CORE_RUNTIME_SCOPE_CANDIDATES = [
       CORE_PART2_RUNTIME_SCOPE && typeof CORE_PART2_RUNTIME_SCOPE === 'object'
         ? CORE_PART2_RUNTIME_SCOPE
@@ -12203,7 +12331,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return row;
     }
     
-    function setRecordingMedia(list) {
+    const setRecordingMediaLocal = list => {
       cameraMediaContainer.innerHTML = '';
       const filtered = filterNoneEntries(list);
       if (filtered.length) {
@@ -12214,7 +12342,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       } else {
         cameraMediaContainer.appendChild(createRecordingMediaRow());
       }
-    }
+    };
+
+    writeCoreScopeValue('setRecordingMedia', setRecordingMediaLocal);
     
     function getRecordingMedia() {
       return Array.from(cameraMediaContainer.querySelectorAll('.form-row'))
@@ -12224,9 +12354,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         })
         .filter(m => m.type && m.type !== 'None');
     }
+
+    writeCoreScopeValue('getRecordingMedia', getRecordingMedia);
     
     function clearRecordingMedia() {
-      setRecordingMedia([]);
+      setRecordingMediaLocal([]);
     }
     
     function powerInputTypes(dev) {
@@ -12402,7 +12534,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return row;
     }
     
-    function setBatteryPlates(list) {
+    const setBatteryPlatesLocal = list => {
       batteryPlatesContainer.innerHTML = '';
       const filtered = filterNoneEntries(list);
       if (filtered.length) {
@@ -12413,8 +12545,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       } else {
         batteryPlatesContainer.appendChild(createBatteryPlateRow());
       }
-    }
-    
+    };
+
+    writeCoreScopeValue('setBatteryPlates', setBatteryPlatesLocal);
+
     function getBatteryPlates() {
       return Array.from(batteryPlatesContainer.querySelectorAll('.form-row'))
         .map(row => {
@@ -12423,9 +12557,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         })
         .filter(bp => bp.type && bp.type !== 'None');
     }
-    
+
+    writeCoreScopeValue('getBatteryPlates', getBatteryPlates);
+
     function clearBatteryPlates() {
-      setBatteryPlates([]);
+      setBatteryPlatesLocal([]);
     }
     
     function getAllViewfinderTypes() {
@@ -13541,8 +13677,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     updateDistanceMethodOptions();
     updateDistanceDisplayOptions();
     setViewfinders([]);
-    setBatteryPlates([]);
-    setRecordingMedia([]);
+    setBatteryPlatesLocal([]);
+    setRecordingMediaLocal([]);
     updateRecordingMediaOptions();
     updatePlateTypeOptions();
     setLensMounts([]);
@@ -13695,7 +13831,41 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       const controllers = controllerSelects.map(sel => sel.value);
       const distance    = distanceSelect.value;
       let battery       = batterySelect.value;
-    
+
+      const totalPowerTarget = typeof totalPowerElem !== 'undefined'
+        ? totalPowerElem
+        : (typeof document !== 'undefined' ? document.getElementById('totalPower') : null);
+      const breakdownListTarget = typeof breakdownListElem !== 'undefined'
+        ? breakdownListElem
+        : (typeof document !== 'undefined' ? document.getElementById('breakdownList') : null);
+      const totalCurrent144Target = typeof totalCurrent144Elem !== 'undefined'
+        ? totalCurrent144Elem
+        : (typeof document !== 'undefined' ? document.getElementById('totalCurrent144') : null);
+      const totalCurrent12Target = typeof totalCurrent12Elem !== 'undefined'
+        ? totalCurrent12Elem
+        : (typeof document !== 'undefined' ? document.getElementById('totalCurrent12') : null);
+      const batteryLifeTarget = typeof batteryLifeElem !== 'undefined'
+        ? batteryLifeElem
+        : (typeof document !== 'undefined' ? document.getElementById('batteryLife') : null);
+      const batteryCountTarget = typeof batteryCountElem !== 'undefined'
+        ? batteryCountElem
+        : (typeof document !== 'undefined' ? document.getElementById('batteryCount') : null);
+      const batteryLifeLabelTarget = typeof batteryLifeLabelElem !== 'undefined'
+        ? batteryLifeLabelElem
+        : (typeof document !== 'undefined' ? document.getElementById('batteryLifeLabel') : null);
+      const runtimeAverageNoteTarget = typeof runtimeAverageNoteElem !== 'undefined'
+        ? runtimeAverageNoteElem
+        : (typeof document !== 'undefined' ? document.getElementById('runtimeAverageNote') : null);
+      const pinWarnTarget = typeof pinWarnElem !== 'undefined'
+        ? pinWarnElem
+        : (typeof document !== 'undefined' ? document.getElementById('pinWarning') : null);
+      const dtapWarnTarget = typeof dtapWarnElem !== 'undefined'
+        ? dtapWarnElem
+        : (typeof document !== 'undefined' ? document.getElementById('dtapWarning') : null);
+      const hotswapWarnTarget = typeof hotswapWarnElem !== 'undefined'
+        ? hotswapWarnElem
+        : (typeof document !== 'undefined' ? document.getElementById('hotswapWarning') : null);
+
       // Calculate total power consumption (W)
       let cameraW = 0;
       if (devices.cameras[camera] !== undefined) {
@@ -13733,7 +13903,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
     
       const totalWatt = cameraW + monitorW + videoW + motorsW + controllersW + distanceW;
-      totalPowerElem.textContent = totalWatt.toFixed(1);
+      if (totalPowerTarget) {
+        totalPowerTarget.textContent = totalWatt.toFixed(1);
+      }
     
       const segments = [
         { power: cameraW, className: "camera", label: texts[currentLang].cameraLabel },
@@ -13745,36 +13917,38 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       ].filter(s => s.power > 0);
     
       // Update breakdown by category
-      breakdownListElem.innerHTML = "";
-      if (cameraW > 0) {
-        const li = document.createElement("li");
-        li.innerHTML = `<strong>${texts[currentLang].cameraLabel}</strong> ${cameraW.toFixed(1)} W`;
-        breakdownListElem.appendChild(li);
-      }
-      if (monitorW > 0) {
-        const li = document.createElement("li");
-        li.innerHTML = `<strong>${texts[currentLang].monitorLabel}</strong> ${monitorW.toFixed(1)} W`;
-        breakdownListElem.appendChild(li);
-      }
-      if (videoW > 0) {
-        const li = document.createElement("li");
-        li.innerHTML = `<strong>${texts[currentLang].videoLabel}</strong> ${videoW.toFixed(1)} W`;
-        breakdownListElem.appendChild(li);
-      }
-      if (motorsW > 0) {
-        const li = document.createElement("li");
-        li.innerHTML = `<strong>${texts[currentLang].fizMotorsLabel}</strong> ${motorsW.toFixed(1)} W`;
-        breakdownListElem.appendChild(li);
-      }
-      if (controllersW > 0) {
-        const li = document.createElement("li");
-        li.innerHTML = `<strong>${texts[currentLang].fizControllersLabel}</strong> ${controllersW.toFixed(1)} W`;
-        breakdownListElem.appendChild(li);
-      }
-      if (distanceW > 0) {
-        const li = document.createElement("li");
-        li.innerHTML = `<strong>${texts[currentLang].distanceLabel}</strong> ${distanceW.toFixed(1)} W`;
-        breakdownListElem.appendChild(li);
+      if (breakdownListTarget) {
+        breakdownListTarget.innerHTML = "";
+        if (cameraW > 0) {
+          const li = document.createElement("li");
+          li.innerHTML = `<strong>${texts[currentLang].cameraLabel}</strong> ${cameraW.toFixed(1)} W`;
+          breakdownListTarget.appendChild(li);
+        }
+        if (monitorW > 0) {
+          const li = document.createElement("li");
+          li.innerHTML = `<strong>${texts[currentLang].monitorLabel}</strong> ${monitorW.toFixed(1)} W`;
+          breakdownListTarget.appendChild(li);
+        }
+        if (videoW > 0) {
+          const li = document.createElement("li");
+          li.innerHTML = `<strong>${texts[currentLang].videoLabel}</strong> ${videoW.toFixed(1)} W`;
+          breakdownListTarget.appendChild(li);
+        }
+        if (motorsW > 0) {
+          const li = document.createElement("li");
+          li.innerHTML = `<strong>${texts[currentLang].fizMotorsLabel}</strong> ${motorsW.toFixed(1)} W`;
+          breakdownListTarget.appendChild(li);
+        }
+        if (controllersW > 0) {
+          const li = document.createElement("li");
+          li.innerHTML = `<strong>${texts[currentLang].fizControllersLabel}</strong> ${controllersW.toFixed(1)} W`;
+          breakdownListTarget.appendChild(li);
+        }
+        if (distanceW > 0) {
+          const li = document.createElement("li");
+          li.innerHTML = `<strong>${texts[currentLang].distanceLabel}</strong> ${distanceW.toFixed(1)} W`;
+          breakdownListTarget.appendChild(li);
+        }
       }
     
       // Calculate currents depending on battery type
@@ -13790,8 +13964,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         totalCurrentLow = totalWatt / lowV;
       }
       refreshTotalCurrentLabels(currentLang, selectedPlate, mountVoltages);
-      totalCurrent144Elem.textContent = totalCurrentHigh.toFixed(2);
-      totalCurrent12Elem.textContent = totalCurrentLow.toFixed(2);
+      if (totalCurrent144Target) {
+        totalCurrent144Target.textContent = totalCurrentHigh.toFixed(2);
+      }
+      if (totalCurrent12Target) {
+        totalCurrent12Target.textContent = totalCurrentLow.toFixed(2);
+      }
     
       // Update battery and hotswap options based on current draw
       updateBatteryOptions();
@@ -13800,15 +13978,19 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     // Wenn kein Akku oder "None" ausgewählt ist: Laufzeit = nicht berechenbar, keine Warnungen
     let hours = null;
     if (!battery || battery === "None" || !devices.batteries[battery]) {
-      batteryLifeElem.textContent = "–";
-      batteryCountElem.textContent = "–";
-      setStatusMessage(pinWarnElem, '');
-      setStatusLevel(pinWarnElem, null);
-      setStatusMessage(dtapWarnElem, '');
-      setStatusLevel(dtapWarnElem, null);
-      if (hotswapWarnElem) {
-        setStatusMessage(hotswapWarnElem, '');
-        setStatusLevel(hotswapWarnElem, null);
+      if (batteryLifeTarget) {
+        batteryLifeTarget.textContent = "–";
+      }
+      if (batteryCountTarget) {
+        batteryCountTarget.textContent = "–";
+      }
+      setStatusMessage(pinWarnTarget, '');
+      setStatusLevel(pinWarnTarget, null);
+      setStatusMessage(dtapWarnTarget, '');
+      setStatusLevel(dtapWarnTarget, null);
+      if (hotswapWarnTarget) {
+        setStatusMessage(hotswapWarnTarget, '');
+        setStatusLevel(hotswapWarnTarget, null);
       }
       closePowerWarningDialog();
       lastRuntimeHours = null;
@@ -13823,33 +14005,41 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (hsData && typeof hsData.pinA === 'number') {
           if (hsData.pinA < maxPinA) {
             setStatusMessage(
-              hotswapWarnElem,
+              hotswapWarnTarget,
               texts[currentLang].warnHotswapLower
                 .replace("{max}", hsData.pinA)
                 .replace("{batt}", battData.pinA)
             );
-            setStatusLevel(hotswapWarnElem, 'warning');
+            setStatusLevel(hotswapWarnTarget, 'warning');
             maxPinA = hsData.pinA;
           } else {
-            setStatusMessage(hotswapWarnElem, '');
-            setStatusLevel(hotswapWarnElem, null);
+            setStatusMessage(hotswapWarnTarget, '');
+            setStatusLevel(hotswapWarnTarget, null);
           }
         } else {
-          if (hotswapWarnElem) {
-            setStatusMessage(hotswapWarnElem, '');
-            setStatusLevel(hotswapWarnElem, null);
+          if (hotswapWarnTarget) {
+            setStatusMessage(hotswapWarnTarget, '');
+            setStatusLevel(hotswapWarnTarget, null);
           }
         }
         const availableWatt = maxPinA * lowV;
         drawPowerDiagram(availableWatt, segments, maxPinA);
-        totalCurrent144Elem.textContent = totalCurrentHigh.toFixed(2);
-        totalCurrent12Elem.textContent = totalCurrentLow.toFixed(2);
+        if (totalCurrent144Target) {
+          totalCurrent144Target.textContent = totalCurrentHigh.toFixed(2);
+        }
+        if (totalCurrent12Target) {
+          totalCurrent12Target.textContent = totalCurrentLow.toFixed(2);
+        }
         if (totalWatt === 0) {
           hours = Infinity;
-          batteryLifeElem.textContent = "∞";
+          if (batteryLifeTarget) {
+            batteryLifeTarget.textContent = "∞";
+          }
         } else {
           hours = capacityWh / totalWatt;
-          batteryLifeElem.textContent = hours.toFixed(2);
+          if (batteryLifeTarget) {
+            batteryLifeTarget.textContent = hours.toFixed(2);
+          }
         }
         lastRuntimeHours = hours;
         // Round up total batteries to the next full number
@@ -13857,15 +14047,17 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (Number.isFinite(hours) && hours > 0) {
           batteriesNeeded = Math.max(1, Math.ceil(10 / hours));
         }
-        batteryCountElem.textContent = batteriesNeeded.toString();
+        if (batteryCountTarget) {
+          batteryCountTarget.textContent = batteriesNeeded.toString();
+        }
         // Warnings about current draw vs battery limits
-        setStatusMessage(pinWarnElem, '');
-        setStatusMessage(dtapWarnElem, '');
+        setStatusMessage(pinWarnTarget, '');
+        setStatusMessage(dtapWarnTarget, '');
         let pinSeverity = "";
         let dtapSeverity = "";
         if (totalCurrentLow > maxPinA) {
           setStatusMessage(
-            pinWarnElem,
+            pinWarnTarget,
             texts[currentLang].warnPinExceeded
               .replace("{current}", totalCurrentLow.toFixed(2))
               .replace("{max}", maxPinA)
@@ -13873,7 +14065,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           pinSeverity = 'danger';
         } else if (totalCurrentLow > maxPinA * 0.8) {
           setStatusMessage(
-            pinWarnElem,
+            pinWarnTarget,
             texts[currentLang].warnPinNear
               .replace("{current}", totalCurrentLow.toFixed(2))
               .replace("{max}", maxPinA)
@@ -13883,7 +14075,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (!bMountCam) {
           if (totalCurrentLow > maxDtapA) {
             setStatusMessage(
-              dtapWarnElem,
+              dtapWarnTarget,
               texts[currentLang].warnDTapExceeded
                 .replace("{current}", totalCurrentLow.toFixed(2))
                 .replace("{max}", maxDtapA)
@@ -13891,7 +14083,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             dtapSeverity = 'danger';
           } else if (totalCurrentLow > maxDtapA * 0.8) {
             setStatusMessage(
-              dtapWarnElem,
+              dtapWarnTarget,
               texts[currentLang].warnDTapNear
                 .replace("{current}", totalCurrentLow.toFixed(2))
                 .replace("{max}", maxDtapA)
@@ -13924,30 +14116,30 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           closePowerWarningDialog();
         }
         // Show max current capability and status (OK/Warning) for Pin and D-Tap
-        if (pinWarnElem.textContent === "") {
+        if (pinWarnTarget && pinWarnTarget.textContent === "") {
           setStatusMessage(
-            pinWarnElem,
+            pinWarnTarget,
             texts[currentLang].pinOk
               .replace("{max}", maxPinA)
           );
-          setStatusLevel(pinWarnElem, 'success');
+          setStatusLevel(pinWarnTarget, 'success');
         } else {
-          setStatusLevel(pinWarnElem, pinSeverity || 'warning');
+          setStatusLevel(pinWarnTarget, pinSeverity || 'warning');
         }
         if (!bMountCam) {
-          if (dtapWarnElem.textContent === "") {
+          if (dtapWarnTarget && dtapWarnTarget.textContent === "") {
             setStatusMessage(
-              dtapWarnElem,
+              dtapWarnTarget,
               texts[currentLang].dtapOk
                 .replace("{max}", maxDtapA)
             );
-            setStatusLevel(dtapWarnElem, 'success');
+            setStatusLevel(dtapWarnTarget, 'success');
           } else {
-            setStatusLevel(dtapWarnElem, dtapSeverity || 'warning');
+            setStatusLevel(dtapWarnTarget, dtapSeverity || 'warning');
           }
         } else {
-          setStatusMessage(dtapWarnElem, '');
-          setStatusLevel(dtapWarnElem, null);
+          setStatusMessage(dtapWarnTarget, '');
+          setStatusLevel(dtapWarnTarget, null);
         }
       }
     
@@ -13982,6 +14174,15 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     
         const pinsCandidates = [];
         const dtapCandidates = [];
+        const nameCollator = (
+          typeof collator !== 'undefined' &&
+          collator &&
+          typeof collator.compare === 'function'
+        )
+          ? collator
+          : (typeof Intl !== 'undefined' && typeof Intl.Collator === 'function'
+              ? new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' })
+              : { compare: (a, b) => String(a).localeCompare(String(b)) });
         for (let battName in devices.batteries) {
           if (battName === "None") continue;
           if (selectedCandidate && battName === selectedCandidate.name) continue;
@@ -14007,7 +14208,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         // Ensure stable ordering: sort by runtime descending, then by name
         const sortByHoursThenName = (a, b) => {
           const diff = b.hours - a.hours;
-          return diff !== 0 ? diff : collator.compare(a.name, b.name);
+          return diff !== 0 ? diff : nameCollator.compare(a.name, b.name);
         };
         pinsCandidates.sort(sortByHoursThenName);
         dtapCandidates.sort(sortByHoursThenName);
@@ -14095,40 +14296,44 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           combinedRuntime =
             (feedback.runtime * feedback.weight + hours) / (feedback.weight + 1);
         }
-        batteryLifeElem.textContent = combinedRuntime.toFixed(2);
+        if (batteryLifeTarget) {
+          batteryLifeTarget.textContent = combinedRuntime.toFixed(2);
+        }
         lastRuntimeHours = combinedRuntime;
-        if (batteryLifeLabelElem) {
+        if (batteryLifeLabelTarget) {
           let label = texts[currentLang].batteryLifeLabel;
           const userNote = texts[currentLang].runtimeUserCountNote.replace('{count}', feedback.count);
           const idx = label.indexOf(')');
           if (idx !== -1) {
             label = `${label.slice(0, idx)}, ${userNote}${label.slice(idx)}`;
           }
-          batteryLifeLabelElem.textContent = label;
-          batteryLifeLabelElem.setAttribute(
+          batteryLifeLabelTarget.textContent = label;
+          batteryLifeLabelTarget.setAttribute(
             "data-help",
             texts[currentLang].batteryLifeHelp
           );
         }
-        if (runtimeAverageNoteElem) {
-          runtimeAverageNoteElem.textContent =
+        if (runtimeAverageNoteTarget) {
+          runtimeAverageNoteTarget.textContent =
             feedback.count > 4 ? texts[currentLang].runtimeAverageNote : '';
         }
         let batteriesNeeded = 1;
         if (Number.isFinite(combinedRuntime) && combinedRuntime > 0) {
           batteriesNeeded = Math.max(1, Math.ceil(10 / combinedRuntime));
         }
-        batteryCountElem.textContent = batteriesNeeded.toString();
+        if (batteryCountTarget) {
+          batteryCountTarget.textContent = batteriesNeeded.toString();
+        }
       } else {
-        if (batteryLifeLabelElem) {
-          batteryLifeLabelElem.textContent = texts[currentLang].batteryLifeLabel;
-          batteryLifeLabelElem.setAttribute(
+        if (batteryLifeLabelTarget) {
+          batteryLifeLabelTarget.textContent = texts[currentLang].batteryLifeLabel;
+          batteryLifeLabelTarget.setAttribute(
             "data-help",
             texts[currentLang].batteryLifeHelp
           );
         }
-        if (runtimeAverageNoteElem) {
-          runtimeAverageNoteElem.textContent = '';
+        if (runtimeAverageNoteTarget) {
+          runtimeAverageNoteTarget.textContent = '';
         }
       }
       renderTemperatureNote(lastRuntimeHours);
@@ -15788,6 +15993,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       refreshAutoGearWirelessOptions,
       refreshAutoGearMotorsOptions,
       refreshAutoGearControllersOptions,
+      refreshAutoGearCrewOptions,
       refreshAutoGearDistanceOptions,
       exportAutoGearRules,
       updateAutoGearCameraWeightDraft,
@@ -15840,7 +16046,121 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       fontSize,
       fontFamily,
     };
-    
+
+
+    const ADDITIONAL_GLOBAL_EXPORT_ENTRIES = [
+      ['setBatteryPlates', () => setBatteryPlatesLocal],
+      ['getBatteryPlates', () => getBatteryPlates],
+      ['setRecordingMedia', () => setRecordingMediaLocal],
+      ['getRecordingMedia', () => getRecordingMedia],
+      ['applyDarkMode', () => applyDarkMode],
+      ['applyPinkMode', () => applyPinkMode],
+      ['applyHighContrast', () => applyHighContrast],
+      ['generatePrintableOverview', () => generatePrintableOverview],
+      ['generateGearListHtml', () => generateGearListHtml],
+      ['displayGearAndRequirements', () => displayGearAndRequirements],
+      ['ensureZoomRemoteSetup', () => ensureZoomRemoteSetup],
+      ['encodeSharedSetup', () => encodeSharedSetup],
+      ['decodeSharedSetup', () => decodeSharedSetup],
+      ['applySharedSetupFromUrl', () => applySharedSetupFromUrl],
+      ['applySharedSetup', () => applySharedSetup],
+      ['updateBatteryPlateVisibility', () => updateBatteryPlateVisibility],
+      ['updateBatteryOptions', () => updateBatteryOptions],
+      ['renderSetupDiagram', () => renderSetupDiagram],
+      ['enableDiagramInteractions', () => enableDiagramInteractions],
+      ['updateDiagramLegend', () => updateDiagramLegend],
+      ['cameraFizPort', () => cameraFizPort],
+      ['controllerCamPort', () => controllerCamPort],
+      ['controllerDistancePort', () => controllerDistancePort],
+      ['detectBrand', () => detectBrand],
+      ['connectionLabel', () => connectionLabel],
+      ['generateConnectorSummary', () => generateConnectorSummary],
+      ['diagramConnectorIcons', () => diagramConnectorIcons],
+      ['DIAGRAM_MONITOR_ICON', () => DIAGRAM_MONITOR_ICON],
+      ['exportDiagramSvg', () => exportDiagramSvg],
+      ['fixPowerInput', () => fixPowerInput],
+      ['powerInputTypes', () => powerInputTypes],
+      ['ensureList', () => ensureList],
+      ['normalizeVideoType', () => normalizeVideoType],
+      ['normalizeFizConnectorType', () => normalizeFizConnectorType],
+      ['normalizeViewfinderType', () => normalizeViewfinderType],
+      ['normalizePowerPortType', () => normalizePowerPortType],
+      ['getCurrentSetupKey', () => getCurrentSetupKey],
+      ['renderFeedbackTable', () => renderFeedbackTable],
+      ['saveCurrentGearList', () => saveCurrentGearList],
+      ['getPowerSelectionSnapshot', () => getPowerSelectionSnapshot],
+      ['applyStoredPowerSelection', () => applyStoredPowerSelection],
+      ['getGearListSelectors', () => getGearListSelectors],
+      ['applyGearListSelectors', () => applyGearListSelectors],
+      ['scenarioIcons', () => scenarioIcons],
+      ['collectProjectFormData', () => collectProjectFormData],
+      ['populateProjectForm', () => populateProjectForm],
+      ['renderFilterDetails', () => renderFilterDetails],
+      ['collectFilterSelections', () => collectFilterSelections],
+      ['parseFilterTokens', () => parseFilterTokens],
+      ['applyFilterSelectionsToGearList', () => applyFilterSelectionsToGearList],
+      ['adjustGearListSelectWidths', () => adjustGearListSelectWidths],
+      ['deviceMap', () => deviceMap],
+      ['helpMap', () => helpMap],
+      ['featureSearchEntries', () => featureSearchEntries],
+      ['featureSearchDefaultOptions', () => featureSearchDefaultOptions],
+      ['restoreFeatureSearchDefaults', () => restoreFeatureSearchDefaults],
+      ['updateFeatureSearchSuggestions', () => updateFeatureSearchSuggestions],
+      ['setCurrentProjectInfo', () => setCurrentProjectInfo],
+      ['getCurrentProjectInfo', () => getCurrentProjectInfo],
+      ['getCurrentSetupState', () => getCurrentSetupState],
+      ['setSliderBowlValue', () => setSliderBowlValue],
+      ['crewRoles', () => crewRoles],
+      ['formatFullBackupFilename', () => formatFullBackupFilename],
+      ['computeGearListCount', () => computeGearListCount],
+      ['autoBackup', () => autoBackup],
+      ['createSettingsBackup', () => createSettingsBackup],
+      ['captureStorageSnapshot', () => captureStorageSnapshot],
+      ['sanitizeBackupPayload', () => sanitizeBackupPayload],
+      ['extractBackupSections', () => extractBackupSections],
+      ['searchKey', () => searchKey],
+      ['searchTokens', () => searchTokens],
+      ['findBestSearchMatch', () => findBestSearchMatch],
+      ['runFeatureSearch', () => runFeatureSearch],
+      ['collectAutoGearCatalogNames', () => collectAutoGearCatalogNames],
+      ['featureMap', () => featureMap],
+      ['buildDefaultVideoDistributionAutoGearRules', () => buildDefaultVideoDistributionAutoGearRules],
+      ['applyAutoGearRulesToTableHtml', () => applyAutoGearRulesToTableHtml],
+      ['importAutoGearRulesFromData', () => importAutoGearRulesFromData],
+      ['createAutoGearBackup', () => createAutoGearBackup],
+      ['restoreAutoGearBackup', () => restoreAutoGearBackup],
+      ['getAutoGearRules', () => getAutoGearRules],
+      ['syncAutoGearRulesFromStorage', () => syncAutoGearRulesFromStorage],
+      ['normalizeAutoGearCameraWeightCondition', () => normalizeAutoGearCameraWeightCondition],
+      ['parseDeviceDatabaseImport', () => parseDeviceDatabaseImport],
+      ['countDeviceDatabaseEntries', () => countDeviceDatabaseEntries],
+      ['sanitizeShareFilename', () => sanitizeShareFilename],
+      ['ensureJsonExtension', () => ensureJsonExtension],
+      ['getDefaultShareFilename', () => getDefaultShareFilename],
+      ['promptForSharedFilename', () => promptForSharedFilename],
+      ['downloadSharedProject', () => downloadSharedProject],
+      ['confirmAutoGearSelection', () => confirmAutoGearSelection],
+      ['configureSharedImportOptions', () => configureSharedImportOptions],
+      ['resolveSharedImportMode', () => resolveSharedImportMode],
+      ['resetPlannerStateAfterFactoryReset', () => resetPlannerStateAfterFactoryReset],
+    ];
+
+    const resolvedAdditionalExports = ADDITIONAL_GLOBAL_EXPORT_ENTRIES.reduce(
+      (acc, [exportName, getter]) => {
+        try {
+          const value = getter();
+          if (typeof value !== 'undefined') {
+            acc[exportName] = value;
+          }
+        } catch (error) {
+          void error;
+        }
+        return acc;
+      },
+      {}
+    );
+
+    Object.assign(CORE_PART2_GLOBAL_EXPORTS, resolvedAdditionalExports);
     const CORE_PART2_GLOBAL_SCOPE =
       CORE_SHARED_SCOPE_PART2 ||
       (typeof globalThis !== 'undefined' ? globalThis : null) ||

@@ -29,6 +29,7 @@
           recordFeatureSearchUsage, extractFeatureSearchFilter,
           helpResultsSummary, helpResultsAssist */
 /* eslint-enable no-redeclare */
+/* global enqueueCoreBootTask */
 /* global triggerPinkModeIconRain, loadDeviceData, loadSetups, loadSessionState,
           loadFeedback, loadFavorites, loadAutoGearBackups,
           loadAutoGearPresets, loadAutoGearSeedFlag, loadAutoGearActivePresetId,
@@ -2363,8 +2364,25 @@ function setSelectValue(select, value) {
       select.selectedIndex = -1;
     }
   }
-  updateFavoriteButton(select);
-  adjustGearListSelectWidth(select);
+  if (typeof updateFavoriteButton === 'function') {
+    updateFavoriteButton(select);
+  } else if (typeof enqueueCoreBootTask === 'function') {
+    enqueueCoreBootTask(() => {
+      if (typeof updateFavoriteButton === 'function') {
+        updateFavoriteButton(select);
+      }
+    });
+  }
+
+  if (typeof adjustGearListSelectWidth === 'function') {
+    adjustGearListSelectWidth(select);
+  } else if (typeof enqueueCoreBootTask === 'function') {
+    enqueueCoreBootTask(() => {
+      if (typeof adjustGearListSelectWidth === 'function') {
+        adjustGearListSelectWidth(select);
+      }
+    });
+  }
 }
 
 function resetSelectsToNone(selects) {
@@ -2932,18 +2950,45 @@ function applySharedSetupFromUrl() {
 
 // --- EVENT LISTENERS FÜR NEUBERECHNUNG ---
 
+function getTrackedPowerSelects() {
+  const maybeHotswap = typeof hotswapSelect === 'undefined' ? null : hotswapSelect;
+  return [
+    cameraSelect,
+    monitorSelect,
+    videoSelect,
+    cageSelect,
+    distanceSelect,
+    batterySelect,
+    maybeHotswap,
+    batteryPlateSelect,
+  ].filter(Boolean);
+}
+
+function getTrackedPowerSelectsWithSetup() {
+  const selects = getTrackedPowerSelects();
+  const maybeSetup = typeof setupSelect === 'undefined' ? null : setupSelect;
+  if (maybeSetup) {
+    selects.push(maybeSetup);
+  }
+  return selects;
+}
+
+function forEachTrackedSelect(collection, handler) {
+  if (!collection || typeof handler !== 'function') {
+    return;
+  }
+  if (typeof collection.forEach === 'function') {
+    collection.forEach(handler);
+    return;
+  }
+  const list = Array.isArray(collection) ? collection : Array.from(collection || []);
+  list.forEach(handler);
+}
+
 // Sicherstellen, dass Änderungen an den Selects auch neu berechnen
-[
-  cameraSelect,
-  monitorSelect,
-  videoSelect,
-  cageSelect,
-  distanceSelect,
-  batterySelect,
-  typeof hotswapSelect === 'undefined' ? null : hotswapSelect,
-  batteryPlateSelect
-]
-  .forEach(sel => { if (sel) sel.addEventListener("change", updateCalculations); });
+forEachTrackedSelect(getTrackedPowerSelects(), (sel) => {
+  sel.addEventListener('change', updateCalculations);
+});
 if (cameraSelect) {
   cameraSelect.addEventListener('change', () => {
     updateBatteryPlateVisibility();
@@ -2968,13 +3013,14 @@ if (batteryPlateSelect) batteryPlateSelect.addEventListener('change', updateBatt
 if (batterySelect) batterySelect.addEventListener('change', updateBatteryOptions);
 if (hotswapSelect) hotswapSelect.addEventListener('change', updateCalculations);
 
-motorSelects.forEach(sel => { if (sel) sel.addEventListener("change", updateCalculations); });
-controllerSelects.forEach(sel => { if (sel) sel.addEventListener("change", updateCalculations); });
+forEachTrackedSelect(motorSelects, (sel) => { if (sel) sel.addEventListener('change', updateCalculations); });
+forEachTrackedSelect(controllerSelects, (sel) => { if (sel) sel.addEventListener('change', updateCalculations); });
 
-[cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, hotswapSelect, batteryPlateSelect, setupSelect]
-  .forEach(sel => { if (sel) sel.addEventListener("change", saveCurrentSession); });
-motorSelects.forEach(sel => { if (sel) sel.addEventListener("change", saveCurrentSession); });
-controllerSelects.forEach(sel => { if (sel) sel.addEventListener("change", saveCurrentSession); });
+forEachTrackedSelect(getTrackedPowerSelectsWithSetup(), (sel) => {
+  sel.addEventListener('change', saveCurrentSession);
+});
+forEachTrackedSelect(motorSelects, (sel) => { if (sel) sel.addEventListener('change', saveCurrentSession); });
+forEachTrackedSelect(controllerSelects, (sel) => { if (sel) sel.addEventListener('change', saveCurrentSession); });
 if (setupNameInput) {
   const handleSetupNameInput = () => {
     const typedName = setupNameInput.value ? setupNameInput.value.trim() : '';
@@ -2985,22 +3031,25 @@ if (setupNameInput) {
   setupNameInput.addEventListener("input", handleSetupNameInput);
 }
 
-[cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, hotswapSelect, batteryPlateSelect]
-  .forEach(sel => { if (sel) sel.addEventListener("change", saveCurrentGearList); });
-motorSelects.forEach(sel => { if (sel) sel.addEventListener("change", saveCurrentGearList); });
-controllerSelects.forEach(sel => { if (sel) sel.addEventListener("change", saveCurrentGearList); });
+forEachTrackedSelect(getTrackedPowerSelects(), (sel) => {
+  sel.addEventListener('change', saveCurrentGearList);
+});
+forEachTrackedSelect(motorSelects, (sel) => { if (sel) sel.addEventListener('change', saveCurrentGearList); });
+forEachTrackedSelect(controllerSelects, (sel) => { if (sel) sel.addEventListener('change', saveCurrentGearList); });
 
-[cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, hotswapSelect, batteryPlateSelect]
-  .forEach(sel => { if (sel) sel.addEventListener("change", checkSetupChanged); });
-motorSelects.forEach(sel => { if (sel) sel.addEventListener("change", checkSetupChanged); });
-controllerSelects.forEach(sel => { if (sel) sel.addEventListener("change", checkSetupChanged); });
-if (setupNameInput) setupNameInput.addEventListener("input", checkSetupChanged);
+forEachTrackedSelect(getTrackedPowerSelects(), (sel) => {
+  sel.addEventListener('change', checkSetupChanged);
+});
+forEachTrackedSelect(motorSelects, (sel) => { if (sel) sel.addEventListener('change', checkSetupChanged); });
+forEachTrackedSelect(controllerSelects, (sel) => { if (sel) sel.addEventListener('change', checkSetupChanged); });
+if (setupNameInput) setupNameInput.addEventListener('input', checkSetupChanged);
 
-[cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, hotswapSelect, batteryPlateSelect]
-  .forEach(sel => { if (sel) sel.addEventListener("change", autoSaveCurrentSetup); });
-motorSelects.forEach(sel => { if (sel) sel.addEventListener("change", autoSaveCurrentSetup); });
-controllerSelects.forEach(sel => { if (sel) sel.addEventListener("change", autoSaveCurrentSetup); });
-if (setupNameInput) setupNameInput.addEventListener("change", autoSaveCurrentSetup);
+forEachTrackedSelect(getTrackedPowerSelects(), (sel) => {
+  sel.addEventListener('change', autoSaveCurrentSetup);
+});
+forEachTrackedSelect(motorSelects, (sel) => { if (sel) sel.addEventListener('change', autoSaveCurrentSetup); });
+forEachTrackedSelect(controllerSelects, (sel) => { if (sel) sel.addEventListener('change', autoSaveCurrentSetup); });
+if (setupNameInput) setupNameInput.addEventListener('change', autoSaveCurrentSetup);
 
 const flushProjectAutoSaveOnExit = () => {
   if (factoryResetInProgress) return;
@@ -3071,6 +3120,14 @@ function setToggleIcon(button, glyph) {
   }
 }
 
+function getIconGlyphSafe(name) {
+  if (!name) return null;
+  if (typeof ICON_GLYPHS !== 'object' || !ICON_GLYPHS) {
+    return null;
+  }
+  return ICON_GLYPHS[name] || null;
+}
+
 function applyDarkMode(enabled) {
   if (enabled) {
     document.body.classList.add("dark-mode");
@@ -3078,7 +3135,10 @@ function applyDarkMode(enabled) {
     document.body.classList.remove("light-mode");
     document.documentElement.classList.remove("light-mode");
     if (darkModeToggle) {
-      setToggleIcon(darkModeToggle, ICON_GLYPHS.sun);
+      const sunGlyph = getIconGlyphSafe('sun');
+      if (sunGlyph) {
+        setToggleIcon(darkModeToggle, sunGlyph);
+      }
       darkModeToggle.setAttribute("aria-pressed", "true");
     }
   } else {
@@ -3087,7 +3147,10 @@ function applyDarkMode(enabled) {
     document.body.classList.add("light-mode");
     document.documentElement.classList.add("light-mode");
     if (darkModeToggle) {
-      setToggleIcon(darkModeToggle, ICON_GLYPHS.moon);
+      const moonGlyph = getIconGlyphSafe('moon');
+      if (moonGlyph) {
+        setToggleIcon(darkModeToggle, moonGlyph);
+      }
       darkModeToggle.setAttribute("aria-pressed", "false");
     }
   }
@@ -11313,9 +11376,12 @@ function renderFilterDetails() {
       .filter(entry => entry.id && entry.label);
   }
   updateGearListFilterEntries(gearEntries);
-  if (matteboxSelect) {
+  const matteboxTarget = typeof matteboxSelect !== 'undefined'
+    ? matteboxSelect
+    : (typeof document !== 'undefined' ? document.getElementById('mattebox') : null);
+  if (matteboxTarget) {
     const needsSwing = selected.some(t => t === 'ND Grad HE' || t === 'ND Grad SE');
-    if (needsSwing) matteboxSelect.value = 'Swing Away';
+    if (needsSwing) matteboxTarget.value = 'Swing Away';
   }
 }
 

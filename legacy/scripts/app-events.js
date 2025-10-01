@@ -102,6 +102,22 @@ function resolveCineUi() {
   }
   return null;
 }
+function getSetupSelectElement() {
+  if (typeof setupSelect !== 'undefined' && setupSelect) {
+    return setupSelect;
+  }
+  if (typeof document !== 'undefined' && document) {
+    var element = document.getElementById('setupSelect');
+    if (element) {
+      return element;
+    }
+  }
+  return null;
+}
+function addSafeEventListener(target, type, handler, options) {
+  if (!target || typeof target.addEventListener !== 'function') return;
+  target.addEventListener(type, handler, options);
+}
 var eventsCineUiRegistered = false;
 function enqueueCineUiRegistration(callback) {
   var scope = typeof globalThis !== 'undefined' && globalThis || typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || typeof global !== 'undefined' && global || null;
@@ -127,15 +143,13 @@ function enqueueCineUiRegistration(callback) {
   scope[key].push(callback);
 }
 enqueueCineUiRegistration(registerEventsCineUiInternal);
-languageSelect.addEventListener("change", function (event) {
+addSafeEventListener(languageSelect, "change", function (event) {
   setLanguage(event.target.value);
 });
-if (skipLink) {
-  skipLink.addEventListener("click", function () {
-    var main = document.getElementById("mainContent");
-    if (main) main.focus();
-  });
-}
+addSafeEventListener(skipLink, "click", function () {
+  var main = document.getElementById("mainContent");
+  if (main) main.focus();
+});
 function handleSaveSetupClick() {
   var typedName = setupNameInput.value.trim();
   if (!typedName) {
@@ -154,7 +168,8 @@ function handleSaveSetupClick() {
   if (gearListHtml) {
     currentSetup.gearList = gearListHtml;
   }
-  var selectedName = setupSelect ? setupSelect.value : '';
+  var setupSelectElement = getSetupSelectElement();
+  var selectedName = setupSelectElement && typeof setupSelectElement.value === 'string' ? setupSelectElement.value : '';
   var renamingExisting = Boolean(selectedName && typedName && selectedName !== typedName);
   var renamingAutoBackup = renamingExisting && typeof selectedName === 'string' && selectedName.startsWith('auto-backup-');
   var setups = getSetups();
@@ -202,7 +217,9 @@ function handleSaveSetupClick() {
   }
   populateSetupSelect();
   setupNameInput.value = finalName;
-  setupSelect.value = finalName;
+  if (setupSelectElement) {
+    setupSelectElement.value = finalName;
+  }
   lastSetupName = finalName;
   saveCurrentSession();
   storeLoadedSetupState(getCurrentSetupState());
@@ -231,9 +248,10 @@ function handleSaveSetupClick() {
   }
   alert(texts[currentLang].alertSetupSaved.replace("{name}", finalName));
 }
-saveSetupBtn.addEventListener("click", handleSaveSetupClick);
+addSafeEventListener(saveSetupBtn, "click", handleSaveSetupClick);
 function handleDeleteSetupClick() {
-  var setupName = setupSelect.value;
+  var setupSelectElement = getSetupSelectElement();
+  var setupName = setupSelectElement && typeof setupSelectElement.value === 'string' ? setupSelectElement.value : '';
   if (!setupName) {
     alert(texts[currentLang].alertNoSetupSelected);
     return;
@@ -252,10 +270,10 @@ function handleDeleteSetupClick() {
     populateSetupSelect();
     setupNameInput.value = "";
     var selectionResetHandled = false;
-    if (setupSelect) {
+    if (setupSelectElement && typeof setupSelectElement.dispatchEvent === 'function') {
       lastSetupName = '';
-      setupSelect.value = "";
-      setupSelect.dispatchEvent(new Event('change'));
+      setupSelectElement.value = "";
+      setupSelectElement.dispatchEvent(new Event('change'));
       selectionResetHandled = true;
     }
     if (!selectionResetHandled) {
@@ -301,7 +319,7 @@ function handleDeleteSetupClick() {
     alert(texts[currentLang].alertSetupDeleted.replace("{name}", setupName));
   }
 }
-deleteSetupBtn.addEventListener("click", handleDeleteSetupClick);
+addSafeEventListener(deleteSetupBtn, "click", handleDeleteSetupClick);
 function resetSetupStateToDefaults() {
   var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   var config = _typeof(options) === 'object' && options !== null ? options : {};
@@ -438,7 +456,8 @@ function finalizeSetupSelection(nextSetupName) {
   }
   lastSetupName = nextSetupName;
 }
-setupSelect.addEventListener("change", function (event) {
+var setupSelectTarget = getSetupSelectElement();
+addSafeEventListener(setupSelectTarget, "change", function (event) {
   var setupName = event.target.value;
   var typedName = setupNameInput && typeof setupNameInput.value === 'string' ? setupNameInput.value.trim() : '';
   var previousKey = (lastSetupName && typeof lastSetupName === 'string' ? lastSetupName : '') || typedName || '';
@@ -684,14 +703,21 @@ setupSelect.addEventListener("change", function (event) {
     storeLoadedSetupState(getCurrentSetupState());
   }
   finalizeSetupSelection(setupName);
-});
+  });
 function populateSetupSelect() {
   var setupsProvider = typeof getSetups === 'function' ? getSetups : null;
+  var setupSelectTarget = getSetupSelectElement();
+  if (!setupSelectTarget) {
+    console.warn('populateSetupSelect: setup select element unavailable, aborting populate');
+    return;
+  }
+  var textBundle = _typeof(texts) === 'object' && texts ? texts[currentLang] || texts.en || {} : {};
+  var newSetupOptionLabel = typeof textBundle.newSetupOption === 'string' && textBundle.newSetupOption.trim() ? textBundle.newSetupOption : 'New setup';
   if (!setupsProvider) {
     console.warn('populateSetupSelect: getSetups is unavailable, using empty setup list');
   }
   var setups = setupsProvider ? setupsProvider() || {} : {};
-  setupSelect.innerHTML = "<option value=\"\">".concat(texts[currentLang].newSetupOption, "</option>");
+  setupSelectTarget.innerHTML = "<option value=\"\">".concat(newSetupOptionLabel, "</option>");
   var includeAutoBackups = false;
   if (typeof showAutoBackups === 'boolean') {
     includeAutoBackups = showAutoBackups;
@@ -725,7 +751,7 @@ function populateSetupSelect() {
       var opt = document.createElement("option");
       opt.value = name;
       opt.textContent = name;
-      setupSelect.appendChild(opt);
+      setupSelectTarget.appendChild(opt);
     }
   } catch (err) {
     _iterator.e(err);
@@ -767,7 +793,8 @@ function notifyAutoSaveFromBackup(message, backupName) {
 }
 function autoBackup() {
   var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-  if (!setupSelect) return null;
+  var setupSelectElement = getSetupSelectElement();
+  if (!setupSelectElement) return null;
   var config = _typeof(options) === 'object' && options !== null ? options : {};
   var suppressSuccess = Boolean(config.suppressSuccess);
   var suppressError = Boolean(config.suppressError);
@@ -780,7 +807,7 @@ function autoBackup() {
   };
   var hasProjectNameOverride = Object.prototype.hasOwnProperty.call(config, 'projectNameOverride');
   var overrideName = hasProjectNameOverride ? normalizeProjectName(config.projectNameOverride) : null;
-  var selectedName = setupSelect && typeof setupSelect.value === 'string' ? setupSelect.value : '';
+  var selectedName = typeof setupSelectElement.value === 'string' ? setupSelectElement.value : '';
   var typedName = setupNameInput && typeof setupNameInput.value === 'string' ? setupNameInput.value : '';
   var normalizedSelectedName = normalizeProjectName(selectedName);
   var normalizedTypedName = normalizeProjectName(typedName);
@@ -821,7 +848,7 @@ function autoBackup() {
     var currentSetup = _objectSpread({}, getCurrentSetupState());
     var gearListHtml = getCurrentGearListHtml();
     if (!gearListHtml) {
-      var activeName = (setupSelect && typeof setupSelect.value === 'string' ? setupSelect.value.trim() : '') || (setupNameInput && typeof setupNameInput.value === 'string' ? setupNameInput.value.trim() : '');
+      var activeName = (typeof setupSelectElement.value === 'string' ? setupSelectElement.value.trim() : '') || (setupNameInput && typeof setupNameInput.value === 'string' ? setupNameInput.value.trim() : '');
       if (activeName) {
         var _setups = typeof getSetups === 'function' ? getSetups() : null;
         var storedSetup = _setups && _typeof(_setups) === 'object' ? _setups[activeName] : null;
@@ -861,10 +888,10 @@ function autoBackup() {
         saveProject(backupName, payload);
       }
     }
-    var prevValue = setupSelect.value;
+    var prevValue = setupSelectElement.value;
     var prevName = setupNameInput ? setupNameInput.value : '';
     populateSetupSelect();
-    setupSelect.value = prevValue;
+    setupSelectElement.value = prevValue;
     if (setupNameInput) setupNameInput.value = prevName;
     if (!suppressSuccess) {
       showNotification('success', successMessage);
@@ -968,7 +995,7 @@ function toggleDeviceManagerSection() {
   }
 }
 if (toggleDeviceBtn) {
-  toggleDeviceBtn.addEventListener('click', toggleDeviceManagerSection);
+  addSafeEventListener(toggleDeviceBtn, 'click', toggleDeviceManagerSection);
 }
 function getEventsLanguageTexts() {
   var scope = typeof globalThis !== 'undefined' && globalThis || typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || typeof global !== 'undefined' && global || null;
@@ -1191,7 +1218,7 @@ function populateDeviceForm(categoryKey, deviceData, subcategory) {
     buildDynamicFields(categoryKey, deviceData, categoryExcludedAttrs[categoryKey] || []);
   }
 }
-deviceManagerSection.addEventListener("click", function (event) {
+addSafeEventListener(deviceManagerSection, "click", function (event) {
   var button = event.target.closest('button');
   if (!button || !deviceManagerSection.contains(button)) {
     return;
@@ -1294,13 +1321,13 @@ deviceManagerSection.addEventListener("click", function (event) {
     }
   }
 });
-deviceManagerSection.addEventListener('keydown', function (event) {
+addSafeEventListener(deviceManagerSection, 'keydown', function (event) {
   if (event.target.classList.contains('detail-toggle') && (event.key === 'Enter' || event.key === ' ')) {
     event.preventDefault();
     toggleDeviceDetails(event.target);
   }
 });
-newCategorySelect.addEventListener("change", function () {
+addSafeEventListener(newCategorySelect, "change", function () {
   var _addDeviceBtn;
   var wasEditing = ((_addDeviceBtn = addDeviceBtn) === null || _addDeviceBtn === void 0 ? void 0 : _addDeviceBtn.dataset.mode) === "edit";
   var previousName = newNameInput ? newNameInput.value : "";
@@ -1443,7 +1470,7 @@ newCategorySelect.addEventListener("change", function () {
     hideFormSection(cancelEditBtn);
   }
 });
-newSubcategorySelect.addEventListener('change', function () {
+addSafeEventListener(newSubcategorySelect, 'change', function () {
   if (newCategorySelect.value === 'accessories.cables') {
     buildDynamicFields("accessories.cables.".concat(newSubcategorySelect.value), {}, categoryExcludedAttrs["accessories.cables.".concat(newSubcategorySelect.value)] || []);
   }
@@ -1468,7 +1495,7 @@ function resetDeviceForm() {
     }
   }
 }
-addDeviceBtn.addEventListener("click", function () {
+addSafeEventListener(addDeviceBtn, "click", function () {
   var name = newNameInput.value.trim();
   var category = newCategorySelect.value;
   var isEditing = addDeviceBtn.dataset.mode === "edit";
@@ -1746,10 +1773,10 @@ addDeviceBtn.addEventListener("click", function () {
     alert(texts[currentLang].alertDeviceAdded.replace("{name}", name).replace("{category}", categoryDisplay));
   }
 });
-cancelEditBtn.addEventListener("click", function () {
+addSafeEventListener(cancelEditBtn, "click", function () {
   resetDeviceForm();
 });
-exportBtn.addEventListener("click", function () {
+addSafeEventListener(exportBtn, "click", function () {
   var dataStr = JSON.stringify(devices, null, 2);
   exportOutput.style.display = "block";
   exportOutput.value = dataStr;
@@ -1767,7 +1794,7 @@ exportBtn.addEventListener("click", function () {
 });
 var exportAndRevertBtn = document.getElementById('exportAndRevertBtn');
 if (exportAndRevertBtn) {
-  exportAndRevertBtn.addEventListener('click', function () {
+  addSafeEventListener(exportAndRevertBtn, 'click', function () {
     if (confirm(texts[currentLang].confirmExportAndRevert)) {
       var dataStr = JSON.stringify(devices, null, 2);
       var blob = new Blob([dataStr], {
@@ -1792,10 +1819,10 @@ if (exportAndRevertBtn) {
     }
   });
 }
-importDataBtn.addEventListener("click", function () {
+  addSafeEventListener(importDataBtn, "click", function () {
   importFileInput.click();
 });
-importFileInput.addEventListener("change", function (event) {
+  addSafeEventListener(importFileInput, "change", function (event) {
   var file = event.target.files[0];
   if (!file) {
     return;
