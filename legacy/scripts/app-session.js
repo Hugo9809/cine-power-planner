@@ -115,6 +115,104 @@ function enqueueCineUiRegistration(callback) {
   scope[key].push(callback);
 }
 enqueueCineUiRegistration(registerSessionCineUiInternal);
+
+var SESSION_GLOBAL_SCOPE =
+  typeof CORE_GLOBAL_SCOPE === 'object' && CORE_GLOBAL_SCOPE
+    || typeof globalThis !== 'undefined' && globalThis
+    || typeof window !== 'undefined' && window
+    || typeof self !== 'undefined' && self
+    || typeof global !== 'undefined' && global
+    || null;
+
+var SESSION_DEFAULT_ACCENT_COLOR_FALLBACK = '#001589';
+var SESSION_HIGH_CONTRAST_ACCENT_COLOR_FALLBACK = '#ffffff';
+
+var resolvedDefaultAccentColor = (function () {
+  if (SESSION_GLOBAL_SCOPE && typeof SESSION_GLOBAL_SCOPE.DEFAULT_ACCENT_COLOR === 'string') {
+    var candidate = SESSION_GLOBAL_SCOPE.DEFAULT_ACCENT_COLOR.trim();
+    if (candidate) {
+      return candidate;
+    }
+  }
+  if (SESSION_GLOBAL_SCOPE && typeof SESSION_GLOBAL_SCOPE.accentColor === 'string') {
+    var seeded = SESSION_GLOBAL_SCOPE.accentColor.trim();
+    if (seeded) {
+      return seeded;
+    }
+  }
+  return SESSION_DEFAULT_ACCENT_COLOR_FALLBACK;
+})();
+
+var resolvedDefaultAccentNormalized =
+  typeof resolvedDefaultAccentColor === 'string'
+    ? resolvedDefaultAccentColor.toLowerCase()
+    : SESSION_DEFAULT_ACCENT_COLOR_FALLBACK.toLowerCase();
+
+var resolvedHighContrastAccentColor = (function () {
+  if (
+    SESSION_GLOBAL_SCOPE
+    && typeof SESSION_GLOBAL_SCOPE.HIGH_CONTRAST_ACCENT_COLOR === 'string'
+  ) {
+    var candidate = SESSION_GLOBAL_SCOPE.HIGH_CONTRAST_ACCENT_COLOR.trim();
+    if (candidate) {
+      return candidate;
+    }
+  }
+  return SESSION_HIGH_CONTRAST_ACCENT_COLOR_FALLBACK;
+})();
+
+var resolvedAccentColor = (function () {
+  if (SESSION_GLOBAL_SCOPE && typeof SESSION_GLOBAL_SCOPE.accentColor === 'string') {
+    var candidate = SESSION_GLOBAL_SCOPE.accentColor.trim();
+    if (candidate) {
+      return candidate;
+    }
+  }
+  return resolvedDefaultAccentColor;
+})();
+
+if (
+  typeof DEFAULT_ACCENT_COLOR === 'undefined'
+  || typeof DEFAULT_ACCENT_COLOR !== 'string'
+  || !DEFAULT_ACCENT_COLOR.trim()
+) {
+  DEFAULT_ACCENT_COLOR = resolvedDefaultAccentColor;
+}
+if (
+  typeof DEFAULT_ACCENT_NORMALIZED === 'undefined'
+  || typeof DEFAULT_ACCENT_NORMALIZED !== 'string'
+  || !DEFAULT_ACCENT_NORMALIZED
+) {
+  DEFAULT_ACCENT_NORMALIZED = resolvedDefaultAccentNormalized;
+}
+if (
+  typeof HIGH_CONTRAST_ACCENT_COLOR === 'undefined'
+  || typeof HIGH_CONTRAST_ACCENT_COLOR !== 'string'
+  || !HIGH_CONTRAST_ACCENT_COLOR.trim()
+) {
+  HIGH_CONTRAST_ACCENT_COLOR = resolvedHighContrastAccentColor;
+}
+if (
+  typeof accentColor === 'undefined'
+  || typeof accentColor !== 'string'
+  || !accentColor.trim()
+) {
+  accentColor = resolvedAccentColor;
+}
+if (
+  typeof prevAccentColor === 'undefined'
+  || typeof prevAccentColor !== 'string'
+  || !prevAccentColor.trim()
+) {
+  prevAccentColor = resolvedAccentColor;
+}
+if (typeof restoringSession === 'undefined') {
+  restoringSession = false;
+}
+if (typeof filterSelectElem === 'undefined') {
+  filterSelectElem = null;
+}
+
 function callSessionCoreFunction(functionName) {
   var args = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
   var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};

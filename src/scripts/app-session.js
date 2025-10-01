@@ -2,7 +2,10 @@
 /* eslint-disable no-redeclare */
 /* global resolveTemperatureStorageKey, TEMPERATURE_STORAGE_KEY,
           updateCageSelectOptions, updateAccentColorResetButtonState,
-          normalizeAccentValue, DEFAULT_ACCENT_NORMALIZED,
+          normalizeAccentValue, DEFAULT_ACCENT_NORMALIZED: true,
+          DEFAULT_ACCENT_COLOR: true, HIGH_CONTRAST_ACCENT_COLOR: true,
+          accentColor: true, prevAccentColor: true,
+          restoringSession: true, filterSelectElem: true,
           autoGearSearchInput, setAutoGearSearchQuery,
           autoGearFilterScenarioSelect, setAutoGearScenarioFilter,
           autoGearFilterClearButton, clearAutoGearFilters,
@@ -170,6 +173,153 @@ function enqueueCineUiRegistration(callback) {
 }
 
 enqueueCineUiRegistration(registerSessionCineUiInternal);
+
+const SESSION_GLOBAL_SCOPE =
+  (typeof CORE_GLOBAL_SCOPE === 'object' && CORE_GLOBAL_SCOPE)
+  || (typeof globalThis !== 'undefined' ? globalThis : null)
+  || (typeof window !== 'undefined' ? window : null)
+  || (typeof self !== 'undefined' ? self : null)
+  || (typeof global !== 'undefined' ? global : null)
+  || null;
+
+const SESSION_DEFAULT_ACCENT_COLOR_FALLBACK = '#001589';
+const SESSION_HIGH_CONTRAST_ACCENT_COLOR_FALLBACK = '#ffffff';
+
+const resolvedDefaultAccentColor = (() => {
+  if (SESSION_GLOBAL_SCOPE && typeof SESSION_GLOBAL_SCOPE.DEFAULT_ACCENT_COLOR === 'string') {
+    const candidate = SESSION_GLOBAL_SCOPE.DEFAULT_ACCENT_COLOR.trim();
+    if (candidate) {
+      return candidate;
+    }
+  }
+  if (SESSION_GLOBAL_SCOPE && typeof SESSION_GLOBAL_SCOPE.accentColor === 'string') {
+    const seeded = SESSION_GLOBAL_SCOPE.accentColor.trim();
+    if (seeded) {
+      return seeded;
+    }
+  }
+  return SESSION_DEFAULT_ACCENT_COLOR_FALLBACK;
+})();
+
+const resolvedDefaultAccentNormalized =
+  typeof resolvedDefaultAccentColor === 'string'
+    ? resolvedDefaultAccentColor.toLowerCase()
+    : SESSION_DEFAULT_ACCENT_COLOR_FALLBACK.toLowerCase();
+
+const resolvedHighContrastAccentColor = (() => {
+  if (
+    SESSION_GLOBAL_SCOPE
+    && typeof SESSION_GLOBAL_SCOPE.HIGH_CONTRAST_ACCENT_COLOR === 'string'
+  ) {
+    const candidate = SESSION_GLOBAL_SCOPE.HIGH_CONTRAST_ACCENT_COLOR.trim();
+    if (candidate) {
+      return candidate;
+    }
+  }
+  return SESSION_HIGH_CONTRAST_ACCENT_COLOR_FALLBACK;
+})();
+
+const resolvedAccentColor = (() => {
+  if (SESSION_GLOBAL_SCOPE && typeof SESSION_GLOBAL_SCOPE.accentColor === 'string') {
+    const candidate = SESSION_GLOBAL_SCOPE.accentColor.trim();
+    if (candidate) {
+      return candidate;
+    }
+  }
+  return resolvedDefaultAccentColor;
+})();
+
+const hasDefaultAccentColor =
+  typeof DEFAULT_ACCENT_COLOR === 'string'
+  && DEFAULT_ACCENT_COLOR.trim();
+if (!hasDefaultAccentColor) {
+  try {
+    DEFAULT_ACCENT_COLOR = resolvedDefaultAccentColor;
+  } catch (assignDefaultAccentError) {
+    if (SESSION_GLOBAL_SCOPE && typeof SESSION_GLOBAL_SCOPE === 'object') {
+      SESSION_GLOBAL_SCOPE.DEFAULT_ACCENT_COLOR = resolvedDefaultAccentColor;
+    }
+    void assignDefaultAccentError;
+  }
+}
+
+const hasDefaultAccentNormalized =
+  typeof DEFAULT_ACCENT_NORMALIZED === 'string'
+  && DEFAULT_ACCENT_NORMALIZED;
+if (!hasDefaultAccentNormalized) {
+  try {
+    DEFAULT_ACCENT_NORMALIZED = resolvedDefaultAccentNormalized;
+  } catch (assignNormalizedAccentError) {
+    if (SESSION_GLOBAL_SCOPE && typeof SESSION_GLOBAL_SCOPE === 'object') {
+      SESSION_GLOBAL_SCOPE.DEFAULT_ACCENT_NORMALIZED = resolvedDefaultAccentNormalized;
+    }
+    void assignNormalizedAccentError;
+  }
+}
+
+const hasHighContrastAccent =
+  typeof HIGH_CONTRAST_ACCENT_COLOR === 'string'
+  && HIGH_CONTRAST_ACCENT_COLOR.trim();
+if (!hasHighContrastAccent) {
+  try {
+    HIGH_CONTRAST_ACCENT_COLOR = resolvedHighContrastAccentColor;
+  } catch (assignHighContrastAccentError) {
+    if (SESSION_GLOBAL_SCOPE && typeof SESSION_GLOBAL_SCOPE === 'object') {
+      SESSION_GLOBAL_SCOPE.HIGH_CONTRAST_ACCENT_COLOR = resolvedHighContrastAccentColor;
+    }
+    void assignHighContrastAccentError;
+  }
+}
+
+const hasAccentColor =
+  typeof accentColor === 'string'
+  && accentColor.trim();
+if (!hasAccentColor) {
+  try {
+    accentColor = resolvedAccentColor;
+  } catch (assignAccentColorError) {
+    if (SESSION_GLOBAL_SCOPE && typeof SESSION_GLOBAL_SCOPE === 'object') {
+      SESSION_GLOBAL_SCOPE.accentColor = resolvedAccentColor;
+    }
+    void assignAccentColorError;
+  }
+}
+
+const hasPrevAccentColor =
+  typeof prevAccentColor === 'string'
+  && prevAccentColor.trim();
+if (!hasPrevAccentColor) {
+  try {
+    prevAccentColor = resolvedAccentColor;
+  } catch (assignPrevAccentError) {
+    if (SESSION_GLOBAL_SCOPE && typeof SESSION_GLOBAL_SCOPE === 'object') {
+      SESSION_GLOBAL_SCOPE.prevAccentColor = resolvedAccentColor;
+    }
+    void assignPrevAccentError;
+  }
+}
+
+if (typeof restoringSession !== 'boolean') {
+  try {
+    restoringSession = false;
+  } catch (assignRestoringSessionError) {
+    if (SESSION_GLOBAL_SCOPE && typeof SESSION_GLOBAL_SCOPE === 'object') {
+      SESSION_GLOBAL_SCOPE.restoringSession = false;
+    }
+    void assignRestoringSessionError;
+  }
+}
+
+if (typeof filterSelectElem === 'undefined') {
+  try {
+    filterSelectElem = null;
+  } catch (assignFilterSelectError) {
+    if (SESSION_GLOBAL_SCOPE && typeof SESSION_GLOBAL_SCOPE === 'object') {
+      SESSION_GLOBAL_SCOPE.filterSelectElem = null;
+    }
+    void assignFilterSelectError;
+  }
+}
 
 function callSessionCoreFunction(functionName, args = [], options = {}) {
   if (typeof callCoreFunctionIfAvailable === 'function') {
