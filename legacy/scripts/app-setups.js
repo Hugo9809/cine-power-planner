@@ -2999,7 +2999,7 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
       var rule = _ref14.rule;
       if (!touchesMatteboxCategory(rule)) return true;
       var matteboxList = Array.isArray(rule.mattebox) ? rule.mattebox.filter(Boolean) : [];
-      if (!matteboxList.length) return false;
+      if (!matteboxList.length) return true;
       var normalizedTargets = matteboxList.map(normalizeAutoGearTriggerValue).filter(Boolean);
       if (!normalizedTargets.length) return false;
       return normalizedTargets.includes(normalizedMattebox);
