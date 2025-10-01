@@ -3763,11 +3763,26 @@ if (autoGearConditionAddButton) {
     addAutoGearConditionFromPicker();
   });
 }
-if (autoGearScenarioModeSelect) {
-  autoGearScenarioModeSelect.addEventListener('change', () => {
+const autoGearScenarioModeSelectHandle =
+  typeof autoGearScenarioModeSelect !== 'undefined'
+    ? autoGearScenarioModeSelect
+    : typeof globalThis !== 'undefined'
+        && globalThis
+        && typeof globalThis.autoGearScenarioModeSelect !== 'undefined'
+      ? globalThis.autoGearScenarioModeSelect
+      : null;
+
+if (autoGearScenarioModeSelectHandle && typeof autoGearScenarioModeSelectHandle.addEventListener === 'function') {
+  autoGearScenarioModeSelectHandle.addEventListener('change', () => {
     if (autoGearEditorDraft) {
-      autoGearEditorDraft.scenarioLogic = normalizeAutoGearScenarioLogic(autoGearScenarioModeSelect.value);
+      const selectValue =
+        typeof autoGearScenarioModeSelectHandle.value === 'string'
+          ? autoGearScenarioModeSelectHandle.value
+          : '';
+
+      autoGearEditorDraft.scenarioLogic = normalizeAutoGearScenarioLogic(selectValue);
     }
+
     applyAutoGearScenarioSettings(getAutoGearScenarioSelectedValues());
   });
 }
