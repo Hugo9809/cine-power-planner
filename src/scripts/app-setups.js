@@ -3006,7 +3006,7 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
         const filtered = triggeredEntries.filter(({ rule }) => {
             if (!touchesMatteboxCategory(rule)) return true;
             const matteboxList = Array.isArray(rule.mattebox) ? rule.mattebox.filter(Boolean) : [];
-            if (!matteboxList.length) return false;
+            if (!matteboxList.length) return true;
             const normalizedTargets = matteboxList
                 .map(normalizeAutoGearTriggerValue)
                 .filter(Boolean);
