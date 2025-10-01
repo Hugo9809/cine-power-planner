@@ -11,19 +11,72 @@ var CORE_PART2_RUNTIME_SCOPE =
             ? global
             : null;
 
-if (typeof autoGearAutoPresetId === 'undefined') {
-  var autoGearAutoPresetId = '';
+var CORE_PART2_GLOBAL_SCOPES = [
+  CORE_PART2_RUNTIME_SCOPE && typeof CORE_PART2_RUNTIME_SCOPE === 'object'
+    ? CORE_PART2_RUNTIME_SCOPE
+    : null,
+  typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object'
+    ? CORE_GLOBAL_SCOPE
+    : null,
+  typeof globalThis !== 'undefined' && typeof globalThis === 'object' ? globalThis : null,
+  typeof window !== 'undefined' && typeof window === 'object' ? window : null,
+  typeof self !== 'undefined' && typeof self === 'object' ? self : null,
+  typeof global !== 'undefined' && typeof global === 'object' ? global : null,
+].filter(Boolean);
+
+function ensureGlobalFallback(name, fallbackValue) {
+  var fallbackProvider =
+    typeof fallbackValue === 'function'
+      ? fallbackValue
+      : function provideStaticFallback() {
+          return fallbackValue;
+        };
+
+  for (var index = 0; index < CORE_PART2_GLOBAL_SCOPES.length; index += 1) {
+    var scope = CORE_PART2_GLOBAL_SCOPES[index];
+    try {
+      if (typeof scope[name] === 'undefined') {
+        scope[name] = fallbackProvider();
+      }
+      return scope[name];
+    } catch (ensureError) {
+      void ensureError;
+    }
+  }
+
+  try {
+    return fallbackProvider();
+  } catch (fallbackError) {
+    void fallbackError;
+    return undefined;
+  }
 }
 
-if (typeof baseAutoGearRules === 'undefined') {
-  var baseAutoGearRules = [];
-} else if (!Array.isArray(baseAutoGearRules)) {
-  baseAutoGearRules = [];
+function normaliseGlobalValue(name, validator, fallbackValue) {
+  var fallbackProvider =
+    typeof fallbackValue === 'function'
+      ? fallbackValue
+      : function provideStaticFallback() {
+          return fallbackValue;
+        };
+
+  for (var index = 0; index < CORE_PART2_GLOBAL_SCOPES.length; index += 1) {
+    var scope = CORE_PART2_GLOBAL_SCOPES[index];
+    try {
+      if (!validator(scope[name])) {
+        scope[name] = fallbackProvider();
+      }
+    } catch (normaliseError) {
+      void normaliseError;
+    }
+  }
 }
 
-if (typeof autoGearScenarioModeSelect === 'undefined') {
-  var autoGearScenarioModeSelect = null;
-}
+ensureGlobalFallback('autoGearAutoPresetId', '');
+ensureGlobalFallback('baseAutoGearRules', function () {
+  return [];
+});
+ensureGlobalFallback('autoGearScenarioModeSelect', null);
 
 function createFallbackSafeGenerateConnectorSummary() {
   return function safeGenerateConnectorSummary(device) {
@@ -54,11 +107,29 @@ function createFallbackSafeGenerateConnectorSummary() {
   };
 }
 
-if (typeof safeGenerateConnectorSummary === 'undefined') {
-  var safeGenerateConnectorSummary = createFallbackSafeGenerateConnectorSummary();
-} else if (typeof safeGenerateConnectorSummary !== 'function') {
-  safeGenerateConnectorSummary = createFallbackSafeGenerateConnectorSummary();
-}
+ensureGlobalFallback('safeGenerateConnectorSummary', function () {
+  return createFallbackSafeGenerateConnectorSummary();
+});
+
+normaliseGlobalValue(
+  'baseAutoGearRules',
+  function validateBaseAutoGearRules(value) {
+    return Array.isArray(value);
+  },
+  function provideBaseAutoGearRulesFallback() {
+    return [];
+  },
+);
+
+normaliseGlobalValue(
+  'safeGenerateConnectorSummary',
+  function validateSafeGenerateConnectorSummary(value) {
+    return typeof value === 'function';
+  },
+  function provideSafeGenerateConnectorSummaryFallback() {
+    return createFallbackSafeGenerateConnectorSummary();
+  },
+);
 
 function ensureCorePart2Placeholder(name, fallbackValue) {
   var providers = [
