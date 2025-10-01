@@ -3336,11 +3336,43 @@ if (settingsButton && settingsDialog) {
       addAutoGearConditionFromPicker();
     });
   }
-  if (autoGearScenarioModeSelect) {
-    autoGearScenarioModeSelect.addEventListener('change', function () {
-      if (autoGearEditorDraft) {
-        autoGearEditorDraft.scenarioLogic = normalizeAutoGearScenarioLogic(autoGearScenarioModeSelect.value);
+  var autoGearScenarioModeSelectHandle = function resolveAutoGearScenarioModeSelectHandle() {
+    var resolvedHandle = null;
+
+    try {
+      if (typeof autoGearScenarioModeSelect !== 'undefined') {
+        resolvedHandle = autoGearScenarioModeSelect;
       }
+    } catch (resolveAutoGearScenarioModeSelectError) {
+      void resolveAutoGearScenarioModeSelectError;
+    }
+
+    if (!resolvedHandle) {
+      var scope = typeof globalThis !== 'undefined' && globalThis || typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || typeof global !== 'undefined' && global || null;
+
+      if (scope && _typeof(scope) === 'object' && 'autoGearScenarioModeSelect' in scope) {
+        resolvedHandle = scope.autoGearScenarioModeSelect || null;
+      }
+    }
+
+    if (!resolvedHandle && typeof document !== 'undefined' && document && typeof document.getElementById === 'function') {
+      try {
+        resolvedHandle = document.getElementById('autoGearScenarioMode') || null;
+      } catch (resolveAutoGearScenarioModeSelectElementError) {
+        void resolveAutoGearScenarioModeSelectElementError;
+      }
+    }
+
+    return resolvedHandle;
+  }();
+
+  if (autoGearScenarioModeSelectHandle && typeof autoGearScenarioModeSelectHandle.addEventListener === 'function') {
+    autoGearScenarioModeSelectHandle.addEventListener('change', function () {
+      if (autoGearEditorDraft) {
+        var selectValue = typeof autoGearScenarioModeSelectHandle.value === 'string' ? autoGearScenarioModeSelectHandle.value : '';
+        autoGearEditorDraft.scenarioLogic = normalizeAutoGearScenarioLogic(selectValue);
+      }
+
       applyAutoGearScenarioSettings(getAutoGearScenarioSelectedValues());
     });
   }
