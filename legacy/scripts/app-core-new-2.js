@@ -125,8 +125,12 @@ function generateSafeConnectorSummary(device) {
   if (typeof safeGenerateConnectorSummaryFn === 'function') {
     candidates.push(safeGenerateConnectorSummaryFn);
   }
-  if (typeof safeGenerateConnectorSummary === 'function') {
-    candidates.push(safeGenerateConnectorSummary);
+  try {
+    if (typeof safeGenerateConnectorSummary === 'function') {
+      candidates.push(safeGenerateConnectorSummary);
+    }
+  } catch (referenceError) {
+    void referenceError;
   }
   if (typeof CORE_SHARED !== 'undefined' && CORE_SHARED && typeof CORE_SHARED.safeGenerateConnectorSummary === 'function') {
     candidates.push(CORE_SHARED.safeGenerateConnectorSummary);
