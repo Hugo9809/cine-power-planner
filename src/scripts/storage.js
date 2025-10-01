@@ -16,16 +16,38 @@
             ? self
             : null;
 
+  const FORCE_STORAGE_REINITIALIZE =
+    typeof process !== 'undefined' &&
+    process &&
+    process.env &&
+    (process.env.JEST_WORKER_ID || process.env.CINE_FORCE_STORAGE_REINIT);
+
   if (GLOBAL_SCOPE && GLOBAL_SCOPE.__cineStorageInitialized) {
-    if (
-      typeof module !== 'undefined' &&
-      module.exports &&
-      GLOBAL_SCOPE.__cineStorageApi &&
-      typeof GLOBAL_SCOPE.__cineStorageApi === 'object'
-    ) {
-      module.exports = GLOBAL_SCOPE.__cineStorageApi;
+    if (FORCE_STORAGE_REINITIALIZE) {
+      try {
+        delete GLOBAL_SCOPE.__cineStorageInitialized;
+      } catch (resetInitFlagError) {
+        GLOBAL_SCOPE.__cineStorageInitialized = false;
+        void resetInitFlagError;
+      }
+
+      try {
+        delete GLOBAL_SCOPE.__cineStorageApi;
+      } catch (resetApiError) {
+        GLOBAL_SCOPE.__cineStorageApi = null;
+        void resetApiError;
+      }
+    } else {
+      if (
+        typeof module !== 'undefined' &&
+        module.exports &&
+        GLOBAL_SCOPE.__cineStorageApi &&
+        typeof GLOBAL_SCOPE.__cineStorageApi === 'object'
+      ) {
+        module.exports = GLOBAL_SCOPE.__cineStorageApi;
+      }
+      return;
     }
-    return;
   }
 
   if (GLOBAL_SCOPE) {
