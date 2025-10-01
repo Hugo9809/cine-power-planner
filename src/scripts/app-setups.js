@@ -2,7 +2,8 @@
           normalizeAutoGearShootingDaysCondition, normalizeAutoGearCameraWeightCondition, evaluateAutoGearCameraWeightCondition,
           getAutoGearMonitorDefault, getSetupNameState,
           createProjectInfoSnapshotForStorage, getProjectAutoSaveOverrides, getAutoGearRuleCoverageSummary,
-          normalizeBatteryPlateValue, setSelectValue, applyBatteryPlateSelectionFromBattery, enqueueCoreBootTask */
+          normalizeBatteryPlateValue, setSelectValue, applyBatteryPlateSelectionFromBattery, enqueueCoreBootTask,
+          callCoreFunctionIfAvailable */
 
 const AUTO_GEAR_ANY_MOTOR_TOKEN_FALLBACK =
     (typeof globalThis !== 'undefined' && globalThis.AUTO_GEAR_ANY_MOTOR_TOKEN)
@@ -32,6 +33,67 @@ function assignSelectValue(select, value) {
         select.selectedIndex = -1;
     } else {
         select.value = value;
+    }
+}
+
+function callSetupsCoreFunction(functionName, args = [], options = {}) {
+    if (typeof callCoreFunctionIfAvailable === 'function') {
+        return callCoreFunctionIfAvailable(functionName, args, options);
+    }
+
+    const scope =
+        (typeof globalThis !== 'undefined' ? globalThis : null)
+        || (typeof window !== 'undefined' ? window : null)
+        || (typeof self !== 'undefined' ? self : null)
+        || (typeof global !== 'undefined' ? global : null)
+        || null;
+
+    const target =
+        typeof functionName === 'string'
+            ? scope && scope[functionName]
+            : functionName;
+
+    if (typeof target === 'function') {
+        try {
+            return target.apply(scope, args);
+        } catch (invokeError) {
+            if (typeof console !== 'undefined' && typeof console.error === 'function') {
+                console.error(`Failed to invoke ${functionName}`, invokeError);
+            }
+        }
+        return undefined;
+    }
+
+    if (options && options.defer === true) {
+        const queue = scope && Array.isArray(scope.CORE_BOOT_QUEUE) ? scope.CORE_BOOT_QUEUE : null;
+        if (queue) {
+            queue.push(() => {
+                callSetupsCoreFunction(functionName, args, { ...options, defer: false });
+            });
+        }
+    }
+
+    return (options && Object.prototype.hasOwnProperty.call(options, 'defaultValue'))
+        ? options.defaultValue
+        : undefined;
+}
+
+function getSetupsCoreValue(functionName, options = {}) {
+    const defaultValue = Object.prototype.hasOwnProperty.call(options, 'defaultValue')
+        ? options.defaultValue
+        : '';
+    const value = callSetupsCoreFunction(functionName, [], { defaultValue });
+    if (typeof value === 'string') {
+        return value;
+    }
+    if (value === null || value === undefined) {
+        return defaultValue;
+    }
+    try {
+        return String(value);
+    } catch (coerceError) {
+        void coerceError;
+        return defaultValue;
     }
 }
 
@@ -1642,8 +1704,8 @@ function collectProjectFormData() {
         tripodBowl: getValue('tripodBowl'),
         tripodTypes: getMultiValue('tripodTypes'),
         tripodSpreader: getValue('tripodSpreader'),
-        sliderBowl: getSliderBowlValue(),
-        easyrig: getEasyrigValue(),
+        sliderBowl: getSetupsCoreValue('getSliderBowlValue'),
+        easyrig: getSetupsCoreValue('getEasyrigValue'),
         filter: filterStr
     };
 
@@ -4469,8 +4531,8 @@ function saveCurrentGearList() {
     if (factoryResetInProgress) return;
     const html = getCurrentGearListHtml();
     const info = projectForm ? collectProjectFormData() : {};
-    info.sliderBowl = getSliderBowlValue();
-    info.easyrig = getEasyrigValue();
+    info.sliderBowl = getSetupsCoreValue('getSliderBowlValue');
+    info.easyrig = getSetupsCoreValue('getEasyrigValue');
     currentProjectInfo = deriveProjectInfo(info);
     const powerSelectionSnapshot = getPowerSelectionSnapshot();
     const gearSelectorsRaw = getGearListSelectors();
@@ -4722,8 +4784,8 @@ function deleteCurrentGearList() {
         ),
         battery: batterySelect ? batterySelect.value : '',
         batteryHotswap: hotswapSelect ? hotswapSelect.value : '',
-        sliderBowl: getSliderBowlValue(),
-        easyrig: getEasyrigValue(),
+        sliderBowl: getSetupsCoreValue('getSliderBowlValue'),
+        easyrig: getSetupsCoreValue('getEasyrigValue'),
         projectInfo: null
     });
     if (typeof autoSaveCurrentSetup === 'function') {
@@ -5358,11 +5420,14 @@ function refreshGearListIfVisible() {
         populateSensorModeDropdown(currentProjectInfo && currentProjectInfo.sensorMode);
         populateCodecDropdown(currentProjectInfo && currentProjectInfo.codec);
         const info = collectProjectFormData();
-        info.sliderBowl = getSliderBowlValue();
-        info.easyrig = getEasyrigValue();
+        info.sliderBowl = getSetupsCoreValue('getSliderBowlValue');
+        info.easyrig = getSetupsCoreValue('getEasyrigValue');
         currentProjectInfo = deriveProjectInfo(info);
     } else {
-        const info = { sliderBowl: getSliderBowlValue(), easyrig: getEasyrigValue() };
+        const info = {
+            sliderBowl: getSetupsCoreValue('getSliderBowlValue'),
+            easyrig: getSetupsCoreValue('getEasyrigValue')
+        };
         currentProjectInfo = deriveProjectInfo(info);
     }
 

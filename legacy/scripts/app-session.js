@@ -243,6 +243,26 @@ function callSessionCoreFunction(functionName) {
   }
   return options && Object.prototype.hasOwnProperty.call(options, 'defaultValue') ? options.defaultValue : undefined;
 }
+
+function getSessionCoreValue(functionName) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  var defaultValue = Object.prototype.hasOwnProperty.call(options, 'defaultValue') ? options.defaultValue : '';
+  var value = callSessionCoreFunction(functionName, [], {
+    defaultValue: defaultValue
+  });
+  if (typeof value === 'string') {
+    return value;
+  }
+  if (value === null || value === undefined) {
+    return defaultValue;
+  }
+  try {
+    return String(value);
+  } catch (coerceError) {
+    void coerceError;
+    return defaultValue;
+  }
+}
 var temperaturePreferenceStorageKey = typeof TEMPERATURE_STORAGE_KEY === 'string' ? TEMPERATURE_STORAGE_KEY : typeof resolveTemperatureStorageKey === 'function' ? resolveTemperatureStorageKey() : 'cameraPowerPlanner_temperatureUnit';
 var recordFullBackupHistoryEntryFn = function recordFullBackupHistoryEntryFn() {};
 var ensureCriticalStorageBackupsFn = function ensureCriticalStorageBackupsFn() {
@@ -1642,8 +1662,8 @@ function saveCurrentSession() {
   var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   if (restoringSession || factoryResetInProgress) return;
   var info = projectForm ? collectProjectFormData() : {};
-  info.sliderBowl = getSliderBowlValue();
-  info.easyrig = getEasyrigValue();
+  info.sliderBowl = getSessionCoreValue('getSliderBowlValue');
+  info.easyrig = getSessionCoreValue('getEasyrigValue');
   currentProjectInfo = deriveProjectInfo(info);
   var batteryValue = batterySelect ? batterySelect.value : '';
   var batteryPlateValue = batteryPlateSelect ? batteryPlateSelect.value : '';
@@ -3328,7 +3348,11 @@ if (settingsButton && settingsDialog) {
     autoGearResetFactoryButton.addEventListener('click', resetAutoGearRulesToFactoryAdditions);
   }
   if (autoGearExportButton) {
-    autoGearExportButton.addEventListener('click', exportAutoGearRules);
+    autoGearExportButton.addEventListener('click', function () {
+      callSessionCoreFunction('exportAutoGearRules', [], {
+        defer: true
+      });
+    });
   }
   if (autoGearImportButton && autoGearImportInput) {
     autoGearImportButton.addEventListener('click', function () {
