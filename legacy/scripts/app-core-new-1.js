@@ -270,6 +270,90 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
     return typeof options !== 'undefined' && Object.prototype.hasOwnProperty.call(options, 'defaultValue') ? options.defaultValue : undefined;
   }
+  (function ensureCoreRuntimePlaceholders() {
+    var scope = CORE_GLOBAL_SCOPE || (typeof globalThis !== 'undefined' ? globalThis : null) || (typeof window !== 'undefined' ? window : null) || (typeof self !== 'undefined' ? self : null) || (typeof global !== 'undefined' ? global : null);
+    if (!scope || _typeof(scope) !== 'object') {
+      return;
+    }
+    if (typeof scope.populateSelect !== 'function') {
+      var placeholder = function populateSelectPlaceholder(selectElem) {
+        var optionsObj = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+        var includeNone = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+        if (!selectElem) {
+          return;
+        }
+        var opts = optionsObj && _typeof(optionsObj) === 'object' ? optionsObj : {};
+        try {
+          selectElem.innerHTML = '';
+          if (includeNone) {
+            var noneOpt = document.createElement('option');
+            noneOpt.value = 'None';
+            var noneMap = {
+              de: 'Keine Auswahl',
+              es: 'Ninguno',
+              fr: 'Aucun'
+            };
+            var lang = typeof currentLang === 'string' ? currentLang : 'en';
+            noneOpt.textContent = noneMap[lang] || 'None';
+            selectElem.appendChild(noneOpt);
+          }
+          Object.keys(opts).filter(function (name) {
+            return name !== 'None';
+          }).sort(typeof localeSort === 'function' ? localeSort : undefined).forEach(function (name) {
+            var opt = document.createElement('option');
+            opt.value = name;
+            opt.textContent = name;
+            selectElem.appendChild(opt);
+          });
+        } catch (populateError) {
+          if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+            console.warn('populateSelect placeholder failed to render options immediately', populateError);
+          }
+        }
+        enqueueCoreBootTask(function () {
+          var realPopulate = scope && typeof scope.populateSelect === 'function' && scope.populateSelect !== placeholder ? scope.populateSelect : null;
+          if (realPopulate) {
+            realPopulate(selectElem, optionsObj, includeNone);
+          }
+        });
+      };
+      try {
+        scope.populateSelect = placeholder;
+      } catch (assignError) {
+        void assignError;
+      }
+    }
+    var ensureFunctionPlaceholder = function ensureFunctionPlaceholder(name) {
+      if (typeof name !== 'string' || !name) {
+        return;
+      }
+      if (typeof scope[name] === 'function') {
+        return;
+      }
+      var placeholder = function coreDeferredFunctionPlaceholder() {
+        for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+          args[_key] = arguments[_key];
+        }
+        return callCoreFunctionIfAvailable(name, args, {
+          defer: true
+        });
+      };
+      try {
+        scope[name] = placeholder;
+      } catch (assignError) {
+        void assignError;
+      }
+    };
+    ensureFunctionPlaceholder('checkSetupChanged');
+    ensureFunctionPlaceholder('updateCalculations');
+    if (typeof scope.feedbackCancelBtn === 'undefined') {
+      try {
+        scope.feedbackCancelBtn = null;
+      } catch (assignError) {
+        void assignError;
+      }
+    }
+  })();
   function fallbackStableStringify(value) {
     if (value === null) return 'null';
     if (value === undefined) return 'undefined';
@@ -5730,13 +5814,29 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     })) {
       batterySelect.value = current;
     }
-    updateFavoriteButton(batterySelect);
+    if (typeof updateFavoriteButton === 'function') {
+      updateFavoriteButton(batterySelect);
+    } else if (typeof enqueueCoreBootTask === 'function') {
+      enqueueCoreBootTask(function () {
+        if (typeof updateFavoriteButton === 'function') {
+          updateFavoriteButton(batterySelect);
+        }
+      });
+    }
     if (Array.from(hotswapSelect.options).some(function (o) {
       return o.value === currentSwap;
     })) {
       hotswapSelect.value = currentSwap;
     }
-    updateFavoriteButton(hotswapSelect);
+    if (typeof updateFavoriteButton === 'function') {
+      updateFavoriteButton(hotswapSelect);
+    } else if (typeof enqueueCoreBootTask === 'function') {
+      enqueueCoreBootTask(function () {
+        if (typeof updateFavoriteButton === 'function') {
+          updateFavoriteButton(hotswapSelect);
+        }
+      });
+    }
     updateBatteryLabel();
   }
   var BRAND_KEYWORDS = {
@@ -11032,9 +11132,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var hasShortKeys = false;
     var needsMerge = false;
     for (var index = 0; index < sharedKeyMapKeys.length; index += 1) {
-      var _key = sharedKeyMapKeys[index];
-      var hasLongKey = Object.prototype.hasOwnProperty.call(setup, _key);
-      var short = sharedKeyMap[_key];
+      var _key2 = sharedKeyMapKeys[index];
+      var hasLongKey = Object.prototype.hasOwnProperty.call(setup, _key2);
+      var short = sharedKeyMap[_key2];
       var hasShortKey = Object.prototype.hasOwnProperty.call(setup, short);
       if (hasLongKey) {
         hasLongKeys = true;
@@ -11424,10 +11524,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       }
       for (var _i10 = 0, _Object$entries7 = Object.entries(deviceSchema); _i10 < _Object$entries7.length; _i10++) {
         var _Object$entries7$_i = _slicedToArray(_Object$entries7[_i10], 2),
-          _key2 = _Object$entries7$_i[0],
+          _key3 = _Object$entries7$_i[0],
           _obj = _Object$entries7$_i[1];
-        if (_key2 === 'accessories' || _key2 === 'fiz') continue;
-        if (_obj && _obj.attributes) addOpt(_key2);
+        if (_key3 === 'accessories' || _key3 === 'fiz') continue;
+        if (_obj && _obj.attributes) addOpt(_key3);
       }
       if (deviceSchema.fiz) {
         for (var _i11 = 0, _Object$entries8 = Object.entries(deviceSchema.fiz); _i11 < _Object$entries8.length; _i11++) {
@@ -11450,20 +11550,20 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       };
       for (var _i12 = 0, _Object$entries9 = Object.entries(devices); _i12 < _Object$entries9.length; _i12++) {
         var _Object$entries9$_i = _slicedToArray(_Object$entries9[_i12], 2),
-          _key3 = _Object$entries9$_i[0],
+          _key4 = _Object$entries9$_i[0],
           _obj3 = _Object$entries9$_i[1];
-        if (_key3 === 'accessories') {
+        if (_key4 === 'accessories') {
           for (var _i13 = 0, _Object$keys = Object.keys(_obj3 || {}); _i13 < _Object$keys.length; _i13++) {
             var _sub3 = _Object$keys[_i13];
             addIfMissing("accessories.".concat(_sub3));
           }
-        } else if (_key3 === 'fiz') {
+        } else if (_key4 === 'fiz') {
           for (var _i14 = 0, _Object$keys2 = Object.keys(_obj3 || {}); _i14 < _Object$keys2.length; _i14++) {
             var _sub4 = _Object$keys2[_i14];
             addIfMissing("fiz.".concat(_sub4));
           }
         } else if (_obj3 && _typeof(_obj3) === 'object' && !Array.isArray(_obj3)) {
-          addIfMissing(_key3);
+          addIfMissing(_key4);
         }
       }
     }
@@ -11827,9 +11927,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     if (!category) return schemaFieldConfigs['*'][attr] || null;
     var parts = category.split('.');
     while (parts.length) {
-      var _key4 = parts.join('.');
-      if (schemaFieldConfigs[_key4] && schemaFieldConfigs[_key4][attr]) {
-        return schemaFieldConfigs[_key4][attr];
+      var _key5 = parts.join('.');
+      if (schemaFieldConfigs[_key5] && schemaFieldConfigs[_key5][attr]) {
+        return schemaFieldConfigs[_key5][attr];
       }
       parts.pop();
     }
@@ -11984,10 +12084,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
     if (data && _typeof(data) === 'object' && !Array.isArray(data)) {
       for (var _i15 = 0, _Object$keys3 = Object.keys(data); _i15 < _Object$keys3.length; _i15++) {
-        var _key5 = _Object$keys3[_i15];
-        if (skip(_key5)) continue;
-        seen.add(_key5);
-        attrs.push(_key5);
+        var _key6 = _Object$keys3[_i15];
+        if (skip(_key6)) continue;
+        seen.add(_key6);
+        attrs.push(_key6);
       }
     }
     return attrs;

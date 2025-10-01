@@ -2525,12 +2525,14 @@ function applyDarkMode(enabled) {
       darkModeToggle.setAttribute("aria-pressed", "false");
     }
   }
-  var highContrast = isHighContrastActive();
+  var highContrast = typeof isHighContrastActive === 'function' ? isHighContrastActive() : false;
   var accentSource = highContrast ? HIGH_CONTRAST_ACCENT_COLOR : accentColor;
-  refreshDarkModeAccentBoost({
-    color: accentSource,
-    highContrast: highContrast
-  });
+  if (typeof refreshDarkModeAccentBoost === 'function') {
+    refreshDarkModeAccentBoost({
+      color: accentSource,
+      highContrast: highContrast
+    });
+  }
   updateThemeColor(enabled);
   if (settingsDarkMode) {
     settingsDarkMode.checked = enabled;

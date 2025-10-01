@@ -732,9 +732,27 @@ if (runtimeFeedbackBtn && feedbackDialog && feedbackForm) {
     }
     openDialog(feedbackDialog);
   });
-  feedbackCancelBtn.addEventListener('click', function () {
-    closeDialog(feedbackDialog);
-  });
+  var handleFeedbackCancel = function handleFeedbackCancel(targetBtn) {
+    if (!targetBtn || targetBtn.dataset.feedbackCancelBound === 'true') {
+      return;
+    }
+    targetBtn.dataset.feedbackCancelBound = 'true';
+    targetBtn.addEventListener('click', function () {
+      closeDialog(feedbackDialog);
+    });
+  };
+  var resolvedFeedbackCancelBtn = typeof feedbackCancelBtn !== 'undefined' && feedbackCancelBtn || document.getElementById('fbCancel');
+  if (resolvedFeedbackCancelBtn) {
+    handleFeedbackCancel(resolvedFeedbackCancelBtn);
+  } else if (typeof enqueueCoreBootTask === 'function') {
+    enqueueCoreBootTask(function () {
+      var nextBtn = typeof feedbackCancelBtn !== 'undefined' && feedbackCancelBtn || document.getElementById('fbCancel');
+      if (nextBtn) {
+        handleFeedbackCancel(nextBtn);
+      }
+    });
+  }
+  var feedbackUseLocationBtn = typeof globalThis !== 'undefined' && globalThis.feedbackUseLocationBtn || typeof window !== 'undefined' && window.feedbackUseLocationBtn || document.getElementById('fbUseLocationBtn');
   if (feedbackUseLocationBtn) {
     feedbackUseLocationBtn.addEventListener('click', function () {
       var locationInput = document.getElementById('fbLocation');

@@ -11776,7 +11776,7 @@ function updateTripodOptions() {
   }
 }
 
-const totalPowerElem      = document.getElementById("totalPower");
+var totalPowerElem      = document.getElementById("totalPower");
 const totalCurrent144Elem = document.getElementById("totalCurrent144");
 var totalCurrent12Elem  = document.getElementById("totalCurrent12");
 const batteryLifeElem     = document.getElementById("batteryLife");
