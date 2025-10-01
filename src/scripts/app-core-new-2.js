@@ -182,6 +182,92 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         ? CORE_SHARED
         : resolveCoreSharedPart2() || {};
 
+    function resolvePart2HelperFunction(name, fallback) {
+      const candidateScopes = [
+        CORE_SHARED_LOCAL && typeof CORE_SHARED_LOCAL === 'object' ? CORE_SHARED_LOCAL : null,
+        CORE_PART2_RUNTIME_SCOPE && typeof CORE_PART2_RUNTIME_SCOPE === 'object'
+          ? CORE_PART2_RUNTIME_SCOPE
+          : null,
+        typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object'
+          ? CORE_GLOBAL_SCOPE
+          : null,
+        typeof globalThis !== 'undefined' && typeof globalThis === 'object' ? globalThis : null,
+        typeof window !== 'undefined' && typeof window === 'object' ? window : null,
+        typeof self !== 'undefined' && typeof self === 'object' ? self : null,
+        typeof global !== 'undefined' && typeof global === 'object' ? global : null,
+      ];
+
+      for (let index = 0; index < candidateScopes.length; index += 1) {
+        const scope = candidateScopes[index];
+        if (!scope) continue;
+        const candidate = scope[name];
+        if (typeof candidate === 'function') {
+          return candidate;
+        }
+      }
+
+      return fallback;
+    }
+
+    const normalizeAutoGearWeightOperator = resolvePart2HelperFunction(
+      'normalizeAutoGearWeightOperator',
+      function normalizeAutoGearWeightOperator(value) {
+        if (typeof value !== 'string') return 'greater';
+        const normalized = value.trim().toLowerCase();
+        if (!normalized) return 'greater';
+        if (normalized === '>' || normalized === 'gt' || normalized === 'greaterthan' || normalized === 'above' || normalized === 'over') {
+          return 'greater';
+        }
+        if (normalized === '<' || normalized === 'lt' || normalized === 'lessthan' || normalized === 'below' || normalized === 'under') {
+          return 'less';
+        }
+        if (
+          normalized === '=' ||
+          normalized === '==' ||
+          normalized === 'equal' ||
+          normalized === 'equals' ||
+          normalized === 'exactly' ||
+          normalized === 'match' ||
+          normalized === 'matches'
+        ) {
+          return 'equal';
+        }
+        return 'greater';
+      }
+    );
+
+    const normalizeAutoGearCameraWeightCondition = resolvePart2HelperFunction(
+      'normalizeAutoGearCameraWeightCondition',
+      function normalizeAutoGearCameraWeightCondition() {
+        return null;
+      }
+    );
+
+    const getAutoGearCameraWeightOperatorLabel = resolvePart2HelperFunction(
+      'getAutoGearCameraWeightOperatorLabel',
+      function getAutoGearCameraWeightOperatorLabel(operator) {
+        const normalized = normalizeAutoGearWeightOperator(operator);
+        if (normalized === 'less') {
+          return 'Lighter than';
+        }
+        if (normalized === 'equal') {
+          return 'Exactly';
+        }
+        return 'Heavier than';
+      }
+    );
+
+    const formatAutoGearCameraWeight = resolvePart2HelperFunction(
+      'formatAutoGearCameraWeight',
+      function formatAutoGearCameraWeight(condition) {
+        if (!condition || !Number.isFinite(condition.value)) {
+          return '';
+        }
+        const label = getAutoGearCameraWeightOperatorLabel(condition.operator);
+        return `${label} ${condition.value} g`;
+      }
+    );
+
     const CORE_RUNTIME_SCOPE_CANDIDATES = [
       CORE_PART2_RUNTIME_SCOPE && typeof CORE_PART2_RUNTIME_SCOPE === 'object'
         ? CORE_PART2_RUNTIME_SCOPE
@@ -12875,7 +12961,37 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         selectElem._favButton.disabled = val === 'None';
         selectElem._favButton.setAttribute('aria-pressed', isFav ? 'true' : 'false');
       }
-    
+
+      (function primeFavoriteButtonGlobalReference() {
+        const candidateScopes = [
+          CORE_PART2_RUNTIME_SCOPE && typeof CORE_PART2_RUNTIME_SCOPE === 'object'
+            ? CORE_PART2_RUNTIME_SCOPE
+            : null,
+          typeof CORE_GLOBAL_SCOPE !== 'undefined'
+            && CORE_GLOBAL_SCOPE
+            && typeof CORE_GLOBAL_SCOPE === 'object'
+            ? CORE_GLOBAL_SCOPE
+            : null,
+          typeof globalThis !== 'undefined' && typeof globalThis === 'object' ? globalThis : null,
+          typeof window !== 'undefined' && typeof window === 'object' ? window : null,
+          typeof self !== 'undefined' && typeof self === 'object' ? self : null,
+          typeof global !== 'undefined' && typeof global === 'object' ? global : null,
+        ];
+
+        for (let index = 0; index < candidateScopes.length; index += 1) {
+          const scope = candidateScopes[index];
+          if (!scope) continue;
+
+          try {
+            if (Object.prototype.hasOwnProperty.call(scope, 'updateFavoriteButton') || Object.isExtensible(scope)) {
+              scope.updateFavoriteButton = updateFavoriteButton;
+            }
+          } catch (assignError) {
+            void assignError;
+          }
+        }
+      })();
+
       function toggleFavorite(selectElem) {
         if (!selectElem || !selectElem.id) return;
         const val = selectElem.value;
@@ -12978,7 +13094,46 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           .querySelectorAll('select')
           .forEach(selectElem => adjustGearListSelectWidth(selectElem));
       }
-    
+
+      (function primeSelectWidthHelpers() {
+        const candidateScopes = [
+          CORE_PART2_RUNTIME_SCOPE && typeof CORE_PART2_RUNTIME_SCOPE === 'object'
+            ? CORE_PART2_RUNTIME_SCOPE
+            : null,
+          typeof CORE_GLOBAL_SCOPE !== 'undefined'
+            && CORE_GLOBAL_SCOPE
+            && typeof CORE_GLOBAL_SCOPE === 'object'
+            ? CORE_GLOBAL_SCOPE
+            : null,
+          typeof globalThis !== 'undefined' && typeof globalThis === 'object' ? globalThis : null,
+          typeof window !== 'undefined' && typeof window === 'object' ? window : null,
+          typeof self !== 'undefined' && typeof self === 'object' ? self : null,
+          typeof global !== 'undefined' && typeof global === 'object' ? global : null,
+        ];
+
+        for (let index = 0; index < candidateScopes.length; index += 1) {
+          const scope = candidateScopes[index];
+          if (!scope) continue;
+
+          try {
+            if (
+              Object.prototype.hasOwnProperty.call(scope, 'adjustGearListSelectWidth')
+              || Object.isExtensible(scope)
+            ) {
+              scope.adjustGearListSelectWidth = adjustGearListSelectWidth;
+            }
+            if (
+              Object.prototype.hasOwnProperty.call(scope, 'adjustGearListSelectWidths')
+              || Object.isExtensible(scope)
+            ) {
+              scope.adjustGearListSelectWidths = adjustGearListSelectWidths;
+            }
+          } catch (assignError) {
+            void assignError;
+          }
+        }
+      })();
+
       function ensureSelectWrapper(selectElem) {
         if (!selectElem) return null;
         let wrapper = selectElem.parentElement;
@@ -15624,12 +15779,20 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       renderAutoGearMonitorDefaultsControls,
       renderAutoGearPresetsControls,
       renderAutoGearRulesList,
+      addAutoGearDraftItem,
       handleAutoGearImportSelection,
       handleAutoGearPresetSelection,
+      handleAutoGearSavePreset,
+      handleAutoGearDeletePreset,
+      handleAutoGearShowBackupsToggle,
+      handleAutoGearBackupRetentionInput,
+      handleAutoGearBackupRetentionBlur,
+      handleAutoGearBackupRetentionChange,
       setAutoGearAutoPresetId,
       syncAutoGearAutoPreset,
       updateAutoGearCatalogOptions,
       updateAutoGearMonitorDefaultOptions,
+      saveAutoGearRuleFromEditor,
       applyFavoritesToSelect,
       updateFavoriteButton,
       toggleFavorite,
@@ -15644,6 +15807,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       currentProjectInfo,
       deriveProjectInfo,
       projectForm,
+      setupDiagramContainer,
+      downloadDiagramBtn,
+      gridSnapToggleBtn,
+      gridSnap,
       filterSelectElem,
       filterDetailsStorage,
       loadFeedbackSafe,
@@ -15658,7 +15825,579 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       fontSize,
       fontFamily,
     };
-    
+
+    const CORE_PART2_AUTO_EXPORT_MAP = {
+  'APP_VERSION': (typeof APP_VERSION !== 'undefined' ? APP_VERSION : undefined),
+  'AUTO_GEAR_BACKUP_INTERVAL_MS': (typeof AUTO_GEAR_BACKUP_INTERVAL_MS !== 'undefined' ? AUTO_GEAR_BACKUP_INTERVAL_MS : undefined),
+  'DEFAULT_ACCENT_COLOR': (typeof DEFAULT_ACCENT_COLOR !== 'undefined' ? DEFAULT_ACCENT_COLOR : undefined),
+  'DEFAULT_FILTER_SIZE': (typeof DEFAULT_FILTER_SIZE !== 'undefined' ? DEFAULT_FILTER_SIZE : undefined),
+  'HIGH_CONTRAST_ACCENT_COLOR': (typeof HIGH_CONTRAST_ACCENT_COLOR !== 'undefined' ? HIGH_CONTRAST_ACCENT_COLOR : undefined),
+  'ICON_FONT_KEYS': (typeof ICON_FONT_KEYS !== 'undefined' ? ICON_FONT_KEYS : undefined),
+  'ICON_GLYPHS': (typeof ICON_GLYPHS !== 'undefined' ? ICON_GLYPHS : undefined),
+  'IOS_PWA_HELP_STORAGE_KEY': (typeof IOS_PWA_HELP_STORAGE_KEY !== 'undefined' ? IOS_PWA_HELP_STORAGE_KEY : undefined),
+  'LZString': (typeof LZString !== 'undefined' ? LZString : undefined),
+  'PINK_MODE_ICON_ANIMATION_CLASS': (typeof PINK_MODE_ICON_ANIMATION_CLASS !== 'undefined' ? PINK_MODE_ICON_ANIMATION_CLASS : undefined),
+  'PINK_MODE_ICON_ANIMATION_RESET_DELAY': (typeof PINK_MODE_ICON_ANIMATION_RESET_DELAY !== 'undefined' ? PINK_MODE_ICON_ANIMATION_RESET_DELAY : undefined),
+  'PINK_MODE_ICON_INTERVAL_MS': (typeof PINK_MODE_ICON_INTERVAL_MS !== 'undefined' ? PINK_MODE_ICON_INTERVAL_MS : undefined),
+  'SAFE_LOCAL_STORAGE': (typeof SAFE_LOCAL_STORAGE !== 'undefined' ? SAFE_LOCAL_STORAGE : undefined),
+  'STRONG_SEARCH_MATCH_TYPES': (typeof STRONG_SEARCH_MATCH_TYPES !== 'undefined' ? STRONG_SEARCH_MATCH_TYPES : undefined),
+  'TEMPERATURE_UNIT_STORAGE_KEY': (typeof TEMPERATURE_UNIT_STORAGE_KEY !== 'undefined' ? TEMPERATURE_UNIT_STORAGE_KEY : undefined),
+  'accentColor': (typeof accentColor !== 'undefined' ? accentColor : undefined),
+  'accentColorInput': (typeof accentColorInput !== 'undefined' ? accentColorInput : undefined),
+  'activateSettingsTab': (typeof activateSettingsTab !== 'undefined' ? activateSettingsTab : undefined),
+  'activateSharedImportProjectPreset': (typeof activateSharedImportProjectPreset !== 'undefined' ? activateSharedImportProjectPreset : undefined),
+  'activeSettingsTabId': (typeof activeSettingsTabId !== 'undefined' ? activeSettingsTabId : undefined),
+  'addAutoGearConditionFromPicker': (typeof addAutoGearConditionFromPicker !== 'undefined' ? addAutoGearConditionFromPicker : undefined),
+  'addAutoGearDraftItem': (typeof addAutoGearDraftItem !== 'undefined' ? addAutoGearDraftItem : undefined),
+  'addCustomFontFromData': (typeof addCustomFontFromData !== 'undefined' ? addCustomFontFromData : undefined),
+  'addDeviceBtn': (typeof addDeviceBtn !== 'undefined' ? addDeviceBtn : undefined),
+  'adjustGearListSelectWidth': (typeof adjustGearListSelectWidth !== 'undefined' ? adjustGearListSelectWidth : undefined),
+  'adjustGearListSelectWidths': (typeof adjustGearListSelectWidths !== 'undefined' ? adjustGearListSelectWidths : undefined),
+  'applyAccentColor': (typeof applyAccentColor !== 'undefined' ? applyAccentColor : undefined),
+  'applyAutoGearRulesToTableHtml': (typeof applyAutoGearRulesToTableHtml !== 'undefined' ? applyAutoGearRulesToTableHtml : undefined),
+  'applyDeviceChanges': (typeof applyDeviceChanges !== 'undefined' ? applyDeviceChanges : undefined),
+  'applyFilters': (typeof applyFilters !== 'undefined' ? applyFilters : undefined),
+  'applyFontFamily': (typeof applyFontFamily !== 'undefined' ? applyFontFamily : undefined),
+  'applyFontSize': (typeof applyFontSize !== 'undefined' ? applyFontSize : undefined),
+  'applyGearListSelectors': (typeof applyGearListSelectors !== 'undefined' ? applyGearListSelectors : undefined),
+  'applyIconGlyph': (typeof applyIconGlyph !== 'undefined' ? applyIconGlyph : undefined),
+  'applyTemperatureUnitPreference': (typeof applyTemperatureUnitPreference !== 'undefined' ? applyTemperatureUnitPreference : undefined),
+  'attachSelectSearch': (typeof attachSelectSearch !== 'undefined' ? attachSelectSearch : undefined),
+  'autoBackup': (typeof autoBackup !== 'undefined' ? autoBackup : undefined),
+  'autoGearAddCategorySelect': (typeof autoGearAddCategorySelect !== 'undefined' ? autoGearAddCategorySelect : undefined),
+  'autoGearAddItemButton': (typeof autoGearAddItemButton !== 'undefined' ? autoGearAddItemButton : undefined),
+  'autoGearAddRuleBtn': (typeof autoGearAddRuleBtn !== 'undefined' ? autoGearAddRuleBtn : undefined),
+  'autoGearAddSelectorDefaultInput': (typeof autoGearAddSelectorDefaultInput !== 'undefined' ? autoGearAddSelectorDefaultInput : undefined),
+  'autoGearAddSelectorTypeSelect': (typeof autoGearAddSelectorTypeSelect !== 'undefined' ? autoGearAddSelectorTypeSelect : undefined),
+  'autoGearBackupRestoreButton': (typeof autoGearBackupRestoreButton !== 'undefined' ? autoGearBackupRestoreButton : undefined),
+  'autoGearBackupSelect': (typeof autoGearBackupSelect !== 'undefined' ? autoGearBackupSelect : undefined),
+  'autoGearCancelEditButton': (typeof autoGearCancelEditButton !== 'undefined' ? autoGearCancelEditButton : undefined),
+  'autoGearConditionAddButton': (typeof autoGearConditionAddButton !== 'undefined' ? autoGearConditionAddButton : undefined),
+  'autoGearConditionList': (typeof autoGearConditionList !== 'undefined' ? autoGearConditionList : undefined),
+  'autoGearConditionSelect': (typeof autoGearConditionSelect !== 'undefined' ? autoGearConditionSelect : undefined),
+  'autoGearDeletePresetButton': (typeof autoGearDeletePresetButton !== 'undefined' ? autoGearDeletePresetButton : undefined),
+  'autoGearEditor': (typeof autoGearEditor !== 'undefined' ? autoGearEditor : undefined),
+  'autoGearEditorActiveItem': (typeof autoGearEditorActiveItem !== 'undefined' ? autoGearEditorActiveItem : undefined),
+  'autoGearEditorDraft': (typeof autoGearEditorDraft !== 'undefined' ? autoGearEditorDraft : undefined),
+  'autoGearExportButton': (typeof autoGearExportButton !== 'undefined' ? autoGearExportButton : undefined),
+  'autoGearImportButton': (typeof autoGearImportButton !== 'undefined' ? autoGearImportButton : undefined),
+  'autoGearImportInput': (typeof autoGearImportInput !== 'undefined' ? autoGearImportInput : undefined),
+  'autoGearPresetSelect': (typeof autoGearPresetSelect !== 'undefined' ? autoGearPresetSelect : undefined),
+  'autoGearRemoveCategorySelect': (typeof autoGearRemoveCategorySelect !== 'undefined' ? autoGearRemoveCategorySelect : undefined),
+  'autoGearRemoveItemButton': (typeof autoGearRemoveItemButton !== 'undefined' ? autoGearRemoveItemButton : undefined),
+  'autoGearRemoveSelectorDefaultInput': (typeof autoGearRemoveSelectorDefaultInput !== 'undefined' ? autoGearRemoveSelectorDefaultInput : undefined),
+  'autoGearRemoveSelectorTypeSelect': (typeof autoGearRemoveSelectorTypeSelect !== 'undefined' ? autoGearRemoveSelectorTypeSelect : undefined),
+  'autoGearResetFactoryButton': (typeof autoGearResetFactoryButton !== 'undefined' ? autoGearResetFactoryButton : undefined),
+  'autoGearRulesDirtySinceBackup': (typeof autoGearRulesDirtySinceBackup !== 'undefined' ? autoGearRulesDirtySinceBackup : undefined),
+  'autoGearRulesList': (typeof autoGearRulesList !== 'undefined' ? autoGearRulesList : undefined),
+  'autoGearSavePresetButton': (typeof autoGearSavePresetButton !== 'undefined' ? autoGearSavePresetButton : undefined),
+  'autoGearSaveRuleButton': (typeof autoGearSaveRuleButton !== 'undefined' ? autoGearSaveRuleButton : undefined),
+  'autoGearShowBackupsCheckbox': (typeof autoGearShowBackupsCheckbox !== 'undefined' ? autoGearShowBackupsCheckbox : undefined),
+  'backupDiffCloseButton': (typeof backupDiffCloseButton !== 'undefined' ? backupDiffCloseButton : undefined),
+  'backupDiffEmptyState': (typeof backupDiffEmptyState !== 'undefined' ? backupDiffEmptyState : undefined),
+  'backupDiffExportButton': (typeof backupDiffExportButton !== 'undefined' ? backupDiffExportButton : undefined),
+  'backupDiffHeading': (typeof backupDiffHeading !== 'undefined' ? backupDiffHeading : undefined),
+  'backupDiffIntro': (typeof backupDiffIntro !== 'undefined' ? backupDiffIntro : undefined),
+  'backupDiffList': (typeof backupDiffList !== 'undefined' ? backupDiffList : undefined),
+  'backupDiffListContainer': (typeof backupDiffListContainer !== 'undefined' ? backupDiffListContainer : undefined),
+  'backupDiffNotes': (typeof backupDiffNotes !== 'undefined' ? backupDiffNotes : undefined),
+  'backupDiffNotesLabel': (typeof backupDiffNotesLabel !== 'undefined' ? backupDiffNotesLabel : undefined),
+  'backupDiffPrimaryLabel': (typeof backupDiffPrimaryLabel !== 'undefined' ? backupDiffPrimaryLabel : undefined),
+  'backupDiffPrimarySelect': (typeof backupDiffPrimarySelect !== 'undefined' ? backupDiffPrimarySelect : undefined),
+  'backupDiffSecondaryLabel': (typeof backupDiffSecondaryLabel !== 'undefined' ? backupDiffSecondaryLabel : undefined),
+  'backupDiffSecondarySelect': (typeof backupDiffSecondarySelect !== 'undefined' ? backupDiffSecondarySelect : undefined),
+  'backupDiffSection': (typeof backupDiffSection !== 'undefined' ? backupDiffSection : undefined),
+  'backupDiffSummary': (typeof backupDiffSummary !== 'undefined' ? backupDiffSummary : undefined),
+  'backupDiffToggleButton': (typeof backupDiffToggleButton !== 'undefined' ? backupDiffToggleButton : undefined),
+  'backupSettings': (typeof backupSettings !== 'undefined' ? backupSettings : undefined),
+  'batteryFieldsDiv': (typeof batteryFieldsDiv !== 'undefined' ? batteryFieldsDiv : undefined),
+  'batteryPlateSelect': (typeof batteryPlateSelect !== 'undefined' ? batteryPlateSelect : undefined),
+  'batterySelect': (typeof batterySelect !== 'undefined' ? batterySelect : undefined),
+  'beginAutoGearDraftItemEdit': (typeof beginAutoGearDraftItemEdit !== 'undefined' ? beginAutoGearDraftItemEdit : undefined),
+  'bindGearListCageListener': (typeof bindGearListCageListener !== 'undefined' ? bindGearListCageListener : undefined),
+  'bindGearListDirectorMonitorListener': (typeof bindGearListDirectorMonitorListener !== 'undefined' ? bindGearListDirectorMonitorListener : undefined),
+  'bindGearListEasyrigListener': (typeof bindGearListEasyrigListener !== 'undefined' ? bindGearListEasyrigListener : undefined),
+  'bindGearListEyeLeatherListener': (typeof bindGearListEyeLeatherListener !== 'undefined' ? bindGearListEyeLeatherListener : undefined),
+  'bindGearListProGaffTapeListener': (typeof bindGearListProGaffTapeListener !== 'undefined' ? bindGearListProGaffTapeListener : undefined),
+  'bindGearListSliderBowlListener': (typeof bindGearListSliderBowlListener !== 'undefined' ? bindGearListSliderBowlListener : undefined),
+  'buildAutoGearRulesFromBaseInfo': (typeof buildAutoGearRulesFromBaseInfo !== 'undefined' ? buildAutoGearRulesFromBaseInfo : undefined),
+  'buildDefaultVideoDistributionAutoGearRules': (typeof buildDefaultVideoDistributionAutoGearRules !== 'undefined' ? buildDefaultVideoDistributionAutoGearRules : undefined),
+  'buildDynamicFields': (typeof buildDynamicFields !== 'undefined' ? buildDynamicFields : undefined),
+  'buildVideoDistributionAutoRules': (typeof buildVideoDistributionAutoRules !== 'undefined' ? buildVideoDistributionAutoRules : undefined),
+  'cageSelect': (typeof cageSelect !== 'undefined' ? cageSelect : undefined),
+  'cameraFieldsDiv': (typeof cameraFieldsDiv !== 'undefined' ? cameraFieldsDiv : undefined),
+  'cameraFizPort': (typeof cameraFizPort !== 'undefined' ? cameraFizPort : undefined),
+  'cameraPortTypeInput': (typeof cameraPortTypeInput !== 'undefined' ? cameraPortTypeInput : undefined),
+  'cameraSelect': (typeof cameraSelect !== 'undefined' ? cameraSelect : undefined),
+  'cameraVoltageInput': (typeof cameraVoltageInput !== 'undefined' ? cameraVoltageInput : undefined),
+  'cameraWattInput': (typeof cameraWattInput !== 'undefined' ? cameraWattInput : undefined),
+  'cancelEditBtn': (typeof cancelEditBtn !== 'undefined' ? cancelEditBtn : undefined),
+  'categoryExcludedAttrs': (typeof categoryExcludedAttrs !== 'undefined' ? categoryExcludedAttrs : undefined),
+  'categoryNames': (typeof categoryNames !== 'undefined' ? categoryNames : undefined),
+  'checkSetupChanged': (typeof checkSetupChanged !== 'undefined' ? checkSetupChanged : undefined),
+  'cineOffline': (typeof cineOffline !== 'undefined' ? cineOffline : undefined),
+  'clearAccentColorOverrides': (typeof clearAccentColorOverrides !== 'undefined' ? clearAccentColorOverrides : undefined),
+  'clearAllData': (typeof clearAllData !== 'undefined' ? clearAllData : undefined),
+  'clearAutoGearDefaultsSeeded': (typeof clearAutoGearDefaultsSeeded !== 'undefined' ? clearAutoGearDefaultsSeeded : undefined),
+  'clearAutoGearDraftItemEdit': (typeof clearAutoGearDraftItemEdit !== 'undefined' ? clearAutoGearDraftItemEdit : undefined),
+  'clearBatteryPlates': (typeof clearBatteryPlates !== 'undefined' ? clearBatteryPlates : undefined),
+  'clearDynamicFields': (typeof clearDynamicFields !== 'undefined' ? clearDynamicFields : undefined),
+  'clearFizConnectors': (typeof clearFizConnectors !== 'undefined' ? clearFizConnectors : undefined),
+  'clearLensMounts': (typeof clearLensMounts !== 'undefined' ? clearLensMounts : undefined),
+  'clearMonitorVideoInputs': (typeof clearMonitorVideoInputs !== 'undefined' ? clearMonitorVideoInputs : undefined),
+  'clearMonitorVideoOutputs': (typeof clearMonitorVideoOutputs !== 'undefined' ? clearMonitorVideoOutputs : undefined),
+  'clearPowerDistribution': (typeof clearPowerDistribution !== 'undefined' ? clearPowerDistribution : undefined),
+  'clearProjectAutoGearRules': (typeof clearProjectAutoGearRules !== 'undefined' ? clearProjectAutoGearRules : undefined),
+  'clearRecordingMedia': (typeof clearRecordingMedia !== 'undefined' ? clearRecordingMedia : undefined),
+  'clearTimecodes': (typeof clearTimecodes !== 'undefined' ? clearTimecodes : undefined),
+  'clearVideoInputs': (typeof clearVideoInputs !== 'undefined' ? clearVideoInputs : undefined),
+  'clearVideoOutputs': (typeof clearVideoOutputs !== 'undefined' ? clearVideoOutputs : undefined),
+  'clearVideoOutputsIO': (typeof clearVideoOutputsIO !== 'undefined' ? clearVideoOutputsIO : undefined),
+  'clearViewfinderVideoInputs': (typeof clearViewfinderVideoInputs !== 'undefined' ? clearViewfinderVideoInputs : undefined),
+  'clearViewfinderVideoOutputs': (typeof clearViewfinderVideoOutputs !== 'undefined' ? clearViewfinderVideoOutputs : undefined),
+  'clearViewfinders': (typeof clearViewfinders !== 'undefined' ? clearViewfinders : undefined),
+  'closeAutoGearEditor': (typeof closeAutoGearEditor !== 'undefined' ? closeAutoGearEditor : undefined),
+  'closeDialog': (typeof closeDialog !== 'undefined' ? closeDialog : undefined),
+  'closeHelpBtn': (typeof closeHelpBtn !== 'undefined' ? closeHelpBtn : undefined),
+  'closeSideMenu': (typeof closeSideMenu !== 'undefined' ? closeSideMenu : undefined),
+  'collectAutoGearCatalogNames': (typeof collectAutoGearCatalogNames !== 'undefined' ? collectAutoGearCatalogNames : undefined),
+  'collectDynamicFieldValues': (typeof collectDynamicFieldValues !== 'undefined' ? collectDynamicFieldValues : undefined),
+  'collectProjectFormData': (typeof collectProjectFormData !== 'undefined' ? collectProjectFormData : undefined),
+  'computeGearListCount': (typeof computeGearListCount !== 'undefined' ? computeGearListCount : undefined),
+  'computeRelativeLuminance': (typeof computeRelativeLuminance !== 'undefined' ? computeRelativeLuminance : undefined),
+  'configureSharedImportOptions': (typeof configureSharedImportOptions !== 'undefined' ? configureSharedImportOptions : undefined),
+  'confirmAutoGearSelection': (typeof confirmAutoGearSelection !== 'undefined' ? confirmAutoGearSelection : undefined),
+  'connectionLabel': (typeof connectionLabel !== 'undefined' ? connectionLabel : undefined),
+  'controllerBatteryInput': (typeof controllerBatteryInput !== 'undefined' ? controllerBatteryInput : undefined),
+  'controllerCamPort': (typeof controllerCamPort !== 'undefined' ? controllerCamPort : undefined),
+  'controllerConnectivityInput': (typeof controllerConnectivityInput !== 'undefined' ? controllerConnectivityInput : undefined),
+  'controllerConnectorInput': (typeof controllerConnectorInput !== 'undefined' ? controllerConnectorInput : undefined),
+  'controllerDistancePort': (typeof controllerDistancePort !== 'undefined' ? controllerDistancePort : undefined),
+  'controllerFieldsDiv': (typeof controllerFieldsDiv !== 'undefined' ? controllerFieldsDiv : undefined),
+  'controllerNotesInput': (typeof controllerNotesInput !== 'undefined' ? controllerNotesInput : undefined),
+  'controllerPowerInput': (typeof controllerPowerInput !== 'undefined' ? controllerPowerInput : undefined),
+  'controllerSelects': (typeof controllerSelects !== 'undefined' ? controllerSelects : undefined),
+  'countDeviceDatabaseEntries': (typeof countDeviceDatabaseEntries !== 'undefined' ? countDeviceDatabaseEntries : undefined),
+  'breakdownListElem': (typeof breakdownListElem !== 'undefined' ? breakdownListElem : undefined),
+  'createAutoGearBackup': (typeof createAutoGearBackup !== 'undefined' ? createAutoGearBackup : undefined),
+  'createSettingsBackup': (typeof createSettingsBackup !== 'undefined' ? createSettingsBackup : undefined),
+  'crewRoles': (typeof crewRoles !== 'undefined' ? crewRoles : undefined),
+  'currentLang': (typeof currentLang !== 'undefined' ? currentLang : undefined),
+  'currentProjectInfo': (typeof currentProjectInfo !== 'undefined' ? currentProjectInfo : undefined),
+  'customFontEntries': (typeof customFontEntries !== 'undefined' ? customFontEntries : undefined),
+  'darkModeToggle': (typeof darkModeToggle !== 'undefined' ? darkModeToggle : undefined),
+  'deactivateSharedImportProjectPreset': (typeof deactivateSharedImportProjectPreset !== 'undefined' ? deactivateSharedImportProjectPreset : undefined),
+  'decodeSharedSetup': (typeof decodeSharedSetup !== 'undefined' ? decodeSharedSetup : undefined),
+  'deleteAutoGearRule': (typeof deleteAutoGearRule !== 'undefined' ? deleteAutoGearRule : undefined),
+  'deleteCurrentGearList': (typeof deleteCurrentGearList !== 'undefined' ? deleteCurrentGearList : undefined),
+  'deleteProject': (typeof deleteProject !== 'undefined' ? deleteProject : undefined),
+  'deleteSetupBtn': (typeof deleteSetupBtn !== 'undefined' ? deleteSetupBtn : undefined),
+  'deriveProjectInfo': (typeof deriveProjectInfo !== 'undefined' ? deriveProjectInfo : undefined),
+  'detectBrand': (typeof detectBrand !== 'undefined' ? detectBrand : undefined),
+  'deviceManagerSection': (typeof deviceManagerSection !== 'undefined' ? deviceManagerSection : undefined),
+  'deviceMap': (typeof deviceMap !== 'undefined' ? deviceMap : undefined),
+  'devices': (typeof devices !== 'undefined' ? devices : undefined),
+  'displayGearAndRequirements': (typeof displayGearAndRequirements !== 'undefined' ? displayGearAndRequirements : undefined),
+  'distanceAccuracyInput': (typeof distanceAccuracyInput !== 'undefined' ? distanceAccuracyInput : undefined),
+  'distanceConnectionInput': (typeof distanceConnectionInput !== 'undefined' ? distanceConnectionInput : undefined),
+  'distanceFieldsDiv': (typeof distanceFieldsDiv !== 'undefined' ? distanceFieldsDiv : undefined),
+  'distanceMethodInput': (typeof distanceMethodInput !== 'undefined' ? distanceMethodInput : undefined),
+  'distanceNotesInput': (typeof distanceNotesInput !== 'undefined' ? distanceNotesInput : undefined),
+  'distanceOutputInput': (typeof distanceOutputInput !== 'undefined' ? distanceOutputInput : undefined),
+  'distanceRangeInput': (typeof distanceRangeInput !== 'undefined' ? distanceRangeInput : undefined),
+  'distanceSelect': (typeof distanceSelect !== 'undefined' ? distanceSelect : undefined),
+  'downloadDiagramBtn': (typeof downloadDiagramBtn !== 'undefined' ? downloadDiagramBtn : undefined),
+  'diagramConnectorIcons': (typeof diagramConnectorIcons !== 'undefined' ? diagramConnectorIcons : undefined),
+  'diagramHint': (typeof diagramHint !== 'undefined' ? diagramHint : undefined),
+  'diagramLegend': (typeof diagramLegend !== 'undefined' ? diagramLegend : undefined),
+  'DIAGRAM_BATTERY_ICON': (typeof DIAGRAM_BATTERY_ICON !== 'undefined' ? DIAGRAM_BATTERY_ICON : undefined),
+  'DIAGRAM_CAMERA_ICON': (typeof DIAGRAM_CAMERA_ICON !== 'undefined' ? DIAGRAM_CAMERA_ICON : undefined),
+  'DIAGRAM_MONITOR_ICON': (typeof DIAGRAM_MONITOR_ICON !== 'undefined' ? DIAGRAM_MONITOR_ICON : undefined),
+  'DIAGRAM_VIEWFINDER_ICON': (typeof DIAGRAM_VIEWFINDER_ICON !== 'undefined' ? DIAGRAM_VIEWFINDER_ICON : undefined),
+  'DIAGRAM_VIDEO_ICON': (typeof DIAGRAM_VIDEO_ICON !== 'undefined' ? DIAGRAM_VIDEO_ICON : undefined),
+  'DIAGRAM_WIRELESS_ICON': (typeof DIAGRAM_WIRELESS_ICON !== 'undefined' ? DIAGRAM_WIRELESS_ICON : undefined),
+  'DIAGRAM_MOTORS_ICON': (typeof DIAGRAM_MOTORS_ICON !== 'undefined' ? DIAGRAM_MOTORS_ICON : undefined),
+  'DIAGRAM_CONTROLLER_ICON': (typeof DIAGRAM_CONTROLLER_ICON !== 'undefined' ? DIAGRAM_CONTROLLER_ICON : undefined),
+  'DIAGRAM_DISTANCE_ICON': (typeof DIAGRAM_DISTANCE_ICON !== 'undefined' ? DIAGRAM_DISTANCE_ICON : undefined),
+  'DIAGRAM_POWER_OUTPUT_ICON': (typeof DIAGRAM_POWER_OUTPUT_ICON !== 'undefined' ? DIAGRAM_POWER_OUTPUT_ICON : undefined),
+  'DIAGRAM_POWER_INPUT_ICON': (typeof DIAGRAM_POWER_INPUT_ICON !== 'undefined' ? DIAGRAM_POWER_INPUT_ICON : undefined),
+  'DIAGRAM_TIMECODE_ICON': (typeof DIAGRAM_TIMECODE_ICON !== 'undefined' ? DIAGRAM_TIMECODE_ICON : undefined),
+  'DIAGRAM_AUDIO_IN_ICON': (typeof DIAGRAM_AUDIO_IN_ICON !== 'undefined' ? DIAGRAM_AUDIO_IN_ICON : undefined),
+  'DIAGRAM_AUDIO_OUT_ICON': (typeof DIAGRAM_AUDIO_OUT_ICON !== 'undefined' ? DIAGRAM_AUDIO_OUT_ICON : undefined),
+  'DIAGRAM_AUDIO_IO_ICON': (typeof DIAGRAM_AUDIO_IO_ICON !== 'undefined' ? DIAGRAM_AUDIO_IO_ICON : undefined),
+  'downloadSharedProject': (typeof downloadSharedProject !== 'undefined' ? downloadSharedProject : undefined),
+  'dtapRow': (typeof dtapRow !== 'undefined' ? dtapRow : undefined),
+  'enableDiagramInteractions': (typeof enableDiagramInteractions !== 'undefined' ? enableDiagramInteractions : undefined),
+  'encodeSharedSetup': (typeof encodeSharedSetup !== 'undefined' ? encodeSharedSetup : undefined),
+  'ensureDefaultProjectInfoSnapshot': (typeof ensureDefaultProjectInfoSnapshot !== 'undefined' ? ensureDefaultProjectInfoSnapshot : undefined),
+  'ensureFeedbackTemperatureOptions': (typeof ensureFeedbackTemperatureOptions !== 'undefined' ? ensureFeedbackTemperatureOptions : undefined),
+  'ensureGearListActions': (typeof ensureGearListActions !== 'undefined' ? ensureGearListActions : undefined),
+  'ensureJsonExtension': (typeof ensureJsonExtension !== 'undefined' ? ensureJsonExtension : undefined),
+  'ensureList': (typeof ensureList !== 'undefined' ? ensureList : undefined),
+  'ensureSharedAutoGearPreset': (typeof ensureSharedAutoGearPreset !== 'undefined' ? ensureSharedAutoGearPreset : undefined),
+  'ensureSvgHasAriaHidden': (typeof ensureSvgHasAriaHidden !== 'undefined' ? ensureSvgHasAriaHidden : undefined),
+  'ensureZoomRemoteSetup': (typeof ensureZoomRemoteSetup !== 'undefined' ? ensureZoomRemoteSetup : undefined),
+  'escapeHtml': (typeof escapeHtml !== 'undefined' ? escapeHtml : undefined),
+  'exportAllData': (typeof exportAllData !== 'undefined' ? exportAllData : undefined),
+  'exportAutoGearRules': (typeof exportAutoGearRules !== 'undefined' ? exportAutoGearRules : undefined),
+  'exportBtn': (typeof exportBtn !== 'undefined' ? exportBtn : undefined),
+  'exportOutput': (typeof exportOutput !== 'undefined' ? exportOutput : undefined),
+  'factoryResetButton': (typeof factoryResetButton !== 'undefined' ? factoryResetButton : undefined),
+  'featureList': (typeof featureList !== 'undefined' ? featureList : undefined),
+  'featureMap': (typeof featureMap !== 'undefined' ? featureMap : undefined),
+  'featureSearch': (typeof featureSearch !== 'undefined' ? featureSearch : undefined),
+  'featureSearchDefaultOptions': (typeof featureSearchDefaultOptions !== 'undefined' ? featureSearchDefaultOptions : undefined),
+  'featureSearchEntries': (typeof featureSearchEntries !== 'undefined' ? featureSearchEntries : undefined),
+  'filterDetailsStorage': (typeof filterDetailsStorage !== 'undefined' ? filterDetailsStorage : undefined),
+  'filterSelectElem': (typeof filterSelectElem !== 'undefined' ? filterSelectElem : undefined),
+  'findBestSearchMatch': (typeof findBestSearchMatch !== 'undefined' ? findBestSearchMatch : undefined),
+  'firstPowerInputType': (typeof firstPowerInputType !== 'undefined' ? firstPowerInputType : undefined),
+  'fixPowerInput': (typeof fixPowerInput !== 'undefined' ? fixPowerInput : undefined),
+  'fontFamily': (typeof fontFamily !== 'undefined' ? fontFamily : undefined),
+  'fontSize': (typeof fontSize !== 'undefined' ? fontSize : undefined),
+  'formatDeviceImportErrors': (typeof formatDeviceImportErrors !== 'undefined' ? formatDeviceImportErrors : undefined),
+  'gearListOutput': (typeof gearListOutput !== 'undefined' ? gearListOutput : undefined),
+  'generateConnectorSummary': (typeof generateConnectorSummary !== 'undefined' ? generateConnectorSummary : undefined),
+  'generateGearListBtn': (typeof generateGearListBtn !== 'undefined' ? generateGearListBtn : undefined),
+  'generateGearListHtml': (typeof generateGearListHtml !== 'undefined' ? generateGearListHtml : undefined),
+  'generateOverviewBtn': (typeof generateOverviewBtn !== 'undefined' ? generateOverviewBtn : undefined),
+  'generatePrintableOverview': (typeof generatePrintableOverview !== 'undefined' ? generatePrintableOverview : undefined),
+  'getAllViewfinderConnectors': (typeof getAllViewfinderConnectors !== 'undefined' ? getAllViewfinderConnectors : undefined),
+  'getAllViewfinderTypes': (typeof getAllViewfinderTypes !== 'undefined' ? getAllViewfinderTypes : undefined),
+  'getAutoGearRules': (typeof getAutoGearRules !== 'undefined' ? getAutoGearRules : undefined),
+  'getBaseAutoGearRules': (typeof getBaseAutoGearRules !== 'undefined' ? getBaseAutoGearRules : undefined),
+  'getBatteryPlates': (typeof getBatteryPlates !== 'undefined' ? getBatteryPlates : undefined),
+  'getCategoryContainer': (typeof getCategoryContainer !== 'undefined' ? getCategoryContainer : undefined),
+  'getCssVariableValue': (typeof getCssVariableValue !== 'undefined' ? getCssVariableValue : undefined),
+  'getCurrentGearListHtml': (typeof getCurrentGearListHtml !== 'undefined' ? getCurrentGearListHtml : undefined),
+  'getCurrentProjectInfo': (typeof getCurrentProjectInfo !== 'undefined' ? getCurrentProjectInfo : undefined),
+  'getCurrentProjectName': (typeof getCurrentProjectName !== 'undefined' ? getCurrentProjectName : undefined),
+  'getCurrentProjectStorageKey': (typeof getCurrentProjectStorageKey !== 'undefined' ? getCurrentProjectStorageKey : undefined),
+  'getCurrentSetupKey': (typeof getCurrentSetupKey !== 'undefined' ? getCurrentSetupKey : undefined),
+  'getCurrentSetupState': (typeof getCurrentSetupState !== 'undefined' ? getCurrentSetupState : undefined),
+  'getDefaultShareFilename': (typeof getDefaultShareFilename !== 'undefined' ? getDefaultShareFilename : undefined),
+  'getDiagramCss': (typeof getDiagramCss !== 'undefined' ? getDiagramCss : undefined),
+  'getEasyrigSelect': (typeof getEasyrigSelect !== 'undefined' ? getEasyrigSelect : undefined),
+  'getEasyrigValue': (typeof getEasyrigValue !== 'undefined' ? getEasyrigValue : undefined),
+  'getFizConnectors': (typeof getFizConnectors !== 'undefined' ? getFizConnectors : undefined),
+  'getGearListSelectors': (typeof getGearListSelectors !== 'undefined' ? getGearListSelectors : undefined),
+  'getLensMounts': (typeof getLensMounts !== 'undefined' ? getLensMounts : undefined),
+  'getMonitorVideoInputs': (typeof getMonitorVideoInputs !== 'undefined' ? getMonitorVideoInputs : undefined),
+  'getMonitorVideoOutputs': (typeof getMonitorVideoOutputs !== 'undefined' ? getMonitorVideoOutputs : undefined),
+  'getPowerDistribution': (typeof getPowerDistribution !== 'undefined' ? getPowerDistribution : undefined),
+  'getProjectScopedAutoGearRules': (typeof getProjectScopedAutoGearRules !== 'undefined' ? getProjectScopedAutoGearRules : undefined),
+  'getRecordingMedia': (typeof getRecordingMedia !== 'undefined' ? getRecordingMedia : undefined),
+  'getSafeLocalStorage': (typeof getSafeLocalStorage !== 'undefined' ? getSafeLocalStorage : undefined),
+  'getSetups': (typeof getSetups !== 'undefined' ? getSetups : undefined),
+  'getSliderBowlSelect': (typeof getSliderBowlSelect !== 'undefined' ? getSliderBowlSelect : undefined),
+  'getSliderBowlValue': (typeof getSliderBowlValue !== 'undefined' ? getSliderBowlValue : undefined),
+  'getTimecodes': (typeof getTimecodes !== 'undefined' ? getTimecodes : undefined),
+  'getVideoInputs': (typeof getVideoInputs !== 'undefined' ? getVideoInputs : undefined),
+  'getVideoOutputs': (typeof getVideoOutputs !== 'undefined' ? getVideoOutputs : undefined),
+  'getVideoOutputsIO': (typeof getVideoOutputsIO !== 'undefined' ? getVideoOutputsIO : undefined),
+  'getViewfinderVideoInputs': (typeof getViewfinderVideoInputs !== 'undefined' ? getViewfinderVideoInputs : undefined),
+  'getViewfinderVideoOutputs': (typeof getViewfinderVideoOutputs !== 'undefined' ? getViewfinderVideoOutputs : undefined),
+  'getViewfinders': (typeof getViewfinders !== 'undefined' ? getViewfinders : undefined),
+  'gridSnap': (typeof gridSnap !== 'undefined' ? gridSnap : undefined),
+  'gridSnapToggleBtn': (typeof gridSnapToggleBtn !== 'undefined' ? gridSnapToggleBtn : undefined),
+  'handleAutoGearConditionShortcut': (typeof handleAutoGearConditionShortcut !== 'undefined' ? handleAutoGearConditionShortcut : undefined),
+  'handleAutoGearDeletePreset': (typeof handleAutoGearDeletePreset !== 'undefined' ? handleAutoGearDeletePreset : undefined),
+  'handleAutoGearImportSelection': (typeof handleAutoGearImportSelection !== 'undefined' ? handleAutoGearImportSelection : undefined),
+  'handleAutoGearPresetSelection': (typeof handleAutoGearPresetSelection !== 'undefined' ? handleAutoGearPresetSelection : undefined),
+  'handleAutoGearSavePreset': (typeof handleAutoGearSavePreset !== 'undefined' ? handleAutoGearSavePreset : undefined),
+  'handleAutoGearShowBackupsToggle': (typeof handleAutoGearShowBackupsToggle !== 'undefined' ? handleAutoGearShowBackupsToggle : undefined),
+  'hasAnyDeviceSelection': (typeof hasAnyDeviceSelection !== 'undefined' ? hasAnyDeviceSelection : undefined),
+  'hasCustomAccentSelection': (typeof hasCustomAccentSelection !== 'undefined' ? hasCustomAccentSelection : undefined),
+  'helpButton': (typeof helpButton !== 'undefined' ? helpButton : undefined),
+  'helpDialog': (typeof helpDialog !== 'undefined' ? helpDialog : undefined),
+  'helpMap': (typeof helpMap !== 'undefined' ? helpMap : undefined),
+  'helpNoResults': (typeof helpNoResults !== 'undefined' ? helpNoResults : undefined),
+  'helpQuickLinksHeading': (typeof helpQuickLinksHeading !== 'undefined' ? helpQuickLinksHeading : undefined),
+  'helpQuickLinksList': (typeof helpQuickLinksList !== 'undefined' ? helpQuickLinksList : undefined),
+  'helpQuickLinksNav': (typeof helpQuickLinksNav !== 'undefined' ? helpQuickLinksNav : undefined),
+  'helpResultsSummary': (typeof helpResultsSummary !== 'undefined' ? helpResultsSummary : undefined),
+  'helpSearch': (typeof helpSearch !== 'undefined' ? helpSearch : undefined),
+  'helpSearchClear': (typeof helpSearchClear !== 'undefined' ? helpSearchClear : undefined),
+  'helpSectionsContainer': (typeof helpSectionsContainer !== 'undefined' ? helpSectionsContainer : undefined),
+  'hideFormSection': (typeof hideFormSection !== 'undefined' ? hideFormSection : undefined),
+  'hotswapSelect': (typeof hotswapSelect !== 'undefined' ? hotswapSelect : undefined),
+  'hoverHelpButton': (typeof hoverHelpButton !== 'undefined' ? hoverHelpButton : undefined),
+  'iconGlyph': (typeof iconGlyph !== 'undefined' ? iconGlyph : undefined),
+  'importAllData': (typeof importAllData !== 'undefined' ? importAllData : undefined),
+  'importAutoGearRulesFromData': (typeof importAutoGearRulesFromData !== 'undefined' ? importAutoGearRulesFromData : undefined),
+  'importDataBtn': (typeof importDataBtn !== 'undefined' ? importDataBtn : undefined),
+  'importFileInput': (typeof importFileInput !== 'undefined' ? importFileInput : undefined),
+  'initFavoritableSelect': (typeof initFavoritableSelect !== 'undefined' ? initFavoritableSelect : undefined),
+  'isDialogOpen': (typeof isDialogOpen !== 'undefined' ? isDialogOpen : undefined),
+  'isHighContrastActive': (typeof isHighContrastActive !== 'undefined' ? isHighContrastActive : undefined),
+  'languageSelect': (typeof languageSelect !== 'undefined' ? languageSelect : undefined),
+  'lastSetupName': (typeof lastSetupName !== 'undefined' ? lastSetupName : undefined),
+  'lastSharedAutoGearRules': (typeof lastSharedAutoGearRules !== 'undefined' ? lastSharedAutoGearRules : undefined),
+  'lastSharedSetupData': (typeof lastSharedSetupData !== 'undefined' ? lastSharedSetupData : undefined),
+  'lensSelect': (typeof lensSelect !== 'undefined' ? lensSelect : undefined),
+  'loadFeedbackSafe': (typeof loadFeedbackSafe !== 'undefined' ? loadFeedbackSafe : undefined),
+  'loadProject': (typeof loadProject !== 'undefined' ? loadProject : undefined),
+  'loadSession': (typeof loadSession !== 'undefined' ? loadSession : undefined),
+  'loadStoredLogoPreview': (typeof loadStoredLogoPreview !== 'undefined' ? loadStoredLogoPreview : undefined),
+  'localeSort': (typeof localeSort !== 'undefined' ? localeSort : undefined),
+  'matteboxSelect': (typeof matteboxSelect !== 'undefined' ? matteboxSelect : undefined),
+  'maybeShowIosPwaHelp': (typeof maybeShowIosPwaHelp !== 'undefined' ? maybeShowIosPwaHelp : undefined),
+  'mergeAutoGearRules': (typeof mergeAutoGearRules !== 'undefined' ? mergeAutoGearRules : undefined),
+  'monitorAudioOutputInput': (typeof monitorAudioOutputInput !== 'undefined' ? monitorAudioOutputInput : undefined),
+  'monitorBrightnessInput': (typeof monitorBrightnessInput !== 'undefined' ? monitorBrightnessInput : undefined),
+  'monitorFieldsDiv': (typeof monitorFieldsDiv !== 'undefined' ? monitorFieldsDiv : undefined),
+  'monitorLatencyInput': (typeof monitorLatencyInput !== 'undefined' ? monitorLatencyInput : undefined),
+  'monitorPortTypeInput': (typeof monitorPortTypeInput !== 'undefined' ? monitorPortTypeInput : undefined),
+  'monitorScreenSizeInput': (typeof monitorScreenSizeInput !== 'undefined' ? monitorScreenSizeInput : undefined),
+  'monitorSelect': (typeof monitorSelect !== 'undefined' ? monitorSelect : undefined),
+  'monitorVoltageInput': (typeof monitorVoltageInput !== 'undefined' ? monitorVoltageInput : undefined),
+  'monitorWattInput': (typeof monitorWattInput !== 'undefined' ? monitorWattInput : undefined),
+  'monitorWirelessTxInput': (typeof monitorWirelessTxInput !== 'undefined' ? monitorWirelessTxInput : undefined),
+  'monitoringConfigurationSelect': (typeof monitoringConfigurationSelect !== 'undefined' ? monitoringConfigurationSelect : undefined),
+  'monitoringConfigurationUserChanged': (typeof monitoringConfigurationUserChanged !== 'undefined' ? monitoringConfigurationUserChanged : undefined),
+  'motorConnectorInput': (typeof motorConnectorInput !== 'undefined' ? motorConnectorInput : undefined),
+  'motorFieldsDiv': (typeof motorFieldsDiv !== 'undefined' ? motorFieldsDiv : undefined),
+  'motorGearInput': (typeof motorGearInput !== 'undefined' ? motorGearInput : undefined),
+  'motorInternalInput': (typeof motorInternalInput !== 'undefined' ? motorInternalInput : undefined),
+  'motorNotesInput': (typeof motorNotesInput !== 'undefined' ? motorNotesInput : undefined),
+  'motorSelects': (typeof motorSelects !== 'undefined' ? motorSelects : undefined),
+  'motorTorqueInput': (typeof motorTorqueInput !== 'undefined' ? motorTorqueInput : undefined),
+  'newCapacityInput': (typeof newCapacityInput !== 'undefined' ? newCapacityInput : undefined),
+  'newCategorySelect': (typeof newCategorySelect !== 'undefined' ? newCategorySelect : undefined),
+  'newDtapAInput': (typeof newDtapAInput !== 'undefined' ? newDtapAInput : undefined),
+  'newNameInput': (typeof newNameInput !== 'undefined' ? newNameInput : undefined),
+  'newPinAInput': (typeof newPinAInput !== 'undefined' ? newPinAInput : undefined),
+  'newSubcategorySelect': (typeof newSubcategorySelect !== 'undefined' ? newSubcategorySelect : undefined),
+  'newWattInput': (typeof newWattInput !== 'undefined' ? newWattInput : undefined),
+  'normaliseMarkVariants': (typeof normaliseMarkVariants !== 'undefined' ? normaliseMarkVariants : undefined),
+  'normalizeAutoGearCameraWeightCondition': (typeof normalizeAutoGearCameraWeightCondition !== 'undefined' ? normalizeAutoGearCameraWeightCondition : undefined),
+  'normalizeFizConnectorType': (typeof normalizeFizConnectorType !== 'undefined' ? normalizeFizConnectorType : undefined),
+  'normalizePowerPortType': (typeof normalizePowerPortType !== 'undefined' ? normalizePowerPortType : undefined),
+  'normalizeSearchValue': (typeof normalizeSearchValue !== 'undefined' ? normalizeSearchValue : undefined),
+  'normalizeSpellingVariants': (typeof normalizeSpellingVariants !== 'undefined' ? normalizeSpellingVariants : undefined),
+  'normalizeVideoType': (typeof normalizeVideoType !== 'undefined' ? normalizeVideoType : undefined),
+  'normalizeViewfinderType': (typeof normalizeViewfinderType !== 'undefined' ? normalizeViewfinderType : undefined),
+  'openAutoGearEditor': (typeof openAutoGearEditor !== 'undefined' ? openAutoGearEditor : undefined),
+  'openDialog': (typeof openDialog !== 'undefined' ? openDialog : undefined),
+  'overviewSectionIcons': (typeof overviewSectionIcons !== 'undefined' ? overviewSectionIcons : undefined),
+  'openSideMenu': (typeof openSideMenu !== 'undefined' ? openSideMenu : undefined),
+  'parseColorToRgb': (typeof parseColorToRgb !== 'undefined' ? parseColorToRgb : undefined),
+  'parseDeviceDatabaseImport': (typeof parseDeviceDatabaseImport !== 'undefined' ? parseDeviceDatabaseImport : undefined),
+  'pendingSharedLinkListener': (typeof pendingSharedLinkListener !== 'undefined' ? pendingSharedLinkListener : undefined),
+  'pinkModeHelpIcon': (typeof pinkModeHelpIcon !== 'undefined' ? pinkModeHelpIcon : undefined),
+  'pinkModeIconIndex': (typeof pinkModeIconIndex !== 'undefined' ? pinkModeIconIndex : undefined),
+  'pinkModeIconRotationTimer': (typeof pinkModeIconRotationTimer !== 'undefined' ? pinkModeIconRotationTimer : undefined),
+  'pinkModeIcons': (typeof pinkModeIcons !== 'undefined' ? pinkModeIcons : undefined),
+  'pinkModeToggle': (typeof pinkModeToggle !== 'undefined' ? pinkModeToggle : undefined),
+  'placeWattField': (typeof placeWattField !== 'undefined' ? placeWattField : undefined),
+  'populateAutoGearCategorySelect': (typeof populateAutoGearCategorySelect !== 'undefined' ? populateAutoGearCategorySelect : undefined),
+  'powerInputTypes': (typeof powerInputTypes !== 'undefined' ? powerInputTypes : undefined),
+  'populateMonitorSelect': (typeof populateMonitorSelect !== 'undefined' ? populateMonitorSelect : undefined),
+  'populateProjectForm': (typeof populateProjectForm !== 'undefined' ? populateProjectForm : undefined),
+  'populateSelect': (typeof populateSelect !== 'undefined' ? populateSelect : undefined),
+  'populateSetupSelect': (typeof populateSetupSelect !== 'undefined' ? populateSetupSelect : undefined),
+  'prevAccentColor': (typeof prevAccentColor !== 'undefined' ? prevAccentColor : undefined),
+  'projectForm': (typeof projectForm !== 'undefined' ? projectForm : undefined),
+  'projectRequirementsOutput': (typeof projectRequirementsOutput !== 'undefined' ? projectRequirementsOutput : undefined),
+  'promptForSharedFilename': (typeof promptForSharedFilename !== 'undefined' ? promptForSharedFilename : undefined),
+  'refreshAutoGearCameraHandleOptions': (typeof refreshAutoGearCameraHandleOptions !== 'undefined' ? refreshAutoGearCameraHandleOptions : undefined),
+  'refreshAutoGearCameraOptions': (typeof refreshAutoGearCameraOptions !== 'undefined' ? refreshAutoGearCameraOptions : undefined),
+  'refreshAutoGearCameraWeightCondition': (typeof refreshAutoGearCameraWeightCondition !== 'undefined' ? refreshAutoGearCameraWeightCondition : undefined),
+  'refreshAutoGearCrewOptions': (typeof refreshAutoGearCrewOptions !== 'undefined' ? refreshAutoGearCrewOptions : undefined),
+  'refreshAutoGearControllersOptions': (typeof refreshAutoGearControllersOptions !== 'undefined' ? refreshAutoGearControllersOptions : undefined),
+  'refreshAutoGearDistanceOptions': (typeof refreshAutoGearDistanceOptions !== 'undefined' ? refreshAutoGearDistanceOptions : undefined),
+  'refreshAutoGearMatteboxOptions': (typeof refreshAutoGearMatteboxOptions !== 'undefined' ? refreshAutoGearMatteboxOptions : undefined),
+  'refreshAutoGearMonitorOptions': (typeof refreshAutoGearMonitorOptions !== 'undefined' ? refreshAutoGearMonitorOptions : undefined),
+  'refreshAutoGearMotorsOptions': (typeof refreshAutoGearMotorsOptions !== 'undefined' ? refreshAutoGearMotorsOptions : undefined),
+  'refreshAutoGearScenarioOptions': (typeof refreshAutoGearScenarioOptions !== 'undefined' ? refreshAutoGearScenarioOptions : undefined),
+  'refreshAutoGearTripodBowlOptions': (typeof refreshAutoGearTripodBowlOptions !== 'undefined' ? refreshAutoGearTripodBowlOptions : undefined),
+  'refreshAutoGearTripodHeadOptions': (typeof refreshAutoGearTripodHeadOptions !== 'undefined' ? refreshAutoGearTripodHeadOptions : undefined),
+  'refreshAutoGearTripodSpreaderOptions': (typeof refreshAutoGearTripodSpreaderOptions !== 'undefined' ? refreshAutoGearTripodSpreaderOptions : undefined),
+  'refreshAutoGearTripodTypesOptions': (typeof refreshAutoGearTripodTypesOptions !== 'undefined' ? refreshAutoGearTripodTypesOptions : undefined),
+  'refreshAutoGearVideoDistributionOptions': (typeof refreshAutoGearVideoDistributionOptions !== 'undefined' ? refreshAutoGearVideoDistributionOptions : undefined),
+  'refreshAutoGearViewfinderExtensionOptions': (typeof refreshAutoGearViewfinderExtensionOptions !== 'undefined' ? refreshAutoGearViewfinderExtensionOptions : undefined),
+  'refreshAutoGearWirelessOptions': (typeof refreshAutoGearWirelessOptions !== 'undefined' ? refreshAutoGearWirelessOptions : undefined),
+  'refreshDarkModeAccentBoost': (typeof refreshDarkModeAccentBoost !== 'undefined' ? refreshDarkModeAccentBoost : undefined),
+  'refreshDeviceLists': (typeof refreshDeviceLists !== 'undefined' ? refreshDeviceLists : undefined),
+  'reloadButton': (typeof reloadButton !== 'undefined' ? reloadButton : undefined),
+  'remoteHeadOption': (typeof remoteHeadOption !== 'undefined' ? remoteHeadOption : undefined),
+  'removeAutoGearCondition': (typeof removeAutoGearCondition !== 'undefined' ? removeAutoGearCondition : undefined),
+  'removeOriginalDeviceEntry': (typeof removeOriginalDeviceEntry !== 'undefined' ? removeOriginalDeviceEntry : undefined),
+  'renameSetup': (typeof renameSetup !== 'undefined' ? renameSetup : undefined),
+  'renderAutoGearDraftLists': (typeof renderAutoGearDraftLists !== 'undefined' ? renderAutoGearDraftLists : undefined),
+  'renderAutoGearRulesList': (typeof renderAutoGearRulesList !== 'undefined' ? renderAutoGearRulesList : undefined),
+  'renderFeedbackTable': (typeof renderFeedbackTable !== 'undefined' ? renderFeedbackTable : undefined),
+  'renderSettingsLogoPreview': (typeof renderSettingsLogoPreview !== 'undefined' ? renderSettingsLogoPreview : undefined),
+  'renderSetupDiagram': (typeof renderSetupDiagram !== 'undefined' ? renderSetupDiagram : undefined),
+  'requiredScenariosSelect': (typeof requiredScenariosSelect !== 'undefined' ? requiredScenariosSelect : undefined),
+  'requiredScenariosSummary': (typeof requiredScenariosSummary !== 'undefined' ? requiredScenariosSummary : undefined),
+  'resetAutoGearRulesToFactoryAdditions': (typeof resetAutoGearRulesToFactoryAdditions !== 'undefined' ? resetAutoGearRulesToFactoryAdditions : undefined),
+  'resetCustomFontsForFactoryReset': (typeof resetCustomFontsForFactoryReset !== 'undefined' ? resetCustomFontsForFactoryReset : undefined),
+  'resetDeviceForm': (typeof resetDeviceForm !== 'undefined' ? resetDeviceForm : undefined),
+  'resetSharedImportStateForFactoryReset': (typeof resetSharedImportStateForFactoryReset !== 'undefined' ? resetSharedImportStateForFactoryReset : undefined),
+  'resolveSharedImportMode': (typeof resolveSharedImportMode !== 'undefined' ? resolveSharedImportMode : undefined),
+  'restoreAutoGearBackup': (typeof restoreAutoGearBackup !== 'undefined' ? restoreAutoGearBackup : undefined),
+  'restoreFeatureSearchDefaults': (typeof restoreFeatureSearchDefaults !== 'undefined' ? restoreFeatureSearchDefaults : undefined),
+  'restoreSettings': (typeof restoreSettings !== 'undefined' ? restoreSettings : undefined),
+  'restoreSettingsInput': (typeof restoreSettingsInput !== 'undefined' ? restoreSettingsInput : undefined),
+  'restoringSession': (typeof restoringSession !== 'undefined' ? restoringSession : undefined),
+  'revertAccentColor': (typeof revertAccentColor !== 'undefined' ? revertAccentColor : undefined),
+  'runFeatureSearch': (typeof runFeatureSearch !== 'undefined' ? runFeatureSearch : undefined),
+  'runtimeFeedbackBtn': (typeof runtimeFeedbackBtn !== 'undefined' ? runtimeFeedbackBtn : undefined),
+  'sanitizeShareFilename': (typeof sanitizeShareFilename !== 'undefined' ? sanitizeShareFilename : undefined),
+  'saveAutoGearRuleFromEditor': (typeof saveAutoGearRuleFromEditor !== 'undefined' ? saveAutoGearRuleFromEditor : undefined),
+  'saveCurrentGearList': (typeof saveCurrentGearList !== 'undefined' ? saveCurrentGearList : undefined),
+  'saveCurrentSession': (typeof saveCurrentSession !== 'undefined' ? saveCurrentSession : undefined),
+  'saveFeedbackSafe': (typeof saveFeedbackSafe !== 'undefined' ? saveFeedbackSafe : undefined),
+  'saveProject': (typeof saveProject !== 'undefined' ? saveProject : undefined),
+  'saveSetupBtn': (typeof saveSetupBtn !== 'undefined' ? saveSetupBtn : undefined),
+  'scheduleSettingsTabsOverflowUpdate': (typeof scheduleSettingsTabsOverflowUpdate !== 'undefined' ? scheduleSettingsTabsOverflowUpdate : undefined),
+  'searchKey': (typeof searchKey !== 'undefined' ? searchKey : undefined),
+  'searchTokens': (typeof searchTokens !== 'undefined' ? searchTokens : undefined),
+  'seedAutoGearRulesFromCurrentProject': (typeof seedAutoGearRulesFromCurrentProject !== 'undefined' ? seedAutoGearRulesFromCurrentProject : undefined),
+  'setActiveAutoGearPresetId': (typeof setActiveAutoGearPresetId !== 'undefined' ? setActiveAutoGearPresetId : undefined),
+  'setAutoGearHighlightEnabled': (typeof setAutoGearHighlightEnabled !== 'undefined' ? setAutoGearHighlightEnabled : undefined),
+  'setAutoGearRules': (typeof setAutoGearRules !== 'undefined' ? setAutoGearRules : undefined),
+  'setBatteryPlates': (typeof setBatteryPlates !== 'undefined' ? setBatteryPlates : undefined),
+  'setButtonLabelWithIcon': (typeof setButtonLabelWithIcon !== 'undefined' ? setButtonLabelWithIcon : undefined),
+  'setCurrentProjectInfo': (typeof setCurrentProjectInfo !== 'undefined' ? setCurrentProjectInfo : undefined),
+  'setEasyrigValue': (typeof setEasyrigValue !== 'undefined' ? setEasyrigValue : undefined),
+  'setFizConnectors': (typeof setFizConnectors !== 'undefined' ? setFizConnectors : undefined),
+  'setLanguage': (typeof setLanguage !== 'undefined' ? setLanguage : undefined),
+  'setLensMounts': (typeof setLensMounts !== 'undefined' ? setLensMounts : undefined),
+  'setMonitorVideoInputs': (typeof setMonitorVideoInputs !== 'undefined' ? setMonitorVideoInputs : undefined),
+  'setMonitorVideoOutputs': (typeof setMonitorVideoOutputs !== 'undefined' ? setMonitorVideoOutputs : undefined),
+  'setPowerDistribution': (typeof setPowerDistribution !== 'undefined' ? setPowerDistribution : undefined),
+  'setRecordingMedia': (typeof setRecordingMedia !== 'undefined' ? setRecordingMedia : undefined),
+  'setSliderBowlValue': (typeof setSliderBowlValue !== 'undefined' ? setSliderBowlValue : undefined),
+  'setTimecodes': (typeof setTimecodes !== 'undefined' ? setTimecodes : undefined),
+  'setVideoInputs': (typeof setVideoInputs !== 'undefined' ? setVideoInputs : undefined),
+  'setVideoOutputs': (typeof setVideoOutputs !== 'undefined' ? setVideoOutputs : undefined),
+  'setVideoOutputsIO': (typeof setVideoOutputsIO !== 'undefined' ? setVideoOutputsIO : undefined),
+  'setViewfinderVideoInputs': (typeof setViewfinderVideoInputs !== 'undefined' ? setViewfinderVideoInputs : undefined),
+  'setViewfinderVideoOutputs': (typeof setViewfinderVideoOutputs !== 'undefined' ? setViewfinderVideoOutputs : undefined),
+  'setViewfinders': (typeof setViewfinders !== 'undefined' ? setViewfinders : undefined),
+  'settingsButton': (typeof settingsButton !== 'undefined' ? settingsButton : undefined),
+  'settingsCancel': (typeof settingsCancel !== 'undefined' ? settingsCancel : undefined),
+  'settingsDarkMode': (typeof settingsDarkMode !== 'undefined' ? settingsDarkMode : undefined),
+  'settingsDialog': (typeof settingsDialog !== 'undefined' ? settingsDialog : undefined),
+  'settingsFontFamily': (typeof settingsFontFamily !== 'undefined' ? settingsFontFamily : undefined),
+  'settingsFontSize': (typeof settingsFontSize !== 'undefined' ? settingsFontSize : undefined),
+  'settingsHighContrast': (typeof settingsHighContrast !== 'undefined' ? settingsHighContrast : undefined),
+  'settingsLanguage': (typeof settingsLanguage !== 'undefined' ? settingsLanguage : undefined),
+  'settingsLogo': (typeof settingsLogo !== 'undefined' ? settingsLogo : undefined),
+  'settingsLogoPreview': (typeof settingsLogoPreview !== 'undefined' ? settingsLogoPreview : undefined),
+  'settingsPinkMode': (typeof settingsPinkMode !== 'undefined' ? settingsPinkMode : undefined),
+  'settingsSave': (typeof settingsSave !== 'undefined' ? settingsSave : undefined),
+  'settingsShowAutoBackups': (typeof settingsShowAutoBackups !== 'undefined' ? settingsShowAutoBackups : undefined),
+  'settingsTemperatureUnit': (typeof settingsTemperatureUnit !== 'undefined' ? settingsTemperatureUnit : undefined),
+  'setupDiagramContainer': (typeof setupDiagramContainer !== 'undefined' ? setupDiagramContainer : undefined),
+  'setupInstallBanner': (typeof setupInstallBanner !== 'undefined' ? setupInstallBanner : undefined),
+  'setupNameInput': (typeof setupNameInput !== 'undefined' ? setupNameInput : undefined),
+  'setupResponsiveControls': (typeof setupResponsiveControls !== 'undefined' ? setupResponsiveControls : undefined),
+  'setupSelect': (typeof setupSelect !== 'undefined' ? setupSelect : undefined),
+  'setupSideMenu': (typeof setupSideMenu !== 'undefined' ? setupSideMenu : undefined),
+  'sharedImportPreviousPresetId': (typeof sharedImportPreviousPresetId !== 'undefined' ? sharedImportPreviousPresetId : undefined),
+  'sharedImportProjectPresetActive': (typeof sharedImportProjectPresetActive !== 'undefined' ? sharedImportProjectPresetActive : undefined),
+  'sharedImportPromptActive': (typeof sharedImportPromptActive !== 'undefined' ? sharedImportPromptActive : undefined),
+  'sharedLinkRow': (typeof sharedLinkRow !== 'undefined' ? sharedLinkRow : undefined),
+  'shouldPreserveAccentInPinkMode': (typeof shouldPreserveAccentInPinkMode !== 'undefined' ? shouldPreserveAccentInPinkMode : undefined),
+  'showAutoBackups': (typeof showAutoBackups !== 'undefined' ? showAutoBackups : undefined),
+  'showDeviceManagerSection': (typeof showDeviceManagerSection !== 'undefined' ? showDeviceManagerSection : undefined),
+  'showFormSection': (typeof showFormSection !== 'undefined' ? showFormSection : undefined),
+  'showNotification': (typeof showNotification !== 'undefined' ? showNotification : undefined),
+  'skipLink': (typeof skipLink !== 'undefined' ? skipLink : undefined),
+  'skipNextGearListRefresh': (typeof skipNextGearListRefresh !== 'undefined' ? skipNextGearListRefresh : undefined),
+  'startPinkModeAnimatedIcons': (typeof startPinkModeAnimatedIcons !== 'undefined' ? startPinkModeAnimatedIcons : undefined),
+  'stopPinkModeAnimatedIcons': (typeof stopPinkModeAnimatedIcons !== 'undefined' ? stopPinkModeAnimatedIcons : undefined),
+  'storeDevices': (typeof storeDevices !== 'undefined' ? storeDevices : undefined),
+  'storeLoadedSetupState': (typeof storeLoadedSetupState !== 'undefined' ? storeLoadedSetupState : undefined),
+  'storeSession': (typeof storeSession !== 'undefined' ? storeSession : undefined),
+  'storeSetups': (typeof storeSetups !== 'undefined' ? storeSetups : undefined),
+  'subcategoryFieldDiv': (typeof subcategoryFieldDiv !== 'undefined' ? subcategoryFieldDiv : undefined),
+  'syncAutoGearMonitorFieldVisibility': (typeof syncAutoGearMonitorFieldVisibility !== 'undefined' ? syncAutoGearMonitorFieldVisibility : undefined),
+  'syncAutoGearRulesFromStorage': (typeof syncAutoGearRulesFromStorage !== 'undefined' ? syncAutoGearRulesFromStorage : undefined),
+  'temperatureUnit': (typeof temperatureUnit !== 'undefined' ? temperatureUnit : undefined),
+  'texts': (typeof texts !== 'undefined' ? texts : undefined),
+  'toggleDeviceBtn': (typeof toggleDeviceBtn !== 'undefined' ? toggleDeviceBtn : undefined),
+  'tripodBowlSelect': (typeof tripodBowlSelect !== 'undefined' ? tripodBowlSelect : undefined),
+  'tripodHeadBrandSelect': (typeof tripodHeadBrandSelect !== 'undefined' ? tripodHeadBrandSelect : undefined),
+  'tripodPreferencesHeading': (typeof tripodPreferencesHeading !== 'undefined' ? tripodPreferencesHeading : undefined),
+  'tripodPreferencesRow': (typeof tripodPreferencesRow !== 'undefined' ? tripodPreferencesRow : undefined),
+  'tripodPreferencesSection': (typeof tripodPreferencesSection !== 'undefined' ? tripodPreferencesSection : undefined),
+  'tripodSpreaderSelect': (typeof tripodSpreaderSelect !== 'undefined' ? tripodSpreaderSelect : undefined),
+  'tripodTypesSelect': (typeof tripodTypesSelect !== 'undefined' ? tripodTypesSelect : undefined),
+  'unifyDevices': (typeof unifyDevices !== 'undefined' ? unifyDevices : undefined),
+  'updateAutoGearBackupRestoreButtonState': (typeof updateAutoGearBackupRestoreButtonState !== 'undefined' ? updateAutoGearBackupRestoreButtonState : undefined),
+  'updateAutoGearCameraWeightDraft': (typeof updateAutoGearCameraWeightDraft !== 'undefined' ? updateAutoGearCameraWeightDraft : undefined),
+  'updateAutoGearCatalogOptions': (typeof updateAutoGearCatalogOptions !== 'undefined' ? updateAutoGearCatalogOptions : undefined),
+  'updateAutoGearConditionAddButtonState': (typeof updateAutoGearConditionAddButtonState !== 'undefined' ? updateAutoGearConditionAddButtonState : undefined),
+  'updateAutoGearMonitorCatalogOptions': (typeof updateAutoGearMonitorCatalogOptions !== 'undefined' ? updateAutoGearMonitorCatalogOptions : undefined),
+  'updateAutoGearShootingDaysDraft': (typeof updateAutoGearShootingDaysDraft !== 'undefined' ? updateAutoGearShootingDaysDraft : undefined),
+  'updateBatteryOptions': (typeof updateBatteryOptions !== 'undefined' ? updateBatteryOptions : undefined),
+  'updateBatteryPlateVisibility': (typeof updateBatteryPlateVisibility !== 'undefined' ? updateBatteryPlateVisibility : undefined),
+  'updateCalculations': (typeof updateCalculations !== 'undefined' ? updateCalculations : undefined),
+  'updateControllerBatteryOptions': (typeof updateControllerBatteryOptions !== 'undefined' ? updateControllerBatteryOptions : undefined),
+  'updateControllerConnectivityOptions': (typeof updateControllerConnectivityOptions !== 'undefined' ? updateControllerConnectivityOptions : undefined),
+  'updateControllerConnectorOptions': (typeof updateControllerConnectorOptions !== 'undefined' ? updateControllerConnectorOptions : undefined),
+  'updateControllerPowerOptions': (typeof updateControllerPowerOptions !== 'undefined' ? updateControllerPowerOptions : undefined),
+  'updateDiagramLegend': (typeof updateDiagramLegend !== 'undefined' ? updateDiagramLegend : undefined),
+  'updateDistanceConnectionOptions': (typeof updateDistanceConnectionOptions !== 'undefined' ? updateDistanceConnectionOptions : undefined),
+  'updateDistanceDisplayOptions': (typeof updateDistanceDisplayOptions !== 'undefined' ? updateDistanceDisplayOptions : undefined),
+  'updateDistanceMethodOptions': (typeof updateDistanceMethodOptions !== 'undefined' ? updateDistanceMethodOptions : undefined),
+  'updateFavoriteButton': (typeof updateFavoriteButton !== 'undefined' ? updateFavoriteButton : undefined),
+  'updateFeatureSearchSuggestions': (typeof updateFeatureSearchSuggestions !== 'undefined' ? updateFeatureSearchSuggestions : undefined),
+  'updateFeatureSearchValue': (typeof updateFeatureSearchValue !== 'undefined' ? updateFeatureSearchValue : undefined),
+  'updateFeedbackTemperatureOptions': (typeof updateFeedbackTemperatureOptions !== 'undefined' ? updateFeedbackTemperatureOptions : undefined),
+  'updateFizConnectorOptions': (typeof updateFizConnectorOptions !== 'undefined' ? updateFizConnectorOptions : undefined),
+  'updateGearListButtonVisibility': (typeof updateGearListButtonVisibility !== 'undefined' ? updateGearListButtonVisibility : undefined),
+  'updateHelpQuickLinksForLanguage': (typeof updateHelpQuickLinksForLanguage !== 'undefined' ? updateHelpQuickLinksForLanguage : undefined),
+  'updateHelpResultsSummaryText': (typeof updateHelpResultsSummaryText !== 'undefined' ? updateHelpResultsSummaryText : undefined),
+  'updateMonitoringConfigurationOptions': (typeof updateMonitoringConfigurationOptions !== 'undefined' ? updateMonitoringConfigurationOptions : undefined),
+  'updateMotorConnectorOptions': (typeof updateMotorConnectorOptions !== 'undefined' ? updateMotorConnectorOptions : undefined),
+  'updatePlateTypeOptions': (typeof updatePlateTypeOptions !== 'undefined' ? updatePlateTypeOptions : undefined),
+  'updatePowerDistCurrentOptions': (typeof updatePowerDistCurrentOptions !== 'undefined' ? updatePowerDistCurrentOptions : undefined),
+  'updatePowerDistTypeOptions': (typeof updatePowerDistTypeOptions !== 'undefined' ? updatePowerDistTypeOptions : undefined),
+  'updatePowerDistVoltageOptions': (typeof updatePowerDistVoltageOptions !== 'undefined' ? updatePowerDistVoltageOptions : undefined),
+  'updatePowerPortOptions': (typeof updatePowerPortOptions !== 'undefined' ? updatePowerPortOptions : undefined),
+  'updateRecordingMediaOptions': (typeof updateRecordingMediaOptions !== 'undefined' ? updateRecordingMediaOptions : undefined),
+  'updateSelectIconBoxes': (typeof updateSelectIconBoxes !== 'undefined' ? updateSelectIconBoxes : undefined),
+  'updateStorageSummary': (typeof updateStorageSummary !== 'undefined' ? updateStorageSummary : undefined),
+  'updateTimecodeTypeOptions': (typeof updateTimecodeTypeOptions !== 'undefined' ? updateTimecodeTypeOptions : undefined),
+  'updateTripodOptions': (typeof updateTripodOptions !== 'undefined' ? updateTripodOptions : undefined),
+  'updateViewfinderExtensionVisibility': (typeof updateViewfinderExtensionVisibility !== 'undefined' ? updateViewfinderExtensionVisibility : undefined),
+  'updateViewfinderSettingsVisibility': (typeof updateViewfinderSettingsVisibility !== 'undefined' ? updateViewfinderSettingsVisibility : undefined),
+  'useProjectAutoGearRules': (typeof useProjectAutoGearRules !== 'undefined' ? useProjectAutoGearRules : undefined),
+  'usingProjectAutoGearRules': (typeof usingProjectAutoGearRules !== 'undefined' ? usingProjectAutoGearRules : undefined),
+  'videoDistributionSelect': (typeof videoDistributionSelect !== 'undefined' ? videoDistributionSelect : undefined),
+  'videoFieldsDiv': (typeof videoFieldsDiv !== 'undefined' ? videoFieldsDiv : undefined),
+  'videoFrequencyInput': (typeof videoFrequencyInput !== 'undefined' ? videoFrequencyInput : undefined),
+  'videoLatencyInput': (typeof videoLatencyInput !== 'undefined' ? videoLatencyInput : undefined),
+  'videoPowerInput': (typeof videoPowerInput !== 'undefined' ? videoPowerInput : undefined),
+  'videoSelect': (typeof videoSelect !== 'undefined' ? videoSelect : undefined),
+  'viewfinderBrightnessInput': (typeof viewfinderBrightnessInput !== 'undefined' ? viewfinderBrightnessInput : undefined),
+  'viewfinderConnectorOptions': (typeof viewfinderConnectorOptions !== 'undefined' ? viewfinderConnectorOptions : undefined),
+  'viewfinderFieldsDiv': (typeof viewfinderFieldsDiv !== 'undefined' ? viewfinderFieldsDiv : undefined),
+  'viewfinderLatencyInput': (typeof viewfinderLatencyInput !== 'undefined' ? viewfinderLatencyInput : undefined),
+  'viewfinderPortTypeInput': (typeof viewfinderPortTypeInput !== 'undefined' ? viewfinderPortTypeInput : undefined),
+  'viewfinderScreenSizeInput': (typeof viewfinderScreenSizeInput !== 'undefined' ? viewfinderScreenSizeInput : undefined),
+  'viewfinderTypeOptions': (typeof viewfinderTypeOptions !== 'undefined' ? viewfinderTypeOptions : undefined),
+  'viewfinderVoltageInput': (typeof viewfinderVoltageInput !== 'undefined' ? viewfinderVoltageInput : undefined),
+  'viewfinderWattInput': (typeof viewfinderWattInput !== 'undefined' ? viewfinderWattInput : undefined),
+  'viewfinderWirelessTxInput': (typeof viewfinderWirelessTxInput !== 'undefined' ? viewfinderWirelessTxInput : undefined),
+  'wattFieldDiv': (typeof wattFieldDiv !== 'undefined' ? wattFieldDiv : undefined)
+};
+
+    Object.entries(CORE_PART2_AUTO_EXPORT_MAP).forEach(([name, value]) => {
+      if (typeof value === 'undefined') {
+        return;
+      }
+      if (!Object.prototype.hasOwnProperty.call(CORE_PART2_GLOBAL_EXPORTS, name)) {
+        CORE_PART2_GLOBAL_EXPORTS[name] = value;
+      }
+    });
+
+
     const CORE_PART2_GLOBAL_SCOPE =
       CORE_SHARED_SCOPE_PART2 ||
       (typeof globalThis !== 'undefined' ? globalThis : null) ||
