@@ -3187,13 +3187,13 @@ function readAutoGearRulesFromStorage() {
 }
 
 var autoGearRules = readAutoGearRulesFromStorage();
-var baseAutoGearRules = autoGearRules.slice();
+let baseAutoGearRulesState = autoGearRules.slice();
 var projectScopedAutoGearRules = null;
 var autoGearBackupRetention = readAutoGearBackupRetentionFromStorage();
 var autoGearBackups = readAutoGearBackupsFromStorage(autoGearBackupRetention);
 var autoGearPresets = readAutoGearPresetsFromStorage();
 var activeAutoGearPresetId = readActiveAutoGearPresetIdFromStorage();
-var autoGearAutoPresetId = readAutoGearAutoPresetIdFromStorage();
+let autoGearAutoPresetIdState = readAutoGearAutoPresetIdFromStorage();
 var autoGearBackupsVisible = readAutoGearBackupVisibilityFromStorage();
 var autoGearMonitorDefaults = readAutoGearMonitorDefaultsFromStorage();
 persistAutoGearBackupRetention(autoGearBackupRetention);
@@ -3216,7 +3216,10 @@ function getAutoGearBackupEntrySignature(entry) {
   });
 }
 
-function getAutoGearConfigurationSignature(rules = baseAutoGearRules, defaults = autoGearMonitorDefaults) {
+function getAutoGearConfigurationSignature(
+  rules = baseAutoGearRulesState,
+  defaults = autoGearMonitorDefaults,
+) {
   return stableStringify({
     rules: Array.isArray(rules) ? rules : [],
     monitorDefaults: normalizeAutoGearMonitorDefaults(defaults),
@@ -3340,7 +3343,7 @@ function setAutoGearMonitorDefault(key, value, options = {}) {
 
 function setAutoGearRules(rules) {
   const normalized = assignAutoGearRules(rules);
-  baseAutoGearRules = normalized.slice();
+  baseAutoGearRulesState = normalized.slice();
   projectScopedAutoGearRules = null;
   persistAutoGearRules();
   syncBaseAutoGearRulesState();
@@ -3357,16 +3360,16 @@ function syncAutoGearRulesFromStorage(rules) {
   if (Array.isArray(rules)) {
     setAutoGearRules(rules);
   } else {
-    baseAutoGearRules = readAutoGearRulesFromStorage();
+    baseAutoGearRulesState = readAutoGearRulesFromStorage();
     projectScopedAutoGearRules = null;
-    assignAutoGearRules(baseAutoGearRules);
+    assignAutoGearRules(baseAutoGearRulesState);
     syncBaseAutoGearRulesState();
   }
   autoGearBackupRetention = readAutoGearBackupRetentionFromStorage();
   autoGearBackups = readAutoGearBackupsFromStorage(autoGearBackupRetention);
   autoGearPresets = readAutoGearPresetsFromStorage();
   activeAutoGearPresetId = readActiveAutoGearPresetIdFromStorage();
-  autoGearAutoPresetId = readAutoGearAutoPresetIdFromStorage();
+  autoGearAutoPresetIdState = readAutoGearAutoPresetIdFromStorage();
   autoGearBackupsVisible = readAutoGearBackupVisibilityFromStorage();
   autoGearMonitorDefaults = readAutoGearMonitorDefaultsFromStorage();
   autoGearRulesLastBackupSignature = autoGearBackups.length
@@ -3379,7 +3382,7 @@ function syncAutoGearRulesFromStorage(rules) {
     [{ persist: true, skipRender: true }],
     { defer: true }
   );
-  callCoreFunctionIfAvailable('syncAutoGearAutoPreset', [baseAutoGearRules], { defer: true });
+  callCoreFunctionIfAvailable('syncAutoGearAutoPreset', [baseAutoGearRulesState], { defer: true });
   callCoreFunctionIfAvailable('alignActiveAutoGearPreset', [{ skipRender: true }], { defer: true });
   callCoreFunctionIfAvailable('renderAutoGearBackupControls', [], { defer: true });
   callCoreFunctionIfAvailable('renderAutoGearPresetsControls', [], { defer: true });
@@ -3394,18 +3397,18 @@ function useProjectAutoGearRules(rules) {
     projectScopedAutoGearRules = assignAutoGearRules(rules).slice();
   } else {
     projectScopedAutoGearRules = null;
-    assignAutoGearRules(baseAutoGearRules);
+    assignAutoGearRules(baseAutoGearRulesState);
   }
 }
 
 function clearProjectAutoGearRules() {
   if (!projectScopedAutoGearRules || !projectScopedAutoGearRules.length) {
     projectScopedAutoGearRules = null;
-    assignAutoGearRules(baseAutoGearRules);
+    assignAutoGearRules(baseAutoGearRulesState);
     return;
   }
   projectScopedAutoGearRules = null;
-  assignAutoGearRules(baseAutoGearRules);
+  assignAutoGearRules(baseAutoGearRulesState);
 }
 
 function getProjectScopedAutoGearRules() {
@@ -3417,7 +3420,7 @@ function usingProjectAutoGearRules() {
 }
 
 function getBaseAutoGearRules() {
-  return baseAutoGearRules.slice();
+  return baseAutoGearRulesState.slice();
 }
 
 function autoGearRuleSignature(rule) {
@@ -4589,7 +4592,7 @@ function computeFactoryAutoGearRules() {
   const previousSelectValues = captureSetupSelectValues();
   const seededBeforeCompute = hasSeededAutoGearDefaults();
   const savedAutoGearRules = autoGearRules.slice();
-  const savedBaseAutoGearRules = baseAutoGearRules.slice();
+  const savedBaseAutoGearRules = baseAutoGearRulesState.slice();
   const savedProjectScopedRules = projectScopedAutoGearRules
     ? projectScopedAutoGearRules.slice()
     : null;
@@ -4601,7 +4604,7 @@ function computeFactoryAutoGearRules() {
       clearAutoGearDefaultsSeeded();
     }
     assignAutoGearRules([]);
-    baseAutoGearRules = [];
+    baseAutoGearRulesState = [];
     projectScopedAutoGearRules = null;
     autoGearRulesLastBackupSignature = savedBackupSignature;
     autoGearRulesLastPersistedSignature = savedPersistedSignature;
@@ -4623,7 +4626,7 @@ function computeFactoryAutoGearRules() {
   } finally {
     applySetupSelectValues(previousSelectValues);
     assignAutoGearRules(savedAutoGearRules);
-    baseAutoGearRules = savedBaseAutoGearRules.slice();
+    baseAutoGearRulesState = savedBaseAutoGearRules.slice();
     projectScopedAutoGearRules = savedProjectScopedRules
       ? savedProjectScopedRules.slice()
       : null;
@@ -12227,7 +12230,7 @@ function ensureSharedAutoGearPreset(rules, sharedData) {
   autoGearPresets.push(normalizedPreset);
   autoGearPresets = sortAutoGearPresets(autoGearPresets.slice());
   persistAutoGearPresets(autoGearPresets);
-  if (autoGearAutoPresetId) {
+  if (autoGearAutoPresetIdState) {
     callCoreFunctionIfAvailable(
       'setAutoGearAutoPresetId',
       ['', { persist: true, skipRender: true }],
@@ -15757,20 +15760,20 @@ exposeCoreRuntimeBindings({
     },
   },
   baseAutoGearRules: {
-    get: () => baseAutoGearRules,
+    get: () => baseAutoGearRulesState,
     set: value => {
       if (Array.isArray(value)) {
-        baseAutoGearRules = value;
+        baseAutoGearRulesState = value;
       }
     },
   },
   autoGearAutoPresetId: {
-    get: () => autoGearAutoPresetId,
+    get: () => autoGearAutoPresetIdState,
     set: value => {
       if (typeof value === 'string') {
-        autoGearAutoPresetId = value;
+        autoGearAutoPresetIdState = value;
       } else if (value === null || typeof value === 'undefined') {
-        autoGearAutoPresetId = '';
+        autoGearAutoPresetIdState = '';
       }
     },
   },
