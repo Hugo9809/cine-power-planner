@@ -20,11 +20,28 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 (function initializeStorageModule() {
   var GLOBAL_SCOPE = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : null;
+  var FORCE_STORAGE_REINITIALIZE = typeof process !== 'undefined' && process && process.env && (process.env.JEST_WORKER_ID || process.env.CINE_FORCE_STORAGE_REINIT);
   if (GLOBAL_SCOPE && GLOBAL_SCOPE.__cineStorageInitialized) {
-    if (typeof module !== 'undefined' && module.exports && GLOBAL_SCOPE.__cineStorageApi && _typeof(GLOBAL_SCOPE.__cineStorageApi) === 'object') {
-      module.exports = GLOBAL_SCOPE.__cineStorageApi;
+    if (FORCE_STORAGE_REINITIALIZE) {
+      try {
+        delete GLOBAL_SCOPE.__cineStorageInitialized;
+      } catch (resetInitFlagError) {
+        GLOBAL_SCOPE.__cineStorageInitialized = false;
+        void resetInitFlagError;
+      }
+
+      try {
+        delete GLOBAL_SCOPE.__cineStorageApi;
+      } catch (resetApiError) {
+        GLOBAL_SCOPE.__cineStorageApi = null;
+        void resetApiError;
+      }
+    } else {
+      if (typeof module !== 'undefined' && module.exports && GLOBAL_SCOPE.__cineStorageApi && _typeof(GLOBAL_SCOPE.__cineStorageApi) === 'object') {
+        module.exports = GLOBAL_SCOPE.__cineStorageApi;
+      }
+      return;
     }
-    return;
   }
   if (GLOBAL_SCOPE) {
     try {
