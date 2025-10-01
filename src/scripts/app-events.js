@@ -4,7 +4,8 @@
           setManualDiagramPositions, normalizeDiagramPositionsInput,
           normalizeSetupName, createProjectInfoSnapshotForStorage,
           applyDynamicFieldValues, applyBatteryPlateSelectionFromBattery,
-          getPowerSelectionSnapshot, applyStoredPowerSelection */
+          getPowerSelectionSnapshot, applyStoredPowerSelection,
+          callCoreFunctionIfAvailable */
 
 const APP_EVENTS_AUTO_BACKUP_RENAMED_FLAG =
   (typeof globalThis !== 'undefined' && globalThis.__CINE_AUTO_BACKUP_RENAMED_FLAG)
@@ -27,6 +28,67 @@ function markAutoBackupDataAsRenamed(value) {
     } catch (infoError) {
       void infoError;
     }
+  }
+}
+
+function callEventsCoreFunction(functionName, args = [], options = {}) {
+  if (typeof callCoreFunctionIfAvailable === 'function') {
+    return callCoreFunctionIfAvailable(functionName, args, options);
+  }
+
+  const scope =
+    (typeof globalThis !== 'undefined' ? globalThis : null)
+    || (typeof window !== 'undefined' ? window : null)
+    || (typeof self !== 'undefined' ? self : null)
+    || (typeof global !== 'undefined' ? global : null)
+    || null;
+
+  const target =
+    typeof functionName === 'string'
+      ? scope && scope[functionName]
+      : functionName;
+
+  if (typeof target === 'function') {
+    try {
+      return target.apply(scope, args);
+    } catch (invokeError) {
+      if (typeof console !== 'undefined' && typeof console.error === 'function') {
+        console.error(`Failed to invoke ${functionName}`, invokeError);
+      }
+    }
+    return undefined;
+  }
+
+  if (options && options.defer === true) {
+    const queue = scope && Array.isArray(scope.CORE_BOOT_QUEUE) ? scope.CORE_BOOT_QUEUE : null;
+    if (queue) {
+      queue.push(() => {
+        callEventsCoreFunction(functionName, args, { ...options, defer: false });
+      });
+    }
+  }
+
+  return options && Object.prototype.hasOwnProperty.call(options, 'defaultValue')
+    ? options.defaultValue
+    : undefined;
+}
+
+function getEventsCoreValue(functionName, options = {}) {
+  const defaultValue = Object.prototype.hasOwnProperty.call(options, 'defaultValue')
+    ? options.defaultValue
+    : '';
+  const value = callEventsCoreFunction(functionName, [], { defaultValue });
+  if (typeof value === 'string') {
+    return value;
+  }
+  if (value === null || value === undefined) {
+    return defaultValue;
+  }
+  try {
+    return String(value);
+  } catch (coerceError) {
+    void coerceError;
+    return defaultValue;
   }
 }
 
@@ -520,8 +582,8 @@ setupSelect.addEventListener("change", (event) => {
   if (typeof saveProject === 'function') {
     const info = projectForm ? collectProjectFormData() : {};
     if (info) {
-      info.sliderBowl = getSliderBowlValue();
-      info.easyrig = getEasyrigValue();
+      info.sliderBowl = getEventsCoreValue('getSliderBowlValue');
+      info.easyrig = getEventsCoreValue('getEasyrigValue');
     }
     const previousProjectInfo = deriveProjectInfo(info);
     currentProjectInfo = previousProjectInfo;

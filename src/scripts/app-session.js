@@ -359,6 +359,25 @@ function callSessionCoreFunction(functionName, args = [], options = {}) {
     : undefined;
 }
 
+function getSessionCoreValue(functionName, options = {}) {
+  const defaultValue = Object.prototype.hasOwnProperty.call(options, 'defaultValue')
+    ? options.defaultValue
+    : '';
+  const value = callSessionCoreFunction(functionName, [], { defaultValue });
+  if (typeof value === 'string') {
+    return value;
+  }
+  if (value === null || value === undefined) {
+    return defaultValue;
+  }
+  try {
+    return String(value);
+  } catch (coerceError) {
+    void coerceError;
+    return defaultValue;
+  }
+}
+
 const temperaturePreferenceStorageKey =
   typeof TEMPERATURE_STORAGE_KEY === 'string'
     ? TEMPERATURE_STORAGE_KEY
@@ -1939,8 +1958,8 @@ function handleRestoreRehearsalAbort() {
 function saveCurrentSession(options = {}) {
   if (restoringSession || factoryResetInProgress) return;
   const info = projectForm ? collectProjectFormData() : {};
-  info.sliderBowl = getSliderBowlValue();
-  info.easyrig = getEasyrigValue();
+  info.sliderBowl = getSessionCoreValue('getSliderBowlValue');
+  info.easyrig = getSessionCoreValue('getEasyrigValue');
   currentProjectInfo = deriveProjectInfo(info);
   const batteryValue = batterySelect ? batterySelect.value : '';
   const batteryPlateValue = batteryPlateSelect ? batteryPlateSelect.value : '';
@@ -3739,7 +3758,9 @@ if (autoGearResetFactoryButton) {
   autoGearResetFactoryButton.addEventListener('click', resetAutoGearRulesToFactoryAdditions);
 }
 if (autoGearExportButton) {
-  autoGearExportButton.addEventListener('click', exportAutoGearRules);
+  autoGearExportButton.addEventListener('click', () => {
+    callSessionCoreFunction('exportAutoGearRules', [], { defer: true });
+  });
 }
 if (autoGearImportButton && autoGearImportInput) {
   autoGearImportButton.addEventListener('click', () => {

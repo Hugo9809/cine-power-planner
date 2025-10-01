@@ -30,6 +30,57 @@ function markAutoBackupDataAsRenamed(value) {
     }
   }
 }
+
+function callEventsCoreFunction(functionName) {
+  var args = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  if (typeof callCoreFunctionIfAvailable === 'function') {
+    return callCoreFunctionIfAvailable(functionName, args, options);
+  }
+  var scope = (typeof globalThis !== 'undefined' ? globalThis : null) || (typeof window !== 'undefined' ? window : null) || (typeof self !== 'undefined' ? self : null) || (typeof global !== 'undefined' ? global : null) || null;
+  var target = typeof functionName === 'string' ? scope && scope[functionName] : functionName;
+  if (typeof target === 'function') {
+    try {
+      return target.apply(scope, args);
+    } catch (invokeError) {
+      if (typeof console !== 'undefined' && typeof console.error === 'function') {
+        console.error("Failed to invoke ".concat(functionName), invokeError);
+      }
+    }
+    return undefined;
+  }
+  if (options && options.defer === true) {
+    var queue = scope && Array.isArray(scope.CORE_BOOT_QUEUE) ? scope.CORE_BOOT_QUEUE : null;
+    if (queue) {
+      queue.push(function () {
+        callEventsCoreFunction(functionName, args, _objectSpread(_objectSpread({}, options), {}, {
+          defer: false
+        }));
+      });
+    }
+  }
+  return options && Object.prototype.hasOwnProperty.call(options, 'defaultValue') ? options.defaultValue : undefined;
+}
+
+function getEventsCoreValue(functionName) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  var defaultValue = Object.prototype.hasOwnProperty.call(options, 'defaultValue') ? options.defaultValue : '';
+  var value = callEventsCoreFunction(functionName, [], {
+    defaultValue: defaultValue
+  });
+  if (typeof value === 'string') {
+    return value;
+  }
+  if (value === null || value === undefined) {
+    return defaultValue;
+  }
+  try {
+    return String(value);
+  } catch (coerceError) {
+    void coerceError;
+    return defaultValue;
+  }
+}
 function resolveCineUi() {
   var scopes = [];
   if (typeof globalThis !== 'undefined') scopes.push(globalThis);
@@ -436,8 +487,8 @@ setupSelect.addEventListener("change", function (event) {
   if (typeof saveProject === 'function') {
     var info = projectForm ? collectProjectFormData() : {};
     if (info) {
-      info.sliderBowl = getSliderBowlValue();
-      info.easyrig = getEasyrigValue();
+      info.sliderBowl = getEventsCoreValue('getSliderBowlValue');
+      info.easyrig = getEventsCoreValue('getEasyrigValue');
     }
     var previousProjectInfo = deriveProjectInfo(info);
     currentProjectInfo = previousProjectInfo;

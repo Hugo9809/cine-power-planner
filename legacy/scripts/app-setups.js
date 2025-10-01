@@ -37,6 +37,57 @@ function assignSelectValue(select, value) {
     select.value = value;
   }
 }
+
+function callSetupsCoreFunction(functionName) {
+  var args = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+  if (typeof callCoreFunctionIfAvailable === 'function') {
+    return callCoreFunctionIfAvailable(functionName, args, options);
+  }
+  var scope = (typeof globalThis !== 'undefined' ? globalThis : null) || (typeof window !== 'undefined' ? window : null) || (typeof self !== 'undefined' ? self : null) || (typeof global !== 'undefined' ? global : null) || null;
+  var target = typeof functionName === 'string' ? scope && scope[functionName] : functionName;
+  if (typeof target === 'function') {
+    try {
+      return target.apply(scope, args);
+    } catch (invokeError) {
+      if (typeof console !== 'undefined' && typeof console.error === 'function') {
+        console.error("Failed to invoke ".concat(functionName), invokeError);
+      }
+    }
+    return undefined;
+  }
+  if (options && options.defer === true) {
+    var queue = scope && Array.isArray(scope.CORE_BOOT_QUEUE) ? scope.CORE_BOOT_QUEUE : null;
+    if (queue) {
+      queue.push(function () {
+        callSetupsCoreFunction(functionName, args, _objectSpread(_objectSpread({}, options), {}, {
+          defer: false
+        }));
+      });
+    }
+  }
+  return options && Object.prototype.hasOwnProperty.call(options, 'defaultValue') ? options.defaultValue : undefined;
+}
+
+function getSetupsCoreValue(functionName) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  var defaultValue = Object.prototype.hasOwnProperty.call(options, 'defaultValue') ? options.defaultValue : '';
+  var value = callSetupsCoreFunction(functionName, [], {
+    defaultValue: defaultValue
+  });
+  if (typeof value === 'string') {
+    return value;
+  }
+  if (value === null || value === undefined) {
+    return defaultValue;
+  }
+  try {
+    return String(value);
+  } catch (coerceError) {
+    void coerceError;
+    return defaultValue;
+  }
+}
 function getGlobalCineUi() {
   var scope = typeof globalThis !== 'undefined' && globalThis || typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || typeof global !== 'undefined' && global || null;
   if (!scope || _typeof(scope) !== 'object') {
@@ -1586,8 +1637,8 @@ function collectProjectFormData() {
     tripodBowl: getValue('tripodBowl'),
     tripodTypes: getMultiValue('tripodTypes'),
     tripodSpreader: getValue('tripodSpreader'),
-    sliderBowl: getSliderBowlValue(),
-    easyrig: getEasyrigValue(),
+    sliderBowl: getSetupsCoreValue('getSliderBowlValue'),
+    easyrig: getSetupsCoreValue('getEasyrigValue'),
     filter: filterStr
   });
   var assignGearField = function assignGearField(prop, id) {
@@ -4496,8 +4547,8 @@ function saveCurrentGearList() {
   if (factoryResetInProgress) return;
   var html = getCurrentGearListHtml();
   var info = projectForm ? collectProjectFormData() : {};
-  info.sliderBowl = getSliderBowlValue();
-  info.easyrig = getEasyrigValue();
+  info.sliderBowl = getSetupsCoreValue('getSliderBowlValue');
+  info.easyrig = getSetupsCoreValue('getEasyrigValue');
   currentProjectInfo = deriveProjectInfo(info);
   var powerSelectionSnapshot = getPowerSelectionSnapshot();
   var gearSelectorsRaw = getGearListSelectors();
@@ -4721,8 +4772,8 @@ function deleteCurrentGearList() {
     batteryPlate: normalizeBatteryPlateValue(batteryPlateSelect ? batteryPlateSelect.value : '', batterySelect ? batterySelect.value : ''),
     battery: batterySelect ? batterySelect.value : '',
     batteryHotswap: hotswapSelect ? hotswapSelect.value : '',
-    sliderBowl: getSliderBowlValue(),
-    easyrig: getEasyrigValue(),
+    sliderBowl: getSetupsCoreValue('getSliderBowlValue'),
+    easyrig: getSetupsCoreValue('getEasyrigValue'),
     projectInfo: null
   });
   if (typeof autoSaveCurrentSetup === 'function') {
@@ -5353,13 +5404,13 @@ function refreshGearListIfVisible() {
     populateSensorModeDropdown(currentProjectInfo && currentProjectInfo.sensorMode);
     populateCodecDropdown(currentProjectInfo && currentProjectInfo.codec);
     var info = collectProjectFormData();
-    info.sliderBowl = getSliderBowlValue();
-    info.easyrig = getEasyrigValue();
+    info.sliderBowl = getSetupsCoreValue('getSliderBowlValue');
+    info.easyrig = getSetupsCoreValue('getEasyrigValue');
     currentProjectInfo = deriveProjectInfo(info);
   } else {
     var _info = {
-      sliderBowl: getSliderBowlValue(),
-      easyrig: getEasyrigValue()
+      sliderBowl: getSetupsCoreValue('getSliderBowlValue'),
+      easyrig: getSetupsCoreValue('getEasyrigValue')
     };
     currentProjectInfo = deriveProjectInfo(_info);
   }
