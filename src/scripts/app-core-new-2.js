@@ -11,6 +11,82 @@ var CORE_PART2_RUNTIME_SCOPE =
             ? global
             : null;
 
+var CORE_PART2_SCOPE_CANDIDATES = (function resolvePart2ScopeCandidates() {
+  var candidates = [];
+
+  if (CORE_PART2_RUNTIME_SCOPE && typeof CORE_PART2_RUNTIME_SCOPE === 'object') {
+    candidates.push(CORE_PART2_RUNTIME_SCOPE);
+  }
+
+  if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object') {
+    candidates.push(CORE_GLOBAL_SCOPE);
+  }
+
+  if (typeof globalThis !== 'undefined' && globalThis && typeof globalThis === 'object') {
+    candidates.push(globalThis);
+  }
+
+  if (typeof window !== 'undefined' && window && typeof window === 'object') {
+    candidates.push(window);
+  }
+
+  if (typeof self !== 'undefined' && self && typeof self === 'object') {
+    candidates.push(self);
+  }
+
+  if (typeof global !== 'undefined' && global && typeof global === 'object') {
+    candidates.push(global);
+  }
+
+  return candidates;
+})();
+
+function ensureCorePart2GlobalBinding(name, fallback) {
+  var resolved;
+
+  for (var index = 0; index < CORE_PART2_SCOPE_CANDIDATES.length; index += 1) {
+    var scope = CORE_PART2_SCOPE_CANDIDATES[index];
+    if (!scope || typeof scope !== 'object') {
+      continue;
+    }
+
+    try {
+      if (name in scope) {
+        var value = scope[name];
+        if (typeof value !== 'undefined') {
+          resolved = value;
+          break;
+        }
+      }
+    } catch (readError) {
+      void readError;
+    }
+  }
+
+  if (typeof resolved === 'undefined') {
+    resolved = typeof fallback === 'function' ? fallback() : fallback;
+  }
+
+  return resolved;
+}
+
+function writeCorePart2GlobalBinding(name, value) {
+  for (var writeIndex = 0; writeIndex < CORE_PART2_SCOPE_CANDIDATES.length; writeIndex += 1) {
+    var writeScope = CORE_PART2_SCOPE_CANDIDATES[writeIndex];
+    if (!writeScope || typeof writeScope !== 'object') {
+      continue;
+    }
+
+    try {
+      if (typeof Object.isExtensible !== 'function' || Object.isExtensible(writeScope)) {
+        writeScope[name] = value;
+      }
+    } catch (writeError) {
+      void writeError;
+    }
+  }
+}
+
 function createFallbackSafeGenerateConnectorSummary() {
   return function safeGenerateConnectorSummary(device) {
     if (!device || typeof device !== 'object') {
@@ -75,24 +151,48 @@ function resolveInitialPart2Value(name) {
   return undefined;
 }
 
-const autoGearAutoPresetIdSeed = resolveInitialPart2Value('autoGearAutoPresetId');
+const autoGearAutoPresetIdSeed = ensureCorePart2GlobalBinding(
+  'autoGearAutoPresetId',
+  function readAutoPresetSeed() {
+    return resolveInitialPart2Value('autoGearAutoPresetId');
+  },
+);
 var autoGearAutoPresetId =
   typeof autoGearAutoPresetIdSeed === 'string' ? autoGearAutoPresetIdSeed : '';
+writeCorePart2GlobalBinding('autoGearAutoPresetId', autoGearAutoPresetId);
 
-const baseAutoGearRulesSeed = resolveInitialPart2Value('baseAutoGearRules');
+const baseAutoGearRulesSeed = ensureCorePart2GlobalBinding(
+  'baseAutoGearRules',
+  function readBaseRulesSeed() {
+    return resolveInitialPart2Value('baseAutoGearRules');
+  },
+);
 var baseAutoGearRules = Array.isArray(baseAutoGearRulesSeed) ? baseAutoGearRulesSeed : [];
+writeCorePart2GlobalBinding('baseAutoGearRules', baseAutoGearRules);
 
-const autoGearScenarioModeSelectSeed = resolveInitialPart2Value('autoGearScenarioModeSelect');
+const autoGearScenarioModeSelectSeed = ensureCorePart2GlobalBinding(
+  'autoGearScenarioModeSelect',
+  function readScenarioModeSeed() {
+    return resolveInitialPart2Value('autoGearScenarioModeSelect');
+  },
+);
 var autoGearScenarioModeSelect =
   autoGearScenarioModeSelectSeed && typeof autoGearScenarioModeSelectSeed === 'object'
     ? autoGearScenarioModeSelectSeed
     : null;
+writeCorePart2GlobalBinding('autoGearScenarioModeSelect', autoGearScenarioModeSelect);
 
-const safeGenerateConnectorSummarySeed = resolveInitialPart2Value('safeGenerateConnectorSummary');
+const safeGenerateConnectorSummarySeed = ensureCorePart2GlobalBinding(
+  'safeGenerateConnectorSummary',
+  function readConnectorSummarySeed() {
+    return resolveInitialPart2Value('safeGenerateConnectorSummary');
+  },
+);
 var safeGenerateConnectorSummary =
   typeof safeGenerateConnectorSummarySeed === 'function'
     ? safeGenerateConnectorSummarySeed
     : createFallbackSafeGenerateConnectorSummary();
+writeCorePart2GlobalBinding('safeGenerateConnectorSummary', safeGenerateConnectorSummary);
 
 if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initialized) {
   if (typeof console !== 'undefined' && typeof console.warn === 'function') {

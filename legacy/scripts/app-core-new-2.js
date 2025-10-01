@@ -22,6 +22,81 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
 function _asyncIterator(r) { var n, t, o, e = 2; for ("undefined" != typeof Symbol && (t = Symbol.asyncIterator, o = Symbol.iterator); e--;) { if (t && null != (n = r[t])) return n.call(r); if (o && null != (n = r[o])) return new AsyncFromSyncIterator(n.call(r)); t = "@@asyncIterator", o = "@@iterator"; } throw new TypeError("Object is not async iterable"); }
 function AsyncFromSyncIterator(r) { function AsyncFromSyncIteratorContinuation(r) { if (Object(r) !== r) return Promise.reject(new TypeError(r + " is not an object.")); var n = r.done; return Promise.resolve(r.value).then(function (r) { return { value: r, done: n }; }); } return AsyncFromSyncIterator = function AsyncFromSyncIterator(r) { this.s = r, this.n = r.next; }, AsyncFromSyncIterator.prototype = { s: null, n: null, next: function next() { return AsyncFromSyncIteratorContinuation(this.n.apply(this.s, arguments)); }, return: function _return(r) { var n = this.s.return; return void 0 === n ? Promise.resolve({ value: r, done: !0 }) : AsyncFromSyncIteratorContinuation(n.apply(this.s, arguments)); }, throw: function _throw(r) { var n = this.s.return; return void 0 === n ? Promise.reject(r) : AsyncFromSyncIteratorContinuation(n.apply(this.s, arguments)); } }, new AsyncFromSyncIterator(r); }
 var CORE_PART2_RUNTIME_SCOPE = typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE ? CORE_GLOBAL_SCOPE : typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : typeof global !== 'undefined' ? global : null;
+var CORE_PART2_SCOPE_CANDIDATES = function resolvePart2ScopeCandidates() {
+  var candidates = [];
+
+  if (CORE_PART2_RUNTIME_SCOPE && _typeof(CORE_PART2_RUNTIME_SCOPE) === 'object') {
+    candidates.push(CORE_PART2_RUNTIME_SCOPE);
+  }
+
+  if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object') {
+    candidates.push(CORE_GLOBAL_SCOPE);
+  }
+
+  if (typeof globalThis !== 'undefined' && globalThis && _typeof(globalThis) === 'object') {
+    candidates.push(globalThis);
+  }
+
+  if (typeof window !== 'undefined' && window && _typeof(window) === 'object') {
+    candidates.push(window);
+  }
+
+  if (typeof self !== 'undefined' && self && _typeof(self) === 'object') {
+    candidates.push(self);
+  }
+
+  if (typeof global !== 'undefined' && global && _typeof(global) === 'object') {
+    candidates.push(global);
+  }
+
+  return candidates;
+}();
+
+function ensureCorePart2GlobalBinding(name, fallback) {
+  var resolved;
+
+  for (var index = 0; index < CORE_PART2_SCOPE_CANDIDATES.length; index += 1) {
+    var scope = CORE_PART2_SCOPE_CANDIDATES[index];
+    if (!scope || _typeof(scope) !== 'object') {
+      continue;
+    }
+
+    try {
+      if (name in scope) {
+        var value = scope[name];
+        if (typeof value !== 'undefined') {
+          resolved = value;
+          break;
+        }
+      }
+    } catch (readError) {
+      void readError;
+    }
+  }
+
+  if (typeof resolved === 'undefined') {
+    resolved = 'function' == typeof fallback ? fallback() : fallback;
+  }
+
+  return resolved;
+}
+
+function writeCorePart2GlobalBinding(name, value) {
+  for (var writeIndex = 0; writeIndex < CORE_PART2_SCOPE_CANDIDATES.length; writeIndex += 1) {
+    var writeScope = CORE_PART2_SCOPE_CANDIDATES[writeIndex];
+    if (!writeScope || _typeof(writeScope) !== 'object') {
+      continue;
+    }
+
+    try {
+      if (typeof Object.isExtensible !== 'function' || Object.isExtensible(writeScope)) {
+        writeScope[name] = value;
+      }
+    } catch (writeError) {
+      void writeError;
+    }
+  }
+}
 function createFallbackSafeGenerateConnectorSummary() {
   return function safeGenerateConnectorSummary(device) {
     if (!device || _typeof(device) !== 'object') {
@@ -65,14 +140,26 @@ function resolveInitialPart2Value(name) {
   }
   return undefined;
 }
-var autoGearAutoPresetIdSeed = resolveInitialPart2Value('autoGearAutoPresetId');
+var autoGearAutoPresetIdSeed = ensureCorePart2GlobalBinding('autoGearAutoPresetId', function readAutoPresetSeed() {
+  return resolveInitialPart2Value('autoGearAutoPresetId');
+});
 var autoGearAutoPresetId = typeof autoGearAutoPresetIdSeed === 'string' ? autoGearAutoPresetIdSeed : '';
-var baseAutoGearRulesSeed = resolveInitialPart2Value('baseAutoGearRules');
+writeCorePart2GlobalBinding('autoGearAutoPresetId', autoGearAutoPresetId);
+var baseAutoGearRulesSeed = ensureCorePart2GlobalBinding('baseAutoGearRules', function readBaseRulesSeed() {
+  return resolveInitialPart2Value('baseAutoGearRules');
+});
 var baseAutoGearRules = Array.isArray(baseAutoGearRulesSeed) ? baseAutoGearRulesSeed : [];
-var autoGearScenarioModeSelectSeed = resolveInitialPart2Value('autoGearScenarioModeSelect');
+writeCorePart2GlobalBinding('baseAutoGearRules', baseAutoGearRules);
+var autoGearScenarioModeSelectSeed = ensureCorePart2GlobalBinding('autoGearScenarioModeSelect', function readScenarioModeSeed() {
+  return resolveInitialPart2Value('autoGearScenarioModeSelect');
+});
 var autoGearScenarioModeSelect = autoGearScenarioModeSelectSeed && _typeof(autoGearScenarioModeSelectSeed) === 'object' ? autoGearScenarioModeSelectSeed : null;
-var safeGenerateConnectorSummarySeed = resolveInitialPart2Value('safeGenerateConnectorSummary');
+writeCorePart2GlobalBinding('autoGearScenarioModeSelect', autoGearScenarioModeSelect);
+var safeGenerateConnectorSummarySeed = ensureCorePart2GlobalBinding('safeGenerateConnectorSummary', function readConnectorSummarySeed() {
+  return resolveInitialPart2Value('safeGenerateConnectorSummary');
+});
 var safeGenerateConnectorSummary = typeof safeGenerateConnectorSummarySeed === 'function' ? safeGenerateConnectorSummarySeed : createFallbackSafeGenerateConnectorSummary();
+writeCorePart2GlobalBinding('safeGenerateConnectorSummary', safeGenerateConnectorSummary);
 if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initialized) {
   if (typeof console !== 'undefined' && typeof console.warn === 'function') {
     console.warn('Cine Power Planner core runtime (part 2) already initialized. Skipping duplicate load.');
