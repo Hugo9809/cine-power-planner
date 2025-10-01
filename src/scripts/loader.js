@@ -49,6 +49,56 @@
     return storages;
   }
 
+  function ensureCoreRuntimePlaceholders() {
+    var scope = getGlobalScope();
+    if (!scope || typeof scope !== 'object') {
+      return;
+    }
+
+    if (typeof scope.autoGearAutoPresetId === 'undefined') {
+      scope.autoGearAutoPresetId = '';
+    }
+
+    if (typeof scope.baseAutoGearRules === 'undefined') {
+      scope.baseAutoGearRules = [];
+    }
+
+    if (typeof scope.safeGenerateConnectorSummary === 'undefined') {
+      scope.safeGenerateConnectorSummary = function fallbackConnectorSummary(device) {
+        if (!device || typeof device !== 'object') {
+          return '';
+        }
+
+        try {
+          var keys = Object.keys(device);
+          if (!keys.length) {
+            return '';
+          }
+
+          var primaryKey = keys[0];
+          var value = device[primaryKey];
+          var label = typeof primaryKey === 'string' ? primaryKey.replace(/_/g, ' ') : 'connector';
+          return value ? label + ': ' + value : label;
+        } catch (error) {
+          void error;
+          return '';
+        }
+      };
+    }
+
+    if (typeof scope.autoGearScenarioModeSelect === 'undefined') {
+      scope.autoGearScenarioModeSelect = null;
+    }
+
+    if (typeof scope.autoGearRuleNameInput === 'undefined') {
+      scope.autoGearRuleNameInput = null;
+    }
+
+    if (typeof scope.totalPowerElem === 'undefined') {
+      scope.totalPowerElem = null;
+    }
+  }
+
   function migrateKey(storage, legacyKey, modernKey) {
     if (!storage || typeof storage.getItem !== 'function' || typeof storage.setItem !== 'function') {
       return false;
@@ -615,6 +665,8 @@
       console.warn('Legacy storage migration failed during loader startup.', migrationError);
     }
   }
+
+  ensureCoreRuntimePlaceholders();
 
   startLoading();
 })();
