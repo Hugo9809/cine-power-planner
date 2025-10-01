@@ -15049,6 +15049,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       renderAutoGearMonitorDefaultsControls: renderAutoGearMonitorDefaultsControls,
       renderAutoGearPresetsControls: renderAutoGearPresetsControls,
       renderAutoGearRulesList: renderAutoGearRulesList,
+      handleAutoGearImportSelection: handleAutoGearImportSelection,
       setAutoGearAutoPresetId: setAutoGearAutoPresetId,
       syncAutoGearAutoPreset: syncAutoGearAutoPreset,
       updateAutoGearCatalogOptions: updateAutoGearCatalogOptions,
@@ -15073,7 +15074,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       skipNextGearListRefresh: skipNextGearListRefresh,
       refreshDarkModeAccentBoost: refreshDarkModeAccentBoost,
       isHighContrastActive: isHighContrastActive,
-      feedbackUseLocationBtn: feedbackUseLocationBtn
+      feedbackUseLocationBtn: feedbackUseLocationBtn,
+      getSliderBowlValue: getSliderBowlValue,
+      getEasyrigValue: getEasyrigValue,
+      setEasyrigValue: setEasyrigValue
     };
     var CORE_PART2_GLOBAL_SCOPE = CORE_SHARED_SCOPE_PART2 || (typeof globalThis !== 'undefined' ? globalThis : null) || (typeof window !== 'undefined' ? window : null) || (typeof self !== 'undefined' ? self : null) || (typeof global !== 'undefined' ? global : null);
     var CORE_PART2_RUNTIME = function resolvePart2Runtime(scope) {
