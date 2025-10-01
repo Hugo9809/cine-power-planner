@@ -6368,7 +6368,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   var autoGearRuleNameLabel = document.getElementById('autoGearRuleNameLabel');
   var autoGearScenariosSelect = document.getElementById('autoGearScenarios');
   var autoGearScenariosLabel = document.getElementById('autoGearScenariosLabel');
-  let autoGearScenarioModeSelect = document.getElementById('autoGearScenarioMode');
+  let autoGearScenarioModeSelectElement = document.getElementById('autoGearScenarioMode');
   var autoGearScenarioModeLabel = document.getElementById('autoGearScenarioModeLabel');
   var autoGearScenarioMultiplierContainer = document.getElementById('autoGearScenarioMultiplierContainer');
   var autoGearScenarioBaseSelect = document.getElementById('autoGearScenarioBase');
@@ -7556,9 +7556,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         var modeHelp = texts[lang].autoGearScenarioModeHelp || ((_texts$en114 = texts.en) === null || _texts$en114 === void 0 ? void 0 : _texts$en114.autoGearScenarioModeHelp) || modeLabel;
         autoGearScenarioModeLabel.textContent = modeLabel;
         autoGearScenarioModeLabel.setAttribute('data-help', modeHelp);
-        if (autoGearScenarioModeSelect) {
-          autoGearScenarioModeSelect.setAttribute('data-help', modeHelp);
-          autoGearScenarioModeSelect.setAttribute('aria-label', modeLabel);
+        if (autoGearScenarioModeSelectElement) {
+          autoGearScenarioModeSelectElement.setAttribute('data-help', modeHelp);
+          autoGearScenarioModeSelectElement.setAttribute('aria-label', modeLabel);
         }
       }
       if (autoGearScenarioBaseLabel) {
@@ -13181,8 +13181,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     });
     refreshAutoGearConditionPicker();
     updateAutoGearConditionAddButtonState();
-    if (autoGearScenarioModeSelect && autoGearEditorDraft) {
-      autoGearScenarioModeSelect.value = normalizeAutoGearScenarioLogic(autoGearEditorDraft.scenarioLogic);
+    if (autoGearScenarioModeSelectElement && autoGearEditorDraft) {
+      autoGearScenarioModeSelectElement.value = normalizeAutoGearScenarioLogic(autoGearEditorDraft.scenarioLogic);
     }
     if (autoGearScenarioFactorInput) {
       var storedMultiplier = autoGearEditorDraft ? normalizeAutoGearScenarioMultiplier(autoGearEditorDraft.scenarioMultiplier) : 1;
@@ -13889,15 +13889,15 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       return typeof value === 'string' && value.trim();
     }) : [];
     var uniqueValues = Array.from(new Set(values));
-    var desiredMode = autoGearEditorDraft ? normalizeAutoGearScenarioLogic(autoGearEditorDraft.scenarioLogic) : normalizeAutoGearScenarioLogic((_autoGearScenarioMode = autoGearScenarioModeSelect) === null || _autoGearScenarioMode === void 0 ? void 0 : _autoGearScenarioMode.value);
-    if (autoGearScenarioModeSelect) {
+    var desiredMode = autoGearEditorDraft ? normalizeAutoGearScenarioLogic(autoGearEditorDraft.scenarioLogic) : normalizeAutoGearScenarioLogic((_autoGearScenarioMode = autoGearScenarioModeSelectElement) === null || _autoGearScenarioMode === void 0 ? void 0 : _autoGearScenarioMode.value);
+    if (autoGearScenarioModeSelectElement) {
       var _texts$currentLang19, _texts$en264, _texts$currentLang20, _texts$en265, _texts$currentLang21, _texts$en266;
       var modeLabels = {
         all: ((_texts$currentLang19 = texts[currentLang]) === null || _texts$currentLang19 === void 0 ? void 0 : _texts$currentLang19.autoGearScenarioModeAll) || ((_texts$en264 = texts.en) === null || _texts$en264 === void 0 ? void 0 : _texts$en264.autoGearScenarioModeAll) || 'Require every selected scenario',
         any: ((_texts$currentLang20 = texts[currentLang]) === null || _texts$currentLang20 === void 0 ? void 0 : _texts$currentLang20.autoGearScenarioModeAny) || ((_texts$en265 = texts.en) === null || _texts$en265 === void 0 ? void 0 : _texts$en265.autoGearScenarioModeAny) || 'Match any selected scenario',
         multiplier: ((_texts$currentLang21 = texts[currentLang]) === null || _texts$currentLang21 === void 0 ? void 0 : _texts$currentLang21.autoGearScenarioModeMultiplier) || ((_texts$en266 = texts.en) === null || _texts$en266 === void 0 ? void 0 : _texts$en266.autoGearScenarioModeMultiplier) || 'Multiply when combined'
       };
-      Array.from(autoGearScenarioModeSelect.options || []).forEach(function (option) {
+      Array.from(autoGearScenarioModeSelectElement.options || []).forEach(function (option) {
         if (!option) return;
         if (option.value === 'multiplier') {
           option.disabled = uniqueValues.length < 2;
@@ -13913,7 +13913,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       if (nextMode === 'multiplier' && uniqueValues.length < 2) {
         nextMode = 'all';
       }
-      autoGearScenarioModeSelect.value = nextMode;
+      autoGearScenarioModeSelectElement.value = nextMode;
       if (autoGearEditorDraft && autoGearEditorDraft.scenarioLogic !== nextMode) {
         autoGearEditorDraft.scenarioLogic = nextMode;
       }
@@ -14384,10 +14384,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     },
     autoGearScenarioModeSelect: {
       get: function get() {
-        return autoGearScenarioModeSelect;
+        return autoGearScenarioModeSelectElement;
       },
       set: function set(value) {
-        autoGearScenarioModeSelect = value || null;
+        autoGearScenarioModeSelectElement = value || null;
       }
     }
   });
