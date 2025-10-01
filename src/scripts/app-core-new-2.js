@@ -1452,7 +1452,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     
     function alignActiveAutoGearPreset(options = {}) {
       const skipRender = options.skipRender === true;
-        const fingerprint = createAutoGearRulesFingerprint(baseAutoGearRulesState);
+      const rulesSource = Array.isArray(baseAutoGearRulesState)
+        ? baseAutoGearRulesState
+        : typeof baseAutoGearRules !== 'undefined' && Array.isArray(baseAutoGearRules)
+          ? baseAutoGearRules
+          : [];
+      const fingerprint = createAutoGearRulesFingerprint(rulesSource);
       const matching = autoGearPresets.find(preset => preset.fingerprint === fingerprint) || null;
       if (matching) {
         setActiveAutoGearPresetId(matching.id, { persist: true, skipRender: true });
