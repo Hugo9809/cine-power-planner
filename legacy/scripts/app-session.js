@@ -9614,11 +9614,61 @@ function initApp() {
   updateCalculations();
   applyFilters();
 }
+function ensureFeedbackTemperatureOptionsSafe(select) {
+  if (!select) return;
+  if (typeof ensureFeedbackTemperatureOptions === 'function') {
+    ensureFeedbackTemperatureOptions(select);
+    return;
+  }
+  var minTemp = typeof FEEDBACK_TEMPERATURE_MIN === 'number' ? FEEDBACK_TEMPERATURE_MIN : -20;
+  var maxTemp = typeof FEEDBACK_TEMPERATURE_MAX === 'number' ? FEEDBACK_TEMPERATURE_MAX : 50;
+  var expectedOptions = maxTemp - minTemp + 2;
+  if (select.options.length === expectedOptions) {
+    return;
+  }
+  var previousValue = select.value;
+  select.innerHTML = '';
+  var emptyOpt = document.createElement('option');
+  emptyOpt.value = '';
+  emptyOpt.textContent = '';
+  select.appendChild(emptyOpt);
+  for (var temp = minTemp; temp <= maxTemp; temp += 1) {
+    var opt = document.createElement('option');
+    opt.value = String(temp);
+    opt.textContent = String(temp);
+    select.appendChild(opt);
+  }
+  if (previousValue) {
+    var previousOption = Array.from(select.options).find(function (option) {
+      return option.value === previousValue;
+    });
+    if (previousOption) {
+      select.value = previousValue;
+    }
+  }
+}
+function updateFeedbackTemperatureOptionsSafe() {
+  if (typeof updateFeedbackTemperatureOptions === 'function') {
+    updateFeedbackTemperatureOptions();
+    return;
+  }
+  var tempSelect = document.getElementById('fbTemperature');
+  if (!tempSelect) return;
+  ensureFeedbackTemperatureOptionsSafe(tempSelect);
+  Array.from(tempSelect.options).forEach(function (option) {
+    if (!option) return;
+    if (option.value === '') {
+      option.textContent = '';
+      return;
+    }
+    option.textContent = "".concat(option.value, "°C");
+  });
+}
 function populateEnvironmentDropdowns() {
   var tempSelect = document.getElementById('fbTemperature');
   if (tempSelect) {
-    ensureFeedbackTemperatureOptions(tempSelect);
-    updateFeedbackTemperatureOptions();
+    ensureFeedbackTemperatureOptionsSafe(tempSelect);
+    updateFeedbackTemperatureOptionsSafe();
   }
 }
 function populateLensDropdown() {
