@@ -11460,7 +11460,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       row.appendChild(removeBtn);
       return row;
     }
-    function setRecordingMedia(list) {
+    var setRecordingMediaLocal = function setRecordingMediaLocal(list) {
       cameraMediaContainer.innerHTML = '';
       var filtered = filterNoneEntries(list);
       if (filtered.length) {
@@ -11475,7 +11475,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       } else {
         cameraMediaContainer.appendChild(createRecordingMediaRow());
       }
-    }
+    };
+
+    writeCoreScopeValue('setRecordingMedia', setRecordingMediaLocal);
     function getRecordingMedia() {
       return Array.from(cameraMediaContainer.querySelectorAll('.form-row')).map(function (row) {
         var _row$querySelectorAll = row.querySelectorAll('select, input'),
@@ -11490,8 +11492,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return m.type && m.type !== 'None';
       });
     }
+    writeCoreScopeValue('getRecordingMedia', getRecordingMedia);
     function clearRecordingMedia() {
-      setRecordingMedia([]);
+      setRecordingMediaLocal([]);
     }
     function powerInputTypes(dev) {
       var _dev$power;
@@ -11683,7 +11686,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       row.appendChild(removeBtn);
       return row;
     }
-    function setBatteryPlates(list) {
+    var setBatteryPlatesLocal = function setBatteryPlatesLocal(list) {
       batteryPlatesContainer.innerHTML = '';
       var filtered = filterNoneEntries(list);
       if (filtered.length) {
@@ -11700,7 +11703,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       } else {
         batteryPlatesContainer.appendChild(createBatteryPlateRow());
       }
-    }
+    };
+
+    writeCoreScopeValue('setBatteryPlates', setBatteryPlatesLocal);
     function getBatteryPlates() {
       return Array.from(batteryPlatesContainer.querySelectorAll('.form-row')).map(function (row) {
         var _row$querySelectorAll3 = row.querySelectorAll('select, input'),
@@ -11717,8 +11722,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return bp.type && bp.type !== 'None';
       });
     }
+    writeCoreScopeValue('getBatteryPlates', getBatteryPlates);
     function clearBatteryPlates() {
-      setBatteryPlates([]);
+      setBatteryPlatesLocal([]);
     }
     function getAllViewfinderTypes() {
       var types = new Set();
@@ -12821,8 +12827,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     updateDistanceMethodOptions();
     updateDistanceDisplayOptions();
     setViewfinders([]);
-    setBatteryPlates([]);
-    setRecordingMedia([]);
+    setBatteryPlatesLocal([]);
+    setRecordingMediaLocal([]);
     updateRecordingMediaOptions();
     updatePlateTypeOptions();
     setLensMounts([]);
@@ -12981,6 +12987,39 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       });
       var distance = distanceSelect.value;
       var battery = batterySelect.value;
+      var totalPowerTarget = typeof totalPowerElem !== 'undefined'
+        ? totalPowerElem
+        : typeof document !== 'undefined' ? document.getElementById('totalPower') : null;
+      var breakdownListTarget = typeof breakdownListElem !== 'undefined'
+        ? breakdownListElem
+        : typeof document !== 'undefined' ? document.getElementById('breakdownList') : null;
+      var totalCurrent144Target = typeof totalCurrent144Elem !== 'undefined'
+        ? totalCurrent144Elem
+        : typeof document !== 'undefined' ? document.getElementById('totalCurrent144') : null;
+      var totalCurrent12Target = typeof totalCurrent12Elem !== 'undefined'
+        ? totalCurrent12Elem
+        : typeof document !== 'undefined' ? document.getElementById('totalCurrent12') : null;
+      var batteryLifeTarget = typeof batteryLifeElem !== 'undefined'
+        ? batteryLifeElem
+        : typeof document !== 'undefined' ? document.getElementById('batteryLife') : null;
+      var batteryCountTarget = typeof batteryCountElem !== 'undefined'
+        ? batteryCountElem
+        : typeof document !== 'undefined' ? document.getElementById('batteryCount') : null;
+      var batteryLifeLabelTarget = typeof batteryLifeLabelElem !== 'undefined'
+        ? batteryLifeLabelElem
+        : typeof document !== 'undefined' ? document.getElementById('batteryLifeLabel') : null;
+      var runtimeAverageNoteTarget = typeof runtimeAverageNoteElem !== 'undefined'
+        ? runtimeAverageNoteElem
+        : typeof document !== 'undefined' ? document.getElementById('runtimeAverageNote') : null;
+      var pinWarnTarget = typeof pinWarnElem !== 'undefined'
+        ? pinWarnElem
+        : typeof document !== 'undefined' ? document.getElementById('pinWarning') : null;
+      var dtapWarnTarget = typeof dtapWarnElem !== 'undefined'
+        ? dtapWarnElem
+        : typeof document !== 'undefined' ? document.getElementById('dtapWarning') : null;
+      var hotswapWarnTarget = typeof hotswapWarnElem !== 'undefined'
+        ? hotswapWarnElem
+        : typeof document !== 'undefined' ? document.getElementById('hotswapWarning') : null;
       var cameraW = 0;
       if (devices.cameras[camera] !== undefined) {
         var camData = devices.cameras[camera];
@@ -13016,7 +13055,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         distanceW = _typeof(d) === 'object' ? d.powerDrawWatts || 0 : d;
       }
       var totalWatt = cameraW + monitorW + videoW + motorsW + controllersW + distanceW;
-      totalPowerElem.textContent = totalWatt.toFixed(1);
+      if (totalPowerTarget) {
+        totalPowerTarget.textContent = totalWatt.toFixed(1);
+      }
       var segments = [{
         power: cameraW,
         className: "camera",
@@ -13044,36 +13085,38 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }].filter(function (s) {
         return s.power > 0;
       });
-      breakdownListElem.innerHTML = "";
-      if (cameraW > 0) {
-        var li = document.createElement("li");
-        li.innerHTML = "<strong>".concat(texts[currentLang].cameraLabel, "</strong> ").concat(cameraW.toFixed(1), " W");
-        breakdownListElem.appendChild(li);
-      }
-      if (monitorW > 0) {
-        var _li = document.createElement("li");
-        _li.innerHTML = "<strong>".concat(texts[currentLang].monitorLabel, "</strong> ").concat(monitorW.toFixed(1), " W");
-        breakdownListElem.appendChild(_li);
-      }
-      if (videoW > 0) {
-        var _li2 = document.createElement("li");
-        _li2.innerHTML = "<strong>".concat(texts[currentLang].videoLabel, "</strong> ").concat(videoW.toFixed(1), " W");
-        breakdownListElem.appendChild(_li2);
-      }
-      if (motorsW > 0) {
-        var _li3 = document.createElement("li");
-        _li3.innerHTML = "<strong>".concat(texts[currentLang].fizMotorsLabel, "</strong> ").concat(motorsW.toFixed(1), " W");
-        breakdownListElem.appendChild(_li3);
-      }
-      if (controllersW > 0) {
-        var _li4 = document.createElement("li");
-        _li4.innerHTML = "<strong>".concat(texts[currentLang].fizControllersLabel, "</strong> ").concat(controllersW.toFixed(1), " W");
-        breakdownListElem.appendChild(_li4);
-      }
-      if (distanceW > 0) {
-        var _li5 = document.createElement("li");
-        _li5.innerHTML = "<strong>".concat(texts[currentLang].distanceLabel, "</strong> ").concat(distanceW.toFixed(1), " W");
-        breakdownListElem.appendChild(_li5);
+      if (breakdownListTarget) {
+        breakdownListTarget.innerHTML = "";
+        if (cameraW > 0) {
+          var li = document.createElement("li");
+          li.innerHTML = "<strong>".concat(texts[currentLang].cameraLabel, "</strong> ").concat(cameraW.toFixed(1), " W");
+          breakdownListTarget.appendChild(li);
+        }
+        if (monitorW > 0) {
+          var _li = document.createElement("li");
+          _li.innerHTML = "<strong>".concat(texts[currentLang].monitorLabel, "</strong> ").concat(monitorW.toFixed(1), " W");
+          breakdownListTarget.appendChild(_li);
+        }
+        if (videoW > 0) {
+          var _li2 = document.createElement("li");
+          _li2.innerHTML = "<strong>".concat(texts[currentLang].videoLabel, "</strong> ").concat(videoW.toFixed(1), " W");
+          breakdownListTarget.appendChild(_li2);
+        }
+        if (motorsW > 0) {
+          var _li3 = document.createElement("li");
+          _li3.innerHTML = "<strong>".concat(texts[currentLang].fizMotorsLabel, "</strong> ").concat(motorsW.toFixed(1), " W");
+          breakdownListTarget.appendChild(_li3);
+        }
+        if (controllersW > 0) {
+          var _li4 = document.createElement("li");
+          _li4.innerHTML = "<strong>".concat(texts[currentLang].fizControllersLabel, "</strong> ").concat(controllersW.toFixed(1), " W");
+          breakdownListTarget.appendChild(_li4);
+        }
+        if (distanceW > 0) {
+          var _li5 = document.createElement("li");
+          _li5.innerHTML = "<strong>".concat(texts[currentLang].distanceLabel, "</strong> ").concat(distanceW.toFixed(1), " W");
+          breakdownListTarget.appendChild(_li5);
+        }
       }
       var selectedPlate = getSelectedPlate();
       var mountVoltages = getMountVoltageConfig(selectedPlate);
@@ -13087,21 +13130,29 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         totalCurrentLow = totalWatt / lowV;
       }
       refreshTotalCurrentLabels(currentLang, selectedPlate, mountVoltages);
-      totalCurrent144Elem.textContent = totalCurrentHigh.toFixed(2);
-      totalCurrent12Elem.textContent = totalCurrentLow.toFixed(2);
+      if (totalCurrent144Target) {
+        totalCurrent144Target.textContent = totalCurrentHigh.toFixed(2);
+      }
+      if (totalCurrent12Target) {
+        totalCurrent12Target.textContent = totalCurrentLow.toFixed(2);
+      }
       updateBatteryOptions();
       battery = batterySelect.value;
       var hours = null;
       if (!battery || battery === "None" || !devices.batteries[battery]) {
-        batteryLifeElem.textContent = "–";
-        batteryCountElem.textContent = "–";
-        setStatusMessage(pinWarnElem, '');
-        setStatusLevel(pinWarnElem, null);
-        setStatusMessage(dtapWarnElem, '');
-        setStatusLevel(dtapWarnElem, null);
-        if (hotswapWarnElem) {
-          setStatusMessage(hotswapWarnElem, '');
-          setStatusLevel(hotswapWarnElem, null);
+        if (batteryLifeTarget) {
+          batteryLifeTarget.textContent = "–";
+        }
+        if (batteryCountTarget) {
+          batteryCountTarget.textContent = "–";
+        }
+        setStatusMessage(pinWarnTarget, '');
+        setStatusLevel(pinWarnTarget, null);
+        setStatusMessage(dtapWarnTarget, '');
+        setStatusLevel(dtapWarnTarget, null);
+        if (hotswapWarnTarget) {
+          setStatusMessage(hotswapWarnTarget, '');
+          setStatusLevel(hotswapWarnTarget, null);
         }
         closePowerWarningDialog();
         lastRuntimeHours = null;
@@ -13115,53 +13166,63 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         var maxDtapA = battData.dtapA;
         if (hsData && typeof hsData.pinA === 'number') {
           if (hsData.pinA < maxPinA) {
-            setStatusMessage(hotswapWarnElem, texts[currentLang].warnHotswapLower.replace("{max}", hsData.pinA).replace("{batt}", battData.pinA));
-            setStatusLevel(hotswapWarnElem, 'warning');
+            setStatusMessage(hotswapWarnTarget, texts[currentLang].warnHotswapLower.replace("{max}", hsData.pinA).replace("{batt}", battData.pinA));
+            setStatusLevel(hotswapWarnTarget, 'warning');
             maxPinA = hsData.pinA;
           } else {
-            setStatusMessage(hotswapWarnElem, '');
-            setStatusLevel(hotswapWarnElem, null);
+            setStatusMessage(hotswapWarnTarget, '');
+            setStatusLevel(hotswapWarnTarget, null);
           }
         } else {
-          if (hotswapWarnElem) {
-            setStatusMessage(hotswapWarnElem, '');
-            setStatusLevel(hotswapWarnElem, null);
+          if (hotswapWarnTarget) {
+            setStatusMessage(hotswapWarnTarget, '');
+            setStatusLevel(hotswapWarnTarget, null);
           }
         }
         var availableWatt = maxPinA * lowV;
         drawPowerDiagram(availableWatt, segments, maxPinA);
-        totalCurrent144Elem.textContent = totalCurrentHigh.toFixed(2);
-        totalCurrent12Elem.textContent = totalCurrentLow.toFixed(2);
+        if (totalCurrent144Target) {
+          totalCurrent144Target.textContent = totalCurrentHigh.toFixed(2);
+        }
+        if (totalCurrent12Target) {
+          totalCurrent12Target.textContent = totalCurrentLow.toFixed(2);
+        }
         if (totalWatt === 0) {
           hours = Infinity;
-          batteryLifeElem.textContent = "∞";
+          if (batteryLifeTarget) {
+            batteryLifeTarget.textContent = "∞";
+          }
         } else {
           hours = capacityWh / totalWatt;
-          batteryLifeElem.textContent = hours.toFixed(2);
+          if (batteryLifeTarget) {
+            batteryLifeTarget.textContent = hours.toFixed(2);
+          }
         }
         lastRuntimeHours = hours;
         var batteriesNeeded = 1;
         if (Number.isFinite(hours) && hours > 0) {
           batteriesNeeded = Math.max(1, Math.ceil(10 / hours));
         }
-        batteryCountElem.textContent = batteriesNeeded.toString();
-        setStatusMessage(pinWarnElem, '');
-        setStatusMessage(dtapWarnElem, '');
+        if (batteryCountTarget) {
+          batteryCountTarget.textContent = batteriesNeeded.toString();
+        }
+        setStatusMessage(pinWarnTarget, '');
+        setStatusMessage(dtapWarnTarget, '');
         var pinSeverity = "";
         var dtapSeverity = "";
         if (totalCurrentLow > maxPinA) {
-          setStatusMessage(pinWarnElem, texts[currentLang].warnPinExceeded.replace("{current}", totalCurrentLow.toFixed(2)).replace("{max}", maxPinA));
+          setStatusMessage(pinWarnTarget, texts[currentLang].warnPinExceeded.replace("{current}", totalCurrentLow.toFixed(2)).replace("{max}", maxPinA));
           pinSeverity = 'danger';
         } else if (totalCurrentLow > maxPinA * 0.8) {
-          setStatusMessage(pinWarnElem, texts[currentLang].warnPinNear.replace("{current}", totalCurrentLow.toFixed(2)).replace("{max}", maxPinA));
+          setStatusMessage(pinWarnTarget, texts[currentLang].warnPinNear.replace("{current}", totalCurrentLow.toFixed(2)).replace("{max}", maxPinA));
           pinSeverity = 'warning';
         }
         if (!bMountCam) {
           if (totalCurrentLow > maxDtapA) {
-            setStatusMessage(dtapWarnElem, texts[currentLang].warnDTapExceeded.replace("{current}", totalCurrentLow.toFixed(2)).replace("{max}", maxDtapA));
+            setStatusMessage(dtapWarnTarget, texts[currentLang].warnDTapExceeded.replace("{current}", totalCurrentLow.toFixed(2)).replace("{max}", maxDtapA));
             dtapSeverity = 'danger';
           } else if (totalCurrentLow > maxDtapA * 0.8) {
-            setStatusMessage(dtapWarnElem, texts[currentLang].warnDTapNear.replace("{current}", totalCurrentLow.toFixed(2)).replace("{max}", maxDtapA));
+            setStatusMessage(dtapWarnTarget, texts[currentLang].warnDTapNear.replace("{current}", totalCurrentLow.toFixed(2)).replace("{max}", maxDtapA));
             dtapSeverity = 'warning';
           }
         }
@@ -13185,22 +13246,22 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         } else {
           closePowerWarningDialog();
         }
-        if (pinWarnElem.textContent === "") {
-          setStatusMessage(pinWarnElem, texts[currentLang].pinOk.replace("{max}", maxPinA));
-          setStatusLevel(pinWarnElem, 'success');
+        if (pinWarnTarget && pinWarnTarget.textContent === "") {
+          setStatusMessage(pinWarnTarget, texts[currentLang].pinOk.replace("{max}", maxPinA));
+          setStatusLevel(pinWarnTarget, 'success');
         } else {
-          setStatusLevel(pinWarnElem, pinSeverity || 'warning');
+          setStatusLevel(pinWarnTarget, pinSeverity || 'warning');
         }
         if (!bMountCam) {
-          if (dtapWarnElem.textContent === "") {
-            setStatusMessage(dtapWarnElem, texts[currentLang].dtapOk.replace("{max}", maxDtapA));
-            setStatusLevel(dtapWarnElem, 'success');
+          if (dtapWarnTarget && dtapWarnTarget.textContent === "") {
+            setStatusMessage(dtapWarnTarget, texts[currentLang].dtapOk.replace("{max}", maxDtapA));
+            setStatusLevel(dtapWarnTarget, 'success');
           } else {
-            setStatusLevel(dtapWarnElem, dtapSeverity || 'warning');
+            setStatusLevel(dtapWarnTarget, dtapSeverity || 'warning');
           }
         } else {
-          setStatusMessage(dtapWarnElem, '');
-          setStatusLevel(dtapWarnElem, null);
+          setStatusMessage(dtapWarnTarget, '');
+          setStatusLevel(dtapWarnTarget, null);
         }
       }
       if (totalWatt > 0) {
@@ -13229,6 +13290,15 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
         var pinsCandidates = [];
         var dtapCandidates = [];
+        var nameCollator = typeof collator !== 'undefined' && collator && typeof collator.compare === 'function' ? collator :
+          typeof Intl !== 'undefined' && typeof Intl.Collator === 'function' ? new Intl.Collator(undefined, {
+            numeric: true,
+            sensitivity: 'base'
+          }) : {
+            compare: function compare(a, b) {
+              return String(a).localeCompare(String(b));
+            }
+          };
         for (var battName in devices.batteries) {
           if (battName === "None") continue;
           if (selectedCandidate && battName === selectedCandidate.name) continue;
@@ -13257,7 +13327,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
         var sortByHoursThenName = function sortByHoursThenName(a, b) {
           var diff = b.hours - a.hours;
-          return diff !== 0 ? diff : collator.compare(a.name, b.name);
+          return diff !== 0 ? diff : nameCollator.compare(a.name, b.name);
         };
         pinsCandidates.sort(sortByHoursThenName);
         dtapCandidates.sort(sortByHoursThenName);
@@ -13325,33 +13395,37 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (Number.isFinite(hours)) {
           combinedRuntime = (feedback.runtime * feedback.weight + hours) / (feedback.weight + 1);
         }
-        batteryLifeElem.textContent = combinedRuntime.toFixed(2);
+        if (batteryLifeTarget) {
+          batteryLifeTarget.textContent = combinedRuntime.toFixed(2);
+        }
         lastRuntimeHours = combinedRuntime;
-        if (batteryLifeLabelElem) {
+        if (batteryLifeLabelTarget) {
           var label = texts[currentLang].batteryLifeLabel;
           var userNote = texts[currentLang].runtimeUserCountNote.replace('{count}', feedback.count);
           var idx = label.indexOf(')');
           if (idx !== -1) {
             label = "".concat(label.slice(0, idx), ", ").concat(userNote).concat(label.slice(idx));
           }
-          batteryLifeLabelElem.textContent = label;
-          batteryLifeLabelElem.setAttribute("data-help", texts[currentLang].batteryLifeHelp);
+          batteryLifeLabelTarget.textContent = label;
+          batteryLifeLabelTarget.setAttribute("data-help", texts[currentLang].batteryLifeHelp);
         }
-        if (runtimeAverageNoteElem) {
-          runtimeAverageNoteElem.textContent = feedback.count > 4 ? texts[currentLang].runtimeAverageNote : '';
+        if (runtimeAverageNoteTarget) {
+          runtimeAverageNoteTarget.textContent = feedback.count > 4 ? texts[currentLang].runtimeAverageNote : '';
         }
         var _batteriesNeeded = 1;
         if (Number.isFinite(combinedRuntime) && combinedRuntime > 0) {
           _batteriesNeeded = Math.max(1, Math.ceil(10 / combinedRuntime));
         }
-        batteryCountElem.textContent = _batteriesNeeded.toString();
-      } else {
-        if (batteryLifeLabelElem) {
-          batteryLifeLabelElem.textContent = texts[currentLang].batteryLifeLabel;
-          batteryLifeLabelElem.setAttribute("data-help", texts[currentLang].batteryLifeHelp);
+        if (batteryCountTarget) {
+          batteryCountTarget.textContent = _batteriesNeeded.toString();
         }
-        if (runtimeAverageNoteElem) {
-          runtimeAverageNoteElem.textContent = '';
+      } else {
+        if (batteryLifeLabelTarget) {
+          batteryLifeLabelTarget.textContent = texts[currentLang].batteryLifeLabel;
+          batteryLifeLabelTarget.setAttribute("data-help", texts[currentLang].batteryLifeHelp);
+        }
+        if (runtimeAverageNoteTarget) {
+          runtimeAverageNoteTarget.textContent = '';
         }
       }
       renderTemperatureNote(lastRuntimeHours);
@@ -15159,6 +15233,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       refreshAutoGearWirelessOptions: refreshAutoGearWirelessOptions,
       refreshAutoGearMotorsOptions: refreshAutoGearMotorsOptions,
       refreshAutoGearControllersOptions: refreshAutoGearControllersOptions,
+      refreshAutoGearCrewOptions: refreshAutoGearCrewOptions,
       refreshAutoGearDistanceOptions: refreshAutoGearDistanceOptions,
       updateAutoGearCameraWeightDraft: updateAutoGearCameraWeightDraft,
       updateAutoGearShootingDaysDraft: updateAutoGearShootingDaysDraft,
@@ -15206,6 +15281,119 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       getEasyrigValue: getEasyrigValue,
       setEasyrigValue: setEasyrigValue
     };
+
+    var ADDITIONAL_GLOBAL_EXPORT_ENTRIES = [
+      ['setBatteryPlates', function () { return setBatteryPlatesLocal; }],
+      ['getBatteryPlates', function () { return getBatteryPlates; }],
+      ['setRecordingMedia', function () { return setRecordingMediaLocal; }],
+      ['getRecordingMedia', function () { return getRecordingMedia; }],
+      ['applyDarkMode', function () { return applyDarkMode; }],
+      ['applyPinkMode', function () { return applyPinkMode; }],
+      ['applyHighContrast', function () { return applyHighContrast; }],
+      ['generatePrintableOverview', function () { return generatePrintableOverview; }],
+      ['generateGearListHtml', function () { return generateGearListHtml; }],
+      ['displayGearAndRequirements', function () { return displayGearAndRequirements; }],
+      ['ensureZoomRemoteSetup', function () { return ensureZoomRemoteSetup; }],
+      ['encodeSharedSetup', function () { return encodeSharedSetup; }],
+      ['decodeSharedSetup', function () { return decodeSharedSetup; }],
+      ['applySharedSetupFromUrl', function () { return applySharedSetupFromUrl; }],
+      ['applySharedSetup', function () { return applySharedSetup; }],
+      ['updateBatteryPlateVisibility', function () { return updateBatteryPlateVisibility; }],
+      ['updateBatteryOptions', function () { return updateBatteryOptions; }],
+      ['renderSetupDiagram', function () { return renderSetupDiagram; }],
+      ['enableDiagramInteractions', function () { return enableDiagramInteractions; }],
+      ['updateDiagramLegend', function () { return updateDiagramLegend; }],
+      ['cameraFizPort', function () { return cameraFizPort; }],
+      ['controllerCamPort', function () { return controllerCamPort; }],
+      ['controllerDistancePort', function () { return controllerDistancePort; }],
+      ['detectBrand', function () { return detectBrand; }],
+      ['connectionLabel', function () { return connectionLabel; }],
+      ['generateConnectorSummary', function () { return generateConnectorSummary; }],
+      ['diagramConnectorIcons', function () { return diagramConnectorIcons; }],
+      ['DIAGRAM_MONITOR_ICON', function () { return DIAGRAM_MONITOR_ICON; }],
+      ['exportDiagramSvg', function () { return exportDiagramSvg; }],
+      ['fixPowerInput', function () { return fixPowerInput; }],
+      ['powerInputTypes', function () { return powerInputTypes; }],
+      ['ensureList', function () { return ensureList; }],
+      ['normalizeVideoType', function () { return normalizeVideoType; }],
+      ['normalizeFizConnectorType', function () { return normalizeFizConnectorType; }],
+      ['normalizeViewfinderType', function () { return normalizeViewfinderType; }],
+      ['normalizePowerPortType', function () { return normalizePowerPortType; }],
+      ['getCurrentSetupKey', function () { return getCurrentSetupKey; }],
+      ['renderFeedbackTable', function () { return renderFeedbackTable; }],
+      ['saveCurrentGearList', function () { return saveCurrentGearList; }],
+      ['getPowerSelectionSnapshot', function () { return getPowerSelectionSnapshot; }],
+      ['applyStoredPowerSelection', function () { return applyStoredPowerSelection; }],
+      ['getGearListSelectors', function () { return getGearListSelectors; }],
+      ['applyGearListSelectors', function () { return applyGearListSelectors; }],
+      ['scenarioIcons', function () { return scenarioIcons; }],
+      ['collectProjectFormData', function () { return collectProjectFormData; }],
+      ['populateProjectForm', function () { return populateProjectForm; }],
+      ['renderFilterDetails', function () { return renderFilterDetails; }],
+      ['collectFilterSelections', function () { return collectFilterSelections; }],
+      ['parseFilterTokens', function () { return parseFilterTokens; }],
+      ['applyFilterSelectionsToGearList', function () { return applyFilterSelectionsToGearList; }],
+      ['adjustGearListSelectWidths', function () { return adjustGearListSelectWidths; }],
+      ['deviceMap', function () { return deviceMap; }],
+      ['helpMap', function () { return helpMap; }],
+      ['featureSearchEntries', function () { return featureSearchEntries; }],
+      ['featureSearchDefaultOptions', function () { return featureSearchDefaultOptions; }],
+      ['restoreFeatureSearchDefaults', function () { return restoreFeatureSearchDefaults; }],
+      ['updateFeatureSearchSuggestions', function () { return updateFeatureSearchSuggestions; }],
+      ['setCurrentProjectInfo', function () { return setCurrentProjectInfo; }],
+      ['getCurrentProjectInfo', function () { return getCurrentProjectInfo; }],
+      ['getCurrentSetupState', function () { return getCurrentSetupState; }],
+      ['setSliderBowlValue', function () { return setSliderBowlValue; }],
+      ['crewRoles', function () { return crewRoles; }],
+      ['formatFullBackupFilename', function () { return formatFullBackupFilename; }],
+      ['computeGearListCount', function () { return computeGearListCount; }],
+      ['autoBackup', function () { return autoBackup; }],
+      ['createSettingsBackup', function () { return createSettingsBackup; }],
+      ['captureStorageSnapshot', function () { return captureStorageSnapshot; }],
+      ['sanitizeBackupPayload', function () { return sanitizeBackupPayload; }],
+      ['extractBackupSections', function () { return extractBackupSections; }],
+      ['searchKey', function () { return searchKey; }],
+      ['searchTokens', function () { return searchTokens; }],
+      ['findBestSearchMatch', function () { return findBestSearchMatch; }],
+      ['runFeatureSearch', function () { return runFeatureSearch; }],
+      ['collectAutoGearCatalogNames', function () { return collectAutoGearCatalogNames; }],
+      ['featureMap', function () { return featureMap; }],
+      ['buildDefaultVideoDistributionAutoGearRules', function () { return buildDefaultVideoDistributionAutoGearRules; }],
+      ['applyAutoGearRulesToTableHtml', function () { return applyAutoGearRulesToTableHtml; }],
+      ['importAutoGearRulesFromData', function () { return importAutoGearRulesFromData; }],
+      ['createAutoGearBackup', function () { return createAutoGearBackup; }],
+      ['restoreAutoGearBackup', function () { return restoreAutoGearBackup; }],
+      ['getAutoGearRules', function () { return getAutoGearRules; }],
+      ['syncAutoGearRulesFromStorage', function () { return syncAutoGearRulesFromStorage; }],
+      ['normalizeAutoGearCameraWeightCondition', function () { return normalizeAutoGearCameraWeightCondition; }],
+      ['parseDeviceDatabaseImport', function () { return parseDeviceDatabaseImport; }],
+      ['countDeviceDatabaseEntries', function () { return countDeviceDatabaseEntries; }],
+      ['sanitizeShareFilename', function () { return sanitizeShareFilename; }],
+      ['ensureJsonExtension', function () { return ensureJsonExtension; }],
+      ['getDefaultShareFilename', function () { return getDefaultShareFilename; }],
+      ['promptForSharedFilename', function () { return promptForSharedFilename; }],
+      ['downloadSharedProject', function () { return downloadSharedProject; }],
+      ['confirmAutoGearSelection', function () { return confirmAutoGearSelection; }],
+      ['configureSharedImportOptions', function () { return configureSharedImportOptions; }],
+      ['resolveSharedImportMode', function () { return resolveSharedImportMode; }],
+      ['resetPlannerStateAfterFactoryReset', function () { return resetPlannerStateAfterFactoryReset; }]
+    ];
+
+    var resolvedAdditionalExports = ADDITIONAL_GLOBAL_EXPORT_ENTRIES.reduce(function (acc, entry) {
+      var exportName = entry[0];
+      var getter = entry[1];
+      try {
+        var value = getter();
+        if (typeof value !== 'undefined') {
+          acc[exportName] = value;
+        }
+      } catch (error) {
+        void error;
+      }
+      return acc;
+    }, {});
+
+    Object.assign(CORE_PART2_GLOBAL_EXPORTS, resolvedAdditionalExports);
     var CORE_PART2_GLOBAL_SCOPE = CORE_SHARED_SCOPE_PART2 || (typeof globalThis !== 'undefined' ? globalThis : null) || (typeof window !== 'undefined' ? window : null) || (typeof self !== 'undefined' ? self : null) || (typeof global !== 'undefined' ? global : null);
     var CORE_PART2_RUNTIME = function resolvePart2Runtime(scope) {
       if (!scope || _typeof(scope) !== 'object') return null;

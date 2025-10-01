@@ -10267,11 +10267,15 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   };
   function updateSelectIconBoxes(sel) {
     if (!sel) return;
-    var container = sel.parentNode.querySelector('.icon-box-summary');
+    var parent = sel.parentNode;
+    if (!parent || typeof parent.querySelector !== 'function') {
+      return;
+    }
+    var container = parent.querySelector('.icon-box-summary');
     if (!container) {
       container = document.createElement('div');
       container.className = 'icon-box-summary';
-      sel.parentNode.insertBefore(container, sel.nextSibling);
+      parent.insertBefore(container, sel.nextSibling);
     }
     container.innerHTML = '';
     var opts = sel.multiple ? Array.from(sel.selectedOptions) : sel.value ? [sel.options[sel.selectedIndex]] : [];
@@ -14370,6 +14374,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       });
     });
   }
+  exposeCoreRuntimeConstant('updateSelectIconBoxes', updateSelectIconBoxes);
   exposeCoreRuntimeConstants({
     CORE_GLOBAL_SCOPE: CORE_GLOBAL_SCOPE,
     CORE_BOOT_QUEUE_KEY: CORE_BOOT_QUEUE_KEY,

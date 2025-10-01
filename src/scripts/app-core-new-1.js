@@ -11549,11 +11549,15 @@ var projectFieldIcons = {
 
 function updateSelectIconBoxes(sel) {
   if (!sel) return;
-  let container = sel.parentNode.querySelector('.icon-box-summary');
+  const parent = sel.parentNode;
+  if (!parent || typeof parent.querySelector !== 'function') {
+    return;
+  }
+  let container = parent.querySelector('.icon-box-summary');
   if (!container) {
     container = document.createElement('div');
     container.className = 'icon-box-summary';
-    sel.parentNode.insertBefore(container, sel.nextSibling);
+    parent.insertBefore(container, sel.nextSibling);
   }
   container.innerHTML = '';
   const opts = sel.multiple
@@ -15795,6 +15799,7 @@ function getCrewRoleEntries() {
   return entries.sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: 'base' }));
 }
 
+exposeCoreRuntimeConstant('updateSelectIconBoxes', updateSelectIconBoxes);
 exposeCoreRuntimeConstants({
   CORE_GLOBAL_SCOPE,
   CORE_BOOT_QUEUE_KEY,
