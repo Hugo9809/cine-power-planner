@@ -1576,8 +1576,19 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return resolved;
       }
 
-      if (typeof baseAutoGearRules !== 'undefined' && Array.isArray(baseAutoGearRules)) {
-        return baseAutoGearRules;
+      for (let index = 0; index < CORE_RUNTIME_SCOPE_CANDIDATES.length; index += 1) {
+        const scope = CORE_RUNTIME_SCOPE_CANDIDATES[index];
+        if (!scope || typeof scope !== 'object') {
+          continue;
+        }
+        try {
+          const value = scope.baseAutoGearRules;
+          if (Array.isArray(value)) {
+            return value;
+          }
+        } catch (fallbackError) {
+          void fallbackError;
+        }
       }
 
       return [];
