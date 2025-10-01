@@ -411,6 +411,18 @@ function repairAutoGearAutoPresetGlobal(scope) {
       }
     }
   }
+
+  try {
+    const globalFn = (scope && scope.Function) || Function;
+    if (typeof globalFn === 'function') {
+      globalFn(
+        'value',
+        "if (typeof autoGearAutoPresetId === 'undefined') { autoGearAutoPresetId = value; } return autoGearAutoPresetId;",
+      )(typeof scope.autoGearAutoPresetId === 'string' ? scope.autoGearAutoPresetId : '');
+    }
+  } catch (bindingError) {
+    void bindingError;
+  }
 }
 
 function callCoreFunctionIfAvailable(functionName, args = [], options = {}) {

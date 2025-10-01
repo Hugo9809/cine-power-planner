@@ -12,9 +12,73 @@
  * side-effect free.
  */
 
-if (typeof autoGearAutoPresetId === 'undefined') {
-  var autoGearAutoPresetId = '';
+function ensureCriticalGlobalVariable(name, fallback) {
+  var scope = null;
+  if (typeof globalThis !== 'undefined') {
+    scope = globalThis;
+  } else if (typeof window !== 'undefined') {
+    scope = window;
+  } else if (typeof self !== 'undefined') {
+    scope = self;
+  } else if (typeof global !== 'undefined') {
+    scope = global;
+  }
+  if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+    return;
+  }
+
+  var initialValue = fallback;
+  try {
+    if (typeof scope[name] !== 'undefined') {
+      initialValue = scope[name];
+    }
+  } catch (readError) {
+    void readError;
+  }
+
+  var value = typeof initialValue === 'undefined' ? fallback : initialValue;
+
+  try {
+    scope[name] = value;
+  } catch (assignError) {
+    void assignError;
+    try {
+      Object.defineProperty(scope, name, {
+        configurable: true,
+        writable: true,
+        enumerable: false,
+        value: value,
+      });
+    } catch (defineError) {
+      void defineError;
+    }
+  }
+
+  try {
+    var globalFn = (scope && scope.Function) || Function;
+    if (typeof globalFn === 'function') {
+      globalFn(
+        'value',
+        "if (typeof " +
+          name +
+          " === 'undefined') { " +
+          name +
+          " = value; } return " +
+          name +
+          ';',
+      )(value);
+    }
+  } catch (bindingError) {
+    void bindingError;
+  }
 }
+
+ensureCriticalGlobalVariable('autoGearAutoPresetId', '');
+ensureCriticalGlobalVariable('baseAutoGearRules', []);
+ensureCriticalGlobalVariable('autoGearScenarioModeSelect', null);
+ensureCriticalGlobalVariable('autoGearRuleNameInput', null);
+ensureCriticalGlobalVariable('autoGearSummaryFocus', 'all');
+ensureCriticalGlobalVariable('autoGearMonitorDefaultControls', []);
 
 if (typeof baseAutoGearRules === 'undefined') {
   var baseAutoGearRules = [];
