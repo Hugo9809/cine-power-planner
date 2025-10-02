@@ -14391,7 +14391,26 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     TEMPERATURE_UNITS: TEMPERATURE_UNITS,
     TEMPERATURE_SCENARIOS: TEMPERATURE_SCENARIOS,
     FEEDBACK_TEMPERATURE_MIN: FEEDBACK_TEMPERATURE_MIN,
-    FEEDBACK_TEMPERATURE_MAX: FEEDBACK_TEMPERATURE_MAX
+    FEEDBACK_TEMPERATURE_MAX: FEEDBACK_TEMPERATURE_MAX,
+    // Mount voltage helpers must stay globally accessible for autosave/share flows.
+    SUPPORTED_MOUNT_VOLTAGE_TYPES: SUPPORTED_MOUNT_VOLTAGE_TYPES,
+    DEFAULT_MOUNT_VOLTAGES: DEFAULT_MOUNT_VOLTAGES,
+    mountVoltageInputs: mountVoltageInputs,
+    parseVoltageValue: parseVoltageValue,
+    getMountVoltagePreferencesClone: getMountVoltagePreferencesClone,
+    applyMountVoltagePreferences: applyMountVoltagePreferences,
+    parseStoredMountVoltages: parseStoredMountVoltages,
+    resetMountVoltagePreferences: resetMountVoltagePreferences,
+    updateMountVoltageInputsFromState: updateMountVoltageInputsFromState,
+    // Pink mode animated icon controls are required for theme toggles during imports.
+    startPinkModeAnimatedIcons: startPinkModeAnimatedIcons,
+    stopPinkModeAnimatedIcons: stopPinkModeAnimatedIcons,
+    pinkModeIcons: pinkModeIcons,
+    ensureSvgHasAriaHidden: ensureSvgHasAriaHidden,
+    triggerPinkModeIconRain: triggerPinkModeIconRain,
+    PINK_MODE_ICON_INTERVAL_MS: PINK_MODE_ICON_INTERVAL_MS,
+    PINK_MODE_ICON_ANIMATION_CLASS: PINK_MODE_ICON_ANIMATION_CLASS,
+    PINK_MODE_ICON_ANIMATION_RESET_DELAY: PINK_MODE_ICON_ANIMATION_RESET_DELAY
   });
   exposeCoreRuntimeBindings({
     safeGenerateConnectorSummary: {
@@ -14432,6 +14451,26 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       },
       set: function set(value) {
         autoGearScenarioModeSelectElement = value || null;
+      }
+    },
+    pinkModeIconRotationTimer: {
+      get: function get() {
+        return pinkModeIconRotationTimer;
+      },
+      set: function set(value) {
+        if (typeof value === 'number' || value === null || typeof value === 'object') {
+          pinkModeIconRotationTimer = value;
+        }
+      }
+    },
+    pinkModeIconIndex: {
+      get: function get() {
+        return pinkModeIconIndex;
+      },
+      set: function set(value) {
+        if (typeof value === 'number') {
+          pinkModeIconIndex = value;
+        }
       }
     }
   });

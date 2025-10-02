@@ -15817,6 +15817,25 @@ exposeCoreRuntimeConstants({
   TEMPERATURE_SCENARIOS,
   FEEDBACK_TEMPERATURE_MIN,
   FEEDBACK_TEMPERATURE_MAX,
+  // Mount voltage helpers must stay globally accessible for autosave/share flows.
+  SUPPORTED_MOUNT_VOLTAGE_TYPES,
+  DEFAULT_MOUNT_VOLTAGES,
+  mountVoltageInputs,
+  parseVoltageValue,
+  getMountVoltagePreferencesClone,
+  applyMountVoltagePreferences,
+  parseStoredMountVoltages,
+  resetMountVoltagePreferences,
+  updateMountVoltageInputsFromState,
+  // Pink mode animated icon controls are required for theme toggles during imports.
+  startPinkModeAnimatedIcons,
+  stopPinkModeAnimatedIcons,
+  pinkModeIcons,
+  ensureSvgHasAriaHidden,
+  triggerPinkModeIconRain,
+  PINK_MODE_ICON_INTERVAL_MS,
+  PINK_MODE_ICON_ANIMATION_CLASS,
+  PINK_MODE_ICON_ANIMATION_RESET_DELAY,
 });
 
 exposeCoreRuntimeBindings({
@@ -15850,6 +15869,22 @@ exposeCoreRuntimeBindings({
     get: () => autoGearScenarioModeSelectElement,
     set: value => {
       autoGearScenarioModeSelectElement = value || null;
+    },
+  },
+  pinkModeIconRotationTimer: {
+    get: () => pinkModeIconRotationTimer,
+    set: value => {
+      if (typeof value === 'number' || value === null || typeof value === 'object') {
+        pinkModeIconRotationTimer = value;
+      }
+    },
+  },
+  pinkModeIconIndex: {
+    get: () => pinkModeIconIndex,
+    set: value => {
+      if (typeof value === 'number') {
+        pinkModeIconIndex = value;
+      }
     },
   },
 });
