@@ -3,8 +3,16 @@ const { setupScriptEnvironment } = require('../helpers/scriptEnvironment');
 
 describe('shared project gear list handling', () => {
   let env;
+  let originalFetch;
 
   beforeEach(() => {
+    originalFetch = global.fetch;
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        ok: false,
+        text: () => Promise.resolve(''),
+      })
+    );
     env = setupScriptEnvironment({
       globals: {
         saveProject: jest.fn(),
@@ -19,7 +27,46 @@ describe('shared project gear list handling', () => {
   });
 
   afterEach(() => {
+    if (typeof window.stopPinkModeAnimatedIcons === 'function') {
+      try {
+        window.stopPinkModeAnimatedIcons();
+      } catch (error) {
+        void error;
+      }
+    }
+    if (typeof window.stopPinkModeIconRotation === 'function') {
+      try {
+        window.stopPinkModeIconRotation();
+      } catch (error) {
+        void error;
+      }
+    }
     env.cleanup();
+    if (typeof originalFetch === 'undefined') {
+      delete global.fetch;
+    } else {
+      global.fetch = originalFetch;
+    }
+  });
+
+  test('mount voltage helpers remain globally accessible for share/import flows', () => {
+    expect(typeof window.getMountVoltagePreferencesClone).toBe('function');
+    expect(typeof window.applyMountVoltagePreferences).toBe('function');
+
+    const baseline = window.getMountVoltagePreferencesClone();
+    const modified = window.getMountVoltagePreferencesClone();
+
+    expect(modified).not.toBe(baseline);
+    expect(modified['V-Mount']).toBeDefined();
+
+    modified['V-Mount'].high = baseline['V-Mount'].high + 1;
+
+    window.applyMountVoltagePreferences(modified, { persist: false, triggerUpdate: false });
+
+    const applied = window.getMountVoltagePreferencesClone();
+    expect(applied['V-Mount'].high).toBe(modified['V-Mount'].high);
+
+    window.applyMountVoltagePreferences(baseline, { persist: false, triggerUpdate: false });
   });
 
   test('encodeSharedSetup includes gear list payload', () => {
