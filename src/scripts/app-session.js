@@ -10693,7 +10693,7 @@ function initApp() {
   document.querySelectorAll('#projectForm select')
     .forEach(sel => {
       attachSelectSearch(sel);
-      initFavoritableSelect(sel);
+      callSessionCoreFunction('initFavoritableSelect', [sel], { defer: true });
     });
   setupInstallBanner();
   setLanguage(currentLang);
