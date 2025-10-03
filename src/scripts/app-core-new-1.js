@@ -229,6 +229,25 @@ function exposeCoreRuntimeBindings(bindings) {
   });
 }
 
+function mergeRuntimeConstantSets(target) {
+  if (!target || typeof target !== 'object') {
+    return target;
+  }
+
+  for (let index = 1; index < arguments.length; index += 1) {
+    const source = arguments[index];
+    if (!source || typeof source !== 'object') {
+      continue;
+    }
+
+    Object.keys(source).forEach(key => {
+      target[key] = source[key];
+    });
+  }
+
+  return target;
+}
+
 const CORE_PART1_VALID_IDENTIFIER = /^[A-Za-z_$][A-Za-z0-9_$]*$/;
 
 function runCoreRuntimeSegment(executor) {
@@ -15799,8 +15818,7 @@ function getCrewRoleEntries() {
   return entries.sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: 'base' }));
 }
 
-exposeCoreRuntimeConstant('updateSelectIconBoxes', updateSelectIconBoxes);
-exposeCoreRuntimeConstants({
+const CORE_RUNTIME_EXPORTS = {
   CORE_GLOBAL_SCOPE,
   CORE_BOOT_QUEUE_KEY,
   CORE_BOOT_QUEUE,
@@ -15817,7 +15835,10 @@ exposeCoreRuntimeConstants({
   TEMPERATURE_SCENARIOS,
   FEEDBACK_TEMPERATURE_MIN,
   FEEDBACK_TEMPERATURE_MAX,
-  // Mount voltage helpers must stay globally accessible for autosave/share flows.
+};
+
+// Mount voltage helpers must stay globally accessible for autosave/share flows.
+const MOUNT_VOLTAGE_RUNTIME_EXPORTS = {
   SUPPORTED_MOUNT_VOLTAGE_TYPES,
   DEFAULT_MOUNT_VOLTAGES,
   mountVoltageInputs,
@@ -15827,7 +15848,10 @@ exposeCoreRuntimeConstants({
   parseStoredMountVoltages,
   resetMountVoltagePreferences,
   updateMountVoltageInputsFromState,
-  // Pink mode animated icon controls are required for theme toggles during imports.
+};
+
+// Pink mode animated icon controls are required for theme toggles during imports.
+const PINK_MODE_ICON_RUNTIME_EXPORTS = {
   startPinkModeAnimatedIcons,
   stopPinkModeAnimatedIcons,
   pinkModeIcons,
@@ -15836,7 +15860,16 @@ exposeCoreRuntimeConstants({
   PINK_MODE_ICON_INTERVAL_MS,
   PINK_MODE_ICON_ANIMATION_CLASS,
   PINK_MODE_ICON_ANIMATION_RESET_DELAY,
-});
+};
+
+const COMBINED_CORE_RUNTIME_CONSTANTS = mergeRuntimeConstantSets(
+  CORE_RUNTIME_EXPORTS,
+  MOUNT_VOLTAGE_RUNTIME_EXPORTS,
+  PINK_MODE_ICON_RUNTIME_EXPORTS,
+);
+
+exposeCoreRuntimeConstant('updateSelectIconBoxes', updateSelectIconBoxes);
+exposeCoreRuntimeConstants(COMBINED_CORE_RUNTIME_CONSTANTS);
 
 exposeCoreRuntimeBindings({
   safeGenerateConnectorSummary: {

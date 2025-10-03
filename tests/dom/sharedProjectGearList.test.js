@@ -52,21 +52,32 @@ describe('shared project gear list handling', () => {
   test('mount voltage helpers remain globally accessible for share/import flows', () => {
     expect(typeof window.getMountVoltagePreferencesClone).toBe('function');
     expect(typeof window.applyMountVoltagePreferences).toBe('function');
+    expect(typeof window.resetMountVoltagePreferences).toBe('function');
+    expect(typeof window.parseStoredMountVoltages).toBe('function');
+
+    expect(Array.isArray(window.SUPPORTED_MOUNT_VOLTAGE_TYPES)).toBe(true);
+    expect(window.DEFAULT_MOUNT_VOLTAGES).toBeDefined();
 
     const baseline = window.getMountVoltagePreferencesClone();
     const modified = window.getMountVoltagePreferencesClone();
 
     expect(modified).not.toBe(baseline);
     expect(modified['V-Mount']).toBeDefined();
+    expect(modified['V-Mount']).not.toBe(baseline['V-Mount']);
 
     modified['V-Mount'].high = baseline['V-Mount'].high + 1;
 
-    window.applyMountVoltagePreferences(modified, { persist: false, triggerUpdate: false });
+    const normalized = window.parseStoredMountVoltages(JSON.stringify(modified));
+    expect(normalized['V-Mount'].high).toBe(modified['V-Mount'].high);
+
+    window.applyMountVoltagePreferences(normalized, { persist: false, triggerUpdate: false });
 
     const applied = window.getMountVoltagePreferencesClone();
     expect(applied['V-Mount'].high).toBe(modified['V-Mount'].high);
 
-    window.applyMountVoltagePreferences(baseline, { persist: false, triggerUpdate: false });
+    window.resetMountVoltagePreferences({ persist: false, triggerUpdate: false });
+    const reset = window.getMountVoltagePreferencesClone();
+    expect(reset['V-Mount'].high).toBe(baseline['V-Mount'].high);
   });
 
   test('encodeSharedSetup includes gear list payload', () => {

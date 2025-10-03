@@ -42,8 +42,27 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     } catch (corePart1InitError) {
       CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initialized = true;
       void corePart1InitError;
-    }
   }
+}
+
+function mergeRuntimeConstantSets(target) {
+  if (!target || typeof target !== 'object') {
+    return target;
+  }
+
+  for (var index = 1; index < arguments.length; index += 1) {
+    var source = arguments[index];
+    if (!source || typeof source !== 'object') {
+      continue;
+    }
+
+    Object.keys(source).forEach(function (key) {
+      target[key] = source[key];
+    });
+  }
+
+  return target;
+}
   var CORE_GLOBAL_SCOPE = CORE_PART1_RUNTIME_SCOPE;
   function exposeCoreRuntimeConstant(name, value) {
     if (typeof name !== 'string' || !name) {
@@ -14374,8 +14393,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       });
     });
   }
-  exposeCoreRuntimeConstant('updateSelectIconBoxes', updateSelectIconBoxes);
-  exposeCoreRuntimeConstants({
+  var CORE_RUNTIME_EXPORTS = {
     CORE_GLOBAL_SCOPE: CORE_GLOBAL_SCOPE,
     CORE_BOOT_QUEUE_KEY: CORE_BOOT_QUEUE_KEY,
     CORE_BOOT_QUEUE: CORE_BOOT_QUEUE,
@@ -14391,8 +14409,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     TEMPERATURE_UNITS: TEMPERATURE_UNITS,
     TEMPERATURE_SCENARIOS: TEMPERATURE_SCENARIOS,
     FEEDBACK_TEMPERATURE_MIN: FEEDBACK_TEMPERATURE_MIN,
-    FEEDBACK_TEMPERATURE_MAX: FEEDBACK_TEMPERATURE_MAX,
-    // Mount voltage helpers must stay globally accessible for autosave/share flows.
+    FEEDBACK_TEMPERATURE_MAX: FEEDBACK_TEMPERATURE_MAX
+  };
+  // Mount voltage helpers must stay globally accessible for autosave/share flows.
+  var MOUNT_VOLTAGE_RUNTIME_EXPORTS = {
     SUPPORTED_MOUNT_VOLTAGE_TYPES: SUPPORTED_MOUNT_VOLTAGE_TYPES,
     DEFAULT_MOUNT_VOLTAGES: DEFAULT_MOUNT_VOLTAGES,
     mountVoltageInputs: mountVoltageInputs,
@@ -14401,8 +14421,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     applyMountVoltagePreferences: applyMountVoltagePreferences,
     parseStoredMountVoltages: parseStoredMountVoltages,
     resetMountVoltagePreferences: resetMountVoltagePreferences,
-    updateMountVoltageInputsFromState: updateMountVoltageInputsFromState,
-    // Pink mode animated icon controls are required for theme toggles during imports.
+    updateMountVoltageInputsFromState: updateMountVoltageInputsFromState
+  };
+  // Pink mode animated icon controls are required for theme toggles during imports.
+  var PINK_MODE_ICON_RUNTIME_EXPORTS = {
     startPinkModeAnimatedIcons: startPinkModeAnimatedIcons,
     stopPinkModeAnimatedIcons: stopPinkModeAnimatedIcons,
     pinkModeIcons: pinkModeIcons,
@@ -14411,7 +14433,14 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     PINK_MODE_ICON_INTERVAL_MS: PINK_MODE_ICON_INTERVAL_MS,
     PINK_MODE_ICON_ANIMATION_CLASS: PINK_MODE_ICON_ANIMATION_CLASS,
     PINK_MODE_ICON_ANIMATION_RESET_DELAY: PINK_MODE_ICON_ANIMATION_RESET_DELAY
-  });
+  };
+  var COMBINED_CORE_RUNTIME_CONSTANTS = mergeRuntimeConstantSets(
+    CORE_RUNTIME_EXPORTS,
+    MOUNT_VOLTAGE_RUNTIME_EXPORTS,
+    PINK_MODE_ICON_RUNTIME_EXPORTS
+  );
+  exposeCoreRuntimeConstant('updateSelectIconBoxes', updateSelectIconBoxes);
+  exposeCoreRuntimeConstants(COMBINED_CORE_RUNTIME_CONSTANTS);
   exposeCoreRuntimeBindings({
     safeGenerateConnectorSummary: {
       get: function get() {
