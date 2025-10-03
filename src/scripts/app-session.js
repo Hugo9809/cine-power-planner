@@ -3395,7 +3395,7 @@ let settingsInitialPinkMode = isPinkModeActive();
 let settingsInitialTemperatureUnit =
   typeof temperatureUnit === 'string' ? temperatureUnit : 'celsius';
 let settingsInitialShowAutoBackups = Boolean(showAutoBackups);
-let settingsInitialMountVoltages = getMountVoltagePreferencesClone();
+let settingsInitialMountVoltages = getSessionMountVoltagePreferencesClone();
 
 function persistPinkModePreference(enabled) {
   pinkModeEnabled = !!enabled;
@@ -3758,7 +3758,7 @@ if (settingsButton && settingsDialog) {
         applyTemperatureUnitPreference(settingsTemperatureUnit.value);
         rememberSettingsTemperatureUnitBaseline();
       }
-      applyMountVoltagePreferences(collectMountVoltageFormValues(), {
+      applySessionMountVoltagePreferences(collectMountVoltageFormValues(), {
         persist: true,
         triggerUpdate: true
       });
@@ -6809,8 +6809,10 @@ function applyPreferencesFromStorage(safeGetItem) {
     }
 
     if (parsedVoltages) {
-      applyMountVoltagePreferences(parsedVoltages, { persist: shouldPersistVoltages, triggerUpdate: true });
-      updateMountVoltageInputsFromState();
+      applySessionMountVoltagePreferences(parsedVoltages, { persist: shouldPersistVoltages, triggerUpdate: true });
+      if (typeof updateMountVoltageInputsFromState === 'function') {
+        updateMountVoltageInputsFromState();
+      }
       rememberSettingsMountVoltagesBaseline();
     }
   } catch (voltageError) {
@@ -11656,6 +11658,11 @@ if (typeof module !== "undefined" && module.exports) {
         pendingSharedLinkListener = typeof listener === 'function' ? listener : null;
       },
     },
+    __mountVoltageInternals: {
+      getSessionMountVoltagePreferencesClone,
+      applySessionMountVoltagePreferences,
+      cloneMountVoltageDefaultsForSession,
+    },
     collectAutoGearCatalogNames,
     buildDefaultVideoDistributionAutoGearRules,
     applyAutoGearRulesToTableHtml,
@@ -11685,13 +11692,106 @@ if (typeof module !== "undefined" && module.exports) {
     },
   };
 }
+
+const missingMountVoltageWarnings = new Set();
+
+function warnMissingMountVoltageHelper(helperName, error) {
+  const key = typeof helperName === 'string' && helperName ? helperName : 'unknown';
+  if (missingMountVoltageWarnings.has(key)) {
+    return;
+  }
+  missingMountVoltageWarnings.add(key);
+  if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+    const message = `Mount voltage helper "${key}" is unavailable; using defaults to protect user data.`;
+    if (error) {
+      console.warn(message, error);
+    } else {
+      console.warn(message);
+    }
+  }
+}
+
+function cloneMountVoltageDefaultsForSession() {
+  if (typeof cloneMountVoltageMap === 'function') {
+    try {
+      return cloneMountVoltageMap(DEFAULT_MOUNT_VOLTAGES);
+    } catch (cloneError) {
+      warnMissingMountVoltageHelper('cloneMountVoltageMap', cloneError);
+    }
+  }
+  if (DEFAULT_MOUNT_VOLTAGES && typeof DEFAULT_MOUNT_VOLTAGES === 'object') {
+    try {
+      return JSON.parse(JSON.stringify(DEFAULT_MOUNT_VOLTAGES));
+    } catch (serializationError) {
+      void serializationError;
+    }
+  }
+  const clone = {};
+  const parse = typeof parseVoltageValue === 'function'
+    ? (value, fallback) => parseVoltageValue(value, fallback)
+    : (value, fallback) => {
+        const numeric = Number(value);
+        if (Number.isFinite(numeric)) {
+          return numeric;
+        }
+        const fallbackNumeric = Number(fallback);
+        return Number.isFinite(fallbackNumeric) ? fallbackNumeric : 0;
+      };
+  if (Array.isArray(SUPPORTED_MOUNT_VOLTAGE_TYPES)) {
+    SUPPORTED_MOUNT_VOLTAGE_TYPES.forEach(type => {
+      const defaults = DEFAULT_MOUNT_VOLTAGES?.[type] || {};
+      clone[type] = {
+        high: parse(defaults.high, defaults.high),
+        low: parse(defaults.low, defaults.low),
+      };
+    });
+  }
+  return clone;
+}
+
+function getSessionMountVoltagePreferencesClone() {
+  if (typeof getMountVoltagePreferencesClone === 'function') {
+    try {
+      const clone = getMountVoltagePreferencesClone();
+      if (clone && typeof clone === 'object') {
+        return clone;
+      }
+    } catch (helperError) {
+      warnMissingMountVoltageHelper('getMountVoltagePreferencesClone', helperError);
+    }
+  } else {
+    warnMissingMountVoltageHelper('getMountVoltagePreferencesClone');
+  }
+  return cloneMountVoltageDefaultsForSession();
+}
+
+function applySessionMountVoltagePreferences(preferences, options = {}) {
+  if (typeof applyMountVoltagePreferences === 'function') {
+    try {
+      applyMountVoltagePreferences(preferences, options);
+      return;
+    } catch (helperError) {
+      warnMissingMountVoltageHelper('applyMountVoltagePreferences', helperError);
+    }
+  } else {
+    warnMissingMountVoltageHelper('applyMountVoltagePreferences');
+  }
+  if (options && options.triggerUpdate && typeof updateMountVoltageInputsFromState === 'function') {
+    try {
+      updateMountVoltageInputsFromState();
+    } catch (updateError) {
+      void updateError;
+    }
+  }
+}
+
 function rememberSettingsMountVoltagesBaseline() {
-  settingsInitialMountVoltages = getMountVoltagePreferencesClone();
+  settingsInitialMountVoltages = getSessionMountVoltagePreferencesClone();
 }
 
 function revertSettingsMountVoltagesIfNeeded() {
-  const baseline = settingsInitialMountVoltages || getMountVoltagePreferencesClone();
-  const current = getMountVoltagePreferencesClone();
+  const baseline = settingsInitialMountVoltages || getSessionMountVoltagePreferencesClone();
+  const current = getSessionMountVoltagePreferencesClone();
   const changed = SUPPORTED_MOUNT_VOLTAGE_TYPES.some(type => {
     const baselineEntry = baseline[type] || DEFAULT_MOUNT_VOLTAGES[type];
     const currentEntry = current[type] || DEFAULT_MOUNT_VOLTAGES[type];
@@ -11701,23 +11801,41 @@ function revertSettingsMountVoltagesIfNeeded() {
     );
   });
   if (changed) {
-    applyMountVoltagePreferences(baseline, { persist: true, triggerUpdate: true });
+    applySessionMountVoltagePreferences(baseline, { persist: true, triggerUpdate: true });
   } else {
-    updateMountVoltageInputsFromState();
+    if (typeof updateMountVoltageInputsFromState === 'function') {
+      updateMountVoltageInputsFromState();
+    }
   }
 }
 
 function collectMountVoltageFormValues() {
-  const updated = getMountVoltagePreferencesClone();
+  const updated = getSessionMountVoltagePreferencesClone();
+  const parse = typeof parseVoltageValue === 'function'
+    ? (value, fallback) => parseVoltageValue(value, fallback)
+    : (value, fallback) => {
+        const numeric = Number(value);
+        if (Number.isFinite(numeric)) {
+          return numeric;
+        }
+        const fallbackNumeric = Number(fallback);
+        return Number.isFinite(fallbackNumeric) ? fallbackNumeric : 0;
+      };
+  const defaultClones = cloneMountVoltageDefaultsForSession();
   SUPPORTED_MOUNT_VOLTAGE_TYPES.forEach(type => {
     const fields = mountVoltageInputs?.[type];
     if (!fields) return;
-    const baselineEntry = updated[type] || DEFAULT_MOUNT_VOLTAGES[type];
+    const defaults = DEFAULT_MOUNT_VOLTAGES?.[type] || { high: 0, low: 0 };
+    let target = updated[type];
+    if (!target || typeof target !== 'object') {
+      target = defaultClones[type] ? { ...defaultClones[type] } : { high: defaults.high, low: defaults.low };
+      updated[type] = target;
+    }
     if (fields.high) {
-      updated[type].high = parseVoltageValue(fields.high.value, baselineEntry.high);
+      target.high = parse(fields.high.value, target.high ?? defaults.high);
     }
     if (fields.low) {
-      updated[type].low = parseVoltageValue(fields.low.value, baselineEntry.low);
+      target.low = parse(fields.low.value, target.low ?? defaults.low);
     }
   });
   return updated;
@@ -11725,6 +11843,6 @@ function collectMountVoltageFormValues() {
 
 function handleMountVoltageInputChange() {
   const values = collectMountVoltageFormValues();
-  applyMountVoltagePreferences(values, { persist: false, triggerUpdate: true });
+  applySessionMountVoltagePreferences(values, { persist: false, triggerUpdate: true });
 }
 

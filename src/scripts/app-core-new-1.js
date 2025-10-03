@@ -1398,6 +1398,21 @@ function persistMountVoltagePreferences(preferences) {
     }
 }
 
+const MOUNT_VOLTAGE_RUNTIME_EXPORTS = Object.freeze({
+  // Mount voltage helpers must stay globally accessible for autosave/share flows.
+  SUPPORTED_MOUNT_VOLTAGE_TYPES,
+  DEFAULT_MOUNT_VOLTAGES,
+  mountVoltageInputs,
+  parseVoltageValue,
+  cloneMountVoltageMap,
+  getMountVoltagePreferencesClone,
+  applyMountVoltagePreferences,
+  parseStoredMountVoltages,
+  resetMountVoltagePreferences,
+  updateMountVoltageInputsFromState,
+  persistMountVoltagePreferences,
+});
+
 function applyMountVoltagePreferences(preferences, options = {}) {
   const { persist = true, triggerUpdate = true } = options || {};
   mountVoltagePreferences = normalizeMountVoltageSource(preferences);
@@ -15800,7 +15815,7 @@ function getCrewRoleEntries() {
 }
 
 exposeCoreRuntimeConstant('updateSelectIconBoxes', updateSelectIconBoxes);
-exposeCoreRuntimeConstants({
+const CORE_RUNTIME_CONSTANTS = {
   CORE_GLOBAL_SCOPE,
   CORE_BOOT_QUEUE_KEY,
   CORE_BOOT_QUEUE,
@@ -15817,16 +15832,12 @@ exposeCoreRuntimeConstants({
   TEMPERATURE_SCENARIOS,
   FEEDBACK_TEMPERATURE_MIN,
   FEEDBACK_TEMPERATURE_MAX,
-  // Mount voltage helpers must stay globally accessible for autosave/share flows.
-  SUPPORTED_MOUNT_VOLTAGE_TYPES,
-  DEFAULT_MOUNT_VOLTAGES,
-  mountVoltageInputs,
-  parseVoltageValue,
-  getMountVoltagePreferencesClone,
-  applyMountVoltagePreferences,
-  parseStoredMountVoltages,
-  resetMountVoltagePreferences,
-  updateMountVoltageInputsFromState,
+};
+
+// Ensure mount voltage helpers remain reachable from the session layer.
+Object.assign(CORE_RUNTIME_CONSTANTS, MOUNT_VOLTAGE_RUNTIME_EXPORTS);
+
+Object.assign(CORE_RUNTIME_CONSTANTS, {
   // Pink mode animated icon controls are required for theme toggles during imports.
   startPinkModeAnimatedIcons,
   stopPinkModeAnimatedIcons,
@@ -15837,6 +15848,8 @@ exposeCoreRuntimeConstants({
   PINK_MODE_ICON_ANIMATION_CLASS,
   PINK_MODE_ICON_ANIMATION_RESET_DELAY,
 });
+
+exposeCoreRuntimeConstants(CORE_RUNTIME_CONSTANTS);
 
 exposeCoreRuntimeBindings({
   safeGenerateConnectorSummary: {
