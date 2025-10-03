@@ -69,6 +69,40 @@ describe('shared project gear list handling', () => {
     window.applyMountVoltagePreferences(baseline, { persist: false, triggerUpdate: false });
   });
 
+  test('session layer falls back to default mount voltages when runtime helper is missing', () => {
+    const { utils } = env;
+    expect(utils.__mountVoltageInternals).toBeDefined();
+
+    const hadCloneHelper = Object.prototype.hasOwnProperty.call(window, 'getMountVoltagePreferencesClone');
+    const originalHelper = window.getMountVoltagePreferencesClone;
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    try {
+      delete window.getMountVoltagePreferencesClone;
+
+      const fallback = utils.__mountVoltageInternals.getSessionMountVoltagePreferencesClone();
+      const defaults = window.DEFAULT_MOUNT_VOLTAGES || {};
+      const supportedTypes = Object.keys(defaults);
+
+      expect(fallback).toBeDefined();
+      expect(typeof fallback).toBe('object');
+      expect(supportedTypes.length).toBeGreaterThan(0);
+
+      supportedTypes.forEach(type => {
+        expect(fallback[type]).toBeDefined();
+        expect(fallback[type]).not.toBe(defaults[type]);
+        expect(fallback[type]).toEqual(defaults[type]);
+      });
+    } finally {
+      warnSpy.mockRestore();
+      if (hadCloneHelper) {
+        window.getMountVoltagePreferencesClone = originalHelper;
+      } else {
+        delete window.getMountVoltagePreferencesClone;
+      }
+    }
+  });
+
   test('encodeSharedSetup includes gear list payload', () => {
     const { utils } = env;
     const payload = {
