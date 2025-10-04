@@ -50,6 +50,24 @@ describe('shared project gear list handling', () => {
   });
 
   test('mount voltage helpers remain globally accessible for share/import flows', () => {
+    const expectedHelpers = [
+      'SUPPORTED_MOUNT_VOLTAGE_TYPES',
+      'DEFAULT_MOUNT_VOLTAGES',
+      'mountVoltageInputs',
+      'parseVoltageValue',
+      'cloneMountVoltageMap',
+      'getMountVoltagePreferencesClone',
+      'applyMountVoltagePreferences',
+      'parseStoredMountVoltages',
+      'resetMountVoltagePreferences',
+      'updateMountVoltageInputsFromState',
+      'persistMountVoltagePreferences',
+    ];
+
+    expectedHelpers.forEach(helperName => {
+      expect(window[helperName]).toBeDefined();
+    });
+
     expect(typeof window.getMountVoltagePreferencesClone).toBe('function');
     expect(typeof window.applyMountVoltagePreferences).toBe('function');
 
