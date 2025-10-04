@@ -81,6 +81,11 @@ function getEventsCoreValue(functionName) {
     return defaultValue;
   }
 }
+function storeLoadedSetupStateSafe(state) {
+  callEventsCoreFunction('storeLoadedSetupState', [state], {
+    defaultValue: undefined
+  });
+}
 function resolveCineUi() {
   var scopes = [];
   if (typeof globalThis !== 'undefined') scopes.push(globalThis);
@@ -222,7 +227,7 @@ function handleSaveSetupClick() {
   }
   lastSetupName = finalName;
   saveCurrentSession();
-  storeLoadedSetupState(getCurrentSetupState());
+  storeLoadedSetupStateSafe(getCurrentSetupState());
   checkSetupChanged();
   saveCurrentGearList();
   if (renamingExisting && selectedName && selectedName !== finalName) {
@@ -287,7 +292,7 @@ function handleDeleteSetupClick() {
       }
       currentProjectInfo = null;
       if (projectForm) populateProjectForm({});
-      storeLoadedSetupState(null);
+      storeLoadedSetupStateSafe(null);
       updateBatteryPlateVisibility();
       updateBatteryOptions();
       clearProjectAutoGearRules();
@@ -411,12 +416,10 @@ function resetSetupStateToDefaults() {
       console.warn('Failed to reset manual diagram positions while preparing setup switch', error);
     }
   }
-  if (typeof storeLoadedSetupState === 'function') {
-    try {
-      storeLoadedSetupState(null);
-    } catch (error) {
-      console.warn('Failed to reset stored setup state while preparing setup switch', error);
-    }
+  try {
+    storeLoadedSetupStateSafe(null);
+  } catch (error) {
+    console.warn('Failed to reset stored setup state while preparing setup switch', error);
   }
   if (typeof globalThis !== 'undefined') {
     globalThis.__cineLastGearListHtml = '';
@@ -700,7 +703,7 @@ addSafeEventListener(setupSelectTarget, "change", function (event) {
         });
       }
     }
-    storeLoadedSetupState(getCurrentSetupState());
+    storeLoadedSetupStateSafe(getCurrentSetupState());
   }
   finalizeSetupSelection(setupName);
   });

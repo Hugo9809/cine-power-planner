@@ -92,6 +92,10 @@ function getEventsCoreValue(functionName, options = {}) {
   }
 }
 
+function storeLoadedSetupStateSafe(state) {
+  callEventsCoreFunction('storeLoadedSetupState', [state], { defaultValue: undefined });
+}
+
 function resolveCineUi() {
   const scopes = [];
 
@@ -278,7 +282,7 @@ function handleSaveSetupClick() {
   }
   lastSetupName = finalName;
   saveCurrentSession(); // Persist selection so refreshes restore this setup
-  storeLoadedSetupState(getCurrentSetupState());
+  storeLoadedSetupStateSafe(getCurrentSetupState());
   checkSetupChanged();
   // Ensure the current gear list stays persisted with the project so setups
   // remain in sync with the automatically saved table.
@@ -354,7 +358,7 @@ function handleDeleteSetupClick() {
       }
       currentProjectInfo = null;
       if (projectForm) populateProjectForm({});
-      storeLoadedSetupState(null);
+      storeLoadedSetupStateSafe(null);
       updateBatteryPlateVisibility();
       updateBatteryOptions();
       clearProjectAutoGearRules();
@@ -493,12 +497,10 @@ function resetSetupStateToDefaults(options = {}) {
     }
   }
 
-  if (typeof storeLoadedSetupState === 'function') {
-    try {
-      storeLoadedSetupState(null);
-    } catch (error) {
-      console.warn('Failed to reset stored setup state while preparing setup switch', error);
-    }
+  try {
+    storeLoadedSetupStateSafe(null);
+  } catch (error) {
+    console.warn('Failed to reset stored setup state while preparing setup switch', error);
   }
 
   if (typeof globalThis !== 'undefined') {
@@ -809,7 +811,7 @@ addSafeEventListener(setupSelectTarget, "change", (event) => {
         setManualDiagramPositions(normalizedDiagram || {}, { render: false });
       }
     }
-    storeLoadedSetupState(getCurrentSetupState());
+    storeLoadedSetupStateSafe(getCurrentSetupState());
   }
 
   finalizeSetupSelection(setupName);
