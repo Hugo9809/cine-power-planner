@@ -1413,6 +1413,11 @@ const MOUNT_VOLTAGE_RUNTIME_EXPORTS = Object.freeze({
   persistMountVoltagePreferences,
 });
 
+// Immediately expose mount voltage helpers so downstream layers can recover even if
+// subsequent refactors adjust the consolidated runtime export list. This keeps
+// autosave/share/backup flows functional when the runtime is split across files.
+exposeCoreRuntimeConstants(MOUNT_VOLTAGE_RUNTIME_EXPORTS);
+
 function applyMountVoltagePreferences(preferences, options = {}) {
   const { persist = true, triggerUpdate = true } = options || {};
   mountVoltagePreferences = normalizeMountVoltageSource(preferences);
