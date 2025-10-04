@@ -10697,7 +10697,12 @@ function initApp() {
       attachSelectSearch(sel);
       callSessionCoreFunction('initFavoritableSelect', [sel], { defer: true });
     });
-  setupInstallBanner();
+  if (
+    typeof globalThis !== 'undefined'
+    && typeof globalThis.setupInstallBanner === 'function'
+  ) {
+    globalThis.setupInstallBanner();
+  }
   setLanguage(currentLang);
   maybeShowIosPwaHelp();
   resetDeviceForm();
