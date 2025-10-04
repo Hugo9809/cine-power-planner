@@ -31,6 +31,7 @@ Run these quick inspections while documenting or rehearsing the workflows above:
 2. `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })` – refreshes the guard and surfaces which modules or functions failed validation, matching the expectations enforced by the integration suite.【F:tests/dom/runtimeIntegration.test.js†L58-L87】
 3. `window.cinePersistence.storage.exportAllData()` – returns the same payload used for planner backups so you can sanity-check file size, project counts and timestamps without triggering a download.【F:src/scripts/modules/persistence.js†L90-L145】
 4. `window.cinePersistence.share.decodeSharedSetup(payload)` – validates bundle text before you import it into production data. Pair it with `window.cinePersistence.share.applySharedSetup()` inside a disposable profile to confirm recovery paths stay healthy.【F:src/scripts/modules/persistence.js†L152-L157】
+5. `typeof window.getMountVoltagePreferencesClone === 'function'` – confirms the runtime re-exposed the mount voltage clone helper that share/import flows depend on so every backup retains the latest mount voltage overrides.【F:src/scripts/app-core-new-1.js†L1398-L1419】【F:src/scripts/app-session.js†L11753-L11783】
 
 The Help Center’s console verification callout mirrors these commands so crews have the checklist available directly inside the offline dialog alongside export and rehearsal guidance.【F:index.html†L3899-L3920】
 
