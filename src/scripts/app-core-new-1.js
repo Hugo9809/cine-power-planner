@@ -381,49 +381,100 @@ function enqueueCoreBootTask(task) {
   }
 }
 
-function isAutoGearAutoPresetReferenceError(error) {
-  if (!error || typeof error !== 'object') {
-    return false;
+  const AUTO_GEAR_GLOBAL_FALLBACKS = {
+    autoGearAutoPresetId: () => '',
+    baseAutoGearRules: () => [],
+    autoGearScenarioModeSelect: () => null,
+    safeGenerateConnectorSummary: () =>
+      function safeGenerateConnectorSummary(device) {
+        if (!device || typeof device !== 'object') {
+          return '';
+        }
+
+        try {
+          const entries = Object.entries(device);
+          if (!entries.length) {
+            return '';
+          }
+
+          const [primaryKey, value] = entries[0];
+          const label =
+            typeof primaryKey === 'string' ? primaryKey.replace(/_/g, ' ') : 'connector';
+          return value ? `${label}: ${value}` : label;
+        } catch (fallbackError) {
+          void fallbackError;
+          return '';
+        }
+      },
+  };
+
+  const AUTO_GEAR_REFERENCE_NAMES = Object.keys(AUTO_GEAR_GLOBAL_FALLBACKS);
+
+  function isAutoGearGlobalReferenceError(error) {
+    if (!error || typeof error !== 'object') {
+      return false;
+    }
+
+    const message = typeof error.message === 'string' ? error.message : '';
+    return (
+      error.name === 'ReferenceError' &&
+      AUTO_GEAR_REFERENCE_NAMES.some(name => message.includes(name))
+    );
   }
 
-  const message = typeof error.message === 'string' ? error.message : '';
-  return error.name === 'ReferenceError' && message.includes('autoGearAutoPresetId');
-}
+  function ensureAutoGearGlobal(scope, name) {
+    const createFallback = AUTO_GEAR_GLOBAL_FALLBACKS[name];
+    if (typeof createFallback !== 'function') {
+      return;
+    }
 
-function repairAutoGearAutoPresetGlobal(scope) {
-  if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
-    return;
-  }
+    const fallbackValue = createFallback();
 
-  if (typeof scope.autoGearAutoPresetId === 'undefined') {
-    try {
-      scope.autoGearAutoPresetId = '';
-    } catch (assignmentError) {
+    if (typeof scope[name] === 'undefined') {
       try {
-        Object.defineProperty(scope, 'autoGearAutoPresetId', {
-          configurable: true,
-          writable: true,
-          enumerable: false,
-          value: '',
-        });
-      } catch (defineError) {
-        void defineError;
+        scope[name] = fallbackValue;
+      } catch (assignmentError) {
+        try {
+          Object.defineProperty(scope, name, {
+            configurable: true,
+            writable: true,
+            enumerable: false,
+            value: fallbackValue,
+          });
+        } catch (defineError) {
+          void defineError;
+        }
       }
     }
+
+    try {
+      const globalFn = (scope && scope.Function) || Function;
+      if (typeof globalFn === 'function') {
+        const binder = globalFn(
+          'value',
+          `if (typeof ${name} === 'undefined') { ${name} = value; }
+           return typeof ${name} !== 'undefined' ? ${name} : value;`,
+        );
+        binder(typeof scope[name] === 'undefined' ? fallbackValue : scope[name]);
+      }
+    } catch (bindingError) {
+      void bindingError;
+    }
   }
 
-  try {
-    const globalFn = (scope && scope.Function) || Function;
-    if (typeof globalFn === 'function') {
-      globalFn(
-        'value',
-        "if (typeof autoGearAutoPresetId === 'undefined') { autoGearAutoPresetId = value; } return autoGearAutoPresetId;",
-      )(typeof scope.autoGearAutoPresetId === 'string' ? scope.autoGearAutoPresetId : '');
+  function repairAutoGearGlobals(scope) {
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+      return;
     }
-  } catch (bindingError) {
-    void bindingError;
+
+    AUTO_GEAR_REFERENCE_NAMES.forEach(name => {
+      try {
+        ensureAutoGearGlobal(scope, name);
+      } catch (ensureError) {
+        void ensureError;
+      }
+    });
   }
-}
 
 function callCoreFunctionIfAvailable(functionName, args = [], options = {}) {
   const scope =
@@ -441,14 +492,14 @@ function callCoreFunctionIfAvailable(functionName, args = [], options = {}) {
   if (typeof target === 'function') {
     let attempt = 0;
     while (attempt < 2) {
-      try {
-        return target.apply(scope, args);
-      } catch (invokeError) {
-        if (attempt === 0 && isAutoGearAutoPresetReferenceError(invokeError)) {
-          repairAutoGearAutoPresetGlobal(scope);
-          attempt += 1;
-          continue;
-        }
+        try {
+          return target.apply(scope, args);
+        } catch (invokeError) {
+          if (attempt === 0 && isAutoGearGlobalReferenceError(invokeError)) {
+            repairAutoGearGlobals(scope);
+            attempt += 1;
+            continue;
+          }
 
         if (typeof console !== 'undefined' && typeof console.error === 'function') {
           console.error(`Failed to invoke ${functionName}`, invokeError);
