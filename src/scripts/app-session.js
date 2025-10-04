@@ -19,6 +19,7 @@
           duplicateAutoGearRule, autoGearScenarioModeSelect,
           normalizeAutoGearScenarioLogic, applyAutoGearScenarioSettings,
           getAutoGearScenarioSelectedValues, autoGearScenarioBaseSelect,
+          cloneMountVoltageMap,
           normalizeAutoGearScenarioPrimary, autoGearScenarioFactorInput,
           normalizeAutoGearScenarioMultiplier,
           isAutoGearHighlightEnabled, setAutoGearHighlightEnabled,
