@@ -9678,7 +9678,15 @@ function initApp() {
     attachSelectSearch(sel);
     initFavoritableSelect(sel);
   });
-  setupInstallBanner();
+  if (
+    typeof globalThis !== 'undefined' &&
+    globalThis &&
+    typeof globalThis.setupInstallBanner === 'function'
+  ) {
+    globalThis.setupInstallBanner();
+  } else if (typeof setupInstallBanner === 'function') {
+    setupInstallBanner();
+  }
   setLanguage(currentLang);
   maybeShowIosPwaHelp();
   resetDeviceForm();
