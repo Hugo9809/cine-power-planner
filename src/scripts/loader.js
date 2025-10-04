@@ -182,6 +182,143 @@ if (typeof safeGenerateConnectorSummary === 'undefined') {
     return storages;
   }
 
+  var LEGACY_BUNDLE_STORAGE_KEY = 'cameraPowerPlanner_forceLegacyBundle';
+  var LEGACY_BUNDLE_MAX_AGE = 1000 * 60 * 60 * 24 * 7;
+
+  function nowMilliseconds() {
+    if (typeof Date !== 'function' || typeof Date.now !== 'function') {
+      return null;
+    }
+    return Date.now();
+  }
+
+  function getLegacyFlagStorages() {
+    return collectStorages(['localStorage']);
+  }
+
+  function rememberLegacyBundlePreference() {
+    var storages = getLegacyFlagStorages();
+    if (!storages.length) {
+      return false;
+    }
+
+    var stored = false;
+    var timestamp = nowMilliseconds();
+    var value = typeof timestamp === 'number' ? String(timestamp) : 'true';
+
+    for (var index = 0; index < storages.length; index += 1) {
+      var storage = storages[index];
+      if (!storage) {
+        continue;
+      }
+
+      try {
+        storage.setItem(LEGACY_BUNDLE_STORAGE_KEY, value);
+        stored = true;
+      } catch (setError) {
+        void setError;
+      }
+    }
+
+    return stored;
+  }
+
+  function clearLegacyBundlePreference() {
+    var storages = getLegacyFlagStorages();
+    var cleared = false;
+
+    for (var index = 0; index < storages.length; index += 1) {
+      var storage = storages[index];
+      if (!storage) {
+        continue;
+      }
+
+      try {
+        if (typeof storage.removeItem === 'function') {
+          storage.removeItem(LEGACY_BUNDLE_STORAGE_KEY);
+          cleared = true;
+        }
+      } catch (removeError) {
+        void removeError;
+      }
+    }
+
+    return cleared;
+  }
+
+  function shouldForceLegacyBundle() {
+    if (typeof window === 'undefined') {
+      return false;
+    }
+
+    var storages = getLegacyFlagStorages();
+    if (!storages.length) {
+      return false;
+    }
+
+    var now = nowMilliseconds();
+    var forceLegacy = false;
+
+    for (var index = 0; index < storages.length; index += 1) {
+      var storage = storages[index];
+      if (!storage) {
+        continue;
+      }
+
+      var rawValue = null;
+      try {
+        rawValue = storage.getItem(LEGACY_BUNDLE_STORAGE_KEY);
+      } catch (readError) {
+        void readError;
+        continue;
+      }
+
+      if (typeof rawValue !== 'string' || !rawValue) {
+        continue;
+      }
+
+      var parsed = parseInt(rawValue, 10);
+      if (!isNaN(parsed) && typeof parsed === 'number' && now !== null) {
+        if (now - parsed <= LEGACY_BUNDLE_MAX_AGE) {
+          forceLegacy = true;
+        } else {
+          try {
+            storage.removeItem(LEGACY_BUNDLE_STORAGE_KEY);
+          } catch (cleanupError) {
+            void cleanupError;
+          }
+        }
+      } else {
+        forceLegacy = true;
+      }
+    }
+
+    return forceLegacy;
+  }
+
+  function triggerLegacyBundleReload() {
+    rememberLegacyBundlePreference();
+
+    if (typeof window === 'undefined') {
+      return false;
+    }
+
+    try {
+      if (window.location && typeof window.location.reload === 'function') {
+        window.location.reload();
+        return true;
+      }
+      if (window.location && typeof window.location.href === 'string') {
+        window.location.assign(window.location.href);
+        return true;
+      }
+    } catch (reloadError) {
+      void reloadError;
+    }
+
+    return false;
+  }
+
   function ensureCoreRuntimePlaceholders() {
     var scope = getGlobalScope();
     if (!scope || typeof scope !== 'object') {
@@ -550,12 +687,22 @@ if (typeof safeGenerateConnectorSummary === 'undefined') {
     var head = document.head || document.getElementsByTagName('head')[0] || document.documentElement;
     var optionalCheckScript = document.createElement('script');
     var resolved = false;
+    var fallbackTimeoutId = null;
 
     function finalize(result) {
       if (resolved) {
         return;
       }
       resolved = true;
+
+      if (fallbackTimeoutId !== null && typeof clearTimeout === 'function') {
+        try {
+          clearTimeout(fallbackTimeoutId);
+        } catch (clearError) {
+          void clearError;
+        }
+        fallbackTimeoutId = null;
+      }
 
       if (optionalCheckScript.parentNode) {
         optionalCheckScript.parentNode.removeChild(optionalCheckScript);
@@ -590,6 +737,11 @@ if (typeof safeGenerateConnectorSummary === 'undefined') {
     };
 
     try {
+      if (typeof setTimeout === 'function') {
+        fallbackTimeoutId = setTimeout(function () {
+          finalize(false);
+        }, 3000);
+      }
       head.appendChild(optionalCheckScript);
     } catch (appendError) {
       if (typeof console !== 'undefined' && typeof console.warn === 'function') {
@@ -738,6 +890,25 @@ if (typeof safeGenerateConnectorSummary === 'undefined') {
   ];
 
   function startLoading() {
+    if (shouldForceLegacyBundle()) {
+      window.__CINE_POWER_LEGACY_BUNDLE__ = true;
+
+      supportsModernFeatures(function (supportsModern) {
+        if (supportsModern) {
+          var cleared = clearLegacyBundlePreference();
+          if (cleared) {
+            if (triggerLegacyBundleReload()) {
+              return;
+            }
+          }
+        }
+
+        loadScriptsSequentially(legacyScripts);
+      });
+
+      return;
+    }
+
     supportsModernFeatures(function (supportsModern) {
       var scriptsToLoad = supportsModern ? modernScripts : legacyScripts;
 
@@ -765,6 +936,11 @@ if (typeof safeGenerateConnectorSummary === 'undefined') {
           }
 
           window.__CINE_POWER_LEGACY_BUNDLE__ = true;
+
+          if (triggerLegacyBundleReload()) {
+            return true;
+          }
+
           loadScriptsSequentially(fallbackScripts);
           return true;
         },
