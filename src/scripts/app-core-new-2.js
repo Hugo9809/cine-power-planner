@@ -153,24 +153,20 @@ normaliseGlobalValue(
 if (typeof autoGearAutoPresetId === 'undefined') {
   // Ensure a concrete global binding exists for browsers that throw when a
   // property-only binding is accessed without `window.`.
-  // eslint-disable-next-line no-var
   var autoGearAutoPresetId = '';
 }
 
 if (typeof baseAutoGearRules === 'undefined') {
-  // eslint-disable-next-line no-var
   var baseAutoGearRules = [];
 } else if (!Array.isArray(baseAutoGearRules)) {
   baseAutoGearRules = [];
 }
 
 if (typeof autoGearScenarioModeSelect === 'undefined') {
-  // eslint-disable-next-line no-var
   var autoGearScenarioModeSelect = null;
 }
 
 if (typeof safeGenerateConnectorSummary === 'undefined') {
-  // eslint-disable-next-line no-var
   var safeGenerateConnectorSummary = createFallbackSafeGenerateConnectorSummary();
 } else if (typeof safeGenerateConnectorSummary !== 'function') {
   safeGenerateConnectorSummary = createFallbackSafeGenerateConnectorSummary();

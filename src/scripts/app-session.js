@@ -15,6 +15,7 @@
           autoGearConditionAddButton, addAutoGearConditionFromPicker,
           autoGearConditionList, removeAutoGearCondition,
           handleAutoGearConditionShortcut, loadAutoGearRules,
+          cloneMountVoltageMap,
           duplicateAutoGearRule, autoGearScenarioModeSelect,
           normalizeAutoGearScenarioLogic, applyAutoGearScenarioSettings,
           getAutoGearScenarioSelectedValues, autoGearScenarioBaseSelect,
