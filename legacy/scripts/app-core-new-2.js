@@ -15290,6 +15290,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       ['applyDarkMode', function () { return applyDarkMode; }],
       ['applyPinkMode', function () { return applyPinkMode; }],
       ['applyHighContrast', function () { return applyHighContrast; }],
+      ['setupInstallBanner', function () { return setupInstallBanner; }],
       ['generatePrintableOverview', function () { return generatePrintableOverview; }],
       ['generateGearListHtml', function () { return generateGearListHtml; }],
       ['displayGearAndRequirements', function () { return displayGearAndRequirements; }],

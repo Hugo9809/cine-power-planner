@@ -16082,6 +16082,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       ['applyDarkMode', () => applyDarkMode],
       ['applyPinkMode', () => applyPinkMode],
       ['applyHighContrast', () => applyHighContrast],
+      ['setupInstallBanner', () => setupInstallBanner],
       ['generatePrintableOverview', () => generatePrintableOverview],
       ['generateGearListHtml', () => generateGearListHtml],
       ['displayGearAndRequirements', () => displayGearAndRequirements],
