@@ -246,37 +246,101 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       CORE_BOOT_QUEUE.push(task);
     }
   }
-  function isAutoGearAutoPresetReferenceError(error) {
-    if (!error || _typeof(error) !== 'object') {
-      return false;
-    }
-    var message = typeof error.message === 'string' ? error.message : '';
-    return error.name === 'ReferenceError' && message.indexOf('autoGearAutoPresetId') !== -1;
-  }
+    var AUTO_GEAR_GLOBAL_FALLBACKS = {
+      autoGearAutoPresetId: function autoGearAutoPresetId() {
+        return '';
+      },
+      baseAutoGearRules: function baseAutoGearRules() {
+        return [];
+      },
+      autoGearScenarioModeSelect: function autoGearScenarioModeSelect() {
+        return null;
+      },
+      safeGenerateConnectorSummary: function safeGenerateConnectorSummary() {
+        return function safeGenerateConnectorSummary(device) {
+          if (!device || _typeof(device) !== 'object') {
+            return '';
+          }
+          try {
+            var entries = Object.entries(device);
+            if (!entries.length) {
+              return '';
+            }
+            var _entries$ = _slicedToArray(entries[0], 2),
+              primaryKey = _entries$[0],
+              value = _entries$[1];
+            var label = typeof primaryKey === 'string' ? primaryKey.replace(/_/g, ' ') : 'connector';
+            return value ? "".concat(label, ": ").concat(value) : label;
+          } catch (fallbackError) {
+            void fallbackError;
+            return '';
+          }
+        };
+      },
+    };
 
-  function repairAutoGearAutoPresetGlobal(scope) {
-    if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
-      return;
+    var AUTO_GEAR_REFERENCE_NAMES = Object.keys(AUTO_GEAR_GLOBAL_FALLBACKS);
+
+    function isAutoGearGlobalReferenceError(error) {
+      if (!error || _typeof(error) !== 'object') {
+        return false;
+      }
+      var message = typeof error.message === 'string' ? error.message : '';
+      return error.name === 'ReferenceError' && AUTO_GEAR_REFERENCE_NAMES.some(function (name) {
+        return message.indexOf(name) !== -1;
+      });
     }
-    if (typeof scope.autoGearAutoPresetId === 'undefined') {
-      try {
-        scope.autoGearAutoPresetId = '';
-      } catch (assignmentError) {
+
+    function ensureAutoGearGlobal(scope, name) {
+      var createFallback = AUTO_GEAR_GLOBAL_FALLBACKS[name];
+      if (typeof createFallback !== 'function') {
+        return;
+      }
+      var fallbackValue = createFallback();
+      if (typeof scope[name] === 'undefined') {
         try {
-          Object.defineProperty(scope, 'autoGearAutoPresetId', {
-            configurable: true,
-            writable: true,
-            enumerable: false,
-            value: ''
-          });
-        } catch (defineError) {
-          void defineError;
+          scope[name] = fallbackValue;
+        } catch (assignmentError) {
+          try {
+            Object.defineProperty(scope, name, {
+              configurable: true,
+              writable: true,
+              enumerable: false,
+              value: fallbackValue,
+            });
+          } catch (defineError) {
+            void defineError;
+          }
         }
       }
+      try {
+        var globalFn = scope && scope.Function || Function;
+        if (typeof globalFn === 'function') {
+          var binder = globalFn(
+            'value',
+            "if (typeof ".concat(name, " === 'undefined') { ").concat(name, " = value; } return typeof ").concat(name, " !== 'undefined' ? ").concat(name, ' : value;'),
+          );
+          binder(typeof scope[name] === 'undefined' ? fallbackValue : scope[name]);
+        }
+      } catch (bindingError) {
+        void bindingError;
+      }
     }
-  }
 
-  function callCoreFunctionIfAvailable(functionName) {
+    function repairAutoGearGlobals(scope) {
+      if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+        return;
+      }
+      AUTO_GEAR_REFERENCE_NAMES.forEach(function (name) {
+        try {
+          ensureAutoGearGlobal(scope, name);
+        } catch (ensureError) {
+          void ensureError;
+        }
+      });
+    }
+
+    function callCoreFunctionIfAvailable(functionName) {
     var args = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
     var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     var scope = CORE_GLOBAL_SCOPE || (typeof globalThis !== 'undefined' ? globalThis : null) || (typeof window !== 'undefined' ? window : null) || (typeof self !== 'undefined' ? self : null) || (typeof global !== 'undefined' ? global : null);
@@ -284,14 +348,14 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     if (typeof target === 'function') {
       var attempt = 0;
       while (attempt < 2) {
-        try {
-          return target.apply(scope, args);
-        } catch (invokeError) {
-          if (attempt === 0 && isAutoGearAutoPresetReferenceError(invokeError)) {
-            repairAutoGearAutoPresetGlobal(scope);
-            attempt += 1;
-            continue;
-          }
+          try {
+            return target.apply(scope, args);
+          } catch (invokeError) {
+            if (attempt === 0 && isAutoGearGlobalReferenceError(invokeError)) {
+              repairAutoGearGlobals(scope);
+              attempt += 1;
+              continue;
+            }
           if (typeof console !== 'undefined' && typeof console.error === 'function') {
             console.error("Failed to invoke ".concat(functionName), invokeError);
           }
