@@ -835,6 +835,16 @@ for (let index = 0; index < AUTO_GEAR_RUNTIME_HANDLERS.length; index += 1) {
   ensureSessionRuntimeFunction(handlerName, { defer: true });
 }
 
+const setAutoGearSummaryFocusSafe = ensureSessionRuntimeFunction('setAutoGearSummaryFocus', {
+  defer: true,
+});
+const focusAutoGearRuleByIdSafe = ensureSessionRuntimeFunction('focusAutoGearRuleById', {
+  defer: true,
+});
+const setAutoGearScenarioFilterSafe = ensureSessionRuntimeFunction('setAutoGearScenarioFilter', {
+  defer: true,
+});
+
 function getSessionCoreValue(functionName, options = {}) {
   const defaultValue = Object.prototype.hasOwnProperty.call(options, 'defaultValue')
     ? options.defaultValue
@@ -4423,7 +4433,7 @@ if (autoGearSearchInput) {
 }
 if (autoGearFilterScenarioSelect) {
   autoGearFilterScenarioSelect.addEventListener('change', event => {
-    setAutoGearScenarioFilter(event?.target?.value || 'all');
+    setAutoGearScenarioFilterSafe(event?.target?.value || 'all');
   });
 }
 if (autoGearFilterClearButton) {
@@ -4436,7 +4446,7 @@ if (autoGearSummaryCards) {
       : null;
     if (!target || target.disabled) return;
     const focus = target.dataset.focus || 'all';
-    setAutoGearSummaryFocus(focus);
+    setAutoGearSummaryFocusSafe(focus);
   });
 }
 if (autoGearSummaryDetails) {
@@ -4447,19 +4457,19 @@ if (autoGearSummaryDetails) {
     if (scenarioButton) {
       const scenario = scenarioButton.dataset.autoGearScenario || '';
       if (scenario) {
-        setAutoGearSummaryFocus('all');
-        setAutoGearScenarioFilter(scenario);
+        setAutoGearSummaryFocusSafe('all');
+        setAutoGearScenarioFilterSafe(scenario);
       }
       return;
     }
     const ruleButton = element.closest('button[data-auto-gear-rule]');
     if (ruleButton) {
-      focusAutoGearRuleById(ruleButton.dataset.autoGearRule || '');
+      focusAutoGearRuleByIdSafe(ruleButton.dataset.autoGearRule || '');
       return;
     }
     const resetButton = element.closest('button[data-auto-gear-summary-reset]');
     if (resetButton) {
-      setAutoGearSummaryFocus('all');
+      setAutoGearSummaryFocusSafe('all');
     }
   });
 }
