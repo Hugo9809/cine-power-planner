@@ -1,4 +1,4 @@
-/* global currentLang, texts, devices, escapeHtml, generateConnectorSummary, cameraSelect, monitorSelect, videoSelect, distanceSelect, motorSelects, controllerSelects, batterySelect, hotswapSelect, overviewSectionIcons, breakdownListElem, totalPowerElem, totalCurrent144Elem, totalCurrent12Elem, batteryLifeElem, batteryCountElem, pinWarnElem, dtapWarnElem, getCurrentGearListHtml, currentProjectInfo, generateGearListHtml, setupDiagramContainer, diagramLegend, diagramHint, getDiagramCss, openDialog, closeDialog, splitGearListHtml, iconMarkup, ICON_GLYPHS, deleteCurrentGearList */
+/* global currentLang, texts, devices, escapeHtml, generateConnectorSummary, cameraSelect, monitorSelect, videoSelect, distanceSelect, motorSelects, controllerSelects, batterySelect, hotswapSelect, overviewSectionIcons, breakdownListElem, totalPowerElem, totalCurrent144Elem, totalCurrent12Elem, batteryLifeElem, batteryCountElem, pinWarnElem, dtapWarnElem, getCurrentGearListHtml, currentProjectInfo, generateGearListHtml, getDiagramCss, openDialog, closeDialog, splitGearListHtml, iconMarkup, ICON_GLYPHS, deleteCurrentGearList */
 
 function generatePrintableOverview(config = {}) {
     const safeConfig = (config && typeof config === 'object') ? config : {};
@@ -262,14 +262,34 @@ function generatePrintableOverview(config = {}) {
     const safeSetupName = escapeHtmlSafe(setupName);
     const diagramCss = typeof getDiagramCss === 'function' ? getDiagramCss(false) : '';
 
+    const resolveDiagramElement = (fallbackId, globalRefName) => {
+        if (globalRefName) {
+            try {
+                if (typeof globalThis !== 'undefined' && globalRefName in globalThis) {
+                    const value = globalThis[globalRefName];
+                    if (value) return value;
+                }
+            } catch (resolveGlobalError) {
+                void resolveGlobalError;
+            }
+        }
+        if (typeof document !== 'undefined' && typeof document.getElementById === 'function') {
+            try {
+                return document.getElementById(fallbackId);
+            } catch (resolveDomError) {
+                void resolveDomError;
+            }
+        }
+        return null;
+    };
+
+    const diagramContainer = resolveDiagramElement('diagramArea', 'setupDiagramContainer');
     let diagramAreaHtml = '';
     let diagramLegendHtml = '';
     let diagramHintHtml = '';
     let diagramDescHtml = '';
-    const hasSetupDiagramContainer =
-        typeof setupDiagramContainer !== 'undefined' && setupDiagramContainer;
-    if (hasSetupDiagramContainer) {
-        const areaClone = setupDiagramContainer.cloneNode(true);
+    if (diagramContainer) {
+        const areaClone = diagramContainer.cloneNode(true);
         areaClone.id = 'diagramAreaOverview';
         areaClone.setAttribute('data-diagram-area', 'overview');
         const describedBy = areaClone.getAttribute('aria-describedby');
@@ -298,15 +318,17 @@ function generatePrintableOverview(config = {}) {
         diagramAreaHtml = areaClone.outerHTML;
     }
 
-    if (diagramLegend) {
-        const legendClone = diagramLegend.cloneNode(true);
+    const sourceDiagramLegend = resolveDiagramElement('diagramLegend', 'diagramLegend');
+    if (sourceDiagramLegend) {
+        const legendClone = sourceDiagramLegend.cloneNode(true);
         legendClone.id = 'diagramLegendOverview';
         legendClone.setAttribute('data-diagram-legend', 'overview');
         diagramLegendHtml = legendClone.outerHTML;
     }
 
-    if (diagramHint) {
-        const hintClone = diagramHint.cloneNode(true);
+    const sourceDiagramHint = resolveDiagramElement('diagramHint', 'diagramHint');
+    if (sourceDiagramHint) {
+        const hintClone = sourceDiagramHint.cloneNode(true);
         hintClone.id = 'diagramHintOverview';
         hintClone.setAttribute('data-diagram-hint', 'overview');
         diagramHintHtml = hintClone.outerHTML;
