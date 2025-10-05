@@ -153,6 +153,7 @@
   "./src/scripts/modules/features/backup.js",
   "./src/scripts/modules/features/feature-search.js",
   "./src/scripts/modules/features/help.js",
+  "./src/scripts/modules/features/print-workflow.js",
   "./src/scripts/modules/globals.js",
   "./src/scripts/modules/immutability.js",
   "./src/scripts/modules/offline.js",

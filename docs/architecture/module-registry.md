@@ -78,6 +78,7 @@ worker used during offline rehearsals) without mutating the main global scope.
 | `cinePersistence`  | `persistence`     | Storage accessors, autosave helpers, backup/export/import orchestration, share/restore bridges. |
 | `cineOffline`      | `offline`         | Service worker registration, cache rebuilds, fallback storage cleanup, reload triggers. |
 | `cineUi`           | `ui`              | Controller/interaction/help registries for dialogs, backups, restore rehearsals and share workflows. |
+| `cineFeaturePrint` | `feature`         | Frozen print orchestration helpers that coordinate native printing and fallback windows so overview exports remain reliable offline. |
 | `cineRuntime`      | `runtime`         | Aggregates modules, exposes integrity checks and ensures every safeguard stays frozen. |
 
 The registry is extensible: additional modules may be registered to expose

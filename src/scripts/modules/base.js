@@ -435,7 +435,13 @@
 
     seen.add(value);
 
-    const keys = Object.getOwnPropertyNames(value);
+    let keys;
+    try {
+      keys = Object.getOwnPropertyNames(value);
+    } catch (error) {
+      void error;
+      return value;
+    }
     for (let index = 0; index < keys.length; index += 1) {
       const key = keys[index];
       const descriptor = Object.getOwnPropertyDescriptor(value, key);
