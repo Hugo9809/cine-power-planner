@@ -1,4 +1,6 @@
 (function () {
+  const DEFAULT_PENDING_QUEUE_KEY = '__cinePendingModuleRegistrations__';
+
   function fallbackDetectGlobalScope() {
     if (typeof globalThis !== 'undefined') {
       return globalThis;
@@ -15,85 +17,7 @@
     return {};
   }
 
-  const LOCAL_SCOPE = fallbackDetectGlobalScope();
-
-  function resolveArchitecture(scope) {
-    const targetScope = scope || LOCAL_SCOPE;
-
-    if (typeof require === 'function') {
-      try {
-        const required = require('./architecture.js');
-        if (required && typeof required === 'object') {
-          return required;
-        }
-      } catch (error) {
-        void error;
-      }
-    }
-
-    if (targetScope && typeof targetScope.cineModuleArchitecture === 'object') {
-      return targetScope.cineModuleArchitecture;
-    }
-
-    return null;
-  }
-
-  function resolveArchitectureHelpers(scope) {
-    const targetScope = scope || LOCAL_SCOPE;
-
-    if (typeof require === 'function') {
-      try {
-        const required = require('./architecture-helpers.js');
-        if (required && typeof required === 'object') {
-          return required;
-        }
-      } catch (error) {
-        void error;
-      }
-    }
-
-    if (targetScope && typeof targetScope.cineModuleArchitectureHelpers === 'object') {
-      return targetScope.cineModuleArchitectureHelpers;
-    }
-
-    return null;
-  }
-
-  const ARCHITECTURE = resolveArchitecture(LOCAL_SCOPE);
-  const ARCHITECTURE_HELPERS = resolveArchitectureHelpers(LOCAL_SCOPE);
-
-  function detectWithArchitecture() {
-    if (ARCHITECTURE && typeof ARCHITECTURE.detectGlobalScope === 'function') {
-      try {
-        const detected = ARCHITECTURE.detectGlobalScope();
-        if (detected) {
-          return detected;
-        }
-      } catch (error) {
-        void error;
-      }
-    }
-    return fallbackDetectGlobalScope();
-  }
-
-  const detectGlobalScope =
-    ARCHITECTURE_HELPERS && typeof ARCHITECTURE_HELPERS.detectGlobalScope === 'function'
-      ? function detectWithHelpers() {
-          try {
-            const detected = ARCHITECTURE_HELPERS.detectGlobalScope();
-            if (detected) {
-              return detected;
-            }
-          } catch (error) {
-            void error;
-          }
-          return detectWithArchitecture();
-        }
-      : detectWithArchitecture;
-
-  const PRIMARY_SCOPE = detectGlobalScope();
-
-  function fallbackCollectCandidateScopes(primary) {
+  function fallbackCollectCandidateScopes(primary, baseScope) {
     const scopes = [];
 
     function pushScope(scope) {
@@ -105,47 +29,13 @@
       }
     }
 
-    pushScope(primary);
+    pushScope(primary || baseScope);
     if (typeof globalThis !== 'undefined') pushScope(globalThis);
     if (typeof window !== 'undefined') pushScope(window);
     if (typeof self !== 'undefined') pushScope(self);
     if (typeof global !== 'undefined') pushScope(global);
 
     return scopes;
-  }
-
-  function collectWithArchitecture(primary) {
-    const targetScope = primary || PRIMARY_SCOPE;
-
-    if (ARCHITECTURE && typeof ARCHITECTURE.collectCandidateScopes === 'function') {
-      try {
-        const collected = ARCHITECTURE.collectCandidateScopes(targetScope);
-        if (Array.isArray(collected) && collected.length > 0) {
-          return collected;
-        }
-      } catch (error) {
-        void error;
-      }
-    }
-
-    return fallbackCollectCandidateScopes(targetScope);
-  }
-
-  function collectScopes(primary) {
-    if (ARCHITECTURE_HELPERS && typeof ARCHITECTURE_HELPERS.collectCandidateScopes === 'function') {
-      const targetScope = primary || PRIMARY_SCOPE;
-      try {
-        const collected = ARCHITECTURE_HELPERS.collectCandidateScopes(targetScope);
-        if (Array.isArray(collected) && collected.length > 0) {
-          return collected;
-        }
-      } catch (error) {
-        void error;
-      }
-      return collectWithArchitecture(targetScope);
-    }
-
-    return collectWithArchitecture(primary);
   }
 
   function fallbackTryRequire(modulePath) {
@@ -160,29 +50,6 @@
       return null;
     }
   }
-
-  function tryRequireWithArchitecture(modulePath) {
-    if (ARCHITECTURE && typeof ARCHITECTURE.tryRequire === 'function') {
-      try {
-        const result = ARCHITECTURE.tryRequire(modulePath);
-        if (typeof result !== 'undefined') {
-          return result;
-        }
-      } catch (error) {
-        void error;
-      }
-    }
-
-    return fallbackTryRequire(modulePath);
-  }
-
-  const baseTryRequire =
-    ARCHITECTURE_HELPERS && typeof ARCHITECTURE_HELPERS.tryRequire === 'function'
-      ? function tryRequireWithHelpers(modulePath) {
-          const result = ARCHITECTURE_HELPERS.tryRequire(modulePath);
-          return typeof result === 'undefined' ? tryRequireWithArchitecture(modulePath) : result;
-        }
-      : tryRequireWithArchitecture;
 
   function fallbackDefineHiddenProperty(target, name, value) {
     if (!target || (typeof target !== 'object' && typeof target !== 'function')) {
@@ -211,33 +78,30 @@
     return false;
   }
 
-  function defineHiddenPropertyWithArchitecture(target, name, value) {
-    if (ARCHITECTURE && typeof ARCHITECTURE.defineHiddenProperty === 'function') {
-      try {
-        if (ARCHITECTURE.defineHiddenProperty(target, name, value)) {
-          return true;
-        }
-      } catch (error) {
-        void error;
-      }
+  function fallbackEnsureQueue(scope, key, baseScope) {
+    const targetScope = scope || baseScope;
+    const queueKey = typeof key === 'string' && key ? key : DEFAULT_PENDING_QUEUE_KEY;
+
+    if (!targetScope || typeof targetScope !== 'object') {
+      return null;
     }
 
-    return fallbackDefineHiddenProperty(target, name, value);
-  }
+    let queue = targetScope[queueKey];
+    if (Array.isArray(queue)) {
+      return queue;
+    }
 
-  const defineHiddenProperty =
-    ARCHITECTURE_HELPERS && typeof ARCHITECTURE_HELPERS.defineHiddenProperty === 'function'
-      ? function defineWithHelpers(target, name, value) {
-          try {
-            if (ARCHITECTURE_HELPERS.defineHiddenProperty(target, name, value)) {
-              return true;
-            }
-          } catch (error) {
-            void error;
-          }
-          return defineHiddenPropertyWithArchitecture(target, name, value);
-        }
-      : defineHiddenPropertyWithArchitecture;
+    if (!fallbackDefineHiddenProperty(targetScope, queueKey, [])) {
+      return null;
+    }
+
+    queue = targetScope[queueKey];
+    if (!Array.isArray(queue)) {
+      return null;
+    }
+
+    return queue;
+  }
 
   function shouldBypassDeepFreeze(value) {
     if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
@@ -295,36 +159,11 @@
       if (!descriptor || ('get' in descriptor) || ('set' in descriptor)) {
         continue;
       }
-
       fallbackFreezeDeep(descriptor.value, seen);
     }
 
     return Object.freeze(value);
   }
-
-  function freezeDeepWithArchitecture(value) {
-    if (ARCHITECTURE && typeof ARCHITECTURE.freezeDeep === 'function') {
-      try {
-        return ARCHITECTURE.freezeDeep(value);
-      } catch (error) {
-        void error;
-      }
-    }
-
-    return fallbackFreezeDeep(value);
-  }
-
-  const freezeDeep =
-    ARCHITECTURE_HELPERS && typeof ARCHITECTURE_HELPERS.freezeDeep === 'function'
-      ? function freezeWithHelpers(value) {
-          try {
-            return ARCHITECTURE_HELPERS.freezeDeep(value);
-          } catch (error) {
-            void error;
-          }
-          return freezeDeepWithArchitecture(value);
-        }
-      : freezeDeepWithArchitecture;
 
   function fallbackSafeWarn(message, detail) {
     if (typeof console === 'undefined' || typeof console.warn !== 'function') {
@@ -342,38 +181,12 @@
     }
   }
 
-  function safeWarnWithArchitecture(message, detail) {
-    if (ARCHITECTURE && typeof ARCHITECTURE.safeWarn === 'function') {
-      try {
-        ARCHITECTURE.safeWarn(message, detail);
-        return;
-      } catch (error) {
-        void error;
-      }
-    }
-
-    fallbackSafeWarn(message, detail);
-  }
-
-  const safeWarn =
-    ARCHITECTURE_HELPERS && typeof ARCHITECTURE_HELPERS.safeWarn === 'function'
-      ? function warnWithHelpers(message, detail) {
-          try {
-            ARCHITECTURE_HELPERS.safeWarn(message, detail);
-            return;
-          } catch (error) {
-            void error;
-          }
-          safeWarnWithArchitecture(message, detail);
-        }
-      : safeWarnWithArchitecture;
-
-  function fallbackResolveFromScopes(propertyName, options) {
+  function fallbackResolveFromScopes(propertyName, options, baseScope) {
     const settings = options || {};
     const predicate = typeof settings.predicate === 'function' ? settings.predicate : null;
     const scopes = Array.isArray(settings.scopes)
       ? settings.scopes.slice()
-      : collectScopes(settings.primaryScope || PRIMARY_SCOPE);
+      : fallbackCollectCandidateScopes(settings.primaryScope || baseScope, baseScope);
 
     for (let index = 0; index < scopes.length; index += 1) {
       const scope = scopes[index];
@@ -401,19 +214,237 @@
     return null;
   }
 
-  const resolveFromScopes =
-    ARCHITECTURE && typeof ARCHITECTURE.resolveFromScopes === 'function'
-      ? function resolveWithArchitecture(propertyName, options) {
-          const settings = { ...(options || {}) };
-          if (!settings.primaryScope) {
-            settings.primaryScope = PRIMARY_SCOPE;
-          }
-          if (!settings.scopes) {
-            settings.scopes = collectScopes(settings.primaryScope);
-          }
-          return ARCHITECTURE.resolveFromScopes(propertyName, settings);
+  function fallbackQueueModuleRegistration(scope, name, api, options, baseScope, queueKey) {
+    const targetScope = scope || baseScope;
+    const queue = fallbackEnsureQueue(targetScope, queueKey || DEFAULT_PENDING_QUEUE_KEY, baseScope);
+    if (!queue) {
+      return false;
+    }
+
+    const payload = Object.freeze({
+      name,
+      api,
+      options: Object.freeze({ ...(options || {}) }),
+    });
+
+    try {
+      queue.push(payload);
+      return true;
+    } catch (error) {
+      void error;
+    }
+
+    try {
+      queue[queue.length] = payload;
+      return true;
+    } catch (assignmentError) {
+      void assignmentError;
+    }
+
+    return false;
+  }
+
+  function createFallbackKernel(primaryScope) {
+    const baseScope = primaryScope || fallbackDetectGlobalScope();
+
+    return {
+      detectGlobalScope: fallbackDetectGlobalScope,
+      getGlobalScope() {
+        return baseScope;
+      },
+      collectCandidateScopes(primary) {
+        return fallbackCollectCandidateScopes(primary || baseScope, baseScope);
+      },
+      tryRequire: fallbackTryRequire,
+      defineHiddenProperty: fallbackDefineHiddenProperty,
+      ensureQueue(scope, key) {
+        return fallbackEnsureQueue(scope || baseScope, key, baseScope);
+      },
+      freezeDeep: fallbackFreezeDeep,
+      safeWarn: fallbackSafeWarn,
+      resolveFromScopes(propertyName, options) {
+        return fallbackResolveFromScopes(propertyName, options, baseScope);
+      },
+      queueModuleRegistration(scope, name, api, options) {
+        return fallbackQueueModuleRegistration(scope || baseScope, name, api, options, baseScope, DEFAULT_PENDING_QUEUE_KEY);
+      },
+      getPendingQueueKey() {
+        return DEFAULT_PENDING_QUEUE_KEY;
+      },
+      resolveModuleRegistry(scope) {
+        const targetScope = scope || baseScope;
+        const required = fallbackTryRequire('./registry.js');
+        if (required && typeof required === 'object') {
+          return required;
         }
-      : fallbackResolveFromScopes;
+        const scopes = fallbackCollectCandidateScopes(targetScope, baseScope);
+        for (let index = 0; index < scopes.length; index += 1) {
+          const candidate = scopes[index];
+          if (candidate && typeof candidate.cineModules === 'object') {
+            return candidate.cineModules;
+          }
+        }
+        return null;
+      },
+    };
+  }
+
+  function resolveArchitectureKernel(scope) {
+    const targetScope = scope || fallbackDetectGlobalScope();
+
+    if (typeof require === 'function') {
+      try {
+        const required = require('./architecture-kernel.js');
+        if (required && typeof required === 'object') {
+          return required;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    if (targetScope && typeof targetScope.cineModuleArchitectureKernel === 'object') {
+      return targetScope.cineModuleArchitectureKernel;
+    }
+
+    return null;
+  }
+
+  const LOCAL_SCOPE = fallbackDetectGlobalScope();
+  const RESOLVED_KERNEL = resolveArchitectureKernel(LOCAL_SCOPE);
+  const ACTIVE_KERNEL = RESOLVED_KERNEL || createFallbackKernel(LOCAL_SCOPE);
+
+  function detectGlobalScope() {
+    if (ACTIVE_KERNEL && typeof ACTIVE_KERNEL.detectGlobalScope === 'function') {
+      try {
+        const detected = ACTIVE_KERNEL.detectGlobalScope();
+        if (detected) {
+          return detected;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    return fallbackDetectGlobalScope();
+  }
+
+  const PRIMARY_SCOPE =
+    ACTIVE_KERNEL && typeof ACTIVE_KERNEL.getGlobalScope === 'function'
+      ? (function resolvePrimaryScope() {
+          try {
+            const scoped = ACTIVE_KERNEL.getGlobalScope();
+            if (scoped) {
+              return scoped;
+            }
+          } catch (error) {
+            void error;
+          }
+          return detectGlobalScope();
+        })()
+      : detectGlobalScope();
+
+  let pendingQueueKey =
+    ACTIVE_KERNEL && typeof ACTIVE_KERNEL.getPendingQueueKey === 'function'
+      ? ACTIVE_KERNEL.getPendingQueueKey()
+      : DEFAULT_PENDING_QUEUE_KEY;
+
+  function collectCandidateScopes(primary) {
+    if (ACTIVE_KERNEL && typeof ACTIVE_KERNEL.collectCandidateScopes === 'function') {
+      try {
+        const collected = ACTIVE_KERNEL.collectCandidateScopes(primary || PRIMARY_SCOPE);
+        if (Array.isArray(collected) && collected.length > 0) {
+          return collected;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    return fallbackCollectCandidateScopes(primary || PRIMARY_SCOPE, PRIMARY_SCOPE);
+  }
+
+  function collectScopes(primary) {
+    const scopes = collectCandidateScopes(primary || PRIMARY_SCOPE);
+    return Array.isArray(scopes) ? scopes : [];
+  }
+
+  function tryRequire(modulePath) {
+    if (ACTIVE_KERNEL && typeof ACTIVE_KERNEL.tryRequire === 'function') {
+      try {
+        const result = ACTIVE_KERNEL.tryRequire(modulePath);
+        if (typeof result !== 'undefined') {
+          return result;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    return fallbackTryRequire(modulePath);
+  }
+
+  function defineHiddenProperty(target, name, value) {
+    if (ACTIVE_KERNEL && typeof ACTIVE_KERNEL.defineHiddenProperty === 'function') {
+      try {
+        if (ACTIVE_KERNEL.defineHiddenProperty(target, name, value)) {
+          return true;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    return fallbackDefineHiddenProperty(target, name, value);
+  }
+
+  function freezeDeep(value) {
+    if (ACTIVE_KERNEL && typeof ACTIVE_KERNEL.freezeDeep === 'function') {
+      try {
+        return ACTIVE_KERNEL.freezeDeep(value);
+      } catch (error) {
+        void error;
+      }
+    }
+
+    return fallbackFreezeDeep(value);
+  }
+
+  function safeWarn(message, detail) {
+    if (ACTIVE_KERNEL && typeof ACTIVE_KERNEL.safeWarn === 'function') {
+      try {
+        ACTIVE_KERNEL.safeWarn(message, detail);
+        return;
+      } catch (error) {
+        void error;
+      }
+    }
+
+    fallbackSafeWarn(message, detail);
+  }
+
+  function resolveFromScopes(propertyName, options) {
+    const settings = options ? { ...options } : {};
+    if (!settings.primaryScope) {
+      settings.primaryScope = PRIMARY_SCOPE;
+    }
+    if (!settings.scopes) {
+      settings.scopes = collectScopes(settings.primaryScope);
+    }
+
+    if (ACTIVE_KERNEL && typeof ACTIVE_KERNEL.resolveFromScopes === 'function') {
+      try {
+        const resolved = ACTIVE_KERNEL.resolveFromScopes(propertyName, settings);
+        if (resolved) {
+          return resolved;
+        }
+      } catch (error) {
+        safeWarn(`cineModuleSystem: resolveFromScopes failed for "${propertyName}".`, error);
+      }
+    }
+
+    return fallbackResolveFromScopes(propertyName, settings, PRIMARY_SCOPE);
+  }
 
   let cachedModuleBase = null;
   let hasResolvedModuleBase = false;
@@ -427,7 +458,7 @@
   function loadModuleBase(scope) {
     const targetScope = scope || PRIMARY_SCOPE;
 
-    const required = baseTryRequire('./base.js');
+    const required = tryRequire('./base.js');
     if (required && typeof required === 'object') {
       updateQueueKeyFromBase(required);
       return required;
@@ -462,7 +493,7 @@
   function fallbackResolveModuleRegistry(scope) {
     const targetScope = scope || PRIMARY_SCOPE;
 
-    const required = baseTryRequire('./registry.js');
+    const required = tryRequire('./registry.js');
     if (required && typeof required === 'object') {
       return required;
     }
@@ -484,19 +515,19 @@
 
   function resolveModuleRegistry(scope) {
     const targetScope = scope || PRIMARY_SCOPE;
-    const base = getModuleBase(targetScope);
 
-    if (ARCHITECTURE_HELPERS && typeof ARCHITECTURE_HELPERS.resolveModuleRegistry === 'function') {
+    if (ACTIVE_KERNEL && typeof ACTIVE_KERNEL.resolveModuleRegistry === 'function') {
       try {
-        const resolvedByHelpers = ARCHITECTURE_HELPERS.resolveModuleRegistry(targetScope);
-        if (resolvedByHelpers && typeof resolvedByHelpers === 'object') {
-          return resolvedByHelpers;
+        const resolvedByKernel = ACTIVE_KERNEL.resolveModuleRegistry(targetScope);
+        if (resolvedByKernel && typeof resolvedByKernel === 'object') {
+          return resolvedByKernel;
         }
       } catch (error) {
-        safeWarn('cineModuleSystem: Architecture helpers resolveModuleRegistry failed.', error);
+        safeWarn('cineModuleSystem: Kernel resolveModuleRegistry failed.', error);
       }
     }
 
+    const base = getModuleBase(targetScope);
     if (base && typeof base.resolveModuleRegistry === 'function') {
       try {
         const resolved = base.resolveModuleRegistry(targetScope);
@@ -504,7 +535,7 @@
           return resolved;
         }
       } catch (error) {
-        safeWarn('cineModuleSystem: Unable to resolve module registry through base.', error);
+        safeWarn('cineModuleSystem: Base resolveModuleRegistry failed.', error);
       }
     }
 
@@ -569,73 +600,22 @@
     return fallbackExposeGlobal(name, value, targetScope, options || {});
   }
 
-  const DEFAULT_PENDING_QUEUE_KEY = '__cinePendingModuleRegistrations__';
-  let pendingQueueKey =
-    ARCHITECTURE_HELPERS && typeof ARCHITECTURE_HELPERS.pendingQueueKey === 'string'
-      ? ARCHITECTURE_HELPERS.pendingQueueKey
-      : DEFAULT_PENDING_QUEUE_KEY;
-
-  function fallbackEnsureQueue(scope) {
-    const targetScope = scope || PRIMARY_SCOPE;
-    if (!targetScope || typeof targetScope !== 'object') {
-      return null;
-    }
-
-    let queue = targetScope[pendingQueueKey];
-    if (Array.isArray(queue)) {
-      return queue;
-    }
-
-    if (defineHiddenProperty(targetScope, pendingQueueKey, [])) {
-      queue = targetScope[pendingQueueKey];
-      if (Array.isArray(queue)) {
-        return queue;
-      }
-    }
-
-    try {
-      targetScope[pendingQueueKey] = [];
-      queue = targetScope[pendingQueueKey];
-    } catch (error) {
-      safeWarn('cineModuleSystem: Unable to create pending registration queue.', error);
-      return null;
-    }
-
-    return Array.isArray(queue) ? queue : null;
-  }
-
-  function ensureRegistrationQueueWithArchitecture(scope) {
+  function ensureRegistrationQueue(scope) {
     const targetScope = scope || PRIMARY_SCOPE;
 
-    if (ARCHITECTURE && typeof ARCHITECTURE.ensureQueue === 'function') {
+    if (ACTIVE_KERNEL && typeof ACTIVE_KERNEL.ensureQueue === 'function') {
       try {
-        const queue = ARCHITECTURE.ensureQueue(targetScope, pendingQueueKey);
+        const queue = ACTIVE_KERNEL.ensureQueue(targetScope, pendingQueueKey);
         if (Array.isArray(queue)) {
           return queue;
         }
       } catch (error) {
-        safeWarn('cineModuleSystem: Architecture ensureQueue failed.', error);
+        safeWarn('cineModuleSystem: ensureQueue failed via kernel.', error);
       }
     }
 
-    return fallbackEnsureQueue(targetScope);
+    return fallbackEnsureQueue(targetScope, pendingQueueKey, PRIMARY_SCOPE);
   }
-
-  const ensureRegistrationQueue =
-    ARCHITECTURE_HELPERS && typeof ARCHITECTURE_HELPERS.ensureQueue === 'function'
-      ? function ensureWithHelpers(scope) {
-          const targetScope = scope || PRIMARY_SCOPE;
-          try {
-            const queue = ARCHITECTURE_HELPERS.ensureQueue(targetScope, pendingQueueKey);
-            if (Array.isArray(queue)) {
-              return queue;
-            }
-          } catch (error) {
-            safeWarn('cineModuleSystem: Architecture helpers ensureQueue failed.', error);
-          }
-          return ensureRegistrationQueueWithArchitecture(targetScope);
-        }
-      : ensureRegistrationQueueWithArchitecture;
 
   function normalizeName(name) {
     if (typeof name === 'string' && name.trim()) {
@@ -650,13 +630,13 @@
   function queueModuleRegistration(name, api, options, scope) {
     const targetScope = scope || PRIMARY_SCOPE;
 
-    if (ARCHITECTURE_HELPERS && typeof ARCHITECTURE_HELPERS.queueModuleRegistration === 'function') {
+    if (ACTIVE_KERNEL && typeof ACTIVE_KERNEL.queueModuleRegistration === 'function') {
       try {
-        if (ARCHITECTURE_HELPERS.queueModuleRegistration(targetScope, name, api, options)) {
+        if (ACTIVE_KERNEL.queueModuleRegistration(targetScope, name, api, options)) {
           return true;
         }
       } catch (error) {
-        safeWarn('cineModuleSystem: Architecture helpers queueModuleRegistration failed.', error);
+        safeWarn('cineModuleSystem: queueModuleRegistration failed via kernel.', error);
       }
     }
 
@@ -666,16 +646,11 @@
       return false;
     }
 
-    const normalizedName = (() => {
-      try {
-        return normalizeName(name);
-      } catch (error) {
-        safeWarn('cineModuleSystem: Ignoring registration with invalid name.', error);
-        return null;
-      }
-    })();
-
-    if (!normalizedName) {
+    let normalizedName;
+    try {
+      normalizedName = normalizeName(name);
+    } catch (error) {
+      safeWarn('cineModuleSystem: Ignoring registration with invalid name.', error);
       return false;
     }
 
@@ -760,9 +735,7 @@
     }
 
     const propertyName = options.propertyName || normalizedName;
-    const scopes = Array.isArray(options.scopes) && options.scopes.length > 0
-      ? options.scopes
-      : collectScopes(targetScope);
+    const scopes = Array.isArray(options.scopes) && options.scopes.length > 0 ? options.scopes : collectScopes(targetScope);
 
     const resolved = resolveFromScopes(propertyName, {
       primaryScope: targetScope,
@@ -801,12 +774,12 @@
 
   const systemApi = {
     getArchitecture() {
-      return ARCHITECTURE;
+      return (ACTIVE_KERNEL && ACTIVE_KERNEL.architecture) || null;
     },
     detectGlobalScope,
     getGlobalScope,
     collectCandidateScopes: collectScopes,
-    tryRequire: baseTryRequire,
+    tryRequire,
     resolveFromScopes,
     getModuleBase,
     getModuleRegistry,
@@ -842,3 +815,4 @@
     module.exports = frozenApi;
   }
 })();
+
