@@ -10,6 +10,24 @@ backup guidance in the main README. Keep a printed copy with your travel kit so 
 entire team can rehearse data safety workflows before boarding a plane or packing the
 truck.
 
+## Cache alignment before every release
+
+Service worker releases must ship with a cache identifier that matches the application
+version or offline crews risk loading stale bundles. Before tagging a release:
+
+1. Update the version in `package.json` as usual and apply the same number wherever the
+   runtime exposes `APP_VERSION` (the shared module guarantees loader, autosave and
+   restore flows expose the value globally).
+2. Run `npm run test:unit -- versionConsistency` to verify the service worker imported
+   the shared version marker correctly and produced the matching cache name. The test
+   executes the worker in isolation, so failures highlight drift before anything ships.
+3. Force-reload the planner locally, open **Settings → About** to confirm the displayed
+   version, and then switch to offline mode. Exercise manual save, autosave, share,
+   import, backup and restore while offline to ensure the regenerated cache serves the
+   updated bundles without losing user data.
+4. Update the verification log with the version string, the command output and the date
+   of the offline rehearsal so future crews can confirm which cache build they trust.
+
 ## 1. Provisioning a new machine
 
 Run this sequence when you clone or copy the repository onto a workstation for the first

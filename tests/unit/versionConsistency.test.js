@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const vm = require('vm');
 
 const rootDir = path.join(__dirname, '..', '..');
 
@@ -11,6 +12,49 @@ function extractVersion(regex, contents, source) {
     throw new Error(`Unable to find version in ${source}`);
   }
   return match[1];
+}
+
+function evaluateServiceWorkerCacheName(rootDirectory) {
+  const serviceWorkerSource = read('service-worker.js');
+  const context = {
+    console,
+  };
+
+  let sandbox = null;
+
+  const globalScope = {
+    importScripts: (...urls) => {
+      urls.forEach(url => {
+        const resolved = path.join(rootDirectory, url.replace(/^\.\//, ''));
+        const scriptSource = fs.readFileSync(resolved, 'utf8');
+        vm.runInContext(scriptSource, sandbox, { filename: resolved });
+      });
+    },
+    addEventListener: () => {},
+    skipWaiting: () => {},
+    clients: {
+      claim: () => Promise.resolve(),
+    },
+  };
+
+  sandbox = vm.createContext({
+    ...context,
+    self: globalScope,
+    globalThis: globalScope,
+  });
+
+  vm.runInContext(serviceWorkerSource, sandbox, { filename: 'service-worker.js' });
+
+  const cacheName =
+    sandbox.CACHE_NAME ||
+    sandbox.self.CACHE_NAME ||
+    sandbox.self.CINE_CACHE_NAME ||
+    null;
+  if (!cacheName) {
+    throw new Error('Service worker did not expose CACHE_NAME during evaluation.');
+  }
+
+  return cacheName;
 }
 
 describe('application version consistency', () => {
@@ -38,11 +82,7 @@ describe('application version consistency', () => {
     );
     expect(htmlVersion).toBe(version);
 
-    const cacheVersion = extractVersion(
-      /const CACHE_NAME = ['"]cine-power-planner-v([^'"]+)['"];?/,
-      read('service-worker.js'),
-      'service-worker.js',
-    );
-    expect(cacheVersion).toBe(version);
+    const cacheName = evaluateServiceWorkerCacheName(rootDir);
+    expect(cacheName).toBe(`cine-power-planner-v${version}`);
   });
 });
