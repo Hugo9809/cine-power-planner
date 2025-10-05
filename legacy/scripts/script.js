@@ -35,7 +35,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
   attemptRegistryBackfill(globalScope);
   var aggregatedExports = module.exports;
   var combinedAppVersion = aggregatedExports && aggregatedExports.APP_VERSION;
-  var APP_VERSION = "1.0.12";
+  var APP_VERSION = "1.0.13";
   if (combinedAppVersion && combinedAppVersion !== APP_VERSION) {
     throw new Error("Combined app version (".concat(combinedAppVersion, ") does not match script marker (").concat(APP_VERSION, ")."));
   }

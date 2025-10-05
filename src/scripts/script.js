@@ -83,7 +83,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
 
   const aggregatedExports = module.exports;
   const combinedAppVersion = aggregatedExports && aggregatedExports.APP_VERSION;
-  const APP_VERSION = "1.0.12"; // Version marker for consistency checks
+  const APP_VERSION = "1.0.13"; // Version marker for consistency checks
 
   if (combinedAppVersion && combinedAppVersion !== APP_VERSION) {
     throw new Error(
