@@ -15468,32 +15468,43 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           var pointer = e.touches && e.touches[0] ? e.touches[0] : e;
           popup.innerHTML = html;
           popup.style.display = 'block';
-          var offset = 12;
-          var viewportWidth = ((_window$visualViewpor = window.visualViewport) === null || _window$visualViewpor === void 0 ? void 0 : _window$visualViewpor.width) || window.innerWidth || ((_document$documentEle = document.documentElement) === null || _document$documentEle === void 0 ? void 0 : _document$documentEle.clientWidth) || 0;
-          var viewportHeight = ((_window$visualViewpor2 = window.visualViewport) === null || _window$visualViewpor2 === void 0 ? void 0 : _window$visualViewpor2.height) || window.innerHeight || ((_document$documentEle2 = document.documentElement) === null || _document$documentEle2 === void 0 ? void 0 : _document$documentEle2.clientHeight) || 0;
-          var maxPopupHeight = viewportHeight > 0 ? Math.max(offset * 2, viewportHeight - offset * 2) : 0;
-          if (maxPopupHeight > 0) {
-            popup.style.maxHeight = "".concat(maxPopupHeight, "px");
-          } else {
-            popup.style.removeProperty('max-height');
-          }
-          var popupWidth = popup.offsetWidth || 0;
-          var popupHeight = popup.offsetHeight || 0;
-          var pointerX = pointer.clientX;
-          var pointerY = pointer.clientY;
-          var left = pointerX + offset;
-          if (viewportWidth > 0 && popupWidth > 0 && left + popupWidth + offset > viewportWidth) {
-            left = Math.max(offset, pointerX - popupWidth - offset);
-          }
-          var top = pointerY + offset;
-          if (viewportHeight > 0 && popupHeight > 0 && top + popupHeight + offset > viewportHeight) {
-            top = Math.max(offset, pointerY - popupHeight - offset);
-          }
-          var maxLeft = viewportWidth > 0 && popupWidth > 0 ? Math.max(offset, viewportWidth - popupWidth - offset) : left;
-          var maxTop = viewportHeight > 0 && popupHeight > 0 ? Math.max(offset, viewportHeight - popupHeight - offset) : top;
-          popup.style.left = "".concat(Math.max(offset, Math.min(left, maxLeft)), "px");
-          popup.style.top = "".concat(Math.max(offset, Math.min(top, maxTop)), "px");
-        };
+        var offset = 12;
+        var viewportWidth = ((_window$visualViewpor = window.visualViewport) === null || _window$visualViewpor === void 0 ? void 0 : _window$visualViewpor.width) || window.innerWidth || ((_document$documentEle = document.documentElement) === null || _document$documentEle === void 0 ? void 0 : _document$documentEle.clientWidth) || 0;
+        var viewportHeight = ((_window$visualViewpor2 = window.visualViewport) === null || _window$visualViewpor2 === void 0 ? void 0 : _window$visualViewpor2.height) || window.innerHeight || ((_document$documentEle2 = document.documentElement) === null || _document$documentEle2 === void 0 ? void 0 : _document$documentEle2.clientHeight) || 0;
+        var viewportLeft = ((_window$visualViewpor3 = window.visualViewport) === null || _window$visualViewpor3 === void 0 ? void 0 : _window$visualViewpor3.offsetLeft) || 0;
+        var viewportTop = ((_window$visualViewpor4 = window.visualViewport) === null || _window$visualViewpor4 === void 0 ? void 0 : _window$visualViewpor4.offsetTop) || 0;
+        var viewportRight = viewportLeft + (viewportWidth || 0);
+        var viewportBottom = viewportTop + (viewportHeight || 0);
+        var viewportAvailableHeight = viewportBottom - viewportTop;
+        var maxPopupHeight = viewportHeight > 0 ? Math.max(offset * 2, viewportAvailableHeight - offset * 2) : 0;
+        if (maxPopupHeight > 0) {
+          popup.style.maxHeight = "".concat(maxPopupHeight, "px");
+        } else {
+          popup.style.removeProperty('max-height');
+        }
+        var popupWidth = popup.offsetWidth || 0;
+        var popupHeight = popup.offsetHeight || 0;
+        var pointerClientX = Number.isFinite(pointer.clientX) ? pointer.clientX : 0;
+        var pointerClientY = Number.isFinite(pointer.clientY) ? pointer.clientY : 0;
+        var pointerX = pointerClientX + viewportLeft;
+        var pointerY = pointerClientY + viewportTop;
+        var left = pointerX + offset;
+        if (viewportWidth > 0 && popupWidth > 0 && left + popupWidth + offset > viewportRight) {
+          left = Math.max(viewportLeft + offset, pointerX - popupWidth - offset);
+        }
+        var top = pointerY + offset;
+        if (viewportHeight > 0 && popupHeight > 0 && top + popupHeight + offset > viewportBottom) {
+          top = Math.max(viewportTop + offset, pointerY - popupHeight - offset);
+        }
+        var maxLeft = viewportWidth > 0 && popupWidth > 0 ? Math.max(offset, viewportWidth - popupWidth - offset) : left;
+        if (viewportWidth > 0 && popupWidth > 0) maxLeft = Math.max(viewportLeft + offset, viewportRight - popupWidth - offset);
+        var maxTop = viewportHeight > 0 && popupHeight > 0 ? Math.max(offset, viewportHeight - popupHeight - offset) : top;
+        if (viewportHeight > 0 && popupHeight > 0) maxTop = Math.max(viewportTop + offset, viewportBottom - popupHeight - offset);
+        var resolvedLeft = Math.max(viewportLeft + offset, Math.min(left, maxLeft));
+        var resolvedTop = Math.max(viewportTop + offset, Math.min(top, maxTop));
+        popup.style.left = "".concat(resolvedLeft, "px");
+        popup.style.top = "".concat(resolvedTop, "px");
+      };
         var hide = function hide(event) {
           if (event) {
             var related = event.relatedTarget;

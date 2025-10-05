@@ -16281,8 +16281,14 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             || window.innerHeight
             || document.documentElement?.clientHeight
             || 0;
+          const viewportLeft = window.visualViewport?.offsetLeft || 0;
+          const viewportTop = window.visualViewport?.offsetTop || 0;
+          const viewportRight = viewportLeft + (viewportWidth || 0);
+          const viewportBottom = viewportTop + (viewportHeight || 0);
+
+          const viewportAvailableHeight = viewportBottom - viewportTop;
           const maxPopupHeight = viewportHeight > 0
-            ? Math.max(offset * 2, viewportHeight - offset * 2)
+            ? Math.max(offset * 2, viewportAvailableHeight - offset * 2)
             : 0;
           if (maxPopupHeight > 0) {
             popup.style.maxHeight = `${maxPopupHeight}px`;
@@ -16292,28 +16298,41 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           const popupWidth = popup.offsetWidth || 0;
           const popupHeight = popup.offsetHeight || 0;
 
-          const pointerX = pointer.clientX;
-          const pointerY = pointer.clientY;
-    
+          const pointerClientX = Number.isFinite(pointer.clientX) ? pointer.clientX : 0;
+          const pointerClientY = Number.isFinite(pointer.clientY) ? pointer.clientY : 0;
+          const pointerX = pointerClientX + viewportLeft;
+          const pointerY = pointerClientY + viewportTop;
+
           let left = pointerX + offset;
-          if (viewportWidth > 0 && popupWidth > 0 && left + popupWidth + offset > viewportWidth) {
-            left = Math.max(offset, pointerX - popupWidth - offset);
+          if (
+            viewportWidth > 0 &&
+            popupWidth > 0 &&
+            left + popupWidth + offset > viewportRight
+          ) {
+            left = Math.max(viewportLeft + offset, pointerX - popupWidth - offset);
           }
-    
+
           let top = pointerY + offset;
-          if (viewportHeight > 0 && popupHeight > 0 && top + popupHeight + offset > viewportHeight) {
-            top = Math.max(offset, pointerY - popupHeight - offset);
+          if (
+            viewportHeight > 0 &&
+            popupHeight > 0 &&
+            top + popupHeight + offset > viewportBottom
+          ) {
+            top = Math.max(viewportTop + offset, pointerY - popupHeight - offset);
           }
-    
+
           const maxLeft = viewportWidth > 0 && popupWidth > 0
-            ? Math.max(offset, viewportWidth - popupWidth - offset)
+            ? Math.max(viewportLeft + offset, viewportRight - popupWidth - offset)
             : left;
           const maxTop = viewportHeight > 0 && popupHeight > 0
-            ? Math.max(offset, viewportHeight - popupHeight - offset)
+            ? Math.max(viewportTop + offset, viewportBottom - popupHeight - offset)
             : top;
-    
-          popup.style.left = `${Math.max(offset, Math.min(left, maxLeft))}px`;
-          popup.style.top = `${Math.max(offset, Math.min(top, maxTop))}px`;
+
+          const resolvedLeft = Math.max(viewportLeft + offset, Math.min(left, maxLeft));
+          const resolvedTop = Math.max(viewportTop + offset, Math.min(top, maxTop));
+
+          popup.style.left = `${resolvedLeft}px`;
+          popup.style.top = `${resolvedTop}px`;
         };
         const hide = event => {
           if (event) {
