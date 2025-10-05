@@ -113,6 +113,36 @@ describe('mount voltage storage key resolution', () => {
     restoreGlobals(snapshot);
   });
 
+  test('getMountVoltageStorageKeyName returns the fallback key when no overrides are present', () => {
+    delete global.MOUNT_VOLTAGE_STORAGE_KEY;
+    delete global[MOUNT_VOLTAGE_SYMBOL];
+
+    const storage = loadStorageModule();
+
+    expect(storage.getMountVoltageStorageKeyName()).toBe(DEFAULT_KEY);
+    expect(storage.getMountVoltageStorageBackupKeyName()).toBe(`${DEFAULT_KEY}__backup`);
+  });
+
+  test('getMountVoltageStorageKeyName prefers the shared symbol override when defined', () => {
+    delete global.MOUNT_VOLTAGE_STORAGE_KEY;
+    global[MOUNT_VOLTAGE_SYMBOL] = 'symbolBasedKey';
+
+    const storage = loadStorageModule();
+
+    expect(storage.getMountVoltageStorageKeyName()).toBe('symbolBasedKey');
+    expect(storage.getMountVoltageStorageBackupKeyName()).toBe('symbolBasedKey__backup');
+  });
+
+  test('getMountVoltageStorageKeyName respects a global string override when provided', () => {
+    delete global[MOUNT_VOLTAGE_SYMBOL];
+    global.MOUNT_VOLTAGE_STORAGE_KEY = 'customVoltageKey';
+
+    const storage = loadStorageModule();
+
+    expect(storage.getMountVoltageStorageKeyName()).toBe('customVoltageKey');
+    expect(storage.getMountVoltageStorageBackupKeyName()).toBe('customVoltageKey__backup');
+  });
+
   test('exportAllData prefers the globally exposed symbol key', () => {
     global[MOUNT_VOLTAGE_SYMBOL] = 'symbolBasedKey';
 
