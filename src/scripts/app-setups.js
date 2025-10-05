@@ -864,8 +864,6 @@ if (shareUiContext.applySharedLinkButton && shareUiContext.sharedLinkInput) {
   shareUiContext.applySharedLinkButton.addEventListener('click', handleApplySharedLinkClick);
 }
 
-enqueueCineUiRegistration(registerSetupsCineUiInternal);
-
 function handleSharedImportModeChange() {
   if (sharedImportPromptActive) return;
   if (lastSharedSetupData === null) return;
@@ -905,6 +903,8 @@ if (sharedImportUiContext.cancelButton) {
 if (sharedImportUiContext.dialog) {
   sharedImportUiContext.dialog.addEventListener('cancel', handleSharedImportDialogCancel);
 }
+
+enqueueCineUiRegistration(registerSetupsCineUiInternal);
 
 function getSafeLanguageTexts() {
   const scope =
