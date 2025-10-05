@@ -12572,6 +12572,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       var favs = loadFavorites();
       return Array.isArray(favs[id]) ? favs[id] : [];
     }
+    var FAVORITE_BUTTON_BY_SELECT = new WeakMap();
+    var FAVORITE_CHANGE_LISTENER_BY_SELECT = new WeakMap();
+    var FAVORITE_BUTTON_LISTENER = new WeakMap();
     function applyFavoritesToSelect(selectElem) {
       if (!selectElem || !selectElem.id) return;
       var favVals = getFavoriteValues(selectElem.id);
@@ -12603,15 +12606,24 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return selectElem.appendChild(o);
       });
     }
+    function getFavoriteButton(selectElem) {
+      var button = FAVORITE_BUTTON_BY_SELECT.get(selectElem);
+      if (button && button.isConnected) {
+        return button;
+      }
+      return null;
+    }
     function updateFavoriteButton(selectElem) {
-      if (!selectElem || !selectElem._favButton) return;
+      if (!selectElem) return;
+      var favoriteButton = getFavoriteButton(selectElem);
+      if (!favoriteButton) return;
       var favVals = getFavoriteValues(selectElem.id);
       var val = selectElem.value;
       var isFav = favVals.includes(val);
-      selectElem._favButton.innerHTML = iconMarkup(ICON_GLYPHS.star, 'favorite-icon');
-      selectElem._favButton.classList.toggle('favorited', isFav);
-      selectElem._favButton.disabled = val === 'None';
-      selectElem._favButton.setAttribute('aria-pressed', isFav ? 'true' : 'false');
+      favoriteButton.innerHTML = iconMarkup(ICON_GLYPHS.star, 'favorite-icon');
+      favoriteButton.classList.toggle('favorited', isFav);
+      favoriteButton.disabled = val === 'None';
+      favoriteButton.setAttribute('aria-pressed', isFav ? 'true' : 'false');
     }
     function toggleFavorite(selectElem) {
       if (!selectElem || !selectElem.id) return;
@@ -12726,15 +12738,19 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (!selectElem || !selectElem.id || selectElem.multiple || selectElem.hidden) return;
       var wrapper = ensureSelectWrapper(selectElem);
       var gearItem = selectElem.closest('.gear-item');
-      function cleanupFavoriteButton(btn) {
+      function cleanupFavoriteButton(btn, ownerSelect) {
         if (!btn) return;
-        if (btn._favListener) {
-          btn.removeEventListener('click', btn._favListener);
-          btn._favListener = null;
+        var listener = FAVORITE_BUTTON_LISTENER.get(btn);
+        if (listener) {
+          btn.removeEventListener('click', listener);
+          FAVORITE_BUTTON_LISTENER.delete(btn);
+        }
+        if (ownerSelect && FAVORITE_BUTTON_BY_SELECT.get(ownerSelect) === btn) {
+          FAVORITE_BUTTON_BY_SELECT.delete(ownerSelect);
         }
         btn.remove();
       }
-      var favoriteButton = selectElem._favButton && selectElem._favButton.isConnected ? selectElem._favButton : null;
+      var favoriteButton = getFavoriteButton(selectElem);
       if (wrapper) {
         var wrapperButtons = Array.from(wrapper.querySelectorAll('.favorite-toggle'));
         if (favoriteButton && !wrapperButtons.includes(favoriteButton)) {
@@ -12744,13 +12760,15 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           favoriteButton = wrapperButtons[0];
         }
         wrapperButtons.forEach(function (btn) {
-          if (btn !== favoriteButton) cleanupFavoriteButton(btn);
+          if (btn !== favoriteButton) cleanupFavoriteButton(btn, selectElem);
         });
       }
       if (gearItem) {
         Array.from(gearItem.querySelectorAll('.favorite-toggle')).filter(function (btn) {
           return btn !== favoriteButton && btn.getAttribute('data-fav-select-id') === selectElem.id;
-        }).forEach(cleanupFavoriteButton);
+        }).forEach(function (btn) {
+          return cleanupFavoriteButton(btn);
+        });
       }
       if (!favoriteButton) {
         favoriteButton = document.createElement('button');
@@ -12762,8 +12780,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       } else if (wrapper && favoriteButton.parentElement !== wrapper) {
         wrapper.appendChild(favoriteButton);
       }
-      if (favoriteButton._favListener) {
-        favoriteButton.removeEventListener('click', favoriteButton._favListener);
+      var previousListener = FAVORITE_BUTTON_LISTENER.get(favoriteButton);
+      if (previousListener) {
+        favoriteButton.removeEventListener('click', previousListener);
       }
       favoriteButton.type = 'button';
       favoriteButton.className = 'favorite-toggle';
@@ -12774,22 +12793,19 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return toggleFavorite(selectElem);
       };
       favoriteButton.addEventListener('click', clickHandler);
-      favoriteButton._favListener = clickHandler;
-      if (!selectElem._favChangeListener) {
+      FAVORITE_BUTTON_LISTENER.set(favoriteButton, clickHandler);
+      if (!FAVORITE_CHANGE_LISTENER_BY_SELECT.has(selectElem)) {
         var changeListener = function changeListener() {
           return updateFavoriteButton(selectElem);
         };
         selectElem.addEventListener('change', changeListener);
-        selectElem._favChangeListener = changeListener;
+        FAVORITE_CHANGE_LISTENER_BY_SELECT.set(selectElem, changeListener);
       }
-      selectElem._favButton = favoriteButton;
-      selectElem._favInit = true;
-      if (selectElem._favButton) {
-        selectElem._favButton.setAttribute('data-fav-select-id', selectElem.id);
-        selectElem._favButton.setAttribute('aria-label', texts[currentLang].favoriteToggleLabel);
-        selectElem._favButton.setAttribute('title', texts[currentLang].favoriteToggleLabel);
-        selectElem._favButton.setAttribute('data-help', texts[currentLang].favoriteToggleHelp || texts[currentLang].favoriteToggleLabel);
-      }
+      FAVORITE_BUTTON_BY_SELECT.set(selectElem, favoriteButton);
+      favoriteButton.setAttribute('data-fav-select-id', selectElem.id);
+      favoriteButton.setAttribute('aria-label', texts[currentLang].favoriteToggleLabel);
+      favoriteButton.setAttribute('title', texts[currentLang].favoriteToggleLabel);
+      favoriteButton.setAttribute('data-help', texts[currentLang].favoriteToggleHelp || texts[currentLang].favoriteToggleLabel);
       applyFavoritesToSelect(selectElem);
       updateFavoriteButton(selectElem);
       adjustGearListSelectWidth(selectElem);
