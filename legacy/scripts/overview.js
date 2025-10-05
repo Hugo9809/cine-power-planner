@@ -232,8 +232,31 @@ function generatePrintableOverview() {
   var safeSetupName = escapeHtmlSafe(setupName);
   var diagramCss = typeof getDiagramCss === 'function' ? getDiagramCss(false) : '';
   var diagramAreaHtml = '';
-  if (setupDiagramContainer) {
+  var diagramLegendHtml = '';
+  var diagramHintHtml = '';
+  var diagramDescHtml = '';
+  var hasSetupDiagramContainer = typeof setupDiagramContainer !== 'undefined' && setupDiagramContainer;
+  if (hasSetupDiagramContainer) {
     var areaClone = setupDiagramContainer.cloneNode(true);
+    areaClone.id = 'diagramAreaOverview';
+    areaClone.setAttribute('data-diagram-area', 'overview');
+    var describedBy = areaClone.getAttribute('aria-describedby');
+    if (describedBy) {
+      var ids = describedBy.split(/\s+/).filter(Boolean);
+      var updated = ids.map(function (id) {
+        return id === 'diagramDesc' ? 'diagramDescOverview' : id;
+      });
+      areaClone.setAttribute('aria-describedby', updated.join(' '));
+    } else {
+      areaClone.setAttribute('aria-describedby', 'diagramDescOverview');
+    }
+    var popupClone = areaClone.querySelector('#diagramPopup');
+    if (popupClone) {
+      popupClone.id = 'diagramPopupOverview';
+      popupClone.setAttribute('data-diagram-popup', 'overview');
+      popupClone.style.position = 'static';
+      popupClone.style.display = 'none';
+    }
     var svg = areaClone.querySelector('svg');
     if (svg) {
       var style = document.createElement('style');
@@ -242,9 +265,25 @@ function generatePrintableOverview() {
     }
     diagramAreaHtml = areaClone.outerHTML;
   }
-  var diagramLegendHtml = diagramLegend ? diagramLegend.outerHTML : '';
-  var diagramHintHtml = diagramHint ? diagramHint.outerHTML : '';
-  var diagramDescHtml = document.getElementById('diagramDesc') ? document.getElementById('diagramDesc').outerHTML : '';
+  if (diagramLegend) {
+    var legendClone = diagramLegend.cloneNode(true);
+    legendClone.id = 'diagramLegendOverview';
+    legendClone.setAttribute('data-diagram-legend', 'overview');
+    diagramLegendHtml = legendClone.outerHTML;
+  }
+  if (diagramHint) {
+    var hintClone = diagramHint.cloneNode(true);
+    hintClone.id = 'diagramHintOverview';
+    hintClone.setAttribute('data-diagram-hint', 'overview');
+    diagramHintHtml = hintClone.outerHTML;
+  }
+  var diagramDescElem = typeof document !== 'undefined' ? document.getElementById('diagramDesc') : null;
+  if (diagramDescElem) {
+    var descClone = diagramDescElem.cloneNode(true);
+    descClone.id = 'diagramDescOverview';
+    descClone.setAttribute('data-diagram-description', 'overview');
+    diagramDescHtml = descClone.outerHTML;
+  }
   var diagramSectionHtml = diagramAreaHtml ? "<section id=\"setupDiagram\" class=\"diagram-section print-section\"><h2>".concat(t.setupDiagramHeading, "</h2>").concat(diagramDescHtml).concat(diagramAreaHtml).concat(diagramLegendHtml).concat(diagramHintHtml, "</section>") : '';
   var hasGeneratedGearList = function () {
     if (typeof document === 'undefined') return false;

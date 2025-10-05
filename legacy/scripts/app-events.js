@@ -30,7 +30,6 @@ function markAutoBackupDataAsRenamed(value) {
     }
   }
 }
-
 function callEventsCoreFunction(functionName) {
   var args = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
   var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
@@ -61,7 +60,70 @@ function callEventsCoreFunction(functionName) {
   }
   return options && Object.prototype.hasOwnProperty.call(options, 'defaultValue') ? options.defaultValue : undefined;
 }
-
+function readCoreDeviceSelectionHelper() {
+  if (typeof globalThis !== 'undefined' && typeof globalThis.hasAnyDeviceSelection === 'function') {
+    return globalThis.hasAnyDeviceSelection;
+  }
+  if (typeof window !== 'undefined' && typeof window.hasAnyDeviceSelection === 'function') {
+    return window.hasAnyDeviceSelection;
+  }
+  if (typeof self !== 'undefined' && typeof self.hasAnyDeviceSelection === 'function') {
+    return self.hasAnyDeviceSelection;
+  }
+  if (typeof global !== 'undefined' && typeof global.hasAnyDeviceSelection === 'function') {
+    return global.hasAnyDeviceSelection;
+  }
+  return null;
+}
+function hasAnyDeviceSelectionSafe(state) {
+  var coreHelper = readCoreDeviceSelectionHelper();
+  if (coreHelper) {
+    try {
+      return coreHelper(state);
+    } catch (error) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Failed to evaluate device selections via core helper', error);
+      }
+    }
+  }
+  if (!state || _typeof(state) !== 'object') {
+    return false;
+  }
+  var _isMeaningfulSelection = function isMeaningfulSelection(value) {
+    if (Array.isArray(value)) {
+      return value.some(function (item) {
+        return _isMeaningfulSelection(item);
+      });
+    }
+    if (value == null) {
+      return false;
+    }
+    var normalized = typeof value === 'string' ? value.trim() : value;
+    if (!normalized) {
+      return false;
+    }
+    if (typeof normalized === 'string' && normalized.toLowerCase() === 'none') {
+      return false;
+    }
+    return true;
+  };
+  var primarySelections = [state.camera, state.monitor, state.video, state.cage, state.batteryPlate, state.battery, state.batteryHotswap];
+  if (primarySelections.some(function (value) {
+    return _isMeaningfulSelection(value);
+  })) {
+    return true;
+  }
+  if (_isMeaningfulSelection(state.motors)) {
+    return true;
+  }
+  if (_isMeaningfulSelection(state.controllers)) {
+    return true;
+  }
+  if (_isMeaningfulSelection(state.distance)) {
+    return true;
+  }
+  return false;
+}
 function getEventsCoreValue(functionName) {
   var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
   var defaultValue = Object.prototype.hasOwnProperty.call(options, 'defaultValue') ? options.defaultValue : '';
@@ -164,7 +226,7 @@ function handleSaveSetupClick() {
   var currentSetup = _objectSpread({}, getCurrentSetupState());
   var langTexts = texts[currentLang] || {};
   var fallbackTexts = texts.en || {};
-  if (!hasAnyDeviceSelection(currentSetup)) {
+  if (!hasAnyDeviceSelectionSafe(currentSetup)) {
     var message = langTexts.alertSetupNeedsDevice || fallbackTexts.alertSetupNeedsDevice || 'Please select at least one device before saving a project.';
     alert(message);
     return;
@@ -706,7 +768,7 @@ addSafeEventListener(setupSelectTarget, "change", function (event) {
     storeLoadedSetupStateSafe(getCurrentSetupState());
   }
   finalizeSetupSelection(setupName);
-  });
+});
 function populateSetupSelect() {
   var setupsProvider = typeof getSetups === 'function' ? getSetups : null;
   var setupSelectTarget = getSetupSelectElement();
@@ -714,7 +776,7 @@ function populateSetupSelect() {
     console.warn('populateSetupSelect: setup select element unavailable, aborting populate');
     return;
   }
-  var textBundle = _typeof(texts) === 'object' && texts ? texts[currentLang] || texts.en || {} : {};
+  var textBundle = (typeof texts === "undefined" ? "undefined" : _typeof(texts)) === 'object' && texts ? texts[currentLang] || texts.en || {} : {};
   var newSetupOptionLabel = typeof textBundle.newSetupOption === 'string' && textBundle.newSetupOption.trim() ? textBundle.newSetupOption : 'New setup';
   if (!setupsProvider) {
     console.warn('populateSetupSelect: getSetups is unavailable, using empty setup list');
@@ -1004,9 +1066,7 @@ function toggleDeviceManagerSection() {
     hideDeviceManagerSection();
   }
 }
-if (toggleDeviceBtn) {
-  addSafeEventListener(toggleDeviceBtn, 'click', toggleDeviceManagerSection);
-}
+addSafeEventListener(toggleDeviceBtn, 'click', toggleDeviceManagerSection);
 function getEventsLanguageTexts() {
   var scope = typeof globalThis !== 'undefined' && globalThis || typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || typeof global !== 'undefined' && global || null;
   var allTexts = typeof texts !== 'undefined' && texts || (scope && _typeof(scope.texts) === 'object' ? scope.texts : null);
@@ -1829,10 +1889,10 @@ if (exportAndRevertBtn) {
     }
   });
 }
-  addSafeEventListener(importDataBtn, "click", function () {
+addSafeEventListener(importDataBtn, "click", function () {
   importFileInput.click();
 });
-  addSafeEventListener(importFileInput, "change", function (event) {
+addSafeEventListener(importFileInput, "change", function (event) {
   var file = event.target.files[0];
   if (!file) {
     return;

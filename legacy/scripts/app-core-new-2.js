@@ -21,66 +21,288 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _asyncIterator(r) { var n, t, o, e = 2; for ("undefined" != typeof Symbol && (t = Symbol.asyncIterator, o = Symbol.iterator); e--;) { if (t && null != (n = r[t])) return n.call(r); if (o && null != (n = r[o])) return new AsyncFromSyncIterator(n.call(r)); t = "@@asyncIterator", o = "@@iterator"; } throw new TypeError("Object is not async iterable"); }
 function AsyncFromSyncIterator(r) { function AsyncFromSyncIteratorContinuation(r) { if (Object(r) !== r) return Promise.reject(new TypeError(r + " is not an object.")); var n = r.done; return Promise.resolve(r.value).then(function (r) { return { value: r, done: n }; }); } return AsyncFromSyncIterator = function AsyncFromSyncIterator(r) { this.s = r, this.n = r.next; }, AsyncFromSyncIterator.prototype = { s: null, n: null, next: function next() { return AsyncFromSyncIteratorContinuation(this.n.apply(this.s, arguments)); }, return: function _return(r) { var n = this.s.return; return void 0 === n ? Promise.resolve({ value: r, done: !0 }) : AsyncFromSyncIteratorContinuation(n.apply(this.s, arguments)); }, throw: function _throw(r) { var n = this.s.return; return void 0 === n ? Promise.reject(r) : AsyncFromSyncIteratorContinuation(n.apply(this.s, arguments)); } }, new AsyncFromSyncIterator(r); }
-var CORE_PART2_RUNTIME_SCOPE = typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE ? CORE_GLOBAL_SCOPE : typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : typeof global !== 'undefined' ? global : null;
-var CORE_PART2_GLOBAL_SCOPES = [
-  CORE_PART2_RUNTIME_SCOPE && _typeof(CORE_PART2_RUNTIME_SCOPE) === 'object' ? CORE_PART2_RUNTIME_SCOPE : null,
-  typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object' ? CORE_GLOBAL_SCOPE : null,
-  typeof globalThis !== 'undefined' && _typeof(globalThis) === 'object' ? globalThis : null,
-  typeof window !== 'undefined' && _typeof(window) === 'object' ? window : null,
-  typeof self !== 'undefined' && _typeof(self) === 'object' ? self : null,
-  typeof global !== 'undefined' && _typeof(global) === 'object' ? global : null
-].filter(Boolean);
-
 var CORE_TEMPERATURE_QUEUE_KEY = '__cinePendingTemperatureNote';
 var CORE_TEMPERATURE_RENDER_NAME = 'renderTemperatureNote';
-
-function assignCoreTemperatureNoteRenderer(renderer) {
-  if (typeof renderer !== 'function') {
-    return;
-  }
-
-  for (var index = 0; index < CORE_PART2_GLOBAL_SCOPES.length; index += 1) {
-    var scope = CORE_PART2_GLOBAL_SCOPES[index];
-    if (!scope || _typeof(scope) !== 'object') {
-      continue;
+var CORE_RUNTIME_CANDIDATE_SCOPES = [typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && (typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' ? CORE_GLOBAL_SCOPE : null, typeof globalThis !== 'undefined' && (typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object' ? globalThis : null, typeof window !== 'undefined' && (typeof window === "undefined" ? "undefined" : _typeof(window)) === 'object' ? window : null, typeof self !== 'undefined' && (typeof self === "undefined" ? "undefined" : _typeof(self)) === 'object' ? self : null, typeof global !== 'undefined' && (typeof global === "undefined" ? "undefined" : _typeof(global)) === 'object' ? global : null].filter(Boolean);
+function createLocalRuntimeState(candidateScopes) {
+  var scopes = [];
+  var seenScopes = typeof Set === 'function' ? new Set() : null;
+  function registerScope(scope) {
+    if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+      return;
     }
-
+    if (seenScopes) {
+      if (seenScopes.has(scope)) {
+        return;
+      }
+      seenScopes.add(scope);
+      scopes.push(scope);
+      return;
+    }
+    if (scopes.indexOf(scope) !== -1) {
+      return;
+    }
+    scopes.push(scope);
+  }
+  if (Array.isArray(candidateScopes)) {
+    for (var initialIndex = 0; initialIndex < candidateScopes.length; initialIndex += 1) {
+      try {
+        registerScope(candidateScopes[initialIndex]);
+      } catch (initialiseScopeError) {
+        void initialiseScopeError;
+      }
+    }
+  }
+  function withEachScope(callback) {
+    if (typeof callback !== 'function') {
+      return;
+    }
+    for (var index = 0; index < scopes.length; index += 1) {
+      try {
+        callback(scopes[index], index);
+      } catch (scopeCallbackError) {
+        void scopeCallbackError;
+      }
+    }
+  }
+  function getScopes() {
+    return scopes.slice();
+  }
+  function getPrimaryScope() {
+    return scopes.length > 0 ? scopes[0] : null;
+  }
+  function ensureValue(name, fallbackValue) {
+    var fallbackProvider = typeof fallbackValue === 'function' ? fallbackValue : function provideStaticFallback() {
+      return fallbackValue;
+    };
+    if (typeof name !== 'string' || !name) {
+      try {
+        return fallbackProvider();
+      } catch (fallbackError) {
+        void fallbackError;
+        return undefined;
+      }
+    }
+    for (var scopeIndex = 0; scopeIndex < scopes.length; scopeIndex += 1) {
+      var scope = scopes[scopeIndex];
+      if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+        continue;
+      }
+      try {
+        if (typeof scope[name] === 'undefined') {
+          scope[name] = fallbackProvider();
+        }
+        return scope[name];
+      } catch (ensureError) {
+        void ensureError;
+      }
+    }
     try {
-      scope[CORE_TEMPERATURE_RENDER_NAME] = renderer;
-      var pending = scope[CORE_TEMPERATURE_QUEUE_KEY];
-      if (pending && _typeof(pending) === 'object') {
-        if (Object.prototype.hasOwnProperty.call(pending, 'latestHours')) {
-          var hours = pending.latestHours;
-          if (typeof hours !== 'undefined') {
-            try {
-              renderer(hours);
-            } catch (temperatureRenderError) {
-              if (typeof console !== 'undefined' && typeof console.error === 'function') {
-                console.error('Failed to apply pending temperature note render', temperatureRenderError);
+      return fallbackProvider();
+    } catch (fallbackError) {
+      void fallbackError;
+      return undefined;
+    }
+  }
+  function normaliseValue(name, validator, fallbackValue) {
+    var fallbackProvider = typeof fallbackValue === 'function' ? fallbackValue : function provideStaticFallback() {
+      return fallbackValue;
+    };
+    var validate = typeof validator === 'function' ? validator : function alwaysValid() {
+      return true;
+    };
+    withEachScope(function applyNormaliser(scope) {
+      try {
+        if (!validate(scope[name])) {
+          scope[name] = fallbackProvider();
+        }
+      } catch (normaliseError) {
+        void normaliseError;
+      }
+    });
+  }
+  function readValue(name) {
+    for (var scopeIndex = 0; scopeIndex < scopes.length; scopeIndex += 1) {
+      var scope = scopes[scopeIndex];
+      if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+        continue;
+      }
+      try {
+        if (name in scope) {
+          return scope[name];
+        }
+      } catch (readError) {
+        void readError;
+      }
+    }
+    return undefined;
+  }
+  var assignedTemperatureRenderer = null;
+  function assignTemperatureRenderer(renderer) {
+    if (typeof renderer !== 'function') {
+      return;
+    }
+    assignedTemperatureRenderer = renderer;
+    withEachScope(function applyRenderer(scope) {
+      if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+        return;
+      }
+      try {
+        scope[CORE_TEMPERATURE_RENDER_NAME] = renderer;
+        var pending = scope[CORE_TEMPERATURE_QUEUE_KEY];
+        if (pending && _typeof(pending) === 'object') {
+          if (Object.prototype.hasOwnProperty.call(pending, 'latestHours')) {
+            var hours = pending.latestHours;
+            if (typeof hours !== 'undefined') {
+              try {
+                renderer(hours);
+              } catch (temperatureRenderError) {
+                if (typeof console !== 'undefined' && typeof console.error === 'function') {
+                  console.error('Failed to apply pending temperature note render', temperatureRenderError);
+                }
               }
             }
           }
+          try {
+            delete pending.latestHours;
+          } catch (clearLatestError) {
+            void clearLatestError;
+            pending.latestHours = undefined;
+          }
         }
-        try {
-          delete pending.latestHours;
-        } catch (clearLatestError) {
-          void clearLatestError;
-          pending.latestHours = undefined;
-        }
+      } catch (assignError) {
+        void assignError;
       }
-    } catch (assignError) {
-      void assignError;
+    });
+  }
+  function getAssignedTemperatureRenderer() {
+    return assignedTemperatureRenderer;
+  }
+  var autoGearGuards = {
+    isReferenceError: function defaultAutoGearReferenceGuard() {
+      return false;
+    },
+    repair: function defaultAutoGearRepair() {
+      return undefined;
+    }
+  };
+  function setAutoGearGuards(nextGuards) {
+    if (!nextGuards || _typeof(nextGuards) !== 'object') {
+      return;
+    }
+    if (typeof nextGuards.isReferenceError === 'function') {
+      autoGearGuards.isReferenceError = nextGuards.isReferenceError;
+    }
+    if (typeof nextGuards.repair === 'function') {
+      autoGearGuards.repair = nextGuards.repair;
     }
   }
+  return {
+    registerScope: registerScope,
+    withEachScope: withEachScope,
+    getScopes: getScopes,
+    getPrimaryScope: getPrimaryScope,
+    ensureValue: ensureValue,
+    normaliseValue: normaliseValue,
+    readValue: readValue,
+    assignTemperatureRenderer: assignTemperatureRenderer,
+    getAssignedTemperatureRenderer: getAssignedTemperatureRenderer,
+    autoGearGuards: autoGearGuards,
+    setAutoGearGuards: setAutoGearGuards
+  };
 }
-
+var CORE_RUNTIME_STATE = function resolveCoreRuntimeState() {
+  var resolvedState = null;
+  for (var index = 0; index < CORE_RUNTIME_CANDIDATE_SCOPES.length; index += 1) {
+    var scope = CORE_RUNTIME_CANDIDATE_SCOPES[index];
+    if (scope && _typeof(scope.__cineRuntimeState) === 'object') {
+      resolvedState = scope.__cineRuntimeState;
+      break;
+    }
+  }
+  if (!resolvedState) {
+    for (var factoryIndex = 0; factoryIndex < CORE_RUNTIME_CANDIDATE_SCOPES.length; factoryIndex += 1) {
+      var factoryScope = CORE_RUNTIME_CANDIDATE_SCOPES[factoryIndex];
+      var createRuntimeState = factoryScope && typeof factoryScope.__cineCreateRuntimeState === 'function' ? factoryScope.__cineCreateRuntimeState : null;
+      if (typeof createRuntimeState === 'function') {
+        try {
+          resolvedState = createRuntimeState(CORE_RUNTIME_CANDIDATE_SCOPES);
+        } catch (createStateError) {
+          resolvedState = null;
+          void createStateError;
+        }
+        if (resolvedState) {
+          break;
+        }
+      }
+    }
+  }
+  if (!resolvedState) {
+    resolvedState = createLocalRuntimeState(CORE_RUNTIME_CANDIDATE_SCOPES);
+  }
+  var primaryScope = CORE_RUNTIME_CANDIDATE_SCOPES.length ? CORE_RUNTIME_CANDIDATE_SCOPES[0] : null;
+  if (primaryScope && resolvedState) {
+    try {
+      Object.defineProperty(primaryScope, '__cineRuntimeState', {
+        configurable: true,
+        enumerable: false,
+        writable: true,
+        value: resolvedState
+      });
+    } catch (defineStateError) {
+      try {
+        primaryScope.__cineRuntimeState = resolvedState;
+      } catch (assignStateError) {
+        void assignStateError;
+      }
+      void defineStateError;
+    }
+  }
+  return resolvedState;
+}();
+function registerRuntimeScope(scope) {
+  if (!CORE_RUNTIME_STATE || typeof CORE_RUNTIME_STATE.registerScope !== 'function') {
+    return;
+  }
+  try {
+    CORE_RUNTIME_STATE.registerScope(scope);
+  } catch (registerError) {
+    void registerError;
+  }
+}
+for (var CORE_RUNTIME_SCOPE_INDEX = 0; CORE_RUNTIME_SCOPE_INDEX < CORE_RUNTIME_CANDIDATE_SCOPES.length; CORE_RUNTIME_SCOPE_INDEX += 1) {
+  registerRuntimeScope(CORE_RUNTIME_CANDIDATE_SCOPES[CORE_RUNTIME_SCOPE_INDEX]);
+}
+function getCoreRuntimeScopesSnapshot() {
+  if (CORE_RUNTIME_STATE && typeof CORE_RUNTIME_STATE.getScopes === 'function') {
+    try {
+      return CORE_RUNTIME_STATE.getScopes();
+    } catch (scopeReadError) {
+      void scopeReadError;
+    }
+  }
+  return CORE_RUNTIME_CANDIDATE_SCOPES.slice();
+}
+var CORE_PART2_RUNTIME_SCOPE = CORE_RUNTIME_STATE && typeof CORE_RUNTIME_STATE.getPrimaryScope === 'function' ? CORE_RUNTIME_STATE.getPrimaryScope() : null;
+if (!CORE_PART2_RUNTIME_SCOPE) {
+  CORE_PART2_RUNTIME_SCOPE = getCoreRuntimeScopesSnapshot().length ? getCoreRuntimeScopesSnapshot()[0] : null;
+}
+function assignCoreTemperatureNoteRenderer(renderer) {
+  if (!CORE_RUNTIME_STATE || typeof CORE_RUNTIME_STATE.assignTemperatureRenderer !== 'function') {
+    return;
+  }
+  CORE_RUNTIME_STATE.assignTemperatureRenderer(renderer);
+}
 function readGlobalScopeValue(name) {
-  for (var index = 0; index < CORE_PART2_GLOBAL_SCOPES.length; index += 1) {
-    var scope = CORE_PART2_GLOBAL_SCOPES[index];
+  if (CORE_RUNTIME_STATE && typeof CORE_RUNTIME_STATE.readValue === 'function') {
+    return CORE_RUNTIME_STATE.readValue(name);
+  }
+  var scopes = getCoreRuntimeScopesSnapshot();
+  for (var index = 0; index < scopes.length; index += 1) {
+    var scope = scopes[index];
     if (!scope || _typeof(scope) !== 'object') {
       continue;
     }
-
     try {
       if (name in scope) {
         return scope[name];
@@ -89,25 +311,151 @@ function readGlobalScopeValue(name) {
       void readError;
     }
   }
-
   return undefined;
 }
-var autoGearAutoPresetId;
-if (typeof autoGearAutoPresetId === 'undefined') {
-  autoGearAutoPresetId = '';
-} else if (typeof autoGearAutoPresetId !== 'string') {
-  autoGearAutoPresetId = '';
+function ensureGlobalFallback(name, fallbackValue) {
+  if (CORE_RUNTIME_STATE && typeof CORE_RUNTIME_STATE.ensureValue === 'function') {
+    return CORE_RUNTIME_STATE.ensureValue(name, fallbackValue);
+  }
+  var fallbackProvider = typeof fallbackValue === 'function' ? fallbackValue : function provideStaticFallback() {
+    return fallbackValue;
+  };
+  var scopes = getCoreRuntimeScopesSnapshot();
+  for (var index = 0; index < scopes.length; index += 1) {
+    var scope = scopes[index];
+    try {
+      if (typeof scope[name] === 'undefined') {
+        scope[name] = fallbackProvider();
+      }
+      return scope[name];
+    } catch (ensureError) {
+      void ensureError;
+    }
+  }
+  try {
+    return fallbackProvider();
+  } catch (fallbackError) {
+    void fallbackError;
+    return undefined;
+  }
 }
-var baseAutoGearRules;
-if (typeof baseAutoGearRules === 'undefined') {
-  baseAutoGearRules = [];
-} else if (!Array.isArray(baseAutoGearRules)) {
-  baseAutoGearRules = [];
+function normaliseGlobalValue(name, validator, fallbackValue) {
+  if (CORE_RUNTIME_STATE && typeof CORE_RUNTIME_STATE.normaliseValue === 'function') {
+    CORE_RUNTIME_STATE.normaliseValue(name, validator, fallbackValue);
+    return;
+  }
+  var fallbackProvider = typeof fallbackValue === 'function' ? fallbackValue : function provideStaticFallback() {
+    return fallbackValue;
+  };
+  var scopes = getCoreRuntimeScopesSnapshot();
+  for (var index = 0; index < scopes.length; index += 1) {
+    var scope = scopes[index];
+    try {
+      if (!validator(scope[name])) {
+        scope[name] = fallbackProvider();
+      }
+    } catch (normaliseError) {
+      void normaliseError;
+    }
+  }
 }
-var autoGearScenarioModeSelect;
-if (typeof autoGearScenarioModeSelect === 'undefined') {
-  autoGearScenarioModeSelect = null;
+var AUTO_GEAR_GLOBAL_FALLBACKS = {
+  autoGearAutoPresetId: function provideAutoGearAutoPresetId() {
+    return '';
+  },
+  baseAutoGearRules: function provideBaseAutoGearRules() {
+    return [];
+  },
+  autoGearScenarioModeSelect: function provideAutoGearScenarioModeSelect() {
+    return null;
+  },
+  autoGearRuleNameInput: function provideAutoGearRuleNameInput() {
+    return null;
+  },
+  autoGearSummaryFocus: function provideAutoGearSummaryFocus() {
+    return 'all';
+  },
+  autoGearMonitorDefaultControls: function provideAutoGearMonitorDefaultControls() {
+    return [];
+  },
+  safeGenerateConnectorSummary: function provideSafeGenerateConnectorSummary() {
+    return createFallbackSafeGenerateConnectorSummary();
+  },
+  totalPowerElem: function provideTotalPowerElem() {
+    return null;
+  }
+};
+var AUTO_GEAR_REFERENCE_NAMES = Object.keys(AUTO_GEAR_GLOBAL_FALLBACKS);
+function isAutoGearGlobalReferenceError(error) {
+  if (!error || _typeof(error) !== 'object') {
+    return false;
+  }
+  var message = typeof error.message === 'string' ? error.message : '';
+  return error.name === 'ReferenceError' && AUTO_GEAR_REFERENCE_NAMES.some(function checkAutoGearReferenceName(name) {
+    return message.indexOf(name) !== -1;
+  });
 }
+function ensureAutoGearGlobal(scope, name) {
+  var createFallback = AUTO_GEAR_GLOBAL_FALLBACKS[name];
+  if (typeof createFallback !== 'function') {
+    return;
+  }
+  var fallbackValue = createFallback();
+  if (typeof scope[name] === 'undefined') {
+    try {
+      scope[name] = fallbackValue;
+    } catch (assignmentError) {
+      try {
+        Object.defineProperty(scope, name, {
+          configurable: true,
+          writable: true,
+          enumerable: false,
+          value: fallbackValue
+        });
+      } catch (defineError) {
+        void defineError;
+      }
+    }
+  }
+  try {
+    var globalFn = scope && scope.Function || Function;
+    if (typeof globalFn === 'function') {
+      var binder = globalFn('value', 'if (typeof ' + name + " === 'undefined') { var " + name + " = value; } else { " + name + ' = value; }\n           return ' + name + ';');
+      var appliedValue = typeof scope[name] === 'undefined' ? fallbackValue : scope[name];
+      binder(appliedValue);
+    }
+  } catch (bindingError) {
+    void bindingError;
+  }
+}
+function repairAutoGearGlobals(scope) {
+  if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+    return;
+  }
+  for (var index = 0; index < AUTO_GEAR_REFERENCE_NAMES.length; index += 1) {
+    var name = AUTO_GEAR_REFERENCE_NAMES[index];
+    try {
+      ensureAutoGearGlobal(scope, name);
+    } catch (ensureError) {
+      void ensureError;
+    }
+  }
+}
+if (CORE_RUNTIME_STATE && typeof CORE_RUNTIME_STATE.setAutoGearGuards === 'function') {
+  try {
+    CORE_RUNTIME_STATE.setAutoGearGuards({
+      isReferenceError: isAutoGearGlobalReferenceError,
+      repair: repairAutoGearGlobals
+    });
+  } catch (setAutoGearGuardsError) {
+    void setAutoGearGuardsError;
+  }
+}
+ensureGlobalFallback('autoGearAutoPresetId', '');
+ensureGlobalFallback('baseAutoGearRules', function () {
+  return [];
+});
+ensureGlobalFallback('autoGearScenarioModeSelect', null);
 function createFallbackSafeGenerateConnectorSummary() {
   return function safeGenerateConnectorSummary(device) {
     if (!device || _typeof(device) !== 'object') {
@@ -131,6 +479,69 @@ function createFallbackSafeGenerateConnectorSummary() {
     }
   };
 }
+ensureGlobalFallback('safeGenerateConnectorSummary', function () {
+  return createFallbackSafeGenerateConnectorSummary();
+});
+normaliseGlobalValue('baseAutoGearRules', function validateBaseAutoGearRules(value) {
+  return Array.isArray(value);
+}, function provideBaseAutoGearRulesFallback() {
+  return [];
+});
+normaliseGlobalValue('safeGenerateConnectorSummary', function validateSafeGenerateConnectorSummary(value) {
+  return typeof value === 'function';
+}, function provideSafeGenerateConnectorSummaryFallback() {
+  return createFallbackSafeGenerateConnectorSummary();
+});
+function createFallbackIconFontKeys() {
+  return Object.freeze({
+    ESSENTIAL: 'essential',
+    FILM: 'film',
+    GADGET: 'gadget',
+    UICONS: 'uicons',
+    TEXT: 'text'
+  });
+}
+ensureGlobalFallback('ICON_FONT_KEYS', function () {
+  return createFallbackIconFontKeys();
+});
+ensureGlobalFallback('iconGlyph', function () {
+  var iconFontKeys = ensureGlobalFallback('ICON_FONT_KEYS', function () {
+    return createFallbackIconFontKeys();
+  });
+  var fallbackFont = iconFontKeys && typeof iconFontKeys.UICONS === 'string' ? iconFontKeys.UICONS : 'uicons';
+  return function fallbackIconGlyph(char, font) {
+    var glyphChar = typeof char === 'string' ? char : '';
+    var resolvedFont = font && typeof font === 'string' ? font : fallbackFont;
+    try {
+      return Object.freeze({
+        char: glyphChar,
+        font: resolvedFont
+      });
+    } catch (freezeError) {
+      void freezeError;
+      return {
+        char: glyphChar,
+        font: resolvedFont
+      };
+    }
+  };
+});
+var autoGearAutoPresetId;
+if (typeof autoGearAutoPresetId === 'undefined') {
+  autoGearAutoPresetId = '';
+} else if (typeof autoGearAutoPresetId !== 'string') {
+  autoGearAutoPresetId = '';
+}
+var baseAutoGearRules;
+if (typeof baseAutoGearRules === 'undefined') {
+  baseAutoGearRules = [];
+} else if (!Array.isArray(baseAutoGearRules)) {
+  baseAutoGearRules = [];
+}
+var autoGearScenarioModeSelect;
+if (typeof autoGearScenarioModeSelect === 'undefined') {
+  autoGearScenarioModeSelect = null;
+}
 var safeGenerateConnectorSummary;
 if (typeof safeGenerateConnectorSummary === 'undefined') {
   safeGenerateConnectorSummary = createFallbackSafeGenerateConnectorSummary();
@@ -139,11 +550,9 @@ if (typeof safeGenerateConnectorSummary === 'undefined') {
 }
 function ensureCorePart2Placeholder(name, fallbackValue) {
   var providers = [CORE_PART2_RUNTIME_SCOPE && _typeof(CORE_PART2_RUNTIME_SCOPE) === 'object' ? CORE_PART2_RUNTIME_SCOPE : null, typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && (typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' ? CORE_GLOBAL_SCOPE : null, typeof globalThis !== 'undefined' && (typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object' ? globalThis : null, typeof window !== 'undefined' && (typeof window === "undefined" ? "undefined" : _typeof(window)) === 'object' ? window : null, typeof self !== 'undefined' && (typeof self === "undefined" ? "undefined" : _typeof(self)) === 'object' ? self : null, typeof global !== 'undefined' && (typeof global === "undefined" ? "undefined" : _typeof(global)) === 'object' ? global : null].filter(Boolean);
-
   var fallbackProvider = typeof fallbackValue === 'function' ? fallbackValue : function provideStaticFallback() {
     return fallbackValue;
   };
-
   for (var index = 0; index < providers.length; index += 1) {
     var scope = providers[index];
     try {
@@ -155,41 +564,8 @@ function ensureCorePart2Placeholder(name, fallbackValue) {
       void placeholderError;
     }
   }
-
   return fallbackProvider();
 }
-
-function createFallbackIconFontKeys() {
-  return Object.freeze({
-    ESSENTIAL: 'essential',
-    FILM: 'film',
-    GADGET: 'gadget',
-    UICONS: 'uicons',
-    TEXT: 'text'
-  });
-}
-
-ensureCorePart2Placeholder('ICON_FONT_KEYS', function () {
-  return createFallbackIconFontKeys();
-});
-
-ensureCorePart2Placeholder('iconGlyph', function () {
-  var iconFontKeys = ensureCorePart2Placeholder('ICON_FONT_KEYS', function () {
-    return createFallbackIconFontKeys();
-  });
-  var fallbackFont = iconFontKeys && typeof iconFontKeys.UICONS === 'string' ? iconFontKeys.UICONS : 'uicons';
-  return function fallbackIconGlyph(char, font) {
-    var glyphChar = typeof char === 'string' ? char : '';
-    var resolvedFont = font && typeof font === 'string' ? font : fallbackFont;
-    try {
-      return Object.freeze({ char: glyphChar, font: resolvedFont });
-    } catch (freezeError) {
-      void freezeError;
-      return { char: glyphChar, font: resolvedFont };
-    }
-  };
-});
-
 ensureCorePart2Placeholder('autoGearAutoPresetId', '');
 ensureCorePart2Placeholder('baseAutoGearRules', function () {
   return [];
@@ -295,6 +671,73 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return null;
     }
     var CORE_SHARED_LOCAL = typeof CORE_SHARED !== 'undefined' && CORE_SHARED ? CORE_SHARED : resolveCoreSharedPart2() || {};
+    function fallbackNormalizeAutoGearWeightOperator(value) {
+      if (typeof value !== 'string') return 'greater';
+      var normalized = value.trim().toLowerCase();
+      if (!normalized) return 'greater';
+      if (normalized === '>' || normalized === 'gt' || normalized === 'greaterthan' || normalized === 'above' || normalized === 'over') {
+        return 'greater';
+      }
+      if (normalized === '<' || normalized === 'lt' || normalized === 'lessthan' || normalized === 'below' || normalized === 'under') {
+        return 'less';
+      }
+      if (normalized === '=' || normalized === '==' || normalized === 'equal' || normalized === 'equals' || normalized === 'exactly' || normalized === 'match' || normalized === 'matches') {
+        return 'equal';
+      }
+      return 'greater';
+    }
+    function fallbackNormalizeAutoGearWeightValue(value) {
+      if (typeof value === 'number' && Number.isFinite(value)) {
+        var rounded = Math.round(value);
+        return rounded >= 0 ? rounded : null;
+      }
+      if (typeof value === 'string') {
+        var trimmed = value.trim();
+        if (!trimmed) return null;
+        var sanitized = trimmed.replace(/[^0-9.,-]/g, '').replace(/,/g, '.');
+        if (!sanitized) return null;
+        var parsed = Number.parseFloat(sanitized);
+        if (!Number.isFinite(parsed)) return null;
+        var _rounded = Math.round(parsed);
+        return _rounded >= 0 ? _rounded : null;
+      }
+      return null;
+    }
+    function fallbackFormatAutoGearWeight(value) {
+      if (!Number.isFinite(value)) return '';
+      try {
+        if (typeof Intl !== 'undefined' && typeof Intl.NumberFormat === 'function') {
+          return new Intl.NumberFormat().format(value);
+        }
+      } catch (error) {
+        void error;
+      }
+      return String(value);
+    }
+    var normalizeAutoGearWeightOperator = typeof CORE_SHARED_LOCAL.normalizeAutoGearWeightOperator === 'function' ? CORE_SHARED_LOCAL.normalizeAutoGearWeightOperator : fallbackNormalizeAutoGearWeightOperator;
+    var normalizeAutoGearWeightValue = typeof CORE_SHARED_LOCAL.normalizeAutoGearWeightValue === 'function' ? CORE_SHARED_LOCAL.normalizeAutoGearWeightValue : fallbackNormalizeAutoGearWeightValue;
+    var normalizeAutoGearCameraWeightCondition = typeof CORE_SHARED_LOCAL.normalizeAutoGearCameraWeightCondition === 'function' ? CORE_SHARED_LOCAL.normalizeAutoGearCameraWeightCondition : function normalizeAutoGearCameraWeightCondition() {
+      return null;
+    };
+    var formatAutoGearWeight = typeof CORE_SHARED_LOCAL.formatAutoGearWeight === 'function' ? CORE_SHARED_LOCAL.formatAutoGearWeight : fallbackFormatAutoGearWeight;
+    var getAutoGearCameraWeightOperatorLabel = typeof CORE_SHARED_LOCAL.getAutoGearCameraWeightOperatorLabel === 'function' ? CORE_SHARED_LOCAL.getAutoGearCameraWeightOperatorLabel : function getAutoGearCameraWeightOperatorLabel(operator, langTexts) {
+      var textsForLang = langTexts || {};
+      var fallbackTexts = CORE_GLOBAL_SCOPE && CORE_GLOBAL_SCOPE.texts && CORE_GLOBAL_SCOPE.texts.en || {};
+      var normalized = normalizeAutoGearWeightOperator(operator);
+      if (normalized === 'less') {
+        return textsForLang.autoGearCameraWeightOperatorLess || fallbackTexts.autoGearCameraWeightOperatorLess || 'Lighter than';
+      }
+      if (normalized === 'equal') {
+        return textsForLang.autoGearCameraWeightOperatorEqual || fallbackTexts.autoGearCameraWeightOperatorEqual || 'Exactly';
+      }
+      return textsForLang.autoGearCameraWeightOperatorGreater || fallbackTexts.autoGearCameraWeightOperatorGreater || 'Heavier than';
+    };
+    var formatAutoGearCameraWeight = typeof CORE_SHARED_LOCAL.formatAutoGearCameraWeight === 'function' ? CORE_SHARED_LOCAL.formatAutoGearCameraWeight : function formatAutoGearCameraWeight(condition, langTexts) {
+      if (!condition || !Number.isFinite(condition.value)) return '';
+      var label = getAutoGearCameraWeightOperatorLabel(condition.operator, langTexts);
+      var formattedValue = formatAutoGearWeight(condition.value);
+      return "".concat(label, " ").concat(formattedValue, " g");
+    };
     var CORE_RUNTIME_SCOPE_CANDIDATES = [CORE_PART2_RUNTIME_SCOPE && _typeof(CORE_PART2_RUNTIME_SCOPE) === 'object' ? CORE_PART2_RUNTIME_SCOPE : null, typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && (typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' ? CORE_GLOBAL_SCOPE : null, typeof globalThis !== 'undefined' && (typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object' ? globalThis : null, typeof window !== 'undefined' && (typeof window === "undefined" ? "undefined" : _typeof(window)) === 'object' ? window : null, typeof self !== 'undefined' && (typeof self === "undefined" ? "undefined" : _typeof(self)) === 'object' ? self : null, typeof global !== 'undefined' && (typeof global === "undefined" ? "undefined" : _typeof(global)) === 'object' ? global : null].filter(Boolean);
     function readCoreScopeValue(name) {
       for (var index = 0; index < CORE_RUNTIME_SCOPE_CANDIDATES.length; index += 1) {
@@ -1417,19 +1860,26 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (Array.isArray(baseAutoGearRulesState)) {
         return baseAutoGearRulesState;
       }
-
       var resolved = readCoreScopeValue('baseAutoGearRules');
       if (Array.isArray(resolved)) {
         return resolved;
       }
-
-      if (typeof baseAutoGearRules !== 'undefined' && Array.isArray(baseAutoGearRules)) {
-        return baseAutoGearRules;
+      for (var index = 0; index < CORE_RUNTIME_SCOPE_CANDIDATES.length; index += 1) {
+        var scope = CORE_RUNTIME_SCOPE_CANDIDATES[index];
+        if (!scope || _typeof(scope) !== 'object') {
+          continue;
+        }
+        try {
+          var value = scope.baseAutoGearRules;
+          if (Array.isArray(value)) {
+            return value;
+          }
+        } catch (fallbackError) {
+          void fallbackError;
+        }
       }
-
       return [];
     }
-
     function alignActiveAutoGearPreset() {
       var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
       var skipRender = options.skipRender === true;
@@ -4890,26 +5340,27 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           console.warn('Failed to resolve shared install banner scope', error);
         }
       }
-      for (var index = 0; index < CORE_PART2_GLOBAL_SCOPES.length; index += 1) {
-        var scope = CORE_PART2_GLOBAL_SCOPES[index];
+      var runtimeScopes = getCoreRuntimeScopesSnapshot();
+      for (var index = 0; index < runtimeScopes.length; index += 1) {
+        var scope = runtimeScopes[index];
         if (scope && _typeof(scope) === 'object') {
           candidates.push(scope);
         }
       }
-      if (typeof globalThis !== 'undefined' && globalThis && candidates.indexOf(globalThis) === -1) {
+      if (typeof globalThis !== 'undefined' && globalThis && !candidates.includes(globalThis)) {
         candidates.push(globalThis);
       }
-      if (typeof window !== 'undefined' && window && candidates.indexOf(window) === -1) {
+      if (typeof window !== 'undefined' && window && !candidates.includes(window)) {
         candidates.push(window);
       }
-      if (typeof self !== 'undefined' && self && candidates.indexOf(self) === -1) {
+      if (typeof self !== 'undefined' && self && !candidates.includes(self)) {
         candidates.push(self);
       }
-      if (typeof global !== 'undefined' && global && candidates.indexOf(global) === -1) {
+      if (typeof global !== 'undefined' && global && !candidates.includes(global)) {
         candidates.push(global);
       }
-      for (var _index = 0; _index < candidates.length; _index += 1) {
-        var candidate = candidates[_index];
+      for (var _index2 = 0; _index2 < candidates.length; _index2 += 1) {
+        var candidate = candidates[_index2];
         if (candidate && _typeof(candidate) === 'object') {
           return candidate;
         }
@@ -5236,13 +5687,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     function resolveIosPwaHelpClose() {
       return resolveGlobalElement('iosPwaHelpClose', 'iosPwaHelpClose');
     }
-    var safeExposeCoreRuntimeConstant =
-      typeof exposeCoreRuntimeConstant === 'function'
-        ? exposeCoreRuntimeConstant
-        : function noopExposeCoreRuntimeConstant() {};
+    var safeExposeCoreRuntimeConstant = typeof exposeCoreRuntimeConstant === 'function' ? exposeCoreRuntimeConstant : function noopExposeCoreRuntimeConstant() {};
     function shouldShowIosPwaHelp() {
       var dialog = resolveIosPwaHelpDialog();
-      return !!dialog && isIosDevice() && isStandaloneDisplayMode() && !hasDismissedIosPwaHelp();
+      return dialog && isIosDevice() && isStandaloneDisplayMode() && !hasDismissedIosPwaHelp();
     }
     function openIosPwaHelp() {
       var dialog = resolveIosPwaHelpDialog();
@@ -5368,11 +5816,19 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return false;
       }
       var matched = 0;
-      for (var _i2 = 0, _REQUIRED_DEVICE_CATE = REQUIRED_DEVICE_CATEGORIES; _i2 < _REQUIRED_DEVICE_CATE.length; _i2++) {
-        var key = _REQUIRED_DEVICE_CATE[_i2];
-        if (Object.prototype.hasOwnProperty.call(candidate, key)) {
-          matched += 1;
+      var _iterator2 = _createForOfIteratorHelper(REQUIRED_DEVICE_CATEGORIES),
+        _step2;
+      try {
+        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+          var key = _step2.value;
+          if (Object.prototype.hasOwnProperty.call(candidate, key)) {
+            matched += 1;
+          }
         }
+      } catch (err) {
+        _iterator2.e(err);
+      } finally {
+        _iterator2.f();
       }
       return matched >= 3;
     }
@@ -5405,39 +5861,47 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       var errors = [];
       var missing = [];
-      for (var _i3 = 0, _REQUIRED_DEVICE_CATE2 = REQUIRED_DEVICE_CATEGORIES; _i3 < _REQUIRED_DEVICE_CATE2.length; _i3++) {
-        var category = _REQUIRED_DEVICE_CATE2[_i3];
-        if (category === 'fiz') {
-          if (!isPlainObjectValue(candidate.fiz)) {
-            missing.push('fiz');
+      var _iterator3 = _createForOfIteratorHelper(REQUIRED_DEVICE_CATEGORIES),
+        _step3;
+      try {
+        for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+          var category = _step3.value;
+          if (category === 'fiz') {
+            if (!isPlainObjectValue(candidate.fiz)) {
+              missing.push('fiz');
+              continue;
+            }
+            var expectedFizKeys = collectReferenceFizKeys();
+            var missingFiz = expectedFizKeys.filter(function (key) {
+              return !isPlainObjectValue(candidate.fiz[key]);
+            });
+            if (missingFiz.length) {
+              errors.push("Missing FIZ categories: ".concat(missingFiz.join(', ')));
+            }
             continue;
           }
-          var expectedFizKeys = collectReferenceFizKeys();
-          var missingFiz = expectedFizKeys.filter(function (key) {
-            return !isPlainObjectValue(candidate.fiz[key]);
-          });
-          if (missingFiz.length) {
-            errors.push("Missing FIZ categories: ".concat(missingFiz.join(', ')));
-          }
-          continue;
-        }
-        if (category === 'accessories') {
-          if (!isPlainObjectValue(candidate.accessories)) {
-            missing.push('accessories');
+          if (category === 'accessories') {
+            if (!isPlainObjectValue(candidate.accessories)) {
+              missing.push('accessories');
+              continue;
+            }
+            var expectedAccessoryKeys = collectReferenceAccessoryKeys();
+            var missingAccessories = expectedAccessoryKeys.filter(function (key) {
+              return !isPlainObjectValue(candidate.accessories[key]);
+            });
+            if (missingAccessories.length) {
+              errors.push("Missing accessory categories: ".concat(missingAccessories.join(', ')));
+            }
             continue;
           }
-          var expectedAccessoryKeys = collectReferenceAccessoryKeys();
-          var missingAccessories = expectedAccessoryKeys.filter(function (key) {
-            return !isPlainObjectValue(candidate.accessories[key]);
-          });
-          if (missingAccessories.length) {
-            errors.push("Missing accessory categories: ".concat(missingAccessories.join(', ')));
+          if (!isPlainObjectValue(candidate[category])) {
+            missing.push(category);
           }
-          continue;
         }
-        if (!isPlainObjectValue(candidate[category])) {
-          missing.push(category);
-        }
+      } catch (err) {
+        _iterator3.e(err);
+      } finally {
+        _iterator3.f();
       }
       if (missing.length) {
         errors.push("Missing categories: ".concat(missing.join(', ')));
@@ -5446,8 +5910,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (!isPlainObjectValue(candidate.accessories)) {
           errors.push('Accessory collections must be objects.');
         } else {
-          for (var _i4 = 0, _Object$entries2 = Object.entries(candidate.accessories); _i4 < _Object$entries2.length; _i4++) {
-            var _Object$entries2$_i = _slicedToArray(_Object$entries2[_i4], 2),
+          for (var _i2 = 0, _Object$entries2 = Object.entries(candidate.accessories); _i2 < _Object$entries2.length; _i2++) {
+            var _Object$entries2$_i = _slicedToArray(_Object$entries2[_i2], 2),
               subKey = _Object$entries2$_i[0],
               subValue = _Object$entries2$_i[1];
             if (!isPlainObjectValue(subValue)) {
@@ -5460,8 +5924,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         errors.push('Filter options must be provided as an array.');
       }
       if (candidate.fiz && isPlainObjectValue(candidate.fiz)) {
-        for (var _i5 = 0, _Object$entries3 = Object.entries(candidate.fiz); _i5 < _Object$entries3.length; _i5++) {
-          var _Object$entries3$_i = _slicedToArray(_Object$entries3[_i5], 2),
+        for (var _i3 = 0, _Object$entries3 = Object.entries(candidate.fiz); _i3 < _Object$entries3.length; _i3++) {
+          var _Object$entries3$_i = _slicedToArray(_Object$entries3[_i3], 2),
             _subKey = _Object$entries3$_i[0],
             _subValue = _Object$entries3$_i[1];
           if (_subValue !== undefined && !isPlainObjectValue(_subValue)) {
@@ -5475,8 +5939,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (!isPlainObjectValue(collection)) {
           return;
         }
-        for (var _i6 = 0, _Object$entries4 = Object.entries(collection); _i6 < _Object$entries4.length; _i6++) {
-          var _Object$entries4$_i = _slicedToArray(_Object$entries4[_i6], 2),
+        for (var _i4 = 0, _Object$entries4 = Object.entries(collection); _i4 < _Object$entries4.length; _i4++) {
+          var _Object$entries4$_i = _slicedToArray(_Object$entries4[_i4], 2),
             name = _Object$entries4$_i[0],
             value = _Object$entries4$_i[1];
           if (name === 'None' || name === 'filterOptions') {
@@ -5502,8 +5966,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         errors.push('The imported database does not contain any devices.');
       }
       var uniqueErrors = [];
-      for (var _i7 = 0, _errors = errors; _i7 < _errors.length; _i7++) {
-        var message = _errors[_i7];
+      for (var _i5 = 0, _errors = errors; _i5 < _errors.length; _i5++) {
+        var message = _errors[_i5];
         if (message && !uniqueErrors.includes(message)) {
           uniqueErrors.push(message);
         }
@@ -5576,8 +6040,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return options == null ? DEFAULT_INTL_CACHE_KEY : String(options);
       }
       var entries = [];
-      for (var _i8 = 0, _Object$entries5 = Object.entries(options); _i8 < _Object$entries5.length; _i8++) {
-        var _Object$entries5$_i = _slicedToArray(_Object$entries5[_i8], 2),
+      for (var _i6 = 0, _Object$entries5 = Object.entries(options); _i6 < _Object$entries5.length; _i6++) {
+        var _Object$entries5$_i = _slicedToArray(_Object$entries5[_i6], 2),
           key = _Object$entries5$_i[0],
           value = _Object$entries5$_i[1];
         if (typeof value === 'undefined') continue;
@@ -6712,20 +7176,20 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     };
     var cleanupFeatureSearchHistory = function cleanupFeatureSearchHistory() {
       var changed = false;
-      var _iterator2 = _createForOfIteratorHelper(featureSearchHistory.keys()),
-        _step2;
+      var _iterator4 = _createForOfIteratorHelper(featureSearchHistory.keys()),
+        _step4;
       try {
-        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
-          var key = _step2.value;
+        for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
+          var key = _step4.value;
           if (!featureSearchEntryIndex.has(key)) {
             featureSearchHistory.delete(key);
             changed = true;
           }
         }
       } catch (err) {
-        _iterator2.e(err);
+        _iterator4.e(err);
       } finally {
-        _iterator2.f();
+        _iterator4.f();
       }
       if (changed) {
         scheduleFeatureSearchHistorySave();
@@ -6766,11 +7230,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       });
       var options = [];
       var seen = new Set();
-      var _iterator3 = _createForOfIteratorHelper(entries),
-        _step3;
+      var _iterator5 = _createForOfIteratorHelper(entries),
+        _step5;
       try {
-        for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
-          var item = _step3.value;
+        for (_iterator5.s(); !(_step5 = _iterator5.n()).done;) {
+          var item = _step5.value;
           if (!item || !item.key) continue;
           var entry = featureSearchEntryIndex.get(item.key);
           if (!entry) continue;
@@ -6781,9 +7245,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           if (options.length >= MAX_FEATURE_SEARCH_RECENTS) break;
         }
       } catch (err) {
-        _iterator3.e(err);
+        _iterator5.e(err);
       } finally {
-        _iterator3.f();
+        _iterator5.f();
       }
       return options;
     };
@@ -6907,8 +7371,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return a.start - b.start || b.end - a.end;
       });
       var merged = [];
-      for (var _i9 = 0, _ranges = ranges; _i9 < _ranges.length; _i9++) {
-        var range = _ranges[_i9];
+      for (var _i7 = 0, _ranges = ranges; _i7 < _ranges.length; _i7++) {
+        var range = _ranges[_i7];
         var last = merged[merged.length - 1];
         if (last && range.start <= last.end) {
           last.end = Math.max(last.end, range.end);
@@ -7087,11 +7551,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       var normalized = [];
       var fragment = featureList ? document.createDocumentFragment() : null;
-      var _iterator4 = _createForOfIteratorHelper(values),
-        _step4;
+      var _iterator6 = _createForOfIteratorHelper(values),
+        _step6;
       try {
-        for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
-          var value = _step4.value;
+        for (_iterator6.s(); !(_step6 = _iterator6.n()).done;) {
+          var value = _step6.value;
           var optionData = normalizeFeatureSearchOption(value);
           if (!optionData || !optionData.value) continue;
           normalized.push(optionData);
@@ -7108,9 +7572,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           fragment.appendChild(option);
         }
       } catch (err) {
-        _iterator4.e(err);
+        _iterator6.e(err);
       } finally {
-        _iterator4.f();
+        _iterator6.f();
       }
       if (featureList) {
         featureList.innerHTML = '';
@@ -7124,33 +7588,33 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       var values = [];
       var seen = new Set();
       var recentOptions = resolveRecentFeatureSearchOptions();
-      var _iterator5 = _createForOfIteratorHelper(recentOptions),
-        _step5;
+      var _iterator7 = _createForOfIteratorHelper(recentOptions),
+        _step7;
       try {
-        for (_iterator5.s(); !(_step5 = _iterator5.n()).done;) {
-          var option = _step5.value;
+        for (_iterator7.s(); !(_step7 = _iterator7.n()).done;) {
+          var option = _step7.value;
           if (!option || !option.value || seen.has(option.value)) continue;
           seen.add(option.value);
           values.push(option);
         }
       } catch (err) {
-        _iterator5.e(err);
+        _iterator7.e(err);
       } finally {
-        _iterator5.f();
+        _iterator7.f();
       }
-      var _iterator6 = _createForOfIteratorHelper(featureSearchDefaultOptions),
-        _step6;
+      var _iterator8 = _createForOfIteratorHelper(featureSearchDefaultOptions),
+        _step8;
       try {
-        for (_iterator6.s(); !(_step6 = _iterator6.n()).done;) {
-          var _option = _step6.value;
+        for (_iterator8.s(); !(_step8 = _iterator8.n()).done;) {
+          var _option = _step8.value;
           if (!_option || !_option.value || seen.has(_option.value)) continue;
           seen.add(_option.value);
           values.push(_option);
         }
       } catch (err) {
-        _iterator6.e(err);
+        _iterator8.e(err);
       } finally {
-        _iterator6.f();
+        _iterator8.f();
       }
       renderFeatureListOptions(values.length ? values : featureSearchDefaultOptions);
     }
@@ -7341,11 +7805,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }).filter(Boolean).sort(compareFeatureSearchCandidates);
       var values = [];
       var seen = new Set();
-      var _iterator7 = _createForOfIteratorHelper(scored),
-        _step7;
+      var _iterator9 = _createForOfIteratorHelper(scored),
+        _step9;
       try {
-        for (_iterator7.s(); !(_step7 = _iterator7.n()).done;) {
-          var item = _step7.value;
+        for (_iterator9.s(); !(_step9 = _iterator9.n()).done;) {
+          var item = _step9.value;
           if (values.length >= FEATURE_SEARCH_MAX_RESULTS) break;
           var _optionData = buildFeatureSearchOptionData(item.entry);
           if (!_optionData || !_optionData.value || seen.has(_optionData.value)) continue;
@@ -7353,9 +7817,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           values.push(_optionData);
         }
       } catch (err) {
-        _iterator7.e(err);
+        _iterator9.e(err);
       } finally {
-        _iterator7.f();
+        _iterator9.f();
       }
       if (values.length === 0) {
         var fallback = filteredEntries.slice().sort(function (a, b) {
@@ -7363,11 +7827,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             sensitivity: 'base'
           });
         });
-        var _iterator8 = _createForOfIteratorHelper(fallback),
-          _step8;
+        var _iterator0 = _createForOfIteratorHelper(fallback),
+          _step0;
         try {
-          for (_iterator8.s(); !(_step8 = _iterator8.n()).done;) {
-            var entry = _step8.value;
+          for (_iterator0.s(); !(_step0 = _iterator0.n()).done;) {
+            var entry = _step0.value;
             if (values.length >= FEATURE_SEARCH_MAX_RESULTS) break;
             var optionData = buildFeatureSearchOptionData(entry);
             if (!optionData || !optionData.value || seen.has(optionData.value)) continue;
@@ -7375,9 +7839,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             values.push(optionData);
           }
         } catch (err) {
-          _iterator8.e(err);
+          _iterator0.e(err);
         } finally {
-          _iterator8.f();
+          _iterator0.f();
         }
       }
       renderFeatureListOptions(values);
@@ -7425,11 +7889,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       var candidates = (meaningful.length > 0 ? meaningful : scored).sort(compareFeatureSearchCandidates);
       var values = [];
       var seen = new Set();
-      var _iterator9 = _createForOfIteratorHelper(candidates),
-        _step9;
+      var _iterator1 = _createForOfIteratorHelper(candidates),
+        _step1;
       try {
-        for (_iterator9.s(); !(_step9 = _iterator9.n()).done;) {
-          var item = _step9.value;
+        for (_iterator1.s(); !(_step1 = _iterator1.n()).done;) {
+          var item = _step1.value;
           if (values.length >= FEATURE_SEARCH_MAX_RESULTS) break;
           var optionData = buildFeatureSearchOptionData(item.entry);
           if (!optionData || !optionData.value || seen.has(optionData.value)) continue;
@@ -7437,9 +7901,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           values.push(optionData);
         }
       } catch (err) {
-        _iterator9.e(err);
+        _iterator1.e(err);
       } finally {
-        _iterator9.f();
+        _iterator1.f();
       }
       if (values.length === 0) {
         if (filterType) {
@@ -7871,8 +8335,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           helpCandidates.push(text);
         });
       }
-      for (var _i0 = 0, _helpCandidates = helpCandidates; _i0 < _helpCandidates.length; _i0++) {
-        var candidate = _helpCandidates[_i0];
+      for (var _i8 = 0, _helpCandidates = helpCandidates; _i8 < _helpCandidates.length; _i8++) {
+        var candidate = _helpCandidates[_i8];
         var detail = normalizeFeatureSearchDetail(candidate);
         if (detail && (!base || detail.toLowerCase() !== base)) {
           return detail;
@@ -7901,8 +8365,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           candidates.push(firstListItem.textContent);
         }
       }
-      for (var _i1 = 0, _candidates = candidates; _i1 < _candidates.length; _i1++) {
-        var candidate = _candidates[_i1];
+      for (var _i9 = 0, _candidates = candidates; _i9 < _candidates.length; _i9++) {
+        var candidate = _candidates[_i9];
         var detail = normalizeFeatureSearchDetail(candidate);
         if (detail) return detail;
       }
@@ -7914,20 +8378,20 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (!select) return '';
       var base = normalizeFeatureSearchDetail(entry.label || '').toLowerCase();
       var helpTexts = collectFeatureSearchHelpTexts(select);
-      var _iterator0 = _createForOfIteratorHelper(helpTexts),
-        _step0;
+      var _iterator10 = _createForOfIteratorHelper(helpTexts),
+        _step10;
       try {
-        for (_iterator0.s(); !(_step0 = _iterator0.n()).done;) {
-          var text = _step0.value;
+        for (_iterator10.s(); !(_step10 = _iterator10.n()).done;) {
+          var text = _step10.value;
           var detail = normalizeFeatureSearchDetail(text);
           if (detail && (!base || detail.toLowerCase() !== base)) {
             return detail;
           }
         }
       } catch (err) {
-        _iterator0.e(err);
+        _iterator10.e(err);
       } finally {
-        _iterator0.f();
+        _iterator10.f();
       }
       var contexts = collectFeatureContexts(select, base);
       if (contexts.length) {
@@ -8003,17 +8467,17 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       var total = 0;
       var matched = 0;
-      var _iterator1 = _createForOfIteratorHelper(validQueryTokens),
-        _step1;
+      var _iterator11 = _createForOfIteratorHelper(validQueryTokens),
+        _step11;
       try {
-        for (_iterator1.s(); !(_step1 = _iterator1.n()).done;) {
-          var token = _step1.value;
+        for (_iterator11.s(); !(_step11 = _iterator11.n()).done;) {
+          var token = _step11.value;
           var best = 0;
-          var _iterator10 = _createForOfIteratorHelper(entryTokens),
-            _step10;
+          var _iterator12 = _createForOfIteratorHelper(entryTokens),
+            _step12;
           try {
-            for (_iterator10.s(); !(_step10 = _iterator10.n()).done;) {
-              var entryToken = _step10.value;
+            for (_iterator12.s(); !(_step12 = _iterator12.n()).done;) {
+              var entryToken = _step12.value;
               if (!entryToken) continue;
               if (entryToken === token) {
                 best = 3;
@@ -8026,9 +8490,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
               }
             }
           } catch (err) {
-            _iterator10.e(err);
+            _iterator12.e(err);
           } finally {
-            _iterator10.f();
+            _iterator12.f();
           }
           if (best > 0) {
             matched += 1;
@@ -8036,9 +8500,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           }
         }
       } catch (err) {
-        _iterator1.e(err);
+        _iterator11.e(err);
       } finally {
-        _iterator1.f();
+        _iterator11.f();
       }
       if (matched === 0) {
         return {
@@ -8116,35 +8580,35 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }, extras);
       };
       var flattened = [];
-      var _iterator11 = _createForOfIteratorHelper(map.entries()),
-        _step11;
+      var _iterator13 = _createForOfIteratorHelper(map.entries()),
+        _step13;
       try {
-        for (_iterator11.s(); !(_step11 = _iterator11.n()).done;) {
-          var _step11$value = _slicedToArray(_step11.value, 2),
-            _entryKey = _step11$value[0],
-            _entryValue2 = _step11$value[1];
+        for (_iterator13.s(); !(_step13 = _iterator13.n()).done;) {
+          var _step13$value = _slicedToArray(_step13.value, 2),
+            _entryKey = _step13$value[0],
+            _entryValue2 = _step13$value[1];
           if (!_entryValue2) continue;
           if (Array.isArray(_entryValue2)) {
-            var _iterator13 = _createForOfIteratorHelper(_entryValue2),
-              _step13;
+            var _iterator15 = _createForOfIteratorHelper(_entryValue2),
+              _step15;
             try {
-              for (_iterator13.s(); !(_step13 = _iterator13.n()).done;) {
-                var value = _step13.value;
+              for (_iterator15.s(); !(_step15 = _iterator15.n()).done;) {
+                var value = _step15.value;
                 if (value) flattened.push([_entryKey, value]);
               }
             } catch (err) {
-              _iterator13.e(err);
+              _iterator15.e(err);
             } finally {
-              _iterator13.f();
+              _iterator15.f();
             }
           } else {
             flattened.push([_entryKey, _entryValue2]);
           }
         }
       } catch (err) {
-        _iterator11.e(err);
+        _iterator13.e(err);
       } finally {
-        _iterator11.f();
+        _iterator13.f();
       }
       if (hasKey) {
         var exactCandidates = flattened.filter(function (_ref16) {
@@ -8159,12 +8623,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             score: Number.POSITIVE_INFINITY,
             matched: queryTokens.length
           };
-          var _iterator12 = _createForOfIteratorHelper(exactCandidates.slice(1)),
-            _step12;
+          var _iterator14 = _createForOfIteratorHelper(exactCandidates.slice(1)),
+            _step14;
           try {
-            for (_iterator12.s(); !(_step12 = _iterator12.n()).done;) {
-              var _step12$value = _slicedToArray(_step12.value, 2),
-                entryValue = _step12$value[1];
+            for (_iterator14.s(); !(_step14 = _iterator14.n()).done;) {
+              var _step14$value = _slicedToArray(_step14.value, 2),
+                entryValue = _step14$value[1];
               if (!queryTokens.length) break;
               var details = computeTokenMatchDetails((entryValue === null || entryValue === void 0 ? void 0 : entryValue.tokens) || [], queryTokens);
               if (details.score > bestDetails.score || details.score === bestDetails.score && details.matched > bestDetails.matched) {
@@ -8173,9 +8637,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
               }
             }
           } catch (err) {
-            _iterator12.e(err);
+            _iterator14.e(err);
           } finally {
-            _iterator12.f();
+            _iterator14.f();
           }
           return toResult(key, bestEntry, 'exactKey', bestDetails.score, bestDetails.matched);
         }
@@ -8199,8 +8663,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       var bestFuzzyDistance = Number.POSITIVE_INFINITY;
       var bestFuzzyLength = Number.POSITIVE_INFINITY;
       var keyLength = hasKey ? key.length : 0;
-      for (var _i10 = 0, _flattened = flattened; _i10 < _flattened.length; _i10++) {
-        var _flattened$_i = _slicedToArray(_flattened[_i10], 2),
+      for (var _i0 = 0, _flattened = flattened; _i0 < _flattened.length; _i0++) {
+        var _flattened$_i = _slicedToArray(_flattened[_i0], 2),
           entryKey = _flattened$_i[0],
           _entryValue = _flattened$_i[1];
         if (!_entryValue) continue;
@@ -8565,20 +9029,20 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (Number.isFinite(computedFontSize) && computedFontSize > 0) {
           baseFontSize = computedFontSize;
         }
-        var _iterator14 = _createForOfIteratorHelper(uiScaleProperties),
-          _step14;
+        var _iterator16 = _createForOfIteratorHelper(uiScaleProperties),
+          _step16;
         try {
-          for (_iterator14.s(); !(_step14 = _iterator14.n()).done;) {
-            var prop = _step14.value;
+          for (_iterator16.s(); !(_step16 = _iterator16.n()).done;) {
+            var prop = _step16.value;
             var value = parseFloat(computedStyle.getPropertyValue(prop));
             if (Number.isFinite(value) && value > 0) {
               baseUIScaleValues[prop] = value;
             }
           }
         } catch (err) {
-          _iterator14.e(err);
+          _iterator16.e(err);
         } finally {
-          _iterator14.f();
+          _iterator16.f();
         }
       } catch (error) {
         console.warn('Unable to read computed styles for UI scaling', error);
@@ -8763,7 +9227,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     function _loadStoredCustomFonts() {
       _loadStoredCustomFonts = _asyncToGenerator(_regenerator().m(function _callee5() {
-        var stored, _iterator17, _step17, entry, normalized, _t5, _t6;
+        var stored, _iterator19, _step19, entry, normalized, _t5, _t6;
         return _regenerator().w(function (_context5) {
           while (1) switch (_context5.p = _context5.n) {
             case 0:
@@ -8774,15 +9238,15 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
               }
               return _context5.a(2);
             case 1:
-              _iterator17 = _createForOfIteratorHelper(stored);
+              _iterator19 = _createForOfIteratorHelper(stored);
               _context5.p = 2;
-              _iterator17.s();
+              _iterator19.s();
             case 3:
-              if ((_step17 = _iterator17.n()).done) {
+              if ((_step19 = _iterator19.n()).done) {
                 _context5.n = 8;
                 break;
               }
-              entry = _step17.value;
+              entry = _step19.value;
               normalized = {
                 id: entry.id,
                 name: sanitizeCustomFontName(entry.name),
@@ -8808,10 +9272,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             case 9:
               _context5.p = 9;
               _t6 = _context5.v;
-              _iterator17.e(_t6);
+              _iterator19.e(_t6);
             case 10:
               _context5.p = 10;
-              _iterator17.f();
+              _iterator19.f();
               return _context5.f(10);
             case 11:
               return _context5.a(2);
@@ -8906,8 +9370,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     function _addCustomFontFromData() {
       _addCustomFontFromData = _asyncToGenerator(_regenerator().m(function _callee6(name, dataUrl) {
-        var _ref44,
-          _ref44$persist,
+        var _ref46,
+          _ref46$persist,
           persist,
           uniqueName,
           value,
@@ -8920,7 +9384,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return _regenerator().w(function (_context6) {
           while (1) switch (_context6.n) {
             case 0:
-              _ref44 = _args6.length > 2 && _args6[2] !== undefined ? _args6[2] : {}, _ref44$persist = _ref44.persist, persist = _ref44$persist === void 0 ? true : _ref44$persist;
+              _ref46 = _args6.length > 2 && _args6[2] !== undefined ? _args6[2] : {}, _ref46$persist = _ref46.persist, persist = _ref46$persist === void 0 ? true : _ref46$persist;
               uniqueName = ensureUniqueCustomFontName(name);
               value = buildFontFamilyValue(uniqueName);
               _ensureFontFamilyOpti2 = ensureFontFamilyOption(value, uniqueName, localFontsGroup, 'uploaded'), option = _ensureFontFamilyOpti2.option;
@@ -8967,7 +9431,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     function _handleLocalFontFiles() {
       _handleLocalFontFiles = _asyncToGenerator(_regenerator().m(function _callee7(fileList) {
-        var added, unsupported, failed, persistFailure, _i13, _Array$from, file, dataUrl, result, message, _message9, _message0, _t7;
+        var added, unsupported, failed, persistFailure, _i11, _Array$from, file, dataUrl, result, message, _message9, _message0, _t7;
         return _regenerator().w(function (_context7) {
           while (1) switch (_context7.p = _context7.n) {
             case 0:
@@ -8978,20 +9442,20 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
               setLocalFontsStatus('localFontsNoFonts');
               return _context7.a(2);
             case 1:
-              if (localFontsButton) {
-                localFontsButton.disabled = true;
+              if (localFontsButtonElement) {
+                localFontsButtonElement.disabled = true;
               }
               added = [];
               unsupported = [];
               failed = [];
               persistFailure = false;
-              _i13 = 0, _Array$from = Array.from(fileList);
+              _i11 = 0, _Array$from = Array.from(fileList);
             case 2:
-              if (!(_i13 < _Array$from.length)) {
+              if (!(_i11 < _Array$from.length)) {
                 _context7.n = 9;
                 break;
               }
-              file = _Array$from[_i13];
+              file = _Array$from[_i11];
               if (isSupportedFontFile(file)) {
                 _context7.n = 3;
                 break;
@@ -9027,7 +9491,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
               console.warn('Failed to import custom font', _t7);
               failed.push(file && typeof file.name === 'string' ? file.name : '');
             case 8:
-              _i13++;
+              _i11++;
               _context7.n = 2;
               break;
             case 9:
@@ -9063,7 +9527,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
                   showNotification('error', _message0);
                 }
               }
-              if (localFontsButton) {
+              if (localFontsButtonElement) {
                 localFontsButtonElement.disabled = false;
               }
             case 10:
@@ -9212,8 +9676,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     var supportsLocalFonts = typeof queryAvailableLocalFonts === 'function';
     var localFontsButtonElement = resolveGlobalElement('localFontsButton', 'localFontsButton');
     var localFontsInputElement = resolveGlobalElement('localFontsInput', 'localFontsInput');
-    var settingsFontFamily = resolveGlobalElement('settingsFontFamily', 'settingsFontFamily');
-    var settingsFontSize = resolveGlobalElement('settingsFontSize', 'settingsFontSize');
+    var settingsFontFamily = typeof settingsFontFamily !== 'undefined' ? settingsFontFamily : resolveGlobalElement('settingsFontFamily', 'settingsFontFamily');
+    var settingsFontSize = typeof settingsFontSize !== 'undefined' ? settingsFontSize : resolveGlobalElement('settingsFontSize', 'settingsFontSize');
     var canUploadFontFiles = !!(localFontsInputElement && typeof window !== 'undefined' && typeof window.FileReader === 'function' && typeof localFontsInputElement.click === 'function');
     function getLocalizedText(key) {
       if (texts[currentLang] && texts[currentLang][key]) return texts[currentLang][key];
@@ -9323,17 +9787,17 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     function _requestLocalFonts() {
       _requestLocalFonts = _asyncToGenerator(_regenerator().m(function _callee9() {
-        var fonts, added, duplicates, seenValues, _iterator18, _step18, font, rawName, name, _value3, _ensureFontFamilyOpti3, option, created, _t9, _t0;
+        var fonts, added, duplicates, seenValues, _iterator20, _step20, font, rawName, name, _value4, _ensureFontFamilyOpti3, option, created, _t9, _t0;
         return _regenerator().w(function (_context9) {
           while (1) switch (_context9.p = _context9.n) {
             case 0:
-              if (!(!supportsLocalFonts || !localFontsButton || !queryAvailableLocalFonts)) {
+              if (!(!supportsLocalFonts || !localFontsButtonElement || !queryAvailableLocalFonts)) {
                 _context9.n = 1;
                 break;
               }
               return _context9.a(2);
             case 1:
-              localFontsButton.disabled = true;
+              localFontsButtonElement.disabled = true;
               _context9.p = 2;
               _context9.n = 3;
               return queryAvailableLocalFonts();
@@ -9349,15 +9813,15 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
               added = [];
               duplicates = [];
               seenValues = new Set();
-              _iterator18 = _createForOfIteratorHelper(fonts);
+              _iterator20 = _createForOfIteratorHelper(fonts);
               _context9.p = 5;
-              _iterator18.s();
+              _iterator20.s();
             case 6:
-              if ((_step18 = _iterator18.n()).done) {
+              if ((_step20 = _iterator20.n()).done) {
                 _context9.n = 11;
                 break;
               }
-              font = _step18.value;
+              font = _step20.value;
               rawName = font && (font.family || font.fullName || font.postscriptName);
               name = rawName ? String(rawName).trim() : '';
               if (name) {
@@ -9366,15 +9830,15 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
               }
               return _context9.a(3, 10);
             case 7:
-              _value3 = buildFontFamilyValue(name);
-              if (!seenValues.has(_value3)) {
+              _value4 = buildFontFamilyValue(name);
+              if (!seenValues.has(_value4)) {
                 _context9.n = 8;
                 break;
               }
               duplicates.push(name);
               return _context9.a(3, 10);
             case 8:
-              _ensureFontFamilyOpti3 = ensureFontFamilyOption(_value3, name, localFontsGroup, 'local'), option = _ensureFontFamilyOpti3.option, created = _ensureFontFamilyOpti3.created;
+              _ensureFontFamilyOpti3 = ensureFontFamilyOption(_value4, name, localFontsGroup, 'local'), option = _ensureFontFamilyOpti3.option, created = _ensureFontFamilyOpti3.created;
               if (option) {
                 _context9.n = 9;
                 break;
@@ -9399,10 +9863,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             case 12:
               _context9.p = 12;
               _t9 = _context9.v;
-              _iterator18.e(_t9);
+              _iterator20.e(_t9);
             case 13:
               _context9.p = 13;
-              _iterator18.f();
+              _iterator20.f();
               return _context9.f(13);
             case 14:
               if (added.length > 0) {
@@ -9456,15 +9920,15 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         setLocalFontsStatus('localFontsUnsupported');
       }
     }
-    if (localFontsInput) {
-      localFontsInput.addEventListener('change', function () {
-        if (localFontsInput.files && localFontsInput.files.length > 0) {
-          handleLocalFontFiles(localFontsInput.files);
+    if (localFontsInputElement) {
+      localFontsInputElement.addEventListener('change', function () {
+        if (localFontsInputElement.files && localFontsInputElement.files.length > 0) {
+          handleLocalFontFiles(localFontsInputElement.files);
         } else {
           setLocalFontsStatus('localFontsNoFonts');
         }
         try {
-          localFontsInput.value = '';
+          localFontsInputElement.value = '';
         } catch (_unused6) {}
       });
     }
@@ -9481,19 +9945,19 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return;
       }
       var scale = numericSize / baseFontSize;
-      var _iterator15 = _createForOfIteratorHelper(uiScaleProperties),
-        _step15;
+      var _iterator17 = _createForOfIteratorHelper(uiScaleProperties),
+        _step17;
       try {
-        for (_iterator15.s(); !(_step15 = _iterator15.n()).done;) {
-          var _prop = _step15.value;
+        for (_iterator17.s(); !(_step17 = _iterator17.n()).done;) {
+          var _prop = _step17.value;
           var baseValue = baseUIScaleValues[_prop];
           if (!Number.isFinite(baseValue) || baseValue <= 0) continue;
           document.documentElement.style.setProperty(_prop, "".concat(baseValue * scale, "px"));
         }
       } catch (err) {
-        _iterator15.e(err);
+        _iterator17.e(err);
       } finally {
-        _iterator15.f();
+        _iterator17.f();
       }
       document.documentElement.style.setProperty('--ui-scale', String(scale));
     }
@@ -9707,11 +10171,15 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (!btn.dataset.editProjectBound) {
         btn.type = 'button';
         btn.addEventListener('click', function () {
-          var infoForDialog = currentProjectInfo ? _objectSpread({}, currentProjectInfo) : projectForm ? collectProjectFormData() : {};
-          if (projectForm) {
-            populateProjectForm(infoForDialog || {});
+          var infoForDialog = typeof getProjectDialogSeedInfo === 'function' ? getProjectDialogSeedInfo() : currentProjectInfo ? _objectSpread({}, currentProjectInfo) : projectForm ? collectProjectFormData() : {};
+          if (typeof openProjectDialogWithInfo === 'function') {
+            openProjectDialogWithInfo(infoForDialog);
+          } else {
+            if (projectForm) {
+              populateProjectForm(infoForDialog || {});
+            }
+            openDialog(projectDialog);
           }
-          openDialog(projectDialog);
         });
         btn.dataset.editProjectBound = 'true';
       }
@@ -9841,11 +10309,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       var overviewCandidates = getOverviewTitleCandidates();
       var lowerText = textValue.toLowerCase();
-      var _iterator16 = _createForOfIteratorHelper(overviewCandidates),
-        _step16;
+      var _iterator18 = _createForOfIteratorHelper(overviewCandidates),
+        _step18;
       try {
-        for (_iterator16.s(); !(_step16 = _iterator16.n()).done;) {
-          var label = _step16.value;
+        for (_iterator18.s(); !(_step18 = _iterator18.n()).done;) {
+          var label = _step18.value;
           var normalizedLabel = label.trim();
           if (!normalizedLabel) continue;
           var lowerLabel = normalizedLabel.toLowerCase();
@@ -9861,9 +10329,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           }
         }
       } catch (err) {
-        _iterator16.e(err);
+        _iterator18.e(err);
       } finally {
-        _iterator16.f();
+        _iterator18.f();
       }
       if (overviewCandidates.some(function (label) {
         return lowerText === label.toLowerCase();
@@ -10305,8 +10773,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
                   categoryPath: path
                 };
               }
-              for (var _i11 = 0, _Object$entries6 = Object.entries(node); _i11 < _Object$entries6.length; _i11++) {
-                var _Object$entries6$_i = _slicedToArray(_Object$entries6[_i11], 2),
+              for (var _i1 = 0, _Object$entries6 = Object.entries(node); _i1 < _Object$entries6.length; _i1++) {
+                var _Object$entries6$_i = _slicedToArray(_Object$entries6[_i1], 2),
                   key = _Object$entries6$_i[0],
                   _value2 = _Object$entries6$_i[1];
                 if (!isPlainObjectValue(_value2)) continue;
@@ -10724,12 +11192,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       } catch (gridSnapStateError) {
         void gridSnapStateError;
       }
-
       var scopedValue = readGlobalScopeValue('gridSnap');
       if (typeof scopedValue === 'boolean') {
         return scopedValue;
       }
-
       if (typeof gridSnap !== 'undefined') {
         try {
           return Boolean(gridSnap);
@@ -10737,7 +11203,6 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           void legacyGridSnapReadError;
         }
       }
-
       return false;
     };
     var manualPositions = {};
@@ -11705,7 +12170,6 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         cameraMediaContainer.appendChild(createRecordingMediaRow());
       }
     };
-
     writeCoreScopeValue('setRecordingMedia', setRecordingMediaLocal);
     function getRecordingMedia() {
       return Array.from(cameraMediaContainer.querySelectorAll('.form-row')).map(function (row) {
@@ -11933,7 +12397,6 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         batteryPlatesContainer.appendChild(createBatteryPlateRow());
       }
     };
-
     writeCoreScopeValue('setBatteryPlates', setBatteryPlatesLocal);
     function getBatteryPlates() {
       return Array.from(batteryPlatesContainer.querySelectorAll('.form-row')).map(function (row) {
@@ -13123,7 +13586,6 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       html += "</table>";
       container.innerHTML = html;
     }
-
     assignCoreTemperatureNoteRenderer(renderTemperatureNote);
     function ensureFeedbackTemperatureOptions(select) {
       if (!select) return;
@@ -13167,48 +13629,45 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         });
       });
     }
-      function updateFeedbackTemperatureLabel() {
-        var lang = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : currentLang;
-        var unit = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : temperatureUnit;
-        var labelTextElem = document.getElementById('fbTemperatureLabelText');
-        var labelElem = document.getElementById('fbTemperatureLabel');
-        var label = "".concat(getTemperatureColumnLabelForLang(lang, unit), ":");
-        if (labelTextElem) {
-          labelTextElem.textContent = label;
-        } else if (labelElem) {
-          labelElem.textContent = label;
-        }
+    function updateFeedbackTemperatureLabel() {
+      var lang = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : currentLang;
+      var unit = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : temperatureUnit;
+      var labelTextElem = document.getElementById('fbTemperatureLabelText');
+      var labelElem = document.getElementById('fbTemperatureLabel');
+      var label = "".concat(getTemperatureColumnLabelForLang(lang, unit), ":");
+      if (labelTextElem) {
+        labelTextElem.textContent = label;
+      } else if (labelElem) {
+        labelElem.textContent = label;
       }
-
-      function refreshFeedbackTemperatureLabel() {
-        var lang = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : currentLang;
-        var unit = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : temperatureUnit;
-        var handled = false;
-        try {
-          if (typeof updateFeedbackTemperatureLabel === 'function') {
-            updateFeedbackTemperatureLabel(lang, unit);
-            handled = true;
-          }
-        } catch (error) {
-          console.warn('Fallback applied while updating feedback temperature label', error);
+    }
+    function refreshFeedbackTemperatureLabel() {
+      var lang = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : currentLang;
+      var unit = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : temperatureUnit;
+      var handled = false;
+      try {
+        if (typeof updateFeedbackTemperatureLabel === 'function') {
+          updateFeedbackTemperatureLabel(lang, unit);
+          handled = true;
         }
-
-        if (handled) {
-          return;
-        }
-
-        var labelTextElem = document.getElementById('fbTemperatureLabelText');
-        var labelElem = document.getElementById('fbTemperatureLabel');
-        if (!labelTextElem && !labelElem) {
-          return;
-        }
-        var label = "".concat(getTemperatureColumnLabelForLang(lang, unit), ":");
-        if (labelTextElem) {
-          labelTextElem.textContent = label;
-        } else if (labelElem) {
-          labelElem.textContent = label;
-        }
+      } catch (error) {
+        console.warn('Fallback applied while updating feedback temperature label', error);
       }
+      if (handled) {
+        return;
+      }
+      var labelTextElem = document.getElementById('fbTemperatureLabelText');
+      var labelElem = document.getElementById('fbTemperatureLabel');
+      if (!labelTextElem && !labelElem) {
+        return;
+      }
+      var label = "".concat(getTemperatureColumnLabelForLang(lang, unit), ":");
+      if (labelTextElem) {
+        labelTextElem.textContent = label;
+      } else if (labelElem) {
+        labelElem.textContent = label;
+      }
+    }
     function applyTemperatureUnitPreference(unit) {
       var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
       var normalized = normalizeTemperatureUnit(unit);
@@ -13251,39 +13710,17 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       });
       var distance = distanceSelect.value;
       var battery = batterySelect.value;
-      var totalPowerTarget = typeof totalPowerElem !== 'undefined'
-        ? totalPowerElem
-        : typeof document !== 'undefined' ? document.getElementById('totalPower') : null;
-      var breakdownListTarget = typeof breakdownListElem !== 'undefined'
-        ? breakdownListElem
-        : typeof document !== 'undefined' ? document.getElementById('breakdownList') : null;
-      var totalCurrent144Target = typeof totalCurrent144Elem !== 'undefined'
-        ? totalCurrent144Elem
-        : typeof document !== 'undefined' ? document.getElementById('totalCurrent144') : null;
-      var totalCurrent12Target = typeof totalCurrent12Elem !== 'undefined'
-        ? totalCurrent12Elem
-        : typeof document !== 'undefined' ? document.getElementById('totalCurrent12') : null;
-      var batteryLifeTarget = typeof batteryLifeElem !== 'undefined'
-        ? batteryLifeElem
-        : typeof document !== 'undefined' ? document.getElementById('batteryLife') : null;
-      var batteryCountTarget = typeof batteryCountElem !== 'undefined'
-        ? batteryCountElem
-        : typeof document !== 'undefined' ? document.getElementById('batteryCount') : null;
-      var batteryLifeLabelTarget = typeof batteryLifeLabelElem !== 'undefined'
-        ? batteryLifeLabelElem
-        : typeof document !== 'undefined' ? document.getElementById('batteryLifeLabel') : null;
-      var runtimeAverageNoteTarget = typeof runtimeAverageNoteElem !== 'undefined'
-        ? runtimeAverageNoteElem
-        : typeof document !== 'undefined' ? document.getElementById('runtimeAverageNote') : null;
-      var pinWarnTarget = typeof pinWarnElem !== 'undefined'
-        ? pinWarnElem
-        : typeof document !== 'undefined' ? document.getElementById('pinWarning') : null;
-      var dtapWarnTarget = typeof dtapWarnElem !== 'undefined'
-        ? dtapWarnElem
-        : typeof document !== 'undefined' ? document.getElementById('dtapWarning') : null;
-      var hotswapWarnTarget = typeof hotswapWarnElem !== 'undefined'
-        ? hotswapWarnElem
-        : typeof document !== 'undefined' ? document.getElementById('hotswapWarning') : null;
+      var totalPowerTarget = typeof totalPowerElem !== 'undefined' ? totalPowerElem : typeof document !== 'undefined' ? document.getElementById('totalPower') : null;
+      var breakdownListTarget = typeof breakdownListElem !== 'undefined' ? breakdownListElem : typeof document !== 'undefined' ? document.getElementById('breakdownList') : null;
+      var totalCurrent144Target = typeof totalCurrent144Elem !== 'undefined' ? totalCurrent144Elem : typeof document !== 'undefined' ? document.getElementById('totalCurrent144') : null;
+      var totalCurrent12Target = typeof totalCurrent12Elem !== 'undefined' ? totalCurrent12Elem : typeof document !== 'undefined' ? document.getElementById('totalCurrent12') : null;
+      var batteryLifeTarget = typeof batteryLifeElem !== 'undefined' ? batteryLifeElem : typeof document !== 'undefined' ? document.getElementById('batteryLife') : null;
+      var batteryCountTarget = typeof batteryCountElem !== 'undefined' ? batteryCountElem : typeof document !== 'undefined' ? document.getElementById('batteryCount') : null;
+      var batteryLifeLabelTarget = typeof batteryLifeLabelElem !== 'undefined' ? batteryLifeLabelElem : typeof document !== 'undefined' ? document.getElementById('batteryLifeLabel') : null;
+      var runtimeAverageNoteTarget = typeof runtimeAverageNoteElem !== 'undefined' ? runtimeAverageNoteElem : typeof document !== 'undefined' ? document.getElementById('runtimeAverageNote') : null;
+      var pinWarnTarget = typeof pinWarnElem !== 'undefined' ? pinWarnElem : typeof document !== 'undefined' ? document.getElementById('pinWarning') : null;
+      var dtapWarnTarget = typeof dtapWarnElem !== 'undefined' ? dtapWarnElem : typeof document !== 'undefined' ? document.getElementById('dtapWarning') : null;
+      var hotswapWarnTarget = typeof hotswapWarnElem !== 'undefined' ? hotswapWarnElem : typeof document !== 'undefined' ? document.getElementById('hotswapWarning') : null;
       var cameraW = 0;
       if (devices.cameras[camera] !== undefined) {
         var camData = devices.cameras[camera];
@@ -13554,15 +13991,14 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
         var pinsCandidates = [];
         var dtapCandidates = [];
-        var nameCollator = typeof collator !== 'undefined' && collator && typeof collator.compare === 'function' ? collator :
-          typeof Intl !== 'undefined' && typeof Intl.Collator === 'function' ? new Intl.Collator(undefined, {
-            numeric: true,
-            sensitivity: 'base'
-          }) : {
-            compare: function compare(a, b) {
-              return String(a).localeCompare(String(b));
-            }
-          };
+        var nameCollator = typeof collator !== 'undefined' && collator && typeof collator.compare === 'function' ? collator : typeof Intl !== 'undefined' && typeof Intl.Collator === 'function' ? new Intl.Collator(undefined, {
+          numeric: true,
+          sensitivity: 'base'
+        }) : {
+          compare: function compare(a, b) {
+            return String(a).localeCompare(String(b));
+          }
+        };
         for (var battName in devices.batteries) {
           if (battName === "None") continue;
           if (selectedCandidate && battName === selectedCandidate.name) continue;
@@ -15080,7 +15516,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           if (target && typeof target.closest === 'function' && target.closest('.diagram-popup')) {
             return;
           }
-          if (!target || typeof target.closest !== 'function' || !target.closest('.diagram-node')) popup.style.display = 'none';
+          if (!target || typeof target.closest !== 'function' || !target.closest('.diagram-node')) {
+            popup.style.display = 'none';
+          }
         };
         if (isTouchDevice) {
           setupDiagramContainer.addEventListener('touchstart', hideOnOutside);
@@ -15489,8 +15927,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         ulElement.appendChild(li);
       };
       if (categoryKey === "accessories.cables") {
-        for (var _i12 = 0, _Object$entries7 = Object.entries(categoryDevices); _i12 < _Object$entries7.length; _i12++) {
-          var _Object$entries7$_i = _slicedToArray(_Object$entries7[_i12], 2),
+        for (var _i10 = 0, _Object$entries7 = Object.entries(categoryDevices); _i10 < _Object$entries7.length; _i10++) {
+          var _Object$entries7$_i = _slicedToArray(_Object$entries7[_i10], 2),
             subcat = _Object$entries7$_i[0],
             devs = _Object$entries7$_i[1];
           for (var name in devs) {
@@ -15517,9 +15955,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     var CORE_PART2_GLOBAL_EXPORTS = {
       populateSelect: populateSelect,
-      refreshAutoGearCameraOptions: refreshAutoGearCameraOptions,
       refreshDeviceLists: refreshDeviceLists,
       hasAnyDeviceSelection: hasAnyDeviceSelection,
+      refreshAutoGearCameraOptions: refreshAutoGearCameraOptions,
       refreshAutoGearCameraWeightCondition: refreshAutoGearCameraWeightCondition,
       refreshAutoGearMonitorOptions: refreshAutoGearMonitorOptions,
       refreshAutoGearTripodHeadOptions: refreshAutoGearTripodHeadOptions,
@@ -15531,6 +15969,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       refreshAutoGearControllersOptions: refreshAutoGearControllersOptions,
       refreshAutoGearCrewOptions: refreshAutoGearCrewOptions,
       refreshAutoGearDistanceOptions: refreshAutoGearDistanceOptions,
+      exportAutoGearRules: exportAutoGearRules,
       updateAutoGearCameraWeightDraft: updateAutoGearCameraWeightDraft,
       updateAutoGearShootingDaysDraft: updateAutoGearShootingDaysDraft,
       checkSetupChanged: checkSetupChanged,
@@ -15564,14 +16003,15 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       renderSettingsLogoPreview: renderSettingsLogoPreview,
       normalizeSpellingVariants: normalizeSpellingVariants,
       prevAccentColor: prevAccentColor,
+      revertAccentColor: revertAccentColor,
       DEFAULT_ACCENT_COLOR: DEFAULT_ACCENT_COLOR,
       HIGH_CONTRAST_ACCENT_COLOR: HIGH_CONTRAST_ACCENT_COLOR,
       applyAccentColor: applyAccentColor,
       clearAccentColorOverrides: clearAccentColorOverrides,
-      revertAccentColor: revertAccentColor,
       updateAccentColorResetButtonState: updateAccentColorResetButtonState,
       restoringSession: restoringSession,
       currentProjectInfo: currentProjectInfo,
+      deriveProjectInfo: deriveProjectInfo,
       projectForm: projectForm,
       filterSelectElem: filterSelectElem,
       filterDetailsStorage: filterDetailsStorage,
@@ -15585,145 +16025,281 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       getSliderBowlValue: getSliderBowlValue,
       getEasyrigValue: getEasyrigValue,
       setEasyrigValue: setEasyrigValue,
+      fontSize: fontSize,
+      fontFamily: fontFamily,
       normalizeSearchValue: normalizeSearchValue
     };
-
-    var ADDITIONAL_GLOBAL_EXPORT_ENTRIES = [
-      ['setBatteryPlates', function () { return setBatteryPlatesLocal; }],
-      ['getBatteryPlates', function () { return getBatteryPlates; }],
-      ['setRecordingMedia', function () { return setRecordingMediaLocal; }],
-      ['getRecordingMedia', function () { return getRecordingMedia; }],
-      ['applyDarkMode', function () { return applyDarkMode; }],
-      ['applyPinkMode', function () { return applyPinkMode; }],
-      ['applyHighContrast', function () { return applyHighContrast; }],
-      ['setupInstallBanner', function () { return setupInstallBanner; }],
-      ['generatePrintableOverview', function () { return generatePrintableOverview; }],
-      ['generateGearListHtml', function () { return generateGearListHtml; }],
-      ['displayGearAndRequirements', function () { return displayGearAndRequirements; }],
-      ['updateGearListButtonVisibility', function () { return updateGearListButtonVisibility; }],
-      ['ensureZoomRemoteSetup', function () { return ensureZoomRemoteSetup; }],
-      ['encodeSharedSetup', function () { return encodeSharedSetup; }],
-      ['decodeSharedSetup', function () { return decodeSharedSetup; }],
-      ['applySharedSetupFromUrl', function () { return applySharedSetupFromUrl; }],
-      ['applySharedSetup', function () { return applySharedSetup; }],
-      ['updateBatteryPlateVisibility', function () { return updateBatteryPlateVisibility; }],
-      ['updateBatteryOptions', function () { return updateBatteryOptions; }],
-      ['renderSetupDiagram', function () { return renderSetupDiagram; }],
-      ['enableDiagramInteractions', function () { return enableDiagramInteractions; }],
-      ['updateDiagramLegend', function () { return updateDiagramLegend; }],
-      ['cameraFizPort', function () { return cameraFizPort; }],
-      ['controllerCamPort', function () { return controllerCamPort; }],
-      ['controllerDistancePort', function () { return controllerDistancePort; }],
-      ['detectBrand', function () { return detectBrand; }],
-      ['connectionLabel', function () { return connectionLabel; }],
-      ['generateConnectorSummary', function () { return generateConnectorSummary; }],
-      ['diagramConnectorIcons', function () { return diagramConnectorIcons; }],
-      ['DIAGRAM_MONITOR_ICON', function () { return DIAGRAM_MONITOR_ICON; }],
-      ['exportDiagramSvg', function () { return exportDiagramSvg; }],
-      ['fixPowerInput', function () { return fixPowerInput; }],
-      ['powerInputTypes', function () { return powerInputTypes; }],
-      ['ensureList', function () { return ensureList; }],
-      ['normalizeVideoType', function () { return normalizeVideoType; }],
-      ['normalizeFizConnectorType', function () { return normalizeFizConnectorType; }],
-      ['normalizeViewfinderType', function () { return normalizeViewfinderType; }],
-      ['normalizePowerPortType', function () { return normalizePowerPortType; }],
-      ['setMonitorVideoInputs', function () { return setMonitorVideoInputs; }],
-      ['clearMonitorVideoInputs', function () { return clearMonitorVideoInputs; }],
-      ['setMonitorVideoOutputs', function () { return setMonitorVideoOutputs; }],
-      ['clearMonitorVideoOutputs', function () { return clearMonitorVideoOutputs; }],
-      ['setViewfinderVideoInputs', function () { return setViewfinderVideoInputs; }],
-      ['clearViewfinderVideoInputs', function () { return clearViewfinderVideoInputs; }],
-      ['setViewfinderVideoOutputs', function () { return setViewfinderVideoOutputs; }],
-      ['clearViewfinderVideoOutputs', function () { return clearViewfinderVideoOutputs; }],
-      ['getCurrentSetupKey', function () { return getCurrentSetupKey; }],
-      ['renderFeedbackTable', function () { return renderFeedbackTable; }],
-      ['saveCurrentGearList', function () { return saveCurrentGearList; }],
-      ['getPowerSelectionSnapshot', function () { return getPowerSelectionSnapshot; }],
-      ['applyStoredPowerSelection', function () { return applyStoredPowerSelection; }],
-      ['getGearListSelectors', function () { return getGearListSelectors; }],
-      ['applyGearListSelectors', function () { return applyGearListSelectors; }],
-      ['scenarioIcons', function () { return scenarioIcons; }],
-      ['collectProjectFormData', function () { return collectProjectFormData; }],
-      ['populateProjectForm', function () { return populateProjectForm; }],
-      ['renderFilterDetails', function () { return renderFilterDetails; }],
-      ['collectFilterSelections', function () { return collectFilterSelections; }],
-      ['parseFilterTokens', function () { return parseFilterTokens; }],
-      ['applyFilterSelectionsToGearList', function () { return applyFilterSelectionsToGearList; }],
-      ['adjustGearListSelectWidth', function () { return adjustGearListSelectWidth; }],
-      ['adjustGearListSelectWidths', function () { return adjustGearListSelectWidths; }],
-      ['deviceMap', function () { return deviceMap; }],
-      ['helpMap', function () { return helpMap; }],
-      ['featureSearchEntries', function () { return featureSearchEntries; }],
-      ['featureSearchDefaultOptions', function () { return featureSearchDefaultOptions; }],
-      ['restoreFeatureSearchDefaults', function () { return restoreFeatureSearchDefaults; }],
-      ['updateFeatureSearchSuggestions', function () { return updateFeatureSearchSuggestions; }],
-      ['setCurrentProjectInfo', function () { return setCurrentProjectInfo; }],
-      ['getCurrentProjectInfo', function () { return getCurrentProjectInfo; }],
-      ['getCurrentSetupState', function () { return getCurrentSetupState; }],
-      ['setSliderBowlValue', function () { return setSliderBowlValue; }],
-      ['crewRoles', function () { return crewRoles; }],
-      ['formatFullBackupFilename', function () { return formatFullBackupFilename; }],
-      ['computeGearListCount', function () { return computeGearListCount; }],
-      ['autoBackup', function () { return autoBackup; }],
-      ['createSettingsBackup', function () { return createSettingsBackup; }],
-      ['captureStorageSnapshot', function () { return captureStorageSnapshot; }],
-      ['sanitizeBackupPayload', function () { return sanitizeBackupPayload; }],
-      ['extractBackupSections', function () { return extractBackupSections; }],
-      ['searchKey', function () { return searchKey; }],
-      ['searchTokens', function () { return searchTokens; }],
-      ['findBestSearchMatch', function () { return findBestSearchMatch; }],
-      ['runFeatureSearch', function () { return runFeatureSearch; }],
-      ['collectAutoGearCatalogNames', function () { return collectAutoGearCatalogNames; }],
-      ['featureMap', function () { return featureMap; }],
-      ['buildDefaultVideoDistributionAutoGearRules', function () { return buildDefaultVideoDistributionAutoGearRules; }],
-      ['applyAutoGearRulesToTableHtml', function () { return applyAutoGearRulesToTableHtml; }],
-      ['importAutoGearRulesFromData', function () { return importAutoGearRulesFromData; }],
-      ['createAutoGearBackup', function () { return createAutoGearBackup; }],
-      ['restoreAutoGearBackup', function () { return restoreAutoGearBackup; }],
-      ['getAutoGearRules', function () { return getAutoGearRules; }],
-      ['syncAutoGearRulesFromStorage', function () { return syncAutoGearRulesFromStorage; }],
-      ['normalizeAutoGearCameraWeightCondition', function () { return normalizeAutoGearCameraWeightCondition; }],
-      ['updateAutoGearItemButtonState', function () { return updateAutoGearItemButtonState; }],
-      ['loadStoredLogoPreview', function () { return loadStoredLogoPreview; }],
-      ['normalizeSpellingVariants', function () { return normalizeSpellingVariants; }],
-      ['parseDeviceDatabaseImport', function () { return parseDeviceDatabaseImport; }],
-      ['countDeviceDatabaseEntries', function () { return countDeviceDatabaseEntries; }],
-      ['sanitizeShareFilename', function () { return sanitizeShareFilename; }],
-      ['ensureJsonExtension', function () { return ensureJsonExtension; }],
-      ['getDefaultShareFilename', function () { return getDefaultShareFilename; }],
-      ['promptForSharedFilename', function () { return promptForSharedFilename; }],
-      ['downloadSharedProject', function () { return downloadSharedProject; }],
-      ['clearBatteryPlates', function () { return clearBatteryPlates; }],
-      ['clearRecordingMedia', function () { return clearRecordingMedia; }],
-      ['clearLensMounts', function () { return clearLensMounts; }],
-      ['clearPowerDistribution', function () { return clearPowerDistribution; }],
-      ['clearVideoOutputs', function () { return clearVideoOutputs; }],
-      ['clearFizConnectors', function () { return clearFizConnectors; }],
-      ['clearViewfinders', function () { return clearViewfinders; }],
-      ['clearTimecodes', function () { return clearTimecodes; }],
-      ['confirmAutoGearSelection', function () { return confirmAutoGearSelection; }],
-      ['configureSharedImportOptions', function () { return configureSharedImportOptions; }],
-      ['resolveSharedImportMode', function () { return resolveSharedImportMode; }],
-      ['resetPlannerStateAfterFactoryReset', function () { return resetPlannerStateAfterFactoryReset; }],
-      ['updateStorageSummary', function () { return updateStorageSummary; }],
-      ['normaliseMarkVariants', function () { return normaliseMarkVariants; }],
-      ['storeLoadedSetupState', function () { return storeLoadedSetupState; }]
-    ];
-
-    var resolvedAdditionalExports = ADDITIONAL_GLOBAL_EXPORT_ENTRIES.reduce(function (acc, entry) {
-      var exportName = entry[0];
-      var getter = entry[1];
+    var ADDITIONAL_GLOBAL_EXPORT_ENTRIES = [['setBatteryPlates', function () {
+      return setBatteryPlatesLocal;
+    }], ['getBatteryPlates', function () {
+      return getBatteryPlates;
+    }], ['setRecordingMedia', function () {
+      return setRecordingMediaLocal;
+    }], ['getRecordingMedia', function () {
+      return getRecordingMedia;
+    }], ['applyDarkMode', function () {
+      return applyDarkMode;
+    }], ['applyPinkMode', function () {
+      return applyPinkMode;
+    }], ['applyHighContrast', function () {
+      return applyHighContrast;
+    }], ['setupInstallBanner', function () {
+      return setupInstallBanner;
+    }], ['generatePrintableOverview', function () {
+      return generatePrintableOverview;
+    }], ['generateGearListHtml', function () {
+      return generateGearListHtml;
+    }], ['displayGearAndRequirements', function () {
+      return displayGearAndRequirements;
+    }], ['updateGearListButtonVisibility', function () {
+      return updateGearListButtonVisibility;
+    }], ['ensureZoomRemoteSetup', function () {
+      return ensureZoomRemoteSetup;
+    }], ['encodeSharedSetup', function () {
+      return encodeSharedSetup;
+    }], ['decodeSharedSetup', function () {
+      return decodeSharedSetup;
+    }], ['applySharedSetupFromUrl', function () {
+      return applySharedSetupFromUrl;
+    }], ['applySharedSetup', function () {
+      return applySharedSetup;
+    }], ['updateBatteryPlateVisibility', function () {
+      return updateBatteryPlateVisibility;
+    }], ['updateBatteryOptions', function () {
+      return updateBatteryOptions;
+    }], ['renderSetupDiagram', function () {
+      return renderSetupDiagram;
+    }], ['enableDiagramInteractions', function () {
+      return enableDiagramInteractions;
+    }], ['updateDiagramLegend', function () {
+      return updateDiagramLegend;
+    }], ['cameraFizPort', function () {
+      return cameraFizPort;
+    }], ['controllerCamPort', function () {
+      return controllerCamPort;
+    }], ['controllerDistancePort', function () {
+      return controllerDistancePort;
+    }], ['detectBrand', function () {
+      return detectBrand;
+    }], ['connectionLabel', function () {
+      return connectionLabel;
+    }], ['generateConnectorSummary', function () {
+      return generateConnectorSummary;
+    }], ['diagramConnectorIcons', function () {
+      return diagramConnectorIcons;
+    }], ['DIAGRAM_MONITOR_ICON', function () {
+      return DIAGRAM_MONITOR_ICON;
+    }], ['exportDiagramSvg', function () {
+      return exportDiagramSvg;
+    }], ['fixPowerInput', function () {
+      return fixPowerInput;
+    }], ['powerInputTypes', function () {
+      return powerInputTypes;
+    }], ['ensureList', function () {
+      return ensureList;
+    }], ['normalizeVideoType', function () {
+      return normalizeVideoType;
+    }], ['normalizeFizConnectorType', function () {
+      return normalizeFizConnectorType;
+    }], ['normalizeViewfinderType', function () {
+      return normalizeViewfinderType;
+    }], ['normalizePowerPortType', function () {
+      return normalizePowerPortType;
+    }], ['setMonitorVideoInputs', function () {
+      return setMonitorVideoInputs;
+    }], ['clearMonitorVideoInputs', function () {
+      return clearMonitorVideoInputs;
+    }], ['setMonitorVideoOutputs', function () {
+      return setMonitorVideoOutputs;
+    }], ['clearMonitorVideoOutputs', function () {
+      return clearMonitorVideoOutputs;
+    }], ['setVideoInputs', function () {
+      return setVideoInputs;
+    }], ['getVideoInputs', function () {
+      return getVideoInputs;
+    }], ['clearVideoInputs', function () {
+      return clearVideoInputs;
+    }], ['setVideoOutputs', function () {
+      return setVideoOutputs;
+    }], ['getVideoOutputs', function () {
+      return getVideoOutputs;
+    }], ['setVideoOutputsIO', function () {
+      return setVideoOutputsIO;
+    }], ['getVideoOutputsIO', function () {
+      return getVideoOutputsIO;
+    }], ['clearVideoOutputsIO', function () {
+      return clearVideoOutputsIO;
+    }], ['setViewfinderVideoInputs', function () {
+      return setViewfinderVideoInputs;
+    }], ['clearViewfinderVideoInputs', function () {
+      return clearViewfinderVideoInputs;
+    }], ['setViewfinderVideoOutputs', function () {
+      return setViewfinderVideoOutputs;
+    }], ['clearViewfinderVideoOutputs', function () {
+      return clearViewfinderVideoOutputs;
+    }], ['getCurrentSetupKey', function () {
+      return getCurrentSetupKey;
+    }], ['renderFeedbackTable', function () {
+      return renderFeedbackTable;
+    }], ['saveCurrentGearList', function () {
+      return saveCurrentGearList;
+    }], ['getPowerSelectionSnapshot', function () {
+      return getPowerSelectionSnapshot;
+    }], ['applyStoredPowerSelection', function () {
+      return applyStoredPowerSelection;
+    }], ['getGearListSelectors', function () {
+      return getGearListSelectors;
+    }], ['applyGearListSelectors', function () {
+      return applyGearListSelectors;
+    }], ['scenarioIcons', function () {
+      return scenarioIcons;
+    }], ['collectProjectFormData', function () {
+      return collectProjectFormData;
+    }], ['populateProjectForm', function () {
+      return populateProjectForm;
+    }], ['renderFilterDetails', function () {
+      return renderFilterDetails;
+    }], ['collectFilterSelections', function () {
+      return collectFilterSelections;
+    }], ['parseFilterTokens', function () {
+      return parseFilterTokens;
+    }], ['applyFilterSelectionsToGearList', function () {
+      return applyFilterSelectionsToGearList;
+    }], ['adjustGearListSelectWidth', function () {
+      return adjustGearListSelectWidth;
+    }], ['adjustGearListSelectWidths', function () {
+      return adjustGearListSelectWidths;
+    }], ['deviceMap', function () {
+      return deviceMap;
+    }], ['helpMap', function () {
+      return helpMap;
+    }], ['featureSearchEntries', function () {
+      return featureSearchEntries;
+    }], ['featureSearchDefaultOptions', function () {
+      return featureSearchDefaultOptions;
+    }], ['populateFeatureSearch', function () {
+      return populateFeatureSearch;
+    }], ['restoreFeatureSearchDefaults', function () {
+      return restoreFeatureSearchDefaults;
+    }], ['updateFeatureSearchSuggestions', function () {
+      return updateFeatureSearchSuggestions;
+    }], ['setCurrentProjectInfo', function () {
+      return setCurrentProjectInfo;
+    }], ['getCurrentProjectInfo', function () {
+      return getCurrentProjectInfo;
+    }], ['getCurrentSetupState', function () {
+      return getCurrentSetupState;
+    }], ['setSliderBowlValue', function () {
+      return setSliderBowlValue;
+    }], ['crewRoles', function () {
+      return crewRoles;
+    }], ['formatFullBackupFilename', function () {
+      return formatFullBackupFilename;
+    }], ['computeGearListCount', function () {
+      return computeGearListCount;
+    }], ['autoBackup', function () {
+      return autoBackup;
+    }], ['createSettingsBackup', function () {
+      return createSettingsBackup;
+    }], ['captureStorageSnapshot', function () {
+      return captureStorageSnapshot;
+    }], ['sanitizeBackupPayload', function () {
+      return sanitizeBackupPayload;
+    }], ['extractBackupSections', function () {
+      return extractBackupSections;
+    }], ['searchKey', function () {
+      return searchKey;
+    }], ['searchTokens', function () {
+      return searchTokens;
+    }], ['findBestSearchMatch', function () {
+      return findBestSearchMatch;
+    }], ['runFeatureSearch', function () {
+      return runFeatureSearch;
+    }], ['collectAutoGearCatalogNames', function () {
+      return collectAutoGearCatalogNames;
+    }], ['featureMap', function () {
+      return featureMap;
+    }], ['buildDefaultVideoDistributionAutoGearRules', function () {
+      return buildDefaultVideoDistributionAutoGearRules;
+    }], ['applyAutoGearRulesToTableHtml', function () {
+      return applyAutoGearRulesToTableHtml;
+    }], ['importAutoGearRulesFromData', function () {
+      return importAutoGearRulesFromData;
+    }], ['createAutoGearBackup', function () {
+      return createAutoGearBackup;
+    }], ['restoreAutoGearBackup', function () {
+      return restoreAutoGearBackup;
+    }], ['getAutoGearRules', function () {
+      return getAutoGearRules;
+    }], ['syncAutoGearRulesFromStorage', function () {
+      return syncAutoGearRulesFromStorage;
+    }], ['normalizeAutoGearCameraWeightCondition', function () {
+      return normalizeAutoGearCameraWeightCondition;
+    }], ['updateAutoGearItemButtonState', function () {
+      return updateAutoGearItemButtonState;
+    }], ['loadStoredLogoPreview', function () {
+      return loadStoredLogoPreview;
+    }], ['normalizeSpellingVariants', function () {
+      return normalizeSpellingVariants;
+    }], ['parseDeviceDatabaseImport', function () {
+      return parseDeviceDatabaseImport;
+    }], ['countDeviceDatabaseEntries', function () {
+      return countDeviceDatabaseEntries;
+    }], ['sanitizeShareFilename', function () {
+      return sanitizeShareFilename;
+    }], ['ensureJsonExtension', function () {
+      return ensureJsonExtension;
+    }], ['getDefaultShareFilename', function () {
+      return getDefaultShareFilename;
+    }], ['promptForSharedFilename', function () {
+      return promptForSharedFilename;
+    }], ['downloadSharedProject', function () {
+      return downloadSharedProject;
+    }], ['clearBatteryPlates', function () {
+      return clearBatteryPlates;
+    }], ['clearRecordingMedia', function () {
+      return clearRecordingMedia;
+    }], ['clearLensMounts', function () {
+      return clearLensMounts;
+    }], ['clearPowerDistribution', function () {
+      return clearPowerDistribution;
+    }], ['clearVideoOutputs', function () {
+      return clearVideoOutputs;
+    }], ['clearFizConnectors', function () {
+      return clearFizConnectors;
+    }], ['clearViewfinders', function () {
+      return clearViewfinders;
+    }], ['clearTimecodes', function () {
+      return clearTimecodes;
+    }], ['confirmAutoGearSelection', function () {
+      return confirmAutoGearSelection;
+    }], ['configureSharedImportOptions', function () {
+      return configureSharedImportOptions;
+    }], ['resolveSharedImportMode', function () {
+      return resolveSharedImportMode;
+    }], ['resetPlannerStateAfterFactoryReset', function () {
+      return resetPlannerStateAfterFactoryReset;
+    }], ['updateStorageSummary', function () {
+      return updateStorageSummary;
+    }], ['normaliseMarkVariants', function () {
+      return normaliseMarkVariants;
+    }], ['storeLoadedSetupState', function () {
+      return storeLoadedSetupState;
+    }]];
+    var resolvedAdditionalExports = ADDITIONAL_GLOBAL_EXPORT_ENTRIES.reduce(function (acc, _ref42) {
+      var _ref43 = _slicedToArray(_ref42, 2),
+        exportName = _ref43[0],
+        getter = _ref43[1];
       try {
-        var value = getter();
-        if (typeof value !== 'undefined') {
-          acc[exportName] = value;
+        var _value3 = getter();
+        if (typeof _value3 !== 'undefined') {
+          acc[exportName] = _value3;
         }
       } catch (error) {
         void error;
       }
       return acc;
     }, {});
-
     Object.assign(CORE_PART2_GLOBAL_EXPORTS, resolvedAdditionalExports);
     var CORE_PART2_GLOBAL_SCOPE = CORE_SHARED_SCOPE_PART2 || (typeof globalThis !== 'undefined' ? globalThis : null) || (typeof window !== 'undefined' ? window : null) || (typeof self !== 'undefined' ? self : null) || (typeof global !== 'undefined' ? global : null);
     var CORE_PART2_RUNTIME = function resolvePart2Runtime(scope) {
@@ -15737,10 +16313,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return null;
     }(CORE_PART2_GLOBAL_SCOPE);
-    Object.entries(CORE_PART2_GLOBAL_EXPORTS).forEach(function (_ref42) {
-      var _ref43 = _slicedToArray(_ref42, 2),
-        name = _ref43[0],
-        value = _ref43[1];
+    Object.entries(CORE_PART2_GLOBAL_EXPORTS).forEach(function (_ref44) {
+      var _ref45 = _slicedToArray(_ref44, 2),
+        name = _ref45[0],
+        value = _ref45[1];
       if (CORE_PART2_GLOBAL_SCOPE && Object.isExtensible(CORE_PART2_GLOBAL_SCOPE)) {
         CORE_PART2_GLOBAL_SCOPE[name] = value;
       }
