@@ -38,14 +38,63 @@
     return null;
   }
 
-  const ARCHITECTURE = resolveArchitecture(LOCAL_SCOPE);
+  function resolveModuleSystem(scope) {
+    const targetScope = scope || LOCAL_SCOPE;
+
+    if (typeof require === 'function') {
+      try {
+        const required = require('./system.js');
+        if (required && typeof required === 'object') {
+          return required;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    if (targetScope && typeof targetScope.cineModuleSystem === 'object') {
+      return targetScope.cineModuleSystem;
+    }
+
+    return null;
+  }
+
+  const MODULE_SYSTEM = resolveModuleSystem(LOCAL_SCOPE);
+
+  const ARCHITECTURE =
+    (MODULE_SYSTEM && typeof MODULE_SYSTEM.getArchitecture === 'function'
+      ? MODULE_SYSTEM.getArchitecture()
+      : null)
+    || resolveArchitecture(LOCAL_SCOPE);
+
+  function detectWithArchitecture() {
+    if (ARCHITECTURE && typeof ARCHITECTURE.detectGlobalScope === 'function') {
+      try {
+        const detected = ARCHITECTURE.detectGlobalScope();
+        if (detected) {
+          return detected;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+    return fallbackDetectGlobalScope();
+  }
 
   const detectGlobalScope =
-    ARCHITECTURE && typeof ARCHITECTURE.detectGlobalScope === 'function'
-      ? function detectWithArchitecture() {
-          return ARCHITECTURE.detectGlobalScope();
+    MODULE_SYSTEM && typeof MODULE_SYSTEM.detectGlobalScope === 'function'
+      ? function detectWithSystem() {
+          try {
+            const detected = MODULE_SYSTEM.detectGlobalScope();
+            if (detected) {
+              return detected;
+            }
+          } catch (error) {
+            void error;
+          }
+          return detectWithArchitecture();
         }
-      : fallbackDetectGlobalScope;
+      : detectWithArchitecture;
 
   const PRIMARY_SCOPE = detectGlobalScope();
 
@@ -70,14 +119,32 @@
     return scopes;
   }
 
+  function collectWithArchitecture(primary) {
+    if (ARCHITECTURE && typeof ARCHITECTURE.collectCandidateScopes === 'function') {
+      try {
+        return ARCHITECTURE.collectCandidateScopes(primary || PRIMARY_SCOPE);
+      } catch (error) {
+        void error;
+      }
+    }
+    return fallbackCollectCandidateScopes(primary || PRIMARY_SCOPE);
+  }
+
   const collectCandidateScopes =
-    ARCHITECTURE && typeof ARCHITECTURE.collectCandidateScopes === 'function'
-      ? function collectWithArchitecture(primary) {
-          return ARCHITECTURE.collectCandidateScopes(primary || PRIMARY_SCOPE);
+    MODULE_SYSTEM && typeof MODULE_SYSTEM.collectCandidateScopes === 'function'
+      ? function collectWithSystem(primary) {
+          const target = primary || PRIMARY_SCOPE;
+          try {
+            const scopes = MODULE_SYSTEM.collectCandidateScopes(target);
+            if (Array.isArray(scopes) && scopes.length > 0) {
+              return scopes;
+            }
+          } catch (error) {
+            void error;
+          }
+          return collectWithArchitecture(target);
         }
-      : function collectWithFallback(primary) {
-          return fallbackCollectCandidateScopes(primary || PRIMARY_SCOPE);
-        };
+      : collectWithArchitecture;
 
   function fallbackTryRequire(modulePath) {
     if (typeof require !== 'function') {
@@ -93,11 +160,16 @@
   }
 
   const tryRequire =
-    ARCHITECTURE && typeof ARCHITECTURE.tryRequire === 'function'
-      ? function tryRequireWithArchitecture(modulePath) {
-          return ARCHITECTURE.tryRequire(modulePath);
+    MODULE_SYSTEM && typeof MODULE_SYSTEM.tryRequire === 'function'
+      ? function tryRequireWithSystem(modulePath) {
+          const result = MODULE_SYSTEM.tryRequire(modulePath);
+          return typeof result === 'undefined' ? fallbackTryRequire(modulePath) : result;
         }
-      : fallbackTryRequire;
+      : ARCHITECTURE && typeof ARCHITECTURE.tryRequire === 'function'
+        ? function tryRequireWithArchitecture(modulePath) {
+            return ARCHITECTURE.tryRequire(modulePath);
+          }
+        : fallbackTryRequire;
 
   function fallbackDefineHiddenProperty(target, name, value) {
     try {
@@ -123,9 +195,11 @@
   }
 
   const defineHiddenProperty =
-    ARCHITECTURE && typeof ARCHITECTURE.defineHiddenProperty === 'function'
-      ? ARCHITECTURE.defineHiddenProperty
-      : fallbackDefineHiddenProperty;
+    MODULE_SYSTEM && typeof MODULE_SYSTEM.defineHiddenProperty === 'function'
+      ? MODULE_SYSTEM.defineHiddenProperty
+      : ARCHITECTURE && typeof ARCHITECTURE.defineHiddenProperty === 'function'
+        ? ARCHITECTURE.defineHiddenProperty
+        : fallbackDefineHiddenProperty;
 
   function fallbackResolveFromScopes(propertyName, options) {
     const settings = options || {};
@@ -161,15 +235,26 @@
   }
 
   const resolveFromScopes =
-    ARCHITECTURE && typeof ARCHITECTURE.resolveFromScopes === 'function'
-      ? function resolveWithArchitecture(propertyName, options) {
+    MODULE_SYSTEM && typeof MODULE_SYSTEM.resolveFromScopes === 'function'
+      ? function resolveWithSystem(propertyName, options) {
           const settings = { ...(options || {}) };
           if (!settings.primaryScope) {
             settings.primaryScope = PRIMARY_SCOPE;
           }
-          return ARCHITECTURE.resolveFromScopes(propertyName, settings);
+          if (!settings.scopes) {
+            settings.scopes = collectCandidateScopes(settings.primaryScope);
+          }
+          return MODULE_SYSTEM.resolveFromScopes(propertyName, settings);
         }
-      : fallbackResolveFromScopes;
+      : ARCHITECTURE && typeof ARCHITECTURE.resolveFromScopes === 'function'
+        ? function resolveWithArchitecture(propertyName, options) {
+            const settings = { ...(options || {}) };
+            if (!settings.primaryScope) {
+              settings.primaryScope = PRIMARY_SCOPE;
+            }
+            return ARCHITECTURE.resolveFromScopes(propertyName, settings);
+          }
+        : fallbackResolveFromScopes;
 
   function resolveModuleEnvironment(scope) {
     const targetScope = scope || PRIMARY_SCOPE;
