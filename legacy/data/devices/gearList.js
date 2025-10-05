@@ -7,6 +7,14 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 (function () {
   var gear = {
     "viewfinders": {
+      "ARRI K2.75004.0 MVF-1 Viewfinder": {
+        "brand": "ARRI",
+        "model": "MVF-1",
+        "kNumber": "K2.75004.0",
+        "compatible": ["Arri Alexa Mini", "Arri Amira"],
+        "isPersonalGear": false,
+        "listOfOrigin": "250530_Equipmentliste_Gönrgy_Werbung.pdf"
+      },
       "Sony DVF-EL200 OLED Viewfinder": {
         "brand": "Sony",
         "model": "DVF-EL200 OLED Viewfinder",
@@ -638,24 +646,16 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "diameterMm": 15,
           "rodStandard": "15mm"
         },
-          "ARRI Side Bracket Left (FS7II/FX9)": {
-            "brand": "ARRI",
-            "kNumber": "K2.0034727",
-            "compatible": ["Sony FS7 II", "Sony FX9"]
-          },
-          "ARRI K2.75004.0 MVF-1 Viewfinder": {
-            "brand": "ARRI",
-            "model": "MVF-1",
-            "kNumber": "K2.75004.0",
-            "compatible": ["Arri Alexa Mini", "Arri Amira"],
-            "isPersonalGear": false,
-            "listOfOrigin": "250530_Equipmentliste_Gönrgy_Werbung.pdf"
-          },
-          "ARRI Side Bracket Right (FS7II/FX9)": {
-            "brand": "ARRI",
-            "kNumber": "K2.0034709",
-            "compatible": ["Sony FS7 II", "Sony FX9"]
-          },
+        "ARRI Side Bracket Left (FS7II/FX9)": {
+          "brand": "ARRI",
+          "kNumber": "K2.0034727",
+          "compatible": ["Sony FS7 II", "Sony FX9"]
+        },
+        "ARRI Side Bracket Right (FS7II/FX9)": {
+          "brand": "ARRI",
+          "kNumber": "K2.0034709",
+          "compatible": ["Sony FS7 II", "Sony FX9"]
+        },
         "ARRI E- to PL-Mount Support (Vocas)": {
           "brand": "ARRI",
           "kNumber": "K2.0034700"

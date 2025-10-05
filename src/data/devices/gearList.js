@@ -2,6 +2,17 @@
 (() => {
 const gear = {
   "viewfinders": {
+    "ARRI K2.75004.0 MVF-1 Viewfinder": {
+      "brand": "ARRI",
+      "model": "MVF-1",
+      "kNumber": "K2.75004.0",
+      "compatible": [
+        "Arri Alexa Mini",
+        "Arri Amira"
+      ],
+      "isPersonalGear": false,
+      "listOfOrigin": "250530_Equipmentliste_Gönrgy_Werbung.pdf"
+    },
     "Sony DVF-EL200 OLED Viewfinder": {
       "brand": "Sony",
       "model": "DVF-EL200 OLED Viewfinder",
@@ -594,17 +605,6 @@ const gear = {
           "Sony FS7 II",
           "Sony FX9"
         ]
-      },
-      "ARRI K2.75004.0 MVF-1 Viewfinder": {
-        "brand": "ARRI",
-        "model": "MVF-1",
-        "kNumber": "K2.75004.0",
-        "compatible": [
-          "Arri Alexa Mini",
-          "Arri Amira"
-        ],
-        "isPersonalGear": false,
-        "listOfOrigin": "250530_Equipmentliste_Gönrgy_Werbung.pdf"
       },
       "ARRI Side Bracket Right (FS7II/FX9)": {
         "brand": "ARRI",
