@@ -25,8 +25,11 @@ const STORAGE_FUNCTIONS = [
   'saveAutoGearRules',
   'loadAutoGearBackups',
   'saveAutoGearBackups',
+  'loadAutoGearSeedFlag',
+  'saveAutoGearSeedFlag',
   'loadAutoGearBackupRetention',
   'saveAutoGearBackupRetention',
+  'getAutoGearBackupRetentionDefault',
   'loadAutoGearPresets',
   'saveAutoGearPresets',
   'loadAutoGearActivePresetId',
@@ -40,6 +43,10 @@ const STORAGE_FUNCTIONS = [
   'loadFullBackupHistory',
   'saveFullBackupHistory',
   'recordFullBackupHistoryEntry',
+  'requestPersistentStorage',
+  'clearUiCacheStorageEntries',
+  'ensureCriticalStorageBackups',
+  'getLastCriticalStorageGuardResult',
 ];
 
 const AUTOSAVE_FUNCTIONS = [
