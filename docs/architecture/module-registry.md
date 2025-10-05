@@ -34,16 +34,19 @@ class concept:
 Before the feature-specific modules are evaluated we register
 `cineModuleBase`, an infrastructure layer that exposes deterministic helpers
 (scope detection, registry resolution, deep freezing, safe warnings and global
-exposure). On top of that base we now expose `cineModuleEnvironment`, a frozen
-bridge that reuses the base helpers across every modern bundle so modules stop
-copying boilerplate when they talk to the registry or the global scope. The
-legacy bundle exposes the same pair so parity can be maintained as we sync
-future updates across both builds.
+exposure). We then layer `cineModuleContext` on top to mirror those primitives
+while unifying module-system lookups, registry access and deferred registration
+queues. Finally `cineModuleEnvironment` provides a frozen bridge that reuses the
+context helpers across every modern bundle so modules stop copying boilerplate
+when they talk to the registry or the global scope. The legacy bundle exposes
+the same trio so parity can be maintained as we sync future updates across both
+builds.
 
 | Module name        | Category          | Responsibilities |
 | ------------------ | ----------------- | ---------------- |
 | `cineModuleBase`   | `infrastructure`  | Normalises scope detection, module registration queues, deep freezing and safe global exposure so higher level modules share the same defensive primitives. |
-| `cineModuleEnvironment` | `infrastructure` | Provides a shared runtime context that mirrors `cineModuleBase` helpers, keeping registry access, queuing and global exposure aligned between files without duplicating the handshake logic. |
+| `cineModuleContext` | `infrastructure` | Shares base helpers with the module system, exposing unified context factories so modules can resolve architecture hooks, registries and queue fallbacks without reimplementing them. |
+| `cineModuleEnvironment` | `infrastructure` | Provides a shared runtime context that mirrors `cineModuleBase` and `cineModuleContext` helpers, keeping registry access, queuing and global exposure aligned between files without duplicating the handshake logic. |
 | `cineCoreShared`   | `shared`          | Stable stringify helpers, connector summaries, auto-gear weight normalization, version marker exposure. |
 | `cinePersistence`  | `persistence`     | Storage accessors, autosave helpers, backup/export/import orchestration, share/restore bridges. |
 | `cineOffline`      | `offline`         | Service worker registration, cache rebuilds, fallback storage cleanup, reload triggers. |

@@ -13201,7 +13201,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (!selectElem || !selectElem.id || selectElem.multiple || selectElem.hidden) return;
       var wrapper = ensureSelectWrapper(selectElem);
       var gearItem = selectElem.closest('.gear-item');
-      function cleanupFavoriteButton(btn, ownerSelect) {
+      function cleanupFavoriteButton(btn) {
+        var ownerSelect = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
         if (!btn) return;
         var listener = FAVORITE_BUTTON_LISTENER.get(btn);
         if (listener) {

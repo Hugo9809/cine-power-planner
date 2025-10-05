@@ -424,6 +424,11 @@ laufen. Die Anforderungen stehen in
 bitte vor neuen Modulen lesen, damit Offline-Garantien, Dokumentation und
 Übersetzungen synchron bleiben.
 
+Ein Infrastruktur-Trio – `cineModuleBase`, `cineModuleContext` und
+`cineModuleEnvironment` – hält Bereichserkennung, Modulsystem-Abfragen,
+Registrierungswarteschlangen und globale Exporte zwischen Modern- und Legacy-
+Bundles ohne zusätzlichen Boilerplate synchron.
+
 ### Legacy-Browser-Bundle
 
 Nach Änderungen in `src/scripts/` oder `src/data/` `npm run build:legacy` ausführen. Dadurch wird das ES5-Bundle unter `legacy/` neu erzeugt und lokale Polyfills bleiben aktuell.

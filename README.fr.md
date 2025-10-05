@@ -426,6 +426,11 @@ Consultez
 avant d’ajouter de nouveaux modules pour garder alignées les garanties hors
 ligne, la documentation et les traductions.
 
+Un trio d’infrastructure — `cineModuleBase`, `cineModuleContext` et
+`cineModuleEnvironment` — maintient alignées la détection de portée, les
+requêtes au système de modules, les files d’enregistrement et l’exposition
+globale entre les bundles moderne et legacy sans dupliquer de boilerplate.
+
 ### Bundle pour navigateurs anciens
 
 Après modification de `src/scripts/` ou `src/data/`, lancez `npm run build:legacy` pour régénérer le bundle ES5 servi aux navigateurs plus anciens et maintenir les polyfills locaux à jour.

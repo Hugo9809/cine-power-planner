@@ -424,6 +424,11 @@ salvaguardas. Consulta
 antes de añadir nuevos módulos para mantener alineadas las garantías offline,
 la documentación y las traducciones.
 
+Un trío de infraestructura — `cineModuleBase`, `cineModuleContext` y
+`cineModuleEnvironment` — mantiene alineadas la detección de ámbitos, las
+consultas al sistema de módulos, las colas de registro y la exposición global
+entre los bundles moderno y legacy sin duplicar código base.
+
 ### Bundle para navegadores legacy
 
 Después de modificar `src/scripts/` o `src/data/`, ejecuta `npm run build:legacy` para regenerar el bundle ES5 que sirve a navegadores antiguos. El comando también actualiza los polyfills locales para preservar la experiencia offline.
