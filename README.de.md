@@ -424,10 +424,10 @@ laufen. Die Anforderungen stehen in
 bitte vor neuen Modulen lesen, damit Offline-Garantien, Dokumentation und
 Übersetzungen synchron bleiben.
 
-Ein Infrastruktur-Trio – `cineModuleBase`, `cineModuleContext` und
-`cineModuleEnvironment` – hält Bereichserkennung, Modulsystem-Abfragen,
-Registrierungswarteschlangen und globale Exporte zwischen Modern- und Legacy-
-Bundles ohne zusätzlichen Boilerplate synchron.
+Ein Infrastruktur-Quartett – `cineModuleArchitectureHelpers`, `cineModuleBase`,
+`cineModuleContext` und `cineModuleEnvironment` – hält Bereichserkennung,
+Modulsystem-Abfragen, Registrierungswarteschlangen und globale Exporte zwischen
+Modern- und Legacy-Bundles ohne zusätzlichen Boilerplate synchron.
 
 ### Legacy-Browser-Bundle
 
