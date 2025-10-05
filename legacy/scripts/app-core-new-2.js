@@ -13040,18 +13040,48 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         });
       });
     }
-    function updateFeedbackTemperatureLabel() {
-      var lang = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : currentLang;
-      var unit = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : temperatureUnit;
-      var labelTextElem = document.getElementById('fbTemperatureLabelText');
-      var labelElem = document.getElementById('fbTemperatureLabel');
-      var label = "".concat(getTemperatureColumnLabelForLang(lang, unit), ":");
-      if (labelTextElem) {
-        labelTextElem.textContent = label;
-      } else if (labelElem) {
-        labelElem.textContent = label;
+      function updateFeedbackTemperatureLabel() {
+        var lang = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : currentLang;
+        var unit = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : temperatureUnit;
+        var labelTextElem = document.getElementById('fbTemperatureLabelText');
+        var labelElem = document.getElementById('fbTemperatureLabel');
+        var label = "".concat(getTemperatureColumnLabelForLang(lang, unit), ":");
+        if (labelTextElem) {
+          labelTextElem.textContent = label;
+        } else if (labelElem) {
+          labelElem.textContent = label;
+        }
       }
-    }
+
+      function refreshFeedbackTemperatureLabel() {
+        var lang = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : currentLang;
+        var unit = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : temperatureUnit;
+        var handled = false;
+        try {
+          if (typeof updateFeedbackTemperatureLabel === 'function') {
+            updateFeedbackTemperatureLabel(lang, unit);
+            handled = true;
+          }
+        } catch (error) {
+          console.warn('Fallback applied while updating feedback temperature label', error);
+        }
+
+        if (handled) {
+          return;
+        }
+
+        var labelTextElem = document.getElementById('fbTemperatureLabelText');
+        var labelElem = document.getElementById('fbTemperatureLabel');
+        if (!labelTextElem && !labelElem) {
+          return;
+        }
+        var label = "".concat(getTemperatureColumnLabelForLang(lang, unit), ":");
+        if (labelTextElem) {
+          labelTextElem.textContent = label;
+        } else if (labelElem) {
+          labelElem.textContent = label;
+        }
+      }
     function applyTemperatureUnitPreference(unit) {
       var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
       var normalized = normalizeTemperatureUnit(unit);
@@ -13077,7 +13107,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         settingsTemperatureUnit.value = temperatureUnit;
       }
       if (reRender) {
-        updateFeedbackTemperatureLabel();
+        refreshFeedbackTemperatureLabel();
         updateFeedbackTemperatureOptions();
         renderTemperatureNote(lastRuntimeHours);
       }

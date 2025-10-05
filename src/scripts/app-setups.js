@@ -806,17 +806,17 @@ function handleShareDialogCancel(event) {
   closeDialog(shareDialog);
 }
 
-const shareUiContext = getShareUiContext();
-if (shareUiContext.form) {
-  shareUiContext.form.addEventListener('submit', handleShareFormSubmit);
+const initialShareUiContext = getShareUiContext();
+if (initialShareUiContext.form) {
+  initialShareUiContext.form.addEventListener('submit', handleShareFormSubmit);
 }
 
-if (shareUiContext.cancelButton) {
-  shareUiContext.cancelButton.addEventListener('click', handleShareCancelClick);
+if (initialShareUiContext.cancelButton) {
+  initialShareUiContext.cancelButton.addEventListener('click', handleShareCancelClick);
 }
 
-if (shareUiContext.dialog) {
-  shareUiContext.dialog.addEventListener('cancel', handleShareDialogCancel);
+if (initialShareUiContext.dialog) {
+  initialShareUiContext.dialog.addEventListener('cancel', handleShareDialogCancel);
 }
 
 function handleSharedLinkInputChange() {
@@ -856,12 +856,12 @@ function handleApplySharedLinkClick() {
   }
 }
 
-if (shareUiContext.sharedLinkInput) {
-  shareUiContext.sharedLinkInput.addEventListener('change', handleSharedLinkInputChange);
+if (initialShareUiContext.sharedLinkInput) {
+  initialShareUiContext.sharedLinkInput.addEventListener('change', handleSharedLinkInputChange);
 }
 
-if (shareUiContext.applySharedLinkButton && shareUiContext.sharedLinkInput) {
-  shareUiContext.applySharedLinkButton.addEventListener('click', handleApplySharedLinkClick);
+if (initialShareUiContext.applySharedLinkButton && initialShareUiContext.sharedLinkInput) {
+  initialShareUiContext.applySharedLinkButton.addEventListener('click', handleApplySharedLinkClick);
 }
 
 function handleSharedImportModeChange() {
@@ -887,21 +887,21 @@ function handleSharedImportDialogCancel(event) {
   clearStoredSharedImportData();
 }
 
-const sharedImportUiContext = getSharedImportUiContext();
-if (sharedImportUiContext.modeSelect) {
-  sharedImportUiContext.modeSelect.addEventListener('change', handleSharedImportModeChange);
+const initialSharedImportUiContext = getSharedImportUiContext();
+if (initialSharedImportUiContext.modeSelect) {
+  initialSharedImportUiContext.modeSelect.addEventListener('change', handleSharedImportModeChange);
 }
 
-if (sharedImportUiContext.form) {
-  sharedImportUiContext.form.addEventListener('submit', handleSharedImportSubmit);
+if (initialSharedImportUiContext.form) {
+  initialSharedImportUiContext.form.addEventListener('submit', handleSharedImportSubmit);
 }
 
-if (sharedImportUiContext.cancelButton) {
-  sharedImportUiContext.cancelButton.addEventListener('click', handleSharedImportCancel);
+if (initialSharedImportUiContext.cancelButton) {
+  initialSharedImportUiContext.cancelButton.addEventListener('click', handleSharedImportCancel);
 }
 
-if (sharedImportUiContext.dialog) {
-  sharedImportUiContext.dialog.addEventListener('cancel', handleSharedImportDialogCancel);
+if (initialSharedImportUiContext.dialog) {
+  initialSharedImportUiContext.dialog.addEventListener('cancel', handleSharedImportDialogCancel);
 }
 
 enqueueCineUiRegistration(registerSetupsCineUiInternal);
@@ -941,13 +941,16 @@ function registerSetupsCineUiInternal(cineUi) {
     return;
   }
 
+  const shareContext = getShareUiContext();
+  const sharedImportContext = getSharedImportUiContext();
+
   registerCineUiEntries(
     cineUi.controllers,
     [
       {
         name: 'shareDialog',
         value: {
-          context: shareUiContext,
+          context: shareContext,
           open: handleShareSetupClick,
           submit: handleShareFormSubmit,
           cancel: handleShareCancelClick,
@@ -957,7 +960,7 @@ function registerSetupsCineUiInternal(cineUi) {
       {
         name: 'sharedImportDialog',
         value: {
-          context: sharedImportUiContext,
+          context: sharedImportContext,
           submit: handleSharedImportSubmit,
           cancel: handleSharedImportCancel,
           dismiss: handleSharedImportDialogCancel,

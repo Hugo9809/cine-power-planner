@@ -1353,6 +1353,40 @@ function updateFeedbackTemperatureLabel(lang = currentLang, unit = temperatureUn
   }
 }
 
+function refreshFeedbackTemperatureLabel(lang = currentLang, unit = temperatureUnit) {
+  let handled = false;
+  try {
+    if (typeof updateFeedbackTemperatureLabel === 'function') {
+      updateFeedbackTemperatureLabel(lang, unit);
+      handled = true;
+    }
+  } catch (error) {
+    if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+      console.warn('Fallback applied while updating feedback temperature label', error);
+    }
+  }
+
+  if (handled) {
+    return;
+  }
+
+  const labelTextElem = typeof document !== 'undefined'
+    ? document.getElementById('fbTemperatureLabelText')
+    : null;
+  const labelElem = typeof document !== 'undefined'
+    ? document.getElementById('fbTemperatureLabel')
+    : null;
+  if (!labelTextElem && !labelElem) {
+    return;
+  }
+  const label = `${getTemperatureColumnLabelForLang(lang, unit)}:`;
+  if (labelTextElem) {
+    labelTextElem.textContent = label;
+  } else if (labelElem) {
+    labelElem.textContent = label;
+  }
+}
+
 function applyTemperatureUnitPreference(unit, options = {}) {
   const normalized = normalizeTemperatureUnit(unit);
   const { persist = true, reRender = true, forceUpdate = false } = options || {};
@@ -1373,7 +1407,7 @@ function applyTemperatureUnitPreference(unit, options = {}) {
     settingsTemperatureUnit.value = temperatureUnit;
   }
   if (reRender) {
-    updateFeedbackTemperatureLabel();
+    refreshFeedbackTemperatureLabel();
     updateFeedbackTemperatureOptions();
     renderTemperatureNote(lastRuntimeHours);
   }
@@ -8079,7 +8113,7 @@ function setLanguage(lang) {
       fb && fb.count > 4 ? texts[lang].runtimeAverageNote : '';
   }
   dispatchTemperatureNoteRender(lastRuntimeHours);
-  updateFeedbackTemperatureLabel(lang, temperatureUnit);
+  refreshFeedbackTemperatureLabel(lang, temperatureUnit);
   updateFeedbackTemperatureOptions(lang, temperatureUnit);
   const tempNoteElem = document.getElementById("temperatureNote");
   if (tempNoteElem)
