@@ -19,6 +19,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     'modules/globals.js',
     'modules/offline.js',
     'modules/core-shared.js',
+    'modules/logging.js',
     'modules/features/help.js',
     'modules/features/feature-search.js',
     'modules/features/backup.js',
