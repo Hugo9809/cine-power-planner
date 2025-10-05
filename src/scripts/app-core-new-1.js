@@ -191,6 +191,18 @@ function dispatchTemperatureNoteRender(hours) {
   const scope = getCoreGlobalObject();
   let renderer = null;
 
+  if (
+    !renderer &&
+    CORE_RUNTIME_STATE &&
+    typeof CORE_RUNTIME_STATE.getAssignedTemperatureRenderer === 'function'
+  ) {
+    try {
+      renderer = CORE_RUNTIME_STATE.getAssignedTemperatureRenderer();
+    } catch (stateRendererError) {
+      void stateRendererError;
+    }
+  }
+
   try {
     if (typeof renderTemperatureNote === "function") {
       renderer = renderTemperatureNote;
@@ -428,6 +440,275 @@ function resolveCoreShared() {
 
 const CORE_SHARED = resolveCoreShared() || {};
 
+function createCoreRuntimeState(initialScopes) {
+  const scopes = [];
+  const seenScopes =
+    typeof Set === 'function'
+      ? new Set()
+      : null;
+
+  function registerScope(scope) {
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+      return;
+    }
+
+    if (seenScopes) {
+      if (seenScopes.has(scope)) {
+        return;
+      }
+      seenScopes.add(scope);
+      scopes.push(scope);
+      return;
+    }
+
+    if (scopes.indexOf(scope) !== -1) {
+      return;
+    }
+
+    scopes.push(scope);
+  }
+
+  if (Array.isArray(initialScopes)) {
+    for (let index = 0; index < initialScopes.length; index += 1) {
+      try {
+        registerScope(initialScopes[index]);
+      } catch (initialiseScopeError) {
+        void initialiseScopeError;
+      }
+    }
+  }
+
+  function withEachScope(callback) {
+    if (typeof callback !== 'function') {
+      return;
+    }
+
+    for (let index = 0; index < scopes.length; index += 1) {
+      try {
+        callback(scopes[index], index);
+      } catch (scopeCallbackError) {
+        void scopeCallbackError;
+      }
+    }
+  }
+
+  function getScopes() {
+    return scopes.slice();
+  }
+
+  function getPrimaryScope() {
+    return scopes.length > 0 ? scopes[0] : null;
+  }
+
+  function ensureValue(name, fallbackValue) {
+    const fallbackProvider =
+      typeof fallbackValue === 'function'
+        ? fallbackValue
+        : function provideStaticFallback() {
+            return fallbackValue;
+          };
+
+    if (typeof name !== 'string' || !name) {
+      try {
+        return fallbackProvider();
+      } catch (fallbackError) {
+        void fallbackError;
+        return undefined;
+      }
+    }
+
+    for (let index = 0; index < scopes.length; index += 1) {
+      const scope = scopes[index];
+      if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+        continue;
+      }
+
+      try {
+        if (typeof scope[name] === 'undefined') {
+          scope[name] = fallbackProvider();
+        }
+        return scope[name];
+      } catch (ensureError) {
+        void ensureError;
+      }
+    }
+
+    try {
+      return fallbackProvider();
+    } catch (fallbackError) {
+      void fallbackError;
+      return undefined;
+    }
+  }
+
+  function normaliseValue(name, validator, fallbackValue) {
+    const fallbackProvider =
+      typeof fallbackValue === 'function'
+        ? fallbackValue
+        : function provideStaticFallback() {
+            return fallbackValue;
+          };
+
+    const validate =
+      typeof validator === 'function'
+        ? validator
+        : function alwaysValid() {
+            return true;
+          };
+
+    withEachScope(scope => {
+      try {
+        if (!validate(scope[name])) {
+          scope[name] = fallbackProvider();
+        }
+      } catch (normaliseError) {
+        void normaliseError;
+      }
+    });
+  }
+
+  function readValue(name) {
+    for (let index = 0; index < scopes.length; index += 1) {
+      const scope = scopes[index];
+      if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+        continue;
+      }
+
+      try {
+        if (name in scope) {
+          return scope[name];
+        }
+      } catch (readError) {
+        void readError;
+      }
+    }
+
+    return undefined;
+  }
+
+  let assignedTemperatureRenderer = null;
+
+  function assignTemperatureRenderer(renderer) {
+    if (typeof renderer !== 'function') {
+      return;
+    }
+
+    assignedTemperatureRenderer = renderer;
+
+    withEachScope(scope => {
+      if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+        return;
+      }
+
+      try {
+        scope[CORE_TEMPERATURE_RENDER_NAME] = renderer;
+        const pending = scope[CORE_TEMPERATURE_QUEUE_KEY];
+
+        if (pending && typeof pending === 'object') {
+          if (Object.prototype.hasOwnProperty.call(pending, 'latestHours')) {
+            const hours = pending.latestHours;
+            if (typeof hours !== 'undefined') {
+              try {
+                renderer(hours);
+              } catch (temperatureRenderError) {
+                if (
+                  typeof console !== 'undefined' &&
+                  typeof console.error === 'function'
+                ) {
+                  console.error(
+                    'Failed to apply pending temperature note render',
+                    temperatureRenderError,
+                  );
+                }
+              }
+            }
+          }
+
+          try {
+            delete pending.latestHours;
+          } catch (clearLatestError) {
+            void clearLatestError;
+            pending.latestHours = undefined;
+          }
+        }
+      } catch (assignError) {
+        void assignError;
+      }
+    });
+  }
+
+  function getAssignedTemperatureRenderer() {
+    return assignedTemperatureRenderer;
+  }
+
+  const autoGearGuards = {
+    isReferenceError() {
+      return false;
+    },
+    repair() {
+      return undefined;
+    },
+  };
+
+  function setAutoGearGuards(nextGuards) {
+    if (!nextGuards || typeof nextGuards !== 'object') {
+      return;
+    }
+
+    if (typeof nextGuards.isReferenceError === 'function') {
+      autoGearGuards.isReferenceError = nextGuards.isReferenceError;
+    }
+
+    if (typeof nextGuards.repair === 'function') {
+      autoGearGuards.repair = nextGuards.repair;
+    }
+  }
+
+  return {
+    registerScope,
+    withEachScope,
+    getScopes,
+    getPrimaryScope,
+    ensureValue,
+    normaliseValue,
+    readValue,
+    assignTemperatureRenderer,
+    getAssignedTemperatureRenderer,
+    autoGearGuards,
+    setAutoGearGuards,
+  };
+}
+
+const CORE_RUNTIME_STATE = ensureCoreGlobalValue('__cineRuntimeState', () => {
+  const initialScopes = [
+    CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object' ? CORE_GLOBAL_SCOPE : null,
+    typeof globalThis !== 'undefined' && typeof globalThis === 'object' ? globalThis : null,
+    typeof window !== 'undefined' && typeof window === 'object' ? window : null,
+    typeof self !== 'undefined' && typeof self === 'object' ? self : null,
+    typeof global !== 'undefined' && typeof global === 'object' ? global : null,
+  ].filter(Boolean);
+
+  return createCoreRuntimeState(initialScopes);
+});
+
+if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object') {
+  try {
+    Object.defineProperty(CORE_GLOBAL_SCOPE, '__cineCreateRuntimeState', {
+      configurable: true,
+      enumerable: false,
+      writable: true,
+      value: createCoreRuntimeState,
+    });
+  } catch (exposeCreateStateError) {
+    try {
+      CORE_GLOBAL_SCOPE.__cineCreateRuntimeState = createCoreRuntimeState;
+    } catch (assignCreateStateError) {
+      void assignCreateStateError;
+    }
+    void exposeCreateStateError;
+  }
+}
+
 const CORE_BOOT_QUEUE_KEY = (function resolveCoreBootQueueKey(scope) {
   const fallbackKey = '__coreRuntimeBootQueue';
 
@@ -518,105 +799,41 @@ function enqueueCoreBootTask(task) {
   }
 }
 
-  const AUTO_GEAR_GLOBAL_FALLBACKS = {
-    autoGearAutoPresetId: () => '',
-    baseAutoGearRules: () => [],
-    autoGearScenarioModeSelect: () => null,
-    autoGearRuleNameInput: () => null,
-    autoGearSummaryFocus: () => 'all',
-    autoGearMonitorDefaultControls: () => [],
-    safeGenerateConnectorSummary: () =>
-      function safeGenerateConnectorSummary(device) {
-        if (!device || typeof device !== 'object') {
-          return '';
-        }
-
-        try {
-          const entries = Object.entries(device);
-          if (!entries.length) {
-            return '';
-          }
-
-          const [primaryKey, value] = entries[0];
-          const label =
-            typeof primaryKey === 'string' ? primaryKey.replace(/_/g, ' ') : 'connector';
-          return value ? `${label}: ${value}` : label;
-        } catch (fallbackError) {
-          void fallbackError;
-          return '';
-        }
-      },
-    totalPowerElem: () => null,
-  };
-
-  const AUTO_GEAR_REFERENCE_NAMES = Object.keys(AUTO_GEAR_GLOBAL_FALLBACKS);
-
-  function isAutoGearGlobalReferenceError(error) {
-    if (!error || typeof error !== 'object') {
-      return false;
-    }
-
-    const message = typeof error.message === 'string' ? error.message : '';
-    return (
-      error.name === 'ReferenceError' &&
-      AUTO_GEAR_REFERENCE_NAMES.some(name => message.includes(name))
-    );
+function isAutoGearGlobalReferenceError(error) {
+  if (!CORE_RUNTIME_STATE || !CORE_RUNTIME_STATE.autoGearGuards) {
+    return false;
   }
 
-  function ensureAutoGearGlobal(scope, name) {
-    const createFallback = AUTO_GEAR_GLOBAL_FALLBACKS[name];
-    if (typeof createFallback !== 'function') {
-      return;
-    }
-
-    const fallbackValue = createFallback();
-
-    if (typeof scope[name] === 'undefined') {
-      try {
-        scope[name] = fallbackValue;
-      } catch (assignmentError) {
-        try {
-          Object.defineProperty(scope, name, {
-            configurable: true,
-            writable: true,
-            enumerable: false,
-            value: fallbackValue,
-          });
-        } catch (defineError) {
-          void defineError;
-        }
-      }
-    }
-
-    try {
-      const globalFn = (scope && scope.Function) || Function;
-      if (typeof globalFn === 'function') {
-        const binder = globalFn(
-          'value',
-          `if (typeof ${name} === 'undefined') { var ${name} = value; } else { ${name} = value; }
-           return ${name};`,
-        );
-        const appliedValue = typeof scope[name] === 'undefined' ? fallbackValue : scope[name];
-        binder(appliedValue);
-      }
-    } catch (bindingError) {
-      void bindingError;
-    }
+  const guard = CORE_RUNTIME_STATE.autoGearGuards.isReferenceError;
+  if (typeof guard !== 'function') {
+    return false;
   }
 
-  function repairAutoGearGlobals(scope) {
-    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
-      return;
-    }
-
-    AUTO_GEAR_REFERENCE_NAMES.forEach(name => {
-      try {
-        ensureAutoGearGlobal(scope, name);
-      } catch (ensureError) {
-        void ensureError;
-      }
-    });
+  try {
+    return guard(error) === true;
+  } catch (guardError) {
+    void guardError;
   }
+
+  return false;
+}
+
+function repairAutoGearGlobals(scope) {
+  if (!CORE_RUNTIME_STATE || !CORE_RUNTIME_STATE.autoGearGuards) {
+    return;
+  }
+
+  const repair = CORE_RUNTIME_STATE.autoGearGuards.repair;
+  if (typeof repair !== 'function') {
+    return;
+  }
+
+  try {
+    repair(scope);
+  } catch (repairError) {
+    void repairError;
+  }
+}
 
 function callCoreFunctionIfAvailable(functionName, args = [], options = {}) {
   const scope =
@@ -666,27 +883,31 @@ function callCoreFunctionIfAvailable(functionName, args = [], options = {}) {
 const GRID_SNAP_STATE_STORAGE_KEY = '__cineGridSnapState';
 
 function getGridSnapStateScopes() {
-  const scopes = [];
-  const pushIfObject = candidate => {
-    if (candidate && typeof candidate === 'object' && scopes.indexOf(candidate) === -1) {
-      scopes.push(candidate);
+  if (CORE_RUNTIME_STATE && typeof CORE_RUNTIME_STATE.getScopes === 'function') {
+    try {
+      return CORE_RUNTIME_STATE.getScopes();
+    } catch (scopeReadError) {
+      void scopeReadError;
     }
-  };
-
-  try {
-    if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object') {
-      pushIfObject(CORE_GLOBAL_SCOPE);
-    }
-  } catch (coreScopeError) {
-    void coreScopeError;
   }
 
-  pushIfObject(typeof globalThis !== 'undefined' ? globalThis : null);
-  pushIfObject(typeof window !== 'undefined' ? window : null);
-  pushIfObject(typeof self !== 'undefined' ? self : null);
-  pushIfObject(typeof global !== 'undefined' ? global : null);
+  const fallbackScopes = [];
+  const candidates = [
+    CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object' ? CORE_GLOBAL_SCOPE : null,
+    typeof globalThis !== 'undefined' && typeof globalThis === 'object' ? globalThis : null,
+    typeof window !== 'undefined' && typeof window === 'object' ? window : null,
+    typeof self !== 'undefined' && typeof self === 'object' ? self : null,
+    typeof global !== 'undefined' && typeof global === 'object' ? global : null,
+  ];
 
-  return scopes;
+  for (let index = 0; index < candidates.length; index += 1) {
+    const candidate = candidates[index];
+    if (candidate && fallbackScopes.indexOf(candidate) === -1) {
+      fallbackScopes.push(candidate);
+    }
+  }
+
+  return fallbackScopes;
 }
 
 function normaliseGridSnapPreference(value, fallback = false) {
