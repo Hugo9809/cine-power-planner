@@ -42,6 +42,29 @@ when they talk to the registry or the global scope. The legacy bundle exposes
 the same trio so parity can be maintained as we sync future updates across both
 builds.
 
+## Architecture factory
+
+The defensive helpers that power `cineModuleBase`, `cineModuleContext` and
+`cineModuleEnvironment` are now also available through
+`cineModuleArchitectureFactory.createModuleArchitecture(options)`. The factory
+creates frozen architecture instances with the same queue, scope-detection and
+deep-freeze behaviour that the primary runtime uses. This is especially useful
+when a feature needs to spin up a sandboxed environment (for example, a shared
+worker used during offline rehearsals) without mutating the main global scope.
+
+- **Scoped isolation.** Pass `{ primaryScope }` to create an architecture bound
+  to an alternative global-like object. The helper still respects the
+  persistence and queue semantics that protect save/share/restore pathways so
+  user data remains safe even in auxiliary contexts.
+- **Deterministic helpers.** The factory mirrors `tryRequire`,
+  `collectCandidateScopes`, `ensureQueue`, `freezeDeep` and `safeWarn`, keeping
+  every environment aligned with the behaviour documented for the primary
+  module registry.
+- **Automatic availability.** The factory lives on
+  `globalThis.cineModuleArchitectureFactory` and piggybacks on the offline
+  asset list. No network access is required, and the existing service worker
+  continues to ship the script alongside local Uicons, fonts and help content.
+
 | Module name        | Category          | Responsibilities |
 | ------------------ | ----------------- | ---------------- |
 | `cineModuleBase`   | `infrastructure`  | Normalises scope detection, module registration queues, deep freezing and safe global exposure so higher level modules share the same defensive primitives. |

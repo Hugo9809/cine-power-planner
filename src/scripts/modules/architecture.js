@@ -240,13 +240,111 @@
     safeWarn,
   });
 
+  function createModuleArchitecture(options) {
+    const settings = options || {};
+    const customPrimaryScope =
+      settings && (settings.primaryScope || settings.scope) &&
+      (typeof settings.primaryScope === 'object' || typeof settings.primaryScope === 'function'
+        ? settings.primaryScope
+        : typeof settings.scope === 'object' || typeof settings.scope === 'function'
+          ? settings.scope
+          : null);
+
+    const detectOverride =
+      typeof settings.detectGlobalScope === 'function'
+        ? settings.detectGlobalScope
+        : function detectOverride() {
+            return customPrimaryScope || detectGlobalScope();
+          };
+
+    const additionalScopes = Array.isArray(settings.additionalScopes)
+      ? settings.additionalScopes.filter(function isObjectLike(value) {
+          return value && (typeof value === 'object' || typeof value === 'function');
+        })
+      : [];
+
+    const tryRequireOverride =
+      typeof settings.tryRequire === 'function' ? settings.tryRequire : tryRequire;
+
+    const resolveOverride =
+      typeof settings.resolveFromScopes === 'function' ? settings.resolveFromScopes : null;
+
+    const ensureQueueDefaultKey =
+      typeof settings.pendingQueueKey === 'string' && settings.pendingQueueKey
+        ? settings.pendingQueueKey
+        : null;
+
+    const freezeOverride =
+      typeof settings.freezeDeep === 'function' ? settings.freezeDeep : freezeDeep;
+
+    const warnOverride =
+      typeof settings.safeWarn === 'function' ? settings.safeWarn : safeWarn;
+
+    function collectWithExtras(primary) {
+      const targetPrimary = primary || customPrimaryScope || detectOverride();
+      const scopes = collectCandidateScopes(targetPrimary);
+
+      for (let index = 0; index < additionalScopes.length; index += 1) {
+        const scope = additionalScopes[index];
+        if (scopes.indexOf(scope) === -1) {
+          scopes.push(scope);
+        }
+      }
+
+      return scopes;
+    }
+
+    function resolveWithExtras(propertyName, resolveOptions) {
+      if (resolveOverride) {
+        return resolveOverride(propertyName, resolveOptions);
+      }
+
+      const optionsToUse = resolveOptions ? { ...resolveOptions } : {};
+      if (!optionsToUse.scopes && additionalScopes.length > 0) {
+        optionsToUse.scopes = collectWithExtras(optionsToUse.primaryScope);
+      }
+      return resolveFromScopes(propertyName, optionsToUse);
+    }
+
+    function tryRequireWithOverride(modulePath) {
+      return tryRequireOverride(modulePath);
+    }
+
+    function ensureQueueWithDefault(scope, key) {
+      const queueKey = typeof key === 'string' && key ? key : ensureQueueDefaultKey;
+      return ensureQueue(scope, queueKey || '__cinePendingModuleRegistrations__');
+    }
+
+    return Object.freeze({
+      detectGlobalScope: detectOverride,
+      collectCandidateScopes: collectWithExtras,
+      tryRequire: tryRequireWithOverride,
+      resolveFromScopes: resolveWithExtras,
+      defineHiddenProperty,
+      ensureQueue: ensureQueueWithDefault,
+      freezeDeep: freezeOverride,
+      safeWarn: warnOverride,
+    });
+  }
+
   const globalScope = detectGlobalScope();
+  const architectureWithFactory = Object.freeze({
+    ...architecture,
+    createModuleArchitecture,
+  });
+
   if (!globalScope.cineModuleArchitecture) {
-    defineHiddenProperty(globalScope, 'cineModuleArchitecture', architecture);
+    defineHiddenProperty(globalScope, 'cineModuleArchitecture', architectureWithFactory);
+  }
+
+  if (!globalScope.cineModuleArchitectureFactory) {
+    defineHiddenProperty(globalScope, 'cineModuleArchitectureFactory', Object.freeze({
+      createModuleArchitecture,
+    }));
   }
 
   if (typeof module !== 'undefined' && module && module.exports) {
-    module.exports = architecture;
+    module.exports = architectureWithFactory;
   }
 })();
 
