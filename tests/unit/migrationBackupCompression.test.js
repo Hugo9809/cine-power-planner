@@ -179,9 +179,16 @@ describe('migration backup compression fallback', () => {
       encoding: 'json-string',
     });
     expect(typeof backupRecord.data).toBe('string');
+    expect(typeof backupRecord.compressionVariant).toBe('string');
     expect(backupRecord.originalSize).toBeGreaterThan(backupRecord.compressedSize);
 
-    const decompressed = lzString.decompressFromUTF16(backupRecord.data);
+    const variant = backupRecord.compressionVariant || 'utf16';
+    const decompressMethod = {
+      'uri-component': 'decompressFromEncodedURIComponent',
+      base64: 'decompressFromBase64',
+      utf16: 'decompressFromUTF16',
+    }[variant] || 'decompressFromUTF16';
+    const decompressed = lzString[decompressMethod](backupRecord.data);
     expect(decompressed).toBeTruthy();
     expect(decompressed.length).toBe(backupRecord.originalSize);
 
@@ -191,5 +198,68 @@ describe('migration backup compression fallback', () => {
 
     const persisted = JSON.parse(localStorageMock.getItem(DEVICE_KEY));
     expect(persisted).toEqual(updatedPayload);
+  });
+
+  test('selects the most compact compression variant before persisting migration backup', () => {
+    jest.resetModules();
+
+    const createCodec = (prefix) => {
+      const store = new Map();
+      return {
+        compress: jest.fn((input) => {
+          const key = `${prefix}${store.size}`;
+          store.set(key, input);
+          return key;
+        }),
+        decompress: jest.fn((key) => (store.has(key) ? store.get(key) : '')),
+      };
+    };
+
+    const utf16Codec = createCodec('U'.repeat(40));
+    const uriCodec = createCodec('S');
+    const base64Codec = createCodec('B'.repeat(20));
+
+    const customLZString = {
+      compressToUTF16: utf16Codec.compress,
+      decompressFromUTF16: utf16Codec.decompress,
+      compressToEncodedURIComponent: uriCodec.compress,
+      decompressFromEncodedURIComponent: uriCodec.decompress,
+      compressToBase64: base64Codec.compress,
+      decompressFromBase64: base64Codec.decompress,
+    };
+
+    global.LZString = customLZString;
+    storageModule = require('../../src/scripts/storage');
+
+    const { saveDeviceData } = storageModule;
+
+    const legacyPayload = {
+      ...createBaselineDeviceData(),
+      notes: 'B'.repeat(4000),
+    };
+
+    const updatedPayload = {
+      ...createBaselineDeviceData(),
+      notes: 'Compact payload',
+    };
+
+    localStorageMock.setItem(DEVICE_KEY, JSON.stringify(legacyPayload));
+
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    try {
+      saveDeviceData(updatedPayload);
+    } finally {
+      warnSpy.mockRestore();
+    }
+
+    const backupRecord = JSON.parse(localStorageMock.getItem(BACKUP_KEY));
+    expect(backupRecord.compressionVariant).toBe('uri-component');
+    expect(uriCodec.compress).toHaveBeenCalled();
+    expect(utf16Codec.compress).toHaveBeenCalled();
+
+    const decoded = uriCodec.decompress(backupRecord.data);
+    expect(decoded.length).toBe(backupRecord.originalSize);
+    const parsedLegacy = JSON.parse(decoded);
+    expect(parsedLegacy.data).toEqual(legacyPayload);
   });
 });

@@ -261,7 +261,7 @@ Repite esta rutina cuando se incorpore personal, se prepare una estación nueva 
 - **Instantáneas guardadas** – El selector conserva cada plan manual y crea `auto-backup-…` cada diez minutos mientras la app está abierta.
 - **Copias completas** – **Configuración → Copia de seguridad y restauración → Copia de seguridad** descarga `planner-backup.json` con proyectos, dispositivos, comentarios, reglas y estado de UI. Antes de restaurar se crea un respaldo de seguridad y se muestran avisos si el archivo proviene de otra versión.
 - **Libro de historial** – Cada copia completa añade una entrada que puedes auditar en **Configuración → Datos y almacenamiento** o exportar junto al archivo. Mantiene sellos horarios y nombres alineados con tu bitácora aunque trabajes sin conexión.
-- **Resguardos ocultos de migración** – Antes de sobrescribir planners, configuraciones o preferencias, la app guarda el JSON anterior en `__legacyMigrationBackup`. Si algo falla, la recuperación vuelve automáticamente a esa copia.
+- **Resguardos ocultos de migración** – Antes de sobrescribir planners, configuraciones o preferencias, la app guarda el JSON anterior en `__legacyMigrationBackup`. Si algo falla, la recuperación vuelve automáticamente a esa copia. La compresión ahora selecciona automáticamente la codificación segura más compacta para que las copias sigan dentro de la cuota del navegador.
 - **Historial automático de reglas** – Los cambios en **Reglas automáticas** generan copias con sello horario cada diez minutos.
 - **Restablecimiento de fábrica** – Borra datos sólo después de descargar un backup.
 - **Recordatorios por hora** – Una rutina en segundo plano sugiere realizar una copia adicional cada hora.
