@@ -16517,6 +16517,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return populateFeatureSearch;
     }], ['restoreFeatureSearchDefaults', function () {
       return restoreFeatureSearchDefaults;
+    }], ['updateFeatureSearchValue', function () {
+      return updateFeatureSearchValue;
     }], ['updateFeatureSearchSuggestions', function () {
       return updateFeatureSearchSuggestions;
     }], ['setCurrentProjectInfo', function () {
