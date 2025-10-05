@@ -1080,7 +1080,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var _require = require('./overview.js');
     generatePrintableOverview = _require.generatePrintableOverview;
   } catch (_unused) {}
-  var APP_VERSION = typeof CORE_SHARED.APP_VERSION === 'string' ? CORE_SHARED.APP_VERSION : '1.0.13';
+  var APP_VERSION = typeof CORE_SHARED.APP_VERSION === 'string' ? CORE_SHARED.APP_VERSION : '1.0.14';
   if (typeof window !== 'undefined') {
     var lottie = window.lottie;
     if (lottie && typeof lottie.useWebWorker === 'function') {
