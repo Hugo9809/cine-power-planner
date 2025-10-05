@@ -168,6 +168,110 @@ function invokeSessionOpenAutoGearEditor(...args) {
 
 ensureSessionRuntimePlaceholder('autoGearScenarioModeSelect', null);
 
+const normalizeAccentValueSafe = ensureSessionRuntimePlaceholder(
+  'normalizeAccentValue',
+  () => value => (typeof value === 'string' ? value.trim().toLowerCase() : ''),
+);
+
+const applyFontSizeSafe = ensureSessionRuntimePlaceholder(
+  'applyFontSize',
+  () => {
+    const defaultUIScaleValues = {
+      '--page-padding': 20,
+      '--gap-size': 10,
+      '--button-size': 24,
+      '--border-radius': 5,
+      '--form-label-width': 150,
+      '--form-label-min-width': 120,
+      '--form-action-width': 110,
+    };
+    const uiScaleProperties = Object.keys(defaultUIScaleValues);
+    const baseUIScaleValues = { ...defaultUIScaleValues };
+    let baseFontSize = null;
+
+    const resolveBaseMetrics = () => {
+      if (baseFontSize !== null) {
+        return;
+      }
+
+      baseFontSize = 16;
+
+      const root =
+        typeof document !== 'undefined' && document
+          ? document.documentElement
+          : null;
+      if (!root) {
+        return;
+      }
+
+      try {
+        const computed =
+          typeof window !== 'undefined'
+          && window
+          && typeof window.getComputedStyle === 'function'
+            ? window.getComputedStyle(root)
+            : null;
+        if (!computed) {
+          return;
+        }
+
+        const computedFontSize = parseFloat(computed.fontSize);
+        if (Number.isFinite(computedFontSize) && computedFontSize > 0) {
+          baseFontSize = computedFontSize;
+        }
+
+        for (let index = 0; index < uiScaleProperties.length; index += 1) {
+          const prop = uiScaleProperties[index];
+          const rawValue = computed.getPropertyValue(prop);
+          const numericValue = parseFloat(rawValue);
+          if (Number.isFinite(numericValue) && numericValue > 0) {
+            baseUIScaleValues[prop] = numericValue;
+          }
+        }
+      } catch (metricsError) {
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn('Unable to capture base UI scale metrics', metricsError);
+        }
+      }
+    };
+
+    return size => {
+      const root =
+        typeof document !== 'undefined' && document
+          ? document.documentElement
+          : null;
+      if (!root) {
+        return;
+      }
+
+      const numericSize = Number.parseFloat(size);
+      if (!Number.isFinite(numericSize) || numericSize <= 0) {
+        return;
+      }
+
+      resolveBaseMetrics();
+
+      root.style.fontSize = `${numericSize}px`;
+
+      const referenceFontSize = Number.isFinite(baseFontSize) && baseFontSize > 0
+        ? baseFontSize
+        : numericSize;
+      const rawScale = referenceFontSize > 0 ? numericSize / referenceFontSize : 1;
+      const scale = Number.isFinite(rawScale) && rawScale > 0 ? rawScale : 1;
+
+      for (let index = 0; index < uiScaleProperties.length; index += 1) {
+        const prop = uiScaleProperties[index];
+        const baseValue = baseUIScaleValues[prop];
+        if (Number.isFinite(baseValue) && baseValue > 0) {
+          root.style.setProperty(prop, `${baseValue * scale}px`);
+        }
+      }
+
+      root.style.setProperty('--ui-scale', String(scale));
+    };
+  },
+);
+
 const downloadDiagramButton = ensureSessionRuntimePlaceholder(
   'downloadDiagramBtn',
   () => {
@@ -4037,7 +4141,7 @@ const mountVoltageResetButtonRef = (() => {
           applyAccentColor(color);
         }
         try {
-          if (normalizeAccentValue(color) === DEFAULT_ACCENT_NORMALIZED) {
+          if (normalizeAccentValueSafe(color) === DEFAULT_ACCENT_NORMALIZED) {
             localStorage.removeItem('accentColor');
           } else {
             localStorage.setItem('accentColor', color);
@@ -4062,7 +4166,7 @@ const mountVoltageResetButtonRef = (() => {
       rememberSettingsMountVoltagesBaseline();
       if (settingsFontSize) {
         const size = settingsFontSize.value;
-        applyFontSize(size);
+        applyFontSizeSafe(size);
         try {
           localStorage.setItem('fontSize', size);
         } catch (e) {
@@ -6865,7 +6969,7 @@ if (factoryResetButton) {
       }
       try {
         fontSize = '16';
-        applyFontSize(fontSize);
+        applyFontSizeSafe(fontSize);
         if (settingsFontSize) {
           settingsFontSize.value = fontSize;
         }
