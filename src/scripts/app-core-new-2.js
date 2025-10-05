@@ -17334,6 +17334,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       ['applyFilterSelectionsToGearList', () => applyFilterSelectionsToGearList],
       ['adjustGearListSelectWidth', () => adjustGearListSelectWidth],
       ['adjustGearListSelectWidths', () => adjustGearListSelectWidths],
+      ['getDeviceChanges', () => getDeviceChanges],
+      ['applyDeviceChanges', () => applyDeviceChanges],
       ['deviceMap', () => deviceMap],
       ['helpMap', () => helpMap],
       ['featureSearchEntries', () => featureSearchEntries],
