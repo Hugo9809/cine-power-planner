@@ -7,12 +7,14 @@ describe('feature search token synonyms', () => {
   let searchTokens;
 
   beforeEach(() => {
-    env = setupScriptEnvironment();
+    process.env.CPP_RUNTIME_STUB = 'searchTokens';
+    env = setupScriptEnvironment({ disableFreeze: true });
     searchTokens = env.utils?.searchTokens;
   });
 
   afterEach(() => {
     env?.cleanup();
+    delete process.env.CPP_RUNTIME_STUB;
   });
 
   function getSearchTokens() {
