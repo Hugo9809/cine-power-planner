@@ -46,6 +46,20 @@ function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" 
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 var FALLBACK_STRONG_SEARCH_MATCH_TYPES = new Set(['exactKey', 'keyPrefix', 'keySubset']);
+var isPlainObject = typeof globalThis !== 'undefined' && typeof globalThis.isPlainObject === 'function' ? globalThis.isPlainObject : function (value) {
+  if (value === null || _typeof(value) !== 'object') {
+    return false;
+  }
+  var proto = Object.getPrototypeOf(value);
+  return proto === Object.prototype || proto === null;
+};
+if (typeof globalThis !== 'undefined' && typeof globalThis.isPlainObject !== 'function') {
+  try {
+    globalThis.isPlainObject = isPlainObject;
+  } catch (plainObjectAssignError) {
+    void plainObjectAssignError;
+  }
+}
 if (typeof globalThis !== 'undefined' && typeof globalThis.STRONG_SEARCH_MATCH_TYPES === 'undefined') {
   globalThis.STRONG_SEARCH_MATCH_TYPES = FALLBACK_STRONG_SEARCH_MATCH_TYPES;
 }
