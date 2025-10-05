@@ -100,7 +100,8 @@ describe('automatic gear backup retention defaults', () => {
     { provided: 1.2, expected: 1 },
     { provided: 7.6, expected: 8 },
     { provided: 50, expected: 50 },
-    { provided: 80, expected: 50 },
+    { provided: 80, expected: 80 },
+    { provided: 150, expected: 120 },
     { provided: Infinity, expected: 12 },
     { provided: Number.NaN, expected: 12 },
   ])('clamps provided default $provided to $expected', ({ provided, expected }) => {
@@ -128,9 +129,11 @@ describe('automatic gear backup retention normalization', () => {
     { input: 3.7, expected: 4 },
     { input: ' 15 ', expected: 15 },
     { input: '10.2', expected: 10 },
-    { input: [' 60 ', 'ignored'], expected: 50 },
+    { input: [' 60 ', 'ignored'], expected: 60 },
+    { input: [' 160 ', 'ignored'], expected: 120 },
     { input: { retention: '9' }, expected: 9 },
-    { input: { limit: '75' }, expected: 50 },
+    { input: { limit: '75' }, expected: 75 },
+    { input: { limit: '175' }, expected: 120 },
     { input: '', expected: 12 },
     { input: '   ', expected: 12 },
     { input: [], expected: 12 },
@@ -154,7 +157,8 @@ describe('automatic gear backup retention normalization', () => {
     { stored: '""', expected: 12 },
     { stored: '["18"]', expected: 18 },
     { stored: '{"value": "27"}', expected: 27 },
-    { stored: '{"count": "72"}', expected: 50 },
+    { stored: '{"count": "72"}', expected: 72 },
+    { stored: '{"count": "172"}', expected: 120 },
     { stored: 'true', expected: 12 },
   ])('loadAutoGearBackupRetention handles stored payload $stored', ({ stored, expected }) => {
     storage.getSafeLocalStorage().setItem(STORAGE_KEY, stored);
