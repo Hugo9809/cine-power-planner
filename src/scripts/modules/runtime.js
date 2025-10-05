@@ -1,14 +1,243 @@
 (function () {
-  const GLOBAL_SCOPE =
-    typeof globalThis !== 'undefined'
-      ? globalThis
-      : typeof window !== 'undefined'
-        ? window
-        : typeof self !== 'undefined'
-          ? self
-          : typeof global !== 'undefined'
-            ? global
-            : {};
+  function detectGlobalScope() {
+    if (typeof globalThis !== 'undefined') {
+      return globalThis;
+    }
+    if (typeof window !== 'undefined') {
+      return window;
+    }
+    if (typeof self !== 'undefined') {
+      return self;
+    }
+    if (typeof global !== 'undefined') {
+      return global;
+    }
+    return {};
+  }
+
+  const FALLBACK_SCOPE = detectGlobalScope();
+
+  function resolveModuleBase() {
+    if (typeof require === 'function') {
+      try {
+        return require('./base.js');
+      } catch (error) {
+        void error;
+      }
+    }
+
+    const candidates = [FALLBACK_SCOPE];
+    if (typeof globalThis !== 'undefined' && candidates.indexOf(globalThis) === -1) candidates.push(globalThis);
+    if (typeof window !== 'undefined' && candidates.indexOf(window) === -1) candidates.push(window);
+    if (typeof self !== 'undefined' && candidates.indexOf(self) === -1) candidates.push(self);
+    if (typeof global !== 'undefined' && candidates.indexOf(global) === -1) candidates.push(global);
+
+    for (let index = 0; index < candidates.length; index += 1) {
+      const scope = candidates[index];
+      if (scope && typeof scope.cineModuleBase === 'object') {
+        return scope.cineModuleBase;
+      }
+    }
+
+    return null;
+  }
+
+  const MODULE_BASE = resolveModuleBase();
+
+  const GLOBAL_SCOPE = MODULE_BASE && typeof MODULE_BASE.getGlobalScope === 'function'
+    ? MODULE_BASE.getGlobalScope() || FALLBACK_SCOPE
+    : FALLBACK_SCOPE;
+
+  const tryRequire = MODULE_BASE && typeof MODULE_BASE.tryRequire === 'function'
+    ? MODULE_BASE.tryRequire
+    : function tryRequire(modulePath) {
+        if (typeof require !== 'function') {
+          return null;
+        }
+
+        try {
+          return require(modulePath);
+        } catch (error) {
+          void error;
+          return null;
+        }
+      };
+
+  const resolveModuleRegistry = MODULE_BASE && typeof MODULE_BASE.resolveModuleRegistry === 'function'
+    ? function resolveModuleRegistry(scope) {
+        return MODULE_BASE.resolveModuleRegistry(scope || GLOBAL_SCOPE);
+      }
+    : function resolveModuleRegistry() {
+        const required = tryRequire('./registry.js');
+        if (required && typeof required === 'object') {
+          return required;
+        }
+
+        const scopes = [GLOBAL_SCOPE];
+        if (typeof globalThis !== 'undefined' && scopes.indexOf(globalThis) === -1) scopes.push(globalThis);
+        if (typeof window !== 'undefined' && scopes.indexOf(window) === -1) scopes.push(window);
+        if (typeof self !== 'undefined' && scopes.indexOf(self) === -1) scopes.push(self);
+        if (typeof global !== 'undefined' && scopes.indexOf(global) === -1) scopes.push(global);
+
+        for (let index = 0; index < scopes.length; index += 1) {
+          const scope = scopes[index];
+          if (scope && typeof scope.cineModules === 'object') {
+            return scope.cineModules;
+          }
+        }
+
+        return null;
+      };
+
+  const MODULE_REGISTRY = (function () {
+    const provided = MODULE_BASE && typeof MODULE_BASE.getModuleRegistry === 'function'
+      ? MODULE_BASE.getModuleRegistry(GLOBAL_SCOPE)
+      : null;
+    return provided || resolveModuleRegistry();
+  })();
+
+  const PENDING_QUEUE_KEY = MODULE_BASE && typeof MODULE_BASE.PENDING_QUEUE_KEY === 'string'
+    ? MODULE_BASE.PENDING_QUEUE_KEY
+    : '__cinePendingModuleRegistrations__';
+
+  function queueModuleRegistration(name, api, options) {
+    if (!GLOBAL_SCOPE || typeof GLOBAL_SCOPE !== 'object') {
+      return false;
+    }
+
+    const payload = Object.freeze({
+      name,
+      api,
+      options: Object.freeze({ ...(options || {}) }),
+    });
+
+    let queue = GLOBAL_SCOPE[PENDING_QUEUE_KEY];
+    if (!Array.isArray(queue)) {
+      try {
+        Object.defineProperty(GLOBAL_SCOPE, PENDING_QUEUE_KEY, {
+          configurable: true,
+          enumerable: false,
+          writable: true,
+          value: [],
+        });
+        queue = GLOBAL_SCOPE[PENDING_QUEUE_KEY];
+      } catch (error) {
+        void error;
+        try {
+          if (!Array.isArray(GLOBAL_SCOPE[PENDING_QUEUE_KEY])) {
+            GLOBAL_SCOPE[PENDING_QUEUE_KEY] = [];
+          }
+          queue = GLOBAL_SCOPE[PENDING_QUEUE_KEY];
+        } catch (assignmentError) {
+          void assignmentError;
+          return false;
+        }
+      }
+    }
+
+    try {
+      queue.push(payload);
+    } catch (error) {
+      void error;
+      queue[queue.length] = payload;
+    }
+
+    return true;
+  }
+
+  const registerOrQueueModule = MODULE_BASE && typeof MODULE_BASE.registerOrQueueModule === 'function'
+    ? function registerOrQueueModule(name, api, options, onError) {
+        return MODULE_BASE.registerOrQueueModule(name, api, options, onError, GLOBAL_SCOPE, MODULE_REGISTRY);
+      }
+    : function registerOrQueueModule(name, api, options, onError) {
+        if (MODULE_REGISTRY && typeof MODULE_REGISTRY.register === 'function') {
+          try {
+            MODULE_REGISTRY.register(name, api, options);
+            return true;
+          } catch (error) {
+            if (typeof onError === 'function') {
+              onError(error);
+            } else {
+              void error;
+            }
+          }
+        }
+
+        queueModuleRegistration(name, api, options);
+        return false;
+      };
+
+  const freezeDeep = MODULE_BASE && typeof MODULE_BASE.freezeDeep === 'function'
+    ? MODULE_BASE.freezeDeep
+    : function freezeDeep(value, seen = new WeakSet()) {
+        if (!value || typeof value !== 'object') {
+          return value;
+        }
+
+        if (seen.has(value)) {
+          return value;
+        }
+
+        seen.add(value);
+
+        const keys = Object.getOwnPropertyNames(value);
+        for (let index = 0; index < keys.length; index += 1) {
+          const key = keys[index];
+          const descriptor = Object.getOwnPropertyDescriptor(value, key);
+          if (!descriptor || ('get' in descriptor) || ('set' in descriptor)) {
+            continue;
+          }
+          freezeDeep(descriptor.value, seen);
+        }
+
+        return Object.freeze(value);
+      };
+
+  const safeWarn = MODULE_BASE && typeof MODULE_BASE.safeWarn === 'function'
+    ? MODULE_BASE.safeWarn
+    : function safeWarn(message, detail) {
+        if (typeof console === 'undefined' || typeof console.warn !== 'function') {
+          return;
+        }
+
+        try {
+          if (typeof detail === 'undefined') {
+            console.warn(message);
+          } else {
+            console.warn(message, detail);
+          }
+        } catch (error) {
+          void error;
+        }
+      };
+
+  const exposeGlobal = MODULE_BASE && typeof MODULE_BASE.exposeGlobal === 'function'
+    ? function exposeGlobal(name, value, options) {
+        return MODULE_BASE.exposeGlobal(name, value, GLOBAL_SCOPE, options);
+      }
+    : function exposeGlobal(name, value) {
+        if (!GLOBAL_SCOPE || typeof GLOBAL_SCOPE !== 'object') {
+          return false;
+        }
+        try {
+          Object.defineProperty(GLOBAL_SCOPE, name, {
+            configurable: true,
+            enumerable: false,
+            value,
+            writable: false,
+          });
+          return true;
+        } catch (error) {
+          void error;
+          try {
+            GLOBAL_SCOPE[name] = value;
+            return true;
+          } catch (assignmentError) {
+            void assignmentError;
+            return false;
+          }
+        }
+      };
 
   const MODULE_NAMES = ['cinePersistence', 'cineOffline', 'cineUi'];
 
@@ -108,146 +337,6 @@
     'backupSettings',
     'restoreSettings'
   ];
-
-  function safeWarn(message, detail) {
-    if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-      try {
-        if (typeof detail === 'undefined') {
-          console.warn(message);
-        } else {
-          console.warn(message, detail);
-        }
-      } catch (error) {
-        void error;
-      }
-    }
-  }
-
-  function tryRequire(modulePath) {
-    if (typeof require !== 'function') {
-      return null;
-    }
-
-    try {
-      return require(modulePath);
-    } catch (error) {
-      void error;
-      return null;
-    }
-  }
-
-  function resolveModuleRegistry() {
-    const required = tryRequire('./registry.js');
-    if (required && typeof required === 'object') {
-      return required;
-    }
-
-    const scopes = [GLOBAL_SCOPE];
-    if (typeof globalThis !== 'undefined' && scopes.indexOf(globalThis) === -1) scopes.push(globalThis);
-    if (typeof window !== 'undefined' && scopes.indexOf(window) === -1) scopes.push(window);
-    if (typeof self !== 'undefined' && scopes.indexOf(self) === -1) scopes.push(self);
-    if (typeof global !== 'undefined' && scopes.indexOf(global) === -1) scopes.push(global);
-
-    for (let index = 0; index < scopes.length; index += 1) {
-      const scope = scopes[index];
-      if (scope && typeof scope.cineModules === 'object') {
-        return scope.cineModules;
-      }
-    }
-
-    return null;
-  }
-
-  const MODULE_REGISTRY = resolveModuleRegistry();
-
-  const PENDING_QUEUE_KEY = '__cinePendingModuleRegistrations__';
-
-  function queueModuleRegistration(name, api, options) {
-    if (!GLOBAL_SCOPE || typeof GLOBAL_SCOPE !== 'object') {
-      return false;
-    }
-
-    const payload = Object.freeze({
-      name,
-      api,
-      options: Object.freeze({ ...(options || {}) }),
-    });
-
-    let queue = GLOBAL_SCOPE[PENDING_QUEUE_KEY];
-    if (!Array.isArray(queue)) {
-      try {
-        Object.defineProperty(GLOBAL_SCOPE, PENDING_QUEUE_KEY, {
-          configurable: true,
-          enumerable: false,
-          writable: true,
-          value: [],
-        });
-        queue = GLOBAL_SCOPE[PENDING_QUEUE_KEY];
-      } catch (error) {
-        void error;
-        try {
-          if (!Array.isArray(GLOBAL_SCOPE[PENDING_QUEUE_KEY])) {
-            GLOBAL_SCOPE[PENDING_QUEUE_KEY] = [];
-          }
-          queue = GLOBAL_SCOPE[PENDING_QUEUE_KEY];
-        } catch (assignmentError) {
-          void assignmentError;
-          return false;
-        }
-      }
-    }
-
-    try {
-      queue.push(payload);
-    } catch (error) {
-      void error;
-      queue[queue.length] = payload;
-    }
-
-    return true;
-  }
-
-  function registerOrQueueModule(name, api, options, onError) {
-    if (MODULE_REGISTRY && typeof MODULE_REGISTRY.register === 'function') {
-      try {
-        MODULE_REGISTRY.register(name, api, options);
-        return true;
-      } catch (error) {
-        if (typeof onError === 'function') {
-          onError(error);
-        } else {
-          void error;
-        }
-      }
-    }
-
-    queueModuleRegistration(name, api, options);
-    return false;
-  }
-
-  function freezeDeep(value, seen = new WeakSet()) {
-    if (!value || typeof value !== 'object') {
-      return value;
-    }
-
-    if (seen.has(value)) {
-      return value;
-    }
-
-    seen.add(value);
-
-    const keys = Object.getOwnPropertyNames(value);
-    for (let index = 0; index < keys.length; index += 1) {
-      const key = keys[index];
-      const descriptor = Object.getOwnPropertyDescriptor(value, key);
-      if (!descriptor || ('get' in descriptor) || ('set' in descriptor)) {
-        continue;
-      }
-      freezeDeep(descriptor.value, seen);
-    }
-
-    return Object.freeze(value);
-  }
 
   function resolveModule(name) {
     if (!name || !MODULE_NAMES.includes(name)) {
@@ -669,17 +758,24 @@
   );
 
   if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE === 'object') {
+    let existingRuntime = null;
     try {
-      if (GLOBAL_SCOPE.cineRuntime !== runtimeAPI) {
-        Object.defineProperty(GLOBAL_SCOPE, 'cineRuntime', {
-          configurable: true,
-          enumerable: false,
-          value: runtimeAPI,
-          writable: false,
-        });
-      }
+      existingRuntime = GLOBAL_SCOPE.cineRuntime || null;
     } catch (error) {
-      safeWarn('Unable to expose cineRuntime globally.', error);
+      void error;
+      existingRuntime = null;
+    }
+
+    if (existingRuntime !== runtimeAPI) {
+      const exposed = exposeGlobal('cineRuntime', runtimeAPI, {
+        configurable: true,
+        enumerable: false,
+        writable: false,
+      });
+
+      if (!exposed) {
+        safeWarn('Unable to expose cineRuntime globally.');
+      }
     }
   }
 
