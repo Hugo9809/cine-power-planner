@@ -82,6 +82,8 @@ const SHARE_FUNCTIONS = [
   'applySharedSetupFromUrl',
 ];
 
+const PENDING_QUEUE_KEY = '__cinePendingModuleRegistrations__';
+
 function mapAutosaveName(name) {
   switch (name) {
     case 'saveCurrentSession':
@@ -389,6 +391,7 @@ describe('cineRuntime module', () => {
     delete global.cinePersistence;
     delete global.cineOffline;
     delete global.cineUi;
+    delete global.cineModules;
     delete global.cineRuntime;
     if (registry && typeof registry.__internalResetForTests === 'function') {
       registry.__internalResetForTests({ force: true });
@@ -438,6 +441,34 @@ describe('cineRuntime module', () => {
       },
     });
     expect(result.details['cinePersistence.storage.clearAllData']).toBe(true);
+  });
+
+  test('synchronizeModules flushes pending registrations and re-links registries', () => {
+    delete global.cineModules;
+
+    const queuedApi = Object.freeze({ value: 'queued-module' });
+    const queuedEntry = Object.freeze({
+      name: 'cineQueuedModule',
+      api: queuedApi,
+      options: Object.freeze({
+        category: 'runtime-test',
+        description: 'Queued module to validate synchronization handling.',
+      }),
+    });
+
+    global[PENDING_QUEUE_KEY] = [queuedEntry];
+
+    const syncResult = runtime.synchronizeModules({ warn: false });
+
+    expect(syncResult.ok).toBe(true);
+    expect(syncResult.flushed.processed).toBeGreaterThanOrEqual(1);
+    expect(syncResult.exposures.some(entry => entry.updated)).toBe(true);
+    expect(registry.get('cineQueuedModule')).toBe(queuedApi);
+    expect(Array.isArray(global[PENDING_QUEUE_KEY])).toBe(true);
+    expect(global[PENDING_QUEUE_KEY].length).toBe(0);
+    expect(typeof (global.cineModules && global.cineModules.register)).toBe('function');
+
+    delete global[PENDING_QUEUE_KEY];
   });
 
   test('reports missing safeguards and can throw when requested', () => {
@@ -501,5 +532,31 @@ describe('cineRuntime module', () => {
       'cinePersistence.storage.clearAllData',
       'cinePersistence.bindings.clearAllData',
     ]));
+  });
+
+  test('verifyCriticalFlows reports synchronization failures when queued modules cannot register', () => {
+    const brokenEntry = Object.freeze({
+      name: 'cineBrokenModule',
+      api: null,
+      options: Object.freeze({
+        category: 'runtime-test',
+        description: 'Broken entry that should fail during synchronization.',
+      }),
+    });
+
+    global[PENDING_QUEUE_KEY] = [brokenEntry];
+
+    const result = runtime.verifyCriticalFlows({ warnOnFailure: false });
+
+    expect(result.ok).toBe(false);
+    expect(result.missing).toContain('cineRuntime synchronization');
+    expect(result.synchronization.ok).toBe(false);
+    expect(result.synchronization.failures).toEqual(expect.arrayContaining([
+      expect.objectContaining({ name: 'cineBrokenModule', reason: 'register-failed' }),
+    ]));
+    expect(Array.isArray(global[PENDING_QUEUE_KEY])).toBe(true);
+    expect(global[PENDING_QUEUE_KEY].length).toBeGreaterThan(0);
+
+    delete global[PENDING_QUEUE_KEY];
   });
 });

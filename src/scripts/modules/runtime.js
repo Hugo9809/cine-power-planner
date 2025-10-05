@@ -576,6 +576,45 @@
     return true;
   }
 
+  function attemptRegistryRegistration(name, api, options) {
+    if (!MODULE_REGISTRY || typeof MODULE_REGISTRY.register !== 'function') {
+      return { ok: false, error: null, reason: 'missing-registry' };
+    }
+
+    const moduleName = typeof name === 'string' ? name : '';
+    if (!moduleName) {
+      return { ok: false, error: new TypeError('cineRuntime expected a module name.'), reason: 'invalid-name' };
+    }
+
+    if (typeof MODULE_REGISTRY.has === 'function') {
+      try {
+        if (MODULE_REGISTRY.has(moduleName)) {
+          if (typeof MODULE_REGISTRY.get === 'function') {
+            try {
+              const existing = MODULE_REGISTRY.get(moduleName);
+              if (existing) {
+                informModuleGlobals(moduleName, existing);
+              }
+            } catch (getError) {
+              void getError;
+            }
+          }
+          return { ok: true, alreadyRegistered: true };
+        }
+      } catch (hasError) {
+        return { ok: false, error: hasError, reason: 'registry-check-failed' };
+      }
+    }
+
+    try {
+      const registered = MODULE_REGISTRY.register(moduleName, api, options);
+      informModuleGlobals(moduleName, registered || api);
+      return { ok: true, registered: true };
+    } catch (error) {
+      return { ok: false, error, reason: 'register-failed' };
+    }
+  }
+
   function fallbackRegisterOrQueue(name, api, options, onError) {
     if (MODULE_SYSTEM && typeof MODULE_SYSTEM.registerModule === 'function') {
       const registered = MODULE_SYSTEM.registerModule(name, api, options, GLOBAL_SCOPE, onError);
@@ -586,20 +625,37 @@
       return false;
     }
 
-    if (MODULE_REGISTRY && typeof MODULE_REGISTRY.register === 'function') {
-      try {
-        MODULE_REGISTRY.register(name, api, options);
+    let lastError = null;
+    const directAttempt = attemptRegistryRegistration(name, api, options);
+    if (directAttempt.ok) {
+      return true;
+    }
+
+    lastError = directAttempt.error || null;
+
+    const syncResult = synchronizeModuleLinks({ warn: false });
+    if (
+      syncResult
+      && ((syncResult.flushed && syncResult.flushed.processed > 0) || syncResult.ok)
+    ) {
+      const retryAttempt = attemptRegistryRegistration(name, api, options);
+      if (retryAttempt.ok) {
         return true;
-      } catch (error) {
-        if (typeof onError === 'function') {
-          try {
-            onError(error);
-          } catch (callbackError) {
-            void callbackError;
-          }
-        } else {
-          void error;
+      }
+      if (retryAttempt.error) {
+        lastError = retryAttempt.error;
+      }
+    }
+
+    if (lastError) {
+      if (typeof onError === 'function') {
+        try {
+          onError(lastError);
+        } catch (callbackError) {
+          void callbackError;
         }
+      } else {
+        void lastError;
       }
     }
 
@@ -796,6 +852,251 @@
 
     return fallbackSafeWarn;
   })();
+
+  function ensureRegistryBinding(scope, registry) {
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+      return { ok: false, reason: 'invalid-scope' };
+    }
+
+    const targetRegistry = registry || MODULE_REGISTRY;
+    if (!targetRegistry) {
+      return { ok: false, reason: 'missing-registry' };
+    }
+
+    try {
+      const existing = scope.cineModules;
+      if (existing === targetRegistry) {
+        return { ok: true, already: true };
+      }
+
+      Object.defineProperty(scope, 'cineModules', {
+        configurable: true,
+        enumerable: false,
+        value: targetRegistry,
+        writable: false,
+      });
+      return { ok: true, updated: true };
+    } catch (defineError) {
+      void defineError;
+      try {
+        scope.cineModules = targetRegistry;
+        if (scope.cineModules === targetRegistry) {
+          return { ok: true, updated: true };
+        }
+      } catch (assignmentError) {
+        void assignmentError;
+        return { ok: false, reason: 'expose-failed', error: assignmentError || defineError };
+      }
+    }
+
+    return { ok: true, updated: true };
+  }
+
+  function getPendingQueueFromScope(scope, queueKey) {
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+      return null;
+    }
+
+    try {
+      const queue = scope[queueKey];
+      return Array.isArray(queue) ? queue : null;
+    } catch (error) {
+      void error;
+      return null;
+    }
+  }
+
+  function requeuePendingEntry(queue, entry) {
+    if (!Array.isArray(queue)) {
+      return;
+    }
+
+    try {
+      queue.push(entry);
+    } catch (error) {
+      void error;
+      queue[queue.length] = entry;
+    }
+  }
+
+  function flushPendingModuleQueues(options = {}) {
+    const registry = options.registry || MODULE_REGISTRY;
+    const queueKey = typeof options.queueKey === 'string' && options.queueKey
+      ? options.queueKey
+      : PENDING_QUEUE_KEY;
+
+    if (!registry || typeof registry.register !== 'function') {
+      return freezeDeep({
+        ok: false,
+        processed: 0,
+        requeued: 0,
+        scopes: 0,
+        queueKey,
+        failures: freezeDeep([{ reason: 'missing-registry' }]),
+      });
+    }
+
+    const scopes = Array.isArray(options.scopes) && options.scopes.length > 0
+      ? options.scopes.slice()
+      : collectCandidateScopes(options.scope || GLOBAL_SCOPE);
+
+    let processed = 0;
+    let requeued = 0;
+    let touchedScopes = 0;
+    const failures = [];
+
+    for (let index = 0; index < scopes.length; index += 1) {
+      const scope = scopes[index];
+      const queue = getPendingQueueFromScope(scope, queueKey);
+      if (!queue || queue.length === 0) {
+        continue;
+      }
+
+      touchedScopes += 1;
+      const pending = queue.slice();
+      queue.length = 0;
+
+      for (let entryIndex = 0; entryIndex < pending.length; entryIndex += 1) {
+        const entry = pending[entryIndex];
+        if (!entry || typeof entry !== 'object') {
+          continue;
+        }
+
+        const name = typeof entry.name === 'string' ? entry.name : '';
+        if (!name) {
+          continue;
+        }
+
+        const api = entry.api;
+        const entryOptions = cloneOptions(entry.options);
+
+        if (typeof registry.has === 'function') {
+          let alreadyRegistered = false;
+          try {
+            alreadyRegistered = registry.has(name);
+          } catch (hasError) {
+            failures.push({
+              name,
+              message: hasError && typeof hasError.message === 'string' ? hasError.message : null,
+              reason: 'has-check-failed',
+              scopeIndex: index,
+            });
+          }
+
+          if (alreadyRegistered) {
+            processed += 1;
+            continue;
+          }
+        }
+
+        try {
+          const registered = registry.register(name, api, entryOptions);
+          informModuleGlobals(name, registered || api);
+          processed += 1;
+        } catch (error) {
+          requeued += 1;
+          requeuePendingEntry(queue, entry);
+          failures.push({
+            name,
+            message: error && typeof error.message === 'string' ? error.message : null,
+            reason: 'register-failed',
+            scopeIndex: index,
+          });
+        }
+      }
+    }
+
+    if (failures.length > 0 && options.warn) {
+      safeWarn(
+        'cineRuntime.flushPendingModuleQueues() encountered issues while replaying module registrations.',
+        failures,
+      );
+    }
+
+    return freezeDeep({
+      ok: failures.length === 0,
+      processed,
+      requeued,
+      scopes: touchedScopes,
+      queueKey,
+      failures: failures.length > 0 ? freezeDeep(failures) : freezeDeep([]),
+    });
+  }
+
+  function synchronizeModuleLinks(options = {}) {
+    const registry = options.registry || MODULE_REGISTRY;
+    const queueKey = typeof options.queueKey === 'string' && options.queueKey
+      ? options.queueKey
+      : PENDING_QUEUE_KEY;
+
+    const scopes = Array.isArray(options.scopes) && options.scopes.length > 0
+      ? options.scopes.slice()
+      : collectCandidateScopes(options.scope || GLOBAL_SCOPE);
+
+    const exposureDetails = [];
+    const exposureFailures = [];
+
+    for (let index = 0; index < scopes.length; index += 1) {
+      const scope = scopes[index];
+      const exposure = ensureRegistryBinding(scope, registry);
+      exposureDetails.push({
+        scopeIndex: index,
+        ok: !!exposure.ok,
+        updated: !!exposure.updated,
+        already: !!exposure.already,
+        reason: typeof exposure.reason === 'string' ? exposure.reason : null,
+      });
+
+      if (!exposure.ok && exposure.reason !== 'missing-registry') {
+        exposureFailures.push({
+          scopeIndex: index,
+          reason: exposure.reason || 'expose-failed',
+          message:
+            exposure.error && typeof exposure.error.message === 'string'
+              ? exposure.error.message
+              : null,
+        });
+      }
+    }
+
+    if (exposureFailures.length > 0 && options.warn !== false) {
+      safeWarn(
+        'cineRuntime.synchronizeModuleLinks() could not expose cineModules on every scope.',
+        exposureFailures,
+      );
+    }
+
+    const flushResult = flushPendingModuleQueues({
+      registry,
+      queueKey,
+      scopes,
+      warn: options.warn !== false,
+    });
+
+    const combinedFailures = [];
+    if (Array.isArray(flushResult.failures)) {
+      for (let index = 0; index < flushResult.failures.length; index += 1) {
+        combinedFailures.push(flushResult.failures[index]);
+      }
+    }
+    if (exposureFailures.length > 0) {
+      for (let index = 0; index < exposureFailures.length; index += 1) {
+        combinedFailures.push(exposureFailures[index]);
+      }
+    }
+
+    const result = {
+      ok: flushResult.ok && exposureFailures.length === 0,
+      queueKey,
+      exposures: exposureDetails,
+      flushed: flushResult,
+      failures: combinedFailures,
+    };
+
+    return freezeDeep(result);
+  }
+
+  const INITIAL_MODULE_LINK_STATE = synchronizeModuleLinks({ warn: false });
 
   function fallbackExposeGlobal(name, value) {
     if (!GLOBAL_SCOPE || typeof GLOBAL_SCOPE !== 'object') {
@@ -1246,8 +1547,19 @@
   }
 
   function verifyCriticalFlows(options = {}) {
+    const synchronization = synchronizeModuleLinks({ warn: options.warnOnFailure });
     const missing = [];
     const detailMap = {};
+
+    if (synchronization && typeof synchronization === 'object') {
+      detailMap['synchronization.ok'] = !!synchronization.ok;
+      if (Array.isArray(synchronization.failures) && synchronization.failures.length > 0) {
+        detailMap['synchronization.failures'] = synchronization.failures;
+      }
+      if (!synchronization.ok) {
+        missing.push('cineRuntime synchronization');
+      }
+    }
 
     let registrySnapshot = null;
     if (MODULE_REGISTRY && typeof MODULE_REGISTRY.assertRegistered === 'function') {
@@ -1338,6 +1650,7 @@
       details: freezeDeep(detailMap),
       registry: registrySnapshot ? freezeDeep(registrySnapshot) : null,
       checks: listCriticalChecks(),
+      synchronization,
     });
 
     if (!ok) {
@@ -1367,6 +1680,9 @@
     getModuleRegistry() {
       return MODULE_REGISTRY || null;
     },
+    synchronizeModules(options) {
+      return synchronizeModuleLinks(options || {});
+    },
     listCriticalChecks,
     verifyCriticalFlows,
     __internal: freezeDeep({
@@ -1374,6 +1690,9 @@
       ensureModule,
       listCriticalChecks,
       moduleRegistry: MODULE_REGISTRY || null,
+      synchronizeModuleLinks,
+      flushPendingModuleQueues,
+      initialSynchronization: INITIAL_MODULE_LINK_STATE,
     }),
   });
 
