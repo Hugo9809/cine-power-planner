@@ -129,10 +129,12 @@
   --line-height-relaxed: 1.65;
   --status-error-bg: #ff8a80;
   --status-warning-bg: #ff6b6b;
+  --status-note-bg: #fff4b8;
   --status-success-bg: #dfd;
   --status-border-color: #ccc;
   --status-error-text-color: #000;
   --status-warning-text-color: #ffffff;
+  --status-note-text-color: #000;
   --status-success-text-color: #000;
   --camera-color: #4caf50;
   --monitor-color: #2196f3;
@@ -489,6 +491,7 @@ textarea {
 
 .status-message--info,
 .status-message--success,
+.status-message--note,
 .status-message--warning,
 .status-message--danger {
   padding: 0.5em 0.75em;
@@ -505,6 +508,11 @@ textarea {
 .status-message--success {
   background-color: var(--status-success-bg);
   color: var(--status-success-text-color);
+}
+
+.status-message--note {
+  background-color: var(--status-note-bg);
+  color: var(--status-note-text-color);
 }
 
 .status-message--warning {
@@ -6131,10 +6139,12 @@ html.dark-mode,
   --neutral-color: #bbbbbb;
   --status-error-bg: rgba(255, 120, 120, 0.45);
   --status-warning-bg: rgba(255, 107, 107, 0.65);
+  --status-note-bg: rgba(255, 214, 102, 0.25);
   --status-success-bg: rgba(102, 187, 106, 0.2);
   --status-border-color: #444;
   --status-error-text-color: #ffffff;
   --status-warning-text-color: #ffffff;
+  --status-note-text-color: #ffe082;
   --status-success-text-color: #f0f0f0;
   --diagram-node-fill: #444;
   --power-color: #ff6666;
@@ -6180,10 +6190,12 @@ body.high-contrast {
   --neutral-color: #fff;
   --status-error-bg: #f00;
   --status-warning-bg: #ff0;
+  --status-note-bg: #ff0;
   --status-success-bg: #0f0;
   --status-border-color: #fff;
   --status-error-text-color: #000;
   --status-warning-text-color: #000;
+  --status-note-text-color: #000;
   --status-success-text-color: #000;
   --diagram-node-fill: #fff;
   --power-color: #f00;
@@ -7872,6 +7884,7 @@ body.pink-mode,
     --status-success-text-color: #000 !important;
     --status-warning-text-color: #000 !important;
     --status-error-text-color: #000 !important;
+    --status-note-text-color: #000 !important;
   }
 
   .status-message--warning {
@@ -7879,6 +7892,10 @@ body.pink-mode,
   }
 
   .status-message--success {
+    color: #000 !important;
+  }
+
+  .status-message--note {
     color: #000 !important;
   }
 

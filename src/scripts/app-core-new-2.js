@@ -15214,7 +15214,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
               .replace("{current}", totalCurrentLow.toFixed(2))
               .replace("{max}", maxPinA)
           );
-          pinSeverity = 'warning';
+          pinSeverity = 'note';
         }
         if (!bMountCam) {
           if (totalCurrentLow > maxDtapA) {
@@ -15232,7 +15232,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
                 .replace("{current}", totalCurrentLow.toFixed(2))
                 .replace("{max}", maxDtapA)
             );
-            dtapSeverity = 'warning';
+            dtapSeverity = 'note';
           }
         }
         const hasPinLimit = typeof maxPinA === 'number' && maxPinA > 0;
