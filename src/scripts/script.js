@@ -22,6 +22,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     'modules/logging.js',
     'modules/features/help.js',
     'modules/features/feature-search.js',
+    'modules/features/auto-gear-rules.js',
     'modules/features/backup.js',
     'modules/help.js',
     'modules/ui.js',
