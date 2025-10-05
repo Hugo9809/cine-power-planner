@@ -347,6 +347,17 @@ table, th, td {
   padding-left: 0;
   padding-right: 0;
 }
+
+#overviewDialogContent #batteryComparison {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+#overviewDialogContent #batteryComparisonHeading {
+  break-after: avoid;
+  break-after: avoid-page;
+  page-break-after: avoid;
+}
 #overviewDialogContent #setupDiagram {
   background: none !important;
   border: none !important;
