@@ -339,7 +339,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return resolved;
   }
   var LZString = resolveLzString();
-  var APP_VERSION = '1.0.12';
+  var APP_VERSION = '1.0.13';
   var shared = freezeDeep({
     APP_VERSION: APP_VERSION,
     stableStringify: stableStringify,
