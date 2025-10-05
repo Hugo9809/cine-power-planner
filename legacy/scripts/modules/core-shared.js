@@ -5,8 +5,46 @@ function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" 
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 (function () {
-  var GLOBAL_SCOPE = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : typeof global !== 'undefined' ? global : null;
-  function tryRequire(modulePath) {
+  function detectGlobalScope() {
+    if (typeof globalThis !== 'undefined') {
+      return globalThis;
+    }
+    if (typeof window !== 'undefined') {
+      return window;
+    }
+    if (typeof self !== 'undefined') {
+      return self;
+    }
+    if (typeof global !== 'undefined') {
+      return global;
+    }
+    return {};
+  }
+  var FALLBACK_SCOPE = detectGlobalScope();
+  function resolveModuleBase() {
+    if (typeof require === 'function') {
+      try {
+        return require('./base.js');
+      } catch (error) {
+        void error;
+      }
+    }
+    var candidates = [FALLBACK_SCOPE];
+    if (typeof globalThis !== 'undefined' && candidates.indexOf(globalThis) === -1) candidates.push(globalThis);
+    if (typeof window !== 'undefined' && candidates.indexOf(window) === -1) candidates.push(window);
+    if (typeof self !== 'undefined' && candidates.indexOf(self) === -1) candidates.push(self);
+    if (typeof global !== 'undefined' && candidates.indexOf(global) === -1) candidates.push(global);
+    for (var index = 0; index < candidates.length; index += 1) {
+      var scope = candidates[index];
+      if (scope && _typeof(scope.cineModuleBase) === 'object') {
+        return scope.cineModuleBase;
+      }
+    }
+    return null;
+  }
+  var MODULE_BASE = resolveModuleBase();
+  var GLOBAL_SCOPE = MODULE_BASE && typeof MODULE_BASE.getGlobalScope === 'function' ? MODULE_BASE.getGlobalScope() || FALLBACK_SCOPE : FALLBACK_SCOPE;
+  var tryRequire = MODULE_BASE && typeof MODULE_BASE.tryRequire === 'function' ? MODULE_BASE.tryRequire : function tryRequire(modulePath) {
     if (typeof require !== 'function') {
       return null;
     }
@@ -16,8 +54,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       void error;
       return null;
     }
-  }
-  function resolveModuleRegistry() {
+  };
+  var resolveModuleRegistry = MODULE_BASE && typeof MODULE_BASE.resolveModuleRegistry === 'function' ? function resolveModuleRegistry(scope) {
+    return MODULE_BASE.resolveModuleRegistry(scope || GLOBAL_SCOPE);
+  } : function resolveModuleRegistry() {
     var required = tryRequire('./registry.js');
     if (required && _typeof(required) === 'object') {
       return required;
@@ -34,9 +74,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     }
     return null;
-  }
-  var MODULE_REGISTRY = resolveModuleRegistry();
-  var PENDING_QUEUE_KEY = '__cinePendingModuleRegistrations__';
+  };
+  var MODULE_REGISTRY = function () {
+    var provided = MODULE_BASE && typeof MODULE_BASE.getModuleRegistry === 'function' ? MODULE_BASE.getModuleRegistry(GLOBAL_SCOPE) : null;
+    return provided || resolveModuleRegistry();
+  }();
+  var PENDING_QUEUE_KEY = MODULE_BASE && typeof MODULE_BASE.PENDING_QUEUE_KEY === 'string' ? MODULE_BASE.PENDING_QUEUE_KEY : '__cinePendingModuleRegistrations__';
   function queueModuleRegistration(name, api, options) {
     if (!GLOBAL_SCOPE || _typeof(GLOBAL_SCOPE) !== 'object') {
       return false;
@@ -77,7 +120,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return true;
   }
-  function registerOrQueueModule(name, api, options, onError) {
+  var registerOrQueueModule = MODULE_BASE && typeof MODULE_BASE.registerOrQueueModule === 'function' ? function registerOrQueueModule(name, api, options, onError) {
+    return MODULE_BASE.registerOrQueueModule(name, api, options, onError, GLOBAL_SCOPE, MODULE_REGISTRY);
+  } : function registerOrQueueModule(name, api, options, onError) {
     if (MODULE_REGISTRY && typeof MODULE_REGISTRY.register === 'function') {
       try {
         MODULE_REGISTRY.register(name, api, options);
@@ -92,8 +137,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     queueModuleRegistration(name, api, options);
     return false;
-  }
-  function freezeDeep(value) {
+  };
+  var freezeDeep = MODULE_BASE && typeof MODULE_BASE.freezeDeep === 'function' ? MODULE_BASE.freezeDeep : function freezeDeep(value) {
     var seen = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new WeakSet();
     if (!value || _typeof(value) !== 'object') {
       return value;
@@ -112,7 +157,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       freezeDeep(descriptor.value, seen);
     }
     return Object.freeze(value);
-  }
+  };
   function createStableStringify() {
     if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.stableStringify === 'function') {
       return GLOBAL_SCOPE.stableStringify;

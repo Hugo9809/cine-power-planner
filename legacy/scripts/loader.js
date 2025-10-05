@@ -1,4 +1,197 @@
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function resolveCriticalGlobalScope() {
+  if (typeof globalThis !== 'undefined') {
+    return globalThis;
+  }
+  if (typeof window !== 'undefined') {
+    return window;
+  }
+  if (typeof self !== 'undefined') {
+    return self;
+  }
+  if (typeof global !== 'undefined') {
+    return global;
+  }
+  return null;
+}
+function ensureCriticalGlobalVariable(name, fallback) {
+  var scope = resolveCriticalGlobalScope();
+  if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+    return null;
+  }
+  var initialValue = fallback;
+  try {
+    if (typeof scope[name] !== 'undefined') {
+      initialValue = scope[name];
+    }
+  } catch (readError) {
+    void readError;
+  }
+  var value = typeof initialValue === 'undefined' ? fallback : initialValue;
+  try {
+    scope[name] = value;
+  } catch (assignError) {
+    void assignError;
+    try {
+      Object.defineProperty(scope, name, {
+        configurable: true,
+        writable: true,
+        enumerable: false,
+        value: value
+      });
+    } catch (defineError) {
+      void defineError;
+    }
+  }
+  try {
+    var globalFn = scope && scope.Function || Function;
+    if (typeof globalFn === 'function') {
+      globalFn('value', "if (typeof " + name + " === 'undefined') { " + name + " = value; } return " + name + ';')(value);
+    }
+  } catch (bindingError) {
+    void bindingError;
+  }
+  return scope;
+}
+function resolveCriticalFallback(fallback) {
+  return typeof fallback === 'function' ? fallback() : fallback;
+}
+function normaliseCriticalGlobalVariable(name, validator, fallback) {
+  var fallbackValue = resolveCriticalFallback(fallback);
+  var scope = ensureCriticalGlobalVariable(name, fallbackValue) || resolveCriticalGlobalScope();
+  if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+    return fallbackValue;
+  }
+  var currentValue = fallbackValue;
+  try {
+    currentValue = scope[name];
+  } catch (readError) {
+    void readError;
+  }
+  var isValid = true;
+  if (typeof validator === 'function') {
+    try {
+      isValid = validator(currentValue);
+    } catch (validationError) {
+      void validationError;
+      isValid = false;
+    }
+  }
+  if (isValid) {
+    return currentValue;
+  }
+  var nextValue = resolveCriticalFallback(fallback);
+  try {
+    scope[name] = nextValue;
+  } catch (assignError) {
+    void assignError;
+    try {
+      Object.defineProperty(scope, name, {
+        configurable: true,
+        writable: true,
+        enumerable: false,
+        value: nextValue
+      });
+    } catch (defineError) {
+      void defineError;
+    }
+  }
+  try {
+    var globalFn = scope && scope.Function || Function;
+    if (typeof globalFn === 'function') {
+      globalFn('value', name + ' = value; return ' + name + ';')(nextValue);
+    }
+  } catch (bindingError) {
+    void bindingError;
+  }
+  return nextValue;
+}
+var CRITICAL_GLOBAL_DEFINITIONS = [{
+  name: 'autoGearAutoPresetId',
+  validator: function validator(value) {
+    return typeof value === 'string';
+  },
+  fallback: ''
+}, {
+  name: 'baseAutoGearRules',
+  validator: function validator(value) {
+    return Array.isArray(value);
+  },
+  fallback: function fallback() {
+    return [];
+  }
+}, {
+  name: 'autoGearScenarioModeSelect',
+  validator: function validator(value) {
+    return typeof value !== 'undefined';
+  },
+  fallback: null
+}, {
+  name: 'autoGearRuleNameInput',
+  validator: function validator(value) {
+    return typeof value !== 'undefined';
+  },
+  fallback: null
+}, {
+  name: 'autoGearSummaryFocus',
+  validator: function validator(value) {
+    return typeof value === 'string';
+  },
+  fallback: 'all'
+}, {
+  name: 'autoGearMonitorDefaultControls',
+  validator: Array.isArray,
+  fallback: function fallback() {
+    return [];
+  }
+}];
+function loaderFallbackSafeGenerateConnectorSummary(device) {
+  if (!device || _typeof(device) !== 'object') {
+    return '';
+  }
+  try {
+    var keys = Object.keys(device);
+    if (!keys.length) {
+      return '';
+    }
+    var primaryKey = keys[0];
+    var value = device[primaryKey];
+    var label = typeof primaryKey === 'string' ? primaryKey.replace(/_/g, ' ') : 'connector';
+    return value ? label + ': ' + value : label;
+  } catch (fallbackError) {
+    void fallbackError;
+    return '';
+  }
+}
+CRITICAL_GLOBAL_DEFINITIONS.push({
+  name: 'safeGenerateConnectorSummary',
+  validator: function validator(value) {
+    return typeof value === 'function';
+  },
+  fallback: loaderFallbackSafeGenerateConnectorSummary
+});
+CRITICAL_GLOBAL_DEFINITIONS.push({
+  name: 'totalPowerElem',
+  validator: function validator(value) {
+    return typeof value === 'undefined' || value === null || _typeof(value) === 'object';
+  },
+  fallback: null
+});
+(function initialiseCriticalGlobals() {
+  var scope = resolveCriticalGlobalScope();
+  if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+    return;
+  }
+  for (var index = 0; index < CRITICAL_GLOBAL_DEFINITIONS.length; index += 1) {
+    var definition = CRITICAL_GLOBAL_DEFINITIONS[index];
+    var value = normaliseCriticalGlobalVariable(definition.name, definition.validator, definition.fallback);
+    try {
+      scope[definition.name] = value;
+    } catch (assignError) {
+      void assignError;
+    }
+  }
+})();
 (function () {
   var OPTIONAL_CHAINING_FLAG = '__cinePowerOptionalChainingCheck__';
   function getGlobalScope() {
@@ -13,129 +206,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return null;
   }
-  function resolveCriticalFallback(fallback) {
-    return typeof fallback === 'function' ? fallback() : fallback;
-  }
-  function ensureCriticalGlobal(definition) {
-    var scope = getGlobalScope();
-    if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
-      return;
-    }
-    var name = definition.name;
-    var fallbackValue = resolveCriticalFallback(definition.fallback);
-    var currentValue = fallbackValue;
-    var hasExisting = false;
-    try {
-      if (typeof scope[name] !== 'undefined') {
-        currentValue = scope[name];
-        hasExisting = true;
-      }
-    } catch (readError) {
-      void readError;
-    }
-    var isValid = true;
-    if (typeof definition.validator === 'function') {
-      try {
-        isValid = definition.validator(currentValue);
-      } catch (validationError) {
-        void validationError;
-        isValid = false;
-      }
-    }
-    if (!hasExisting || !isValid) {
-      var value = fallbackValue;
-      try {
-        scope[name] = value;
-      } catch (assignError) {
-        void assignError;
-        try {
-          Object.defineProperty(scope, name, {
-            configurable: true,
-            writable: true,
-            enumerable: false,
-            value: value
-          });
-        } catch (defineError) {
-          void defineError;
-        }
-      }
-    }
-  }
-  function bootstrapCriticalGlobals(definitions) {
-    for (var index = 0; index < definitions.length; index += 1) {
-      ensureCriticalGlobal(definitions[index]);
-    }
-  }
-  function loaderFallbackSafeGenerateConnectorSummary(device) {
-    if (!device || _typeof(device) !== 'object') {
-      return '';
-    }
-    try {
-      var keys = Object.keys(device);
-      if (!keys.length) {
-        return '';
-      }
-      var primaryKey = keys[0];
-      var value = device[primaryKey];
-      var label = typeof primaryKey === 'string' ? primaryKey.replace(/_/g, ' ') : 'connector';
-      return value ? label + ': ' + value : label;
-    } catch (fallbackError) {
-      void fallbackError;
-      return '';
-    }
-  }
-  var CRITICAL_GLOBAL_DEFINITIONS = [{
-    name: 'autoGearAutoPresetId',
-    validator: function validator(value) {
-      return typeof value === 'string';
-    },
-    fallback: ''
-  }, {
-    name: 'baseAutoGearRules',
-    validator: function validator(value) {
-      return Array.isArray(value);
-    },
-    fallback: function fallback() {
-      return [];
-    }
-  }, {
-    name: 'autoGearScenarioModeSelect',
-    validator: function validator(value) {
-      return typeof value !== 'undefined';
-    },
-    fallback: null
-  }, {
-    name: 'autoGearRuleNameInput',
-    validator: function validator(value) {
-      return typeof value !== 'undefined';
-    },
-    fallback: null
-  }, {
-    name: 'autoGearSummaryFocus',
-    validator: function validator(value) {
-      return typeof value === 'string';
-    },
-    fallback: 'all'
-  }, {
-    name: 'autoGearMonitorDefaultControls',
-    validator: Array.isArray,
-    fallback: function fallback() {
-      return [];
-    }
-  }, {
-    name: 'safeGenerateConnectorSummary',
-    validator: function validator(value) {
-      return typeof value === 'function';
-    },
-    fallback: loaderFallbackSafeGenerateConnectorSummary
-  }, {
-    name: 'totalPowerElem',
-    validator: function validator(value) {
-      return typeof value === 'undefined' || value === null || _typeof(value) === 'object';
-    },
-    fallback: null
-  }];
-  bootstrapCriticalGlobals(CRITICAL_GLOBAL_DEFINITIONS);
   function collectStorages(names) {
     var storages = [];
     if (typeof window === 'undefined') {
@@ -164,6 +234,131 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     }
     return storages;
+  }
+  var LEGACY_BUNDLE_STORAGE_KEY = 'cameraPowerPlanner_forceLegacyBundle';
+  var LEGACY_BUNDLE_MAX_AGE = 1000 * 60 * 60 * 24 * 7;
+  function nowMilliseconds() {
+    if (typeof Date !== 'function' || typeof Date.now !== 'function') {
+      return null;
+    }
+    return Date.now();
+  }
+  function getLegacyFlagStorages() {
+    return collectStorages(['localStorage']);
+  }
+  function rememberLegacyBundlePreference() {
+    var storages = getLegacyFlagStorages();
+    if (!storages.length) {
+      return false;
+    }
+    var stored = false;
+    var timestamp = nowMilliseconds();
+    var value = typeof timestamp === 'number' ? String(timestamp) : 'true';
+    for (var index = 0; index < storages.length; index += 1) {
+      var storage = storages[index];
+      if (!storage) {
+        continue;
+      }
+      try {
+        storage.setItem(LEGACY_BUNDLE_STORAGE_KEY, value);
+        stored = true;
+      } catch (setError) {
+        void setError;
+      }
+    }
+    return stored;
+  }
+  function clearLegacyBundlePreference() {
+    var storages = getLegacyFlagStorages();
+    var cleared = false;
+    for (var index = 0; index < storages.length; index += 1) {
+      var storage = storages[index];
+      if (!storage) {
+        continue;
+      }
+      try {
+        if (typeof storage.removeItem === 'function') {
+          storage.removeItem(LEGACY_BUNDLE_STORAGE_KEY);
+          cleared = true;
+        }
+      } catch (removeError) {
+        void removeError;
+      }
+    }
+    return cleared;
+  }
+  function shouldForceLegacyBundle() {
+    if (typeof window === 'undefined') {
+      return false;
+    }
+    var storages = getLegacyFlagStorages();
+    if (!storages.length) {
+      return false;
+    }
+    var now = nowMilliseconds();
+    var forceLegacy = false;
+    for (var index = 0; index < storages.length; index += 1) {
+      var storage = storages[index];
+      if (!storage) {
+        continue;
+      }
+      var rawValue = null;
+      try {
+        rawValue = storage.getItem(LEGACY_BUNDLE_STORAGE_KEY);
+      } catch (readError) {
+        void readError;
+        continue;
+      }
+      if (typeof rawValue !== 'string' || !rawValue) {
+        continue;
+      }
+      var parsed = parseInt(rawValue, 10);
+      if (!isNaN(parsed) && typeof parsed === 'number' && now !== null) {
+        if (now - parsed <= LEGACY_BUNDLE_MAX_AGE) {
+          forceLegacy = true;
+        } else {
+          try {
+            storage.removeItem(LEGACY_BUNDLE_STORAGE_KEY);
+          } catch (cleanupError) {
+            void cleanupError;
+          }
+        }
+      } else {
+        forceLegacy = true;
+      }
+    }
+    return forceLegacy;
+  }
+  function triggerLegacyBundleReload() {
+    rememberLegacyBundlePreference();
+    if (typeof window === 'undefined') {
+      return false;
+    }
+    try {
+      if (window.location && typeof window.location.reload === 'function') {
+        window.location.reload();
+        return true;
+      }
+      if (window.location && typeof window.location.href === 'string') {
+        window.location.assign(window.location.href);
+        return true;
+      }
+    } catch (reloadError) {
+      void reloadError;
+    }
+    return false;
+  }
+  function ensureCoreRuntimePlaceholders() {
+    var scope = getGlobalScope();
+    if (!scope || _typeof(scope) !== 'object') {
+      return;
+    }
+    for (var index = 0; index < CRITICAL_GLOBAL_DEFINITIONS.length; index += 1) {
+      var definition = CRITICAL_GLOBAL_DEFINITIONS[index];
+      if (typeof scope[definition.name] === 'undefined') {
+        scope[definition.name] = resolveCriticalFallback(definition.fallback);
+      }
+    }
   }
   function migrateKey(storage, legacyKey, modernKey) {
     if (!storage || typeof storage.getItem !== 'function' || typeof storage.setItem !== 'function') {
@@ -481,11 +676,20 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var head = document.head || document.getElementsByTagName('head')[0] || document.documentElement;
     var optionalCheckScript = document.createElement('script');
     var resolved = false;
+    var fallbackTimeoutId = null;
     function finalize(result) {
       if (resolved) {
         return;
       }
       resolved = true;
+      if (fallbackTimeoutId !== null && typeof clearTimeout === 'function') {
+        try {
+          clearTimeout(fallbackTimeoutId);
+        } catch (clearError) {
+          void clearError;
+        }
+        fallbackTimeoutId = null;
+      }
       if (optionalCheckScript.parentNode) {
         optionalCheckScript.parentNode.removeChild(optionalCheckScript);
       }
@@ -516,6 +720,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       finalize(false);
     };
     try {
+      if (typeof setTimeout === 'function') {
+        fallbackTimeoutId = setTimeout(function () {
+          finalize(false);
+        }, 3000);
+      }
       head.appendChild(optionalCheckScript);
     } catch (appendError) {
       if (typeof console !== 'undefined' && typeof console.warn === 'function') {
@@ -579,9 +788,24 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     };
   }
-  var modernScripts = ['src/scripts/globalthis-polyfill.js', 'src/data/devices/index.js', 'src/data/devices/cameras.js', 'src/data/devices/monitors.js', 'src/data/devices/video.js', 'src/data/devices/fiz.js', 'src/data/devices/batteries.js', 'src/data/devices/batteryHotswaps.js', 'src/data/devices/chargers.js', 'src/data/devices/cages.js', 'src/data/devices/gearList.js', 'src/data/devices/wirelessReceivers.js', 'src/scripts/storage.js', 'src/scripts/translations.js', 'src/vendor/lz-string.min.js', 'src/vendor/lottie-light.min.js', 'src/scripts/auto-gear-weight.js', 'src/scripts/modules/registry.js', 'src/scripts/modules/offline.js', 'src/scripts/modules/core-shared.js', 'src/scripts/modules/ui.js', 'src/scripts/app-core-new-1.js', 'src/scripts/app-core-new-2.js', 'src/scripts/app-events.js', 'src/scripts/app-setups.js', 'src/scripts/restore-verification.js', 'src/scripts/app-session.js', 'src/scripts/modules/persistence.js', 'src/scripts/modules/runtime.js', 'src/scripts/script.js', 'src/scripts/auto-gear-monitoring.js', 'src/scripts/overview.js', 'src/scripts/autosave-overlay.js'];
-  var legacyScripts = ['legacy/polyfills/core-js-bundle.min.js', 'legacy/polyfills/regenerator-runtime.js', 'legacy/scripts/globalthis-polyfill.js', 'legacy/data/devices/index.js', 'legacy/data/devices/cameras.js', 'legacy/data/devices/monitors.js', 'legacy/data/devices/video.js', 'legacy/data/devices/fiz.js', 'legacy/data/devices/batteries.js', 'legacy/data/devices/batteryHotswaps.js', 'legacy/data/devices/chargers.js', 'legacy/data/devices/cages.js', 'legacy/data/devices/gearList.js', 'legacy/data/devices/wirelessReceivers.js', 'legacy/scripts/storage.js', 'legacy/scripts/translations.js', 'src/vendor/lz-string.min.js', 'src/vendor/lottie-light.min.js', 'legacy/scripts/auto-gear-weight.js', 'src/scripts/modules/registry.js', 'src/scripts/modules/offline.js', 'src/scripts/modules/core-shared.js', 'src/scripts/modules/ui.js', 'legacy/scripts/app-core-new-1.js', 'legacy/scripts/app-core-new-2.js', 'legacy/scripts/app-events.js', 'legacy/scripts/app-setups.js', 'legacy/scripts/app-session.js', 'legacy/scripts/modules/runtime.js', 'src/scripts/modules/persistence.js', 'legacy/scripts/script.js', 'legacy/scripts/auto-gear-monitoring.js', 'legacy/scripts/overview.js', 'legacy/scripts/autosave-overlay.js'];
+  var modernScripts = ['src/scripts/globalthis-polyfill.js', 'src/data/devices/index.js', 'src/data/devices/cameras.js', 'src/data/devices/monitors.js', 'src/data/devices/video.js', 'src/data/devices/fiz.js', 'src/data/devices/batteries.js', 'src/data/devices/batteryHotswaps.js', 'src/data/devices/chargers.js', 'src/data/devices/cages.js', 'src/data/devices/gearList.js', 'src/data/devices/wirelessReceivers.js', 'src/scripts/storage.js', 'src/scripts/translations.js', 'src/vendor/lz-string.min.js', 'src/vendor/lottie-light.min.js', 'src/scripts/auto-gear-weight.js', 'src/scripts/modules/base.js', 'src/scripts/modules/registry.js', 'src/scripts/modules/offline.js', 'src/scripts/modules/core-shared.js', 'src/scripts/modules/ui.js', 'src/scripts/app-core-new-1.js', 'src/scripts/app-core-new-2.js', 'src/scripts/app-events.js', 'src/scripts/app-setups.js', 'src/scripts/restore-verification.js', 'src/scripts/app-session.js', 'src/scripts/modules/persistence.js', 'src/scripts/modules/runtime.js', 'src/scripts/script.js', 'src/scripts/auto-gear-monitoring.js', 'src/scripts/overview.js', 'src/scripts/autosave-overlay.js'];
+  var legacyScripts = ['legacy/polyfills/core-js-bundle.min.js', 'legacy/polyfills/regenerator-runtime.js', 'legacy/scripts/globalthis-polyfill.js', 'legacy/data/devices/index.js', 'legacy/data/devices/cameras.js', 'legacy/data/devices/monitors.js', 'legacy/data/devices/video.js', 'legacy/data/devices/fiz.js', 'legacy/data/devices/batteries.js', 'legacy/data/devices/batteryHotswaps.js', 'legacy/data/devices/chargers.js', 'legacy/data/devices/cages.js', 'legacy/data/devices/gearList.js', 'legacy/data/devices/wirelessReceivers.js', 'legacy/scripts/storage.js', 'legacy/scripts/translations.js', 'src/vendor/lz-string.min.js', 'src/vendor/lottie-light.min.js', 'legacy/scripts/auto-gear-weight.js', 'legacy/scripts/modules/base.js', 'legacy/scripts/modules/registry.js', 'legacy/scripts/modules/offline.js', 'legacy/scripts/modules/core-shared.js', 'legacy/scripts/modules/ui.js', 'legacy/scripts/app-core-new-1.js', 'legacy/scripts/app-core-new-2.js', 'legacy/scripts/app-events.js', 'legacy/scripts/app-setups.js', 'legacy/scripts/app-session.js', 'legacy/scripts/modules/runtime.js', 'legacy/scripts/modules/persistence.js', 'legacy/scripts/script.js', 'legacy/scripts/auto-gear-monitoring.js', 'legacy/scripts/overview.js', 'legacy/scripts/autosave-overlay.js'];
   function startLoading() {
+    if (shouldForceLegacyBundle()) {
+      window.__CINE_POWER_LEGACY_BUNDLE__ = true;
+      supportsModernFeatures(function (supportsModern) {
+        if (supportsModern) {
+          var cleared = clearLegacyBundlePreference();
+          if (cleared) {
+            if (triggerLegacyBundleReload()) {
+              return;
+            }
+          }
+        }
+        loadScriptsSequentially(legacyScripts);
+      });
+      return;
+    }
     supportsModernFeatures(function (supportsModern) {
       var scriptsToLoad = supportsModern ? modernScripts : legacyScripts;
       if (!supportsModern) {
@@ -599,6 +823,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             console.warn('Loader switching to legacy bundle after failing to load modern script:', context && context.url, context && context.event && context.event.error);
           }
           window.__CINE_POWER_LEGACY_BUNDLE__ = true;
+          if (triggerLegacyBundleReload()) {
+            return true;
+          }
           loadScriptsSequentially(fallbackScripts);
           return true;
         }
@@ -612,5 +839,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       console.warn('Legacy storage migration failed during loader startup.', migrationError);
     }
   }
+  ensureCoreRuntimePlaceholders();
   startLoading();
 })();
