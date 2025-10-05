@@ -2853,6 +2853,96 @@ function generateUniqueName(base, usedNames, normalizedNames) {
   return name;
 }
 
+function deriveLegacyProjectNameCandidate(rawKey, normalizedProject) {
+  if (
+    normalizedProject
+    && typeof normalizedProject === "object"
+    && normalizedProject.projectInfo
+    && typeof normalizedProject.projectInfo === "object"
+  ) {
+    const info = normalizedProject.projectInfo;
+    if (typeof info.projectName === "string" && info.projectName.trim()) {
+      return info.projectName.trim();
+    }
+    if (typeof info.name === "string" && info.name.trim()) {
+      return info.name.trim();
+    }
+  }
+
+  if (typeof rawKey === "string" && rawKey.trim()) {
+    return rawKey.trim();
+  }
+
+  return "Project";
+}
+
+function formatUpdatedProjectKey(baseName) {
+  const trimmed = typeof baseName === "string" ? baseName.trim() : "";
+  if (!trimmed) {
+    return "Project-updated";
+  }
+  if (trimmed.toLowerCase().endsWith("-updated")) {
+    return trimmed;
+  }
+  return `${trimmed}-updated`;
+}
+
+function resolveLegacyUpgradeKey(rawKey, normalizedProject, tracking = null) {
+  const baseName = deriveLegacyProjectNameCandidate(rawKey, normalizedProject);
+  const formatted = formatUpdatedProjectKey(baseName);
+  if (
+    tracking
+    && tracking.usedNames
+    && tracking.normalizedNames
+    && tracking.usedNames instanceof Set
+    && tracking.normalizedNames instanceof Set
+  ) {
+    return {
+      key: generateUniqueName(formatted, tracking.usedNames, tracking.normalizedNames),
+      baseName,
+    };
+  }
+  const localUsed = new Set();
+  return {
+    key: generateUniqueName(formatted, localUsed),
+    baseName,
+  };
+}
+
+function applyUpdatedProjectName(normalizedProject, newName, previousKey, baseName) {
+  if (!normalizedProject || typeof normalizedProject !== "object") {
+    return;
+  }
+  if (typeof newName !== "string") {
+    return;
+  }
+  const trimmedNew = newName.trim();
+  if (!trimmedNew) {
+    return;
+  }
+
+  const previousTrimmed = typeof previousKey === "string" ? previousKey.trim() : "";
+  const baseTrimmed = typeof baseName === "string" ? baseName.trim() : "";
+  const existingInfo =
+    normalizedProject.projectInfo && typeof normalizedProject.projectInfo === "object"
+      ? normalizedProject.projectInfo
+      : null;
+  const currentName = existingInfo && typeof existingInfo.projectName === "string"
+    ? existingInfo.projectName.trim()
+    : "";
+  const shouldUpdate =
+    !currentName
+    || (previousTrimmed && currentName.toLowerCase() === previousTrimmed.toLowerCase())
+    || (baseTrimmed && currentName.toLowerCase() === baseTrimmed.toLowerCase());
+  if (!shouldUpdate) {
+    return;
+  }
+
+  const nextInfo = existingInfo ? { ...existingInfo } : {};
+  nextInfo.projectName = trimmedNew;
+  normalizedProject.projectInfo = nextInfo;
+}
+
 // --- Session State Storage ---
 // Store the current session (unsaved setup) in localStorage so it survives
 // full app reloads.
@@ -4334,8 +4424,11 @@ function readAllProjectsFromStorage() {
   if (typeof parsed === "string") {
     const normalized = normalizeProject(parsed);
     if (normalized) {
-      projects[""] = normalized;
-      registerLookupKey("", "");
+      const { key: upgradedKey, baseName } = resolveLegacyUpgradeKey("", normalized);
+      applyUpdatedProjectName(normalized, upgradedKey, "", baseName);
+      projects[upgradedKey] = normalized;
+      registerLookupKey("", upgradedKey);
+      registerLookupKey(upgradedKey, upgradedKey);
     }
     return { projects, changed: true, originalValue, lookup: createLookupSnapshot() };
   }
@@ -4372,19 +4465,43 @@ function readAllProjectsFromStorage() {
   if (maybeLegacy) {
     const normalized = normalizeProject(parsed);
     if (normalized) {
-      projects[""] = normalized;
-      registerLookupKey("", "");
+      const { key: upgradedKey, baseName } = resolveLegacyUpgradeKey("", normalized);
+      applyUpdatedProjectName(normalized, upgradedKey, "", baseName);
+      projects[upgradedKey] = normalized;
+      registerLookupKey("", upgradedKey);
+      registerLookupKey(upgradedKey, upgradedKey);
     }
     return { projects, changed: true, originalValue, lookup: createLookupSnapshot() };
   }
 
+  const usedNamesForUpgrade = new Set();
+  const normalizedNamesForUpgrade = new Set();
+  keys.forEach((key) => {
+    if (typeof key === "string") {
+      usedNamesForUpgrade.add(key);
+      normalizedNamesForUpgrade.add(key.trim().toLowerCase());
+    }
+  });
+
   keys.forEach((key) => {
     const normalized = normalizeProject(parsed[key]);
     if (normalized) {
-      projects[key] = normalized;
-      registerLookupKey(key, key);
       if (!isNormalizedProjectEntry(parsed[key])) {
+        const { key: upgradedKey, baseName } = resolveLegacyUpgradeKey(
+          key,
+          normalized,
+          { usedNames: usedNamesForUpgrade, normalizedNames: normalizedNamesForUpgrade },
+        );
+        applyUpdatedProjectName(normalized, upgradedKey, key, baseName);
+        projects[upgradedKey] = normalized;
+        registerLookupKey(key, upgradedKey);
+        if (upgradedKey !== key) {
+          registerLookupKey(upgradedKey, upgradedKey);
+        }
         changed = true;
+      } else {
+        projects[key] = normalized;
+        registerLookupKey(key, key);
       }
     } else {
       changed = true;
@@ -4725,6 +4842,22 @@ function createProjectImporter() {
     const fallback = typeof fallbackName === "string" && fallbackName.trim()
       ? fallbackName.trim()
       : defaultName;
+
+    const legacySource =
+      typeof project === "string"
+      || (isPlainObject(project) && !isNormalizedProjectEntry(project));
+
+    if (legacySource) {
+      const legacyRawName = typeof rawName === "string" ? rawName.trim() : "";
+      const { key: upgradedName, baseName } = resolveLegacyUpgradeKey(
+        legacyRawName,
+        normalizedProject,
+        { usedNames, normalizedNames },
+      );
+      applyUpdatedProjectName(normalizedProject, upgradedName, legacyRawName, baseName);
+      saveProject(upgradedName, normalizedProject);
+      return;
+    }
 
     if (candidates.includes("") && !normalizedNames.has("")) {
       usedNames.add("");

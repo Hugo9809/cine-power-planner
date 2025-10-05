@@ -1,4 +1,11 @@
 const { TextEncoder: NodeTextEncoder, TextDecoder: NodeTextDecoder } = require('util');
+const { Console } = require('console');
+let BufferedConsole;
+try {
+  ({ BufferedConsole } = require('@jest/console'));
+} catch (error) {
+  BufferedConsole = null;
+}
 
 if (typeof global.TextEncoder === 'undefined') {
   global.TextEncoder = NodeTextEncoder;
@@ -7,6 +14,109 @@ if (typeof global.TextEncoder === 'undefined') {
 if (typeof global.TextDecoder === 'undefined') {
   global.TextDecoder = NodeTextDecoder;
 }
+
+const consoleExists = typeof console !== 'undefined' && console !== null;
+
+const makePrototypeWritable = (prototype) => {
+  if (!prototype || prototype.__cameraPowerPlannerWritablePrototype) {
+    return;
+  }
+
+  const overrides = new WeakMap();
+  const methodNames = [
+    'assert',
+    'clear',
+    'count',
+    'countReset',
+    'debug',
+    'dir',
+    'dirxml',
+    'error',
+    'group',
+    'groupCollapsed',
+    'groupEnd',
+    'info',
+    'log',
+    'table',
+    'trace',
+    'warn',
+    'time',
+    'timeLog',
+    'timeEnd',
+    'timeStamp',
+    'profile',
+    'profileEnd',
+  ];
+
+  methodNames.forEach((prop) => {
+    const descriptor = Object.getOwnPropertyDescriptor(prototype, prop);
+    if (!descriptor) {
+      return;
+    }
+
+    const enumerable = Boolean(descriptor.enumerable);
+    const hasValue = Object.prototype.hasOwnProperty.call(descriptor, 'value');
+    const originalValue = descriptor.value;
+    const originalGet = descriptor.get;
+    const originalSet = descriptor.set;
+
+    Object.defineProperty(prototype, prop, {
+      configurable: true,
+      enumerable,
+      get() {
+        const bucket = overrides.get(this);
+        if (bucket && bucket.has(prop)) {
+          return bucket.get(prop);
+        }
+
+        if (hasValue && typeof originalValue === 'function') {
+          return originalValue.bind(this);
+        }
+
+        if (hasValue) {
+          return originalValue;
+        }
+
+        if (originalGet) {
+          return originalGet.call(this);
+        }
+
+        return undefined;
+      },
+      set(value) {
+        let bucket = overrides.get(this);
+        if (!bucket) {
+          bucket = new Map();
+          overrides.set(this, bucket);
+        }
+
+        if (originalSet && !hasValue) {
+          try {
+            originalSet.call(this, value);
+            bucket.delete(prop);
+            return;
+          } catch (error) {
+            // fall back to storing the override value
+          }
+        }
+
+        bucket.set(prop, value);
+      },
+    });
+  });
+
+  Object.defineProperty(prototype, '__cameraPowerPlannerWritablePrototype', {
+    configurable: true,
+    enumerable: false,
+    writable: false,
+    value: true,
+  });
+};
+
+makePrototypeWritable(Console?.prototype);
+makePrototypeWritable(BufferedConsole?.prototype);
+
+
 
 const suppressMessages = (originalFn, patterns) => {
   if (typeof originalFn !== 'function') {
@@ -35,7 +145,7 @@ const suppressMessages = (originalFn, patterns) => {
   };
 };
 
-if (!console.__cameraPowerPlannerPatched) {
+if (consoleExists && !console.__cameraPowerPlannerPatched) {
   const suppressedWarns = [
     /^Failed to .*backup/i,
     /^Backup failed/i,
