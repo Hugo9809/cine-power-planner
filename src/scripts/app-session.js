@@ -835,6 +835,19 @@ for (let index = 0; index < AUTO_GEAR_RUNTIME_HANDLERS.length; index += 1) {
   ensureSessionRuntimeFunction(handlerName, { defer: true });
 }
 
+const AUTO_GEAR_RUNTIME_FUNCTIONS = [
+  'setAutoGearSummaryFocus',
+  'focusAutoGearRuleById',
+  'setAutoGearSearchQuery',
+  'setAutoGearScenarioFilter',
+  'clearAutoGearFilters',
+];
+
+for (let index = 0; index < AUTO_GEAR_RUNTIME_FUNCTIONS.length; index += 1) {
+  const functionName = AUTO_GEAR_RUNTIME_FUNCTIONS[index];
+  ensureSessionRuntimeFunction(functionName, { defer: true });
+}
+
 function getSessionCoreValue(functionName, options = {}) {
   const defaultValue = Object.prototype.hasOwnProperty.call(options, 'defaultValue')
     ? options.defaultValue
