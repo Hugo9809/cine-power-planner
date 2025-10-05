@@ -315,8 +315,6 @@ function enqueueCineUiRegistration(callback) {
     scope[key].push(callback);
 }
 
-enqueueCineUiRegistration(registerSetupsCineUiInternal);
-
 function getPowerSelectionSnapshot() {
     if (!batterySelect && !batteryPlateSelect && !hotswapSelect) return null;
     const rawBattery = batterySelect ? normalizePowerSelectionString(batterySelect.value) : '';
@@ -865,6 +863,8 @@ if (shareUiContext.sharedLinkInput) {
 if (shareUiContext.applySharedLinkButton && shareUiContext.sharedLinkInput) {
   shareUiContext.applySharedLinkButton.addEventListener('click', handleApplySharedLinkClick);
 }
+
+enqueueCineUiRegistration(registerSetupsCineUiInternal);
 
 function handleSharedImportModeChange() {
   if (sharedImportPromptActive) return;

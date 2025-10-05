@@ -784,6 +784,253 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     factor: 0.5,
     color: '#0275d8'
   }];
+  function resolveLanguageCode(lang) {
+    if (typeof lang === 'string' && lang.trim()) {
+      return lang.trim();
+    }
+    if (typeof currentLang === 'string' && currentLang.trim()) {
+      return currentLang;
+    }
+    return 'en';
+  }
+  function getLanguageTexts(lang) {
+    var resolved = resolveLanguageCode(lang);
+    var allTexts = typeof texts !== 'undefined' && texts ? texts : {};
+    if (allTexts && _typeof(allTexts[resolved]) === 'object') {
+      return allTexts[resolved] || {};
+    }
+    if (allTexts && _typeof(allTexts.en) === 'object') {
+      return allTexts.en || {};
+    }
+    return {};
+  }
+  function formatNumberForLang(lang, value, options) {
+    var resolved = resolveLanguageCode(lang);
+    try {
+      return new Intl.NumberFormat(resolved, options).format(value);
+    } catch (firstError) {
+      try {
+        return new Intl.NumberFormat('en', options).format(value);
+      } catch (fallbackError) {
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn('Number formatting failed', firstError, fallbackError);
+        }
+        return String(value);
+      }
+    }
+  }
+  function normalizeTemperatureUnit(unit) {
+    if (typeof unit === 'string') {
+      var normalized = unit.trim().toLowerCase();
+      if (normalized === TEMPERATURE_UNITS.fahrenheit) {
+        return TEMPERATURE_UNITS.fahrenheit;
+      }
+      if (normalized === TEMPERATURE_UNITS.celsius) {
+        return TEMPERATURE_UNITS.celsius;
+      }
+    }
+    if (unit === TEMPERATURE_UNITS.fahrenheit) {
+      return TEMPERATURE_UNITS.fahrenheit;
+    }
+    return TEMPERATURE_UNITS.celsius;
+  }
+  function convertCelsiusToUnit(value, unit) {
+    var targetUnit = typeof unit === 'undefined' ? temperatureUnit : unit;
+    var numeric = Number(value);
+    if (!Number.isFinite(numeric)) {
+      return Number.NaN;
+    }
+    var resolvedUnit = normalizeTemperatureUnit(targetUnit);
+    if (resolvedUnit === TEMPERATURE_UNITS.fahrenheit) {
+      return numeric * 9 / 5 + 32;
+    }
+    return numeric;
+  }
+  function getTemperatureUnitSymbolForLang(lang, unit) {
+    var targetLang = typeof lang === 'undefined' ? currentLang : lang;
+    var targetUnit = typeof unit === 'undefined' ? temperatureUnit : unit;
+    var resolvedUnit = normalizeTemperatureUnit(targetUnit);
+    var langTexts = getLanguageTexts(targetLang);
+    var fallbackTexts = getLanguageTexts('en');
+    var key = resolvedUnit === TEMPERATURE_UNITS.fahrenheit ? 'temperatureUnitSymbolFahrenheit' : 'temperatureUnitSymbolCelsius';
+    return langTexts[key] || fallbackTexts[key] || (resolvedUnit === TEMPERATURE_UNITS.fahrenheit ? '°F' : '°C');
+  }
+  function getTemperatureUnitLabelForLang(lang, unit) {
+    var targetLang = typeof lang === 'undefined' ? currentLang : lang;
+    var targetUnit = typeof unit === 'undefined' ? temperatureUnit : unit;
+    var resolvedUnit = normalizeTemperatureUnit(targetUnit);
+    var langTexts = getLanguageTexts(targetLang);
+    var fallbackTexts = getLanguageTexts('en');
+    var key = resolvedUnit === TEMPERATURE_UNITS.fahrenheit ? 'temperatureUnitFahrenheit' : 'temperatureUnitCelsius';
+    return langTexts[key] || fallbackTexts[key] || (resolvedUnit === TEMPERATURE_UNITS.fahrenheit ? 'Fahrenheit (°F)' : 'Celsius (°C)');
+  }
+  function getTemperatureColumnLabelForLang(lang, unit) {
+    var targetLang = typeof lang === 'undefined' ? currentLang : lang;
+    var targetUnit = typeof unit === 'undefined' ? temperatureUnit : unit;
+    var langTexts = getLanguageTexts(targetLang);
+    var fallbackTexts = getLanguageTexts('en');
+    var baseLabel = langTexts.temperatureLabel || fallbackTexts.temperatureLabel || 'Temperature';
+    var symbol = getTemperatureUnitSymbolForLang(targetLang, targetUnit);
+    return baseLabel + ' (' + symbol + ')';
+  }
+  function formatTemperatureForDisplay(celsius, options) {
+    var opts = options && _typeof(options) === 'object' ? options : {};
+    var unit = typeof opts.unit === 'undefined' ? temperatureUnit : opts.unit;
+    var lang = typeof opts.lang === 'undefined' ? currentLang : opts.lang;
+    var includeSign = typeof opts.includeSign === 'undefined' ? true : opts.includeSign;
+    var resolvedUnit = normalizeTemperatureUnit(unit);
+    var converted = convertCelsiusToUnit(celsius, resolvedUnit);
+    if (!Number.isFinite(converted)) {
+      return '';
+    }
+    if (Math.abs(converted) < 1e-6) {
+      converted = 0;
+    }
+    var isNegative = converted < 0;
+    var isPositive = converted > 0;
+    var absolute = Math.abs(converted);
+    var isInteger = Math.abs(absolute - Math.round(absolute)) < 1e-6;
+    var fractionDigits = resolvedUnit === TEMPERATURE_UNITS.fahrenheit && !isInteger ? 1 : 0;
+    var formatted = formatNumberForLang(lang, absolute, {
+      minimumFractionDigits: fractionDigits,
+      maximumFractionDigits: fractionDigits
+    });
+    var prefix = '';
+    if (includeSign === 'none') {
+      prefix = '';
+    } else if (includeSign === false || includeSign === 'negative') {
+      if (isNegative) {
+        prefix = '\u2013';
+      }
+    } else if (isPositive) {
+      prefix = '+';
+    } else if (isNegative) {
+      prefix = '\u2013';
+    }
+    var symbol = getTemperatureUnitSymbolForLang(lang, resolvedUnit);
+    return '' + prefix + formatted + ' ' + symbol;
+  }
+  function renderTemperatureNote(baseHours) {
+    if (typeof document === 'undefined') {
+      return;
+    }
+    var container = document.getElementById('temperatureNote');
+    if (!container) {
+      return;
+    }
+    var langTexts = getLanguageTexts(currentLang);
+    var fallbackTexts = getLanguageTexts('en');
+    var heading = langTexts.temperatureNoteHeading || fallbackTexts.temperatureNoteHeading || '';
+    var html = heading ? '<p>' + heading + '</p>' : '';
+    if (!baseHours || !Number.isFinite(baseHours)) {
+      container.innerHTML = html;
+      return;
+    }
+    var temperatureHeader = getTemperatureColumnLabelForLang(currentLang, temperatureUnit);
+    var runtimeHeader = langTexts.runtimeLabel || fallbackTexts.runtimeLabel || 'Runtime';
+    var batteryHeader = langTexts.batteryCountTempLabel || fallbackTexts.batteryCountTempLabel || 'Batteries';
+    html += '<table><tr><th>' + temperatureHeader + '</th><th>' + runtimeHeader + '</th><th>' + batteryHeader + '</th></tr>';
+    TEMPERATURE_SCENARIOS.forEach(function (scenario) {
+      var runtime = baseHours * scenario.factor;
+      var runtimeCell = Number.isFinite(runtime) ? runtime.toFixed(2) : '0.00';
+      var batteries = '–';
+      if (Number.isFinite(runtime) && runtime > 0) {
+        batteries = String(Math.ceil(10 / runtime));
+      }
+      var temperatureCell = formatTemperatureForDisplay(scenario.celsius);
+      html += '<tr><td style="color:' + scenario.color + '">' + temperatureCell + '</td><td>' + runtimeCell + '</td><td>' + batteries + '</td></tr>';
+    });
+    html += '</table>';
+    container.innerHTML = html;
+  }
+  function ensureFeedbackTemperatureOptions(select) {
+    if (!select) return;
+    var expectedOptions = FEEDBACK_TEMPERATURE_MAX - FEEDBACK_TEMPERATURE_MIN + 2;
+    if (select.options.length === expectedOptions) {
+      return;
+    }
+    var previousValue = select.value;
+    select.innerHTML = '';
+    var emptyOpt = document.createElement('option');
+    emptyOpt.value = '';
+    emptyOpt.textContent = '';
+    select.appendChild(emptyOpt);
+    for (var temp = FEEDBACK_TEMPERATURE_MIN; temp <= FEEDBACK_TEMPERATURE_MAX; temp += 1) {
+      var opt = document.createElement('option');
+      opt.value = String(temp);
+      select.appendChild(opt);
+    }
+    if (previousValue) {
+      select.value = previousValue;
+    }
+  }
+  function updateFeedbackTemperatureOptions(lang, unit) {
+    if (typeof document === 'undefined') {
+      return;
+    }
+    var targetLang = typeof lang === 'undefined' ? currentLang : lang;
+    var targetUnit = typeof unit === 'undefined' ? temperatureUnit : unit;
+    var tempSelect = document.getElementById('fbTemperature');
+    if (!tempSelect) return;
+    ensureFeedbackTemperatureOptions(tempSelect);
+    Array.from(tempSelect.options).forEach(function (option) {
+      if (!option) return;
+      if (option.value === '') {
+        option.textContent = '';
+        return;
+      }
+      var celsiusValue = Number(option.value);
+      if (!Number.isFinite(celsiusValue)) return;
+      option.textContent = formatTemperatureForDisplay(celsiusValue, {
+        lang: targetLang,
+        unit: targetUnit,
+        includeSign: 'negative'
+      });
+    });
+  }
+  function updateFeedbackTemperatureLabel(lang, unit) {
+    if (typeof document === 'undefined') {
+      return;
+    }
+    var targetLang = typeof lang === 'undefined' ? currentLang : lang;
+    var targetUnit = typeof unit === 'undefined' ? temperatureUnit : unit;
+    var labelTextElem = document.getElementById('fbTemperatureLabelText');
+    var labelElem = document.getElementById('fbTemperatureLabel');
+    var label = getTemperatureColumnLabelForLang(targetLang, targetUnit) + ':';
+    if (labelTextElem) {
+      labelTextElem.textContent = label;
+    } else if (labelElem) {
+      labelElem.textContent = label;
+    }
+  }
+  function applyTemperatureUnitPreference(unit, options) {
+    var opts = options && _typeof(options) === 'object' ? options : {};
+    var normalized = normalizeTemperatureUnit(unit);
+    var persist = typeof opts.persist === 'undefined' ? true : opts.persist;
+    var reRender = typeof opts.reRender === 'undefined' ? true : opts.reRender;
+    var forceUpdate = typeof opts.forceUpdate === 'undefined' ? false : opts.forceUpdate;
+    if (!forceUpdate && temperatureUnit === normalized) {
+      return;
+    }
+    temperatureUnit = normalized;
+    if (persist && typeof localStorage !== 'undefined') {
+      try {
+        localStorage.setItem(TEMPERATURE_STORAGE_KEY, temperatureUnit);
+      } catch (error) {
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn('Could not save temperature unit preference', error);
+        }
+      }
+    }
+    if (typeof settingsTemperatureUnit !== 'undefined' && settingsTemperatureUnit) {
+      settingsTemperatureUnit.value = temperatureUnit;
+    }
+    if (reRender) {
+      updateFeedbackTemperatureLabel();
+      updateFeedbackTemperatureOptions();
+      renderTemperatureNote(lastRuntimeHours);
+    }
+  }
   var collator = new Intl.Collator(undefined, {
     numeric: true,
     sensitivity: 'base'
