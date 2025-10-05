@@ -2539,6 +2539,35 @@ function formatAutoGearSelectorValue(type, value) {
   return normalizedValue;
 }
 
+function populateAutoGearCategorySelect(select, currentValue) {
+  if (!select) return;
+
+  const current = typeof currentValue === 'string' ? currentValue : '';
+  const lang = typeof currentLang === 'string' ? currentLang : 'en';
+
+  select.innerHTML = '';
+
+  GEAR_LIST_CATEGORIES.forEach(category => {
+    const option = document.createElement('option');
+    option.value = category;
+    option.textContent = category;
+    if (current === category) {
+      option.selected = true;
+    }
+    select.appendChild(option);
+  });
+
+  const customOption = document.createElement('option');
+  customOption.value = AUTO_GEAR_CUSTOM_CATEGORY;
+  customOption.textContent = texts?.[lang]?.autoGearCustomCategory
+    || texts?.en?.autoGearCustomCategory
+    || 'Custom Additions';
+  if (!current || current === AUTO_GEAR_CUSTOM_CATEGORY) {
+    customOption.selected = true;
+  }
+  select.appendChild(customOption);
+}
+
 function isAutoGearMonitoringCategory(value) {
   if (typeof value !== 'string') return false;
   return value.trim().toLowerCase() === 'monitoring';
