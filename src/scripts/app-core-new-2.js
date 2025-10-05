@@ -16241,7 +16241,6 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       HIGH_CONTRAST_ACCENT_COLOR,
       applyAccentColor,
       clearAccentColorOverrides,
-      revertAccentColor,
       updateAccentColorResetButtonState,
       restoringSession,
       currentProjectInfo,
