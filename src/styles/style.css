@@ -2043,19 +2043,13 @@ body.dark-mode:not(.pink-mode) .help-content a:visited {
 
 .settings-tabs {
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   gap: var(--cluster-gap);
   padding: 0;
   margin: 0;
   list-style: none;
   align-items: stretch;
   flex: 0 0 auto;
-  overflow-x: auto;
-  overflow-y: hidden;
-  scrollbar-width: thin;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-gutter: stable both-edges;
-  scroll-snap-type: x proximity;
 }
 
 .settings-tab {
@@ -2155,8 +2149,7 @@ body.high-contrast .settings-tab[aria-selected="true"] {
   }
 
   .settings-tab {
-    flex: 0 0 auto;
-    flex-basis: auto;
+    flex: 1 1 clamp(136px, 50%, 220px);
     min-width: clamp(136px, 56vw, 220px);
   }
 
