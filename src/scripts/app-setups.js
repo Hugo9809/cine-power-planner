@@ -4860,13 +4860,67 @@ function cloneProjectInfoForStorage(info) {
     return clone;
 }
 
+function normalizeRequirementNodeValue(node) {
+    if (!node) return '';
+    const textNodeType = typeof Node === 'undefined' ? 3 : Node.TEXT_NODE;
+    const elementNodeType = typeof Node === 'undefined' ? 1 : Node.ELEMENT_NODE;
+    if (node.nodeType === textNodeType) {
+        return node.textContent || '';
+    }
+    if (node.nodeType === elementNodeType) {
+        const tag = node.tagName ? node.tagName.toLowerCase() : '';
+        if (tag === 'br') {
+            return '\n';
+        }
+        return Array.from(node.childNodes || []).map(normalizeRequirementNodeValue).join('');
+    }
+    return '';
+}
+
+function collectProjectInfoFromRequirementsGrid() {
+    if (!projectRequirementsOutput) return null;
+    const boxes = Array.from(projectRequirementsOutput.querySelectorAll('.requirement-box'));
+    if (!boxes.length) {
+        return null;
+    }
+    const info = {};
+    boxes.forEach((box) => {
+        if (!box || typeof box.getAttribute !== 'function') return;
+        const field = box.getAttribute('data-field');
+        if (!field) return;
+        const valueEl = box.querySelector('.req-value');
+        if (!valueEl) return;
+        const rawValue = Array.from(valueEl.childNodes || [])
+            .map(normalizeRequirementNodeValue)
+            .join('');
+        const normalized = rawValue
+            .replace(/\r\n?/g, '\n')
+            .split('\n')
+            .map(segment => segment.replace(/\s+/g, ' ').trim())
+            .filter(segment => segment);
+        if (!normalized.length) return;
+        const text = normalized.join('\n');
+        if (!Object.prototype.hasOwnProperty.call(info, field)) {
+            info[field] = text;
+        }
+    });
+    return Object.keys(info).length ? info : null;
+}
+
 function saveCurrentGearList() {
     if (factoryResetInProgress) return;
     const html = getCurrentGearListHtml();
     const info = projectForm ? collectProjectFormData() : {};
     info.sliderBowl = getSetupsCoreValue('getSliderBowlValue');
     info.easyrig = getSetupsCoreValue('getEasyrigValue');
-    currentProjectInfo = deriveProjectInfo(info);
+    const previousProjectInfo = (currentProjectInfo && typeof currentProjectInfo === 'object')
+        ? currentProjectInfo
+        : null;
+    const requirementsVisible = Boolean(
+        projectRequirementsOutput
+        && projectRequirementsOutput.querySelector('.requirement-box')
+    );
+    let pendingProjectInfo = deriveProjectInfo(info);
     const powerSelectionSnapshot = getPowerSelectionSnapshot();
     const gearSelectorsRaw = getGearListSelectors();
     const gearSelectors = cloneGearListSelectors(gearSelectorsRaw);
@@ -4920,6 +4974,29 @@ function saveCurrentGearList() {
     const effectiveStorageKey = renameInProgress
         ? (selectedStorageKey || projectStorageKey)
         : projectStorageKey;
+    if (!pendingProjectInfo && requirementsVisible) {
+        if (previousProjectInfo && Object.keys(previousProjectInfo).length) {
+            pendingProjectInfo = previousProjectInfo;
+        } else if (typeof loadProject === 'function') {
+            const fallbackKey =
+                (typeof effectiveStorageKey === 'string' && effectiveStorageKey)
+                    ? effectiveStorageKey
+                    : (projectStorageKey || selectedStorageKey || '');
+            if (fallbackKey) {
+                const existingProject = loadProject(fallbackKey);
+                if (existingProject && existingProject.projectInfo && Object.keys(existingProject.projectInfo).length) {
+                    pendingProjectInfo = cloneProjectInfoForStorage(existingProject.projectInfo);
+                }
+            }
+        }
+        if (!pendingProjectInfo) {
+            const gridInfo = collectProjectInfoFromRequirementsGrid();
+            if (gridInfo) {
+                pendingProjectInfo = deriveProjectInfo(gridInfo) || gridInfo;
+            }
+        }
+    }
+    currentProjectInfo = pendingProjectInfo;
     const projectInfoForStorage = typeof createProjectInfoSnapshotForStorage === 'function'
         ? createProjectInfoSnapshotForStorage(currentProjectInfo, {
             projectNameOverride: renameInProgress ? (selectedStorageKey || projectStorageKey) : undefined,
