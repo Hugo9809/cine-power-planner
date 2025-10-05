@@ -12891,6 +12891,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         filterDeviceList(list, value);
       });
     }
+    if (filterHelperScope && typeof filterHelperScope.applyFilters !== 'function') {
+      filterHelperScope.applyFilters = applyFilters;
+    }
     populateSelect(cameraSelect, devices.cameras, true);
     populateMonitorSelect();
     populateSelect(videoSelect, devices.video, true);
