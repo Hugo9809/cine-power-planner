@@ -16179,6 +16179,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       saveAutoGearRuleFromEditor,
       handleAutoGearImportSelection,
       handleAutoGearPresetSelection,
+      applyAutoGearBackupVisibility,
       setAutoGearAutoPresetId,
       syncAutoGearAutoPreset,
       updateAutoGearCatalogOptions,
@@ -16313,6 +16314,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       ['configureSharedImportOptions', () => configureSharedImportOptions],
       ['resolveSharedImportMode', () => resolveSharedImportMode],
       ['resetPlannerStateAfterFactoryReset', () => resetPlannerStateAfterFactoryReset],
+      ['updateStorageSummary', () => updateStorageSummary],
+      ['normaliseMarkVariants', () => normaliseMarkVariants],
+      ['storeLoadedSetupState', () => storeLoadedSetupState],
     ];
 
     const resolvedAdditionalExports = ADDITIONAL_GLOBAL_EXPORT_ENTRIES.reduce(
