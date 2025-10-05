@@ -1,4 +1,8 @@
-const { ASSETS, CACHE_NAME } = require('../../service-worker.js');
+const {
+  ASSETS,
+  CACHE_NAME,
+  __private__: { shouldBypassCache },
+} = require('../../service-worker.js');
 
 describe('service worker configuration', () => {
   test('caches overview assets for offline usage', () => {
@@ -63,5 +67,17 @@ describe('service worker configuration', () => {
   test('exposes a cache name', () => {
     expect(typeof CACHE_NAME).toBe('string');
     expect(CACHE_NAME).not.toBe('');
+  });
+
+  test('treats forceReload navigation requests as cache bypass candidates', () => {
+    const mockRequest = {
+      cache: 'default',
+      headers: {
+        get: () => null,
+      },
+    };
+    const url = new URL('https://example.test/app?forceReload=abc123');
+
+    expect(shouldBypassCache(mockRequest, url)).toBe(true);
   });
 });
