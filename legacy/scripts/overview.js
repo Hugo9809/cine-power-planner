@@ -5,6 +5,245 @@ function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Sym
 function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function resolveResultsSectionModule() {
+  var cacheKey = '__cineResultsSectionModule';
+  var globalScope = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : typeof global !== 'undefined' ? global : null;
+  if (globalScope && globalScope[cacheKey]) {
+    var cachedModule = globalScope[cacheKey];
+    if (cachedModule && typeof cachedModule.generateResultsSectionHtml === 'function') {
+      return cachedModule;
+    }
+  }
+
+  var fallbackModule = function () {
+    var defaultSeverityMap = {
+      danger: 'status-message--danger',
+      warning: 'status-message--warning',
+      note: 'status-message--note',
+      success: 'status-message--success',
+      info: 'status-message--info'
+    };
+
+    var escapeSafe = function escapeSafe(value) {
+      var stringValue = value == null ? '' : String(value);
+      if (!stringValue) {
+        return '';
+      }
+      if (typeof escapeHtml === 'function') {
+        try {
+          return escapeHtml(stringValue);
+        } catch (error) {
+          void error;
+        }
+      }
+      return stringValue.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    };
+
+    var extractSeverityClass = function extractSeverityClass(element, severityMap) {
+      if (!element) {
+        return '';
+      }
+      var map = severityMap && _typeof(severityMap) === 'object' ? severityMap : defaultSeverityMap;
+      var dataset = element.dataset || (typeof element.getAttribute === 'function' ? {
+        statusLevel: element.getAttribute('data-status-level')
+      } : null);
+      var level = dataset && typeof dataset.statusLevel === 'string' ? dataset.statusLevel : typeof element.getAttribute === 'function' ? element.getAttribute('data-status-level') : null;
+      if (level && map[level]) {
+        return map[level];
+      }
+      if (element.classList) {
+        for (var key in map) {
+          if (!Object.prototype.hasOwnProperty.call(map, key)) {
+            continue;
+          }
+          var className = map[key];
+          if (className && element.classList.contains(className)) {
+            return className;
+          }
+        }
+      }
+      if (typeof element.getAttribute === 'function') {
+        var classAttr = element.getAttribute('class');
+        if (classAttr && typeof classAttr === 'string') {
+          var classes = classAttr.split(/\s+/);
+          for (var mapKey in map) {
+            if (!Object.prototype.hasOwnProperty.call(map, mapKey)) {
+              continue;
+            }
+            var mapped = map[mapKey];
+            if (mapped && classes.indexOf(mapped) !== -1) {
+              return mapped;
+            }
+          }
+        }
+      }
+      return '';
+    };
+
+    var buildStatusMarkup = function buildStatusMarkup(element, severityMap) {
+      if (!element) {
+        return '';
+      }
+      var text = element && typeof element.textContent === 'string' ? element.textContent.trim() : '';
+      if (!text) {
+        return '';
+      }
+      var classes = ['status-message'];
+      var severityClass = extractSeverityClass(element, severityMap);
+      if (severityClass) {
+        classes.push(severityClass);
+      }
+      return '<p class="' + classes.join(' ') + '">' + escapeSafe(text) + '</p>';
+    };
+
+    var clonePowerDiagramFallback = function clonePowerDiagramFallback(element) {
+      if (!element) {
+        return '';
+      }
+      if (element.classList && element.classList.contains('hidden')) {
+        return '';
+      }
+      if (element.hasAttribute && element.hasAttribute('hidden')) {
+        return '';
+      }
+      var rawHtml = typeof element.innerHTML === 'string' ? element.innerHTML.trim() : '';
+      if (!rawHtml) {
+        return '';
+      }
+      var clone = element.cloneNode(true);
+      clone.id = 'powerDiagramOverview';
+      if (clone.classList && clone.classList.contains('hidden')) {
+        clone.classList.remove('hidden');
+      }
+      if (clone.classList) {
+        clone.classList.add('power-diagram');
+      }
+      var bar = clone.querySelector('#powerDiagramBar');
+      if (bar) {
+        bar.id = 'powerDiagramBarOverview';
+      }
+      var legend = clone.querySelector('#powerDiagramLegend');
+      if (legend) {
+        legend.id = 'powerDiagramLegendOverview';
+        if (legend.classList) {
+          legend.classList.add('power-diagram-legend');
+        }
+      }
+      var maxPowerText = clone.querySelector('#maxPowerText');
+      if (maxPowerText) {
+        maxPowerText.id = 'maxPowerTextOverview';
+        if (maxPowerText.classList) {
+          maxPowerText.classList.add('power-diagram-note');
+        }
+      }
+      return clone.outerHTML;
+    };
+
+    return {
+      generateResultsSectionHtml: function generateResultsSectionHtml() {
+        var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+        var textsSource = options.texts && _typeof(options.texts) === 'object' ? options.texts : (typeof texts === 'undefined' ? 'undefined' : _typeof(texts)) === 'object' && texts ? texts : null;
+        var lang = typeof options.lang === 'string' && options.lang ? options.lang : typeof currentLang === 'string' && currentLang ? currentLang : 'en';
+        var dictionary = textsSource ? textsSource[lang] || textsSource.en || {} : {};
+        var breakdownHtml = typeof options.breakdownHtml === 'string' ? options.breakdownHtml : '';
+
+        var powerDiagramHtml = '';
+        if (options.powerDiagramHtml != null) {
+          powerDiagramHtml = String(options.powerDiagramHtml);
+        } else if (options.powerDiagramElem) {
+          powerDiagramHtml = clonePowerDiagramFallback(options.powerDiagramElem);
+        }
+
+        var totals = options.totals && _typeof(options.totals) === 'object' ? options.totals : {};
+        var formatting = options.totalsFormatting && _typeof(options.totalsFormatting) === 'object' ? options.totalsFormatting : {};
+        var totalPowerUnit = typeof formatting.totalPowerUnit === 'string' ? formatting.totalPowerUnit : ' W';
+        var totalCurrent144Unit = typeof formatting.totalCurrent144Unit === 'string' ? formatting.totalCurrent144Unit : ' A';
+        var totalCurrent12Unit = typeof formatting.totalCurrent12Unit === 'string' ? formatting.totalCurrent12Unit : ' A';
+        var batteryLifeSeparator = typeof formatting.batteryLifeUnitSeparator === 'string' ? formatting.batteryLifeUnitSeparator : ' ';
+        var includeRuntimeAverageNote = typeof formatting.includeRuntimeAverageNote === 'boolean' ? formatting.includeRuntimeAverageNote : false;
+
+        var batteryLifeUnitSegment = totals.batteryLifeUnitText ? batteryLifeSeparator + String(totals.batteryLifeUnitText) : '';
+        var runtimeNoteSegment = includeRuntimeAverageNote && totals.runtimeAverageNoteText ? batteryLifeSeparator + String(totals.runtimeAverageNoteText) : '';
+
+        var warnings = Array.isArray(options.warningElements) ? options.warningElements : [];
+        var severityMap = options.warningsSeverityClassMap && _typeof(options.warningsSeverityClassMap) === 'object' ? options.warningsSeverityClassMap : defaultSeverityMap;
+        var warningsHtml = '';
+        for (var index = 0; index < warnings.length; index += 1) {
+          warningsHtml += buildStatusMarkup(warnings[index], severityMap) || '';
+        }
+
+        var sectionId = typeof options.sectionId === 'string' ? options.sectionId : 'resultsSection';
+        var sectionClass = typeof options.sectionClass === 'string' ? options.sectionClass : 'results-section print-section';
+        var bodyClass = typeof options.bodyClass === 'string' ? options.bodyClass : 'results-body';
+        var warningsClass = typeof options.warningsClass === 'string' ? options.warningsClass : 'results-warnings';
+
+        var lines = [
+          '<section id="' + sectionId + '" class="' + sectionClass + '">',
+          '    <h2>' + escapeSafe(dictionary.resultsHeading || '') + '</h2>',
+          '    <div class="' + bodyClass + '">',
+          '        <ul id="breakdownList">' + breakdownHtml + '</ul>',
+          powerDiagramHtml ? '        ' + powerDiagramHtml : '',
+          '        <p><strong>' + escapeSafe(dictionary.totalPowerLabel || '') + '</strong> ' + escapeSafe(totals.totalPowerText || '') + escapeSafe(totalPowerUnit) + '</p>',
+          '        <p><strong>' + escapeSafe(dictionary.totalCurrent144Label || '') + '</strong> ' + escapeSafe(totals.totalCurrent144Text || '') + escapeSafe(totalCurrent144Unit) + '</p>',
+          '        <p><strong>' + escapeSafe(dictionary.totalCurrent12Label || '') + '</strong> ' + escapeSafe(totals.totalCurrent12Text || '') + escapeSafe(totalCurrent12Unit) + '</p>',
+          '        <p><strong>' + escapeSafe(dictionary.batteryLifeLabel || '') + '</strong> ' + escapeSafe(totals.batteryLifeText || '') + escapeSafe(batteryLifeUnitSegment) + escapeSafe(runtimeNoteSegment) + '</p>',
+          '        <p><strong>' + escapeSafe(dictionary.batteryCountLabel || '') + '</strong> ' + escapeSafe(totals.batteryCountText || '') + '</p>',
+          warningsHtml ? '        <div class="' + warningsClass + '">' + warningsHtml + '</div>' : '',
+          '    </div>',
+          '</section>'
+        ];
+
+        return lines.filter(Boolean).join('\n');
+      }
+    };
+  }();
+
+  var moduleBase = _typeof(cineModuleBase) === 'object' && cineModuleBase ? cineModuleBase : globalScope && _typeof(globalScope.cineModuleBase) === 'object' ? globalScope.cineModuleBase : null;
+
+  var registry = null;
+  if (moduleBase && typeof moduleBase.getModuleRegistry === 'function') {
+    try {
+      registry = moduleBase.getModuleRegistry(globalScope);
+    } catch (error) {
+      if (moduleBase && typeof moduleBase.safeWarn === 'function') {
+        moduleBase.safeWarn('Failed to resolve cine.ui.resultsSection module registry.', error);
+      } else if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+        console.warn('Failed to resolve cine.ui.resultsSection module registry.', error);
+      }
+    }
+  }
+
+  var resolved = null;
+  if (registry && typeof registry.get === 'function') {
+    try {
+      resolved = registry.get('cine.ui.resultsSection');
+    } catch (error) {
+      if (moduleBase && typeof moduleBase.safeWarn === 'function') {
+        moduleBase.safeWarn('Failed to read cine.ui.resultsSection module.', error);
+      } else if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+        console.warn('Failed to read cine.ui.resultsSection module.', error);
+      }
+    }
+  }
+
+  if (!resolved && globalScope && _typeof(globalScope.cineUiResultsSection) === 'object') {
+    resolved = globalScope.cineUiResultsSection;
+  }
+
+  var hasGenerateHtml = resolved && typeof resolved.generateResultsSectionHtml === 'function';
+  var api = hasGenerateHtml ? resolved : fallbackModule;
+
+  if (hasGenerateHtml && globalScope) {
+    try {
+      globalScope[cacheKey] = api;
+    } catch (error) {
+      void error;
+    }
+  }
+
+  return api;
+}
+
 function generatePrintableOverview() {
   var config = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   var safeConfig = config && _typeof(config) === 'object' ? config : {};
@@ -132,69 +371,59 @@ function generatePrintableOverview() {
   var breakdownHtml = breakdownListElem.innerHTML;
   var batteryLifeUnitElem = document.getElementById("batteryLifeUnit");
   var powerDiagramElem = typeof document !== 'undefined' ? document.getElementById('powerDiagram') : null;
-  var powerDiagramHtml = '';
-  if (powerDiagramElem && !powerDiagramElem.classList.contains('hidden') && powerDiagramElem.innerHTML.trim().length > 0) {
-    var clone = powerDiagramElem.cloneNode(true);
-    clone.id = 'powerDiagramOverview';
-    clone.classList.remove('hidden');
-    clone.classList.add('power-diagram');
-    var bar = clone.querySelector('#powerDiagramBar');
-    if (bar) {
-      bar.id = 'powerDiagramBarOverview';
+  var resultsModule = resolveResultsSectionModule();
+  var resultsModuleOptions = {
+    lang: lang,
+    texts: texts,
+    document: typeof document !== 'undefined' ? document : null,
+    breakdownHtml: breakdownHtml,
+    powerDiagramElem: powerDiagramElem,
+    totals: {
+      totalPowerText: totalPowerElem ? totalPowerElem.textContent : '',
+      totalCurrent144Text: totalCurrent144Elem ? totalCurrent144Elem.textContent : '',
+      totalCurrent12Text: totalCurrent12Elem ? totalCurrent12Elem.textContent : '',
+      batteryLifeText: batteryLifeElem ? batteryLifeElem.textContent : '',
+      batteryLifeUnitText: batteryLifeUnitElem ? batteryLifeUnitElem.textContent : '',
+      batteryCountText: batteryCountElem ? batteryCountElem.textContent : ''
+    },
+    warningElements: [pinWarnElem, dtapWarnElem],
+    sectionId: 'resultsSection',
+    sectionClass: 'results-section print-section',
+    bodyClass: 'results-body',
+    warningsClass: 'results-warnings',
+    headingId: 'resultsHeading',
+    totalsFormatting: {
+      totalPowerUnit: ' W',
+      totalCurrent144Unit: ' A',
+      totalCurrent12Unit: ' A',
+      includeRuntimeAverageNote: false
+    },
+    powerDiagramClone: {
+      containerId: 'powerDiagramOverview',
+      removeClasses: ['hidden'],
+      addClasses: ['power-diagram'],
+      replacements: [{
+        selector: '#powerDiagramBar',
+        newId: 'powerDiagramBarOverview'
+      }, {
+        selector: '#powerDiagramLegend',
+        newId: 'powerDiagramLegendOverview',
+        addClasses: ['power-diagram-legend']
+      }, {
+        selector: '#maxPowerText',
+        newId: 'maxPowerTextOverview',
+        addClasses: ['power-diagram-note']
+      }]
+    },
+    warningsSeverityClassMap: {
+      danger: 'status-message--danger',
+      warning: 'status-message--warning',
+      note: 'status-message--note',
+      success: 'status-message--success',
+      info: 'status-message--info'
     }
-    var legend = clone.querySelector('#powerDiagramLegend');
-    if (legend) {
-      legend.id = 'powerDiagramLegendOverview';
-      legend.classList.add('power-diagram-legend');
-    }
-    var maxPowerText = clone.querySelector('#maxPowerText');
-    if (maxPowerText) {
-      maxPowerText.id = 'maxPowerTextOverview';
-      maxPowerText.classList.add('power-diagram-note');
-    }
-    powerDiagramHtml = clone.outerHTML;
-  }
-  var resultsHtml = "\n        <ul id=\"breakdownList\">".concat(breakdownHtml, "</ul>\n        ").concat(powerDiagramHtml, "\n        <p><strong>").concat(t.totalPowerLabel, "</strong> ").concat(totalPowerElem.textContent, " W</p>\n        <p><strong>").concat(t.totalCurrent144Label, "</strong> ").concat(totalCurrent144Elem.textContent, " A</p>\n        <p><strong>").concat(t.totalCurrent12Label, "</strong> ").concat(totalCurrent12Elem.textContent, " A</p>\n        <p><strong>").concat(t.batteryLifeLabel, "</strong> ").concat(batteryLifeElem.textContent, " ").concat(batteryLifeUnitElem ? batteryLifeUnitElem.textContent : '', "</p>\n        <p><strong>").concat(t.batteryCountLabel, "</strong> ").concat(batteryCountElem.textContent, "</p>\n    ");
-  var severityClassMap = {
-    danger: 'status-message--danger',
-    warning: 'status-message--warning',
-    note: 'status-message--note',
-    success: 'status-message--success',
-    info: 'status-message--info'
   };
-  var extractSeverityClass = function extractSeverityClass(element) {
-    if (!element) return '';
-    var datasetLevel = element.dataset ? element.dataset.statusLevel : element.getAttribute && element.getAttribute('data-status-level');
-    if (datasetLevel && severityClassMap[datasetLevel]) {
-      return severityClassMap[datasetLevel];
-    }
-    if (element.classList) {
-      return Object.values(severityClassMap).find(function (cls) {
-        return element.classList.contains(cls);
-      }) || '';
-    }
-    var classAttr = typeof element.getAttribute === 'function' ? element.getAttribute('class') : '';
-    if (classAttr) {
-      var classes = classAttr.split(/\s+/);
-      return Object.values(severityClassMap).find(function (cls) {
-        return classes.includes(cls);
-      }) || '';
-    }
-    return '';
-  };
-  var buildStatusMarkup = function buildStatusMarkup(element) {
-    if (!element || element.textContent.trim() === '') {
-      return '';
-    }
-    var classes = ['status-message'];
-    var severityClass = extractSeverityClass(element);
-    if (severityClass) {
-      classes.push(severityClass);
-    }
-    return "<p class=\"".concat(classes.join(' '), "\">").concat(escapeHtmlSafe(element.textContent), "</p>");
-  };
-  var warningHtml = buildStatusMarkup(pinWarnElem) + buildStatusMarkup(dtapWarnElem);
-  var resultsSectionHtml = "\n        <section id=\"resultsSection\" class=\"results-section print-section\">\n            <h2>".concat(t.resultsHeading, "</h2>\n            <div class=\"results-body\">\n                ").concat(resultsHtml, "\n                ").concat(warningHtml ? "<div class=\"results-warnings\">".concat(warningHtml, "</div>") : '', "\n            </div>\n        </section>\n    ");
+  var resultsSectionHtml = typeof resultsModule.generateResultsSectionHtml === 'function' ? resultsModule.generateResultsSectionHtml(resultsModuleOptions) : '';
   var batteryComparisonSection = typeof document !== 'undefined' ? document.getElementById('batteryComparison') : null;
   var isSectionRenderable = function isSectionRenderable(section) {
     if (!section) return false;

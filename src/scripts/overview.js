@@ -1,4 +1,276 @@
-/* global currentLang, texts, devices, escapeHtml, generateConnectorSummary, cameraSelect, monitorSelect, videoSelect, distanceSelect, motorSelects, controllerSelects, batterySelect, hotswapSelect, overviewSectionIcons, breakdownListElem, totalPowerElem, totalCurrent144Elem, totalCurrent12Elem, batteryLifeElem, batteryCountElem, pinWarnElem, dtapWarnElem, getCurrentGearListHtml, currentProjectInfo, generateGearListHtml, getDiagramCss, openDialog, closeDialog, splitGearListHtml, iconMarkup, ICON_GLYPHS, deleteCurrentGearList */
+/* global currentLang, texts, devices, escapeHtml, generateConnectorSummary, cameraSelect, monitorSelect, videoSelect, distanceSelect, motorSelects, controllerSelects, batterySelect, hotswapSelect, overviewSectionIcons, breakdownListElem, totalPowerElem, totalCurrent144Elem, totalCurrent12Elem, batteryLifeElem, batteryCountElem, pinWarnElem, dtapWarnElem, getCurrentGearListHtml, currentProjectInfo, generateGearListHtml, getDiagramCss, openDialog, closeDialog, splitGearListHtml, iconMarkup, ICON_GLYPHS, deleteCurrentGearList, cineModuleBase */
+
+function resolveResultsSectionModule() {
+    const cacheKey = '__cineResultsSectionModule';
+    const globalScope = typeof globalThis !== 'undefined'
+        ? globalThis
+        : (typeof window !== 'undefined'
+            ? window
+            : (typeof self !== 'undefined'
+                ? self
+                : (typeof global !== 'undefined' ? global : null)));
+
+    if (globalScope && globalScope[cacheKey]) {
+        const cachedModule = globalScope[cacheKey];
+        if (cachedModule && typeof cachedModule.generateResultsSectionHtml === 'function') {
+            return cachedModule;
+        }
+    }
+
+    const fallbackModule = (() => {
+        const defaultSeverityMap = {
+            danger: 'status-message--danger',
+            warning: 'status-message--warning',
+            note: 'status-message--note',
+            success: 'status-message--success',
+            info: 'status-message--info'
+        };
+
+        const escapeSafe = (value) => {
+            const stringValue = value == null ? '' : String(value);
+            if (!stringValue) {
+                return '';
+            }
+            if (typeof escapeHtml === 'function') {
+                try {
+                    return escapeHtml(stringValue);
+                } catch (error) {
+                    void error;
+                }
+            }
+            return stringValue
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        };
+
+        const extractSeverityClass = (element, severityMap) => {
+            if (!element) {
+                return '';
+            }
+            const map = severityMap && typeof severityMap === 'object' ? severityMap : defaultSeverityMap;
+            const dataset = element.dataset || (typeof element.getAttribute === 'function'
+                ? { statusLevel: element.getAttribute('data-status-level') }
+                : null);
+            const level = dataset && typeof dataset.statusLevel === 'string'
+                ? dataset.statusLevel
+                : (typeof element.getAttribute === 'function'
+                    ? element.getAttribute('data-status-level')
+                    : null);
+            if (level && map[level]) {
+                return map[level];
+            }
+            if (element.classList) {
+                for (const key in map) {
+                    if (!Object.prototype.hasOwnProperty.call(map, key)) {
+                        continue;
+                    }
+                    const className = map[key];
+                    if (className && element.classList.contains(className)) {
+                        return className;
+                    }
+                }
+            }
+            if (typeof element.getAttribute === 'function') {
+                const classAttr = element.getAttribute('class');
+                if (classAttr && typeof classAttr === 'string') {
+                    const classes = classAttr.split(/\s+/);
+                    for (const key in map) {
+                        if (!Object.prototype.hasOwnProperty.call(map, key)) {
+                            continue;
+                        }
+                        const className = map[key];
+                        if (className && classes.indexOf(className) !== -1) {
+                            return className;
+                        }
+                    }
+                }
+            }
+            return '';
+        };
+
+        const buildStatusMarkup = (element, severityMap) => {
+            if (!element) {
+                return '';
+            }
+            const text = element && typeof element.textContent === 'string' ? element.textContent.trim() : '';
+            if (!text) {
+                return '';
+            }
+            const classes = ['status-message'];
+            const severityClass = extractSeverityClass(element, severityMap);
+            if (severityClass) {
+                classes.push(severityClass);
+            }
+            return `<p class="${classes.join(' ')}">${escapeSafe(text)}</p>`;
+        };
+
+        const clonePowerDiagramFallback = (element) => {
+            if (!element) {
+                return '';
+            }
+            if (element.classList && element.classList.contains('hidden')) {
+                return '';
+            }
+            if (element.hasAttribute && element.hasAttribute('hidden')) {
+                return '';
+            }
+            const rawHtml = typeof element.innerHTML === 'string' ? element.innerHTML.trim() : '';
+            if (!rawHtml) {
+                return '';
+            }
+            const clone = element.cloneNode(true);
+            clone.id = 'powerDiagramOverview';
+            if (clone.classList && clone.classList.contains('hidden')) {
+                clone.classList.remove('hidden');
+            }
+            if (clone.classList) {
+                clone.classList.add('power-diagram');
+            }
+            const bar = clone.querySelector('#powerDiagramBar');
+            if (bar) {
+                bar.id = 'powerDiagramBarOverview';
+            }
+            const legend = clone.querySelector('#powerDiagramLegend');
+            if (legend) {
+                legend.id = 'powerDiagramLegendOverview';
+                if (legend.classList) {
+                    legend.classList.add('power-diagram-legend');
+                }
+            }
+            const maxPowerText = clone.querySelector('#maxPowerText');
+            if (maxPowerText) {
+                maxPowerText.id = 'maxPowerTextOverview';
+                if (maxPowerText.classList) {
+                    maxPowerText.classList.add('power-diagram-note');
+                }
+            }
+            return clone.outerHTML;
+        };
+
+        return {
+            generateResultsSectionHtml(options = {}) {
+                const textsSource = options.texts && typeof options.texts === 'object'
+                    ? options.texts
+                    : (typeof texts === 'object' && texts ? texts : null);
+                const lang = typeof options.lang === 'string' && options.lang
+                    ? options.lang
+                    : (typeof currentLang === 'string' && currentLang ? currentLang : 'en');
+                const dictionary = textsSource ? (textsSource[lang] || textsSource.en || {}) : {};
+                const breakdownHtml = typeof options.breakdownHtml === 'string' ? options.breakdownHtml : '';
+
+                let powerDiagramHtml = '';
+                if (options.powerDiagramHtml != null) {
+                    powerDiagramHtml = String(options.powerDiagramHtml);
+                } else if (options.powerDiagramElem) {
+                    powerDiagramHtml = clonePowerDiagramFallback(options.powerDiagramElem);
+                }
+
+                const totals = typeof options.totals === 'object' && options.totals ? options.totals : {};
+                const formatting = typeof options.totalsFormatting === 'object' && options.totalsFormatting
+                    ? options.totalsFormatting
+                    : {};
+                const totalPowerUnit = typeof formatting.totalPowerUnit === 'string' ? formatting.totalPowerUnit : ' W';
+                const totalCurrent144Unit = typeof formatting.totalCurrent144Unit === 'string' ? formatting.totalCurrent144Unit : ' A';
+                const totalCurrent12Unit = typeof formatting.totalCurrent12Unit === 'string' ? formatting.totalCurrent12Unit : ' A';
+                const batteryLifeSeparator = typeof formatting.batteryLifeUnitSeparator === 'string'
+                    ? formatting.batteryLifeUnitSeparator
+                    : ' ';
+                const includeRuntimeAverageNote = typeof formatting.includeRuntimeAverageNote === 'boolean'
+                    ? formatting.includeRuntimeAverageNote
+                    : false;
+
+                const batteryLifeUnitSegment = totals.batteryLifeUnitText
+                    ? batteryLifeSeparator + String(totals.batteryLifeUnitText)
+                    : '';
+                const runtimeNoteSegment = includeRuntimeAverageNote && totals.runtimeAverageNoteText
+                    ? batteryLifeSeparator + String(totals.runtimeAverageNoteText)
+                    : '';
+
+                const warnings = Array.isArray(options.warningElements) ? options.warningElements : [];
+                const severityMap = options.warningsSeverityClassMap && typeof options.warningsSeverityClassMap === 'object'
+                    ? options.warningsSeverityClassMap
+                    : defaultSeverityMap;
+                let warningsHtml = '';
+                for (let index = 0; index < warnings.length; index += 1) {
+                    warningsHtml += buildStatusMarkup(warnings[index], severityMap) || '';
+                }
+
+                const sectionId = typeof options.sectionId === 'string' ? options.sectionId : 'resultsSection';
+                const sectionClass = typeof options.sectionClass === 'string' ? options.sectionClass : 'results-section print-section';
+                const bodyClass = typeof options.bodyClass === 'string' ? options.bodyClass : 'results-body';
+                const warningsClass = typeof options.warningsClass === 'string' ? options.warningsClass : 'results-warnings';
+
+                const lines = [
+                    `<section id="${sectionId}" class="${sectionClass}">`,
+                    `    <h2>${escapeSafe(dictionary.resultsHeading || '')}</h2>`,
+                    `    <div class="${bodyClass}">`,
+                    `        <ul id="breakdownList">${breakdownHtml}</ul>`,
+                    powerDiagramHtml ? `        ${powerDiagramHtml}` : '',
+                    `        <p><strong>${escapeSafe(dictionary.totalPowerLabel || '')}</strong> ${escapeSafe(totals.totalPowerText || '')}${escapeSafe(totalPowerUnit)}</p>`,
+                    `        <p><strong>${escapeSafe(dictionary.totalCurrent144Label || '')}</strong> ${escapeSafe(totals.totalCurrent144Text || '')}${escapeSafe(totalCurrent144Unit)}</p>`,
+                    `        <p><strong>${escapeSafe(dictionary.totalCurrent12Label || '')}</strong> ${escapeSafe(totals.totalCurrent12Text || '')}${escapeSafe(totalCurrent12Unit)}</p>`,
+                    `        <p><strong>${escapeSafe(dictionary.batteryLifeLabel || '')}</strong> ${escapeSafe(totals.batteryLifeText || '')}${escapeSafe(batteryLifeUnitSegment)}${escapeSafe(runtimeNoteSegment)}</p>`,
+                    `        <p><strong>${escapeSafe(dictionary.batteryCountLabel || '')}</strong> ${escapeSafe(totals.batteryCountText || '')}</p>`,
+                    warningsHtml ? `        <div class="${warningsClass}">${warningsHtml}</div>` : '',
+                    '    </div>',
+                    '</section>'
+                ];
+
+                return lines.filter(Boolean).join('\n');
+            }
+        };
+    })();
+
+    const moduleBase = (typeof cineModuleBase === 'object' && cineModuleBase)
+        || (globalScope && typeof globalScope.cineModuleBase === 'object' ? globalScope.cineModuleBase : null);
+
+    let registry = null;
+    if (moduleBase && typeof moduleBase.getModuleRegistry === 'function') {
+        try {
+            registry = moduleBase.getModuleRegistry(globalScope);
+        } catch (error) {
+            if (moduleBase && typeof moduleBase.safeWarn === 'function') {
+                moduleBase.safeWarn('Failed to resolve cine.ui.resultsSection module registry.', error);
+            } else if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+                console.warn('Failed to resolve cine.ui.resultsSection module registry.', error);
+            }
+        }
+    }
+
+    let resolved = null;
+    if (registry && typeof registry.get === 'function') {
+        try {
+            resolved = registry.get('cine.ui.resultsSection');
+        } catch (error) {
+            if (moduleBase && typeof moduleBase.safeWarn === 'function') {
+                moduleBase.safeWarn('Failed to read cine.ui.resultsSection module.', error);
+            } else if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+                console.warn('Failed to read cine.ui.resultsSection module.', error);
+            }
+        }
+    }
+
+    if (!resolved && globalScope && typeof globalScope.cineUiResultsSection === 'object') {
+        resolved = globalScope.cineUiResultsSection;
+    }
+
+    const hasGenerateHtml = resolved && typeof resolved.generateResultsSectionHtml === 'function';
+    const api = hasGenerateHtml ? resolved : fallbackModule;
+
+    if (hasGenerateHtml && globalScope) {
+        try {
+            globalScope[cacheKey] = api;
+        } catch (error) {
+            void error;
+        }
+    }
+
+    return api;
+}
+
 
 function generatePrintableOverview(config = {}) {
     const safeConfig = (config && typeof config === 'object') ? config : {};
@@ -137,89 +409,56 @@ function generatePrintableOverview(config = {}) {
     const powerDiagramElem = typeof document !== 'undefined'
         ? document.getElementById('powerDiagram')
         : null;
-    let powerDiagramHtml = '';
-    if (
-        powerDiagramElem &&
-        !powerDiagramElem.classList.contains('hidden') &&
-        powerDiagramElem.innerHTML.trim().length > 0
-    ) {
-        const clone = powerDiagramElem.cloneNode(true);
-        clone.id = 'powerDiagramOverview';
-        clone.classList.remove('hidden');
-        clone.classList.add('power-diagram');
-        const bar = clone.querySelector('#powerDiagramBar');
-        if (bar) {
-            bar.id = 'powerDiagramBarOverview';
-        }
-        const legend = clone.querySelector('#powerDiagramLegend');
-        if (legend) {
-            legend.id = 'powerDiagramLegendOverview';
-            legend.classList.add('power-diagram-legend');
-        }
-        const maxPowerText = clone.querySelector('#maxPowerText');
-        if (maxPowerText) {
-            maxPowerText.id = 'maxPowerTextOverview';
-            maxPowerText.classList.add('power-diagram-note');
-        }
-        powerDiagramHtml = clone.outerHTML;
-    }
-    const resultsHtml = `
-        <ul id="breakdownList">${breakdownHtml}</ul>
-        ${powerDiagramHtml}
-        <p><strong>${t.totalPowerLabel}</strong> ${totalPowerElem.textContent} W</p>
-        <p><strong>${t.totalCurrent144Label}</strong> ${totalCurrent144Elem.textContent} A</p>
-        <p><strong>${t.totalCurrent12Label}</strong> ${totalCurrent12Elem.textContent} A</p>
-        <p><strong>${t.batteryLifeLabel}</strong> ${batteryLifeElem.textContent} ${batteryLifeUnitElem ? batteryLifeUnitElem.textContent : ''}</p>
-        <p><strong>${t.batteryCountLabel}</strong> ${batteryCountElem.textContent}</p>
-    `;
 
-    // Get current warning messages with their colors
-    const severityClassMap = {
-        danger: 'status-message--danger',
-        warning: 'status-message--warning',
-        note: 'status-message--note',
-        success: 'status-message--success',
-        info: 'status-message--info'
-    };
-    const extractSeverityClass = (element) => {
-        if (!element) return '';
-        const datasetLevel = element.dataset ? element.dataset.statusLevel : element.getAttribute && element.getAttribute('data-status-level');
-        if (datasetLevel && severityClassMap[datasetLevel]) {
-            return severityClassMap[datasetLevel];
+    const resultsModule = resolveResultsSectionModule();
+    const resultsModuleOptions = {
+        lang,
+        texts,
+        document: typeof document !== 'undefined' ? document : null,
+        breakdownHtml,
+        powerDiagramElem,
+        totals: {
+            totalPowerText: totalPowerElem ? totalPowerElem.textContent : '',
+            totalCurrent144Text: totalCurrent144Elem ? totalCurrent144Elem.textContent : '',
+            totalCurrent12Text: totalCurrent12Elem ? totalCurrent12Elem.textContent : '',
+            batteryLifeText: batteryLifeElem ? batteryLifeElem.textContent : '',
+            batteryLifeUnitText: batteryLifeUnitElem ? batteryLifeUnitElem.textContent : '',
+            batteryCountText: batteryCountElem ? batteryCountElem.textContent : ''
+        },
+        warningElements: [pinWarnElem, dtapWarnElem],
+        sectionId: 'resultsSection',
+        sectionClass: 'results-section print-section',
+        bodyClass: 'results-body',
+        warningsClass: 'results-warnings',
+        headingId: 'resultsHeading',
+        totalsFormatting: {
+            totalPowerUnit: ' W',
+            totalCurrent144Unit: ' A',
+            totalCurrent12Unit: ' A',
+            includeRuntimeAverageNote: false
+        },
+        powerDiagramClone: {
+            containerId: 'powerDiagramOverview',
+            removeClasses: ['hidden'],
+            addClasses: ['power-diagram'],
+            replacements: [
+                { selector: '#powerDiagramBar', newId: 'powerDiagramBarOverview' },
+                { selector: '#powerDiagramLegend', newId: 'powerDiagramLegendOverview', addClasses: ['power-diagram-legend'] },
+                { selector: '#maxPowerText', newId: 'maxPowerTextOverview', addClasses: ['power-diagram-note'] }
+            ]
+        },
+        warningsSeverityClassMap: {
+            danger: 'status-message--danger',
+            warning: 'status-message--warning',
+            note: 'status-message--note',
+            success: 'status-message--success',
+            info: 'status-message--info'
         }
-        if (element.classList) {
-            return Object.values(severityClassMap).find(cls => element.classList.contains(cls)) || '';
-        }
-        const classAttr = typeof element.getAttribute === 'function' ? element.getAttribute('class') : '';
-        if (classAttr) {
-            const classes = classAttr.split(/\s+/);
-            return Object.values(severityClassMap).find(cls => classes.includes(cls)) || '';
-        }
-        return '';
-    };
-    const buildStatusMarkup = (element) => {
-        if (!element || element.textContent.trim() === '') {
-            return '';
-        }
-        const classes = ['status-message'];
-        const severityClass = extractSeverityClass(element);
-        if (severityClass) {
-            classes.push(severityClass);
-        }
-        return `<p class="${classes.join(' ')}">${escapeHtmlSafe(element.textContent)}</p>`;
     };
 
-    const warningHtml = buildStatusMarkup(pinWarnElem) + buildStatusMarkup(dtapWarnElem);
-
-    const resultsSectionHtml = `
-        <section id="resultsSection" class="results-section print-section">
-            <h2>${t.resultsHeading}</h2>
-            <div class="results-body">
-                ${resultsHtml}
-                ${warningHtml ? `<div class="results-warnings">${warningHtml}</div>` : ''}
-            </div>
-        </section>
-    `;
+    const resultsSectionHtml = typeof resultsModule.generateResultsSectionHtml === 'function'
+        ? resultsModule.generateResultsSectionHtml(resultsModuleOptions)
+        : '';
 
     const batteryComparisonSection = typeof document !== 'undefined'
         ? document.getElementById('batteryComparison')
