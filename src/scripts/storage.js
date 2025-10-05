@@ -5852,8 +5852,12 @@ function removeAutoGearPresetFromStorage(presetId, storage) {
   }
 
   let parsedPresets;
+  let normalizedRawPresets = rawPresets;
+  if (typeof rawPresets === 'string' && rawPresets) {
+    normalizedRawPresets = maybeDecompressStoredString(rawPresets);
+  }
   try {
-    parsedPresets = JSON.parse(rawPresets);
+    parsedPresets = JSON.parse(normalizedRawPresets);
   } catch (parseError) {
     console.error('Error parsing automatic gear presets while removing autosaved preset from localStorage:', parseError);
     return;
