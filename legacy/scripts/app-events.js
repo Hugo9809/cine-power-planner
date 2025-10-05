@@ -932,17 +932,24 @@ function ensureAutoBackupBeforeDeletion(context) {
     }
   }
   var backupName = null;
+  var backupSkipped = null;
   if (typeof backupResult === 'string') {
     backupName = backupResult;
   } else if (backupResult && _typeof(backupResult) === 'object') {
     if (backupResult.status === 'skipped') {
-      return backupResult;
+      backupSkipped = backupResult;
     }
     if (typeof backupResult.name === 'string' && backupResult.name) {
       backupName = backupResult.name;
     }
   }
   if (!backupName) {
+    if (backupSkipped) {
+      var reason = typeof backupSkipped.reason === 'string' && backupSkipped.reason ? backupSkipped.reason : 'unspecified';
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn("Automatic backup before ".concat(context || 'deletion', " was skipped (").concat(reason, "). The action was cancelled to protect user data."));
+      }
+    }
     showNotification('error', failureMessage);
     return null;
   }
