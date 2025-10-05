@@ -190,6 +190,13 @@ var CRITICAL_GLOBAL_DEFINITIONS = [
     },
   },
   {
+    name: 'gridSnap',
+    validator: function (value) {
+      return typeof value === 'boolean';
+    },
+    fallback: false,
+  },
+  {
     name: 'iosPwaHelpDialog',
     validator: function (value) {
       return typeof value === 'undefined' || value === null || typeof value === 'object';
@@ -198,6 +205,13 @@ var CRITICAL_GLOBAL_DEFINITIONS = [
   },
   {
     name: 'iosPwaHelpClose',
+    validator: function (value) {
+      return typeof value === 'undefined' || value === null || typeof value === 'object';
+    },
+    fallback: null,
+  },
+  {
+    name: '__cineRuntimeState',
     validator: function (value) {
       return typeof value === 'undefined' || value === null || typeof value === 'object';
     },
@@ -226,6 +240,57 @@ function loaderFallbackSafeGenerateConnectorSummary(device) {
   }
 }
 
+function loaderCreateFallbackIconFontKeys() {
+  return Object.freeze({
+    ESSENTIAL: 'essential',
+    FILM: 'film',
+    GADGET: 'gadget',
+    UICONS: 'uicons',
+    TEXT: 'text',
+  });
+}
+
+function loaderResolveIconFontKeysFallback() {
+  var scope = resolveCriticalGlobalScope();
+  if (scope && scope.ICON_FONT_KEYS && typeof scope.ICON_FONT_KEYS === 'object') {
+    return scope.ICON_FONT_KEYS;
+  }
+
+  try {
+    return loaderCreateFallbackIconFontKeys();
+  } catch (error) {
+    void error;
+    return {
+      ESSENTIAL: 'essential',
+      FILM: 'film',
+      GADGET: 'gadget',
+      UICONS: 'uicons',
+      TEXT: 'text',
+    };
+  }
+}
+
+function loaderResolveIconFontValues() {
+  var keys = loaderResolveIconFontKeysFallback();
+  var values = [];
+
+  if (keys && typeof keys === 'object') {
+    var candidates = [keys.ESSENTIAL, keys.FILM, keys.GADGET, keys.UICONS, keys.TEXT];
+    for (var index = 0; index < candidates.length; index += 1) {
+      var candidate = candidates[index];
+      if (typeof candidate === 'string' && values.indexOf(candidate) === -1) {
+        values.push(candidate);
+      }
+    }
+  }
+
+  if (values.indexOf('uicons') === -1) {
+    values.push('uicons');
+  }
+
+  return values;
+}
+
 CRITICAL_GLOBAL_DEFINITIONS.push({
   name: 'safeGenerateConnectorSummary',
   validator: function (value) {
@@ -240,6 +305,68 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
     return typeof value === 'undefined' || value === null || typeof value === 'object';
   },
   fallback: null,
+});
+
+CRITICAL_GLOBAL_DEFINITIONS.push({
+  name: 'ICON_FONT_KEYS',
+  validator: function (value) {
+    return (
+      value &&
+      typeof value === 'object' &&
+      typeof value.ESSENTIAL === 'string' &&
+      typeof value.FILM === 'string' &&
+      typeof value.GADGET === 'string' &&
+      typeof value.UICONS === 'string' &&
+      typeof value.TEXT === 'string'
+    );
+  },
+  fallback: function () {
+    return loaderResolveIconFontKeysFallback();
+  },
+});
+
+CRITICAL_GLOBAL_DEFINITIONS.push({
+  name: 'iconGlyph',
+  validator: function (value) {
+    return typeof value === 'function';
+  },
+  fallback: function () {
+    var fontValues = loaderResolveIconFontValues();
+
+    return function loaderFallbackIconGlyph(char, font) {
+      var glyphChar = typeof char === 'string' ? char : '';
+      var normalizedFont = null;
+
+      if (typeof font === 'string') {
+        for (var index = 0; index < fontValues.length; index += 1) {
+          if (fontValues[index] === font) {
+            normalizedFont = font;
+            break;
+          }
+        }
+      }
+
+      if (!normalizedFont) {
+        for (var fallbackIndex = 0; fallbackIndex < fontValues.length; fallbackIndex += 1) {
+          if (fontValues[fallbackIndex] === 'uicons') {
+            normalizedFont = fontValues[fallbackIndex];
+            break;
+          }
+        }
+      }
+
+      if (!normalizedFont) {
+        normalizedFont = fontValues.length ? fontValues[0] : 'uicons';
+      }
+
+      try {
+        return Object.freeze({ char: glyphChar, font: normalizedFont });
+      } catch (freezeError) {
+        void freezeError;
+        return { char: glyphChar, font: normalizedFont };
+      }
+    };
+  },
 });
 
 (function initialiseCriticalGlobals() {
