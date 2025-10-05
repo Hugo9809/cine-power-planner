@@ -114,43 +114,194 @@
 
   const providerModules = [];
 
-  providerModules.push(GLOBAL_SCOPE);
+  function addProviderModule(reference, label) {
+    if (!reference || typeof reference !== 'object') {
+      return;
+    }
+
+    providerModules.push({
+      ref: reference,
+      name: label || null,
+    });
+  }
+
+  addProviderModule(GLOBAL_SCOPE, 'global');
 
   const storageModule = tryRequire('../storage.js');
   if (storageModule && typeof storageModule === 'object') {
-    providerModules.push(storageModule);
+    addProviderModule(storageModule, 'storage');
   }
 
   const sessionModule = tryRequire('../app-session.js');
   if (sessionModule && typeof sessionModule === 'object') {
-    providerModules.push(sessionModule);
+    addProviderModule(sessionModule, 'session');
   }
 
   const setupsModule = tryRequire('../app-setups.js');
   if (setupsModule && typeof setupsModule === 'object') {
-    providerModules.push(setupsModule);
+    addProviderModule(setupsModule, 'setups');
   }
-  function resolveFunction(name) {
+
+  const bindingState = Object.create(null);
+  const bindingNames = [];
+
+  function identifyProvider(providerEntry) {
+    if (!providerEntry) {
+      return null;
+    }
+
+    if (providerEntry.name) {
+      return providerEntry.name;
+    }
+
+    const ref = providerEntry.ref;
+    if (!ref || typeof ref !== 'object') {
+      return null;
+    }
+
+    if (ref === GLOBAL_SCOPE) {
+      return 'global';
+    }
+
+    if (typeof ref.constructor === 'function' && ref.constructor.name) {
+      return ref.constructor.name;
+    }
+
+    return null;
+  }
+
+  function ensureBindingEntry(bindingKey, implementationName) {
+    const key = String(bindingKey);
+    let entry = bindingState[key];
+    if (!entry) {
+      entry = {
+        name: key,
+        implementationName: implementationName || key,
+        available: false,
+        providerIndex: -1,
+        providerName: null,
+        lastChecked: null,
+        implementation: null,
+      };
+      bindingState[key] = entry;
+      bindingNames.push(key);
+    } else if (implementationName && entry.implementationName !== implementationName) {
+      entry.implementationName = implementationName;
+    }
+
+    return entry;
+  }
+
+  function resolveBinding(name, options = {}) {
+    const refresh = options && Object.prototype.hasOwnProperty.call(options, 'refresh')
+      ? options.refresh
+      : true;
+
+    const entry = ensureBindingEntry(name);
+    const implementationName = entry.implementationName || String(name);
+    if (!refresh && entry.implementation && typeof entry.implementation === 'function') {
+      return entry;
+    }
+
+    let resolved = null;
+
     for (let index = 0; index < providerModules.length; index += 1) {
-      const provider = providerModules[index];
+      const providerEntry = providerModules[index];
+      const provider = providerEntry && providerEntry.ref;
       if (!provider || typeof provider !== 'object') {
         continue;
       }
 
-      const candidate = provider[name];
+      const candidate = provider[implementationName];
       if (typeof candidate === 'function') {
-        return candidate;
+        resolved = {
+          implementation: candidate,
+          providerIndex: index,
+          providerName: identifyProvider(providerEntry),
+        };
+        break;
       }
     }
 
-    throw new Error(`cinePersistence could not resolve function "${name}".`);
+    entry.available = !!resolved;
+    entry.providerIndex = resolved ? resolved.providerIndex : -1;
+    entry.providerName = resolved ? resolved.providerName : null;
+    entry.lastChecked = Date.now();
+    entry.implementation = resolved ? resolved.implementation : null;
+
+    return entry;
   }
 
-  function createWrapper(name) {
+  function requireBinding(name) {
+    const detail = resolveBinding(name, { refresh: true });
+    if (!detail || typeof detail.implementation !== 'function') {
+      const error = new Error(`cinePersistence could not resolve function "${name}".`);
+      error.code = 'CINE_PERSISTENCE_BINDING_MISSING';
+      error.binding = name;
+      error.detail = {
+        name,
+        available: detail ? detail.available : false,
+        providerName: detail ? detail.providerName : null,
+      };
+      throw error;
+    }
+    return detail.implementation;
+  }
+
+  function snapshotBinding(detail) {
+    if (!detail) {
+      return null;
+    }
+
+    return Object.freeze({
+      name: detail.name,
+      available: !!detail.available,
+      providerIndex: typeof detail.providerIndex === 'number' ? detail.providerIndex : -1,
+      providerName: detail.providerName || null,
+      lastChecked: detail.lastChecked || null,
+      implementation: detail.implementationName || detail.name,
+    });
+  }
+
+  function createWrapper(name, alias) {
+    const bindingKey = alias || name;
+    ensureBindingEntry(bindingKey, name);
     return function persistenceWrapper() {
-      const fn = resolveFunction(name);
+      const fn = requireBinding(bindingKey);
       return fn.apply(this, arguments);
     };
+  }
+
+  function inspectBinding(name, options = {}) {
+    const normalized = String(name);
+    const refresh = options && Object.prototype.hasOwnProperty.call(options, 'refresh')
+      ? options.refresh
+      : true;
+    const detail = resolveBinding(normalized, { refresh });
+    return snapshotBinding(detail);
+  }
+
+  function inspectAllBindings(options = {}) {
+    const refresh = options && Object.prototype.hasOwnProperty.call(options, 'refresh')
+      ? options.refresh
+      : true;
+
+    if (refresh) {
+      for (let index = 0; index < bindingNames.length; index += 1) {
+        resolveBinding(bindingNames[index], { refresh: true });
+      }
+    }
+
+    const snapshot = {};
+    for (let index = 0; index < bindingNames.length; index += 1) {
+      const name = bindingNames[index];
+      snapshot[name] = snapshotBinding(bindingState[name]);
+    }
+    return freezeDeep(snapshot);
+  }
+
+  function listBindings() {
+    return bindingNames.slice();
   }
 
   function freezeDeep(value, seen = new WeakSet()) {
@@ -219,9 +370,9 @@
       recordFullBackupHistoryEntry: createWrapper('recordFullBackupHistoryEntry'),
     },
     autosave: {
-      saveSession: createWrapper('saveCurrentSession'),
-      autoSaveSetup: createWrapper('autoSaveCurrentSetup'),
-      saveGearList: createWrapper('saveCurrentGearList'),
+      saveSession: createWrapper('saveCurrentSession', 'saveSession'),
+      autoSaveSetup: createWrapper('autoSaveCurrentSetup', 'autoSaveSetup'),
+      saveGearList: createWrapper('saveCurrentGearList', 'saveGearList'),
       restoreSessionState: createWrapper('restoreSessionState'),
     },
     backups: {
@@ -231,20 +382,27 @@
       sanitizeBackupPayload: createWrapper('sanitizeBackupPayload'),
       autoBackup: createWrapper('autoBackup'),
       formatFullBackupFilename: createWrapper('formatFullBackupFilename'),
-      downloadPayload: createWrapper('downloadBackupPayload'),
+      downloadPayload: createWrapper('downloadBackupPayload', 'downloadPayload'),
       recordFullBackupHistoryEntry: createWrapper('recordFullBackupHistoryEntry'),
     },
     restore: {
-      proceed: createWrapper('handleRestoreRehearsalProceed'),
-      abort: createWrapper('handleRestoreRehearsalAbort'),
+      proceed: createWrapper('handleRestoreRehearsalProceed', 'proceed'),
+      abort: createWrapper('handleRestoreRehearsalAbort', 'abort'),
     },
     share: {
-      downloadProject: createWrapper('downloadSharedProject'),
+      downloadProject: createWrapper('downloadSharedProject', 'downloadProject'),
       encodeSharedSetup: createWrapper('encodeSharedSetup'),
       decodeSharedSetup: createWrapper('decodeSharedSetup'),
       applySharedSetup: createWrapper('applySharedSetup'),
       applySharedSetupFromUrl: createWrapper('applySharedSetupFromUrl'),
     },
+    __internal: freezeDeep({
+      listBindings,
+      inspectBinding(name, options) {
+        return inspectBinding(name, options) || null;
+      },
+      inspectAllBindings,
+    }),
   };
 
   freezeDeep(persistenceAPI);

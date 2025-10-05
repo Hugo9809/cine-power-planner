@@ -331,6 +331,58 @@
     detailMap[finalPath] = ok;
   }
 
+  function inspectPersistenceModule(persistenceModule, missing, detailMap) {
+    if (!persistenceModule || typeof persistenceModule !== 'object') {
+      return;
+    }
+
+    for (let index = 0; index < REQUIRED_PERSISTENCE_FUNCTIONS.length; index += 1) {
+      inspectFunctionPath(
+        persistenceModule,
+        REQUIRED_PERSISTENCE_FUNCTIONS[index],
+        missing,
+        detailMap,
+        'cinePersistence',
+      );
+    }
+
+    const internal = persistenceModule.__internal;
+    const inspector = internal && typeof internal.inspectBinding === 'function'
+      ? internal.inspectBinding.bind(internal)
+      : null;
+
+    if (!inspector) {
+      const key = 'cinePersistence.__internal.inspectBinding';
+      missing.push(key);
+      detailMap[key] = false;
+      return;
+    }
+
+    for (let index = 0; index < REQUIRED_PERSISTENCE_FUNCTIONS.length; index += 1) {
+      const path = REQUIRED_PERSISTENCE_FUNCTIONS[index];
+      const segments = parsePath(path);
+      const bindingName = segments[segments.length - 1];
+      const bindingPath = `cinePersistence.bindings.${bindingName}`;
+
+      let detail = null;
+      try {
+        detail = inspector(bindingName, { refresh: true });
+      } catch (error) {
+        void error;
+        detail = null;
+      }
+
+      const available = !!(detail && detail.available);
+      if (!available) {
+        missing.push(bindingPath);
+      }
+      detailMap[bindingPath] = available;
+      if (detail) {
+        detailMap[`${bindingPath}.provider`] = detail.providerName || null;
+      }
+    }
+  }
+
   function inspectOfflineFunctions(module, missing, detailMap) {
     for (let index = 0; index < REQUIRED_OFFLINE_FUNCTIONS.length; index += 1) {
       const name = REQUIRED_OFFLINE_FUNCTIONS[index];
@@ -520,9 +572,7 @@
         detailMap['cinePersistence.frozen'] = true;
       }
 
-      for (let index = 0; index < REQUIRED_PERSISTENCE_FUNCTIONS.length; index += 1) {
-        inspectFunctionPath(persistence, REQUIRED_PERSISTENCE_FUNCTIONS[index], missing, detailMap, 'cinePersistence');
-      }
+      inspectPersistenceModule(persistence, missing, detailMap);
     }
 
     if (!offline) {

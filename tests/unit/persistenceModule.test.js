@@ -1,3 +1,7 @@
+jest.mock('../../src/scripts/storage.js', () => ({}));
+jest.mock('../../src/scripts/app-session.js', () => ({}));
+jest.mock('../../src/scripts/app-setups.js', () => ({}));
+
 const STORAGE_FUNCTIONS = [
   'loadDeviceData',
   'saveDeviceData',
@@ -153,6 +157,29 @@ describe('cinePersistence module', () => {
     expectDelegation(persistence.share.decodeSharedSetup, stubs.decodeSharedSetup, 'decodeSharedSetup');
     expectDelegation(persistence.share.applySharedSetup, stubs.applySharedSetup, 'applySharedSetup');
     expectDelegation(persistence.share.applySharedSetupFromUrl, stubs.applySharedSetupFromUrl, 'applySharedSetupFromUrl');
+  });
+
+  test('exposes binding inspection metadata for each wrapper', () => {
+    expect(persistence.__internal).toBeDefined();
+    expect(typeof persistence.__internal.inspectBinding).toBe('function');
+    expect(Array.isArray(persistence.__internal.listBindings())).toBe(true);
+
+    const detail = persistence.__internal.inspectBinding('loadDeviceData');
+    expect(detail).toMatchObject({ name: 'loadDeviceData', available: true });
+
+    const snapshot = persistence.__internal.inspectAllBindings();
+    expect(snapshot.loadDeviceData).toMatchObject({ name: 'loadDeviceData', available: true });
+  });
+
+  test('flags missing bindings and prevents invocation when implementation is removed', () => {
+    delete global.loadDeviceData;
+
+    const detail = persistence.__internal.inspectBinding('loadDeviceData', { refresh: true });
+    expect(detail).toMatchObject({ name: 'loadDeviceData', available: false });
+
+    expect(() => persistence.storage.loadDeviceData()).toThrow(/could not resolve function "loadDeviceData"/i);
+
+    global.loadDeviceData = stubs.loadDeviceData;
   });
 });
 
