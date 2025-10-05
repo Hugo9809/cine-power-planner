@@ -16236,6 +16236,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       renderSettingsLogoPreview,
       normalizeSpellingVariants,
       prevAccentColor,
+      revertAccentColor,
       DEFAULT_ACCENT_COLOR,
       HIGH_CONTRAST_ACCENT_COLOR,
       applyAccentColor,
