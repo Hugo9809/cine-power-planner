@@ -3731,6 +3731,28 @@ var autoGearSearchQuery = '';
 var autoGearSummaryFocus = 'all';
 var autoGearSummaryLast = null;
 var autoGearScenarioFilter = 'all';
+
+function updateAutoGearItemButtonState(type) {
+  const normalizedType = type === 'remove' ? 'remove' : 'add';
+  const button = normalizedType === 'remove' ? autoGearRemoveItemButton : autoGearAddItemButton;
+  if (!button) return;
+  const langTexts = texts[currentLang] || texts.en || {};
+  const isEditing = autoGearEditorActiveItem?.listType === normalizedType;
+  const defaultKey = normalizedType === 'remove' ? 'autoGearRemoveItemButton' : 'autoGearAddItemButton';
+  const defaultLabel = langTexts[defaultKey]
+    || texts.en?.[defaultKey]
+    || button.textContent
+    || '';
+  const updateLabel = langTexts.autoGearUpdateItemButton
+    || texts.en?.autoGearUpdateItemButton
+    || defaultLabel;
+  const label = isEditing ? updateLabel : defaultLabel;
+  const glyph = isEditing
+    ? ICON_GLYPHS.save
+    : (normalizedType === 'remove' ? ICON_GLYPHS.minus : ICON_GLYPHS.add);
+  setButtonLabelWithIcon(button, label, glyph);
+  button.setAttribute('data-help', label);
+}
 function getAutoGearBackupEntrySignature(entry) {
   if (!entry || typeof entry !== 'object') return '';
   return stableStringify({

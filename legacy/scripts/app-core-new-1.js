@@ -3317,11 +3317,31 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   var autoGearBackupRetentionWarningText = '';
   var autoGearEditorDraft = null;
   var autoGearEditorActiveItem = null;
-  var autoGearDraftPendingWarnings = null;
-  var autoGearSearchQuery = '';
-  var autoGearSummaryFocus = 'all';
-  var autoGearSummaryLast = null;
-  var autoGearScenarioFilter = 'all';
+var autoGearDraftPendingWarnings = null;
+var autoGearSearchQuery = '';
+var autoGearSummaryFocus = 'all';
+var autoGearSummaryLast = null;
+var autoGearScenarioFilter = 'all';
+
+function updateAutoGearItemButtonState(type) {
+  var normalizedType = type === 'remove' ? 'remove' : 'add';
+  var button = normalizedType === 'remove' ? autoGearRemoveItemButton : autoGearAddItemButton;
+  if (!button) return;
+  var langTexts = texts[currentLang] || texts.en || {};
+  var isEditing = !!(autoGearEditorActiveItem && autoGearEditorActiveItem.listType === normalizedType);
+  var defaultKey = normalizedType === 'remove' ? 'autoGearRemoveItemButton' : 'autoGearAddItemButton';
+  var defaultLabel = langTexts[defaultKey]
+    || (texts.en && texts.en[defaultKey])
+    || button.textContent
+    || '';
+  var updateLabel = langTexts.autoGearUpdateItemButton
+    || (texts.en && texts.en.autoGearUpdateItemButton)
+    || defaultLabel;
+  var label = isEditing ? updateLabel : defaultLabel;
+  var glyph = isEditing ? ICON_GLYPHS.save : normalizedType === 'remove' ? ICON_GLYPHS.minus : ICON_GLYPHS.add;
+  setButtonLabelWithIcon(button, label, glyph);
+  button.setAttribute('data-help', label);
+}
   function getAutoGearBackupEntrySignature(entry) {
     if (!entry || _typeof(entry) !== 'object') return '';
     return stableStringify({
