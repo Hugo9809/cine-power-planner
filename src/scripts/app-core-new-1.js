@@ -522,6 +522,9 @@ function enqueueCoreBootTask(task) {
     autoGearAutoPresetId: () => '',
     baseAutoGearRules: () => [],
     autoGearScenarioModeSelect: () => null,
+    autoGearRuleNameInput: () => null,
+    autoGearSummaryFocus: () => 'all',
+    autoGearMonitorDefaultControls: () => [],
     safeGenerateConnectorSummary: () =>
       function safeGenerateConnectorSummary(device) {
         if (!device || typeof device !== 'object') {
@@ -543,6 +546,7 @@ function enqueueCoreBootTask(task) {
           return '';
         }
       },
+    totalPowerElem: () => null,
   };
 
   const AUTO_GEAR_REFERENCE_NAMES = Object.keys(AUTO_GEAR_GLOBAL_FALLBACKS);
