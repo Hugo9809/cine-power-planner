@@ -1,5 +1,152 @@
 const { TextEncoder: NodeTextEncoder, TextDecoder: NodeTextDecoder } = require('util');
 
+const createConsoleFacade = (baseConsole) => {
+  if (!baseConsole || baseConsole.__cameraPowerPlannerProxy) {
+    return baseConsole;
+  }
+
+  const overrides = new Map();
+
+  const normalizeDescriptor = (descriptor = {}) => {
+    const normalized = { ...descriptor };
+    if (!Object.prototype.hasOwnProperty.call(normalized, 'configurable')) {
+      normalized.configurable = true;
+    }
+    if (!Object.prototype.hasOwnProperty.call(normalized, 'enumerable')) {
+      normalized.enumerable = true;
+    }
+    if (
+      !Object.prototype.hasOwnProperty.call(normalized, 'writable')
+      && !('get' in normalized || 'set' in normalized)
+    ) {
+      normalized.writable = true;
+    }
+    return normalized;
+  };
+
+  const setOverride = (property, descriptor) => {
+    overrides.set(property, normalizeDescriptor(descriptor));
+  };
+
+  const consoleProxy = new Proxy(baseConsole, {
+    get(target, property, receiver) {
+      if (overrides.has(property)) {
+        const descriptor = overrides.get(property);
+        if (typeof descriptor.get === 'function') {
+          return descriptor.get.call(receiver);
+        }
+        if (Object.prototype.hasOwnProperty.call(descriptor, 'value')) {
+          return descriptor.value;
+        }
+        return undefined;
+      }
+
+      const value = Reflect.get(target, property, receiver);
+      if (typeof value === 'function') {
+        return value.bind(target);
+      }
+      return value;
+    },
+    set(target, property, value) {
+      setOverride(property, { value });
+      return true;
+    },
+    defineProperty(target, property, descriptor) {
+      setOverride(property, descriptor);
+      return true;
+    },
+    deleteProperty(target, property) {
+      if (overrides.has(property)) {
+        overrides.delete(property);
+        return true;
+      }
+      return Reflect.deleteProperty(target, property);
+    },
+    has(target, property) {
+      if (overrides.has(property)) {
+        return true;
+      }
+      return Reflect.has(target, property);
+    },
+    ownKeys(target) {
+      const keys = new Set(Reflect.ownKeys(target));
+      overrides.forEach((_, property) => {
+        keys.add(property);
+      });
+      return Array.from(keys);
+    },
+    getOwnPropertyDescriptor(target, property) {
+      if (overrides.has(property)) {
+        return overrides.get(property);
+      }
+      return Reflect.getOwnPropertyDescriptor(target, property);
+    },
+    getPrototypeOf(target) {
+      return Reflect.getPrototypeOf(target);
+    },
+    setPrototypeOf(target, prototype) {
+      return Reflect.setPrototypeOf(target, prototype);
+    },
+  });
+
+  setOverride('__cameraPowerPlannerProxy', {
+    value: true,
+    configurable: false,
+    enumerable: false,
+    writable: false,
+  });
+  setOverride('__cameraPowerPlannerOriginal', {
+    value: baseConsole,
+    configurable: false,
+    enumerable: false,
+    writable: false,
+  });
+
+  return consoleProxy;
+};
+
+const ensureConsoleFacade = () => {
+  const descriptor = Object.getOwnPropertyDescriptor(global, 'console');
+  const initialConsole = descriptor && 'value' in descriptor ? descriptor.value : global.console;
+  if (!initialConsole) {
+    return initialConsole;
+  }
+
+  if (descriptor && (typeof descriptor.get === 'function' || typeof descriptor.set === 'function')) {
+    try {
+      const current = descriptor.get ? descriptor.get.call(global) : initialConsole;
+      if (current && current.__cameraPowerPlannerProxy) {
+        return current;
+      }
+    } catch (error) {
+      void error;
+    }
+  }
+
+  let baseConsole = initialConsole;
+  let facade = createConsoleFacade(baseConsole);
+
+  Object.defineProperty(global, 'console', {
+    configurable: true,
+    enumerable: descriptor ? descriptor.enumerable : true,
+    get() {
+      if (facade && facade.__cameraPowerPlannerOriginal !== baseConsole) {
+        facade = createConsoleFacade(baseConsole);
+      }
+      return facade;
+    },
+    set(nextConsole) {
+      baseConsole = nextConsole;
+      facade = createConsoleFacade(baseConsole);
+    },
+  });
+
+  global.console = baseConsole;
+  return facade;
+};
+
+const activeConsole = ensureConsoleFacade() || console;
+
 if (typeof global.TextEncoder === 'undefined') {
   global.TextEncoder = NodeTextEncoder;
 }
@@ -35,7 +182,7 @@ const suppressMessages = (originalFn, patterns) => {
   };
 };
 
-if (!console.__cameraPowerPlannerPatched) {
+if (activeConsole && !activeConsole.__cameraPowerPlannerPatched) {
   const suppressedWarns = [
     /^Failed to .*backup/i,
     /^Backup failed/i,
@@ -61,9 +208,9 @@ if (!console.__cameraPowerPlannerPatched) {
     /^Error loading .* from localStorage/i,
   ];
 
-  console.warn = suppressMessages(console.warn?.bind(console), suppressedWarns);
-  console.error = suppressMessages(console.error?.bind(console), suppressedErrors);
-  console.__cameraPowerPlannerPatched = true;
+  activeConsole.warn = suppressMessages(activeConsole.warn?.bind(activeConsole), suppressedWarns);
+  activeConsole.error = suppressMessages(activeConsole.error?.bind(activeConsole), suppressedErrors);
+  activeConsole.__cameraPowerPlannerPatched = true;
 }
 
 if (typeof window !== 'undefined') {
