@@ -96,6 +96,7 @@ function buildSharedImportUiContext() {
 
 let cachedShareUiContext = null;
 let cachedSharedImportUiContext = null;
+let projectDialogInitialSnapshot = null;
 
 function getShareUiContext(scope) {
     if (scope && typeof scope === 'object' && scope.context && typeof scope.context === 'object') {
@@ -119,6 +120,75 @@ function getSharedImportUiContext(scope) {
     }
 
     return cachedSharedImportUiContext;
+}
+
+function cloneProjectDialogState(value) {
+    if (value === null || value === undefined) {
+        return value;
+    }
+    if (Array.isArray(value)) {
+        return value.map(item => cloneProjectDialogState(item));
+    }
+    if (Object.prototype.toString.call(value) === '[object Object]') {
+        const clone = {};
+        Object.keys(value).forEach(key => {
+            clone[key] = cloneProjectDialogState(value[key]);
+        });
+        return clone;
+    }
+    return value;
+}
+
+function getProjectDialogSeedInfo() {
+    if (currentProjectInfo) {
+        return cloneProjectDialogState(currentProjectInfo);
+    }
+    if (projectForm) {
+        try {
+            return cloneProjectDialogState(collectProjectFormData());
+        } catch (error) {
+            if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+                console.warn('Failed to read current project form data before opening dialog', error);
+            }
+        }
+    }
+    return {};
+}
+
+function captureProjectDialogSnapshot() {
+    if (!projectForm) {
+        projectDialogInitialSnapshot = null;
+        return;
+    }
+    try {
+        const snapshot = collectProjectFormData();
+        projectDialogInitialSnapshot = cloneProjectDialogState(snapshot);
+    } catch (error) {
+        projectDialogInitialSnapshot = null;
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+            console.warn('Failed to capture project dialog snapshot', error);
+        }
+    }
+}
+
+function openProjectDialogWithInfo(info) {
+    if (projectForm) {
+        const seed = info && typeof info === 'object' ? info : {};
+        populateProjectForm(seed);
+        captureProjectDialogSnapshot();
+    } else {
+        projectDialogInitialSnapshot = null;
+    }
+    openDialog(projectDialog);
+}
+
+function restoreProjectDialogSnapshot() {
+    if (!projectForm) return;
+    if (projectDialogInitialSnapshot && typeof projectDialogInitialSnapshot === 'object') {
+        populateProjectForm(cloneProjectDialogState(projectDialogInitialSnapshot));
+    } else {
+        projectForm.reset();
+    }
 }
 
 function callSetupsCoreFunction(functionName, args = [], options = {}) {
@@ -466,10 +536,13 @@ generateGearListBtn.addEventListener('click', () => {
         alertPinExceeded();
         return;
     }
-    populateRecordingResolutionDropdown(currentProjectInfo && currentProjectInfo.recordingResolution);
-    populateSensorModeDropdown(currentProjectInfo && currentProjectInfo.sensorMode);
-    populateCodecDropdown(currentProjectInfo && currentProjectInfo.codec);
-    openDialog(projectDialog);
+    const seedInfo = getProjectDialogSeedInfo();
+    if (seedInfo && typeof seedInfo === 'object') {
+        populateRecordingResolutionDropdown(seedInfo.recordingResolution);
+        populateSensorModeDropdown(seedInfo.sensorMode);
+        populateCodecDropdown(seedInfo.codec);
+    }
+    openProjectDialogWithInfo(seedInfo);
 });
 
 if (deleteGearListProjectBtn) {
@@ -481,6 +554,7 @@ if (deleteGearListProjectBtn) {
 const projectCancelBtnRef = typeof projectCancelBtn !== 'undefined' ? projectCancelBtn : null;
 if (projectCancelBtnRef) {
     projectCancelBtnRef.addEventListener('click', () => {
+        restoreProjectDialogSnapshot();
         closeDialog(projectDialog);
     });
 }
@@ -490,6 +564,18 @@ if (projectDialogCloseBtn) {
         if (projectCancelBtnRef) {
             projectCancelBtnRef.click();
         } else {
+            closeDialog(projectDialog);
+        }
+    });
+}
+
+if (projectDialog) {
+    projectDialog.addEventListener('cancel', event => {
+        if (event) event.preventDefault();
+        if (projectCancelBtnRef) {
+            projectCancelBtnRef.click();
+        } else {
+            restoreProjectDialogSnapshot();
             closeDialog(projectDialog);
         }
     });
