@@ -13023,6 +13023,146 @@ const deviceManagerLists = (() => {
   }
   return created;
 })();
+
+const filterHelperScope = (() => {
+  if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE) return CORE_GLOBAL_SCOPE;
+  if (typeof globalThis !== 'undefined' && globalThis) return globalThis;
+  if (typeof window !== 'undefined' && window) return window;
+  if (typeof self !== 'undefined' && self) return self;
+  if (typeof global !== 'undefined' && global) return global;
+  return null;
+})();
+
+function fallbackFilterSelect(selectElem, filterValue) {
+  if (!selectElem || typeof selectElem !== "object") {
+    return;
+  }
+  const text = (filterValue || "").toLowerCase();
+  Array.from(selectElem.options || []).forEach(option => {
+    if (!option || typeof option !== "object") return;
+    const isMatch =
+      option.value === "None"
+      || text === ""
+      || (option.textContent || "").toLowerCase().includes(text);
+    option.hidden = !isMatch;
+    option.disabled = !isMatch;
+  });
+}
+
+function fallbackFilterDeviceList(listElem, filterValue) {
+  if (!listElem || typeof listElem !== "object") {
+    return;
+  }
+  const text = (filterValue || "").toLowerCase();
+  Array.from(listElem.querySelectorAll ? listElem.querySelectorAll("li") : []).forEach(item => {
+    if (!item || typeof item !== "object") return;
+    const summary = item.querySelector ? item.querySelector(".device-summary span") : null;
+    const content = summary && typeof summary.textContent === "string" ? summary.textContent.toLowerCase() : "";
+    item.style.display = text === "" || content.includes(text) ? "" : "none";
+  });
+}
+
+function fallbackAddInputClearButton(inputElem, callback) {
+  if (!inputElem || typeof inputElem !== "object" || typeof inputElem.insertAdjacentElement !== "function") {
+    return;
+  }
+  const clearLabel = (texts[currentLang] && texts[currentLang].clearFilter) || "Clear filter";
+  const clearBtn = document.createElement("button");
+  clearBtn.type = "button";
+  clearBtn.className = "clear-input-btn";
+  clearBtn.innerHTML = iconMarkup(ICON_GLYPHS.circleX, "clear-icon");
+  clearBtn.setAttribute("aria-label", clearLabel);
+  clearBtn.title = clearLabel;
+  clearBtn.hidden = true;
+  clearBtn.addEventListener("click", () => {
+    inputElem.value = "";
+    if (typeof callback === "function") {
+      callback();
+    }
+    if (typeof inputElem.focus === "function") {
+      inputElem.focus();
+    }
+  });
+  inputElem.insertAdjacentElement("afterend", clearBtn);
+  const toggle = () => {
+    clearBtn.hidden = !inputElem.value;
+  };
+  inputElem.addEventListener("input", toggle);
+  toggle();
+}
+
+function fallbackBindFilterInput(inputElem, callback) {
+  if (!inputElem || typeof inputElem !== "object") {
+    return;
+  }
+  const handler = typeof callback === "function" ? callback : () => {};
+  inputElem.addEventListener("input", handler);
+  inputElem.addEventListener("keydown", event => {
+    if (event && event.key === "Escape") {
+      inputElem.value = "";
+      handler();
+    }
+  });
+  fallbackAddInputClearButton(inputElem, handler);
+}
+
+function ensureFilterHelpers() {
+  const scope = filterHelperScope && typeof filterHelperScope === "object"
+    ? filterHelperScope
+    : {};
+  const attachHelper = (key, fn) => {
+    if (typeof scope[key] === "function") {
+      return;
+    }
+    try {
+      scope[key] = fn;
+    } catch (assignError) {
+      try {
+        Object.defineProperty(scope, key, {
+          configurable: true,
+          writable: true,
+          value: fn,
+        });
+      } catch (defineError) {
+        void defineError;
+      }
+    }
+  };
+  attachHelper("filterSelect", fallbackFilterSelect);
+  attachHelper("filterDeviceList", fallbackFilterDeviceList);
+  attachHelper("bindFilterInput", fallbackBindFilterInput);
+  attachHelper("addInputClearButton", fallbackAddInputClearButton);
+  return scope;
+}
+
+ensureFilterHelpers();
+
+function applyFilters() {
+  const helpers = ensureFilterHelpers();
+  const filterFn = typeof helpers.filterDeviceList === "function"
+    ? helpers.filterDeviceList
+    : fallbackFilterDeviceList;
+  if (!(deviceManagerLists instanceof Map)) {
+    return;
+  }
+  deviceManagerLists.forEach(entry => {
+    if (!entry || typeof entry !== "object") {
+      return;
+    }
+    const { list, filterInput } = entry;
+    if (!list || typeof list !== "object") {
+      return;
+    }
+    const value = filterInput && typeof filterInput.value === "string"
+      ? filterInput.value
+      : "";
+    try {
+      filterFn(list, value);
+    } catch (filterError) {
+      console.warn("Failed to apply device manager filters", filterError);
+    }
+  });
+}
 const deviceManagerPreferredOrder = [
   "cameras",
   "viewfinders",
