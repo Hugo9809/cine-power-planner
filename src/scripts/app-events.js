@@ -7,6 +7,45 @@
           getPowerSelectionSnapshot, applyStoredPowerSelection,
           callCoreFunctionIfAvailable */
 
+const eventsLogger = (function resolveEventsLogger() {
+  const scopes = [];
+
+  if (typeof globalThis !== 'undefined' && globalThis) scopes.push(globalThis);
+  if (typeof window !== 'undefined' && window && scopes.indexOf(window) === -1) scopes.push(window);
+  if (typeof self !== 'undefined' && self && scopes.indexOf(self) === -1) scopes.push(self);
+  if (typeof global !== 'undefined' && global && scopes.indexOf(global) === -1) scopes.push(global);
+
+  for (let index = 0; index < scopes.length; index += 1) {
+    const scope = scopes[index];
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+      continue;
+    }
+
+    let logging = null;
+    try {
+      logging = scope.cineLogging || null;
+    } catch (error) {
+      logging = null;
+    }
+
+    if (logging && typeof logging.createLogger === 'function') {
+      try {
+        return logging.createLogger('events', { meta: { source: 'app-events' } });
+      } catch (creationError) {
+        try {
+          if (typeof logging.error === 'function') {
+            logging.error('Failed to create events logger', creationError, { namespace: 'events-bootstrap' });
+          }
+        } catch (logError) {
+          void logError;
+        }
+      }
+    }
+  }
+
+  return null;
+})();
+
 const APP_EVENTS_AUTO_BACKUP_RENAMED_FLAG =
   (typeof globalThis !== 'undefined' && globalThis.__CINE_AUTO_BACKUP_RENAMED_FLAG)
     ? globalThis.__CINE_AUTO_BACKUP_RENAMED_FLAG
@@ -52,6 +91,19 @@ function callEventsCoreFunction(functionName, args = [], options = {}) {
     try {
       return target.apply(scope, args);
     } catch (invokeError) {
+      if (eventsLogger && typeof eventsLogger.error === 'function') {
+        const metadata = {
+          functionName,
+          deferred: !!(options && options.defer),
+          argumentsSnapshot: Array.isArray(args) ? args.slice(0, 5) : null,
+        };
+        try {
+          eventsLogger.error(`Failed to invoke ${functionName}`, invokeError, metadata);
+        } catch (logError) {
+          void logError;
+        }
+      }
+
       if (typeof console !== 'undefined' && typeof console.error === 'function') {
         console.error(`Failed to invoke ${functionName}`, invokeError);
       }
@@ -95,6 +147,22 @@ function hasAnyDeviceSelectionSafe(state) {
     try {
       return coreHelper(state);
     } catch (error) {
+      if (eventsLogger && typeof eventsLogger.warn === 'function') {
+        const statePreview =
+          state && typeof state === 'object'
+            ? Object.keys(state).slice(0, 10)
+            : null;
+        try {
+          eventsLogger.warn(
+            'Failed to evaluate device selections via core helper',
+            error,
+            { statePreview },
+          );
+        } catch (logError) {
+          void logError;
+        }
+      }
+
       if (typeof console !== 'undefined' && typeof console.warn === 'function') {
         console.warn('Failed to evaluate device selections via core helper', error);
       }
