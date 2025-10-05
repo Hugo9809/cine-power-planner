@@ -3780,13 +3780,14 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       };
     }) : [];
     if (typeof saveAutoGearBackups === 'function') {
-      saveAutoGearBackups(payload);
-      return;
+      var storedPayload = saveAutoGearBackups(payload);
+      return Array.isArray(storedPayload) ? storedPayload : payload;
     }
     if (typeof localStorage === 'undefined') {
       throw new Error('Storage unavailable');
     }
     localStorage.setItem(AUTO_GEAR_BACKUPS_KEY, JSON.stringify(payload));
+    return payload;
   }
   function enforceAutoGearBackupRetentionLimit(limit) {
     var normalized = clampAutoGearBackupRetentionLimit(limit);
@@ -3820,8 +3821,12 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       var updatedBackups = autoGearBackups.slice(0, normalized);
       trimmedEntries.push.apply(trimmedEntries, _toConsumableArray(autoGearBackups.slice(normalized)));
       try {
-        persistAutoGearBackups(updatedBackups);
-        autoGearBackups = updatedBackups;
+        var persistedBackups = persistAutoGearBackups(updatedBackups) || [];
+        var finalBackups = Array.isArray(persistedBackups) ? persistedBackups : [];
+        if (finalBackups.length < updatedBackups.length) {
+          trimmedEntries.push.apply(trimmedEntries, _toConsumableArray(updatedBackups.slice(finalBackups.length)));
+        }
+        autoGearBackups = finalBackups;
       } catch (error) {
         console.warn('Failed to trim automatic gear backups to retention limit', error);
         autoGearBackupRetention = previousLimit;
