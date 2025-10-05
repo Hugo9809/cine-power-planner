@@ -73,6 +73,84 @@ function callEventsCoreFunction(functionName, args = [], options = {}) {
     : undefined;
 }
 
+function readCoreDeviceSelectionHelper() {
+  if (typeof globalThis !== 'undefined' && typeof globalThis.hasAnyDeviceSelection === 'function') {
+    return globalThis.hasAnyDeviceSelection;
+  }
+  if (typeof window !== 'undefined' && typeof window.hasAnyDeviceSelection === 'function') {
+    return window.hasAnyDeviceSelection;
+  }
+  if (typeof self !== 'undefined' && typeof self.hasAnyDeviceSelection === 'function') {
+    return self.hasAnyDeviceSelection;
+  }
+  if (typeof global !== 'undefined' && typeof global.hasAnyDeviceSelection === 'function') {
+    return global.hasAnyDeviceSelection;
+  }
+  return null;
+}
+
+function hasAnyDeviceSelectionSafe(state) {
+  const coreHelper = readCoreDeviceSelectionHelper();
+  if (coreHelper) {
+    try {
+      return coreHelper(state);
+    } catch (error) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Failed to evaluate device selections via core helper', error);
+      }
+    }
+  }
+
+  if (!state || typeof state !== 'object') {
+    return false;
+  }
+
+  const isMeaningfulSelection = value => {
+    if (Array.isArray(value)) {
+      return value.some(item => isMeaningfulSelection(item));
+    }
+    if (value == null) {
+      return false;
+    }
+    const normalized = typeof value === 'string' ? value.trim() : value;
+    if (!normalized) {
+      return false;
+    }
+    if (typeof normalized === 'string' && normalized.toLowerCase() === 'none') {
+      return false;
+    }
+    return true;
+  };
+
+  const primarySelections = [
+    state.camera,
+    state.monitor,
+    state.video,
+    state.cage,
+    state.batteryPlate,
+    state.battery,
+    state.batteryHotswap,
+  ];
+
+  if (primarySelections.some(value => isMeaningfulSelection(value))) {
+    return true;
+  }
+
+  if (isMeaningfulSelection(state.motors)) {
+    return true;
+  }
+
+  if (isMeaningfulSelection(state.controllers)) {
+    return true;
+  }
+
+  if (isMeaningfulSelection(state.distance)) {
+    return true;
+  }
+
+  return false;
+}
+
 function getEventsCoreValue(functionName, options = {}) {
   const defaultValue = Object.prototype.hasOwnProperty.call(options, 'defaultValue')
     ? options.defaultValue
@@ -205,7 +283,7 @@ function handleSaveSetupClick() {
   const currentSetup = { ...getCurrentSetupState() };
   const langTexts = texts[currentLang] || {};
   const fallbackTexts = texts.en || {};
-  if (!hasAnyDeviceSelection(currentSetup)) {
+  if (!hasAnyDeviceSelectionSafe(currentSetup)) {
     const message =
       langTexts.alertSetupNeedsDevice ||
       fallbackTexts.alertSetupNeedsDevice ||

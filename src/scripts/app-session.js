@@ -239,6 +239,18 @@ function registerCineUiEntries(registry, entries, warningMessage) {
   }
 }
 
+function safeLoadStoredLogoPreview() {
+  if (typeof loadStoredLogoPreview !== 'function') {
+    return;
+  }
+
+  try {
+    loadStoredLogoPreview();
+  } catch (error) {
+    console.warn('Failed to load stored logo preview', error);
+  }
+}
+
 function areSessionEntriesRegistered(cineUi) {
   if (!cineUi || typeof cineUi !== 'object') {
     return false;
@@ -3714,7 +3726,7 @@ const mountVoltageResetButtonRef = (() => {
     if (settingsFontSize) settingsFontSize.value = fontSize;
     if (settingsFontFamily) settingsFontFamily.value = fontFamily;
     if (settingsLogo) settingsLogo.value = '';
-    if (settingsLogoPreview) loadStoredLogoPreview();
+    if (settingsLogoPreview) safeLoadStoredLogoPreview();
     updateStorageSummary();
     if (autoGearEditor) {
       closeAutoGearEditor();
@@ -3766,7 +3778,7 @@ const mountVoltageResetButtonRef = (() => {
       rememberSettingsMountVoltagesBaseline();
       revertAccentColor();
       if (settingsLogo) settingsLogo.value = '';
-      if (settingsLogoPreview) loadStoredLogoPreview();
+      if (settingsLogoPreview) safeLoadStoredLogoPreview();
       closeAutoGearEditor();
       collapseBackupDiffSection();
       closeDialog(settingsDialog);
@@ -3886,7 +3898,7 @@ const mountVoltageResetButtonRef = (() => {
         } else {
           showNotification('error', texts[currentLang].logoFormatError || 'Unsupported logo format');
           if (settingsLogo) settingsLogo.value = '';
-          loadStoredLogoPreview();
+          safeLoadStoredLogoPreview();
         }
       }
       closeAutoGearEditor();
@@ -3912,7 +3924,7 @@ const mountVoltageResetButtonRef = (() => {
       rememberSettingsMountVoltagesBaseline();
       revertAccentColor();
       if (settingsLogo) settingsLogo.value = '';
-      if (settingsLogoPreview) loadStoredLogoPreview();
+      if (settingsLogoPreview) safeLoadStoredLogoPreview();
       closeAutoGearEditor();
       collapseBackupDiffSection();
       closeDialog(settingsDialog);
@@ -3932,7 +3944,7 @@ const mountVoltageResetButtonRef = (() => {
     rememberSettingsMountVoltagesBaseline();
     revertAccentColor();
     if (settingsLogo) settingsLogo.value = '';
-    if (settingsLogoPreview) loadStoredLogoPreview();
+    if (settingsLogoPreview) safeLoadStoredLogoPreview();
     closeAutoGearEditor();
     collapseBackupDiffSection();
     closeDialog(settingsDialog);
@@ -7402,7 +7414,7 @@ function handleRestoreSettingsInputChange() {
       console.warn('Failed to restore sessionStorage snapshot after restore failure', sessionError);
     }
     try {
-      loadStoredLogoPreview();
+      safeLoadStoredLogoPreview();
     } catch (logoError) {
       console.warn('Failed to refresh logo preview after restore failure', logoError);
     }
@@ -7509,7 +7521,7 @@ function handleRestoreSettingsInputChange() {
         });
       }
       try {
-        loadStoredLogoPreview();
+        safeLoadStoredLogoPreview();
       } catch (logoError) {
         console.warn('Failed to refresh logo preview after restore', logoError);
       }
@@ -7948,9 +7960,7 @@ function resetPlannerStateAfterFactoryReset() {
   }
 
   try {
-    if (typeof loadStoredLogoPreview === 'function') {
-      loadStoredLogoPreview();
-    }
+    safeLoadStoredLogoPreview();
   } catch (error) {
     console.warn('Failed to reset custom logo preview during factory reset', error);
   }
@@ -9030,7 +9040,9 @@ if (helpButton && helpDialog) {
       .replace(/[°º˚]/g, 'deg')
       .replace(/\bdegrees?\b/g, 'deg')
       .replace(/[×✕✖✗✘]/g, 'x');
-    normalized = normalizeSpellingVariants(normalized);
+    if (typeof normalizeSpellingVariants === 'function') {
+      normalized = normalizeSpellingVariants(normalized);
+    }
     normalized = normaliseMarkVariants(normalized);
     return normalized.replace(/[^a-z0-9]+/g, '');
   };
