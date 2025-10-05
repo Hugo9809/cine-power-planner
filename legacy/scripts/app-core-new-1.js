@@ -6916,10 +6916,6 @@ function updateAutoGearItemButtonState(type) {
   }
   var autoGearHeadingElem = document.getElementById('autoGearHeading');
   var autoGearDescriptionElem = document.getElementById('autoGearDescription');
-  var autoGearRuleOptionsSection = document.getElementById('autoGearRuleOptions');
-  var autoGearRuleOptionsHeading = document.getElementById('autoGearRuleOptionsHeading');
-  var autoGearRuleOptionsIntro = document.getElementById('autoGearRuleOptionsIntro');
-  var autoGearRuleOptionsList = document.getElementById('autoGearRuleOptionsList');
   var autoGearMonitorDefaultsSection = document.getElementById('autoGearMonitorDefaultsSection');
   var autoGearMonitorDefaultsHeading = document.getElementById('autoGearMonitorDefaultsHeading');
   var autoGearMonitorDefaultsDescription = document.getElementById('autoGearMonitorDefaultsDescription');
@@ -6954,66 +6950,6 @@ function updateAutoGearItemButtonState(type) {
       setAutoGearMonitorDefault(control.key, event.target.value);
     });
   });
-  function renderAutoGearRuleOptionsContent(lang) {
-    if (!autoGearRuleOptionsSection || !autoGearRuleOptionsList) {
-      return;
-    }
-    var fallbackBundle = texts.en && texts.en.autoGearRuleOptions ? texts.en.autoGearRuleOptions : null;
-    var langBundle = texts[lang] && texts[lang].autoGearRuleOptions ? texts[lang].autoGearRuleOptions : null;
-    var bundle = langBundle || fallbackBundle;
-    var groups = Array.isArray(bundle === null || bundle === void 0 ? void 0 : bundle.groups) && bundle.groups.length ? bundle.groups : Array.isArray(fallbackBundle === null || fallbackBundle === void 0 ? void 0 : fallbackBundle.groups) && fallbackBundle.groups.length ? fallbackBundle.groups : [];
-    var headingText = (bundle === null || bundle === void 0 ? void 0 : bundle.heading) || (fallbackBundle === null || fallbackBundle === void 0 ? void 0 : fallbackBundle.heading) || '';
-    if (autoGearRuleOptionsHeading) {
-      autoGearRuleOptionsHeading.textContent = headingText;
-      if (headingText) {
-        autoGearRuleOptionsHeading.setAttribute('data-help', headingText);
-      } else {
-        autoGearRuleOptionsHeading.removeAttribute('data-help');
-      }
-    }
-    var introText = (bundle === null || bundle === void 0 ? void 0 : bundle.intro) || (fallbackBundle === null || fallbackBundle === void 0 ? void 0 : fallbackBundle.intro) || '';
-    if (autoGearRuleOptionsIntro) {
-      autoGearRuleOptionsIntro.textContent = introText;
-      autoGearRuleOptionsIntro.hidden = !introText;
-    }
-    autoGearRuleOptionsList.innerHTML = '';
-    groups.forEach(function (group) {
-      if (!group || _typeof(group) !== 'object') return;
-      var title = typeof group.title === 'string' ? group.title.trim() : '';
-      var summary = typeof group.summary === 'string' ? group.summary.trim() : '';
-      var details = Array.isArray(group.details) ? group.details.map(function (detail) {
-        return typeof detail === 'string' ? detail.trim() : '';
-      }).filter(Boolean) : [];
-      if (!title && !summary && !details.length) return;
-      var item = document.createElement('li');
-      item.className = 'auto-gear-rule-options-item';
-      if (title) {
-        var titleElem = document.createElement('strong');
-        titleElem.className = 'auto-gear-rule-option-title';
-        titleElem.textContent = title;
-        item.appendChild(titleElem);
-      }
-      if (summary) {
-        var summaryElem = document.createElement('p');
-        summaryElem.className = 'auto-gear-rule-option-summary settings-hint';
-        summaryElem.textContent = summary;
-        item.appendChild(summaryElem);
-      }
-      if (details.length) {
-        var detailsList = document.createElement('ul');
-        detailsList.className = 'auto-gear-rule-option-details';
-        details.forEach(function (detailText) {
-          var detailItem = document.createElement('li');
-          detailItem.textContent = detailText;
-          detailsList.appendChild(detailItem);
-        });
-        item.appendChild(detailsList);
-      }
-      autoGearRuleOptionsList.appendChild(item);
-    });
-    var hasItems = autoGearRuleOptionsList.children.length > 0;
-    autoGearRuleOptionsSection.hidden = !hasItems;
-  }
   var autoGearSearchInput = document.getElementById('autoGearSearch');
   var autoGearSearchLabel = document.getElementById('autoGearSearchLabel');
   var autoGearFilterScenarioLabel = document.getElementById('autoGearFilterScenarioLabel');
@@ -8160,7 +8096,6 @@ function updateAutoGearItemButtonState(type) {
       var _texts$en71;
       autoGearDescriptionElem.textContent = texts[lang].autoGearDescription || ((_texts$en71 = texts.en) === null || _texts$en71 === void 0 ? void 0 : _texts$en71.autoGearDescription) || '';
     }
-    renderAutoGearRuleOptionsContent(lang);
     if (autoGearMonitorDefaultsHeading) {
       var _texts$en72;
       var _heading = texts[lang].autoGearMonitorDefaultsHeading || ((_texts$en72 = texts.en) === null || _texts$en72 === void 0 ? void 0 : _texts$en72.autoGearMonitorDefaultsHeading) || autoGearMonitorDefaultsHeading.textContent;
