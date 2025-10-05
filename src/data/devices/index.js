@@ -8,8 +8,13 @@ function registerDevice(path, data) {
     obj = obj[part] = obj[part] || {};
   }
   var last = parts[0];
-  if (obj[last] && typeof obj[last] === 'object' && typeof data === 'object' && !Array.isArray(data)) {
-    obj[last] = Object.assign(obj[last], data);
+  if (
+    obj[last] &&
+    typeof obj[last] === 'object' &&
+    typeof data === 'object' &&
+    !Array.isArray(data)
+  ) {
+    obj[last] = Object.assign({}, obj[last], data);
   } else {
     obj[last] = data;
   }
