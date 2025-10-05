@@ -110,6 +110,59 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
 
 const CORE_GLOBAL_SCOPE = CORE_PART1_RUNTIME_SCOPE;
+const CORE_TEMPERATURE_QUEUE_KEY = "__cinePendingTemperatureNote";
+const CORE_TEMPERATURE_RENDER_NAME = "renderTemperatureNote";
+
+function getCoreGlobalObject() {
+  if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === "object") {
+    return CORE_GLOBAL_SCOPE;
+  }
+  if (typeof globalThis !== "undefined" && typeof globalThis === "object") {
+    return globalThis;
+  }
+  if (typeof window !== "undefined" && typeof window === "object") {
+    return window;
+  }
+  if (typeof self !== "undefined" && typeof self === "object") {
+    return self;
+  }
+  if (typeof global !== "undefined" && typeof global === "object") {
+    return global;
+  }
+  return null;
+}
+
+function dispatchTemperatureNoteRender(hours) {
+  const scope = getCoreGlobalObject();
+  const renderer =
+    typeof renderTemperatureNote === "function"
+      ? renderTemperatureNote
+      : scope && typeof scope[CORE_TEMPERATURE_RENDER_NAME] === "function"
+        ? scope[CORE_TEMPERATURE_RENDER_NAME]
+        : null;
+
+  if (typeof renderer === "function") {
+    renderer(hours);
+    return;
+  }
+
+  if (!scope || typeof scope !== "object") {
+    return;
+  }
+
+  let pending = scope[CORE_TEMPERATURE_QUEUE_KEY];
+  if (!pending || typeof pending !== "object") {
+    pending = {};
+  }
+  pending.latestHours = hours;
+  try {
+    pending.updatedAt = Date.now ? Date.now() : new Date().getTime();
+  } catch (timestampError) {
+    void timestampError;
+    pending.updatedAt = 0;
+  }
+  scope[CORE_TEMPERATURE_QUEUE_KEY] = pending;
+}
 
 function exposeCoreRuntimeConstant(name, value) {
   if (typeof name !== 'string' || !name) {
@@ -7737,7 +7790,7 @@ function setLanguage(lang) {
     runtimeAverageNoteElem.textContent =
       fb && fb.count > 4 ? texts[lang].runtimeAverageNote : '';
   }
-  renderTemperatureNote(lastRuntimeHours);
+  dispatchTemperatureNoteRender(lastRuntimeHours);
   updateFeedbackTemperatureLabel(lang, temperatureUnit);
   updateFeedbackTemperatureOptions(lang, temperatureUnit);
   const tempNoteElem = document.getElementById("temperatureNote");

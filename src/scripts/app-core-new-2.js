@@ -24,6 +24,49 @@ var CORE_PART2_GLOBAL_SCOPES = [
   typeof global !== 'undefined' && typeof global === 'object' ? global : null,
 ].filter(Boolean);
 
+var CORE_TEMPERATURE_QUEUE_KEY = '__cinePendingTemperatureNote';
+var CORE_TEMPERATURE_RENDER_NAME = 'renderTemperatureNote';
+
+function assignCoreTemperatureNoteRenderer(renderer) {
+  if (typeof renderer !== 'function') {
+    return;
+  }
+
+  for (let index = 0; index < CORE_PART2_GLOBAL_SCOPES.length; index += 1) {
+    const scope = CORE_PART2_GLOBAL_SCOPES[index];
+    if (!scope || typeof scope !== 'object') {
+      continue;
+    }
+
+    try {
+      scope[CORE_TEMPERATURE_RENDER_NAME] = renderer;
+      const pending = scope[CORE_TEMPERATURE_QUEUE_KEY];
+      if (pending && typeof pending === 'object') {
+        if (Object.prototype.hasOwnProperty.call(pending, 'latestHours')) {
+          const hours = pending.latestHours;
+          if (typeof hours !== 'undefined') {
+            try {
+              renderer(hours);
+            } catch (temperatureRenderError) {
+              if (typeof console !== 'undefined' && typeof console.error === 'function') {
+                console.error('Failed to apply pending temperature note render', temperatureRenderError);
+              }
+            }
+          }
+        }
+        try {
+          delete pending.latestHours;
+        } catch (clearLatestError) {
+          void clearLatestError;
+          pending.latestHours = undefined;
+        }
+      }
+    } catch (assignError) {
+      void assignError;
+    }
+  }
+}
+
 function readGlobalScopeValue(name) {
   for (let index = 0; index < CORE_PART2_GLOBAL_SCOPES.length; index += 1) {
     const scope = CORE_PART2_GLOBAL_SCOPES[index];
@@ -13830,6 +13873,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       html += "</table>";
       container.innerHTML = html;
     }
+
+    assignCoreTemperatureNoteRenderer(renderTemperatureNote);
     
     function ensureFeedbackTemperatureOptions(select) {
       if (!select) return;
