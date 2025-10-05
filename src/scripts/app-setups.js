@@ -4777,8 +4777,8 @@ function saveCurrentGearList() {
             setup.gearList = html;
             changed = true;
         }
-    } else if (Object.prototype.hasOwnProperty.call(setup, 'gearList')) {
-        delete setup.gearList;
+    } else if (setup.gearList !== '') {
+        setup.gearList = '';
         changed = true;
     }
 
@@ -4787,6 +4787,11 @@ function saveCurrentGearList() {
         const existingInfoSignature = existingInfo ? stableStringify(existingInfo) : '';
         if (existingInfoSignature !== projectInfoSignature) {
             setup.projectInfo = projectInfoSnapshotForSetups;
+            changed = true;
+        }
+    } else if (projectInfoSnapshot === null) {
+        if (setup.projectInfo !== null) {
+            setup.projectInfo = null;
             changed = true;
         }
     } else if (Object.prototype.hasOwnProperty.call(setup, 'projectInfo')) {
