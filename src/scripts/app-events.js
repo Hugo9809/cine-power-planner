@@ -1155,11 +1155,12 @@ function ensureAutoBackupBeforeDeletion(context, options = {}) {
   }
 
   let backupName = null;
+  let backupSkipped = null;
   if (typeof backupResult === 'string') {
     backupName = backupResult;
   } else if (backupResult && typeof backupResult === 'object') {
     if (backupResult.status === 'skipped') {
-      return backupResult;
+      backupSkipped = backupResult;
     }
     if (typeof backupResult.name === 'string' && backupResult.name) {
       backupName = backupResult.name;
@@ -1167,6 +1168,16 @@ function ensureAutoBackupBeforeDeletion(context, options = {}) {
   }
 
   if (!backupName) {
+    if (backupSkipped) {
+      const reason = typeof backupSkipped.reason === 'string' && backupSkipped.reason
+        ? backupSkipped.reason
+        : 'unspecified';
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn(
+          `Automatic backup before ${context || 'deletion'} was skipped (${reason}). The action was cancelled to protect user data.`,
+        );
+      }
+    }
     showNotification('error', failureMessage);
     return null;
   }

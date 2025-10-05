@@ -21,6 +21,7 @@ describe('delete gear list action', () => {
   let deleteProjectMock;
   let saveSessionStateMock;
   let confirmSpy;
+  let showNotificationMock;
 
   beforeEach(() => {
     storedSetups = {
@@ -45,6 +46,7 @@ describe('delete gear list action', () => {
     saveSetupsMock = jest.fn();
     deleteProjectMock = jest.fn();
     saveSessionStateMock = jest.fn();
+    showNotificationMock = jest.fn();
 
     env = setupScriptEnvironment({
       globals: {
@@ -52,7 +54,8 @@ describe('delete gear list action', () => {
         saveSetups: saveSetupsMock,
         deleteProject: deleteProjectMock,
         saveProject: jest.fn(),
-        saveSessionState: saveSessionStateMock
+        saveSessionState: saveSessionStateMock,
+        showNotification: showNotificationMock
       }
     });
 
@@ -66,6 +69,7 @@ describe('delete gear list action', () => {
     saveSetupsMock.mockClear();
     deleteProjectMock.mockClear();
     saveSessionStateMock.mockClear();
+    showNotificationMock.mockClear();
   });
 
   afterEach(() => {
@@ -145,5 +149,34 @@ describe('delete gear list action', () => {
     expect(confirmSpy).toHaveBeenCalledTimes(2);
     expect(deletedEvents.length).toBe(1);
     expect(deletedEvents[0].detail.projectName).toBe('Project One');
+  });
+
+  test('deleteCurrentGearList cancels when auto backup is skipped', () => {
+    const deletedEvents = [];
+    const deletedListener = (event) => deletedEvents.push(event);
+    document.addEventListener('gearlist:deleted', deletedListener);
+
+    const autoBackupSpy = jest
+      .spyOn(env.utils, 'autoBackup')
+      .mockReturnValue({ status: 'skipped', reason: 'auto-backup-selected' });
+
+    const result = env.utils.deleteCurrentGearList();
+
+    autoBackupSpy.mockRestore();
+    document.removeEventListener('gearlist:deleted', deletedListener);
+
+    expect(result).toBe(false);
+    expect(autoBackupSpy).toHaveBeenCalled();
+    expect(confirmSpy).toHaveBeenCalledTimes(2);
+    expect(showNotificationMock).toHaveBeenCalledWith(
+      'error',
+      expect.stringContaining('Automatic backup failed'),
+    );
+    expect(deleteProjectMock).not.toHaveBeenCalled();
+    expect(saveSetupsMock).not.toHaveBeenCalled();
+    expect(saveSessionStateMock).not.toHaveBeenCalled();
+    expect(storedSetups['Project One'].gearList).toBe(savedGearHtml);
+    expect(storedSetups['Project One'].projectInfo).toEqual({ note: 'persisted' });
+    expect(deletedEvents.length).toBe(0);
   });
 });
