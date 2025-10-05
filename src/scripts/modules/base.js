@@ -1,5 +1,5 @@
 (function () {
-  function detectGlobalScope() {
+  function fallbackDetectGlobalScope() {
     if (typeof globalThis !== 'undefined') {
       return globalThis;
     }
@@ -15,9 +15,39 @@
     return {};
   }
 
+  const LOCAL_SCOPE = fallbackDetectGlobalScope();
+
+  function resolveArchitecture(scope) {
+    const targetScope = scope || LOCAL_SCOPE;
+
+    if (typeof require === 'function') {
+      try {
+        const required = require('./architecture.js');
+        if (required && typeof required === 'object') {
+          return required;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    if (targetScope && typeof targetScope.cineModuleArchitecture === 'object') {
+      return targetScope.cineModuleArchitecture;
+    }
+
+    return null;
+  }
+
+  const ARCHITECTURE = resolveArchitecture(LOCAL_SCOPE);
+
+  const detectGlobalScope =
+    ARCHITECTURE && typeof ARCHITECTURE.detectGlobalScope === 'function'
+      ? ARCHITECTURE.detectGlobalScope
+      : fallbackDetectGlobalScope;
+
   const PRIMARY_SCOPE = detectGlobalScope();
 
-  function collectCandidateScopes(primary) {
+  function fallbackCollectCandidateScopes(primary) {
     const scopes = [];
 
     function pushScope(scope) {
@@ -38,7 +68,16 @@
     return scopes;
   }
 
-  function baseTryRequire(modulePath) {
+  const collectCandidateScopes =
+    ARCHITECTURE && typeof ARCHITECTURE.collectCandidateScopes === 'function'
+      ? function (primary) {
+          return ARCHITECTURE.collectCandidateScopes(primary || PRIMARY_SCOPE);
+        }
+      : function (primary) {
+          return fallbackCollectCandidateScopes(primary || PRIMARY_SCOPE);
+        };
+
+  function fallbackTryRequire(modulePath) {
     if (typeof require !== 'function') {
       return null;
     }
@@ -50,6 +89,13 @@
       return null;
     }
   }
+
+  const baseTryRequire =
+    ARCHITECTURE && typeof ARCHITECTURE.tryRequire === 'function'
+      ? function (modulePath) {
+          return ARCHITECTURE.tryRequire(modulePath);
+        }
+      : fallbackTryRequire;
 
   function baseResolveModuleRegistry(scope) {
     const required = baseTryRequire('./registry.js');
@@ -86,39 +132,60 @@
 
   const PENDING_QUEUE_KEY = '__cinePendingModuleRegistrations__';
 
-  function ensureQueue(scope) {
-    if (!scope || typeof scope !== 'object') {
-      return null;
-    }
-
-    let queue = scope[PENDING_QUEUE_KEY];
-    if (Array.isArray(queue)) {
-      return queue;
-    }
-
+  function fallbackDefineHiddenProperty(target, name, value) {
     try {
-      Object.defineProperty(scope, PENDING_QUEUE_KEY, {
+      Object.defineProperty(target, name, {
         configurable: true,
         enumerable: false,
         writable: true,
-        value: [],
+        value,
       });
-      queue = scope[PENDING_QUEUE_KEY];
+      return true;
     } catch (error) {
       void error;
-      try {
-        if (!Array.isArray(scope[PENDING_QUEUE_KEY])) {
-          scope[PENDING_QUEUE_KEY] = [];
-        }
-        queue = scope[PENDING_QUEUE_KEY];
-      } catch (assignmentError) {
-        void assignmentError;
-        return null;
-      }
     }
 
-    return queue;
+    try {
+      target[name] = value;
+      return true;
+    } catch (assignmentError) {
+      void assignmentError;
+    }
+
+    return false;
   }
+
+  const defineHiddenProperty =
+    ARCHITECTURE && typeof ARCHITECTURE.defineHiddenProperty === 'function'
+      ? ARCHITECTURE.defineHiddenProperty
+      : fallbackDefineHiddenProperty;
+
+  const ensureQueue =
+    ARCHITECTURE && typeof ARCHITECTURE.ensureQueue === 'function'
+      ? function (scope) {
+          return ARCHITECTURE.ensureQueue(scope, PENDING_QUEUE_KEY);
+        }
+      : function (scope) {
+          if (!scope || typeof scope !== 'object') {
+            return null;
+          }
+
+          let queue = scope[PENDING_QUEUE_KEY];
+          if (Array.isArray(queue)) {
+            return queue;
+          }
+
+          if (!defineHiddenProperty(scope, PENDING_QUEUE_KEY, [])) {
+            return null;
+          }
+
+          queue = scope[PENDING_QUEUE_KEY];
+          if (!Array.isArray(queue)) {
+            return null;
+          }
+
+          return queue;
+        };
 
   function queueModuleRegistration(scope, name, api, options) {
     const queue = ensureQueue(scope);
@@ -160,7 +227,7 @@
     return false;
   }
 
-  function baseFreezeDeep(value, seen = new WeakSet()) {
+  function fallbackFreezeDeep(value, seen = new WeakSet()) {
     if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
       return value;
     }
@@ -178,13 +245,20 @@
       if (!descriptor || ('get' in descriptor) || ('set' in descriptor)) {
         continue;
       }
-      baseFreezeDeep(descriptor.value, seen);
+      fallbackFreezeDeep(descriptor.value, seen);
     }
 
     return Object.freeze(value);
   }
 
-  function baseSafeWarn(message, detail) {
+  const baseFreezeDeep =
+    ARCHITECTURE && typeof ARCHITECTURE.freezeDeep === 'function'
+      ? function (value) {
+          return ARCHITECTURE.freezeDeep(value);
+        }
+      : fallbackFreezeDeep;
+
+  function fallbackSafeWarn(message, detail) {
     if (typeof console === 'undefined' || typeof console.warn !== 'function') {
       return;
     }
@@ -199,6 +273,11 @@
       void error;
     }
   }
+
+  const baseSafeWarn =
+    ARCHITECTURE && typeof ARCHITECTURE.safeWarn === 'function'
+      ? ARCHITECTURE.safeWarn
+      : fallbackSafeWarn;
 
   function exposeGlobal(name, value, scope, options = {}) {
     const targetScope = scope || PRIMARY_SCOPE;

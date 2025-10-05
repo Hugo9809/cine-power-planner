@@ -1,5 +1,5 @@
 (function () {
-  function detectPrimaryScope() {
+  function fallbackDetectPrimaryScope() {
     if (typeof globalThis !== 'undefined') {
       return globalThis;
     }
@@ -15,9 +15,39 @@
     return {};
   }
 
+  const LOCAL_SCOPE = fallbackDetectPrimaryScope();
+
+  function resolveArchitecture(scope) {
+    const targetScope = scope || LOCAL_SCOPE;
+
+    if (typeof require === 'function') {
+      try {
+        const required = require('./architecture.js');
+        if (required && typeof required === 'object') {
+          return required;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    if (targetScope && typeof targetScope.cineModuleArchitecture === 'object') {
+      return targetScope.cineModuleArchitecture;
+    }
+
+    return null;
+  }
+
+  const ARCHITECTURE = resolveArchitecture(LOCAL_SCOPE);
+
+  const detectPrimaryScope =
+    ARCHITECTURE && typeof ARCHITECTURE.detectGlobalScope === 'function'
+      ? ARCHITECTURE.detectGlobalScope
+      : fallbackDetectPrimaryScope;
+
   const PRIMARY_SCOPE = detectPrimaryScope();
 
-  function collectCandidateScopes(primary) {
+  function fallbackCollectCandidateScopes(primary) {
     const scopes = [];
 
     function pushScope(scope) {
@@ -38,29 +68,48 @@
     return scopes;
   }
 
-  function tryRequireLocal(modulePath) {
-    if (typeof require !== 'function') {
-      return null;
-    }
+  const collectCandidateScopes =
+    ARCHITECTURE && typeof ARCHITECTURE.collectCandidateScopes === 'function'
+      ? function (primary) {
+          return ARCHITECTURE.collectCandidateScopes(primary || PRIMARY_SCOPE);
+        }
+      : function (primary) {
+          return fallbackCollectCandidateScopes(primary || PRIMARY_SCOPE);
+        };
 
-    try {
-      return require(modulePath);
-    } catch (error) {
-      void error;
-      return null;
-    }
-  }
+  const tryRequire =
+    ARCHITECTURE && typeof ARCHITECTURE.tryRequire === 'function'
+      ? ARCHITECTURE.tryRequire
+      : function (modulePath) {
+          if (typeof require !== 'function') {
+            return null;
+          }
+
+          try {
+            return require(modulePath);
+          } catch (error) {
+            void error;
+            return null;
+          }
+        };
 
   let resolvedModuleBase;
   let hasResolvedModuleBase = false;
 
   function resolveModuleBase() {
-    const required = tryRequireLocal('./base.js');
+    const required = tryRequire('./base.js');
     if (required && typeof required === 'object') {
       return required;
     }
 
     const scopes = collectCandidateScopes(PRIMARY_SCOPE);
+    if (ARCHITECTURE && typeof ARCHITECTURE.resolveFromScopes === 'function') {
+      const resolved = ARCHITECTURE.resolveFromScopes('cineModuleBase', { scopes });
+      if (resolved && typeof resolved === 'object') {
+        return resolved;
+      }
+    }
+
     for (let index = 0; index < scopes.length; index += 1) {
       const scope = scopes[index];
       if (scope && typeof scope.cineModuleBase === 'object') {
@@ -122,7 +171,7 @@
     if (base && typeof base.tryRequire === 'function') {
       return base.tryRequire;
     }
-    return tryRequireLocal;
+    return tryRequire;
   }
 
   function resolveModuleRegistry(scope) {
@@ -143,6 +192,13 @@
     }
 
     const scopes = getCandidateScopes(targetScope);
+    if (ARCHITECTURE && typeof ARCHITECTURE.resolveFromScopes === 'function') {
+      const resolved = ARCHITECTURE.resolveFromScopes('cineModules', { scopes });
+      if (resolved && typeof resolved === 'object') {
+        return resolved;
+      }
+    }
+
     for (let index = 0; index < scopes.length; index += 1) {
       const candidate = scopes[index];
       if (candidate && typeof candidate.cineModules === 'object') {
