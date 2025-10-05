@@ -97,7 +97,7 @@ Consultez `docs/translation-guide.md` pour le guide de localisation.
 - **Règles automatiques de matériel** – Définissez des ajouts/suppressions déclenchés par scénario avec contrôle d’import/export et backups horodatés.
 - **Tableau de couverture des règles** – Résume la couverture par scénario, les déclencheurs dupliqués, les bilans nets, les scénarios superposés, les conflits et les exigences non couvertes depuis Règles automatiques, applique des filtres de focus hors ligne et partage les mêmes informations via exports et impressions.
 - **Tableau de bord données & stockage** – Auditez projets, listes, matériels personnalisés, favoris et retours d’autonomie directement depuis Paramètres et estimez la taille du backup.
-- **Inspecteur de sauvegarde runtime** – Le bundle runtime consigne le résultat dans `window.__cineRuntimeIntegrity` et expose `window.cineRuntime.verifyCriticalFlows()` afin que l’équipe confirme les parcours de sauvegarde/partage/restauration avant le départ.
+- **Inspecteur de sauvegarde runtime** – Le bundle runtime consigne le résultat dans `window.__cineRuntimeIntegrity` et expose `window.cineRuntime.verifyCriticalFlows()` afin que l’équipe confirme les parcours de sauvegarde/partage/restauration et la persistance du feedback avant le départ.
 - **Superposition d’état d’autosave** – Réplique la dernière note d’autosave dans la boîte de dialogue des paramètres afin que les équipes voient l’activité de fond pendant les exercices.
 - **Éditeur sensible au monitoring** – Affiche les champs de monitoring supplémentaires uniquement lorsque les scénarios l’exigent pour garder la création de règles focalisée.
 - **Contrôles d’accent et typographie** – Ajustez couleur d’accent, taille et famille de police ; les thèmes sombre, rose et contraste élevé persistent entre les sessions.
@@ -126,7 +126,7 @@ Appliquez cette checklist lors de l’installation ou après une mise à jour po
 6. Exportez **Paramètres → Backup & Restauration → Backup** et importez le fichier `planner-backup.json` dans un profil privé. Cette vérification garantit qu’aucune sauvegarde ne reste isolée et démontre le backup forcé avant restauration.
 7. Entraînez-vous à exporter un bundle (`project-name.json`) puis à l’importer sur une seconde machine ou profil pour valider la chaîne Sauvegarder → Partager → Importer et s’assurer que les ressources locales suivent le projet hors ligne.
 8. Archivez le backup vérifié et le bundle avec la copie du dépôt. Consignez date, machine et opérateur pour attester du succès de l’exercice et garder les flux synchronisés dès la première session.
-9. Ouvrez la console du navigateur et capturez `window.__cineRuntimeIntegrity` (ou relancez `window.cineRuntime.verifyCriticalFlows()` puis enregistrez le rapport). Cette trace prouve que la sentinelle runtime a validé les parcours de sauvegarde/partage/restauration durant la répétition hors ligne.
+9. Ouvrez la console du navigateur et capturez `window.__cineRuntimeIntegrity` (ou relancez `window.cineRuntime.verifyCriticalFlows()` puis enregistrez le rapport). Cette trace prouve que la sentinelle runtime a validé les parcours de sauvegarde/partage/restauration et la persistance du feedback durant la répétition hors ligne.
 
 ## Prérequis système et navigateurs
 
@@ -145,7 +145,7 @@ Cette routine prouve que sauvegarde, partage, import, backup et restauration fon
 4. **Vérification hors ligne.** Sur le profil d’essai, coupez la connexion et rechargez `index.html`. Confirmez l’affichage de l’indicateur hors ligne et le chargement des Uicons et scripts locaux.
 5. **Consigner un diff.** De retour sur le profil principal, ouvrez **Paramètres → Sauvegarde & restauration → Comparer les versions**, sélectionnez la dernière sauvegarde manuelle et l’auto-backup le plus récent, examinez les changements mis en évidence, ajoutez du contexte dans **Notes d’incident** et exportez le JSON. Archivez-le avec les artefacts de la répétition pour que les audits hors ligne retrouvent l’historique.
 6. **Archivage.** Supprimez le profil de test après validation et étiquetez les exports selon le protocole de production.
-7. **Consignez la sentinelle runtime.** Dans le même profil, ouvrez la console et vérifiez que `window.__cineRuntimeIntegrity.ok` vaut `true`. Si besoin d’un nouveau rapport, exécutez `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })` et archivez le résultat avec vos notes.
+7. **Consignez la sentinelle runtime.** Dans le même profil, ouvrez la console et vérifiez que `window.__cineRuntimeIntegrity.ok` vaut `true`. Si besoin d’un nouveau rapport, exécutez `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })` et archivez le résultat avec vos notes pour prouver que la persistance du feedback reste protégée.
 
 ## Routine quotidienne
 
@@ -267,7 +267,7 @@ Cette routine prouve que sauvegarde, partage, import, backup et restauration fon
 - **Snapshots automatiques des règles** – Les modifications dans **Règles automatiques** génèrent des copies horodatées toutes les dix minutes.
 - **Réinitialisation usine** – Efface les données uniquement après téléchargement d’un backup.
 - **Rappels horaires** – Une tâche de fond invite à créer un backup toutes les heures pour disposer d’une capture récente.
-- **Sentinelle d’intégrité runtime** – Avant un déplacement, ouvrez la console et vérifiez que `window.__cineRuntimeIntegrity.ok` vaut `true` (ou exécutez `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })`). Le rapport démontre que les parcours de sauvegarde/partage/restauration restent protégés hors ligne.
+- **Sentinelle d’intégrité runtime** – Avant un déplacement, ouvrez la console et vérifiez que `window.__cineRuntimeIntegrity.ok` vaut `true` (ou exécutez `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })`). Le rapport démontre que les parcours de sauvegarde/partage/restauration et la persistance du feedback restent protégés hors ligne.
 - **Boucle de vérification** – Après chaque backup critique, importez-le dans un profil séparé pour confirmer le résultat avant de supprimer l’instance de test.
 - **Habitudes de stockage sécurisées** – Étiquetez les backups avec nom de projet et horodatage puis stockez-les sur des supports redondants (RAID, clé chiffrée, disque optique).
 - **Comparer avant d’écraser** – Téléchargez un backup du contexte actuel avant toute restauration et examinez les différences avec un outil diff JSON pour fusionner manuellement si besoin.

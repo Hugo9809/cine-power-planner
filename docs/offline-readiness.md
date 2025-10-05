@@ -57,7 +57,8 @@ time:
    `window.__cineRuntimeIntegrity`. It should report `{ ok: true }` with an empty
    `missing` list. Run `window.cineRuntime.verifyCriticalFlows()` if you need a fresh
    report—the output lists every persistence, offline and UI safeguard that must stay
-   available before crews rely on the workstation.
+   available, including the runtime feedback storage wrappers and bindings, before crews
+   rely on the workstation.
 5. **Capture baseline exports.** While still offline, export both a planner backup
    (`planner-backup.json`) and a project bundle (`project-name.json`). Import the files into
    a private browser profile that also stays offline. Once you confirm the restore loop
@@ -97,8 +98,9 @@ connectivity:
 5. **Confirm safeguards stayed intact.** In the main profile, review
    `window.__cineRuntimeIntegrity` or rerun
    `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })` to ensure no
-   controller, share helper or backup routine dropped out between rehearsals. If the
-   report lists anything in `missing`, rehearse exports again before travelling.
+   controller, share helper, feedback persistence wrapper or backup routine dropped out
+   between rehearsals. If the report lists anything in `missing`, rehearse exports again
+   before travelling.
 6. **Simulate outages.** With the verification profile still offline, reload the planner
    and navigate the interface. Confirm locally stored Uicons, fonts and helper scripts stay
    available and that autosave warnings do not appear.

@@ -97,7 +97,7 @@ Consulta `docs/translation-guide.md` para más detalles sobre la localización.
 - **Reglas automáticas de equipo** – Define añadidos o retiradas activados por escenarios, con controles de importación/exportación y copias temporizadas.
 - **Panel de cobertura de reglas** – Resume la cobertura por escenario, los disparadores duplicados, los cambios netos, los escenarios apilados, los conflictos y los requisitos sin cubrir dentro de Reglas automáticas de equipo, aplica filtros de foco sin conexión y comparte los mismos datos en exportaciones e impresiones.
 - **Panel de datos y almacenamiento** – Audita proyectos, listas, equipos personalizados, favoritos y comentarios de autonomía desde Configuración y estima el tamaño del backup.
-- **Inspector de salvaguardas en tiempo de ejecución** – El runtime guarda el resultado en `window.__cineRuntimeIntegrity` y ofrece `window.cineRuntime.verifyCriticalFlows()` para que el equipo confirme las rutas de guardado/compartido/restauración antes de viajar.
+- **Inspector de salvaguardas en tiempo de ejecución** – El runtime guarda el resultado en `window.__cineRuntimeIntegrity` y ofrece `window.cineRuntime.verifyCriticalFlows()` para que el equipo confirme las rutas de guardado/compartido/restauración y la persistencia de feedback antes de viajar.
 - **Superposición de estado de auto-guardado** – Refleja la nota más reciente dentro del diálogo de ajustes para que el equipo vea la actividad de fondo durante los ensayos.
 - **Editor sensible al monitoreo** – Sólo muestra campos extra de monitores y distribución cuando el escenario lo requiere.
 - **Controles de acento y tipografía** – Ajusta color de acento, tamaño y familia de fuente; los temas oscuro, rosa y alto contraste persisten entre sesiones.
@@ -126,7 +126,7 @@ Ejecuta esta lista tras instalar o actualizar el planner. Confirma que guardado,
 6. Exporta **Configuración → Copia de seguridad y restauración → Copia de seguridad** e importa el archivo `planner-backup.json` en un perfil privado. Verificar la ruta de restauración demuestra que ninguna copia queda atrapada y que la salvaguarda previa funciona.
 7. Practica la exportación de un paquete (`project-name.json`) y su importación en otro equipo o perfil. Ensayar el flujo Guardar → Compartir → Importar asegura que los recursos locales acompañan al proyecto.
 8. Archiva la copia verificada y el paquete junto a la versión del repositorio usada. Registra fecha, equipo y operador para dejar constancia de cuándo se validó el ensayo y mantener los flujos sincronizados desde la primera sesión.
-9. Abre la consola del navegador y captura `window.__cineRuntimeIntegrity` (o vuelve a ejecutar `window.cineRuntime.verifyCriticalFlows()` y guarda el informe). Ese registro demuestra que la guarda en tiempo de ejecución validó las rutas de guardado/compartido/restauración durante la práctica offline.
+9. Abre la consola del navegador y captura `window.__cineRuntimeIntegrity` (o vuelve a ejecutar `window.cineRuntime.verifyCriticalFlows()` y guarda el informe). Ese registro demuestra que la guarda en tiempo de ejecución validó las rutas de guardado/compartido/restauración y la persistencia de feedback durante la práctica offline.
 
 ## Requisitos del sistema y navegadores
 
@@ -145,7 +145,7 @@ Repite esta rutina cuando se incorpore personal, se prepare una estación nueva 
 4. **Verificación offline.** En el perfil de ensayo, desconecta la red y recarga `index.html`. Confirma que aparece el indicador offline y que los Uicons y scripts locales cargan correctamente.
 5. **Registra un diff.** De vuelta en el perfil principal abre **Configuración → Copia de seguridad y restauración → Comparar versiones**, selecciona el último guardado manual y el auto-backup más reciente, revisa los cambios resaltados, añade contexto en **Notas de incidente** y exporta el JSON. Guarda el archivo junto a los artefactos del ensayo para que auditorías futuras puedan revisar el historial sin conexión.
 6. **Archiva con confianza.** Borra el perfil de ensayo tras confirmar la restauración y etiqueta los archivos verificados según el protocolo del proyecto.
-7. **Registra la guarda runtime.** En el mismo perfil, abre la consola y confirma que `window.__cineRuntimeIntegrity.ok` vale `true`. Si necesitas un informe nuevo, ejecuta `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })` y guarda el resultado junto con tus notas.
+7. **Registra la guarda runtime.** En el mismo perfil, abre la consola y confirma que `window.__cineRuntimeIntegrity.ok` vale `true`. Si necesitas un informe nuevo, ejecuta `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })` y guarda el resultado junto con tus notas para demostrar que también se protegió la persistencia de feedback.
 
 ## Flujo cotidiano
 
@@ -265,7 +265,7 @@ Repite esta rutina cuando se incorpore personal, se prepare una estación nueva 
 - **Historial automático de reglas** – Los cambios en **Reglas automáticas** generan copias con sello horario cada diez minutos.
 - **Restablecimiento de fábrica** – Borra datos sólo después de descargar un backup.
 - **Recordatorios por hora** – Una rutina en segundo plano sugiere realizar una copia adicional cada hora.
-- **Guardia de integridad runtime** – Antes de viajar, abre la consola y verifica que `window.__cineRuntimeIntegrity.ok` sea `true` (o ejecuta `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })`). El informe demuestra que los caminos de guardado/compartido/restauración siguen protegidos offline.
+- **Guardia de integridad runtime** – Antes de viajar, abre la consola y verifica que `window.__cineRuntimeIntegrity.ok` sea `true` (o ejecuta `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })`). El informe demuestra que los caminos de guardado/compartido/restauración y la persistencia de feedback siguen protegidos offline.
 - **Bucle de verificación** – Tras cada backup crítico, impórtalo en un perfil separado y confirma que coincide antes de eliminar el perfil.
 - **Hábitos de almacenamiento seguro** – Etiqueta los archivos con nombre del proyecto y fecha y guárdalos en medios redundantes (RAID, USB cifrado, disco óptico).
 - **Compara antes de sobrescribir** – Descarga un backup nuevo antes de restaurar y revisa diferencias con una herramienta de diff JSON.
