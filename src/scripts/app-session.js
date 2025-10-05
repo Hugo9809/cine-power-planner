@@ -8351,13 +8351,6 @@ if (helpButton && helpDialog) {
   let hoverHelpHighlightedTarget = null;
   let hoverHelpPointerClientX = null;
   let hoverHelpPointerClientY = null;
-  let hoverHelpStatus = null;
-  let hoverHelpStatusHeading = null;
-  let hoverHelpStatusBody = null;
-  let hoverHelpStatusShortcuts = null;
-  let hoverHelpStatusShortcutsHeading = null;
-  let hoverHelpStatusShortcutsList = null;
-  let hoverHelpStatusHint = null;
 
   const parseHoverHelpSelectorList = value => {
     if (typeof value !== 'string') return [];
@@ -9028,143 +9021,11 @@ if (helpButton && helpDialog) {
     return fragment;
   };
 
-  const removeHoverHelpStatus = () => {
-    if (hoverHelpStatus) {
-      hoverHelpStatus.remove();
-    }
-    hoverHelpStatus = null;
-    hoverHelpStatusHeading = null;
-    hoverHelpStatusBody = null;
-    hoverHelpStatusShortcuts = null;
-    hoverHelpStatusShortcutsHeading = null;
-    hoverHelpStatusShortcutsList = null;
-    hoverHelpStatusHint = null;
-  };
-
-  const setElementHidden = (element, hidden) => {
-    if (!element) return;
-    if (hidden) {
-      element.setAttribute('hidden', '');
-    } else {
-      element.removeAttribute('hidden');
-    }
-  };
-
-  const ensureHoverHelpStatus = () => {
-    if (hoverHelpStatus && hoverHelpStatus.isConnected) {
-      return hoverHelpStatus;
-    }
-    const body = document?.body;
-    if (!body) {
-      return null;
-    }
-    removeHoverHelpStatus();
-    hoverHelpStatus = document.createElement('div');
-    hoverHelpStatus.id = 'hoverHelpStatus';
-    hoverHelpStatus.setAttribute('role', 'status');
-    hoverHelpStatus.setAttribute('aria-live', 'polite');
-    hoverHelpStatus.setAttribute('aria-atomic', 'true');
-
-    hoverHelpStatusHeading = document.createElement('div');
-    hoverHelpStatusHeading.className = 'hover-help-status-heading';
-    hoverHelpStatus.appendChild(hoverHelpStatusHeading);
-
-    hoverHelpStatusBody = document.createElement('div');
-    hoverHelpStatusBody.className = 'hover-help-status-body';
-    hoverHelpStatus.appendChild(hoverHelpStatusBody);
-
-    hoverHelpStatusShortcuts = document.createElement('div');
-    hoverHelpStatusShortcuts.className = 'hover-help-status-shortcuts';
-    hoverHelpStatusShortcutsHeading = document.createElement('div');
-    hoverHelpStatusShortcutsHeading.className = 'hover-help-status-shortcuts-heading';
-    hoverHelpStatusShortcuts.appendChild(hoverHelpStatusShortcutsHeading);
-    hoverHelpStatusShortcutsList = document.createElement('ul');
-    hoverHelpStatusShortcutsList.className = 'hover-help-status-shortcuts-list';
-    hoverHelpStatusShortcuts.appendChild(hoverHelpStatusShortcutsList);
-    hoverHelpStatus.appendChild(hoverHelpStatusShortcuts);
-    setElementHidden(hoverHelpStatusShortcuts, true);
-
-    hoverHelpStatusHint = document.createElement('div');
-    hoverHelpStatusHint.className = 'hover-help-status-hint';
-    hoverHelpStatus.appendChild(hoverHelpStatusHint);
-
-    body.appendChild(hoverHelpStatus);
-    return hoverHelpStatus;
-  };
-
-  const updateHoverHelpStatus = ({ heading = '', details = [], shortcuts = [], hint } = {}) => {
-    const statusEl = ensureHoverHelpStatus();
-    if (!statusEl) {
-      return;
-    }
-    if (hoverHelpStatusHeading) {
-      hoverHelpStatusHeading.textContent = heading || '';
-      setElementHidden(hoverHelpStatusHeading, !heading);
-    }
-    if (hoverHelpStatusBody) {
-      hoverHelpStatusBody.textContent = '';
-      const detailList = Array.isArray(details) ? details.filter(Boolean) : [];
-      if (detailList.length) {
-        hoverHelpStatusBody.appendChild(createHoverHelpDetailsFragment(detailList));
-        setElementHidden(hoverHelpStatusBody, false);
-      } else {
-        setElementHidden(hoverHelpStatusBody, true);
-      }
-    }
-    if (hoverHelpStatusShortcuts && hoverHelpStatusShortcutsList) {
-      hoverHelpStatusShortcutsList.textContent = '';
-      const shortcutItems = Array.isArray(shortcuts) ? shortcuts.filter(Boolean) : [];
-      if (shortcutItems.length) {
-        const headingText = getHoverHelpLocaleValue('hoverHelpShortcutsHeading');
-        if (hoverHelpStatusShortcutsHeading) {
-          hoverHelpStatusShortcutsHeading.textContent = headingText || '';
-          setElementHidden(hoverHelpStatusShortcutsHeading, !headingText);
-        }
-        shortcutItems.forEach(text => {
-          const item = document.createElement('li');
-          item.textContent = text;
-          hoverHelpStatusShortcutsList.appendChild(item);
-        });
-        setElementHidden(hoverHelpStatusShortcuts, false);
-      } else {
-        setElementHidden(hoverHelpStatusShortcuts, true);
-      }
-    }
-    if (hoverHelpStatusHint) {
-      const resolvedHint =
-        typeof hint === 'string' && hint.trim()
-          ? hint
-          : getHoverHelpLocaleValue('hoverHelpExitHint');
-      hoverHelpStatusHint.textContent = resolvedHint || '';
-      setElementHidden(hoverHelpStatusHint, !resolvedHint);
-    }
-  };
-
-  const renderHoverHelpStatusIntro = () => {
-    const heading = getHoverHelpLocaleValue('hoverHelpButtonLabel');
-    const description = getHoverHelpLocaleValue('hoverHelpButtonHelp');
-    const details = description ? [description] : [];
-    updateHoverHelpStatus({ heading, details });
-  };
-
-  const renderHoverHelpStatusForTarget = (label, detailText, shortcutList) => {
-    const heading = label && label.trim()
-      ? label.trim()
-      : getHoverHelpLocaleValue('hoverHelpButtonLabel');
-    const details = Array.isArray(detailText) ? detailText.filter(Boolean) : [];
-    const resolvedDetails = details.length ? details : [getHoverHelpLocaleValue('hoverHelpFallbackGeneric')];
-    const shortcuts = Array.isArray(shortcutList) ? shortcutList.filter(Boolean) : [];
-    updateHoverHelpStatus({ heading, details: resolvedDetails, shortcuts });
-  };
-
   const updateHoverHelpTooltip = target => {
     hoverHelpCurrentTarget = target || null;
     setHoverHelpHighlight(target || null);
     if (!hoverHelpActive || !hoverHelpTooltip || !target) {
       hideHoverHelpTooltip();
-      if (hoverHelpActive) {
-        renderHoverHelpStatusIntro();
-      }
       return;
     }
     const { label, details, shortcuts } = collectHoverHelpContent(target);
@@ -9175,7 +9036,6 @@ if (helpButton && helpDialog) {
       : [];
     if (!hasLabel && detailText.length === 0 && shortcutList.length === 0) {
       hideHoverHelpTooltip();
-      renderHoverHelpStatusIntro();
       return;
     }
     hoverHelpTooltip.textContent = '';
@@ -9215,6 +9075,13 @@ if (helpButton && helpDialog) {
         hoverHelpTooltip.appendChild(shortcutsWrapper);
       }
     }
+    const exitHint = getHoverHelpLocaleValue('hoverHelpExitHint');
+    if (exitHint) {
+      const hintEl = document.createElement('div');
+      hintEl.className = 'hover-help-hint';
+      hintEl.textContent = exitHint;
+      hoverHelpTooltip.appendChild(hintEl);
+    }
     const wasHidden = hoverHelpTooltip.hasAttribute('hidden');
     if (wasHidden) {
       hoverHelpTooltip.style.visibility = 'hidden';
@@ -9225,7 +9092,6 @@ if (helpButton && helpDialog) {
       hoverHelpTooltip.style.removeProperty('visibility');
     }
     hoverHelpTooltip.removeAttribute('hidden');
-    renderHoverHelpStatusForTarget(hasLabel ? label : '', detailText, shortcutList);
   };
 
   const canInteractDuringHoverHelp = target => {
@@ -9244,7 +9110,6 @@ if (helpButton && helpDialog) {
     clearHoverHelpHighlight();
     document.body.style.cursor = '';
     document.body.classList.remove('hover-help-active');
-    removeHoverHelpStatus();
   };
 
   // Start hover-help mode: close the dialog, create the tooltip element and
@@ -9260,7 +9125,6 @@ if (helpButton && helpDialog) {
     hoverHelpTooltip.setAttribute('role', 'tooltip');
     hoverHelpTooltip.setAttribute('hidden', '');
     document.body.appendChild(hoverHelpTooltip);
-    renderHoverHelpStatusIntro();
   };
 
   const refreshTooltipPosition = () => {

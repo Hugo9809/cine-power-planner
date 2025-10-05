@@ -7401,13 +7401,6 @@ if (helpButton && helpDialog) {
   var hoverHelpHighlightedTarget = null;
   var hoverHelpPointerClientX = null;
   var hoverHelpPointerClientY = null;
-  var hoverHelpStatus = null;
-  var hoverHelpStatusHeading = null;
-  var hoverHelpStatusBody = null;
-  var hoverHelpStatusShortcuts = null;
-  var hoverHelpStatusShortcutsHeading = null;
-  var hoverHelpStatusShortcutsList = null;
-  var hoverHelpStatusHint = null;
   var parseHoverHelpSelectorList = function parseHoverHelpSelectorList(value) {
     if (typeof value !== 'string') return [];
     return value.split(',').map(function (selector) {
@@ -8007,143 +8000,11 @@ if (helpButton && helpDialog) {
     }
     return fragment;
   };
-  var removeHoverHelpStatus = function removeHoverHelpStatus() {
-    if (hoverHelpStatus) {
-      hoverHelpStatus.remove();
-    }
-    hoverHelpStatus = null;
-    hoverHelpStatusHeading = null;
-    hoverHelpStatusBody = null;
-    hoverHelpStatusShortcuts = null;
-    hoverHelpStatusShortcutsHeading = null;
-    hoverHelpStatusShortcutsList = null;
-    hoverHelpStatusHint = null;
-  };
-  var setElementHidden = function setElementHidden(element, hidden) {
-    if (!element) return;
-    if (hidden) {
-      element.setAttribute('hidden', '');
-    } else {
-      element.removeAttribute('hidden');
-    }
-  };
-  var ensureHoverHelpStatus = function ensureHoverHelpStatus() {
-    var _document2;
-    if (hoverHelpStatus && hoverHelpStatus.isConnected) {
-      return hoverHelpStatus;
-    }
-    var body = (_document2 = document) === null || _document2 === void 0 ? void 0 : _document2.body;
-    if (!body) {
-      return null;
-    }
-    removeHoverHelpStatus();
-    hoverHelpStatus = document.createElement('div');
-    hoverHelpStatus.id = 'hoverHelpStatus';
-    hoverHelpStatus.setAttribute('role', 'status');
-    hoverHelpStatus.setAttribute('aria-live', 'polite');
-    hoverHelpStatus.setAttribute('aria-atomic', 'true');
-    hoverHelpStatusHeading = document.createElement('div');
-    hoverHelpStatusHeading.className = 'hover-help-status-heading';
-    hoverHelpStatus.appendChild(hoverHelpStatusHeading);
-    hoverHelpStatusBody = document.createElement('div');
-    hoverHelpStatusBody.className = 'hover-help-status-body';
-    hoverHelpStatus.appendChild(hoverHelpStatusBody);
-    hoverHelpStatusShortcuts = document.createElement('div');
-    hoverHelpStatusShortcuts.className = 'hover-help-status-shortcuts';
-    hoverHelpStatusShortcutsHeading = document.createElement('div');
-    hoverHelpStatusShortcutsHeading.className = 'hover-help-status-shortcuts-heading';
-    hoverHelpStatusShortcuts.appendChild(hoverHelpStatusShortcutsHeading);
-    hoverHelpStatusShortcutsList = document.createElement('ul');
-    hoverHelpStatusShortcutsList.className = 'hover-help-status-shortcuts-list';
-    hoverHelpStatusShortcuts.appendChild(hoverHelpStatusShortcutsList);
-    hoverHelpStatus.appendChild(hoverHelpStatusShortcuts);
-    setElementHidden(hoverHelpStatusShortcuts, true);
-    hoverHelpStatusHint = document.createElement('div');
-    hoverHelpStatusHint.className = 'hover-help-status-hint';
-    hoverHelpStatus.appendChild(hoverHelpStatusHint);
-    body.appendChild(hoverHelpStatus);
-    return hoverHelpStatus;
-  };
-  var updateHoverHelpStatus = function updateHoverHelpStatus() {
-    var _ref20 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-      _ref20$heading = _ref20.heading,
-      heading = _ref20$heading === void 0 ? '' : _ref20$heading,
-      _ref20$details = _ref20.details,
-      details = _ref20$details === void 0 ? [] : _ref20$details,
-      _ref20$shortcuts = _ref20.shortcuts,
-      shortcuts = _ref20$shortcuts === void 0 ? [] : _ref20$shortcuts,
-      hint = _ref20.hint;
-    var statusEl = ensureHoverHelpStatus();
-    if (!statusEl) {
-      return;
-    }
-    if (hoverHelpStatusHeading) {
-      hoverHelpStatusHeading.textContent = heading || '';
-      setElementHidden(hoverHelpStatusHeading, !heading);
-    }
-    if (hoverHelpStatusBody) {
-      hoverHelpStatusBody.textContent = '';
-      var detailList = Array.isArray(details) ? details.filter(Boolean) : [];
-      if (detailList.length) {
-        hoverHelpStatusBody.appendChild(createHoverHelpDetailsFragment(detailList));
-        setElementHidden(hoverHelpStatusBody, false);
-      } else {
-        setElementHidden(hoverHelpStatusBody, true);
-      }
-    }
-    if (hoverHelpStatusShortcuts && hoverHelpStatusShortcutsList) {
-      hoverHelpStatusShortcutsList.textContent = '';
-      var shortcutItems = Array.isArray(shortcuts) ? shortcuts.filter(Boolean) : [];
-      if (shortcutItems.length) {
-        var headingText = getHoverHelpLocaleValue('hoverHelpShortcutsHeading');
-        if (hoverHelpStatusShortcutsHeading) {
-          hoverHelpStatusShortcutsHeading.textContent = headingText || '';
-          setElementHidden(hoverHelpStatusShortcutsHeading, !headingText);
-        }
-        shortcutItems.forEach(function (text) {
-          var item = document.createElement('li');
-          item.textContent = text;
-          hoverHelpStatusShortcutsList.appendChild(item);
-        });
-        setElementHidden(hoverHelpStatusShortcuts, false);
-      } else {
-        setElementHidden(hoverHelpStatusShortcuts, true);
-      }
-    }
-    if (hoverHelpStatusHint) {
-      var resolvedHint = typeof hint === 'string' && hint.trim() ? hint : getHoverHelpLocaleValue('hoverHelpExitHint');
-      hoverHelpStatusHint.textContent = resolvedHint || '';
-      setElementHidden(hoverHelpStatusHint, !resolvedHint);
-    }
-  };
-  var renderHoverHelpStatusIntro = function renderHoverHelpStatusIntro() {
-    var heading = getHoverHelpLocaleValue('hoverHelpButtonLabel');
-    var description = getHoverHelpLocaleValue('hoverHelpButtonHelp');
-    var details = description ? [description] : [];
-    updateHoverHelpStatus({
-      heading: heading,
-      details: details
-    });
-  };
-  var renderHoverHelpStatusForTarget = function renderHoverHelpStatusForTarget(label, detailText, shortcutList) {
-    var heading = label && label.trim() ? label.trim() : getHoverHelpLocaleValue('hoverHelpButtonLabel');
-    var details = Array.isArray(detailText) ? detailText.filter(Boolean) : [];
-    var resolvedDetails = details.length ? details : [getHoverHelpLocaleValue('hoverHelpFallbackGeneric')];
-    var shortcuts = Array.isArray(shortcutList) ? shortcutList.filter(Boolean) : [];
-    updateHoverHelpStatus({
-      heading: heading,
-      details: resolvedDetails,
-      shortcuts: shortcuts
-    });
-  };
   var updateHoverHelpTooltip = function updateHoverHelpTooltip(target) {
     hoverHelpCurrentTarget = target || null;
     setHoverHelpHighlight(target || null);
     if (!hoverHelpActive || !hoverHelpTooltip || !target) {
       hideHoverHelpTooltip();
-      if (hoverHelpActive) {
-        renderHoverHelpStatusIntro();
-      }
       return;
     }
     var _collectHoverHelpCont = collectHoverHelpContent(target),
@@ -8155,7 +8016,6 @@ if (helpButton && helpDialog) {
     var shortcutList = Array.isArray(shortcuts) ? shortcuts.filter(Boolean) : [];
     if (!hasLabel && detailText.length === 0 && shortcutList.length === 0) {
       hideHoverHelpTooltip();
-      renderHoverHelpStatusIntro();
       return;
     }
     hoverHelpTooltip.textContent = '';
@@ -8195,6 +8055,13 @@ if (helpButton && helpDialog) {
         hoverHelpTooltip.appendChild(shortcutsWrapper);
       }
     }
+    var exitHint = getHoverHelpLocaleValue('hoverHelpExitHint');
+    if (exitHint) {
+      var hintEl = document.createElement('div');
+      hintEl.className = 'hover-help-hint';
+      hintEl.textContent = exitHint;
+      hoverHelpTooltip.appendChild(hintEl);
+    }
     var wasHidden = hoverHelpTooltip.hasAttribute('hidden');
     if (wasHidden) {
       hoverHelpTooltip.style.visibility = 'hidden';
@@ -8205,7 +8072,6 @@ if (helpButton && helpDialog) {
       hoverHelpTooltip.style.removeProperty('visibility');
     }
     hoverHelpTooltip.removeAttribute('hidden');
-    renderHoverHelpStatusForTarget(hasLabel ? label : '', detailText, shortcutList);
   };
   var canInteractDuringHoverHelp = function canInteractDuringHoverHelp(target) {
     if (!hoverHelpActive || !target) return false;
@@ -8221,7 +8087,6 @@ if (helpButton && helpDialog) {
     clearHoverHelpHighlight();
     document.body.style.cursor = '';
     document.body.classList.remove('hover-help-active');
-    removeHoverHelpStatus();
   };
   var startHoverHelp = function startHoverHelp() {
     hoverHelpActive = true;
@@ -8234,7 +8099,6 @@ if (helpButton && helpDialog) {
     hoverHelpTooltip.setAttribute('role', 'tooltip');
     hoverHelpTooltip.setAttribute('hidden', '');
     document.body.appendChild(hoverHelpTooltip);
-    renderHoverHelpStatusIntro();
   };
   var refreshTooltipPosition = function refreshTooltipPosition() {
     if (hoverHelpActive && hoverHelpTooltip && hoverHelpCurrentTarget) {
