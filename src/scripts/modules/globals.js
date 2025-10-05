@@ -163,6 +163,46 @@
     return queue;
   }
 
+  function shouldBypassDeepFreeze(value) {
+    if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
+      return false;
+    }
+
+    try {
+      if (typeof value.pipe === 'function' && typeof value.unpipe === 'function') {
+        return true;
+      }
+
+      if (typeof value.on === 'function' && typeof value.emit === 'function') {
+        if (typeof value.write === 'function' || typeof value.read === 'function') {
+          return true;
+        }
+
+        var ctorName = '';
+        try {
+          ctorName = value.constructor && value.constructor.name;
+        } catch (ctorError) {
+          void ctorError;
+        }
+
+        if (ctorName && /Stream|Emitter|Port/i.test(ctorName)) {
+          return true;
+        }
+      }
+
+      if (typeof Symbol !== 'undefined' && value[Symbol.toStringTag]) {
+        var tag = value[Symbol.toStringTag];
+        if (typeof tag === 'string' && /Stream|Port/i.test(tag)) {
+          return true;
+        }
+      }
+    } catch (inspectionError) {
+      void inspectionError;
+    }
+
+    return false;
+  }
+
   function fallbackFreezeDeep(value, seen) {
     var localSeen = seen;
     if (!localSeen) {
@@ -182,6 +222,10 @@
     }
 
     if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
+      return value;
+    }
+
+    if (shouldBypassDeepFreeze(value)) {
       return value;
     }
 
