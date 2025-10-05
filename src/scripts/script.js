@@ -14,6 +14,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     'modules/base.js',
     'modules/registry.js',
     'modules/environment-bridge.js',
+    'modules/globals.js',
     'modules/offline.js',
     'modules/core-shared.js',
     'modules/ui.js',
@@ -78,6 +79,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
   ensureModule('modules/base.js');
   ensureModule('modules/registry.js');
   ensureModule('modules/environment-bridge.js');
+  ensureModule('modules/globals.js');
   ensureModule('modules/persistence.js');
   ensureModule('modules/runtime.js');
 
@@ -146,6 +148,14 @@ function attemptRegistryBackfill(scope) {
       description: 'Shared helpers for module registration, freezing, and safe global exposure.',
       resolve() {
         return scope.cineModuleBase || null;
+      },
+    },
+    {
+      name: 'cineModuleGlobals',
+      category: 'infrastructure',
+      description: 'Shared module globals for cross-script coordination.',
+      resolve() {
+        return scope.cineModuleGlobals || null;
       },
     },
     {

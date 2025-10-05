@@ -79,6 +79,46 @@
       : null)
     || FALLBACK_SCOPE;
 
+  const MODULE_GLOBALS = (function resolveModuleGlobals() {
+    if (typeof require === 'function') {
+      try {
+        const required = require('./globals.js');
+        if (required && typeof required === 'object') {
+          return required;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    const candidates = [GLOBAL_SCOPE];
+    if (typeof globalThis !== 'undefined' && candidates.indexOf(globalThis) === -1) candidates.push(globalThis);
+    if (typeof window !== 'undefined' && candidates.indexOf(window) === -1) candidates.push(window);
+    if (typeof self !== 'undefined' && candidates.indexOf(self) === -1) candidates.push(self);
+    if (typeof global !== 'undefined' && candidates.indexOf(global) === -1) candidates.push(global);
+
+    for (let index = 0; index < candidates.length; index += 1) {
+      const candidate = candidates[index];
+      if (candidate && typeof candidate.cineModuleGlobals === 'object') {
+        return candidate.cineModuleGlobals;
+      }
+    }
+
+    return null;
+  })();
+
+  function informModuleGlobals(name, api) {
+    if (!MODULE_GLOBALS || typeof MODULE_GLOBALS.recordModule !== 'function') {
+      return;
+    }
+
+    try {
+      MODULE_GLOBALS.recordModule(name, api);
+    } catch (error) {
+      void error;
+    }
+  }
+
   function fallbackTryRequire(modulePath) {
     if (typeof require !== 'function') {
       return null;
@@ -93,6 +133,10 @@
   }
 
   const tryRequire = (function resolveTryRequire() {
+    if (MODULE_GLOBALS && typeof MODULE_GLOBALS.tryRequire === 'function') {
+      return MODULE_GLOBALS.tryRequire;
+    }
+
     if (ENV_BRIDGE && typeof ENV_BRIDGE.tryRequire === 'function') {
       return function bridgeTryRequire(modulePath) {
         const result = ENV_BRIDGE.tryRequire(modulePath);
@@ -108,6 +152,17 @@
   })();
 
   function resolveModuleRegistry(scope) {
+    if (MODULE_GLOBALS && typeof MODULE_GLOBALS.resolveModuleRegistry === 'function') {
+      try {
+        const resolved = MODULE_GLOBALS.resolveModuleRegistry(scope || GLOBAL_SCOPE);
+        if (resolved) {
+          return resolved;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
     if (ENV_BRIDGE && typeof ENV_BRIDGE.getModuleRegistry === 'function') {
       try {
         const bridged = ENV_BRIDGE.getModuleRegistry(scope || GLOBAL_SCOPE);
@@ -149,6 +204,17 @@
   }
 
   const MODULE_REGISTRY = (function () {
+    if (MODULE_GLOBALS && typeof MODULE_GLOBALS.getModuleRegistry === 'function') {
+      try {
+        const shared = MODULE_GLOBALS.getModuleRegistry(GLOBAL_SCOPE);
+        if (shared) {
+          return shared;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
     if (ENV_BRIDGE && typeof ENV_BRIDGE.getModuleRegistry === 'function') {
       try {
         const bridged = ENV_BRIDGE.getModuleRegistry(GLOBAL_SCOPE);
@@ -174,6 +240,17 @@
   })();
 
   const PENDING_QUEUE_KEY = (function resolvePendingKey() {
+    if (MODULE_GLOBALS && typeof MODULE_GLOBALS.getPendingQueueKey === 'function') {
+      try {
+        const sharedKey = MODULE_GLOBALS.getPendingQueueKey();
+        if (typeof sharedKey === 'string' && sharedKey) {
+          return sharedKey;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
     if (ENV_BRIDGE && typeof ENV_BRIDGE.getPendingQueueKey === 'function') {
       try {
         const bridgedKey = ENV_BRIDGE.getPendingQueueKey();
@@ -253,6 +330,16 @@
   }
 
   function queueModuleRegistration(name, api, options) {
+    if (MODULE_GLOBALS && typeof MODULE_GLOBALS.queueModuleRegistration === 'function') {
+      try {
+        if (MODULE_GLOBALS.queueModuleRegistration(name, api, options, GLOBAL_SCOPE)) {
+          return true;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
     if (ENV_BRIDGE && typeof ENV_BRIDGE.queueModuleRegistration === 'function') {
       try {
         const bridged = ENV_BRIDGE.queueModuleRegistration(name, api, options);
@@ -294,6 +381,28 @@
   }
 
   const registerOrQueueModule = (function resolveRegisterOrQueue() {
+    if (MODULE_GLOBALS && typeof MODULE_GLOBALS.registerOrQueueModule === 'function') {
+      return function registerOrQueueModule(name, api, options, onError) {
+        try {
+          const registered = MODULE_GLOBALS.registerOrQueueModule(
+            name,
+            api,
+            options,
+            onError,
+            GLOBAL_SCOPE,
+            MODULE_REGISTRY,
+          );
+          if (registered) {
+            return true;
+          }
+        } catch (error) {
+          void error;
+        }
+
+        return fallbackRegisterOrQueue(name, api, options, onError);
+      };
+    }
+
     if (ENV_BRIDGE && typeof ENV_BRIDGE.registerOrQueueModule === 'function') {
       return function registerOrQueueModule(name, api, options, onError) {
         try {
@@ -343,6 +452,10 @@
   }
 
   const freezeDeep = (function resolveFreezeDeep() {
+    if (MODULE_GLOBALS && typeof MODULE_GLOBALS.freezeDeep === 'function') {
+      return MODULE_GLOBALS.freezeDeep;
+    }
+
     if (ENV_BRIDGE && typeof ENV_BRIDGE.freezeDeep === 'function') {
       return function bridgeFreezeDeep(value, seen) {
         try {
@@ -378,6 +491,10 @@
   }
 
   const safeWarn = (function resolveSafeWarn() {
+    if (MODULE_GLOBALS && typeof MODULE_GLOBALS.safeWarn === 'function') {
+      return MODULE_GLOBALS.safeWarn;
+    }
+
     if (ENV_BRIDGE && typeof ENV_BRIDGE.safeWarn === 'function') {
       return function bridgeSafeWarn(message, detail) {
         try {
@@ -421,6 +538,17 @@
   }
 
   const exposeGlobal = (function resolveExposeGlobal() {
+    if (MODULE_GLOBALS && typeof MODULE_GLOBALS.exposeGlobal === 'function') {
+      return function moduleGlobalsExpose(name, value, options) {
+        try {
+          return MODULE_GLOBALS.exposeGlobal(name, value, options);
+        } catch (error) {
+          void error;
+          return fallbackExposeGlobal(name, value);
+        }
+      };
+    }
+
     if (ENV_BRIDGE && typeof ENV_BRIDGE.exposeGlobal === 'function') {
       return function bridgeExposeGlobal(name, value, options) {
         try {
@@ -975,6 +1103,8 @@
   };
 
   freezeDeep(offlineAPI);
+
+  informModuleGlobals('cineOffline', offlineAPI);
 
   registerOrQueueModule(
     'cineOffline',
