@@ -3442,6 +3442,31 @@ body.pink-mode:not(.dark-mode) #settingsPanel-autoGear .auto-gear-rule-items-lab
   border-left-color: var(--warning-color, #ff9f1c);
 }
 
+body.auto-gear-highlight-context .auto-gear-impact-item.auto-gear-impact-stacked,
+.auto-gear-highlight-context .auto-gear-impact-item.auto-gear-impact-stacked {
+  border-left-color: transparent;
+  border-image: linear-gradient(
+      180deg,
+      var(--accent-color, #007aff),
+      var(--warning-color, #ff9f1c)
+    )
+    1;
+  padding: 8px 12px 8px 12px;
+  gap: 6px;
+  border-radius: var(--border-radius, 8px);
+  background-color: var(--surface-color, #ffffff);
+  background-image: linear-gradient(
+    135deg,
+    rgba(0, 122, 255, 0.16),
+    rgba(255, 159, 28, 0.16)
+  );
+}
+
+body.auto-gear-highlight-context.dark-mode .auto-gear-impact-item.auto-gear-impact-stacked,
+.auto-gear-highlight-context.dark-mode .auto-gear-impact-item.auto-gear-impact-stacked {
+  background-color: color-mix(in srgb, var(--surface-color, #111111) 85%, transparent);
+}
+
 .auto-gear-impact-summary {
   font-weight: 600;
 }

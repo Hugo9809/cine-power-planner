@@ -5184,6 +5184,7 @@ function deleteCurrentGearList() {
 }
 
 const AUTO_GEAR_HIGHLIGHT_CLASS = 'show-auto-gear-highlight';
+const AUTO_GEAR_HIGHLIGHT_CONTEXT_CLASS = 'auto-gear-highlight-context';
 const AUTO_GEAR_HIGHLIGHT_ICON = '\uE8AF';
 const AUTO_GEAR_HIGHLIGHT_LABEL_FALLBACK = 'Highlight automatic gear';
 const AUTO_GEAR_HIGHLIGHT_HELP_FALLBACK =
@@ -5481,6 +5482,19 @@ function getAutoGearHighlightStateText(isActive) {
     return fallback;
 }
 
+function applyAutoGearHighlightContext(isActive) {
+    if (typeof document === 'undefined') {
+        return;
+    }
+    const enable = !!isActive;
+    const targets = [document.documentElement, document.body, document.getElementById('autoGearDraftImpact')];
+    targets.forEach(node => {
+        if (node && node.classList) {
+            node.classList.toggle(AUTO_GEAR_HIGHLIGHT_CONTEXT_CLASS, enable);
+        }
+    });
+}
+
 function setAutoGearHighlightEnabled(enabled) {
     const nextState = !!enabled;
     if (gearListOutput && gearListOutput.classList) {
@@ -5508,6 +5522,7 @@ function updateAutoGearHighlightToggleButton() {
     toggle.setAttribute('data-help', help);
     toggle.setAttribute('aria-label', help);
     const active = isAutoGearHighlightEnabled();
+    applyAutoGearHighlightContext(active);
     const stateText = getAutoGearHighlightStateText(active);
     if (stateContainer) {
         stateContainer.textContent = stateText;
