@@ -9316,6 +9316,42 @@ function setLanguage(lang) {
   if (storageSummaryEmpty) {
     storageSummaryEmpty.textContent = texts[lang].storageSummaryEmpty;
   }
+  if (storagePersistenceHeading) {
+    const headingText = texts[lang].storagePersistenceHeading
+      || texts.en?.storagePersistenceHeading
+      || storagePersistenceHeading.textContent;
+    storagePersistenceHeading.textContent = headingText;
+    const headingHelp = texts[lang].storagePersistenceHeadingHelp
+      || texts.en?.storagePersistenceHeadingHelp
+      || headingText;
+    storagePersistenceHeading.setAttribute('data-help', headingHelp);
+  }
+  if (storagePersistenceIntro) {
+    storagePersistenceIntro.textContent = texts[lang].storagePersistenceIntro
+      || texts.en?.storagePersistenceIntro
+      || storagePersistenceIntro.textContent;
+  }
+  if (storagePersistenceRequestButton) {
+    const requestLabel = texts[lang].storagePersistenceRequest
+      || texts.en?.storagePersistenceRequest
+      || storagePersistenceRequestButton.textContent;
+    setButtonLabelWithIcon(storagePersistenceRequestButton, requestLabel, ICON_GLYPHS.save);
+    storagePersistenceRequestButton.dataset.defaultLabel = requestLabel;
+    const requestHelp = texts[lang].storagePersistenceRequestHelp
+      || texts.en?.storagePersistenceRequestHelp
+      || requestLabel;
+    storagePersistenceRequestButton.setAttribute('data-help', requestHelp);
+    storagePersistenceRequestButton.setAttribute('title', requestHelp);
+    storagePersistenceRequestButton.setAttribute('aria-label', requestHelp);
+  }
+  if (storagePersistenceStatus) {
+    const idleText = texts[lang].storagePersistenceStatusIdle
+      || texts.en?.storagePersistenceStatusIdle
+      || storagePersistenceStatus.textContent;
+    storagePersistenceStatus.textContent = idleText;
+    storagePersistenceStatus.setAttribute('data-help', idleText);
+  }
+  callCoreFunctionIfAvailable('renderStoragePersistenceStatus', [], { defer: true });
   if (storageActionsHeading) {
     const headingText = texts[lang].storageActionsHeading
       || texts.en?.storageActionsHeading
@@ -15768,6 +15804,11 @@ const storageSummaryIntro = document.getElementById("storageSummaryIntro");
 const storageSummaryList = document.getElementById("storageSummaryList");
 const storageSummaryEmpty = document.getElementById("storageSummaryEmpty");
 const storageSummaryFootnote = document.getElementById("storageSummaryFootnote");
+const storagePersistenceSection = document.getElementById("storagePersistence");
+const storagePersistenceHeading = document.getElementById("storagePersistenceHeading");
+const storagePersistenceIntro = document.getElementById("storagePersistenceIntro");
+const storagePersistenceRequestButton = document.getElementById("storagePersistenceRequest");
+const storagePersistenceStatus = document.getElementById("storagePersistenceStatus");
 var storageActionsHeading = document.getElementById('storageActionsHeading');
 var storageActionsIntro = document.getElementById('storageActionsIntro');
 var storageBackupNowButton = document.getElementById('storageBackupNow');
