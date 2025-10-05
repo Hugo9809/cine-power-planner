@@ -16567,6 +16567,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return applyAutoGearRulesToTableHtml;
     }], ['importAutoGearRulesFromData', function () {
       return importAutoGearRulesFromData;
+    }], ['getAutoGearRuleCoverageSummary', function () {
+      return getAutoGearRuleCoverageSummary;
     }], ['createAutoGearBackup', function () {
       return createAutoGearBackup;
     }], ['restoreAutoGearBackup', function () {
