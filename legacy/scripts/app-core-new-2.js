@@ -2064,7 +2064,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
         return;
       }
-      if (autoGearAutoPresetIdState) {
+      var previousAutoPresetId = autoGearAutoPresetIdState || '';
+      if (previousAutoPresetId) {
         setAutoGearAutoPresetId('', {
           persist: true,
           skipRender: true
@@ -2077,6 +2078,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         autoGearPresets[existingIndex] = normalizedPreset;
       } else {
         autoGearPresets.push(normalizedPreset);
+      }
+      if (previousAutoPresetId && previousAutoPresetId !== normalizedPreset.id) {
+        autoGearPresets = autoGearPresets.filter(function (preset) {
+          return preset.id !== previousAutoPresetId;
+        });
       }
       autoGearPresets = sortAutoGearPresets(autoGearPresets.slice());
       persistAutoGearPresets(autoGearPresets);

@@ -2458,14 +2458,18 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
         return;
       }
-        if (autoGearAutoPresetIdState) {
-          setAutoGearAutoPresetId('', { persist: true, skipRender: true });
-        }
+      const previousAutoPresetId = autoGearAutoPresetIdState || '';
+      if (previousAutoPresetId) {
+        setAutoGearAutoPresetId('', { persist: true, skipRender: true });
+      }
       const existingIndex = autoGearPresets.findIndex(preset => preset.id === normalizedPreset.id);
       if (existingIndex >= 0) {
         autoGearPresets[existingIndex] = normalizedPreset;
       } else {
         autoGearPresets.push(normalizedPreset);
+      }
+      if (previousAutoPresetId && previousAutoPresetId !== normalizedPreset.id) {
+        autoGearPresets = autoGearPresets.filter(preset => preset.id !== previousAutoPresetId);
       }
       autoGearPresets = sortAutoGearPresets(autoGearPresets.slice());
       persistAutoGearPresets(autoGearPresets);
