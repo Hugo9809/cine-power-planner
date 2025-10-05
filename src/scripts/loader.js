@@ -1083,6 +1083,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
     'src/scripts/modules/globals.js',
     'src/scripts/modules/offline.js',
     'src/scripts/modules/core-shared.js',
+    'src/scripts/modules/features/auto-gear-rules.js',
     'src/scripts/modules/features/backup.js',
     'src/scripts/modules/ui.js',
     'src/scripts/app-core-new-1.js',
