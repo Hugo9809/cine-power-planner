@@ -27,6 +27,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     'app-core-new-2.js',
     'app-events.js',
     'app-setups.js',
+    'help.js',
     'app-session.js'
   ];
   const nodePrelude = [
