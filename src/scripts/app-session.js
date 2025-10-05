@@ -4512,6 +4512,31 @@ function showNotification(type, message) {
 
 
 
+function getDiffText(key, fallbackValue = '') {
+  if (typeof key !== 'string' || !key) {
+    return fallbackValue;
+  }
+
+  const langTexts = texts && typeof currentLang === 'string' ? texts[currentLang] : null;
+  const fallbackTexts = texts && texts.en ? texts.en : null;
+
+  if (langTexts && Object.prototype.hasOwnProperty.call(langTexts, key)) {
+    const value = langTexts[key];
+    if (typeof value === 'string' && value) {
+      return value;
+    }
+  }
+
+  if (fallbackTexts && Object.prototype.hasOwnProperty.call(fallbackTexts, key)) {
+    const value = fallbackTexts[key];
+    if (typeof value === 'string' && value) {
+      return value;
+    }
+  }
+
+  return fallbackValue;
+}
+
 function formatTimestampForComparison(date, includeSeconds) {
   if (!(date instanceof Date) || Number.isNaN(date.valueOf())) {
     return '';
