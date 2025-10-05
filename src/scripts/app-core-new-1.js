@@ -1417,7 +1417,7 @@ try {
   // overview generation not needed in test environments without module support
 }
 
-var APP_VERSION = typeof CORE_SHARED.APP_VERSION === 'string' ? CORE_SHARED.APP_VERSION : '1.0.13';
+var APP_VERSION = typeof CORE_SHARED.APP_VERSION === 'string' ? CORE_SHARED.APP_VERSION : '1.0.14';
 
 if (typeof window !== 'undefined') {
   const lottie = window.lottie;

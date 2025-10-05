@@ -44,7 +44,7 @@ if (SERVICE_WORKER_SCOPE && typeof SERVICE_WORKER_SCOPE.importScripts === 'funct
 }
 
 if (!CACHE_VERSION) {
-  CACHE_VERSION = '1.0.13';
+  CACHE_VERSION = '1.0.14';
 }
 
 const CACHE_NAME = `cine-power-planner-v${CACHE_VERSION}`;
