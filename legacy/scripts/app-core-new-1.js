@@ -2428,7 +2428,11 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   var AUTO_GEAR_CUSTOM_CATEGORY = '';
   var GEAR_LIST_CATEGORIES = ['Camera', 'Camera Support', 'Media', 'Lens', 'Lens Support', 'Matte box + filter', 'LDS (FIZ)', 'Camera Batteries', 'Monitoring Batteries', 'Chargers', 'Monitoring', 'Monitoring support', 'Rigging', 'Power', 'Grip', 'Carts and Transportation', 'Miscellaneous', 'Consumables'];
   var AUTO_GEAR_SELECTOR_TYPES = ['none', 'monitor', 'directorMonitor', 'tripodHeadBrand', 'tripodBowl', 'tripodTypes', 'tripodSpreader'];
-  var AUTO_GEAR_SELECTOR_TYPE_SET = new Set(AUTO_GEAR_SELECTOR_TYPES);
+  var AUTO_GEAR_SELECTOR_TYPE_MAP = AUTO_GEAR_SELECTOR_TYPES.reduce(function(map, type) {
+    map[type.toLowerCase()] = type;
+    return map;
+  }, Object.create(null));
+  var AUTO_GEAR_SELECTOR_TYPE_SET = new Set(Object.keys(AUTO_GEAR_SELECTOR_TYPE_MAP));
   var AUTO_GEAR_MONITOR_FALLBACKS = ['SmallHD Ultra 7', 'SmallHD Focus', 'SmallHD Cine 7'];
   var AUTO_GEAR_TRIPOD_SELECTOR_TYPES = new Set(['tripodHeadBrand', 'tripodBowl', 'tripodTypes', 'tripodSpreader']);
   var AUTO_GEAR_TRIPOD_FIELD_IDS = {
@@ -2492,7 +2496,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   function normalizeAutoGearSelectorType(value) {
     var candidate = typeof value === 'string' ? value.trim().toLowerCase() : '';
     if (!candidate) return 'none';
-    return AUTO_GEAR_SELECTOR_TYPE_SET.has(candidate) ? candidate : 'none';
+    if (!AUTO_GEAR_SELECTOR_TYPE_SET.has(candidate)) return 'none';
+    return AUTO_GEAR_SELECTOR_TYPE_MAP[candidate] || 'none';
   }
   function normalizeAutoGearSelectorDefault(type, value) {
     var text = normalizeAutoGearText(value);

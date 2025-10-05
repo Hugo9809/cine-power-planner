@@ -2969,7 +2969,11 @@ const AUTO_GEAR_SELECTOR_TYPES = [
   'tripodTypes',
   'tripodSpreader',
 ];
-const AUTO_GEAR_SELECTOR_TYPE_SET = new Set(AUTO_GEAR_SELECTOR_TYPES);
+const AUTO_GEAR_SELECTOR_TYPE_MAP = AUTO_GEAR_SELECTOR_TYPES.reduce((map, type) => {
+  map[type.toLowerCase()] = type;
+  return map;
+}, Object.create(null));
+const AUTO_GEAR_SELECTOR_TYPE_SET = new Set(Object.keys(AUTO_GEAR_SELECTOR_TYPE_MAP));
 const AUTO_GEAR_MONITOR_FALLBACKS = ['SmallHD Ultra 7', 'SmallHD Focus', 'SmallHD Cine 7'];
 const AUTO_GEAR_TRIPOD_SELECTOR_TYPES = new Set([
   'tripodHeadBrand',
@@ -3083,7 +3087,8 @@ function normalizeAutoGearText(value, { collapseWhitespace = true } = {}) {
 function normalizeAutoGearSelectorType(value) {
   const candidate = typeof value === 'string' ? value.trim().toLowerCase() : '';
   if (!candidate) return 'none';
-  return AUTO_GEAR_SELECTOR_TYPE_SET.has(candidate) ? candidate : 'none';
+  if (!AUTO_GEAR_SELECTOR_TYPE_SET.has(candidate)) return 'none';
+  return AUTO_GEAR_SELECTOR_TYPE_MAP[candidate] || 'none';
 }
 
 /**
