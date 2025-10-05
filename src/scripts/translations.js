@@ -51,6 +51,10 @@ const texts = {
     batteryComparisonHeading: "Battery Comparison",
     batteryComparisonDescription:
       "Review every compatible battery to see runtime estimates for your current setup.",
+    batteryComparisonDescriptionHelp:
+      "This table lists every compatible battery and updates as you change your setup. Hover any heading to learn what the numbers represent.",
+    batteryComparisonTableHelp:
+      "Rows show compatible batteries. Runtime includes current draw calculations, and the colored bar compares runtime length at a glance.",
     setupDiagramHeading: "Connection Diagram",
     diagramPdfNote:
       "The visual connection diagram is not included in the PDF export. Open the print view to review the layout.",
@@ -75,6 +79,13 @@ const texts = {
       "Add, edit or remove entries from the device database, including categories, subcategories and attributes.",
     batteryComparisonHeadingHelp:
       "Compare runtimes for all compatible batteries.",
+    batteryTableBatteryHelp:
+      "Battery name and mount that can power your current build.",
+    batteryTableRuntimeHelp:
+      "Estimated runtime in hours plus which outputs supply enough current.",
+    batteryTableGraphLabel: "Runtime comparison bar",
+    batteryTableGraphHelp:
+      "Bar length compares runtime across batteries. Green covers pins and D-Tap, orange means only main pins, and blue marks infinite runtime estimates.",
     setupDiagramHeadingHelp:
       "View a visual diagram of how selected devices connect.",
     setupDiagramPlaceholder: "Select devices to visualize the project.",
@@ -1417,6 +1428,10 @@ const texts = {
     batteryComparisonHeading: "Confronto batterie",
     batteryComparisonDescription:
       "Esamina tutte le batterie compatibili per vedere le stime di autonomia con la configurazione attuale.",
+    batteryComparisonDescriptionHelp:
+      "Questa tabella elenca tutte le batterie compatibili e si aggiorna quando modifichi la configurazione. Passa il puntatore sulle intestazioni per capire i valori.",
+    batteryComparisonTableHelp:
+      "Ogni riga mostra una batteria compatibile. L'autonomia include il consumo stimato e la barra colorata confronta la durata a colpo d'occhio.",
     setupDiagramHeading: "Diagramma delle connessioni",
     diagramPdfNote:
       "Il diagramma delle connessioni non è incluso nell'esportazione PDF. Apri la vista di stampa per consultare il layout.",
@@ -1443,6 +1458,13 @@ const texts = {
       "Aggiungi, modifica o rimuovi elementi dal database dei dispositivi, inclusi categorie, sottocategorie e attributi.",
     batteryComparisonHeadingHelp:
       "Confronta le autonomie di tutte le batterie compatibili.",
+    batteryTableBatteryHelp:
+      "Nome della batteria e attacco che possono alimentare la tua configurazione.",
+    batteryTableRuntimeHelp:
+      "Autonomia stimata in ore e quali uscite forniscono abbastanza corrente.",
+    batteryTableGraphLabel: "Barra di confronto autonomia",
+    batteryTableGraphHelp:
+      "La lunghezza della barra confronta l'autonomia tra le batterie. Il verde copre pin e D-Tap, l'arancione indica solo i pin principali e il blu segnala autonomie teoricamente infinite.",
     setupDiagramHeadingHelp:
       "Mostra un diagramma visivo di come i dispositivi selezionati si collegano.",
     setupDiagramPlaceholder: "Seleziona i dispositivi per visualizzare la configurazione.",
@@ -2769,6 +2791,10 @@ const texts = {
     batteryComparisonHeading: "Comparación de baterías",
     batteryComparisonDescription:
       "Revisa cada batería compatible para ver las estimaciones de autonomía con tu configuración actual.",
+    batteryComparisonDescriptionHelp:
+      "Esta tabla reúne todas las baterías compatibles y se actualiza al cambiar tu configuración. Pasa el cursor por los encabezados para conocer qué representa cada dato.",
+    batteryComparisonTableHelp:
+      "Cada fila muestra una batería compatible. El tiempo estimado incluye el consumo calculado y la barra de color compara la duración de un vistazo.",
     setupDiagramHeading: "Diagrama de conexiones",
     diagramPdfNote:
       "El diagrama de conexiones no se incluye en la exportación PDF. Abre la vista de impresión para ver el diseño.",
@@ -2795,6 +2821,13 @@ const texts = {
       "Añade, edita o elimina entradas de la base de datos de dispositivos, incluidas categorías, subcategorías y atributos.",
     batteryComparisonHeadingHelp:
       "Compara los tiempos de funcionamiento de todas las baterías compatibles.",
+    batteryTableBatteryHelp:
+      "Nombre de la batería y montura capaces de alimentar tu configuración.",
+    batteryTableRuntimeHelp:
+      "Autonomía estimada en horas y qué salidas entregan la corriente necesaria.",
+    batteryTableGraphLabel: "Barra de comparación de autonomía",
+    batteryTableGraphHelp:
+      "La longitud de la barra compara la autonomía entre baterías. El verde cubre pines y D-Tap, el naranja significa solo los pines principales y el azul marca estimaciones de autonomía infinita.",
     setupDiagramHeadingHelp:
       "Visualiza cómo se conectan los dispositivos del proyecto.",
     setupDiagramPlaceholder: "Selecciona dispositivos para mostrar el diagrama del proyecto.",
@@ -4135,6 +4168,10 @@ const texts = {
     batteryComparisonHeading: "Comparaison des batteries",
     batteryComparisonDescription:
       "Passez en revue chaque batterie compatible pour voir les estimations d’autonomie pour votre configuration actuelle.",
+    batteryComparisonDescriptionHelp:
+      "Ce tableau réunit toutes les batteries compatibles et se met à jour dès que vous modifiez votre configuration. Survolez les en-têtes pour comprendre chaque valeur.",
+    batteryComparisonTableHelp:
+      "Chaque ligne présente une batterie compatible. L’autonomie estimée intègre la consommation calculée et la barre colorée compare les durées d’un coup d’œil.",
     setupDiagramHeading: "Schéma de connexion",
     diagramPdfNote:
       "Le schéma de connexion n’est pas inclus dans l’export PDF. Ouvrez la vue d’impression pour vérifier la mise en page.",
@@ -4161,6 +4198,13 @@ const texts = {
       "Ajoutez, modifiez ou supprimez des entrées de la base de données des appareils, y compris les catégories, sous-catégories et attributs.",
     batteryComparisonHeadingHelp:
       "Compare l’autonomie de toutes les batteries compatibles.",
+    batteryTableBatteryHelp:
+      "Nom de la batterie et type de montage capables d’alimenter votre configuration.",
+    batteryTableRuntimeHelp:
+      "Autonomie estimée en heures ainsi que les sorties qui fournissent le courant nécessaire.",
+    batteryTableGraphLabel: "Barre de comparaison d’autonomie",
+    batteryTableGraphHelp:
+      "La longueur de la barre compare l’autonomie entre les batteries. Le vert couvre les broches et la sortie D-Tap, l’orange signifie uniquement les broches principales et le bleu indique une autonomie théorique infinie.",
     setupDiagramHeadingHelp:
       "Affiche un schéma visuel des connexions entre les appareils sélectionnés.",
     setupDiagramPlaceholder: "Sélectionnez des appareils pour afficher le schéma.",
@@ -5512,6 +5556,10 @@ const texts = {
     batteryComparisonHeading: "Akkuvergleich",
     batteryComparisonDescription:
       "Prüfe alle kompatiblen Akkus, um die Laufzeitschätzungen für deine aktuelle Konfiguration zu sehen.",
+    batteryComparisonDescriptionHelp:
+      "Diese Tabelle listet alle kompatiblen Akkus und aktualisiert sich, sobald du dein Setup änderst. Fahre mit der Maus über die Spaltenüberschriften, um die Werte zu verstehen.",
+    batteryComparisonTableHelp:
+      "Jede Zeile zeigt einen kompatiblen Akku. Die Laufzeit basiert auf dem berechneten Verbrauch und der farbige Balken vergleicht die Dauer auf einen Blick.",
     setupDiagramHeading: "Verbindungsdiagramm",
     diagramPdfNote:
       "Das Verbindungsdiagramm ist nicht im PDF-Export enthalten. Öffnen Sie die Druckansicht, um das Layout zu sehen.",
@@ -5538,6 +5586,13 @@ const texts = {
       "Füge Einträge zur Gerätedatenbank hinzu, bearbeite oder entferne sie – inklusive Kategorien, Unterkategorien und Attributen.",
     batteryComparisonHeadingHelp:
       "Vergleicht Laufzeiten aller kompatiblen Batterien.",
+    batteryTableBatteryHelp:
+      "Akkuname und Mount, die dein aktuelles Setup versorgen können.",
+    batteryTableRuntimeHelp:
+      "Geschätzte Laufzeit in Stunden sowie welche Ausgänge genug Strom liefern.",
+    batteryTableGraphLabel: "Laufzeitvergleichsbalken",
+    batteryTableGraphHelp:
+      "Die Balkenlänge vergleicht die Laufzeit der Akkus. Grün steht für Pins und D-Tap, Orange bedeutet nur die Hauptpins und Blau kennzeichnet theoretisch unbegrenzte Laufzeiten.",
     setupDiagramHeadingHelp:
       "Zeigt ein visuelles Diagramm der Verbindungen der ausgewählten Geräte.",
     setupDiagramPlaceholder: "Geräte auswählen, um das Projekt zu visualisieren.",

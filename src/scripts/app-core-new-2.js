@@ -15358,7 +15358,32 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         dtapCandidates.sort(sortByHoursThenName);
     
         // Prepare table HTML
-        let tableHtml = `<tr><th>${texts[currentLang].batteryTableLabel}</th><th>${texts[currentLang].runtimeLabel}</th><th></th></tr>`;
+        const batteryHeaderHelp = texts[currentLang].batteryTableBatteryHelp || '';
+        const runtimeHeaderHelp = texts[currentLang].batteryTableRuntimeHelp || '';
+        const graphHeaderHelp = texts[currentLang].batteryTableGraphHelp || '';
+        const graphHeaderLabel = texts[currentLang].batteryTableGraphLabel || '';
+
+        const batteryHelpAttr = batteryHeaderHelp
+          ? ` data-help="${escapeHtml(batteryHeaderHelp)}"`
+          : '';
+        const runtimeHelpAttr = runtimeHeaderHelp
+          ? ` data-help="${escapeHtml(runtimeHeaderHelp)}"`
+          : '';
+        const graphHelpAttr = graphHeaderHelp
+          ? ` data-help="${escapeHtml(graphHeaderHelp)}"`
+          : '';
+        const graphAriaAttr = graphHeaderLabel
+          ? ` aria-label="${escapeHtml(graphHeaderLabel)}"`
+          : '';
+        const graphHeaderContent = graphHeaderLabel
+          ? `<span class="visually-hidden">${escapeHtml(graphHeaderLabel)}</span>`
+          : '';
+
+        let tableHtml = `<tr>` +
+          `<th${batteryHelpAttr}>${escapeHtml(texts[currentLang].batteryTableLabel)}</th>` +
+          `<th${runtimeHelpAttr}>${escapeHtml(texts[currentLang].runtimeLabel)}</th>` +
+          `<th${graphHelpAttr}${graphAriaAttr}>${graphHeaderContent}</th>` +
+          `</tr>`;
     
         if ((selectedCandidate ? 1 : 0) + pinsCandidates.length + dtapCandidates.length === 0) {
           // No battery can supply via either output
@@ -15429,6 +15454,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           });
         }
         batteryTableElem.innerHTML = tableHtml;
+        const tableHelpText = texts[currentLang].batteryComparisonTableHelp || '';
+        if (tableHelpText) {
+          batteryTableElem.setAttribute('data-help', tableHelpText);
+        }
         batteryComparisonSection.style.display = "block";
       } else {
         batteryComparisonSection.style.display = "none";

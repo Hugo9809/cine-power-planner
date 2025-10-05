@@ -8648,6 +8648,26 @@ function setLanguage(lang) {
   if (batteryComparisonDescriptionElem) {
     batteryComparisonDescriptionElem.textContent =
       texts[lang].batteryComparisonDescription;
+    if (texts[lang].batteryComparisonDescriptionHelp) {
+      batteryComparisonDescriptionElem.setAttribute(
+        "data-help",
+        texts[lang].batteryComparisonDescriptionHelp
+      );
+    } else {
+      batteryComparisonDescriptionElem.removeAttribute("data-help");
+    }
+  }
+
+  const batteryTableElem = document.getElementById("batteryTable");
+  if (batteryTableElem) {
+    if (texts[lang].batteryComparisonTableHelp) {
+      batteryTableElem.setAttribute(
+        "data-help",
+        texts[lang].batteryComparisonTableHelp
+      );
+    } else {
+      batteryTableElem.removeAttribute("data-help");
+    }
   }
 
   const setupDiagramHeadingElem = document.getElementById("setupDiagramHeading");
