@@ -1056,6 +1056,42 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       labelElem.textContent = label;
     }
   }
+
+  function refreshFeedbackTemperatureLabel(lang, unit) {
+    var targetLang = typeof lang === 'undefined' ? currentLang : lang;
+    var targetUnit = typeof unit === 'undefined' ? temperatureUnit : unit;
+    var handled = false;
+    try {
+      if (typeof updateFeedbackTemperatureLabel === 'function') {
+        updateFeedbackTemperatureLabel(targetLang, targetUnit);
+        handled = true;
+      }
+    } catch (error) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Fallback applied while updating feedback temperature label', error);
+      }
+    }
+
+    if (handled) {
+      return;
+    }
+
+    if (typeof document === 'undefined') {
+      return;
+    }
+
+    var labelTextElem = document.getElementById('fbTemperatureLabelText');
+    var labelElem = document.getElementById('fbTemperatureLabel');
+    if (!labelTextElem && !labelElem) {
+      return;
+    }
+    var label = getTemperatureColumnLabelForLang(targetLang, targetUnit) + ':';
+    if (labelTextElem) {
+      labelTextElem.textContent = label;
+    } else if (labelElem) {
+      labelElem.textContent = label;
+    }
+  }
   function applyTemperatureUnitPreference(unit, options) {
     var opts = options && _typeof(options) === 'object' ? options : {};
     var normalized = normalizeTemperatureUnit(unit);
@@ -1079,11 +1115,11 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       settingsTemperatureUnit.value = temperatureUnit;
     }
     if (reRender) {
-      updateFeedbackTemperatureLabel();
+      refreshFeedbackTemperatureLabel();
       updateFeedbackTemperatureOptions();
       renderTemperatureNote(lastRuntimeHours);
     }
-  }
+    }
   var collator = new Intl.Collator(undefined, {
     numeric: true,
     sensitivity: 'base'
@@ -7343,7 +7379,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       runtimeAverageNoteElem.textContent = fb && fb.count > 4 ? texts[lang].runtimeAverageNote : '';
     }
     dispatchTemperatureNoteRender(lastRuntimeHours);
-    updateFeedbackTemperatureLabel(lang, temperatureUnit);
+    refreshFeedbackTemperatureLabel(lang, temperatureUnit);
     updateFeedbackTemperatureOptions(lang, temperatureUnit);
     var tempNoteElem = document.getElementById("temperatureNote");
     if (tempNoteElem) tempNoteElem.setAttribute("data-help", texts[lang].temperatureNoteHelp);
