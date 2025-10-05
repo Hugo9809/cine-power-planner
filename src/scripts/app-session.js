@@ -126,6 +126,87 @@ function getSessionRuntimeFunction(name) {
   return null;
 }
 
+function getSessionRuntimeValue(name, defaultValue) {
+  if (typeof name !== 'string' || !name) {
+    return defaultValue;
+  }
+
+  const scopes = getSessionRuntimeScopes();
+  for (let index = 0; index < scopes.length; index += 1) {
+    const scope = scopes[index];
+    if (!scope || typeof scope !== 'object') {
+      continue;
+    }
+
+    try {
+      if (name in scope) {
+        return scope[name];
+      }
+    } catch (resolveError) {
+      void resolveError;
+    }
+  }
+
+  return defaultValue;
+}
+
+function setSessionRuntimeValue(name, value) {
+  if (typeof name !== 'string' || !name) {
+    return;
+  }
+
+  const scopes = getSessionRuntimeScopes();
+  for (let index = 0; index < scopes.length; index += 1) {
+    const scope = scopes[index];
+    if (!scope || typeof scope !== 'object') {
+      continue;
+    }
+
+    try {
+      scope[name] = value;
+    } catch (assignError) {
+      void assignError;
+    }
+  }
+}
+
+ensureSessionRuntimePlaceholder('gridSnap', false);
+
+function getGlobalGridSnapState() {
+  const state = getSessionRuntimeValue('gridSnap', false);
+  return typeof state === 'boolean' ? state : !!state;
+}
+
+function applyGlobalGridSnapState(value) {
+  const normalized = !!value;
+  setSessionRuntimeValue('gridSnap', normalized);
+  return normalized;
+}
+
+try {
+  if (typeof window !== 'undefined' && window.localStorage) {
+    const storedGridSnap = window.localStorage.getItem('cineGridSnapEnabled');
+    if (storedGridSnap === '1' || storedGridSnap === '0') {
+      applyGlobalGridSnapState(storedGridSnap === '1');
+    }
+  }
+} catch (gridSnapInitError) {
+  void gridSnapInitError;
+}
+
+const initialGridSnapState = getGlobalGridSnapState();
+const initialDiagramContainer =
+  typeof setupDiagramContainer !== 'undefined' && setupDiagramContainer
+    ? setupDiagramContainer
+    : (typeof document !== 'undefined' ? document.getElementById('diagramArea') : null);
+if (initialDiagramContainer && initialDiagramContainer.classList) {
+  try {
+    initialDiagramContainer.classList.toggle('grid-snap', initialGridSnapState);
+  } catch (gridSnapInitClassError) {
+    void gridSnapInitClassError;
+  }
+}
+
 function invokeSessionRevertAccentColor() {
   const revertFn = getSessionRuntimeFunction('revertAccentColor');
   if (typeof revertFn !== 'function') {
@@ -194,6 +275,16 @@ const gridSnapToggleButton = ensureSessionRuntimePlaceholder(
     }
   },
 );
+
+if (gridSnapToggleButton) {
+  const gridSnapState = getGlobalGridSnapState();
+  try {
+    gridSnapToggleButton.classList.toggle('active', gridSnapState);
+  } catch (gridSnapToggleError) {
+    void gridSnapToggleError;
+  }
+  gridSnapToggleButton.setAttribute('aria-pressed', gridSnapState ? 'true' : 'false');
+}
 
 function getGlobalCineUi() {
   const scope =
@@ -8618,11 +8709,19 @@ if (downloadDiagramButton) {
 
 if (gridSnapToggleButton) {
   gridSnapToggleButton.addEventListener('click', () => {
-    gridSnap = !gridSnap;
-    gridSnapToggleButton.classList.toggle('active', gridSnap);
-    gridSnapToggleButton.setAttribute('aria-pressed', gridSnap ? 'true' : 'false');
+    const nextState = !getGlobalGridSnapState();
+    const appliedState = applyGlobalGridSnapState(nextState);
+    gridSnapToggleButton.classList.toggle('active', appliedState);
+    gridSnapToggleButton.setAttribute('aria-pressed', appliedState ? 'true' : 'false');
     if (setupDiagramContainer) {
-      setupDiagramContainer.classList.toggle('grid-snap', gridSnap);
+      setupDiagramContainer.classList.toggle('grid-snap', appliedState);
+    }
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        window.localStorage.setItem('cineGridSnapEnabled', appliedState ? '1' : '0');
+      }
+    } catch (gridSnapStorageError) {
+      void gridSnapStorageError;
     }
   });
 }

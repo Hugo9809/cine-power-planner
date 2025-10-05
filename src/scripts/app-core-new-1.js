@@ -10399,7 +10399,24 @@ function setLanguage(lang) {
     gridSnapToggleBtn.setAttribute("title", texts[lang].gridSnapToggle);
     gridSnapToggleBtn.setAttribute("aria-label", texts[lang].gridSnapToggle);
     gridSnapToggleBtn.setAttribute("data-help", texts[lang].gridSnapToggleHelp);
-    gridSnapToggleBtn.setAttribute("aria-pressed", gridSnap ? "true" : "false");
+    let gridSnapActive = false;
+    try {
+      if (typeof gridSnap !== 'undefined') {
+        gridSnapActive = !!gridSnap;
+      } else if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE.gridSnap !== 'undefined') {
+        gridSnapActive = !!CORE_GLOBAL_SCOPE.gridSnap;
+      } else if (typeof globalThis !== 'undefined' && typeof globalThis.gridSnap !== 'undefined') {
+        gridSnapActive = !!globalThis.gridSnap;
+      }
+    } catch (gridSnapResolveError) {
+      void gridSnapResolveError;
+    }
+    gridSnapToggleBtn.setAttribute("aria-pressed", gridSnapActive ? "true" : "false");
+    try {
+      gridSnapToggleBtn.classList.toggle('active', gridSnapActive);
+    } catch (gridSnapClassError) {
+      void gridSnapClassError;
+    }
   }
   const resetViewBtn =
     typeof document !== 'undefined' ? document.getElementById('resetView') : null;

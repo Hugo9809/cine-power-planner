@@ -5,6 +5,24 @@ function generatePrintableOverview(config = {}) {
     const { autoPrint = false } = safeConfig;
     const escapeHtmlSafe = (value) => (typeof escapeHtml === 'function' ? escapeHtml(value) : String(value ?? ''));
     const summarizeConnectors = (device) => (typeof generateConnectorSummary === 'function' ? generateConnectorSummary(device) : '');
+    const resolveElement = (candidate, elementId) => {
+        if (candidate && typeof candidate === 'object') {
+            return candidate;
+        }
+        if (typeof document === 'undefined' || !elementId) {
+            return null;
+        }
+        try {
+            return document.getElementById(elementId);
+        } catch (resolveError) {
+            void resolveError;
+            return null;
+        }
+    };
+    const readElementText = (candidate, elementId) => {
+        const element = resolveElement(candidate, elementId);
+        return element ? element.textContent : '';
+    };
     const setupNameField = typeof document !== 'undefined' ? document.getElementById('setupName') : null;
     const setupName = setupNameField ? setupNameField.value : '';
     const now = new Date();
@@ -163,14 +181,20 @@ function generatePrintableOverview(config = {}) {
         }
         powerDiagramHtml = clone.outerHTML;
     }
+    const totalPowerText = readElementText(typeof totalPowerElem !== 'undefined' ? totalPowerElem : null, 'totalPower');
+    const totalCurrent144Text = readElementText(typeof totalCurrent144Elem !== 'undefined' ? totalCurrent144Elem : null, 'totalCurrent144');
+    const totalCurrent12Text = readElementText(typeof totalCurrent12Elem !== 'undefined' ? totalCurrent12Elem : null, 'totalCurrent12');
+    const batteryLifeText = readElementText(typeof batteryLifeElem !== 'undefined' ? batteryLifeElem : null, 'batteryLife');
+    const batteryLifeUnitText = readElementText(typeof batteryLifeUnitElem !== 'undefined' ? batteryLifeUnitElem : null, 'batteryLifeUnit');
+    const batteryCountText = readElementText(typeof batteryCountElem !== 'undefined' ? batteryCountElem : null, 'batteryCount');
     const resultsHtml = `
         <ul id="breakdownList">${breakdownHtml}</ul>
         ${powerDiagramHtml}
-        <p><strong>${t.totalPowerLabel}</strong> ${totalPowerElem.textContent} W</p>
-        <p><strong>${t.totalCurrent144Label}</strong> ${totalCurrent144Elem.textContent} A</p>
-        <p><strong>${t.totalCurrent12Label}</strong> ${totalCurrent12Elem.textContent} A</p>
-        <p><strong>${t.batteryLifeLabel}</strong> ${batteryLifeElem.textContent} ${batteryLifeUnitElem ? batteryLifeUnitElem.textContent : ''}</p>
-        <p><strong>${t.batteryCountLabel}</strong> ${batteryCountElem.textContent}</p>
+        <p><strong>${t.totalPowerLabel}</strong> ${totalPowerText} W</p>
+        <p><strong>${t.totalCurrent144Label}</strong> ${totalCurrent144Text} A</p>
+        <p><strong>${t.totalCurrent12Label}</strong> ${totalCurrent12Text} A</p>
+        <p><strong>${t.batteryLifeLabel}</strong> ${batteryLifeText} ${batteryLifeUnitText}</p>
+        <p><strong>${t.batteryCountLabel}</strong> ${batteryCountText}</p>
     `;
 
     // Get current warning messages with their colors
