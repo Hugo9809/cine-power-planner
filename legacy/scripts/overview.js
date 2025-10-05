@@ -271,12 +271,8 @@ function generatePrintableOverview() {
     legendClone.setAttribute('data-diagram-legend', 'overview');
     diagramLegendHtml = legendClone.outerHTML;
   }
-  if (diagramHint) {
-    var hintClone = diagramHint.cloneNode(true);
-    hintClone.id = 'diagramHintOverview';
-    hintClone.setAttribute('data-diagram-hint', 'overview');
-    diagramHintHtml = hintClone.outerHTML;
-  }
+  // Skip the interactive drag hint in the overview/print output so the static
+  // summary remains focused on non-interactive guidance.
   var diagramDescElem = typeof document !== 'undefined' ? document.getElementById('diagramDesc') : null;
   if (diagramDescElem) {
     var descClone = diagramDescElem.cloneNode(true);
