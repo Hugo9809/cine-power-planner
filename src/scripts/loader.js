@@ -1,3 +1,4 @@
+/* eslint-disable no-redeclare */
 /*
  * Ensure critical core runtime globals always exist before the loader
  * initialises the rest of the application. Some browsers, notably older
