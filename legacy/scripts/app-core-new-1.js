@@ -6951,6 +6951,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   var STATUS_CLASS_BY_LEVEL = {
     info: 'status-message--info',
     success: 'status-message--success',
+    note: 'status-message--note',
     warning: 'status-message--warning',
     danger: 'status-message--danger'
   };

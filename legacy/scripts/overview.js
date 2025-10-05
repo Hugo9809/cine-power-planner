@@ -158,6 +158,7 @@ function generatePrintableOverview() {
   var severityClassMap = {
     danger: 'status-message--danger',
     warning: 'status-message--warning',
+    note: 'status-message--note',
     success: 'status-message--success',
     info: 'status-message--info'
   };
