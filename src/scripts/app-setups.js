@@ -126,6 +126,51 @@ function getGlobalScope() {
     );
 }
 
+function getSafeGearListHtmlSections(html) {
+    const normalizedHtml = typeof html === 'string' ? html : '';
+    const fallbackResult = {
+        projectHtml: '',
+        gearHtml: normalizedHtml
+    };
+
+    const scope = getGlobalScope();
+
+    const splitter =
+        typeof splitGearListHtml === 'function'
+            ? splitGearListHtml
+            : scope && typeof scope.splitGearListHtml === 'function'
+                ? scope.splitGearListHtml
+                : null;
+
+    if (!splitter) {
+        return fallbackResult;
+    }
+
+    try {
+        const result = splitter(normalizedHtml);
+        if (!result || typeof result !== 'object') {
+            return fallbackResult;
+        }
+
+        const projectHtml =
+            typeof result.projectHtml === 'string' ? result.projectHtml : '';
+        const gearHtml =
+            typeof result.gearHtml === 'string'
+                ? result.gearHtml
+                : projectHtml
+                    ? ''
+                    : normalizedHtml;
+
+        return {
+            projectHtml,
+            gearHtml
+        };
+    } catch (error) {
+        console.warn('Failed to split gear list HTML', error);
+        return fallbackResult;
+    }
+}
+
 function resolveElementById(id, globalName) {
     const doc = typeof document !== 'undefined' ? document : null;
     if (doc && typeof doc.getElementById === 'function') {
@@ -747,7 +792,7 @@ function downloadSharedProject(shareFileName, includeAutoGear) {
   }
   const combinedHtml = getCurrentGearListHtml();
   if (combinedHtml) {
-    const { projectHtml, gearHtml } = splitGearListHtml(combinedHtml);
+    const { projectHtml, gearHtml } = getSafeGearListHtmlSections(combinedHtml);
     if (projectHtml) currentSetup.projectHtml = projectHtml;
     if (gearHtml) {
       currentSetup.gearList = projectHtml
@@ -5745,7 +5790,7 @@ function refreshGearListIfVisible() {
     if (currentProjectInfo) {
         displayGearAndRequirements(html);
     } else {
-        const { gearHtml } = splitGearListHtml(html);
+        const { gearHtml } = getSafeGearListHtmlSections(html);
         gearListOutput.innerHTML = gearHtml;
     }
     ensureGearListActions();
