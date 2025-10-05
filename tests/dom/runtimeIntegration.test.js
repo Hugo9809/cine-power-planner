@@ -20,6 +20,7 @@ describe('critical workflow integration', () => {
     expect(global.cinePersistence).toBeDefined();
     expect(typeof global.cinePersistence.storage.saveProject).toBe('function');
     expect(typeof global.cinePersistence.storage.importAllData).toBe('function');
+    expect(typeof global.cinePersistence.storage.clearAllData).toBe('function');
     expect(typeof global.cinePersistence.backups.createSettingsBackup).toBe('function');
     expect(typeof global.cinePersistence.restore.proceed).toBe('function');
     expect(typeof global.cinePersistence.share.applySharedSetup).toBe('function');
