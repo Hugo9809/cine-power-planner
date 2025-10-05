@@ -263,15 +263,17 @@ function generatePrintableOverview(config = {}) {
     const diagramCss = typeof getDiagramCss === 'function' ? getDiagramCss(false) : '';
 
     let diagramAreaHtml = '';
-    if (setupDiagramContainer) {
-      const areaClone = setupDiagramContainer.cloneNode(true);
-      const svg = areaClone.querySelector('svg');
-      if (svg) {
-        const style = document.createElement('style');
-        style.textContent = diagramCss;
-        svg.insertBefore(style, svg.firstChild);
-      }
-      diagramAreaHtml = areaClone.outerHTML;
+    const hasSetupDiagramContainer =
+        typeof setupDiagramContainer !== 'undefined' && setupDiagramContainer;
+    if (hasSetupDiagramContainer) {
+        const areaClone = setupDiagramContainer.cloneNode(true);
+        const svg = areaClone.querySelector('svg');
+        if (svg) {
+            const style = document.createElement('style');
+            style.textContent = diagramCss;
+            svg.insertBefore(style, svg.firstChild);
+        }
+        diagramAreaHtml = areaClone.outerHTML;
     }
     const diagramLegendHtml = diagramLegend ? diagramLegend.outerHTML : '';
     const diagramHintHtml = diagramHint ? diagramHint.outerHTML : '';
