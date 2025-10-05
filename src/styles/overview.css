@@ -281,7 +281,13 @@ th { background-color: var(--control-bg); font-weight: var(--font-weight-bold); 
     flex: 0 0 var(--button-size);
   }
 }
-#diagramArea { border: 1px solid var(--panel-border); padding: 10px; margin-top: 10px; border-radius: 4px; }
+#diagramArea,
+#diagramAreaOverview {
+  border: 1px solid var(--panel-border);
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 4px;
+}
 .no-break { break-inside: avoid; page-break-inside: avoid; }
 
 @media (prefers-color-scheme: dark) {

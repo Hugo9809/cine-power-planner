@@ -263,10 +263,32 @@ function generatePrintableOverview(config = {}) {
     const diagramCss = typeof getDiagramCss === 'function' ? getDiagramCss(false) : '';
 
     let diagramAreaHtml = '';
+    let diagramLegendHtml = '';
+    let diagramHintHtml = '';
+    let diagramDescHtml = '';
     const hasSetupDiagramContainer =
         typeof setupDiagramContainer !== 'undefined' && setupDiagramContainer;
     if (hasSetupDiagramContainer) {
         const areaClone = setupDiagramContainer.cloneNode(true);
+        areaClone.id = 'diagramAreaOverview';
+        areaClone.setAttribute('data-diagram-area', 'overview');
+        const describedBy = areaClone.getAttribute('aria-describedby');
+        if (describedBy) {
+            const ids = describedBy.split(/\s+/).filter(Boolean);
+            const updated = ids.map(id => (id === 'diagramDesc' ? 'diagramDescOverview' : id));
+            areaClone.setAttribute('aria-describedby', updated.join(' '));
+        } else {
+            areaClone.setAttribute('aria-describedby', 'diagramDescOverview');
+        }
+
+        const popupClone = areaClone.querySelector('#diagramPopup');
+        if (popupClone) {
+            popupClone.id = 'diagramPopupOverview';
+            popupClone.setAttribute('data-diagram-popup', 'overview');
+            popupClone.style.position = 'static';
+            popupClone.style.display = 'none';
+        }
+
         const svg = areaClone.querySelector('svg');
         if (svg) {
             const style = document.createElement('style');
@@ -275,9 +297,30 @@ function generatePrintableOverview(config = {}) {
         }
         diagramAreaHtml = areaClone.outerHTML;
     }
-    const diagramLegendHtml = diagramLegend ? diagramLegend.outerHTML : '';
-    const diagramHintHtml = diagramHint ? diagramHint.outerHTML : '';
-    const diagramDescHtml = document.getElementById('diagramDesc') ? document.getElementById('diagramDesc').outerHTML : '';
+
+    if (diagramLegend) {
+        const legendClone = diagramLegend.cloneNode(true);
+        legendClone.id = 'diagramLegendOverview';
+        legendClone.setAttribute('data-diagram-legend', 'overview');
+        diagramLegendHtml = legendClone.outerHTML;
+    }
+
+    if (diagramHint) {
+        const hintClone = diagramHint.cloneNode(true);
+        hintClone.id = 'diagramHintOverview';
+        hintClone.setAttribute('data-diagram-hint', 'overview');
+        diagramHintHtml = hintClone.outerHTML;
+    }
+
+    const diagramDescElem = typeof document !== 'undefined'
+        ? document.getElementById('diagramDesc')
+        : null;
+    if (diagramDescElem) {
+        const descClone = diagramDescElem.cloneNode(true);
+        descClone.id = 'diagramDescOverview';
+        descClone.setAttribute('data-diagram-description', 'overview');
+        diagramDescHtml = descClone.outerHTML;
+    }
     const diagramSectionHtml = diagramAreaHtml
         ? `<section id="setupDiagram" class="diagram-section print-section"><h2>${t.setupDiagramHeading}</h2>${diagramDescHtml}${diagramAreaHtml}${diagramLegendHtml}${diagramHintHtml}</section>`
         : '';
