@@ -17103,6 +17103,102 @@ function autoGearRuleMatchesSearch(rule, query) {
   );
 }
 
+const AUTO_GEAR_SCENARIO_FALLBACK_VALUES = Object.freeze([
+  'Indoor',
+  'Outdoor',
+  'Studio',
+  'Tripod',
+  'Handheld',
+  'Easyrig',
+  'Cine Saddle',
+  'Steadybag',
+  'Dolly',
+  'Slider',
+  'Steadicam',
+  'Gimbal',
+  'Trinity',
+  'Rollcage',
+  'Car Mount',
+  'Jib',
+  'Undersling mode',
+  'Crane',
+  'Remote Head',
+  'Extreme cold (snow)',
+  'Extreme rain',
+  'Extreme heat',
+  'Rain Machine',
+  'Slow Motion',
+  'Battery Belt',
+]);
+
+function getAutoGearScenarioFallbackOptions() {
+  const normalizeEntry = entry => {
+    if (!entry || typeof entry !== 'object') {
+      return null;
+    }
+
+    const { value, label } = entry;
+    if (typeof value !== 'string') {
+      return null;
+    }
+
+    const trimmedValue = value.trim();
+    if (!trimmedValue) {
+      return null;
+    }
+
+    const displayLabel =
+      typeof label === 'string' && label.trim()
+        ? label.trim()
+        : trimmedValue;
+
+    return { value: trimmedValue, label: displayLabel };
+  };
+
+  const resolveFromSession = () => {
+    const sessionEntries = callCoreFunctionIfAvailable(
+      'getRequiredScenarioOptionEntries',
+      [],
+      { defaultValue: null },
+    );
+
+    if (Array.isArray(sessionEntries) && sessionEntries.length) {
+      const normalized = sessionEntries
+        .map(normalizeEntry)
+        .filter(Boolean);
+      if (normalized.length) {
+        return normalized;
+      }
+    }
+    return null;
+  };
+
+  const resolveFromScenarioIcons = () => {
+    const scope = getCoreGlobalObject();
+    const scenarioIcons = scope && scope.scenarioIcons;
+    if (!scenarioIcons || typeof scenarioIcons !== 'object') {
+      return null;
+    }
+
+    const entries = Object.keys(scenarioIcons)
+      .filter(key => typeof key === 'string')
+      .map(key => key.trim())
+      .filter(Boolean)
+      .map(value => ({ value, label: value }));
+
+    return entries.length ? entries : null;
+  };
+
+  const resolveFromFallbackValues = () =>
+    AUTO_GEAR_SCENARIO_FALLBACK_VALUES.map(value => ({ value, label: value }));
+
+  return (
+    resolveFromSession()
+    || resolveFromScenarioIcons()
+    || resolveFromFallbackValues()
+  ).sort((a, b) => localeSort(a.label, b.label));
+}
+
 function collectAutoGearScenarioFilterOptions(rules) {
   const options = new Map();
   const source = document.getElementById('requiredScenarios');
@@ -17127,6 +17223,13 @@ function collectAutoGearScenarioFilterOptions(rules) {
           options.set(trimmed, trimmed);
         }
       });
+    });
+  }
+  if (!options.size) {
+    getAutoGearScenarioFallbackOptions().forEach(({ value, label }) => {
+      if (!options.has(value)) {
+        options.set(value, label);
+      }
     });
   }
   return Array.from(options.entries())
