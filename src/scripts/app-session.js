@@ -30,6 +30,10 @@
           helpResultsSummary, helpResultsAssist */
 /* eslint-enable no-redeclare */
 /* global enqueueCoreBootTask */
+const FALLBACK_STRONG_SEARCH_MATCH_TYPES = new Set(['exactKey', 'keyPrefix', 'keySubset']);
+if (typeof globalThis !== 'undefined' && typeof globalThis.STRONG_SEARCH_MATCH_TYPES === 'undefined') {
+  globalThis.STRONG_SEARCH_MATCH_TYPES = FALLBACK_STRONG_SEARCH_MATCH_TYPES;
+}
 /* global triggerPinkModeIconRain, loadDeviceData, loadSetups, loadSessionState,
           loadFeedback, loadFavorites, loadAutoGearBackups,
           loadAutoGearPresets, loadAutoGearSeedFlag, loadAutoGearActivePresetId,
@@ -10452,8 +10456,14 @@ if (helpButton && helpDialog) {
     const helpScore = helpMatch?.score || 0;
     const deviceScore = deviceMatch?.score || 0;
     const featureScore = featureMatch?.score || 0;
-    const deviceStrong = deviceMatch ? STRONG_SEARCH_MATCH_TYPES.has(deviceMatch.matchType) : false;
-    const featureStrong = featureMatch ? STRONG_SEARCH_MATCH_TYPES.has(featureMatch.matchType) : false;
+    const strongSearchMatchTypes =
+      typeof STRONG_SEARCH_MATCH_TYPES !== 'undefined' &&
+      STRONG_SEARCH_MATCH_TYPES instanceof Set
+        ? STRONG_SEARCH_MATCH_TYPES
+        : FALLBACK_STRONG_SEARCH_MATCH_TYPES;
+
+    const deviceStrong = deviceMatch ? strongSearchMatchTypes.has(deviceMatch.matchType) : false;
+    const featureStrong = featureMatch ? strongSearchMatchTypes.has(featureMatch.matchType) : false;
     const bestNonHelpScore = Math.max(deviceScore, featureScore);
     const hasStrongNonHelp = deviceStrong || featureStrong;
     const preferHelp =
