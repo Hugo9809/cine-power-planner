@@ -10598,7 +10598,6 @@ if (helpButton && helpDialog) {
     const featureMatch = findBestSearchMatch(featureMap, cleanKey, cleanTokens);
     const helpScore = helpMatch?.score || 0;
     const deviceScore = deviceMatch?.score || 0;
-    const featureScore = featureMatch?.score || 0;
     const strongSearchMatchTypes =
       typeof STRONG_SEARCH_MATCH_TYPES !== 'undefined' &&
       STRONG_SEARCH_MATCH_TYPES instanceof Set
@@ -10606,7 +10605,30 @@ if (helpButton && helpDialog) {
         : FALLBACK_STRONG_SEARCH_MATCH_TYPES;
 
     const deviceStrong = deviceMatch ? strongSearchMatchTypes.has(deviceMatch.matchType) : false;
-    const featureStrong = featureMatch ? strongSearchMatchTypes.has(featureMatch.matchType) : false;
+    const filterTargetsDevices = filterType === 'device';
+    const filterTargetsActions = filterType === 'action';
+    const filterTargetsFeatures = filterType === 'feature';
+    const filterBlocksDevices = filterTargetsFeatures || filterTargetsActions;
+    const normalizedFeatureMatch = (() => {
+      if (!featureMatch) return null;
+      const entry = featureMatch.value;
+      if (!entry) return null;
+      const entryType = entry.entryType || 'feature';
+      if (entryType === 'device') return null;
+      if (filterTargetsDevices) return null;
+      if (filterTargetsFeatures && entryType !== 'feature') return null;
+      if (filterTargetsActions && entryType !== 'action') return null;
+      return { match: featureMatch, entryType, entry };
+    })();
+    const fallbackFeatureMatch =
+      featureMatch && featureMatch.value && featureMatch.value.entryType !== 'device'
+        ? featureMatch
+        : null;
+    const featureMatchForComparison = normalizedFeatureMatch?.match || fallbackFeatureMatch;
+    const featureScore = featureMatchForComparison?.score || 0;
+    const featureStrong = featureMatchForComparison
+      ? strongSearchMatchTypes.has(featureMatchForComparison.matchType)
+      : false;
     const bestNonHelpScore = Math.max(deviceScore, featureScore);
     const hasStrongNonHelp = deviceStrong || featureStrong;
     const preferHelp =
@@ -10614,14 +10636,16 @@ if (helpButton && helpDialog) {
       (isHelpSuggestion || filterType === 'help' || (!hasStrongNonHelp && helpScore > bestNonHelpScore));
 
     if (!isHelpSuggestion && !preferHelp) {
+      const featureMatchType = featureMatchForComparison?.matchType;
       const shouldUseDevice =
-        (!!deviceMatch &&
-          (!featureMatch ||
-            (deviceStrong && !featureStrong) ||
-            (deviceStrong === featureStrong &&
-              (deviceScore > featureScore ||
-                (deviceScore === featureScore && featureMatch?.matchType !== 'exactKey'))))) ||
-        (filterType === 'device' && !!deviceMatch);
+        (!filterBlocksDevices &&
+          (!!deviceMatch &&
+            (!featureMatchForComparison ||
+              (deviceStrong && !featureStrong) ||
+              (deviceStrong === featureStrong &&
+                (deviceScore > featureScore ||
+                  (deviceScore === featureScore && featureMatchType !== 'exactKey')))))) ||
+        (filterTargetsDevices && !!deviceMatch);
       if (shouldUseDevice) {
         const device = deviceMatch.value;
         if (device && device.select) {
@@ -10649,8 +10673,8 @@ if (helpButton && helpDialog) {
           return;
         }
       }
-      if (featureMatch) {
-        const feature = featureMatch.value;
+      if (normalizedFeatureMatch) {
+        const feature = normalizedFeatureMatch.entry;
         const featureEl = feature?.element || feature;
         if (featureEl) {
           const label = feature?.label || featureEl.textContent?.trim();
@@ -10658,8 +10682,9 @@ if (helpButton && helpDialog) {
             updateFeatureSearchValue(label, originalNormalized);
           }
           if (typeof recordFeatureSearchUsage === 'function') {
-            const type = feature?.entryType || 'feature';
-            recordFeatureSearchUsage(featureMatch.key, type, label);
+            const type = normalizedFeatureMatch.entryType || 'feature';
+            const usageKey = normalizedFeatureMatch.match?.key || featureMatch?.key;
+            recordFeatureSearchUsage(usageKey, type, label);
           }
           focusFeatureElement(featureEl);
           const highlightTargets = [

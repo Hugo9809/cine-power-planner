@@ -172,4 +172,36 @@ describe('global feature search help navigation', () => {
     const highlightedText = Array.from(highlights).map(el => el.textContent.trim().toLowerCase());
     expect(highlightedText.some(text => text.includes('backup'))).toBe(true);
   });
+
+  test('feature filter skips device matches when navigating from search', async () => {
+    expect(featureSearch).toBeTruthy();
+
+    const batterySelect = document.getElementById('batterySelect');
+    expect(batterySelect).toBeTruthy();
+
+    const noneOption = document.createElement('option');
+    noneOption.value = 'None';
+    noneOption.textContent = 'None';
+    batterySelect.appendChild(noneOption);
+
+    const deviceOption = document.createElement('option');
+    deviceOption.value = 'Test Battery';
+    deviceOption.textContent = 'Test Battery';
+    batterySelect.appendChild(deviceOption);
+    batterySelect.value = 'None';
+
+    document.dispatchEvent(new Event('DOMContentLoaded'));
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+    featureSearch.value = 'feature: battery';
+    featureSearch.dispatchEvent(new Event('change', { bubbles: true }));
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+    expect(batterySelect.value).toBe('None');
+
+    const heading = document.getElementById('batteryComparisonHeading');
+    expect(heading).toBeTruthy();
+    expect(document.activeElement).toBe(heading);
+    expect(heading.classList.contains('feature-search-focus')).toBe(true);
+  });
 });
