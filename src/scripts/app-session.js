@@ -3401,6 +3401,12 @@ function startPinkModeIconRotation() {
     pinkModeIconIndex = (pinkModeIconIndex + 1) % sequence.length;
     applyPinkModeIcon(sequence[pinkModeIconIndex], { animate: true });
   }, PINK_MODE_ICON_INTERVAL_MS);
+  if (
+    pinkModeIconRotationTimer &&
+    typeof pinkModeIconRotationTimer.unref === 'function'
+  ) {
+    pinkModeIconRotationTimer.unref();
+  }
 }
 
 function applyPinkMode(enabled) {

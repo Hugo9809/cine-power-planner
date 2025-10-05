@@ -11968,6 +11968,12 @@ function scheduleNextPinkModeAnimatedIcon(templates) {
       scheduleNextPinkModeAnimatedIcon(templates);
     }
   }, delay);
+  if (
+    pinkModeAnimatedIconTimeoutId &&
+    typeof pinkModeAnimatedIconTimeoutId.unref === 'function'
+  ) {
+    pinkModeAnimatedIconTimeoutId.unref();
+  }
 }
 
 function startPinkModeAnimatedIcons() {
@@ -13151,7 +13157,13 @@ function fallbackAddInputClearButton(inputElem, callback) {
   if (!inputElem || typeof inputElem !== "object" || typeof inputElem.insertAdjacentElement !== "function") {
     return;
   }
-  const clearLabel = (texts[currentLang] && texts[currentLang].clearFilter) || "Clear filter";
+  const translationSource =
+    (typeof texts === "object" && texts)
+      || (typeof window !== "undefined" && typeof window.texts === "object" && window.texts)
+      || null;
+  const clearLabel =
+    (translationSource && translationSource[currentLang] && translationSource[currentLang].clearFilter)
+      || "Clear filter";
   const clearBtn = document.createElement("button");
   clearBtn.type = "button";
   clearBtn.className = "clear-input-btn";
