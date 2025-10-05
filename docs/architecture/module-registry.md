@@ -32,20 +32,23 @@ class concept:
 ## Modules registered by default
 
 Before the feature-specific modules are evaluated we register
-`cineModuleBase`, an infrastructure layer that exposes deterministic helpers
-(scope detection, registry resolution, deep freezing, safe warnings and global
-exposure). We then layer `cineModuleContext` on top to mirror those primitives
-while unifying module-system lookups, registry access and deferred registration
-queues. Finally `cineModuleEnvironment` provides a frozen bridge that reuses the
-context helpers across every modern bundle so modules stop copying boilerplate
-when they talk to the registry or the global scope. The legacy bundle exposes
-the same trio so parity can be maintained as we sync future updates across both
-builds.
+`cineModuleArchitectureHelpers`, a compact infrastructure layer that exposes
+deterministic scope detection, registry resolution, queue management, deep
+freezing and safe logging primitives to every environment. `cineModuleBase`
+builds on those helpers to provide the historical base API, while
+`cineModuleContext` mirrors the primitives inside the module system so
+consumers can resolve registries and queue fallbacks without reimplementing the
+boilerplate. Finally `cineModuleEnvironment` provides a frozen bridge that
+reuses the context helpers across every modern bundle so modules stop copying
+plumbing when they talk to the registry or the global scope. The legacy bundle
+exposes the same quartet so parity can be maintained as we sync future updates
+across both builds.
 
 ## Architecture factory
 
-The defensive helpers that power `cineModuleBase`, `cineModuleContext` and
-`cineModuleEnvironment` are now also available through
+The defensive helpers that power `cineModuleArchitectureHelpers`,
+`cineModuleBase`, `cineModuleContext` and `cineModuleEnvironment` are now also
+available through
 `cineModuleArchitectureFactory.createModuleArchitecture(options)`. The factory
 creates frozen architecture instances with the same queue, scope-detection and
 deep-freeze behaviour that the primary runtime uses. This is especially useful
@@ -67,6 +70,7 @@ worker used during offline rehearsals) without mutating the main global scope.
 
 | Module name        | Category          | Responsibilities |
 | ------------------ | ----------------- | ---------------- |
+| `cineModuleArchitectureHelpers` | `infrastructure` | Shares frozen scope detection, registry resolution, queue management, deep freezing and safe warning helpers so every environment starts from the same defensive baseline. |
 | `cineModuleBase`   | `infrastructure`  | Normalises scope detection, module registration queues, deep freezing and safe global exposure so higher level modules share the same defensive primitives. |
 | `cineModuleContext` | `infrastructure` | Shares base helpers with the module system, exposing unified context factories so modules can resolve architecture hooks, registries and queue fallbacks without reimplementing them. |
 | `cineModuleEnvironment` | `infrastructure` | Provides a shared runtime context that mirrors `cineModuleBase` and `cineModuleContext` helpers, keeping registry access, queuing and global exposure aligned between files without duplicating the handshake logic. |

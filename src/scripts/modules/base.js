@@ -38,12 +38,58 @@
     return null;
   }
 
+  function resolveArchitectureHelpers(scope) {
+    const targetScope = scope || LOCAL_SCOPE;
+
+    if (typeof require === 'function') {
+      try {
+        const required = require('./architecture-helpers.js');
+        if (required && typeof required === 'object') {
+          return required;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    if (targetScope && typeof targetScope.cineModuleArchitectureHelpers === 'object') {
+      return targetScope.cineModuleArchitectureHelpers;
+    }
+
+    return null;
+  }
+
   const ARCHITECTURE = resolveArchitecture(LOCAL_SCOPE);
+  const ARCHITECTURE_HELPERS = resolveArchitectureHelpers(LOCAL_SCOPE);
+
+  function detectWithArchitecture() {
+    if (ARCHITECTURE && typeof ARCHITECTURE.detectGlobalScope === 'function') {
+      try {
+        const detected = ARCHITECTURE.detectGlobalScope();
+        if (detected) {
+          return detected;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+    return fallbackDetectGlobalScope();
+  }
 
   const detectGlobalScope =
-    ARCHITECTURE && typeof ARCHITECTURE.detectGlobalScope === 'function'
-      ? ARCHITECTURE.detectGlobalScope
-      : fallbackDetectGlobalScope;
+    ARCHITECTURE_HELPERS && typeof ARCHITECTURE_HELPERS.detectGlobalScope === 'function'
+      ? function detectWithHelpers() {
+          try {
+            const detected = ARCHITECTURE_HELPERS.detectGlobalScope();
+            if (detected) {
+              return detected;
+            }
+          } catch (error) {
+            void error;
+          }
+          return detectWithArchitecture();
+        }
+      : detectWithArchitecture;
 
   const PRIMARY_SCOPE = detectGlobalScope();
 
@@ -68,14 +114,38 @@
     return scopes;
   }
 
-  const collectCandidateScopes =
-    ARCHITECTURE && typeof ARCHITECTURE.collectCandidateScopes === 'function'
-      ? function (primary) {
-          return ARCHITECTURE.collectCandidateScopes(primary || PRIMARY_SCOPE);
+  function collectWithArchitecture(primary) {
+    const target = primary || PRIMARY_SCOPE;
+
+    if (ARCHITECTURE && typeof ARCHITECTURE.collectCandidateScopes === 'function') {
+      try {
+        const collected = ARCHITECTURE.collectCandidateScopes(target);
+        if (Array.isArray(collected) && collected.length > 0) {
+          return collected;
         }
-      : function (primary) {
-          return fallbackCollectCandidateScopes(primary || PRIMARY_SCOPE);
-        };
+      } catch (error) {
+        void error;
+      }
+    }
+
+    return fallbackCollectCandidateScopes(target);
+  }
+
+  const collectCandidateScopes =
+    ARCHITECTURE_HELPERS && typeof ARCHITECTURE_HELPERS.collectCandidateScopes === 'function'
+      ? function (primary) {
+          const target = primary || PRIMARY_SCOPE;
+          try {
+            const collected = ARCHITECTURE_HELPERS.collectCandidateScopes(target);
+            if (Array.isArray(collected) && collected.length > 0) {
+              return collected;
+            }
+          } catch (error) {
+            void error;
+          }
+          return collectWithArchitecture(target);
+        }
+      : collectWithArchitecture;
 
   function fallbackTryRequire(modulePath) {
     if (typeof require !== 'function') {
@@ -90,20 +160,49 @@
     }
   }
 
-  const baseTryRequire =
-    ARCHITECTURE && typeof ARCHITECTURE.tryRequire === 'function'
-      ? function (modulePath) {
-          return ARCHITECTURE.tryRequire(modulePath);
+  function tryRequireWithArchitecture(modulePath) {
+    if (ARCHITECTURE && typeof ARCHITECTURE.tryRequire === 'function') {
+      try {
+        const result = ARCHITECTURE.tryRequire(modulePath);
+        if (typeof result !== 'undefined') {
+          return result;
         }
-      : fallbackTryRequire;
+      } catch (error) {
+        void error;
+      }
+    }
+
+    return fallbackTryRequire(modulePath);
+  }
+
+  const baseTryRequire =
+    ARCHITECTURE_HELPERS && typeof ARCHITECTURE_HELPERS.tryRequire === 'function'
+      ? function (modulePath) {
+          const result = ARCHITECTURE_HELPERS.tryRequire(modulePath);
+          return typeof result === 'undefined' ? tryRequireWithArchitecture(modulePath) : result;
+        }
+      : tryRequireWithArchitecture;
 
   function baseResolveModuleRegistry(scope) {
+    const targetScope = scope || PRIMARY_SCOPE;
+
+    if (ARCHITECTURE_HELPERS && typeof ARCHITECTURE_HELPERS.resolveModuleRegistry === 'function') {
+      try {
+        const helpersResolved = ARCHITECTURE_HELPERS.resolveModuleRegistry(targetScope);
+        if (helpersResolved && typeof helpersResolved === 'object') {
+          return helpersResolved;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
     const required = baseTryRequire('./registry.js');
     if (required && typeof required === 'object') {
       return required;
     }
 
-    const scopes = collectCandidateScopes(scope || PRIMARY_SCOPE);
+    const scopes = collectCandidateScopes(targetScope);
     for (let index = 0; index < scopes.length; index += 1) {
       const candidate = scopes[index];
       if (candidate && typeof candidate.cineModules === 'object') {
@@ -130,7 +229,10 @@
     return cachedModuleRegistry;
   }
 
-  const PENDING_QUEUE_KEY = '__cinePendingModuleRegistrations__';
+  const PENDING_QUEUE_KEY =
+    ARCHITECTURE_HELPERS && typeof ARCHITECTURE_HELPERS.pendingQueueKey === 'string'
+      ? ARCHITECTURE_HELPERS.pendingQueueKey
+      : '__cinePendingModuleRegistrations__';
 
   function fallbackDefineHiddenProperty(target, name, value) {
     try {
@@ -155,40 +257,97 @@
     return false;
   }
 
+  function defineHiddenPropertyWithArchitecture(target, name, value) {
+    if (ARCHITECTURE && typeof ARCHITECTURE.defineHiddenProperty === 'function') {
+      try {
+        if (ARCHITECTURE.defineHiddenProperty(target, name, value)) {
+          return true;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    return fallbackDefineHiddenProperty(target, name, value);
+  }
+
   const defineHiddenProperty =
-    ARCHITECTURE && typeof ARCHITECTURE.defineHiddenProperty === 'function'
-      ? ARCHITECTURE.defineHiddenProperty
-      : fallbackDefineHiddenProperty;
+    ARCHITECTURE_HELPERS && typeof ARCHITECTURE_HELPERS.defineHiddenProperty === 'function'
+      ? function (target, name, value) {
+          try {
+            if (ARCHITECTURE_HELPERS.defineHiddenProperty(target, name, value)) {
+              return true;
+            }
+          } catch (error) {
+            void error;
+          }
+          return defineHiddenPropertyWithArchitecture(target, name, value);
+        }
+      : defineHiddenPropertyWithArchitecture;
+
+  function ensureQueueWithArchitecture(scope) {
+    const targetScope = scope || PRIMARY_SCOPE;
+    if (ARCHITECTURE && typeof ARCHITECTURE.ensureQueue === 'function') {
+      try {
+        const queue = ARCHITECTURE.ensureQueue(targetScope, PENDING_QUEUE_KEY);
+        if (Array.isArray(queue)) {
+          return queue;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    if (!targetScope || typeof targetScope !== 'object') {
+      return null;
+    }
+
+    let queue = targetScope[PENDING_QUEUE_KEY];
+    if (Array.isArray(queue)) {
+      return queue;
+    }
+
+    if (!defineHiddenProperty(targetScope, PENDING_QUEUE_KEY, [])) {
+      return null;
+    }
+
+    queue = targetScope[PENDING_QUEUE_KEY];
+    if (!Array.isArray(queue)) {
+      return null;
+    }
+
+    return queue;
+  }
 
   const ensureQueue =
-    ARCHITECTURE && typeof ARCHITECTURE.ensureQueue === 'function'
+    ARCHITECTURE_HELPERS && typeof ARCHITECTURE_HELPERS.ensureQueue === 'function'
       ? function (scope) {
-          return ARCHITECTURE.ensureQueue(scope, PENDING_QUEUE_KEY);
+          try {
+            const queue = ARCHITECTURE_HELPERS.ensureQueue(scope || PRIMARY_SCOPE, PENDING_QUEUE_KEY);
+            if (Array.isArray(queue)) {
+              return queue;
+            }
+          } catch (error) {
+            void error;
+          }
+          return ensureQueueWithArchitecture(scope);
         }
-      : function (scope) {
-          if (!scope || typeof scope !== 'object') {
-            return null;
-          }
-
-          let queue = scope[PENDING_QUEUE_KEY];
-          if (Array.isArray(queue)) {
-            return queue;
-          }
-
-          if (!defineHiddenProperty(scope, PENDING_QUEUE_KEY, [])) {
-            return null;
-          }
-
-          queue = scope[PENDING_QUEUE_KEY];
-          if (!Array.isArray(queue)) {
-            return null;
-          }
-
-          return queue;
-        };
+      : ensureQueueWithArchitecture;
 
   function queueModuleRegistration(scope, name, api, options) {
-    const queue = ensureQueue(scope);
+    const targetScope = scope || PRIMARY_SCOPE;
+
+    if (ARCHITECTURE_HELPERS && typeof ARCHITECTURE_HELPERS.queueModuleRegistration === 'function') {
+      try {
+        if (ARCHITECTURE_HELPERS.queueModuleRegistration(targetScope, name, api, options)) {
+          return true;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    const queue = ensureQueue(targetScope);
     if (!queue) {
       return false;
     }
@@ -289,12 +448,29 @@
     return Object.freeze(value);
   }
 
+  function freezeWithArchitecture(value) {
+    if (ARCHITECTURE && typeof ARCHITECTURE.freezeDeep === 'function') {
+      try {
+        return ARCHITECTURE.freezeDeep(value);
+      } catch (error) {
+        void error;
+      }
+    }
+
+    return fallbackFreezeDeep(value);
+  }
+
   const baseFreezeDeep =
-    ARCHITECTURE && typeof ARCHITECTURE.freezeDeep === 'function'
+    ARCHITECTURE_HELPERS && typeof ARCHITECTURE_HELPERS.freezeDeep === 'function'
       ? function (value) {
-          return ARCHITECTURE.freezeDeep(value);
+          try {
+            return ARCHITECTURE_HELPERS.freezeDeep(value);
+          } catch (error) {
+            void error;
+          }
+          return freezeWithArchitecture(value);
         }
-      : fallbackFreezeDeep;
+      : freezeWithArchitecture;
 
   function fallbackSafeWarn(message, detail) {
     if (typeof console === 'undefined' || typeof console.warn !== 'function') {
@@ -312,10 +488,31 @@
     }
   }
 
+  function safeWarnWithArchitecture(message, detail) {
+    if (ARCHITECTURE && typeof ARCHITECTURE.safeWarn === 'function') {
+      try {
+        ARCHITECTURE.safeWarn(message, detail);
+        return;
+      } catch (error) {
+        void error;
+      }
+    }
+
+    fallbackSafeWarn(message, detail);
+  }
+
   const baseSafeWarn =
-    ARCHITECTURE && typeof ARCHITECTURE.safeWarn === 'function'
-      ? ARCHITECTURE.safeWarn
-      : fallbackSafeWarn;
+    ARCHITECTURE_HELPERS && typeof ARCHITECTURE_HELPERS.safeWarn === 'function'
+      ? function (message, detail) {
+          try {
+            ARCHITECTURE_HELPERS.safeWarn(message, detail);
+            return;
+          } catch (error) {
+            void error;
+          }
+          safeWarnWithArchitecture(message, detail);
+        }
+      : safeWarnWithArchitecture;
 
   function exposeGlobal(name, value, scope, options = {}) {
     const targetScope = scope || PRIMARY_SCOPE;

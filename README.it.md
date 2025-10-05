@@ -425,10 +425,11 @@ e ripristini non funzionino mai senza le relative protezioni. Consulta
 prima di aggiungere nuovi moduli per mantenere allineate le garanzie offline,
 la documentazione e le traduzioni.
 
-Un trio infrastrutturale — `cineModuleBase`, `cineModuleContext` e
-`cineModuleEnvironment` — mantiene allineati il rilevamento dello scope, le
-interrogazioni al sistema di moduli, le code di registrazione e l’esposizione
-globale tra bundle moderni e legacy senza duplicare boilerplate.
+Un pacchetto infrastrutturale — `cineModuleArchitectureHelpers`,
+`cineModuleBase`, `cineModuleContext` e `cineModuleEnvironment` — mantiene
+allineati il rilevamento dello scope, le interrogazioni al sistema di moduli, le
+code di registrazione e l’esposizione globale tra bundle moderni e legacy senza
+duplicare boilerplate.
 
 ### Bundle legacy
 

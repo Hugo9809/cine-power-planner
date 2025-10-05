@@ -229,6 +229,21 @@
     return null;
   }
 
+  function resolveArchitectureHelpers(scope) {
+    const targetScope = scope || LOCAL_SCOPE;
+
+    const required = fallbackTryRequire('./architecture-helpers.js');
+    if (required && typeof required === 'object') {
+      return required;
+    }
+
+    if (targetScope && typeof targetScope.cineModuleArchitectureHelpers === 'object') {
+      return targetScope.cineModuleArchitectureHelpers;
+    }
+
+    return null;
+  }
+
   function resolveModuleSystem(scope) {
     const targetScope = scope || LOCAL_SCOPE;
 
@@ -244,7 +259,10 @@
     return null;
   }
 
-  let pendingQueueKey = DEFAULT_PENDING_QUEUE_KEY;
+  let pendingQueueKey =
+    ARCHITECTURE_HELPERS && typeof ARCHITECTURE_HELPERS.pendingQueueKey === 'string'
+      ? ARCHITECTURE_HELPERS.pendingQueueKey
+      : DEFAULT_PENDING_QUEUE_KEY;
 
   function updatePendingQueueKey(source) {
     if (!source || (typeof source !== 'object' && typeof source !== 'function')) {
@@ -268,6 +286,8 @@
     }
   }
 
+  const ARCHITECTURE_HELPERS = resolveArchitectureHelpers(LOCAL_SCOPE);
+
   const MODULE_SYSTEM = resolveModuleSystem(LOCAL_SCOPE);
   if (MODULE_SYSTEM) {
     updatePendingQueueKey(MODULE_SYSTEM);
@@ -279,112 +299,257 @@
       : null)
     || resolveArchitecture(LOCAL_SCOPE);
 
+  function detectWithFallbackChain() {
+    if (MODULE_SYSTEM && typeof MODULE_SYSTEM.detectGlobalScope === 'function') {
+      try {
+        const detected = MODULE_SYSTEM.detectGlobalScope();
+        if (detected) {
+          return detected;
+        }
+      } catch (error) {
+        void error;
+      }
+
+      if (ARCHITECTURE && typeof ARCHITECTURE.detectGlobalScope === 'function') {
+        try {
+          const architectureDetected = ARCHITECTURE.detectGlobalScope();
+          if (architectureDetected) {
+            return architectureDetected;
+          }
+        } catch (architectureError) {
+          void architectureError;
+        }
+      }
+
+      return fallbackDetectGlobalScope();
+    }
+
+    if (ARCHITECTURE && typeof ARCHITECTURE.detectGlobalScope === 'function') {
+      try {
+        const detected = ARCHITECTURE.detectGlobalScope();
+        if (detected) {
+          return detected;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    return fallbackDetectGlobalScope();
+  }
+
   const detectGlobalScope =
-    MODULE_SYSTEM && typeof MODULE_SYSTEM.detectGlobalScope === 'function'
-      ? function detectWithSystem() {
+    ARCHITECTURE_HELPERS && typeof ARCHITECTURE_HELPERS.detectGlobalScope === 'function'
+      ? function detectWithHelpers() {
           try {
-            const detected = MODULE_SYSTEM.detectGlobalScope();
+            const detected = ARCHITECTURE_HELPERS.detectGlobalScope();
             if (detected) {
               return detected;
             }
           } catch (error) {
             void error;
           }
-          if (ARCHITECTURE && typeof ARCHITECTURE.detectGlobalScope === 'function') {
-            try {
-              const architectureDetected = ARCHITECTURE.detectGlobalScope();
-              if (architectureDetected) {
-                return architectureDetected;
-              }
-            } catch (architectureError) {
-              void architectureError;
-            }
-          }
-          return fallbackDetectGlobalScope();
+          return detectWithFallbackChain();
         }
-      : ARCHITECTURE && typeof ARCHITECTURE.detectGlobalScope === 'function'
-        ? function detectWithArchitecture() {
-            try {
-              const detected = ARCHITECTURE.detectGlobalScope();
-              if (detected) {
-                return detected;
-              }
-            } catch (error) {
-              void error;
-            }
-            return fallbackDetectGlobalScope();
-          }
-        : fallbackDetectGlobalScope;
+      : detectWithFallbackChain;
 
   const PRIMARY_SCOPE = detectGlobalScope();
 
+  function collectWithFallbackChain(primary) {
+    const target = primary || PRIMARY_SCOPE;
+
+    if (MODULE_SYSTEM && typeof MODULE_SYSTEM.collectCandidateScopes === 'function') {
+      try {
+        const scopes = MODULE_SYSTEM.collectCandidateScopes(target);
+        if (Array.isArray(scopes) && scopes.length > 0) {
+          return scopes;
+        }
+      } catch (error) {
+        void error;
+      }
+
+      if (ARCHITECTURE && typeof ARCHITECTURE.collectCandidateScopes === 'function') {
+        try {
+          const architectureScopes = ARCHITECTURE.collectCandidateScopes(target);
+          if (Array.isArray(architectureScopes) && architectureScopes.length > 0) {
+            return architectureScopes;
+          }
+        } catch (architectureError) {
+          void architectureError;
+        }
+      }
+
+      return fallbackCollectCandidateScopes(target);
+    }
+
+    if (ARCHITECTURE && typeof ARCHITECTURE.collectCandidateScopes === 'function') {
+      try {
+        const architectureScopes = ARCHITECTURE.collectCandidateScopes(target);
+        if (Array.isArray(architectureScopes) && architectureScopes.length > 0) {
+          return architectureScopes;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    return fallbackCollectCandidateScopes(target);
+  }
+
   const collectCandidateScopes =
-    MODULE_SYSTEM && typeof MODULE_SYSTEM.collectCandidateScopes === 'function'
-      ? function collectWithSystem(primary) {
+    ARCHITECTURE_HELPERS && typeof ARCHITECTURE_HELPERS.collectCandidateScopes === 'function'
+      ? function collectWithHelpers(primary) {
           const target = primary || PRIMARY_SCOPE;
           try {
-            const scopes = MODULE_SYSTEM.collectCandidateScopes(target);
+            const scopes = ARCHITECTURE_HELPERS.collectCandidateScopes(target);
             if (Array.isArray(scopes) && scopes.length > 0) {
               return scopes;
             }
           } catch (error) {
             void error;
           }
-          if (ARCHITECTURE && typeof ARCHITECTURE.collectCandidateScopes === 'function') {
-            try {
-              return ARCHITECTURE.collectCandidateScopes(target);
-            } catch (architectureError) {
-              void architectureError;
-            }
-          }
-          return fallbackCollectCandidateScopes(target);
+          return collectWithFallbackChain(target);
         }
-      : ARCHITECTURE && typeof ARCHITECTURE.collectCandidateScopes === 'function'
-        ? function collectWithArchitecture(primary) {
-            const target = primary || PRIMARY_SCOPE;
-            try {
-              return ARCHITECTURE.collectCandidateScopes(target);
-            } catch (error) {
-              void error;
-            }
-            return fallbackCollectCandidateScopes(target);
-          }
-        : function collectWithFallback(primary) {
-            return fallbackCollectCandidateScopes(primary || PRIMARY_SCOPE);
-          };
+      : collectWithFallbackChain;
+
+  function tryRequireWithFallback(modulePath) {
+    if (MODULE_SYSTEM && typeof MODULE_SYSTEM.tryRequire === 'function') {
+      try {
+        const result = MODULE_SYSTEM.tryRequire(modulePath);
+        if (typeof result !== 'undefined') {
+          return result;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    if (ARCHITECTURE && typeof ARCHITECTURE.tryRequire === 'function') {
+      try {
+        const result = ARCHITECTURE.tryRequire(modulePath);
+        if (typeof result !== 'undefined') {
+          return result;
+        }
+      } catch (architectureError) {
+        void architectureError;
+      }
+    }
+
+    return fallbackTryRequire(modulePath);
+  }
 
   const tryRequire =
-    MODULE_SYSTEM && typeof MODULE_SYSTEM.tryRequire === 'function'
-      ? function tryRequireWithSystem(modulePath) {
-          const result = MODULE_SYSTEM.tryRequire(modulePath);
-          return typeof result === 'undefined' ? fallbackTryRequire(modulePath) : result;
+    ARCHITECTURE_HELPERS && typeof ARCHITECTURE_HELPERS.tryRequire === 'function'
+      ? function tryRequireWithHelpers(modulePath) {
+          const result = ARCHITECTURE_HELPERS.tryRequire(modulePath);
+          return typeof result === 'undefined' ? tryRequireWithFallback(modulePath) : result;
         }
-      : ARCHITECTURE && typeof ARCHITECTURE.tryRequire === 'function'
-        ? function tryRequireWithArchitecture(modulePath) {
-            return ARCHITECTURE.tryRequire(modulePath);
-          }
-        : fallbackTryRequire;
+      : tryRequireWithFallback;
+
+  function defineHiddenPropertyWithFallback(target, name, value) {
+    if (MODULE_SYSTEM && typeof MODULE_SYSTEM.defineHiddenProperty === 'function') {
+      try {
+        if (MODULE_SYSTEM.defineHiddenProperty(target, name, value)) {
+          return true;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    if (ARCHITECTURE && typeof ARCHITECTURE.defineHiddenProperty === 'function') {
+      try {
+        if (ARCHITECTURE.defineHiddenProperty(target, name, value)) {
+          return true;
+        }
+      } catch (architectureError) {
+        void architectureError;
+      }
+    }
+
+    return fallbackDefineHiddenProperty(target, name, value);
+  }
 
   const defineHiddenProperty =
-    MODULE_SYSTEM && typeof MODULE_SYSTEM.defineHiddenProperty === 'function'
-      ? MODULE_SYSTEM.defineHiddenProperty
-      : ARCHITECTURE && typeof ARCHITECTURE.defineHiddenProperty === 'function'
-        ? ARCHITECTURE.defineHiddenProperty
-        : fallbackDefineHiddenProperty;
+    ARCHITECTURE_HELPERS && typeof ARCHITECTURE_HELPERS.defineHiddenProperty === 'function'
+      ? function defineWithHelpers(target, name, value) {
+          try {
+            if (ARCHITECTURE_HELPERS.defineHiddenProperty(target, name, value)) {
+              return true;
+            }
+          } catch (error) {
+            void error;
+          }
+          return defineHiddenPropertyWithFallback(target, name, value);
+        }
+      : defineHiddenPropertyWithFallback;
+
+  function freezeDeepWithFallback(value) {
+    if (MODULE_SYSTEM && typeof MODULE_SYSTEM.freezeDeep === 'function') {
+      try {
+        return MODULE_SYSTEM.freezeDeep(value);
+      } catch (error) {
+        void error;
+      }
+    }
+
+    if (ARCHITECTURE && typeof ARCHITECTURE.freezeDeep === 'function') {
+      try {
+        return ARCHITECTURE.freezeDeep(value);
+      } catch (architectureError) {
+        void architectureError;
+      }
+    }
+
+    return fallbackFreezeDeep(value);
+  }
 
   const freezeDeep =
-    MODULE_SYSTEM && typeof MODULE_SYSTEM.freezeDeep === 'function'
-      ? MODULE_SYSTEM.freezeDeep
-      : ARCHITECTURE && typeof ARCHITECTURE.freezeDeep === 'function'
-        ? ARCHITECTURE.freezeDeep
-        : fallbackFreezeDeep;
+    ARCHITECTURE_HELPERS && typeof ARCHITECTURE_HELPERS.freezeDeep === 'function'
+      ? function freezeWithHelpers(value) {
+          try {
+            return ARCHITECTURE_HELPERS.freezeDeep(value);
+          } catch (error) {
+            void error;
+          }
+          return freezeDeepWithFallback(value);
+        }
+      : freezeDeepWithFallback;
+
+  function safeWarnWithFallback(message, detail) {
+    if (MODULE_SYSTEM && typeof MODULE_SYSTEM.safeWarn === 'function') {
+      try {
+        MODULE_SYSTEM.safeWarn(message, detail);
+        return;
+      } catch (error) {
+        void error;
+      }
+    }
+
+    if (ARCHITECTURE && typeof ARCHITECTURE.safeWarn === 'function') {
+      try {
+        ARCHITECTURE.safeWarn(message, detail);
+        return;
+      } catch (architectureError) {
+        void architectureError;
+      }
+    }
+
+    fallbackSafeWarn(message, detail);
+  }
 
   const safeWarn =
-    MODULE_SYSTEM && typeof MODULE_SYSTEM.safeWarn === 'function'
-      ? MODULE_SYSTEM.safeWarn
-      : ARCHITECTURE && typeof ARCHITECTURE.safeWarn === 'function'
-        ? ARCHITECTURE.safeWarn
-        : fallbackSafeWarn;
+    ARCHITECTURE_HELPERS && typeof ARCHITECTURE_HELPERS.safeWarn === 'function'
+      ? function warnWithHelpers(message, detail) {
+          try {
+            ARCHITECTURE_HELPERS.safeWarn(message, detail);
+            return;
+          } catch (error) {
+            void error;
+          }
+          safeWarnWithFallback(message, detail);
+        }
+      : safeWarnWithFallback;
 
   const resolveFromScopes =
     MODULE_SYSTEM && typeof MODULE_SYSTEM.resolveFromScopes === 'function'
@@ -457,6 +622,17 @@
   function ensureQueue(scope) {
     const targetScope = scope || PRIMARY_SCOPE;
 
+    if (ARCHITECTURE_HELPERS && typeof ARCHITECTURE_HELPERS.ensureQueue === 'function') {
+      try {
+        const queueFromHelpers = ARCHITECTURE_HELPERS.ensureQueue(targetScope, pendingQueueKey);
+        if (Array.isArray(queueFromHelpers)) {
+          return queueFromHelpers;
+        }
+      } catch (error) {
+        safeWarn('cineModuleContext: Unable to access pending queue via architecture helpers.', error);
+      }
+    }
+
     if (MODULE_SYSTEM && typeof MODULE_SYSTEM.getPendingQueue === 'function') {
       try {
         const queueFromSystem = MODULE_SYSTEM.getPendingQueue(targetScope);
@@ -484,6 +660,17 @@
 
   function queueModuleRegistration(name, api, options, scope) {
     const targetScope = scope || PRIMARY_SCOPE;
+
+    if (ARCHITECTURE_HELPERS && typeof ARCHITECTURE_HELPERS.queueModuleRegistration === 'function') {
+      try {
+        if (ARCHITECTURE_HELPERS.queueModuleRegistration(targetScope, name, api, options)) {
+          return true;
+        }
+      } catch (error) {
+        safeWarn('cineModuleContext: Architecture helpers queueModuleRegistration failed.', error);
+      }
+    }
+
     const queue = ensureQueue(targetScope);
     if (!queue) {
       return false;
@@ -507,6 +694,17 @@
 
   function resolveModuleRegistry(scope) {
     const targetScope = scope || PRIMARY_SCOPE;
+
+    if (ARCHITECTURE_HELPERS && typeof ARCHITECTURE_HELPERS.resolveModuleRegistry === 'function') {
+      try {
+        const resolvedByHelpers = ARCHITECTURE_HELPERS.resolveModuleRegistry(targetScope);
+        if (resolvedByHelpers && typeof resolvedByHelpers === 'object') {
+          return resolvedByHelpers;
+        }
+      } catch (error) {
+        safeWarn('cineModuleContext: Architecture helpers resolveModuleRegistry failed.', error);
+      }
+    }
 
     if (MODULE_SYSTEM && typeof MODULE_SYSTEM.getModuleRegistry === 'function') {
       try {

@@ -924,10 +924,10 @@ their safeguards. Review
 before adding new modules to keep offline guarantees, documentation and
 translations aligned.
 
-An infrastructure trio—`cineModuleBase`, `cineModuleContext` and
-`cineModuleEnvironment`—keeps scope detection, module-system lookups,
-registration queues and global exposure aligned between modern and legacy
-bundles without duplicating boilerplate.
+An infrastructure stack—`cineModuleArchitectureHelpers`, `cineModuleBase`,
+`cineModuleContext` and `cineModuleEnvironment`—keeps scope detection,
+module-system lookups, registration queues and global exposure aligned between
+modern and legacy bundles without duplicating boilerplate.
 
 ### Legacy browser bundle
 
