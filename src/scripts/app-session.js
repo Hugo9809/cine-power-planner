@@ -2785,6 +2785,27 @@ function restoreSessionState() {
         // Ensure the generator button reflects the restored gear list state
         updateGearListButtonVisibility();
       }
+    } else if (currentProjectInfo && typeof generateGearListHtml === 'function') {
+      const regeneratedHtml = generateGearListHtml(currentProjectInfo || {});
+      if (regeneratedHtml) {
+        displayGearAndRequirements(regeneratedHtml);
+        if (gearListOutput) {
+          gearListOutput.classList.remove('hidden');
+          skipNextGearListRefresh = true;
+          ensureGearListActions();
+          bindGearListCageListener();
+          bindGearListEasyrigListener();
+          bindGearListSliderBowlListener();
+          bindGearListEyeLeatherListener();
+          bindGearListProGaffTapeListener();
+          bindGearListDirectorMonitorListener();
+          if (state) {
+            setSliderBowlValue(state.sliderBowl);
+            setEasyrigValue(state.easyrig);
+          }
+          updateGearListButtonVisibility();
+        }
+      }
     }
   }
   const highlightPreference = state && Object.prototype.hasOwnProperty.call(state, 'autoGearHighlight')
