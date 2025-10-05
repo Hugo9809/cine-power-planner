@@ -107,6 +107,8 @@ function __cineIsArray(value) {
   ensureNullableObject('autoGearRuleNameInput');
   ensureString('autoGearSummaryFocus', 'all');
   ensureArray('autoGearMonitorDefaultControls');
+  ensureNullableObject('iosPwaHelpDialog');
+  ensureNullableObject('iosPwaHelpClose');
   ensureNullableObject('totalPowerElem');
   ensureFunction('safeGenerateConnectorSummary', fallbackSafeGenerateConnectorSummary);
 })();

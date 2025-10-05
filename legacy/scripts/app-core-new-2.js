@@ -159,6 +159,37 @@ function ensureCorePart2Placeholder(name, fallbackValue) {
   return fallbackProvider();
 }
 
+function createFallbackIconFontKeys() {
+  return Object.freeze({
+    ESSENTIAL: 'essential',
+    FILM: 'film',
+    GADGET: 'gadget',
+    UICONS: 'uicons',
+    TEXT: 'text'
+  });
+}
+
+ensureCorePart2Placeholder('ICON_FONT_KEYS', function () {
+  return createFallbackIconFontKeys();
+});
+
+ensureCorePart2Placeholder('iconGlyph', function () {
+  var iconFontKeys = ensureCorePart2Placeholder('ICON_FONT_KEYS', function () {
+    return createFallbackIconFontKeys();
+  });
+  var fallbackFont = iconFontKeys && typeof iconFontKeys.UICONS === 'string' ? iconFontKeys.UICONS : 'uicons';
+  return function fallbackIconGlyph(char, font) {
+    var glyphChar = typeof char === 'string' ? char : '';
+    var resolvedFont = font && typeof font === 'string' ? font : fallbackFont;
+    try {
+      return Object.freeze({ char: glyphChar, font: resolvedFont });
+    } catch (freezeError) {
+      void freezeError;
+      return { char: glyphChar, font: resolvedFont };
+    }
+  };
+});
+
 ensureCorePart2Placeholder('autoGearAutoPresetId', '');
 ensureCorePart2Placeholder('baseAutoGearRules', function () {
   return [];
@@ -5161,23 +5192,75 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       updateInstallBannerPosition();
     }
+    function resolveGlobalElement(name, elementId) {
+      if (typeof name !== 'string' || !name) {
+        return null;
+      }
+      var assignResolved = function assignResolved(element) {
+        if (!element || _typeof(element) !== 'object') {
+          return null;
+        }
+        try {
+          CORE_PART2_RUNTIME_SCOPE[name] = element;
+        } catch (assignError) {
+          void assignError;
+        }
+        return element;
+      };
+      var globalValue = readGlobalScopeValue(name);
+      if (globalValue && _typeof(globalValue) === 'object') {
+        var resolved = assignResolved(globalValue);
+        if (resolved) {
+          return resolved;
+        }
+      }
+      if (typeof document !== 'undefined' && document && typeof document.getElementById === 'function') {
+        try {
+          var lookupId = typeof elementId === 'string' && elementId ? elementId : name;
+          var fallback = document.getElementById(lookupId);
+          if (fallback && _typeof(fallback) === 'object') {
+            var _resolved = assignResolved(fallback);
+            if (_resolved) {
+              return _resolved;
+            }
+          }
+        } catch (lookupError) {
+          void lookupError;
+        }
+      }
+      return null;
+    }
+    function resolveIosPwaHelpDialog() {
+      return resolveGlobalElement('iosPwaHelpDialog', 'iosPwaHelpDialog');
+    }
+    function resolveIosPwaHelpClose() {
+      return resolveGlobalElement('iosPwaHelpClose', 'iosPwaHelpClose');
+    }
+    var safeExposeCoreRuntimeConstant =
+      typeof exposeCoreRuntimeConstant === 'function'
+        ? exposeCoreRuntimeConstant
+        : function noopExposeCoreRuntimeConstant() {};
     function shouldShowIosPwaHelp() {
-      return !!iosPwaHelpDialog && isIosDevice() && isStandaloneDisplayMode() && !hasDismissedIosPwaHelp();
+      var dialog = resolveIosPwaHelpDialog();
+      return !!dialog && isIosDevice() && isStandaloneDisplayMode() && !hasDismissedIosPwaHelp();
     }
     function openIosPwaHelp() {
-      if (!iosPwaHelpDialog) return;
+      var dialog = resolveIosPwaHelpDialog();
+      if (!dialog) return;
       if (!shouldShowIosPwaHelp()) return;
       lastActiveBeforeIosHelp = document.activeElement;
-      iosPwaHelpDialog.removeAttribute('hidden');
-      var focusTarget = iosPwaHelpClose || iosPwaHelpDialog.querySelector('button, [href], [tabindex]:not([tabindex="-1"])');
+      dialog.removeAttribute('hidden');
+      var closeButton = resolveIosPwaHelpClose();
+      var focusTarget = closeButton || dialog.querySelector('button, [href], [tabindex]:not([tabindex="-1"])');
       if (focusTarget && typeof focusTarget.focus === 'function') {
         focusTarget.focus();
       }
     }
     function closeIosPwaHelp() {
       var storeDismissal = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
-      if (!iosPwaHelpDialog) return;
-      iosPwaHelpDialog.setAttribute('hidden', '');
+      var dialog = resolveIosPwaHelpDialog();
+      if (!dialog) return;
+      dialog.setAttribute('hidden', '');
       if (storeDismissal) {
         markIosPwaHelpDismissed();
       }
@@ -5188,14 +5271,16 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     function maybeShowIosPwaHelp() {
       openIosPwaHelp();
     }
-    if (iosPwaHelpClose) {
-      iosPwaHelpClose.addEventListener('click', function () {
+    var iosPwaHelpCloseButton = resolveIosPwaHelpClose();
+    if (iosPwaHelpCloseButton) {
+      iosPwaHelpCloseButton.addEventListener('click', function () {
         return closeIosPwaHelp(true);
       });
     }
-    if (iosPwaHelpDialog) {
-      iosPwaHelpDialog.addEventListener('click', function (event) {
-        if (event.target === iosPwaHelpDialog) {
+    var iosPwaHelpDialogElement = resolveIosPwaHelpDialog();
+    if (iosPwaHelpDialogElement) {
+      iosPwaHelpDialogElement.addEventListener('click', function (event) {
+        if (event.target === iosPwaHelpDialogElement) {
           closeIosPwaHelp(true);
         }
       });
@@ -5203,7 +5288,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     document.addEventListener('keydown', function (event) {
       if (event.key !== 'Escape' && event.key !== 'Esc') return;
       var handled = false;
-      if (iosPwaHelpDialog && !iosPwaHelpDialog.hasAttribute('hidden')) {
+      var activeIosDialog = resolveIosPwaHelpDialog();
+      if (activeIosDialog && !activeIosDialog.hasAttribute('hidden')) {
         closeIosPwaHelp(true);
         handled = true;
       }
@@ -6440,16 +6526,17 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
       }
     }
-    if (settingsLogo) {
-      settingsLogo.addEventListener('change', function () {
-        var file = settingsLogo.files && settingsLogo.files[0];
+    var settingsLogoInput = resolveGlobalElement('settingsLogo', 'settingsLogo');
+    if (settingsLogoInput) {
+      settingsLogoInput.addEventListener('change', function () {
+        var file = settingsLogoInput.files && settingsLogoInput.files[0];
         if (!file) {
           loadStoredLogoPreview();
           return;
         }
         if (file.type !== 'image/svg+xml' && !file.name.toLowerCase().endsWith('.svg')) {
           showNotification('error', texts[currentLang].logoFormatError || 'Unsupported logo format');
-          settingsLogo.value = '';
+          settingsLogoInput.value = '';
           loadStoredLogoPreview();
           return;
         }
@@ -6703,7 +6790,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     var normalizeSearchValue = function normalizeSearchValue(value) {
       return typeof value === 'string' ? value.trim().toLowerCase() : '';
     };
-    exposeCoreRuntimeConstant('normalizeSearchValue', normalizeSearchValue);
+    safeExposeCoreRuntimeConstant('normalizeSearchValue', normalizeSearchValue);
     var FEATURE_SEARCH_EXTRA_SELECTOR = '[data-feature-search]';
     var FEATURE_SEARCH_TYPE_LABEL_KEYS = {
       feature: 'featureSearchTypeFeature',
@@ -8195,7 +8282,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     var breakdownListElem = document.getElementById("breakdownList");
     if (breakdownListElem) {
       try {
-        exposeCoreRuntimeConstant('breakdownListElem', breakdownListElem);
+        safeExposeCoreRuntimeConstant('breakdownListElem', breakdownListElem);
       } catch (exposeError) {
         void exposeError;
       }
@@ -8213,19 +8300,21 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     var normalizeAccentValue = function normalizeAccentValue(value) {
       return typeof value === 'string' ? value.trim().toLowerCase() : '';
     };
+    var accentColorInputElement = resolveGlobalElement('accentColorInput', 'accentColorInput');
+    var accentColorResetButtonElement = resolveGlobalElement('accentColorResetButton', 'accentColorReset');
     var updateAccentColorResetButtonState = function updateAccentColorResetButtonState() {
-      if (!accentColorResetButton) return;
+      if (!accentColorResetButtonElement) return;
       var body = typeof document !== 'undefined' ? document.body : null;
       var pinkModeActive = !!(body && body.classList.contains('pink-mode'));
-      var inputDisabled = !accentColorInput || accentColorInput.disabled;
-      var currentValue = accentColorInput ? normalizeAccentValue(accentColorInput.value || '') : '';
+      var inputDisabled = !accentColorInputElement || accentColorInputElement.disabled;
+      var currentValue = accentColorInputElement ? normalizeAccentValue(accentColorInputElement.value || '') : '';
       var isDefaultSelection = !currentValue || currentValue === DEFAULT_ACCENT_NORMALIZED;
       var shouldDisable = pinkModeActive || inputDisabled || isDefaultSelection;
-      accentColorResetButton.disabled = shouldDisable;
+      accentColorResetButtonElement.disabled = shouldDisable;
       if (shouldDisable) {
-        accentColorResetButton.setAttribute('aria-disabled', 'true');
+        accentColorResetButtonElement.setAttribute('aria-disabled', 'true');
       } else {
-        accentColorResetButton.removeAttribute('aria-disabled');
+        accentColorResetButtonElement.removeAttribute('aria-disabled');
       }
     };
     var DARK_MODE_ACCENT_BOOST_CLASS = 'dark-accent-boost';
@@ -8410,42 +8499,42 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     prevAccentColor = accentColor;
     updateAccentColorResetButtonState();
-    if (accentColorInput) {
-      accentColorInput.addEventListener('input', function () {
+    if (accentColorInputElement) {
+      accentColorInputElement.addEventListener('input', function () {
         if (typeof document !== 'undefined' && document.body && document.body.classList.contains('pink-mode')) {
           updateAccentColorResetButtonState();
           return;
         }
-        var color = accentColorInput.value;
+        var color = accentColorInputElement.value;
         applyAccentColor(color);
         updateAccentColorResetButtonState();
       });
     }
-    if (accentColorResetButton && accentColorInput) {
-      accentColorResetButton.addEventListener('click', function () {
-        if (accentColorResetButton.disabled || accentColorInput.disabled) return;
+    if (accentColorResetButtonElement && accentColorInputElement) {
+      accentColorResetButtonElement.addEventListener('click', function () {
+        if (accentColorResetButtonElement.disabled || accentColorInputElement.disabled) return;
         if (typeof document !== 'undefined' && document.body && document.body.classList.contains('pink-mode')) {
           updateAccentColorResetButtonState();
           return;
         }
-        var currentValue = normalizeAccentValue(accentColorInput.value || '');
+        var currentValue = normalizeAccentValue(accentColorInputElement.value || '');
         if (currentValue === DEFAULT_ACCENT_NORMALIZED) {
           updateAccentColorResetButtonState();
           return;
         }
-        accentColorInput.value = DEFAULT_ACCENT_COLOR;
+        accentColorInputElement.value = DEFAULT_ACCENT_COLOR;
         var eventHandled = false;
         try {
           var inputEvent = new Event('input', {
             bubbles: true
           });
-          eventHandled = accentColorInput.dispatchEvent(inputEvent);
+          eventHandled = accentColorInputElement.dispatchEvent(inputEvent);
         } catch (error) {
           void error;
           if (typeof document !== 'undefined' && document.createEvent) {
             var legacyEvent = document.createEvent('Event');
             legacyEvent.initEvent('input', true, true);
-            eventHandled = accentColorInput.dispatchEvent(legacyEvent);
+            eventHandled = accentColorInputElement.dispatchEvent(legacyEvent);
           }
         }
         if (!eventHandled) {
@@ -8975,7 +9064,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
                 }
               }
               if (localFontsButton) {
-                localFontsButton.disabled = false;
+                localFontsButtonElement.disabled = false;
               }
             case 10:
               return _context7.a(2);
@@ -9121,7 +9210,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return null;
     }();
     var supportsLocalFonts = typeof queryAvailableLocalFonts === 'function';
-    var canUploadFontFiles = !!(localFontsInput && typeof window !== 'undefined' && typeof window.FileReader === 'function' && typeof localFontsInput.click === 'function');
+    var localFontsButtonElement = resolveGlobalElement('localFontsButton', 'localFontsButton');
+    var localFontsInputElement = resolveGlobalElement('localFontsInput', 'localFontsInput');
+    var settingsFontFamily = resolveGlobalElement('settingsFontFamily', 'settingsFontFamily');
+    var settingsFontSize = resolveGlobalElement('settingsFontSize', 'settingsFontSize');
+    var canUploadFontFiles = !!(localFontsInputElement && typeof window !== 'undefined' && typeof window.FileReader === 'function' && typeof localFontsInputElement.click === 'function');
     function getLocalizedText(key) {
       if (texts[currentLang] && texts[currentLang][key]) return texts[currentLang][key];
       if (texts.en && texts.en[key]) return texts.en[key];
@@ -9337,7 +9430,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
               }
             case 16:
               _context9.p = 16;
-              localFontsButton.disabled = false;
+              localFontsButtonElement.disabled = false;
               return _context9.f(16);
             case 17:
               return _context9.a(2);
@@ -9346,14 +9439,14 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }));
       return _requestLocalFonts.apply(this, arguments);
     }
-    if (localFontsButton) {
+    if (localFontsButtonElement) {
       if (supportsLocalFonts || canUploadFontFiles) {
-        localFontsButton.removeAttribute('hidden');
-        localFontsButton.addEventListener('click', function () {
+        localFontsButtonElement.removeAttribute('hidden');
+        localFontsButtonElement.addEventListener('click', function () {
           if (supportsLocalFonts) {
             requestLocalFonts();
-          } else if (canUploadFontFiles && localFontsInput) {
-            localFontsInput.click();
+          } else if (canUploadFontFiles && localFontsInputElement) {
+            localFontsInputElement.click();
           }
         });
         if (!supportsLocalFonts && canUploadFontFiles) {

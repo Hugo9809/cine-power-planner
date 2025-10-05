@@ -123,6 +123,18 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return [];
     }
   }, {
+    name: 'iosPwaHelpDialog',
+    validator: function validator(value) {
+      return typeof value === 'undefined' || value === null || _typeof(value) === 'object';
+    },
+    fallback: null
+  }, {
+    name: 'iosPwaHelpClose',
+    validator: function validator(value) {
+      return typeof value === 'undefined' || value === null || _typeof(value) === 'object';
+    },
+    fallback: null
+  }, {
     name: 'safeGenerateConnectorSummary',
     validator: function validator(value) {
       return typeof value === 'function';
