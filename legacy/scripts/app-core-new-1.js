@@ -69,15 +69,42 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
 
   function dispatchTemperatureNoteRender(hours) {
     var scope = getCoreGlobalObject();
-    var renderer =
-      typeof renderTemperatureNote === "function"
-        ? renderTemperatureNote
-        : scope && typeof scope[CORE_TEMPERATURE_RENDER_NAME] === "function"
-          ? scope[CORE_TEMPERATURE_RENDER_NAME]
-          : null;
+    var renderer = null;
 
-    if (typeof renderer === "function") {
-      renderer(hours);
+    try {
+      if (typeof renderTemperatureNote === 'function') {
+        renderer = renderTemperatureNote;
+      }
+    } catch (referenceError) {
+      var message = String(referenceError && referenceError.message);
+      var isReferenceError =
+        referenceError &&
+        (referenceError.name === 'ReferenceError' || /is not defined|Cannot access uninitialized/i.test(message));
+
+      if (!isReferenceError) {
+        throw referenceError;
+      }
+    }
+
+    if (!renderer && scope && _typeof(scope) === 'object') {
+      try {
+        var scopedRenderer = scope[CORE_TEMPERATURE_RENDER_NAME];
+        if (typeof scopedRenderer === 'function') {
+          renderer = scopedRenderer;
+        }
+      } catch (readError) {
+        void readError;
+      }
+    }
+
+    if (typeof renderer === 'function') {
+      try {
+        renderer(hours);
+      } catch (renderError) {
+        if (typeof console !== 'undefined' && typeof console.error === 'function') {
+          console.error('Temperature note renderer failed', renderError);
+        }
+      }
       return;
     }
 

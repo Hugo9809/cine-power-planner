@@ -134,15 +134,44 @@ function getCoreGlobalObject() {
 
 function dispatchTemperatureNoteRender(hours) {
   const scope = getCoreGlobalObject();
-  const renderer =
-    typeof renderTemperatureNote === "function"
-      ? renderTemperatureNote
-      : scope && typeof scope[CORE_TEMPERATURE_RENDER_NAME] === "function"
-        ? scope[CORE_TEMPERATURE_RENDER_NAME]
-        : null;
+  let renderer = null;
+
+  try {
+    if (typeof renderTemperatureNote === "function") {
+      renderer = renderTemperatureNote;
+    }
+  } catch (referenceError) {
+    const isReferenceError =
+      referenceError &&
+      (referenceError.name === "ReferenceError" ||
+        /is not defined|Cannot access uninitialized/i.test(
+          String(referenceError && referenceError.message)
+        ));
+
+    if (!isReferenceError) {
+      throw referenceError;
+    }
+  }
+
+  if (!renderer && scope && typeof scope === "object") {
+    try {
+      const scopedRenderer = scope[CORE_TEMPERATURE_RENDER_NAME];
+      if (typeof scopedRenderer === "function") {
+        renderer = scopedRenderer;
+      }
+    } catch (readError) {
+      void readError;
+    }
+  }
 
   if (typeof renderer === "function") {
-    renderer(hours);
+    try {
+      renderer(hours);
+    } catch (renderError) {
+      if (typeof console !== "undefined" && typeof console.error === "function") {
+        console.error("Temperature note renderer failed", renderError);
+      }
+    }
     return;
   }
 
