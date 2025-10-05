@@ -14895,6 +14895,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           var offset = 12;
           var viewportWidth = ((_window$visualViewpor = window.visualViewport) === null || _window$visualViewpor === void 0 ? void 0 : _window$visualViewpor.width) || window.innerWidth || ((_document$documentEle = document.documentElement) === null || _document$documentEle === void 0 ? void 0 : _document$documentEle.clientWidth) || 0;
           var viewportHeight = ((_window$visualViewpor2 = window.visualViewport) === null || _window$visualViewpor2 === void 0 ? void 0 : _window$visualViewpor2.height) || window.innerHeight || ((_document$documentEle2 = document.documentElement) === null || _document$documentEle2 === void 0 ? void 0 : _document$documentEle2.clientHeight) || 0;
+          var maxPopupHeight = viewportHeight > 0 ? Math.max(offset * 2, viewportHeight - offset * 2) : 0;
+          if (maxPopupHeight > 0) {
+            popup.style.maxHeight = "".concat(maxPopupHeight, "px");
+          } else {
+            popup.style.removeProperty('max-height');
+          }
           var popupWidth = popup.offsetWidth || 0;
           var popupHeight = popup.offsetHeight || 0;
           var pointerX = pointer.clientX;
@@ -14912,7 +14918,13 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           popup.style.left = "".concat(Math.max(offset, Math.min(left, maxLeft)), "px");
           popup.style.top = "".concat(Math.max(offset, Math.min(top, maxTop)), "px");
         };
-        var hide = function hide() {
+        var hide = function hide(event) {
+          if (event) {
+            var related = event.relatedTarget;
+            if (related && (related === popup || popup.contains(related))) {
+              return;
+            }
+          }
           popup.style.display = 'none';
         };
         if (isTouchDevice) {
@@ -14920,13 +14932,31 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           node.addEventListener('click', show);
         } else {
           node.addEventListener('mousemove', show);
-          node.addEventListener('mouseout', hide);
+          node.addEventListener('mouseleave', hide);
           node.addEventListener('click', show);
         }
       });
+      if (!popup.dataset.interactiveBound) {
+        var hidePopup = function hidePopup(event) {
+          if (event) {
+            var related = event.relatedTarget;
+            if (related && typeof related.closest === 'function' && related.closest('.diagram-node')) {
+              return;
+            }
+          }
+          popup.style.display = 'none';
+        };
+        popup.addEventListener('mouseleave', hidePopup);
+        popup.addEventListener('blur', hidePopup, true);
+        popup.dataset.interactiveBound = 'true';
+      }
       if (!setupDiagramContainer.dataset.popupOutsideListeners) {
         var hideOnOutside = function hideOnOutside(e) {
-          if (!e.target.closest('.diagram-node')) popup.style.display = 'none';
+          var target = e.target;
+          if (target && typeof target.closest === 'function' && target.closest('.diagram-popup')) {
+            return;
+          }
+          if (!target || typeof target.closest !== 'function' || !target.closest('.diagram-node')) popup.style.display = 'none';
         };
         if (isTouchDevice) {
           setupDiagramContainer.addEventListener('touchstart', hideOnOutside);
