@@ -5284,48 +5284,384 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     var lastActiveBeforeIosHelp = null;
     var lastActiveBeforeInstallGuide = null;
     var currentInstallGuidePlatform = null;
-    function isIosDevice() {
-      if (typeof navigator === 'undefined') return false;
-      var ua = navigator.userAgent || '';
-      var platform = navigator.platform || '';
-      var hasTouch = typeof navigator.maxTouchPoints === 'number' && navigator.maxTouchPoints > 1;
-      return /iphone|ipad|ipod/i.test(ua) || platform === 'MacIntel' && hasTouch;
-    }
-    function isAndroidDevice() {
-      if (typeof navigator === 'undefined') return false;
-      var ua = navigator.userAgent || '';
-      var vendor = navigator.vendor || '';
-      return /android/i.test(ua) || /android/i.test(vendor);
-    }
-    function isStandaloneDisplayMode() {
-      if (typeof window === 'undefined') return false;
-      if (typeof window.matchMedia === 'function') {
-        try {
-          if (window.matchMedia('(display-mode: standalone)').matches) {
-            return true;
+    function createLocalHelpModuleFallback() {
+      function fallbackResolveStorageKey(explicitKey) {
+        if (typeof explicitKey === 'string' && explicitKey) {
+          return explicitKey;
+        }
+        if (typeof IOS_PWA_HELP_STORAGE_KEY === 'string' && IOS_PWA_HELP_STORAGE_KEY) {
+          return IOS_PWA_HELP_STORAGE_KEY;
+        }
+        if (typeof globalThis !== 'undefined' && globalThis && typeof globalThis.IOS_PWA_HELP_STORAGE_KEY === 'string' && globalThis.IOS_PWA_HELP_STORAGE_KEY) {
+          return globalThis.IOS_PWA_HELP_STORAGE_KEY;
+        }
+        if (typeof window !== 'undefined' && window && typeof window.IOS_PWA_HELP_STORAGE_KEY === 'string' && window.IOS_PWA_HELP_STORAGE_KEY) {
+          return window.IOS_PWA_HELP_STORAGE_KEY;
+        }
+        return 'iosPwaHelpShown';
+      }
+      function fallbackIsIosDevice(navigatorOverride) {
+        var nav = navigatorOverride || (typeof navigator !== 'undefined' ? navigator : null);
+        if (!nav) {
+          return false;
+        }
+        var ua = nav.userAgent || '';
+        var platform = nav.platform || '';
+        var hasTouch = typeof nav.maxTouchPoints === 'number' && nav.maxTouchPoints > 1;
+        return /iphone|ipad|ipod/i.test(ua) || platform === 'MacIntel' && hasTouch;
+      }
+      function fallbackIsAndroidDevice(navigatorOverride) {
+        var nav = navigatorOverride || (typeof navigator !== 'undefined' ? navigator : null);
+        if (!nav) {
+          return false;
+        }
+        var ua = nav.userAgent || '';
+        var vendor = nav.vendor || '';
+        return /android/i.test(ua) || /android/i.test(vendor);
+      }
+      function fallbackIsStandaloneDisplayMode(windowOverride, navigatorOverride) {
+        var win = windowOverride || (typeof window !== 'undefined' ? window : null);
+        var nav = navigatorOverride || (typeof navigator !== 'undefined' ? navigator : null);
+        if (!win) {
+          return false;
+        }
+        if (typeof win.matchMedia === 'function') {
+          try {
+            if (win.matchMedia('(display-mode: standalone)').matches) {
+              return true;
+            }
+          } catch (error) {
+            if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+              console.warn('matchMedia display-mode check failed', error);
+            }
           }
+        }
+        if (nav && typeof nav.standalone === 'boolean') {
+          return nav.standalone;
+        }
+        return false;
+      }
+      function fallbackHasDismissedIosPwaHelp(explicitKey) {
+        var storageKey = fallbackResolveStorageKey(explicitKey);
+        if (typeof localStorage === 'undefined' || !localStorage || typeof localStorage.getItem !== 'function') {
+          return false;
+        }
+        try {
+          return localStorage.getItem(storageKey) === '1';
         } catch (error) {
-          console.warn('matchMedia display-mode check failed', error);
+          if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+            console.warn('Could not read iOS PWA help dismissal flag', error);
+          }
+          return false;
         }
       }
-      if (typeof navigator !== 'undefined' && typeof navigator.standalone === 'boolean') {
-        return navigator.standalone;
+      function fallbackMarkIosPwaHelpDismissed(explicitKey) {
+        var storageKey = fallbackResolveStorageKey(explicitKey);
+        if (typeof localStorage === 'undefined' || !localStorage || typeof localStorage.setItem !== 'function') {
+          return;
+        }
+        try {
+          localStorage.setItem(storageKey, '1');
+        } catch (error) {
+          if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+            console.warn('Could not store iOS PWA help dismissal', error);
+          }
+        }
+      }
+      function fallbackShouldShow(resolveDialog) {
+        var dialog = typeof resolveDialog === 'function' ? resolveDialog() : resolveDialog || null;
+        if (!dialog) {
+          return false;
+        }
+        if (!fallbackIsIosDevice()) {
+          return false;
+        }
+        if (!fallbackIsStandaloneDisplayMode()) {
+          return false;
+        }
+        if (fallbackHasDismissedIosPwaHelp()) {
+          return false;
+        }
+        return true;
+      }
+      return {
+        resolveIosPwaHelpStorageKey: fallbackResolveStorageKey,
+        isIosDevice: fallbackIsIosDevice,
+        isAndroidDevice: fallbackIsAndroidDevice,
+        isStandaloneDisplayMode: fallbackIsStandaloneDisplayMode,
+        hasDismissedIosPwaHelp: fallbackHasDismissedIosPwaHelp,
+        markIosPwaHelpDismissed: fallbackMarkIosPwaHelpDismissed,
+        shouldShowIosPwaHelp: fallbackShouldShow
+      };
+    }
+    var helpModuleApi = function () {
+      if (typeof resolveHelpModuleApi === 'function') {
+        try {
+          return resolveHelpModuleApi();
+        } catch (error) {
+          if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+            console.warn('resolveHelpModuleApi() failed in part 2', error);
+          }
+        }
+      }
+      var fallback = createLocalHelpModuleFallback();
+      try {
+        var globalScope = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : typeof global !== 'undefined' ? global : null;
+        if (globalScope && !globalScope.__cineResolvedHelpModule) {
+          globalScope.__cineResolvedHelpModule = fallback;
+        }
+      } catch (error) {
+        void error;
+      }
+      return fallback;
+    }();
+    var FEATURE_SEARCH_MODULE_CACHE_KEY = '__cineResolvedFeatureSearchModule';
+    function createFallbackFeatureSearchModuleApi() {
+      var FEATURE_SEARCH_DETAIL_MAX_LENGTH = 140;
+      function fallbackNormalizeSearchValue(value) {
+        return typeof value === 'string' ? value.trim().toLowerCase() : '';
+      }
+      function fallbackSanitizeHighlightTokens(tokens) {
+        if (!Array.isArray(tokens) || tokens.length === 0) {
+          return [];
+        }
+        var seen = typeof Set === 'function' ? new Set() : null;
+        var sanitized = [];
+        for (var index = 0; index < tokens.length; index += 1) {
+          var token = tokens[index];
+          if (typeof token !== 'string') {
+            continue;
+          }
+          var trimmed = token.trim().toLowerCase();
+          if (!trimmed) {
+            continue;
+          }
+          if (trimmed.length < 2 && !/^\d+$/.test(trimmed)) {
+            continue;
+          }
+          if (seen) {
+            if (seen.has(trimmed)) {
+              continue;
+            }
+            seen.add(trimmed);
+          } else if (sanitized.indexOf(trimmed) !== -1) {
+            continue;
+          }
+          sanitized.push(trimmed);
+        }
+        return sanitized;
+      }
+      function fallbackCollectHighlightRanges(text, tokens) {
+        if (!text || !tokens || !tokens.length) {
+          return [];
+        }
+        var lower = text.toLowerCase();
+        var ranges = [];
+        for (var index = 0; index < tokens.length; index += 1) {
+          var token = tokens[index];
+          var length = token.length;
+          if (!length) {
+            continue;
+          }
+          var position = 0;
+          while (position < lower.length) {
+            var found = lower.indexOf(token, position);
+            if (found === -1) {
+              break;
+            }
+            ranges.push({
+              start: found,
+              end: found + length
+            });
+            position = found + length;
+          }
+        }
+        if (!ranges.length) {
+          return [];
+        }
+        ranges.sort(function (a, b) {
+          return a.start - b.start || b.end - a.end;
+        });
+        var merged = [];
+        for (var _index2 = 0; _index2 < ranges.length; _index2 += 1) {
+          var range = ranges[_index2];
+          var last = merged[merged.length - 1];
+          if (last && range.start <= last.end) {
+            last.end = Math.max(last.end, range.end);
+          } else {
+            merged.push({
+              start: range.start,
+              end: range.end
+            });
+          }
+        }
+        return merged;
+      }
+      function fallbackApplyHighlight(element, text, tokens, doc) {
+        if (!element) {
+          return;
+        }
+        var content = typeof text === 'string' ? text : '';
+        if (!content) {
+          element.textContent = '';
+          return;
+        }
+        var highlightTokens = fallbackSanitizeHighlightTokens(tokens || []);
+        if (!highlightTokens.length) {
+          element.textContent = content;
+          return;
+        }
+        var ranges = fallbackCollectHighlightRanges(content, highlightTokens);
+        if (!ranges.length) {
+          element.textContent = content;
+          return;
+        }
+        var documentRef = doc || element.ownerDocument || (typeof document !== 'undefined' ? document : null);
+        if (!documentRef || typeof documentRef.createTextNode !== 'function') {
+          element.textContent = content;
+          return;
+        }
+        element.textContent = '';
+        var cursor = 0;
+        for (var index = 0; index < ranges.length; index += 1) {
+          var range = ranges[index];
+          if (range.start > cursor) {
+            element.appendChild(documentRef.createTextNode(content.slice(cursor, range.start)));
+          }
+          var mark = documentRef.createElement('mark');
+          mark.className = 'feature-search-highlight';
+          mark.textContent = content.slice(range.start, range.end);
+          element.appendChild(mark);
+          cursor = range.end;
+        }
+        if (cursor < content.length) {
+          element.appendChild(documentRef.createTextNode(content.slice(cursor)));
+        }
+      }
+      function fallbackNormalizeDetail(text) {
+        if (typeof text !== 'string') {
+          return '';
+        }
+        var normalized = text.replace(/\s+/g, ' ').trim();
+        if (!normalized) {
+          return '';
+        }
+        if (normalized.length <= FEATURE_SEARCH_DETAIL_MAX_LENGTH) {
+          return normalized;
+        }
+        return "".concat(normalized.slice(0, FEATURE_SEARCH_DETAIL_MAX_LENGTH - 1).trimEnd(), "\u2026");
+      }
+      return {
+        normalizeSearchValue: fallbackNormalizeSearchValue,
+        sanitizeHighlightTokens: fallbackSanitizeHighlightTokens,
+        collectHighlightRanges: fallbackCollectHighlightRanges,
+        applyHighlight: fallbackApplyHighlight,
+        normalizeDetail: fallbackNormalizeDetail
+      };
+    }
+    var fallbackFeatureSearchModuleApi = createFallbackFeatureSearchModuleApi();
+    function resolveFeatureSearchModuleApi() {
+      var globalScope = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : typeof global !== 'undefined' ? global : null;
+      if (globalScope && globalScope[FEATURE_SEARCH_MODULE_CACHE_KEY]) {
+        return globalScope[FEATURE_SEARCH_MODULE_CACHE_KEY];
+      }
+      var moduleBase = (typeof cineModuleBase === "undefined" ? "undefined" : _typeof(cineModuleBase)) === 'object' && cineModuleBase || (globalScope && _typeof(globalScope.cineModuleBase) === 'object' ? globalScope.cineModuleBase : null);
+      var registry = null;
+      if (moduleBase && typeof moduleBase.getModuleRegistry === 'function') {
+        try {
+          registry = moduleBase.getModuleRegistry(globalScope);
+        } catch (error) {
+          if (moduleBase && typeof moduleBase.safeWarn === 'function') {
+            moduleBase.safeWarn('Failed to resolve cine.features.featureSearch module registry.', error);
+          } else if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+            console.warn('Failed to resolve cine.features.featureSearch module registry.', error);
+          }
+        }
+      }
+      var resolved = null;
+      if (registry && typeof registry.get === 'function') {
+        try {
+          resolved = registry.get('cine.features.featureSearch');
+        } catch (error) {
+          if (moduleBase && typeof moduleBase.safeWarn === 'function') {
+            moduleBase.safeWarn('Failed to read cine.features.featureSearch module.', error);
+          } else if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+            console.warn('Failed to read cine.features.featureSearch module.', error);
+          }
+        }
+      }
+      if (!resolved && globalScope && _typeof(globalScope.cineFeaturesFeatureSearch) === 'object') {
+        resolved = globalScope.cineFeaturesFeatureSearch;
+      }
+      var fallback = fallbackFeatureSearchModuleApi;
+      var api = resolved && typeof resolved.normalizeSearchValue === 'function' ? resolved : fallback;
+      if (globalScope) {
+        try {
+          globalScope[FEATURE_SEARCH_MODULE_CACHE_KEY] = api;
+        } catch (error) {
+          void error;
+        }
+      }
+      return api;
+    }
+    var featureSearchModuleApi = resolveFeatureSearchModuleApi();
+    function isIosDevice() {
+      try {
+        if (helpModuleApi && typeof helpModuleApi.isIosDevice === 'function') {
+          return Boolean(helpModuleApi.isIosDevice());
+        }
+      } catch (error) {
+        if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+          console.warn('isIosDevice() failed', error);
+        }
+      }
+      return false;
+    }
+    function isAndroidDevice() {
+      try {
+        if (helpModuleApi && typeof helpModuleApi.isAndroidDevice === 'function') {
+          return Boolean(helpModuleApi.isAndroidDevice());
+        }
+      } catch (error) {
+        if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+          console.warn('isAndroidDevice() failed', error);
+        }
+      }
+      return false;
+    }
+    function isStandaloneDisplayMode() {
+      try {
+        if (helpModuleApi && typeof helpModuleApi.isStandaloneDisplayMode === 'function') {
+          return Boolean(helpModuleApi.isStandaloneDisplayMode());
+        }
+      } catch (error) {
+        if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+          console.warn('isStandaloneDisplayMode() failed', error);
+        }
       }
       return false;
     }
     function hasDismissedIosPwaHelp() {
       try {
-        return localStorage.getItem(IOS_PWA_HELP_STORAGE_KEY) === '1';
+        if (helpModuleApi && typeof helpModuleApi.hasDismissedIosPwaHelp === 'function') {
+          return Boolean(helpModuleApi.hasDismissedIosPwaHelp());
+        }
       } catch (error) {
-        console.warn('Could not read iOS PWA help dismissal flag', error);
-        return false;
+        if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+          console.warn('hasDismissedIosPwaHelp() failed', error);
+        }
       }
+      return false;
     }
     function markIosPwaHelpDismissed() {
       try {
-        localStorage.setItem(IOS_PWA_HELP_STORAGE_KEY, '1');
+        if (helpModuleApi && typeof helpModuleApi.markIosPwaHelpDismissed === 'function') {
+          helpModuleApi.markIosPwaHelpDismissed();
+        }
       } catch (error) {
-        console.warn('Could not store iOS PWA help dismissal', error);
+        if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+          console.warn('markIosPwaHelpDismissed() failed', error);
+        }
       }
     }
     function getInstallBannerGlobalScope() {
@@ -5359,8 +5695,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (typeof global !== 'undefined' && global && !candidates.includes(global)) {
         candidates.push(global);
       }
-      for (var _index2 = 0; _index2 < candidates.length; _index2 += 1) {
-        var candidate = candidates[_index2];
+      for (var _index3 = 0; _index3 < candidates.length; _index3 += 1) {
+        var candidate = candidates[_index3];
         if (candidate && _typeof(candidate) === 'object') {
           return candidate;
         }
@@ -5689,8 +6025,16 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     var safeExposeCoreRuntimeConstant = typeof exposeCoreRuntimeConstant === 'function' ? exposeCoreRuntimeConstant : function noopExposeCoreRuntimeConstant() {};
     function shouldShowIosPwaHelp() {
-      var dialog = resolveIosPwaHelpDialog();
-      return dialog && isIosDevice() && isStandaloneDisplayMode() && !hasDismissedIosPwaHelp();
+      try {
+        if (helpModuleApi && typeof helpModuleApi.shouldShowIosPwaHelp === 'function') {
+          return Boolean(helpModuleApi.shouldShowIosPwaHelp(resolveIosPwaHelpDialog));
+        }
+      } catch (error) {
+        if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+          console.warn('shouldShowIosPwaHelp() failed', error);
+        }
+      }
+      return false;
     }
     function openIosPwaHelp() {
       var dialog = resolveIosPwaHelpDialog();
@@ -7252,6 +7596,15 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return options;
     };
     var normalizeSearchValue = function normalizeSearchValue(value) {
+      try {
+        if (featureSearchModuleApi && typeof featureSearchModuleApi.normalizeSearchValue === 'function') {
+          return featureSearchModuleApi.normalizeSearchValue(value);
+        }
+      } catch (error) {
+        if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+          console.warn('normalizeSearchValue() failed', error);
+        }
+      }
       return typeof value === 'string' ? value.trim().toLowerCase() : '';
     };
     safeExposeCoreRuntimeConstant('normalizeSearchValue', normalizeSearchValue);
@@ -7325,113 +7678,57 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     };
     var featureSearchHighlightTokens = [];
     var sanitizeFeatureSearchHighlightTokens = function sanitizeFeatureSearchHighlightTokens(tokens) {
-      if (!Array.isArray(tokens) || tokens.length === 0) {
-        return [];
+      try {
+        if (featureSearchModuleApi && typeof featureSearchModuleApi.sanitizeHighlightTokens === 'function') {
+          return featureSearchModuleApi.sanitizeHighlightTokens(tokens);
+        }
+      } catch (error) {
+        if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+          console.warn('sanitizeFeatureSearchHighlightTokens() failed', error);
+        }
       }
-      var seen = new Set();
-      var sanitized = [];
-      tokens.forEach(function (token) {
-        if (typeof token !== 'string') return;
-        var trimmed = token.trim().toLowerCase();
-        if (!trimmed) return;
-        if (trimmed.length < 2 && !/^\d+$/.test(trimmed)) return;
-        if (seen.has(trimmed)) return;
-        seen.add(trimmed);
-        sanitized.push(trimmed);
-      });
-      return sanitized;
+      return fallbackFeatureSearchModuleApi.sanitizeHighlightTokens(tokens);
     };
     var updateFeatureSearchHighlightTokens = function updateFeatureSearchHighlightTokens(tokens) {
       featureSearchHighlightTokens = sanitizeFeatureSearchHighlightTokens(tokens);
     };
     var collectFeatureSearchHighlightRanges = function collectFeatureSearchHighlightRanges(text, tokens) {
-      if (!text || !tokens.length) {
-        return [];
-      }
-      var lower = text.toLowerCase();
-      var ranges = [];
-      tokens.forEach(function (token) {
-        var length = token.length;
-        if (!length) return;
-        var index = 0;
-        while (index < lower.length) {
-          var found = lower.indexOf(token, index);
-          if (found === -1) break;
-          ranges.push({
-            start: found,
-            end: found + length
-          });
-          index = found + length;
+      try {
+        if (featureSearchModuleApi && typeof featureSearchModuleApi.collectHighlightRanges === 'function') {
+          return featureSearchModuleApi.collectHighlightRanges(text, tokens);
         }
-      });
-      if (!ranges.length) {
-        return [];
-      }
-      ranges.sort(function (a, b) {
-        return a.start - b.start || b.end - a.end;
-      });
-      var merged = [];
-      for (var _i7 = 0, _ranges = ranges; _i7 < _ranges.length; _i7++) {
-        var range = _ranges[_i7];
-        var last = merged[merged.length - 1];
-        if (last && range.start <= last.end) {
-          last.end = Math.max(last.end, range.end);
-        } else {
-          merged.push({
-            start: range.start,
-            end: range.end
-          });
+      } catch (error) {
+        if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+          console.warn('collectFeatureSearchHighlightRanges() failed', error);
         }
       }
-      return merged;
+      return fallbackFeatureSearchModuleApi.collectHighlightRanges(text, tokens);
     };
     var applyFeatureSearchHighlight = function applyFeatureSearchHighlight(element, text) {
-      if (!element) return;
-      var content = typeof text === 'string' ? text : '';
-      if (!content) {
-        element.textContent = '';
-        return;
-      }
       var tokens = featureSearchHighlightTokens;
-      if (!Array.isArray(tokens) || tokens.length === 0) {
-        element.textContent = content;
-        return;
-      }
-      var ranges = collectFeatureSearchHighlightRanges(content, tokens);
-      if (!ranges.length) {
-        element.textContent = content;
-        return;
-      }
-      var doc = element.ownerDocument || (typeof document !== 'undefined' ? document : null);
-      if (!doc) {
-        element.textContent = content;
-        return;
-      }
-      element.textContent = '';
-      var position = 0;
-      ranges.forEach(function (range) {
-        if (range.start > position) {
-          element.appendChild(doc.createTextNode(content.slice(position, range.start)));
+      try {
+        if (featureSearchModuleApi && typeof featureSearchModuleApi.applyHighlight === 'function') {
+          featureSearchModuleApi.applyHighlight(element, text, tokens);
+          return;
         }
-        var mark = doc.createElement('mark');
-        mark.className = 'feature-search-highlight';
-        mark.textContent = content.slice(range.start, range.end);
-        element.appendChild(mark);
-        position = range.end;
-      });
-      if (position < content.length) {
-        element.appendChild(doc.createTextNode(content.slice(position)));
+      } catch (error) {
+        if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+          console.warn('applyFeatureSearchHighlight() failed', error);
+        }
       }
+      fallbackFeatureSearchModuleApi.applyHighlight(element, text, tokens);
     };
-    var FEATURE_SEARCH_DETAIL_MAX_LENGTH = 140;
     var normalizeFeatureSearchDetail = function normalizeFeatureSearchDetail(text) {
-      if (typeof text !== 'string') return '';
-      var normalized = text.replace(/\s+/g, ' ').trim();
-      if (!normalized) return '';
-      if (normalized.length <= FEATURE_SEARCH_DETAIL_MAX_LENGTH) {
-        return normalized;
+      try {
+        if (featureSearchModuleApi && typeof featureSearchModuleApi.normalizeDetail === 'function') {
+          return featureSearchModuleApi.normalizeDetail(text);
+        }
+      } catch (error) {
+        if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+          console.warn('normalizeFeatureSearchDetail() failed', error);
+        }
       }
-      return "".concat(normalized.slice(0, FEATURE_SEARCH_DETAIL_MAX_LENGTH - 1).trimEnd(), "\u2026");
+      return fallbackFeatureSearchModuleApi.normalizeDetail(text);
     };
     var buildFeatureSearchOptionData = function buildFeatureSearchOptionData(entry) {
       if (!entry) return null;
@@ -8335,8 +8632,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           helpCandidates.push(text);
         });
       }
-      for (var _i8 = 0, _helpCandidates = helpCandidates; _i8 < _helpCandidates.length; _i8++) {
-        var candidate = _helpCandidates[_i8];
+      for (var _i7 = 0, _helpCandidates = helpCandidates; _i7 < _helpCandidates.length; _i7++) {
+        var candidate = _helpCandidates[_i7];
         var detail = normalizeFeatureSearchDetail(candidate);
         if (detail && (!base || detail.toLowerCase() !== base)) {
           return detail;
@@ -8365,8 +8662,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           candidates.push(firstListItem.textContent);
         }
       }
-      for (var _i9 = 0, _candidates = candidates; _i9 < _candidates.length; _i9++) {
-        var candidate = _candidates[_i9];
+      for (var _i8 = 0, _candidates = candidates; _i8 < _candidates.length; _i8++) {
+        var candidate = _candidates[_i8];
         var detail = normalizeFeatureSearchDetail(candidate);
         if (detail) return detail;
       }
@@ -8421,6 +8718,16 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       var primaryTokenSource = [baseLabel, contextLabels.join(' ')].filter(Boolean).join(' ');
       var combinedKeywords = [baseLabel, contextLabels.join(' '), keywords, helpTexts.join(' ')].filter(Boolean).join(' ');
+      var entryType = getFeatureSearchEntryType(element);
+      if (entryType === 'feature') {
+        var tagName = typeof element.tagName === 'string' ? element.tagName.toLowerCase() : '';
+        if (tagName === 'option') {
+          var _ownerSelect$dataset, _ownerSelect$getAttri, _selectType$trim;
+          var ownerSelect = typeof element.closest === 'function' ? element.closest('select') : null;
+          var selectType = (ownerSelect === null || ownerSelect === void 0 || (_ownerSelect$dataset = ownerSelect.dataset) === null || _ownerSelect$dataset === void 0 ? void 0 : _ownerSelect$dataset.featureSearchType) || (ownerSelect === null || ownerSelect === void 0 || (_ownerSelect$getAttri = ownerSelect.getAttribute) === null || _ownerSelect$getAttri === void 0 ? void 0 : _ownerSelect$getAttri.call(ownerSelect, 'data-feature-search-type'));
+          entryType = (selectType === null || selectType === void 0 || (_selectType$trim = selectType.trim()) === null || _selectType$trim === void 0 ? void 0 : _selectType$trim.toLowerCase()) || 'device';
+        }
+      }
       var primaryTokens = searchTokens(primaryTokenSource);
       var entry = {
         element: element,
@@ -8433,7 +8740,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         key: baseKey,
         optionValue: combinedLabel,
         helpTexts: helpTexts,
-        entryType: getFeatureSearchEntryType(element)
+        entryType: entryType
       };
       var existing = featureMap.get(baseKey);
       if (!existing) {
@@ -8663,8 +8970,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       var bestFuzzyDistance = Number.POSITIVE_INFINITY;
       var bestFuzzyLength = Number.POSITIVE_INFINITY;
       var keyLength = hasKey ? key.length : 0;
-      for (var _i0 = 0, _flattened = flattened; _i0 < _flattened.length; _i0++) {
-        var _flattened$_i = _slicedToArray(_flattened[_i0], 2),
+      for (var _i9 = 0, _flattened = flattened; _i9 < _flattened.length; _i9++) {
+        var _flattened$_i = _slicedToArray(_flattened[_i9], 2),
           entryKey = _flattened$_i[0],
           _entryValue = _flattened$_i[1];
         if (!_entryValue) continue;
@@ -9431,7 +9738,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     function _handleLocalFontFiles() {
       _handleLocalFontFiles = _asyncToGenerator(_regenerator().m(function _callee7(fileList) {
-        var added, unsupported, failed, persistFailure, _i11, _Array$from, file, dataUrl, result, message, _message9, _message0, _t7;
+        var added, unsupported, failed, persistFailure, _i10, _Array$from, file, dataUrl, result, message, _message9, _message0, _t7;
         return _regenerator().w(function (_context7) {
           while (1) switch (_context7.p = _context7.n) {
             case 0:
@@ -9449,13 +9756,13 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
               unsupported = [];
               failed = [];
               persistFailure = false;
-              _i11 = 0, _Array$from = Array.from(fileList);
+              _i10 = 0, _Array$from = Array.from(fileList);
             case 2:
-              if (!(_i11 < _Array$from.length)) {
+              if (!(_i10 < _Array$from.length)) {
                 _context7.n = 9;
                 break;
               }
-              file = _Array$from[_i11];
+              file = _Array$from[_i10];
               if (isSupportedFontFile(file)) {
                 _context7.n = 3;
                 break;
@@ -9491,7 +9798,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
               console.warn('Failed to import custom font', _t7);
               failed.push(file && typeof file.name === 'string' ? file.name : '');
             case 8:
-              _i11++;
+              _i10++;
               _context7.n = 2;
               break;
             case 9:
@@ -10773,8 +11080,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
                   categoryPath: path
                 };
               }
-              for (var _i1 = 0, _Object$entries6 = Object.entries(node); _i1 < _Object$entries6.length; _i1++) {
-                var _Object$entries6$_i = _slicedToArray(_Object$entries6[_i1], 2),
+              for (var _i0 = 0, _Object$entries6 = Object.entries(node); _i0 < _Object$entries6.length; _i0++) {
+                var _Object$entries6$_i = _slicedToArray(_Object$entries6[_i0], 2),
                   key = _Object$entries6$_i[0],
                   _value2 = _Object$entries6$_i[1];
                 if (!isPlainObjectValue(_value2)) continue;
@@ -15464,48 +15771,46 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         var infoHtml = (deviceData && deviceData.latencyMs ? "<div class=\"info-box video-conn\"><strong>Latency:</strong> ".concat(escapeHtml(String(deviceData.latencyMs)), "</div>") : '') + (deviceData && deviceData.frequency ? "<div class=\"info-box video-conn\"><strong>Frequency:</strong> ".concat(escapeHtml(String(deviceData.frequency)), "</div>") : '');
         var html = "<strong>".concat(escapeHtml(info.name), "</strong>") + connectors + infoHtml;
         var show = function show(e) {
-          var _window$visualViewpor, _document$documentEle, _window$visualViewpor2, _document$documentEle2;
+          var _window$visualViewpor, _document$documentEle, _window$visualViewpor2, _document$documentEle2, _window$visualViewpor3, _window$visualViewpor4;
           e.stopPropagation();
           var pointer = e.touches && e.touches[0] ? e.touches[0] : e;
           popup.innerHTML = html;
           popup.style.display = 'block';
-        var offset = 12;
-        var viewportWidth = ((_window$visualViewpor = window.visualViewport) === null || _window$visualViewpor === void 0 ? void 0 : _window$visualViewpor.width) || window.innerWidth || ((_document$documentEle = document.documentElement) === null || _document$documentEle === void 0 ? void 0 : _document$documentEle.clientWidth) || 0;
-        var viewportHeight = ((_window$visualViewpor2 = window.visualViewport) === null || _window$visualViewpor2 === void 0 ? void 0 : _window$visualViewpor2.height) || window.innerHeight || ((_document$documentEle2 = document.documentElement) === null || _document$documentEle2 === void 0 ? void 0 : _document$documentEle2.clientHeight) || 0;
-        var viewportLeft = ((_window$visualViewpor3 = window.visualViewport) === null || _window$visualViewpor3 === void 0 ? void 0 : _window$visualViewpor3.offsetLeft) || 0;
-        var viewportTop = ((_window$visualViewpor4 = window.visualViewport) === null || _window$visualViewpor4 === void 0 ? void 0 : _window$visualViewpor4.offsetTop) || 0;
-        var viewportRight = viewportLeft + (viewportWidth || 0);
-        var viewportBottom = viewportTop + (viewportHeight || 0);
-        var viewportAvailableHeight = viewportBottom - viewportTop;
-        var maxPopupHeight = viewportHeight > 0 ? Math.max(offset * 2, viewportAvailableHeight - offset * 2) : 0;
-        if (maxPopupHeight > 0) {
-          popup.style.maxHeight = "".concat(maxPopupHeight, "px");
-        } else {
-          popup.style.removeProperty('max-height');
-        }
-        var popupWidth = popup.offsetWidth || 0;
-        var popupHeight = popup.offsetHeight || 0;
-        var pointerClientX = Number.isFinite(pointer.clientX) ? pointer.clientX : 0;
-        var pointerClientY = Number.isFinite(pointer.clientY) ? pointer.clientY : 0;
-        var pointerX = pointerClientX + viewportLeft;
-        var pointerY = pointerClientY + viewportTop;
-        var left = pointerX + offset;
-        if (viewportWidth > 0 && popupWidth > 0 && left + popupWidth + offset > viewportRight) {
-          left = Math.max(viewportLeft + offset, pointerX - popupWidth - offset);
-        }
-        var top = pointerY + offset;
-        if (viewportHeight > 0 && popupHeight > 0 && top + popupHeight + offset > viewportBottom) {
-          top = Math.max(viewportTop + offset, pointerY - popupHeight - offset);
-        }
-        var maxLeft = viewportWidth > 0 && popupWidth > 0 ? Math.max(offset, viewportWidth - popupWidth - offset) : left;
-        if (viewportWidth > 0 && popupWidth > 0) maxLeft = Math.max(viewportLeft + offset, viewportRight - popupWidth - offset);
-        var maxTop = viewportHeight > 0 && popupHeight > 0 ? Math.max(offset, viewportHeight - popupHeight - offset) : top;
-        if (viewportHeight > 0 && popupHeight > 0) maxTop = Math.max(viewportTop + offset, viewportBottom - popupHeight - offset);
-        var resolvedLeft = Math.max(viewportLeft + offset, Math.min(left, maxLeft));
-        var resolvedTop = Math.max(viewportTop + offset, Math.min(top, maxTop));
-        popup.style.left = "".concat(resolvedLeft, "px");
-        popup.style.top = "".concat(resolvedTop, "px");
-      };
+          var offset = 12;
+          var viewportWidth = ((_window$visualViewpor = window.visualViewport) === null || _window$visualViewpor === void 0 ? void 0 : _window$visualViewpor.width) || window.innerWidth || ((_document$documentEle = document.documentElement) === null || _document$documentEle === void 0 ? void 0 : _document$documentEle.clientWidth) || 0;
+          var viewportHeight = ((_window$visualViewpor2 = window.visualViewport) === null || _window$visualViewpor2 === void 0 ? void 0 : _window$visualViewpor2.height) || window.innerHeight || ((_document$documentEle2 = document.documentElement) === null || _document$documentEle2 === void 0 ? void 0 : _document$documentEle2.clientHeight) || 0;
+          var viewportLeft = ((_window$visualViewpor3 = window.visualViewport) === null || _window$visualViewpor3 === void 0 ? void 0 : _window$visualViewpor3.offsetLeft) || 0;
+          var viewportTop = ((_window$visualViewpor4 = window.visualViewport) === null || _window$visualViewpor4 === void 0 ? void 0 : _window$visualViewpor4.offsetTop) || 0;
+          var viewportRight = viewportLeft + (viewportWidth || 0);
+          var viewportBottom = viewportTop + (viewportHeight || 0);
+          var viewportAvailableHeight = viewportBottom - viewportTop;
+          var maxPopupHeight = viewportHeight > 0 ? Math.max(offset * 2, viewportAvailableHeight - offset * 2) : 0;
+          if (maxPopupHeight > 0) {
+            popup.style.maxHeight = "".concat(maxPopupHeight, "px");
+          } else {
+            popup.style.removeProperty('max-height');
+          }
+          var popupWidth = popup.offsetWidth || 0;
+          var popupHeight = popup.offsetHeight || 0;
+          var pointerClientX = Number.isFinite(pointer.clientX) ? pointer.clientX : 0;
+          var pointerClientY = Number.isFinite(pointer.clientY) ? pointer.clientY : 0;
+          var pointerX = pointerClientX + viewportLeft;
+          var pointerY = pointerClientY + viewportTop;
+          var left = pointerX + offset;
+          if (viewportWidth > 0 && popupWidth > 0 && left + popupWidth + offset > viewportRight) {
+            left = Math.max(viewportLeft + offset, pointerX - popupWidth - offset);
+          }
+          var top = pointerY + offset;
+          if (viewportHeight > 0 && popupHeight > 0 && top + popupHeight + offset > viewportBottom) {
+            top = Math.max(viewportTop + offset, pointerY - popupHeight - offset);
+          }
+          var maxLeft = viewportWidth > 0 && popupWidth > 0 ? Math.max(viewportLeft + offset, viewportRight - popupWidth - offset) : left;
+          var maxTop = viewportHeight > 0 && popupHeight > 0 ? Math.max(viewportTop + offset, viewportBottom - popupHeight - offset) : top;
+          var resolvedLeft = Math.max(viewportLeft + offset, Math.min(left, maxLeft));
+          var resolvedTop = Math.max(viewportTop + offset, Math.min(top, maxTop));
+          popup.style.left = "".concat(resolvedLeft, "px");
+          popup.style.top = "".concat(resolvedTop, "px");
+        };
         var hide = function hide(event) {
           if (event) {
             var related = event.relatedTarget;
@@ -15955,8 +16260,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         ulElement.appendChild(li);
       };
       if (categoryKey === "accessories.cables") {
-        for (var _i10 = 0, _Object$entries7 = Object.entries(categoryDevices); _i10 < _Object$entries7.length; _i10++) {
-          var _Object$entries7$_i = _slicedToArray(_Object$entries7[_i10], 2),
+        for (var _i1 = 0, _Object$entries7 = Object.entries(categoryDevices); _i1 < _Object$entries7.length; _i1++) {
+          var _Object$entries7$_i = _slicedToArray(_Object$entries7[_i1], 2),
             subcat = _Object$entries7$_i[0],
             devs = _Object$entries7$_i[1];
           for (var name in devs) {

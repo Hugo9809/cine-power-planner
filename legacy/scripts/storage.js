@@ -277,11 +277,30 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
   }
   ensureGlobalAutoGearBackupDefaults();
+  function getStorageKeyVariants(key) {
+    if (typeof key !== 'string' || !key) {
+      return [key];
+    }
+    var variants = new Set([key]);
+    if (key.startsWith('cameraPowerPlanner_')) {
+      variants.add("cinePowerPlanner_".concat(key.slice('cameraPowerPlanner_'.length)));
+    } else if (key.startsWith('cinePowerPlanner_')) {
+      variants.add("cameraPowerPlanner_".concat(key.slice('cinePowerPlanner_'.length)));
+    }
+    return Array.from(variants);
+  }
   var STORAGE_BACKUP_SUFFIX = '__backup';
   var MAX_SAVE_ATTEMPTS = 3;
   var MAX_QUOTA_RECOVERY_STEPS = 100;
   var STORAGE_MIGRATION_BACKUP_SUFFIX = '__legacyMigrationBackup';
   var RAW_STORAGE_BACKUP_KEYS = new Set([getCustomFontStorageKeyName(), CUSTOM_LOGO_STORAGE_KEY, DEVICE_SCHEMA_CACHE_KEY, MOUNT_VOLTAGE_STORAGE_KEY_NAME]);
+  Array.from(RAW_STORAGE_BACKUP_KEYS).forEach(function (key) {
+    getStorageKeyVariants(key).forEach(function (variant) {
+      if (typeof variant === 'string' && variant) {
+        RAW_STORAGE_BACKUP_KEYS.add(variant);
+      }
+    });
+  });
   var CRITICAL_BACKUP_KEY_PROVIDERS = [function () {
     return {
       key: DEVICE_STORAGE_KEY
@@ -1021,23 +1040,31 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       try {
         for (var i = 0; i < PRIMARY_STORAGE_KEYS.length; i += 1) {
           var key = PRIMARY_STORAGE_KEYS[i];
-          if (storage.getItem(key) !== null) {
-            return true;
-          }
-          var backupKey = "".concat(key).concat(STORAGE_BACKUP_SUFFIX);
-          if (storage.getItem(backupKey) !== null) {
-            return true;
+          var variants = getStorageKeyVariants(key);
+          for (var j = 0; j < variants.length; j += 1) {
+            var candidateKey = variants[j];
+            if (storage.getItem(candidateKey) !== null) {
+              return true;
+            }
+            var backupKey = "".concat(candidateKey).concat(STORAGE_BACKUP_SUFFIX);
+            if (storage.getItem(backupKey) !== null) {
+              return true;
+            }
           }
         }
         for (var _i = 0; _i < SIMPLE_STORAGE_KEYS.length; _i += 1) {
           var _key = SIMPLE_STORAGE_KEYS[_i];
-          if (storage.getItem(_key) !== null) {
-            return true;
-          }
-          if (RAW_STORAGE_BACKUP_KEYS.has(_key)) {
-            var _backupKey = "".concat(_key).concat(STORAGE_BACKUP_SUFFIX);
-            if (storage.getItem(_backupKey) !== null) {
+          var _variants = getStorageKeyVariants(_key);
+          for (var _j = 0; _j < _variants.length; _j += 1) {
+            var _candidateKey = _variants[_j];
+            if (storage.getItem(_candidateKey) !== null) {
               return true;
+            }
+            if (RAW_STORAGE_BACKUP_KEYS.has(_candidateKey)) {
+              var _backupKey = "".concat(_candidateKey).concat(STORAGE_BACKUP_SUFFIX);
+              if (storage.getItem(_backupKey) !== null) {
+                return true;
+              }
             }
           }
         }
@@ -4792,28 +4819,32 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   function readLocalStorageValue(key) {
     var storage = getSafeLocalStorage();
     if (!storage || typeof storage.getItem !== 'function') return null;
-    try {
-      var value = storage.getItem(key);
-      if (value === null || value === undefined) {
-        if (RAW_STORAGE_BACKUP_KEYS.has(key)) {
-          try {
-            var backupValue = storage.getItem("".concat(key).concat(STORAGE_BACKUP_SUFFIX));
-            if (backupValue !== null && backupValue !== undefined) {
-              return String(backupValue);
+    var variants = getStorageKeyVariants(key);
+    for (var i = 0; i < variants.length; i += 1) {
+      var candidateKey = variants[i];
+      try {
+        var value = storage.getItem(candidateKey);
+        if (value === null || value === undefined) {
+          if (RAW_STORAGE_BACKUP_KEYS.has(candidateKey)) {
+            try {
+              var backupValue = storage.getItem("".concat(candidateKey).concat(STORAGE_BACKUP_SUFFIX));
+              if (backupValue !== null && backupValue !== undefined) {
+                return String(backupValue);
+              }
+            } catch (backupError) {
+              console.warn('Unable to read backup key for export', candidateKey, backupError);
+              downgradeSafeLocalStorageToMemory('read access', backupError, storage);
             }
-          } catch (backupError) {
-            console.warn('Unable to read backup key for export', key, backupError);
-            downgradeSafeLocalStorageToMemory('read access', backupError, storage);
           }
+        } else {
+          return String(value);
         }
-        return null;
+      } catch (error) {
+        console.warn('Unable to read storage key for backup', candidateKey, error);
+        downgradeSafeLocalStorageToMemory('read access', error, storage);
       }
-      return String(value);
-    } catch (error) {
-      console.warn('Unable to read storage key for backup', key, error);
-      downgradeSafeLocalStorageToMemory('read access', error, storage);
-      return null;
     }
+    return null;
   }
   function parseStoredBoolean(value) {
     if (value === null || value === undefined) {
@@ -5194,15 +5225,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return "";
   }
   function getSnapshotKeyVariants(key) {
-    var variants = [key];
-    if (typeof key === 'string') {
-      if (key.startsWith('cameraPowerPlanner_')) {
-        variants.push("cinePowerPlanner_".concat(key.slice('cameraPowerPlanner_'.length)));
-      } else if (key.startsWith('cinePowerPlanner_')) {
-        variants.push("cameraPowerPlanner_".concat(key.slice('cinePowerPlanner_'.length)));
-      }
-    }
-    return variants;
+    return getStorageKeyVariants(key);
   }
   function readSnapshotEntry(snapshot, key) {
     if (!isPlainObject(snapshot)) {
@@ -5702,6 +5725,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     loadSetup: loadSetup,
     deleteSetup: deleteSetup,
     renameSetup: renameSetup,
+    getMountVoltageStorageKeyName: getMountVoltageStorageKeyName,
+    getMountVoltageStorageBackupKeyName: getMountVoltageStorageBackupKeyName,
     loadProject: loadProject,
     saveProject: saveProject,
     deleteProject: deleteProject,
