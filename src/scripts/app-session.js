@@ -173,6 +173,24 @@ const normalizeAccentValueSafe = ensureSessionRuntimePlaceholder(
   () => value => (typeof value === 'string' ? value.trim().toLowerCase() : ''),
 );
 
+const isPlainObjectFallback = value => {
+  if (value === null || typeof value !== 'object') {
+    return false;
+  }
+
+  if (Array.isArray(value)) {
+    return false;
+  }
+
+  const prototype = Object.getPrototypeOf(value);
+  return prototype === Object.prototype || prototype === null;
+};
+
+const isPlainObject = ensureSessionRuntimePlaceholder(
+  'isPlainObject',
+  () => isPlainObjectFallback,
+);
+
 const applyFontSizeSafe = ensureSessionRuntimePlaceholder(
   'applyFontSize',
   () => {
