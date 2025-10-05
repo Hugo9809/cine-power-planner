@@ -7632,8 +7632,48 @@ if (helpButton && helpDialog) {
     return Array.from(labels);
   };
 
+  const ensureFeatureSearchVisibility = element => {
+    if (!element) return;
+
+    if (
+      backupDiffSectionEl &&
+      backupDiffSectionEl.contains(element) &&
+      backupDiffSectionEl.hasAttribute('hidden')
+    ) {
+      if (typeof showBackupDiffSection === 'function') {
+        try {
+          showBackupDiffSection();
+        } catch (error) {
+          console.warn('Unable to open backup diff section for feature search target', error);
+          backupDiffSectionEl.removeAttribute('hidden');
+        }
+      } else {
+        backupDiffSectionEl.removeAttribute('hidden');
+      }
+    }
+
+    if (
+      restoreRehearsalSectionEl &&
+      restoreRehearsalSectionEl.contains(element) &&
+      restoreRehearsalSectionEl.hasAttribute('hidden')
+    ) {
+      if (typeof openRestoreRehearsal === 'function') {
+        try {
+          openRestoreRehearsal();
+        } catch (error) {
+          console.warn('Unable to open restore rehearsal section for feature search target', error);
+          restoreRehearsalSectionEl.removeAttribute('hidden');
+        }
+      } else {
+        restoreRehearsalSectionEl.removeAttribute('hidden');
+      }
+    }
+  };
+
   const focusFeatureElement = element => {
     if (!element) return;
+
+    ensureFeatureSearchVisibility(element);
 
     const settingsSection = element.closest('#settingsDialog');
     const settingsPanel = element.closest('.settings-panel');
