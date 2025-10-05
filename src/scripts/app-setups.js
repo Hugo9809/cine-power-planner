@@ -4704,9 +4704,12 @@ function saveCurrentGearList() {
     const renameInProgress = nameState
         ? nameState.renameInProgress
         : Boolean(selectedStorageKey && typedStorageKey && selectedStorageKey !== typedStorageKey);
+    const effectiveStorageKey = renameInProgress
+        ? (selectedStorageKey || projectStorageKey)
+        : projectStorageKey;
     const projectInfoForStorage = typeof createProjectInfoSnapshotForStorage === 'function'
         ? createProjectInfoSnapshotForStorage(currentProjectInfo, {
-            projectNameOverride: renameInProgress ? selectedStorageKey : undefined,
+            projectNameOverride: renameInProgress ? (selectedStorageKey || projectStorageKey) : undefined,
         })
         : currentProjectInfo;
     const projectInfoSnapshot = cloneProjectInfoForStorage(projectInfoForStorage);
@@ -4728,7 +4731,7 @@ function saveCurrentGearList() {
             diagramPositionsSnapshotForSetups = cloneProjectInfoForStorage(diagramPositionsSnapshot);
         }
     }
-    if (typeof saveProject === 'function' && typeof projectStorageKey === 'string' && projectStorageKey) {
+    if (typeof saveProject === 'function' && typeof effectiveStorageKey === 'string' && effectiveStorageKey) {
         const payload = {
             projectInfo: projectInfoSnapshot,
             gearList: html
@@ -4745,7 +4748,7 @@ function saveCurrentGearList() {
         if (projectRulesSnapshot && projectRulesSnapshot.length) {
             payload.autoGearRules = projectRulesSnapshot;
         }
-        saveProject(projectStorageKey, payload);
+        saveProject(effectiveStorageKey, payload);
     }
 
     if (!selectedStorageKey) return;
