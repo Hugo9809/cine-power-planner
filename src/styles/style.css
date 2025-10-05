@@ -6524,6 +6524,7 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .settings-content.modal-surface
 
 /* Project requirements dialog */
 #projectDialog {
+  --select-height: calc(var(--button-size) * 1.2);
   border: none;
   padding: 0;
   background: transparent;
