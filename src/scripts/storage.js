@@ -600,10 +600,16 @@ function ensureCriticalStorageBackups(options = {}) {
 
   registerCriticalStorageGuardResult(summary);
 
-  if (summary.ensured.length && typeof console !== 'undefined' && typeof console.info === 'function') {
-    const mirroredKeys = summary.ensured.map((entry) => entry.key);
-    console.info('Critical storage guard mirrored backup copies for', mirroredKeys);
-  }
+    if (summary.ensured.length && typeof console !== 'undefined' && typeof console.info === 'function') {
+      const mirroredDetails = summary.ensured.map((entry) => ({
+        key: entry.key,
+        backupKey: entry.backupKey,
+      }));
+      console.info('Critical storage guard mirrored backup copies', {
+        count: summary.ensured.length,
+        entries: mirroredDetails,
+      });
+    }
 
   if (summary.errors.length && typeof console !== 'undefined' && typeof console.warn === 'function') {
     console.warn('Critical storage guard encountered issues', summary.errors);
