@@ -132,6 +132,61 @@ function getCoreGlobalObject() {
   return null;
 }
 
+function ensureCoreGlobalValue(name, fallbackValue) {
+  const fallbackProvider =
+    typeof fallbackValue === 'function' ? fallbackValue : () => fallbackValue;
+
+  if (typeof name !== 'string' || !name) {
+    return fallbackProvider();
+  }
+
+  const scope = getCoreGlobalObject();
+  if (!scope || typeof scope !== 'object') {
+    return fallbackProvider();
+  }
+
+  let existing;
+  try {
+    existing = scope[name];
+  } catch (readError) {
+    existing = undefined;
+    void readError;
+  }
+
+  if (typeof existing !== 'undefined') {
+    return existing;
+  }
+
+  const value = fallbackProvider();
+
+  try {
+    scope[name] = value;
+    return scope[name];
+  } catch (assignError) {
+    void assignError;
+  }
+
+  try {
+    Object.defineProperty(scope, name, {
+      configurable: true,
+      writable: true,
+      value,
+    });
+  } catch (defineError) {
+    void defineError;
+  }
+
+  try {
+    return scope[name];
+  } catch (finalReadError) {
+    void finalReadError;
+  }
+
+  return value;
+}
+
+ensureCoreGlobalValue('gridSnap', () => false);
+
 function dispatchTemperatureNoteRender(hours) {
   const scope = getCoreGlobalObject();
   let renderer = null;

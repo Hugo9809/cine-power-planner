@@ -67,6 +67,65 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     return null;
   }
 
+  function ensureCoreGlobalValue(name, fallbackValue) {
+    var fallbackProvider =
+      typeof fallbackValue === 'function' ? fallbackValue : function () {
+        return fallbackValue;
+      };
+
+    if (typeof name !== 'string' || !name) {
+      return fallbackProvider();
+    }
+
+    var scope = getCoreGlobalObject();
+    if (!scope || _typeof(scope) !== 'object') {
+      return fallbackProvider();
+    }
+
+    var existing;
+    try {
+      existing = scope[name];
+    } catch (readError) {
+      existing = undefined;
+      void readError;
+    }
+
+    if (typeof existing !== 'undefined') {
+      return existing;
+    }
+
+    var value = fallbackProvider();
+
+    try {
+      scope[name] = value;
+      return scope[name];
+    } catch (assignError) {
+      void assignError;
+    }
+
+    try {
+      Object.defineProperty(scope, name, {
+        configurable: true,
+        writable: true,
+        value: value
+      });
+    } catch (defineError) {
+      void defineError;
+    }
+
+    try {
+      return scope[name];
+    } catch (finalReadError) {
+      void finalReadError;
+    }
+
+    return value;
+  }
+
+  ensureCoreGlobalValue('gridSnap', function () {
+    return false;
+  });
+
   function dispatchTemperatureNoteRender(hours) {
     var scope = getCoreGlobalObject();
     var renderer = null;
