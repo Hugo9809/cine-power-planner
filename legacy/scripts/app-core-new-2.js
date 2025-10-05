@@ -15394,6 +15394,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     var CORE_PART2_GLOBAL_EXPORTS = {
       populateSelect: populateSelect,
       refreshAutoGearCameraOptions: refreshAutoGearCameraOptions,
+      refreshDeviceLists: refreshDeviceLists,
+      hasAnyDeviceSelection: hasAnyDeviceSelection,
       refreshAutoGearCameraWeightCondition: refreshAutoGearCameraWeightCondition,
       refreshAutoGearMonitorOptions: refreshAutoGearMonitorOptions,
       refreshAutoGearTripodHeadOptions: refreshAutoGearTripodHeadOptions,
@@ -15420,6 +15422,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       renderAutoGearMonitorDefaultsControls: renderAutoGearMonitorDefaultsControls,
       renderAutoGearPresetsControls: renderAutoGearPresetsControls,
       renderAutoGearRulesList: renderAutoGearRulesList,
+      overviewSectionIcons: overviewSectionIcons,
       saveAutoGearRuleFromEditor: saveAutoGearRuleFromEditor,
       handleAutoGearImportSelection: handleAutoGearImportSelection,
       handleAutoGearPresetSelection: handleAutoGearPresetSelection,
