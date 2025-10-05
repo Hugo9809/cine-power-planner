@@ -5745,8 +5745,8 @@ function buildAutoGearRulesFromBaseInfo(baseInfo, scenarioValues) {
         const scenarioMap = parseGearTableForAutoRules(scenarioHtml);
         if (!scenarioMap) return;
         const diff = diffGearTableMaps(baselineMap, scenarioMap);
-        const add = cloneAutoGearItems(diff.add);
-        const remove = cloneAutoGearItems(diff.remove);
+        let add = cloneAutoGearItems(diff.add);
+        let remove = cloneAutoGearItems(diff.remove);
         if (!add.length && !remove.length) return;
         scenarioDiffMap.set(value, { add, remove });
         rules.push({
@@ -5790,13 +5790,13 @@ function buildAutoGearRulesFromBaseInfo(baseInfo, scenarioValues) {
       const hasRainOverlap = rainOverlapKeys.every(key => scenarioDiffMap.has(key));
       if (hasRainOverlap) {
         const overlapRemovals = [
-          { name: 'Schulz Sprayoff Micro', quantity: 1 },
-          { name: 'Fischer RS to D-Tap cable 0,5m', quantity: 2 },
-          { name: 'Spare Disc (Schulz Sprayoff Micro)', quantity: 1 },
+          { name: 'Schulz Sprayoff Micro', quantity: 1, category: 'Matte box + filter' },
+          { name: 'Fischer RS to D-Tap cable 0,5m', quantity: 2, category: 'Rigging' },
+          { name: 'Spare Disc (Schulz Sprayoff Micro)', quantity: 1, category: 'Matte box + filter' },
         ].map(entry => ({
           id: generateAutoGearId('item'),
           name: entry.name,
-          category: 'Matte box + filter',
+          category: entry.category,
           quantity: entry.quantity,
         }));
         rules.push({

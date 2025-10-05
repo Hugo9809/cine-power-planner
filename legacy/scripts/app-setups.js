@@ -3485,9 +3485,9 @@ function generateGearListHtml() {
   });
   if (isAnyScenarioActive(['Rain Machine', 'Extreme rain'])) {
     filterSelections.push('Schulz Sprayoff Micro');
-    filterSelections.push('Fischer RS to D-Tap cable 0,5m');
-    filterSelections.push('Fischer RS to D-Tap cable 0,5m');
     filterSelections.push('Spare Disc (Schulz Sprayoff Micro)');
+    riggingAcc.push('Fischer RS to D-Tap cable 0,5m');
+    riggingAcc.push('Fischer RS to D-Tap cable 0,5m');
   }
   var gimbalSelectionsFinal = [];
   var selectedGimbal = '';

@@ -5169,18 +5169,21 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         if (hasRainOverlap) {
           var overlapRemovals = [{
             name: 'Schulz Sprayoff Micro',
-            quantity: 1
+            quantity: 1,
+            category: 'Matte box + filter'
           }, {
             name: 'Fischer RS to D-Tap cable 0,5m',
-            quantity: 2
+            quantity: 2,
+            category: 'Rigging'
           }, {
             name: 'Spare Disc (Schulz Sprayoff Micro)',
-            quantity: 1
+            quantity: 1,
+            category: 'Matte box + filter'
           }].map(function (entry) {
             return {
               id: generateAutoGearId('item'),
               name: entry.name,
-              category: 'Matte box + filter',
+              category: entry.category,
               quantity: entry.quantity
             };
           });
