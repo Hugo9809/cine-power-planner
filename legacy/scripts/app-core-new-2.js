@@ -16505,6 +16505,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return adjustGearListSelectWidth;
     }], ['adjustGearListSelectWidths', function () {
       return adjustGearListSelectWidths;
+    }], ['getDeviceChanges', function () {
+      return getDeviceChanges;
+    }], ['applyDeviceChanges', function () {
+      return applyDeviceChanges;
     }], ['deviceMap', function () {
       return deviceMap;
     }], ['helpMap', function () {
