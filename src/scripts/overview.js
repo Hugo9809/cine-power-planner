@@ -326,13 +326,9 @@ function generatePrintableOverview(config = {}) {
         diagramLegendHtml = legendClone.outerHTML;
     }
 
-    const sourceDiagramHint = resolveDiagramElement('diagramHint', 'diagramHint');
-    if (sourceDiagramHint) {
-        const hintClone = sourceDiagramHint.cloneNode(true);
-        hintClone.id = 'diagramHintOverview';
-        hintClone.setAttribute('data-diagram-hint', 'overview');
-        diagramHintHtml = hintClone.outerHTML;
-    }
+    // Intentionally omit the interactive drag hint from the overview/print output
+    // so the static summary focuses on content that applies outside of the live
+    // editor.
 
     const diagramDescElem = typeof document !== 'undefined'
         ? document.getElementById('diagramDesc')
