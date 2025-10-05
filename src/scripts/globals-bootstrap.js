@@ -162,83 +162,128 @@ function __cineResolveGlobalValue(name, fallback) {
   return typeof value === 'undefined' ? fallback : value;
 }
 
+function __cineCommitGlobalValue(name, value) {
+  var scope =
+    (typeof globalThis !== 'undefined' && globalThis) ||
+    (typeof window !== 'undefined' && window) ||
+    (typeof self !== 'undefined' && self) ||
+    (typeof global !== 'undefined' && global) ||
+    null;
+
+  if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+    return value;
+  }
+
+  try {
+    scope[name] = value;
+  } catch (assignError) {
+    void assignError;
+  }
+
+  return value;
+}
+
 var autoGearAutoPresetId =
-  typeof autoGearAutoPresetId !== 'undefined'
+  typeof autoGearAutoPresetId !== 'undefined' && typeof autoGearAutoPresetId === 'string'
     ? autoGearAutoPresetId
     : (function resolveAutoGearAutoPresetId() {
         var value = __cineResolveGlobalValue('autoGearAutoPresetId', '');
-        return typeof value === 'string' ? value : '';
+        var normalized = typeof value === 'string' ? value : '';
+        return __cineCommitGlobalValue('autoGearAutoPresetId', normalized);
       })();
 
 var baseAutoGearRules =
-  typeof baseAutoGearRules !== 'undefined'
+  typeof baseAutoGearRules !== 'undefined' && __cineIsArray(baseAutoGearRules)
     ? baseAutoGearRules
     : (function resolveBaseAutoGearRules() {
         var value = __cineResolveGlobalValue('baseAutoGearRules', []);
-        return __cineIsArray(value) ? value : [];
+        var normalized = __cineIsArray(value) ? value : [];
+        return __cineCommitGlobalValue('baseAutoGearRules', normalized);
       })();
 
 var autoGearScenarioModeSelect =
-  typeof autoGearScenarioModeSelect !== 'undefined'
+  typeof autoGearScenarioModeSelect !== 'undefined' &&
+  (autoGearScenarioModeSelect === null || typeof autoGearScenarioModeSelect === 'object')
     ? autoGearScenarioModeSelect
-    : __cineResolveGlobalValue('autoGearScenarioModeSelect', null);
+    : (function resolveAutoGearScenarioModeSelect() {
+        var value = __cineResolveGlobalValue('autoGearScenarioModeSelect', null);
+        var normalized =
+          typeof value === 'undefined' || value === null || typeof value === 'object' ? value : null;
+        return __cineCommitGlobalValue('autoGearScenarioModeSelect', normalized);
+      })();
 
 var autoGearRuleNameInput =
-  typeof autoGearRuleNameInput !== 'undefined'
+  typeof autoGearRuleNameInput !== 'undefined' &&
+  (autoGearRuleNameInput === null || typeof autoGearRuleNameInput === 'object')
     ? autoGearRuleNameInput
-    : __cineResolveGlobalValue('autoGearRuleNameInput', null);
+    : (function resolveAutoGearRuleNameInput() {
+        var value = __cineResolveGlobalValue('autoGearRuleNameInput', null);
+        var normalized =
+          typeof value === 'undefined' || value === null || typeof value === 'object' ? value : null;
+        return __cineCommitGlobalValue('autoGearRuleNameInput', normalized);
+      })();
 
 var autoGearSummaryFocus =
-  typeof autoGearSummaryFocus !== 'undefined'
+  typeof autoGearSummaryFocus !== 'undefined' && typeof autoGearSummaryFocus === 'string'
     ? autoGearSummaryFocus
     : (function resolveAutoGearSummaryFocus() {
         var value = __cineResolveGlobalValue('autoGearSummaryFocus', 'all');
-        return typeof value === 'string' ? value : 'all';
+        var normalized = typeof value === 'string' ? value : 'all';
+        return __cineCommitGlobalValue('autoGearSummaryFocus', normalized);
       })();
 
 var autoGearMonitorDefaultControls =
-  typeof autoGearMonitorDefaultControls !== 'undefined'
+  typeof autoGearMonitorDefaultControls !== 'undefined' &&
+  __cineIsArray(autoGearMonitorDefaultControls)
     ? autoGearMonitorDefaultControls
     : (function resolveAutoGearMonitorDefaultControls() {
         var value = __cineResolveGlobalValue('autoGearMonitorDefaultControls', []);
-        return __cineIsArray(value) ? value : [];
+        var normalized = __cineIsArray(value) ? value : [];
+        return __cineCommitGlobalValue('autoGearMonitorDefaultControls', normalized);
       })();
 
 var safeGenerateConnectorSummary =
-  typeof safeGenerateConnectorSummary !== 'undefined'
+  typeof safeGenerateConnectorSummary !== 'undefined' &&
+  typeof safeGenerateConnectorSummary === 'function'
     ? safeGenerateConnectorSummary
     : (function resolveSafeGenerateConnectorSummary() {
         var value = __cineResolveGlobalValue('safeGenerateConnectorSummary', null);
-        return typeof value === 'function'
-          ? value
-          : function fallbackSafeGenerateConnectorSummary(device) {
-            if (!device || typeof device !== 'object') {
-              return '';
-            }
+        var normalized =
+          typeof value === 'function'
+            ? value
+            : function fallbackSafeGenerateConnectorSummary(device) {
+                if (!device || typeof device !== 'object') {
+                  return '';
+                }
 
-            var keys;
-            try {
-              keys = Object.keys(device);
-            } catch (keyError) {
-              void keyError;
-              return '';
-            }
+                var keys;
+                try {
+                  keys = Object.keys(device);
+                } catch (keyError) {
+                  void keyError;
+                  return '';
+                }
 
-              if (!keys || !keys.length) {
-                return '';
-              }
+                if (!keys || !keys.length) {
+                  return '';
+                }
 
-              var primaryKey = keys[0];
-              var result = device[primaryKey];
-              var label = typeof primaryKey === 'string' ? primaryKey.replace(/_/g, ' ') : 'connector';
-            return result ? label + ': ' + result : label;
-          };
+                var primaryKey = keys[0];
+                var result = device[primaryKey];
+                var label = typeof primaryKey === 'string' ? primaryKey.replace(/_/g, ' ') : 'connector';
+                return result ? label + ': ' + result : label;
+              };
+
+        return __cineCommitGlobalValue('safeGenerateConnectorSummary', normalized);
       })();
 
 var totalPowerElem =
-  typeof totalPowerElem !== 'undefined'
+  typeof totalPowerElem !== 'undefined' &&
+  (totalPowerElem === null || typeof totalPowerElem === 'object')
     ? totalPowerElem
     : (function resolveTotalPowerElem() {
         var value = __cineResolveGlobalValue('totalPowerElem', null);
-        return typeof value === 'undefined' ? null : value;
+        var normalized =
+          typeof value === 'undefined' || value === null || typeof value === 'object' ? value : null;
+        return __cineCommitGlobalValue('totalPowerElem', normalized);
       })();
