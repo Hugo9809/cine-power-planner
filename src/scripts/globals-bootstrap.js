@@ -132,6 +132,10 @@ function __cineIsArray(value) {
   ensureString('autoGearAutoPresetId', '');
   ensureArray('baseAutoGearRules');
   ensureNullableObject('autoGearScenarioModeSelect');
+  ensureNullableObject('autoGearRuleNameInput');
+  ensureString('autoGearSummaryFocus', 'all');
+  ensureArray('autoGearMonitorDefaultControls');
+  ensureNullableObject('totalPowerElem');
   ensureFunction('safeGenerateConnectorSummary', fallbackSafeGenerateConnectorSummary);
 })();
 
@@ -179,6 +183,27 @@ var autoGearScenarioModeSelect =
     ? autoGearScenarioModeSelect
     : __cineResolveGlobalValue('autoGearScenarioModeSelect', null);
 
+var autoGearRuleNameInput =
+  typeof autoGearRuleNameInput !== 'undefined'
+    ? autoGearRuleNameInput
+    : __cineResolveGlobalValue('autoGearRuleNameInput', null);
+
+var autoGearSummaryFocus =
+  typeof autoGearSummaryFocus !== 'undefined'
+    ? autoGearSummaryFocus
+    : (function resolveAutoGearSummaryFocus() {
+        var value = __cineResolveGlobalValue('autoGearSummaryFocus', 'all');
+        return typeof value === 'string' ? value : 'all';
+      })();
+
+var autoGearMonitorDefaultControls =
+  typeof autoGearMonitorDefaultControls !== 'undefined'
+    ? autoGearMonitorDefaultControls
+    : (function resolveAutoGearMonitorDefaultControls() {
+        var value = __cineResolveGlobalValue('autoGearMonitorDefaultControls', []);
+        return __cineIsArray(value) ? value : [];
+      })();
+
 var safeGenerateConnectorSummary =
   typeof safeGenerateConnectorSummary !== 'undefined'
     ? safeGenerateConnectorSummary
@@ -206,6 +231,14 @@ var safeGenerateConnectorSummary =
               var primaryKey = keys[0];
               var result = device[primaryKey];
               var label = typeof primaryKey === 'string' ? primaryKey.replace(/_/g, ' ') : 'connector';
-              return result ? label + ': ' + result : label;
-            };
+            return result ? label + ': ' + result : label;
+          };
+      })();
+
+var totalPowerElem =
+  typeof totalPowerElem !== 'undefined'
+    ? totalPowerElem
+    : (function resolveTotalPowerElem() {
+        var value = __cineResolveGlobalValue('totalPowerElem', null);
+        return typeof value === 'undefined' ? null : value;
       })();

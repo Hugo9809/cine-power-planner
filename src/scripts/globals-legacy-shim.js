@@ -108,12 +108,60 @@
   );
 
   ensureBinding(
+    'autoGearRuleNameInput',
+    function validateAutoGearRuleNameInput(candidate) {
+      return (
+        typeof candidate === 'undefined' ||
+        candidate === null ||
+        typeof candidate === 'object'
+      );
+    },
+    function provideAutoGearRuleNameInputFallback() {
+      return null;
+    }
+  );
+
+  ensureBinding(
+    'autoGearSummaryFocus',
+    function validateAutoGearSummaryFocus(candidate) {
+      return typeof candidate === 'string';
+    },
+    function provideAutoGearSummaryFocusFallback() {
+      return 'all';
+    }
+  );
+
+  ensureBinding(
+    'autoGearMonitorDefaultControls',
+    function validateAutoGearMonitorDefaultControls(candidate) {
+      return Array.isArray(candidate);
+    },
+    function provideAutoGearMonitorDefaultControlsFallback() {
+      return [];
+    }
+  );
+
+  ensureBinding(
     'safeGenerateConnectorSummary',
     function validateConnectorSummary(candidate) {
       return typeof candidate === 'function';
     },
     function provideConnectorSummaryFallback() {
       return fallbackSafeGenerateConnectorSummary;
+    }
+  );
+
+  ensureBinding(
+    'totalPowerElem',
+    function validateTotalPowerElem(candidate) {
+      return (
+        typeof candidate === 'undefined' ||
+        candidate === null ||
+        typeof candidate === 'object'
+      );
+    },
+    function provideTotalPowerElemFallback() {
+      return null;
     }
   );
 })();
