@@ -17323,6 +17323,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       saveAutoGearRuleFromEditor,
       handleAutoGearImportSelection,
       handleAutoGearPresetSelection,
+      handleAutoGearSavePreset,
+      handleAutoGearDeletePreset,
       applyAutoGearBackupVisibility,
       setAutoGearAutoPresetId,
       syncAutoGearAutoPreset,
