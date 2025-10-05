@@ -682,20 +682,107 @@ function getLastCriticalStorageGuardResult() {
 var MAX_MIGRATION_BACKUP_CLEANUP_STEPS = 10;
 var MIGRATION_BACKUP_COMPRESSION_ALGORITHM = 'lz-string';
 var MIGRATION_BACKUP_COMPRESSION_ENCODING = 'json-string';
+var MIGRATION_BACKUP_COMPRESSION_VARIANTS = [
+  { variant: 'utf16', compress: 'compressToUTF16', decompress: 'decompressFromUTF16' },
+  { variant: 'uri-component', compress: 'compressToEncodedURIComponent', decompress: 'decompressFromEncodedURIComponent' },
+  { variant: 'base64', compress: 'compressToBase64', decompress: 'decompressFromBase64' },
+];
 
 var STORAGE_COMPRESSION_FLAG_KEY = '__cineStorageCompressed';
 var STORAGE_COMPRESSION_VERSION = 1;
-var STORAGE_COMPRESSION_ALGORITHM = 'lz-string-utf16';
+var STORAGE_COMPRESSION_ALGORITHM = 'lz-string';
+var LEGACY_STORAGE_COMPRESSION_ALGORITHM = 'lz-string-utf16';
+var STORAGE_COMPRESSION_VARIANTS = MIGRATION_BACKUP_COMPRESSION_VARIANTS;
 var STORAGE_COMPRESSION_NAMESPACE = 'camera-power-planner:storage-compression';
 var storageCompressionPatchedStorages = typeof WeakSet === 'function' ? new WeakSet() : null;
 
+function getAvailableLZStringCompressionStrategies(variants) {
+  if (
+    typeof LZString !== 'object'
+    || LZString === null
+  ) {
+    return [];
+  }
+
+  var available = [];
+  for (var i = 0; i < variants.length; i += 1) {
+    var variant = variants[i];
+    var compressFn = LZString && typeof LZString[variant.compress] === 'function'
+      ? LZString[variant.compress]
+      : null;
+    var decompressFn = LZString && typeof LZString[variant.decompress] === 'function'
+      ? LZString[variant.decompress]
+      : null;
+
+    if (compressFn && decompressFn) {
+      available.push({
+        variant: variant.variant,
+        compress: compressFn,
+        decompress: decompressFn,
+      });
+    }
+  }
+
+  return available;
+}
+
+function tryDecompressWithStrategies(data, variants, preferredVariant, contextLabel) {
+  if (typeof data !== 'string' || !data) {
+    return { success: false };
+  }
+
+  var available = getAvailableLZStringCompressionStrategies(variants);
+  if (!available.length) {
+    return { success: false };
+  }
+
+  var attempts = [];
+  if (preferredVariant) {
+    var preferred = null;
+    for (var i = 0; i < available.length; i += 1) {
+      if (available[i].variant === preferredVariant) {
+        preferred = available[i];
+        break;
+      }
+    }
+    if (preferred) {
+      attempts.push(preferred);
+    } else if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+      console.warn("Compression variant "
+        .concat(preferredVariant, " is unavailable while reading "
+        ).concat(contextLabel || 'compressed payload', "."));
+    }
+  }
+
+  for (var j = 0; j < available.length; j += 1) {
+    if (!preferredVariant || available[j].variant !== preferredVariant) {
+      attempts.push(available[j]);
+    }
+  }
+
+  var lastError = null;
+  for (var k = 0; k < attempts.length; k += 1) {
+    var strategy = attempts[k];
+    try {
+      var decompressed = strategy.decompress(data);
+      if (typeof decompressed === 'string' && decompressed) {
+        return { success: true, value: decompressed, variant: strategy.variant };
+      }
+    } catch (error) {
+      lastError = error;
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn("Unable to decompress "
+          .concat(contextLabel || 'compressed payload', " with ")
+          .concat(strategy.variant, " variant"), error);
+      }
+    }
+  }
+
+  return { success: false, error: lastError };
+}
+
 function canUseMigrationBackupCompression() {
-  return (
-    typeof LZString === 'object'
-    && LZString !== null
-    && typeof LZString.compressToUTF16 === 'function'
-    && typeof LZString.decompressFromUTF16 === 'function'
-  );
+  return getAvailableLZStringCompressionStrategies(MIGRATION_BACKUP_COMPRESSION_VARIANTS).length > 0;
 }
 
 function tryCreateCompressedMigrationBackupCandidate(serializedPayload, createdAt) {
@@ -706,38 +793,62 @@ function tryCreateCompressedMigrationBackupCandidate(serializedPayload, createdA
     return null;
   }
 
-  let compressed;
-  try {
-    compressed = LZString.compressToUTF16(serializedPayload);
-  } catch (compressionError) {
-    console.warn('Unable to compress migration backup payload', compressionError);
-    return null;
-  }
+  var bestCandidate = null;
+  var strategies = getAvailableLZStringCompressionStrategies(MIGRATION_BACKUP_COMPRESSION_VARIANTS);
 
-  if (typeof compressed !== 'string' || !compressed || compressed.length >= serializedPayload.length) {
-    return null;
-  }
+  for (var i = 0; i < strategies.length; i += 1) {
+    var strategy = strategies[i];
+    var compressed = null;
+    try {
+      compressed = strategy.compress(serializedPayload);
+    } catch (compressionError) {
+      console.warn("Unable to compress migration backup payload with "
+        .concat(strategy.variant, " variant"), compressionError);
+      continue;
+    }
 
-  let serializedCompressedPayload;
-  try {
-    serializedCompressedPayload = JSON.stringify({
-      createdAt,
+    if (typeof compressed !== 'string' || !compressed || compressed.length >= serializedPayload.length) {
+      continue;
+    }
+
+    var record = {
+      createdAt: createdAt,
       compression: MIGRATION_BACKUP_COMPRESSION_ALGORITHM,
+      compressionVariant: strategy.variant,
       encoding: MIGRATION_BACKUP_COMPRESSION_ENCODING,
       data: compressed,
       originalSize: serializedPayload.length,
       compressedSize: compressed.length,
-    });
-  } catch (serializationError) {
-    console.warn('Unable to serialize compressed migration backup payload', serializationError);
-    return null;
+    };
+
+    var serializedCompressedPayload;
+    try {
+      serializedCompressedPayload = JSON.stringify(record);
+    } catch (serializationError) {
+      console.warn('Unable to serialize compressed migration backup payload', serializationError);
+      continue;
+    }
+
+    if (typeof serializedCompressedPayload !== 'string' || !serializedCompressedPayload) {
+      continue;
+    }
+
+    if (serializedCompressedPayload.length >= serializedPayload.length) {
+      continue;
+    }
+
+    if (!bestCandidate || serializedCompressedPayload.length < bestCandidate.serializedLength) {
+      bestCandidate = {
+        serialized: serializedCompressedPayload,
+        serializedLength: serializedCompressedPayload.length,
+        originalSize: serializedPayload.length,
+        compressedSize: compressed.length,
+        variant: strategy.variant,
+      };
+    }
   }
 
-  return {
-    serialized: serializedCompressedPayload,
-    originalSize: serializedPayload.length,
-    compressedSize: compressed.length,
-  };
+  return bestCandidate;
 }
 
 function parseMigrationBackupMetadata(raw) {
@@ -777,50 +888,66 @@ function createCompressedJsonStorageCandidate(serialized) {
     return null;
   }
 
-  let compressed;
-  try {
-    compressed = LZString.compressToUTF16(serialized);
-  } catch (compressionError) {
-    console.warn('Unable to compress storage payload', compressionError);
+  var strategies = getAvailableLZStringCompressionStrategies(STORAGE_COMPRESSION_VARIANTS);
+  if (!strategies.length) {
     return null;
   }
 
-  if (typeof compressed !== 'string' || !compressed) {
-    return null;
+  var best = null;
+  for (var i = 0; i < strategies.length; i += 1) {
+    var strategy = strategies[i];
+    var compressed = null;
+    try {
+      compressed = strategy.compress(serialized);
+    } catch (compressionError) {
+      console.warn('Unable to compress storage payload with '
+        .concat(strategy.variant, ' variant'), compressionError);
+      continue;
+    }
+
+    if (typeof compressed !== 'string' || !compressed) {
+      continue;
+    }
+
+    var wrapper = {
+      [STORAGE_COMPRESSION_FLAG_KEY]: true,
+      version: STORAGE_COMPRESSION_VERSION,
+      algorithm: STORAGE_COMPRESSION_ALGORITHM,
+      namespace: STORAGE_COMPRESSION_NAMESPACE,
+      data: compressed,
+      originalLength: serialized.length,
+      compressedPayloadLength: compressed.length,
+      compressionVariant: strategy.variant,
+    };
+
+    var wrappedSerialized;
+    try {
+      wrappedSerialized = JSON.stringify(wrapper);
+    } catch (serializationError) {
+      console.warn('Unable to serialize compressed storage payload wrapper', serializationError);
+      continue;
+    }
+
+    if (typeof wrappedSerialized !== 'string' || !wrappedSerialized) {
+      continue;
+    }
+
+    if (wrappedSerialized.length >= serialized.length) {
+      continue;
+    }
+
+    if (!best || wrappedSerialized.length < best.wrappedLength) {
+      best = {
+        serialized: wrappedSerialized,
+        originalLength: serialized.length,
+        wrappedLength: wrappedSerialized.length,
+        compressedPayloadLength: compressed.length,
+        compressionVariant: strategy.variant,
+      };
+    }
   }
 
-  const wrapper = {
-    [STORAGE_COMPRESSION_FLAG_KEY]: true,
-    version: STORAGE_COMPRESSION_VERSION,
-    algorithm: STORAGE_COMPRESSION_ALGORITHM,
-    namespace: STORAGE_COMPRESSION_NAMESPACE,
-    data: compressed,
-    originalLength: serialized.length,
-    compressedPayloadLength: compressed.length,
-  };
-
-  let wrappedSerialized;
-  try {
-    wrappedSerialized = JSON.stringify(wrapper);
-  } catch (serializationError) {
-    console.warn('Unable to serialize compressed storage payload wrapper', serializationError);
-    return null;
-  }
-
-  if (typeof wrappedSerialized !== 'string' || !wrappedSerialized) {
-    return null;
-  }
-
-  if (wrappedSerialized.length >= serialized.length) {
-    return null;
-  }
-
-  return {
-    serialized: wrappedSerialized,
-    originalLength: serialized.length,
-    wrappedLength: wrappedSerialized.length,
-    compressedPayloadLength: compressed.length,
-  };
+  return best;
 }
 
 function decodeCompressedJsonStorageValue(raw) {
@@ -859,7 +986,10 @@ function decodeCompressedJsonStorageValue(raw) {
     return { success: false };
   }
 
-  if (parsed.algorithm !== STORAGE_COMPRESSION_ALGORITHM) {
+  if (
+    parsed.algorithm !== STORAGE_COMPRESSION_ALGORITHM
+    && parsed.algorithm !== LEGACY_STORAGE_COMPRESSION_ALGORITHM
+  ) {
     console.warn('Unsupported storage compression algorithm', parsed.algorithm);
     return { success: false };
   }
@@ -873,19 +1003,23 @@ function decodeCompressedJsonStorageValue(raw) {
     return { success: false };
   }
 
-  let decompressed;
-  try {
-    decompressed = LZString.decompressFromUTF16(parsed.data);
-  } catch (decompressionError) {
-    console.warn('Unable to decompress storage payload', decompressionError);
-    return { success: false, error: decompressionError };
+  var preferredVariant = null;
+  if (typeof parsed.compressionVariant === 'string' && parsed.compressionVariant) {
+    preferredVariant = parsed.compressionVariant;
+  } else if (parsed.algorithm === LEGACY_STORAGE_COMPRESSION_ALGORITHM) {
+    preferredVariant = 'utf16';
   }
 
-  if (typeof decompressed !== 'string') {
-    return { success: false };
+  var decoded = tryDecompressWithStrategies(parsed.data, STORAGE_COMPRESSION_VARIANTS, preferredVariant, 'storage payload');
+  if (!decoded.success) {
+    return { success: false, error: decoded.error };
   }
 
-  return { success: true, value: decompressed, metadata: parsed };
+  if (!parsed.compressionVariant && decoded.variant) {
+    parsed.compressionVariant = decoded.variant;
+  }
+
+  return { success: true, value: decoded.value, metadata: parsed };
 }
 
 function maybeDecompressStoredString(raw, options) {
@@ -1269,10 +1403,16 @@ function createStorageMigrationBackup(storage, key, originalValue) {
       storage.setItem(backupKey, candidate.serialized);
       if (logCompression && info && !tryStoreSerialized.compressionLogged) {
         tryStoreSerialized.compressionLogged = true;
-        const savings = info.originalSize - info.compressedSize;
-        const percent = info.originalSize > 0 ? Math.round((savings / info.originalSize) * 100) : 0;
+        const storedLength = typeof info.serializedLength === 'number'
+          ? info.serializedLength
+          : info.compressedSize;
+        const rawSavings = info.originalSize - storedLength;
+        const savings = rawSavings > 0 ? rawSavings : 0;
+        const percent = info.originalSize > 0
+          ? Math.round((savings / info.originalSize) * 100)
+          : 0;
         console.warn(
-          `Stored compressed migration backup for ${key} to reduce storage usage by ${savings} characters (${percent}%).`,
+          `Stored compressed migration backup for ${key} to reduce storage usage by ${savings} characters (${percent}%) using ${info.variant || 'unknown'} variant.`,
         );
       }
       return { success: true, quota: false };
@@ -6750,20 +6890,29 @@ function extractSnapshotStoredValue(entry) {
           && typeof parsed.data === 'string'
         ) {
           if (canUseMigrationBackupCompression()) {
-            try {
-              const decompressed = LZString.decompressFromUTF16(parsed.data);
-              if (typeof decompressed === 'string' && decompressed) {
-                const decoded = JSON.parse(decompressed);
-                if (decoded && typeof decoded === 'object' && Object.prototype.hasOwnProperty.call(decoded, 'data')) {
-                  raw = decoded.data;
+            const variant = typeof parsed.compressionVariant === 'string'
+              ? parsed.compressionVariant
+              : 'utf16';
+            const decoded = tryDecompressWithStrategies(
+              parsed.data,
+              MIGRATION_BACKUP_COMPRESSION_VARIANTS,
+              variant,
+              'migration backup entry',
+            );
+            if (decoded.success && typeof decoded.value === 'string') {
+              try {
+                const payload = JSON.parse(decoded.value);
+                if (payload && typeof payload === 'object' && Object.prototype.hasOwnProperty.call(payload, 'data')) {
+                  raw = payload.data;
                 } else {
                   raw = null;
                 }
-              } else {
+              } catch (parseError) {
+                console.warn('Unable to parse migration backup entry during import', entry.key, parseError);
                 raw = null;
               }
-            } catch (decompressionError) {
-              console.warn('Unable to decompress migration backup entry during import', entry && entry.key, decompressionError);
+            } else {
+              console.warn('Unable to decompress migration backup entry during import', entry && entry.key, decoded.error);
               raw = null;
             }
           } else {
