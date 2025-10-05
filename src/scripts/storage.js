@@ -6590,6 +6590,8 @@ var STORAGE_API = {
   loadSetup,
   deleteSetup,
   renameSetup,
+  getMountVoltageStorageKeyName,
+  getMountVoltageStorageBackupKeyName,
   loadProject,
   saveProject,
   deleteProject,
