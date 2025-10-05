@@ -11288,6 +11288,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         summary: 'Matte boxes, trays and filter packs.',
         logic: 'Generated from your matte box preference and filter selections, including required adapters.'
       },
+      'Rain Machine': {
+        summary: 'Rain deflector, spare discs and rain-proofing cables.',
+        logic: 'Enabled by the Rain Machine scenario so the lens stays clear in heavy rain setups.'
+      },
       'LDS (FIZ)': {
         summary: 'Focus, iris and zoom control hardware.',
         logic: 'Reflects the motors and controllers picked in the wireless FIZ section.'

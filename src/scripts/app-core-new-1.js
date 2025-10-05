@@ -2737,6 +2737,13 @@ const LEGAL_LINKS = {
 };
 
 var AUTO_GEAR_CUSTOM_CATEGORY = '';
+const RAIN_MACHINE_CATEGORY = 'Rain Machine';
+const RAIN_MACHINE_ITEM_NAMES = new Set([
+  'Schulz Sprayoff Micro',
+  'Spare Disc (Schulz Sprayoff Micro)',
+  'Fischer RS to D-Tap cable 0,5m',
+]);
+
 const GEAR_LIST_CATEGORIES = [
   'Camera',
   'Camera Support',
@@ -2744,6 +2751,7 @@ const GEAR_LIST_CATEGORIES = [
   'Lens',
   'Lens Support',
   'Matte box + filter',
+  RAIN_MACHINE_CATEGORY,
   'LDS (FIZ)',
   'Camera Batteries',
   'Monitoring Batteries',
@@ -4645,6 +4653,16 @@ function cloneAutoGearItems(items) {
     .filter(Boolean);
 }
 
+function normalizeRainMachineAutoGearCategories(items) {
+  if (!Array.isArray(items)) return [];
+  return items.map(item => {
+    if (!item || typeof item !== 'object') return item;
+    if (!RAIN_MACHINE_ITEM_NAMES.has(item.name)) return item;
+    if (item.category === RAIN_MACHINE_CATEGORY) return item;
+    return { ...item, category: RAIN_MACHINE_CATEGORY };
+  });
+}
+
 function cloneAutoGearRuleItem(item) {
   if (!item || typeof item !== 'object') {
     return {
@@ -5548,8 +5566,12 @@ function buildAutoGearRulesFromBaseInfo(baseInfo, scenarioValues) {
         const scenarioMap = parseGearTableForAutoRules(scenarioHtml);
         if (!scenarioMap) return;
         const diff = diffGearTableMaps(baselineMap, scenarioMap);
-        const add = cloneAutoGearItems(diff.add);
-        const remove = cloneAutoGearItems(diff.remove);
+        let add = cloneAutoGearItems(diff.add);
+        let remove = cloneAutoGearItems(diff.remove);
+        if (value === 'Rain Machine') {
+          add = normalizeRainMachineAutoGearCategories(add);
+          remove = normalizeRainMachineAutoGearCategories(remove);
+        }
         if (!add.length && !remove.length) return;
         scenarioDiffMap.set(value, { add, remove });
         rules.push({
@@ -5599,7 +5621,7 @@ function buildAutoGearRulesFromBaseInfo(baseInfo, scenarioValues) {
         ].map(entry => ({
           id: generateAutoGearId('item'),
           name: entry.name,
-          category: 'Matte box + filter',
+          category: RAIN_MACHINE_CATEGORY,
           quantity: entry.quantity,
         }));
         rules.push({
