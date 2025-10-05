@@ -9754,12 +9754,18 @@ function updateAutoGearItemButtonState(type) {
     }
     pinkModeIcons.onSequence = Object.freeze(configs);
     if (typeof document !== 'undefined' && document.body && document.body.classList.contains('pink-mode')) {
-      stopPinkModeIconRotation();
+      if (typeof stopPinkModeIconRotation === 'function') {
+        stopPinkModeIconRotation();
+      }
       pinkModeIconIndex = 0;
-      applyPinkModeIcon(pinkModeIcons.onSequence[pinkModeIconIndex], {
-        animate: false
-      });
-      startPinkModeIconRotation();
+      if (typeof applyPinkModeIcon === 'function') {
+        applyPinkModeIcon(pinkModeIcons.onSequence[pinkModeIconIndex], {
+          animate: false
+        });
+      }
+      if (typeof startPinkModeIconRotation === 'function') {
+        startPinkModeIconRotation();
+      }
     }
     return true;
   }
