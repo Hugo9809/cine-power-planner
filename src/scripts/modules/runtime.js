@@ -257,6 +257,7 @@
     'storage.deleteProject',
     'storage.exportAllData',
     'storage.importAllData',
+    'storage.clearAllData',
     'storage.loadFavorites',
     'storage.saveFavorites',
     'storage.loadFeedback',

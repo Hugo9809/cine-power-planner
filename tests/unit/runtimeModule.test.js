@@ -405,7 +405,11 @@ describe('cineRuntime module', () => {
   test('lists critical checks across persistence, offline and UI layers', () => {
     const checks = runtime.listCriticalChecks();
     expect(Object.isFrozen(checks)).toBe(true);
-    expect(checks.cinePersistence).toEqual(expect.arrayContaining(['storage.saveProject', 'share.applySharedSetupFromUrl']));
+    expect(checks.cinePersistence).toEqual(expect.arrayContaining([
+      'storage.saveProject',
+      'share.applySharedSetupFromUrl',
+      'storage.clearAllData',
+    ]));
     expect(checks.cinePersistence).toEqual(expect.arrayContaining(['storage.loadFeedback', 'storage.saveFeedback']));
     expect(checks.cineOffline).toEqual(expect.arrayContaining(['registerServiceWorker', 'reloadApp']));
     expect(checks.cineUi.controllers).toEqual(expect.arrayContaining([
@@ -427,6 +431,7 @@ describe('cineRuntime module', () => {
         cineUi: true,
       },
     });
+    expect(result.details['cinePersistence.storage.clearAllData']).toBe(true);
   });
 
   test('reports missing safeguards and can throw when requested', () => {
@@ -473,6 +478,22 @@ describe('cineRuntime module', () => {
       'cinePersistence.storage.saveFeedback',
       'cinePersistence.bindings.loadFeedback',
       'cinePersistence.bindings.saveFeedback',
+    ]));
+  });
+
+  test('flags missing clearAllData persistence safeguards', () => {
+    const mutated = buildPersistenceStub({
+      missingWrappers: ['clearAllData'],
+      missingBindings: ['clearAllData'],
+    });
+    global.cinePersistence = mutated;
+    registry.register('cinePersistence', mutated, { replace: true, category: 'persistence', description: 'clearAllData-mutated' });
+
+    const result = runtime.verifyCriticalFlows();
+    expect(result.ok).toBe(false);
+    expect(result.missing).toEqual(expect.arrayContaining([
+      'cinePersistence.storage.clearAllData',
+      'cinePersistence.bindings.clearAllData',
     ]));
   });
 });
