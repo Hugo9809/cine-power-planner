@@ -18,6 +18,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     'modules/globals.js',
     'modules/offline.js',
     'modules/core-shared.js',
+    'modules/features/backup.js',
     'modules/ui.js',
     'app-core-new-1.js',
     'app-core-new-2.js',
