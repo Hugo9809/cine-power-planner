@@ -7839,6 +7839,90 @@ function setLanguage(lang) {
     "backupDiffCloseButton",
     "backupDiffClose"
   );
+  const restoreRehearsalButton = resolveElement(
+    "restoreRehearsalButton",
+    "restoreRehearsalButton"
+  );
+  const restoreRehearsalHeading = resolveElement(
+    "restoreRehearsalHeading",
+    "restoreRehearsalHeading"
+  );
+  const restoreRehearsalIntro = resolveElement(
+    "restoreRehearsalIntro",
+    "restoreRehearsalIntro"
+  );
+  const restoreRehearsalModeLabel = resolveElement(
+    "restoreRehearsalModeLabel",
+    "restoreRehearsalModeLabel"
+  );
+  const restoreRehearsalModeBackupText = resolveElement(
+    "restoreRehearsalModeBackupText",
+    "restoreRehearsalModeBackupText"
+  );
+  const restoreRehearsalModeProjectText = resolveElement(
+    "restoreRehearsalModeProjectText",
+    "restoreRehearsalModeProjectText"
+  );
+  const restoreRehearsalFileLabel = resolveElement(
+    "restoreRehearsalFileLabel",
+    "restoreRehearsalFileLabel"
+  );
+  const restoreRehearsalBrowse = resolveElement(
+    "restoreRehearsalBrowse",
+    "restoreRehearsalBrowse"
+  );
+  const restoreRehearsalFileName = resolveElement(
+    "restoreRehearsalFileName",
+    "restoreRehearsalFileName"
+  );
+  const restoreRehearsalStatus = resolveElement(
+    "restoreRehearsalStatus",
+    "restoreRehearsalStatus"
+  );
+  const restoreRehearsalRuleHeading = resolveElement(
+    "restoreRehearsalRuleHeading",
+    "restoreRehearsalRuleHeading"
+  );
+  const restoreRehearsalRuleIntro = resolveElement(
+    "restoreRehearsalRuleIntro",
+    "restoreRehearsalRuleIntro"
+  );
+  const restoreRehearsalRuleEmpty = resolveElement(
+    "restoreRehearsalRuleEmpty",
+    "restoreRehearsalRuleEmpty"
+  );
+  const restoreRehearsalTableCaption = resolveElement(
+    "restoreRehearsalTableCaption",
+    "restoreRehearsalTableCaption"
+  );
+  const restoreRehearsalMetricHeader = resolveElement(
+    "restoreRehearsalMetricHeader",
+    "restoreRehearsalMetricHeader"
+  );
+  const restoreRehearsalLiveHeader = resolveElement(
+    "restoreRehearsalLiveHeader",
+    "restoreRehearsalLiveHeader"
+  );
+  const restoreRehearsalSandboxHeader = resolveElement(
+    "restoreRehearsalSandboxHeader",
+    "restoreRehearsalSandboxHeader"
+  );
+  const restoreRehearsalDifferenceHeader = resolveElement(
+    "restoreRehearsalDifferenceHeader",
+    "restoreRehearsalDifferenceHeader"
+  );
+  const restoreRehearsalCloseButton = resolveElement(
+    "restoreRehearsalCloseButton",
+    "restoreRehearsalClose"
+  );
+  const restoreRehearsalProceedButton = resolveElement(
+    "restoreRehearsalProceedButton",
+    "restoreRehearsalProceed"
+  );
+  const restoreRehearsalAbortButton = resolveElement(
+    "restoreRehearsalAbortButton",
+    "restoreRehearsalAbort"
+  );
   if (skipLink) skipLink.textContent = texts[lang].skipToContent;
   const offlineElem = document.getElementById("offlineIndicator");
   if (offlineElem) {
