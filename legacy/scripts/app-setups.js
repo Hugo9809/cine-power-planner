@@ -457,9 +457,7 @@ if (typeof generateOverviewBtn !== 'undefined' && generateOverviewBtn) {
       alert(texts[currentLang].alertSelectSetupForOverview);
       return;
     }
-    generatePrintableOverview({
-      autoPrint: true
-    });
+    generatePrintableOverview();
   });
 }
 function batteryPinsSufficient() {
