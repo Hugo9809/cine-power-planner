@@ -16713,6 +16713,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         const show = e => {
           e.stopPropagation();
           const pointer = e.touches && e.touches[0] ? e.touches[0] : e;
+          const isCameraNode = id === 'camera';
+          if (isCameraNode) {
+            popup.classList.add('diagram-popup--camera');
+          } else {
+            popup.classList.remove('diagram-popup--camera');
+          }
           popup.innerHTML = html;
           cancelPopupHide();
           popup.style.display = 'block';
