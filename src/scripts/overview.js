@@ -260,7 +260,7 @@ function generatePrintableOverview(config = {}) {
     }
 
     const safeSetupName = escapeHtmlSafe(setupName);
-    const diagramCss = getDiagramCss(false);
+    const diagramCss = typeof getDiagramCss === 'function' ? getDiagramCss(false) : '';
 
     let diagramAreaHtml = '';
     if (setupDiagramContainer) {
