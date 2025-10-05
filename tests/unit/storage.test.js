@@ -1149,6 +1149,50 @@ describe('automatic gear storage', () => {
     expect(parseLocalStorageJSON(AUTO_GEAR_BACKUPS_KEY)).toEqual(backups);
   });
 
+  test('saveAutoGearAutoPresetId removes auto preset entries from compressed storage', () => {
+    const repeatedNote = 'Lens kit packed for rainy night exterior shots. '.repeat(120);
+    const buildRules = (presetIndex) => Array.from({ length: 4 }, (_, ruleIndex) => ({
+      id: `rule-${presetIndex}-${ruleIndex}`,
+      label: `Rule ${ruleIndex}`,
+      scenarios: ['Indoor', 'Outdoor'],
+      add: Array.from({ length: 3 }, (__, itemIndex) => ({
+        name: `Accessory ${itemIndex}`,
+        category: 'Accessories',
+        quantity: 1,
+        notes: repeatedNote,
+      })),
+      remove: [],
+    }));
+
+    const presets = Array.from({ length: 6 }, (_, index) => ({
+      id: index === 0 ? 'preset-auto' : `preset-${index}`,
+      label: `Preset ${index}`,
+      rules: buildRules(index),
+    }));
+
+    const serializedPresets = JSON.stringify(presets);
+    const compressed = LZString.compressToUTF16(serializedPresets);
+    const wrapper = JSON.stringify({
+      __cineStorageCompressed: true,
+      version: 1,
+      algorithm: 'lz-string-utf16',
+      namespace: 'camera-power-planner:storage-compression',
+      data: compressed,
+      originalLength: serializedPresets.length,
+      compressedPayloadLength: compressed.length,
+    });
+
+    localStorage.setItem(AUTO_GEAR_PRESETS_KEY, wrapper);
+    localStorage.setItem(AUTO_GEAR_AUTO_PRESET_KEY, 'preset-auto');
+
+    saveAutoGearAutoPresetId('');
+
+    const storedPresets = parseLocalStorageJSON(AUTO_GEAR_PRESETS_KEY);
+    expect(Array.isArray(storedPresets)).toBe(true);
+    expect(storedPresets.find(preset => preset?.id === 'preset-auto')).toBeUndefined();
+    expect(localStorage.getItem(AUTO_GEAR_AUTO_PRESET_KEY)).toBeNull();
+  });
+
   test('saveAutoGearBackups trims the oldest entry when storage quota is exceeded', () => {
     const backups = [
       {

@@ -2403,6 +2403,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     function handleAutoGearSavePreset() {
       const rules = getAutoGearRules();
       const activePreset = getAutoGearPresetById(activeAutoGearPresetId);
+      const previousAutoPresetId = autoGearAutoPresetIdState;
       const promptTemplate = texts[currentLang]?.autoGearPresetNamePrompt
         || texts.en?.autoGearPresetNamePrompt
         || 'Name this preset';
@@ -2458,13 +2459,21 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
         return;
       }
-        if (autoGearAutoPresetIdState) {
-          setAutoGearAutoPresetId('', { persist: true, skipRender: true });
-        }
+      if (previousAutoPresetId) {
+        setAutoGearAutoPresetId('', { persist: true, skipRender: true });
+      }
       const existingIndex = autoGearPresets.findIndex(preset => preset.id === normalizedPreset.id);
       if (existingIndex >= 0) {
         autoGearPresets[existingIndex] = normalizedPreset;
       } else {
+        if (previousAutoPresetId) {
+          const autoPresetIndex = autoGearPresets.findIndex(
+            preset => preset && preset.id === previousAutoPresetId,
+          );
+          if (autoPresetIndex >= 0) {
+            autoGearPresets.splice(autoPresetIndex, 1);
+          }
+        }
         autoGearPresets.push(normalizedPreset);
       }
       autoGearPresets = sortAutoGearPresets(autoGearPresets.slice());
