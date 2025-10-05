@@ -80,26 +80,36 @@ ensureCriticalGlobalVariable('autoGearRuleNameInput', null);
 ensureCriticalGlobalVariable('autoGearSummaryFocus', 'all');
 ensureCriticalGlobalVariable('autoGearMonitorDefaultControls', []);
 
+var autoGearAutoPresetId;
+if (typeof autoGearAutoPresetId === 'undefined' || typeof autoGearAutoPresetId !== 'string') {
+  autoGearAutoPresetId = '';
+}
+
+var baseAutoGearRules;
 if (typeof baseAutoGearRules === 'undefined') {
-  var baseAutoGearRules = [];
+  baseAutoGearRules = [];
 } else if (!Array.isArray(baseAutoGearRules)) {
   baseAutoGearRules = [];
 }
 
+var autoGearScenarioModeSelect;
 if (typeof autoGearScenarioModeSelect === 'undefined') {
-  var autoGearScenarioModeSelect = null;
+  autoGearScenarioModeSelect = null;
 }
 
+var autoGearRuleNameInput;
 if (typeof autoGearRuleNameInput === 'undefined') {
-  var autoGearRuleNameInput = null;
+  autoGearRuleNameInput = null;
 }
 
+var autoGearSummaryFocus;
 if (typeof autoGearSummaryFocus === 'undefined' || typeof autoGearSummaryFocus !== 'string') {
-  var autoGearSummaryFocus = 'all';
+  autoGearSummaryFocus = 'all';
 }
 
+var autoGearMonitorDefaultControls;
 if (typeof autoGearMonitorDefaultControls === 'undefined') {
-  var autoGearMonitorDefaultControls = [];
+  autoGearMonitorDefaultControls = [];
 } else if (!Array.isArray(autoGearMonitorDefaultControls)) {
   autoGearMonitorDefaultControls = [];
 }

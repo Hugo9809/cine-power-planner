@@ -49,16 +49,21 @@ function readGlobalScopeValue(name) {
 
   return undefined;
 }
+var autoGearAutoPresetId;
 if (typeof autoGearAutoPresetId === 'undefined') {
-  var autoGearAutoPresetId = '';
+  autoGearAutoPresetId = '';
+} else if (typeof autoGearAutoPresetId !== 'string') {
+  autoGearAutoPresetId = '';
 }
+var baseAutoGearRules;
 if (typeof baseAutoGearRules === 'undefined') {
-  var baseAutoGearRules = [];
+  baseAutoGearRules = [];
 } else if (!Array.isArray(baseAutoGearRules)) {
   baseAutoGearRules = [];
 }
+var autoGearScenarioModeSelect;
 if (typeof autoGearScenarioModeSelect === 'undefined') {
-  var autoGearScenarioModeSelect = null;
+  autoGearScenarioModeSelect = null;
 }
 function createFallbackSafeGenerateConnectorSummary() {
   return function safeGenerateConnectorSummary(device) {
@@ -83,8 +88,9 @@ function createFallbackSafeGenerateConnectorSummary() {
     }
   };
 }
+var safeGenerateConnectorSummary;
 if (typeof safeGenerateConnectorSummary === 'undefined') {
-  var safeGenerateConnectorSummary = createFallbackSafeGenerateConnectorSummary();
+  safeGenerateConnectorSummary = createFallbackSafeGenerateConnectorSummary();
 } else if (typeof safeGenerateConnectorSummary !== 'function') {
   safeGenerateConnectorSummary = createFallbackSafeGenerateConnectorSummary();
 }

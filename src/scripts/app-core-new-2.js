@@ -150,24 +150,30 @@ normaliseGlobalValue(
   },
 );
 
+var autoGearAutoPresetId;
 if (typeof autoGearAutoPresetId === 'undefined') {
   // Ensure a concrete global binding exists for browsers that throw when a
   // property-only binding is accessed without `window.`.
-  var autoGearAutoPresetId = '';
+  autoGearAutoPresetId = '';
+} else if (typeof autoGearAutoPresetId !== 'string') {
+  autoGearAutoPresetId = '';
 }
 
+var baseAutoGearRules;
 if (typeof baseAutoGearRules === 'undefined') {
-  var baseAutoGearRules = [];
+  baseAutoGearRules = [];
 } else if (!Array.isArray(baseAutoGearRules)) {
   baseAutoGearRules = [];
 }
 
+var autoGearScenarioModeSelect;
 if (typeof autoGearScenarioModeSelect === 'undefined') {
-  var autoGearScenarioModeSelect = null;
+  autoGearScenarioModeSelect = null;
 }
 
+var safeGenerateConnectorSummary;
 if (typeof safeGenerateConnectorSummary === 'undefined') {
-  var safeGenerateConnectorSummary = createFallbackSafeGenerateConnectorSummary();
+  safeGenerateConnectorSummary = createFallbackSafeGenerateConnectorSummary();
 } else if (typeof safeGenerateConnectorSummary !== 'function') {
   safeGenerateConnectorSummary = createFallbackSafeGenerateConnectorSummary();
 }
