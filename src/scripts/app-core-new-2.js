@@ -17319,6 +17319,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       renderAutoGearMonitorDefaultsControls,
       renderAutoGearPresetsControls,
       renderAutoGearRulesList,
+      openAutoGearEditor,
       overviewSectionIcons,
       saveAutoGearRuleFromEditor,
       handleAutoGearImportSelection,
