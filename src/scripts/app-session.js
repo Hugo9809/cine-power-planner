@@ -3155,7 +3155,7 @@ function applySharedSetup(shared, options = {}) {
         ? setupNameInput.value.trim()
         : '';
       const storageKey = selectedName || typedName;
-      if (storageKey) {
+      if (typeof storageKey === 'string') {
         saveProject(storageKey, payload);
       }
     }

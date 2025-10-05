@@ -4978,11 +4978,14 @@ function saveCurrentGearList() {
         if (previousProjectInfo && Object.keys(previousProjectInfo).length) {
             pendingProjectInfo = previousProjectInfo;
         } else if (typeof loadProject === 'function') {
-            const fallbackKey =
-                (typeof effectiveStorageKey === 'string' && effectiveStorageKey)
-                    ? effectiveStorageKey
-                    : (projectStorageKey || selectedStorageKey || '');
-            if (fallbackKey) {
+            const fallbackKey = (typeof effectiveStorageKey === 'string')
+                ? effectiveStorageKey
+                : (typeof projectStorageKey === 'string' && projectStorageKey)
+                    ? projectStorageKey
+                    : (typeof selectedStorageKey === 'string'
+                        ? selectedStorageKey
+                        : '');
+            if (typeof fallbackKey === 'string') {
                 const existingProject = loadProject(fallbackKey);
                 if (existingProject && existingProject.projectInfo && Object.keys(existingProject.projectInfo).length) {
                     pendingProjectInfo = cloneProjectInfoForStorage(existingProject.projectInfo);
@@ -5021,7 +5024,7 @@ function saveCurrentGearList() {
             diagramPositionsSnapshotForSetups = cloneProjectInfoForStorage(diagramPositionsSnapshot);
         }
     }
-    if (typeof saveProject === 'function' && typeof effectiveStorageKey === 'string' && effectiveStorageKey) {
+    if (typeof saveProject === 'function' && typeof effectiveStorageKey === 'string') {
         const payload = {
             projectInfo: projectInfoSnapshot,
             gearList: html
