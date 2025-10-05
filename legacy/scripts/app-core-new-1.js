@@ -7155,13 +7155,25 @@ function updateAutoGearItemButtonState(type) {
       }
       return void 0;
     };
+    var registerResolvedElement = function registerResolvedElement(globalName, element) {
+      if (!globalName || !element) {
+        return element;
+      }
+      try {
+        exposeCoreRuntimeConstant(globalName, element);
+      } catch (exposeError) {
+        void exposeError;
+      }
+      return element;
+    };
     var resolveElement = function resolveElement(globalName, elementId) {
       var existing = resolveRuntimeValue(globalName);
       if (existing && typeof existing === "object") {
         return existing;
       }
       if (doc && typeof doc.getElementById === "function" && elementId) {
-        return doc.getElementById(elementId);
+        var element = doc.getElementById(elementId);
+        return registerResolvedElement(globalName, element);
       }
       return null;
     };
