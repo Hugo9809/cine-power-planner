@@ -14803,7 +14803,7 @@ const installGuideMigrationIntro = document.getElementById("installGuideMigratio
 const installGuideMigrationSteps = document.getElementById("installGuideMigrationSteps");
 const installGuideMigrationNote = document.getElementById("installGuideMigrationNote");
 const installGuideClose = document.getElementById("installGuideClose");
-const iosPwaHelpDialog = document.getElementById("iosPwaHelpDialog");
+var iosPwaHelpDialog = document.getElementById("iosPwaHelpDialog");
 const iosPwaHelpTitle = document.getElementById("iosPwaHelpTitle");
 const iosPwaHelpIntro = document.getElementById("iosPwaHelpIntro");
 const iosPwaHelpStep1 = document.getElementById("iosPwaHelpStep1");
@@ -14850,7 +14850,7 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
 }
 const iosPwaHelpStep4 = document.getElementById("iosPwaHelpStep4");
 const iosPwaHelpNote = document.getElementById("iosPwaHelpNote");
-const iosPwaHelpClose = document.getElementById("iosPwaHelpClose");
+var iosPwaHelpClose = document.getElementById("iosPwaHelpClose");
 
 let installBannerSetupComplete = false;
 let currentInstallGuidePlatform = null;

@@ -189,6 +189,20 @@ var CRITICAL_GLOBAL_DEFINITIONS = [
       return [];
     },
   },
+  {
+    name: 'iosPwaHelpDialog',
+    validator: function (value) {
+      return typeof value === 'undefined' || value === null || typeof value === 'object';
+    },
+    fallback: null,
+  },
+  {
+    name: 'iosPwaHelpClose',
+    validator: function (value) {
+      return typeof value === 'undefined' || value === null || typeof value === 'object';
+    },
+    fallback: null,
+  },
 ];
 
 function loaderFallbackSafeGenerateConnectorSummary(device) {

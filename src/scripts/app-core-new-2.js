@@ -193,6 +193,43 @@ normaliseGlobalValue(
   },
 );
 
+function createFallbackIconFontKeys() {
+  return Object.freeze({
+    ESSENTIAL: 'essential',
+    FILM: 'film',
+    GADGET: 'gadget',
+    UICONS: 'uicons',
+    TEXT: 'text',
+  });
+}
+
+ensureGlobalFallback('ICON_FONT_KEYS', function () {
+  return createFallbackIconFontKeys();
+});
+
+ensureGlobalFallback('iconGlyph', function () {
+  const iconFontKeys = ensureGlobalFallback('ICON_FONT_KEYS', function () {
+    return createFallbackIconFontKeys();
+  });
+  const fallbackFont =
+    iconFontKeys && typeof iconFontKeys.UICONS === 'string'
+      ? iconFontKeys.UICONS
+      : 'uicons';
+
+  return function fallbackIconGlyph(char, font) {
+    const glyphChar = typeof char === 'string' ? char : '';
+    const resolvedFont =
+      font && typeof font === 'string' ? font : fallbackFont;
+
+    try {
+      return Object.freeze({ char: glyphChar, font: resolvedFont });
+    } catch (freezeError) {
+      void freezeError;
+      return { char: glyphChar, font: resolvedFont };
+    }
+  };
+});
+
 var autoGearAutoPresetId;
 if (typeof autoGearAutoPresetId === 'undefined') {
   // Ensure a concrete global binding exists for browsers that throw when a
@@ -5857,29 +5894,84 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       updateInstallBannerPosition();
     }
     
-    function shouldShowIosPwaHelp() {
-      return (
-        !!iosPwaHelpDialog &&
-        isIosDevice() &&
-        isStandaloneDisplayMode() &&
-        !hasDismissedIosPwaHelp()
-      );
+    function resolveGlobalElement(name, elementId) {
+      if (typeof name !== 'string' || !name) {
+        return null;
+      }
+
+      const assignResolved = element => {
+        if (!element || typeof element !== 'object') {
+          return null;
+        }
+        try {
+          CORE_PART2_RUNTIME_SCOPE[name] = element;
+        } catch (assignError) {
+          void assignError;
+        }
+        return element;
+      };
+
+      const globalValue = readGlobalScopeValue(name);
+      if (globalValue && typeof globalValue === 'object') {
+        const resolved = assignResolved(globalValue);
+        if (resolved) {
+          return resolved;
+        }
+      }
+
+      if (typeof document !== 'undefined' && document && typeof document.getElementById === 'function') {
+        try {
+          const lookupId = typeof elementId === 'string' && elementId ? elementId : name;
+          const fallback = document.getElementById(lookupId);
+          if (fallback && typeof fallback === 'object') {
+            const resolved = assignResolved(fallback);
+            if (resolved) {
+              return resolved;
+            }
+          }
+        } catch (lookupError) {
+          void lookupError;
+        }
+      }
+
+      return null;
     }
-    
+
+    function resolveIosPwaHelpDialog() {
+      return resolveGlobalElement('iosPwaHelpDialog', 'iosPwaHelpDialog');
+    }
+
+    function resolveIosPwaHelpClose() {
+      return resolveGlobalElement('iosPwaHelpClose', 'iosPwaHelpClose');
+    }
+
+    const safeExposeCoreRuntimeConstant =
+      typeof exposeCoreRuntimeConstant === 'function'
+        ? exposeCoreRuntimeConstant
+        : function noopExposeCoreRuntimeConstant() {};
+
+    function shouldShowIosPwaHelp() {
+      const dialog = resolveIosPwaHelpDialog();
+      return dialog && isIosDevice() && isStandaloneDisplayMode() && !hasDismissedIosPwaHelp();
+    }
+
     function openIosPwaHelp() {
-      if (!iosPwaHelpDialog) return;
+      const dialog = resolveIosPwaHelpDialog();
+      if (!dialog) return;
       if (!shouldShowIosPwaHelp()) return;
       lastActiveBeforeIosHelp = document.activeElement;
-      iosPwaHelpDialog.removeAttribute('hidden');
-      const focusTarget = iosPwaHelpClose || iosPwaHelpDialog.querySelector('button, [href], [tabindex]:not([tabindex="-1"])');
+      dialog.removeAttribute('hidden');
+      const closeButton = resolveIosPwaHelpClose();
+      const focusTarget = closeButton || dialog.querySelector('button, [href], [tabindex]:not([tabindex="-1"])');
       if (focusTarget && typeof focusTarget.focus === 'function') {
         focusTarget.focus();
       }
     }
-    
+
     function closeIosPwaHelp(storeDismissal = false) {
-      if (!iosPwaHelpDialog) return;
-      iosPwaHelpDialog.setAttribute('hidden', '');
+      const dialog = resolveIosPwaHelpDialog();
+      if (!dialog) return;
+      dialog.setAttribute('hidden', '');
       if (storeDismissal) {
         markIosPwaHelpDismissed();
       }
@@ -5887,27 +5979,30 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         lastActiveBeforeIosHelp.focus();
       }
     }
-    
+
     function maybeShowIosPwaHelp() {
       openIosPwaHelp();
     }
-    
-    if (iosPwaHelpClose) {
-      iosPwaHelpClose.addEventListener('click', () => closeIosPwaHelp(true));
+
+    const iosPwaHelpCloseButton = resolveIosPwaHelpClose();
+    if (iosPwaHelpCloseButton) {
+      iosPwaHelpCloseButton.addEventListener('click', () => closeIosPwaHelp(true));
     }
-    
-    if (iosPwaHelpDialog) {
-      iosPwaHelpDialog.addEventListener('click', event => {
-        if (event.target === iosPwaHelpDialog) {
+
+    const iosPwaHelpDialogElement = resolveIosPwaHelpDialog();
+    if (iosPwaHelpDialogElement) {
+      iosPwaHelpDialogElement.addEventListener('click', event => {
+        if (event.target === iosPwaHelpDialogElement) {
           closeIosPwaHelp(true);
         }
       });
     }
-    
+
     document.addEventListener('keydown', event => {
       if (event.key !== 'Escape' && event.key !== 'Esc') return;
       let handled = false;
-      if (iosPwaHelpDialog && !iosPwaHelpDialog.hasAttribute('hidden')) {
+      const activeIosDialog = resolveIosPwaHelpDialog();
+      if (activeIosDialog && !activeIosDialog.hasAttribute('hidden')) {
         closeIosPwaHelp(true);
         handled = true;
       }
@@ -7229,16 +7324,17 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
     }
     
-    if (settingsLogo) {
-      settingsLogo.addEventListener('change', () => {
-        const file = settingsLogo.files && settingsLogo.files[0];
+    const settingsLogoInput = resolveGlobalElement('settingsLogo', 'settingsLogo');
+    if (settingsLogoInput) {
+      settingsLogoInput.addEventListener('change', () => {
+        const file = settingsLogoInput.files && settingsLogoInput.files[0];
         if (!file) {
           loadStoredLogoPreview();
           return;
         }
         if (file.type !== 'image/svg+xml' && !file.name.toLowerCase().endsWith('.svg')) {
           showNotification('error', texts[currentLang].logoFormatError || 'Unsupported logo format');
-          settingsLogo.value = '';
+          settingsLogoInput.value = '';
           loadStoredLogoPreview();
           return;
         }
@@ -7486,7 +7582,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     
     var normalizeSearchValue = value =>
       typeof value === 'string' ? value.trim().toLowerCase() : '';
-    exposeCoreRuntimeConstant('normalizeSearchValue', normalizeSearchValue);
+    safeExposeCoreRuntimeConstant('normalizeSearchValue', normalizeSearchValue);
     const FEATURE_SEARCH_EXTRA_SELECTOR = '[data-feature-search]';
     
     const FEATURE_SEARCH_TYPE_LABEL_KEYS = {
@@ -9213,7 +9309,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     const breakdownListElem = document.getElementById("breakdownList");
     if (breakdownListElem) {
       try {
-        exposeCoreRuntimeConstant('breakdownListElem', breakdownListElem);
+        safeExposeCoreRuntimeConstant('breakdownListElem', breakdownListElem);
       } catch (exposeError) {
         void exposeError;
       }
@@ -9234,21 +9330,24 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     const normalizeAccentValue = value =>
       typeof value === 'string' ? value.trim().toLowerCase() : '';
     
+    const accentColorInputElement = resolveGlobalElement('accentColorInput', 'accentColorInput');
+    const accentColorResetButtonElement = resolveGlobalElement('accentColorResetButton', 'accentColorReset');
+
     const updateAccentColorResetButtonState = () => {
-      if (!accentColorResetButton) return;
+      if (!accentColorResetButtonElement) return;
       const body = typeof document !== 'undefined' ? document.body : null;
       const pinkModeActive = !!(body && body.classList.contains('pink-mode'));
-      const inputDisabled = !accentColorInput || accentColorInput.disabled;
-      const currentValue = accentColorInput
-        ? normalizeAccentValue(accentColorInput.value || '')
+      const inputDisabled = !accentColorInputElement || accentColorInputElement.disabled;
+      const currentValue = accentColorInputElement
+        ? normalizeAccentValue(accentColorInputElement.value || '')
         : '';
       const isDefaultSelection = !currentValue || currentValue === DEFAULT_ACCENT_NORMALIZED;
       const shouldDisable = pinkModeActive || inputDisabled || isDefaultSelection;
-      accentColorResetButton.disabled = shouldDisable;
+      accentColorResetButtonElement.disabled = shouldDisable;
       if (shouldDisable) {
-        accentColorResetButton.setAttribute('aria-disabled', 'true');
+        accentColorResetButtonElement.setAttribute('aria-disabled', 'true');
       } else {
-        accentColorResetButton.removeAttribute('aria-disabled');
+        accentColorResetButtonElement.removeAttribute('aria-disabled');
       }
     };
     
@@ -9432,8 +9531,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     prevAccentColor = accentColor;
     updateAccentColorResetButtonState();
     
-    if (accentColorInput) {
-      accentColorInput.addEventListener('input', () => {
+    if (accentColorInputElement) {
+      accentColorInputElement.addEventListener('input', () => {
         if (
           typeof document !== 'undefined' &&
           document.body &&
@@ -9442,15 +9541,15 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           updateAccentColorResetButtonState();
           return;
         }
-        const color = accentColorInput.value;
+        const color = accentColorInputElement.value;
         applyAccentColor(color);
         updateAccentColorResetButtonState();
       });
     }
-    
-    if (accentColorResetButton && accentColorInput) {
-      accentColorResetButton.addEventListener('click', () => {
-        if (accentColorResetButton.disabled || accentColorInput.disabled) return;
+
+    if (accentColorResetButtonElement && accentColorInputElement) {
+      accentColorResetButtonElement.addEventListener('click', () => {
+        if (accentColorResetButtonElement.disabled || accentColorInputElement.disabled) return;
         if (
           typeof document !== 'undefined' &&
           document.body &&
@@ -9459,22 +9558,22 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           updateAccentColorResetButtonState();
           return;
         }
-        const currentValue = normalizeAccentValue(accentColorInput.value || '');
+        const currentValue = normalizeAccentValue(accentColorInputElement.value || '');
         if (currentValue === DEFAULT_ACCENT_NORMALIZED) {
           updateAccentColorResetButtonState();
           return;
         }
-        accentColorInput.value = DEFAULT_ACCENT_COLOR;
+        accentColorInputElement.value = DEFAULT_ACCENT_COLOR;
         let eventHandled = false;
         try {
           const inputEvent = new Event('input', { bubbles: true });
-          eventHandled = accentColorInput.dispatchEvent(inputEvent);
+          eventHandled = accentColorInputElement.dispatchEvent(inputEvent);
         } catch (error) {
           void error;
           if (typeof document !== 'undefined' && document.createEvent) {
             const legacyEvent = document.createEvent('Event');
             legacyEvent.initEvent('input', true, true);
-            eventHandled = accentColorInput.dispatchEvent(legacyEvent);
+            eventHandled = accentColorInputElement.dispatchEvent(legacyEvent);
           }
         }
         if (!eventHandled) {
@@ -9800,8 +9899,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         setLocalFontsStatus('localFontsNoFonts');
         return;
       }
-      if (localFontsButton) {
-        localFontsButton.disabled = true;
+      if (localFontsButtonElement) {
+        localFontsButtonElement.disabled = true;
       }
       const added = [];
       const unsupported = [];
@@ -9866,8 +9965,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
       }
     
-      if (localFontsButton) {
-        localFontsButton.disabled = false;
+      if (localFontsButtonElement) {
+        localFontsButtonElement.disabled = false;
       }
     }
     
@@ -9911,12 +10010,22 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     })();
     
     const supportsLocalFonts = typeof queryAvailableLocalFonts === 'function';
+    const localFontsButtonElement = resolveGlobalElement('localFontsButton', 'localFontsButton');
+    const localFontsInputElement = resolveGlobalElement('localFontsInput', 'localFontsInput');
+    var settingsFontFamily =
+      typeof settingsFontFamily !== 'undefined'
+        ? settingsFontFamily
+        : resolveGlobalElement('settingsFontFamily', 'settingsFontFamily');
+    var settingsFontSize =
+      typeof settingsFontSize !== 'undefined'
+        ? settingsFontSize
+        : resolveGlobalElement('settingsFontSize', 'settingsFontSize');
     const canUploadFontFiles =
       !!(
-        localFontsInput &&
+        localFontsInputElement &&
         typeof window !== 'undefined' &&
         typeof window.FileReader === 'function' &&
-        typeof localFontsInput.click === 'function'
+        typeof localFontsInputElement.click === 'function'
       );
     
     function getLocalizedText(key) {
@@ -10020,8 +10129,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     
     async function requestLocalFonts() {
-      if (!supportsLocalFonts || !localFontsButton || !queryAvailableLocalFonts) return;
-      localFontsButton.disabled = true;
+      if (!supportsLocalFonts || !localFontsButtonElement || !queryAvailableLocalFonts) return;
+      localFontsButtonElement.disabled = true;
       try {
         const fonts = await queryAvailableLocalFonts();
         if (!Array.isArray(fonts) || fonts.length === 0) {
@@ -10079,18 +10188,18 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           setLocalFontsStatus('localFontsError');
         }
       } finally {
-        localFontsButton.disabled = false;
+        localFontsButtonElement.disabled = false;
       }
     }
     
-    if (localFontsButton) {
+    if (localFontsButtonElement) {
       if (supportsLocalFonts || canUploadFontFiles) {
-        localFontsButton.removeAttribute('hidden');
-        localFontsButton.addEventListener('click', () => {
+        localFontsButtonElement.removeAttribute('hidden');
+        localFontsButtonElement.addEventListener('click', () => {
           if (supportsLocalFonts) {
             requestLocalFonts();
-          } else if (canUploadFontFiles && localFontsInput) {
-            localFontsInput.click();
+          } else if (canUploadFontFiles && localFontsInputElement) {
+            localFontsInputElement.click();
           }
         });
         if (!supportsLocalFonts && canUploadFontFiles) {
@@ -10100,16 +10209,16 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         setLocalFontsStatus('localFontsUnsupported');
       }
     }
-    
-    if (localFontsInput) {
-      localFontsInput.addEventListener('change', () => {
-        if (localFontsInput.files && localFontsInput.files.length > 0) {
-          handleLocalFontFiles(localFontsInput.files);
+
+    if (localFontsInputElement) {
+      localFontsInputElement.addEventListener('change', () => {
+        if (localFontsInputElement.files && localFontsInputElement.files.length > 0) {
+          handleLocalFontFiles(localFontsInputElement.files);
         } else {
           setLocalFontsStatus('localFontsNoFonts');
         }
         try {
-          localFontsInput.value = '';
+          localFontsInputElement.value = '';
         } catch {
           // ignore reset errors
         }
