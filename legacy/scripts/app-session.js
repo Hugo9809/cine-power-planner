@@ -1,4 +1,3 @@
-/* global enqueueCoreBootTask, updateFavoriteButton, adjustGearListSelectWidth */
 var _excluded = ["parsed", "timestamp"];
 function _regenerator() { var e, t, r = "function" == typeof Symbol ? Symbol : {}, n = r.iterator || "@@iterator", o = r.toStringTag || "@@toStringTag"; function i(r, n, o, i) { var c = n && n.prototype instanceof Generator ? n : Generator, u = Object.create(c.prototype); return _regeneratorDefine2(u, "_invoke", function (r, n, o) { var i, c, u, f = 0, p = o || [], y = !1, G = { p: 0, n: 0, v: e, a: d, f: d.bind(e, 4), d: function d(t, r) { return i = t, c = 0, u = e, G.n = r, a; } }; function d(r, n) { for (c = r, u = n, t = 0; !y && f && !o && t < p.length; t++) { var o, i = p[t], d = G.p, l = i[2]; r > 3 ? (o = l === n) && (u = i[(c = i[4]) ? 5 : (c = 3, 3)], i[4] = i[5] = e) : i[0] <= d && ((o = r < 2 && d < i[1]) ? (c = 0, G.v = n, G.n = i[1]) : d < l && (o = r < 3 || i[0] > n || n > l) && (i[4] = r, i[5] = n, G.n = l, c = 0)); } if (o || r > 1) return a; throw y = !0, n; } return function (o, p, l) { if (f > 1) throw TypeError("Generator is already running"); for (y && 1 === p && d(p, l), c = p, u = l; (t = c < 2 ? e : u) || !y;) { i || (c ? c < 3 ? (c > 1 && (G.n = -1), d(c, u)) : G.n = u : G.v = u); try { if (f = 2, i) { if (c || (o = "next"), t = i[o]) { if (!(t = t.call(i, u))) throw TypeError("iterator result is not an object"); if (!t.done) return t; u = t.value, c < 2 && (c = 0); } else 1 === c && (t = i.return) && t.call(i), c < 2 && (u = TypeError("The iterator does not provide a '" + o + "' method"), c = 1); i = e; } else if ((t = (y = G.n < 0) ? u : r.call(n, G)) !== a) break; } catch (t) { i = e, c = 1, u = t; } finally { f = 1; } } return { value: t, done: y }; }; }(r, o, i), !0), u; } var a = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} t = Object.getPrototypeOf; var c = [][n] ? t(t([][n]())) : (_regeneratorDefine2(t = {}, n, function () { return this; }), t), u = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(c); function f(e) { return Object.setPrototypeOf ? Object.setPrototypeOf(e, GeneratorFunctionPrototype) : (e.__proto__ = GeneratorFunctionPrototype, _regeneratorDefine2(e, o, "GeneratorFunction")), e.prototype = Object.create(u), e; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, _regeneratorDefine2(u, "constructor", GeneratorFunctionPrototype), _regeneratorDefine2(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = "GeneratorFunction", _regeneratorDefine2(GeneratorFunctionPrototype, o, "GeneratorFunction"), _regeneratorDefine2(u), _regeneratorDefine2(u, o, "Generator"), _regeneratorDefine2(u, n, function () { return this; }), _regeneratorDefine2(u, "toString", function () { return "[object Generator]"; }), (_regenerator = function _regenerator() { return { w: i, m: f }; })(); }
 function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { i({}, "", {}); } catch (e) { i = 0; } _regeneratorDefine2 = function _regeneratorDefine(e, r, n, t) { if (r) i ? i(e, r, { value: n, enumerable: !t, configurable: !t, writable: !t }) : e[r] = n;else { function o(r, n) { _regeneratorDefine2(e, r, function (e) { return this._invoke(r, n, e); }); } o("next", 0), o("throw", 1), o("return", 2); } }, _regeneratorDefine2(e, r, n, t); }
@@ -29,14 +28,12 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function ensureSessionRuntimePlaceholder(name, fallbackValue) {
   var scope = typeof globalThis !== 'undefined' && globalThis || typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || typeof global !== 'undefined' && global || null;
-  var fallbackProvider = typeof fallbackValue === 'function' ? fallbackValue : function provideStaticFallback() {
+  var fallbackProvider = typeof fallbackValue === 'function' ? fallbackValue : function () {
     return fallbackValue;
   };
-
   if (!scope || _typeof(scope) !== 'object') {
     return fallbackProvider();
   }
-
   try {
     if (typeof scope[name] === 'undefined') {
       scope[name] = fallbackProvider();
@@ -47,7 +44,6 @@ function ensureSessionRuntimePlaceholder(name, fallbackValue) {
     return fallbackProvider();
   }
 }
-
 function getSessionRuntimeScopes() {
   var scopes = [];
   var addScope = function addScope(candidate) {
@@ -58,7 +54,6 @@ function getSessionRuntimeScopes() {
       scopes.push(candidate);
     }
   };
-
   try {
     if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE) {
       addScope(CORE_GLOBAL_SCOPE);
@@ -66,20 +61,16 @@ function getSessionRuntimeScopes() {
   } catch (coreScopeError) {
     void coreScopeError;
   }
-
   addScope(typeof globalThis !== 'undefined' ? globalThis : null);
   addScope(typeof window !== 'undefined' ? window : null);
   addScope(typeof self !== 'undefined' ? self : null);
   addScope(typeof global !== 'undefined' ? global : null);
-
   return scopes;
 }
-
 function getSessionRuntimeFunction(name) {
   if (typeof name !== 'string' || !name) {
     return null;
   }
-
   var scopes = getSessionRuntimeScopes();
   for (var index = 0; index < scopes.length; index += 1) {
     var scope = scopes[index];
@@ -90,48 +81,51 @@ function getSessionRuntimeFunction(name) {
       candidate = null;
       void resolveError;
     }
-
     if (typeof candidate === 'function') {
       return candidate;
     }
   }
-
   return null;
 }
-
 function invokeSessionRevertAccentColor() {
   var revertFn = getSessionRuntimeFunction('revertAccentColor');
   if (typeof revertFn !== 'function') {
     return;
   }
-
   try {
     revertFn();
   } catch (revertError) {
     console.warn('Failed to revert accent color', revertError);
   }
 }
-
 function invokeSessionOpenAutoGearEditor() {
   var openFn = getSessionRuntimeFunction('openAutoGearEditor');
   if (typeof openFn !== 'function') {
     console.warn('Auto Gear editor runtime is not available yet.');
     return;
   }
-
   try {
     openFn.apply(void 0, arguments);
   } catch (openError) {
     console.warn('Failed to open Auto Gear editor', openError);
   }
 }
-
 ensureSessionRuntimePlaceholder('autoGearScenarioModeSelect', null);
-var gridSnapToggleBtn = ensureSessionRuntimePlaceholder('gridSnapToggleBtn', function () {
+var downloadDiagramButton = ensureSessionRuntimePlaceholder('downloadDiagramBtn', function () {
   if (typeof document === 'undefined' || !document || typeof document.getElementById !== 'function') {
     return null;
   }
-
+  try {
+    return document.getElementById('downloadDiagram');
+  } catch (resolveError) {
+    void resolveError;
+    return null;
+  }
+});
+var gridSnapToggleButton = ensureSessionRuntimePlaceholder('gridSnapToggleBtn', function () {
+  if (typeof document === 'undefined' || !document || typeof document.getElementById !== 'function') {
+    return null;
+  }
   try {
     return document.getElementById('gridSnapToggle');
   } catch (resolveError) {
@@ -194,6 +188,16 @@ function registerCineUiEntries(registry, entries, warningMessage) {
     }
   }
 }
+function safeLoadStoredLogoPreview() {
+  if (typeof loadStoredLogoPreview !== 'function') {
+    return;
+  }
+  try {
+    loadStoredLogoPreview();
+  } catch (error) {
+    console.warn('Failed to load stored logo preview', error);
+  }
+}
 function areSessionEntriesRegistered(cineUi) {
   if (!cineUi || _typeof(cineUi) !== 'object') {
     return false;
@@ -228,19 +232,10 @@ function enqueueCineUiRegistration(callback) {
   scope[key].push(callback);
 }
 enqueueCineUiRegistration(registerSessionCineUiInternal);
-
-var SESSION_GLOBAL_SCOPE =
-  typeof CORE_GLOBAL_SCOPE === 'object' && CORE_GLOBAL_SCOPE
-    || typeof globalThis !== 'undefined' && globalThis
-    || typeof window !== 'undefined' && window
-    || typeof self !== 'undefined' && self
-    || typeof global !== 'undefined' && global
-    || null;
-
+var SESSION_GLOBAL_SCOPE = (typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' && CORE_GLOBAL_SCOPE || (typeof globalThis !== 'undefined' ? globalThis : null) || (typeof window !== 'undefined' ? window : null) || (typeof self !== 'undefined' ? self : null) || (typeof global !== 'undefined' ? global : null) || null;
 var SESSION_DEFAULT_ACCENT_COLOR_FALLBACK = '#001589';
 var SESSION_HIGH_CONTRAST_ACCENT_COLOR_FALLBACK = '#ffffff';
-
-var resolvedDefaultAccentColor = (function () {
+var resolvedDefaultAccentColor = function () {
   if (SESSION_GLOBAL_SCOPE && typeof SESSION_GLOBAL_SCOPE.DEFAULT_ACCENT_COLOR === 'string') {
     var candidate = SESSION_GLOBAL_SCOPE.DEFAULT_ACCENT_COLOR.trim();
     if (candidate) {
@@ -254,27 +249,18 @@ var resolvedDefaultAccentColor = (function () {
     }
   }
   return SESSION_DEFAULT_ACCENT_COLOR_FALLBACK;
-})();
-
-var resolvedDefaultAccentNormalized =
-  typeof resolvedDefaultAccentColor === 'string'
-    ? resolvedDefaultAccentColor.toLowerCase()
-    : SESSION_DEFAULT_ACCENT_COLOR_FALLBACK.toLowerCase();
-
-var resolvedHighContrastAccentColor = (function () {
-  if (
-    SESSION_GLOBAL_SCOPE
-    && typeof SESSION_GLOBAL_SCOPE.HIGH_CONTRAST_ACCENT_COLOR === 'string'
-  ) {
+}();
+var resolvedDefaultAccentNormalized = typeof resolvedDefaultAccentColor === 'string' ? resolvedDefaultAccentColor.toLowerCase() : SESSION_DEFAULT_ACCENT_COLOR_FALLBACK.toLowerCase();
+var resolvedHighContrastAccentColor = function () {
+  if (SESSION_GLOBAL_SCOPE && typeof SESSION_GLOBAL_SCOPE.HIGH_CONTRAST_ACCENT_COLOR === 'string') {
     var candidate = SESSION_GLOBAL_SCOPE.HIGH_CONTRAST_ACCENT_COLOR.trim();
     if (candidate) {
       return candidate;
     }
   }
   return SESSION_HIGH_CONTRAST_ACCENT_COLOR_FALLBACK;
-})();
-
-var resolvedAccentColor = (function () {
+}();
+var resolvedAccentColor = function () {
   if (SESSION_GLOBAL_SCOPE && typeof SESSION_GLOBAL_SCOPE.accentColor === 'string') {
     var candidate = SESSION_GLOBAL_SCOPE.accentColor.trim();
     if (candidate) {
@@ -282,50 +268,82 @@ var resolvedAccentColor = (function () {
     }
   }
   return resolvedDefaultAccentColor;
-})();
-
-if (
-  typeof DEFAULT_ACCENT_COLOR === 'undefined'
-  || typeof DEFAULT_ACCENT_COLOR !== 'string'
-  || !DEFAULT_ACCENT_COLOR.trim()
-) {
-  DEFAULT_ACCENT_COLOR = resolvedDefaultAccentColor;
+}();
+var hasDefaultAccentColor = typeof DEFAULT_ACCENT_COLOR === 'string' && DEFAULT_ACCENT_COLOR.trim();
+if (!hasDefaultAccentColor) {
+  try {
+    DEFAULT_ACCENT_COLOR = resolvedDefaultAccentColor;
+  } catch (assignDefaultAccentError) {
+    if (SESSION_GLOBAL_SCOPE && _typeof(SESSION_GLOBAL_SCOPE) === 'object') {
+      SESSION_GLOBAL_SCOPE.DEFAULT_ACCENT_COLOR = resolvedDefaultAccentColor;
+    }
+    void assignDefaultAccentError;
+  }
 }
-if (
-  typeof DEFAULT_ACCENT_NORMALIZED === 'undefined'
-  || typeof DEFAULT_ACCENT_NORMALIZED !== 'string'
-  || !DEFAULT_ACCENT_NORMALIZED
-) {
-  DEFAULT_ACCENT_NORMALIZED = resolvedDefaultAccentNormalized;
+var hasDefaultAccentNormalized = typeof DEFAULT_ACCENT_NORMALIZED === 'string' && DEFAULT_ACCENT_NORMALIZED;
+if (!hasDefaultAccentNormalized) {
+  try {
+    DEFAULT_ACCENT_NORMALIZED = resolvedDefaultAccentNormalized;
+  } catch (assignNormalizedAccentError) {
+    if (SESSION_GLOBAL_SCOPE && _typeof(SESSION_GLOBAL_SCOPE) === 'object') {
+      SESSION_GLOBAL_SCOPE.DEFAULT_ACCENT_NORMALIZED = resolvedDefaultAccentNormalized;
+    }
+    void assignNormalizedAccentError;
+  }
 }
-if (
-  typeof HIGH_CONTRAST_ACCENT_COLOR === 'undefined'
-  || typeof HIGH_CONTRAST_ACCENT_COLOR !== 'string'
-  || !HIGH_CONTRAST_ACCENT_COLOR.trim()
-) {
-  HIGH_CONTRAST_ACCENT_COLOR = resolvedHighContrastAccentColor;
+var hasHighContrastAccent = typeof HIGH_CONTRAST_ACCENT_COLOR === 'string' && HIGH_CONTRAST_ACCENT_COLOR.trim();
+if (!hasHighContrastAccent) {
+  try {
+    HIGH_CONTRAST_ACCENT_COLOR = resolvedHighContrastAccentColor;
+  } catch (assignHighContrastAccentError) {
+    if (SESSION_GLOBAL_SCOPE && _typeof(SESSION_GLOBAL_SCOPE) === 'object') {
+      SESSION_GLOBAL_SCOPE.HIGH_CONTRAST_ACCENT_COLOR = resolvedHighContrastAccentColor;
+    }
+    void assignHighContrastAccentError;
+  }
 }
-if (
-  typeof accentColor === 'undefined'
-  || typeof accentColor !== 'string'
-  || !accentColor.trim()
-) {
-  accentColor = resolvedAccentColor;
+var hasAccentColor = typeof accentColor === 'string' && accentColor.trim();
+if (!hasAccentColor) {
+  try {
+    accentColor = resolvedAccentColor;
+  } catch (assignAccentColorError) {
+    if (SESSION_GLOBAL_SCOPE && _typeof(SESSION_GLOBAL_SCOPE) === 'object') {
+      SESSION_GLOBAL_SCOPE.accentColor = resolvedAccentColor;
+    }
+    void assignAccentColorError;
+  }
 }
-if (
-  typeof prevAccentColor === 'undefined'
-  || typeof prevAccentColor !== 'string'
-  || !prevAccentColor.trim()
-) {
-  prevAccentColor = resolvedAccentColor;
+var hasPrevAccentColor = typeof prevAccentColor === 'string' && prevAccentColor.trim();
+if (!hasPrevAccentColor) {
+  try {
+    prevAccentColor = resolvedAccentColor;
+  } catch (assignPrevAccentError) {
+    if (SESSION_GLOBAL_SCOPE && _typeof(SESSION_GLOBAL_SCOPE) === 'object') {
+      SESSION_GLOBAL_SCOPE.prevAccentColor = resolvedAccentColor;
+    }
+    void assignPrevAccentError;
+  }
 }
-if (typeof restoringSession === 'undefined') {
-  restoringSession = false;
+if (typeof restoringSession !== 'boolean') {
+  try {
+    restoringSession = false;
+  } catch (assignRestoringSessionError) {
+    if (SESSION_GLOBAL_SCOPE && _typeof(SESSION_GLOBAL_SCOPE) === 'object') {
+      SESSION_GLOBAL_SCOPE.restoringSession = false;
+    }
+    void assignRestoringSessionError;
+  }
 }
 if (typeof filterSelectElem === 'undefined') {
-  filterSelectElem = null;
+  try {
+    filterSelectElem = null;
+  } catch (assignFilterSelectError) {
+    if (SESSION_GLOBAL_SCOPE && _typeof(SESSION_GLOBAL_SCOPE) === 'object') {
+      SESSION_GLOBAL_SCOPE.filterSelectElem = null;
+    }
+    void assignFilterSelectError;
+  }
 }
-
 function callSessionCoreFunction(functionName) {
   var args = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
   var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
@@ -356,7 +374,24 @@ function callSessionCoreFunction(functionName) {
   }
   return options && Object.prototype.hasOwnProperty.call(options, 'defaultValue') ? options.defaultValue : undefined;
 }
-
+function ensureSessionRuntimeFunction(functionName) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  return ensureSessionRuntimePlaceholder(functionName, function () {
+    return function () {
+      for (var _len = arguments.length, invocationArgs = new Array(_len), _key = 0; _key < _len; _key++) {
+        invocationArgs[_key] = arguments[_key];
+      }
+      return callSessionCoreFunction(functionName, invocationArgs, options);
+    };
+  });
+}
+var AUTO_GEAR_RUNTIME_HANDLERS = ['handleAutoGearImportSelection', 'handleAutoGearPresetSelection', 'handleAutoGearSavePreset', 'handleAutoGearDeletePreset', 'handleAutoGearShowBackupsToggle', 'handleAutoGearConditionShortcut'];
+for (var index = 0; index < AUTO_GEAR_RUNTIME_HANDLERS.length; index += 1) {
+  var handlerName = AUTO_GEAR_RUNTIME_HANDLERS[index];
+  ensureSessionRuntimeFunction(handlerName, {
+    defer: true
+  });
+}
 function getSessionCoreValue(functionName) {
   var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
   var defaultValue = Object.prototype.hasOwnProperty.call(options, 'defaultValue') ? options.defaultValue : '';
@@ -872,8 +907,8 @@ function hasAnyRestoreRehearsalKeys(source, keys) {
   if (!isPlainObject(source)) {
     return false;
   }
-  for (var index = 0; index < keys.length; index += 1) {
-    var key = keys[index];
+  for (var _index = 0; _index < keys.length; _index += 1) {
+    var key = keys[_index];
     if (Object.prototype.hasOwnProperty.call(source, key)) {
       return true;
     }
@@ -2070,17 +2105,16 @@ function setSelectValue(select, value) {
   if (typeof updateFavoriteButton === 'function') {
     updateFavoriteButton(select);
   } else if (typeof enqueueCoreBootTask === 'function') {
-    enqueueCoreBootTask(() => {
+    enqueueCoreBootTask(function () {
       if (typeof updateFavoriteButton === 'function') {
         updateFavoriteButton(select);
       }
     });
   }
-
   if (typeof adjustGearListSelectWidth === 'function') {
     adjustGearListSelectWidth(select);
   } else if (typeof enqueueCoreBootTask === 'function') {
-    enqueueCoreBootTask(() => {
+    enqueueCoreBootTask(function () {
       if (typeof adjustGearListSelectWidth === 'function') {
         adjustGearListSelectWidth(select);
       }
@@ -2521,8 +2555,8 @@ function buildSearchWithoutShared(search) {
   }
   var preserved = [];
   var pairs = query.split('&');
-  for (var index = 0; index < pairs.length; index += 1) {
-    var pair = pairs[index];
+  for (var _index2 = 0; _index2 < pairs.length; _index2 += 1) {
+    var pair = pairs[_index2];
     if (!pair) {
       continue;
     }
@@ -2637,7 +2671,7 @@ function forEachTrackedSelect(collection, handler) {
   list.forEach(handler);
 }
 forEachTrackedSelect(getTrackedPowerSelects(), function (sel) {
-  sel.addEventListener("change", updateCalculations);
+  sel.addEventListener('change', updateCalculations);
 });
 if (cameraSelect) {
   cameraSelect.addEventListener('change', function () {
@@ -2663,19 +2697,19 @@ if (batteryPlateSelect) batteryPlateSelect.addEventListener('change', updateBatt
 if (batterySelect) batterySelect.addEventListener('change', updateBatteryOptions);
 if (hotswapSelect) hotswapSelect.addEventListener('change', updateCalculations);
 forEachTrackedSelect(motorSelects, function (sel) {
-  if (sel) sel.addEventListener("change", updateCalculations);
+  if (sel) sel.addEventListener('change', updateCalculations);
 });
 forEachTrackedSelect(controllerSelects, function (sel) {
-  if (sel) sel.addEventListener("change", updateCalculations);
+  if (sel) sel.addEventListener('change', updateCalculations);
 });
 forEachTrackedSelect(getTrackedPowerSelectsWithSetup(), function (sel) {
-  sel.addEventListener("change", saveCurrentSession);
+  sel.addEventListener('change', saveCurrentSession);
 });
 forEachTrackedSelect(motorSelects, function (sel) {
-  if (sel) sel.addEventListener("change", saveCurrentSession);
+  if (sel) sel.addEventListener('change', saveCurrentSession);
 });
 forEachTrackedSelect(controllerSelects, function (sel) {
-  if (sel) sel.addEventListener("change", saveCurrentSession);
+  if (sel) sel.addEventListener('change', saveCurrentSession);
 });
 if (setupNameInput) {
   var handleSetupNameInput = function handleSetupNameInput() {
@@ -2689,34 +2723,34 @@ if (setupNameInput) {
   setupNameInput.addEventListener("input", handleSetupNameInput);
 }
 forEachTrackedSelect(getTrackedPowerSelects(), function (sel) {
-  sel.addEventListener("change", saveCurrentGearList);
+  sel.addEventListener('change', saveCurrentGearList);
 });
 forEachTrackedSelect(motorSelects, function (sel) {
-  if (sel) sel.addEventListener("change", saveCurrentGearList);
+  if (sel) sel.addEventListener('change', saveCurrentGearList);
 });
 forEachTrackedSelect(controllerSelects, function (sel) {
-  if (sel) sel.addEventListener("change", saveCurrentGearList);
+  if (sel) sel.addEventListener('change', saveCurrentGearList);
 });
 forEachTrackedSelect(getTrackedPowerSelects(), function (sel) {
-  sel.addEventListener("change", checkSetupChanged);
+  sel.addEventListener('change', checkSetupChanged);
 });
 forEachTrackedSelect(motorSelects, function (sel) {
-  if (sel) sel.addEventListener("change", checkSetupChanged);
+  if (sel) sel.addEventListener('change', checkSetupChanged);
 });
 forEachTrackedSelect(controllerSelects, function (sel) {
-  if (sel) sel.addEventListener("change", checkSetupChanged);
+  if (sel) sel.addEventListener('change', checkSetupChanged);
 });
-if (setupNameInput) setupNameInput.addEventListener("input", checkSetupChanged);
+if (setupNameInput) setupNameInput.addEventListener('input', checkSetupChanged);
 forEachTrackedSelect(getTrackedPowerSelects(), function (sel) {
-  sel.addEventListener("change", autoSaveCurrentSetup);
+  sel.addEventListener('change', autoSaveCurrentSetup);
 });
 forEachTrackedSelect(motorSelects, function (sel) {
-  if (sel) sel.addEventListener("change", autoSaveCurrentSetup);
+  if (sel) sel.addEventListener('change', autoSaveCurrentSetup);
 });
 forEachTrackedSelect(controllerSelects, function (sel) {
-  if (sel) sel.addEventListener("change", autoSaveCurrentSetup);
+  if (sel) sel.addEventListener('change', autoSaveCurrentSetup);
 });
-if (setupNameInput) setupNameInput.addEventListener("change", autoSaveCurrentSetup);
+if (setupNameInput) setupNameInput.addEventListener('change', autoSaveCurrentSetup);
 var flushProjectAutoSaveOnExit = function flushProjectAutoSaveOnExit() {
   if (factoryResetInProgress) return;
   scheduleProjectAutoSave(true);
@@ -2778,7 +2812,7 @@ function setToggleIcon(button, glyph) {
 }
 function getIconGlyphSafe(name) {
   if (!name) return null;
-  if (_typeof(ICON_GLYPHS) !== 'object' || !ICON_GLYPHS) {
+  if ((typeof ICON_GLYPHS === "undefined" ? "undefined" : _typeof(ICON_GLYPHS)) !== 'object' || !ICON_GLYPHS) {
     return null;
   }
   return ICON_GLYPHS[name] || null;
@@ -2993,6 +3027,9 @@ function startPinkModeIconRotation() {
       animate: true
     });
   }, PINK_MODE_ICON_INTERVAL_MS);
+  if (pinkModeIconRotationTimer && typeof pinkModeIconRotationTimer.unref === 'function') {
+    pinkModeIconRotationTimer.unref();
+  }
 }
 function applyPinkMode(enabled) {
   if (enabled) {
@@ -3037,7 +3074,7 @@ var pinkModeEnabled = false;
 var settingsInitialPinkMode = isPinkModeActive();
 var settingsInitialTemperatureUnit = typeof temperatureUnit === 'string' ? temperatureUnit : 'celsius';
 var settingsInitialShowAutoBackups = Boolean(showAutoBackups);
-var settingsInitialMountVoltages = getMountVoltagePreferencesClone();
+var settingsInitialMountVoltages = getSessionMountVoltagePreferencesClone();
 function persistPinkModePreference(enabled) {
   pinkModeEnabled = !!enabled;
   applyPinkMode(pinkModeEnabled);
@@ -3180,8 +3217,8 @@ mountVoltageInputNodes.forEach(function (input) {
 });
 var mountVoltageResetButtonRef = function () {
   var candidateScopes = [typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && (typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' ? CORE_GLOBAL_SCOPE : null, typeof globalThis !== 'undefined' && (typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object' ? globalThis : null, typeof window !== 'undefined' && (typeof window === "undefined" ? "undefined" : _typeof(window)) === 'object' ? window : null, typeof self !== 'undefined' && (typeof self === "undefined" ? "undefined" : _typeof(self)) === 'object' ? self : null, typeof global !== 'undefined' && (typeof global === "undefined" ? "undefined" : _typeof(global)) === 'object' ? global : null].filter(Boolean);
-  for (var index = 0; index < candidateScopes.length; index += 1) {
-    var scope = candidateScopes[index];
+  for (var _index3 = 0; _index3 < candidateScopes.length; _index3 += 1) {
+    var scope = candidateScopes[_index3];
     var button = scope && scope.mountVoltageResetButton;
     if (button) {
       return button;
@@ -3191,11 +3228,29 @@ var mountVoltageResetButtonRef = function () {
 }();
 if (mountVoltageResetButtonRef) {
   mountVoltageResetButtonRef.addEventListener('click', function () {
-    resetMountVoltagePreferences({
-      persist: false,
-      triggerUpdate: true
-    });
-    updateMountVoltageInputsFromState();
+    var resetMountVoltagePreferencesFn = getSessionRuntimeFunction('resetMountVoltagePreferences');
+    if (resetMountVoltagePreferencesFn) {
+      try {
+        resetMountVoltagePreferencesFn({
+          persist: false,
+          triggerUpdate: true
+        });
+      } catch (resetError) {
+        warnMissingMountVoltageHelper('resetMountVoltagePreferences', resetError);
+      }
+    } else {
+      warnMissingMountVoltageHelper('resetMountVoltagePreferences');
+    }
+    var updateMountVoltageInputsFromStateFn = getSessionRuntimeFunction('updateMountVoltageInputsFromState');
+    if (updateMountVoltageInputsFromStateFn) {
+      try {
+        updateMountVoltageInputsFromStateFn();
+      } catch (updateError) {
+        warnMissingMountVoltageHelper('updateMountVoltageInputsFromState', updateError);
+      }
+    } else {
+      warnMissingMountVoltageHelper('updateMountVoltageInputsFromState');
+    }
   });
 }
 if (settingsButton && settingsDialog) {
@@ -3205,7 +3260,16 @@ if (settingsButton && settingsDialog) {
     rememberSettingsTemperatureUnitBaseline();
     rememberSettingsShowAutoBackupsBaseline();
     rememberSettingsMountVoltagesBaseline();
-    updateMountVoltageInputsFromState();
+    var updateMountVoltageInputsFromStateFn = getSessionRuntimeFunction('updateMountVoltageInputsFromState');
+    if (updateMountVoltageInputsFromStateFn) {
+      try {
+        updateMountVoltageInputsFromStateFn();
+      } catch (updateError) {
+        warnMissingMountVoltageHelper('updateMountVoltageInputsFromState', updateError);
+      }
+    } else {
+      warnMissingMountVoltageHelper('updateMountVoltageInputsFromState');
+    }
     if (settingsLanguage) settingsLanguage.value = currentLang;
     if (settingsDarkMode) settingsDarkMode.checked = document.body.classList.contains('dark-mode');
     if (settingsPinkMode) settingsPinkMode.checked = document.body.classList.contains('pink-mode');
@@ -3230,7 +3294,7 @@ if (settingsButton && settingsDialog) {
     if (settingsFontSize) settingsFontSize.value = fontSize;
     if (settingsFontFamily) settingsFontFamily.value = fontFamily;
     if (settingsLogo) settingsLogo.value = '';
-    if (settingsLogoPreview) loadStoredLogoPreview();
+    if (settingsLogoPreview) safeLoadStoredLogoPreview();
     updateStorageSummary();
     if (autoGearEditor) {
       closeAutoGearEditor();
@@ -3284,7 +3348,7 @@ if (settingsButton && settingsDialog) {
       rememberSettingsMountVoltagesBaseline();
       invokeSessionRevertAccentColor();
       if (settingsLogo) settingsLogo.value = '';
-      if (settingsLogoPreview) loadStoredLogoPreview();
+      if (settingsLogoPreview) safeLoadStoredLogoPreview();
       closeAutoGearEditor();
       collapseBackupDiffSection();
       closeDialog(settingsDialog);
@@ -3362,7 +3426,7 @@ if (settingsButton && settingsDialog) {
         applyTemperatureUnitPreference(settingsTemperatureUnit.value);
         rememberSettingsTemperatureUnitBaseline();
       }
-      applyMountVoltagePreferences(collectMountVoltageFormValues(), {
+      applySessionMountVoltagePreferences(collectMountVoltageFormValues(), {
         persist: true,
         triggerUpdate: true
       });
@@ -3403,7 +3467,7 @@ if (settingsButton && settingsDialog) {
         } else {
           showNotification('error', texts[currentLang].logoFormatError || 'Unsupported logo format');
           if (settingsLogo) settingsLogo.value = '';
-          loadStoredLogoPreview();
+          safeLoadStoredLogoPreview();
         }
       }
       closeAutoGearEditor();
@@ -3428,7 +3492,7 @@ if (settingsButton && settingsDialog) {
       rememberSettingsMountVoltagesBaseline();
       invokeSessionRevertAccentColor();
       if (settingsLogo) settingsLogo.value = '';
-      if (settingsLogoPreview) loadStoredLogoPreview();
+      if (settingsLogoPreview) safeLoadStoredLogoPreview();
       closeAutoGearEditor();
       collapseBackupDiffSection();
       closeDialog(settingsDialog);
@@ -3447,7 +3511,7 @@ if (settingsButton && settingsDialog) {
     rememberSettingsMountVoltagesBaseline();
     invokeSessionRevertAccentColor();
     if (settingsLogo) settingsLogo.value = '';
-    if (settingsLogoPreview) loadStoredLogoPreview();
+    if (settingsLogoPreview) safeLoadStoredLogoPreview();
     closeAutoGearEditor();
     collapseBackupDiffSection();
     closeDialog(settingsDialog);
@@ -3468,9 +3532,8 @@ if (settingsButton && settingsDialog) {
       addAutoGearConditionFromPicker();
     });
   }
-  var autoGearScenarioModeSelectHandle = function resolveAutoGearScenarioModeSelectHandle() {
+  var autoGearScenarioModeSelectHandle = function () {
     var resolvedHandle = null;
-
     try {
       if (typeof autoGearScenarioModeSelect !== 'undefined') {
         resolvedHandle = autoGearScenarioModeSelect;
@@ -3478,15 +3541,12 @@ if (settingsButton && settingsDialog) {
     } catch (resolveAutoGearScenarioModeSelectError) {
       void resolveAutoGearScenarioModeSelectError;
     }
-
     if (!resolvedHandle) {
       var scope = typeof globalThis !== 'undefined' && globalThis || typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || typeof global !== 'undefined' && global || null;
-
       if (scope && _typeof(scope) === 'object' && 'autoGearScenarioModeSelect' in scope) {
         resolvedHandle = scope.autoGearScenarioModeSelect || null;
       }
     }
-
     if (!resolvedHandle && typeof document !== 'undefined' && document && typeof document.getElementById === 'function') {
       try {
         resolvedHandle = document.getElementById('autoGearScenarioMode') || null;
@@ -3494,17 +3554,14 @@ if (settingsButton && settingsDialog) {
         void resolveAutoGearScenarioModeSelectElementError;
       }
     }
-
     return resolvedHandle;
   }();
-
   if (autoGearScenarioModeSelectHandle && typeof autoGearScenarioModeSelectHandle.addEventListener === 'function') {
     autoGearScenarioModeSelectHandle.addEventListener('change', function () {
       if (autoGearEditorDraft) {
         var selectValue = typeof autoGearScenarioModeSelectHandle.value === 'string' ? autoGearScenarioModeSelectHandle.value : '';
         autoGearEditorDraft.scenarioLogic = normalizeAutoGearScenarioLogic(selectValue);
       }
-
       applyAutoGearScenarioSettings(getAutoGearScenarioSelectedValues());
     });
   }
@@ -3696,11 +3753,11 @@ if (settingsButton && settingsDialog) {
         var itemId = target.dataset.itemId;
         if (!autoGearEditorDraft || !itemId) return;
         var list = normalizedType === 'remove' ? autoGearEditorDraft.remove : autoGearEditorDraft.add;
-        var index = list.findIndex(function (item) {
+        var _index4 = list.findIndex(function (item) {
           return item.id === itemId;
         });
-        if (index >= 0) {
-          list.splice(index, 1);
+        if (_index4 >= 0) {
+          list.splice(_index4, 1);
           if (autoGearEditorActiveItem && autoGearEditorActiveItem.listType === normalizedType && autoGearEditorActiveItem.itemId === itemId) {
             clearAutoGearDraftItemEdit(normalizedType, {
               skipRender: true
@@ -4091,8 +4148,8 @@ function sanitizeBackupPayload(raw) {
       try {
         var result = '';
         var CHUNK_SIZE = 0x8000;
-        for (var index = 0; index < array.length; index += CHUNK_SIZE) {
-          var slice = array.subarray(index, index + CHUNK_SIZE);
+        for (var _index5 = 0; _index5 < array.length; _index5 += CHUNK_SIZE) {
+          var slice = array.subarray(_index5, _index5 + CHUNK_SIZE);
           result += String.fromCharCode.apply(null, slice);
         }
         return result;
@@ -5470,12 +5527,12 @@ function formatDiffListIndex(part) {
   }
   var indexMatch = part.match(/^\[(\d+)\]$/);
   if (indexMatch) {
-    var index = Number(indexMatch[1]);
-    if (!Number.isFinite(index) || index < 0) {
+    var _index6 = Number(indexMatch[1]);
+    if (!Number.isFinite(_index6) || _index6 < 0) {
       return null;
     }
     var template = getDiffText('versionCompareListItemLabel', 'Item %s');
-    return template.replace('%s', formatNumberForComparison(index + 1));
+    return template.replace('%s', formatNumberForComparison(_index6 + 1));
   }
   var keyedSegment = parseKeyedDiffPathSegment(part);
   if (keyedSegment) {
@@ -5659,26 +5716,26 @@ function computeSetupDiff(baseline, comparison) {
         return;
       }
       var maxLength = Math.max(baseValue.length, compareValue.length);
-      for (var index = 0; index < maxLength; index += 1) {
-        var hasBase = index < baseValue.length;
-        var hasCompare = index < compareValue.length;
-        var nextPath = path.concat("[".concat(index, "]"));
+      for (var _index7 = 0; _index7 < maxLength; _index7 += 1) {
+        var hasBase = _index7 < baseValue.length;
+        var hasCompare = _index7 < compareValue.length;
+        var nextPath = path.concat("[".concat(_index7, "]"));
         if (!hasBase) {
           entries.push({
             type: 'added',
             path: nextPath,
             before: undefined,
-            after: compareValue[index]
+            after: compareValue[_index7]
           });
         } else if (!hasCompare) {
           entries.push({
             type: 'removed',
             path: nextPath,
-            before: baseValue[index],
+            before: baseValue[_index7],
             after: undefined
           });
         } else {
-          walk(baseValue[index], compareValue[index], nextPath);
+          walk(baseValue[_index7], compareValue[_index7], nextPath);
         }
       }
       return;
@@ -6193,11 +6250,20 @@ function applyPreferencesFromStorage(safeGetItem) {
       }
     }
     if (parsedVoltages) {
-      applyMountVoltagePreferences(parsedVoltages, {
+      applySessionMountVoltagePreferences(parsedVoltages, {
         persist: shouldPersistVoltages,
         triggerUpdate: true
       });
-      updateMountVoltageInputsFromState();
+      var updateMountVoltageInputsFromStateFn = getSessionRuntimeFunction('updateMountVoltageInputsFromState');
+      if (updateMountVoltageInputsFromStateFn) {
+        try {
+          updateMountVoltageInputsFromStateFn();
+        } catch (updateError) {
+          warnMissingMountVoltageHelper('updateMountVoltageInputsFromState', updateError);
+        }
+      } else {
+        warnMissingMountVoltageHelper('updateMountVoltageInputsFromState');
+      }
       rememberSettingsMountVoltagesBaseline();
     }
   } catch (voltageError) {
@@ -6725,7 +6791,7 @@ function handleRestoreSettingsInputChange() {
       console.warn('Failed to restore sessionStorage snapshot after restore failure', sessionError);
     }
     try {
-      loadStoredLogoPreview();
+      safeLoadStoredLogoPreview();
     } catch (logoError) {
       console.warn('Failed to refresh logo preview after restore failure', logoError);
     }
@@ -6831,7 +6897,7 @@ function handleRestoreSettingsInputChange() {
         });
       }
       try {
-        loadStoredLogoPreview();
+        safeLoadStoredLogoPreview();
       } catch (logoError) {
         console.warn('Failed to refresh logo preview after restore', logoError);
       }
@@ -7181,9 +7247,7 @@ function resetPlannerStateAfterFactoryReset() {
     console.warn('Failed to reset battery options during factory reset', error);
   }
   try {
-    if (typeof loadStoredLogoPreview === 'function') {
-      loadStoredLogoPreview();
-    }
+    safeLoadStoredLogoPreview();
   } catch (error) {
     console.warn('Failed to reset custom logo preview during factory reset', error);
   }
@@ -7307,11 +7371,21 @@ if (factoryResetButton) {
         console.warn('Failed to reset accent color during factory reset', accentError);
       }
       try {
-        resetMountVoltagePreferences({
-          persist: true,
-          triggerUpdate: true
-        });
-        updateMountVoltageInputsFromState();
+        var resetMountVoltagePreferencesFn = getSessionRuntimeFunction('resetMountVoltagePreferences');
+        if (resetMountVoltagePreferencesFn) {
+          resetMountVoltagePreferencesFn({
+            persist: true,
+            triggerUpdate: true
+          });
+        } else {
+          warnMissingMountVoltageHelper('resetMountVoltagePreferences');
+        }
+        var updateMountVoltageInputsFromStateFn = getSessionRuntimeFunction('updateMountVoltageInputsFromState');
+        if (updateMountVoltageInputsFromStateFn) {
+          updateMountVoltageInputsFromStateFn();
+        } else {
+          warnMissingMountVoltageHelper('updateMountVoltageInputsFromState');
+        }
         rememberSettingsMountVoltagesBaseline();
       } catch (voltageResetError) {
         console.warn('Failed to reset mount voltages during factory reset', voltageResetError);
@@ -7742,8 +7816,8 @@ function copyTextToClipboardBestEffort(text) {
     }
   }
 }
-if (downloadDiagramBtn) {
-  downloadDiagramBtn.addEventListener('click', function (e) {
+if (downloadDiagramButton) {
+  downloadDiagramButton.addEventListener('click', function (e) {
     var source = exportDiagramSvg();
     if (!source) return;
     copyTextToClipboardBestEffort(source);
@@ -7788,11 +7862,11 @@ if (downloadDiagramBtn) {
     }
   });
 }
-if (gridSnapToggleBtn) {
-  gridSnapToggleBtn.addEventListener('click', function () {
+if (gridSnapToggleButton) {
+  gridSnapToggleButton.addEventListener('click', function () {
     gridSnap = !gridSnap;
-    gridSnapToggleBtn.classList.toggle('active', gridSnap);
-    gridSnapToggleBtn.setAttribute('aria-pressed', gridSnap ? 'true' : 'false');
+    gridSnapToggleButton.classList.toggle('active', gridSnap);
+    gridSnapToggleButton.setAttribute('aria-pressed', gridSnap ? 'true' : 'false');
     if (setupDiagramContainer) {
       setupDiagramContainer.classList.toggle('grid-snap', gridSnap);
     }
@@ -8172,7 +8246,9 @@ if (helpButton && helpDialog) {
       normalized = normalized.normalize('NFD');
     }
     normalized = normalized.replace(/[\u0300-\u036f]/g, '').replace(/ß/g, 'ss').replace(/æ/g, 'ae').replace(/œ/g, 'oe').replace(/ø/g, 'o').replace(/&/g, 'and').replace(/\+/g, 'plus').replace(/[°º˚]/g, 'deg').replace(/\bdegrees?\b/g, 'deg').replace(/[×✕✖✗✘]/g, 'x');
-    normalized = normalizeSpellingVariants(normalized);
+    if (typeof normalizeSpellingVariants === 'function') {
+      normalized = normalizeSpellingVariants(normalized);
+    }
     normalized = normaliseMarkVariants(normalized);
     return normalized.replace(/[^a-z0-9]+/g, '');
   };
@@ -9754,16 +9830,12 @@ function initApp() {
   populateUserButtonDropdowns();
   document.querySelectorAll('#projectForm select').forEach(function (sel) {
     attachSelectSearch(sel);
-    initFavoritableSelect(sel);
+    callSessionCoreFunction('initFavoritableSelect', [sel], {
+      defer: true
+    });
   });
-  if (
-    typeof globalThis !== 'undefined' &&
-    globalThis &&
-    typeof globalThis.setupInstallBanner === 'function'
-  ) {
+  if (typeof globalThis !== 'undefined' && typeof globalThis.setupInstallBanner === 'function') {
     globalThis.setupInstallBanner();
-  } else if (typeof setupInstallBanner === 'function') {
-    setupInstallBanner();
   }
   setLanguage(currentLang);
   maybeShowIosPwaHelp();
@@ -9833,7 +9905,7 @@ function updateFeedbackTemperatureOptionsSafe() {
       option.textContent = '';
       return;
     }
-    option.textContent = "".concat(option.value, "°C");
+    option.textContent = "".concat(option.value, "\xB0C");
   });
 }
 function populateEnvironmentDropdowns() {
@@ -10782,6 +10854,11 @@ if (typeof module !== "undefined" && module.exports) {
         pendingSharedLinkListener = typeof listener === 'function' ? listener : null;
       }
     },
+    __mountVoltageInternals: {
+      getSessionMountVoltagePreferencesClone: getSessionMountVoltagePreferencesClone,
+      applySessionMountVoltagePreferences: applySessionMountVoltagePreferences,
+      cloneMountVoltageDefaultsForSession: cloneMountVoltageDefaultsForSession
+    },
     collectAutoGearCatalogNames: collectAutoGearCatalogNames,
     buildDefaultVideoDistributionAutoGearRules: buildDefaultVideoDistributionAutoGearRules,
     applyAutoGearRulesToTableHtml: applyAutoGearRulesToTableHtml,
@@ -10811,45 +10888,175 @@ if (typeof module !== "undefined" && module.exports) {
     }
   };
 }
+var missingMountVoltageWarnings = new Set();
+function warnMissingMountVoltageHelper(helperName, error) {
+  var key = typeof helperName === 'string' && helperName ? helperName : 'unknown';
+  if (missingMountVoltageWarnings.has(key)) {
+    return;
+  }
+  missingMountVoltageWarnings.add(key);
+  if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+    var message = "Mount voltage helper \"".concat(key, "\" is unavailable; using defaults to protect user data.");
+    if (error) {
+      console.warn(message, error);
+    } else {
+      console.warn(message);
+    }
+  }
+}
+function cloneMountVoltageDefaultsForSession() {
+  var runtimeCloneMountVoltageMap = getSessionRuntimeFunction('cloneMountVoltageMap');
+  if (runtimeCloneMountVoltageMap) {
+    try {
+      return runtimeCloneMountVoltageMap(DEFAULT_MOUNT_VOLTAGES);
+    } catch (cloneError) {
+      warnMissingMountVoltageHelper('cloneMountVoltageMap', cloneError);
+    }
+  } else {
+    warnMissingMountVoltageHelper('cloneMountVoltageMap');
+  }
+  if (DEFAULT_MOUNT_VOLTAGES && (typeof DEFAULT_MOUNT_VOLTAGES === "undefined" ? "undefined" : _typeof(DEFAULT_MOUNT_VOLTAGES)) === 'object') {
+    try {
+      return JSON.parse(JSON.stringify(DEFAULT_MOUNT_VOLTAGES));
+    } catch (serializationError) {
+      void serializationError;
+    }
+  }
+  var clone = {};
+  var parse = typeof parseVoltageValue === 'function' ? function (value, fallback) {
+    return parseVoltageValue(value, fallback);
+  } : function (value, fallback) {
+    var numeric = Number(value);
+    if (Number.isFinite(numeric)) {
+      return numeric;
+    }
+    var fallbackNumeric = Number(fallback);
+    return Number.isFinite(fallbackNumeric) ? fallbackNumeric : 0;
+  };
+  if (Array.isArray(SUPPORTED_MOUNT_VOLTAGE_TYPES)) {
+    SUPPORTED_MOUNT_VOLTAGE_TYPES.forEach(function (type) {
+      var _DEFAULT_MOUNT_VOLTAG;
+      var defaults = ((_DEFAULT_MOUNT_VOLTAG = DEFAULT_MOUNT_VOLTAGES) === null || _DEFAULT_MOUNT_VOLTAG === void 0 ? void 0 : _DEFAULT_MOUNT_VOLTAG[type]) || {};
+      clone[type] = {
+        high: parse(defaults.high, defaults.high),
+        low: parse(defaults.low, defaults.low)
+      };
+    });
+  }
+  return clone;
+}
+function getSessionMountVoltagePreferencesClone() {
+  var getMountVoltagePreferencesCloneFn = getSessionRuntimeFunction('getMountVoltagePreferencesClone');
+  if (getMountVoltagePreferencesCloneFn) {
+    try {
+      var clone = getMountVoltagePreferencesCloneFn();
+      if (clone && _typeof(clone) === 'object') {
+        return clone;
+      }
+    } catch (helperError) {
+      warnMissingMountVoltageHelper('getMountVoltagePreferencesClone', helperError);
+    }
+  } else {
+    warnMissingMountVoltageHelper('getMountVoltagePreferencesClone');
+  }
+  return cloneMountVoltageDefaultsForSession();
+}
+function applySessionMountVoltagePreferences(preferences) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  var applyMountVoltagePreferencesFn = getSessionRuntimeFunction('applyMountVoltagePreferences');
+  if (applyMountVoltagePreferencesFn) {
+    try {
+      applyMountVoltagePreferencesFn(preferences, options);
+      return;
+    } catch (helperError) {
+      warnMissingMountVoltageHelper('applyMountVoltagePreferences', helperError);
+    }
+  } else {
+    warnMissingMountVoltageHelper('applyMountVoltagePreferences');
+  }
+  if (options && options.triggerUpdate) {
+    var updateMountVoltageInputsFromStateFn = getSessionRuntimeFunction('updateMountVoltageInputsFromState');
+    if (updateMountVoltageInputsFromStateFn) {
+      try {
+        updateMountVoltageInputsFromStateFn();
+      } catch (updateError) {
+        void updateError;
+      }
+    }
+  }
+}
 function rememberSettingsMountVoltagesBaseline() {
-  settingsInitialMountVoltages = getMountVoltagePreferencesClone();
+  settingsInitialMountVoltages = getSessionMountVoltagePreferencesClone();
 }
 function revertSettingsMountVoltagesIfNeeded() {
-  var baseline = settingsInitialMountVoltages || getMountVoltagePreferencesClone();
-  var current = getMountVoltagePreferencesClone();
+  var baseline = settingsInitialMountVoltages || getSessionMountVoltagePreferencesClone();
+  var current = getSessionMountVoltagePreferencesClone();
   var changed = SUPPORTED_MOUNT_VOLTAGE_TYPES.some(function (type) {
     var baselineEntry = baseline[type] || DEFAULT_MOUNT_VOLTAGES[type];
     var currentEntry = current[type] || DEFAULT_MOUNT_VOLTAGES[type];
     return Number(baselineEntry.high) !== Number(currentEntry.high) || Number(baselineEntry.low) !== Number(currentEntry.low);
   });
   if (changed) {
-    applyMountVoltagePreferences(baseline, {
+    applySessionMountVoltagePreferences(baseline, {
       persist: true,
       triggerUpdate: true
     });
   } else {
-    updateMountVoltageInputsFromState();
+    var updateMountVoltageInputsFromStateFn = getSessionRuntimeFunction('updateMountVoltageInputsFromState');
+    if (updateMountVoltageInputsFromStateFn) {
+      try {
+        updateMountVoltageInputsFromStateFn();
+      } catch (updateError) {
+        warnMissingMountVoltageHelper('updateMountVoltageInputsFromState', updateError);
+      }
+    } else {
+      warnMissingMountVoltageHelper('updateMountVoltageInputsFromState');
+    }
   }
 }
 function collectMountVoltageFormValues() {
-  var updated = getMountVoltagePreferencesClone();
+  var updated = getSessionMountVoltagePreferencesClone();
+  var parse = typeof parseVoltageValue === 'function' ? function (value, fallback) {
+    return parseVoltageValue(value, fallback);
+  } : function (value, fallback) {
+    var numeric = Number(value);
+    if (Number.isFinite(numeric)) {
+      return numeric;
+    }
+    var fallbackNumeric = Number(fallback);
+    return Number.isFinite(fallbackNumeric) ? fallbackNumeric : 0;
+  };
+  var defaultClones = cloneMountVoltageDefaultsForSession();
   SUPPORTED_MOUNT_VOLTAGE_TYPES.forEach(function (type) {
-    var _mountVoltageInputs;
+    var _mountVoltageInputs, _DEFAULT_MOUNT_VOLTAG2;
     var fields = (_mountVoltageInputs = mountVoltageInputs) === null || _mountVoltageInputs === void 0 ? void 0 : _mountVoltageInputs[type];
     if (!fields) return;
-    var baselineEntry = updated[type] || DEFAULT_MOUNT_VOLTAGES[type];
+    var defaults = ((_DEFAULT_MOUNT_VOLTAG2 = DEFAULT_MOUNT_VOLTAGES) === null || _DEFAULT_MOUNT_VOLTAG2 === void 0 ? void 0 : _DEFAULT_MOUNT_VOLTAG2[type]) || {
+      high: 0,
+      low: 0
+    };
+    var target = updated[type];
+    if (!target || _typeof(target) !== 'object') {
+      target = defaultClones[type] ? _objectSpread({}, defaultClones[type]) : {
+        high: defaults.high,
+        low: defaults.low
+      };
+      updated[type] = target;
+    }
     if (fields.high) {
-      updated[type].high = parseVoltageValue(fields.high.value, baselineEntry.high);
+      var _target$high;
+      target.high = parse(fields.high.value, (_target$high = target.high) !== null && _target$high !== void 0 ? _target$high : defaults.high);
     }
     if (fields.low) {
-      updated[type].low = parseVoltageValue(fields.low.value, baselineEntry.low);
+      var _target$low;
+      target.low = parse(fields.low.value, (_target$low = target.low) !== null && _target$low !== void 0 ? _target$low : defaults.low);
     }
   });
   return updated;
 }
 function handleMountVoltageInputChange() {
   var values = collectMountVoltageFormValues();
-  applyMountVoltagePreferences(values, {
+  applySessionMountVoltagePreferences(values, {
     persist: false,
     triggerUpdate: true
   });

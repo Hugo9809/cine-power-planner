@@ -5,8 +5,46 @@ function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" 
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 (function () {
-  var GLOBAL_SCOPE = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : typeof global !== 'undefined' ? global : {};
-  function tryRequire(modulePath) {
+  function detectGlobalScope() {
+    if (typeof globalThis !== 'undefined') {
+      return globalThis;
+    }
+    if (typeof window !== 'undefined') {
+      return window;
+    }
+    if (typeof self !== 'undefined') {
+      return self;
+    }
+    if (typeof global !== 'undefined') {
+      return global;
+    }
+    return {};
+  }
+  var FALLBACK_SCOPE = detectGlobalScope();
+  function resolveModuleBase() {
+    if (typeof require === 'function') {
+      try {
+        return require('./base.js');
+      } catch (error) {
+        void error;
+      }
+    }
+    var candidates = [FALLBACK_SCOPE];
+    if (typeof globalThis !== 'undefined' && candidates.indexOf(globalThis) === -1) candidates.push(globalThis);
+    if (typeof window !== 'undefined' && candidates.indexOf(window) === -1) candidates.push(window);
+    if (typeof self !== 'undefined' && candidates.indexOf(self) === -1) candidates.push(self);
+    if (typeof global !== 'undefined' && candidates.indexOf(global) === -1) candidates.push(global);
+    for (var index = 0; index < candidates.length; index += 1) {
+      var scope = candidates[index];
+      if (scope && _typeof(scope.cineModuleBase) === 'object') {
+        return scope.cineModuleBase;
+      }
+    }
+    return null;
+  }
+  var MODULE_BASE = resolveModuleBase();
+  var GLOBAL_SCOPE = MODULE_BASE && typeof MODULE_BASE.getGlobalScope === 'function' ? MODULE_BASE.getGlobalScope() || FALLBACK_SCOPE : FALLBACK_SCOPE;
+  var tryRequire = MODULE_BASE && typeof MODULE_BASE.tryRequire === 'function' ? MODULE_BASE.tryRequire : function tryRequire(modulePath) {
     if (typeof require !== 'function') {
       return null;
     }
@@ -16,8 +54,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       void error;
       return null;
     }
-  }
-  function resolveModuleRegistry() {
+  };
+  var resolveModuleRegistry = MODULE_BASE && typeof MODULE_BASE.resolveModuleRegistry === 'function' ? function resolveModuleRegistry(scope) {
+    return MODULE_BASE.resolveModuleRegistry(scope || GLOBAL_SCOPE);
+  } : function resolveModuleRegistry() {
     var required = tryRequire('./registry.js');
     if (required && _typeof(required) === 'object') {
       return required;
@@ -34,9 +74,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     }
     return null;
-  }
-  var MODULE_REGISTRY = resolveModuleRegistry();
-  var PENDING_QUEUE_KEY = '__cinePendingModuleRegistrations__';
+  };
+  var MODULE_REGISTRY = function () {
+    var provided = MODULE_BASE && typeof MODULE_BASE.getModuleRegistry === 'function' ? MODULE_BASE.getModuleRegistry(GLOBAL_SCOPE) : null;
+    return provided || resolveModuleRegistry();
+  }();
+  var PENDING_QUEUE_KEY = MODULE_BASE && typeof MODULE_BASE.PENDING_QUEUE_KEY === 'string' ? MODULE_BASE.PENDING_QUEUE_KEY : '__cinePendingModuleRegistrations__';
   function queueModuleRegistration(name, api, options) {
     if (!GLOBAL_SCOPE || _typeof(GLOBAL_SCOPE) !== 'object') {
       return false;
@@ -77,7 +120,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return true;
   }
-  function registerOrQueueModule(name, api, options, onError) {
+  var registerOrQueueModule = MODULE_BASE && typeof MODULE_BASE.registerOrQueueModule === 'function' ? function registerOrQueueModule(name, api, options, onError) {
+    return MODULE_BASE.registerOrQueueModule(name, api, options, onError, GLOBAL_SCOPE, MODULE_REGISTRY);
+  } : function registerOrQueueModule(name, api, options, onError) {
     if (MODULE_REGISTRY && typeof MODULE_REGISTRY.register === 'function') {
       try {
         MODULE_REGISTRY.register(name, api, options);
@@ -92,41 +137,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     queueModuleRegistration(name, api, options);
     return false;
-  }
-  var controllerRegistry = new Map();
-  var interactionRegistry = new Map();
-  var orchestrationRegistry = new Map();
-  var helpRegistry = new Map();
-  var WARNED_NAMES = new Set();
-  function safeWarn(message, detail) {
-    if (typeof console === 'undefined' || typeof console.warn !== 'function') {
-      return;
-    }
-    try {
-      if (typeof detail === 'undefined') {
-        console.warn(message);
-      } else {
-        console.warn(message, detail);
-      }
-    } catch (error) {
-      void error;
-    }
-  }
-  function normalizeName(name) {
-    if (typeof name === 'string' && name.trim()) {
-      return name.trim();
-    }
-    throw new TypeError('cineUi registry names must be non-empty strings.');
-  }
-  function cloneFunction(fn) {
-    if (typeof fn !== 'function') {
-      return null;
-    }
-    return function uiWrapper() {
-      return fn.apply(this, arguments);
-    };
-  }
-  function freezeDeep(value) {
+  };
+  var freezeDeep = MODULE_BASE && typeof MODULE_BASE.freezeDeep === 'function' ? MODULE_BASE.freezeDeep : function freezeDeep(value) {
     var seen = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new WeakSet();
     if (!value || _typeof(value) !== 'object') {
       return value;
@@ -145,24 +157,119 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       freezeDeep(descriptor.value, seen);
     }
     return Object.freeze(value);
+  };
+  var safeWarn = MODULE_BASE && typeof MODULE_BASE.safeWarn === 'function' ? MODULE_BASE.safeWarn : function safeWarn(message, detail) {
+    if (typeof console === 'undefined' || typeof console.warn !== 'function') {
+      return;
+    }
+    try {
+      if (typeof detail === 'undefined') {
+        console.warn(message);
+      } else {
+        console.warn(message, detail);
+      }
+    } catch (error) {
+      void error;
+    }
+  };
+  var exposeGlobal = MODULE_BASE && typeof MODULE_BASE.exposeGlobal === 'function' ? function exposeGlobal(name, value, options) {
+    return MODULE_BASE.exposeGlobal(name, value, GLOBAL_SCOPE, options);
+  } : function exposeGlobal(name, value) {
+    if (!GLOBAL_SCOPE || _typeof(GLOBAL_SCOPE) !== 'object') {
+      return false;
+    }
+    try {
+      Object.defineProperty(GLOBAL_SCOPE, name, {
+        configurable: true,
+        enumerable: false,
+        value: value,
+        writable: false
+      });
+      return true;
+    } catch (error) {
+      void error;
+      try {
+        GLOBAL_SCOPE[name] = value;
+        return true;
+      } catch (assignmentError) {
+        void assignmentError;
+        return false;
+      }
+    }
+  };
+  var controllerRegistry = new Map();
+  var interactionRegistry = new Map();
+  var orchestrationRegistry = new Map();
+  var helpRegistry = new Map();
+  var WARNED_NAMES = new Set();
+  function normalizeName(name) {
+    if (typeof name === 'string' && name.trim()) {
+      return name.trim();
+    }
+    throw new TypeError('cineUi registry names must be non-empty strings.');
+  }
+  function cloneFunction(fn) {
+    if (typeof fn !== 'function') {
+      return null;
+    }
+    return function uiWrapper() {
+      return fn.apply(this, arguments);
+    };
   }
   function sanitizeDescriptor(name, descriptor) {
     if (!descriptor || _typeof(descriptor) !== 'object') {
       throw new TypeError("cineUi controller \"".concat(name, "\" requires a descriptor object."));
     }
-    var entries = {};
+    var actions = {};
+    var contextValues = {};
     var propNames = Object.getOwnPropertyNames(descriptor);
     for (var index = 0; index < propNames.length; index += 1) {
       var prop = propNames[index];
       var value = descriptor[prop];
       if (typeof value === 'function') {
-        entries[prop] = cloneFunction(value);
+        actions[prop] = cloneFunction(value);
+        continue;
       }
+      if (prop === 'context' && value && _typeof(value) === 'object') {
+        var _contextKeys = Object.getOwnPropertyNames(value);
+        for (var contextIndex = 0; contextIndex < _contextKeys.length; contextIndex += 1) {
+          var contextKey = _contextKeys[contextIndex];
+          contextValues[contextKey] = value[contextKey];
+        }
+        continue;
+      }
+      contextValues[prop] = value;
     }
-    if (!Object.keys(entries).length) {
+    var actionNames = Object.getOwnPropertyNames(actions);
+    if (!actionNames.length) {
       throw new Error("cineUi controller \"".concat(name, "\" did not provide any callable actions."));
     }
-    return freezeDeep(entries);
+    var contextObject = Object.create(null);
+    var contextKeys = Object.getOwnPropertyNames(contextValues);
+    for (var _contextIndex = 0; _contextIndex < contextKeys.length; _contextIndex += 1) {
+      var key = contextKeys[_contextIndex];
+      contextObject[key] = contextValues[key];
+    }
+    Object.freeze(contextObject);
+    var controller = {};
+    Object.defineProperty(controller, 'context', {
+      configurable: false,
+      enumerable: true,
+      get: function get() {
+        return contextObject;
+      }
+    });
+    var _loop = function _loop() {
+      var actionName = actionNames[_index];
+      var action = actions[actionName];
+      controller[actionName] = function controllerAction() {
+        return action.apply(controller, arguments);
+      };
+    };
+    for (var _index = 0; _index < actionNames.length; _index += 1) {
+      _loop();
+    }
+    return freezeDeep(controller);
   }
   function sanitizeInteraction(name, handler) {
     var fn = cloneFunction(handler);
@@ -361,17 +468,22 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     safeWarn('Unable to register cineUi module.', error);
   });
   if (GLOBAL_SCOPE && _typeof(GLOBAL_SCOPE) === 'object') {
+    var existingUi = null;
     try {
-      if (GLOBAL_SCOPE.cineUi !== uiAPI) {
-        Object.defineProperty(GLOBAL_SCOPE, 'cineUi', {
-          configurable: true,
-          enumerable: false,
-          value: uiAPI,
-          writable: false
-        });
-      }
+      existingUi = GLOBAL_SCOPE.cineUi || null;
     } catch (error) {
-      safeWarn('Unable to expose cineUi globally.', error);
+      void error;
+      existingUi = null;
+    }
+    if (existingUi !== uiAPI) {
+      var exposed = exposeGlobal('cineUi', uiAPI, {
+        configurable: true,
+        enumerable: false,
+        writable: false
+      });
+      if (!exposed) {
+        safeWarn('Unable to expose cineUi globally.');
+      }
     }
   }
   function flushRegistrationQueue() {

@@ -5,42 +5,46 @@ function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" 
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 (function () {
-  var GLOBAL_SCOPE = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : typeof global !== 'undefined' ? global : {};
-  var MODULE_NAMES = ['cinePersistence', 'cineOffline', 'cineUi'];
-  var REQUIRED_PERSISTENCE_FUNCTIONS = ['storage.loadDeviceData', 'storage.saveDeviceData', 'storage.loadSetups', 'storage.saveSetups', 'storage.saveSetup', 'storage.loadSetup', 'storage.deleteSetup', 'storage.renameSetup', 'storage.loadSessionState', 'storage.saveSessionState', 'storage.saveProject', 'storage.loadProject', 'storage.deleteProject', 'storage.exportAllData', 'storage.importAllData', 'storage.loadFavorites', 'storage.saveFavorites', 'storage.loadAutoGearRules', 'storage.saveAutoGearRules', 'storage.loadAutoGearBackups', 'storage.saveAutoGearBackups', 'storage.loadAutoGearBackupRetention', 'storage.saveAutoGearBackupRetention', 'storage.loadAutoGearPresets', 'storage.saveAutoGearPresets', 'storage.loadAutoGearActivePresetId', 'storage.saveAutoGearActivePresetId', 'storage.loadAutoGearAutoPresetId', 'storage.saveAutoGearAutoPresetId', 'storage.loadAutoGearMonitorDefaults', 'storage.saveAutoGearMonitorDefaults', 'storage.loadAutoGearBackupVisibility', 'storage.saveAutoGearBackupVisibility', 'storage.loadFullBackupHistory', 'storage.saveFullBackupHistory', 'storage.recordFullBackupHistoryEntry', 'autosave.saveSession', 'autosave.autoSaveSetup', 'autosave.saveGearList', 'autosave.restoreSessionState', 'backups.collectFullBackupData', 'backups.createSettingsBackup', 'backups.captureStorageSnapshot', 'backups.sanitizeBackupPayload', 'backups.autoBackup', 'backups.formatFullBackupFilename', 'backups.downloadPayload', 'backups.recordFullBackupHistoryEntry', 'restore.proceed', 'restore.abort', 'share.downloadProject', 'share.encodeSharedSetup', 'share.decodeSharedSetup', 'share.applySharedSetup', 'share.applySharedSetupFromUrl'];
-  var REQUIRED_OFFLINE_FUNCTIONS = ['registerServiceWorker', 'reloadApp'];
-  var REQUIRED_UI_CONTROLLERS = [{
-    name: 'deviceManagerSection',
-    actions: ['show', 'hide', 'toggle']
-  }, {
-    name: 'shareDialog',
-    actions: ['open', 'submit', 'cancel', 'dismiss']
-  }, {
-    name: 'sharedImportDialog',
-    actions: ['submit', 'cancel', 'dismiss', 'changeMode']
-  }, {
-    name: 'backupSettings',
-    actions: ['execute']
-  }, {
-    name: 'restoreSettings',
-    actions: ['openPicker', 'processFile']
-  }];
-  var REQUIRED_UI_INTERACTIONS = ['saveSetup', 'deleteSetup', 'shareOpen', 'shareSubmit', 'shareCancel', 'shareApplyFile', 'shareInputChange', 'sharedImportSubmit', 'sharedImportCancel', 'performBackup', 'openRestorePicker', 'applyRestoreFile'];
-  var REQUIRED_UI_HELP_ENTRIES = ['saveSetup', 'autoBackupBeforeDeletion', 'shareProject', 'sharedImport', 'backupSettings', 'restoreSettings'];
-  function safeWarn(message, detail) {
-    if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+  function detectGlobalScope() {
+    if (typeof globalThis !== 'undefined') {
+      return globalThis;
+    }
+    if (typeof window !== 'undefined') {
+      return window;
+    }
+    if (typeof self !== 'undefined') {
+      return self;
+    }
+    if (typeof global !== 'undefined') {
+      return global;
+    }
+    return {};
+  }
+  var FALLBACK_SCOPE = detectGlobalScope();
+  function resolveModuleBase() {
+    if (typeof require === 'function') {
       try {
-        if (typeof detail === 'undefined') {
-          console.warn(message);
-        } else {
-          console.warn(message, detail);
-        }
+        return require('./base.js');
       } catch (error) {
         void error;
       }
     }
+    var candidates = [FALLBACK_SCOPE];
+    if (typeof globalThis !== 'undefined' && candidates.indexOf(globalThis) === -1) candidates.push(globalThis);
+    if (typeof window !== 'undefined' && candidates.indexOf(window) === -1) candidates.push(window);
+    if (typeof self !== 'undefined' && candidates.indexOf(self) === -1) candidates.push(self);
+    if (typeof global !== 'undefined' && candidates.indexOf(global) === -1) candidates.push(global);
+    for (var index = 0; index < candidates.length; index += 1) {
+      var scope = candidates[index];
+      if (scope && _typeof(scope.cineModuleBase) === 'object') {
+        return scope.cineModuleBase;
+      }
+    }
+    return null;
   }
-  function tryRequire(modulePath) {
+  var MODULE_BASE = resolveModuleBase();
+  var GLOBAL_SCOPE = MODULE_BASE && typeof MODULE_BASE.getGlobalScope === 'function' ? MODULE_BASE.getGlobalScope() || FALLBACK_SCOPE : FALLBACK_SCOPE;
+  var tryRequire = MODULE_BASE && typeof MODULE_BASE.tryRequire === 'function' ? MODULE_BASE.tryRequire : function tryRequire(modulePath) {
     if (typeof require !== 'function') {
       return null;
     }
@@ -50,8 +54,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       void error;
       return null;
     }
-  }
-  function resolveModuleRegistry() {
+  };
+  var resolveModuleRegistry = MODULE_BASE && typeof MODULE_BASE.resolveModuleRegistry === 'function' ? function resolveModuleRegistry(scope) {
+    return MODULE_BASE.resolveModuleRegistry(scope || GLOBAL_SCOPE);
+  } : function resolveModuleRegistry() {
     var required = tryRequire('./registry.js');
     if (required && _typeof(required) === 'object') {
       return required;
@@ -68,9 +74,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     }
     return null;
-  }
-  var MODULE_REGISTRY = resolveModuleRegistry();
-  var PENDING_QUEUE_KEY = '__cinePendingModuleRegistrations__';
+  };
+  var MODULE_REGISTRY = function () {
+    var provided = MODULE_BASE && typeof MODULE_BASE.getModuleRegistry === 'function' ? MODULE_BASE.getModuleRegistry(GLOBAL_SCOPE) : null;
+    return provided || resolveModuleRegistry();
+  }();
+  var PENDING_QUEUE_KEY = MODULE_BASE && typeof MODULE_BASE.PENDING_QUEUE_KEY === 'string' ? MODULE_BASE.PENDING_QUEUE_KEY : '__cinePendingModuleRegistrations__';
   function queueModuleRegistration(name, api, options) {
     if (!GLOBAL_SCOPE || _typeof(GLOBAL_SCOPE) !== 'object') {
       return false;
@@ -111,7 +120,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return true;
   }
-  function registerOrQueueModule(name, api, options, onError) {
+  var registerOrQueueModule = MODULE_BASE && typeof MODULE_BASE.registerOrQueueModule === 'function' ? function registerOrQueueModule(name, api, options, onError) {
+    return MODULE_BASE.registerOrQueueModule(name, api, options, onError, GLOBAL_SCOPE, MODULE_REGISTRY);
+  } : function registerOrQueueModule(name, api, options, onError) {
     if (MODULE_REGISTRY && typeof MODULE_REGISTRY.register === 'function') {
       try {
         MODULE_REGISTRY.register(name, api, options);
@@ -126,8 +137,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     queueModuleRegistration(name, api, options);
     return false;
-  }
-  function freezeDeep(value) {
+  };
+  var freezeDeep = MODULE_BASE && typeof MODULE_BASE.freezeDeep === 'function' ? MODULE_BASE.freezeDeep : function freezeDeep(value) {
     var seen = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new WeakSet();
     if (!value || _typeof(value) !== 'object') {
       return value;
@@ -146,7 +157,67 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       freezeDeep(descriptor.value, seen);
     }
     return Object.freeze(value);
-  }
+  };
+  var safeWarn = MODULE_BASE && typeof MODULE_BASE.safeWarn === 'function' ? MODULE_BASE.safeWarn : function safeWarn(message, detail) {
+    if (typeof console === 'undefined' || typeof console.warn !== 'function') {
+      return;
+    }
+    try {
+      if (typeof detail === 'undefined') {
+        console.warn(message);
+      } else {
+        console.warn(message, detail);
+      }
+    } catch (error) {
+      void error;
+    }
+  };
+  var exposeGlobal = MODULE_BASE && typeof MODULE_BASE.exposeGlobal === 'function' ? function exposeGlobal(name, value, options) {
+    return MODULE_BASE.exposeGlobal(name, value, GLOBAL_SCOPE, options);
+  } : function exposeGlobal(name, value) {
+    if (!GLOBAL_SCOPE || _typeof(GLOBAL_SCOPE) !== 'object') {
+      return false;
+    }
+    try {
+      Object.defineProperty(GLOBAL_SCOPE, name, {
+        configurable: true,
+        enumerable: false,
+        value: value,
+        writable: false
+      });
+      return true;
+    } catch (error) {
+      void error;
+      try {
+        GLOBAL_SCOPE[name] = value;
+        return true;
+      } catch (assignmentError) {
+        void assignmentError;
+        return false;
+      }
+    }
+  };
+  var MODULE_NAMES = ['cinePersistence', 'cineOffline', 'cineUi'];
+  var REQUIRED_PERSISTENCE_FUNCTIONS = ['storage.loadDeviceData', 'storage.saveDeviceData', 'storage.loadSetups', 'storage.saveSetups', 'storage.saveSetup', 'storage.loadSetup', 'storage.deleteSetup', 'storage.renameSetup', 'storage.loadSessionState', 'storage.saveSessionState', 'storage.saveProject', 'storage.loadProject', 'storage.deleteProject', 'storage.exportAllData', 'storage.importAllData', 'storage.loadFavorites', 'storage.saveFavorites', 'storage.loadFeedback', 'storage.saveFeedback', 'storage.loadAutoGearRules', 'storage.saveAutoGearRules', 'storage.loadAutoGearBackups', 'storage.saveAutoGearBackups', 'storage.loadAutoGearSeedFlag', 'storage.saveAutoGearSeedFlag', 'storage.loadAutoGearBackupRetention', 'storage.saveAutoGearBackupRetention', 'storage.getAutoGearBackupRetentionDefault', 'storage.loadAutoGearPresets', 'storage.saveAutoGearPresets', 'storage.loadAutoGearActivePresetId', 'storage.saveAutoGearActivePresetId', 'storage.loadAutoGearAutoPresetId', 'storage.saveAutoGearAutoPresetId', 'storage.loadAutoGearMonitorDefaults', 'storage.saveAutoGearMonitorDefaults', 'storage.loadAutoGearBackupVisibility', 'storage.saveAutoGearBackupVisibility', 'storage.loadFullBackupHistory', 'storage.saveFullBackupHistory', 'storage.recordFullBackupHistoryEntry', 'storage.requestPersistentStorage', 'storage.clearUiCacheStorageEntries', 'storage.ensureCriticalStorageBackups', 'storage.getLastCriticalStorageGuardResult', 'autosave.saveSession', 'autosave.autoSaveSetup', 'autosave.saveGearList', 'autosave.restoreSessionState', 'backups.collectFullBackupData', 'backups.createSettingsBackup', 'backups.captureStorageSnapshot', 'backups.sanitizeBackupPayload', 'backups.autoBackup', 'backups.formatFullBackupFilename', 'backups.downloadPayload', 'backups.recordFullBackupHistoryEntry', 'restore.proceed', 'restore.abort', 'share.downloadProject', 'share.encodeSharedSetup', 'share.decodeSharedSetup', 'share.applySharedSetup', 'share.applySharedSetupFromUrl'];
+  var REQUIRED_OFFLINE_FUNCTIONS = ['registerServiceWorker', 'reloadApp'];
+  var REQUIRED_UI_CONTROLLERS = [{
+    name: 'deviceManagerSection',
+    actions: ['show', 'hide', 'toggle']
+  }, {
+    name: 'shareDialog',
+    actions: ['open', 'submit', 'cancel', 'dismiss']
+  }, {
+    name: 'sharedImportDialog',
+    actions: ['submit', 'cancel', 'dismiss', 'changeMode']
+  }, {
+    name: 'backupSettings',
+    actions: ['execute']
+  }, {
+    name: 'restoreSettings',
+    actions: ['openPicker', 'processFile']
+  }];
+  var REQUIRED_UI_INTERACTIONS = ['saveSetup', 'deleteSetup', 'shareOpen', 'shareSubmit', 'shareCancel', 'shareApplyFile', 'shareInputChange', 'sharedImportSubmit', 'sharedImportCancel', 'performBackup', 'openRestorePicker', 'applyRestoreFile'];
+  var REQUIRED_UI_HELP_ENTRIES = ['saveSetup', 'autoBackupBeforeDeletion', 'shareProject', 'sharedImport', 'backupSettings', 'restoreSettings'];
   function resolveModule(name) {
     if (!name || !MODULE_NAMES.includes(name)) {
       throw new TypeError("cineRuntime cannot resolve unknown module \"".concat(name, "\"."));
@@ -222,6 +293,45 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       missing.push(finalPath);
     }
     detailMap[finalPath] = ok;
+  }
+  function inspectPersistenceModule(persistenceModule, missing, detailMap) {
+    if (!persistenceModule || _typeof(persistenceModule) !== 'object') {
+      return;
+    }
+    for (var index = 0; index < REQUIRED_PERSISTENCE_FUNCTIONS.length; index += 1) {
+      inspectFunctionPath(persistenceModule, REQUIRED_PERSISTENCE_FUNCTIONS[index], missing, detailMap, 'cinePersistence');
+    }
+    var internal = persistenceModule.__internal;
+    var inspector = internal && typeof internal.inspectBinding === 'function' ? internal.inspectBinding.bind(internal) : null;
+    if (!inspector) {
+      var key = 'cinePersistence.__internal.inspectBinding';
+      missing.push(key);
+      detailMap[key] = false;
+      return;
+    }
+    for (var _index = 0; _index < REQUIRED_PERSISTENCE_FUNCTIONS.length; _index += 1) {
+      var path = REQUIRED_PERSISTENCE_FUNCTIONS[_index];
+      var segments = parsePath(path);
+      var bindingName = segments[segments.length - 1];
+      var bindingPath = "cinePersistence.bindings.".concat(bindingName);
+      var detail = null;
+      try {
+        detail = inspector(bindingName, {
+          refresh: true
+        });
+      } catch (error) {
+        void error;
+        detail = null;
+      }
+      var available = !!(detail && detail.available);
+      if (!available) {
+        missing.push(bindingPath);
+      }
+      detailMap[bindingPath] = available;
+      if (detail) {
+        detailMap["".concat(bindingPath, ".provider")] = detail.providerName || null;
+      }
+    }
   }
   function inspectOfflineFunctions(module, missing, detailMap) {
     for (var index = 0; index < REQUIRED_OFFLINE_FUNCTIONS.length; index += 1) {
@@ -383,9 +493,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       } else {
         detailMap['cinePersistence.frozen'] = true;
       }
-      for (var _index = 0; _index < REQUIRED_PERSISTENCE_FUNCTIONS.length; _index += 1) {
-        inspectFunctionPath(persistence, REQUIRED_PERSISTENCE_FUNCTIONS[_index], missing, detailMap, 'cinePersistence');
-      }
+      inspectPersistenceModule(persistence, missing, detailMap);
     }
     if (!offline) {
       missing.push('cineOffline');
@@ -466,17 +574,22 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     safeWarn('Unable to register cineRuntime module.', error);
   });
   if (GLOBAL_SCOPE && _typeof(GLOBAL_SCOPE) === 'object') {
+    var existingRuntime = null;
     try {
-      if (GLOBAL_SCOPE.cineRuntime !== runtimeAPI) {
-        Object.defineProperty(GLOBAL_SCOPE, 'cineRuntime', {
-          configurable: true,
-          enumerable: false,
-          value: runtimeAPI,
-          writable: false
-        });
-      }
+      existingRuntime = GLOBAL_SCOPE.cineRuntime || null;
     } catch (error) {
-      safeWarn('Unable to expose cineRuntime globally.', error);
+      void error;
+      existingRuntime = null;
+    }
+    if (existingRuntime !== runtimeAPI) {
+      var exposed = exposeGlobal('cineRuntime', runtimeAPI, {
+        configurable: true,
+        enumerable: false,
+        writable: false
+      });
+      if (!exposed) {
+        safeWarn('Unable to expose cineRuntime globally.');
+      }
     }
   }
   if (typeof module !== 'undefined' && module && module.exports) {
