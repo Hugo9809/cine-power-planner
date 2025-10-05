@@ -182,22 +182,62 @@
       throw new TypeError(`cineUi controller "${name}" requires a descriptor object.`);
     }
 
-    const entries = {};
+    const actions = {};
+    const contextValues = {};
     const propNames = Object.getOwnPropertyNames(descriptor);
 
     for (let index = 0; index < propNames.length; index += 1) {
       const prop = propNames[index];
       const value = descriptor[prop];
+
       if (typeof value === 'function') {
-        entries[prop] = cloneFunction(value);
+        actions[prop] = cloneFunction(value);
+        continue;
       }
+
+      if (prop === 'context' && value && typeof value === 'object') {
+        const contextKeys = Object.getOwnPropertyNames(value);
+        for (let contextIndex = 0; contextIndex < contextKeys.length; contextIndex += 1) {
+          const contextKey = contextKeys[contextIndex];
+          contextValues[contextKey] = value[contextKey];
+        }
+        continue;
+      }
+
+      contextValues[prop] = value;
     }
 
-    if (!Object.keys(entries).length) {
+    const actionNames = Object.getOwnPropertyNames(actions);
+    if (!actionNames.length) {
       throw new Error(`cineUi controller "${name}" did not provide any callable actions.`);
     }
 
-    return freezeDeep(entries);
+    const contextObject = Object.create(null);
+    const contextKeys = Object.getOwnPropertyNames(contextValues);
+    for (let contextIndex = 0; contextIndex < contextKeys.length; contextIndex += 1) {
+      const key = contextKeys[contextIndex];
+      contextObject[key] = contextValues[key];
+    }
+    Object.freeze(contextObject);
+
+    const controller = {};
+    Object.defineProperty(controller, 'context', {
+      configurable: false,
+      enumerable: true,
+      get() {
+        return contextObject;
+      },
+    });
+
+    for (let index = 0; index < actionNames.length; index += 1) {
+      const actionName = actionNames[index];
+      const action = actions[actionName];
+      controller[actionName] = function controllerAction() {
+        return action.apply(controller, arguments);
+      };
+    }
+
+    return freezeDeep(controller);
   }
 
   function sanitizeInteraction(name, handler) {

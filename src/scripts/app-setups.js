@@ -36,6 +36,91 @@ function assignSelectValue(select, value) {
     }
 }
 
+function getGlobalScope() {
+    return (
+        (typeof globalThis !== 'undefined' && globalThis)
+        || (typeof window !== 'undefined' && window)
+        || (typeof self !== 'undefined' && self)
+        || (typeof global !== 'undefined' && global)
+        || null
+    );
+}
+
+function resolveElementById(id, globalName) {
+    const doc = typeof document !== 'undefined' ? document : null;
+    if (doc && typeof doc.getElementById === 'function') {
+        const element = doc.getElementById(id);
+        if (element) {
+            return element;
+        }
+    }
+
+    const scope = getGlobalScope();
+    if (scope && globalName && typeof scope === 'object') {
+        try {
+            const candidate = scope[globalName];
+            if (candidate) {
+                return candidate;
+            }
+        } catch (error) {
+            void error;
+        }
+    }
+
+    return null;
+}
+
+function buildShareUiContext() {
+    return {
+        dialog: resolveElementById('shareDialog', 'shareDialog'),
+        form: resolveElementById('shareForm', 'shareForm'),
+        filenameInput: resolveElementById('shareFilename', 'shareFilenameInput'),
+        filenameMessage: resolveElementById('shareFilenameMessage', 'shareFilenameMessage'),
+        linkMessage: resolveElementById('shareLinkMessage', 'shareLinkMessage'),
+        includeAutoGearCheckbox: resolveElementById('shareIncludeAutoGear', 'shareIncludeAutoGearCheckbox'),
+        includeAutoGearLabel: resolveElementById('shareIncludeAutoGearLabel', 'shareIncludeAutoGearLabelElem'),
+        cancelButton: resolveElementById('shareCancelBtn', 'shareCancelBtn'),
+        sharedLinkInput: resolveElementById('sharedLinkInput', 'sharedLinkInput'),
+        applySharedLinkButton: resolveElementById('applySharedLinkBtn', 'applySharedLinkBtn'),
+    };
+}
+
+function buildSharedImportUiContext() {
+    return {
+        dialog: resolveElementById('sharedImportDialog', 'sharedImportDialog'),
+        form: resolveElementById('sharedImportForm', 'sharedImportForm'),
+        modeSelect: resolveElementById('sharedImportModeSelect', 'sharedImportModeSelect'),
+        cancelButton: resolveElementById('sharedImportCancelBtn', 'sharedImportCancelBtn'),
+    };
+}
+
+let cachedShareUiContext = null;
+let cachedSharedImportUiContext = null;
+
+function getShareUiContext(scope) {
+    if (scope && typeof scope === 'object' && scope.context && typeof scope.context === 'object') {
+        return scope.context;
+    }
+
+    if (!cachedShareUiContext) {
+        cachedShareUiContext = buildShareUiContext();
+    }
+
+    return cachedShareUiContext;
+}
+
+function getSharedImportUiContext(scope) {
+    if (scope && typeof scope === 'object' && scope.context && typeof scope.context === 'object') {
+        return scope.context;
+    }
+
+    if (!cachedSharedImportUiContext) {
+        cachedSharedImportUiContext = buildSharedImportUiContext();
+    }
+
+    return cachedSharedImportUiContext;
+}
+
 function callSetupsCoreFunction(functionName, args = [], options = {}) {
     if (typeof callCoreFunctionIfAvailable === 'function') {
         return callCoreFunctionIfAvailable(functionName, args, options);
@@ -442,6 +527,10 @@ if (projectForm) {
 
 function downloadSharedProject(shareFileName, includeAutoGear) {
   if (!shareFileName) return;
+  const shareContext = getShareUiContext(this);
+  const shareLinkMessage = shareContext.linkMessage;
+  const shareIncludeAutoGearCheckbox = shareContext.includeAutoGearCheckbox;
+  const shareIncludeAutoGearLabelElem = shareContext.includeAutoGearLabel;
   const setupName = getCurrentProjectName();
   const readPowerSelectValue = (select) => (
     select && typeof select.value === 'string'
@@ -595,6 +684,13 @@ function downloadSharedProject(shareFileName, includeAutoGear) {
 }
 
 function handleShareSetupClick() {
+  const shareContext = getShareUiContext(this);
+  const shareDialog = shareContext.dialog;
+  const shareForm = shareContext.form;
+  const shareFilenameInput = shareContext.filenameInput;
+  const shareFilenameMessage = shareContext.filenameMessage;
+  const shareIncludeAutoGearCheckbox = shareContext.includeAutoGearCheckbox;
+  const shareIncludeAutoGearLabelElem = shareContext.includeAutoGearLabel;
   saveCurrentGearList();
   const setupName = getCurrentProjectName();
   const defaultName = getDefaultShareFilename(setupName);
@@ -659,10 +755,17 @@ function handleShareSetupClick() {
   }
 }
 
-shareSetupBtn.addEventListener('click', handleShareSetupClick);
+const shareSetupButton = resolveElementById('shareSetupBtn', 'shareSetupBtn');
+if (shareSetupButton) {
+  shareSetupButton.addEventListener('click', handleShareSetupClick);
+}
 
 function handleShareFormSubmit(event) {
   event.preventDefault();
+  const shareContext = getShareUiContext(this);
+  const shareFilenameInput = shareContext.filenameInput;
+  const shareDialog = shareContext.dialog;
+  const shareIncludeAutoGearCheckbox = shareContext.includeAutoGearCheckbox;
   if (!shareFilenameInput) return;
   const sanitized = sanitizeShareFilename(shareFilenameInput.value);
   if (!sanitized) {
@@ -684,46 +787,53 @@ function handleShareFormSubmit(event) {
   downloadSharedProject(shareFileName, includeAutoGear);
 }
 
-if (shareForm) {
-  shareForm.addEventListener('submit', handleShareFormSubmit);
-}
-
 function handleShareCancelClick() {
+  const shareContext = getShareUiContext(this);
+  const shareFilenameInput = shareContext.filenameInput;
+  const shareDialog = shareContext.dialog;
   if (shareFilenameInput) {
     shareFilenameInput.setCustomValidity('');
   }
   closeDialog(shareDialog);
-}
-
-if (shareCancelBtn) {
-  shareCancelBtn.addEventListener('click', handleShareCancelClick);
 }
 
 function handleShareDialogCancel(event) {
   event.preventDefault();
+  const shareContext = getShareUiContext(this);
+  const shareFilenameInput = shareContext.filenameInput;
+  const shareDialog = shareContext.dialog;
   if (shareFilenameInput) {
     shareFilenameInput.setCustomValidity('');
   }
   closeDialog(shareDialog);
 }
 
-if (shareDialog) {
-  shareDialog.addEventListener('cancel', handleShareDialogCancel);
+const shareUiContext = getShareUiContext();
+if (shareUiContext.form) {
+  shareUiContext.form.addEventListener('submit', handleShareFormSubmit);
+}
+
+if (shareUiContext.cancelButton) {
+  shareUiContext.cancelButton.addEventListener('click', handleShareCancelClick);
+}
+
+if (shareUiContext.dialog) {
+  shareUiContext.dialog.addEventListener('cancel', handleShareDialogCancel);
 }
 
 function handleSharedLinkInputChange() {
-  if (pendingSharedLinkListener) return;
+  const shareContext = getShareUiContext(this);
+  const sharedLinkInput = shareContext.sharedLinkInput;
+  if (!sharedLinkInput || pendingSharedLinkListener) return;
   const file = sharedLinkInput.files && sharedLinkInput.files[0];
   if (file) {
     readSharedProjectFile(file);
   }
 }
 
-if (sharedLinkInput) {
-  sharedLinkInput.addEventListener('change', handleSharedLinkInputChange);
-}
-
 function handleApplySharedLinkClick() {
+  const shareContext = getShareUiContext(this);
+  const sharedLinkInput = shareContext.sharedLinkInput;
   if (!sharedLinkInput) {
     return;
   }
@@ -748,8 +858,12 @@ function handleApplySharedLinkClick() {
   }
 }
 
-if (applySharedLinkBtn && sharedLinkInput) {
-  applySharedLinkBtn.addEventListener('click', handleApplySharedLinkClick);
+if (shareUiContext.sharedLinkInput) {
+  shareUiContext.sharedLinkInput.addEventListener('change', handleSharedLinkInputChange);
+}
+
+if (shareUiContext.applySharedLinkButton && shareUiContext.sharedLinkInput) {
+  shareUiContext.applySharedLinkButton.addEventListener('click', handleApplySharedLinkClick);
 }
 
 function handleSharedImportModeChange() {
@@ -758,27 +872,15 @@ function handleSharedImportModeChange() {
   reapplySharedImportSelection();
 }
 
-if (sharedImportModeSelect) {
-  sharedImportModeSelect.addEventListener('change', handleSharedImportModeChange);
-}
-
 function handleSharedImportSubmit(event) {
   event.preventDefault();
   finalizeSharedImportPrompt();
   applyStoredSharedImport();
 }
 
-if (sharedImportForm) {
-  sharedImportForm.addEventListener('submit', handleSharedImportSubmit);
-}
-
 function handleSharedImportCancel() {
   finalizeSharedImportPrompt();
   clearStoredSharedImportData();
-}
-
-if (sharedImportCancelBtn) {
-  sharedImportCancelBtn.addEventListener('click', handleSharedImportCancel);
 }
 
 function handleSharedImportDialogCancel(event) {
@@ -787,8 +889,21 @@ function handleSharedImportDialogCancel(event) {
   clearStoredSharedImportData();
 }
 
-if (sharedImportDialog) {
-  sharedImportDialog.addEventListener('cancel', handleSharedImportDialogCancel);
+const sharedImportUiContext = getSharedImportUiContext();
+if (sharedImportUiContext.modeSelect) {
+  sharedImportUiContext.modeSelect.addEventListener('change', handleSharedImportModeChange);
+}
+
+if (sharedImportUiContext.form) {
+  sharedImportUiContext.form.addEventListener('submit', handleSharedImportSubmit);
+}
+
+if (sharedImportUiContext.cancelButton) {
+  sharedImportUiContext.cancelButton.addEventListener('click', handleSharedImportCancel);
+}
+
+if (sharedImportUiContext.dialog) {
+  sharedImportUiContext.dialog.addEventListener('cancel', handleSharedImportDialogCancel);
 }
 
 function getSafeLanguageTexts() {
@@ -832,6 +947,7 @@ function registerSetupsCineUiInternal(cineUi) {
       {
         name: 'shareDialog',
         value: {
+          context: shareUiContext,
           open: handleShareSetupClick,
           submit: handleShareFormSubmit,
           cancel: handleShareCancelClick,
@@ -841,6 +957,7 @@ function registerSetupsCineUiInternal(cineUi) {
       {
         name: 'sharedImportDialog',
         value: {
+          context: sharedImportUiContext,
           submit: handleSharedImportSubmit,
           cancel: handleSharedImportCancel,
           dismiss: handleSharedImportDialogCancel,

@@ -1,5 +1,125 @@
 const path = require('path');
 
+const STORAGE_FUNCTIONS = [
+  'loadDeviceData',
+  'saveDeviceData',
+  'loadSetups',
+  'saveSetups',
+  'saveSetup',
+  'loadSetup',
+  'deleteSetup',
+  'renameSetup',
+  'loadSessionState',
+  'saveSessionState',
+  'saveProject',
+  'loadProject',
+  'deleteProject',
+  'exportAllData',
+  'importAllData',
+  'clearAllData',
+  'loadFavorites',
+  'saveFavorites',
+  'loadFeedback',
+  'saveFeedback',
+  'loadAutoGearRules',
+  'saveAutoGearRules',
+  'loadAutoGearBackups',
+  'saveAutoGearBackups',
+  'loadAutoGearBackupRetention',
+  'saveAutoGearBackupRetention',
+  'loadAutoGearPresets',
+  'saveAutoGearPresets',
+  'loadAutoGearActivePresetId',
+  'saveAutoGearActivePresetId',
+  'loadAutoGearAutoPresetId',
+  'saveAutoGearAutoPresetId',
+  'loadAutoGearMonitorDefaults',
+  'saveAutoGearMonitorDefaults',
+  'loadAutoGearBackupVisibility',
+  'saveAutoGearBackupVisibility',
+  'loadFullBackupHistory',
+  'saveFullBackupHistory',
+  'recordFullBackupHistoryEntry',
+];
+
+const AUTOSAVE_FUNCTIONS = [
+  'saveCurrentSession',
+  'autoSaveCurrentSetup',
+  'saveCurrentGearList',
+  'restoreSessionState',
+];
+
+const BACKUP_FUNCTIONS = [
+  'collectFullBackupData',
+  'createSettingsBackup',
+  'captureStorageSnapshot',
+  'sanitizeBackupPayload',
+  'autoBackup',
+  'formatFullBackupFilename',
+  'downloadBackupPayload',
+  'recordFullBackupHistoryEntry',
+];
+
+const RESTORE_FUNCTIONS = [
+  'handleRestoreRehearsalProceed',
+  'handleRestoreRehearsalAbort',
+];
+
+const SHARE_FUNCTIONS = [
+  'downloadSharedProject',
+  'encodeSharedSetup',
+  'decodeSharedSetup',
+  'applySharedSetup',
+  'applySharedSetupFromUrl',
+];
+
+function mapAutosaveName(name) {
+  switch (name) {
+    case 'saveCurrentSession':
+      return 'saveSession';
+    case 'autoSaveCurrentSetup':
+      return 'autoSaveSetup';
+    case 'saveCurrentGearList':
+      return 'saveGearList';
+    case 'restoreSessionState':
+      return 'restoreSessionState';
+    default:
+      return name;
+  }
+}
+
+function mapBackupName(name) {
+  switch (name) {
+    case 'collectFullBackupData':
+      return 'collectFullBackupData';
+    case 'createSettingsBackup':
+      return 'createSettingsBackup';
+    case 'captureStorageSnapshot':
+      return 'captureStorageSnapshot';
+    case 'sanitizeBackupPayload':
+      return 'sanitizeBackupPayload';
+    case 'autoBackup':
+      return 'autoBackup';
+    case 'formatFullBackupFilename':
+      return 'formatFullBackupFilename';
+    case 'downloadBackupPayload':
+      return 'downloadPayload';
+    case 'recordFullBackupHistoryEntry':
+      return 'recordFullBackupHistoryEntry';
+    default:
+      return name;
+  }
+}
+
+function mapShareName(name) {
+  switch (name) {
+    case 'downloadSharedProject':
+      return 'downloadProject';
+    default:
+      return name;
+  }
+}
+
 describe('cineRuntime module', () => {
   let runtime;
   let persistenceStub;
@@ -7,77 +127,121 @@ describe('cineRuntime module', () => {
   let uiStub;
   let registry;
 
-  function buildPersistenceStub() {
+  function buildPersistenceStub(options = {}) {
+    const missingWrappers = new Set((options.missingWrappers || []).map(String));
+    const missingBindings = new Set((options.missingBindings || []).map(String));
+
+    const isWrapperMissing = (actual, alias) => (
+      missingWrappers.has(actual)
+      || (alias && missingWrappers.has(alias))
+    );
+
+    const isBindingMissing = (actual, alias) => (
+      missingBindings.has(actual)
+      || (alias && missingBindings.has(alias))
+    );
+
     const noop = () => {};
     const storage = {
-      loadDeviceData: noop,
-      saveDeviceData: noop,
-      loadSetups: noop,
-      saveSetups: noop,
-      saveSetup: noop,
-      loadSetup: noop,
-      deleteSetup: noop,
-      renameSetup: noop,
-      loadSessionState: noop,
-      saveSessionState: noop,
-      saveProject: noop,
-      loadProject: noop,
-      deleteProject: noop,
-      exportAllData: noop,
-      importAllData: noop,
-      loadFavorites: noop,
-      saveFavorites: noop,
-      loadAutoGearRules: noop,
-      saveAutoGearRules: noop,
-      loadAutoGearBackups: noop,
-      saveAutoGearBackups: noop,
-      loadAutoGearBackupRetention: noop,
-      saveAutoGearBackupRetention: noop,
-      loadAutoGearPresets: noop,
-      saveAutoGearPresets: noop,
-      loadAutoGearActivePresetId: noop,
-      saveAutoGearActivePresetId: noop,
-      loadAutoGearAutoPresetId: noop,
-      saveAutoGearAutoPresetId: noop,
-      loadAutoGearMonitorDefaults: noop,
-      saveAutoGearMonitorDefaults: noop,
-      loadAutoGearBackupVisibility: noop,
-      saveAutoGearBackupVisibility: noop,
-      loadFullBackupHistory: noop,
-      saveFullBackupHistory: noop,
-      recordFullBackupHistoryEntry: noop,
+      loadFeedback: noop,
+      saveFeedback: noop,
     };
 
     const autosave = {
-      saveSession: noop,
-      autoSaveSetup: noop,
-      saveGearList: noop,
-      restoreSessionState: noop,
     };
 
     const backups = {
-      collectFullBackupData: noop,
-      createSettingsBackup: noop,
-      captureStorageSnapshot: noop,
-      sanitizeBackupPayload: noop,
-      autoBackup: noop,
-      formatFullBackupFilename: noop,
-      downloadPayload: noop,
-      recordFullBackupHistoryEntry: noop,
     };
 
     const restore = {
-      proceed: noop,
-      abort: noop,
     };
 
     const share = {
-      downloadProject: noop,
-      encodeSharedSetup: noop,
-      decodeSharedSetup: noop,
-      applySharedSetup: noop,
-      applySharedSetupFromUrl: noop,
     };
+
+    const bindingNames = new Set();
+    const bindingAvailability = {};
+
+    STORAGE_FUNCTIONS.forEach((name) => {
+      const bindingKey = name;
+      bindingNames.add(bindingKey);
+      bindingAvailability[bindingKey] = !isBindingMissing(name, bindingKey);
+      if (!isWrapperMissing(name, bindingKey)) {
+        storage[name] = noop;
+      } else {
+        delete storage[name];
+      }
+    });
+
+    AUTOSAVE_FUNCTIONS.forEach((name) => {
+      const exportName = mapAutosaveName(name);
+      bindingNames.add(exportName);
+      bindingAvailability[exportName] = !isBindingMissing(name, exportName);
+      if (!isWrapperMissing(name, exportName)) {
+        autosave[exportName] = noop;
+      } else {
+        delete autosave[exportName];
+      }
+    });
+
+    BACKUP_FUNCTIONS.forEach((name) => {
+      const exportName = mapBackupName(name);
+      bindingNames.add(exportName);
+      bindingAvailability[exportName] = !isBindingMissing(name, exportName);
+      if (!isWrapperMissing(name, exportName)) {
+        backups[exportName] = noop;
+      } else {
+        delete backups[exportName];
+      }
+    });
+
+    RESTORE_FUNCTIONS.forEach((name) => {
+      const exportName = name === 'handleRestoreRehearsalProceed'
+        ? 'proceed'
+        : name === 'handleRestoreRehearsalAbort'
+          ? 'abort'
+          : name;
+      bindingNames.add(exportName);
+      bindingAvailability[exportName] = !isBindingMissing(name, exportName);
+    });
+
+    if (!isWrapperMissing('handleRestoreRehearsalProceed', 'proceed')) {
+      restore.proceed = noop;
+    }
+    if (!isWrapperMissing('handleRestoreRehearsalAbort', 'abort')) {
+      restore.abort = noop;
+    }
+
+    SHARE_FUNCTIONS.forEach((name) => {
+      const exportName = mapShareName(name);
+      bindingNames.add(exportName);
+      bindingAvailability[exportName] = !isBindingMissing(name, exportName);
+      if (!isWrapperMissing(name, exportName)) {
+        share[exportName] = noop;
+      } else {
+        delete share[exportName];
+      }
+    });
+
+    const internal = Object.freeze({
+      listBindings() {
+        return Array.from(bindingNames);
+      },
+      inspectBinding(name) {
+        const key = String(name);
+        const available = Object.prototype.hasOwnProperty.call(bindingAvailability, key)
+          ? !!bindingAvailability[key]
+          : false;
+        return { name: key, available };
+      },
+      inspectAllBindings() {
+        const snapshot = {};
+        bindingNames.forEach((key) => {
+          snapshot[key] = { name: key, available: !!bindingAvailability[key] };
+        });
+        return snapshot;
+      },
+    });
 
     return Object.freeze({
       storage: Object.freeze(storage),
@@ -85,6 +249,7 @@ describe('cineRuntime module', () => {
       backups: Object.freeze(backups),
       restore: Object.freeze(restore),
       share: Object.freeze(share),
+      __internal: internal,
     });
   }
 
@@ -257,20 +422,31 @@ describe('cineRuntime module', () => {
   });
 
   test('reports missing safeguards and can throw when requested', () => {
-    const mutated = { ...persistenceStub.storage };
-    delete mutated.saveProject;
-    global.cinePersistence = Object.freeze({
-      ...persistenceStub,
-      storage: Object.freeze(mutated),
+    const mutated = buildPersistenceStub({
+      missingWrappers: ['saveProject'],
+      missingBindings: ['saveProject'],
     });
-    registry.register('cinePersistence', global.cinePersistence, { replace: true, category: 'persistence', description: 'mutated' });
+    global.cinePersistence = mutated;
+    registry.register('cinePersistence', mutated, { replace: true, category: 'persistence', description: 'mutated' });
 
     const result = runtime.verifyCriticalFlows();
     expect(result.ok).toBe(false);
     expect(result.missing).toContain('cinePersistence.storage.saveProject');
+    expect(result.missing).toContain('cinePersistence.bindings.saveProject');
 
     expect(() => runtime.verifyCriticalFlows({ throwOnFailure: true })).toThrow(
       /cineRuntime integrity verification failed/
     );
+  });
+
+  test('detects missing persistence bindings even when wrappers are present', () => {
+    const mutated = buildPersistenceStub({ missingBindings: ['saveProject'] });
+    global.cinePersistence = mutated;
+    registry.register('cinePersistence', mutated, { replace: true, category: 'persistence', description: 'bindings-mutated' });
+
+    const result = runtime.verifyCriticalFlows();
+    expect(result.ok).toBe(false);
+    expect(result.missing).toContain('cinePersistence.bindings.saveProject');
+    expect(result.missing).not.toContain('cinePersistence.storage.saveProject');
   });
 });

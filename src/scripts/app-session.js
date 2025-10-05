@@ -40,7 +40,7 @@
 /* global FEEDBACK_TEMPERATURE_MIN: true, FEEDBACK_TEMPERATURE_MAX: true */
 /* global getDiagramManualPositions, setManualDiagramPositions,
           normalizeDiagramPositionsInput, ensureAutoBackupsFromProjects */
-/* global getMountVoltagePreferencesClone, cloneMountVoltageMap,
+/* global getMountVoltagePreferencesClone,
           mountVoltageResetButton, CORE_GLOBAL_SCOPE,
           resetMountVoltagePreferences, updateMountVoltageInputsFromState,
           applyMountVoltagePreferences, getMountVoltageStorageKeyName,
