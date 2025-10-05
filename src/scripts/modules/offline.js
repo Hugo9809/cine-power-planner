@@ -607,6 +607,14 @@
       }
     };
 
+    const finalizePendingRegistration = (promise) => {
+      const tracked = Promise.resolve(promise).finally(() => {
+        pendingServiceWorkerRegistration = null;
+      });
+      pendingServiceWorkerRegistration = tracked;
+      return tracked;
+    };
+
     if (!win || typeof win.addEventListener !== 'function') {
       return register();
     }
@@ -616,24 +624,27 @@
     }
 
     if (shouldRegisterImmediately(win) || options.immediate === true) {
-      pendingServiceWorkerRegistration = register();
-      return pendingServiceWorkerRegistration;
+      return finalizePendingRegistration(Promise.resolve().then(() => register()));
     }
 
-    pendingServiceWorkerRegistration = new Promise((resolve) => {
+    const waitForLoad = new Promise((resolve, reject) => {
       const handler = () => {
         try {
           win.removeEventListener('load', handler);
         } catch (error) {
           void error;
         }
-        resolve(register());
+        try {
+          resolve(register());
+        } catch (error) {
+          reject(error);
+        }
       };
 
       win.addEventListener('load', handler, { once: true });
     });
 
-    return pendingServiceWorkerRegistration;
+    return finalizePendingRegistration(waitForLoad);
   }
 
   function freezeDeep(value, seen = new WeakSet()) {

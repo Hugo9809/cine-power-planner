@@ -63,6 +63,37 @@ describe('cineOffline module', () => {
     expect(register).toHaveBeenCalledWith('sw.js', undefined);
   });
 
+  test('registerServiceWorker retries registration on a new invocation after a rejection', async () => {
+    const firstError = new Error('fail');
+    const register = jest
+      .fn()
+      .mockImplementationOnce(() => Promise.reject(firstError))
+      .mockImplementationOnce(() => Promise.resolve('ok'));
+
+    const navigatorMock = { serviceWorker: { register } };
+    const windowMock = {
+      document: { readyState: 'complete' },
+      addEventListener: jest.fn(),
+      removeEventListener: jest.fn(),
+    };
+
+    await expect(
+      offline.registerServiceWorker('sw.js', {
+        window: windowMock,
+        navigator: navigatorMock,
+      })
+    ).rejects.toBe(firstError);
+
+    await expect(
+      offline.registerServiceWorker('sw.js', {
+        window: windowMock,
+        navigator: navigatorMock,
+      })
+    ).resolves.toBe('ok');
+
+    expect(register).toHaveBeenCalledTimes(2);
+  });
+
   test('reloadApp clears UI caches, unregisters service workers, clears caches and triggers reload', async () => {
     const clearUiCacheStorageEntries = jest.fn();
     global.clearUiCacheStorageEntries = clearUiCacheStorageEntries;
