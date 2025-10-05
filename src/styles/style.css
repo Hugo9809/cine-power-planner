@@ -4366,6 +4366,14 @@ body.pink-mode .favorite-toggle.favorited:active {
   gap: 4px;
 }
 
+#hoverHelpTooltip .hover-help-hint {
+  border-top: 1px solid color-mix(in srgb, var(--accent-color) 35%, transparent);
+  padding-top: 4px;
+  margin-top: 2px;
+  font-size: calc(var(--font-size-base) * 0.82);
+  color: color-mix(in srgb, var(--text-color) 70%, transparent);
+}
+
 #hoverHelpTooltip .hover-help-shortcuts-heading {
   font-weight: 600;
   font-size: calc(var(--font-size-base) * var(--font-scale-compact));
@@ -4397,108 +4405,14 @@ body.dark-mode #hoverHelpTooltip .hover-help-shortcut {
   border-color: color-mix(in srgb, var(--accent-color) 60%, transparent);
 }
 
+
 body.high-contrast #hoverHelpTooltip .hover-help-shortcut {
   background: color-mix(in srgb, var(--surface-color) 70%, transparent);
   border-color: currentColor;
 }
 
-#hoverHelpStatus {
-  position: fixed;
-  right: calc(16px + env(safe-area-inset-right, 0px));
-  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
-  z-index: 999;
-  max-width: min(360px, 90vw);
-  background: var(--surface-color);
-  color: var(--text-color);
-  border: 1px solid color-mix(in srgb, var(--accent-color) 60%, transparent);
-  box-shadow: var(--panel-shadow);
-  border-radius: 8px;
-  padding: 12px 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  font-size: calc(var(--font-size-base) * var(--font-scale-compact));
-}
-
-#hoverHelpStatus[hidden] {
-  display: none;
-}
-
-#hoverHelpStatus .hover-help-status-heading {
-  font-weight: 600;
-  letter-spacing: 0.01em;
-}
-
-#hoverHelpStatus .hover-help-status-body {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  line-height: 1.4;
-}
-
-#hoverHelpStatus .hover-help-status-body p {
-  margin: 0;
-}
-
-#hoverHelpStatus .hover-help-status-body ul {
-  margin: 0;
-  padding-inline-start: 18px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-#hoverHelpStatus .hover-help-status-shortcuts {
-  border-top: 1px solid color-mix(in srgb, var(--accent-color) 40%, transparent);
-  padding-top: 6px;
-  margin-top: 2px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-#hoverHelpStatus .hover-help-status-shortcuts-heading {
-  font-weight: 600;
-  font-size: calc(var(--font-size-base) * var(--font-scale-compact));
-  letter-spacing: 0.01em;
-}
-
-#hoverHelpStatus .hover-help-status-shortcuts-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-#hoverHelpStatus .hover-help-status-shortcuts-list li {
-  background: color-mix(in srgb, var(--accent-color) 18%, transparent);
-  border: 1px solid color-mix(in srgb, var(--accent-color) 45%, transparent);
-  border-radius: 4px;
-  padding: 2px 6px;
-  font-family: var(--font-family-mono, var(--font-family));
-  font-size: calc(var(--font-size-base) * 0.78);
-  line-height: 1.2;
-  white-space: nowrap;
-}
-
-#hoverHelpStatus .hover-help-status-hint {
-  font-size: calc(var(--font-size-base) * 0.82);
-  color: color-mix(in srgb, var(--text-color) 70%, transparent);
-}
-
-body.dark-mode #hoverHelpStatus .hover-help-status-shortcuts-list li {
-  background: color-mix(in srgb, var(--accent-color) 35%, rgba(0, 0, 0, 0.45));
-  border-color: color-mix(in srgb, var(--accent-color) 60%, transparent);
-}
-
-body.high-contrast #hoverHelpStatus {
-  border-color: currentColor;
-}
-
-body.high-contrast #hoverHelpStatus .hover-help-status-shortcuts-list li {
-  background: color-mix(in srgb, var(--surface-color) 70%, transparent);
+body.high-contrast #hoverHelpTooltip .hover-help-hint {
+  color: currentColor;
   border-color: currentColor;
 }
 
