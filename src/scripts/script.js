@@ -13,6 +13,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
   const parts = [
     'modules/base.js',
     'modules/registry.js',
+    'modules/environment-bridge.js',
     'modules/offline.js',
     'modules/core-shared.js',
     'modules/ui.js',
@@ -76,6 +77,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
 
   ensureModule('modules/base.js');
   ensureModule('modules/registry.js');
+  ensureModule('modules/environment-bridge.js');
   ensureModule('modules/persistence.js');
   ensureModule('modules/runtime.js');
 
