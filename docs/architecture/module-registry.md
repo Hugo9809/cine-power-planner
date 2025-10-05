@@ -31,16 +31,19 @@ class concept:
 
 ## Modules registered by default
 
-Before the feature-specific modules are evaluated we register `cineModuleBase`,
-an infrastructure layer that exposes deterministic helpers (scope detection,
-registry resolution, deep freezing, safe warnings and global exposure). The
-modern bundle now consumes these helpers instead of duplicating boilerplate,
-and the legacy bundle exposes the same module so parity can be maintained as we
-sync future updates across both builds.
+Before the feature-specific modules are evaluated we register
+`cineModuleBase`, an infrastructure layer that exposes deterministic helpers
+(scope detection, registry resolution, deep freezing, safe warnings and global
+exposure). On top of that base we now expose `cineModuleEnvironment`, a frozen
+bridge that reuses the base helpers across every modern bundle so modules stop
+copying boilerplate when they talk to the registry or the global scope. The
+legacy bundle exposes the same pair so parity can be maintained as we sync
+future updates across both builds.
 
 | Module name        | Category          | Responsibilities |
 | ------------------ | ----------------- | ---------------- |
 | `cineModuleBase`   | `infrastructure`  | Normalises scope detection, module registration queues, deep freezing and safe global exposure so higher level modules share the same defensive primitives. |
+| `cineModuleEnvironment` | `infrastructure` | Provides a shared runtime context that mirrors `cineModuleBase` helpers, keeping registry access, queuing and global exposure aligned between files without duplicating the handshake logic. |
 | `cineCoreShared`   | `shared`          | Stable stringify helpers, connector summaries, auto-gear weight normalization, version marker exposure. |
 | `cinePersistence`  | `persistence`     | Storage accessors, autosave helpers, backup/export/import orchestration, share/restore bridges. |
 | `cineOffline`      | `offline`         | Service worker registration, cache rebuilds, fallback storage cleanup, reload triggers. |
