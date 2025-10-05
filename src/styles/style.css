@@ -2889,16 +2889,24 @@ body.high-contrast .settings-tab[aria-selected="true"] {
 }
 
 body.dark-mode:not(.high-contrast) .auto-gear-summary {
-  background: color-mix(in srgb, var(--surface-color) 70%, #ffffff 30%);
+  background: color-mix(in srgb, var(--surface-color) 85%, #000000 15%);
   border-color: color-mix(in srgb, var(--panel-border) 65%, transparent);
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
 }
 
 body.dark-mode:not(.high-contrast) .auto-gear-summary-card {
-  background: color-mix(in srgb, var(--surface-color) 55%, #ffffff 45%);
+  background: color-mix(in srgb, var(--control-bg) 80%, #000000 20%);
   border-color: color-mix(in srgb, var(--panel-border) 65%, transparent);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
   color: var(--inverse-text-color);
+}
+
+body.dark-mode:not(.high-contrast) .auto-gear-summary-list button,
+body.dark-mode:not(.high-contrast) .auto-gear-summary-details button[data-auto-gear-rule],
+body.dark-mode:not(.high-contrast) .auto-gear-summary-details button[data-auto-gear-scenario],
+body.dark-mode:not(.high-contrast) .auto-gear-summary-reset {
+  color: var(--inverse-text-color);
+  text-decoration-color: currentColor;
 }
 
 body.dark-mode:not(.high-contrast) .auto-gear-summary-label,
@@ -2909,16 +2917,24 @@ body.dark-mode:not(.high-contrast) .auto-gear-summary-detail-text {
 
 @media (prefers-color-scheme: dark) {
   body:not(.light-mode):not(.high-contrast) .auto-gear-summary {
-    background: color-mix(in srgb, var(--surface-color) 70%, #ffffff 30%);
+    background: color-mix(in srgb, var(--surface-color) 85%, #000000 15%);
     border-color: color-mix(in srgb, var(--panel-border) 65%, transparent);
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
   }
 
   body:not(.light-mode):not(.high-contrast) .auto-gear-summary-card {
-    background: color-mix(in srgb, var(--surface-color) 55%, #ffffff 45%);
+    background: color-mix(in srgb, var(--control-bg) 80%, #000000 20%);
     border-color: color-mix(in srgb, var(--panel-border) 65%, transparent);
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
     color: var(--inverse-text-color);
+  }
+
+  body:not(.light-mode):not(.high-contrast) .auto-gear-summary-list button,
+  body:not(.light-mode):not(.high-contrast) .auto-gear-summary-details button[data-auto-gear-rule],
+  body:not(.light-mode):not(.high-contrast) .auto-gear-summary-details button[data-auto-gear-scenario],
+  body:not(.light-mode):not(.high-contrast) .auto-gear-summary-reset {
+    color: var(--inverse-text-color);
+    text-decoration-color: currentColor;
   }
 
   body:not(.light-mode):not(.high-contrast) .auto-gear-summary-label,
