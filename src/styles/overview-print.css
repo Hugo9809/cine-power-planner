@@ -305,6 +305,10 @@ h2, h3, table, .device-block, .device-category, .requirement-box {
   margin-top: 0.5em;
 }
 
+#overviewDialogContent #resultsSection .results-warnings .status-message--warning {
+  color: #000 !important;
+}
+
 .device-category-container,
 .device-block-grid {
   page-break-inside: avoid;
