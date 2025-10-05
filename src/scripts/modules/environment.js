@@ -368,8 +368,6 @@
     const registry = options && options.registry ? options.registry : getModuleRegistry(scope);
 
     const environment = {
-      scope,
-      registry,
       tryRequire(modulePath) {
         return getTryRequire()(modulePath);
       },
@@ -389,6 +387,23 @@
       },
       PENDING_QUEUE_KEY: getPendingQueueKey(),
     };
+
+    Object.defineProperties(environment, {
+      scope: {
+        configurable: false,
+        enumerable: true,
+        get() {
+          return scope;
+        },
+      },
+      registry: {
+        configurable: false,
+        enumerable: true,
+        get() {
+          return registry;
+        },
+      },
+    });
 
     return freezeDeep(environment);
   }
