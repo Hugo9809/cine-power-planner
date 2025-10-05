@@ -9,6 +9,7 @@ describe('service worker configuration', () => {
     expect(ASSETS).toEqual(
       expect.arrayContaining([
         './src/scripts/globalthis-polyfill.js',
+        './src/scripts/globals-bootstrap.js',
         './src/scripts/modern-support-check.mjs',
         './src/scripts/modules/registry.js',
         './src/scripts/modules/offline.js',
@@ -29,6 +30,7 @@ describe('service worker configuration', () => {
         './legacy/scripts/autosave-overlay.js',
         './legacy/scripts/modules/registry.js',
         './legacy/scripts/modern-support-check.js',
+        './legacy/scripts/globals-bootstrap.js',
       ]),
     );
   });
