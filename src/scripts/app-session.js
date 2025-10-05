@@ -290,6 +290,25 @@ const applyFontSizeSafe = ensureSessionRuntimePlaceholder(
   },
 );
 
+const applyFontFamilySafe = ensureSessionRuntimePlaceholder(
+  'applyFontFamily',
+  () => family => {
+    const root =
+      typeof document !== 'undefined' && document ? document.documentElement : null;
+    if (!root) {
+      return;
+    }
+
+    try {
+      root.style.setProperty('--font-family', family || '');
+    } catch (fontFamilyError) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Unable to apply font family', fontFamilyError);
+      }
+    }
+  },
+);
+
 const downloadDiagramButton = ensureSessionRuntimePlaceholder(
   'downloadDiagramBtn',
   () => {
@@ -4201,7 +4220,7 @@ const mountVoltageResetButtonRef = (() => {
       }
       if (settingsFontFamily) {
         const family = settingsFontFamily.value;
-        applyFontFamily(family);
+        applyFontFamilySafe(family);
         try {
           localStorage.setItem('fontFamily', family);
         } catch (e) {
@@ -7058,7 +7077,7 @@ if (factoryResetButton) {
       }
       try {
         fontFamily = "'Ubuntu', sans-serif";
-        applyFontFamily(fontFamily);
+        applyFontFamilySafe(fontFamily);
         if (settingsFontFamily) {
           settingsFontFamily.value = fontFamily;
         }
