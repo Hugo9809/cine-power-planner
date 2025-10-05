@@ -2561,9 +2561,9 @@ if (projectForm) {
   });
 
   projectForm.querySelectorAll('select').forEach(sel => {
-    if (sel.id === 'requiredScenarios') return;
-    sel.addEventListener('change', () => updateSelectIconBoxes(sel));
-    updateSelectIconBoxes(sel);
+    const handleUpdate = () => updateSelectIconBoxes(sel);
+    sel.addEventListener('change', handleUpdate);
+    handleUpdate();
   });
 
   const queueProjectAutoSave = () => scheduleProjectAutoSave();
