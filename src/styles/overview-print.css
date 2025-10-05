@@ -325,7 +325,8 @@ table, th, td {
   hyphens: auto;
 }
 #overviewDialogContent section,
-#overviewDialogContent #diagramArea {
+#overviewDialogContent #diagramArea,
+#overviewDialogContent #diagramAreaOverview {
   background: var(--surface-color) !important;
   border-color: var(--accent-color);
   box-shadow: var(--panel-shadow);
@@ -423,7 +424,8 @@ table, th, td {
     --section-padding: 1.1cm;
   }
 }
-#overviewDialogContent #setupDiagram #diagramArea {
+#overviewDialogContent #setupDiagram #diagramArea,
+#overviewDialogContent #setupDiagram #diagramAreaOverview {
   background: none !important;
   border: none !important;
   box-shadow: none !important;
