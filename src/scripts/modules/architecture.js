@@ -61,6 +61,31 @@
     }
   }
 
+  function resolveImmutability(scope) {
+    const targetScope = scope || detectGlobalScope();
+
+    if (typeof require === 'function') {
+      try {
+        const required = require('./immutability.js');
+        if (required && typeof required === 'object') {
+          return required;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    const scopes = collectCandidateScopes(targetScope);
+    for (let index = 0; index < scopes.length; index += 1) {
+      const candidate = scopes[index];
+      if (candidate && typeof candidate.cineModuleImmutability === 'object') {
+        return candidate.cineModuleImmutability;
+      }
+    }
+
+    return null;
+  }
+
   function resolveFromScopes(propertyName, options) {
     const settings = options || {};
     const predicate = typeof settings.predicate === 'function' ? settings.predicate : null;
@@ -149,68 +174,103 @@
     return queue;
   }
 
-  function shouldBypassDeepFreeze(value) {
-    if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
+  function createFallbackImmutability() {
+    function shouldBypass(value) {
+      if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
+        return false;
+      }
+
+      try {
+        if (typeof value.pipe === 'function' && typeof value.unpipe === 'function') {
+          return true;
+        }
+
+        if (typeof value.on === 'function' && typeof value.emit === 'function') {
+          if (typeof value.write === 'function' || typeof value.read === 'function') {
+            return true;
+          }
+
+          const ctorName = value.constructor && value.constructor.name;
+          if (ctorName && /Stream|Emitter|Port/i.test(ctorName)) {
+            return true;
+          }
+        }
+
+        if (typeof Symbol !== 'undefined' && value[Symbol.toStringTag]) {
+          const tag = value[Symbol.toStringTag];
+          if (typeof tag === 'string' && /Stream|Port/i.test(tag)) {
+            return true;
+          }
+        }
+      } catch (inspectionError) {
+        void inspectionError;
+      }
+
       return false;
     }
 
-    try {
-      if (typeof value.pipe === 'function' && typeof value.unpipe === 'function') {
-        return true;
+    function freeze(value, seen) {
+      if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
+        return value;
       }
 
-      if (typeof value.on === 'function' && typeof value.emit === 'function') {
-        if (typeof value.write === 'function' || typeof value.read === 'function') {
-          return true;
-        }
-
-        const ctorName = value.constructor && value.constructor.name;
-        if (ctorName && /Stream|Emitter|Port/i.test(ctorName)) {
-          return true;
-        }
+      if (shouldBypass(value)) {
+        return value;
       }
 
-      if (typeof Symbol !== 'undefined' && value[Symbol.toStringTag]) {
-        const tag = value[Symbol.toStringTag];
-        if (typeof tag === 'string' && /Stream|Port/i.test(tag)) {
-          return true;
-        }
+      const tracker = seen || new WeakSet();
+      if (tracker.has(value)) {
+        return value;
       }
-    } catch (inspectionError) {
-      void inspectionError;
+
+      tracker.add(value);
+
+      const keys = Object.getOwnPropertyNames(value);
+      for (let index = 0; index < keys.length; index += 1) {
+        const key = keys[index];
+        const descriptor = Object.getOwnPropertyDescriptor(value, key);
+        if (!descriptor || 'get' in descriptor || 'set' in descriptor) {
+          continue;
+        }
+
+        freeze(descriptor.value, tracker);
+      }
+
+      return Object.freeze(value);
     }
 
-    return false;
+    return {
+      shouldBypassDeepFreeze: shouldBypass,
+      freezeDeep: freeze,
+    };
+  }
+
+  const FALLBACK_IMMUTABILITY = createFallbackImmutability();
+  let activeImmutability = resolveImmutability(detectGlobalScope()) || FALLBACK_IMMUTABILITY;
+
+  function getImmutability() {
+    if (activeImmutability !== FALLBACK_IMMUTABILITY) {
+      return activeImmutability;
+    }
+
+    const resolved = resolveImmutability(detectGlobalScope());
+    if (resolved && resolved !== activeImmutability) {
+      activeImmutability = resolved;
+    }
+
+    return activeImmutability;
   }
 
   function freezeDeep(value, seen) {
-    if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
-      return value;
+    const provider = getImmutability();
+
+    try {
+      return provider.freezeDeep(value, seen);
+    } catch (error) {
+      void error;
     }
 
-    if (shouldBypassDeepFreeze(value)) {
-      return value;
-    }
-
-    const tracker = seen || new WeakSet();
-    if (tracker.has(value)) {
-      return value;
-    }
-
-    tracker.add(value);
-
-    const keys = Object.getOwnPropertyNames(value);
-    for (let index = 0; index < keys.length; index += 1) {
-      const key = keys[index];
-      const descriptor = Object.getOwnPropertyDescriptor(value, key);
-      if (!descriptor || 'get' in descriptor || 'set' in descriptor) {
-        continue;
-      }
-
-      freezeDeep(descriptor.value, tracker);
-    }
-
-    return Object.freeze(value);
+    return FALLBACK_IMMUTABILITY.freezeDeep(value, seen);
   }
 
   function safeWarn(message, detail) {
