@@ -708,6 +708,29 @@ const texts = {
     storageSummaryFootnote:
       "Backups download human-readable JSON with each entry—Quick safeguards keep fresh copies one click away.",
     storageSummaryEmpty: "No planner data is currently stored.",
+    storagePersistenceHeading: "Storage reliability",
+    storagePersistenceHeadingHelp:
+      "Ask the browser to keep Cine Power Planner's data safe from automatic cleanups.",
+    storagePersistenceIntro:
+      "Request persistent storage so the browser keeps planner data even when space runs low.",
+    storagePersistenceRequest: "Protect storage on this device",
+    storagePersistenceRequestHelp:
+      "Tell the browser to mark Cine Power Planner's data as persistent.",
+    storagePersistenceStatusIdle:
+      "Request persistent storage to reduce the risk of automatic cleanup.",
+    storagePersistenceStatusChecking: "Checking storage protection…",
+    storagePersistenceStatusRequesting:
+      "Requesting persistent storage from the browser…",
+    storagePersistenceStatusGranted:
+      "Persistent storage granted. Planner data is protected from automatic cleanup.",
+    storagePersistenceStatusDenied:
+      "The browser could not grant persistent storage. Keep exporting backups regularly.",
+    storagePersistenceStatusError:
+      "Persistent storage request failed. Try again after freeing space or review browser settings.",
+    storagePersistenceStatusUnsupported:
+      "This browser cannot grant persistent storage automatically. Continue keeping external backups.",
+    storagePersistenceUsage: "Approximate usage: {used} of {quota}.",
+    storagePersistenceUsageUnknown: "Approximate usage: {used}.",
     storageActionsHeading: "Quick safeguards",
     storageActionsHeadingHelp:
       "Download full backups or jump straight to restore tools from here.",
@@ -2519,6 +2542,29 @@ const texts = {
     storageSummaryFootnote:
       "I backup scaricano ogni voce in JSON leggibile—le Azioni rapide di sicurezza mantengono copie aggiornate sempre pronte.",
     storageSummaryEmpty: "Nessun dato dell’app è attualmente salvato.",
+    storagePersistenceHeading: "Affidabilità dell'archiviazione",
+    storagePersistenceHeadingHelp:
+      "Chiedi al browser di mantenere al sicuro i dati di Cine Power Planner ed evitare pulizie automatiche.",
+    storagePersistenceIntro:
+      "Richiedi l'archiviazione persistente così il browser conserva i dati del planner anche quando lo spazio si riduce.",
+    storagePersistenceRequest: "Proteggi l'archiviazione su questo dispositivo",
+    storagePersistenceRequestHelp:
+      "Chiedi al browser di contrassegnare i dati di Cine Power Planner come persistenti.",
+    storagePersistenceStatusIdle:
+      "Richiedi l'archiviazione persistente per ridurre il rischio di pulizie automatiche.",
+    storagePersistenceStatusChecking: "Verifica della protezione dell'archiviazione…",
+    storagePersistenceStatusRequesting:
+      "Richiesta di archiviazione persistente al browser…",
+    storagePersistenceStatusGranted:
+      "Archiviazione persistente concessa. I dati del planner sono protetti dalla pulizia automatica.",
+    storagePersistenceStatusDenied:
+      "Il browser non ha concesso l'archiviazione persistente. Continua a esportare regolarmente i backup.",
+    storagePersistenceStatusError:
+      "Richiesta di archiviazione persistente non riuscita. Riprova dopo aver liberato spazio o controlla le impostazioni del browser.",
+    storagePersistenceStatusUnsupported:
+      "Questo browser non può concedere automaticamente l'archiviazione persistente. Continua a mantenere backup esterni.",
+    storagePersistenceUsage: "Utilizzo approssimativo: {used} su {quota}.",
+    storagePersistenceUsageUnknown: "Utilizzo approssimativo: {used}.",
     storageActionsHeading: "Azioni rapide di sicurezza",
     storageActionsHeadingHelp:
       "Scarica backup completi o apri subito gli strumenti di ripristino da qui.",
@@ -3895,6 +3941,29 @@ const texts = {
     storageSummaryFootnote:
       "Las copias de seguridad descargan cada elemento en JSON legible—las Protecciones rápidas mantienen copias actualizadas al alcance de un clic.",
     storageSummaryEmpty: "No hay datos del planificador guardados actualmente.",
+    storagePersistenceHeading: "Fiabilidad del almacenamiento",
+    storagePersistenceHeadingHelp:
+      "Pídele al navegador que mantenga seguros los datos de Cine Power Planner frente a limpiezas automáticas.",
+    storagePersistenceIntro:
+      "Solicita almacenamiento persistente para que el navegador conserve los datos del planner incluso cuando quede poco espacio.",
+    storagePersistenceRequest: "Proteger almacenamiento en este dispositivo",
+    storagePersistenceRequestHelp:
+      "Indica al navegador que marque los datos de Cine Power Planner como persistentes.",
+    storagePersistenceStatusIdle:
+      "Solicita almacenamiento persistente para reducir el riesgo de limpiezas automáticas.",
+    storagePersistenceStatusChecking: "Comprobando la protección del almacenamiento…",
+    storagePersistenceStatusRequesting:
+      "Solicitando almacenamiento persistente al navegador…",
+    storagePersistenceStatusGranted:
+      "Almacenamiento persistente concedido. Los datos del planner están protegidos frente a limpiezas automáticas.",
+    storagePersistenceStatusDenied:
+      "El navegador no pudo conceder almacenamiento persistente. Sigue exportando copias de seguridad con regularidad.",
+    storagePersistenceStatusError:
+      "La solicitud de almacenamiento persistente falló. Vuelve a intentarlo tras liberar espacio o revisa la configuración del navegador.",
+    storagePersistenceStatusUnsupported:
+      "Este navegador no puede conceder almacenamiento persistente automáticamente. Continúa manteniendo copias de seguridad externas.",
+    storagePersistenceUsage: "Uso aproximado: {used} de {quota}.",
+    storagePersistenceUsageUnknown: "Uso aproximado: {used}.",
     storageActionsHeading: "Protecciones rápidas",
     storageActionsHeadingHelp:
       "Descarga copias completas o abre de inmediato las herramientas de restauración desde aquí.",
@@ -5281,6 +5350,29 @@ const texts = {
     storageSummaryFootnote:
       "Les sauvegardes téléchargent chaque élément en JSON lisible—les Actions de sécurité rapides gardent des copies à jour prêtes à l’emploi.",
     storageSummaryEmpty: "Aucune donnée du planificateur n'est actuellement enregistrée.",
+    storagePersistenceHeading: "Fiabilité du stockage",
+    storagePersistenceHeadingHelp:
+      "Demandez au navigateur de protéger les données de Cine Power Planner contre les nettoyages automatiques.",
+    storagePersistenceIntro:
+      "Demandez un stockage persistant afin que le navigateur conserve les données du planner même lorsque l'espace se fait rare.",
+    storagePersistenceRequest: "Protéger le stockage sur cet appareil",
+    storagePersistenceRequestHelp:
+      "Indiquez au navigateur de marquer les données de Cine Power Planner comme persistantes.",
+    storagePersistenceStatusIdle:
+      "Demandez un stockage persistant pour réduire le risque de nettoyage automatique.",
+    storagePersistenceStatusChecking: "Vérification de la protection du stockage…",
+    storagePersistenceStatusRequesting:
+      "Demande de stockage persistant au navigateur…",
+    storagePersistenceStatusGranted:
+      "Stockage persistant accordé. Les données du planner sont protégées contre les nettoyages automatiques.",
+    storagePersistenceStatusDenied:
+      "Le navigateur n'a pas pu accorder le stockage persistant. Continuez à exporter des sauvegardes régulièrement.",
+    storagePersistenceStatusError:
+      "La demande de stockage persistant a échoué. Réessayez après avoir libéré de l'espace ou vérifiez les paramètres du navigateur.",
+    storagePersistenceStatusUnsupported:
+      "Ce navigateur ne peut pas accorder automatiquement le stockage persistant. Continuez à conserver des sauvegardes externes.",
+    storagePersistenceUsage: "Utilisation approximative : {used} sur {quota}.",
+    storagePersistenceUsageUnknown: "Utilisation approximative : {used}.",
     storageActionsHeading: "Actions de sécurité rapides",
     storageActionsHeadingHelp:
       "Téléchargez des sauvegardes complètes ou ouvrez immédiatement les outils de restauration depuis ici.",
@@ -6672,6 +6764,29 @@ const texts = {
     storageSummaryFootnote:
       "Backups laden jede Position als gut lesbares JSON herunter—die schnellen Schutzmaßnahmen halten aktuelle Kopien jederzeit bereit.",
     storageSummaryEmpty: "Derzeit sind keine Planer-Daten gespeichert.",
+    storagePersistenceHeading: "Speichersicherheit",
+    storagePersistenceHeadingHelp:
+      "Bitten Sie den Browser, die Daten von Cine Power Planner vor automatischen Bereinigungen zu schützen.",
+    storagePersistenceIntro:
+      "Fordern Sie persistenten Speicher an, damit der Browser die Planner-Daten auch bei wenig freiem Platz behält.",
+    storagePersistenceRequest: "Speicher auf diesem Gerät schützen",
+    storagePersistenceRequestHelp:
+      "Weisen Sie den Browser an, die Daten von Cine Power Planner als persistent zu markieren.",
+    storagePersistenceStatusIdle:
+      "Fordern Sie persistenten Speicher an, um das Risiko automatischer Bereinigungen zu verringern.",
+    storagePersistenceStatusChecking: "Speicherschutz wird überprüft…",
+    storagePersistenceStatusRequesting:
+      "Persistenter Speicher wird beim Browser angefragt…",
+    storagePersistenceStatusGranted:
+      "Persistenter Speicher gewährt. Planner-Daten sind vor automatischen Bereinigungen geschützt.",
+    storagePersistenceStatusDenied:
+      "Der Browser konnte keinen persistenten Speicher gewähren. Exportieren Sie weiterhin regelmäßig Sicherungen.",
+    storagePersistenceStatusError:
+      "Anfrage nach persistentem Speicher fehlgeschlagen. Versuchen Sie es nach Freigabe von Speicherplatz erneut oder prüfen Sie die Browser-Einstellungen.",
+    storagePersistenceStatusUnsupported:
+      "Dieser Browser kann keinen persistenten Speicher automatisch gewähren. Bewahren Sie weiterhin externe Sicherungen auf.",
+    storagePersistenceUsage: "Ungefähre Nutzung: {used} von {quota}.",
+    storagePersistenceUsageUnknown: "Ungefähre Nutzung: {used}.",
     storageActionsHeading: "Schnelle Schutzmaßnahmen",
     storageActionsHeadingHelp:
       "Lade vollständige Backups herunter oder öffne sofort die Wiederherstellungswerkzeuge.",

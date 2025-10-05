@@ -58,6 +58,7 @@ if (typeof globalThis !== 'undefined' && typeof globalThis.STRONG_SEARCH_MATCH_T
           getMountVoltageStorageBackupKeyName,
           parseStoredMountVoltages, SUPPORTED_MOUNT_VOLTAGE_TYPES,
           DEFAULT_MOUNT_VOLTAGES, mountVoltageInputs, parseVoltageValue */
+/* global requestPersistentStorage */
 
 function ensureSessionRuntimePlaceholder(name, fallbackValue) {
   const scope =
@@ -6270,6 +6271,312 @@ const storageBackupNowControl = typeof document !== 'undefined'
 if (storageBackupNowControl) {
   storageBackupNowControl.addEventListener('click', createSettingsBackup);
 }
+
+const storagePersistenceRequestButton = typeof document !== 'undefined'
+  ? document.getElementById('storagePersistenceRequest')
+  : null;
+const storagePersistenceStatusEl = typeof document !== 'undefined'
+  ? document.getElementById('storagePersistenceStatus')
+  : null;
+
+const storagePersistenceState = {
+  supported: null,
+  persisted: null,
+  usage: null,
+  quota: null,
+  checking: false,
+  requestInFlight: false,
+  requestAttempted: false,
+  lastRequestDenied: false,
+  lastError: null,
+};
+
+let storagePersistenceCheckToken = 0;
+
+function getStoragePersistenceLangInfo() {
+  const fallbackTexts = texts && texts.en ? texts.en : {};
+  const lang = typeof currentLang === 'string' && texts && texts[currentLang]
+    ? currentLang
+    : 'en';
+  const langTexts = (texts && texts[lang]) || fallbackTexts;
+  return { lang, langTexts, fallbackTexts };
+}
+
+function getStorageManagerInstance() {
+  if (typeof navigator !== 'undefined' && navigator && typeof navigator.storage === 'object') {
+    return navigator.storage;
+  }
+  return null;
+}
+
+function formatStoragePersistenceBytes(bytes, lang) {
+  if (typeof bytes !== 'number' || !Number.isFinite(bytes) || bytes < 0) {
+    return '';
+  }
+  const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+  let index = 0;
+  let value = bytes;
+  while (value >= 1024 && index < units.length - 1) {
+    value /= 1024;
+    index += 1;
+  }
+  let formatted = '';
+  if (typeof Intl !== 'undefined' && typeof Intl.NumberFormat === 'function') {
+    try {
+      const formatter = new Intl.NumberFormat(lang, {
+        maximumFractionDigits: value >= 100 ? 0 : 1,
+      });
+      formatted = formatter.format(value);
+    } catch (error) {
+      console.warn('Unable to format storage size', error);
+      formatted = value.toFixed(value >= 100 ? 0 : 1);
+    }
+  } else {
+    formatted = value.toFixed(value >= 100 ? 0 : 1);
+  }
+  return `${formatted} ${units[index]}`;
+}
+
+function renderStoragePersistenceStatus() {
+  if (!storagePersistenceStatusEl) return;
+  const { lang, langTexts, fallbackTexts } = getStoragePersistenceLangInfo();
+  let message = '';
+  if (storagePersistenceState.requestInFlight) {
+    message = langTexts.storagePersistenceStatusRequesting
+      || fallbackTexts.storagePersistenceStatusRequesting
+      || '';
+  } else if (storagePersistenceState.checking) {
+    message = langTexts.storagePersistenceStatusChecking
+      || fallbackTexts.storagePersistenceStatusChecking
+      || '';
+  } else if (storagePersistenceState.supported === false) {
+    message = langTexts.storagePersistenceStatusUnsupported
+      || fallbackTexts.storagePersistenceStatusUnsupported
+      || '';
+  } else if (storagePersistenceState.persisted) {
+    message = langTexts.storagePersistenceStatusGranted
+      || fallbackTexts.storagePersistenceStatusGranted
+      || '';
+  } else if (storagePersistenceState.lastError) {
+    message = langTexts.storagePersistenceStatusError
+      || fallbackTexts.storagePersistenceStatusError
+      || '';
+  } else if (storagePersistenceState.requestAttempted && storagePersistenceState.lastRequestDenied) {
+    message = langTexts.storagePersistenceStatusDenied
+      || fallbackTexts.storagePersistenceStatusDenied
+      || '';
+  } else {
+    message = langTexts.storagePersistenceStatusIdle
+      || fallbackTexts.storagePersistenceStatusIdle
+      || '';
+  }
+
+  const parts = [message];
+  if (typeof storagePersistenceState.usage === 'number') {
+    const usedText = formatStoragePersistenceBytes(storagePersistenceState.usage, lang);
+    if (usedText) {
+      if (typeof storagePersistenceState.quota === 'number' && storagePersistenceState.quota > 0) {
+        const quotaText = formatStoragePersistenceBytes(storagePersistenceState.quota, lang);
+        const template = langTexts.storagePersistenceUsage
+          || fallbackTexts.storagePersistenceUsage
+          || '';
+        if (template) {
+          parts.push(template.replace('{used}', usedText).replace('{quota}', quotaText || ''));
+        } else if (quotaText) {
+          parts.push(`${usedText} / ${quotaText}`);
+        } else {
+          parts.push(usedText);
+        }
+      } else {
+        const template = langTexts.storagePersistenceUsageUnknown
+          || fallbackTexts.storagePersistenceUsageUnknown
+          || '';
+        if (template) {
+          parts.push(template.replace('{used}', usedText));
+        } else {
+          parts.push(usedText);
+        }
+      }
+    }
+  }
+
+  const combined = parts.filter(Boolean).join(' ').trim();
+  const output = combined || message || '';
+  storagePersistenceStatusEl.textContent = output;
+  if (output) {
+    storagePersistenceStatusEl.setAttribute('data-help', output);
+  } else {
+    storagePersistenceStatusEl.removeAttribute('data-help');
+  }
+  if (storagePersistenceRequestButton) {
+    const shouldDisable = !storagePersistenceStatusEl
+      || storagePersistenceState.supported === false
+      || storagePersistenceState.persisted
+      || storagePersistenceState.requestInFlight
+      || storagePersistenceState.checking;
+    storagePersistenceRequestButton.disabled = shouldDisable;
+    storagePersistenceRequestButton.setAttribute('aria-disabled', shouldDisable ? 'true' : 'false');
+    const requestLabel = langTexts.storagePersistenceRequest
+      || fallbackTexts.storagePersistenceRequest
+      || storagePersistenceRequestButton.dataset.defaultLabel
+      || storagePersistenceRequestButton.textContent
+      || '';
+    const requestHelp = langTexts.storagePersistenceRequestHelp
+      || fallbackTexts.storagePersistenceRequestHelp
+      || requestLabel;
+    if (requestHelp) {
+      storagePersistenceRequestButton.setAttribute('data-help', requestHelp);
+      storagePersistenceRequestButton.setAttribute('title', requestHelp);
+      storagePersistenceRequestButton.setAttribute('aria-label', requestHelp);
+    }
+  }
+}
+
+async function refreshStoragePersistenceStatus(options = {}) {
+  if (!storagePersistenceStatusEl) {
+    return;
+  }
+  const { fromRequest = false } = options || {};
+  const checkToken = ++storagePersistenceCheckToken;
+  storagePersistenceState.checking = true;
+  if (!fromRequest) {
+    storagePersistenceState.lastError = null;
+  }
+  renderStoragePersistenceStatus();
+
+  const storageManager = getStorageManagerInstance();
+  if (!storageManager) {
+    if (checkToken !== storagePersistenceCheckToken) {
+      return;
+    }
+    storagePersistenceState.supported = false;
+    storagePersistenceState.persisted = false;
+    storagePersistenceState.usage = null;
+    storagePersistenceState.quota = null;
+    storagePersistenceState.checking = false;
+    if (fromRequest) {
+      storagePersistenceState.lastRequestDenied = true;
+    }
+    renderStoragePersistenceStatus();
+    return;
+  }
+
+  storagePersistenceState.supported = true;
+  let persistedValue = storagePersistenceState.persisted;
+  if (typeof storageManager.persisted === 'function') {
+    try {
+      persistedValue = await storageManager.persisted();
+    } catch (error) {
+      console.warn('Unable to determine persistent storage state', error);
+    }
+  }
+
+  let usageValue = storagePersistenceState.usage;
+  let quotaValue = storagePersistenceState.quota;
+  if (typeof storageManager.estimate === 'function') {
+    try {
+      const estimate = await storageManager.estimate();
+      if (estimate && typeof estimate === 'object') {
+        if (typeof estimate.usage === 'number' && Number.isFinite(estimate.usage)) {
+          usageValue = estimate.usage;
+        }
+        if (typeof estimate.quota === 'number' && Number.isFinite(estimate.quota)) {
+          quotaValue = estimate.quota;
+        }
+      }
+    } catch (error) {
+      console.warn('Unable to estimate storage usage', error);
+    }
+  }
+
+  if (checkToken !== storagePersistenceCheckToken) {
+    return;
+  }
+
+  storagePersistenceState.persisted = Boolean(persistedValue);
+  storagePersistenceState.usage = typeof usageValue === 'number' && Number.isFinite(usageValue)
+    ? usageValue
+    : null;
+  storagePersistenceState.quota = typeof quotaValue === 'number' && Number.isFinite(quotaValue)
+    ? quotaValue
+    : null;
+  storagePersistenceState.checking = false;
+  if (fromRequest) {
+    storagePersistenceState.lastRequestDenied = !storagePersistenceState.persisted;
+  }
+  renderStoragePersistenceStatus();
+}
+
+async function handleStoragePersistenceRequest(event) {
+  if (event && typeof event.preventDefault === 'function') {
+    event.preventDefault();
+  }
+  if (!storagePersistenceRequestButton || storagePersistenceState.requestInFlight) {
+    return;
+  }
+  const storageManager = getStorageManagerInstance();
+  storagePersistenceState.requestAttempted = true;
+  if (!storageManager || typeof storageManager.persist !== 'function') {
+    storagePersistenceState.supported = Boolean(storageManager);
+    storagePersistenceState.lastRequestDenied = true;
+    storagePersistenceState.lastError = null;
+    renderStoragePersistenceStatus();
+    return;
+  }
+
+  storagePersistenceState.requestInFlight = true;
+  storagePersistenceState.lastError = null;
+  renderStoragePersistenceStatus();
+
+  let granted = false;
+  let alreadyGranted = false;
+  try {
+    if (typeof requestPersistentStorage === 'function') {
+      const result = await requestPersistentStorage();
+      if (result && typeof result.supported === 'boolean') {
+        storagePersistenceState.supported = result.supported;
+      }
+      if (result && typeof result.granted === 'boolean') {
+        granted = result.granted;
+      }
+      if (result && typeof result.alreadyGranted === 'boolean') {
+        alreadyGranted = result.alreadyGranted;
+      }
+      if (result && result.error) {
+        storagePersistenceState.lastError = result.error;
+        console.warn('Persistent storage request error', result.error);
+      }
+    } else {
+      granted = await storageManager.persist();
+    }
+  } catch (error) {
+    storagePersistenceState.lastError = error;
+    console.warn('Persistent storage request failed', error);
+  }
+
+  storagePersistenceState.requestInFlight = false;
+  storagePersistenceState.lastRequestDenied = !(granted || alreadyGranted);
+  if (granted || alreadyGranted) {
+    storagePersistenceState.persisted = true;
+  }
+  renderStoragePersistenceStatus();
+  refreshStoragePersistenceStatus({ fromRequest: true }).catch(error => {
+    console.warn('Persistent storage status refresh failed', error);
+  });
+}
+
+if (storagePersistenceRequestButton) {
+  storagePersistenceRequestButton.addEventListener('click', handleStoragePersistenceRequest);
+}
+
+if (storagePersistenceStatusEl) {
+  refreshStoragePersistenceStatus().catch(error => {
+    console.warn('Persistent storage status initialization failed', error);
+  });
+}
+
+ensureSessionRuntimePlaceholder('renderStoragePersistenceStatus', () => renderStoragePersistenceStatus);
+ensureSessionRuntimePlaceholder('refreshStoragePersistenceStatus', () => refreshStoragePersistenceStatus);
 
 if (backupDiffToggleButtonEl) {
   backupDiffToggleButtonEl.addEventListener('click', handleBackupDiffToggle);
