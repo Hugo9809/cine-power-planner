@@ -7613,6 +7613,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var batteryComparisonHeadingElem = document.getElementById("batteryComparisonHeading");
     batteryComparisonHeadingElem.textContent = texts[lang].batteryComparisonHeading;
     batteryComparisonHeadingElem.setAttribute("data-help", texts[lang].batteryComparisonHeadingHelp);
+    var batteryComparisonDescriptionElem = document.getElementById("batteryComparisonDescription");
+    if (batteryComparisonDescriptionElem) {
+      batteryComparisonDescriptionElem.textContent = texts[lang].batteryComparisonDescription;
+    }
     var setupDiagramHeadingElem = document.getElementById("setupDiagramHeading");
     setupDiagramHeadingElem.textContent = texts[lang].setupDiagramHeading;
     setupDiagramHeadingElem.setAttribute("data-help", texts[lang].setupDiagramHeadingHelp);

@@ -5928,6 +5928,14 @@ body:not(.light-mode) #temperatureNote th {
   background-color: var(--panel-bg);
 }
 
+/* Shared section description helper */
+.section-description {
+  margin: 0 0 0.75em;
+  color: var(--muted-text-color);
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-sm));
+  line-height: var(--line-height-supporting);
+}
+
 /* Battery comparison section */
 .battery-comparison-section {
   background: var(--panel-bg); /* Match section background */

@@ -8433,6 +8433,14 @@ function setLanguage(lang) {
     texts[lang].batteryComparisonHeadingHelp
   );
 
+  const batteryComparisonDescriptionElem = document.getElementById(
+    "batteryComparisonDescription"
+  );
+  if (batteryComparisonDescriptionElem) {
+    batteryComparisonDescriptionElem.textContent =
+      texts[lang].batteryComparisonDescription;
+  }
+
   const setupDiagramHeadingElem = document.getElementById("setupDiagramHeading");
   setupDiagramHeadingElem.textContent = texts[lang].setupDiagramHeading;
   setupDiagramHeadingElem.setAttribute(

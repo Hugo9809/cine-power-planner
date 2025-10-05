@@ -40,6 +40,8 @@ var texts = {
     resultsHeading: "Power Summary",
     deviceManagerHeading: "Device Library",
     batteryComparisonHeading: "Battery Comparison",
+    batteryComparisonDescription:
+      "Review every compatible battery to see runtime estimates for your current setup.",
     setupDiagramHeading: "Connection Diagram",
     diagramPdfNote: "The visual connection diagram is not included in the PDF export. Open the print view to review the layout.",
     projectRequirementsNav: "Project Requirements",
@@ -1192,6 +1194,8 @@ var texts = {
     pdfWarningsHeading: "Avvisi",
     deviceManagerHeading: "Libreria dispositivi",
     batteryComparisonHeading: "Confronto batterie",
+    batteryComparisonDescription:
+      "Esamina tutte le batterie compatibili per vedere le stime di autonomia con la configurazione attuale.",
     setupDiagramHeading: "Diagramma delle connessioni",
     diagramPdfNote: "Il diagramma delle connessioni non è incluso nell'esportazione PDF. Apri la vista di stampa per consultare il layout.",
     projectRequirementsNav: "Requisiti di progetto",
@@ -2343,6 +2347,8 @@ var texts = {
     pdfWarningsHeading: "Avisos",
     deviceManagerHeading: "Biblioteca de dispositivos",
     batteryComparisonHeading: "Comparación de baterías",
+    batteryComparisonDescription:
+      "Revisa cada batería compatible para ver las estimaciones de autonomía con tu configuración actual.",
     setupDiagramHeading: "Diagrama de conexiones",
     diagramPdfNote: "El diagrama de conexiones no se incluye en la exportación PDF. Abre la vista de impresión para ver el diseño.",
     projectRequirementsNav: "Requisitos del proyecto",
@@ -3494,6 +3500,8 @@ var texts = {
     pdfWarningsHeading: "Avertissements",
     deviceManagerHeading: "Bibliothèque d’appareils",
     batteryComparisonHeading: "Comparaison des batteries",
+    batteryComparisonDescription:
+      "Passez en revue chaque batterie compatible pour voir les estimations d’autonomie pour votre configuration actuelle.",
     setupDiagramHeading: "Schéma de connexion",
     diagramPdfNote: "Le schéma de connexion n’est pas inclus dans l’export PDF. Ouvrez la vue d’impression pour vérifier la mise en page.",
     projectRequirementsNav: "Exigences du projet",
@@ -4645,6 +4653,8 @@ var texts = {
     pdfWarningsHeading: "Warnungen",
     deviceManagerHeading: "Gerätebibliothek",
     batteryComparisonHeading: "Akkuvergleich",
+    batteryComparisonDescription:
+      "Prüfe alle kompatiblen Akkus, um die Laufzeitschätzungen für deine aktuelle Konfiguration zu sehen.",
     setupDiagramHeading: "Verbindungsdiagramm",
     diagramPdfNote: "Das Verbindungsdiagramm ist nicht im PDF-Export enthalten. Öffnen Sie die Druckansicht, um das Layout zu sehen.",
     projectRequirementsNav: "Projektanforderungen",
