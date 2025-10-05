@@ -362,6 +362,22 @@ function ensureGlobalAutoGearBackupDefaults() {
 
 ensureGlobalAutoGearBackupDefaults();
 
+function getStorageKeyVariants(key) {
+  if (typeof key !== 'string' || !key) {
+    return [key];
+  }
+
+  const variants = new Set([key]);
+
+  if (key.startsWith('cameraPowerPlanner_')) {
+    variants.add(`cinePowerPlanner_${key.slice('cameraPowerPlanner_'.length)}`);
+  } else if (key.startsWith('cinePowerPlanner_')) {
+    variants.add(`cameraPowerPlanner_${key.slice('cinePowerPlanner_'.length)}`);
+  }
+
+  return Array.from(variants);
+}
+
 var STORAGE_BACKUP_SUFFIX = '__backup';
 var MAX_SAVE_ATTEMPTS = 3;
 var MAX_QUOTA_RECOVERY_STEPS = 100;
@@ -372,6 +388,14 @@ var RAW_STORAGE_BACKUP_KEYS = new Set([
   DEVICE_SCHEMA_CACHE_KEY,
   MOUNT_VOLTAGE_STORAGE_KEY_NAME,
 ]);
+
+Array.from(RAW_STORAGE_BACKUP_KEYS).forEach((key) => {
+  getStorageKeyVariants(key).forEach((variant) => {
+    if (typeof variant === 'string' && variant) {
+      RAW_STORAGE_BACKUP_KEYS.add(variant);
+    }
+  });
+});
 
 var CRITICAL_BACKUP_KEY_PROVIDERS = [
   () => ({ key: DEVICE_STORAGE_KEY }),
@@ -1109,24 +1133,32 @@ function hasStoredEntries(storage) {
     try {
       for (let i = 0; i < PRIMARY_STORAGE_KEYS.length; i += 1) {
         const key = PRIMARY_STORAGE_KEYS[i];
-        if (storage.getItem(key) !== null) {
-          return true;
-        }
-        const backupKey = `${key}${STORAGE_BACKUP_SUFFIX}`;
-        if (storage.getItem(backupKey) !== null) {
-          return true;
+        const variants = getStorageKeyVariants(key);
+        for (let j = 0; j < variants.length; j += 1) {
+          const candidateKey = variants[j];
+          if (storage.getItem(candidateKey) !== null) {
+            return true;
+          }
+          const backupKey = `${candidateKey}${STORAGE_BACKUP_SUFFIX}`;
+          if (storage.getItem(backupKey) !== null) {
+            return true;
+          }
         }
       }
 
       for (let i = 0; i < SIMPLE_STORAGE_KEYS.length; i += 1) {
         const key = SIMPLE_STORAGE_KEYS[i];
-        if (storage.getItem(key) !== null) {
-          return true;
-        }
-        if (RAW_STORAGE_BACKUP_KEYS.has(key)) {
-          const backupKey = `${key}${STORAGE_BACKUP_SUFFIX}`;
-          if (storage.getItem(backupKey) !== null) {
+        const variants = getStorageKeyVariants(key);
+        for (let j = 0; j < variants.length; j += 1) {
+          const candidateKey = variants[j];
+          if (storage.getItem(candidateKey) !== null) {
             return true;
+          }
+          if (RAW_STORAGE_BACKUP_KEYS.has(candidateKey)) {
+            const backupKey = `${candidateKey}${STORAGE_BACKUP_SUFFIX}`;
+            if (storage.getItem(backupKey) !== null) {
+              return true;
+            }
           }
         }
       }
@@ -5517,28 +5549,32 @@ function clearAllData() {
   function readLocalStorageValue(key) {
     const storage = getSafeLocalStorage();
     if (!storage || typeof storage.getItem !== 'function') return null;
-    try {
-      const value = storage.getItem(key);
-      if (value === null || value === undefined) {
-        if (RAW_STORAGE_BACKUP_KEYS.has(key)) {
-          try {
-            const backupValue = storage.getItem(`${key}${STORAGE_BACKUP_SUFFIX}`);
-            if (backupValue !== null && backupValue !== undefined) {
-              return String(backupValue);
+    const variants = getStorageKeyVariants(key);
+    for (let i = 0; i < variants.length; i += 1) {
+      const candidateKey = variants[i];
+      try {
+        const value = storage.getItem(candidateKey);
+        if (value === null || value === undefined) {
+          if (RAW_STORAGE_BACKUP_KEYS.has(candidateKey)) {
+            try {
+              const backupValue = storage.getItem(`${candidateKey}${STORAGE_BACKUP_SUFFIX}`);
+              if (backupValue !== null && backupValue !== undefined) {
+                return String(backupValue);
+              }
+            } catch (backupError) {
+              console.warn('Unable to read backup key for export', candidateKey, backupError);
+              downgradeSafeLocalStorageToMemory('read access', backupError, storage);
             }
-          } catch (backupError) {
-            console.warn('Unable to read backup key for export', key, backupError);
-            downgradeSafeLocalStorageToMemory('read access', backupError, storage);
           }
+        } else {
+          return String(value);
         }
-        return null;
+      } catch (error) {
+        console.warn('Unable to read storage key for backup', candidateKey, error);
+        downgradeSafeLocalStorageToMemory('read access', error, storage);
       }
-      return String(value);
-    } catch (error) {
-      console.warn('Unable to read storage key for backup', key, error);
-      downgradeSafeLocalStorageToMemory('read access', error, storage);
-      return null;
     }
+    return null;
   }
 
   function parseStoredBoolean(value) {
@@ -5970,15 +6006,7 @@ function normalizeImportedPresetId(value) {
 }
 
 function getSnapshotKeyVariants(key) {
-  const variants = [key];
-  if (typeof key === 'string') {
-    if (key.startsWith('cameraPowerPlanner_')) {
-      variants.push(`cinePowerPlanner_${key.slice('cameraPowerPlanner_'.length)}`);
-    } else if (key.startsWith('cinePowerPlanner_')) {
-      variants.push(`cameraPowerPlanner_${key.slice('cinePowerPlanner_'.length)}`);
-    }
-  }
-  return variants;
+  return getStorageKeyVariants(key);
 }
 
 function readSnapshotEntry(snapshot, key) {
