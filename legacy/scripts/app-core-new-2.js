@@ -15392,6 +15392,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       renderAutoGearRulesList: renderAutoGearRulesList,
       saveAutoGearRuleFromEditor: saveAutoGearRuleFromEditor,
       handleAutoGearImportSelection: handleAutoGearImportSelection,
+      handleAutoGearPresetSelection: handleAutoGearPresetSelection,
+      applyAutoGearBackupVisibility: applyAutoGearBackupVisibility,
       setAutoGearAutoPresetId: setAutoGearAutoPresetId,
       syncAutoGearAutoPreset: syncAutoGearAutoPreset,
       updateAutoGearCatalogOptions: updateAutoGearCatalogOptions,
@@ -15521,7 +15523,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       ['confirmAutoGearSelection', function () { return confirmAutoGearSelection; }],
       ['configureSharedImportOptions', function () { return configureSharedImportOptions; }],
       ['resolveSharedImportMode', function () { return resolveSharedImportMode; }],
-      ['resetPlannerStateAfterFactoryReset', function () { return resetPlannerStateAfterFactoryReset; }]
+      ['resetPlannerStateAfterFactoryReset', function () { return resetPlannerStateAfterFactoryReset; }],
+      ['updateStorageSummary', function () { return updateStorageSummary; }],
+      ['normaliseMarkVariants', function () { return normaliseMarkVariants; }],
+      ['storeLoadedSetupState', function () { return storeLoadedSetupState; }]
     ];
 
     var resolvedAdditionalExports = ADDITIONAL_GLOBAL_EXPORT_ENTRIES.reduce(function (acc, entry) {
