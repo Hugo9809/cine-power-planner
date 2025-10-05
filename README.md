@@ -962,6 +962,11 @@ flows cannot run without their safeguards. See
 for the full contract and guidance on adding new modules while keeping offline
 guarantees, documentation and translations aligned.
 
+An infrastructure trio—`cineModuleBase`, `cineModuleContext` and
+`cineModuleEnvironment`—now wraps the registry so that scope detection, module
+system lookups, deferred registration queues and global exposure stay aligned
+between modern and legacy bundles without duplicating boilerplate.
+
 ### Legacy browser bundle
 
 Run `npm run build:legacy` after modifying files in `src/scripts/` or `src/data/`

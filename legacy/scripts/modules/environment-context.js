@@ -20,68 +20,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return {};
   }
-  var LOCAL_SCOPE = fallbackDetectGlobalScope();
-  function resolveArchitecture(scope) {
-    var targetScope = scope || LOCAL_SCOPE;
-    if (typeof require === 'function') {
-      try {
-        var required = require('./architecture.js');
-        if (required && _typeof(required) === 'object') {
-          return required;
-        }
-      } catch (error) {
-        void error;
-      }
-    }
-    if (targetScope && _typeof(targetScope.cineModuleArchitecture) === 'object') {
-      return targetScope.cineModuleArchitecture;
-    }
-    return null;
-  }
-  function resolveModuleSystem(scope) {
-    var targetScope = scope || LOCAL_SCOPE;
-    if (typeof require === 'function') {
-      try {
-        var required = require('./system.js');
-        if (required && _typeof(required) === 'object') {
-          return required;
-        }
-      } catch (error) {
-        void error;
-      }
-    }
-    if (targetScope && _typeof(targetScope.cineModuleSystem) === 'object') {
-      return targetScope.cineModuleSystem;
-    }
-    return null;
-  }
-  var MODULE_SYSTEM = resolveModuleSystem(LOCAL_SCOPE);
-  var ARCHITECTURE = (MODULE_SYSTEM && typeof MODULE_SYSTEM.getArchitecture === 'function' ? MODULE_SYSTEM.getArchitecture() : null) || resolveArchitecture(LOCAL_SCOPE);
-  function detectWithArchitecture() {
-    if (ARCHITECTURE && typeof ARCHITECTURE.detectGlobalScope === 'function') {
-      try {
-        var detected = ARCHITECTURE.detectGlobalScope();
-        if (detected) {
-          return detected;
-        }
-      } catch (error) {
-        void error;
-      }
-    }
-    return fallbackDetectGlobalScope();
-  }
-  var detectGlobalScope = MODULE_SYSTEM && typeof MODULE_SYSTEM.detectGlobalScope === 'function' ? function detectWithSystem() {
-    try {
-      var detected = MODULE_SYSTEM.detectGlobalScope();
-      if (detected) {
-        return detected;
-      }
-    } catch (error) {
-      void error;
-    }
-    return detectWithArchitecture();
-  } : detectWithArchitecture;
-  var PRIMARY_SCOPE = detectGlobalScope();
   function fallbackCollectCandidateScopes(primary) {
     var scopes = [];
     function pushScope(scope) {
@@ -99,28 +37,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (typeof global !== 'undefined') pushScope(global);
     return scopes;
   }
-  function collectWithArchitecture(primary) {
-    if (ARCHITECTURE && typeof ARCHITECTURE.collectCandidateScopes === 'function') {
-      try {
-        return ARCHITECTURE.collectCandidateScopes(primary || PRIMARY_SCOPE);
-      } catch (error) {
-        void error;
-      }
-    }
-    return fallbackCollectCandidateScopes(primary || PRIMARY_SCOPE);
-  }
-  var collectCandidateScopes = MODULE_SYSTEM && typeof MODULE_SYSTEM.collectCandidateScopes === 'function' ? function collectWithSystem(primary) {
-    var target = primary || PRIMARY_SCOPE;
-    try {
-      var scopes = MODULE_SYSTEM.collectCandidateScopes(target);
-      if (Array.isArray(scopes) && scopes.length > 0) {
-        return scopes;
-      }
-    } catch (error) {
-      void error;
-    }
-    return collectWithArchitecture(target);
-  } : collectWithArchitecture;
   function fallbackTryRequire(modulePath) {
     if (typeof require !== 'function') {
       return null;
@@ -132,13 +48,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return null;
     }
   }
-  var tryRequire = MODULE_SYSTEM && typeof MODULE_SYSTEM.tryRequire === 'function' ? function tryRequireWithSystem(modulePath) {
-    var result = MODULE_SYSTEM.tryRequire(modulePath);
-    return typeof result === 'undefined' ? fallbackTryRequire(modulePath) : result;
-  } : ARCHITECTURE && typeof ARCHITECTURE.tryRequire === 'function' ? function tryRequireWithArchitecture(modulePath) {
-    return ARCHITECTURE.tryRequire(modulePath);
-  } : fallbackTryRequire;
   function fallbackDefineHiddenProperty(target, name, value) {
+    if (!target || _typeof(target) !== 'object' && typeof target !== 'function') {
+      return false;
+    }
     try {
       Object.defineProperty(target, name, {
         configurable: true,
@@ -158,11 +71,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return false;
   }
-  var defineHiddenProperty = MODULE_SYSTEM && typeof MODULE_SYSTEM.defineHiddenProperty === 'function' ? MODULE_SYSTEM.defineHiddenProperty : ARCHITECTURE && typeof ARCHITECTURE.defineHiddenProperty === 'function' ? ARCHITECTURE.defineHiddenProperty : fallbackDefineHiddenProperty;
   function fallbackResolveFromScopes(propertyName, options) {
     var settings = options || {};
     var predicate = typeof settings.predicate === 'function' ? settings.predicate : null;
-    var scopes = Array.isArray(settings.scopes) ? settings.scopes.slice() : fallbackCollectCandidateScopes(settings.primaryScope || PRIMARY_SCOPE);
+    var scopes = Array.isArray(settings.scopes) ? settings.scopes.slice() : fallbackCollectCandidateScopes(settings.primaryScope);
     for (var index = 0; index < scopes.length; index += 1) {
       var scope = scopes[index];
       if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
@@ -185,22 +97,167 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return null;
   }
-  var resolveFromScopes = MODULE_SYSTEM && typeof MODULE_SYSTEM.resolveFromScopes === 'function' ? function resolveWithSystem(propertyName, options) {
+  var LOCAL_SCOPE = fallbackDetectGlobalScope();
+  function resolveArchitecture(scope) {
+    var targetScope = scope || LOCAL_SCOPE;
+    var required = fallbackTryRequire('./architecture.js');
+    if (required && _typeof(required) === 'object') {
+      return required;
+    }
+    if (targetScope && _typeof(targetScope.cineModuleArchitecture) === 'object') {
+      return targetScope.cineModuleArchitecture;
+    }
+    return null;
+  }
+  function resolveModuleSystem(scope) {
+    var targetScope = scope || LOCAL_SCOPE;
+    var required = fallbackTryRequire('./system.js');
+    if (required && _typeof(required) === 'object') {
+      return required;
+    }
+    if (targetScope && _typeof(targetScope.cineModuleSystem) === 'object') {
+      return targetScope.cineModuleSystem;
+    }
+    return null;
+  }
+  function resolveModuleContext(scope) {
+    var targetScope = scope || LOCAL_SCOPE;
+    var required = fallbackTryRequire('./context.js');
+    if (required && _typeof(required) === 'object') {
+      return required;
+    }
+    if (targetScope && _typeof(targetScope.cineModuleContext) === 'object') {
+      return targetScope.cineModuleContext;
+    }
+    return null;
+  }
+  var MODULE_CONTEXT = resolveModuleContext(LOCAL_SCOPE);
+  var MODULE_SYSTEM = (MODULE_CONTEXT && typeof MODULE_CONTEXT.getModuleSystem === 'function' ? MODULE_CONTEXT.getModuleSystem() : null) || resolveModuleSystem(LOCAL_SCOPE);
+  var ARCHITECTURE = (MODULE_CONTEXT && typeof MODULE_CONTEXT.getArchitecture === 'function' ? MODULE_CONTEXT.getArchitecture() : null) || (MODULE_SYSTEM && typeof MODULE_SYSTEM.getArchitecture === 'function' ? MODULE_SYSTEM.getArchitecture() : null) || resolveArchitecture(LOCAL_SCOPE);
+  var CONTEXT_INSTANCE = MODULE_CONTEXT && typeof MODULE_CONTEXT.createModuleContext === 'function' ? MODULE_CONTEXT.createModuleContext({
+    scope: LOCAL_SCOPE
+  }) : null;
+  function detectWithoutContext() {
+    if (MODULE_SYSTEM && typeof MODULE_SYSTEM.detectGlobalScope === 'function') {
+      try {
+        var detected = MODULE_SYSTEM.detectGlobalScope();
+        if (detected) {
+          return detected;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+    if (ARCHITECTURE && typeof ARCHITECTURE.detectGlobalScope === 'function') {
+      try {
+        var _detected = ARCHITECTURE.detectGlobalScope();
+        if (_detected) {
+          return _detected;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+    return fallbackDetectGlobalScope();
+  }
+  var PRIMARY_SCOPE = (CONTEXT_INSTANCE && typeof CONTEXT_INSTANCE.getScope === 'function' ? CONTEXT_INSTANCE.getScope() : null) || detectWithoutContext();
+  var detectGlobalScope = CONTEXT_INSTANCE && typeof CONTEXT_INSTANCE.detectGlobalScope === 'function' ? function detectWithContext(primary) {
+    try {
+      var detected = CONTEXT_INSTANCE.detectGlobalScope(primary);
+      if (detected) {
+        return detected;
+      }
+    } catch (error) {
+      void error;
+    }
+    return detectWithoutContext();
+  } : function detectWithFallback(primary) {
+    void primary;
+    return detectWithoutContext();
+  };
+  function collectWithoutContext(primary) {
+    var target = primary || PRIMARY_SCOPE;
+    if (MODULE_SYSTEM && typeof MODULE_SYSTEM.collectCandidateScopes === 'function') {
+      try {
+        var scopes = MODULE_SYSTEM.collectCandidateScopes(target);
+        if (Array.isArray(scopes) && scopes.length > 0) {
+          return scopes;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+    if (ARCHITECTURE && typeof ARCHITECTURE.collectCandidateScopes === 'function') {
+      try {
+        return ARCHITECTURE.collectCandidateScopes(target);
+      } catch (error) {
+        void error;
+      }
+    }
+    return fallbackCollectCandidateScopes(target);
+  }
+  var collectCandidateScopes = CONTEXT_INSTANCE && typeof CONTEXT_INSTANCE.collectCandidateScopes === 'function' ? function collectWithContext(primary) {
+    try {
+      var scopes = CONTEXT_INSTANCE.collectCandidateScopes(primary || PRIMARY_SCOPE);
+      if (Array.isArray(scopes) && scopes.length > 0) {
+        return scopes;
+      }
+    } catch (error) {
+      void error;
+    }
+    return collectWithoutContext(primary);
+  } : collectWithoutContext;
+  function tryRequireWithoutContext(modulePath) {
+    if (MODULE_SYSTEM && typeof MODULE_SYSTEM.tryRequire === 'function') {
+      var result = MODULE_SYSTEM.tryRequire(modulePath);
+      if (typeof result !== 'undefined') {
+        return result;
+      }
+    }
+    if (ARCHITECTURE && typeof ARCHITECTURE.tryRequire === 'function') {
+      return ARCHITECTURE.tryRequire(modulePath);
+    }
+    return fallbackTryRequire(modulePath);
+  }
+  var tryRequire = CONTEXT_INSTANCE && typeof CONTEXT_INSTANCE.tryRequire === 'function' ? function tryRequireWithContext(modulePath) {
+    var result = CONTEXT_INSTANCE.tryRequire(modulePath);
+    return typeof result === 'undefined' ? tryRequireWithoutContext(modulePath) : result;
+  } : tryRequireWithoutContext;
+  var defineHiddenProperty = CONTEXT_INSTANCE && typeof CONTEXT_INSTANCE.defineHiddenProperty === 'function' ? function defineWithContext(target, name, value) {
+    return CONTEXT_INSTANCE.defineHiddenProperty(target, name, value);
+  } : MODULE_SYSTEM && typeof MODULE_SYSTEM.defineHiddenProperty === 'function' ? MODULE_SYSTEM.defineHiddenProperty : ARCHITECTURE && typeof ARCHITECTURE.defineHiddenProperty === 'function' ? ARCHITECTURE.defineHiddenProperty : fallbackDefineHiddenProperty;
+  function resolveFromScopesWithoutContext(propertyName, options) {
     var settings = _objectSpread({}, options || {});
     if (!settings.primaryScope) {
       settings.primaryScope = PRIMARY_SCOPE;
     }
     if (!settings.scopes) {
-      settings.scopes = collectCandidateScopes(settings.primaryScope);
+      settings.scopes = collectWithoutContext(settings.primaryScope);
     }
-    return MODULE_SYSTEM.resolveFromScopes(propertyName, settings);
-  } : ARCHITECTURE && typeof ARCHITECTURE.resolveFromScopes === 'function' ? function resolveWithArchitecture(propertyName, options) {
-    var settings = _objectSpread({}, options || {});
-    if (!settings.primaryScope) {
-      settings.primaryScope = PRIMARY_SCOPE;
+    if (MODULE_SYSTEM && typeof MODULE_SYSTEM.resolveFromScopes === 'function') {
+      try {
+        return MODULE_SYSTEM.resolveFromScopes(propertyName, settings);
+      } catch (error) {
+        void error;
+      }
     }
-    return ARCHITECTURE.resolveFromScopes(propertyName, settings);
-  } : fallbackResolveFromScopes;
+    if (ARCHITECTURE && typeof ARCHITECTURE.resolveFromScopes === 'function') {
+      try {
+        return ARCHITECTURE.resolveFromScopes(propertyName, settings);
+      } catch (error) {
+        void error;
+      }
+    }
+    return fallbackResolveFromScopes(propertyName, settings);
+  }
+  var resolveFromScopes = CONTEXT_INSTANCE && typeof CONTEXT_INSTANCE.resolveFromScopes === 'function' ? function resolveWithContext(propertyName, options) {
+    try {
+      return CONTEXT_INSTANCE.resolveFromScopes(propertyName, options);
+    } catch (error) {
+      void error;
+    }
+    return resolveFromScopesWithoutContext(propertyName, options);
+  } : resolveFromScopesWithoutContext;
   function resolveModuleEnvironment(scope) {
     var targetScope = scope || PRIMARY_SCOPE;
     var required = tryRequire('./environment.js');
@@ -237,34 +294,18 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     });
     return resolved && _typeof(resolved) === 'object' ? resolved : null;
   }
-  function getGlobalScope(scope) {
+  function resolveModuleRegistry(scope) {
     var targetScope = scope || PRIMARY_SCOPE;
-    var bridge = resolveEnvironmentBridge(targetScope);
-    if (bridge && typeof bridge.getGlobalScope === 'function') {
+    if (CONTEXT_INSTANCE && typeof CONTEXT_INSTANCE.getModuleRegistry === 'function') {
       try {
-        var bridged = bridge.getGlobalScope(targetScope);
-        if (bridged) {
-          return bridged;
-        }
-      } catch (error) {
-        void error;
-      }
-    }
-    var environment = resolveModuleEnvironment(targetScope);
-    if (environment && typeof environment.getGlobalScope === 'function') {
-      try {
-        var provided = environment.getGlobalScope(targetScope);
-        if (provided) {
+        var provided = CONTEXT_INSTANCE.getModuleRegistry();
+        if (provided && _typeof(provided) === 'object') {
           return provided;
         }
       } catch (error) {
         void error;
       }
     }
-    return targetScope || PRIMARY_SCOPE;
-  }
-  function resolveModuleRegistry(scope) {
-    var targetScope = scope || PRIMARY_SCOPE;
     var moduleGlobals = resolveModuleGlobals(targetScope);
     if (moduleGlobals && typeof moduleGlobals.resolveModuleRegistry === 'function') {
       try {
@@ -278,9 +319,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     if (moduleGlobals && typeof moduleGlobals.getModuleRegistry === 'function') {
       try {
-        var provided = moduleGlobals.getModuleRegistry(targetScope);
-        if (provided) {
-          return provided;
+        var _provided = moduleGlobals.getModuleRegistry(targetScope);
+        if (_provided) {
+          return _provided;
         }
       } catch (error) {
         void error;
@@ -318,6 +359,32 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     });
     return resolved && _typeof(resolved) === 'object' ? resolved : null;
   }
+  function getGlobalScope(scope) {
+    var targetScope = scope || PRIMARY_SCOPE;
+    var bridge = resolveEnvironmentBridge(targetScope);
+    if (bridge && typeof bridge.getGlobalScope === 'function') {
+      try {
+        var bridged = bridge.getGlobalScope(targetScope);
+        if (bridged) {
+          return bridged;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+    var environment = resolveModuleEnvironment(targetScope);
+    if (environment && typeof environment.getGlobalScope === 'function') {
+      try {
+        var provided = environment.getGlobalScope(targetScope);
+        if (provided) {
+          return provided;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+    return targetScope || PRIMARY_SCOPE;
+  }
   var context = Object.freeze({
     detectGlobalScope: detectGlobalScope,
     collectCandidateScopes: collectCandidateScopes,
@@ -334,7 +401,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   });
   var globalScope = getGlobalScope(PRIMARY_SCOPE) || PRIMARY_SCOPE;
   if (globalScope && !globalScope.cineModuleEnvironmentContext) {
-    defineHiddenProperty(globalScope, 'cineModuleEnvironmentContext', context);
+    var define = CONTEXT_INSTANCE && typeof CONTEXT_INSTANCE.defineHiddenProperty === 'function' ? CONTEXT_INSTANCE.defineHiddenProperty : defineHiddenProperty;
+    define(globalScope, 'cineModuleEnvironmentContext', context);
   }
   if (typeof module !== 'undefined' && module && module.exports) {
     module.exports = context;

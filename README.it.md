@@ -425,6 +425,11 @@ e ripristini non funzionino mai senza le relative protezioni. Consulta
 prima di aggiungere nuovi moduli per mantenere allineate le garanzie offline,
 la documentazione e le traduzioni.
 
+Un trio infrastrutturale — `cineModuleBase`, `cineModuleContext` e
+`cineModuleEnvironment` — mantiene allineati il rilevamento dello scope, le
+interrogazioni al sistema di moduli, le code di registrazione e l’esposizione
+globale tra bundle moderni e legacy senza duplicare boilerplate.
+
 ### Bundle legacy
 
 Dopo modifiche in `src/scripts/` o `src/data/`, esegui `npm run build:legacy` per rigenerare il bundle ES5 destinato ai browser datati e mantenere aggiornati i polyfill locali.

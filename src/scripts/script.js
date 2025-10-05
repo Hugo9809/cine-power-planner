@@ -13,6 +13,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
   const parts = [
     'modules/base.js',
     'modules/registry.js',
+    'modules/context.js',
     'modules/environment-bridge.js',
     'modules/globals.js',
     'modules/offline.js',
@@ -78,6 +79,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
 
   ensureModule('modules/base.js');
   ensureModule('modules/registry.js');
+  ensureModule('modules/context.js');
   ensureModule('modules/environment-bridge.js');
   ensureModule('modules/globals.js');
   ensureModule('modules/persistence.js');
