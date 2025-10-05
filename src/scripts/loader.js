@@ -74,9 +74,6 @@ function ensureCriticalGlobalVariable(name, fallback) {
 }
 
 ensureCriticalGlobalVariable('autoGearAutoPresetId', '');
-if (typeof autoGearAutoPresetId === 'undefined') {
-  var autoGearAutoPresetId = '';
-}
 ensureCriticalGlobalVariable('baseAutoGearRules', []);
 ensureCriticalGlobalVariable('autoGearScenarioModeSelect', null);
 ensureCriticalGlobalVariable('autoGearRuleNameInput', null);
