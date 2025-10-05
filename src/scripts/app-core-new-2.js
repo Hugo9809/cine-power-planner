@@ -10468,13 +10468,19 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (!btn.dataset.editProjectBound) {
         btn.type = 'button';
         btn.addEventListener('click', () => {
-          const infoForDialog = currentProjectInfo
-            ? { ...currentProjectInfo }
-            : (projectForm ? collectProjectFormData() : {});
-          if (projectForm) {
-            populateProjectForm(infoForDialog || {});
+          const infoForDialog = typeof getProjectDialogSeedInfo === 'function'
+            ? getProjectDialogSeedInfo()
+            : currentProjectInfo
+              ? { ...currentProjectInfo }
+              : (projectForm ? collectProjectFormData() : {});
+          if (typeof openProjectDialogWithInfo === 'function') {
+            openProjectDialogWithInfo(infoForDialog);
+          } else {
+            if (projectForm) {
+              populateProjectForm(infoForDialog || {});
+            }
+            openDialog(projectDialog);
           }
-          openDialog(projectDialog);
         });
         btn.dataset.editProjectBound = 'true';
       }
