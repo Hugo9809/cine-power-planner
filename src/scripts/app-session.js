@@ -10063,14 +10063,19 @@ function getFilterValueConfig(type) {
   }
 }
 
-function createFilterSizeSelect(type, selected = DEFAULT_FILTER_SIZE, options = {}) {
+const SESSION_DEFAULT_FILTER_SIZE = ensureSessionRuntimePlaceholder(
+  'DEFAULT_FILTER_SIZE',
+  () => '4x5.65'
+);
+
+function createFilterSizeSelect(type, selected = SESSION_DEFAULT_FILTER_SIZE, options = {}) {
   const { includeId = true, idPrefix = 'filter-size-' } = options;
   const sel = document.createElement('select');
   if (includeId) {
     sel.id = `${idPrefix}${filterId(type)}`;
   }
-  let sizes = [DEFAULT_FILTER_SIZE, '4x4', '6x6', '95mm'];
-  if (type === 'Rota-Pol') sizes = [DEFAULT_FILTER_SIZE, '6x6', '95mm'];
+  let sizes = [SESSION_DEFAULT_FILTER_SIZE, '4x4', '6x6', '95mm'];
+  if (type === 'Rota-Pol') sizes = [SESSION_DEFAULT_FILTER_SIZE, '6x6', '95mm'];
   sizes.forEach(s => {
     const o = document.createElement('option');
     o.value = s;
@@ -10151,7 +10156,7 @@ function createFilterValueSelect(type, selected) {
   return { container, select: sel };
 }
 
-function resolveFilterDisplayInfo(type, size = DEFAULT_FILTER_SIZE) {
+function resolveFilterDisplayInfo(type, size = SESSION_DEFAULT_FILTER_SIZE) {
   switch (type) {
     case 'Diopter':
       return { label: 'Schneider CF DIOPTER FULL GEN2', gearName: 'Schneider CF DIOPTER FULL GEN2' };
@@ -10190,9 +10195,9 @@ function resolveFilterDisplayInfo(type, size = DEFAULT_FILTER_SIZE) {
 
 function buildFilterGearEntries(filters = []) {
   const entries = [];
-  filters.forEach(({ type, size = DEFAULT_FILTER_SIZE, values }) => {
+  filters.forEach(({ type, size = SESSION_DEFAULT_FILTER_SIZE, values }) => {
     if (!type) return;
-    const sizeValue = size || DEFAULT_FILTER_SIZE;
+    const sizeValue = size || SESSION_DEFAULT_FILTER_SIZE;
     const idBase = `filter-${filterId(type)}`;
     switch (type) {
       case 'Diopter': {
@@ -10513,7 +10518,7 @@ function renderFilterDetails() {
   const existingMap = new Map(existingTokens.map(token => [token.type, token]));
   const details = selected.map(type => {
     const prev = existingMap.get(type) || {};
-    const size = prev.size || DEFAULT_FILTER_SIZE;
+    const size = prev.size || SESSION_DEFAULT_FILTER_SIZE;
     const needsSize = type !== 'Diopter';
     const needsValues = filterTypeNeedsValueSelect(type);
     const { label, gearName, hideDetails } = resolveFilterDisplayInfo(type, size);
@@ -10578,7 +10583,7 @@ function collectFilterSelections() {
     const sizeSel = document.getElementById(`filter-size-${filterId(type)}`);
     const valSel = document.getElementById(`filter-values-${filterId(type)}`);
     const prev = existingMap[type] || {};
-    const size = sizeSel ? sizeSel.value : (prev.size || DEFAULT_FILTER_SIZE);
+    const size = sizeSel ? sizeSel.value : (prev.size || SESSION_DEFAULT_FILTER_SIZE);
     let vals;
     const needsValues = filterTypeNeedsValueSelect(type);
     if (valSel) {
@@ -10602,7 +10607,7 @@ function parseFilterTokens(str) {
   return str.split(',').map(s => {
     const parts = s.split(':').map(p => p.trim());
     const type = parts[0];
-    const size = parts[1] || DEFAULT_FILTER_SIZE;
+    const size = parts[1] || SESSION_DEFAULT_FILTER_SIZE;
     const vals = parts.length > 2 ? parts[2] : undefined;
     let values;
     if (vals === undefined) {
