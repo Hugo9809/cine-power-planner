@@ -7,6 +7,10 @@ const relativeModulePath = '../../src/scripts/modules/environment-context.js';
 const absoluteModulePath = path.resolve(__dirname, relativeModulePath);
 
 function loadContextWithOverrides(overrides = {}, sandboxOverrides = {}) {
+  if (!Object.prototype.hasOwnProperty.call(overrides, './context.js')) {
+    overrides['./context.js'] = null;
+  }
+
   const code = fs.readFileSync(absoluteModulePath, 'utf8');
   const baseRequire = createRequire(absoluteModulePath);
   const sandbox = {
@@ -14,6 +18,37 @@ function loadContextWithOverrides(overrides = {}, sandboxOverrides = {}) {
     module: { exports: {} },
     exports: {},
   };
+
+  const injectedCaches = [];
+  const resolvedOverrides = new Map();
+
+  Object.keys(overrides).forEach((request) => {
+    try {
+      const resolved = baseRequire.resolve(request);
+      if (!resolvedOverrides.has(resolved)) {
+        resolvedOverrides.set(resolved, overrides[request]);
+        if (!Object.prototype.hasOwnProperty.call(overrides, resolved)) {
+          overrides[resolved] = overrides[request];
+        }
+      }
+    } catch (error) {
+      void error;
+    }
+  });
+
+  resolvedOverrides.forEach((value, resolved) => {
+    injectedCaches.push({
+      id: resolved,
+      previous: require.cache[resolved],
+    });
+
+    require.cache[resolved] = {
+      id: resolved,
+      filename: resolved,
+      loaded: true,
+      exports: value,
+    };
+  });
 
   if (!('globalThis' in sandbox)) {
     sandbox.globalThis = sandbox;
@@ -44,8 +79,19 @@ function loadContextWithOverrides(overrides = {}, sandboxOverrides = {}) {
     }
   };
 
-  vm.runInNewContext(code, sandbox, { filename: absoluteModulePath });
-  return { context: sandbox.module.exports, sandbox };
+  try {
+    vm.runInNewContext(code, sandbox, { filename: absoluteModulePath });
+    return { context: sandbox.module.exports, sandbox };
+  } finally {
+    for (let index = 0; index < injectedCaches.length; index += 1) {
+      const { id, previous } = injectedCaches[index];
+      if (previous) {
+        require.cache[id] = previous;
+      } else {
+        delete require.cache[id];
+      }
+    }
+  }
 }
 
 function createSystemStub(custom = {}) {
@@ -53,7 +99,7 @@ function createSystemStub(custom = {}) {
   const stub = {
     detectGlobalScope: jest.fn(() => ('primary' in custom ? custom.primary : stubPrimary)),
     collectCandidateScopes: jest.fn(() => []),
-    tryRequire: jest.fn(() => null),
+    tryRequire: jest.fn(() => undefined),
     defineHiddenProperty: jest.fn((target, name, value) => {
       if (target && (typeof target === 'object' || typeof target === 'function')) {
         try {

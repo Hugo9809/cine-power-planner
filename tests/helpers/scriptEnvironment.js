@@ -135,6 +135,48 @@ function setupScriptEnvironment(options = {}) {
     throw new Error('setupScriptEnvironment requires a DOM with a document.body.');
   }
 
+  const freezeOverrideEnabled = options.disableFreeze === true;
+  const originalFreeze = freezeOverrideEnabled ? Object.freeze : null;
+  const originalIsFrozen = freezeOverrideEnabled ? Object.isFrozen : null;
+  const originalGetOwnPropertyNames = freezeOverrideEnabled ? Object.getOwnPropertyNames : null;
+  const originalGetOwnPropertyDescriptor = freezeOverrideEnabled ? Object.getOwnPropertyDescriptor : null;
+  if (freezeOverrideEnabled) {
+    Object.freeze = (value) => value;
+    Object.isFrozen = () => false;
+    const describeTarget = (value) => {
+      try {
+        return Object.prototype.toString.call(value);
+      } catch (error) {
+        void error;
+        return '';
+      }
+    };
+    Object.getOwnPropertyNames = (target) => {
+      const description = describeTarget(target);
+      if (/^\[object (HTML|SVG|Document|Window)/.test(description)) {
+        return [];
+      }
+      try {
+        return originalGetOwnPropertyNames(target);
+      } catch (error) {
+        void error;
+        return [];
+      }
+    };
+    Object.getOwnPropertyDescriptor = (target, property) => {
+      const description = describeTarget(target);
+      if (/^\[object (HTML|SVG|Document|Window)/.test(description)) {
+        return undefined;
+      }
+      try {
+        return originalGetOwnPropertyDescriptor(target, property);
+      } catch (error) {
+        void error;
+        return undefined;
+      }
+    };
+  }
+
   const readyStateDescriptor = stubReadyState(options.readyState ?? 'loading');
 
   if (options.injectHtml === false) {
@@ -203,6 +245,12 @@ function setupScriptEnvironment(options = {}) {
     }
     jest.clearAllMocks();
     doc.body.innerHTML = '';
+    if (freezeOverrideEnabled) {
+      Object.freeze = originalFreeze;
+      Object.isFrozen = originalIsFrozen;
+      Object.getOwnPropertyNames = originalGetOwnPropertyNames;
+      Object.getOwnPropertyDescriptor = originalGetOwnPropertyDescriptor;
+    }
   };
 
   return { utils, cleanup, globals: globalStubs };

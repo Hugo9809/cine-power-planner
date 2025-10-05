@@ -7,6 +7,10 @@ const SCRIPT_CANDIDATES = ['script.module.js', 'script.js'];
 
 const { version: APP_VERSION } = require(path.join(ROOT_DIR, 'package.json'));
 
+const RUNTIME_STUBS = {
+  searchTokens: () => require('../stubs/searchTokensRuntime'),
+};
+
 function getGlobalScope() {
   if (typeof globalThis !== 'undefined') {
     return globalThis;
@@ -81,6 +85,11 @@ function normalizeRuntimeExports(rawExports) {
 }
 
 function loadRuntime() {
+  const stubLoader = RUNTIME_STUBS[process.env.CPP_RUNTIME_STUB];
+  if (typeof stubLoader === 'function') {
+    return stubLoader();
+  }
+
   const resolvedScriptPath = resolveScriptPath();
 
   if (require.cache[resolvedScriptPath]) {
