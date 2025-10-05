@@ -7486,6 +7486,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     
     var normalizeSearchValue = value =>
       typeof value === 'string' ? value.trim().toLowerCase() : '';
+    exposeCoreRuntimeConstant('normalizeSearchValue', normalizeSearchValue);
     const FEATURE_SEARCH_EXTRA_SELECTOR = '[data-feature-search]';
     
     const FEATURE_SEARCH_TYPE_LABEL_KEYS = {
@@ -11442,7 +11443,32 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     const resetViewBtn = document.getElementById("resetView");
     var gridSnapToggleBtn = document.getElementById("gridSnapToggle");
     const diagramHint = document.getElementById("diagramHint");
-    
+
+    const getCurrentGridSnap = () => {
+      try {
+        if (typeof getGridSnapState === 'function') {
+          return Boolean(getGridSnapState());
+        }
+      } catch (gridSnapStateError) {
+        void gridSnapStateError;
+      }
+
+      const scopedValue = readGlobalScopeValue('gridSnap');
+      if (typeof scopedValue === 'boolean') {
+        return scopedValue;
+      }
+
+      if (typeof gridSnap !== 'undefined') {
+        try {
+          return Boolean(gridSnap);
+        } catch (legacyGridSnapReadError) {
+          void legacyGridSnapReadError;
+        }
+      }
+
+      return false;
+    };
+
     let manualPositions = {};
     let lastDiagramPositions = {};
     
@@ -11474,7 +11500,6 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         renderSetupDiagram();
       }
     }
-    var gridSnap = false;
     let cleanupDiagramInteractions = null;
     
     // CSS used when exporting the setup diagram
@@ -15953,7 +15978,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         const dy = delta.y;
         let newX = start.x + dx;
         let newY = start.y + dy;
-        if (gridSnap) {
+        if (getCurrentGridSnap()) {
           const g = 20;
           newX = Math.round(newX / g) * g;
           newY = Math.round(newY / g) * g;
@@ -15973,7 +15998,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           const dy = delta.y;
           let newX = start.x + dx;
           let newY = start.y + dy;
-          if (gridSnap) {
+          if (getCurrentGridSnap()) {
             const g = 20;
             newX = Math.round(newX / g) * g;
             newY = Math.round(newY / g) * g;

@@ -35,6 +35,7 @@
           loadAutoGearPresets, loadAutoGearSeedFlag, loadAutoGearActivePresetId,
           loadAutoGearAutoPresetId, loadAutoGearBackupVisibility,
           loadAutoGearBackupRetention, loadFullBackupHistory */
+/* global getGridSnapState: true, setGridSnapState: true */
 /* global FEEDBACK_TEMPERATURE_MIN: true, FEEDBACK_TEMPERATURE_MAX: true */
 /* global getDiagramManualPositions, setManualDiagramPositions,
           normalizeDiagramPositionsInput, ensureAutoBackupsFromProjects */
@@ -180,6 +181,135 @@ const gridSnapToggleButton = ensureSessionRuntimePlaceholder(
     }
   },
 );
+
+const GRID_SNAP_STORAGE_KEY = '__cineGridSnapState';
+
+const readGridSnapState = () => {
+  try {
+    if (typeof getGridSnapState === 'function') {
+      return Boolean(getGridSnapState());
+    }
+  } catch (gridSnapReadError) {
+    void gridSnapReadError;
+  }
+
+  if (typeof gridSnap !== 'undefined') {
+    try {
+      return Boolean(gridSnap);
+    } catch (legacyGridSnapError) {
+      void legacyGridSnapError;
+    }
+  }
+
+  const scopes = getSessionRuntimeScopes();
+  for (let index = 0; index < scopes.length; index += 1) {
+    const scope = scopes[index];
+    if (!scope || typeof scope !== 'object') {
+      continue;
+    }
+
+    try {
+      const stored = scope[GRID_SNAP_STORAGE_KEY];
+      if (typeof stored === 'boolean') {
+        return stored;
+      }
+    } catch (storedReadError) {
+      void storedReadError;
+    }
+
+    try {
+      const legacy = scope.gridSnap;
+      if (typeof legacy === 'boolean') {
+        return legacy;
+      }
+    } catch (legacyScopeError) {
+      void legacyScopeError;
+    }
+  }
+
+  return false;
+};
+
+const writeGridSnapState = value => {
+  const desired = value === true;
+
+  try {
+    if (typeof setGridSnapState === 'function') {
+      return Boolean(setGridSnapState(desired));
+    }
+  } catch (gridSnapWriteError) {
+    void gridSnapWriteError;
+  }
+
+  const scopes = getSessionRuntimeScopes();
+  for (let index = 0; index < scopes.length; index += 1) {
+    const scope = scopes[index];
+    if (!scope || typeof scope !== 'object') {
+      continue;
+    }
+
+    try {
+      scope[GRID_SNAP_STORAGE_KEY] = desired;
+    } catch (assignStorageError) {
+      try {
+        Object.defineProperty(scope, GRID_SNAP_STORAGE_KEY, {
+          configurable: true,
+          writable: true,
+          value: desired,
+        });
+      } catch (defineStorageError) {
+        void defineStorageError;
+      }
+    }
+
+    try {
+      scope.gridSnap = desired;
+    } catch (assignLegacyError) {
+      try {
+        Object.defineProperty(scope, 'gridSnap', {
+          configurable: true,
+          writable: true,
+          value: desired,
+        });
+      } catch (defineLegacyError) {
+        void defineLegacyError;
+      }
+    }
+  }
+
+  return desired;
+};
+
+const resolveDiagramContainer = () => {
+  if (typeof setupDiagramContainer !== 'undefined' && setupDiagramContainer) {
+    return setupDiagramContainer;
+  }
+  if (
+    typeof document !== 'undefined'
+    && document
+    && typeof document.getElementById === 'function'
+  ) {
+    try {
+      return document.getElementById('diagramArea');
+    } catch (diagramResolveError) {
+      void diagramResolveError;
+    }
+  }
+  return null;
+};
+
+const applyGridSnapUiState = enabled => {
+  const diagramContainer = resolveDiagramContainer();
+  if (gridSnapToggleButton) {
+    gridSnapToggleButton.classList.toggle('active', enabled);
+    gridSnapToggleButton.setAttribute('aria-pressed', enabled ? 'true' : 'false');
+  }
+  if (diagramContainer) {
+    diagramContainer.classList.toggle('grid-snap', enabled);
+  }
+};
+
+applyGridSnapUiState(readGridSnapState());
 
 function getGlobalCineUi() {
   const scope =
@@ -8604,12 +8734,9 @@ if (downloadDiagramButton) {
 
 if (gridSnapToggleButton) {
   gridSnapToggleButton.addEventListener('click', () => {
-    gridSnap = !gridSnap;
-    gridSnapToggleButton.classList.toggle('active', gridSnap);
-    gridSnapToggleButton.setAttribute('aria-pressed', gridSnap ? 'true' : 'false');
-    if (setupDiagramContainer) {
-      setupDiagramContainer.classList.toggle('grid-snap', gridSnap);
-    }
+    const nextState = !readGridSnapState();
+    const finalState = writeGridSnapState(nextState);
+    applyGridSnapUiState(finalState);
   });
 }
 

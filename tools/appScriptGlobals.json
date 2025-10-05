@@ -14,6 +14,8 @@
     "loadDeviceData",
     "loadFeedback",
     "loadSetups",
+    "getGridSnapState",
+    "setGridSnapState",
     "populateProjectForm",
     "refreshGearListIfVisible",
     "renderFilterDetails",

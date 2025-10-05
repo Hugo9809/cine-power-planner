@@ -454,6 +454,165 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
     return typeof options !== 'undefined' && Object.prototype.hasOwnProperty.call(options, 'defaultValue') ? options.defaultValue : undefined;
   }
+
+  var GRID_SNAP_STATE_STORAGE_KEY = '__cineGridSnapState';
+
+  function getGridSnapStateScopes() {
+    var scopes = [];
+
+    var pushIfObject = function pushIfObject(candidate) {
+      if (candidate && _typeof(candidate) === 'object' && scopes.indexOf(candidate) === -1) {
+        scopes.push(candidate);
+      }
+    };
+
+    try {
+      if (CORE_GLOBAL_SCOPE && _typeof(CORE_GLOBAL_SCOPE) === 'object') {
+        pushIfObject(CORE_GLOBAL_SCOPE);
+      }
+    } catch (coreScopeError) {
+      void coreScopeError;
+    }
+
+    pushIfObject(typeof globalThis !== 'undefined' ? globalThis : null);
+    pushIfObject(typeof window !== 'undefined' ? window : null);
+    pushIfObject(typeof self !== 'undefined' ? self : null);
+    pushIfObject(typeof global !== 'undefined' ? global : null);
+
+    return scopes;
+  }
+
+  function normaliseGridSnapPreference(value, fallback) {
+    if (typeof fallback === 'undefined') {
+      fallback = false;
+    }
+
+    if (value === true || value === false) {
+      return value === true;
+    }
+
+    if (typeof value === 'string') {
+      var normalized = value.trim().toLowerCase();
+      if (!normalized) {
+        return fallback;
+      }
+      if (['true', '1', 'yes', 'on', 'enabled', 'enable'].indexOf(normalized) !== -1) {
+        return true;
+      }
+      if (['false', '0', 'no', 'off', 'disabled', 'disable'].indexOf(normalized) !== -1) {
+        return false;
+      }
+      return fallback;
+    }
+
+    if (typeof value === 'number') {
+      if (typeof Number.isFinite === 'function' ? !Number.isFinite(value) : !isFinite(value)) {
+        return fallback;
+      }
+      return value > 0;
+    }
+
+    if (value && _typeof(value) === 'object') {
+      if (Object.prototype.hasOwnProperty.call(value, 'enabled')) {
+        return normaliseGridSnapPreference(value.enabled, fallback);
+      }
+      if (Object.prototype.hasOwnProperty.call(value, 'value')) {
+        return normaliseGridSnapPreference(value.value, fallback);
+      }
+    }
+
+    return fallback;
+  }
+
+  function readInitialGridSnapPreference() {
+    var scopes = getGridSnapStateScopes();
+    for (var index = 0; index < scopes.length; index += 1) {
+      var scope = scopes[index];
+      if (!scope || _typeof(scope) !== 'object') {
+        continue;
+      }
+
+      try {
+        if (Object.prototype.hasOwnProperty.call(scope, GRID_SNAP_STATE_STORAGE_KEY)) {
+          var stored = scope[GRID_SNAP_STATE_STORAGE_KEY];
+          var normalized = normaliseGridSnapPreference(stored, undefined);
+          if (typeof normalized === 'boolean') {
+            return normalized;
+          }
+        }
+      } catch (storageReadError) {
+        void storageReadError;
+      }
+
+      try {
+        if (Object.prototype.hasOwnProperty.call(scope, 'gridSnap')) {
+          var legacy = scope.gridSnap;
+          var normalizedLegacy = normaliseGridSnapPreference(legacy, undefined);
+          if (typeof normalizedLegacy === 'boolean') {
+            return normalizedLegacy;
+          }
+        }
+      } catch (legacyReadError) {
+        void legacyReadError;
+      }
+    }
+
+    return undefined;
+  }
+
+  var gridSnapState = normaliseGridSnapPreference(readInitialGridSnapPreference(), false);
+
+  function syncGridSnapStateToScopes(value) {
+    var scopes = getGridSnapStateScopes();
+    for (var index = 0; index < scopes.length; index += 1) {
+      var scope = scopes[index];
+      if (!scope || _typeof(scope) !== 'object') {
+        continue;
+      }
+
+      try {
+        scope[GRID_SNAP_STATE_STORAGE_KEY] = value;
+      } catch (assignStorageError) {
+        try {
+          Object.defineProperty(scope, GRID_SNAP_STATE_STORAGE_KEY, {
+            configurable: true,
+            writable: true,
+            value: value
+          });
+        } catch (defineStorageError) {
+          void defineStorageError;
+        }
+      }
+
+      try {
+        scope.gridSnap = value;
+      } catch (assignLegacyError) {
+        try {
+          Object.defineProperty(scope, 'gridSnap', {
+            configurable: true,
+            writable: true,
+            value: value
+          });
+        } catch (defineLegacyError) {
+          void defineLegacyError;
+        }
+      }
+    }
+  }
+
+  function getGridSnapState() {
+    return gridSnapState;
+  }
+
+  function setGridSnapState(value) {
+    var normalized = normaliseGridSnapPreference(value, gridSnapState);
+    gridSnapState = normalized;
+    syncGridSnapStateToScopes(normalized);
+    return gridSnapState;
+  }
+
+  syncGridSnapStateToScopes(gridSnapState);
+
   (function ensureCoreRuntimePlaceholders() {
     var scope = CORE_GLOBAL_SCOPE || (typeof globalThis !== 'undefined' ? globalThis : null) || (typeof window !== 'undefined' ? window : null) || (typeof self !== 'undefined' ? self : null) || (typeof global !== 'undefined' ? global : null);
     if (!scope || _typeof(scope) !== 'object') {
@@ -9153,7 +9312,18 @@ function updateAutoGearItemButtonState(type) {
       gridSnapToggleBtn.setAttribute("title", texts[lang].gridSnapToggle);
       gridSnapToggleBtn.setAttribute("aria-label", texts[lang].gridSnapToggle);
       gridSnapToggleBtn.setAttribute("data-help", texts[lang].gridSnapToggleHelp);
-      gridSnapToggleBtn.setAttribute("aria-pressed", gridSnap ? "true" : "false");
+      var snapActive = false;
+      try {
+        snapActive = Boolean(getGridSnapState());
+      } catch (gridSnapReadError) {
+        void gridSnapReadError;
+        try {
+          snapActive = Boolean(gridSnap);
+        } catch (legacyGridSnapError) {
+          void legacyGridSnapError;
+        }
+      }
+      gridSnapToggleBtn.setAttribute('aria-pressed', snapActive ? 'true' : 'false');
     }
     if (resetViewBtn) {
       setButtonLabelWithIcon(resetViewBtn, texts[lang].resetViewBtn, ICON_GLYPHS.resetView);
@@ -14969,7 +15139,9 @@ function updateAutoGearItemButtonState(type) {
     triggerPinkModeIconRain: triggerPinkModeIconRain,
     PINK_MODE_ICON_INTERVAL_MS: PINK_MODE_ICON_INTERVAL_MS,
     PINK_MODE_ICON_ANIMATION_CLASS: PINK_MODE_ICON_ANIMATION_CLASS,
-    PINK_MODE_ICON_ANIMATION_RESET_DELAY: PINK_MODE_ICON_ANIMATION_RESET_DELAY
+    PINK_MODE_ICON_ANIMATION_RESET_DELAY: PINK_MODE_ICON_ANIMATION_RESET_DELAY,
+    getGridSnapState: getGridSnapState,
+    setGridSnapState: setGridSnapState
   });
   exposeCoreRuntimeBindings({
     safeGenerateConnectorSummary: {
