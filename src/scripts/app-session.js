@@ -4672,6 +4672,47 @@ function formatTimestampForComparison(date, includeSeconds) {
   return date.toISOString();
 }
 
+const getDiffText = (key, fallbackValue = '') => {
+  if (typeof key !== 'string' || !key) {
+    return typeof fallbackValue === 'string' ? fallbackValue : `${fallbackValue ?? ''}`;
+  }
+
+  const normalizedFallback =
+    typeof fallbackValue === 'string' ? fallbackValue : `${fallbackValue ?? ''}`;
+  const langTexts =
+    texts && typeof currentLang === 'string' && currentLang && texts[currentLang]
+      ? texts[currentLang]
+      : null;
+  const defaultTexts = texts && typeof texts.en === 'object' ? texts.en : null;
+
+  const resolveCandidate = source => {
+    if (!source || typeof source !== 'object') {
+      return null;
+    }
+    if (!Object.prototype.hasOwnProperty.call(source, key)) {
+      return null;
+    }
+    const value = source[key];
+    if (typeof value !== 'string') {
+      return null;
+    }
+    const trimmed = value.trim();
+    return trimmed ? trimmed : null;
+  };
+
+  const localized = resolveCandidate(langTexts);
+  if (localized) {
+    return localized;
+  }
+
+  const fallbackLocalized = resolveCandidate(defaultTexts);
+  if (fallbackLocalized) {
+    return fallbackLocalized;
+  }
+
+  return normalizedFallback;
+};
+
 function formatComparisonOptionLabel(name, parsedDetails) {
   if (typeof name !== 'string') {
     return '';
