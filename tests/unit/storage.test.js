@@ -62,6 +62,7 @@ const {
   saveFullBackupHistory,
   recordFullBackupHistoryEntry,
   ensureCriticalStorageBackups,
+  decodeStoredValue,
 } = require('../../src/scripts/storage');
 
 const DEVICE_KEY = 'cameraPowerPlanner_devices';
@@ -93,6 +94,16 @@ const TEST_AUTO_BACKUP_RENAMED_FLAG =
   (typeof globalThis !== 'undefined' && globalThis.__CINE_AUTO_BACKUP_RENAMED_FLAG)
     ? globalThis.__CINE_AUTO_BACKUP_RENAMED_FLAG
     : '__cineAutoBackupRenamed';
+
+const parseLocalStorageJSON = (key) => {
+  const raw = localStorage.getItem(key);
+  if (raw === null || raw === undefined) {
+    return raw;
+  }
+  return JSON.parse(decodeStoredValue(raw));
+};
+
+const getDecodedLocalStorageItem = (key) => decodeStoredValue(localStorage.getItem(key));
 
 const validDeviceData = {
   cameras: {},
@@ -137,7 +148,7 @@ describe('device data storage', () => {
 
   test('saveDeviceData stores JSON in localStorage', () => {
     saveDeviceData(validDeviceData);
-    expect(localStorage.getItem(DEVICE_KEY)).toBe(JSON.stringify(validDeviceData));
+    expect(getDecodedLocalStorageItem(DEVICE_KEY)).toBe(JSON.stringify(validDeviceData));
   });
 
   test('saveDeviceData(null) removes stored overrides and backup copy', () => {
@@ -146,8 +157,8 @@ describe('device data storage', () => {
 
     saveDeviceData(null);
 
-    expect(localStorage.getItem(DEVICE_KEY)).toBeNull();
-    expect(localStorage.getItem(backupKeyFor(DEVICE_KEY))).toBeNull();
+    expect(getDecodedLocalStorageItem(DEVICE_KEY)).toBeNull();
+    expect(getDecodedLocalStorageItem(backupKeyFor(DEVICE_KEY))).toBeNull();
   });
 
   test('loadDeviceData returns parsed data if valid', () => {
@@ -195,22 +206,22 @@ describe('device data storage', () => {
       filterOptions: [],
     };
     expect(result).toEqual(expected);
-    expect(JSON.parse(localStorage.getItem(DEVICE_KEY))).toEqual(expected);
+    expect(parseLocalStorageJSON(DEVICE_KEY)).toEqual(expected);
   });
 
   test('loadDeviceData creates migration backup before rewriting normalized data', () => {
     const legacy = { cameras: { Alexa: {} } };
     localStorage.setItem(DEVICE_KEY, JSON.stringify(legacy));
 
-    expect(localStorage.getItem(migrationBackupKeyFor(DEVICE_KEY))).toBeNull();
+    expect(getDecodedLocalStorageItem(migrationBackupKeyFor(DEVICE_KEY))).toBeNull();
 
     const result = loadDeviceData();
 
     expect(result).toMatchObject({ cameras: { Alexa: {} } });
-    const stored = JSON.parse(localStorage.getItem(DEVICE_KEY));
+    const stored = parseLocalStorageJSON(DEVICE_KEY);
     expect(stored).toEqual(result);
 
-    const backupRaw = localStorage.getItem(migrationBackupKeyFor(DEVICE_KEY));
+    const backupRaw = getDecodedLocalStorageItem(migrationBackupKeyFor(DEVICE_KEY));
     expect(backupRaw).toBeTruthy();
     const backup = JSON.parse(backupRaw);
     expect(typeof backup.createdAt).toBe('string');
@@ -230,7 +241,7 @@ describe('device data storage', () => {
     const result = loadDeviceData();
 
     expect(result).toMatchObject({ cameras: { Alexa: {} } });
-    expect(localStorage.getItem(migrationBackupKeyFor(DEVICE_KEY))).toBe(
+    expect(getDecodedLocalStorageItem(migrationBackupKeyFor(DEVICE_KEY))).toBe(
       JSON.stringify(existingBackup),
     );
   });
@@ -242,9 +253,9 @@ describe('device data storage', () => {
     const result = loadDeviceData();
 
     expect(result).not.toBeNull();
-    const stored = JSON.parse(localStorage.getItem(DEVICE_KEY));
+    const stored = parseLocalStorageJSON(DEVICE_KEY);
     expect(stored).toEqual(result);
-    expect(localStorage.getItem('cinePowerPlanner_devices')).toBeNull();
+    expect(getDecodedLocalStorageItem('cinePowerPlanner_devices')).toBeNull();
   });
 
   test('loadDeviceData replaces non-object categories with empty objects', () => {
@@ -295,12 +306,12 @@ describe('device data storage', () => {
   test('loadDeviceData restores data from backup when primary payload is corrupted', () => {
     saveDeviceData(validDeviceData);
     const backupKey = backupKeyFor(DEVICE_KEY);
-    expect(localStorage.getItem(backupKey)).toBe(JSON.stringify(validDeviceData));
+    expect(getDecodedLocalStorageItem(backupKey)).toBe(JSON.stringify(validDeviceData));
 
     localStorage.setItem(DEVICE_KEY, '{invalid-json');
 
     expect(loadDeviceData()).toEqual(validDeviceData);
-    expect(localStorage.getItem(DEVICE_KEY)).toBe(JSON.stringify(validDeviceData));
+    expect(getDecodedLocalStorageItem(DEVICE_KEY)).toBe(JSON.stringify(validDeviceData));
   });
 });
 
@@ -312,7 +323,7 @@ describe('setup storage', () => {
   test('saveSetups stores JSON', () => {
     const setups = {A: {foo: 1}};
     saveSetups(setups);
-    expect(localStorage.getItem(SETUP_KEY)).toBe(JSON.stringify(setups));
+    expect(getDecodedLocalStorageItem(SETUP_KEY)).toBe(JSON.stringify(setups));
   });
 
   test('loadSetups returns empty object when none', () => {
@@ -329,7 +340,7 @@ describe('setup storage', () => {
     const arr = [{ name: 'A', foo: 1 }, { name: 'B', bar: 2 }];
     localStorage.setItem(SETUP_KEY, JSON.stringify(arr));
     expect(loadSetups()).toEqual({ A: { name: 'A', foo: 1 }, B: { name: 'B', bar: 2 } });
-    expect(JSON.parse(localStorage.getItem(SETUP_KEY))).toEqual({ A: { name: 'A', foo: 1 }, B: { name: 'B', bar: 2 } });
+    expect(parseLocalStorageJSON(SETUP_KEY)).toEqual({ A: { name: 'A', foo: 1 }, B: { name: 'B', bar: 2 } });
   });
 
   test('loadSetups ensures unique keys when names duplicate', () => {
@@ -352,12 +363,12 @@ describe('setup storage', () => {
   test('loadSetups recovers from backup when stored data is corrupted', () => {
     const setups = { A: { foo: 1 } };
     saveSetups(setups);
-    expect(localStorage.getItem(backupKeyFor(SETUP_KEY))).toBe(JSON.stringify(setups));
+    expect(getDecodedLocalStorageItem(backupKeyFor(SETUP_KEY))).toBe(JSON.stringify(setups));
 
     localStorage.setItem(SETUP_KEY, '{bad-json');
 
     expect(loadSetups()).toEqual(setups);
-    expect(JSON.parse(localStorage.getItem(SETUP_KEY))).toEqual(setups);
+    expect(parseLocalStorageJSON(SETUP_KEY)).toEqual(setups);
   });
 
   test('loadSetups removes entries that are not plain objects', () => {
@@ -369,7 +380,7 @@ describe('setup storage', () => {
     };
     localStorage.setItem(SETUP_KEY, JSON.stringify(stored));
     expect(loadSetups()).toEqual({ A: { foo: 1 } });
-    expect(JSON.parse(localStorage.getItem(SETUP_KEY))).toEqual({ A: { foo: 1 } });
+    expect(parseLocalStorageJSON(SETUP_KEY)).toEqual({ A: { foo: 1 } });
   });
 
   test('saveSetups removes older duplicate auto backups before trimming unique entries', () => {
@@ -388,7 +399,7 @@ describe('setup storage', () => {
 
     saveSetups(setups);
 
-    const stored = JSON.parse(localStorage.getItem(SETUP_KEY));
+    const stored = parseLocalStorageJSON(SETUP_KEY);
     expect(stored[oldDuplicateKey]).toBeUndefined();
     expect(stored[newDuplicateKey]).toEqual(duplicateValue);
     const autoBackupCount = Object.keys(stored).filter(name => name.startsWith('auto-backup-')).length;
@@ -410,7 +421,7 @@ describe('setup storage', () => {
 
     saveSetups(setups);
 
-    const stored = JSON.parse(localStorage.getItem(SETUP_KEY));
+    const stored = parseLocalStorageJSON(SETUP_KEY);
     expect(stored[alphaKey]).toEqual(shared);
     expect(stored[betaKey]).toEqual(shared);
   });
@@ -444,7 +455,7 @@ describe('setup storage', () => {
 
     saveSetups(setups);
 
-    const stored = JSON.parse(localStorage.getItem(SETUP_KEY));
+    const stored = parseLocalStorageJSON(SETUP_KEY);
     const storedKeys = Object.keys(stored).filter((name) => name.startsWith('auto-backup-'));
     expect(storedKeys.length).toBeLessThanOrEqual(120);
     expect(stored[alphaOldKey]).toBeDefined();
@@ -470,7 +481,7 @@ describe('setup storage', () => {
 
     saveSetups(setups);
 
-    const stored = JSON.parse(localStorage.getItem(SETUP_KEY));
+    const stored = parseLocalStorageJSON(SETUP_KEY);
     const autoKeys = Object.keys(stored).filter((name) => name.startsWith('auto-backup-')).sort();
     expect(autoKeys.length).toBeLessThanOrEqual(120);
 
@@ -497,7 +508,7 @@ describe('setup storage', () => {
 
     saveSetups(setups);
 
-    const stored = JSON.parse(localStorage.getItem(SETUP_KEY));
+    const stored = parseLocalStorageJSON(SETUP_KEY);
     const autoKeys = Object.keys(stored).filter((name) => name.startsWith('auto-backup-')).sort();
 
     expect(autoKeys).toEqual(['auto-backup-2024-01-01-02-19']);
@@ -517,7 +528,7 @@ describe('setup storage', () => {
 
     saveSetups(setups);
 
-    const stored = JSON.parse(localStorage.getItem(SETUP_KEY));
+    const stored = parseLocalStorageJSON(SETUP_KEY);
     const autoKeys = Object.keys(stored).filter((name) => name.startsWith('auto-backup-'));
 
     expect(autoKeys).toHaveLength(130);
@@ -533,7 +544,7 @@ describe('setup storage', () => {
 
     expect(result).toBe(renamedKey);
 
-    const stored = JSON.parse(localStorage.getItem(SETUP_KEY));
+    const stored = parseLocalStorageJSON(SETUP_KEY);
     expect(stored[renamedKey][TEST_AUTO_BACKUP_RENAMED_FLAG]).toBe(true);
   });
 
@@ -547,7 +558,7 @@ describe('setup storage', () => {
 
     saveSetups(setups);
 
-    const stored = JSON.parse(localStorage.getItem(SETUP_KEY));
+    const stored = parseLocalStorageJSON(SETUP_KEY);
     expect(stored[renamedKey]).toBeDefined();
     expect(stored[newKey]).toBeDefined();
   });
@@ -556,7 +567,7 @@ describe('setup storage', () => {
     const initial = {A: {foo: 1}};
     localStorage.setItem(SETUP_KEY, JSON.stringify(initial));
     saveSetup('B', {bar: 2});
-    const result = JSON.parse(localStorage.getItem(SETUP_KEY));
+    const result = parseLocalStorageJSON(SETUP_KEY);
     expect(result).toEqual({A:{foo:1}, B:{bar:2}});
   });
 
@@ -570,7 +581,7 @@ describe('setup storage', () => {
       const setups = {A:{foo:1}, B:{bar:2}};
       localStorage.setItem(SETUP_KEY, JSON.stringify(setups));
       deleteSetup('A');
-      expect(JSON.parse(localStorage.getItem(SETUP_KEY))).toEqual({B:{bar:2}});
+      expect(parseLocalStorageJSON(SETUP_KEY)).toEqual({B:{bar:2}});
     });
 
     test('renameSetup renames setup to a new unique name', () => {
@@ -578,7 +589,7 @@ describe('setup storage', () => {
       localStorage.setItem(SETUP_KEY, JSON.stringify(setups));
       const newName = renameSetup('A', 'C');
       expect(newName).toBe('C');
-      expect(JSON.parse(localStorage.getItem(SETUP_KEY))).toEqual({C:{foo:1}, B:{bar:2}});
+      expect(parseLocalStorageJSON(SETUP_KEY)).toEqual({C:{foo:1}, B:{bar:2}});
     });
 
     test('renameSetup appends suffix when target exists', () => {
@@ -586,7 +597,7 @@ describe('setup storage', () => {
       localStorage.setItem(SETUP_KEY, JSON.stringify(setups));
       const newName = renameSetup('A', 'C');
       expect(newName).toBe('C (2)');
-      expect(JSON.parse(localStorage.getItem(SETUP_KEY))).toEqual({'C (2)':{foo:1}, C:{bar:2}});
+      expect(parseLocalStorageJSON(SETUP_KEY)).toEqual({'C (2)':{foo:1}, C:{bar:2}});
     });
 
     test('renameSetup ignores case and whitespace when name unchanged', () => {
@@ -594,7 +605,7 @@ describe('setup storage', () => {
       localStorage.setItem(SETUP_KEY, JSON.stringify(setups));
       const newName = renameSetup('A', ' a ');
       expect(newName).toBe('A');
-      expect(JSON.parse(localStorage.getItem(SETUP_KEY))).toEqual({A:{foo:1}});
+      expect(parseLocalStorageJSON(SETUP_KEY)).toEqual({A:{foo:1}});
     });
 
     test('renameSetup prevents case-insensitive duplicates', () => {
@@ -602,14 +613,14 @@ describe('setup storage', () => {
       localStorage.setItem(SETUP_KEY, JSON.stringify(setups));
       const newName = renameSetup('B', ' a ');
       expect(newName).toBe('a (2)');
-      expect(JSON.parse(localStorage.getItem(SETUP_KEY))).toEqual({A:{foo:1}, 'a (2)':{bar:2}});
+      expect(parseLocalStorageJSON(SETUP_KEY)).toEqual({A:{foo:1}, 'a (2)':{bar:2}});
     });
 
     test('renameSetup returns null when original missing', () => {
       localStorage.setItem(SETUP_KEY, JSON.stringify({A:{foo:1}}));
       const result = renameSetup('B', 'C');
       expect(result).toBeNull();
-      expect(JSON.parse(localStorage.getItem(SETUP_KEY))).toEqual({A:{foo:1}});
+      expect(parseLocalStorageJSON(SETUP_KEY)).toEqual({A:{foo:1}});
     });
 
     test('renameSetup ignores empty new name', () => {
@@ -617,7 +628,7 @@ describe('setup storage', () => {
       localStorage.setItem(SETUP_KEY, JSON.stringify(setups));
       const newName = renameSetup('A', '   ');
       expect(newName).toBe('A');
-      expect(JSON.parse(localStorage.getItem(SETUP_KEY))).toEqual({A:{foo:1}});
+      expect(parseLocalStorageJSON(SETUP_KEY)).toEqual({A:{foo:1}});
     });
   });
 
@@ -630,7 +641,7 @@ describe('session state storage', () => {
   test('saveSessionState stores JSON in localStorage', () => {
     const state = { camera: 'CamA' };
     saveSessionState(state);
-    expect(localStorage.getItem(SESSION_KEY)).toBe(JSON.stringify(state));
+    expect(getDecodedLocalStorageItem(SESSION_KEY)).toBe(JSON.stringify(state));
   });
 
   test('loadSessionState returns parsed object when present', () => {
@@ -647,7 +658,7 @@ describe('session state storage', () => {
     const state = { camera: 'CamA' };
     sessionStorage.setItem(SESSION_KEY, JSON.stringify(state));
     expect(loadSessionState()).toEqual(state);
-    expect(localStorage.getItem(SESSION_KEY)).toBe(JSON.stringify(state));
+    expect(getDecodedLocalStorageItem(SESSION_KEY)).toBe(JSON.stringify(state));
     expect(sessionStorage.getItem(SESSION_KEY)).toBeNull();
   });
 
@@ -659,8 +670,8 @@ describe('session state storage', () => {
 
     expect(result).toEqual({ camera: 'CamA', motors: ['MotorA'] });
 
-    expect(JSON.parse(localStorage.getItem(SESSION_KEY))).toEqual(result);
-    expect(localStorage.getItem('cinePowerPlanner_session')).toBeNull();
+    expect(parseLocalStorageJSON(SESSION_KEY)).toEqual(result);
+    expect(getDecodedLocalStorageItem('cinePowerPlanner_session')).toBeNull();
   });
 
   test('loadSessionState normalizes legacy session payloads', () => {
@@ -677,7 +688,7 @@ describe('session state storage', () => {
     localStorage.setItem(SESSION_KEY, JSON.stringify(legacyState));
 
     const result = loadSessionState();
-    const stored = JSON.parse(localStorage.getItem(SESSION_KEY));
+    const stored = parseLocalStorageJSON(SESSION_KEY);
 
     expect(result.motors).toEqual(['ZoomMotor', 'FocusMotor']);
     expect(result.controllers).toEqual(['HandUnit', 'FocusWheel']);
@@ -698,7 +709,7 @@ describe('session state storage', () => {
     };
     localStorage.setItem(SESSION_KEY, JSON.stringify(legacyState));
 
-    expect(localStorage.getItem(migrationBackupKeyFor(SESSION_KEY))).toBeNull();
+    expect(getDecodedLocalStorageItem(migrationBackupKeyFor(SESSION_KEY))).toBeNull();
 
     const state = loadSessionState();
 
@@ -707,10 +718,10 @@ describe('session state storage', () => {
       motors: ['FocusMotor'],
       controllers: ['FocusWheel'],
     });
-    const stored = JSON.parse(localStorage.getItem(SESSION_KEY));
+    const stored = parseLocalStorageJSON(SESSION_KEY);
     expect(stored).toEqual(state);
 
-    const backupRaw = localStorage.getItem(migrationBackupKeyFor(SESSION_KEY));
+    const backupRaw = getDecodedLocalStorageItem(migrationBackupKeyFor(SESSION_KEY));
     expect(backupRaw).toBeTruthy();
     const backup = JSON.parse(backupRaw);
     expect(typeof backup.createdAt).toBe('string');
@@ -730,7 +741,7 @@ describe('session state storage', () => {
     const state = loadSessionState();
 
     expect(state).toMatchObject({ setupName: 'Legacy', motors: ['FocusMotor'] });
-    expect(localStorage.getItem(migrationBackupKeyFor(SESSION_KEY))).toBe(
+    expect(getDecodedLocalStorageItem(migrationBackupKeyFor(SESSION_KEY))).toBe(
       JSON.stringify(existingBackup),
     );
   });
@@ -744,7 +755,7 @@ describe('feedback storage', () => {
   test('saveFeedback stores JSON', () => {
     const fb = { note: 'hi' };
     saveFeedback(fb);
-    expect(localStorage.getItem(FEEDBACK_KEY)).toBe(JSON.stringify(fb));
+    expect(getDecodedLocalStorageItem(FEEDBACK_KEY)).toBe(JSON.stringify(fb));
   });
 
   test('loadFeedback returns parsed object when present', () => {
@@ -789,7 +800,7 @@ describe('project storage', () => {
 
     saveProject('Old Name ', { gearList: '<ul>Updated</ul>', projectInfo: null });
 
-    const stored = JSON.parse(localStorage.getItem(PROJECT_KEY));
+    const stored = parseLocalStorageJSON(PROJECT_KEY);
     expect(stored['Old Name ']).toBeUndefined();
     expect(stored['Old Name']).toEqual({ gearList: '<ul>Updated</ul>', projectInfo: null });
     expect(loadProject('Old Name ')).toEqual({ gearList: '<ul>Updated</ul>', projectInfo: null });
@@ -803,7 +814,7 @@ describe('project storage', () => {
 
     deleteProject(' Drop ');
 
-    const stored = JSON.parse(localStorage.getItem(PROJECT_KEY));
+    const stored = parseLocalStorageJSON(PROJECT_KEY);
     expect(stored.Drop).toBeUndefined();
     expect(loadProject('Drop')).toBeNull();
   });
@@ -835,7 +846,7 @@ describe('project storage', () => {
 
     saveProject(newDuplicateKey, { gearList: '<ul>duplicate</ul>', projectInfo: null });
 
-    const stored = JSON.parse(localStorage.getItem(PROJECT_KEY));
+    const stored = parseLocalStorageJSON(PROJECT_KEY);
     expect(stored[oldDuplicateKey]).toBeUndefined();
     expect(stored[newDuplicateKey]).toEqual(duplicateValue);
     const autoBackupCount = Object.keys(stored).filter(name => name.startsWith('auto-backup-')).length;
@@ -854,14 +865,14 @@ describe('project storage', () => {
 
     saveProject('Project Unique Latest', { gearList: '<ul>Latest</ul>', projectInfo: null });
 
-    const stored = JSON.parse(localStorage.getItem(PROJECT_KEY));
+    const stored = parseLocalStorageJSON(PROJECT_KEY);
     const autoKeys = Object.keys(stored).filter(name => name.startsWith('auto-backup-'));
     expect(autoKeys).toHaveLength(130);
   });
 
   test('saveProject ignores non-object payloads entirely', () => {
     saveProject('Broken', 'not-an-object');
-    expect(localStorage.getItem(PROJECT_KEY)).toBeNull();
+    expect(getDecodedLocalStorageItem(PROJECT_KEY)).toBeNull();
   });
 
   test('saveProject creates an automatic backup before overwriting existing data', () => {
@@ -876,7 +887,7 @@ describe('project storage', () => {
     const updated = { gearList: '<ul>Updated</ul>', projectInfo: { notes: 'updated' } };
     saveProject('Overwrite Demo', updated);
 
-    const stored = JSON.parse(localStorage.getItem(PROJECT_KEY));
+    const stored = parseLocalStorageJSON(PROJECT_KEY);
     const backupKeys = Object.keys(stored).filter(key => key.startsWith('auto-backup-'));
     expect(backupKeys).toHaveLength(1);
     expect(backupKeys[0]).toBe('auto-backup-2024-05-01-10-21-30-Overwrite Demo');
@@ -895,7 +906,7 @@ describe('project storage', () => {
     jest.setSystemTime(new Date('2024-05-02T08:05:00Z'));
     saveProject('No Change', { gearList: '<ul>Same</ul>', projectInfo: null });
 
-    const stored = JSON.parse(localStorage.getItem(PROJECT_KEY));
+    const stored = parseLocalStorageJSON(PROJECT_KEY);
     expect(Object.keys(stored).filter(key => key.startsWith('auto-backup-'))).toHaveLength(0);
     expect(stored['No Change']).toEqual({ gearList: '<ul>Same</ul>', projectInfo: null });
 
@@ -911,7 +922,7 @@ describe('project storage', () => {
     jest.setSystemTime(new Date('2024-05-03T09:16:00Z'));
     saveProject(autoKey, { gearList: '<ul>Updated</ul>', projectInfo: null });
 
-    const stored = JSON.parse(localStorage.getItem(PROJECT_KEY));
+    const stored = parseLocalStorageJSON(PROJECT_KEY);
     const autoBackupKeys = Object.keys(stored).filter(key => key.startsWith('auto-backup-'));
     expect(autoBackupKeys).toHaveLength(1);
     expect(autoBackupKeys[0]).toBe(autoKey);
@@ -1002,28 +1013,28 @@ describe('project storage', () => {
     localStorage.setItem('cinePowerPlanner_project', JSON.stringify('<p>Legacy</p>'));
 
     const projects = loadProject();
-    const stored = JSON.parse(localStorage.getItem(PROJECT_KEY));
+    const stored = parseLocalStorageJSON(PROJECT_KEY);
 
     expect(projects).toEqual({
       'Project-updated': { gearList: '<p>Legacy</p>', projectInfo: null },
     });
     expect(stored).toEqual(projects);
-    expect(localStorage.getItem('cinePowerPlanner_project')).toBeNull();
+    expect(getDecodedLocalStorageItem('cinePowerPlanner_project')).toBeNull();
   });
 
   test('loadProject creates migration backup before rewriting normalized data', () => {
     const legacySerialized = JSON.stringify('<p>Legacy project</p>');
     localStorage.setItem(PROJECT_KEY, legacySerialized);
 
-    expect(localStorage.getItem(migrationBackupKeyFor(PROJECT_KEY))).toBeNull();
+    expect(getDecodedLocalStorageItem(migrationBackupKeyFor(PROJECT_KEY))).toBeNull();
 
     const projects = loadProject();
 
-    const stored = localStorage.getItem(PROJECT_KEY);
+    const stored = getDecodedLocalStorageItem(PROJECT_KEY);
     expect(stored).not.toBeNull();
     expect(JSON.parse(stored)).toEqual(projects);
 
-    const backupRaw = localStorage.getItem(migrationBackupKeyFor(PROJECT_KEY));
+    const backupRaw = getDecodedLocalStorageItem(migrationBackupKeyFor(PROJECT_KEY));
     expect(backupRaw).toBeTruthy();
     const backup = JSON.parse(backupRaw);
     expect(typeof backup.createdAt).toBe('string');
@@ -1045,7 +1056,7 @@ describe('project storage', () => {
       'Project-updated': { gearList: '<p>Legacy project</p>', projectInfo: null },
     });
 
-    const storedBackup = localStorage.getItem(migrationBackupKeyFor(PROJECT_KEY));
+    const storedBackup = getDecodedLocalStorageItem(migrationBackupKeyFor(PROJECT_KEY));
     expect(storedBackup).toBe(JSON.stringify(existingBackup));
   });
 
@@ -1063,7 +1074,7 @@ describe('project storage', () => {
 
     deleteProject('Keep');
     expect(loadProject('Keep')).toBeNull();
-    const storedRaw = localStorage.getItem(PROJECT_KEY);
+    const storedRaw = getDecodedLocalStorageItem(PROJECT_KEY);
     expect(storedRaw).not.toBeNull();
     const storedProjects = JSON.parse(storedRaw);
     const backupKeys = Object.keys(storedProjects);
@@ -1078,7 +1089,7 @@ describe('project storage', () => {
     saveProject('A', { gearList: '<ul>A</ul>' });
     saveProject('B', { gearList: '<ul>B</ul>' });
     deleteProject();
-    expect(localStorage.getItem(PROJECT_KEY)).toBeNull();
+    expect(getDecodedLocalStorageItem(PROJECT_KEY)).toBeNull();
   });
 });
 
@@ -1094,7 +1105,7 @@ describe('favorites storage', () => {
 
   test('saveFavorites ignores non-object payloads', () => {
     saveFavorites(['CamA']);
-    expect(localStorage.getItem(FAVORITES_KEY)).toBeNull();
+    expect(getDecodedLocalStorageItem(FAVORITES_KEY)).toBeNull();
   });
 });
 
@@ -1106,7 +1117,7 @@ describe('automatic gear storage', () => {
   test('saveAutoGearRules persists rule arrays', () => {
     const rules = [{ id: 'rule-a', label: 'Outdoor', scenarios: ['Outdoor'], add: [], remove: [] }];
     saveAutoGearRules(rules);
-    expect(JSON.parse(localStorage.getItem(AUTO_GEAR_RULES_KEY))).toEqual(rules);
+    expect(parseLocalStorageJSON(AUTO_GEAR_RULES_KEY)).toEqual(rules);
     expect(loadAutoGearRules()).toEqual(rules);
   });
 
@@ -1121,8 +1132,8 @@ describe('automatic gear storage', () => {
 
     const loaded = loadAutoGearRules();
     expect(loaded).toEqual(rules);
-    expect(JSON.parse(localStorage.getItem(AUTO_GEAR_RULES_KEY))).toEqual(rules);
-    expect(localStorage.getItem('cinePowerPlanner_autoGearRules')).toBeNull();
+    expect(parseLocalStorageJSON(AUTO_GEAR_RULES_KEY)).toEqual(rules);
+    expect(getDecodedLocalStorageItem('cinePowerPlanner_autoGearRules')).toBeNull();
   });
 
   test('loadAutoGearBackups returns stored backups and sanitises invalid payloads', () => {
@@ -1130,12 +1141,12 @@ describe('automatic gear storage', () => {
       { id: 'backup-1', label: 'Manual backup', createdAt: 1720646400000, rules: [] }
     ];
     saveAutoGearBackups(backups);
-    expect(JSON.parse(localStorage.getItem(AUTO_GEAR_BACKUPS_KEY))).toEqual(backups);
+    expect(parseLocalStorageJSON(AUTO_GEAR_BACKUPS_KEY)).toEqual(backups);
     expect(loadAutoGearBackups()).toEqual(backups);
 
     localStorage.setItem(AUTO_GEAR_BACKUPS_KEY, JSON.stringify('oops'));
     expect(loadAutoGearBackups()).toEqual(backups);
-    expect(JSON.parse(localStorage.getItem(AUTO_GEAR_BACKUPS_KEY))).toEqual(backups);
+    expect(parseLocalStorageJSON(AUTO_GEAR_BACKUPS_KEY)).toEqual(backups);
   });
 
   test('saveAutoGearBackups trims the oldest entry when storage quota is exceeded', () => {
@@ -1218,7 +1229,10 @@ describe('automatic gear storage', () => {
 
         const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
         const storedBackups = isolatedSaveAutoGearBackups(backups);
-        const stored = JSON.parse(localStorageMock.getItem(AUTO_GEAR_BACKUPS_KEY));
+        const storedRaw = localStorageMock.getItem(AUTO_GEAR_BACKUPS_KEY);
+        const stored = storedRaw === null || storedRaw === undefined
+          ? storedRaw
+          : JSON.parse(storageModule.decodeStoredValue(storedRaw));
         const quotaWarning = warnSpy.mock.calls.find(([message]) =>
           typeof message === 'string'
           && message.includes('Removed automatic gear backup'),
@@ -1435,11 +1449,11 @@ describe('automatic gear storage', () => {
 
   test('saveAutoGearBackupRetention creates migration backup before overwriting existing values', () => {
     localStorage.setItem(AUTO_GEAR_BACKUP_RETENTION_KEY, JSON.stringify(12));
-    expect(localStorage.getItem(migrationBackupKeyFor(AUTO_GEAR_BACKUP_RETENTION_KEY))).toBeNull();
+    expect(getDecodedLocalStorageItem(migrationBackupKeyFor(AUTO_GEAR_BACKUP_RETENTION_KEY))).toBeNull();
 
     saveAutoGearBackupRetention(18);
 
-    const backupRaw = localStorage.getItem(migrationBackupKeyFor(AUTO_GEAR_BACKUP_RETENTION_KEY));
+    const backupRaw = getDecodedLocalStorageItem(migrationBackupKeyFor(AUTO_GEAR_BACKUP_RETENTION_KEY));
     expect(backupRaw).not.toBeNull();
     const backup = JSON.parse(backupRaw);
     expect(typeof backup.createdAt).toBe('string');
@@ -1450,19 +1464,19 @@ describe('automatic gear storage', () => {
 
   test('saveAutoGearSeedFlag toggles the persisted flag', () => {
     saveAutoGearSeedFlag(true);
-    expect(localStorage.getItem(AUTO_GEAR_SEEDED_KEY)).toBe('1');
+    expect(getDecodedLocalStorageItem(AUTO_GEAR_SEEDED_KEY)).toBe('1');
     expect(loadAutoGearSeedFlag()).toBe(true);
     saveAutoGearSeedFlag(false);
-    expect(localStorage.getItem(AUTO_GEAR_SEEDED_KEY)).toBeNull();
+    expect(getDecodedLocalStorageItem(AUTO_GEAR_SEEDED_KEY)).toBeNull();
     expect(loadAutoGearSeedFlag()).toBe(false);
   });
 
   test('loadAutoGearAutoPresetId reflects persisted value', () => {
     saveAutoGearAutoPresetId('preset-auto');
-    expect(localStorage.getItem(AUTO_GEAR_AUTO_PRESET_KEY)).toBe('preset-auto');
+    expect(getDecodedLocalStorageItem(AUTO_GEAR_AUTO_PRESET_KEY)).toBe('preset-auto');
     expect(loadAutoGearAutoPresetId()).toBe('preset-auto');
     saveAutoGearAutoPresetId('');
-    expect(localStorage.getItem(AUTO_GEAR_AUTO_PRESET_KEY)).toBeNull();
+    expect(getDecodedLocalStorageItem(AUTO_GEAR_AUTO_PRESET_KEY)).toBeNull();
     expect(loadAutoGearAutoPresetId()).toBe('');
   });
 
@@ -1470,8 +1484,8 @@ describe('automatic gear storage', () => {
     localStorage.setItem('cinePowerPlanner_autoGearAutoPreset', 'legacy-auto');
 
     expect(loadAutoGearAutoPresetId()).toBe('legacy-auto');
-    expect(localStorage.getItem(AUTO_GEAR_AUTO_PRESET_KEY)).toBe('legacy-auto');
-    expect(localStorage.getItem('cinePowerPlanner_autoGearAutoPreset')).toBeNull();
+    expect(getDecodedLocalStorageItem(AUTO_GEAR_AUTO_PRESET_KEY)).toBe('legacy-auto');
+    expect(getDecodedLocalStorageItem('cinePowerPlanner_autoGearAutoPreset')).toBeNull();
   });
 
   test('clearing the auto preset removes the autosaved entry from presets', () => {
@@ -1485,11 +1499,11 @@ describe('automatic gear storage', () => {
 
     saveAutoGearAutoPresetId('');
 
-    const stored = JSON.parse(localStorage.getItem(AUTO_GEAR_PRESETS_KEY));
+    const stored = parseLocalStorageJSON(AUTO_GEAR_PRESETS_KEY);
     expect(stored).toEqual([
       { id: 'manual-1', label: 'Manual preset', rules: [] },
     ]);
-    expect(localStorage.getItem(AUTO_GEAR_AUTO_PRESET_KEY)).toBeNull();
+    expect(getDecodedLocalStorageItem(AUTO_GEAR_AUTO_PRESET_KEY)).toBeNull();
   });
 
   test('replacing the auto preset id removes the previous autosaved entry', () => {
@@ -1505,7 +1519,7 @@ describe('automatic gear storage', () => {
     ]);
     saveAutoGearAutoPresetId('auto-new');
 
-    const stored = JSON.parse(localStorage.getItem(AUTO_GEAR_PRESETS_KEY));
+    const stored = parseLocalStorageJSON(AUTO_GEAR_PRESETS_KEY);
     expect(stored).toEqual([
       { id: 'auto-new', label: 'Autosaved rules', rules: [{ id: 'rule-2' }] },
       { id: 'manual-1', label: 'Manual preset', rules: [] },
@@ -1518,8 +1532,8 @@ describe('automatic gear storage', () => {
 
     const loaded = loadAutoGearMonitorDefaults();
     expect(loaded).toEqual(defaults);
-    expect(JSON.parse(localStorage.getItem(AUTO_GEAR_MONITOR_DEFAULTS_KEY))).toEqual(defaults);
-    expect(localStorage.getItem('cinePowerPlanner_autoGearMonitorDefaults')).toBeNull();
+    expect(parseLocalStorageJSON(AUTO_GEAR_MONITOR_DEFAULTS_KEY)).toEqual(defaults);
+    expect(getDecodedLocalStorageItem('cinePowerPlanner_autoGearMonitorDefaults')).toBeNull();
   });
 });
 
@@ -1560,35 +1574,35 @@ describe('clearAllData', () => {
     );
     localStorage.setItem(TEMPERATURE_UNIT_KEY, 'fahrenheit');
     clearAllData();
-    expect(localStorage.getItem(DEVICE_KEY)).toBeNull();
-    expect(localStorage.getItem(SETUP_KEY)).toBeNull();
-    expect(localStorage.getItem(FEEDBACK_KEY)).toBeNull();
-    expect(localStorage.getItem(PROJECT_KEY)).toBeNull();
-    expect(localStorage.getItem(SESSION_KEY)).toBeNull();
-    expect(localStorage.getItem(FAVORITES_KEY)).toBeNull();
-    expect(localStorage.getItem(AUTO_GEAR_RULES_KEY)).toBeNull();
-    expect(localStorage.getItem(AUTO_GEAR_BACKUPS_KEY)).toBeNull();
-    expect(localStorage.getItem(AUTO_GEAR_SEEDED_KEY)).toBeNull();
-    expect(localStorage.getItem(AUTO_GEAR_PRESETS_KEY)).toBeNull();
-    expect(localStorage.getItem(AUTO_GEAR_ACTIVE_PRESET_KEY)).toBeNull();
-    expect(localStorage.getItem(AUTO_GEAR_AUTO_PRESET_KEY)).toBeNull();
-    expect(localStorage.getItem(AUTO_GEAR_BACKUP_VISIBILITY_KEY)).toBeNull();
-    expect(localStorage.getItem(SCHEMA_CACHE_KEY)).toBeNull();
-    expect(localStorage.getItem(CUSTOM_LOGO_KEY)).toBeNull();
-    expect(localStorage.getItem(CUSTOM_FONT_KEY)).toBeNull();
-    expect(localStorage.getItem(TEMPERATURE_UNIT_KEY)).toBeNull();
+    expect(getDecodedLocalStorageItem(DEVICE_KEY)).toBeNull();
+    expect(getDecodedLocalStorageItem(SETUP_KEY)).toBeNull();
+    expect(getDecodedLocalStorageItem(FEEDBACK_KEY)).toBeNull();
+    expect(getDecodedLocalStorageItem(PROJECT_KEY)).toBeNull();
+    expect(getDecodedLocalStorageItem(SESSION_KEY)).toBeNull();
+    expect(getDecodedLocalStorageItem(FAVORITES_KEY)).toBeNull();
+    expect(getDecodedLocalStorageItem(AUTO_GEAR_RULES_KEY)).toBeNull();
+    expect(getDecodedLocalStorageItem(AUTO_GEAR_BACKUPS_KEY)).toBeNull();
+    expect(getDecodedLocalStorageItem(AUTO_GEAR_SEEDED_KEY)).toBeNull();
+    expect(getDecodedLocalStorageItem(AUTO_GEAR_PRESETS_KEY)).toBeNull();
+    expect(getDecodedLocalStorageItem(AUTO_GEAR_ACTIVE_PRESET_KEY)).toBeNull();
+    expect(getDecodedLocalStorageItem(AUTO_GEAR_AUTO_PRESET_KEY)).toBeNull();
+    expect(getDecodedLocalStorageItem(AUTO_GEAR_BACKUP_VISIBILITY_KEY)).toBeNull();
+    expect(getDecodedLocalStorageItem(SCHEMA_CACHE_KEY)).toBeNull();
+    expect(getDecodedLocalStorageItem(CUSTOM_LOGO_KEY)).toBeNull();
+    expect(getDecodedLocalStorageItem(CUSTOM_FONT_KEY)).toBeNull();
+    expect(getDecodedLocalStorageItem(TEMPERATURE_UNIT_KEY)).toBeNull();
 
-    expect(localStorage.getItem(backupKeyFor(DEVICE_KEY))).toBeNull();
-    expect(localStorage.getItem(backupKeyFor(SETUP_KEY))).toBeNull();
-    expect(localStorage.getItem(backupKeyFor(FEEDBACK_KEY))).toBeNull();
-    expect(localStorage.getItem(backupKeyFor(PROJECT_KEY))).toBeNull();
-    expect(localStorage.getItem(backupKeyFor(SESSION_KEY))).toBeNull();
-    expect(localStorage.getItem(backupKeyFor(FAVORITES_KEY))).toBeNull();
-    expect(localStorage.getItem(backupKeyFor(AUTO_GEAR_RULES_KEY))).toBeNull();
-    expect(localStorage.getItem(backupKeyFor(AUTO_GEAR_BACKUPS_KEY))).toBeNull();
-    expect(localStorage.getItem(backupKeyFor(AUTO_GEAR_PRESETS_KEY))).toBeNull();
-    expect(localStorage.getItem(backupKeyFor(CUSTOM_LOGO_KEY))).toBeNull();
-    expect(localStorage.getItem(backupKeyFor(CUSTOM_FONT_KEY))).toBeNull();
+    expect(getDecodedLocalStorageItem(backupKeyFor(DEVICE_KEY))).toBeNull();
+    expect(getDecodedLocalStorageItem(backupKeyFor(SETUP_KEY))).toBeNull();
+    expect(getDecodedLocalStorageItem(backupKeyFor(FEEDBACK_KEY))).toBeNull();
+    expect(getDecodedLocalStorageItem(backupKeyFor(PROJECT_KEY))).toBeNull();
+    expect(getDecodedLocalStorageItem(backupKeyFor(SESSION_KEY))).toBeNull();
+    expect(getDecodedLocalStorageItem(backupKeyFor(FAVORITES_KEY))).toBeNull();
+    expect(getDecodedLocalStorageItem(backupKeyFor(AUTO_GEAR_RULES_KEY))).toBeNull();
+    expect(getDecodedLocalStorageItem(backupKeyFor(AUTO_GEAR_BACKUPS_KEY))).toBeNull();
+    expect(getDecodedLocalStorageItem(backupKeyFor(AUTO_GEAR_PRESETS_KEY))).toBeNull();
+    expect(getDecodedLocalStorageItem(backupKeyFor(CUSTOM_LOGO_KEY))).toBeNull();
+    expect(getDecodedLocalStorageItem(backupKeyFor(CUSTOM_FONT_KEY))).toBeNull();
   });
 
   test('removes legacy planner keys so migrations cannot restore cleared data', () => {
@@ -1600,8 +1614,8 @@ describe('clearAllData', () => {
 
     clearAllData();
 
-    expect(localStorage.getItem(legacySetupKey)).toBeNull();
-    expect(localStorage.getItem(`${legacySetupKey}__backup`)).toBeNull();
+    expect(getDecodedLocalStorageItem(legacySetupKey)).toBeNull();
+    expect(getDecodedLocalStorageItem(`${legacySetupKey}__backup`)).toBeNull();
     expect(sessionStorage.getItem(legacySessionKey)).toBeNull();
   });
 });
@@ -1818,20 +1832,20 @@ describe('export/import all data', () => {
     expect(loadAutoGearAutoPresetId()).toBe('preset-restore');
     expect(loadAutoGearBackupRetention()).toBe(18);
       expect(loadAutoGearBackupVisibility()).toBe(true);
-      expect(localStorage.getItem('customLogo')).toBe('data:image/svg+xml;base64,PE1PQ0s+');
-      expect(localStorage.getItem('darkMode')).toBe('true');
-      expect(localStorage.getItem('pinkMode')).toBe('false');
-      expect(localStorage.getItem('highContrast')).toBe('true');
-      expect(localStorage.getItem('reduceMotion')).toBe('false');
-      expect(localStorage.getItem('relaxedSpacing')).toBe('true');
-      expect(localStorage.getItem('showAutoBackups')).toBe('true');
-      expect(localStorage.getItem('accentColor')).toBe('#00ff00');
-      expect(localStorage.getItem('fontSize')).toBe('20');
-      expect(localStorage.getItem('fontFamily')).toBe("'Other Font', serif");
-      expect(localStorage.getItem('language')).toBe('fr');
-      expect(localStorage.getItem('iosPwaHelpShown')).toBe('true');
-    expect(localStorage.getItem(TEMPERATURE_UNIT_KEY)).toBe('fahrenheit');
-    expect(JSON.parse(localStorage.getItem('cameraPowerPlanner_customFonts'))).toEqual([
+      expect(getDecodedLocalStorageItem('customLogo')).toBe('data:image/svg+xml;base64,PE1PQ0s+');
+      expect(getDecodedLocalStorageItem('darkMode')).toBe('true');
+      expect(getDecodedLocalStorageItem('pinkMode')).toBe('false');
+      expect(getDecodedLocalStorageItem('highContrast')).toBe('true');
+      expect(getDecodedLocalStorageItem('reduceMotion')).toBe('false');
+      expect(getDecodedLocalStorageItem('relaxedSpacing')).toBe('true');
+      expect(getDecodedLocalStorageItem('showAutoBackups')).toBe('true');
+      expect(getDecodedLocalStorageItem('accentColor')).toBe('#00ff00');
+      expect(getDecodedLocalStorageItem('fontSize')).toBe('20');
+      expect(getDecodedLocalStorageItem('fontFamily')).toBe("'Other Font', serif");
+      expect(getDecodedLocalStorageItem('language')).toBe('fr');
+      expect(getDecodedLocalStorageItem('iosPwaHelpShown')).toBe('true');
+    expect(getDecodedLocalStorageItem(TEMPERATURE_UNIT_KEY)).toBe('fahrenheit');
+    expect(parseLocalStorageJSON('cameraPowerPlanner_customFonts')).toEqual([
       { id: 'font-restore', name: 'Restore Font', data: 'data:font/woff;base64,BBBB' }
     ]);
   });
@@ -1839,7 +1853,7 @@ describe('export/import all data', () => {
   test('importAllData applies temperature unit preference', () => {
     importAllData({ preferences: { temperatureUnit: 'fahrenheit' } });
 
-    expect(localStorage.getItem(TEMPERATURE_UNIT_KEY)).toBe('fahrenheit');
+    expect(getDecodedLocalStorageItem(TEMPERATURE_UNIT_KEY)).toBe('fahrenheit');
   });
 
   test('importAllData converts legacy storage snapshots with prefixed keys', () => {
@@ -1914,16 +1928,16 @@ describe('export/import all data', () => {
     expect(loadAutoGearAutoPresetId()).toBe('snap-preset');
     expect(loadAutoGearBackupVisibility()).toBe(true);
 
-    expect(localStorage.getItem(SCHEMA_CACHE_KEY)).toBe('{"version":1}');
-    expect(localStorage.getItem(CUSTOM_LOGO_KEY)).toBe('data:image/png;base64,snapshot');
-    expect(JSON.parse(localStorage.getItem(CUSTOM_FONT_KEY))).toEqual([
+    expect(getDecodedLocalStorageItem(SCHEMA_CACHE_KEY)).toBe('{"version":1}');
+    expect(getDecodedLocalStorageItem(CUSTOM_LOGO_KEY)).toBe('data:image/png;base64,snapshot');
+    expect(parseLocalStorageJSON(CUSTOM_FONT_KEY)).toEqual([
       { id: 'snap-font', name: 'Snapshot Font', data: 'data:font/woff;base64,AAAA' },
     ]);
-    expect(localStorage.getItem('darkMode')).toBe('true');
-    expect(localStorage.getItem('highContrast')).toBe('false');
-    expect(localStorage.getItem('language')).toBe('es');
-    expect(localStorage.getItem('iosPwaHelpShown')).toBe('true');
-    expect(localStorage.getItem(TEMPERATURE_UNIT_KEY)).toBe('fahrenheit');
+    expect(getDecodedLocalStorageItem('darkMode')).toBe('true');
+    expect(getDecodedLocalStorageItem('highContrast')).toBe('false');
+    expect(getDecodedLocalStorageItem('language')).toBe('es');
+    expect(getDecodedLocalStorageItem('iosPwaHelpShown')).toBe('true');
+    expect(getDecodedLocalStorageItem(TEMPERATURE_UNIT_KEY)).toBe('fahrenheit');
   });
 
   test('importAllData clears stored device overrides when payload sets devices to null', () => {
@@ -1933,8 +1947,8 @@ describe('export/import all data', () => {
     importAllData({ devices: null });
 
     expect(loadDeviceData()).toBeNull();
-    expect(localStorage.getItem(DEVICE_KEY)).toBeNull();
-    expect(localStorage.getItem(backupKeyFor(DEVICE_KEY))).toBeNull();
+    expect(getDecodedLocalStorageItem(DEVICE_KEY)).toBeNull();
+    expect(getDecodedLocalStorageItem(backupKeyFor(DEVICE_KEY))).toBeNull();
   });
 
   test('importAllData clears session state when payload sets session to null', () => {
@@ -1944,8 +1958,8 @@ describe('export/import all data', () => {
     importAllData({ session: null });
 
     expect(loadSessionState()).toBeNull();
-    expect(localStorage.getItem(SESSION_KEY)).toBeNull();
-    expect(localStorage.getItem(backupKeyFor(SESSION_KEY))).toBeNull();
+    expect(getDecodedLocalStorageItem(SESSION_KEY)).toBeNull();
+    expect(getDecodedLocalStorageItem(backupKeyFor(SESSION_KEY))).toBeNull();
   });
 
   test('importAllData handles legacy projects array', () => {
@@ -2064,7 +2078,7 @@ describe('export/import all data', () => {
       ],
     });
 
-    const stored = JSON.parse(localStorage.getItem(PROJECT_KEY));
+    const stored = parseLocalStorageJSON(PROJECT_KEY);
     expect(stored['Project-updated']).toEqual({
       gearList: '<section>Legacy</section>',
       projectInfo: { projectName: 'Legacy Stored' },
@@ -2090,7 +2104,7 @@ describe('export/import all data', () => {
       projectInfo: { projectName: 'Legacy Map' },
     });
 
-    const updated = JSON.parse(localStorage.getItem(PROJECT_KEY));
+    const updated = parseLocalStorageJSON(PROJECT_KEY);
     expect(updated['Legacy-updated']).toEqual({
       gearList: '<article>Legacy Map</article>',
       projectInfo: { projectName: 'Legacy Map' },
@@ -2104,9 +2118,9 @@ describe('export/import all data', () => {
     });
 
     expect(loadAutoGearSeedFlag()).toBe(false);
-    expect(localStorage.getItem(AUTO_GEAR_SEEDED_KEY)).toBeNull();
+    expect(getDecodedLocalStorageItem(AUTO_GEAR_SEEDED_KEY)).toBeNull();
     expect(loadAutoGearBackupVisibility()).toBe(true);
-    expect(localStorage.getItem(AUTO_GEAR_BACKUP_VISIBILITY_KEY)).toBe('1');
+    expect(getDecodedLocalStorageItem(AUTO_GEAR_BACKUP_VISIBILITY_KEY)).toBe('1');
   });
 
   test('importAllData treats ambiguous automatic gear booleans as disabled', () => {
@@ -2116,9 +2130,9 @@ describe('export/import all data', () => {
     });
 
     expect(loadAutoGearSeedFlag()).toBe(false);
-    expect(localStorage.getItem(AUTO_GEAR_SEEDED_KEY)).toBeNull();
+    expect(getDecodedLocalStorageItem(AUTO_GEAR_SEEDED_KEY)).toBeNull();
     expect(loadAutoGearBackupVisibility()).toBe(false);
-    expect(localStorage.getItem(AUTO_GEAR_BACKUP_VISIBILITY_KEY)).toBeNull();
+    expect(getDecodedLocalStorageItem(AUTO_GEAR_BACKUP_VISIBILITY_KEY)).toBeNull();
   });
 
   test('importAllData accepts automatic gear data stored as object maps', () => {
@@ -2238,7 +2252,7 @@ describe('full backup history storage', () => {
     for (let i = 0; i < 205; i += 1) {
       recordFullBackupHistoryEntry({ createdAt: `2024-01-01T00:00:00Z-${i}` });
     }
-    const stored = JSON.parse(localStorage.getItem(FULL_BACKUP_HISTORY_KEY));
+    const stored = parseLocalStorageJSON(FULL_BACKUP_HISTORY_KEY);
     expect(Array.isArray(stored)).toBe(true);
     expect(stored.length).toBe(200);
     const history = loadFullBackupHistory();
@@ -2249,9 +2263,9 @@ describe('full backup history storage', () => {
 
   test('saveFullBackupHistory removes storage key when empty array provided', () => {
     saveFullBackupHistory([{ createdAt: '2024-02-02T12:00:00Z', fileName: 'backup.json' }]);
-    expect(localStorage.getItem(FULL_BACKUP_HISTORY_KEY)).not.toBeNull();
+    expect(getDecodedLocalStorageItem(FULL_BACKUP_HISTORY_KEY)).not.toBeNull();
     saveFullBackupHistory([]);
-    expect(localStorage.getItem(FULL_BACKUP_HISTORY_KEY)).toBeNull();
+    expect(getDecodedLocalStorageItem(FULL_BACKUP_HISTORY_KEY)).toBeNull();
   });
 
   test('loadFullBackupHistory normalizes raw string entries', () => {
@@ -2267,7 +2281,7 @@ describe('migration backups before overwriting data', () => {
   });
 
   const readMigrationBackupData = (storageKey) => {
-    const raw = localStorage.getItem(migrationBackupKeyFor(storageKey));
+    const raw = getDecodedLocalStorageItem(migrationBackupKeyFor(storageKey));
     expect(raw).not.toBeNull();
     const parsed = JSON.parse(raw);
     expect(typeof parsed.createdAt).toBe('string');
@@ -2348,7 +2362,7 @@ describe('migration backups before overwriting data', () => {
     },
   ])('captures previous %s snapshot before writing new data', ({ key, initial, save, next }) => {
     localStorage.setItem(key, JSON.stringify(initial));
-    expect(localStorage.getItem(migrationBackupKeyFor(key))).toBeNull();
+    expect(getDecodedLocalStorageItem(migrationBackupKeyFor(key))).toBeNull();
 
     save(next);
 
@@ -2359,7 +2373,7 @@ describe('migration backups before overwriting data', () => {
   test('saveProject preserves existing project container before overwriting', () => {
     const initialProjects = { Legacy: { gearList: '', projectInfo: null } };
     localStorage.setItem(PROJECT_KEY, JSON.stringify(initialProjects));
-    expect(localStorage.getItem(migrationBackupKeyFor(PROJECT_KEY))).toBeNull();
+    expect(getDecodedLocalStorageItem(migrationBackupKeyFor(PROJECT_KEY))).toBeNull();
 
     saveProject('New Project', { gearList: '', projectInfo: null });
 
@@ -2405,7 +2419,7 @@ describe('critical storage backup guard', () => {
   test('creates backup copies for stored entries', () => {
     localStorage.setItem(DEVICE_KEY, JSON.stringify(validDeviceData));
     const result = ensureCriticalStorageBackups();
-    expect(localStorage.getItem(backupKeyFor(DEVICE_KEY))).toBe(JSON.stringify(validDeviceData));
+    expect(getDecodedLocalStorageItem(backupKeyFor(DEVICE_KEY))).toBe(JSON.stringify(validDeviceData));
     expect(result.ensured).toEqual(expect.arrayContaining([
       expect.objectContaining({ key: DEVICE_KEY }),
     ]));
