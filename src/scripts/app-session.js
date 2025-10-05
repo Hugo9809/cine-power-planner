@@ -4618,62 +4618,6 @@ function showNotification(type, message) {
 
 function getDiffText(key, fallbackValue = '') {
   if (typeof key !== 'string' || !key) {
-    return fallbackValue;
-  }
-
-  const langTexts = texts && typeof currentLang === 'string' ? texts[currentLang] : null;
-  const fallbackTexts = texts && texts.en ? texts.en : null;
-
-  if (langTexts && Object.prototype.hasOwnProperty.call(langTexts, key)) {
-    const value = langTexts[key];
-    if (typeof value === 'string' && value) {
-      return value;
-    }
-  }
-
-  if (fallbackTexts && Object.prototype.hasOwnProperty.call(fallbackTexts, key)) {
-    const value = fallbackTexts[key];
-    if (typeof value === 'string' && value) {
-      return value;
-    }
-  }
-
-  return fallbackValue;
-}
-
-function formatTimestampForComparison(date, includeSeconds) {
-  if (!(date instanceof Date) || Number.isNaN(date.valueOf())) {
-    return '';
-  }
-  const lang = typeof currentLang === 'string' && currentLang ? currentLang : 'en';
-  const options = {
-    year: 'numeric',
-    month: 'short',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-  };
-  if (includeSeconds) {
-    options.second = '2-digit';
-  }
-  try {
-    return new Intl.DateTimeFormat(lang, options).format(date);
-  } catch (error) {
-    if (lang !== 'en') {
-      try {
-        return new Intl.DateTimeFormat('en', options).format(date);
-      } catch (fallbackError) {
-        console.warn('Date formatting failed for comparison timestamp', error, fallbackError);
-      }
-    } else {
-      console.warn('Date formatting failed for comparison timestamp', error);
-    }
-  }
-  return date.toISOString();
-}
-
-const getDiffText = (key, fallbackValue = '') => {
-  if (typeof key !== 'string' || !key) {
     return typeof fallbackValue === 'string' ? fallbackValue : `${fallbackValue ?? ''}`;
   }
 
@@ -4711,7 +4655,38 @@ const getDiffText = (key, fallbackValue = '') => {
   }
 
   return normalizedFallback;
-};
+}
+
+function formatTimestampForComparison(date, includeSeconds) {
+  if (!(date instanceof Date) || Number.isNaN(date.valueOf())) {
+    return '';
+  }
+  const lang = typeof currentLang === 'string' && currentLang ? currentLang : 'en';
+  const options = {
+    year: 'numeric',
+    month: 'short',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  };
+  if (includeSeconds) {
+    options.second = '2-digit';
+  }
+  try {
+    return new Intl.DateTimeFormat(lang, options).format(date);
+  } catch (error) {
+    if (lang !== 'en') {
+      try {
+        return new Intl.DateTimeFormat('en', options).format(date);
+      } catch (fallbackError) {
+        console.warn('Date formatting failed for comparison timestamp', error, fallbackError);
+      }
+    } else {
+      console.warn('Date formatting failed for comparison timestamp', error);
+    }
+  }
+  return date.toISOString();
+}
 
 function formatComparisonOptionLabel(name, parsedDetails) {
   if (typeof name !== 'string') {
