@@ -230,7 +230,7 @@ function generatePrintableOverview() {
     batteryComparisonHtml = "<div class=\"page-break\"></div>".concat(_clone.outerHTML);
   }
   var safeSetupName = escapeHtmlSafe(setupName);
-  var diagramCss = getDiagramCss(false);
+  var diagramCss = typeof getDiagramCss === 'function' ? getDiagramCss(false) : '';
   var diagramAreaHtml = '';
   if (setupDiagramContainer) {
     var areaClone = setupDiagramContainer.cloneNode(true);
