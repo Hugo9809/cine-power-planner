@@ -80,6 +80,7 @@ body.dark-mode {
   --video-conn-bg: rgba(51, 102, 153, 0.15);
   --neutral-conn-bg: rgba(158, 158, 158, 0.15);
   --status-warning-bg: #ff6b6b;
+  --status-success-text-color: #000;
   --status-warning-text-color: #000000;
   --status-error-text-color: #000;
   --nd-grad-border-color: var(--accent-color);
@@ -124,6 +125,7 @@ strong {
   --video-conn-bg: rgba(51, 102, 153, 0.15);
   --neutral-conn-bg: rgba(158, 158, 158, 0.15);
   --status-warning-bg: #ff6b6b;
+  --status-success-text-color: #000;
   --status-warning-text-color: #000000;
   --status-error-text-color: #000;
   --diagram-node-fill: #f0f0f0;
