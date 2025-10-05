@@ -1,3 +1,5 @@
+/* global cineModuleBase */
+
 (function () {
   function detectGlobalScope() {
     if (typeof globalThis !== 'undefined') {

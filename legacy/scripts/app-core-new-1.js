@@ -1112,6 +1112,162 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   if (installBannerGlobalScope && typeof installBannerGlobalScope.installBannerDismissedInSession !== 'boolean') {
     installBannerGlobalScope.installBannerDismissedInSession = false;
   }
+  var HELP_MODULE_CACHE_KEY = '__cineResolvedHelpModule';
+  function createFallbackHelpModuleApi() {
+    function fallbackResolveStorageKey(explicitKey) {
+      if (typeof explicitKey === 'string' && explicitKey) {
+        return explicitKey;
+      }
+      if (typeof IOS_PWA_HELP_STORAGE_KEY === 'string' && IOS_PWA_HELP_STORAGE_KEY) {
+        return IOS_PWA_HELP_STORAGE_KEY;
+      }
+      if (typeof globalThis !== 'undefined' && globalThis && typeof globalThis.IOS_PWA_HELP_STORAGE_KEY === 'string' && globalThis.IOS_PWA_HELP_STORAGE_KEY) {
+        return globalThis.IOS_PWA_HELP_STORAGE_KEY;
+      }
+      if (typeof window !== 'undefined' && window && typeof window.IOS_PWA_HELP_STORAGE_KEY === 'string' && window.IOS_PWA_HELP_STORAGE_KEY) {
+        return window.IOS_PWA_HELP_STORAGE_KEY;
+      }
+      return 'iosPwaHelpShown';
+    }
+    function fallbackIsIosDevice(navigatorOverride) {
+      var nav = navigatorOverride || (typeof navigator !== 'undefined' ? navigator : null);
+      if (!nav) {
+        return false;
+      }
+      var ua = nav.userAgent || '';
+      var platform = nav.platform || '';
+      var hasTouch = typeof nav.maxTouchPoints === 'number' && nav.maxTouchPoints > 1;
+      return /iphone|ipad|ipod/i.test(ua) || platform === 'MacIntel' && hasTouch;
+    }
+    function fallbackIsAndroidDevice(navigatorOverride) {
+      var nav = navigatorOverride || (typeof navigator !== 'undefined' ? navigator : null);
+      if (!nav) {
+        return false;
+      }
+      var ua = nav.userAgent || '';
+      var vendor = nav.vendor || '';
+      return /android/i.test(ua) || /android/i.test(vendor);
+    }
+    function fallbackIsStandaloneDisplayMode(windowOverride, navigatorOverride) {
+      var win = windowOverride || (typeof window !== 'undefined' ? window : null);
+      var nav = navigatorOverride || (typeof navigator !== 'undefined' ? navigator : null);
+      if (!win) {
+        return false;
+      }
+      if (typeof win.matchMedia === 'function') {
+        try {
+          if (win.matchMedia('(display-mode: standalone)').matches) {
+            return true;
+          }
+        } catch (error) {
+          if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+            console.warn('matchMedia display-mode check failed', error);
+          }
+        }
+      }
+      if (nav && typeof nav.standalone === 'boolean') {
+        return nav.standalone;
+      }
+      return false;
+    }
+    function fallbackHasDismissedIosPwaHelp(explicitKey) {
+      var storageKey = fallbackResolveStorageKey(explicitKey);
+      if (typeof localStorage === 'undefined' || !localStorage || typeof localStorage.getItem !== 'function') {
+        return false;
+      }
+      try {
+        return localStorage.getItem(storageKey) === '1';
+      } catch (error) {
+        if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+          console.warn('Could not read iOS PWA help dismissal flag', error);
+        }
+        return false;
+      }
+    }
+    function fallbackMarkIosPwaHelpDismissed(explicitKey) {
+      var storageKey = fallbackResolveStorageKey(explicitKey);
+      if (typeof localStorage === 'undefined' || !localStorage || typeof localStorage.setItem !== 'function') {
+        return;
+      }
+      try {
+        localStorage.setItem(storageKey, '1');
+      } catch (error) {
+        if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+          console.warn('Could not store iOS PWA help dismissal', error);
+        }
+      }
+    }
+    function fallbackShouldShow(resolveDialog) {
+      var dialog = typeof resolveDialog === 'function' ? resolveDialog() : resolveDialog || null;
+      if (!dialog) {
+        return false;
+      }
+      if (!fallbackIsIosDevice()) {
+        return false;
+      }
+      if (!fallbackIsStandaloneDisplayMode()) {
+        return false;
+      }
+      if (fallbackHasDismissedIosPwaHelp()) {
+        return false;
+      }
+      return true;
+    }
+    return {
+      resolveIosPwaHelpStorageKey: fallbackResolveStorageKey,
+      isIosDevice: fallbackIsIosDevice,
+      isAndroidDevice: fallbackIsAndroidDevice,
+      isStandaloneDisplayMode: fallbackIsStandaloneDisplayMode,
+      hasDismissedIosPwaHelp: fallbackHasDismissedIosPwaHelp,
+      markIosPwaHelpDismissed: fallbackMarkIosPwaHelpDismissed,
+      shouldShowIosPwaHelp: fallbackShouldShow
+    };
+  }
+  function resolveHelpModuleApi() {
+    var globalScope = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : typeof global !== 'undefined' ? global : null;
+    if (globalScope && globalScope[HELP_MODULE_CACHE_KEY]) {
+      return globalScope[HELP_MODULE_CACHE_KEY];
+    }
+    var fallback = createFallbackHelpModuleApi();
+    var moduleBase = (typeof cineModuleBase === "undefined" ? "undefined" : _typeof(cineModuleBase)) === 'object' && cineModuleBase || (globalScope && _typeof(globalScope.cineModuleBase) === 'object' ? globalScope.cineModuleBase : null);
+    var registry = null;
+    if (moduleBase && typeof moduleBase.getModuleRegistry === 'function') {
+      try {
+        registry = moduleBase.getModuleRegistry(globalScope);
+      } catch (error) {
+        if (typeof moduleBase.safeWarn === 'function') {
+          moduleBase.safeWarn('Failed to resolve cine.features.help module registry.', error);
+        } else if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+          console.warn('Failed to resolve cine.features.help module registry.', error);
+        }
+      }
+    }
+    var resolved = null;
+    if (registry && typeof registry.get === 'function') {
+      try {
+        resolved = registry.get('cine.features.help');
+      } catch (error) {
+        if (moduleBase && typeof moduleBase.safeWarn === 'function') {
+          moduleBase.safeWarn('Failed to read cine.features.help module.', error);
+        } else if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+          console.warn('Failed to read cine.features.help module.', error);
+        }
+      }
+    }
+    if (!resolved && globalScope && _typeof(globalScope.cineFeaturesHelp) === 'object') {
+      resolved = globalScope.cineFeaturesHelp;
+    }
+    var api = resolved && typeof resolved.isIosDevice === 'function' ? resolved : fallback;
+    if (globalScope) {
+      try {
+        globalScope[HELP_MODULE_CACHE_KEY] = api;
+      } catch (error) {
+        void error;
+      }
+    }
+    return api;
+  }
+  var helpModuleApi = resolveHelpModuleApi();
   var DEVICE_SCHEMA_PATH = 'src/data/schema.json';
   var DEVICE_SCHEMA_STORAGE_KEY = 'cameraPowerPlanner_schemaCache';
   var AUTO_GEAR_RULES_KEY = typeof AUTO_GEAR_RULES_STORAGE_KEY !== 'undefined' ? AUTO_GEAR_RULES_STORAGE_KEY : 'cameraPowerPlanner_autoGearRules';
@@ -11218,6 +11374,14 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   };
   function updateSelectIconBoxes(sel) {
     if (!sel) return;
+    var multiSelected = sel.multiple ? Array.from(sel.selectedOptions || []) : [];
+    var hasValue = sel.multiple ? multiSelected.some(function (opt) {
+      return typeof opt.value === 'string' ? opt.value.trim() !== '' : !!opt.value;
+    }) : typeof sel.value === 'string' ? sel.value.trim() !== '' : sel.value !== null && sel.value !== undefined && String(sel.value).trim() !== '';
+    sel.classList.toggle('select-placeholder', !hasValue);
+    if (sel.id === 'requiredScenarios') {
+      return;
+    }
     var parent = sel.parentNode;
     if (!parent || typeof parent.querySelector !== 'function') {
       return;
@@ -11229,7 +11393,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       parent.insertBefore(container, sel.nextSibling);
     }
     container.innerHTML = '';
-    var opts = sel.multiple ? Array.from(sel.selectedOptions) : sel.value ? [sel.options[sel.selectedIndex]] : [];
+    var opts = sel.multiple ? multiSelected : hasValue && sel.selectedIndex >= 0 ? [sel.options[sel.selectedIndex]] : [];
     opts.forEach(function (opt) {
       var box = document.createElement('span');
       box.className = 'icon-box';
@@ -13526,47 +13690,62 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
   }
   function isIosDevice() {
-    if (typeof navigator === 'undefined') return false;
-    var ua = navigator.userAgent || '';
-    var platform = navigator.platform || '';
-    var hasTouch = typeof navigator.maxTouchPoints === 'number' && navigator.maxTouchPoints > 1;
-    return /iphone|ipad|ipod/i.test(ua) || platform === 'MacIntel' && hasTouch;
-  }
-  function isAndroidDevice() {
-    if (typeof navigator === 'undefined') return false;
-    var ua = navigator.userAgent || '';
-    var vendor = navigator.vendor || '';
-    return /android/i.test(ua) || /android/i.test(vendor);
-  }
-  function isStandaloneDisplayMode() {
-    if (typeof window === 'undefined') return false;
-    if (typeof window.matchMedia === 'function') {
-      try {
-        if (window.matchMedia('(display-mode: standalone)').matches) {
-          return true;
-        }
-      } catch (error) {
-        console.warn('matchMedia display-mode check failed', error);
+    try {
+      if (helpModuleApi && typeof helpModuleApi.isIosDevice === 'function') {
+        return Boolean(helpModuleApi.isIosDevice());
+      }
+    } catch (error) {
+      if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+        console.warn('isIosDevice() failed', error);
       }
     }
-    if (typeof navigator !== 'undefined' && typeof navigator.standalone === 'boolean') {
-      return navigator.standalone;
+    return false;
+  }
+  function isAndroidDevice() {
+    try {
+      if (helpModuleApi && typeof helpModuleApi.isAndroidDevice === 'function') {
+        return Boolean(helpModuleApi.isAndroidDevice());
+      }
+    } catch (error) {
+      if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+        console.warn('isAndroidDevice() failed', error);
+      }
+    }
+    return false;
+  }
+  function isStandaloneDisplayMode() {
+    try {
+      if (helpModuleApi && typeof helpModuleApi.isStandaloneDisplayMode === 'function') {
+        return Boolean(helpModuleApi.isStandaloneDisplayMode());
+      }
+    } catch (error) {
+      if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+        console.warn('isStandaloneDisplayMode() failed', error);
+      }
     }
     return false;
   }
   function hasDismissedIosPwaHelp() {
     try {
-      return localStorage.getItem(IOS_PWA_HELP_STORAGE_KEY) === '1';
+      if (helpModuleApi && typeof helpModuleApi.hasDismissedIosPwaHelp === 'function') {
+        return Boolean(helpModuleApi.hasDismissedIosPwaHelp());
+      }
     } catch (error) {
-      console.warn('Could not read iOS PWA help dismissal flag', error);
-      return false;
+      if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+        console.warn('hasDismissedIosPwaHelp() failed', error);
+      }
     }
+    return false;
   }
   function markIosPwaHelpDismissed() {
     try {
-      localStorage.setItem(IOS_PWA_HELP_STORAGE_KEY, '1');
+      if (helpModuleApi && typeof helpModuleApi.markIosPwaHelpDismissed === 'function') {
+        helpModuleApi.markIosPwaHelpDismissed();
+      }
     } catch (error) {
-      console.warn('Could not store iOS PWA help dismissal', error);
+      if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+        console.warn('markIosPwaHelpDismissed() failed', error);
+      }
     }
   }
   function getInstallBannerDismissedInSession() {
@@ -13874,7 +14053,18 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     updateInstallBannerColors();
   }
   function shouldShowIosPwaHelp() {
-    return !!iosPwaHelpDialog && isIosDevice() && isStandaloneDisplayMode() && !hasDismissedIosPwaHelp();
+    try {
+      if (helpModuleApi && typeof helpModuleApi.shouldShowIosPwaHelp === 'function') {
+        return Boolean(helpModuleApi.shouldShowIosPwaHelp(function () {
+          return iosPwaHelpDialog;
+        }));
+      }
+    } catch (error) {
+      if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+        console.warn('shouldShowIosPwaHelp() failed', error);
+      }
+    }
+    return false;
   }
   function openIosPwaHelp() {
     if (!iosPwaHelpDialog) return;

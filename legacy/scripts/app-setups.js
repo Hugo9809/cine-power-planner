@@ -84,6 +84,33 @@ function assignSelectValue(select, value) {
 function getGlobalScope() {
   return typeof globalThis !== 'undefined' && globalThis || typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || typeof global !== 'undefined' && global || null;
 }
+function getSafeGearListHtmlSections(html) {
+  var normalizedHtml = typeof html === 'string' ? html : '';
+  var fallbackResult = {
+    projectHtml: '',
+    gearHtml: normalizedHtml
+  };
+  var scope = getGlobalScope();
+  var splitter = typeof splitGearListHtml === 'function' ? splitGearListHtml : scope && typeof scope.splitGearListHtml === 'function' ? scope.splitGearListHtml : null;
+  if (!splitter) {
+    return fallbackResult;
+  }
+  try {
+    var result = splitter(normalizedHtml);
+    if (!result || _typeof(result) !== 'object') {
+      return fallbackResult;
+    }
+    var projectHtml = typeof result.projectHtml === 'string' ? result.projectHtml : '';
+    var gearHtml = typeof result.gearHtml === 'string' ? result.gearHtml : projectHtml ? '' : normalizedHtml;
+    return {
+      projectHtml: projectHtml,
+      gearHtml: gearHtml
+    };
+  } catch (error) {
+    console.warn('Failed to split gear list HTML', error);
+    return fallbackResult;
+  }
+}
 function resolveElementById(id, globalName) {
   var doc = typeof document !== 'undefined' ? document : null;
   if (doc && typeof doc.getElementById === 'function') {
@@ -606,9 +633,9 @@ function downloadSharedProject(shareFileName, includeAutoGear) {
   }
   var combinedHtml = getCurrentGearListHtml();
   if (combinedHtml) {
-    var _splitGearListHtml = splitGearListHtml(combinedHtml),
-      projectHtml = _splitGearListHtml.projectHtml,
-      gearHtml = _splitGearListHtml.gearHtml;
+    var _getSafeGearListHtmlS = getSafeGearListHtmlSections(combinedHtml),
+      projectHtml = _getSafeGearListHtmlS.projectHtml,
+      gearHtml = _getSafeGearListHtmlS.gearHtml;
     if (projectHtml) currentSetup.projectHtml = projectHtml;
     if (gearHtml) {
       currentSetup.gearList = projectHtml ? gearHtml.replace(/<h2[^>]*>.*?<\/h2>/, '') : gearHtml;
@@ -5654,8 +5681,8 @@ function refreshGearListIfVisible() {
   if (currentProjectInfo) {
     displayGearAndRequirements(html);
   } else {
-    var _splitGearListHtml2 = splitGearListHtml(html),
-      gearHtml = _splitGearListHtml2.gearHtml;
+    var _getSafeGearListHtmlS2 = getSafeGearListHtmlSections(html),
+      gearHtml = _getSafeGearListHtmlS2.gearHtml;
     gearListOutput.innerHTML = gearHtml;
   }
   ensureGearListActions();

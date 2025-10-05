@@ -3,17 +3,13 @@ function _regenerator() { var e, t, r = "function" == typeof Symbol ? Symbol : {
 function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { i({}, "", {}); } catch (e) { i = 0; } _regeneratorDefine2 = function _regeneratorDefine(e, r, n, t) { if (r) i ? i(e, r, { value: n, enumerable: !t, configurable: !t, writable: !t }) : e[r] = n;else { function o(r, n) { _regeneratorDefine2(e, r, function (e) { return this._invoke(r, n, e); }); } o("next", 0), o("throw", 1), o("return", 2); } }, _regeneratorDefine2(e, r, n, t); }
 function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
 function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
+function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
 function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
 function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
 function _objectWithoutProperties(e, t) { if (null == e) return {}; var o, r, i = _objectWithoutPropertiesLoose(e, t); if (Object.getOwnPropertySymbols) { var n = Object.getOwnPropertySymbols(e); for (r = 0; r < n.length; r++) o = n[r], -1 === t.indexOf(o) && {}.propertyIsEnumerable.call(e, o) && (i[o] = e[o]); } return i; }
 function _objectWithoutPropertiesLoose(r, e) { if (null == r) return {}; var t = {}; for (var n in r) if ({}.hasOwnProperty.call(r, n)) { if (-1 !== e.indexOf(n)) continue; t[n] = r[n]; } return t; }
-function _construct(t, e, r) { if (_isNativeReflectConstruct()) return Reflect.construct.apply(null, arguments); var o = [null]; o.push.apply(o, e); var p = new (t.bind.apply(t, o))(); return r && _setPrototypeOf(p, r.prototype), p; }
-function _setPrototypeOf(t, e) { return _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function (t, e) { return t.__proto__ = e, t; }, _setPrototypeOf(t, e); }
-function _isNativeReflectConstruct() { try { var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); } catch (t) {} return (_isNativeReflectConstruct = function _isNativeReflectConstruct() { return !!t; })(); }
-function _toArray(r) { return _arrayWithHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableRest(); }
-function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
-function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
 function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
@@ -2180,11 +2176,11 @@ if (projectForm) {
     });
   });
   projectForm.querySelectorAll('select').forEach(function (sel) {
-    if (sel.id === 'requiredScenarios') return;
-    sel.addEventListener('change', function () {
+    var handleUpdate = function handleUpdate() {
       return updateSelectIconBoxes(sel);
-    });
-    updateSelectIconBoxes(sel);
+    };
+    sel.addEventListener('change', handleUpdate);
+    handleUpdate();
   });
   var queueProjectAutoSave = function queueProjectAutoSave() {
     return scheduleProjectAutoSave();
@@ -3992,1304 +3988,6 @@ function showNotification(type, message) {
     }
   }, 4000);
 }
-function formatFullBackupFilename(date) {
-  var safeDate = date instanceof Date && !Number.isNaN(date.valueOf()) ? date : new Date();
-  var pad = function pad(n) {
-    return String(n).padStart(2, '0');
-  };
-  var year = safeDate.getFullYear();
-  var month = pad(safeDate.getMonth() + 1);
-  var day = pad(safeDate.getDate());
-  var hours = pad(safeDate.getHours());
-  var minutes = pad(safeDate.getMinutes());
-  var seconds = pad(safeDate.getSeconds());
-  var offsetMinutes = safeDate.getTimezoneOffset();
-  var offsetSuffix = 'Z';
-  if (offsetMinutes !== 0) {
-    var sign = offsetMinutes > 0 ? '-' : '+';
-    var abs = Math.abs(offsetMinutes);
-    var offsetHours = pad(Math.floor(abs / 60));
-    var offsetMins = pad(abs % 60);
-    offsetSuffix = "".concat(sign).concat(offsetHours, ":").concat(offsetMins);
-  }
-  var iso = "".concat(year, "-").concat(month, "-").concat(day, "T").concat(hours, ":").concat(minutes, ":").concat(seconds).concat(offsetSuffix);
-  var safeIso = iso.replace(/[:]/g, '-');
-  return {
-    iso: iso,
-    fileName: "".concat(safeIso, " full app backup.json")
-  };
-}
-function resolveSafeLocalStorage() {
-  if (typeof getSafeLocalStorage === 'function') {
-    try {
-      var storage = getSafeLocalStorage();
-      if (storage) {
-        return storage;
-      }
-    } catch (error) {
-      console.warn('Unable to obtain safe local storage reference', error);
-    }
-  }
-  if (typeof SAFE_LOCAL_STORAGE !== 'undefined') {
-    return SAFE_LOCAL_STORAGE;
-  }
-  if (typeof localStorage !== 'undefined') {
-    return localStorage;
-  }
-  return null;
-}
-function captureStorageSnapshot(storage) {
-  var snapshot = Object.create(null);
-  if (!storage) return snapshot;
-  var assignEntry = function assignEntry(key, valueOrGetter) {
-    if (typeof key !== 'string' || !key) {
-      return;
-    }
-    try {
-      var value = typeof valueOrGetter === 'function' ? valueOrGetter() : valueOrGetter;
-      snapshot[key] = value;
-    } catch (error) {
-      console.warn('Failed to read storage entry for backup', key, error);
-    }
-  };
-  var tryEnumerateByIndex = function tryEnumerateByIndex() {
-    if (typeof storage.key !== 'function' || typeof storage.length !== 'number') {
-      return false;
-    }
-    var length = 0;
-    try {
-      length = Number(storage.length) || 0;
-    } catch (lengthError) {
-      console.warn('Failed to inspect storage length for backup snapshot', lengthError);
-      return true;
-    }
-    var _loop = function _loop() {
-      var key;
-      try {
-        key = storage.key(i);
-      } catch (keyError) {
-        console.warn('Failed to access storage key for backup snapshot', keyError);
-        return 1;
-      }
-      assignEntry(key, function () {
-        return storage.getItem(key);
-      });
-    };
-    for (var i = 0; i < length; i += 1) {
-      if (_loop()) continue;
-    }
-    return true;
-  };
-  var tryEnumerateByKeys = function tryEnumerateByKeys() {
-    if (typeof storage.keys !== 'function') {
-      return false;
-    }
-    var keys;
-    try {
-      keys = storage.keys();
-    } catch (keysError) {
-      console.warn('Failed to enumerate storage keys for backup snapshot', keysError);
-      return true;
-    }
-    if (!keys) {
-      return true;
-    }
-    var iterate = function iterate(list) {
-      if (!list) return;
-      if (typeof list.forEach === 'function') {
-        list.forEach(function (key) {
-          return assignEntry(key, function () {
-            return storage.getItem(key);
-          });
-        });
-      } else if (typeof list[Symbol.iterator] === 'function') {
-        var _iterator = _createForOfIteratorHelper(list),
-          _step;
-        try {
-          var _loop2 = function _loop2() {
-            var key = _step.value;
-            assignEntry(key, function () {
-              return storage.getItem(key);
-            });
-          };
-          for (_iterator.s(); !(_step = _iterator.n()).done;) {
-            _loop2();
-          }
-        } catch (err) {
-          _iterator.e(err);
-        } finally {
-          _iterator.f();
-        }
-      }
-    };
-    iterate(keys);
-    return true;
-  };
-  var tryEnumerateByForEach = function tryEnumerateByForEach() {
-    if (typeof storage.forEach !== 'function') {
-      return false;
-    }
-    try {
-      storage.forEach(function (value, key) {
-        assignEntry(key, value);
-      });
-    } catch (error) {
-      console.warn('Failed to iterate storage for backup snapshot', error);
-    }
-    return true;
-  };
-  var enumerated = false;
-  try {
-    enumerated = tryEnumerateByIndex();
-  } catch (error) {
-    console.warn('Failed to snapshot storage via index enumeration', error);
-  }
-  if (!Object.keys(snapshot).length) {
-    try {
-      enumerated = tryEnumerateByKeys() || enumerated;
-    } catch (error) {
-      console.warn('Failed to snapshot storage via key enumeration', error);
-    }
-  }
-  if (!Object.keys(snapshot).length && !enumerated) {
-    try {
-      tryEnumerateByForEach();
-    } catch (error) {
-      console.warn('Failed to snapshot storage via iteration', error);
-    }
-  } else if (!Object.keys(snapshot).length) {
-    tryEnumerateByForEach();
-  }
-  return snapshot;
-}
-function createSafeStorageReader(storage, errorMessagePrefix) {
-  if (!storage || typeof storage.getItem !== 'function') {
-    return function () {
-      return null;
-    };
-  }
-  var message = typeof errorMessagePrefix === 'string' && errorMessagePrefix ? errorMessagePrefix : 'Failed to read storage key';
-  return function (key) {
-    if (typeof key !== 'string') {
-      return null;
-    }
-    try {
-      return storage.getItem(key);
-    } catch (error) {
-      console.warn("".concat(message), key, error);
-      return null;
-    }
-  };
-}
-function restoreSessionStorageSnapshot(snapshot) {
-  if (typeof sessionStorage === 'undefined' || !sessionStorage) {
-    return;
-  }
-  var entries = snapshot && _typeof(snapshot) === 'object' ? Object.entries(snapshot) : [];
-  var retainedKeys = new Set(entries.map(function (_ref7) {
-    var _ref8 = _slicedToArray(_ref7, 1),
-      key = _ref8[0];
-    return key;
-  }));
-  var keysToRemove = [];
-  try {
-    var _sessionStorage = sessionStorage,
-      length = _sessionStorage.length;
-    for (var i = 0; i < length; i += 1) {
-      var key = sessionStorage.key(i);
-      if (typeof key !== 'string') continue;
-      if (!retainedKeys.has(key)) {
-        keysToRemove.push(key);
-      }
-    }
-  } catch (error) {
-    console.warn('Failed to inspect sessionStorage during restore rollback', error);
-  }
-  keysToRemove.forEach(function (key) {
-    try {
-      sessionStorage.removeItem(key);
-    } catch (removeError) {
-      console.warn('Failed to remove sessionStorage key during restore rollback', key, removeError);
-    }
-  });
-  entries.forEach(function (_ref9) {
-    var _ref0 = _slicedToArray(_ref9, 2),
-      key = _ref0[0],
-      value = _ref0[1];
-    if (typeof key !== 'string') return;
-    try {
-      sessionStorage.setItem(key, typeof value === 'string' ? value : String(value));
-    } catch (setError) {
-      console.warn('Failed to reapply sessionStorage key during restore rollback', key, setError);
-    }
-  });
-}
-function sanitizeBackupPayload(raw) {
-  if (raw === null || raw === undefined) {
-    return '';
-  }
-  var decodeBinaryPayload = function decodeBinaryPayload(value) {
-    if (_typeof(value) !== 'object' || value === null) {
-      return null;
-    }
-    var isNodeBuffer = typeof Buffer !== 'undefined' && typeof Buffer.isBuffer === 'function' && Buffer.isBuffer(value);
-    var objectTag = Object.prototype.toString.call(value);
-    var isArrayBuffer = typeof ArrayBuffer !== 'undefined' && (value instanceof ArrayBuffer || objectTag === '[object ArrayBuffer]' || objectTag === '[object SharedArrayBuffer]');
-    var isArrayBufferView = function () {
-      if (typeof ArrayBuffer === 'undefined') {
-        return false;
-      }
-      if (typeof ArrayBuffer.isView === 'function' && ArrayBuffer.isView(value)) {
-        return true;
-      }
-      return Boolean(value && _typeof(value) === 'object' && _typeof(value.buffer) === 'object' && typeof value.byteLength === 'number' && typeof value.BYTES_PER_ELEMENT === 'number');
-    }();
-    if (!isNodeBuffer && !isArrayBuffer && !isArrayBufferView) {
-      return null;
-    }
-    var toUint8Array = function toUint8Array() {
-      if (isNodeBuffer) {
-        return new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
-      }
-      if (isArrayBuffer) {
-        return new Uint8Array(value);
-      }
-      if (_typeof(value.buffer) === 'object' && typeof value.byteLength === 'number') {
-        var offset = typeof value.byteOffset === 'number' ? value.byteOffset : 0;
-        return new Uint8Array(value.buffer, offset, value.byteLength);
-      }
-      throw new TypeError('Unsupported binary payload type');
-    };
-    var decodeWithTextDecoder = function decodeWithTextDecoder(array) {
-      if (typeof TextDecoder !== 'function') {
-        return null;
-      }
-      try {
-        var decoder = new TextDecoder('utf-8', {
-          fatal: false
-        });
-        return decoder.decode(array);
-      } catch (error) {
-        console.warn('Failed to decode backup payload with TextDecoder', error);
-        return null;
-      }
-    };
-    var decodeWithBuffer = function decodeWithBuffer() {
-      if (!isNodeBuffer) {
-        return null;
-      }
-      try {
-        return value.toString('utf8');
-      } catch (error) {
-        console.warn('Failed to decode backup payload with Buffer', error);
-        return null;
-      }
-    };
-    var decodeManually = function decodeManually(array) {
-      try {
-        var result = '';
-        var CHUNK_SIZE = 0x8000;
-        for (var _index5 = 0; _index5 < array.length; _index5 += CHUNK_SIZE) {
-          var slice = array.subarray(_index5, _index5 + CHUNK_SIZE);
-          result += String.fromCharCode.apply(null, slice);
-        }
-        return result;
-      } catch (error) {
-        console.warn('Failed to manually decode backup payload', error);
-        return null;
-      }
-    };
-    var array = toUint8Array();
-    return decodeWithTextDecoder(array) || decodeWithBuffer() || decodeManually(array);
-  };
-  var text;
-  if (typeof raw === 'string') {
-    text = raw;
-  } else {
-    var decoded = decodeBinaryPayload(raw);
-    if (typeof decoded === 'string') {
-      text = decoded;
-    } else {
-      try {
-        text = String(raw);
-      } catch (error) {
-        console.warn('Failed to stringify backup payload', error);
-        text = '';
-      }
-    }
-  }
-  if (typeof text !== 'string') {
-    return '';
-  }
-  if (text.charCodeAt(0) === 0xFEFF) {
-    return text.slice(1);
-  }
-  return text;
-}
-function parseBackupDataString(raw) {
-  if (typeof raw !== 'string') {
-    return null;
-  }
-  var sanitized = sanitizeBackupPayload(raw);
-  if (!sanitized) {
-    return null;
-  }
-  var trimmed = sanitized.trim();
-  if (!trimmed) {
-    return null;
-  }
-  try {
-    var parsed = JSON.parse(trimmed);
-    if (isPlainObject(parsed)) {
-      return parsed;
-    }
-    if (Array.isArray(parsed)) {
-      return convertLegacyDataEntriesToObject(parsed);
-    }
-  } catch (error) {
-    console.warn('Failed to parse backup data string', error);
-  }
-  return null;
-}
-function convertLegacyDataEntriesToObject(entries) {
-  if (!Array.isArray(entries)) {
-    return null;
-  }
-  var snapshot = Object.create(null);
-  var assignEntry = function assignEntry(key, value) {
-    if (typeof key !== 'string' || !key) return;
-    if (Object.prototype.hasOwnProperty.call(snapshot, key)) return;
-    snapshot[key] = value;
-  };
-  var keyCandidateKeys = ['key', 'name', 'section', 'type'];
-  var valueCandidateKeys = ['value', 'data', 'content', 'payload', 'entries', 'items', 'record', 'snapshot', 'state', 'values', 'settings', 'sectionData', 'body'];
-  entries.forEach(function (entry) {
-    if (!entry) return;
-    if (Array.isArray(entry)) {
-      assignEntry(entry[0], entry[1]);
-      return;
-    }
-    if (!isPlainObject(entry)) {
-      return;
-    }
-    if (Array.isArray(entry.entry)) {
-      assignEntry(entry.entry[0], entry.entry[1]);
-      return;
-    }
-    var keyCandidate = keyCandidateKeys.find(function (candidate) {
-      var value = entry[candidate];
-      return typeof value === 'string' && value;
-    });
-    if (!keyCandidate) {
-      return;
-    }
-    var value = undefined;
-    for (var i = 0; i < valueCandidateKeys.length; i += 1) {
-      var candidate = valueCandidateKeys[i];
-      if (Object.prototype.hasOwnProperty.call(entry, candidate)) {
-        value = entry[candidate];
-        break;
-      }
-    }
-    if (value === undefined) {
-      var _ref1, _ref10, _ref11, _ref12, _ref13, _ref14, _ref15, _ref16, _entry$value;
-      value = (_ref1 = (_ref10 = (_ref11 = (_ref12 = (_ref13 = (_ref14 = (_ref15 = (_ref16 = (_entry$value = entry.value) !== null && _entry$value !== void 0 ? _entry$value : entry.data) !== null && _ref16 !== void 0 ? _ref16 : entry.content) !== null && _ref15 !== void 0 ? _ref15 : entry.payload) !== null && _ref14 !== void 0 ? _ref14 : entry.entries) !== null && _ref13 !== void 0 ? _ref13 : entry.items) !== null && _ref12 !== void 0 ? _ref12 : entry.snapshot) !== null && _ref11 !== void 0 ? _ref11 : entry.state) !== null && _ref10 !== void 0 ? _ref10 : entry.values) !== null && _ref1 !== void 0 ? _ref1 : entry.settings;
-    }
-    if (value === undefined) {
-      return;
-    }
-    assignEntry(entry[keyCandidate], value);
-  });
-  return Object.keys(snapshot).length ? snapshot : null;
-}
-function normalizeBackupDataSection(section) {
-  if (isPlainObject(section)) {
-    return section;
-  }
-  if (Array.isArray(section)) {
-    var converted = convertLegacyDataEntriesToObject(section);
-    if (converted) {
-      return converted;
-    }
-  }
-  if (typeof section === 'string') {
-    var parsed = parseBackupDataString(section);
-    if (parsed) {
-      return parsed;
-    }
-  }
-  if (section && typeof section.toJSON === 'function') {
-    try {
-      var _parsed2 = section.toJSON();
-      if (isPlainObject(_parsed2)) {
-        return _parsed2;
-      }
-    } catch (error) {
-      console.warn('Failed to convert backup data via toJSON', error);
-    }
-  }
-  return null;
-}
-function normalizeBackupDataValue(key, value) {
-  if (typeof key === 'string' && BACKUP_DATA_COMPLEX_KEYS.has(key)) {
-    var normalized = normalizeBackupDataSection(value);
-    if (normalized) {
-      return normalized;
-    }
-  }
-  return value;
-}
-function mergeBackupDataSections(base, additions) {
-  if (!isPlainObject(additions) || !Object.keys(additions).length) {
-    return base ? _objectSpread({}, base) : null;
-  }
-  var target = base ? _objectSpread({}, base) : {};
-  Object.entries(additions).forEach(function (_ref17) {
-    var _ref18 = _slicedToArray(_ref17, 2),
-      key = _ref18[0],
-      value = _ref18[1];
-    if (typeof key !== 'string') return;
-    if (Object.prototype.hasOwnProperty.call(target, key)) return;
-    target[key] = normalizeBackupDataValue(key, value);
-  });
-  return target;
-}
-var BACKUP_STORAGE_KEY_PREFIXES = ['cameraPowerPlanner_', 'cinePowerPlanner_'];
-var BACKUP_STORAGE_KNOWN_KEYS = new Set(['darkMode', 'pinkMode', 'highContrast', 'showAutoBackups', 'accentColor', 'fontSize', 'fontFamily', 'customLogo', 'language', IOS_PWA_HELP_STORAGE_KEY]);
-var BACKUP_METADATA_BASE_KEYS = new Set(['settings', 'storage', 'localStorage', 'values', 'entries', 'sessionStorage', 'sessionState', 'sessionEntries', 'payload', 'plannerData', 'allData', 'generatedAt', 'version', 'appVersion', 'applicationVersion']);
-var BACKUP_DATA_KEYS = ['devices', 'setups', 'session', 'feedback', 'project', 'projects', 'gearList', 'favorites', 'autoGearRules', 'autoGearSeeded', 'autoGearBackups', 'autoGearPresets', 'autoGearMonitorDefaults', 'autoGearActivePresetId', 'autoGearAutoPresetId', 'autoGearShowBackups', 'autoGearBackupRetention', 'customLogo', 'customFonts', 'preferences', 'schemaCache', 'fullBackupHistory', 'fullBackups'];
-var BACKUP_DATA_COMPLEX_KEYS = new Set(['devices', 'setups', 'session', 'sessions', 'feedback', 'project', 'projects', 'gearList', 'favorites', 'autoGearRules', 'autoGearBackups', 'autoGearPresets', 'autoGearMonitorDefaults', 'preferences', 'fullBackupHistory', 'fullBackups', 'customFonts']);
-function isPlainObject(value) {
-  return value !== null && _typeof(value) === 'object' && !Array.isArray(value);
-}
-function normalizeStoredValue(value) {
-  if (typeof value === 'string') return value;
-  if (value === undefined || value === null) return '';
-  if (_typeof(value) === 'object') {
-    try {
-      return JSON.stringify(value);
-    } catch (error) {
-      console.warn('Failed to serialize stored value for backup compatibility', error);
-      return '';
-    }
-  }
-  try {
-    return String(value);
-  } catch (error) {
-    console.warn('Failed to normalize stored value for backup compatibility', error);
-    return '';
-  }
-}
-function convertEntriesToSnapshot(section) {
-  if (!section) return null;
-  var source = section;
-  if (typeof source === 'string') {
-    var parsed = null;
-    try {
-      parsed = JSON.parse(source);
-    } catch (error) {
-      parsed = null;
-    }
-    if (parsed && (Array.isArray(parsed) || isPlainObject(parsed))) {
-      source = parsed;
-    } else {
-      return null;
-    }
-  }
-  var snapshot = Object.create(null);
-  var assignEntry = function assignEntry(key, value) {
-    if (typeof key !== 'string' || !key) return;
-    snapshot[key] = normalizeStoredValue(value);
-  };
-  if (Array.isArray(source)) {
-    source.forEach(function (entry) {
-      if (!entry) return;
-      if (Array.isArray(entry)) {
-        assignEntry(entry[0], entry[1]);
-        return;
-      }
-      if (_typeof(entry) === 'object') {
-        if (typeof entry.key === 'string') {
-          var _ref19, _ref20, _ref21, _entry$value2;
-          assignEntry(entry.key, (_ref19 = (_ref20 = (_ref21 = (_entry$value2 = entry.value) !== null && _entry$value2 !== void 0 ? _entry$value2 : entry.val) !== null && _ref21 !== void 0 ? _ref21 : entry.data) !== null && _ref20 !== void 0 ? _ref20 : entry.content) !== null && _ref19 !== void 0 ? _ref19 : entry.string);
-          return;
-        }
-        if (typeof entry.name === 'string') {
-          var _ref22, _ref23, _ref24, _entry$value3;
-          assignEntry(entry.name, (_ref22 = (_ref23 = (_ref24 = (_entry$value3 = entry.value) !== null && _entry$value3 !== void 0 ? _entry$value3 : entry.val) !== null && _ref24 !== void 0 ? _ref24 : entry.data) !== null && _ref23 !== void 0 ? _ref23 : entry.content) !== null && _ref22 !== void 0 ? _ref22 : entry.string);
-          return;
-        }
-        if (Array.isArray(entry.entry)) {
-          assignEntry(entry.entry[0], entry.entry[1]);
-        }
-      }
-    });
-  } else if (isPlainObject(source)) {
-    Object.entries(source).forEach(function (_ref25) {
-      var _ref26 = _slicedToArray(_ref25, 2),
-        key = _ref26[0],
-        value = _ref26[1];
-      assignEntry(key, value);
-    });
-  } else {
-    return null;
-  }
-  return Object.keys(snapshot).length ? snapshot : null;
-}
-function extractFirstMatchingSnapshot(source, keys) {
-  if (!isPlainObject(source)) return {
-    snapshot: null,
-    keyUsed: null
-  };
-  var _iterator2 = _createForOfIteratorHelper(keys),
-    _step2;
-  try {
-    for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
-      var key = _step2.value;
-      if (!Object.prototype.hasOwnProperty.call(source, key)) continue;
-      var snapshot = convertEntriesToSnapshot(source[key]);
-      if (snapshot) {
-        return {
-          snapshot: snapshot,
-          keyUsed: key
-        };
-      }
-    }
-  } catch (err) {
-    _iterator2.e(err);
-  } finally {
-    _iterator2.f();
-  }
-  return {
-    snapshot: null,
-    keyUsed: null
-  };
-}
-function looksLikeStoredSettingKey(key) {
-  if (BACKUP_STORAGE_KNOWN_KEYS.has(key)) {
-    return true;
-  }
-  return BACKUP_STORAGE_KEY_PREFIXES.some(function (prefix) {
-    return key.startsWith(prefix);
-  });
-}
-function restoreLocalStorageSnapshot(storage, snapshot) {
-  if (!storage || typeof storage.setItem !== 'function') {
-    return;
-  }
-  var entries = snapshot && _typeof(snapshot) === 'object' ? Object.entries(snapshot) : [];
-  var targetKeys = new Set(entries.map(function (_ref27) {
-    var _ref28 = _slicedToArray(_ref27, 1),
-      key = _ref28[0];
-    return key;
-  }));
-  var keysToRemove = [];
-  try {
-    var length = storage.length;
-    for (var i = 0; i < length; i += 1) {
-      var key = storage.key(i);
-      if (typeof key !== 'string') continue;
-      if (!targetKeys.has(key) && looksLikeStoredSettingKey(key)) {
-        keysToRemove.push(key);
-      }
-    }
-  } catch (error) {
-    console.warn('Failed to inspect storage during restore rollback', error);
-  }
-  keysToRemove.forEach(function (key) {
-    try {
-      storage.removeItem(key);
-    } catch (removeError) {
-      console.warn('Failed to remove storage key during restore rollback', key, removeError);
-    }
-  });
-  entries.forEach(function (_ref29) {
-    var _ref30 = _slicedToArray(_ref29, 2),
-      key = _ref30[0],
-      value = _ref30[1];
-    if (typeof key !== 'string') return;
-    try {
-      if (value === null || value === undefined) {
-        storage.removeItem(key);
-      } else {
-        storage.setItem(key, typeof value === 'string' ? value : String(value));
-      }
-    } catch (setError) {
-      console.warn('Failed to reapply storage key during restore rollback', key, setError);
-    }
-  });
-}
-function buildLegacyStorageFromRoot(source, metadataKeys) {
-  if (!isPlainObject(source)) return null;
-  var snapshot = Object.create(null);
-  Object.entries(source).forEach(function (_ref31) {
-    var _ref32 = _slicedToArray(_ref31, 2),
-      key = _ref32[0],
-      value = _ref32[1];
-    if (metadataKeys.has(key)) return;
-    if (!looksLikeStoredSettingKey(key)) return;
-    snapshot[key] = normalizeStoredValue(value);
-  });
-  return Object.keys(snapshot).length ? snapshot : null;
-}
-function extractBackupSections(raw) {
-  var parsed = isPlainObject(raw) ? raw : {};
-  var versionValue = typeof parsed.version === 'string' ? parsed.version : typeof parsed.appVersion === 'string' ? parsed.appVersion : typeof parsed.applicationVersion === 'string' ? parsed.applicationVersion : undefined;
-  var settingsResult = extractFirstMatchingSnapshot(parsed, ['settings', 'localStorage', 'storage', 'storedSettings', 'values', 'entries']);
-  var sessionResult = extractFirstMatchingSnapshot(parsed, ['sessionStorage', 'session', 'sessions', 'sessionState', 'sessionEntries']);
-  var metadataKeys = new Set(BACKUP_METADATA_BASE_KEYS);
-  if (settingsResult.keyUsed) metadataKeys.add(settingsResult.keyUsed);
-  if (sessionResult.keyUsed) metadataKeys.add(sessionResult.keyUsed);
-  var settingsSnapshot = settingsResult.snapshot || buildLegacyStorageFromRoot(parsed, metadataKeys);
-  var sessionSnapshot = sessionResult.snapshot;
-  var dataSection = null;
-  for (var _i2 = 0, _arr = ['data', 'payload', 'plannerData', 'allData']; _i2 < _arr.length; _i2++) {
-    var key = _arr[_i2];
-    if (!Object.prototype.hasOwnProperty.call(parsed, key)) continue;
-    var normalized = normalizeBackupDataSection(parsed[key]);
-    if (normalized) {
-      dataSection = mergeBackupDataSections(dataSection, normalized);
-    }
-  }
-  var fallback = {};
-  BACKUP_DATA_KEYS.forEach(function (key) {
-    if (metadataKeys.has(key)) return;
-    if (!Object.prototype.hasOwnProperty.call(parsed, key)) return;
-    fallback[key] = normalizeBackupDataValue(key, parsed[key]);
-  });
-  if (Object.keys(fallback).length) {
-    dataSection = mergeBackupDataSections(dataSection, fallback);
-  }
-  return {
-    fileVersion: versionValue,
-    settings: settingsSnapshot,
-    sessionStorage: sessionSnapshot,
-    data: isPlainObject(dataSection) ? dataSection : null
-  };
-}
-function resolveRestoreTranslation(langTexts, fallbackTexts, key, defaultText) {
-  if (langTexts && Object.prototype.hasOwnProperty.call(langTexts, key)) {
-    return langTexts[key];
-  }
-  if (fallbackTexts && Object.prototype.hasOwnProperty.call(fallbackTexts, key)) {
-    return fallbackTexts[key];
-  }
-  return defaultText;
-}
-var restoreVerificationApi = null;
-var restoreVerificationResolutionAttempted = false;
-function resolveRestoreVerificationApi() {
-  if (restoreVerificationResolutionAttempted) {
-    return restoreVerificationApi;
-  }
-  restoreVerificationResolutionAttempted = true;
-  if (typeof require === 'function') {
-    try {
-      var moduleApi = require('./restore-verification.js');
-      if (moduleApi && typeof moduleApi.buildReport === 'function') {
-        restoreVerificationApi = moduleApi;
-        return restoreVerificationApi;
-      }
-    } catch (requireError) {
-      void requireError;
-    }
-  }
-  var scope = typeof globalThis !== 'undefined' && globalThis || typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || typeof global !== 'undefined' && global || null;
-  if (scope && _typeof(scope.__cineRestoreVerification) === 'object') {
-    restoreVerificationApi = scope.__cineRestoreVerification;
-  }
-  return restoreVerificationApi;
-}
-function verifyRestoredBackupIntegrity(importedData) {
-  var api = resolveRestoreVerificationApi();
-  if (!api || typeof api.buildReport !== 'function') {
-    return null;
-  }
-  var _getSessionLanguageTe = getSessionLanguageTexts(),
-    langTexts = _getSessionLanguageTe.langTexts,
-    fallbackTexts = _getSessionLanguageTe.fallbackTexts;
-  var translation = function translation(key, fallback) {
-    return resolveRestoreTranslation(langTexts, fallbackTexts, key, fallback);
-  };
-  var safeImportedData = isPlainObject(importedData) ? importedData : {};
-  var liveData = {};
-  try {
-    var snapshot = collectFullBackupData();
-    if (snapshot && snapshot.data && isPlainObject(snapshot.data)) {
-      liveData = snapshot.data;
-    }
-  } catch (snapshotError) {
-    console.warn('Restore verification failed to collect live snapshot', snapshotError);
-    if (typeof api.buildFailureReport === 'function') {
-      return api.buildFailureReport({
-        translation: translation,
-        error: snapshotError
-      });
-    }
-    return null;
-  }
-  try {
-    var liveCounts = summarizeCountsFromData(liveData);
-    var expectedCounts = summarizeCountsFromData(safeImportedData);
-    var rows = buildRestoreRehearsalRows(liveCounts, expectedCounts, {
-      mode: 'backup'
-    });
-    return api.buildReport({
-      rows: rows,
-      translation: translation
-    });
-  } catch (reportError) {
-    console.warn('Restore verification report failed', reportError);
-    if (typeof api.buildFailureReport === 'function') {
-      return api.buildFailureReport({
-        translation: translation,
-        error: reportError
-      });
-    }
-    return null;
-  }
-}
-function hasAnyDataKey(data, keys) {
-  if (!data || _typeof(data) !== 'object') {
-    return false;
-  }
-  for (var i = 0; i < keys.length; i += 1) {
-    var key = keys[i];
-    if (Object.prototype.hasOwnProperty.call(data, key)) {
-      return true;
-    }
-  }
-  return false;
-}
-function buildRestoreVersionCompatibilityMessage(options) {
-  var _ref33 = options || {},
-    langTexts = _ref33.langTexts,
-    fallbackTexts = _ref33.fallbackTexts,
-    fileVersion = _ref33.fileVersion,
-    targetVersion = _ref33.targetVersion,
-    data = _ref33.data,
-    settingsSnapshot = _ref33.settingsSnapshot,
-    sessionSnapshot = _ref33.sessionSnapshot,
-    backupFileName = _ref33.backupFileName;
-  var translation = function translation(key, fallback) {
-    return resolveRestoreTranslation(langTexts, fallbackTexts, key, fallback);
-  };
-  var unknownVersion = translation('restoreVersionUnknownVersion', 'unknown version');
-  var safeData = isPlainObject(data) ? data : {};
-  var coreDefinitions = [{
-    keys: ['devices'],
-    labelKey: 'restoreSectionDevices',
-    fallback: 'Device library'
-  }, {
-    keys: ['setups'],
-    labelKey: 'restoreSectionSetups',
-    fallback: 'Saved setups'
-  }, {
-    keys: ['project', 'projects', 'gearList'],
-    labelKey: 'restoreSectionProjects',
-    fallback: 'Projects',
-    detect: function detect(section) {
-      if (hasAnyDataKey(section, ['project', 'projects'])) {
-        return true;
-      }
-      return typeof section.gearList === 'string' && section.gearList.trim().length > 0;
-    }
-  }, {
-    keys: ['favorites'],
-    labelKey: 'restoreSectionFavorites',
-    fallback: 'Favorites'
-  }, {
-    keys: ['autoGearRules'],
-    labelKey: 'restoreSectionAutoGearRules',
-    fallback: 'Automatic gear rules'
-  }, {
-    keys: ['autoGearPresets'],
-    labelKey: 'restoreSectionAutoGearPresets',
-    fallback: 'Automatic gear presets'
-  }, {
-    keys: ['autoGearBackups'],
-    labelKey: 'restoreSectionAutoGearBackups',
-    fallback: 'Automatic gear backups'
-  }];
-  var optionalDefinitions = [{
-    keys: ['autoGearActivePresetId'],
-    labelKey: 'restoreSectionAutoGearActivePreset',
-    fallback: 'Selected automatic gear preset'
-  }, {
-    keys: ['autoGearAutoPresetId'],
-    labelKey: 'restoreSectionAutoGearAutoPreset',
-    fallback: 'Automatic assignment preset'
-  }, {
-    keys: ['autoGearShowBackups'],
-    labelKey: 'restoreSectionAutoGearVisibility',
-    fallback: 'Automatic backup visibility'
-  }, {
-    keys: ['autoGearBackupRetention'],
-    labelKey: 'restoreSectionAutoGearBackupRetention',
-    fallback: 'Automatic backup retention'
-  }, {
-    keys: ['autoGearSeeded'],
-    labelKey: 'restoreSectionAutoGearSeeded',
-    fallback: 'Automatic gear seed state'
-  }, {
-    keys: ['autoGearMonitorDefaults'],
-    labelKey: 'restoreSectionAutoGearMonitorDefaults',
-    fallback: 'Monitor defaults'
-  }, {
-    keys: ['session'],
-    labelKey: 'restoreSectionSession',
-    fallback: 'Current planner session'
-  }, {
-    keys: ['feedback'],
-    labelKey: 'restoreSectionFeedback',
-    fallback: 'Feedback drafts'
-  }, {
-    keys: ['preferences'],
-    labelKey: 'restoreSectionPreferences',
-    fallback: 'App preferences'
-  }, {
-    keys: ['customLogo'],
-    labelKey: 'restoreSectionCustomLogo',
-    fallback: 'Custom logo'
-  }, {
-    keys: ['customFonts'],
-    labelKey: 'restoreSectionCustomFonts',
-    fallback: 'Custom fonts'
-  }, {
-    keys: ['schemaCache'],
-    labelKey: 'restoreSectionSchemaCache',
-    fallback: 'Device schema cache'
-  }, {
-    keys: ['fullBackupHistory', 'fullBackups'],
-    labelKey: 'restoreSectionFullBackupHistory',
-    fallback: 'Backup history'
-  }];
-  var missingCore = [];
-  coreDefinitions.forEach(function (def) {
-    var present = typeof def.detect === 'function' ? def.detect(safeData) : hasAnyDataKey(safeData, def.keys);
-    if (!present) {
-      missingCore.push(translation(def.labelKey, def.fallback));
-    }
-  });
-  var missingOptional = [];
-  optionalDefinitions.forEach(function (def) {
-    var present = typeof def.detect === 'function' ? def.detect(safeData) : hasAnyDataKey(safeData, def.keys);
-    if (!present) {
-      missingOptional.push(translation(def.labelKey, def.fallback));
-    }
-  });
-  var missingStorage = [];
-  if (!settingsSnapshot) {
-    missingStorage.push(translation('restoreSectionStoredSettings', 'Stored settings snapshot'));
-  }
-  if (!sessionSnapshot) {
-    missingStorage.push(translation('restoreSectionStoredSession', 'Stored session snapshot'));
-  }
-  var lines = [];
-  lines.push("\u26A0\uFE0F ".concat(translation('restoreVersionSummaryTitle', 'Older backup detected')));
-  var headingTemplate = translation('restoreVersionSummaryHeading', 'This backup was created with {oldVersion} and you are running {newVersion}.');
-  var heading = headingTemplate.replace('{oldVersion}', fileVersion || unknownVersion).replace('{newVersion}', targetVersion || unknownVersion);
-  lines.push(heading);
-  var hasProblems = missingCore.length || missingOptional.length || missingStorage.length;
-  if (hasProblems) {
-    if (missingCore.length) {
-      lines.push('');
-      lines.push(translation('restoreVersionCoreMissing', 'Not included in this backup:'));
-      missingCore.forEach(function (label) {
-        lines.push("\u2022 ".concat(label));
-      });
-    }
-    if (missingStorage.length) {
-      lines.push('');
-      lines.push(translation('restoreVersionStorageMissing', 'Stored preferences not included:'));
-      missingStorage.forEach(function (label) {
-        lines.push("\u2022 ".concat(label));
-      });
-    }
-    if (missingOptional.length) {
-      lines.push('');
-      lines.push(translation('restoreVersionOptionalMissing', 'Optional items you may need to recreate:'));
-      missingOptional.forEach(function (label) {
-        lines.push("\u25E6 ".concat(label));
-      });
-    }
-  } else {
-    lines.push('');
-    lines.push(translation('restoreVersionNoIssues', 'All modern data sections were found in this backup.'));
-  }
-  if (backupFileName) {
-    lines.push('');
-    var backupLine = translation('restoreVersionBackupLabel', 'Safety backup saved before restore: {fileName}').replace('{fileName}', backupFileName);
-    lines.push(backupLine);
-  }
-  lines.push('');
-  lines.push(translation('restoreVersionTip', 'We saved a safety backup of your current data before importing.'));
-  lines.push(translation('restoreVersionFooter', 'You can continue and manually recreate the missing items afterward.'));
-  return lines.join('\n');
-}
-function triggerBackupDownload(url, fileName) {
-  if (typeof document === 'undefined') {
-    return false;
-  }
-  var anchor;
-  try {
-    anchor = document.createElement('a');
-  } catch (error) {
-    console.warn('Failed to create backup download link', error);
-    return false;
-  }
-  if (!anchor || typeof anchor.click !== 'function' || !('download' in anchor)) {
-    return false;
-  }
-  anchor.href = url;
-  anchor.download = fileName;
-  anchor.rel = 'noopener';
-  if (anchor.style) {
-    try {
-      if (typeof anchor.style.setProperty === 'function') {
-        anchor.style.setProperty('display', 'none');
-      } else {
-        anchor.style.display = 'none';
-      }
-    } catch (styleError) {
-      void styleError;
-    }
-  }
-  var parent = document.body || document.documentElement || document.head;
-  var appended = false;
-  if (parent && typeof parent.appendChild === 'function') {
-    try {
-      parent.appendChild(anchor);
-      appended = true;
-    } catch (appendError) {
-      void appendError;
-    }
-  }
-  try {
-    anchor.click();
-  } catch (clickError) {
-    console.warn('Failed to trigger backup download link', clickError);
-    if (appended && anchor.parentNode && typeof anchor.parentNode.removeChild === 'function') {
-      try {
-        anchor.parentNode.removeChild(anchor);
-      } catch (removeError) {
-        void removeError;
-      }
-    }
-    return false;
-  }
-  if (appended && anchor.parentNode && typeof anchor.parentNode.removeChild === 'function') {
-    try {
-      anchor.parentNode.removeChild(anchor);
-    } catch (removeError2) {
-      void removeError2;
-    }
-  }
-  return true;
-}
-function encodeBackupDataUrl(payload) {
-  try {
-    return "data:application/json;charset=utf-8,".concat(encodeURIComponent(payload));
-  } catch (error) {
-    console.warn('Failed to encode backup data URL', error);
-    return null;
-  }
-}
-function getManualDownloadFallbackMessage() {
-  if ((typeof texts === "undefined" ? "undefined" : _typeof(texts)) === 'object' && texts) {
-    var _texts$en21;
-    var lang = typeof currentLang === 'string' && texts[currentLang] ? currentLang : 'en';
-    var langTexts = texts[lang] || texts.en || {};
-    var fallback = langTexts.manualDownloadFallback || ((_texts$en21 = texts.en) === null || _texts$en21 === void 0 ? void 0 : _texts$en21.manualDownloadFallback);
-    if (fallback) {
-      return fallback;
-    }
-  }
-  return 'The download did not start automatically. A new tab opened so you can copy or save the file manually.';
-}
-function getManualDownloadCopyHint() {
-  if ((typeof texts === "undefined" ? "undefined" : _typeof(texts)) === 'object' && texts) {
-    var _texts$en22;
-    var lang = typeof currentLang === 'string' && texts[currentLang] ? currentLang : 'en';
-    var langTexts = texts[lang] || texts.en || {};
-    var fallback = langTexts.manualDownloadCopyHint || ((_texts$en22 = texts.en) === null || _texts$en22 === void 0 ? void 0 : _texts$en22.manualDownloadCopyHint);
-    if (fallback) {
-      return fallback;
-    }
-  }
-  return 'Select all the text below and copy it to store the file safely.';
-}
-function openBackupFallbackWindow(payload, fileName) {
-  if (typeof window === 'undefined' || typeof window.open !== 'function') {
-    return false;
-  }
-  var backupWindow = null;
-  try {
-    backupWindow = window.open('', '_blank');
-  } catch (openError) {
-    console.warn('Failed to open manual backup window', openError);
-    backupWindow = null;
-  }
-  if (!backupWindow) {
-    return false;
-  }
-  try {
-    var doc = backupWindow.document;
-    if (!doc) {
-      return false;
-    }
-    var langAttr = document && document.documentElement && document.documentElement.getAttribute ? document.documentElement.getAttribute('lang') : 'en';
-    doc.open();
-    doc.write("<!DOCTYPE html><html lang=\"".concat(langAttr || 'en', "\"><head><meta charset=\"utf-8\"><title>Manual download</title></head><body></body></html>"));
-    doc.close();
-    try {
-      doc.title = fileName || 'backup.json';
-    } catch (titleError) {
-      void titleError;
-    }
-    var body = doc.body;
-    if (!body) {
-      return false;
-    }
-    body.style.margin = '0';
-    body.style.padding = '1.5rem';
-    body.style.background = '#f8f9fb';
-    body.style.color = '#0f172a';
-    body.style.fontFamily = "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
-    var container = doc.createElement('div');
-    container.style.maxWidth = '960px';
-    container.style.margin = '0 auto';
-    container.style.display = 'flex';
-    container.style.flexDirection = 'column';
-    container.style.gap = '1rem';
-    var heading = doc.createElement('h1');
-    heading.textContent = fileName || 'Manual backup';
-    heading.style.margin = '0';
-    heading.style.fontSize = '1.5rem';
-    heading.style.fontWeight = '600';
-    var description = doc.createElement('p');
-    description.textContent = getManualDownloadFallbackMessage();
-    description.style.margin = '0';
-    description.style.lineHeight = '1.5';
-    var helper = doc.createElement('p');
-    helper.textContent = getManualDownloadCopyHint();
-    helper.style.margin = '0';
-    helper.style.lineHeight = '1.5';
-    var textArea = doc.createElement('textarea');
-    textArea.value = payload;
-    textArea.readOnly = true;
-    textArea.spellcheck = false;
-    textArea.style.width = '100%';
-    textArea.style.height = '70vh';
-    textArea.style.resize = 'vertical';
-    textArea.style.padding = '1rem';
-    textArea.style.borderRadius = '1rem';
-    textArea.style.border = '1px solid rgba(15, 23, 42, 0.15)';
-    textArea.style.background = '#ffffff';
-    textArea.style.fontFamily = "'SFMono-Regular', 'Roboto Mono', 'Menlo', 'Courier New', monospace";
-    textArea.style.fontSize = '0.875rem';
-    textArea.style.lineHeight = '1.5';
-    textArea.style.boxShadow = '0 0.75rem 2.5rem rgba(15, 23, 42, 0.16)';
-    container.appendChild(heading);
-    container.appendChild(description);
-    container.appendChild(helper);
-    container.appendChild(textArea);
-    body.appendChild(container);
-    try {
-      textArea.focus();
-      textArea.select();
-    } catch (focusError) {
-      void focusError;
-    }
-    try {
-      backupWindow.focus();
-    } catch (focusWindowError) {
-      void focusWindowError;
-    }
-    return true;
-  } catch (renderError) {
-    console.warn('Failed to render manual backup window', renderError);
-    return false;
-  }
-}
-function downloadBackupPayload(payload, fileName) {
-  var failureResult = {
-    success: false,
-    method: null
-  };
-  if (typeof payload !== 'string') {
-    return failureResult;
-  }
-  var blob = null;
-  if (typeof Blob !== 'undefined') {
-    try {
-      blob = new Blob([payload], {
-        type: 'application/json'
-      });
-    } catch (blobError) {
-      console.warn('Failed to create backup blob', blobError);
-      blob = null;
-    }
-  }
-  if (blob) {
-    if (typeof navigator !== 'undefined' && typeof navigator.msSaveOrOpenBlob === 'function') {
-      try {
-        var msSaveResult = navigator.msSaveOrOpenBlob(blob, fileName);
-        if (msSaveResult === false) {
-          console.warn('Saving backup via msSaveOrOpenBlob was cancelled or declined');
-        } else {
-          return {
-            success: true,
-            method: 'ms-save'
-          };
-        }
-      } catch (msError) {
-        console.warn('Saving backup via msSaveOrOpenBlob failed', msError);
-      }
-    }
-    if (typeof URL !== 'undefined' && URL && typeof URL.createObjectURL === 'function') {
-      var objectUrl = null;
-      try {
-        objectUrl = URL.createObjectURL(blob);
-      } catch (urlError) {
-        console.warn('Failed to create backup object URL', urlError);
-        objectUrl = null;
-      }
-      if (objectUrl) {
-        var triggered = triggerBackupDownload(objectUrl, fileName);
-        try {
-          if (typeof URL.revokeObjectURL === 'function') {
-            URL.revokeObjectURL(objectUrl);
-          }
-        } catch (revokeError) {
-          console.warn('Failed to revoke backup object URL', revokeError);
-        }
-        if (triggered) {
-          return {
-            success: true,
-            method: 'object-url'
-          };
-        }
-      }
-    }
-  }
-  var dataUrl = encodeBackupDataUrl(payload);
-  if (dataUrl) {
-    var _triggered = triggerBackupDownload(dataUrl, fileName);
-    if (_triggered) {
-      return {
-        success: true,
-        method: 'data-url'
-      };
-    }
-  }
-  if (openBackupFallbackWindow(payload, fileName)) {
-    return {
-      success: true,
-      method: 'window-fallback'
-    };
-  }
-  return failureResult;
-}
-var SESSION_AUTO_BACKUP_NAME_PREFIX = 'auto-backup-';
-var SESSION_AUTO_BACKUP_DELETION_PREFIX = 'auto-backup-before-delete-';
-var backupDiffOptionsCache = [];
-var backupDiffState = {
-  baseline: '',
-  comparison: ''
-};
-function getDiffText(key) {
-  var fallbackValue = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
-  var langTexts = texts && typeof currentLang === 'string' ? texts[currentLang] : null;
-  var fallbackTexts = texts && texts.en ? texts.en : {};
-  if (langTexts && Object.prototype.hasOwnProperty.call(langTexts, key)) {
-    var value = langTexts[key];
-    if (typeof value === 'string' && value) {
-      return value;
-    }
-  }
-  if (fallbackTexts && Object.prototype.hasOwnProperty.call(fallbackTexts, key)) {
-    var _value = fallbackTexts[key];
-    if (typeof _value === 'string' && _value) {
-      return _value;
-    }
-  }
-  return fallbackValue;
-}
-function formatNumberForComparison(value) {
-  var lang = typeof currentLang === 'string' && currentLang ? currentLang : 'en';
-  try {
-    return new Intl.NumberFormat(lang).format(value);
-  } catch (error) {
-    if (lang !== 'en') {
-      try {
-        return new Intl.NumberFormat('en').format(value);
-      } catch (fallbackError) {
-        console.warn('Number formatting failed for comparison summary', error, fallbackError);
-        return String(value);
-      }
-    }
-    console.warn('Number formatting failed for comparison summary', error);
-    return String(value);
-  }
-}
-function isAutoBackupName(name) {
-  return typeof name === 'string' && (name.startsWith(SESSION_AUTO_BACKUP_NAME_PREFIX) || name.startsWith(SESSION_AUTO_BACKUP_DELETION_PREFIX));
-}
-function parseAutoBackupName(name) {
-  if (typeof name !== 'string') {
-    return null;
-  }
-  var config = function () {
-    if (name.startsWith(SESSION_AUTO_BACKUP_DELETION_PREFIX)) {
-      return {
-        prefixLength: SESSION_AUTO_BACKUP_DELETION_PREFIX.length,
-        type: 'auto-backup-before-delete',
-        includeSeconds: true,
-        minParts: 6
-      };
-    }
-    if (name.startsWith(SESSION_AUTO_BACKUP_NAME_PREFIX)) {
-      return {
-        prefixLength: SESSION_AUTO_BACKUP_NAME_PREFIX.length,
-        type: 'auto-backup',
-        includeSeconds: false,
-        minParts: 5
-      };
-    }
-    return null;
-  }();
-  if (!config) {
-    return null;
-  }
-  var remainder = name.slice(config.prefixLength);
-  var parts = remainder.split('-');
-  if (parts.length < config.minParts) {
-    return null;
-  }
-  var _parts = _toArray(parts),
-    year = _parts[0],
-    month = _parts[1],
-    day = _parts[2],
-    hour = _parts[3],
-    minute = _parts[4],
-    rest = _parts.slice(5);
-  var dateParts = [Number(year), Number(month) - 1, Number(day), Number(hour), Number(minute)];
-  var labelParts = rest;
-  if (config.includeSeconds) {
-    var secondsPart = rest.length ? rest[0] : '0';
-    dateParts.push(Number(secondsPart));
-    labelParts = rest.slice(1);
-  }
-  var label = labelParts.join('-').trim();
-  var date = _construct(Date, dateParts);
-  return {
-    type: config.type,
-    date: Number.isNaN(date.valueOf()) ? null : date,
-    label: label,
-    includeSeconds: config.includeSeconds
-  };
-}
 function formatTimestampForComparison(date, includeSeconds) {
   if (!(date instanceof Date) || Number.isNaN(date.valueOf())) {
     return '';
@@ -5371,10 +4069,10 @@ function collectBackupDiffOptions() {
         }
       }
       return localeSort(a.label, b.label);
-    }).map(function (_ref34) {
-      var parsed = _ref34.parsed,
-        timestamp = _ref34.timestamp,
-        option = _objectWithoutProperties(_ref34, _excluded);
+    }).map(function (_ref7) {
+      var parsed = _ref7.parsed,
+        timestamp = _ref7.timestamp,
+        option = _objectWithoutProperties(_ref7, _excluded);
       return option;
     });
     options.push.apply(options, _toConsumableArray(setupOptions));
@@ -5575,11 +4273,11 @@ function findArrayComparisonKey(baseArray, compareArray) {
     return null;
   }
   var arrays = [baseArray, compareArray];
-  var _iterator3 = _createForOfIteratorHelper(ARRAY_COMPARISON_KEY_CANDIDATES),
-    _step3;
+  var _iterator = _createForOfIteratorHelper(ARRAY_COMPARISON_KEY_CANDIDATES),
+    _step;
   try {
-    for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
-      var candidate = _step3.value;
+    for (_iterator.s(); !(_step = _iterator.n()).done;) {
+      var candidate = _step.value;
       var hasValues = false;
       var valid = true;
       var seenByArray = arrays.map(function () {
@@ -5621,9 +4319,9 @@ function findArrayComparisonKey(baseArray, compareArray) {
       }
     }
   } catch (err) {
-    _iterator3.e(err);
+    _iterator.e(err);
   } finally {
-    _iterator3.f();
+    _iterator.f();
   }
   return null;
 }
@@ -5668,12 +4366,12 @@ function formatDiffListIndex(part) {
   }
   var indexMatch = part.match(/^\[(\d+)\]$/);
   if (indexMatch) {
-    var _index6 = Number(indexMatch[1]);
-    if (!Number.isFinite(_index6) || _index6 < 0) {
+    var _index5 = Number(indexMatch[1]);
+    if (!Number.isFinite(_index5) || _index5 < 0) {
       return null;
     }
     var template = getDiffText('versionCompareListItemLabel', 'Item %s');
-    return template.replace('%s', formatNumberForComparison(_index6 + 1));
+    return template.replace('%s', formatNumberForComparison(_index5 + 1));
   }
   var keyedSegment = parseKeyedDiffPathSegment(part);
   if (keyedSegment) {
@@ -5821,8 +4519,8 @@ function computeSetupDiff(baseline, comparison) {
         for (var i = 0; i < baseValue.length; i += 1) {
           _appendKey(createPrimitiveDiffKey(baseValue[i]));
         }
-        for (var _i3 = 0; _i3 < compareValue.length; _i3 += 1) {
-          _appendKey(createPrimitiveDiffKey(compareValue[_i3]));
+        for (var _i2 = 0; _i2 < compareValue.length; _i2 += 1) {
+          _appendKey(createPrimitiveDiffKey(compareValue[_i2]));
         }
         _combinedOrder.forEach(function (key) {
           var baseEntry = _baseIndex.get(key) || null;
@@ -5832,7 +4530,7 @@ function computeSetupDiff(baseline, comparison) {
           if (compareCount > baseCount) {
             var addValue = compareEntry ? compareEntry.value : undefined;
             var diff = compareCount - baseCount;
-            for (var _i4 = 0; _i4 < diff; _i4 += 1) {
+            for (var _i3 = 0; _i3 < diff; _i3 += 1) {
               entries.push({
                 type: 'added',
                 path: path.concat(createKeyedDiffPathSegment('value', formatPrimitiveDiffPathValue(addValue))),
@@ -5844,7 +4542,7 @@ function computeSetupDiff(baseline, comparison) {
           if (baseCount > compareCount) {
             var removeValue = baseEntry ? baseEntry.value : undefined;
             var _diff = baseCount - compareCount;
-            for (var _i5 = 0; _i5 < _diff; _i5 += 1) {
+            for (var _i4 = 0; _i4 < _diff; _i4 += 1) {
               entries.push({
                 type: 'removed',
                 path: path.concat(createKeyedDiffPathSegment('value', formatPrimitiveDiffPathValue(removeValue))),
@@ -5857,26 +4555,26 @@ function computeSetupDiff(baseline, comparison) {
         return;
       }
       var maxLength = Math.max(baseValue.length, compareValue.length);
-      for (var _index7 = 0; _index7 < maxLength; _index7 += 1) {
-        var hasBase = _index7 < baseValue.length;
-        var hasCompare = _index7 < compareValue.length;
-        var nextPath = path.concat("[".concat(_index7, "]"));
+      for (var _index6 = 0; _index6 < maxLength; _index6 += 1) {
+        var hasBase = _index6 < baseValue.length;
+        var hasCompare = _index6 < compareValue.length;
+        var nextPath = path.concat("[".concat(_index6, "]"));
         if (!hasBase) {
           entries.push({
             type: 'added',
             path: nextPath,
             before: undefined,
-            after: compareValue[_index7]
+            after: compareValue[_index6]
           });
         } else if (!hasCompare) {
           entries.push({
             type: 'removed',
             path: nextPath,
-            before: baseValue[_index7],
+            before: baseValue[_index6],
             after: undefined
           });
         } else {
-          walk(baseValue[_index7], compareValue[_index7], nextPath);
+          walk(baseValue[_index6], compareValue[_index6], nextPath);
         }
       }
       return;
@@ -6014,9 +4712,9 @@ function renderBackupDiffEntries(entries) {
   }
   backupDiffListContainerEl.hidden = false;
   var decoratedEntries = sortDiffEntries(entries);
-  decoratedEntries.forEach(function (_ref35) {
-    var entry = _ref35.entry,
-      pathText = _ref35.pathText;
+  decoratedEntries.forEach(function (_ref8) {
+    var entry = _ref8.entry,
+      pathText = _ref8.pathText;
     if (!entry) {
       return;
     }
@@ -6622,11 +5320,11 @@ function applyBackupFallbacks(target, diagnostics) {
   if (!target || _typeof(target) !== 'object') {
     return;
   }
-  backupFallbackLoaders.forEach(function (_ref36) {
-    var key = _ref36.key,
-      loader = _ref36.loader,
-      loaderName = _ref36.loaderName,
-      isValid = _ref36.isValid;
+  backupFallbackLoaders.forEach(function (_ref9) {
+    var key = _ref9.key,
+      loader = _ref9.loader,
+      loaderName = _ref9.loaderName,
+      isValid = _ref9.isValid;
     var currentValue = target[key];
     if (isValid(currentValue)) {
       return;
@@ -7005,10 +5703,10 @@ function handleRestoreSettingsInputChange() {
       if (restoredSettings && _typeof(restoredSettings) === 'object') {
         if (safeStorage && typeof safeStorage.setItem === 'function') {
           restoreMutated = true;
-          Object.entries(restoredSettings).forEach(function (_ref37) {
-            var _ref38 = _slicedToArray(_ref37, 2),
-              k = _ref38[0],
-              v = _ref38[1];
+          Object.entries(restoredSettings).forEach(function (_ref0) {
+            var _ref1 = _slicedToArray(_ref0, 2),
+              k = _ref1[0],
+              v = _ref1[1];
             if (typeof k !== 'string') return;
             try {
               if (v === null || v === undefined) {
@@ -7026,10 +5724,10 @@ function handleRestoreSettingsInputChange() {
       }
       if (restoredSession && typeof sessionStorage !== 'undefined') {
         restoreMutated = true;
-        Object.entries(restoredSession).forEach(function (_ref39) {
-          var _ref40 = _slicedToArray(_ref39, 2),
-            key = _ref40[0],
-            value = _ref40[1];
+        Object.entries(restoredSession).forEach(function (_ref10) {
+          var _ref11 = _slicedToArray(_ref10, 2),
+            key = _ref11[0],
+            value = _ref11[1];
           try {
             sessionStorage.setItem(key, value);
           } catch (sessionError) {
@@ -7063,10 +5761,10 @@ function handleRestoreSettingsInputChange() {
         setLanguage(restoredPreferenceState.language);
       }
       if (restoredSession && typeof sessionStorage !== 'undefined') {
-        Object.entries(restoredSession).forEach(function (_ref41) {
-          var _ref42 = _slicedToArray(_ref41, 2),
-            key = _ref42[0],
-            value = _ref42[1];
+        Object.entries(restoredSession).forEach(function (_ref12) {
+          var _ref13 = _slicedToArray(_ref12, 2),
+            key = _ref13[0],
+            value = _ref13[1];
           try {
             sessionStorage.setItem(key, value);
           } catch (sessionError) {
@@ -7196,17 +5894,17 @@ function registerSessionCineUiInternal(cineUi) {
   registerCineUiEntries(cineUi.help, [{
     name: 'backupSettings',
     value: function value() {
-      var _getSessionLanguageTe2 = getSessionLanguageTexts(),
-        langTexts = _getSessionLanguageTe2.langTexts,
-        fallbackTexts = _getSessionLanguageTe2.fallbackTexts;
+      var _getSessionLanguageTe = getSessionLanguageTexts(),
+        langTexts = _getSessionLanguageTe.langTexts,
+        fallbackTexts = _getSessionLanguageTe.fallbackTexts;
       return langTexts.backupSettingsHelp || fallbackTexts.backupSettingsHelp || 'Create a full backup of every project and preference stored on this device.';
     }
   }, {
     name: 'restoreSettings',
     value: function value() {
-      var _getSessionLanguageTe3 = getSessionLanguageTexts(),
-        langTexts = _getSessionLanguageTe3.langTexts,
-        fallbackTexts = _getSessionLanguageTe3.fallbackTexts;
+      var _getSessionLanguageTe2 = getSessionLanguageTexts(),
+        langTexts = _getSessionLanguageTe2.langTexts,
+        fallbackTexts = _getSessionLanguageTe2.fallbackTexts;
       return langTexts.restoreSettingsHelp || fallbackTexts.restoreSettingsHelp || 'Restore a full backup. The planner saves another backup automatically before importing.';
     }
   }], 'cineUi help registration (session) failed');
@@ -7661,9 +6359,9 @@ function collectFallbackUiCacheStorages() {
       label: '__cineGlobal'
     });
   }
-  scopeCandidates.forEach(function (_ref43) {
-    var scope = _ref43.scope,
-      label = _ref43.label;
+  scopeCandidates.forEach(function (_ref14) {
+    var scope = _ref14.scope,
+      label = _ref14.label;
     _inspectScope(scope, label);
   });
   if (typeof localStorage !== 'undefined') {
@@ -8195,10 +6893,10 @@ if (helpButton && helpDialog) {
       return;
     }
     var hasVisible = false;
-    helpQuickLinkItems.forEach(function (_ref44) {
-      var section = _ref44.section,
-        listItem = _ref44.listItem,
-        button = _ref44.button;
+    helpQuickLinkItems.forEach(function (_ref15) {
+      var section = _ref15.section,
+        listItem = _ref15.listItem,
+        button = _ref15.button;
       if (section && !section.hasAttribute('hidden')) {
         listItem.removeAttribute('hidden');
         hasVisible = true;
@@ -8230,9 +6928,9 @@ if (helpButton && helpDialog) {
       helpQuickLinksNav.removeAttribute('data-help');
     }
     var template = langTexts.helpQuickLinkButtonHelp || fallbackTexts.helpQuickLinkButtonHelp;
-    helpQuickLinkItems.forEach(function (_ref45) {
-      var button = _ref45.button,
-        label = _ref45.label;
+    helpQuickLinkItems.forEach(function (_ref16) {
+      var button = _ref16.button,
+        label = _ref16.label;
       if (!button) return;
       if (template) {
         var helpText = template.replace('%s', label);
@@ -8400,19 +7098,19 @@ if (helpButton && helpDialog) {
       var variants = HELP_SEARCH_ACCENT_VARIANTS.get(char) || '';
       var chars = new Set();
       var all = "".concat(char).concat(variants);
-      var _iterator4 = _createForOfIteratorHelper(all),
-        _step4;
+      var _iterator2 = _createForOfIteratorHelper(all),
+        _step2;
       try {
-        for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
-          var ch = _step4.value;
+        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+          var ch = _step2.value;
           chars.add(ch);
           var upper = ch.toUpperCase();
           if (upper) chars.add(upper);
         }
       } catch (err) {
-        _iterator4.e(err);
+        _iterator2.e(err);
       } finally {
-        _iterator4.f();
+        _iterator2.f();
       }
       var escaped = Array.from(chars).map(escapeRegExp).join('');
       return "[".concat(escaped, "]");
@@ -8431,11 +7129,11 @@ if (helpButton && helpDialog) {
     return "(".concat(parts.join(''), ")");
   };
   updateHelpResultsSummaryText = function updateHelpResultsSummaryText() {
-    var _ref46 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-      totalCount = _ref46.totalCount,
-      visibleCount = _ref46.visibleCount,
-      hasQuery = _ref46.hasQuery,
-      queryText = _ref46.queryText;
+    var _ref17 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+      totalCount = _ref17.totalCount,
+      visibleCount = _ref17.visibleCount,
+      hasQuery = _ref17.hasQuery,
+      queryText = _ref17.queryText;
     var hideAssist = function hideAssist() {
       if (!helpResultsAssist) return;
       helpResultsAssist.textContent = '';
@@ -8988,11 +7686,11 @@ if (helpButton && helpDialog) {
       return addUnique(value, shortcutParts);
     };
     var addTextFromElement = function addTextFromElement(element) {
-      var _ref47 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-        _ref47$includeTextCon = _ref47.includeTextContent,
-        includeTextContent = _ref47$includeTextCon === void 0 ? false : _ref47$includeTextCon,
-        _ref47$preferTextAsLa = _ref47.preferTextAsLabel,
-        preferTextAsLabel = _ref47$preferTextAsLa === void 0 ? false : _ref47$preferTextAsLa;
+      var _ref18 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+        _ref18$includeTextCon = _ref18.includeTextContent,
+        includeTextContent = _ref18$includeTextCon === void 0 ? false : _ref18$includeTextCon,
+        _ref18$preferTextAsLa = _ref18.preferTextAsLabel,
+        preferTextAsLabel = _ref18$preferTextAsLa === void 0 ? false : _ref18$preferTextAsLa;
       if (!element) return;
       addDetailText(element.getAttribute('data-help'));
       addDetailText(element.getAttribute('aria-description'));
@@ -9024,9 +7722,9 @@ if (helpButton && helpDialog) {
       }
     };
     var applyFromIds = function applyFromIds(ids) {
-      var _ref48 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
-        _ref48$preferTextAsLa = _ref48.preferTextAsLabel,
-        preferTextAsLabel = _ref48$preferTextAsLa === void 0 ? false : _ref48$preferTextAsLa;
+      var _ref19 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+        _ref19$preferTextAsLa = _ref19.preferTextAsLabel,
+        preferTextAsLabel = _ref19$preferTextAsLa === void 0 ? false : _ref19$preferTextAsLa;
       if (!ids) return;
       ids.split(/\s+/).map(function (id) {
         return id.trim();
@@ -9330,14 +8028,14 @@ if (helpButton && helpDialog) {
     return hoverHelpStatus;
   };
   var updateHoverHelpStatus = function updateHoverHelpStatus() {
-    var _ref49 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-      _ref49$heading = _ref49.heading,
-      heading = _ref49$heading === void 0 ? '' : _ref49$heading,
-      _ref49$details = _ref49.details,
-      details = _ref49$details === void 0 ? [] : _ref49$details,
-      _ref49$shortcuts = _ref49.shortcuts,
-      shortcuts = _ref49$shortcuts === void 0 ? [] : _ref49$shortcuts,
-      hint = _ref49.hint;
+    var _ref20 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+      _ref20$heading = _ref20.heading,
+      heading = _ref20$heading === void 0 ? '' : _ref20$heading,
+      _ref20$details = _ref20.details,
+      details = _ref20$details === void 0 ? [] : _ref20$details,
+      _ref20$shortcuts = _ref20.shortcuts,
+      shortcuts = _ref20$shortcuts === void 0 ? [] : _ref20$shortcuts,
+      hint = _ref20.hint;
     var statusEl = ensureHoverHelpStatus();
     if (!statusEl) {
       return;
@@ -9620,15 +8318,37 @@ if (helpButton && helpDialog) {
     var featureMatch = findBestSearchMatch(featureMap, cleanKey, cleanTokens);
     var helpScore = (helpMatch === null || helpMatch === void 0 ? void 0 : helpMatch.score) || 0;
     var deviceScore = (deviceMatch === null || deviceMatch === void 0 ? void 0 : deviceMatch.score) || 0;
-    var featureScore = (featureMatch === null || featureMatch === void 0 ? void 0 : featureMatch.score) || 0;
     var strongSearchMatchTypes = typeof STRONG_SEARCH_MATCH_TYPES !== 'undefined' && STRONG_SEARCH_MATCH_TYPES instanceof Set ? STRONG_SEARCH_MATCH_TYPES : FALLBACK_STRONG_SEARCH_MATCH_TYPES;
     var deviceStrong = deviceMatch ? strongSearchMatchTypes.has(deviceMatch.matchType) : false;
-    var featureStrong = featureMatch ? strongSearchMatchTypes.has(featureMatch.matchType) : false;
+    var filterTargetsDevices = filterType === 'device';
+    var filterTargetsActions = filterType === 'action';
+    var filterTargetsFeatures = filterType === 'feature';
+    var filterBlocksDevices = filterTargetsFeatures || filterTargetsActions;
+    var normalizedFeatureMatch = function () {
+      if (!featureMatch) return null;
+      var entry = featureMatch.value;
+      if (!entry) return null;
+      var entryType = entry.entryType || 'feature';
+      if (entryType === 'device') return null;
+      if (filterTargetsDevices) return null;
+      if (filterTargetsFeatures && entryType !== 'feature') return null;
+      if (filterTargetsActions && entryType !== 'action') return null;
+      return {
+        match: featureMatch,
+        entryType: entryType,
+        entry: entry
+      };
+    }();
+    var fallbackFeatureMatch = featureMatch && featureMatch.value && featureMatch.value.entryType !== 'device' ? featureMatch : null;
+    var featureMatchForComparison = (normalizedFeatureMatch === null || normalizedFeatureMatch === void 0 ? void 0 : normalizedFeatureMatch.match) || fallbackFeatureMatch;
+    var featureScore = (featureMatchForComparison === null || featureMatchForComparison === void 0 ? void 0 : featureMatchForComparison.score) || 0;
+    var featureStrong = featureMatchForComparison ? strongSearchMatchTypes.has(featureMatchForComparison.matchType) : false;
     var bestNonHelpScore = Math.max(deviceScore, featureScore);
     var hasStrongNonHelp = deviceStrong || featureStrong;
     var preferHelp = !!helpMatch && (isHelpSuggestion || filterType === 'help' || !hasStrongNonHelp && helpScore > bestNonHelpScore);
     if (!isHelpSuggestion && !preferHelp) {
-      var shouldUseDevice = !!deviceMatch && (!featureMatch || deviceStrong && !featureStrong || deviceStrong === featureStrong && (deviceScore > featureScore || deviceScore === featureScore && (featureMatch === null || featureMatch === void 0 ? void 0 : featureMatch.matchType) !== 'exactKey')) || filterType === 'device' && !!deviceMatch;
+      var featureMatchType = featureMatchForComparison === null || featureMatchForComparison === void 0 ? void 0 : featureMatchForComparison.matchType;
+      var shouldUseDevice = !filterBlocksDevices && !!deviceMatch && (!featureMatchForComparison || deviceStrong && !featureStrong || deviceStrong === featureStrong && (deviceScore > featureScore || deviceScore === featureScore && featureMatchType !== 'exactKey')) || filterTargetsDevices && !!deviceMatch;
       if (shouldUseDevice) {
         var device = deviceMatch.value;
         if (device && device.select) {
@@ -9657,8 +8377,8 @@ if (helpButton && helpDialog) {
           return;
         }
       }
-      if (featureMatch) {
-        var feature = featureMatch.value;
+      if (normalizedFeatureMatch) {
+        var feature = normalizedFeatureMatch.entry;
         var featureEl = (feature === null || feature === void 0 ? void 0 : feature.element) || feature;
         if (featureEl) {
           var _featureEl$textConten;
@@ -9667,8 +8387,10 @@ if (helpButton && helpDialog) {
             updateFeatureSearchValue(label, originalNormalized);
           }
           if (typeof recordFeatureSearchUsage === 'function') {
-            var type = (feature === null || feature === void 0 ? void 0 : feature.entryType) || 'feature';
-            recordFeatureSearchUsage(featureMatch.key, type, label);
+            var _normalizedFeatureMat;
+            var type = normalizedFeatureMatch.entryType || 'feature';
+            var usageKey = ((_normalizedFeatureMat = normalizedFeatureMatch.match) === null || _normalizedFeatureMat === void 0 ? void 0 : _normalizedFeatureMat.key) || (featureMatch === null || featureMatch === void 0 ? void 0 : featureMatch.key);
+            recordFeatureSearchUsage(usageKey, type, label);
           }
           focusFeatureElement(featureEl);
           var _highlightTargets = [featureEl].concat(_toConsumableArray(findAssociatedLabelElements(featureEl)));
@@ -10210,7 +8932,7 @@ function populateLensDropdown() {
     lensSelect.appendChild(emptyOpt);
   }
   Object.keys(lensData).sort(localeSort).forEach(function (name) {
-    var _ref50, _lens$minFocusMeters;
+    var _ref21, _lens$minFocusMeters;
     var opt = document.createElement('option');
     opt.value = name;
     var lens = lensData[name] || {};
@@ -10221,7 +8943,7 @@ function populateLensDropdown() {
     } else if (lens.clampOn === false) {
       attrs.push('no clamp-on');
     }
-    var minFocus = (_ref50 = (_lens$minFocusMeters = lens.minFocusMeters) !== null && _lens$minFocusMeters !== void 0 ? _lens$minFocusMeters : lens.minFocus) !== null && _ref50 !== void 0 ? _ref50 : lens.minFocusCm ? lens.minFocusCm / 100 : null;
+    var minFocus = (_ref21 = (_lens$minFocusMeters = lens.minFocusMeters) !== null && _lens$minFocusMeters !== void 0 ? _lens$minFocusMeters : lens.minFocus) !== null && _ref21 !== void 0 ? _ref21 : lens.minFocusCm ? lens.minFocusCm / 100 : null;
     if (minFocus) attrs.push("".concat(minFocus, "m min focus"));
     opt.textContent = attrs.length ? "".concat(name, " (").concat(attrs.join(', '), ")") : name;
     lensSelect.appendChild(opt);
@@ -10467,11 +9189,11 @@ function resolveFilterDisplayInfo(type) {
 function buildFilterGearEntries() {
   var filters = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
   var entries = [];
-  filters.forEach(function (_ref51) {
-    var type = _ref51.type,
-      _ref51$size = _ref51.size,
-      size = _ref51$size === void 0 ? DEFAULT_FILTER_SIZE : _ref51$size,
-      values = _ref51.values;
+  filters.forEach(function (_ref22) {
+    var type = _ref22.type,
+      _ref22$size = _ref22.size,
+      size = _ref22$size === void 0 ? DEFAULT_FILTER_SIZE : _ref22$size,
+      values = _ref22.values;
     if (!type) return;
     var sizeValue = size || DEFAULT_FILTER_SIZE;
     var idBase = "filter-".concat(filterId(type));
@@ -10954,8 +9676,8 @@ function buildFilterSelectHtml() {
 function collectFilterAccessories() {
   var filters = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
   var items = [];
-  filters.forEach(function (_ref52) {
-    var type = _ref52.type;
+  filters.forEach(function (_ref23) {
+    var type = _ref23.type;
     switch (type) {
       case 'ND Grad HE':
       case 'ND Grad SE':

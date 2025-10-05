@@ -231,13 +231,33 @@ function generatePrintableOverview() {
   }
   var safeSetupName = escapeHtmlSafe(setupName);
   var diagramCss = typeof getDiagramCss === 'function' ? getDiagramCss(false) : '';
+  var resolveDiagramElement = function resolveDiagramElement(fallbackId, globalRefName) {
+    if (globalRefName) {
+      try {
+        if (typeof globalThis !== 'undefined' && globalRefName in globalThis) {
+          var value = globalThis[globalRefName];
+          if (value) return value;
+        }
+      } catch (resolveGlobalError) {
+        void resolveGlobalError;
+      }
+    }
+    if (typeof document !== 'undefined' && typeof document.getElementById === 'function') {
+      try {
+        return document.getElementById(fallbackId);
+      } catch (resolveDomError) {
+        void resolveDomError;
+      }
+    }
+    return null;
+  };
+  var diagramContainer = resolveDiagramElement('diagramArea', 'setupDiagramContainer');
   var diagramAreaHtml = '';
   var diagramLegendHtml = '';
   var diagramHintHtml = '';
   var diagramDescHtml = '';
-  var hasSetupDiagramContainer = typeof setupDiagramContainer !== 'undefined' && setupDiagramContainer;
-  if (hasSetupDiagramContainer) {
-    var areaClone = setupDiagramContainer.cloneNode(true);
+  if (diagramContainer) {
+    var areaClone = diagramContainer.cloneNode(true);
     areaClone.id = 'diagramAreaOverview';
     areaClone.setAttribute('data-diagram-area', 'overview');
     var describedBy = areaClone.getAttribute('aria-describedby');
@@ -265,14 +285,13 @@ function generatePrintableOverview() {
     }
     diagramAreaHtml = areaClone.outerHTML;
   }
-  if (diagramLegend) {
-    var legendClone = diagramLegend.cloneNode(true);
+  var sourceDiagramLegend = resolveDiagramElement('diagramLegend', 'diagramLegend');
+  if (sourceDiagramLegend) {
+    var legendClone = sourceDiagramLegend.cloneNode(true);
     legendClone.id = 'diagramLegendOverview';
     legendClone.setAttribute('data-diagram-legend', 'overview');
     diagramLegendHtml = legendClone.outerHTML;
   }
-  // Skip the interactive drag hint in the overview/print output so the static
-  // summary remains focused on non-interactive guidance.
   var diagramDescElem = typeof document !== 'undefined' ? document.getElementById('diagramDesc') : null;
   if (diagramDescElem) {
     var descClone = diagramDescElem.cloneNode(true);

@@ -5917,53 +5917,459 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     let lastActiveBeforeIosHelp = null;
     let lastActiveBeforeInstallGuide = null;
     let currentInstallGuidePlatform = null;
-    
-    function isIosDevice() {
-      if (typeof navigator === 'undefined') return false;
-      const ua = navigator.userAgent || '';
-      const platform = navigator.platform || '';
-      const hasTouch = typeof navigator.maxTouchPoints === 'number' && navigator.maxTouchPoints > 1;
-      return /iphone|ipad|ipod/i.test(ua) || (platform === 'MacIntel' && hasTouch);
-    }
-    
-    function isAndroidDevice() {
-      if (typeof navigator === 'undefined') return false;
-      const ua = navigator.userAgent || '';
-      const vendor = navigator.vendor || '';
-      return /android/i.test(ua) || /android/i.test(vendor);
-    }
-    
-    function isStandaloneDisplayMode() {
-      if (typeof window === 'undefined') return false;
-      if (typeof window.matchMedia === 'function') {
-        try {
-          if (window.matchMedia('(display-mode: standalone)').matches) {
-            return true;
+
+    function createLocalHelpModuleFallback() {
+      function fallbackResolveStorageKey(explicitKey) {
+        if (typeof explicitKey === 'string' && explicitKey) {
+          return explicitKey;
+        }
+        if (typeof IOS_PWA_HELP_STORAGE_KEY === 'string' && IOS_PWA_HELP_STORAGE_KEY) {
+          return IOS_PWA_HELP_STORAGE_KEY;
+        }
+        if (
+          typeof globalThis !== 'undefined'
+          && globalThis
+          && typeof globalThis.IOS_PWA_HELP_STORAGE_KEY === 'string'
+          && globalThis.IOS_PWA_HELP_STORAGE_KEY
+        ) {
+          return globalThis.IOS_PWA_HELP_STORAGE_KEY;
+        }
+        if (
+          typeof window !== 'undefined'
+          && window
+          && typeof window.IOS_PWA_HELP_STORAGE_KEY === 'string'
+          && window.IOS_PWA_HELP_STORAGE_KEY
+        ) {
+          return window.IOS_PWA_HELP_STORAGE_KEY;
+        }
+        return 'iosPwaHelpShown';
+      }
+
+      function fallbackIsIosDevice(navigatorOverride) {
+        const nav = navigatorOverride || (typeof navigator !== 'undefined' ? navigator : null);
+        if (!nav) {
+          return false;
+        }
+        const ua = nav.userAgent || '';
+        const platform = nav.platform || '';
+        const hasTouch = typeof nav.maxTouchPoints === 'number' && nav.maxTouchPoints > 1;
+        return /iphone|ipad|ipod/i.test(ua) || (platform === 'MacIntel' && hasTouch);
+      }
+
+      function fallbackIsAndroidDevice(navigatorOverride) {
+        const nav = navigatorOverride || (typeof navigator !== 'undefined' ? navigator : null);
+        if (!nav) {
+          return false;
+        }
+        const ua = nav.userAgent || '';
+        const vendor = nav.vendor || '';
+        return /android/i.test(ua) || /android/i.test(vendor);
+      }
+
+      function fallbackIsStandaloneDisplayMode(windowOverride, navigatorOverride) {
+        const win = windowOverride || (typeof window !== 'undefined' ? window : null);
+        const nav = navigatorOverride || (typeof navigator !== 'undefined' ? navigator : null);
+        if (!win) {
+          return false;
+        }
+        if (typeof win.matchMedia === 'function') {
+          try {
+            if (win.matchMedia('(display-mode: standalone)').matches) {
+              return true;
+            }
+          } catch (error) {
+            if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+              console.warn('matchMedia display-mode check failed', error);
+            }
           }
+        }
+        if (nav && typeof nav.standalone === 'boolean') {
+          return nav.standalone;
+        }
+        return false;
+      }
+
+      function fallbackHasDismissedIosPwaHelp(explicitKey) {
+        const storageKey = fallbackResolveStorageKey(explicitKey);
+        if (typeof localStorage === 'undefined' || !localStorage || typeof localStorage.getItem !== 'function') {
+          return false;
+        }
+        try {
+          return localStorage.getItem(storageKey) === '1';
         } catch (error) {
-          console.warn('matchMedia display-mode check failed', error);
+          if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+            console.warn('Could not read iOS PWA help dismissal flag', error);
+          }
+          return false;
         }
       }
-      if (typeof navigator !== 'undefined' && typeof navigator.standalone === 'boolean') {
-        return navigator.standalone;
+
+      function fallbackMarkIosPwaHelpDismissed(explicitKey) {
+        const storageKey = fallbackResolveStorageKey(explicitKey);
+        if (typeof localStorage === 'undefined' || !localStorage || typeof localStorage.setItem !== 'function') {
+          return;
+        }
+        try {
+          localStorage.setItem(storageKey, '1');
+        } catch (error) {
+          if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+            console.warn('Could not store iOS PWA help dismissal', error);
+          }
+        }
+      }
+
+      function fallbackShouldShow(resolveDialog) {
+        const dialog = typeof resolveDialog === 'function' ? resolveDialog() : resolveDialog || null;
+        if (!dialog) {
+          return false;
+        }
+        if (!fallbackIsIosDevice()) {
+          return false;
+        }
+        if (!fallbackIsStandaloneDisplayMode()) {
+          return false;
+        }
+        if (fallbackHasDismissedIosPwaHelp()) {
+          return false;
+        }
+        return true;
+      }
+
+      return {
+        resolveIosPwaHelpStorageKey: fallbackResolveStorageKey,
+        isIosDevice: fallbackIsIosDevice,
+        isAndroidDevice: fallbackIsAndroidDevice,
+        isStandaloneDisplayMode: fallbackIsStandaloneDisplayMode,
+        hasDismissedIosPwaHelp: fallbackHasDismissedIosPwaHelp,
+        markIosPwaHelpDismissed: fallbackMarkIosPwaHelpDismissed,
+        shouldShowIosPwaHelp: fallbackShouldShow,
+      };
+    }
+
+    const helpModuleApi = (() => {
+      if (typeof resolveHelpModuleApi === 'function') {
+        try {
+          return resolveHelpModuleApi();
+        } catch (error) {
+          if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+            console.warn('resolveHelpModuleApi() failed in part 2', error);
+          }
+        }
+      }
+      const fallback = createLocalHelpModuleFallback();
+      try {
+        const globalScope =
+          typeof globalThis !== 'undefined'
+            ? globalThis
+            : typeof window !== 'undefined'
+              ? window
+              : typeof self !== 'undefined'
+                ? self
+                : typeof global !== 'undefined'
+                  ? global
+                  : null;
+        if (globalScope && !globalScope.__cineResolvedHelpModule) {
+          globalScope.__cineResolvedHelpModule = fallback;
+        }
+      } catch (error) {
+        void error;
+      }
+      return fallback;
+    })();
+
+    const FEATURE_SEARCH_MODULE_CACHE_KEY = '__cineResolvedFeatureSearchModule';
+
+    function createFallbackFeatureSearchModuleApi() {
+      const FEATURE_SEARCH_DETAIL_MAX_LENGTH = 140;
+
+      function fallbackNormalizeSearchValue(value) {
+        return typeof value === 'string' ? value.trim().toLowerCase() : '';
+      }
+
+      function fallbackSanitizeHighlightTokens(tokens) {
+        if (!Array.isArray(tokens) || tokens.length === 0) {
+          return [];
+        }
+
+        const seen = typeof Set === 'function' ? new Set() : null;
+        const sanitized = [];
+
+        for (let index = 0; index < tokens.length; index += 1) {
+          const token = tokens[index];
+          if (typeof token !== 'string') {
+            continue;
+          }
+          const trimmed = token.trim().toLowerCase();
+          if (!trimmed) {
+            continue;
+          }
+          if (trimmed.length < 2 && !/^\d+$/.test(trimmed)) {
+            continue;
+          }
+          if (seen) {
+            if (seen.has(trimmed)) {
+              continue;
+            }
+            seen.add(trimmed);
+          } else if (sanitized.indexOf(trimmed) !== -1) {
+            continue;
+          }
+          sanitized.push(trimmed);
+        }
+
+        return sanitized;
+      }
+
+      function fallbackCollectHighlightRanges(text, tokens) {
+        if (!text || !tokens || !tokens.length) {
+          return [];
+        }
+
+        const lower = text.toLowerCase();
+        const ranges = [];
+
+        for (let index = 0; index < tokens.length; index += 1) {
+          const token = tokens[index];
+          const length = token.length;
+          if (!length) {
+            continue;
+          }
+
+          let position = 0;
+          while (position < lower.length) {
+            const found = lower.indexOf(token, position);
+            if (found === -1) {
+              break;
+            }
+            ranges.push({ start: found, end: found + length });
+            position = found + length;
+          }
+        }
+
+        if (!ranges.length) {
+          return [];
+        }
+
+        ranges.sort((a, b) => (a.start - b.start) || (b.end - a.end));
+
+        const merged = [];
+        for (let index = 0; index < ranges.length; index += 1) {
+          const range = ranges[index];
+          const last = merged[merged.length - 1];
+          if (last && range.start <= last.end) {
+            last.end = Math.max(last.end, range.end);
+          } else {
+            merged.push({ start: range.start, end: range.end });
+          }
+        }
+
+        return merged;
+      }
+
+      function fallbackApplyHighlight(element, text, tokens, doc) {
+        if (!element) {
+          return;
+        }
+
+        const content = typeof text === 'string' ? text : '';
+        if (!content) {
+          element.textContent = '';
+          return;
+        }
+
+        const highlightTokens = fallbackSanitizeHighlightTokens(tokens || []);
+        if (!highlightTokens.length) {
+          element.textContent = content;
+          return;
+        }
+
+        const ranges = fallbackCollectHighlightRanges(content, highlightTokens);
+        if (!ranges.length) {
+          element.textContent = content;
+          return;
+        }
+
+        const documentRef = doc || element.ownerDocument || (typeof document !== 'undefined' ? document : null);
+        if (!documentRef || typeof documentRef.createTextNode !== 'function') {
+          element.textContent = content;
+          return;
+        }
+
+        element.textContent = '';
+        let cursor = 0;
+
+        for (let index = 0; index < ranges.length; index += 1) {
+          const range = ranges[index];
+          if (range.start > cursor) {
+            element.appendChild(documentRef.createTextNode(content.slice(cursor, range.start)));
+          }
+          const mark = documentRef.createElement('mark');
+          mark.className = 'feature-search-highlight';
+          mark.textContent = content.slice(range.start, range.end);
+          element.appendChild(mark);
+          cursor = range.end;
+        }
+
+        if (cursor < content.length) {
+          element.appendChild(documentRef.createTextNode(content.slice(cursor)));
+        }
+      }
+
+      function fallbackNormalizeDetail(text) {
+        if (typeof text !== 'string') {
+          return '';
+        }
+
+        const normalized = text.replace(/\s+/g, ' ').trim();
+        if (!normalized) {
+          return '';
+        }
+
+        if (normalized.length <= FEATURE_SEARCH_DETAIL_MAX_LENGTH) {
+          return normalized;
+        }
+
+        return `${normalized.slice(0, FEATURE_SEARCH_DETAIL_MAX_LENGTH - 1).trimEnd()}…`;
+      }
+
+      return {
+        normalizeSearchValue: fallbackNormalizeSearchValue,
+        sanitizeHighlightTokens: fallbackSanitizeHighlightTokens,
+        collectHighlightRanges: fallbackCollectHighlightRanges,
+        applyHighlight: fallbackApplyHighlight,
+        normalizeDetail: fallbackNormalizeDetail,
+      };
+    }
+
+    const fallbackFeatureSearchModuleApi = createFallbackFeatureSearchModuleApi();
+
+    function resolveFeatureSearchModuleApi() {
+      const globalScope =
+        typeof globalThis !== 'undefined'
+          ? globalThis
+          : typeof window !== 'undefined'
+            ? window
+            : typeof self !== 'undefined'
+              ? self
+              : typeof global !== 'undefined'
+                ? global
+                : null;
+
+      if (globalScope && globalScope[FEATURE_SEARCH_MODULE_CACHE_KEY]) {
+        return globalScope[FEATURE_SEARCH_MODULE_CACHE_KEY];
+      }
+
+      const moduleBase =
+        (typeof cineModuleBase === 'object' && cineModuleBase)
+        || (globalScope && typeof globalScope.cineModuleBase === 'object' ? globalScope.cineModuleBase : null);
+
+      let registry = null;
+      if (moduleBase && typeof moduleBase.getModuleRegistry === 'function') {
+        try {
+          registry = moduleBase.getModuleRegistry(globalScope);
+        } catch (error) {
+          if (moduleBase && typeof moduleBase.safeWarn === 'function') {
+            moduleBase.safeWarn('Failed to resolve cine.features.featureSearch module registry.', error);
+          } else if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+            console.warn('Failed to resolve cine.features.featureSearch module registry.', error);
+          }
+        }
+      }
+
+      let resolved = null;
+      if (registry && typeof registry.get === 'function') {
+        try {
+          resolved = registry.get('cine.features.featureSearch');
+        } catch (error) {
+          if (moduleBase && typeof moduleBase.safeWarn === 'function') {
+            moduleBase.safeWarn('Failed to read cine.features.featureSearch module.', error);
+          } else if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+            console.warn('Failed to read cine.features.featureSearch module.', error);
+          }
+        }
+      }
+
+      if (!resolved && globalScope && typeof globalScope.cineFeaturesFeatureSearch === 'object') {
+        resolved = globalScope.cineFeaturesFeatureSearch;
+      }
+
+      const fallback = fallbackFeatureSearchModuleApi;
+      const api = resolved && typeof resolved.normalizeSearchValue === 'function' ? resolved : fallback;
+
+      if (globalScope) {
+        try {
+          globalScope[FEATURE_SEARCH_MODULE_CACHE_KEY] = api;
+        } catch (error) {
+          void error;
+        }
+      }
+
+      return api;
+    }
+
+    const featureSearchModuleApi = resolveFeatureSearchModuleApi();
+
+    function isIosDevice() {
+      try {
+        if (helpModuleApi && typeof helpModuleApi.isIosDevice === 'function') {
+          return Boolean(helpModuleApi.isIosDevice());
+        }
+      } catch (error) {
+        if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+          console.warn('isIosDevice() failed', error);
+        }
       }
       return false;
     }
-    
+
+    function isAndroidDevice() {
+      try {
+        if (helpModuleApi && typeof helpModuleApi.isAndroidDevice === 'function') {
+          return Boolean(helpModuleApi.isAndroidDevice());
+        }
+      } catch (error) {
+        if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+          console.warn('isAndroidDevice() failed', error);
+        }
+      }
+      return false;
+    }
+
+    function isStandaloneDisplayMode() {
+      try {
+        if (helpModuleApi && typeof helpModuleApi.isStandaloneDisplayMode === 'function') {
+          return Boolean(helpModuleApi.isStandaloneDisplayMode());
+        }
+      } catch (error) {
+        if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+          console.warn('isStandaloneDisplayMode() failed', error);
+        }
+      }
+      return false;
+    }
+
     function hasDismissedIosPwaHelp() {
       try {
-        return localStorage.getItem(IOS_PWA_HELP_STORAGE_KEY) === '1';
+        if (helpModuleApi && typeof helpModuleApi.hasDismissedIosPwaHelp === 'function') {
+          return Boolean(helpModuleApi.hasDismissedIosPwaHelp());
+        }
       } catch (error) {
-        console.warn('Could not read iOS PWA help dismissal flag', error);
-        return false;
+        if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+          console.warn('hasDismissedIosPwaHelp() failed', error);
+        }
       }
+      return false;
     }
-    
+
     function markIosPwaHelpDismissed() {
       try {
-        localStorage.setItem(IOS_PWA_HELP_STORAGE_KEY, '1');
+        if (helpModuleApi && typeof helpModuleApi.markIosPwaHelpDismissed === 'function') {
+          helpModuleApi.markIosPwaHelpDismissed();
+        }
       } catch (error) {
-        console.warn('Could not store iOS PWA help dismissal', error);
+        if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+          console.warn('markIosPwaHelpDismissed() failed', error);
+        }
       }
     }
     
@@ -6374,8 +6780,16 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         : function noopExposeCoreRuntimeConstant() {};
 
     function shouldShowIosPwaHelp() {
-      const dialog = resolveIosPwaHelpDialog();
-      return dialog && isIosDevice() && isStandaloneDisplayMode() && !hasDismissedIosPwaHelp();
+      try {
+        if (helpModuleApi && typeof helpModuleApi.shouldShowIosPwaHelp === 'function') {
+          return Boolean(helpModuleApi.shouldShowIosPwaHelp(resolveIosPwaHelpDialog));
+        }
+      } catch (error) {
+        if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+          console.warn('shouldShowIosPwaHelp() failed', error);
+        }
+      }
+      return false;
     }
 
     function openIosPwaHelp() {
@@ -8003,8 +8417,18 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return options;
     };
     
-    var normalizeSearchValue = value =>
-      typeof value === 'string' ? value.trim().toLowerCase() : '';
+    const normalizeSearchValue = value => {
+      try {
+        if (featureSearchModuleApi && typeof featureSearchModuleApi.normalizeSearchValue === 'function') {
+          return featureSearchModuleApi.normalizeSearchValue(value);
+        }
+      } catch (error) {
+        if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+          console.warn('normalizeSearchValue() failed', error);
+        }
+      }
+      return typeof value === 'string' ? value.trim().toLowerCase() : '';
+    };
     safeExposeCoreRuntimeConstant('normalizeSearchValue', normalizeSearchValue);
     const FEATURE_SEARCH_EXTRA_SELECTOR = '[data-feature-search]';
     
@@ -8084,21 +8508,16 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     let featureSearchHighlightTokens = [];
     
     const sanitizeFeatureSearchHighlightTokens = tokens => {
-      if (!Array.isArray(tokens) || tokens.length === 0) {
-        return [];
+      try {
+        if (featureSearchModuleApi && typeof featureSearchModuleApi.sanitizeHighlightTokens === 'function') {
+          return featureSearchModuleApi.sanitizeHighlightTokens(tokens);
+        }
+      } catch (error) {
+        if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+          console.warn('sanitizeFeatureSearchHighlightTokens() failed', error);
+        }
       }
-      const seen = new Set();
-      const sanitized = [];
-      tokens.forEach(token => {
-        if (typeof token !== 'string') return;
-        const trimmed = token.trim().toLowerCase();
-        if (!trimmed) return;
-        if (trimmed.length < 2 && !/^\d+$/.test(trimmed)) return;
-        if (seen.has(trimmed)) return;
-        seen.add(trimmed);
-        sanitized.push(trimmed);
-      });
-      return sanitized;
+      return fallbackFeatureSearchModuleApi.sanitizeHighlightTokens(tokens);
     };
     
     const updateFeatureSearchHighlightTokens = tokens => {
@@ -8106,87 +8525,44 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     };
     
     const collectFeatureSearchHighlightRanges = (text, tokens) => {
-      if (!text || !tokens.length) {
-        return [];
-      }
-      const lower = text.toLowerCase();
-      const ranges = [];
-      tokens.forEach(token => {
-        const length = token.length;
-        if (!length) return;
-        let index = 0;
-        while (index < lower.length) {
-          const found = lower.indexOf(token, index);
-          if (found === -1) break;
-          ranges.push({ start: found, end: found + length });
-          index = found + length;
+      try {
+        if (featureSearchModuleApi && typeof featureSearchModuleApi.collectHighlightRanges === 'function') {
+          return featureSearchModuleApi.collectHighlightRanges(text, tokens);
         }
-      });
-      if (!ranges.length) {
-        return [];
-      }
-      ranges.sort((a, b) => (a.start - b.start) || (b.end - a.end));
-      const merged = [];
-      for (const range of ranges) {
-        const last = merged[merged.length - 1];
-        if (last && range.start <= last.end) {
-          last.end = Math.max(last.end, range.end);
-        } else {
-          merged.push({ start: range.start, end: range.end });
+      } catch (error) {
+        if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+          console.warn('collectFeatureSearchHighlightRanges() failed', error);
         }
       }
-      return merged;
+      return fallbackFeatureSearchModuleApi.collectHighlightRanges(text, tokens);
     };
     
     const applyFeatureSearchHighlight = (element, text) => {
-      if (!element) return;
-      const content = typeof text === 'string' ? text : '';
-      if (!content) {
-        element.textContent = '';
-        return;
-      }
       const tokens = featureSearchHighlightTokens;
-      if (!Array.isArray(tokens) || tokens.length === 0) {
-        element.textContent = content;
-        return;
-      }
-      const ranges = collectFeatureSearchHighlightRanges(content, tokens);
-      if (!ranges.length) {
-        element.textContent = content;
-        return;
-      }
-      const doc = element.ownerDocument || (typeof document !== 'undefined' ? document : null);
-      if (!doc) {
-        element.textContent = content;
-        return;
-      }
-      element.textContent = '';
-      let position = 0;
-      ranges.forEach(range => {
-        if (range.start > position) {
-          element.appendChild(doc.createTextNode(content.slice(position, range.start)));
+      try {
+        if (featureSearchModuleApi && typeof featureSearchModuleApi.applyHighlight === 'function') {
+          featureSearchModuleApi.applyHighlight(element, text, tokens);
+          return;
         }
-        const mark = doc.createElement('mark');
-        mark.className = 'feature-search-highlight';
-        mark.textContent = content.slice(range.start, range.end);
-        element.appendChild(mark);
-        position = range.end;
-      });
-      if (position < content.length) {
-        element.appendChild(doc.createTextNode(content.slice(position)));
+      } catch (error) {
+        if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+          console.warn('applyFeatureSearchHighlight() failed', error);
+        }
       }
+      fallbackFeatureSearchModuleApi.applyHighlight(element, text, tokens);
     };
-    
-    const FEATURE_SEARCH_DETAIL_MAX_LENGTH = 140;
-    
+
     const normalizeFeatureSearchDetail = text => {
-      if (typeof text !== 'string') return '';
-      const normalized = text.replace(/\s+/g, ' ').trim();
-      if (!normalized) return '';
-      if (normalized.length <= FEATURE_SEARCH_DETAIL_MAX_LENGTH) {
-        return normalized;
+      try {
+        if (featureSearchModuleApi && typeof featureSearchModuleApi.normalizeDetail === 'function') {
+          return featureSearchModuleApi.normalizeDetail(text);
+        }
+      } catch (error) {
+        if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+          console.warn('normalizeFeatureSearchDetail() failed', error);
+        }
       }
-      return `${normalized.slice(0, FEATURE_SEARCH_DETAIL_MAX_LENGTH - 1).trimEnd()}…`;
+      return fallbackFeatureSearchModuleApi.normalizeDetail(text);
     };
     
     const buildFeatureSearchOptionData = entry => {
