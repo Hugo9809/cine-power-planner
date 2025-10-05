@@ -112,6 +112,20 @@ function invokeSessionRevertAccentColor() {
   }
 }
 
+function invokeSessionOpenAutoGearEditor() {
+  var openFn = getSessionRuntimeFunction('openAutoGearEditor');
+  if (typeof openFn !== 'function') {
+    console.warn('Auto Gear editor runtime is not available yet.');
+    return;
+  }
+
+  try {
+    openFn.apply(void 0, arguments);
+  } catch (openError) {
+    console.warn('Failed to open Auto Gear editor', openError);
+  }
+}
+
 ensureSessionRuntimePlaceholder('autoGearScenarioModeSelect', null);
 var gridSnapToggleBtn = ensureSessionRuntimePlaceholder('gridSnapToggleBtn', function () {
   if (typeof document === 'undefined' || !document || typeof document.getElementById !== 'function') {
@@ -3441,7 +3455,7 @@ if (settingsButton && settingsDialog) {
   });
   if (autoGearAddRuleBtn) {
     autoGearAddRuleBtn.addEventListener('click', function () {
-      openAutoGearEditor();
+      invokeSessionOpenAutoGearEditor();
     });
   }
   if (autoGearConditionSelect) {
@@ -3627,7 +3641,7 @@ if (settingsButton && settingsDialog) {
       var button = targetElement && typeof targetElement.closest === 'function' ? targetElement.closest('button') : null;
       if (!button) return;
       if (button.classList.contains('auto-gear-edit')) {
-        openAutoGearEditor(button.dataset.ruleId || '');
+        invokeSessionOpenAutoGearEditor(button.dataset.ruleId || '');
       } else if (button.classList.contains('auto-gear-duplicate')) {
         duplicateAutoGearRule(button.dataset.ruleId || '');
       } else if (button.classList.contains('auto-gear-delete')) {

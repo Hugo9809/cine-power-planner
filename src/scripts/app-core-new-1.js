@@ -7857,14 +7857,34 @@ function setLanguage(lang) {
     return element;
   };
   const resolveElement = (globalName, elementId) => {
-    const existing = resolveRuntimeValue(globalName);
+    let existing = null;
+    try {
+      existing = resolveRuntimeValue(globalName);
+    } catch (resolveError) {
+      console.warn(
+        `Failed to resolve runtime value for "${globalName}"`,
+        resolveError,
+      );
+      existing = null;
+    }
+
     if (existing && typeof existing === "object") {
       return existing;
     }
+
     if (doc && typeof doc.getElementById === "function" && elementId) {
-      const element = doc.getElementById(elementId);
-      return registerResolvedElement(globalName, element);
+      try {
+        const element = doc.getElementById(elementId);
+        return registerResolvedElement(globalName, element);
+      } catch (resolveDomError) {
+        console.warn(
+          `Failed to resolve document element "${elementId}"`,
+          resolveDomError,
+        );
+        return null;
+      }
     }
+
     return null;
   };
   const settingsShowAutoBackupsEl = resolveElement(

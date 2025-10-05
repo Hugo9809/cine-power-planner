@@ -7167,14 +7167,34 @@ function updateAutoGearItemButtonState(type) {
       return element;
     };
     var resolveElement = function resolveElement(globalName, elementId) {
-      var existing = resolveRuntimeValue(globalName);
+      var existing = null;
+      try {
+        existing = resolveRuntimeValue(globalName);
+      } catch (resolveError) {
+        console.warn(
+          "Failed to resolve runtime value for \"".concat(globalName, "\""),
+          resolveError,
+        );
+        existing = null;
+      }
+
       if (existing && typeof existing === "object") {
         return existing;
       }
+
       if (doc && typeof doc.getElementById === "function" && elementId) {
-        var element = doc.getElementById(elementId);
-        return registerResolvedElement(globalName, element);
+        try {
+          var element = doc.getElementById(elementId);
+          return registerResolvedElement(globalName, element);
+        } catch (resolveDomError) {
+          console.warn(
+            "Failed to resolve document element \"".concat(elementId, "\""),
+            resolveDomError,
+          );
+          return null;
+        }
       }
+
       return null;
     };
     var settingsShowAutoBackupsEl = resolveElement("settingsShowAutoBackups", "settingsShowAutoBackups");

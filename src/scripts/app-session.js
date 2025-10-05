@@ -139,6 +139,20 @@ function invokeSessionRevertAccentColor() {
   }
 }
 
+function invokeSessionOpenAutoGearEditor(...args) {
+  const openFn = getSessionRuntimeFunction('openAutoGearEditor');
+  if (typeof openFn !== 'function') {
+    console.warn('Auto Gear editor runtime is not available yet.');
+    return;
+  }
+
+  try {
+    openFn(...args);
+  } catch (openError) {
+    console.warn('Failed to open Auto Gear editor', openError);
+  }
+}
+
 ensureSessionRuntimePlaceholder('autoGearScenarioModeSelect', null);
 
 const downloadDiagramButton = ensureSessionRuntimePlaceholder(
@@ -3966,7 +3980,7 @@ const mountVoltageResetButtonRef = (() => {
 
 if (autoGearAddRuleBtn) {
   autoGearAddRuleBtn.addEventListener('click', () => {
-    openAutoGearEditor();
+    invokeSessionOpenAutoGearEditor();
   });
 }
 if (autoGearConditionSelect) {
@@ -4162,7 +4176,7 @@ if (autoGearAddItemButton) {
         : null;
       if (!button) return;
       if (button.classList.contains('auto-gear-edit')) {
-        openAutoGearEditor(button.dataset.ruleId || '');
+        invokeSessionOpenAutoGearEditor(button.dataset.ruleId || '');
       } else if (button.classList.contains('auto-gear-duplicate')) {
         duplicateAutoGearRule(button.dataset.ruleId || '');
       } else if (button.classList.contains('auto-gear-delete')) {
