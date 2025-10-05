@@ -695,6 +695,8 @@ var LEGACY_STORAGE_COMPRESSION_ALGORITHM = 'lz-string-utf16';
 var STORAGE_COMPRESSION_VARIANTS = MIGRATION_BACKUP_COMPRESSION_VARIANTS;
 var STORAGE_COMPRESSION_NAMESPACE = 'camera-power-planner:storage-compression';
 var storageCompressionPatchedStorages = typeof WeakSet === 'function' ? new WeakSet() : null;
+var STORAGE_COMPRESSION_SWEEP_LIMIT = 40;
+var STORAGE_COMPRESSION_SWEEP_MIN_SAVINGS = 128;
 
 function getAvailableLZStringCompressionStrategies(variants) {
   if (
@@ -1041,6 +1043,98 @@ function maybeDecompressStoredString(raw, options) {
   }
 
   return decoded.value;
+}
+
+function attemptStorageCompressionSweep(storage, options) {
+  if (!storage || typeof storage.length !== 'number' || typeof storage.key !== 'function') {
+    return { success: false, compressed: 0, freed: 0 };
+  }
+
+  const { skipKeys = [], limit = STORAGE_COMPRESSION_SWEEP_LIMIT, minSavings = STORAGE_COMPRESSION_SWEEP_MIN_SAVINGS } = options || {};
+
+  const skipSet = new Set();
+  if (Array.isArray(skipKeys)) {
+    for (let i = 0; i < skipKeys.length; i += 1) {
+      const key = skipKeys[i];
+      if (typeof key === 'string' && key) {
+        skipSet.add(key);
+      }
+    }
+  }
+
+  const total = storage.length;
+  const keys = [];
+  for (let index = 0; index < total; index += 1) {
+    let key;
+    try {
+      key = storage.key(index);
+    } catch (keyError) {
+      void keyError;
+      key = null;
+    }
+    if (typeof key === 'string' && key && !skipSet.has(key)) {
+      keys.push(key);
+    }
+  }
+
+  let compressedCount = 0;
+  let freedCharacters = 0;
+  const upperLimit = typeof limit === 'number' && limit > 0 ? Math.min(limit, keys.length) : keys.length;
+
+  for (let index = 0; index < keys.length && compressedCount < upperLimit; index += 1) {
+    const key = keys[index];
+    if (skipSet.has(key)) {
+      continue;
+    }
+
+    let raw;
+    try {
+      raw = storage.getItem(key);
+    } catch (readError) {
+      void readError;
+      continue;
+    }
+
+    if (typeof raw !== 'string' || !raw) {
+      continue;
+    }
+
+    if (raw.includes(`"${STORAGE_COMPRESSION_FLAG_KEY}":true`)) {
+      continue;
+    }
+
+    const candidate = createCompressedJsonStorageCandidate(raw);
+    if (!candidate || typeof candidate.serialized !== 'string' || !candidate.serialized) {
+      continue;
+    }
+
+    const savings = typeof candidate.originalLength === 'number' && typeof candidate.wrappedLength === 'number'
+      ? candidate.originalLength - candidate.wrappedLength
+      : 0;
+    if (savings < (typeof minSavings === 'number' && minSavings > 0 ? minSavings : 0)) {
+      continue;
+    }
+
+    try {
+      storage.setItem(key, candidate.serialized);
+      compressedCount += 1;
+      freedCharacters += savings > 0 ? savings : 0;
+    } catch (writeError) {
+      void writeError;
+    }
+  }
+
+  if (compressedCount > 0 && typeof console !== 'undefined' && typeof console.warn === 'function') {
+    if (freedCharacters > 0) {
+      console.warn(
+        `Compressed ${compressedCount} stored entr${compressedCount === 1 ? 'y' : 'ies'} during quota recovery, freeing approximately ${freedCharacters} characters.`,
+      );
+    } else {
+      console.warn(`Compressed ${compressedCount} stored entr${compressedCount === 1 ? 'y' : 'ies'} during quota recovery.`);
+    }
+  }
+
+  return { success: compressedCount > 0, compressed: compressedCount, freed: freedCharacters };
 }
 
 function decodeStoredValue(raw) {
@@ -3019,7 +3113,12 @@ function saveJSONToStorage(
 ) {
   if (!storage) return;
 
-  const { disableBackup = false, backupKey, onQuotaExceeded } = options || {};
+  const {
+    disableBackup = false,
+    backupKey,
+    onQuotaExceeded,
+    enableCompressionSweep = true,
+  } = options || {};
   const fallbackKey = typeof backupKey === 'string' && backupKey
     ? backupKey
     : `${key}${STORAGE_BACKUP_SUFFIX}`;
@@ -3143,6 +3242,7 @@ function saveJSONToStorage(
   let removedBackupDuringRetry = false;
   let quotaRecoverySteps = 0;
   let quotaRecoveryFailed = false;
+  let compressionSweepAttempted = false;
 
   const registerQuotaRecoveryStep = () => {
     quotaRecoverySteps += 1;
@@ -3155,22 +3255,43 @@ function saveJSONToStorage(
   };
 
   const attemptHandleQuota = (error, context = {}) => {
-    if (!isQuotaExceededError(error) || typeof onQuotaExceeded !== 'function') {
+    if (!isQuotaExceededError(error)) {
       return false;
     }
 
-    try {
-      return onQuotaExceeded(error, {
-        storage,
-        key,
-        value,
-        ...context,
-      }) === true;
-    } catch (handlerError) {
-      const scope = context && context.isBackup ? ' (backup)' : '';
-      console.error(`Error while handling quota exceed for ${key}${scope}`, handlerError);
+    if (typeof onQuotaExceeded === 'function') {
+      try {
+        if (
+          onQuotaExceeded(error, {
+            storage,
+            key,
+            value,
+            ...context,
+          }) === true
+        ) {
+          return true;
+        }
+      } catch (handlerError) {
+        const scope = context && context.isBackup ? ' (backup)' : '';
+        console.error(`Error while handling quota exceed for ${key}${scope}`, handlerError);
+      }
+    }
+
+    if (compressionSweepAttempted || enableCompressionSweep === false) {
       return false;
     }
+
+    compressionSweepAttempted = true;
+    const skipKeys = [key];
+    if (useBackup && typeof fallbackKey === 'string' && fallbackKey && fallbackKey !== key) {
+      skipKeys.push(fallbackKey);
+    }
+    if (context && typeof context.backupKey === 'string' && context.backupKey) {
+      skipKeys.push(context.backupKey);
+    }
+
+    const sweepResult = attemptStorageCompressionSweep(storage, { skipKeys });
+    return Boolean(sweepResult && sweepResult.success);
   };
 
   let attempts = 0;

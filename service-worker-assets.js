@@ -144,6 +144,7 @@
   "./src/scripts/loader.js",
   "./src/scripts/modern-support-check.mjs",
   "./src/scripts/modules/architecture-helpers.js",
+  "./src/scripts/modules/architecture-kernel.js",
   "./src/scripts/modules/architecture.js",
   "./src/scripts/modules/base.js",
   "./src/scripts/modules/context.js",
