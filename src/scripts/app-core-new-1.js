@@ -12742,6 +12742,18 @@ var projectFieldIcons = {
 
 function updateSelectIconBoxes(sel) {
   if (!sel) return;
+  const multiSelected = sel.multiple
+    ? Array.from(sel.selectedOptions || [])
+    : [];
+  const hasValue = sel.multiple
+    ? multiSelected.some(opt => typeof opt.value === 'string' ? opt.value.trim() !== '' : !!opt.value)
+    : (typeof sel.value === 'string'
+      ? sel.value.trim() !== ''
+      : (sel.value !== null && sel.value !== undefined && String(sel.value).trim() !== ''));
+  sel.classList.toggle('select-placeholder', !hasValue);
+  if (sel.id === 'requiredScenarios') {
+    return;
+  }
   const parent = sel.parentNode;
   if (!parent || typeof parent.querySelector !== 'function') {
     return;
@@ -12754,8 +12766,8 @@ function updateSelectIconBoxes(sel) {
   }
   container.innerHTML = '';
   const opts = sel.multiple
-    ? Array.from(sel.selectedOptions)
-    : (sel.value ? [sel.options[sel.selectedIndex]] : []);
+    ? multiSelected
+    : (hasValue && sel.selectedIndex >= 0 ? [sel.options[sel.selectedIndex]] : []);
   opts.forEach(opt => {
     const box = document.createElement('span');
     box.className = 'icon-box';
