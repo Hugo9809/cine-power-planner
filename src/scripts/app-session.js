@@ -291,6 +291,14 @@ const writeGridSnapState = value => {
     }
   }
 
+  try {
+    if (typeof applyLegacyGridSnapValue === 'function') {
+      return Boolean(applyLegacyGridSnapValue(desired));
+    }
+  } catch (legacyGridSnapError) {
+    void legacyGridSnapError;
+  }
+
   return desired;
 };
 

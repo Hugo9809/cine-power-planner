@@ -185,7 +185,7 @@ function ensureCoreGlobalValue(name, fallbackValue) {
   return value;
 }
 
-ensureCoreGlobalValue('gridSnap', () => false);
+var gridSnap = ensureCoreGlobalValue('gridSnap', () => false);
 
 function dispatchTemperatureNoteRender(hours) {
   const scope = getCoreGlobalObject();
@@ -756,8 +756,8 @@ function readInitialGridSnapPreference() {
 }
 
 let gridSnapState = normaliseGridSnapPreference(readInitialGridSnapPreference(), false);
-
-function syncGridSnapStateToScopes(value) {
+gridSnap = gridSnapState;
+function syncGridSnapStateToScopes(value, originScope = null) {
   const scopes = getGridSnapStateScopes();
   for (let index = 0; index < scopes.length; index += 1) {
     const scope = scopes[index];
@@ -779,6 +779,10 @@ function syncGridSnapStateToScopes(value) {
       }
     }
 
+    if (originScope === scope) {
+      continue;
+    }
+
     try {
       scope.gridSnap = value;
     } catch (assignLegacyError) {
@@ -793,6 +797,9 @@ function syncGridSnapStateToScopes(value) {
       }
     }
   }
+
+  gridSnap = value;
+  return value;
 }
 
 function getGridSnapState() {
@@ -805,6 +812,15 @@ function setGridSnapState(value) {
   syncGridSnapStateToScopes(normalized);
   return gridSnapState;
 }
+
+function applyLegacyGridSnapValue(value) {
+  const normalized = normaliseGridSnapPreference(value, gridSnapState);
+  gridSnapState = normalized;
+  gridSnap = normalized;
+  return gridSnapState;
+}
+
+exposeCoreRuntimeConstant('applyLegacyGridSnapValue', applyLegacyGridSnapValue);
 
 syncGridSnapStateToScopes(gridSnapState);
 
@@ -12887,28 +12903,28 @@ function updateTripodOptions() {
   }
 }
 
-var totalPowerElem      = document.getElementById("totalPower");
-const totalCurrent144Elem = document.getElementById("totalCurrent144");
-var totalCurrent12Elem  = document.getElementById("totalCurrent12");
-const batteryLifeElem     = document.getElementById("batteryLife");
-const batteryLifeLabelElem = document.getElementById("batteryLifeLabel");
-const runtimeAverageNoteElem = document.getElementById("runtimeAverageNote");
-var batteryCountElem    = document.getElementById("batteryCount");
-const pinWarnElem         = document.getElementById("pinWarning");
-const dtapWarnElem        = document.getElementById("dtapWarning");
-const hotswapWarnElem     = document.getElementById("hotswapWarning");
-const powerWarningDialog  = document.getElementById("powerWarningDialog");
-const powerWarningTitleElem = document.getElementById("powerWarningTitle");
-const powerWarningMessageElem = document.getElementById("powerWarningMessage");
-const powerWarningLimitsHeadingElem = document.getElementById("powerWarningLimitsHeading");
-const powerWarningPinsDetailElem = document.getElementById("powerWarningPinsDetail");
-const powerWarningDtapDetailElem = document.getElementById("powerWarningDtapDetail");
-const powerWarningAdviceElem = document.getElementById("powerWarningAdvice");
-const powerWarningCloseBtn = document.getElementById("powerWarningCloseBtn");
-const powerDiagramElem    = document.getElementById("powerDiagram");
-const powerDiagramBarElem = document.getElementById("powerDiagramBar");
-const maxPowerTextElem    = document.getElementById("maxPowerText");
-const powerDiagramLegendElem = document.getElementById("powerDiagramLegend");
+var totalPowerElem            = document.getElementById("totalPower");
+var totalCurrent144Elem       = document.getElementById("totalCurrent144");
+var totalCurrent12Elem        = document.getElementById("totalCurrent12");
+var batteryLifeElem           = document.getElementById("batteryLife");
+var batteryLifeLabelElem      = document.getElementById("batteryLifeLabel");
+var runtimeAverageNoteElem    = document.getElementById("runtimeAverageNote");
+var batteryCountElem          = document.getElementById("batteryCount");
+var pinWarnElem               = document.getElementById("pinWarning");
+var dtapWarnElem              = document.getElementById("dtapWarning");
+var hotswapWarnElem           = document.getElementById("hotswapWarning");
+var powerWarningDialog        = document.getElementById("powerWarningDialog");
+var powerWarningTitleElem     = document.getElementById("powerWarningTitle");
+var powerWarningMessageElem   = document.getElementById("powerWarningMessage");
+var powerWarningLimitsHeadingElem = document.getElementById("powerWarningLimitsHeading");
+var powerWarningPinsDetailElem    = document.getElementById("powerWarningPinsDetail");
+var powerWarningDtapDetailElem    = document.getElementById("powerWarningDtapDetail");
+var powerWarningAdviceElem        = document.getElementById("powerWarningAdvice");
+var powerWarningCloseBtn          = document.getElementById("powerWarningCloseBtn");
+var powerDiagramElem              = document.getElementById("powerDiagram");
+var powerDiagramBarElem           = document.getElementById("powerDiagramBar");
+var maxPowerTextElem              = document.getElementById("maxPowerText");
+var powerDiagramLegendElem        = document.getElementById("powerDiagramLegend");
 
 let currentPowerWarningKey = '';
 let dismissedPowerWarningKey = '';
