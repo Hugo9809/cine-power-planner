@@ -2,6 +2,8 @@ jest.mock('../../src/scripts/storage.js', () => ({}));
 jest.mock('../../src/scripts/app-session.js', () => ({}));
 jest.mock('../../src/scripts/app-setups.js', () => ({}));
 
+const { setupModuleHarness } = require('../helpers/moduleHarness');
+
 const STORAGE_FUNCTIONS = [
   'loadDeviceData',
   'saveDeviceData',
@@ -86,9 +88,10 @@ const UNIQUE_FUNCTIONS = Array.from(new Set([
 describe('cinePersistence module', () => {
   let persistence;
   let stubs;
+  let harness;
 
   beforeEach(() => {
-    jest.resetModules();
+    harness = setupModuleHarness();
     stubs = {};
 
     UNIQUE_FUNCTIONS.forEach((name) => {
@@ -105,7 +108,10 @@ describe('cinePersistence module', () => {
       delete global[name];
     });
     delete global.cinePersistence;
-    jest.resetModules();
+    if (harness) {
+      harness.teardown();
+      harness = null;
+    }
   });
 
   function expectDelegation(wrapper, stub, name) {

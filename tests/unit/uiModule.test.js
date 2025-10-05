@@ -1,10 +1,13 @@
 const path = require('path');
 
+const { setupModuleHarness } = require('../helpers/moduleHarness');
+
 describe('cineUi module', () => {
   let cineUi;
+  let harness;
 
   function loadModule() {
-    jest.resetModules();
+    harness = setupModuleHarness();
     jest.isolateModules(() => {
       cineUi = require(path.join('..', '..', 'src', 'scripts', 'modules', 'ui.js'));
     });
@@ -20,6 +23,10 @@ describe('cineUi module', () => {
   afterEach(() => {
     if (cineUi && cineUi.__internal && typeof cineUi.__internal.clearRegistries === 'function') {
       cineUi.__internal.clearRegistries();
+    }
+    if (harness) {
+      harness.teardown();
+      harness = null;
     }
   });
 

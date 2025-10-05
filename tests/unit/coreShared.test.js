@@ -1,6 +1,10 @@
 const path = require('path');
 
+const { setupModuleHarness } = require('../helpers/moduleHarness');
+
 describe('core shared utilities', () => {
+  let harness;
+
   function cleanupGlobals() {
     delete global.generateConnectorSummary;
     delete global.cineCoreShared;
@@ -10,7 +14,7 @@ describe('core shared utilities', () => {
   }
 
   beforeEach(() => {
-    jest.resetModules();
+    harness = setupModuleHarness();
     cleanupGlobals();
     jest.spyOn(console, 'warn').mockImplementation(() => {});
   });
@@ -20,6 +24,10 @@ describe('core shared utilities', () => {
       console.warn.mockRestore();
     }
     cleanupGlobals();
+    if (harness) {
+      harness.teardown();
+      harness = null;
+    }
   });
 
   function loadCoreShared() {
