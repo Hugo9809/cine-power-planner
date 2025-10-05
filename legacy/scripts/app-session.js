@@ -48,6 +48,70 @@ function ensureSessionRuntimePlaceholder(name, fallbackValue) {
   }
 }
 
+function getSessionRuntimeScopes() {
+  var scopes = [];
+  var addScope = function addScope(candidate) {
+    if (!candidate || _typeof(candidate) !== 'object') {
+      return;
+    }
+    if (scopes.indexOf(candidate) === -1) {
+      scopes.push(candidate);
+    }
+  };
+
+  try {
+    if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE) {
+      addScope(CORE_GLOBAL_SCOPE);
+    }
+  } catch (coreScopeError) {
+    void coreScopeError;
+  }
+
+  addScope(typeof globalThis !== 'undefined' ? globalThis : null);
+  addScope(typeof window !== 'undefined' ? window : null);
+  addScope(typeof self !== 'undefined' ? self : null);
+  addScope(typeof global !== 'undefined' ? global : null);
+
+  return scopes;
+}
+
+function getSessionRuntimeFunction(name) {
+  if (typeof name !== 'string' || !name) {
+    return null;
+  }
+
+  var scopes = getSessionRuntimeScopes();
+  for (var index = 0; index < scopes.length; index += 1) {
+    var scope = scopes[index];
+    var candidate = null;
+    try {
+      candidate = scope[name];
+    } catch (resolveError) {
+      candidate = null;
+      void resolveError;
+    }
+
+    if (typeof candidate === 'function') {
+      return candidate;
+    }
+  }
+
+  return null;
+}
+
+function invokeSessionRevertAccentColor() {
+  var revertFn = getSessionRuntimeFunction('revertAccentColor');
+  if (typeof revertFn !== 'function') {
+    return;
+  }
+
+  try {
+    revertFn();
+  } catch (revertError) {
+    console.warn('Failed to revert accent color', revertError);
+  }
+}
+
 ensureSessionRuntimePlaceholder('autoGearScenarioModeSelect', null);
 var gridSnapToggleBtn = ensureSessionRuntimePlaceholder('gridSnapToggleBtn', function () {
   if (typeof document === 'undefined' || !document || typeof document.getElementById !== 'function') {
@@ -3204,7 +3268,7 @@ if (settingsButton && settingsDialog) {
       rememberSettingsShowAutoBackupsBaseline();
       revertSettingsMountVoltagesIfNeeded();
       rememberSettingsMountVoltagesBaseline();
-      revertAccentColor();
+      invokeSessionRevertAccentColor();
       if (settingsLogo) settingsLogo.value = '';
       if (settingsLogoPreview) loadStoredLogoPreview();
       closeAutoGearEditor();
@@ -3348,7 +3412,7 @@ if (settingsButton && settingsDialog) {
       rememberSettingsShowAutoBackupsBaseline();
       revertSettingsMountVoltagesIfNeeded();
       rememberSettingsMountVoltagesBaseline();
-      revertAccentColor();
+      invokeSessionRevertAccentColor();
       if (settingsLogo) settingsLogo.value = '';
       if (settingsLogoPreview) loadStoredLogoPreview();
       closeAutoGearEditor();
@@ -3367,7 +3431,7 @@ if (settingsButton && settingsDialog) {
     rememberSettingsShowAutoBackupsBaseline();
     revertSettingsMountVoltagesIfNeeded();
     rememberSettingsMountVoltagesBaseline();
-    revertAccentColor();
+    invokeSessionRevertAccentColor();
     if (settingsLogo) settingsLogo.value = '';
     if (settingsLogoPreview) loadStoredLogoPreview();
     closeAutoGearEditor();
@@ -9499,7 +9563,7 @@ if (helpButton && helpDialog) {
       rememberSettingsPinkModeBaseline();
       revertSettingsTemperatureUnitIfNeeded();
       rememberSettingsTemperatureUnitBaseline();
-      revertAccentColor();
+      invokeSessionRevertAccentColor();
       closeDialog(settingsDialog);
       settingsDialog.setAttribute('hidden', '');
     } else if (e.key === 'F1' || (e.key === '/' || e.key === '?') && (e.ctrlKey || e.metaKey)) {

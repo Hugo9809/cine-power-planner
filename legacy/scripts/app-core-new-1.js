@@ -7179,6 +7179,27 @@ function updateAutoGearItemButtonState(type) {
     var backupDiffNotesEl = resolveElement("backupDiffNotes", "backupDiffNotes");
     var backupDiffExportButtonEl = resolveElement("backupDiffExportButton", "backupDiffExport");
     var backupDiffCloseButtonEl = resolveElement("backupDiffCloseButton", "backupDiffClose");
+    var restoreRehearsalButton = resolveElement("restoreRehearsalButton", "restoreRehearsalButton");
+    var restoreRehearsalHeading = resolveElement("restoreRehearsalHeading", "restoreRehearsalHeading");
+    var restoreRehearsalIntro = resolveElement("restoreRehearsalIntro", "restoreRehearsalIntro");
+    var restoreRehearsalModeLabel = resolveElement("restoreRehearsalModeLabel", "restoreRehearsalModeLabel");
+    var restoreRehearsalModeBackupText = resolveElement("restoreRehearsalModeBackupText", "restoreRehearsalModeBackupText");
+    var restoreRehearsalModeProjectText = resolveElement("restoreRehearsalModeProjectText", "restoreRehearsalModeProjectText");
+    var restoreRehearsalFileLabel = resolveElement("restoreRehearsalFileLabel", "restoreRehearsalFileLabel");
+    var restoreRehearsalBrowse = resolveElement("restoreRehearsalBrowse", "restoreRehearsalBrowse");
+    var restoreRehearsalFileName = resolveElement("restoreRehearsalFileName", "restoreRehearsalFileName");
+    var restoreRehearsalStatus = resolveElement("restoreRehearsalStatus", "restoreRehearsalStatus");
+    var restoreRehearsalRuleHeading = resolveElement("restoreRehearsalRuleHeading", "restoreRehearsalRuleHeading");
+    var restoreRehearsalRuleIntro = resolveElement("restoreRehearsalRuleIntro", "restoreRehearsalRuleIntro");
+    var restoreRehearsalRuleEmpty = resolveElement("restoreRehearsalRuleEmpty", "restoreRehearsalRuleEmpty");
+    var restoreRehearsalTableCaption = resolveElement("restoreRehearsalTableCaption", "restoreRehearsalTableCaption");
+    var restoreRehearsalMetricHeader = resolveElement("restoreRehearsalMetricHeader", "restoreRehearsalMetricHeader");
+    var restoreRehearsalLiveHeader = resolveElement("restoreRehearsalLiveHeader", "restoreRehearsalLiveHeader");
+    var restoreRehearsalSandboxHeader = resolveElement("restoreRehearsalSandboxHeader", "restoreRehearsalSandboxHeader");
+    var restoreRehearsalDifferenceHeader = resolveElement("restoreRehearsalDifferenceHeader", "restoreRehearsalDifferenceHeader");
+    var restoreRehearsalCloseButton = resolveElement("restoreRehearsalCloseButton", "restoreRehearsalClose");
+    var restoreRehearsalProceedButton = resolveElement("restoreRehearsalProceedButton", "restoreRehearsalProceed");
+    var restoreRehearsalAbortButton = resolveElement("restoreRehearsalAbortButton", "restoreRehearsalAbort");
     if (skipLink) skipLink.textContent = texts[lang].skipToContent;
     var offlineElem = document.getElementById("offlineIndicator");
     if (offlineElem) {

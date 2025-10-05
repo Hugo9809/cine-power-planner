@@ -126,6 +126,19 @@ function getSessionRuntimeFunction(name) {
   return null;
 }
 
+function invokeSessionRevertAccentColor() {
+  const revertFn = getSessionRuntimeFunction('revertAccentColor');
+  if (typeof revertFn !== 'function') {
+    return;
+  }
+
+  try {
+    revertFn();
+  } catch (revertError) {
+    console.warn('Failed to revert accent color', revertError);
+  }
+}
+
 ensureSessionRuntimePlaceholder('autoGearScenarioModeSelect', null);
 
 const downloadDiagramButton = ensureSessionRuntimePlaceholder(
@@ -3776,7 +3789,7 @@ const mountVoltageResetButtonRef = (() => {
       rememberSettingsShowAutoBackupsBaseline();
       revertSettingsMountVoltagesIfNeeded();
       rememberSettingsMountVoltagesBaseline();
-      revertAccentColor();
+      invokeSessionRevertAccentColor();
       if (settingsLogo) settingsLogo.value = '';
       if (settingsLogoPreview) safeLoadStoredLogoPreview();
       closeAutoGearEditor();
@@ -3922,7 +3935,7 @@ const mountVoltageResetButtonRef = (() => {
       rememberSettingsShowAutoBackupsBaseline();
       revertSettingsMountVoltagesIfNeeded();
       rememberSettingsMountVoltagesBaseline();
-      revertAccentColor();
+      invokeSessionRevertAccentColor();
       if (settingsLogo) settingsLogo.value = '';
       if (settingsLogoPreview) safeLoadStoredLogoPreview();
       closeAutoGearEditor();
@@ -3942,7 +3955,7 @@ const mountVoltageResetButtonRef = (() => {
     rememberSettingsShowAutoBackupsBaseline();
     revertSettingsMountVoltagesIfNeeded();
     rememberSettingsMountVoltagesBaseline();
-    revertAccentColor();
+    invokeSessionRevertAccentColor();
     if (settingsLogo) settingsLogo.value = '';
     if (settingsLogoPreview) safeLoadStoredLogoPreview();
     closeAutoGearEditor();
@@ -10615,7 +10628,7 @@ if (helpButton && helpDialog) {
       rememberSettingsPinkModeBaseline();
       revertSettingsTemperatureUnitIfNeeded();
       rememberSettingsTemperatureUnitBaseline();
-      revertAccentColor();
+      invokeSessionRevertAccentColor();
       closeDialog(settingsDialog);
       settingsDialog.setAttribute('hidden', '');
     } else if (
