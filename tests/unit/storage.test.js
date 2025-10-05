@@ -374,13 +374,14 @@ describe('setup storage', () => {
 
   test('saveSetups removes older duplicate auto backups before trimming unique entries', () => {
     const setups = {};
-    for (let index = 0; index < 49; index += 1) {
-      const minute = String(index).padStart(2, '0');
-      const key = `auto-backup-2024-01-01-00-${minute}`;
+    for (let index = 0; index < 119; index += 1) {
+      const hour = String(Math.floor(index / 60)).padStart(2, '0');
+      const minute = String(index % 60).padStart(2, '0');
+      const key = `auto-backup-2024-01-01-${hour}-${minute}`;
       setups[key] = { camera: `Camera ${index}` };
     }
     const duplicateValue = { camera: 'Shared Camera', lens: 'Shared Lens' };
-    const oldDuplicateKey = 'auto-backup-2024-01-01-01-00-Project Alpha';
+    const oldDuplicateKey = 'auto-backup-2023-12-31-23-59-Project Alpha';
     const newDuplicateKey = 'auto-backup-2024-01-02-00-00-Project Alpha';
     setups[oldDuplicateKey] = duplicateValue;
     setups[newDuplicateKey] = duplicateValue;
@@ -391,7 +392,7 @@ describe('setup storage', () => {
     expect(stored[oldDuplicateKey]).toBeUndefined();
     expect(stored[newDuplicateKey]).toEqual(duplicateValue);
     const autoBackupCount = Object.keys(stored).filter(name => name.startsWith('auto-backup-')).length;
-    expect(autoBackupCount).toBeLessThanOrEqual(50);
+    expect(autoBackupCount).toBeLessThanOrEqual(120);
   });
 
   test('saveSetups keeps auto backups with identical data when labels differ', () => {
@@ -417,9 +418,10 @@ describe('setup storage', () => {
   test('saveSetups keeps auto backups with distinct Date values for the same label', () => {
     const setups = {};
 
-    for (let index = 0; index < 46; index += 1) {
-      const minute = String(index).padStart(2, '0');
-      const key = `auto-backup-2024-01-01-00-${minute}-Filler-${index}`;
+    for (let index = 0; index < 116; index += 1) {
+      const hour = String(Math.floor(index / 60)).padStart(2, '0');
+      const minute = String(index % 60).padStart(2, '0');
+      const key = `auto-backup-2024-01-01-${hour}-${minute}-Filler-${index}`;
       setups[key] = { camera: `Camera ${index}` };
     }
 
@@ -444,7 +446,7 @@ describe('setup storage', () => {
 
     const stored = JSON.parse(localStorage.getItem(SETUP_KEY));
     const storedKeys = Object.keys(stored).filter((name) => name.startsWith('auto-backup-'));
-    expect(storedKeys.length).toBeLessThanOrEqual(50);
+    expect(storedKeys.length).toBeLessThanOrEqual(120);
     expect(stored[alphaOldKey]).toBeDefined();
     expect(stored[alphaNewKey]).toBeDefined();
     expect(stored[betaOldKey]).toBeUndefined();
@@ -455,10 +457,11 @@ describe('setup storage', () => {
 
   test('saveSetups keeps the newest auto backup for each project label when trimming', () => {
     const setups = {};
-    for (let index = 0; index < 60; index += 1) {
-      const minute = String(index).padStart(2, '0');
+    for (let index = 0; index < 140; index += 1) {
+      const hour = String(Math.floor(index / 60)).padStart(2, '0');
+      const minute = String(index % 60).padStart(2, '0');
       const label = index % 2 === 0 ? 'Project Alpha' : 'Project Beta';
-      const key = `auto-backup-2024-01-01-00-${minute}-${label}`;
+      const key = `auto-backup-2024-01-01-${hour}-${minute}-${label}`;
       setups[key] = {
         camera: 'Camera 1',
         projectInfo: { projectName: label },
@@ -469,22 +472,23 @@ describe('setup storage', () => {
 
     const stored = JSON.parse(localStorage.getItem(SETUP_KEY));
     const autoKeys = Object.keys(stored).filter((name) => name.startsWith('auto-backup-')).sort();
-    expect(autoKeys.length).toBeLessThanOrEqual(50);
+    expect(autoKeys.length).toBeLessThanOrEqual(120);
 
     const alphaKeys = autoKeys.filter((name) => name.endsWith('Project Alpha'));
     const betaKeys = autoKeys.filter((name) => name.endsWith('Project Beta'));
 
     expect(alphaKeys.length).toBeGreaterThan(0);
     expect(betaKeys.length).toBeGreaterThan(0);
-    expect(alphaKeys[alphaKeys.length - 1]).toBe('auto-backup-2024-01-01-00-58-Project Alpha');
-    expect(betaKeys[betaKeys.length - 1]).toBe('auto-backup-2024-01-01-00-59-Project Beta');
+    expect(alphaKeys[alphaKeys.length - 1]).toBe('auto-backup-2024-01-01-02-18-Project Alpha');
+    expect(betaKeys[betaKeys.length - 1]).toBe('auto-backup-2024-01-01-02-19-Project Beta');
   });
 
   test('saveSetups keeps multiple unlabeled auto backups when trimming', () => {
     const setups = {};
-    for (let index = 0; index < 60; index += 1) {
-      const minute = String(index).padStart(2, '0');
-      const key = `auto-backup-2024-01-01-00-${minute}`;
+    for (let index = 0; index < 140; index += 1) {
+      const hour = String(Math.floor(index / 60)).padStart(2, '0');
+      const minute = String(index % 60).padStart(2, '0');
+      const key = `auto-backup-2024-01-01-${hour}-${minute}`;
       setups[key] = {
         camera: 'Camera 1',
         projectInfo: { projectName: '' },
@@ -496,9 +500,9 @@ describe('setup storage', () => {
     const stored = JSON.parse(localStorage.getItem(SETUP_KEY));
     const autoKeys = Object.keys(stored).filter((name) => name.startsWith('auto-backup-')).sort();
 
-    expect(autoKeys.length).toBe(50);
-    expect(autoKeys[0]).toBe('auto-backup-2024-01-01-00-10');
-    expect(autoKeys[autoKeys.length - 1]).toBe('auto-backup-2024-01-01-00-59');
+    expect(autoKeys.length).toBe(120);
+    expect(autoKeys[0]).toBe('auto-backup-2024-01-01-00-20');
+    expect(autoKeys[autoKeys.length - 1]).toBe('auto-backup-2024-01-01-02-19');
   });
 
   test('renameSetup marks auto backups renamed within the automatic namespace', () => {
@@ -798,13 +802,14 @@ describe('project storage', () => {
 
   test('saveProject removes older duplicate auto backups before trimming unique entries', () => {
     const projects = {};
-    for (let index = 0; index < 49; index += 1) {
-      const minute = String(index).padStart(2, '0');
-      const key = `auto-backup-2024-01-01-00-${minute}-Project Alpha`;
+    for (let index = 0; index < 119; index += 1) {
+      const hour = String(Math.floor(index / 60)).padStart(2, '0');
+      const minute = String(index % 60).padStart(2, '0');
+      const key = `auto-backup-2024-01-01-${hour}-${minute}-Project Alpha`;
       projects[key] = { gearList: `<ul>${index}</ul>`, projectInfo: null };
     }
     const duplicateValue = { gearList: '<ul>duplicate</ul>', projectInfo: null };
-    const oldDuplicateKey = 'auto-backup-2024-01-01-01-00-Project Alpha';
+    const oldDuplicateKey = 'auto-backup-2023-12-31-23-59-Project Alpha';
     const newDuplicateKey = 'auto-backup-2024-01-02-00-00-Project Alpha';
     projects[oldDuplicateKey] = duplicateValue;
     projects[newDuplicateKey] = duplicateValue;
@@ -816,7 +821,7 @@ describe('project storage', () => {
     expect(stored[oldDuplicateKey]).toBeUndefined();
     expect(stored[newDuplicateKey]).toEqual(duplicateValue);
     const autoBackupCount = Object.keys(stored).filter(name => name.startsWith('auto-backup-')).length;
-    expect(autoBackupCount).toBeLessThanOrEqual(50);
+    expect(autoBackupCount).toBeLessThanOrEqual(120);
   });
 
   test('saveProject ignores non-object payloads entirely', () => {
