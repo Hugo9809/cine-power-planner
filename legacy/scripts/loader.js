@@ -1,7 +1,4 @@
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
-if (typeof autoGearAutoPresetId === 'undefined') {
-  var autoGearAutoPresetId = '';
-}
 (function () {
   var OPTIONAL_CHAINING_FLAG = '__cinePowerOptionalChainingCheck__';
   function getGlobalScope() {
@@ -16,6 +13,129 @@ if (typeof autoGearAutoPresetId === 'undefined') {
     }
     return null;
   }
+  function resolveCriticalFallback(fallback) {
+    return typeof fallback === 'function' ? fallback() : fallback;
+  }
+  function ensureCriticalGlobal(definition) {
+    var scope = getGlobalScope();
+    if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+      return;
+    }
+    var name = definition.name;
+    var fallbackValue = resolveCriticalFallback(definition.fallback);
+    var currentValue = fallbackValue;
+    var hasExisting = false;
+    try {
+      if (typeof scope[name] !== 'undefined') {
+        currentValue = scope[name];
+        hasExisting = true;
+      }
+    } catch (readError) {
+      void readError;
+    }
+    var isValid = true;
+    if (typeof definition.validator === 'function') {
+      try {
+        isValid = definition.validator(currentValue);
+      } catch (validationError) {
+        void validationError;
+        isValid = false;
+      }
+    }
+    if (!hasExisting || !isValid) {
+      var value = fallbackValue;
+      try {
+        scope[name] = value;
+      } catch (assignError) {
+        void assignError;
+        try {
+          Object.defineProperty(scope, name, {
+            configurable: true,
+            writable: true,
+            enumerable: false,
+            value: value
+          });
+        } catch (defineError) {
+          void defineError;
+        }
+      }
+    }
+  }
+  function bootstrapCriticalGlobals(definitions) {
+    for (var index = 0; index < definitions.length; index += 1) {
+      ensureCriticalGlobal(definitions[index]);
+    }
+  }
+  function loaderFallbackSafeGenerateConnectorSummary(device) {
+    if (!device || _typeof(device) !== 'object') {
+      return '';
+    }
+    try {
+      var keys = Object.keys(device);
+      if (!keys.length) {
+        return '';
+      }
+      var primaryKey = keys[0];
+      var value = device[primaryKey];
+      var label = typeof primaryKey === 'string' ? primaryKey.replace(/_/g, ' ') : 'connector';
+      return value ? label + ': ' + value : label;
+    } catch (fallbackError) {
+      void fallbackError;
+      return '';
+    }
+  }
+  var CRITICAL_GLOBAL_DEFINITIONS = [{
+    name: 'autoGearAutoPresetId',
+    validator: function validator(value) {
+      return typeof value === 'string';
+    },
+    fallback: ''
+  }, {
+    name: 'baseAutoGearRules',
+    validator: function validator(value) {
+      return Array.isArray(value);
+    },
+    fallback: function fallback() {
+      return [];
+    }
+  }, {
+    name: 'autoGearScenarioModeSelect',
+    validator: function validator(value) {
+      return typeof value !== 'undefined';
+    },
+    fallback: null
+  }, {
+    name: 'autoGearRuleNameInput',
+    validator: function validator(value) {
+      return typeof value !== 'undefined';
+    },
+    fallback: null
+  }, {
+    name: 'autoGearSummaryFocus',
+    validator: function validator(value) {
+      return typeof value === 'string';
+    },
+    fallback: 'all'
+  }, {
+    name: 'autoGearMonitorDefaultControls',
+    validator: Array.isArray,
+    fallback: function fallback() {
+      return [];
+    }
+  }, {
+    name: 'safeGenerateConnectorSummary',
+    validator: function validator(value) {
+      return typeof value === 'function';
+    },
+    fallback: loaderFallbackSafeGenerateConnectorSummary
+  }, {
+    name: 'totalPowerElem',
+    validator: function validator(value) {
+      return typeof value === 'undefined' || value === null || _typeof(value) === 'object';
+    },
+    fallback: null
+  }];
+  bootstrapCriticalGlobals(CRITICAL_GLOBAL_DEFINITIONS);
   function collectStorages(names) {
     var storages = [];
     if (typeof window === 'undefined') {

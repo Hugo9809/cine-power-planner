@@ -1,4 +1,3 @@
-/* eslint-disable no-redeclare */
 /*
  * Ensure critical core runtime globals always exist before the loader
  * initialises the rest of the application. Some browsers, notably older
@@ -145,55 +144,52 @@ function normaliseCriticalGlobalVariable(name, validator, fallback) {
   return nextValue;
 }
 
-normaliseCriticalGlobalVariable(
-  'autoGearAutoPresetId',
-  function (value) {
-    return typeof value === 'string';
+var CRITICAL_GLOBAL_DEFINITIONS = [
+  {
+    name: 'autoGearAutoPresetId',
+    validator: function (value) {
+      return typeof value === 'string';
+    },
+    fallback: '',
   },
-  '',
-);
-
-normaliseCriticalGlobalVariable(
-  'baseAutoGearRules',
-  function (value) {
-    return Array.isArray(value);
+  {
+    name: 'baseAutoGearRules',
+    validator: function (value) {
+      return Array.isArray(value);
+    },
+    fallback: function () {
+      return [];
+    },
   },
-  function () {
-    return [];
+  {
+    name: 'autoGearScenarioModeSelect',
+    validator: function (value) {
+      return typeof value !== 'undefined';
+    },
+    fallback: null,
   },
-);
-
-normaliseCriticalGlobalVariable(
-  'autoGearScenarioModeSelect',
-  function (value) {
-    return typeof value !== 'undefined';
+  {
+    name: 'autoGearRuleNameInput',
+    validator: function (value) {
+      return typeof value !== 'undefined';
+    },
+    fallback: null,
   },
-  null,
-);
-
-normaliseCriticalGlobalVariable(
-  'autoGearRuleNameInput',
-  function (value) {
-    return typeof value !== 'undefined';
+  {
+    name: 'autoGearSummaryFocus',
+    validator: function (value) {
+      return typeof value === 'string';
+    },
+    fallback: 'all',
   },
-  null,
-);
-
-normaliseCriticalGlobalVariable(
-  'autoGearSummaryFocus',
-  function (value) {
-    return typeof value === 'string';
+  {
+    name: 'autoGearMonitorDefaultControls',
+    validator: Array.isArray,
+    fallback: function () {
+      return [];
+    },
   },
-  'all',
-);
-
-normaliseCriticalGlobalVariable(
-  'autoGearMonitorDefaultControls',
-  Array.isArray,
-  function () {
-    return [];
-  },
-);
+];
 
 function loaderFallbackSafeGenerateConnectorSummary(device) {
   if (!device || typeof device !== 'object') {
@@ -216,13 +212,43 @@ function loaderFallbackSafeGenerateConnectorSummary(device) {
   }
 }
 
-normaliseCriticalGlobalVariable(
-  'safeGenerateConnectorSummary',
-  function (value) {
+CRITICAL_GLOBAL_DEFINITIONS.push({
+  name: 'safeGenerateConnectorSummary',
+  validator: function (value) {
     return typeof value === 'function';
   },
-  loaderFallbackSafeGenerateConnectorSummary,
-);
+  fallback: loaderFallbackSafeGenerateConnectorSummary,
+});
+
+CRITICAL_GLOBAL_DEFINITIONS.push({
+  name: 'totalPowerElem',
+  validator: function (value) {
+    return typeof value === 'undefined' || value === null || typeof value === 'object';
+  },
+  fallback: null,
+});
+
+(function initialiseCriticalGlobals() {
+  var scope = resolveCriticalGlobalScope();
+  if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+    return;
+  }
+
+  for (var index = 0; index < CRITICAL_GLOBAL_DEFINITIONS.length; index += 1) {
+    var definition = CRITICAL_GLOBAL_DEFINITIONS[index];
+    var value = normaliseCriticalGlobalVariable(
+      definition.name,
+      definition.validator,
+      definition.fallback,
+    );
+
+    try {
+      scope[definition.name] = value;
+    } catch (assignError) {
+      void assignError;
+    }
+  }
+})();
 
 (function () {
   var OPTIONAL_CHAINING_FLAG = '__cinePowerOptionalChainingCheck__';
@@ -418,28 +444,11 @@ normaliseCriticalGlobalVariable(
       return;
     }
 
-    if (typeof scope.autoGearAutoPresetId === 'undefined') {
-      scope.autoGearAutoPresetId = '';
-    }
-
-    if (typeof scope.baseAutoGearRules === 'undefined') {
-      scope.baseAutoGearRules = [];
-    }
-
-    if (typeof scope.safeGenerateConnectorSummary === 'undefined') {
-      scope.safeGenerateConnectorSummary = loaderFallbackSafeGenerateConnectorSummary;
-    }
-
-    if (typeof scope.autoGearScenarioModeSelect === 'undefined') {
-      scope.autoGearScenarioModeSelect = null;
-    }
-
-    if (typeof scope.autoGearRuleNameInput === 'undefined') {
-      scope.autoGearRuleNameInput = null;
-    }
-
-    if (typeof scope.totalPowerElem === 'undefined') {
-      scope.totalPowerElem = null;
+    for (var index = 0; index < CRITICAL_GLOBAL_DEFINITIONS.length; index += 1) {
+      var definition = CRITICAL_GLOBAL_DEFINITIONS[index];
+      if (typeof scope[definition.name] === 'undefined') {
+        scope[definition.name] = resolveCriticalFallback(definition.fallback);
+      }
     }
   }
 
