@@ -52,7 +52,10 @@ time:
    updated as expected. Confirm the **Backup guardian** row reports an active or mirrored
    state so every critical key already has a redundant copy before rehearsals continue,
    check the **Latest activity** board for the new save entries and capture a backup through
-   **Quick safeguards** if you need an extra offline copy.
+   **Quick safeguards** if you need an extra offline copy. The sequential loader now
+   predeclares the grid snap flag, the runtime guard stub and the icon glyph helpers on the
+   global scope before it injects the core bundles, preventing older Safari builds from
+   throwing reference errors while you are offline.【F:src/scripts/loader.js†L193-L307】【F:src/scripts/loader.js†L310-L370】
 4. **Check the runtime guard.** Open the browser console and inspect
    `window.__cineRuntimeIntegrity`. It should report `{ ok: true }` with an empty
    `missing` list. Run `window.cineRuntime.verifyCriticalFlows()` if you need a fresh
