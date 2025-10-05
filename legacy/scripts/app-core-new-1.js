@@ -395,6 +395,15 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       autoGearScenarioModeSelect: function autoGearScenarioModeSelect() {
         return null;
       },
+      autoGearRuleNameInput: function autoGearRuleNameInput() {
+        return null;
+      },
+      autoGearSummaryFocus: function autoGearSummaryFocus() {
+        return 'all';
+      },
+      autoGearMonitorDefaultControls: function autoGearMonitorDefaultControls() {
+        return [];
+      },
       safeGenerateConnectorSummary: function safeGenerateConnectorSummary() {
         return function safeGenerateConnectorSummary(device) {
           if (!device || _typeof(device) !== 'object') {
@@ -416,6 +425,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
           }
         };
       },
+      totalPowerElem: function totalPowerElem() {
+        return null;
+      }
     };
 
     var AUTO_GEAR_REFERENCE_NAMES = Object.keys(AUTO_GEAR_GLOBAL_FALLBACKS);
