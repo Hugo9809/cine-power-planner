@@ -659,6 +659,155 @@ function callCoreFunctionIfAvailable(functionName, args = [], options = {}) {
     : undefined;
 }
 
+const GRID_SNAP_STATE_STORAGE_KEY = '__cineGridSnapState';
+
+function getGridSnapStateScopes() {
+  const scopes = [];
+  const pushIfObject = candidate => {
+    if (candidate && typeof candidate === 'object' && scopes.indexOf(candidate) === -1) {
+      scopes.push(candidate);
+    }
+  };
+
+  try {
+    if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object') {
+      pushIfObject(CORE_GLOBAL_SCOPE);
+    }
+  } catch (coreScopeError) {
+    void coreScopeError;
+  }
+
+  pushIfObject(typeof globalThis !== 'undefined' ? globalThis : null);
+  pushIfObject(typeof window !== 'undefined' ? window : null);
+  pushIfObject(typeof self !== 'undefined' ? self : null);
+  pushIfObject(typeof global !== 'undefined' ? global : null);
+
+  return scopes;
+}
+
+function normaliseGridSnapPreference(value, fallback = false) {
+  if (value === true || value === false) {
+    return value === true;
+  }
+  if (typeof value === 'string') {
+    const normalized = value.trim().toLowerCase();
+    if (!normalized) {
+      return fallback;
+    }
+    if (['true', '1', 'yes', 'on', 'enabled', 'enable'].includes(normalized)) {
+      return true;
+    }
+    if (['false', '0', 'no', 'off', 'disabled', 'disable'].includes(normalized)) {
+      return false;
+    }
+    return fallback;
+  }
+  if (typeof value === 'number') {
+    if (!Number.isFinite(value)) {
+      return fallback;
+    }
+    return value > 0;
+  }
+  if (value && typeof value === 'object') {
+    if (Object.prototype.hasOwnProperty.call(value, 'enabled')) {
+      return normaliseGridSnapPreference(value.enabled, fallback);
+    }
+    if (Object.prototype.hasOwnProperty.call(value, 'value')) {
+      return normaliseGridSnapPreference(value.value, fallback);
+    }
+  }
+  return fallback;
+}
+
+function readInitialGridSnapPreference() {
+  const scopes = getGridSnapStateScopes();
+  for (let index = 0; index < scopes.length; index += 1) {
+    const scope = scopes[index];
+    if (!scope || typeof scope !== 'object') {
+      continue;
+    }
+
+    try {
+      if (Object.prototype.hasOwnProperty.call(scope, GRID_SNAP_STATE_STORAGE_KEY)) {
+        const stored = scope[GRID_SNAP_STATE_STORAGE_KEY];
+        const normalized = normaliseGridSnapPreference(stored, undefined);
+        if (typeof normalized === 'boolean') {
+          return normalized;
+        }
+      }
+    } catch (storageReadError) {
+      void storageReadError;
+    }
+
+    try {
+      if (Object.prototype.hasOwnProperty.call(scope, 'gridSnap')) {
+        const legacy = scope.gridSnap;
+        const normalizedLegacy = normaliseGridSnapPreference(legacy, undefined);
+        if (typeof normalizedLegacy === 'boolean') {
+          return normalizedLegacy;
+        }
+      }
+    } catch (legacyReadError) {
+      void legacyReadError;
+    }
+  }
+
+  return undefined;
+}
+
+let gridSnapState = normaliseGridSnapPreference(readInitialGridSnapPreference(), false);
+
+function syncGridSnapStateToScopes(value) {
+  const scopes = getGridSnapStateScopes();
+  for (let index = 0; index < scopes.length; index += 1) {
+    const scope = scopes[index];
+    if (!scope || typeof scope !== 'object') {
+      continue;
+    }
+
+    try {
+      scope[GRID_SNAP_STATE_STORAGE_KEY] = value;
+    } catch (assignStorageError) {
+      try {
+        Object.defineProperty(scope, GRID_SNAP_STATE_STORAGE_KEY, {
+          configurable: true,
+          writable: true,
+          value,
+        });
+      } catch (defineStorageError) {
+        void defineStorageError;
+      }
+    }
+
+    try {
+      scope.gridSnap = value;
+    } catch (assignLegacyError) {
+      try {
+        Object.defineProperty(scope, 'gridSnap', {
+          configurable: true,
+          writable: true,
+          value,
+        });
+      } catch (defineLegacyError) {
+        void defineLegacyError;
+      }
+    }
+  }
+}
+
+function getGridSnapState() {
+  return gridSnapState;
+}
+
+function setGridSnapState(value) {
+  const normalized = normaliseGridSnapPreference(value, gridSnapState);
+  gridSnapState = normalized;
+  syncGridSnapStateToScopes(normalized);
+  return gridSnapState;
+}
+
+syncGridSnapStateToScopes(gridSnapState);
+
 function safeFormatAutoGearItemSummary(item, options = {}) {
   if (typeof formatAutoGearItemSummary === 'function') {
     try {
@@ -10454,7 +10603,18 @@ function setLanguage(lang) {
     gridSnapToggleBtn.setAttribute("title", texts[lang].gridSnapToggle);
     gridSnapToggleBtn.setAttribute("aria-label", texts[lang].gridSnapToggle);
     gridSnapToggleBtn.setAttribute("data-help", texts[lang].gridSnapToggleHelp);
-    gridSnapToggleBtn.setAttribute("aria-pressed", gridSnap ? "true" : "false");
+    let snapActive = false;
+    try {
+      snapActive = Boolean(getGridSnapState());
+    } catch (gridSnapReadError) {
+      void gridSnapReadError;
+      try {
+        snapActive = Boolean(gridSnap);
+      } catch (legacyGridSnapError) {
+        void legacyGridSnapError;
+      }
+    }
+    gridSnapToggleBtn.setAttribute('aria-pressed', snapActive ? 'true' : 'false');
   }
   const resetViewBtn =
     typeof document !== 'undefined' ? document.getElementById('resetView') : null;
@@ -17403,6 +17563,8 @@ Object.assign(CORE_RUNTIME_CONSTANTS, {
   PINK_MODE_ICON_INTERVAL_MS,
   PINK_MODE_ICON_ANIMATION_CLASS,
   PINK_MODE_ICON_ANIMATION_RESET_DELAY,
+  getGridSnapState,
+  setGridSnapState,
 });
 
 exposeCoreRuntimeConstants(CORE_RUNTIME_CONSTANTS);

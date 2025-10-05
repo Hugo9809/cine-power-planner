@@ -6703,6 +6703,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     var normalizeSearchValue = function normalizeSearchValue(value) {
       return typeof value === 'string' ? value.trim().toLowerCase() : '';
     };
+    exposeCoreRuntimeConstant('normalizeSearchValue', normalizeSearchValue);
     var FEATURE_SEARCH_EXTRA_SELECTOR = '[data-feature-search]';
     var FEATURE_SEARCH_TYPE_LABEL_KEYS = {
       feature: 'featureSearchTypeFeature',
@@ -10622,6 +10623,30 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     var resetViewBtn = document.getElementById("resetView");
     var gridSnapToggleBtn = document.getElementById("gridSnapToggle");
     var diagramHint = document.getElementById("diagramHint");
+    var getCurrentGridSnap = function getCurrentGridSnap() {
+      try {
+        if (typeof getGridSnapState === 'function') {
+          return Boolean(getGridSnapState());
+        }
+      } catch (gridSnapStateError) {
+        void gridSnapStateError;
+      }
+
+      var scopedValue = readGlobalScopeValue('gridSnap');
+      if (typeof scopedValue === 'boolean') {
+        return scopedValue;
+      }
+
+      if (typeof gridSnap !== 'undefined') {
+        try {
+          return Boolean(gridSnap);
+        } catch (legacyGridSnapReadError) {
+          void legacyGridSnapReadError;
+        }
+      }
+
+      return false;
+    };
     var manualPositions = {};
     var lastDiagramPositions = {};
     function normalizeDiagramPositionsInput(positions) {
@@ -10657,7 +10682,6 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         renderSetupDiagram();
       }
     }
-    var gridSnap = false;
     var cleanupDiagramInteractions = null;
     var diagramCssLight = "\n    .node-box{fill:#f0f0f0;stroke:none;}\n    .node-box.first-fiz{stroke:none;}\n    .first-fiz-highlight{stroke:url(#firstFizGrad);stroke-width:1px;fill:none;}\n    .node-icon{font-size:var(--font-size-diagram-icon, 24px);font-family:'UiconsThinStraightV2',system-ui,sans-serif;font-style:normal;}\n    .node-icon[data-icon-font='essential']{font-family:'EssentialIconsV2',system-ui,sans-serif;}\n    .conn{stroke:none;}\n    .conn.red{fill:#d33;}\n    .conn.blue{fill:#369;}\n    .conn.green{fill:#090;}\n    text{font-family:system-ui,sans-serif;}\n    .edge-label{font-size:var(--font-size-diagram-label, 11px);}\n    line{stroke:#333;stroke-width:2px;}\n    path.edge-path{stroke:#333;stroke-width:2px;fill:none;}\n    path.power{stroke:#d33;}\n    path.video{stroke:#369;}\n    path.fiz{stroke:#090;}\n    .diagram-placeholder{font-style:italic;color:#666;margin:0;}\n    ";
     var diagramCssDark = "\n    .node-box{fill:#444;stroke:none;}\n    .node-box.first-fiz{stroke:none;}\n    .first-fiz-highlight{stroke:url(#firstFizGrad);}\n    .node-icon{font-size:var(--font-size-diagram-icon, 24px);font-family:'UiconsThinStraightV2',system-ui,sans-serif;font-style:normal;}\n    .node-icon[data-icon-font='essential']{font-family:'EssentialIconsV2',system-ui,sans-serif;}\n    text{fill:#fff;font-family:system-ui,sans-serif;}\n    .edge-label{font-size:var(--font-size-diagram-label, 11px);}\n    line{stroke:#fff;}\n    path.edge-path{stroke:#fff;}\n    path.power{stroke:#ff6666;}\n    path.video{stroke:#7ec8ff;}\n    path.fiz{stroke:#6f6;}\n    .conn.red{fill:#ff6666;}\n    .conn.blue{fill:#7ec8ff;}\n    .conn.green{fill:#6f6;}\n    .diagram-placeholder{color:#bbb;}\n    ";
@@ -15151,7 +15175,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         var dy = delta.y;
         var newX = start.x + dx;
         var newY = start.y + dy;
-        if (gridSnap) {
+        if (getCurrentGridSnap()) {
           var g = 20;
           newX = Math.round(newX / g) * g;
           newY = Math.round(newY / g) * g;
@@ -15171,7 +15195,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           var dy = delta.y;
           var newX = start.x + dx;
           var newY = start.y + dy;
-          if (gridSnap) {
+          if (getCurrentGridSnap()) {
             var g = 20;
             newX = Math.round(newX / g) * g;
             newY = Math.round(newY / g) * g;
