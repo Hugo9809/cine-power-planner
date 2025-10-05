@@ -32,3 +32,11 @@ planner predictable, offline-ready and data-safe.
   saving or sharing projects.【F:src/scripts/app-core-new-1.js†L3456-L3502】
 * When exporting or backing up, store these rules using the existing automatic gear backup and
   preset infrastructure so user data remains safe and offline-capable.
+
+## Draft impact preview cues
+
+* The draft impact preview surfaces stacked changes whenever multiple rules touch the same gear
+  entry. Turn the **Highlight automatic gear** toggle **On** to activate the multicolour stacked
+  indicator while auditing rule changes. The preview falls back to the standard positive/negative
+  borders whenever the highlight overlay is disabled so the behaviour remains predictable during
+  offline reviews.

@@ -4479,6 +4479,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           } else if (entry.delta < 0) {
             li.classList.add('auto-gear-impact-negative');
           }
+          if (entry.stacked) {
+            li.classList.add('auto-gear-impact-stacked');
+          }
           const summary = document.createElement('div');
           summary.className = 'auto-gear-impact-summary';
           summary.textContent = formatAutoGearDraftItemLabel(entry.item, entry.previewNet || entry.baseNet || entry.delta);
