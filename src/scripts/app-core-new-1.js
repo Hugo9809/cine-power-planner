@@ -7761,6 +7761,84 @@ function setLanguage(lang) {
   document.title = texts[lang].appTitle;
   document.getElementById("mainTitle").textContent = texts[lang].appTitle;
   document.getElementById("tagline").textContent = texts[lang].tagline;
+  const doc = typeof document !== "undefined" ? document : null;
+  const runtimeScope = getCoreGlobalObject();
+  const resolveRuntimeValue = (name) => {
+    if (!name) return undefined;
+    if (runtimeScope && typeof runtimeScope === "object") {
+      try {
+        if (name in runtimeScope) {
+          return runtimeScope[name];
+        }
+      } catch (scopeError) {
+        void scopeError;
+      }
+    }
+    if (typeof globalThis !== "undefined" && globalThis !== runtimeScope) {
+      try {
+        if (name in globalThis) {
+          return globalThis[name];
+        }
+      } catch (globalError) {
+        void globalError;
+      }
+    }
+    return undefined;
+  };
+  const resolveElement = (globalName, elementId) => {
+    const existing = resolveRuntimeValue(globalName);
+    if (existing && typeof existing === "object") {
+      return existing;
+    }
+    if (doc && typeof doc.getElementById === "function" && elementId) {
+      return doc.getElementById(elementId);
+    }
+    return null;
+  };
+  const settingsShowAutoBackupsEl = resolveElement(
+    "settingsShowAutoBackups",
+    "settingsShowAutoBackups"
+  );
+  const backupSettingsButton = resolveElement("backupSettings", "backupSettings");
+  const backupDiffToggleButtonEl = resolveElement(
+    "backupDiffToggleButton",
+    "backupDiffToggleButton"
+  );
+  const backupDiffHeadingEl = resolveElement("backupDiffHeading", "backupDiffHeading");
+  const backupDiffIntroEl = resolveElement("backupDiffIntro", "backupDiffIntro");
+  const backupDiffPrimaryLabelEl = resolveElement(
+    "backupDiffPrimaryLabel",
+    "backupDiffPrimaryLabel"
+  );
+  const backupDiffPrimarySelectEl = resolveElement(
+    "backupDiffPrimarySelect",
+    "backupDiffPrimary"
+  );
+  const backupDiffSecondaryLabelEl = resolveElement(
+    "backupDiffSecondaryLabel",
+    "backupDiffSecondaryLabel"
+  );
+  const backupDiffSecondarySelectEl = resolveElement(
+    "backupDiffSecondarySelect",
+    "backupDiffSecondary"
+  );
+  const backupDiffEmptyStateEl = resolveElement(
+    "backupDiffEmptyState",
+    "backupDiffEmptyState"
+  );
+  const backupDiffNotesLabelEl = resolveElement(
+    "backupDiffNotesLabel",
+    "backupDiffNotesLabel"
+  );
+  const backupDiffNotesEl = resolveElement("backupDiffNotes", "backupDiffNotes");
+  const backupDiffExportButtonEl = resolveElement(
+    "backupDiffExportButton",
+    "backupDiffExport"
+  );
+  const backupDiffCloseButtonEl = resolveElement(
+    "backupDiffCloseButton",
+    "backupDiffClose"
+  );
   if (skipLink) skipLink.textContent = texts[lang].skipToContent;
   const offlineElem = document.getElementById("offlineIndicator");
   if (offlineElem) {
@@ -9713,75 +9791,75 @@ function setLanguage(lang) {
     const autoBackupsHelp =
       texts[lang].showAutoBackupsHelp || texts[lang].showAutoBackupsSetting;
     showAutoBackupsLabel.setAttribute("data-help", autoBackupsHelp);
-    if (settingsShowAutoBackups) {
-      settingsShowAutoBackups.setAttribute("data-help", autoBackupsHelp);
-      settingsShowAutoBackups.setAttribute(
+    if (settingsShowAutoBackupsEl) {
+      settingsShowAutoBackupsEl.setAttribute("data-help", autoBackupsHelp);
+      settingsShowAutoBackupsEl.setAttribute(
         "aria-label",
         texts[lang].showAutoBackupsSetting
       );
     }
   }
-  if (backupDiffToggleButton) {
+  if (backupDiffToggleButtonEl) {
     const compareLabel = texts[lang].versionCompareButton || 'Compare versions';
-    setButtonLabelWithIcon(backupDiffToggleButton, compareLabel, ICON_GLYPHS.note);
+    setButtonLabelWithIcon(backupDiffToggleButtonEl, compareLabel, ICON_GLYPHS.note);
     const compareHelp = texts[lang].versionCompareButtonHelp || compareLabel;
-    backupDiffToggleButton.setAttribute('data-help', compareHelp);
-    backupDiffToggleButton.setAttribute('title', compareHelp);
+    backupDiffToggleButtonEl.setAttribute('data-help', compareHelp);
+    backupDiffToggleButtonEl.setAttribute('title', compareHelp);
   }
-  if (backupDiffHeading) {
-    backupDiffHeading.textContent = texts[lang].versionCompareHeading || 'Version comparison';
+  if (backupDiffHeadingEl) {
+    backupDiffHeadingEl.textContent = texts[lang].versionCompareHeading || 'Version comparison';
   }
-  if (backupDiffIntro) {
-    backupDiffIntro.textContent = texts[lang].versionCompareIntro || '';
+  if (backupDiffIntroEl) {
+    backupDiffIntroEl.textContent = texts[lang].versionCompareIntro || '';
   }
-  if (backupDiffPrimaryLabel) {
+  if (backupDiffPrimaryLabelEl) {
     const primaryLabel = texts[lang].versionComparePrimaryLabel || 'Baseline version';
-    backupDiffPrimaryLabel.textContent = primaryLabel;
-    if (backupDiffPrimarySelect) {
-      backupDiffPrimarySelect.setAttribute('aria-label', primaryLabel);
+    backupDiffPrimaryLabelEl.textContent = primaryLabel;
+    if (backupDiffPrimarySelectEl) {
+      backupDiffPrimarySelectEl.setAttribute('aria-label', primaryLabel);
     }
   }
-  if (backupDiffSecondaryLabel) {
+  if (backupDiffSecondaryLabelEl) {
     const compareLabelText = texts[lang].versionCompareSecondaryLabel || 'Comparison version';
-    backupDiffSecondaryLabel.textContent = compareLabelText;
-    if (backupDiffSecondarySelect) {
-      backupDiffSecondarySelect.setAttribute('aria-label', compareLabelText);
+    backupDiffSecondaryLabelEl.textContent = compareLabelText;
+    if (backupDiffSecondarySelectEl) {
+      backupDiffSecondarySelectEl.setAttribute('aria-label', compareLabelText);
     }
   }
-  if (backupDiffEmptyState) {
-    backupDiffEmptyState.textContent =
+  if (backupDiffEmptyStateEl) {
+    backupDiffEmptyStateEl.textContent =
       texts[lang].versionCompareEmpty
       || 'Save a project or wait for auto-backups to start comparing versions.';
   }
-  if (backupDiffNotesLabel) {
-    backupDiffNotesLabel.textContent = texts[lang].versionCompareNotesLabel || 'Incident notes';
+  if (backupDiffNotesLabelEl) {
+    backupDiffNotesLabelEl.textContent = texts[lang].versionCompareNotesLabel || 'Incident notes';
   }
-  if (backupDiffNotes) {
+  if (backupDiffNotesEl) {
     const placeholder = texts[lang].versionCompareNotesPlaceholder
       || 'Record context, on-set observations, or required follow-up.';
-    backupDiffNotes.placeholder = placeholder;
+    backupDiffNotesEl.placeholder = placeholder;
   }
-  if (backupDiffExportButton) {
+  if (backupDiffExportButtonEl) {
     const exportLabel = texts[lang].versionCompareExport || 'Export log';
-    setButtonLabelWithIcon(backupDiffExportButton, exportLabel, ICON_GLYPHS.fileExport);
+    setButtonLabelWithIcon(backupDiffExportButtonEl, exportLabel, ICON_GLYPHS.fileExport);
     const exportHelp = texts[lang].versionCompareExportHelp || exportLabel;
-    backupDiffExportButton.setAttribute('data-help', exportHelp);
-    backupDiffExportButton.setAttribute('title', exportHelp);
+    backupDiffExportButtonEl.setAttribute('data-help', exportHelp);
+    backupDiffExportButtonEl.setAttribute('title', exportHelp);
   }
-  if (backupDiffCloseButton) {
+  if (backupDiffCloseButtonEl) {
     const closeLabel = texts[lang].versionCompareClose
       || texts[lang].cancelSettings
       || 'Close';
-    setButtonLabelWithIcon(backupDiffCloseButton, closeLabel, ICON_GLYPHS.circleX);
+    setButtonLabelWithIcon(backupDiffCloseButtonEl, closeLabel, ICON_GLYPHS.circleX);
   }
-  if (backupSettings) {
+  if (backupSettingsButton) {
     const backupLabel = texts[lang].backupSettings;
-    setButtonLabelWithIcon(backupSettings, backupLabel, ICON_GLYPHS.fileExport);
+    setButtonLabelWithIcon(backupSettingsButton, backupLabel, ICON_GLYPHS.fileExport);
     const backupHelp =
       texts[lang].backupSettingsHelp || backupLabel;
-    backupSettings.setAttribute("data-help", backupHelp);
-    backupSettings.setAttribute("title", backupHelp);
-    backupSettings.setAttribute("aria-label", backupHelp);
+    backupSettingsButton.setAttribute("data-help", backupHelp);
+    backupSettingsButton.setAttribute("title", backupHelp);
+    backupSettingsButton.setAttribute("aria-label", backupHelp);
   }
   if (restoreSettings) {
     const restoreLabel = texts[lang].restoreSettings;

@@ -16189,6 +16189,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     const CORE_PART2_GLOBAL_EXPORTS = {
       populateSelect,
       refreshDeviceLists,
+      hasAnyDeviceSelection,
       refreshAutoGearCameraOptions,
       refreshAutoGearCameraWeightCondition,
       refreshAutoGearMonitorOptions,
@@ -16217,6 +16218,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       renderAutoGearMonitorDefaultsControls,
       renderAutoGearPresetsControls,
       renderAutoGearRulesList,
+      overviewSectionIcons,
       saveAutoGearRuleFromEditor,
       handleAutoGearImportSelection,
       handleAutoGearPresetSelection,

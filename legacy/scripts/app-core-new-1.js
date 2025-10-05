@@ -7131,6 +7131,54 @@ function updateAutoGearItemButtonState(type) {
     document.title = texts[lang].appTitle;
     document.getElementById("mainTitle").textContent = texts[lang].appTitle;
     document.getElementById("tagline").textContent = texts[lang].tagline;
+    var doc = typeof document !== "undefined" ? document : null;
+    var runtimeScope = getCoreGlobalObject();
+    var resolveRuntimeValue = function resolveRuntimeValue(name) {
+      if (!name) return void 0;
+      if (runtimeScope && typeof runtimeScope === "object") {
+        try {
+          if (name in runtimeScope) {
+            return runtimeScope[name];
+          }
+        } catch (scopeError) {
+          void scopeError;
+        }
+      }
+      if (typeof globalThis !== "undefined" && globalThis !== runtimeScope) {
+        try {
+          if (name in globalThis) {
+            return globalThis[name];
+          }
+        } catch (globalError) {
+          void globalError;
+        }
+      }
+      return void 0;
+    };
+    var resolveElement = function resolveElement(globalName, elementId) {
+      var existing = resolveRuntimeValue(globalName);
+      if (existing && typeof existing === "object") {
+        return existing;
+      }
+      if (doc && typeof doc.getElementById === "function" && elementId) {
+        return doc.getElementById(elementId);
+      }
+      return null;
+    };
+    var settingsShowAutoBackupsEl = resolveElement("settingsShowAutoBackups", "settingsShowAutoBackups");
+    var backupSettingsButton = resolveElement("backupSettings", "backupSettings");
+    var backupDiffToggleButtonEl = resolveElement("backupDiffToggleButton", "backupDiffToggleButton");
+    var backupDiffHeadingEl = resolveElement("backupDiffHeading", "backupDiffHeading");
+    var backupDiffIntroEl = resolveElement("backupDiffIntro", "backupDiffIntro");
+    var backupDiffPrimaryLabelEl = resolveElement("backupDiffPrimaryLabel", "backupDiffPrimaryLabel");
+    var backupDiffPrimarySelectEl = resolveElement("backupDiffPrimarySelect", "backupDiffPrimary");
+    var backupDiffSecondaryLabelEl = resolveElement("backupDiffSecondaryLabel", "backupDiffSecondaryLabel");
+    var backupDiffSecondarySelectEl = resolveElement("backupDiffSecondarySelect", "backupDiffSecondary");
+    var backupDiffEmptyStateEl = resolveElement("backupDiffEmptyState", "backupDiffEmptyState");
+    var backupDiffNotesLabelEl = resolveElement("backupDiffNotesLabel", "backupDiffNotesLabel");
+    var backupDiffNotesEl = resolveElement("backupDiffNotes", "backupDiffNotes");
+    var backupDiffExportButtonEl = resolveElement("backupDiffExportButton", "backupDiffExport");
+    var backupDiffCloseButtonEl = resolveElement("backupDiffCloseButton", "backupDiffClose");
     if (skipLink) skipLink.textContent = texts[lang].skipToContent;
     var offlineElem = document.getElementById("offlineIndicator");
     if (offlineElem) {
@@ -8753,66 +8801,66 @@ function updateAutoGearItemButtonState(type) {
       showAutoBackupsLabel.textContent = texts[lang].showAutoBackupsSetting;
       var autoBackupsHelp = texts[lang].showAutoBackupsHelp || texts[lang].showAutoBackupsSetting;
       showAutoBackupsLabel.setAttribute("data-help", autoBackupsHelp);
-      if (settingsShowAutoBackups) {
-        settingsShowAutoBackups.setAttribute("data-help", autoBackupsHelp);
-        settingsShowAutoBackups.setAttribute("aria-label", texts[lang].showAutoBackupsSetting);
+      if (settingsShowAutoBackupsEl) {
+        settingsShowAutoBackupsEl.setAttribute("data-help", autoBackupsHelp);
+        settingsShowAutoBackupsEl.setAttribute("aria-label", texts[lang].showAutoBackupsSetting);
       }
     }
-    if (backupDiffToggleButton) {
+    if (backupDiffToggleButtonEl) {
       var compareLabel = texts[lang].versionCompareButton || 'Compare versions';
-      setButtonLabelWithIcon(backupDiffToggleButton, compareLabel, ICON_GLYPHS.note);
+      setButtonLabelWithIcon(backupDiffToggleButtonEl, compareLabel, ICON_GLYPHS.note);
       var compareHelp = texts[lang].versionCompareButtonHelp || compareLabel;
-      backupDiffToggleButton.setAttribute('data-help', compareHelp);
-      backupDiffToggleButton.setAttribute('title', compareHelp);
+      backupDiffToggleButtonEl.setAttribute('data-help', compareHelp);
+      backupDiffToggleButtonEl.setAttribute('title', compareHelp);
     }
-    if (backupDiffHeading) {
-      backupDiffHeading.textContent = texts[lang].versionCompareHeading || 'Version comparison';
+    if (backupDiffHeadingEl) {
+      backupDiffHeadingEl.textContent = texts[lang].versionCompareHeading || 'Version comparison';
     }
-    if (backupDiffIntro) {
-      backupDiffIntro.textContent = texts[lang].versionCompareIntro || '';
+    if (backupDiffIntroEl) {
+      backupDiffIntroEl.textContent = texts[lang].versionCompareIntro || '';
     }
-    if (backupDiffPrimaryLabel) {
+    if (backupDiffPrimaryLabelEl) {
       var primaryLabel = texts[lang].versionComparePrimaryLabel || 'Baseline version';
-      backupDiffPrimaryLabel.textContent = primaryLabel;
-      if (backupDiffPrimarySelect) {
-        backupDiffPrimarySelect.setAttribute('aria-label', primaryLabel);
+      backupDiffPrimaryLabelEl.textContent = primaryLabel;
+      if (backupDiffPrimarySelectEl) {
+        backupDiffPrimarySelectEl.setAttribute('aria-label', primaryLabel);
       }
     }
-    if (backupDiffSecondaryLabel) {
+    if (backupDiffSecondaryLabelEl) {
       var compareLabelText = texts[lang].versionCompareSecondaryLabel || 'Comparison version';
-      backupDiffSecondaryLabel.textContent = compareLabelText;
-      if (backupDiffSecondarySelect) {
-        backupDiffSecondarySelect.setAttribute('aria-label', compareLabelText);
+      backupDiffSecondaryLabelEl.textContent = compareLabelText;
+      if (backupDiffSecondarySelectEl) {
+        backupDiffSecondarySelectEl.setAttribute('aria-label', compareLabelText);
       }
     }
-    if (backupDiffEmptyState) {
-      backupDiffEmptyState.textContent = texts[lang].versionCompareEmpty || 'Save a project or wait for auto-backups to start comparing versions.';
+    if (backupDiffEmptyStateEl) {
+      backupDiffEmptyStateEl.textContent = texts[lang].versionCompareEmpty || 'Save a project or wait for auto-backups to start comparing versions.';
     }
-    if (backupDiffNotesLabel) {
-      backupDiffNotesLabel.textContent = texts[lang].versionCompareNotesLabel || 'Incident notes';
+    if (backupDiffNotesLabelEl) {
+      backupDiffNotesLabelEl.textContent = texts[lang].versionCompareNotesLabel || 'Incident notes';
     }
-    if (backupDiffNotes) {
+    if (backupDiffNotesEl) {
       var _placeholder = texts[lang].versionCompareNotesPlaceholder || 'Record context, on-set observations, or required follow-up.';
-      backupDiffNotes.placeholder = _placeholder;
+      backupDiffNotesEl.placeholder = _placeholder;
     }
-    if (backupDiffExportButton) {
+    if (backupDiffExportButtonEl) {
       var exportLabel = texts[lang].versionCompareExport || 'Export log';
-      setButtonLabelWithIcon(backupDiffExportButton, exportLabel, ICON_GLYPHS.fileExport);
+      setButtonLabelWithIcon(backupDiffExportButtonEl, exportLabel, ICON_GLYPHS.fileExport);
       var exportHelp = texts[lang].versionCompareExportHelp || exportLabel;
-      backupDiffExportButton.setAttribute('data-help', exportHelp);
-      backupDiffExportButton.setAttribute('title', exportHelp);
+      backupDiffExportButtonEl.setAttribute('data-help', exportHelp);
+      backupDiffExportButtonEl.setAttribute('title', exportHelp);
     }
-    if (backupDiffCloseButton) {
+    if (backupDiffCloseButtonEl) {
       var closeLabel = texts[lang].versionCompareClose || texts[lang].cancelSettings || 'Close';
-      setButtonLabelWithIcon(backupDiffCloseButton, closeLabel, ICON_GLYPHS.circleX);
+      setButtonLabelWithIcon(backupDiffCloseButtonEl, closeLabel, ICON_GLYPHS.circleX);
     }
-    if (backupSettings) {
+    if (backupSettingsButton) {
       var _backupLabel = texts[lang].backupSettings;
-      setButtonLabelWithIcon(backupSettings, _backupLabel, ICON_GLYPHS.fileExport);
+      setButtonLabelWithIcon(backupSettingsButton, _backupLabel, ICON_GLYPHS.fileExport);
       var _backupHelp = texts[lang].backupSettingsHelp || _backupLabel;
-      backupSettings.setAttribute("data-help", _backupHelp);
-      backupSettings.setAttribute("title", _backupHelp);
-      backupSettings.setAttribute("aria-label", _backupHelp);
+      backupSettingsButton.setAttribute("data-help", _backupHelp);
+      backupSettingsButton.setAttribute("title", _backupHelp);
+      backupSettingsButton.setAttribute("aria-label", _backupHelp);
     }
     if (restoreSettings) {
       var restoreLabel = texts[lang].restoreSettings;
