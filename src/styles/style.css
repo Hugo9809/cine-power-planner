@@ -7835,11 +7835,16 @@ body.pink-mode,
   html,
   body,
   #overviewDialogContent {
+    --status-success-text-color: #000 !important;
     --status-warning-text-color: #000 !important;
     --status-error-text-color: #000 !important;
   }
 
   .status-message--warning {
+    color: #000 !important;
+  }
+
+  .status-message--success {
     color: #000 !important;
   }
 
