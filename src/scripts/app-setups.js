@@ -3324,6 +3324,13 @@ function generateGearListHtml(info = {}) {
         }
     }
     const supportAccNoCages = cameraSupportAcc.filter(item => !compatibleCages.includes(item));
+    if (selectedNames.viewfinder) {
+        const normalizedSupport = new Set(supportAccNoCages.map(item => normalizeGearNameForComparison(item)));
+        const normalizedViewfinder = normalizeGearNameForComparison(selectedNames.viewfinder);
+        if (!normalizedSupport.has(normalizedViewfinder)) {
+            supportAccNoCages.push(selectedNames.viewfinder);
+        }
+    }
     const scenarios = info.requiredScenarios
         ? info.requiredScenarios.split(',').map(s => s.trim()).filter(Boolean)
         : [];
@@ -3860,9 +3867,6 @@ function generateGearListHtml(info = {}) {
     addRow('Camera Batteries', batteryItems);
     let monitoringItems = '';
     const monitorSizes = [];
-    if (selectedNames.viewfinder) {
-        monitoringItems += `1x <strong>Viewfinder</strong> - ${escapeHtml(addArriKNumber(selectedNames.viewfinder))}`;
-    }
     if (selectedNames.monitor) {
         const size = devices?.monitors?.[selectedNames.monitor]?.screenSizeInches;
         if (size) monitorSizes.push(size);
