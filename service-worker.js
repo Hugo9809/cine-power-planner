@@ -1,5 +1,61 @@
 /* eslint-env serviceworker */
-const CACHE_NAME = 'cine-power-planner-v1.0.12';
+const SERVICE_WORKER_SCOPE =
+  (typeof self !== 'undefined' && self) ||
+  (typeof globalThis !== 'undefined' && globalThis) ||
+  null;
+
+function resolveCacheVersion() {
+  if (!SERVICE_WORKER_SCOPE || (typeof SERVICE_WORKER_SCOPE !== 'object' && typeof SERVICE_WORKER_SCOPE !== 'function')) {
+    return null;
+  }
+
+  try {
+    if (typeof SERVICE_WORKER_SCOPE.cineCoreShared === 'object' && SERVICE_WORKER_SCOPE.cineCoreShared) {
+      const sharedVersion = SERVICE_WORKER_SCOPE.cineCoreShared.APP_VERSION;
+      if (typeof sharedVersion === 'string' && sharedVersion) {
+        return sharedVersion;
+      }
+    }
+  } catch (sharedReadError) {
+    console.warn('Unable to read APP_VERSION from cineCoreShared.', sharedReadError);
+  }
+
+  try {
+    const directVersion = SERVICE_WORKER_SCOPE.APP_VERSION;
+    if (typeof directVersion === 'string' && directVersion) {
+      return directVersion;
+    }
+  } catch (directReadError) {
+    console.warn('Unable to read APP_VERSION from global scope.', directReadError);
+  }
+
+  return null;
+}
+
+let CACHE_VERSION = null;
+
+if (SERVICE_WORKER_SCOPE && typeof SERVICE_WORKER_SCOPE.importScripts === 'function') {
+  try {
+    SERVICE_WORKER_SCOPE.importScripts('./src/scripts/modules/core-shared.js');
+    CACHE_VERSION = resolveCacheVersion();
+  } catch (versionImportError) {
+    console.warn('Falling back to bundled cache version after importScripts failure.', versionImportError);
+  }
+}
+
+if (!CACHE_VERSION) {
+  CACHE_VERSION = '1.0.12';
+}
+
+const CACHE_NAME = `cine-power-planner-v${CACHE_VERSION}`;
+
+try {
+  if (SERVICE_WORKER_SCOPE && typeof SERVICE_WORKER_SCOPE === 'object') {
+    SERVICE_WORKER_SCOPE.CINE_CACHE_NAME = CACHE_NAME;
+  }
+} catch (cacheExposeError) {
+  console.warn('Unable to expose computed cache name for diagnostics.', cacheExposeError);
+}
 const ASSETS = [
   './',
   './index.html',
