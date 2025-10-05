@@ -189,3 +189,37 @@ if (typeof window !== 'undefined') {
     global.Blob = SimpleBlob;
   }
 }
+
+const { decodeStoredValue } = require('../../src/scripts/storage.js');
+
+const patchedStorages = typeof WeakSet === 'function' ? new WeakSet() : null;
+
+const wrapTestStorage = (storage) => {
+  if (!storage || typeof storage.getItem !== 'function') {
+    return;
+  }
+
+  if (patchedStorages && patchedStorages.has(storage)) {
+    return;
+  }
+
+  const originalGetItem = storage.getItem.bind(storage);
+  storage.getItem = (...args) => {
+    const raw = originalGetItem(...args);
+    if (raw === null || raw === undefined) {
+      return raw;
+    }
+    return decodeStoredValue(raw);
+  };
+
+  if (patchedStorages) {
+    patchedStorages.add(storage);
+  }
+};
+
+wrapTestStorage(global.localStorage);
+wrapTestStorage(global.sessionStorage);
+if (typeof window !== 'undefined') {
+  wrapTestStorage(window.localStorage);
+  wrapTestStorage(window.sessionStorage);
+}

@@ -83,17 +83,6 @@ function readGlobalStringValue(scope, key) {
     return '';
   }
 
-  if (key === 'MOUNT_VOLTAGE_STORAGE_KEY' && MOUNT_VOLTAGE_STORAGE_KEY_SYMBOL) {
-    try {
-      const symbolValue = scope[MOUNT_VOLTAGE_STORAGE_KEY_SYMBOL];
-      if (typeof symbolValue === 'string' && symbolValue) {
-        return symbolValue;
-      }
-    } catch (symbolReadError) {
-      void symbolReadError;
-    }
-  }
-
   var descriptor;
   try {
     descriptor = Object.getOwnPropertyDescriptor(scope, key);
@@ -119,7 +108,22 @@ function readGlobalStringValue(scope, key) {
     void readError;
   }
 
-  return typeof directValue === 'string' && directValue ? directValue : '';
+  if (typeof directValue === 'string' && directValue) {
+    return directValue;
+  }
+
+  if (key === 'MOUNT_VOLTAGE_STORAGE_KEY' && MOUNT_VOLTAGE_STORAGE_KEY_SYMBOL) {
+    try {
+      const symbolValue = scope[MOUNT_VOLTAGE_STORAGE_KEY_SYMBOL];
+      if (typeof symbolValue === 'string' && symbolValue) {
+        return symbolValue;
+      }
+    } catch (symbolReadError) {
+      void symbolReadError;
+    }
+  }
+
+  return '';
 }
 
 function exposeGlobalStringValue(scope, key, value) {
@@ -211,12 +215,38 @@ function resolveMountVoltageStorageKeyName() {
 
 var MOUNT_VOLTAGE_STORAGE_KEY_NAME = resolveMountVoltageStorageKeyName();
 
-function getMountVoltageStorageKeyName() {
+function refreshMountVoltageStorageKeyName() {
+  const resolved = resolveMountVoltageStorageKeyName();
+  if (resolved && resolved !== MOUNT_VOLTAGE_STORAGE_KEY_NAME) {
+    MOUNT_VOLTAGE_STORAGE_KEY_NAME = resolved;
+    if (GLOBAL_SCOPE) {
+      exposeGlobalStringValue(
+        GLOBAL_SCOPE,
+        'MOUNT_VOLTAGE_STORAGE_KEY',
+        resolved,
+      );
+    }
+    if (typeof RAW_STORAGE_BACKUP_KEYS !== 'undefined' && RAW_STORAGE_BACKUP_KEYS && typeof RAW_STORAGE_BACKUP_KEYS.add === 'function') {
+      RAW_STORAGE_BACKUP_KEYS.add(resolved);
+      const variants = getStorageKeyVariants(resolved);
+      for (let i = 0; i < variants.length; i += 1) {
+        const variant = variants[i];
+        if (typeof variant === 'string' && variant) {
+          RAW_STORAGE_BACKUP_KEYS.add(variant);
+        }
+      }
+    }
+  }
   return MOUNT_VOLTAGE_STORAGE_KEY_NAME;
 }
 
+function getMountVoltageStorageKeyName() {
+  return refreshMountVoltageStorageKeyName();
+}
+
 function getMountVoltageStorageBackupKeyName() {
-  return `${MOUNT_VOLTAGE_STORAGE_KEY_NAME}__backup`;
+  const key = refreshMountVoltageStorageKeyName();
+  return key ? `${key}__backup` : `${MOUNT_VOLTAGE_STORAGE_KEY_FALLBACK}__backup`;
 }
 
 function ensureCustomFontStorageKeyName() {
@@ -653,6 +683,12 @@ var MAX_MIGRATION_BACKUP_CLEANUP_STEPS = 10;
 var MIGRATION_BACKUP_COMPRESSION_ALGORITHM = 'lz-string';
 var MIGRATION_BACKUP_COMPRESSION_ENCODING = 'json-string';
 
+var STORAGE_COMPRESSION_FLAG_KEY = '__cineStorageCompressed';
+var STORAGE_COMPRESSION_VERSION = 1;
+var STORAGE_COMPRESSION_ALGORITHM = 'lz-string-utf16';
+var STORAGE_COMPRESSION_NAMESPACE = 'camera-power-planner:storage-compression';
+var storageCompressionPatchedStorages = typeof WeakSet === 'function' ? new WeakSet() : null;
+
 function canUseMigrationBackupCompression() {
   return (
     typeof LZString === 'object'
@@ -727,6 +763,285 @@ function parseMigrationBackupMetadata(raw) {
   }
 
   return metadata;
+}
+
+function canUseJsonValueCompression() {
+  return canUseMigrationBackupCompression();
+}
+
+function createCompressedJsonStorageCandidate(serialized) {
+  if (typeof serialized !== 'string' || !serialized) {
+    return null;
+  }
+  if (!canUseJsonValueCompression()) {
+    return null;
+  }
+
+  let compressed;
+  try {
+    compressed = LZString.compressToUTF16(serialized);
+  } catch (compressionError) {
+    console.warn('Unable to compress storage payload', compressionError);
+    return null;
+  }
+
+  if (typeof compressed !== 'string' || !compressed) {
+    return null;
+  }
+
+  const wrapper = {
+    [STORAGE_COMPRESSION_FLAG_KEY]: true,
+    version: STORAGE_COMPRESSION_VERSION,
+    algorithm: STORAGE_COMPRESSION_ALGORITHM,
+    namespace: STORAGE_COMPRESSION_NAMESPACE,
+    data: compressed,
+    originalLength: serialized.length,
+    compressedPayloadLength: compressed.length,
+  };
+
+  let wrappedSerialized;
+  try {
+    wrappedSerialized = JSON.stringify(wrapper);
+  } catch (serializationError) {
+    console.warn('Unable to serialize compressed storage payload wrapper', serializationError);
+    return null;
+  }
+
+  if (typeof wrappedSerialized !== 'string' || !wrappedSerialized) {
+    return null;
+  }
+
+  if (wrappedSerialized.length >= serialized.length) {
+    return null;
+  }
+
+  return {
+    serialized: wrappedSerialized,
+    originalLength: serialized.length,
+    wrappedLength: wrappedSerialized.length,
+    compressedPayloadLength: compressed.length,
+  };
+}
+
+function decodeCompressedJsonStorageValue(raw) {
+  if (typeof raw !== 'string') {
+    return { success: false };
+  }
+
+  if (!raw || raw.charCodeAt(0) !== 123) {
+    return { success: false };
+  }
+
+  if (
+    !raw.includes(`"${STORAGE_COMPRESSION_FLAG_KEY}":true`)
+    || !raw.includes(`"namespace":"${STORAGE_COMPRESSION_NAMESPACE}`)
+  ) {
+    return { success: false };
+  }
+
+  let parsed;
+  try {
+    parsed = JSON.parse(raw);
+  } catch (parseError) {
+    return { success: false, error: parseError };
+  }
+
+  if (!parsed || parsed[STORAGE_COMPRESSION_FLAG_KEY] !== true) {
+    return { success: false };
+  }
+
+  if (parsed.namespace !== STORAGE_COMPRESSION_NAMESPACE) {
+    return { success: false };
+  }
+
+  if (parsed.version !== STORAGE_COMPRESSION_VERSION) {
+    console.warn('Unsupported storage compression version', parsed.version);
+    return { success: false };
+  }
+
+  if (parsed.algorithm !== STORAGE_COMPRESSION_ALGORITHM) {
+    console.warn('Unsupported storage compression algorithm', parsed.algorithm);
+    return { success: false };
+  }
+
+  if (typeof parsed.data !== 'string' || !parsed.data) {
+    return { success: false };
+  }
+
+  if (!canUseJsonValueCompression()) {
+    console.warn('Compressed storage payload detected but compression library is unavailable.');
+    return { success: false };
+  }
+
+  let decompressed;
+  try {
+    decompressed = LZString.decompressFromUTF16(parsed.data);
+  } catch (decompressionError) {
+    console.warn('Unable to decompress storage payload', decompressionError);
+    return { success: false, error: decompressionError };
+  }
+
+  if (typeof decompressed !== 'string') {
+    return { success: false };
+  }
+
+  return { success: true, value: decompressed, metadata: parsed };
+}
+
+function maybeDecompressStoredString(raw, options) {
+  if (typeof raw !== 'string') {
+    return raw;
+  }
+
+  const decoded = decodeCompressedJsonStorageValue(raw);
+  if (!decoded.success) {
+    return raw;
+  }
+
+  if (options && typeof options.onDecoded === 'function') {
+    try {
+      options.onDecoded(decoded);
+    } catch (callbackError) {
+      console.warn('Error while processing storage decompression callback', callbackError);
+    }
+  }
+
+  return decoded.value;
+}
+
+function decodeStoredValue(raw) {
+  if (raw === null || raw === undefined) {
+    return raw;
+  }
+  return maybeDecompressStoredString(raw);
+}
+
+function patchIndividualStorageGetItem(storage) {
+  if (!storage || typeof storage.getItem !== 'function') {
+    return;
+  }
+
+  if (
+    storageCompressionPatchedStorages
+    && typeof storageCompressionPatchedStorages.has === 'function'
+    && storageCompressionPatchedStorages.has(storage)
+  ) {
+    return;
+  }
+
+  const originalGetItem = storage.getItem;
+  const patchedGetItem = function patchedStorageGetItem(key) {
+    const rawValue = typeof originalGetItem === 'function'
+      ? originalGetItem.call(this, key)
+      : undefined;
+    return maybeDecompressStoredString(rawValue);
+  };
+
+  try {
+    Object.defineProperty(storage, 'getItem', {
+      configurable: true,
+      writable: true,
+      value: patchedGetItem,
+    });
+  } catch (defineError) {
+    try {
+      storage.getItem = patchedGetItem;
+    } catch (assignError) {
+      console.warn('Unable to patch storage instance getItem for compression support', assignError);
+      return;
+    }
+  }
+
+  if (
+    storageCompressionPatchedStorages
+    && typeof storageCompressionPatchedStorages.add === 'function'
+  ) {
+    try {
+      storageCompressionPatchedStorages.add(storage);
+    } catch (trackError) {
+      void trackError;
+    }
+  }
+}
+
+function patchStorageGetItemForCompression() {
+  if (typeof Storage === 'undefined') {
+    const candidates = [];
+    if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE === 'object') {
+      if (GLOBAL_SCOPE.localStorage) {
+        candidates.push(GLOBAL_SCOPE.localStorage);
+      }
+      if (GLOBAL_SCOPE.sessionStorage) {
+        candidates.push(GLOBAL_SCOPE.sessionStorage);
+      }
+    }
+    if (typeof global !== 'undefined' && global && global !== GLOBAL_SCOPE) {
+      if (global.localStorage) {
+        candidates.push(global.localStorage);
+      }
+      if (global.sessionStorage) {
+        candidates.push(global.sessionStorage);
+      }
+    }
+    candidates.forEach(patchIndividualStorageGetItem);
+    return;
+  }
+
+  const prototype = Storage.prototype;
+  if (!prototype || typeof prototype.getItem !== 'function') {
+    return;
+  }
+
+  if (prototype.__cineStorageCompressionPatched) {
+    return;
+  }
+
+  const originalGetItem = prototype.getItem;
+  const patchedGetItem = function patchedStorageGetItem(key) {
+    const rawValue = originalGetItem.call(this, key);
+    return maybeDecompressStoredString(rawValue);
+  };
+
+  try {
+    Object.defineProperty(prototype, 'getItem', {
+      configurable: true,
+      writable: true,
+      value: patchedGetItem,
+    });
+  } catch (patchError) {
+    console.warn('Unable to patch Storage.getItem for compression support', patchError);
+    return;
+  }
+
+  try {
+    Object.defineProperty(prototype, '__cineStorageCompressionPatched', {
+      configurable: true,
+      writable: false,
+      value: true,
+    });
+  } catch (flagError) {
+    prototype.__cineStorageCompressionPatched = true;
+    void flagError;
+  }
+
+  const candidates = [];
+  if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE === 'object') {
+    if (GLOBAL_SCOPE.localStorage) {
+      candidates.push(GLOBAL_SCOPE.localStorage);
+    }
+    if (GLOBAL_SCOPE.sessionStorage) {
+      candidates.push(GLOBAL_SCOPE.sessionStorage);
+    }
+  }
+  if (typeof global !== 'undefined' && global && global !== GLOBAL_SCOPE) {
+    if (global.localStorage) {
+      candidates.push(global.localStorage);
+    }
+    if (global.sessionStorage) {
+      candidates.push(global.sessionStorage);
+    }
+  }
+  candidates.forEach(patchIndividualStorageGetItem);
 }
 
 function collectMigrationBackupEntriesForCleanup(storage, excludeKey) {
@@ -1252,9 +1567,10 @@ function createMemoryStorage() {
       return index >= 0 && index < keys.length ? keys[index] : null;
     },
     getItem(key) {
-      return Object.prototype.hasOwnProperty.call(memoryStore, key)
-        ? memoryStore[key]
-        : null;
+      if (!Object.prototype.hasOwnProperty.call(memoryStore, key)) {
+        return null;
+      }
+      return maybeDecompressStoredString(memoryStore[key]);
     },
     setItem(key, value) {
       memoryStore[key] = String(value);
@@ -1603,6 +1919,7 @@ function getSafeLocalStorage() {
 }
 
 updateGlobalSafeLocalStorageReference();
+patchStorageGetItemForCompression();
 
 var persistentStorageRequestPromise = null;
 
@@ -2469,14 +2786,22 @@ function loadJSONFromStorage(
     if (raw === null || raw === undefined) {
       return { ok: false, reason: 'missing' };
     }
+    const normalizedRaw = typeof raw === 'string'
+      ? maybeDecompressStoredString(raw)
+      : raw;
     try {
-      const parsed = JSON.parse(raw);
+      const parsed = JSON.parse(normalizedRaw);
       if (typeof validate === 'function' && !validate(parsed)) {
         console.warn(`${errorMessage} Invalid data${label ? ` (${label})` : ''}.`);
         shouldAlert = true;
         return { ok: false, reason: 'invalid' };
       }
-      return { ok: true, value: parsed, raw };
+      return {
+        ok: true,
+        value: parsed,
+        raw,
+        normalizedRaw,
+      };
     } catch (err) {
       console.error(`${errorMessage}${label ? ` (${label})` : ''}`, err);
       shouldAlert = true;
@@ -2520,7 +2845,16 @@ function loadJSONFromStorage(
       }
       if (backup.raw !== null && backup.raw !== undefined) {
         try {
-          storage.setItem(key, backup.raw);
+          if (typeof backup.raw === 'string') {
+            const recompressed = createCompressedJsonStorageCandidate(backup.raw);
+            if (recompressed && typeof recompressed.serialized === 'string') {
+              storage.setItem(key, recompressed.serialized);
+            } else {
+              storage.setItem(key, backup.raw);
+            }
+          } else {
+            storage.setItem(key, backup.raw);
+          }
         } catch (restoreError) {
           console.warn(`Unable to restore primary copy for ${key} from backup`, restoreError);
         }
@@ -2551,14 +2885,117 @@ function saveJSONToStorage(
     : `${key}${STORAGE_BACKUP_SUFFIX}`;
   const useBackup = !disableBackup && fallbackKey && fallbackKey !== key;
 
-  const serializeValue = () => {
+  let standardSerializedCache;
+  let standardSerializationComputed = false;
+  let compressionCandidate;
+  let useCompressedSerialization = false;
+  let compressionAttempted = false;
+  let compressionLogged = false;
+
+  const resetSerializationState = () => {
+    standardSerializedCache = undefined;
+    standardSerializationComputed = false;
+    compressionCandidate = undefined;
+    useCompressedSerialization = false;
+    compressionAttempted = false;
+    compressionLogged = false;
+  };
+
+  const computeStandardSerialized = () => {
+    if (standardSerializationComputed) {
+      return standardSerializedCache;
+    }
+    standardSerializationComputed = true;
     try {
-      return JSON.stringify(value);
+      standardSerializedCache = JSON.stringify(value);
     } catch (serializationError) {
+      standardSerializedCache = null;
       console.error(errorMessage, serializationError);
       alertStorageError();
+    }
+    return standardSerializedCache;
+  };
+
+  const computeCompressedSerialized = () => {
+    if (compressionCandidate !== undefined) {
+      return compressionCandidate && typeof compressionCandidate.serialized === 'string'
+        ? compressionCandidate.serialized
+        : null;
+    }
+
+    const baseline = computeStandardSerialized();
+    if (typeof baseline !== 'string' || !baseline) {
+      compressionCandidate = null;
       return null;
     }
+
+    const candidate = createCompressedJsonStorageCandidate(baseline);
+    if (!candidate || typeof candidate.serialized !== 'string') {
+      compressionCandidate = null;
+      return null;
+    }
+
+    compressionCandidate = candidate;
+    return candidate.serialized;
+  };
+
+  const getSerializedForAttempt = () => {
+    if (useCompressedSerialization) {
+      const compressed = computeCompressedSerialized();
+      if (typeof compressed === 'string') {
+        return compressed;
+      }
+      useCompressedSerialization = false;
+    }
+
+    const standard = computeStandardSerialized();
+    if (typeof standard === 'string') {
+      return standard;
+    }
+    return null;
+  };
+
+  const tryEnableCompression = () => {
+    if (useCompressedSerialization || compressionAttempted) {
+      return false;
+    }
+    compressionAttempted = true;
+    const baseline = computeStandardSerialized();
+    if (typeof baseline !== 'string' || !baseline) {
+      return false;
+    }
+    const compressed = computeCompressedSerialized();
+    if (typeof compressed !== 'string' || !compressed) {
+      return false;
+    }
+    if (compressed.length >= baseline.length) {
+      return false;
+    }
+    useCompressedSerialization = true;
+    return true;
+  };
+
+  const logCompressionIfNeeded = () => {
+    if (!useCompressedSerialization || !compressionCandidate || compressionLogged) {
+      return;
+    }
+
+    const { originalLength, wrappedLength } = compressionCandidate;
+    if (
+      typeof originalLength === 'number'
+      && typeof wrappedLength === 'number'
+      && wrappedLength < originalLength
+      && typeof console !== 'undefined'
+      && typeof console.warn === 'function'
+    ) {
+      const savings = originalLength - wrappedLength;
+      const percent = originalLength > 0 ? Math.round((savings / originalLength) * 100) : 0;
+      console.warn(
+        `Stored compressed value for ${key} to reduce storage usage by ${savings} characters (${percent}%).`,
+      );
+    }
+
+    compressionLogged = true;
   };
 
   let preservedBackupValue;
@@ -2600,8 +3037,8 @@ function saveJSONToStorage(
   while (attempts < MAX_SAVE_ATTEMPTS) {
     attempts += 1;
 
-    const serialized = serializeValue();
-    if (serialized === null) {
+    const serialized = getSerializedForAttempt();
+    if (typeof serialized !== 'string') {
       return;
     }
 
@@ -2643,8 +3080,19 @@ function saveJSONToStorage(
     if (!skipPrimaryWrite) {
       try {
         storage.setItem(key, serialized);
+        logCompressionIfNeeded();
       } catch (error) {
         if (attemptHandleQuota(error)) {
+          resetSerializationState();
+          if (!registerQuotaRecoveryStep()) {
+            break;
+          }
+          if (attempts > 0) {
+            attempts -= 1;
+          }
+          continue;
+        }
+        if (!quotaRecoveryFailed && tryEnableCompression()) {
           if (!registerQuotaRecoveryStep()) {
             break;
           }
@@ -2667,6 +3115,7 @@ function saveJSONToStorage(
     const attemptBackupWrite = () => {
       try {
         storage.setItem(fallbackKey, serialized);
+        logCompressionIfNeeded();
         return 'success';
       } catch (error) {
         let backupError = error;
@@ -2698,6 +3147,15 @@ function saveJSONToStorage(
             backupKey: fallbackKey,
             isBackup: true,
           })) {
+            resetSerializationState();
+            if (!registerQuotaRecoveryStep()) {
+              return 'failure';
+            }
+            return 'retry';
+          }
+
+          if (!quotaRecoveryFailed && tryEnableCompression()) {
+            resetSerializationState();
             if (!registerQuotaRecoveryStep()) {
               return 'failure';
             }
@@ -5789,7 +6247,8 @@ function clearAllData() {
             try {
               const backupValue = storage.getItem(`${candidateKey}${STORAGE_BACKUP_SUFFIX}`);
               if (backupValue !== null && backupValue !== undefined) {
-                return String(backupValue);
+                const decodedBackup = decodeStoredValue(backupValue);
+                return typeof decodedBackup === 'string' ? decodedBackup : String(backupValue);
               }
             } catch (backupError) {
               console.warn('Unable to read backup key for export', candidateKey, backupError);
@@ -5797,7 +6256,8 @@ function clearAllData() {
             }
           }
         } else {
-          return String(value);
+          const decoded = decodeStoredValue(value);
+          return typeof decoded === 'string' ? decoded : String(value);
         }
       } catch (error) {
         console.warn('Unable to read storage key for backup', candidateKey, error);
@@ -5898,7 +6358,8 @@ function clearAllData() {
       preferences.language = language;
     }
 
-    const mountVoltages = readLocalStorageValue(MOUNT_VOLTAGE_STORAGE_KEY_NAME);
+    const mountVoltageKey = getMountVoltageStorageKeyName();
+    const mountVoltages = readLocalStorageValue(mountVoltageKey);
     if (mountVoltages) {
       try {
         preferences.mountVoltages = JSON.parse(mountVoltages);
@@ -6422,11 +6883,12 @@ function convertStorageSnapshotToData(snapshot) {
     'iosPwaHelpShown',
   ];
 
-  const simpleSnapshotKeys = new Set([
-    CUSTOM_LOGO_STORAGE_KEY,
-    ...preferenceKeys,
-    MOUNT_VOLTAGE_STORAGE_KEY_NAME,
-  ]);
+  const mountVoltageKeyName = getMountVoltageStorageKeyName();
+  const simpleSnapshotKeys = new Set(
+    [CUSTOM_LOGO_STORAGE_KEY, ...preferenceKeys, mountVoltageKeyName].filter(
+      (key) => typeof key === 'string' && key,
+    ),
+  );
 
   const booleanPreferenceKeys = new Set([
     'darkMode',
@@ -6579,7 +7041,7 @@ function convertStorageSnapshotToData(snapshot) {
     }
   }
 
-  const mountVoltageEntry = readSnapshotEntry(snapshot, MOUNT_VOLTAGE_STORAGE_KEY_NAME);
+  const mountVoltageEntry = readSnapshotEntry(snapshot, mountVoltageKeyName);
   if (mountVoltageEntry) {
     markSnapshotEntry(mountVoltageEntry);
     const storedVoltages = parseSnapshotJSONValue(mountVoltageEntry);
@@ -6616,6 +7078,7 @@ function importAllData(allData, options = {}) {
   }
 
   const hasOwn = (key) => Object.prototype.hasOwnProperty.call(allData, key);
+  const mountVoltageKeyName = getMountVoltageStorageKeyName();
 
   if (hasOwn('devices')) {
     saveDeviceData(allData.devices);
@@ -6673,7 +7136,7 @@ function importAllData(allData, options = {}) {
       const rawVoltages = prefs.mountVoltages;
       if (rawVoltages && typeof rawVoltages === 'object') {
         try {
-          safeSetLocalStorage(MOUNT_VOLTAGE_STORAGE_KEY_NAME, JSON.stringify(rawVoltages));
+          safeSetLocalStorage(mountVoltageKeyName, JSON.stringify(rawVoltages));
         } catch (voltStoreError) {
           console.warn('Unable to store imported mount voltages', voltStoreError);
         }
@@ -6681,7 +7144,7 @@ function importAllData(allData, options = {}) {
           applyMountVoltagePreferences(rawVoltages, { persist: false, triggerUpdate: true });
         }
       } else if (typeof rawVoltages === 'string') {
-        safeSetLocalStorage(MOUNT_VOLTAGE_STORAGE_KEY_NAME, rawVoltages);
+        safeSetLocalStorage(mountVoltageKeyName, rawVoltages);
         if (typeof parseStoredMountVoltages === 'function') {
           try {
             const parsedVoltages = parseStoredMountVoltages(rawVoltages);
@@ -6693,7 +7156,7 @@ function importAllData(allData, options = {}) {
           }
         }
       } else if (rawVoltages === null) {
-        safeSetLocalStorage(MOUNT_VOLTAGE_STORAGE_KEY_NAME, null);
+        safeSetLocalStorage(mountVoltageKeyName, null);
         if (typeof resetMountVoltagePreferences === 'function') {
           resetMountVoltagePreferences({ persist: false, triggerUpdate: true });
         }
@@ -6860,6 +7323,7 @@ var STORAGE_API = {
   clearUiCacheStorageEntries,
   ensureCriticalStorageBackups,
   getLastCriticalStorageGuardResult,
+  decodeStoredValue,
 };
 
 if (typeof module !== "undefined" && module.exports) {
