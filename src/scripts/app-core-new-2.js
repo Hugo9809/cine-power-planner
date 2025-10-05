@@ -9431,6 +9431,15 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       ]
         .filter(Boolean)
         .join(' ');
+      let entryType = getFeatureSearchEntryType(element);
+      if (entryType === 'feature') {
+        const tagName = typeof element.tagName === 'string' ? element.tagName.toLowerCase() : '';
+        if (tagName === 'option') {
+          const ownerSelect = typeof element.closest === 'function' ? element.closest('select') : null;
+          const selectType = ownerSelect?.dataset?.featureSearchType || ownerSelect?.getAttribute?.('data-feature-search-type');
+          entryType = selectType?.trim()?.toLowerCase() || 'device';
+        }
+      }
       const primaryTokens = searchTokens(primaryTokenSource);
       const entry = {
         element,
@@ -9443,7 +9452,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         key: baseKey,
         optionValue: combinedLabel,
         helpTexts,
-        entryType: getFeatureSearchEntryType(element)
+        entryType
       };
       const existing = featureMap.get(baseKey);
       if (!existing) {
