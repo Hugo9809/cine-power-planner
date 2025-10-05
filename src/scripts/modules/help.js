@@ -145,9 +145,190 @@
         return scopes.filter(Boolean);
       };
 
+  function safeNormalizeSeedName(name) {
+    if (typeof name !== 'string') {
+      return '';
+    }
+    const trimmed = name.trim();
+    return trimmed && trimmed.length ? trimmed : '';
+  }
+
+  function recordSeedEntry(target, name, value) {
+    if (!target || typeof target.set !== 'function') {
+      return;
+    }
+
+    const normalized = safeNormalizeSeedName(name);
+    if (!normalized) {
+      return;
+    }
+
+    if (typeof value === 'function') {
+      target.set(normalized, value);
+      return;
+    }
+
+    if (typeof value === 'string') {
+      const text = value.trim();
+      if (!text) {
+        return;
+      }
+      target.set(normalized, text);
+    }
+  }
+
+  function adoptEntriesFromRegistry(storage, registry) {
+    if (!storage || !registry) {
+      return;
+    }
+
+    if (typeof registry.forEach === 'function') {
+      try {
+        registry.forEach((entry, key) => {
+          if (!entry) {
+            return;
+          }
+          const resolver = typeof entry.resolver === 'function' ? entry.resolver : entry;
+          recordSeedEntry(storage, key, resolver);
+        });
+        return;
+      } catch (error) {
+        void error;
+      }
+    }
+
+    if (typeof registry.entries === 'function') {
+      try {
+        const iterator = registry.entries();
+        if (iterator && typeof iterator[Symbol.iterator] === 'function') {
+          for (const pair of iterator) {
+            if (!Array.isArray(pair) || pair.length < 2) {
+              continue;
+            }
+            const [key, entry] = pair;
+            if (!entry) {
+              continue;
+            }
+            const resolver = typeof entry.resolver === 'function' ? entry.resolver : entry;
+            recordSeedEntry(storage, key, resolver);
+          }
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+  }
+
+  function adoptEntriesFromHelpApi(storage, api) {
+    if (!storage || !api || typeof api !== 'object') {
+      return;
+    }
+
+    if (typeof api.list !== 'function' || typeof api.get !== 'function') {
+      return;
+    }
+
+    let names = [];
+    try {
+      names = api.list();
+    } catch (error) {
+      void error;
+      names = [];
+    }
+
+    if (!Array.isArray(names) || !names.length) {
+      return;
+    }
+
+    for (let index = 0; index < names.length; index += 1) {
+      const name = names[index];
+      let resolver = null;
+
+      try {
+        resolver = api.get(name);
+      } catch (error) {
+        void error;
+        resolver = null;
+      }
+
+      if (typeof resolver === 'function') {
+        recordSeedEntry(storage, name, resolver);
+      }
+    }
+  }
+
+  function adoptEntriesFromHelpModule(storage, moduleCandidate) {
+    if (!storage || !moduleCandidate || typeof moduleCandidate !== 'object') {
+      return;
+    }
+
+    try {
+      const internals = moduleCandidate.__internal;
+      if (internals && internals.helpRegistry) {
+        adoptEntriesFromRegistry(storage, internals.helpRegistry);
+      }
+    } catch (error) {
+      void error;
+    }
+
+    try {
+      const helpApi = moduleCandidate.help || moduleCandidate;
+      adoptEntriesFromHelpApi(storage, helpApi);
+    } catch (error) {
+      void error;
+    }
+  }
+
+  function collectExistingHelpEntries(scope) {
+    const seeds = new Map();
+    const scopes = collectCandidateScopes(scope || GLOBAL_SCOPE);
+    const seenScopes = new Set();
+
+    for (let index = 0; index < scopes.length; index += 1) {
+      const candidateScope = scopes[index];
+      if (!candidateScope || seenScopes.has(candidateScope)) {
+        continue;
+      }
+      seenScopes.add(candidateScope);
+
+      try {
+        adoptEntriesFromHelpModule(seeds, candidateScope.cineHelpModule);
+      } catch (error) {
+        void error;
+      }
+
+      try {
+        adoptEntriesFromHelpApi(seeds, candidateScope.cineHelp);
+      } catch (error) {
+        void error;
+      }
+
+      try {
+        const uiCandidate = candidateScope.cineUi;
+        if (uiCandidate && typeof uiCandidate === 'object') {
+          if (uiCandidate.__internal && uiCandidate.__internal.helpRegistry) {
+            adoptEntriesFromRegistry(seeds, uiCandidate.__internal.helpRegistry);
+          }
+          adoptEntriesFromHelpApi(seeds, uiCandidate.help);
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    const entries = [];
+    seeds.forEach((value, name) => {
+      entries.push({ name, value });
+    });
+    return entries;
+  }
+
   function createHelpModule(overrides) {
     const freeze = overrides && typeof overrides.freezeDeep === 'function' ? overrides.freezeDeep : freezeDeep;
     const warn = overrides && typeof overrides.safeWarn === 'function' ? overrides.safeWarn : safeWarn;
+    const seeds = overrides && Array.isArray(overrides.seedEntries)
+      ? overrides.seedEntries.slice()
+      : collectExistingHelpEntries(GLOBAL_SCOPE);
 
     const helpRegistry = new Map();
     const warnedNames = new Set();
@@ -156,7 +337,7 @@
       if (typeof name === 'string' && name.trim()) {
         return name.trim();
       }
-      throw new TypeError('cineHelp registry names must be non-empty strings.');
+      throw new TypeError('cineUi registry names must be non-empty strings.');
     }
 
     function cloneFunction(fn) {
@@ -172,7 +353,7 @@
       if (typeof value === 'string') {
         const text = value.trim();
         if (!text) {
-          throw new Error(`cineHelp entry "${name}" cannot be empty.`);
+          throw new Error(`cineUi help entry "${name}" cannot be empty.`);
         }
         return freeze({ resolver: () => text });
       }
@@ -182,7 +363,7 @@
         return freeze({ resolver });
       }
 
-      throw new TypeError(`cineHelp entry "${name}" must be a string or function.`);
+      throw new TypeError(`cineUi help entry "${name}" must be a string or function.`);
     }
 
     function warnDuplicate(name) {
@@ -190,7 +371,7 @@
         return;
       }
       warnedNames.add(name);
-      warn(`cineHelp entry "${name}" was replaced. Using the latest registration.`);
+      warn(`cineUi help "${name}" was replaced. Using the latest registration.`);
     }
 
     function listRegistryKeys() {
@@ -215,7 +396,7 @@
       resolve(name) {
         const resolver = this.get(name);
         if (typeof resolver !== 'function') {
-          throw new Error(`cineHelp entry "${name}" is not registered.`);
+          throw new Error(`cineUi help entry "${name}" is not registered.`);
         }
         return resolver.apply(null, Array.prototype.slice.call(arguments, 1));
       },
@@ -223,6 +404,31 @@
         return listRegistryKeys();
       },
     });
+
+    if (Array.isArray(seeds) && seeds.length) {
+      for (let index = 0; index < seeds.length; index += 1) {
+        const entry = seeds[index];
+        if (!entry || typeof entry.name !== 'string') {
+          continue;
+        }
+
+        const normalized = safeNormalizeSeedName(entry.name);
+        if (!normalized) {
+          continue;
+        }
+
+        const seedValue = entry.value;
+        if (typeof seedValue !== 'function' && typeof seedValue !== 'string') {
+          continue;
+        }
+
+        try {
+          helpAPI.register(normalized, seedValue);
+        } catch (error) {
+          warn(`cineHelp could not migrate entry "${normalized}".`, error);
+        }
+      }
+    }
 
     function clearRegistries() {
       helpRegistry.clear();

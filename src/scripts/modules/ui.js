@@ -989,7 +989,7 @@
         register(name, value) {
           const normalized = typeof name === 'string' ? name.trim() : '';
           if (!normalized) {
-            throw new TypeError('cineHelp entry names must be non-empty strings.');
+            throw new TypeError('cineUi registry names must be non-empty strings.');
           }
 
           if (typeof value === 'function') {
@@ -998,12 +998,12 @@
           }
 
           if (typeof value !== 'string') {
-            throw new TypeError(`cineHelp entry "${normalized}" must be a string or function.`);
+            throw new TypeError(`cineUi help entry "${normalized}" must be a string or function.`);
           }
 
           const text = value.trim();
           if (!text) {
-            throw new Error(`cineHelp entry "${normalized}" cannot be empty.`);
+            throw new Error(`cineUi help entry "${normalized}" cannot be empty.`);
           }
 
           const resolver = function helpStringResolver() {
@@ -1016,14 +1016,14 @@
         get(name) {
           const normalized = typeof name === 'string' ? name.trim() : '';
           if (!normalized) {
-            return null;
+            throw new TypeError('cineUi registry names must be non-empty strings.');
           }
           return fallbackHelpRegistry.get(normalized) || null;
         },
         resolve(name, ...args) {
           const resolver = this.get(name);
           if (typeof resolver !== 'function') {
-            throw new Error(`cineHelp entry "${name}" is not registered.`);
+            throw new Error(`cineUi help entry "${name}" is not registered.`);
           }
           return resolver.apply(null, args);
         },
