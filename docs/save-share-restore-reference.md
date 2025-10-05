@@ -6,6 +6,8 @@ The application exposes these routines through the frozen `cinePersistence` gate
 
 A compatibility watchdog upgrades any legacy project payloads on sight. When the reader encounters a single-project export, an array of unnamed saves, or a legacy project object, the importer now renames the recovered entry with an `-updated` suffix before persisting it in the normalized structure. Existing normalized saves keep their names, while upgraded copies automatically receive unique suffixed titles so they never overwrite recent work. This ensures every restored project inherits the modern field layout, autosave routines and backup hooks without dropping historical data.【F:src/scripts/storage.js†L2834-L2881】【F:src/scripts/storage.js†L4336-L4457】
 
+A silent guard now also captures unnamed in-progress sessions: autosave writes the gear list, requirements, diagram positions and auto-gear rules to the shared project store even when no setup name has been entered, and the restore flow looks up the anonymous slot while rebuilding the form after a reload.【F:src/scripts/app-setups.js†L4976-L5037】【F:src/scripts/app-session.js†L3143-L3163】
+
 A dedicated storage guardian runs on every launch to mirror each critical key into its backup slot before the UI touches data, ensuring that even legacy entries have a redundant copy ready before rehearsals or imports begin.【F:src/scripts/storage.js†L247-L376】【F:src/scripts/app-session.js†L10017-L10024】 The latest guard report is exposed globally so you can confirm the mirroring state from diagnostics panels.【F:src/scripts/storage.js†L347-L358】【F:src/scripts/app-core-new-2.js†L6266-L6349】
 
 ## Workflow matrix
