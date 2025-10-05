@@ -6620,14 +6620,16 @@ body.dark-mode.dark-accent-boost:not(.pink-mode) .settings-content.modal-surface
 }
 
 #projectDialog select {
-  font: inherit;
+  font-family: var(--font-family);
+  font-size: var(--form-control-font-size);
+  font-weight: inherit;
+  line-height: var(--button-line-height, 1.25);
   color: var(--control-text);
   background-color: var(--control-bg);
   border: 1px solid var(--control-border);
   border-radius: var(--border-radius);
   padding: 0.45em 0.75em;
   min-height: var(--select-height);
-  line-height: 1.4;
   transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, color 0.2s ease;
 }
 
