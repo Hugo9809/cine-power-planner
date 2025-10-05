@@ -1,6 +1,6 @@
 {
   "name": "cine-power-planner",
-  "version": "1.0.10",
+  "version": "1.0.12",
   "description": "Browser-based tool for planning professional camera setups powered by V-Mount or B-Mount batteries. It calculates total power consumption, current draw at 14.4 V and 12 V, and estimated battery runtime while checking that the battery can safely deliver the required power.",
   "main": "src/data/index.js",
   "scripts": {
