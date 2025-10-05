@@ -7678,8 +7678,13 @@ function setLanguage(lang) {
       el.textContent = texts[lang].notesLabel;
     });
   // Results labels
-  if (breakdownListElem)
-    breakdownListElem.setAttribute("data-help", texts[lang].breakdownListHelp);
+  const breakdownListTarget =
+    typeof breakdownListElem !== "undefined" && breakdownListElem
+      ? breakdownListElem
+      : document.getElementById('breakdownList');
+  if (breakdownListTarget) {
+    breakdownListTarget.setAttribute("data-help", texts[lang].breakdownListHelp);
+  }
 
   const totalPowerLabelElem = document.getElementById("totalPowerLabel");
   totalPowerLabelElem.textContent = texts[lang].totalPowerLabel;

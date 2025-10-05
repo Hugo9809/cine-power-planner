@@ -7001,7 +7001,13 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     document.querySelectorAll('#motorNotesLabel,#controllerNotesLabel,#distanceNotesLabel').forEach(function (el) {
       el.textContent = texts[lang].notesLabel;
     });
-    if (breakdownListElem) breakdownListElem.setAttribute("data-help", texts[lang].breakdownListHelp);
+    const breakdownListTarget =
+      typeof breakdownListElem !== 'undefined' && breakdownListElem
+        ? breakdownListElem
+        : document.getElementById('breakdownList');
+    if (breakdownListTarget) {
+      breakdownListTarget.setAttribute("data-help", texts[lang].breakdownListHelp);
+    }
     var totalPowerLabelElem = document.getElementById("totalPowerLabel");
     totalPowerLabelElem.textContent = texts[lang].totalPowerLabel;
     totalPowerLabelElem.setAttribute("data-help", texts[lang].totalPowerHelp);
