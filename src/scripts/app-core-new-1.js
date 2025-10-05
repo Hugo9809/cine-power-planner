@@ -452,10 +452,11 @@ function enqueueCoreBootTask(task) {
       if (typeof globalFn === 'function') {
         const binder = globalFn(
           'value',
-          `if (typeof ${name} === 'undefined') { ${name} = value; }
-           return typeof ${name} !== 'undefined' ? ${name} : value;`,
+          `if (typeof ${name} === 'undefined') { var ${name} = value; } else { ${name} = value; }
+           return ${name};`,
         );
-        binder(typeof scope[name] === 'undefined' ? fallbackValue : scope[name]);
+        const appliedValue = typeof scope[name] === 'undefined' ? fallbackValue : scope[name];
+        binder(appliedValue);
       }
     } catch (bindingError) {
       void bindingError;

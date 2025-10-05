@@ -318,9 +318,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         if (typeof globalFn === 'function') {
           var binder = globalFn(
             'value',
-            "if (typeof ".concat(name, " === 'undefined') { ").concat(name, " = value; } return typeof ").concat(name, " !== 'undefined' ? ").concat(name, ' : value;'),
+            "if (typeof ".concat(name, " === 'undefined') { var ").concat(name, " = value; } else { ").concat(name, " = value; } return ").concat(name, ';'),
           );
-          binder(typeof scope[name] === 'undefined' ? fallbackValue : scope[name]);
+          var appliedValue = typeof scope[name] === 'undefined' ? fallbackValue : scope[name];
+          binder(appliedValue);
         }
       } catch (bindingError) {
         void bindingError;
