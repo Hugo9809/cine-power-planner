@@ -15,11 +15,9 @@
           autoGearConditionAddButton, addAutoGearConditionFromPicker,
           autoGearConditionList, removeAutoGearCondition,
           handleAutoGearConditionShortcut, loadAutoGearRules,
-          cloneMountVoltageMap,
           duplicateAutoGearRule, autoGearScenarioModeSelect,
           normalizeAutoGearScenarioLogic, applyAutoGearScenarioSettings,
           getAutoGearScenarioSelectedValues, autoGearScenarioBaseSelect,
-          cloneMountVoltageMap,
           normalizeAutoGearScenarioPrimary, autoGearScenarioFactorInput,
           normalizeAutoGearScenarioMultiplier,
           isAutoGearHighlightEnabled, setAutoGearHighlightEnabled,
@@ -40,7 +38,7 @@
 /* global FEEDBACK_TEMPERATURE_MIN: true, FEEDBACK_TEMPERATURE_MAX: true */
 /* global getDiagramManualPositions, setManualDiagramPositions,
           normalizeDiagramPositionsInput, ensureAutoBackupsFromProjects */
-/* global getMountVoltagePreferencesClone, cloneMountVoltageMap,
+/* global getMountVoltagePreferencesClone,
           mountVoltageResetButton, CORE_GLOBAL_SCOPE,
           resetMountVoltagePreferences, updateMountVoltageInputsFromState,
           applyMountVoltagePreferences, getMountVoltageStorageKeyName,
@@ -74,6 +72,58 @@ function ensureSessionRuntimePlaceholder(name, fallbackValue) {
     void placeholderError;
     return fallbackProvider();
   }
+}
+
+function getSessionRuntimeScopes() {
+  const scopes = [];
+
+  const addScope = candidate => {
+    if (!candidate || typeof candidate !== 'object') {
+      return;
+    }
+    if (scopes.indexOf(candidate) === -1) {
+      scopes.push(candidate);
+    }
+  };
+
+  try {
+    if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE) {
+      addScope(CORE_GLOBAL_SCOPE);
+    }
+  } catch (coreScopeError) {
+    void coreScopeError;
+  }
+
+  addScope(typeof globalThis !== 'undefined' ? globalThis : null);
+  addScope(typeof window !== 'undefined' ? window : null);
+  addScope(typeof self !== 'undefined' ? self : null);
+  addScope(typeof global !== 'undefined' ? global : null);
+
+  return scopes;
+}
+
+function getSessionRuntimeFunction(name) {
+  if (typeof name !== 'string' || !name) {
+    return null;
+  }
+
+  const scopes = getSessionRuntimeScopes();
+  for (let index = 0; index < scopes.length; index += 1) {
+    const scope = scopes[index];
+    let candidate = null;
+    try {
+      candidate = scope[name];
+    } catch (resolveError) {
+      candidate = null;
+      void resolveError;
+    }
+
+    if (typeof candidate === 'function') {
+      return candidate;
+    }
+  }
+
+  return null;
 }
 
 ensureSessionRuntimePlaceholder('autoGearScenarioModeSelect', null);
@@ -3591,21 +3641,49 @@ const mountVoltageResetButtonRef = (() => {
   return null;
 })();
 
-if (mountVoltageResetButtonRef) {
-  mountVoltageResetButtonRef.addEventListener('click', () => {
-    resetMountVoltagePreferences({ persist: false, triggerUpdate: true });
-    updateMountVoltageInputsFromState();
-  });
-}
+  if (mountVoltageResetButtonRef) {
+    mountVoltageResetButtonRef.addEventListener('click', () => {
+      const resetMountVoltagePreferencesFn = getSessionRuntimeFunction('resetMountVoltagePreferences');
+      if (resetMountVoltagePreferencesFn) {
+        try {
+          resetMountVoltagePreferencesFn({ persist: false, triggerUpdate: true });
+        } catch (resetError) {
+          warnMissingMountVoltageHelper('resetMountVoltagePreferences', resetError);
+        }
+      } else {
+        warnMissingMountVoltageHelper('resetMountVoltagePreferences');
+      }
 
-if (settingsButton && settingsDialog) {
-  settingsButton.addEventListener('click', () => {
+      const updateMountVoltageInputsFromStateFn = getSessionRuntimeFunction('updateMountVoltageInputsFromState');
+      if (updateMountVoltageInputsFromStateFn) {
+        try {
+          updateMountVoltageInputsFromStateFn();
+        } catch (updateError) {
+          warnMissingMountVoltageHelper('updateMountVoltageInputsFromState', updateError);
+        }
+      } else {
+        warnMissingMountVoltageHelper('updateMountVoltageInputsFromState');
+      }
+    });
+  }
+
+  if (settingsButton && settingsDialog) {
+    settingsButton.addEventListener('click', () => {
     prevAccentColor = accentColor;
     rememberSettingsPinkModeBaseline();
     rememberSettingsTemperatureUnitBaseline();
     rememberSettingsShowAutoBackupsBaseline();
-    rememberSettingsMountVoltagesBaseline();
-    updateMountVoltageInputsFromState();
+      rememberSettingsMountVoltagesBaseline();
+      const updateMountVoltageInputsFromStateFn = getSessionRuntimeFunction('updateMountVoltageInputsFromState');
+      if (updateMountVoltageInputsFromStateFn) {
+        try {
+          updateMountVoltageInputsFromStateFn();
+        } catch (updateError) {
+          warnMissingMountVoltageHelper('updateMountVoltageInputsFromState', updateError);
+        }
+      } else {
+        warnMissingMountVoltageHelper('updateMountVoltageInputsFromState');
+      }
     if (settingsLanguage) settingsLanguage.value = currentLang;
     if (settingsDarkMode) settingsDarkMode.checked = document.body.classList.contains('dark-mode');
     if (settingsPinkMode) settingsPinkMode.checked = document.body.classList.contains('pink-mode');
@@ -6813,9 +6891,16 @@ function applyPreferencesFromStorage(safeGetItem) {
 
     if (parsedVoltages) {
       applySessionMountVoltagePreferences(parsedVoltages, { persist: shouldPersistVoltages, triggerUpdate: true });
-      if (typeof updateMountVoltageInputsFromState === 'function') {
-        updateMountVoltageInputsFromState();
-      }
+        const updateMountVoltageInputsFromStateFn = getSessionRuntimeFunction('updateMountVoltageInputsFromState');
+        if (updateMountVoltageInputsFromStateFn) {
+          try {
+            updateMountVoltageInputsFromStateFn();
+          } catch (updateError) {
+            warnMissingMountVoltageHelper('updateMountVoltageInputsFromState', updateError);
+          }
+        } else {
+          warnMissingMountVoltageHelper('updateMountVoltageInputsFromState');
+        }
       rememberSettingsMountVoltagesBaseline();
     }
   } catch (voltageError) {
@@ -7998,11 +8083,23 @@ if (factoryResetButton) {
       } catch (accentError) {
         console.warn('Failed to reset accent color during factory reset', accentError);
       }
-      try {
-        resetMountVoltagePreferences({ persist: true, triggerUpdate: true });
-        updateMountVoltageInputsFromState();
-        rememberSettingsMountVoltagesBaseline();
-      } catch (voltageResetError) {
+        try {
+          const resetMountVoltagePreferencesFn = getSessionRuntimeFunction('resetMountVoltagePreferences');
+          if (resetMountVoltagePreferencesFn) {
+            resetMountVoltagePreferencesFn({ persist: true, triggerUpdate: true });
+          } else {
+            warnMissingMountVoltageHelper('resetMountVoltagePreferences');
+          }
+
+          const updateMountVoltageInputsFromStateFn = getSessionRuntimeFunction('updateMountVoltageInputsFromState');
+          if (updateMountVoltageInputsFromStateFn) {
+            updateMountVoltageInputsFromStateFn();
+          } else {
+            warnMissingMountVoltageHelper('updateMountVoltageInputsFromState');
+          }
+
+          rememberSettingsMountVoltagesBaseline();
+        } catch (voltageResetError) {
         console.warn('Failed to reset mount voltages during factory reset', voltageResetError);
       }
       try {
@@ -11720,12 +11817,15 @@ function warnMissingMountVoltageHelper(helperName, error) {
 }
 
 function cloneMountVoltageDefaultsForSession() {
-  if (typeof cloneMountVoltageMap === 'function') {
+  const runtimeCloneMountVoltageMap = getSessionRuntimeFunction('cloneMountVoltageMap');
+  if (runtimeCloneMountVoltageMap) {
     try {
-      return cloneMountVoltageMap(DEFAULT_MOUNT_VOLTAGES);
+      return runtimeCloneMountVoltageMap(DEFAULT_MOUNT_VOLTAGES);
     } catch (cloneError) {
       warnMissingMountVoltageHelper('cloneMountVoltageMap', cloneError);
     }
+  } else {
+    warnMissingMountVoltageHelper('cloneMountVoltageMap');
   }
   if (DEFAULT_MOUNT_VOLTAGES && typeof DEFAULT_MOUNT_VOLTAGES === 'object') {
     try {
@@ -11758,9 +11858,10 @@ function cloneMountVoltageDefaultsForSession() {
 }
 
 function getSessionMountVoltagePreferencesClone() {
-  if (typeof getMountVoltagePreferencesClone === 'function') {
+  const getMountVoltagePreferencesCloneFn = getSessionRuntimeFunction('getMountVoltagePreferencesClone');
+  if (getMountVoltagePreferencesCloneFn) {
     try {
-      const clone = getMountVoltagePreferencesClone();
+      const clone = getMountVoltagePreferencesCloneFn();
       if (clone && typeof clone === 'object') {
         return clone;
       }
@@ -11774,9 +11875,10 @@ function getSessionMountVoltagePreferencesClone() {
 }
 
 function applySessionMountVoltagePreferences(preferences, options = {}) {
-  if (typeof applyMountVoltagePreferences === 'function') {
+  const applyMountVoltagePreferencesFn = getSessionRuntimeFunction('applyMountVoltagePreferences');
+  if (applyMountVoltagePreferencesFn) {
     try {
-      applyMountVoltagePreferences(preferences, options);
+      applyMountVoltagePreferencesFn(preferences, options);
       return;
     } catch (helperError) {
       warnMissingMountVoltageHelper('applyMountVoltagePreferences', helperError);
@@ -11784,11 +11886,14 @@ function applySessionMountVoltagePreferences(preferences, options = {}) {
   } else {
     warnMissingMountVoltageHelper('applyMountVoltagePreferences');
   }
-  if (options && options.triggerUpdate && typeof updateMountVoltageInputsFromState === 'function') {
-    try {
-      updateMountVoltageInputsFromState();
-    } catch (updateError) {
-      void updateError;
+  if (options && options.triggerUpdate) {
+    const updateMountVoltageInputsFromStateFn = getSessionRuntimeFunction('updateMountVoltageInputsFromState');
+    if (updateMountVoltageInputsFromStateFn) {
+      try {
+        updateMountVoltageInputsFromStateFn();
+      } catch (updateError) {
+        void updateError;
+      }
     }
   }
 }
@@ -11811,8 +11916,15 @@ function revertSettingsMountVoltagesIfNeeded() {
   if (changed) {
     applySessionMountVoltagePreferences(baseline, { persist: true, triggerUpdate: true });
   } else {
-    if (typeof updateMountVoltageInputsFromState === 'function') {
-      updateMountVoltageInputsFromState();
+    const updateMountVoltageInputsFromStateFn = getSessionRuntimeFunction('updateMountVoltageInputsFromState');
+    if (updateMountVoltageInputsFromStateFn) {
+      try {
+        updateMountVoltageInputsFromStateFn();
+      } catch (updateError) {
+        warnMissingMountVoltageHelper('updateMountVoltageInputsFromState', updateError);
+      }
+    } else {
+      warnMissingMountVoltageHelper('updateMountVoltageInputsFromState');
     }
   }
 }
