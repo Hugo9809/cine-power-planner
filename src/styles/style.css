@@ -2895,6 +2895,46 @@ body.high-contrast .settings-tab[aria-selected="true"] {
   outline: none;
 }
 
+body.dark-mode:not(.high-contrast) .auto-gear-summary {
+  background: color-mix(in srgb, var(--surface-color) 70%, #ffffff 30%);
+  border-color: color-mix(in srgb, var(--panel-border) 65%, transparent);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+}
+
+body.dark-mode:not(.high-contrast) .auto-gear-summary-card {
+  background: color-mix(in srgb, var(--surface-color) 55%, #ffffff 45%);
+  border-color: color-mix(in srgb, var(--panel-border) 65%, transparent);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+  color: var(--inverse-text-color);
+}
+
+body.dark-mode:not(.high-contrast) .auto-gear-summary-label,
+body.dark-mode:not(.high-contrast) .auto-gear-summary-description,
+body.dark-mode:not(.high-contrast) .auto-gear-summary-detail-text {
+  color: color-mix(in srgb, var(--inverse-text-color) 85%, transparent);
+}
+
+@media (prefers-color-scheme: dark) {
+  body:not(.light-mode):not(.high-contrast) .auto-gear-summary {
+    background: color-mix(in srgb, var(--surface-color) 70%, #ffffff 30%);
+    border-color: color-mix(in srgb, var(--panel-border) 65%, transparent);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+  }
+
+  body:not(.light-mode):not(.high-contrast) .auto-gear-summary-card {
+    background: color-mix(in srgb, var(--surface-color) 55%, #ffffff 45%);
+    border-color: color-mix(in srgb, var(--panel-border) 65%, transparent);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+    color: var(--inverse-text-color);
+  }
+
+  body:not(.light-mode):not(.high-contrast) .auto-gear-summary-label,
+  body:not(.light-mode):not(.high-contrast) .auto-gear-summary-description,
+  body:not(.light-mode):not(.high-contrast) .auto-gear-summary-detail-text {
+    color: color-mix(in srgb, var(--inverse-text-color) 85%, transparent);
+  }
+}
+
 @media (max-width: 600px) {
   .auto-gear-summary-grid {
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
