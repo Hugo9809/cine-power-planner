@@ -4441,7 +4441,15 @@ function maybeCreateProjectOverwriteBackup(projects, key) {
 
 function saveProject(name, project) {
   if (!isPlainObject(project)) return;
-  const normalized = normalizeProject(project) || { gearList: "", projectInfo: null };
+  const normalized = normalizeProject(project);
+  if (!normalized) {
+    if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+      console.warn(
+        `Skipped saving project "${name || ''}" because the payload could not be normalised.`,
+      );
+    }
+    return;
+  }
   const { projects, changed, originalValue } = readAllProjectsFromStorage();
   if (changed) {
     const safeStorage = getSafeLocalStorage();
