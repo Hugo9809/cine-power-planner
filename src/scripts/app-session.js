@@ -4092,6 +4092,13 @@ const mountVoltageResetButtonRef = (() => {
     settingsSave.addEventListener('click', () => {
       if (settingsLanguage) {
         setLanguage(settingsLanguage.value);
+        if (typeof populateUserButtonDropdowns === 'function') {
+          try {
+            populateUserButtonDropdowns();
+          } catch (userButtonError) {
+            console.warn('Failed to refresh user button selectors after language change', userButtonError);
+          }
+        }
       }
       if (settingsDarkMode) {
         const enabled = settingsDarkMode.checked;
@@ -6335,6 +6342,13 @@ function handleRestoreSettingsInputChange() {
     if (restoredPreferences.language) {
       try {
         setLanguage(restoredPreferences.language);
+        if (typeof populateUserButtonDropdowns === 'function') {
+          try {
+            populateUserButtonDropdowns();
+          } catch (userButtonError) {
+            console.warn('Failed to refresh user button selectors after restoring language', userButtonError);
+          }
+        }
       } catch (languageError) {
         console.warn('Failed to restore language after restore failure', languageError);
       }
@@ -6437,6 +6451,13 @@ function handleRestoreSettingsInputChange() {
       }
       if (restoredPreferenceState.language) {
         setLanguage(restoredPreferenceState.language);
+        if (typeof populateUserButtonDropdowns === 'function') {
+          try {
+            populateUserButtonDropdowns();
+          } catch (userButtonError) {
+            console.warn('Failed to refresh user button selectors after applying restored preferences', userButtonError);
+          }
+        }
       }
       if (restoredSession && typeof sessionStorage !== 'undefined') {
         Object.entries(restoredSession).forEach(([key, value]) => {
@@ -9945,6 +9966,13 @@ function initApp() {
     globalThis.setupInstallBanner();
   }
   setLanguage(currentLang);
+  if (typeof populateUserButtonDropdowns === 'function') {
+    try {
+      populateUserButtonDropdowns();
+    } catch (userButtonError) {
+      console.warn('Failed to refresh user button selectors after applying current language', userButtonError);
+    }
+  }
   maybeShowIosPwaHelp();
   resetDeviceForm();
   ensureDefaultProjectInfoSnapshot();
@@ -10752,30 +10780,72 @@ function collectFilterAccessories(filters = []) {
   return items;
 }
 
+const USER_BUTTON_FUNCTION_ITEMS = [
+  { key: 'toggleLut', value: 'Toggle LUT' },
+  { key: 'falseColor', value: 'False Color' },
+  { key: 'peaking', value: 'Peaking' },
+  { key: 'anamorphicDesqueeze', value: 'Anamorphic Desqueeze' },
+  { key: 'surroundView', value: 'Surround View' },
+  { key: 'oneToOneZoom', value: '1:1 Zoom' },
+  { key: 'playback', value: 'Playback' },
+  { key: 'record', value: 'Record' },
+  { key: 'zoom', value: 'Zoom' },
+  { key: 'frameLines', value: 'Frame Lines' },
+  { key: 'frameGrab', value: 'Frame Grab' }
+];
+
 function populateUserButtonDropdowns() {
-  const functions = [
-    'Toggle LUT',
-    'False Color',
-    'Peaking',
-    'Anamorphic Desqueeze',
-    'Surround View',
-    '1:1 Zoom',
-    'Playback',
-    'Record',
-    'Zoom',
-    'Frame Lines',
-    'Frame Grab'
-  ];
+  const lang = typeof currentLang === 'string' && texts[currentLang]
+    ? currentLang
+    : 'en';
+  const fallbackProjectForm = texts?.en?.projectForm || {};
+  const langProjectForm = texts?.[lang]?.projectForm || fallbackProjectForm;
+  const labels = langProjectForm.userButtonFunctions || {};
+  const fallbackLabels = fallbackProjectForm.userButtonFunctions || {};
+
+  const items = USER_BUTTON_FUNCTION_ITEMS.map(item => {
+    const label = labels[item.key] || fallbackLabels[item.key] || item.value;
+    return { ...item, label };
+  });
+
+  const knownValues = new Set(items.map(item => item.value));
+
   ['monitorUserButtons', 'cameraUserButtons', 'viewfinderUserButtons'].forEach(id => {
     const sel = document.getElementById(id);
     if (!sel) return;
-    functions.forEach(fn => {
+
+    const previouslySelected = new Set(
+      Array.from(sel.selectedOptions || []).map(opt => opt.value)
+    );
+
+    sel.innerHTML = '';
+
+    items.forEach(({ value, label }) => {
+      if (!value) {
+        return;
+      }
       const opt = document.createElement('option');
-      opt.value = fn;
-      opt.textContent = fn;
+      opt.value = value;
+      opt.textContent = label;
+      if (previouslySelected.has(value)) {
+        opt.selected = true;
+      }
       sel.appendChild(opt);
     });
-    sel.size = functions.length;
+
+    previouslySelected.forEach(value => {
+      if (knownValues.has(value)) {
+        return;
+      }
+      const opt = document.createElement('option');
+      opt.value = value;
+      opt.textContent = value;
+      opt.selected = true;
+      sel.appendChild(opt);
+    });
+
+    const optionCount = sel.options.length;
+    sel.size = optionCount > 0 ? optionCount : USER_BUTTON_FUNCTION_ITEMS.length;
   });
 }
 

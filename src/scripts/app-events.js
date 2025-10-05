@@ -261,6 +261,13 @@ enqueueCineUiRegistration(registerEventsCineUiInternal);
 // Language selection
 addSafeEventListener(languageSelect, "change", (event) => {
   setLanguage(event.target.value);
+  if (typeof populateUserButtonDropdowns === 'function') {
+    try {
+      populateUserButtonDropdowns();
+    } catch (userButtonError) {
+      console.warn('Failed to refresh user button selectors after manual language change', userButtonError);
+    }
+  }
 });
 
 addSafeEventListener(skipLink, "click", () => {
