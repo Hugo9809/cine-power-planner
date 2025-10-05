@@ -604,6 +604,66 @@ function callCoreFunctionIfAvailable(functionName, args = [], options = {}) {
     : undefined;
 }
 
+function safeFormatAutoGearItemSummary(item, options = {}) {
+  if (typeof formatAutoGearItemSummary === 'function') {
+    try {
+      return formatAutoGearItemSummary(item, options);
+    } catch (formatError) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Failed to format automatic gear item summary via direct formatter.', formatError);
+      }
+    }
+  }
+
+  const fallback = callCoreFunctionIfAvailable(
+    'formatAutoGearItemSummary',
+    [item, options],
+    { defaultValue: '' },
+  );
+
+  if (typeof fallback === 'string') {
+    return fallback;
+  }
+  if (fallback === null || typeof fallback === 'undefined') {
+    return '';
+  }
+  try {
+    return String(fallback);
+  } catch (coerceError) {
+    void coerceError;
+    return '';
+  }
+}
+
+function formatWithPlaceholdersSafe(template, ...values) {
+  if (typeof formatWithPlaceholders === 'function') {
+    try {
+      return formatWithPlaceholders(template, ...values);
+    } catch (formatError) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Failed to format placeholder template via direct formatter.', formatError);
+      }
+    }
+  }
+
+  const fallback = callCoreFunctionIfAvailable(
+    'formatWithPlaceholders',
+    [template, ...values],
+    { defaultValue: null },
+  );
+
+  if (typeof fallback === 'string' && fallback) {
+    return fallback;
+  }
+
+  let formatted = typeof template === 'string' ? template : String(template || '');
+  for (let index = 0; index < values.length; index += 1) {
+    const value = values[index];
+    formatted = formatted.replace('%s', value);
+  }
+  return formatted;
+}
+
 (function ensureCoreRuntimePlaceholders() {
   const scope =
     CORE_GLOBAL_SCOPE ||
@@ -8447,6 +8507,10 @@ function setLanguage(lang) {
   applyFilters();
   updateCalculations();
 
+  const existingDevicesHeading =
+    typeof document !== 'undefined'
+      ? document.getElementById('existingDevicesHeading')
+      : null;
   if (existingDevicesHeading) {
     existingDevicesHeading.textContent = texts[lang].existingDevicesHeading;
   }
@@ -9734,7 +9798,7 @@ function setLanguage(lang) {
   callCoreFunctionIfAvailable('renderAutoGearDraftLists', [], { defer: true });
   callCoreFunctionIfAvailable('updateAutoGearCatalogOptions', [], { defer: true });
   callCoreFunctionIfAvailable('renderAutoGearPresetsControls', [], { defer: true });
-  applyAutoGearBackupVisibility();
+  callCoreFunctionIfAvailable('applyAutoGearBackupVisibility', [], { defer: true });
   const contrastLabel = document.getElementById("settingsHighContrastLabel");
   if (contrastLabel) {
     contrastLabel.textContent = texts[lang].highContrastSetting;
@@ -9765,6 +9829,10 @@ function setLanguage(lang) {
       texts[lang].backupHeadingHelp || texts[lang].backupHeading
     );
   }
+  const projectBackupsHeading =
+    typeof document !== 'undefined'
+      ? document.getElementById('projectBackupsHeading')
+      : null;
   if (projectBackupsHeading) {
     const headingText = texts[lang].projectBackupsHeading || "Project Backups";
     projectBackupsHeading.textContent = headingText;
@@ -9775,6 +9843,10 @@ function setLanguage(lang) {
       projectBackupsHeading.removeAttribute("data-help");
     }
   }
+  const projectBackupsDescription =
+    typeof document !== 'undefined'
+      ? document.getElementById('projectBackupsDescription')
+      : null;
   if (projectBackupsDescription) {
     const descriptionText = texts[lang].projectBackupsDescription || "";
     if (descriptionText) {
@@ -10074,8 +10146,12 @@ function setLanguage(lang) {
       texts[lang].aboutHeadingHelp || texts[lang].aboutHeading
     );
   }
+  const aboutVersionElem =
+    typeof document !== 'undefined' ? document.getElementById('aboutVersion') : null;
   if (aboutVersionElem)
     aboutVersionElem.textContent = `${texts[lang].versionLabel} ${APP_VERSION}`;
+  const supportLink =
+    typeof document !== 'undefined' ? document.getElementById('supportLink') : null;
   if (supportLink) {
     supportLink.textContent = texts[lang].supportLink;
     const supportHelp =
@@ -10293,24 +10369,32 @@ function setLanguage(lang) {
     gridSnapToggleBtn.setAttribute("data-help", texts[lang].gridSnapToggleHelp);
     gridSnapToggleBtn.setAttribute("aria-pressed", gridSnap ? "true" : "false");
   }
+  const resetViewBtn =
+    typeof document !== 'undefined' ? document.getElementById('resetView') : null;
   if (resetViewBtn) {
     setButtonLabelWithIcon(resetViewBtn, texts[lang].resetViewBtn, ICON_GLYPHS.resetView);
     resetViewBtn.setAttribute("title", texts[lang].resetViewBtn);
     resetViewBtn.setAttribute("aria-label", texts[lang].resetViewBtn);
     resetViewBtn.setAttribute("data-help", texts[lang].resetViewHelp);
   }
+  const zoomInBtn =
+    typeof document !== 'undefined' ? document.getElementById('zoomIn') : null;
   if (zoomInBtn) {
     setButtonLabelWithIcon(zoomInBtn, '', ICON_GLYPHS.add);
     zoomInBtn.setAttribute("title", texts[lang].zoomInLabel);
     zoomInBtn.setAttribute("aria-label", texts[lang].zoomInLabel);
     zoomInBtn.setAttribute("data-help", texts[lang].zoomInHelp);
   }
+  const zoomOutBtn =
+    typeof document !== 'undefined' ? document.getElementById('zoomOut') : null;
   if (zoomOutBtn) {
     setButtonLabelWithIcon(zoomOutBtn, '', ICON_GLYPHS.minus);
     zoomOutBtn.setAttribute("title", texts[lang].zoomOutLabel);
     zoomOutBtn.setAttribute("aria-label", texts[lang].zoomOutLabel);
     zoomOutBtn.setAttribute("data-help", texts[lang].zoomOutHelp);
   }
+  const diagramHint =
+    typeof document !== 'undefined' ? document.getElementById('diagramHint') : null;
   if (diagramHint) {
     diagramHint.textContent = texts[lang].diagramMoveHint;
   }
@@ -10468,7 +10552,7 @@ function setLanguage(lang) {
   ensureGearListActions();
   updateDiagramLegend();
   updateStorageSummary();
-  populateFeatureSearch();
+  callCoreFunctionIfAvailable('populateFeatureSearch', [], { defer: true });
 }
 
 // Reference elements (DOM Elements)
@@ -12961,7 +13045,7 @@ function getSharedImportPresetLabel(sharedData) {
     || texts.en?.sharedImportAutoGearPresetName
     || '%s';
   if (template.includes('%s')) {
-    return formatWithPlaceholders(template, projectName);
+    return formatWithPlaceholdersSafe(template, projectName);
   }
   return `${template} ${projectName}`.trim();
 }
@@ -15412,8 +15496,18 @@ var autoGearConditionRefreshers = {
   tripodBowl: createDeferredAutoGearRefresher('refreshAutoGearTripodBowlOptions'),
   tripodTypes: createDeferredAutoGearRefresher('refreshAutoGearTripodTypesOptions'),
   tripodSpreader: createDeferredAutoGearRefresher('refreshAutoGearTripodSpreaderOptions'),
-  crewPresent: selected => refreshAutoGearCrewOptions(autoGearCrewPresentSelect, selected, 'crewPresent'),
-  crewAbsent: selected => refreshAutoGearCrewOptions(autoGearCrewAbsentSelect, selected, 'crewAbsent'),
+  crewPresent: selected =>
+    callCoreFunctionIfAvailable(
+      'refreshAutoGearCrewOptions',
+      [autoGearCrewPresentSelect, selected, 'crewPresent'],
+      { defer: true },
+    ),
+  crewAbsent: selected =>
+    callCoreFunctionIfAvailable(
+      'refreshAutoGearCrewOptions',
+      [autoGearCrewAbsentSelect, selected, 'crewAbsent'],
+      { defer: true },
+    ),
   wireless: createDeferredAutoGearRefresher('refreshAutoGearWirelessOptions'),
   motors: createDeferredAutoGearRefresher('refreshAutoGearMotorsOptions'),
   controllers: createDeferredAutoGearRefresher('refreshAutoGearControllersOptions'),
@@ -16347,7 +16441,7 @@ function autoGearRuleMatchesSearch(rule, query) {
           haystack.push(item.selector.default);
         }
       }
-      haystack.push(formatAutoGearItemSummary(item));
+      haystack.push(safeFormatAutoGearItemSummary(item));
     });
   };
   collectItems(rule?.add);
