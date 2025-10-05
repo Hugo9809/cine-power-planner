@@ -5459,24 +5459,37 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
     }
     
+    function getInstallBannerDismissedInSession() {
+      if (typeof globalThis !== 'undefined' && typeof globalThis.installBannerDismissedInSession === 'boolean') {
+        return globalThis.installBannerDismissedInSession;
+      }
+      return false;
+    }
+
+    function setInstallBannerDismissedInSession(value) {
+      if (typeof globalThis !== 'undefined') {
+        globalThis.installBannerDismissedInSession = Boolean(value);
+      }
+    }
+
     function hasDismissedInstallBanner() {
-      if (installBannerDismissedInSession) return true;
+      if (getInstallBannerDismissedInSession()) return true;
       if (typeof localStorage === 'undefined') return false;
       try {
         const storedValue = localStorage.getItem(INSTALL_BANNER_DISMISSED_KEY);
         const dismissed = storedValue === '1';
         if (dismissed) {
-          installBannerDismissedInSession = true;
+          setInstallBannerDismissedInSession(true);
         }
         return dismissed;
       } catch (error) {
         console.warn('Could not read install banner dismissal flag', error);
-        return installBannerDismissedInSession;
+        return getInstallBannerDismissedInSession();
       }
     }
-    
+
     function markInstallBannerDismissed() {
-      installBannerDismissedInSession = true;
+      setInstallBannerDismissedInSession(true);
       if (typeof localStorage === 'undefined') return;
       try {
         localStorage.setItem(INSTALL_BANNER_DISMISSED_KEY, '1');

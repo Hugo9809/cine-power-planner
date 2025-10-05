@@ -843,7 +843,10 @@ if (typeof window !== 'undefined') {
 }
 var IOS_PWA_HELP_STORAGE_KEY = 'iosPwaHelpShown';
 const INSTALL_BANNER_DISMISSED_KEY = 'installPromptDismissed';
-let installBannerDismissedInSession = false;
+
+if (typeof globalThis !== 'undefined' && typeof globalThis.installBannerDismissedInSession !== 'boolean') {
+  globalThis.installBannerDismissedInSession = false;
+}
 
 const DEVICE_SCHEMA_PATH = 'src/data/schema.json';
 const DEVICE_SCHEMA_STORAGE_KEY = 'cameraPowerPlanner_schemaCache';
