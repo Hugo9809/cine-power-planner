@@ -1,12 +1,15 @@
 const path = require('path');
 
+const { setupModuleHarness } = require('../helpers/moduleHarness');
+
 describe('cineOffline module', () => {
   let offline;
   let internal;
   let consoleWarnSpy;
+  let harness;
 
   beforeEach(() => {
-    jest.resetModules();
+    harness = setupModuleHarness();
     delete global.cineOffline;
     offline = require(path.join('..', '..', 'src', 'scripts', 'modules', 'offline.js'));
     internal = offline.__internal;
@@ -19,7 +22,10 @@ describe('cineOffline module', () => {
       consoleWarnSpy.mockRestore();
       consoleWarnSpy = null;
     }
-    jest.resetModules();
+    if (harness) {
+      harness.teardown();
+      harness = null;
+    }
   });
 
   function createStorageSpy() {

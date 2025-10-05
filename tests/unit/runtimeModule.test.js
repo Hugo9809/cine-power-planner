@@ -1,5 +1,7 @@
 const path = require('path');
 
+const { setupModuleHarness } = require('../helpers/moduleHarness');
+
 const STORAGE_FUNCTIONS = [
   'loadDeviceData',
   'saveDeviceData',
@@ -133,6 +135,7 @@ describe('cineRuntime module', () => {
   let offlineStub;
   let uiStub;
   let registry;
+  let harness;
 
   function buildPersistenceStub(options = {}) {
     const missingWrappers = new Set((options.missingWrappers || []).map(String));
@@ -364,9 +367,8 @@ describe('cineRuntime module', () => {
   }
 
   beforeEach(() => {
-    jest.resetModules();
-    registry = require(path.join('..', '..', 'src', 'scripts', 'modules', 'registry.js'));
-    registry.__internalResetForTests({ force: true });
+    harness = setupModuleHarness();
+    registry = harness.registry;
 
     persistenceStub = buildPersistenceStub();
     offlineStub = buildOfflineStub();
@@ -392,6 +394,10 @@ describe('cineRuntime module', () => {
       registry.__internalResetForTests({ force: true });
     }
     registry = null;
+    if (harness) {
+      harness.teardown();
+      harness = null;
+    }
   });
 
   test('exposes frozen runtime API and module getters', () => {
