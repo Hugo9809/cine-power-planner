@@ -146,6 +146,36 @@
     return fallbackTryRequire(modulePath);
   }
 
+  function resolveImmutability(scope) {
+    var targetScope = scope || PRIMARY_SCOPE;
+
+    if (ARCHITECTURE && typeof ARCHITECTURE.tryRequire === 'function') {
+      try {
+        var required = ARCHITECTURE.tryRequire('./immutability.js');
+        if (required && _typeof(required) === 'object') {
+          return required;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    var direct = tryRequireWithArchitecture('./immutability.js');
+    if (direct && _typeof(direct) === 'object') {
+      return direct;
+    }
+
+    var scopes = collectCandidateScopes(targetScope);
+    for (var index = 0; index < scopes.length; index += 1) {
+      var candidate = scopes[index];
+      if (candidate && _typeof(candidate.cineModuleImmutability) === 'object') {
+        return candidate.cineModuleImmutability;
+      }
+    }
+
+    return null;
+  }
+
   function fallbackDefineHiddenProperty(target, name, value) {
     if (!target || typeof target !== 'object' && typeof target !== 'function') {
       return false;

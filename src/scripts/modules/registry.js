@@ -15,66 +15,131 @@
   let moduleMap = Object.create(null);
   let metadataMap = Object.create(null);
 
-  function shouldBypassDeepFreeze(value) {
-    if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
+  function resolveImmutability(scope) {
+    const targetScope = scope || GLOBAL_SCOPE;
+
+    if (typeof require === 'function') {
+      try {
+        const required = require('./immutability.js');
+        if (required && typeof required === 'object') {
+          return required;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    const scopes = [targetScope];
+    if (typeof globalThis !== 'undefined' && scopes.indexOf(globalThis) === -1) scopes.push(globalThis);
+    if (typeof window !== 'undefined' && scopes.indexOf(window) === -1) scopes.push(window);
+    if (typeof self !== 'undefined' && scopes.indexOf(self) === -1) scopes.push(self);
+    if (typeof global !== 'undefined' && scopes.indexOf(global) === -1) scopes.push(global);
+
+    for (let index = 0; index < scopes.length; index += 1) {
+      const candidate = scopes[index];
+      if (candidate && typeof candidate.cineModuleImmutability === 'object') {
+        return candidate.cineModuleImmutability;
+      }
+    }
+
+    return null;
+  }
+
+  function createFallbackImmutability() {
+    function shouldBypass(value) {
+      if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
+        return false;
+      }
+
+      try {
+        if (typeof value.pipe === 'function' && typeof value.unpipe === 'function') {
+          return true;
+        }
+
+        if (typeof value.on === 'function' && typeof value.emit === 'function') {
+          if (typeof value.write === 'function' || typeof value.read === 'function') {
+            return true;
+          }
+
+          const ctorName = value.constructor && value.constructor.name;
+          if (ctorName && /Stream|Emitter|Port/i.test(ctorName)) {
+            return true;
+          }
+        }
+
+        if (typeof Symbol !== 'undefined' && value[Symbol.toStringTag]) {
+          const tag = value[Symbol.toStringTag];
+          if (typeof tag === 'string' && /Stream|Port/i.test(tag)) {
+            return true;
+          }
+        }
+      } catch (inspectionError) {
+        void inspectionError;
+      }
+
       return false;
     }
 
-    try {
-      if (typeof value.pipe === 'function' && typeof value.unpipe === 'function') {
-        return true;
+    function freeze(value, seen = new WeakSet()) {
+      if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
+        return value;
       }
 
-      if (typeof value.on === 'function' && typeof value.emit === 'function') {
-        if (typeof value.write === 'function' || typeof value.read === 'function') {
-          return true;
-        }
-
-        const ctorName = value.constructor && value.constructor.name;
-        if (ctorName && /Stream|Emitter|Port/i.test(ctorName)) {
-          return true;
-        }
+      if (shouldBypass(value)) {
+        return value;
       }
 
-      if (typeof Symbol !== 'undefined' && value[Symbol.toStringTag]) {
-        const tag = value[Symbol.toStringTag];
-        if (typeof tag === 'string' && /Stream|Port/i.test(tag)) {
-          return true;
-        }
+      if (seen.has(value)) {
+        return value;
       }
-    } catch (inspectionError) {
-      void inspectionError;
+
+      seen.add(value);
+
+      const keys = Object.getOwnPropertyNames(value);
+      for (let index = 0; index < keys.length; index += 1) {
+        const key = keys[index];
+        const descriptor = Object.getOwnPropertyDescriptor(value, key);
+        if (!descriptor || ('get' in descriptor) || ('set' in descriptor)) {
+          continue;
+        }
+        freeze(descriptor.value, seen);
+      }
+
+      return Object.freeze(value);
     }
 
-    return false;
+    return {
+      shouldBypassDeepFreeze: shouldBypass,
+      freezeDeep: freeze,
+    };
   }
 
-  function freezeDeep(value, seen = new WeakSet()) {
-    if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
-      return value;
+  const FALLBACK_IMMUTABILITY = createFallbackImmutability();
+  let activeImmutability = resolveImmutability(GLOBAL_SCOPE) || FALLBACK_IMMUTABILITY;
+
+  function getImmutability() {
+    if (activeImmutability !== FALLBACK_IMMUTABILITY) {
+      return activeImmutability;
     }
 
-    if (shouldBypassDeepFreeze(value)) {
-      return value;
+    const resolved = resolveImmutability(GLOBAL_SCOPE);
+    if (resolved && resolved !== activeImmutability) {
+      activeImmutability = resolved;
     }
 
-    if (seen.has(value)) {
-      return value;
+    return activeImmutability;
+  }
+
+  function freezeDeep(value, seen) {
+    const provider = getImmutability();
+
+    try {
+      return provider.freezeDeep(value, seen);
+    } catch (error) {
+      void error;
     }
 
-    seen.add(value);
-
-    const keys = Object.getOwnPropertyNames(value);
-    for (let index = 0; index < keys.length; index += 1) {
-      const key = keys[index];
-      const descriptor = Object.getOwnPropertyDescriptor(value, key);
-      if (!descriptor || ('get' in descriptor) || ('set' in descriptor)) {
-        continue;
-      }
-      freezeDeep(descriptor.value, seen);
-    }
-
-    return Object.freeze(value);
+    return FALLBACK_IMMUTABILITY.freezeDeep(value, seen);
   }
 
   function normalizeName(name) {
