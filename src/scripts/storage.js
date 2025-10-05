@@ -2853,6 +2853,34 @@ function generateUniqueName(base, usedNames, normalizedNames) {
   return name;
 }
 
+function ensureUpdatedProjectBaseName(rawName) {
+  const trimmed = typeof rawName === "string" ? rawName.trim() : "";
+  if (!trimmed) {
+    return "Project-updated";
+  }
+  if (trimmed.toLowerCase().endsWith("-updated")) {
+    return trimmed;
+  }
+  return `${trimmed}-updated`;
+}
+
+function generateUpdatedProjectName(baseName, usedNames, normalizedNames) {
+  const normalized = normalizedNames || new Set(
+    [...usedNames]
+      .map((name) => (typeof name === "string" ? name.trim().toLowerCase() : ""))
+      .filter((name) => name),
+  );
+  const base = ensureUpdatedProjectBaseName(baseName);
+  let candidate = base;
+  let suffix = 2;
+  let normalizedCandidate = candidate.trim().toLowerCase();
+  while (normalizedCandidate && normalized.has(normalizedCandidate)) {
+    candidate = `${base}-${suffix++}`;
+    normalizedCandidate = candidate.trim().toLowerCase();
+  }
+  return candidate;
+}
+
 // --- Session State Storage ---
 // Store the current session (unsaved setup) in localStorage so it survives
 // full app reloads.
@@ -4307,6 +4335,18 @@ function readAllProjectsFromStorage() {
   const originalValue = parsed;
   const projects = {};
   let changed = false;
+  const usedProjectNames = new Set();
+  const normalizedProjectNames = new Set();
+  const markProjectNameUsed = (name) => {
+    if (typeof name !== "string") {
+      return;
+    }
+    usedProjectNames.add(name);
+    const trimmed = name.trim();
+    if (trimmed) {
+      normalizedProjectNames.add(trimmed.toLowerCase());
+    }
+  };
 
   const rawKeyLookup = new Map();
   const normalizedKeyLookup = new Map();
@@ -4334,15 +4374,17 @@ function readAllProjectsFromStorage() {
   if (typeof parsed === "string") {
     const normalized = normalizeProject(parsed);
     if (normalized) {
-      projects[""] = normalized;
-      registerLookupKey("", "");
+      const updatedName = generateUpdatedProjectName("", usedProjectNames, normalizedProjectNames);
+      projects[updatedName] = normalized;
+      registerLookupKey("", updatedName);
+      markProjectNameUsed(updatedName);
     }
     return { projects, changed: true, originalValue, lookup: createLookupSnapshot() };
   }
 
   if (Array.isArray(parsed)) {
-    const usedNames = new Set();
-    const normalizedNames = new Set();
+    const usedNames = usedProjectNames;
+    const normalizedNames = normalizedProjectNames;
     parsed.forEach((item, index) => {
       const normalized = normalizeProject(item);
       if (!normalized) {
@@ -4354,9 +4396,10 @@ function readAllProjectsFromStorage() {
           ? item.name.trim()
           : `Project ${index + 1}`;
       const candidate = baseName || `Project ${index + 1}`;
-      const unique = generateUniqueName(candidate, usedNames, normalizedNames);
+      const unique = generateUpdatedProjectName(candidate, usedNames, normalizedNames);
       projects[unique] = normalized;
       registerLookupKey(candidate, unique);
+      markProjectNameUsed(unique);
     });
     return { projects, changed: true, originalValue, lookup: createLookupSnapshot() };
   }
@@ -4372,20 +4415,43 @@ function readAllProjectsFromStorage() {
   if (maybeLegacy) {
     const normalized = normalizeProject(parsed);
     if (normalized) {
-      projects[""] = normalized;
-      registerLookupKey("", "");
+      const updatedName = generateUpdatedProjectName("", usedProjectNames, normalizedProjectNames);
+      projects[updatedName] = normalized;
+      registerLookupKey("", updatedName);
+      markProjectNameUsed(updatedName);
     }
     return { projects, changed: true, originalValue, lookup: createLookupSnapshot() };
   }
 
   keys.forEach((key) => {
+    if (isNormalizedProjectEntry(parsed[key])) {
+      const trimmedKey = typeof key === "string" ? key.trim() : "";
+      if (trimmedKey) {
+        normalizedProjectNames.add(trimmedKey.toLowerCase());
+      }
+    }
+  });
+
+  keys.forEach((key) => {
     const normalized = normalizeProject(parsed[key]);
     if (normalized) {
-      projects[key] = normalized;
-      registerLookupKey(key, key);
-      if (!isNormalizedProjectEntry(parsed[key])) {
+      const originalEntry = parsed[key];
+      const needsUpgrade = !isNormalizedProjectEntry(originalEntry);
+      let finalKey = key;
+      if (needsUpgrade) {
+        finalKey = generateUpdatedProjectName(key, usedProjectNames, normalizedProjectNames);
         changed = true;
       }
+      if (
+        finalKey !== key
+        && Object.prototype.hasOwnProperty.call(projects, finalKey)
+      ) {
+        const adjusted = generateUpdatedProjectName(finalKey, usedProjectNames, normalizedProjectNames);
+        finalKey = adjusted;
+      }
+      projects[finalKey] = normalized;
+      registerLookupKey(key, finalKey);
+      markProjectNameUsed(finalKey);
     } else {
       changed = true;
     }
