@@ -4712,12 +4712,20 @@ function saveCurrentGearList() {
     const projectInfoSnapshot = cloneProjectInfoForStorage(projectInfoForStorage);
     const projectInfoSignature = projectInfoSnapshot ? stableStringify(projectInfoSnapshot) : '';
     const projectInfoSnapshotForSetups = projectInfoSnapshot ? cloneProjectInfoForStorage(projectInfoSnapshot) : null;
-    const projectRules = getProjectScopedAutoGearRules();
-    let diagramPositions = null;
+    const projectRulesRaw = getProjectScopedAutoGearRules();
+    const projectRulesSnapshot = projectRulesRaw && projectRulesRaw.length
+        ? cloneProjectInfoForStorage(projectRulesRaw)
+        : null;
+    const projectRulesSnapshotForSetups = projectRulesSnapshot
+        ? cloneProjectInfoForStorage(projectRulesSnapshot)
+        : null;
+    let diagramPositionsSnapshot = null;
+    let diagramPositionsSnapshotForSetups = null;
     if (typeof getDiagramManualPositions === 'function') {
         const positions = getDiagramManualPositions();
         if (positions && Object.keys(positions).length) {
-            diagramPositions = positions;
+            diagramPositionsSnapshot = cloneProjectInfoForStorage(positions);
+            diagramPositionsSnapshotForSetups = cloneProjectInfoForStorage(diagramPositionsSnapshot);
         }
     }
     if (typeof saveProject === 'function' && typeof projectStorageKey === 'string' && projectStorageKey) {
@@ -4731,11 +4739,11 @@ function saveCurrentGearList() {
         if (hasGearSelectors) {
             payload.gearSelectors = gearSelectors;
         }
-        if (diagramPositions) {
-            payload.diagramPositions = diagramPositions;
+        if (diagramPositionsSnapshot) {
+            payload.diagramPositions = diagramPositionsSnapshot;
         }
-        if (projectRules && projectRules.length) {
-            payload.autoGearRules = projectRules;
+        if (projectRulesSnapshot && projectRulesSnapshot.length) {
+            payload.autoGearRules = projectRulesSnapshot;
         }
         saveProject(projectStorageKey, payload);
     }
@@ -4744,7 +4752,13 @@ function saveCurrentGearList() {
 
     const setups = getSetups();
     const existing = setups[selectedStorageKey];
-    if (!existing && !html && !currentProjectInfo && !(projectRules && projectRules.length) && !diagramPositions) {
+    if (
+        !existing
+        && !html
+        && !currentProjectInfo
+        && !(projectRulesSnapshot && projectRulesSnapshot.length)
+        && !diagramPositionsSnapshot
+    ) {
         return;
     }
 
@@ -4773,13 +4787,13 @@ function saveCurrentGearList() {
         changed = true;
     }
 
-    if (diagramPositions) {
+    if (diagramPositionsSnapshotForSetups) {
         const existingDiagramSig = setup.diagramPositions
             ? stableStringify(setup.diagramPositions)
             : '';
-        const newDiagramSig = stableStringify(diagramPositions);
+        const newDiagramSig = stableStringify(diagramPositionsSnapshotForSetups);
         if (existingDiagramSig !== newDiagramSig) {
-            setup.diagramPositions = diagramPositions;
+            setup.diagramPositions = diagramPositionsSnapshotForSetups;
             changed = true;
         }
     } else if (Object.prototype.hasOwnProperty.call(setup, 'diagramPositions')) {
@@ -4789,10 +4803,10 @@ function saveCurrentGearList() {
 
     const existingRules = setup.autoGearRules;
     const existingRulesSig = existingRules && existingRules.length ? stableStringify(existingRules) : '';
-    const newRulesSig = projectRules && projectRules.length ? stableStringify(projectRules) : '';
+    const newRulesSig = projectRulesSnapshot && projectRulesSnapshot.length ? stableStringify(projectRulesSnapshot) : '';
     if (newRulesSig) {
         if (existingRulesSig !== newRulesSig) {
-            setup.autoGearRules = projectRules;
+            setup.autoGearRules = projectRulesSnapshotForSetups;
             changed = true;
         }
     } else if (Object.prototype.hasOwnProperty.call(setup, 'autoGearRules')) {
