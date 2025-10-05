@@ -459,13 +459,31 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (!entry) {
         return;
       }
-      var storageId = entry.storage || null;
-      var id = "".concat(entry.key, "__").concat(storageId ? String(storageId) : 'default');
-      if (seen.has(id)) {
-        return;
+      var variants = getStorageKeyVariants(entry.key);
+      var expectedBaseBackupKey = "".concat(entry.key).concat(STORAGE_BACKUP_SUFFIX);
+      for (var index = 0; index < variants.length; index += 1) {
+        var variantKey = variants[index];
+        if (typeof variantKey !== 'string' || !variantKey) {
+          continue;
+        }
+        var resolvedBackupKey = entry.backupKey;
+        if (variantKey !== entry.key) {
+          if (entry.backupKey === expectedBaseBackupKey) {
+            resolvedBackupKey = "".concat(variantKey).concat(STORAGE_BACKUP_SUFFIX);
+          }
+        }
+        var variantEntry = variantKey === entry.key ? entry : _objectSpread(_objectSpread({}, entry), {}, {
+          key: variantKey,
+          backupKey: resolvedBackupKey
+        });
+        var storageId = variantEntry.storage || null;
+        var id = "".concat(variantEntry.key, "__").concat(storageId ? String(storageId) : 'default');
+        if (seen.has(id)) {
+          continue;
+        }
+        seen.add(id);
+        entries.push(variantEntry);
       }
-      seen.add(id);
-      entries.push(entry);
     };
     for (var i = 0; i < CRITICAL_BACKUP_KEY_PROVIDERS.length; i += 1) {
       var provider = CRITICAL_BACKUP_KEY_PROVIDERS[i];

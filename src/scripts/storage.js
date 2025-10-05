@@ -462,13 +462,40 @@ function gatherCriticalStorageEntries(options = {}) {
     if (!entry) {
       return;
     }
-    const storageId = entry.storage || null;
-    const id = `${entry.key}__${storageId ? String(storageId) : 'default'}`;
-    if (seen.has(id)) {
-      return;
+
+    const variants = getStorageKeyVariants(entry.key);
+    const expectedBaseBackupKey = `${entry.key}${STORAGE_BACKUP_SUFFIX}`;
+
+    for (let index = 0; index < variants.length; index += 1) {
+      const variantKey = variants[index];
+      if (typeof variantKey !== 'string' || !variantKey) {
+        continue;
+      }
+
+      let resolvedBackupKey = entry.backupKey;
+      if (variantKey !== entry.key) {
+        if (entry.backupKey === expectedBaseBackupKey) {
+          resolvedBackupKey = `${variantKey}${STORAGE_BACKUP_SUFFIX}`;
+        }
+      }
+
+      const variantEntry = variantKey === entry.key
+        ? entry
+        : {
+          ...entry,
+          key: variantKey,
+          backupKey: resolvedBackupKey,
+        };
+
+      const storageId = variantEntry.storage || null;
+      const id = `${variantEntry.key}__${storageId ? String(storageId) : 'default'}`;
+      if (seen.has(id)) {
+        continue;
+      }
+
+      seen.add(id);
+      entries.push(variantEntry);
     }
-    seen.add(id);
-    entries.push(entry);
   };
 
   for (let i = 0; i < CRITICAL_BACKUP_KEY_PROVIDERS.length; i += 1) {
