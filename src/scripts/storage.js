@@ -4185,6 +4185,77 @@ function isNormalizedProjectEntry(entry) {
   return true;
 }
 
+function normalizeProjectStorageKey(name) {
+  if (typeof name !== "string") {
+    return "";
+  }
+  return name.trim();
+}
+
+function resolveProjectKey(projects, lookup, name, options = {}) {
+  if (!projects || typeof projects !== "object") {
+    return null;
+  }
+
+  const rawName = typeof name === "string" ? name : "";
+  if (Object.prototype.hasOwnProperty.call(projects, rawName)) {
+    return rawName;
+  }
+
+  const normalizedName = normalizeProjectStorageKey(rawName);
+  if (
+    normalizedName
+    && normalizedName !== rawName
+    && Object.prototype.hasOwnProperty.call(projects, normalizedName)
+  ) {
+    return normalizedName;
+  }
+
+  if (!lookup || typeof lookup !== "object") {
+    return null;
+  }
+
+  const { raw: rawMap, normalized: normalizedMap } = lookup;
+
+  if (rawMap && typeof rawMap.get === "function" && rawMap.has(rawName)) {
+    const candidate = rawMap.get(rawName);
+    if (Object.prototype.hasOwnProperty.call(projects, candidate)) {
+      return candidate;
+    }
+  }
+
+  if (
+    normalizedMap
+    && typeof normalizedMap.get === "function"
+    && normalizedMap.has(normalizedName)
+  ) {
+    const candidates = normalizedMap.get(normalizedName);
+    if (Array.isArray(candidates)) {
+      if (options && options.preferExact && rawName) {
+        const exact = candidates.find(
+          (candidate) => candidate === rawName && Object.prototype.hasOwnProperty.call(projects, candidate),
+        );
+        if (exact) {
+          return exact;
+        }
+      }
+      const firstExisting = candidates.find((candidate) =>
+        Object.prototype.hasOwnProperty.call(projects, candidate)
+      );
+      if (firstExisting) {
+        return firstExisting;
+      }
+    } else if (
+      typeof candidates === "string"
+      && Object.prototype.hasOwnProperty.call(projects, candidates)
+    ) {
+      return candidates;
+    }
+  }
+
+  return null;
+}
+
 function readAllProjectsFromStorage() {
   applyLegacyStorageMigrations();
   const safeStorage = getSafeLocalStorage();
@@ -4205,16 +4276,36 @@ function readAllProjectsFromStorage() {
   const projects = {};
   let changed = false;
 
+  const rawKeyLookup = new Map();
+  const normalizedKeyLookup = new Map();
+  const registerLookupKey = (rawKey, storedKey) => {
+    if (typeof rawKey !== "string") {
+      return;
+    }
+    const effectiveKey = typeof storedKey === "string" ? storedKey : rawKey;
+    rawKeyLookup.set(rawKey, effectiveKey);
+    const normalized = normalizeProjectStorageKey(rawKey);
+    if (!normalizedKeyLookup.has(normalized)) {
+      normalizedKeyLookup.set(normalized, []);
+    }
+    normalizedKeyLookup.get(normalized).push(effectiveKey);
+  };
+  const createLookupSnapshot = () => ({
+    raw: rawKeyLookup,
+    normalized: normalizedKeyLookup,
+  });
+
   if (parsed === null || parsed === undefined) {
-    return { projects, changed: false, originalValue };
+    return { projects, changed: false, originalValue, lookup: createLookupSnapshot() };
   }
 
   if (typeof parsed === "string") {
     const normalized = normalizeProject(parsed);
     if (normalized) {
       projects[""] = normalized;
+      registerLookupKey("", "");
     }
-    return { projects, changed: true, originalValue };
+    return { projects, changed: true, originalValue, lookup: createLookupSnapshot() };
   }
 
   if (Array.isArray(parsed)) {
@@ -4233,12 +4324,13 @@ function readAllProjectsFromStorage() {
       const candidate = baseName || `Project ${index + 1}`;
       const unique = generateUniqueName(candidate, usedNames, normalizedNames);
       projects[unique] = normalized;
+      registerLookupKey(candidate, unique);
     });
-    return { projects, changed: true, originalValue };
+    return { projects, changed: true, originalValue, lookup: createLookupSnapshot() };
   }
 
   if (!isPlainObject(parsed)) {
-    return { projects, changed: true, originalValue };
+    return { projects, changed: true, originalValue, lookup: createLookupSnapshot() };
   }
 
   const keys = Object.keys(parsed);
@@ -4249,14 +4341,16 @@ function readAllProjectsFromStorage() {
     const normalized = normalizeProject(parsed);
     if (normalized) {
       projects[""] = normalized;
+      registerLookupKey("", "");
     }
-    return { projects, changed: true, originalValue };
+    return { projects, changed: true, originalValue, lookup: createLookupSnapshot() };
   }
 
   keys.forEach((key) => {
     const normalized = normalizeProject(parsed[key]);
     if (normalized) {
       projects[key] = normalized;
+      registerLookupKey(key, key);
       if (!isNormalizedProjectEntry(parsed[key])) {
         changed = true;
       }
@@ -4265,7 +4359,7 @@ function readAllProjectsFromStorage() {
     }
   });
 
-  return { projects, changed, originalValue };
+  return { projects, changed, originalValue, lookup: createLookupSnapshot() };
 }
 
 function persistAllProjects(projects) {
@@ -4293,7 +4387,7 @@ function persistAllProjects(projects) {
 }
 
 function loadProject(name) {
-  const { projects, changed, originalValue } = readAllProjectsFromStorage();
+  const { projects, changed, originalValue, lookup } = readAllProjectsFromStorage();
   if (changed) {
     const safeStorage = getSafeLocalStorage();
     if (safeStorage) {
@@ -4304,8 +4398,15 @@ function loadProject(name) {
   if (name === undefined) {
     return projects;
   }
-  const key = name || "";
-  return Object.prototype.hasOwnProperty.call(projects, key) ? projects[key] : null;
+  const resolvedKey = resolveProjectKey(projects, lookup, name, { preferExact: true });
+  if (
+    resolvedKey !== null
+    && resolvedKey !== undefined
+    && Object.prototype.hasOwnProperty.call(projects, resolvedKey)
+  ) {
+    return projects[resolvedKey];
+  }
+  return null;
 }
 
 function sanitizeProjectNameForBackup(name) {
@@ -4450,7 +4551,7 @@ function saveProject(name, project) {
     }
     return;
   }
-  const { projects, changed, originalValue } = readAllProjectsFromStorage();
+  const { projects, changed, originalValue, lookup } = readAllProjectsFromStorage();
   if (changed) {
     const safeStorage = getSafeLocalStorage();
     if (safeStorage) {
@@ -4458,22 +4559,59 @@ function saveProject(name, project) {
     }
   }
 
-  const key = name || "";
-  const hasExistingEntry = Object.prototype.hasOwnProperty.call(projects, key);
+  const requestedKey = typeof name === 'string' ? name : '';
+  const preferredKey = normalizeProjectStorageKey(requestedKey);
+  const resolvedKey = resolveProjectKey(projects, lookup, requestedKey, { preferExact: true });
+
+  let storageKey = resolvedKey;
+  let renamedFromKey = null;
+  if (
+    preferredKey
+    && preferredKey !== resolvedKey
+    && !Object.prototype.hasOwnProperty.call(projects, preferredKey)
+  ) {
+    storageKey = preferredKey;
+    renamedFromKey = resolvedKey;
+  }
+
+  if (storageKey === null || storageKey === undefined) {
+    storageKey = preferredKey;
+  }
+
+  if (!storageKey && storageKey !== '') {
+    storageKey = '';
+  }
+
+  const existingKey = renamedFromKey !== null && renamedFromKey !== undefined
+    ? renamedFromKey
+    : storageKey;
+  const hasExistingEntry =
+    existingKey !== null
+    && existingKey !== undefined
+    && Object.prototype.hasOwnProperty.call(projects, existingKey);
+
   if (hasExistingEntry) {
-    const existingSignature = createStableValueSignature(projects[key]);
+    const existingSignature = createStableValueSignature(projects[existingKey]);
     const nextSignature = createStableValueSignature(normalized);
     if (existingSignature !== nextSignature) {
-      const backupOutcome = maybeCreateProjectOverwriteBackup(projects, key);
+      const backupOutcome = maybeCreateProjectOverwriteBackup(projects, existingKey);
       if (backupOutcome.status === 'failed') {
         console.warn(
-          `Automatic backup before overwriting project "${key}" failed. Proceeding with save.`,
+          `Automatic backup before overwriting project "${existingKey}" failed. Proceeding with save.`,
         );
       }
     }
   }
 
-  projects[key] = normalized;
+  if (
+    renamedFromKey !== null
+    && renamedFromKey !== undefined
+    && renamedFromKey !== storageKey
+  ) {
+    delete projects[renamedFromKey];
+  }
+
+  projects[storageKey || ''] = normalized;
   persistAllProjects(projects);
 }
 
@@ -4487,14 +4625,18 @@ function deleteProject(name) {
     return;
   }
 
-  const key = name || "";
-  const { projects, changed, originalValue } = readAllProjectsFromStorage();
+  const { projects, changed, originalValue, lookup } = readAllProjectsFromStorage();
   if (changed) {
     const safeStorage = getSafeLocalStorage();
     if (safeStorage) {
       createStorageMigrationBackup(safeStorage, PROJECT_STORAGE_KEY, originalValue);
     }
   }
+  const resolvedKey = resolveProjectKey(projects, lookup, name, { preferExact: true });
+  const key =
+    resolvedKey !== null && resolvedKey !== undefined
+      ? resolvedKey
+      : normalizeProjectStorageKey(name);
   if (!Object.prototype.hasOwnProperty.call(projects, key)) {
     return;
   }

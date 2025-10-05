@@ -751,6 +751,41 @@ describe('project storage', () => {
     expect(loadProject('B')).toEqual({ gearList: '<ul>B</ul>', projectInfo: null });
   });
 
+  test('loadProject resolves entries saved with surrounding whitespace', () => {
+    localStorage.setItem(PROJECT_KEY, JSON.stringify({
+      ' Spaced ': { gearList: '<ul>Saved</ul>', projectInfo: null },
+    }));
+
+    expect(loadProject(' Spaced ')).toEqual({ gearList: '<ul>Saved</ul>', projectInfo: null });
+    expect(loadProject('Spaced')).toEqual({ gearList: '<ul>Saved</ul>', projectInfo: null });
+  });
+
+  test('saveProject normalizes project keys with surrounding whitespace when unused', () => {
+    localStorage.setItem(PROJECT_KEY, JSON.stringify({
+      'Old Name ': { gearList: '<ul>Legacy</ul>', projectInfo: null },
+    }));
+
+    saveProject('Old Name ', { gearList: '<ul>Updated</ul>', projectInfo: null });
+
+    const stored = JSON.parse(localStorage.getItem(PROJECT_KEY));
+    expect(stored['Old Name ']).toBeUndefined();
+    expect(stored['Old Name']).toEqual({ gearList: '<ul>Updated</ul>', projectInfo: null });
+    expect(loadProject('Old Name ')).toEqual({ gearList: '<ul>Updated</ul>', projectInfo: null });
+  });
+
+  test('deleteProject removes entries even when addressed with trimmed names', () => {
+    saveProject('Keep ', { gearList: '<ul>Keep</ul>', projectInfo: null });
+    saveProject('Drop', { gearList: '<ul>Drop</ul>', projectInfo: null });
+
+    expect(loadProject('Keep')).toEqual({ gearList: '<ul>Keep</ul>', projectInfo: null });
+
+    deleteProject(' Drop ');
+
+    const stored = JSON.parse(localStorage.getItem(PROJECT_KEY));
+    expect(stored.Drop).toBeUndefined();
+    expect(loadProject('Drop')).toBeNull();
+  });
+
   test('saveProject normalizes null gearList to empty string', () => {
     saveProject('NullProj', { gearList: null });
     expect(loadProject('NullProj')).toEqual({ gearList: '', projectInfo: null });
