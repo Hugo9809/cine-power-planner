@@ -122,7 +122,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     return value;
   }
 
-  ensureCoreGlobalValue('gridSnap', function () {
+  var gridSnap = ensureCoreGlobalValue('gridSnap', function () {
     return false;
   });
 
@@ -620,8 +620,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
 
   var gridSnapState = normaliseGridSnapPreference(readInitialGridSnapPreference(), false);
+  gridSnap = gridSnapState;
 
   function syncGridSnapStateToScopes(value) {
+    var originScope = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
     var scopes = getGridSnapStateScopes();
     for (var index = 0; index < scopes.length; index += 1) {
       var scope = scopes[index];
@@ -643,6 +645,10 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         }
       }
 
+      if (originScope === scope) {
+        continue;
+      }
+
       try {
         scope.gridSnap = value;
       } catch (assignLegacyError) {
@@ -657,6 +663,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
         }
       }
     }
+
+    gridSnap = value;
+    return value;
   }
 
   function getGridSnapState() {
@@ -669,6 +678,15 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     syncGridSnapStateToScopes(normalized);
     return gridSnapState;
   }
+
+  function applyLegacyGridSnapValue(value) {
+    var normalized = normaliseGridSnapPreference(value, gridSnapState);
+    gridSnapState = normalized;
+    gridSnap = normalized;
+    return gridSnapState;
+  }
+
+  exposeCoreRuntimeConstant('applyLegacyGridSnapValue', applyLegacyGridSnapValue);
 
   syncGridSnapStateToScopes(gridSnapState);
 
