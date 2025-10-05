@@ -5614,6 +5614,40 @@ body.light-mode #topBar select:focus-visible {
   overflow: auto;
 }
 
+.diagram-popup--camera {
+  width: min(520px, calc(100vw - 24px));
+  max-width: min(520px, calc(100vw - 24px));
+}
+
+.diagram-popup--camera .connector-summary,
+.diagram-popup--camera .scenario-summary,
+.diagram-popup--camera .icon-box-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  column-gap: 6px;
+  row-gap: 4px;
+}
+
+.diagram-popup--camera .connector-summary > *,
+.diagram-popup--camera .scenario-summary > *,
+.diagram-popup--camera .icon-box-summary > * {
+  min-width: 0;
+}
+
+.diagram-popup--camera .connector-summary .info-label,
+.diagram-popup--camera .connector-summary .port-table,
+.diagram-popup--camera .connector-summary .lens-mount-box,
+.diagram-popup--camera .connector-summary .tray-box {
+  grid-column: 1 / -1;
+}
+
+.diagram-popup--camera .connector-summary .connector-block,
+.diagram-popup--camera .connector-summary .info-box,
+.diagram-popup--camera .connector-summary .scenario-box,
+.diagram-popup--camera .connector-summary .icon-box {
+  width: 100%;
+}
+
 
 /* Device info lists inside diagram popups */
 .connector-summary {
