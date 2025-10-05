@@ -17,12 +17,12 @@
 
   const LOCAL_SCOPE = fallbackDetectPrimaryScope();
 
-  function resolveArchitecture(scope) {
+  function resolveArchitectureAccess(scope) {
     const targetScope = scope || LOCAL_SCOPE;
 
     if (typeof require === 'function') {
       try {
-        const required = require('./architecture.js');
+        const required = require('./architecture-access.js');
         if (required && typeof required === 'object') {
           return required;
         }
@@ -31,18 +31,29 @@
       }
     }
 
-    if (targetScope && typeof targetScope.cineModuleArchitecture === 'object') {
-      return targetScope.cineModuleArchitecture;
+    if (targetScope && typeof targetScope.cineModuleArchitectureAccess === 'object') {
+      return targetScope.cineModuleArchitectureAccess;
     }
 
     return null;
   }
 
-  const ARCHITECTURE = resolveArchitecture(LOCAL_SCOPE);
+  const ARCHITECTURE_ACCESS = resolveArchitectureAccess(LOCAL_SCOPE);
+  const ARCHITECTURE_BRIDGE =
+    ARCHITECTURE_ACCESS && typeof ARCHITECTURE_ACCESS.createScopedBridge === 'function'
+      ? ARCHITECTURE_ACCESS.createScopedBridge({ scope: LOCAL_SCOPE })
+      : null;
+  const ARCHITECTURE =
+    ARCHITECTURE_BRIDGE && typeof ARCHITECTURE_BRIDGE.getArchitecture === 'function'
+      ? ARCHITECTURE_BRIDGE.getArchitecture()
+      : null;
 
   const detectPrimaryScope =
-    ARCHITECTURE && typeof ARCHITECTURE.detectGlobalScope === 'function'
-      ? ARCHITECTURE.detectGlobalScope
+    ARCHITECTURE_BRIDGE && typeof ARCHITECTURE_BRIDGE.detectGlobalScope === 'function'
+      ? function detectWithBridge() {
+          const detected = ARCHITECTURE_BRIDGE.detectGlobalScope();
+          return detected || fallbackDetectPrimaryScope();
+        }
       : fallbackDetectPrimaryScope;
 
   const PRIMARY_SCOPE = detectPrimaryScope();
@@ -69,29 +80,34 @@
   }
 
   const collectCandidateScopes =
-    ARCHITECTURE && typeof ARCHITECTURE.collectCandidateScopes === 'function'
-      ? function (primary) {
-          return ARCHITECTURE.collectCandidateScopes(primary || PRIMARY_SCOPE);
+    ARCHITECTURE_BRIDGE && typeof ARCHITECTURE_BRIDGE.collectCandidateScopes === 'function'
+      ? function collectWithBridge(primary) {
+          return ARCHITECTURE_BRIDGE.collectCandidateScopes(primary || PRIMARY_SCOPE);
         }
-      : function (primary) {
+      : function collectWithFallback(primary) {
           return fallbackCollectCandidateScopes(primary || PRIMARY_SCOPE);
         };
 
   const tryRequire =
-    ARCHITECTURE && typeof ARCHITECTURE.tryRequire === 'function'
-      ? ARCHITECTURE.tryRequire
-      : function (modulePath) {
-          if (typeof require !== 'function') {
-            return null;
-          }
+    ARCHITECTURE_BRIDGE && typeof ARCHITECTURE_BRIDGE.tryRequire === 'function'
+      ? function tryWithBridge(modulePath) {
+          const result = ARCHITECTURE_BRIDGE.tryRequire(modulePath);
+          return typeof result === 'undefined' ? fallbackTryRequire(modulePath) : result;
+        }
+      : fallbackTryRequire;
 
-          try {
-            return require(modulePath);
-          } catch (error) {
-            void error;
-            return null;
-          }
-        };
+  function fallbackTryRequire(modulePath) {
+    if (typeof require !== 'function') {
+      return null;
+    }
+
+    try {
+      return require(modulePath);
+    } catch (error) {
+      void error;
+      return null;
+    }
+  }
 
   let resolvedModuleBase;
   let hasResolvedModuleBase = false;
@@ -103,8 +119,11 @@
     }
 
     const scopes = collectCandidateScopes(PRIMARY_SCOPE);
-    if (ARCHITECTURE && typeof ARCHITECTURE.resolveFromScopes === 'function') {
-      const resolved = ARCHITECTURE.resolveFromScopes('cineModuleBase', { scopes });
+    if (ARCHITECTURE_BRIDGE && typeof ARCHITECTURE_BRIDGE.resolveFromScopes === 'function') {
+      const resolved = ARCHITECTURE_BRIDGE.resolveFromScopes('cineModuleBase', {
+        primaryScope: PRIMARY_SCOPE,
+        scopes,
+      });
       if (resolved && typeof resolved === 'object') {
         return resolved;
       }
@@ -192,8 +211,11 @@
     }
 
     const scopes = getCandidateScopes(targetScope);
-    if (ARCHITECTURE && typeof ARCHITECTURE.resolveFromScopes === 'function') {
-      const resolved = ARCHITECTURE.resolveFromScopes('cineModules', { scopes });
+    if (ARCHITECTURE_BRIDGE && typeof ARCHITECTURE_BRIDGE.resolveFromScopes === 'function') {
+      const resolved = ARCHITECTURE_BRIDGE.resolveFromScopes('cineModules', {
+        primaryScope: targetScope,
+        scopes,
+      });
       if (resolved && typeof resolved === 'object') {
         return resolved;
       }

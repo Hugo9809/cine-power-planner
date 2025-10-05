@@ -17,12 +17,12 @@
 
   const LOCAL_SCOPE = fallbackDetectGlobalScope();
 
-  function resolveArchitecture(scope) {
+  function resolveArchitectureAccess(scope) {
     const targetScope = scope || LOCAL_SCOPE;
 
     if (typeof require === 'function') {
       try {
-        const required = require('./architecture.js');
+        const required = require('./architecture-access.js');
         if (required && typeof required === 'object') {
           return required;
         }
@@ -31,27 +31,28 @@
       }
     }
 
-    if (targetScope && typeof targetScope.cineModuleArchitecture === 'object') {
-      return targetScope.cineModuleArchitecture;
+    if (targetScope && typeof targetScope.cineModuleArchitectureAccess === 'object') {
+      return targetScope.cineModuleArchitectureAccess;
     }
 
     return null;
   }
 
-  const ARCHITECTURE = resolveArchitecture(LOCAL_SCOPE);
+  const ARCHITECTURE_ACCESS = resolveArchitectureAccess(LOCAL_SCOPE);
+  const ARCHITECTURE_BRIDGE =
+    ARCHITECTURE_ACCESS && typeof ARCHITECTURE_ACCESS.createScopedBridge === 'function'
+      ? ARCHITECTURE_ACCESS.createScopedBridge({ scope: LOCAL_SCOPE })
+      : null;
+  const ARCHITECTURE =
+    ARCHITECTURE_BRIDGE && typeof ARCHITECTURE_BRIDGE.getArchitecture === 'function'
+      ? ARCHITECTURE_BRIDGE.getArchitecture()
+      : null;
 
   const detectGlobalScope =
-    ARCHITECTURE && typeof ARCHITECTURE.detectGlobalScope === 'function'
-      ? function detectWithArchitecture() {
-          try {
-            const detected = ARCHITECTURE.detectGlobalScope();
-            if (detected) {
-              return detected;
-            }
-          } catch (error) {
-            void error;
-          }
-          return fallbackDetectGlobalScope();
+    ARCHITECTURE_BRIDGE && typeof ARCHITECTURE_BRIDGE.detectGlobalScope === 'function'
+      ? function detectWithBridge() {
+          const detected = ARCHITECTURE_BRIDGE.detectGlobalScope();
+          return detected || fallbackDetectGlobalScope();
         }
       : fallbackDetectGlobalScope;
 
@@ -78,22 +79,14 @@
     return scopes;
   }
 
-  function collectScopes(primary) {
-    const targetScope = primary || PRIMARY_SCOPE;
-
-    if (ARCHITECTURE && typeof ARCHITECTURE.collectCandidateScopes === 'function') {
-      try {
-        const collected = ARCHITECTURE.collectCandidateScopes(targetScope);
-        if (Array.isArray(collected) && collected.length > 0) {
-          return collected;
+  const collectScopes =
+    ARCHITECTURE_BRIDGE && typeof ARCHITECTURE_BRIDGE.collectCandidateScopes === 'function'
+      ? function collectWithBridge(primary) {
+          return ARCHITECTURE_BRIDGE.collectCandidateScopes(primary || PRIMARY_SCOPE);
         }
-      } catch (error) {
-        void error;
-      }
-    }
-
-    return fallbackCollectCandidateScopes(targetScope);
-  }
+      : function collectWithFallback(primary) {
+          return fallbackCollectCandidateScopes(primary || PRIMARY_SCOPE);
+        };
 
   function fallbackTryRequire(modulePath) {
     if (typeof require !== 'function') {
@@ -109,9 +102,9 @@
   }
 
   const baseTryRequire =
-    ARCHITECTURE && typeof ARCHITECTURE.tryRequire === 'function'
-      ? function tryRequireWithArchitecture(modulePath) {
-          const result = ARCHITECTURE.tryRequire(modulePath);
+    ARCHITECTURE_BRIDGE && typeof ARCHITECTURE_BRIDGE.tryRequire === 'function'
+      ? function tryRequireWithBridge(modulePath) {
+          const result = ARCHITECTURE_BRIDGE.tryRequire(modulePath);
           return typeof result === 'undefined' ? fallbackTryRequire(modulePath) : result;
         }
       : fallbackTryRequire;
@@ -144,8 +137,8 @@
   }
 
   const defineHiddenProperty =
-    ARCHITECTURE && typeof ARCHITECTURE.defineHiddenProperty === 'function'
-      ? ARCHITECTURE.defineHiddenProperty
+    ARCHITECTURE_BRIDGE && typeof ARCHITECTURE_BRIDGE.defineHiddenProperty === 'function'
+      ? ARCHITECTURE_BRIDGE.defineHiddenProperty
       : fallbackDefineHiddenProperty;
 
   function fallbackFreezeDeep(value, seen = new WeakSet()) {
@@ -174,8 +167,10 @@
   }
 
   const freezeDeep =
-    ARCHITECTURE && typeof ARCHITECTURE.freezeDeep === 'function'
-      ? ARCHITECTURE.freezeDeep
+    ARCHITECTURE_BRIDGE && typeof ARCHITECTURE_BRIDGE.freezeDeep === 'function'
+      ? function freezeWithBridge(value) {
+          return ARCHITECTURE_BRIDGE.freezeDeep(value);
+        }
       : fallbackFreezeDeep;
 
   function fallbackSafeWarn(message, detail) {
@@ -195,8 +190,8 @@
   }
 
   const safeWarn =
-    ARCHITECTURE && typeof ARCHITECTURE.safeWarn === 'function'
-      ? ARCHITECTURE.safeWarn
+    ARCHITECTURE_BRIDGE && typeof ARCHITECTURE_BRIDGE.safeWarn === 'function'
+      ? ARCHITECTURE_BRIDGE.safeWarn
       : fallbackSafeWarn;
 
   function fallbackResolveFromScopes(propertyName, options) {
@@ -233,8 +228,8 @@
   }
 
   const resolveFromScopes =
-    ARCHITECTURE && typeof ARCHITECTURE.resolveFromScopes === 'function'
-      ? function resolveWithArchitecture(propertyName, options) {
+    ARCHITECTURE_BRIDGE && typeof ARCHITECTURE_BRIDGE.resolveFromScopes === 'function'
+      ? function resolveWithBridge(propertyName, options) {
           const settings = { ...(options || {}) };
           if (!settings.primaryScope) {
             settings.primaryScope = PRIMARY_SCOPE;
@@ -242,7 +237,7 @@
           if (!settings.scopes) {
             settings.scopes = collectScopes(settings.primaryScope);
           }
-          return ARCHITECTURE.resolveFromScopes(propertyName, settings);
+          return ARCHITECTURE_BRIDGE.resolveFromScopes(propertyName, settings);
         }
       : fallbackResolveFromScopes;
 
@@ -422,10 +417,10 @@
   }
 
   const ensureRegistrationQueue =
-    ARCHITECTURE && typeof ARCHITECTURE.ensureQueue === 'function'
-      ? function ensureWithArchitecture(scope) {
+    ARCHITECTURE_BRIDGE && typeof ARCHITECTURE_BRIDGE.ensureQueue === 'function'
+      ? function ensureWithBridge(scope) {
           const targetScope = scope || PRIMARY_SCOPE;
-          const queue = ARCHITECTURE.ensureQueue(targetScope, pendingQueueKey);
+          const queue = ARCHITECTURE_BRIDGE.ensureQueue(targetScope, pendingQueueKey);
           if (Array.isArray(queue)) {
             return queue;
           }

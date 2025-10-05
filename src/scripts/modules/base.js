@@ -17,12 +17,12 @@
 
   const LOCAL_SCOPE = fallbackDetectGlobalScope();
 
-  function resolveArchitecture(scope) {
+  function resolveArchitectureAccess(scope) {
     const targetScope = scope || LOCAL_SCOPE;
 
     if (typeof require === 'function') {
       try {
-        const required = require('./architecture.js');
+        const required = require('./architecture-access.js');
         if (required && typeof required === 'object') {
           return required;
         }
@@ -31,18 +31,25 @@
       }
     }
 
-    if (targetScope && typeof targetScope.cineModuleArchitecture === 'object') {
-      return targetScope.cineModuleArchitecture;
+    if (targetScope && typeof targetScope.cineModuleArchitectureAccess === 'object') {
+      return targetScope.cineModuleArchitectureAccess;
     }
 
     return null;
   }
 
-  const ARCHITECTURE = resolveArchitecture(LOCAL_SCOPE);
+  const ARCHITECTURE_ACCESS = resolveArchitectureAccess(LOCAL_SCOPE);
+  const ARCHITECTURE_BRIDGE =
+    ARCHITECTURE_ACCESS && typeof ARCHITECTURE_ACCESS.createScopedBridge === 'function'
+      ? ARCHITECTURE_ACCESS.createScopedBridge({ scope: LOCAL_SCOPE })
+      : null;
 
   const detectGlobalScope =
-    ARCHITECTURE && typeof ARCHITECTURE.detectGlobalScope === 'function'
-      ? ARCHITECTURE.detectGlobalScope
+    ARCHITECTURE_BRIDGE && typeof ARCHITECTURE_BRIDGE.detectGlobalScope === 'function'
+      ? function detectWithBridge() {
+          const detected = ARCHITECTURE_BRIDGE.detectGlobalScope();
+          return detected || fallbackDetectGlobalScope();
+        }
       : fallbackDetectGlobalScope;
 
   const PRIMARY_SCOPE = detectGlobalScope();
@@ -69,11 +76,11 @@
   }
 
   const collectCandidateScopes =
-    ARCHITECTURE && typeof ARCHITECTURE.collectCandidateScopes === 'function'
-      ? function (primary) {
-          return ARCHITECTURE.collectCandidateScopes(primary || PRIMARY_SCOPE);
+    ARCHITECTURE_BRIDGE && typeof ARCHITECTURE_BRIDGE.collectCandidateScopes === 'function'
+      ? function collectWithBridge(primary) {
+          return ARCHITECTURE_BRIDGE.collectCandidateScopes(primary || PRIMARY_SCOPE);
         }
-      : function (primary) {
+      : function collectWithFallback(primary) {
           return fallbackCollectCandidateScopes(primary || PRIMARY_SCOPE);
         };
 
@@ -91,9 +98,10 @@
   }
 
   const baseTryRequire =
-    ARCHITECTURE && typeof ARCHITECTURE.tryRequire === 'function'
-      ? function (modulePath) {
-          return ARCHITECTURE.tryRequire(modulePath);
+    ARCHITECTURE_BRIDGE && typeof ARCHITECTURE_BRIDGE.tryRequire === 'function'
+      ? function tryRequireWithBridge(modulePath) {
+          const result = ARCHITECTURE_BRIDGE.tryRequire(modulePath);
+          return typeof result === 'undefined' ? fallbackTryRequire(modulePath) : result;
         }
       : fallbackTryRequire;
 
@@ -156,35 +164,39 @@
   }
 
   const defineHiddenProperty =
-    ARCHITECTURE && typeof ARCHITECTURE.defineHiddenProperty === 'function'
-      ? ARCHITECTURE.defineHiddenProperty
+    ARCHITECTURE_BRIDGE && typeof ARCHITECTURE_BRIDGE.defineHiddenProperty === 'function'
+      ? ARCHITECTURE_BRIDGE.defineHiddenProperty
       : fallbackDefineHiddenProperty;
 
+  function fallbackEnsureQueue(scope, key) {
+    if (!scope || typeof scope !== 'object') {
+      return null;
+    }
+
+    let queue = scope[key];
+    if (Array.isArray(queue)) {
+      return queue;
+    }
+
+    if (!defineHiddenProperty(scope, key, [])) {
+      return null;
+    }
+
+    queue = scope[key];
+    if (!Array.isArray(queue)) {
+      return null;
+    }
+
+    return queue;
+  }
+
   const ensureQueue =
-    ARCHITECTURE && typeof ARCHITECTURE.ensureQueue === 'function'
-      ? function (scope) {
-          return ARCHITECTURE.ensureQueue(scope, PENDING_QUEUE_KEY);
+    ARCHITECTURE_BRIDGE && typeof ARCHITECTURE_BRIDGE.ensureQueue === 'function'
+      ? function ensureQueueWithBridge(scope) {
+          return ARCHITECTURE_BRIDGE.ensureQueue(scope || PRIMARY_SCOPE, PENDING_QUEUE_KEY);
         }
-      : function (scope) {
-          if (!scope || typeof scope !== 'object') {
-            return null;
-          }
-
-          let queue = scope[PENDING_QUEUE_KEY];
-          if (Array.isArray(queue)) {
-            return queue;
-          }
-
-          if (!defineHiddenProperty(scope, PENDING_QUEUE_KEY, [])) {
-            return null;
-          }
-
-          queue = scope[PENDING_QUEUE_KEY];
-          if (!Array.isArray(queue)) {
-            return null;
-          }
-
-          return queue;
+      : function ensureQueueWithFallback(scope) {
+          return fallbackEnsureQueue(scope || PRIMARY_SCOPE, PENDING_QUEUE_KEY);
         };
 
   function queueModuleRegistration(scope, name, api, options) {
@@ -252,9 +264,9 @@
   }
 
   const baseFreezeDeep =
-    ARCHITECTURE && typeof ARCHITECTURE.freezeDeep === 'function'
-      ? function (value) {
-          return ARCHITECTURE.freezeDeep(value);
+    ARCHITECTURE_BRIDGE && typeof ARCHITECTURE_BRIDGE.freezeDeep === 'function'
+      ? function freezeWithBridge(value) {
+          return ARCHITECTURE_BRIDGE.freezeDeep(value);
         }
       : fallbackFreezeDeep;
 
@@ -275,8 +287,8 @@
   }
 
   const baseSafeWarn =
-    ARCHITECTURE && typeof ARCHITECTURE.safeWarn === 'function'
-      ? ARCHITECTURE.safeWarn
+    ARCHITECTURE_BRIDGE && typeof ARCHITECTURE_BRIDGE.safeWarn === 'function'
+      ? ARCHITECTURE_BRIDGE.safeWarn
       : fallbackSafeWarn;
 
   function exposeGlobal(name, value, scope, options = {}) {

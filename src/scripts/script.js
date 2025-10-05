@@ -11,6 +11,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
   const path = require('path');
   const vm = require('vm');
   const parts = [
+    'modules/architecture-access.js',
     'modules/base.js',
     'modules/registry.js',
     'modules/environment-bridge.js',
@@ -76,6 +77,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     return require(resolvedPath);
   };
 
+  ensureModule('modules/architecture-access.js');
   ensureModule('modules/base.js');
   ensureModule('modules/registry.js');
   ensureModule('modules/environment-bridge.js');

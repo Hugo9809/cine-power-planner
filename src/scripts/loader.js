@@ -1077,6 +1077,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
     'src/vendor/lz-string.min.js',
     'src/vendor/lottie-light.min.js',
     'src/scripts/auto-gear-weight.js',
+    'src/scripts/modules/architecture-access.js',
     'src/scripts/modules/base.js',
     'src/scripts/modules/registry.js',
     'src/scripts/modules/environment-bridge.js',

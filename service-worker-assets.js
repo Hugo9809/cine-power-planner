@@ -129,6 +129,7 @@
   "./src/scripts/legal-topbar.js",
   "./src/scripts/loader.js",
   "./src/scripts/modern-support-check.mjs",
+  "./src/scripts/modules/architecture-access.js",
   "./src/scripts/modules/base.js",
   "./src/scripts/modules/core-shared.js",
   "./src/scripts/modules/offline.js",
