@@ -10,6 +10,86 @@ const AUTO_GEAR_ANY_MOTOR_TOKEN_FALLBACK =
         ? globalThis.AUTO_GEAR_ANY_MOTOR_TOKEN
         : '__any__';
 
+const localGetLocalizedText = (() => {
+    function fallbackGetLocalizedText(key) {
+        if (!key) return '';
+
+        const scope = getGlobalScope();
+        const allTexts =
+            (scope && typeof scope.texts === 'object' && scope.texts)
+            || (typeof texts === 'object' && texts)
+            || null;
+
+        if (!allTexts) {
+            return '';
+        }
+
+        const scopeLang =
+            scope
+            && typeof scope.currentLang === 'string'
+            && typeof allTexts[scope.currentLang] === 'object'
+                ? scope.currentLang
+                : null;
+
+        const localLang =
+            typeof currentLang === 'string'
+            && typeof allTexts[currentLang] === 'object'
+                ? currentLang
+                : null;
+
+        const langKey = scopeLang || localLang || 'en';
+        const langTexts = (typeof allTexts[langKey] === 'object' && allTexts[langKey]) || {};
+
+        const directValue = Object.prototype.hasOwnProperty.call(langTexts, key)
+            ? langTexts[key]
+            : undefined;
+
+        if (typeof directValue === 'string') {
+            return directValue;
+        }
+
+        const fallbackTexts = (typeof allTexts.en === 'object' && allTexts.en) || {};
+        const fallbackValue = Object.prototype.hasOwnProperty.call(fallbackTexts, key)
+            ? fallbackTexts[key]
+            : undefined;
+
+        return typeof fallbackValue === 'string' ? fallbackValue : '';
+    }
+
+    let loggedGlobalFailure = false;
+
+    return function resolveLocalizedText(key) {
+        const scope = getGlobalScope();
+        const globalFn =
+            scope
+            && typeof scope.getLocalizedText === 'function'
+            && scope.getLocalizedText !== resolveLocalizedText
+                ? scope.getLocalizedText
+                : null;
+
+        if (globalFn) {
+            try {
+                const value = globalFn(key);
+                if (typeof value === 'string') {
+                    return value;
+                }
+            } catch (error) {
+                if (!loggedGlobalFailure && typeof console !== 'undefined' && typeof console.warn === 'function') {
+                    console.warn('getLocalizedText fallback used after global failure', error);
+                    loggedGlobalFailure = true;
+                }
+            }
+        }
+
+        return fallbackGetLocalizedText(key);
+    };
+})();
+
+const localizationScope = getGlobalScope();
+if (localizationScope && typeof localizationScope.getLocalizedText !== 'function') {
+    localizationScope.getLocalizedText = localGetLocalizedText;
+}
+
 // --- NEW SETUP MANAGEMENT FUNCTIONS ---
 
 function hasMeaningfulPowerSelection(value) {
