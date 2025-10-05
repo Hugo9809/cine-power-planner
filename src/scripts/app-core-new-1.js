@@ -9418,7 +9418,9 @@ function setLanguage(lang) {
     }
   }
   if (autoGearAddItemButton) {
-    updateAutoGearItemButtonState('add');
+    if (typeof updateAutoGearItemButtonState === 'function') {
+      updateAutoGearItemButtonState('add');
+    }
   }
   if (autoGearRemoveItemsHeading) {
     autoGearRemoveItemsHeading.textContent = texts[lang].autoGearRemoveItemsHeading || texts.en?.autoGearRemoveItemsHeading || autoGearRemoveItemsHeading.textContent;
@@ -9526,7 +9528,9 @@ function setLanguage(lang) {
     autoGearDraftWarningHeading.textContent = heading;
   }
   if (autoGearRemoveItemButton) {
-    updateAutoGearItemButtonState('remove');
+    if (typeof updateAutoGearItemButtonState === 'function') {
+      updateAutoGearItemButtonState('remove');
+    }
   }
   if (autoGearSaveRuleButton) {
     const label = texts[lang].autoGearSaveRule || texts.en?.autoGearSaveRule || autoGearSaveRuleButton.textContent;
