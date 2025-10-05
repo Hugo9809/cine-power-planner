@@ -11,6 +11,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
   const path = require('path');
   const vm = require('vm');
   const parts = [
+    'modules/base.js',
     'modules/registry.js',
     'modules/offline.js',
     'modules/core-shared.js',
@@ -73,6 +74,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     return require(resolvedPath);
   };
 
+  ensureModule('modules/base.js');
   ensureModule('modules/registry.js');
   ensureModule('modules/persistence.js');
   ensureModule('modules/runtime.js');
@@ -136,6 +138,14 @@ function attemptRegistryBackfill(scope) {
   }
 
   const descriptors = [
+    {
+      name: 'cineModuleBase',
+      category: 'infrastructure',
+      description: 'Shared helpers for module registration, freezing, and safe global exposure.',
+      resolve() {
+        return scope.cineModuleBase || null;
+      },
+    },
     {
       name: 'cineCoreShared',
       category: 'shared',

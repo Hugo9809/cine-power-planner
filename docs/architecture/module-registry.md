@@ -30,13 +30,21 @@ class concept:
 
 ## Modules registered by default
 
-| Module name       | Category      | Responsibilities |
-| ----------------- | ------------- | ---------------- |
-| `cineCoreShared`  | `shared`      | Stable stringify helpers, connector summaries, auto-gear weight normalization, version marker exposure. |
-| `cinePersistence` | `persistence` | Storage accessors, autosave helpers, backup/export/import orchestration, share/restore bridges. |
-| `cineOffline`     | `offline`     | Service worker registration, cache rebuilds, fallback storage cleanup, reload triggers. |
-| `cineUi`          | `ui`          | Controller/interaction/help registries for dialogs, backups, restore rehearsals and share workflows. |
-| `cineRuntime`     | `runtime`     | Aggregates modules, exposes integrity checks and ensures every safeguard stays frozen. |
+Before the feature-specific modules are evaluated we register `cineModuleBase`,
+an infrastructure layer that exposes deterministic helpers (scope detection,
+registry resolution, deep freezing, safe warnings and global exposure). The
+modern bundle now consumes these helpers instead of duplicating boilerplate,
+and the legacy bundle exposes the same module so parity can be maintained as we
+sync future updates across both builds.
+
+| Module name        | Category          | Responsibilities |
+| ------------------ | ----------------- | ---------------- |
+| `cineModuleBase`   | `infrastructure`  | Normalises scope detection, module registration queues, deep freezing and safe global exposure so higher level modules share the same defensive primitives. |
+| `cineCoreShared`   | `shared`          | Stable stringify helpers, connector summaries, auto-gear weight normalization, version marker exposure. |
+| `cinePersistence`  | `persistence`     | Storage accessors, autosave helpers, backup/export/import orchestration, share/restore bridges. |
+| `cineOffline`      | `offline`         | Service worker registration, cache rebuilds, fallback storage cleanup, reload triggers. |
+| `cineUi`           | `ui`              | Controller/interaction/help registries for dialogs, backups, restore rehearsals and share workflows. |
+| `cineRuntime`      | `runtime`         | Aggregates modules, exposes integrity checks and ensures every safeguard stays frozen. |
 
 The registry is extensible: additional modules may be registered to expose
 purpose-specific APIs, but every entry must honour the guarantees below.
