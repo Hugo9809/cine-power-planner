@@ -5459,17 +5459,63 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
     }
     
-    function getInstallBannerDismissedInSession() {
-      if (typeof globalThis !== 'undefined' && typeof globalThis.installBannerDismissedInSession === 'boolean') {
-        return globalThis.installBannerDismissedInSession;
+    function getInstallBannerGlobalScope() {
+      const candidates = [];
+      if (typeof resolveInstallBannerGlobalScope === 'function') {
+        try {
+          const resolved = resolveInstallBannerGlobalScope();
+          if (resolved) {
+            candidates.push(resolved);
+          }
+        } catch (error) {
+          console.warn('Failed to resolve shared install banner scope', error);
+        }
       }
-      return false;
+      for (let index = 0; index < CORE_PART2_GLOBAL_SCOPES.length; index += 1) {
+        const scope = CORE_PART2_GLOBAL_SCOPES[index];
+        if (scope && typeof scope === 'object') {
+          candidates.push(scope);
+        }
+      }
+      if (typeof globalThis !== 'undefined' && globalThis && !candidates.includes(globalThis)) {
+        candidates.push(globalThis);
+      }
+      if (typeof window !== 'undefined' && window && !candidates.includes(window)) {
+        candidates.push(window);
+      }
+      if (typeof self !== 'undefined' && self && !candidates.includes(self)) {
+        candidates.push(self);
+      }
+      if (typeof global !== 'undefined' && global && !candidates.includes(global)) {
+        candidates.push(global);
+      }
+      for (let index = 0; index < candidates.length; index += 1) {
+        const candidate = candidates[index];
+        if (candidate && typeof candidate === 'object') {
+          return candidate;
+        }
+      }
+      return null;
+    }
+
+    function getInstallBannerDismissedInSession() {
+      const scope = getInstallBannerGlobalScope();
+      if (!scope) {
+        return false;
+      }
+      if (typeof scope.installBannerDismissedInSession !== 'boolean') {
+        scope.installBannerDismissedInSession = false;
+        return false;
+      }
+      return scope.installBannerDismissedInSession;
     }
 
     function setInstallBannerDismissedInSession(value) {
-      if (typeof globalThis !== 'undefined') {
-        globalThis.installBannerDismissedInSession = Boolean(value);
+      const scope = getInstallBannerGlobalScope();
+      if (!scope) {
+        return;
       }
+      scope.installBannerDismissedInSession = Boolean(value);
     }
 
     function hasDismissedInstallBanner() {

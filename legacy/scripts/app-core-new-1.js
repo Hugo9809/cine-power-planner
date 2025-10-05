@@ -629,8 +629,24 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
   var IOS_PWA_HELP_STORAGE_KEY = 'iosPwaHelpShown';
   var INSTALL_BANNER_DISMISSED_KEY = 'installPromptDismissed';
-  if (typeof globalThis !== 'undefined' && typeof globalThis.installBannerDismissedInSession !== 'boolean') {
-    globalThis.installBannerDismissedInSession = false;
+  function resolveInstallBannerGlobalScope() {
+    if (typeof globalThis !== 'undefined' && globalThis) {
+      return globalThis;
+    }
+    if (typeof window !== 'undefined' && window) {
+      return window;
+    }
+    if (typeof self !== 'undefined' && self) {
+      return self;
+    }
+    if (typeof global !== 'undefined' && global) {
+      return global;
+    }
+    return null;
+  }
+  var installBannerGlobalScope = resolveInstallBannerGlobalScope();
+  if (installBannerGlobalScope && typeof installBannerGlobalScope.installBannerDismissedInSession !== 'boolean') {
+    installBannerGlobalScope.installBannerDismissedInSession = false;
   }
   var DEVICE_SCHEMA_PATH = 'src/data/schema.json';
   var DEVICE_SCHEMA_STORAGE_KEY = 'cameraPowerPlanner_schemaCache';
