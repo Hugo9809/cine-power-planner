@@ -4412,11 +4412,154 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     });
     return Array.isArray(parsed) ? parsed : [];
   }
+
+  function describeAutoGearBackupEntry(entry) {
+    if (!entry || _typeof(entry) !== 'object') {
+      return '';
+    }
+
+    if (typeof entry.note === 'string') {
+      var trimmedNote = entry.note.trim();
+      if (trimmedNote) {
+        return trimmedNote;
+      }
+    }
+
+    if (typeof entry.createdAt === 'string') {
+      var trimmedTimestamp = entry.createdAt.trim();
+      if (trimmedTimestamp) {
+        return trimmedTimestamp;
+      }
+    }
+
+    if (typeof entry.id === 'string') {
+      return entry.id;
+    }
+
+    return '';
+  }
+
+  function removeOldestAutoGearBackupEntry(backups) {
+    if (!Array.isArray(backups) || backups.length === 0) {
+      return null;
+    }
+
+    var removeAt = function removeAt(index) {
+      var removed = backups.splice(index, 1)[0];
+      return {
+        removed: removed,
+        label: describeAutoGearBackupEntry(removed)
+      };
+    };
+
+    for (var index = backups.length - 1; index >= 0; index -= 1) {
+      var entry = backups[index];
+      if (!entry || _typeof(entry) !== 'object') {
+        return removeAt(index);
+      }
+      if (!Array.isArray(entry.rules)) {
+        return removeAt(index);
+      }
+    }
+
+    return removeAt(backups.length - 1);
+  }
+
+  function cleanupAutoGearBackupMigrationCopies(storage) {
+    if (!storage || typeof storage.getItem !== 'function' || typeof storage.removeItem !== 'function') {
+      return false;
+    }
+
+    var migrationBackupKey = "cameraPowerPlanner_autoGearBackups".concat(STORAGE_MIGRATION_BACKUP_SUFFIX);
+    var removedKeys = [];
+
+    try {
+      var existing = storage.getItem(migrationBackupKey);
+      if (existing !== null && existing !== undefined) {
+        storage.removeItem(migrationBackupKey);
+        removedKeys.push(migrationBackupKey);
+      }
+    } catch (error) {
+      console.warn('Unable to inspect automatic gear backup migration snapshot while recovering storage quota.', error);
+    }
+
+    try {
+      var pruned = pruneMigrationBackupEntriesForCleanup(storage, migrationBackupKey);
+      if (Array.isArray(pruned) && pruned.length > 0) {
+        removedKeys.push.apply(removedKeys, pruned);
+      }
+    } catch (cleanupError) {
+      console.warn('Unable to prune migration backups while recovering storage for automatic gear backups.', cleanupError);
+    }
+
+    if (removedKeys.length > 0) {
+      console.warn(
+        "Removed ".concat(removedKeys.length, " migration backup").concat(removedKeys.length > 1 ? 's' : '', " while freeing storage for automatic gear backups."),
+        removedKeys
+      );
+      return true;
+    }
+
+    return false;
+  }
+
+  function clearCachedPlannerDataForAutoGearBackups() {
+    if (typeof clearUiCacheStorageEntries !== 'function') {
+      return false;
+    }
+
+    try {
+      clearUiCacheStorageEntries();
+      console.warn('Cleared cached planner data to free up storage space before saving automatic gear backups.');
+      return true;
+    } catch (error) {
+      console.warn('Unable to clear cached planner data while recovering storage for automatic gear backups.', error);
+    }
+
+    return false;
+  }
+
   function saveAutoGearBackups(backups) {
-    var safeBackups = Array.isArray(backups) ? backups : [];
+    var safeBackups = Array.isArray(backups) ? backups.slice() : [];
     var safeStorage = getSafeLocalStorage();
     ensurePreWriteMigrationBackup(safeStorage, AUTO_GEAR_BACKUPS_STORAGE_KEY);
-    saveJSONToStorage(safeStorage, AUTO_GEAR_BACKUPS_STORAGE_KEY, safeBackups, "Error saving automatic gear rule backups to localStorage:");
+
+    var attemptedMigrationCleanup = false;
+    var attemptedCacheCleanup = false;
+
+    saveJSONToStorage(safeStorage, AUTO_GEAR_BACKUPS_STORAGE_KEY, safeBackups, "Error saving automatic gear rule backups to localStorage:", {
+      onQuotaExceeded: function onQuotaExceeded(error, context) {
+        var removal = removeOldestAutoGearBackupEntry(safeBackups);
+        if (removal) {
+          var label = removal.label;
+          if (label) {
+            console.warn("Removed automatic gear backup \"".concat(label, "\" to free up storage space before saving gear backups."));
+          } else {
+            console.warn('Removed oldest automatic gear backup entry to free up storage space before saving gear backups.');
+          }
+          return true;
+        }
+
+        var storage = context && context.storage ? context.storage : safeStorage;
+
+        if (!attemptedMigrationCleanup) {
+          attemptedMigrationCleanup = true;
+          if (cleanupAutoGearBackupMigrationCopies(storage)) {
+            return true;
+          }
+        }
+
+        if (!attemptedCacheCleanup) {
+          attemptedCacheCleanup = true;
+          if (clearCachedPlannerDataForAutoGearBackups()) {
+            return true;
+          }
+        }
+
+        return false;
+      }
+    });
+    return safeBackups;
   }
   function loadAutoGearSeedFlag() {
     applyLegacyStorageMigrations();

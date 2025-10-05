@@ -4166,13 +4166,14 @@ function persistAutoGearBackups(backups) {
       }))
     : [];
   if (typeof saveAutoGearBackups === 'function') {
-    saveAutoGearBackups(payload);
-    return;
+    const storedPayload = saveAutoGearBackups(payload);
+    return Array.isArray(storedPayload) ? storedPayload : payload;
   }
   if (typeof localStorage === 'undefined') {
     throw new Error('Storage unavailable');
   }
   localStorage.setItem(AUTO_GEAR_BACKUPS_KEY, JSON.stringify(payload));
+  return payload;
 }
 
 function enforceAutoGearBackupRetentionLimit(limit) {
@@ -4199,8 +4200,12 @@ function enforceAutoGearBackupRetentionLimit(limit) {
     const updatedBackups = autoGearBackups.slice(0, normalized);
     trimmedEntries.push(...autoGearBackups.slice(normalized));
     try {
-      persistAutoGearBackups(updatedBackups);
-      autoGearBackups = updatedBackups;
+      const persistedBackups = persistAutoGearBackups(updatedBackups) || [];
+      const finalBackups = Array.isArray(persistedBackups) ? persistedBackups : [];
+      if (finalBackups.length < updatedBackups.length) {
+        trimmedEntries.push(...updatedBackups.slice(finalBackups.length));
+      }
+      autoGearBackups = finalBackups;
     } catch (error) {
       console.warn('Failed to trim automatic gear backups to retention limit', error);
       autoGearBackupRetention = previousLimit;

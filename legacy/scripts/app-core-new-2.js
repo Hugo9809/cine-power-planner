@@ -5159,10 +5159,13 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       var effectiveLimit = Math.max(1, retentionLimit);
       var updatedBackups = [entry].concat(_toConsumableArray(autoGearBackups)).slice(0, effectiveLimit);
       try {
-        persistAutoGearBackups(updatedBackups);
-        autoGearBackups = updatedBackups;
-        autoGearRulesLastBackupSignature = signature;
-        autoGearRulesLastPersistedSignature = signature;
+        var persistedBackups = persistAutoGearBackups(updatedBackups) || [];
+        var finalBackups = Array.isArray(persistedBackups) ? persistedBackups : [];
+        autoGearBackups = finalBackups;
+        var persistedEntry = finalBackups[0] || entry;
+        var persistedSignature = finalBackups.length ? getAutoGearConfigurationSignature(finalBackups[0].rules, finalBackups[0].monitorDefaults) : signature;
+        autoGearRulesLastBackupSignature = persistedSignature;
+        autoGearRulesLastPersistedSignature = persistedSignature;
         autoGearRulesDirtySinceBackup = false;
         renderAutoGearBackupControls();
         renderAutoGearBackupRetentionControls();
@@ -5173,7 +5176,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
         return {
           status: 'created',
-          entry: entry
+          entry: persistedEntry
         };
       } catch (error) {
         console.warn('Automatic gear backup failed', error);

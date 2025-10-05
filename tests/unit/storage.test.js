@@ -1095,6 +1095,301 @@ describe('automatic gear storage', () => {
     expect(JSON.parse(localStorage.getItem(AUTO_GEAR_BACKUPS_KEY))).toEqual(backups);
   });
 
+  test('saveAutoGearBackups trims the oldest entry when storage quota is exceeded', () => {
+    const backups = [
+      {
+        id: 'backup-new',
+        createdAt: '2025-01-01T12:00:00.000Z',
+        rules: [{ id: 'rule-a' }],
+        monitorDefaults: {},
+        note: 'Latest snapshot',
+      },
+      {
+        id: 'backup-mid',
+        createdAt: '2024-12-15T08:30:00.000Z',
+        rules: [{ id: 'rule-b' }],
+        monitorDefaults: {},
+      },
+      {
+        id: 'backup-old',
+        createdAt: '2024-10-01T05:45:00.000Z',
+        rules: [{ id: 'rule-c' }],
+        monitorDefaults: {},
+        note: 'Old snapshot',
+      },
+    ];
+
+    const createStorage = () => ({
+      store: new Map(),
+      getItem(key) {
+        return this.store.has(key) ? this.store.get(key) : null;
+      },
+      setItem(key, value) {
+        this.store.set(key, String(value));
+      },
+      removeItem(key) {
+        this.store.delete(key);
+      },
+      clear() {
+        this.store.clear();
+      },
+      key(index) {
+        return Array.from(this.store.keys())[index] || null;
+      },
+      get length() {
+        return this.store.size;
+      },
+    });
+
+    const originalWindow = global.window;
+    const originalLocalStorage = global.localStorage;
+    const originalSessionStorage = global.sessionStorage;
+
+    const quotaError = new Error('quota exceeded');
+    quotaError.name = 'QuotaExceededError';
+
+    try {
+      jest.isolateModules(() => {
+        const localStorageMock = createStorage();
+        const sessionStorageMock = createStorage();
+        global.localStorage = localStorageMock;
+        global.sessionStorage = sessionStorageMock;
+        global.window = { localStorage: localStorageMock, sessionStorage: sessionStorageMock };
+
+        const storageModule = require('../../src/scripts/storage');
+        const isolatedSaveAutoGearBackups = storageModule.saveAutoGearBackups;
+        const isolatedGetSafeLocalStorage = storageModule.getSafeLocalStorage;
+
+        const safeStorage = isolatedGetSafeLocalStorage();
+        const originalSetItem = safeStorage.setItem;
+        const observedKeys = [];
+        let attempts = 0;
+        safeStorage.setItem = function quotaGuard(key, value) {
+          observedKeys.push(key);
+          if (key === AUTO_GEAR_BACKUPS_KEY && attempts < 1) {
+            attempts += 1;
+            throw quotaError;
+          }
+          return originalSetItem.call(this, key, value);
+        };
+
+        const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+        const storedBackups = isolatedSaveAutoGearBackups(backups);
+        const stored = JSON.parse(localStorageMock.getItem(AUTO_GEAR_BACKUPS_KEY));
+        const quotaWarning = warnSpy.mock.calls.find(([message]) =>
+          typeof message === 'string'
+          && message.includes('Removed automatic gear backup'),
+        );
+
+        safeStorage.setItem = originalSetItem;
+        warnSpy.mockRestore();
+
+        expect(observedKeys).toContain(AUTO_GEAR_BACKUPS_KEY);
+        expect(Array.isArray(storedBackups)).toBe(true);
+        expect(storedBackups.length).toBe(2);
+        expect(storedBackups).toEqual(backups.slice(0, 2));
+        expect(stored).toEqual(storedBackups);
+        expect(quotaWarning).toBeDefined();
+        expect(quotaWarning && quotaWarning[0]).toContain('Old snapshot');
+      });
+    } finally {
+      global.window = originalWindow;
+      if (originalLocalStorage) {
+        global.localStorage = originalLocalStorage;
+      } else {
+        delete global.localStorage;
+      }
+      if (originalSessionStorage) {
+        global.sessionStorage = originalSessionStorage;
+      } else {
+        delete global.sessionStorage;
+      }
+    }
+  });
+
+  test('saveAutoGearBackups removes migration backup copy when quota persists with empty payload', () => {
+    const createStorage = () => ({
+      store: new Map(),
+      getItem(key) {
+        return this.store.has(key) ? this.store.get(key) : null;
+      },
+      setItem(key, value) {
+        this.store.set(key, String(value));
+      },
+      removeItem(key) {
+        this.store.delete(key);
+      },
+      clear() {
+        this.store.clear();
+      },
+      key(index) {
+        return Array.from(this.store.keys())[index] || null;
+      },
+      get length() {
+        return this.store.size;
+      },
+    });
+
+    const originalWindow = global.window;
+    const originalLocalStorage = global.localStorage;
+    const originalSessionStorage = global.sessionStorage;
+
+    const quotaError = new Error('quota exceeded');
+    quotaError.name = 'QuotaExceededError';
+
+    try {
+      jest.isolateModules(() => {
+        const localStorageMock = createStorage();
+        const sessionStorageMock = createStorage();
+        global.localStorage = localStorageMock;
+        global.sessionStorage = sessionStorageMock;
+        global.window = { localStorage: localStorageMock, sessionStorage: sessionStorageMock };
+
+        const migrationKey = `${AUTO_GEAR_BACKUPS_KEY}${MIGRATION_BACKUP_SUFFIX}`;
+        localStorageMock.setItem(migrationKey, JSON.stringify({ createdAt: 'legacy', data: ['stored'] }));
+
+        const storageModule = require('../../src/scripts/storage');
+        const { saveAutoGearBackups, getSafeLocalStorage } = storageModule;
+
+        const safeStorage = getSafeLocalStorage();
+        const originalSetItem = safeStorage.setItem;
+        let attempts = 0;
+        safeStorage.setItem = function patchedSetItem(key, value) {
+          if (key === AUTO_GEAR_BACKUPS_KEY && attempts === 0) {
+            attempts += 1;
+            throw quotaError;
+          }
+          return originalSetItem.call(this, key, value);
+        };
+
+        const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+        const storedBackups = saveAutoGearBackups([]);
+
+        const storedValue = localStorageMock.getItem(AUTO_GEAR_BACKUPS_KEY);
+        const migrationValue = localStorageMock.getItem(migrationKey);
+        const migrationWarning = warnSpy.mock.calls.find(([message]) =>
+          typeof message === 'string'
+          && message.includes('migration backup')
+          && message.includes('automatic gear backups'),
+        );
+
+        safeStorage.setItem = originalSetItem;
+        warnSpy.mockRestore();
+
+        expect(Array.isArray(storedBackups)).toBe(true);
+        expect(storedBackups).toEqual([]);
+        expect(storedValue).toBe(JSON.stringify([]));
+        expect(migrationValue).toBeNull();
+        expect(migrationWarning).toBeDefined();
+      });
+    } finally {
+      global.window = originalWindow;
+      if (originalLocalStorage) {
+        global.localStorage = originalLocalStorage;
+      } else {
+        delete global.localStorage;
+      }
+      if (originalSessionStorage) {
+        global.sessionStorage = originalSessionStorage;
+      } else {
+        delete global.sessionStorage;
+      }
+    }
+  });
+
+  test('saveAutoGearBackups clears cached UI storage when migration cleanup is unavailable', () => {
+    const createStorage = () => ({
+      store: new Map(),
+      removed: [],
+      getItem(key) {
+        return this.store.has(key) ? this.store.get(key) : null;
+      },
+      setItem(key, value) {
+        this.store.set(key, String(value));
+      },
+      removeItem(key) {
+        this.removed.push(key);
+        this.store.delete(key);
+      },
+      clear() {
+        this.store.clear();
+      },
+      key(index) {
+        return Array.from(this.store.keys())[index] || null;
+      },
+      get length() {
+        return this.store.size;
+      },
+    });
+
+    const originalWindow = global.window;
+    const originalLocalStorage = global.localStorage;
+    const originalSessionStorage = global.sessionStorage;
+
+    const quotaError = new Error('quota exceeded');
+    quotaError.name = 'QuotaExceededError';
+
+    try {
+      jest.isolateModules(() => {
+        const localStorageMock = createStorage();
+        const sessionStorageMock = createStorage();
+        localStorageMock.setItem(SCHEMA_CACHE_KEY, 'schema-data');
+        sessionStorageMock.setItem(SCHEMA_CACHE_KEY, 'schema-data');
+
+        global.localStorage = localStorageMock;
+        global.sessionStorage = sessionStorageMock;
+        global.window = { localStorage: localStorageMock, sessionStorage: sessionStorageMock };
+
+        const storageModule = require('../../src/scripts/storage');
+        const { saveAutoGearBackups, getSafeLocalStorage } = storageModule;
+
+        const safeStorage = getSafeLocalStorage();
+        const originalSetItem = safeStorage.setItem;
+        let attempts = 0;
+        safeStorage.setItem = function patchedSetItem(key, value) {
+          if (key === AUTO_GEAR_BACKUPS_KEY && attempts === 0) {
+            attempts += 1;
+            throw quotaError;
+          }
+          return originalSetItem.call(this, key, value);
+        };
+
+        const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+        const storedBackups = saveAutoGearBackups([]);
+
+        const storedValue = localStorageMock.getItem(AUTO_GEAR_BACKUPS_KEY);
+        const cacheRemovals = [...localStorageMock.removed, ...sessionStorageMock.removed];
+        const cacheWarning = warnSpy.mock.calls.find(([message]) =>
+          typeof message === 'string'
+          && message.includes('Cleared cached planner data'),
+        );
+
+        safeStorage.setItem = originalSetItem;
+        warnSpy.mockRestore();
+
+        expect(Array.isArray(storedBackups)).toBe(true);
+        expect(storedBackups).toEqual([]);
+        expect(storedValue).toBe(JSON.stringify([]));
+        expect(cacheRemovals).toContain(SCHEMA_CACHE_KEY);
+        expect(cacheWarning).toBeDefined();
+      });
+    } finally {
+      global.window = originalWindow;
+      if (originalLocalStorage) {
+        global.localStorage = originalLocalStorage;
+      } else {
+        delete global.localStorage;
+      }
+      if (originalSessionStorage) {
+        global.sessionStorage = originalSessionStorage;
+      } else {
+        delete global.sessionStorage;
+      }
+    }
+  });
+
   test('saveAutoGearBackupRetention creates migration backup before overwriting existing values', () => {
     localStorage.setItem(AUTO_GEAR_BACKUP_RETENTION_KEY, JSON.stringify(12));
     expect(localStorage.getItem(migrationBackupKeyFor(AUTO_GEAR_BACKUP_RETENTION_KEY))).toBeNull();
