@@ -23,6 +23,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     'modules/features/help.js',
     'modules/features/feature-search.js',
     'modules/features/backup.js',
+    'modules/help.js',
     'modules/ui.js',
     'app-core-new-1.js',
     'app-core-new-2.js',

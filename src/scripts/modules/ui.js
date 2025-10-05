@@ -689,7 +689,6 @@
   const controllerRegistry = new Map();
   const interactionRegistry = new Map();
   const orchestrationRegistry = new Map();
-  const helpRegistry = new Map();
 
   const WARNED_NAMES = new Set();
 
@@ -790,23 +789,6 @@
     return freezeDeep({ initializer: fn });
   }
 
-  function sanitizeHelpEntry(name, value) {
-    if (typeof value === 'string') {
-      const text = value.trim();
-      if (!text) {
-        throw new Error(`cineUi help entry "${name}" cannot be empty.`);
-      }
-      return freezeDeep({ resolver: () => text });
-    }
-
-    if (typeof value === 'function') {
-      const resolver = cloneFunction(value);
-      return freezeDeep({ resolver });
-    }
-
-    throw new TypeError(`cineUi help entry "${name}" must be a string or function.`);
-  }
-
   function warnDuplicate(name, type) {
     const key = `${type}:${name}`;
     if (WARNED_NAMES.has(key)) {
@@ -904,39 +886,180 @@
     },
   });
 
-  const helpAPI = freezeDeep({
-    register(name, value) {
-      const normalized = normalizeName(name);
-      const sanitized = sanitizeHelpEntry(normalized, value);
-      if (helpRegistry.has(normalized)) {
-        warnDuplicate(normalized, 'help');
+  function resolveHelpModule(scope) {
+    const modules = [];
+
+    if (typeof tryRequire === 'function') {
+      const required = tryRequire('./help.js');
+      if (required && typeof required === 'object') {
+        modules.push(required);
       }
-      helpRegistry.set(normalized, sanitized);
-      return sanitized.resolver;
-    },
-    get(name) {
-      const normalized = normalizeName(name);
-      const entry = helpRegistry.get(normalized);
-      return entry ? entry.resolver : null;
-    },
-    resolve(name, ...args) {
-      const resolver = this.get(name);
-      if (typeof resolver !== 'function') {
-        throw new Error(`cineUi help entry "${name}" is not registered.`);
+    }
+
+    const scopes = fallbackCollectCandidateScopes(scope);
+
+    for (let index = 0; index < scopes.length; index += 1) {
+      const candidateScope = scopes[index];
+      if (!candidateScope) {
+        continue;
       }
-      return resolver.apply(null, args);
-    },
-    list() {
-      return listRegistryKeys(helpRegistry);
-    },
-  });
+
+      try {
+        const moduleCandidate = candidateScope.cineHelpModule;
+        if (moduleCandidate && modules.indexOf(moduleCandidate) === -1) {
+          modules.push(moduleCandidate);
+        }
+      } catch (error) {
+        void error;
+      }
+
+      try {
+        const apiCandidate = candidateScope.cineHelp;
+        if (apiCandidate) {
+          let exists = false;
+          for (let checkIndex = 0; checkIndex < modules.length; checkIndex += 1) {
+            const existing = modules[checkIndex];
+            if (existing === apiCandidate || (existing && existing.help === apiCandidate)) {
+              exists = true;
+              break;
+            }
+          }
+          if (!exists) {
+            modules.push({ help: apiCandidate, __internal: null });
+          }
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    for (let moduleIndex = 0; moduleIndex < modules.length; moduleIndex += 1) {
+      const candidate = modules[moduleIndex];
+      if (!candidate) {
+        continue;
+      }
+
+      const api = candidate.help || candidate;
+      if (!api) {
+        continue;
+      }
+
+      if (
+        typeof api.register === 'function'
+        && typeof api.get === 'function'
+        && typeof api.resolve === 'function'
+        && typeof api.list === 'function'
+      ) {
+        if (!candidate.help && api) {
+          return { help: api, __internal: candidate.__internal || null };
+        }
+        return candidate;
+      }
+    }
+
+    for (let index = 0; index < scopes.length; index += 1) {
+      const candidateScope = scopes[index];
+      if (!candidateScope) {
+        continue;
+      }
+
+      try {
+        const factory = candidateScope.__cineCreateHelpModule;
+        if (typeof factory === 'function') {
+          const created = factory({ freezeDeep, safeWarn });
+          if (created && typeof created === 'object') {
+            return created;
+          }
+        }
+      } catch (error) {
+        safeWarn('cineUi: Failed to create help module from factory.', error);
+      }
+    }
+
+    return null;
+  }
+
+  const resolvedHelpModule = resolveHelpModule(GLOBAL_SCOPE);
+
+  const fallbackHelpRegistry = new Map();
+
+  const helpAPI = resolvedHelpModule && resolvedHelpModule.help
+    ? resolvedHelpModule.help
+    : freezeDeep({
+        register(name, value) {
+          const normalized = typeof name === 'string' ? name.trim() : '';
+          if (!normalized) {
+            throw new TypeError('cineHelp entry names must be non-empty strings.');
+          }
+
+          if (typeof value === 'function') {
+            fallbackHelpRegistry.set(normalized, value);
+            return value;
+          }
+
+          if (typeof value !== 'string') {
+            throw new TypeError(`cineHelp entry "${normalized}" must be a string or function.`);
+          }
+
+          const text = value.trim();
+          if (!text) {
+            throw new Error(`cineHelp entry "${normalized}" cannot be empty.`);
+          }
+
+          const resolver = function helpStringResolver() {
+            return text;
+          };
+
+          fallbackHelpRegistry.set(normalized, resolver);
+          return resolver;
+        },
+        get(name) {
+          const normalized = typeof name === 'string' ? name.trim() : '';
+          if (!normalized) {
+            return null;
+          }
+          return fallbackHelpRegistry.get(normalized) || null;
+        },
+        resolve(name, ...args) {
+          const resolver = this.get(name);
+          if (typeof resolver !== 'function') {
+            throw new Error(`cineHelp entry "${name}" is not registered.`);
+          }
+          return resolver.apply(null, args);
+        },
+        list() {
+          return Array.from(fallbackHelpRegistry.keys()).sort();
+        },
+      });
+
+  const helpModuleInternals = resolvedHelpModule && resolvedHelpModule.__internal
+    ? resolvedHelpModule.__internal
+    : freezeDeep({
+        helpRegistry: fallbackHelpRegistry,
+        clearRegistries() {
+          fallbackHelpRegistry.clear();
+        },
+      });
 
   function clearRegistries() {
     controllerRegistry.clear();
     interactionRegistry.clear();
     orchestrationRegistry.clear();
-    helpRegistry.clear();
     WARNED_NAMES.clear();
+
+    if (helpModuleInternals && typeof helpModuleInternals.clearRegistries === 'function') {
+      try {
+        helpModuleInternals.clearRegistries();
+      } catch (error) {
+        safeWarn('cineUi: Unable to clear help registry.', error);
+      }
+    } else if (
+      helpModuleInternals
+      && helpModuleInternals.helpRegistry
+      && typeof helpModuleInternals.helpRegistry.clear === 'function'
+    ) {
+      helpModuleInternals.helpRegistry.clear();
+    }
   }
 
   const uiAPI = {
@@ -948,7 +1071,10 @@
       controllerRegistry,
       interactionRegistry,
       orchestrationRegistry,
-      helpRegistry,
+      helpRegistry:
+        helpModuleInternals && helpModuleInternals.helpRegistry
+          ? helpModuleInternals.helpRegistry
+          : fallbackHelpRegistry,
       clearRegistries,
     },
   };
