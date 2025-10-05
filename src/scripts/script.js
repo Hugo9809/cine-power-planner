@@ -200,6 +200,14 @@ function attemptRegistryBackfill(scope) {
       },
     },
     {
+      name: 'cineFeaturePrint',
+      category: 'feature',
+      description: 'Print orchestration helpers for overview exports and fallback workflows.',
+      resolve() {
+        return scope.cineFeaturePrint || null;
+      },
+    },
+    {
       name: 'cineRuntime',
       category: 'runtime',
       description: 'Runtime orchestrator ensuring persistence, offline, and UI safeguards stay intact.',

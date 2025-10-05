@@ -14,6 +14,11 @@ workflow diagrams and troubleshooting notes to reference the registered controll
 interactions and help entries so offline operators can cross-check the exact button or
 dialog names documented in code.【F:src/scripts/modules/ui.js†L1-L192】
 
+Printable overviews and PDF exports now route through the dedicated
+`cineFeaturePrint` module. When you adjust instructions for sharing power summaries or
+exporting documentation bundles, reference the module so readers understand how native
+printing and fallback windows cooperate offline.【F:src/scripts/modules/features/print-workflow.js†L1-L208】
+
 The new integration suite (`tests/dom/runtimeIntegration.test.js`) ensures these modules
 continue to cooperate. When updating help text or translations, keep the assertions in that
 test in mind—they describe the critical APIs (`cineOffline`, `cinePersistence`, `cineUi`) that

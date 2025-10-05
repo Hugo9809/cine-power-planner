@@ -1,5 +1,49 @@
 /* global currentLang, texts, devices, escapeHtml, generateConnectorSummary, cameraSelect, monitorSelect, videoSelect, distanceSelect, motorSelects, controllerSelects, batterySelect, hotswapSelect, overviewSectionIcons, breakdownListElem, totalPowerElem, totalCurrent144Elem, totalCurrent12Elem, batteryLifeElem, batteryCountElem, pinWarnElem, dtapWarnElem, getCurrentGearListHtml, currentProjectInfo, generateGearListHtml, getDiagramCss, openDialog, closeDialog, splitGearListHtml, iconMarkup, ICON_GLYPHS, deleteCurrentGearList */
 
+let createOverviewPrintWorkflowModule = null;
+let triggerOverviewPrintWorkflowModule = null;
+
+(function resolveOverviewPrintWorkflowModule() {
+    const globalScope = (typeof globalThis !== 'undefined' && globalThis)
+        || (typeof window !== 'undefined' && window)
+        || (typeof self !== 'undefined' && self)
+        || (typeof global !== 'undefined' && global)
+        || null;
+
+    const candidates = [];
+
+    if (typeof require === 'function') {
+        try {
+            const required = require('./modules/features/print-workflow.js');
+            if (required && typeof required === 'object') {
+                candidates.push(required);
+            }
+        } catch (error) {
+            void error;
+        }
+    }
+
+    if (globalScope && typeof globalScope.cineFeaturePrint === 'object' && globalScope.cineFeaturePrint) {
+        candidates.push(globalScope.cineFeaturePrint);
+    }
+
+    for (let index = 0; index < candidates.length; index += 1) {
+        const candidate = candidates[index];
+        if (!candidate || typeof candidate !== 'object') {
+            continue;
+        }
+        if (!createOverviewPrintWorkflowModule && typeof candidate.createOverviewPrintWorkflow === 'function') {
+            createOverviewPrintWorkflowModule = candidate.createOverviewPrintWorkflow;
+        }
+        if (!triggerOverviewPrintWorkflowModule && typeof candidate.triggerOverviewPrintWorkflow === 'function') {
+            triggerOverviewPrintWorkflowModule = candidate.triggerOverviewPrintWorkflow;
+        }
+        if (createOverviewPrintWorkflowModule && triggerOverviewPrintWorkflowModule) {
+            break;
+        }
+    }
+})();
+
 function generatePrintableOverview(config = {}) {
     const safeConfig = (config && typeof config === 'object') ? config : {};
     const { autoPrint = false } = safeConfig;
@@ -615,69 +659,84 @@ function generatePrintableOverview(config = {}) {
         return true;
     };
 
-    const triggerPrintWorkflow = (options = {}) => {
-        const { preferFallback = false, reason = 'print' } = options;
-        const logPrefix = reason === 'export' ? 'Overview PDF export' : 'Overview print';
-        let fallbackAttempts = 0;
-
-        const attemptFallback = (error) => {
-            fallbackAttempts += 1;
-            if (error && error.name !== 'AbortError') {
-                console.warn(`${logPrefix}: falling back to print window.`, error);
-            }
-            const opened = openFallbackPrintView();
-            if (opened) {
-                closeAfterPrint();
-                return true;
-            }
-            if (error && error.name !== 'AbortError') {
-                console.error(`${logPrefix}: unable to open fallback print window.`, error);
-            }
-            return false;
-        };
+    const fallbackTriggerPrintWorkflow = (context, options = {}) => {
+        const { preferFallback = false } = options || {};
+        const windowRef = context && context.windowRef ? context.windowRef : (typeof window !== 'undefined' ? window : null);
+        const documentRef = context && context.documentRef ? context.documentRef : (typeof document !== 'undefined' ? document : null);
+        const openFallback = context && typeof context.openFallbackPrintView === 'function'
+            ? context.openFallbackPrintView
+            : () => false;
+        const cleanup = context && typeof context.closeAfterPrint === 'function'
+            ? context.closeAfterPrint
+            : () => {};
+        const printTitle = context && typeof context.printDocumentTitle === 'string'
+            ? context.printDocumentTitle
+            : '';
+        const originalTitle = context && typeof context.originalDocumentTitle === 'string'
+            ? context.originalDocumentTitle
+            : (documentRef && typeof documentRef.title === 'string' ? documentRef.title : '');
 
         const attemptNative = () => {
-            if (typeof window === 'undefined' || typeof window.print !== 'function') {
+            if (!windowRef || typeof windowRef.print !== 'function') {
                 return false;
             }
             try {
-                if (typeof document !== 'undefined') {
-                    document.title = printDocumentTitle;
+                if (documentRef && printTitle) {
+                    documentRef.title = printTitle;
                 }
-                const result = window.print();
-                if (result && typeof result.then === 'function') {
-                    result.catch(error => {
-                        if (!fallbackAttempts) {
-                            attemptFallback(error);
-                        }
-                    });
-                }
+                windowRef.print();
                 return true;
             } catch (error) {
-                return attemptFallback(error);
+                void error;
+                return false;
             }
         };
 
         let success = false;
-
-        if (preferFallback) {
-            success = attemptFallback();
-            if (!success) {
-                success = attemptNative();
-            }
-        } else {
+        if (!preferFallback) {
             success = attemptNative();
         }
 
-        if (!success && fallbackAttempts === 0) {
-            success = attemptFallback();
+        if (!success) {
+            success = openFallback();
+            if (success) {
+                cleanup();
+            }
         }
 
-        if (!success && typeof document !== 'undefined' && document.title === printDocumentTitle) {
-            document.title = originalDocumentTitle;
+        if (!success && documentRef && printTitle && documentRef.title === printTitle) {
+            try {
+                documentRef.title = originalTitle;
+            } catch (restoreError) {
+                void restoreError;
+            }
         }
 
         return success;
+    };
+
+    const printWorkflowContext = {
+        windowRef: typeof window !== 'undefined' ? window : null,
+        documentRef: typeof document !== 'undefined' ? document : null,
+        printDocumentTitle,
+        originalDocumentTitle,
+        openFallbackPrintView,
+        closeAfterPrint,
+        logger: typeof console === 'object' ? console : null,
+    };
+
+    const resolvedPrintWorkflow = typeof createOverviewPrintWorkflowModule === 'function'
+        ? createOverviewPrintWorkflowModule(printWorkflowContext)
+        : null;
+
+    const triggerPrintWorkflow = (options = {}) => {
+        if (resolvedPrintWorkflow && typeof resolvedPrintWorkflow.trigger === 'function') {
+            return resolvedPrintWorkflow.trigger(options);
+        }
+        if (typeof triggerOverviewPrintWorkflowModule === 'function') {
+            return triggerOverviewPrintWorkflowModule(printWorkflowContext, options);
+        }
+        return fallbackTriggerPrintWorkflow(printWorkflowContext, options);
     };
 
     const exportBtn = overviewDialog.querySelector('#exportPdfBtn');
