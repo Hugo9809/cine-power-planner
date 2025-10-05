@@ -7845,13 +7845,25 @@ function setLanguage(lang) {
     }
     return undefined;
   };
+  const registerResolvedElement = (globalName, element) => {
+    if (!globalName || !element) {
+      return element;
+    }
+    try {
+      exposeCoreRuntimeConstant(globalName, element);
+    } catch (exposeError) {
+      void exposeError;
+    }
+    return element;
+  };
   const resolveElement = (globalName, elementId) => {
     const existing = resolveRuntimeValue(globalName);
     if (existing && typeof existing === "object") {
       return existing;
     }
     if (doc && typeof doc.getElementById === "function" && elementId) {
-      return doc.getElementById(elementId);
+      const element = doc.getElementById(elementId);
+      return registerResolvedElement(globalName, element);
     }
     return null;
   };

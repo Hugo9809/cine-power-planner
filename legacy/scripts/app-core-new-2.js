@@ -8192,6 +8192,13 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     var batteryComparisonSection = document.getElementById("batteryComparison");
     var batteryTableElem = document.getElementById("batteryTable");
     var breakdownListElem = document.getElementById("breakdownList");
+    if (breakdownListElem) {
+      try {
+        exposeCoreRuntimeConstant('breakdownListElem', breakdownListElem);
+      } catch (exposeError) {
+        void exposeError;
+      }
+    }
     var runtimeFeedbackBtn = document.getElementById("runtimeFeedbackBtn");
     var generateGearListBtn = document.getElementById("generateGearListBtn");
     var deleteGearListProjectBtn = document.getElementById('deleteGearListProjectBtn');
