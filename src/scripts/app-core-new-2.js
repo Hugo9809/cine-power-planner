@@ -16690,13 +16690,30 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           const pointerX = pointerClientX + viewportLeft;
           const pointerY = pointerClientY + viewportTop;
 
-          let left = pointerX + offset;
-          if (
-            viewportWidth > 0 &&
-            popupWidth > 0 &&
-            left + popupWidth + offset > viewportRight
-          ) {
-            left = Math.max(viewportLeft + offset, pointerX - popupWidth - offset);
+          const pointerRelativeX = viewportWidth > 0
+            ? pointerX - viewportLeft
+            : 0;
+          const preferLeft = viewportWidth > 0
+            && popupWidth > 0
+            && pointerRelativeX > viewportWidth * 0.55;
+
+          let left = preferLeft
+            ? pointerX - popupWidth - offset
+            : pointerX + offset;
+
+          if (viewportWidth > 0 && popupWidth > 0) {
+            const minLeft = viewportLeft + offset;
+            const maxLeft = viewportRight - popupWidth - offset;
+
+            if (preferLeft && left < minLeft) {
+              const fallback = pointerX + offset;
+              left = Math.min(maxLeft, Math.max(minLeft, fallback));
+            } else if (!preferLeft && left > maxLeft) {
+              const fallback = pointerX - popupWidth - offset;
+              left = Math.max(minLeft, Math.min(maxLeft, fallback));
+            }
+
+            left = Math.max(minLeft, Math.min(left, maxLeft));
           }
 
           let top = pointerY + offset;
