@@ -16628,6 +16628,63 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       const popup = document.getElementById('diagramPopup');
       if (!popup) return;
       popup.style.display = 'none';
+      const HOVER_HIDE_DELAY_MS = 160;
+      const getPopupHideTimer = () => (
+        Object.prototype.hasOwnProperty.call(popup, '__hoverHideTimer')
+          ? popup.__hoverHideTimer
+          : null
+      );
+      const setPopupHideTimer = timer => {
+        try {
+          popup.__hoverHideTimer = timer;
+        } catch (assignError) {
+          void assignError;
+        }
+      };
+      const cancelPopupHide = () => {
+        const timer = getPopupHideTimer();
+        if (timer !== null && typeof timer !== 'undefined') {
+          clearTimeout(timer);
+        }
+        setPopupHideTimer(null);
+      };
+      const hidePopupNow = () => {
+        cancelPopupHide();
+        popup.style.display = 'none';
+      };
+      const schedulePopupHide = event => {
+        if (event) {
+          const related = event.relatedTarget;
+          if (
+            related &&
+            (
+              related === popup ||
+              popup.contains(related) ||
+              (typeof related.closest === 'function' && related.closest('.diagram-node'))
+            )
+          ) {
+            return;
+          }
+        }
+        cancelPopupHide();
+        let timer = null;
+        if (typeof window !== 'undefined' && typeof window.setTimeout === 'function') {
+          timer = window.setTimeout(() => {
+            popup.style.display = 'none';
+            setPopupHideTimer(null);
+          }, HOVER_HIDE_DELAY_MS);
+        } else if (typeof setTimeout === 'function') {
+          timer = setTimeout(() => {
+            popup.style.display = 'none';
+            setPopupHideTimer(null);
+          }, HOVER_HIDE_DELAY_MS);
+        }
+        if (timer !== null && typeof timer !== 'undefined') {
+          setPopupHideTimer(timer);
+        } else {
+          popup.style.display = 'none';
+        }
+      };
       const isTouchDevice = (navigator.maxTouchPoints || 0) > 0;
     
       setupDiagramContainer.querySelectorAll('.diagram-node').forEach(node => {
@@ -16657,6 +16714,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           e.stopPropagation();
           const pointer = e.touches && e.touches[0] ? e.touches[0] : e;
           popup.innerHTML = html;
+          cancelPopupHide();
           popup.style.display = 'block';
 
           const offset = 12;
@@ -16722,13 +16780,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           popup.style.top = `${resolvedTop}px`;
         };
         const hide = event => {
-          if (event) {
-            const related = event.relatedTarget;
-            if (related && (related === popup || popup.contains(related))) {
-              return;
-            }
-          }
-          popup.style.display = 'none';
+          schedulePopupHide(event);
         };
         if (isTouchDevice) {
           node.addEventListener('touchstart', show);
@@ -16741,24 +16793,22 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       });
 
       if (!popup.dataset.interactiveBound) {
-        const hidePopup = event => {
-          if (event) {
-            const related = event.relatedTarget;
-            if (
-              related &&
-              typeof related.closest === 'function' &&
-              related.closest('.diagram-node')
-            ) {
-              return;
-            }
-          }
-          popup.style.display = 'none';
+        const handlePopupLeave = event => {
+          schedulePopupHide(event);
         };
-        popup.addEventListener('mouseleave', hidePopup);
-        popup.addEventListener('blur', hidePopup, true);
+        const handlePopupBlur = event => {
+          schedulePopupHide(event);
+        };
+        const handlePopupEnter = () => {
+          cancelPopupHide();
+        };
+        popup.addEventListener('mouseenter', handlePopupEnter);
+        popup.addEventListener('focusin', handlePopupEnter);
+        popup.addEventListener('mouseleave', handlePopupLeave);
+        popup.addEventListener('blur', handlePopupBlur, true);
         popup.dataset.interactiveBound = 'true';
       }
-    
+
       if (!setupDiagramContainer.dataset.popupOutsideListeners) {
         const hideOnOutside = e => {
           const target = e.target;
@@ -16766,7 +16816,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             return;
           }
           if (!target || typeof target.closest !== 'function' || !target.closest('.diagram-node')) {
-            popup.style.display = 'none';
+            hidePopupNow();
           }
         };
         if (isTouchDevice) {
