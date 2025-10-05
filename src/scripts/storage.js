@@ -1814,13 +1814,38 @@ function getAutoBackupLabelKey(entry) {
   if (!entry || typeof entry !== 'object') {
     return '';
   }
-  if (typeof entry.label === 'string' && entry.label.trim()) {
-    return entry.label.trim();
+  if (typeof entry.label === 'string') {
+    const trimmed = entry.label.trim();
+    if (trimmed) {
+      return trimmed;
+    }
   }
-  if (typeof entry.key === 'string') {
-    return entry.key;
+  if (typeof entry.key === 'string' && entry.key.trim()) {
+    const key = entry.key.trim();
+    if (
+      key.startsWith(STORAGE_AUTO_BACKUP_NAME_PREFIX)
+      || key.startsWith(STORAGE_AUTO_BACKUP_DELETION_PREFIX)
+    ) {
+      return '__auto-backup:unlabeled__';
+    }
+    return key;
   }
-  return '';
+  return '__auto-backup:unlabeled__';
+}
+
+function getAutoBackupEntrySignature(container, entry) {
+  if (!isPlainObject(container) || !entry || typeof entry.key !== 'string') {
+    return 'undefined';
+  }
+  const value = Object.prototype.hasOwnProperty.call(container, entry.key)
+    ? container[entry.key]
+    : undefined;
+  try {
+    return createStableValueSignature(value);
+  } catch (error) {
+    console.warn('Failed to create stable signature for automatic backup entry', error);
+    return 'undefined';
+  }
 }
 
 function createStableValueSignature(value) {
@@ -1922,72 +1947,57 @@ function pruneAutoBackupEntries(container, entries, limit, removedKeys) {
     return;
   }
 
-  const labelCounts = new Map();
+  const duplicateBuckets = new Map();
   for (let index = 0; index < entries.length; index += 1) {
     const entry = entries[index];
-    if (!entry || typeof entry !== 'object') {
-      continue;
-    }
-    const labelKey = getAutoBackupLabelKey(entry);
-    labelCounts.set(labelKey, (labelCounts.get(labelKey) || 0) + 1);
-  }
-
-  let index = 0;
-  while (entries.length > limit && index < entries.length) {
-    const entry = entries[index];
     if (!entry || typeof entry.key !== 'string') {
-      index += 1;
-      continue;
-    }
-    if (isRenamedAutoBackupEntry(container, entry.key)) {
-      index += 1;
       continue;
     }
     const labelKey = getAutoBackupLabelKey(entry);
-    const count = labelCounts.get(labelKey) || 0;
-    if (labelKey && count > 1) {
-      delete container[entry.key];
-      entries.splice(index, 1);
-      labelCounts.set(labelKey, count - 1);
-      removedKeys.push(entry.key);
-      continue;
+    const signature = getAutoBackupEntrySignature(container, entry);
+    const bucketKey = `${labelKey}__${signature}`;
+    const existing = duplicateBuckets.get(bucketKey);
+    if (existing) {
+      existing.push(index);
+    } else {
+      duplicateBuckets.set(bucketKey, [index]);
     }
-    index += 1;
   }
 
-  if (entries.length <= limit) {
+  const removable = Array.from(duplicateBuckets.values())
+    .filter(indexes => Array.isArray(indexes) && indexes.length > 1)
+    .flatMap(indexes => indexes.slice(0, -1))
+    .sort((a, b) => a - b);
+
+  if (!removable.length) {
+    if (entries.length > limit) {
+      console.warn(
+        'Skipped trimming automatic backups because all remaining versions are unique.',
+        { limit, total: entries.length },
+      );
+    }
     return;
   }
 
-  index = 0;
-  while (entries.length > limit && index < entries.length) {
+  for (let i = removable.length - 1; i >= 0 && entries.length > limit; i -= 1) {
+    const index = removable[i];
     const entry = entries[index];
     if (!entry || typeof entry.key !== 'string') {
-      index += 1;
       continue;
     }
     if (isRenamedAutoBackupEntry(container, entry.key)) {
-      index += 1;
       continue;
     }
-    const labelKey = getAutoBackupLabelKey(entry);
-    const count = labelCounts.get(labelKey) || 0;
     delete container[entry.key];
     entries.splice(index, 1);
-    labelCounts.set(labelKey, Math.max(0, count - 1));
     removedKeys.push(entry.key);
   }
 
   if (entries.length > limit) {
-    for (let fallbackIndex = entries.length - 1; entries.length > limit && fallbackIndex >= 0; fallbackIndex -= 1) {
-      const entry = entries[fallbackIndex];
-      if (!entry || typeof entry.key !== 'string') {
-        continue;
-      }
-      delete container[entry.key];
-      entries.splice(fallbackIndex, 1);
-      removedKeys.push(entry.key);
-    }
+    console.warn(
+      'Unable to trim automatic backups down to the configured limit without losing unique data.',
+      { limit, remaining: entries.length },
+    );
   }
 }
 
@@ -2031,24 +2041,7 @@ function removeOldestAutoBackupEntry(container) {
     return duplicateAutoBackupKey;
   }
   if (autoBackups.length > 0) {
-    let fallback = null;
-    for (let index = 0; index < autoBackups.length; index += 1) {
-      const candidate = autoBackups[index];
-      if (!candidate || typeof candidate.key !== 'string') {
-        continue;
-      }
-      if (!isRenamedAutoBackupEntry(container, candidate.key)) {
-        delete container[candidate.key];
-        return candidate.key;
-      }
-      if (!fallback) {
-        fallback = candidate;
-      }
-    }
-    if (fallback && typeof fallback.key === 'string') {
-      delete container[fallback.key];
-      return fallback.key;
-    }
+    console.warn('Unable to free space by removing automatic backups because all versions are unique.');
   }
 
   const deletionBackups = collectAutoBackupEntries(container, STORAGE_AUTO_BACKUP_DELETION_PREFIX);
@@ -2057,24 +2050,7 @@ function removeOldestAutoBackupEntry(container) {
     return duplicateDeletionBackupKey;
   }
   if (deletionBackups.length > 0) {
-    let fallback = null;
-    for (let index = 0; index < deletionBackups.length; index += 1) {
-      const candidate = deletionBackups[index];
-      if (!candidate || typeof candidate.key !== 'string') {
-        continue;
-      }
-      if (!isRenamedAutoBackupEntry(container, candidate.key)) {
-        delete container[candidate.key];
-        return candidate.key;
-      }
-      if (!fallback) {
-        fallback = candidate;
-      }
-    }
-    if (fallback && typeof fallback.key === 'string') {
-      delete container[fallback.key];
-      return fallback.key;
-    }
+    console.warn('Unable to free space by removing pre-deletion backups because all versions are unique.');
   }
 
   return null;

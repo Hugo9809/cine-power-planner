@@ -483,7 +483,7 @@ describe('setup storage', () => {
     expect(betaKeys[betaKeys.length - 1]).toBe('auto-backup-2024-01-01-02-19-Project Beta');
   });
 
-  test('saveSetups keeps multiple unlabeled auto backups when trimming', () => {
+  test('saveSetups keeps only the newest unlabeled auto backup when earlier copies are identical', () => {
     const setups = {};
     for (let index = 0; index < 140; index += 1) {
       const hour = String(Math.floor(index / 60)).padStart(2, '0');
@@ -500,9 +500,27 @@ describe('setup storage', () => {
     const stored = JSON.parse(localStorage.getItem(SETUP_KEY));
     const autoKeys = Object.keys(stored).filter((name) => name.startsWith('auto-backup-')).sort();
 
-    expect(autoKeys.length).toBe(120);
-    expect(autoKeys[0]).toBe('auto-backup-2024-01-01-00-20');
-    expect(autoKeys[autoKeys.length - 1]).toBe('auto-backup-2024-01-01-02-19');
+    expect(autoKeys).toEqual(['auto-backup-2024-01-01-02-19']);
+  });
+
+  test('saveSetups retains unique auto backups even when exceeding the retention limit', () => {
+    const setups = {};
+    for (let index = 0; index < 130; index += 1) {
+      const hour = String(Math.floor(index / 60)).padStart(2, '0');
+      const minute = String(index % 60).padStart(2, '0');
+      const key = `auto-backup-2024-05-01-${hour}-${minute}-Project Unique`;
+      setups[key] = {
+        camera: `Camera ${index}`,
+        notes: [`Entry ${index}`],
+      };
+    }
+
+    saveSetups(setups);
+
+    const stored = JSON.parse(localStorage.getItem(SETUP_KEY));
+    const autoKeys = Object.keys(stored).filter((name) => name.startsWith('auto-backup-'));
+
+    expect(autoKeys).toHaveLength(130);
   });
 
   test('renameSetup marks auto backups renamed within the automatic namespace', () => {
@@ -824,6 +842,23 @@ describe('project storage', () => {
     expect(autoBackupCount).toBeLessThanOrEqual(120);
   });
 
+  test('saveProject retains unique auto backups even when exceeding the retention limit', () => {
+    const projects = {};
+    for (let index = 0; index < 130; index += 1) {
+      const hour = String(Math.floor(index / 60)).padStart(2, '0');
+      const minute = String(index % 60).padStart(2, '0');
+      const key = `auto-backup-2024-06-01-${hour}-${minute}-Project Unique`;
+      projects[key] = { gearList: `<ul>${index}</ul>`, projectInfo: { note: `Entry ${index}` } };
+    }
+    localStorage.setItem(PROJECT_KEY, JSON.stringify(projects));
+
+    saveProject('Project Unique Latest', { gearList: '<ul>Latest</ul>', projectInfo: null });
+
+    const stored = JSON.parse(localStorage.getItem(PROJECT_KEY));
+    const autoKeys = Object.keys(stored).filter(name => name.startsWith('auto-backup-'));
+    expect(autoKeys).toHaveLength(130);
+  });
+
   test('saveProject ignores non-object payloads entirely', () => {
     saveProject('Broken', 'not-an-object');
     expect(localStorage.getItem(PROJECT_KEY)).toBeNull();
@@ -893,10 +928,14 @@ describe('project storage', () => {
       Invalid: 7,
     };
     localStorage.setItem(PROJECT_KEY, JSON.stringify(stored));
-    expect(loadProject()).toEqual({
+    const result = loadProject();
+    expect(result).toEqual({
       NewFormat: { gearList: '<ul>New</ul>', projectInfo: { notes: 'ok' } },
-      LegacyHtml: { gearList: { projectHtml: '<section>project</section>', gearHtml: '<div>gear</div>' }, projectInfo: null },
-      LegacyString: { gearList: '<p>standalone</p>', projectInfo: null },
+      'LegacyHtml-updated': {
+        gearList: { projectHtml: '<section>project</section>', gearHtml: '<div>gear</div>' },
+        projectInfo: null,
+      },
+      'LegacyString-updated': { gearList: '<p>standalone</p>', projectInfo: null },
     });
   });
 
@@ -965,7 +1004,9 @@ describe('project storage', () => {
     const projects = loadProject();
     const stored = JSON.parse(localStorage.getItem(PROJECT_KEY));
 
-    expect(projects).toEqual({ '': { gearList: '<p>Legacy</p>', projectInfo: null } });
+    expect(projects).toEqual({
+      'Project-updated': { gearList: '<p>Legacy</p>', projectInfo: null },
+    });
     expect(stored).toEqual(projects);
     expect(localStorage.getItem('cinePowerPlanner_project')).toBeNull();
   });
@@ -1000,7 +1041,9 @@ describe('project storage', () => {
     );
 
     const projects = loadProject();
-    expect(projects).toEqual({ '': { gearList: '<p>Legacy project</p>', projectInfo: null } });
+    expect(projects).toEqual({
+      'Project-updated': { gearList: '<p>Legacy project</p>', projectInfo: null },
+    });
 
     const storedBackup = localStorage.getItem(migrationBackupKeyFor(PROJECT_KEY));
     expect(storedBackup).toBe(JSON.stringify(existingBackup));
@@ -2022,7 +2065,7 @@ describe('export/import all data', () => {
     });
 
     const stored = JSON.parse(localStorage.getItem(PROJECT_KEY));
-    expect(stored['']).toEqual({
+    expect(stored['Project-updated']).toEqual({
       gearList: '<section>Legacy</section>',
       projectInfo: { projectName: 'Legacy Stored' },
       autoGearRules: [
@@ -2048,7 +2091,7 @@ describe('export/import all data', () => {
     });
 
     const updated = JSON.parse(localStorage.getItem(PROJECT_KEY));
-    expect(updated.Legacy).toEqual({
+    expect(updated['Legacy-updated']).toEqual({
       gearList: '<article>Legacy Map</article>',
       projectInfo: { projectName: 'Legacy Map' },
     });
