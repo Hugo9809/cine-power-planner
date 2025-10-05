@@ -24,7 +24,8 @@ class concept:
   aid troubleshooting during offline rehearsals.
 - **Integrity verification.** `cineRuntime.verifyCriticalFlows()` now inspects
   registry membership before checking method availability. A missing registration
-  fails the same guard that protects save/share/restore flows.
+  fails the same guard that protects save/share/restore flows and the runtime
+  feedback storage wrappers and bindings.
 - **Legacy parity.** The ES5 bundle under `legacy/` mirrors the registry so
   older browsers and cached offline copies keep the same guarantees.
 

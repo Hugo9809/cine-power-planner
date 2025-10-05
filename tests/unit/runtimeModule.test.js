@@ -399,6 +399,7 @@ describe('cineRuntime module', () => {
     const checks = runtime.listCriticalChecks();
     expect(Object.isFrozen(checks)).toBe(true);
     expect(checks.cinePersistence).toEqual(expect.arrayContaining(['storage.saveProject', 'share.applySharedSetupFromUrl']));
+    expect(checks.cinePersistence).toEqual(expect.arrayContaining(['storage.loadFeedback', 'storage.saveFeedback']));
     expect(checks.cineOffline).toEqual(expect.arrayContaining(['registerServiceWorker', 'reloadApp']));
     expect(checks.cineUi.controllers).toEqual(expect.arrayContaining([
       expect.objectContaining({ name: 'backupSettings' }),
@@ -448,5 +449,23 @@ describe('cineRuntime module', () => {
     expect(result.ok).toBe(false);
     expect(result.missing).toContain('cinePersistence.bindings.saveProject');
     expect(result.missing).not.toContain('cinePersistence.storage.saveProject');
+  });
+
+  test('flags missing feedback persistence wrappers and bindings', () => {
+    const mutated = buildPersistenceStub({
+      missingWrappers: ['loadFeedback', 'saveFeedback'],
+      missingBindings: ['loadFeedback', 'saveFeedback'],
+    });
+    global.cinePersistence = mutated;
+    registry.register('cinePersistence', mutated, { replace: true, category: 'persistence', description: 'feedback-mutated' });
+
+    const result = runtime.verifyCriticalFlows();
+    expect(result.ok).toBe(false);
+    expect(result.missing).toEqual(expect.arrayContaining([
+      'cinePersistence.storage.loadFeedback',
+      'cinePersistence.storage.saveFeedback',
+      'cinePersistence.bindings.loadFeedback',
+      'cinePersistence.bindings.saveFeedback',
+    ]));
   });
 });

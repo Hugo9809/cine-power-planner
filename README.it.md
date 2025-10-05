@@ -97,7 +97,7 @@ Consulta `docs/translation-guide.md` per i dettagli sulla localizzazione.
 - **Regole automatiche per l’attrezzatura** – Definisci aggiunte o rimozioni attivate dagli scenari con controlli di import/export e backup programmati.
 - **Dashboard di copertura regole** – Riassume la copertura per scenario, i trigger duplicati, le variazioni nette, gli scenari sovrapposti, i conflitti e i requisiti non coperti nelle Regole automatiche, applica filtri di focus offline e condivide le stesse informazioni in export e stampe.
 - **Dashboard dati e archiviazione** – Audita progetti, liste, dispositivi personalizzati, preferiti e feedback sulle autonomie direttamente da Impostazioni e stima la dimensione del backup.
-- **Ispettore di salvaguardia runtime** – Il bundle runtime registra il risultato su `window.__cineRuntimeIntegrity` ed espone `window.cineRuntime.verifyCriticalFlows()` così la troupe può confermare i percorsi di salvataggio/condivisione/ripristino prima di partire.
+- **Ispettore di salvaguardia runtime** – Il bundle runtime registra il risultato su `window.__cineRuntimeIntegrity` ed espone `window.cineRuntime.verifyCriticalFlows()` così la troupe può confermare i percorsi di salvataggio/condivisione/ripristino e la persistenza del feedback prima di partire.
 - **Overlay stato auto-save** – Replica l’ultima nota di auto-save nel dialogo Impostazioni così la troupe vede l’attività in background durante gli esercizi.
 - **Editor sensibile al monitoring** – Mostra campi aggiuntivi per monitor e distribuzione video solo quando richiesti dagli scenari.
 - **Controlli di accento e tipografia** – Regola colore di accento, dimensione e famiglia di font; i temi scuro, rosa e alto contrasto restano attivi tra le sessioni.
@@ -126,7 +126,7 @@ Segui questa checklist all’installazione o dopo un aggiornamento: dimostra che
 6. Esporta **Impostazioni → Backup e ripristino → Backup** e importa il file `planner-backup.json` in un profilo privato. Così verifichi che nessuna copia resti isolata e che il backup forzato prima del ripristino funzioni.
 7. Esercitati a esportare un bundle (`project-name.json`) e importarlo su un altro dispositivo o profilo per collaudare il flusso Salva → Condividi → Importa e assicurarti che risorse locali seguano il progetto.
 8. Archivia backup e bundle verificati insieme alla copia del repository utilizzato. Annota data, macchina e operatore per documentare quando l’esercizio è stato convalidato e mantenere i flussi sincronizzati fin dalla prima sessione.
-9. Apri la console del browser e acquisisci `window.__cineRuntimeIntegrity` (oppure riesegui `window.cineRuntime.verifyCriticalFlows()` e salva il report). In questo modo dimostri che la sentinella runtime ha validato i percorsi di salvataggio/condivisione/ripristino durante la prova offline.
+9. Apri la console del browser e acquisisci `window.__cineRuntimeIntegrity` (oppure riesegui `window.cineRuntime.verifyCriticalFlows()` e salva il report). In questo modo dimostri che la sentinella runtime ha validato i percorsi di salvataggio/condivisione/ripristino e la persistenza del feedback durante la prova offline.
 
 ## Requisiti di sistema e browser
 
@@ -145,7 +145,7 @@ Ripeti questa routine quando arriva un nuovo membro, allestisci una postazione o
 4. **Verifica offline.** Nel profilo di test, disconnetti la rete e ricarica `index.html`. Assicurati che l’indicatore offline appaia e che Uicons e script locali si carichino correttamente.
 5. **Registra un diff.** Torna nel profilo principale, apri **Impostazioni → Backup e ripristino → Confronta versioni**, seleziona l’ultimo salvataggio manuale e l’auto-backup più recente, rivedi le differenze evidenziate, annota il contesto in **Note sull’incidente** ed esporta il JSON. Archivia il file con gli artefatti della prova così gli audit offline possono ricostruire la cronologia.
 6. **Archiviazione sicura.** Elimina il profilo di test dopo la verifica e etichetta gli export secondo la procedura di produzione.
-7. **Registra la sentinella runtime.** Nello stesso profilo apri la console, verifica che `window.__cineRuntimeIntegrity.ok` sia `true` e, se serve un report aggiornato, esegui `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })`, archiviando l’output con le note dell’esercizio.
+7. **Registra la sentinella runtime.** Nello stesso profilo apri la console, verifica che `window.__cineRuntimeIntegrity.ok` sia `true` e, se serve un report aggiornato, esegui `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })`, archiviando l’output con le note dell’esercizio per confermare che resta protetta anche la persistenza del feedback.
 
 ## Flusso quotidiano
 
@@ -267,7 +267,7 @@ Ripeti questa routine quando arriva un nuovo membro, allestisci una postazione o
 - **Snapshot automatici delle regole** – Le modifiche in **Regole automatiche** generano copie con timestamp ogni dieci minuti.
 - **Ripristino impostazioni di fabbrica** – Cancella i dati solo dopo aver scaricato un backup.
 - **Promemoria orari** – Una routine in background suggerisce un backup aggiuntivo ogni ora per avere sempre una copia recente.
-- **Sentinella di integrità runtime** – Prima di partire, apri la console e assicurati che `window.__cineRuntimeIntegrity.ok` sia `true` (o esegui `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })`). Il report dimostra che i percorsi di salvataggio/condivisione/ripristino restano protetti offline.
+- **Sentinella di integrità runtime** – Prima di partire, apri la console e assicurati che `window.__cineRuntimeIntegrity.ok` sia `true` (o esegui `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })`). Il report dimostra che i percorsi di salvataggio/condivisione/ripristino e la persistenza del feedback restano protetti offline.
 - **Loop di verifica** – Dopo ogni backup critico, importalo in un profilo separato per confermare il risultato prima di eliminare l’istanza di test.
 - **Abitudini di archiviazione sicura** – Etichetta backup con nome progetto e orario, poi conserva su supporti ridondanti (RAID, USB cifrato, disco ottico).
 - **Confronta prima di sovrascrivere** – Scarica un backup dello stato corrente prima di ripristinare e confronta le differenze con un diff JSON per eventuali fusioni manuali.

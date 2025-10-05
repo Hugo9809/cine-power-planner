@@ -172,7 +172,7 @@ localization steps.
 - **Runtime safeguard inspector** – the runtime bundle now records verification
   results on `window.__cineRuntimeIntegrity` and exposes
   `window.cineRuntime.verifyCriticalFlows()` so crews can confirm save/share/
-  restore gateways before leaving for set.
+  restore gateways and runtime feedback persistence before leaving for set.
 - **Autosave status overlay** – mirror the latest autosave note inside the
   settings dialog so crews see background activity while rehearsing recovery
   drills.
@@ -233,9 +233,9 @@ same online or offline.
    prove when the drill succeeded, keeping save, share, import, backup and
    restore workflows provably in sync from the first session.
 9. Capture a console screenshot of `window.__cineRuntimeIntegrity` (or rerun
-   `window.cineRuntime.verifyCriticalFlows()` and store the report) to document
-   that the runtime guard validated every save/share/restore gateway while you
-   rehearsed offline.
+  `window.cineRuntime.verifyCriticalFlows()` and store the report) to document
+  that the runtime guard validated every save/share/restore gateway and the
+  runtime feedback storage bindings while you rehearsed offline.
 
 ## Key Workflow Reference
 

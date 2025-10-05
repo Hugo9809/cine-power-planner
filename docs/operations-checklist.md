@@ -44,7 +44,8 @@ update the repository or hand off a project at the end of the day.
    developer console and check `window.__cineRuntimeIntegrity`. It should show
    `{ ok: true }` with no missing safeguards. When in doubt, run
    `window.cineRuntime.verifyCriticalFlows()` for a fresh report and confirm the
-   persistence, offline and UI sections all pass before you archive exports.
+   persistence, offline and UI sections—including runtime feedback storage
+   wrappers and bindings—all pass before you archive exports.
 7. **Review data & storage dashboard.** Open **Settings → Data & Storage** to
    ensure counts for projects, backups and custom devices match expectations,
    confirm the **Latest activity** board lists recent saves and backups, and use

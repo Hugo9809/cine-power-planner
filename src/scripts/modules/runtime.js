@@ -30,6 +30,8 @@
     'storage.importAllData',
     'storage.loadFavorites',
     'storage.saveFavorites',
+    'storage.loadFeedback',
+    'storage.saveFeedback',
     'storage.loadAutoGearRules',
     'storage.saveAutoGearRules',
     'storage.loadAutoGearBackups',
