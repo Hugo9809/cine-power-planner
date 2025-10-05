@@ -69,10 +69,31 @@ function mergeDeviceOverrides(target, source) {
   return target;
 }
 
+function resolveDocument() {
+  if (typeof document !== 'undefined' && document) {
+    return document;
+  }
+
+  if (typeof globalThis !== 'undefined' && globalThis.document) {
+    return globalThis.document;
+  }
+
+  if (typeof global !== 'undefined' && global.document) {
+    return global.document;
+  }
+
+  return null;
+}
+
 function stubReadyState(value) {
-  const descriptor = Object.getOwnPropertyDescriptor(document, 'readyState');
+  const doc = resolveDocument();
+  if (!doc) {
+    return null;
+  }
+
+  const descriptor = Object.getOwnPropertyDescriptor(doc, 'readyState');
   try {
-    Object.defineProperty(document, 'readyState', {
+    Object.defineProperty(doc, 'readyState', {
       configurable: true,
       get: () => value
     });
@@ -83,10 +104,15 @@ function stubReadyState(value) {
 }
 
 function restoreReadyState(descriptor) {
+  const doc = resolveDocument();
+  if (!doc) {
+    return;
+  }
+
   if (descriptor) {
-    Object.defineProperty(document, 'readyState', descriptor);
+    Object.defineProperty(doc, 'readyState', descriptor);
   } else {
-    delete document.readyState;
+    delete doc.readyState;
   }
 }
 
@@ -104,12 +130,17 @@ function applyTranslations() {
 }
 
 function setupScriptEnvironment(options = {}) {
+  const doc = resolveDocument();
+  if (!doc || !doc.body) {
+    throw new Error('setupScriptEnvironment requires a DOM with a document.body.');
+  }
+
   const readyStateDescriptor = stubReadyState(options.readyState ?? 'loading');
 
   if (options.injectHtml === false) {
-    document.body.innerHTML = '';
+    doc.body.innerHTML = '';
   } else {
-    document.body.innerHTML = getHtmlBody();
+    doc.body.innerHTML = getHtmlBody();
   }
 
   const globalStubs = {
@@ -171,7 +202,7 @@ function setupScriptEnvironment(options = {}) {
       void runtimeCleanupError;
     }
     jest.clearAllMocks();
-    document.body.innerHTML = '';
+    doc.body.innerHTML = '';
   };
 
   return { utils, cleanup, globals: globalStubs };
