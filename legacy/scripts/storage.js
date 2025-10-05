@@ -29,7 +29,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         GLOBAL_SCOPE.__cineStorageInitialized = false;
         void resetInitFlagError;
       }
-
       try {
         delete GLOBAL_SCOPE.__cineStorageApi;
       } catch (resetApiError) {
@@ -3674,6 +3673,59 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return true;
   }
+  function normalizeProjectStorageKey(name) {
+    if (typeof name !== "string") {
+      return "";
+    }
+    return name.trim();
+  }
+  function resolveProjectKey(projects, lookup, name) {
+    var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+    if (!projects || _typeof(projects) !== "object") {
+      return null;
+    }
+    var rawName = typeof name === "string" ? name : "";
+    if (Object.prototype.hasOwnProperty.call(projects, rawName)) {
+      return rawName;
+    }
+    var normalizedName = normalizeProjectStorageKey(rawName);
+    if (normalizedName && normalizedName !== rawName && Object.prototype.hasOwnProperty.call(projects, normalizedName)) {
+      return normalizedName;
+    }
+    if (!lookup || _typeof(lookup) !== "object") {
+      return null;
+    }
+    var rawMap = lookup.raw,
+      normalizedMap = lookup.normalized;
+    if (rawMap && typeof rawMap.get === "function" && rawMap.has(rawName)) {
+      var candidate = rawMap.get(rawName);
+      if (Object.prototype.hasOwnProperty.call(projects, candidate)) {
+        return candidate;
+      }
+    }
+    if (normalizedMap && typeof normalizedMap.get === "function" && normalizedMap.has(normalizedName)) {
+      var candidates = normalizedMap.get(normalizedName);
+      if (Array.isArray(candidates)) {
+        if (options && options.preferExact && rawName) {
+          var exact = candidates.find(function (candidate) {
+            return candidate === rawName && Object.prototype.hasOwnProperty.call(projects, candidate);
+          });
+          if (exact) {
+            return exact;
+          }
+        }
+        var firstExisting = candidates.find(function (candidate) {
+          return Object.prototype.hasOwnProperty.call(projects, candidate);
+        });
+        if (firstExisting) {
+          return firstExisting;
+        }
+      } else if (typeof candidates === "string" && Object.prototype.hasOwnProperty.call(projects, candidates)) {
+        return candidates;
+      }
+    }
+    return null;
+  }
   function readAllProjectsFromStorage() {
     applyLegacyStorageMigrations();
     var safeStorage = getSafeLocalStorage();
@@ -3685,22 +3737,45 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var originalValue = parsed;
     var projects = {};
     var changed = false;
+    var rawKeyLookup = new Map();
+    var normalizedKeyLookup = new Map();
+    var registerLookupKey = function registerLookupKey(rawKey, storedKey) {
+      if (typeof rawKey !== "string") {
+        return;
+      }
+      var effectiveKey = typeof storedKey === "string" ? storedKey : rawKey;
+      rawKeyLookup.set(rawKey, effectiveKey);
+      var normalized = normalizeProjectStorageKey(rawKey);
+      if (!normalizedKeyLookup.has(normalized)) {
+        normalizedKeyLookup.set(normalized, []);
+      }
+      normalizedKeyLookup.get(normalized).push(effectiveKey);
+    };
+    var createLookupSnapshot = function createLookupSnapshot() {
+      return {
+        raw: rawKeyLookup,
+        normalized: normalizedKeyLookup
+      };
+    };
     if (parsed === null || parsed === undefined) {
       return {
         projects: projects,
         changed: false,
-        originalValue: originalValue
+        originalValue: originalValue,
+        lookup: createLookupSnapshot()
       };
     }
     if (typeof parsed === "string") {
       var normalized = normalizeProject(parsed);
       if (normalized) {
         projects[""] = normalized;
+        registerLookupKey("", "");
       }
       return {
         projects: projects,
         changed: true,
-        originalValue: originalValue
+        originalValue: originalValue,
+        lookup: createLookupSnapshot()
       };
     }
     if (Array.isArray(parsed)) {
@@ -3716,18 +3791,21 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         var candidate = baseName || "Project ".concat(index + 1);
         var unique = generateUniqueName(candidate, usedNames, normalizedNames);
         projects[unique] = normalized;
+        registerLookupKey(candidate, unique);
       });
       return {
         projects: projects,
         changed: true,
-        originalValue: originalValue
+        originalValue: originalValue,
+        lookup: createLookupSnapshot()
       };
     }
     if (!isPlainObject(parsed)) {
       return {
         projects: projects,
         changed: true,
-        originalValue: originalValue
+        originalValue: originalValue,
+        lookup: createLookupSnapshot()
       };
     }
     var keys = Object.keys(parsed);
@@ -3738,17 +3816,20 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var _normalized3 = normalizeProject(parsed);
       if (_normalized3) {
         projects[""] = _normalized3;
+        registerLookupKey("", "");
       }
       return {
         projects: projects,
         changed: true,
-        originalValue: originalValue
+        originalValue: originalValue,
+        lookup: createLookupSnapshot()
       };
     }
     keys.forEach(function (key) {
       var normalized = normalizeProject(parsed[key]);
       if (normalized) {
         projects[key] = normalized;
+        registerLookupKey(key, key);
         if (!isNormalizedProjectEntry(parsed[key])) {
           changed = true;
         }
@@ -3759,7 +3840,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return {
       projects: projects,
       changed: changed,
-      originalValue: originalValue
+      originalValue: originalValue,
+      lookup: createLookupSnapshot()
     };
   }
   function persistAllProjects(projects) {
@@ -3781,7 +3863,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var _readAllProjectsFromS = readAllProjectsFromStorage(),
       projects = _readAllProjectsFromS.projects,
       changed = _readAllProjectsFromS.changed,
-      originalValue = _readAllProjectsFromS.originalValue;
+      originalValue = _readAllProjectsFromS.originalValue,
+      lookup = _readAllProjectsFromS.lookup;
     if (changed) {
       var safeStorage = getSafeLocalStorage();
       if (safeStorage) {
@@ -3792,8 +3875,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (name === undefined) {
       return projects;
     }
-    var key = name || "";
-    return Object.prototype.hasOwnProperty.call(projects, key) ? projects[key] : null;
+    var resolvedKey = resolveProjectKey(projects, lookup, name, {
+      preferExact: true
+    });
+    if (resolvedKey !== null && resolvedKey !== undefined && Object.prototype.hasOwnProperty.call(projects, resolvedKey)) {
+      return projects[resolvedKey];
+    }
+    return null;
   }
   function sanitizeProjectNameForBackup(name) {
     if (typeof name !== 'string') {
@@ -3942,33 +4030,57 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function saveProject(name, project) {
     if (!isPlainObject(project)) return;
-    var normalized = normalizeProject(project) || {
-      gearList: "",
-      projectInfo: null
-    };
+    var normalized = normalizeProject(project);
+    if (!normalized) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn("Skipped saving project \"".concat(name || '', "\" because the payload could not be normalised."));
+      }
+      return;
+    }
     var _readAllProjectsFromS2 = readAllProjectsFromStorage(),
       projects = _readAllProjectsFromS2.projects,
       changed = _readAllProjectsFromS2.changed,
-      originalValue = _readAllProjectsFromS2.originalValue;
+      originalValue = _readAllProjectsFromS2.originalValue,
+      lookup = _readAllProjectsFromS2.lookup;
     if (changed) {
       var safeStorage = getSafeLocalStorage();
       if (safeStorage) {
         createStorageMigrationBackup(safeStorage, PROJECT_STORAGE_KEY, originalValue);
       }
     }
-    var key = name || "";
-    var hasExistingEntry = Object.prototype.hasOwnProperty.call(projects, key);
+    var requestedKey = typeof name === 'string' ? name : '';
+    var preferredKey = normalizeProjectStorageKey(requestedKey);
+    var resolvedKey = resolveProjectKey(projects, lookup, requestedKey, {
+      preferExact: true
+    });
+    var storageKey = resolvedKey;
+    var renamedFromKey = null;
+    if (preferredKey && preferredKey !== resolvedKey && !Object.prototype.hasOwnProperty.call(projects, preferredKey)) {
+      storageKey = preferredKey;
+      renamedFromKey = resolvedKey;
+    }
+    if (storageKey === null || storageKey === undefined) {
+      storageKey = preferredKey;
+    }
+    if (!storageKey && storageKey !== '') {
+      storageKey = '';
+    }
+    var existingKey = renamedFromKey !== null && renamedFromKey !== undefined ? renamedFromKey : storageKey;
+    var hasExistingEntry = existingKey !== null && existingKey !== undefined && Object.prototype.hasOwnProperty.call(projects, existingKey);
     if (hasExistingEntry) {
-      var existingSignature = createStableValueSignature(projects[key]);
+      var existingSignature = createStableValueSignature(projects[existingKey]);
       var nextSignature = createStableValueSignature(normalized);
       if (existingSignature !== nextSignature) {
-        var backupOutcome = maybeCreateProjectOverwriteBackup(projects, key);
+        var backupOutcome = maybeCreateProjectOverwriteBackup(projects, existingKey);
         if (backupOutcome.status === 'failed') {
-          console.warn("Automatic backup before overwriting project \"".concat(key, "\" failed. Proceeding with save."));
+          console.warn("Automatic backup before overwriting project \"".concat(existingKey, "\" failed. Proceeding with save."));
         }
       }
     }
-    projects[key] = normalized;
+    if (renamedFromKey !== null && renamedFromKey !== undefined && renamedFromKey !== storageKey) {
+      delete projects[renamedFromKey];
+    }
+    projects[storageKey || ''] = normalized;
     persistAllProjects(projects);
   }
   function deleteProject(name) {
@@ -3976,17 +4088,21 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       deleteFromStorage(getSafeLocalStorage(), PROJECT_STORAGE_KEY, "Error deleting project from localStorage:");
       return;
     }
-    var key = name || "";
     var _readAllProjectsFromS3 = readAllProjectsFromStorage(),
       projects = _readAllProjectsFromS3.projects,
       changed = _readAllProjectsFromS3.changed,
-      originalValue = _readAllProjectsFromS3.originalValue;
+      originalValue = _readAllProjectsFromS3.originalValue,
+      lookup = _readAllProjectsFromS3.lookup;
     if (changed) {
       var safeStorage = getSafeLocalStorage();
       if (safeStorage) {
         createStorageMigrationBackup(safeStorage, PROJECT_STORAGE_KEY, originalValue);
       }
     }
+    var resolvedKey = resolveProjectKey(projects, lookup, name, {
+      preferExact: true
+    });
+    var key = resolvedKey !== null && resolvedKey !== undefined ? resolvedKey : normalizeProjectStorageKey(name);
     if (!Object.prototype.hasOwnProperty.call(projects, key)) {
       return;
     }
