@@ -93,6 +93,43 @@ if (!Array.isArray(ASSETS) || ASSETS.length === 0) {
   ASSETS = ['./'];
 }
 
+function shouldBypassCache(request, requestUrl) {
+  if (!request) {
+    return false;
+  }
+
+  try {
+    if (
+      requestUrl &&
+      typeof requestUrl === 'object' &&
+      requestUrl.searchParams &&
+      typeof requestUrl.searchParams.has === 'function' &&
+      requestUrl.searchParams.has('forceReload')
+    ) {
+      return true;
+    }
+  } catch (forceReloadCheckError) {
+    console.warn('Unable to evaluate forceReload search parameter for cache bypass.', forceReloadCheckError);
+  }
+
+  const { cache } = request;
+  if (cache === 'reload' || cache === 'no-store') {
+    return true;
+  }
+
+  const cacheControl = request.headers && request.headers.get && request.headers.get('Cache-Control');
+  if (cacheControl && /no-cache|max-age=0/i.test(cacheControl)) {
+    return true;
+  }
+
+  const pragma = request.headers && request.headers.get && request.headers.get('Pragma');
+  if (pragma && /no-cache/i.test(pragma)) {
+    return true;
+  }
+
+  return false;
+}
+
 async function precacheAssets(cacheName, assets) {
   const cache = await caches.open(cacheName);
 
@@ -166,29 +203,6 @@ if (typeof self !== 'undefined') {
     self.clients.claim();
   });
 
-  function shouldBypassCache(request) {
-    if (!request) {
-      return false;
-    }
-
-    const { cache } = request;
-    if (cache === 'reload' || cache === 'no-store') {
-      return true;
-    }
-
-    const cacheControl = request.headers && request.headers.get('Cache-Control');
-    if (cacheControl && /no-cache|max-age=0/i.test(cacheControl)) {
-      return true;
-    }
-
-    const pragma = request.headers && request.headers.get('Pragma');
-    if (pragma && /no-cache/i.test(pragma)) {
-      return true;
-    }
-
-    return false;
-  }
-
   self.addEventListener('fetch', event => {
     if (event.request.method !== 'GET') {
       return;
@@ -199,7 +213,9 @@ if (typeof self !== 'undefined') {
     const requestUrl = new URL(event.request.url);
     const isSameOrigin = requestUrl.origin === self.location.origin;
     const isAppIconRequest = isSameOrigin && requestUrl.pathname.includes('/src/icons/');
-    const bypassCache = shouldBypassCache(event.request);
+    const bypassCache = shouldBypassCache(event.request, requestUrl);
+    const shouldIgnoreSearch =
+      isNavigationRequest && (!requestUrl.searchParams || !requestUrl.searchParams.has('forceReload'));
     if (isAppIconRequest) {
       event.respondWith((async () => {
         const cache = await caches.open(CACHE_NAME);
@@ -222,7 +238,7 @@ if (typeof self !== 'undefined') {
     }
 
     event.respondWith((async () => {
-      const cacheMatchOptions = isNavigationRequest ? { ignoreSearch: true } : undefined;
+      const cacheMatchOptions = shouldIgnoreSearch ? { ignoreSearch: true } : undefined;
 
       if (bypassCache) {
         try {
@@ -281,5 +297,9 @@ if (typeof self !== 'undefined') {
 }
 
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { ASSETS, CACHE_NAME };
+  module.exports = {
+    ASSETS,
+    CACHE_NAME,
+    __private__: { shouldBypassCache },
+  };
 }
