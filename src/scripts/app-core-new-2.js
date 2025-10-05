@@ -16363,6 +16363,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       ['helpMap', () => helpMap],
       ['featureSearchEntries', () => featureSearchEntries],
       ['featureSearchDefaultOptions', () => featureSearchDefaultOptions],
+      ['populateFeatureSearch', () => populateFeatureSearch],
       ['restoreFeatureSearchDefaults', () => restoreFeatureSearchDefaults],
       ['updateFeatureSearchSuggestions', () => updateFeatureSearchSuggestions],
       ['setCurrentProjectInfo', () => setCurrentProjectInfo],
