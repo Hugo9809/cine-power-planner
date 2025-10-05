@@ -117,6 +117,29 @@
 
   const LOCAL_SCOPE = fallbackDetectGlobalScope();
 
+  function resolveModuleSystem(scope) {
+    const targetScope = scope || LOCAL_SCOPE;
+
+    if (typeof require === 'function') {
+      try {
+        const required = require('./system.js');
+        if (required && typeof required === 'object') {
+          return required;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    if (targetScope && typeof targetScope.cineModuleSystem === 'object') {
+      return targetScope.cineModuleSystem;
+    }
+
+    return null;
+  }
+
+  const MODULE_SYSTEM = resolveModuleSystem(LOCAL_SCOPE);
+
   function resolveEnvironmentContext(scope) {
     const targetScope = scope || LOCAL_SCOPE;
 
@@ -140,28 +163,94 @@
 
   const ENVIRONMENT_CONTEXT = resolveEnvironmentContext(LOCAL_SCOPE);
 
+  function detectWithContext() {
+    if (ENVIRONMENT_CONTEXT && typeof ENVIRONMENT_CONTEXT.detectGlobalScope === 'function') {
+      try {
+        const detected = ENVIRONMENT_CONTEXT.detectGlobalScope();
+        if (detected) {
+          return detected;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+    return fallbackDetectGlobalScope();
+  }
+
   const detectGlobalScope =
-    ENVIRONMENT_CONTEXT && typeof ENVIRONMENT_CONTEXT.detectGlobalScope === 'function'
-      ? function detectWithContext() {
+    MODULE_SYSTEM && typeof MODULE_SYSTEM.detectGlobalScope === 'function'
+      ? function detectWithSystem() {
           try {
-            return ENVIRONMENT_CONTEXT.detectGlobalScope();
+            const detected = MODULE_SYSTEM.detectGlobalScope();
+            if (detected) {
+              return detected;
+            }
           } catch (error) {
             void error;
           }
-          return fallbackDetectGlobalScope();
+          return detectWithContext();
         }
-      : fallbackDetectGlobalScope;
+      : detectWithContext;
 
   const PRIMARY_SCOPE =
-    ENVIRONMENT_CONTEXT && typeof ENVIRONMENT_CONTEXT.getPrimaryScope === 'function'
+    (ENVIRONMENT_CONTEXT && typeof ENVIRONMENT_CONTEXT.getPrimaryScope === 'function'
       ? ENVIRONMENT_CONTEXT.getPrimaryScope()
-      : detectGlobalScope();
-
-  const GLOBAL_SCOPE =
-    (ENVIRONMENT_CONTEXT && typeof ENVIRONMENT_CONTEXT.getGlobalScope === 'function'
-      ? ENVIRONMENT_CONTEXT.getGlobalScope(PRIMARY_SCOPE)
       : null)
-    || PRIMARY_SCOPE;
+    || detectGlobalScope();
+
+  const GLOBAL_SCOPE = (function resolveGlobalScope() {
+    if (MODULE_SYSTEM && typeof MODULE_SYSTEM.getGlobalScope === 'function') {
+      try {
+        const resolved = MODULE_SYSTEM.getGlobalScope(PRIMARY_SCOPE);
+        if (resolved) {
+          return resolved;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    if (ENVIRONMENT_CONTEXT && typeof ENVIRONMENT_CONTEXT.getGlobalScope === 'function') {
+      try {
+        const scoped = ENVIRONMENT_CONTEXT.getGlobalScope(PRIMARY_SCOPE);
+        if (scoped) {
+          return scoped;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    return PRIMARY_SCOPE;
+  })();
+
+  function collectCandidateScopes(scope) {
+    const targetScope = scope || GLOBAL_SCOPE;
+
+    if (MODULE_SYSTEM && typeof MODULE_SYSTEM.collectCandidateScopes === 'function') {
+      try {
+        const scopes = MODULE_SYSTEM.collectCandidateScopes(targetScope);
+        if (Array.isArray(scopes) && scopes.length > 0) {
+          return scopes;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    if (ENVIRONMENT_CONTEXT && typeof ENVIRONMENT_CONTEXT.collectCandidateScopes === 'function') {
+      try {
+        const fromContext = ENVIRONMENT_CONTEXT.collectCandidateScopes(targetScope);
+        if (Array.isArray(fromContext) && fromContext.length > 0) {
+          return fromContext;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    return fallbackCollectCandidateScopes(targetScope);
+  }
 
   const MODULE_ENV =
     (ENVIRONMENT_CONTEXT && typeof ENVIRONMENT_CONTEXT.resolveModuleEnvironment === 'function'
@@ -194,6 +283,13 @@
   }
 
   const tryRequire = (function resolveTryRequire() {
+    if (MODULE_SYSTEM && typeof MODULE_SYSTEM.tryRequire === 'function') {
+      return function tryRequireWithSystem(modulePath) {
+        const result = MODULE_SYSTEM.tryRequire(modulePath);
+        return typeof result === 'undefined' ? fallbackTryRequire(modulePath) : result;
+      };
+    }
+
     if (ENVIRONMENT_CONTEXT && typeof ENVIRONMENT_CONTEXT.tryRequire === 'function') {
       return function tryRequireThroughContext(modulePath) {
         const result = ENVIRONMENT_CONTEXT.tryRequire(modulePath);
@@ -220,9 +316,11 @@
   })();
 
   function fallbackResolveModuleRegistry(scope) {
+    const targetScope = scope || GLOBAL_SCOPE;
+
     if (MODULE_GLOBALS && typeof MODULE_GLOBALS.resolveModuleRegistry === 'function') {
       try {
-        const resolved = MODULE_GLOBALS.resolveModuleRegistry(scope || GLOBAL_SCOPE);
+        const resolved = MODULE_GLOBALS.resolveModuleRegistry(targetScope);
         if (resolved) {
           return resolved;
         }
@@ -233,7 +331,7 @@
 
     if (ENV_BRIDGE && typeof ENV_BRIDGE.getModuleRegistry === 'function') {
       try {
-        const bridged = ENV_BRIDGE.getModuleRegistry(scope || GLOBAL_SCOPE);
+        const bridged = ENV_BRIDGE.getModuleRegistry(targetScope);
         if (bridged) {
           return bridged;
         }
@@ -244,7 +342,7 @@
 
     if (MODULE_ENV && typeof MODULE_ENV.resolveModuleRegistry === 'function') {
       try {
-        return MODULE_ENV.resolveModuleRegistry(scope || GLOBAL_SCOPE);
+        return MODULE_ENV.resolveModuleRegistry(targetScope);
       } catch (error) {
         void error;
       }
@@ -255,7 +353,7 @@
       return required;
     }
 
-    const scopes = fallbackCollectCandidateScopes(scope || GLOBAL_SCOPE);
+    const scopes = collectCandidateScopes(targetScope);
 
     for (let index = 0; index < scopes.length; index += 1) {
       const candidate = scopes[index];
@@ -268,9 +366,11 @@
   }
 
   function resolveModuleRegistry(scope) {
-    if (ENVIRONMENT_CONTEXT && typeof ENVIRONMENT_CONTEXT.resolveModuleRegistry === 'function') {
+    const targetScope = scope || GLOBAL_SCOPE;
+
+    if (MODULE_SYSTEM && typeof MODULE_SYSTEM.getModuleRegistry === 'function') {
       try {
-        const resolved = ENVIRONMENT_CONTEXT.resolveModuleRegistry(scope || GLOBAL_SCOPE);
+        const resolved = MODULE_SYSTEM.getModuleRegistry(targetScope);
         if (resolved) {
           return resolved;
         }
@@ -279,10 +379,32 @@
       }
     }
 
-    return fallbackResolveModuleRegistry(scope);
+    if (ENVIRONMENT_CONTEXT && typeof ENVIRONMENT_CONTEXT.resolveModuleRegistry === 'function') {
+      try {
+        const resolved = ENVIRONMENT_CONTEXT.resolveModuleRegistry(targetScope);
+        if (resolved) {
+          return resolved;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    return fallbackResolveModuleRegistry(targetScope);
   }
 
   const MODULE_REGISTRY = (function () {
+    if (MODULE_SYSTEM && typeof MODULE_SYSTEM.getModuleRegistry === 'function') {
+      try {
+        const viaSystem = MODULE_SYSTEM.getModuleRegistry(GLOBAL_SCOPE);
+        if (viaSystem) {
+          return viaSystem;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
     if (MODULE_GLOBALS && typeof MODULE_GLOBALS.getModuleRegistry === 'function') {
       try {
         const shared = MODULE_GLOBALS.getModuleRegistry(GLOBAL_SCOPE);
@@ -319,6 +441,17 @@
   })();
 
   const PENDING_QUEUE_KEY = (function resolvePendingKey() {
+    if (MODULE_SYSTEM && typeof MODULE_SYSTEM.getPendingQueueKey === 'function') {
+      try {
+        const systemKey = MODULE_SYSTEM.getPendingQueueKey();
+        if (typeof systemKey === 'string' && systemKey) {
+          return systemKey;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
     if (MODULE_GLOBALS && typeof MODULE_GLOBALS.getPendingQueueKey === 'function') {
       try {
         const sharedKey = MODULE_GLOBALS.getPendingQueueKey();
@@ -364,6 +497,16 @@
   }
 
   function queueModuleRegistration(name, api, options) {
+    if (MODULE_SYSTEM && typeof MODULE_SYSTEM.queueModuleRegistration === 'function') {
+      try {
+        if (MODULE_SYSTEM.queueModuleRegistration(name, api, options, GLOBAL_SCOPE)) {
+          return true;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
     if (MODULE_GLOBALS && typeof MODULE_GLOBALS.queueModuleRegistration === 'function') {
       try {
         if (MODULE_GLOBALS.queueModuleRegistration(name, api, options, GLOBAL_SCOPE)) {
@@ -434,6 +577,15 @@
   }
 
   function fallbackRegisterOrQueue(name, api, options, onError) {
+    if (MODULE_SYSTEM && typeof MODULE_SYSTEM.registerModule === 'function') {
+      const registered = MODULE_SYSTEM.registerModule(name, api, options, GLOBAL_SCOPE, onError);
+      if (registered) {
+        informModuleGlobals(name, api);
+        return true;
+      }
+      return false;
+    }
+
     if (MODULE_REGISTRY && typeof MODULE_REGISTRY.register === 'function') {
       try {
         MODULE_REGISTRY.register(name, api, options);
@@ -456,6 +608,17 @@
   }
 
   const registerOrQueueModule = (function resolveRegisterOrQueue() {
+    if (MODULE_SYSTEM && typeof MODULE_SYSTEM.registerModule === 'function') {
+      return function registerWithSystem(name, api, options, onError) {
+        const registered = MODULE_SYSTEM.registerModule(name, api, options, GLOBAL_SCOPE, onError);
+        if (registered) {
+          informModuleGlobals(name, api);
+          return true;
+        }
+        return false;
+      };
+    }
+
     if (MODULE_GLOBALS && typeof MODULE_GLOBALS.registerOrQueueModule === 'function') {
       return function registerOrQueueModule(name, api, options, onError) {
         try {
@@ -527,6 +690,10 @@
   }
 
   const freezeDeep = (function resolveFreezeDeep() {
+    if (MODULE_SYSTEM && typeof MODULE_SYSTEM.freezeDeep === 'function') {
+      return MODULE_SYSTEM.freezeDeep;
+    }
+
     if (MODULE_GLOBALS && typeof MODULE_GLOBALS.freezeDeep === 'function') {
       return MODULE_GLOBALS.freezeDeep;
     }
@@ -566,6 +733,10 @@
   }
 
   const safeWarn = (function resolveSafeWarn() {
+    if (MODULE_SYSTEM && typeof MODULE_SYSTEM.safeWarn === 'function') {
+      return MODULE_SYSTEM.safeWarn;
+    }
+
     if (MODULE_GLOBALS && typeof MODULE_GLOBALS.safeWarn === 'function') {
       return MODULE_GLOBALS.safeWarn;
     }
@@ -613,6 +784,17 @@
   }
 
   const exposeGlobal = (function resolveExposeGlobal() {
+    if (MODULE_SYSTEM && typeof MODULE_SYSTEM.exposeGlobal === 'function') {
+      return function exposeWithSystem(name, value, options) {
+        try {
+          return MODULE_SYSTEM.exposeGlobal(name, value, GLOBAL_SCOPE, options);
+        } catch (error) {
+          void error;
+          return fallbackExposeGlobal(name, value);
+        }
+      };
+    }
+
     if (MODULE_GLOBALS && typeof MODULE_GLOBALS.exposeGlobal === 'function') {
       return function moduleGlobalsExpose(name, value, options) {
         try {
