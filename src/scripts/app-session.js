@@ -9775,6 +9775,68 @@ const scenarioIcons = {
   'Battery Belt': ICON_GLYPHS.batteryBolt
 };
 
+function registerRequiredScenarioOptionEntriesGetter(getter) {
+  if (typeof getter !== 'function') {
+    return;
+  }
+
+  const scopes = getSessionRuntimeScopes();
+  for (let index = 0; index < scopes.length; index += 1) {
+    const scope = scopes[index];
+    if (!scope || typeof scope !== 'object') {
+      continue;
+    }
+
+    try {
+      scope.getRequiredScenarioOptionEntries = getter;
+    } catch (assignError) {
+      try {
+        Object.defineProperty(scope, 'getRequiredScenarioOptionEntries', {
+          configurable: true,
+          writable: true,
+          value: getter,
+        });
+      } catch (defineError) {
+        void defineError;
+      }
+    }
+  }
+}
+
+function getRequiredScenarioOptionEntries() {
+  const options = new Map();
+
+  if (requiredScenariosSelect && requiredScenariosSelect.options) {
+    Array.from(requiredScenariosSelect.options).forEach(option => {
+      if (!option) return;
+      if (option.disabled) return;
+      const value = typeof option.value === 'string' ? option.value.trim() : '';
+      if (!value) return;
+      const label = typeof option.textContent === 'string' && option.textContent.trim()
+        ? option.textContent.trim()
+        : value;
+      if (!options.has(value)) {
+        options.set(value, label);
+      }
+    });
+  }
+
+  Object.keys(scenarioIcons).forEach(key => {
+    if (typeof key !== 'string') return;
+    const value = key.trim();
+    if (!value || options.has(value)) {
+      return;
+    }
+    options.set(value, value);
+  });
+
+  return Array.from(options.entries())
+    .map(([value, label]) => ({ value, label }))
+    .sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: 'base' }));
+}
+
+registerRequiredScenarioOptionEntriesGetter(getRequiredScenarioOptionEntries);
+
 function updateRequiredScenariosSummary() {
   if (!requiredScenariosSelect || !requiredScenariosSummary) return;
   requiredScenariosSummary.innerHTML = '';
@@ -10787,6 +10849,7 @@ if (typeof module !== "undefined" && module.exports) {
     populateSensorModeDropdown,
     populateCodecDropdown,
     updateRequiredScenariosSummary,
+    getRequiredScenarioOptionEntries,
     updateMonitoringConfigurationOptions,
     updateViewfinderExtensionVisibility,
     scenarioIcons,
