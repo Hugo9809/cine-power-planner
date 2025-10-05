@@ -8969,11 +8969,15 @@ function updateAutoGearItemButtonState(type) {
     if (restoreRehearsalDifferenceHeader) {
       restoreRehearsalDifferenceHeader.textContent = texts[lang].restoreRehearsalDifferenceColumn || restoreRehearsalDifferenceHeader.textContent;
     }
-    if (restoreRehearsalCloseButton) {
+    var resolvedRestoreRehearsalCloseButton =
+      typeof restoreRehearsalCloseButton !== 'undefined'
+        ? restoreRehearsalCloseButton
+        : resolveElement('restoreRehearsalCloseButton', 'restoreRehearsalClose');
+    if (resolvedRestoreRehearsalCloseButton) {
       var _closeLabel = texts[lang].restoreRehearsalClose || texts[lang].cancelSettings || 'Close';
-      setButtonLabelWithIcon(restoreRehearsalCloseButton, _closeLabel, ICON_GLYPHS.circleX);
-      restoreRehearsalCloseButton.setAttribute('title', _closeLabel);
-      restoreRehearsalCloseButton.setAttribute('aria-label', _closeLabel);
+      setButtonLabelWithIcon(resolvedRestoreRehearsalCloseButton, _closeLabel, ICON_GLYPHS.circleX);
+      resolvedRestoreRehearsalCloseButton.setAttribute('title', _closeLabel);
+      resolvedRestoreRehearsalCloseButton.setAttribute('aria-label', _closeLabel);
     }
     if (restoreRehearsalProceedButton) {
       var _texts$en226, _texts$en227;

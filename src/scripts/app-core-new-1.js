@@ -10111,11 +10111,16 @@ function setLanguage(lang) {
   if (restoreRehearsalDifferenceHeader) {
     restoreRehearsalDifferenceHeader.textContent = texts[lang].restoreRehearsalDifferenceColumn || restoreRehearsalDifferenceHeader.textContent;
   }
-  if (restoreRehearsalCloseButton) {
+  const resolvedRestoreRehearsalCloseButton =
+    typeof restoreRehearsalCloseButton !== 'undefined'
+      ? restoreRehearsalCloseButton
+      : resolveElement('restoreRehearsalCloseButton', 'restoreRehearsalClose');
+
+  if (resolvedRestoreRehearsalCloseButton) {
     const closeLabel = texts[lang].restoreRehearsalClose || texts[lang].cancelSettings || 'Close';
-    setButtonLabelWithIcon(restoreRehearsalCloseButton, closeLabel, ICON_GLYPHS.circleX);
-    restoreRehearsalCloseButton.setAttribute('title', closeLabel);
-    restoreRehearsalCloseButton.setAttribute('aria-label', closeLabel);
+    setButtonLabelWithIcon(resolvedRestoreRehearsalCloseButton, closeLabel, ICON_GLYPHS.circleX);
+    resolvedRestoreRehearsalCloseButton.setAttribute('title', closeLabel);
+    resolvedRestoreRehearsalCloseButton.setAttribute('aria-label', closeLabel);
   }
   if (restoreRehearsalProceedButton) {
     const proceedLabel = texts[lang].restoreRehearsalProceed
