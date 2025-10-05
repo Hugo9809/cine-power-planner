@@ -1,20 +1,7 @@
-var CORE_PART2_RUNTIME_SCOPE =
-  typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE
-    ? CORE_GLOBAL_SCOPE
-    : typeof globalThis !== 'undefined'
-      ? globalThis
-      : typeof window !== 'undefined'
-        ? window
-        : typeof self !== 'undefined'
-          ? self
-          : typeof global !== 'undefined'
-            ? global
-            : null;
+var CORE_TEMPERATURE_QUEUE_KEY = '__cinePendingTemperatureNote';
+var CORE_TEMPERATURE_RENDER_NAME = 'renderTemperatureNote';
 
-var CORE_PART2_GLOBAL_SCOPES = [
-  CORE_PART2_RUNTIME_SCOPE && typeof CORE_PART2_RUNTIME_SCOPE === 'object'
-    ? CORE_PART2_RUNTIME_SCOPE
-    : null,
+var CORE_RUNTIME_CANDIDATE_SCOPES = [
   typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object'
     ? CORE_GLOBAL_SCOPE
     : null,
@@ -24,52 +11,359 @@ var CORE_PART2_GLOBAL_SCOPES = [
   typeof global !== 'undefined' && typeof global === 'object' ? global : null,
 ].filter(Boolean);
 
-var CORE_TEMPERATURE_QUEUE_KEY = '__cinePendingTemperatureNote';
-var CORE_TEMPERATURE_RENDER_NAME = 'renderTemperatureNote';
+function createLocalRuntimeState(candidateScopes) {
+  var scopes = [];
+  var seenScopes = typeof Set === 'function' ? new Set() : null;
 
-function assignCoreTemperatureNoteRenderer(renderer) {
-  if (typeof renderer !== 'function') {
-    return;
+  function registerScope(scope) {
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+      return;
+    }
+
+    if (seenScopes) {
+      if (seenScopes.has(scope)) {
+        return;
+      }
+      seenScopes.add(scope);
+      scopes.push(scope);
+      return;
+    }
+
+    if (scopes.indexOf(scope) !== -1) {
+      return;
+    }
+
+    scopes.push(scope);
   }
 
-  for (let index = 0; index < CORE_PART2_GLOBAL_SCOPES.length; index += 1) {
-    const scope = CORE_PART2_GLOBAL_SCOPES[index];
-    if (!scope || typeof scope !== 'object') {
-      continue;
+  if (Array.isArray(candidateScopes)) {
+    for (var initialIndex = 0; initialIndex < candidateScopes.length; initialIndex += 1) {
+      try {
+        registerScope(candidateScopes[initialIndex]);
+      } catch (initialiseScopeError) {
+        void initialiseScopeError;
+      }
+    }
+  }
+
+  function withEachScope(callback) {
+    if (typeof callback !== 'function') {
+      return;
+    }
+
+    for (var index = 0; index < scopes.length; index += 1) {
+      try {
+        callback(scopes[index], index);
+      } catch (scopeCallbackError) {
+        void scopeCallbackError;
+      }
+    }
+  }
+
+  function getScopes() {
+    return scopes.slice();
+  }
+
+  function getPrimaryScope() {
+    return scopes.length > 0 ? scopes[0] : null;
+  }
+
+  function ensureValue(name, fallbackValue) {
+    var fallbackProvider =
+      typeof fallbackValue === 'function'
+        ? fallbackValue
+        : function provideStaticFallback() {
+            return fallbackValue;
+          };
+
+    if (typeof name !== 'string' || !name) {
+      try {
+        return fallbackProvider();
+      } catch (fallbackError) {
+        void fallbackError;
+        return undefined;
+      }
+    }
+
+    for (var scopeIndex = 0; scopeIndex < scopes.length; scopeIndex += 1) {
+      var scope = scopes[scopeIndex];
+      if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+        continue;
+      }
+
+      try {
+        if (typeof scope[name] === 'undefined') {
+          scope[name] = fallbackProvider();
+        }
+        return scope[name];
+      } catch (ensureError) {
+        void ensureError;
+      }
     }
 
     try {
-      scope[CORE_TEMPERATURE_RENDER_NAME] = renderer;
-      const pending = scope[CORE_TEMPERATURE_QUEUE_KEY];
-      if (pending && typeof pending === 'object') {
-        if (Object.prototype.hasOwnProperty.call(pending, 'latestHours')) {
-          const hours = pending.latestHours;
-          if (typeof hours !== 'undefined') {
-            try {
-              renderer(hours);
-            } catch (temperatureRenderError) {
-              if (typeof console !== 'undefined' && typeof console.error === 'function') {
-                console.error('Failed to apply pending temperature note render', temperatureRenderError);
+      return fallbackProvider();
+    } catch (fallbackError) {
+      void fallbackError;
+      return undefined;
+    }
+  }
+
+  function normaliseValue(name, validator, fallbackValue) {
+    var fallbackProvider =
+      typeof fallbackValue === 'function'
+        ? fallbackValue
+        : function provideStaticFallback() {
+            return fallbackValue;
+          };
+
+    var validate =
+      typeof validator === 'function'
+        ? validator
+        : function alwaysValid() {
+            return true;
+          };
+
+    withEachScope(function applyNormaliser(scope) {
+      try {
+        if (!validate(scope[name])) {
+          scope[name] = fallbackProvider();
+        }
+      } catch (normaliseError) {
+        void normaliseError;
+      }
+    });
+  }
+
+  function readValue(name) {
+    for (var scopeIndex = 0; scopeIndex < scopes.length; scopeIndex += 1) {
+      var scope = scopes[scopeIndex];
+      if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+        continue;
+      }
+
+      try {
+        if (name in scope) {
+          return scope[name];
+        }
+      } catch (readError) {
+        void readError;
+      }
+    }
+
+    return undefined;
+  }
+
+  var assignedTemperatureRenderer = null;
+
+  function assignTemperatureRenderer(renderer) {
+    if (typeof renderer !== 'function') {
+      return;
+    }
+
+    assignedTemperatureRenderer = renderer;
+
+    withEachScope(function applyRenderer(scope) {
+      if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+        return;
+      }
+
+      try {
+        scope[CORE_TEMPERATURE_RENDER_NAME] = renderer;
+        var pending = scope[CORE_TEMPERATURE_QUEUE_KEY];
+
+        if (pending && typeof pending === 'object') {
+          if (Object.prototype.hasOwnProperty.call(pending, 'latestHours')) {
+            var hours = pending.latestHours;
+            if (typeof hours !== 'undefined') {
+              try {
+                renderer(hours);
+              } catch (temperatureRenderError) {
+                if (
+                  typeof console !== 'undefined' &&
+                  typeof console.error === 'function'
+                ) {
+                  console.error(
+                    'Failed to apply pending temperature note render',
+                    temperatureRenderError,
+                  );
+                }
               }
             }
           }
+
+          try {
+            delete pending.latestHours;
+          } catch (clearLatestError) {
+            void clearLatestError;
+            pending.latestHours = undefined;
+          }
         }
+      } catch (assignError) {
+        void assignError;
+      }
+    });
+  }
+
+  function getAssignedTemperatureRenderer() {
+    return assignedTemperatureRenderer;
+  }
+
+  var autoGearGuards = {
+    isReferenceError: function defaultAutoGearReferenceGuard() {
+      return false;
+    },
+    repair: function defaultAutoGearRepair() {
+      return undefined;
+    },
+  };
+
+  function setAutoGearGuards(nextGuards) {
+    if (!nextGuards || typeof nextGuards !== 'object') {
+      return;
+    }
+
+    if (typeof nextGuards.isReferenceError === 'function') {
+      autoGearGuards.isReferenceError = nextGuards.isReferenceError;
+    }
+
+    if (typeof nextGuards.repair === 'function') {
+      autoGearGuards.repair = nextGuards.repair;
+    }
+  }
+
+  return {
+    registerScope: registerScope,
+    withEachScope: withEachScope,
+    getScopes: getScopes,
+    getPrimaryScope: getPrimaryScope,
+    ensureValue: ensureValue,
+    normaliseValue: normaliseValue,
+    readValue: readValue,
+    assignTemperatureRenderer: assignTemperatureRenderer,
+    getAssignedTemperatureRenderer: getAssignedTemperatureRenderer,
+    autoGearGuards: autoGearGuards,
+    setAutoGearGuards: setAutoGearGuards,
+  };
+}
+
+var CORE_RUNTIME_STATE = (function resolveCoreRuntimeState() {
+  var resolvedState = null;
+
+  for (var index = 0; index < CORE_RUNTIME_CANDIDATE_SCOPES.length; index += 1) {
+    var scope = CORE_RUNTIME_CANDIDATE_SCOPES[index];
+    if (scope && typeof scope.__cineRuntimeState === 'object') {
+      resolvedState = scope.__cineRuntimeState;
+      break;
+    }
+  }
+
+  if (!resolvedState) {
+    for (var factoryIndex = 0; factoryIndex < CORE_RUNTIME_CANDIDATE_SCOPES.length; factoryIndex += 1) {
+      var factoryScope = CORE_RUNTIME_CANDIDATE_SCOPES[factoryIndex];
+      var createRuntimeState =
+        factoryScope && typeof factoryScope.__cineCreateRuntimeState === 'function'
+          ? factoryScope.__cineCreateRuntimeState
+          : null;
+
+      if (typeof createRuntimeState === 'function') {
         try {
-          delete pending.latestHours;
-        } catch (clearLatestError) {
-          void clearLatestError;
-          pending.latestHours = undefined;
+          resolvedState = createRuntimeState(CORE_RUNTIME_CANDIDATE_SCOPES);
+        } catch (createStateError) {
+          resolvedState = null;
+          void createStateError;
+        }
+        if (resolvedState) {
+          break;
         }
       }
-    } catch (assignError) {
-      void assignError;
     }
+  }
+
+  if (!resolvedState) {
+    resolvedState = createLocalRuntimeState(CORE_RUNTIME_CANDIDATE_SCOPES);
+  }
+
+  var primaryScope = CORE_RUNTIME_CANDIDATE_SCOPES.length
+    ? CORE_RUNTIME_CANDIDATE_SCOPES[0]
+    : null;
+
+  if (primaryScope && resolvedState) {
+    try {
+      Object.defineProperty(primaryScope, '__cineRuntimeState', {
+        configurable: true,
+        enumerable: false,
+        writable: true,
+        value: resolvedState,
+      });
+    } catch (defineStateError) {
+      try {
+        primaryScope.__cineRuntimeState = resolvedState;
+      } catch (assignStateError) {
+        void assignStateError;
+      }
+      void defineStateError;
+    }
+  }
+
+  return resolvedState;
+})();
+
+function registerRuntimeScope(scope) {
+  if (!CORE_RUNTIME_STATE || typeof CORE_RUNTIME_STATE.registerScope !== 'function') {
+    return;
+  }
+
+  try {
+    CORE_RUNTIME_STATE.registerScope(scope);
+  } catch (registerError) {
+    void registerError;
   }
 }
 
+for (var CORE_RUNTIME_SCOPE_INDEX = 0; CORE_RUNTIME_SCOPE_INDEX < CORE_RUNTIME_CANDIDATE_SCOPES.length; CORE_RUNTIME_SCOPE_INDEX += 1) {
+  registerRuntimeScope(CORE_RUNTIME_CANDIDATE_SCOPES[CORE_RUNTIME_SCOPE_INDEX]);
+}
+
+function getCoreRuntimeScopesSnapshot() {
+  if (CORE_RUNTIME_STATE && typeof CORE_RUNTIME_STATE.getScopes === 'function') {
+    try {
+      return CORE_RUNTIME_STATE.getScopes();
+    } catch (scopeReadError) {
+      void scopeReadError;
+    }
+  }
+
+  return CORE_RUNTIME_CANDIDATE_SCOPES.slice();
+}
+
+var CORE_PART2_RUNTIME_SCOPE =
+  CORE_RUNTIME_STATE && typeof CORE_RUNTIME_STATE.getPrimaryScope === 'function'
+    ? CORE_RUNTIME_STATE.getPrimaryScope()
+    : null;
+
+if (!CORE_PART2_RUNTIME_SCOPE) {
+  CORE_PART2_RUNTIME_SCOPE = getCoreRuntimeScopesSnapshot().length
+    ? getCoreRuntimeScopesSnapshot()[0]
+    : null;
+}
+
+function assignCoreTemperatureNoteRenderer(renderer) {
+  if (!CORE_RUNTIME_STATE || typeof CORE_RUNTIME_STATE.assignTemperatureRenderer !== 'function') {
+    return;
+  }
+
+  CORE_RUNTIME_STATE.assignTemperatureRenderer(renderer);
+}
+
 function readGlobalScopeValue(name) {
-  for (let index = 0; index < CORE_PART2_GLOBAL_SCOPES.length; index += 1) {
-    const scope = CORE_PART2_GLOBAL_SCOPES[index];
+  if (CORE_RUNTIME_STATE && typeof CORE_RUNTIME_STATE.readValue === 'function') {
+    return CORE_RUNTIME_STATE.readValue(name);
+  }
+
+  var scopes = getCoreRuntimeScopesSnapshot();
+  for (var index = 0; index < scopes.length; index += 1) {
+    var scope = scopes[index];
     if (!scope || typeof scope !== 'object') {
       continue;
     }
@@ -87,6 +381,10 @@ function readGlobalScopeValue(name) {
 }
 
 function ensureGlobalFallback(name, fallbackValue) {
+  if (CORE_RUNTIME_STATE && typeof CORE_RUNTIME_STATE.ensureValue === 'function') {
+    return CORE_RUNTIME_STATE.ensureValue(name, fallbackValue);
+  }
+
   var fallbackProvider =
     typeof fallbackValue === 'function'
       ? fallbackValue
@@ -94,8 +392,9 @@ function ensureGlobalFallback(name, fallbackValue) {
           return fallbackValue;
         };
 
-  for (var index = 0; index < CORE_PART2_GLOBAL_SCOPES.length; index += 1) {
-    var scope = CORE_PART2_GLOBAL_SCOPES[index];
+  var scopes = getCoreRuntimeScopesSnapshot();
+  for (var index = 0; index < scopes.length; index += 1) {
+    var scope = scopes[index];
     try {
       if (typeof scope[name] === 'undefined') {
         scope[name] = fallbackProvider();
@@ -115,6 +414,11 @@ function ensureGlobalFallback(name, fallbackValue) {
 }
 
 function normaliseGlobalValue(name, validator, fallbackValue) {
+  if (CORE_RUNTIME_STATE && typeof CORE_RUNTIME_STATE.normaliseValue === 'function') {
+    CORE_RUNTIME_STATE.normaliseValue(name, validator, fallbackValue);
+    return;
+  }
+
   var fallbackProvider =
     typeof fallbackValue === 'function'
       ? fallbackValue
@@ -122,8 +426,9 @@ function normaliseGlobalValue(name, validator, fallbackValue) {
           return fallbackValue;
         };
 
-  for (var index = 0; index < CORE_PART2_GLOBAL_SCOPES.length; index += 1) {
-    var scope = CORE_PART2_GLOBAL_SCOPES[index];
+  var scopes = getCoreRuntimeScopesSnapshot();
+  for (var index = 0; index < scopes.length; index += 1) {
+    var scope = scopes[index];
     try {
       if (!validator(scope[name])) {
         scope[name] = fallbackProvider();
@@ -131,6 +436,123 @@ function normaliseGlobalValue(name, validator, fallbackValue) {
     } catch (normaliseError) {
       void normaliseError;
     }
+  }
+}
+
+var AUTO_GEAR_GLOBAL_FALLBACKS = {
+  autoGearAutoPresetId: function provideAutoGearAutoPresetId() {
+    return '';
+  },
+  baseAutoGearRules: function provideBaseAutoGearRules() {
+    return [];
+  },
+  autoGearScenarioModeSelect: function provideAutoGearScenarioModeSelect() {
+    return null;
+  },
+  autoGearRuleNameInput: function provideAutoGearRuleNameInput() {
+    return null;
+  },
+  autoGearSummaryFocus: function provideAutoGearSummaryFocus() {
+    return 'all';
+  },
+  autoGearMonitorDefaultControls: function provideAutoGearMonitorDefaultControls() {
+    return [];
+  },
+  safeGenerateConnectorSummary: function provideSafeGenerateConnectorSummary() {
+    return createFallbackSafeGenerateConnectorSummary();
+  },
+  totalPowerElem: function provideTotalPowerElem() {
+    return null;
+  },
+};
+
+var AUTO_GEAR_REFERENCE_NAMES = Object.keys(AUTO_GEAR_GLOBAL_FALLBACKS);
+
+function isAutoGearGlobalReferenceError(error) {
+  if (!error || typeof error !== 'object') {
+    return false;
+  }
+
+  var message = typeof error.message === 'string' ? error.message : '';
+  return (
+    error.name === 'ReferenceError' &&
+    AUTO_GEAR_REFERENCE_NAMES.some(function checkAutoGearReferenceName(name) {
+      return message.indexOf(name) !== -1;
+    })
+  );
+}
+
+function ensureAutoGearGlobal(scope, name) {
+  var createFallback = AUTO_GEAR_GLOBAL_FALLBACKS[name];
+  if (typeof createFallback !== 'function') {
+    return;
+  }
+
+  var fallbackValue = createFallback();
+
+  if (typeof scope[name] === 'undefined') {
+    try {
+      scope[name] = fallbackValue;
+    } catch (assignmentError) {
+      try {
+        Object.defineProperty(scope, name, {
+          configurable: true,
+          writable: true,
+          enumerable: false,
+          value: fallbackValue,
+        });
+      } catch (defineError) {
+        void defineError;
+      }
+    }
+  }
+
+  try {
+    var globalFn = (scope && scope.Function) || Function;
+    if (typeof globalFn === 'function') {
+      var binder = globalFn(
+        'value',
+        'if (typeof ' +
+          name +
+          " === 'undefined') { var " +
+          name +
+          " = value; } else { " +
+          name +
+          ' = value; }\n           return ' +
+          name +
+          ';',
+      );
+      var appliedValue = typeof scope[name] === 'undefined' ? fallbackValue : scope[name];
+      binder(appliedValue);
+    }
+  } catch (bindingError) {
+    void bindingError;
+  }
+}
+
+function repairAutoGearGlobals(scope) {
+  if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+    return;
+  }
+
+  for (var index = 0; index < AUTO_GEAR_REFERENCE_NAMES.length; index += 1) {
+    var name = AUTO_GEAR_REFERENCE_NAMES[index];
+    try {
+      ensureAutoGearGlobal(scope, name);
+    } catch (ensureError) {
+      void ensureError;
+    }
+  }
+}
+
+if (CORE_RUNTIME_STATE && typeof CORE_RUNTIME_STATE.setAutoGearGuards === 'function') {
+  try {
+    CORE_RUNTIME_STATE.setAutoGearGuards({
+      isReferenceError: isAutoGearGlobalReferenceError,
+      repair: repairAutoGearGlobals,
+    });
+  } catch (setAutoGearGuardsError) {
+    void setAutoGearGuardsError;
   }
 }
 
@@ -5557,8 +5979,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           console.warn('Failed to resolve shared install banner scope', error);
         }
       }
-      for (let index = 0; index < CORE_PART2_GLOBAL_SCOPES.length; index += 1) {
-        const scope = CORE_PART2_GLOBAL_SCOPES[index];
+      const runtimeScopes = getCoreRuntimeScopesSnapshot();
+      for (let index = 0; index < runtimeScopes.length; index += 1) {
+        const scope = runtimeScopes[index];
         if (scope && typeof scope === 'object') {
           candidates.push(scope);
         }
