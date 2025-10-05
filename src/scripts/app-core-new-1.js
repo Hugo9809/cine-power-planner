@@ -2149,6 +2149,12 @@ function updateGlobalDevicesReference(value) {
       }
     }
   }
+
+  // Ensure dependent UI components refresh once the device database is ready.
+  // The defer flag guarantees the session layer can react even if it has not
+  // been initialised yet (for example, when this runs before app-session.js
+  // loads during boot).
+  callCoreFunctionIfAvailable('populateLensDropdown', [], { defer: true });
 }
 
 function initializeDeviceDatabase() {

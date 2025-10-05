@@ -9972,35 +9972,47 @@ function populateEnvironmentDropdowns() {
 function populateLensDropdown() {
   if (!lensSelect) return;
 
-  lensSelect.innerHTML = '';
-  const lensData = devices && devices.lenses;
+  const lensData =
+    (devices && devices.lenses && Object.keys(devices.lenses).length ? devices.lenses : null)
+    || (devices && devices.accessories && devices.accessories.lenses)
+    || null;
 
   if (!lensData || Object.keys(lensData).length === 0) {
     return;
   }
+
+  const previousSelection = new Set(Array.from(lensSelect.selectedOptions || []).map(opt => opt.value));
+
+  lensSelect.innerHTML = '';
 
   if (!lensSelect.multiple) {
     const emptyOpt = document.createElement('option');
     emptyOpt.value = '';
     lensSelect.appendChild(emptyOpt);
   }
-  Object.keys(lensData).sort(localeSort).forEach(name => {
-    const opt = document.createElement('option');
-    opt.value = name;
-    const lens = lensData[name] || {};
-    const attrs = [];
-    if (lens.weight_g) attrs.push(`${lens.weight_g}g`);
-    if (lens.clampOn) {
-      if (lens.frontDiameterMm) attrs.push(`${lens.frontDiameterMm}mm clamp-on`);
-      else attrs.push('clamp-on');
-    } else if (lens.clampOn === false) {
-      attrs.push('no clamp-on');
-    }
-    const minFocus = lens.minFocusMeters ?? lens.minFocus ?? (lens.minFocusCm ? lens.minFocusCm / 100 : null);
-    if (minFocus) attrs.push(`${minFocus}m min focus`);
-    opt.textContent = attrs.length ? `${name} (${attrs.join(', ')})` : name;
-    lensSelect.appendChild(opt);
-  });
+
+  Object.keys(lensData)
+    .sort(localeSort)
+    .forEach(name => {
+      const opt = document.createElement('option');
+      opt.value = name;
+      const lens = lensData[name] || {};
+      const attrs = [];
+      if (lens.weight_g) attrs.push(`${lens.weight_g}g`);
+      if (lens.clampOn) {
+        if (lens.frontDiameterMm) attrs.push(`${lens.frontDiameterMm}mm clamp-on`);
+        else attrs.push('clamp-on');
+      } else if (lens.clampOn === false) {
+        attrs.push('no clamp-on');
+      }
+      const minFocus = lens.minFocusMeters ?? lens.minFocus ?? (lens.minFocusCm ? lens.minFocusCm / 100 : null);
+      if (minFocus) attrs.push(`${minFocus}m min focus`);
+      opt.textContent = attrs.length ? `${name} (${attrs.join(', ')})` : name;
+      if (previousSelection.has(name)) {
+        opt.selected = true;
+      }
+      lensSelect.appendChild(opt);
+    });
 }
 
 function populateCameraPropertyDropdown(selectId, property, selected = '') {
