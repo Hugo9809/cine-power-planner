@@ -376,6 +376,30 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     }
   }
+  function createTextResolver(langTexts, fallbackTexts) {
+    var primary = langTexts && _typeof(langTexts) === 'object' ? langTexts : {};
+    var secondary = fallbackTexts && _typeof(fallbackTexts) === 'object' ? fallbackTexts : {};
+    return function resolveText(key) {
+      if (!key) {
+        return '';
+      }
+      var value = primary[key];
+      if (typeof value === 'string') {
+        var trimmed = value.trim();
+        if (trimmed) {
+          return trimmed;
+        }
+      }
+      value = secondary[key];
+      if (typeof value === 'string') {
+        var fallbackTrimmed = value.trim();
+        if (fallbackTrimmed) {
+          return fallbackTrimmed;
+        }
+      }
+      return '';
+    };
+  }
   function localizeResultsSection(options) {
     var opts = options || {};
     var deps = updateRuntimeDependencies(opts);
@@ -386,26 +410,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var lang = typeof opts.lang === 'string' ? opts.lang : '';
     var langTexts = opts.langTexts && _typeof(opts.langTexts) === 'object' ? opts.langTexts : {};
     var fallbackTexts = opts.fallbackTexts && _typeof(opts.fallbackTexts) === 'object' ? opts.fallbackTexts : {};
-    function resolveText(key) {
-      if (!key) {
-        return '';
-      }
-      var value = langTexts[key];
-      if (typeof value === 'string') {
-        var trimmed = value.trim();
-        if (trimmed) {
-          return trimmed;
-        }
-      }
-      value = fallbackTexts[key];
-      if (typeof value === 'string') {
-        var fallbackTrimmed = value.trim();
-        if (fallbackTrimmed) {
-          return fallbackTrimmed;
-        }
-      }
-      return '';
-    }
+    var resolveText = createTextResolver(langTexts, fallbackTexts);
     var breakdownList = resolveElementFromOptions(opts, 'breakdownListElem', 'breakdownList', 'breakdownListElem');
     if (breakdownList) {
       var breakdownHelp = resolveText('breakdownListHelp');
@@ -579,6 +584,58 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     runtimeFeedbackState.elements.runtimeAverageNote = runtimeAverageNote;
     runtimeFeedbackState.elements.tempNote = tempNote;
     return true;
+  }
+  function localizeBatteryComparisonSection(options) {
+    var opts = options || {};
+    var doc = resolveDocument(opts);
+    if (!doc) {
+      return false;
+    }
+    var langTexts = opts.langTexts && _typeof(opts.langTexts) === 'object' ? opts.langTexts : {};
+    var fallbackTexts = opts.fallbackTexts && _typeof(opts.fallbackTexts) === 'object' ? opts.fallbackTexts : {};
+    var resolveText = createTextResolver(langTexts, fallbackTexts);
+    var heading = resolveElementFromOptions(opts, 'batteryComparisonHeading', 'batteryComparisonHeading', 'batteryComparisonHeading');
+    var description = resolveElementFromOptions(opts, 'batteryComparisonDescription', 'batteryComparisonDescription');
+    var table = resolveElementFromOptions(opts, 'batteryComparisonTable', 'batteryTable', 'batteryTable');
+    var localized = false;
+    if (heading) {
+      var headingText = resolveText('batteryComparisonHeading');
+      if (!headingText && typeof heading.textContent === 'string') {
+        headingText = heading.textContent;
+      }
+      try {
+        if (typeof heading.textContent === 'string') {
+          heading.textContent = headingText;
+        }
+      } catch (error) {
+        void error;
+      }
+      setHelpAttribute(heading, resolveText('batteryComparisonHeadingHelp'));
+      localized = true;
+    }
+    if (description) {
+      var descriptionText = resolveText('batteryComparisonDescription');
+      if (!descriptionText && typeof description.textContent === 'string') {
+        descriptionText = description.textContent;
+      }
+      try {
+        if (typeof description.textContent === 'string') {
+          description.textContent = descriptionText;
+        }
+      } catch (error) {
+        void error;
+      }
+      setHelpAttribute(description, resolveText('batteryComparisonDescriptionHelp'));
+      localized = true;
+    }
+    if (table) {
+      setHelpAttribute(table, resolveText('batteryComparisonTableHelp'));
+      localized = true;
+    }
+    runtimeFeedbackState.elements.batteryComparisonHeading = heading;
+    runtimeFeedbackState.elements.batteryComparisonDescription = description;
+    runtimeFeedbackState.elements.batteryComparisonTable = table;
+    return localized;
   }
   function attachHandlerOnce(target, eventName, handlerKey, factory) {
     if (!target || !eventName || !handlerKey || typeof factory !== 'function') {
@@ -811,6 +868,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   var resultsAPI = {
     localizeResultsSection: localizeResultsSection,
+    localizeBatteryComparisonSection: localizeBatteryComparisonSection,
     setupRuntimeFeedback: setupRuntimeFeedback
   };
   freezeDeep(resultsAPI);
