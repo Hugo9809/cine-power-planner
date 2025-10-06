@@ -141,6 +141,156 @@ function getSessionRuntimeFunction(name) {
   return null;
 }
 
+const settingsLogger = (() => {
+  const scopes = getSessionRuntimeScopes();
+  for (let index = 0; index < scopes.length; index += 1) {
+    const scope = scopes[index];
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+      continue;
+    }
+    try {
+      const logging = scope.cineLogging;
+      if (logging && typeof logging.createLogger === 'function') {
+        try {
+          return logging.createLogger('settings', { meta: { source: 'app-session' } });
+        } catch (creationError) {
+          try {
+            if (typeof logging.error === 'function') {
+              logging.error(
+                'Failed to create settings logger',
+                creationError,
+                { namespace: 'settings-bootstrap' },
+              );
+            }
+          } catch (logError) {
+            void logError;
+          }
+        }
+      }
+    } catch (resolveError) {
+      void resolveError;
+    }
+  }
+  return null;
+})();
+
+function logSettingsEvent(level, message, detail, meta) {
+  const normalizedLevel = typeof level === 'string' && level ? level.toLowerCase() : 'info';
+  let handled = false;
+  if (settingsLogger && typeof settingsLogger[normalizedLevel] === 'function') {
+    try {
+      settingsLogger[normalizedLevel](message, detail, meta);
+      handled = true;
+    } catch (loggingError) {
+      handled = false;
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Settings logger invocation failed', loggingError);
+      }
+    }
+  }
+  if (handled || typeof console === 'undefined' || !console) {
+    return;
+  }
+  let fallback = null;
+  if (normalizedLevel === 'error' && typeof console.error === 'function') {
+    fallback = console.error;
+  } else if (normalizedLevel === 'warn' && typeof console.warn === 'function') {
+    fallback = console.warn;
+  } else if (typeof console.info === 'function') {
+    fallback = console.info;
+  } else if (typeof console.log === 'function') {
+    fallback = console.log;
+  }
+  if (typeof fallback === 'function') {
+    try {
+      fallback.call(console, `[settings] ${message}`, detail || null, meta || null);
+    } catch (consoleError) {
+      void consoleError;
+    }
+  }
+}
+
+let pendingSettingsOpenContext = null;
+
+function prepareSettingsOpenContext(context) {
+  if (context && typeof context === 'object') {
+    pendingSettingsOpenContext = { ...context };
+  } else {
+    pendingSettingsOpenContext = null;
+  }
+}
+
+function consumeSettingsOpenContext(defaultContext) {
+  const context = pendingSettingsOpenContext;
+  pendingSettingsOpenContext = null;
+  if (context && typeof context === 'object') {
+    return { ...context };
+  }
+  if (defaultContext && typeof defaultContext === 'object') {
+    return { ...defaultContext };
+  }
+  return { reason: 'settings-button' };
+}
+
+function resolveSettingsDialog() {
+  if (typeof settingsDialog !== 'undefined' && settingsDialog) {
+    return settingsDialog;
+  }
+  if (typeof document !== 'undefined' && document) {
+    try {
+      return document.getElementById('settingsDialog');
+    } catch (resolveError) {
+      void resolveError;
+    }
+  }
+  return null;
+}
+
+function resolveSettingsButton() {
+  if (typeof settingsButton !== 'undefined' && settingsButton) {
+    return settingsButton;
+  }
+  if (typeof document !== 'undefined' && document) {
+    try {
+      return document.getElementById('settingsButton');
+    } catch (resolveError) {
+      void resolveError;
+    }
+  }
+  return null;
+}
+
+function requestSettingsOpen(context) {
+  const dialog = resolveSettingsDialog();
+  const trigger = resolveSettingsButton();
+  const openBefore = dialog
+    ? (typeof isDialogOpen === 'function' ? isDialogOpen(dialog) : !!(dialog && dialog.open))
+    : false;
+  const detail = context && typeof context === 'object' ? { ...context } : {};
+  if (typeof detail.openBefore !== 'boolean') {
+    detail.openBefore = openBefore;
+  }
+  if (trigger && typeof trigger.click === 'function') {
+    prepareSettingsOpenContext(detail);
+    try {
+      trigger.click();
+    } catch (clickError) {
+      prepareSettingsOpenContext(null);
+      logSettingsEvent('error', 'Settings dialog open request failed during click',
+        { ...detail, buttonAvailable: true },
+        { action: 'open-request' },
+      );
+      throw clickError;
+    }
+    return true;
+  }
+  logSettingsEvent('warn', 'Settings dialog open request unavailable',
+    { ...detail, buttonAvailable: false },
+    { action: 'open-request' },
+  );
+  return false;
+}
+
 function resolveCompatibilityTexts(langTexts, fallbackTexts) {
   const translations = typeof texts === 'object' && texts ? texts : {};
   const resolvedFallback = fallbackTexts || translations.en || {};
@@ -4227,6 +4377,20 @@ const mountVoltageResetButtonRef = (() => {
 
   if (settingsButton && settingsDialog) {
     settingsButton.addEventListener('click', () => {
+      const context = consumeSettingsOpenContext({ reason: 'settings-button' });
+      const hiddenBefore = typeof settingsDialog.hasAttribute === 'function'
+        ? settingsDialog.hasAttribute('hidden')
+        : null;
+      const openBefore = typeof isDialogOpen === 'function'
+        ? isDialogOpen(settingsDialog)
+        : !!(settingsDialog && settingsDialog.open);
+      logSettingsEvent(
+        'info',
+        'Settings dialog open requested',
+        { ...context, openBefore, hiddenBefore },
+        { action: 'open-request' },
+      );
+
     prevAccentColor = accentColor;
     rememberSettingsPinkModeBaseline();
     rememberSettingsTemperatureUnitBaseline();
@@ -4304,7 +4468,21 @@ const mountVoltageResetButtonRef = (() => {
         first.focus();
       }
     }
-  });
+
+      const hiddenAfter = typeof settingsDialog.hasAttribute === 'function'
+        ? settingsDialog.hasAttribute('hidden')
+        : null;
+      const openAfter = typeof isDialogOpen === 'function'
+        ? isDialogOpen(settingsDialog)
+        : !!(settingsDialog && settingsDialog.open);
+      const resultDetail = { ...context, openBefore, openAfter, hiddenAfter };
+      logSettingsEvent(
+        openAfter ? 'info' : 'warn',
+        openAfter ? 'Settings dialog opened' : 'Settings dialog did not open',
+        resultDetail,
+        { action: 'open-result' },
+      );
+    });
 
   if (settingsCancel) {
     settingsCancel.addEventListener('click', () => {
@@ -8838,7 +9016,24 @@ if (helpButton && helpDialog) {
       }
     }
     if (settingsSection && !isDialogOpen(settingsDialog)) {
-      settingsButton?.click?.();
+      const context = {
+        reason: 'feature-search',
+        targetId: typeof element.id === 'string' && element.id ? element.id : null,
+      };
+      if (typeof element.getAttribute === 'function') {
+        const label =
+          element.getAttribute('aria-label') ||
+          element.getAttribute('data-help') ||
+          element.getAttribute('data-feature-key');
+        if (label) {
+          context.targetLabel = label;
+        }
+        const role = element.getAttribute('role');
+        if (role) {
+          context.targetRole = role;
+        }
+      }
+      requestSettingsOpen(context);
     }
 
     const dialog = element.closest('dialog');
@@ -10820,7 +11015,13 @@ if (helpButton && helpDialog) {
       if (helpSearch) helpSearch.focus();
     } else if (key === ',' && (e.ctrlKey || e.metaKey)) {
       e.preventDefault();
-      if (settingsButton) settingsButton.click();
+      requestSettingsOpen({
+        reason: 'keyboard-shortcut',
+        key,
+        ctrl: !!e.ctrlKey,
+        meta: !!e.metaKey,
+        shift: !!e.shiftKey,
+      });
     } else if (lowerKey === 'k' && (e.ctrlKey || e.metaKey)) {
       e.preventDefault();
       focusFeatureSearchInput();
