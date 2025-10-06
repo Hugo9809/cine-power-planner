@@ -1263,15 +1263,58 @@ function resetAutoGearRulesToFactoryAdditions() {
     return;
   }
 
+  const fallbackTexts = texts.en || {};
+  const successMessage = langTexts.autoGearResetFactoryDone
+    || fallbackTexts.autoGearResetFactoryDone
+    || 'Automatic gear rules restored to factory additions.';
+  const emptyMessage = langTexts.autoGearResetFactoryEmpty
+    || fallbackTexts.autoGearResetFactoryEmpty
+    || 'Factory additions unavailable. Automatic gear rules cleared.';
+  const failureMessage = langTexts.autoGearResetFactoryError
+    || fallbackTexts.autoGearResetFactoryError
+    || 'Reset failed. Please try again.';
+
   try {
     const factoryRules = computeFactoryAutoGearRules();
-    let appliedRules = [];
     if (Array.isArray(factoryRules) && factoryRules.length) {
       setAutoGearRules(factoryRules);
       markAutoGearDefaultsSeeded();
-      appliedRules = getAutoGearRules();
-      setFactoryAutoGearRulesSnapshot(appliedRules);
-    } else {
+      setFactoryAutoGearRulesSnapshot(getAutoGearRules());
+      if (typeof showNotification === 'function') {
+        showNotification('success', successMessage);
+      }
+      return;
+    }
+
+    setAutoGearRules([]);
+    setFactoryAutoGearRulesSnapshot(null);
+    clearAutoGearDefaultsSeeded();
+    const addedDefaults = ensureDefaultMatteboxAutoGearRules();
+    if (addedDefaults) {
+      markAutoGearDefaultsSeeded();
+      setFactoryAutoGearRulesSnapshot(getAutoGearRules());
+      if (typeof showNotification === 'function') {
+        showNotification('success', successMessage);
+      }
+      return;
+    }
+    if (typeof showNotification === 'function') {
+      showNotification('info', emptyMessage);
+    }
+  } catch (error) {
+    console.error('Failed to reset automatic gear rules to factory additions', error);
+    if (typeof showNotification === 'function') {
+      showNotification('error', failureMessage);
+    }
+    if (backupName && typeof notifyAutoSaveFromBackup === 'function') {
+      try {
+        notifyAutoSaveFromBackup(failureMessage, backupName);
+      } catch (notifyError) {
+        console.warn('Failed to announce automatic backup after reset failure', notifyError);
+      }
+    }
+  }
+}
 
   const autoGearRulesAPI = freezeDeep({
     getFactoryAutoGearRulesSnapshot: function getFactoryAutoGearRulesSnapshot() {
