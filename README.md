@@ -602,7 +602,10 @@ Use Cine Power Planner end-to-end with the following routine:
   preferences, the app now preserves the previous JSON snapshot in a protected
   `__legacyMigrationBackup` slot. If a write ever fails or produces corrupt
   data, the recovery tools automatically fall back to that safety copy so no
-  user data disappears. Compression now auto-selects the tightest safe encoding
+  user data disappears. Legacy snapshots are automatically upgraded into the
+  modern envelope so older backups inherit the same created-at metadata and
+  payload wrapper before new saves run. Compression now auto-selects the
+  tightest safe encoding
   so migration backups keep fitting within the browser quota even as datasets
   grow.
 - **Automatic gear snapshots** – rule changes trigger timestamped safety copies

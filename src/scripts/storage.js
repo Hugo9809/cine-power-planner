@@ -1298,11 +1298,40 @@ function parseMigrationBackupMetadata(raw) {
   try {
     const parsed = JSON.parse(raw);
     if (parsed && typeof parsed === 'object') {
-      const candidate = typeof parsed.createdAt === 'string' ? parsed.createdAt.trim() : '';
+      let candidate = null;
+      if (typeof parsed.createdAt === 'string') {
+        candidate = parsed.createdAt.trim();
+      } else if (
+        typeof parsed.createdAt === 'number'
+        && Number.isFinite(parsed.createdAt)
+      ) {
+        metadata.createdAt = parsed.createdAt;
+      }
+
       if (candidate) {
         const timestamp = Date.parse(candidate);
         if (!Number.isNaN(timestamp)) {
           metadata.createdAt = timestamp;
+        }
+      } else {
+        for (let i = 0; i < MIGRATION_BACKUP_LEGACY_CREATED_AT_KEYS.length; i += 1) {
+          const key = MIGRATION_BACKUP_LEGACY_CREATED_AT_KEYS[i];
+          if (typeof parsed[key] === 'string') {
+            const trimmed = parsed[key].trim();
+            if (trimmed) {
+              const timestamp = Date.parse(trimmed);
+              if (!Number.isNaN(timestamp)) {
+                metadata.createdAt = timestamp;
+                break;
+              }
+            }
+          } else if (
+            typeof parsed[key] === 'number'
+            && Number.isFinite(parsed[key])
+          ) {
+            metadata.createdAt = parsed[key];
+            break;
+          }
         }
       }
     }
@@ -1889,6 +1918,191 @@ function ensurePreWriteMigrationBackup(storage, key) {
   return parsedValue;
 }
 
+var MIGRATION_BACKUP_LEGACY_DATA_KEYS = [
+  'payload',
+  'value',
+  'content',
+  'entries',
+  'snapshot',
+  'state',
+  'record',
+];
+
+var MIGRATION_BACKUP_LEGACY_CREATED_AT_KEYS = ['iso', 'timestamp', 'time'];
+
+function trySerializeMigrationBackupValue(value) {
+  try {
+    return JSON.stringify(value);
+  } catch (serializationError) {
+    console.warn('Unable to serialize normalized migration backup payload', serializationError);
+    return null;
+  }
+}
+
+function normalizeLegacyMigrationBackupCreatedAt(value, fallbackIso) {
+  const fallback = typeof fallbackIso === 'string' && fallbackIso
+    ? fallbackIso
+    : null;
+
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    if (!trimmed) {
+      return { value: fallback || new Date().toISOString(), changed: true };
+    }
+    const numeric = Number(trimmed);
+    if (!Number.isNaN(numeric) && Number.isFinite(numeric) && String(numeric) === trimmed) {
+      try {
+        return { value: new Date(numeric).toISOString(), changed: true };
+      } catch (error) {
+        return { value: fallback || new Date().toISOString(), changed: true };
+      }
+    }
+    const timestamp = Date.parse(trimmed);
+    if (!Number.isNaN(timestamp)) {
+      try {
+        const iso = new Date(timestamp).toISOString();
+        return { value: iso, changed: iso !== trimmed };
+      } catch (error) {
+        return { value: fallback || new Date().toISOString(), changed: true };
+      }
+    }
+    return { value: trimmed, changed: trimmed !== value };
+  }
+
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    try {
+      return { value: new Date(value).toISOString(), changed: true };
+    } catch (error) {
+      return { value: fallback || new Date().toISOString(), changed: true };
+    }
+  }
+
+  if (value instanceof Date) {
+    const time = value.getTime();
+    if (Number.isFinite(time)) {
+      try {
+        return { value: value.toISOString(), changed: true };
+      } catch (error) {
+        return { value: fallback || new Date().toISOString(), changed: true };
+      }
+    }
+  }
+
+  if (fallback) {
+    return { value: fallback, changed: true };
+  }
+
+  const generated = new Date().toISOString();
+  return { value: generated, changed: true };
+}
+
+function normalizeLegacyMigrationBackupValue(rawValue, fallbackIso) {
+  if (typeof rawValue !== 'string' || !rawValue) {
+    return null;
+  }
+
+  const fallback = typeof fallbackIso === 'string' && fallbackIso
+    ? fallbackIso
+    : new Date().toISOString();
+
+  let parsed;
+  try {
+    parsed = JSON.parse(rawValue);
+  } catch (parseError) {
+    return trySerializeMigrationBackupValue({ createdAt: fallback, data: rawValue });
+  }
+
+  if (!parsed || typeof parsed !== 'object') {
+    const dataValue = parsed === undefined ? rawValue : parsed;
+    return trySerializeMigrationBackupValue({ createdAt: fallback, data: dataValue });
+  }
+
+  let normalized;
+  let changed = false;
+
+  if (Object.prototype.hasOwnProperty.call(parsed, 'data')) {
+    normalized = { ...parsed };
+  } else {
+    let usedKey = null;
+    for (let i = 0; i < MIGRATION_BACKUP_LEGACY_DATA_KEYS.length; i += 1) {
+      const key = MIGRATION_BACKUP_LEGACY_DATA_KEYS[i];
+      if (Object.prototype.hasOwnProperty.call(parsed, key)) {
+        usedKey = key;
+        break;
+      }
+    }
+
+    if (usedKey) {
+      normalized = { ...parsed };
+      normalized.data = parsed[usedKey];
+      delete normalized[usedKey];
+      changed = true;
+    } else {
+      normalized = { data: parsed };
+      changed = true;
+    }
+  }
+
+  let rawCreatedAt = normalized.createdAt;
+  let createdAtSourceKey = 'createdAt';
+  if (rawCreatedAt === undefined) {
+    for (let i = 0; i < MIGRATION_BACKUP_LEGACY_CREATED_AT_KEYS.length; i += 1) {
+      const key = MIGRATION_BACKUP_LEGACY_CREATED_AT_KEYS[i];
+      if (Object.prototype.hasOwnProperty.call(parsed, key)) {
+        rawCreatedAt = parsed[key];
+        createdAtSourceKey = key;
+        break;
+      }
+    }
+  }
+
+  const { value: createdAt, changed: createdAtChanged } = normalizeLegacyMigrationBackupCreatedAt(
+    rawCreatedAt,
+    fallback,
+  );
+
+  normalized.createdAt = createdAt;
+  if (createdAtSourceKey !== 'createdAt' && createdAtSourceKey && Object.prototype.hasOwnProperty.call(normalized, createdAtSourceKey)) {
+    delete normalized[createdAtSourceKey];
+    changed = true;
+  }
+
+  if (createdAtChanged) {
+    changed = true;
+  }
+
+  if (!Object.prototype.hasOwnProperty.call(normalized, 'data')) {
+    normalized.data = parsed;
+    changed = true;
+  }
+
+  if (!changed) {
+    return null;
+  }
+
+  return trySerializeMigrationBackupValue(normalized);
+}
+
+function upgradeLegacyMigrationBackupEntry(storage, backupKey, rawValue, fallbackIso) {
+  const normalized = normalizeLegacyMigrationBackupValue(rawValue, fallbackIso);
+  if (normalized === null) {
+    return true;
+  }
+  if (typeof normalized !== 'string' || !normalized) {
+    return false;
+  }
+  if (normalized === rawValue) {
+    return true;
+  }
+  try {
+    storage.setItem(backupKey, normalized);
+    return true;
+  } catch (error) {
+    console.warn(`Unable to normalize legacy migration backup for ${backupKey}`, error);
+    return false;
+  }
+}
+
 function createStorageMigrationBackup(storage, key, originalValue) {
   if (!storage || typeof storage.setItem !== 'function') {
     return;
@@ -1905,6 +2119,8 @@ function createStorageMigrationBackup(storage, key, originalValue) {
       const existing = storage.getItem(backupKey);
       if (existing !== null && existing !== undefined) {
         hasExistingBackup = true;
+        const fallbackCreatedAt = new Date().toISOString();
+        upgradeLegacyMigrationBackupEntry(storage, backupKey, existing, fallbackCreatedAt);
       }
     } catch (inspectionError) {
       console.warn(`Unable to inspect migration backup for ${key}`, inspectionError);
