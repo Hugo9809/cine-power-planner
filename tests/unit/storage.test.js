@@ -2036,6 +2036,40 @@ describe('export/import all data', () => {
     expect(getDecodedLocalStorageItem(TEMPERATURE_UNIT_KEY)).toBe('fahrenheit');
   });
 
+  test('importAllData decodes legacy longgop compressed migration backups', () => {
+    localStorage.clear();
+    sessionStorage.clear();
+
+    const createdAt = '2024-01-01T00:00:00.000Z';
+    const legacyRules = [
+      { id: 'legacy-rule', label: 'Legacy', scenarios: [], add: [], remove: [] },
+    ];
+    const legacyBackups = [
+      { id: 'legacy-backup', label: 'Legacy', createdAt: 321, rules: [] },
+    ];
+
+    const utf16Payload = JSON.stringify({ createdAt, data: legacyRules });
+    const uriPayload = JSON.stringify({ createdAt, data: legacyBackups });
+
+    const snapshot = {
+      [`${AUTO_GEAR_RULES_KEY}${MIGRATION_BACKUP_SUFFIX}`]: JSON.stringify({
+        compression: 'longgop',
+        encoding: 'utf16',
+        data: lzString.compressToUTF16(utf16Payload),
+      }),
+      [`${AUTO_GEAR_BACKUPS_KEY}${MIGRATION_BACKUP_SUFFIX}`]: JSON.stringify({
+        compression: 'Long_Gop',
+        encoding: 'uri-component',
+        data: lzString.compressToEncodedURIComponent(uriPayload),
+      }),
+    };
+
+    importAllData(snapshot);
+
+    expect(loadAutoGearRules()).toEqual(legacyRules);
+    expect(loadAutoGearBackups()).toEqual(legacyBackups);
+  });
+
   test('importAllData clears stored device overrides when payload sets devices to null', () => {
     saveDeviceData(validDeviceData);
     expect(loadDeviceData()).toEqual(validDeviceData);
