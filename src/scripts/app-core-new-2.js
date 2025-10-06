@@ -2317,9 +2317,262 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (autoGearDeletePresetButton) {
         autoGearDeletePresetButton.disabled = !activeAutoGearPresetId;
       }
-    
+
     }
-    
+
+    let autoGearPresetNameDialog = null;
+    let autoGearPresetNameForm = null;
+    let autoGearPresetNameLabel = null;
+    let autoGearPresetNameInput = null;
+    let autoGearPresetNameError = null;
+    let autoGearPresetNameCancelButton = null;
+    let autoGearPresetNameConfirmButton = null;
+    let autoGearPresetNamePending = null;
+    let autoGearPresetNamePreviousFocus = null;
+    let autoGearPresetNameRequiredMessage = '';
+
+    function ensureAutoGearPresetNameDialog() {
+      if (autoGearPresetNameDialog) {
+        return autoGearPresetNameDialog;
+      }
+      if (typeof document === 'undefined') {
+        return null;
+      }
+      const panel = document.getElementById('autoGearPresetPanel');
+      if (!panel) {
+        return null;
+      }
+
+      const dialog = document.createElement('div');
+      dialog.className = 'auto-gear-preset-name-dialog';
+      dialog.hidden = true;
+      dialog.setAttribute('aria-hidden', 'true');
+      dialog.setAttribute('role', 'dialog');
+      dialog.setAttribute('aria-modal', 'true');
+
+      const card = document.createElement('div');
+      card.className = 'auto-gear-preset-name-card';
+
+      const form = document.createElement('form');
+      form.className = 'auto-gear-preset-name-form';
+
+      const label = document.createElement('label');
+      label.className = 'auto-gear-preset-name-label';
+      label.id = 'autoGearPresetNamePromptLabel';
+      label.setAttribute('for', 'autoGearPresetNameInput');
+
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.id = 'autoGearPresetNameInput';
+      input.className = 'auto-gear-preset-name-input';
+      input.autocomplete = 'off';
+      input.spellcheck = true;
+
+      const error = document.createElement('p');
+      error.id = 'autoGearPresetNameError';
+      error.className = 'auto-gear-preset-name-error';
+      error.setAttribute('aria-live', 'polite');
+
+      const actions = document.createElement('div');
+      actions.className = 'dialog-actions';
+
+      const cancelButton = document.createElement('button');
+      cancelButton.type = 'button';
+
+      const confirmButton = document.createElement('button');
+      confirmButton.type = 'submit';
+
+      actions.append(cancelButton, confirmButton);
+      form.append(label, input, error, actions);
+      card.appendChild(form);
+      dialog.appendChild(card);
+      panel.appendChild(dialog);
+
+      dialog.setAttribute('aria-labelledby', label.id);
+      input.setAttribute('aria-describedby', error.id);
+
+      autoGearPresetNameDialog = dialog;
+      autoGearPresetNameForm = form;
+      autoGearPresetNameLabel = label;
+      autoGearPresetNameInput = input;
+      autoGearPresetNameError = error;
+      autoGearPresetNameCancelButton = cancelButton;
+      autoGearPresetNameConfirmButton = confirmButton;
+
+      form.addEventListener('submit', handleAutoGearPresetNameSubmit);
+      cancelButton.addEventListener('click', cancelAutoGearPresetNameDialog);
+      dialog.addEventListener('keydown', handleAutoGearPresetNameKeydown);
+
+      return autoGearPresetNameDialog;
+    }
+
+    function getAutoGearPresetNameFocusTargets() {
+      return [autoGearPresetNameInput, autoGearPresetNameCancelButton, autoGearPresetNameConfirmButton]
+        .filter(element => element && typeof element.focus === 'function' && !element.disabled);
+    }
+
+    function handleAutoGearPresetNameKeydown(event) {
+      if (!autoGearPresetNameDialog || autoGearPresetNameDialog.hidden) {
+        return;
+      }
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        cancelAutoGearPresetNameDialog();
+        return;
+      }
+      if (event.key === 'Tab') {
+        const focusable = getAutoGearPresetNameFocusTargets();
+        if (!focusable.length) {
+          return;
+        }
+        const active = document.activeElement;
+        let currentIndex = focusable.indexOf(active);
+        if (currentIndex === -1) {
+          currentIndex = 0;
+        }
+        if (event.shiftKey) {
+          currentIndex = (currentIndex - 1 + focusable.length) % focusable.length;
+        } else {
+          currentIndex = (currentIndex + 1) % focusable.length;
+        }
+        event.preventDefault();
+        const target = focusable[currentIndex];
+        if (target) {
+          target.focus({ preventScroll: true });
+        }
+      }
+    }
+
+    function handleAutoGearPresetNameSubmit(event) {
+      if (event) {
+        event.preventDefault();
+      }
+      if (!autoGearPresetNameInput) {
+        return;
+      }
+      const value = autoGearPresetNameInput.value.trim();
+      if (!value) {
+        if (autoGearPresetNameError && autoGearPresetNameRequiredMessage) {
+          autoGearPresetNameError.textContent = autoGearPresetNameRequiredMessage;
+        }
+        autoGearPresetNameInput.focus({ preventScroll: true });
+        autoGearPresetNameInput.select();
+        return;
+      }
+      closeAutoGearPresetNameDialog(value);
+    }
+
+    function closeAutoGearPresetNameDialog(result) {
+      if (!autoGearPresetNameDialog) {
+        return;
+      }
+      autoGearPresetNameDialog.classList.remove('is-visible');
+      autoGearPresetNameDialog.setAttribute('aria-hidden', 'true');
+      autoGearPresetNameDialog.hidden = true;
+      if (autoGearPresetNameError) {
+        autoGearPresetNameError.textContent = '';
+      }
+      if (autoGearPresetNameInput) {
+        autoGearPresetNameInput.value = '';
+      }
+      autoGearPresetNameRequiredMessage = '';
+      const restoreFocus = autoGearPresetNamePreviousFocus;
+      autoGearPresetNamePreviousFocus = null;
+      if (typeof restoreFocus === 'function') {
+        restoreFocus();
+      } else if (autoGearSavePresetButton && typeof autoGearSavePresetButton.focus === 'function') {
+        autoGearSavePresetButton.focus({ preventScroll: true });
+      }
+      if (autoGearPresetNamePending) {
+        const { resolve } = autoGearPresetNamePending;
+        autoGearPresetNamePending = null;
+        resolve(typeof result === 'string' ? result : null);
+      }
+    }
+
+    function cancelAutoGearPresetNameDialog() {
+      closeAutoGearPresetNameDialog(null);
+    }
+
+    function requestAutoGearPresetName(promptMessage, defaultName, requiredMessage) {
+      if (typeof window !== 'undefined' && typeof window.prompt === 'function') {
+        let promptResponse;
+        let promptError = null;
+        const promptStartedAt = Date.now();
+        try {
+          promptResponse = window.prompt(promptMessage, defaultName);
+        } catch (error) {
+          promptError = error;
+        }
+        const promptDuration = Date.now() - promptStartedAt;
+        if (typeof promptResponse === 'string') {
+          return Promise.resolve(promptResponse.trim());
+        }
+        const promptLikelyBlocked = promptError || promptDuration < 20;
+        if (!promptLikelyBlocked && promptResponse === null) {
+          return Promise.resolve(null);
+        }
+        if (promptLikelyBlocked) {
+          console.warn('Prompt unavailable, falling back to inline auto gear preset dialog', promptError);
+        }
+      }
+
+      const dialog = ensureAutoGearPresetNameDialog();
+      if (!dialog) {
+        return Promise.resolve(defaultName ? defaultName.trim() : '');
+      }
+
+      const confirmLabel = texts[currentLang]?.autoGearSavePresetButton
+        || texts.en?.autoGearSavePresetButton
+        || 'Save preset';
+      const cancelLabel = texts[currentLang]?.autoGearCancelEdit
+        || texts.en?.autoGearCancelEdit
+        || 'Cancel';
+
+      autoGearPresetNameRequiredMessage = requiredMessage || '';
+      if (autoGearPresetNameLabel) {
+        autoGearPresetNameLabel.textContent = promptMessage || '';
+      }
+      if (autoGearPresetNameConfirmButton) {
+        autoGearPresetNameConfirmButton.textContent = confirmLabel;
+        autoGearPresetNameConfirmButton.setAttribute('aria-label', confirmLabel);
+      }
+      if (autoGearPresetNameCancelButton) {
+        autoGearPresetNameCancelButton.textContent = cancelLabel;
+        autoGearPresetNameCancelButton.setAttribute('aria-label', cancelLabel);
+      }
+      if (autoGearPresetNameError) {
+        autoGearPresetNameError.textContent = '';
+      }
+      if (autoGearPresetNameInput) {
+        autoGearPresetNameInput.value = defaultName || '';
+      }
+
+      dialog.hidden = false;
+      dialog.setAttribute('aria-hidden', 'false');
+      dialog.classList.add('is-visible');
+
+      const previouslyFocused = typeof document !== 'undefined' ? document.activeElement : null;
+      autoGearPresetNamePreviousFocus = () => {
+        if (previouslyFocused && typeof previouslyFocused.focus === 'function') {
+          previouslyFocused.focus({ preventScroll: true });
+        } else if (autoGearSavePresetButton && typeof autoGearSavePresetButton.focus === 'function') {
+          autoGearSavePresetButton.focus({ preventScroll: true });
+        }
+      };
+
+      setTimeout(() => {
+        if (autoGearPresetNameInput) {
+          autoGearPresetNameInput.focus({ preventScroll: true });
+          autoGearPresetNameInput.select();
+        }
+      }, 0);
+
+      return new Promise(resolve => {
+        autoGearPresetNamePending = { resolve };
+      });
+    }
+
     function applyAutoGearBackupVisibility() {
       const show = !!autoGearBackupsVisible;
       if (autoGearShowBackupsCheckbox) {
@@ -2400,7 +2653,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       showNotification('success', appliedMessage);
     }
     
-    function handleAutoGearSavePreset() {
+    async function handleAutoGearSavePreset() {
       const rules = getAutoGearRules();
       const activePreset = getAutoGearPresetById(activeAutoGearPresetId);
       const previousAutoPresetId = autoGearAutoPresetIdState;
@@ -2408,22 +2661,13 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         || texts.en?.autoGearPresetNamePrompt
         || 'Name this preset';
       const defaultName = activePreset ? activePreset.label : '';
-      if (typeof window === 'undefined' || typeof window.prompt !== 'function') {
-        const requiredMessage = texts[currentLang]?.autoGearPresetNameRequired
-          || texts.en?.autoGearPresetNameRequired
-          || 'Enter a preset name to continue.';
-        if (typeof window !== 'undefined' && typeof window.alert === 'function') {
-          window.alert(requiredMessage);
-        }
-        return;
-      }
-      const response = window.prompt(promptTemplate, defaultName);
+      const requiredMessage = texts[currentLang]?.autoGearPresetNameRequired
+        || texts.en?.autoGearPresetNameRequired
+        || 'Enter a preset name to continue.';
+      const response = await requestAutoGearPresetName(promptTemplate, defaultName, requiredMessage);
       if (response === null) return;
-      const trimmed = response.trim();
+      const trimmed = typeof response === 'string' ? response.trim() : '';
       if (!trimmed) {
-        const requiredMessage = texts[currentLang]?.autoGearPresetNameRequired
-          || texts.en?.autoGearPresetNameRequired
-          || 'Enter a preset name to continue.';
         if (typeof window.alert === 'function') {
           window.alert(requiredMessage);
         }
