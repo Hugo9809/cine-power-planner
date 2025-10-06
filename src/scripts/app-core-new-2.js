@@ -6343,173 +6343,54 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
 
     const FEATURE_SEARCH_MODULE_CACHE_KEY = '__cineResolvedFeatureSearchModule';
 
-    function createFallbackFeatureSearchModuleApi() {
-      const FEATURE_SEARCH_DETAIL_MAX_LENGTH = 140;
-
-      function fallbackNormalizeSearchValue(value) {
-        return typeof value === 'string' ? value.trim().toLowerCase() : '';
-      }
-
-      function fallbackSanitizeHighlightTokens(tokens) {
-        if (!Array.isArray(tokens) || tokens.length === 0) {
-          return [];
-        }
-
-        const seen = typeof Set === 'function' ? new Set() : null;
-        const sanitized = [];
-
-        for (let index = 0; index < tokens.length; index += 1) {
-          const token = tokens[index];
-          if (typeof token !== 'string') {
-            continue;
+    function createFeatureSearchFallback() {
+      return {
+        normalizeSearchValue(value) {
+          return typeof value === 'string' ? value.trim().toLowerCase() : '';
+        },
+        sanitizeHighlightTokens(tokens) {
+          if (!Array.isArray(tokens) || !tokens.length) {
+            return [];
           }
-          const trimmed = token.trim().toLowerCase();
-          if (!trimmed) {
-            continue;
-          }
-          if (trimmed.length < 2 && !/^\d+$/.test(trimmed)) {
-            continue;
-          }
-          if (seen) {
-            if (seen.has(trimmed)) {
+
+          const sanitized = [];
+          for (let index = 0; index < tokens.length; index += 1) {
+            const token = tokens[index];
+            if (typeof token !== 'string') {
               continue;
             }
-            seen.add(trimmed);
-          } else if (sanitized.indexOf(trimmed) !== -1) {
-            continue;
-          }
-          sanitized.push(trimmed);
-        }
-
-        return sanitized;
-      }
-
-      function fallbackCollectHighlightRanges(text, tokens) {
-        if (!text || !tokens || !tokens.length) {
-          return [];
-        }
-
-        const lower = text.toLowerCase();
-        const ranges = [];
-
-        for (let index = 0; index < tokens.length; index += 1) {
-          const token = tokens[index];
-          const length = token.length;
-          if (!length) {
-            continue;
-          }
-
-          let position = 0;
-          while (position < lower.length) {
-            const found = lower.indexOf(token, position);
-            if (found === -1) {
-              break;
+            const normalized = token.trim().toLowerCase();
+            if (!normalized) {
+              continue;
             }
-            ranges.push({ start: found, end: found + length });
-            position = found + length;
+            if (sanitized.indexOf(normalized) === -1) {
+              sanitized.push(normalized);
+            }
           }
-        }
 
-        if (!ranges.length) {
+          return sanitized;
+        },
+        collectHighlightRanges() {
           return [];
-        }
-
-        ranges.sort((a, b) => (a.start - b.start) || (b.end - a.end));
-
-        const merged = [];
-        for (let index = 0; index < ranges.length; index += 1) {
-          const range = ranges[index];
-          const last = merged[merged.length - 1];
-          if (last && range.start <= last.end) {
-            last.end = Math.max(last.end, range.end);
-          } else {
-            merged.push({ start: range.start, end: range.end });
+        },
+        applyHighlight(element, text) {
+          if (!element) {
+            return;
           }
-        }
 
-        return merged;
-      }
-
-      function fallbackApplyHighlight(element, text, tokens, doc) {
-        if (!element) {
-          return;
-        }
-
-        const content = typeof text === 'string' ? text : '';
-        if (!content) {
-          element.textContent = '';
-          return;
-        }
-
-        const highlightTokens = fallbackSanitizeHighlightTokens(tokens || []);
-        if (!highlightTokens.length) {
+          const content = typeof text === 'string' ? text : '';
           element.textContent = content;
-          return;
-        }
-
-        const ranges = fallbackCollectHighlightRanges(content, highlightTokens);
-        if (!ranges.length) {
-          element.textContent = content;
-          return;
-        }
-
-        const documentRef = doc || element.ownerDocument || (typeof document !== 'undefined' ? document : null);
-        if (!documentRef || typeof documentRef.createTextNode !== 'function') {
-          element.textContent = content;
-          return;
-        }
-
-        element.textContent = '';
-        let cursor = 0;
-
-        for (let index = 0; index < ranges.length; index += 1) {
-          const range = ranges[index];
-          if (range.start > cursor) {
-            element.appendChild(documentRef.createTextNode(content.slice(cursor, range.start)));
-          }
-          const mark = documentRef.createElement('mark');
-          mark.className = 'feature-search-highlight';
-          mark.textContent = content.slice(range.start, range.end);
-          element.appendChild(mark);
-          cursor = range.end;
-        }
-
-        if (cursor < content.length) {
-          element.appendChild(documentRef.createTextNode(content.slice(cursor)));
-        }
-      }
-
-      function fallbackNormalizeDetail(text) {
-        if (typeof text !== 'string') {
-          return '';
-        }
-
-        const normalized = text.replace(/\s+/g, ' ').trim();
-        if (!normalized) {
-          return '';
-        }
-
-        if (normalized.length <= FEATURE_SEARCH_DETAIL_MAX_LENGTH) {
-          return normalized;
-        }
-
-        return `${normalized.slice(0, FEATURE_SEARCH_DETAIL_MAX_LENGTH - 1).trimEnd()}…`;
-      }
-
-      return {
-        normalizeSearchValue: fallbackNormalizeSearchValue,
-        sanitizeHighlightTokens: fallbackSanitizeHighlightTokens,
-        collectHighlightRanges: fallbackCollectHighlightRanges,
-        applyHighlight: fallbackApplyHighlight,
-        normalizeDetail: fallbackNormalizeDetail,
+        },
+        normalizeDetail(text) {
+          return typeof text === 'string' ? text.trim() : '';
+        },
       };
     }
 
-    const fallbackFeatureSearchModuleApi = createFallbackFeatureSearchModuleApi();
-
     function resolveFeatureSearchModuleApi() {
-      const globalScope =
-        typeof globalThis !== 'undefined'
+      const globalScope = typeof getCoreGlobalObject === 'function'
+        ? getCoreGlobalObject()
+        : (typeof globalThis !== 'undefined'
           ? globalThis
           : typeof window !== 'undefined'
             ? window
@@ -6517,7 +6398,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
               ? self
               : typeof global !== 'undefined'
                 ? global
-                : null;
+                : null);
 
       if (globalScope && globalScope[FEATURE_SEARCH_MODULE_CACHE_KEY]) {
         return globalScope[FEATURE_SEARCH_MODULE_CACHE_KEY];
@@ -6527,38 +6408,96 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         (typeof cineModuleBase === 'object' && cineModuleBase)
         || (globalScope && typeof globalScope.cineModuleBase === 'object' ? globalScope.cineModuleBase : null);
 
-      let registry = null;
+      function logModuleWarning(message, error) {
+        if (moduleBase && typeof moduleBase.safeWarn === 'function') {
+          try {
+            moduleBase.safeWarn(message, error);
+            return;
+          } catch (warnError) {
+            void warnError;
+          }
+        }
+        if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+          try {
+            if (typeof error === 'undefined') {
+              console.warn(message);
+            } else {
+              console.warn(message, error);
+            }
+          } catch (consoleError) {
+            void consoleError;
+          }
+        }
+      }
+
+      const candidates = [];
+
       if (moduleBase && typeof moduleBase.getModuleRegistry === 'function') {
+        let registry = null;
         try {
           registry = moduleBase.getModuleRegistry(globalScope);
         } catch (error) {
-          if (moduleBase && typeof moduleBase.safeWarn === 'function') {
-            moduleBase.safeWarn('Failed to resolve cine.features.featureSearch module registry.', error);
-          } else if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
-            console.warn('Failed to resolve cine.features.featureSearch module registry.', error);
+          logModuleWarning('Unable to resolve cine.features.featureSearch module registry.', error);
+        }
+        if (registry && typeof registry.get === 'function') {
+          try {
+            const fromRegistry = registry.get('cine.features.featureSearch');
+            if (fromRegistry && candidates.indexOf(fromRegistry) === -1) {
+              candidates.push(fromRegistry);
+            }
+          } catch (error) {
+            logModuleWarning('Unable to read cine.features.featureSearch module.', error);
           }
         }
       }
 
-      let resolved = null;
-      if (registry && typeof registry.get === 'function') {
+      const scopeCandidates = [];
+      if (globalScope && scopeCandidates.indexOf(globalScope) === -1) {
+        scopeCandidates.push(globalScope);
+      }
+      if (typeof globalThis !== 'undefined' && scopeCandidates.indexOf(globalThis) === -1) {
+        scopeCandidates.push(globalThis);
+      }
+      if (typeof window !== 'undefined' && scopeCandidates.indexOf(window) === -1) {
+        scopeCandidates.push(window);
+      }
+      if (typeof self !== 'undefined' && scopeCandidates.indexOf(self) === -1) {
+        scopeCandidates.push(self);
+      }
+      if (typeof global !== 'undefined' && scopeCandidates.indexOf(global) === -1) {
+        scopeCandidates.push(global);
+      }
+
+      for (let index = 0; index < scopeCandidates.length; index += 1) {
+        const scope = scopeCandidates[index];
+        if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+          continue;
+        }
+
         try {
-          resolved = registry.get('cine.features.featureSearch');
-        } catch (error) {
-          if (moduleBase && typeof moduleBase.safeWarn === 'function') {
-            moduleBase.safeWarn('Failed to read cine.features.featureSearch module.', error);
-          } else if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
-            console.warn('Failed to read cine.features.featureSearch module.', error);
+          const exposed = scope.cineFeaturesFeatureSearch;
+          if (exposed && candidates.indexOf(exposed) === -1) {
+            candidates.push(exposed);
           }
+        } catch (error) {
+          void error;
         }
       }
 
-      if (!resolved && globalScope && typeof globalScope.cineFeaturesFeatureSearch === 'object') {
-        resolved = globalScope.cineFeaturesFeatureSearch;
+      let resolvedApi = null;
+      for (let index = 0; index < candidates.length; index += 1) {
+        const candidate = candidates[index];
+        if (
+          candidate
+          && typeof candidate === 'object'
+          && typeof candidate.normalizeSearchValue === 'function'
+        ) {
+          resolvedApi = candidate;
+          break;
+        }
       }
 
-      const fallback = fallbackFeatureSearchModuleApi;
-      const api = resolved && typeof resolved.normalizeSearchValue === 'function' ? resolved : fallback;
+      const api = resolvedApi || createFeatureSearchFallback();
 
       if (globalScope) {
         try {
@@ -6572,6 +6511,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
 
     const featureSearchModuleApi = resolveFeatureSearchModuleApi();
+    const fallbackFeatureSearchModuleApi = createFeatureSearchFallback();
 
     function isIosDevice() {
       try {

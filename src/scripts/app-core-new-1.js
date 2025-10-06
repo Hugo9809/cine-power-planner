@@ -1458,187 +1458,176 @@ if (
 
 const HELP_MODULE_CACHE_KEY = '__cineResolvedHelpModule';
 
-function createFallbackHelpModuleApi() {
-  function fallbackResolveStorageKey(explicitKey) {
-    if (typeof explicitKey === 'string' && explicitKey) {
-      return explicitKey;
-    }
-    if (typeof IOS_PWA_HELP_STORAGE_KEY === 'string' && IOS_PWA_HELP_STORAGE_KEY) {
-      return IOS_PWA_HELP_STORAGE_KEY;
-    }
-    if (
-      typeof globalThis !== 'undefined'
-      && globalThis
-      && typeof globalThis.IOS_PWA_HELP_STORAGE_KEY === 'string'
-      && globalThis.IOS_PWA_HELP_STORAGE_KEY
-    ) {
-      return globalThis.IOS_PWA_HELP_STORAGE_KEY;
-    }
-    if (
-      typeof window !== 'undefined'
-      && window
-      && typeof window.IOS_PWA_HELP_STORAGE_KEY === 'string'
-      && window.IOS_PWA_HELP_STORAGE_KEY
-    ) {
-      return window.IOS_PWA_HELP_STORAGE_KEY;
-    }
-    return 'iosPwaHelpShown';
-  }
-
-  function fallbackIsIosDevice(navigatorOverride) {
-    const nav = navigatorOverride || (typeof navigator !== 'undefined' ? navigator : null);
-    if (!nav) {
-      return false;
-    }
-    const ua = nav.userAgent || '';
-    const platform = nav.platform || '';
-    const hasTouch = typeof nav.maxTouchPoints === 'number' && nav.maxTouchPoints > 1;
-    return /iphone|ipad|ipod/i.test(ua) || (platform === 'MacIntel' && hasTouch);
-  }
-
-  function fallbackIsAndroidDevice(navigatorOverride) {
-    const nav = navigatorOverride || (typeof navigator !== 'undefined' ? navigator : null);
-    if (!nav) {
-      return false;
-    }
-    const ua = nav.userAgent || '';
-    const vendor = nav.vendor || '';
-    return /android/i.test(ua) || /android/i.test(vendor);
-  }
-
-  function fallbackIsStandaloneDisplayMode(windowOverride, navigatorOverride) {
-    const win = windowOverride || (typeof window !== 'undefined' ? window : null);
-    const nav = navigatorOverride || (typeof navigator !== 'undefined' ? navigator : null);
-    if (!win) {
-      return false;
-    }
-    if (typeof win.matchMedia === 'function') {
-      try {
-        if (win.matchMedia('(display-mode: standalone)').matches) {
-          return true;
-        }
-      } catch (error) {
-        if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
-          console.warn('matchMedia display-mode check failed', error);
-        }
-      }
-    }
-    if (nav && typeof nav.standalone === 'boolean') {
-      return nav.standalone;
-    }
-    return false;
-  }
-
-  function fallbackHasDismissedIosPwaHelp(explicitKey) {
-    const storageKey = fallbackResolveStorageKey(explicitKey);
-    if (typeof localStorage === 'undefined' || !localStorage || typeof localStorage.getItem !== 'function') {
-      return false;
-    }
-    try {
-      return localStorage.getItem(storageKey) === '1';
-    } catch (error) {
-      if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
-        console.warn('Could not read iOS PWA help dismissal flag', error);
-      }
-      return false;
-    }
-  }
-
-  function fallbackMarkIosPwaHelpDismissed(explicitKey) {
-    const storageKey = fallbackResolveStorageKey(explicitKey);
-    if (typeof localStorage === 'undefined' || !localStorage || typeof localStorage.setItem !== 'function') {
-      return;
-    }
-    try {
-      localStorage.setItem(storageKey, '1');
-    } catch (error) {
-      if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
-        console.warn('Could not store iOS PWA help dismissal', error);
-      }
-    }
-  }
-
-  function fallbackShouldShow(resolveDialog) {
-    const dialog = typeof resolveDialog === 'function' ? resolveDialog() : resolveDialog || null;
-    if (!dialog) {
-      return false;
-    }
-    if (!fallbackIsIosDevice()) {
-      return false;
-    }
-    if (!fallbackIsStandaloneDisplayMode()) {
-      return false;
-    }
-    if (fallbackHasDismissedIosPwaHelp()) {
-      return false;
-    }
-    return true;
-  }
-
+function createHelpModuleFallback() {
   return {
-    resolveIosPwaHelpStorageKey: fallbackResolveStorageKey,
-    isIosDevice: fallbackIsIosDevice,
-    isAndroidDevice: fallbackIsAndroidDevice,
-    isStandaloneDisplayMode: fallbackIsStandaloneDisplayMode,
-    hasDismissedIosPwaHelp: fallbackHasDismissedIosPwaHelp,
-    markIosPwaHelpDismissed: fallbackMarkIosPwaHelpDismissed,
-    shouldShowIosPwaHelp: fallbackShouldShow,
+    resolveIosPwaHelpStorageKey(explicitKey) {
+      if (typeof explicitKey === 'string' && explicitKey) {
+        return explicitKey;
+      }
+      if (typeof IOS_PWA_HELP_STORAGE_KEY === 'string' && IOS_PWA_HELP_STORAGE_KEY) {
+        return IOS_PWA_HELP_STORAGE_KEY;
+      }
+      return 'iosPwaHelpShown';
+    },
+    isIosDevice() {
+      return false;
+    },
+    isAndroidDevice() {
+      return false;
+    },
+    isStandaloneDisplayMode() {
+      return false;
+    },
+    hasDismissedIosPwaHelp() {
+      return false;
+    },
+    markIosPwaHelpDismissed() {},
+    shouldShowIosPwaHelp() {
+      return false;
+    },
   };
 }
 
 function resolveHelpModuleApi() {
-  const globalScope =
-    typeof globalThis !== 'undefined'
-      ? globalThis
-      : typeof window !== 'undefined'
-        ? window
-        : typeof self !== 'undefined'
-          ? self
-          : typeof global !== 'undefined'
-            ? global
-            : null;
+  const globalScope = getCoreGlobalObject();
 
   if (globalScope && globalScope[HELP_MODULE_CACHE_KEY]) {
     return globalScope[HELP_MODULE_CACHE_KEY];
   }
 
-  const fallback = createFallbackHelpModuleApi();
-
   const moduleBase =
     (typeof cineModuleBase === 'object' && cineModuleBase)
       || (globalScope && typeof globalScope.cineModuleBase === 'object' ? globalScope.cineModuleBase : null);
 
-  let registry = null;
+  function logModuleWarning(message, error) {
+    if (moduleBase && typeof moduleBase.safeWarn === 'function') {
+      try {
+        moduleBase.safeWarn(message, error);
+        return;
+      } catch (warnError) {
+        void warnError;
+      }
+    }
+    if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+      try {
+        if (typeof error === 'undefined') {
+          console.warn(message);
+        } else {
+          console.warn(message, error);
+        }
+      } catch (consoleError) {
+        void consoleError;
+      }
+    }
+  }
+
+  const candidates = [];
+
   if (moduleBase && typeof moduleBase.getModuleRegistry === 'function') {
+    let registry = null;
     try {
       registry = moduleBase.getModuleRegistry(globalScope);
     } catch (error) {
-      if (typeof moduleBase.safeWarn === 'function') {
-        moduleBase.safeWarn('Failed to resolve cine.features.help module registry.', error);
-      } else if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
-        console.warn('Failed to resolve cine.features.help module registry.', error);
+      logModuleWarning('Unable to resolve cine.features.help module registry.', error);
+    }
+    if (registry && typeof registry.get === 'function') {
+      try {
+        const fromRegistry = registry.get('cine.features.help');
+        if (fromRegistry && candidates.indexOf(fromRegistry) === -1) {
+          candidates.push(fromRegistry);
+        }
+      } catch (error) {
+        logModuleWarning('Unable to read cine.features.help module.', error);
       }
     }
   }
 
-  let resolved = null;
-  if (registry && typeof registry.get === 'function') {
+  const scopeCandidates = [];
+  if (globalScope && scopeCandidates.indexOf(globalScope) === -1) {
+    scopeCandidates.push(globalScope);
+  }
+  if (typeof globalThis !== 'undefined' && scopeCandidates.indexOf(globalThis) === -1) {
+    scopeCandidates.push(globalThis);
+  }
+  if (typeof window !== 'undefined' && scopeCandidates.indexOf(window) === -1) {
+    scopeCandidates.push(window);
+  }
+  if (typeof self !== 'undefined' && scopeCandidates.indexOf(self) === -1) {
+    scopeCandidates.push(self);
+  }
+  if (typeof global !== 'undefined' && scopeCandidates.indexOf(global) === -1) {
+    scopeCandidates.push(global);
+  }
+
+  for (let index = 0; index < scopeCandidates.length; index += 1) {
+    const scope = scopeCandidates[index];
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+      continue;
+    }
+
     try {
-      resolved = registry.get('cine.features.help');
+      const exposed = scope.cineFeaturesHelp;
+      if (exposed && candidates.indexOf(exposed) === -1) {
+        candidates.push(exposed);
+      }
     } catch (error) {
-      if (moduleBase && typeof moduleBase.safeWarn === 'function') {
-        moduleBase.safeWarn('Failed to read cine.features.help module.', error);
-      } else if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
-        console.warn('Failed to read cine.features.help module.', error);
+      void error;
+    }
+
+    try {
+      const moduleNamespace = scope.cineHelpModule;
+      if (
+        moduleNamespace
+        && typeof moduleNamespace === 'object'
+        && moduleNamespace
+        && typeof moduleNamespace.help === 'object'
+        && candidates.indexOf(moduleNamespace.help) === -1
+      ) {
+        candidates.push(moduleNamespace.help);
+      }
+    } catch (error) {
+      void error;
+    }
+
+    if (typeof scope.__cineCreateHelpModule === 'function') {
+      try {
+        const created = scope.__cineCreateHelpModule();
+        if (created && typeof created === 'object') {
+          if (typeof created.help === 'object' && candidates.indexOf(created.help) === -1) {
+            candidates.push(created.help);
+          } else if (candidates.indexOf(created) === -1) {
+            candidates.push(created);
+          }
+        }
+      } catch (error) {
+        logModuleWarning('Unable to instantiate cine.features.help module.', error);
       }
     }
   }
 
-  if (!resolved && globalScope && typeof globalScope.cineFeaturesHelp === 'object') {
-    resolved = globalScope.cineFeaturesHelp;
+  let resolvedApi = null;
+  for (let index = 0; index < candidates.length; index += 1) {
+    const candidate = candidates[index];
+    if (
+      candidate
+      && typeof candidate === 'object'
+      && typeof candidate.isIosDevice === 'function'
+    ) {
+      resolvedApi = candidate;
+      break;
+    }
+    if (
+      candidate
+      && typeof candidate === 'object'
+      && typeof candidate.help === 'object'
+      && typeof candidate.help.isIosDevice === 'function'
+    ) {
+      resolvedApi = candidate.help;
+      break;
+    }
   }
 
-  const api = resolved && typeof resolved.isIosDevice === 'function' ? resolved : fallback;
+  const api = resolvedApi || createHelpModuleFallback();
 
   if (globalScope) {
     try {
