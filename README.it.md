@@ -250,7 +250,7 @@ Ripeti questa routine quando arriva un nuovo membro, allestisci una postazione o
 - Apri **Impostazioni → Dati e archiviazione** per vedere progetti salvati, auto-backup, liste, dispositivi personalizzati, preferiti, feedback e cache di sessione con conteggi in tempo reale.
 - Ogni sezione descrive il proprio contenuto; quelle vuote restano nascoste per riconoscere subito lo stato del planner.
 - Il riepilogo stima la dimensione del backup basandosi sull’export più recente.
-- Il **registro diagnostico** replica tutte le voci di cineLogging, permette filtri per gravità o namespace e offre controlli su conservazione, mirroring sulla console e cattura degli errori, tutto offline dentro Impostazioni. Un avviso segnala quando i filtri nascondono tutte le voci così da evitare falsi allarmi durante le verifiche.
+- Il **registro diagnostico** replica tutte le voci di cineLogging, permette filtri per gravità o namespace e offre controlli su conservazione, mirroring sulla console e cattura degli errori, tutto offline dentro Impostazioni. Un avviso segnala quando i filtri nascondono tutte le voci così da evitare falsi allarmi durante le verifiche. Gli avvisi e gli errori delle stampe o esportazioni della panoramica vengono ora registrati qui, con l’indicazione dell’eventuale apertura della finestra di fallback, così le prove di condivisione restano completamente tracciate.
 - I backup completi mostrano il totale corrente e alimentano il registro storico, così puoi verificare che le copie orarie siano state registrate prima di archiviare offline.
 
 ## Gestione quote e manutenzione

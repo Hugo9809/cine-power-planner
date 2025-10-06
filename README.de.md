@@ -248,7 +248,7 @@ Dieser kurze Ablauf sollte bei neuen Teammitgliedern, frisch eingerichteten Work
 - **Einstellungen → Daten & Speicher** listet gespeicherte Projekte, Auto-Backups, Gerätelisten, Custom-Geräte, Favoriten, Laufzeitfeedback und Session-Cache mit Live-Zahlen.
 - Einträge erklären ihre Inhalte; leere Bereiche bleiben verborgen, damit du den Zustand sofort siehst.
 - Die Übersicht schätzt die Backup-Größe basierend auf dem jüngsten Export.
-- Das **Diagnoseprotokoll** spiegelt alle cineLogging-Einträge, erlaubt Filter nach Schweregrad oder Namespace und bietet Regler für Aufbewahrung, Konsolenspiegelung sowie globale Fehlererfassung – direkt offline in den Einstellungen. Ein Hinweis erscheint, sobald Filter alle Einträge ausblenden, damit Prüfungen nicht versehentlich als Fehler gewertet werden.
+- Das **Diagnoseprotokoll** spiegelt alle cineLogging-Einträge, erlaubt Filter nach Schweregrad oder Namespace und bietet Regler für Aufbewahrung, Konsolenspiegelung sowie globale Fehlererfassung – direkt offline in den Einstellungen. Ein Hinweis erscheint, sobald Filter alle Einträge ausblenden, damit Prüfungen nicht versehentlich als Fehler gewertet werden. Warnungen und Fehler aus Übersichts-Drucken sowie PDF-Exporten landen nun ebenfalls hier – inklusive Hinweis, ob das Fallback-Fenster anspringen musste –, damit Freigabeproben den kompletten Ablauf nachvollziehen.
 - Vollbackups zeigen ihre aktuelle Anzahl und speisen das Backup-Protokoll, damit du vor dem Archivieren kontrollieren kannst, ob die stündlichen Sicherungen erfasst wurden.
 
 ## Speicherbudget & Wartung

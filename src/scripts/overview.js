@@ -44,6 +44,122 @@ let triggerOverviewPrintWorkflowModule = null;
     }
 })();
 
+const overviewLogger = (() => {
+    const scopes = [];
+
+    if (typeof globalThis !== 'undefined' && globalThis) scopes.push(globalThis);
+    if (typeof window !== 'undefined' && window && scopes.indexOf(window) === -1) scopes.push(window);
+    if (typeof self !== 'undefined' && self && scopes.indexOf(self) === -1) scopes.push(self);
+    if (typeof global !== 'undefined' && global && scopes.indexOf(global) === -1) scopes.push(global);
+
+    for (let index = 0; index < scopes.length; index += 1) {
+        const scope = scopes[index];
+        if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+            continue;
+        }
+
+        let logging = null;
+        try {
+            logging = scope.cineLogging || null;
+        } catch (error) {
+            void error;
+            logging = null;
+        }
+
+        if (logging && typeof logging.createLogger === 'function') {
+            try {
+                return logging.createLogger('overview', { meta: { source: 'overview-dialog' } });
+            } catch (creationError) {
+                try {
+                    if (typeof logging.error === 'function') {
+                        logging.error('Failed to create overview logger', creationError, { namespace: 'overview-bootstrap' });
+                    }
+                } catch (logError) {
+                    void logError;
+                }
+            }
+        }
+    }
+
+    return null;
+})();
+
+const overviewConsoleFallback = (typeof console === 'object' && console) ? console : null;
+
+function logOverview(level, message, detail, meta) {
+    const normalizedLevel = typeof level === 'string' && level ? level.toLowerCase() : 'info';
+    const sanitizedMeta = (meta && typeof meta === 'object') ? { ...meta } : null;
+    const detailValue = typeof detail === 'undefined' ? undefined : detail;
+
+    if (overviewLogger && typeof overviewLogger[normalizedLevel] === 'function') {
+        try {
+            overviewLogger[normalizedLevel](message, detailValue, sanitizedMeta);
+        } catch (loggerError) {
+            if (overviewConsoleFallback && typeof overviewConsoleFallback.warn === 'function') {
+                try {
+                    overviewConsoleFallback.warn('Overview logger invocation failed', loggerError);
+                } catch (consoleError) {
+                    void consoleError;
+                }
+            }
+        }
+    }
+
+    if (!overviewConsoleFallback) {
+        return;
+    }
+
+    const consoleMethodName = normalizedLevel === 'warn'
+        ? 'warn'
+        : normalizedLevel === 'error'
+            ? 'error'
+            : normalizedLevel === 'debug'
+                ? 'debug'
+                : 'info';
+    const consoleMethod = typeof overviewConsoleFallback[consoleMethodName] === 'function'
+        ? overviewConsoleFallback[consoleMethodName]
+        : (typeof overviewConsoleFallback.log === 'function' ? overviewConsoleFallback.log : null);
+    if (!consoleMethod) {
+        return;
+    }
+
+    const consoleArgs = [message];
+    if (typeof detailValue !== 'undefined') {
+        consoleArgs.push(detailValue);
+    }
+    if (sanitizedMeta) {
+        consoleArgs.push({ meta: sanitizedMeta });
+    }
+
+    try {
+        consoleMethod.apply(overviewConsoleFallback, consoleArgs);
+    } catch (consoleInvokeError) {
+        void consoleInvokeError;
+    }
+}
+
+function createOverviewLoggerProxy(baseMeta) {
+    const frozenMeta = (baseMeta && typeof baseMeta === 'object') ? Object.freeze({ ...baseMeta }) : null;
+    const proxy = {
+        log(message, detail) {
+            logOverview('info', message, detail, frozenMeta);
+        },
+        info(message, detail) {
+            logOverview('info', message, detail, frozenMeta);
+        },
+        debug(message, detail) {
+            logOverview('debug', message, detail, frozenMeta);
+        },
+        warn(message, detail) {
+            logOverview('warn', message, detail, frozenMeta);
+        },
+        error(message, detail) {
+            logOverview('error', message, detail, frozenMeta);
+        },
+    };
+    return Object.freeze(proxy);
+}
+
 function generatePrintableOverview(config = {}) {
     const safeConfig = (config && typeof config === 'object') ? config : {};
     const { autoPrint = false } = safeConfig;
@@ -442,7 +558,10 @@ function generatePrintableOverview(config = {}) {
             try {
                 return iconMarkup(ICON_GLYPHS.fileExport, 'btn-icon');
             } catch (error) {
-                console.warn('Unable to render export icon for overview dialog.', error);
+                logOverview('warn', 'Unable to render export icon for overview dialog.', error, {
+                    action: 'render-icon',
+                    icon: 'fileExport',
+                });
             }
         }
         return '<span class="btn-icon icon-glyph" aria-hidden="true" data-icon-font="uicons">&#xE7AB;</span>';
@@ -536,7 +655,10 @@ function generatePrintableOverview(config = {}) {
                     }
                     return;
                 } catch (error) {
-                    console.warn('Failed to delete gear list from overview button', error);
+                    logOverview('warn', 'Failed to delete gear list from overview button', error, {
+                        action: 'delete-gear-list',
+                        method: 'direct-call',
+                    });
                     usedFallback = true;
                 }
             } else {
@@ -551,7 +673,10 @@ function generatePrintableOverview(config = {}) {
                         fallbackEvent.initCustomEvent('gearlist:delete-requested', false, false, { source: 'overview' });
                         document.dispatchEvent(fallbackEvent);
                     } else {
-                        console.warn('Unable to request gear list deletion from overview', error);
+                        logOverview('warn', 'Unable to request gear list deletion from overview', error, {
+                            action: 'delete-gear-list',
+                            method: 'event-dispatch',
+                        });
                     }
                 }
             }
@@ -575,13 +700,28 @@ function generatePrintableOverview(config = {}) {
         closeDialog(overviewDialog);
     };
 
+    const printWorkflowLoggerMeta = {
+        action: 'print-workflow',
+        source: 'overview-dialog',
+    };
+    if (setupName) {
+        printWorkflowLoggerMeta.setupName = setupName;
+    } else if (fallbackProjectName) {
+        printWorkflowLoggerMeta.projectName = fallbackProjectName;
+    }
+    const printWorkflowLogger = createOverviewLoggerProxy(printWorkflowLoggerMeta);
+
     const openFallbackPrintView = () => {
         if (!content || typeof window === 'undefined') return false;
         const fallbackRoot = content.cloneNode(true);
         fallbackRoot.querySelectorAll('.print-btn, .back-btn').forEach(btn => btn.remove());
         const printWindow = window.open('', '_blank', 'noopener,noreferrer');
         if (!printWindow) {
-            console.error('Unable to open a fallback print window. Please allow pop-ups and try again.');
+            logOverview('error', 'Unable to open a fallback print window. Please allow pop-ups and try again.', undefined, {
+                action: 'print-workflow',
+                stage: 'fallback-window-open',
+                result: 'blocked',
+            });
             return false;
         }
 
@@ -643,7 +783,10 @@ function generatePrintableOverview(config = {}) {
             try {
                 printWindow.print();
             } catch (error) {
-                console.error('Failed to trigger print in fallback window.', error);
+                logOverview('error', 'Failed to trigger print in fallback window.', error, {
+                    action: 'print-workflow',
+                    stage: 'fallback-window-print',
+                });
             }
         };
 
@@ -722,7 +865,7 @@ function generatePrintableOverview(config = {}) {
         originalDocumentTitle,
         openFallbackPrintView,
         closeAfterPrint,
-        logger: typeof console === 'object' ? console : null,
+        logger: printWorkflowLogger,
     };
 
     const resolvedPrintWorkflow = typeof createOverviewPrintWorkflowModule === 'function'
@@ -749,10 +892,19 @@ function generatePrintableOverview(config = {}) {
             try {
                 const printStarted = triggerPrintWorkflow({ preferFallback: true, reason: 'export' });
                 if (!printStarted) {
-                    console.error('Unable to start the PDF export print workflow. Please enable pop-ups and try again.');
+                    logOverview('error', 'Unable to start the PDF export print workflow. Please enable pop-ups and try again.', undefined, {
+                        action: 'print-workflow',
+                        stage: 'trigger',
+                        reason: 'export',
+                        result: 'not-started',
+                    });
                 }
             } catch (error) {
-                console.error('Failed to export overview PDF via print workflow.', error);
+                logOverview('error', 'Failed to export overview PDF via print workflow.', error, {
+                    action: 'print-workflow',
+                    stage: 'trigger',
+                    reason: 'export',
+                });
             } finally {
                 exportBtn.disabled = false;
             }
@@ -764,7 +916,12 @@ function generatePrintableOverview(config = {}) {
         printBtn.addEventListener('click', () => {
             const success = triggerPrintWorkflow({ reason: 'print' });
             if (!success) {
-                console.error('Unable to open the print dialog. Please check your browser settings and try again.');
+                logOverview('error', 'Unable to open the print dialog. Please check your browser settings and try again.', undefined, {
+                    action: 'print-workflow',
+                    stage: 'trigger',
+                    reason: 'print',
+                    result: 'not-started',
+                });
             }
         });
     }
@@ -773,7 +930,12 @@ function generatePrintableOverview(config = {}) {
     if (autoPrint) {
         const printed = triggerPrintWorkflow({ reason: 'generate' });
         if (!printed) {
-            console.error('Unable to open the print dialog. Please check your browser settings and try again.');
+            logOverview('error', 'Unable to open the print dialog. Please check your browser settings and try again.', undefined, {
+                action: 'print-workflow',
+                stage: 'trigger',
+                reason: 'generate',
+                result: 'not-started',
+            });
         }
     }
 
