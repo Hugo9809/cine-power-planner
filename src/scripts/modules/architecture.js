@@ -482,53 +482,130 @@
     ? ARCHITECTURE_CORE.createCore
     : createFallbackCore;
 
-  const CORE_INSTANCE = CORE_FACTORY({});
+  function instantiateCore(options) {
+    const fallbackInstance = createFallbackCore(options);
 
-  const detectGlobalScope = CORE_INSTANCE && typeof CORE_INSTANCE.detectGlobalScope === 'function'
-    ? CORE_INSTANCE.detectGlobalScope
-    : function detectGlobalScopeFallback() {
-        return fallbackDetectGlobalScope();
+    if (!CORE_FACTORY || typeof CORE_FACTORY !== 'function') {
+      return {
+        primary: fallbackInstance,
+        fallback: fallbackInstance,
       };
+    }
 
-  const collectCandidateScopes = CORE_INSTANCE && typeof CORE_INSTANCE.collectCandidateScopes === 'function'
-    ? CORE_INSTANCE.collectCandidateScopes
-    : fallbackCollectCandidateScopes;
+    try {
+      const instance = CORE_FACTORY(options || {});
+      if (instance && typeof instance === 'object') {
+        return {
+          primary: instance,
+          fallback: fallbackInstance,
+        };
+      }
+    } catch (error) {
+      fallbackSafeWarn('cineModuleArchitecture: core factory failed; using fallback core.', error);
+    }
 
-  const tryRequire = CORE_INSTANCE && typeof CORE_INSTANCE.tryRequire === 'function'
-    ? CORE_INSTANCE.tryRequire
-    : fallbackTryRequire;
+    return {
+      primary: fallbackInstance,
+      fallback: fallbackInstance,
+    };
+  }
 
-  const resolveFromScopes = CORE_INSTANCE && typeof CORE_INSTANCE.resolveFromScopes === 'function'
-    ? CORE_INSTANCE.resolveFromScopes
-    : fallbackResolveFromScopes;
+  function wrapMethod(primaryCore, fallbackCore, methodName, fallbackImpl, warn) {
+    const primaryFn =
+      primaryCore && typeof primaryCore[methodName] === 'function' ? primaryCore[methodName] : null;
+    const fallbackFn =
+      fallbackCore && typeof fallbackCore[methodName] === 'function' ? fallbackCore[methodName] : null;
+    const ultimateFallback = typeof fallbackImpl === 'function' ? fallbackImpl : null;
 
-  const defineHiddenProperty = CORE_INSTANCE && typeof CORE_INSTANCE.defineHiddenProperty === 'function'
-    ? CORE_INSTANCE.defineHiddenProperty
-    : fallbackDefineHiddenProperty;
+    return function wrappedMethod() {
+      const args = arguments;
 
-  const ensureQueue = CORE_INSTANCE && typeof CORE_INSTANCE.ensureQueue === 'function'
-    ? CORE_INSTANCE.ensureQueue
-    : fallbackEnsureQueue;
+      if (primaryFn) {
+        try {
+          return primaryFn.apply(primaryCore, args);
+        } catch (error) {
+          if (typeof warn === 'function') {
+            try {
+              warn('cineModuleArchitecture.' + methodName + ': primary implementation failed, using fallback.', error);
+            } catch (warnError) {
+              void warnError;
+            }
+          }
+        }
+      }
 
-  const freezeDeep = CORE_INSTANCE && typeof CORE_INSTANCE.freezeDeep === 'function'
-    ? CORE_INSTANCE.freezeDeep
-    : function freezeDeepFallback(value, seen) {
-        return createFallbackCore({}).freezeDeep(value, seen);
-      };
+      if (fallbackFn) {
+        return fallbackFn.apply(fallbackCore, args);
+      }
 
-  const safeWarn = CORE_INSTANCE && typeof CORE_INSTANCE.safeWarn === 'function'
-    ? CORE_INSTANCE.safeWarn
-    : fallbackSafeWarn;
+      if (ultimateFallback) {
+        return ultimateFallback.apply(null, args);
+      }
+
+      return undefined;
+    };
+  }
+
+  function createArchitectureInstance(options) {
+    const instances = instantiateCore(options || {});
+    const primaryCore = instances.primary;
+    const fallbackCore = instances.fallback;
+
+    const safeWarn = wrapMethod(primaryCore, fallbackCore, 'safeWarn', fallbackSafeWarn, null);
+
+    function wrap(methodName, fallbackImpl) {
+      return wrapMethod(primaryCore, fallbackCore, methodName, fallbackImpl, safeWarn);
+    }
+
+    const detectGlobalScope = wrap('detectGlobalScope', fallbackDetectGlobalScope);
+    const getPrimaryScope = wrap('getPrimaryScope', function defaultGetPrimaryScope() {
+      return detectGlobalScope();
+    });
+    const collectCandidateScopes = wrap('collectCandidateScopes', function collectWithFallback(primary) {
+      const target = primary || getPrimaryScope();
+      return fallbackCollectCandidateScopes(target);
+    });
+    const tryRequire = wrap('tryRequire', fallbackTryRequire);
+    const resolveFromScopes = wrap('resolveFromScopes', function resolveWithFallback(propertyName, resolveOptions) {
+      const optionsToUse = cloneOptions(resolveOptions);
+      if (!optionsToUse.scopes) {
+        optionsToUse.scopes = collectCandidateScopes(optionsToUse.primaryScope);
+      }
+      return fallbackResolveFromScopes(propertyName, optionsToUse);
+    });
+    const defineHiddenProperty = wrap('defineHiddenProperty', fallbackDefineHiddenProperty);
+    const ensureQueue = wrap('ensureQueue', function ensureQueueWithFallback(scope, key) {
+      const scopeToUse = scope || getPrimaryScope();
+      return fallbackEnsureQueue(scopeToUse, key);
+    });
+    const freezeDeep = wrap('freezeDeep', function freezeDeepWithFallback(value, seen) {
+      return FALLBACK_IMMUTABILITY.freezeDeep(value, seen);
+    });
+
+    return Object.freeze({
+      detectGlobalScope,
+      getPrimaryScope,
+      collectCandidateScopes,
+      tryRequire,
+      resolveFromScopes,
+      defineHiddenProperty,
+      ensureQueue,
+      freezeDeep,
+      safeWarn,
+    });
+  }
+
+  const defaultInstance = createArchitectureInstance({});
 
   const architecture = Object.freeze({
-    detectGlobalScope,
-    collectCandidateScopes,
-    tryRequire,
-    resolveFromScopes,
-    defineHiddenProperty,
-    ensureQueue,
-    freezeDeep,
-    safeWarn,
+    detectGlobalScope: defaultInstance.detectGlobalScope,
+    collectCandidateScopes: defaultInstance.collectCandidateScopes,
+    tryRequire: defaultInstance.tryRequire,
+    resolveFromScopes: defaultInstance.resolveFromScopes,
+    defineHiddenProperty: defaultInstance.defineHiddenProperty,
+    ensureQueue: defaultInstance.ensureQueue,
+    freezeDeep: defaultInstance.freezeDeep,
+    safeWarn: defaultInstance.safeWarn,
   });
 
   function createModuleArchitecture(options) {
@@ -545,7 +622,7 @@
     const detectOverride = typeof settings.detectGlobalScope === 'function'
       ? settings.detectGlobalScope
       : function detectOverride() {
-          return customPrimaryScope || detectGlobalScope();
+          return customPrimaryScope || defaultInstance.detectGlobalScope();
         };
 
     const additionalScopes = Array.isArray(settings.additionalScopes)
@@ -554,16 +631,16 @@
         })
       : [];
 
-    const tryRequireOverride = typeof settings.tryRequire === 'function' ? settings.tryRequire : tryRequire;
+    const tryRequireOverride = typeof settings.tryRequire === 'function' ? settings.tryRequire : defaultInstance.tryRequire;
     const resolveOverride = typeof settings.resolveFromScopes === 'function' ? settings.resolveFromScopes : null;
     const ensureQueueDefaultKey =
       typeof settings.pendingQueueKey === 'string' && settings.pendingQueueKey
         ? settings.pendingQueueKey
         : DEFAULT_PENDING_QUEUE_KEY;
-    const freezeOverride = typeof settings.freezeDeep === 'function' ? settings.freezeDeep : freezeDeep;
-    const warnOverride = typeof settings.safeWarn === 'function' ? settings.safeWarn : safeWarn;
+    const freezeOverride = typeof settings.freezeDeep === 'function' ? settings.freezeDeep : defaultInstance.freezeDeep;
+    const warnOverride = typeof settings.safeWarn === 'function' ? settings.safeWarn : defaultInstance.safeWarn;
 
-    const derived = CORE_FACTORY({
+    const instance = createArchitectureInstance({
       primaryScope: customPrimaryScope,
       detectGlobalScope: detectOverride,
       additionalScopes,
@@ -574,55 +651,33 @@
       safeWarn: warnOverride,
     });
 
-    const derivedDefineHiddenProperty =
-      derived && typeof derived.defineHiddenProperty === 'function'
-        ? derived.defineHiddenProperty
-        : fallbackDefineHiddenProperty;
-
-    const derivedEnsureQueue =
-      derived && typeof derived.ensureQueue === 'function'
-        ? derived.ensureQueue
-        : function ensureQueueWithDefault(scope, key) {
-            const queueKey = typeof key === 'string' && key ? key : ensureQueueDefaultKey;
-            return fallbackEnsureQueue(scope, queueKey);
-          };
-
-    const derivedFreezeDeep =
-      derived && typeof derived.freezeDeep === 'function'
-        ? derived.freezeDeep
-        : function freezeDeepWithDefault(value, seen) {
-            return freezeOverride(value, seen);
-          };
-
-    const derivedSafeWarn =
-      derived && typeof derived.safeWarn === 'function'
-        ? derived.safeWarn
-        : warnOverride;
-
     return Object.freeze({
-      detectGlobalScope: derived && typeof derived.detectGlobalScope === 'function' ? derived.detectGlobalScope : detectOverride,
-      collectCandidateScopes: derived && typeof derived.collectCandidateScopes === 'function' ? derived.collectCandidateScopes : collectCandidateScopes,
-      tryRequire: derived && typeof derived.tryRequire === 'function' ? derived.tryRequire : tryRequireOverride,
-      resolveFromScopes: derived && typeof derived.resolveFromScopes === 'function' ? derived.resolveFromScopes : resolveOverride || resolveFromScopes,
-      defineHiddenProperty: derivedDefineHiddenProperty,
-      ensureQueue: derivedEnsureQueue,
-      freezeDeep: derivedFreezeDeep,
-      safeWarn: derivedSafeWarn,
+      detectGlobalScope: instance.detectGlobalScope,
+      collectCandidateScopes: instance.collectCandidateScopes,
+      tryRequire: instance.tryRequire,
+      resolveFromScopes: instance.resolveFromScopes,
+      defineHiddenProperty: instance.defineHiddenProperty,
+      ensureQueue: instance.ensureQueue,
+      freezeDeep: instance.freezeDeep,
+      safeWarn: instance.safeWarn,
     });
   }
 
-  const globalScope = detectGlobalScope();
   const architectureWithFactory = Object.freeze({
     ...architecture,
     createModuleArchitecture,
   });
 
-  if (!globalScope.cineModuleArchitecture) {
-    defineHiddenProperty(globalScope, 'cineModuleArchitecture', architectureWithFactory);
+  const globalScope = defaultInstance.getPrimaryScope
+    ? defaultInstance.getPrimaryScope()
+    : defaultInstance.detectGlobalScope();
+
+  if (globalScope && typeof globalScope === 'object' && !globalScope.cineModuleArchitecture) {
+    architecture.defineHiddenProperty(globalScope, 'cineModuleArchitecture', architectureWithFactory);
   }
 
-  if (!globalScope.cineModuleArchitectureFactory) {
-    defineHiddenProperty(globalScope, 'cineModuleArchitectureFactory', Object.freeze({
+  if (globalScope && typeof globalScope === 'object' && !globalScope.cineModuleArchitectureFactory) {
+    architecture.defineHiddenProperty(globalScope, 'cineModuleArchitectureFactory', Object.freeze({
       createModuleArchitecture,
     }));
   }

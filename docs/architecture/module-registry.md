@@ -68,6 +68,10 @@ worker used during offline rehearsals) without mutating the main global scope.
   `globalThis.cineModuleArchitectureFactory` and piggybacks on the offline
   asset list. No network access is required, and the existing service worker
   continues to ship the script alongside local Uicons, fonts and help content.
+- **Unified instantiation.** Both the modern and legacy bundles now share the
+  same `createArchitectureInstance()` scaffolding so the fallback queue,
+  immutability and warning semantics stay in lockstep whenever a feature spins
+  up a scoped architecture.
 
 ## Blueprint helper
 
