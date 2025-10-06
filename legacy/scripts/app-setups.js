@@ -1000,28 +1000,17 @@ function registerSetupsCineUi() {
   return true;
 }
 registerSetupsCineUi();
-const cineResultsModule = typeof cineResults === 'object' ? cineResults : null;
+var cineResultsModule = (typeof cineResults === "undefined" ? "undefined" : _typeof(cineResults)) === 'object' ? cineResults : null;
 if (cineResultsModule && typeof cineResultsModule.setupRuntimeFeedback === 'function') {
   cineResultsModule.setupRuntimeFeedback({
     openDialog: typeof openDialog === 'function' ? openDialog : null,
     closeDialog: typeof closeDialog === 'function' ? closeDialog : null,
     getCurrentSetupKey: typeof getCurrentSetupKey === 'function' ? getCurrentSetupKey : null,
-    loadFeedback:
-      typeof loadFeedbackSafe === 'function'
-        ? loadFeedbackSafe
-        : typeof loadFeedback === 'function'
-          ? loadFeedback
-          : null,
-    saveFeedback:
-      typeof saveFeedbackSafe === 'function'
-        ? saveFeedbackSafe
-        : typeof saveFeedback === 'function'
-          ? saveFeedback
-          : null,
+    loadFeedback: typeof loadFeedbackSafe === 'function' ? loadFeedbackSafe : typeof loadFeedback === 'function' ? loadFeedback : null,
+    saveFeedback: typeof saveFeedbackSafe === 'function' ? saveFeedbackSafe : typeof saveFeedback === 'function' ? saveFeedback : null,
     updateCalculations: typeof updateCalculations === 'function' ? updateCalculations : null,
-    setButtonLabelWithIcon:
-      typeof setButtonLabelWithIcon === 'function' ? setButtonLabelWithIcon : null,
-    iconGlyphs: typeof ICON_GLYPHS !== 'undefined' ? ICON_GLYPHS : null,
+    setButtonLabelWithIcon: typeof setButtonLabelWithIcon === 'function' ? setButtonLabelWithIcon : null,
+    iconGlyphs: typeof ICON_GLYPHS !== 'undefined' ? ICON_GLYPHS : null
   });
 }
 function summarizeByType(list) {
@@ -1044,10 +1033,10 @@ function connectorBlocks(items, icon) {
   var dir = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : '';
   if (!Array.isArray(items) || items.length === 0) return '';
   var counts = summarizeByType(items);
-  var entries = Object.entries(counts).map(function (_ref4) {
-    var _ref5 = _slicedToArray(_ref4, 2),
-      type = _ref5[0],
-      count = _ref5[1];
+  var entries = Object.entries(counts).map(function (_ref2) {
+    var _ref3 = _slicedToArray(_ref2, 2),
+      type = _ref3[0],
+      count = _ref3[1];
     return "".concat(escapeHtml(type)).concat(count > 1 ? " \xD7".concat(count) : '');
   });
   if (!entries.length) return '';
@@ -1439,11 +1428,11 @@ function suggestArriFizCables() {
 }
 function collectAccessories() {
   var _acc$cables, _acc$cables2;
-  var _ref6 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
-    _ref6$hasMotor = _ref6.hasMotor,
-    hasMotor = _ref6$hasMotor === void 0 ? false : _ref6$hasMotor,
-    _ref6$videoDistPrefs = _ref6.videoDistPrefs,
-    videoDistPrefs = _ref6$videoDistPrefs === void 0 ? [] : _ref6$videoDistPrefs;
+  var _ref4 = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {},
+    _ref4$hasMotor = _ref4.hasMotor,
+    hasMotor = _ref4$hasMotor === void 0 ? false : _ref4$hasMotor,
+    _ref4$videoDistPrefs = _ref4.videoDistPrefs,
+    videoDistPrefs = _ref4$videoDistPrefs === void 0 ? [] : _ref4$videoDistPrefs;
   var cameraSupport = [];
   var misc = [];
   var monitoringSupport = [];
@@ -1924,10 +1913,10 @@ function populateProjectForm() {
     return t.type;
   }));
   renderFilterDetails();
-  filterTokens.forEach(function (_ref7) {
-    var type = _ref7.type,
-      size = _ref7.size,
-      values = _ref7.values;
+  filterTokens.forEach(function (_ref5) {
+    var type = _ref5.type,
+      size = _ref5.size,
+      values = _ref5.values;
     var sizeSel = document.getElementById("filter-size-".concat(filterId(type)));
     if (sizeSel) sizeSel.value = size;
     var valSel = document.getElementById("filter-values-".concat(filterId(type)));
@@ -2465,9 +2454,9 @@ function mergeAutoGearSpanContextNotes(span, contexts, quantity) {
 function renderAutoGearSpanContextNotes(span) {
   if (!span) return;
   var map = getAutoGearSpanContextMap(span);
-  var entries = Array.from(map.entries()).filter(function (_ref8) {
-    var _ref9 = _slicedToArray(_ref8, 2),
-      count = _ref9[1];
+  var entries = Array.from(map.entries()).filter(function (_ref6) {
+    var _ref7 = _slicedToArray(_ref6, 2),
+      count = _ref7[1];
     return Number.isFinite(count) && count > 0;
   });
   var contextNode = span.querySelector('.auto-gear-context-notes');
@@ -2477,22 +2466,22 @@ function renderAutoGearSpanContextNotes(span) {
     }
     return;
   }
-  var parts = entries.sort(function (_ref0, _ref1) {
+  var parts = entries.sort(function (_ref8, _ref9) {
     var _AUTO_GEAR_CONTEXT_SO, _AUTO_GEAR_CONTEXT_SO2;
-    var _ref10 = _slicedToArray(_ref0, 1),
-      a = _ref10[0];
-    var _ref11 = _slicedToArray(_ref1, 1),
-      b = _ref11[0];
+    var _ref0 = _slicedToArray(_ref8, 1),
+      a = _ref0[0];
+    var _ref1 = _slicedToArray(_ref9, 1),
+      b = _ref1[0];
     var pa = (_AUTO_GEAR_CONTEXT_SO = AUTO_GEAR_CONTEXT_SORT_PRIORITY.get(a.trim().toLowerCase())) !== null && _AUTO_GEAR_CONTEXT_SO !== void 0 ? _AUTO_GEAR_CONTEXT_SO : Number.POSITIVE_INFINITY;
     var pb = (_AUTO_GEAR_CONTEXT_SO2 = AUTO_GEAR_CONTEXT_SORT_PRIORITY.get(b.trim().toLowerCase())) !== null && _AUTO_GEAR_CONTEXT_SO2 !== void 0 ? _AUTO_GEAR_CONTEXT_SO2 : Number.POSITIVE_INFINITY;
     if (pa !== pb) return pa - pb;
     return a.localeCompare(b, undefined, {
       sensitivity: 'base'
     });
-  }).map(function (_ref12) {
-    var _ref13 = _slicedToArray(_ref12, 2),
-      note = _ref13[0],
-      count = _ref13[1];
+  }).map(function (_ref10) {
+    var _ref11 = _slicedToArray(_ref10, 2),
+      note = _ref11[0],
+      count = _ref11[1];
     return "".concat(count, "x ").concat(note);
   });
   var text = " (".concat(parts.join(', '), ")");
@@ -3147,8 +3136,8 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
   });
   if (!triggeredEntries.length) return tableHtml;
   if (normalizedMattebox) {
-    var filtered = triggeredEntries.filter(function (_ref14) {
-      var rule = _ref14.rule;
+    var filtered = triggeredEntries.filter(function (_ref12) {
+      var rule = _ref12.rule;
       if (!touchesMatteboxCategory(rule)) return true;
       var matteboxList = Array.isArray(rule.mattebox) ? rule.mattebox.filter(Boolean) : [];
       if (!matteboxList.length) return true;
@@ -3166,9 +3155,9 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
   container.innerHTML = tableHtml;
   var table = container.querySelector('.gear-table');
   if (!table) return tableHtml;
-  triggeredEntries.forEach(function (_ref15) {
-    var rule = _ref15.rule,
-      multiplier = _ref15.multiplier;
+  triggeredEntries.forEach(function (_ref13) {
+    var rule = _ref13.rule,
+      multiplier = _ref13.multiplier;
     var effectiveMultiplier = Math.max(1, Math.round(Number.isFinite(multiplier) ? multiplier : 1));
     rule.remove.forEach(function (item) {
       var remaining = normalizeAutoGearQuantity(item.quantity) * effectiveMultiplier;
@@ -3541,16 +3530,16 @@ function generateGearListHtml() {
   var projectLabels = ((_texts$currentLang3 = texts[currentLang]) === null || _texts$currentLang3 === void 0 ? void 0 : _texts$currentLang3.projectFields) || ((_texts$en6 = texts.en) === null || _texts$en6 === void 0 ? void 0 : _texts$en6.projectFields) || {};
   var projectFormTexts = ((_texts$currentLang4 = texts[currentLang]) === null || _texts$currentLang4 === void 0 ? void 0 : _texts$currentLang4.projectForm) || ((_texts$en7 = texts.en) === null || _texts$en7 === void 0 ? void 0 : _texts$en7.projectForm) || {};
   var excludedFields = new Set(['cameraHandle', 'viewfinderExtension', 'mattebox', 'videoDistribution', 'monitoringConfiguration', 'focusMonitor', 'tripodHeadBrand', 'tripodBowl', 'tripodTypes', 'tripodSpreader', 'sliderBowl', 'easyrig', 'lenses', 'viewfinderSettings', 'frameGuides', 'aspectMaskOpacity', 'filter', 'viewfinderEyeLeatherColor', 'directorMonitor', 'dopMonitor', 'gafferMonitor', 'directorMonitor15', 'comboMonitor15', 'dopMonitor15', 'proGaffColor1', 'proGaffWidth1', 'proGaffColor2', 'proGaffWidth2']);
-  var infoEntries = Object.entries(projectInfo).filter(function (_ref16) {
+  var infoEntries = Object.entries(projectInfo).filter(function (_ref14) {
+    var _ref15 = _slicedToArray(_ref14, 2),
+      k = _ref15[0],
+      v = _ref15[1];
+    return v && k !== 'projectName' && !excludedFields.has(k) && !k.endsWith('Manual');
+  });
+  var boxesHtml = infoEntries.length ? '<div class="requirements-grid">' + infoEntries.map(function (_ref16) {
     var _ref17 = _slicedToArray(_ref16, 2),
       k = _ref17[0],
       v = _ref17[1];
-    return v && k !== 'projectName' && !excludedFields.has(k) && !k.endsWith('Manual');
-  });
-  var boxesHtml = infoEntries.length ? '<div class="requirements-grid">' + infoEntries.map(function (_ref18) {
-    var _ref19 = _slicedToArray(_ref18, 2),
-      k = _ref19[0],
-      v = _ref19[1];
     var value = formatRequirementValue(v);
     var label = projectLabels[k] || k;
     var iconHtml = iconMarkup(projectFieldIcons[k], {
@@ -3581,21 +3570,21 @@ function generateGearListHtml() {
       var current = counts[base].ctxCounts[ctx] || 0;
       counts[base].ctxCounts[ctx] = current + (Number.isFinite(quantity) && quantity > 0 ? quantity : 1);
     });
-    return Object.entries(counts).sort(function (_ref20, _ref21) {
-      var _ref22 = _slicedToArray(_ref20, 1),
-        a = _ref22[0];
-      var _ref23 = _slicedToArray(_ref21, 1),
-        b = _ref23[0];
+    return Object.entries(counts).sort(function (_ref18, _ref19) {
+      var _ref20 = _slicedToArray(_ref18, 1),
+        a = _ref20[0];
+      var _ref21 = _slicedToArray(_ref19, 1),
+        b = _ref21[0];
       return a.localeCompare(b, undefined, {
         sensitivity: 'base'
       });
-    }).map(function (_ref24) {
+    }).map(function (_ref22) {
       var _gearItemTranslations;
-      var _ref25 = _slicedToArray(_ref24, 2),
-        base = _ref25[0],
-        _ref25$ = _ref25[1],
-        total = _ref25$.total,
-        ctxCounts = _ref25$.ctxCounts;
+      var _ref23 = _slicedToArray(_ref22, 2),
+        base = _ref23[0],
+        _ref23$ = _ref23[1],
+        total = _ref23$.total,
+        ctxCounts = _ref23$.ctxCounts;
       var ctxKeys = Object.keys(ctxCounts);
       var hasContext = ctxKeys.some(function (c) {
         return c;
@@ -3603,41 +3592,41 @@ function generateGearListHtml() {
       var ctxParts = [];
       if (hasContext) {
         if (base === 'sand bag') {
-          var realEntries = Object.entries(ctxCounts).filter(function (_ref26) {
-            var _ref27 = _slicedToArray(_ref26, 1),
-              c = _ref27[0];
+          var realEntries = Object.entries(ctxCounts).filter(function (_ref24) {
+            var _ref25 = _slicedToArray(_ref24, 1),
+              c = _ref25[0];
             return c && c.toLowerCase() !== 'spare';
-          }).sort(function (_ref28, _ref29) {
-            var _ref30 = _slicedToArray(_ref28, 1),
-              a = _ref30[0];
-            var _ref31 = _slicedToArray(_ref29, 1),
-              b = _ref31[0];
+          }).sort(function (_ref26, _ref27) {
+            var _ref28 = _slicedToArray(_ref26, 1),
+              a = _ref28[0];
+            var _ref29 = _slicedToArray(_ref27, 1),
+              b = _ref29[0];
             return a.localeCompare(b, undefined, {
               sensitivity: 'base'
             });
           });
-          var usedCount = realEntries.reduce(function (sum, _ref32) {
-            var _ref33 = _slicedToArray(_ref32, 2),
-              count = _ref33[1];
+          var usedCount = realEntries.reduce(function (sum, _ref30) {
+            var _ref31 = _slicedToArray(_ref30, 2),
+              count = _ref31[1];
             return sum + count;
           }, 0);
           var spareCount = total - usedCount;
-          ctxParts = realEntries.map(function (_ref34) {
-            var _ref35 = _slicedToArray(_ref34, 2),
-              c = _ref35[0],
-              count = _ref35[1];
+          ctxParts = realEntries.map(function (_ref32) {
+            var _ref33 = _slicedToArray(_ref32, 2),
+              c = _ref33[0],
+              count = _ref33[1];
             return "".concat(count, "x ").concat(c);
           });
           if (spareCount > 0) ctxParts.push("".concat(spareCount, "x Spare"));
         } else if (base.startsWith('Bebob ')) {
-          var _realEntries = Object.entries(ctxCounts).filter(function (_ref36) {
-            var _ref37 = _slicedToArray(_ref36, 1),
-              c = _ref37[0];
+          var _realEntries = Object.entries(ctxCounts).filter(function (_ref34) {
+            var _ref35 = _slicedToArray(_ref34, 1),
+              c = _ref35[0];
             return c && c.toLowerCase() !== 'spare';
-          }).map(function (_ref38) {
-            var _ref39 = _slicedToArray(_ref38, 2),
-              c = _ref39[0],
-              count = _ref39[1];
+          }).map(function (_ref36) {
+            var _ref37 = _slicedToArray(_ref36, 2),
+              c = _ref37[0],
+              count = _ref37[1];
             var qtyMatch = c.match(/^(\d+)x\s+(.*)$/i);
             if (qtyMatch) {
               var _qtyMatch = _slicedToArray(qtyMatch, 3),
@@ -3649,63 +3638,63 @@ function generateGearListHtml() {
               }
             }
             return [c, count];
-          }).sort(function (_ref40, _ref41) {
-            var _ref42 = _slicedToArray(_ref40, 1),
-              a = _ref42[0];
-            var _ref43 = _slicedToArray(_ref41, 1),
-              b = _ref43[0];
+          }).sort(function (_ref38, _ref39) {
+            var _ref40 = _slicedToArray(_ref38, 1),
+              a = _ref40[0];
+            var _ref41 = _slicedToArray(_ref39, 1),
+              b = _ref41[0];
             return a.localeCompare(b, undefined, {
               sensitivity: 'base'
             });
           });
-          var _usedCount = _realEntries.reduce(function (sum, _ref44) {
-            var _ref45 = _slicedToArray(_ref44, 2),
-              count = _ref45[1];
+          var _usedCount = _realEntries.reduce(function (sum, _ref42) {
+            var _ref43 = _slicedToArray(_ref42, 2),
+              count = _ref43[1];
             return sum + count;
           }, 0);
           var _spareCount = total - _usedCount;
-          ctxParts = _realEntries.map(function (_ref46) {
-            var _ref47 = _slicedToArray(_ref46, 2),
-              c = _ref47[0],
-              count = _ref47[1];
+          ctxParts = _realEntries.map(function (_ref44) {
+            var _ref45 = _slicedToArray(_ref44, 2),
+              c = _ref45[0],
+              count = _ref45[1];
             return "".concat(count, "x ").concat(c);
           });
           if (_spareCount > 0) ctxParts.push("".concat(_spareCount, "x Spare"));
         } else {
-          var _realEntries2 = Object.entries(ctxCounts).filter(function (_ref48) {
-            var _ref49 = _slicedToArray(_ref48, 1),
-              c = _ref49[0];
+          var _realEntries2 = Object.entries(ctxCounts).filter(function (_ref46) {
+            var _ref47 = _slicedToArray(_ref46, 1),
+              c = _ref47[0];
             return c && c.toLowerCase() !== 'spare';
-          }).sort(function (_ref50, _ref51) {
-            var _ref52 = _slicedToArray(_ref50, 1),
-              a = _ref52[0];
-            var _ref53 = _slicedToArray(_ref51, 1),
-              b = _ref53[0];
+          }).sort(function (_ref48, _ref49) {
+            var _ref50 = _slicedToArray(_ref48, 1),
+              a = _ref50[0];
+            var _ref51 = _slicedToArray(_ref49, 1),
+              b = _ref51[0];
             return a.localeCompare(b, undefined, {
               sensitivity: 'base'
             });
           });
-          ctxParts = _realEntries2.map(function (_ref54) {
-            var _ref55 = _slicedToArray(_ref54, 2),
-              c = _ref55[0],
-              count = _ref55[1];
+          ctxParts = _realEntries2.map(function (_ref52) {
+            var _ref53 = _slicedToArray(_ref52, 2),
+              c = _ref53[0],
+              count = _ref53[1];
             return "".concat(count, "x ").concat(c);
           });
-          var _spareCount2 = Object.entries(ctxCounts).filter(function (_ref56) {
-            var _ref57 = _slicedToArray(_ref56, 1),
-              c = _ref57[0];
+          var _spareCount2 = Object.entries(ctxCounts).filter(function (_ref54) {
+            var _ref55 = _slicedToArray(_ref54, 1),
+              c = _ref55[0];
             return c && c.toLowerCase() === 'spare';
-          }).reduce(function (sum, _ref58) {
-            var _ref59 = _slicedToArray(_ref58, 2),
-              count = _ref59[1];
+          }).reduce(function (sum, _ref56) {
+            var _ref57 = _slicedToArray(_ref56, 2),
+              count = _ref57[1];
             return sum + count;
           }, 0);
           if (_spareCount2 > 0) {
             ctxParts.push("".concat(_spareCount2, "x Spare"));
           } else if (base === 'D-Tap Extension 50 cm') {
-            var _usedCount2 = _realEntries2.reduce(function (sum, _ref60) {
-              var _ref61 = _slicedToArray(_ref60, 2),
-                count = _ref61[1];
+            var _usedCount2 = _realEntries2.reduce(function (sum, _ref58) {
+              var _ref59 = _slicedToArray(_ref58, 2),
+                count = _ref59[1];
               return sum + count;
             }, 0);
             var remaining = total - _usedCount2;
@@ -3781,7 +3770,7 @@ function generateGearListHtml() {
   }
   addRow('Media', mediaItems);
   var lensDisplayNames = selectedLensNames.map(function (name) {
-    var _ref62, _lens$minFocusMeters;
+    var _ref60, _lens$minFocusMeters;
     var lens = devices.lenses && devices.lenses[name];
     var base = addArriKNumber(name);
     if (!lens) return base;
@@ -3792,7 +3781,7 @@ function generateGearListHtml() {
     } else if (lens.clampOn === false) {
       attrs.push('no clamp-on');
     }
-    var minFocus = (_ref62 = (_lens$minFocusMeters = lens.minFocusMeters) !== null && _lens$minFocusMeters !== void 0 ? _lens$minFocusMeters : lens.minFocus) !== null && _ref62 !== void 0 ? _ref62 : lens.minFocusCm ? lens.minFocusCm / 100 : null;
+    var minFocus = (_ref60 = (_lens$minFocusMeters = lens.minFocusMeters) !== null && _lens$minFocusMeters !== void 0 ? _lens$minFocusMeters : lens.minFocus) !== null && _ref60 !== void 0 ? _ref60 : lens.minFocusCm ? lens.minFocusCm / 100 : null;
     if (minFocus) attrs.push("".concat(minFocus, "m min focus"));
     return attrs.length ? "".concat(base, " (").concat(attrs.join(', '), ")") : base;
   });
@@ -3915,15 +3904,15 @@ function generateGearListHtml() {
   var monitoringItems = '';
   var monitorSizes = [];
   if (selectedNames.monitor) {
-    var _devices2;
-    var size = (_devices2 = devices) === null || _devices2 === void 0 || (_devices2 = _devices2.monitors) === null || _devices2 === void 0 || (_devices2 = _devices2[selectedNames.monitor]) === null || _devices2 === void 0 ? void 0 : _devices2.screenSizeInches;
+    var _devices;
+    var size = (_devices = devices) === null || _devices === void 0 || (_devices = _devices.monitors) === null || _devices === void 0 || (_devices = _devices[selectedNames.monitor]) === null || _devices === void 0 ? void 0 : _devices.screenSizeInches;
     if (size) monitorSizes.push(size);
     var sizeHtml = size ? "".concat(size, "&quot; - ") : '';
     monitoringItems += (monitoringItems ? '<br>' : '') + "1x <strong>Onboard Monitor</strong> - ".concat(sizeHtml).concat(escapeHtml(addArriKNumber(selectedNames.monitor)), " - incl. Sunhood");
   }
-  handheldPrefs.forEach(function (_ref63) {
-    var role = _ref63.role,
-      size = _ref63.size;
+  handheldPrefs.forEach(function (_ref61) {
+    var role = _ref61.role,
+      size = _ref61.size;
     var monitorsDb = devices && devices.monitors ? devices.monitors : {};
     var names = Object.keys(monitorsDb).filter(function (n) {
       return !monitorsDb[n].wirelessTx || monitorsDb[n].wirelessRX;
@@ -4002,9 +3991,9 @@ function generateGearListHtml() {
     monitoringItems += (monitoringItems ? '<br>' : '') + "1x <strong>".concat(labelRole, " Handheld Monitor</strong> - <span id=\"monitorSize").concat(idSuffix, "\">").concat(selectedSize, "&quot;</span> - ") + "<select id=\"gearList".concat(idSuffix, "Monitor\" data-auto-gear-manual=\"").concat(manualFlag ? 'true' : 'false', "\">").concat(opts, "</select> ") + 'incl. Directors cage, shoulder strap, sunhood, rigging for teradeks';
     if (selectedSize) monitorSizes.push(selectedSize);
   });
-  largeMonitorPrefs.forEach(function (_ref64) {
+  largeMonitorPrefs.forEach(function (_ref62) {
     var _dirDb$resolvedName, _dirDb$defaultName, _dirDb$candidate;
-    var role = _ref64.role;
+    var role = _ref62.role;
     var dirDb = devices && devices.directorMonitors ? devices.directorMonitors : {};
     var names = Object.keys(dirDb).filter(function (n) {
       return n !== 'None';
@@ -4434,14 +4423,14 @@ function generateGearListHtml() {
   var gaffColors = [['red', 'Red'], ['blue', 'Blue'], ['green', 'Green'], ['yellow', 'Yellow'], ['black', 'Black'], ['pink', 'Pink'], ['orange', 'Orange'], ['violette', 'Violette'], ['white', 'White']];
   var gaffWidths = ['6mm', '12mm', '19mm', '24mm', '48mm'];
   var proGaffCount = multiplier;
-  var proGaffHtml = gaffTapeSelections.map(function (_ref65) {
-    var id = _ref65.id,
-      color = _ref65.color,
-      width = _ref65.width;
-    var colorOpts = gaffColors.map(function (_ref66) {
-      var _ref67 = _slicedToArray(_ref66, 2),
-        val = _ref67[0],
-        label = _ref67[1];
+  var proGaffHtml = gaffTapeSelections.map(function (_ref63) {
+    var id = _ref63.id,
+      color = _ref63.color,
+      width = _ref63.width;
+    var colorOpts = gaffColors.map(function (_ref64) {
+      var _ref65 = _slicedToArray(_ref64, 2),
+        val = _ref65[0],
+        label = _ref65[1];
       return "<option value=\"".concat(val, "\"").concat(val === color ? ' selected' : '', ">").concat(label, "</option>");
     }).join('');
     var widthOpts = gaffWidths.map(function (val) {
@@ -4452,10 +4441,10 @@ function generateGearListHtml() {
   var eyeLeatherHtml = '';
   if (eyeLeatherCount) {
     var colors = [['red', 'Red'], ['blue', 'Blue'], ['natural', 'Natural'], ['green', 'Green'], ['purple', 'Purple'], ['orange', 'Orange'], ['gray', 'Gray'], ['yellow', 'Yellow'], ['jaguar', 'Jaguar'], ['killer bee', 'Killer Bee'], ['green rabbit', 'Green Rabbit'], ['black', 'Black']];
-    var _options3 = colors.map(function (_ref68) {
-      var _ref69 = _slicedToArray(_ref68, 2),
-        val = _ref69[0],
-        label = _ref69[1];
+    var _options3 = colors.map(function (_ref66) {
+      var _ref67 = _slicedToArray(_ref66, 2),
+        val = _ref67[0],
+        label = _ref67[1];
       return "<option value=\"".concat(val, "\"").concat(val === eyeLeatherColor ? ' selected' : '', ">").concat(label, "</option>");
     }).join('');
     eyeLeatherHtml = "<span class=\"gear-item\" data-gear-name=\"Bluestar eye leather made of microfiber oval, large\">".concat(eyeLeatherCount, "x Bluestar eye leather made of microfiber oval, large <select id=\"gearListEyeLeatherColor\">").concat(_options3, "</select></span>");
@@ -4631,10 +4620,10 @@ function getGearListSelectors() {
 function cloneGearListSelectors(selectors) {
   if (!selectors || _typeof(selectors) !== 'object') return {};
   var clone = {};
-  Object.entries(selectors).forEach(function (_ref70) {
-    var _ref71 = _slicedToArray(_ref70, 2),
-      id = _ref71[0],
-      value = _ref71[1];
+  Object.entries(selectors).forEach(function (_ref68) {
+    var _ref69 = _slicedToArray(_ref68, 2),
+      id = _ref69[0],
+      value = _ref69[1];
     if (!id || typeof id !== 'string') return;
     if (Array.isArray(value)) {
       clone[id] = value.map(function (item) {
@@ -4650,10 +4639,10 @@ function cloneGearListSelectors(selectors) {
 }
 function applyGearListSelectors(selectors) {
   if (!gearListOutput || !selectors) return;
-  Object.entries(selectors).forEach(function (_ref72) {
-    var _ref73 = _slicedToArray(_ref72, 2),
-      id = _ref73[0],
-      value = _ref73[1];
+  Object.entries(selectors).forEach(function (_ref70) {
+    var _ref71 = _slicedToArray(_ref70, 2),
+      id = _ref71[0],
+      value = _ref71[1];
     var sel = gearListOutput.querySelector("#".concat(id));
     if (sel) {
       if (sel.multiple) {
@@ -4699,13 +4688,58 @@ function cloneProjectInfoForStorage(info) {
   });
   return clone;
 }
+function normalizeRequirementNodeValue(node) {
+  if (!node) return '';
+  var textNodeType = typeof Node === 'undefined' ? 3 : Node.TEXT_NODE;
+  var elementNodeType = typeof Node === 'undefined' ? 1 : Node.ELEMENT_NODE;
+  if (node.nodeType === textNodeType) {
+    return node.textContent || '';
+  }
+  if (node.nodeType === elementNodeType) {
+    var tag = node.tagName ? node.tagName.toLowerCase() : '';
+    if (tag === 'br') {
+      return '\n';
+    }
+    return Array.from(node.childNodes || []).map(normalizeRequirementNodeValue).join('');
+  }
+  return '';
+}
+function collectProjectInfoFromRequirementsGrid() {
+  if (!projectRequirementsOutput) return null;
+  var boxes = Array.from(projectRequirementsOutput.querySelectorAll('.requirement-box'));
+  if (!boxes.length) {
+    return null;
+  }
+  var info = {};
+  boxes.forEach(function (box) {
+    if (!box || typeof box.getAttribute !== 'function') return;
+    var field = box.getAttribute('data-field');
+    if (!field) return;
+    var valueEl = box.querySelector('.req-value');
+    if (!valueEl) return;
+    var rawValue = Array.from(valueEl.childNodes || []).map(normalizeRequirementNodeValue).join('');
+    var normalized = rawValue.replace(/\r\n?/g, '\n').split('\n').map(function (segment) {
+      return segment.replace(/\s+/g, ' ').trim();
+    }).filter(function (segment) {
+      return segment;
+    });
+    if (!normalized.length) return;
+    var text = normalized.join('\n');
+    if (!Object.prototype.hasOwnProperty.call(info, field)) {
+      info[field] = text;
+    }
+  });
+  return Object.keys(info).length ? info : null;
+}
 function saveCurrentGearList() {
   if (factoryResetInProgress) return;
   var html = getCurrentGearListHtml();
   var info = projectForm ? collectProjectFormData() : {};
   info.sliderBowl = getSetupsCoreValue('getSliderBowlValue');
   info.easyrig = getSetupsCoreValue('getEasyrigValue');
-  currentProjectInfo = deriveProjectInfo(info);
+  var previousProjectInfo = currentProjectInfo && (typeof currentProjectInfo === "undefined" ? "undefined" : _typeof(currentProjectInfo)) === 'object' ? currentProjectInfo : null;
+  var requirementsVisible = Boolean(projectRequirementsOutput && projectRequirementsOutput.querySelector('.requirement-box'));
+  var pendingProjectInfo = deriveProjectInfo(info);
   var powerSelectionSnapshot = getPowerSelectionSnapshot();
   var gearSelectorsRaw = getGearListSelectors();
   var gearSelectors = cloneGearListSelectors(gearSelectorsRaw);
@@ -4739,6 +4773,26 @@ function saveCurrentGearList() {
   var projectStorageKey = nameState ? nameState.storageKey : selectedStorageKey || typedStorageKey;
   var renameInProgress = nameState ? nameState.renameInProgress : Boolean(selectedStorageKey && typedStorageKey && selectedStorageKey !== typedStorageKey);
   var effectiveStorageKey = renameInProgress ? selectedStorageKey || projectStorageKey : projectStorageKey;
+  if (!pendingProjectInfo && requirementsVisible) {
+    if (previousProjectInfo && Object.keys(previousProjectInfo).length) {
+      pendingProjectInfo = previousProjectInfo;
+    } else if (typeof loadProject === 'function') {
+      var fallbackKey = typeof effectiveStorageKey === 'string' ? effectiveStorageKey : typeof projectStorageKey === 'string' && projectStorageKey ? projectStorageKey : typeof selectedStorageKey === 'string' ? selectedStorageKey : '';
+      if (typeof fallbackKey === 'string') {
+        var existingProject = loadProject(fallbackKey);
+        if (existingProject && existingProject.projectInfo && Object.keys(existingProject.projectInfo).length) {
+          pendingProjectInfo = cloneProjectInfoForStorage(existingProject.projectInfo);
+        }
+      }
+    }
+    if (!pendingProjectInfo) {
+      var gridInfo = collectProjectInfoFromRequirementsGrid();
+      if (gridInfo) {
+        pendingProjectInfo = deriveProjectInfo(gridInfo) || gridInfo;
+      }
+    }
+  }
+  currentProjectInfo = pendingProjectInfo;
   var projectInfoForStorage = typeof createProjectInfoSnapshotForStorage === 'function' ? createProjectInfoSnapshotForStorage(currentProjectInfo, {
     projectNameOverride: renameInProgress ? selectedStorageKey || projectStorageKey : undefined
   }) : currentProjectInfo;
@@ -4757,7 +4811,7 @@ function saveCurrentGearList() {
       diagramPositionsSnapshotForSetups = cloneProjectInfoForStorage(diagramPositionsSnapshot);
     }
   }
-  if (typeof saveProject === 'function' && typeof effectiveStorageKey === 'string' && effectiveStorageKey) {
+  if (typeof saveProject === 'function' && typeof effectiveStorageKey === 'string') {
     var payload = {
       projectInfo: projectInfoSnapshot,
       gearList: html
@@ -4988,6 +5042,7 @@ function deleteCurrentGearList() {
   return true;
 }
 var AUTO_GEAR_HIGHLIGHT_CLASS = 'show-auto-gear-highlight';
+var AUTO_GEAR_HIGHLIGHT_CONTEXT_CLASS = 'auto-gear-highlight-context';
 var AUTO_GEAR_HIGHLIGHT_ICON = "\uE8AF";
 var AUTO_GEAR_HIGHLIGHT_LABEL_FALLBACK = 'Highlight automatic gear';
 var AUTO_GEAR_HIGHLIGHT_HELP_FALLBACK = 'Toggle a temporary color overlay for gear added by automatic rules. Useful while debugging gear rule behavior.';
@@ -5289,6 +5344,18 @@ function getAutoGearHighlightStateText(isActive) {
   }
   return fallback;
 }
+function applyAutoGearHighlightContext(isActive) {
+  if (typeof document === 'undefined') {
+    return;
+  }
+  var enable = !!isActive;
+  var targets = [document.documentElement, document.body, document.getElementById('autoGearDraftImpact')];
+  targets.forEach(function (node) {
+    if (node && node.classList) {
+      node.classList.toggle(AUTO_GEAR_HIGHLIGHT_CONTEXT_CLASS, enable);
+    }
+  });
+}
 function setAutoGearHighlightEnabled(enabled) {
   var nextState = !!enabled;
   if (gearListOutput && gearListOutput.classList) {
@@ -5315,6 +5382,7 @@ function updateAutoGearHighlightToggleButton() {
   toggle.setAttribute('data-help', help);
   toggle.setAttribute('aria-label', help);
   var active = isAutoGearHighlightEnabled();
+  applyAutoGearHighlightContext(active);
   var stateText = getAutoGearHighlightStateText(active);
   if (stateContainer) {
     stateContainer.textContent = stateText;
@@ -5369,6 +5437,37 @@ function ensureGearListActions() {
     autoSaveNote.setAttribute('title', '');
     autoSaveNote.setAttribute('data-help', '');
     autoSaveNote.hidden = true;
+  }
+  var deleteLabel = texts[currentLang] && texts[currentLang].deleteGearListBtn || texts.en && texts.en.deleteGearListBtn || 'Delete Gear List';
+  var deleteHelp = texts[currentLang] && (texts[currentLang].deleteGearListBtnHelp || texts[currentLang].deleteGearListBtn) || texts.en && (texts.en.deleteGearListBtnHelp || texts.en.deleteGearListBtn) || deleteLabel;
+  var deleteBtn = document.createElement('button');
+  deleteBtn.id = 'deleteGearListBtn';
+  deleteBtn.type = 'button';
+  deleteBtn.className = 'gear-list-action-btn';
+  if (typeof setButtonLabelWithIcon === 'function' && (typeof ICON_GLYPHS === "undefined" ? "undefined" : _typeof(ICON_GLYPHS)) === 'object') {
+    setButtonLabelWithIcon(deleteBtn, deleteLabel, ICON_GLYPHS.trash);
+  } else {
+    var iconHtml = typeof iconMarkup === 'function' && (typeof ICON_GLYPHS === "undefined" ? "undefined" : _typeof(ICON_GLYPHS)) === 'object' ? iconMarkup(ICON_GLYPHS.trash, 'btn-icon') : '';
+    deleteBtn.innerHTML = "".concat(iconHtml).concat(escapeHtml(deleteLabel));
+  }
+  deleteBtn.setAttribute('title', deleteHelp);
+  deleteBtn.setAttribute('data-help', deleteHelp);
+  deleteBtn.setAttribute('aria-label', deleteHelp);
+  deleteBtn.setAttribute('data-feature-search', 'true');
+  deleteBtn.setAttribute('data-feature-search-keywords', 'delete remove clear gear list project');
+  deleteBtn.addEventListener('click', deleteCurrentGearList);
+  var shouldHideDeleteBtn = !gearListOutput || gearListOutput.classList.contains('hidden') || gearListOutput.innerHTML.trim() === '';
+  if (shouldHideDeleteBtn) {
+    deleteBtn.hidden = true;
+    deleteBtn.setAttribute('hidden', '');
+  } else {
+    deleteBtn.hidden = false;
+    deleteBtn.removeAttribute('hidden');
+  }
+  if (autoSaveNote && autoSaveNote.parentElement === actions) {
+    actions.insertBefore(deleteBtn, autoSaveNote);
+  } else {
+    actions.appendChild(deleteBtn);
   }
   var highlightToggle = document.getElementById('autoGearHighlightToggle');
   if (highlightToggle && !highlightToggle.dataset.gearListHighlightBound) {

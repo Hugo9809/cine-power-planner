@@ -759,7 +759,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   registerOrQueueModule('cinePersistence', persistenceAPI, {
     category: 'persistence',
     description: 'Data integrity facade for storage, autosave, backups, restore, and share flows.',
-    replace: true
+    replace: true,
+    connections: ['cineModuleGlobals', 'cineModuleEnvironment', 'cineEnvironmentBridge', 'cineModuleContext']
   }, function (error) {
     safeWarn('Unable to register cinePersistence module.', error);
   });

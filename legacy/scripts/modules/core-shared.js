@@ -404,76 +404,129 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return fallbackRegisterOrQueue;
   }();
-  function shouldBypassDeepFreeze(value) {
-    if (!value || _typeof(value) !== 'object' && typeof value !== 'function') {
+  function resolveImmutability(scope) {
+    var targetScope = scope || GLOBAL_SCOPE;
+    if (MODULE_GLOBALS && typeof MODULE_GLOBALS.getImmutability === 'function') {
+      try {
+        var resolved = MODULE_GLOBALS.getImmutability(targetScope);
+        if (resolved) {
+          return resolved;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+    if (ENV_BRIDGE && typeof ENV_BRIDGE.getImmutability === 'function') {
+      try {
+        var bridged = ENV_BRIDGE.getImmutability(targetScope);
+        if (bridged) {
+          return bridged;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+    if (MODULE_ENV && typeof MODULE_ENV.resolveImmutability === 'function') {
+      try {
+        var moduleProvided = MODULE_ENV.resolveImmutability(targetScope);
+        if (moduleProvided) {
+          return moduleProvided;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+    var required = tryRequire('./immutability.js');
+    if (required && _typeof(required) === 'object') {
+      return required;
+    }
+    var scopes = fallbackCollectCandidateScopes(targetScope);
+    for (var index = 0; index < scopes.length; index += 1) {
+      var candidate = scopes[index];
+      if (candidate && _typeof(candidate.cineModuleImmutability) === 'object') {
+        return candidate.cineModuleImmutability;
+      }
+    }
+    return null;
+  }
+  function createFallbackImmutability() {
+    function shouldBypass(value) {
+      if (!value || _typeof(value) !== 'object' && typeof value !== 'function') {
+        return false;
+      }
+      try {
+        if (typeof value.pipe === 'function' && typeof value.unpipe === 'function') {
+          return true;
+        }
+        if (typeof value.on === 'function' && typeof value.emit === 'function') {
+          if (typeof value.write === 'function' || typeof value.read === 'function') {
+            return true;
+          }
+          var ctorName = value.constructor && value.constructor.name;
+          if (ctorName && /Stream|Emitter|Port/i.test(ctorName)) {
+            return true;
+          }
+        }
+        if (typeof Symbol !== 'undefined' && value[Symbol.toStringTag]) {
+          var tag = value[Symbol.toStringTag];
+          if (typeof tag === 'string' && /Stream|Port/i.test(tag)) {
+            return true;
+          }
+        }
+      } catch (inspectionError) {
+        void inspectionError;
+      }
       return false;
     }
+    function freeze(value) {
+      var seen = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new WeakSet();
+      if (!value || _typeof(value) !== 'object') {
+        return value;
+      }
+      if (shouldBypass(value)) {
+        return value;
+      }
+      if (seen.has(value)) {
+        return value;
+      }
+      seen.add(value);
+      var keys = Object.getOwnPropertyNames(value);
+      for (var index = 0; index < keys.length; index += 1) {
+        var key = keys[index];
+        var descriptor = Object.getOwnPropertyDescriptor(value, key);
+        if (!descriptor || 'get' in descriptor || 'set' in descriptor) {
+          continue;
+        }
+        freeze(descriptor.value, seen);
+      }
+      return Object.freeze(value);
+    }
+    return {
+      shouldBypassDeepFreeze: shouldBypass,
+      freezeDeep: freeze
+    };
+  }
+  var FALLBACK_IMMUTABILITY = createFallbackImmutability();
+  var activeImmutability = resolveImmutability(GLOBAL_SCOPE) || FALLBACK_IMMUTABILITY;
+  function getImmutability() {
+    if (activeImmutability !== FALLBACK_IMMUTABILITY) {
+      return activeImmutability;
+    }
+    var resolved = resolveImmutability(GLOBAL_SCOPE);
+    if (resolved && resolved !== activeImmutability) {
+      activeImmutability = resolved;
+    }
+    return activeImmutability;
+  }
+  function freezeDeep(value, seen) {
+    var provider = getImmutability();
     try {
-      if (typeof value.pipe === 'function' && typeof value.unpipe === 'function') {
-        return true;
-      }
-      if (typeof value.on === 'function' && typeof value.emit === 'function') {
-        if (typeof value.write === 'function' || typeof value.read === 'function') {
-          return true;
-        }
-        var ctorName = value.constructor && value.constructor.name;
-        if (ctorName && /Stream|Emitter|Port/i.test(ctorName)) {
-          return true;
-        }
-      }
-      if (typeof Symbol !== 'undefined' && value[Symbol.toStringTag]) {
-        var tag = value[Symbol.toStringTag];
-        if (typeof tag === 'string' && /Stream|Port/i.test(tag)) {
-          return true;
-        }
-      }
-    } catch (inspectionError) {
-      void inspectionError;
+      return provider.freezeDeep(value, seen);
+    } catch (error) {
+      void error;
     }
-    return false;
+    return FALLBACK_IMMUTABILITY.freezeDeep(value, seen);
   }
-  function fallbackFreezeDeep(value) {
-    var seen = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new WeakSet();
-    if (!value || _typeof(value) !== 'object') {
-      return value;
-    }
-    if (shouldBypassDeepFreeze(value)) {
-      return value;
-    }
-    if (seen.has(value)) {
-      return value;
-    }
-    seen.add(value);
-    var keys = Object.getOwnPropertyNames(value);
-    for (var index = 0; index < keys.length; index += 1) {
-      var key = keys[index];
-      var descriptor = Object.getOwnPropertyDescriptor(value, key);
-      if (!descriptor || 'get' in descriptor || 'set' in descriptor) {
-        continue;
-      }
-      fallbackFreezeDeep(descriptor.value, seen);
-    }
-    return Object.freeze(value);
-  }
-  var freezeDeep = function resolveFreezeDeep() {
-    if (MODULE_GLOBALS && typeof MODULE_GLOBALS.freezeDeep === 'function') {
-      return MODULE_GLOBALS.freezeDeep;
-    }
-    if (ENV_BRIDGE && typeof ENV_BRIDGE.freezeDeep === 'function') {
-      return function bridgeFreezeDeep(value, seen) {
-        try {
-          return ENV_BRIDGE.freezeDeep(value, seen);
-        } catch (error) {
-          void error;
-          return fallbackFreezeDeep(value, seen);
-        }
-      };
-    }
-    if (MODULE_ENV && typeof MODULE_ENV.freezeDeep === 'function') {
-      return MODULE_ENV.freezeDeep;
-    }
-    return fallbackFreezeDeep;
-  }();
   function fallbackSafeWarn(message, detail) {
     if (typeof console === 'undefined' || typeof console.warn !== 'function') {
       return;
@@ -806,7 +859,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   registerOrQueueModule('cineCoreShared', shared, {
     category: 'shared',
     description: 'Shared helpers for deterministic stringification, weights, and version markers.',
-    replace: true
+    replace: true,
+    connections: ['cineModuleEnvironment', 'cineModuleGlobals', 'cineModuleContext']
   });
   if (GLOBAL_SCOPE && _typeof(GLOBAL_SCOPE) === 'object') {
     if (!GLOBAL_SCOPE.APP_VERSION) {

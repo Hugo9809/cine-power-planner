@@ -193,7 +193,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   MODULE_BASE.registerOrQueueModule('cine.features.featureSearch', moduleApi, {
     category: 'features',
     description: 'Reusable helpers for feature search normalisation, highlighting and detail formatting.',
-    replace: true
+    replace: true,
+    connections: ['cineModuleBase', 'cineModuleContext', 'cineUi']
   }, function (error) {
     return safeWarn('Unable to register cine.features.featureSearch module.', error);
   }, GLOBAL_SCOPE, MODULE_BASE.getModuleRegistry && MODULE_BASE.getModuleRegistry(GLOBAL_SCOPE));

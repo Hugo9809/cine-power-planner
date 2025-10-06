@@ -18,48 +18,11 @@ function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" !=
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
 function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
-function getDiffText(e, t) {
-  var n = '';
-  if ("string" != typeof e || !e) return "string" == typeof t ? t : null == t ? n : String(t);
-  n = "string" == typeof t ? t : null == t ? n : String(t);
-  var r = "undefined" != typeof texts && texts && "object" == typeof texts ? texts : null,
-    o = "undefined" != typeof currentLang && "string" == typeof currentLang && currentLang ? currentLang : "en",
-    i = r && "object" == typeof r[o] ? r[o] : null;
-  if (i && Object.prototype.hasOwnProperty.call(i, e)) {
-    var a = i[e];
-    if ("string" == typeof a) {
-      var c = a.trim();
-      if (c) return c;
-    }
-  }
-  if ("en" !== o && r && "object" == typeof r.en && Object.prototype.hasOwnProperty.call(r.en, e)) {
-    var u = r.en[e];
-    if ("string" == typeof u) {
-      var f = u.trim();
-      if (f) return f;
-    }
-  }
-  return n;
-}
 function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 var FALLBACK_STRONG_SEARCH_MATCH_TYPES = new Set(['exactKey', 'keyPrefix', 'keySubset']);
-var isPlainObject = typeof globalThis !== 'undefined' && typeof globalThis.isPlainObject === 'function' ? globalThis.isPlainObject : function (value) {
-  if (value === null || _typeof(value) !== 'object') {
-    return false;
-  }
-  var proto = Object.getPrototypeOf(value);
-  return proto === Object.prototype || proto === null;
-};
-if (typeof globalThis !== 'undefined' && typeof globalThis.isPlainObject !== 'function') {
-  try {
-    globalThis.isPlainObject = isPlainObject;
-  } catch (plainObjectAssignError) {
-    void plainObjectAssignError;
-  }
-}
 if (typeof globalThis !== 'undefined' && typeof globalThis.STRONG_SEARCH_MATCH_TYPES === 'undefined') {
   globalThis.STRONG_SEARCH_MATCH_TYPES = FALLBACK_STRONG_SEARCH_MATCH_TYPES;
 }
@@ -148,6 +111,108 @@ function invokeSessionOpenAutoGearEditor() {
   }
 }
 ensureSessionRuntimePlaceholder('autoGearScenarioModeSelect', null);
+var normalizeAccentValueSafe = ensureSessionRuntimePlaceholder('normalizeAccentValue', function () {
+  return function (value) {
+    return typeof value === 'string' ? value.trim().toLowerCase() : '';
+  };
+});
+var isPlainObjectFallback = function isPlainObjectFallback(value) {
+  if (value === null || _typeof(value) !== 'object') {
+    return false;
+  }
+  if (Array.isArray(value)) {
+    return false;
+  }
+  var prototype = Object.getPrototypeOf(value);
+  return prototype === Object.prototype || prototype === null;
+};
+var isPlainObject = ensureSessionRuntimePlaceholder('isPlainObject', function () {
+  return isPlainObjectFallback;
+});
+var applyFontSizeSafe = ensureSessionRuntimePlaceholder('applyFontSize', function () {
+  var defaultUIScaleValues = {
+    '--page-padding': 20,
+    '--gap-size': 10,
+    '--button-size': 24,
+    '--border-radius': 5,
+    '--form-label-width': 150,
+    '--form-label-min-width': 120,
+    '--form-action-width': 110
+  };
+  var uiScaleProperties = Object.keys(defaultUIScaleValues);
+  var baseUIScaleValues = _objectSpread({}, defaultUIScaleValues);
+  var baseFontSize = null;
+  var resolveBaseMetrics = function resolveBaseMetrics() {
+    if (baseFontSize !== null) {
+      return;
+    }
+    baseFontSize = 16;
+    var root = typeof document !== 'undefined' && document ? document.documentElement : null;
+    if (!root) {
+      return;
+    }
+    try {
+      var computed = typeof window !== 'undefined' && window && typeof window.getComputedStyle === 'function' ? window.getComputedStyle(root) : null;
+      if (!computed) {
+        return;
+      }
+      var computedFontSize = parseFloat(computed.fontSize);
+      if (Number.isFinite(computedFontSize) && computedFontSize > 0) {
+        baseFontSize = computedFontSize;
+      }
+      for (var index = 0; index < uiScaleProperties.length; index += 1) {
+        var prop = uiScaleProperties[index];
+        var rawValue = computed.getPropertyValue(prop);
+        var numericValue = parseFloat(rawValue);
+        if (Number.isFinite(numericValue) && numericValue > 0) {
+          baseUIScaleValues[prop] = numericValue;
+        }
+      }
+    } catch (metricsError) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Unable to capture base UI scale metrics', metricsError);
+      }
+    }
+  };
+  return function (size) {
+    var root = typeof document !== 'undefined' && document ? document.documentElement : null;
+    if (!root) {
+      return;
+    }
+    var numericSize = Number.parseFloat(size);
+    if (!Number.isFinite(numericSize) || numericSize <= 0) {
+      return;
+    }
+    resolveBaseMetrics();
+    root.style.fontSize = "".concat(numericSize, "px");
+    var referenceFontSize = Number.isFinite(baseFontSize) && baseFontSize > 0 ? baseFontSize : numericSize;
+    var rawScale = referenceFontSize > 0 ? numericSize / referenceFontSize : 1;
+    var scale = Number.isFinite(rawScale) && rawScale > 0 ? rawScale : 1;
+    for (var index = 0; index < uiScaleProperties.length; index += 1) {
+      var prop = uiScaleProperties[index];
+      var baseValue = baseUIScaleValues[prop];
+      if (Number.isFinite(baseValue) && baseValue > 0) {
+        root.style.setProperty(prop, "".concat(baseValue * scale, "px"));
+      }
+    }
+    root.style.setProperty('--ui-scale', String(scale));
+  };
+});
+var applyFontFamilySafe = ensureSessionRuntimePlaceholder('applyFontFamily', function () {
+  return function (family) {
+    var root = typeof document !== 'undefined' && document ? document.documentElement : null;
+    if (!root) {
+      return;
+    }
+    try {
+      root.style.setProperty('--font-family', family || '');
+    } catch (fontFamilyError) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Unable to apply font family', fontFamilyError);
+      }
+    }
+  };
+});
 var downloadDiagramButton = ensureSessionRuntimePlaceholder('downloadDiagramBtn', function () {
   if (typeof document === 'undefined' || !document || typeof document.getElementById !== 'function') {
     return null;
@@ -542,6 +607,13 @@ var AUTO_GEAR_RUNTIME_HANDLERS = ['handleAutoGearImportSelection', 'handleAutoGe
 for (var index = 0; index < AUTO_GEAR_RUNTIME_HANDLERS.length; index += 1) {
   var handlerName = AUTO_GEAR_RUNTIME_HANDLERS[index];
   ensureSessionRuntimeFunction(handlerName, {
+    defer: true
+  });
+}
+var AUTO_GEAR_RUNTIME_FUNCTIONS = ['setAutoGearSummaryFocus', 'focusAutoGearRuleById', 'setAutoGearSearchQuery', 'setAutoGearScenarioFilter', 'clearAutoGearFilters'];
+for (var _index = 0; _index < AUTO_GEAR_RUNTIME_FUNCTIONS.length; _index += 1) {
+  var functionName = AUTO_GEAR_RUNTIME_FUNCTIONS[_index];
+  ensureSessionRuntimeFunction(functionName, {
     defer: true
   });
 }
@@ -1060,8 +1132,8 @@ function hasAnyRestoreRehearsalKeys(source, keys) {
   if (!isPlainObject(source)) {
     return false;
   }
-  for (var _index = 0; _index < keys.length; _index += 1) {
-    var key = keys[_index];
+  for (var _index2 = 0; _index2 < keys.length; _index2 += 1) {
+    var key = keys[_index2];
     if (Object.prototype.hasOwnProperty.call(source, key)) {
       return true;
     }
@@ -2650,7 +2722,7 @@ function applySharedSetup(shared) {
       var selectedName = setupSelect && typeof setupSelect.value === 'string' ? setupSelect.value.trim() : '';
       var typedName = setupNameInput && typeof setupNameInput.value === 'string' ? setupNameInput.value.trim() : '';
       var storageKey = selectedName || typedName;
-      if (storageKey) {
+      if (typeof storageKey === 'string') {
         saveProject(storageKey, payload);
       }
     }
@@ -2729,8 +2801,8 @@ function buildSearchWithoutShared(search) {
   }
   var preserved = [];
   var pairs = query.split('&');
-  for (var _index2 = 0; _index2 < pairs.length; _index2 += 1) {
-    var pair = pairs[_index2];
+  for (var _index3 = 0; _index3 < pairs.length; _index3 += 1) {
+    var pair = pairs[_index3];
     if (!pair) {
       continue;
     }
@@ -3391,8 +3463,8 @@ mountVoltageInputNodes.forEach(function (input) {
 });
 var mountVoltageResetButtonRef = function () {
   var candidateScopes = [typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE && (typeof CORE_GLOBAL_SCOPE === "undefined" ? "undefined" : _typeof(CORE_GLOBAL_SCOPE)) === 'object' ? CORE_GLOBAL_SCOPE : null, typeof globalThis !== 'undefined' && (typeof globalThis === "undefined" ? "undefined" : _typeof(globalThis)) === 'object' ? globalThis : null, typeof window !== 'undefined' && (typeof window === "undefined" ? "undefined" : _typeof(window)) === 'object' ? window : null, typeof self !== 'undefined' && (typeof self === "undefined" ? "undefined" : _typeof(self)) === 'object' ? self : null, typeof global !== 'undefined' && (typeof global === "undefined" ? "undefined" : _typeof(global)) === 'object' ? global : null].filter(Boolean);
-  for (var _index3 = 0; _index3 < candidateScopes.length; _index3 += 1) {
-    var scope = candidateScopes[_index3];
+  for (var _index4 = 0; _index4 < candidateScopes.length; _index4 += 1) {
+    var scope = candidateScopes[_index4];
     var button = scope && scope.mountVoltageResetButton;
     if (button) {
       return button;
@@ -3533,6 +3605,13 @@ if (settingsButton && settingsDialog) {
     settingsSave.addEventListener('click', function () {
       if (settingsLanguage) {
         setLanguage(settingsLanguage.value);
+        if (typeof populateUserButtonDropdowns === 'function') {
+          try {
+            populateUserButtonDropdowns();
+          } catch (userButtonError) {
+            console.warn('Failed to refresh user button selectors after language change', userButtonError);
+          }
+        }
       }
       if (settingsDarkMode) {
         var enabled = settingsDarkMode.checked;
@@ -3582,7 +3661,7 @@ if (settingsButton && settingsDialog) {
           applyAccentColor(color);
         }
         try {
-          if (normalizeAccentValue(color) === DEFAULT_ACCENT_NORMALIZED) {
+          if (normalizeAccentValueSafe(color) === DEFAULT_ACCENT_NORMALIZED) {
             localStorage.removeItem('accentColor');
           } else {
             localStorage.setItem('accentColor', color);
@@ -3607,7 +3686,7 @@ if (settingsButton && settingsDialog) {
       rememberSettingsMountVoltagesBaseline();
       if (settingsFontSize) {
         var size = settingsFontSize.value;
-        applyFontSize(size);
+        applyFontSizeSafe(size);
         try {
           localStorage.setItem('fontSize', size);
         } catch (e) {
@@ -3617,7 +3696,7 @@ if (settingsButton && settingsDialog) {
       }
       if (settingsFontFamily) {
         var family = settingsFontFamily.value;
-        applyFontFamily(family);
+        applyFontFamilySafe(family);
         try {
           localStorage.setItem('fontFamily', family);
         } catch (e) {
@@ -3927,11 +4006,11 @@ if (settingsButton && settingsDialog) {
         var itemId = target.dataset.itemId;
         if (!autoGearEditorDraft || !itemId) return;
         var list = normalizedType === 'remove' ? autoGearEditorDraft.remove : autoGearEditorDraft.add;
-        var _index4 = list.findIndex(function (item) {
+        var _index5 = list.findIndex(function (item) {
           return item.id === itemId;
         });
-        if (_index4 >= 0) {
-          list.splice(_index4, 1);
+        if (_index5 >= 0) {
+          list.splice(_index5, 1);
           if (autoGearEditorActiveItem && autoGearEditorActiveItem.listType === normalizedType && autoGearEditorActiveItem.itemId === itemId) {
             clearAutoGearDraftItemEdit(normalizedType, {
               skipRender: true
@@ -4024,6 +4103,38 @@ function showNotification(type, message) {
       container.remove();
     }
   }, 4000);
+}
+function getDiffText(key) {
+  var fallbackValue = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+  if (typeof key !== 'string' || !key) {
+    return typeof fallbackValue === 'string' ? fallbackValue : "".concat(fallbackValue !== null && fallbackValue !== void 0 ? fallbackValue : '');
+  }
+  var normalizedFallback = typeof fallbackValue === 'string' ? fallbackValue : "".concat(fallbackValue !== null && fallbackValue !== void 0 ? fallbackValue : '');
+  var langTexts = texts && typeof currentLang === 'string' && currentLang && texts[currentLang] ? texts[currentLang] : null;
+  var defaultTexts = texts && _typeof(texts.en) === 'object' ? texts.en : null;
+  var resolveCandidate = function resolveCandidate(source) {
+    if (!source || _typeof(source) !== 'object') {
+      return null;
+    }
+    if (!Object.prototype.hasOwnProperty.call(source, key)) {
+      return null;
+    }
+    var value = source[key];
+    if (typeof value !== 'string') {
+      return null;
+    }
+    var trimmed = value.trim();
+    return trimmed ? trimmed : null;
+  };
+  var localized = resolveCandidate(langTexts);
+  if (localized) {
+    return localized;
+  }
+  var fallbackLocalized = resolveCandidate(defaultTexts);
+  if (fallbackLocalized) {
+    return fallbackLocalized;
+  }
+  return normalizedFallback;
 }
 function formatTimestampForComparison(date, includeSeconds) {
   if (!(date instanceof Date) || Number.isNaN(date.valueOf())) {
@@ -4403,12 +4514,12 @@ function formatDiffListIndex(part) {
   }
   var indexMatch = part.match(/^\[(\d+)\]$/);
   if (indexMatch) {
-    var _index5 = Number(indexMatch[1]);
-    if (!Number.isFinite(_index5) || _index5 < 0) {
+    var _index6 = Number(indexMatch[1]);
+    if (!Number.isFinite(_index6) || _index6 < 0) {
       return null;
     }
     var template = getDiffText('versionCompareListItemLabel', 'Item %s');
-    return template.replace('%s', formatNumberForComparison(_index5 + 1));
+    return template.replace('%s', formatNumberForComparison(_index6 + 1));
   }
   var keyedSegment = parseKeyedDiffPathSegment(part);
   if (keyedSegment) {
@@ -4592,26 +4703,26 @@ function computeSetupDiff(baseline, comparison) {
         return;
       }
       var maxLength = Math.max(baseValue.length, compareValue.length);
-      for (var _index6 = 0; _index6 < maxLength; _index6 += 1) {
-        var hasBase = _index6 < baseValue.length;
-        var hasCompare = _index6 < compareValue.length;
-        var nextPath = path.concat("[".concat(_index6, "]"));
+      for (var _index7 = 0; _index7 < maxLength; _index7 += 1) {
+        var hasBase = _index7 < baseValue.length;
+        var hasCompare = _index7 < compareValue.length;
+        var nextPath = path.concat("[".concat(_index7, "]"));
         if (!hasBase) {
           entries.push({
             type: 'added',
             path: nextPath,
             before: undefined,
-            after: compareValue[_index6]
+            after: compareValue[_index7]
           });
         } else if (!hasCompare) {
           entries.push({
             type: 'removed',
             path: nextPath,
-            before: baseValue[_index6],
+            before: baseValue[_index7],
             after: undefined
           });
         } else {
-          walk(baseValue[_index6], compareValue[_index6], nextPath);
+          walk(baseValue[_index7], compareValue[_index7], nextPath);
         }
       }
       return;
@@ -5591,6 +5702,357 @@ var storageBackupNowControl = typeof document !== 'undefined' ? document.getElem
 if (storageBackupNowControl) {
   storageBackupNowControl.addEventListener('click', createSettingsBackup);
 }
+var storagePersistenceRequestButton = typeof document !== 'undefined' ? document.getElementById('storagePersistenceRequest') : null;
+var storagePersistenceStatusEl = typeof document !== 'undefined' ? document.getElementById('storagePersistenceStatus') : null;
+var storagePersistenceState = {
+  supported: null,
+  persisted: null,
+  usage: null,
+  quota: null,
+  checking: false,
+  requestInFlight: false,
+  requestAttempted: false,
+  lastRequestDenied: false,
+  lastError: null
+};
+var storagePersistenceCheckToken = 0;
+function getStoragePersistenceLangInfo() {
+  var fallbackTexts = texts && texts.en ? texts.en : {};
+  var lang = typeof currentLang === 'string' && texts && texts[currentLang] ? currentLang : 'en';
+  var langTexts = texts && texts[lang] || fallbackTexts;
+  return {
+    lang: lang,
+    langTexts: langTexts,
+    fallbackTexts: fallbackTexts
+  };
+}
+function getStorageManagerInstance() {
+  if (typeof navigator !== 'undefined' && navigator && _typeof(navigator.storage) === 'object') {
+    return navigator.storage;
+  }
+  return null;
+}
+function formatStoragePersistenceBytes(bytes, lang) {
+  if (typeof bytes !== 'number' || !Number.isFinite(bytes) || bytes < 0) {
+    return '';
+  }
+  var units = ['B', 'KB', 'MB', 'GB', 'TB'];
+  var index = 0;
+  var value = bytes;
+  while (value >= 1024 && index < units.length - 1) {
+    value /= 1024;
+    index += 1;
+  }
+  var formatted = '';
+  if (typeof Intl !== 'undefined' && typeof Intl.NumberFormat === 'function') {
+    try {
+      var formatter = new Intl.NumberFormat(lang, {
+        maximumFractionDigits: value >= 100 ? 0 : 1
+      });
+      formatted = formatter.format(value);
+    } catch (error) {
+      console.warn('Unable to format storage size', error);
+      formatted = value.toFixed(value >= 100 ? 0 : 1);
+    }
+  } else {
+    formatted = value.toFixed(value >= 100 ? 0 : 1);
+  }
+  return "".concat(formatted, " ").concat(units[index]);
+}
+function renderStoragePersistenceStatus() {
+  if (!storagePersistenceStatusEl) return;
+  var _getStoragePersistenc = getStoragePersistenceLangInfo(),
+    lang = _getStoragePersistenc.lang,
+    langTexts = _getStoragePersistenc.langTexts,
+    fallbackTexts = _getStoragePersistenc.fallbackTexts;
+  var message = '';
+  if (storagePersistenceState.requestInFlight) {
+    message = langTexts.storagePersistenceStatusRequesting || fallbackTexts.storagePersistenceStatusRequesting || '';
+  } else if (storagePersistenceState.checking) {
+    message = langTexts.storagePersistenceStatusChecking || fallbackTexts.storagePersistenceStatusChecking || '';
+  } else if (storagePersistenceState.supported === false) {
+    message = langTexts.storagePersistenceStatusUnsupported || fallbackTexts.storagePersistenceStatusUnsupported || '';
+  } else if (storagePersistenceState.persisted) {
+    message = langTexts.storagePersistenceStatusGranted || fallbackTexts.storagePersistenceStatusGranted || '';
+  } else if (storagePersistenceState.lastError) {
+    message = langTexts.storagePersistenceStatusError || fallbackTexts.storagePersistenceStatusError || '';
+  } else if (storagePersistenceState.requestAttempted && storagePersistenceState.lastRequestDenied) {
+    message = langTexts.storagePersistenceStatusDenied || fallbackTexts.storagePersistenceStatusDenied || '';
+  } else {
+    message = langTexts.storagePersistenceStatusIdle || fallbackTexts.storagePersistenceStatusIdle || '';
+  }
+  var parts = [message];
+  if (typeof storagePersistenceState.usage === 'number') {
+    var usedText = formatStoragePersistenceBytes(storagePersistenceState.usage, lang);
+    if (usedText) {
+      if (typeof storagePersistenceState.quota === 'number' && storagePersistenceState.quota > 0) {
+        var quotaText = formatStoragePersistenceBytes(storagePersistenceState.quota, lang);
+        var template = langTexts.storagePersistenceUsage || fallbackTexts.storagePersistenceUsage || '';
+        if (template) {
+          parts.push(template.replace('{used}', usedText).replace('{quota}', quotaText || ''));
+        } else if (quotaText) {
+          parts.push("".concat(usedText, " / ").concat(quotaText));
+        } else {
+          parts.push(usedText);
+        }
+      } else {
+        var _template2 = langTexts.storagePersistenceUsageUnknown || fallbackTexts.storagePersistenceUsageUnknown || '';
+        if (_template2) {
+          parts.push(_template2.replace('{used}', usedText));
+        } else {
+          parts.push(usedText);
+        }
+      }
+    }
+  }
+  var combined = parts.filter(Boolean).join(' ').trim();
+  var output = combined || message || '';
+  storagePersistenceStatusEl.textContent = output;
+  if (output) {
+    storagePersistenceStatusEl.setAttribute('data-help', output);
+  } else {
+    storagePersistenceStatusEl.removeAttribute('data-help');
+  }
+  if (storagePersistenceRequestButton) {
+    var shouldDisable = !storagePersistenceStatusEl || storagePersistenceState.supported === false || storagePersistenceState.persisted || storagePersistenceState.requestInFlight || storagePersistenceState.checking;
+    storagePersistenceRequestButton.disabled = shouldDisable;
+    storagePersistenceRequestButton.setAttribute('aria-disabled', shouldDisable ? 'true' : 'false');
+    var requestLabel = langTexts.storagePersistenceRequest || fallbackTexts.storagePersistenceRequest || storagePersistenceRequestButton.dataset.defaultLabel || storagePersistenceRequestButton.textContent || '';
+    var requestHelp = langTexts.storagePersistenceRequestHelp || fallbackTexts.storagePersistenceRequestHelp || requestLabel;
+    if (requestHelp) {
+      storagePersistenceRequestButton.setAttribute('data-help', requestHelp);
+      storagePersistenceRequestButton.setAttribute('title', requestHelp);
+      storagePersistenceRequestButton.setAttribute('aria-label', requestHelp);
+    }
+  }
+}
+function refreshStoragePersistenceStatus() {
+  return _refreshStoragePersistenceStatus.apply(this, arguments);
+}
+function _refreshStoragePersistenceStatus() {
+  _refreshStoragePersistenceStatus = _asyncToGenerator(_regenerator().m(function _callee() {
+    var options,
+      _ref26,
+      _ref26$fromRequest,
+      fromRequest,
+      checkToken,
+      storageManager,
+      persistedValue,
+      usageValue,
+      quotaValue,
+      estimate,
+      _args = arguments,
+      _t,
+      _t2;
+    return _regenerator().w(function (_context) {
+      while (1) switch (_context.p = _context.n) {
+        case 0:
+          options = _args.length > 0 && _args[0] !== undefined ? _args[0] : {};
+          if (storagePersistenceStatusEl) {
+            _context.n = 1;
+            break;
+          }
+          return _context.a(2);
+        case 1:
+          _ref26 = options || {}, _ref26$fromRequest = _ref26.fromRequest, fromRequest = _ref26$fromRequest === void 0 ? false : _ref26$fromRequest;
+          checkToken = ++storagePersistenceCheckToken;
+          storagePersistenceState.checking = true;
+          if (!fromRequest) {
+            storagePersistenceState.lastError = null;
+          }
+          renderStoragePersistenceStatus();
+          storageManager = getStorageManagerInstance();
+          if (storageManager) {
+            _context.n = 3;
+            break;
+          }
+          if (!(checkToken !== storagePersistenceCheckToken)) {
+            _context.n = 2;
+            break;
+          }
+          return _context.a(2);
+        case 2:
+          storagePersistenceState.supported = false;
+          storagePersistenceState.persisted = false;
+          storagePersistenceState.usage = null;
+          storagePersistenceState.quota = null;
+          storagePersistenceState.checking = false;
+          if (fromRequest) {
+            storagePersistenceState.lastRequestDenied = true;
+          }
+          renderStoragePersistenceStatus();
+          return _context.a(2);
+        case 3:
+          storagePersistenceState.supported = true;
+          persistedValue = storagePersistenceState.persisted;
+          if (!(typeof storageManager.persisted === 'function')) {
+            _context.n = 7;
+            break;
+          }
+          _context.p = 4;
+          _context.n = 5;
+          return storageManager.persisted();
+        case 5:
+          persistedValue = _context.v;
+          _context.n = 7;
+          break;
+        case 6:
+          _context.p = 6;
+          _t = _context.v;
+          console.warn('Unable to determine persistent storage state', _t);
+        case 7:
+          usageValue = storagePersistenceState.usage;
+          quotaValue = storagePersistenceState.quota;
+          if (!(typeof storageManager.estimate === 'function')) {
+            _context.n = 11;
+            break;
+          }
+          _context.p = 8;
+          _context.n = 9;
+          return storageManager.estimate();
+        case 9:
+          estimate = _context.v;
+          if (estimate && _typeof(estimate) === 'object') {
+            if (typeof estimate.usage === 'number' && Number.isFinite(estimate.usage)) {
+              usageValue = estimate.usage;
+            }
+            if (typeof estimate.quota === 'number' && Number.isFinite(estimate.quota)) {
+              quotaValue = estimate.quota;
+            }
+          }
+          _context.n = 11;
+          break;
+        case 10:
+          _context.p = 10;
+          _t2 = _context.v;
+          console.warn('Unable to estimate storage usage', _t2);
+        case 11:
+          if (!(checkToken !== storagePersistenceCheckToken)) {
+            _context.n = 12;
+            break;
+          }
+          return _context.a(2);
+        case 12:
+          storagePersistenceState.persisted = Boolean(persistedValue);
+          storagePersistenceState.usage = typeof usageValue === 'number' && Number.isFinite(usageValue) ? usageValue : null;
+          storagePersistenceState.quota = typeof quotaValue === 'number' && Number.isFinite(quotaValue) ? quotaValue : null;
+          storagePersistenceState.checking = false;
+          if (fromRequest) {
+            storagePersistenceState.lastRequestDenied = !storagePersistenceState.persisted;
+          }
+          renderStoragePersistenceStatus();
+        case 13:
+          return _context.a(2);
+      }
+    }, _callee, null, [[8, 10], [4, 6]]);
+  }));
+  return _refreshStoragePersistenceStatus.apply(this, arguments);
+}
+function handleStoragePersistenceRequest(_x) {
+  return _handleStoragePersistenceRequest.apply(this, arguments);
+}
+function _handleStoragePersistenceRequest() {
+  _handleStoragePersistenceRequest = _asyncToGenerator(_regenerator().m(function _callee2(event) {
+    var storageManager, granted, alreadyGranted, result, _t3;
+    return _regenerator().w(function (_context2) {
+      while (1) switch (_context2.p = _context2.n) {
+        case 0:
+          if (event && typeof event.preventDefault === 'function') {
+            event.preventDefault();
+          }
+          if (!(!storagePersistenceRequestButton || storagePersistenceState.requestInFlight)) {
+            _context2.n = 1;
+            break;
+          }
+          return _context2.a(2);
+        case 1:
+          storageManager = getStorageManagerInstance();
+          storagePersistenceState.requestAttempted = true;
+          if (!(!storageManager || typeof storageManager.persist !== 'function')) {
+            _context2.n = 2;
+            break;
+          }
+          storagePersistenceState.supported = Boolean(storageManager);
+          storagePersistenceState.lastRequestDenied = true;
+          storagePersistenceState.lastError = null;
+          renderStoragePersistenceStatus();
+          return _context2.a(2);
+        case 2:
+          storagePersistenceState.requestInFlight = true;
+          storagePersistenceState.lastError = null;
+          renderStoragePersistenceStatus();
+          granted = false;
+          alreadyGranted = false;
+          _context2.p = 3;
+          if (!(typeof requestPersistentStorage === 'function')) {
+            _context2.n = 5;
+            break;
+          }
+          _context2.n = 4;
+          return requestPersistentStorage();
+        case 4:
+          result = _context2.v;
+          if (result && typeof result.supported === 'boolean') {
+            storagePersistenceState.supported = result.supported;
+          }
+          if (result && typeof result.granted === 'boolean') {
+            granted = result.granted;
+          }
+          if (result && typeof result.alreadyGranted === 'boolean') {
+            alreadyGranted = result.alreadyGranted;
+          }
+          if (result && result.error) {
+            storagePersistenceState.lastError = result.error;
+            console.warn('Persistent storage request error', result.error);
+          }
+          _context2.n = 7;
+          break;
+        case 5:
+          _context2.n = 6;
+          return storageManager.persist();
+        case 6:
+          granted = _context2.v;
+        case 7:
+          _context2.n = 9;
+          break;
+        case 8:
+          _context2.p = 8;
+          _t3 = _context2.v;
+          storagePersistenceState.lastError = _t3;
+          console.warn('Persistent storage request failed', _t3);
+        case 9:
+          storagePersistenceState.requestInFlight = false;
+          storagePersistenceState.lastRequestDenied = !(granted || alreadyGranted);
+          if (granted || alreadyGranted) {
+            storagePersistenceState.persisted = true;
+          }
+          renderStoragePersistenceStatus();
+          refreshStoragePersistenceStatus({
+            fromRequest: true
+          }).catch(function (error) {
+            console.warn('Persistent storage status refresh failed', error);
+          });
+        case 10:
+          return _context2.a(2);
+      }
+    }, _callee2, null, [[3, 8]]);
+  }));
+  return _handleStoragePersistenceRequest.apply(this, arguments);
+}
+if (storagePersistenceRequestButton) {
+  storagePersistenceRequestButton.addEventListener('click', handleStoragePersistenceRequest);
+}
+if (storagePersistenceStatusEl) {
+  refreshStoragePersistenceStatus().catch(function (error) {
+    console.warn('Persistent storage status initialization failed', error);
+  });
+}
+ensureSessionRuntimePlaceholder('renderStoragePersistenceStatus', function () {
+  return renderStoragePersistenceStatus;
+});
+ensureSessionRuntimePlaceholder('refreshStoragePersistenceStatus', function () {
+  return refreshStoragePersistenceStatus;
+});
 if (backupDiffToggleButtonEl) {
   backupDiffToggleButtonEl.addEventListener('click', handleBackupDiffToggle);
 }
@@ -5695,6 +6157,13 @@ function handleRestoreSettingsInputChange() {
     if (restoredPreferences.language) {
       try {
         setLanguage(restoredPreferences.language);
+        if (typeof populateUserButtonDropdowns === 'function') {
+          try {
+            populateUserButtonDropdowns();
+          } catch (userButtonError) {
+            console.warn('Failed to refresh user button selectors after restoring language', userButtonError);
+          }
+        }
       } catch (languageError) {
         console.warn('Failed to restore language after restore failure', languageError);
       }
@@ -5796,6 +6265,13 @@ function handleRestoreSettingsInputChange() {
       }
       if (restoredPreferenceState.language) {
         setLanguage(restoredPreferenceState.language);
+        if (typeof populateUserButtonDropdowns === 'function') {
+          try {
+            populateUserButtonDropdowns();
+          } catch (userButtonError) {
+            console.warn('Failed to refresh user button selectors after applying restored preferences', userButtonError);
+          }
+        }
       }
       if (restoredSession && typeof sessionStorage !== 'undefined') {
         Object.entries(restoredSession).forEach(function (_ref12) {
@@ -6268,7 +6744,7 @@ if (factoryResetButton) {
       }
       try {
         fontSize = '16';
-        applyFontSize(fontSize);
+        applyFontSizeSafe(fontSize);
         if (settingsFontSize) {
           settingsFontSize.value = fontSize;
         }
@@ -6277,7 +6753,7 @@ if (factoryResetButton) {
       }
       try {
         fontFamily = "'Ubuntu', sans-serif";
-        applyFontFamily(fontFamily);
+        applyFontFamilySafe(fontFamily);
         if (settingsFontFamily) {
           settingsFontFamily.value = fontFamily;
         }
@@ -6438,24 +6914,24 @@ function clearCachesAndReload() {
   return _clearCachesAndReload.apply(this, arguments);
 }
 function _clearCachesAndReload() {
-  _clearCachesAndReload = _asyncToGenerator(_regenerator().m(function _callee() {
-    var offlineModule, uiCacheCleared, registrations, _navigator, serviceWorker, regs, reg, readyReg, keys, _window2, location, hasReplace, hasReload, navigationTriggered, paramName, timestamp, href, hash, hashIndex, pattern, replacement, _t, _t2, _t3;
-    return _regenerator().w(function (_context) {
-      while (1) switch (_context.p = _context.n) {
+  _clearCachesAndReload = _asyncToGenerator(_regenerator().m(function _callee3() {
+    var offlineModule, uiCacheCleared, registrations, _navigator, serviceWorker, regs, reg, readyReg, keys, _window2, location, hasReplace, hasReload, navigationTriggered, paramName, timestamp, href, hash, hashIndex, pattern, replacement, _t4, _t5, _t6;
+    return _regenerator().w(function (_context3) {
+      while (1) switch (_context3.p = _context3.n) {
         case 0:
           offlineModule = typeof globalThis !== 'undefined' && globalThis && globalThis.cineOffline || typeof window !== 'undefined' && window && window.cineOffline || null;
           if (!(offlineModule && typeof offlineModule.reloadApp === 'function')) {
-            _context.n = 2;
+            _context3.n = 2;
             break;
           }
-          _context.n = 1;
+          _context3.n = 1;
           return offlineModule.reloadApp({
             window: window,
             navigator: typeof navigator !== 'undefined' ? navigator : undefined,
             caches: typeof caches !== 'undefined' ? caches : undefined
           });
         case 1:
-          return _context.a(2);
+          return _context3.a(2);
         case 2:
           uiCacheCleared = false;
           try {
@@ -6474,75 +6950,75 @@ function _clearCachesAndReload() {
               console.warn('Fallback UI cache clear failed', fallbackError);
             }
           }
-          _context.p = 3;
+          _context3.p = 3;
           if (!(typeof navigator !== 'undefined' && navigator.serviceWorker)) {
-            _context.n = 15;
+            _context3.n = 15;
             break;
           }
           registrations = [];
           _navigator = navigator, serviceWorker = _navigator.serviceWorker;
-          _context.p = 4;
+          _context3.p = 4;
           if (!(typeof serviceWorker.getRegistrations === 'function')) {
-            _context.n = 6;
+            _context3.n = 6;
             break;
           }
-          _context.n = 5;
+          _context3.n = 5;
           return serviceWorker.getRegistrations();
         case 5:
-          regs = _context.v;
+          regs = _context3.v;
           if (Array.isArray(regs)) {
             regs.forEach(function (reg) {
               return registrations.push(reg);
             });
           }
-          _context.n = 12;
+          _context3.n = 12;
           break;
         case 6:
           if (!(typeof serviceWorker.getRegistration === 'function')) {
-            _context.n = 8;
+            _context3.n = 8;
             break;
           }
-          _context.n = 7;
+          _context3.n = 7;
           return serviceWorker.getRegistration();
         case 7:
-          reg = _context.v;
+          reg = _context3.v;
           if (reg) {
             registrations.push(reg);
           }
-          _context.n = 12;
+          _context3.n = 12;
           break;
         case 8:
           if (!(serviceWorker.ready && typeof serviceWorker.ready.then === 'function')) {
-            _context.n = 12;
+            _context3.n = 12;
             break;
           }
-          _context.p = 9;
-          _context.n = 10;
+          _context3.p = 9;
+          _context3.n = 10;
           return serviceWorker.ready;
         case 10:
-          readyReg = _context.v;
+          readyReg = _context3.v;
           if (readyReg) {
             registrations.push(readyReg);
           }
-          _context.n = 12;
+          _context3.n = 12;
           break;
         case 11:
-          _context.p = 11;
-          _t = _context.v;
-          console.warn('Failed to await active service worker', _t);
+          _context3.p = 11;
+          _t4 = _context3.v;
+          console.warn('Failed to await active service worker', _t4);
         case 12:
-          _context.n = 14;
+          _context3.n = 14;
           break;
         case 13:
-          _context.p = 13;
-          _t2 = _context.v;
-          console.warn('Failed to query service worker registrations', _t2);
+          _context3.p = 13;
+          _t5 = _context3.v;
+          console.warn('Failed to query service worker registrations', _t5);
         case 14:
           if (!registrations.length) {
-            _context.n = 15;
+            _context3.n = 15;
             break;
           }
-          _context.n = 15;
+          _context3.n = 15;
           return Promise.all(registrations.map(function (reg) {
             if (!reg || typeof reg.unregister !== 'function') {
               return Promise.resolve();
@@ -6553,14 +7029,14 @@ function _clearCachesAndReload() {
           }));
         case 15:
           if (!(typeof caches !== 'undefined' && caches && typeof caches.keys === 'function')) {
-            _context.n = 17;
+            _context3.n = 17;
             break;
           }
-          _context.n = 16;
+          _context3.n = 16;
           return caches.keys();
         case 16:
-          keys = _context.v;
-          _context.n = 17;
+          keys = _context3.v;
+          _context3.n = 17;
           return Promise.all(keys.map(function (key) {
             if (!key || typeof caches.delete !== 'function') {
               return Promise.resolve(false);
@@ -6571,14 +7047,14 @@ function _clearCachesAndReload() {
             });
           }));
         case 17:
-          _context.n = 19;
+          _context3.n = 19;
           break;
         case 18:
-          _context.p = 18;
-          _t3 = _context.v;
-          console.warn('Cache clear failed', _t3);
+          _context3.p = 18;
+          _t6 = _context3.v;
+          console.warn('Cache clear failed', _t6);
         case 19:
-          _context.p = 19;
+          _context3.p = 19;
           try {
             if (typeof window !== 'undefined' && window.location) {
               _window2 = window, location = _window2.location;
@@ -6617,11 +7093,11 @@ function _clearCachesAndReload() {
               window.location.reload();
             }
           }
-          return _context.f(19);
+          return _context3.f(19);
         case 20:
-          return _context.a(2);
+          return _context3.a(2);
       }
-    }, _callee, null, [[9, 11], [4, 13], [3, 18, 19, 20]]);
+    }, _callee3, null, [[9, 11], [4, 13], [3, 18, 19, 20]]);
   }));
   return _clearCachesAndReload.apply(this, arguments);
 }
@@ -6819,8 +7295,36 @@ if (helpButton && helpDialog) {
     }
     return Array.from(labels);
   };
+  var ensureFeatureSearchVisibility = function ensureFeatureSearchVisibility(element) {
+    if (!element) return;
+    if (backupDiffSectionEl && backupDiffSectionEl.contains(element) && backupDiffSectionEl.hasAttribute('hidden')) {
+      if (typeof showBackupDiffSection === 'function') {
+        try {
+          showBackupDiffSection();
+        } catch (error) {
+          console.warn('Unable to open backup diff section for feature search target', error);
+          backupDiffSectionEl.removeAttribute('hidden');
+        }
+      } else {
+        backupDiffSectionEl.removeAttribute('hidden');
+      }
+    }
+    if (restoreRehearsalSectionEl && restoreRehearsalSectionEl.contains(element) && restoreRehearsalSectionEl.hasAttribute('hidden')) {
+      if (typeof openRestoreRehearsal === 'function') {
+        try {
+          openRestoreRehearsal();
+        } catch (error) {
+          console.warn('Unable to open restore rehearsal section for feature search target', error);
+          restoreRehearsalSectionEl.removeAttribute('hidden');
+        }
+      } else {
+        restoreRehearsalSectionEl.removeAttribute('hidden');
+      }
+    }
+  };
   var focusFeatureElement = function focusFeatureElement(element) {
     if (!element) return;
+    ensureFeatureSearchVisibility(element);
     var settingsSection = element.closest('#settingsDialog');
     var settingsPanel = element.closest('.settings-panel');
     if (settingsPanel) {
@@ -7215,9 +7719,9 @@ if (helpButton && helpDialog) {
         summaryText = "Showing ".concat(storedVisible, " of ").concat(storedTotal, " help topics.");
       }
     } else {
-      var _template2 = langTexts.helpResultsSummaryAll || fallbackTexts.helpResultsSummaryAll;
-      if (_template2) {
-        summaryText = _template2.replace('%s', storedTotal);
+      var _template3 = langTexts.helpResultsSummaryAll || fallbackTexts.helpResultsSummaryAll;
+      if (_template3) {
+        summaryText = _template3.replace('%s', storedTotal);
       } else {
         summaryText = "All ".concat(storedTotal, " help topics are shown.");
       }
@@ -8631,6 +9135,68 @@ var scenarioIcons = {
   'Slow Motion': iconGlyph("\uF373", ICON_FONT_KEYS.UICONS),
   'Battery Belt': ICON_GLYPHS.batteryBolt
 };
+function registerRequiredScenarioOptionEntriesGetter(getter) {
+  if (typeof getter !== 'function') {
+    return;
+  }
+  var scopes = getSessionRuntimeScopes();
+  for (var _index8 = 0; _index8 < scopes.length; _index8 += 1) {
+    var scope = scopes[_index8];
+    if (!scope || _typeof(scope) !== 'object') {
+      continue;
+    }
+    try {
+      scope.getRequiredScenarioOptionEntries = getter;
+    } catch (assignError) {
+      try {
+        Object.defineProperty(scope, 'getRequiredScenarioOptionEntries', {
+          configurable: true,
+          writable: true,
+          value: getter
+        });
+      } catch (defineError) {
+        void defineError;
+      }
+    }
+  }
+}
+function getRequiredScenarioOptionEntries() {
+  var options = new Map();
+  if (requiredScenariosSelect && requiredScenariosSelect.options) {
+    Array.from(requiredScenariosSelect.options).forEach(function (option) {
+      if (!option) return;
+      if (option.disabled) return;
+      var value = typeof option.value === 'string' ? option.value.trim() : '';
+      if (!value) return;
+      var label = typeof option.textContent === 'string' && option.textContent.trim() ? option.textContent.trim() : value;
+      if (!options.has(value)) {
+        options.set(value, label);
+      }
+    });
+  }
+  Object.keys(scenarioIcons).forEach(function (key) {
+    if (typeof key !== 'string') return;
+    var value = key.trim();
+    if (!value || options.has(value)) {
+      return;
+    }
+    options.set(value, value);
+  });
+  return Array.from(options.entries()).map(function (_ref20) {
+    var _ref21 = _slicedToArray(_ref20, 2),
+      value = _ref21[0],
+      label = _ref21[1];
+    return {
+      value: value,
+      label: label
+    };
+  }).sort(function (a, b) {
+    return a.label.localeCompare(b.label, undefined, {
+      sensitivity: 'base'
+    });
+  });
+}
+registerRequiredScenarioOptionEntriesGetter(getRequiredScenarioOptionEntries);
 function updateRequiredScenariosSummary() {
   if (!requiredScenariosSelect || !requiredScenariosSummary) return;
   requiredScenariosSummary.innerHTML = '';
@@ -8743,6 +9309,13 @@ function initApp() {
     globalThis.setupInstallBanner();
   }
   setLanguage(currentLang);
+  if (typeof populateUserButtonDropdowns === 'function') {
+    try {
+      populateUserButtonDropdowns();
+    } catch (userButtonError) {
+      console.warn('Failed to refresh user button selectors after applying current language', userButtonError);
+    }
+  }
   maybeShowIosPwaHelp();
   resetDeviceForm();
   ensureDefaultProjectInfoSnapshot();
@@ -8822,18 +9395,21 @@ function populateEnvironmentDropdowns() {
 }
 function populateLensDropdown() {
   if (!lensSelect) return;
-  lensSelect.innerHTML = '';
-  var lensData = devices && devices.lenses;
+  var lensData = (devices && devices.lenses && Object.keys(devices.lenses).length ? devices.lenses : null) || devices && devices.accessories && devices.accessories.lenses || null;
   if (!lensData || Object.keys(lensData).length === 0) {
     return;
   }
+  var previousSelection = new Set(Array.from(lensSelect.selectedOptions || []).map(function (opt) {
+    return opt.value;
+  }));
+  lensSelect.innerHTML = '';
   if (!lensSelect.multiple) {
     var emptyOpt = document.createElement('option');
     emptyOpt.value = '';
     lensSelect.appendChild(emptyOpt);
   }
   Object.keys(lensData).sort(localeSort).forEach(function (name) {
-    var _ref21, _lens$minFocusMeters;
+    var _ref22, _lens$minFocusMeters;
     var opt = document.createElement('option');
     opt.value = name;
     var lens = lensData[name] || {};
@@ -8844,9 +9420,12 @@ function populateLensDropdown() {
     } else if (lens.clampOn === false) {
       attrs.push('no clamp-on');
     }
-    var minFocus = (_ref21 = (_lens$minFocusMeters = lens.minFocusMeters) !== null && _lens$minFocusMeters !== void 0 ? _lens$minFocusMeters : lens.minFocus) !== null && _ref21 !== void 0 ? _ref21 : lens.minFocusCm ? lens.minFocusCm / 100 : null;
+    var minFocus = (_ref22 = (_lens$minFocusMeters = lens.minFocusMeters) !== null && _lens$minFocusMeters !== void 0 ? _lens$minFocusMeters : lens.minFocus) !== null && _ref22 !== void 0 ? _ref22 : lens.minFocusCm ? lens.minFocusCm / 100 : null;
     if (minFocus) attrs.push("".concat(minFocus, "m min focus"));
     opt.textContent = attrs.length ? "".concat(name, " (").concat(attrs.join(', '), ")") : name;
+    if (previousSelection.has(name)) {
+      opt.selected = true;
+    }
     lensSelect.appendChild(opt);
   });
 }
@@ -8929,8 +9508,11 @@ function getFilterValueConfig(type) {
       };
   }
 }
+var SESSION_DEFAULT_FILTER_SIZE = ensureSessionRuntimePlaceholder('DEFAULT_FILTER_SIZE', function () {
+  return '4x5.65';
+});
 function createFilterSizeSelect(type) {
-  var selected = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : DEFAULT_FILTER_SIZE;
+  var selected = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : SESSION_DEFAULT_FILTER_SIZE;
   var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
   var _options$includeId = options.includeId,
     includeId = _options$includeId === void 0 ? true : _options$includeId,
@@ -8940,8 +9522,8 @@ function createFilterSizeSelect(type) {
   if (includeId) {
     sel.id = "".concat(idPrefix).concat(filterId(type));
   }
-  var sizes = [DEFAULT_FILTER_SIZE, '4x4', '6x6', '95mm'];
-  if (type === 'Rota-Pol') sizes = [DEFAULT_FILTER_SIZE, '6x6', '95mm'];
+  var sizes = [SESSION_DEFAULT_FILTER_SIZE, '4x4', '6x6', '95mm'];
+  if (type === 'Rota-Pol') sizes = [SESSION_DEFAULT_FILTER_SIZE, '6x6', '95mm'];
   sizes.forEach(function (s) {
     var o = document.createElement('option');
     o.value = s;
@@ -9025,7 +9607,7 @@ function createFilterValueSelect(type, selected) {
   };
 }
 function resolveFilterDisplayInfo(type) {
-  var size = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : DEFAULT_FILTER_SIZE;
+  var size = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : SESSION_DEFAULT_FILTER_SIZE;
   switch (type) {
     case 'Diopter':
       return {
@@ -9090,13 +9672,13 @@ function resolveFilterDisplayInfo(type) {
 function buildFilterGearEntries() {
   var filters = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
   var entries = [];
-  filters.forEach(function (_ref22) {
-    var type = _ref22.type,
-      _ref22$size = _ref22.size,
-      size = _ref22$size === void 0 ? DEFAULT_FILTER_SIZE : _ref22$size,
-      values = _ref22.values;
+  filters.forEach(function (_ref23) {
+    var type = _ref23.type,
+      _ref23$size = _ref23.size,
+      size = _ref23$size === void 0 ? SESSION_DEFAULT_FILTER_SIZE : _ref23$size,
+      values = _ref23.values;
     if (!type) return;
-    var sizeValue = size || DEFAULT_FILTER_SIZE;
+    var sizeValue = size || SESSION_DEFAULT_FILTER_SIZE;
     var idBase = "filter-".concat(filterId(type));
     switch (type) {
       case 'Diopter':
@@ -9431,7 +10013,7 @@ function renderFilterDetails() {
   }));
   var details = selected.map(function (type) {
     var prev = existingMap.get(type) || {};
-    var size = prev.size || DEFAULT_FILTER_SIZE;
+    var size = prev.size || SESSION_DEFAULT_FILTER_SIZE;
     var needsSize = type !== 'Diopter';
     var needsValues = filterTypeNeedsValueSelect(type);
     var _resolveFilterDisplay6 = resolveFilterDisplayInfo(type, size),
@@ -9501,7 +10083,7 @@ function collectFilterSelections() {
     var sizeSel = document.getElementById("filter-size-".concat(filterId(type)));
     var valSel = document.getElementById("filter-values-".concat(filterId(type)));
     var prev = existingMap[type] || {};
-    var size = sizeSel ? sizeSel.value : prev.size || DEFAULT_FILTER_SIZE;
+    var size = sizeSel ? sizeSel.value : prev.size || SESSION_DEFAULT_FILTER_SIZE;
     var vals;
     var needsValues = filterTypeNeedsValueSelect(type);
     if (valSel) {
@@ -9528,7 +10110,7 @@ function parseFilterTokens(str) {
       return p.trim();
     });
     var type = parts[0];
-    var size = parts[1] || DEFAULT_FILTER_SIZE;
+    var size = parts[1] || SESSION_DEFAULT_FILTER_SIZE;
     var vals = parts.length > 2 ? parts[2] : undefined;
     var values;
     if (vals === undefined) {
@@ -9577,8 +10159,8 @@ function buildFilterSelectHtml() {
 function collectFilterAccessories() {
   var filters = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
   var items = [];
-  filters.forEach(function (_ref23) {
-    var type = _ref23.type;
+  filters.forEach(function (_ref24) {
+    var type = _ref24.type;
     switch (type) {
       case 'ND Grad HE':
       case 'ND Grad SE':
@@ -9589,18 +10171,128 @@ function collectFilterAccessories() {
   });
   return items;
 }
+var USER_BUTTON_FUNCTION_ITEMS = [{
+  key: 'user1',
+  value: 'User 1'
+}, {
+  key: 'user2',
+  value: 'User 2'
+}, {
+  key: 'user3',
+  value: 'User 3'
+}, {
+  key: 'user4',
+  value: 'User 4'
+}, {
+  key: 'toggleLut',
+  value: 'Toggle LUT'
+}, {
+  key: 'falseColor',
+  value: 'False Color'
+}, {
+  key: 'peaking',
+  value: 'Peaking'
+}, {
+  key: 'anamorphicDesqueeze',
+  value: 'Anamorphic Desqueeze'
+}, {
+  key: 'surroundView',
+  value: 'Surround View'
+}, {
+  key: 'oneToOneZoom',
+  value: '1:1 Zoom'
+}, {
+  key: 'waveform',
+  value: 'Waveform'
+}, {
+  key: 'histogram',
+  value: 'Histogram'
+}, {
+  key: 'vectorscope',
+  value: 'Vectorscope'
+}, {
+  key: 'zebra',
+  value: 'Zebra'
+}, {
+  key: 'playback',
+  value: 'Playback'
+}, {
+  key: 'record',
+  value: 'Record'
+}, {
+  key: 'zoom',
+  value: 'Zoom'
+}, {
+  key: 'frameLines',
+  value: 'Frame Lines'
+}, {
+  key: 'frameGrab',
+  value: 'Frame Grab'
+}, {
+  key: 'wb',
+  value: 'WB'
+}, {
+  key: 'iso',
+  value: 'ISO'
+}, {
+  key: 'nd',
+  value: 'ND'
+}, {
+  key: 'fps',
+  value: 'FPS'
+}, {
+  key: 'shutter',
+  value: 'Shutter'
+}];
 function populateUserButtonDropdowns() {
-  var functions = ['User 1', 'User 2', 'User 3', 'User 4', 'Toggle LUT', 'False Color', 'Peaking', 'Anamorphic Desqueeze', 'Surround View', '1:1 Zoom', 'Waveform', 'Histogram', 'Vectorscope', 'Zebra', 'Playback', 'Record', 'Zoom', 'Frame Lines', 'Frame Grab', 'WB', 'ISO', 'ND', 'FPS', 'Shutter'];
+  var _texts, _texts2;
+  var lang = typeof currentLang === 'string' && texts[currentLang] ? currentLang : 'en';
+  var fallbackProjectForm = ((_texts = texts) === null || _texts === void 0 || (_texts = _texts.en) === null || _texts === void 0 ? void 0 : _texts.projectForm) || {};
+  var langProjectForm = ((_texts2 = texts) === null || _texts2 === void 0 || (_texts2 = _texts2[lang]) === null || _texts2 === void 0 ? void 0 : _texts2.projectForm) || fallbackProjectForm;
+  var labels = langProjectForm.userButtonFunctions || {};
+  var fallbackLabels = fallbackProjectForm.userButtonFunctions || {};
+  var items = USER_BUTTON_FUNCTION_ITEMS.map(function (item) {
+    var label = labels[item.key] || fallbackLabels[item.key] || item.value;
+    return _objectSpread(_objectSpread({}, item), {}, {
+      label: label
+    });
+  });
+  var knownValues = new Set(items.map(function (item) {
+    return item.value;
+  }));
   ['monitorUserButtons', 'cameraUserButtons', 'viewfinderUserButtons'].forEach(function (id) {
     var sel = document.getElementById(id);
     if (!sel) return;
-    functions.forEach(function (fn) {
+    var previouslySelected = new Set(Array.from(sel.selectedOptions || []).map(function (opt) {
+      return opt.value;
+    }));
+    sel.innerHTML = '';
+    items.forEach(function (_ref25) {
+      var value = _ref25.value,
+        label = _ref25.label;
+      if (!value) {
+        return;
+      }
       var opt = document.createElement('option');
-      opt.value = fn;
-      opt.textContent = fn;
+      opt.value = value;
+      opt.textContent = label;
+      if (previouslySelected.has(value)) {
+        opt.selected = true;
+      }
       sel.appendChild(opt);
     });
-    sel.size = functions.length;
+    previouslySelected.forEach(function (value) {
+      if (knownValues.has(value)) {
+        return;
+      }
+      var opt = document.createElement('option');
+      opt.value = value;
+      opt.textContent = value;
+      opt.selected = true;
+      sel.appendChild(opt);
+    });
+    var optionCount = sel.options.length;
+    sel.size = optionCount > 0 ? optionCount : USER_BUTTON_FUNCTION_ITEMS.length;
   });
 }
 if (document.readyState === "loading") {
@@ -9671,6 +10363,7 @@ if (typeof module !== "undefined" && module.exports) {
     populateSensorModeDropdown: populateSensorModeDropdown,
     populateCodecDropdown: populateCodecDropdown,
     updateRequiredScenariosSummary: updateRequiredScenariosSummary,
+    getRequiredScenarioOptionEntries: getRequiredScenarioOptionEntries,
     updateMonitoringConfigurationOptions: updateMonitoringConfigurationOptions,
     updateViewfinderExtensionVisibility: updateViewfinderExtensionVisibility,
     scenarioIcons: scenarioIcons,

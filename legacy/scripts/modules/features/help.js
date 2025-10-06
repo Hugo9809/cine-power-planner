@@ -221,7 +221,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   MODULE_BASE.registerOrQueueModule('cine.features.help', moduleApi, {
     category: 'features',
     description: 'Shared helpers for install guidance, platform detection and iOS PWA help lifecycle.',
-    replace: true
+    replace: true,
+    connections: ['cineModuleBase', 'cineModuleContext', 'cineUi']
   }, function (error) {
     return safeWarn('Unable to register cine.features.help module.', error);
   }, GLOBAL_SCOPE, MODULE_BASE.getModuleRegistry && MODULE_BASE.getModuleRegistry(GLOBAL_SCOPE));
