@@ -139,6 +139,18 @@ describe('cineModules registry', () => {
     expect(() => registry.register('cineExample', {})).toThrow(/already registered/);
   });
 
+  test('describe reports declared module connections', () => {
+    registry.register('cineConnected', { ready: true }, {
+      category: 'test',
+      description: 'Module with explicit dependencies.',
+      connections: [' cineAlpha ', 'cineBeta', 'cineAlpha'],
+    });
+
+    const meta = registry.describe('cineConnected');
+    expect(meta.connections).toEqual(['cineAlpha', 'cineBeta']);
+    expect(Object.isFrozen(meta.connections)).toBe(true);
+  });
+
   test('supports replacing modules explicitly', () => {
     registry.register('cineReplace', { value: 1 }, { freeze: false });
     const replacement = { value: 2 };

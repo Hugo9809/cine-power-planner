@@ -1068,6 +1068,7 @@
     category: 'shared',
     description: 'Shared helpers for deterministic stringification, weights, and version markers.',
     replace: true,
+    connections: ['cineModuleEnvironment', 'cineModuleGlobals', 'cineModuleContext'],
   });
 
   if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE === 'object') {

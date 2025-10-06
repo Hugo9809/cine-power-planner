@@ -535,6 +535,7 @@
       category: 'infrastructure',
       description: 'Shared environment bootstrap that harmonizes module communication across bundles.',
       replace: true,
+      connections: ['cineModuleBase', 'cineModuleGlobals', 'cineEnvironmentBridge'],
     },
     (error) => {
       safeWarn('Unable to register cineModuleEnvironment.', error);

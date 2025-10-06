@@ -314,6 +314,7 @@
         description: 'Print orchestration for overview exports and PDF generation.',
         freeze: false,
         replace: true,
+        connections: ['cineModuleBase', 'cineModuleContext', 'cineUi'],
       },
       (error) => {
         log(sanitizeLogger(GLOBAL_SCOPE && GLOBAL_SCOPE.console), 'warn', 'Unable to register cineFeaturePrint module.', error);

@@ -1151,6 +1151,7 @@
       category: 'offline',
       description: 'Offline helpers for service worker registration and cache recovery.',
       replace: true,
+      connections: ['cineModuleGlobals', 'cineModuleEnvironment', 'cineEnvironmentBridge', 'cineModuleContext'],
     },
     (error) => {
       safeWarn('Unable to register cineOffline in module registry.', error);

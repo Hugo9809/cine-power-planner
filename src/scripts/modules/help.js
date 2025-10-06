@@ -488,6 +488,7 @@
       category: 'ui',
       description: 'Shared registry for in-app help entries and resolvers.',
       replace: true,
+      connections: ['cineModuleBase'],
     },
     function onError(error) {
       safeWarn('Unable to register cineHelp module.', error);

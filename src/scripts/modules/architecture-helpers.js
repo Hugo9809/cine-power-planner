@@ -462,6 +462,7 @@
     category: 'infrastructure',
     description: 'Shared architecture helpers for scope detection, registry resolution and queue management.',
     replace: true,
+    connections: ['cineModuleArchitectureKernel'],
   };
 
   if (registry && typeof registry.register === 'function') {

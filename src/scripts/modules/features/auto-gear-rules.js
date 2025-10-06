@@ -1365,6 +1365,7 @@ function resetAutoGearRulesToFactoryAdditions() {
       category: 'feature',
       description: 'Automatic gear rule cloning, factory defaults and seeding helpers.',
       replace: true,
+      connections: ['cineModuleBase', 'cineModuleContext', 'cinePersistence'],
     },
     (error) => {
       if (typeof console !== 'undefined' && typeof console.warn === 'function') {

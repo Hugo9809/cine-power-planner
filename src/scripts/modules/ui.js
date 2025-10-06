@@ -1090,6 +1090,7 @@
       category: 'ui',
       description: 'UI controller registry for dialogs, interactions, orchestration, and help copy.',
       replace: true,
+      connections: ['cineModuleGlobals', 'cineModuleEnvironment', 'cineHelp', 'cineModuleContext'],
     },
     (error) => {
       safeWarn('Unable to register cineUi module.', error);

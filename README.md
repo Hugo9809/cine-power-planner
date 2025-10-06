@@ -175,6 +175,8 @@ localization steps.
   results on `window.__cineRuntimeIntegrity` and exposes
   `window.cineRuntime.verifyCriticalFlows()` so crews can confirm save/share/
   restore gateways and runtime feedback persistence before leaving for set.
+  Use `window.cineRuntime.inspectModuleConnections()` to audit how modules are
+  linked through the registry without mutating cached data.
 - **Autosave status overlay** – mirror the latest autosave note inside the
   settings dialog so crews see background activity while rehearsing recovery
   drills.

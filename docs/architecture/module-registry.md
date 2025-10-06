@@ -91,7 +91,11 @@ purpose-specific APIs, but every entry must honour the guarantees below.
    accidental mutation of shared state.
 2. **Metadata is mandatory.** Provide `category` and `description` to document
    how the module supports user data protection. These strings appear in
-   integrity reports and documentation.
+   integrity reports and documentation. You can also include a
+   `connections` array listing other modules that the new entry depends on
+   (for example, `['cineModuleBase', 'cineModuleContext']`). The runtime uses
+   these relationships to validate cross-module wiring without mutating the
+   registry.
 3. **One name, one module.** Registering an already-registered name throws
    unless `options.replace === true`. Replacements are intended for controlled
    overrides (tests, feature flags) and should remain rare.
@@ -133,6 +137,10 @@ Whenever you modify a registered module:
 - **Integrity verification.** Re-run `npm run test:unit` and, if possible,
   execute `npm run test:script` to ensure the runtime guard recognises the new
   module boundaries.
+- **Connection audit.** Run `window.cineRuntime.inspectModuleConnections()` in
+  the browser console (or call the exported function in tests) to confirm the
+  new module reports accurate dependencies and that every connection resolves
+  to a registered module.
 - **Backups first.** When in doubt, err on the side of capturing additional user
   data (extra autosaves, more detailed backups) instead of removing fields. User
   data must never be lost because of a module change.

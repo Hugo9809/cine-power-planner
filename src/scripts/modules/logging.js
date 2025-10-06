@@ -1720,6 +1720,7 @@
     category: 'diagnostics',
     description: 'Structured logging utilities for debugging and diagnostics.',
     replace: true,
+    connections: ['cineModuleGlobals', 'cineModuleEnvironment', 'cineEnvironmentBridge', 'cineModuleContext'],
   };
 
   const registered = registerOrQueueModule(

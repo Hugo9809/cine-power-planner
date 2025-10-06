@@ -486,6 +486,7 @@
     category: 'infrastructure',
     description: 'Unified kernel for module detection, registry resolution and queue management.',
     replace: true,
+    connections: ['cineModuleArchitectureHelpers'],
   };
 
   if (registry && typeof registry.register === 'function') {

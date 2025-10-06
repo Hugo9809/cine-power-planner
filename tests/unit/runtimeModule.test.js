@@ -443,6 +443,46 @@ describe('cineRuntime module', () => {
     expect(result.details['cinePersistence.storage.clearAllData']).toBe(true);
   });
 
+  test('inspectModuleConnections summarises registered module links', () => {
+    registry.register('cineDiagnostics', { ready: true }, {
+      category: 'test',
+      description: 'Diagnostics helpers for runtime tests.',
+      connections: ['cinePersistence'],
+    });
+
+    const report = runtime.inspectModuleConnections();
+    const diagnostics = report.modules.find((entry) => entry.name === 'cineDiagnostics');
+
+    expect(diagnostics).toEqual(expect.objectContaining({
+      name: 'cineDiagnostics',
+      connections: ['cinePersistence'],
+      missing: [],
+      ok: true,
+    }));
+    expect(Array.isArray(report.missingConnections)).toBe(true);
+  });
+
+  test('inspectModuleConnections flags missing module dependencies', () => {
+    registry.register('cineBroken', { ready: false }, {
+      category: 'test',
+      description: 'Module with unresolved dependency.',
+      connections: ['cineMissingDependency'],
+    });
+
+    const report = runtime.inspectModuleConnections();
+    const broken = report.modules.find((entry) => entry.name === 'cineBroken');
+
+    expect(broken).toEqual(expect.objectContaining({
+      name: 'cineBroken',
+      connections: ['cineMissingDependency'],
+      missing: ['cineMissingDependency'],
+      ok: false,
+    }));
+    expect(report.missingConnections).toEqual(expect.arrayContaining([
+      { from: 'cineBroken', to: 'cineMissingDependency' },
+    ]));
+  });
+
   test('synchronizeModules flushes pending registrations and re-links registries', () => {
     delete global.cineModules;
 
