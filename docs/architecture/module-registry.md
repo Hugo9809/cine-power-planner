@@ -103,6 +103,9 @@ manual `registry.register` calls.
 | `cineOffline`      | `offline`         | Service worker registration, cache rebuilds, fallback storage cleanup, reload triggers. |
 | `cineUi`           | `ui`              | Controller/interaction/help registries for dialogs, backups, restore rehearsals and share workflows. |
 | `cineFeaturePrint` | `feature`         | Frozen print orchestration helpers that coordinate native printing and fallback windows so overview exports remain reliable offline. |
+| `cineCoreProject` | `domain`          | Project intelligence helpers that expose derived metadata, filter selections, and comparison utilities to the wider runtime. |
+| `cineCoreGuard`   | `safety`          | Persistence guards that stabilise autosaves, preset editors, logo previews, and feedback storage without risking data loss. |
+| `cineCoreExperience` | `experience`   | Experience helpers that coordinate feature search, accent colours, and printable views so the UI stays human-friendly offline. |
 | `cineRuntime`      | `runtime`         | Aggregates modules, exposes integrity checks and ensures every safeguard stays frozen. |
 
 The registry is extensible: additional modules may be registered to expose
