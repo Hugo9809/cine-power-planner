@@ -1086,7 +1086,7 @@ function notifyAutoSaveFromBackup(message, backupName) {
   }
 }
 
-const AUTO_BACKUP_MAX_DELTA_SEQUENCE = 9;
+const AUTO_BACKUP_MAX_DELTA_SEQUENCE = 30;
 
 function readAutoBackupMetadata(entry) {
   if (!entry || typeof entry !== 'object') {
