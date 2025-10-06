@@ -3,7 +3,7 @@
           getAutoGearMonitorDefault, getSetupNameState,
           createProjectInfoSnapshotForStorage, getProjectAutoSaveOverrides, getAutoGearRuleCoverageSummary,
           normalizeBatteryPlateValue, setSelectValue, applyBatteryPlateSelectionFromBattery, enqueueCoreBootTask,
-          callCoreFunctionIfAvailable */
+          callCoreFunctionIfAvailable, cineGearList */
 
 const AUTO_GEAR_ANY_MOTOR_TOKEN_FALLBACK =
     (typeof globalThis !== 'undefined' && globalThis.AUTO_GEAR_ANY_MOTOR_TOKEN)
@@ -126,7 +126,7 @@ function getGlobalScope() {
     );
 }
 
-function getSafeGearListHtmlSections(html) {
+function gearListGetSafeHtmlSectionsImpl(html) {
     const normalizedHtml = typeof html === 'string' ? html : '';
     const fallbackResult = {
         projectHtml: '',
@@ -194,6 +194,73 @@ function resolveElementById(id, globalName) {
 
     return null;
 }
+
+function resolveGearListModule() {
+    const scope = getGlobalScope();
+    const candidates = [];
+
+    if (typeof cineGearList === 'object' && cineGearList) {
+        candidates.push(cineGearList);
+    }
+
+    if (scope && typeof scope.cineGearList === 'object' && scope.cineGearList) {
+        if (!candidates.includes(scope.cineGearList)) {
+            candidates.push(scope.cineGearList);
+        }
+    }
+
+    if (typeof require === 'function') {
+        try {
+            const required = require('./modules/gear-list.js');
+            if (required && typeof required === 'object' && !candidates.includes(required)) {
+                candidates.push(required);
+            }
+        } catch (error) {
+            void error;
+        }
+    }
+
+    for (let index = 0; index < candidates.length; index += 1) {
+        const candidate = candidates[index];
+        if (!candidate || typeof candidate.setImplementation !== 'function') {
+            continue;
+        }
+        return candidate;
+    }
+
+    return null;
+}
+
+function registerGearListModuleImplementation() {
+    const module = resolveGearListModule();
+    const implementation = {
+        getSafeGearListHtmlSections: gearListGetSafeHtmlSectionsImpl,
+        generateGearListHtml: gearListGenerateHtmlImpl,
+        getCurrentGearListHtml: gearListGetCurrentHtmlImpl
+    };
+
+    if (module && typeof module.setImplementation === 'function') {
+        try {
+            module.setImplementation(implementation, { source: 'app-setups' });
+            return true;
+        } catch (error) {
+            if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+                console.warn('Unable to register gear list implementation with cineGearList.', error);
+            }
+        }
+    }
+
+    const scope = getGlobalScope();
+    if (scope && typeof scope === 'object') {
+        try { scope.getSafeGearListHtmlSections = gearListGetSafeHtmlSectionsImpl; } catch (error) { void error; }
+        try { scope.generateGearListHtml = gearListGenerateHtmlImpl; } catch (error) { void error; }
+        try { scope.getCurrentGearListHtml = gearListGetCurrentHtmlImpl; } catch (error) { void error; }
+    }
+
+    return false;
+}
+
+registerGearListModuleImplementation();
 
 function buildShareUiContext() {
     return {
@@ -716,7 +783,7 @@ if (projectForm) {
         const info = collectProjectFormData();
         currentProjectInfo = info;
         ensureZoomRemoteSetup(info);
-        const html = generateGearListHtml(info);
+        const html = gearListGenerateHtmlImpl(info);
         displayGearAndRequirements(html);
         ensureGearListActions();
         bindGearListCageListener();
@@ -790,9 +857,9 @@ function downloadSharedProject(shareFileName, includeAutoGear) {
   if (Object.keys(gearSelectors).length) {
     currentSetup.gearSelectors = gearSelectors;
   }
-  const combinedHtml = getCurrentGearListHtml();
+  const combinedHtml = gearListGetCurrentHtmlImpl();
   if (combinedHtml) {
-    const { projectHtml, gearHtml } = getSafeGearListHtmlSections(combinedHtml);
+    const { projectHtml, gearHtml } = gearListGetSafeHtmlSectionsImpl(combinedHtml);
     if (projectHtml) currentSetup.projectHtml = projectHtml;
     if (gearHtml) {
       currentSetup.gearList = projectHtml
@@ -3387,7 +3454,7 @@ function formatRequirementValue(rawValue) {
   return escapeHtml(value).replace(/\n/g, '<br>');
 }
 
-function generateGearListHtml(info = {}) {
+function gearListGenerateHtmlImpl(info = {}) {
     const getText = sel => sel && sel.options && sel.selectedIndex >= 0
         ? sel.options[sel.selectedIndex].text.trim()
         : '';
@@ -4541,7 +4608,7 @@ function generateGearListHtml(info = {}) {
 }
 
 
-function getCurrentGearListHtml() {
+function gearListGetCurrentHtmlImpl() {
     if (!gearListOutput && !projectRequirementsOutput) return '';
 
     let projHtml = '';
@@ -4811,7 +4878,7 @@ function collectProjectInfoFromRequirementsGrid() {
 
 function saveCurrentGearList() {
     if (factoryResetInProgress) return;
-    const html = getCurrentGearListHtml();
+    const html = gearListGetCurrentHtmlImpl();
     const info = projectForm ? collectProjectFormData() : {};
     info.sliderBowl = getSetupsCoreValue('getSliderBowlValue');
     info.easyrig = getSetupsCoreValue('getEasyrigValue');
@@ -5830,11 +5897,11 @@ function refreshGearListIfVisible() {
         currentProjectInfo = deriveProjectInfo(info);
     }
 
-    const html = generateGearListHtml(currentProjectInfo || {});
+    const html = gearListGenerateHtmlImpl(currentProjectInfo || {});
     if (currentProjectInfo) {
         displayGearAndRequirements(html);
     } else {
-        const { gearHtml } = getSafeGearListHtmlSections(html);
+        const { gearHtml } = gearListGetSafeHtmlSectionsImpl(html);
         gearListOutput.innerHTML = gearHtml;
     }
     ensureGearListActions();
