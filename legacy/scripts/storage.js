@@ -272,7 +272,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     }
   }
-  var MAX_AUTO_BACKUPS = 120;
+  var MAX_AUTO_BACKUPS = 240;
   var MAX_DELETION_BACKUPS = 20;
   var MAX_FULL_BACKUP_HISTORY_ENTRIES = 200;
   var AUTO_GEAR_BACKUP_RETENTION_DEFAULT_VALUE = 12;

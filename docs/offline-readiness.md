@@ -88,7 +88,7 @@ connectivity:
 2. **Review current data.** Load active projects plus their latest `auto-backup-…`
    entries. Confirm gear lists, runtime dashboards, favorites and automatic gear rules all
    match the production log. In **Settings → Automatic Gear Rules** reveal the automatic
-   backup timeline, review the retention summary—the planner now keeps up to 120 automatic
+   backup timeline, review the retention summary—the planner now keeps up to 240 automatic
    project backups by default—and adjust the limit if you need a longer runway of snapshots
    before travelling.
 3. **Generate redundancy.** Export a fresh planner backup and project bundle, then import
