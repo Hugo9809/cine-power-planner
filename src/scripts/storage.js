@@ -1005,14 +1005,88 @@ function ensureCriticalStorageBackups(options = {}) {
       continue;
     }
 
-    try {
-      storage.setItem(entry.backupKey, primaryValue);
-      summary.ensured.push({ key: entry.key, backupKey: entry.backupKey });
-    } catch (writeError) {
-      summary.errors.push({ key: entry.key, reason: 'backup-write-failed', error: writeError });
-      if (typeof console !== 'undefined' && typeof console.error === 'function') {
-        console.error(`Critical storage guard could not mirror ${entry.key}`, writeError);
+    const stringPrimaryValue = typeof primaryValue === 'string'
+      ? primaryValue
+      : primaryValue === null || primaryValue === undefined
+        ? ''
+        : String(primaryValue);
+
+    const tryStoreBackup = (candidate) => {
+      try {
+        storage.setItem(entry.backupKey, candidate);
+        return { success: true, error: null };
+      } catch (error) {
+        return { success: false, error };
       }
+    };
+
+    const recordError = (error, reason = 'backup-write-failed') => {
+      summary.errors.push({ key: entry.key, reason, error });
+      if (typeof console !== 'undefined' && typeof console.error === 'function') {
+        console.error(`Critical storage guard could not mirror ${entry.key}`, error);
+      }
+    };
+
+    const shouldAttemptCompression = typeof stringPrimaryValue === 'string'
+      && stringPrimaryValue
+      && !stringPrimaryValue.includes(`"${STORAGE_COMPRESSION_FLAG_KEY}":true`);
+
+    let candidateValue = stringPrimaryValue;
+    let compressionInfo = null;
+    let writeResult = tryStoreBackup(candidateValue);
+
+    if (!writeResult.success && writeResult.error) {
+      if (!isQuotaExceededError(writeResult.error)) {
+        recordError(writeResult.error);
+        continue;
+      }
+
+      if (shouldAttemptCompression) {
+        const compressedCandidate = createCompressedJsonStorageCandidate(stringPrimaryValue);
+        if (compressedCandidate && typeof compressedCandidate.serialized === 'string' && compressedCandidate.serialized) {
+          candidateValue = compressedCandidate.serialized;
+          compressionInfo = compressedCandidate;
+          writeResult = tryStoreBackup(candidateValue);
+        }
+      }
+
+      if (!writeResult.success && writeResult.error && isQuotaExceededError(writeResult.error)) {
+        const skipKeys = [entry.key, entry.backupKey];
+        const sweepResult = attemptStorageCompressionSweep(storage, { skipKeys });
+        if (sweepResult && sweepResult.success) {
+          writeResult = tryStoreBackup(candidateValue);
+        }
+      }
+
+      if (!writeResult.success) {
+        recordError(writeResult.error, isQuotaExceededError(writeResult.error) ? 'backup-quota-exceeded' : 'backup-write-failed');
+        if (isQuotaExceededError(writeResult.error)) {
+          alertStorageError('critical-backup-quota');
+        }
+        continue;
+      }
+    }
+
+    summary.ensured.push({
+      key: entry.key,
+      backupKey: entry.backupKey,
+      compressed: Boolean(compressionInfo),
+    });
+
+    if (
+      compressionInfo
+      && typeof console !== 'undefined'
+      && typeof console.warn === 'function'
+      && typeof compressionInfo.originalLength === 'number'
+      && typeof compressionInfo.wrappedLength === 'number'
+    ) {
+      const savings = compressionInfo.originalLength - compressionInfo.wrappedLength;
+      const percent = compressionInfo.originalLength > 0
+        ? Math.round((savings / compressionInfo.originalLength) * 100)
+        : 0;
+      console.warn(
+        `Stored compressed critical backup for ${entry.key}, reducing storage usage by ${savings} characters (${percent}%).`,
+      );
     }
   }
 
