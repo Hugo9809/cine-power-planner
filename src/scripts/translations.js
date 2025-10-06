@@ -290,6 +290,7 @@ const texts = {
     autoGearConditionLogicHelp: "Choose how the selected values interact before the rule activates.",
     autoGearConditionLogicAll: "Require every selected value",
     autoGearConditionLogicAny: "Match any selected value",
+    autoGearConditionLogicOr: "Start a new OR group (matches any selected value)",
     autoGearConditionLogicMultiplier: "Multiply by matched values",
     autoGearConditionRepeatHint:
       "Condition already added. Existing inputs for {condition} are highlighted so you can add more selections.",
@@ -2189,6 +2190,7 @@ const texts = {
       "Scegli come interagiscono i valori selezionati prima di attivare la regola.",
     autoGearConditionLogicAll: "Richiedi tutti i valori selezionati",
     autoGearConditionLogicAny: "Abbina qualsiasi valore selezionato",
+    autoGearConditionLogicOr: "Avvia un nuovo gruppo OR (abbina qualsiasi valore selezionato)",
     autoGearConditionLogicMultiplier: "Moltiplica in base ai valori corrispondenti",
     autoGearConditionRepeatHint:
       "Condizione già aggiunta. I campi esistenti per {condition} vengono evidenziati per permetterti di aggiungere altre selezioni.",
@@ -3646,6 +3648,7 @@ const texts = {
       "Elige cómo interactúan los valores seleccionados antes de que se active la regla.",
     autoGearConditionLogicAll: "Requerir todos los valores seleccionados",
     autoGearConditionLogicAny: "Coincidir con cualquier valor seleccionado",
+    autoGearConditionLogicOr: "Iniciar un nuevo grupo OR (coincide con cualquier valor seleccionado)",
     autoGearConditionLogicMultiplier: "Multiplicar por los valores coincidentes",
     autoGearConditionRepeatHint:
       "Condición ya añadida. Resaltamos los campos existentes de {condition} para que puedas añadir más selecciones.",
@@ -5104,6 +5107,7 @@ const texts = {
       "Choisissez comment les valeurs sélectionnées interagissent avant l’activation de la règle.",
     autoGearConditionLogicAll: "Exiger toutes les valeurs sélectionnées",
     autoGearConditionLogicAny: "Correspondre à n’importe quelle valeur sélectionnée",
+    autoGearConditionLogicOr: "Démarrer un nouveau groupe OR (correspond à n’importe quelle valeur sélectionnée)",
     autoGearConditionLogicMultiplier: "Multiplier selon les valeurs correspondantes",
     autoGearConditionRepeatHint:
       "Condition déjà ajoutée. Les champs existants pour {condition} sont mis en évidence pour vous permettre d'ajouter d'autres sélections.",
@@ -6574,6 +6578,7 @@ const texts = {
       "Legt fest, wie die ausgewählten Werte zusammenwirken, bevor die Regel aktiv wird.",
     autoGearConditionLogicAll: "Alle ausgewählten Werte erforderlich",
     autoGearConditionLogicAny: "Beliebiger ausgewählter Wert genügt",
+    autoGearConditionLogicOr: "Neuen OR-Block beginnen (entspricht beliebigem ausgewähltem Wert)",
     autoGearConditionLogicMultiplier: "Mit passenden Werten multiplizieren",
     autoGearConditionRepeatHint:
       "Bedingung bereits hinzugefügt. Die vorhandenen Eingaben für {condition} sind markiert, damit du weitere Auswahlmöglichkeiten setzen kannst.",

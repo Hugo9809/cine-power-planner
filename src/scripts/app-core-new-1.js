@@ -3443,7 +3443,7 @@ function normalizeAutoGearScenarioLogic(value) {
   return AUTO_GEAR_SCENARIO_LOGIC_VALUES.has(normalized) ? normalized : 'all';
 }
 
-const AUTO_GEAR_CONDITION_LOGIC_VALUES = new Set(['all', 'any', 'multiplier']);
+const AUTO_GEAR_CONDITION_LOGIC_VALUES = new Set(['all', 'any', 'or', 'multiplier']);
 const AUTO_GEAR_CONDITION_LOGIC_FIELDS = {
   mattebox: 'matteboxLogic',
   cameraHandle: 'cameraHandleLogic',
@@ -3468,13 +3468,19 @@ function normalizeAutoGearConditionLogic(value) {
   if (typeof value !== 'string') return 'all';
   const normalized = value.trim().toLowerCase();
   if (!normalized) return 'all';
-  if (normalized === 'or') return 'any';
+  if (normalized === 'or') return 'or';
   if (normalized === 'and') return 'all';
   if (normalized === 'any') return 'any';
   if (normalized === 'multiplier' || normalized === 'multiply' || normalized === 'multiplied') {
     return 'multiplier';
   }
-  return AUTO_GEAR_CONDITION_LOGIC_VALUES.has(normalized) ? normalized : 'all';
+  if (!AUTO_GEAR_CONDITION_LOGIC_VALUES.has(normalized)) {
+    if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+      console.warn('Unknown auto gear condition logic joiner. Falling back to "all".', value);
+    }
+    return 'all';
+  }
+  return normalized;
 }
 
 function readAutoGearConditionLogic(rule, key) {

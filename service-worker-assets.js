@@ -162,6 +162,7 @@
   "./src/scripts/modules/environment.js",
   "./src/scripts/modules/features/auto-gear-rules.js",
   "./src/scripts/modules/features/backup.js",
+  "./src/scripts/modules/features/connection-diagram.js",
   "./src/scripts/modules/features/feature-search.js",
   "./src/scripts/modules/features/help.js",
   "./src/scripts/modules/features/print-workflow.js",

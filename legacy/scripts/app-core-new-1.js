@@ -2848,7 +2848,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
     return AUTO_GEAR_SCENARIO_LOGIC_VALUES.has(normalized) ? normalized : 'all';
   }
-  var AUTO_GEAR_CONDITION_LOGIC_VALUES = new Set(['all', 'any', 'multiplier']);
+var AUTO_GEAR_CONDITION_LOGIC_VALUES = new Set(['all', 'any', 'or', 'multiplier']);
   var AUTO_GEAR_CONDITION_LOGIC_FIELDS = {
     mattebox: 'matteboxLogic',
     cameraHandle: 'cameraHandleLogic',
@@ -2868,18 +2868,21 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     controllers: 'controllersLogic',
     distance: 'distanceLogic'
   };
-  function normalizeAutoGearConditionLogic(value) {
-    if (typeof value !== 'string') return 'all';
-    var normalized = value.trim().toLowerCase();
-    if (!normalized) return 'all';
-    if (normalized === 'or') return 'any';
-    if (normalized === 'and') return 'all';
-    if (normalized === 'any') return 'any';
-    if (normalized === 'multiplier' || normalized === 'multiply' || normalized === 'multiplied') {
-      return 'multiplier';
-    }
-    return AUTO_GEAR_CONDITION_LOGIC_VALUES.has(normalized) ? normalized : 'all';
+function normalizeAutoGearConditionLogic(value) {
+  if (typeof value !== 'string') return 'all';
+  var normalized = value.trim().toLowerCase();
+  if (!normalized) return 'all';
+  if (normalized === 'or') return 'or';
+  if (normalized === 'and') return 'all';
+  if (normalized === 'any') return 'any';
+  if (normalized === 'multiplier' || normalized === 'multiply' || normalized === 'multiplied') {
+    return 'multiplier';
   }
+  if (!AUTO_GEAR_CONDITION_LOGIC_VALUES.has(normalized) && typeof console !== 'undefined' && typeof console.warn === 'function') {
+    console.warn('Unknown auto gear condition logic joiner. Falling back to "all".', value);
+  }
+  return AUTO_GEAR_CONDITION_LOGIC_VALUES.has(normalized) ? normalized : 'all';
+}
   function readAutoGearConditionLogic(rule, key) {
     if (!rule || _typeof(rule) !== 'object') return 'all';
     var property = AUTO_GEAR_CONDITION_LOGIC_FIELDS[key];
