@@ -245,4 +245,63 @@ describe('project autosave', () => {
 
     env.cleanup();
   });
+
+  test('switching to a new setup keeps previously saved requirements intact', () => {
+    const requirementHtml = [
+      '<section id="projectRequirementsOutput" class="project-requirements-section">',
+      '  <div class="requirements-grid">',
+      '    <div class="requirement-box" data-field="productionCompany">',
+      '      <span class="req-label">Production Company</span>',
+      '      <span class="req-value">Safe Films</span>',
+      '    </div>',
+      '  </div>',
+      '</section>'
+    ].join('');
+
+    let setupsState = {
+      'Project One': {
+        gearList: requirementHtml,
+        projectInfo: { productionCompany: 'Safe Films' }
+      }
+    };
+
+    const env = setupScriptEnvironment({
+      globals: {
+        saveSessionState: jest.fn(),
+        loadSessionState: jest.fn(() => ({})),
+        loadSetups: jest.fn(() => setupsState),
+        saveSetups: jest.fn(next => { setupsState = next; })
+      }
+    });
+
+    require('../../src/scripts/storage.js');
+
+    if (typeof window.saveProject === 'function') {
+      window.saveProject('Project One', {
+        gearList: requirementHtml,
+        projectInfo: { productionCompany: 'Safe Films' }
+      });
+    }
+
+    const setupSelect = document.getElementById('setupSelect');
+    expect(setupSelect).not.toBeNull();
+
+    setupSelect.value = 'Project One';
+    setupSelect.dispatchEvent(new Event('change'));
+
+    const companyField = document.getElementById('productionCompany');
+    expect(companyField.value).toBe('Safe Films');
+
+    setupSelect.value = '';
+    setupSelect.dispatchEvent(new Event('change'));
+
+    const storedRaw = localStorage.getItem(PROJECT_STORAGE_KEY);
+    expect(storedRaw).toBeTruthy();
+    const stored = JSON.parse(storedRaw);
+    expect(stored['Project One']).toBeDefined();
+    expect(stored['Project One'].projectInfo).toBeDefined();
+    expect(stored['Project One'].projectInfo.productionCompany).toBe('Safe Films');
+
+    env.cleanup();
+  });
 });

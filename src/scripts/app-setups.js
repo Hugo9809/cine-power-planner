@@ -10,6 +10,23 @@ const AUTO_GEAR_ANY_MOTOR_TOKEN_FALLBACK =
         ? globalThis.AUTO_GEAR_ANY_MOTOR_TOKEN
         : '__any__';
 
+let projectPersistenceSuspendedCount = 0;
+
+function suspendProjectPersistence() {
+    projectPersistenceSuspendedCount += 1;
+}
+
+function resumeProjectPersistence() {
+    if (projectPersistenceSuspendedCount > 0) {
+        projectPersistenceSuspendedCount -= 1;
+    }
+    return projectPersistenceSuspendedCount;
+}
+
+function isProjectPersistenceSuspended() {
+    return projectPersistenceSuspendedCount > 0;
+}
+
 const localGetLocalizedText = (() => {
     function fallbackGetLocalizedText(key) {
         if (!key) return '';
@@ -4878,6 +4895,7 @@ function collectProjectInfoFromRequirementsGrid() {
 
 function saveCurrentGearList() {
     if (factoryResetInProgress) return;
+    if (isProjectPersistenceSuspended()) return;
     const html = gearListGetCurrentHtmlImpl();
     const info = projectForm ? collectProjectFormData() : {};
     info.sliderBowl = getSetupsCoreValue('getSliderBowlValue');

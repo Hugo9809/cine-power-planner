@@ -542,122 +542,143 @@ function handleDeleteSetupClick() {
 addSafeEventListener(deleteSetupBtn, "click", handleDeleteSetupClick);
 
 function resetSetupStateToDefaults(options = {}) {
+  const suspendable =
+    typeof suspendProjectPersistence === 'function'
+    && typeof resumeProjectPersistence === 'function';
+  if (suspendable) {
+    try {
+      suspendProjectPersistence();
+    } catch (error) {
+      console.warn('Failed to suspend project persistence during setup reset', error);
+    }
+  }
+
   const config = typeof options === 'object' && options !== null ? options : {};
   const preserveSetupNameInput = Boolean(config.preserveSetupNameInput);
 
-  if (!preserveSetupNameInput && setupNameInput) {
-    setupNameInput.value = "";
-  }
-
-  const resetSelectToDefault = (select) => {
-    if (!select || typeof select !== 'object') return;
-    const noneOption = Array.from(select.options || []).find(opt => opt.value === "None");
-    if (noneOption) {
-      select.value = "None";
-    } else if (select.options && select.options.length) {
-      select.selectedIndex = 0;
-    } else {
-      select.value = "";
-    }
-  };
-
-  [
-    cameraSelect,
-    monitorSelect,
-    videoSelect,
-    cageSelect,
-    distanceSelect,
-    batterySelect,
-    hotswapSelect,
-  ].forEach(resetSelectToDefault);
-
-  if (typeof updateCageSelectOptions === 'function') {
-    try {
-      updateCageSelectOptions('None');
-    } catch (error) {
-      console.warn('Failed to reset cage options while preparing setup switch', error);
-    }
-  }
-
-  const sliderBowlSelect = typeof getSliderBowlSelect === 'function'
-    ? getSliderBowlSelect()
-    : null;
-  if (sliderBowlSelect) {
-    sliderBowlSelect.value = '';
-  }
-
-  if (Array.isArray(motorSelects)) {
-    motorSelects.forEach(resetSelectToDefault);
-  }
-  if (Array.isArray(controllerSelects)) {
-    controllerSelects.forEach(resetSelectToDefault);
-  }
-
-  if (typeof updateBatteryPlateVisibility === 'function') {
-    try {
-      updateBatteryPlateVisibility();
-    } catch (error) {
-      console.warn('Failed to reset battery plate visibility while preparing setup switch', error);
-    }
-  }
-  if (typeof updateBatteryOptions === 'function') {
-    try {
-      updateBatteryOptions();
-    } catch (error) {
-      console.warn('Failed to reset battery options while preparing setup switch', error);
-    }
-  }
-
-  if (typeof displayGearAndRequirements === 'function') {
-    try {
-      displayGearAndRequirements('');
-    } catch (error) {
-      console.warn('Failed to reset gear and requirements display while preparing setup switch', error);
-    }
-  }
-
-  if (gearListOutput) {
-    gearListOutput.innerHTML = '';
-    gearListOutput.classList.add('hidden');
-  }
-  if (projectRequirementsOutput) {
-    projectRequirementsOutput.innerHTML = '';
-    projectRequirementsOutput.classList.add('hidden');
-  }
-
-  currentProjectInfo = null;
-  if (projectForm) {
-    try {
-      populateProjectForm({});
-    } catch (error) {
-      console.warn('Failed to reset project form while preparing setup switch', error);
-    }
-  }
-
-  if (typeof clearProjectAutoGearRules === 'function') {
-    try {
-      clearProjectAutoGearRules();
-    } catch (error) {
-      console.warn('Failed to clear project auto gear rules while preparing setup switch', error);
-    }
-  }
-
-  if (typeof setManualDiagramPositions === 'function') {
-    try {
-      setManualDiagramPositions({}, { render: false });
-    } catch (error) {
-      console.warn('Failed to reset manual diagram positions while preparing setup switch', error);
-    }
-  }
-
   try {
-    storeLoadedSetupStateSafe(null);
-  } catch (error) {
-    console.warn('Failed to reset stored setup state while preparing setup switch', error);
-  }
+    if (!preserveSetupNameInput && setupNameInput) {
+      setupNameInput.value = "";
+    }
 
-  if (typeof globalThis !== 'undefined') {
-    globalThis.__cineLastGearListHtml = '';
+    const resetSelectToDefault = (select) => {
+      if (!select || typeof select !== 'object') return;
+      const noneOption = Array.from(select.options || []).find(opt => opt.value === "None");
+      if (noneOption) {
+        select.value = "None";
+      } else if (select.options && select.options.length) {
+        select.selectedIndex = 0;
+      } else {
+        select.value = "";
+      }
+    };
+
+    [
+      cameraSelect,
+      monitorSelect,
+      videoSelect,
+      cageSelect,
+      distanceSelect,
+      batterySelect,
+      hotswapSelect,
+    ].forEach(resetSelectToDefault);
+
+    if (typeof updateCageSelectOptions === 'function') {
+      try {
+        updateCageSelectOptions('None');
+      } catch (error) {
+        console.warn('Failed to reset cage options while preparing setup switch', error);
+      }
+    }
+
+    const sliderBowlSelect = typeof getSliderBowlSelect === 'function'
+      ? getSliderBowlSelect()
+      : null;
+    if (sliderBowlSelect) {
+      sliderBowlSelect.value = '';
+    }
+
+    if (Array.isArray(motorSelects)) {
+      motorSelects.forEach(resetSelectToDefault);
+    }
+    if (Array.isArray(controllerSelects)) {
+      controllerSelects.forEach(resetSelectToDefault);
+    }
+
+    if (typeof updateBatteryPlateVisibility === 'function') {
+      try {
+        updateBatteryPlateVisibility();
+      } catch (error) {
+        console.warn('Failed to reset battery plate visibility while preparing setup switch', error);
+      }
+    }
+    if (typeof updateBatteryOptions === 'function') {
+      try {
+        updateBatteryOptions();
+      } catch (error) {
+        console.warn('Failed to reset battery options while preparing setup switch', error);
+      }
+    }
+
+    if (typeof displayGearAndRequirements === 'function') {
+      try {
+        displayGearAndRequirements('');
+      } catch (error) {
+        console.warn('Failed to reset gear and requirements display while preparing setup switch', error);
+      }
+    }
+
+    if (gearListOutput) {
+      gearListOutput.innerHTML = '';
+      gearListOutput.classList.add('hidden');
+    }
+    if (projectRequirementsOutput) {
+      projectRequirementsOutput.innerHTML = '';
+      projectRequirementsOutput.classList.add('hidden');
+    }
+
+    currentProjectInfo = null;
+    if (projectForm) {
+      try {
+        populateProjectForm({});
+      } catch (error) {
+        console.warn('Failed to reset project form while preparing setup switch', error);
+      }
+    }
+
+    if (typeof clearProjectAutoGearRules === 'function') {
+      try {
+        clearProjectAutoGearRules();
+      } catch (error) {
+        console.warn('Failed to clear project auto gear rules while preparing setup switch', error);
+      }
+    }
+
+    if (typeof setManualDiagramPositions === 'function') {
+      try {
+        setManualDiagramPositions({}, { render: false });
+      } catch (error) {
+        console.warn('Failed to reset manual diagram positions while preparing setup switch', error);
+      }
+    }
+
+    try {
+      storeLoadedSetupStateSafe(null);
+    } catch (error) {
+      console.warn('Failed to reset stored setup state while preparing setup switch', error);
+    }
+
+    if (typeof globalThis !== 'undefined') {
+      globalThis.__cineLastGearListHtml = '';
+    }
+  } finally {
+    if (suspendable) {
+      try {
+        resumeProjectPersistence();
+      } catch (error) {
+        console.warn('Failed to resume project persistence after setup reset', error);
+      }
+    }
   }
 }
 

@@ -2848,6 +2848,9 @@ function handleRestoreRehearsalAbort() {
 
 function saveCurrentSession(options = {}) {
   if (restoringSession || factoryResetInProgress) return;
+  if (typeof isProjectPersistenceSuspended === 'function' && isProjectPersistenceSuspended()) {
+    return;
+  }
   const info = projectForm ? collectProjectFormData() : {};
   info.sliderBowl = getSessionCoreValue('getSliderBowlValue');
   info.easyrig = getSessionCoreValue('getEasyrigValue');
@@ -7856,189 +7859,210 @@ if (restoreRehearsalInputEl) {
 }
 
 function resetPlannerStateAfterFactoryReset() {
-  try {
-    if (typeof storeLoadedSetupState === 'function') {
-      storeLoadedSetupState(null);
-    }
-  } catch (error) {
-    console.warn('Failed to reset loaded setup state during factory reset', error);
-  }
-
-  try {
-    currentProjectInfo = null;
-  } catch (error) {
-    console.warn('Failed to clear in-memory project info during factory reset', error);
-  }
-
-  try {
-    if (typeof populateProjectForm === 'function') {
-      populateProjectForm({});
-    } else if (projectForm && typeof projectForm.reset === 'function') {
-      projectForm.reset();
-    }
-  } catch (error) {
-    console.warn('Failed to reset project form during factory reset', error);
-  }
-
-  try {
-    displayGearAndRequirements('');
-  } catch (error) {
-    console.warn('Failed to reset gear displays during factory reset', error);
-    if (gearListOutput) {
-      gearListOutput.innerHTML = '';
-      gearListOutput.classList.add('hidden');
-    }
-    if (projectRequirementsOutput) {
-      projectRequirementsOutput.innerHTML = '';
-      projectRequirementsOutput.classList.add('hidden');
-    }
-  }
-
-  const primarySelects = [
-    cameraSelect,
-    monitorSelect,
-    videoSelect,
-    cageSelect,
-    distanceSelect,
-    batterySelect,
-    hotswapSelect,
-    batteryPlateSelect,
-  ];
-  primarySelects.forEach(select => {
-    if (!select) return;
+  const suspendable =
+    typeof suspendProjectPersistence === 'function'
+    && typeof resumeProjectPersistence === 'function';
+  if (suspendable) {
     try {
-      const options = Array.from(select.options || []);
-      const noneOption = options.find(opt => opt.value === 'None');
-      if (noneOption) {
-        select.value = 'None';
-      } else if (options.length) {
-        select.selectedIndex = 0;
-      } else {
-        select.value = '';
+      suspendProjectPersistence();
+    } catch (error) {
+      console.warn('Failed to suspend project persistence during factory reset cleanup', error);
+    }
+  }
+
+  try {
+    try {
+      if (typeof storeLoadedSetupState === 'function') {
+        storeLoadedSetupState(null);
       }
-    } catch (selectError) {
-      console.warn('Failed to reset selector during factory reset', selectError);
+    } catch (error) {
+      console.warn('Failed to reset loaded setup state during factory reset', error);
     }
-  });
 
-  try {
-    resetSelectsToNone(motorSelects);
-  } catch (error) {
-    console.warn('Failed to reset motor selections during factory reset', error);
-  }
-
-  try {
-    resetSelectsToNone(controllerSelects);
-  } catch (error) {
-    console.warn('Failed to reset controller selections during factory reset', error);
-  }
-
-  try {
-    const sliderSelect = getSliderBowlSelect();
-    if (sliderSelect) sliderSelect.value = '';
-  } catch (error) {
-    console.warn('Failed to reset slider bowl selection during factory reset', error);
-  }
-
-  try {
-    const easyrigSelect = getEasyrigSelect();
-    if (easyrigSelect) easyrigSelect.value = '';
-  } catch (error) {
-    console.warn('Failed to reset Easyrig selection during factory reset', error);
-  }
-
-  try {
-    if (setupNameInput) {
-      setupNameInput.value = '';
-    }
-  } catch (error) {
-    console.warn('Failed to clear setup name during factory reset', error);
-  }
-
-  try {
-    if (setupSelect) {
-      populateSetupSelect();
-      setupSelect.value = '';
-    }
-  } catch (error) {
-    console.warn('Failed to reset setup selector options during factory reset', error);
-  }
-
-  try {
-    syncAutoGearRulesFromStorage();
-  } catch (error) {
-    console.warn('Failed to sync automatic gear rules during factory reset', error);
     try {
-      clearProjectAutoGearRules();
-    } catch (fallbackError) {
-      console.warn('Failed to clear project automatic gear rules during factory reset', fallbackError);
+      currentProjectInfo = null;
+    } catch (error) {
+      console.warn('Failed to clear in-memory project info during factory reset', error);
     }
-  }
 
-  try {
-    renderAutoGearRulesList();
-  } catch (error) {
-    console.warn('Failed to render automatic gear rules during factory reset', error);
-  }
+    try {
+      if (typeof populateProjectForm === 'function') {
+        populateProjectForm({});
+      } else if (projectForm && typeof projectForm.reset === 'function') {
+        projectForm.reset();
+      }
+    } catch (error) {
+      console.warn('Failed to reset project form during factory reset', error);
+    }
 
-  try {
-    resetSharedImportStateForFactoryReset();
-  } catch (error) {
-    console.warn('Failed to reset shared import state during factory reset', error);
-  }
+    try {
+      displayGearAndRequirements('');
+    } catch (error) {
+      console.warn('Failed to reset gear displays during factory reset', error);
+      if (gearListOutput) {
+        gearListOutput.innerHTML = '';
+        gearListOutput.classList.add('hidden');
+      }
+      if (projectRequirementsOutput) {
+        projectRequirementsOutput.innerHTML = '';
+        projectRequirementsOutput.classList.add('hidden');
+      }
+    }
 
-  try {
-    updateAutoGearCatalogOptions();
-  } catch (error) {
-    console.warn('Failed to refresh automatic gear catalog during factory reset', error);
-  }
+    const primarySelects = [
+      cameraSelect,
+      monitorSelect,
+      videoSelect,
+      cageSelect,
+      distanceSelect,
+      batterySelect,
+      hotswapSelect,
+      batteryPlateSelect,
+    ];
+    primarySelects.forEach(select => {
+      if (!select) return;
+      try {
+        const options = Array.from(select.options || []);
+        const noneOption = options.find(opt => opt.value === 'None');
+        if (noneOption) {
+          select.value = 'None';
+        } else if (options.length) {
+          select.selectedIndex = 0;
+        } else {
+          select.value = '';
+        }
+      } catch (selectError) {
+        console.warn('Failed to reset selector during factory reset', selectError);
+      }
+    });
 
-  try {
-    updateBatteryPlateVisibility();
-  } catch (error) {
-    console.warn('Failed to reset battery plate visibility during factory reset', error);
-  }
+    try {
+      resetSelectsToNone(motorSelects);
+    } catch (error) {
+      console.warn('Failed to reset motor selections during factory reset', error);
+    }
 
-  try {
-    updateBatteryOptions();
-  } catch (error) {
-    console.warn('Failed to reset battery options during factory reset', error);
-  }
+    try {
+      resetSelectsToNone(controllerSelects);
+    } catch (error) {
+      console.warn('Failed to reset controller selections during factory reset', error);
+    }
 
-  try {
-    safeLoadStoredLogoPreview();
-  } catch (error) {
-    console.warn('Failed to reset custom logo preview during factory reset', error);
-  }
+    try {
+      const sliderSelect = getSliderBowlSelect();
+      if (sliderSelect) sliderSelect.value = '';
+    } catch (error) {
+      console.warn('Failed to reset slider bowl selection during factory reset', error);
+    }
 
-  try {
-    resetCustomFontsForFactoryReset();
-  } catch (error) {
-    console.warn('Failed to reset custom fonts during factory reset', error);
-  }
+    try {
+      const easyrigSelect = getEasyrigSelect();
+      if (easyrigSelect) easyrigSelect.value = '';
+    } catch (error) {
+      console.warn('Failed to reset Easyrig selection during factory reset', error);
+    }
 
-  try {
-    updateStorageSummary();
-  } catch (error) {
-    console.warn('Failed to update storage summary during factory reset', error);
-  }
+    try {
+      if (setupNameInput) {
+        setupNameInput.value = '';
+      }
+    } catch (error) {
+      console.warn('Failed to clear setup name during factory reset', error);
+    }
 
-  try {
-    ensureGearListActions();
-  } catch (error) {
-    console.warn('Failed to ensure gear list actions during factory reset', error);
-  }
+    try {
+      if (setupSelect) {
+        populateSetupSelect();
+        setupSelect.value = '';
+      }
+    } catch (error) {
+      console.warn('Failed to reset setup selector options during factory reset', error);
+    }
 
-  try {
-    checkSetupChanged();
-  } catch (error) {
-    console.warn('Failed to refresh setup state during factory reset', error);
-  }
+    try {
+      syncAutoGearRulesFromStorage();
+    } catch (error) {
+      console.warn('Failed to sync automatic gear rules during factory reset', error);
+      try {
+        clearProjectAutoGearRules();
+      } catch (fallbackError) {
+        console.warn('Failed to clear project automatic gear rules during factory reset', fallbackError);
+      }
+    }
 
-  try {
-    updateCalculations();
-  } catch (error) {
-    console.warn('Failed to update calculations during factory reset', error);
+    try {
+      renderAutoGearRulesList();
+    } catch (error) {
+      console.warn('Failed to render automatic gear rules during factory reset', error);
+    }
+
+    try {
+      resetSharedImportStateForFactoryReset();
+    } catch (error) {
+      console.warn('Failed to reset shared import state during factory reset', error);
+    }
+
+    try {
+      updateAutoGearCatalogOptions();
+    } catch (error) {
+      console.warn('Failed to refresh automatic gear catalog during factory reset', error);
+    }
+
+    try {
+      updateBatteryPlateVisibility();
+    } catch (error) {
+      console.warn('Failed to reset battery plate visibility during factory reset', error);
+    }
+
+    try {
+      updateBatteryOptions();
+    } catch (error) {
+      console.warn('Failed to reset battery options during factory reset', error);
+    }
+
+    try {
+      safeLoadStoredLogoPreview();
+    } catch (error) {
+      console.warn('Failed to reset custom logo preview during factory reset', error);
+    }
+
+    try {
+      resetCustomFontsForFactoryReset();
+    } catch (error) {
+      console.warn('Failed to reset custom fonts during factory reset', error);
+    }
+
+    try {
+      updateStorageSummary();
+    } catch (error) {
+      console.warn('Failed to update storage summary during factory reset', error);
+    }
+
+    try {
+      ensureGearListActions();
+    } catch (error) {
+      console.warn('Failed to ensure gear list actions during factory reset', error);
+    }
+
+    try {
+      checkSetupChanged();
+    } catch (error) {
+      console.warn('Failed to refresh setup state during factory reset', error);
+    }
+
+    try {
+      updateCalculations();
+    } catch (error) {
+      console.warn('Failed to update calculations during factory reset', error);
+    }
+  } finally {
+    if (suspendable) {
+      try {
+        resumeProjectPersistence();
+      } catch (error) {
+        console.warn('Failed to resume project persistence after factory reset cleanup', error);
+      }
+    }
   }
 }
 
