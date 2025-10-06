@@ -1523,6 +1523,7 @@ function patchIndividualStorageGetItem(storage) {
       value: patchedGetItem,
     });
   } catch (defineError) {
+    console.warn('Unable to redefine storage.getItem descriptor for compression support', defineError);
     try {
       storage.getItem = patchedGetItem;
     } catch (assignError) {

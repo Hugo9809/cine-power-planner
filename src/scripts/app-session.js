@@ -46,8 +46,7 @@ if (typeof globalThis !== 'undefined' && typeof globalThis.STRONG_SEARCH_MATCH_T
           normalizeBackupDataValue, mergeBackupDataSections, extractBackupSections,
           triggerBackupDownload, encodeBackupDataUrl, openBackupFallbackWindow,
           downloadBackupPayload, isAutoBackupName, parseAutoBackupName,
-          SESSION_AUTO_BACKUP_NAME_PREFIX, SESSION_AUTO_BACKUP_DELETION_PREFIX,
-          isPlainObject */
+          SESSION_AUTO_BACKUP_NAME_PREFIX, SESSION_AUTO_BACKUP_DELETION_PREFIX */
 /* global FEEDBACK_TEMPERATURE_MIN: true, FEEDBACK_TEMPERATURE_MAX: true */
 /* global getDiagramManualPositions, setManualDiagramPositions,
           normalizeDiagramPositionsInput, ensureAutoBackupsFromProjects */
@@ -139,6 +138,408 @@ function getSessionRuntimeFunction(name) {
 
   return null;
 }
+
+function resolveCompatibilityTexts(langTexts, fallbackTexts) {
+  const translations = typeof texts === 'object' && texts ? texts : {};
+  const resolvedFallback = fallbackTexts || translations.en || {};
+  const lang = typeof currentLang === 'string' && translations[currentLang]
+    ? currentLang
+    : 'en';
+  const resolvedLang = langTexts || translations[lang] || resolvedFallback;
+  return { lang, langTexts: resolvedLang, fallbackTexts: resolvedFallback };
+}
+
+function ensureMeaningfulValue(value) {
+  if (value === null || value === undefined) {
+    return false;
+  }
+  if (typeof value === 'string') {
+    return value.trim().length > 0;
+  }
+  if (typeof value === 'number' || typeof value === 'boolean') {
+    return true;
+  }
+  if (Array.isArray(value)) {
+    return value.length > 0;
+  }
+  if (typeof value === 'object') {
+    return Object.keys(value).length > 0;
+  }
+  return false;
+}
+
+const formatNumberForComparison = ensureSessionRuntimePlaceholder(
+  'formatNumberForComparison',
+  () => {
+    const formatterCache = new Map();
+
+    const getFormatter = (lang, hasFraction) => {
+      const cacheKey = `${lang}|${hasFraction ? 'fraction' : 'integer'}`;
+      if (formatterCache.has(cacheKey)) {
+        return formatterCache.get(cacheKey);
+      }
+
+      if (typeof Intl !== 'undefined' && typeof Intl.NumberFormat === 'function') {
+        try {
+          const formatter = new Intl.NumberFormat(lang, {
+            maximumFractionDigits: hasFraction ? 2 : 0,
+          });
+          formatterCache.set(cacheKey, formatter);
+          return formatter;
+        } catch (error) {
+          console.warn('Unable to create comparison number formatter', error);
+        }
+      }
+
+      formatterCache.set(cacheKey, null);
+      return null;
+    };
+
+    return (input) => {
+      if (input === null || input === undefined) {
+        return '';
+      }
+
+      const numeric = typeof input === 'number'
+        ? input
+        : Number(typeof input === 'string' ? input.trim() : input);
+
+      if (!Number.isFinite(numeric)) {
+        return typeof input === 'string' ? input : String(input);
+      }
+
+      const { lang } = resolveCompatibilityTexts();
+      const hasFraction = Math.abs(numeric % 1) > Number.EPSILON;
+      const formatter = getFormatter(lang, hasFraction);
+
+      if (formatter) {
+        try {
+          return formatter.format(numeric);
+        } catch (error) {
+          console.warn('Comparison number formatting failed', error);
+        }
+      }
+
+      try {
+        return numeric.toLocaleString(lang);
+      } catch (localeError) {
+        void localeError;
+      }
+
+      return String(numeric);
+    };
+  },
+);
+
+const getManualDownloadFallbackMessage = ensureSessionRuntimePlaceholder(
+  'getManualDownloadFallbackMessage',
+  () => () => {
+    const { langTexts, fallbackTexts } = resolveCompatibilityTexts();
+    return langTexts.manualDownloadFallback
+      || fallbackTexts.manualDownloadFallback
+      || 'The download did not start automatically. A new tab opened with the file contents so you can copy or save them manually.';
+  },
+);
+
+const getManualDownloadCopyHint = ensureSessionRuntimePlaceholder(
+  'getManualDownloadCopyHint',
+  () => () => {
+    const { langTexts, fallbackTexts } = resolveCompatibilityTexts();
+    return langTexts.manualDownloadCopyHint
+      || fallbackTexts.manualDownloadCopyHint
+      || 'Select all the text below and copy it to keep the file safe.';
+  },
+);
+
+let backupDiffOptionsCache = ensureSessionRuntimePlaceholder(
+  'backupDiffOptionsCache',
+  () => [],
+);
+
+let backupDiffState = ensureSessionRuntimePlaceholder(
+  'backupDiffState',
+  () => ({ baseline: '', comparison: '' }),
+);
+
+const RESTORE_COMPATIBILITY_CORE_KEYS = [
+  'devices',
+  'setups',
+  'project',
+  'projects',
+  'gearList',
+  'favorites',
+];
+
+const RESTORE_COMPATIBILITY_OPTIONAL_KEYS = [
+  'autoGearRules',
+  'autoGearPresets',
+  'autoGearBackups',
+  'autoGearMonitorDefaults',
+  'autoGearActivePresetId',
+  'autoGearAutoPresetId',
+  'autoGearShowBackups',
+  'autoGearBackupRetention',
+  'fullBackups',
+  'fullBackupHistory',
+  'session',
+];
+
+const RESTORE_COMPATIBILITY_STORAGE_KEYS = [
+  'accentColor',
+  'fontSize',
+  'fontFamily',
+  'language',
+  'showAutoBackups',
+  'customLogo',
+  'customFonts',
+];
+
+const RESTORE_SECTION_LABEL_OVERRIDES = {
+  autoGearRules: 'Automatic gear rules',
+  autoGearPresets: 'Automatic gear presets',
+  autoGearBackups: 'Automatic gear backups',
+  autoGearMonitorDefaults: 'Monitor defaults',
+  autoGearActivePresetId: 'Active auto gear preset',
+  autoGearAutoPresetId: 'Auto gear auto preset',
+  autoGearShowBackups: 'Auto gear backup visibility',
+  autoGearBackupRetention: 'Auto gear backup retention',
+  fullBackups: 'Full backups',
+  fullBackupHistory: 'Full backup history',
+  showAutoBackups: 'Automatic backup visibility',
+};
+
+function humanizeRestoreSectionKey(key) {
+  if (RESTORE_SECTION_LABEL_OVERRIDES[key]) {
+    return RESTORE_SECTION_LABEL_OVERRIDES[key];
+  }
+  if (typeof key !== 'string') {
+    return String(key);
+  }
+  const spaced = key
+    .replace(/[_\s-]+/g, ' ')
+    .replace(/([a-z\d])([A-Z])/g, '$1 $2')
+    .trim();
+  if (!spaced) {
+    return key;
+  }
+  return spaced.charAt(0).toUpperCase() + spaced.slice(1);
+}
+
+function evaluateRestoreCompatibilitySections({ data, settingsSnapshot, sessionSnapshot }) {
+  const normalizedData = data && typeof data === 'object' ? data : null;
+  const normalizedSettings = settingsSnapshot && typeof settingsSnapshot === 'object'
+    ? settingsSnapshot
+    : null;
+  const normalizedSession = sessionSnapshot && typeof sessionSnapshot === 'object'
+    ? sessionSnapshot
+    : null;
+
+  const missingCore = [];
+  const missingOptional = [];
+  const missingStorage = [];
+
+  const checkDataKey = (key, bucket) => {
+    if (!normalizedData || !Object.prototype.hasOwnProperty.call(normalizedData, key)) {
+      bucket.push(key);
+      return;
+    }
+    if (!ensureMeaningfulValue(normalizedData[key])) {
+      bucket.push(key);
+    }
+  };
+
+  RESTORE_COMPATIBILITY_CORE_KEYS.forEach(key => checkDataKey(key, missingCore));
+  RESTORE_COMPATIBILITY_OPTIONAL_KEYS.forEach(key => checkDataKey(key, missingOptional));
+
+  if (!normalizedSession || !ensureMeaningfulValue(normalizedSession)) {
+    if (!missingOptional.includes('session')) {
+      missingOptional.push('session');
+    }
+  }
+
+  RESTORE_COMPATIBILITY_STORAGE_KEYS.forEach(key => {
+    if (!normalizedSettings || !Object.prototype.hasOwnProperty.call(normalizedSettings, key)) {
+      missingStorage.push(key);
+      return;
+    }
+    if (!ensureMeaningfulValue(normalizedSettings[key])) {
+      missingStorage.push(key);
+    }
+  });
+
+  return {
+    missingCore,
+    missingOptional,
+    missingStorage,
+  };
+}
+
+function describeMissingSections(label, items) {
+  if (!label || !Array.isArray(items) || !items.length) {
+    return '';
+  }
+  const bulletList = items
+    .map(item => `• ${humanizeRestoreSectionKey(item)}`)
+    .join('\n');
+  return `${label}\n${bulletList}`;
+}
+
+function buildRestoreCompatibilityReport(options = {}) {
+  const {
+    langTexts: providedLangTexts,
+    fallbackTexts: providedFallbackTexts,
+    fileVersion,
+    targetVersion,
+    data,
+    settingsSnapshot,
+    sessionSnapshot,
+    backupFileName,
+  } = options;
+
+  const { langTexts, fallbackTexts } = resolveCompatibilityTexts(
+    providedLangTexts,
+    providedFallbackTexts,
+  );
+
+  const evaluation = evaluateRestoreCompatibilitySections({
+    data,
+    settingsSnapshot,
+    sessionSnapshot,
+  });
+
+  const getText = (key, fallback) => {
+    if (langTexts && typeof langTexts[key] === 'string') {
+      return langTexts[key];
+    }
+    if (fallbackTexts && typeof fallbackTexts[key] === 'string') {
+      return fallbackTexts[key];
+    }
+    return fallback || '';
+  };
+
+  const messageParts = [];
+  const summaryTitle = getText('restoreVersionSummaryTitle');
+  if (summaryTitle) {
+    messageParts.push(summaryTitle);
+  }
+
+  const unknownVersion = getText('restoreVersionUnknownVersion', 'unknown version');
+  const headingTemplate = getText(
+    'restoreVersionSummaryHeading',
+    'This backup was created with {oldVersion} and you are running {newVersion}.',
+  );
+  const heading = headingTemplate
+    .replace('{oldVersion}', fileVersion || unknownVersion)
+    .replace('{newVersion}', targetVersion || unknownVersion);
+  messageParts.push(heading);
+
+  const warning = getText('restoreVersionWarning');
+  if (warning) {
+    messageParts.push(warning);
+  }
+
+  const coreSection = describeMissingSections(
+    getText('restoreVersionCoreMissing', 'Not included in this backup:'),
+    evaluation.missingCore,
+  );
+  if (coreSection) {
+    messageParts.push(coreSection);
+  }
+
+  const storageSection = describeMissingSections(
+    getText('restoreVersionStorageMissing', 'Stored preferences not included:'),
+    evaluation.missingStorage,
+  );
+  if (storageSection) {
+    messageParts.push(storageSection);
+  }
+
+  const optionalSection = describeMissingSections(
+    getText('restoreVersionOptionalMissing', 'Optional items you may need to recreate:'),
+    evaluation.missingOptional,
+  );
+  if (optionalSection) {
+    messageParts.push(optionalSection);
+  }
+
+  if (
+    !evaluation.missingCore.length
+    && !evaluation.missingStorage.length
+    && !evaluation.missingOptional.length
+  ) {
+    const noIssues = getText('restoreVersionNoIssues');
+    if (noIssues) {
+      messageParts.push(noIssues);
+    }
+  }
+
+  if (backupFileName) {
+    const backupLabel = getText('restoreVersionBackupLabel');
+    if (backupLabel) {
+      messageParts.push(backupLabel.replace('{fileName}', backupFileName));
+    }
+  }
+
+  const tip = getText('restoreVersionTip');
+  if (tip) {
+    messageParts.push(tip);
+  }
+
+  const footer = getText('restoreVersionFooter');
+  if (footer) {
+    messageParts.push(footer);
+  }
+
+  return {
+    evaluation,
+    message: messageParts.filter(Boolean).join('\n\n'),
+    langTexts,
+    fallbackTexts,
+  };
+}
+
+const buildRestoreVersionCompatibilityMessage = ensureSessionRuntimePlaceholder(
+  'buildRestoreVersionCompatibilityMessage',
+  () => (options = {}) => buildRestoreCompatibilityReport(options).message,
+);
+
+const verifyRestoredBackupIntegrity = ensureSessionRuntimePlaceholder(
+  'verifyRestoredBackupIntegrity',
+  () => (payload) => {
+    const options = payload && typeof payload === 'object' && !Array.isArray(payload)
+      && (payload.data || payload.settingsSnapshot || payload.sessionSnapshot)
+      ? payload
+      : { data: payload };
+
+    const report = buildRestoreCompatibilityReport(options);
+    const { evaluation, message, langTexts, fallbackTexts } = report;
+    const missingCount = evaluation.missingCore.length
+      + evaluation.missingStorage.length
+      + evaluation.missingOptional.length;
+
+    const warning = (langTexts && langTexts.restoreVersionWarning)
+      || (fallbackTexts && fallbackTexts.restoreVersionWarning)
+      || 'Backup created with a different version. Some features might not transfer.';
+
+    const success = (langTexts && langTexts.restoreVersionNoIssues)
+      || (fallbackTexts && fallbackTexts.restoreVersionNoIssues)
+      || 'All modern data sections were found in this backup.';
+
+    if (missingCount === 0) {
+      return {
+        notificationType: 'success',
+        notificationMessage: success,
+        alertMessage: '',
+      };
+    }
+
+    return {
+      notificationType: 'warning',
+      notificationMessage: warning,
+      alertMessage: message,
+    };
+  },
+);
 
 function invokeSessionRevertAccentColor() {
   const revertFn = getSessionRuntimeFunction('revertAccentColor');

@@ -1,4 +1,4 @@
-function bindConsoleValue(baseConsole, descriptor, property) {
+function bindConsoleValue(baseConsole, descriptor) {
   if (!descriptor) {
     return undefined;
   }
@@ -32,7 +32,7 @@ function createConsoleFacade(baseConsole) {
 
   const facade = {};
   const define = (property) => {
-    const descriptor = bindConsoleValue(baseConsole, Object.getOwnPropertyDescriptor(baseConsole, property), property);
+    const descriptor = bindConsoleValue(baseConsole, Object.getOwnPropertyDescriptor(baseConsole, property));
     if (descriptor) {
       Object.defineProperty(facade, property, descriptor);
     }

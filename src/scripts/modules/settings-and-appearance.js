@@ -281,6 +281,8 @@
     const autoBackups = context.autoBackups || {};
     const mountVoltages = context.mountVoltages || {};
     const helpers = context.helpers || {};
+    void win;
+    void helpers;
 
     let pinkModeIconRotationTimer = null;
     let pinkModeIconIndex = 0;
