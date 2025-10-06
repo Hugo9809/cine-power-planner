@@ -1098,6 +1098,115 @@
 
   const INITIAL_MODULE_LINK_STATE = synchronizeModuleLinks({ warn: false });
 
+  function inspectModuleConnections(options = {}) {
+    const registry = options.registry || MODULE_REGISTRY;
+
+    if (!registry || typeof registry.list !== 'function' || typeof registry.describe !== 'function') {
+      return freezeDeep({
+        ok: false,
+        reason: 'missing-registry',
+        modules: [],
+        missingConnections: [],
+        errors: [],
+      });
+    }
+
+    let names;
+    try {
+      names = registry.list();
+    } catch (error) {
+      return freezeDeep({
+        ok: false,
+        reason: 'list-failed',
+        modules: [],
+        missingConnections: [],
+        errors: freezeDeep([
+          {
+            type: 'list',
+            message: error && typeof error.message === 'string' ? error.message : null,
+          },
+        ]),
+      });
+    }
+
+    const moduleNames = Array.isArray(names) ? names.slice() : [];
+    const modules = [];
+    const missingConnections = [];
+    const errors = [];
+
+    const hasConnection = typeof registry.has === 'function'
+      ? function hasViaRegistry(name) {
+          try {
+            return registry.has(name);
+          } catch (error) {
+            errors.push({
+              type: 'has',
+              module: name,
+              message: error && typeof error.message === 'string' ? error.message : null,
+            });
+            return moduleNames.indexOf(name) !== -1;
+          }
+        }
+      : function hasViaList(name) {
+          return moduleNames.indexOf(name) !== -1;
+        };
+
+    for (let index = 0; index < moduleNames.length; index += 1) {
+      const name = moduleNames[index];
+      let meta = null;
+
+      try {
+        meta = registry.describe(name);
+      } catch (error) {
+        errors.push({
+          type: 'describe',
+          module: name,
+          message: error && typeof error.message === 'string' ? error.message : null,
+        });
+      }
+
+      const connectionSet = new Set();
+      const connectionList = [];
+      const missingList = [];
+
+      if (meta && meta.connections && typeof meta.connections[Symbol.iterator] === 'function') {
+        for (const connection of meta.connections) {
+          if (typeof connection !== 'string') {
+            continue;
+          }
+          const trimmed = connection.trim();
+          if (!trimmed || connectionSet.has(trimmed)) {
+            continue;
+          }
+
+          connectionSet.add(trimmed);
+          connectionList.push(trimmed);
+
+          if (!hasConnection(trimmed)) {
+            missingList.push(trimmed);
+            missingConnections.push({ from: name, to: trimmed });
+          }
+        }
+      }
+
+      modules.push(
+        freezeDeep({
+          name,
+          connections: connectionList,
+          missing: missingList,
+          ok: missingList.length === 0,
+        }),
+      );
+    }
+
+    return freezeDeep({
+      ok: missingConnections.length === 0,
+      modules,
+      missingConnections,
+      errors,
+    });
+  }
+
   function fallbackExposeGlobal(name, value) {
     if (!GLOBAL_SCOPE || typeof GLOBAL_SCOPE !== 'object') {
       return false;
@@ -1683,6 +1792,9 @@
     synchronizeModules(options) {
       return synchronizeModuleLinks(options || {});
     },
+    inspectModuleConnections(options) {
+      return inspectModuleConnections(options || {});
+    },
     listCriticalChecks,
     verifyCriticalFlows,
     __internal: freezeDeep({
@@ -1693,6 +1805,7 @@
       synchronizeModuleLinks,
       flushPendingModuleQueues,
       initialSynchronization: INITIAL_MODULE_LINK_STATE,
+      inspectModuleConnections,
     }),
   });
 
@@ -1705,6 +1818,7 @@
       category: 'runtime',
       description: 'Runtime orchestrator ensuring persistence, offline, and UI safeguards stay intact.',
       replace: true,
+      connections: ['cinePersistence', 'cineOffline', 'cineUi', 'cineModuleGlobals', 'cineModuleContext'],
     },
     (error) => {
       safeWarn('Unable to register cineRuntime module.', error);

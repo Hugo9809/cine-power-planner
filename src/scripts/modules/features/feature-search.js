@@ -227,6 +227,7 @@
       category: 'features',
       description: 'Reusable helpers for feature search normalisation, highlighting and detail formatting.',
       replace: true,
+      connections: ['cineModuleBase', 'cineModuleContext', 'cineUi'],
     },
     error => safeWarn('Unable to register cine.features.featureSearch module.', error),
     GLOBAL_SCOPE,

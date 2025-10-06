@@ -693,6 +693,7 @@
         category: 'infrastructure',
         description: 'Provides consistent global environment access between Cine modules.',
         replace: true,
+        connections: ['cineModuleEnvironment', 'cineModuleGlobals'],
       });
     } catch (error) {
       safeWarn('Unable to register cineEnvironmentBridge.', error);
@@ -702,6 +703,7 @@
       category: 'infrastructure',
       description: 'Provides consistent global environment access between Cine modules.',
       replace: true,
+      connections: ['cineModuleEnvironment', 'cineModuleGlobals'],
     });
   }
 

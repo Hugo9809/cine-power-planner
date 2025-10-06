@@ -597,6 +597,7 @@
       category: 'infrastructure',
       description: 'Shared helpers for module registration, freezing and safe global exposure.',
       replace: true,
+      connections: ['cineModuleArchitectureKernel', 'cineModuleArchitectureHelpers'],
     },
     (error) => {
       baseSafeWarn('Unable to register cineModuleBase.', error);

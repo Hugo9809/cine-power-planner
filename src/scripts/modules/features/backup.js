@@ -1302,6 +1302,7 @@
       category: 'feature',
       description: 'Backup and restore helpers for snapshots, payload normalization, downloads and diff metadata.',
       replace: true,
+      connections: ['cineModuleBase', 'cineModuleContext', 'cinePersistence'],
     },
     (error) => {
       if (typeof console !== 'undefined' && typeof console.warn === 'function') {

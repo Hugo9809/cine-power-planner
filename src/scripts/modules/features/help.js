@@ -285,6 +285,7 @@
       category: 'features',
       description: 'Shared helpers for install guidance, platform detection and iOS PWA help lifecycle.',
       replace: true,
+      connections: ['cineModuleBase', 'cineModuleContext', 'cineUi'],
     },
     error => safeWarn('Unable to register cine.features.help module.', error),
     GLOBAL_SCOPE,

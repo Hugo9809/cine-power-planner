@@ -199,6 +199,48 @@
     throw new TypeError('cineModules.register expected a non-empty string name.');
   }
 
+  function normalizeConnections(value) {
+    if (value == null) {
+      return [];
+    }
+
+    const entries = Array.isArray(value)
+      ? value
+      : typeof value === 'string'
+        ? [value]
+        : typeof value[Symbol.iterator] === 'function'
+          ? Array.from(value)
+          : [value];
+
+    const seen = new Set();
+    const normalized = [];
+
+    for (let index = 0; index < entries.length; index += 1) {
+      const entry = entries[index];
+      let raw = null;
+
+      if (typeof entry === 'string') {
+        raw = entry;
+      } else if (entry && typeof entry.name === 'string') {
+        raw = entry.name;
+      }
+
+      if (!raw) {
+        continue;
+      }
+
+      const trimmed = raw.trim();
+      if (!trimmed || seen.has(trimmed)) {
+        continue;
+      }
+
+      seen.add(trimmed);
+      normalized.push(trimmed);
+    }
+
+    return normalized;
+  }
+
   function register(name, moduleApi, options = {}) {
     const normalizedName = normalizeName(name);
 
@@ -228,6 +270,9 @@
       category: typeof options.category === 'string' ? options.category.trim() : '',
       registeredAt: Date.now(),
       frozen: freeze,
+      connections: freezeDeep(normalizeConnections(
+        options.connections || options.links || options.dependencies || null,
+      )),
     };
 
     return descriptor;
@@ -261,6 +306,7 @@
       category: meta.category,
       registeredAt: meta.registeredAt,
       frozen: meta.frozen,
+      connections: meta.connections || freezeDeep([]),
     });
   }
 

@@ -832,6 +832,7 @@
       category: 'infrastructure',
       description: 'Shared module globals for cross-script coordination.',
       replace: true,
+      connections: ['cineModuleBase', 'cineModuleEnvironment', 'cineEnvironmentBridge'],
     },
     function (error) {
       safeWarn('Unable to register cineModuleGlobals module.', error);
@@ -848,6 +849,7 @@
         category: 'infrastructure',
         description: 'Shared module globals for cross-script coordination.',
         replace: true,
+        connections: ['cineModuleBase', 'cineModuleEnvironment', 'cineEnvironmentBridge'],
       },
       GLOBAL_SCOPE
     );

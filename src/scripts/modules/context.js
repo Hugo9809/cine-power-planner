@@ -963,6 +963,7 @@
       category: 'infrastructure',
       description: 'Shared context helpers that unify architecture, system and registry lookups.',
       freeze: false,
+      connections: ['cineModuleBase', 'cineModuleGlobals', 'cineModuleEnvironment', 'cineModuleArchitectureKernel'],
     },
     PRIMARY_SCOPE,
   );

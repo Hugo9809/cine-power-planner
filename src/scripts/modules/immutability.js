@@ -292,6 +292,7 @@
     category: 'infrastructure',
     description: 'Shared immutability helpers that provide consistent deep freezing across modules.',
     replace: true,
+    connections: ['cineModuleArchitectureHelpers'],
   };
 
   if (registry && typeof registry.register === 'function') {
