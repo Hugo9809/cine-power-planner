@@ -259,6 +259,8 @@
     return null;
   }
 
+  const ARCHITECTURE_HELPERS = resolveArchitectureHelpers(LOCAL_SCOPE);
+
   let pendingQueueKey =
     ARCHITECTURE_HELPERS && typeof ARCHITECTURE_HELPERS.pendingQueueKey === 'string'
       ? ARCHITECTURE_HELPERS.pendingQueueKey
@@ -285,8 +287,6 @@
       pendingQueueKey = source.PENDING_QUEUE_KEY;
     }
   }
-
-  const ARCHITECTURE_HELPERS = resolveArchitectureHelpers(LOCAL_SCOPE);
 
   const MODULE_SYSTEM = resolveModuleSystem(LOCAL_SCOPE);
   if (MODULE_SYSTEM) {
