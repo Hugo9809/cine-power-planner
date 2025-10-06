@@ -26,6 +26,8 @@
           normalizeBatteryPlateValue, applyBatteryPlateSelectionFromBattery,
           getPowerSelectionSnapshot, applyStoredPowerSelection,
           settingsReduceMotion, settingsRelaxedSpacing, callCoreFunctionIfAvailable,
+          suspendProjectPersistence, resumeProjectPersistence,
+          isProjectPersistenceSuspended,
           recordFeatureSearchUsage, extractFeatureSearchFilter,
           helpResultsSummary, helpResultsAssist */
 /* eslint-enable no-redeclare */
