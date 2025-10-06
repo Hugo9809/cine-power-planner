@@ -130,6 +130,143 @@
   let factoryAutoGearRulesSnapshot = null;
   let factoryAutoGearSeedContext = null;
 
+  function fallbackCollectCandidateScopes(primary) {
+    const scopes = [];
+
+    function push(scope) {
+      if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+        return;
+      }
+      if (scopes.indexOf(scope) === -1) {
+        scopes.push(scope);
+      }
+    }
+
+    push(primary);
+    if (typeof globalThis !== 'undefined') push(globalThis);
+    if (typeof window !== 'undefined') push(window);
+    if (typeof self !== 'undefined') push(self);
+    if (typeof global !== 'undefined') push(global);
+
+    return scopes;
+  }
+
+  const candidateScopes = (function resolveCandidateScopes() {
+    if (MODULE_BASE && typeof MODULE_BASE.collectCandidateScopes === 'function') {
+      try {
+        const collected = MODULE_BASE.collectCandidateScopes(GLOBAL_SCOPE);
+        if (Array.isArray(collected) && collected.length) {
+          return collected;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    return fallbackCollectCandidateScopes(GLOBAL_SCOPE);
+  })();
+
+  const structuredCloneCandidates = (function collectStructuredCloneCandidates() {
+    const candidates = [];
+
+    function addCandidate(fn, scope) {
+      if (typeof fn !== 'function') {
+        return;
+      }
+      const exists = candidates.some(candidate => candidate && candidate.fn === fn);
+      if (!exists) {
+        candidates.push({ fn, scope: scope || null });
+      }
+    }
+
+    if (MODULE_BASE) {
+      if (typeof MODULE_BASE.structuredClone === 'function') {
+        addCandidate(MODULE_BASE.structuredClone, MODULE_BASE);
+      }
+      if (typeof MODULE_BASE.getStructuredClone === 'function') {
+        try {
+          const resolved = MODULE_BASE.getStructuredClone();
+          addCandidate(resolved, MODULE_BASE);
+        } catch (error) {
+          void error;
+        }
+      }
+    }
+
+    for (let index = 0; index < candidateScopes.length; index += 1) {
+      const scope = candidateScopes[index];
+      if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+        continue;
+      }
+      const candidate = scope.structuredClone;
+      if (typeof candidate === 'function') {
+        addCandidate(candidate, scope);
+      }
+    }
+
+    return candidates;
+  })();
+
+  let cachedStructuredCloneCandidate = null;
+
+  function tryStructuredCloneValue(value) {
+    if (cachedStructuredCloneCandidate) {
+      try {
+        const candidate = cachedStructuredCloneCandidate;
+        return {
+          success: true,
+          value: candidate.scope ? candidate.fn.call(candidate.scope, value) : candidate.fn(value),
+        };
+      } catch (error) {
+        void error;
+        cachedStructuredCloneCandidate = null;
+      }
+    }
+
+    for (let index = 0; index < structuredCloneCandidates.length; index += 1) {
+      const candidate = structuredCloneCandidates[index];
+      if (!candidate || typeof candidate.fn !== 'function') {
+        continue;
+      }
+      try {
+        const cloned = candidate.scope ? candidate.fn.call(candidate.scope, value) : candidate.fn(value);
+        cachedStructuredCloneCandidate = candidate;
+        return { success: true, value: cloned };
+      } catch (error) {
+        void error;
+      }
+    }
+
+    return { success: false, value: null };
+  }
+
+  function cloneWithStructuredCloneFallback(value) {
+    if (value === null || typeof value === 'undefined') {
+      return value;
+    }
+
+    const attempt = tryStructuredCloneValue(value);
+    if (attempt.success) {
+      return attempt.value;
+    }
+
+    try {
+      return JSON.parse(JSON.stringify(value));
+    } catch (error) {
+      void error;
+    }
+
+    if (Array.isArray(value)) {
+      return value.slice();
+    }
+
+    if (typeof value === 'object') {
+      return { ...value };
+    }
+
+    return value;
+  }
+
 function cloneAutoGearItems(items) {
   return items
     .map(item => {
@@ -1016,11 +1153,8 @@ function captureAutoGearSeedContext() {
   if (factoryAutoGearSeedContext) return;
   if (typeof collectProjectFormData !== 'function') return;
   const baseInfo = collectProjectFormData() || {};
-  let projectDataClone;
-  try {
-    projectDataClone = JSON.parse(JSON.stringify(baseInfo));
-  } catch (cloneError) {
-    void cloneError;
+  let projectDataClone = cloneWithStructuredCloneFallback(baseInfo);
+  if (!projectDataClone || typeof projectDataClone !== 'object') {
     projectDataClone = { ...baseInfo };
   }
   const scenarioValues = requiredScenariosSelect
@@ -1198,11 +1332,8 @@ function computeFactoryAutoGearRules() {
     autoGearRulesDirtySinceBackup = savedDirtyFlag;
     applySetupSelectValues(context.setupValues);
     const baseInfoSource = context.projectFormData || {};
-    let baseInfo;
-    try {
-      baseInfo = JSON.parse(JSON.stringify(baseInfoSource));
-    } catch (cloneErr) {
-      void cloneErr;
+    let baseInfo = cloneWithStructuredCloneFallback(baseInfoSource);
+    if (!baseInfo || typeof baseInfo !== 'object') {
       baseInfo = { ...baseInfoSource };
     }
     const rules = buildAutoGearRulesFromBaseInfo(baseInfo, context.scenarioValues || []);
@@ -1351,12 +1482,11 @@ function resetAutoGearRulesToFactoryAdditions() {
       if (!factoryAutoGearSeedContext) {
         return null;
       }
-      try {
-        return JSON.parse(JSON.stringify(factoryAutoGearSeedContext));
-      } catch (error) {
-        void error;
-        return { ...factoryAutoGearSeedContext };
+      const clonedContext = cloneWithStructuredCloneFallback(factoryAutoGearSeedContext);
+      if (clonedContext && typeof clonedContext === 'object') {
+        return clonedContext;
       }
+      return { ...factoryAutoGearSeedContext };
     },
     setFactoryAutoGearRulesSnapshot,
     cloneAutoGearItems,
