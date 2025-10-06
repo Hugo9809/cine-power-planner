@@ -10794,6 +10794,36 @@ function ensurePinkModeAnimationLayer(options) {
   return layer;
 }
 
+function resolvePinkModeHostExtent(host, hostRect, fallbackHeight) {
+  if (host && typeof host === 'object') {
+    try {
+      const scrollHeight = host.scrollHeight;
+      if (typeof scrollHeight === 'number' && scrollHeight > 0) {
+        return scrollHeight;
+      }
+    } catch (error) {
+      void error;
+    }
+  }
+
+  if (hostRect && typeof hostRect.height === 'number' && hostRect.height > 0) {
+    return hostRect.height;
+  }
+
+  if (
+    hostRect &&
+    typeof hostRect.top === 'number' &&
+    typeof hostRect.bottom === 'number'
+  ) {
+    const derivedHeight = hostRect.bottom - hostRect.top;
+    if (Number.isFinite(derivedHeight) && derivedHeight > 0) {
+      return derivedHeight;
+    }
+  }
+
+  return fallbackHeight;
+}
+
 function computePinkModeAnimationAvoidRegions(layer) {
   if (
     typeof document === 'undefined' ||
@@ -11599,12 +11629,7 @@ function spawnPinkModeAnimatedIconInstance(templates) {
   const viewportBottom = viewportTop + viewportHeight;
   const hostRect = host ? host.getBoundingClientRect() : null;
   const hostTop = hostRect ? hostRect.top + viewportTop : 0;
-  const hostHeight =
-    host && typeof host.scrollHeight === 'number' && host.scrollHeight > 0
-      ? host.scrollHeight
-      : hostRect && hostRect.height
-        ? hostRect.height
-        : viewportHeight;
+  const hostHeight = resolvePinkModeHostExtent(host, hostRect, viewportHeight);
   const hostBottom = hostTop + hostHeight;
   let visibleTop = Math.max(hostTop, viewportTop);
   let visibleBottom = Math.min(hostBottom, viewportBottom);
