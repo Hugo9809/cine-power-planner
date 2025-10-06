@@ -12661,7 +12661,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     if (connectionDiagramModule && typeof connectionDiagramModule.createConnectionDiagram === 'function') {
       try {
         const scheduleProjectAutoSaveFn =
-          typeof scheduleProjectAutoSave === 'function' ? scheduleProjectAutoSave : null;
+          typeof globalThis !== 'undefined' &&
+          typeof globalThis.scheduleProjectAutoSave === 'function'
+            ? globalThis.scheduleProjectAutoSave
+            : null;
 
         const connectionDiagram = connectionDiagramModule.createConnectionDiagram({
           document,
