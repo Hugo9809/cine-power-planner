@@ -3500,87 +3500,182 @@ if (setupNameInput && saveSetupBtn) {
   });
 }
 
-// Dark mode handling
-function updateThemeColor(isDark) {
-  const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) {
-    meta.setAttribute('content', isDark ? '#1c1c1e' : '#ffffff');
-  }
-}
+const warnMountVoltageHelper = typeof warnMissingMountVoltageHelper === 'function'
+  ? warnMissingMountVoltageHelper
+  : () => {};
 
-function setToggleIcon(button, glyph) {
-  if (!button) return;
-  let iconSpan = button.querySelector('.icon-glyph');
-  if (!iconSpan) {
-    iconSpan = document.createElement('span');
-    iconSpan.className = 'icon-glyph';
-    iconSpan.setAttribute('aria-hidden', 'true');
-    button.textContent = '';
-    button.appendChild(iconSpan);
-  }
+let updateThemeColor = () => {};
+let setToggleIcon = () => {};
+let applyDarkMode = () => {};
+let applyHighContrast = () => {};
+let applyReduceMotion = () => {};
+let applyRelaxedSpacing = () => {};
+let applyPinkMode = () => {};
+let persistPinkModePreference = () => {};
+let rememberSettingsPinkModeBaseline = () => {};
+let revertSettingsPinkModeIfNeeded = () => {};
+let rememberSettingsTemperatureUnitBaseline = () => {};
+let revertSettingsTemperatureUnitIfNeeded = () => {};
+let applyShowAutoBackupsPreference = () => {};
+let rememberSettingsShowAutoBackupsBaseline = () => {};
+let revertSettingsShowAutoBackupsIfNeeded = () => {};
+let rememberSettingsMountVoltagesBaseline = () => {};
+let revertSettingsMountVoltagesIfNeeded = () => {};
+let handlePinkModeIconPress = () => {};
+let triggerPinkModeIconAnimation = () => {};
+let startPinkModeIconRotation = () => {};
+let stopPinkModeIconRotation = () => {};
+let startPinkModeAnimatedIconRotation = () => {};
+let stopPinkModeAnimatedIconRotation = () => {};
+let applyPinkModeIcon = () => {};
+let isPinkModeActive = () => !!(typeof document !== 'undefined' && document.body && document.body.classList.contains('pink-mode'));
 
-  const glyphConfig =
-    glyph && typeof glyph === 'object' && (glyph.markup || glyph.className)
-      ? glyph
-      : { value: glyph };
+const appearanceModuleFactory = ensureSessionRuntimePlaceholder(
+  'cineSettingsAppearance',
+  () => null,
+);
 
-  const classNames = ['icon-glyph'];
-  if (glyphConfig.className) {
-    classNames.push(glyphConfig.className);
-  }
-  iconSpan.className = classNames.join(' ');
-
-  if (glyphConfig.markup) {
-    iconSpan.innerHTML = ensureSvgHasAriaHidden(glyphConfig.markup);
-    iconSpan.removeAttribute('data-icon-font');
-  } else {
-    applyIconGlyph(iconSpan, glyphConfig.value);
-  }
-}
-
-function getIconGlyphSafe(name) {
-  if (!name) return null;
-  if (typeof ICON_GLYPHS !== 'object' || !ICON_GLYPHS) {
-    return null;
-  }
-  return ICON_GLYPHS[name] || null;
-}
-
-function applyDarkMode(enabled) {
-  if (enabled) {
-    document.body.classList.add("dark-mode");
-    document.documentElement.classList.add("dark-mode");
-    document.body.classList.remove("light-mode");
-    document.documentElement.classList.remove("light-mode");
-    if (darkModeToggle) {
-      const sunGlyph = getIconGlyphSafe('sun');
-      if (sunGlyph) {
-        setToggleIcon(darkModeToggle, sunGlyph);
+const appearanceContext = {
+  document: typeof document !== 'undefined' ? document : null,
+  window: typeof window !== 'undefined' ? window : null,
+  elements: {
+    darkModeToggle: typeof darkModeToggle !== 'undefined' ? darkModeToggle : null,
+    pinkModeToggle: typeof pinkModeToggle !== 'undefined' ? pinkModeToggle : null,
+    pinkModeHelpIcon: typeof pinkModeHelpIcon !== 'undefined' ? pinkModeHelpIcon : null,
+  },
+  settings: {
+    darkMode: typeof settingsDarkMode !== 'undefined' ? settingsDarkMode : null,
+    highContrast: typeof settingsHighContrast !== 'undefined' ? settingsHighContrast : null,
+    pinkMode: typeof settingsPinkMode !== 'undefined' ? settingsPinkMode : null,
+    reduceMotion: typeof settingsReduceMotion !== 'undefined' ? settingsReduceMotion : null,
+    relaxedSpacing: typeof settingsRelaxedSpacing !== 'undefined' ? settingsRelaxedSpacing : null,
+    showAutoBackups: typeof settingsShowAutoBackups !== 'undefined' ? settingsShowAutoBackups : null,
+    temperatureUnit: typeof settingsTemperatureUnit !== 'undefined' ? settingsTemperatureUnit : null,
+  },
+  accent: {
+    accentColorInput: typeof accentColorInput !== 'undefined' ? accentColorInput : null,
+    getAccentColor: () => accentColor,
+    setAccentColor: value => {
+      accentColor = value;
+    },
+    getPrevAccentColor: () => prevAccentColor,
+    setPrevAccentColor: value => {
+      prevAccentColor = value;
+    },
+    getHighContrastAccentColor: () => HIGH_CONTRAST_ACCENT_COLOR,
+    clearAccentColorOverrides: () => {
+      if (typeof clearAccentColorOverrides === 'function') {
+        clearAccentColorOverrides();
       }
-      darkModeToggle.setAttribute("aria-pressed", "true");
-    }
-  } else {
-    document.body.classList.remove("dark-mode");
-    document.documentElement.classList.remove("dark-mode");
-    document.body.classList.add("light-mode");
-    document.documentElement.classList.add("light-mode");
-    if (darkModeToggle) {
-      const moonGlyph = getIconGlyphSafe('moon');
-      if (moonGlyph) {
-        setToggleIcon(darkModeToggle, moonGlyph);
+    },
+    applyAccentColor: value => {
+      if (typeof applyAccentColor === 'function') {
+        applyAccentColor(value);
       }
-      darkModeToggle.setAttribute("aria-pressed", "false");
-    }
-  }
-  const highContrast = typeof isHighContrastActive === 'function' ? isHighContrastActive() : false;
-  const accentSource = highContrast ? HIGH_CONTRAST_ACCENT_COLOR : accentColor;
-  if (typeof refreshDarkModeAccentBoost === 'function') {
-    refreshDarkModeAccentBoost({ color: accentSource, highContrast });
-  }
-  updateThemeColor(enabled);
-  if (settingsDarkMode) {
-    settingsDarkMode.checked = enabled;
-  }
+    },
+    updateAccentColorResetButtonState: () => {
+      if (typeof updateAccentColorResetButtonState === 'function') {
+        updateAccentColorResetButtonState();
+      }
+    },
+    refreshDarkModeAccentBoost: payload => {
+      if (typeof refreshDarkModeAccentBoost === 'function') {
+        refreshDarkModeAccentBoost(payload);
+      }
+    },
+    isHighContrastActive: () => (typeof isHighContrastActive === 'function' ? isHighContrastActive() : false),
+  },
+  icons: {
+    registry: typeof ICON_GLYPHS === 'object' ? ICON_GLYPHS : null,
+    applyIconGlyph: typeof applyIconGlyph === 'function' ? (element, glyph) => applyIconGlyph(element, glyph) : null,
+    ensureSvgHasAriaHidden: typeof ensureSvgHasAriaHidden === 'function' ? ensureSvgHasAriaHidden : null,
+    pinkModeIcons: typeof pinkModeIcons === 'object' ? pinkModeIcons : null,
+    startPinkModeAnimatedIcons: typeof startPinkModeAnimatedIcons === 'function' ? startPinkModeAnimatedIcons : null,
+    stopPinkModeAnimatedIcons: typeof stopPinkModeAnimatedIcons === 'function' ? stopPinkModeAnimatedIcons : null,
+    triggerPinkModeIconRain: typeof triggerPinkModeIconRain === 'function' ? triggerPinkModeIconRain : null,
+  },
+  storage: {
+    getLocalStorage: () => {
+      try {
+        return typeof localStorage !== 'undefined' ? localStorage : null;
+      } catch (storageError) {
+        void storageError;
+        return null;
+      }
+    },
+  },
+  preferences: {
+    getTemperatureUnit: () => temperatureUnit,
+    setTemperatureUnit: value => {
+      temperatureUnit = value;
+    },
+    applyTemperatureUnitPreference: typeof applyTemperatureUnitPreference === 'function' ? applyTemperatureUnitPreference : null,
+    getShowAutoBackups: () => showAutoBackups,
+    setShowAutoBackups: value => {
+      showAutoBackups = Boolean(value);
+    },
+    ensureAutoBackupsFromProjects: typeof ensureAutoBackupsFromProjects === 'function' ? ensureAutoBackupsFromProjects : null,
+  },
+  autoBackups: {
+    populateSetupSelect: typeof populateSetupSelect === 'function' ? populateSetupSelect : null,
+    setupSelect: typeof setupSelect !== 'undefined' ? setupSelect : null,
+    setupNameInput: typeof setupNameInput !== 'undefined' ? setupNameInput : null,
+  },
+  mountVoltages: {
+    getPreferencesClone: () => getSessionMountVoltagePreferencesClone(),
+    applyPreferences: (preferences, options) => applySessionMountVoltagePreferences(preferences, options),
+    supportedTypes: typeof SUPPORTED_MOUNT_VOLTAGE_TYPES !== 'undefined' ? SUPPORTED_MOUNT_VOLTAGE_TYPES : [],
+    defaultVoltages: typeof DEFAULT_MOUNT_VOLTAGES !== 'undefined' ? DEFAULT_MOUNT_VOLTAGES : {},
+    updateInputsFromState: () => {
+      const updateFn = getSessionRuntimeFunction('updateMountVoltageInputsFromState');
+      if (updateFn) {
+        try {
+          updateFn();
+        } catch (updateError) {
+          warnMountVoltageHelper('updateMountVoltageInputsFromState', updateError);
+        }
+      } else {
+        warnMountVoltageHelper('updateMountVoltageInputsFromState');
+      }
+    },
+    warnMissingHelper: (name, error) => {
+      warnMountVoltageHelper(name, error);
+    },
+  },
+};
+
+const appearanceModule = appearanceModuleFactory && typeof appearanceModuleFactory.initialize === 'function'
+  ? appearanceModuleFactory.initialize(appearanceContext)
+  : null;
+
+if (appearanceModule) {
+  updateThemeColor = appearanceModule.updateThemeColor || updateThemeColor;
+  setToggleIcon = appearanceModule.setToggleIcon || setToggleIcon;
+  applyDarkMode = appearanceModule.applyDarkMode || applyDarkMode;
+  applyHighContrast = appearanceModule.applyHighContrast || applyHighContrast;
+  applyReduceMotion = appearanceModule.applyReduceMotion || applyReduceMotion;
+  applyRelaxedSpacing = appearanceModule.applyRelaxedSpacing || applyRelaxedSpacing;
+  applyPinkMode = appearanceModule.applyPinkMode || applyPinkMode;
+  persistPinkModePreference = appearanceModule.persistPinkModePreference || persistPinkModePreference;
+  rememberSettingsPinkModeBaseline = appearanceModule.rememberSettingsPinkModeBaseline || rememberSettingsPinkModeBaseline;
+  revertSettingsPinkModeIfNeeded = appearanceModule.revertSettingsPinkModeIfNeeded || revertSettingsPinkModeIfNeeded;
+  rememberSettingsTemperatureUnitBaseline = appearanceModule.rememberSettingsTemperatureUnitBaseline || rememberSettingsTemperatureUnitBaseline;
+  revertSettingsTemperatureUnitIfNeeded = appearanceModule.revertSettingsTemperatureUnitIfNeeded || revertSettingsTemperatureUnitIfNeeded;
+  applyShowAutoBackupsPreference = appearanceModule.applyShowAutoBackupsPreference || applyShowAutoBackupsPreference;
+  rememberSettingsShowAutoBackupsBaseline = appearanceModule.rememberSettingsShowAutoBackupsBaseline || rememberSettingsShowAutoBackupsBaseline;
+  revertSettingsShowAutoBackupsIfNeeded = appearanceModule.revertSettingsShowAutoBackupsIfNeeded || revertSettingsShowAutoBackupsIfNeeded;
+  rememberSettingsMountVoltagesBaseline = appearanceModule.rememberSettingsMountVoltagesBaseline || rememberSettingsMountVoltagesBaseline;
+  revertSettingsMountVoltagesIfNeeded = appearanceModule.revertSettingsMountVoltagesIfNeeded || revertSettingsMountVoltagesIfNeeded;
+  handlePinkModeIconPress = appearanceModule.handlePinkModeIconPress || handlePinkModeIconPress;
+  triggerPinkModeIconAnimation = appearanceModule.triggerPinkModeIconAnimation || triggerPinkModeIconAnimation;
+  startPinkModeIconRotation = appearanceModule.startPinkModeIconRotation || startPinkModeIconRotation;
+  stopPinkModeIconRotation = appearanceModule.stopPinkModeIconRotation || stopPinkModeIconRotation;
+  startPinkModeAnimatedIconRotation = appearanceModule.startPinkModeAnimatedIconRotation || startPinkModeAnimatedIconRotation;
+  stopPinkModeAnimatedIconRotation = appearanceModule.stopPinkModeAnimatedIconRotation || stopPinkModeAnimatedIconRotation;
+  applyPinkModeIcon = appearanceModule.applyPinkModeIcon || applyPinkModeIcon;
+  isPinkModeActive = appearanceModule.isPinkModeActive || isPinkModeActive;
+} else if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+  console.warn('cineSettingsAppearance module is not available; settings appearance features are limited.');
 }
 
 let darkModeEnabled = false;
@@ -3608,57 +3703,6 @@ if (darkModeToggle) {
   });
 }
 
-function applyHighContrast(enabled) {
-  if (enabled) {
-    if (document.body) {
-      document.body.classList.add("high-contrast");
-    }
-    document.documentElement.classList.add("high-contrast");
-    applyAccentColor(accentColor);
-    if (document.body && document.body.classList.contains('pink-mode')) {
-      clearAccentColorOverrides();
-    }
-  } else {
-    if (document.body) {
-      document.body.classList.remove("high-contrast");
-    }
-    document.documentElement.classList.remove("high-contrast");
-    if (document.body && document.body.classList.contains('pink-mode')) {
-      clearAccentColorOverrides();
-    } else {
-      applyAccentColor(accentColor);
-    }
-  }
-}
-
-function applyReduceMotion(enabled) {
-  const root = typeof document !== 'undefined' ? document.documentElement : null;
-  const body = typeof document !== 'undefined' ? document.body : null;
-  if (root) {
-    root.classList.toggle('reduce-motion', Boolean(enabled));
-  }
-  if (body) {
-    body.classList.toggle('reduce-motion', Boolean(enabled));
-  }
-  if (typeof settingsReduceMotion !== 'undefined' && settingsReduceMotion) {
-    settingsReduceMotion.checked = Boolean(enabled);
-  }
-}
-
-function applyRelaxedSpacing(enabled) {
-  const root = typeof document !== 'undefined' ? document.documentElement : null;
-  const body = typeof document !== 'undefined' ? document.body : null;
-  if (root) {
-    root.classList.toggle('relaxed-spacing', Boolean(enabled));
-  }
-  if (body) {
-    body.classList.toggle('relaxed-spacing', Boolean(enabled));
-  }
-  if (typeof settingsRelaxedSpacing !== 'undefined' && settingsRelaxedSpacing) {
-    settingsRelaxedSpacing.checked = Boolean(enabled);
-  }
-}
-
 let highContrastEnabled = false;
 try {
   highContrastEnabled = localStorage.getItem("highContrast") === "true";
@@ -3667,278 +3711,13 @@ try {
 }
 applyHighContrast(highContrastEnabled);
 
-// Pink mode handling
-
-function stopPinkModeIconRotation() {
-  if (pinkModeIconRotationTimer) {
-    clearInterval(pinkModeIconRotationTimer);
-    pinkModeIconRotationTimer = null;
-  }
-}
-
-const PINK_MODE_ICON_RAIN_PRESS_TRIGGER_COUNT = 5;
-const PINK_MODE_ICON_RAIN_PRESS_WINDOW_MS = 6000;
-let pinkModeIconPressTimestamps = [];
-
-function prunePinkModeIconPressHistory(now) {
-  const cutoff = now - PINK_MODE_ICON_RAIN_PRESS_WINDOW_MS;
-  if (cutoff <= 0 || !pinkModeIconPressTimestamps.length) {
-    return;
-  }
-  pinkModeIconPressTimestamps = pinkModeIconPressTimestamps.filter(
-    timestamp => timestamp >= cutoff
-  );
-}
-
-function handlePinkModeIconPress() {
-  const now = Date.now();
-  prunePinkModeIconPressHistory(now);
-  pinkModeIconPressTimestamps.push(now);
-  if (
-    pinkModeIconPressTimestamps.length >= PINK_MODE_ICON_RAIN_PRESS_TRIGGER_COUNT &&
-    typeof triggerPinkModeIconRain === 'function'
-  ) {
-    pinkModeIconPressTimestamps = [];
-    triggerPinkModeIconRain();
-  }
-}
-
 if (typeof window !== 'undefined') {
-  window.handlePinkModeIconPress = handlePinkModeIconPress;
-}
-
-function triggerPinkModeIconAnimation() {
-  const targets = [];
-  if (pinkModeToggle) {
-    const toggleIcon = pinkModeToggle.querySelector('.pink-mode-icon');
-    if (toggleIcon) {
-      targets.push(toggleIcon);
-    }
-  }
-  if (pinkModeHelpIcon) {
-    targets.push(pinkModeHelpIcon);
-  }
-  if (!targets.length) {
-    return;
-  }
-  targets.forEach(target => {
-    target.classList.remove(PINK_MODE_ICON_ANIMATION_CLASS);
-    // Force a reflow so the animation restarts even when toggled quickly
-    target.getBoundingClientRect();
-    target.classList.add(PINK_MODE_ICON_ANIMATION_CLASS);
-    if (PINK_MODE_ICON_ANIMATION_RESET_DELAY > 0) {
-      setTimeout(() => {
-        target.classList.remove(PINK_MODE_ICON_ANIMATION_CLASS);
-      }, PINK_MODE_ICON_ANIMATION_RESET_DELAY);
-    }
-  });
-}
-
-function applyPinkModeIcon(iconConfig, { animate = false } = {}) {
-  if (!iconConfig) return;
-  if (pinkModeToggle) {
-    setToggleIcon(pinkModeToggle, iconConfig);
-  }
-  if (pinkModeHelpIcon) {
-    pinkModeHelpIcon.className = 'help-icon icon-glyph icon-svg pink-mode-icon';
-    pinkModeHelpIcon.innerHTML = iconConfig.markup || '';
-  }
-  if (animate) {
-    triggerPinkModeIconAnimation();
-  }
-}
-
-function startPinkModeIconRotation() {
-  const sequence = Array.isArray(pinkModeIcons.onSequence)
-    ? pinkModeIcons.onSequence
-    : [];
-  if (!sequence.length) {
-    applyPinkModeIcon(pinkModeIcons.off, { animate: false });
-    return;
-  }
-  stopPinkModeIconRotation();
-  if (!pinkModeToggle && !pinkModeHelpIcon) {
-    return;
-  }
-  pinkModeIconIndex = 0;
-  applyPinkModeIcon(sequence[pinkModeIconIndex], { animate: true });
-  pinkModeIconRotationTimer = setInterval(() => {
-    pinkModeIconIndex = (pinkModeIconIndex + 1) % sequence.length;
-    applyPinkModeIcon(sequence[pinkModeIconIndex], { animate: true });
-  }, PINK_MODE_ICON_INTERVAL_MS);
-  if (
-    pinkModeIconRotationTimer &&
-    typeof pinkModeIconRotationTimer.unref === 'function'
-  ) {
-    pinkModeIconRotationTimer.unref();
-  }
-}
-
-function applyPinkMode(enabled) {
-  if (enabled) {
-    document.body.classList.add("pink-mode");
-    document.documentElement.classList.add("pink-mode");
-    if (accentColorInput) {
-      accentColorInput.disabled = true;
-    }
-    clearAccentColorOverrides();
-    if (pinkModeToggle) {
-      pinkModeToggle.setAttribute("aria-pressed", "true");
-    }
-    startPinkModeIconRotation();
-    startPinkModeAnimatedIcons();
-  } else {
-    stopPinkModeAnimatedIcons();
-    document.body.classList.remove("pink-mode");
-    document.documentElement.classList.remove("pink-mode");
-    if (accentColorInput) {
-      accentColorInput.disabled = false;
-    }
-    applyAccentColor(accentColor);
-    stopPinkModeIconRotation();
-    applyPinkModeIcon(pinkModeIcons.off, { animate: false });
-    if (pinkModeToggle) {
-      pinkModeToggle.setAttribute("aria-pressed", "false");
-    }
-  }
-  if (settingsPinkMode) {
-    settingsPinkMode.checked = enabled;
-  }
-  if (typeof updateAccentColorResetButtonState === 'function') {
-    updateAccentColorResetButtonState();
-  }
-}
-
-function isPinkModeActive() {
-  return !!(document.body && document.body.classList.contains('pink-mode'));
+  window.handlePinkModeIconPress = () => {
+    handlePinkModeIconPress();
+  };
 }
 
 let pinkModeEnabled = false;
-
-let settingsInitialPinkMode = isPinkModeActive();
-let settingsInitialTemperatureUnit =
-  typeof temperatureUnit === 'string' ? temperatureUnit : 'celsius';
-let settingsInitialShowAutoBackups = Boolean(showAutoBackups);
-let settingsInitialMountVoltages = getSessionMountVoltagePreferencesClone();
-
-function persistPinkModePreference(enabled) {
-  pinkModeEnabled = !!enabled;
-  applyPinkMode(pinkModeEnabled);
-  try {
-    localStorage.setItem('pinkMode', pinkModeEnabled);
-  } catch (e) {
-    console.warn('Could not save pink mode preference', e);
-  }
-}
-
-function rememberSettingsPinkModeBaseline() {
-  settingsInitialPinkMode = isPinkModeActive();
-}
-
-function revertSettingsPinkModeIfNeeded() {
-  if (isPinkModeActive() !== settingsInitialPinkMode) {
-    persistPinkModePreference(settingsInitialPinkMode);
-  }
-}
-
-function rememberSettingsTemperatureUnitBaseline() {
-  if (typeof temperatureUnit === 'string') {
-    settingsInitialTemperatureUnit = temperatureUnit;
-  }
-}
-
-function revertSettingsTemperatureUnitIfNeeded() {
-  const baseline =
-    typeof settingsInitialTemperatureUnit === 'string'
-      ? settingsInitialTemperatureUnit
-      : 'celsius';
-
-  if (typeof applyTemperatureUnitPreference === 'function') {
-    if (temperatureUnit !== baseline) {
-      applyTemperatureUnitPreference(baseline, {
-        persist: false,
-        forceUpdate: true
-      });
-    } else if (settingsTemperatureUnit) {
-      settingsTemperatureUnit.value = baseline;
-    }
-  } else if (settingsTemperatureUnit) {
-    settingsTemperatureUnit.value = baseline;
-  }
-}
-
-function applyShowAutoBackupsPreference(enabled, options = {}) {
-  const config = typeof options === 'object' && options !== null ? options : {};
-  const persist = config.persist !== false;
-  const forceRepopulate = Boolean(config.forceRepopulate);
-  const normalized = Boolean(enabled);
-  const previousValue = Boolean(showAutoBackups);
-  const changed = normalized !== previousValue;
-
-  showAutoBackups = normalized;
-
-  if (normalized && typeof ensureAutoBackupsFromProjects === 'function') {
-    try {
-      ensureAutoBackupsFromProjects();
-    } catch (error) {
-      console.warn('Failed to sync auto backups from project storage', error);
-    }
-  }
-
-  if (persist && typeof localStorage !== 'undefined') {
-    try {
-      localStorage.setItem('showAutoBackups', normalized);
-    } catch (error) {
-      console.warn('Could not save auto backup visibility preference', error);
-    }
-  }
-
-  if (!changed && !forceRepopulate) {
-    if (settingsShowAutoBackups) {
-      settingsShowAutoBackups.checked = normalized;
-    }
-    return;
-  }
-
-  const prevValue = setupSelect ? setupSelect.value : '';
-  const prevName = setupNameInput ? setupNameInput.value : '';
-
-  try {
-    populateSetupSelect();
-  } catch (error) {
-    console.warn('Failed to refresh setup selector after changing auto backup visibility', error);
-  }
-
-  if (setupSelect) {
-    if (normalized || !prevValue || !prevValue.startsWith('auto-backup-')) {
-      setupSelect.value = prevValue;
-    } else {
-      setupSelect.value = '';
-    }
-  }
-
-  if (setupNameInput) {
-    setupNameInput.value = prevName;
-  }
-
-  if (settingsShowAutoBackups) {
-    settingsShowAutoBackups.checked = normalized;
-  }
-}
-
-function rememberSettingsShowAutoBackupsBaseline() {
-  settingsInitialShowAutoBackups = Boolean(showAutoBackups);
-}
-
-function revertSettingsShowAutoBackupsIfNeeded() {
-  const baseline = Boolean(settingsInitialShowAutoBackups);
-  if (Boolean(showAutoBackups) !== baseline) {
-    applyShowAutoBackupsPreference(baseline, { forceRepopulate: true });
-  } else if (settingsShowAutoBackups) {
-    settingsShowAutoBackups.checked = baseline;
-  }
-}
-
 try {
   pinkModeEnabled = localStorage.getItem('pinkMode') === 'true';
 } catch (e) {
@@ -3973,9 +3752,11 @@ if (settingsShowAutoBackups) {
 
 if (settingsTemperatureUnit) {
   settingsTemperatureUnit.addEventListener('change', () => {
-    applyTemperatureUnitPreference(settingsTemperatureUnit.value, {
-      persist: false
-    });
+    if (typeof applyTemperatureUnitPreference === 'function') {
+      applyTemperatureUnitPreference(settingsTemperatureUnit.value, {
+        persist: false
+      });
+    }
   });
 }
 
@@ -11397,37 +11178,6 @@ function applySessionMountVoltagePreferences(preferences, options = {}) {
       } catch (updateError) {
         void updateError;
       }
-    }
-  }
-}
-
-function rememberSettingsMountVoltagesBaseline() {
-  settingsInitialMountVoltages = getSessionMountVoltagePreferencesClone();
-}
-
-function revertSettingsMountVoltagesIfNeeded() {
-  const baseline = settingsInitialMountVoltages || getSessionMountVoltagePreferencesClone();
-  const current = getSessionMountVoltagePreferencesClone();
-  const changed = SUPPORTED_MOUNT_VOLTAGE_TYPES.some(type => {
-    const baselineEntry = baseline[type] || DEFAULT_MOUNT_VOLTAGES[type];
-    const currentEntry = current[type] || DEFAULT_MOUNT_VOLTAGES[type];
-    return (
-      Number(baselineEntry.high) !== Number(currentEntry.high)
-      || Number(baselineEntry.low) !== Number(currentEntry.low)
-    );
-  });
-  if (changed) {
-    applySessionMountVoltagePreferences(baseline, { persist: true, triggerUpdate: true });
-  } else {
-    const updateMountVoltageInputsFromStateFn = getSessionRuntimeFunction('updateMountVoltageInputsFromState');
-    if (updateMountVoltageInputsFromStateFn) {
-      try {
-        updateMountVoltageInputsFromStateFn();
-      } catch (updateError) {
-        warnMissingMountVoltageHelper('updateMountVoltageInputsFromState', updateError);
-      }
-    } else {
-      warnMissingMountVoltageHelper('updateMountVoltageInputsFromState');
     }
   }
 }
