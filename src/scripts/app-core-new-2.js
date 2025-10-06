@@ -12666,6 +12666,13 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             ? globalThis.scheduleProjectAutoSave
             : null;
 
+        const saveCurrentSessionFn =
+          typeof saveCurrentSession === 'function'
+            ? saveCurrentSession
+            : (typeof globalThis !== 'undefined' && typeof globalThis.saveCurrentSession === 'function'
+                ? (...args) => globalThis.saveCurrentSession(...args)
+                : undefined);
+
         const connectionDiagram = connectionDiagramModule.createConnectionDiagram({
           document,
           window,
@@ -12690,7 +12697,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           getGridSnapToggleBtn: () => gridSnapToggleBtn,
           getCurrentGridSnap,
           scheduleProjectAutoSave: scheduleProjectAutoSaveFn,
-          saveCurrentSession,
+          saveCurrentSession: saveCurrentSessionFn,
           checkSetupChanged,
           motorPriority,
           controllerPriority,
