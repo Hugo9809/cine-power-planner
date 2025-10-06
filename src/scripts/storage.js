@@ -78,6 +78,56 @@ var MOUNT_VOLTAGE_STORAGE_KEY_SYMBOL =
     ? Symbol.for('cinePowerPlanner.mountVoltageKey')
     : null;
 
+  const STORAGE_STRUCTURED_CLONE = (() => {
+    const candidates = [];
+
+    if (typeof structuredClone === 'function') {
+      candidates.push(structuredClone);
+    }
+
+    if (
+      GLOBAL_SCOPE &&
+      typeof GLOBAL_SCOPE.structuredClone === 'function' &&
+      !candidates.includes(GLOBAL_SCOPE.structuredClone)
+    ) {
+      try {
+        const bound = GLOBAL_SCOPE.structuredClone.bind(GLOBAL_SCOPE);
+        candidates.push(bound);
+      } catch (bindError) {
+        candidates.push(GLOBAL_SCOPE.structuredClone);
+        void bindError;
+      }
+    }
+
+    return candidates.length ? candidates[0] : null;
+  })();
+
+  let storageStructuredCloneFailureLogged = false;
+
+  function tryStructuredCloneValue(value) {
+    if (!STORAGE_STRUCTURED_CLONE || value === null || typeof value !== 'object') {
+      return { success: false };
+    }
+
+    try {
+      return { success: true, value: STORAGE_STRUCTURED_CLONE(value) };
+    } catch (error) {
+      if (
+        !storageStructuredCloneFailureLogged &&
+        typeof console !== 'undefined' &&
+        console &&
+        typeof console.warn === 'function'
+      ) {
+        console.warn(
+          'cineStorage: structuredClone failed. Falling back to JSON serialization.',
+          error
+        );
+        storageStructuredCloneFailureLogged = true;
+      }
+      return { success: false };
+    }
+  }
+
 function readGlobalStringValue(scope, key) {
   if (!scope || typeof scope !== 'object') {
     return '';
@@ -5537,6 +5587,17 @@ function extractProjectInfoFromHtml(html) {
 }
 
 function cloneProjectData(value) {
+  if (value === null || value === undefined) {
+    return value;
+  }
+
+  if (typeof value === 'object') {
+    const attempt = tryStructuredCloneValue(value);
+    if (attempt.success) {
+      return attempt.value;
+    }
+  }
+
   if (Array.isArray(value)) {
     return value.map((item) => cloneProjectData(item));
   }
@@ -5553,6 +5614,12 @@ function cloneProjectData(value) {
 function cloneProjectInfo(projectInfo) {
   if (!isPlainObject(projectInfo)) {
     return null;
+  }
+  if (typeof projectInfo === 'object' && projectInfo) {
+    const attempt = tryStructuredCloneValue(projectInfo);
+    if (attempt.success) {
+      return attempt.value;
+    }
   }
   try {
     return JSON.parse(JSON.stringify(projectInfo));
@@ -5667,6 +5734,10 @@ function cloneAutoGearRules(rules) {
   if (!Array.isArray(rules) || !rules.length) {
     return null;
   }
+  const attempt = tryStructuredCloneValue(rules);
+  if (attempt.success) {
+    return attempt.value;
+  }
   try {
     return JSON.parse(JSON.stringify(rules));
   } catch (error) {
@@ -5683,6 +5754,10 @@ function cloneAutoGearRules(rules) {
 function cloneDiagramPositionsForStorage(positions) {
   if (!isPlainObject(positions) || !Object.keys(positions).length) {
     return {};
+  }
+  const attempt = tryStructuredCloneValue(positions);
+  if (attempt.success) {
+    return attempt.value;
   }
   try {
     return JSON.parse(JSON.stringify(positions));
@@ -6414,6 +6489,11 @@ function cloneProjectEntryForBackup(entry) {
   }
   if (entry === null || typeof entry !== 'object') {
     return entry;
+  }
+  const attempt = tryStructuredCloneValue(entry);
+  if (attempt.success) {
+    const normalized = normalizeLegacyLongGopStructure(attempt.value);
+    return normalized !== attempt.value ? normalized : attempt.value;
   }
   try {
     const cloned = JSON.parse(JSON.stringify(entry));
