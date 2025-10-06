@@ -4363,7 +4363,8 @@ const texts = {
   },
   fr: {
     appTitle: "Cine Power Planner",
-    tagline: "Planifiez votre équipement de tournage et calculez la consommation énergétique et l'autonomie des batteries.",
+    tagline:
+      "Planifiez votre configuration cinéma et calculez la consommation électrique ainsi que l’autonomie de vos batteries.",
     skipToContent: "Aller au contenu",
     offlineIndicator: "Hors ligne",
     offlineIndicatorHelp:
