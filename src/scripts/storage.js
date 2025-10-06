@@ -2708,6 +2708,34 @@ function isPlainObject(val) {
 
 var LEGACY_LONG_GOP_TOKEN_REGEX = /^long[\s_-]?gop$/i;
 
+function inferLegacyLongGopCompressionVariant(value) {
+  if (typeof value !== 'string') {
+    return null;
+  }
+
+  var trimmed = value.trim();
+  if (!trimmed) {
+    return null;
+  }
+
+  var lower = trimmed.toLowerCase();
+  if (lower === 'utf16' || lower === 'utf-16') {
+    return 'utf16';
+  }
+  if (lower === 'uri-component' || lower === 'uri_component' || lower === 'encoded-uri-component' || lower === 'uri') {
+    return 'uri-component';
+  }
+  if (lower === 'base64') {
+    return 'base64';
+  }
+
+  if (LEGACY_LONG_GOP_TOKEN_REGEX.test(lower)) {
+    return 'utf16';
+  }
+
+  return null;
+}
+
 function normalizeLegacyLongGopString(value) {
   if (typeof value !== 'string') {
     return value;
@@ -7689,19 +7717,34 @@ function extractSnapshotStoredValue(entry) {
     try {
       const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
       if (parsed && typeof parsed === 'object') {
-        if (
-          parsed.compression === MIGRATION_BACKUP_COMPRESSION_ALGORITHM
-          && parsed.encoding === MIGRATION_BACKUP_COMPRESSION_ENCODING
-          && typeof parsed.data === 'string'
-        ) {
+        const compressionToken = typeof parsed.compression === 'string' ? parsed.compression.trim() : '';
+        const encodingToken = typeof parsed.encoding === 'string' ? parsed.encoding.trim() : '';
+        const isModernCompression =
+          compressionToken === MIGRATION_BACKUP_COMPRESSION_ALGORITHM
+          && encodingToken === MIGRATION_BACKUP_COMPRESSION_ENCODING;
+        const isLegacyLongGopCompression =
+          LEGACY_LONG_GOP_TOKEN_REGEX.test(compressionToken)
+          || LEGACY_LONG_GOP_TOKEN_REGEX.test(encodingToken);
+
+        if ((isModernCompression || isLegacyLongGopCompression) && typeof parsed.data === 'string') {
           if (canUseMigrationBackupCompression()) {
-            const variant = typeof parsed.compressionVariant === 'string'
+            let preferredVariant = typeof parsed.compressionVariant === 'string'
+              && parsed.compressionVariant
               ? parsed.compressionVariant
-              : 'utf16';
+              : null;
+            if (!preferredVariant) {
+              if (isLegacyLongGopCompression) {
+                preferredVariant = inferLegacyLongGopCompressionVariant(encodingToken)
+                  || inferLegacyLongGopCompressionVariant(compressionToken)
+                  || 'utf16';
+              } else {
+                preferredVariant = 'utf16';
+              }
+            }
             const decoded = tryDecompressWithStrategies(
               parsed.data,
               MIGRATION_BACKUP_COMPRESSION_VARIANTS,
-              variant,
+              preferredVariant,
               'migration backup entry',
             );
             if (decoded.success && typeof decoded.value === 'string') {
