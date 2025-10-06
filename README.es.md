@@ -161,6 +161,7 @@ Repite esta rutina cuando se incorpore personal, se prepare una estación nueva 
 
 - **Guardados manuales para versiones explícitas.** Introduce el nombre y pulsa **Enter**/**Guardar**. Cada guardado preserva dispositivos, requisitos, listas, favoritos, diagramas y observaciones.
 - **Auto-guardados para progreso en curso.** Mientras el proyecto está abierto, la app escribe cambios en segundo plano. Las entradas `auto-backup-…` aparecen cada diez minutos.
+- **Resguardos rápidos capturan copias completas al instante.** Abre **Configuración → Datos y almacenamiento → Quick safeguards** para descargar una copia completa o abrir las herramientas de restauración sin abandonar la pestaña; cada ejecución queda registrada en el panel para archivar el JSON al momento.【F:index.html†L2548-L2570】
 - **Mostrar auto-backups bajo demanda.** Activa **Configuración → Copia de seguridad y restauración → Mostrar auto-backups** para ver los sellos temporales.
 - **Renombrar crea bifurcaciones.** Cambia el nombre y pulsa **Enter** para duplicar la versión. Útil para comparar variantes.
 - **Cambiar de proyecto no destruye datos.** Selecciona otro elemento en el menú; la app conserva la posición de scroll y campos no guardados.
@@ -262,6 +263,7 @@ Repite esta rutina cuando se incorpore personal, se prepare una estación nueva 
 
 - **Instantáneas guardadas** – El selector conserva cada plan manual y crea `auto-backup-…` cada diez minutos mientras la app está abierta.
 - **Copias completas** – **Configuración → Copia de seguridad y restauración → Copia de seguridad** descarga `planner-backup.json` con proyectos, dispositivos, comentarios, reglas y estado de UI. Antes de restaurar se crea un respaldo de seguridad y se muestran avisos si el archivo proviene de otra versión.
+- **Panel de resguardos rápidos** – En **Configuración → Datos y almacenamiento** encontrarás un bloque dedicado de **Quick safeguards** para lanzar copias completas con un clic o abrir rápidamente las herramientas de restauración, de modo que captures duplicados sin cambiar de pestaña.【F:index.html†L2548-L2570】
 - **Libro de historial** – Cada copia completa añade una entrada que puedes auditar en **Configuración → Datos y almacenamiento** o exportar junto al archivo. Mantiene sellos horarios y nombres alineados con tu bitácora aunque trabajes sin conexión.
 - **Resguardos ocultos de migración** – Antes de sobrescribir planners, configuraciones o preferencias, la app guarda el JSON anterior en `__legacyMigrationBackup`. Si algo falla, la recuperación vuelve automáticamente a esa copia. La compresión ahora selecciona automáticamente la codificación segura más compacta para que las copias sigan dentro de la cuota del navegador.
 - **Historial automático de reglas** – Los cambios en **Reglas automáticas** generan copias con sello horario cada diez minutos.

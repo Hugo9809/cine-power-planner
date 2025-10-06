@@ -359,6 +359,11 @@ Use Cine Power Planner end-to-end with the following routine:
   writes incremental changes in the background. Timestamped `auto-backup-…`
   versions appear in the project selector every 10 minutes so you can roll back
   without leaving the interface.
+- **Quick safeguards capture full backups instantly.** Open **Settings → Data &
+  Storage → Quick safeguards** to download a fresh planner backup or jump
+  straight to the restore tools without leaving your current tab; each run is
+  logged in the storage dashboard so you can archive the JSON immediately.
+  【F:index.html†L2548-L2570】
 - **Reveal auto backup snapshots on demand.** Toggle **Settings → Backup &
   Restore → Show auto backups** to temporarily display the timestamped safety
   copies in the project selector when you need to restore one manually.
@@ -596,6 +601,10 @@ Use Cine Power Planner end-to-end with the following routine:
   `planner-backup.json` with projects, custom devices, runtime feedback,
   favorites, automatic gear rules and UI state. Restores create a safety copy
   before importing and warn if the file was produced on another version.
+- **Quick safeguards panel** – the **Settings → Data & Storage** view keeps a
+  dedicated **Quick safeguards** block for one-click full backups or fast access
+  to restore tools, making it effortless to capture redundant copies before you
+  leave the page.【F:index.html†L2548-L2570】
 - **Backup history ledger** – each full-app backup writes an entry that you can
   audit from **Settings → Data & Storage** or export with the archive. It keeps
   timestamps and filenames aligned with your paper trail even when you rotate

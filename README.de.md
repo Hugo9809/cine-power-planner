@@ -161,6 +161,7 @@ Dieser kurze Ablauf sollte bei neuen Teammitgliedern, frisch eingerichteten Work
 
 - **Manuelle Saves halten Versionen bewusst.** Projektnamen eingeben und **Enter**/**Speichern** drücken. Jede Version bewahrt Geräte, Anforderungen, Listen, Favoriten, Diagramm-Layouts und Laufzeitbeobachtungen.
 - **Auto-Saves schützen Fortschritt.** Während ein Projekt aktiv ist, schreibt die App Änderungen im Hintergrund. `auto-backup-…`-Einträge erscheinen alle zehn Minuten.
+- **Quick safeguards sichern sofort.** Öffne **Einstellungen → Daten & Speicher → Quick safeguards**, um ohne Tab-Wechsel ein Vollbackup zu laden oder direkt zum Wiederherstellungsbereich zu springen; jeder Lauf erscheint im Dashboard, damit du die JSON sofort ablegen kannst.【F:index.html†L2548-L2570】
 - **Auto-Backups bei Bedarf einblenden.** Über **Einstellungen → Backup & Wiederherstellung → Auto-Backups anzeigen** lassen sich die Zeitstempel im Selector sichtbar machen.
 - **Umbenennen erzeugt Duplikate.** Namen ändern und **Enter** drücken erstellt eine Abzweigung – ideal für Vergleichsversionen.
 - **Projektwechsel ist verlustfrei.** Auswahl im Menü lädt sofort, Scrollposition und unsaved Inputs werden übernommen.
@@ -262,6 +263,7 @@ Dieser kurze Ablauf sollte bei neuen Teammitgliedern, frisch eingerichteten Work
 
 - **Gespeicherte Projektsnapshots** – Projektliste speichert alle Saves und erzeugt alle zehn Minuten `auto-backup-…`.
 - **Vollbackups** – **Einstellungen → Backup & Wiederherstellung → Backup** erstellt `planner-backup.json` inkl. aller Projekte, Geräte, Regeln und UI-States; vor jeder Wiederherstellung wird ein Sicherheitsbackup angelegt.
+- **Quick safeguards-Bereich** – In **Einstellungen → Daten & Speicher** steht ein eigener **Quick safeguards**-Block für Ein-Klick-Backups oder den Sprung zu Restore-Tools bereit, damit zusätzliche Kopien ohne Kontextwechsel entstehen.【F:index.html†L2548-L2570】
 - **Backup-Verlauf** – Jede Vollsicherung schreibt einen Eintrag, der sich in **Einstellungen → Daten & Speicher** prüfen oder zusammen mit dem Archiv exportieren lässt. Zeitstempel und Dateinamen bleiben so auch offline nachvollziehbar.
 - **Verborgene Migrations-Backups** – Vor Überschreibungen wird der vorige JSON-Snapshot im geschützten `__legacyMigrationBackup` abgelegt und bei Fehlern automatisch wiederhergestellt. Die Komprimierung wählt jetzt automatisch die kleinste sichere Kodierung, damit Sicherungen weiterhin in das Browser-Kontingent passen.
 - **Automatische Regel-Snapshots** – Änderungen in **Automatische Gear-Regeln** erzeugen alle zehn Minuten Sicherheitskopien.
