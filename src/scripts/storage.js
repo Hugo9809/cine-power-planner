@@ -2276,18 +2276,44 @@ function parseAutoBackupKey(name) {
   }
 
   if (name.startsWith(STORAGE_AUTO_BACKUP_NAME_PREFIX)) {
-    const match = name.match(/^auto-backup-(\d{4})-(\d{2})-(\d{2})-(\d{2})-(\d{2})(?:-(.*))?$/);
-    if (!match) {
-      return { timestamp: Number.NEGATIVE_INFINITY, label: '' };
+    const secondsAwareMatch = name.match(
+      /^auto-backup-(\d{4})-(\d{2})-(\d{2})-(\d{2})-(\d{2})-(\d{2})(?:-(.*))?$/,
+    );
+
+    let year;
+    let month;
+    let day;
+    let hour;
+    let minute;
+    let rawLabel = '';
+    let second = '00';
+
+    if (secondsAwareMatch) {
+      [, year, month, day, hour, minute, second, rawLabel = ''] = secondsAwareMatch;
+    } else {
+      const legacyMatch = name.match(
+        /^auto-backup-(\d{4})-(\d{2})-(\d{2})-(\d{2})-(\d{2})(?:-(.*))?$/,
+      );
+      if (!legacyMatch) {
+        return { timestamp: Number.NEGATIVE_INFINITY, label: '' };
+      }
+      [, year, month, day, hour, minute, rawLabel = ''] = legacyMatch;
     }
-    const [, year, month, day, hour, minute, rawLabel = ''] = match;
+
+    const parsedYear = Number.parseInt(year, 10);
+    const parsedMonth = Number.parseInt(month, 10) - 1;
+    const parsedDay = Number.parseInt(day, 10);
+    const parsedHour = Number.parseInt(hour, 10);
+    const parsedMinute = Number.parseInt(minute, 10);
+    const parsedSecond = Number.parseInt(second, 10);
+
     const date = new Date(
-      Number.parseInt(year, 10),
-      Number.parseInt(month, 10) - 1,
-      Number.parseInt(day, 10),
-      Number.parseInt(hour, 10),
-      Number.parseInt(minute, 10),
-      0,
+      parsedYear,
+      parsedMonth,
+      parsedDay,
+      parsedHour,
+      parsedMinute,
+      Number.isNaN(parsedSecond) ? 0 : parsedSecond,
       0,
     );
     const time = date.getTime();

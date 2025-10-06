@@ -406,6 +406,48 @@ describe('setup storage', () => {
     expect(autoBackupCount).toBeLessThanOrEqual(120);
   });
 
+  test('saveSetups treats second-level auto backup timestamps as duplicates for the same label', () => {
+    const shared = { camera: 'Shared Camera', lenses: ['Lens 1'] };
+    const setups = {};
+    for (let index = 0; index < 119; index += 1) {
+      const minute = String(index % 60).padStart(2, '0');
+      const second = String(index % 60).padStart(2, '0');
+      const key = `auto-backup-2023-12-31-23-${minute}-${second}-Filler-${index}`;
+      setups[key] = { camera: `Camera ${index}` };
+    }
+    const oldDuplicateKey = 'auto-backup-2024-01-01-00-00-15-Project Alpha';
+    const newDuplicateKey = 'auto-backup-2024-01-01-00-00-45-Project Alpha';
+    setups[oldDuplicateKey] = shared;
+    setups[newDuplicateKey] = shared;
+
+    saveSetups(setups);
+
+    const stored = parseLocalStorageJSON(SETUP_KEY);
+    expect(stored[oldDuplicateKey]).toBeUndefined();
+    expect(stored[newDuplicateKey]).toEqual(shared);
+  });
+
+  test('saveSetups removes unlabeled auto backups with duplicate data even when seconds differ', () => {
+    const shared = { camera: 'Shared Camera', accessories: ['Accessory'] };
+    const setups = {};
+    for (let index = 0; index < 119; index += 1) {
+      const minute = String(Math.floor(index / 2)).padStart(2, '0');
+      const second = String(index % 60).padStart(2, '0');
+      const key = `auto-backup-2023-11-30-22-${minute}-${second}-Filler-${index}`;
+      setups[key] = { camera: `Camera ${index}` };
+    }
+    const firstKey = 'auto-backup-2024-01-01-00-00-05';
+    const secondKey = 'auto-backup-2024-01-01-00-00-55';
+    setups[firstKey] = shared;
+    setups[secondKey] = shared;
+
+    saveSetups(setups);
+
+    const stored = parseLocalStorageJSON(SETUP_KEY);
+    expect(stored[firstKey]).toBeUndefined();
+    expect(stored[secondKey]).toEqual(shared);
+  });
+
   test('saveSetups keeps auto backups with identical data when labels differ', () => {
     const shared = {
       camera: 'Shared Camera',

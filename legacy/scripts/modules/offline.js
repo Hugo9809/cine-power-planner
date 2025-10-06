@@ -1097,7 +1097,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   registerOrQueueModule('cineOffline', offlineAPI, {
     category: 'offline',
     description: 'Offline helpers for service worker registration and cache recovery.',
-    replace: true
+    replace: true,
+    connections: ['cineModuleGlobals', 'cineModuleEnvironment', 'cineEnvironmentBridge', 'cineModuleContext']
   }, function (error) {
     safeWarn('Unable to register cineOffline in module registry.', error);
   });

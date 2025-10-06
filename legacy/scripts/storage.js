@@ -1,8 +1,3 @@
-function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
-function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
-function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
-function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
-function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t.return && (u = t.return(), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
@@ -17,6 +12,11 @@ function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) 
 function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
 function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 (function initializeStorageModule() {
   var GLOBAL_SCOPE = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : null;
@@ -69,16 +69,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (!scope || _typeof(scope) !== 'object') {
       return '';
     }
-    if (key === 'MOUNT_VOLTAGE_STORAGE_KEY' && MOUNT_VOLTAGE_STORAGE_KEY_SYMBOL) {
-      try {
-        var symbolValue = scope[MOUNT_VOLTAGE_STORAGE_KEY_SYMBOL];
-        if (typeof symbolValue === 'string' && symbolValue) {
-          return symbolValue;
-        }
-      } catch (symbolReadError) {
-        void symbolReadError;
-      }
-    }
     var descriptor;
     try {
       descriptor = Object.getOwnPropertyDescriptor(scope, key);
@@ -96,7 +86,20 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       directValue = '';
       void readError;
     }
-    return typeof directValue === 'string' && directValue ? directValue : '';
+    if (typeof directValue === 'string' && directValue) {
+      return directValue;
+    }
+    if (key === 'MOUNT_VOLTAGE_STORAGE_KEY' && MOUNT_VOLTAGE_STORAGE_KEY_SYMBOL) {
+      try {
+        var symbolValue = scope[MOUNT_VOLTAGE_STORAGE_KEY_SYMBOL];
+        if (typeof symbolValue === 'string' && symbolValue) {
+          return symbolValue;
+        }
+      } catch (symbolReadError) {
+        void symbolReadError;
+      }
+    }
+    return '';
   }
   function exposeGlobalStringValue(scope, key, value) {
     if (!scope || _typeof(scope) !== 'object') {
@@ -157,11 +160,32 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return MOUNT_VOLTAGE_STORAGE_KEY_FALLBACK;
   }
   var MOUNT_VOLTAGE_STORAGE_KEY_NAME = resolveMountVoltageStorageKeyName();
-  function getMountVoltageStorageKeyName() {
+  function refreshMountVoltageStorageKeyName() {
+    var resolved = resolveMountVoltageStorageKeyName();
+    if (resolved && resolved !== MOUNT_VOLTAGE_STORAGE_KEY_NAME) {
+      MOUNT_VOLTAGE_STORAGE_KEY_NAME = resolved;
+      if (GLOBAL_SCOPE) {
+        exposeGlobalStringValue(GLOBAL_SCOPE, 'MOUNT_VOLTAGE_STORAGE_KEY', resolved);
+      }
+      if (typeof RAW_STORAGE_BACKUP_KEYS !== 'undefined' && RAW_STORAGE_BACKUP_KEYS && typeof RAW_STORAGE_BACKUP_KEYS.add === 'function') {
+        RAW_STORAGE_BACKUP_KEYS.add(resolved);
+        var variants = getStorageKeyVariants(resolved);
+        for (var i = 0; i < variants.length; i += 1) {
+          var variant = variants[i];
+          if (typeof variant === 'string' && variant) {
+            RAW_STORAGE_BACKUP_KEYS.add(variant);
+          }
+        }
+      }
+    }
     return MOUNT_VOLTAGE_STORAGE_KEY_NAME;
   }
+  function getMountVoltageStorageKeyName() {
+    return refreshMountVoltageStorageKeyName();
+  }
   function getMountVoltageStorageBackupKeyName() {
-    return "".concat(MOUNT_VOLTAGE_STORAGE_KEY_NAME, "__backup");
+    var key = refreshMountVoltageStorageKeyName();
+    return key ? "".concat(key, "__backup") : "".concat(MOUNT_VOLTAGE_STORAGE_KEY_FALLBACK, "__backup");
   }
   function ensureCustomFontStorageKeyName() {
     if (!GLOBAL_SCOPE) {
@@ -620,10 +644,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     registerCriticalStorageGuardResult(summary);
     if (summary.ensured.length && typeof console !== 'undefined' && typeof console.info === 'function') {
-      var mirroredKeys = summary.ensured.map(function (entry) {
-        return entry.key;
+      var mirroredDetails = summary.ensured.map(function (entry) {
+        return {
+          key: entry.key,
+          backupKey: entry.backupKey
+        };
       });
-      console.info('Critical storage guard mirrored backup copies for', mirroredKeys);
+      console.info('Critical storage guard mirrored backup copies', {
+        count: summary.ensured.length,
+        entries: mirroredDetails
+      });
     }
     if (summary.errors.length && typeof console !== 'undefined' && typeof console.warn === 'function') {
       console.warn('Critical storage guard encountered issues', summary.errors);
@@ -636,8 +666,105 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var MAX_MIGRATION_BACKUP_CLEANUP_STEPS = 10;
   var MIGRATION_BACKUP_COMPRESSION_ALGORITHM = 'lz-string';
   var MIGRATION_BACKUP_COMPRESSION_ENCODING = 'json-string';
+  var MIGRATION_BACKUP_COMPRESSION_VARIANTS = [{
+    variant: 'utf16',
+    compress: 'compressToUTF16',
+    decompress: 'decompressFromUTF16'
+  }, {
+    variant: 'uri-component',
+    compress: 'compressToEncodedURIComponent',
+    decompress: 'decompressFromEncodedURIComponent'
+  }, {
+    variant: 'base64',
+    compress: 'compressToBase64',
+    decompress: 'decompressFromBase64'
+  }];
+  var STORAGE_COMPRESSION_FLAG_KEY = '__cineStorageCompressed';
+  var STORAGE_COMPRESSION_VERSION = 1;
+  var STORAGE_COMPRESSION_ALGORITHM = 'lz-string';
+  var LEGACY_STORAGE_COMPRESSION_ALGORITHM = 'lz-string-utf16';
+  var STORAGE_COMPRESSION_VARIANTS = MIGRATION_BACKUP_COMPRESSION_VARIANTS;
+  var STORAGE_COMPRESSION_NAMESPACE = 'camera-power-planner:storage-compression';
+  var storageCompressionPatchedStorages = typeof WeakSet === 'function' ? new WeakSet() : null;
+  var STORAGE_COMPRESSION_SWEEP_LIMIT = 40;
+  var STORAGE_COMPRESSION_SWEEP_MIN_SAVINGS = 128;
+  function getAvailableLZStringCompressionStrategies(variants) {
+    if ((typeof LZString === "undefined" ? "undefined" : _typeof(LZString)) !== 'object' || LZString === null) {
+      return [];
+    }
+    var available = [];
+    for (var i = 0; i < variants.length; i += 1) {
+      var variant = variants[i];
+      var compressFn = LZString && typeof LZString[variant.compress] === 'function' ? LZString[variant.compress] : null;
+      var decompressFn = LZString && typeof LZString[variant.decompress] === 'function' ? LZString[variant.decompress] : null;
+      if (compressFn && decompressFn) {
+        available.push({
+          variant: variant.variant,
+          compress: compressFn,
+          decompress: decompressFn
+        });
+      }
+    }
+    return available;
+  }
+  function tryDecompressWithStrategies(data, variants, preferredVariant, contextLabel) {
+    if (typeof data !== 'string' || !data) {
+      return {
+        success: false
+      };
+    }
+    var available = getAvailableLZStringCompressionStrategies(variants);
+    if (!available.length) {
+      return {
+        success: false
+      };
+    }
+    var attempts = [];
+    if (preferredVariant) {
+      var preferred = null;
+      for (var i = 0; i < available.length; i += 1) {
+        if (available[i].variant === preferredVariant) {
+          preferred = available[i];
+          break;
+        }
+      }
+      if (preferred) {
+        attempts.push(preferred);
+      } else if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn("Compression variant ".concat(preferredVariant, " is unavailable while reading ").concat(contextLabel || 'compressed payload', "."));
+      }
+    }
+    for (var j = 0; j < available.length; j += 1) {
+      if (!preferredVariant || available[j].variant !== preferredVariant) {
+        attempts.push(available[j]);
+      }
+    }
+    var lastError = null;
+    for (var k = 0; k < attempts.length; k += 1) {
+      var strategy = attempts[k];
+      try {
+        var decompressed = strategy.decompress(data);
+        if (typeof decompressed === 'string' && decompressed) {
+          return {
+            success: true,
+            value: decompressed,
+            variant: strategy.variant
+          };
+        }
+      } catch (error) {
+        lastError = error;
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn("Unable to decompress ".concat(contextLabel || 'compressed payload', " with ").concat(strategy.variant, " variant"), error);
+        }
+      }
+    }
+    return {
+      success: false,
+      error: lastError
+    };
+  }
   function canUseMigrationBackupCompression() {
-    return (typeof LZString === "undefined" ? "undefined" : _typeof(LZString)) === 'object' && LZString !== null && typeof LZString.compressToUTF16 === 'function' && typeof LZString.decompressFromUTF16 === 'function';
+    return getAvailableLZStringCompressionStrategies(MIGRATION_BACKUP_COMPRESSION_VARIANTS).length > 0;
   }
   function tryCreateCompressedMigrationBackupCandidate(serializedPayload, createdAt) {
     if (typeof serializedPayload !== 'string' || !serializedPayload) {
@@ -646,35 +773,53 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (!canUseMigrationBackupCompression()) {
       return null;
     }
-    var compressed;
-    try {
-      compressed = LZString.compressToUTF16(serializedPayload);
-    } catch (compressionError) {
-      console.warn('Unable to compress migration backup payload', compressionError);
-      return null;
-    }
-    if (typeof compressed !== 'string' || !compressed || compressed.length >= serializedPayload.length) {
-      return null;
-    }
-    var serializedCompressedPayload;
-    try {
-      serializedCompressedPayload = JSON.stringify({
+    var bestCandidate = null;
+    var strategies = getAvailableLZStringCompressionStrategies(MIGRATION_BACKUP_COMPRESSION_VARIANTS);
+    for (var i = 0; i < strategies.length; i += 1) {
+      var strategy = strategies[i];
+      var compressed = null;
+      try {
+        compressed = strategy.compress(serializedPayload);
+      } catch (compressionError) {
+        console.warn("Unable to compress migration backup payload with ".concat(strategy.variant, " variant"), compressionError);
+        continue;
+      }
+      if (typeof compressed !== 'string' || !compressed || compressed.length >= serializedPayload.length) {
+        continue;
+      }
+      var record = {
         createdAt: createdAt,
         compression: MIGRATION_BACKUP_COMPRESSION_ALGORITHM,
+        compressionVariant: strategy.variant,
         encoding: MIGRATION_BACKUP_COMPRESSION_ENCODING,
         data: compressed,
         originalSize: serializedPayload.length,
         compressedSize: compressed.length
-      });
-    } catch (serializationError) {
-      console.warn('Unable to serialize compressed migration backup payload', serializationError);
-      return null;
+      };
+      var serializedCompressedPayload;
+      try {
+        serializedCompressedPayload = JSON.stringify(record);
+      } catch (serializationError) {
+        console.warn('Unable to serialize compressed migration backup payload', serializationError);
+        continue;
+      }
+      if (typeof serializedCompressedPayload !== 'string' || !serializedCompressedPayload) {
+        continue;
+      }
+      if (serializedCompressedPayload.length >= serializedPayload.length) {
+        continue;
+      }
+      if (!bestCandidate || serializedCompressedPayload.length < bestCandidate.serializedLength) {
+        bestCandidate = {
+          serialized: serializedCompressedPayload,
+          serializedLength: serializedCompressedPayload.length,
+          originalSize: serializedPayload.length,
+          compressedSize: compressed.length,
+          variant: strategy.variant
+        };
+      }
     }
-    return {
-      serialized: serializedCompressedPayload,
-      originalSize: serializedPayload.length,
-      compressedSize: compressed.length
-    };
+    return bestCandidate;
   }
   function parseMigrationBackupMetadata(raw) {
     if (typeof raw !== 'string' || !raw) {
@@ -702,6 +847,357 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       void error;
     }
     return metadata;
+  }
+  function canUseJsonValueCompression() {
+    return canUseMigrationBackupCompression();
+  }
+  function createCompressedJsonStorageCandidate(serialized) {
+    if (typeof serialized !== 'string' || !serialized) {
+      return null;
+    }
+    if (!canUseJsonValueCompression()) {
+      return null;
+    }
+    var strategies = getAvailableLZStringCompressionStrategies(STORAGE_COMPRESSION_VARIANTS);
+    if (!strategies.length) {
+      return null;
+    }
+    var best = null;
+    for (var i = 0; i < strategies.length; i += 1) {
+      var strategy = strategies[i];
+      var compressed = null;
+      try {
+        compressed = strategy.compress(serialized);
+      } catch (compressionError) {
+        console.warn('Unable to compress storage payload with '.concat(strategy.variant, ' variant'), compressionError);
+        continue;
+      }
+      if (typeof compressed !== 'string' || !compressed) {
+        continue;
+      }
+      var wrapper = _defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty(_defineProperty({}, STORAGE_COMPRESSION_FLAG_KEY, true), "version", STORAGE_COMPRESSION_VERSION), "algorithm", STORAGE_COMPRESSION_ALGORITHM), "namespace", STORAGE_COMPRESSION_NAMESPACE), "data", compressed), "originalLength", serialized.length), "compressedPayloadLength", compressed.length), "compressionVariant", strategy.variant);
+      var wrappedSerialized;
+      try {
+        wrappedSerialized = JSON.stringify(wrapper);
+      } catch (serializationError) {
+        console.warn('Unable to serialize compressed storage payload wrapper', serializationError);
+        continue;
+      }
+      if (typeof wrappedSerialized !== 'string' || !wrappedSerialized) {
+        continue;
+      }
+      if (wrappedSerialized.length >= serialized.length) {
+        continue;
+      }
+      if (!best || wrappedSerialized.length < best.wrappedLength) {
+        best = {
+          serialized: wrappedSerialized,
+          originalLength: serialized.length,
+          wrappedLength: wrappedSerialized.length,
+          compressedPayloadLength: compressed.length,
+          compressionVariant: strategy.variant
+        };
+      }
+    }
+    return best;
+  }
+  function decodeCompressedJsonStorageValue(raw) {
+    if (typeof raw !== 'string') {
+      return {
+        success: false
+      };
+    }
+    if (!raw || raw.charCodeAt(0) !== 123) {
+      return {
+        success: false
+      };
+    }
+    if (!raw.includes("\"".concat(STORAGE_COMPRESSION_FLAG_KEY, "\":true")) || !raw.includes("\"namespace\":\"".concat(STORAGE_COMPRESSION_NAMESPACE))) {
+      return {
+        success: false
+      };
+    }
+    var parsed;
+    try {
+      parsed = JSON.parse(raw);
+    } catch (parseError) {
+      return {
+        success: false,
+        error: parseError
+      };
+    }
+    if (!parsed || parsed[STORAGE_COMPRESSION_FLAG_KEY] !== true) {
+      return {
+        success: false
+      };
+    }
+    if (parsed.namespace !== STORAGE_COMPRESSION_NAMESPACE) {
+      return {
+        success: false
+      };
+    }
+    if (parsed.version !== STORAGE_COMPRESSION_VERSION) {
+      console.warn('Unsupported storage compression version', parsed.version);
+      return {
+        success: false
+      };
+    }
+    if (parsed.algorithm !== STORAGE_COMPRESSION_ALGORITHM && parsed.algorithm !== LEGACY_STORAGE_COMPRESSION_ALGORITHM) {
+      console.warn('Unsupported storage compression algorithm', parsed.algorithm);
+      return {
+        success: false
+      };
+    }
+    if (typeof parsed.data !== 'string' || !parsed.data) {
+      return {
+        success: false
+      };
+    }
+    if (!canUseJsonValueCompression()) {
+      console.warn('Compressed storage payload detected but compression library is unavailable.');
+      return {
+        success: false
+      };
+    }
+    var preferredVariant = null;
+    if (typeof parsed.compressionVariant === 'string' && parsed.compressionVariant) {
+      preferredVariant = parsed.compressionVariant;
+    } else if (parsed.algorithm === LEGACY_STORAGE_COMPRESSION_ALGORITHM) {
+      preferredVariant = 'utf16';
+    }
+    var decoded = tryDecompressWithStrategies(parsed.data, STORAGE_COMPRESSION_VARIANTS, preferredVariant, 'storage payload');
+    if (!decoded.success) {
+      return {
+        success: false,
+        error: decoded.error
+      };
+    }
+    if (!parsed.compressionVariant && decoded.variant) {
+      parsed.compressionVariant = decoded.variant;
+    }
+    return {
+      success: true,
+      value: decoded.value,
+      metadata: parsed
+    };
+  }
+  function maybeDecompressStoredString(raw, options) {
+    if (typeof raw !== 'string') {
+      return raw;
+    }
+    var decoded = decodeCompressedJsonStorageValue(raw);
+    if (!decoded.success) {
+      return raw;
+    }
+    if (options && typeof options.onDecoded === 'function') {
+      try {
+        options.onDecoded(decoded);
+      } catch (callbackError) {
+        console.warn('Error while processing storage decompression callback', callbackError);
+      }
+    }
+    return decoded.value;
+  }
+  function attemptStorageCompressionSweep(storage, options) {
+    if (!storage || typeof storage.length !== 'number' || typeof storage.key !== 'function') {
+      return {
+        success: false,
+        compressed: 0,
+        freed: 0
+      };
+    }
+    var _ref = options || {},
+      _ref$skipKeys = _ref.skipKeys,
+      skipKeys = _ref$skipKeys === void 0 ? [] : _ref$skipKeys,
+      _ref$limit = _ref.limit,
+      limit = _ref$limit === void 0 ? STORAGE_COMPRESSION_SWEEP_LIMIT : _ref$limit,
+      _ref$minSavings = _ref.minSavings,
+      minSavings = _ref$minSavings === void 0 ? STORAGE_COMPRESSION_SWEEP_MIN_SAVINGS : _ref$minSavings;
+    var skipSet = new Set();
+    if (Array.isArray(skipKeys)) {
+      for (var i = 0; i < skipKeys.length; i += 1) {
+        var key = skipKeys[i];
+        if (typeof key === 'string' && key) {
+          skipSet.add(key);
+        }
+      }
+    }
+    var total = storage.length;
+    var keys = [];
+    for (var index = 0; index < total; index += 1) {
+      var _key = void 0;
+      try {
+        _key = storage.key(index);
+      } catch (keyError) {
+        void keyError;
+        _key = null;
+      }
+      if (typeof _key === 'string' && _key && !skipSet.has(_key)) {
+        keys.push(_key);
+      }
+    }
+    var compressedCount = 0;
+    var freedCharacters = 0;
+    var upperLimit = typeof limit === 'number' && limit > 0 ? Math.min(limit, keys.length) : keys.length;
+    for (var _index = 0; _index < keys.length && compressedCount < upperLimit; _index += 1) {
+      var _key2 = keys[_index];
+      if (skipSet.has(_key2)) {
+        continue;
+      }
+      var raw = void 0;
+      try {
+        raw = storage.getItem(_key2);
+      } catch (readError) {
+        void readError;
+        continue;
+      }
+      if (typeof raw !== 'string' || !raw) {
+        continue;
+      }
+      if (raw.includes("\"".concat(STORAGE_COMPRESSION_FLAG_KEY, "\":true"))) {
+        continue;
+      }
+      var candidate = createCompressedJsonStorageCandidate(raw);
+      if (!candidate || typeof candidate.serialized !== 'string' || !candidate.serialized) {
+        continue;
+      }
+      var savings = typeof candidate.originalLength === 'number' && typeof candidate.wrappedLength === 'number' ? candidate.originalLength - candidate.wrappedLength : 0;
+      if (savings < (typeof minSavings === 'number' && minSavings > 0 ? minSavings : 0)) {
+        continue;
+      }
+      try {
+        storage.setItem(_key2, candidate.serialized);
+        compressedCount += 1;
+        freedCharacters += savings > 0 ? savings : 0;
+      } catch (writeError) {
+        void writeError;
+      }
+    }
+    if (compressedCount > 0 && typeof console !== 'undefined' && typeof console.warn === 'function') {
+      if (freedCharacters > 0) {
+        console.warn("Compressed ".concat(compressedCount, " stored entr").concat(compressedCount === 1 ? 'y' : 'ies', " during quota recovery, freeing approximately ").concat(freedCharacters, " characters."));
+      } else {
+        console.warn("Compressed ".concat(compressedCount, " stored entr").concat(compressedCount === 1 ? 'y' : 'ies', " during quota recovery."));
+      }
+    }
+    return {
+      success: compressedCount > 0,
+      compressed: compressedCount,
+      freed: freedCharacters
+    };
+  }
+  function decodeStoredValue(raw) {
+    if (raw === null || raw === undefined) {
+      return raw;
+    }
+    return maybeDecompressStoredString(raw);
+  }
+  function patchIndividualStorageGetItem(storage) {
+    if (!storage || typeof storage.getItem !== 'function') {
+      return;
+    }
+    if (storageCompressionPatchedStorages && typeof storageCompressionPatchedStorages.has === 'function' && storageCompressionPatchedStorages.has(storage)) {
+      return;
+    }
+    var originalGetItem = storage.getItem;
+    var patchedGetItem = function patchedStorageGetItem(key) {
+      var rawValue = typeof originalGetItem === 'function' ? originalGetItem.call(this, key) : undefined;
+      return maybeDecompressStoredString(rawValue);
+    };
+    try {
+      Object.defineProperty(storage, 'getItem', {
+        configurable: true,
+        writable: true,
+        value: patchedGetItem
+      });
+    } catch (defineError) {
+      try {
+        storage.getItem = patchedGetItem;
+      } catch (assignError) {
+        console.warn('Unable to patch storage instance getItem for compression support', assignError);
+        return;
+      }
+    }
+    if (storageCompressionPatchedStorages && typeof storageCompressionPatchedStorages.add === 'function') {
+      try {
+        storageCompressionPatchedStorages.add(storage);
+      } catch (trackError) {
+        void trackError;
+      }
+    }
+  }
+  function patchStorageGetItemForCompression() {
+    if (typeof Storage === 'undefined') {
+      var _candidates = [];
+      if (GLOBAL_SCOPE && _typeof(GLOBAL_SCOPE) === 'object') {
+        if (GLOBAL_SCOPE.localStorage) {
+          _candidates.push(GLOBAL_SCOPE.localStorage);
+        }
+        if (GLOBAL_SCOPE.sessionStorage) {
+          _candidates.push(GLOBAL_SCOPE.sessionStorage);
+        }
+      }
+      if (typeof global !== 'undefined' && global && global !== GLOBAL_SCOPE) {
+        if (global.localStorage) {
+          _candidates.push(global.localStorage);
+        }
+        if (global.sessionStorage) {
+          _candidates.push(global.sessionStorage);
+        }
+      }
+      _candidates.forEach(patchIndividualStorageGetItem);
+      return;
+    }
+    var prototype = Storage.prototype;
+    if (!prototype || typeof prototype.getItem !== 'function') {
+      return;
+    }
+    if (prototype.__cineStorageCompressionPatched) {
+      return;
+    }
+    var originalGetItem = prototype.getItem;
+    var patchedGetItem = function patchedStorageGetItem(key) {
+      var rawValue = originalGetItem.call(this, key);
+      return maybeDecompressStoredString(rawValue);
+    };
+    try {
+      Object.defineProperty(prototype, 'getItem', {
+        configurable: true,
+        writable: true,
+        value: patchedGetItem
+      });
+    } catch (patchError) {
+      console.warn('Unable to patch Storage.getItem for compression support', patchError);
+      return;
+    }
+    try {
+      Object.defineProperty(prototype, '__cineStorageCompressionPatched', {
+        configurable: true,
+        writable: false,
+        value: true
+      });
+    } catch (flagError) {
+      prototype.__cineStorageCompressionPatched = true;
+      void flagError;
+    }
+    var candidates = [];
+    if (GLOBAL_SCOPE && _typeof(GLOBAL_SCOPE) === 'object') {
+      if (GLOBAL_SCOPE.localStorage) {
+        candidates.push(GLOBAL_SCOPE.localStorage);
+      }
+      if (GLOBAL_SCOPE.sessionStorage) {
+        candidates.push(GLOBAL_SCOPE.sessionStorage);
+      }
+    }
+    if (typeof global !== 'undefined' && global && global !== GLOBAL_SCOPE) {
+      if (global.localStorage) {
+        candidates.push(global.localStorage);
+      }
+      if (global.sessionStorage) {
+        candidates.push(global.sessionStorage);
+      }
+    }
+    candidates.forEach(patchIndividualStorageGetItem);
   }
   function collectMigrationBackupEntriesForCleanup(storage, excludeKey) {
     if (!storage) {
@@ -923,18 +1419,20 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     var _tryStoreSerialized = function tryStoreSerialized(candidate) {
       var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-      var _ref = options || {},
-        _ref$logCompression = _ref.logCompression,
-        logCompression = _ref$logCompression === void 0 ? false : _ref$logCompression,
-        _ref$info = _ref.info,
-        info = _ref$info === void 0 ? null : _ref$info;
+      var _ref2 = options || {},
+        _ref2$logCompression = _ref2.logCompression,
+        logCompression = _ref2$logCompression === void 0 ? false : _ref2$logCompression,
+        _ref2$info = _ref2.info,
+        info = _ref2$info === void 0 ? null : _ref2$info;
       try {
         storage.setItem(backupKey, candidate.serialized);
         if (logCompression && info && !_tryStoreSerialized.compressionLogged) {
           _tryStoreSerialized.compressionLogged = true;
-          var savings = info.originalSize - info.compressedSize;
+          var storedLength = typeof info.serializedLength === 'number' ? info.serializedLength : info.compressedSize;
+          var rawSavings = info.originalSize - storedLength;
+          var savings = rawSavings > 0 ? rawSavings : 0;
           var percent = info.originalSize > 0 ? Math.round(savings / info.originalSize * 100) : 0;
-          console.warn("Stored compressed migration backup for ".concat(key, " to reduce storage usage by ").concat(savings, " characters (").concat(percent, "%)."));
+          console.warn("Stored compressed migration backup for ".concat(key, " to reduce storage usage by ").concat(savings, " characters (").concat(percent, "%) using ").concat(info.variant || 'unknown', " variant."));
         }
         return {
           success: true,
@@ -1071,8 +1569,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           }
         }
         for (var _i = 0; _i < SIMPLE_STORAGE_KEYS.length; _i += 1) {
-          var _key = SIMPLE_STORAGE_KEYS[_i];
-          var _variants = getStorageKeyVariants(_key);
+          var _key3 = SIMPLE_STORAGE_KEYS[_i];
+          var _variants = getStorageKeyVariants(_key3);
           for (var _j = 0; _j < _variants.length; _j += 1) {
             var _candidateKey = _variants[_j];
             if (storage.getItem(_candidateKey) !== null) {
@@ -1134,7 +1632,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         return index >= 0 && index < keys.length ? keys[index] : null;
       },
       getItem: function getItem(key) {
-        return Object.prototype.hasOwnProperty.call(memoryStore, key) ? memoryStore[key] : null;
+        if (!Object.prototype.hasOwnProperty.call(memoryStore, key)) {
+          return null;
+        }
+        return maybeDecompressStoredString(memoryStore[key]);
       },
       setItem: function setItem(key, value) {
         memoryStore[key] = String(value);
@@ -1268,9 +1769,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (!storage) {
       return snapshot;
     }
-    var _ref2 = options || {},
-      _ref2$suppressAlerts = _ref2.suppressAlerts,
-      suppressAlerts = _ref2$suppressAlerts === void 0 ? false : _ref2$suppressAlerts;
+    var _ref3 = options || {},
+      _ref3$suppressAlerts = _ref3.suppressAlerts,
+      suppressAlerts = _ref3$suppressAlerts === void 0 ? false : _ref3$suppressAlerts;
     var captureKey = function captureKey(key) {
       if (typeof key !== 'string' || !key) {
         return;
@@ -1454,6 +1955,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return safeLocalStorageInfo.storage;
   }
   updateGlobalSafeLocalStorageReference();
+  patchStorageGetItemForCompression();
   var persistentStorageRequestPromise = null;
   function requestPersistentStorage() {
     var storageManager = getStorageManager();
@@ -1593,22 +2095,48 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       };
     }
     if (name.startsWith(STORAGE_AUTO_BACKUP_NAME_PREFIX)) {
-      var match = name.match(/^auto-backup-(\d{4})-(\d{2})-(\d{2})-(\d{2})-(\d{2})(?:-(.*))?$/);
-      if (!match) {
-        return {
-          timestamp: Number.NEGATIVE_INFINITY,
-          label: ''
-        };
+      var secondsAwareMatch = name.match(/^auto-backup-(\d{4})-(\d{2})-(\d{2})-(\d{2})-(\d{2})-(\d{2})(?:-(.*))?$/);
+      var year;
+      var month;
+      var day;
+      var hour;
+      var minute;
+      var rawLabel = '';
+      var second = '00';
+      if (secondsAwareMatch) {
+        var _secondsAwareMatch = _slicedToArray(secondsAwareMatch, 8);
+        year = _secondsAwareMatch[1];
+        month = _secondsAwareMatch[2];
+        day = _secondsAwareMatch[3];
+        hour = _secondsAwareMatch[4];
+        minute = _secondsAwareMatch[5];
+        second = _secondsAwareMatch[6];
+        var _secondsAwareMatch$ = _secondsAwareMatch[7];
+        rawLabel = _secondsAwareMatch$ === void 0 ? '' : _secondsAwareMatch$;
+      } else {
+        var legacyMatch = name.match(/^auto-backup-(\d{4})-(\d{2})-(\d{2})-(\d{2})-(\d{2})(?:-(.*))?$/);
+        if (!legacyMatch) {
+          return {
+            timestamp: Number.NEGATIVE_INFINITY,
+            label: ''
+          };
+        }
+        var _legacyMatch = _slicedToArray(legacyMatch, 7);
+        year = _legacyMatch[1];
+        month = _legacyMatch[2];
+        day = _legacyMatch[3];
+        hour = _legacyMatch[4];
+        minute = _legacyMatch[5];
+        var _legacyMatch$ = _legacyMatch[6];
+        rawLabel = _legacyMatch$ === void 0 ? '' : _legacyMatch$;
       }
-      var _match = _slicedToArray(match, 7),
-        year = _match[1],
-        month = _match[2],
-        day = _match[3],
-        hour = _match[4],
-        minute = _match[5],
-        _match$ = _match[6],
-        rawLabel = _match$ === void 0 ? '' : _match$;
-      var date = new Date(Number.parseInt(year, 10), Number.parseInt(month, 10) - 1, Number.parseInt(day, 10), Number.parseInt(hour, 10), Number.parseInt(minute, 10), 0, 0);
+      var parsedYear = Number.parseInt(year, 10);
+      var parsedMonth = Number.parseInt(month, 10) - 1;
+      var parsedDay = Number.parseInt(day, 10);
+      var parsedHour = Number.parseInt(hour, 10);
+      var parsedMinute = Number.parseInt(minute, 10);
+      var parsedSecond = Number.parseInt(second, 10);
+      var date = new Date(parsedYear, parsedMonth, parsedDay, parsedHour, parsedMinute, Number.isNaN(parsedSecond) ? 0 : parsedSecond, 0);
       var time = date.getTime();
       return {
         timestamp: Number.isNaN(time) ? Number.NEGATIVE_INFINITY : time,
@@ -1616,23 +2144,23 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       };
     }
     if (name.startsWith(STORAGE_AUTO_BACKUP_DELETION_PREFIX)) {
-      var _match2 = name.match(/^auto-backup-before-delete-(\d{4})-(\d{2})-(\d{2})-(\d{2})-(\d{2})-(\d{2})(?:-(.*))?$/);
-      if (!_match2) {
+      var match = name.match(/^auto-backup-before-delete-(\d{4})-(\d{2})-(\d{2})-(\d{2})-(\d{2})-(\d{2})(?:-(.*))?$/);
+      if (!match) {
         return {
           timestamp: Number.NEGATIVE_INFINITY,
           label: ''
         };
       }
-      var _match3 = _slicedToArray(_match2, 8),
-        _year = _match3[1],
-        _month = _match3[2],
-        _day = _match3[3],
-        _hour = _match3[4],
-        _minute = _match3[5],
-        second = _match3[6],
-        _match3$ = _match3[7],
-        _rawLabel = _match3$ === void 0 ? '' : _match3$;
-      var _date = new Date(Number.parseInt(_year, 10), Number.parseInt(_month, 10) - 1, Number.parseInt(_day, 10), Number.parseInt(_hour, 10), Number.parseInt(_minute, 10), Number.parseInt(second, 10), 0);
+      var _match = _slicedToArray(match, 8),
+        _year = _match[1],
+        _month = _match[2],
+        _day = _match[3],
+        _hour = _match[4],
+        _minute = _match[5],
+        _second = _match[6],
+        _match$ = _match[7],
+        _rawLabel = _match$ === void 0 ? '' : _match$;
+      var _date = new Date(Number.parseInt(_year, 10), Number.parseInt(_month, 10) - 1, Number.parseInt(_day, 10), Number.parseInt(_hour, 10), Number.parseInt(_minute, 10), Number.parseInt(_second, 10), 0);
       var _time = _date.getTime();
       return {
         timestamp: Number.isNaN(_time) ? Number.NEGATIVE_INFINITY : _time,
@@ -1715,13 +2243,32 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (!entry || _typeof(entry) !== 'object') {
       return '';
     }
-    if (typeof entry.label === 'string' && entry.label.trim()) {
-      return entry.label.trim();
+    if (typeof entry.label === 'string') {
+      var trimmed = entry.label.trim();
+      if (trimmed) {
+        return trimmed;
+      }
     }
-    if (typeof entry.key === 'string') {
-      return entry.key;
+    if (typeof entry.key === 'string' && entry.key.trim()) {
+      var key = entry.key.trim();
+      if (key.startsWith(STORAGE_AUTO_BACKUP_NAME_PREFIX) || key.startsWith(STORAGE_AUTO_BACKUP_DELETION_PREFIX)) {
+        return '__auto-backup:unlabeled__';
+      }
+      return key;
     }
-    return '';
+    return '__auto-backup:unlabeled__';
+  }
+  function getAutoBackupEntrySignature(container, entry) {
+    if (!isPlainObject(container) || !entry || typeof entry.key !== 'string') {
+      return 'undefined';
+    }
+    var value = Object.prototype.hasOwnProperty.call(container, entry.key) ? container[entry.key] : undefined;
+    try {
+      return createStableValueSignature(value);
+    } catch (error) {
+      console.warn('Failed to create stable signature for automatic backup entry', error);
+      return 'undefined';
+    }
   }
   function createStableValueSignature(value) {
     if (value === null) {
@@ -1817,68 +2364,56 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (!isPlainObject(container) || !Array.isArray(entries) || entries.length <= limit) {
       return;
     }
-    var labelCounts = new Map();
-    for (var _index = 0; _index < entries.length; _index += 1) {
-      var entry = entries[_index];
-      if (!entry || _typeof(entry) !== 'object') {
+    var duplicateBuckets = new Map();
+    for (var index = 0; index < entries.length; index += 1) {
+      var entry = entries[index];
+      if (!entry || typeof entry.key !== 'string') {
         continue;
       }
       var labelKey = getAutoBackupLabelKey(entry);
-      labelCounts.set(labelKey, (labelCounts.get(labelKey) || 0) + 1);
+      var signature = getAutoBackupEntrySignature(container, entry);
+      var bucketKey = "".concat(labelKey, "__").concat(signature);
+      var existing = duplicateBuckets.get(bucketKey);
+      if (existing) {
+        existing.push(index);
+      } else {
+        duplicateBuckets.set(bucketKey, [index]);
+      }
     }
-    var index = 0;
-    while (entries.length > limit && index < entries.length) {
-      var _entry = entries[index];
+    var removable = Array.from(duplicateBuckets.values()).filter(function (indexes) {
+      return Array.isArray(indexes) && indexes.length > 1;
+    }).flatMap(function (indexes) {
+      return indexes.slice(0, -1);
+    }).sort(function (a, b) {
+      return a - b;
+    });
+    if (!removable.length) {
+      if (entries.length > limit) {
+        console.warn('Skipped trimming automatic backups because all remaining versions are unique.', {
+          limit: limit,
+          total: entries.length
+        });
+      }
+      return;
+    }
+    for (var i = removable.length - 1; i >= 0 && entries.length > limit; i -= 1) {
+      var _index2 = removable[i];
+      var _entry = entries[_index2];
       if (!_entry || typeof _entry.key !== 'string') {
-        index += 1;
         continue;
       }
       if (isRenamedAutoBackupEntry(container, _entry.key)) {
-        index += 1;
         continue;
       }
-      var _labelKey = getAutoBackupLabelKey(_entry);
-      var count = labelCounts.get(_labelKey) || 0;
-      if (_labelKey && count > 1) {
-        delete container[_entry.key];
-        entries.splice(index, 1);
-        labelCounts.set(_labelKey, count - 1);
-        removedKeys.push(_entry.key);
-        continue;
-      }
-      index += 1;
-    }
-    if (entries.length <= limit) {
-      return;
-    }
-    index = 0;
-    while (entries.length > limit && index < entries.length) {
-      var _entry2 = entries[index];
-      if (!_entry2 || typeof _entry2.key !== 'string') {
-        index += 1;
-        continue;
-      }
-      if (isRenamedAutoBackupEntry(container, _entry2.key)) {
-        index += 1;
-        continue;
-      }
-      var _labelKey2 = getAutoBackupLabelKey(_entry2);
-      var _count = labelCounts.get(_labelKey2) || 0;
-      delete container[_entry2.key];
-      entries.splice(index, 1);
-      labelCounts.set(_labelKey2, Math.max(0, _count - 1));
-      removedKeys.push(_entry2.key);
+      delete container[_entry.key];
+      entries.splice(_index2, 1);
+      removedKeys.push(_entry.key);
     }
     if (entries.length > limit) {
-      for (var fallbackIndex = entries.length - 1; entries.length > limit && fallbackIndex >= 0; fallbackIndex -= 1) {
-        var _entry3 = entries[fallbackIndex];
-        if (!_entry3 || typeof _entry3.key !== 'string') {
-          continue;
-        }
-        delete container[_entry3.key];
-        entries.splice(fallbackIndex, 1);
-        removedKeys.push(_entry3.key);
-      }
+      console.warn('Unable to trim automatic backups down to the configured limit without losing unique data.', {
+        limit: limit,
+        remaining: entries.length
+      });
     }
   }
   function enforceAutoBackupLimits(container) {
@@ -1911,24 +2446,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return duplicateAutoBackupKey;
     }
     if (autoBackups.length > 0) {
-      var fallback = null;
-      for (var index = 0; index < autoBackups.length; index += 1) {
-        var candidate = autoBackups[index];
-        if (!candidate || typeof candidate.key !== 'string') {
-          continue;
-        }
-        if (!isRenamedAutoBackupEntry(container, candidate.key)) {
-          delete container[candidate.key];
-          return candidate.key;
-        }
-        if (!fallback) {
-          fallback = candidate;
-        }
-      }
-      if (fallback && typeof fallback.key === 'string') {
-        delete container[fallback.key];
-        return fallback.key;
-      }
+      console.warn('Unable to free space by removing automatic backups because all versions are unique.');
     }
     var deletionBackups = collectAutoBackupEntries(container, STORAGE_AUTO_BACKUP_DELETION_PREFIX);
     var duplicateDeletionBackupKey = removeSingleDuplicateAutoBackupEntry(container, deletionBackups);
@@ -1936,26 +2454,96 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return duplicateDeletionBackupKey;
     }
     if (deletionBackups.length > 0) {
-      var _fallback = null;
-      for (var _index2 = 0; _index2 < deletionBackups.length; _index2 += 1) {
-        var _candidate = deletionBackups[_index2];
-        if (!_candidate || typeof _candidate.key !== 'string') {
-          continue;
-        }
-        if (!isRenamedAutoBackupEntry(container, _candidate.key)) {
-          delete container[_candidate.key];
-          return _candidate.key;
-        }
-        if (!_fallback) {
-          _fallback = _candidate;
-        }
-      }
-      if (_fallback && typeof _fallback.key === 'string') {
-        delete container[_fallback.key];
-        return _fallback.key;
-      }
+      console.warn('Unable to free space by removing pre-deletion backups because all versions are unique.');
     }
     return null;
+  }
+  function describeAutoGearBackupEntry(entry) {
+    if (!entry || _typeof(entry) !== 'object') {
+      return '';
+    }
+    if (typeof entry.note === 'string') {
+      var trimmedNote = entry.note.trim();
+      if (trimmedNote) {
+        return trimmedNote;
+      }
+    }
+    if (typeof entry.createdAt === 'string') {
+      var trimmedTimestamp = entry.createdAt.trim();
+      if (trimmedTimestamp) {
+        return trimmedTimestamp;
+      }
+    }
+    if (typeof entry.id === 'string') {
+      return entry.id;
+    }
+    return '';
+  }
+  function removeOldestAutoGearBackupEntry(backups) {
+    if (!Array.isArray(backups) || backups.length === 0) {
+      return null;
+    }
+    var removeAt = function removeAt(index) {
+      var _backups$splice = backups.splice(index, 1),
+        _backups$splice2 = _slicedToArray(_backups$splice, 1),
+        removed = _backups$splice2[0];
+      return {
+        removed: removed,
+        label: describeAutoGearBackupEntry(removed)
+      };
+    };
+    for (var index = backups.length - 1; index >= 0; index -= 1) {
+      var entry = backups[index];
+      if (!entry || _typeof(entry) !== 'object') {
+        return removeAt(index);
+      }
+      if (!Array.isArray(entry.rules)) {
+        return removeAt(index);
+      }
+    }
+    return removeAt(backups.length - 1);
+  }
+  function cleanupAutoGearBackupMigrationCopies(storage) {
+    if (!storage || typeof storage.getItem !== 'function' || typeof storage.removeItem !== 'function') {
+      return false;
+    }
+    var migrationBackupKey = "".concat(AUTO_GEAR_BACKUPS_STORAGE_KEY).concat(STORAGE_MIGRATION_BACKUP_SUFFIX);
+    var removedKeys = [];
+    try {
+      var existing = storage.getItem(migrationBackupKey);
+      if (existing !== null && existing !== undefined) {
+        storage.removeItem(migrationBackupKey);
+        removedKeys.push(migrationBackupKey);
+      }
+    } catch (error) {
+      console.warn('Unable to inspect automatic gear backup migration snapshot while recovering storage quota.', error);
+    }
+    try {
+      var pruned = pruneMigrationBackupEntriesForCleanup(storage, migrationBackupKey);
+      if (Array.isArray(pruned) && pruned.length > 0) {
+        removedKeys.push.apply(removedKeys, _toConsumableArray(pruned));
+      }
+    } catch (error) {
+      console.warn('Unable to prune migration backups while recovering storage for automatic gear backups.', error);
+    }
+    if (removedKeys.length > 0) {
+      console.warn("Removed ".concat(removedKeys.length, " migration backup").concat(removedKeys.length > 1 ? 's' : '', " while freeing storage for automatic gear backups."), removedKeys);
+      return true;
+    }
+    return false;
+  }
+  function clearCachedPlannerDataForAutoGearBackups() {
+    if (typeof clearUiCacheStorageEntries !== 'function') {
+      return false;
+    }
+    try {
+      clearUiCacheStorageEntries();
+      console.warn('Cleared cached planner data to free up storage space before saving automatic gear backups.');
+      return true;
+    } catch (error) {
+      console.warn('Unable to clear cached planner data while recovering storage for automatic gear backups.', error);
+    }
+    return false;
   }
   function shouldDisplayStorageAlert(reason) {
     if (!reason) {
@@ -2162,13 +2750,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       modern: CUSTOM_FONT_STORAGE_KEY_DEFAULT,
       updateFontKey: true
     }];
-    mappings.forEach(function (_ref4) {
-      var legacy = _ref4.legacy,
-        modern = _ref4.modern,
-        _ref4$includeSession = _ref4.includeSession,
-        includeSession = _ref4$includeSession === void 0 ? false : _ref4$includeSession,
-        _ref4$updateFontKey = _ref4.updateFontKey,
-        updateFontKey = _ref4$updateFontKey === void 0 ? false : _ref4$updateFontKey;
+    mappings.forEach(function (_ref5) {
+      var legacy = _ref5.legacy,
+        modern = _ref5.modern,
+        _ref5$includeSession = _ref5.includeSession,
+        includeSession = _ref5$includeSession === void 0 ? false : _ref5$includeSession,
+        _ref5$updateFontKey = _ref5.updateFontKey,
+        updateFontKey = _ref5$updateFontKey === void 0 ? false : _ref5$updateFontKey;
       var migratedLocal = migrateKeyInStorages(localStorages, safeStorage, legacy, modern);
       migrateKeyInStorages(localStorages, safeStorage, "".concat(legacy).concat(STORAGE_BACKUP_SUFFIX), "".concat(modern).concat(STORAGE_BACKUP_SUFFIX));
       if (includeSession) {
@@ -2192,15 +2780,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var defaultValue = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
     var options = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
     if (!storage) return defaultValue;
-    var _ref5 = options || {},
-      _ref5$disableBackup = _ref5.disableBackup,
-      disableBackup = _ref5$disableBackup === void 0 ? false : _ref5$disableBackup,
-      backupKey = _ref5.backupKey,
-      validate = _ref5.validate,
-      _ref5$restoreIfMissin = _ref5.restoreIfMissing,
-      restoreIfMissing = _ref5$restoreIfMissin === void 0 ? false : _ref5$restoreIfMissin,
-      _ref5$alertOnFailure = _ref5.alertOnFailure,
-      alertOnFailure = _ref5$alertOnFailure === void 0 ? null : _ref5$alertOnFailure;
+    var _ref6 = options || {},
+      _ref6$disableBackup = _ref6.disableBackup,
+      disableBackup = _ref6$disableBackup === void 0 ? false : _ref6$disableBackup,
+      backupKey = _ref6.backupKey,
+      validate = _ref6.validate,
+      _ref6$restoreIfMissin = _ref6.restoreIfMissing,
+      restoreIfMissing = _ref6$restoreIfMissin === void 0 ? false : _ref6$restoreIfMissin,
+      _ref6$alertOnFailure = _ref6.alertOnFailure,
+      alertOnFailure = _ref6$alertOnFailure === void 0 ? null : _ref6$alertOnFailure;
     var fallbackKey = typeof backupKey === 'string' && backupKey ? backupKey : "".concat(key).concat(STORAGE_BACKUP_SUFFIX);
     var useBackup = !disableBackup && fallbackKey && fallbackKey !== key;
     var shouldAlert = false;
@@ -2211,8 +2799,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           reason: 'missing'
         };
       }
+      var normalizedRaw = typeof raw === 'string' ? maybeDecompressStoredString(raw) : raw;
       try {
-        var parsed = JSON.parse(raw);
+        var parsed = JSON.parse(normalizedRaw);
         if (typeof validate === 'function' && !validate(parsed)) {
           console.warn("".concat(errorMessage, " Invalid data").concat(label ? " (".concat(label, ")") : '', "."));
           shouldAlert = true;
@@ -2224,7 +2813,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         return {
           ok: true,
           value: parsed,
-          raw: raw
+          raw: raw,
+          normalizedRaw: normalizedRaw
         };
       } catch (err) {
         console.error("".concat(errorMessage).concat(label ? " (".concat(label, ")") : ''), err);
@@ -2265,7 +2855,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
         if (backup.raw !== null && backup.raw !== undefined) {
           try {
-            storage.setItem(key, backup.raw);
+            if (typeof backup.raw === 'string') {
+              var recompressed = createCompressedJsonStorageCandidate(backup.raw);
+              if (recompressed && typeof recompressed.serialized === 'string') {
+                storage.setItem(key, recompressed.serialized);
+              } else {
+                storage.setItem(key, backup.raw);
+              }
+            } else {
+              storage.setItem(key, backup.raw);
+            }
           } catch (restoreError) {
             console.warn("Unable to restore primary copy for ".concat(key, " from backup"), restoreError);
           }
@@ -2281,27 +2880,113 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   function saveJSONToStorage(storage, key, value, errorMessage) {
     var options = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
     if (!storage) return;
-    var _ref6 = options || {},
-      _ref6$disableBackup = _ref6.disableBackup,
-      disableBackup = _ref6$disableBackup === void 0 ? false : _ref6$disableBackup,
-      backupKey = _ref6.backupKey,
-      onQuotaExceeded = _ref6.onQuotaExceeded;
+    var _ref7 = options || {},
+      _ref7$disableBackup = _ref7.disableBackup,
+      disableBackup = _ref7$disableBackup === void 0 ? false : _ref7$disableBackup,
+      backupKey = _ref7.backupKey,
+      onQuotaExceeded = _ref7.onQuotaExceeded,
+      _ref7$enableCompressi = _ref7.enableCompressionSweep,
+      enableCompressionSweep = _ref7$enableCompressi === void 0 ? true : _ref7$enableCompressi;
     var fallbackKey = typeof backupKey === 'string' && backupKey ? backupKey : "".concat(key).concat(STORAGE_BACKUP_SUFFIX);
     var useBackup = !disableBackup && fallbackKey && fallbackKey !== key;
-    var serializeValue = function serializeValue() {
+    var standardSerializedCache;
+    var standardSerializationComputed = false;
+    var compressionCandidate;
+    var useCompressedSerialization = false;
+    var compressionAttempted = false;
+    var compressionLogged = false;
+    var resetSerializationState = function resetSerializationState() {
+      standardSerializedCache = undefined;
+      standardSerializationComputed = false;
+      compressionCandidate = undefined;
+      useCompressedSerialization = false;
+      compressionAttempted = false;
+      compressionLogged = false;
+    };
+    var computeStandardSerialized = function computeStandardSerialized() {
+      if (standardSerializationComputed) {
+        return standardSerializedCache;
+      }
+      standardSerializationComputed = true;
       try {
-        return JSON.stringify(value);
+        standardSerializedCache = JSON.stringify(value);
       } catch (serializationError) {
+        standardSerializedCache = null;
         console.error(errorMessage, serializationError);
         alertStorageError();
+      }
+      return standardSerializedCache;
+    };
+    var computeCompressedSerialized = function computeCompressedSerialized() {
+      if (compressionCandidate !== undefined) {
+        return compressionCandidate && typeof compressionCandidate.serialized === 'string' ? compressionCandidate.serialized : null;
+      }
+      var baseline = computeStandardSerialized();
+      if (typeof baseline !== 'string' || !baseline) {
+        compressionCandidate = null;
         return null;
       }
+      var candidate = createCompressedJsonStorageCandidate(baseline);
+      if (!candidate || typeof candidate.serialized !== 'string') {
+        compressionCandidate = null;
+        return null;
+      }
+      compressionCandidate = candidate;
+      return candidate.serialized;
+    };
+    var getSerializedForAttempt = function getSerializedForAttempt() {
+      if (useCompressedSerialization) {
+        var compressed = computeCompressedSerialized();
+        if (typeof compressed === 'string') {
+          return compressed;
+        }
+        useCompressedSerialization = false;
+      }
+      var standard = computeStandardSerialized();
+      if (typeof standard === 'string') {
+        return standard;
+      }
+      return null;
+    };
+    var tryEnableCompression = function tryEnableCompression() {
+      if (useCompressedSerialization || compressionAttempted) {
+        return false;
+      }
+      compressionAttempted = true;
+      var baseline = computeStandardSerialized();
+      if (typeof baseline !== 'string' || !baseline) {
+        return false;
+      }
+      var compressed = computeCompressedSerialized();
+      if (typeof compressed !== 'string' || !compressed) {
+        return false;
+      }
+      if (compressed.length >= baseline.length) {
+        return false;
+      }
+      useCompressedSerialization = true;
+      return true;
+    };
+    var logCompressionIfNeeded = function logCompressionIfNeeded() {
+      if (!useCompressedSerialization || !compressionCandidate || compressionLogged) {
+        return;
+      }
+      var _compressionCandidate = compressionCandidate,
+        originalLength = _compressionCandidate.originalLength,
+        wrappedLength = _compressionCandidate.wrappedLength;
+      if (typeof originalLength === 'number' && typeof wrappedLength === 'number' && wrappedLength < originalLength && typeof console !== 'undefined' && typeof console.warn === 'function') {
+        var savings = originalLength - wrappedLength;
+        var percent = originalLength > 0 ? Math.round(savings / originalLength * 100) : 0;
+        console.warn("Stored compressed value for ".concat(key, " to reduce storage usage by ").concat(savings, " characters (").concat(percent, "%)."));
+      }
+      compressionLogged = true;
     };
     var preservedBackupValue;
     var hasPreservedBackup = false;
     var removedBackupDuringRetry = false;
     var quotaRecoverySteps = 0;
     var quotaRecoveryFailed = false;
+    var compressionSweepAttempted = false;
     var registerQuotaRecoveryStep = function registerQuotaRecoveryStep() {
       quotaRecoverySteps += 1;
       if (quotaRecoverySteps > MAX_QUOTA_RECOVERY_STEPS) {
@@ -2313,26 +2998,44 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     };
     var attemptHandleQuota = function attemptHandleQuota(error) {
       var context = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-      if (!isQuotaExceededError(error) || typeof onQuotaExceeded !== 'function') {
+      if (!isQuotaExceededError(error)) {
         return false;
       }
-      try {
-        return onQuotaExceeded(error, _objectSpread({
-          storage: storage,
-          key: key,
-          value: value
-        }, context)) === true;
-      } catch (handlerError) {
-        var scope = context && context.isBackup ? ' (backup)' : '';
-        console.error("Error while handling quota exceed for ".concat(key).concat(scope), handlerError);
+      if (typeof onQuotaExceeded === 'function') {
+        try {
+          if (onQuotaExceeded(error, _objectSpread({
+            storage: storage,
+            key: key,
+            value: value
+          }, context)) === true) {
+            return true;
+          }
+        } catch (handlerError) {
+          var scope = context && context.isBackup ? ' (backup)' : '';
+          console.error("Error while handling quota exceed for ".concat(key).concat(scope), handlerError);
+        }
+      }
+      if (compressionSweepAttempted || enableCompressionSweep === false) {
         return false;
       }
+      compressionSweepAttempted = true;
+      var skipKeys = [key];
+      if (useBackup && typeof fallbackKey === 'string' && fallbackKey && fallbackKey !== key) {
+        skipKeys.push(fallbackKey);
+      }
+      if (context && typeof context.backupKey === 'string' && context.backupKey) {
+        skipKeys.push(context.backupKey);
+      }
+      var sweepResult = attemptStorageCompressionSweep(storage, {
+        skipKeys: skipKeys
+      });
+      return Boolean(sweepResult && sweepResult.success);
     };
     var attempts = 0;
     var _loop = function _loop() {
         attempts += 1;
-        var serialized = serializeValue();
-        if (serialized === null) {
+        var serialized = getSerializedForAttempt();
+        if (typeof serialized !== 'string') {
           return {
             v: void 0
           };
@@ -2370,8 +3073,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         if (!skipPrimaryWrite) {
           try {
             storage.setItem(key, serialized);
+            logCompressionIfNeeded();
           } catch (error) {
             if (attemptHandleQuota(error)) {
+              resetSerializationState();
+              if (!registerQuotaRecoveryStep()) {
+                return 0;
+              }
+              if (attempts > 0) {
+                attempts -= 1;
+              }
+              return 1;
+            }
+            if (!quotaRecoveryFailed && tryEnableCompression()) {
               if (!registerQuotaRecoveryStep()) {
                 return 0;
               }
@@ -2396,6 +3110,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         var attemptBackupWrite = function attemptBackupWrite() {
           try {
             storage.setItem(fallbackKey, serialized);
+            logCompressionIfNeeded();
             return 'success';
           } catch (error) {
             var backupError = error;
@@ -2424,6 +3139,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
                 backupKey: fallbackKey,
                 isBackup: true
               })) {
+                resetSerializationState();
+                if (!registerQuotaRecoveryStep()) {
+                  return 'failure';
+                }
+                return 'retry';
+              }
+              if (!quotaRecoveryFailed && tryEnableCompression()) {
+                resetSerializationState();
                 if (!registerQuotaRecoveryStep()) {
                   return 'failure';
                 }
@@ -2482,10 +3205,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   function deleteFromStorage(storage, key, errorMessage) {
     var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
     if (!storage) return;
-    var _ref7 = options || {},
-      _ref7$disableBackup = _ref7.disableBackup,
-      disableBackup = _ref7$disableBackup === void 0 ? false : _ref7$disableBackup,
-      backupKey = _ref7.backupKey;
+    var _ref8 = options || {},
+      _ref8$disableBackup = _ref8.disableBackup,
+      disableBackup = _ref8$disableBackup === void 0 ? false : _ref8$disableBackup,
+      backupKey = _ref8.backupKey;
     var fallbackKey = typeof backupKey === 'string' && backupKey ? backupKey : "".concat(key).concat(STORAGE_BACKUP_SUFFIX);
     var useBackup = !disableBackup && fallbackKey && fallbackKey !== key;
     try {
@@ -2649,6 +3372,32 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     usedNames.add(name);
     normalized.add(candidate);
     return name;
+  }
+  function ensureUpdatedProjectBaseName(rawName) {
+    var trimmed = typeof rawName === "string" ? rawName.trim() : "";
+    if (!trimmed) {
+      return "Project-updated";
+    }
+    if (trimmed.toLowerCase().endsWith("-updated")) {
+      return trimmed;
+    }
+    return "".concat(trimmed, "-updated");
+  }
+  function generateUpdatedProjectName(baseName, usedNames, normalizedNames) {
+    var normalized = normalizedNames || new Set(_toConsumableArray(usedNames).map(function (name) {
+      return typeof name === "string" ? name.trim().toLowerCase() : "";
+    }).filter(function (name) {
+      return name;
+    }));
+    var base = ensureUpdatedProjectBaseName(baseName);
+    var candidate = base;
+    var suffix = 2;
+    var normalizedCandidate = candidate.trim().toLowerCase();
+    while (normalizedCandidate && normalized.has(normalizedCandidate)) {
+      candidate = "".concat(base, "-").concat(suffix++);
+      normalizedCandidate = candidate.trim().toLowerCase();
+    }
+    return candidate;
   }
   function collectStringValues(value) {
     if (value === null || value === undefined) {
@@ -3030,10 +3779,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function updateSetups(callback) {
     var setups = loadSetups();
-    var _ref8 = callback(setups) || {},
-      result = _ref8.result,
-      _ref8$changed = _ref8.changed,
-      changed = _ref8$changed === void 0 ? true : _ref8$changed;
+    var _ref9 = callback(setups) || {},
+      result = _ref9.result,
+      _ref9$changed = _ref9.changed,
+      changed = _ref9$changed === void 0 ? true : _ref9$changed;
     if (changed) {
       saveSetups(setups);
     }
@@ -3142,10 +3891,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (typeof label !== 'string') return '';
       return label.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[:：]/g, '').replace(/[^a-zA-Z0-9]+/g, ' ').trim().toLowerCase();
     };
-    Object.entries(LEGACY_PROJECT_FIELD_LABELS).forEach(function (_ref9) {
-      var _ref0 = _slicedToArray(_ref9, 2),
-        field = _ref0[0],
-        labels = _ref0[1];
+    Object.entries(LEGACY_PROJECT_FIELD_LABELS).forEach(function (_ref0) {
+      var _ref1 = _slicedToArray(_ref0, 2),
+        field = _ref1[0],
+        labels = _ref1[1];
       labels.forEach(function (label) {
         var normalized = normalize(label);
         if (normalized && !map.has(normalized)) {
@@ -3274,10 +4023,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     if (isPlainObject(value)) {
       var clone = {};
-      Object.entries(value).forEach(function (_ref1) {
-        var _ref10 = _slicedToArray(_ref1, 2),
-          key = _ref10[0],
-          val = _ref10[1];
+      Object.entries(value).forEach(function (_ref10) {
+        var _ref11 = _slicedToArray(_ref10, 2),
+          key = _ref11[0],
+          val = _ref11[1];
         clone[key] = cloneProjectData(val);
       });
       return clone;
@@ -3372,10 +4121,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return null;
     }
     var normalized = {};
-    Object.entries(info).forEach(function (_ref11) {
-      var _ref12 = _slicedToArray(_ref11, 2),
-        key = _ref12[0],
-        raw = _ref12[1];
+    Object.entries(info).forEach(function (_ref12) {
+      var _ref13 = _slicedToArray(_ref12, 2),
+        key = _ref13[0],
+        raw = _ref13[1];
       if (raw === null || raw === undefined) {
         return;
       }
@@ -3430,10 +4179,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return null;
     }
     var clone = {};
-    Object.entries(selectors).forEach(function (_ref13) {
-      var _ref14 = _slicedToArray(_ref13, 2),
-        id = _ref14[0],
-        value = _ref14[1];
+    Object.entries(selectors).forEach(function (_ref14) {
+      var _ref15 = _slicedToArray(_ref14, 2),
+        id = _ref15[0],
+        value = _ref15[1];
       if (typeof id !== 'string' || !id) {
         return;
       }
@@ -3782,6 +4531,18 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var originalValue = parsed;
     var projects = {};
     var changed = false;
+    var usedProjectNames = new Set();
+    var normalizedProjectNames = new Set();
+    var markProjectNameUsed = function markProjectNameUsed(name) {
+      if (typeof name !== "string") {
+        return;
+      }
+      usedProjectNames.add(name);
+      var trimmed = name.trim();
+      if (trimmed) {
+        normalizedProjectNames.add(trimmed.toLowerCase());
+      }
+    };
     var rawKeyLookup = new Map();
     var normalizedKeyLookup = new Map();
     var registerLookupKey = function registerLookupKey(rawKey, storedKey) {
@@ -3813,8 +4574,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (typeof parsed === "string") {
       var normalized = normalizeProject(parsed);
       if (normalized) {
-        projects[""] = normalized;
-        registerLookupKey("", "");
+        var updatedName = generateUpdatedProjectName("", usedProjectNames, normalizedProjectNames);
+        projects[updatedName] = normalized;
+        registerLookupKey("", updatedName);
+        markProjectNameUsed(updatedName);
       }
       return {
         projects: projects,
@@ -3824,8 +4587,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       };
     }
     if (Array.isArray(parsed)) {
-      var usedNames = new Set();
-      var normalizedNames = new Set();
+      var usedNames = usedProjectNames;
+      var normalizedNames = normalizedProjectNames;
       parsed.forEach(function (item, index) {
         var normalized = normalizeProject(item);
         if (!normalized) {
@@ -3834,9 +4597,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
         var baseName = isPlainObject(item) && typeof item.name === "string" ? item.name.trim() : "Project ".concat(index + 1);
         var candidate = baseName || "Project ".concat(index + 1);
-        var unique = generateUniqueName(candidate, usedNames, normalizedNames);
+        var unique = generateUpdatedProjectName(candidate, usedNames, normalizedNames);
         projects[unique] = normalized;
         registerLookupKey(candidate, unique);
+        markProjectNameUsed(unique);
       });
       return {
         projects: projects,
@@ -3860,8 +4624,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (maybeLegacy) {
       var _normalized3 = normalizeProject(parsed);
       if (_normalized3) {
-        projects[""] = _normalized3;
-        registerLookupKey("", "");
+        var _updatedName = generateUpdatedProjectName("", usedProjectNames, normalizedProjectNames);
+        projects[_updatedName] = _normalized3;
+        registerLookupKey("", _updatedName);
+        markProjectNameUsed(_updatedName);
       }
       return {
         projects: projects,
@@ -3871,13 +4637,30 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       };
     }
     keys.forEach(function (key) {
+      if (isNormalizedProjectEntry(parsed[key])) {
+        var trimmedKey = typeof key === "string" ? key.trim() : "";
+        if (trimmedKey) {
+          normalizedProjectNames.add(trimmedKey.toLowerCase());
+        }
+      }
+    });
+    keys.forEach(function (key) {
       var normalized = normalizeProject(parsed[key]);
       if (normalized) {
-        projects[key] = normalized;
-        registerLookupKey(key, key);
-        if (!isNormalizedProjectEntry(parsed[key])) {
+        var originalEntry = parsed[key];
+        var needsUpgrade = !isNormalizedProjectEntry(originalEntry);
+        var finalKey = key;
+        if (needsUpgrade) {
+          finalKey = generateUpdatedProjectName(key, usedProjectNames, normalizedProjectNames);
           changed = true;
         }
+        if (finalKey !== key && Object.prototype.hasOwnProperty.call(projects, finalKey)) {
+          var adjusted = generateUpdatedProjectName(finalKey, usedProjectNames, normalizedProjectNames);
+          finalKey = adjusted;
+        }
+        projects[finalKey] = normalized;
+        registerLookupKey(key, finalKey);
+        markProjectNameUsed(finalKey);
       } else {
         changed = true;
       }
@@ -4275,10 +5058,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     if (isPlainObject(collection)) {
       var _importProject = ensureImporter();
-      Object.entries(collection).forEach(function (_ref15) {
-        var _ref16 = _slicedToArray(_ref15, 2),
-          name = _ref16[0],
-          proj = _ref16[1];
+      Object.entries(collection).forEach(function (_ref16) {
+        var _ref17 = _slicedToArray(_ref16, 2),
+          name = _ref17[0],
+          proj = _ref17[1];
         _importProject(name, proj);
       });
       return true;
@@ -4420,9 +5203,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (Array.isArray(value.list)) {
         return normalizeImportedFullBackupHistory(value.list);
       }
-      var _entry4 = normalizeFullBackupHistoryEntry(value);
-      if (_entry4) {
-        return [_entry4];
+      var _entry2 = normalizeFullBackupHistoryEntry(value);
+      if (_entry2) {
+        return [_entry2];
       }
       var nestedValues = Object.values(value);
       if (nestedValues.length) {
@@ -4457,123 +5240,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     });
     return Array.isArray(parsed) ? parsed : [];
   }
-
-  function describeAutoGearBackupEntry(entry) {
-    if (!entry || _typeof(entry) !== 'object') {
-      return '';
-    }
-
-    if (typeof entry.note === 'string') {
-      var trimmedNote = entry.note.trim();
-      if (trimmedNote) {
-        return trimmedNote;
-      }
-    }
-
-    if (typeof entry.createdAt === 'string') {
-      var trimmedTimestamp = entry.createdAt.trim();
-      if (trimmedTimestamp) {
-        return trimmedTimestamp;
-      }
-    }
-
-    if (typeof entry.id === 'string') {
-      return entry.id;
-    }
-
-    return '';
-  }
-
-  function removeOldestAutoGearBackupEntry(backups) {
-    if (!Array.isArray(backups) || backups.length === 0) {
-      return null;
-    }
-
-    var removeAt = function removeAt(index) {
-      var removed = backups.splice(index, 1)[0];
-      return {
-        removed: removed,
-        label: describeAutoGearBackupEntry(removed)
-      };
-    };
-
-    for (var index = backups.length - 1; index >= 0; index -= 1) {
-      var entry = backups[index];
-      if (!entry || _typeof(entry) !== 'object') {
-        return removeAt(index);
-      }
-      if (!Array.isArray(entry.rules)) {
-        return removeAt(index);
-      }
-    }
-
-    return removeAt(backups.length - 1);
-  }
-
-  function cleanupAutoGearBackupMigrationCopies(storage) {
-    if (!storage || typeof storage.getItem !== 'function' || typeof storage.removeItem !== 'function') {
-      return false;
-    }
-
-    var migrationBackupKey = "cameraPowerPlanner_autoGearBackups".concat(STORAGE_MIGRATION_BACKUP_SUFFIX);
-    var removedKeys = [];
-
-    try {
-      var existing = storage.getItem(migrationBackupKey);
-      if (existing !== null && existing !== undefined) {
-        storage.removeItem(migrationBackupKey);
-        removedKeys.push(migrationBackupKey);
-      }
-    } catch (error) {
-      console.warn('Unable to inspect automatic gear backup migration snapshot while recovering storage quota.', error);
-    }
-
-    try {
-      var pruned = pruneMigrationBackupEntriesForCleanup(storage, migrationBackupKey);
-      if (Array.isArray(pruned) && pruned.length > 0) {
-        removedKeys.push.apply(removedKeys, pruned);
-      }
-    } catch (cleanupError) {
-      console.warn('Unable to prune migration backups while recovering storage for automatic gear backups.', cleanupError);
-    }
-
-    if (removedKeys.length > 0) {
-      console.warn(
-        "Removed ".concat(removedKeys.length, " migration backup").concat(removedKeys.length > 1 ? 's' : '', " while freeing storage for automatic gear backups."),
-        removedKeys
-      );
-      return true;
-    }
-
-    return false;
-  }
-
-  function clearCachedPlannerDataForAutoGearBackups() {
-    if (typeof clearUiCacheStorageEntries !== 'function') {
-      return false;
-    }
-
-    try {
-      clearUiCacheStorageEntries();
-      console.warn('Cleared cached planner data to free up storage space before saving automatic gear backups.');
-      return true;
-    } catch (error) {
-      console.warn('Unable to clear cached planner data while recovering storage for automatic gear backups.', error);
-    }
-
-    return false;
-  }
-
   function saveAutoGearBackups(backups) {
     var safeBackups = Array.isArray(backups) ? backups.slice() : [];
     var safeStorage = getSafeLocalStorage();
     ensurePreWriteMigrationBackup(safeStorage, AUTO_GEAR_BACKUPS_STORAGE_KEY);
-
     var attemptedMigrationCleanup = false;
     var attemptedCacheCleanup = false;
-
     saveJSONToStorage(safeStorage, AUTO_GEAR_BACKUPS_STORAGE_KEY, safeBackups, "Error saving automatic gear rule backups to localStorage:", {
-      onQuotaExceeded: function onQuotaExceeded(error, context) {
+      onQuotaExceeded: function onQuotaExceeded(error) {
+        var context = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
         var removal = removeOldestAutoGearBackupEntry(safeBackups);
         if (removal) {
           var label = removal.label;
@@ -4584,23 +5259,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           }
           return true;
         }
-
         var storage = context && context.storage ? context.storage : safeStorage;
-
         if (!attemptedMigrationCleanup) {
           attemptedMigrationCleanup = true;
           if (cleanupAutoGearBackupMigrationCopies(storage)) {
             return true;
           }
         }
-
         if (!attemptedCacheCleanup) {
           attemptedCacheCleanup = true;
           if (clearCachedPlannerDataForAutoGearBackups()) {
             return true;
           }
         }
-
         return false;
       }
     });
@@ -4668,8 +5339,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return;
     }
     var parsedPresets;
+    var normalizedRawPresets = rawPresets;
+    if (typeof rawPresets === 'string' && rawPresets) {
+      normalizedRawPresets = maybeDecompressStoredString(rawPresets);
+    }
     try {
-      parsedPresets = JSON.parse(rawPresets);
+      parsedPresets = JSON.parse(normalizedRawPresets);
     } catch (parseError) {
       console.error('Error parsing automatic gear presets while removing autosaved preset from localStorage:', parseError);
       return;
@@ -4844,9 +5519,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         if (!Object.prototype.hasOwnProperty.call(value, key)) {
           continue;
         }
-        var _candidate2 = normalizeAutoGearBackupRetentionValue(value[key], null);
-        if (typeof _candidate2 === 'number' && Number.isFinite(_candidate2)) {
-          return clampAutoGearBackupRetention(_candidate2);
+        var _candidate = normalizeAutoGearBackupRetentionValue(value[key], null);
+        if (typeof _candidate === 'number' && Number.isFinite(_candidate)) {
+          return clampAutoGearBackupRetention(_candidate);
         }
       }
       return fallback;
@@ -4990,7 +5665,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             try {
               var backupValue = storage.getItem("".concat(candidateKey).concat(STORAGE_BACKUP_SUFFIX));
               if (backupValue !== null && backupValue !== undefined) {
-                return String(backupValue);
+                var decodedBackup = decodeStoredValue(backupValue);
+                return typeof decodedBackup === 'string' ? decodedBackup : String(backupValue);
               }
             } catch (backupError) {
               console.warn('Unable to read backup key for export', candidateKey, backupError);
@@ -4998,7 +5674,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             }
           }
         } else {
-          return String(value);
+          var decoded = decodeStoredValue(value);
+          return typeof decoded === 'string' ? decoded : String(value);
         }
       } catch (error) {
         console.warn('Unable to read storage key for backup', candidateKey, error);
@@ -5074,7 +5751,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (language) {
       preferences.language = language;
     }
-    var mountVoltages = readLocalStorageValue(MOUNT_VOLTAGE_STORAGE_KEY_NAME);
+    var mountVoltageKey = getMountVoltageStorageKeyName();
+    var mountVoltages = readLocalStorageValue(mountVoltageKey);
     if (mountVoltages) {
       try {
         preferences.mountVoltages = JSON.parse(mountVoltages);
@@ -5323,9 +6001,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         if (!Object.prototype.hasOwnProperty.call(value, key)) {
           continue;
         }
-        var _candidate3 = normalizeImportedAutoGearBackupRetention(value[key]);
-        if (typeof _candidate3 === 'number') {
-          return _candidate3;
+        var _candidate2 = normalizeImportedAutoGearBackupRetention(value[key]);
+        if (typeof _candidate2 === 'number') {
+          return _candidate2;
         }
       }
       return null;
@@ -5345,10 +6023,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return {};
     }
     var normalized = {};
-    Object.entries(value).forEach(function (_ref17) {
-      var _ref18 = _slicedToArray(_ref17, 2),
-        key = _ref18[0],
-        val = _ref18[1];
+    Object.entries(value).forEach(function (_ref18) {
+      var _ref19 = _slicedToArray(_ref18, 2),
+        key = _ref19[0],
+        val = _ref19[1];
       if (typeof val !== 'string') return;
       var trimmed = val.trim();
       if (!trimmed) return;
@@ -5404,21 +6082,21 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     }
     for (var _i4 = 0; _i4 < variants.length; _i4 += 1) {
-      var _candidate4 = "".concat(variants[_i4]).concat(STORAGE_BACKUP_SUFFIX);
-      if (Object.prototype.hasOwnProperty.call(snapshot, _candidate4)) {
+      var _candidate3 = "".concat(variants[_i4]).concat(STORAGE_BACKUP_SUFFIX);
+      if (Object.prototype.hasOwnProperty.call(snapshot, _candidate3)) {
         return {
-          key: _candidate4,
-          value: snapshot[_candidate4],
+          key: _candidate3,
+          value: snapshot[_candidate3],
           type: 'backup'
         };
       }
     }
     for (var _i5 = 0; _i5 < variants.length; _i5 += 1) {
-      var _candidate5 = "".concat(variants[_i5]).concat(STORAGE_MIGRATION_BACKUP_SUFFIX);
-      if (Object.prototype.hasOwnProperty.call(snapshot, _candidate5)) {
+      var _candidate4 = "".concat(variants[_i5]).concat(STORAGE_MIGRATION_BACKUP_SUFFIX);
+      if (Object.prototype.hasOwnProperty.call(snapshot, _candidate4)) {
         return {
-          key: _candidate5,
-          value: snapshot[_candidate5],
+          key: _candidate4,
+          value: snapshot[_candidate4],
           type: 'migration-backup'
         };
       }
@@ -5436,20 +6114,22 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         if (parsed && _typeof(parsed) === 'object') {
           if (parsed.compression === MIGRATION_BACKUP_COMPRESSION_ALGORITHM && parsed.encoding === MIGRATION_BACKUP_COMPRESSION_ENCODING && typeof parsed.data === 'string') {
             if (canUseMigrationBackupCompression()) {
-              try {
-                var decompressed = LZString.decompressFromUTF16(parsed.data);
-                if (typeof decompressed === 'string' && decompressed) {
-                  var decoded = JSON.parse(decompressed);
-                  if (decoded && _typeof(decoded) === 'object' && Object.prototype.hasOwnProperty.call(decoded, 'data')) {
-                    raw = decoded.data;
+              var variant = typeof parsed.compressionVariant === 'string' ? parsed.compressionVariant : 'utf16';
+              var decoded = tryDecompressWithStrategies(parsed.data, MIGRATION_BACKUP_COMPRESSION_VARIANTS, variant, 'migration backup entry');
+              if (decoded.success && typeof decoded.value === 'string') {
+                try {
+                  var payload = JSON.parse(decoded.value);
+                  if (payload && _typeof(payload) === 'object' && Object.prototype.hasOwnProperty.call(payload, 'data')) {
+                    raw = payload.data;
                   } else {
                     raw = null;
                   }
-                } else {
+                } catch (parseError) {
+                  console.warn('Unable to parse migration backup entry during import', entry.key, parseError);
                   raw = null;
                 }
-              } catch (decompressionError) {
-                console.warn('Unable to decompress migration backup entry during import', entry && entry.key, decompressionError);
+              } else {
+                console.warn('Unable to decompress migration backup entry during import', entry && entry.key, decoded.error);
                 raw = null;
               }
             } else {
@@ -5531,7 +6211,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var hasAssignments = false;
     var hasSnapshotKeys = false;
     var preferenceKeys = ['darkMode', 'pinkMode', 'highContrast', 'reduceMotion', 'relaxedSpacing', 'showAutoBackups', 'accentColor', 'fontSize', 'fontFamily', 'language', 'iosPwaHelpShown'];
-    var simpleSnapshotKeys = new Set([CUSTOM_LOGO_STORAGE_KEY].concat(preferenceKeys, [MOUNT_VOLTAGE_STORAGE_KEY_NAME]));
+    var mountVoltageKeyName = getMountVoltageStorageKeyName();
+    var simpleSnapshotKeys = new Set([CUSTOM_LOGO_STORAGE_KEY].concat(preferenceKeys, [mountVoltageKeyName]).filter(function (key) {
+      return typeof key === 'string' && key;
+    }));
     var booleanPreferenceKeys = new Set(['darkMode', 'pinkMode', 'highContrast', 'reduceMotion', 'relaxedSpacing', 'showAutoBackups', 'iosPwaHelpShown']);
     var markSnapshotEntry = function markSnapshotEntry(entry) {
       if (!entry || typeof entry.key !== 'string') {
@@ -5655,7 +6338,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
       }
     }
-    var mountVoltageEntry = readSnapshotEntry(snapshot, MOUNT_VOLTAGE_STORAGE_KEY_NAME);
+    var mountVoltageEntry = readSnapshotEntry(snapshot, mountVoltageKeyName);
     if (mountVoltageEntry) {
       markSnapshotEntry(mountVoltageEntry);
       var storedVoltages = parseSnapshotJSONValue(mountVoltageEntry);
@@ -5677,9 +6360,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (!isPlainObject(allData)) {
       return;
     }
-    var _ref19 = options || {},
-      _ref19$skipSnapshotCo = _ref19.skipSnapshotConversion,
-      skipSnapshotConversion = _ref19$skipSnapshotCo === void 0 ? false : _ref19$skipSnapshotCo;
+    var _ref20 = options || {},
+      _ref20$skipSnapshotCo = _ref20.skipSnapshotConversion,
+      skipSnapshotConversion = _ref20$skipSnapshotCo === void 0 ? false : _ref20$skipSnapshotCo;
     if (!skipSnapshotConversion) {
       var converted = convertStorageSnapshotToData(allData);
       if (converted) {
@@ -5692,6 +6375,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var hasOwn = function hasOwn(key) {
       return Object.prototype.hasOwnProperty.call(allData, key);
     };
+    var mountVoltageKeyName = getMountVoltageStorageKeyName();
     if (hasOwn('devices')) {
       saveDeviceData(allData.devices);
     }
@@ -5739,7 +6423,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         var rawVoltages = prefs.mountVoltages;
         if (rawVoltages && _typeof(rawVoltages) === 'object') {
           try {
-            safeSetLocalStorage(MOUNT_VOLTAGE_STORAGE_KEY_NAME, JSON.stringify(rawVoltages));
+            safeSetLocalStorage(mountVoltageKeyName, JSON.stringify(rawVoltages));
           } catch (voltStoreError) {
             console.warn('Unable to store imported mount voltages', voltStoreError);
           }
@@ -5750,7 +6434,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             });
           }
         } else if (typeof rawVoltages === 'string') {
-          safeSetLocalStorage(MOUNT_VOLTAGE_STORAGE_KEY_NAME, rawVoltages);
+          safeSetLocalStorage(mountVoltageKeyName, rawVoltages);
           if (typeof parseStoredMountVoltages === 'function') {
             try {
               var parsedVoltages = parseStoredMountVoltages(rawVoltages);
@@ -5765,7 +6449,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             }
           }
         } else if (rawVoltages === null) {
-          safeSetLocalStorage(MOUNT_VOLTAGE_STORAGE_KEY_NAME, null);
+          safeSetLocalStorage(mountVoltageKeyName, null);
           if (typeof resetMountVoltagePreferences === 'function') {
             resetMountVoltagePreferences({
               persist: false,
@@ -5925,7 +6609,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     requestPersistentStorage: requestPersistentStorage,
     clearUiCacheStorageEntries: clearUiCacheStorageEntries,
     ensureCriticalStorageBackups: ensureCriticalStorageBackups,
-    getLastCriticalStorageGuardResult: getLastCriticalStorageGuardResult
+    getLastCriticalStorageGuardResult: getLastCriticalStorageGuardResult,
+    decodeStoredValue: decodeStoredValue
   };
   if (typeof module !== "undefined" && module.exports) {
     module.exports = STORAGE_API;

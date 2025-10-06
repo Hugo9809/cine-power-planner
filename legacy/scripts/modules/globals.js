@@ -711,7 +711,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var registered = registerOrQueueModule('cineModuleGlobals', frozenApi, {
     category: 'infrastructure',
     description: 'Shared module globals for cross-script coordination.',
-    replace: true
+    replace: true,
+    connections: ['cineModuleBase', 'cineModuleEnvironment', 'cineEnvironmentBridge']
   }, function (error) {
     safeWarn('Unable to register cineModuleGlobals module.', error);
   }, GLOBAL_SCOPE, getModuleRegistry(GLOBAL_SCOPE));
@@ -719,7 +720,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     queueModuleRegistration('cineModuleGlobals', frozenApi, {
       category: 'infrastructure',
       description: 'Shared module globals for cross-script coordination.',
-      replace: true
+      replace: true,
+      connections: ['cineModuleBase', 'cineModuleEnvironment', 'cineEnvironmentBridge']
     }, GLOBAL_SCOPE);
   }
   var exposed = exposeGlobalInternal('cineModuleGlobals', frozenApi, GLOBAL_SCOPE, {

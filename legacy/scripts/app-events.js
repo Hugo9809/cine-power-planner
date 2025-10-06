@@ -11,6 +11,45 @@ function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+var eventsLogger = function resolveEventsLogger() {
+  var scopes = [];
+  if (typeof globalThis !== 'undefined' && globalThis) scopes.push(globalThis);
+  if (typeof window !== 'undefined' && window && scopes.indexOf(window) === -1) scopes.push(window);
+  if (typeof self !== 'undefined' && self && scopes.indexOf(self) === -1) scopes.push(self);
+  if (typeof global !== 'undefined' && global && scopes.indexOf(global) === -1) scopes.push(global);
+  for (var index = 0; index < scopes.length; index += 1) {
+    var scope = scopes[index];
+    if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+      continue;
+    }
+    var logging = null;
+    try {
+      logging = scope.cineLogging || null;
+    } catch (error) {
+      logging = null;
+    }
+    if (logging && typeof logging.createLogger === 'function') {
+      try {
+        return logging.createLogger('events', {
+          meta: {
+            source: 'app-events'
+          }
+        });
+      } catch (creationError) {
+        try {
+          if (typeof logging.error === 'function') {
+            logging.error('Failed to create events logger', creationError, {
+              namespace: 'events-bootstrap'
+            });
+          }
+        } catch (logError) {
+          void logError;
+        }
+      }
+    }
+  }
+  return null;
+}();
 var APP_EVENTS_AUTO_BACKUP_RENAMED_FLAG = typeof globalThis !== 'undefined' && globalThis.__CINE_AUTO_BACKUP_RENAMED_FLAG ? globalThis.__CINE_AUTO_BACKUP_RENAMED_FLAG : '__cineAutoBackupRenamed';
 function markAutoBackupDataAsRenamed(value) {
   if (!value || _typeof(value) !== 'object') {
@@ -42,6 +81,18 @@ function callEventsCoreFunction(functionName) {
     try {
       return target.apply(scope, args);
     } catch (invokeError) {
+      if (eventsLogger && typeof eventsLogger.error === 'function') {
+        var metadata = {
+          functionName: functionName,
+          deferred: !!(options && options.defer),
+          argumentsSnapshot: Array.isArray(args) ? args.slice(0, 5) : null
+        };
+        try {
+          eventsLogger.error("Failed to invoke ".concat(functionName), invokeError, metadata);
+        } catch (logError) {
+          void logError;
+        }
+      }
       if (typeof console !== 'undefined' && typeof console.error === 'function') {
         console.error("Failed to invoke ".concat(functionName), invokeError);
       }
@@ -81,6 +132,16 @@ function hasAnyDeviceSelectionSafe(state) {
     try {
       return coreHelper(state);
     } catch (error) {
+      if (eventsLogger && typeof eventsLogger.warn === 'function') {
+        var statePreview = state && _typeof(state) === 'object' ? Object.keys(state).slice(0, 10) : null;
+        try {
+          eventsLogger.warn('Failed to evaluate device selections via core helper', error, {
+            statePreview: statePreview
+          });
+        } catch (logError) {
+          void logError;
+        }
+      }
       if (typeof console !== 'undefined' && typeof console.warn === 'function') {
         console.warn('Failed to evaluate device selections via core helper', error);
       }
@@ -212,6 +273,13 @@ function enqueueCineUiRegistration(callback) {
 enqueueCineUiRegistration(registerEventsCineUiInternal);
 addSafeEventListener(languageSelect, "change", function (event) {
   setLanguage(event.target.value);
+  if (typeof populateUserButtonDropdowns === 'function') {
+    try {
+      populateUserButtonDropdowns();
+    } catch (userButtonError) {
+      console.warn('Failed to refresh user button selectors after manual language change', userButtonError);
+    }
+  }
 });
 addSafeEventListener(skipLink, "click", function () {
   var main = document.getElementById("mainContent");
