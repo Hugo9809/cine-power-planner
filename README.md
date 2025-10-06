@@ -557,7 +557,9 @@ Use Cine Power Planner end-to-end with the following routine:
   and global error capture toggles so you can adjust diagnostics without leaving
   Settings. It now also calls out when filters hide all entries, avoiding false
   alarms during audits. Entries stay local and persist across reloads when you
-  enable session storage.
+  enable session storage. Overview print and export attempts now stream their
+  warnings and fallback usage into this log so share rehearsals capture exactly
+  when the dialog had to open the backup window.
 - Full-app backups report their running total and feed the backup history ledger
   so you can confirm hourly safety copies are captured before archiving them
   offline.

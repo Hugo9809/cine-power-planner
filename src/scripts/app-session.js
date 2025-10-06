@@ -29,12 +29,9 @@
           suspendProjectPersistence, resumeProjectPersistence,
           isProjectPersistenceSuspended,
           recordFeatureSearchUsage, extractFeatureSearchFilter,
-          helpResultsSummary, helpResultsAssist,
-          suspendProjectPersistence, resumeProjectPersistence,
-          isProjectPersistenceSuspended */
+          helpResultsSummary, helpResultsAssist */
 /* eslint-enable no-redeclare */
 /* global enqueueCoreBootTask */
-/* global suspendProjectPersistence, resumeProjectPersistence, isProjectPersistenceSuspended */
 const FALLBACK_STRONG_SEARCH_MATCH_TYPES = new Set(['exactKey', 'keyPrefix', 'keySubset']);
 if (typeof globalThis !== 'undefined' && typeof globalThis.STRONG_SEARCH_MATCH_TYPES === 'undefined') {
   globalThis.STRONG_SEARCH_MATCH_TYPES = FALLBACK_STRONG_SEARCH_MATCH_TYPES;

@@ -2034,6 +2034,7 @@ function normalizeLegacyMigrationBackupCreatedAt(value, fallbackIso) {
       try {
         return { value: new Date(numeric).toISOString(), changed: true };
       } catch (error) {
+        void error;
         return { value: fallback || new Date().toISOString(), changed: true };
       }
     }
@@ -2043,6 +2044,7 @@ function normalizeLegacyMigrationBackupCreatedAt(value, fallbackIso) {
         const iso = new Date(timestamp).toISOString();
         return { value: iso, changed: iso !== trimmed };
       } catch (error) {
+        void error;
         return { value: fallback || new Date().toISOString(), changed: true };
       }
     }
@@ -2053,6 +2055,7 @@ function normalizeLegacyMigrationBackupCreatedAt(value, fallbackIso) {
     try {
       return { value: new Date(value).toISOString(), changed: true };
     } catch (error) {
+      void error;
       return { value: fallback || new Date().toISOString(), changed: true };
     }
   }
@@ -2063,6 +2066,7 @@ function normalizeLegacyMigrationBackupCreatedAt(value, fallbackIso) {
       try {
         return { value: value.toISOString(), changed: true };
       } catch (error) {
+        void error;
         return { value: fallback || new Date().toISOString(), changed: true };
       }
     }
@@ -2089,6 +2093,7 @@ function normalizeLegacyMigrationBackupValue(rawValue, fallbackIso) {
   try {
     parsed = JSON.parse(rawValue);
   } catch (parseError) {
+    void parseError;
     return trySerializeMigrationBackupValue({ createdAt: fallback, data: rawValue });
   }
 

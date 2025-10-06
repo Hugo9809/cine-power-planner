@@ -248,7 +248,7 @@ Repite esta rutina cuando se incorpore personal, se prepare una estación nueva 
 - Abre **Configuración → Datos y almacenamiento** para revisar proyectos, auto-backups, listas, dispositivos personalizados, favoritos, comentarios y la caché de sesión con recuentos en vivo.
 - Cada entrada explica qué representa; las secciones vacías permanecen ocultas para que identifiques el estado rápidamente.
 - El resumen estima el tamaño del backup usando la exportación más reciente.
-- El **registro de diagnósticos** refleja todas las entradas de cineLogging, permite filtrar por severidad o namespace y ofrece controles de retención, reflejo en consola y captura de errores, todo dentro de Ajustes y sin conexión. Ahora además avisa cuando los filtros ocultan todas las entradas para evitar falsas alarmas durante las auditorías.
+- El **registro de diagnósticos** refleja todas las entradas de cineLogging, permite filtrar por severidad o namespace y ofrece controles de retención, reflejo en consola y captura de errores, todo dentro de Ajustes y sin conexión. Ahora además avisa cuando los filtros ocultan todas las entradas para evitar falsas alarmas durante las auditorías. Las alertas y fallos de impresión o exportación de la vista general también se registran aquí, incluyendo si fue necesario abrir la ventana de respaldo, para que los ensayos de compartición queden documentados por completo.
 - Las copias completas muestran su total acumulado y alimentan el registro de historial, así puedes confirmar que las copias horarias quedaron capturadas antes de archivarlas sin conexión.
 
 ## Cuotas y mantenimiento
