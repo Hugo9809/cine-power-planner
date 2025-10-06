@@ -73,6 +73,10 @@
       return false;
     }
 
+    if (isEthereumProviderCandidate(value)) {
+      return true;
+    }
+
     try {
       if (typeof value.pipe === 'function' && typeof value.unpipe === 'function') {
         return true;
@@ -102,6 +106,51 @@
     return false;
   }
 
+  function isEthereumProviderCandidate(value) {
+    if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
+      return false;
+    }
+
+    if (PRIMARY_SCOPE && typeof PRIMARY_SCOPE === 'object') {
+      try {
+        if (value === PRIMARY_SCOPE.ethereum) {
+          return true;
+        }
+      } catch (error) {
+        void error;
+        return true;
+      }
+    }
+
+    try {
+      if (value.isMetaMask === true) {
+        return true;
+      }
+    } catch (inspectionError) {
+      if (inspectionError && typeof inspectionError.message === 'string' && /metamask/i.test(inspectionError.message)) {
+        return true;
+      }
+    }
+
+    try {
+      if (typeof value.request === 'function' && typeof value.on === 'function') {
+        if (typeof value.removeListener === 'function' || typeof value.removeEventListener === 'function') {
+          return true;
+        }
+
+        var ctorName = value.constructor && value.constructor.name;
+        if (ctorName && /Ethereum|MetaMask|Provider/i.test(ctorName)) {
+          return true;
+        }
+      }
+    } catch (accessError) {
+      void accessError;
+      return true;
+    }
+
+    return false;
+  }
+
   function fallbackFreezeDeep(value, seen) {
     var localSeen = seen;
     if (!localSeen) {
@@ -125,6 +174,10 @@
     }
 
     if (shouldBypassDeepFreeze(value)) {
+      return value;
+    }
+
+    if (isEthereumProviderCandidate(value)) {
       return value;
     }
 
