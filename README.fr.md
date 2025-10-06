@@ -93,6 +93,7 @@ Consultez `docs/translation-guide.md` pour le guide de localisation.
 
 - **Comparaison de sauvegardes** – Sélectionnez un enregistrement manuel ou un auto-backup, analysez les différences, ajoutez des notes d’incident et exportez un rapport avant toute restauration ou remise au montage.
 - **Simulations de restauration** – Chargez un backup complet ou un bundle projet dans une sandbox isolée pour vérifier le contenu sans toucher aux profils de production.
+- **Journal de diagnostics** – Ouvrez **Paramètres → Données & stockage** pour consulter le journal en direct, filtrer par niveau ou namespace et ajuster rétention, duplication console et capture des erreurs sans quitter le planner.
 - **Journal d’historique des sauvegardes** – Chaque téléchargement de backup complet enregistre localement l’horodatage et le nom de fichier. Consultez-le dans **Paramètres → Données & stockage** ou exportez le journal avec vos archives pour prouver la conservation hors ligne.
 - **Règles automatiques de matériel** – Définissez des ajouts/suppressions déclenchés par scénario avec contrôle d’import/export et backups horodatés.
 - **Tableau de couverture des règles** – Résume la couverture par scénario, les déclencheurs dupliqués, les bilans nets, les scénarios superposés, les conflits et les exigences non couvertes depuis Règles automatiques, applique des filtres de focus hors ligne et partage les mêmes informations via exports et impressions.
@@ -249,6 +250,7 @@ Cette routine prouve que sauvegarde, partage, import, backup et restauration fon
 - Ouvrez **Paramètres → Données & stockage** pour consulter projets, auto-backups, listes, équipements personnalisés, favoris, retours et cache de session avec des compteurs en temps réel.
 - Chaque section précise son contenu ; les sections vides restent masquées pour identifier rapidement l’état du planner.
 - Le résumé estime la taille d’un backup à partir de la dernière exportation.
+- Le **journal de diagnostics** reflète toutes les entrées cineLogging, autorise des filtres par gravité ou namespace et propose des réglages de rétention, duplication console et capture des erreurs – le tout hors ligne dans Paramètres. Un message apparaît désormais quand les filtres masquent toutes les entrées afin d’éviter les fausses alertes durant les audits.
 - Les backups complets affichent leur total cumulé et alimentent le journal d’historique afin que vous confirmiez la capture des copies horaires avant archivage hors ligne.
 
 ## Gestion des quotas et maintenance

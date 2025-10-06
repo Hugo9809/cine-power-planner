@@ -9502,6 +9502,181 @@ function setLanguage(lang) {
   if (storageStatusLastFullBackupValue) {
     storageStatusLastFullBackupValue.textContent = statusDefaultText;
   }
+  if (loggingSection) {
+    const sectionHelp = texts[lang].loggingSectionHelp
+      || texts[lang].loggingHeadingHelp
+      || texts.en?.loggingHeadingHelp
+      || '';
+    if (sectionHelp) {
+      loggingSection.setAttribute('data-help', sectionHelp);
+    } else {
+      loggingSection.removeAttribute('data-help');
+    }
+  }
+  if (loggingHeading) {
+    const headingText = texts[lang].loggingHeading
+      || texts.en?.loggingHeading
+      || loggingHeading.textContent
+      || 'Diagnostics log';
+    loggingHeading.textContent = headingText;
+    const headingHelp = texts[lang].loggingHeadingHelp
+      || texts.en?.loggingHeadingHelp
+      || headingText;
+    loggingHeading.setAttribute('data-help', headingHelp);
+  }
+  if (loggingIntro) {
+    loggingIntro.textContent = texts[lang].loggingIntro
+      || texts.en?.loggingIntro
+      || loggingIntro.textContent;
+  }
+  if (loggingLevelFilterLabel) {
+    const filterLabel = texts[lang].loggingLevelFilterLabel
+      || texts.en?.loggingLevelFilterLabel
+      || loggingLevelFilterLabel.textContent;
+    loggingLevelFilterLabel.textContent = filterLabel;
+    loggingLevelFilterLabel.setAttribute('data-help', filterLabel);
+  }
+  if (loggingLevelFilter) {
+    const optionTexts = {
+      all: texts[lang].loggingLevelFilterAll || texts.en?.loggingLevelFilterAll || 'All levels',
+      info: texts[lang].loggingLevelFilterInfo || texts.en?.loggingLevelFilterInfo || 'Info and above',
+      warn: texts[lang].loggingLevelFilterWarn || texts.en?.loggingLevelFilterWarn || 'Warnings and errors',
+      error: texts[lang].loggingLevelFilterError || texts.en?.loggingLevelFilterError || 'Errors only',
+    };
+    Array.from(loggingLevelFilter.options || []).forEach(option => {
+      if (!option || typeof option.value !== 'string') return;
+      const key = option.value;
+      if (Object.prototype.hasOwnProperty.call(optionTexts, key)) {
+        option.textContent = optionTexts[key];
+      }
+    });
+    const filterHelp = texts[lang].loggingLevelFilterHelp
+      || texts.en?.loggingLevelFilterHelp
+      || '';
+    if (filterHelp) {
+      loggingLevelFilter.setAttribute('data-help', filterHelp);
+    } else {
+      loggingLevelFilter.removeAttribute('data-help');
+    }
+  }
+  if (loggingNamespaceFilterLabel) {
+    const namespaceLabel = texts[lang].loggingNamespaceFilterLabel
+      || texts.en?.loggingNamespaceFilterLabel
+      || loggingNamespaceFilterLabel.textContent;
+    loggingNamespaceFilterLabel.textContent = namespaceLabel;
+  }
+  if (loggingNamespaceFilter) {
+    const placeholder = texts[lang].loggingNamespaceFilterPlaceholder
+      || texts.en?.loggingNamespaceFilterPlaceholder
+      || '';
+    if (placeholder) {
+      loggingNamespaceFilter.setAttribute('placeholder', placeholder);
+    }
+    const namespaceHelp = texts[lang].loggingNamespaceFilterHelp
+      || texts.en?.loggingNamespaceFilterHelp
+      || placeholder;
+    if (namespaceHelp) {
+      loggingNamespaceFilter.setAttribute('data-help', namespaceHelp);
+      if (loggingNamespaceFilterLabel) {
+        loggingNamespaceFilterLabel.setAttribute('data-help', namespaceHelp);
+      }
+    }
+    if (loggingNamespaceFilterHelp) {
+      loggingNamespaceFilterHelp.textContent = namespaceHelp;
+      if (namespaceHelp) {
+        loggingNamespaceFilterHelp.removeAttribute('hidden');
+      } else {
+        loggingNamespaceFilterHelp.setAttribute('hidden', '');
+      }
+    }
+  }
+  if (loggingHistoryLimitLabel) {
+    const historyLabel = texts[lang].loggingHistoryLimitLabel
+      || texts.en?.loggingHistoryLimitLabel
+      || loggingHistoryLimitLabel.textContent;
+    loggingHistoryLimitLabel.textContent = historyLabel;
+  }
+  if (loggingHistoryLimitHelp) {
+    const historyHelp = texts[lang].loggingHistoryLimitHelp
+      || texts.en?.loggingHistoryLimitHelp
+      || loggingHistoryLimitHelp.textContent;
+    loggingHistoryLimitHelp.textContent = historyHelp;
+  }
+  if (loggingHistoryLimit) {
+    const limitHelp = texts[lang].loggingHistoryLimitHelp
+      || texts.en?.loggingHistoryLimitHelp
+      || '';
+    if (limitHelp) {
+      loggingHistoryLimit.setAttribute('data-help', limitHelp);
+    } else {
+      loggingHistoryLimit.removeAttribute('data-help');
+    }
+    const limitAria = texts[lang].loggingHistoryLimitAria
+      || texts.en?.loggingHistoryLimitAria
+      || '';
+    if (limitAria) {
+      loggingHistoryLimit.setAttribute('aria-label', limitAria);
+    }
+  }
+  if (loggingConsoleOutputLabel) {
+    const consoleLabel = texts[lang].loggingConsoleOutputLabel
+      || texts.en?.loggingConsoleOutputLabel
+      || loggingConsoleOutputLabel.textContent;
+    loggingConsoleOutputLabel.textContent = consoleLabel;
+  }
+  if (loggingConsoleOutputHelp) {
+    const consoleHelp = texts[lang].loggingConsoleOutputHelp
+      || texts.en?.loggingConsoleOutputHelp
+      || loggingConsoleOutputHelp.textContent;
+    loggingConsoleOutputHelp.textContent = consoleHelp;
+  }
+  if (loggingCaptureErrorsLabel) {
+    const captureLabel = texts[lang].loggingCaptureErrorsLabel
+      || texts.en?.loggingCaptureErrorsLabel
+      || loggingCaptureErrorsLabel.textContent;
+    loggingCaptureErrorsLabel.textContent = captureLabel;
+  }
+  if (loggingCaptureErrorsHelp) {
+    const captureHelp = texts[lang].loggingCaptureErrorsHelp
+      || texts.en?.loggingCaptureErrorsHelp
+      || loggingCaptureErrorsHelp.textContent;
+    loggingCaptureErrorsHelp.textContent = captureHelp;
+  }
+  if (loggingPersistSessionLabel) {
+    const persistLabel = texts[lang].loggingPersistSessionLabel
+      || texts.en?.loggingPersistSessionLabel
+      || loggingPersistSessionLabel.textContent;
+    loggingPersistSessionLabel.textContent = persistLabel;
+  }
+  if (loggingPersistSessionHelp) {
+    const persistHelp = texts[lang].loggingPersistSessionHelp
+      || texts.en?.loggingPersistSessionHelp
+      || loggingPersistSessionHelp.textContent;
+    loggingPersistSessionHelp.textContent = persistHelp;
+  }
+  if (loggingStatus) {
+    const statusText = texts[lang].loggingStatusIdle
+      || texts.en?.loggingStatusIdle
+      || '';
+    loggingStatus.textContent = statusText;
+    if (statusText) {
+      loggingStatus.setAttribute('data-help', statusText);
+    }
+  }
+  if (loggingEmpty) {
+    const emptyText = texts[lang].loggingEmptyState
+      || texts.en?.loggingEmptyState
+      || loggingEmpty.textContent;
+    loggingEmpty.textContent = emptyText;
+    if (emptyText) {
+      loggingEmpty.setAttribute('data-help', emptyText);
+    }
+  }
+  if (loggingUnavailable) {
+    loggingUnavailable.textContent = texts[lang].loggingUnavailable
+      || texts.en?.loggingUnavailable
+      || loggingUnavailable.textContent;
+  }
   const showAutoBackupsLabel = document.getElementById("settingsShowAutoBackupsLabel");
   if (showAutoBackupsLabel) {
     showAutoBackupsLabel.textContent = texts[lang].showAutoBackupsSetting;
@@ -15921,6 +16096,26 @@ var storageStatusLastAutoBackupLabel = document.getElementById('storageStatusLas
 var storageStatusLastAutoBackupValue = document.getElementById('storageStatusLastAutoBackupValue');
 var storageStatusLastFullBackupLabel = document.getElementById('storageStatusLastFullBackupLabel');
 var storageStatusLastFullBackupValue = document.getElementById('storageStatusLastFullBackupValue');
+const loggingSection = document.getElementById('loggingSection');
+const loggingHeading = document.getElementById('loggingHeading');
+const loggingIntro = document.getElementById('loggingIntro');
+const loggingLevelFilterLabel = document.getElementById('loggingLevelFilterLabel');
+const loggingLevelFilter = document.getElementById('loggingLevelFilter');
+const loggingNamespaceFilterLabel = document.getElementById('loggingNamespaceFilterLabel');
+const loggingNamespaceFilter = document.getElementById('loggingNamespaceFilter');
+const loggingNamespaceFilterHelp = document.getElementById('loggingNamespaceFilterHelp');
+const loggingHistoryLimitLabel = document.getElementById('loggingHistoryLimitLabel');
+const loggingHistoryLimit = document.getElementById('loggingHistoryLimit');
+const loggingHistoryLimitHelp = document.getElementById('loggingHistoryLimitHelp');
+const loggingConsoleOutputLabel = document.getElementById('loggingConsoleOutputLabel');
+const loggingConsoleOutputHelp = document.getElementById('loggingConsoleOutputHelp');
+const loggingCaptureErrorsLabel = document.getElementById('loggingCaptureErrorsLabel');
+const loggingCaptureErrorsHelp = document.getElementById('loggingCaptureErrorsHelp');
+const loggingPersistSessionLabel = document.getElementById('loggingPersistSessionLabel');
+const loggingPersistSessionHelp = document.getElementById('loggingPersistSessionHelp');
+const loggingStatus = document.getElementById('loggingStatus');
+const loggingEmpty = document.getElementById('loggingEmpty');
+const loggingUnavailable = document.getElementById('loggingUnavailable');
 
 if (autoGearBackupRetentionInput) {
   const queueAutoGearRetentionHandler = handlerName => {

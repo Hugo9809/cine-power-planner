@@ -3738,6 +3738,191 @@ body.auto-gear-highlight-context.dark-mode .auto-gear-impact-item.auto-gear-impa
   opacity: 0.9;
 }
 
+.logging-section {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.logging-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.logging-filter {
+  flex: 1 1 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.logging-filter input,
+.logging-filter select {
+  width: 100%;
+}
+
+.logging-toggles {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.logging-history-container {
+  max-height: 280px;
+  overflow: auto;
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  padding: 8px;
+  background: var(--panel-background-alt, rgba(0, 0, 0, 0.02));
+}
+
+.logging-history {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.log-entry {
+  border: 1px solid var(--panel-border);
+  border-left-width: 4px;
+  border-radius: 6px;
+  padding: 8px 10px;
+  background: var(--panel-background, var(--surface-color));
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.log-entry-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.log-entry-message {
+  font-weight: var(--font-weight-medium);
+  word-break: break-word;
+}
+
+.log-entry-level {
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-xs));
+  text-transform: uppercase;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.04em;
+  padding: 2px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.log-entry-meta {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+}
+
+.log-entry-meta-row {
+  display: grid;
+  gap: 2px;
+}
+
+.log-entry-meta-row dt {
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-xs));
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--control-text);
+  opacity: 0.9;
+}
+
+.log-entry-meta-row dd {
+  margin: 0;
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-sm));
+  word-break: break-word;
+}
+
+.log-entry-detail {
+  margin: 0;
+  font-family: var(--font-family-monospace, 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace);
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-xs));
+  background: color-mix(in srgb, var(--panel-border) 12%, transparent);
+  border-radius: 4px;
+  padding: 6px;
+  overflow: auto;
+  max-height: 160px;
+}
+
+.log-entry-details summary {
+  cursor: pointer;
+  font-weight: var(--font-weight-medium);
+}
+
+.log-entry-details[open] summary {
+  margin-bottom: 4px;
+}
+
+.log-entry.level-debug {
+  border-left-color: color-mix(in srgb, var(--panel-border) 70%, transparent);
+}
+
+.log-entry.level-info {
+  border-left-color: var(--accent-color);
+}
+
+.log-entry.level-warn {
+  border-left-color: var(--warning-color, #ff9f1c);
+}
+
+.log-entry.level-error {
+  border-left-color: var(--status-error-bg, #ff3b30);
+}
+
+.log-entry.level-info .log-entry-level {
+  background: color-mix(in srgb, var(--accent-color) 15%, transparent);
+  color: var(--accent-color);
+}
+
+.log-entry.level-warn .log-entry-level {
+  background: color-mix(in srgb, var(--warning-color, #ff9f1c) 20%, transparent);
+  color: var(--warning-color, #ff9f1c);
+}
+
+.log-entry.level-error .log-entry-level {
+  background: color-mix(in srgb, var(--status-error-bg, #ff3b30) 20%, transparent);
+  color: var(--status-error-bg, #ff3b30);
+}
+
+.log-entry.level-debug .log-entry-level {
+  background: color-mix(in srgb, var(--panel-border) 20%, transparent);
+  color: var(--control-text);
+}
+
+@supports not (color-mix(in srgb, #000 50%, transparent)) {
+  .log-entry-detail {
+    background: rgba(0, 0, 0, 0.04);
+  }
+
+  .log-entry.level-info .log-entry-level {
+    background: rgba(0, 0, 0, 0.03);
+  }
+
+  .log-entry.level-warn .log-entry-level {
+    background: rgba(255, 159, 28, 0.15);
+  }
+
+  .log-entry.level-error .log-entry-level {
+    background: rgba(255, 59, 48, 0.15);
+  }
+
+  .log-entry.level-debug .log-entry-level {
+    background: rgba(0, 0, 0, 0.04);
+  }
+}
+
 .settings-content .button-row {
   display: flex;
   gap: var(--cluster-gap);

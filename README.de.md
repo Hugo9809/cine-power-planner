@@ -93,6 +93,7 @@ Folge `docs/translation-guide.md` für Details zur Lokalisierung.
 
 - **Backup-Vergleiche** – Wähle manuelle Saves oder Auto-Backups, prüfe Diffs, ergänze Vorfallnotizen und exportiere Protokolle, bevor du Änderungen zurückrollst oder Daten an die Post übergibst.
 - **Restore-Proben** – Lade komplette Backups oder Projekt-Bundles in eine isolierte Sandbox, um Inhalte gegen Live-Daten zu checken, ohne Produktionsprofile anzurühren.
+- **Diagnoseprotokoll-Steuerung** – Öffne **Einstellungen → Daten & Speicher**, sieh dir das laufende Log direkt im Planner an, filtere nach Stufe oder Namespace und passe Aufbewahrung, Konsolenspiegelung sowie Fehlererfassung ohne externe Tools an.
 - **Backup-Verlaufsprotokoll** – Jeder Vollbackup-Download speichert Zeitstempel und Dateinamen lokal. In **Einstellungen → Daten & Speicher** kannst du die Zählung prüfen oder das Protokoll zusammen mit deinen Archiven exportieren, um Offline-Aufbewahrung nachzuweisen.
 - **Automatische Gear-Regeln** – Definiere szenariobasierte Ergänzungen oder Entfernungen mit Import/Export-Kontrollen und zeitgesteuerten Backups.
 - **Regelabdeckungs-Dashboard** – Fasse Abdeckungsgrad, doppelte Auslöser, Netto-Zu-/Abgänge, gestapelte Szenarien, Konflikte und ungedeckte Anforderungen direkt in den automatischen Gear-Regeln zusammen, setze Fokus-Filter offline und gib dieselben Einblicke in Exporten und Druckansichten weiter.
@@ -247,6 +248,7 @@ Dieser kurze Ablauf sollte bei neuen Teammitgliedern, frisch eingerichteten Work
 - **Einstellungen → Daten & Speicher** listet gespeicherte Projekte, Auto-Backups, Gerätelisten, Custom-Geräte, Favoriten, Laufzeitfeedback und Session-Cache mit Live-Zahlen.
 - Einträge erklären ihre Inhalte; leere Bereiche bleiben verborgen, damit du den Zustand sofort siehst.
 - Die Übersicht schätzt die Backup-Größe basierend auf dem jüngsten Export.
+- Das **Diagnoseprotokoll** spiegelt alle cineLogging-Einträge, erlaubt Filter nach Schweregrad oder Namespace und bietet Regler für Aufbewahrung, Konsolenspiegelung sowie globale Fehlererfassung – direkt offline in den Einstellungen. Ein Hinweis erscheint, sobald Filter alle Einträge ausblenden, damit Prüfungen nicht versehentlich als Fehler gewertet werden.
 - Vollbackups zeigen ihre aktuelle Anzahl und speisen das Backup-Protokoll, damit du vor dem Archivieren kontrollieren kannst, ob die stündlichen Sicherungen erfasst wurden.
 
 ## Speicherbudget & Wartung
