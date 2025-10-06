@@ -9590,7 +9590,7 @@ function collectFilterAccessories() {
   return items;
 }
 function populateUserButtonDropdowns() {
-  var functions = ['Toggle LUT', 'False Color', 'Peaking', 'Anamorphic Desqueeze', 'Surround View', '1:1 Zoom', 'Playback', 'Record', 'Zoom', 'Frame Lines', 'Frame Grab'];
+  var functions = ['User 1', 'User 2', 'User 3', 'User 4', 'Toggle LUT', 'False Color', 'Peaking', 'Anamorphic Desqueeze', 'Surround View', '1:1 Zoom', 'Waveform', 'Histogram', 'Vectorscope', 'Zebra', 'Playback', 'Record', 'Zoom', 'Frame Lines', 'Frame Grab', 'WB', 'ISO', 'ND', 'FPS', 'Shutter'];
   ['monitorUserButtons', 'cameraUserButtons', 'viewfinderUserButtons'].forEach(function (id) {
     var sel = document.getElementById(id);
     if (!sel) return;
