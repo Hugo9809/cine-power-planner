@@ -6905,48 +6905,92 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     document.querySelectorAll('#motorNotesLabel,#controllerNotesLabel,#distanceNotesLabel').forEach(function (el) {
       el.textContent = texts[lang].notesLabel;
     });
-    var breakdownListTarget = typeof breakdownListElem !== "undefined" && breakdownListElem ? breakdownListElem : document.getElementById('breakdownList');
-    if (breakdownListTarget) {
-      breakdownListTarget.setAttribute("data-help", texts[lang].breakdownListHelp);
-    }
-    var totalPowerLabelElem = document.getElementById("totalPowerLabel");
-    totalPowerLabelElem.textContent = texts[lang].totalPowerLabel;
-    totalPowerLabelElem.setAttribute("data-help", texts[lang].totalPowerHelp);
-    refreshTotalCurrentLabels(lang);
-    updateMountVoltageSettingLabels(lang);
-    var batteryCountLabelElem = document.getElementById("batteryCountLabel");
-    batteryCountLabelElem.textContent = texts[lang].batteryCountLabel;
-    batteryCountLabelElem.setAttribute("data-help", texts[lang].batteryCountHelp);
-    if (pinWarnElem) pinWarnElem.setAttribute("data-help", texts[lang].pinWarningHelp);
-    if (dtapWarnElem) dtapWarnElem.setAttribute("data-help", texts[lang].dtapWarningHelp);
-    if (hotswapWarnElem) hotswapWarnElem.setAttribute("data-help", texts[lang].hotswapWarningHelp);
-    if (powerWarningTitleElem) powerWarningTitleElem.textContent = texts[lang].powerWarningTitle;
-    if (powerWarningLimitsHeadingElem) powerWarningLimitsHeadingElem.textContent = texts[lang].powerWarningLimitsHeading;
-    if (powerWarningAdviceElem) powerWarningAdviceElem.textContent = texts[lang].powerWarningAdvice;
-    if (powerWarningCloseBtn) setButtonLabelWithIcon(powerWarningCloseBtn, texts[lang].powerWarningClose, ICON_GLYPHS.check);
-    var unitElem = document.getElementById("batteryLifeUnit");
-    if (unitElem) unitElem.textContent = texts[lang].batteryLifeUnit;
-    var fb = renderFeedbackTable(getCurrentSetupKey());
-    if (batteryLifeLabelElem) {
-      var _label6 = texts[lang].batteryLifeLabel;
-      if (fb) {
-        var userNote = texts[lang].runtimeUserCountNote.replace('{count}', fb.count);
-        var idx = _label6.indexOf(')');
-        if (idx !== -1) {
-          _label6 = "".concat(_label6.slice(0, idx), ", ").concat(userNote).concat(_label6.slice(idx));
-        }
+    var cineResultsModule = typeof cineResults === 'object' ? cineResults : null;
+    var resultsLocalizationApplied = false;
+    if (cineResultsModule && typeof cineResultsModule.localizeResultsSection === 'function') {
+      try {
+        resultsLocalizationApplied = cineResultsModule.localizeResultsSection({
+          lang: lang,
+          langTexts: texts[lang] || {},
+          fallbackTexts: texts.en || {},
+          document: document,
+          breakdownListElem: typeof breakdownListElem !== "undefined" && breakdownListElem ? breakdownListElem : null,
+          elements: {
+            totalPowerLabel: document.getElementById('totalPowerLabel'),
+            batteryCountLabel: document.getElementById('batteryCountLabel'),
+            pinWarning: typeof pinWarnElem !== 'undefined' ? pinWarnElem : null,
+            dtapWarning: typeof dtapWarnElem !== 'undefined' ? dtapWarnElem : null,
+            hotswapWarning: typeof hotswapWarnElem !== 'undefined' ? hotswapWarnElem : null,
+            powerWarningTitle: typeof powerWarningTitleElem !== 'undefined' ? powerWarningTitleElem : null,
+            powerWarningLimitsHeading: typeof powerWarningLimitsHeadingElem !== 'undefined' ? powerWarningLimitsHeadingElem : null,
+            powerWarningAdvice: typeof powerWarningAdviceElem !== 'undefined' ? powerWarningAdviceElem : null,
+            powerWarningCloseBtn: typeof powerWarningCloseBtn !== 'undefined' ? powerWarningCloseBtn : null,
+            batteryLifeUnit: document.getElementById('batteryLifeUnit'),
+            batteryLifeLabel: typeof batteryLifeLabelElem !== 'undefined' ? batteryLifeLabelElem : document.getElementById('batteryLifeLabel'),
+            runtimeAverageNote: typeof runtimeAverageNoteElem !== 'undefined' ? runtimeAverageNoteElem : document.getElementById('runtimeAverageNote'),
+            tempNote: document.getElementById('temperatureNote')
+          },
+          refreshTotalCurrentLabels: typeof refreshTotalCurrentLabels === 'function' ? refreshTotalCurrentLabels : null,
+          updateMountVoltageSettingLabels: typeof updateMountVoltageSettingLabels === 'function' ? updateMountVoltageSettingLabels : null,
+          getCurrentSetupKey: typeof getCurrentSetupKey === 'function' ? getCurrentSetupKey : null,
+          renderFeedbackTable: typeof renderFeedbackTable === 'function' ? renderFeedbackTable : null,
+          dispatchTemperatureNoteRender: typeof dispatchTemperatureNoteRender === 'function' ? dispatchTemperatureNoteRender : null,
+          refreshFeedbackTemperatureLabel: typeof refreshFeedbackTemperatureLabel === 'function' ? refreshFeedbackTemperatureLabel : null,
+          updateFeedbackTemperatureOptions: typeof updateFeedbackTemperatureOptions === 'function' ? updateFeedbackTemperatureOptions : null,
+          lastRuntimeHours: typeof lastRuntimeHours !== 'undefined' ? lastRuntimeHours : null,
+          temperatureUnit: typeof temperatureUnit !== 'undefined' ? temperatureUnit : null,
+          setButtonLabelWithIcon: typeof setButtonLabelWithIcon === 'function' ? setButtonLabelWithIcon : null,
+          iconGlyphs: typeof ICON_GLYPHS !== 'undefined' ? ICON_GLYPHS : null
+        });
+      } catch (cineResultsError) {
+        console.warn('cineResults.localizeResultsSection failed', cineResultsError);
+        resultsLocalizationApplied = false;
       }
-      batteryLifeLabelElem.textContent = _label6;
-      batteryLifeLabelElem.setAttribute("data-help", texts[lang].batteryLifeHelp);
     }
-    if (runtimeAverageNoteElem) {
-      runtimeAverageNoteElem.textContent = fb && fb.count > 4 ? texts[lang].runtimeAverageNote : '';
+    if (!resultsLocalizationApplied) {
+      var breakdownListTarget = typeof breakdownListElem !== "undefined" && breakdownListElem ? breakdownListElem : document.getElementById('breakdownList');
+      if (breakdownListTarget) {
+        breakdownListTarget.setAttribute("data-help", texts[lang].breakdownListHelp);
+      }
+      var totalPowerLabelElem = document.getElementById("totalPowerLabel");
+      totalPowerLabelElem.textContent = texts[lang].totalPowerLabel;
+      totalPowerLabelElem.setAttribute("data-help", texts[lang].totalPowerHelp);
+      refreshTotalCurrentLabels(lang);
+      updateMountVoltageSettingLabels(lang);
+      var batteryCountLabelElem = document.getElementById("batteryCountLabel");
+      batteryCountLabelElem.textContent = texts[lang].batteryCountLabel;
+      batteryCountLabelElem.setAttribute("data-help", texts[lang].batteryCountHelp);
+      if (pinWarnElem) pinWarnElem.setAttribute("data-help", texts[lang].pinWarningHelp);
+      if (dtapWarnElem) dtapWarnElem.setAttribute("data-help", texts[lang].dtapWarningHelp);
+      if (hotswapWarnElem) hotswapWarnElem.setAttribute("data-help", texts[lang].hotswapWarningHelp);
+      if (powerWarningTitleElem) powerWarningTitleElem.textContent = texts[lang].powerWarningTitle;
+      if (powerWarningLimitsHeadingElem) powerWarningLimitsHeadingElem.textContent = texts[lang].powerWarningLimitsHeading;
+      if (powerWarningAdviceElem) powerWarningAdviceElem.textContent = texts[lang].powerWarningAdvice;
+      if (powerWarningCloseBtn) setButtonLabelWithIcon(powerWarningCloseBtn, texts[lang].powerWarningClose, ICON_GLYPHS.check);
+      var unitElem = document.getElementById("batteryLifeUnit");
+      if (unitElem) unitElem.textContent = texts[lang].batteryLifeUnit;
+      var fb = renderFeedbackTable(getCurrentSetupKey());
+      if (batteryLifeLabelElem) {
+        var _label6 = texts[lang].batteryLifeLabel;
+        if (fb) {
+          var userNote = texts[lang].runtimeUserCountNote.replace('{count}', fb.count);
+          var idx = _label6.indexOf(')');
+          if (idx !== -1) {
+            _label6 = "".concat(_label6.slice(0, idx), ", ").concat(userNote).concat(_label6.slice(idx));
+          }
+        }
+        batteryLifeLabelElem.textContent = _label6;
+        batteryLifeLabelElem.setAttribute("data-help", texts[lang].batteryLifeHelp);
+      }
+      if (runtimeAverageNoteElem) {
+        runtimeAverageNoteElem.textContent = fb && fb.count > 4 ? texts[lang].runtimeAverageNote : '';
+      }
+      dispatchTemperatureNoteRender(lastRuntimeHours);
+      refreshFeedbackTemperatureLabel(lang, temperatureUnit);
+      updateFeedbackTemperatureOptions(lang, temperatureUnit);
+      var tempNoteElem = document.getElementById("temperatureNote");
+      if (tempNoteElem) tempNoteElem.setAttribute("data-help", texts[lang].temperatureNoteHelp);
     }
-    dispatchTemperatureNoteRender(lastRuntimeHours);
-    refreshFeedbackTemperatureLabel(lang, temperatureUnit);
-    updateFeedbackTemperatureOptions(lang, temperatureUnit);
-    var tempNoteElem = document.getElementById("temperatureNote");
-    if (tempNoteElem) tempNoteElem.setAttribute("data-help", texts[lang].temperatureNoteHelp);
     document.getElementById("addDeviceHeading").textContent = texts[lang].addDeviceHeading;
     document.getElementById("categoryLabel").textContent = texts[lang].categoryLabel;
     document.getElementById("subcategoryLabel").textContent = texts[lang].subcategoryLabel;

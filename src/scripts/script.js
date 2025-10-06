@@ -26,6 +26,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     'modules/features/backup.js',
     'modules/help.js',
     'modules/ui.js',
+    'modules/results.js',
     'app-core-new-1.js',
     'app-core-new-2.js',
     'app-events.js',
@@ -89,6 +90,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
   ensureModule('modules/context.js');
   ensureModule('modules/environment-bridge.js');
   ensureModule('modules/globals.js');
+  ensureModule('modules/results.js');
   ensureModule('modules/persistence.js');
   ensureModule('modules/runtime.js');
 

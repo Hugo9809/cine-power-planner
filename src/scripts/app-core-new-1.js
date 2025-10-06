@@ -7778,7 +7778,87 @@ function setLanguage(lang) {
     .forEach(el => {
       el.textContent = texts[lang].notesLabel;
     });
-  // Results labels
+
+  var cineResultsModule = typeof cineResults === 'object' ? cineResults : null;
+  var resultsLocalizationApplied = false;
+  if (cineResultsModule && typeof cineResultsModule.localizeResultsSection === 'function') {
+    try {
+      resultsLocalizationApplied = cineResultsModule.localizeResultsSection({
+        lang: lang,
+        langTexts: texts[lang] || {},
+        fallbackTexts: texts.en || {},
+        document: document,
+        breakdownListElem:
+          typeof breakdownListElem !== 'undefined' && breakdownListElem
+            ? breakdownListElem
+            : null,
+        elements: {
+          totalPowerLabel: document.getElementById('totalPowerLabel'),
+          batteryCountLabel: document.getElementById('batteryCountLabel'),
+          pinWarning: typeof pinWarnElem !== 'undefined' ? pinWarnElem : null,
+          dtapWarning: typeof dtapWarnElem !== 'undefined' ? dtapWarnElem : null,
+          hotswapWarning: typeof hotswapWarnElem !== 'undefined' ? hotswapWarnElem : null,
+          powerWarningTitle:
+            typeof powerWarningTitleElem !== 'undefined' ? powerWarningTitleElem : null,
+          powerWarningLimitsHeading:
+            typeof powerWarningLimitsHeadingElem !== 'undefined'
+              ? powerWarningLimitsHeadingElem
+              : null,
+          powerWarningAdvice:
+            typeof powerWarningAdviceElem !== 'undefined' ? powerWarningAdviceElem : null,
+          powerWarningCloseBtn:
+            typeof powerWarningCloseBtn !== 'undefined' ? powerWarningCloseBtn : null,
+          batteryLifeUnit: document.getElementById('batteryLifeUnit'),
+          batteryLifeLabel:
+            typeof batteryLifeLabelElem !== 'undefined'
+              ? batteryLifeLabelElem
+              : document.getElementById('batteryLifeLabel'),
+          runtimeAverageNote:
+            typeof runtimeAverageNoteElem !== 'undefined'
+              ? runtimeAverageNoteElem
+              : document.getElementById('runtimeAverageNote'),
+          tempNote: document.getElementById('temperatureNote'),
+        },
+        refreshTotalCurrentLabels:
+          typeof refreshTotalCurrentLabels === 'function'
+            ? refreshTotalCurrentLabels
+            : null,
+        updateMountVoltageSettingLabels:
+          typeof updateMountVoltageSettingLabels === 'function'
+            ? updateMountVoltageSettingLabels
+            : null,
+        getCurrentSetupKey:
+          typeof getCurrentSetupKey === 'function' ? getCurrentSetupKey : null,
+        renderFeedbackTable:
+          typeof renderFeedbackTable === 'function' ? renderFeedbackTable : null,
+        dispatchTemperatureNoteRender:
+          typeof dispatchTemperatureNoteRender === 'function'
+            ? dispatchTemperatureNoteRender
+            : null,
+        refreshFeedbackTemperatureLabel:
+          typeof refreshFeedbackTemperatureLabel === 'function'
+            ? refreshFeedbackTemperatureLabel
+            : null,
+        updateFeedbackTemperatureOptions:
+          typeof updateFeedbackTemperatureOptions === 'function'
+            ? updateFeedbackTemperatureOptions
+            : null,
+        lastRuntimeHours:
+          typeof lastRuntimeHours !== 'undefined' ? lastRuntimeHours : null,
+        temperatureUnit:
+          typeof temperatureUnit !== 'undefined' ? temperatureUnit : null,
+        setButtonLabelWithIcon:
+          typeof setButtonLabelWithIcon === 'function' ? setButtonLabelWithIcon : null,
+        iconGlyphs: typeof ICON_GLYPHS !== 'undefined' ? ICON_GLYPHS : null,
+      });
+    } catch (cineResultsError) {
+      console.warn('cineResults.localizeResultsSection failed', cineResultsError);
+      resultsLocalizationApplied = false;
+    }
+  }
+
+  if (!resultsLocalizationApplied) {
+    // Results labels
   const breakdownListTarget =
     typeof breakdownListElem !== "undefined" && breakdownListElem
       ? breakdownListElem
@@ -7843,6 +7923,7 @@ function setLanguage(lang) {
   const tempNoteElem = document.getElementById("temperatureNote");
   if (tempNoteElem)
     tempNoteElem.setAttribute("data-help", texts[lang].temperatureNoteHelp);
+  }
   // Add device form labels and button
   document.getElementById("addDeviceHeading").textContent = texts[lang].addDeviceHeading;
   document.getElementById("categoryLabel").textContent = texts[lang].categoryLabel;

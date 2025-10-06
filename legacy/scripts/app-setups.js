@@ -1000,125 +1000,28 @@ function registerSetupsCineUi() {
   return true;
 }
 registerSetupsCineUi();
-if (runtimeFeedbackBtn && feedbackDialog && feedbackForm) {
-  runtimeFeedbackBtn.addEventListener('click', function () {
-    var _devices, _cam$resolutions, _cam$recordingCodecs;
-    var today = new Date().toISOString().split('T')[0];
-    var motVals = motorSelects.map(function (sel) {
-      return sel.value;
-    }).filter(function (v) {
-      return v && v !== 'None';
-    });
-    var ctrlVals = controllerSelects.map(function (sel) {
-      return sel.value;
-    }).filter(function (v) {
-      return v && v !== 'None';
-    });
-    document.getElementById('fbDate').value = today;
-    document.getElementById('fbCamera').value = cameraSelect.value || '';
-    document.getElementById('fbBatteryPlate').value = getSelectedPlate() || '';
-    document.getElementById('fbBattery').value = batterySelect.value || '';
-    document.getElementById('fbWirelessVideo').value = videoSelect.value || '';
-    document.getElementById('fbMonitor').value = monitorSelect.value || '';
-    var cam = (_devices = devices) === null || _devices === void 0 || (_devices = _devices.cameras) === null || _devices === void 0 ? void 0 : _devices[cameraSelect.value];
-    document.getElementById('fbResolution').value = (cam === null || cam === void 0 || (_cam$resolutions = cam.resolutions) === null || _cam$resolutions === void 0 ? void 0 : _cam$resolutions[0]) || '';
-    document.getElementById('fbCodec').value = (cam === null || cam === void 0 || (_cam$recordingCodecs = cam.recordingCodecs) === null || _cam$recordingCodecs === void 0 ? void 0 : _cam$recordingCodecs[0]) || '';
-    document.getElementById('fbControllers').value = ctrlVals.join(', ');
-    document.getElementById('fbMotors').value = motVals.join(', ');
-    var fbDistance = document.getElementById('fbDistance');
-    if (fbDistance && distanceSelect) {
-      fbDistance.innerHTML = distanceSelect.innerHTML;
-      fbDistance.value = distanceSelect.value || '';
-    }
-    openDialog(feedbackDialog);
-  });
-  var handleFeedbackCancel = function handleFeedbackCancel(targetBtn) {
-    if (!targetBtn || targetBtn.dataset.feedbackCancelBound === 'true') {
-      return;
-    }
-    targetBtn.dataset.feedbackCancelBound = 'true';
-    targetBtn.addEventListener('click', function () {
-      closeDialog(feedbackDialog);
-    });
-  };
-  var resolvedFeedbackCancelBtn = typeof feedbackCancelBtn !== 'undefined' && feedbackCancelBtn || document.getElementById('fbCancel');
-  if (resolvedFeedbackCancelBtn) {
-    handleFeedbackCancel(resolvedFeedbackCancelBtn);
-  } else if (typeof enqueueCoreBootTask === 'function') {
-    enqueueCoreBootTask(function () {
-      var nextBtn = typeof feedbackCancelBtn !== 'undefined' && feedbackCancelBtn || document.getElementById('fbCancel');
-      if (nextBtn) {
-        handleFeedbackCancel(nextBtn);
-      }
-    });
-  }
-  var feedbackUseLocationBtn = typeof globalThis !== 'undefined' && globalThis.feedbackUseLocationBtn || typeof window !== 'undefined' && window.feedbackUseLocationBtn || document.getElementById('fbUseLocationBtn');
-  if (feedbackUseLocationBtn) {
-    feedbackUseLocationBtn.addEventListener('click', function () {
-      var locationInput = document.getElementById('fbLocation');
-      if (!navigator.geolocation) {
-        alert('Geolocation is not supported by your browser');
-        return;
-      }
-      feedbackUseLocationBtn.disabled = true;
-      navigator.geolocation.getCurrentPosition(function (pos) {
-        var _pos$coords = pos.coords,
-          latitude = _pos$coords.latitude,
-          longitude = _pos$coords.longitude;
-        locationInput.value = "".concat(latitude.toFixed(5), ", ").concat(longitude.toFixed(5));
-        feedbackUseLocationBtn.disabled = false;
-      }, function () {
-        feedbackUseLocationBtn.disabled = false;
-        alert('Unable to retrieve your location');
-      });
-    });
-  }
-  feedbackForm.addEventListener('submit', function (e) {
-    e.preventDefault();
-    var entry = {
-      username: document.getElementById('fbUsername').value.trim(),
-      date: document.getElementById('fbDate').value,
-      location: document.getElementById('fbLocation').value.trim(),
-      camera: document.getElementById('fbCamera').value.trim(),
-      batteryPlate: document.getElementById('fbBatteryPlate').value.trim(),
-      lensMount: document.getElementById('fbLensMount').value.trim(),
-      resolution: document.getElementById('fbResolution').value.trim(),
-      codec: document.getElementById('fbCodec').value.trim(),
-      framerate: document.getElementById('fbFramerate').value.trim(),
-      cameraWifi: document.getElementById('fbWifi').value,
-      firmware: document.getElementById('fbFirmware').value.trim(),
-      battery: document.getElementById('fbBattery').value.trim(),
-      batteryAge: document.getElementById('fbBatteryAge').value.trim(),
-      wirelessVideo: document.getElementById('fbWirelessVideo').value.trim(),
-      monitor: document.getElementById('fbMonitor').value.trim(),
-      monitorBrightness: document.getElementById('fbMonitorBrightness').value.trim(),
-      lens: document.getElementById('fbLens').value.trim(),
-      lensData: document.getElementById('fbLensData').value.trim(),
-      controllers: document.getElementById('fbControllers').value.trim(),
-      motors: document.getElementById('fbMotors').value.trim(),
-      distance: document.getElementById('fbDistance').value.trim(),
-      temperature: document.getElementById('fbTemperature').value.trim(),
-      charging: document.getElementById('fbCharging').value.trim(),
-      runtime: document.getElementById('fbRuntime').value.trim(),
-      batteriesPerDay: document.getElementById('fbBatteriesPerDay').value.trim()
-    };
-    var key = getCurrentSetupKey();
-    var feedback = loadFeedbackSafe();
-    if (!feedback[key]) feedback[key] = [];
-    feedback[key].push(entry);
-    saveFeedbackSafe(feedback);
-    var lines = [];
-    Object.entries(entry).forEach(function (_ref2) {
-      var _ref3 = _slicedToArray(_ref2, 2),
-        k = _ref3[0],
-        v = _ref3[1];
-      lines.push("".concat(k, ": ").concat(v));
-    });
-    var subject = encodeURIComponent('Cine Power Planner Runtime Feedback');
-    var body = encodeURIComponent(lines.join('\n'));
-    window.location.href = "mailto:info@lucazanner.de?subject=".concat(subject, "&body=").concat(body);
-    closeDialog(feedbackDialog);
-    updateCalculations();
+const cineResultsModule = typeof cineResults === 'object' ? cineResults : null;
+if (cineResultsModule && typeof cineResultsModule.setupRuntimeFeedback === 'function') {
+  cineResultsModule.setupRuntimeFeedback({
+    openDialog: typeof openDialog === 'function' ? openDialog : null,
+    closeDialog: typeof closeDialog === 'function' ? closeDialog : null,
+    getCurrentSetupKey: typeof getCurrentSetupKey === 'function' ? getCurrentSetupKey : null,
+    loadFeedback:
+      typeof loadFeedbackSafe === 'function'
+        ? loadFeedbackSafe
+        : typeof loadFeedback === 'function'
+          ? loadFeedback
+          : null,
+    saveFeedback:
+      typeof saveFeedbackSafe === 'function'
+        ? saveFeedbackSafe
+        : typeof saveFeedback === 'function'
+          ? saveFeedback
+          : null,
+    updateCalculations: typeof updateCalculations === 'function' ? updateCalculations : null,
+    setButtonLabelWithIcon:
+      typeof setButtonLabelWithIcon === 'function' ? setButtonLabelWithIcon : null,
+    iconGlyphs: typeof ICON_GLYPHS !== 'undefined' ? ICON_GLYPHS : null,
   });
 }
 function summarizeByType(list) {
