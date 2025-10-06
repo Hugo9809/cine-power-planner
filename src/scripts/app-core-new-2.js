@@ -16587,13 +16587,13 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             canAttachMarker = Object.isExtensible(moduleBase);
           } catch (isExtensibleError) {
             void isExtensibleError;
-            canAttachMarker = true;
+            canAttachMarker = false;
           }
         }
 
         const shouldAttemptDirectMark = hasExistingMarker || canAttachMarker;
 
-        if (shouldAttemptDirectMark) {
+        if (shouldAttemptDirectMark && canAttachMarker) {
           try {
             moduleBase[markerKey] = true;
             if (moduleBase[markerKey]) {
@@ -16604,7 +16604,18 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           }
         }
 
-        if (!marked && shouldAttemptDirectMark && typeof Object.defineProperty === 'function') {
+        let canDefineMarker = shouldAttemptDirectMark && !marked;
+
+        if (canDefineMarker && typeof Object.isExtensible === 'function') {
+          try {
+            canDefineMarker = Object.isExtensible(moduleBase);
+          } catch (defineExtensibleError) {
+            void defineExtensibleError;
+            canDefineMarker = false;
+          }
+        }
+
+        if (canDefineMarker && typeof Object.defineProperty === 'function') {
           try {
             Object.defineProperty(moduleBase, markerKey, {
               configurable: false,
