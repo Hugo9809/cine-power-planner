@@ -1246,129 +1246,31 @@ function registerSetupsCineUi() {
 registerSetupsCineUi();
 
 // Open feedback dialog and handle submission
-if (runtimeFeedbackBtn && feedbackDialog && feedbackForm) {
-  runtimeFeedbackBtn.addEventListener('click', () => {
-    const today = new Date().toISOString().split('T')[0];
-    const motVals = motorSelects.map(sel => sel.value).filter(v => v && v !== 'None');
-    const ctrlVals = controllerSelects.map(sel => sel.value).filter(v => v && v !== 'None');
-    document.getElementById('fbDate').value = today;
-    document.getElementById('fbCamera').value = cameraSelect.value || '';
-    document.getElementById('fbBatteryPlate').value = getSelectedPlate() || '';
-    document.getElementById('fbBattery').value = batterySelect.value || '';
-    document.getElementById('fbWirelessVideo').value = videoSelect.value || '';
-    document.getElementById('fbMonitor').value = monitorSelect.value || '';
-    const cam = devices?.cameras?.[cameraSelect.value];
-    document.getElementById('fbResolution').value = cam?.resolutions?.[0] || '';
-    document.getElementById('fbCodec').value = cam?.recordingCodecs?.[0] || '';
-    document.getElementById('fbControllers').value = ctrlVals.join(', ');
-    document.getElementById('fbMotors').value = motVals.join(', ');
-    const fbDistance = document.getElementById('fbDistance');
-    if (fbDistance && distanceSelect) {
-      fbDistance.innerHTML = distanceSelect.innerHTML;
-      fbDistance.value = distanceSelect.value || '';
-    }
-    openDialog(feedbackDialog);
-  });
-
-  const handleFeedbackCancel = targetBtn => {
-    if (!targetBtn || targetBtn.dataset.feedbackCancelBound === 'true') {
-      return;
-    }
-    targetBtn.dataset.feedbackCancelBound = 'true';
-    targetBtn.addEventListener('click', () => {
-      closeDialog(feedbackDialog);
-    });
-  };
-
-  const resolvedFeedbackCancelBtn =
-    (typeof feedbackCancelBtn !== 'undefined' && feedbackCancelBtn)
-    || document.getElementById('fbCancel');
-
-  if (resolvedFeedbackCancelBtn) {
-    handleFeedbackCancel(resolvedFeedbackCancelBtn);
-  } else if (typeof enqueueCoreBootTask === 'function') {
-    enqueueCoreBootTask(() => {
-      const nextBtn =
-        (typeof feedbackCancelBtn !== 'undefined' && feedbackCancelBtn)
-        || document.getElementById('fbCancel');
-      if (nextBtn) {
-        handleFeedbackCancel(nextBtn);
-      }
-    });
-  }
-
-  const feedbackUseLocationBtn =
-    (typeof globalThis !== 'undefined' && globalThis.feedbackUseLocationBtn)
-    || (typeof window !== 'undefined' && window.feedbackUseLocationBtn)
-    || document.getElementById('fbUseLocationBtn');
-
-  if (feedbackUseLocationBtn) {
-    feedbackUseLocationBtn.addEventListener('click', () => {
-      const locationInput = document.getElementById('fbLocation');
-      if (!navigator.geolocation) {
-        alert('Geolocation is not supported by your browser');
-        return;
-      }
-      feedbackUseLocationBtn.disabled = true;
-      navigator.geolocation.getCurrentPosition(
-        pos => {
-          const { latitude, longitude } = pos.coords;
-          locationInput.value = `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
-          feedbackUseLocationBtn.disabled = false;
-        },
-        () => {
-          feedbackUseLocationBtn.disabled = false;
-          alert('Unable to retrieve your location');
-        }
-      );
-    });
-  }
-
-  feedbackForm.addEventListener('submit', e => {
-    e.preventDefault();
-    const entry = {
-      username: document.getElementById('fbUsername').value.trim(),
-      date: document.getElementById('fbDate').value,
-      location: document.getElementById('fbLocation').value.trim(),
-      camera: document.getElementById('fbCamera').value.trim(),
-      batteryPlate: document.getElementById('fbBatteryPlate').value.trim(),
-      lensMount: document.getElementById('fbLensMount').value.trim(),
-      resolution: document.getElementById('fbResolution').value.trim(),
-      codec: document.getElementById('fbCodec').value.trim(),
-      framerate: document.getElementById('fbFramerate').value.trim(),
-      cameraWifi: document.getElementById('fbWifi').value,
-      firmware: document.getElementById('fbFirmware').value.trim(),
-      battery: document.getElementById('fbBattery').value.trim(),
-      batteryAge: document.getElementById('fbBatteryAge').value.trim(),
-      wirelessVideo: document.getElementById('fbWirelessVideo').value.trim(),
-      monitor: document.getElementById('fbMonitor').value.trim(),
-      monitorBrightness: document.getElementById('fbMonitorBrightness').value.trim(),
-      lens: document.getElementById('fbLens').value.trim(),
-      lensData: document.getElementById('fbLensData').value.trim(),
-      controllers: document.getElementById('fbControllers').value.trim(),
-      motors: document.getElementById('fbMotors').value.trim(),
-      distance: document.getElementById('fbDistance').value.trim(),
-      temperature: document.getElementById('fbTemperature').value.trim(),
-      charging: document.getElementById('fbCharging').value.trim(),
-      runtime: document.getElementById('fbRuntime').value.trim(),
-      batteriesPerDay: document.getElementById('fbBatteriesPerDay').value.trim()
-    };
-    const key = getCurrentSetupKey();
-    const feedback = loadFeedbackSafe();
-    if (!feedback[key]) feedback[key] = [];
-    feedback[key].push(entry);
-    saveFeedbackSafe(feedback);
-    const lines = [];
-    Object.entries(entry).forEach(([k, v]) => {
-      lines.push(`${k}: ${v}`);
-    });
-    const subject = encodeURIComponent('Cine Power Planner Runtime Feedback');
-    const body = encodeURIComponent(lines.join('\n'));
-    window.location.href = `mailto:info@lucazanner.de?subject=${subject}&body=${body}`;
-    closeDialog(feedbackDialog);
-    updateCalculations();
+const cineResultsModule = typeof cineResults === 'object' ? cineResults : null;
+if (cineResultsModule && typeof cineResultsModule.setupRuntimeFeedback === 'function') {
+  cineResultsModule.setupRuntimeFeedback({
+    openDialog: typeof openDialog === 'function' ? openDialog : null,
+    closeDialog: typeof closeDialog === 'function' ? closeDialog : null,
+    getCurrentSetupKey: typeof getCurrentSetupKey === 'function' ? getCurrentSetupKey : null,
+    loadFeedback:
+      typeof loadFeedbackSafe === 'function'
+        ? loadFeedbackSafe
+        : typeof loadFeedback === 'function'
+          ? loadFeedback
+          : null,
+    saveFeedback:
+      typeof saveFeedbackSafe === 'function'
+        ? saveFeedbackSafe
+        : typeof saveFeedback === 'function'
+          ? saveFeedback
+          : null,
+    updateCalculations: typeof updateCalculations === 'function' ? updateCalculations : null,
+    setButtonLabelWithIcon:
+      typeof setButtonLabelWithIcon === 'function' ? setButtonLabelWithIcon : null,
+    iconGlyphs: typeof ICON_GLYPHS !== 'undefined' ? ICON_GLYPHS : null,
   });
 }
+
 
 
 function summarizeByType(list) {
