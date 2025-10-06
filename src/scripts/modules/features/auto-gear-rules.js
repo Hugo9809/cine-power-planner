@@ -405,7 +405,7 @@ function buildOnboardMonitorRiggingAutoGearRules() {
     return [];
   }
 
-  const rules = [];
+  const monitorLabels = [];
   const seen = new Set();
 
   Array.from(select.options).forEach(option => {
@@ -417,17 +417,31 @@ function buildOnboardMonitorRiggingAutoGearRules() {
     const normalized = normalizeAutoGearTriggerValue(label);
     if (!normalized || seen.has(normalized)) return;
     seen.add(normalized);
+    monitorLabels.push(label);
+  });
 
-    rules.push({
+  if (!monitorLabels.length) {
+    return [];
+  }
+
+  const monitorLabelText = (typeof texts === 'object' && texts)
+    ? ((texts[currentLang] && texts[currentLang].autoGearMonitorLabel)
+      || (texts.en && texts.en.autoGearMonitorLabel)
+      || 'Onboard monitors')
+    : 'Onboard monitors';
+  const contextNote = monitorLabelText;
+
+  return [
+    {
       id: generateAutoGearId('rule'),
-      label: `Onboard monitor: ${label}`,
+      label: monitorLabelText,
       scenarios: [],
       mattebox: [],
       cameraHandle: [],
       viewfinderExtension: [],
       videoDistribution: [],
       camera: [],
-      monitor: [label],
+      monitor: monitorLabels.slice(),
       crewPresent: [],
       crewAbsent: [],
       wireless: [],
@@ -440,14 +454,12 @@ function buildOnboardMonitorRiggingAutoGearRules() {
           name: 'ULCS Arm mit 3/8" und 1/4" double',
           category: 'Rigging',
           quantity: 1,
-          contextNotes: [`Onboard monitor: ${label}`],
+          contextNotes: [contextNote],
         },
       ],
       remove: [],
-    });
-  });
-
-  return rules;
+    },
+  ];
 }
 
 function buildTripodPreferenceAutoGearRules(baseInfo = {}) {
