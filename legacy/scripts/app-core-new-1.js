@@ -8229,7 +8229,13 @@ function normalizeAutoGearConditionLogic(value) {
     if (autoGearVideoDistributionSelect) {
       refreshAutoGearVideoDistributionOptions(autoGearEditorDraft === null || autoGearEditorDraft === void 0 ? void 0 : autoGearEditorDraft.videoDistribution);
     }
-    seedAutoGearRulesFromCurrentProject();
+    callCoreFunctionIfAvailable(
+      'seedAutoGearRulesFromCurrentProject',
+      [],
+      {
+        defer: true
+      }
+    );
     callCoreFunctionIfAvailable('renderAutoGearRulesList', [], {
       defer: true
     });

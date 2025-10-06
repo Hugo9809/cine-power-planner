@@ -9372,7 +9372,11 @@ function setLanguage(lang) {
   if (autoGearVideoDistributionSelect) {
     refreshAutoGearVideoDistributionOptions(autoGearEditorDraft?.videoDistribution);
   }
-  seedAutoGearRulesFromCurrentProject();
+  callCoreFunctionIfAvailable(
+    'seedAutoGearRulesFromCurrentProject',
+    [],
+    { defer: true }
+  );
   callCoreFunctionIfAvailable('renderAutoGearRulesList', [], { defer: true });
   callCoreFunctionIfAvailable('renderAutoGearDraftLists', [], { defer: true });
   callCoreFunctionIfAvailable('updateAutoGearCatalogOptions', [], { defer: true });
