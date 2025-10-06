@@ -429,6 +429,12 @@ Ein Infrastruktur-Quartett – `cineModuleArchitectureHelpers`, `cineModuleBase`
 Modulsystem-Abfragen, Registrierungswarteschlangen und globale Exporte zwischen
 Modern- und Legacy-Bundles ohne zusätzlichen Boilerplate synchron.
 
+Für neue Module sollte `cineModules.createBlueprint({...})` genutzt werden, um
+Metadaten und Standard-Freeze-Optionen vor der Registrierung zu übernehmen. Der
+Helfer friert die erzeugte API ein, normalisiert Kategorie-, Beschreibungs- und
+Verbindungsangaben und stellt fehlgeschlagene Registrierungen automatisch in die
+Warteschlange, damit Offline-Workflows keine Schutzmechanismen verlieren.
+
 ### Legacy-Browser-Bundle
 
 Nach Änderungen in `src/scripts/` oder `src/data/` `npm run build:legacy` ausführen. Dadurch wird das ES5-Bundle unter `legacy/` neu erzeugt und lokale Polyfills bleiben aktuell.

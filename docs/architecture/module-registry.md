@@ -68,6 +68,28 @@ worker used during offline rehearsals) without mutating the main global scope.
   asset list. No network access is required, and the existing service worker
   continues to ship the script alongside local Uicons, fonts and help content.
 
+## Blueprint helper
+
+`cineModules.createBlueprint(options)` packages the registration contract into a
+single helper so new modules can inherit the hardened defaults without copying
+boilerplate. A blueprint freezes its metadata, deep-freezes the produced API by
+default and records failed registrations in the same offline-safe queue used by
+manual `registry.register` calls.
+
+- **Deterministic metadata.** Category, description and connection lists are
+  normalised and frozen so integrity reports always reflect the protections a
+  module adds for save, share, import, backup and restore flows.
+- **Single instantiation.** The underlying factory is called once and cached,
+  preventing divergent module instances from appearing when retries occur in
+  auxiliary scopes.
+- **Automatic queuing.** If registration fails (for example during worker
+  initialisation) the blueprint places the attempt into
+  `__cinePendingModuleRegistrations__` so the module is retried instead of being
+  dropped.
+- **Custom registries.** Tests can pass a mock `registry` to
+  `blueprint.register({ registry, options, context })` and still reuse the
+  production metadata and freeze semantics.
+
 | Module name        | Category          | Responsibilities |
 | ------------------ | ----------------- | ---------------- |
 | `cineModuleArchitectureHelpers` | `infrastructure` | Shares frozen scope detection, registry resolution, queue management, deep freezing and safe warning helpers so every environment starts from the same defensive baseline. |
@@ -107,8 +129,11 @@ purpose-specific APIs, but every entry must honour the guarantees below.
 1. Implement the module under `src/scripts/modules/`. Keep the file frozen under
    25 000 lines and follow existing patterns (defensive try/catch when reading
    globals, no external network calls, offline-first defaults).
-2. Require the registry via `require('./registry.js')` (with a `tryRequire`
-   helper) and register the module with category/description metadata.
+2. Prefer `cineModules.createBlueprint({...})` to capture the category,
+   description, connections and freeze defaults before registering. If a
+   blueprint is not suitable, require the registry via
+   `require('./registry.js')` (with a `tryRequire` helper) and register the
+   module with category/description metadata.
 3. Update `src/scripts/script.js`, `legacy/scripts/script.js`, `loader.js` and
    `service-worker.js` to preload/cache the new module so offline usage stays
    reliable.

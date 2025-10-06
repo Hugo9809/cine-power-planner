@@ -432,6 +432,12 @@ alignées la détection de portée, les requêtes au système de modules, les fi
 d’enregistrement et l’exposition globale entre les bundles moderne et legacy
 sans dupliquer de boilerplate.
 
+Pour les nouveaux modules, utilisez `cineModules.createBlueprint({...})` afin de
+capturer les métadonnées et les options de gel avant l’enregistrement. Le
+gestionnaire fige l’API produite, normalise la catégorie, la description et les
+connexions, puis remet en file les enregistrements en échec pour que les
+workflows hors ligne conservent leurs protections.
+
 ### Bundle pour navigateurs anciens
 
 Après modification de `src/scripts/` ou `src/data/`, lancez `npm run build:legacy` pour régénérer le bundle ES5 servi aux navigateurs plus anciens et maintenir les polyfills locaux à jour.

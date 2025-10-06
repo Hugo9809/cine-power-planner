@@ -931,6 +931,12 @@ An infrastructure stack—`cineModuleArchitectureHelpers`, `cineModuleBase`,
 module-system lookups, registration queues and global exposure aligned between
 modern and legacy bundles without duplicating boilerplate.
 
+When introducing new modules prefer `cineModules.createBlueprint({...})` to
+collect metadata and freeze defaults before registering. The helper freezes the
+generated API, normalises category/description/connection strings and
+automatically re-queues failed registrations so offline workflows retain their
+safeguards.
+
 ### Legacy browser bundle
 
 Run `npm run build:legacy` after modifying files in `src/scripts/` or `src/data/`

@@ -15,6 +15,7 @@
 
   let moduleMap = Object.create(null);
   let metadataMap = Object.create(null);
+  let registryReference = null;
 
   function resolveImmutability(scope) {
     const targetScope = scope || GLOBAL_SCOPE;
@@ -482,6 +483,226 @@
     }
   }
 
+  function queueRegistrationPayload(scope, payload) {
+    const targetScope = scope || GLOBAL_SCOPE;
+    if (!targetScope || (typeof targetScope !== 'object' && typeof targetScope !== 'function')) {
+      return false;
+    }
+
+    let queue = null;
+    try {
+      queue = targetScope[PENDING_QUEUE_KEY];
+    } catch (error) {
+      void error;
+      queue = null;
+    }
+
+    if (!Array.isArray(queue)) {
+      queue = [];
+      assignHidden(targetScope, PENDING_QUEUE_KEY, queue);
+    }
+
+    const record = freezeDeep({
+      name: payload && payload.name ? normalizeName(payload.name) : null,
+      api: payload ? payload.api : null,
+      options: Object.freeze({ ...(payload && payload.options ? payload.options : {}) }),
+    });
+
+    try {
+      queue.push(record);
+    } catch (error) {
+      void error;
+      queue[queue.length] = record;
+    }
+
+    try {
+      schedulePendingFlush(targetScope);
+    } catch (error) {
+      void error;
+    }
+
+    return true;
+  }
+
+  function createBlueprint(options = {}) {
+    const normalizedName = normalizeName(options.name);
+    const normalizedCategory = typeof options.category === 'string' ? options.category.trim() : '';
+    if (!normalizedCategory) {
+      throw new TypeError(`cineModules.createBlueprint("${normalizedName}") expected a non-empty category string.`);
+    }
+
+    const normalizedDescription = typeof options.description === 'string' ? options.description.trim() : '';
+    if (!normalizedDescription) {
+      throw new TypeError(`cineModules.createBlueprint("${normalizedName}") expected a non-empty description.`);
+    }
+
+    const freezeByDefault = options.freeze !== false;
+    const normalizedConnections = freezeDeep(normalizeConnections(options.connections));
+
+    const factory = typeof options.factory === 'function' ? options.factory : null;
+    const staticApi = factory ? null : options.api;
+
+    if (!factory && (!staticApi || (typeof staticApi !== 'object' && typeof staticApi !== 'function'))) {
+      throw new TypeError(
+        `cineModules.createBlueprint("${normalizedName}") expected an object API or factory function.`,
+      );
+    }
+
+    const metadata = Object.freeze({
+      name: normalizedName,
+      category: normalizedCategory,
+      description: normalizedDescription,
+      connections: normalizedConnections,
+      freeze: freezeByDefault,
+    });
+
+    let cachedApi = null;
+    let instantiated = false;
+    let instantiateError = null;
+
+    function buildRegistrationOptions(overrides) {
+      const base = {
+        category: metadata.category,
+        description: metadata.description,
+        connections: metadata.connections,
+        freeze: metadata.freeze,
+      };
+
+      if (!overrides || typeof overrides !== 'object') {
+        return Object.freeze({ ...base });
+      }
+
+      const normalized = { ...base };
+
+      if (Object.prototype.hasOwnProperty.call(overrides, 'category')) {
+        const candidate = typeof overrides.category === 'string' ? overrides.category.trim() : '';
+        if (candidate) {
+          normalized.category = candidate;
+        }
+      }
+
+      if (Object.prototype.hasOwnProperty.call(overrides, 'description')) {
+        const candidate = typeof overrides.description === 'string' ? overrides.description.trim() : '';
+        if (candidate) {
+          normalized.description = candidate;
+        }
+      }
+
+      if (Object.prototype.hasOwnProperty.call(overrides, 'connections')) {
+        normalized.connections = freezeDeep(normalizeConnections(overrides.connections));
+      }
+
+      if (Object.prototype.hasOwnProperty.call(overrides, 'freeze')) {
+        normalized.freeze = overrides.freeze !== false;
+      }
+
+      return Object.freeze(normalized);
+    }
+
+    function instantiate(context) {
+      if (instantiated) {
+        if (instantiateError) {
+          throw instantiateError;
+        }
+        return cachedApi;
+      }
+
+      instantiated = true;
+
+      let produced = staticApi;
+      if (factory) {
+        const invocationContext = context && typeof context === 'object' ? { ...context } : {};
+        const frozenContext = Object.freeze({
+          registry: registryReference || null,
+          metadata,
+          context: invocationContext,
+          freezeDeep,
+          normalizeConnections,
+        });
+
+        try {
+          produced = factory(frozenContext);
+        } catch (error) {
+          instantiateError = error instanceof Error ? error : new Error(String(error));
+          throw instantiateError;
+        }
+      }
+
+      if (!produced || (typeof produced !== 'object' && typeof produced !== 'function')) {
+        const error = new TypeError(
+          `cineModules.createBlueprint("${normalizedName}") factory expected an object or function return value.`,
+        );
+        instantiateError = error;
+        throw error;
+      }
+
+      cachedApi = freezeByDefault && !Object.isFrozen(produced) ? freezeDeep(produced) : produced;
+      return cachedApi;
+    }
+
+    function registerBlueprint(options = {}) {
+      const resolvedRegistry =
+        options && typeof options.registry === 'object' && options.registry
+          ? options.registry
+          : registryReference;
+
+      const registrationOptions = buildRegistrationOptions(options && options.options);
+      const scope = options && options.scope ? options.scope : GLOBAL_SCOPE;
+      const deferOnError = options && Object.prototype.hasOwnProperty.call(options, 'defer') ? options.defer !== false : true;
+      const onError = options && typeof options.onError === 'function' ? options.onError : null;
+
+      const api = instantiate(options && options.context);
+
+      const targetRegistry =
+        resolvedRegistry && typeof resolvedRegistry.register === 'function' ? resolvedRegistry : registryReference;
+
+      if (!targetRegistry || typeof targetRegistry.register !== 'function') {
+        throw new TypeError('cineModules.createBlueprint register() requires a registry with a register() function.');
+      }
+
+      try {
+        return targetRegistry.register(metadata.name, api, registrationOptions);
+      } catch (error) {
+        if (deferOnError) {
+          queueRegistrationPayload(scope, {
+            name: metadata.name,
+            api,
+            options: registrationOptions,
+          });
+        }
+
+        if (onError) {
+          try {
+            onError(error);
+          } catch (handlerError) {
+            void handlerError;
+          }
+        }
+
+        throw error;
+      }
+    }
+
+    const blueprint = {
+      name: metadata.name,
+      category: metadata.category,
+      description: metadata.description,
+      connections: metadata.connections,
+      freeze: metadata.freeze,
+      instantiate,
+      register: registerBlueprint,
+      getMetadata() {
+        return metadata;
+      },
+      createRegistrationOptions: buildRegistrationOptions,
+      toJSON() {
+        return metadata;
+      },
+    };
+
+    return Object.freeze(blueprint);
+  }
+
   const registry = Object.freeze({
     register,
     get,
@@ -489,8 +710,11 @@
     list,
     describe,
     assertRegistered,
+    createBlueprint,
     __internalResetForTests: resetForTests,
   });
+
+  registryReference = registry;
 
   const scopes = [GLOBAL_SCOPE];
   if (typeof globalThis !== 'undefined' && globalThis !== GLOBAL_SCOPE) scopes.push(globalThis);
