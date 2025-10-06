@@ -3853,7 +3853,24 @@ if (settingsButton && settingsDialog) {
     });
   }
   if (autoGearResetFactoryButton) {
-    autoGearResetFactoryButton.addEventListener('click', resetAutoGearRulesToFactoryAdditions);
+    var resetAutoGearRulesHandler = null;
+
+    if (typeof resetAutoGearRulesToFactoryAdditions === 'function') {
+      resetAutoGearRulesHandler = resetAutoGearRulesToFactoryAdditions;
+    } else if (typeof globalThis !== 'undefined'
+      && typeof globalThis.resetAutoGearRulesToFactoryAdditions === 'function') {
+      resetAutoGearRulesHandler = globalThis.resetAutoGearRulesToFactoryAdditions;
+    }
+
+    if (resetAutoGearRulesHandler) {
+      autoGearResetFactoryButton.addEventListener('click', resetAutoGearRulesHandler);
+    } else {
+      autoGearResetFactoryButton.disabled = true;
+      autoGearResetFactoryButton.setAttribute('aria-disabled', 'true');
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Automatic gear reset action unavailable: reset handler missing.');
+      }
+    }
   }
   if (autoGearExportButton) {
     autoGearExportButton.addEventListener('click', function () {
