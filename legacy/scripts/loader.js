@@ -357,6 +357,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
     return storages;
   }
   var LEGACY_BUNDLE_STORAGE_KEY = 'cameraPowerPlanner_forceLegacyBundle';
+  var LEGACY_BUNDLE_RETRY_SESSION_KEY = 'cameraPowerPlanner_forceLegacyBundleRetry';
   var LEGACY_BUNDLE_MAX_AGE = 1000 * 60 * 60 * 24 * 7;
   function nowMilliseconds() {
     if (typeof Date !== 'function' || typeof Date.now !== 'function') {
@@ -366,6 +367,10 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
   }
   function getLegacyFlagStorages() {
     return collectStorages(['localStorage']);
+  }
+
+  function getLegacyRetryStorages() {
+    return collectStorages(['sessionStorage']);
   }
   function rememberLegacyBundlePreference() {
     var storages = getLegacyFlagStorages();
@@ -389,6 +394,33 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
     }
     return stored;
   }
+
+  function markLegacyBundleRetryAttempt() {
+    var storages = getLegacyRetryStorages();
+    if (!storages.length) {
+      return false;
+    }
+
+    var timestamp = nowMilliseconds();
+    var value = typeof timestamp === 'number' ? String(timestamp) : '1';
+    var marked = false;
+
+    for (var index = 0; index < storages.length; index += 1) {
+      var storage = storages[index];
+      if (!storage) {
+        continue;
+      }
+
+      try {
+        storage.setItem(LEGACY_BUNDLE_RETRY_SESSION_KEY, value);
+        marked = true;
+      } catch (setError) {
+        void setError;
+      }
+    }
+
+    return marked;
+  }
   function clearLegacyBundlePreference() {
     var storages = getLegacyFlagStorages();
     var cleared = false;
@@ -407,6 +439,31 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
       }
     }
     return cleared;
+  }
+
+  function hasLegacyBundleRetryAttempt() {
+    var storages = getLegacyRetryStorages();
+    if (!storages.length) {
+      return false;
+    }
+
+    for (var index = 0; index < storages.length; index += 1) {
+      var storage = storages[index];
+      if (!storage) {
+        continue;
+      }
+
+      try {
+        var rawValue = storage.getItem(LEGACY_BUNDLE_RETRY_SESSION_KEY);
+        if (typeof rawValue === 'string' && rawValue) {
+          return true;
+        }
+      } catch (readError) {
+        void readError;
+      }
+    }
+
+    return false;
   }
   function shouldForceLegacyBundle() {
     if (typeof window === 'undefined') {
@@ -450,8 +507,17 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
     }
     return forceLegacy;
   }
-  function triggerLegacyBundleReload() {
-    rememberLegacyBundlePreference();
+  function triggerLegacyBundleReload(options) {
+    var settings = options || {};
+
+    if (settings.rememberPreference !== false) {
+      rememberLegacyBundlePreference();
+    }
+
+    if (settings.markRetry === true) {
+      markLegacyBundleRetryAttempt();
+    }
+
     if (typeof window === 'undefined') {
       return false;
     }
@@ -915,11 +981,17 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
   function startLoading() {
     if (shouldForceLegacyBundle()) {
       window.__CINE_POWER_LEGACY_BUNDLE__ = true;
+
+      if (hasLegacyBundleRetryAttempt()) {
+        loadScriptsSequentially(legacyScripts);
+        return;
+      }
+
       supportsModernFeatures(function (supportsModern) {
         if (supportsModern) {
           var cleared = clearLegacyBundlePreference();
           if (cleared) {
-            if (triggerLegacyBundleReload()) {
+            if (triggerLegacyBundleReload({ rememberPreference: false, markRetry: true })) {
               return;
             }
           }
