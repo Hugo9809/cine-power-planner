@@ -9452,7 +9452,37 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     }
     return layer;
   }
-  function computePinkModeAnimationAvoidRegions(layer) {
+function resolvePinkModeHostExtent(host, hostRect, fallbackHeight) {
+  if (host && _typeof(host) === 'object') {
+    try {
+      var scrollHeight = host.scrollHeight;
+      if (typeof scrollHeight === 'number' && scrollHeight > 0) {
+        return scrollHeight;
+      }
+    } catch (error) {
+      void error;
+    }
+  }
+
+  if (hostRect && typeof hostRect.height === 'number' && hostRect.height > 0) {
+    return hostRect.height;
+  }
+
+  if (
+    hostRect &&
+    typeof hostRect.top === 'number' &&
+    typeof hostRect.bottom === 'number'
+  ) {
+    var derivedHeight = hostRect.bottom - hostRect.top;
+    if (Number.isFinite(derivedHeight) && derivedHeight > 0) {
+      return derivedHeight;
+    }
+  }
+
+  return fallbackHeight;
+}
+
+function computePinkModeAnimationAvoidRegions(layer) {
     if (typeof document === 'undefined' || typeof document.querySelectorAll !== 'function') {
       return Object.freeze([]);
     }
@@ -10140,7 +10170,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     var viewportBottom = viewportTop + viewportHeight;
     var hostRect = host ? host.getBoundingClientRect() : null;
     var hostTop = hostRect ? hostRect.top + viewportTop : 0;
-    var hostHeight = host && typeof host.scrollHeight === 'number' && host.scrollHeight > 0 ? host.scrollHeight : hostRect && hostRect.height ? hostRect.height : viewportHeight;
+    var hostHeight = resolvePinkModeHostExtent(host, hostRect, viewportHeight);
     var hostBottom = hostTop + hostHeight;
     var visibleTop = Math.max(hostTop, viewportTop);
     var visibleBottom = Math.min(hostBottom, viewportBottom);
