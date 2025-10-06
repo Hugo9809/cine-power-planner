@@ -4089,9 +4089,9 @@ const texts = {
     storagePersistenceStatusGranted:
       "Almacenamiento persistente concedido. Los datos del planner están protegidos frente a limpiezas automáticas.",
     storagePersistenceStatusDenied:
-      "El navegador no pudo conceder almacenamiento persistente. Sigue exportando copias de seguridad con regularidad.",
+      "El navegador no pudo conceder almacenamiento persistente. Sigue exportando copias de seguridad con regularidad y verifica que las copias locales estén listas para usar sin conexión.",
     storagePersistenceStatusError:
-      "La solicitud de almacenamiento persistente falló. Vuelve a intentarlo tras liberar espacio o revisa la configuración del navegador.",
+      "La solicitud de almacenamiento persistente falló. Libera espacio, revisa la configuración del navegador y confirma tus copias de seguridad antes de volver a intentarlo.",
     storagePersistenceStatusUnsupported:
       "Este navegador no puede conceder almacenamiento persistente automáticamente. Continúa manteniendo copias de seguridad externas.",
     storagePersistenceUsage: "Uso aproximado: {used} de {quota}.",
