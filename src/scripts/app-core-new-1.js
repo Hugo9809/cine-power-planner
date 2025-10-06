@@ -5596,9 +5596,15 @@ function closeDialog(dialog) {
 function isDialogOpen(dialog) {
   if (!dialog) return false;
   if (typeof dialog.open === 'boolean') {
-    return dialog.open;
+    if (dialog.open) {
+      return true;
+    }
+    if (typeof dialog.hasAttribute === 'function' && dialog.hasAttribute('open')) {
+      return true;
+    }
+    return false;
   }
-  return dialog.hasAttribute('open');
+  return typeof dialog.hasAttribute === 'function' && dialog.hasAttribute('open');
 }
 
 /**
