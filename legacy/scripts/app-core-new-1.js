@@ -6686,25 +6686,8 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     deviceManagerHeadingElem.textContent = texts[lang].deviceManagerHeading;
     deviceManagerHeadingElem.setAttribute("data-help", texts[lang].deviceManagerHeadingHelp);
     var batteryComparisonHeadingElem = document.getElementById("batteryComparisonHeading");
-    batteryComparisonHeadingElem.textContent = texts[lang].batteryComparisonHeading;
-    batteryComparisonHeadingElem.setAttribute("data-help", texts[lang].batteryComparisonHeadingHelp);
     var batteryComparisonDescriptionElem = document.getElementById("batteryComparisonDescription");
-    if (batteryComparisonDescriptionElem) {
-      batteryComparisonDescriptionElem.textContent = texts[lang].batteryComparisonDescription;
-      if (texts[lang].batteryComparisonDescriptionHelp) {
-        batteryComparisonDescriptionElem.setAttribute("data-help", texts[lang].batteryComparisonDescriptionHelp);
-      } else {
-        batteryComparisonDescriptionElem.removeAttribute("data-help");
-      }
-    }
     var batteryTableElem = document.getElementById("batteryTable");
-    if (batteryTableElem) {
-      if (texts[lang].batteryComparisonTableHelp) {
-        batteryTableElem.setAttribute("data-help", texts[lang].batteryComparisonTableHelp);
-      } else {
-        batteryTableElem.removeAttribute("data-help");
-      }
-    }
     var setupDiagramHeadingElem = document.getElementById("setupDiagramHeading");
     setupDiagramHeadingElem.textContent = texts[lang].setupDiagramHeading;
     setupDiagramHeadingElem.setAttribute("data-help", texts[lang].setupDiagramHeadingHelp);
@@ -6961,6 +6944,44 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       } catch (cineResultsError) {
         console.warn('cineResults.localizeResultsSection failed', cineResultsError);
         resultsLocalizationApplied = false;
+      }
+    }
+    var batteryComparisonLocalized = false;
+    if (cineResultsModule && typeof cineResultsModule.localizeBatteryComparisonSection === 'function') {
+      try {
+        batteryComparisonLocalized = cineResultsModule.localizeBatteryComparisonSection({
+          lang: lang,
+          langTexts: texts[lang] || {},
+          fallbackTexts: texts.en || {},
+          document: document,
+          batteryComparisonHeading: batteryComparisonHeadingElem,
+          batteryComparisonDescription: batteryComparisonDescriptionElem,
+          batteryComparisonTable: batteryTableElem
+        });
+      } catch (cineResultsError) {
+        console.warn('cineResults.localizeBatteryComparisonSection failed', cineResultsError);
+        batteryComparisonLocalized = false;
+      }
+    }
+    if (!batteryComparisonLocalized) {
+      if (batteryComparisonHeadingElem) {
+        batteryComparisonHeadingElem.textContent = texts[lang].batteryComparisonHeading;
+        batteryComparisonHeadingElem.setAttribute("data-help", texts[lang].batteryComparisonHeadingHelp);
+      }
+      if (batteryComparisonDescriptionElem) {
+        batteryComparisonDescriptionElem.textContent = texts[lang].batteryComparisonDescription;
+        if (texts[lang].batteryComparisonDescriptionHelp) {
+          batteryComparisonDescriptionElem.setAttribute("data-help", texts[lang].batteryComparisonDescriptionHelp);
+        } else {
+          batteryComparisonDescriptionElem.removeAttribute("data-help");
+        }
+      }
+      if (batteryTableElem) {
+        if (texts[lang].batteryComparisonTableHelp) {
+          batteryTableElem.setAttribute("data-help", texts[lang].batteryComparisonTableHelp);
+        } else {
+          batteryTableElem.removeAttribute("data-help");
+        }
       }
     }
     if (!resultsLocalizationApplied) {
