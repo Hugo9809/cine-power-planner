@@ -113,12 +113,12 @@ function shouldBypassCache(request, requestUrl) {
   }
 
   const { cache } = request;
-  if (cache === 'reload' || cache === 'no-store') {
+  if (cache === 'reload' || cache === 'no-store' || cache === 'no-cache') {
     return true;
   }
 
   const cacheControl = request.headers && request.headers.get && request.headers.get('Cache-Control');
-  if (cacheControl && /no-cache|max-age=0/i.test(cacheControl)) {
+  if (cacheControl && /no-cache|no-store|max-age=0/i.test(cacheControl)) {
     return true;
   }
 
