@@ -1370,7 +1370,7 @@ function resetAutoGearRulesToFactoryAdditions() {
       if (typeof console !== 'undefined' && typeof console.warn === 'function') {
         console.warn('Unable to register cineFeatureAutoGearRules module.', error);
       }
-    },
+    }
   );
 
   const globalExports = [
