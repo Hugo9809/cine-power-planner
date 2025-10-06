@@ -20,6 +20,9 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     'modules/globals.js',
     'modules/offline.js',
     'modules/core-shared.js',
+    'modules/core/project-intelligence.js',
+    'modules/core/persistence-guard.js',
+    'modules/core/experience.js',
     'modules/logging.js',
     'modules/features/help.js',
     'modules/features/feature-search.js',
@@ -210,6 +213,30 @@ function attemptRegistryBackfill(scope) {
       description: 'Print orchestration helpers for overview exports and fallback workflows.',
       resolve() {
         return scope.cineFeaturePrint || null;
+      },
+    },
+    {
+      name: 'cineCoreProject',
+      category: 'domain',
+      description: 'Project intelligence helpers for derived metadata, selectors, and calculations.',
+      resolve() {
+        return scope.cineCoreProject || null;
+      },
+    },
+    {
+      name: 'cineCoreGuard',
+      category: 'safety',
+      description: 'Persistence guards that preserve autosaves, presets, and backup state across workflows.',
+      resolve() {
+        return scope.cineCoreGuard || null;
+      },
+    },
+    {
+      name: 'cineCoreExperience',
+      category: 'experience',
+      description: 'Experience helpers for UI orchestration, feature discovery, and presentation.',
+      resolve() {
+        return scope.cineCoreExperience || null;
       },
     },
     {

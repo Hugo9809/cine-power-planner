@@ -9,6 +9,7 @@ The app core orchestrates the domain logic that other camera power planner layer
   - Stable stringifier utilities that feed persistence, diffing, and export routines.
   - Metadata normalisers that guarantee comparable calculations even without network connectivity.
 - **Consumers:** Session lifecycle handlers, setup catalogue, backup/export pipelines.
+- **Module reference:** Implemented in `src/scripts/modules/core/project-intelligence.js` and exposed as `cineCoreProject` for registry consumers.
 
 ## 2. Persistence Guard Module
 - **Purpose:** Defend user data at every mutation boundary and coordinate autosave workflows.
@@ -17,6 +18,7 @@ The app core orchestrates the domain logic that other camera power planner layer
   - Clear transient selections and reset input buffers so incoming data cannot overwrite unsaved edits.
   - Maintain redundant snapshots for backup, restore, and offline recovery flows.
 - **Consumers:** Share/import flows, backup rotation, session storage, restore utilities.
+- **Module reference:** Implemented in `src/scripts/modules/core/persistence-guard.js` and registered as `cineCoreGuard` within the module registry.
 
 ## 3. Shared Utilities Module
 - **Purpose:** Provide reusable helpers with deterministic output for other packages to consume safely.
@@ -33,6 +35,7 @@ The app core orchestrates the domain logic that other camera power planner layer
   - Surface help affordances and documentation hooks that stay synchronised with core behaviour.
   - Ensure accessibility metadata and keyboard mappings update together with core logic changes.
 - **Consumers:** UI shell, help overlays, documentation builds, translation maintenance.
+- **Module reference:** Implemented in `src/scripts/modules/core/experience.js` and exposed globally as `cineCoreExperience`.
 
 ## Cross-cutting rules
 - Preserve deterministic outputs so that saved artefacts and shared payloads remain stable across sessions.

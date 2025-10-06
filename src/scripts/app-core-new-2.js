@@ -16486,6 +16486,188 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     );
 
     Object.assign(CORE_PART2_GLOBAL_EXPORTS, resolvedAdditionalExports);
+
+    (function installCoreModuleExports() {
+      const scope =
+        (typeof globalThis !== 'undefined' && globalThis)
+        || (typeof window !== 'undefined' && window)
+        || (typeof self !== 'undefined' && self)
+        || (typeof global !== 'undefined' && global)
+        || null;
+
+      if (!scope) {
+        return;
+      }
+
+      if (scope.cineModuleBase && typeof scope.cineModuleBase.freezeDeep === 'function' && !scope.cineModuleBase.__cineSafeFreezeWrapped) {
+        const originalFreezeDeep = scope.cineModuleBase.freezeDeep;
+        scope.cineModuleBase.freezeDeep = function safeFreezeDeep(value, seen) {
+          try {
+            return originalFreezeDeep(value, seen);
+          } catch (freezeError) {
+            try {
+              if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+                console.warn('cineModuleBase.freezeDeep fallback triggered for core module export.', freezeError);
+              }
+            } catch (warnError) {
+              void warnError;
+            }
+            return value;
+          }
+        };
+        Object.defineProperty(scope.cineModuleBase, '__cineSafeFreezeWrapped', {
+          configurable: false,
+          enumerable: false,
+          writable: false,
+          value: true,
+        });
+      }
+
+      const MODULE_EXPORTS = {
+        cineCoreProject: [
+          'deriveProjectInfo',
+          'updateCalculations',
+          'checkSetupChanged',
+          'currentProjectInfo',
+          'setCurrentProjectInfo',
+          'getCurrentProjectInfo',
+          'collectProjectFormData',
+          'populateProjectForm',
+          'renderFilterDetails',
+          'collectFilterSelections',
+          'collectFilterTokens',
+          'parseFilterTokens',
+          'applyFilterSelectionsToGearList',
+          'normalizeSpellingVariants',
+          'normalizeSearchValue',
+          'getPowerSelectionSnapshot',
+          'applyStoredPowerSelection',
+          'getGearListSelectors',
+          'applyGearListSelectors',
+        ],
+        cineCoreGuard: [
+          'ensureDefaultProjectInfoSnapshot',
+          'skipNextGearListRefresh',
+          'alignActiveAutoGearPreset',
+          'reconcileAutoGearAutoPresetState',
+          'openAutoGearEditor',
+          'closeAutoGearEditor',
+          'saveAutoGearRuleFromEditor',
+          'handleAutoGearImportSelection',
+          'handleAutoGearPresetSelection',
+          'handleAutoGearSavePreset',
+          'handleAutoGearDeletePreset',
+          'applyAutoGearBackupVisibility',
+          'renderAutoGearBackupControls',
+          'renderAutoGearBackupRetentionControls',
+          'renderAutoGearDraftImpact',
+          'renderAutoGearDraftLists',
+          'renderAutoGearMonitorDefaultsControls',
+          'renderAutoGearPresetsControls',
+          'renderAutoGearRulesList',
+          'updateAutoGearCameraWeightDraft',
+          'updateAutoGearShootingDaysDraft',
+          'setAutoGearAutoPresetId',
+          'syncAutoGearAutoPreset',
+          'updateAutoGearCatalogOptions',
+          'updateAutoGearItemButtonState',
+          'updateAutoGearMonitorDefaultOptions',
+          'applyFavoritesToSelect',
+          'updateFavoriteButton',
+          'toggleFavorite',
+          'loadStoredLogoPreview',
+          'renderSettingsLogoPreview',
+          'loadFeedbackSafe',
+          'saveFeedbackSafe',
+          'saveCurrentGearList',
+        ],
+        cineCoreExperience: [
+          'populateSelect',
+          'refreshDeviceLists',
+          'hasAnyDeviceSelection',
+          'refreshAutoGearCameraOptions',
+          'refreshAutoGearCameraWeightCondition',
+          'refreshAutoGearMonitorOptions',
+          'refreshAutoGearTripodHeadOptions',
+          'refreshAutoGearTripodBowlOptions',
+          'refreshAutoGearTripodTypesOptions',
+          'refreshAutoGearTripodSpreaderOptions',
+          'refreshAutoGearWirelessOptions',
+          'refreshAutoGearMotorsOptions',
+          'refreshAutoGearControllersOptions',
+          'refreshAutoGearCrewOptions',
+          'refreshAutoGearDistanceOptions',
+          'exportAutoGearRules',
+          'generatePrintableOverview',
+          'generateGearListHtml',
+          'displayGearAndRequirements',
+          'updateGearListButtonVisibility',
+          'overviewSectionIcons',
+          'scenarioIcons',
+          'populateFeatureSearch',
+          'restoreFeatureSearchDefaults',
+          'updateFeatureSearchValue',
+          'updateFeatureSearchSuggestions',
+          'featureSearchEntries',
+          'featureSearchDefaultOptions',
+          'applyAccentColor',
+          'clearAccentColorOverrides',
+          'updateAccentColorResetButtonState',
+          'refreshDarkModeAccentBoost',
+          'isHighContrastActive',
+          'accentColor',
+          'prevAccentColor',
+          'revertAccentColor',
+          'DEFAULT_ACCENT_COLOR',
+          'HIGH_CONTRAST_ACCENT_COLOR',
+          'fontSize',
+          'fontFamily',
+          'applyDarkMode',
+          'applyPinkMode',
+          'applyHighContrast',
+          'setupInstallBanner',
+          'ensureZoomRemoteSetup',
+          'generateConnectorSummary',
+          'diagramConnectorIcons',
+          'DIAGRAM_MONITOR_ICON',
+        ],
+      };
+
+      Object.entries(MODULE_EXPORTS).forEach(([moduleName, exportNames]) => {
+        const moduleRef = scope[moduleName];
+        if (!moduleRef || typeof moduleRef.install !== 'function') {
+          return;
+        }
+
+        const payload = {};
+        let hasValues = false;
+
+        for (let index = 0; index < exportNames.length; index += 1) {
+          const exportName = exportNames[index];
+          if (Object.prototype.hasOwnProperty.call(CORE_PART2_GLOBAL_EXPORTS, exportName)) {
+            payload[exportName] = CORE_PART2_GLOBAL_EXPORTS[exportName];
+            hasValues = true;
+          }
+        }
+
+        if (!hasValues) {
+          return;
+        }
+
+        try {
+          moduleRef.install(payload);
+        } catch (installError) {
+          try {
+            if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+              console.warn(`Failed to install exports for ${moduleName}.`, installError);
+            }
+          } catch (warnError) {
+            void warnError;
+          }
+        }
+      });
+    })();
+
     const CORE_PART2_GLOBAL_SCOPE =
       CORE_SHARED_SCOPE_PART2 ||
       (typeof globalThis !== 'undefined' ? globalThis : null) ||

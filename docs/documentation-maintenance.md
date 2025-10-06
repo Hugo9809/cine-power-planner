@@ -19,6 +19,11 @@ Printable overviews and PDF exports now route through the dedicated
 exporting documentation bundles, reference the module so readers understand how native
 printing and fallback windows cooperate offline.【F:src/scripts/modules/features/print-workflow.js†L1-L208】
 
+Project intelligence, persistence guardrails and experience helpers are now surfaced
+through `cineCoreProject`, `cineCoreGuard` and `cineCoreExperience`. Reference these
+modules when documenting derived metadata, autosave safeguards or UI affordances so
+the registry-backed contracts stay aligned with user guidance.【F:src/scripts/modules/core/project-intelligence.js†L1-L229】【F:src/scripts/modules/core/persistence-guard.js†L1-L213】【F:src/scripts/modules/core/experience.js†L1-L229】
+
 The new integration suite (`tests/dom/runtimeIntegration.test.js`) ensures these modules
 continue to cooperate. When updating help text or translations, keep the assertions in that
 test in mind—they describe the critical APIs (`cineOffline`, `cinePersistence`, `cineUi`) that

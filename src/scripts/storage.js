@@ -432,6 +432,7 @@ function defineAutoBackupMetadata(target, metadata) {
       value: clonedMetadata,
     });
   } catch (error) {
+    void error;
     try {
       target[AUTO_BACKUP_METADATA_PROPERTY] = clonedMetadata;
     } catch (assignmentError) {
