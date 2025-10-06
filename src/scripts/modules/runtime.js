@@ -773,6 +773,11 @@
     const keys = Object.getOwnPropertyNames(value);
     for (let index = 0; index < keys.length; index += 1) {
       const key = keys[index];
+      if (key === 'web3' && value === GLOBAL_SCOPE) {
+        // Touching the deprecated MetaMask web3 shim triggers warning logs; skip it while
+        // preserving the freeze behavior for the remaining global properties.
+        continue;
+      }
       const descriptor = Object.getOwnPropertyDescriptor(value, key);
       if (!descriptor || ('get' in descriptor) || ('set' in descriptor)) {
         continue;
