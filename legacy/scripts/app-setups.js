@@ -84,6 +84,33 @@ function assignSelectValue(select, value) {
 function getGlobalScope() {
   return typeof globalThis !== 'undefined' && globalThis || typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || typeof global !== 'undefined' && global || null;
 }
+
+var cachedGearListModule = null;
+var attemptedGearListModuleLoad = false;
+function resolveGearListModule() {
+  if (cachedGearListModule) {
+    return cachedGearListModule;
+  }
+  var scope = getGlobalScope();
+  if (!attemptedGearListModuleLoad && typeof require === 'function') {
+    attemptedGearListModuleLoad = true;
+    try {
+      cachedGearListModule = require('../../src/scripts/modules/gear-list.js');
+    } catch (firstError) {
+      try {
+        cachedGearListModule = require('./modules/gear-list.js');
+      } catch (secondError) {
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn('Unable to require gear list module for legacy app-setups', firstError || secondError);
+        }
+      }
+    }
+  }
+  if (!cachedGearListModule && scope && scope.cine && scope.cine.gearList) {
+    cachedGearListModule = scope.cine.gearList;
+  }
+  return cachedGearListModule;
+}
 function getSafeGearListHtmlSections(html) {
   var normalizedHtml = typeof html === 'string' ? html : '';
   var fallbackResult = {
@@ -4466,148 +4493,33 @@ function generateGearListHtml() {
   body += '<h3>Gear List</h3>' + adjustedTable;
   return body;
 }
-function getCurrentGearListHtml() {
-  if (!gearListOutput && !projectRequirementsOutput) return '';
-  var projHtml = '';
-  if (projectRequirementsOutput) {
-    var projClone = projectRequirementsOutput.cloneNode(true);
-    var editBtn = projClone.querySelector('#editProjectBtn');
-    if (editBtn) editBtn.remove();
-    var t = projClone.querySelector('h2');
-    if (t) t.remove();
-    projHtml = projClone.innerHTML.trim();
-  }
-  var gearHtml = '';
-  if (gearListOutput) {
-    var clone = gearListOutput.cloneNode(true);
-    var actions = clone.querySelector('#gearListActions');
-    if (actions) actions.remove();
-    var _editBtn = clone.querySelector('#editProjectBtn');
-    if (_editBtn) _editBtn.remove();
-    ['Director', 'Dop', 'Gaffer', 'Focus'].forEach(function (role) {
-      var sel = clone.querySelector("#gearList".concat(role, "Monitor"));
-      if (sel) {
-        var originalSel = gearListOutput.querySelector("#gearList".concat(role, "Monitor"));
-        var val = originalSel ? originalSel.value : sel.value;
-        Array.from(sel.options).forEach(function (opt) {
-          if (opt.value === val) {
-            opt.setAttribute('selected', '');
-          } else {
-            opt.removeAttribute('selected');
-          }
-        });
-      }
-    });
-    ['Director', 'Combo', 'Dop'].forEach(function (role) {
-      var sel = clone.querySelector("#gearList".concat(role, "Monitor15"));
-      if (sel) {
-        var originalSel = gearListOutput.querySelector("#gearList".concat(role, "Monitor15"));
-        var val = originalSel ? originalSel.value : sel.value;
-        Array.from(sel.options).forEach(function (opt) {
-          if (opt.value === val) {
-            opt.setAttribute('selected', '');
-          } else {
-            opt.removeAttribute('selected');
-          }
-        });
-      }
-    });
-    var cageSel = clone.querySelector('#gearListCage');
-    if (cageSel) {
-      var originalSel = gearListOutput.querySelector('#gearListCage');
-      var val = originalSel ? originalSel.value : cageSel.value;
-      Array.from(cageSel.options).forEach(function (opt) {
-        if (opt.value === val) {
-          opt.setAttribute('selected', '');
-        } else {
-          opt.removeAttribute('selected');
-        }
-      });
-    }
-    var easyrigSel = clone.querySelector('#gearListEasyrig');
-    if (easyrigSel) {
-      var _originalSel = gearListOutput.querySelector('#gearListEasyrig');
-      var _val = _originalSel ? _originalSel.value : easyrigSel.value;
-      Array.from(easyrigSel.options).forEach(function (opt) {
-        if (opt.value === _val) {
-          opt.setAttribute('selected', '');
-        } else {
-          opt.removeAttribute('selected');
-        }
-      });
-    }
-    var sliderSel = clone.querySelector('#gearListSliderBowl');
-    if (sliderSel) {
-      var _originalSel2 = gearListOutput.querySelector('#gearListSliderBowl');
-      var _val2 = _originalSel2 ? _originalSel2.value : sliderSel.value;
-      Array.from(sliderSel.options).forEach(function (opt) {
-        if (opt.value === _val2) {
-          opt.setAttribute('selected', '');
-        } else {
-          opt.removeAttribute('selected');
-        }
-      });
-    }
-    var eyeSel = clone.querySelector('#gearListEyeLeatherColor');
-    if (eyeSel) {
-      var _originalSel3 = gearListOutput.querySelector('#gearListEyeLeatherColor');
-      var _val3 = _originalSel3 ? _originalSel3.value : eyeSel.value;
-      Array.from(eyeSel.options).forEach(function (opt) {
-        if (opt.value === _val3) {
-          opt.setAttribute('selected', '');
-        } else {
-          opt.removeAttribute('selected');
-        }
-      });
-    }
-    [1, 2].forEach(function (i) {
-      var colorSel = clone.querySelector("#gearListProGaffColor".concat(i));
-      if (colorSel) {
-        var _originalSel4 = gearListOutput.querySelector("#gearListProGaffColor".concat(i));
-        var _val4 = _originalSel4 ? _originalSel4.value : colorSel.value;
-        Array.from(colorSel.options).forEach(function (opt) {
-          if (opt.value === _val4) {
-            opt.setAttribute('selected', '');
-          } else {
-            opt.removeAttribute('selected');
-          }
-        });
-      }
-      var widthSel = clone.querySelector("#gearListProGaffWidth".concat(i));
-      if (widthSel) {
-        var _originalSel5 = gearListOutput.querySelector("#gearListProGaffWidth".concat(i));
-        var _val5 = _originalSel5 ? _originalSel5.value : widthSel.value;
-        Array.from(widthSel.options).forEach(function (opt) {
-          if (opt.value === _val5) {
-            opt.setAttribute('selected', '');
-          } else {
-            opt.removeAttribute('selected');
-          }
-        });
-      }
-    });
-    clone.querySelectorAll('input[type="checkbox"]').forEach(function (cb) {
-      if (cb.checked) {
-        cb.setAttribute('checked', '');
-      } else {
-        cb.removeAttribute('checked');
-      }
-    });
-    var table = clone.querySelector('.gear-table');
-    gearHtml = table ? '<h3>Gear List</h3>' + table.outerHTML : '';
-  }
-  if (!projHtml && !gearHtml) {
+function getCurrentGearListHtml(options) {
+  var moduleApi = resolveGearListModule();
+  if (!moduleApi || typeof moduleApi.getCurrentGearListHtml !== 'function') {
     return '';
   }
-  var projectName = getCurrentProjectName();
-  var titleHtml = projectName ? "<h2>".concat(projectName, "</h2>") : '';
-  var combined = "".concat(titleHtml).concat(projHtml).concat(gearHtml).trim();
-  if (combined && typeof globalThis !== 'undefined') {
-    globalThis.__cineLastGearListHtml = combined;
+  var scope = getGlobalScope();
+  var normalizedOptions = _objectSpread({
+    scope: scope,
+    gearListRoot: typeof gearListOutput === 'undefined' ? null : gearListOutput,
+    projectRequirementsRoot: typeof projectRequirementsOutput === 'undefined' ? null : projectRequirementsOutput
+  }, options && _typeof(options) === 'object' ? options : {});
+  if (!normalizedOptions.projectName && typeof getCurrentProjectName === 'function') {
+    normalizedOptions.projectName = getCurrentProjectName();
   }
-  return combined;
+  return moduleApi.getCurrentGearListHtml(normalizedOptions);
 }
-function getGearListSelectors() {
+
+function getGearListSelectors(options) {
+  var moduleApi = resolveGearListModule();
+  if (moduleApi && typeof moduleApi.getGearListSelectors === 'function') {
+    var scope = getGlobalScope();
+    var normalizedOptions = _objectSpread({
+      scope: scope,
+      gearListRoot: typeof gearListOutput === 'undefined' ? null : gearListOutput
+    }, options && _typeof(options) === 'object' ? options : {});
+    return moduleApi.getGearListSelectors(normalizedOptions);
+  }
   if (!gearListOutput) return {};
   var selectors = {};
   gearListOutput.querySelectorAll('select[id]').forEach(function (sel) {
@@ -4617,13 +4529,18 @@ function getGearListSelectors() {
   });
   return selectors;
 }
+
 function cloneGearListSelectors(selectors) {
+  var moduleApi = resolveGearListModule();
+  if (moduleApi && typeof moduleApi.cloneGearListSelectors === 'function') {
+    return moduleApi.cloneGearListSelectors(selectors);
+  }
   if (!selectors || _typeof(selectors) !== 'object') return {};
   var clone = {};
-  Object.entries(selectors).forEach(function (_ref68) {
-    var _ref69 = _slicedToArray(_ref68, 2),
-      id = _ref69[0],
-      value = _ref69[1];
+  Object.entries(selectors).forEach(function (_ref) {
+    var _ref2 = _slicedToArray(_ref, 2),
+      id = _ref2[0],
+      value = _ref2[1];
     if (!id || typeof id !== 'string') return;
     if (Array.isArray(value)) {
       clone[id] = value.map(function (item) {
@@ -4637,27 +4554,39 @@ function cloneGearListSelectors(selectors) {
   });
   return clone;
 }
-function applyGearListSelectors(selectors) {
+
+function applyGearListSelectors(selectors, options) {
+  var moduleApi = resolveGearListModule();
+  if (moduleApi && typeof moduleApi.applyGearListSelectors === 'function') {
+    var scope = getGlobalScope();
+    var normalizedOptions = _objectSpread({
+      scope: scope,
+      gearListRoot: typeof gearListOutput === 'undefined' ? null : gearListOutput
+    }, options && _typeof(options) === 'object' ? options : {});
+    moduleApi.applyGearListSelectors(selectors, normalizedOptions);
+    return;
+  }
   if (!gearListOutput || !selectors) return;
-  Object.entries(selectors).forEach(function (_ref70) {
-    var _ref71 = _slicedToArray(_ref70, 2),
-      id = _ref71[0],
-      value = _ref71[1];
+  Object.entries(selectors).forEach(function (_ref3) {
+    var _ref4 = _slicedToArray(_ref3, 2),
+      id = _ref4[0],
+      value = _ref4[1];
     var sel = gearListOutput.querySelector("#".concat(id));
-    if (sel) {
-      if (sel.multiple) {
-        var vals = Array.isArray(value) ? value : [value];
-        Array.from(sel.options).forEach(function (opt) {
-          opt.selected = vals.includes(opt.value);
-        });
-        sel.dispatchEvent(new Event('change'));
-      } else {
-        sel.value = value;
-        sel.dispatchEvent(new Event('change'));
-      }
+    if (!sel) return;
+    if (sel.multiple) {
+      var vals = Array.isArray(value) ? value : [value];
+      Array.from(sel.options).forEach(function (opt) {
+        opt.selected = vals.includes(opt.value);
+      });
+    } else {
+      sel.value = value;
+    }
+    if (typeof sel.dispatchEvent === 'function') {
+      sel.dispatchEvent(new Event('change'));
     }
   });
 }
+
 function cloneProjectInfoForStorage(info) {
   if (info === undefined || info === null) {
     return null;
