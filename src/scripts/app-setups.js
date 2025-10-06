@@ -862,12 +862,61 @@ function downloadSharedProject(shareFileName, includeAutoGear) {
       currentSetup.diagramPositions = diagramPositions;
     }
   }
+  const projectInfoCandidates = [];
   if (currentProjectInfo) {
-    currentSetup.projectInfo = currentProjectInfo;
-  } else {
-    const project = typeof loadProject === 'function' ? loadProject(setupName) : null;
-    if (project && project.projectInfo) {
-      currentSetup.projectInfo = project.projectInfo;
+    projectInfoCandidates.push(currentProjectInfo);
+  }
+  if (typeof loadProject === 'function') {
+    const storageKeys = new Set();
+    if (typeof setupName === 'string' && setupName) {
+      storageKeys.add(setupName);
+    }
+    if (typeof getCurrentProjectStorageKey === 'function') {
+      const storageKey = getCurrentProjectStorageKey({ allowTyped: true });
+      if (typeof storageKey === 'string' && storageKey) {
+        storageKeys.add(storageKey);
+      }
+    }
+    if (typeof getSetupNameState === 'function') {
+      const nameState = getSetupNameState();
+      if (nameState && typeof nameState === 'object') {
+        ['storageKey', 'selectedName', 'typedName'].forEach((prop) => {
+          const value = typeof nameState[prop] === 'string' ? nameState[prop].trim() : '';
+          if (value) {
+            storageKeys.add(value);
+          }
+        });
+      }
+    }
+    storageKeys.forEach((key) => {
+      try {
+        const storedProject = loadProject(key);
+        if (storedProject && storedProject.projectInfo) {
+          projectInfoCandidates.push(storedProject.projectInfo);
+        }
+      } catch (error) {
+        console.warn('Unable to read project info for export from storage key', key, error);
+      }
+    });
+  }
+
+  let mergedProjectInfo = null;
+  projectInfoCandidates.forEach((candidate) => {
+    if (!candidate) return;
+    if (!mergedProjectInfo) {
+      mergedProjectInfo = cloneProjectInfoForStorage(candidate);
+    } else {
+      mergedProjectInfo = mergeProjectInfoSnapshots(mergedProjectInfo, candidate);
+    }
+  });
+
+  if (mergedProjectInfo) {
+    const snapshotForExport = typeof createProjectInfoSnapshotForStorage === 'function'
+      ? createProjectInfoSnapshotForStorage(mergedProjectInfo, { projectNameOverride: setupName })
+      : mergedProjectInfo;
+    const clonedSnapshot = cloneProjectInfoForStorage(snapshotForExport);
+    if (clonedSnapshot && typeof clonedSnapshot === 'object') {
+      currentSetup.projectInfo = clonedSnapshot;
     }
   }
   const gearSelectors = cloneGearListSelectors(getGearListSelectors());
@@ -4844,6 +4893,55 @@ function cloneProjectInfoForStorage(info) {
         clone[key] = cloneProjectInfoForStorage(info[key]);
     });
     return clone;
+}
+
+function hasMeaningfulProjectInfoValue(value) {
+    if (value === null || value === undefined) {
+        return false;
+    }
+    if (typeof value === 'string') {
+        return value.trim().length > 0;
+    }
+    if (typeof value === 'number') {
+        return !Number.isNaN(value);
+    }
+    if (typeof value === 'boolean') {
+        return value;
+    }
+    if (Array.isArray(value)) {
+        return value.some(entry => hasMeaningfulProjectInfoValue(entry));
+    }
+    if (typeof value === 'object') {
+        return Object.values(value).some(entry => hasMeaningfulProjectInfoValue(entry));
+    }
+    return false;
+}
+
+function mergeProjectInfoSnapshots(base, updates) {
+    const baseHasData = hasMeaningfulProjectInfoValue(base);
+    const updateHasData = hasMeaningfulProjectInfoValue(updates);
+
+    if (!updateHasData) {
+        return baseHasData ? cloneProjectInfoForStorage(base) : cloneProjectInfoForStorage(updates);
+    }
+
+    if (!baseHasData) {
+        return cloneProjectInfoForStorage(updates);
+    }
+
+    if (Array.isArray(base) && Array.isArray(updates)) {
+        return cloneProjectInfoForStorage(updates.length ? updates : base);
+    }
+
+    if (typeof base === 'object' && typeof updates === 'object') {
+        const merged = cloneProjectInfoForStorage(base);
+        Object.keys(updates).forEach(key => {
+            merged[key] = mergeProjectInfoSnapshots(merged[key], updates[key]);
+        });
+        return merged;
+    }
+
+    return cloneProjectInfoForStorage(updates);
 }
 
 function normalizeRequirementNodeValue(node) {

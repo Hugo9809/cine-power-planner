@@ -268,6 +268,115 @@ describe('project sharing helpers', () => {
     }
   });
 
+  test('downloadSharedProject includes stored project requirements when current info is missing', () => {
+    const loadProjectMock = jest.fn((key) => {
+      if (typeof key === 'string' && key.trim() === 'Exported Project') {
+        return {
+          projectInfo: {
+            projectName: 'Exported Project',
+            notes: 'Stored notes',
+          },
+        };
+      }
+      return null;
+    });
+
+    const downloadPayloadMock = jest.fn(() => ({ success: true, method: 'blob' }));
+
+    env = setupScriptEnvironment({
+      disableFreeze: true,
+      globals: {
+        loadProject: loadProjectMock,
+        downloadBackupPayload: downloadPayloadMock,
+        getSetupNameState: jest.fn(() => ({
+          selectedName: 'Exported Project',
+          typedName: 'Exported Project',
+          storageKey: 'Exported Project',
+        })),
+        buildDefaultVideoDistributionAutoGearRules: jest.fn(() => []),
+        syncAutoGearMonitorFieldVisibility: jest.fn(),
+      },
+    });
+
+    const { downloadSharedProject } = env.utils;
+
+    const setupNameInput = document.getElementById('setupName');
+    setupNameInput.value = 'Exported Project';
+    setupNameInput.dispatchEvent(new Event('input', { bubbles: true }));
+
+    global.currentProjectInfo = null;
+
+    downloadSharedProject('project.json', false);
+
+    expect(downloadPayloadMock).toHaveBeenCalledTimes(1);
+    const [payload] = downloadPayloadMock.mock.calls[0];
+    const parsed = JSON.parse(payload);
+    expect(parsed.projectInfo).toEqual(expect.objectContaining({
+      projectName: 'Exported Project',
+      notes: 'Stored notes',
+    }));
+    expect(loadProjectMock).toHaveBeenCalled();
+    delete global.currentProjectInfo;
+  });
+
+  test('downloadSharedProject merges current and stored project requirements', () => {
+    const loadProjectMock = jest.fn((key) => {
+      if (typeof key === 'string' && key.trim() === 'Merged Project') {
+        return {
+          projectInfo: {
+            projectName: 'Merged Project',
+            notes: 'Stored notes',
+            contacts: 'Producer',
+          },
+        };
+      }
+      return null;
+    });
+
+    const downloadPayloadMock = jest.fn(() => ({ success: true, method: 'blob' }));
+
+    env = setupScriptEnvironment({
+      disableFreeze: true,
+      globals: {
+        loadProject: loadProjectMock,
+        downloadBackupPayload: downloadPayloadMock,
+        getSetupNameState: jest.fn(() => ({
+          selectedName: 'Merged Project',
+          typedName: 'Merged Project',
+          storageKey: 'Merged Project',
+        })),
+        buildDefaultVideoDistributionAutoGearRules: jest.fn(() => []),
+        syncAutoGearMonitorFieldVisibility: jest.fn(),
+      },
+    });
+
+    const { downloadSharedProject } = env.utils;
+
+    const setupNameInput = document.getElementById('setupName');
+    setupNameInput.value = 'Merged Project';
+    setupNameInput.dispatchEvent(new Event('input', { bubbles: true }));
+
+    global.currentProjectInfo = {
+      projectName: 'Merged Project',
+      notes: 'Updated note',
+      schedule: 'Night shoot',
+    };
+
+    downloadSharedProject('merged.json', false);
+
+    expect(downloadPayloadMock).toHaveBeenCalledTimes(1);
+    const [payload] = downloadPayloadMock.mock.calls[0];
+    const parsed = JSON.parse(payload);
+    expect(parsed.projectInfo).toEqual(expect.objectContaining({
+      projectName: 'Merged Project',
+      notes: 'Updated note',
+      contacts: 'Producer',
+      schedule: 'Night shoot',
+    }));
+    expect(loadProjectMock).toHaveBeenCalled();
+    delete global.currentProjectInfo;
+  });
+
   test('downloadSharedProject alerts when status element is unavailable', () => {
     const originalGetElementById = document.getElementById;
     document.getElementById = jest.fn(function getElementByIdOverride(id) {
