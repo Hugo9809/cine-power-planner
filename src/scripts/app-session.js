@@ -4599,8 +4599,29 @@ if (autoGearConditionList) {
     }
   });
 }
+const resolveResetAutoGearRulesHandler = () => {
+  if (typeof resetAutoGearRulesToFactoryAdditions === 'function') {
+    return resetAutoGearRulesToFactoryAdditions;
+  }
+  if (typeof globalThis !== 'undefined'
+    && typeof globalThis.resetAutoGearRulesToFactoryAdditions === 'function') {
+    return globalThis.resetAutoGearRulesToFactoryAdditions;
+  }
+  return null;
+};
+
 if (autoGearResetFactoryButton) {
-  autoGearResetFactoryButton.addEventListener('click', resetAutoGearRulesToFactoryAdditions);
+  const resetAutoGearRulesHandler = resolveResetAutoGearRulesHandler();
+
+  if (resetAutoGearRulesHandler) {
+    autoGearResetFactoryButton.addEventListener('click', resetAutoGearRulesHandler);
+  } else {
+    autoGearResetFactoryButton.disabled = true;
+    autoGearResetFactoryButton.setAttribute('aria-disabled', 'true');
+    if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+      console.warn('Automatic gear reset action unavailable: reset handler missing.');
+    }
+  }
 }
 if (autoGearExportButton) {
   autoGearExportButton.addEventListener('click', () => {
