@@ -1064,10 +1064,32 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
       document.head || document.getElementsByTagName('head')[0] || document.documentElement;
     var index = 0;
     var aborted = false;
+    var completed = false;
     var settings = options || {};
 
+    function finalize() {
+      if (completed) {
+        return;
+      }
+
+      completed = true;
+
+      if (typeof settings.onComplete === 'function') {
+        try {
+          settings.onComplete();
+        } catch (callbackError) {
+          console.error('Loader completion callback failed', callbackError);
+        }
+      }
+    }
+
     function next() {
-      if (aborted || index >= urls.length) {
+      if (aborted) {
+        return;
+      }
+
+      if (index >= urls.length) {
+        finalize();
         return;
       }
 
@@ -1124,103 +1146,158 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
     };
   }
 
-  var modernScripts = [
-    'src/scripts/globalthis-polyfill.js',
-    'src/data/devices/index.js',
-    'src/data/devices/cameras.js',
-    'src/data/devices/monitors.js',
-    'src/data/devices/video.js',
-    'src/data/devices/fiz.js',
-    'src/data/devices/batteries.js',
-    'src/data/devices/batteryHotswaps.js',
-    'src/data/devices/chargers.js',
-    'src/data/devices/cages.js',
-    'src/data/devices/gearList.js',
-    'src/data/devices/wirelessReceivers.js',
-    'src/scripts/storage.js',
-    'src/scripts/translations.js',
-    'src/vendor/lz-string.min.js',
-    'src/vendor/lottie-light.min.js',
-    'src/scripts/auto-gear-weight.js',
-    'src/scripts/modules/base.js',
-    'src/scripts/modules/registry.js',
-    'src/scripts/modules/environment-bridge.js',
-    'src/scripts/modules/globals.js',
-    'src/scripts/modules/offline.js',
-    'src/scripts/modules/core-shared.js',
-    'src/scripts/modules/core/project-intelligence.js',
-    'src/scripts/modules/core/persistence-guard.js',
-    'src/scripts/modules/core/experience.js',
-    'src/scripts/modules/settings-and-appearance.js',
-    'src/scripts/modules/features/auto-gear-rules.js',
-    'src/scripts/modules/features/connection-diagram.js',
-    'src/scripts/modules/features/backup.js',
-    'src/scripts/modules/features/print-workflow.js',
-    'src/scripts/modules/ui.js',
-    'src/scripts/modules/results.js',
-    'src/scripts/app-core-new-1.js',
-    'src/scripts/app-core-new-2.js',
-    'src/scripts/app-events.js',
-    'src/scripts/app-setups.js',
-    'src/scripts/restore-verification.js',
-    'src/scripts/app-session.js',
-    'src/scripts/modules/persistence.js',
-    'src/scripts/modules/runtime.js',
-    'src/scripts/script.js',
-    'src/scripts/auto-gear-monitoring.js',
-    'src/scripts/overview.js',
-    'src/scripts/autosave-overlay.js'
-  ];
+  function scheduleDeferredScripts(urls) {
+    if (!urls || urls.length === 0) {
+      return;
+    }
 
-  var legacyScripts = [
-    'legacy/polyfills/core-js-bundle.min.js',
-    'legacy/polyfills/regenerator-runtime.js',
-    'legacy/scripts/globalthis-polyfill.js',
-    'legacy/data/devices/index.js',
-    'legacy/data/devices/cameras.js',
-    'legacy/data/devices/monitors.js',
-    'legacy/data/devices/video.js',
-    'legacy/data/devices/fiz.js',
-    'legacy/data/devices/batteries.js',
-    'legacy/data/devices/batteryHotswaps.js',
-    'legacy/data/devices/chargers.js',
-    'legacy/data/devices/cages.js',
-    'legacy/data/devices/gearList.js',
-    'legacy/data/devices/wirelessReceivers.js',
-    'legacy/scripts/storage.js',
-    'legacy/scripts/translations.js',
-    'src/vendor/lz-string.min.js',
-    'src/vendor/lottie-light.min.js',
-    'legacy/scripts/auto-gear-weight.js',
-    'legacy/scripts/modules/base.js',
-    'legacy/scripts/modules/registry.js',
-    'legacy/scripts/modules/environment-bridge.js',
-    'legacy/scripts/modules/globals.js',
-    'legacy/scripts/modules/offline.js',
-    'legacy/scripts/modules/core-shared.js',
-    'legacy/scripts/modules/features/backup.js',
-    'legacy/scripts/modules/features/print-workflow.js',
-    'legacy/scripts/modules/ui.js',
-    'legacy/scripts/modules/results.js',
-    'legacy/scripts/app-core-new-1.js',
-    'legacy/scripts/app-core-new-2.js',
-    'legacy/scripts/app-events.js',
-    'legacy/scripts/app-setups.js',
-    'legacy/scripts/app-session.js',
-    'legacy/scripts/modules/runtime.js',
-    'legacy/scripts/modules/persistence.js',
-    'legacy/scripts/script.js',
-    'legacy/scripts/auto-gear-monitoring.js',
-    'legacy/scripts/overview.js',
-    'legacy/scripts/autosave-overlay.js'
-  ];
+    function startDeferredLoad() {
+      loadScriptsSequentially(urls);
+    }
+
+    if (typeof requestIdleCallback === 'function') {
+      try {
+        requestIdleCallback(startDeferredLoad, { timeout: 1500 });
+        return;
+      } catch (idleError) {
+        console.warn('requestIdleCallback failed, falling back to timeout for deferred scripts.', idleError);
+      }
+    }
+
+    setTimeout(startDeferredLoad, 120);
+  }
+
+  function loadScriptBundle(bundle, options) {
+    if (!bundle || !bundle.core || bundle.core.length === 0) {
+      if (bundle && bundle.deferred) {
+        scheduleDeferredScripts(bundle.deferred);
+      }
+      return null;
+    }
+
+    var settings = options || {};
+    return loadScriptsSequentially(bundle.core, {
+      onError: settings.onError,
+      onComplete: function handleBundleComplete() {
+        if (bundle.deferred && bundle.deferred.length) {
+          scheduleDeferredScripts(bundle.deferred);
+        }
+        if (typeof settings.onComplete === 'function') {
+          try {
+            settings.onComplete();
+          } catch (callbackError) {
+            console.error('Bundle completion callback failed', callbackError);
+          }
+        }
+      },
+    });
+  }
+
+  var modernScriptBundle = {
+    core: [
+      'src/scripts/globalthis-polyfill.js',
+      'src/data/devices/index.js',
+      'src/data/devices/cameras.js',
+      'src/data/devices/monitors.js',
+      'src/data/devices/video.js',
+      'src/data/devices/fiz.js',
+      'src/data/devices/batteries.js',
+      'src/data/devices/batteryHotswaps.js',
+      'src/data/devices/chargers.js',
+      'src/data/devices/cages.js',
+      'src/data/devices/gearList.js',
+      'src/data/devices/wirelessReceivers.js',
+      'src/scripts/storage.js',
+      'src/scripts/translations.js',
+      'src/vendor/lz-string.min.js',
+      'src/vendor/lottie-light.min.js',
+      'src/scripts/auto-gear-weight.js',
+      'src/scripts/modules/base.js',
+      'src/scripts/modules/registry.js',
+      'src/scripts/modules/environment-bridge.js',
+      'src/scripts/modules/globals.js',
+      'src/scripts/modules/offline.js',
+      'src/scripts/modules/core-shared.js',
+      'src/scripts/modules/core/project-intelligence.js',
+      'src/scripts/modules/core/persistence-guard.js',
+      'src/scripts/modules/core/experience.js',
+      'src/scripts/modules/settings-and-appearance.js',
+      'src/scripts/modules/features/auto-gear-rules.js',
+      'src/scripts/modules/features/connection-diagram.js',
+      'src/scripts/modules/features/backup.js',
+      'src/scripts/modules/features/print-workflow.js',
+      'src/scripts/modules/ui.js',
+      'src/scripts/modules/results.js',
+      'src/scripts/app-core-new-1.js',
+      'src/scripts/app-core-new-2.js',
+      'src/scripts/app-events.js',
+      'src/scripts/app-setups.js',
+      'src/scripts/restore-verification.js',
+      'src/scripts/app-session.js',
+      'src/scripts/modules/persistence.js',
+      'src/scripts/modules/runtime.js',
+      'src/scripts/script.js'
+    ],
+    deferred: [
+      'src/scripts/auto-gear-monitoring.js',
+      'src/scripts/overview.js',
+      'src/scripts/autosave-overlay.js'
+    ],
+  };
+
+  var legacyScriptBundle = {
+    core: [
+      'legacy/polyfills/core-js-bundle.min.js',
+      'legacy/polyfills/regenerator-runtime.js',
+      'legacy/scripts/globalthis-polyfill.js',
+      'legacy/data/devices/index.js',
+      'legacy/data/devices/cameras.js',
+      'legacy/data/devices/monitors.js',
+      'legacy/data/devices/video.js',
+      'legacy/data/devices/fiz.js',
+      'legacy/data/devices/batteries.js',
+      'legacy/data/devices/batteryHotswaps.js',
+      'legacy/data/devices/chargers.js',
+      'legacy/data/devices/cages.js',
+      'legacy/data/devices/gearList.js',
+      'legacy/data/devices/wirelessReceivers.js',
+      'legacy/scripts/storage.js',
+      'legacy/scripts/translations.js',
+      'src/vendor/lz-string.min.js',
+      'src/vendor/lottie-light.min.js',
+      'legacy/scripts/auto-gear-weight.js',
+      'legacy/scripts/modules/base.js',
+      'legacy/scripts/modules/registry.js',
+      'legacy/scripts/modules/environment-bridge.js',
+      'legacy/scripts/modules/globals.js',
+      'legacy/scripts/modules/offline.js',
+      'legacy/scripts/modules/core-shared.js',
+      'legacy/scripts/modules/features/backup.js',
+      'legacy/scripts/modules/features/print-workflow.js',
+      'legacy/scripts/modules/ui.js',
+      'legacy/scripts/modules/results.js',
+      'legacy/scripts/app-core-new-1.js',
+      'legacy/scripts/app-core-new-2.js',
+      'legacy/scripts/app-events.js',
+      'legacy/scripts/app-setups.js',
+      'legacy/scripts/app-session.js',
+      'legacy/scripts/modules/runtime.js',
+      'legacy/scripts/modules/persistence.js',
+      'legacy/scripts/script.js'
+    ],
+    deferred: [
+      'legacy/scripts/auto-gear-monitoring.js',
+      'legacy/scripts/overview.js',
+      'legacy/scripts/autosave-overlay.js'
+    ],
+  };
 
   function startLoading() {
     if (shouldForceLegacyBundle()) {
       window.__CINE_POWER_LEGACY_BUNDLE__ = true;
 
       if (hasLegacyBundleRetryAttempt()) {
-        loadScriptsSequentially(legacyScripts);
+        loadScriptBundle(legacyScriptBundle);
         return;
       }
 
@@ -1234,25 +1311,25 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
           }
         }
 
-        loadScriptsSequentially(legacyScripts);
+        loadScriptBundle(legacyScriptBundle);
       });
 
       return;
     }
 
     supportsModernFeatures(function (supportsModern) {
-      var scriptsToLoad = supportsModern ? modernScripts : legacyScripts;
+      var activeBundle = supportsModern ? modernScriptBundle : legacyScriptBundle;
 
       if (!supportsModern) {
         window.__CINE_POWER_LEGACY_BUNDLE__ = true;
       }
 
-      var fallbackScripts = supportsModern ? legacyScripts : null;
+      var fallbackBundle = supportsModern ? legacyScriptBundle : null;
       var fallbackTriggered = false;
 
-      loadScriptsSequentially(scriptsToLoad, {
+      loadScriptBundle(activeBundle, {
         onError: function handleLoaderError(context) {
-          if (!supportsModern || !fallbackScripts || fallbackTriggered) {
+          if (!supportsModern || !fallbackBundle || fallbackTriggered) {
             return false;
           }
 
@@ -1272,7 +1349,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
             return true;
           }
 
-          loadScriptsSequentially(fallbackScripts);
+          loadScriptBundle(fallbackBundle);
           return true;
         },
       });
