@@ -16,6 +16,8 @@ When the browser reports a quota error, the persistence layer now runs a compres
 
 The **Diagnostics log** inside **Settings → Data & Storage** exposes those cineLogging entries in the UI. Teams can filter by severity or namespace and adjust retention, console mirroring, session persistence and global error capture without leaving the planner, keeping verification artifacts local even when offline. The panel now flags when filters hide every entry so you can confirm the quiet periods are intentional before escalating an incident.【F:index.html†L2590-L2649】【F:src/scripts/app-session.js†L6672-L6687】【F:src/scripts/translations.js†L760-L786】
 
+The logging serializers now retain detail from Maps, Sets, typed arrays, URL parameters and regular expressions so incident reviews capture the full context without chasing down reproduced payloads. Map entries and typed array previews truncate with explicit counters when the payload is large, keeping diagnostics responsive while still documenting how much data the runtime handled.【F:src/scripts/modules/logging.js†L712-L901】
+
 ## Workflow matrix
 
 | Workflow | Primary controls (UI/Keyboard) | What success looks like | Evidence to capture |
