@@ -35,6 +35,25 @@ planner predictable, offline-ready and data-safe.
 * **Or** – Begins a fresh OR group when evaluating condition chains while still matching any value
   within the condition itself. The loader now keeps the explicit `"or"` joiner so editor UIs can
   surface the grouping intent to the crew configuring backup rules.【F:src/scripts/app-core-new-1.js†L3446-L3466】
+* **Multiplier** – Treats the first value in the list as the base requirement and only scales the
+  rule when every additional value is also present. The multiplier defaults to ×1 but scales the
+  additions and removals once the factor input is above one, preserving the base scenario so teams
+  can express “double for rehearsal days” or similar patterns without cloning rules.【F:src/scripts/app-core-new-1.js†L3431-L3504】【F:src/scripts/app-setups.js†L2925-L3389】
+
+## Scenario multiplier specifics
+
+* **Base scenario selection** – When a rule is saved in multiplier mode the normalizer keeps the
+  requested primary scenario (or falls back to the first entry) so the rule still triggers offline
+  even if a share or backup reorders the trigger list. The base value is re-inserted if it goes
+  missing to avoid losing the anchor that defines when scaling can start.【F:src/scripts/app-core-new-1.js†L3431-L3504】
+* **Scaling behaviour** – During evaluation the rule activates only when the base scenario is
+  present. Each extra scenario must also be selected before the stored multiplier factor is applied
+  to the quantities being added or removed, ensuring the planner never over-allocates gear when a
+  project only partially meets the multiplier conditions.【F:src/scripts/app-setups.js†L2930-L3389】
+* **Editor and summaries** – The automatic gear editor surfaces the multiplier mode label, factor
+  and base scenario inside the summary strings so crews can understand why a rule scales up without
+  needing network access. The UI formats the factor using the active language pack, keeping the
+  documentation view and inline help in sync for offline teams.【F:src/scripts/app-core-new-2.js†L3363-L3389】
 
 ## Migration checklist
 
