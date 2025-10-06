@@ -311,6 +311,117 @@
     });
   }
 
+  function normalizeNameCollection(value) {
+    if (value == null) {
+      return null;
+    }
+
+    const entries = Array.isArray(value)
+      ? value
+      : typeof value === 'string'
+        ? [value]
+        : typeof value[Symbol.iterator] === 'function'
+          ? Array.from(value)
+          : [value];
+
+    const normalized = [];
+    const seen = new Set();
+
+    for (let index = 0; index < entries.length; index += 1) {
+      const entry = entries[index];
+
+      try {
+        const normalizedName = normalizeName(entry);
+        if (!seen.has(normalizedName)) {
+          seen.add(normalizedName);
+          normalized.push(normalizedName);
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    return normalized.length > 0 ? normalized : null;
+  }
+
+  function normalizeCategoryCollection(value) {
+    if (value == null) {
+      return null;
+    }
+
+    const entries = Array.isArray(value)
+      ? value
+      : typeof value === 'string'
+        ? [value]
+        : typeof value[Symbol.iterator] === 'function'
+          ? Array.from(value)
+          : [value];
+
+    const normalized = [];
+    const seen = new Set();
+
+    for (let index = 0; index < entries.length; index += 1) {
+      const entry = entries[index];
+      if (typeof entry !== 'string') {
+        continue;
+      }
+
+      const trimmed = entry.trim();
+      if (!trimmed || seen.has(trimmed)) {
+        continue;
+      }
+
+      seen.add(trimmed);
+      normalized.push(trimmed);
+    }
+
+    return normalized.length > 0 ? normalized : null;
+  }
+
+  function describeAll(options = {}) {
+    const normalizedNames = normalizeNameCollection(options && options.names);
+    const normalizedCategories = normalizeCategoryCollection(
+      options && (options.categories || options.category || null),
+    );
+
+    const namesFilter = normalizedNames ? new Set(normalizedNames) : null;
+    const categoryFilter = normalizedCategories ? new Set(normalizedCategories) : null;
+
+    const snapshot = [];
+
+    const sourceNames = namesFilter ? normalizedNames : Object.keys(metadataMap);
+
+    for (let index = 0; index < sourceNames.length; index += 1) {
+      const name = sourceNames[index];
+      const meta = metadataMap[name];
+      if (!meta) {
+        continue;
+      }
+
+      if (categoryFilter && !categoryFilter.has(meta.category)) {
+        continue;
+      }
+
+      snapshot.push({
+        name,
+        description: meta.description,
+        category: meta.category,
+        registeredAt: meta.registeredAt,
+        frozen: meta.frozen,
+        connections: meta.connections || freezeDeep([]),
+      });
+    }
+
+    if (!namesFilter) {
+      const shouldSort = !options || options.sort !== false;
+      if (shouldSort) {
+        snapshot.sort((left, right) => left.name.localeCompare(right.name));
+      }
+    }
+
+    return freezeDeep(snapshot);
+  }
+
   function assertRegistered(names) {
     const entries = Array.isArray(names) ? names.slice() : [names];
     const detail = {};
@@ -362,8 +473,8 @@
   }
 
   function assignHidden(scope, key, value) {
-    if (!scope || typeof scope !== 'object') {
-      return;
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+      return false;
     }
 
     try {
@@ -373,14 +484,19 @@
         writable: true,
         value,
       });
+      return true;
     } catch (error) {
       void error;
-      try {
-        scope[key] = value;
-      } catch (assignmentError) {
-        void assignmentError;
-      }
     }
+
+    try {
+      scope[key] = value;
+      return true;
+    } catch (assignmentError) {
+      void assignmentError;
+    }
+
+    return false;
   }
 
   function cancelPendingFlush(scope) {
@@ -778,6 +894,7 @@
     has,
     list,
     describe,
+    describeAll,
     assertRegistered,
     createBlueprint,
     __internalResetForTests: resetForTests,
