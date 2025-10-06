@@ -16580,9 +16580,19 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           moduleBase,
           markerKey,
         );
+
+        if (hasExistingMarker) {
+          try {
+            marked = Boolean(moduleBase[markerKey]);
+          } catch (readMarkerError) {
+            void readMarkerError;
+            marked = true;
+          }
+        }
+
         let canAttachMarker = true;
 
-        if (!hasExistingMarker && typeof Object.isExtensible === 'function') {
+        if (!marked && !hasExistingMarker && typeof Object.isExtensible === 'function') {
           try {
             canAttachMarker = Object.isExtensible(moduleBase);
           } catch (isExtensibleError) {
@@ -16591,7 +16601,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           }
         }
 
-        const shouldAttemptDirectMark = hasExistingMarker || canAttachMarker;
+        const shouldAttemptDirectMark = !marked && canAttachMarker;
 
         if (shouldAttemptDirectMark) {
           try {
@@ -16604,7 +16614,25 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           }
         }
 
-        if (!marked && shouldAttemptDirectMark && typeof Object.defineProperty === 'function') {
+        if (
+          !marked
+          && shouldAttemptDirectMark
+          && typeof Object.isExtensible === 'function'
+        ) {
+          try {
+            if (!Object.isExtensible(moduleBase)) {
+              canAttachMarker = false;
+            }
+          } catch (postAssignIsExtensibleError) {
+            void postAssignIsExtensibleError;
+          }
+        }
+
+        if (
+          !marked
+          && canAttachMarker
+          && typeof Object.defineProperty === 'function'
+        ) {
           try {
             Object.defineProperty(moduleBase, markerKey, {
               configurable: false,

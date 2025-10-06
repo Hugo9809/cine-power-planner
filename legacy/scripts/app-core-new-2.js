@@ -17072,9 +17072,19 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         var marked = false;
         var markerKey = '__cineSafeFreezeWrapped';
         var hasExistingMarker = Object.prototype.hasOwnProperty.call(moduleBase, markerKey);
+
+        if (hasExistingMarker) {
+          try {
+            marked = Boolean(moduleBase[markerKey]);
+          } catch (readMarkerError) {
+            void readMarkerError;
+            marked = true;
+          }
+        }
+
         var canAttachMarker = true;
 
-        if (!hasExistingMarker && typeof Object.isExtensible === 'function') {
+        if (!marked && !hasExistingMarker && typeof Object.isExtensible === 'function') {
           try {
             canAttachMarker = Object.isExtensible(moduleBase);
           } catch (isExtensibleError) {
@@ -17083,7 +17093,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           }
         }
 
-        var shouldAttemptDirectMark = hasExistingMarker || canAttachMarker;
+        var shouldAttemptDirectMark = !marked && canAttachMarker;
 
         if (shouldAttemptDirectMark) {
           try {
@@ -17096,7 +17106,17 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           }
         }
 
-        if (!marked && shouldAttemptDirectMark && typeof Object.defineProperty === 'function') {
+        if (!marked && shouldAttemptDirectMark && typeof Object.isExtensible === 'function') {
+          try {
+            if (!Object.isExtensible(moduleBase)) {
+              canAttachMarker = false;
+            }
+          } catch (postAssignIsExtensibleError) {
+            void postAssignIsExtensibleError;
+          }
+        }
+
+        if (!marked && canAttachMarker && typeof Object.defineProperty === 'function') {
           try {
             Object.defineProperty(moduleBase, markerKey, {
               configurable: false,
