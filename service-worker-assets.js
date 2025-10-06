@@ -158,6 +158,8 @@
   "./src/scripts/modules/features/help.js",
   "./src/scripts/modules/features/print-workflow.js",
   "./src/scripts/modules/globals.js",
+  "./src/scripts/modules/help.js",
+  "./src/scripts/modules/helpers/immutability-builtins.js",
   "./src/scripts/modules/immutability.js",
   "./src/scripts/modules/logging.js",
   "./src/scripts/modules/offline.js",

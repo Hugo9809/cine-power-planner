@@ -49,6 +49,77 @@ describe('cineModules registry', () => {
     delete global[pendingKey];
   });
 
+  test('retries pending registrations when initial attempts fail', () => {
+    const pendingKey = '__cinePendingModuleRegistrations__';
+    const timerKey = '__cinePendingModuleRegistrationsTimer__';
+
+    registry.__internalResetForTests({ force: true });
+    jest.resetModules();
+
+    const failingEntry = {
+      name: '   ',
+      api: { value: 'delayed' },
+      options: Object.freeze({ replace: true, freeze: false }),
+    };
+
+    Object.defineProperty(global, pendingKey, {
+      configurable: true,
+      enumerable: false,
+      writable: true,
+      value: [failingEntry],
+    });
+
+    const originalSetTimeout = global.setTimeout;
+    const originalClearTimeout = global.clearTimeout;
+    const scheduledCallbacks = [];
+
+    global.setTimeout = jest.fn((callback, delay) => {
+      if (typeof callback === 'function') {
+        scheduledCallbacks.push(callback);
+      }
+      return scheduledCallbacks.length;
+    });
+
+    global.clearTimeout = jest.fn();
+
+    let freshRegistry;
+
+    try {
+      freshRegistry = require(path.join('..', '..', 'src', 'scripts', 'modules', 'registry.js'));
+
+      const queue = global[pendingKey];
+      expect(Array.isArray(queue)).toBe(true);
+      expect(queue.length).toBe(1);
+      expect(global[timerKey]).not.toBeUndefined();
+
+      queue.splice(0, queue.length, {
+        name: 'cineRecovered',
+        api: { ready: true },
+        options: Object.freeze({ replace: true, freeze: false }),
+      });
+
+      while (scheduledCallbacks.length > 0) {
+        const callback = scheduledCallbacks.shift();
+        if (typeof callback === 'function') {
+          callback();
+        }
+      }
+
+      expect(queue.length).toBe(0);
+      expect(freshRegistry.get('cineRecovered')).toEqual({ ready: true });
+      expect(global[timerKey] == null).toBe(true);
+    } finally {
+      global.setTimeout = originalSetTimeout;
+      global.clearTimeout = originalClearTimeout;
+      if (freshRegistry) {
+        freshRegistry.__internalResetForTests({ force: true });
+        registry = freshRegistry;
+      }
+      delete global[pendingKey];
+      delete global[timerKey];
+    }
+  });
+
   test('register freezes modules by default and exposes metadata', () => {
     const sample = { ready: () => true };
     const registered = registry.register('cineExample', sample, {

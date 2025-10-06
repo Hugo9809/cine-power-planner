@@ -103,12 +103,54 @@
     return queue;
   }
 
+  const BUILTIN_IMMUTABILITY = (function resolveBuiltinImmutability() {
+    const registryKey = '__cineBuiltinImmutabilityGuards__';
+    const scopes = fallbackCollectCandidateScopes(null, fallbackDetectGlobalScope());
+
+    if (typeof require === 'function') {
+      try {
+        const required = require('./helpers/immutability-builtins.js');
+        if (required && typeof required === 'object') {
+          return required;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    for (let index = 0; index < scopes.length; index += 1) {
+      const scope = scopes[index];
+      if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+        continue;
+      }
+
+      try {
+        const candidate = scope[registryKey];
+        if (candidate && typeof candidate === 'object') {
+          return candidate;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    return null;
+  })();
+
   function shouldBypassDeepFreeze(value) {
     if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
       return false;
     }
 
     try {
+      if (
+        BUILTIN_IMMUTABILITY &&
+        typeof BUILTIN_IMMUTABILITY.isImmutableBuiltin === 'function' &&
+        BUILTIN_IMMUTABILITY.isImmutableBuiltin(value)
+      ) {
+        return true;
+      }
+
       if (typeof value.pipe === 'function' && typeof value.unpipe === 'function') {
         return true;
       }

@@ -4,6 +4,27 @@ const { ensureConsoleFacade } = require('./consoleFacade');
 
 const activeConsole = ensureConsoleFacade() || console;
 
+const originalDateNow = Date.now;
+
+try {
+  const descriptor = Object.getOwnPropertyDescriptor(Date, 'now');
+  if (!descriptor || descriptor.configurable !== true || descriptor.writable !== true) {
+    Object.defineProperty(Date, 'now', {
+      configurable: true,
+      enumerable: false,
+      writable: true,
+      value:
+        typeof originalDateNow === 'function'
+          ? originalDateNow
+          : function safeDateNow() {
+              return Number(new Date());
+            },
+    });
+  }
+} catch (error) {
+  void error;
+}
+
 try {
   void Object.getOwnPropertyDescriptor(global.console, 'trace');
 } catch (descriptorError) {

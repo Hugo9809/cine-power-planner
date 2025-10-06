@@ -11,6 +11,7 @@
             : {};
 
   const PENDING_QUEUE_KEY = '__cinePendingModuleRegistrations__';
+  const QUEUE_FLUSH_TIMER_KEY = '__cinePendingModuleRegistrationsTimer__';
 
   let moduleMap = Object.create(null);
   let metadataMap = Object.create(null);
@@ -45,6 +46,44 @@
     return null;
   }
 
+  const BUILTIN_IMMUTABILITY = (function resolveBuiltinImmutability() {
+    const registryKey = '__cineBuiltinImmutabilityGuards__';
+    const scopes = [GLOBAL_SCOPE];
+    if (typeof globalThis !== 'undefined' && globalThis !== GLOBAL_SCOPE) scopes.push(globalThis);
+    if (typeof window !== 'undefined') scopes.push(window);
+    if (typeof self !== 'undefined') scopes.push(self);
+    if (typeof global !== 'undefined') scopes.push(global);
+
+    if (typeof require === 'function') {
+      try {
+        const required = require('./helpers/immutability-builtins.js');
+        if (required && typeof required === 'object') {
+          return required;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    for (let index = 0; index < scopes.length; index += 1) {
+      const scope = scopes[index];
+      if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+        continue;
+      }
+
+      try {
+        const candidate = scope[registryKey];
+        if (candidate && typeof candidate === 'object') {
+          return candidate;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    return null;
+  })();
+
   function createFallbackImmutability() {
     function shouldBypass(value) {
       if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
@@ -52,6 +91,14 @@
       }
 
       try {
+        if (
+          BUILTIN_IMMUTABILITY &&
+          typeof BUILTIN_IMMUTABILITY.isImmutableBuiltin === 'function' &&
+          BUILTIN_IMMUTABILITY.isImmutableBuiltin(value)
+        ) {
+          return true;
+        }
+
         if (typeof value.pipe === 'function' && typeof value.unpipe === 'function') {
           return true;
         }
@@ -258,6 +305,95 @@
     return true;
   }
 
+  function getTimerDescriptor(scope) {
+    if (!scope || typeof scope !== 'object') {
+      return null;
+    }
+
+    const descriptor = scope[QUEUE_FLUSH_TIMER_KEY];
+    return descriptor && typeof descriptor === 'object' ? descriptor : null;
+  }
+
+  function assignHidden(scope, key, value) {
+    if (!scope || typeof scope !== 'object') {
+      return;
+    }
+
+    try {
+      Object.defineProperty(scope, key, {
+        configurable: true,
+        enumerable: false,
+        writable: true,
+        value,
+      });
+    } catch (error) {
+      void error;
+      try {
+        scope[key] = value;
+      } catch (assignmentError) {
+        void assignmentError;
+      }
+    }
+  }
+
+  function cancelPendingFlush(scope) {
+    const descriptor = getTimerDescriptor(scope);
+    if (!descriptor) {
+      return;
+    }
+
+    const clearTimer = descriptor && typeof descriptor.clear === 'function' ? descriptor.clear : null;
+    if (clearTimer && Object.prototype.hasOwnProperty.call(descriptor, 'id')) {
+      try {
+        clearTimer(descriptor.id);
+      } catch (error) {
+        void error;
+      }
+    }
+
+    assignHidden(scope, QUEUE_FLUSH_TIMER_KEY, null);
+  }
+
+  function schedulePendingFlush(scope) {
+    if (!scope || typeof scope !== 'object') {
+      return;
+    }
+
+    const queue = scope[PENDING_QUEUE_KEY];
+    if (!Array.isArray(queue) || queue.length === 0) {
+      cancelPendingFlush(scope);
+      return;
+    }
+
+    if (getTimerDescriptor(scope)) {
+      return;
+    }
+
+    const scheduleFromScope =
+      (typeof scope.setTimeout === 'function' && scope.setTimeout.bind(scope)) ||
+      (typeof GLOBAL_SCOPE.setTimeout === 'function' && GLOBAL_SCOPE.setTimeout.bind(GLOBAL_SCOPE)) ||
+      (typeof setTimeout === 'function' ? setTimeout : null);
+
+    if (typeof scheduleFromScope !== 'function') {
+      return;
+    }
+
+    const clearFromScope =
+      (typeof scope.clearTimeout === 'function' && scope.clearTimeout.bind(scope)) ||
+      (typeof GLOBAL_SCOPE.clearTimeout === 'function' && GLOBAL_SCOPE.clearTimeout.bind(GLOBAL_SCOPE)) ||
+      (typeof clearTimeout === 'function' ? clearTimeout : null);
+
+    const timerId = scheduleFromScope(function retryFlush() {
+      cancelPendingFlush(scope);
+      flushPendingRegistrations(scope);
+    }, 0);
+
+    assignHidden(scope, QUEUE_FLUSH_TIMER_KEY, {
+      id: timerId,
+      clear: typeof clearFromScope === 'function' ? clearFromScope : null,
+    });
+  }
+
   function flushPendingRegistrations(scope) {
     if (!scope || typeof scope !== 'object') {
       return;
@@ -265,11 +401,14 @@
 
     const queue = scope[PENDING_QUEUE_KEY];
     if (!Array.isArray(queue) || queue.length === 0) {
+      cancelPendingFlush(scope);
       return;
     }
 
     const pending = queue.slice();
     queue.length = 0;
+
+    let requiresReschedule = false;
 
     for (let index = 0; index < pending.length; index += 1) {
       const entry = pending[index];
@@ -285,8 +424,15 @@
         registry.register(name, api, options);
       } catch (error) {
         void error;
+        requiresReschedule = true;
         queue.push(entry);
       }
+    }
+
+    if (requiresReschedule || queue.length > 0) {
+      schedulePendingFlush(scope);
+    } else {
+      cancelPendingFlush(scope);
     }
   }
 
