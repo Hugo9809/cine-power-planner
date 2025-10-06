@@ -34,6 +34,7 @@
           isProjectPersistenceSuspended */
 /* eslint-enable no-redeclare */
 /* global enqueueCoreBootTask */
+/* global suspendProjectPersistence, resumeProjectPersistence, isProjectPersistenceSuspended */
 const FALLBACK_STRONG_SEARCH_MATCH_TYPES = new Set(['exactKey', 'keyPrefix', 'keySubset']);
 if (typeof globalThis !== 'undefined' && typeof globalThis.STRONG_SEARCH_MATCH_TYPES === 'undefined') {
   globalThis.STRONG_SEARCH_MATCH_TYPES = FALLBACK_STRONG_SEARCH_MATCH_TYPES;
@@ -8408,12 +8409,21 @@ async function clearCachesAndReload() {
 
   if (offlineModule && typeof offlineModule.reloadApp === 'function') {
     try {
-      await offlineModule.reloadApp({
+      const result = await offlineModule.reloadApp({
         window,
         navigator: typeof navigator !== 'undefined' ? navigator : undefined,
         caches: typeof caches !== 'undefined' ? caches : undefined,
       });
-      return;
+
+      const reloadHandled =
+        result === true ||
+        (result &&
+          typeof result === 'object' &&
+          (result.reloadTriggered === true || result.navigationTriggered === true));
+
+      if (reloadHandled) {
+        return;
+      }
     } catch (offlineReloadError) {
       console.warn('Offline module reload failed, falling back to manual refresh', offlineReloadError);
     }
