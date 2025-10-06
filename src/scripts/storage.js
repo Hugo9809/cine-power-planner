@@ -3709,16 +3709,23 @@ function getWindowStorage(name) {
 }
 
 function collectUniqueStorages(storages) {
+  if (!Array.isArray(storages) || storages.length === 0) {
+    return [];
+  }
+
   const unique = [];
+  const seen = new Set();
+
   for (let i = 0; i < storages.length; i += 1) {
     const storage = storages[i];
-    if (!storage || typeof storage.getItem !== 'function') {
+    if (!storage || typeof storage.getItem !== 'function' || seen.has(storage)) {
       continue;
     }
-    if (!unique.includes(storage)) {
-      unique.push(storage);
-    }
+
+    seen.add(storage);
+    unique.push(storage);
   }
+
   return unique;
 }
 
