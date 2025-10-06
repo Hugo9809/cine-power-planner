@@ -880,6 +880,100 @@ function callCoreFunctionIfAvailable(functionName, args = [], options = {}) {
     : undefined;
 }
 
+function resolveAutoGearSeedingScope(preferredScope) {
+  if (preferredScope && typeof preferredScope === 'object') {
+    return preferredScope;
+  }
+
+  if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object') {
+    return CORE_GLOBAL_SCOPE;
+  }
+
+  if (typeof globalThis !== 'undefined' && globalThis && typeof globalThis === 'object') {
+    return globalThis;
+  }
+
+  if (typeof window !== 'undefined' && window && typeof window === 'object') {
+    return window;
+  }
+
+  if (typeof self !== 'undefined' && self && typeof self === 'object') {
+    return self;
+  }
+
+  if (typeof global !== 'undefined' && global && typeof global === 'object') {
+    return global;
+  }
+
+  return null;
+}
+
+function resolveAutoGearSeedFunctionFromScope(scope) {
+  if (typeof seedAutoGearRulesFromCurrentProject === 'function') {
+    return seedAutoGearRulesFromCurrentProject;
+  }
+
+  if (scope && typeof scope.seedAutoGearRulesFromCurrentProject === 'function') {
+    return scope.seedAutoGearRulesFromCurrentProject;
+  }
+
+  const autoGearModule =
+    scope &&
+    scope.cineFeatureAutoGearRules &&
+    typeof scope.cineFeatureAutoGearRules === 'object'
+      ? scope.cineFeatureAutoGearRules
+      : null;
+
+  if (
+    autoGearModule &&
+    typeof autoGearModule.seedAutoGearRulesFromCurrentProject === 'function'
+  ) {
+    return autoGearModule.seedAutoGearRulesFromCurrentProject;
+  }
+
+  return null;
+}
+
+function ensureAutoGearSeeding(options = {}) {
+  const scope = resolveAutoGearSeedingScope(options.scope || null);
+  const seedFunction = resolveAutoGearSeedFunctionFromScope(scope);
+
+  if (typeof seedFunction === 'function') {
+    let attempt = 0;
+    while (attempt < 2) {
+      try {
+        seedFunction.call(scope || undefined);
+        return true;
+      } catch (seedError) {
+        if (attempt === 0 && isAutoGearGlobalReferenceError(seedError)) {
+          repairAutoGearGlobals(scope);
+          attempt += 1;
+          continue;
+        }
+
+        if (!options.silent && typeof console !== 'undefined' && typeof console.error === 'function') {
+          console.error('Unable to seed automatic gear rules from current project', seedError);
+        }
+        break;
+      }
+    }
+    return false;
+  }
+
+  if (options.defer === true && typeof enqueueCoreBootTask === 'function') {
+    enqueueCoreBootTask(() => {
+      ensureAutoGearSeeding({ ...options, defer: false });
+    });
+    if (!options.silent && typeof console !== 'undefined' && typeof console.info === 'function') {
+      console.info('Automatic gear rule seeding deferred until helpers are ready.');
+    }
+  } else if (!options.silent && typeof console !== 'undefined' && typeof console.warn === 'function') {
+    console.warn('Automatic gear rule seeding helpers are not available yet.');
+  }
+
+  return false;
+}
+
 const GRID_SNAP_STATE_STORAGE_KEY = '__cineGridSnapState';
 
 function getGridSnapStateScopes() {
@@ -9372,7 +9466,7 @@ function setLanguage(lang) {
   if (autoGearVideoDistributionSelect) {
     refreshAutoGearVideoDistributionOptions(autoGearEditorDraft?.videoDistribution);
   }
-  seedAutoGearRulesFromCurrentProject();
+  ensureAutoGearSeeding({ defer: true, silent: true });
   callCoreFunctionIfAvailable('renderAutoGearRulesList', [], { defer: true });
   callCoreFunctionIfAvailable('renderAutoGearDraftLists', [], { defer: true });
   callCoreFunctionIfAvailable('updateAutoGearCatalogOptions', [], { defer: true });
