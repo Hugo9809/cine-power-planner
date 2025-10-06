@@ -4,6 +4,163 @@ const SERVICE_WORKER_SCOPE =
   (typeof globalThis !== 'undefined' && globalThis) ||
   null;
 
+const LOG_HISTORY_LIMIT = 50;
+
+function sanitizeLogDetail(detail, seen = new WeakSet()) {
+  if (detail === null || typeof detail === 'undefined') {
+    return null;
+  }
+
+  if (seen && typeof detail === 'object') {
+    if (seen.has(detail)) {
+      return '[Circular]';
+    }
+    try {
+      seen.add(detail);
+    } catch (error) {
+      void error;
+    }
+  }
+
+  if (detail instanceof Error) {
+    return {
+      name: detail.name || 'Error',
+      message: detail.message || '',
+      stack: typeof detail.stack === 'string' ? detail.stack : null,
+    };
+  }
+
+  const type = typeof detail;
+  if (type === 'string' || type === 'number' || type === 'boolean') {
+    return detail;
+  }
+
+  if (type === 'bigint') {
+    try {
+      return detail.toString();
+    } catch (error) {
+      void error;
+      return '[unserializable bigint]';
+    }
+  }
+
+  if (type === 'symbol' || type === 'function') {
+    return String(detail);
+  }
+
+  if (Array.isArray(detail)) {
+    const slice = detail.slice(0, 20);
+    return slice.map(item => sanitizeLogDetail(item, seen));
+  }
+
+  if (!detail || type !== 'object') {
+    return detail;
+  }
+
+  try {
+    const clone = {};
+    const keys = Object.keys(detail).slice(0, 20);
+    for (let index = 0; index < keys.length; index += 1) {
+      const key = keys[index];
+      clone[key] = sanitizeLogDetail(detail[key], seen);
+    }
+    return clone;
+  } catch (error) {
+    void error;
+    try {
+      return JSON.parse(JSON.stringify(detail));
+    } catch (stringifyError) {
+      void stringifyError;
+      return String(detail);
+    }
+  }
+}
+
+function ensureDiagnosticState() {
+  if (!SERVICE_WORKER_SCOPE || (typeof SERVICE_WORKER_SCOPE !== 'object' && typeof SERVICE_WORKER_SCOPE !== 'function')) {
+    return null;
+  }
+
+  try {
+    if (!SERVICE_WORKER_SCOPE.__cineSWDiagnostics || typeof SERVICE_WORKER_SCOPE.__cineSWDiagnostics !== 'object') {
+      SERVICE_WORKER_SCOPE.__cineSWDiagnostics = {
+        history: [],
+        lastEntry: null,
+      };
+    }
+    return SERVICE_WORKER_SCOPE.__cineSWDiagnostics;
+  } catch (error) {
+    void error;
+    return null;
+  }
+}
+
+function outputToConsole(level, message, detail) {
+  if (typeof console === 'undefined' || !console) {
+    return;
+  }
+
+  const method = typeof console[level] === 'function' ? console[level] : console.log;
+  if (typeof method !== 'function') {
+    return;
+  }
+
+  const prefix = `[cine-sw] ${message}`;
+  try {
+    if (typeof detail === 'undefined') {
+      method.call(console, prefix);
+    } else {
+      method.call(console, prefix, detail);
+    }
+  } catch (error) {
+    void error;
+  }
+}
+
+function recordLogEntry(level, message, detail) {
+  const timestamp = Date.now();
+  let isoTimestamp = '';
+  try {
+    isoTimestamp = new Date(timestamp).toISOString();
+  } catch (error) {
+    void error;
+    isoTimestamp = String(timestamp);
+  }
+
+  const entry = {
+    level,
+    message,
+    timestamp,
+    isoTimestamp,
+    detail: sanitizeLogDetail(detail),
+  };
+
+  const diagnostics = ensureDiagnosticState();
+  if (diagnostics && diagnostics.history) {
+    diagnostics.history.push(entry);
+    while (diagnostics.history.length > LOG_HISTORY_LIMIT) {
+      diagnostics.history.shift();
+    }
+    diagnostics.lastEntry = entry;
+  }
+
+  outputToConsole(level, `${isoTimestamp} ${message}`, detail);
+
+  return entry;
+}
+
+const serviceWorkerLog = {
+  info(message, detail) {
+    return recordLogEntry('info', message, detail);
+  },
+  warn(message, detail) {
+    return recordLogEntry('warn', message, detail);
+  },
+  error(message, detail) {
+    return recordLogEntry('error', message, detail);
+  },
+};
+
 function resolveCacheVersion() {
   if (!SERVICE_WORKER_SCOPE || (typeof SERVICE_WORKER_SCOPE !== 'object' && typeof SERVICE_WORKER_SCOPE !== 'function')) {
     return null;
@@ -17,7 +174,7 @@ function resolveCacheVersion() {
       }
     }
   } catch (sharedReadError) {
-    console.warn('Unable to read APP_VERSION from cineCoreShared.', sharedReadError);
+    serviceWorkerLog.warn('Unable to read APP_VERSION from cineCoreShared.', sharedReadError);
   }
 
   try {
@@ -26,7 +183,7 @@ function resolveCacheVersion() {
       return directVersion;
     }
   } catch (directReadError) {
-    console.warn('Unable to read APP_VERSION from global scope.', directReadError);
+    serviceWorkerLog.warn('Unable to read APP_VERSION from global scope.', directReadError);
   }
 
   return null;
@@ -34,14 +191,14 @@ function resolveCacheVersion() {
 
 let CACHE_VERSION = null;
 
-if (SERVICE_WORKER_SCOPE && typeof SERVICE_WORKER_SCOPE.importScripts === 'function') {
-  try {
-    SERVICE_WORKER_SCOPE.importScripts('./src/scripts/modules/core-shared.js');
-    CACHE_VERSION = resolveCacheVersion();
-  } catch (versionImportError) {
-    console.warn('Falling back to bundled cache version after importScripts failure.', versionImportError);
+  if (SERVICE_WORKER_SCOPE && typeof SERVICE_WORKER_SCOPE.importScripts === 'function') {
+    try {
+      SERVICE_WORKER_SCOPE.importScripts('./src/scripts/modules/core-shared.js');
+      CACHE_VERSION = resolveCacheVersion();
+    } catch (versionImportError) {
+      serviceWorkerLog.warn('Falling back to bundled cache version after importScripts failure.', versionImportError);
+    }
   }
-}
 
 if (!CACHE_VERSION) {
   CACHE_VERSION = '1.0.14';
@@ -54,7 +211,21 @@ try {
     SERVICE_WORKER_SCOPE.CINE_CACHE_NAME = CACHE_NAME;
   }
 } catch (cacheExposeError) {
-  console.warn('Unable to expose computed cache name for diagnostics.', cacheExposeError);
+  serviceWorkerLog.warn('Unable to expose computed cache name for diagnostics.', cacheExposeError);
+}
+
+const diagnosticsState = ensureDiagnosticState();
+if (diagnosticsState && typeof diagnosticsState === 'object') {
+  diagnosticsState.cacheName = CACHE_NAME;
+  diagnosticsState.cacheVersion = CACHE_VERSION;
+}
+
+try {
+  if (SERVICE_WORKER_SCOPE && typeof SERVICE_WORKER_SCOPE === 'object') {
+    SERVICE_WORKER_SCOPE.cineSWLog = serviceWorkerLog;
+  }
+} catch (logExposeError) {
+  serviceWorkerLog.warn('Unable to expose service worker logger on global scope.', logExposeError);
 }
 function loadServiceWorkerAssets() {
   if (SERVICE_WORKER_SCOPE && typeof SERVICE_WORKER_SCOPE.importScripts === 'function') {
@@ -65,7 +236,7 @@ function loadServiceWorkerAssets() {
         return importedAssets.slice();
       }
     } catch (assetImportError) {
-      console.warn('Unable to load service worker assets via importScripts.', assetImportError);
+      serviceWorkerLog.warn('Unable to load service worker assets via importScripts.', assetImportError);
     }
   }
 
@@ -79,7 +250,7 @@ function loadServiceWorkerAssets() {
         return manifestModule.SERVICE_WORKER_ASSETS.slice();
       }
     } catch (assetRequireError) {
-      console.warn('Unable to load service worker assets via require.', assetRequireError);
+      serviceWorkerLog.warn('Unable to load service worker assets via require.', assetRequireError);
     }
   }
 
@@ -89,7 +260,7 @@ function loadServiceWorkerAssets() {
 let ASSETS = loadServiceWorkerAssets();
 
 if (!Array.isArray(ASSETS) || ASSETS.length === 0) {
-  console.warn('Falling back to an empty asset list. Offline support may be degraded.');
+  serviceWorkerLog.warn('Falling back to an empty asset list. Offline support may be degraded.');
   ASSETS = ['./'];
 }
 
@@ -109,7 +280,7 @@ function shouldBypassCache(request, requestUrl) {
       return true;
     }
   } catch (forceReloadCheckError) {
-    console.warn('Unable to evaluate forceReload search parameter for cache bypass.', forceReloadCheckError);
+    serviceWorkerLog.warn('Unable to evaluate forceReload search parameter for cache bypass.', forceReloadCheckError);
   }
 
   const { cache } = request;
@@ -137,7 +308,7 @@ async function precacheAssets(cacheName, assets) {
     await cache.addAll(assets);
     return;
   } catch (error) {
-    console.warn('Precaching via cache.addAll failed, falling back to resilient mode.', error);
+    serviceWorkerLog.warn('Precaching via cache.addAll failed, falling back to resilient mode.', error);
   }
 
   const missingAssets = [];
@@ -159,19 +330,19 @@ async function precacheAssets(cacheName, assets) {
             reusedFromExistingCache = true;
           }
         } catch (reuseError) {
-          console.warn(`Unable to reuse cached response for ${asset}`, reuseError);
+          serviceWorkerLog.warn(`Unable to reuse cached response for ${asset}`, reuseError);
         }
 
         if (!reusedFromExistingCache) {
           missingAssets.push(asset);
-          console.warn(`Failed to precache asset ${asset}`, networkError);
+          serviceWorkerLog.warn(`Failed to precache asset ${asset}`, networkError);
         }
       }
     })
   );
 
   if (missingAssets.length) {
-    console.warn(
+    serviceWorkerLog.warn(
       'Service worker installed with missing cached assets. Offline support may be degraded until the next update.',
       missingAssets
     );
@@ -183,8 +354,12 @@ if (typeof self !== 'undefined') {
     event.waitUntil((async () => {
       try {
         await precacheAssets(CACHE_NAME, ASSETS);
+        serviceWorkerLog.info('Service worker precache complete.', {
+          cacheName: CACHE_NAME,
+          assetCount: Array.isArray(ASSETS) ? ASSETS.length : 0,
+        });
       } catch (error) {
-        console.error('Failed to precache assets during installation', error);
+        serviceWorkerLog.error('Failed to precache assets during installation', error);
         throw error;
       }
 
@@ -201,6 +376,7 @@ if (typeof self !== 'undefined') {
       )
     );
     self.clients.claim();
+    serviceWorkerLog.info('Service worker activated.', { cacheName: CACHE_NAME });
   });
 
   self.addEventListener('fetch', event => {
@@ -248,7 +424,7 @@ if (typeof self !== 'undefined') {
               const cache = await caches.open(CACHE_NAME);
               await cache.put(event.request, freshResponse.clone());
             } catch (cacheError) {
-              console.warn('Unable to store fresh response in cache', cacheError);
+              serviceWorkerLog.warn('Unable to store fresh response in cache', cacheError);
             }
           }
           if (freshResponse) {
@@ -257,6 +433,11 @@ if (typeof self !== 'undefined') {
         } catch (networkError) {
           const cachedFallback = await caches.match(event.request, cacheMatchOptions);
           if (cachedFallback) {
+            serviceWorkerLog.warn('Network error during cache bypass. Serving cached fallback.', {
+              url: event.request && event.request.url ? event.request.url : null,
+              cacheName: CACHE_NAME,
+              error: networkError,
+            });
             return cachedFallback;
           }
 
@@ -264,10 +445,16 @@ if (typeof self !== 'undefined') {
             const cache = await caches.open(CACHE_NAME);
             const fallback = await cache.match('./index.html') || await cache.match('./');
             if (fallback) {
+              serviceWorkerLog.warn('Network error during navigation bypass. Serving offline shell.', {
+                url: event.request && event.request.url ? event.request.url : null,
+                cacheName: CACHE_NAME,
+                error: networkError,
+              });
               return fallback;
             }
           }
 
+          serviceWorkerLog.error('Network error during cache bypass without fallback.', networkError);
           throw networkError;
         }
       }
@@ -287,9 +474,15 @@ if (typeof self !== 'undefined') {
         const cache = await caches.open(CACHE_NAME);
         const offlineShell = await cache.match('./index.html') || await cache.match('./');
         if (offlineShell) {
+          serviceWorkerLog.info('Served offline shell after navigation request failed.', {
+            url: event.request && event.request.url ? event.request.url : null,
+            cacheName: CACHE_NAME,
+            error,
+          });
           return offlineShell;
         }
 
+        serviceWorkerLog.error('Navigation request failed without offline shell available.', error);
         throw error;
       }
     })());
