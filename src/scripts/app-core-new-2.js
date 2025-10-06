@@ -14842,139 +14842,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     controllerSelects.forEach(sel => { if (sel.options.length) sel.value = "None"; });
     
     // Calculation function to update results and warnings
-    function renderTemperatureNote(baseHours) {
-      const container = document.getElementById("temperatureNote");
-      if (!container) return;
-      const heading = texts[currentLang].temperatureNoteHeading;
-      let html = `<p>${heading}</p>`;
-      if (!baseHours || !isFinite(baseHours)) {
-        container.innerHTML = html;
-        return;
-      }
-      const temperatureHeader = getTemperatureColumnLabelForLang(currentLang, temperatureUnit);
-      html += `<table><tr><th>${temperatureHeader}</th><th>${texts[currentLang].runtimeLabel}</th><th>${texts[currentLang].batteryCountTempLabel}</th></tr>`;
-      TEMPERATURE_SCENARIOS.forEach(scenario => {
-        const runtime = baseHours * scenario.factor;
-        const runtimeCell = Number.isFinite(runtime) ? runtime.toFixed(2) : '0.00';
-        let batteries = '–';
-        if (Number.isFinite(runtime) && runtime > 0) {
-          batteries = Math.ceil(10 / runtime);
-        }
-        const temperatureCell = formatTemperatureForDisplay(scenario.celsius);
-        html += `<tr><td style="color:${scenario.color}">${temperatureCell}</td><td>${runtimeCell}</td><td>${batteries}</td></tr>`;
-      });
-      html += "</table>";
-      container.innerHTML = html;
+    if (typeof assignCoreTemperatureNoteRenderer === 'function' && typeof renderTemperatureNote === 'function') {
+      assignCoreTemperatureNoteRenderer(renderTemperatureNote);
     }
 
-    assignCoreTemperatureNoteRenderer(renderTemperatureNote);
-    
-    function ensureFeedbackTemperatureOptions(select) {
-      if (!select) return;
-      const expectedOptions = FEEDBACK_TEMPERATURE_MAX - FEEDBACK_TEMPERATURE_MIN + 2;
-      if (select.options.length === expectedOptions) {
-        return;
-      }
-      const previousValue = select.value;
-      select.innerHTML = '';
-      const emptyOpt = document.createElement('option');
-      emptyOpt.value = '';
-      emptyOpt.textContent = '';
-      select.appendChild(emptyOpt);
-      for (let temp = FEEDBACK_TEMPERATURE_MIN; temp <= FEEDBACK_TEMPERATURE_MAX; temp += 1) {
-        const opt = document.createElement('option');
-        opt.value = String(temp);
-        select.appendChild(opt);
-      }
-      if (previousValue) {
-        select.value = previousValue;
-      }
-    }
-    
-    function updateFeedbackTemperatureOptions(lang = currentLang, unit = temperatureUnit) {
-      const tempSelect = document.getElementById('fbTemperature');
-      if (!tempSelect) return;
-      ensureFeedbackTemperatureOptions(tempSelect);
-      Array.from(tempSelect.options).forEach(option => {
-        if (!option) return;
-        if (option.value === '') {
-          option.textContent = '';
-          return;
-        }
-        const celsiusValue = Number(option.value);
-        if (!Number.isFinite(celsiusValue)) return;
-        option.textContent = formatTemperatureForDisplay(celsiusValue, {
-          lang,
-          unit,
-          includeSign: 'negative'
-        });
-      });
-    }
-    
-    function updateFeedbackTemperatureLabel(lang = currentLang, unit = temperatureUnit) {
-      const labelTextElem = document.getElementById('fbTemperatureLabelText');
-      const labelElem = document.getElementById('fbTemperatureLabel');
-      const label = `${getTemperatureColumnLabelForLang(lang, unit)}:`;
-      if (labelTextElem) {
-        labelTextElem.textContent = label;
-      } else if (labelElem) {
-        labelElem.textContent = label;
-      }
-    }
-
-    function refreshFeedbackTemperatureLabel(lang = currentLang, unit = temperatureUnit) {
-      let handled = false;
-      try {
-        if (typeof updateFeedbackTemperatureLabel === 'function') {
-          updateFeedbackTemperatureLabel(lang, unit);
-          handled = true;
-        }
-      } catch (error) {
-        console.warn('Fallback applied while updating feedback temperature label', error);
-      }
-
-      if (handled) {
-        return;
-      }
-
-      const labelTextElem = document.getElementById('fbTemperatureLabelText');
-      const labelElem = document.getElementById('fbTemperatureLabel');
-      if (!labelTextElem && !labelElem) {
-        return;
-      }
-      const label = `${getTemperatureColumnLabelForLang(lang, unit)}:`;
-      if (labelTextElem) {
-        labelTextElem.textContent = label;
-      } else if (labelElem) {
-        labelElem.textContent = label;
-      }
-    }
-
-    function applyTemperatureUnitPreference(unit, options = {}) {
-      const normalized = normalizeTemperatureUnit(unit);
-      const { persist = true, reRender = true, forceUpdate = false } = options || {};
-      if (!forceUpdate && temperatureUnit === normalized) {
-        return;
-      }
-      temperatureUnit = normalized;
-      if (persist && typeof localStorage !== 'undefined') {
-        try {
-          localStorage.setItem(TEMPERATURE_STORAGE_KEY, temperatureUnit);
-        } catch (error) {
-          console.warn('Could not save temperature unit preference', error);
-        }
-      }
-      if (typeof settingsTemperatureUnit !== 'undefined' && settingsTemperatureUnit) {
-        settingsTemperatureUnit.value = temperatureUnit;
-      }
-      if (reRender) {
-        refreshFeedbackTemperatureLabel();
-        updateFeedbackTemperatureOptions();
-        renderTemperatureNote(lastRuntimeHours);
-      }
-    }
-    
-    // Calculation function to update results and warnings
     function updateCalculations() {
       // Gather selected values
       const camera      = cameraSelect.value;
@@ -14985,38 +14856,43 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       const distance    = distanceSelect.value;
       let battery       = batterySelect.value;
 
-      const totalPowerTarget = typeof totalPowerElem !== 'undefined'
-        ? totalPowerElem
+      const resultsModule = typeof cineResults !== 'undefined' ? cineResults : null;
+      const resolvedTargets = resultsModule && typeof resultsModule.resolveResultsTargets === 'function'
+        ? resultsModule.resolveResultsTargets()
+        : null;
+
+      const totalPowerTarget = resolvedTargets && resolvedTargets.totalPower
+        ? resolvedTargets.totalPower
         : (typeof document !== 'undefined' ? document.getElementById('totalPower') : null);
-      const breakdownListTarget = typeof breakdownListElem !== 'undefined'
-        ? breakdownListElem
+      const breakdownListTarget = resolvedTargets && resolvedTargets.breakdownList
+        ? resolvedTargets.breakdownList
         : (typeof document !== 'undefined' ? document.getElementById('breakdownList') : null);
-      const totalCurrent144Target = typeof totalCurrent144Elem !== 'undefined'
-        ? totalCurrent144Elem
+      const totalCurrent144Target = resolvedTargets && resolvedTargets.totalCurrent144
+        ? resolvedTargets.totalCurrent144
         : (typeof document !== 'undefined' ? document.getElementById('totalCurrent144') : null);
-      const totalCurrent12Target = typeof totalCurrent12Elem !== 'undefined'
-        ? totalCurrent12Elem
+      const totalCurrent12Target = resolvedTargets && resolvedTargets.totalCurrent12
+        ? resolvedTargets.totalCurrent12
         : (typeof document !== 'undefined' ? document.getElementById('totalCurrent12') : null);
-      const batteryLifeTarget = typeof batteryLifeElem !== 'undefined'
-        ? batteryLifeElem
+      const batteryLifeTarget = resolvedTargets && resolvedTargets.batteryLife
+        ? resolvedTargets.batteryLife
         : (typeof document !== 'undefined' ? document.getElementById('batteryLife') : null);
-      const batteryCountTarget = typeof batteryCountElem !== 'undefined'
-        ? batteryCountElem
+      const batteryCountTarget = resolvedTargets && resolvedTargets.batteryCount
+        ? resolvedTargets.batteryCount
         : (typeof document !== 'undefined' ? document.getElementById('batteryCount') : null);
-      const batteryLifeLabelTarget = typeof batteryLifeLabelElem !== 'undefined'
-        ? batteryLifeLabelElem
+      const batteryLifeLabelTarget = resolvedTargets && resolvedTargets.batteryLifeLabel
+        ? resolvedTargets.batteryLifeLabel
         : (typeof document !== 'undefined' ? document.getElementById('batteryLifeLabel') : null);
-      const runtimeAverageNoteTarget = typeof runtimeAverageNoteElem !== 'undefined'
-        ? runtimeAverageNoteElem
+      const runtimeAverageNoteTarget = resolvedTargets && resolvedTargets.runtimeAverageNote
+        ? resolvedTargets.runtimeAverageNote
         : (typeof document !== 'undefined' ? document.getElementById('runtimeAverageNote') : null);
-      const pinWarnTarget = typeof pinWarnElem !== 'undefined'
-        ? pinWarnElem
+      const pinWarnTarget = resolvedTargets && resolvedTargets.pinWarning
+        ? resolvedTargets.pinWarning
         : (typeof document !== 'undefined' ? document.getElementById('pinWarning') : null);
-      const dtapWarnTarget = typeof dtapWarnElem !== 'undefined'
-        ? dtapWarnElem
+      const dtapWarnTarget = resolvedTargets && resolvedTargets.dtapWarning
+        ? resolvedTargets.dtapWarning
         : (typeof document !== 'undefined' ? document.getElementById('dtapWarning') : null);
-      const hotswapWarnTarget = typeof hotswapWarnElem !== 'undefined'
-        ? hotswapWarnElem
+      const hotswapWarnTarget = resolvedTargets && resolvedTargets.hotswapWarning
+        ? resolvedTargets.hotswapWarning
         : (typeof document !== 'undefined' ? document.getElementById('hotswapWarning') : null);
 
       // Calculate total power consumption (W)

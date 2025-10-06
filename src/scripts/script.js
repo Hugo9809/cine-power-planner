@@ -24,6 +24,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     'modules/features/feature-search.js',
     'modules/features/auto-gear-rules.js',
     'modules/features/backup.js',
+    'modules/features/results.js',
     'modules/help.js',
     'modules/ui.js',
     'app-core-new-1.js',
