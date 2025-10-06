@@ -494,6 +494,12 @@ function cloneAutoBackupValue(value, options) {
   return clone;
 }
 
+function cloneAutoBackupValueWithLegacyNormalization(value, options) {
+  const cloned = cloneAutoBackupValue(value, options);
+  const normalized = normalizeLegacyLongGopStructure(cloned);
+  return normalized !== cloned ? normalized : cloned;
+}
+
 function deriveAutoBackupCreatedAt(name, fallbackDate) {
   const info = parseAutoBackupKey(name);
   if (info && Number.isFinite(info.timestamp) && info.timestamp > 0) {
@@ -681,8 +687,10 @@ function serializeAutoBackupEntries(entries, options) {
 
   entryNames.forEach((name) => {
     const value = entries[name];
-    if (!isAutoBackupKey(name) || !isPlainObject(value)) {
-      serialized[name] = cloneAutoBackupValue(value, { stripMetadata: true });
+    const normalizedValue = cloneAutoBackupValueWithLegacyNormalization(value, { stripMetadata: true });
+
+    if (!isAutoBackupKey(name) || !isPlainObject(normalizedValue)) {
+      serialized[name] = normalizedValue;
       return;
     }
 
@@ -699,9 +707,9 @@ function serializeAutoBackupEntries(entries, options) {
         base: null,
         sequence: 0,
         createdAt,
-        changedKeys: Object.keys(value || {}),
+        changedKeys: Object.keys(normalizedValue || {}),
         removedKeys: [],
-        payload: cloneAutoBackupValue(value, { stripMetadata: true }),
+        payload: normalizedValue,
       };
       return;
     }
@@ -719,18 +727,19 @@ function serializeAutoBackupEntries(entries, options) {
         base: null,
         sequence: 0,
         createdAt,
-        changedKeys: Object.keys(value || {}),
+        changedKeys: Object.keys(normalizedValue || {}),
         removedKeys: [],
-        payload: cloneAutoBackupValue(value, { stripMetadata: true }),
+        payload: normalizedValue,
       };
       return;
     }
 
-    const diff = computeAutoBackupDiff(value, baseValue);
+    const normalizedBase = cloneAutoBackupValueWithLegacyNormalization(baseValue, { stripMetadata: true });
+    const diff = computeAutoBackupDiff(normalizedValue, normalizedBase);
 
     serialized[name] = {};
     serialized[name][AUTO_BACKUP_SNAPSHOT_PROPERTY] = {
-      version: AUTO_BACKUP_SNAPSHOT_VERSION,
+      version: Number.isFinite(metadata.version) ? metadata.version : AUTO_BACKUP_SNAPSHOT_VERSION,
       snapshotType: 'delta',
       base: baseName,
       sequence: Number.isFinite(metadata.sequence) ? metadata.sequence : 1,
@@ -2623,6 +2632,80 @@ function isPlainObject(val) {
   return false;
 }
 
+var LEGACY_LONG_GOP_TOKEN_REGEX = /^long[\s_-]?gop$/i;
+
+function normalizeLegacyLongGopString(value) {
+  if (typeof value !== 'string') {
+    return value;
+  }
+
+  const trimmed = value.trim();
+  if (LEGACY_LONG_GOP_TOKEN_REGEX.test(trimmed)) {
+    return 'long-gop';
+  }
+
+  return value;
+}
+
+function normalizeLegacyLongGopKey(key) {
+  if (typeof key !== 'string') {
+    return key;
+  }
+
+  return LEGACY_LONG_GOP_TOKEN_REGEX.test(key) ? 'long-gop' : key;
+}
+
+function normalizeLegacyLongGopStructure(value) {
+  if (Array.isArray(value)) {
+    let changed = false;
+    const normalizedArray = value.map((item) => {
+      const normalizedItem = normalizeLegacyLongGopStructure(item);
+      if (normalizedItem !== item) {
+        changed = true;
+      }
+      return normalizedItem;
+    });
+    return changed ? normalizedArray : value;
+  }
+
+  if (isPlainObject(value)) {
+    let changed = false;
+    const normalizedObject = {};
+    Object.keys(value).forEach((key) => {
+      const normalizedKey = normalizeLegacyLongGopKey(key);
+      const originalValue = value[key];
+      const normalizedValue = normalizeLegacyLongGopStructure(originalValue);
+      if (normalizedKey !== key || normalizedValue !== originalValue) {
+        changed = true;
+      }
+      normalizedObject[normalizedKey] = normalizedValue;
+    });
+    return changed ? normalizedObject : value;
+  }
+
+  return normalizeLegacyLongGopString(value);
+}
+
+function normalizeLegacyLongGopBackups(backups) {
+  if (!Array.isArray(backups)) {
+    return { normalized: Array.isArray(backups) ? backups : [], changed: false };
+  }
+
+  let changed = false;
+  const normalized = backups.map((entry) => {
+    if (entry === null || entry === undefined) {
+      return entry;
+    }
+    const normalizedEntry = normalizeLegacyLongGopStructure(entry);
+    if (normalizedEntry !== entry) {
+      changed = true;
+    }
+    return normalizedEntry;
+  });
+
+  return { normalized, changed };
+}
+
 function parseAutoBackupKey(name) {
   if (typeof name !== 'string') {
     return { timestamp: Number.NEGATIVE_INFINITY, label: '' };
@@ -4309,6 +4392,11 @@ function normalizeSessionStatePayload(raw) {
     }
   }
 
+  const normalizedState = normalizeLegacyLongGopStructure(state);
+  if (normalizedState !== state) {
+    return { state: normalizedState, changed: true };
+  }
+
   return { state, changed };
 }
 
@@ -4359,10 +4447,11 @@ function saveSessionState(state) {
   }
 
   ensurePreWriteMigrationBackup(safeStorage, SESSION_STATE_KEY);
+  const normalizedState = normalizeLegacyLongGopStructure(state);
   saveJSONToStorage(
     safeStorage,
     SESSION_STATE_KEY,
-    state,
+    normalizedState,
     "Error saving session state to localStorage:",
   );
 }
@@ -4488,7 +4577,11 @@ function normalizeSetups(rawData) {
   Object.keys(rawData).forEach((name) => {
     const value = rawData[name];
     if (isPlainObject(value)) {
-      normalized[name] = value;
+      const normalizedValue = normalizeLegacyLongGopStructure(value);
+      if (normalizedValue !== value) {
+        changed = true;
+      }
+      normalized[name] = normalizedValue;
     } else {
       changed = true;
     }
@@ -5092,7 +5185,12 @@ function sanitizeImportedProjectInfo(info) {
       normalized[key] = value;
     }
   });
-  return Object.keys(normalized).length ? normalized : null;
+  if (!Object.keys(normalized).length) {
+    return null;
+  }
+
+  const normalizedWithLegacySupport = normalizeLegacyLongGopStructure(normalized);
+  return normalizedWithLegacySupport;
 }
 
 function cloneAutoGearRules(rules) {
@@ -5384,6 +5482,36 @@ function normalizeProject(data) {
         normalized.powerSelection = cloneProjectPowerSelection(normalizedPowerSelection);
       }
       copyAutoBackupMetadata(data, normalized);
+      if (normalized.projectInfo) {
+        const normalizedInfo = normalizeLegacyLongGopStructure(normalized.projectInfo);
+        if (normalizedInfo !== normalized.projectInfo) {
+          normalized.projectInfo = normalizedInfo;
+        }
+      }
+      if (normalized.autoGearRules) {
+        const normalizedRules = normalizeLegacyLongGopStructure(normalized.autoGearRules);
+        if (normalizedRules !== normalized.autoGearRules) {
+          normalized.autoGearRules = normalizedRules;
+        }
+      }
+      if (normalized.gearSelectors) {
+        const normalizedSelectors = normalizeLegacyLongGopStructure(normalized.gearSelectors);
+        if (normalizedSelectors !== normalized.gearSelectors) {
+          normalized.gearSelectors = normalizedSelectors;
+        }
+      }
+      if (normalized.diagramPositions) {
+        const normalizedDiagram = normalizeLegacyLongGopStructure(normalized.diagramPositions);
+        if (normalizedDiagram !== normalized.diagramPositions) {
+          normalized.diagramPositions = normalizedDiagram;
+        }
+      }
+      if (normalized.powerSelection) {
+        const normalizedPower = normalizeLegacyLongGopStructure(normalized.powerSelection);
+        if (normalizedPower !== normalized.powerSelection) {
+          normalized.powerSelection = normalizedPower;
+        }
+      }
       return normalized;
     }
     // Legacy format { projectHtml, gearHtml }
@@ -5672,6 +5800,22 @@ function readAllProjectsFromStorage() {
     if (normalized) {
       const originalEntry = expandedParsed[key];
       const needsUpgrade = !isNormalizedProjectEntry(originalEntry);
+      let requiresContentUpdate = false;
+      if (!needsUpgrade) {
+        try {
+          const normalizedSignature = createStableValueSignature(normalized);
+          const originalSignature = createStableValueSignature(originalEntry);
+          if (normalizedSignature !== originalSignature) {
+            requiresContentUpdate = true;
+          }
+        } catch (signatureError) {
+          requiresContentUpdate = true;
+          console.warn(
+            'Unable to compare stored project entry during legacy long-GOP normalization check',
+            signatureError,
+          );
+        }
+      }
       let finalKey = key;
       if (needsUpgrade) {
         finalKey = generateUpdatedProjectName(key, usedProjectNames, normalizedProjectNames);
@@ -5687,6 +5831,9 @@ function readAllProjectsFromStorage() {
       projects[finalKey] = normalized;
       registerLookupKey(key, finalKey);
       markProjectNameUsed(finalKey);
+      if (!needsUpgrade && requiresContentUpdate) {
+        changed = true;
+      }
     } else {
       changed = true;
     }
@@ -5799,10 +5946,14 @@ function cloneProjectEntryForBackup(entry) {
     return entry;
   }
   try {
-    return JSON.parse(JSON.stringify(entry));
+    const cloned = JSON.parse(JSON.stringify(entry));
+    const normalized = normalizeLegacyLongGopStructure(cloned);
+    return normalized !== cloned ? normalized : cloned;
   } catch (error) {
     console.warn('Unable to deep clone project for backup', error);
-    return { ...entry };
+    const fallback = { ...entry };
+    const normalized = normalizeLegacyLongGopStructure(fallback);
+    return normalized !== fallback ? normalized : fallback;
   }
 }
 
@@ -6333,19 +6484,32 @@ function loadAutoGearRules() {
     [],
     { validate: (value) => value === null || Array.isArray(value) },
   );
-  return Array.isArray(parsed) ? parsed : [];
+  const rules = Array.isArray(parsed) ? parsed : [];
+  const normalizedRules = Array.isArray(rules)
+    ? normalizeLegacyLongGopStructure(rules)
+    : [];
+  if (normalizedRules !== rules) {
+    saveAutoGearRules(normalizedRules, { skipNormalization: true });
+  }
+  return Array.isArray(normalizedRules) ? normalizedRules : [];
 }
 
-function saveAutoGearRules(rules) {
-  const safeRules = Array.isArray(rules) ? rules : [];
+function saveAutoGearRules(rules, options = {}) {
+  const opts = options || {};
+  const { skipNormalization = false } = opts;
+  const safeRules = Array.isArray(rules) ? rules.slice() : [];
+  const normalizedRules = skipNormalization
+    ? safeRules
+    : (Array.isArray(safeRules) ? normalizeLegacyLongGopStructure(safeRules) : []);
   const safeStorage = getSafeLocalStorage();
   ensurePreWriteMigrationBackup(safeStorage, AUTO_GEAR_RULES_STORAGE_KEY);
   saveJSONToStorage(
     safeStorage,
     AUTO_GEAR_RULES_STORAGE_KEY,
-    safeRules,
+    normalizedRules,
     "Error saving automatic gear rules to localStorage:",
   );
+  return normalizedRules;
 }
 
 function loadAutoGearBackups() {
@@ -6358,11 +6522,21 @@ function loadAutoGearBackups() {
     [],
     { validate: (value) => value === null || Array.isArray(value) },
   );
-  return Array.isArray(parsed) ? parsed : [];
+  const backups = Array.isArray(parsed) ? parsed : [];
+  const { normalized: normalizedBackups, changed } = normalizeLegacyLongGopBackups(backups);
+  if (changed) {
+    saveAutoGearBackups(normalizedBackups, { skipNormalization: true });
+  }
+  return normalizedBackups;
 }
 
-function saveAutoGearBackups(backups) {
+function saveAutoGearBackups(backups, options = {}) {
+  const opts = options || {};
+  const { skipNormalization = false } = opts;
   const safeBackups = Array.isArray(backups) ? backups.slice() : [];
+  const { normalized: normalizedBackups } = skipNormalization
+    ? { normalized: safeBackups, changed: false }
+    : normalizeLegacyLongGopBackups(safeBackups);
   const safeStorage = getSafeLocalStorage();
   ensurePreWriteMigrationBackup(safeStorage, AUTO_GEAR_BACKUPS_STORAGE_KEY);
 
@@ -6372,11 +6546,11 @@ function saveAutoGearBackups(backups) {
   saveJSONToStorage(
     safeStorage,
     AUTO_GEAR_BACKUPS_STORAGE_KEY,
-    safeBackups,
+    normalizedBackups,
     "Error saving automatic gear rule backups to localStorage:",
     {
       onQuotaExceeded: (error, context = {}) => {
-        const removal = removeOldestAutoGearBackupEntry(safeBackups);
+        const removal = removeOldestAutoGearBackupEntry(normalizedBackups);
         if (removal) {
           const label = removal.label;
           if (label) {
@@ -6411,7 +6585,7 @@ function saveAutoGearBackups(backups) {
       },
     },
   );
-  return safeBackups;
+  return normalizedBackups;
 }
 
 function loadAutoGearSeedFlag() {
@@ -6444,19 +6618,32 @@ function loadAutoGearPresets() {
     [],
     { validate: (value) => value === null || Array.isArray(value) },
   );
-  return Array.isArray(presets) ? presets : [];
+  const presetArray = Array.isArray(presets) ? presets : [];
+  const normalized = Array.isArray(presetArray)
+    ? normalizeLegacyLongGopStructure(presetArray)
+    : [];
+  if (normalized !== presetArray) {
+    saveAutoGearPresets(normalized, { skipNormalization: true });
+  }
+  return Array.isArray(normalized) ? normalized : [];
 }
 
-function saveAutoGearPresets(presets) {
-  const safePresets = Array.isArray(presets) ? presets : [];
+function saveAutoGearPresets(presets, options = {}) {
+  const opts = options || {};
+  const { skipNormalization = false } = opts;
+  const safePresets = Array.isArray(presets) ? presets.slice() : [];
+  const normalizedPresets = skipNormalization
+    ? safePresets
+    : (Array.isArray(safePresets) ? normalizeLegacyLongGopStructure(safePresets) : []);
   const safeStorage = getSafeLocalStorage();
   ensurePreWriteMigrationBackup(safeStorage, AUTO_GEAR_PRESETS_STORAGE_KEY);
   saveJSONToStorage(
     safeStorage,
     AUTO_GEAR_PRESETS_STORAGE_KEY,
-    safePresets,
+    normalizedPresets,
     "Error saving automatic gear presets to localStorage:",
   );
+  return normalizedPresets;
 }
 
 function loadAutoGearMonitorDefaults() {
@@ -6469,19 +6656,32 @@ function loadAutoGearMonitorDefaults() {
     {},
     { validate: (value) => value === null || typeof value === 'object' },
   );
-  return defaults && typeof defaults === 'object' ? defaults : {};
+  const monitorDefaults = defaults && typeof defaults === 'object' ? defaults : {};
+  const normalizedDefaults = isPlainObject(monitorDefaults)
+    ? normalizeLegacyLongGopStructure(monitorDefaults)
+    : {};
+  if (normalizedDefaults !== monitorDefaults) {
+    saveAutoGearMonitorDefaults(normalizedDefaults, { skipNormalization: true });
+  }
+  return normalizedDefaults && typeof normalizedDefaults === 'object' ? normalizedDefaults : {};
 }
 
-function saveAutoGearMonitorDefaults(defaults) {
-  const safeDefaults = defaults && typeof defaults === 'object' ? defaults : {};
+function saveAutoGearMonitorDefaults(defaults, options = {}) {
+  const opts = options || {};
+  const { skipNormalization = false } = opts;
+  const safeDefaults = defaults && typeof defaults === 'object' ? { ...defaults } : {};
+  const normalizedDefaults = skipNormalization
+    ? safeDefaults
+    : (isPlainObject(safeDefaults) ? normalizeLegacyLongGopStructure(safeDefaults) : {});
   const safeStorage = getSafeLocalStorage();
   ensurePreWriteMigrationBackup(safeStorage, AUTO_GEAR_MONITOR_DEFAULTS_STORAGE_KEY);
   saveJSONToStorage(
     safeStorage,
     AUTO_GEAR_MONITOR_DEFAULTS_STORAGE_KEY,
-    safeDefaults,
+    normalizedDefaults,
     "Error saving automatic gear monitor defaults to localStorage:",
   );
+  return normalizedDefaults;
 }
 
 function removeAutoGearPresetFromStorage(presetId, storage) {
@@ -7239,19 +7439,28 @@ function normalizeImportedArray(value, fallbackKeys = [], filterFn = null) {
 }
 
 function normalizeImportedAutoGearRules(value) {
-  return normalizeImportedArray(
+  const rules = normalizeImportedArray(
     value,
     ["rules", "items", "entries", "list", "values", "data"],
     (entry) => entry !== null && typeof entry === "object",
   );
+  if (!Array.isArray(rules)) {
+    return [];
+  }
+  return normalizeLegacyLongGopStructure(rules);
 }
 
 function normalizeImportedAutoGearBackups(value) {
-  return normalizeImportedArray(
+  const backups = normalizeImportedArray(
     value,
     ["backups", "entries", "items", "list", "values", "data"],
     (entry) => entry !== null && typeof entry === "object",
   );
+  if (!Array.isArray(backups)) {
+    return [];
+  }
+  const { normalized } = normalizeLegacyLongGopBackups(backups);
+  return normalized;
 }
 
 function normalizeImportedAutoGearBackupRetention(value) {
@@ -7306,11 +7515,15 @@ function normalizeImportedAutoGearBackupRetention(value) {
 }
 
 function normalizeImportedAutoGearPresets(value) {
-  return normalizeImportedArray(
+  const presets = normalizeImportedArray(
     value,
     ["presets", "entries", "items", "list", "values", "data"],
     (entry) => entry !== null && typeof entry === "object",
   );
+  if (!Array.isArray(presets)) {
+    return [];
+  }
+  return normalizeLegacyLongGopStructure(presets);
 }
 
 function normalizeImportedAutoGearMonitorDefaults(value) {
@@ -7324,7 +7537,8 @@ function normalizeImportedAutoGearMonitorDefaults(value) {
     if (!trimmed) return;
     normalized[key] = trimmed;
   });
-  return normalized;
+  const legacyNormalized = normalizeLegacyLongGopStructure(normalized);
+  return isPlainObject(legacyNormalized) ? legacyNormalized : normalized;
 }
 
 function normalizeImportedPresetId(value) {

@@ -1106,7 +1106,6 @@ function attachAutoBackupMetadata(target, metadata) {
     });
   } catch (error) {
     try {
-      // eslint-disable-next-line no-param-reassign
       target.__cineAutoBackupMetadata = snapshotMetadata;
     } catch (assignmentError) {
       void assignmentError;
