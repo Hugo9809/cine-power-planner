@@ -161,6 +161,7 @@ Ripeti questa routine quando arriva un nuovo membro, allestisci una postazione o
 
 - **Salvataggi manuali per versioni esplicite.** Inserisci il nome e premi **Invio**/**Salva**. Ogni salvataggio conserva dispositivi, requisiti, liste, preferiti, diagrammi e osservazioni.
 - **Auto-save per il lavoro in corso.** Con un progetto aperto, l’app scrive i cambiamenti in background. Le voci `auto-backup-…` compaiono ogni dieci minuti.
+- **Salvaguardie rapide catturano backup completi all’istante.** Apri **Impostazioni → Dati e archiviazione → Quick safeguards** per scaricare subito un backup completo o aprire gli strumenti di ripristino senza lasciare la scheda; ogni esecuzione viene registrata nel pannello così da archiviare immediatamente il JSON.【F:index.html†L2548-L2570】
 - **Mostra gli auto-backup su richiesta.** Attiva **Impostazioni → Backup e ripristino → Mostra auto-backup** per vedere gli orari.
 - **Rinominare crea una copia.** Modifica il nome e premi **Invio** per duplicare il progetto, utile per confrontare varianti.
 - **Cambiare progetto è sicuro.** Seleziona un’altra voce: posizione di scroll e campi non salvati si aggiornano senza perdere dati.
@@ -264,6 +265,7 @@ Ripeti questa routine quando arriva un nuovo membro, allestisci una postazione o
 
 - **Snapshot salvati** – Il selettore conserva ogni salvataggio manuale e crea `auto-backup-…` ogni dieci minuti mentre l’app è aperta.
 - **Backup completi** – **Impostazioni → Backup e ripristino → Backup** scarica `planner-backup.json` con progetti, dispositivi, feedback, preferiti, regole automatiche e stato UI. I ripristini creano un backup di sicurezza e avvisano se il file proviene da un’altra versione.
+- **Blocco Quick safeguards** – In **Impostazioni → Dati e archiviazione** trovi un blocco dedicato **Quick safeguards** per avviare backup completi con un clic o aprire rapidamente gli strumenti di ripristino, così produci copie ridondanti senza cambiare scheda.【F:index.html†L2548-L2570】
 - **Registro storico** – Ogni backup completo aggiunge una voce consultabile in **Impostazioni → Dati e archiviazione** o esportabile insieme al file. Mantiene timestamp e nomi allineati alla documentazione anche offline.
 - **Backup di migrazione nascosti** – Prima di sovrascrivere planner, setup o preferenze, l’app salva il precedente JSON in `__legacyMigrationBackup`. In caso di errore, gli strumenti di recupero tornano automaticamente a quella copia. La compressione ora seleziona automaticamente la codifica sicura più compatta così i backup restano entro la quota del browser.
 - **Snapshot automatici delle regole** – Le modifiche in **Regole automatiche** generano copie con timestamp ogni dieci minuti.

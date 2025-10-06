@@ -161,6 +161,7 @@ Cette routine prouve que sauvegarde, partage, import, backup et restauration fon
 
 - **Sauvegardes manuelles pour des versions explicites.** Entrez le nom et appuyez sur **Entrée**/**Sauvegarder**. Chaque version conserve équipements, exigences, listes, favoris, schémas et observations.
 - **Autosaves pour le travail en cours.** Tant qu’un projet est ouvert, l’application écrit les changements en arrière-plan. Des entrées `auto-backup-…` apparaissent toutes les dix minutes.
+- **Sauvegardes rapides pour une copie complète immédiate.** Ouvrez **Paramètres → Données & stockage → Quick safeguards** pour déclencher une sauvegarde complète ou accéder instantanément aux outils de restauration sans quitter l’onglet ; chaque exécution est consignée dans le tableau de bord pour archiver le JSON sans attendre.【F:index.html†L2548-L2570】
 - **Afficher les auto-backups à la demande.** Activez **Paramètres → Backup & Restauration → Afficher les auto-backups** pour visualiser les horodatages.
 - **Renommer crée une branche.** Modifier le nom puis valider duplique le projet — pratique pour comparer des variantes.
 - **Changer de projet n’efface rien.** Sélectionnez un autre élément dans le menu ; la position et les saisies non sauvegardées se propagent.
@@ -264,6 +265,7 @@ Cette routine prouve que sauvegarde, partage, import, backup et restauration fon
 
 - **Instantanés enregistrés** – Le sélecteur conserve chaque sauvegarde manuelle et crée un `auto-backup-…` toutes les dix minutes.
 - **Backups complets** – **Paramètres → Backup & Restauration → Backup** télécharge `planner-backup.json` avec projets, équipements personnalisés, retours, favoris, règles automatiques et état UI. Les restaurations créent une copie de sécurité et avertissent si le fichier provient d’une autre version.
+- **Bloc Quick safeguards** – Dans **Paramètres → Données & stockage**, un encart **Quick safeguards** permet de lancer un backup complet ou d’ouvrir les outils de restauration en un clic afin de multiplier les copies sans quitter la vue actuelle.【F:index.html†L2548-L2570】
 - **Journal d’historique** – Chaque backup complet ajoute une entrée consultable via **Paramètres → Données & stockage** ou exportable avec l’archive. Horodatages et noms restent alignés avec votre documentation même hors ligne.
 - **Backups de migration cachés** – Avant d’écraser planners, configurations ou préférences, l’application enregistre le JSON précédent dans `__legacyMigrationBackup`. En cas d’échec, les outils de récupération reviennent automatiquement à cette copie. La compression choisit désormais automatiquement l’encodage sûr le plus compact afin que les sauvegardes restent dans le quota du navigateur.
 - **Snapshots automatiques des règles** – Les modifications dans **Règles automatiques** génèrent des copies horodatées toutes les dix minutes.
