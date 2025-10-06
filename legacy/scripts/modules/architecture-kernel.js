@@ -33,6 +33,34 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return null;
     }
   }
+  function resolveArchitectureCore(scope) {
+    if (typeof require === 'function') {
+      try {
+        var required = require('./architecture-core.js');
+        if (required && _typeof(required) === 'object') {
+          return required;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+    var candidates = [];
+    var primary = scope || LOCAL_SCOPE;
+    if (primary && _typeof(primary) === 'object') {
+      candidates.push(primary);
+    }
+    if (typeof globalThis !== 'undefined' && candidates.indexOf(globalThis) === -1) candidates.push(globalThis);
+    if (typeof window !== 'undefined' && candidates.indexOf(window) === -1) candidates.push(window);
+    if (typeof self !== 'undefined' && candidates.indexOf(self) === -1) candidates.push(self);
+    if (typeof global !== 'undefined' && candidates.indexOf(global) === -1) candidates.push(global);
+    for (var index = 0; index < candidates.length; index += 1) {
+      var candidate = candidates[index];
+      if (candidate && _typeof(candidate.cineModuleArchitectureCore) === 'object') {
+        return candidate.cineModuleArchitectureCore;
+      }
+    }
+    return null;
+  }
   function resolveArchitecture(scope) {
     var targetScope = scope || LOCAL_SCOPE;
     var required = fallbackTryRequire('./architecture.js');
@@ -57,6 +85,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   var ARCHITECTURE = resolveArchitecture(LOCAL_SCOPE);
   var ARCHITECTURE_HELPERS = resolveArchitectureHelpers(LOCAL_SCOPE);
+  var ARCHITECTURE_CORE = resolveArchitectureCore(LOCAL_SCOPE);
+  var CORE_INSTANCE = ARCHITECTURE_CORE && typeof ARCHITECTURE_CORE.createCore === 'function' ? ARCHITECTURE_CORE.createCore({
+    primaryScope: LOCAL_SCOPE,
+    pendingQueueKey: DEFAULT_PENDING_QUEUE_KEY
+  }) : null;
   function fallbackCollectCandidateScopes(primary) {
     var scopes = [];
     function pushScope(scope) {
@@ -247,24 +280,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return null;
   }
-  function preferFunction(helperFn, architectureFn, fallbackFn) {
+  function preferFunction(coreFn, helperFn, architectureFn, fallbackFn) {
     return function applyPreferred() {
       var args = arguments;
-      if (typeof helperFn === 'function') {
-        try {
-          var helperResult = helperFn.apply(null, args);
-          if (typeof helperResult !== 'undefined' && helperResult !== null) {
-            return helperResult;
-          }
-        } catch (error) {
-          void error;
+      var candidates = [coreFn, helperFn, architectureFn];
+      for (var index = 0; index < candidates.length; index += 1) {
+        var candidate = candidates[index];
+        if (typeof candidate !== 'function') {
+          continue;
         }
-      }
-      if (typeof architectureFn === 'function') {
         try {
-          var architectureResult = architectureFn.apply(null, args);
-          if (typeof architectureResult !== 'undefined' && architectureResult !== null) {
-            return architectureResult;
+          var result = candidate.apply(null, args);
+          if (typeof result !== 'undefined' && result !== null) {
+            return result;
           }
         } catch (error) {
           void error;
@@ -273,17 +301,17 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return fallbackFn.apply(null, args);
     };
   }
-  var detectGlobalScope = preferFunction(ARCHITECTURE_HELPERS && ARCHITECTURE_HELPERS.detectGlobalScope, ARCHITECTURE && ARCHITECTURE.detectGlobalScope, fallbackDetectGlobalScope);
+  var detectGlobalScope = preferFunction(CORE_INSTANCE && CORE_INSTANCE.detectGlobalScope, ARCHITECTURE_HELPERS && ARCHITECTURE_HELPERS.detectGlobalScope, ARCHITECTURE && ARCHITECTURE.detectGlobalScope, fallbackDetectGlobalScope);
   var PRIMARY_SCOPE = detectGlobalScope();
   function fallbackCollectWithPrimary(primary) {
     return fallbackCollectCandidateScopes(primary || PRIMARY_SCOPE);
   }
-  var baseCollectCandidateScopes = preferFunction(ARCHITECTURE_HELPERS && ARCHITECTURE_HELPERS.collectCandidateScopes, ARCHITECTURE && ARCHITECTURE.collectCandidateScopes, fallbackCollectWithPrimary);
+  var baseCollectCandidateScopes = preferFunction(CORE_INSTANCE && CORE_INSTANCE.collectCandidateScopes, ARCHITECTURE_HELPERS && ARCHITECTURE_HELPERS.collectCandidateScopes, ARCHITECTURE && ARCHITECTURE.collectCandidateScopes, fallbackCollectWithPrimary);
   function collectCandidateScopes(primary) {
     return baseCollectCandidateScopes(primary || PRIMARY_SCOPE);
   }
-  var tryRequire = preferFunction(ARCHITECTURE_HELPERS && ARCHITECTURE_HELPERS.tryRequire, ARCHITECTURE && ARCHITECTURE.tryRequire, fallbackTryRequire);
-  var defineHiddenProperty = preferFunction(ARCHITECTURE_HELPERS && ARCHITECTURE_HELPERS.defineHiddenProperty, ARCHITECTURE && ARCHITECTURE.defineHiddenProperty, fallbackDefineHiddenProperty);
+  var tryRequire = preferFunction(CORE_INSTANCE && CORE_INSTANCE.tryRequire, ARCHITECTURE_HELPERS && ARCHITECTURE_HELPERS.tryRequire, ARCHITECTURE && ARCHITECTURE.tryRequire, fallbackTryRequire);
+  var defineHiddenProperty = preferFunction(CORE_INSTANCE && CORE_INSTANCE.defineHiddenProperty, ARCHITECTURE_HELPERS && ARCHITECTURE_HELPERS.defineHiddenProperty, ARCHITECTURE && ARCHITECTURE.defineHiddenProperty, fallbackDefineHiddenProperty);
   function ensureQueue(scope, key) {
     var resolvedScope = scope || PRIMARY_SCOPE;
     var resolvedKey = typeof key === 'string' && key ? key : getPendingQueueKey();
@@ -311,8 +339,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return fallbackEnsureQueue(resolvedScope, resolvedKey);
   }
-  var freezeDeep = preferFunction(ARCHITECTURE_HELPERS && ARCHITECTURE_HELPERS.freezeDeep, ARCHITECTURE && ARCHITECTURE.freezeDeep, fallbackFreezeDeep);
-  var safeWarn = preferFunction(ARCHITECTURE_HELPERS && ARCHITECTURE_HELPERS.safeWarn, ARCHITECTURE && ARCHITECTURE.safeWarn, fallbackSafeWarn);
+  var freezeDeep = preferFunction(CORE_INSTANCE && CORE_INSTANCE.freezeDeep, ARCHITECTURE_HELPERS && ARCHITECTURE_HELPERS.freezeDeep, ARCHITECTURE && ARCHITECTURE.freezeDeep, fallbackFreezeDeep);
+  var safeWarn = preferFunction(CORE_INSTANCE && CORE_INSTANCE.safeWarn, ARCHITECTURE_HELPERS && ARCHITECTURE_HELPERS.safeWarn, ARCHITECTURE && ARCHITECTURE.safeWarn, fallbackSafeWarn);
   function resolveModuleRegistry(scope) {
     var targetScope = scope || PRIMARY_SCOPE;
     if (ARCHITECTURE_HELPERS && typeof ARCHITECTURE_HELPERS.resolveModuleRegistry === 'function') {
@@ -325,9 +353,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         void error;
       }
     }
-    return preferFunction(null, ARCHITECTURE && ARCHITECTURE.resolveModuleRegistry, fallbackResolveModuleRegistry)(targetScope);
+    return preferFunction(CORE_INSTANCE && CORE_INSTANCE.resolveModuleRegistry, null, ARCHITECTURE && ARCHITECTURE.resolveModuleRegistry, fallbackResolveModuleRegistry)(targetScope);
   }
-  var baseResolveFromScopes = preferFunction(ARCHITECTURE_HELPERS && ARCHITECTURE_HELPERS.resolveFromScopes, ARCHITECTURE && ARCHITECTURE.resolveFromScopes, fallbackResolveFromScopes);
+  var baseResolveFromScopes = preferFunction(CORE_INSTANCE && CORE_INSTANCE.resolveFromScopes, ARCHITECTURE_HELPERS && ARCHITECTURE_HELPERS.resolveFromScopes, ARCHITECTURE && ARCHITECTURE.resolveFromScopes, fallbackResolveFromScopes);
   function resolveFromScopes(propertyName, options) {
     var settings = options ? _objectSpread({}, options) : {};
     if (!settings.primaryScope) {
@@ -356,6 +384,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   var kernel = Object.freeze({
     architecture: ARCHITECTURE || null,
+    architectureCore: ARCHITECTURE_CORE || null,
     helpers: ARCHITECTURE_HELPERS || null,
     detectGlobalScope: detectGlobalScope,
     getGlobalScope: function getGlobalScope() {
@@ -377,7 +406,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     category: 'infrastructure',
     description: 'Unified kernel for module detection, registry resolution and queue management.',
     replace: true,
-    connections: ['cineModuleArchitectureHelpers']
+    connections: ['cineModuleArchitectureHelpers', 'cineModuleArchitectureCore']
   };
   if (registry && typeof registry.register === 'function') {
     try {

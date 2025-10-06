@@ -32,6 +32,38 @@
     }
   }
 
+  function resolveArchitectureCore(scope) {
+    if (typeof require === 'function') {
+      try {
+        const required = require('./architecture-core.js');
+        if (required && typeof required === 'object') {
+          return required;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    const candidates = [];
+    const primary = scope || LOCAL_SCOPE;
+    if (primary && typeof primary === 'object') {
+      candidates.push(primary);
+    }
+    if (typeof globalThis !== 'undefined' && candidates.indexOf(globalThis) === -1) candidates.push(globalThis);
+    if (typeof window !== 'undefined' && candidates.indexOf(window) === -1) candidates.push(window);
+    if (typeof self !== 'undefined' && candidates.indexOf(self) === -1) candidates.push(self);
+    if (typeof global !== 'undefined' && candidates.indexOf(global) === -1) candidates.push(global);
+
+    for (let index = 0; index < candidates.length; index += 1) {
+      const candidate = candidates[index];
+      if (candidate && typeof candidate.cineModuleArchitectureCore === 'object') {
+        return candidate.cineModuleArchitectureCore;
+      }
+    }
+
+    return null;
+  }
+
   function resolveArchitecture(scope) {
     const targetScope = scope || LOCAL_SCOPE;
 
@@ -64,6 +96,14 @@
 
   const ARCHITECTURE = resolveArchitecture(LOCAL_SCOPE);
   const ARCHITECTURE_HELPERS = resolveArchitectureHelpers(LOCAL_SCOPE);
+  const ARCHITECTURE_CORE = resolveArchitectureCore(LOCAL_SCOPE);
+  const CORE_INSTANCE =
+    ARCHITECTURE_CORE && typeof ARCHITECTURE_CORE.createCore === 'function'
+      ? ARCHITECTURE_CORE.createCore({
+          primaryScope: LOCAL_SCOPE,
+          pendingQueueKey: DEFAULT_PENDING_QUEUE_KEY,
+        })
+      : null;
 
   function fallbackCollectCandidateScopes(primary) {
     const scopes = [];
@@ -299,26 +339,21 @@
     return null;
   }
 
-  function preferFunction(helperFn, architectureFn, fallbackFn) {
+  function preferFunction(coreFn, helperFn, architectureFn, fallbackFn) {
     return function applyPreferred() {
       const args = arguments;
 
-      if (typeof helperFn === 'function') {
-        try {
-          const helperResult = helperFn.apply(null, args);
-          if (typeof helperResult !== 'undefined' && helperResult !== null) {
-            return helperResult;
-          }
-        } catch (error) {
-          void error;
+      const candidates = [coreFn, helperFn, architectureFn];
+      for (let index = 0; index < candidates.length; index += 1) {
+        const candidate = candidates[index];
+        if (typeof candidate !== 'function') {
+          continue;
         }
-      }
 
-      if (typeof architectureFn === 'function') {
         try {
-          const architectureResult = architectureFn.apply(null, args);
-          if (typeof architectureResult !== 'undefined' && architectureResult !== null) {
-            return architectureResult;
+          const result = candidate.apply(null, args);
+          if (typeof result !== 'undefined' && result !== null) {
+            return result;
           }
         } catch (error) {
           void error;
@@ -330,6 +365,7 @@
   }
 
   const detectGlobalScope = preferFunction(
+    CORE_INSTANCE && CORE_INSTANCE.detectGlobalScope,
     ARCHITECTURE_HELPERS && ARCHITECTURE_HELPERS.detectGlobalScope,
     ARCHITECTURE && ARCHITECTURE.detectGlobalScope,
     fallbackDetectGlobalScope,
@@ -342,6 +378,7 @@
   }
 
   const baseCollectCandidateScopes = preferFunction(
+    CORE_INSTANCE && CORE_INSTANCE.collectCandidateScopes,
     ARCHITECTURE_HELPERS && ARCHITECTURE_HELPERS.collectCandidateScopes,
     ARCHITECTURE && ARCHITECTURE.collectCandidateScopes,
     fallbackCollectWithPrimary,
@@ -352,12 +389,14 @@
   }
 
   const tryRequire = preferFunction(
+    CORE_INSTANCE && CORE_INSTANCE.tryRequire,
     ARCHITECTURE_HELPERS && ARCHITECTURE_HELPERS.tryRequire,
     ARCHITECTURE && ARCHITECTURE.tryRequire,
     fallbackTryRequire,
   );
 
   const defineHiddenProperty = preferFunction(
+    CORE_INSTANCE && CORE_INSTANCE.defineHiddenProperty,
     ARCHITECTURE_HELPERS && ARCHITECTURE_HELPERS.defineHiddenProperty,
     ARCHITECTURE && ARCHITECTURE.defineHiddenProperty,
     fallbackDefineHiddenProperty,
@@ -395,12 +434,14 @@
   }
 
   const freezeDeep = preferFunction(
+    CORE_INSTANCE && CORE_INSTANCE.freezeDeep,
     ARCHITECTURE_HELPERS && ARCHITECTURE_HELPERS.freezeDeep,
     ARCHITECTURE && ARCHITECTURE.freezeDeep,
     fallbackFreezeDeep,
   );
 
   const safeWarn = preferFunction(
+    CORE_INSTANCE && CORE_INSTANCE.safeWarn,
     ARCHITECTURE_HELPERS && ARCHITECTURE_HELPERS.safeWarn,
     ARCHITECTURE && ARCHITECTURE.safeWarn,
     fallbackSafeWarn,
@@ -420,12 +461,16 @@
       }
     }
 
-    return preferFunction(null, ARCHITECTURE && ARCHITECTURE.resolveModuleRegistry, fallbackResolveModuleRegistry)(
-      targetScope,
-    );
+    return preferFunction(
+      CORE_INSTANCE && CORE_INSTANCE.resolveModuleRegistry,
+      null,
+      ARCHITECTURE && ARCHITECTURE.resolveModuleRegistry,
+      fallbackResolveModuleRegistry,
+    )(targetScope);
   }
 
   const baseResolveFromScopes = preferFunction(
+    CORE_INSTANCE && CORE_INSTANCE.resolveFromScopes,
     ARCHITECTURE_HELPERS && ARCHITECTURE_HELPERS.resolveFromScopes,
     ARCHITECTURE && ARCHITECTURE.resolveFromScopes,
     fallbackResolveFromScopes,
@@ -464,6 +509,7 @@
 
   const kernel = Object.freeze({
     architecture: ARCHITECTURE || null,
+    architectureCore: ARCHITECTURE_CORE || null,
     helpers: ARCHITECTURE_HELPERS || null,
     detectGlobalScope,
     getGlobalScope() {
@@ -486,7 +532,7 @@
     category: 'infrastructure',
     description: 'Unified kernel for module detection, registry resolution and queue management.',
     replace: true,
-    connections: ['cineModuleArchitectureHelpers'],
+    connections: ['cineModuleArchitectureHelpers', 'cineModuleArchitectureCore'],
   };
 
   if (registry && typeof registry.register === 'function') {

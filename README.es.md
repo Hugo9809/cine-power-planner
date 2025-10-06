@@ -424,8 +424,9 @@ salvaguardas. Consulta
 antes de añadir nuevos módulos para mantener alineadas las garantías offline,
 la documentación y las traducciones.
 
-Una pila de infraestructura — `cineModuleArchitectureHelpers`, `cineModuleBase`,
-`cineModuleContext` y `cineModuleEnvironment` — mantiene alineadas la detección
+Una pila de infraestructura — `cineModuleArchitectureCore`,
+`cineModuleArchitectureHelpers`, `cineModuleBase`, `cineModuleContext` y
+`cineModuleEnvironment` — mantiene alineadas la detección
 de ámbitos, las consultas al sistema de módulos, las colas de registro y la
 exposición global entre los bundles moderno y legacy sin duplicar código base.
 

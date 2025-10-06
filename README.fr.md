@@ -426,8 +426,9 @@ Consultez
 avant d’ajouter de nouveaux modules pour garder alignées les garanties hors
 ligne, la documentation et les traductions.
 
-Un ensemble d’infrastructure — `cineModuleArchitectureHelpers`,
-`cineModuleBase`, `cineModuleContext` et `cineModuleEnvironment` — maintient
+Un ensemble d’infrastructure — `cineModuleArchitectureCore`,
+`cineModuleArchitectureHelpers`, `cineModuleBase`, `cineModuleContext` et
+`cineModuleEnvironment` — maintient
 alignées la détection de portée, les requêtes au système de modules, les files
 d’enregistrement et l’exposition globale entre les bundles moderne et legacy
 sans dupliquer de boilerplate.
