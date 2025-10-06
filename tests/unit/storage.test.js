@@ -2510,6 +2510,57 @@ describe('migration backups before overwriting data', () => {
     const backupData = readMigrationBackupData(PROJECT_KEY);
     expect(backupData).toEqual(initialProjects);
   });
+
+  test('saveDeviceData upgrades legacy migration backup payloads to modern envelope', () => {
+    const legacyBackupKey = migrationBackupKeyFor(DEVICE_KEY);
+    const legacyPayload = { cameras: { Legacy: { brand: 'Old', model: 'Camera' } } };
+
+    localStorage.setItem(DEVICE_KEY, JSON.stringify(validDeviceData));
+    localStorage.setItem(legacyBackupKey, JSON.stringify(legacyPayload));
+
+    saveDeviceData(validDeviceData);
+
+    const rawBackup = localStorage.getItem(legacyBackupKey);
+    expect(rawBackup).toBeTruthy();
+    const parsed = JSON.parse(rawBackup);
+    expect(typeof parsed.createdAt).toBe('string');
+    expect(parsed.createdAt.length).toBeGreaterThan(0);
+    expect(Number.isNaN(Date.parse(parsed.createdAt))).toBe(false);
+    expect(parsed.data).toEqual(legacyPayload);
+  });
+
+  test('saveDeviceData wraps string-based legacy migration backups', () => {
+    const legacyBackupKey = migrationBackupKeyFor(DEVICE_KEY);
+
+    localStorage.setItem(DEVICE_KEY, JSON.stringify(validDeviceData));
+    localStorage.setItem(legacyBackupKey, 'legacy-string');
+
+    saveDeviceData(validDeviceData);
+
+    const rawBackup = localStorage.getItem(legacyBackupKey);
+    expect(rawBackup).toBeTruthy();
+    const parsed = JSON.parse(rawBackup);
+    expect(parsed.data).toBe('legacy-string');
+    expect(typeof parsed.createdAt).toBe('string');
+    expect(Number.isNaN(Date.parse(parsed.createdAt))).toBe(false);
+  });
+
+  test('saveDeviceData normalizes numeric migration backup timestamps', () => {
+    const legacyBackupKey = migrationBackupKeyFor(DEVICE_KEY);
+    const numericTimestamp = 1_700_000_000_000;
+    const legacyPayload = { createdAt: numericTimestamp, data: { cameras: { Legacy: {} } } };
+
+    localStorage.setItem(DEVICE_KEY, JSON.stringify(validDeviceData));
+    localStorage.setItem(legacyBackupKey, JSON.stringify(legacyPayload));
+
+    saveDeviceData(validDeviceData);
+
+    const rawBackup = localStorage.getItem(legacyBackupKey);
+    expect(rawBackup).toBeTruthy();
+    const parsed = JSON.parse(rawBackup);
+    expect(parsed.data).toEqual(legacyPayload.data);
+    expect(parsed.createdAt).toBe(new Date(numericTimestamp).toISOString());
+  });
 });
 
 describe('storage snapshot conversion', () => {
