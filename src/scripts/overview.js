@@ -86,27 +86,167 @@ const overviewLogger = (() => {
 
 const overviewConsoleFallback = (typeof console === 'object' && console) ? console : null;
 
+const OVERVIEW_LOG_META_DEFAULTS = Object.freeze({
+    namespace: 'overview',
+    source: 'overview-dialog',
+});
+
+function cloneOverviewLogMeta(meta) {
+    if (!meta || typeof meta !== 'object') {
+        return {};
+    }
+
+    const clone = {};
+    const keys = Object.keys(meta);
+
+    for (let index = 0; index < keys.length; index += 1) {
+        const key = keys[index];
+        const value = meta[key];
+        if (typeof value === 'undefined') {
+            continue;
+        }
+
+        if (value === null) {
+            clone[key] = null;
+            continue;
+        }
+
+        const valueType = typeof value;
+        if (valueType === 'string' || valueType === 'number' || valueType === 'boolean') {
+            clone[key] = value;
+            continue;
+        }
+
+        if (value instanceof Date && typeof value.toISOString === 'function') {
+            clone[key] = value.toISOString();
+            continue;
+        }
+
+        if (Array.isArray(value)) {
+            try {
+                clone[key] = JSON.parse(JSON.stringify(value));
+            } catch (arrayError) {
+                void arrayError;
+                clone[key] = value.map(item => {
+                    if (item === null || typeof item === 'undefined') {
+                        return null;
+                    }
+                    const itemType = typeof item;
+                    if (itemType === 'string' || itemType === 'number' || itemType === 'boolean') {
+                        return item;
+                    }
+                    if (item instanceof Date && typeof item.toISOString === 'function') {
+                        return item.toISOString();
+                    }
+                    try {
+                        return JSON.parse(JSON.stringify(item));
+                    } catch (itemError) {
+                        void itemError;
+                        return String(item);
+                    }
+                });
+            }
+            continue;
+        }
+
+        if (valueType === 'object') {
+            try {
+                clone[key] = JSON.parse(JSON.stringify(value));
+            } catch (objectError) {
+                void objectError;
+                clone[key] = String(value);
+            }
+            continue;
+        }
+
+        try {
+            clone[key] = JSON.parse(JSON.stringify(value));
+        } catch (fallbackError) {
+            void fallbackError;
+            clone[key] = String(value);
+        }
+    }
+
+    return clone;
+}
+
+function createOverviewLogMetaSnapshot(level, meta) {
+    const normalizedLevel = typeof level === 'string' && level ? level.toLowerCase() : 'info';
+    const timestamp = Date.now();
+    let isoTimestamp = null;
+
+    try {
+        isoTimestamp = new Date(timestamp).toISOString();
+    } catch (timestampError) {
+        void timestampError;
+        try {
+            isoTimestamp = new Date().toISOString();
+        } catch (isoError) {
+            void isoError;
+            isoTimestamp = String(timestamp);
+        }
+    }
+
+    const baseMeta = {
+        ...OVERVIEW_LOG_META_DEFAULTS,
+        ...cloneOverviewLogMeta(meta),
+    };
+
+    if (!baseMeta.namespace) {
+        baseMeta.namespace = OVERVIEW_LOG_META_DEFAULTS.namespace;
+    }
+    if (!baseMeta.source) {
+        baseMeta.source = OVERVIEW_LOG_META_DEFAULTS.source;
+    }
+
+    baseMeta.level = normalizedLevel;
+    baseMeta.timestamp = isoTimestamp;
+    baseMeta.timestampMs = timestamp;
+
+    if (typeof baseMeta.eventId !== 'string' || !baseMeta.eventId) {
+        baseMeta.eventId = `overview-${timestamp.toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+    }
+
+    if (typeof baseMeta.correlationId !== 'string' || !baseMeta.correlationId) {
+        baseMeta.correlationId = baseMeta.eventId;
+    }
+
+    return baseMeta;
+}
+
 function logOverview(level, message, detail, meta) {
     const normalizedLevel = typeof level === 'string' && level ? level.toLowerCase() : 'info';
-    const sanitizedMeta = (meta && typeof meta === 'object') ? { ...meta } : null;
     const detailValue = typeof detail === 'undefined' ? undefined : detail;
+    const baseMeta = createOverviewLogMetaSnapshot(normalizedLevel, meta);
+
+    const loggerMeta = { ...baseMeta, channel: 'cineLogging' };
+    const consoleMeta = { ...baseMeta, channel: 'console' };
+    let loggerInvocationFailed = false;
 
     if (overviewLogger && typeof overviewLogger[normalizedLevel] === 'function') {
         try {
-            overviewLogger[normalizedLevel](message, detailValue, sanitizedMeta);
+            overviewLogger[normalizedLevel](message, detailValue, loggerMeta);
         } catch (loggerError) {
+            loggerInvocationFailed = true;
+            consoleMeta.consoleFallbackUsed = true;
+            consoleMeta.consoleFallbackReason = 'logger-invocation-failed';
+            consoleMeta.loggerErrorMessage = loggerError && loggerError.message ? loggerError.message : undefined;
             if (overviewConsoleFallback && typeof overviewConsoleFallback.warn === 'function') {
                 try {
-                    overviewConsoleFallback.warn('Overview logger invocation failed', loggerError);
+                    overviewConsoleFallback.warn('Overview logger invocation failed', loggerError, { meta: consoleMeta });
                 } catch (consoleError) {
                     void consoleError;
                 }
             }
         }
+    } else {
+        loggerInvocationFailed = true;
+        consoleMeta.consoleFallbackUsed = true;
+        consoleMeta.consoleFallbackReason = overviewLogger ? 'logger-level-missing' : 'logger-unavailable';
     }
 
     if (!overviewConsoleFallback) {
-        return;
+        return baseMeta.eventId;
     }
 
     const consoleMethodName = normalizedLevel === 'warn'
@@ -120,22 +260,26 @@ function logOverview(level, message, detail, meta) {
         ? overviewConsoleFallback[consoleMethodName]
         : (typeof overviewConsoleFallback.log === 'function' ? overviewConsoleFallback.log : null);
     if (!consoleMethod) {
-        return;
+        return baseMeta.eventId;
     }
 
-    const consoleArgs = [message];
+    if (!loggerInvocationFailed) {
+        consoleMeta.consoleFallbackUsed = consoleMeta.consoleFallbackUsed || false;
+    }
+
+    const consoleArgs = [`[overview:${consoleMeta.eventId}] ${message}`];
     if (typeof detailValue !== 'undefined') {
         consoleArgs.push(detailValue);
     }
-    if (sanitizedMeta) {
-        consoleArgs.push({ meta: sanitizedMeta });
-    }
+    consoleArgs.push({ meta: consoleMeta });
 
     try {
         consoleMethod.apply(overviewConsoleFallback, consoleArgs);
     } catch (consoleInvokeError) {
         void consoleInvokeError;
     }
+
+    return baseMeta.eventId;
 }
 
 function createOverviewLoggerProxy(baseMeta) {

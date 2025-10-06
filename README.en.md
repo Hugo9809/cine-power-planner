@@ -555,7 +555,10 @@ Use Cine Power Planner end-to-end with the following routine:
   and global error capture toggles so you can adjust diagnostics without leaving
   Settings. It also flags when filters hide all entries so verification crews
   know the quiet periods are expected. Entries stay local and persist across
-  reloads when you enable session storage.
+  reloads when you enable session storage. Each entry now records an ISO
+  timestamp, millisecond marker, event ID and channel indicator so teams can
+  align console fallbacks with stored diagnostics even when the structured
+  logger is unavailable.
 - Full-app backups report their running total and feed the backup history ledger
   so you can confirm hourly safety copies are captured before archiving them
   offline.
