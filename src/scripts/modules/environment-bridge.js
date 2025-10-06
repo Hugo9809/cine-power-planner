@@ -199,6 +199,12 @@
 
     for (var index = 0; index < keys.length; index += 1) {
       var key = keys[index];
+
+      if (key === 'web3' && value === PRIMARY_SCOPE) {
+        // Accessing the deprecated MetaMask web3 shim logs noisy warnings. Skip it entirely
+        // to avoid touching the getter while still freezing the remaining globals.
+        continue;
+      }
       var descriptor;
       try {
         descriptor = Object.getOwnPropertyDescriptor(value, key);
