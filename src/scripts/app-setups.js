@@ -5661,6 +5661,53 @@ function ensureGearListActions() {
         autoSaveNote.hidden = true;
     }
 
+    const deleteLabel =
+        (texts[currentLang] && texts[currentLang].deleteGearListBtn)
+            || (texts.en && texts.en.deleteGearListBtn)
+            || 'Delete Gear List';
+    const deleteHelp =
+        (texts[currentLang]
+            && (texts[currentLang].deleteGearListBtnHelp || texts[currentLang].deleteGearListBtn))
+        || (texts.en && (texts.en.deleteGearListBtnHelp || texts.en.deleteGearListBtn))
+        || deleteLabel;
+
+    const deleteBtn = document.createElement('button');
+    deleteBtn.id = 'deleteGearListBtn';
+    deleteBtn.type = 'button';
+    deleteBtn.className = 'gear-list-action-btn';
+    if (typeof setButtonLabelWithIcon === 'function' && typeof ICON_GLYPHS === 'object') {
+        setButtonLabelWithIcon(deleteBtn, deleteLabel, ICON_GLYPHS.trash);
+    } else {
+        const iconHtml = typeof iconMarkup === 'function' && typeof ICON_GLYPHS === 'object'
+            ? iconMarkup(ICON_GLYPHS.trash, 'btn-icon')
+            : '';
+        deleteBtn.innerHTML = `${iconHtml}${escapeHtml(deleteLabel)}`;
+    }
+    deleteBtn.setAttribute('title', deleteHelp);
+    deleteBtn.setAttribute('data-help', deleteHelp);
+    deleteBtn.setAttribute('aria-label', deleteHelp);
+    deleteBtn.setAttribute('data-feature-search', 'true');
+    deleteBtn.setAttribute('data-feature-search-keywords', 'delete remove clear gear list project');
+    deleteBtn.addEventListener('click', deleteCurrentGearList);
+
+    const shouldHideDeleteBtn =
+        !gearListOutput
+        || gearListOutput.classList.contains('hidden')
+        || gearListOutput.innerHTML.trim() === '';
+    if (shouldHideDeleteBtn) {
+        deleteBtn.hidden = true;
+        deleteBtn.setAttribute('hidden', '');
+    } else {
+        deleteBtn.hidden = false;
+        deleteBtn.removeAttribute('hidden');
+    }
+
+    if (autoSaveNote && autoSaveNote.parentElement === actions) {
+        actions.insertBefore(deleteBtn, autoSaveNote);
+    } else {
+        actions.appendChild(deleteBtn);
+    }
+
     const highlightToggle = document.getElementById('autoGearHighlightToggle');
     if (highlightToggle && !highlightToggle.dataset.gearListHighlightBound) {
         highlightToggle.addEventListener('click', () => {
