@@ -16575,40 +16575,46 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         coreSafeFreezeRegistryAdd(moduleBase);
 
         let marked = false;
+        const markerKey = '__cineSafeFreezeWrapped';
+        const hasExistingMarker = Object.prototype.hasOwnProperty.call(
+          moduleBase,
+          markerKey,
+        );
+        let canAttachMarker = true;
 
-        try {
-          moduleBase.__cineSafeFreezeWrapped = true;
-          if (moduleBase.__cineSafeFreezeWrapped) {
-            marked = true;
+        if (!hasExistingMarker && typeof Object.isExtensible === 'function') {
+          try {
+            canAttachMarker = Object.isExtensible(moduleBase);
+          } catch (isExtensibleError) {
+            void isExtensibleError;
+            canAttachMarker = true;
           }
-        } catch (assignError) {
-          void assignError;
         }
 
-        if (!marked && typeof Object.defineProperty === 'function') {
-          let canDefine = true;
+        const shouldAttemptDirectMark = hasExistingMarker || canAttachMarker;
 
-          if (typeof Object.isExtensible === 'function') {
-            try {
-              canDefine = Object.isExtensible(moduleBase);
-            } catch (isExtensibleError) {
-              void isExtensibleError;
-              canDefine = true;
-            }
-          }
-
-          if (canDefine || Object.prototype.hasOwnProperty.call(moduleBase, '__cineSafeFreezeWrapped')) {
-            try {
-              Object.defineProperty(moduleBase, '__cineSafeFreezeWrapped', {
-                configurable: false,
-                enumerable: false,
-                writable: false,
-                value: true,
-              });
+        if (shouldAttemptDirectMark) {
+          try {
+            moduleBase[markerKey] = true;
+            if (moduleBase[markerKey]) {
               marked = true;
-            } catch (defineError) {
-              void defineError;
             }
+          } catch (assignError) {
+            void assignError;
+          }
+        }
+
+        if (!marked && shouldAttemptDirectMark && typeof Object.defineProperty === 'function') {
+          try {
+            Object.defineProperty(moduleBase, markerKey, {
+              configurable: false,
+              enumerable: false,
+              writable: false,
+              value: true,
+            });
+            marked = true;
+          } catch (defineError) {
+            void defineError;
           }
         }
 
