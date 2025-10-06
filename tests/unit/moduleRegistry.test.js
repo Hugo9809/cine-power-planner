@@ -174,4 +174,37 @@ describe('cineModules registry', () => {
   test('reset helper requires explicit confirmation', () => {
     expect(() => registry.__internalResetForTests()).toThrow(/requires \{ force: true \}/);
   });
+
+  test('describeAll provides frozen snapshots with filtering options', () => {
+    const alpha = registry.register('cineAlpha', { ok: true }, {
+      category: 'infrastructure',
+      description: 'Alpha module',
+    });
+    const beta = registry.register('cineBeta', { ok: true }, {
+      category: 'feature',
+      description: 'Beta module',
+      connections: ['cineAlpha'],
+    });
+    expect(Object.isFrozen(alpha)).toBe(true);
+    expect(Object.isFrozen(beta)).toBe(true);
+
+    const allMetadata = registry.describeAll();
+    expect(Array.isArray(allMetadata)).toBe(true);
+    expect(Object.isFrozen(allMetadata)).toBe(true);
+    expect(allMetadata.map((entry) => entry.name)).toEqual(['cineAlpha', 'cineBeta']);
+    expect(allMetadata.every((entry) => Object.isFrozen(entry))).toBe(true);
+
+    const featureOnly = registry.describeAll({ category: 'feature' });
+    expect(featureOnly).toHaveLength(1);
+    expect(Object.isFrozen(featureOnly)).toBe(true);
+    expect(featureOnly[0]).toMatchObject({ name: 'cineBeta', category: 'feature' });
+    expect(featureOnly[0].connections).toEqual(['cineAlpha']);
+    expect(Object.isFrozen(featureOnly[0].connections)).toBe(true);
+
+    const explicitNames = registry.describeAll({ names: ['cineBeta', 'cineMissing'], sort: false });
+    expect(explicitNames).toHaveLength(1);
+    expect(Object.isFrozen(explicitNames)).toBe(true);
+    expect(explicitNames[0].name).toBe('cineBeta');
+    expect(explicitNames[0].category).toBe('feature');
+  });
 });
