@@ -1202,7 +1202,7 @@ describe('automatic gear storage', () => {
     }));
 
     const serializedPresets = JSON.stringify(presets);
-    const compressed = LZString.compressToUTF16(serializedPresets);
+    const compressed = lzString.compressToUTF16(serializedPresets);
     const wrapper = JSON.stringify({
       __cineStorageCompressed: true,
       version: 1,

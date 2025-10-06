@@ -73,7 +73,7 @@ describe('cineModules registry', () => {
     const originalClearTimeout = global.clearTimeout;
     const scheduledCallbacks = [];
 
-    global.setTimeout = jest.fn((callback, delay) => {
+    global.setTimeout = jest.fn((callback) => {
       if (typeof callback === 'function') {
         scheduledCallbacks.push(callback);
       }

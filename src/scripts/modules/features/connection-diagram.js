@@ -139,6 +139,7 @@
         return null;
       }
     );
+    void applyIconGlyph;
     const resolveIconGlyph = fallbackGetter(
       context.resolveIconGlyph,
       glyph => (typeof GLOBAL_SCOPE.resolveIconGlyph === 'function' ? GLOBAL_SCOPE.resolveIconGlyph(glyph) : glyph)
@@ -177,10 +178,12 @@
     const resolveDiagramLegend = () => getDiagramLegend();
     const resolveDiagramHint = () => getDiagramHint();
     const resolveDownloadButton = () => getDownloadDiagramBtn();
+    void resolveDownloadButton;
     const resolveZoomInButton = () => getZoomInBtn();
     const resolveZoomOutButton = () => getZoomOutBtn();
     const resolveResetButton = () => getResetViewBtn();
     const resolveGridSnapToggle = () => getGridSnapToggleBtn();
+    void resolveGridSnapToggle;
 
     const resolveTexts = () => {
       try { return getTexts() || {}; } catch (error) { void error; return {}; }
@@ -350,6 +353,7 @@
       const controllerSelects = resolveControllerSelects();
 
       const isTouchDevice = (navigator && Number.isFinite(navigator.maxTouchPoints) ? navigator.maxTouchPoints : 0) > 0;
+      void isTouchDevice;
 
       const camName = cameraSelect ? cameraSelect.value : '';
       const cam = devices.cameras ? devices.cameras[camName] : undefined;

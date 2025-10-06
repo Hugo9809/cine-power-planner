@@ -1,4 +1,5 @@
-/* global cineModuleBase */
+/* global cineModuleBase, IOS_PWA_HELP_STORAGE_KEY, getSafeLocalStorage, SAFE_LOCAL_STORAGE,
+          getManualDownloadFallbackMessage, getManualDownloadCopyHint */
 
 (function () {
   function detectGlobalScope() {
@@ -464,6 +465,7 @@
         parsed = JSON.parse(source);
       } catch (error) {
         parsed = null;
+        void error;
       }
       if (parsed && (Array.isArray(parsed) || isPlainObject(parsed))) {
         source = parsed;
@@ -731,6 +733,11 @@
     return target;
   }
 
+  const CONTROL_CHARACTER_REGEX = new RegExp(
+    `[${String.fromCharCode(0)}-${String.fromCharCode(31)}${String.fromCharCode(127)}]`,
+    'g',
+  );
+
   function sanitizeBackupPayload(raw) {
     if (raw === null || raw === undefined) {
       return '';
@@ -861,7 +868,7 @@
     }
 
     try {
-      return text.replace(/[\u0000-\u001f\u007f]/g, '');
+      return text.replace(CONTROL_CHARACTER_REGEX, '');
     } catch (error) {
       console.warn('Failed to strip control characters from backup payload', error);
       return text;

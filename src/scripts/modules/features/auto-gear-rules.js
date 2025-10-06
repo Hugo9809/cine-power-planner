@@ -1,4 +1,17 @@
-/* global cineModuleBase */
+/* global cineModuleBase, normalizeAutoGearItem, normalizeAutoGearQuantity, normalizeAutoGearShootingDaysCondition,
+          normalizeVideoDistributionOptionValue, normalizeBatteryPlateValue, autoGearRuleSignature,
+          generateGearListHtml, parseGearTableForAutoRules, diffGearTableMaps, generateAutoGearId,
+          getViewfinderFallbackLabel, getVideoDistributionFallbackLabel, monitorSelect, normalizeAutoGearTriggerValue,
+          texts, currentLang, devices, setSelectValue, distanceSelect, motorSelects, controllerSelects, batterySelect,
+          hotswapSelect, setSliderBowlValue, setEasyrigValue, collectProjectFormData, requiredScenariosSelect,
+          autoGearRules, autoGearRuleMatteboxKey, setAutoGearRules, cameraSelect, videoSelect, cageSelect,
+          batteryPlateSelect, updateBatteryPlateVisibility, updateBatteryOptions, applyBatteryPlateSelectionFromBattery,
+          getSliderBowlValue, getEasyrigValue, ensureAutoBackupBeforeDeletion, showNotification, notifyAutoSaveFromBackup,
+          markAutoGearDefaultsSeeded, getAutoGearRules, clearAutoGearDefaultsSeeded, hasSeededAutoGearDefaults,
+          assignAutoGearRules, AUTO_GEAR_ANY_MOTOR_TOKEN,
+          baseAutoGearRulesState: true, projectScopedAutoGearRules: true,
+          autoGearRulesLastBackupSignature: true, autoGearRulesLastPersistedSignature: true,
+          autoGearRulesDirtySinceBackup: true */
 
 (function () {
   function detectGlobalScope() {
