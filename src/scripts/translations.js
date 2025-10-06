@@ -452,7 +452,7 @@ const texts = {
       "The import timestamp \"{value}\" could not be verified. Confirm the file has not been modified.",
     autoGearBackupsHeading: "Automatic backups",
     autoGearBackupsDescription:
-      "Backups save your rules every 10 minutes when changes occur. Restore a snapshot if something goes wrong.",
+      "Backups save your rules every 10 minutes when changes occur and keep up to 30 incremental steps between full snapshots. Restore a snapshot if something goes wrong.",
     autoGearShowBackupsLabel: "Show automatic backups",
     autoGearShowBackupsHelp: "Reveal the snapshots captured in the background.",
     autoGearBackupsHidden: "Automatic backups stay hidden until you turn them on.",
@@ -2357,7 +2357,7 @@ const texts = {
       "Il timestamp di importazione \"{value}\" non può essere verificato. Assicurati che il file non sia stato modificato.",
     autoGearBackupsHeading: "Backup automatici",
     autoGearBackupsDescription:
-      "Viene salvato un backup ogni 10 minuti quando ci sono modifiche. Ripristina una versione se qualcosa va storto.",
+      "Viene salvato un backup ogni 10 minuti quando ci sono modifiche e vengono conservati fino a 30 passaggi incrementali tra due snapshot completi. Ripristina una versione se qualcosa va storto.",
     autoGearShowBackupsLabel: "Mostra i backup automatici",
     autoGearShowBackupsHelp: "Mostra gli snapshot salvati in background.",
     autoGearBackupsHidden: "I backup automatici restano nascosti finché non li attivi.",
@@ -3815,7 +3815,7 @@ const texts = {
       "No se pudo verificar la marca de tiempo de importación \"{value}\". Asegúrate de que el archivo no haya sido modificado.",
     autoGearBackupsHeading: "Copias de seguridad automáticas",
     autoGearBackupsDescription:
-      "Guarda una copia cada 10 minutos cuando hay cambios. Restaura una versión si algo sale mal.",
+      "Guarda una copia cada 10 minutos cuando hay cambios y mantiene hasta 30 pasos incrementales entre instantáneas completas. Restaura una versión si algo sale mal.",
     autoGearShowBackupsLabel: "Mostrar copias automáticas",
     autoGearShowBackupsHelp: "Muestra las instantáneas guardadas en segundo plano.",
     autoGearBackupsHidden: "Las copias automáticas permanecen ocultas hasta que las actives.",
@@ -5274,7 +5274,7 @@ const texts = {
       "L’horodatage d’import \"{value}\" n’a pas pu être vérifié. Assurez-vous que le fichier n’a pas été modifié.",
     autoGearBackupsHeading: "Sauvegardes automatiques",
     autoGearBackupsDescription:
-      "Une sauvegarde est créée toutes les 10 minutes en cas de changement. Restaurez une version si nécessaire.",
+      "Une sauvegarde est créée toutes les 10 minutes en cas de changement et conserve jusqu’à 30 étapes incrémentales entre deux instantanés complets. Restaurez une version si nécessaire.",
     autoGearShowBackupsLabel: "Afficher les sauvegardes automatiques",
     autoGearShowBackupsHelp: "Affiche les instantanés capturés en arrière-plan.",
     versionCompareButton: "Comparer les versions",
@@ -6746,7 +6746,7 @@ const texts = {
       "Der Import-Zeitstempel \"{value}\" konnte nicht verifiziert werden. Stelle sicher, dass die Datei nicht verändert wurde.",
     autoGearBackupsHeading: "Automatische Sicherungen",
     autoGearBackupsDescription:
-      "Alle 10 Minuten wird bei Änderungen eine Sicherung erstellt. Stelle eine Version wieder her, falls etwas schiefgeht.",
+      "Alle 10 Minuten wird bei Änderungen eine Sicherung erstellt und bis zu 30 inkrementelle Schritte zwischen vollständigen Snapshots behalten. Stelle eine Version wieder her, falls etwas schiefgeht.",
     autoGearShowBackupsLabel: "Automatische Sicherungen anzeigen",
     autoGearShowBackupsHelp: "Blendet die im Hintergrund erstellten Snapshots ein.",
     versionCompareButton: "Versionen vergleichen",

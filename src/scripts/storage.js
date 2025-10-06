@@ -2963,7 +2963,10 @@ function getAutoBackupEntrySignature(container, entry) {
     ? container[entry.key]
     : undefined;
   try {
-    return createStableValueSignature(value);
+    const normalizedValue = cloneAutoBackupValueWithLegacyNormalization(value, {
+      stripMetadata: true,
+    });
+    return createStableValueSignature(normalizedValue);
   } catch (error) {
     console.warn('Failed to create stable signature for automatic backup entry', error);
     return 'undefined';
