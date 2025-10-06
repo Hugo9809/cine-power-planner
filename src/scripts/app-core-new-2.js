@@ -16585,6 +16585,24 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           void assignError;
         }
 
+        let existingDescriptor = null;
+
+        if (typeof Object.getOwnPropertyDescriptor === 'function') {
+          try {
+            existingDescriptor = Object.getOwnPropertyDescriptor(
+              moduleBase,
+              '__cineSafeFreezeWrapped'
+            );
+          } catch (descriptorError) {
+            void descriptorError;
+            existingDescriptor = null;
+          }
+        }
+
+        if (existingDescriptor && existingDescriptor.value === true) {
+          marked = true;
+        }
+
         if (!marked && typeof Object.defineProperty === 'function') {
           let canDefine = true;
 
@@ -16597,7 +16615,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             }
           }
 
-          if (canDefine || Object.prototype.hasOwnProperty.call(moduleBase, '__cineSafeFreezeWrapped')) {
+          const canRedefineExisting =
+            existingDescriptor && (existingDescriptor.configurable || existingDescriptor.writable);
+
+          if ((canDefine && !existingDescriptor) || canRedefineExisting) {
             try {
               Object.defineProperty(moduleBase, '__cineSafeFreezeWrapped', {
                 configurable: false,
