@@ -7957,12 +7957,16 @@ async function clearCachesAndReload() {
     || null;
 
   if (offlineModule && typeof offlineModule.reloadApp === 'function') {
-    await offlineModule.reloadApp({
-      window,
-      navigator: typeof navigator !== 'undefined' ? navigator : undefined,
-      caches: typeof caches !== 'undefined' ? caches : undefined,
-    });
-    return;
+    try {
+      await offlineModule.reloadApp({
+        window,
+        navigator: typeof navigator !== 'undefined' ? navigator : undefined,
+        caches: typeof caches !== 'undefined' ? caches : undefined,
+      });
+      return;
+    } catch (offlineReloadError) {
+      console.warn('Offline module reload failed, falling back to manual refresh', offlineReloadError);
+    }
   }
 
   let uiCacheCleared = false;
