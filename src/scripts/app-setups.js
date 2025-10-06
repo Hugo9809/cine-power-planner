@@ -126,6 +126,84 @@ function getGlobalScope() {
     );
 }
 
+let cachedGearListModule = null;
+let attemptedGearListModuleLoad = false;
+
+function resolveGearListModule() {
+    if (cachedGearListModule) {
+        return cachedGearListModule;
+    }
+
+    const scope = getGlobalScope();
+
+    if (!attemptedGearListModuleLoad && typeof require === 'function') {
+        attemptedGearListModuleLoad = true;
+        try {
+            cachedGearListModule = require('./modules/gear-list.js');
+        } catch (error) {
+            if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+                console.warn('Unable to require gear list module, falling back to global namespace', error);
+            }
+        }
+    }
+
+    if (!cachedGearListModule && scope && scope.cine && scope.cine.gearList) {
+        cachedGearListModule = scope.cine.gearList;
+    }
+
+    return cachedGearListModule;
+}
+
+function getCurrentGearListHtml(options) {
+    const moduleApi = resolveGearListModule();
+    if (!moduleApi || typeof moduleApi.getCurrentGearListHtml !== 'function') {
+        return '';
+    }
+
+    const scope = getGlobalScope();
+    const normalizedOptions = Object.assign({
+        scope,
+        gearListRoot: gearListOutput,
+        projectRequirementsRoot,
+    }, options);
+
+    if (!normalizedOptions.projectName && typeof getCurrentProjectName === 'function') {
+        normalizedOptions.projectName = getCurrentProjectName();
+    }
+
+    return moduleApi.getCurrentGearListHtml(normalizedOptions);
+}
+
+function getGearListSelectors(options) {
+    const moduleApi = resolveGearListModule();
+    if (!moduleApi || typeof moduleApi.getGearListSelectors !== 'function') {
+        return {};
+    }
+
+    const scope = getGlobalScope();
+    const normalizedOptions = Object.assign({ scope, gearListRoot: gearListOutput }, options);
+    return moduleApi.getGearListSelectors(normalizedOptions);
+}
+
+function applyGearListSelectors(selectors, options) {
+    const moduleApi = resolveGearListModule();
+    if (!moduleApi || typeof moduleApi.applyGearListSelectors !== 'function') {
+        return;
+    }
+
+    const scope = getGlobalScope();
+    const normalizedOptions = Object.assign({ scope, gearListRoot: gearListOutput }, options);
+    moduleApi.applyGearListSelectors(selectors, normalizedOptions);
+}
+
+function cloneGearListSelectors(selectors) {
+    const moduleApi = resolveGearListModule();
+    if (!moduleApi || typeof moduleApi.cloneGearListSelectors !== 'function') {
+        return {};
+    }
+    return moduleApi.cloneGearListSelectors(selectors);
+}
+
 function getSafeGearListHtmlSections(html) {
     const normalizedHtml = typeof html === 'string' ? html : '';
     const fallbackResult = {
@@ -4540,198 +4618,6 @@ function generateGearListHtml(info = {}) {
     return body;
 }
 
-
-function getCurrentGearListHtml() {
-    if (!gearListOutput && !projectRequirementsOutput) return '';
-
-    let projHtml = '';
-    if (projectRequirementsOutput) {
-        const projClone = projectRequirementsOutput.cloneNode(true);
-        const editBtn = projClone.querySelector('#editProjectBtn');
-        if (editBtn) editBtn.remove();
-        const t = projClone.querySelector('h2');
-        if (t) t.remove();
-        projHtml = projClone.innerHTML.trim();
-    }
-
-    let gearHtml = '';
-    if (gearListOutput) {
-        const clone = gearListOutput.cloneNode(true);
-        const actions = clone.querySelector('#gearListActions');
-        if (actions) actions.remove();
-        const editBtn = clone.querySelector('#editProjectBtn');
-        if (editBtn) editBtn.remove();
-        ['Director', 'Dop', 'Gaffer', 'Focus'].forEach(role => {
-            const sel = clone.querySelector(`#gearList${role}Monitor`);
-            if (sel) {
-                const originalSel = gearListOutput.querySelector(`#gearList${role}Monitor`);
-                const val = originalSel ? originalSel.value : sel.value;
-                Array.from(sel.options).forEach(opt => {
-                    if (opt.value === val) {
-                        opt.setAttribute('selected', '');
-                    } else {
-                        opt.removeAttribute('selected');
-                    }
-                });
-            }
-        });
-        ['Director', 'Combo', 'Dop'].forEach(role => {
-            const sel = clone.querySelector(`#gearList${role}Monitor15`);
-            if (sel) {
-                const originalSel = gearListOutput.querySelector(`#gearList${role}Monitor15`);
-                const val = originalSel ? originalSel.value : sel.value;
-                Array.from(sel.options).forEach(opt => {
-                    if (opt.value === val) {
-                        opt.setAttribute('selected', '');
-                    } else {
-                        opt.removeAttribute('selected');
-                    }
-                });
-            }
-        });
-        const cageSel = clone.querySelector('#gearListCage');
-        if (cageSel) {
-            const originalSel = gearListOutput.querySelector('#gearListCage');
-            const val = originalSel ? originalSel.value : cageSel.value;
-            Array.from(cageSel.options).forEach(opt => {
-                if (opt.value === val) {
-                    opt.setAttribute('selected', '');
-                } else {
-                    opt.removeAttribute('selected');
-                }
-            });
-        }
-        const easyrigSel = clone.querySelector('#gearListEasyrig');
-        if (easyrigSel) {
-            const originalSel = gearListOutput.querySelector('#gearListEasyrig');
-            const val = originalSel ? originalSel.value : easyrigSel.value;
-            Array.from(easyrigSel.options).forEach(opt => {
-                if (opt.value === val) {
-                    opt.setAttribute('selected', '');
-                } else {
-                    opt.removeAttribute('selected');
-                }
-            });
-        }
-        const sliderSel = clone.querySelector('#gearListSliderBowl');
-        if (sliderSel) {
-            const originalSel = gearListOutput.querySelector('#gearListSliderBowl');
-            const val = originalSel ? originalSel.value : sliderSel.value;
-            Array.from(sliderSel.options).forEach(opt => {
-                if (opt.value === val) {
-                    opt.setAttribute('selected', '');
-                } else {
-                    opt.removeAttribute('selected');
-                }
-            });
-        }
-        const eyeSel = clone.querySelector('#gearListEyeLeatherColor');
-        if (eyeSel) {
-            const originalSel = gearListOutput.querySelector('#gearListEyeLeatherColor');
-            const val = originalSel ? originalSel.value : eyeSel.value;
-            Array.from(eyeSel.options).forEach(opt => {
-                if (opt.value === val) {
-                    opt.setAttribute('selected', '');
-                } else {
-                    opt.removeAttribute('selected');
-                }
-            });
-        }
-        [1, 2].forEach(i => {
-            const colorSel = clone.querySelector(`#gearListProGaffColor${i}`);
-            if (colorSel) {
-                const originalSel = gearListOutput.querySelector(`#gearListProGaffColor${i}`);
-                const val = originalSel ? originalSel.value : colorSel.value;
-                Array.from(colorSel.options).forEach(opt => {
-                    if (opt.value === val) {
-                        opt.setAttribute('selected', '');
-                    } else {
-                        opt.removeAttribute('selected');
-                    }
-                });
-            }
-            const widthSel = clone.querySelector(`#gearListProGaffWidth${i}`);
-            if (widthSel) {
-                const originalSel = gearListOutput.querySelector(`#gearListProGaffWidth${i}`);
-                const val = originalSel ? originalSel.value : widthSel.value;
-                Array.from(widthSel.options).forEach(opt => {
-                    if (opt.value === val) {
-                        opt.setAttribute('selected', '');
-                    } else {
-                        opt.removeAttribute('selected');
-                    }
-                });
-            }
-        });
-        clone.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-            if (cb.checked) {
-                cb.setAttribute('checked', '');
-            } else {
-                cb.removeAttribute('checked');
-            }
-        });
-        const table = clone.querySelector('.gear-table');
-        gearHtml = table ? '<h3>Gear List</h3>' + table.outerHTML : '';
-    }
-
-    if (!projHtml && !gearHtml) {
-        return '';
-    }
-
-    const projectName = getCurrentProjectName();
-    const titleHtml = projectName ? `<h2>${projectName}</h2>` : '';
-    const combined = `${titleHtml}${projHtml}${gearHtml}`.trim();
-    if (combined && typeof globalThis !== 'undefined') {
-        globalThis.__cineLastGearListHtml = combined;
-    }
-    return combined;
-}
-
-function getGearListSelectors() {
-    if (!gearListOutput) return {};
-    const selectors = {};
-    gearListOutput.querySelectorAll('select[id]').forEach(sel => {
-        selectors[sel.id] = sel.multiple
-            ? Array.from(sel.selectedOptions).map(o => o.value)
-            : sel.value;
-    });
-    return selectors;
-}
-
-function cloneGearListSelectors(selectors) {
-    if (!selectors || typeof selectors !== 'object') return {};
-    const clone = {};
-    Object.entries(selectors).forEach(([id, value]) => {
-        if (!id || typeof id !== 'string') return;
-        if (Array.isArray(value)) {
-            clone[id] = value.map(item => (typeof item === 'string' ? item : String(item ?? '')));
-        } else if (value === undefined || value === null) {
-            clone[id] = '';
-        } else {
-            clone[id] = typeof value === 'string' ? value : String(value);
-        }
-    });
-    return clone;
-}
-
-function applyGearListSelectors(selectors) {
-    if (!gearListOutput || !selectors) return;
-    Object.entries(selectors).forEach(([id, value]) => {
-        const sel = gearListOutput.querySelector(`#${id}`);
-        if (sel) {
-            if (sel.multiple) {
-                const vals = Array.isArray(value) ? value : [value];
-                Array.from(sel.options).forEach(opt => {
-                    opt.selected = vals.includes(opt.value);
-                });
-                sel.dispatchEvent(new Event('change'));
-            } else {
-                sel.value = value;
-                sel.dispatchEvent(new Event('change'));
-            }
-        }
-    });
-}
 
 function cloneProjectInfoForStorage(info) {
     if (info === undefined || info === null) {
