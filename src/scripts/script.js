@@ -11,6 +11,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
   const path = require('path');
   const vm = require('vm');
   const parts = [
+    'modules/architecture-core.js',
     'modules/architecture-helpers.js',
     'modules/base.js',
     'modules/registry.js',

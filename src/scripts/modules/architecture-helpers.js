@@ -19,6 +19,38 @@
 
   const LOCAL_SCOPE = fallbackDetectGlobalScope();
 
+  function resolveArchitectureCore(scope) {
+    if (typeof require === 'function') {
+      try {
+        const required = require('./architecture-core.js');
+        if (required && typeof required === 'object') {
+          return required;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    const candidates = [];
+    const primary = scope || LOCAL_SCOPE;
+    if (primary && typeof primary === 'object') {
+      candidates.push(primary);
+    }
+    if (typeof globalThis !== 'undefined' && candidates.indexOf(globalThis) === -1) candidates.push(globalThis);
+    if (typeof window !== 'undefined' && candidates.indexOf(window) === -1) candidates.push(window);
+    if (typeof self !== 'undefined' && candidates.indexOf(self) === -1) candidates.push(self);
+    if (typeof global !== 'undefined' && candidates.indexOf(global) === -1) candidates.push(global);
+
+    for (let index = 0; index < candidates.length; index += 1) {
+      const candidate = candidates[index];
+      if (candidate && typeof candidate.cineModuleArchitectureCore === 'object') {
+        return candidate.cineModuleArchitectureCore;
+      }
+    }
+
+    return null;
+  }
+
   function tryRequireArchitecture(scope) {
     if (typeof require === 'function') {
       try {
@@ -40,6 +72,14 @@
   }
 
   const ARCHITECTURE = tryRequireArchitecture(LOCAL_SCOPE);
+  const ARCHITECTURE_CORE = resolveArchitectureCore(LOCAL_SCOPE);
+  const CORE_INSTANCE =
+    ARCHITECTURE_CORE && typeof ARCHITECTURE_CORE.createCore === 'function'
+      ? ARCHITECTURE_CORE.createCore({
+          primaryScope: LOCAL_SCOPE,
+          pendingQueueKey: DEFAULT_PENDING_QUEUE_KEY,
+        })
+      : null;
 
   function fallbackCollectCandidateScopes(primary) {
     const scopes = [];
@@ -63,6 +103,17 @@
   }
 
   function detectWithArchitecture() {
+    if (CORE_INSTANCE && typeof CORE_INSTANCE.detectGlobalScope === 'function') {
+      try {
+        const detected = CORE_INSTANCE.detectGlobalScope();
+        if (detected) {
+          return detected;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
     if (ARCHITECTURE && typeof ARCHITECTURE.detectGlobalScope === 'function') {
       try {
         const detected = ARCHITECTURE.detectGlobalScope();
@@ -95,6 +146,17 @@
 
   function collectWithArchitecture(primary) {
     const target = primary || PRIMARY_SCOPE;
+
+    if (CORE_INSTANCE && typeof CORE_INSTANCE.collectCandidateScopes === 'function') {
+      try {
+        const collected = CORE_INSTANCE.collectCandidateScopes(target);
+        if (Array.isArray(collected) && collected.length > 0) {
+          return collected;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
 
     if (ARCHITECTURE && typeof ARCHITECTURE.collectCandidateScopes === 'function') {
       try {
@@ -133,6 +195,17 @@
   }
 
   function tryRequireWithArchitecture(modulePath) {
+    if (CORE_INSTANCE && typeof CORE_INSTANCE.tryRequire === 'function') {
+      try {
+        const result = CORE_INSTANCE.tryRequire(modulePath);
+        if (typeof result !== 'undefined') {
+          return result;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
     if (ARCHITECTURE && typeof ARCHITECTURE.tryRequire === 'function') {
       try {
         const result = ARCHITECTURE.tryRequire(modulePath);
@@ -149,6 +222,17 @@
 
   function resolveImmutability(scope) {
     const targetScope = scope || PRIMARY_SCOPE;
+
+    if (CORE_INSTANCE && typeof CORE_INSTANCE.resolveImmutability === 'function') {
+      try {
+        const resolved = CORE_INSTANCE.resolveImmutability(targetScope);
+        if (resolved && typeof resolved === 'object') {
+          return resolved;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
 
     if (ARCHITECTURE && typeof ARCHITECTURE.tryRequire === 'function') {
       try {
@@ -205,6 +289,16 @@
   }
 
   function defineHiddenProperty(target, name, value) {
+    if (CORE_INSTANCE && typeof CORE_INSTANCE.defineHiddenProperty === 'function') {
+      try {
+        if (CORE_INSTANCE.defineHiddenProperty(target, name, value)) {
+          return true;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
     if (ARCHITECTURE && typeof ARCHITECTURE.defineHiddenProperty === 'function') {
       try {
         if (ARCHITECTURE.defineHiddenProperty(target, name, value)) {
@@ -256,6 +350,17 @@
   function ensureQueue(scope, queueKey) {
     const key = typeof queueKey === 'string' && queueKey ? queueKey : DEFAULT_PENDING_QUEUE_KEY;
     const targetScope = scope || PRIMARY_SCOPE;
+
+    if (CORE_INSTANCE && typeof CORE_INSTANCE.ensureQueue === 'function') {
+      try {
+        const resolved = CORE_INSTANCE.ensureQueue(targetScope, key);
+        if (Array.isArray(resolved)) {
+          return resolved;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
 
     if (ARCHITECTURE && typeof ARCHITECTURE.ensureQueue === 'function') {
       try {
@@ -357,6 +462,14 @@
   }
 
   function freezeDeep(value) {
+    if (CORE_INSTANCE && typeof CORE_INSTANCE.freezeDeep === 'function') {
+      try {
+        return CORE_INSTANCE.freezeDeep(value);
+      } catch (error) {
+        void error;
+      }
+    }
+
     const provider = getImmutability();
 
     try {
@@ -385,6 +498,15 @@
   }
 
   function safeWarn(message, detail) {
+    if (CORE_INSTANCE && typeof CORE_INSTANCE.safeWarn === 'function') {
+      try {
+        CORE_INSTANCE.safeWarn(message, detail);
+        return;
+      } catch (error) {
+        void error;
+      }
+    }
+
     if (ARCHITECTURE && typeof ARCHITECTURE.safeWarn === 'function') {
       try {
         ARCHITECTURE.safeWarn(message, detail);
@@ -441,6 +563,7 @@
 
   const helpers = freezeDeep({
     architecture: ARCHITECTURE,
+    architectureCore: ARCHITECTURE_CORE,
     detectGlobalScope,
     getPrimaryScope() {
       return PRIMARY_SCOPE;
@@ -462,7 +585,7 @@
     category: 'infrastructure',
     description: 'Shared architecture helpers for scope detection, registry resolution and queue management.',
     replace: true,
-    connections: ['cineModuleArchitectureKernel'],
+    connections: ['cineModuleArchitectureKernel', 'cineModuleArchitectureCore'],
   };
 
   if (registry && typeof registry.register === 'function') {

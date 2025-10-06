@@ -22,6 +22,34 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return {};
   }
   var LOCAL_SCOPE = fallbackDetectGlobalScope();
+  function resolveArchitectureCore(scope) {
+    if (typeof require === 'function') {
+      try {
+        var required = require('./architecture-core.js');
+        if (required && _typeof(required) === 'object') {
+          return required;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+    var candidates = [];
+    var primary = scope || LOCAL_SCOPE;
+    if (primary && _typeof(primary) === 'object') {
+      candidates.push(primary);
+    }
+    if (typeof globalThis !== 'undefined' && candidates.indexOf(globalThis) === -1) candidates.push(globalThis);
+    if (typeof window !== 'undefined' && candidates.indexOf(window) === -1) candidates.push(window);
+    if (typeof self !== 'undefined' && candidates.indexOf(self) === -1) candidates.push(self);
+    if (typeof global !== 'undefined' && candidates.indexOf(global) === -1) candidates.push(global);
+    for (var index = 0; index < candidates.length; index += 1) {
+      var candidate = candidates[index];
+      if (candidate && _typeof(candidate.cineModuleArchitectureCore) === 'object') {
+        return candidate.cineModuleArchitectureCore;
+      }
+    }
+    return null;
+  }
   function tryRequireArchitecture(scope) {
     if (typeof require === 'function') {
       try {
@@ -40,6 +68,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return null;
   }
   var ARCHITECTURE = tryRequireArchitecture(LOCAL_SCOPE);
+  var ARCHITECTURE_CORE = resolveArchitectureCore(LOCAL_SCOPE);
+  var CORE_INSTANCE = ARCHITECTURE_CORE && typeof ARCHITECTURE_CORE.createCore === 'function' ? ARCHITECTURE_CORE.createCore({
+    primaryScope: LOCAL_SCOPE,
+    pendingQueueKey: DEFAULT_PENDING_QUEUE_KEY,
+  }) : null;
   function fallbackCollectCandidateScopes(primary) {
     var scopes = [];
     function pushScope(scope) {
@@ -58,6 +91,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return scopes;
   }
   function detectWithArchitecture() {
+    if (CORE_INSTANCE && typeof CORE_INSTANCE.detectGlobalScope === 'function') {
+      try {
+        var detectedCore = CORE_INSTANCE.detectGlobalScope();
+        if (detectedCore) {
+          return detectedCore;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
     if (ARCHITECTURE && typeof ARCHITECTURE.detectGlobalScope === 'function') {
       try {
         var detected = ARCHITECTURE.detectGlobalScope();
@@ -84,6 +127,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var PRIMARY_SCOPE = detectGlobalScope();
   function collectWithArchitecture(primary) {
     var target = primary || PRIMARY_SCOPE;
+    if (CORE_INSTANCE && typeof CORE_INSTANCE.collectCandidateScopes === 'function') {
+      try {
+        var collectedCore = CORE_INSTANCE.collectCandidateScopes(target);
+        if (Array.isArray(collectedCore) && collectedCore.length > 0) {
+          return collectedCore;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
     if (ARCHITECTURE && typeof ARCHITECTURE.collectCandidateScopes === 'function') {
       try {
         var collected = ARCHITECTURE.collectCandidateScopes(target);
@@ -116,6 +169,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
   }
   function tryRequireWithArchitecture(modulePath) {
+    if (CORE_INSTANCE && typeof CORE_INSTANCE.tryRequire === 'function') {
+      try {
+        var resultCore = CORE_INSTANCE.tryRequire(modulePath);
+        if (typeof resultCore !== 'undefined') {
+          return resultCore;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
     if (ARCHITECTURE && typeof ARCHITECTURE.tryRequire === 'function') {
       try {
         var result = ARCHITECTURE.tryRequire(modulePath);
@@ -130,6 +193,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function resolveImmutability(scope) {
     var targetScope = scope || PRIMARY_SCOPE;
+    if (CORE_INSTANCE && typeof CORE_INSTANCE.resolveImmutability === 'function') {
+      try {
+        var resolvedCore = CORE_INSTANCE.resolveImmutability(targetScope);
+        if (resolvedCore && _typeof(resolvedCore) === 'object') {
+          return resolvedCore;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
     if (ARCHITECTURE && typeof ARCHITECTURE.tryRequire === 'function') {
       try {
         var required = ARCHITECTURE.tryRequire('./immutability.js');
@@ -177,6 +250,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return false;
   }
   function defineHiddenProperty(target, name, value) {
+    if (CORE_INSTANCE && typeof CORE_INSTANCE.defineHiddenProperty === 'function') {
+      try {
+        if (CORE_INSTANCE.defineHiddenProperty(target, name, value)) {
+          return true;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
     if (ARCHITECTURE && typeof ARCHITECTURE.defineHiddenProperty === 'function') {
       try {
         if (ARCHITECTURE.defineHiddenProperty(target, name, value)) {
@@ -220,6 +302,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   function ensureQueue(scope, queueKey) {
     var key = typeof queueKey === 'string' && queueKey ? queueKey : DEFAULT_PENDING_QUEUE_KEY;
     var targetScope = scope || PRIMARY_SCOPE;
+    if (CORE_INSTANCE && typeof CORE_INSTANCE.ensureQueue === 'function') {
+      try {
+        var resolvedCore = CORE_INSTANCE.ensureQueue(targetScope, key);
+        if (Array.isArray(resolvedCore)) {
+          return resolvedCore;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
     if (ARCHITECTURE && typeof ARCHITECTURE.ensureQueue === 'function') {
       try {
         var resolved = ARCHITECTURE.ensureQueue(targetScope, key);
@@ -302,6 +394,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return activeImmutability;
   }
   function freezeDeep(value) {
+    if (CORE_INSTANCE && typeof CORE_INSTANCE.freezeDeep === 'function') {
+      try {
+        return CORE_INSTANCE.freezeDeep(value);
+      } catch (error) {
+        void error;
+      }
+    }
     var provider = getImmutability();
     try {
       return provider.freezeDeep(value);
@@ -325,6 +424,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
   }
   function safeWarn(message, detail) {
+    if (CORE_INSTANCE && typeof CORE_INSTANCE.safeWarn === 'function') {
+      try {
+        CORE_INSTANCE.safeWarn(message, detail);
+        return;
+      } catch (error) {
+        void error;
+      }
+    }
     if (ARCHITECTURE && typeof ARCHITECTURE.safeWarn === 'function') {
       try {
         ARCHITECTURE.safeWarn(message, detail);
@@ -371,6 +478,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   var helpers = freezeDeep({
     architecture: ARCHITECTURE,
+    architectureCore: ARCHITECTURE_CORE,
     detectGlobalScope: detectGlobalScope,
     getPrimaryScope: function getPrimaryScope() {
       return PRIMARY_SCOPE;
@@ -391,7 +499,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     category: 'infrastructure',
     description: 'Shared architecture helpers for scope detection, registry resolution and queue management.',
     replace: true,
-    connections: ['cineModuleArchitectureKernel']
+    connections: ['cineModuleArchitectureKernel', 'cineModuleArchitectureCore']
   };
   if (registry && typeof registry.register === 'function') {
     try {
