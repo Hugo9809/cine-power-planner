@@ -105,6 +105,20 @@ const parseLocalStorageJSON = (key) => {
 
 const getDecodedLocalStorageItem = (key) => decodeStoredValue(localStorage.getItem(key));
 
+const expectAutoBackupSnapshot = (entry, expectedPayload, options = {}) => {
+  expect(entry).toBeDefined();
+  expect(typeof entry).toBe('object');
+  expect(entry).toHaveProperty('__cineAutoBackupSnapshot');
+  const snapshot = entry.__cineAutoBackupSnapshot;
+  expect(snapshot).toBeDefined();
+  const expectedType = options.snapshotType || 'full';
+  expect(snapshot.snapshotType).toBe(expectedType);
+  if (Object.prototype.hasOwnProperty.call(options, 'base')) {
+    expect(snapshot.base).toBe(options.base);
+  }
+  expect(snapshot.payload).toEqual(expectedPayload);
+};
+
 const validDeviceData = {
   cameras: {},
   monitors: {},
@@ -401,7 +415,7 @@ describe('setup storage', () => {
 
     const stored = parseLocalStorageJSON(SETUP_KEY);
     expect(stored[oldDuplicateKey]).toBeUndefined();
-    expect(stored[newDuplicateKey]).toEqual(duplicateValue);
+    expectAutoBackupSnapshot(stored[newDuplicateKey], duplicateValue);
     const autoBackupCount = Object.keys(stored).filter(name => name.startsWith('auto-backup-')).length;
     expect(autoBackupCount).toBeLessThanOrEqual(120);
   });
@@ -422,8 +436,8 @@ describe('setup storage', () => {
     saveSetups(setups);
 
     const stored = parseLocalStorageJSON(SETUP_KEY);
-    expect(stored[alphaKey]).toEqual(shared);
-    expect(stored[betaKey]).toEqual(shared);
+    expectAutoBackupSnapshot(stored[alphaKey], shared);
+    expectAutoBackupSnapshot(stored[betaKey], shared);
   });
 
   test('saveSetups keeps auto backups with distinct Date values for the same label', () => {
@@ -461,9 +475,9 @@ describe('setup storage', () => {
     expect(stored[alphaOldKey]).toBeDefined();
     expect(stored[alphaNewKey]).toBeDefined();
     expect(stored[betaOldKey]).toBeUndefined();
-    expect(stored[betaNewKey]).toEqual(betaValue);
+    expectAutoBackupSnapshot(stored[betaNewKey], betaValue);
     expect(stored[gammaOldKey]).toBeUndefined();
-    expect(stored[gammaNewKey]).toEqual(gammaValue);
+    expectAutoBackupSnapshot(stored[gammaNewKey], gammaValue);
   });
 
   test('saveSetups keeps the newest auto backup for each project label when trimming', () => {
@@ -576,7 +590,11 @@ describe('setup storage', () => {
     expect(result).toBe(renamedKey);
 
     const stored = parseLocalStorageJSON(SETUP_KEY);
-    expect(stored[renamedKey][TEST_AUTO_BACKUP_RENAMED_FLAG]).toBe(true);
+    expect(stored[renamedKey]).toBeDefined();
+    expect(stored[renamedKey]).toHaveProperty('__cineAutoBackupSnapshot');
+    expect(
+      stored[renamedKey].__cineAutoBackupSnapshot.payload[TEST_AUTO_BACKUP_RENAMED_FLAG],
+    ).toBe(true);
   });
 
   test('saveSetups keeps renamed auto backups when a new snapshot shares the label', () => {
@@ -879,7 +897,7 @@ describe('project storage', () => {
 
     const stored = parseLocalStorageJSON(PROJECT_KEY);
     expect(stored[oldDuplicateKey]).toBeUndefined();
-    expect(stored[newDuplicateKey]).toEqual(duplicateValue);
+    expectAutoBackupSnapshot(stored[newDuplicateKey], duplicateValue);
     const autoBackupCount = Object.keys(stored).filter(name => name.startsWith('auto-backup-')).length;
     expect(autoBackupCount).toBeLessThanOrEqual(120);
   });
@@ -922,7 +940,10 @@ describe('project storage', () => {
     const backupKeys = Object.keys(stored).filter(key => key.startsWith('auto-backup-'));
     expect(backupKeys).toHaveLength(1);
     expect(backupKeys[0]).toBe('auto-backup-2024-05-01-10-21-30-Overwrite Demo');
-    expect(stored[backupKeys[0]]).toEqual({ gearList: '<ul>Initial</ul>', projectInfo: { notes: 'original' } });
+    expectAutoBackupSnapshot(
+      stored[backupKeys[0]],
+      { gearList: '<ul>Initial</ul>', projectInfo: { notes: 'original' } },
+    );
     expect(stored['Overwrite Demo']).toEqual({ gearList: '<ul>Updated</ul>', projectInfo: { notes: 'updated' } });
 
     jest.useRealTimers();
@@ -957,7 +978,7 @@ describe('project storage', () => {
     const autoBackupKeys = Object.keys(stored).filter(key => key.startsWith('auto-backup-'));
     expect(autoBackupKeys).toHaveLength(1);
     expect(autoBackupKeys[0]).toBe(autoKey);
-    expect(stored[autoKey]).toEqual({ gearList: '<ul>Updated</ul>', projectInfo: null });
+    expectAutoBackupSnapshot(stored[autoKey], { gearList: '<ul>Updated</ul>', projectInfo: null });
 
     jest.useRealTimers();
   });
@@ -1113,7 +1134,7 @@ describe('project storage', () => {
     expect(backupKeys.every((name) => name.startsWith('auto-backup-'))).toBe(true);
     const keepBackupKey = backupKeys.find((name) => name.includes('Keep'));
     expect(keepBackupKey).toBeDefined();
-    expect(storedProjects[keepBackupKey]).toEqual({ gearList: '<ul>Keep</ul>', projectInfo: null });
+    expectAutoBackupSnapshot(storedProjects[keepBackupKey], { gearList: '<ul>Keep</ul>', projectInfo: null });
   });
 
   test('deleteProject without a name clears all stored projects', () => {

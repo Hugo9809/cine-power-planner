@@ -339,6 +339,15 @@ var FULL_BACKUP_HISTORY_STORAGE_KEY = 'cameraPowerPlanner_fullBackups';
 var STORAGE_AUTO_BACKUP_NAME_PREFIX = 'auto-backup-';
 var STORAGE_AUTO_BACKUP_DELETION_PREFIX = 'auto-backup-before-delete-';
 var STORAGE_AUTO_BACKUP_RENAMED_FLAG = '__cineAutoBackupRenamed';
+var AUTO_BACKUP_METADATA_PROPERTY = '__cineAutoBackupMetadata';
+var AUTO_BACKUP_SNAPSHOT_PROPERTY = '__cineAutoBackupSnapshot';
+var AUTO_BACKUP_SNAPSHOT_VERSION = 1;
+
+function isAutoBackupStorageKey(name) {
+  return typeof name === 'string'
+    && (name.startsWith(STORAGE_AUTO_BACKUP_NAME_PREFIX)
+      || name.startsWith(STORAGE_AUTO_BACKUP_DELETION_PREFIX));
+}
 
 if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE === 'object') {
   try {
@@ -391,6 +400,348 @@ function ensureGlobalAutoGearBackupDefaults() {
 }
 
 ensureGlobalAutoGearBackupDefaults();
+
+function cloneAutoBackupMetadata(metadata) {
+  if (!metadata || typeof metadata !== 'object') {
+    return null;
+  }
+
+  return {
+    version: Number.isFinite(metadata.version) ? metadata.version : AUTO_BACKUP_SNAPSHOT_VERSION,
+    snapshotType: metadata.snapshotType === 'delta' ? 'delta' : 'full',
+    base: typeof metadata.base === 'string' ? metadata.base : null,
+    sequence: Number.isFinite(metadata.sequence) ? metadata.sequence : (metadata.snapshotType === 'delta' ? 1 : 0),
+    createdAt: typeof metadata.createdAt === 'string' ? metadata.createdAt : null,
+    changedKeys: Array.isArray(metadata.changedKeys) ? metadata.changedKeys.slice() : [],
+    removedKeys: Array.isArray(metadata.removedKeys) ? metadata.removedKeys.slice() : [],
+  };
+}
+
+function defineAutoBackupMetadata(target, metadata) {
+  if (!target || typeof target !== 'object') {
+    return;
+  }
+
+  const clonedMetadata = cloneAutoBackupMetadata(metadata);
+
+  try {
+    Object.defineProperty(target, AUTO_BACKUP_METADATA_PROPERTY, {
+      configurable: true,
+      enumerable: false,
+      writable: true,
+      value: clonedMetadata,
+    });
+  } catch (error) {
+    try {
+      target[AUTO_BACKUP_METADATA_PROPERTY] = clonedMetadata;
+    } catch (assignmentError) {
+      void assignmentError;
+    }
+  }
+}
+
+function getAutoBackupMetadata(value) {
+  if (!value || typeof value !== 'object') {
+    return null;
+  }
+
+  const metadata = value[AUTO_BACKUP_METADATA_PROPERTY];
+  if (!metadata || typeof metadata !== 'object') {
+    return null;
+  }
+
+  return metadata;
+}
+
+function copyAutoBackupMetadata(source, target) {
+  if (!target || typeof target !== 'object') {
+    return;
+  }
+
+  const metadata = getAutoBackupMetadata(source);
+  if (metadata) {
+    defineAutoBackupMetadata(target, metadata);
+  }
+}
+
+function cloneAutoBackupValue(value, options) {
+  const opts = options || {};
+  if (value === null || typeof value !== 'object') {
+    return value;
+  }
+
+  if (Array.isArray(value)) {
+    return value.map((item) => cloneAutoBackupValue(item, opts));
+  }
+
+  if (value instanceof Date) {
+    return new Date(value.getTime());
+  }
+
+  const clone = {};
+  Object.keys(value).forEach((key) => {
+    clone[key] = cloneAutoBackupValue(value[key], opts);
+  });
+
+  if (!opts.stripMetadata) {
+    const metadata = getAutoBackupMetadata(value);
+    if (metadata) {
+      defineAutoBackupMetadata(clone, metadata);
+    }
+  }
+
+  return clone;
+}
+
+function deriveAutoBackupCreatedAt(name, fallbackDate) {
+  const info = parseAutoBackupKey(name);
+  if (info && Number.isFinite(info.timestamp) && info.timestamp > 0) {
+    try {
+      return new Date(info.timestamp).toISOString();
+    } catch (error) {
+      void error;
+    }
+  }
+
+  const sourceDate = fallbackDate instanceof Date ? fallbackDate : new Date();
+  try {
+    return sourceDate.toISOString();
+  } catch (error) {
+    void error;
+    return new Date().toISOString();
+  }
+}
+
+function expandAutoBackupEntries(container, options) {
+  if (!isPlainObject(container)) {
+    return container;
+  }
+
+  const result = {};
+  const cache = new Map();
+  const opts = options || {};
+  const isAutoBackupKey = typeof opts.isAutoBackupKey === 'function'
+    ? opts.isAutoBackupKey
+    : isAutoBackupStorageKey;
+
+  const resolve = (name, stack) => {
+    if (cache.has(name)) {
+      return cache.get(name);
+    }
+
+    const value = container[name];
+    if (!isPlainObject(value)) {
+      const clonedValue = cloneAutoBackupValue(value);
+      cache.set(name, clonedValue);
+      return clonedValue;
+    }
+
+    const snapshot = value[AUTO_BACKUP_SNAPSHOT_PROPERTY];
+    if (snapshot && typeof snapshot === 'object') {
+      if (stack.has(name)) {
+        console.warn('Detected cyclic auto-backup reference while expanding snapshot', name);
+        const fallback = {};
+        cache.set(name, fallback);
+        return fallback;
+      }
+
+      stack.add(name);
+
+      const snapshotType = snapshot.snapshotType === 'delta' ? 'delta' : 'full';
+      const baseName = snapshotType === 'delta' && typeof snapshot.base === 'string'
+        ? snapshot.base
+        : null;
+      const baseValue = baseName ? cloneAutoBackupValue(resolve(baseName, stack)) : {};
+      const payload = isPlainObject(snapshot.payload) ? snapshot.payload : {};
+      const changedKeys = Array.isArray(snapshot.changedKeys) && snapshot.changedKeys.length
+        ? snapshot.changedKeys
+        : Object.keys(payload);
+      const removedKeys = Array.isArray(snapshot.removedKeys) ? snapshot.removedKeys : [];
+
+      const expanded = cloneAutoBackupValue(baseValue);
+
+      changedKeys.forEach((key) => {
+        if (Object.prototype.hasOwnProperty.call(payload, key)) {
+          expanded[key] = cloneAutoBackupValue(payload[key]);
+        }
+      });
+
+      removedKeys.forEach((key) => {
+        if (Object.prototype.hasOwnProperty.call(expanded, key)) {
+          delete expanded[key];
+        }
+      });
+
+      const metadata = {
+        version: Number.isFinite(snapshot.version) ? snapshot.version : AUTO_BACKUP_SNAPSHOT_VERSION,
+        snapshotType,
+        base: snapshotType === 'delta' ? baseName : null,
+        sequence: Number.isFinite(snapshot.sequence)
+          ? snapshot.sequence
+          : (snapshotType === 'delta' ? 1 : 0),
+        createdAt: typeof snapshot.createdAt === 'string'
+          ? snapshot.createdAt
+          : deriveAutoBackupCreatedAt(name),
+        changedKeys: changedKeys.slice(),
+        removedKeys: removedKeys.slice(),
+      };
+
+      defineAutoBackupMetadata(expanded, metadata);
+      cache.set(name, expanded);
+      stack.delete(name);
+      return expanded;
+    }
+
+    const cloned = cloneAutoBackupValue(value);
+    if (isAutoBackupKey(name)) {
+      const metadata = {
+        version: AUTO_BACKUP_SNAPSHOT_VERSION,
+        snapshotType: 'full',
+        base: null,
+        sequence: 0,
+        createdAt: deriveAutoBackupCreatedAt(name),
+        changedKeys: Object.keys(cloned),
+        removedKeys: [],
+      };
+      defineAutoBackupMetadata(cloned, metadata);
+    }
+    cache.set(name, cloned);
+    return cloned;
+  };
+
+  Object.keys(container).forEach((name) => {
+    if (!isAutoBackupKey(name)) {
+      const value = container[name];
+      result[name] = isPlainObject(value)
+        ? cloneAutoBackupValue(value)
+        : value;
+      return;
+    }
+
+    result[name] = resolve(name, new Set());
+  });
+
+  return result;
+}
+
+function computeAutoBackupDiff(currentValue, baseValue) {
+  const payload = {};
+  const changedKeys = [];
+  const removedKeys = [];
+
+  const baseKeys = isPlainObject(baseValue) ? Object.keys(baseValue) : [];
+  const currentKeys = isPlainObject(currentValue) ? Object.keys(currentValue) : [];
+  const allKeys = new Set([...baseKeys, ...currentKeys]);
+
+  allKeys.forEach((key) => {
+    if (key === AUTO_BACKUP_METADATA_PROPERTY) {
+      return;
+    }
+
+    const hasCurrent = Object.prototype.hasOwnProperty.call(currentValue || {}, key);
+    const hasBase = Object.prototype.hasOwnProperty.call(baseValue || {}, key);
+
+    if (!hasCurrent && hasBase) {
+      removedKeys.push(key);
+      return;
+    }
+
+    if (!hasCurrent) {
+      return;
+    }
+
+    const currentEntry = currentValue ? currentValue[key] : undefined;
+    const baseEntry = hasBase ? baseValue[key] : undefined;
+
+    const currentSignature = createStableValueSignature(currentEntry);
+    const baseSignature = createStableValueSignature(baseEntry);
+
+    if (currentSignature !== baseSignature) {
+      changedKeys.push(key);
+      payload[key] = cloneAutoBackupValue(currentEntry, { stripMetadata: true });
+    }
+  });
+
+  return { payload, changedKeys, removedKeys };
+}
+
+function serializeAutoBackupEntries(entries, options) {
+  if (!isPlainObject(entries)) {
+    return entries;
+  }
+
+  const opts = options || {};
+  const isAutoBackupKey = typeof opts.isAutoBackupKey === 'function'
+    ? opts.isAutoBackupKey
+    : isAutoBackupStorageKey;
+
+  const serialized = {};
+  const entryNames = Object.keys(entries);
+
+  entryNames.forEach((name) => {
+    const value = entries[name];
+    if (!isAutoBackupKey(name) || !isPlainObject(value)) {
+      serialized[name] = cloneAutoBackupValue(value, { stripMetadata: true });
+      return;
+    }
+
+    const metadata = getAutoBackupMetadata(value);
+    const createdAt = metadata && typeof metadata.createdAt === 'string'
+      ? metadata.createdAt
+      : deriveAutoBackupCreatedAt(name);
+
+    if (!metadata || metadata.snapshotType !== 'delta') {
+      serialized[name] = {};
+      serialized[name][AUTO_BACKUP_SNAPSHOT_PROPERTY] = {
+        version: AUTO_BACKUP_SNAPSHOT_VERSION,
+        snapshotType: 'full',
+        base: null,
+        sequence: 0,
+        createdAt,
+        changedKeys: Object.keys(value || {}),
+        removedKeys: [],
+        payload: cloneAutoBackupValue(value, { stripMetadata: true }),
+      };
+      return;
+    }
+
+    const baseName = typeof metadata.base === 'string' ? metadata.base : null;
+    const baseValue = baseName && Object.prototype.hasOwnProperty.call(entries, baseName)
+      ? entries[baseName]
+      : null;
+
+    if (!baseValue || !isPlainObject(baseValue)) {
+      serialized[name] = {};
+      serialized[name][AUTO_BACKUP_SNAPSHOT_PROPERTY] = {
+        version: AUTO_BACKUP_SNAPSHOT_VERSION,
+        snapshotType: 'full',
+        base: null,
+        sequence: 0,
+        createdAt,
+        changedKeys: Object.keys(value || {}),
+        removedKeys: [],
+        payload: cloneAutoBackupValue(value, { stripMetadata: true }),
+      };
+      return;
+    }
+
+    const diff = computeAutoBackupDiff(value, baseValue);
+
+    serialized[name] = {};
+    serialized[name][AUTO_BACKUP_SNAPSHOT_PROPERTY] = {
+      version: AUTO_BACKUP_SNAPSHOT_VERSION,
+      snapshotType: 'delta',
+      base: baseName,
+      sequence: Number.isFinite(metadata.sequence) ? metadata.sequence : 1,
+      createdAt,
+      changedKeys: diff.changedKeys,
+      removedKeys: diff.removedKeys,
+      payload: diff.payload,
+    };
+  });
+
+  return serialized;
+}
 
 function getStorageKeyVariants(key) {
   if (typeof key !== 'string' || !key) {
@@ -4171,22 +4522,35 @@ function loadSetups() {
       "Error updating setups in localStorage during normalization:",
     );
   }
-  return setups;
+
+  try {
+    return expandAutoBackupEntries(setups, {
+      isAutoBackupKey: (name) => typeof name === 'string'
+        && name.startsWith(STORAGE_AUTO_BACKUP_NAME_PREFIX),
+    });
+  } catch (error) {
+    console.warn('Failed to expand automatic backup entries while loading setups', error);
+    return cloneAutoBackupValue(setups);
+  }
 }
 
 function saveSetups(setups) {
   const { data: normalizedSetups } = normalizeSetups(setups);
   enforceAutoBackupLimits(normalizedSetups);
+  const serializedSetups = serializeAutoBackupEntries(normalizedSetups, {
+    isAutoBackupKey: (name) => typeof name === 'string'
+      && name.startsWith(STORAGE_AUTO_BACKUP_NAME_PREFIX),
+  });
   const safeStorage = getSafeLocalStorage();
   ensurePreWriteMigrationBackup(safeStorage, SETUP_STORAGE_KEY);
   saveJSONToStorage(
     safeStorage,
     SETUP_STORAGE_KEY,
-    normalizedSetups,
+    serializedSetups,
     "Error saving setups to localStorage:",
     {
       onQuotaExceeded: () => {
-        const removedKey = removeOldestAutoBackupEntry(normalizedSetups);
+        const removedKey = removeOldestAutoBackupEntry(serializedSetups);
         if (!removedKey) {
           return false;
         }
@@ -5017,6 +5381,7 @@ function normalizeProject(data) {
       if (normalizedPowerSelection) {
         normalized.powerSelection = cloneProjectPowerSelection(normalizedPowerSelection);
       }
+      copyAutoBackupMetadata(data, normalized);
       return normalized;
     }
     // Legacy format { projectHtml, gearHtml }
@@ -5198,6 +5563,9 @@ function readAllProjectsFromStorage() {
     },
   );
   const originalValue = parsed;
+  const expandedParsed = expandAutoBackupEntries(parsed, {
+    isAutoBackupKey: isAutoBackupStorageKey,
+  });
   const projects = {};
   let changed = false;
   const usedProjectNames = new Set();
@@ -5232,12 +5600,12 @@ function readAllProjectsFromStorage() {
     normalized: normalizedKeyLookup,
   });
 
-  if (parsed === null || parsed === undefined) {
+  if (expandedParsed === null || expandedParsed === undefined) {
     return { projects, changed: false, originalValue, lookup: createLookupSnapshot() };
   }
 
-  if (typeof parsed === "string") {
-    const normalized = normalizeProject(parsed);
+  if (typeof expandedParsed === "string") {
+    const normalized = normalizeProject(expandedParsed);
     if (normalized) {
       const updatedName = generateUpdatedProjectName("", usedProjectNames, normalizedProjectNames);
       projects[updatedName] = normalized;
@@ -5247,10 +5615,10 @@ function readAllProjectsFromStorage() {
     return { projects, changed: true, originalValue, lookup: createLookupSnapshot() };
   }
 
-  if (Array.isArray(parsed)) {
+  if (Array.isArray(expandedParsed)) {
     const usedNames = usedProjectNames;
     const normalizedNames = normalizedProjectNames;
-    parsed.forEach((item, index) => {
+    expandedParsed.forEach((item, index) => {
       const normalized = normalizeProject(item);
       if (!normalized) {
         changed = true;
@@ -5269,16 +5637,16 @@ function readAllProjectsFromStorage() {
     return { projects, changed: true, originalValue, lookup: createLookupSnapshot() };
   }
 
-  if (!isPlainObject(parsed)) {
+  if (!isPlainObject(expandedParsed)) {
     return { projects, changed: true, originalValue, lookup: createLookupSnapshot() };
   }
 
-  const keys = Object.keys(parsed);
+  const keys = Object.keys(expandedParsed);
   const maybeLegacy =
     keys.length > 0 && keys.every((key) => LEGACY_PROJECT_ROOT_KEYS.has(key));
 
   if (maybeLegacy) {
-    const normalized = normalizeProject(parsed);
+    const normalized = normalizeProject(expandedParsed);
     if (normalized) {
       const updatedName = generateUpdatedProjectName("", usedProjectNames, normalizedProjectNames);
       projects[updatedName] = normalized;
@@ -5289,7 +5657,7 @@ function readAllProjectsFromStorage() {
   }
 
   keys.forEach((key) => {
-    if (isNormalizedProjectEntry(parsed[key])) {
+    if (isNormalizedProjectEntry(expandedParsed[key])) {
       const trimmedKey = typeof key === "string" ? key.trim() : "";
       if (trimmedKey) {
         normalizedProjectNames.add(trimmedKey.toLowerCase());
@@ -5298,9 +5666,9 @@ function readAllProjectsFromStorage() {
   });
 
   keys.forEach((key) => {
-    const normalized = normalizeProject(parsed[key]);
+    const normalized = normalizeProject(expandedParsed[key]);
     if (normalized) {
-      const originalEntry = parsed[key];
+      const originalEntry = expandedParsed[key];
       const needsUpgrade = !isNormalizedProjectEntry(originalEntry);
       let finalKey = key;
       if (needsUpgrade) {
@@ -5328,15 +5696,18 @@ function readAllProjectsFromStorage() {
 function persistAllProjects(projects) {
   const safeStorage = getSafeLocalStorage();
   enforceAutoBackupLimits(projects);
+  const serializedProjects = serializeAutoBackupEntries(projects, {
+    isAutoBackupKey: isAutoBackupStorageKey,
+  });
   ensurePreWriteMigrationBackup(safeStorage, PROJECT_STORAGE_KEY);
   saveJSONToStorage(
     safeStorage,
     PROJECT_STORAGE_KEY,
-    projects,
+    serializedProjects,
     "Error saving project to localStorage:",
     {
       onQuotaExceeded: () => {
-        const removedKey = removeOldestAutoBackupEntry(projects);
+        const removedKey = removeOldestAutoBackupEntry(serializedProjects);
         if (!removedKey) {
           return false;
         }
