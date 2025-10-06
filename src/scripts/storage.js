@@ -2496,19 +2496,42 @@ function removeSingleDuplicateAutoBackupEntry(container, entries) {
     if (isRenamedAutoBackupEntry(container, entry.key)) {
       continue;
     }
+
     const labelKey = getAutoBackupLabelKey(entry);
-    const labelSignatures = seenSignaturesByLabel.get(labelKey) || new Set();
+    let labelSignatures = seenSignaturesByLabel.get(labelKey);
+    if (!labelSignatures) {
+      labelSignatures = new Map();
+      seenSignaturesByLabel.set(labelKey, labelSignatures);
+    }
+
     const value = Object.prototype.hasOwnProperty.call(container, entry.key)
       ? container[entry.key]
       : undefined;
     const signature = createStableValueSignature(value);
-    if (labelSignatures.has(signature)) {
+    const seen = labelSignatures.get(signature);
+
+    if (seen && typeof seen.key === 'string') {
       delete container[entry.key];
       entries.splice(index, 1);
+
+      if (
+        typeof console !== 'undefined'
+        && typeof console.info === 'function'
+      ) {
+        console.info('Removed duplicate automatic backup while preserving newer copy.', {
+          removedKey: entry.key,
+          preservedKey: seen.key,
+          label: labelKey,
+        });
+      }
+
       return entry.key;
     }
-    labelSignatures.add(signature);
-    seenSignaturesByLabel.set(labelKey, labelSignatures);
+
+    labelSignatures.set(signature, {
+      key: entry.key,
+      signature,
+    });
   }
 
   return null;

@@ -514,6 +514,37 @@ describe('setup storage', () => {
     expect(autoKeys).toEqual(['auto-backup-2024-01-01-02-19']);
   });
 
+  test('saveSetups logs when duplicate auto backups are trimmed without losing the newest copy', () => {
+    const infoSpy = jest.spyOn(console, 'info').mockImplementation(() => {});
+
+    const setups = {};
+    for (let index = 0; index < 140; index += 1) {
+      const hour = String(Math.floor(index / 60)).padStart(2, '0');
+      const minute = String(index % 60).padStart(2, '0');
+      const label = index % 3 === 0 ? 'Project Alpha' : 'Project Beta';
+      const key = `auto-backup-2024-01-01-${hour}-${minute}-${label}`;
+      setups[key] = { camera: 'Camera 1', projectInfo: { projectName: label } };
+    }
+
+    saveSetups(setups);
+
+    const duplicateLog = infoSpy.mock.calls.find((call) => {
+      const [message, details] = call;
+      return (
+        message === 'Removed duplicate automatic backup while preserving newer copy.'
+        && details
+        && typeof details === 'object'
+        && typeof details.removedKey === 'string'
+        && typeof details.preservedKey === 'string'
+        && details.removedKey !== details.preservedKey
+      );
+    });
+
+    infoSpy.mockRestore();
+
+    expect(duplicateLog).toBeDefined();
+  });
+
   test('saveSetups retains unique auto backups even when exceeding the retention limit', () => {
     const setups = {};
     for (let index = 0; index < 130; index += 1) {
