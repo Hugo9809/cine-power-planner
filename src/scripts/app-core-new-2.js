@@ -7759,7 +7759,144 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return count;
       }, 0);
     }
-    
+
+    function pruneValueForImportantBackup(value) {
+      if (Array.isArray(value)) {
+        const pruned = value
+          .map(item => pruneValueForImportantBackup(item))
+          .filter(item => item !== undefined);
+        return pruned.length ? pruned : undefined;
+      }
+      if (isPlainObjectValue(value)) {
+        const result = {};
+        Object.entries(value).forEach(([key, val]) => {
+          const pruned = pruneValueForImportantBackup(val);
+          if (pruned !== undefined) {
+            result[key] = pruned;
+          }
+        });
+        return Object.keys(result).length ? result : undefined;
+      }
+      if (value === null || value === undefined) {
+        return undefined;
+      }
+      if (typeof value === 'string') {
+        return value.trim() ? value : undefined;
+      }
+      return value;
+    }
+
+    function extractImportantProjectEntry(entry) {
+      if (entry === null || entry === undefined) {
+        return null;
+      }
+      if (typeof entry === 'string') {
+        return entry.trim() ? { gearList: entry } : null;
+      }
+      if (Array.isArray(entry)) {
+        const prunedArray = pruneValueForImportantBackup(entry);
+        return prunedArray !== undefined ? { gearList: prunedArray } : null;
+      }
+      if (!isPlainObjectValue(entry)) {
+        return null;
+      }
+
+      const projectSource = isPlainObjectValue(entry.project) ? entry.project : entry;
+      const snapshot = {};
+
+      const projectInfoSource = projectSource.projectInfo ?? entry.projectInfo;
+      const projectInfo = pruneValueForImportantBackup(projectInfoSource);
+      if (projectInfo !== undefined) {
+        snapshot.projectInfo = projectInfo;
+      }
+
+      const gearListSource = projectSource.gearList ?? entry.gearList;
+      if (typeof gearListSource === 'string') {
+        if (gearListSource.trim()) {
+          snapshot.gearList = gearListSource;
+        }
+      } else {
+        const gearList = pruneValueForImportantBackup(gearListSource);
+        if (gearList !== undefined) {
+          snapshot.gearList = gearList;
+        }
+      }
+
+      const gearSelectorsSource = projectSource.gearSelectors ?? entry.gearSelectors;
+      const gearSelectors = pruneValueForImportantBackup(gearSelectorsSource);
+      if (gearSelectors !== undefined) {
+        snapshot.gearSelectors = gearSelectors;
+      }
+
+      const diagramPositionsSource = projectSource.diagramPositions ?? entry.diagramPositions;
+      const diagramPositions = pruneValueForImportantBackup(diagramPositionsSource);
+      if (diagramPositions !== undefined) {
+        snapshot.diagramPositions = diagramPositions;
+      }
+
+      const powerSelectionSource = projectSource.powerSelection ?? entry.powerSelection;
+      const deviceSelection = pruneValueForImportantBackup(powerSelectionSource);
+      if (deviceSelection !== undefined) {
+        snapshot.powerSelection = deviceSelection;
+      }
+
+      const autoGearRulesSource = projectSource.autoGearRules ?? entry.autoGearRules;
+      if (Array.isArray(autoGearRulesSource)) {
+        const autoGearRules = pruneValueForImportantBackup(autoGearRulesSource);
+        if (autoGearRules !== undefined && autoGearRules.length) {
+          snapshot.autoGearRules = autoGearRules;
+        }
+      }
+
+      return Object.keys(snapshot).length ? snapshot : null;
+    }
+
+    function buildImportantProjectMap(collection) {
+      if (!isPlainObjectValue(collection)) {
+        return undefined;
+      }
+      const reduced = {};
+      Object.entries(collection).forEach(([name, entry]) => {
+        const important = extractImportantProjectEntry(entry);
+        if (important) {
+          reduced[name] = important;
+        }
+      });
+      return Object.keys(reduced).length ? reduced : undefined;
+    }
+
+    function createImportantProjectData(data) {
+      const importantData = {};
+
+      if (isPlainObjectValue(data)) {
+        Object.entries(data).forEach(([key, value]) => {
+          if (key === 'project' || key === 'setups' || key === 'autoGearRules') {
+            return;
+          }
+          const pruned = pruneValueForImportantBackup(value);
+          if (pruned !== undefined) {
+            importantData[key] = pruned;
+          }
+        });
+      }
+
+      const project = extractImportantProjectEntry(data.project);
+      const setups = buildImportantProjectMap(data.setups);
+      if (project) {
+        importantData.project = project;
+      }
+      if (setups) {
+        importantData.setups = setups;
+      }
+      if (Array.isArray(data.autoGearRules)) {
+        const autoGearRules = pruneValueForImportantBackup(data.autoGearRules);
+        if (autoGearRules !== undefined && autoGearRules.length) {
+          importantData.autoGearRules = autoGearRules;
+        }
+      }
+      return importantData;
+    }
+
     function estimateBackupSize(data) {
       if (typeof localStorage === 'undefined') return 0;
       try {
@@ -7769,11 +7906,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           if (typeof key !== 'string') continue;
           snapshot[key] = localStorage.getItem(key);
         }
+        const importantData = isPlainObjectValue(data) ? createImportantProjectData(data) : {};
         const payload = {
           version: typeof APP_VERSION !== 'undefined' ? APP_VERSION : '',
           generatedAt: new Date().toISOString(),
           settings: snapshot,
-          data,
+          data: importantData,
         };
         const json = JSON.stringify(payload);
         if (typeof TextEncoder !== 'undefined') {

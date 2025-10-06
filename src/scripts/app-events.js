@@ -5,7 +5,8 @@
           normalizeSetupName, createProjectInfoSnapshotForStorage,
           applyDynamicFieldValues, applyBatteryPlateSelectionFromBattery,
           getPowerSelectionSnapshot, applyStoredPowerSelection,
-          callCoreFunctionIfAvailable */
+          callCoreFunctionIfAvailable, suspendProjectPersistence,
+          resumeProjectPersistence */
 
 const eventsLogger = (function resolveEventsLogger() {
   const scopes = [];
