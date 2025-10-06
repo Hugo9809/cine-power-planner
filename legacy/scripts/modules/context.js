@@ -196,6 +196,17 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return null;
   }
+  function resolveArchitectureHelpers(scope) {
+    var targetScope = scope || LOCAL_SCOPE;
+    var required = fallbackTryRequire('./architecture-helpers.js');
+    if (required && _typeof(required) === 'object') {
+      return required;
+    }
+    if (targetScope && _typeof(targetScope.cineModuleArchitectureHelpers) === 'object') {
+      return targetScope.cineModuleArchitectureHelpers;
+    }
+    return null;
+  }
   function resolveModuleSystem(scope) {
     var targetScope = scope || LOCAL_SCOPE;
     var required = fallbackTryRequire('./system.js');
@@ -207,7 +218,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return null;
   }
-  var pendingQueueKey = DEFAULT_PENDING_QUEUE_KEY;
+  var pendingQueueKey = ARCHITECTURE_HELPERS && typeof ARCHITECTURE_HELPERS.pendingQueueKey === 'string' ? ARCHITECTURE_HELPERS.pendingQueueKey : DEFAULT_PENDING_QUEUE_KEY;
   function updatePendingQueueKey(source) {
     if (!source || _typeof(source) !== 'object' && typeof source !== 'function') {
       return;
@@ -227,81 +238,216 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       pendingQueueKey = source.PENDING_QUEUE_KEY;
     }
   }
+  var ARCHITECTURE_HELPERS = resolveArchitectureHelpers(LOCAL_SCOPE);
   var MODULE_SYSTEM = resolveModuleSystem(LOCAL_SCOPE);
   if (MODULE_SYSTEM) {
     updatePendingQueueKey(MODULE_SYSTEM);
   }
   var ARCHITECTURE = (MODULE_SYSTEM && typeof MODULE_SYSTEM.getArchitecture === 'function' ? MODULE_SYSTEM.getArchitecture() : null) || resolveArchitecture(LOCAL_SCOPE);
-  var detectGlobalScope = MODULE_SYSTEM && typeof MODULE_SYSTEM.detectGlobalScope === 'function' ? function detectWithSystem() {
-    try {
-      var detected = MODULE_SYSTEM.detectGlobalScope();
-      if (detected) {
-        return detected;
+  function detectWithFallbackChain() {
+    if (MODULE_SYSTEM && typeof MODULE_SYSTEM.detectGlobalScope === 'function') {
+      try {
+        var detected = MODULE_SYSTEM.detectGlobalScope();
+        if (detected) {
+          return detected;
+        }
+      } catch (error) {
+        void error;
       }
-    } catch (error) {
-      void error;
+      if (ARCHITECTURE && typeof ARCHITECTURE.detectGlobalScope === 'function') {
+        try {
+          var architectureDetected = ARCHITECTURE.detectGlobalScope();
+          if (architectureDetected) {
+            return architectureDetected;
+          }
+        } catch (architectureError) {
+          void architectureError;
+        }
+      }
+      return fallbackDetectGlobalScope();
     }
     if (ARCHITECTURE && typeof ARCHITECTURE.detectGlobalScope === 'function') {
       try {
-        var architectureDetected = ARCHITECTURE.detectGlobalScope();
-        if (architectureDetected) {
-          return architectureDetected;
+        var _detected = ARCHITECTURE.detectGlobalScope();
+        if (_detected) {
+          return _detected;
         }
-      } catch (architectureError) {
-        void architectureError;
+      } catch (error) {
+        void error;
       }
     }
     return fallbackDetectGlobalScope();
-  } : ARCHITECTURE && typeof ARCHITECTURE.detectGlobalScope === 'function' ? function detectWithArchitecture() {
+  }
+  var detectGlobalScope = ARCHITECTURE_HELPERS && typeof ARCHITECTURE_HELPERS.detectGlobalScope === 'function' ? function detectWithHelpers() {
     try {
-      var detected = ARCHITECTURE.detectGlobalScope();
+      var detected = ARCHITECTURE_HELPERS.detectGlobalScope();
       if (detected) {
         return detected;
       }
     } catch (error) {
       void error;
     }
-    return fallbackDetectGlobalScope();
-  } : fallbackDetectGlobalScope;
+    return detectWithFallbackChain();
+  } : detectWithFallbackChain;
   var PRIMARY_SCOPE = detectGlobalScope();
-  var _collectCandidateScopes = MODULE_SYSTEM && typeof MODULE_SYSTEM.collectCandidateScopes === 'function' ? function collectWithSystem(primary) {
+  function collectWithFallbackChain(primary) {
+    var target = primary || PRIMARY_SCOPE;
+    if (MODULE_SYSTEM && typeof MODULE_SYSTEM.collectCandidateScopes === 'function') {
+      try {
+        var scopes = MODULE_SYSTEM.collectCandidateScopes(target);
+        if (Array.isArray(scopes) && scopes.length > 0) {
+          return scopes;
+        }
+      } catch (error) {
+        void error;
+      }
+      if (ARCHITECTURE && typeof ARCHITECTURE.collectCandidateScopes === 'function') {
+        try {
+          var architectureScopes = ARCHITECTURE.collectCandidateScopes(target);
+          if (Array.isArray(architectureScopes) && architectureScopes.length > 0) {
+            return architectureScopes;
+          }
+        } catch (architectureError) {
+          void architectureError;
+        }
+      }
+      return fallbackCollectCandidateScopes(target);
+    }
+    if (ARCHITECTURE && typeof ARCHITECTURE.collectCandidateScopes === 'function') {
+      try {
+        var _architectureScopes = ARCHITECTURE.collectCandidateScopes(target);
+        if (Array.isArray(_architectureScopes) && _architectureScopes.length > 0) {
+          return _architectureScopes;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+    return fallbackCollectCandidateScopes(target);
+  }
+  var _collectCandidateScopes = ARCHITECTURE_HELPERS && typeof ARCHITECTURE_HELPERS.collectCandidateScopes === 'function' ? function collectWithHelpers(primary) {
     var target = primary || PRIMARY_SCOPE;
     try {
-      var scopes = MODULE_SYSTEM.collectCandidateScopes(target);
+      var scopes = ARCHITECTURE_HELPERS.collectCandidateScopes(target);
       if (Array.isArray(scopes) && scopes.length > 0) {
         return scopes;
       }
     } catch (error) {
       void error;
     }
-    if (ARCHITECTURE && typeof ARCHITECTURE.collectCandidateScopes === 'function') {
+    return collectWithFallbackChain(target);
+  } : collectWithFallbackChain;
+  function tryRequireWithFallback(modulePath) {
+    if (MODULE_SYSTEM && typeof MODULE_SYSTEM.tryRequire === 'function') {
       try {
-        return ARCHITECTURE.collectCandidateScopes(target);
+        var result = MODULE_SYSTEM.tryRequire(modulePath);
+        if (typeof result !== 'undefined') {
+          return result;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+    if (ARCHITECTURE && typeof ARCHITECTURE.tryRequire === 'function') {
+      try {
+        var _result = ARCHITECTURE.tryRequire(modulePath);
+        if (typeof _result !== 'undefined') {
+          return _result;
+        }
       } catch (architectureError) {
         void architectureError;
       }
     }
-    return fallbackCollectCandidateScopes(target);
-  } : ARCHITECTURE && typeof ARCHITECTURE.collectCandidateScopes === 'function' ? function collectWithArchitecture(primary) {
-    var target = primary || PRIMARY_SCOPE;
+    return fallbackTryRequire(modulePath);
+  }
+  var _tryRequire = ARCHITECTURE_HELPERS && typeof ARCHITECTURE_HELPERS.tryRequire === 'function' ? function tryRequireWithHelpers(modulePath) {
+    var result = ARCHITECTURE_HELPERS.tryRequire(modulePath);
+    return typeof result === 'undefined' ? tryRequireWithFallback(modulePath) : result;
+  } : tryRequireWithFallback;
+  function defineHiddenPropertyWithFallback(target, name, value) {
+    if (MODULE_SYSTEM && typeof MODULE_SYSTEM.defineHiddenProperty === 'function') {
+      try {
+        if (MODULE_SYSTEM.defineHiddenProperty(target, name, value)) {
+          return true;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+    if (ARCHITECTURE && typeof ARCHITECTURE.defineHiddenProperty === 'function') {
+      try {
+        if (ARCHITECTURE.defineHiddenProperty(target, name, value)) {
+          return true;
+        }
+      } catch (architectureError) {
+        void architectureError;
+      }
+    }
+    return fallbackDefineHiddenProperty(target, name, value);
+  }
+  var _defineHiddenProperty = ARCHITECTURE_HELPERS && typeof ARCHITECTURE_HELPERS.defineHiddenProperty === 'function' ? function defineWithHelpers(target, name, value) {
     try {
-      return ARCHITECTURE.collectCandidateScopes(target);
+      if (ARCHITECTURE_HELPERS.defineHiddenProperty(target, name, value)) {
+        return true;
+      }
     } catch (error) {
       void error;
     }
-    return fallbackCollectCandidateScopes(target);
-  } : function collectWithFallback(primary) {
-    return fallbackCollectCandidateScopes(primary || PRIMARY_SCOPE);
-  };
-  var _tryRequire = MODULE_SYSTEM && typeof MODULE_SYSTEM.tryRequire === 'function' ? function tryRequireWithSystem(modulePath) {
-    var result = MODULE_SYSTEM.tryRequire(modulePath);
-    return typeof result === 'undefined' ? fallbackTryRequire(modulePath) : result;
-  } : ARCHITECTURE && typeof ARCHITECTURE.tryRequire === 'function' ? function tryRequireWithArchitecture(modulePath) {
-    return ARCHITECTURE.tryRequire(modulePath);
-  } : fallbackTryRequire;
-  var _defineHiddenProperty = MODULE_SYSTEM && typeof MODULE_SYSTEM.defineHiddenProperty === 'function' ? MODULE_SYSTEM.defineHiddenProperty : ARCHITECTURE && typeof ARCHITECTURE.defineHiddenProperty === 'function' ? ARCHITECTURE.defineHiddenProperty : fallbackDefineHiddenProperty;
-  var _freezeDeep = MODULE_SYSTEM && typeof MODULE_SYSTEM.freezeDeep === 'function' ? MODULE_SYSTEM.freezeDeep : ARCHITECTURE && typeof ARCHITECTURE.freezeDeep === 'function' ? ARCHITECTURE.freezeDeep : fallbackFreezeDeep;
-  var _safeWarn = MODULE_SYSTEM && typeof MODULE_SYSTEM.safeWarn === 'function' ? MODULE_SYSTEM.safeWarn : ARCHITECTURE && typeof ARCHITECTURE.safeWarn === 'function' ? ARCHITECTURE.safeWarn : fallbackSafeWarn;
+    return defineHiddenPropertyWithFallback(target, name, value);
+  } : defineHiddenPropertyWithFallback;
+  function freezeDeepWithFallback(value) {
+    if (MODULE_SYSTEM && typeof MODULE_SYSTEM.freezeDeep === 'function') {
+      try {
+        return MODULE_SYSTEM.freezeDeep(value);
+      } catch (error) {
+        void error;
+      }
+    }
+    if (ARCHITECTURE && typeof ARCHITECTURE.freezeDeep === 'function') {
+      try {
+        return ARCHITECTURE.freezeDeep(value);
+      } catch (architectureError) {
+        void architectureError;
+      }
+    }
+    return fallbackFreezeDeep(value);
+  }
+  var _freezeDeep = ARCHITECTURE_HELPERS && typeof ARCHITECTURE_HELPERS.freezeDeep === 'function' ? function freezeWithHelpers(value) {
+    try {
+      return ARCHITECTURE_HELPERS.freezeDeep(value);
+    } catch (error) {
+      void error;
+    }
+    return freezeDeepWithFallback(value);
+  } : freezeDeepWithFallback;
+  function safeWarnWithFallback(message, detail) {
+    if (MODULE_SYSTEM && typeof MODULE_SYSTEM.safeWarn === 'function') {
+      try {
+        MODULE_SYSTEM.safeWarn(message, detail);
+        return;
+      } catch (error) {
+        void error;
+      }
+    }
+    if (ARCHITECTURE && typeof ARCHITECTURE.safeWarn === 'function') {
+      try {
+        ARCHITECTURE.safeWarn(message, detail);
+        return;
+      } catch (architectureError) {
+        void architectureError;
+      }
+    }
+    fallbackSafeWarn(message, detail);
+  }
+  var _safeWarn = ARCHITECTURE_HELPERS && typeof ARCHITECTURE_HELPERS.safeWarn === 'function' ? function warnWithHelpers(message, detail) {
+    try {
+      ARCHITECTURE_HELPERS.safeWarn(message, detail);
+      return;
+    } catch (error) {
+      void error;
+    }
+    safeWarnWithFallback(message, detail);
+  } : safeWarnWithFallback;
   var _resolveFromScopes = MODULE_SYSTEM && typeof MODULE_SYSTEM.resolveFromScopes === 'function' ? function resolveWithSystem(propertyName, options) {
     var settings = _objectSpread({}, options || {});
     if (!settings.primaryScope) {
@@ -360,6 +506,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function _ensureQueue(scope) {
     var targetScope = scope || PRIMARY_SCOPE;
+    if (ARCHITECTURE_HELPERS && typeof ARCHITECTURE_HELPERS.ensureQueue === 'function') {
+      try {
+        var queueFromHelpers = ARCHITECTURE_HELPERS.ensureQueue(targetScope, pendingQueueKey);
+        if (Array.isArray(queueFromHelpers)) {
+          return queueFromHelpers;
+        }
+      } catch (error) {
+        _safeWarn('cineModuleContext: Unable to access pending queue via architecture helpers.', error);
+      }
+    }
     if (MODULE_SYSTEM && typeof MODULE_SYSTEM.getPendingQueue === 'function') {
       try {
         var queueFromSystem = MODULE_SYSTEM.getPendingQueue(targetScope);
@@ -384,6 +540,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function _queueModuleRegistration(name, api, options, scope) {
     var targetScope = scope || PRIMARY_SCOPE;
+    if (ARCHITECTURE_HELPERS && typeof ARCHITECTURE_HELPERS.queueModuleRegistration === 'function') {
+      try {
+        if (ARCHITECTURE_HELPERS.queueModuleRegistration(targetScope, name, api, options)) {
+          return true;
+        }
+      } catch (error) {
+        _safeWarn('cineModuleContext: Architecture helpers queueModuleRegistration failed.', error);
+      }
+    }
     var queue = _ensureQueue(targetScope);
     if (!queue) {
       return false;
@@ -403,6 +568,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function resolveModuleRegistry(scope) {
     var targetScope = scope || PRIMARY_SCOPE;
+    if (ARCHITECTURE_HELPERS && typeof ARCHITECTURE_HELPERS.resolveModuleRegistry === 'function') {
+      try {
+        var resolvedByHelpers = ARCHITECTURE_HELPERS.resolveModuleRegistry(targetScope);
+        if (resolvedByHelpers && _typeof(resolvedByHelpers) === 'object') {
+          return resolvedByHelpers;
+        }
+      } catch (error) {
+        _safeWarn('cineModuleContext: Architecture helpers resolveModuleRegistry failed.', error);
+      }
+    }
     if (MODULE_SYSTEM && typeof MODULE_SYSTEM.getModuleRegistry === 'function') {
       try {
         var registryFromSystem = MODULE_SYSTEM.getModuleRegistry(targetScope);
@@ -543,9 +718,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
         if (ARCHITECTURE && typeof ARCHITECTURE.detectGlobalScope === 'function') {
           try {
-            var _detected = ARCHITECTURE.detectGlobalScope(target);
-            if (_detected) {
-              return _detected;
+            var _detected2 = ARCHITECTURE.detectGlobalScope(target);
+            if (_detected2) {
+              return _detected2;
             }
           } catch (error) {
             _safeWarn('cineModuleContext: detectGlobalScope via architecture failed.', error);
@@ -627,7 +802,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   registerOrQueue('cineModuleContext', contextApi, {
     category: 'infrastructure',
     description: 'Shared context helpers that unify architecture, system and registry lookups.',
-    freeze: false
+    freeze: false,
+    connections: ['cineModuleBase', 'cineModuleGlobals', 'cineModuleEnvironment', 'cineModuleArchitectureKernel']
   }, PRIMARY_SCOPE);
   _exposeGlobal('cineModuleContext', contextApi, PRIMARY_SCOPE, {
     configurable: true,

@@ -1096,7 +1096,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   registerOrQueueModule('cineFeatureBackup', backupAPI, {
     category: 'feature',
     description: 'Backup and restore helpers for snapshots, payload normalization, downloads and diff metadata.',
-    replace: true
+    replace: true,
+    connections: ['cineModuleBase', 'cineModuleContext', 'cinePersistence']
   }, function (error) {
     if (typeof console !== 'undefined' && typeof console.warn === 'function') {
       console.warn('Unable to register cineFeatureBackup module.', error);

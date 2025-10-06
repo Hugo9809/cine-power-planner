@@ -5,6 +5,7 @@ function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" 
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 (function () {
+  var DEFAULT_PENDING_QUEUE_KEY = '__cinePendingModuleRegistrations__';
   function fallbackDetectGlobalScope() {
     if (typeof globalThis !== 'undefined') {
       return globalThis;
@@ -20,38 +21,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return {};
   }
-  var LOCAL_SCOPE = fallbackDetectGlobalScope();
-  function resolveArchitecture(scope) {
-    var targetScope = scope || LOCAL_SCOPE;
-    if (typeof require === 'function') {
-      try {
-        var required = require('./architecture.js');
-        if (required && _typeof(required) === 'object') {
-          return required;
-        }
-      } catch (error) {
-        void error;
-      }
-    }
-    if (targetScope && _typeof(targetScope.cineModuleArchitecture) === 'object') {
-      return targetScope.cineModuleArchitecture;
-    }
-    return null;
-  }
-  var ARCHITECTURE = resolveArchitecture(LOCAL_SCOPE);
-  var detectGlobalScope = ARCHITECTURE && typeof ARCHITECTURE.detectGlobalScope === 'function' ? function detectWithArchitecture() {
-    try {
-      var detected = ARCHITECTURE.detectGlobalScope();
-      if (detected) {
-        return detected;
-      }
-    } catch (error) {
-      void error;
-    }
-    return fallbackDetectGlobalScope();
-  } : fallbackDetectGlobalScope;
-  var PRIMARY_SCOPE = detectGlobalScope();
-  function fallbackCollectCandidateScopes(primary) {
+  function fallbackCollectCandidateScopes(primary, baseScope) {
     var scopes = [];
     function pushScope(scope) {
       if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
@@ -61,26 +31,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         scopes.push(scope);
       }
     }
-    pushScope(primary);
+    pushScope(primary || baseScope);
     if (typeof globalThis !== 'undefined') pushScope(globalThis);
     if (typeof window !== 'undefined') pushScope(window);
     if (typeof self !== 'undefined') pushScope(self);
     if (typeof global !== 'undefined') pushScope(global);
     return scopes;
-  }
-  function collectScopes(primary) {
-    var targetScope = primary || PRIMARY_SCOPE;
-    if (ARCHITECTURE && typeof ARCHITECTURE.collectCandidateScopes === 'function') {
-      try {
-        var collected = ARCHITECTURE.collectCandidateScopes(targetScope);
-        if (Array.isArray(collected) && collected.length > 0) {
-          return collected;
-        }
-      } catch (error) {
-        void error;
-      }
-    }
-    return fallbackCollectCandidateScopes(targetScope);
   }
   function fallbackTryRequire(modulePath) {
     if (typeof require !== 'function') {
@@ -93,10 +49,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return null;
     }
   }
-  var baseTryRequire = ARCHITECTURE && typeof ARCHITECTURE.tryRequire === 'function' ? function tryRequireWithArchitecture(modulePath) {
-    var result = ARCHITECTURE.tryRequire(modulePath);
-    return typeof result === 'undefined' ? fallbackTryRequire(modulePath) : result;
-  } : fallbackTryRequire;
   function fallbackDefineHiddenProperty(target, name, value) {
     if (!target || _typeof(target) !== 'object' && typeof target !== 'function') {
       return false;
@@ -120,7 +72,25 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return false;
   }
-  var defineHiddenProperty = ARCHITECTURE && typeof ARCHITECTURE.defineHiddenProperty === 'function' ? ARCHITECTURE.defineHiddenProperty : fallbackDefineHiddenProperty;
+  function fallbackEnsureQueue(scope, key, baseScope) {
+    var targetScope = scope || baseScope;
+    var queueKey = typeof key === 'string' && key ? key : DEFAULT_PENDING_QUEUE_KEY;
+    if (!targetScope || _typeof(targetScope) !== 'object') {
+      return null;
+    }
+    var queue = targetScope[queueKey];
+    if (Array.isArray(queue)) {
+      return queue;
+    }
+    if (!fallbackDefineHiddenProperty(targetScope, queueKey, [])) {
+      return null;
+    }
+    queue = targetScope[queueKey];
+    if (!Array.isArray(queue)) {
+      return null;
+    }
+    return queue;
+  }
   function shouldBypassDeepFreeze(value) {
     if (!value || _typeof(value) !== 'object' && typeof value !== 'function') {
       return false;
@@ -172,7 +142,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return Object.freeze(value);
   }
-  var freezeDeep = ARCHITECTURE && typeof ARCHITECTURE.freezeDeep === 'function' ? ARCHITECTURE.freezeDeep : fallbackFreezeDeep;
   function fallbackSafeWarn(message, detail) {
     if (typeof console === 'undefined' || typeof console.warn !== 'function') {
       return;
@@ -187,11 +156,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       void error;
     }
   }
-  var safeWarn = ARCHITECTURE && typeof ARCHITECTURE.safeWarn === 'function' ? ARCHITECTURE.safeWarn : fallbackSafeWarn;
-  function fallbackResolveFromScopes(propertyName, options) {
+  function fallbackResolveFromScopes(propertyName, options, baseScope) {
     var settings = options || {};
     var predicate = typeof settings.predicate === 'function' ? settings.predicate : null;
-    var scopes = Array.isArray(settings.scopes) ? settings.scopes.slice() : collectScopes(settings.primaryScope || PRIMARY_SCOPE);
+    var scopes = Array.isArray(settings.scopes) ? settings.scopes.slice() : fallbackCollectCandidateScopes(settings.primaryScope || baseScope, baseScope);
     for (var index = 0; index < scopes.length; index += 1) {
       var scope = scopes[index];
       if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
@@ -214,16 +182,202 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return null;
   }
-  var resolveFromScopes = ARCHITECTURE && typeof ARCHITECTURE.resolveFromScopes === 'function' ? function resolveWithArchitecture(propertyName, options) {
-    var settings = _objectSpread({}, options || {});
+  function fallbackQueueModuleRegistration(scope, name, api, options, baseScope, queueKey) {
+    var targetScope = scope || baseScope;
+    var queue = fallbackEnsureQueue(targetScope, queueKey || DEFAULT_PENDING_QUEUE_KEY, baseScope);
+    if (!queue) {
+      return false;
+    }
+    var payload = Object.freeze({
+      name: name,
+      api: api,
+      options: Object.freeze(_objectSpread({}, options || {}))
+    });
+    try {
+      queue.push(payload);
+      return true;
+    } catch (error) {
+      void error;
+    }
+    try {
+      queue[queue.length] = payload;
+      return true;
+    } catch (assignmentError) {
+      void assignmentError;
+    }
+    return false;
+  }
+  function createFallbackKernel(primaryScope) {
+    var baseScope = primaryScope || fallbackDetectGlobalScope();
+    return {
+      detectGlobalScope: fallbackDetectGlobalScope,
+      getGlobalScope: function getGlobalScope() {
+        return baseScope;
+      },
+      collectCandidateScopes: function collectCandidateScopes(primary) {
+        return fallbackCollectCandidateScopes(primary || baseScope, baseScope);
+      },
+      tryRequire: fallbackTryRequire,
+      defineHiddenProperty: fallbackDefineHiddenProperty,
+      ensureQueue: function ensureQueue(scope, key) {
+        return fallbackEnsureQueue(scope || baseScope, key, baseScope);
+      },
+      freezeDeep: fallbackFreezeDeep,
+      safeWarn: fallbackSafeWarn,
+      resolveFromScopes: function resolveFromScopes(propertyName, options) {
+        return fallbackResolveFromScopes(propertyName, options, baseScope);
+      },
+      queueModuleRegistration: function queueModuleRegistration(scope, name, api, options) {
+        return fallbackQueueModuleRegistration(scope || baseScope, name, api, options, baseScope, DEFAULT_PENDING_QUEUE_KEY);
+      },
+      getPendingQueueKey: function getPendingQueueKey() {
+        return DEFAULT_PENDING_QUEUE_KEY;
+      },
+      resolveModuleRegistry: function resolveModuleRegistry(scope) {
+        var targetScope = scope || baseScope;
+        var required = fallbackTryRequire('./registry.js');
+        if (required && _typeof(required) === 'object') {
+          return required;
+        }
+        var scopes = fallbackCollectCandidateScopes(targetScope, baseScope);
+        for (var index = 0; index < scopes.length; index += 1) {
+          var candidate = scopes[index];
+          if (candidate && _typeof(candidate.cineModules) === 'object') {
+            return candidate.cineModules;
+          }
+        }
+        return null;
+      }
+    };
+  }
+  function resolveArchitectureKernel(scope) {
+    var targetScope = scope || fallbackDetectGlobalScope();
+    if (typeof require === 'function') {
+      try {
+        var required = require('./architecture-kernel.js');
+        if (required && _typeof(required) === 'object') {
+          return required;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+    if (targetScope && _typeof(targetScope.cineModuleArchitectureKernel) === 'object') {
+      return targetScope.cineModuleArchitectureKernel;
+    }
+    return null;
+  }
+  var LOCAL_SCOPE = fallbackDetectGlobalScope();
+  var RESOLVED_KERNEL = resolveArchitectureKernel(LOCAL_SCOPE);
+  var ACTIVE_KERNEL = RESOLVED_KERNEL || createFallbackKernel(LOCAL_SCOPE);
+  function detectGlobalScope() {
+    if (ACTIVE_KERNEL && typeof ACTIVE_KERNEL.detectGlobalScope === 'function') {
+      try {
+        var detected = ACTIVE_KERNEL.detectGlobalScope();
+        if (detected) {
+          return detected;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+    return fallbackDetectGlobalScope();
+  }
+  var PRIMARY_SCOPE = ACTIVE_KERNEL && typeof ACTIVE_KERNEL.getGlobalScope === 'function' ? function resolvePrimaryScope() {
+    try {
+      var scoped = ACTIVE_KERNEL.getGlobalScope();
+      if (scoped) {
+        return scoped;
+      }
+    } catch (error) {
+      void error;
+    }
+    return detectGlobalScope();
+  }() : detectGlobalScope();
+  var pendingQueueKey = ACTIVE_KERNEL && typeof ACTIVE_KERNEL.getPendingQueueKey === 'function' ? ACTIVE_KERNEL.getPendingQueueKey() : DEFAULT_PENDING_QUEUE_KEY;
+  function collectCandidateScopes(primary) {
+    if (ACTIVE_KERNEL && typeof ACTIVE_KERNEL.collectCandidateScopes === 'function') {
+      try {
+        var collected = ACTIVE_KERNEL.collectCandidateScopes(primary || PRIMARY_SCOPE);
+        if (Array.isArray(collected) && collected.length > 0) {
+          return collected;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+    return fallbackCollectCandidateScopes(primary || PRIMARY_SCOPE, PRIMARY_SCOPE);
+  }
+  function collectScopes(primary) {
+    var scopes = collectCandidateScopes(primary || PRIMARY_SCOPE);
+    return Array.isArray(scopes) ? scopes : [];
+  }
+  function tryRequire(modulePath) {
+    if (ACTIVE_KERNEL && typeof ACTIVE_KERNEL.tryRequire === 'function') {
+      try {
+        var result = ACTIVE_KERNEL.tryRequire(modulePath);
+        if (typeof result !== 'undefined') {
+          return result;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+    return fallbackTryRequire(modulePath);
+  }
+  function defineHiddenProperty(target, name, value) {
+    if (ACTIVE_KERNEL && typeof ACTIVE_KERNEL.defineHiddenProperty === 'function') {
+      try {
+        if (ACTIVE_KERNEL.defineHiddenProperty(target, name, value)) {
+          return true;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+    return fallbackDefineHiddenProperty(target, name, value);
+  }
+  function freezeDeep(value) {
+    if (ACTIVE_KERNEL && typeof ACTIVE_KERNEL.freezeDeep === 'function') {
+      try {
+        return ACTIVE_KERNEL.freezeDeep(value);
+      } catch (error) {
+        void error;
+      }
+    }
+    return fallbackFreezeDeep(value);
+  }
+  function safeWarn(message, detail) {
+    if (ACTIVE_KERNEL && typeof ACTIVE_KERNEL.safeWarn === 'function') {
+      try {
+        ACTIVE_KERNEL.safeWarn(message, detail);
+        return;
+      } catch (error) {
+        void error;
+      }
+    }
+    fallbackSafeWarn(message, detail);
+  }
+  function resolveFromScopes(propertyName, options) {
+    var settings = options ? _objectSpread({}, options) : {};
     if (!settings.primaryScope) {
       settings.primaryScope = PRIMARY_SCOPE;
     }
     if (!settings.scopes) {
       settings.scopes = collectScopes(settings.primaryScope);
     }
-    return ARCHITECTURE.resolveFromScopes(propertyName, settings);
-  } : fallbackResolveFromScopes;
+    if (ACTIVE_KERNEL && typeof ACTIVE_KERNEL.resolveFromScopes === 'function') {
+      try {
+        var resolved = ACTIVE_KERNEL.resolveFromScopes(propertyName, settings);
+        if (resolved) {
+          return resolved;
+        }
+      } catch (error) {
+        safeWarn("cineModuleSystem: resolveFromScopes failed for \"".concat(propertyName, "\"."), error);
+      }
+    }
+    return fallbackResolveFromScopes(propertyName, settings, PRIMARY_SCOPE);
+  }
   var cachedModuleBase = null;
   var hasResolvedModuleBase = false;
   function updateQueueKeyFromBase(base) {
@@ -233,7 +387,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function loadModuleBase(scope) {
     var targetScope = scope || PRIMARY_SCOPE;
-    var required = baseTryRequire('./base.js');
+    var required = tryRequire('./base.js');
     if (required && _typeof(required) === 'object') {
       updateQueueKeyFromBase(required);
       return required;
@@ -260,7 +414,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function fallbackResolveModuleRegistry(scope) {
     var targetScope = scope || PRIMARY_SCOPE;
-    var required = baseTryRequire('./registry.js');
+    var required = tryRequire('./registry.js');
     if (required && _typeof(required) === 'object') {
       return required;
     }
@@ -277,6 +431,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var hasResolvedModuleRegistry = false;
   function resolveModuleRegistry(scope) {
     var targetScope = scope || PRIMARY_SCOPE;
+    if (ACTIVE_KERNEL && typeof ACTIVE_KERNEL.resolveModuleRegistry === 'function') {
+      try {
+        var resolvedByKernel = ACTIVE_KERNEL.resolveModuleRegistry(targetScope);
+        if (resolvedByKernel && _typeof(resolvedByKernel) === 'object') {
+          return resolvedByKernel;
+        }
+      } catch (error) {
+        safeWarn('cineModuleSystem: Kernel resolveModuleRegistry failed.', error);
+      }
+    }
     var base = getModuleBase(targetScope);
     if (base && typeof base.resolveModuleRegistry === 'function') {
       try {
@@ -285,7 +449,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           return resolved;
         }
       } catch (error) {
-        safeWarn('cineModuleSystem: Unable to resolve module registry through base.', error);
+        safeWarn('cineModuleSystem: Base resolveModuleRegistry failed.', error);
       }
     }
     return fallbackResolveModuleRegistry(targetScope);
@@ -338,40 +502,20 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return fallbackExposeGlobal(name, value, targetScope, options || {});
   }
-  var DEFAULT_PENDING_QUEUE_KEY = '__cinePendingModuleRegistrations__';
-  var pendingQueueKey = DEFAULT_PENDING_QUEUE_KEY;
-  function fallbackEnsureQueue(scope) {
+  function ensureRegistrationQueue(scope) {
     var targetScope = scope || PRIMARY_SCOPE;
-    if (!targetScope || _typeof(targetScope) !== 'object') {
-      return null;
-    }
-    var queue = targetScope[pendingQueueKey];
-    if (Array.isArray(queue)) {
-      return queue;
-    }
-    if (defineHiddenProperty(targetScope, pendingQueueKey, [])) {
-      queue = targetScope[pendingQueueKey];
-      if (Array.isArray(queue)) {
-        return queue;
+    if (ACTIVE_KERNEL && typeof ACTIVE_KERNEL.ensureQueue === 'function') {
+      try {
+        var queue = ACTIVE_KERNEL.ensureQueue(targetScope, pendingQueueKey);
+        if (Array.isArray(queue)) {
+          return queue;
+        }
+      } catch (error) {
+        safeWarn('cineModuleSystem: ensureQueue failed via kernel.', error);
       }
     }
-    try {
-      targetScope[pendingQueueKey] = [];
-      queue = targetScope[pendingQueueKey];
-    } catch (error) {
-      safeWarn('cineModuleSystem: Unable to create pending registration queue.', error);
-      return null;
-    }
-    return Array.isArray(queue) ? queue : null;
+    return fallbackEnsureQueue(targetScope, pendingQueueKey, PRIMARY_SCOPE);
   }
-  var ensureRegistrationQueue = ARCHITECTURE && typeof ARCHITECTURE.ensureQueue === 'function' ? function ensureWithArchitecture(scope) {
-    var targetScope = scope || PRIMARY_SCOPE;
-    var queue = ARCHITECTURE.ensureQueue(targetScope, pendingQueueKey);
-    if (Array.isArray(queue)) {
-      return queue;
-    }
-    return fallbackEnsureQueue(targetScope);
-  } : fallbackEnsureQueue;
   function normalizeName(name) {
     if (typeof name === 'string' && name.trim()) {
       return name.trim();
@@ -383,6 +527,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function queueModuleRegistration(name, api, options, scope) {
     var targetScope = scope || PRIMARY_SCOPE;
+    if (ACTIVE_KERNEL && typeof ACTIVE_KERNEL.queueModuleRegistration === 'function') {
+      try {
+        if (ACTIVE_KERNEL.queueModuleRegistration(targetScope, name, api, options)) {
+          return true;
+        }
+      } catch (error) {
+        safeWarn('cineModuleSystem: queueModuleRegistration failed via kernel.', error);
+      }
+    }
     var queue = ensureRegistrationQueue(targetScope);
     if (!queue) {
       safeWarn('cineModuleSystem: Unable to queue module registration.', {
@@ -390,15 +543,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       });
       return false;
     }
-    var normalizedName = function () {
-      try {
-        return normalizeName(name);
-      } catch (error) {
-        safeWarn('cineModuleSystem: Ignoring registration with invalid name.', error);
-        return null;
-      }
-    }();
-    if (!normalizedName) {
+    var normalizedName;
+    try {
+      normalizedName = normalizeName(name);
+    } catch (error) {
+      safeWarn('cineModuleSystem: Ignoring registration with invalid name.', error);
       return false;
     }
     var payload = Object.freeze({
@@ -503,12 +652,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   var systemApi = {
     getArchitecture: function getArchitecture() {
-      return ARCHITECTURE;
+      return ACTIVE_KERNEL && ACTIVE_KERNEL.architecture || null;
     },
     detectGlobalScope: detectGlobalScope,
     getGlobalScope: getGlobalScope,
     collectCandidateScopes: collectScopes,
-    tryRequire: baseTryRequire,
+    tryRequire: tryRequire,
     resolveFromScopes: resolveFromScopes,
     getModuleBase: getModuleBase,
     getModuleRegistry: getModuleRegistry,

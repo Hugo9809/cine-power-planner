@@ -1,3 +1,6 @@
+function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 (function () {
   function fallbackDetectGlobalScope() {
@@ -474,6 +477,63 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return true;
   }
+  function attemptRegistryRegistration(name, api, options) {
+    if (!MODULE_REGISTRY || typeof MODULE_REGISTRY.register !== 'function') {
+      return {
+        ok: false,
+        error: null,
+        reason: 'missing-registry'
+      };
+    }
+    var moduleName = typeof name === 'string' ? name : '';
+    if (!moduleName) {
+      return {
+        ok: false,
+        error: new TypeError('cineRuntime expected a module name.'),
+        reason: 'invalid-name'
+      };
+    }
+    if (typeof MODULE_REGISTRY.has === 'function') {
+      try {
+        if (MODULE_REGISTRY.has(moduleName)) {
+          if (typeof MODULE_REGISTRY.get === 'function') {
+            try {
+              var existing = MODULE_REGISTRY.get(moduleName);
+              if (existing) {
+                informModuleGlobals(moduleName, existing);
+              }
+            } catch (getError) {
+              void getError;
+            }
+          }
+          return {
+            ok: true,
+            alreadyRegistered: true
+          };
+        }
+      } catch (hasError) {
+        return {
+          ok: false,
+          error: hasError,
+          reason: 'registry-check-failed'
+        };
+      }
+    }
+    try {
+      var registered = MODULE_REGISTRY.register(moduleName, api, options);
+      informModuleGlobals(moduleName, registered || api);
+      return {
+        ok: true,
+        registered: true
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        error: error,
+        reason: 'register-failed'
+      };
+    }
+  }
   function fallbackRegisterOrQueue(name, api, options, onError) {
     if (MODULE_SYSTEM && typeof MODULE_SYSTEM.registerModule === 'function') {
       var registered = MODULE_SYSTEM.registerModule(name, api, options, GLOBAL_SCOPE, onError);
@@ -483,20 +543,33 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       return false;
     }
-    if (MODULE_REGISTRY && typeof MODULE_REGISTRY.register === 'function') {
-      try {
-        MODULE_REGISTRY.register(name, api, options);
+    var lastError = null;
+    var directAttempt = attemptRegistryRegistration(name, api, options);
+    if (directAttempt.ok) {
+      return true;
+    }
+    lastError = directAttempt.error || null;
+    var syncResult = synchronizeModuleLinks({
+      warn: false
+    });
+    if (syncResult && (syncResult.flushed && syncResult.flushed.processed > 0 || syncResult.ok)) {
+      var retryAttempt = attemptRegistryRegistration(name, api, options);
+      if (retryAttempt.ok) {
         return true;
-      } catch (error) {
-        if (typeof onError === 'function') {
-          try {
-            onError(error);
-          } catch (callbackError) {
-            void callbackError;
-          }
-        } else {
-          void error;
+      }
+      if (retryAttempt.error) {
+        lastError = retryAttempt.error;
+      }
+    }
+    if (lastError) {
+      if (typeof onError === 'function') {
+        try {
+          onError(lastError);
+        } catch (callbackError) {
+          void callbackError;
         }
+      } else {
+        void lastError;
       }
     }
     queueModuleRegistration(name, api, options);
@@ -655,6 +728,331 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return fallbackSafeWarn;
   }();
+  function ensureRegistryBinding(scope, registry) {
+    if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+      return {
+        ok: false,
+        reason: 'invalid-scope'
+      };
+    }
+    var targetRegistry = registry || MODULE_REGISTRY;
+    if (!targetRegistry) {
+      return {
+        ok: false,
+        reason: 'missing-registry'
+      };
+    }
+    try {
+      var existing = scope.cineModules;
+      if (existing === targetRegistry) {
+        return {
+          ok: true,
+          already: true
+        };
+      }
+      Object.defineProperty(scope, 'cineModules', {
+        configurable: true,
+        enumerable: false,
+        value: targetRegistry,
+        writable: false
+      });
+      return {
+        ok: true,
+        updated: true
+      };
+    } catch (defineError) {
+      void defineError;
+      try {
+        scope.cineModules = targetRegistry;
+        if (scope.cineModules === targetRegistry) {
+          return {
+            ok: true,
+            updated: true
+          };
+        }
+      } catch (assignmentError) {
+        void assignmentError;
+        return {
+          ok: false,
+          reason: 'expose-failed',
+          error: assignmentError || defineError
+        };
+      }
+    }
+    return {
+      ok: true,
+      updated: true
+    };
+  }
+  function getPendingQueueFromScope(scope, queueKey) {
+    if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+      return null;
+    }
+    try {
+      var queue = scope[queueKey];
+      return Array.isArray(queue) ? queue : null;
+    } catch (error) {
+      void error;
+      return null;
+    }
+  }
+  function requeuePendingEntry(queue, entry) {
+    if (!Array.isArray(queue)) {
+      return;
+    }
+    try {
+      queue.push(entry);
+    } catch (error) {
+      void error;
+      queue[queue.length] = entry;
+    }
+  }
+  function flushPendingModuleQueues() {
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var registry = options.registry || MODULE_REGISTRY;
+    var queueKey = typeof options.queueKey === 'string' && options.queueKey ? options.queueKey : PENDING_QUEUE_KEY;
+    if (!registry || typeof registry.register !== 'function') {
+      return freezeDeep({
+        ok: false,
+        processed: 0,
+        requeued: 0,
+        scopes: 0,
+        queueKey: queueKey,
+        failures: freezeDeep([{
+          reason: 'missing-registry'
+        }])
+      });
+    }
+    var scopes = Array.isArray(options.scopes) && options.scopes.length > 0 ? options.scopes.slice() : collectCandidateScopes(options.scope || GLOBAL_SCOPE);
+    var processed = 0;
+    var requeued = 0;
+    var touchedScopes = 0;
+    var failures = [];
+    for (var index = 0; index < scopes.length; index += 1) {
+      var scope = scopes[index];
+      var queue = getPendingQueueFromScope(scope, queueKey);
+      if (!queue || queue.length === 0) {
+        continue;
+      }
+      touchedScopes += 1;
+      var pending = queue.slice();
+      queue.length = 0;
+      for (var entryIndex = 0; entryIndex < pending.length; entryIndex += 1) {
+        var entry = pending[entryIndex];
+        if (!entry || _typeof(entry) !== 'object') {
+          continue;
+        }
+        var name = typeof entry.name === 'string' ? entry.name : '';
+        if (!name) {
+          continue;
+        }
+        var api = entry.api;
+        var entryOptions = cloneOptions(entry.options);
+        if (typeof registry.has === 'function') {
+          var alreadyRegistered = false;
+          try {
+            alreadyRegistered = registry.has(name);
+          } catch (hasError) {
+            failures.push({
+              name: name,
+              message: hasError && typeof hasError.message === 'string' ? hasError.message : null,
+              reason: 'has-check-failed',
+              scopeIndex: index
+            });
+          }
+          if (alreadyRegistered) {
+            processed += 1;
+            continue;
+          }
+        }
+        try {
+          var registered = registry.register(name, api, entryOptions);
+          informModuleGlobals(name, registered || api);
+          processed += 1;
+        } catch (error) {
+          requeued += 1;
+          requeuePendingEntry(queue, entry);
+          failures.push({
+            name: name,
+            message: error && typeof error.message === 'string' ? error.message : null,
+            reason: 'register-failed',
+            scopeIndex: index
+          });
+        }
+      }
+    }
+    if (failures.length > 0 && options.warn) {
+      safeWarn('cineRuntime.flushPendingModuleQueues() encountered issues while replaying module registrations.', failures);
+    }
+    return freezeDeep({
+      ok: failures.length === 0,
+      processed: processed,
+      requeued: requeued,
+      scopes: touchedScopes,
+      queueKey: queueKey,
+      failures: failures.length > 0 ? freezeDeep(failures) : freezeDeep([])
+    });
+  }
+  function synchronizeModuleLinks() {
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var registry = options.registry || MODULE_REGISTRY;
+    var queueKey = typeof options.queueKey === 'string' && options.queueKey ? options.queueKey : PENDING_QUEUE_KEY;
+    var scopes = Array.isArray(options.scopes) && options.scopes.length > 0 ? options.scopes.slice() : collectCandidateScopes(options.scope || GLOBAL_SCOPE);
+    var exposureDetails = [];
+    var exposureFailures = [];
+    for (var index = 0; index < scopes.length; index += 1) {
+      var scope = scopes[index];
+      var exposure = ensureRegistryBinding(scope, registry);
+      exposureDetails.push({
+        scopeIndex: index,
+        ok: !!exposure.ok,
+        updated: !!exposure.updated,
+        already: !!exposure.already,
+        reason: typeof exposure.reason === 'string' ? exposure.reason : null
+      });
+      if (!exposure.ok && exposure.reason !== 'missing-registry') {
+        exposureFailures.push({
+          scopeIndex: index,
+          reason: exposure.reason || 'expose-failed',
+          message: exposure.error && typeof exposure.error.message === 'string' ? exposure.error.message : null
+        });
+      }
+    }
+    if (exposureFailures.length > 0 && options.warn !== false) {
+      safeWarn('cineRuntime.synchronizeModuleLinks() could not expose cineModules on every scope.', exposureFailures);
+    }
+    var flushResult = flushPendingModuleQueues({
+      registry: registry,
+      queueKey: queueKey,
+      scopes: scopes,
+      warn: options.warn !== false
+    });
+    var combinedFailures = [];
+    if (Array.isArray(flushResult.failures)) {
+      for (var _index = 0; _index < flushResult.failures.length; _index += 1) {
+        combinedFailures.push(flushResult.failures[_index]);
+      }
+    }
+    if (exposureFailures.length > 0) {
+      for (var _index2 = 0; _index2 < exposureFailures.length; _index2 += 1) {
+        combinedFailures.push(exposureFailures[_index2]);
+      }
+    }
+    var result = {
+      ok: flushResult.ok && exposureFailures.length === 0,
+      queueKey: queueKey,
+      exposures: exposureDetails,
+      flushed: flushResult,
+      failures: combinedFailures
+    };
+    return freezeDeep(result);
+  }
+  var INITIAL_MODULE_LINK_STATE = synchronizeModuleLinks({
+    warn: false
+  });
+  function _inspectModuleConnections() {
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var registry = options.registry || MODULE_REGISTRY;
+    if (!registry || typeof registry.list !== 'function' || typeof registry.describe !== 'function') {
+      return freezeDeep({
+        ok: false,
+        reason: 'missing-registry',
+        modules: [],
+        missingConnections: [],
+        errors: []
+      });
+    }
+    var names;
+    try {
+      names = registry.list();
+    } catch (error) {
+      return freezeDeep({
+        ok: false,
+        reason: 'list-failed',
+        modules: [],
+        missingConnections: [],
+        errors: freezeDeep([{
+          type: 'list',
+          message: error && typeof error.message === 'string' ? error.message : null
+        }])
+      });
+    }
+    var moduleNames = Array.isArray(names) ? names.slice() : [];
+    var modules = [];
+    var missingConnections = [];
+    var errors = [];
+    var hasConnection = typeof registry.has === 'function' ? function hasViaRegistry(name) {
+      try {
+        return registry.has(name);
+      } catch (error) {
+        errors.push({
+          type: 'has',
+          module: name,
+          message: error && typeof error.message === 'string' ? error.message : null
+        });
+        return moduleNames.indexOf(name) !== -1;
+      }
+    } : function hasViaList(name) {
+      return moduleNames.indexOf(name) !== -1;
+    };
+    for (var index = 0; index < moduleNames.length; index += 1) {
+      var name = moduleNames[index];
+      var meta = null;
+      try {
+        meta = registry.describe(name);
+      } catch (error) {
+        errors.push({
+          type: 'describe',
+          module: name,
+          message: error && typeof error.message === 'string' ? error.message : null
+        });
+      }
+      var connectionSet = new Set();
+      var connectionList = [];
+      var missingList = [];
+      if (meta && meta.connections && typeof meta.connections[Symbol.iterator] === 'function') {
+        var _iterator = _createForOfIteratorHelper(meta.connections),
+          _step;
+        try {
+          for (_iterator.s(); !(_step = _iterator.n()).done;) {
+            var connection = _step.value;
+            if (typeof connection !== 'string') {
+              continue;
+            }
+            var trimmed = connection.trim();
+            if (!trimmed || connectionSet.has(trimmed)) {
+              continue;
+            }
+            connectionSet.add(trimmed);
+            connectionList.push(trimmed);
+            if (!hasConnection(trimmed)) {
+              missingList.push(trimmed);
+              missingConnections.push({
+                from: name,
+                to: trimmed
+              });
+            }
+          }
+        } catch (err) {
+          _iterator.e(err);
+        } finally {
+          _iterator.f();
+        }
+      }
+      modules.push(freezeDeep({
+        name: name,
+        connections: connectionList,
+        missing: missingList,
+        ok: missingList.length === 0
+      }));
+    }
+    return freezeDeep({
+      ok: missingConnections.length === 0,
+      modules: modules,
+      missingConnections: missingConnections,
+      errors: errors
+    });
+  }
   function fallbackExposeGlobal(name, value) {
     if (!GLOBAL_SCOPE || _typeof(GLOBAL_SCOPE) !== 'object') {
       return false;
@@ -828,8 +1226,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       detailMap[key] = false;
       return;
     }
-    for (var _index = 0; _index < REQUIRED_PERSISTENCE_FUNCTIONS.length; _index += 1) {
-      var path = REQUIRED_PERSISTENCE_FUNCTIONS[_index];
+    for (var _index3 = 0; _index3 < REQUIRED_PERSISTENCE_FUNCTIONS.length; _index3 += 1) {
+      var path = REQUIRED_PERSISTENCE_FUNCTIONS[_index3];
       var segments = parsePath(path);
       var bindingName = segments[segments.length - 1];
       var bindingPath = "cinePersistence.bindings.".concat(bindingName);
@@ -969,8 +1367,20 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function verifyCriticalFlows() {
     var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    var synchronization = synchronizeModuleLinks({
+      warn: options.warnOnFailure
+    });
     var missing = [];
     var detailMap = {};
+    if (synchronization && _typeof(synchronization) === 'object') {
+      detailMap['synchronization.ok'] = !!synchronization.ok;
+      if (Array.isArray(synchronization.failures) && synchronization.failures.length > 0) {
+        detailMap['synchronization.failures'] = synchronization.failures;
+      }
+      if (!synchronization.ok) {
+        missing.push('cineRuntime synchronization');
+      }
+    }
     var registrySnapshot = null;
     if (MODULE_REGISTRY && typeof MODULE_REGISTRY.assertRegistered === 'function') {
       try {
@@ -1049,7 +1459,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       modules: freezeDeep(modulePresence),
       details: freezeDeep(detailMap),
       registry: registrySnapshot ? freezeDeep(registrySnapshot) : null,
-      checks: listCriticalChecks()
+      checks: listCriticalChecks(),
+      synchronization: synchronization
     });
     if (!ok) {
       if (options.warnOnFailure) {
@@ -1076,20 +1487,31 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     getModuleRegistry: function getModuleRegistry() {
       return MODULE_REGISTRY || null;
     },
+    synchronizeModules: function synchronizeModules(options) {
+      return synchronizeModuleLinks(options || {});
+    },
+    inspectModuleConnections: function inspectModuleConnections(options) {
+      return _inspectModuleConnections(options || {});
+    },
     listCriticalChecks: listCriticalChecks,
     verifyCriticalFlows: verifyCriticalFlows,
     __internal: freezeDeep({
       resolveModule: resolveModule,
       ensureModule: ensureModule,
       listCriticalChecks: listCriticalChecks,
-      moduleRegistry: MODULE_REGISTRY || null
+      moduleRegistry: MODULE_REGISTRY || null,
+      synchronizeModuleLinks: synchronizeModuleLinks,
+      flushPendingModuleQueues: flushPendingModuleQueues,
+      initialSynchronization: INITIAL_MODULE_LINK_STATE,
+      inspectModuleConnections: _inspectModuleConnections
     })
   });
   informModuleGlobals('cineRuntime', runtimeAPI);
   registerOrQueueModule('cineRuntime', runtimeAPI, {
     category: 'runtime',
     description: 'Runtime orchestrator ensuring persistence, offline, and UI safeguards stay intact.',
-    replace: true
+    replace: true,
+    connections: ['cinePersistence', 'cineOffline', 'cineUi', 'cineModuleGlobals', 'cineModuleContext']
   }, function (error) {
     safeWarn('Unable to register cineRuntime module.', error);
   });

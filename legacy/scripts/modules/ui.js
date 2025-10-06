@@ -561,7 +561,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var controllerRegistry = new Map();
   var interactionRegistry = new Map();
   var orchestrationRegistry = new Map();
-  var helpRegistry = new Map();
   var WARNED_NAMES = new Set();
   function normalizeName(name) {
     if (typeof name === 'string' && name.trim()) {
@@ -649,26 +648,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return freezeDeep({
       initializer: fn
     });
-  }
-  function sanitizeHelpEntry(name, value) {
-    if (typeof value === 'string') {
-      var text = value.trim();
-      if (!text) {
-        throw new Error("cineUi help entry \"".concat(name, "\" cannot be empty."));
-      }
-      return freezeDeep({
-        resolver: function resolver() {
-          return text;
-        }
-      });
-    }
-    if (typeof value === 'function') {
-      var resolver = cloneFunction(value);
-      return freezeDeep({
-        resolver: resolver
-      });
-    }
-    throw new TypeError("cineUi help entry \"".concat(name, "\" must be a string or function."));
   }
   function warnDuplicate(name, type) {
     var key = "".concat(type, ":").concat(name);
@@ -771,20 +750,122 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return listRegistryKeys(orchestrationRegistry);
     }
   });
-  var helpAPI = freezeDeep({
-    register: function register(name, value) {
-      var normalized = normalizeName(name);
-      var sanitized = sanitizeHelpEntry(normalized, value);
-      if (helpRegistry.has(normalized)) {
-        warnDuplicate(normalized, 'help');
+  function resolveHelpModule(scope) {
+    var modules = [];
+    if (typeof tryRequire === 'function') {
+      var required = tryRequire('./help.js');
+      if (required && _typeof(required) === 'object') {
+        modules.push(required);
       }
-      helpRegistry.set(normalized, sanitized);
-      return sanitized.resolver;
+    }
+    var scopes = fallbackCollectCandidateScopes(scope);
+    for (var index = 0; index < scopes.length; index += 1) {
+      var candidateScope = scopes[index];
+      if (!candidateScope) {
+        continue;
+      }
+      try {
+        var moduleCandidate = candidateScope.cineHelpModule;
+        if (moduleCandidate && modules.indexOf(moduleCandidate) === -1) {
+          modules.push(moduleCandidate);
+        }
+      } catch (error) {
+        void error;
+      }
+      try {
+        var apiCandidate = candidateScope.cineHelp;
+        if (apiCandidate) {
+          var exists = false;
+          for (var checkIndex = 0; checkIndex < modules.length; checkIndex += 1) {
+            var existing = modules[checkIndex];
+            if (existing === apiCandidate || existing && existing.help === apiCandidate) {
+              exists = true;
+              break;
+            }
+          }
+          if (!exists) {
+            modules.push({
+              help: apiCandidate,
+              __internal: null
+            });
+          }
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+    for (var moduleIndex = 0; moduleIndex < modules.length; moduleIndex += 1) {
+      var candidate = modules[moduleIndex];
+      if (!candidate) {
+        continue;
+      }
+      var api = candidate.help || candidate;
+      if (!api) {
+        continue;
+      }
+      if (typeof api.register === 'function' && typeof api.get === 'function' && typeof api.resolve === 'function' && typeof api.list === 'function') {
+        if (!candidate.help && api) {
+          return {
+            help: api,
+            __internal: candidate.__internal || null
+          };
+        }
+        return candidate;
+      }
+    }
+    for (var _index2 = 0; _index2 < scopes.length; _index2 += 1) {
+      var _candidateScope = scopes[_index2];
+      if (!_candidateScope) {
+        continue;
+      }
+      try {
+        var factory = _candidateScope.__cineCreateHelpModule;
+        if (typeof factory === 'function') {
+          var created = factory({
+            freezeDeep: freezeDeep,
+            safeWarn: safeWarn
+          });
+          if (created && _typeof(created) === 'object') {
+            return created;
+          }
+        }
+      } catch (error) {
+        safeWarn('cineUi: Failed to create help module from factory.', error);
+      }
+    }
+    return null;
+  }
+  var resolvedHelpModule = resolveHelpModule(GLOBAL_SCOPE);
+  var fallbackHelpRegistry = new Map();
+  var helpAPI = resolvedHelpModule && resolvedHelpModule.help ? resolvedHelpModule.help : freezeDeep({
+    register: function register(name, value) {
+      var normalized = typeof name === 'string' ? name.trim() : '';
+      if (!normalized) {
+        throw new TypeError('cineUi registry names must be non-empty strings.');
+      }
+      if (typeof value === 'function') {
+        fallbackHelpRegistry.set(normalized, value);
+        return value;
+      }
+      if (typeof value !== 'string') {
+        throw new TypeError("cineUi help entry \"".concat(normalized, "\" must be a string or function."));
+      }
+      var text = value.trim();
+      if (!text) {
+        throw new Error("cineUi help entry \"".concat(normalized, "\" cannot be empty."));
+      }
+      var resolver = function helpStringResolver() {
+        return text;
+      };
+      fallbackHelpRegistry.set(normalized, resolver);
+      return resolver;
     },
     get: function get(name) {
-      var normalized = normalizeName(name);
-      var entry = helpRegistry.get(normalized);
-      return entry ? entry.resolver : null;
+      var normalized = typeof name === 'string' ? name.trim() : '';
+      if (!normalized) {
+        throw new TypeError('cineUi registry names must be non-empty strings.');
+      }
+      return fallbackHelpRegistry.get(normalized) || null;
     },
     resolve: function resolve(name) {
       var resolver = this.get(name);
@@ -797,15 +878,29 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return resolver.apply(null, args);
     },
     list: function list() {
-      return listRegistryKeys(helpRegistry);
+      return Array.from(fallbackHelpRegistry.keys()).sort();
+    }
+  });
+  var helpModuleInternals = resolvedHelpModule && resolvedHelpModule.__internal ? resolvedHelpModule.__internal : freezeDeep({
+    helpRegistry: fallbackHelpRegistry,
+    clearRegistries: function clearRegistries() {
+      fallbackHelpRegistry.clear();
     }
   });
   function clearRegistries() {
     controllerRegistry.clear();
     interactionRegistry.clear();
     orchestrationRegistry.clear();
-    helpRegistry.clear();
     WARNED_NAMES.clear();
+    if (helpModuleInternals && typeof helpModuleInternals.clearRegistries === 'function') {
+      try {
+        helpModuleInternals.clearRegistries();
+      } catch (error) {
+        safeWarn('cineUi: Unable to clear help registry.', error);
+      }
+    } else if (helpModuleInternals && helpModuleInternals.helpRegistry && typeof helpModuleInternals.helpRegistry.clear === 'function') {
+      helpModuleInternals.helpRegistry.clear();
+    }
   }
   var uiAPI = {
     controllers: controllersAPI,
@@ -816,7 +911,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       controllerRegistry: controllerRegistry,
       interactionRegistry: interactionRegistry,
       orchestrationRegistry: orchestrationRegistry,
-      helpRegistry: helpRegistry,
+      helpRegistry: helpModuleInternals && helpModuleInternals.helpRegistry ? helpModuleInternals.helpRegistry : fallbackHelpRegistry,
       clearRegistries: clearRegistries
     }
   };
@@ -825,7 +920,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   registerOrQueueModule('cineUi', uiAPI, {
     category: 'ui',
     description: 'UI controller registry for dialogs, interactions, orchestration, and help copy.',
-    replace: true
+    replace: true,
+    connections: ['cineModuleGlobals', 'cineModuleEnvironment', 'cineHelp', 'cineModuleContext']
   }, function (error) {
     safeWarn('Unable to register cineUi module.', error);
   });

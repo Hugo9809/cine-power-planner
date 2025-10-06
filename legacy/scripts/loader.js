@@ -368,7 +368,6 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
   function getLegacyFlagStorages() {
     return collectStorages(['localStorage']);
   }
-
   function getLegacyRetryStorages() {
     return collectStorages(['sessionStorage']);
   }
@@ -394,23 +393,19 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
     }
     return stored;
   }
-
   function markLegacyBundleRetryAttempt() {
     var storages = getLegacyRetryStorages();
     if (!storages.length) {
       return false;
     }
-
     var timestamp = nowMilliseconds();
     var value = typeof timestamp === 'number' ? String(timestamp) : '1';
     var marked = false;
-
     for (var index = 0; index < storages.length; index += 1) {
       var storage = storages[index];
       if (!storage) {
         continue;
       }
-
       try {
         storage.setItem(LEGACY_BUNDLE_RETRY_SESSION_KEY, value);
         marked = true;
@@ -418,7 +413,6 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
         void setError;
       }
     }
-
     return marked;
   }
   function clearLegacyBundlePreference() {
@@ -440,19 +434,16 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
     }
     return cleared;
   }
-
   function hasLegacyBundleRetryAttempt() {
     var storages = getLegacyRetryStorages();
     if (!storages.length) {
       return false;
     }
-
     for (var index = 0; index < storages.length; index += 1) {
       var storage = storages[index];
       if (!storage) {
         continue;
       }
-
       try {
         var rawValue = storage.getItem(LEGACY_BUNDLE_RETRY_SESSION_KEY);
         if (typeof rawValue === 'string' && rawValue) {
@@ -462,7 +453,6 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
         void readError;
       }
     }
-
     return false;
   }
   function shouldForceLegacyBundle() {
@@ -509,15 +499,12 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
   }
   function triggerLegacyBundleReload(options) {
     var settings = options || {};
-
     if (settings.rememberPreference !== false) {
       rememberLegacyBundlePreference();
     }
-
     if (settings.markRetry === true) {
       markLegacyBundleRetryAttempt();
     }
-
     if (typeof window === 'undefined') {
       return false;
     }
@@ -975,23 +962,23 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
       }
     };
   }
-  var modernScripts = ['src/scripts/globalthis-polyfill.js', 'src/data/devices/index.js', 'src/data/devices/cameras.js', 'src/data/devices/monitors.js', 'src/data/devices/video.js', 'src/data/devices/fiz.js', 'src/data/devices/batteries.js', 'src/data/devices/batteryHotswaps.js', 'src/data/devices/chargers.js', 'src/data/devices/cages.js', 'src/data/devices/gearList.js', 'src/data/devices/wirelessReceivers.js', 'src/scripts/storage.js', 'src/scripts/translations.js', 'src/vendor/lz-string.min.js', 'src/vendor/lottie-light.min.js', 'src/scripts/auto-gear-weight.js', 'src/scripts/modules/base.js', 'src/scripts/modules/registry.js', 'src/scripts/modules/environment-bridge.js', 'src/scripts/modules/globals.js', 'src/scripts/modules/offline.js', 'src/scripts/modules/core-shared.js', 'src/scripts/modules/features/backup.js', 'src/scripts/modules/ui.js', 'src/scripts/modules/results.js', 'src/scripts/app-core-new-1.js', 'src/scripts/app-core-new-2.js', 'src/scripts/app-events.js', 'src/scripts/app-setups.js', 'src/scripts/restore-verification.js', 'src/scripts/app-session.js', 'src/scripts/modules/persistence.js', 'src/scripts/modules/runtime.js', 'src/scripts/script.js', 'src/scripts/auto-gear-monitoring.js', 'src/scripts/overview.js', 'src/scripts/autosave-overlay.js'];
-  var modernScripts = ['src/scripts/globalthis-polyfill.js', 'src/data/devices/index.js', 'src/data/devices/cameras.js', 'src/data/devices/monitors.js', 'src/data/devices/video.js', 'src/data/devices/fiz.js', 'src/data/devices/batteries.js', 'src/data/devices/batteryHotswaps.js', 'src/data/devices/chargers.js', 'src/data/devices/cages.js', 'src/data/devices/gearList.js', 'src/data/devices/wirelessReceivers.js', 'src/scripts/storage.js', 'src/scripts/translations.js', 'src/vendor/lz-string.min.js', 'src/vendor/lottie-light.min.js', 'src/scripts/auto-gear-weight.js', 'src/scripts/modules/base.js', 'src/scripts/modules/registry.js', 'src/scripts/modules/environment-bridge.js', 'src/scripts/modules/globals.js', 'src/scripts/modules/offline.js', 'src/scripts/modules/core-shared.js', 'src/scripts/modules/features/auto-gear-rules.js', 'src/scripts/modules/features/backup.js', 'src/scripts/modules/ui.js', 'src/scripts/modules/results.js', 'src/scripts/app-core-new-1.js', 'src/scripts/app-core-new-2.js', 'src/scripts/app-events.js', 'src/scripts/app-setups.js', 'src/scripts/restore-verification.js', 'src/scripts/app-session.js', 'src/scripts/modules/persistence.js', 'src/scripts/modules/runtime.js', 'src/scripts/script.js', 'src/scripts/auto-gear-monitoring.js', 'src/scripts/overview.js', 'src/scripts/autosave-overlay.js'];
-  var legacyScripts = ['legacy/polyfills/core-js-bundle.min.js', 'legacy/polyfills/regenerator-runtime.js', 'legacy/scripts/globalthis-polyfill.js', 'legacy/data/devices/index.js', 'legacy/data/devices/cameras.js', 'legacy/data/devices/monitors.js', 'legacy/data/devices/video.js', 'legacy/data/devices/fiz.js', 'legacy/data/devices/batteries.js', 'legacy/data/devices/batteryHotswaps.js', 'legacy/data/devices/chargers.js', 'legacy/data/devices/cages.js', 'legacy/data/devices/gearList.js', 'legacy/data/devices/wirelessReceivers.js', 'legacy/scripts/storage.js', 'legacy/scripts/translations.js', 'src/vendor/lz-string.min.js', 'src/vendor/lottie-light.min.js', 'legacy/scripts/auto-gear-weight.js', 'legacy/scripts/modules/base.js', 'legacy/scripts/modules/registry.js', 'src/scripts/modules/environment-bridge.js', 'src/scripts/modules/globals.js', 'legacy/scripts/modules/offline.js', 'legacy/scripts/modules/core-shared.js', 'src/scripts/modules/features/auto-gear-rules.js', 'src/scripts/modules/features/backup.js', 'legacy/scripts/modules/ui.js', 'src/scripts/modules/results.js', 'legacy/scripts/app-core-new-1.js', 'legacy/scripts/app-core-new-2.js', 'legacy/scripts/app-events.js', 'legacy/scripts/app-setups.js', 'legacy/scripts/app-session.js', 'legacy/scripts/modules/runtime.js', 'legacy/scripts/modules/persistence.js', 'legacy/scripts/script.js', 'legacy/scripts/auto-gear-monitoring.js', 'legacy/scripts/overview.js', 'legacy/scripts/autosave-overlay.js'];
+  var modernScripts = ['src/scripts/globalthis-polyfill.js', 'src/data/devices/index.js', 'src/data/devices/cameras.js', 'src/data/devices/monitors.js', 'src/data/devices/video.js', 'src/data/devices/fiz.js', 'src/data/devices/batteries.js', 'src/data/devices/batteryHotswaps.js', 'src/data/devices/chargers.js', 'src/data/devices/cages.js', 'src/data/devices/gearList.js', 'src/data/devices/wirelessReceivers.js', 'src/scripts/storage.js', 'src/scripts/translations.js', 'src/vendor/lz-string.min.js', 'src/vendor/lottie-light.min.js', 'src/scripts/auto-gear-weight.js', 'src/scripts/modules/base.js', 'src/scripts/modules/registry.js', 'src/scripts/modules/environment-bridge.js', 'src/scripts/modules/globals.js', 'src/scripts/modules/offline.js', 'src/scripts/modules/core-shared.js', 'src/scripts/modules/features/auto-gear-rules.js', 'src/scripts/modules/features/backup.js', 'src/scripts/modules/features/print-workflow.js', 'src/scripts/modules/ui.js', 'src/scripts/modules/results.js', 'src/scripts/app-core-new-1.js', 'src/scripts/app-core-new-2.js', 'src/scripts/app-events.js', 'src/scripts/app-setups.js', 'src/scripts/restore-verification.js', 'src/scripts/app-session.js', 'src/scripts/modules/persistence.js', 'src/scripts/modules/runtime.js', 'src/scripts/script.js', 'src/scripts/auto-gear-monitoring.js', 'src/scripts/overview.js', 'src/scripts/autosave-overlay.js'];
+  var legacyScripts = ['legacy/polyfills/core-js-bundle.min.js', 'legacy/polyfills/regenerator-runtime.js', 'legacy/scripts/globalthis-polyfill.js', 'legacy/data/devices/index.js', 'legacy/data/devices/cameras.js', 'legacy/data/devices/monitors.js', 'legacy/data/devices/video.js', 'legacy/data/devices/fiz.js', 'legacy/data/devices/batteries.js', 'legacy/data/devices/batteryHotswaps.js', 'legacy/data/devices/chargers.js', 'legacy/data/devices/cages.js', 'legacy/data/devices/gearList.js', 'legacy/data/devices/wirelessReceivers.js', 'legacy/scripts/storage.js', 'legacy/scripts/translations.js', 'src/vendor/lz-string.min.js', 'src/vendor/lottie-light.min.js', 'legacy/scripts/auto-gear-weight.js', 'legacy/scripts/modules/base.js', 'legacy/scripts/modules/registry.js', 'src/scripts/modules/environment-bridge.js', 'src/scripts/modules/globals.js', 'legacy/scripts/modules/offline.js', 'legacy/scripts/modules/core-shared.js', 'src/scripts/modules/features/backup.js', 'src/scripts/modules/features/print-workflow.js', 'legacy/scripts/modules/ui.js', 'src/scripts/modules/results.js', 'legacy/scripts/app-core-new-1.js', 'legacy/scripts/app-core-new-2.js', 'legacy/scripts/app-events.js', 'legacy/scripts/app-setups.js', 'legacy/scripts/app-session.js', 'legacy/scripts/modules/runtime.js', 'legacy/scripts/modules/persistence.js', 'legacy/scripts/script.js', 'legacy/scripts/auto-gear-monitoring.js', 'legacy/scripts/overview.js', 'legacy/scripts/autosave-overlay.js'];
   function startLoading() {
     if (shouldForceLegacyBundle()) {
       window.__CINE_POWER_LEGACY_BUNDLE__ = true;
-
       if (hasLegacyBundleRetryAttempt()) {
         loadScriptsSequentially(legacyScripts);
         return;
       }
-
       supportsModernFeatures(function (supportsModern) {
         if (supportsModern) {
           var cleared = clearLegacyBundlePreference();
           if (cleared) {
-            if (triggerLegacyBundleReload({ rememberPreference: false, markRetry: true })) {
+            if (triggerLegacyBundleReload({
+              rememberPreference: false,
+              markRetry: true
+            })) {
               return;
             }
           }

@@ -456,7 +456,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   registerOrQueueForScope(getGlobalScope(), getModuleRegistry(), 'cineModuleEnvironment', moduleEnvironment, {
     category: 'infrastructure',
     description: 'Shared environment bootstrap that harmonizes module communication across bundles.',
-    replace: true
+    replace: true,
+    connections: ['cineModuleBase', 'cineModuleGlobals', 'cineEnvironmentBridge']
   }, function (error) {
     safeWarn('Unable to register cineModuleEnvironment.', error);
   });
