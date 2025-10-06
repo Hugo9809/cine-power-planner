@@ -5459,6 +5459,34 @@ function cloneProjectEntryForSetup(projectEntry) {
     }
   }
 
+  const metadata = projectEntry && typeof projectEntry === 'object'
+    ? projectEntry.__cineAutoBackupMetadata
+    : null;
+  if (metadata && typeof metadata === 'object') {
+    try {
+      Object.defineProperty(snapshot, '__cineAutoBackupMetadata', {
+        configurable: true,
+        enumerable: false,
+        writable: true,
+        value: {
+          version: typeof metadata.version === 'number' ? metadata.version : 1,
+          snapshotType: metadata.snapshotType === 'delta' ? 'delta' : 'full',
+          base: typeof metadata.base === 'string' ? metadata.base : null,
+          sequence: typeof metadata.sequence === 'number' ? metadata.sequence : 0,
+          createdAt: typeof metadata.createdAt === 'string' ? metadata.createdAt : null,
+          changedKeys: Array.isArray(metadata.changedKeys) ? metadata.changedKeys.slice() : [],
+          removedKeys: Array.isArray(metadata.removedKeys) ? metadata.removedKeys.slice() : [],
+        },
+      });
+    } catch (error) {
+      try {
+        snapshot.__cineAutoBackupMetadata = metadata;
+      } catch (assignmentError) {
+        void assignmentError;
+      }
+    }
+  }
+
   return snapshot;
 }
 

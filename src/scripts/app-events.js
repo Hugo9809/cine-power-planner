@@ -1065,6 +1065,91 @@ function notifyAutoSaveFromBackup(message, backupName) {
   }
 }
 
+const AUTO_BACKUP_MAX_DELTA_SEQUENCE = 9;
+
+function readAutoBackupMetadata(entry) {
+  if (!entry || typeof entry !== 'object') {
+    return null;
+  }
+
+  const metadata = entry.__cineAutoBackupMetadata;
+  if (!metadata || typeof metadata !== 'object') {
+    return null;
+  }
+
+  return metadata;
+}
+
+function attachAutoBackupMetadata(target, metadata) {
+  if (!target || typeof target !== 'object') {
+    return;
+  }
+
+  const snapshotMetadata = metadata && typeof metadata === 'object'
+    ? {
+        version: typeof metadata.version === 'number' ? metadata.version : 1,
+        snapshotType: metadata.snapshotType === 'delta' ? 'delta' : 'full',
+        base: typeof metadata.base === 'string' ? metadata.base : null,
+        sequence: typeof metadata.sequence === 'number' ? metadata.sequence : 0,
+        createdAt: typeof metadata.createdAt === 'string' ? metadata.createdAt : null,
+        changedKeys: Array.isArray(metadata.changedKeys) ? metadata.changedKeys.slice() : [],
+        removedKeys: Array.isArray(metadata.removedKeys) ? metadata.removedKeys.slice() : [],
+      }
+    : null;
+
+  try {
+    Object.defineProperty(target, '__cineAutoBackupMetadata', {
+      configurable: true,
+      enumerable: false,
+      writable: true,
+      value: snapshotMetadata,
+    });
+  } catch (error) {
+    try {
+      // eslint-disable-next-line no-param-reassign
+      target.__cineAutoBackupMetadata = snapshotMetadata;
+    } catch (assignmentError) {
+      void assignmentError;
+    }
+  }
+}
+
+function determineNextAutoBackupPlan(setups) {
+  if (!setups || typeof setups !== 'object') {
+    return { snapshotType: 'full', base: null, sequence: 0 };
+  }
+
+  const autoBackupNames = Object.keys(setups)
+    .filter((name) => typeof name === 'string' && name.startsWith('auto-backup-'))
+    .sort();
+
+  if (!autoBackupNames.length) {
+    return { snapshotType: 'full', base: null, sequence: 0 };
+  }
+
+  const latestName = autoBackupNames[autoBackupNames.length - 1];
+  const latestEntry = setups[latestName];
+  const latestMetadata = readAutoBackupMetadata(latestEntry);
+
+  if (!latestEntry || !latestMetadata) {
+    return { snapshotType: 'full', base: null, sequence: 0 };
+  }
+
+  const latestSequence = typeof latestMetadata.sequence === 'number'
+    ? latestMetadata.sequence
+    : 0;
+
+  if (latestSequence >= AUTO_BACKUP_MAX_DELTA_SEQUENCE) {
+    return { snapshotType: 'full', base: null, sequence: 0 };
+  }
+
+  return {
+    snapshotType: 'delta',
+    base: latestName,
+    sequence: latestSequence + 1,
+  };
+}
+
 // Auto-save backups every 10 minutes. Saved backups appear in the setup
 // selector but do not change the currently selected setup. Intervals are
 // unref'ed when possible so Node environments can exit cleanly.
@@ -1133,6 +1218,15 @@ function autoBackup(options = {}) {
     const normalizedName = nameForBackup || '';
     const backupName = normalizedName ? `${baseName}-${normalizedName}` : baseName;
     const currentSetup = { ...getCurrentSetupState() };
+    const setupsSnapshot = getSetups();
+    const plan = determineNextAutoBackupPlan(setupsSnapshot);
+    let resolvedPlan = plan;
+    if (plan.snapshotType === 'delta') {
+      const baseEntry = plan.base && setupsSnapshot ? setupsSnapshot[plan.base] : null;
+      if (!baseEntry || typeof baseEntry !== 'object') {
+        resolvedPlan = { snapshotType: 'full', base: null, sequence: 0 };
+      }
+    }
     let gearListHtml = getCurrentGearListHtml();
     if (!gearListHtml) {
       const activeName = (typeof setupSelectElement.value === 'string'
@@ -1164,7 +1258,18 @@ function autoBackup(options = {}) {
     if (gearListHtml) {
       currentSetup.gearList = gearListHtml;
     }
-    const setups = getSetups();
+    const timestamp = now.toISOString();
+    const backupMetadata = {
+      version: 1,
+      snapshotType: resolvedPlan.snapshotType,
+      base: resolvedPlan.base,
+      sequence: resolvedPlan.sequence,
+      createdAt: timestamp,
+      changedKeys: [],
+      removedKeys: [],
+    };
+    attachAutoBackupMetadata(currentSetup, backupMetadata);
+    const setups = setupsSnapshot;
     setups[backupName] = currentSetup;
     storeSetups(setups);
     if (typeof saveProject === 'function') {
@@ -1177,6 +1282,7 @@ function autoBackup(options = {}) {
         payload.autoGearRules = activeRules;
       }
       if (payload.gearList || payload.projectInfo || payload.autoGearRules) {
+        attachAutoBackupMetadata(payload, backupMetadata);
         saveProject(backupName, payload);
       }
     }
