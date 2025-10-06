@@ -12378,6 +12378,19 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     }
     var loadFeedbackSafe = typeof loadFeedback === 'function' ? loadFeedback : () => ({});
     var saveFeedbackSafe = typeof saveFeedback === 'function' ? saveFeedback : () => {};
+    if (typeof cineResults !== 'undefined' && cineResults && typeof cineResults.configureRuntimeFeedback === 'function') {
+      cineResults.configureRuntimeFeedback({
+        loadFeedback: loadFeedbackSafe,
+        saveFeedback: saveFeedbackSafe,
+        devices,
+        cameraSelect,
+        monitorSelect,
+        videoSelect,
+        distanceSelect,
+        motorSelects,
+        controllerSelects
+      });
+    }
     var setupDiagramContainer = document.getElementById("diagramArea");
     const diagramLegend = document.getElementById("diagramLegend");
     var downloadDiagramBtn = document.getElementById("downloadDiagram");
@@ -15056,10 +15069,6 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
     
       const totalWatt = cameraW + monitorW + videoW + motorsW + controllersW + distanceW;
-      if (totalPowerTarget) {
-        totalPowerTarget.textContent = totalWatt.toFixed(1);
-      }
-    
       const segments = [
         { power: cameraW, className: "camera", label: texts[currentLang].cameraLabel },
         { power: monitorW, className: "monitor", label: texts[currentLang].monitorLabel },
@@ -15068,41 +15077,15 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         { power: controllersW, className: "controllers", label: texts[currentLang].fizControllersLabel },
         { power: distanceW, className: "distance", label: texts[currentLang].distanceLabel }
       ].filter(s => s.power > 0);
-    
-      // Update breakdown by category
-      if (breakdownListTarget) {
-        breakdownListTarget.innerHTML = "";
-        if (cameraW > 0) {
-          const li = document.createElement("li");
-          li.innerHTML = `<strong>${texts[currentLang].cameraLabel}</strong> ${cameraW.toFixed(1)} W`;
-          breakdownListTarget.appendChild(li);
-        }
-        if (monitorW > 0) {
-          const li = document.createElement("li");
-          li.innerHTML = `<strong>${texts[currentLang].monitorLabel}</strong> ${monitorW.toFixed(1)} W`;
-          breakdownListTarget.appendChild(li);
-        }
-        if (videoW > 0) {
-          const li = document.createElement("li");
-          li.innerHTML = `<strong>${texts[currentLang].videoLabel}</strong> ${videoW.toFixed(1)} W`;
-          breakdownListTarget.appendChild(li);
-        }
-        if (motorsW > 0) {
-          const li = document.createElement("li");
-          li.innerHTML = `<strong>${texts[currentLang].fizMotorsLabel}</strong> ${motorsW.toFixed(1)} W`;
-          breakdownListTarget.appendChild(li);
-        }
-        if (controllersW > 0) {
-          const li = document.createElement("li");
-          li.innerHTML = `<strong>${texts[currentLang].fizControllersLabel}</strong> ${controllersW.toFixed(1)} W`;
-          breakdownListTarget.appendChild(li);
-        }
-        if (distanceW > 0) {
-          const li = document.createElement("li");
-          li.innerHTML = `<strong>${texts[currentLang].distanceLabel}</strong> ${distanceW.toFixed(1)} W`;
-          breakdownListTarget.appendChild(li);
-        }
-      }
+
+      const breakdownEntries = [
+        { label: texts[currentLang].cameraLabel, power: cameraW },
+        { label: texts[currentLang].monitorLabel, power: monitorW },
+        { label: texts[currentLang].videoLabel, power: videoW },
+        { label: texts[currentLang].fizMotorsLabel, power: motorsW },
+        { label: texts[currentLang].fizControllersLabel, power: controllersW },
+        { label: texts[currentLang].distanceLabel, power: distanceW }
+      ];
     
       // Calculate currents depending on battery type
       const selectedPlate = getSelectedPlate();
@@ -15117,26 +15100,15 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         totalCurrentLow = totalWatt / lowV;
       }
       refreshTotalCurrentLabels(currentLang, selectedPlate, mountVoltages);
-      if (totalCurrent144Target) {
-        totalCurrent144Target.textContent = totalCurrentHigh.toFixed(2);
-      }
-      if (totalCurrent12Target) {
-        totalCurrent12Target.textContent = totalCurrentLow.toFixed(2);
-      }
-    
       // Update battery and hotswap options based on current draw
       updateBatteryOptions();
       battery = batterySelect.value;
     
     // Wenn kein Akku oder "None" ausgewählt ist: Laufzeit = nicht berechenbar, keine Warnungen
     let hours = null;
+    let runtimeDisplayText = '–';
+    let batteryCountDisplay = '–';
     if (!battery || battery === "None" || !devices.batteries[battery]) {
-      if (batteryLifeTarget) {
-        batteryLifeTarget.textContent = "–";
-      }
-      if (batteryCountTarget) {
-        batteryCountTarget.textContent = "–";
-      }
       setStatusMessage(pinWarnTarget, '');
       setStatusLevel(pinWarnTarget, null);
       setStatusMessage(dtapWarnTarget, '');
@@ -15177,32 +15149,14 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
         const availableWatt = maxPinA * lowV;
         drawPowerDiagram(availableWatt, segments, maxPinA);
-        if (totalCurrent144Target) {
-          totalCurrent144Target.textContent = totalCurrentHigh.toFixed(2);
-        }
-        if (totalCurrent12Target) {
-          totalCurrent12Target.textContent = totalCurrentLow.toFixed(2);
-        }
         if (totalWatt === 0) {
           hours = Infinity;
-          if (batteryLifeTarget) {
-            batteryLifeTarget.textContent = "∞";
-          }
+          runtimeDisplayText = '∞';
         } else {
           hours = capacityWh / totalWatt;
-          if (batteryLifeTarget) {
-            batteryLifeTarget.textContent = hours.toFixed(2);
-          }
+          runtimeDisplayText = Number.isFinite(hours) ? hours.toFixed(2) : '–';
         }
         lastRuntimeHours = hours;
-        // Round up total batteries to the next full number
-        let batteriesNeeded = 1;
-        if (Number.isFinite(hours) && hours > 0) {
-          batteriesNeeded = Math.max(1, Math.ceil(10 / hours));
-        }
-        if (batteryCountTarget) {
-          batteryCountTarget.textContent = batteriesNeeded.toString();
-        }
         // Warnings about current draw vs battery limits
         setStatusMessage(pinWarnTarget, '');
         setStatusMessage(dtapWarnTarget, '');
@@ -15471,53 +15425,123 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       } else {
         batteryComparisonSection.style.display = "none";
       }
-      const feedback = renderFeedbackTable(getCurrentSetupKey());
+      let finalRuntimeHours = hours;
+      let batteryLifeLabelText = texts[currentLang].batteryLifeLabel;
+      let runtimeAverageNoteText = '';
+      const feedback = renderFeedbackTable(getCurrentSetupKey(), {
+        onAfterDelete: () => updateCalculations(),
+        texts,
+        currentLang
+      });
       if (feedback !== null) {
         let combinedRuntime = feedback.runtime;
         if (Number.isFinite(hours)) {
           combinedRuntime =
             (feedback.runtime * feedback.weight + hours) / (feedback.weight + 1);
         }
-        if (batteryLifeTarget) {
-          batteryLifeTarget.textContent = combinedRuntime.toFixed(2);
-        }
+        finalRuntimeHours = combinedRuntime;
+        runtimeDisplayText = Number.isFinite(combinedRuntime)
+          ? combinedRuntime.toFixed(2)
+          : (combinedRuntime === Infinity ? '∞' : '–');
         lastRuntimeHours = combinedRuntime;
-        if (batteryLifeLabelTarget) {
-          let label = texts[currentLang].batteryLifeLabel;
-          const userNote = texts[currentLang].runtimeUserCountNote.replace('{count}', feedback.count);
-          const idx = label.indexOf(')');
-          if (idx !== -1) {
-            label = `${label.slice(0, idx)}, ${userNote}${label.slice(idx)}`;
-          }
-          batteryLifeLabelTarget.textContent = label;
-          batteryLifeLabelTarget.setAttribute(
-            "data-help",
-            texts[currentLang].batteryLifeHelp
-          );
+        const userNote = texts[currentLang].runtimeUserCountNote.replace('{count}', feedback.count);
+        const idx = batteryLifeLabelText.indexOf(')');
+        if (idx !== -1) {
+          batteryLifeLabelText = `${batteryLifeLabelText.slice(0, idx)}, ${userNote}${batteryLifeLabelText.slice(idx)}`;
         }
-        if (runtimeAverageNoteTarget) {
-          runtimeAverageNoteTarget.textContent =
-            feedback.count > 4 ? texts[currentLang].runtimeAverageNote : '';
-        }
-        let batteriesNeeded = 1;
+        runtimeAverageNoteText = feedback.count > 4 ? texts[currentLang].runtimeAverageNote : '';
         if (Number.isFinite(combinedRuntime) && combinedRuntime > 0) {
-          batteriesNeeded = Math.max(1, Math.ceil(10 / combinedRuntime));
-        }
-        if (batteryCountTarget) {
-          batteryCountTarget.textContent = batteriesNeeded.toString();
+          batteryCountDisplay = Math.max(1, Math.ceil(10 / combinedRuntime)).toString();
+        } else if (combinedRuntime === Infinity) {
+          batteryCountDisplay = '1';
+        } else {
+          batteryCountDisplay = '–';
         }
       } else {
+        if (Number.isFinite(hours) && hours > 0) {
+          batteryCountDisplay = Math.max(1, Math.ceil(10 / hours)).toString();
+          runtimeDisplayText = Number.isFinite(hours) ? hours.toFixed(2) : runtimeDisplayText;
+        } else if (hours === Infinity) {
+          batteryCountDisplay = '1';
+          runtimeDisplayText = '∞';
+        } else {
+          batteryCountDisplay = '–';
+        }
+        lastRuntimeHours = hours;
+        finalRuntimeHours = hours;
+      }
+
+      if (typeof cineResults !== 'undefined'
+        && cineResults
+        && typeof cineResults.updateResultsSection === 'function') {
+        cineResults.updateResultsSection({
+          breakdown: breakdownEntries,
+          totals: { totalWatt },
+          currents: { high: totalCurrentHigh, low: totalCurrentLow },
+          runtime: {
+            hours: finalRuntimeHours,
+            displayText: runtimeDisplayText,
+            batteryCountDisplay,
+            batteryLifeLabelText,
+            batteryLifeHelp: texts[currentLang].batteryLifeHelp,
+            runtimeAverageNoteText,
+            defaultBatteryLifeLabel: texts[currentLang].batteryLifeLabel
+          },
+          elements: {
+            breakdown: breakdownListTarget,
+            totalPower: totalPowerTarget,
+            totalCurrentHigh: totalCurrent144Target,
+            totalCurrentLow: totalCurrent12Target,
+            batteryLife: batteryLifeTarget,
+            batteryLifeLabel: batteryLifeLabelTarget,
+            runtimeAverageNote: runtimeAverageNoteTarget,
+            batteryCount: batteryCountTarget
+          },
+          texts,
+          currentLang
+        });
+      } else {
+        if (totalPowerTarget) {
+          totalPowerTarget.textContent = totalWatt.toFixed(1);
+        }
+        if (totalCurrent144Target) {
+          totalCurrent144Target.textContent = totalCurrentHigh.toFixed(2);
+        }
+        if (totalCurrent12Target) {
+          totalCurrent12Target.textContent = totalCurrentLow.toFixed(2);
+        }
+        if (batteryLifeTarget) {
+          batteryLifeTarget.textContent = runtimeDisplayText;
+        }
+        if (batteryCountTarget) {
+          batteryCountTarget.textContent = batteryCountDisplay;
+        }
         if (batteryLifeLabelTarget) {
-          batteryLifeLabelTarget.textContent = texts[currentLang].batteryLifeLabel;
+          batteryLifeLabelTarget.textContent = batteryLifeLabelText;
           batteryLifeLabelTarget.setAttribute(
-            "data-help",
+            'data-help',
             texts[currentLang].batteryLifeHelp
           );
         }
         if (runtimeAverageNoteTarget) {
-          runtimeAverageNoteTarget.textContent = '';
+          runtimeAverageNoteTarget.textContent = runtimeAverageNoteText;
+        }
+        if (breakdownListTarget) {
+          breakdownListTarget.innerHTML = '';
+          breakdownEntries.forEach(entry => {
+            if (!entry || !Number.isFinite(entry.power) || entry.power <= 0) {
+              return;
+            }
+            const li = document.createElement('li');
+            const label = entry.label || '';
+            const htmlSafeLabel = typeof escapeHtml === 'function' ? escapeHtml(label) : label;
+            li.innerHTML = `<strong>${htmlSafeLabel}</strong> ${entry.power.toFixed(1)} W`;
+            breakdownListTarget.appendChild(li);
+          });
         }
       }
+
+      lastRuntimeHours = finalRuntimeHours;
       renderTemperatureNote(lastRuntimeHours);
       checkFizCompatibility();
       checkFizController();
@@ -15557,233 +15581,28 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return [camera, monitor, video, cage, motors, controllers, distance, battery, hotswap, plate].join('|');
     }
     
-    function deleteFeedbackEntry(key, index) {
-      const feedbackData = loadFeedbackSafe();
-      if (feedbackData[key]) {
-        feedbackData[key].splice(index, 1);
-        if (!feedbackData[key].length) {
-          delete feedbackData[key];
-        }
-        saveFeedbackSafe(feedbackData);
-        updateCalculations();
-      }
-    }
-    
-    function renderFeedbackTable(currentKey) {
-      const container = document.getElementById('feedbackTableContainer');
-      const table = document.getElementById('userFeedbackTable');
-      const feedbackData = loadFeedbackSafe();
-      // Filter out any stored location information to keep the table column hidden
-      const entries = (feedbackData[currentKey] || []).map(entry => {
-        const rest = { ...entry };
-        delete rest.location;
-        return rest;
-      });
-    
-      if (!entries.length) {
-        if (table) {
-          table.innerHTML = '';
-          table.classList.add('hidden');
-        }
-        if (container) container.classList.add('hidden');
-        return null;
-      }
-    
-      const columns = [
-        { key: 'username', label: 'User' },
-        { key: 'date', label: 'Date' },
-        { key: 'cameraWifi', label: 'WIFI' },
-        { key: 'resolution', label: 'Res' },
-        { key: 'codec', label: 'Codec' },
-        { key: 'framerate', label: 'FPS' },
-        { key: 'firmware', label: 'Firmware' },
-        { key: 'batteryAge', label: 'Battery Age' },
-        { key: 'monitorBrightness', label: 'Monitor Brightness' },
-        { key: 'temperature', label: 'temp' },
-        { key: 'charging', label: 'Charging' },
-        { key: 'runtime', label: 'runtime' },
-        { key: 'batteriesPerDay', label: 'batteries a day' },
-        { key: 'weighting', label: 'weight' }
-      ];
-    
-      // Helper functions for weighting factors
-      const parseResolution = str => {
-        if (!str) return null;
-        const s = String(str).toLowerCase();
-        const kMatch = s.match(/(\d+(?:\.\d+)?)\s*k/);
-        if (kMatch) return parseFloat(kMatch[1]) * 1000;
-        const pMatch = s.match(/(\d{3,4})p/);
-        if (pMatch) return parseInt(pMatch[1], 10);
-        const xMatch = s.match(/x\s*(\d{3,4})/);
-        if (xMatch) return parseInt(xMatch[1], 10);
-        const numMatch = s.match(/(\d{3,4})/);
-        return numMatch ? parseInt(numMatch[1], 10) : null;
-      };
-      const parseFramerate = str => {
-        if (!str) return null;
-        const m = String(str).match(/\d+(?:\.\d+)?/);
-        return m ? parseFloat(m[0]) : null;
-      };
-      const tempFactor = temp => {
-        if (Number.isNaN(temp)) return 1;
-        if (temp >= 25) return 1;
-        if (temp >= 0) return 1 + (25 - temp) * 0.01;
-        if (temp >= -10) return 1.25 + (-temp) * 0.035;
-        if (temp >= -20) return 1.6 + (-10 - temp) * 0.04;
-        return 2;
-      };
-    
-      const resolutionWeight = res => {
-        if (res >= 12000) return 3;
-        if (res >= 8000) return 2;
-        if (res >= 4000) return 1.5;
-        if (res >= 1080) return 1;
-        return res / 1080;
-      };
-    
-      const codecWeight = codec => {
-        if (!codec) return 1;
-        const c = String(codec).toLowerCase();
-        if (
-          /(prores\s*raw|braw|arriraw|r3d|redcode|cinema\s*dng|cdng|canon\s*raw|x-ocn|raw)/.test(c)
-        )
-          return 1;
-        if (/prores/.test(c)) return 1.1;
-        if (/dnx|avid/.test(c)) return 1.2;
-        if (/\ball[\s-]?i\b|all\s*intra|intra/.test(c)) return 1.3;
-        if (/h265|h\.265|hevc|xavc\s*hs|xhevc/.test(c)) return 1.7;
-        if (/h264|h\.264|avc|xavc|avchd|mpeg-4/.test(c)) return 1.5;
-        return 1;
-      };
-    
-      const camPower = devices?.cameras?.[cameraSelect?.value]?.powerDrawWatts || 0;
-      const monitorPower = devices?.monitors?.[monitorSelect?.value]?.powerDrawWatts || 0;
-      const videoPower = devices?.video?.[videoSelect?.value]?.powerDrawWatts || 0;
-      const motorPower = motorSelects.reduce(
-        (sum, sel) => sum + (devices?.fiz?.motors?.[sel.value]?.powerDrawWatts || 0),
-        0
-      );
-      const controllerPower = controllerSelects.reduce(
-        (sum, sel) => sum + (devices?.fiz?.controllers?.[sel.value]?.powerDrawWatts || 0),
-        0
-      );
-      const distancePower = devices?.fiz?.distance?.[distanceSelect?.value]?.powerDrawWatts || 0;
-      const otherPower = videoPower + motorPower + controllerPower + distancePower;
-      const totalPower = camPower + monitorPower + otherPower;
-      const specBrightness = devices?.monitors?.[monitorSelect?.value]?.brightnessNits;
-    
-      let weightedSum = 0;
-      let weightTotal = 0;
-      let count = 0;
-      const breakdown = entries.map(e => {
-        const rt = parseFloat(e.runtime);
-        if (Number.isNaN(rt)) return null;
-    
-        let camFactor = 1;
-        let monitorFactor = 1;
-    
-        const res = parseResolution(e.resolution);
-        if (res) camFactor *= resolutionWeight(res);
-    
-        const fps = parseFramerate(e.framerate);
-        if (fps) camFactor *= fps / 24;
-    
-        const wifi = (e.cameraWifi || '').toLowerCase();
-        if (wifi.includes('on')) camFactor *= 1.1;
-    
-        const codec = e.codec;
-        if (codec) camFactor *= codecWeight(codec);
-    
-        const entryBrightness = parseFloat(e.monitorBrightness);
-        if (!Number.isNaN(entryBrightness) && specBrightness) {
-          const ratio = entryBrightness / specBrightness;
-          if (ratio < 1) monitorFactor *= ratio;
-        }
-    
-        let weight = 1;
-        if (totalPower > 0) {
-          weight =
-            (camFactor * camPower + monitorFactor * monitorPower + otherPower) /
-            totalPower;
-        }
-    
-        const temp = parseFloat(e.temperature);
-        const tempMul = tempFactor(temp);
-        const adjustedRuntime = rt * tempMul;
-    
-        weightedSum += adjustedRuntime * weight;
-        weightTotal += weight;
-        count++;
-    
-        return {
-          temperature: tempMul,
-          resolution: res ? resolutionWeight(res) : 1,
-          framerate: fps ? fps / 24 : 1,
-          wifi: wifi.includes('on') ? 1.1 : 1,
-          codec: codec ? codecWeight(codec) : 1,
-          monitor: monitorFactor,
-          weight
-        };
-      });
-    
-      const maxWeight = Math.max(...breakdown.filter(Boolean).map(b => b.weight), 0);
-      let html = '<tr>' + columns.map(c => `<th>${escapeHtml(c.label)}</th>`).join('') + '<th></th></tr>';
-      const deleteFeedbackLabel =
-        texts[currentLang]?.deleteSetupBtn ||
-        texts.en?.deleteSetupBtn ||
-        'Delete';
-      entries.forEach((entry, index) => {
-        html += '<tr>';
-        columns.forEach(c => {
-          if (c.key === 'weighting') {
-            const b = breakdown[index];
-            if (b) {
-              const percent = maxWeight ? (b.weight / maxWeight) * 100 : 0;
-              const share = b.weight * 100;
-              const tooltip =
-                `Temp ×${b.temperature.toFixed(2)}\n` +
-                `Res ×${b.resolution.toFixed(2)}\n` +
-                `FPS ×${b.framerate.toFixed(2)}\n` +
-                `Codec ×${b.codec.toFixed(2)}\n` +
-                `Wi-Fi ×${b.wifi.toFixed(2)}\n` +
-                `Monitor ×${b.monitor.toFixed(2)}\n` +
-                `Share ${share.toFixed(1)}%`;
-              html +=
-                `<td><div class="weightingRow"><div class="barContainer"><div class="weightBar" style="width:${percent}%" title="${escapeHtml(tooltip)}"></div></div><span class="weightingPercent">${share.toFixed(1)}%</span></div></td>`;
-            } else {
-              html += '<td></td>';
-            }
-          } else if (c.key === 'date') {
-            html += `<td>${escapeHtml(formatDateString(entry[c.key]))}</td>`;
-          } else {
-            html += `<td>${escapeHtml(entry[c.key] || '')}</td>`;
-          }
+    function renderFeedbackTable(currentKey, options) {
+      if (typeof cineResults !== 'undefined'
+        && cineResults
+        && typeof cineResults.renderRuntimeFeedbackTable === 'function') {
+        return cineResults.renderRuntimeFeedbackTable(currentKey, {
+          loadFeedback: loadFeedbackSafe,
+          saveFeedback: saveFeedbackSafe,
+          devices,
+          cameraSelect,
+          monitorSelect,
+          videoSelect,
+          distanceSelect,
+          motorSelects,
+          controllerSelects,
+          texts,
+          currentLang,
+          ...options
         });
-        html += `<td><button data-key="${encodeURIComponent(currentKey)}" data-index="${index}" class="deleteFeedbackBtn">${iconMarkup(ICON_GLYPHS.trash, 'btn-icon')}${escapeHtml(deleteFeedbackLabel)}</button></td>`;
-        html += '</tr>';
-      });
-      table.innerHTML = html;
-      table.classList.remove('hidden');
-      if (container) container.classList.remove('hidden');
-      table.querySelectorAll('.deleteFeedbackBtn').forEach(btn => {
-        btn.setAttribute('aria-label', deleteFeedbackLabel);
-        btn.setAttribute('title', deleteFeedbackLabel);
-        btn.addEventListener('click', () => {
-          const key = decodeURIComponent(btn.dataset.key);
-          const idx = parseInt(btn.dataset.index, 10);
-          deleteFeedbackEntry(key, idx);
-        });
-      });
-    
-      if (count >= 3 && weightTotal > 0) {
-        return { runtime: weightedSum / weightTotal, count, weight: weightTotal };
       }
       return null;
     }
-    
-    // Determine differences between the default device database and the current
-    // in-memory `devices` object. Only changed, added or removed entries are
-    // returned so they can be shared in a generated link.
+
     function getDeviceChanges() {
       if (!window.defaultDevices) return {};
       const diff = {};

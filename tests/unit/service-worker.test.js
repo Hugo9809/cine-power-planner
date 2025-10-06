@@ -18,6 +18,7 @@ describe('service worker configuration', () => {
         './src/scripts/modules/registry.js',
         './src/scripts/modules/offline.js',
         './src/scripts/modules/ui.js',
+        './src/scripts/modules/results.js',
         './src/data/devices/batteryHotswaps.js',
         './src/data/devices/chargers.js',
         './src/data/devices/wirelessReceivers.js',

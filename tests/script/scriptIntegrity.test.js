@@ -108,6 +108,7 @@ describe('script.js modular runtime', () => {
       'modules/offline.js',
       'modules/core-shared.js',
       'modules/ui.js',
+      'modules/results.js',
       'app-core-new-1.js',
       'app-core-new-2.js',
       'app-events.js',
