@@ -262,4 +262,48 @@ describe('migration backup compression fallback', () => {
     const parsedLegacy = JSON.parse(decoded);
     expect(parsedLegacy.data).toEqual(legacyPayload);
   });
+
+  test('proactively compresses large payloads when savings are significant', () => {
+    const { saveDeviceData, loadDeviceData } = storageModule;
+
+    const payload = {
+      ...createBaselineDeviceData(),
+      notes: 'Massive note '.repeat(600),
+    };
+
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    try {
+      saveDeviceData(payload);
+    } finally {
+      warnSpy.mockRestore();
+    }
+
+    const rawStored = localStorageMock.store[DEVICE_KEY];
+    expect(typeof rawStored).toBe('string');
+    expect(rawStored).toContain('__cineStorageCompressed');
+
+    const wrapper = JSON.parse(rawStored);
+    expect(wrapper.__cineStorageCompressed).toBe(true);
+    expect(wrapper.algorithm).toBe('lz-string');
+    expect(typeof wrapper.data).toBe('string');
+
+    const variant = wrapper.compressionVariant || 'utf16';
+    const decompressMethod = {
+      'uri-component': 'decompressFromEncodedURIComponent',
+      base64: 'decompressFromBase64',
+      utf16: 'decompressFromUTF16',
+    }[variant] || 'decompressFromUTF16';
+    const decompressed = lzString[decompressMethod](wrapper.data);
+    expect(typeof decompressed).toBe('string');
+    expect(decompressed.length).toBe(wrapper.originalLength);
+
+    const parsed = JSON.parse(decompressed);
+    const loaded = loadDeviceData();
+    expect(parsed).toEqual(loaded);
+
+    const storedBefore = rawStored;
+    saveDeviceData(loaded);
+    const storedAfter = localStorageMock.store[DEVICE_KEY];
+    expect(storedAfter).toBe(storedBefore);
+  });
 });

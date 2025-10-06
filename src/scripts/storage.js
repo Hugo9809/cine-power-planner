@@ -1132,6 +1132,10 @@ var STORAGE_COMPRESSION_NAMESPACE = 'camera-power-planner:storage-compression';
 var storageCompressionPatchedStorages = typeof WeakSet === 'function' ? new WeakSet() : null;
 var STORAGE_COMPRESSION_SWEEP_LIMIT = 40;
 var STORAGE_COMPRESSION_SWEEP_MIN_SAVINGS = 128;
+var STORAGE_RAW_GET_ITEM_PROPERTY = '__cineRawGetItem';
+var STORAGE_PROACTIVE_COMPRESSION_MIN_LENGTH = 1024;
+var STORAGE_PROACTIVE_COMPRESSION_MIN_SAVINGS = 256;
+var STORAGE_PROACTIVE_COMPRESSION_MIN_RATIO = 0.08;
 
 function getAvailableLZStringCompressionStrategies(variants) {
   if (
@@ -1622,10 +1626,13 @@ function patchIndividualStorageGetItem(storage) {
   }
 
   const originalGetItem = storage.getItem;
+  const rawGetItem = typeof originalGetItem === 'function'
+    ? function rawStorageGetItem(key) {
+        return originalGetItem.call(this, key);
+      }
+    : null;
   const patchedGetItem = function patchedStorageGetItem(key) {
-    const rawValue = typeof originalGetItem === 'function'
-      ? originalGetItem.call(this, key)
-      : undefined;
+    const rawValue = rawGetItem ? rawGetItem.call(this, key) : undefined;
     return maybeDecompressStoredString(rawValue);
   };
 
@@ -1642,6 +1649,23 @@ function patchIndividualStorageGetItem(storage) {
     } catch (assignError) {
       console.warn('Unable to patch storage instance getItem for compression support', assignError);
       return;
+    }
+  }
+
+  if (rawGetItem) {
+    try {
+      Object.defineProperty(storage, STORAGE_RAW_GET_ITEM_PROPERTY, {
+        configurable: true,
+        writable: true,
+        value: rawGetItem,
+      });
+    } catch (rawAssignError) {
+      try {
+        storage[STORAGE_RAW_GET_ITEM_PROPERTY] = rawGetItem;
+      } catch (rawStoreError) {
+        void rawStoreError;
+      }
+      void rawAssignError;
     }
   }
 
@@ -1690,8 +1714,11 @@ function patchStorageGetItemForCompression() {
   }
 
   const originalGetItem = prototype.getItem;
+  const rawGetItem = function rawStorageGetItem(key) {
+    return originalGetItem.call(this, key);
+  };
   const patchedGetItem = function patchedStorageGetItem(key) {
-    const rawValue = originalGetItem.call(this, key);
+    const rawValue = rawGetItem.call(this, key);
     return maybeDecompressStoredString(rawValue);
   };
 
@@ -1704,6 +1731,21 @@ function patchStorageGetItemForCompression() {
   } catch (patchError) {
     console.warn('Unable to patch Storage.getItem for compression support', patchError);
     return;
+  }
+
+  try {
+    Object.defineProperty(prototype, STORAGE_RAW_GET_ITEM_PROPERTY, {
+      configurable: true,
+      writable: false,
+      value: rawGetItem,
+    });
+  } catch (rawError) {
+    try {
+      prototype[STORAGE_RAW_GET_ITEM_PROPERTY] = rawGetItem;
+    } catch (assignError) {
+      void assignError;
+    }
+    void rawError;
   }
 
   try {
@@ -1735,6 +1777,44 @@ function patchStorageGetItemForCompression() {
     }
   }
   candidates.forEach(patchIndividualStorageGetItem);
+}
+
+function getRawStorageGetter(storage) {
+  if (!storage || typeof storage !== 'object') {
+    return null;
+  }
+
+  const direct = storage[STORAGE_RAW_GET_ITEM_PROPERTY];
+  if (typeof direct === 'function') {
+    return direct;
+  }
+
+  const prototype = Object.getPrototypeOf(storage);
+  if (prototype && typeof prototype[STORAGE_RAW_GET_ITEM_PROPERTY] === 'function') {
+    return prototype[STORAGE_RAW_GET_ITEM_PROPERTY];
+  }
+
+  return null;
+}
+
+function readRawStorageValue(storage, key, rawGetterOverride) {
+  if (!storage || typeof key !== 'string' || !key) {
+    return null;
+  }
+
+  const getter = typeof rawGetterOverride === 'function'
+    ? rawGetterOverride
+    : getRawStorageGetter(storage);
+  if (typeof getter !== 'function') {
+    return null;
+  }
+
+  try {
+    return getter.call(storage, key);
+  } catch (error) {
+    void error;
+    return null;
+  }
 }
 
 function collectMigrationBackupEntriesForCleanup(storage, excludeKey) {
@@ -3904,6 +3984,9 @@ function saveJSONToStorage(
     : `${key}${STORAGE_BACKUP_SUFFIX}`;
   const useBackup = !disableBackup && fallbackKey && fallbackKey !== key;
 
+  const rawGetter = getRawStorageGetter(storage);
+  const loadRawValue = (targetKey) => readRawStorageValue(storage, targetKey, rawGetter);
+
   let standardSerializedCache;
   let standardSerializationComputed = false;
   let compressionCandidate;
@@ -4017,12 +4100,52 @@ function saveJSONToStorage(
     compressionLogged = true;
   };
 
+  const maybeEnableProactiveCompression = () => {
+    if (useCompressedSerialization || compressionAttempted) {
+      return;
+    }
+
+    const baseline = computeStandardSerialized();
+    if (typeof baseline !== 'string' || !baseline) {
+      return;
+    }
+
+    if (baseline.length < STORAGE_PROACTIVE_COMPRESSION_MIN_LENGTH) {
+      return;
+    }
+
+    const compressed = computeCompressedSerialized();
+    if (typeof compressed !== 'string' || !compressed) {
+      return;
+    }
+
+    const savings = baseline.length - compressed.length;
+    if (savings < STORAGE_PROACTIVE_COMPRESSION_MIN_SAVINGS) {
+      return;
+    }
+
+    const ratio = baseline.length > 0 ? savings / baseline.length : 0;
+    if (ratio < STORAGE_PROACTIVE_COMPRESSION_MIN_RATIO) {
+      return;
+    }
+
+    const rawExisting = loadRawValue(key);
+    if (typeof rawExisting === 'string' && rawExisting === compressed) {
+      return;
+    }
+
+    useCompressedSerialization = true;
+    compressionAttempted = true;
+  };
+
   let preservedBackupValue;
   let hasPreservedBackup = false;
   let removedBackupDuringRetry = false;
   let quotaRecoverySteps = 0;
   let quotaRecoveryFailed = false;
   let compressionSweepAttempted = false;
+
+  maybeEnableProactiveCompression();
 
   const registerQuotaRecoveryStep = () => {
     quotaRecoverySteps += 1;
@@ -4084,23 +4207,33 @@ function saveJSONToStorage(
     }
 
     let skipPrimaryWrite = false;
+    let existingBackupValue;
+    let hasExistingBackup = false;
+    let existingBackupRaw = null;
+
     if (typeof storage.getItem === 'function') {
       try {
         const existingValue = storage.getItem(key);
         if (existingValue === serialized) {
           skipPrimaryWrite = true;
+        } else if (useCompressedSerialization) {
+          const existingRawValue = loadRawValue(key);
+          if (typeof existingRawValue === 'string' && existingRawValue === serialized) {
+            skipPrimaryWrite = true;
+          }
         }
       } catch (inspectError) {
         console.warn(`Unable to inspect existing value for ${key}`, inspectError);
       }
     }
 
-    let existingBackupValue;
-    let hasExistingBackup = false;
     if (useBackup && typeof storage.getItem === 'function') {
       try {
         existingBackupValue = storage.getItem(fallbackKey);
         hasExistingBackup = typeof existingBackupValue === 'string';
+        if (hasExistingBackup && useCompressedSerialization) {
+          existingBackupRaw = loadRawValue(fallbackKey);
+        }
       } catch (inspectError) {
         console.warn(`Unable to inspect existing backup for ${key}`, inspectError);
       }
@@ -4111,10 +4244,17 @@ function saveJSONToStorage(
       hasPreservedBackup = true;
     }
 
-    if (
-      skipPrimaryWrite
-      && (!useBackup || (hasExistingBackup && existingBackupValue === serialized))
-    ) {
+    const backupMatchesSerialized = hasExistingBackup
+      && (
+        existingBackupValue === serialized
+        || (
+          useCompressedSerialization
+          && typeof existingBackupRaw === 'string'
+          && existingBackupRaw === serialized
+        )
+      );
+
+    if (skipPrimaryWrite && (!useBackup || backupMatchesSerialized)) {
       return;
     }
 
@@ -4150,6 +4290,10 @@ function saveJSONToStorage(
     }
 
     if (!useBackup) {
+      return;
+    }
+
+    if (backupMatchesSerialized) {
       return;
     }
 

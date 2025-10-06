@@ -29,7 +29,9 @@
           suspendProjectPersistence, resumeProjectPersistence,
           isProjectPersistenceSuspended,
           recordFeatureSearchUsage, extractFeatureSearchFilter,
-          helpResultsSummary, helpResultsAssist */
+          helpResultsSummary, helpResultsAssist,
+          suspendProjectPersistence, resumeProjectPersistence,
+          isProjectPersistenceSuspended */
 /* eslint-enable no-redeclare */
 /* global enqueueCoreBootTask */
 const FALLBACK_STRONG_SEARCH_MATCH_TYPES = new Set(['exactKey', 'keyPrefix', 'keySubset']);
