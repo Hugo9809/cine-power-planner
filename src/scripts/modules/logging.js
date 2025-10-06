@@ -147,6 +147,109 @@
     return fallbackTryRequire;
   })();
 
+  const structuredCloneCandidates = (function collectStructuredCloneCandidates() {
+    const candidates = [];
+
+    function addCandidate(fn, scope) {
+      if (typeof fn !== 'function') {
+        return;
+      }
+      const alreadyPresent = candidates.some(candidate => candidate && candidate.fn === fn);
+      if (!alreadyPresent) {
+        candidates.push({ fn, scope: scope || null });
+      }
+    }
+
+    if (MODULE_GLOBALS) {
+      if (typeof MODULE_GLOBALS.structuredClone === 'function') {
+        addCandidate(MODULE_GLOBALS.structuredClone, MODULE_GLOBALS);
+      }
+      if (typeof MODULE_GLOBALS.getStructuredClone === 'function') {
+        try {
+          const resolved = MODULE_GLOBALS.getStructuredClone();
+          addCandidate(resolved, MODULE_GLOBALS);
+        } catch (error) {
+          void error;
+        }
+      }
+    }
+
+    if (ENV_BRIDGE) {
+      if (typeof ENV_BRIDGE.structuredClone === 'function') {
+        addCandidate(ENV_BRIDGE.structuredClone, ENV_BRIDGE);
+      }
+      if (typeof ENV_BRIDGE.getStructuredClone === 'function') {
+        try {
+          const resolved = ENV_BRIDGE.getStructuredClone();
+          addCandidate(resolved, ENV_BRIDGE);
+        } catch (error) {
+          void error;
+        }
+      }
+    }
+
+    if (MODULE_ENV) {
+      if (typeof MODULE_ENV.structuredClone === 'function') {
+        addCandidate(MODULE_ENV.structuredClone, MODULE_ENV);
+      }
+      if (typeof MODULE_ENV.getStructuredClone === 'function') {
+        try {
+          const resolved = MODULE_ENV.getStructuredClone();
+          addCandidate(resolved, MODULE_ENV);
+        } catch (error) {
+          void error;
+        }
+      }
+    }
+
+    const scopes = fallbackCollectCandidateScopes(GLOBAL_SCOPE);
+    for (let index = 0; index < scopes.length; index += 1) {
+      const scope = scopes[index];
+      if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+        continue;
+      }
+      const candidate = scope.structuredClone;
+      if (typeof candidate === 'function') {
+        addCandidate(candidate, scope);
+      }
+    }
+
+    return candidates;
+  })();
+
+  let cachedStructuredCloneCandidate = null;
+
+  function tryStructuredCloneValue(value) {
+    if (cachedStructuredCloneCandidate) {
+      try {
+        const candidate = cachedStructuredCloneCandidate;
+        return {
+          success: true,
+          value: candidate.scope ? candidate.fn.call(candidate.scope, value) : candidate.fn(value),
+        };
+      } catch (error) {
+        void error;
+        cachedStructuredCloneCandidate = null;
+      }
+    }
+
+    for (let index = 0; index < structuredCloneCandidates.length; index += 1) {
+      const candidate = structuredCloneCandidates[index];
+      if (!candidate || typeof candidate.fn !== 'function') {
+        continue;
+      }
+      try {
+        const cloned = candidate.scope ? candidate.fn.call(candidate.scope, value) : candidate.fn(value);
+        cachedStructuredCloneCandidate = candidate;
+        return { success: true, value: cloned };
+      } catch (error) {
+        void error;
+      }
+    }
+
+    return { success: false, value: null };
+  }
+
   function resolveModuleRegistry(scope) {
     if (MODULE_GLOBALS && typeof MODULE_GLOBALS.resolveModuleRegistry === 'function') {
       try {
@@ -978,6 +1081,11 @@
       }
 
       return output;
+    }
+
+    const structuredCloneResult = tryStructuredCloneValue(value);
+    if (structuredCloneResult.success) {
+      return structuredCloneResult.value;
     }
 
     try {
