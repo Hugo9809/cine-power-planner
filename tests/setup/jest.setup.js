@@ -84,6 +84,11 @@ if (activeConsole && !activeConsole.__cameraPowerPlannerPatched) {
     /^Unable to access localStorage/i,
     /^Project export failed/i,
     /^No supported download method available/i,
+    /^Unable to redefine storage\.getItem descriptor for compression support/i,
+    /^cineModuleArchitecture\.freezeDeep: primary implementation failed, using fallback/i,
+    /^cineModuleBase\.freezeDeep fallback triggered/i,
+    /^Stored compressed value for /i,
+    /^Stored compressed migration backup/i,
   ];
 
   const suppressedErrors = [
@@ -92,8 +97,14 @@ if (activeConsole && !activeConsole.__cameraPowerPlannerPatched) {
     /^Error loading .* from localStorage/i,
   ];
 
+  const suppressedInfos = [
+    /^Critical storage guard mirrored backup copies/i,
+    /^Removed duplicate automatic backup while preserving newer copy/i,
+  ];
+
   activeConsole.warn = suppressMessages(activeConsole.warn?.bind(activeConsole), suppressedWarns);
   activeConsole.error = suppressMessages(activeConsole.error?.bind(activeConsole), suppressedErrors);
+  activeConsole.info = suppressMessages(activeConsole.info?.bind(activeConsole), suppressedInfos);
   activeConsole.__cameraPowerPlannerPatched = true;
 }
 

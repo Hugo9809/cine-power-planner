@@ -16,6 +16,57 @@
             ? self
             : null;
 
+  const CORE_SHARED =
+    GLOBAL_SCOPE && typeof GLOBAL_SCOPE.cineCoreShared === 'object'
+      ? GLOBAL_SCOPE.cineCoreShared
+      : null;
+
+  function createCloneSerializableFallback(scope) {
+    const structuredCloneFn =
+      typeof structuredClone === 'function'
+        ? structuredClone
+        : scope && typeof scope.structuredClone === 'function'
+          ? function scopedClone(value) {
+              return scope.structuredClone(value);
+            }
+          : null;
+
+    return function cloneSerializableFallback(value) {
+      if (!value || typeof value !== 'object') {
+        return value;
+      }
+
+      let lastError = null;
+
+      if (structuredCloneFn) {
+        try {
+          return structuredCloneFn(value);
+        } catch (error) {
+          lastError = error;
+        }
+      }
+
+      if (typeof JSON !== 'undefined' && typeof JSON.stringify === 'function' && typeof JSON.parse === 'function') {
+        try {
+          return JSON.parse(JSON.stringify(value));
+        } catch (error) {
+          lastError = error;
+        }
+      }
+
+      if (lastError) {
+        throw lastError;
+      }
+
+      throw new Error('Serializable clone is not supported in this environment.');
+    };
+  }
+
+  const cloneSerializable =
+    CORE_SHARED && typeof CORE_SHARED.cloneSerializable === 'function'
+      ? CORE_SHARED.cloneSerializable
+      : createCloneSerializableFallback(GLOBAL_SCOPE);
+
   const FORCE_STORAGE_REINITIALIZE =
     typeof process !== 'undefined' &&
     process &&
@@ -372,6 +423,21 @@ var MAX_DELETION_BACKUPS = 20;
 var MAX_FULL_BACKUP_HISTORY_ENTRIES = 200;
 var AUTO_GEAR_BACKUP_RETENTION_DEFAULT_VALUE = 12;
 var AUTO_GEAR_BACKUP_RETENTION_MIN = 1;
+var AUTO_GEAR_BACKUP_RETENTION_MAX_LIMIT = 120;
+
+function resolveAutoGearBackupRetentionMax(scope) {
+  if (scope && typeof scope.AUTO_GEAR_BACKUP_RETENTION_MAX === 'number') {
+    const candidate = scope.AUTO_GEAR_BACKUP_RETENTION_MAX;
+    if (Number.isFinite(candidate) && candidate >= AUTO_GEAR_BACKUP_RETENTION_MIN) {
+      return Math.min(
+        Math.max(Math.round(candidate), AUTO_GEAR_BACKUP_RETENTION_MIN),
+        MAX_AUTO_BACKUPS,
+      );
+    }
+  }
+
+  return AUTO_GEAR_BACKUP_RETENTION_MAX_LIMIT;
+}
 
 function ensureGlobalAutoGearBackupDefaults() {
   if (!GLOBAL_SCOPE || typeof GLOBAL_SCOPE !== 'object') {
@@ -395,6 +461,28 @@ function ensureGlobalAutoGearBackupDefaults() {
       if (typeof console !== 'undefined' && typeof console.warn === 'function') {
         console.warn('Unable to expose auto gear backup retention minimum globally.', error);
       }
+    }
+  }
+
+  const resolvedMax = resolveAutoGearBackupRetentionMax(GLOBAL_SCOPE);
+  AUTO_GEAR_BACKUP_RETENTION_MAX_LIMIT = resolvedMax;
+
+  if (typeof GLOBAL_SCOPE.AUTO_GEAR_BACKUP_RETENTION_MAX !== 'number') {
+    try {
+      GLOBAL_SCOPE.AUTO_GEAR_BACKUP_RETENTION_MAX = resolvedMax;
+    } catch (error) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Unable to expose auto gear backup retention maximum globally.', error);
+      }
+    }
+  } else if (
+    Number.isFinite(GLOBAL_SCOPE.AUTO_GEAR_BACKUP_RETENTION_MAX)
+    && GLOBAL_SCOPE.AUTO_GEAR_BACKUP_RETENTION_MAX !== resolvedMax
+  ) {
+    try {
+      GLOBAL_SCOPE.AUTO_GEAR_BACKUP_RETENTION_MAX = resolvedMax;
+    } catch (error) {
+      void error;
     }
   }
 }
@@ -5555,7 +5643,7 @@ function cloneProjectInfo(projectInfo) {
     return null;
   }
   try {
-    return JSON.parse(JSON.stringify(projectInfo));
+    return cloneSerializable(projectInfo);
   } catch (error) {
     console.warn('Unable to serialize project info during normalization', error);
     try {
@@ -5668,7 +5756,7 @@ function cloneAutoGearRules(rules) {
     return null;
   }
   try {
-    return JSON.parse(JSON.stringify(rules));
+    return cloneSerializable(rules);
   } catch (error) {
     console.warn('Unable to serialize automatic gear rules during normalization', error);
     try {
@@ -5685,7 +5773,7 @@ function cloneDiagramPositionsForStorage(positions) {
     return {};
   }
   try {
-    return JSON.parse(JSON.stringify(positions));
+    return cloneSerializable(positions);
   } catch (error) {
     console.warn('Unable to serialize diagram positions during normalization', error);
     try {
@@ -6416,7 +6504,7 @@ function cloneProjectEntryForBackup(entry) {
     return entry;
   }
   try {
-    const cloned = JSON.parse(JSON.stringify(entry));
+    const cloned = cloneSerializable(entry);
     const normalized = normalizeLegacyLongGopStructure(cloned);
     return normalized !== cloned ? normalized : cloned;
   } catch (error) {
@@ -7331,8 +7419,8 @@ function clampAutoGearBackupRetention(value) {
   if (rounded < AUTO_GEAR_BACKUP_RETENTION_MIN) {
     return AUTO_GEAR_BACKUP_RETENTION_MIN;
   }
-  if (rounded > MAX_AUTO_BACKUPS) {
-    return MAX_AUTO_BACKUPS;
+  if (rounded > AUTO_GEAR_BACKUP_RETENTION_MAX_LIMIT) {
+    return AUTO_GEAR_BACKUP_RETENTION_MAX_LIMIT;
   }
   return rounded;
 }
@@ -7341,7 +7429,10 @@ function getAutoGearBackupRetentionDefault() {
   if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.AUTO_GEAR_BACKUP_RETENTION_DEFAULT === 'number') {
     const candidate = GLOBAL_SCOPE.AUTO_GEAR_BACKUP_RETENTION_DEFAULT;
     if (Number.isFinite(candidate) && candidate >= AUTO_GEAR_BACKUP_RETENTION_MIN) {
-      return Math.min(Math.max(Math.round(candidate), AUTO_GEAR_BACKUP_RETENTION_MIN), MAX_AUTO_BACKUPS);
+      return Math.min(
+        Math.max(Math.round(candidate), AUTO_GEAR_BACKUP_RETENTION_MIN),
+        AUTO_GEAR_BACKUP_RETENTION_MAX_LIMIT,
+      );
     }
   }
   return AUTO_GEAR_BACKUP_RETENTION_DEFAULT_VALUE;

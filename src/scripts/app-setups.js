@@ -10,6 +10,58 @@ const AUTO_GEAR_ANY_MOTOR_TOKEN_FALLBACK =
         ? globalThis.AUTO_GEAR_ANY_MOTOR_TOKEN
         : '__any__';
 
+const cloneSerializableScope = getGlobalScope();
+const cloneSerializableShared =
+    cloneSerializableScope && typeof cloneSerializableScope.cineCoreShared === 'object'
+        ? cloneSerializableScope.cineCoreShared
+        : null;
+
+function createCloneSerializableFallback(scope) {
+    const structuredCloneFn =
+        typeof structuredClone === 'function'
+            ? structuredClone
+            : scope && typeof scope.structuredClone === 'function'
+                ? function scopedClone(value) {
+                    return scope.structuredClone(value);
+                }
+                : null;
+
+    return function cloneSerializableFallback(value) {
+        if (!value || typeof value !== 'object') {
+            return value;
+        }
+
+        let lastError = null;
+
+        if (structuredCloneFn) {
+            try {
+                return structuredCloneFn(value);
+            } catch (error) {
+                lastError = error;
+            }
+        }
+
+        if (typeof JSON !== 'undefined' && typeof JSON.stringify === 'function' && typeof JSON.parse === 'function') {
+            try {
+                return JSON.parse(JSON.stringify(value));
+            } catch (error) {
+                lastError = error;
+            }
+        }
+
+        if (lastError) {
+            throw lastError;
+        }
+
+        throw new Error('Serializable clone is not supported in this environment.');
+    };
+}
+
+const cloneSerializable =
+    cloneSerializableShared && typeof cloneSerializableShared.cloneSerializable === 'function'
+        ? cloneSerializableShared.cloneSerializable
+        : createCloneSerializableFallback(cloneSerializableScope);
+
 let projectPersistenceSuspendedCount = 0;
 
 function suspendProjectPersistence() {
@@ -4873,15 +4925,8 @@ function cloneProjectInfoForStorage(info) {
     if (typeof info !== 'object') {
         return info;
     }
-    if (typeof structuredClone === 'function') {
-        try {
-            return structuredClone(info);
-        } catch (error) {
-            console.warn('Failed to structured clone project info for storage', error);
-        }
-    }
     try {
-        return JSON.parse(JSON.stringify(info));
+        return cloneSerializable(info);
     } catch (error) {
         console.warn('Failed to serialize project info for storage', error);
     }

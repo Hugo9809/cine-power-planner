@@ -128,6 +128,57 @@
       : null)
     || LOCAL_SCOPE;
 
+  const CORE_SHARED =
+    GLOBAL_SCOPE && typeof GLOBAL_SCOPE.cineCoreShared === 'object'
+      ? GLOBAL_SCOPE.cineCoreShared
+      : null;
+
+  function createCloneSerializableFallback(scope) {
+    const structuredCloneFn =
+      typeof structuredClone === 'function'
+        ? structuredClone
+        : scope && typeof scope.structuredClone === 'function'
+          ? function scopedClone(value) {
+              return scope.structuredClone(value);
+            }
+          : null;
+
+    return function cloneSerializableFallback(value) {
+      if (!value || typeof value !== 'object') {
+        return value;
+      }
+
+      let lastError = null;
+
+      if (structuredCloneFn) {
+        try {
+          return structuredCloneFn(value);
+        } catch (error) {
+          lastError = error;
+        }
+      }
+
+      if (typeof JSON !== 'undefined' && typeof JSON.stringify === 'function' && typeof JSON.parse === 'function') {
+        try {
+          return JSON.parse(JSON.stringify(value));
+        } catch (error) {
+          lastError = error;
+        }
+      }
+
+      if (lastError) {
+        throw lastError;
+      }
+
+      throw new Error('Serializable clone is not supported in this environment.');
+    };
+  }
+
+  const cloneSerializable =
+    CORE_SHARED && typeof CORE_SHARED.cloneSerializable === 'function'
+      ? CORE_SHARED.cloneSerializable
+      : createCloneSerializableFallback(GLOBAL_SCOPE);
+
   const tryRequire = (function resolveTryRequire() {
     if (MODULE_GLOBALS && typeof MODULE_GLOBALS.tryRequire === 'function') {
       return MODULE_GLOBALS.tryRequire;
@@ -981,7 +1032,7 @@
     }
 
     try {
-      return JSON.parse(JSON.stringify(value));
+      return cloneSerializable(value);
     } catch (error) {
       void error;
     }

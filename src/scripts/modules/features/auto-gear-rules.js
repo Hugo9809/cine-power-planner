@@ -60,6 +60,57 @@
     return;
   }
 
+  const CORE_SHARED =
+    GLOBAL_SCOPE && typeof GLOBAL_SCOPE.cineCoreShared === 'object'
+      ? GLOBAL_SCOPE.cineCoreShared
+      : null;
+
+  function createCloneSerializableFallback(scope) {
+    const structuredCloneFn =
+      typeof structuredClone === 'function'
+        ? structuredClone
+        : scope && typeof scope.structuredClone === 'function'
+          ? function scopedClone(value) {
+              return scope.structuredClone(value);
+            }
+          : null;
+
+    return function cloneSerializableFallback(value) {
+      if (!value || typeof value !== 'object') {
+        return value;
+      }
+
+      let lastError = null;
+
+      if (structuredCloneFn) {
+        try {
+          return structuredCloneFn(value);
+        } catch (error) {
+          lastError = error;
+        }
+      }
+
+      if (typeof JSON !== 'undefined' && typeof JSON.stringify === 'function' && typeof JSON.parse === 'function') {
+        try {
+          return JSON.parse(JSON.stringify(value));
+        } catch (error) {
+          lastError = error;
+        }
+      }
+
+      if (lastError) {
+        throw lastError;
+      }
+
+      throw new Error('Serializable clone is not supported in this environment.');
+    };
+  }
+
+  const cloneSerializable =
+    CORE_SHARED && typeof CORE_SHARED.cloneSerializable === 'function'
+      ? CORE_SHARED.cloneSerializable
+      : createCloneSerializableFallback(GLOBAL_SCOPE);
+
   const freezeDeep = typeof MODULE_BASE.freezeDeep === 'function'
     ? MODULE_BASE.freezeDeep
     : function fallbackFreezeDeep(value) {
@@ -1018,7 +1069,7 @@ function captureAutoGearSeedContext() {
   const baseInfo = collectProjectFormData() || {};
   let projectDataClone;
   try {
-    projectDataClone = JSON.parse(JSON.stringify(baseInfo));
+    projectDataClone = cloneSerializable(baseInfo);
   } catch (cloneError) {
     void cloneError;
     projectDataClone = { ...baseInfo };
@@ -1200,7 +1251,7 @@ function computeFactoryAutoGearRules() {
     const baseInfoSource = context.projectFormData || {};
     let baseInfo;
     try {
-      baseInfo = JSON.parse(JSON.stringify(baseInfoSource));
+      baseInfo = cloneSerializable(baseInfoSource);
     } catch (cloneErr) {
       void cloneErr;
       baseInfo = { ...baseInfoSource };
@@ -1352,7 +1403,7 @@ function resetAutoGearRulesToFactoryAdditions() {
         return null;
       }
       try {
-        return JSON.parse(JSON.stringify(factoryAutoGearSeedContext));
+        return cloneSerializable(factoryAutoGearSeedContext);
       } catch (error) {
         void error;
         return { ...factoryAutoGearSeedContext };

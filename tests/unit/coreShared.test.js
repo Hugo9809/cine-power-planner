@@ -14,9 +14,12 @@ describe('core shared utilities', () => {
   }
 
   beforeEach(() => {
-    harness = setupModuleHarness();
-    cleanupGlobals();
     jest.spyOn(console, 'warn').mockImplementation(() => {});
+    harness = setupModuleHarness();
+    if (console.warn && typeof console.warn.mockClear === 'function') {
+      console.warn.mockClear();
+    }
+    cleanupGlobals();
   });
 
   afterEach(() => {
@@ -32,7 +35,11 @@ describe('core shared utilities', () => {
 
   function loadCoreShared() {
     const modulePath = path.resolve(__dirname, '../../src/scripts/modules/core-shared.js');
-    return require(modulePath);
+    const moduleExports = require(modulePath);
+    if (console.warn && typeof console.warn.mockClear === 'function') {
+      console.warn.mockClear();
+    }
+    return moduleExports;
   }
 
   test('stableStringify sorts object keys recursively', () => {

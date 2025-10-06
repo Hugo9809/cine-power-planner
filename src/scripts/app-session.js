@@ -36,6 +36,81 @@ const FALLBACK_STRONG_SEARCH_MATCH_TYPES = new Set(['exactKey', 'keyPrefix', 'ke
 if (typeof globalThis !== 'undefined' && typeof globalThis.STRONG_SEARCH_MATCH_TYPES === 'undefined') {
   globalThis.STRONG_SEARCH_MATCH_TYPES = FALLBACK_STRONG_SEARCH_MATCH_TYPES;
 }
+
+const SESSION_CLONE_SCOPE = (function resolveSessionCloneScope() {
+  if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE) {
+    return CORE_GLOBAL_SCOPE;
+  }
+
+  if (typeof globalThis !== 'undefined' && globalThis) {
+    return globalThis;
+  }
+
+  if (typeof window !== 'undefined' && window) {
+    return window;
+  }
+
+  if (typeof self !== 'undefined' && self) {
+    return self;
+  }
+
+  if (typeof global !== 'undefined' && global) {
+    return global;
+  }
+
+  return null;
+})();
+
+const SESSION_CORE_SHARED =
+  SESSION_CLONE_SCOPE && typeof SESSION_CLONE_SCOPE.cineCoreShared === 'object'
+    ? SESSION_CLONE_SCOPE.cineCoreShared
+    : null;
+
+function createSessionCloneSerializableFallback(scope) {
+  const structuredCloneFn =
+    typeof structuredClone === 'function'
+      ? structuredClone
+      : scope && typeof scope.structuredClone === 'function'
+        ? function scopedClone(value) {
+            return scope.structuredClone(value);
+          }
+        : null;
+
+  return function sessionCloneSerializableFallback(value) {
+    if (!value || typeof value !== 'object') {
+      return value;
+    }
+
+    let lastError = null;
+
+    if (structuredCloneFn) {
+      try {
+        return structuredCloneFn(value);
+      } catch (error) {
+        lastError = error;
+      }
+    }
+
+    if (typeof JSON !== 'undefined' && typeof JSON.stringify === 'function' && typeof JSON.parse === 'function') {
+      try {
+        return JSON.parse(JSON.stringify(value));
+      } catch (error) {
+        lastError = error;
+      }
+    }
+
+    if (lastError) {
+      throw lastError;
+    }
+
+    throw new Error('Serializable clone is not supported in this environment.');
+  };
+}
+
+const cloneSerializable =
+  SESSION_CORE_SHARED && typeof SESSION_CORE_SHARED.cloneSerializable === 'function'
+    ? SESSION_CORE_SHARED.cloneSerializable
+    : createSessionCloneSerializableFallback(SESSION_CLONE_SCOPE);
 /* global triggerPinkModeIconRain, loadDeviceData, loadSetups, loadSessionState,
           loadFeedback, loadFavorites, loadAutoGearBackups,
           loadAutoGearPresets, loadAutoGearSeedFlag, loadAutoGearActivePresetId,
@@ -6061,7 +6136,7 @@ function cloneValueForExport(value) {
     return undefined;
   }
   try {
-    return JSON.parse(JSON.stringify(value));
+    return cloneSerializable(value);
   } catch (error) {
     console.warn('Failed to clone comparison snapshot for export', error);
     return value;
@@ -12371,7 +12446,7 @@ function cloneMountVoltageDefaultsForSession() {
   }
   if (DEFAULT_MOUNT_VOLTAGES && typeof DEFAULT_MOUNT_VOLTAGES === 'object') {
     try {
-      return JSON.parse(JSON.stringify(DEFAULT_MOUNT_VOLTAGES));
+      return cloneSerializable(DEFAULT_MOUNT_VOLTAGES);
     } catch (serializationError) {
       void serializationError;
     }

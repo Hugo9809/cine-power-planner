@@ -440,6 +440,76 @@ function resolveCoreShared() {
 
 const CORE_SHARED = resolveCoreShared() || {};
 
+function resolveCloneScope() {
+  if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE === 'object') {
+    return CORE_GLOBAL_SCOPE;
+  }
+
+  if (typeof globalThis !== 'undefined' && globalThis) {
+    return globalThis;
+  }
+
+  if (typeof window !== 'undefined' && window) {
+    return window;
+  }
+
+  if (typeof self !== 'undefined' && self) {
+    return self;
+  }
+
+  if (typeof global !== 'undefined' && global) {
+    return global;
+  }
+
+  return null;
+}
+
+function createCloneSerializableFallback(scope) {
+  const structuredCloneFn =
+    typeof structuredClone === 'function'
+      ? structuredClone
+      : scope && typeof scope.structuredClone === 'function'
+        ? function scopedClone(value) {
+            return scope.structuredClone(value);
+          }
+        : null;
+
+  return function cloneSerializableFallback(value) {
+    if (!value || typeof value !== 'object') {
+      return value;
+    }
+
+    let lastError = null;
+
+    if (structuredCloneFn) {
+      try {
+        return structuredCloneFn(value);
+      } catch (error) {
+        lastError = error;
+      }
+    }
+
+    if (typeof JSON !== 'undefined' && typeof JSON.stringify === 'function' && typeof JSON.parse === 'function') {
+      try {
+        return JSON.parse(JSON.stringify(value));
+      } catch (error) {
+        lastError = error;
+      }
+    }
+
+    if (lastError) {
+      throw lastError;
+    }
+
+    throw new Error('Serializable clone is not supported in this environment.');
+  };
+}
+
+const cloneSerializable =
+  typeof CORE_SHARED.cloneSerializable === 'function'
+    ? CORE_SHARED.cloneSerializable
+    : createCloneSerializableFallback(resolveCloneScope());
+
 function createCoreRuntimeState(initialScopes) {
   const scopes = [];
   const seenScopes =
@@ -5431,7 +5501,7 @@ function cloneProjectEntryForSetup(projectEntry) {
 
   if (projectInfo && typeof projectInfo === 'object') {
     try {
-      snapshot.projectInfo = JSON.parse(JSON.stringify(projectInfo));
+      snapshot.projectInfo = cloneSerializable(projectInfo);
     } catch (error) {
       console.warn('Failed to clone project info for auto backup import', error);
       snapshot.projectInfo = projectInfo;
@@ -5439,7 +5509,7 @@ function cloneProjectEntryForSetup(projectEntry) {
   }
   if (projectEntry && typeof projectEntry.powerSelection === 'object') {
     try {
-      snapshot.powerSelection = JSON.parse(JSON.stringify(projectEntry.powerSelection));
+      snapshot.powerSelection = cloneSerializable(projectEntry.powerSelection);
     } catch (error) {
       console.warn('Failed to clone project power selection for auto backup import', error);
       snapshot.powerSelection = projectEntry.powerSelection;
@@ -5452,7 +5522,7 @@ function cloneProjectEntryForSetup(projectEntry) {
 
   if (Array.isArray(autoGearRules) && autoGearRules.length) {
     try {
-      snapshot.autoGearRules = JSON.parse(JSON.stringify(autoGearRules));
+      snapshot.autoGearRules = cloneSerializable(autoGearRules);
     } catch (error) {
       console.warn('Failed to clone auto gear rules for auto backup import', error);
       snapshot.autoGearRules = autoGearRules.slice();
@@ -5973,7 +6043,7 @@ function unifyDevices(devicesData) {
 // Initialize defaultDevices only if it hasn't been declared yet, to prevent
 // "already declared" errors if the script is loaded multiple times.
 if (window.defaultDevices === undefined) {
-  window.defaultDevices = JSON.parse(JSON.stringify(devices));
+window.defaultDevices = cloneSerializable(devices);
   unifyDevices(window.defaultDevices);
 }
 
@@ -5982,7 +6052,7 @@ let storedDevices = loadDeviceData();
 if (storedDevices) {
   // Merge stored devices with the defaults so that categories missing
   // from saved data (e.g. FIZ) fall back to the built-in definitions.
-  const merged = JSON.parse(JSON.stringify(window.defaultDevices));
+const merged = cloneSerializable(window.defaultDevices);
   for (const [key, value] of Object.entries(storedDevices)) {
     if (key === 'fiz' && value && typeof value === 'object') {
       merged.fiz = merged.fiz || {};
@@ -12804,7 +12874,7 @@ let sharedImportPreparedForImport = false;
 function cloneSharedImportValue(value) {
   if (value == null) return null;
   try {
-    return JSON.parse(JSON.stringify(value));
+    return cloneSerializable(value);
   } catch (error) {
     console.warn('Failed to clone shared import value', error);
     return null;
