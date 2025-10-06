@@ -11042,17 +11042,30 @@ function collectFilterAccessories(filters = []) {
 }
 
 const USER_BUTTON_FUNCTION_ITEMS = [
+  { key: 'user1', value: 'User 1' },
+  { key: 'user2', value: 'User 2' },
+  { key: 'user3', value: 'User 3' },
+  { key: 'user4', value: 'User 4' },
   { key: 'toggleLut', value: 'Toggle LUT' },
   { key: 'falseColor', value: 'False Color' },
   { key: 'peaking', value: 'Peaking' },
   { key: 'anamorphicDesqueeze', value: 'Anamorphic Desqueeze' },
   { key: 'surroundView', value: 'Surround View' },
   { key: 'oneToOneZoom', value: '1:1 Zoom' },
+  { key: 'waveform', value: 'Waveform' },
+  { key: 'histogram', value: 'Histogram' },
+  { key: 'vectorscope', value: 'Vectorscope' },
+  { key: 'zebra', value: 'Zebra' },
   { key: 'playback', value: 'Playback' },
   { key: 'record', value: 'Record' },
   { key: 'zoom', value: 'Zoom' },
   { key: 'frameLines', value: 'Frame Lines' },
-  { key: 'frameGrab', value: 'Frame Grab' }
+  { key: 'frameGrab', value: 'Frame Grab' },
+  { key: 'wb', value: 'WB' },
+  { key: 'iso', value: 'ISO' },
+  { key: 'nd', value: 'ND' },
+  { key: 'fps', value: 'FPS' },
+  { key: 'shutter', value: 'Shutter' }
 ];
 
 function populateUserButtonDropdowns() {
