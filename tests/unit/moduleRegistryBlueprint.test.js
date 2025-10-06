@@ -114,4 +114,37 @@ describe('cineModules.createBlueprint', () => {
       }),
     );
   });
+
+  test('queues registration to a fallback scope when preferred scope is sealed', () => {
+    const pendingKey = '__cinePendingModuleRegistrations__';
+    const sealedScope = Object.freeze({});
+
+    const blueprint = registry.createBlueprint({
+      name: 'cineBlueprintQueueFallback',
+      category: 'infrastructure',
+      description: 'Queues even when the provided scope cannot store metadata.',
+      factory: () => ({ ok: true }),
+    });
+
+    const failingRegistry = {
+      register() {
+        throw new Error('forced failure');
+      },
+    };
+
+    expect(() => blueprint.register({ registry: failingRegistry, scope: sealedScope })).toThrow('forced failure');
+
+    expect(Object.prototype.hasOwnProperty.call(sealedScope, pendingKey)).toBe(false);
+
+    const queue = global[pendingKey];
+    expect(Array.isArray(queue)).toBe(true);
+    const queuedEntry = queue.find((entry) => entry && entry.name === 'cineBlueprintQueueFallback');
+    expect(queuedEntry).toBeDefined();
+    expect(queuedEntry && queuedEntry.options).toEqual(
+      expect.objectContaining({
+        category: 'infrastructure',
+        description: 'Queues even when the provided scope cannot store metadata.',
+      }),
+    );
+  });
 });

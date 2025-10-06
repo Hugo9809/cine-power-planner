@@ -483,23 +483,90 @@
     }
   }
 
-  function queueRegistrationPayload(scope, payload) {
-    const targetScope = scope || GLOBAL_SCOPE;
-    if (!targetScope || (typeof targetScope !== 'object' && typeof targetScope !== 'function')) {
-      return false;
+  function collectQueueScopes(preferredScope) {
+    const scopes = [];
+
+    function pushScope(candidate) {
+      if (!candidate || (typeof candidate !== 'object' && typeof candidate !== 'function')) {
+        return;
+      }
+      if (scopes.indexOf(candidate) === -1) {
+        scopes.push(candidate);
+      }
     }
 
-    let queue = null;
+    pushScope(preferredScope);
+    pushScope(GLOBAL_SCOPE);
+    if (typeof globalThis !== 'undefined') pushScope(globalThis);
+    if (typeof window !== 'undefined') pushScope(window);
+    if (typeof self !== 'undefined') pushScope(self);
+    if (typeof global !== 'undefined') pushScope(global);
+
+    return scopes;
+  }
+
+  function readQueueFromScope(scope) {
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+      return null;
+    }
+
     try {
-      queue = targetScope[PENDING_QUEUE_KEY];
+      const queue = scope[PENDING_QUEUE_KEY];
+      return Array.isArray(queue) ? queue : null;
     } catch (error) {
       void error;
-      queue = null;
+      return null;
+    }
+  }
+
+  function ensureQueueOnScope(scope) {
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+      return null;
     }
 
-    if (!Array.isArray(queue)) {
-      queue = [];
-      assignHidden(targetScope, PENDING_QUEUE_KEY, queue);
+    let queue = readQueueFromScope(scope);
+    if (queue) {
+      return queue;
+    }
+
+    if (assignHidden(scope, PENDING_QUEUE_KEY, [])) {
+      queue = readQueueFromScope(scope);
+      if (queue) {
+        return queue;
+      }
+    }
+
+    try {
+      scope[PENDING_QUEUE_KEY] = [];
+      queue = readQueueFromScope(scope);
+      if (queue) {
+        return queue;
+      }
+    } catch (error) {
+      void error;
+    }
+
+    return null;
+  }
+
+  function resolveQueueDescriptor(preferredScope) {
+    const scopes = collectQueueScopes(preferredScope);
+
+    for (let index = 0; index < scopes.length; index += 1) {
+      const candidate = scopes[index];
+      const queue = ensureQueueOnScope(candidate);
+      if (queue) {
+        return { queue, scope: candidate };
+      }
+    }
+
+    return null;
+  }
+
+  function queueRegistrationPayload(scope, payload) {
+    const descriptor = resolveQueueDescriptor(scope || GLOBAL_SCOPE);
+    if (!descriptor || !descriptor.queue) {
+      return false;
     }
 
     const record = freezeDeep({
@@ -507,6 +574,8 @@
       api: payload ? payload.api : null,
       options: Object.freeze({ ...(payload && payload.options ? payload.options : {}) }),
     });
+
+    const { queue, scope: queueScope } = descriptor;
 
     try {
       queue.push(record);
@@ -516,7 +585,7 @@
     }
 
     try {
-      schedulePendingFlush(targetScope);
+      schedulePendingFlush(queueScope);
     } catch (error) {
       void error;
     }
