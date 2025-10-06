@@ -12660,6 +12660,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
 
     if (connectionDiagramModule && typeof connectionDiagramModule.createConnectionDiagram === 'function') {
       try {
+        const scheduleProjectAutoSaveFn =
+          typeof scheduleProjectAutoSave === 'function' ? scheduleProjectAutoSave : null;
+
         const connectionDiagram = connectionDiagramModule.createConnectionDiagram({
           document,
           window,
@@ -12683,7 +12686,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           getResetViewBtn: () => resetViewBtn,
           getGridSnapToggleBtn: () => gridSnapToggleBtn,
           getCurrentGridSnap,
-          scheduleProjectAutoSave,
+          scheduleProjectAutoSave: scheduleProjectAutoSaveFn,
           saveCurrentSession,
           checkSetupChanged,
           motorPriority,
