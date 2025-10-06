@@ -33,6 +33,14 @@ planner predictable, offline-ready and data-safe.
 * When exporting or backing up, store these rules using the existing automatic gear backup and
   preset infrastructure so user data remains safe and offline-capable.
 
+## Preset naming reliability
+
+* Browsers that disable native `prompt()` dialogs (for example installed PWAs running without a
+  URL bar) now trigger an inline naming modal within the Automatic gear preset panel. A quick timing
+  check detects blocked prompts or thrown errors so the inline fallback opens automatically instead
+  of treating the save as cancelled. The dialog keeps the experience accessible offline and
+  guarantees presets can still be saved without losing user data.【F:src/scripts/app-core-new-2.js†L2497-L2524】【F:src/styles/style.css†L2583-L2624】
+
 ## Draft impact preview cues
 
 * The draft impact preview surfaces stacked changes whenever multiple rules touch the same gear
