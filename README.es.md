@@ -429,6 +429,12 @@ Una pila de infraestructura — `cineModuleArchitectureHelpers`, `cineModuleBase
 de ámbitos, las consultas al sistema de módulos, las colas de registro y la
 exposición global entre los bundles moderno y legacy sin duplicar código base.
 
+Para los módulos nuevos utiliza `cineModules.createBlueprint({...})` para
+capturar los metadatos y las opciones de congelación antes de registrarlos. El
+asistente congela la API generada, normaliza categoría, descripción y
+conexiones, y reencola los registros que fallen para que los flujos offline no
+pierdan sus protecciones.
+
 ### Bundle para navegadores legacy
 
 Después de modificar `src/scripts/` o `src/data/`, ejecuta `npm run build:legacy` para regenerar el bundle ES5 que sirve a navegadores antiguos. El comando también actualiza los polyfills locales para preservar la experiencia offline.

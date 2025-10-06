@@ -431,6 +431,12 @@ allineati il rilevamento dello scope, le interrogazioni al sistema di moduli, le
 code di registrazione e l’esposizione globale tra bundle moderni e legacy senza
 duplicare boilerplate.
 
+Per i moduli nuovi usa `cineModules.createBlueprint({...})` per acquisire i
+metadati e le opzioni di congelamento prima della registrazione. Il helper
+congela l’API generata, normalizza categoria, descrizione e connessioni e
+rimette in coda i registri falliti così che i flussi offline non perdano le
+proprie protezioni.
+
 ### Bundle legacy
 
 Dopo modifiche in `src/scripts/` o `src/data/`, esegui `npm run build:legacy` per rigenerare il bundle ES5 destinato ai browser datati e mantenere aggiornati i polyfill locali.

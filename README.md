@@ -972,6 +972,11 @@ scope detection, module system lookups, deferred registration queues and global
 exposure stay aligned between modern and legacy bundles without duplicating
 boilerplate.
 
+For new modules, prefer `cineModules.createBlueprint({...})` to capture metadata
+and freeze defaults before registering. The helper freezes the generated API,
+normalises category/description/connection strings and automatically queues
+failed registrations so offline workflows never lose critical safeguards.
+
 ### Legacy browser bundle
 
 Run `npm run build:legacy` after modifying files in `src/scripts/` or `src/data/`
