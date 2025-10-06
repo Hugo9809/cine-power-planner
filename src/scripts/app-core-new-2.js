@@ -13,6 +13,57 @@ var CORE_RUNTIME_CANDIDATE_SCOPES = [
   typeof global !== 'undefined' && typeof global === 'object' ? global : null,
 ].filter(Boolean);
 
+var CORE_SAFE_FREEZE_REGISTRY =
+  typeof WeakSet === 'function'
+    ? new WeakSet()
+    : [];
+
+function coreSafeFreezeRegistryHas(value) {
+  if (!value || !CORE_SAFE_FREEZE_REGISTRY) {
+    return false;
+  }
+
+  if (typeof CORE_SAFE_FREEZE_REGISTRY.has === 'function') {
+    try {
+      return CORE_SAFE_FREEZE_REGISTRY.has(value);
+    } catch (registryHasError) {
+      void registryHasError;
+      return false;
+    }
+  }
+
+  for (var index = 0; index < CORE_SAFE_FREEZE_REGISTRY.length; index += 1) {
+    if (CORE_SAFE_FREEZE_REGISTRY[index] === value) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+function coreSafeFreezeRegistryAdd(value) {
+  if (!value || !CORE_SAFE_FREEZE_REGISTRY) {
+    return;
+  }
+
+  if (typeof CORE_SAFE_FREEZE_REGISTRY.add === 'function') {
+    try {
+      CORE_SAFE_FREEZE_REGISTRY.add(value);
+    } catch (registryAddError) {
+      void registryAddError;
+    }
+    return;
+  }
+
+  for (var index = 0; index < CORE_SAFE_FREEZE_REGISTRY.length; index += 1) {
+    if (CORE_SAFE_FREEZE_REGISTRY[index] === value) {
+      return;
+    }
+  }
+
+  CORE_SAFE_FREEZE_REGISTRY.push(value);
+}
+
 function createLocalRuntimeState(candidateScopes) {
   var scopes = [];
   var seenScopes = typeof Set === 'function' ? new Set() : null;
@@ -16499,9 +16550,14 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return;
       }
 
-      if (scope.cineModuleBase && typeof scope.cineModuleBase.freezeDeep === 'function' && !scope.cineModuleBase.__cineSafeFreezeWrapped) {
-        const originalFreezeDeep = scope.cineModuleBase.freezeDeep;
-        scope.cineModuleBase.freezeDeep = function safeFreezeDeep(value, seen) {
+      const moduleBase = scope.cineModuleBase;
+      const alreadyWrapped =
+        !!(moduleBase && moduleBase.__cineSafeFreezeWrapped)
+        || coreSafeFreezeRegistryHas(moduleBase);
+
+      if (moduleBase && typeof moduleBase.freezeDeep === 'function' && !alreadyWrapped) {
+        const originalFreezeDeep = moduleBase.freezeDeep;
+        moduleBase.freezeDeep = function safeFreezeDeep(value, seen) {
           try {
             return originalFreezeDeep(value, seen);
           } catch (freezeError) {
@@ -16515,12 +16571,50 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             return value;
           }
         };
-        Object.defineProperty(scope.cineModuleBase, '__cineSafeFreezeWrapped', {
-          configurable: false,
-          enumerable: false,
-          writable: false,
-          value: true,
-        });
+
+        coreSafeFreezeRegistryAdd(moduleBase);
+
+        let marked = false;
+
+        try {
+          moduleBase.__cineSafeFreezeWrapped = true;
+          if (moduleBase.__cineSafeFreezeWrapped) {
+            marked = true;
+          }
+        } catch (assignError) {
+          void assignError;
+        }
+
+        if (!marked && typeof Object.defineProperty === 'function') {
+          let canDefine = true;
+
+          if (typeof Object.isExtensible === 'function') {
+            try {
+              canDefine = Object.isExtensible(moduleBase);
+            } catch (isExtensibleError) {
+              void isExtensibleError;
+              canDefine = true;
+            }
+          }
+
+          if (canDefine || Object.prototype.hasOwnProperty.call(moduleBase, '__cineSafeFreezeWrapped')) {
+            try {
+              Object.defineProperty(moduleBase, '__cineSafeFreezeWrapped', {
+                configurable: false,
+                enumerable: false,
+                writable: false,
+                value: true,
+              });
+              marked = true;
+            } catch (defineError) {
+              void defineError;
+            }
+          }
+        }
+
+        if (!marked && !coreSafeFreezeRegistryHas(moduleBase)) {
+          coreSafeFreezeRegistryAdd(moduleBase);
+        }
       }
 
       const MODULE_EXPORTS = {
