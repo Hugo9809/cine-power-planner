@@ -27,7 +27,9 @@
           getPowerSelectionSnapshot, applyStoredPowerSelection,
           settingsReduceMotion, settingsRelaxedSpacing, callCoreFunctionIfAvailable,
           recordFeatureSearchUsage, extractFeatureSearchFilter,
-          helpResultsSummary, helpResultsAssist */
+          helpResultsSummary, helpResultsAssist,
+          isProjectPersistenceSuspended, suspendProjectPersistence,
+          resumeProjectPersistence */
 /* eslint-enable no-redeclare */
 /* global enqueueCoreBootTask */
 const FALLBACK_STRONG_SEARCH_MATCH_TYPES = new Set(['exactKey', 'keyPrefix', 'keySubset']);

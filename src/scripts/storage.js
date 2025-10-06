@@ -3458,14 +3458,14 @@ function enforceAutoBackupLimits(container) {
   const removed = [];
 
   const autoBackups = collectAutoBackupEntries(container, STORAGE_AUTO_BACKUP_NAME_PREFIX);
+  removed.push(...removeDuplicateAutoBackupEntries(container, autoBackups));
   if (autoBackups.length > MAX_AUTO_BACKUPS) {
-    removed.push(...removeDuplicateAutoBackupEntries(container, autoBackups));
     pruneAutoBackupEntries(container, autoBackups, MAX_AUTO_BACKUPS, removed);
   }
 
   const deletionBackups = collectAutoBackupEntries(container, STORAGE_AUTO_BACKUP_DELETION_PREFIX);
+  removed.push(...removeDuplicateAutoBackupEntries(container, deletionBackups));
   if (deletionBackups.length > MAX_DELETION_BACKUPS) {
-    removed.push(...removeDuplicateAutoBackupEntries(container, deletionBackups));
     pruneAutoBackupEntries(container, deletionBackups, MAX_DELETION_BACKUPS, removed);
   }
 
