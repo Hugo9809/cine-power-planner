@@ -1,3 +1,5 @@
+/* global cineGearList */
+
 var CORE_TEMPERATURE_QUEUE_KEY = '__cinePendingTemperatureNote';
 var CORE_TEMPERATURE_RENDER_NAME = 'renderTemperatureNote';
 
@@ -11785,11 +11787,54 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return { projectHtml, gearHtml };
     }
     
-    // Expose for modules like overview.js
-    if (typeof global !== 'undefined') {
-      global.splitGearListHtml = splitGearListHtml;
+    registerGearListSplitImplementation(splitGearListHtml);
+
+    function registerGearListSplitImplementation(fn) {
+      var candidates = [];
+
+      if (typeof cineGearList === 'object' && cineGearList) {
+        candidates.push(cineGearList);
+      }
+
+      if (typeof global !== 'undefined' && global && typeof global.cineGearList === 'object' && global.cineGearList) {
+        if (candidates.indexOf(global.cineGearList) === -1) {
+          candidates.push(global.cineGearList);
+        }
+      }
+
+      if (typeof require === 'function') {
+        try {
+          var required = require('./modules/gear-list.js');
+          if (required && typeof required === 'object' && candidates.indexOf(required) === -1) {
+            candidates.push(required);
+          }
+        } catch (error) {
+          void error;
+        }
+      }
+
+      for (var index = 0; index < candidates.length; index += 1) {
+        var candidate = candidates[index];
+        if (!candidate || typeof candidate.setImplementation !== 'function') {
+          continue;
+        }
+        try {
+          candidate.setImplementation({ splitGearListHtml: fn }, { source: 'app-core-new-2' });
+          return true;
+        } catch (error) {
+          if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+            console.warn('Unable to register splitGearListHtml implementation with cineGearList.', error);
+          }
+        }
+      }
+
+      if (typeof global !== 'undefined') {
+        global.splitGearListHtml = fn;
+      }
+
+      return false;
     }
-    
+
     function describeRequirement(field, value) {
       const val = value || '';
       const parts = [];
