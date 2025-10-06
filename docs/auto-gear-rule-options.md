@@ -24,6 +24,18 @@ planner predictable, offline-ready and data-safe.
    maps and diffing them. This ensures quantities remain accurate when converting legacy
    behaviour into explicit rules.【F:src/scripts/app-core-new-1.js†L2508-L2559】
 
+## Condition joiners refresher
+
+* **All** – Every selected value for the condition must match before the rule activates. This is
+  the default for existing rules and remains the fallback when an unknown joiner is encountered
+  during normalization.【F:src/scripts/app-core-new-1.js†L3446-L3458】
+* **Any** – At least one selected value has to match. Rules saved before this update that used the
+  legacy “any” behaviour continue to load without changes because the joiner value is preserved
+  verbatim.【F:src/scripts/app-core-new-1.js†L3459-L3466】
+* **Or** – Begins a fresh OR group when evaluating condition chains while still matching any value
+  within the condition itself. The loader now keeps the explicit `"or"` joiner so editor UIs can
+  surface the grouping intent to the crew configuring backup rules.【F:src/scripts/app-core-new-1.js†L3446-L3466】
+
 ## Migration checklist
 
 * Ensure rule generation continues to parse the gear table HTML before diffing so quantity math
