@@ -746,6 +746,15 @@
       }
     }
 
+    if (typeof RegExp !== 'undefined' && value instanceof RegExp) {
+      try {
+        return value.toString();
+      } catch (error) {
+        void error;
+      }
+      return '[RegExp]';
+    }
+
     if (value instanceof Error) {
       const errorOutput = {
         name: value.name,
@@ -776,6 +785,138 @@
             return '[Circular]';
           }
           visited.add(value);
+        } catch (error) {
+          void error;
+        }
+      }
+
+      if (typeof ArrayBuffer !== 'undefined' && value instanceof ArrayBuffer) {
+        return {
+          __type: 'ArrayBuffer',
+          byteLength: value.byteLength,
+        };
+      }
+
+      if (typeof DataView !== 'undefined' && value instanceof DataView) {
+        return {
+          __type: 'DataView',
+          byteOffset: value.byteOffset,
+          byteLength: value.byteLength,
+        };
+      }
+
+      if (
+        typeof ArrayBuffer !== 'undefined'
+        && typeof ArrayBuffer.isView === 'function'
+        && ArrayBuffer.isView(value)
+      ) {
+        const ctorName = value.constructor && value.constructor.name;
+        const maxPreview = 32;
+        const length = typeof value.length === 'number' ? value.length : 0;
+        const preview = [];
+        const previewLength = Math.min(length, maxPreview);
+        for (let index = 0; index < previewLength; index += 1) {
+          preview.push(value[index]);
+        }
+        const summary = {
+          __type: ctorName || 'TypedArray',
+          length,
+          byteOffset: typeof value.byteOffset === 'number' ? value.byteOffset : 0,
+          byteLength: typeof value.byteLength === 'number' ? value.byteLength : 0,
+        };
+        if (preview.length) {
+          summary.preview = preview;
+        }
+        if (length > maxPreview) {
+          summary.__truncatedItems = length - maxPreview;
+        }
+        return summary;
+      }
+
+      const mapCtor = typeof Map === 'function' ? Map : null;
+      if (mapCtor && value instanceof mapCtor) {
+        const entries = [];
+        const maxEntries = 30;
+        let index = 0;
+        value.forEach((mapValue, mapKey) => {
+          if (index < maxEntries) {
+            entries.push({
+              key: sanitizeForLog(mapKey, nextDepth + 1, visited),
+              value: sanitizeForLog(mapValue, nextDepth + 1, visited),
+            });
+          }
+          index += 1;
+        });
+        const result = {
+          __type: 'Map',
+          size: typeof value.size === 'number' ? value.size : index,
+          entries,
+        };
+        if (index > maxEntries) {
+          result.__truncatedEntries = index - maxEntries;
+        }
+        return result;
+      }
+
+      const setCtor = typeof Set === 'function' ? Set : null;
+      if (setCtor && value instanceof setCtor) {
+        const items = [];
+        const maxItems = 30;
+        let index = 0;
+        value.forEach(item => {
+          if (index < maxItems) {
+            items.push(sanitizeForLog(item, nextDepth + 1, visited));
+          }
+          index += 1;
+        });
+        const result = {
+          __type: 'Set',
+          size: typeof value.size === 'number' ? value.size : index,
+          values: items,
+        };
+        if (index > maxItems) {
+          result.__truncatedValues = index - maxItems;
+        }
+        return result;
+      }
+
+      const urlParamsCtor = typeof URLSearchParams === 'function' ? URLSearchParams : null;
+      if (urlParamsCtor && value instanceof urlParamsCtor) {
+        const params = [];
+        const iterator = typeof value.entries === 'function' ? value.entries() : null;
+        let truncated = 0;
+        if (iterator && typeof iterator.next === 'function') {
+          const maxPairs = 40;
+          let count = 0;
+          let next = iterator.next();
+          while (!next.done) {
+            if (count < maxPairs) {
+              const pair = next.value || [];
+              params.push({
+                key: sanitizeForLog(pair[0], nextDepth + 1, visited),
+                value: sanitizeForLog(pair[1], nextDepth + 1, visited),
+              });
+            }
+            count += 1;
+            next = iterator.next();
+          }
+          if (count > params.length) {
+            truncated = count - params.length;
+          }
+        }
+        const result = {
+          __type: 'URLSearchParams',
+          entries: params,
+        };
+        if (truncated > 0) {
+          result.__truncatedEntries = truncated;
+        }
+        return result;
+      }
+
+      if (typeof URL === 'function' && value instanceof URL) {
+        try {
+          return value.toString();
         } catch (error) {
           void error;
         }
