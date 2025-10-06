@@ -6278,6 +6278,45 @@ const storagePersistenceRequestButton = typeof document !== 'undefined'
 const storagePersistenceStatusEl = typeof document !== 'undefined'
   ? document.getElementById('storagePersistenceStatus')
   : null;
+const loggingSectionEl = typeof document !== 'undefined'
+  ? document.getElementById('loggingSection')
+  : null;
+const loggingHistoryListEl = typeof document !== 'undefined'
+  ? document.getElementById('loggingHistory')
+  : null;
+const loggingStatusEl = typeof document !== 'undefined'
+  ? document.getElementById('loggingStatus')
+  : null;
+const loggingEmptyEl = typeof document !== 'undefined'
+  ? document.getElementById('loggingEmpty')
+  : null;
+const loggingUnavailableEl = typeof document !== 'undefined'
+  ? document.getElementById('loggingUnavailable')
+  : null;
+const loggingLevelFilterEl = typeof document !== 'undefined'
+  ? document.getElementById('loggingLevelFilter')
+  : null;
+const loggingNamespaceFilterEl = typeof document !== 'undefined'
+  ? document.getElementById('loggingNamespaceFilter')
+  : null;
+const loggingNamespaceHelpEl = typeof document !== 'undefined'
+  ? document.getElementById('loggingNamespaceFilterHelp')
+  : null;
+const loggingHistoryLimitInput = typeof document !== 'undefined'
+  ? document.getElementById('loggingHistoryLimit')
+  : null;
+const loggingHistoryLimitHelpEl = typeof document !== 'undefined'
+  ? document.getElementById('loggingHistoryLimitHelp')
+  : null;
+const loggingConsoleOutputInput = typeof document !== 'undefined'
+  ? document.getElementById('loggingConsoleOutput')
+  : null;
+const loggingCaptureErrorsInput = typeof document !== 'undefined'
+  ? document.getElementById('loggingCaptureErrors')
+  : null;
+const loggingPersistSessionInput = typeof document !== 'undefined'
+  ? document.getElementById('loggingPersistSession')
+  : null;
 
 const storagePersistenceState = {
   supported: null,
@@ -6292,6 +6331,551 @@ const storagePersistenceState = {
 };
 
 let storagePersistenceCheckToken = 0;
+
+const LOGGING_LEVEL_PRIORITY = {
+  debug: 10,
+  info: 20,
+  warn: 30,
+  error: 40,
+};
+
+const LOGGING_HISTORY_MIN = 50;
+const LOGGING_HISTORY_MAX = 2000;
+
+const loggingState = {
+  initialized: false,
+  loggingApi: null,
+  unsubscribeHistory: null,
+  unsubscribeConfig: null,
+  retryTimer: null,
+  renderScheduled: false,
+  levelFilter: 'all',
+  namespaceFilter: '',
+  config: null,
+  namespaceDebounce: null,
+};
+
+function getLoggingLangInfo() {
+  const fallbackTexts = texts && texts.en ? texts.en : {};
+  const lang = typeof currentLang === 'string' && texts && texts[currentLang]
+    ? currentLang
+    : 'en';
+  const langTexts = (texts && texts[lang]) || fallbackTexts;
+  return { lang, langTexts, fallbackTexts };
+}
+
+function setLoggingStatusKey(key) {
+  if (!loggingStatusEl) {
+    return;
+  }
+  const { langTexts, fallbackTexts } = getLoggingLangInfo();
+  const text = (langTexts && langTexts[key]) || (fallbackTexts && fallbackTexts[key]) || '';
+  loggingStatusEl.textContent = text;
+  if (text) {
+    loggingStatusEl.setAttribute('data-help', text);
+  } else {
+    loggingStatusEl.removeAttribute('data-help');
+  }
+}
+
+function resolveLoggingApi() {
+  if (loggingState.loggingApi && typeof loggingState.loggingApi.getHistory === 'function') {
+    return loggingState.loggingApi;
+  }
+
+  const scopes = [];
+  if (typeof globalThis !== 'undefined' && globalThis) scopes.push(globalThis);
+  if (typeof window !== 'undefined' && window && scopes.indexOf(window) === -1) scopes.push(window);
+  if (typeof self !== 'undefined' && self && scopes.indexOf(self) === -1) scopes.push(self);
+  if (typeof global !== 'undefined' && global && scopes.indexOf(global) === -1) scopes.push(global);
+
+  for (let index = 0; index < scopes.length; index += 1) {
+    const scope = scopes[index];
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+      continue;
+    }
+    try {
+      const candidate = scope.cineLogging;
+      if (
+        candidate
+        && typeof candidate === 'object'
+        && typeof candidate.getHistory === 'function'
+        && typeof candidate.subscribe === 'function'
+      ) {
+        loggingState.loggingApi = candidate;
+        return candidate;
+      }
+    } catch (error) {
+      console.warn('Unable to resolve cineLogging', error);
+    }
+  }
+
+  return null;
+}
+
+function detachLoggingSubscriptions() {
+  if (loggingState.unsubscribeHistory) {
+    try {
+      loggingState.unsubscribeHistory();
+    } catch (error) {
+      console.warn('Failed to detach logging history subscription', error);
+    }
+  }
+  if (loggingState.unsubscribeConfig) {
+    try {
+      loggingState.unsubscribeConfig();
+    } catch (error) {
+      console.warn('Failed to detach logging config subscription', error);
+    }
+  }
+  loggingState.unsubscribeHistory = null;
+  loggingState.unsubscribeConfig = null;
+}
+
+function setLoggingControlsDisabled(disabled) {
+  const inputs = [
+    loggingLevelFilterEl,
+    loggingNamespaceFilterEl,
+    loggingHistoryLimitInput,
+    loggingConsoleOutputInput,
+    loggingCaptureErrorsInput,
+    loggingPersistSessionInput,
+  ];
+  inputs.forEach(input => {
+    if (!input) return;
+    input.disabled = !!disabled;
+    if (disabled) {
+      input.setAttribute('aria-disabled', 'true');
+    } else {
+      input.setAttribute('aria-disabled', 'false');
+    }
+  });
+}
+
+function formatLogDetailValue(value) {
+  if (value == null) {
+    return '';
+  }
+  if (typeof value === 'string') {
+    return value;
+  }
+  try {
+    return JSON.stringify(value, null, 2);
+  } catch (error) {
+    return String(value);
+  }
+}
+
+function formatLogTimestamp(entry, langTexts, fallbackTexts) {
+  const lang = typeof currentLang === 'string' && texts && texts[currentLang]
+    ? currentLang
+    : 'en';
+  const timestamp = typeof entry.timestamp === 'number' && Number.isFinite(entry.timestamp)
+    ? entry.timestamp
+    : null;
+  let localText = '';
+  if (timestamp != null) {
+    const date = new Date(timestamp);
+    if (!Number.isNaN(date.getTime())) {
+      try {
+        if (typeof Intl !== 'undefined' && typeof Intl.DateTimeFormat === 'function') {
+          const formatter = new Intl.DateTimeFormat(lang, {
+            dateStyle: 'short',
+            timeStyle: 'medium',
+          });
+          localText = formatter.format(date);
+        } else {
+          localText = date.toLocaleString();
+        }
+      } catch (error) {
+        console.warn('Unable to format log timestamp', error);
+        localText = date.toISOString();
+      }
+    }
+  }
+  const iso = typeof entry.isoTimestamp === 'string' && entry.isoTimestamp
+    ? entry.isoTimestamp
+    : (timestamp != null ? new Date(timestamp).toISOString() : '');
+  if (localText && iso && iso !== localText) {
+    const template = langTexts.loggingTimestampCombined
+      || fallbackTexts.loggingTimestampCombined
+      || '{local} ({iso})';
+    return template.replace('{local}', localText).replace('{iso}', iso);
+  }
+  return localText || iso || '';
+}
+
+function createLogDetailsElement(label, value) {
+  const details = document.createElement('details');
+  details.className = 'log-entry-details';
+  const summary = document.createElement('summary');
+  summary.textContent = label;
+  const pre = document.createElement('pre');
+  pre.className = 'log-entry-detail';
+  pre.textContent = formatLogDetailValue(value);
+  details.appendChild(summary);
+  details.appendChild(pre);
+  return details;
+}
+
+function renderLoggingHistory() {
+  loggingState.renderScheduled = false;
+  if (!loggingSectionEl || !loggingHistoryListEl) {
+    return;
+  }
+  const logging = resolveLoggingApi();
+  const { langTexts, fallbackTexts } = getLoggingLangInfo();
+
+  if (!logging || typeof logging.getHistory !== 'function') {
+    setLoggingControlsDisabled(true);
+    if (loggingUnavailableEl) {
+      loggingUnavailableEl.removeAttribute('hidden');
+    }
+    if (loggingEmptyEl) {
+      loggingEmptyEl.setAttribute('hidden', '');
+    }
+    if (loggingHistoryListEl) {
+      loggingHistoryListEl.textContent = '';
+    }
+    setLoggingStatusKey('loggingStatusError');
+    return;
+  }
+
+  setLoggingControlsDisabled(false);
+  if (loggingUnavailableEl) {
+    loggingUnavailableEl.setAttribute('hidden', '');
+  }
+
+  let history = [];
+  try {
+    const snapshot = logging.getHistory({});
+    if (Array.isArray(snapshot)) {
+      history = snapshot;
+    }
+  } catch (error) {
+    console.warn('Unable to read logging history', error);
+    setLoggingStatusKey('loggingStatusError');
+    history = [];
+  }
+
+  const namespaceQuery = typeof loggingState.namespaceFilter === 'string'
+    ? loggingState.namespaceFilter.trim().toLowerCase()
+    : '';
+  const threshold = loggingState.levelFilter === 'all'
+    ? -Infinity
+    : LOGGING_LEVEL_PRIORITY[loggingState.levelFilter] || LOGGING_LEVEL_PRIORITY.warn;
+
+  const entries = history
+    .slice()
+    .reverse()
+    .filter(entry => {
+      if (!entry || typeof entry !== 'object') {
+        return false;
+      }
+      const level = typeof entry.level === 'string' ? entry.level.toLowerCase() : 'info';
+      const priority = LOGGING_LEVEL_PRIORITY[level] ?? LOGGING_LEVEL_PRIORITY.info;
+      if (priority < threshold) {
+        return false;
+      }
+      if (namespaceQuery) {
+        const namespace = typeof entry.namespace === 'string' ? entry.namespace.toLowerCase() : '';
+        if (!namespace.includes(namespaceQuery)) {
+          return false;
+        }
+      }
+      return true;
+    });
+
+  const fragment = document.createDocumentFragment();
+  const levelLabels = {
+    debug: langTexts.loggingLevelDebug || fallbackTexts.loggingLevelDebug || 'Debug',
+    info: langTexts.loggingLevelInfo || fallbackTexts.loggingLevelInfo || 'Info',
+    warn: langTexts.loggingLevelWarn || fallbackTexts.loggingLevelWarn || 'Warn',
+    error: langTexts.loggingLevelError || fallbackTexts.loggingLevelError || 'Error',
+  };
+
+  entries.forEach(entry => {
+    const level = typeof entry.level === 'string' ? entry.level.toLowerCase() : 'info';
+    const listItem = document.createElement('li');
+    listItem.className = `log-entry level-${level}`;
+
+    const header = document.createElement('div');
+    header.className = 'log-entry-header';
+
+    const message = document.createElement('span');
+    message.className = 'log-entry-message';
+    message.textContent = typeof entry.message === 'string' ? entry.message : '';
+
+    const levelBadge = document.createElement('span');
+    levelBadge.className = 'log-entry-level';
+    levelBadge.textContent = levelLabels[level] || levelLabels.info;
+
+    header.appendChild(message);
+    header.appendChild(levelBadge);
+
+    listItem.appendChild(header);
+
+    const metaList = document.createElement('dl');
+    metaList.className = 'log-entry-meta';
+
+    const timestampRow = document.createElement('div');
+    timestampRow.className = 'log-entry-meta-row';
+    const timestampLabel = document.createElement('dt');
+    timestampLabel.textContent = langTexts.loggingEntryTimestampLabel
+      || fallbackTexts.loggingEntryTimestampLabel
+      || 'Time';
+    const timestampValue = document.createElement('dd');
+    timestampValue.textContent = formatLogTimestamp(entry, langTexts, fallbackTexts);
+    timestampRow.appendChild(timestampLabel);
+    timestampRow.appendChild(timestampValue);
+    metaList.appendChild(timestampRow);
+
+    const namespace = typeof entry.namespace === 'string' ? entry.namespace : '';
+    if (namespace) {
+      const namespaceRow = document.createElement('div');
+      namespaceRow.className = 'log-entry-meta-row';
+      const namespaceLabel = document.createElement('dt');
+      namespaceLabel.textContent = langTexts.loggingEntryNamespaceLabel
+        || fallbackTexts.loggingEntryNamespaceLabel
+        || 'Namespace';
+      const namespaceValue = document.createElement('dd');
+      namespaceValue.textContent = namespace;
+      namespaceRow.appendChild(namespaceLabel);
+      namespaceRow.appendChild(namespaceValue);
+      metaList.appendChild(namespaceRow);
+    }
+
+    listItem.appendChild(metaList);
+
+    if (entry.meta != null) {
+      const metaDetails = createLogDetailsElement(
+        langTexts.loggingEntryMetaLabel || fallbackTexts.loggingEntryMetaLabel || 'Meta',
+        entry.meta,
+      );
+      listItem.appendChild(metaDetails);
+    }
+
+    if (entry.detail != null) {
+      const detailDetails = createLogDetailsElement(
+        langTexts.loggingEntryDetailLabel || fallbackTexts.loggingEntryDetailLabel || 'Details',
+        entry.detail,
+      );
+      listItem.appendChild(detailDetails);
+    }
+
+    fragment.appendChild(listItem);
+  });
+
+  loggingHistoryListEl.textContent = '';
+  loggingHistoryListEl.appendChild(fragment);
+
+  if (loggingEmptyEl) {
+    if (entries.length === 0) {
+      const emptyKey = history.length > 0 ? 'loggingEmptyFiltered' : 'loggingEmptyState';
+      const emptyMessage = (langTexts && langTexts[emptyKey])
+        || (fallbackTexts && fallbackTexts[emptyKey])
+        || (emptyKey === 'loggingEmptyFiltered'
+          ? 'No log entries match the current filters.'
+          : 'No log entries captured yet.');
+      loggingEmptyEl.textContent = emptyMessage;
+      loggingEmptyEl.removeAttribute('hidden');
+      if (emptyMessage) {
+        loggingEmptyEl.setAttribute('data-help', emptyMessage);
+      }
+    } else {
+      loggingEmptyEl.setAttribute('hidden', '');
+      loggingEmptyEl.removeAttribute('data-help');
+    }
+  }
+
+  setLoggingStatusKey('loggingStatusIdle');
+}
+
+function scheduleLoggingRender(options = {}) {
+  if (loggingState.renderScheduled && !options.immediate) {
+    return;
+  }
+  if (options.immediate) {
+    renderLoggingHistory();
+    return;
+  }
+  loggingState.renderScheduled = true;
+  const schedule = typeof requestAnimationFrame === 'function'
+    ? requestAnimationFrame
+    : callback => setTimeout(callback, 50);
+  schedule(() => {
+    renderLoggingHistory();
+  });
+}
+
+function applyLoggingConfig(config) {
+  if (!config || typeof config !== 'object') {
+    return;
+  }
+  loggingState.config = config;
+  const { langTexts, fallbackTexts } = getLoggingLangInfo();
+  if (loggingHistoryLimitInput && typeof config.historyLimit === 'number') {
+    loggingHistoryLimitInput.value = config.historyLimit;
+    const template = langTexts.loggingHistoryLimitStatus
+      || fallbackTexts.loggingHistoryLimitStatus
+      || (loggingHistoryLimitHelpEl ? loggingHistoryLimitHelpEl.textContent : '');
+    if (loggingHistoryLimitHelpEl && template) {
+      loggingHistoryLimitHelpEl.textContent = template.replace('{count}', String(config.historyLimit));
+    }
+  }
+  const setToggleState = (input, value) => {
+    if (!input) return;
+    const checked = !!value;
+    input.checked = checked;
+    input.setAttribute('aria-checked', checked ? 'true' : 'false');
+  };
+  setToggleState(loggingConsoleOutputInput, config.consoleOutput !== false);
+  setToggleState(loggingCaptureErrorsInput, config.captureGlobalErrors !== false);
+  setToggleState(loggingPersistSessionInput, config.persistSession !== false);
+}
+
+function updateLoggingConfig(partial) {
+  const logging = resolveLoggingApi();
+  if (!logging || typeof logging.setConfig !== 'function' || !partial || typeof partial !== 'object') {
+    return;
+  }
+  try {
+    logging.setConfig(partial);
+  } catch (error) {
+    console.warn('Unable to update logging config', error);
+    setLoggingStatusKey('loggingStatusError');
+  }
+}
+
+function attachLoggingSubscriptions() {
+  const logging = resolveLoggingApi();
+  if (!logging) {
+    detachLoggingSubscriptions();
+    setLoggingControlsDisabled(true);
+    if (loggingUnavailableEl) {
+      loggingUnavailableEl.removeAttribute('hidden');
+    }
+    if (loggingState.retryTimer == null && typeof setTimeout === 'function') {
+      loggingState.retryTimer = setTimeout(() => {
+        loggingState.retryTimer = null;
+        attachLoggingSubscriptions();
+      }, 2000);
+    }
+    return;
+  }
+
+  if (loggingState.retryTimer != null) {
+    clearTimeout(loggingState.retryTimer);
+    loggingState.retryTimer = null;
+  }
+
+  try {
+    applyLoggingConfig(typeof logging.getConfig === 'function' ? logging.getConfig() : {});
+  } catch (error) {
+    console.warn('Unable to read logging config', error);
+  }
+
+  detachLoggingSubscriptions();
+
+  if (typeof logging.subscribe === 'function') {
+    loggingState.unsubscribeHistory = logging.subscribe(() => {
+      setLoggingStatusKey('loggingStatusUpdating');
+      scheduleLoggingRender();
+    });
+  }
+  if (typeof logging.subscribeConfig === 'function') {
+    loggingState.unsubscribeConfig = logging.subscribeConfig(snapshot => {
+      applyLoggingConfig(snapshot || {});
+    });
+  }
+
+  scheduleLoggingRender({ immediate: true });
+}
+
+function initializeLoggingPanel() {
+  if (!loggingSectionEl || loggingState.initialized) {
+    return;
+  }
+  loggingState.initialized = true;
+
+  if (loggingLevelFilterEl) {
+    const value = typeof loggingLevelFilterEl.value === 'string' && loggingLevelFilterEl.value
+      ? loggingLevelFilterEl.value
+      : 'all';
+    loggingState.levelFilter = value;
+    loggingLevelFilterEl.addEventListener('change', () => {
+      const selected = typeof loggingLevelFilterEl.value === 'string' ? loggingLevelFilterEl.value : 'all';
+      loggingState.levelFilter = selected;
+      setLoggingStatusKey('loggingStatusUpdating');
+      scheduleLoggingRender({ immediate: true });
+    });
+  }
+
+  if (loggingNamespaceFilterEl) {
+    loggingNamespaceFilterEl.value = '';
+    const debounceDelay = 200;
+    loggingNamespaceFilterEl.addEventListener('input', () => {
+      if (loggingState.namespaceDebounce) {
+        clearTimeout(loggingState.namespaceDebounce);
+      }
+      loggingState.namespaceDebounce = setTimeout(() => {
+        loggingState.namespaceDebounce = null;
+        loggingState.namespaceFilter = loggingNamespaceFilterEl.value || '';
+        setLoggingStatusKey('loggingStatusUpdating');
+        scheduleLoggingRender({ immediate: true });
+      }, debounceDelay);
+    });
+  }
+
+  if (loggingHistoryLimitInput) {
+    const applyLimitUpdate = () => {
+      const raw = loggingHistoryLimitInput.value;
+      const parsed = parseInt(raw, 10);
+      if (!Number.isFinite(parsed)) {
+        if (loggingState.config && typeof loggingState.config.historyLimit === 'number') {
+          loggingHistoryLimitInput.value = loggingState.config.historyLimit;
+        }
+        return;
+      }
+      const clamped = Math.min(Math.max(parsed, LOGGING_HISTORY_MIN), LOGGING_HISTORY_MAX);
+      if (loggingState.config && loggingState.config.historyLimit === clamped) {
+        if (parsed !== clamped) {
+          loggingHistoryLimitInput.value = clamped;
+        }
+        return;
+      }
+      loggingHistoryLimitInput.value = clamped;
+      setLoggingStatusKey('loggingStatusUpdating');
+      updateLoggingConfig({ historyLimit: clamped });
+    };
+    loggingHistoryLimitInput.addEventListener('change', applyLimitUpdate);
+    loggingHistoryLimitInput.addEventListener('blur', applyLimitUpdate);
+  }
+
+  const registerToggleHandler = (input, key) => {
+    if (!input) return;
+    input.addEventListener('change', () => {
+      const checked = !!input.checked;
+      if (loggingState.config && loggingState.config[key] === checked) {
+        input.setAttribute('aria-checked', checked ? 'true' : 'false');
+        return;
+      }
+      input.setAttribute('aria-checked', checked ? 'true' : 'false');
+      setLoggingStatusKey('loggingStatusUpdating');
+      updateLoggingConfig({ [key]: checked });
+    });
+  };
+
+  registerToggleHandler(loggingConsoleOutputInput, 'consoleOutput');
+  registerToggleHandler(loggingCaptureErrorsInput, 'captureGlobalErrors');
+  registerToggleHandler(loggingPersistSessionInput, 'persistSession');
+
+  if (loggingNamespaceHelpEl) {
+    loggingNamespaceHelpEl.setAttribute('aria-live', 'polite');
+  }
+
+  attachLoggingSubscriptions();
+}
 
 function getStoragePersistenceLangInfo() {
   const fallbackTexts = texts && texts.en ? texts.en : {};
@@ -6572,6 +7156,18 @@ if (storagePersistenceRequestButton) {
 if (storagePersistenceStatusEl) {
   refreshStoragePersistenceStatus().catch(error => {
     console.warn('Persistent storage status initialization failed', error);
+  });
+}
+
+initializeLoggingPanel();
+
+if (typeof window !== 'undefined' && window && typeof window.addEventListener === 'function') {
+  window.addEventListener('beforeunload', () => {
+    detachLoggingSubscriptions();
+    if (loggingState.retryTimer != null) {
+      clearTimeout(loggingState.retryTimer);
+      loggingState.retryTimer = null;
+    }
   });
 }
 

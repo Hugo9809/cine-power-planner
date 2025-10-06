@@ -57,9 +57,12 @@ you prepare a release candidate or validate a workstation:
    the same timestamp before continuing.
 3. **Inspect data inventory.** Visit **Settings → Data & Storage** to confirm
    project, backup, gear list and custom device counts match expectations, scan
-   the **Latest activity** summary to ensure recent saves appear, and trigger a
-   **Quick safeguards** backup if you need an additional offline copy. This step
-   catches storage issues before they risk user data.
+   the **Latest activity** summary to ensure recent saves appear, review the
+   **Diagnostics log** filters (level/namespace) and retention toggles for
+   anomalies (the panel now calls out when filters hide all entries so you can
+   distinguish silence from filtered noise), and trigger a **Quick safeguards** backup if you need an
+   additional offline copy. This step catches storage and logging issues before
+   they risk user data.
 4. **Exercise backups and bundles.** Export a planner backup and a
    `project-name.json` bundle, import both into an offline private profile and
    review gear lists, automatic gear rules, runtime dashboards and favorites for

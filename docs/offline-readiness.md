@@ -49,7 +49,9 @@ time:
    timestamped `auto-backup-…` snapshot once the autosave routine runs. Open **Settings →
    Backup & Restore** to confirm the autosave status overlay reflects the same timestamp,
    then review **Settings → Data & Storage** to verify project, backup and gear counts
-   updated as expected. Confirm the **Backup guardian** row reports an active or mirrored
+   updated as expected, scan the **Diagnostics log** for fresh entries and adjust filters
+   if anomalies appear (the viewer now notes when filters suppress every entry so you know
+   the silence is intentional). Confirm the **Backup guardian** row reports an active or mirrored
    state so every critical key already has a redundant copy before rehearsals continue,
    check the **Latest activity** board for the new save entries and capture a backup through
    **Quick safeguards** if you need an extra offline copy. The sequential loader now

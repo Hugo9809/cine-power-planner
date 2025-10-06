@@ -2586,6 +2586,68 @@
             </div>
           </dl>
         </section>
+        <section
+          id="loggingSection"
+          class="logging-section"
+          aria-labelledby="loggingHeading"
+        >
+          <h4 id="loggingHeading">Diagnostics log</h4>
+          <p id="loggingIntro" class="storage-summary-note">
+            Monitor runtime diagnostics captured on this device. Updates live while Settings stay open.
+          </p>
+          <div class="logging-controls">
+            <div class="logging-filter">
+              <label for="loggingLevelFilter" id="loggingLevelFilterLabel">Show entries from</label>
+              <select id="loggingLevelFilter">
+                <option value="all">All levels</option>
+                <option value="info">Info and above</option>
+                <option value="warn">Warnings and errors</option>
+                <option value="error">Errors only</option>
+              </select>
+            </div>
+            <div class="logging-filter">
+              <label for="loggingNamespaceFilter" id="loggingNamespaceFilterLabel">Namespace filter</label>
+              <input type="search" id="loggingNamespaceFilter" />
+              <p id="loggingNamespaceFilterHelp" class="settings-hint">Filter namespaces such as backups or autosave.</p>
+            </div>
+            <div class="logging-filter">
+              <label for="loggingHistoryLimit" id="loggingHistoryLimitLabel">History size</label>
+              <input
+                type="number"
+                id="loggingHistoryLimit"
+                min="50"
+                max="2000"
+                step="50"
+                inputmode="numeric"
+                pattern="[0-9]*"
+              />
+              <p id="loggingHistoryLimitHelp" class="settings-hint">Controls how many entries stay available offline.</p>
+            </div>
+          </div>
+          <div class="logging-toggles">
+            <div class="settings-field settings-field-toggle">
+              <label for="loggingConsoleOutput" id="loggingConsoleOutputLabel">Mirror to console</label>
+              <input type="checkbox" id="loggingConsoleOutput" />
+              <p id="loggingConsoleOutputHelp" class="settings-hint">Keep the browser console in sync with this log.</p>
+            </div>
+            <div class="settings-field settings-field-toggle">
+              <label for="loggingCaptureErrors" id="loggingCaptureErrorsLabel">Capture global errors</label>
+              <input type="checkbox" id="loggingCaptureErrors" />
+              <p id="loggingCaptureErrorsHelp" class="settings-hint">Record uncaught errors and promise rejections.</p>
+            </div>
+            <div class="settings-field settings-field-toggle">
+              <label for="loggingPersistSession" id="loggingPersistSessionLabel">Keep log between reloads</label>
+              <input type="checkbox" id="loggingPersistSession" />
+              <p id="loggingPersistSessionHelp" class="settings-hint">Store entries in session storage to survive refreshes.</p>
+            </div>
+          </div>
+          <p id="loggingStatus" class="storage-summary-note" aria-live="polite"></p>
+          <div class="logging-history-container" aria-live="polite">
+            <ol id="loggingHistory" class="logging-history"></ol>
+            <p id="loggingEmpty" class="storage-summary-note" hidden>No log entries captured yet.</p>
+          </div>
+          <p id="loggingUnavailable" class="storage-summary-note" hidden>Logging module unavailable.</p>
+        </section>
         <p id="storageSummaryFootnote" class="storage-summary-note">
           Backups export each entry as human-readable JSON.
         </p>

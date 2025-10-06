@@ -93,6 +93,7 @@ Consulta `docs/translation-guide.md` per i dettagli sulla localizzazione.
 
 - **Confronto backup** – Seleziona salvataggi manuali o auto-backup, analizza i diff, aggiungi note e esporta un log prima di ripristinare o consegnare il materiale.
 - **Prove di ripristino** – Carica un backup completo o un bundle in una sandbox isolata per verificarne il contenuto senza toccare i profili di produzione.
+- **Registro diagnostico** – Apri **Impostazioni → Dati e archiviazione** per vedere il log in tempo reale, filtrare per livello o namespace e regolare conservazione, mirroring sulla console e cattura degli errori senza uscire dal planner.
 - **Registro storico dei backup** – Ogni download del backup completo salva localmente timestamp e nome file. Controllalo in **Impostazioni → Dati e archiviazione** o esporta il registro insieme agli archivi per dimostrare la conservazione offline.
 - **Regole automatiche per l’attrezzatura** – Definisci aggiunte o rimozioni attivate dagli scenari con controlli di import/export e backup programmati.
 - **Dashboard di copertura regole** – Riassume la copertura per scenario, i trigger duplicati, le variazioni nette, gli scenari sovrapposti, i conflitti e i requisiti non coperti nelle Regole automatiche, applica filtri di focus offline e condivide le stesse informazioni in export e stampe.
@@ -249,6 +250,7 @@ Ripeti questa routine quando arriva un nuovo membro, allestisci una postazione o
 - Apri **Impostazioni → Dati e archiviazione** per vedere progetti salvati, auto-backup, liste, dispositivi personalizzati, preferiti, feedback e cache di sessione con conteggi in tempo reale.
 - Ogni sezione descrive il proprio contenuto; quelle vuote restano nascoste per riconoscere subito lo stato del planner.
 - Il riepilogo stima la dimensione del backup basandosi sull’export più recente.
+- Il **registro diagnostico** replica tutte le voci di cineLogging, permette filtri per gravità o namespace e offre controlli su conservazione, mirroring sulla console e cattura degli errori, tutto offline dentro Impostazioni. Un avviso segnala quando i filtri nascondono tutte le voci così da evitare falsi allarmi durante le verifiche.
 - I backup completi mostrano il totale corrente e alimentano il registro storico, così puoi verificare che le copie orarie siano state registrate prima di archiviare offline.
 
 ## Gestione quote e manutenzione

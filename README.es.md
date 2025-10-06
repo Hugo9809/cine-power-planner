@@ -93,6 +93,7 @@ Consulta `docs/translation-guide.md` para más detalles sobre la localización.
 
 - **Comparación de copias de seguridad** – Selecciona guardados manuales o auto-backups, revisa diferencias, añade notas de incidente y exporta un registro antes de revertir cambios o entregar material a postproducción.
 - **Ensayos de restauración** – Carga copias completas o paquetes de proyectos en un entorno aislado para comprobar su contenido sin tocar perfiles de producción.
+- **Registro de diagnósticos** – Abre **Configuración → Datos y almacenamiento** para ver el log en vivo, filtrar por nivel o namespace y ajustar retención, reflejo en consola y captura de errores sin salir del planner.
 - **Libro de historial de copias** – Cada descarga de copia completa registra su marca de tiempo y nombre de archivo localmente. Revísalo en **Configuración → Datos y almacenamiento** o exporta el registro junto con tus archivos para demostrar retención sin conexión.
 - **Reglas automáticas de equipo** – Define añadidos o retiradas activados por escenarios, con controles de importación/exportación y copias temporizadas.
 - **Panel de cobertura de reglas** – Resume la cobertura por escenario, los disparadores duplicados, los cambios netos, los escenarios apilados, los conflictos y los requisitos sin cubrir dentro de Reglas automáticas de equipo, aplica filtros de foco sin conexión y comparte los mismos datos en exportaciones e impresiones.
@@ -247,6 +248,7 @@ Repite esta rutina cuando se incorpore personal, se prepare una estación nueva 
 - Abre **Configuración → Datos y almacenamiento** para revisar proyectos, auto-backups, listas, dispositivos personalizados, favoritos, comentarios y la caché de sesión con recuentos en vivo.
 - Cada entrada explica qué representa; las secciones vacías permanecen ocultas para que identifiques el estado rápidamente.
 - El resumen estima el tamaño del backup usando la exportación más reciente.
+- El **registro de diagnósticos** refleja todas las entradas de cineLogging, permite filtrar por severidad o namespace y ofrece controles de retención, reflejo en consola y captura de errores, todo dentro de Ajustes y sin conexión. Ahora además avisa cuando los filtros ocultan todas las entradas para evitar falsas alarmas durante las auditorías.
 - Las copias completas muestran su total acumulado y alimentan el registro de historial, así puedes confirmar que las copias horarias quedaron capturadas antes de archivarlas sin conexión.
 
 ## Cuotas y mantenimiento
