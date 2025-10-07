@@ -322,7 +322,7 @@ Ces routines garantissent que projets, backups et ressources hors ligne restent 
 - Les entrées sont regroupées par catégorie et les doublons fusionnés. Les scénarios ajoutent rigging, protections météo et accessoires spécifiques pour refléter la réalité terrain.
 - Les règles automatiques s’exécutent après le générateur pour ajouter ou retirer des éléments sans modifier le JSON à la main.
 - Les annotations de couverture du tableau des règles apparaissent dans les vues imprimables, les exports et les bundles partagés afin que les revues hors ligne reflètent le même résumé.
-- Les lignes d’objectifs incluent diamètre frontal, poids, mise au point minimale, besoin de rods et composants matte box. Les lignes batteries tiennent compte du nombre et du matériel de bascule à chaud.
+- Les lignes d’objectifs incluent diamètre frontal, poids, mise au point minimale, besoin de rods et composants matte box. Le résumé imprimable reflète ces sélections avec marque, monture, diamètre, focus, poids, support de rods et notes pour que les dossiers restent complets hors-ligne. Les lignes batteries tiennent compte du nombre et du matériel de bascule à chaud.
 - Détails de l’équipe, configurations de monitoring, distribution vidéo et notes personnalisées apparaissent dans les exports.
 - Les listes sont sauvegardées avec le projet, visibles dans les aperçus imprimables et incluses dans les bundles ; utilisez **Supprimer la liste** pour repartir de zéro.
 

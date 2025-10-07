@@ -319,7 +319,7 @@ Rutinas repetibles para mantener proyectos, respaldos y recursos offline sincron
 - Los elementos se agrupan por categoría y fusionan duplicados. Los escenarios añaden rigging, protección climática y accesorios especializados para reflejar la realidad del rodaje.
 - Las reglas automáticas se ejecutan tras el generador para añadir o quitar elementos específicos sin editar JSON a mano.
 - Las anotaciones de cobertura del panel de reglas aparecen en vistas impresas, exportaciones y paquetes compartidos para que las revisiones offline reflejen el mismo resumen.
-- Las filas de lentes incluyen diámetro frontal, peso, mínimo enfoque, necesidad de varillas y componentes de matte box. Las filas de baterías consideran cantidades y hardware para hot-swap.
+- Las filas de lentes incluyen diámetro frontal, peso, mínimo enfoque, necesidad de varillas y componentes de matte box. La vista general imprimible refleja estas selecciones con marca, montura, diámetro, enfoque, peso, soporte de varillas y notas para que los paquetes de entrega mantengan las mismas especificaciones sin conexión. Las filas de baterías consideran cantidades y hardware para hot-swap.
 - Detalles del equipo, configuraciones de monitoreo, preferencias de distribución de vídeo y notas personalizadas aparecen en las exportaciones.
 - Las listas se guardan con el proyecto, aparecen en las vistas imprimibles y en los paquetes; puedes reiniciarlas con **Eliminar lista de equipo**.
 
