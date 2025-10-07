@@ -280,18 +280,27 @@ function tryGetCachedStorageValue(storage, key, primaryRaw, rawStored) {
     return { hit: false };
   }
 
+  const result = () => ({
+    hit: true,
+    value: cloneCachedEntryValue(entry),
+    raw: typeof entry.raw === 'string' && entry.raw ? entry.raw : null,
+    normalizedRaw: typeof entry.normalizedRaw === 'string' && entry.normalizedRaw
+      ? entry.normalizedRaw
+      : null,
+  });
+
   if (typeof rawStored === 'string' && rawStored) {
     if (entry.raw && entry.raw === rawStored) {
-      return { hit: true, value: cloneCachedEntryValue(entry) };
+      return result();
     }
   }
 
   if (typeof primaryRaw === 'string' && primaryRaw) {
     if (entry.normalizedRaw && entry.normalizedRaw === primaryRaw) {
-      return { hit: true, value: cloneCachedEntryValue(entry) };
+      return result();
     }
     if (entry.raw && entry.raw === primaryRaw) {
-      return { hit: true, value: cloneCachedEntryValue(entry) };
+      return result();
     }
   }
 
@@ -4224,12 +4233,30 @@ function loadJSONFromStorage(
     clearCachedStorageEntry(storage, key);
   }
 
+  let primary = null;
   const cachedPrimary = tryGetCachedStorageValue(storage, key, primaryRaw, rawStoredValue);
   if (cachedPrimary.hit) {
-    return cachedPrimary.value;
+    if (typeof validate === 'function') {
+      try {
+        if (validate(cachedPrimary.value)) {
+          return cachedPrimary.value;
+        }
+        console.warn(`${errorMessage} Invalid data.`);
+        shouldAlert = true;
+        primary = { ok: false, reason: 'invalid' };
+      } catch (validationError) {
+        console.error(`${errorMessage}`, validationError);
+        shouldAlert = true;
+        primary = { ok: false, reason: 'error' };
+      }
+    } else {
+      return cachedPrimary.value;
+    }
   }
 
-  const primary = parseRawValue(primaryRaw, '');
+  if (!primary) {
+    primary = parseRawValue(primaryRaw, '');
+  }
   if (primary.ok) {
     const normalizedForCache = typeof primary.normalizedRaw === 'string' && primary.normalizedRaw
       ? primary.normalizedRaw
