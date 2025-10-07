@@ -4268,42 +4268,78 @@ function gearListGenerateHtmlImpl(info = {}) {
         cageSelectHtml = `<span class="cage-select-wrapper"><span>1x</span><select id="gearListCage">${options}</select></span>`;
     }
     addRow('Camera Support', [cameraSupportText, cageSelectHtml].filter(Boolean).join('<br>'));
-    let mediaItems = '';
-    const cam = devices && devices.cameras && selectedNames.camera ? devices.cameras[selectedNames.camera] : null;
-    if (cam && Array.isArray(cam.recordingMedia) && cam.recordingMedia.length) {
-        const sizeMap = {
-            'CFexpress Type A': '320GB',
-            'CFast 2.0': '512GB',
-            'CFexpress Type B': '512GB',
-            'Codex Compact Drive': '1TB',
-            'AXS Memory A-Series slot': '1TB',
-            'SD': '128GB',
-            'SD Card': '128GB',
-            'SDXC': '128GB',
-            'XQD Card': '120GB',
-            'RED MINI-MAG': '512GB',
-            'REDMAG 1.8" SSD': '512GB',
-            'Blackmagic Media Module': '8TB',
-            'DJI PROSSD': '1TB',
-            'USB-C 3.1 Gen 1 expansion port for external media': '1TB',
-            'USB-C 3.1 Gen 2 expansion port for external media': '1TB',
-            'USB-C to external SSD/HDD': '1TB'
-        };
-        mediaItems = cam.recordingMedia
-            .slice(0, 1)
-            .map(m => {
-                const type = m && m.type ? m.type : '';
-                if (!type) return '';
-                let size = '';
-                if (m.notes) {
-                    const match = m.notes.match(/(\d+(?:\.\d+)?\s*(?:TB|GB))/i);
-                    if (match) size = match[1].toUpperCase();
+    const storageGearListItems = Array.isArray(info.storageRequirements)
+        ? info.storageRequirements
+            .map(entry => {
+                if (!entry || typeof entry !== 'object') return '';
+                const quantity = Number.isFinite(entry.quantity) && entry.quantity > 0 ? entry.quantity : null;
+                const type = typeof entry.type === 'string' ? entry.type.trim() : '';
+                const variant = typeof entry.variant === 'string' ? entry.variant.trim() : '';
+                const notes = typeof entry.notes === 'string' ? entry.notes.trim() : '';
+                if (!quantity && !type && !variant && !notes) return '';
+                const contextParts = [];
+                const normalizedType = type.toLowerCase();
+                let display = variant || '';
+                if (display) {
+                    const normalizedVariant = display.toLowerCase();
+                    if (normalizedType && !normalizedVariant.includes(normalizedType) && type) {
+                        contextParts.push(type);
+                    }
+                } else if (type) {
+                    display = type;
                 }
-                if (!size) size = sizeMap[type] || '512GB';
-                return `4x ${escapeHtml(size)} ${escapeHtml(type)}<br>2x ${escapeHtml(type)} reader with USB-C`;
+                if (!display) {
+                    display = storageFallbackLabel;
+                }
+                if (notes) {
+                    contextParts.push(notes);
+                }
+                const context = contextParts.length ? ` (${contextParts.join(', ')})` : '';
+                const prefix = quantity ? `${quantity}x ` : '';
+                return `${prefix}${display}${context}`.trim();
             })
             .filter(Boolean)
-            .join('<br>');
+        : [];
+    let mediaItems = '';
+    if (storageGearListItems.length) {
+        mediaItems = formatItems(storageGearListItems);
+    } else {
+        const cam = devices && devices.cameras && selectedNames.camera ? devices.cameras[selectedNames.camera] : null;
+        if (cam && Array.isArray(cam.recordingMedia) && cam.recordingMedia.length) {
+            const sizeMap = {
+                'CFexpress Type A': '320GB',
+                'CFast 2.0': '512GB',
+                'CFexpress Type B': '512GB',
+                'Codex Compact Drive': '1TB',
+                'AXS Memory A-Series slot': '1TB',
+                'SD': '128GB',
+                'SD Card': '128GB',
+                'SDXC': '128GB',
+                'XQD Card': '120GB',
+                'RED MINI-MAG': '512GB',
+                'REDMAG 1.8" SSD': '512GB',
+                'Blackmagic Media Module': '8TB',
+                'DJI PROSSD': '1TB',
+                'USB-C 3.1 Gen 1 expansion port for external media': '1TB',
+                'USB-C 3.1 Gen 2 expansion port for external media': '1TB',
+                'USB-C to external SSD/HDD': '1TB'
+            };
+            mediaItems = cam.recordingMedia
+                .slice(0, 1)
+                .map(m => {
+                    const type = m && m.type ? m.type : '';
+                    if (!type) return '';
+                    let size = '';
+                    if (m.notes) {
+                        const match = m.notes.match(/(\d+(?:\.\d+)?\s*(?:TB|GB))/i);
+                        if (match) size = match[1].toUpperCase();
+                    }
+                    if (!size) size = sizeMap[type] || '512GB';
+                    return `4x ${escapeHtml(size)} ${escapeHtml(type)}<br>2x ${escapeHtml(type)} reader with USB-C`;
+                })
+                .filter(Boolean)
+                .join('<br>');
+        }
     }
     addRow('Media', mediaItems);
     const lensDisplayNames = selectedLensNames.map(name => {

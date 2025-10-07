@@ -12693,6 +12693,8 @@ function createStorageRequirementRow(data = {}) {
   const quantityLabelText = getProjectFormText('storageQuantityLabel', 'Quantity');
   const quantityLabel = createHiddenLabel(ensureElementId(quantityInput, quantityLabelText), quantityLabelText);
   quantityLabel.dataset.storageLabelKey = 'storageQuantityLabel';
+  quantityInput.addEventListener('input', () => scheduleProjectAutoSave(true));
+  quantityInput.addEventListener('change', () => scheduleProjectAutoSave(true));
 
   const typeSelect = document.createElement('select');
   typeSelect.name = 'storageMediaType';
@@ -12709,6 +12711,7 @@ function createStorageRequirementRow(data = {}) {
   const variantLabelText = getProjectFormText('storageVariantLabel', 'Brand & capacity');
   const variantLabel = createHiddenLabel(ensureElementId(variantSelect, variantLabelText), variantLabelText);
   variantLabel.dataset.storageLabelKey = 'storageVariantLabel';
+  variantSelect.addEventListener('change', () => scheduleProjectAutoSave(true));
 
   const notesInput = document.createElement('input');
   notesInput.type = 'text';
@@ -12719,6 +12722,8 @@ function createStorageRequirementRow(data = {}) {
   const notesLabelText = getProjectFormText('storageNotesLabel', 'Notes');
   const notesLabel = createHiddenLabel(ensureElementId(notesInput, notesLabelText), notesLabelText);
   notesLabel.dataset.storageLabelKey = 'storageNotesLabel';
+  notesInput.addEventListener('input', () => scheduleProjectAutoSave(true));
+  notesInput.addEventListener('change', () => scheduleProjectAutoSave(true));
 
   typeSelect.addEventListener('change', () => {
     updateStorageVariantOptions(variantSelect, typeSelect.value);
