@@ -6289,7 +6289,7 @@ function normalizeProject(data) {
         return normalized;
       }
     }
-    return { gearList: data, projectInfo: null };
+    return normalizeProject({ gearList: data, projectInfo: null });
   }
   if (isPlainObject(data)) {
     // New format { gearList, projectInfo }
@@ -7191,7 +7191,10 @@ function createProjectImporter() {
       && Object.prototype.hasOwnProperty.call(project, "gearListAndProjectRequirementsGenerated")
       && typeof project.gearListAndProjectRequirementsGenerated === "boolean";
 
-    if (!originalHasGenerationFlag) {
+    if (
+      !originalHasGenerationFlag
+      && typeof normalizedProject.gearListAndProjectRequirementsGenerated !== 'boolean'
+    ) {
       normalizedProject.gearListAndProjectRequirementsGenerated = false;
     }
 
