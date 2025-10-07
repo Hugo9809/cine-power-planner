@@ -145,6 +145,68 @@ describe('backup compatibility utilities', () => {
     expect(sections.data.autoGearMonitorDefaults).toEqual({ monitor: 'Director' });
   });
 
+  test('extractBackupSections normalizes nested entry containers in storage snapshots', () => {
+    const { extractBackupSections } = loadApp();
+
+    const legacyStorage = {
+      entries: [
+        { name: 'cameraPowerPlanner_setups', data: { Legacy: { name: 'Legacy', items: [] } } },
+        {
+          items: [
+            { key: 'darkMode', value: true },
+            { key: 'language', value: 'fr' },
+          ],
+        },
+        {
+          entry: ['cameraPowerPlanner_session', { activeSetup: 'Legacy' }],
+        },
+        JSON.stringify([['pinkMode', false]]),
+      ],
+      version: '1.0.0',
+    };
+
+    const sections = extractBackupSections({ storage: legacyStorage });
+
+    expect(sections.settings.cameraPowerPlanner_setups).toBe(
+      JSON.stringify({ Legacy: { name: 'Legacy', items: [] } }),
+    );
+    expect(sections.settings.darkMode).toBe('true');
+    expect(sections.settings.language).toBe('fr');
+    expect(sections.settings.cameraPowerPlanner_session).toBe(
+      JSON.stringify({ activeSetup: 'Legacy' }),
+    );
+    expect(sections.settings.pinkMode).toBe('false');
+  });
+
+  test('extractBackupSections converts entry containers within data sections', () => {
+    const { extractBackupSections } = loadApp();
+
+    const legacyData = {
+      entries: [
+        {
+          key: 'projects',
+          value: { Legacy: { gearList: '<div>Legacy</div>' } },
+        },
+        {
+          items: [
+            { key: 'favorites', data: { monitor: 'Director' } },
+          ],
+        },
+        {
+          records: [
+            { name: 'autoGearRules', content: [{ id: 'rule-1' }] },
+          ],
+        },
+      ],
+    };
+
+    const sections = extractBackupSections({ data: legacyData });
+
+    expect(sections.data.projects).toEqual({ Legacy: { gearList: '<div>Legacy</div>' } });
+    expect(sections.data.favorites).toEqual({ monitor: 'Director' });
+    expect(sections.data.autoGearRules).toEqual([{ id: 'rule-1' }]);
+  });
+
   test('extractBackupSections keeps cinePowerPlanner_* storage entries from the root object', () => {
     const { extractBackupSections } = loadApp();
 

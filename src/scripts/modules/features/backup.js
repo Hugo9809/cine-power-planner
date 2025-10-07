@@ -455,6 +455,169 @@
     }
   }
 
+  const LEGACY_SNAPSHOT_ENTRY_CONTAINER_KEYS = [
+    'entries',
+    'items',
+    'values',
+    'list',
+    'records',
+    'sections',
+  ];
+
+  const LEGACY_SNAPSHOT_ENTRY_KEY_CANDIDATES = ['key', 'name', 'section', 'type'];
+
+  const LEGACY_SNAPSHOT_ENTRY_VALUE_CANDIDATES = [
+    'value',
+    'data',
+    'content',
+    'payload',
+    'entries',
+    'items',
+    'record',
+    'snapshot',
+    'state',
+    'values',
+    'settings',
+    'sectionData',
+    'body',
+    'string',
+    'text',
+  ];
+
+  function forEachLegacyEntryLike(source, iterator) {
+    if (source === null || source === undefined) {
+      return false;
+    }
+
+    const queue = [source];
+    const seen = typeof WeakSet === 'function' ? new WeakSet() : null;
+    let processed = false;
+
+    const enqueue = (value) => {
+      if (value === null || value === undefined) {
+        return;
+      }
+      if (seen && value && (typeof value === 'object' || typeof value === 'function')) {
+        if (seen.has(value)) {
+          return;
+        }
+        seen.add(value);
+      }
+      queue.push(value);
+    };
+
+    while (queue.length) {
+      const current = queue.shift();
+      if (current === null || current === undefined) {
+        continue;
+      }
+
+      if (typeof current === 'string') {
+        const parsed = parseBackupDataString(current);
+        if (parsed !== null) {
+          enqueue(parsed);
+          processed = true;
+          continue;
+        }
+
+        const sanitized = sanitizeBackupPayload(current);
+        if (typeof sanitized === 'string' && sanitized !== current) {
+          enqueue(sanitized);
+          processed = true;
+        }
+        continue;
+      }
+
+      const isBinaryPayload = (() => {
+        if (!current || typeof current !== 'object') {
+          return false;
+        }
+        if (typeof Buffer !== 'undefined' && typeof Buffer.isBuffer === 'function' && Buffer.isBuffer(current)) {
+          return true;
+        }
+        if (typeof ArrayBuffer === 'undefined') {
+          return false;
+        }
+        if (current instanceof ArrayBuffer) {
+          return true;
+        }
+        if (typeof ArrayBuffer.isView === 'function' && ArrayBuffer.isView(current)) {
+          return true;
+        }
+        return Boolean(
+          current
+          && typeof current.buffer === 'object'
+          && typeof current.byteLength === 'number'
+          && typeof current.BYTES_PER_ELEMENT === 'number',
+        );
+      })();
+
+      if (isBinaryPayload) {
+        const decoded = sanitizeBackupPayload(current);
+        if (typeof decoded === 'string' && decoded) {
+          enqueue(decoded);
+          processed = true;
+        }
+        continue;
+      }
+
+      if (Array.isArray(current)) {
+        if (current.length === 2 && typeof current[0] === 'string' && current[0]) {
+          iterator(current[0], current[1]);
+          processed = true;
+          continue;
+        }
+        for (let index = 0; index < current.length; index += 1) {
+          enqueue(current[index]);
+        }
+        processed = true;
+        continue;
+      }
+
+      if (!isPlainObject(current)) {
+        continue;
+      }
+
+      if (Array.isArray(current.entry)) {
+        enqueue(current.entry);
+        processed = true;
+      }
+
+      const keyCandidate = LEGACY_SNAPSHOT_ENTRY_KEY_CANDIDATES.find((candidate) => {
+        const value = current[candidate];
+        return typeof value === 'string' && value;
+      });
+
+      if (keyCandidate) {
+        let valueCandidate;
+        for (let idx = 0; idx < LEGACY_SNAPSHOT_ENTRY_VALUE_CANDIDATES.length; idx += 1) {
+          const candidate = LEGACY_SNAPSHOT_ENTRY_VALUE_CANDIDATES[idx];
+          if (Object.prototype.hasOwnProperty.call(current, candidate)) {
+            valueCandidate = current[candidate];
+            break;
+          }
+        }
+        if (valueCandidate === undefined && Object.prototype.hasOwnProperty.call(current, 'value')) {
+          valueCandidate = current.value;
+        }
+        if (valueCandidate !== undefined) {
+          iterator(current[keyCandidate], valueCandidate);
+          processed = true;
+        }
+      }
+
+      for (let containerIdx = 0; containerIdx < LEGACY_SNAPSHOT_ENTRY_CONTAINER_KEYS.length; containerIdx += 1) {
+        const containerKey = LEGACY_SNAPSHOT_ENTRY_CONTAINER_KEYS[containerIdx];
+        if (Object.prototype.hasOwnProperty.call(current, containerKey)) {
+          enqueue(current[containerKey]);
+          processed = true;
+        }
+      }
+    }
+
+    return processed;
+  }
+
   function convertEntriesToSnapshot(section) {
     if (!section) return null;
 
@@ -481,8 +644,11 @@
     };
 
     if (Array.isArray(source)) {
-      source.forEach(entry => {
+      source.forEach((entry) => {
         if (!entry) return;
+        if (forEachLegacyEntryLike(entry, assignEntry)) {
+          return;
+        }
         if (Array.isArray(entry)) {
           assignEntry(entry[0], entry[1]);
           return;
@@ -500,9 +666,24 @@
             assignEntry(entry.entry[0], entry.entry[1]);
           }
         }
+        if (typeof entry === 'string') {
+          forEachLegacyEntryLike(entry, assignEntry);
+        }
       });
     } else if (isPlainObject(source)) {
+      const consumedKeys = new Set();
+      LEGACY_SNAPSHOT_ENTRY_CONTAINER_KEYS.forEach((containerKey) => {
+        if (!Object.prototype.hasOwnProperty.call(source, containerKey)) {
+          return;
+        }
+        if (forEachLegacyEntryLike(source[containerKey], assignEntry)) {
+          consumedKeys.add(containerKey);
+        }
+      });
       Object.entries(source).forEach(([key, value]) => {
+        if (consumedKeys.has(key)) {
+          return;
+        }
         assignEntry(key, value);
       });
     } else {
@@ -591,6 +772,31 @@
 
   function convertLegacyDataEntriesToObject(entries) {
     if (!Array.isArray(entries)) {
+      if (entries === null || entries === undefined) {
+        return null;
+      }
+      if (typeof entries === 'string') {
+        const parsed = parseBackupDataString(entries);
+        if (parsed && typeof parsed === 'object') {
+          if (Array.isArray(parsed)) {
+            return convertLegacyDataEntriesToObject(parsed);
+          }
+          if (isPlainObject(parsed)) {
+            return parsed;
+          }
+        }
+        return null;
+      }
+      if (isPlainObject(entries)) {
+        const collected = [];
+        const processed = forEachLegacyEntryLike(entries, (key, value) => {
+          collected.push([key, value]);
+        });
+        if (processed && collected.length) {
+          return convertLegacyDataEntriesToObject(collected);
+        }
+        return null;
+      }
       return null;
     }
 
@@ -618,13 +824,19 @@
       'body',
     ];
 
-    entries.forEach(entry => {
+    entries.forEach((entry) => {
       if (!entry) return;
+      if (forEachLegacyEntryLike(entry, assignEntry)) {
+        return;
+      }
       if (Array.isArray(entry)) {
         assignEntry(entry[0], entry[1]);
         return;
       }
       if (!isPlainObject(entry)) {
+        if (typeof entry === 'string') {
+          forEachLegacyEntryLike(entry, assignEntry);
+        }
         return;
       }
 
@@ -676,6 +888,25 @@
 
   function normalizeBackupDataSection(section) {
     if (isPlainObject(section)) {
+      let merged = null;
+      LEGACY_SNAPSHOT_ENTRY_CONTAINER_KEYS.forEach((key) => {
+        if (!Object.prototype.hasOwnProperty.call(section, key)) {
+          return;
+        }
+        const converted = normalizeBackupDataSection(section[key]);
+        if (isPlainObject(converted) && Object.keys(converted).length) {
+          merged = merged || {};
+          Object.entries(converted).forEach(([entryKey, entryValue]) => {
+            if (Object.prototype.hasOwnProperty.call(merged, entryKey)) {
+              return;
+            }
+            merged[entryKey] = entryValue;
+          });
+        }
+      });
+      if (merged) {
+        return merged;
+      }
       return section;
     }
 

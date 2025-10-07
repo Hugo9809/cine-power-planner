@@ -7191,8 +7191,32 @@ function createProjectImporter() {
       && Object.prototype.hasOwnProperty.call(project, "gearListAndProjectRequirementsGenerated")
       && typeof project.gearListAndProjectRequirementsGenerated === "boolean";
 
-    if (!originalHasGenerationFlag) {
-      normalizedProject.gearListAndProjectRequirementsGenerated = false;
+    const normalizedHasGenerationFlag =
+      typeof normalizedProject.gearListAndProjectRequirementsGenerated === "boolean";
+
+    const deriveGenerationFlag = () => {
+      if (typeof normalizedProject.gearList === "string") {
+        return normalizedProject.gearList.trim().length > 0;
+      }
+      if (
+        normalizedProject.gearList
+        && typeof normalizedProject.gearList === "object"
+      ) {
+        const candidates = [];
+        const { projectHtml, gearHtml } = normalizedProject.gearList;
+        if (typeof projectHtml === "string") {
+          candidates.push(projectHtml);
+        }
+        if (typeof gearHtml === "string") {
+          candidates.push(gearHtml);
+        }
+        return candidates.some((value) => typeof value === "string" && value.trim());
+      }
+      return false;
+    };
+
+    if (!originalHasGenerationFlag && !normalizedHasGenerationFlag) {
+      normalizedProject.gearListAndProjectRequirementsGenerated = deriveGenerationFlag();
     }
 
     const candidates = [];
