@@ -9166,6 +9166,124 @@ function buildForceReloadHref(locationLike, paramName) {
   };
 }
 
+function waitForReloadNavigation(beforeHref, options = {}) {
+  if (typeof window === 'undefined' || !window) {
+    return Promise.resolve(false);
+  }
+
+  const win = window;
+  const startHref = typeof beforeHref === 'string' ? beforeHref : '';
+  const timeout =
+    options && typeof options.timeout === 'number' && options.timeout > 0
+      ? options.timeout
+      : 1500;
+  const pollInterval =
+    options && typeof options.interval === 'number' && options.interval > 0
+      ? options.interval
+      : 60;
+  const schedule =
+    typeof win.setTimeout === 'function' ? win.setTimeout.bind(win) : setTimeout;
+  const cancel =
+    typeof win.clearTimeout === 'function' ? win.clearTimeout.bind(win) : clearTimeout;
+
+  return new Promise(resolve => {
+    let resolved = false;
+    let pollTimer = null;
+    let timeoutTimer = null;
+
+    const cleanup = () => {
+      if (pollTimer) {
+        try {
+          cancel(pollTimer);
+        } catch (cancelError) {
+          void cancelError;
+        }
+        pollTimer = null;
+      }
+      if (timeoutTimer) {
+        try {
+          cancel(timeoutTimer);
+        } catch (timeoutCancelError) {
+          void timeoutCancelError;
+        }
+        timeoutTimer = null;
+      }
+
+      if (typeof win.removeEventListener === 'function') {
+        try {
+          win.removeEventListener('beforeunload', handleUnload, true);
+        } catch (removeBeforeUnloadError) {
+          void removeBeforeUnloadError;
+        }
+        try {
+          win.removeEventListener('pagehide', handleUnload, true);
+        } catch (removePagehideError) {
+          void removePagehideError;
+        }
+        try {
+          win.removeEventListener('unload', handleUnload, true);
+        } catch (removeUnloadError) {
+          void removeUnloadError;
+        }
+      }
+    };
+
+    const finish = value => {
+      if (resolved) {
+        return;
+      }
+      resolved = true;
+      cleanup();
+      resolve(value);
+    };
+
+    const handleUnload = () => {
+      finish(true);
+    };
+
+    const evaluate = () => {
+      if (resolved) {
+        return;
+      }
+
+      try {
+        const currentHref = readLocationHrefSafe(win.location);
+        if (startHref && currentHref && currentHref !== startHref) {
+          finish(true);
+          return;
+        }
+      } catch (readError) {
+        void readError;
+      }
+
+      pollTimer = schedule(evaluate, pollInterval);
+    };
+
+    if (typeof win.addEventListener === 'function') {
+      try {
+        win.addEventListener('beforeunload', handleUnload, true);
+      } catch (beforeUnloadError) {
+        void beforeUnloadError;
+      }
+      try {
+        win.addEventListener('pagehide', handleUnload, true);
+      } catch (pageHideError) {
+        void pageHideError;
+      }
+      try {
+        win.addEventListener('unload', handleUnload, true);
+      } catch (unloadError) {
+        void unloadError;
+      }
+    }
+
+    evaluate();
+    timeoutTimer = schedule(() => {
+      finish(false);
+    }, timeout);
+  });
+}
+
 function attemptForceReloadNavigation(locationLike, nextHref, baseHref, applyFn, description) {
   if (!locationLike || typeof applyFn !== 'function' || typeof nextHref !== 'string' || !nextHref) {
     return false;
@@ -9208,6 +9326,11 @@ async function clearCachesAndReload() {
     || (typeof window !== 'undefined' && window && window.cineOffline)
     || null;
 
+  const beforeReloadHref =
+    typeof window !== 'undefined' && window && window.location
+      ? readLocationHrefSafe(window.location)
+      : '';
+
   if (offlineModule && typeof offlineModule.reloadApp === 'function') {
     try {
       const result = await offlineModule.reloadApp({
@@ -9223,7 +9346,10 @@ async function clearCachesAndReload() {
           (result.reloadTriggered === true || result.navigationTriggered === true));
 
       if (reloadHandled) {
-        return;
+        const navigationObserved = await waitForReloadNavigation(beforeReloadHref).catch(() => false);
+        if (navigationObserved) {
+          return;
+        }
       }
     } catch (offlineReloadError) {
       console.warn('Offline module reload failed, falling back to manual refresh', offlineReloadError);
