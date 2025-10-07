@@ -4331,17 +4331,47 @@ function saveJSONToStorage(
       hasPreservedBackup = true;
     }
 
-    const backupMatchesSerialized = hasExistingBackup
+    const backupCandidates = (() => {
+      if (!useBackup) {
+        return [];
+      }
+
+      const candidates = [];
+
+      if (useCompressedSerialization) {
+        const standardSerialized = computeStandardSerialized();
+        if (typeof standardSerialized === 'string' && standardSerialized) {
+          candidates.push({ serialized: standardSerialized, compressed: false });
+        }
+
+        if (
+          typeof serialized === 'string'
+          && serialized
+          && (!candidates.length || candidates[candidates.length - 1].serialized !== serialized)
+        ) {
+          candidates.push({ serialized, compressed: true });
+        }
+      } else if (typeof serialized === 'string' && serialized) {
+        candidates.push({ serialized, compressed: false });
+      }
+
+      return candidates;
+    })();
+
+    const preferredBackupCandidate = backupCandidates.length ? backupCandidates[0] : null;
+
+    const backupMatchesPreferred = hasExistingBackup
+      && preferredBackupCandidate
+      && typeof preferredBackupCandidate.serialized === 'string'
       && (
-        existingBackupValue === serialized
+        existingBackupValue === preferredBackupCandidate.serialized
         || (
-          useCompressedSerialization
-          && typeof existingBackupRaw === 'string'
-          && existingBackupRaw === serialized
+          typeof existingBackupRaw === 'string'
+          && existingBackupRaw === preferredBackupCandidate.serialized
         )
       );
 
-    if (skipPrimaryWrite && (!useBackup || backupMatchesSerialized)) {
+    if (skipPrimaryWrite && (!useBackup || backupMatchesPreferred)) {
       return;
     }
 
@@ -4380,74 +4410,96 @@ function saveJSONToStorage(
       return;
     }
 
-    if (backupMatchesSerialized) {
+    if (backupMatchesPreferred) {
       return;
     }
 
     const attemptBackupWrite = () => {
-      try {
-        storage.setItem(fallbackKey, serialized);
-        logCompressionIfNeeded();
-        return 'success';
-      } catch (error) {
-        let backupError = error;
-        let backupRemovedForRetry = false;
+      const candidates = backupCandidates.length
+        ? backupCandidates
+        : [{ serialized, compressed: useCompressedSerialization }];
 
-        if (isQuotaExceededError(backupError)) {
-          if (hasExistingBackup) {
-            try {
-              storage.removeItem(fallbackKey);
-              backupRemovedForRetry = true;
-              removedBackupDuringRetry = true;
-            } catch (removeError) {
-              console.warn(`Unable to remove previous backup for ${key}`, removeError);
-            }
+      let backupError = null;
+      let backupRemovedForRetry = false;
+      let lastCandidate = null;
 
-            if (backupRemovedForRetry) {
-              try {
-                storage.setItem(fallbackKey, serialized);
-                removedBackupDuringRetry = false;
-                return 'success';
-              } catch (retryError) {
-                backupError = retryError;
-              }
-            }
+      const tryStoreCandidate = (candidate) => {
+        try {
+          storage.setItem(fallbackKey, candidate.serialized);
+          if (candidate.compressed) {
+            logCompressionIfNeeded();
           }
+          removedBackupDuringRetry = false;
+          return true;
+        } catch (error) {
+          backupError = error;
+          return false;
+        }
+      };
 
-          if (attemptHandleQuota(backupError, {
-            serialized,
-            backupKey: fallbackKey,
-            isBackup: true,
-          })) {
-            resetSerializationState();
-            if (!registerQuotaRecoveryStep()) {
-              return 'failure';
-            }
-            return 'retry';
-          }
+      for (let index = 0; index < candidates.length; index += 1) {
+        const candidate = candidates[index];
+        lastCandidate = candidate;
 
-          if (!quotaRecoveryFailed && tryEnableCompression()) {
-            resetSerializationState();
-            if (!registerQuotaRecoveryStep()) {
-              return 'failure';
-            }
-            return 'retry';
-          }
+        if (tryStoreCandidate(candidate)) {
+          return 'success';
         }
 
-        if (backupRemovedForRetry && hasExistingBackup && typeof existingBackupValue === 'string') {
+        if (!isQuotaExceededError(backupError)) {
+          break;
+        }
+
+        if (!backupRemovedForRetry && hasExistingBackup) {
           try {
-            storage.setItem(fallbackKey, existingBackupValue);
-            removedBackupDuringRetry = false;
-          } catch (restoreError) {
-            console.warn(`Unable to restore previous backup for ${key}`, restoreError);
+            storage.removeItem(fallbackKey);
+            backupRemovedForRetry = true;
+            removedBackupDuringRetry = true;
+            hasExistingBackup = false;
+            if (tryStoreCandidate(candidate)) {
+              return 'success';
+            }
+          } catch (removeError) {
+            console.warn(`Unable to remove previous backup for ${key}`, removeError);
           }
         }
-
-        console.warn(`Unable to update backup copy for ${key}`, backupError);
-        alertStorageError();
-        return 'failure';
       }
+
+      if (isQuotaExceededError(backupError)) {
+        if (attemptHandleQuota(backupError, {
+          serialized: lastCandidate && typeof lastCandidate.serialized === 'string'
+            ? lastCandidate.serialized
+            : serialized,
+          backupKey: fallbackKey,
+          isBackup: true,
+        })) {
+          resetSerializationState();
+          if (!registerQuotaRecoveryStep()) {
+            return 'failure';
+          }
+          return 'retry';
+        }
+
+        if (!quotaRecoveryFailed && tryEnableCompression()) {
+          resetSerializationState();
+          if (!registerQuotaRecoveryStep()) {
+            return 'failure';
+          }
+          return 'retry';
+        }
+      }
+
+      if (backupRemovedForRetry && typeof existingBackupValue === 'string') {
+        try {
+          storage.setItem(fallbackKey, existingBackupValue);
+          removedBackupDuringRetry = false;
+        } catch (restoreError) {
+          console.warn(`Unable to restore previous backup for ${key}`, restoreError);
+        }
+      }
+
+      console.warn(`Unable to update backup copy for ${key}`, backupError);
+      alertStorageError();
+      return 'failure';
     };
 
     const backupResult = attemptBackupWrite();
