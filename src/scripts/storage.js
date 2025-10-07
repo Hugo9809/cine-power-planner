@@ -113,6 +113,96 @@ var STORAGE_STATE_CACHE_WEAKMAP =
     ? new WeakMap()
     : null;
 
+var COMPRESSION_STRATEGY_CACHE =
+  typeof Map === 'function'
+    ? new Map()
+    : null;
+var COMPRESSION_STRATEGY_CACHE_KEYS = [];
+var COMPRESSION_STRATEGY_CACHE_LIMIT = 6;
+
+function getCompressionStrategyCacheKey(variants) {
+  if (!Array.isArray(variants) || !variants.length) {
+    return null;
+  }
+
+  var segments = [];
+  for (var i = 0; i < variants.length; i += 1) {
+    var variant = variants[i] || {};
+    var name = typeof variant.variant === 'string' ? variant.variant : '';
+    var compressName = typeof variant.compress === 'string' ? variant.compress : '';
+    var decompressName = typeof variant.decompress === 'string' ? variant.decompress : '';
+    segments.push(name + ':' + compressName + ':' + decompressName);
+  }
+
+  return segments.join('|');
+}
+
+function readCompressionStrategyCache(cacheKey, lzReference) {
+  if (!COMPRESSION_STRATEGY_CACHE || !cacheKey) {
+    return null;
+  }
+
+  var cached;
+  try {
+    cached = COMPRESSION_STRATEGY_CACHE.get(cacheKey);
+  } catch (cacheReadError) {
+    cached = null;
+    void cacheReadError;
+  }
+
+  if (!cached || cached.lz !== lzReference) {
+    return null;
+  }
+
+  if (!Array.isArray(cached.strategies) || !cached.strategies.length) {
+    return Array.isArray(cached.strategies) ? [] : null;
+  }
+
+  return cached.strategies.slice();
+}
+
+function pruneCompressionStrategyCache(cacheKey) {
+  if (!COMPRESSION_STRATEGY_CACHE || !cacheKey) {
+    return;
+  }
+
+  var existingIndex = COMPRESSION_STRATEGY_CACHE_KEYS.indexOf(cacheKey);
+  if (existingIndex !== -1) {
+    COMPRESSION_STRATEGY_CACHE_KEYS.splice(existingIndex, 1);
+  }
+
+  COMPRESSION_STRATEGY_CACHE_KEYS.push(cacheKey);
+
+  while (COMPRESSION_STRATEGY_CACHE_KEYS.length > COMPRESSION_STRATEGY_CACHE_LIMIT) {
+    var oldestKey = COMPRESSION_STRATEGY_CACHE_KEYS.shift();
+    if (typeof COMPRESSION_STRATEGY_CACHE.delete === 'function') {
+      try {
+        COMPRESSION_STRATEGY_CACHE.delete(oldestKey);
+      } catch (cacheDeleteError) {
+        void cacheDeleteError;
+      }
+    }
+  }
+}
+
+function writeCompressionStrategyCache(cacheKey, lzReference, strategies) {
+  if (!COMPRESSION_STRATEGY_CACHE || !cacheKey) {
+    return;
+  }
+
+  var payload = {
+    lz: lzReference,
+    strategies: Array.isArray(strategies) ? strategies.slice() : [],
+  };
+
+  try {
+    COMPRESSION_STRATEGY_CACHE.set(cacheKey, payload);
+    pruneCompressionStrategyCache(cacheKey);
+  } catch (cacheStoreError) {
+    void cacheStoreError;
+  }
+}
+
 function getStorageStateCacheMap(storage, createIfMissing) {
   if (!storage || (typeof storage !== 'object' && typeof storage !== 'function')) {
     return null;
@@ -1359,21 +1449,33 @@ var STORAGE_PROACTIVE_COMPRESSION_MIN_SAVINGS = 256;
 var STORAGE_PROACTIVE_COMPRESSION_MIN_RATIO = 0.08;
 
 function getAvailableLZStringCompressionStrategies(variants) {
-  if (
-    typeof LZString !== 'object'
-    || LZString === null
-  ) {
+  if (!Array.isArray(variants) || !variants.length) {
     return [];
+  }
+
+  var lzReference = typeof LZString === 'object' && LZString ? LZString : null;
+  if (!lzReference) {
+    return [];
+  }
+
+  var cacheKey = getCompressionStrategyCacheKey(variants);
+  var cachedStrategies = readCompressionStrategyCache(cacheKey, lzReference);
+  if (cachedStrategies !== null && cachedStrategies !== undefined) {
+    return cachedStrategies;
   }
 
   var available = [];
   for (var i = 0; i < variants.length; i += 1) {
     var variant = variants[i];
-    var compressFn = LZString && typeof LZString[variant.compress] === 'function'
-      ? LZString[variant.compress]
+    if (!variant) {
+      continue;
+    }
+
+    var compressFn = typeof lzReference[variant.compress] === 'function'
+      ? lzReference[variant.compress]
       : null;
-    var decompressFn = LZString && typeof LZString[variant.decompress] === 'function'
-      ? LZString[variant.decompress]
+    var decompressFn = typeof lzReference[variant.decompress] === 'function'
+      ? lzReference[variant.decompress]
       : null;
 
     if (compressFn && decompressFn) {
@@ -1385,7 +1487,13 @@ function getAvailableLZStringCompressionStrategies(variants) {
     }
   }
 
-  return available;
+  var result = available.length ? available.slice() : [];
+
+  if (cacheKey) {
+    writeCompressionStrategyCache(cacheKey, lzReference, result);
+  }
+
+  return result;
 }
 
 function tryDecompressWithStrategies(data, variants, preferredVariant, contextLabel) {
