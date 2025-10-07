@@ -1110,6 +1110,137 @@ function notifyAutoSaveFromBackup(message, backupName) {
 }
 
 const AUTO_BACKUP_MAX_DELTA_SEQUENCE = 30;
+let lastAutoBackupSignature = null;
+let lastAutoBackupName = null;
+let lastAutoBackupCreatedAtIso = null;
+
+function createStableValueSignature(value) {
+  if (value === null) {
+    return 'null';
+  }
+  if (value === undefined) {
+    return 'undefined';
+  }
+  if (Array.isArray(value)) {
+    return `[${value.map(item => createStableValueSignature(item)).join(',')}]`;
+  }
+  if (value instanceof Date) {
+    const timestamp = value.getTime();
+    if (Number.isNaN(timestamp)) {
+      return 'date:invalid';
+    }
+    return `date:${timestamp}`;
+  }
+  const valueType = typeof value;
+  if (valueType === 'number') {
+    if (Number.isNaN(value)) {
+      return 'number:NaN';
+    }
+    if (!Number.isFinite(value)) {
+      return value > 0 ? 'number:Infinity' : 'number:-Infinity';
+    }
+    return `number:${value}`;
+  }
+  if (valueType === 'bigint') {
+    return `bigint:${value.toString()}`;
+  }
+  if (valueType === 'boolean') {
+    return value ? 'boolean:true' : 'boolean:false';
+  }
+  if (valueType === 'string') {
+    return `string:${value}`;
+  }
+  if (valueType === 'symbol') {
+    return `symbol:${String(value)}`;
+  }
+  if (valueType === 'function') {
+    return `function:${value.name || 'anonymous'}`;
+  }
+  if (valueType === 'object') {
+    const keys = Object.keys(value).sort();
+    const entries = keys.map((key) => `${JSON.stringify(key)}:${createStableValueSignature(value[key])}`);
+    return `{${entries.join(',')}}`;
+  }
+  return `${valueType}:${String(value)}`;
+}
+
+function computeAutoBackupStateSignature(setupState, gearSelectors, gearListGenerated) {
+  return createStableValueSignature({
+    setup: setupState || null,
+    gearSelectors: gearSelectors || null,
+    gearListGenerated: Boolean(gearListGenerated),
+  });
+}
+
+function getSortedAutoBackupNames(setups) {
+  if (!setups || typeof setups !== 'object') {
+    return [];
+  }
+  return Object.keys(setups)
+    .filter((name) => typeof name === 'string' && name.startsWith('auto-backup-'))
+    .sort();
+}
+
+function resolveLatestAutoBackupEntry(setups) {
+  const names = getSortedAutoBackupNames(setups);
+  if (!names.length) {
+    return { name: null, entry: null };
+  }
+  const latestName = names[names.length - 1];
+  const latestEntry = setups && typeof setups === 'object' ? setups[latestName] : null;
+  return { name: latestName, entry: latestEntry };
+}
+
+function computeStoredAutoBackupSignature(name, entry) {
+  if (!entry || typeof entry !== 'object') {
+    return createStableValueSignature(null);
+  }
+
+  let gearSelectors = null;
+  if (entry.gearSelectors && typeof entry.gearSelectors === 'object') {
+    gearSelectors = entry.gearSelectors;
+  }
+
+  let gearListGenerated = false;
+  if (typeof loadProject === 'function' && name) {
+    try {
+      const storedProject = loadProject(name);
+      if (storedProject && typeof storedProject === 'object') {
+        if (!gearSelectors && storedProject.gearSelectors && typeof storedProject.gearSelectors === 'object') {
+          gearSelectors = storedProject.gearSelectors;
+        }
+        if (typeof storedProject.gearListAndProjectRequirementsGenerated === 'boolean') {
+          gearListGenerated = storedProject.gearListAndProjectRequirementsGenerated;
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to inspect stored project payload for auto backup signature', error);
+    }
+  }
+
+  return computeAutoBackupStateSignature(entry, gearSelectors, gearListGenerated);
+}
+
+function ensureLastAutoBackupSignatureInitialized(setups) {
+  if (lastAutoBackupSignature || !setups || typeof setups !== 'object') {
+    return;
+  }
+  const { name, entry } = resolveLatestAutoBackupEntry(setups);
+  if (!name || !entry || typeof entry !== 'object') {
+    return;
+  }
+  try {
+    lastAutoBackupSignature = computeStoredAutoBackupSignature(name, entry);
+    lastAutoBackupName = name;
+    const metadata = readAutoBackupMetadata(entry);
+    if (metadata && typeof metadata.createdAt === 'string') {
+      lastAutoBackupCreatedAtIso = metadata.createdAt;
+    }
+  } catch (error) {
+    lastAutoBackupSignature = null;
+    console.warn('Failed to prime automatic backup signature cache', error);
+  }
+}
 
 function readAutoBackupMetadata(entry) {
   if (!entry || typeof entry !== 'object') {
@@ -1162,9 +1293,7 @@ function determineNextAutoBackupPlan(setups) {
     return { snapshotType: 'full', base: null, sequence: 0 };
   }
 
-  const autoBackupNames = Object.keys(setups)
-    .filter((name) => typeof name === 'string' && name.startsWith('auto-backup-'))
-    .sort();
+  const autoBackupNames = getSortedAutoBackupNames(setups);
 
   if (!autoBackupNames.length) {
     return { snapshotType: 'full', base: null, sequence: 0 };
@@ -1202,6 +1331,7 @@ function autoBackup(options = {}) {
   const config = typeof options === 'object' && options !== null ? options : {};
   const suppressSuccess = Boolean(config.suppressSuccess);
   const suppressError = Boolean(config.suppressError);
+  const force = config.force === true;
   const successMessage = typeof config.successMessage === 'string' && config.successMessage
     ? config.successMessage
     : 'Auto backup saved';
@@ -1262,6 +1392,7 @@ function autoBackup(options = {}) {
     const backupName = normalizedName ? `${baseName}-${normalizedName}` : baseName;
     const currentSetup = { ...getCurrentSetupState() };
     const setupsSnapshot = getSetups();
+    ensureLastAutoBackupSignatureInitialized(setupsSnapshot);
     const plan = determineNextAutoBackupPlan(setupsSnapshot);
     let resolvedPlan = plan;
     if (plan.snapshotType === 'delta') {
@@ -1276,6 +1407,16 @@ function autoBackup(options = {}) {
     const gearSelectors = callEventsCoreFunction('cloneGearListSelectors', [gearSelectorsRaw], { defaultValue: {} }) || {};
     if (gearSelectors && Object.keys(gearSelectors).length) {
       currentSetup.gearSelectors = gearSelectors;
+    }
+    const gearListGenerated = Boolean(currentGearListHtml);
+    const currentSignature = computeAutoBackupStateSignature(currentSetup, gearSelectors, gearListGenerated);
+    if (!force && lastAutoBackupSignature && currentSignature === lastAutoBackupSignature) {
+      return {
+        status: 'skipped',
+        reason: 'unchanged',
+        name: lastAutoBackupName || null,
+        createdAt: lastAutoBackupCreatedAtIso || null,
+      };
     }
     const timestamp = now.toISOString();
     const backupMetadata = {
@@ -1324,6 +1465,9 @@ function autoBackup(options = {}) {
     if (triggerAutoSaveNotification) {
       notifyAutoSaveFromBackup(autoSaveNotificationMessage, backupName);
     }
+    lastAutoBackupSignature = currentSignature;
+    lastAutoBackupName = backupName;
+    lastAutoBackupCreatedAtIso = timestamp;
     return backupName;
   } catch (e) {
     console.warn('Auto backup failed', e);
@@ -1351,6 +1495,9 @@ function ensureAutoBackupBeforeDeletion(context, options = {}) {
     suppressError: true,
     ...(config.autoBackupOptions || {}),
   };
+  if (!Object.prototype.hasOwnProperty.call(autoBackupOptions, 'force')) {
+    autoBackupOptions.force = true;
+  }
 
   let backupResult = null;
   if (typeof autoBackup === 'function') {
@@ -1380,6 +1527,12 @@ function ensureAutoBackupBeforeDeletion(context, options = {}) {
       const reason = typeof backupSkipped.reason === 'string' && backupSkipped.reason
         ? backupSkipped.reason
         : 'unspecified';
+      if (reason === 'unchanged' && typeof backupSkipped.name === 'string' && backupSkipped.name) {
+        if (config.notifySuccess !== false) {
+          showNotification('success', successMessage);
+        }
+        return backupSkipped.name;
+      }
       if (typeof console !== 'undefined' && typeof console.warn === 'function') {
         console.warn(
           `Automatic backup before ${context || 'deletion'} was skipped (${reason}). The action was cancelled to protect user data.`,
