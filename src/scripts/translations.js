@@ -1427,11 +1427,11 @@ const texts = {
     generateGearListHelp:
       "Build a categorized table that combines selected gear with project requirements. The list refreshes on every change, merges duplicate items with counts and auto-adds required cables, rigging, lens supports, matte box parts, battery counts with hotswap hardware, default monitors for each role and scenario-specific accessories. Entries are sorted alphabetically and include hover descriptions.",
     shareSetupHelp:
-      "Download a JSON file of the current project to share with others.",
+      "Download a JSON backup of the current project so you can share or restore it later. Store the file with your crew backups before closing the planner.",
     applySharedLinkHelp:
-      "Load the configuration from the selected project file.",
+      "Load the configuration from a JSON backup exported via Save & Share. Review the preview before applying so nothing overwrites the wrong project.",
     sharedLinkHelp:
-      "Choose a previously saved project JSON file to load.",
+      "Choose a project JSON exported from Save & Share or Backup & Restore. Keep the original file in your backups after import.",
     cameraSelectHelp: "Choose the camera body that anchors your rig.",
     monitorSelectHelp: "Choose an on-board or wireless monitor to include.",
     videoSelectHelp: "Choose a transmitter/receiver pair or other wireless video link.",
@@ -2875,10 +2875,11 @@ const texts = {
     generateGearListHelp:
       "Genera una tabella categorizzata che combina l'attrezzatura selezionata con i requisiti del progetto. L'elenco si aggiorna a ogni modifica, unisce i duplicati con un conteggio e aggiunge automaticamente cavi, rigging, supporti lente, componenti matte box, conteggi batteria con hotswap, monitor predefiniti per ogni ruolo e accessori specifici per gli scenari. Gli elementi sono ordinati alfabeticamente e includono descrizioni al passaggio del mouse.",
     shareSetupHelp:
-      "Scarica un file JSON del progetto corrente per condividerlo.",
-    applySharedLinkHelp: "Carica la configurazione dal file di progetto selezionato.",
+      "Scarica un backup JSON del progetto corrente così puoi condividerlo o ripristinarlo in seguito. Salva il file insieme ai backup della troupe prima di chiudere il planner.",
+    applySharedLinkHelp:
+      "Carica la configurazione da un backup JSON esportato tramite Salva e condividi. Controlla l’anteprima prima di applicarlo per evitare di sovrascrivere il progetto sbagliato.",
     sharedLinkHelp:
-      "Seleziona un file JSON di progetto condiviso da caricare.",
+      "Scegli un JSON del progetto esportato da Salva e condividi o da Backup e ripristino. Conserva il file originale nei tuoi backup dopo l’importazione.",
     cameraSelectHelp: "Seleziona la fotocamera per la tua configurazione.",
     monitorSelectHelp: "Seleziona un monitor da includere.",
     videoSelectHelp: "Seleziona un sistema video wireless da includere.",
@@ -4332,10 +4333,11 @@ const texts = {
     generateGearListHelp:
       "Genera una tabla categorizada que combina el equipo seleccionado con los requisitos del proyecto. La lista se actualiza con cada cambio, fusiona duplicados con sus cantidades y añade automáticamente cables, rigging, soportes de lente, piezas de matte box, recuentos de baterías con hotswap, monitores predeterminados para cada rol y accesorios específicos de los escenarios. Los elementos se ordenan alfabéticamente e incluyen descripciones al pasar el cursor.",
     shareSetupHelp:
-      "Descarga un archivo JSON del proyecto actual para compartirlo.",
-    applySharedLinkHelp: "Carga la configuración desde el archivo de proyecto seleccionado.",
+      "Descarga una copia de seguridad JSON del proyecto actual para compartirla o restaurarla más tarde. Guarda el archivo junto con los respaldos del equipo antes de cerrar el planificador.",
+    applySharedLinkHelp:
+      "Carga la configuración desde un respaldo JSON exportado con Guardar y compartir. Revisa la vista previa antes de aplicarlo para no sobrescribir el proyecto equivocado.",
     sharedLinkHelp:
-      "Selecciona un archivo JSON de proyecto compartido para cargarlo.",
+      "Elige un JSON del proyecto exportado desde Guardar y compartir o Copia de seguridad y restaurar. Conserva el archivo original en tus respaldos después de importarlo.",
     cameraSelectHelp: "Selecciona la cámara para tu configuración.",
     monitorSelectHelp: "Selecciona un monitor para incluir.",
     videoSelectHelp: "Selecciona un sistema de video inalámbrico para incluir.",
@@ -5801,10 +5803,11 @@ const texts = {
     generateGearListHelp:
       "Génère un tableau catégorisé combinant le matériel sélectionné et les exigences du projet. La liste se met à jour à chaque changement, fusionne les doublons avec leur quantité et ajoute automatiquement câbles, rigging, supports d'objectif, éléments de matte box, nombre de batteries avec matériel de hotswap, moniteurs par rôle et accessoires spécifiques aux scénarios. Chaque entrée est triée alphabétiquement et offre une description au survol.",
     shareSetupHelp:
-      "Téléchargez un fichier JSON du projet actuel pour le partager.",
-    applySharedLinkHelp: "Chargez la configuration depuis le fichier projet sélectionné.",
+      "Téléchargez une sauvegarde JSON du projet en cours afin de pouvoir le partager ou le restaurer plus tard. Rangez le fichier avec les sauvegardes de l’équipe avant de fermer le planner.",
+    applySharedLinkHelp:
+      "Chargez la configuration depuis une sauvegarde JSON exportée via Enregistrer et partager. Vérifiez l’aperçu avant d’appliquer pour éviter d’écraser le mauvais projet.",
     sharedLinkHelp:
-      "Choisissez un fichier JSON de projet partagé à charger.",
+      "Choisissez un fichier JSON de projet exporté depuis Enregistrer et partager ou Sauvegarde et restauration. Conservez l’original dans vos sauvegardes après l’import.",
     cameraSelectHelp: "Sélectionnez la caméra pour votre configuration.",
     monitorSelectHelp: "Sélectionnez un moniteur à inclure.",
     videoSelectHelp: "Sélectionnez un système vidéo sans fil à inclure.",
@@ -7274,10 +7277,11 @@ const texts = {
     generateGearListHelp:
       "Erstellt eine kategorisierte Tabelle aus ausgewähltem Equipment und Projektanforderungen. Die Liste aktualisiert sich bei jeder Änderung, fasst doppelte Einträge mit Anzahl zusammen und ergänzt automatisch benötigte Kabel, Rigging, Linsensupports, Matte-Box-Bauteile, Batteriezahlen mit Hotswap-Hardware, Standardmonitore pro Rolle sowie szenariospezifisches Zubehör. Alle Posten sind alphabetisch sortiert und zeigen beim Überfahren eine Beschreibung.",
     shareSetupHelp:
-      "Lädt eine JSON-Datei des aktuellen Projekts zum Teilen herunter.",
-    applySharedLinkHelp: "Lädt die Konfiguration aus der ausgewählten Projektdatei.",
+      "Lade eine JSON-Sicherung des aktuellen Projekts herunter, damit du sie später teilen oder wiederherstellen kannst. Lege die Datei vor dem Schließen des Planners zu den Team-Backups.",
+    applySharedLinkHelp:
+      "Lade die Konfiguration aus einer JSON-Sicherung, die über Speichern & Teilen exportiert wurde. Prüfe die Vorschau, bevor du anwendest, damit kein falsches Projekt überschrieben wird.",
     sharedLinkHelp:
-      "Wähle eine zuvor geteilte Projektdatei aus, um sie zu laden.",
+      "Wähle eine Projekt-JSON, die über Speichern & Teilen oder Sicherung & Wiederherstellung exportiert wurde. Bewahre die Originaldatei nach dem Import in deinen Backups auf.",
     cameraSelectHelp: "Wähle die Kamera für dein Setup.",
     monitorSelectHelp: "Wähle einen Monitor, der enthalten sein soll.",
     videoSelectHelp: "Wähle ein drahtloses Videosystem aus.",

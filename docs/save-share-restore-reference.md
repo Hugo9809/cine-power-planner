@@ -52,6 +52,8 @@ Run these quick inspections while documenting or rehearsing the workflows above:
 
 The Help Center’s console verification callout mirrors these commands so crews have the checklist available directly inside the offline dialog alongside export and rehearsal guidance.【F:index.html†L3899-L3920】
 
+Contextual help inside **Share** now spells out the full safeguarding routine: the export tooltip reminds crews to file every JSON bundle alongside redundant backups before they close the planner, and the import tooltip highlights the preview step so no one overwrites the wrong project mid-rehearsal.【F:src/scripts/translations.js†L1419-L1434】【F:src/scripts/translations.js†L2872-L2887】【F:src/scripts/translations.js†L4331-L4346】【F:src/scripts/translations.js†L5795-L5810】【F:src/scripts/translations.js†L7269-L7284】【F:src/scripts/app-setups.js†L1347-L1369】
+
 Record the outputs (or screenshots) in your verification log, and store them alongside the exported files so any teammate can confirm the same safeguards were present.
 
 ## When to run this checklist
