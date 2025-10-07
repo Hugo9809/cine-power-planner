@@ -564,6 +564,32 @@ const fizData = {
       "connectivity": "Wireless (swappable ARRI radio modules: RF-EMIP, RF-2400, RF-900) or Wired (LBUS, CAM, SERIAL)",
       "notes": "Versatile receiver/transmitter/motor controller, extends wireless range of WCU-4/SXU-1, brings wireless functionality to Master Grips/OCU-1, supports distance measuring devices (CineRT, Focusbug, UDM-1, Cinetape), camera control (ARRI, Panavision, RED, Sony), compact and robust. Typically powered via a CAM-to-LBUS connection on ALEXA Mini/Mini LF/Alexa 35 cameras or via a Cam to D-Tap cable when used with other cameras. Can be supplemented with an LBUS to D-Tap cable to supply additional power for higher motor torque."
     },
+    "Arri NIA-1": {
+      "powerDrawWatts": 5,
+      "fizConnectors": [
+        {
+          "type": "LBUS (LEMO 4-pin)",
+          "notes": "LBUS 1 (bidirectional power/data)"
+        },
+        {
+          "type": "LBUS (LEMO 4-pin)",
+          "notes": "LBUS 2 (bidirectional power/data)"
+        },
+        {
+          "type": "Ethernet (RJ45 8-pin)",
+          "notes": "100 Mbit network"
+        },
+        {
+          "type": "USB-C",
+          "notes": "Power, firmware updates, supported USB peripherals"
+        }
+      ],
+      "internalController": false,
+      "powerSource": "External DC (6.3-34V via LBUS) or USB-C (4.75-5.25V)",
+      "batteryType": "N/A (no internal battery)",
+      "connectivity": "Wired (Ethernet up to 100 Mbit) plus LBUS pass-through; USB-C for updates/peripherals",
+      "notes": "Network interface adapter that bridges ARRI ECS to IP networks. Provides dual LBUS ports for powering and daisy-chaining LBUS devices, 100 Mbit Ethernet for remote operation and USB-C for updates or auxiliary power. Draws approx. 5 W when self-powered (up to 10 W when powering a USB-C device) and will not feed LBUS power if running solely from USB-C."
+    },
     "Arri Master Grip (single unit)": {
       "powerDrawWatts": 0.72,
       "fizConnectors": [
