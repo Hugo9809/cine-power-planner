@@ -9169,8 +9169,36 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       ['guides', 'help'],
       ['support', 'help']
     ]);
-    
+
     const FEATURE_SEARCH_FILTER_STRIP_PATTERN = /^[\s:> /=\-?,.]+/;
+
+    const FEATURE_SEARCH_SMART_QUOTE_PATTERN = /[“”„«»]/g;
+
+    const normalizeFeatureSearchQuotes = value =>
+      typeof value === 'string'
+        ? value.replace(FEATURE_SEARCH_SMART_QUOTE_PATTERN, '"')
+        : '';
+
+    const extractFeatureSearchQuotedPhrases = query => {
+      if (typeof query !== 'string') {
+        return [];
+      }
+      const normalized = normalizeFeatureSearchQuotes(query);
+      if (!normalized) {
+        return [];
+      }
+      const phrases = [];
+      const regex = /"([^"]+)"/g;
+      let match;
+      while ((match = regex.exec(normalized))) {
+        const phrase = (match[1] || '').trim();
+        if (phrase.length < 2) {
+          continue;
+        }
+        phrases.push(phrase);
+      }
+      return phrases;
+    };
     
     const extractFeatureSearchFilter = query => {
       if (typeof query !== 'string') {
@@ -9197,7 +9225,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return { filterType, queryText: remainder };
     };
     
-    function scoreFeatureSearchEntry(entry, queryKey, queryTokens, rawQueryText) {
+    function scoreFeatureSearchEntry(entry, queryKey, queryTokens, rawQueryText, quotedPhrases = []) {
       if (!entry || !entry.key) return null;
       const display = entry.display;
       if (!display) return null;
@@ -9221,7 +9249,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       const allTokensMatched =
         queryTokenCount > 0 && tokenDetails.matched >= queryTokenCount;
       const phraseDetails = computePhraseMatchDetails(entry, validQueryTokens, rawQueryText);
-    
+      const quotedPhraseDetails = computeQuotedPhraseMatchDetails(entry, quotedPhrases);
+
       let bestType = 'none';
       let bestPriority = FEATURE_SEARCH_MATCH_PRIORITIES.none;
       let fuzzyDistance = Number.POSITIVE_INFINITY;
@@ -9280,9 +9309,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         keyLength: entryKey.length,
         historyCount,
         historyLastUsed
+        ,
+        quotedPhraseScore: quotedPhraseDetails.score,
+        quotedPhraseMatches: quotedPhraseDetails.matched
       };
     }
-    
+
     const compareFeatureSearchCandidates = (a, b) => {
       if (!a && !b) return 0;
       if (!a) return 1;
@@ -9298,6 +9330,16 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       if (Number(b.phraseMatched) !== Number(a.phraseMatched)) {
         return Number(b.phraseMatched) - Number(a.phraseMatched);
+      }
+      const aQuotedMatches = typeof a.quotedPhraseMatches === 'number' ? a.quotedPhraseMatches : 0;
+      const bQuotedMatches = typeof b.quotedPhraseMatches === 'number' ? b.quotedPhraseMatches : 0;
+      if (bQuotedMatches !== aQuotedMatches) {
+        return bQuotedMatches - aQuotedMatches;
+      }
+      const aQuotedScore = typeof a.quotedPhraseScore === 'number' ? a.quotedPhraseScore : 0;
+      const bQuotedScore = typeof b.quotedPhraseScore === 'number' ? b.quotedPhraseScore : 0;
+      if (bQuotedScore !== aQuotedScore) {
+        return bQuotedScore - aQuotedScore;
       }
       const aPrimaryScore = typeof a.primaryTokenScore === 'number' ? a.primaryTokenScore : 0;
       const bPrimaryScore = typeof b.primaryTokenScore === 'number' ? b.primaryTokenScore : 0;
@@ -9377,22 +9419,28 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       const rawTrimmed = raw.trim();
       const { filterType, queryText } = extractFeatureSearchFilter(rawTrimmed);
       const trimmed = queryText.trim();
-    
+      const quotedPhrases = extractFeatureSearchQuotedPhrases(queryText);
+
       if (!trimmed && !filterType) {
         restoreFeatureSearchDefaults();
         return;
       }
-    
+
       const highlightSegments = trimmed
         ? trimmed.split(/[^a-z0-9]+/i).filter(Boolean)
         : [];
       const queryKey = trimmed ? searchKey(trimmed) : '';
       const queryTokens = trimmed ? searchTokens(trimmed) : [];
-      updateFeatureSearchHighlightTokens([...highlightSegments, ...queryTokens]);
+      const highlightTokens = [
+        ...highlightSegments,
+        ...queryTokens,
+        ...quotedPhrases.map(phrase => phrase && phrase.toLowerCase()).filter(Boolean)
+      ];
+      updateFeatureSearchHighlightTokens(highlightTokens);
       const entries = filterType
         ? featureSearchEntries.filter(entry => (entry?.type || 'feature') === filterType)
         : featureSearchEntries;
-    
+
       if (entries.length === 0) {
         renderFeatureListOptions([]);
         return;
@@ -9403,7 +9451,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
     
       const scored = entries
-        .map(entry => scoreFeatureSearchEntry(entry, queryKey, queryTokens, trimmed))
+        .map(entry => scoreFeatureSearchEntry(entry, queryKey, queryTokens, trimmed, quotedPhrases))
         .filter(Boolean);
     
       if (scored.length === 0) {
@@ -9421,7 +9469,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
               item.priority > FEATURE_SEARCH_MATCH_PRIORITIES.none ||
               item.tokenScore > 0 ||
               item.primaryTokenScore > 0 ||
-              item.phraseScore > 0
+              item.phraseScore > 0 ||
+              item.quotedPhraseScore > 0
           )
         : [];
     
@@ -10362,6 +10411,45 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
       }
 
+      return { score, matched };
+    };
+
+    const computeQuotedPhraseMatchDetails = (entry, phrases = []) => {
+      if (!Array.isArray(phrases) || phrases.length === 0) {
+        return { score: 0, matched: 0 };
+      }
+      const normalizedPhrases = phrases
+        .map(phrase =>
+          typeof phrase === 'string'
+            ? phrase.replace(/\s+/g, ' ').trim().toLowerCase()
+            : ''
+        )
+        .filter(phrase => phrase.length > 1);
+      if (!normalizedPhrases.length) {
+        return { score: 0, matched: 0 };
+      }
+      const texts = collectFeatureSearchTexts(entry);
+      if (!texts.length) {
+        return { score: 0, matched: 0 };
+      }
+      let matched = 0;
+      let score = 0;
+      normalizedPhrases.forEach(phrase => {
+        let found = false;
+        for (const text of texts) {
+          if (text.includes(phrase)) {
+            found = true;
+            break;
+          }
+        }
+        if (found) {
+          matched += 1;
+          score += Math.max(phrase.length * 4, 24);
+        }
+      });
+      if (matched === 0) {
+        return { score: 0, matched: 0 };
+      }
       return { score, matched };
     };
     

@@ -482,6 +482,8 @@ Use Cine Power Planner end-to-end with the following routine:
   search field.
 - Search suggestions highlight matching keywords so you can confirm results
   before committing to a navigation or action.
+- Wrap phrases in double quotes inside global search to demand exact matches
+  when you know the precise label you need.
 - Star icons pin favorite devices so they stay at the top of selectors and
   persist across sessions and backups.
 
