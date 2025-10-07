@@ -29,6 +29,7 @@
           suspendProjectPersistence, resumeProjectPersistence,
           isProjectPersistenceSuspended,
           recordFeatureSearchUsage, extractFeatureSearchFilter,
+          extractFeatureSearchQuotedPhrases,
           helpResultsSummary, helpResultsAssist,
           isProjectPersistenceSuspended, suspendProjectPersistence,
           resumeProjectPersistence */
@@ -11005,10 +11006,20 @@ if (helpButton && helpDialog) {
     const clean = cleanSource || (filterType ? '' : value);
     const cleanKey = searchKey(clean);
     const cleanTokens = searchTokens(clean);
+    const queryForPhrases =
+      typeof filterData?.queryText === 'string' && filterType
+        ? filterData.queryText
+        : filteredQuery;
+    const quotedPhrases = typeof extractFeatureSearchQuotedPhrases === 'function'
+      ? extractFeatureSearchQuotedPhrases(queryForPhrases || value)
+      : [];
+    const rawQueryForScoring = typeof queryForPhrases === 'string' && queryForPhrases.trim()
+      ? queryForPhrases
+      : clean;
 
-    const helpMatch = findBestSearchMatch(helpMap, cleanKey, cleanTokens);
-    const deviceMatch = findBestSearchMatch(deviceMap, cleanKey, cleanTokens);
-    const featureMatch = findBestSearchMatch(featureMap, cleanKey, cleanTokens);
+    const helpMatch = findBestSearchMatch(helpMap, cleanKey, cleanTokens, quotedPhrases, rawQueryForScoring);
+    const deviceMatch = findBestSearchMatch(deviceMap, cleanKey, cleanTokens, quotedPhrases, rawQueryForScoring);
+    const featureMatch = findBestSearchMatch(featureMap, cleanKey, cleanTokens, quotedPhrases, rawQueryForScoring);
     const helpScore = helpMatch?.score || 0;
     const deviceScore = deviceMatch?.score || 0;
     const strongSearchMatchTypes =

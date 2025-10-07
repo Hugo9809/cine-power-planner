@@ -10354,8 +10354,17 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (entry.display && entry.display !== entry.optionLabel) {
         push(entry.display);
       }
+      push(entry.displayLabel);
+      push(entry.baseLabel);
+      push(entry.label);
       if (entry.detail) {
         push(entry.detail);
+      }
+      if (Array.isArray(entry.context) && entry.context.length) {
+        push(entry.context.join(' '));
+      }
+      if (typeof entry.keywords === 'string') {
+        push(entry.keywords);
       }
       const rawValue = entry.value;
       if (rawValue && typeof rawValue === 'object') {
@@ -10502,11 +10511,12 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return distance <= 3 && distance / maxLength <= 0.4;
     };
     
-    function findBestSearchMatch(map, key, tokens = []) {
+    function findBestSearchMatch(map, key, tokens = [], quotedPhrases = [], rawQuery = '') {
       const queryTokens = Array.isArray(tokens) ? tokens.filter(Boolean) : [];
       const hasKey = Boolean(key);
+      const normalizedRawQuery = typeof rawQuery === 'string' ? rawQuery.trim() : '';
       if (!hasKey && queryTokens.length === 0) return null;
-    
+
       const toResult = (
         entryKey,
         entryValue,
@@ -10522,7 +10532,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         matchedCount,
         ...extras
       });
-    
+
       const flattened = [];
       for (const [entryKey, entryValue] of map.entries()) {
         if (!entryValue) continue;
@@ -10535,28 +10545,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         }
       }
     
-      if (hasKey) {
-        const exactCandidates = flattened.filter(([entryKey]) => entryKey === key);
-        if (exactCandidates.length) {
-          let bestEntry = exactCandidates[0][1];
-          let bestDetails = queryTokens.length > 0
-            ? computeTokenMatchDetails(bestEntry?.tokens || [], queryTokens)
-            : { score: Number.POSITIVE_INFINITY, matched: queryTokens.length };
-          for (const [, entryValue] of exactCandidates.slice(1)) {
-            if (!queryTokens.length) break;
-            const details = computeTokenMatchDetails(entryValue?.tokens || [], queryTokens);
-            if (
-              details.score > bestDetails.score ||
-              (details.score === bestDetails.score && details.matched > bestDetails.matched)
-            ) {
-              bestDetails = details;
-              bestEntry = entryValue;
-            }
-          }
-          return toResult(key, bestEntry, 'exactKey', bestDetails.score, bestDetails.matched);
-        }
-      }
-    
+      let bestExactMatch = null;
+      let bestExactScore = Number.NEGATIVE_INFINITY;
       let bestTokenMatch = null;
       let bestTokenScore = 0;
       let bestTokenMatched = 0;
@@ -10584,10 +10574,46 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         const tokenDetails = queryTokens.length
           ? computeTokenMatchDetails(entryTokens, queryTokens)
           : { score: 0, matched: 0 };
-    
+        const phraseDetails = computePhraseMatchDetails(entryValue, queryTokens, normalizedRawQuery);
+        const quotedPhraseDetails = computeQuotedPhraseMatchDetails(entryValue, quotedPhrases);
+        const phraseScore = typeof phraseDetails.score === 'number' ? phraseDetails.score : 0;
+        const quotedScore = typeof quotedPhraseDetails.score === 'number' ? quotedPhraseDetails.score : 0;
+        const combinedTokenScore = tokenDetails.score + phraseScore + quotedScore;
+        const extras = {
+          tokenScore: tokenDetails.score,
+          phraseScore,
+          phraseMatched: Boolean(phraseDetails.matched),
+          quotedPhraseScore: quotedScore,
+          quotedPhraseMatches: quotedPhraseDetails.matched || 0
+        };
+
+        if (hasKey && entryKey === key) {
+          const exactBaseScore = queryTokens.length > 0
+            ? tokenDetails.score
+            : Number.POSITIVE_INFINITY;
+          const exactScore = exactBaseScore + phraseScore + quotedScore;
+          const exactCandidate = toResult(
+            entryKey,
+            entryValue,
+            'exactKey',
+            exactScore,
+            tokenDetails.matched,
+            extras
+          );
+          if (
+            !bestExactMatch ||
+            exactScore > bestExactScore ||
+            (exactScore === bestExactScore && tokenDetails.matched > (bestExactMatch?.matchedCount || 0))
+          ) {
+            bestExactMatch = exactCandidate;
+            bestExactScore = exactScore;
+          }
+        }
+
         if (hasKey && entryKey.startsWith(key)) {
-          const score = queryTokens.length > 0 ? tokenDetails.score : Number.POSITIVE_INFINITY;
-          const candidate = toResult(entryKey, entryValue, 'keyPrefix', score, tokenDetails.matched);
+          const baseScore = queryTokens.length > 0 ? tokenDetails.score : Number.POSITIVE_INFINITY;
+          const score = baseScore + phraseScore + quotedScore;
+          const candidate = toResult(entryKey, entryValue, 'keyPrefix', score, tokenDetails.matched, extras);
           if (
             !bestPrefixMatch ||
             score > bestPrefixScore ||
@@ -10601,25 +10627,33 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             bestPrefixLength = entryKey.length;
           }
         }
-    
+
         if (queryTokens.length) {
           const distance = hasKey ? Math.abs(entryKey.length - keyLength) : Number.POSITIVE_INFINITY;
           if (
-            tokenDetails.score > bestTokenScore ||
-            (tokenDetails.score === bestTokenScore &&
+            combinedTokenScore > bestTokenScore ||
+            (combinedTokenScore === bestTokenScore &&
               (tokenDetails.matched > bestTokenMatched ||
                 (tokenDetails.matched === bestTokenMatched && distance < bestTokenKeyDistance)))
           ) {
-            bestTokenMatch = toResult(entryKey, entryValue, 'token', tokenDetails.score, tokenDetails.matched);
-            bestTokenScore = tokenDetails.score;
+            bestTokenMatch = toResult(
+              entryKey,
+              entryValue,
+              'token',
+              combinedTokenScore,
+              tokenDetails.matched,
+              extras
+            );
+            bestTokenScore = combinedTokenScore;
             bestTokenMatched = tokenDetails.matched;
             bestTokenKeyDistance = distance;
           }
         }
-    
+
         if (hasKey && key.startsWith(entryKey)) {
-          const score = queryTokens.length > 0 ? tokenDetails.score : Number.POSITIVE_INFINITY;
-          const candidate = toResult(entryKey, entryValue, 'keySubset', score, tokenDetails.matched);
+          const baseScore = queryTokens.length > 0 ? tokenDetails.score : Number.POSITIVE_INFINITY;
+          const score = baseScore + phraseScore + quotedScore;
+          const candidate = toResult(entryKey, entryValue, 'keySubset', score, tokenDetails.matched, extras);
           if (
             !bestSubsetMatch ||
             score > bestSubsetScore ||
@@ -10635,18 +10669,19 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           hasKey &&
           (entryKey.includes(key) || key.includes(entryKey))
         ) {
-          const candidate = toResult(entryKey, entryValue, 'partial', tokenDetails.score, tokenDetails.matched);
+          const score = combinedTokenScore;
+          const candidate = toResult(entryKey, entryValue, 'partial', score, tokenDetails.matched, extras);
           if (
             !bestPartialMatch ||
-            tokenDetails.score > bestPartialScore ||
-            (tokenDetails.score === bestPartialScore && tokenDetails.matched > bestPartialMatched)
+            score > bestPartialScore ||
+            (score === bestPartialScore && tokenDetails.matched > bestPartialMatched)
           ) {
             bestPartialMatch = candidate;
-            bestPartialScore = tokenDetails.score;
+            bestPartialScore = score;
             bestPartialMatched = tokenDetails.matched;
           }
         }
-    
+
         if (hasKey && entryKey) {
           const fuzzyDistance = computeLevenshteinDistance(entryKey, key);
           if (isAcceptableFuzzyMatch(entryKey, key, fuzzyDistance)) {
@@ -10655,7 +10690,9 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
               fuzzyDistance < bestFuzzyDistance ||
               (fuzzyDistance === bestFuzzyDistance && entryKey.length < bestFuzzyLength)
             ) {
-              bestFuzzyMatch = toResult(entryKey, entryValue, 'fuzzy', tokenDetails.score, tokenDetails.matched, {
+              const score = combinedTokenScore;
+              bestFuzzyMatch = toResult(entryKey, entryValue, 'fuzzy', score, tokenDetails.matched, {
+                ...extras,
                 fuzzyDistance
               });
               bestFuzzyDistance = fuzzyDistance;
@@ -10664,7 +10701,10 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
           }
         }
       }
-    
+
+      if (bestExactMatch) {
+        return bestExactMatch;
+      }
       if (bestTokenMatch && bestTokenScore > 0) {
         return bestTokenMatch;
       }
