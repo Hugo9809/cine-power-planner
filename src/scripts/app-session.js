@@ -3453,8 +3453,22 @@ function restoreSessionState() {
       typeof loadProject === 'function' && typeof name === 'string'
         ? loadProject(name)
         : null;
-    const hasProjectPayload = project =>
-      project && (project.gearList || project.projectInfo || project.powerSelection);
+    const hasProjectPayload = (project) => {
+      if (!project || typeof project !== 'object') {
+        return false;
+      }
+
+      if (Object.prototype.hasOwnProperty.call(project, 'gearList')) {
+        return true;
+      }
+
+      return Boolean(
+        project.projectInfo
+        || project.powerSelection
+        || (project.autoGearRules && project.autoGearRules.length)
+        || (project.diagramPositions && Object.keys(project.diagramPositions).length)
+      );
+    };
     const candidateNames = [];
     if (typedName) {
       candidateNames.push(typedName);
@@ -3491,12 +3505,31 @@ function restoreSessionState() {
           updateBatteryOptions();
         }
       }
-      const mergedInfo = {
-        ...(storedProject.projectInfo || {}),
-        ...(currentProjectInfo || {})
-      };
-      currentProjectInfo = mergedInfo;
-      if (projectForm) populateProjectForm(currentProjectInfo);
+      const storedHasProjectInfo = Object.prototype.hasOwnProperty.call(storedProject, 'projectInfo');
+      const storedProjectInfo = storedHasProjectInfo
+        && storedProject.projectInfo
+        && typeof storedProject.projectInfo === 'object'
+        ? storedProject.projectInfo
+        : null;
+      const sessionProjectInfo = currentProjectInfo && typeof currentProjectInfo === 'object'
+        ? currentProjectInfo
+        : null;
+
+      let nextProjectInfo = null;
+      if (storedHasProjectInfo) {
+        if (storedProjectInfo && sessionProjectInfo) {
+          nextProjectInfo = { ...storedProjectInfo, ...sessionProjectInfo };
+        } else if (storedProjectInfo) {
+          nextProjectInfo = { ...storedProjectInfo };
+        } else {
+          nextProjectInfo = null;
+        }
+      } else if (sessionProjectInfo) {
+        nextProjectInfo = { ...sessionProjectInfo };
+      }
+
+      currentProjectInfo = nextProjectInfo;
+      if (projectForm) populateProjectForm(currentProjectInfo || {});
       if (
         typeof normalizeDiagramPositionsInput === 'function'
         && typeof setManualDiagramPositions === 'function'
@@ -3731,9 +3764,11 @@ function applySharedSetup(shared, options = {}) {
       applyGearListSelectors(decoded.gearSelectors);
     }
     if (decoded.projectInfo || decoded.gearSelectors || decoded.gearList) {
+      const currentGearList = getCurrentGearListHtml();
       const payload = {
-        gearList: getCurrentGearListHtml(),
-        projectInfo: decoded.projectInfo || null
+        gearList: currentGearList,
+        projectInfo: decoded.projectInfo || null,
+        gearListAndProjectRequirementsGenerated: Boolean(currentGearList)
       };
       if (typeof getDiagramManualPositions === 'function') {
         const diagramPositions = getDiagramManualPositions();

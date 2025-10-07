@@ -6040,11 +6040,27 @@ function normalizeProject(data) {
       if (typeof data.projectHtml === 'string') {
         htmlSources.push(data.projectHtml);
       }
-      if (isPlainObject(data.project) && typeof data.project.projectHtml === 'string') {
-        htmlSources.push(data.project.projectHtml);
+      if (typeof data.gearHtml === 'string') {
+        htmlSources.push(data.gearHtml);
       }
-      if (isPlainObject(normalizedGearList) && typeof normalizedGearList.projectHtml === 'string') {
-        htmlSources.push(normalizedGearList.projectHtml);
+      if (isPlainObject(data.project)) {
+        if (typeof data.project.projectHtml === 'string') {
+          htmlSources.push(data.project.projectHtml);
+        }
+        if (typeof data.project.gearHtml === 'string') {
+          htmlSources.push(data.project.gearHtml);
+        }
+      }
+      if (isPlainObject(data.gearList) && typeof data.gearList.gearHtml === 'string') {
+        htmlSources.push(data.gearList.gearHtml);
+      }
+      if (isPlainObject(normalizedGearList)) {
+        if (typeof normalizedGearList.projectHtml === 'string') {
+          htmlSources.push(normalizedGearList.projectHtml);
+        }
+        if (typeof normalizedGearList.gearHtml === 'string') {
+          htmlSources.push(normalizedGearList.gearHtml);
+        }
       } else if (typeof normalizedGearList === 'string') {
         htmlSources.push(normalizedGearList);
       }
@@ -6076,6 +6092,10 @@ function normalizeProject(data) {
           }
         }
       }
+      const derivedGenerationFlag = typeof data.gearListAndProjectRequirementsGenerated === 'boolean'
+        ? data.gearListAndProjectRequirementsGenerated
+        : htmlSources.some((value) => typeof value === 'string' && value.trim());
+      normalized.gearListAndProjectRequirementsGenerated = derivedGenerationFlag;
       if (normalizedAutoGearRules && normalizedAutoGearRules.length) {
         normalized.autoGearRules = cloneAutoGearRules(normalizedAutoGearRules);
       }
@@ -6151,6 +6171,7 @@ var LEGACY_PROJECT_ROOT_KEYS = new Set([
   "gearHtml",
   "autoGearRules",
   "powerSelection",
+  "gearListAndProjectRequirementsGenerated",
 ]);
 
 var NORMALIZED_PROJECT_KEYS = new Set([
@@ -6160,6 +6181,7 @@ var NORMALIZED_PROJECT_KEYS = new Set([
   "diagramPositions",
   "gearSelectors",
   "powerSelection",
+  "gearListAndProjectRequirementsGenerated",
 ]);
 
 function isNormalizedProjectEntry(entry) {
@@ -6205,6 +6227,12 @@ function isNormalizedProjectEntry(entry) {
     if (!isPlainObject(powerSelection)) {
       return false;
     }
+  }
+  if (
+    Object.prototype.hasOwnProperty.call(entry, "gearListAndProjectRequirementsGenerated")
+    && typeof entry.gearListAndProjectRequirementsGenerated !== "boolean"
+  ) {
+    return false;
   }
   return true;
 }

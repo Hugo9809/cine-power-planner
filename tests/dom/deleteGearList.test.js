@@ -115,8 +115,10 @@ describe('delete gear list action', () => {
     const finalArg = saveSetupsMock.mock.calls[saveSetupsMock.mock.calls.length - 1][0];
     expect(finalArg['Project One'].gearList).toBeUndefined();
     expect(finalArg['Project One'].projectInfo).toBeUndefined();
+    expect(finalArg['Project One'].gearListAndProjectRequirementsGenerated).toBeUndefined();
     expect(storedSetups['Project One'].gearList).toBeUndefined();
     expect(storedSetups['Project One'].projectInfo).toBeUndefined();
+    expect(storedSetups['Project One'].gearListAndProjectRequirementsGenerated).toBeUndefined();
 
     const gearListOutput = document.getElementById('gearListOutput');
     expect(gearListOutput.innerHTML).toBe('');

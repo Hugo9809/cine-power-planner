@@ -35,8 +35,15 @@ describe('saveCurrentGearList project info handling', () => {
     const lastCall = globals.saveProject.mock.calls[globals.saveProject.mock.calls.length - 1];
     expect(lastCall[0]).toBe('Empty Project');
 
-    const { projectInfo, gearList, diagramPositions, autoGearRules } = lastCall[1];
+    const {
+      projectInfo,
+      gearList,
+      diagramPositions,
+      autoGearRules,
+      gearListAndProjectRequirementsGenerated,
+    } = lastCall[1];
     expect(gearList).toBe('');
+    expect(gearListAndProjectRequirementsGenerated).toBe(false);
     expect(projectInfo).toEqual(utils.getCurrentProjectInfo());
     expect(projectInfo).toMatchObject({
       projectName: 'Empty Project',
@@ -102,6 +109,7 @@ describe('saveCurrentGearList project info handling', () => {
     expect(savedSetup.projectInfo).toMatchObject({
       projectName: 'Snapshot Project',
     });
+    expect(savedSetup.gearListAndProjectRequirementsGenerated).toBe(false);
 
     savedSetup.projectInfo.projectName = 'Mutated via setups';
     const infoAfterMutation = utils.getCurrentProjectInfo();

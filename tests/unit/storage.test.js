@@ -105,6 +105,11 @@ const parseLocalStorageJSON = (key) => {
 
 const getDecodedLocalStorageItem = (key) => decodeStoredValue(localStorage.getItem(key));
 
+const withGenerationFlag = (value, generated = true) => ({
+  ...value,
+  gearListAndProjectRequirementsGenerated: generated,
+});
+
 const expectAutoBackupSnapshot = (entry, expectedPayload, options = {}) => {
   expect(entry).toBeDefined();
   expect(typeof entry).toBe('object');
@@ -889,8 +894,8 @@ describe('project storage', () => {
   test('saveProject stores data per project name', () => {
     saveProject('A', { gearList: '<ul>A</ul>' });
     saveProject('B', { gearList: '<ul>B</ul>' });
-    expect(loadProject('A')).toEqual({ gearList: '<ul>A</ul>', projectInfo: null });
-    expect(loadProject('B')).toEqual({ gearList: '<ul>B</ul>', projectInfo: null });
+    expect(loadProject('A')).toEqual(withGenerationFlag({ gearList: '<ul>A</ul>', projectInfo: null }));
+    expect(loadProject('B')).toEqual(withGenerationFlag({ gearList: '<ul>B</ul>', projectInfo: null }));
   });
 
   test('loadProject resolves entries saved with surrounding whitespace', () => {
@@ -898,8 +903,8 @@ describe('project storage', () => {
       ' Spaced ': { gearList: '<ul>Saved</ul>', projectInfo: null },
     }));
 
-    expect(loadProject(' Spaced ')).toEqual({ gearList: '<ul>Saved</ul>', projectInfo: null });
-    expect(loadProject('Spaced')).toEqual({ gearList: '<ul>Saved</ul>', projectInfo: null });
+    expect(loadProject(' Spaced ')).toEqual(withGenerationFlag({ gearList: '<ul>Saved</ul>', projectInfo: null }));
+    expect(loadProject('Spaced')).toEqual(withGenerationFlag({ gearList: '<ul>Saved</ul>', projectInfo: null }));
   });
 
   test('saveProject normalizes project keys with surrounding whitespace when unused', () => {
@@ -911,15 +916,15 @@ describe('project storage', () => {
 
     const stored = parseLocalStorageJSON(PROJECT_KEY);
     expect(stored['Old Name ']).toBeUndefined();
-    expect(stored['Old Name']).toEqual({ gearList: '<ul>Updated</ul>', projectInfo: null });
-    expect(loadProject('Old Name ')).toEqual({ gearList: '<ul>Updated</ul>', projectInfo: null });
+    expect(stored['Old Name']).toEqual(withGenerationFlag({ gearList: '<ul>Updated</ul>', projectInfo: null }));
+    expect(loadProject('Old Name ')).toEqual(withGenerationFlag({ gearList: '<ul>Updated</ul>', projectInfo: null }));
   });
 
   test('deleteProject removes entries even when addressed with trimmed names', () => {
     saveProject('Keep ', { gearList: '<ul>Keep</ul>', projectInfo: null });
     saveProject('Drop', { gearList: '<ul>Drop</ul>', projectInfo: null });
 
-    expect(loadProject('Keep')).toEqual({ gearList: '<ul>Keep</ul>', projectInfo: null });
+    expect(loadProject('Keep')).toEqual(withGenerationFlag({ gearList: '<ul>Keep</ul>', projectInfo: null }));
 
     deleteProject(' Drop ');
 
@@ -930,12 +935,12 @@ describe('project storage', () => {
 
   test('saveProject normalizes null gearList to empty string', () => {
     saveProject('NullProj', { gearList: null });
-    expect(loadProject('NullProj')).toEqual({ gearList: '', projectInfo: null });
+    expect(loadProject('NullProj')).toEqual(withGenerationFlag({ gearList: '', projectInfo: null }, false));
   });
 
   test('saveProject strips non-object projectInfo values', () => {
     saveProject('InfoProj', { gearList: '<ul>Info</ul>', projectInfo: 'bad' });
-    expect(loadProject('InfoProj')).toEqual({ gearList: '<ul>Info</ul>', projectInfo: null });
+    expect(loadProject('InfoProj')).toEqual(withGenerationFlag({ gearList: '<ul>Info</ul>', projectInfo: null }));
   });
 
   test('saveProject removes older duplicate auto backups before trimming unique entries', () => {
@@ -1004,7 +1009,7 @@ describe('project storage', () => {
       stored[backupKeys[0]],
       { gearList: '<ul>Initial</ul>', projectInfo: { notes: 'original' } },
     );
-    expect(stored['Overwrite Demo']).toEqual({ gearList: '<ul>Updated</ul>', projectInfo: { notes: 'updated' } });
+    expect(stored['Overwrite Demo']).toEqual(withGenerationFlag({ gearList: '<ul>Updated</ul>', projectInfo: { notes: 'updated' } }));
 
     jest.useRealTimers();
   });
@@ -1020,7 +1025,7 @@ describe('project storage', () => {
 
     const stored = parseLocalStorageJSON(PROJECT_KEY);
     expect(Object.keys(stored).filter(key => key.startsWith('auto-backup-'))).toHaveLength(0);
-    expect(stored['No Change']).toEqual({ gearList: '<ul>Same</ul>', projectInfo: null });
+    expect(stored['No Change']).toEqual(withGenerationFlag({ gearList: '<ul>Same</ul>', projectInfo: null }));
 
     jest.useRealTimers();
   });
@@ -1165,7 +1170,7 @@ describe('project storage', () => {
 
     const projects = loadProject();
     expect(projects).toEqual({
-      'Project-updated': { gearList: '<p>Legacy project</p>', projectInfo: null },
+      'Project-updated': withGenerationFlag({ gearList: '<p>Legacy project</p>', projectInfo: null }),
     });
 
     const storedBackup = getDecodedLocalStorageItem(migrationBackupKeyFor(PROJECT_KEY));
@@ -1178,11 +1183,11 @@ describe('project storage', () => {
 
     deleteProject('Drop');
     expect(loadProject('Drop')).toBeNull();
-    expect(loadProject('Keep')).toEqual({ gearList: '<ul>Keep</ul>', projectInfo: null });
+    expect(loadProject('Keep')).toEqual(withGenerationFlag({ gearList: '<ul>Keep</ul>', projectInfo: null }));
     const afterFirstDeletion = loadProject();
     const dropBackupKey = Object.keys(afterFirstDeletion).find((name) => name.includes('Drop'));
     expect(dropBackupKey).toBeDefined();
-    expect(afterFirstDeletion[dropBackupKey]).toEqual({ gearList: '<ul>Drop</ul>', projectInfo: null });
+    expect(afterFirstDeletion[dropBackupKey]).toEqual(withGenerationFlag({ gearList: '<ul>Drop</ul>', projectInfo: null }));
 
     deleteProject('Keep');
     expect(loadProject('Keep')).toBeNull();
@@ -1978,7 +1983,7 @@ describe('export/import all data', () => {
       expect(loadSetups()).toEqual({ A: { foo: 1 } });
       expect(loadSessionState()).toEqual({ camera: 'CamA' });
     expect(loadFeedback()).toEqual({ note: 'hi' });
-    expect(loadProject('Proj')).toEqual({ gearList: '<ol></ol>', projectInfo: null });
+    expect(loadProject('Proj')).toEqual(withGenerationFlag({ gearList: '<ol></ol>', projectInfo: null }));
     expect(loadFavorites()).toEqual({ cat: ['B'] });
     expect(loadAutoGearRules()).toEqual(data.autoGearRules);
     expect(loadAutoGearBackups()).toEqual(data.autoGearBackups);
@@ -2068,7 +2073,7 @@ describe('export/import all data', () => {
 
     expect(loadFeedback()).toEqual({ message: 'snapshot' });
     expect(loadFavorites()).toEqual({ camera: ['Mini'] });
-    expect(loadProject('Snapshot')).toEqual({ gearList: '<p>Snapshot</p>', projectInfo: null });
+    expect(loadProject('Snapshot')).toEqual(withGenerationFlag({ gearList: '<p>Snapshot</p>', projectInfo: null }));
 
     expect(loadAutoGearRules()).toEqual([
       { id: 'snap-rule', label: 'Snap', scenarios: [], add: [], remove: [] },
@@ -2159,7 +2164,7 @@ describe('export/import all data', () => {
       ]
     };
     importAllData(data);
-    expect(loadProject('OldProj')).toEqual({ gearList: '<ul></ul>', projectInfo: null });
+    expect(loadProject('OldProj')).toEqual(withGenerationFlag({ gearList: '<ul></ul>', projectInfo: null }, false));
   });
 
   test('importAllData merges project map without overwriting existing entries', () => {
@@ -2173,14 +2178,14 @@ describe('export/import all data', () => {
     };
     importAllData(data);
     const projects = loadProject();
-    expect(projects.Duplicate).toEqual({ gearList: '<ul>Original</ul>', projectInfo: null });
+    expect(projects.Duplicate).toEqual(withGenerationFlag({ gearList: '<ul>Original</ul>', projectInfo: null }));
     const duplicateKeys = Object.keys(projects).filter((name) => name.toLowerCase().startsWith('duplicate'));
     expect(duplicateKeys.length).toBe(2);
     const importedDuplicate = duplicateKeys.find((name) => name !== 'Duplicate');
     expect(importedDuplicate).toBeTruthy();
-    expect(projects[importedDuplicate]).toEqual({ gearList: '<ul>Replacement</ul>', projectInfo: { projectName: 'Dup' } });
-    expect(projects.Fresh).toEqual({ gearList: '<ul>Fresh</ul>', projectInfo: { projectName: 'Fresh' } });
-    expect(projects.Existing).toEqual({ gearList: '<ul>Existing</ul>', projectInfo: null });
+    expect(projects[importedDuplicate]).toEqual(withGenerationFlag({ gearList: '<ul>Replacement</ul>', projectInfo: { projectName: 'Dup' } }));
+    expect(projects.Fresh).toEqual(withGenerationFlag({ gearList: '<ul>Fresh</ul>', projectInfo: { projectName: 'Fresh' } }));
+    expect(projects.Existing).toEqual(withGenerationFlag({ gearList: '<ul>Existing</ul>', projectInfo: null }));
   });
 
   test('importAllData merges legacy project arrays without replacing existing ones', () => {
@@ -2193,29 +2198,29 @@ describe('export/import all data', () => {
     };
     importAllData(data);
     const projects = loadProject();
-    expect(projects.Legacy).toEqual({ gearList: '<ul>Old</ul>', projectInfo: null });
+    expect(projects.Legacy).toEqual(withGenerationFlag({ gearList: '<ul>Old</ul>', projectInfo: null }));
     const legacyKeys = Object.keys(projects).filter((name) => name.toLowerCase().startsWith('legacy'));
     expect(legacyKeys.length).toBe(2);
     const importedLegacy = legacyKeys.find((name) => name !== 'Legacy');
     expect(importedLegacy).toBeTruthy();
-    expect(projects[importedLegacy]).toEqual({ gearList: '<ul>New</ul>', projectInfo: null });
+    expect(projects[importedLegacy]).toEqual(withGenerationFlag({ gearList: '<ul>New</ul>', projectInfo: null }));
     const unnamedEntry = Object.entries(projects).find(([name, proj]) => {
       return name !== 'Legacy' && proj.gearList === '<ul>Unnamed</ul>';
     });
     expect(unnamedEntry).toBeDefined();
-    expect(unnamedEntry[1]).toEqual({ gearList: '<ul>Unnamed</ul>', projectInfo: null });
+    expect(unnamedEntry[1]).toEqual(withGenerationFlag({ gearList: '<ul>Unnamed</ul>', projectInfo: null }));
   });
 
   test('importAllData handles legacy project string payload', () => {
     const data = { project: '<section>Legacy</section>' };
     importAllData(data);
-    expect(loadProject('')).toEqual({ gearList: '<section>Legacy</section>', projectInfo: null });
+    expect(loadProject('')).toEqual(withGenerationFlag({ gearList: '<section>Legacy</section>', projectInfo: null }));
   });
 
   test('importAllData handles legacy project map entries stored as strings', () => {
     const data = { project: { Legacy: '<div>Legacy</div>' } };
     importAllData(data);
-    expect(loadProject('Legacy')).toEqual({ gearList: '<div>Legacy</div>', projectInfo: null });
+    expect(loadProject('Legacy')).toEqual(withGenerationFlag({ gearList: '<div>Legacy</div>', projectInfo: null }));
   });
 
   test('importAllData handles project map entries stored as JSON strings', () => {
@@ -2245,7 +2250,7 @@ describe('export/import all data', () => {
   test('importAllData handles legacy single gearList', () => {
     const data = { gearList: '<p></p>' };
     importAllData(data);
-    expect(loadProject('')).toEqual({ gearList: '<p></p>', projectInfo: null });
+    expect(loadProject('')).toEqual(withGenerationFlag({ gearList: '<p></p>', projectInfo: null }, false));
   });
 
   test('loadProject normalizes stored JSON string payloads', () => {
@@ -2382,11 +2387,11 @@ describe('export/import all data', () => {
     });
 
     const projects = loadProject();
-    expect(projects.Legacy).toEqual({ gearList: '<div>Legacy</div>', projectInfo: null });
-    expect(projects.WithInfo).toEqual({
+    expect(projects.Legacy).toEqual(withGenerationFlag({ gearList: '<div>Legacy</div>', projectInfo: null }));
+    expect(projects.WithInfo).toEqual(withGenerationFlag({
       gearList: '<div>Info</div>',
       projectInfo: { projectName: 'WithInfo' },
-    });
+    }));
   });
 
   test('importAllData parses project JSON arrays stored as strings', () => {
@@ -2398,13 +2403,13 @@ describe('export/import all data', () => {
     });
 
     const projects = loadProject();
-    expect(projects.JsonProject).toEqual({
+    expect(projects.JsonProject).toEqual(withGenerationFlag({
       gearList: '<section>JSON</section>',
       projectInfo: null,
-    });
+    }));
     const inlineEntry = Object.entries(projects).find(([, value]) => value.gearList === '<article>Inline</article>');
     expect(inlineEntry).toBeDefined();
-    expect(inlineEntry[1]).toEqual({ gearList: '<article>Inline</article>', projectInfo: null });
+    expect(inlineEntry[1]).toEqual(withGenerationFlag({ gearList: '<article>Inline</article>', projectInfo: null }));
   });
 
   test('importAllData normalizes nested legacy project payloads', () => {

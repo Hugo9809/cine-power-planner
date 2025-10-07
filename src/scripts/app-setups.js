@@ -945,6 +945,7 @@ function downloadSharedProject(shareFileName, includeAutoGear) {
     currentSetup.gearSelectors = gearSelectors;
   }
   const combinedHtml = gearListGetCurrentHtmlImpl();
+  currentSetup.gearListAndProjectRequirementsGenerated = Boolean(combinedHtml);
   if (combinedHtml) {
     const { projectHtml, gearHtml } = gearListGetSafeHtmlSectionsImpl(combinedHtml);
     if (projectHtml) currentSetup.projectHtml = projectHtml;
@@ -5011,6 +5012,7 @@ function saveCurrentGearList() {
     if (factoryResetInProgress) return;
     if (isProjectPersistenceSuspended()) return;
     const html = gearListGetCurrentHtmlImpl();
+    const gearListGenerated = Boolean(html);
     const info = projectForm ? collectProjectFormData() : {};
     info.sliderBowl = getSetupsCoreValue('getSliderBowlValue');
     info.easyrig = getSetupsCoreValue('getEasyrigValue');
@@ -5128,7 +5130,8 @@ function saveCurrentGearList() {
     if (typeof saveProject === 'function' && typeof effectiveStorageKey === 'string') {
         const payload = {
             projectInfo: projectInfoSnapshot,
-            gearList: html
+            gearList: html,
+            gearListAndProjectRequirementsGenerated: gearListGenerated
         };
         if (powerSelectionSnapshot) {
             payload.powerSelection = powerSelectionSnapshot;
@@ -5169,6 +5172,11 @@ function saveCurrentGearList() {
         }
     } else if (setup.gearList !== '') {
         setup.gearList = '';
+        changed = true;
+    }
+
+    if (setup.gearListAndProjectRequirementsGenerated !== gearListGenerated) {
+        setup.gearListAndProjectRequirementsGenerated = gearListGenerated;
         changed = true;
     }
 
