@@ -209,7 +209,132 @@
   ]);
 
   function isPlainObject(value) {
-    return value !== null && typeof value === 'object' && !Array.isArray(value);
+    if (value === null || typeof value !== 'object') {
+      return false;
+    }
+    if (Array.isArray(value)) {
+      return false;
+    }
+    const tag = Object.prototype.toString.call(value);
+    if (tag !== '[object Object]') {
+      return false;
+    }
+    let prototype;
+    try {
+      prototype = Object.getPrototypeOf(value);
+    } catch (error) {
+      void error;
+      return false;
+    }
+    return prototype === null || prototype === Object.prototype;
+  }
+
+  function isMapLike(value) {
+    if (!value || typeof value !== 'object') {
+      return false;
+    }
+    const tag = Object.prototype.toString.call(value);
+    if (tag === '[object Map]') {
+      return true;
+    }
+    if (typeof Map !== 'undefined') {
+      try {
+        if (value instanceof Map) {
+          return true;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+    return (
+      typeof value.size === 'number'
+      && typeof value.entries === 'function'
+      && typeof value.forEach === 'function'
+      && typeof value.get === 'function'
+      && typeof value.set === 'function'
+    );
+  }
+
+  function convertMapLikeKey(key) {
+    if (typeof key === 'string') {
+      return key;
+    }
+    if (typeof key === 'number' || typeof key === 'boolean' || typeof key === 'bigint') {
+      return String(key);
+    }
+    if (typeof key === 'symbol') {
+      return key.description || key.toString();
+    }
+    if (key && typeof key === 'object') {
+      try {
+        const json = JSON.stringify(key);
+        if (json && json !== '{}') {
+          return json;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+    try {
+      return String(key);
+    } catch (error) {
+      void error;
+    }
+    return null;
+  }
+
+  function convertMapLikeToObject(mapLike) {
+    if (!isMapLike(mapLike)) {
+      return null;
+    }
+
+    const snapshot = Object.create(null);
+    const assignEntry = (rawKey, value) => {
+      const key = convertMapLikeKey(rawKey);
+      if (key === null || key === undefined) {
+        return;
+      }
+      if (Object.prototype.hasOwnProperty.call(snapshot, key)) {
+        return;
+      }
+      snapshot[key] = value;
+    };
+
+    let iterated = false;
+
+    if (typeof mapLike.entries === 'function') {
+      try {
+        const iterator = mapLike.entries();
+        if (iterator && typeof iterator.next === 'function') {
+          for (let step = iterator.next(); !step.done; step = iterator.next()) {
+            const entry = step && step.value;
+            if (Array.isArray(entry) && entry.length >= 2) {
+              assignEntry(entry[0], entry[1]);
+            }
+          }
+          iterated = true;
+        }
+      } catch (error) {
+        console.warn('Unable to iterate map-like backup value entries', error);
+      }
+    }
+
+    if (!iterated && typeof mapLike.forEach === 'function') {
+      try {
+        mapLike.forEach((value, key) => {
+          assignEntry(key, value);
+        });
+        iterated = true;
+      } catch (error) {
+        console.warn('Unable to iterate map-like backup value via forEach', error);
+      }
+    }
+
+    if (!Object.keys(snapshot).length && !iterated) {
+      return null;
+    }
+
+    return snapshot;
   }
 
   function formatFullBackupFilename(date) {
@@ -459,6 +584,12 @@
     if (!section) return null;
 
     let source = section;
+    if (isMapLike(source)) {
+      const converted = convertMapLikeToObject(source);
+      if (converted) {
+        source = converted;
+      }
+    }
     if (typeof source === 'string') {
       let parsed = null;
       try {
@@ -513,11 +644,23 @@
   }
 
   function extractFirstMatchingSnapshot(source, keys) {
-    if (!isPlainObject(source)) return { snapshot: null, keyUsed: null };
+    let resolvedSource = source;
+    if (!isPlainObject(resolvedSource)) {
+      if (isMapLike(resolvedSource)) {
+        const converted = convertMapLikeToObject(resolvedSource);
+        if (converted && isPlainObject(converted)) {
+          resolvedSource = converted;
+        } else {
+          return { snapshot: null, keyUsed: null };
+        }
+      } else {
+        return { snapshot: null, keyUsed: null };
+      }
+    }
     for (let index = 0; index < keys.length; index += 1) {
       const key = keys[index];
-      if (!Object.prototype.hasOwnProperty.call(source, key)) continue;
-      const snapshot = convertEntriesToSnapshot(source[key]);
+      if (!Object.prototype.hasOwnProperty.call(resolvedSource, key)) continue;
+      const snapshot = convertEntriesToSnapshot(resolvedSource[key]);
       if (snapshot) {
         return { snapshot, keyUsed: key };
       }
@@ -579,9 +722,16 @@
   }
 
   function buildLegacyStorageFromRoot(source, metadataKeys) {
-    if (!isPlainObject(source)) return null;
+    let resolvedSource = source;
+    if (isMapLike(resolvedSource)) {
+      const converted = convertMapLikeToObject(resolvedSource);
+      if (converted) {
+        resolvedSource = converted;
+      }
+    }
+    if (!isPlainObject(resolvedSource)) return null;
     const snapshot = Object.create(null);
-    Object.entries(source).forEach(([key, value]) => {
+    Object.entries(resolvedSource).forEach(([key, value]) => {
       if (metadataKeys.has(key)) return;
       if (!looksLikeStoredSettingKey(key)) return;
       snapshot[key] = normalizeStoredValue(value);
@@ -590,6 +740,13 @@
   }
 
   function convertLegacyDataEntriesToObject(entries) {
+    if (isMapLike(entries)) {
+      const converted = convertMapLikeToObject(entries);
+      if (converted) {
+        return converted;
+      }
+    }
+
     if (!Array.isArray(entries)) {
       return null;
     }
@@ -675,6 +832,13 @@
   }
 
   function normalizeBackupDataSection(section) {
+    if (isMapLike(section)) {
+      const converted = convertMapLikeToObject(section);
+      if (converted) {
+        return normalizeBackupDataSection(converted);
+      }
+    }
+
     if (isPlainObject(section)) {
       return section;
     }
@@ -906,7 +1070,15 @@
   }
 
   function extractBackupSections(raw) {
-    const parsed = isPlainObject(raw) ? raw : {};
+    let parsed;
+    if (isPlainObject(raw)) {
+      parsed = raw;
+    } else if (isMapLike(raw)) {
+      const converted = convertMapLikeToObject(raw);
+      parsed = isPlainObject(converted) ? converted : {};
+    } else {
+      parsed = {};
+    }
     const versionValue =
       typeof parsed.version === 'string'
         ? parsed.version

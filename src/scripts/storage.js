@@ -3272,6 +3272,117 @@ function isPlainObject(val) {
   return false;
 }
 
+function isMapLike(value) {
+  if (!value || typeof value !== 'object') {
+    return false;
+  }
+
+  const tag = Object.prototype.toString.call(value);
+  if (tag === '[object Map]') {
+    return true;
+  }
+
+  if (typeof Map !== 'undefined') {
+    try {
+      if (value instanceof Map) {
+        return true;
+      }
+    } catch (error) {
+      void error;
+    }
+  }
+
+  return (
+    typeof value.size === 'number'
+    && typeof value.entries === 'function'
+    && typeof value.forEach === 'function'
+    && typeof value.get === 'function'
+    && typeof value.set === 'function'
+  );
+}
+
+function convertMapLikeKey(key) {
+  if (typeof key === 'string') {
+    return key;
+  }
+  if (typeof key === 'number' || typeof key === 'boolean' || typeof key === 'bigint') {
+    return String(key);
+  }
+  if (typeof key === 'symbol') {
+    return key.description || key.toString();
+  }
+  if (key && typeof key === 'object') {
+    try {
+      const json = JSON.stringify(key);
+      if (json && json !== '{}') {
+        return json;
+      }
+    } catch (error) {
+      void error;
+    }
+  }
+  try {
+    return String(key);
+  } catch (error) {
+    void error;
+  }
+  return null;
+}
+
+function convertMapLikeToObject(mapLike) {
+  if (!isMapLike(mapLike)) {
+    return null;
+  }
+
+  const snapshot = Object.create(null);
+  const assignEntry = (rawKey, value) => {
+    const key = convertMapLikeKey(rawKey);
+    if (key === null || key === undefined) {
+      return;
+    }
+    if (Object.prototype.hasOwnProperty.call(snapshot, key)) {
+      return;
+    }
+    snapshot[key] = value;
+  };
+
+  let iterated = false;
+
+  if (typeof mapLike.entries === 'function') {
+    try {
+      const iterator = mapLike.entries();
+      if (iterator && typeof iterator.next === 'function') {
+        for (let step = iterator.next(); !step.done; step = iterator.next()) {
+          const entry = step && step.value;
+          if (Array.isArray(entry) && entry.length >= 2) {
+            assignEntry(entry[0], entry[1]);
+          }
+        }
+        iterated = true;
+      }
+    } catch (error) {
+      console.warn('Unable to iterate map-like value entries', error);
+    }
+  }
+
+  if (!iterated && typeof mapLike.forEach === 'function') {
+    try {
+      mapLike.forEach((value, key) => {
+        assignEntry(key, value);
+      });
+      iterated = true;
+    } catch (error) {
+      console.warn('Unable to iterate map-like value via forEach', error);
+    }
+  }
+
+  if (!Object.keys(snapshot).length && !iterated) {
+    return null;
+  }
+
+  return snapshot;
+}
+
 var LEGACY_LONG_GOP_TOKEN_REGEX = /^long[\s_-]?gop$/i;
 
 function inferLegacyLongGopCompressionVariant(value) {
@@ -6291,59 +6402,105 @@ function normalizeProject(data) {
     }
     return normalizeProject({ gearList: data, projectInfo: null });
   }
+  if (isMapLike(data)) {
+    const converted = convertMapLikeToObject(data);
+    if (converted) {
+      return normalizeProject(converted);
+    }
+    return null;
+  }
   if (isPlainObject(data)) {
     // New format { gearList, projectInfo }
     if (Object.prototype.hasOwnProperty.call(data, "gearList") || Object.prototype.hasOwnProperty.call(data, "projectInfo")) {
-      let normalizedProjectInfo = isPlainObject(data.projectInfo)
-        ? data.projectInfo
+      const projectContainer = isMapLike(data.project)
+        ? convertMapLikeToObject(data.project)
+        : data.project;
+
+      let projectInfoSource = data.projectInfo;
+      if (isMapLike(projectInfoSource)) {
+        projectInfoSource = convertMapLikeToObject(projectInfoSource);
+      }
+
+      let normalizedProjectInfo = isPlainObject(projectInfoSource)
+        ? projectInfoSource
         : null;
-      if (!normalizedProjectInfo && typeof data.projectInfo === "string") {
-        const parsedInfo = tryParseJSONLike(data.projectInfo);
+      if (!normalizedProjectInfo && typeof projectInfoSource === "string") {
+        const parsedInfo = tryParseJSONLike(projectInfoSource);
         if (parsedInfo.success && isPlainObject(parsedInfo.parsed)) {
           normalizedProjectInfo = parsedInfo.parsed;
         }
       }
-      if (!normalizedProjectInfo && isPlainObject(data.project)) {
-        if (isPlainObject(data.project.projectInfo)) {
-          normalizedProjectInfo = data.project.projectInfo;
-        } else if (typeof data.project.projectInfo === "string") {
-          const parsedProjectInfo = tryParseJSONLike(data.project.projectInfo);
+      if (!normalizedProjectInfo && isPlainObject(projectContainer)) {
+        let nestedProjectInfo = projectContainer.projectInfo;
+        if (isMapLike(nestedProjectInfo)) {
+          nestedProjectInfo = convertMapLikeToObject(nestedProjectInfo);
+        }
+        if (isPlainObject(nestedProjectInfo)) {
+          normalizedProjectInfo = nestedProjectInfo;
+        } else if (typeof nestedProjectInfo === "string") {
+          const parsedProjectInfo = tryParseJSONLike(nestedProjectInfo);
           if (parsedProjectInfo.success && isPlainObject(parsedProjectInfo.parsed)) {
             normalizedProjectInfo = parsedProjectInfo.parsed;
           }
         }
       }
 
-      let normalizedAutoGearRules = Array.isArray(data.autoGearRules) && data.autoGearRules.length
-        ? data.autoGearRules
-        : null;
-      if (!normalizedAutoGearRules && typeof data.autoGearRules === "string") {
-        const parsedRules = tryParseJSONLike(data.autoGearRules);
-        if (parsedRules.success && Array.isArray(parsedRules.parsed) && parsedRules.parsed.length) {
-          normalizedAutoGearRules = parsedRules.parsed;
+      let normalizedAutoGearRules = null;
+      const assignAutoGearRules = (source) => {
+        if (normalizedAutoGearRules && normalizedAutoGearRules.length) {
+          return;
         }
-      }
-      if (!normalizedAutoGearRules && isPlainObject(data.project)) {
-        const nestedRules = data.project.autoGearRules;
-        if (Array.isArray(nestedRules) && nestedRules.length) {
-          normalizedAutoGearRules = nestedRules;
-        } else if (typeof nestedRules === "string") {
-          const parsedNestedRules = tryParseJSONLike(nestedRules);
-          if (parsedNestedRules.success && Array.isArray(parsedNestedRules.parsed) && parsedNestedRules.parsed.length) {
-            normalizedAutoGearRules = parsedNestedRules.parsed;
+        if (source === null || source === undefined) {
+          return;
+        }
+        let candidate = source;
+        if (isMapLike(candidate)) {
+          const convertedRules = convertMapLikeToObject(candidate);
+          if (convertedRules) {
+            candidate = Object.values(convertedRules).filter((entry) => entry !== null && entry !== undefined);
           }
         }
+        if (Array.isArray(candidate) && candidate.length) {
+          normalizedAutoGearRules = candidate;
+          return;
+        }
+        if (isPlainObject(candidate)) {
+          const values = Object.values(candidate).filter((entry) => entry !== null && entry !== undefined);
+          if (values.length) {
+            normalizedAutoGearRules = values;
+            return;
+          }
+        }
+        if (typeof candidate === "string") {
+          const parsedRules = tryParseJSONLike(candidate);
+          if (parsedRules.success && Array.isArray(parsedRules.parsed) && parsedRules.parsed.length) {
+            normalizedAutoGearRules = parsedRules.parsed;
+          }
+        }
+      };
+
+      assignAutoGearRules(data.autoGearRules);
+      if (!normalizedAutoGearRules && isPlainObject(projectContainer)) {
+        assignAutoGearRules(projectContainer.autoGearRules);
       }
 
-      let gearListSource = data.gearList;
+      let gearListSource = isMapLike(data.gearList)
+        ? convertMapLikeToObject(data.gearList)
+        : data.gearList;
       if (
         (gearListSource === null
           || gearListSource === undefined
           || (typeof gearListSource === "string" && !gearListSource))
-        && isPlainObject(data.project)
-        && Object.prototype.hasOwnProperty.call(data.project, "gearList")
+        && isPlainObject(projectContainer)
+        && Object.prototype.hasOwnProperty.call(projectContainer, "gearList")
       ) {
-        gearListSource = data.project.gearList;
+        gearListSource = projectContainer.gearList;
+      }
+      if (isMapLike(gearListSource)) {
+        const convertedGearList = convertMapLikeToObject(gearListSource);
+        if (convertedGearList) {
+          gearListSource = convertedGearList;
+        }
       }
 
       let normalizedGearList =
@@ -6352,17 +6509,23 @@ function normalizeProject(data) {
           : "";
 
       let normalizedGearSelectors = null;
-      let normalizedPowerSelection = normalizeProjectPowerSelection(data.powerSelection);
-      if (isPlainObject(data.gearSelectors)) {
-        normalizedGearSelectors = cloneProjectGearSelectors(data.gearSelectors);
-      } else if (typeof data.gearSelectors === "string") {
-        const parsedSelectors = tryParseJSONLike(data.gearSelectors);
+      const gearSelectorsSource = isMapLike(data.gearSelectors)
+        ? convertMapLikeToObject(data.gearSelectors)
+        : data.gearSelectors;
+      if (isPlainObject(gearSelectorsSource)) {
+        normalizedGearSelectors = cloneProjectGearSelectors(gearSelectorsSource);
+      } else if (typeof gearSelectorsSource === "string") {
+        const parsedSelectors = tryParseJSONLike(gearSelectorsSource);
         if (parsedSelectors.success && isPlainObject(parsedSelectors.parsed)) {
           normalizedGearSelectors = cloneProjectGearSelectors(parsedSelectors.parsed);
         }
       }
-      if (!normalizedPowerSelection && isPlainObject(data.powerSelection)) {
-        normalizedPowerSelection = normalizeProjectPowerSelection(data.powerSelection);
+      const powerSelectionSource = isMapLike(data.powerSelection)
+        ? convertMapLikeToObject(data.powerSelection)
+        : data.powerSelection;
+      let normalizedPowerSelection = normalizeProjectPowerSelection(powerSelectionSource);
+      if (!normalizedPowerSelection && isPlainObject(powerSelectionSource)) {
+        normalizedPowerSelection = normalizeProjectPowerSelection(powerSelectionSource);
       }
 
       if (typeof normalizedGearList === "string") {
@@ -6415,12 +6578,18 @@ function normalizeProject(data) {
           : normalizedGearList,
         projectInfo: normalizedProjectInfo ? cloneProjectInfo(normalizedProjectInfo) : null,
       };
-      let normalizedDiagramPositions = normalizeDiagramPositions(data.diagramPositions);
+      const diagramSource = isMapLike(data.diagramPositions)
+        ? convertMapLikeToObject(data.diagramPositions)
+        : data.diagramPositions;
+      let normalizedDiagramPositions = normalizeDiagramPositions(diagramSource);
       if (
         Object.keys(normalizedDiagramPositions).length === 0
-        && isPlainObject(data.project)
+        && isPlainObject(projectContainer)
       ) {
-        normalizedDiagramPositions = normalizeDiagramPositions(data.project.diagramPositions);
+        const nestedDiagramSource = isMapLike(projectContainer.diagramPositions)
+          ? convertMapLikeToObject(projectContainer.diagramPositions)
+          : projectContainer.diagramPositions;
+        normalizedDiagramPositions = normalizeDiagramPositions(nestedDiagramSource);
       }
       if (Object.keys(normalizedDiagramPositions).length) {
         normalized.diagramPositions = cloneDiagramPositionsForStorage(normalizedDiagramPositions);
@@ -6432,16 +6601,16 @@ function normalizeProject(data) {
       if (typeof data.gearHtml === 'string') {
         htmlSources.push(data.gearHtml);
       }
-      if (isPlainObject(data.project)) {
-        if (typeof data.project.projectHtml === 'string') {
-          htmlSources.push(data.project.projectHtml);
+      if (isPlainObject(projectContainer)) {
+        if (typeof projectContainer.projectHtml === 'string') {
+          htmlSources.push(projectContainer.projectHtml);
         }
-        if (typeof data.project.gearHtml === 'string') {
-          htmlSources.push(data.project.gearHtml);
+        if (typeof projectContainer.gearHtml === 'string') {
+          htmlSources.push(projectContainer.gearHtml);
         }
       }
-      if (isPlainObject(data.gearList) && typeof data.gearList.gearHtml === 'string') {
-        htmlSources.push(data.gearList.gearHtml);
+      if (isPlainObject(gearListSource) && typeof gearListSource.gearHtml === 'string') {
+        htmlSources.push(gearListSource.gearHtml);
       }
       if (isPlainObject(normalizedGearList)) {
         if (typeof normalizedGearList.projectHtml === 'string') {
@@ -6453,14 +6622,24 @@ function normalizeProject(data) {
       } else if (typeof normalizedGearList === 'string') {
         htmlSources.push(normalizedGearList);
       }
-      if (!normalizedGearSelectors && isPlainObject(data.project) && isPlainObject(data.project.gearSelectors)) {
-        normalizedGearSelectors = cloneProjectGearSelectors(data.project.gearSelectors);
+      if (!normalizedGearSelectors && isPlainObject(projectContainer)) {
+        const nestedSelectorsSource = isMapLike(projectContainer.gearSelectors)
+          ? convertMapLikeToObject(projectContainer.gearSelectors)
+          : projectContainer.gearSelectors;
+        if (isPlainObject(nestedSelectorsSource)) {
+          normalizedGearSelectors = cloneProjectGearSelectors(nestedSelectorsSource);
+        }
       }
       if (!normalizedGearSelectors && isPlainObject(normalizedGearList) && isPlainObject(normalizedGearList.gearSelectors)) {
         normalizedGearSelectors = cloneProjectGearSelectors(normalizedGearList.gearSelectors);
       }
-      if (!normalizedPowerSelection && isPlainObject(data.project) && isPlainObject(data.project.powerSelection)) {
-        normalizedPowerSelection = normalizeProjectPowerSelection(data.project.powerSelection);
+      if (!normalizedPowerSelection && isPlainObject(projectContainer)) {
+        const nestedPowerSelection = isMapLike(projectContainer.powerSelection)
+          ? convertMapLikeToObject(projectContainer.powerSelection)
+          : projectContainer.powerSelection;
+        if (isPlainObject(nestedPowerSelection)) {
+          normalizedPowerSelection = normalizeProjectPowerSelection(nestedPowerSelection);
+        }
       }
       if (!normalizedProjectInfo) {
         for (let i = 0; i < htmlSources.length; i += 1) {
@@ -7272,19 +7451,55 @@ function importProjectCollection(collection, ensureImporter, fallbackLabel = "Im
       return importProjectCollection(parsed.parsed, ensureImporter, fallbackLabel);
     }
 
-    ensureImporter()("", collection);
+    const importProject = ensureImporter();
+    importProject("", collection, fallbackLabel);
     return true;
   }
 
+  if (isMapLike(collection)) {
+    const converted = convertMapLikeToObject(collection);
+    if (converted) {
+      return importProjectCollection(Object.entries(converted), ensureImporter, fallbackLabel);
+    }
+    return false;
+  }
+
   if (Array.isArray(collection)) {
+    const entries = collection
+      .map((proj) => {
+        if (proj === null || proj === undefined) {
+          return null;
+        }
+        if (Array.isArray(proj) && proj.length >= 2) {
+          return { name: proj[0], project: proj[1] };
+        }
+        if (isPlainObject(proj) && typeof proj.name === "string") {
+          return { name: proj.name, project: proj };
+        }
+        return { name: '', project: proj };
+      })
+      .filter(Boolean);
+
+    if (!entries.length) {
+      return true;
+    }
+
     const importProject = ensureImporter();
-    collection.forEach((proj, idx) => {
-      if (proj === null || proj === undefined) return;
-      const rawName =
-        isPlainObject(proj) && typeof proj.name === "string"
-          ? proj.name
-          : "";
-      importProject(rawName, proj, `${fallbackLabel} ${idx + 1}`);
+    let count = 0;
+    entries.forEach(({ name, project }) => {
+      if (project === null || project === undefined) {
+        return;
+      }
+      count += 1;
+      let normalizedName = '';
+      if (typeof name === 'string') {
+        normalizedName = name;
+      } else if (typeof name === 'number' || typeof name === 'boolean' || typeof name === 'bigint') {
+        normalizedName = String(name);
+      } else if (typeof name === 'symbol') {
+        normalizedName = name.description || name.toString();
+      }
+      importProject(normalizedName, project, `${fallbackLabel} ${count}`);
     });
     return true;
   }
@@ -7292,7 +7507,8 @@ function importProjectCollection(collection, ensureImporter, fallbackLabel = "Im
   if (isPlainObject(collection)) {
     const importProject = ensureImporter();
     Object.entries(collection).forEach(([name, proj]) => {
-      importProject(name, proj);
+      const normalizedName = typeof name === 'string' ? name : convertMapLikeKey(name);
+      importProject(typeof normalizedName === 'string' ? normalizedName : '', proj);
     });
     return true;
   }
@@ -7470,6 +7686,14 @@ var recordFullBackupHistoryEntry = entry => {
 
 function normalizeImportedFullBackupHistory(value) {
   if (value === null || value === undefined) {
+    return [];
+  }
+
+  if (isMapLike(value)) {
+    const converted = convertMapLikeToObject(value);
+    if (converted) {
+      return normalizeImportedFullBackupHistory(Object.values(converted));
+    }
     return [];
   }
 
@@ -8482,6 +8706,14 @@ function normalizeImportedBoolean(value) {
 }
 
 function normalizeImportedArray(value, fallbackKeys = [], filterFn = null) {
+  if (isMapLike(value)) {
+    const converted = convertMapLikeToObject(value);
+    if (converted) {
+      return normalizeImportedArray(converted, fallbackKeys, filterFn);
+    }
+    return [];
+  }
+
   if (Array.isArray(value)) {
     return filterFn
       ? value.filter((entry) => filterFn(entry))
@@ -9244,10 +9476,11 @@ function importAllData(allData, options = {}) {
 
   if (allData.project) {
     importProjectCollection(allData.project, ensureProjectImporter);
-  } else if (allData.projects) {
+  }
+  if (allData.projects) {
     // Legacy plural key. Accept object map or array of named projects.
     importProjectCollection(allData.projects, ensureProjectImporter);
-  } else if (typeof allData.gearList === "string") {
+  } else if (!allData.project && typeof allData.gearList === "string") {
     // Legacy export format stored just the gear list HTML
     ensureProjectImporter()("", { gearList: allData.gearList });
   }

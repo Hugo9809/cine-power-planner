@@ -168,5 +168,33 @@ describe('backup compatibility utilities', () => {
     );
     expect(sections.sessionStorage).toBeNull();
   });
+
+  test('extractBackupSections converts Map-based backup payloads', () => {
+    const { extractBackupSections } = loadApp();
+
+    const dataMap = new Map();
+    dataMap.set('setups', new Map([
+      ['MapSetup', { name: 'MapSetup', items: [] }],
+    ]));
+
+    const rootMap = new Map();
+    rootMap.set('data', dataMap);
+    rootMap.set('fullBackups', new Map([
+      ['entry', { createdAt: '2024-03-01T00:00:00.000Z' }],
+    ]));
+    rootMap.set('settings', new Map([
+      ['cameraPowerPlanner_setups', { Primary: { name: 'Primary', items: [] } }],
+    ]));
+
+    const sections = extractBackupSections(rootMap);
+
+    expect(sections.data.setups).toEqual({ MapSetup: { name: 'MapSetup', items: [] } });
+    expect(sections.data.fullBackups).toEqual([
+      { createdAt: '2024-03-01T00:00:00.000Z' },
+    ]);
+    expect(sections.settings.cameraPowerPlanner_setups).toBe(
+      JSON.stringify({ Primary: { name: 'Primary', items: [] } }),
+    );
+  });
 });
 

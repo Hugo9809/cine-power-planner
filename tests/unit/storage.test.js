@@ -2220,6 +2220,43 @@ describe('export/import all data', () => {
     expect(unnamedEntry[1]).toEqual(withGenerationFlag({ gearList: '<ul>Unnamed</ul>', projectInfo: null }));
   });
 
+  test('importAllData handles project collections stored as Map instances', () => {
+    const mappedProjects = new Map();
+    mappedProjects.set('Mapped', { gearList: '<ul>Mapped</ul>' });
+    mappedProjects.set(7, { gearList: '<ul>Seven</ul>' });
+
+    const singleProjectMap = new Map();
+    singleProjectMap.set('Solo', { gearList: '<ul>Solo</ul>' });
+
+    importAllData({
+      projects: mappedProjects,
+      project: singleProjectMap,
+    });
+
+    const projectKeys = Object.keys(loadProject());
+    expect(projectKeys).toEqual(expect.arrayContaining(['Mapped', '7', 'Solo']));
+    expect(loadProject('Mapped')).toEqual(withGenerationFlag({ gearList: '<ul>Mapped</ul>', projectInfo: null }));
+    expect(loadProject('7')).toEqual(withGenerationFlag({ gearList: '<ul>Seven</ul>', projectInfo: null }));
+    expect(loadProject('Solo')).toEqual(withGenerationFlag({ gearList: '<ul>Solo</ul>', projectInfo: null }));
+  });
+
+  test('importAllData handles project tuple arrays with explicit names', () => {
+    importAllData({
+      projects: [
+        ['TupleProject', { gearList: '<ul>Tuple</ul>' }],
+        ['  ', { gearList: '<ul>Blank</ul>' }],
+        [[1, 2, 3], { gearList: '<ul>ArrayKey</ul>' }],
+      ],
+    });
+
+    const projects = loadProject();
+    expect(projects.TupleProject).toEqual(withGenerationFlag({ gearList: '<ul>Tuple</ul>', projectInfo: null }));
+    const blankEntry = Object.entries(projects).find(([, proj]) => proj.gearList === '<ul>Blank</ul>');
+    expect(blankEntry).toBeDefined();
+    const arrayKeyEntry = Object.entries(projects).find(([, proj]) => proj.gearList === '<ul>ArrayKey</ul>');
+    expect(arrayKeyEntry).toBeDefined();
+  });
+
   test('importAllData handles legacy project string payload', () => {
     const data = { project: '<section>Legacy</section>' };
     importAllData(data);
@@ -2362,6 +2399,33 @@ describe('export/import all data', () => {
     ]);
   });
 
+  test('importAllData accepts automatic gear data stored as Map instances', () => {
+    const rulesMap = new Map();
+    rulesMap.set('map-rule', { id: 'map-rule', label: 'Map rule', scenarios: [], add: [], remove: [] });
+
+    const backupsMap = new Map();
+    backupsMap.set('map-backup', { id: 'map-backup', label: 'Map backup', createdAt: 789, rules: [] });
+
+    const presetsMap = new Map();
+    presetsMap.set('map-preset', { id: 'map-preset', label: 'Map preset', rules: [] });
+
+    importAllData({
+      autoGearRules: rulesMap,
+      autoGearBackups: backupsMap,
+      autoGearPresets: presetsMap,
+    });
+
+    expect(loadAutoGearRules()).toEqual([
+      { id: 'map-rule', label: 'Map rule', scenarios: [], add: [], remove: [] },
+    ]);
+    expect(loadAutoGearBackups()).toEqual([
+      { id: 'map-backup', label: 'Map backup', createdAt: 789, rules: [] },
+    ]);
+    expect(loadAutoGearPresets()).toEqual([
+      { id: 'map-preset', label: 'Map preset', rules: [] },
+    ]);
+  });
+
   test('importAllData accepts automatic gear data stored as JSON strings', () => {
     const rules = [
       { id: 'rule-json', label: 'JSON', scenarios: [], add: [], remove: [] },
@@ -2478,6 +2542,18 @@ describe('full backup history storage', () => {
     localStorage.setItem(FULL_BACKUP_HISTORY_KEY, JSON.stringify([' 2024-03-03T08:30:00Z ']));
     const history = loadFullBackupHistory();
     expect(history).toEqual([{ createdAt: '2024-03-03T08:30:00Z' }]);
+  });
+
+  test('importAllData accepts full backup history stored as Map', () => {
+    const historyMap = new Map();
+    historyMap.set('entry', { createdAt: '2024-02-02T00:00:00Z', fileName: 'backup.json' });
+
+    importAllData({ fullBackupHistory: historyMap });
+
+    const history = loadFullBackupHistory();
+    expect(history).toEqual([
+      { createdAt: '2024-02-02T00:00:00Z', fileName: 'backup.json' },
+    ]);
   });
 });
 
