@@ -517,4 +517,76 @@ describe('cineResults module', () => {
     expect(closeDialog).toHaveBeenCalledWith(dialog);
     expect(updateCalculations).toHaveBeenCalledTimes(1);
   });
+
+  test('setupRuntimeFeedback picks up latest updateCalculations reference', () => {
+    const fieldElements = new Map();
+    FEEDBACK_FIELD_CONFIG.forEach(({ id }) => {
+      fieldElements.set(id, { value: '', setAttribute: jest.fn(), removeAttribute: jest.fn() });
+    });
+
+    const doc = {
+      getElementById: jest.fn((id) => fieldElements.get(id) || null),
+    };
+
+    const button = createInteractiveElement('Feedback');
+    const dialog = { ...createInteractiveElement('Dialog'), close: jest.fn() };
+    const form = createInteractiveElement('Form');
+    const cancelBtn = createInteractiveElement('Cancel');
+    const useLocationBtn = createInteractiveElement('Use location');
+    useLocationBtn.disabled = false;
+
+    const loadFeedback = jest.fn(() => ({}));
+    const saveFeedback = jest.fn();
+    const getCurrentSetupKey = jest.fn(() => 'setup-2');
+
+    cineResults.setupRuntimeFeedback({
+      document: doc,
+      runtimeFeedbackButton: button,
+      feedbackDialog: dialog,
+      feedbackForm: form,
+      feedbackCancelBtn: cancelBtn,
+      feedbackUseLocationBtn: useLocationBtn,
+      loadFeedback,
+      saveFeedback,
+      getCurrentSetupKey,
+      mailTarget: 'team@example.com',
+    });
+
+    expect(typeof form.listeners.submit).toBe('function');
+
+    const emptySelect = { value: '', options: [], selectedIndex: 0 };
+    const setLastRuntimeHours = jest.fn();
+
+    cineResults.updateCalculations({
+      elements: {
+        cameraSelect: emptySelect,
+        monitorSelect: emptySelect,
+        videoSelect: emptySelect,
+        distanceSelect: emptySelect,
+        batterySelect: { ...emptySelect },
+        hotswapSelect: { ...emptySelect },
+      },
+      motorSelects: [],
+      controllerSelects: [],
+      getDevices: () => ({
+        cameras: {},
+        monitors: {},
+        video: {},
+        fiz: { motors: {}, controllers: {}, distance: {} },
+        batteries: {},
+        batteryHotswaps: {},
+      }),
+      getTexts: () => ({ en: {} }),
+      getCurrentLang: () => 'en',
+      setLastRuntimeHours,
+    });
+
+    const submitEvent = { preventDefault: jest.fn() };
+    form.listeners.submit(submitEvent);
+
+    expect(submitEvent.preventDefault).toHaveBeenCalled();
+    expect(loadFeedback).toHaveBeenCalledTimes(1);
+    expect(saveFeedback).toHaveBeenCalledTimes(1);
+    expect(setLastRuntimeHours).toHaveBeenCalledTimes(2);
+  });
 });
