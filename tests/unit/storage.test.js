@@ -2544,6 +2544,58 @@ describe('full backup history storage', () => {
     expect(history).toEqual([{ createdAt: '2024-03-03T08:30:00Z' }]);
   });
 
+  test('importAllData normalizes mixed array full backup history payloads', () => {
+    importAllData({
+      fullBackupHistory: [
+        ' 2024-04-01T00:00:00Z ',
+        { iso: '2024-04-02T03:04:05Z', name: '  backup.json  ' },
+        { timestamp: '2024-04-03T05:06:07Z', fileName: ' third.json ' },
+        { createdAt: '   ' },
+        null,
+        42,
+      ],
+    });
+
+    const history = loadFullBackupHistory();
+    expect(history).toEqual([
+      { createdAt: '2024-04-01T00:00:00Z' },
+      { createdAt: '2024-04-02T03:04:05Z', fileName: 'backup.json' },
+      { createdAt: '2024-04-03T05:06:07Z', fileName: 'third.json' },
+    ]);
+  });
+
+  test('importAllData accepts full backup history stored inside nested objects', () => {
+    importAllData({
+      fullBackupHistory: {
+        alpha: { createdAt: '2024-05-01T09:10:11Z', fileName: ' Alpha.json ' },
+        beta: ' 2024-05-02T12:13:14Z ',
+        gamma: { timestamp: '2024-05-03T15:16:17Z', fileName: ' third.json ' },
+      },
+    });
+
+    const history = loadFullBackupHistory();
+    expect(history).toEqual([
+      { createdAt: '2024-05-01T09:10:11Z', fileName: 'Alpha.json' },
+      { createdAt: '2024-05-02T12:13:14Z' },
+      { createdAt: '2024-05-03T15:16:17Z', fileName: 'third.json' },
+    ]);
+  });
+
+  test('importAllData supports legacy fullBackups string payloads', () => {
+    const legacyPayload = JSON.stringify([
+      { timestamp: '2024-06-01T18:19:20Z', fileName: ' legacy.json ' },
+      '2024-06-02T21:22:23Z',
+    ]);
+
+    importAllData({ fullBackups: legacyPayload });
+
+    const history = loadFullBackupHistory();
+    expect(history).toEqual([
+      { createdAt: '2024-06-01T18:19:20Z', fileName: 'legacy.json' },
+      { createdAt: '2024-06-02T21:22:23Z' },
+    ]);
+  });
+
   test('importAllData accepts full backup history stored as Map', () => {
     const historyMap = new Map();
     historyMap.set('entry', { createdAt: '2024-02-02T00:00:00Z', fileName: 'backup.json' });
