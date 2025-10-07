@@ -1,6 +1,6 @@
 /* global getManualDownloadFallbackMessage, getDiagramManualPositions, normalizeAutoGearShootingDayValue,
           normalizeAutoGearShootingDaysCondition, normalizeAutoGearCameraWeightCondition, evaluateAutoGearCameraWeightCondition,
-          getAutoGearMonitorDefault, getSetupNameState,
+          normalizeAutoGearText, getAutoGearMonitorDefault, getSetupNameState,
           createProjectInfoSnapshotForStorage, getProjectAutoSaveOverrides, getAutoGearRuleCoverageSummary,
           normalizeBatteryPlateValue, setSelectValue, applyBatteryPlateSelectionFromBattery, enqueueCoreBootTask,
           callCoreFunctionIfAvailable, cineGearList */
@@ -3051,11 +3051,21 @@ function ensureAutoGearCategory(table, category) {
     const rawCategory = category && category.trim() ? category.trim() : '';
     const label = rawCategory || AUTO_GEAR_CUSTOM_CATEGORY;
     const existing = Array.from(table.querySelectorAll('tbody.category-group')).find(body => {
-        if (body.dataset && Object.prototype.hasOwnProperty.call(body.dataset, 'autoCategory')) {
-            return body.dataset.autoCategory === rawCategory;
+        if (body.dataset) {
+            if (Object.prototype.hasOwnProperty.call(body.dataset, 'autoCategory')) {
+                return body.dataset.autoCategory === rawCategory;
+            }
+            if (rawCategory && Object.prototype.hasOwnProperty.call(body.dataset, 'gearTableCategory')) {
+                return body.dataset.gearTableCategory === rawCategory;
+            }
         }
         const headerCell = body.querySelector('.category-row td');
-        return headerCell && headerCell.textContent.trim() === label;
+        if (!headerCell) return false;
+        const storedLabel = headerCell.getAttribute('data-gear-category-label') || headerCell.textContent.trim();
+        if (rawCategory) {
+            return storedLabel === rawCategory;
+        }
+        return body.classList.contains('auto-gear-category') || storedLabel === label;
     });
     if (existing) {
         const cell = existing.querySelector('tr:not(.category-row) td');
@@ -3064,12 +3074,14 @@ function ensureAutoGearCategory(table, category) {
     const body = document.createElement('tbody');
     body.className = 'category-group auto-gear-category';
     body.dataset.autoCategory = rawCategory;
+    body.dataset.gearTableCategory = rawCategory || label;
     const headerRow = document.createElement('tr');
     headerRow.className = 'category-row';
     const headerCell = document.createElement('td');
     const labelText = rawCategory
         ? rawCategory
         : (texts[currentLang]?.autoGearCustomCategory || texts.en?.autoGearCustomCategory || 'Custom Additions');
+    headerCell.setAttribute('data-gear-category-label', labelText);
     headerCell.textContent = labelText;
     headerRow.appendChild(headerCell);
     body.appendChild(headerRow);
@@ -3087,16 +3099,25 @@ function findAutoGearCategoryCell(table, category) {
     const label = rawCategory || AUTO_GEAR_CUSTOM_CATEGORY;
     const bodies = Array.from(table.querySelectorAll('tbody.category-group'));
     for (const body of bodies) {
-        if (body.dataset && Object.prototype.hasOwnProperty.call(body.dataset, 'autoCategory')) {
-            if (body.dataset.autoCategory === rawCategory) {
-                const cell = body.querySelector('tr:not(.category-row) td');
-                if (cell) return cell;
+        if (body.dataset) {
+            if (Object.prototype.hasOwnProperty.call(body.dataset, 'autoCategory')) {
+                if (body.dataset.autoCategory === rawCategory) {
+                    const cell = body.querySelector('tr:not(.category-row) td');
+                    if (cell) return cell;
+                }
+                continue;
             }
-            continue;
+            if (rawCategory && Object.prototype.hasOwnProperty.call(body.dataset, 'gearTableCategory')) {
+                if (body.dataset.gearTableCategory === rawCategory) {
+                    const cell = body.querySelector('tr:not(.category-row) td');
+                    if (cell) return cell;
+                }
+                continue;
+            }
         }
         const headerCell = body.querySelector('.category-row td');
         if (!headerCell) continue;
-        const headerLabel = headerCell.textContent.trim();
+        const headerLabel = headerCell.getAttribute('data-gear-category-label') || headerCell.textContent.trim();
         if (rawCategory) {
             if (headerLabel === rawCategory) {
                 const cell = body.querySelector('tr:not(.category-row) td');
@@ -3775,6 +3796,230 @@ function formatRequirementValue(rawValue) {
   return escapeHtml(value).replace(/\n/g, '<br>');
 }
 
+function resolveGearListCustomText(key, fallback, replacements) {
+  const langEntry = texts?.[currentLang]?.[key];
+  const enEntry = texts?.en?.[key];
+  const template = typeof langEntry === 'string' && langEntry.trim()
+    ? langEntry
+    : (typeof enEntry === 'string' && enEntry.trim() ? enEntry : fallback);
+  if (!replacements || typeof replacements !== 'object') {
+    return template;
+  }
+  return Object.keys(replacements).reduce((acc, token) => {
+    const value = replacements[token];
+    const replacement = typeof value === 'string' ? value : String(value ?? '');
+    return acc.replace(new RegExp(`\\{${token}\\}`, 'g'), replacement);
+  }, template);
+}
+
+function createCustomCategoryKey(label) {
+  if (typeof label !== 'string' || !label.trim()) {
+    return 'category';
+  }
+  const normalized = label.trim().toLowerCase();
+  const slug = normalized
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+/, '')
+    .replace(/-+$/, '');
+  return slug || 'category';
+}
+
+function getCustomItemsContainer(key) {
+  if (!gearListOutput || typeof key !== 'string') return null;
+  return gearListOutput.querySelector(`.gear-custom-items[data-gear-custom-list="${key}"]`);
+}
+
+function updateCustomItemPreview(entry) {
+  if (!entry) return;
+  const preview = entry.querySelector('.gear-custom-item-preview');
+  if (!preview) return;
+  const quantityInput = entry.querySelector('[data-gear-custom-input="quantity"]');
+  const nameInput = entry.querySelector('[data-gear-custom-input="name"]');
+  const quantity = quantityInput ? String(quantityInput.value ?? '').trim() : '';
+  const name = nameInput ? String(nameInput.value ?? '').trim() : '';
+  const fallback = resolveGearListCustomText('gearListCustomItemPreviewFallback', 'Custom item');
+  let display = '';
+  if (quantity && name) {
+    display = `${quantity}x ${name}`;
+  } else if (name) {
+    display = name;
+  } else if (quantity) {
+    display = `${quantity}x ${fallback}`;
+  } else {
+    display = fallback;
+  }
+  preview.textContent = display;
+}
+
+function buildCustomItemEntryElement(categoryKey, categoryLabel, data) {
+  const doc = (gearListOutput && gearListOutput.ownerDocument) || (typeof document !== 'undefined' ? document : null);
+  if (!doc) return null;
+  const template = doc.createElement('template');
+  const rawQuantity = data && Object.prototype.hasOwnProperty.call(data, 'quantity') ? data.quantity : '1';
+  const rawName = data && Object.prototype.hasOwnProperty.call(data, 'name') ? data.name : '';
+  const quantityValue = typeof rawQuantity === 'string' ? rawQuantity : String(rawQuantity ?? '');
+  const nameValue = typeof rawName === 'string' ? rawName : String(rawName ?? '');
+  const quantityLabel = resolveGearListCustomText('gearListCustomItemQuantityLabel', 'Quantity');
+  const quantityAria = resolveGearListCustomText('gearListCustomItemQuantityAria', 'Quantity for custom item in {category}', { category: categoryLabel });
+  const nameLabel = resolveGearListCustomText('gearListCustomItemNameLabel', 'Item name');
+  const nameAria = resolveGearListCustomText('gearListCustomItemNameAria', 'Item name for custom item in {category}', { category: categoryLabel });
+  const placeholder = resolveGearListCustomText('gearListCustomItemNamePlaceholder', 'Custom item');
+  const removeLabel = resolveGearListCustomText('gearListRemoveCustomItem', 'Remove');
+  const removeAria = resolveGearListCustomText('gearListRemoveCustomItemFromCategory', 'Remove custom item from {category}', { category: categoryLabel });
+  const minusIcon = (typeof iconMarkup === 'function' && typeof ICON_GLYPHS === 'object')
+    ? iconMarkup(ICON_GLYPHS.minus, { className: 'btn-icon' })
+    : '';
+  template.innerHTML = `
+    <div class="gear-custom-item" data-gear-custom-entry="${escapeHtml(categoryKey)}">
+      <span class="gear-custom-item-preview" aria-hidden="true"></span>
+      <label class="gear-custom-field gear-custom-field--quantity">
+        <span class="visually-hidden">${escapeHtml(quantityLabel)} (${escapeHtml(categoryLabel)})</span>
+        <input
+          type="number"
+          inputmode="numeric"
+          pattern="[0-9]*"
+          min="0"
+          step="1"
+          data-gear-custom-input="quantity"
+          value="${escapeHtml(quantityValue)}"
+          aria-label="${escapeHtml(quantityAria)}"
+        />
+      </label>
+      <label class="gear-custom-field gear-custom-field--name">
+        <span class="visually-hidden">${escapeHtml(nameLabel)} (${escapeHtml(categoryLabel)})</span>
+        <input
+          type="text"
+          data-gear-custom-input="name"
+          value="${escapeHtml(nameValue)}"
+          placeholder="${escapeHtml(placeholder)}"
+          aria-label="${escapeHtml(nameAria)}"
+        />
+      </label>
+      <button
+        type="button"
+        class="gear-custom-remove-btn"
+        data-gear-custom-remove="${escapeHtml(categoryKey)}"
+        data-gear-custom-category="${escapeHtml(categoryLabel)}"
+        aria-label="${escapeHtml(removeAria)}"
+      >
+        ${minusIcon}<span>${escapeHtml(removeLabel)}</span>
+      </button>
+    </div>
+  `.trim();
+  const element = template.content.firstElementChild;
+  if (element) {
+    updateCustomItemPreview(element);
+  }
+  return element;
+}
+
+function persistCustomItemsChange() {
+  if (typeof saveCurrentGearList === 'function') {
+    saveCurrentGearList();
+  }
+  if (typeof saveCurrentSession === 'function') {
+    saveCurrentSession();
+  }
+  if (typeof checkSetupChanged === 'function') {
+    checkSetupChanged();
+  }
+}
+
+function addCustomItemEntry(categoryKey, categoryLabel, data = {}, options = {}) {
+  const container = getCustomItemsContainer(categoryKey);
+  if (!container) return null;
+  const entry = buildCustomItemEntryElement(categoryKey, categoryLabel, data);
+  if (!entry) return null;
+  container.appendChild(entry);
+  updateCustomItemPreview(entry);
+  if (!options.skipFocus) {
+    const nameInput = entry.querySelector('[data-gear-custom-input="name"]');
+    if (nameInput) {
+      nameInput.focus();
+    }
+  }
+  if (!options.skipPersist) {
+    persistCustomItemsChange();
+  }
+  return entry;
+}
+
+function handleAddCustomItemRequest(button) {
+  if (!button) return;
+  const categoryKey = button.getAttribute('data-gear-custom-add') || '';
+  if (!categoryKey) return;
+  const categoryLabel = button.getAttribute('data-gear-custom-category') || '';
+  addCustomItemEntry(categoryKey, categoryLabel, { quantity: '1', name: '' });
+}
+
+function handleRemoveCustomItemRequest(button) {
+  if (!button) return;
+  const entry = button.closest('.gear-custom-item');
+  if (!entry) return;
+  const categoryKey = button.getAttribute('data-gear-custom-remove')
+    || entry.getAttribute('data-gear-custom-entry')
+    || '';
+  entry.remove();
+  persistCustomItemsChange();
+  if (categoryKey) {
+    const addBtn = gearListOutput?.querySelector(`[data-gear-custom-add="${categoryKey}"]`);
+    if (addBtn) {
+      addBtn.focus();
+    }
+  }
+}
+
+function readCustomItemsState() {
+  if (!gearListOutput) return {};
+  const state = {};
+  const containers = gearListOutput.querySelectorAll('.gear-custom-items[data-gear-custom-list]');
+  containers.forEach(container => {
+    const key = container.getAttribute('data-gear-custom-list');
+    if (!key) return;
+    const entries = [];
+    container.querySelectorAll('.gear-custom-item').forEach(item => {
+      const quantityInput = item.querySelector('[data-gear-custom-input="quantity"]');
+      const nameInput = item.querySelector('[data-gear-custom-input="name"]');
+      const quantity = quantityInput ? String(quantityInput.value ?? '') : '';
+      const name = nameInput ? String(nameInput.value ?? '') : '';
+      entries.push({ quantity, name });
+    });
+    if (entries.length) {
+      state[key] = entries;
+    }
+  });
+  return state;
+}
+
+function applyCustomItemsState(state) {
+  if (!gearListOutput) return;
+  const normalizedState = (state && typeof state === 'object') ? state : {};
+  const activeKeys = new Set(Object.keys(normalizedState));
+  const containers = gearListOutput.querySelectorAll('.gear-custom-items[data-gear-custom-list]');
+  containers.forEach(container => {
+    const key = container.getAttribute('data-gear-custom-list');
+    if (!key) return;
+    if (!activeKeys.has(key)) {
+      container.querySelectorAll('.gear-custom-item').forEach(item => item.remove());
+    }
+  });
+  Object.entries(normalizedState).forEach(([key, entries]) => {
+    const container = getCustomItemsContainer(key);
+    if (!container) return;
+    container.querySelectorAll('.gear-custom-item').forEach(item => item.remove());
+    const categoryLabel = container.getAttribute('data-gear-custom-category') || '';
+    if (Array.isArray(entries)) {
+      entries.forEach(entry => {
+        if (entry && typeof entry === 'object') {
+          addCustomItemEntry(key, categoryLabel, entry, { skipFocus: true, skipPersist: true });
+        } else {
+          addCustomItemEntry(key, categoryLabel, { quantity: '', name: '' }, { skipFocus: true, skipPersist: true });
+        }
+      });
+    }
+  });
+}
+
 function gearListGenerateHtmlImpl(info = {}) {
     const getText = sel => sel && sel.options && sel.selectedIndex >= 0
         ? sel.options[sel.selectedIndex].text.trim()
@@ -4186,8 +4431,21 @@ function gearListGenerateHtmlImpl(info = {}) {
     };
     const categoryGroups = [];
     const addRow = (cat, items) => {
+        const rawLabel = typeof cat === 'string' ? cat : String(cat ?? '');
+        const categoryLabel = rawLabel.trim() || String(cat ?? '');
+        const categoryKey = createCustomCategoryKey(categoryLabel);
+        const safeLabel = escapeHtml(categoryLabel);
+        const addLabel = resolveGearListCustomText('gearListAddCustomItem', 'Add custom item');
+        const addAria = resolveGearListCustomText('gearListAddCustomItemToCategory', 'Add custom item to {category}', { category: categoryLabel });
+        const addIcon = (typeof iconMarkup === 'function' && typeof ICON_GLYPHS === 'object')
+            ? iconMarkup(ICON_GLYPHS.add, { className: 'btn-icon' })
+            : '';
+        const addButtonHtml = `<button type="button" class="gear-custom-add-btn" data-gear-custom-add="${escapeHtml(categoryKey)}" data-gear-custom-category="${safeLabel}" aria-label="${escapeHtml(addAria)}">${addIcon}<span>${escapeHtml(addLabel)}</span></button>`;
+        const standardItemsHtml = items ? `<div class="gear-standard-items">${items}</div>` : '';
+        const customSectionHtml = `<div class="gear-custom-section" data-gear-custom-key="${escapeHtml(categoryKey)}" data-gear-custom-category="${safeLabel}"><div class="gear-custom-items" data-gear-custom-list="${escapeHtml(categoryKey)}" data-gear-custom-category="${safeLabel}" aria-live="polite"></div></div>`;
+        const rowContent = `${standardItemsHtml}${customSectionHtml}`;
         categoryGroups.push(
-            `<tbody class="category-group"><tr class="category-row"><td>${cat}</td></tr><tr><td>${items}</td></tr></tbody>`
+            `<tbody class="category-group" data-gear-table-category="${safeLabel}" data-gear-custom-key="${escapeHtml(categoryKey)}"><tr class="category-row"><td data-gear-category-label="${safeLabel}"><div class="gear-category-header"><span class="gear-category-label">${safeLabel}</span>${addButtonHtml}</div></td></tr><tr><td>${rowContent}</td></tr></tbody>`
         );
     };
     addRow('Camera', formatItems([selectedNames.camera]));
@@ -5124,6 +5382,11 @@ function gearListGetCurrentHtmlImpl() {
                 cb.removeAttribute('checked');
             }
         });
+        clone.querySelectorAll('[data-gear-custom-input]').forEach(input => {
+            if (input && typeof input.getAttribute === 'function') {
+                input.setAttribute('value', input.value);
+            }
+        });
         const table = clone.querySelector('.gear-table');
         gearHtml = table ? '<h3>Gear List</h3>' + table.outerHTML : '';
     }
@@ -5149,21 +5412,35 @@ function getGearListSelectors() {
             ? Array.from(sel.selectedOptions).map(o => o.value)
             : sel.value;
     });
+    const customState = readCustomItemsState();
+    if (customState && Object.keys(customState).length) {
+        selectors.__customItems = customState;
+    }
     return selectors;
 }
 
 function cloneGearListSelectors(selectors) {
     if (!selectors || typeof selectors !== 'object') return {};
+    const cloneValue = (value) => {
+        if (Array.isArray(value)) {
+            return value.map(item => cloneValue(item));
+        }
+        if (value && typeof value === 'object') {
+            const nested = {};
+            Object.entries(value).forEach(([key, nestedValue]) => {
+                nested[key] = cloneValue(nestedValue);
+            });
+            return nested;
+        }
+        if (value === undefined || value === null) {
+            return '';
+        }
+        return typeof value === 'string' ? value : String(value);
+    };
     const clone = {};
     Object.entries(selectors).forEach(([id, value]) => {
         if (!id || typeof id !== 'string') return;
-        if (Array.isArray(value)) {
-            clone[id] = value.map(item => (typeof item === 'string' ? item : String(item ?? '')));
-        } else if (value === undefined || value === null) {
-            clone[id] = '';
-        } else {
-            clone[id] = typeof value === 'string' ? value : String(value);
-        }
+        clone[id] = cloneValue(value);
     });
     return clone;
 }
@@ -5171,6 +5448,7 @@ function cloneGearListSelectors(selectors) {
 function applyGearListSelectors(selectors) {
     if (!gearListOutput || !selectors) return;
     Object.entries(selectors).forEach(([id, value]) => {
+        if (id === '__customItems') return;
         const sel = gearListOutput.querySelector(`#${id}`);
         if (sel) {
             if (sel.multiple) {
@@ -5185,6 +5463,7 @@ function applyGearListSelectors(selectors) {
             }
         }
     });
+    applyCustomItemsState(selectors.__customItems || {});
 }
 
 function cloneProjectInfoForStorage(info) {
@@ -6186,6 +6465,9 @@ function ensureGearListActions() {
             const target = e.target;
             if (!target) return;
             if (target.closest('#gearListActions')) return;
+            if (target.closest('.gear-custom-item')) {
+                updateCustomItemPreview(target.closest('.gear-custom-item'));
+            }
             if (target.matches('input, textarea')) {
                 saveCurrentGearList();
                 saveCurrentSession();
@@ -6193,6 +6475,23 @@ function ensureGearListActions() {
             }
         });
         gearListOutput._inputListenerBound = true;
+    }
+
+    if (!gearListOutput._customClickListenerBound) {
+        gearListOutput.addEventListener('click', e => {
+            const addBtn = e.target && e.target.closest('[data-gear-custom-add]');
+            if (addBtn) {
+                e.preventDefault();
+                handleAddCustomItemRequest(addBtn);
+                return;
+            }
+            const removeBtn = e.target && e.target.closest('[data-gear-custom-remove]');
+            if (removeBtn) {
+                e.preventDefault();
+                handleRemoveCustomItemRequest(removeBtn);
+            }
+        });
+        gearListOutput._customClickListenerBound = true;
     }
 }
 
