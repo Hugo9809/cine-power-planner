@@ -1362,20 +1362,27 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
       return;
     }
 
+    // Load deferred bundles immediately so all planner sections are always ready.
+    // Using a microtask keeps execution ordered without waiting for idle time,
+    // preventing situations where fast user interaction delays essential UI.
     function startDeferredLoad() {
       loadScriptsSequentially(urls);
     }
 
-    if (typeof requestIdleCallback === 'function') {
-      try {
-        requestIdleCallback(startDeferredLoad, { timeout: 1500 });
-        return;
-      } catch (idleError) {
-        console.warn('requestIdleCallback failed, falling back to timeout for deferred scripts.', idleError);
-      }
+    if (typeof queueMicrotask === 'function') {
+      queueMicrotask(startDeferredLoad);
+      return;
     }
 
-    setTimeout(startDeferredLoad, 120);
+    if (typeof Promise === 'function') {
+      Promise.resolve().then(startDeferredLoad).catch(function (error) {
+        console.warn('Deferred script microtask scheduling failed. Loading immediately.', error);
+        startDeferredLoad();
+      });
+      return;
+    }
+
+    startDeferredLoad();
   }
 
   function loadScriptBundle(bundle, options) {
