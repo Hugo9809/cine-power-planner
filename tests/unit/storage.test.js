@@ -2238,19 +2238,19 @@ describe('export/import all data', () => {
 
     importAllData(payload);
 
-    expect(loadProject('Legacy')).toEqual({
+    expect(loadProject('Legacy')).toEqual(withGenerationFlag({
       gearList: '<div>Legacy</div>',
       projectInfo: { projectName: 'Legacy JSON' },
       autoGearRules: [
         { id: 'legacy-json', label: 'Legacy JSON', scenarios: [], add: [], remove: [] },
       ],
-    });
+    }));
   });
 
   test('importAllData handles legacy single gearList', () => {
     const data = { gearList: '<p></p>' };
     importAllData(data);
-    expect(loadProject('')).toEqual(withGenerationFlag({ gearList: '<p></p>', projectInfo: null }, false));
+    expect(loadProject('')).toEqual(withGenerationFlag({ gearList: '<p></p>', projectInfo: null }));
   });
 
   test('loadProject normalizes stored JSON string payloads', () => {
@@ -2265,13 +2265,13 @@ describe('export/import all data', () => {
 
     const project = loadProject('');
 
-    expect(project).toEqual({
+    expect(project).toEqual(withGenerationFlag({
       gearList: '<section>Legacy</section>',
       projectInfo: { projectName: 'Legacy Stored' },
       autoGearRules: [
         { id: 'stored-json', label: 'Stored JSON', scenarios: [], add: [], remove: [] },
       ],
-    });
+    }));
 
     const stored = parseLocalStorageJSON(PROJECT_KEY);
     expect(stored['Project-updated']).toEqual({
@@ -2294,10 +2294,10 @@ describe('export/import all data', () => {
 
     const project = loadProject('Legacy');
 
-    expect(project).toEqual({
+    expect(project).toEqual(withGenerationFlag({
       gearList: '<article>Legacy Map</article>',
       projectInfo: { projectName: 'Legacy Map' },
-    });
+    }));
 
     const updated = parseLocalStorageJSON(PROJECT_KEY);
     expect(updated['Legacy-updated']).toEqual({
@@ -2430,11 +2430,11 @@ describe('export/import all data', () => {
     });
 
     const legacyProject = loadProject('LegacyNested');
-    expect(legacyProject).toEqual({
+    expect(legacyProject).toEqual(withGenerationFlag({
       gearList: '<div>Legacy nested</div>',
       projectInfo: { projectName: 'Legacy Nested' },
       autoGearRules: legacyRules,
-    });
+    }));
   });
 });
 

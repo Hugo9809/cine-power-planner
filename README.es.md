@@ -171,6 +171,7 @@ Repite esta rutina cuando se incorpore personal, se prepare una estación nueva 
 
 - **Paquetes de proyecto ligeros.** **Exportar proyecto** descarga `project-name.json` con el proyecto activo, favoritos y dispositivos personalizados. Renómbralo a `.cpproject` si tu archivo maestro lo requiere.
 - **Reglas automáticas junto al paquete.** Activa **Incluir reglas automáticas** durante la exportación para que viajen; al importar se pueden aplicar sólo al proyecto o fusionarse con las reglas globales.
+- **Las importaciones no sobrescriben por accidente.** Si un paquete entrante coincide con el nombre de un proyecto existente, el planner guarda la copia nueva como `nombre-proyecto-imported` para que puedas revisar ambas versiones con calma.
 - **Importaciones validadas offline.** Al importar `auto-gear-rules-*.json`, la app verifica tipo, versión semántica y metadatos antes de sobrescribir. Las discrepancias muestran avisos y, si algo falla, se restaura el snapshot anterior automáticamente.
 - **Restauraciones con doble buffer.** Antes de importar, se solicita guardar una copia del estado actual. Tras validar el paquete, el proyecto restaurado aparece arriba en el selector.
 - **Flujos entre dispositivos sin red.** Copia `index.html`, `script.js`, `devices/` y tus archivos de respaldo a un medio externo. Lanza la app desde disco, importa el paquete y continúa trabajando sin conectarte.

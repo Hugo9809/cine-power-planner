@@ -135,6 +135,7 @@ describe('cineOffline module', () => {
       serviceWorkersUnregistered: true,
       cachesCleared: true,
       reloadTriggered: true,
+      navigationTriggered: true,
     });
 
     delete global.clearUiCacheStorageEntries;
