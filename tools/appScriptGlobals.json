@@ -597,6 +597,7 @@
     "handleAutoGearPresetSelection",
     "handleAutoGearSavePreset",
     "handleAutoGearShowBackupsToggle",
+    "setAutoGearBackupsVisible",
     "hasCustomAccentSelection",
     "helpButton",
     "helpDialog",

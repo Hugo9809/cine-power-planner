@@ -3562,6 +3562,8 @@ if (settingsButton && settingsDialog) {
       renderAutoGearRulesList();
       renderAutoGearDraftLists();
       updateAutoGearCatalogOptions();
+      callSessionCoreFunction('renderAutoGearBackupControls', [], { defer: true });
+      callSessionCoreFunction('applyAutoGearBackupVisibility', [], { defer: true });
     }
     if (activeSettingsTabId) {
       activateSettingsTab(activeSettingsTabId);
@@ -3654,6 +3656,13 @@ if (settingsButton && settingsDialog) {
       }
       if (settingsShowAutoBackups) {
         applyShowAutoBackupsPreference(settingsShowAutoBackups.checked);
+      }
+      var autoGearShowBackupsToggle =
+        typeof document !== 'undefined' && typeof document.getElementById === 'function'
+          ? document.getElementById('autoGearShowBackups')
+          : null;
+      if (autoGearShowBackupsToggle) {
+        callSessionCoreFunction('setAutoGearBackupsVisible', [!!autoGearShowBackupsToggle.checked]);
       }
       if (accentColorInput) {
         var color = accentColorInput.value;

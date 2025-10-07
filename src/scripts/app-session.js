@@ -4477,6 +4477,8 @@ const mountVoltageResetButtonRef = (() => {
       renderAutoGearRulesList();
       renderAutoGearDraftLists();
       updateAutoGearCatalogOptions();
+      callSessionCoreFunction('renderAutoGearBackupControls', [], { defer: true });
+      callSessionCoreFunction('applyAutoGearBackupVisibility', [], { defer: true });
     }
     if (activeSettingsTabId) {
       activateSettingsTab(activeSettingsTabId);
@@ -4584,6 +4586,16 @@ const mountVoltageResetButtonRef = (() => {
       }
       if (settingsShowAutoBackups) {
         applyShowAutoBackupsPreference(settingsShowAutoBackups.checked);
+      }
+      const autoGearShowBackupsToggle =
+        typeof document !== 'undefined' && typeof document.getElementById === 'function'
+          ? document.getElementById('autoGearShowBackups')
+          : null;
+      if (autoGearShowBackupsToggle) {
+        callSessionCoreFunction(
+          'setAutoGearBackupsVisible',
+          [Boolean(autoGearShowBackupsToggle.checked)],
+        );
       }
       if (accentColorInput) {
         const color = accentColorInput.value;
