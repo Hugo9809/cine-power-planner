@@ -32,6 +32,23 @@
 
   const GLOBAL_SCOPE = detectGlobalScope();
 
+  const MODULE_DEEP_CLONE =
+    GLOBAL_SCOPE && typeof GLOBAL_SCOPE.__cineDeepClone === 'function'
+      ? GLOBAL_SCOPE.__cineDeepClone
+      : function moduleFallbackDeepClone(value) {
+          if (value === null || typeof value !== 'object') {
+            return value;
+          }
+
+          try {
+            return JSON.parse(JSON.stringify(value));
+          } catch (cloneError) {
+            void cloneError;
+          }
+
+          return value;
+        };
+
   function resolveModuleBase(scope) {
     if (typeof cineModuleBase === 'object' && cineModuleBase) {
       return cineModuleBase;
@@ -248,6 +265,17 @@
     const attempt = tryStructuredCloneValue(value);
     if (attempt.success) {
       return attempt.value;
+    }
+
+    if (MODULE_DEEP_CLONE) {
+      try {
+        const cloned = MODULE_DEEP_CLONE(value);
+        if (cloned !== value || value === null || typeof value !== 'object') {
+          return cloned;
+        }
+      } catch (cloneError) {
+        void cloneError;
+      }
     }
 
     try {

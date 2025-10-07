@@ -143,6 +143,27 @@ function getGlobalScope() {
     );
 }
 
+const SETUPS_DEEP_CLONE = (() => {
+    const scope = getGlobalScope();
+    if (scope && typeof scope.__cineDeepClone === 'function') {
+        return scope.__cineDeepClone;
+    }
+
+    return function setupsFallbackDeepClone(value) {
+        if (value === null || typeof value !== 'object') {
+            return value;
+        }
+
+        try {
+            return JSON.parse(JSON.stringify(value));
+        } catch (cloneError) {
+            void cloneError;
+        }
+
+        return value;
+    };
+})();
+
 function gearListGetSafeHtmlSectionsImpl(html) {
     const normalizedHtml = typeof html === 'string' ? html : '';
     const fallbackResult = {
@@ -4873,17 +4894,12 @@ function cloneProjectInfoForStorage(info) {
     if (typeof info !== 'object') {
         return info;
     }
-    if (typeof structuredClone === 'function') {
+    if (typeof SETUPS_DEEP_CLONE === 'function') {
         try {
-            return structuredClone(info);
+            return SETUPS_DEEP_CLONE(info);
         } catch (error) {
-            console.warn('Failed to structured clone project info for storage', error);
+            console.warn('Failed to clone project info for storage', error);
         }
-    }
-    try {
-        return JSON.parse(JSON.stringify(info));
-    } catch (error) {
-        console.warn('Failed to serialize project info for storage', error);
     }
     if (Array.isArray(info)) {
         return info.map(item => cloneProjectInfoForStorage(item));

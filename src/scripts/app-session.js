@@ -38,6 +38,31 @@ const FALLBACK_STRONG_SEARCH_MATCH_TYPES = new Set(['exactKey', 'keyPrefix', 'ke
 if (typeof globalThis !== 'undefined' && typeof globalThis.STRONG_SEARCH_MATCH_TYPES === 'undefined') {
   globalThis.STRONG_SEARCH_MATCH_TYPES = FALLBACK_STRONG_SEARCH_MATCH_TYPES;
 }
+
+const SESSION_DEEP_CLONE =
+  CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE.__cineDeepClone === 'function'
+    ? CORE_GLOBAL_SCOPE.__cineDeepClone
+    : function sessionFallbackDeepClone(value) {
+        if (value === null || typeof value !== 'object') {
+          return value;
+        }
+
+        try {
+          return JSON.parse(JSON.stringify(value));
+        } catch (cloneError) {
+          void cloneError;
+        }
+
+        return value;
+      };
+
+if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE.__cineDeepClone !== 'function') {
+  try {
+    CORE_GLOBAL_SCOPE.__cineDeepClone = SESSION_DEEP_CLONE;
+  } catch (sessionDeepCloneError) {
+    void sessionDeepCloneError;
+  }
+}
 /* global triggerPinkModeIconRain, loadDeviceData, loadSetups, loadSessionState,
           loadFeedback, loadFavorites, loadAutoGearBackups,
           loadAutoGearPresets, loadAutoGearSeedFlag, loadAutoGearActivePresetId,
@@ -6063,7 +6088,7 @@ function cloneValueForExport(value) {
     return undefined;
   }
   try {
-    return JSON.parse(JSON.stringify(value));
+    return SESSION_DEEP_CLONE(value);
   } catch (error) {
     console.warn('Failed to clone comparison snapshot for export', error);
     return value;
@@ -12373,7 +12398,7 @@ function cloneMountVoltageDefaultsForSession() {
   }
   if (DEFAULT_MOUNT_VOLTAGES && typeof DEFAULT_MOUNT_VOLTAGES === 'object') {
     try {
-      return JSON.parse(JSON.stringify(DEFAULT_MOUNT_VOLTAGES));
+      return SESSION_DEEP_CLONE(DEFAULT_MOUNT_VOLTAGES);
     } catch (serializationError) {
       void serializationError;
     }

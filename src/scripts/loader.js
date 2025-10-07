@@ -291,6 +291,217 @@ function loaderResolveIconFontValues() {
   return values;
 }
 
+function loaderCreateDeepCloneMemo() {
+  if (typeof WeakMap === 'function') {
+    var weakMemo = new WeakMap();
+    return {
+      has: function (key) {
+        return weakMemo.has(key);
+      },
+      get: function (key) {
+        return weakMemo.get(key);
+      },
+      set: function (key, value) {
+        weakMemo.set(key, value);
+      },
+    };
+  }
+
+  var entries = [];
+  return {
+    has: function (key) {
+      for (var index = 0; index < entries.length; index += 1) {
+        if (entries[index][0] === key) {
+          return true;
+        }
+      }
+      return false;
+    },
+    get: function (key) {
+      for (var index = 0; index < entries.length; index += 1) {
+        if (entries[index][0] === key) {
+          return entries[index][1];
+        }
+      }
+      return undefined;
+    },
+    set: function (key, value) {
+      entries.push([key, value]);
+    },
+  };
+}
+
+function loaderManualDeepCloneValue(value, memo) {
+  if (value === null || typeof value !== 'object') {
+    return value;
+  }
+
+  if (memo && typeof memo.has === 'function') {
+    try {
+      if (memo.has(value)) {
+        return memo.get(value);
+      }
+    } catch (memoError) {
+      void memoError;
+    }
+  }
+
+  var hasSetter = memo && typeof memo.set === 'function';
+
+  if (typeof Date !== 'undefined' && value instanceof Date) {
+    try {
+      var clonedDate = new Date(value.getTime());
+      if (hasSetter) {
+        memo.set(value, clonedDate);
+      }
+      return clonedDate;
+    } catch (dateError) {
+      void dateError;
+    }
+  }
+
+  if (typeof RegExp !== 'undefined' && value instanceof RegExp) {
+    try {
+      var flags = '';
+      try {
+        flags = value.flags;
+      } catch (flagError) {
+        void flagError;
+      }
+      var clonedRegExp = new RegExp(value.source, flags);
+      if (hasSetter) {
+        memo.set(value, clonedRegExp);
+      }
+      return clonedRegExp;
+    } catch (regexpError) {
+      void regexpError;
+    }
+  }
+
+  if (typeof Map !== 'undefined' && value instanceof Map) {
+    try {
+      var mapClone = new Map();
+      if (hasSetter) {
+        memo.set(value, mapClone);
+      }
+      value.forEach(function (mapValue, mapKey) {
+        mapClone.set(mapKey, loaderManualDeepCloneValue(mapValue, memo));
+      });
+      return mapClone;
+    } catch (mapError) {
+      void mapError;
+    }
+  }
+
+  if (typeof Set !== 'undefined' && value instanceof Set) {
+    try {
+      var setClone = new Set();
+      if (hasSetter) {
+        memo.set(value, setClone);
+      }
+      value.forEach(function (setValue) {
+        setClone.add(loaderManualDeepCloneValue(setValue, memo));
+      });
+      return setClone;
+    } catch (setError) {
+      void setError;
+    }
+  }
+
+  if (
+    typeof ArrayBuffer !== 'undefined' &&
+    typeof ArrayBuffer.isView === 'function' &&
+    ArrayBuffer.isView(value)
+  ) {
+    try {
+      var viewCtor = value.constructor;
+      if (typeof viewCtor === 'function') {
+        var viewClone = new viewCtor(value);
+        if (hasSetter) {
+          memo.set(value, viewClone);
+        }
+        return viewClone;
+      }
+    } catch (typedArrayError) {
+      void typedArrayError;
+    }
+  }
+
+  if (Array.isArray(value)) {
+    var arrayClone = new Array(value.length);
+    if (hasSetter) {
+      memo.set(value, arrayClone);
+    }
+    for (var index = 0; index < value.length; index += 1) {
+      arrayClone[index] = loaderManualDeepCloneValue(value[index], memo);
+    }
+    return arrayClone;
+  }
+
+  if (value && typeof value === 'object') {
+    var plainClone = {};
+    if (hasSetter) {
+      memo.set(value, plainClone);
+    }
+    try {
+      var keys = Object.keys(value);
+      for (var keyIndex = 0; keyIndex < keys.length; keyIndex += 1) {
+        var key = keys[keyIndex];
+        plainClone[key] = loaderManualDeepCloneValue(value[key], memo);
+      }
+    } catch (objectError) {
+      void objectError;
+    }
+    return plainClone;
+  }
+
+  return value;
+}
+
+function loaderCreateDeepCloneUtility() {
+  return function loaderDeepClone(value) {
+    if (value === null || typeof value !== 'object') {
+      return value;
+    }
+
+    if (typeof structuredClone === 'function') {
+      try {
+        return structuredClone(value);
+      } catch (structuredCloneError) {
+        void structuredCloneError;
+      }
+    }
+
+    try {
+      return JSON.parse(JSON.stringify(value));
+    } catch (jsonCloneError) {
+      void jsonCloneError;
+    }
+
+    try {
+      return loaderManualDeepCloneValue(value, loaderCreateDeepCloneMemo());
+    } catch (manualCloneError) {
+      void manualCloneError;
+    }
+
+    try {
+      return JSON.parse(JSON.stringify(value));
+    } catch (finalError) {
+      void finalError;
+    }
+
+    return value;
+  };
+}
+
+CRITICAL_GLOBAL_DEFINITIONS.push({
+  name: '__cineDeepClone',
+  validator: function (value) {
+    return typeof value === 'function';
+  },
+  fallback: loaderCreateDeepCloneUtility,
+});
+
 CRITICAL_GLOBAL_DEFINITIONS.push({
   name: 'safeGenerateConnectorSummary',
   validator: function (value) {
