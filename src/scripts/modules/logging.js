@@ -1497,6 +1497,7 @@
     try {
       return fn.apply(receiver, finalArgs);
     } catch (applyError) {
+      void applyError;
       try {
         return Function.prototype.apply.call(fn, receiver, finalArgs);
       } catch (callError) {
@@ -1537,8 +1538,9 @@
     if (rawArgs.length) {
       try {
         detailPayload = { arguments: sanitizeForLog(rawArgs) };
-      } catch (error) {
+      } catch (detailError) {
         detailPayload = { arguments: rawArgs.slice() };
+        void detailError;
       }
     }
 
@@ -1549,8 +1551,9 @@
         const key = metaKeys[index];
         try {
           contextMeta[key] = sanitizeForLog(meta[key]);
-        } catch (error) {
+        } catch (metaError) {
           contextMeta[key] = meta[key];
+          void metaError;
         }
       }
     }
