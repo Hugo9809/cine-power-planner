@@ -15036,6 +15036,41 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       return null;
     }
+    function normalizeDeviceValueForComparison(value) {
+      if (Array.isArray(value)) {
+        return value.map(function (item) {
+          return normalizeDeviceValueForComparison(item);
+        });
+      }
+      if (isPlainObjectValue(value)) {
+        var normalized = {};
+        Object.keys(value)
+          .filter(function (key) {
+            return value[key] !== undefined;
+          })
+          .sort()
+          .forEach(function (key) {
+            normalized[key] = normalizeDeviceValueForComparison(value[key]);
+          });
+        return normalized;
+      }
+      if (value === undefined) {
+        return null;
+      }
+      return value;
+    }
+    function deviceEntriesEqual(a, b) {
+      if (a === b) return true;
+      if ((a === null || a === undefined) && (b === null || b === undefined)) {
+        return true;
+      }
+      if (a === null || a === undefined || b === null || b === undefined) {
+        return false;
+      }
+      var normalizedA = normalizeDeviceValueForComparison(a);
+      var normalizedB = normalizeDeviceValueForComparison(b);
+      return JSON.stringify(normalizedA) === JSON.stringify(normalizedB);
+    }
     function getDeviceChanges() {
       if (!window.defaultDevices) return {};
       var diff = {};
@@ -15053,7 +15088,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         Object.keys(curCat).forEach(function (name) {
           var cur = curCat[name];
           var def = defCat[name];
-          if (!def || JSON.stringify(cur) !== JSON.stringify(def)) {
+          if (!def || !deviceEntriesEqual(cur, def)) {
             record(cat, name, cur, sub);
           }
         });
