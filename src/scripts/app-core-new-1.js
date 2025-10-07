@@ -10268,6 +10268,10 @@ function setLanguage(lang) {
     setLabelText(matteboxFilterHeadingElem, 'matteboxFilterHeading');
     setLabelText(matteboxLabel, 'mattebox');
     setLabelText(filterLabel, 'filter');
+    setLabelText(storageHeading, 'storageHeading');
+    setLabelText(storageNeedsLabel, 'storageNeedsLabel');
+    updateStorageRequirementTranslations(projectFormTexts, fallbackProjectForm);
+    updateStorageRequirementTypeOptions();
     setLabelText(monitoringHeadingElem, 'monitoringHeading');
     setLabelText(monitoringConfigurationLabel, 'monitoringConfiguration');
     setLabelText(viewfinderSettingsLabel, 'viewfinderSettings');
@@ -10361,6 +10365,15 @@ function setLanguage(lang) {
       addShootBtn.setAttribute('aria-label', label);
       addShootBtn.setAttribute('data-help', label);
     }
+    if (addStorageNeedBtn) {
+      const storageLabelText = stripTrailingPunctuation(
+        projectFormTexts.storageNeedsLabel || fallbackProjectForm.storageNeedsLabel || 'Recording media needs'
+      );
+      const label = `${addEntryLabel} ${storageLabelText}`.trim();
+      setButtonLabelWithIcon(addStorageNeedBtn, label, ICON_GLYPHS.add);
+      addStorageNeedBtn.setAttribute('aria-label', label);
+      addStorageNeedBtn.setAttribute('data-help', label);
+    }
   }
   if (iosPwaHelpTitle) iosPwaHelpTitle.textContent = texts[lang].iosPwaHelpTitle;
   if (iosPwaHelpIntro) iosPwaHelpIntro.textContent = texts[lang].iosPwaHelpIntro;
@@ -10451,6 +10464,8 @@ const viewfinderExtensionSelect = document.getElementById("viewfinderExtension")
 const matteboxFilterHeadingElem = document.getElementById("matteboxFilterHeading");
 const matteboxLabel = document.getElementById("matteboxLabel");
 const filterLabel = document.getElementById("filterLabel");
+const storageHeading = document.getElementById("storageHeading");
+const storageNeedsLabel = document.getElementById("storageNeedsLabel");
 const monitoringHeadingElem = document.getElementById("monitoringHeading");
 const monitoringConfigurationLabel = document.getElementById("monitoringConfigurationLabel");
 const viewfinderSettingsLabel = document.getElementById("viewfinderSettingsLabel");
@@ -10471,6 +10486,8 @@ var prepContainer = document.getElementById("prepContainer");
 const addPrepBtn = document.getElementById("addPrepBtn");
 var shootContainer = document.getElementById("shootContainer");
 const addShootBtn = document.getElementById("addShootBtn");
+var storageNeedsContainer = document.getElementById("storageNeedsContainer");
+const addStorageNeedBtn = document.getElementById("addStorageNeedBtn");
 
 var monitoringConfigurationUserChanged = false;
 
@@ -12191,7 +12208,8 @@ var projectFieldIcons = {
   monitoringConfiguration: iconGlyph('\uF0D0', ICON_FONT_KEYS.UICONS),
   monitorUserButtons: iconGlyph('\uF0D1', ICON_FONT_KEYS.UICONS),
   cameraUserButtons: iconGlyph('\uF0D1', ICON_FONT_KEYS.UICONS),
-  viewfinderUserButtons: iconGlyph('\uF0D1', ICON_FONT_KEYS.UICONS)
+  viewfinderUserButtons: iconGlyph('\uF0D1', ICON_FONT_KEYS.UICONS),
+  storageRequirements: ICON_GLYPHS.save
 };
 
 function updateSelectIconBoxes(sel) {
@@ -12328,6 +12346,19 @@ function createHiddenLabel(forId, text) {
   label.setAttribute('for', forId);
   label.textContent = typeof text === 'string' ? text : '';
   return label;
+}
+
+function getProjectFormText(key, defaultValue = '') {
+  const fallbackProjectForm = texts?.en?.projectForm || {};
+  const projectFormTexts = texts?.[currentLang]?.projectForm || fallbackProjectForm;
+  const localized = projectFormTexts && typeof projectFormTexts[key] === 'string'
+    ? projectFormTexts[key].trim()
+    : '';
+  if (localized) return localized;
+  const fallback = fallbackProjectForm && typeof fallbackProjectForm[key] === 'string'
+    ? fallbackProjectForm[key].trim()
+    : '';
+  return fallback || defaultValue;
 }
 
 function createCrewRow(data = {}) {
@@ -12467,6 +12498,317 @@ function createShootRow(data = {}) {
   shootContainer.appendChild(row);
 }
 
+function formatCapacity(value, unit) {
+  const num = Number(value);
+  if (!Number.isFinite(num) || num <= 0) return '';
+  const formatted = Number.isInteger(num)
+    ? String(num)
+    : num.toLocaleString(undefined, { maximumFractionDigits: 2, minimumFractionDigits: 0 });
+  return `${formatted} ${unit}`;
+}
+
+function gatherMediaEntriesForType(type) {
+  const entries = [];
+  if (!type) return entries;
+  const cameraDb = devices?.cameras || {};
+  const selectedName = typeof cameraSelect?.value === 'string' ? cameraSelect.value : '';
+  const addEntries = cam => {
+    if (!cam || !Array.isArray(cam.recordingMedia)) return;
+    cam.recordingMedia.forEach(media => {
+      if (media && media.type === type) {
+        entries.push(media);
+      }
+    });
+  };
+  if (selectedName && cameraDb[selectedName]) {
+    addEntries(cameraDb[selectedName]);
+  }
+  Object.keys(cameraDb).forEach(name => {
+    if (name === selectedName) return;
+    addEntries(cameraDb[name]);
+  });
+  return entries;
+}
+
+function getAvailableStorageMediaTypes() {
+  const cameraDb = devices?.cameras || {};
+  const types = new Set();
+  const selectedName = typeof cameraSelect?.value === 'string' ? cameraSelect.value : '';
+  if (selectedName && cameraDb[selectedName]) {
+    (cameraDb[selectedName].recordingMedia || []).forEach(media => {
+      if (media && media.type) {
+        types.add(media.type);
+      }
+    });
+  }
+  if (!types.size) {
+    Object.values(cameraDb).forEach(cam => {
+      (cam?.recordingMedia || []).forEach(media => {
+        if (media && media.type) {
+          types.add(media.type);
+        }
+      });
+    });
+  }
+  return Array.from(types).sort(localeSort);
+}
+
+function getStorageVariantOptions(type) {
+  const variants = [];
+  if (!type) return variants;
+  const normalizedType = type.toLowerCase();
+  const mediaDb = devices?.gearList?.media || {};
+  const seen = new Set();
+  const addVariant = (value, label) => {
+    if (!value || seen.has(value)) return;
+    variants.push({ value, label: label || value });
+    seen.add(value);
+  };
+
+  Object.entries(mediaDb).forEach(([name, info]) => {
+    if (!name) return;
+    const fields = [name, info?.model, info?.interface];
+    const matches = fields.some(field => typeof field === 'string' && field.toLowerCase().includes(normalizedType));
+    if (!matches) return;
+    const parts = [];
+    if (info?.brand) parts.push(info.brand);
+    const model = info?.model || '';
+    if (model && (!info.brand || model.toLowerCase() !== info.brand.toLowerCase())) {
+      parts.push(model);
+    }
+    const capacityLabel = info?.capacityTb != null
+      ? formatCapacity(info.capacityTb, 'TB')
+      : info?.capacityGb != null
+        ? formatCapacity(info.capacityGb, 'GB')
+        : '';
+    if (capacityLabel) parts.push(capacityLabel);
+    addVariant(name, parts.length ? parts.join(' • ') : name);
+  });
+
+  const noteVariants = new Set();
+  gatherMediaEntriesForType(type).forEach(media => {
+    const notes = typeof media?.notes === 'string' ? media.notes : '';
+    if (!notes) return;
+    notes.split(/[,;/]/).forEach(part => {
+      const trimmed = part.trim();
+      if (trimmed) noteVariants.add(trimmed);
+    });
+  });
+  noteVariants.forEach(note => {
+    const value = `${type} ${note}`.trim();
+    addVariant(value, note);
+  });
+
+  if (!variants.length) {
+    addVariant(type, type);
+  }
+
+  return variants.sort((a, b) => localeSort(a.label, b.label));
+}
+
+function updateStorageVariantOptions(select, type, selectedValue) {
+  if (!select) return;
+  const options = getStorageVariantOptions(type);
+  const placeholder = getProjectFormText('storageVariantPlaceholder', 'Select brand & size');
+  const previous = selectedValue !== undefined ? selectedValue : select.value;
+  select.innerHTML = '';
+  const blank = document.createElement('option');
+  blank.value = '';
+  blank.textContent = placeholder;
+  select.appendChild(blank);
+  options.forEach(opt => {
+    const option = document.createElement('option');
+    option.value = opt.value;
+    option.textContent = opt.label;
+    select.appendChild(option);
+  });
+  if (previous) {
+    const hasMatch = Array.from(select.options).some(opt => opt.value === previous);
+    if (!hasMatch) {
+      const fallback = document.createElement('option');
+      fallback.value = previous;
+      fallback.textContent = previous;
+      fallback.dataset.extraOption = 'true';
+      select.appendChild(fallback);
+    }
+    select.value = previous;
+  } else {
+    select.value = '';
+  }
+}
+
+function updateStorageRequirementTypeOptions() {
+  if (!storageNeedsContainer) return;
+  const types = getAvailableStorageMediaTypes();
+  const placeholder = getProjectFormText('storageTypePlaceholder', 'Select media type');
+  Array.from(storageNeedsContainer.querySelectorAll('.storage-row')).forEach(row => {
+    const typeSelect = row.querySelector('.storage-type');
+    const variantSelect = row.querySelector('.storage-variant');
+    if (!typeSelect) return;
+    const previous = typeSelect.value;
+    const previousVariant = variantSelect ? variantSelect.value : '';
+    typeSelect.innerHTML = '';
+    const blank = document.createElement('option');
+    blank.value = '';
+    blank.textContent = placeholder;
+    typeSelect.appendChild(blank);
+    types.forEach(typeOption => {
+      const option = document.createElement('option');
+      option.value = typeOption;
+      option.textContent = typeOption;
+      typeSelect.appendChild(option);
+    });
+    if (previous) {
+      const hasMatch = types.includes(previous);
+      if (!hasMatch) {
+        const fallback = document.createElement('option');
+        fallback.value = previous;
+        fallback.textContent = previous;
+        fallback.dataset.extraOption = 'true';
+        typeSelect.appendChild(fallback);
+      }
+      typeSelect.value = previous;
+    } else {
+      typeSelect.value = '';
+    }
+    updateStorageVariantOptions(variantSelect, typeSelect.value, previousVariant);
+  });
+}
+
+function createStorageRequirementRow(data = {}) {
+  if (!storageNeedsContainer) return null;
+  const row = document.createElement('div');
+  row.className = 'storage-row form-row';
+
+  const quantityInput = document.createElement('input');
+  quantityInput.type = 'number';
+  quantityInput.min = '1';
+  quantityInput.step = '1';
+  quantityInput.name = 'storageQuantity';
+  quantityInput.className = 'storage-quantity';
+  const quantityValue = Number(data.quantity);
+  if (Number.isFinite(quantityValue) && quantityValue > 0) {
+    quantityInput.value = quantityValue;
+  }
+  const quantityLabelText = getProjectFormText('storageQuantityLabel', 'Quantity');
+  const quantityLabel = createHiddenLabel(ensureElementId(quantityInput, quantityLabelText), quantityLabelText);
+  quantityLabel.dataset.storageLabelKey = 'storageQuantityLabel';
+  quantityInput.addEventListener('input', () => scheduleProjectAutoSave(true));
+  quantityInput.addEventListener('change', () => scheduleProjectAutoSave(true));
+
+  const typeSelect = document.createElement('select');
+  typeSelect.name = 'storageMediaType';
+  typeSelect.className = 'storage-type';
+  typeSelect.value = typeof data.type === 'string' ? data.type : '';
+  const typeLabelText = getProjectFormText('storageTypeLabel', 'Media type');
+  const typeLabel = createHiddenLabel(ensureElementId(typeSelect, typeLabelText), typeLabelText);
+  typeLabel.dataset.storageLabelKey = 'storageTypeLabel';
+
+  const variantSelect = document.createElement('select');
+  variantSelect.name = 'storageMediaVariant';
+  variantSelect.className = 'storage-variant';
+  variantSelect.value = typeof data.variant === 'string' ? data.variant : '';
+  const variantLabelText = getProjectFormText('storageVariantLabel', 'Brand & capacity');
+  const variantLabel = createHiddenLabel(ensureElementId(variantSelect, variantLabelText), variantLabelText);
+  variantLabel.dataset.storageLabelKey = 'storageVariantLabel';
+  variantSelect.addEventListener('change', () => scheduleProjectAutoSave(true));
+
+  const notesInput = document.createElement('input');
+  notesInput.type = 'text';
+  notesInput.name = 'storageMediaNotes';
+  notesInput.className = 'storage-notes';
+  notesInput.value = typeof data.notes === 'string' ? data.notes : '';
+  notesInput.placeholder = getProjectFormText('storageNotesPlaceholder', '');
+  const notesLabelText = getProjectFormText('storageNotesLabel', 'Notes');
+  const notesLabel = createHiddenLabel(ensureElementId(notesInput, notesLabelText), notesLabelText);
+  notesLabel.dataset.storageLabelKey = 'storageNotesLabel';
+  notesInput.addEventListener('input', () => scheduleProjectAutoSave(true));
+  notesInput.addEventListener('change', () => scheduleProjectAutoSave(true));
+
+  typeSelect.addEventListener('change', () => {
+    updateStorageVariantOptions(variantSelect, typeSelect.value);
+    scheduleProjectAutoSave(true);
+  });
+
+  const removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  const removeBase = getProjectFormText('removeEntry', 'Remove');
+  const storageLabel = getProjectFormText('storageNeedsLabel', 'Recording media needs');
+  const removeLabel = `${removeBase} ${storageLabel}`.trim();
+  removeBtn.innerHTML = iconMarkup(ICON_GLYPHS.minus, 'btn-icon');
+  removeBtn.setAttribute('aria-label', removeLabel);
+  removeBtn.setAttribute('title', removeLabel);
+  removeBtn.setAttribute('data-help', removeLabel);
+  removeBtn.addEventListener('click', () => {
+    row.remove();
+    if (!storageNeedsContainer.querySelector('.storage-row')) {
+      createStorageRequirementRow();
+    } else {
+      updateStorageRequirementTypeOptions();
+    }
+    scheduleProjectAutoSave(true);
+  });
+
+  row.append(
+    quantityLabel,
+    quantityInput,
+    typeLabel,
+    typeSelect,
+    variantLabel,
+    variantSelect,
+    notesLabel,
+    notesInput,
+    removeBtn
+  );
+
+  storageNeedsContainer.appendChild(row);
+  updateStorageRequirementTypeOptions();
+  return row;
+}
+
+function updateStorageRequirementTranslations(projectFormTexts, fallbackProjectForm) {
+  const headingText = projectFormTexts.storageHeading
+    || fallbackProjectForm.storageHeading
+    || 'Storage & Media';
+  if (storageHeading) storageHeading.textContent = headingText;
+
+  const labelText = projectFormTexts.storageNeedsLabel
+    || fallbackProjectForm.storageNeedsLabel
+    || 'Recording media needs:';
+  if (storageNeedsLabel) storageNeedsLabel.textContent = labelText;
+
+  const updateLabel = key => {
+    const text = projectFormTexts[key] || fallbackProjectForm[key];
+    if (!text) return;
+    document.querySelectorAll(`#storageNeedsContainer [data-storage-label-key="${key}"]`).forEach(label => {
+      label.textContent = text;
+    });
+  };
+  ['storageQuantityLabel', 'storageTypeLabel', 'storageVariantLabel', 'storageNotesLabel'].forEach(updateLabel);
+
+  const typePlaceholder = projectFormTexts.storageTypePlaceholder
+    || fallbackProjectForm.storageTypePlaceholder
+    || 'Select media type';
+  const variantPlaceholder = projectFormTexts.storageVariantPlaceholder
+    || fallbackProjectForm.storageVariantPlaceholder
+    || 'Select brand & size';
+  const notesPlaceholder = projectFormTexts.storageNotesPlaceholder
+    || fallbackProjectForm.storageNotesPlaceholder
+    || '';
+
+  document.querySelectorAll('#storageNeedsContainer .storage-type').forEach(select => {
+    const firstOption = select.options[0];
+    if (firstOption) firstOption.textContent = typePlaceholder;
+  });
+  document.querySelectorAll('#storageNeedsContainer .storage-variant').forEach(select => {
+    const firstOption = select.options[0];
+    if (firstOption) firstOption.textContent = variantPlaceholder;
+  });
+  document.querySelectorAll('#storageNeedsContainer .storage-notes').forEach(input => {
+    input.placeholder = notesPlaceholder;
+  });
+}
+
 if (addPersonBtn) {
   addPersonBtn.addEventListener('click', () => createCrewRow());
 }
@@ -12475,6 +12817,12 @@ if (addPrepBtn) {
 }
 if (addShootBtn) {
   addShootBtn.addEventListener('click', () => createShootRow());
+}
+if (addStorageNeedBtn) {
+  addStorageNeedBtn.addEventListener('click', () => {
+    createStorageRequirementRow();
+    scheduleProjectAutoSave(true);
+  });
 }
 
 function updateTripodOptions() {

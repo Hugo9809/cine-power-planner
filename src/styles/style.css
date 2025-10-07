@@ -828,6 +828,28 @@ main.legal-content {
   align-self: stretch;
 }
 
+.storage-row {
+  align-items: stretch;
+}
+
+.storage-row .storage-quantity {
+  flex: 0 0 6rem;
+  min-width: 5.5rem;
+}
+
+.storage-row .storage-type,
+.storage-row .storage-variant,
+.storage-row .storage-notes {
+  flex: 1 1 180px;
+  min-width: 160px;
+}
+
+.storage-row button {
+  flex: 0 0 auto;
+  margin: 0;
+  align-self: center;
+}
+
 #dynamicFields {
   margin-top: 10px;
 }
