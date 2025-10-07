@@ -554,15 +554,26 @@
     const keys = Object.getOwnPropertyNames(value);
     for (let index = 0; index < keys.length; index += 1) {
       const key = keys[index];
-      const descriptor = Object.getOwnPropertyDescriptor(value, key);
-      if (!descriptor || ('get' in descriptor) || ('set' in descriptor)) {
+      let child;
+      try {
+        child = value[key];
+      } catch (accessError) {
+        void accessError;
+        child = undefined;
+      }
+      if (!child || (typeof child !== 'object' && typeof child !== 'function')) {
         continue;
       }
-      fallbackFreezeDeep(descriptor.value, visited);
+      fallbackFreezeDeep(child, visited);
     }
 
     try {
-      return Object.freeze(value);
+      try {
+        return Object.freeze(value);
+      } catch (freezeError) {
+        void freezeError;
+        return value;
+      }
     } catch (freezeError) {
       void freezeError;
       return value;

@@ -96,11 +96,17 @@
             const keys = Object.getOwnPropertyNames(target);
             for (let index = 0; index < keys.length; index += 1) {
               const key = keys[index];
-              const descriptor = Object.getOwnPropertyDescriptor(target, key);
-              if (!descriptor || descriptor.get || descriptor.set) {
+              let child;
+              try {
+                child = target[key];
+              } catch (accessError) {
+                void accessError;
+                child = undefined;
+              }
+              if (!child || (typeof child !== 'object' && typeof child !== 'function')) {
                 continue;
               }
-              freeze(descriptor.value);
+              freeze(child);
             }
             Object.freeze(target);
           } catch (error) {

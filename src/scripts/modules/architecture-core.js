@@ -252,6 +252,15 @@
 
       try {
         if (
+          typeof module !== 'undefined' &&
+          module &&
+          typeof module.constructor === 'function' &&
+          value instanceof module.constructor
+        ) {
+          return true;
+        }
+
+        if (
           builtin &&
           typeof builtin.isImmutableBuiltin === 'function' &&
           builtin.isImmutableBuiltin(value)
@@ -302,18 +311,61 @@
 
       seen.add(value);
 
-      const keys = Object.getOwnPropertyNames(value);
+      let keys = [];
+      try {
+        keys = Object.getOwnPropertyNames(value);
+      } catch (inspectionError) {
+        void inspectionError;
+        if (typeof Reflect !== 'undefined' && typeof Reflect.ownKeys === 'function') {
+          try {
+            keys = Reflect.ownKeys(value).filter(function filterStringKeys(key) {
+              return typeof key === 'string';
+            });
+          } catch (reflectError) {
+            void reflectError;
+            keys = [];
+          }
+        }
+      }
       for (let index = 0; index < keys.length; index += 1) {
         const key = keys[index];
-        const descriptor = Object.getOwnPropertyDescriptor(value, key);
-        if (!descriptor || ('get' in descriptor) || ('set' in descriptor)) {
+
+        let hasOwn = true;
+        try {
+          hasOwn = Object.prototype.hasOwnProperty.call(value, key);
+        } catch (hasOwnError) {
+          void hasOwnError;
+          hasOwn = true;
+        }
+        if (!hasOwn) {
           continue;
         }
 
-        freeze(descriptor.value, seen);
+        let child;
+        try {
+          child = value[key];
+        } catch (accessError) {
+          void accessError;
+          child = undefined;
+        }
+
+        if (!child || (typeof child !== 'object' && typeof child !== 'function')) {
+          continue;
+        }
+
+        try {
+          freeze(child, seen);
+        } catch (childError) {
+          void childError;
+        }
       }
 
-      return Object.freeze(value);
+      try {
+        return Object.freeze(value);
+      } catch (freezeError) {
+        void freezeError;
+        return value;
+      }
     }
 
     return {

@@ -98,22 +98,28 @@
 
     for (let index = 0; index < keys.length; index += 1) {
       const key = keys[index];
-      let descriptor = null;
+      let child;
       try {
-        descriptor = Object.getOwnPropertyDescriptor(value, key);
-      } catch (descriptorError) {
-        void descriptorError;
+        child = value[key];
+      } catch (accessError) {
+        void accessError;
+        child = undefined;
       }
 
-      if (!descriptor || 'get' in descriptor || 'set' in descriptor) {
+      if (!child || (typeof child !== 'object' && typeof child !== 'function')) {
         continue;
       }
 
-      fallbackFreezeDeep(descriptor.value, seen);
+      fallbackFreezeDeep(child, seen);
     }
 
     try {
-      return Object.freeze(value);
+      try {
+        return Object.freeze(value);
+      } catch (freezeError) {
+        void freezeError;
+        return value;
+      }
     } catch (freezeError) {
       void freezeError;
       return value;
