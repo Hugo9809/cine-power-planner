@@ -206,6 +206,10 @@ exported artifacts if it does not already exist) with:
   audit trail shows how many diagnostics entries were recorded, when retention trimmed the
   history and how many events were preserved. Keeping this metadata with the exported
   backups proves that no warnings disappeared silently while the limit rotated entries.
+- **Storage fallback traces.** Record the diagnostics IDs emitted when storage falls back to
+  session-only or in-memory modes and when alerts appear. The entries demonstrate exactly
+  when the planner lost persistent storage access and which warning surfaced so recovery
+  drills can prove the correct prompts reached the crew.
 - **Cache status.** Confirm the help dialog, legal pages and other locally stored Uicons or
   helper scripts rendered correctly while offline. A quick note here proves the service
   worker cache stayed intact.

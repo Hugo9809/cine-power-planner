@@ -113,6 +113,183 @@ var STORAGE_STATE_CACHE_WEAKMAP =
     ? new WeakMap()
     : null;
 
+const STORAGE_LOG_NAMESPACE = 'storage';
+const STORAGE_LOG_BASE_META = {
+  channel: 'storage',
+  component: 'storage',
+};
+
+const STORAGE_LOG_STATE = {
+  logger: null,
+};
+
+function normalizeStorageLogMeta(meta) {
+  const normalized = {
+    channel: STORAGE_LOG_BASE_META.channel,
+    component: STORAGE_LOG_BASE_META.component,
+  };
+
+  if (meta && typeof meta === 'object') {
+    const keys = Object.keys(meta);
+    for (let index = 0; index < keys.length; index += 1) {
+      const key = keys[index];
+      normalized[key] = meta[key];
+    }
+  }
+
+  return normalized;
+}
+
+function resolveStorageLogger() {
+  if (STORAGE_LOG_STATE.logger) {
+    return STORAGE_LOG_STATE.logger;
+  }
+
+  const scope =
+    (GLOBAL_SCOPE && typeof GLOBAL_SCOPE === 'object'
+      ? GLOBAL_SCOPE
+      : null)
+    || (typeof window !== 'undefined' ? window : null)
+    || null;
+
+  const logging = scope && scope.cineLogging;
+  if (!logging) {
+    return null;
+  }
+
+  if (typeof logging.createLogger === 'function') {
+    try {
+      STORAGE_LOG_STATE.logger = logging.createLogger(STORAGE_LOG_NAMESPACE, {
+        meta: STORAGE_LOG_BASE_META,
+      });
+      return STORAGE_LOG_STATE.logger;
+    } catch (error) {
+      void error;
+    }
+  }
+
+  function createLoggerShim(level) {
+    return function storageLoggerShim(message, detail, meta) {
+      if (typeof logging[level] === 'function') {
+        logging[level](message, detail, {
+          namespace: STORAGE_LOG_NAMESPACE,
+          meta,
+        });
+        return;
+      }
+
+      if (typeof logging.log === 'function') {
+        logging.log(level, message, detail, {
+          namespace: STORAGE_LOG_NAMESPACE,
+          meta,
+        });
+      }
+    };
+  }
+
+  if (logging && typeof logging.log === 'function') {
+    const shim = {
+      debug: createLoggerShim('debug'),
+      info: createLoggerShim('info'),
+      warn: createLoggerShim('warn'),
+      error: createLoggerShim('error'),
+    };
+
+    if (typeof logging.getConfig === 'function') {
+      shim.getConfig = function getStorageLoggerConfig() {
+        try {
+          return logging.getConfig();
+        } catch (error) {
+          void error;
+          return null;
+        }
+      };
+    }
+
+    STORAGE_LOG_STATE.logger = shim;
+    return STORAGE_LOG_STATE.logger;
+  }
+
+  return null;
+}
+
+function logStorageEvent(level, message, detail, meta) {
+  const logger = resolveStorageLogger();
+  const normalizedMeta = normalizeStorageLogMeta(meta);
+
+  if (logger && typeof logger[level] === 'function') {
+    try {
+      logger[level](message, detail, normalizedMeta);
+    } catch (error) {
+      void error;
+    }
+  }
+
+  let shouldMirrorToConsole = !logger;
+
+  if (logger) {
+    shouldMirrorToConsole = true;
+    if (typeof logger.getConfig === 'function') {
+      try {
+        const loggerConfig = logger.getConfig();
+        if (!loggerConfig || loggerConfig.consoleOutput !== false) {
+          shouldMirrorToConsole = false;
+        }
+      } catch (configError) {
+        void configError;
+        shouldMirrorToConsole = true;
+      }
+    }
+  }
+
+  if (!shouldMirrorToConsole) {
+    return;
+  }
+
+  if (typeof console === 'undefined') {
+    return;
+  }
+
+  let consoleMethod = null;
+  if (level === 'error' && typeof console.error === 'function') {
+    consoleMethod = console.error;
+  } else if (level === 'warn' && typeof console.warn === 'function') {
+    consoleMethod = console.warn;
+  } else if (typeof console.info === 'function') {
+    consoleMethod = console.info;
+  } else if (typeof console.log === 'function') {
+    consoleMethod = console.log;
+  }
+
+  if (!consoleMethod) {
+    return;
+  }
+
+  const args = [message];
+  if (typeof detail !== 'undefined') {
+    args.push(detail);
+  }
+  args.push({ meta: normalizedMeta });
+
+  try {
+    consoleMethod.apply(console, args);
+  } catch (error) {
+    void error;
+  }
+}
+
+function logStorageInfo(message, detail, meta) {
+  logStorageEvent('info', message, detail, meta);
+}
+
+function logStorageWarn(message, detail, meta) {
+  logStorageEvent('warn', message, detail, meta);
+}
+
+function logStorageError(message, detail, meta) {
+  logStorageEvent('error', message, detail, meta);
+}
+
 function getStorageStateCacheMap(storage, createIfMissing) {
   if (!storage || (typeof storage !== 'object' && typeof storage !== 'function')) {
     return null;
@@ -2836,7 +3013,11 @@ function initializeSafeLocalStorage() {
         }
       }
     } catch (e) {
-      console.warn('localStorage is unavailable:', e);
+      logStorageError(
+        'localStorage is unavailable',
+        { error: e },
+        { stage: 'initialize', availability: 'localStorage' },
+      );
       if (candidate) {
         lastFailedUpgradeCandidate = candidate;
       }
@@ -2846,17 +3027,30 @@ function initializeSafeLocalStorage() {
       if ('sessionStorage' in window) {
         const storage = verifyStorage(window.sessionStorage);
         if (storage) {
-          console.warn('Falling back to sessionStorage; data persists for this tab only.');
+          logStorageWarn(
+            'Falling back to sessionStorage; data persists for this tab only.',
+            null,
+            { stage: 'initialize', availability: 'sessionStorage' },
+          );
           alertSessionFallback();
           return { storage, type: 'session' };
         }
       }
     } catch (e) {
-      console.warn('sessionStorage fallback is unavailable:', e);
+      logStorageError(
+        'sessionStorage fallback is unavailable',
+        { error: e },
+        { stage: 'initialize', availability: 'sessionStorage' },
+      );
     }
   }
 
   alertStorageError();
+  logStorageError(
+    'Falling back to in-memory storage.',
+    null,
+    { stage: 'initialize', availability: 'memory' },
+  );
   return { storage: createMemoryStorage(), type: 'memory' };
 }
 
@@ -2883,7 +3077,11 @@ function migrateSnapshotToStorage(snapshot, target) {
       existing = target.getItem(key);
       existingRead = true;
     } catch (readError) {
-      console.warn('Unable to inspect localStorage during upgrade', key, readError);
+      logStorageWarn(
+        'Unable to inspect localStorage during upgrade',
+        { key, error: readError },
+        { stage: 'upgrade', operation: 'inspect-key' },
+      );
     }
 
     if (existingRead && existing !== null && existing !== undefined && existing !== value) {
@@ -2899,7 +3097,11 @@ function migrateSnapshotToStorage(snapshot, target) {
       target.setItem(key, value);
       migratedKeys.push(key);
     } catch (writeError) {
-      console.warn('Unable to migrate storage key during upgrade', key, writeError);
+      logStorageWarn(
+        'Unable to migrate storage key during upgrade',
+        { key, error: writeError },
+        { stage: 'upgrade', operation: 'write-key' },
+      );
       failedKeys.push(key);
     }
   });
@@ -3923,6 +4125,8 @@ function alertStorageError(reason) {
     return;
   }
 
+  const normalizedReason = typeof reason === 'string' && reason ? reason : 'general';
+
   if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE[STORAGE_ALERT_FLAG_NAME] === 'boolean') {
     storageErrorAlertShown = GLOBAL_SCOPE[STORAGE_ALERT_FLAG_NAME];
   }
@@ -3938,9 +4142,10 @@ function alertStorageError(reason) {
 
   if (typeof window === 'undefined' || typeof window.alert !== 'function') return;
   let msg = 'Storage error: Unable to access local data. Changes may not be saved.';
+  let lang = 'en';
   try {
     if (typeof texts !== 'undefined') {
-      const lang = typeof currentLang !== 'undefined' && texts[currentLang]
+      lang = typeof currentLang !== 'undefined' && texts[currentLang]
         ? currentLang
         : 'en';
       msg = texts[lang]?.alertStorageError || msg;
@@ -3949,6 +4154,12 @@ function alertStorageError(reason) {
     void err;
     // ignore and fall back to default
   }
+
+  logStorageError(
+    'Storage error alert displayed',
+    { reason: normalizedReason, message: msg, language: lang },
+    { stage: 'alert', reason: normalizedReason },
+  );
   window.alert(msg);
 }
 
@@ -3965,9 +4176,10 @@ function alertSessionFallback() {
   if (typeof window === 'undefined' || typeof window.alert !== 'function') return;
 
   let msg = 'Warning: Local storage is unavailable. Data will only persist for this browser tab.';
+  let lang = 'en';
   try {
     if (typeof texts !== 'undefined') {
-      const lang = typeof currentLang !== 'undefined' && texts[currentLang] ? currentLang : 'en';
+      lang = typeof currentLang !== 'undefined' && texts[currentLang] ? currentLang : 'en';
       msg = texts[lang]?.alertSessionFallback || msg;
     }
   } catch (err) {
@@ -3975,6 +4187,11 @@ function alertSessionFallback() {
     // ignore and fall back to default
   }
 
+  logStorageWarn(
+    'Session storage fallback alert displayed',
+    { message: msg, language: lang },
+    { stage: 'alert', reason: 'session-fallback' },
+  );
   window.alert(msg);
 }
 
@@ -3986,7 +4203,11 @@ function getWindowStorage(name) {
   try {
     return window[name];
   } catch (error) {
-    console.warn(`Unable to access ${name} during legacy migration`, error);
+    logStorageWarn(
+      `Unable to access ${name} during legacy migration`,
+      { storageName: name, error },
+      { stage: 'migration', operation: 'access-window-storage' },
+    );
     return null;
   }
 }
@@ -6849,6 +7070,19 @@ function readAllProjectsFromStorage() {
         const adjusted = generateUpdatedProjectName(finalKey, usedProjectNames, normalizedProjectNames);
         finalKey = adjusted;
       }
+      if (
+        needsUpgrade
+        && originalEntry
+        && typeof originalEntry === "object"
+        && normalized
+        && typeof normalized === "object"
+        && Object.prototype.hasOwnProperty.call(
+          normalized,
+          "gearListAndProjectRequirementsGenerated",
+        )
+      ) {
+        delete normalized.gearListAndProjectRequirementsGenerated;
+      }
       projects[finalKey] = normalized;
       registerLookupKey(key, finalKey);
       markProjectNameUsed(finalKey);
@@ -7167,6 +7401,39 @@ function deleteProject(name) {
   }
 }
 
+function deriveGenerationFlagFromNormalizedProject(project) {
+  if (!project || typeof project !== "object") {
+    return null;
+  }
+
+  const sources = [];
+  const gearList = project.gearList;
+
+  if (typeof gearList === "string") {
+    sources.push(gearList);
+  } else if (gearList && typeof gearList === "object") {
+    if (typeof gearList.projectHtml === "string") {
+      sources.push(gearList.projectHtml);
+    }
+    if (typeof gearList.gearHtml === "string") {
+      sources.push(gearList.gearHtml);
+    }
+  }
+
+  if (!sources.length) {
+    return null;
+  }
+
+  for (let index = 0; index < sources.length; index += 1) {
+    const value = sources[index];
+    if (typeof value === "string" && value.trim()) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 function createProjectImporter() {
   const { projects, changed, originalValue } = readAllProjectsFromStorage();
   if (changed) {
@@ -7191,8 +7458,20 @@ function createProjectImporter() {
       && Object.prototype.hasOwnProperty.call(project, "gearListAndProjectRequirementsGenerated")
       && typeof project.gearListAndProjectRequirementsGenerated === "boolean";
 
-    if (!originalHasGenerationFlag) {
-      normalizedProject.gearListAndProjectRequirementsGenerated = false;
+    const normalizedHasGenerationFlag =
+      normalizedProject
+      && typeof normalizedProject === "object"
+      && typeof normalizedProject.gearListAndProjectRequirementsGenerated === "boolean";
+
+    if (!normalizedHasGenerationFlag) {
+      if (originalHasGenerationFlag) {
+        normalizedProject.gearListAndProjectRequirementsGenerated =
+          project.gearListAndProjectRequirementsGenerated;
+      } else {
+        const derivedGenerationFlag = deriveGenerationFlagFromNormalizedProject(normalizedProject);
+        normalizedProject.gearListAndProjectRequirementsGenerated =
+          derivedGenerationFlag === null ? false : derivedGenerationFlag;
+      }
     }
 
     const candidates = [];

@@ -561,7 +561,11 @@ Use Cine Power Planner end-to-end with the following routine:
   reloads when you enable session storage. Each entry now records an ISO
   timestamp, millisecond marker, event ID and channel indicator so teams can
   align console fallbacks with stored diagnostics even when the structured
-  logger is unavailable.
+  logger is unavailable. Overview print and export attempts now stream their
+  warnings and fallback usage into this log so share rehearsals capture exactly
+  when the dialog had to open the backup window. Storage fallbacks and alert
+  prompts now generate their own entries so audits show when the planner was
+  forced to rely on session or in-memory storage.
 - Full-app backups report their running total and feed the backup history ledger
   so you can confirm hourly safety copies are captured before archiving them
   offline.
