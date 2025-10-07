@@ -63,6 +63,31 @@
     }
   }
 
+  const STORAGE_DEEP_CLONE =
+    GLOBAL_SCOPE && typeof GLOBAL_SCOPE.__cineDeepClone === 'function'
+      ? GLOBAL_SCOPE.__cineDeepClone
+      : function storageFallbackDeepClone(value) {
+          if (value === null || typeof value !== 'object') {
+            return value;
+          }
+
+          try {
+            return JSON.parse(JSON.stringify(value));
+          } catch (cloneError) {
+            void cloneError;
+          }
+
+          return value;
+        };
+
+  if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.__cineDeepClone !== 'function') {
+    try {
+      GLOBAL_SCOPE.__cineDeepClone = STORAGE_DEEP_CLONE;
+    } catch (storageDeepCloneError) {
+      void storageDeepCloneError;
+    }
+  }
+
 var DEVICE_STORAGE_KEY = 'cameraPowerPlanner_devices';
 var SETUP_STORAGE_KEY = 'cameraPowerPlanner_setups';
 var SESSION_STATE_KEY = 'cameraPowerPlanner_session';
@@ -5555,7 +5580,7 @@ function cloneProjectInfo(projectInfo) {
     return null;
   }
   try {
-    return JSON.parse(JSON.stringify(projectInfo));
+    return STORAGE_DEEP_CLONE(projectInfo);
   } catch (error) {
     console.warn('Unable to serialize project info during normalization', error);
     try {
@@ -5668,7 +5693,7 @@ function cloneAutoGearRules(rules) {
     return null;
   }
   try {
-    return JSON.parse(JSON.stringify(rules));
+    return STORAGE_DEEP_CLONE(rules);
   } catch (error) {
     console.warn('Unable to serialize automatic gear rules during normalization', error);
     try {
@@ -5685,7 +5710,7 @@ function cloneDiagramPositionsForStorage(positions) {
     return {};
   }
   try {
-    return JSON.parse(JSON.stringify(positions));
+    return STORAGE_DEEP_CLONE(positions);
   } catch (error) {
     console.warn('Unable to serialize diagram positions during normalization', error);
     try {
@@ -6416,7 +6441,7 @@ function cloneProjectEntryForBackup(entry) {
     return entry;
   }
   try {
-    const cloned = JSON.parse(JSON.stringify(entry));
+    const cloned = STORAGE_DEEP_CLONE(entry);
     const normalized = normalizeLegacyLongGopStructure(cloned);
     return normalized !== cloned ? normalized : cloned;
   } catch (error) {

@@ -36,6 +36,27 @@
     return scopes;
   }
 
+  const LOGGING_DEEP_CLONE = (function resolveLoggingDeepClone() {
+    const scope = fallbackDetectGlobalScope();
+    if (scope && typeof scope.__cineDeepClone === 'function') {
+      return scope.__cineDeepClone;
+    }
+
+    return function loggingFallbackDeepClone(value) {
+      if (value === null || typeof value !== 'object') {
+        return value;
+      }
+
+      try {
+        return JSON.parse(JSON.stringify(value));
+      } catch (cloneError) {
+        void cloneError;
+      }
+
+      return value;
+    };
+  })();
+
   function fallbackLoadModuleEnvironment(scope) {
     if (typeof require === 'function') {
       try {
@@ -1089,7 +1110,7 @@
     }
 
     try {
-      return JSON.parse(JSON.stringify(value));
+      return LOGGING_DEEP_CLONE(value);
     } catch (error) {
       void error;
     }

@@ -110,6 +110,30 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
 
 const CORE_GLOBAL_SCOPE = CORE_PART1_RUNTIME_SCOPE;
+const CORE_DEEP_CLONE =
+  CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE.__cineDeepClone === 'function'
+    ? CORE_GLOBAL_SCOPE.__cineDeepClone
+    : function coreFallbackDeepClone(value) {
+        if (value === null || typeof value !== 'object') {
+          return value;
+        }
+
+        try {
+          return JSON.parse(JSON.stringify(value));
+        } catch (cloneError) {
+          void cloneError;
+        }
+
+        return value;
+      };
+
+if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE.__cineDeepClone !== 'function') {
+  try {
+    CORE_GLOBAL_SCOPE.__cineDeepClone = CORE_DEEP_CLONE;
+  } catch (coreDeepCloneError) {
+    void coreDeepCloneError;
+  }
+}
 const CORE_TEMPERATURE_QUEUE_KEY = "__cinePendingTemperatureNote";
 const CORE_TEMPERATURE_RENDER_NAME = "renderTemperatureNote";
 
@@ -5431,7 +5455,7 @@ function cloneProjectEntryForSetup(projectEntry) {
 
   if (projectInfo && typeof projectInfo === 'object') {
     try {
-      snapshot.projectInfo = JSON.parse(JSON.stringify(projectInfo));
+      snapshot.projectInfo = CORE_DEEP_CLONE(projectInfo);
     } catch (error) {
       console.warn('Failed to clone project info for auto backup import', error);
       snapshot.projectInfo = projectInfo;
@@ -5439,7 +5463,7 @@ function cloneProjectEntryForSetup(projectEntry) {
   }
   if (projectEntry && typeof projectEntry.powerSelection === 'object') {
     try {
-      snapshot.powerSelection = JSON.parse(JSON.stringify(projectEntry.powerSelection));
+      snapshot.powerSelection = CORE_DEEP_CLONE(projectEntry.powerSelection);
     } catch (error) {
       console.warn('Failed to clone project power selection for auto backup import', error);
       snapshot.powerSelection = projectEntry.powerSelection;
@@ -5452,7 +5476,7 @@ function cloneProjectEntryForSetup(projectEntry) {
 
   if (Array.isArray(autoGearRules) && autoGearRules.length) {
     try {
-      snapshot.autoGearRules = JSON.parse(JSON.stringify(autoGearRules));
+      snapshot.autoGearRules = CORE_DEEP_CLONE(autoGearRules);
     } catch (error) {
       console.warn('Failed to clone auto gear rules for auto backup import', error);
       snapshot.autoGearRules = autoGearRules.slice();
@@ -5973,7 +5997,7 @@ function unifyDevices(devicesData) {
 // Initialize defaultDevices only if it hasn't been declared yet, to prevent
 // "already declared" errors if the script is loaded multiple times.
 if (window.defaultDevices === undefined) {
-  window.defaultDevices = JSON.parse(JSON.stringify(devices));
+  window.defaultDevices = CORE_DEEP_CLONE(devices);
   unifyDevices(window.defaultDevices);
 }
 
@@ -5982,7 +6006,7 @@ let storedDevices = loadDeviceData();
 if (storedDevices) {
   // Merge stored devices with the defaults so that categories missing
   // from saved data (e.g. FIZ) fall back to the built-in definitions.
-  const merged = JSON.parse(JSON.stringify(window.defaultDevices));
+  const merged = CORE_DEEP_CLONE(window.defaultDevices);
   for (const [key, value] of Object.entries(storedDevices)) {
     if (key === 'fiz' && value && typeof value === 'object') {
       merged.fiz = merged.fiz || {};
@@ -12804,7 +12828,7 @@ let sharedImportPreparedForImport = false;
 function cloneSharedImportValue(value) {
   if (value == null) return null;
   try {
-    return JSON.parse(JSON.stringify(value));
+    return CORE_DEEP_CLONE(value);
   } catch (error) {
     console.warn('Failed to clone shared import value', error);
     return null;
