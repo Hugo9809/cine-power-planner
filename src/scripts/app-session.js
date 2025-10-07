@@ -1357,6 +1357,29 @@ if (typeof filterSelectElem === 'undefined') {
   }
 }
 
+function resolveFilterSelectElement() {
+  if (
+    filterSelectElem &&
+    typeof filterSelectElem === 'object' &&
+    typeof filterSelectElem.tagName === 'string'
+  ) {
+    return filterSelectElem;
+  }
+  if (typeof document === 'undefined' || !document) {
+    return null;
+  }
+  try {
+    const resolved = document.getElementById('filter');
+    if (resolved) {
+      filterSelectElem = resolved;
+      return resolved;
+    }
+  } catch (resolveFilterSelectError) {
+    void resolveFilterSelectError;
+  }
+  return filterSelectElem;
+}
+
 function callSessionCoreFunction(functionName, args = [], options = {}) {
   if (typeof callCoreFunctionIfAvailable === 'function') {
     return callCoreFunctionIfAvailable(functionName, args, options);
@@ -11379,15 +11402,16 @@ function initApp() {
       console.error('Critical storage backup guard failed during initialization', criticalGuardError);
     }
   }
+  const resolvedFilterSelect = resolveFilterSelectElement();
   if (sharedLinkRow) {
     sharedLinkRow.classList.remove('hidden');
   }
   populateEnvironmentDropdowns();
   populateLensDropdown();
   populateFilterDropdown();
-  if (filterSelectElem) {
-    filterSelectElem.addEventListener('change', renderFilterDetails);
-    filterSelectElem.addEventListener('change', () => {
+  if (resolvedFilterSelect) {
+    resolvedFilterSelect.addEventListener('change', renderFilterDetails);
+    resolvedFilterSelect.addEventListener('change', () => {
       saveCurrentSession();
       saveCurrentGearList();
       checkSetupChanged();
@@ -11584,17 +11608,18 @@ function populateCodecDropdown(selected = '') {
 }
 
 function populateFilterDropdown() {
-  if (filterSelectElem && devices && Array.isArray(devices.filterOptions)) {
-    if (!filterSelectElem.multiple) {
+  const select = resolveFilterSelectElement();
+  if (select && devices && Array.isArray(devices.filterOptions)) {
+    if (!select.multiple) {
       const emptyOpt = document.createElement('option');
       emptyOpt.value = '';
-      filterSelectElem.appendChild(emptyOpt);
+      select.appendChild(emptyOpt);
     }
     devices.filterOptions.forEach(f => {
       const opt = document.createElement('option');
       opt.value = f;
       opt.textContent = f;
-      filterSelectElem.appendChild(opt);
+      select.appendChild(opt);
     });
   }
 }
@@ -12068,8 +12093,9 @@ function syncGearListFilterValue(storageId, value, isSelected) {
 }
 
 function renderFilterDetails() {
-  if (!filterSelectElem) return;
-  const selected = Array.from(filterSelectElem.selectedOptions).map(o => o.value).filter(Boolean);
+  const select = resolveFilterSelectElement();
+  if (!select) return;
+  const selected = Array.from(select.selectedOptions).map(o => o.value).filter(Boolean);
   const existingSelections = collectFilterSelections();
   const existingTokens = existingSelections
     ? parseFilterTokens(existingSelections)
@@ -12120,7 +12146,7 @@ function renderFilterDetails() {
 }
 
 function handleFilterDetailChange() {
-  if (!filterSelectElem) return;
+  if (!resolveFilterSelectElement()) return;
   const filterStr = collectFilterSelections();
   const entries = buildFilterGearEntries(parseFilterTokens(filterStr));
   updateGearListFilterEntries(entries);
@@ -12132,8 +12158,9 @@ function handleFilterDetailChange() {
 }
 
 function collectFilterSelections() {
-  if (!filterSelectElem) return '';
-  const selected = Array.from(filterSelectElem.selectedOptions).map(o => o.value);
+  const select = resolveFilterSelectElement();
+  if (!select) return '';
+  const selected = Array.from(select.selectedOptions).map(o => o.value);
   const existing = currentProjectInfo && currentProjectInfo.filter
     ? parseFilterTokens(currentProjectInfo.filter)
     : [];
@@ -12182,6 +12209,7 @@ function parseFilterTokens(str) {
 
 function applyFilterSelectionsToGearList(info = currentProjectInfo) {
   if (!gearListOutput) return;
+  resolveFilterSelectElement();
   const tokens = info && info.filter ? parseFilterTokens(info.filter) : [];
   const entries = buildFilterGearEntries(tokens);
   updateGearListFilterEntries(entries);
