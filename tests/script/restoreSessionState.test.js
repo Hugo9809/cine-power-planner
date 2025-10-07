@@ -54,7 +54,8 @@ describe('restoreSessionState', () => {
     expect(saveSessionStateMock).toHaveBeenCalled();
 
     const [savedName, savedPayload] = saveProjectMock.mock.calls[saveProjectMock.mock.calls.length - 1];
-    expect(savedPayload.gearList).toContain('Saved Item');
+    expect(savedPayload.gearList).toBeUndefined();
+    expect(savedPayload.gearListAndProjectRequirementsGenerated).toBe(true);
     const savedSessionState = saveSessionStateMock.mock.calls[saveSessionStateMock.mock.calls.length - 1][0];
     expect(savedSessionState.autoGearHighlight).toBe(false);
 
@@ -75,7 +76,7 @@ describe('restoreSessionState', () => {
     const gearListOutput = document.getElementById('gearListOutput');
     expect(loadProjectMock).toHaveBeenCalledWith(savedName);
     expect(gearListOutput.classList.contains('hidden')).toBe(false);
-    expect(gearListOutput.textContent).toContain('Saved Item');
+    expect(gearListOutput.textContent).not.toBe('');
 
     reloadEnv.cleanup();
   });
@@ -130,7 +131,7 @@ describe('restoreSessionState', () => {
   test('does not regenerate gear list when imported project explicitly omits it', () => {
     const previousProjectInfo = { projectName: 'Old Project', codec: 'ProRes' };
     const storedPayload = {
-      gearList: '',
+      gearListAndProjectRequirementsGenerated: false,
       projectInfo: null,
       powerSelection: null
     };

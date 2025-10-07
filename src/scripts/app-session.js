@@ -3461,6 +3461,15 @@ function restoreSessionState() {
       if (Object.prototype.hasOwnProperty.call(project, 'gearList')) {
         return true;
       }
+      if (Object.prototype.hasOwnProperty.call(project, 'gearSelectors')) {
+        const selectors = project.gearSelectors;
+        if (selectors && typeof selectors === 'object' && Object.keys(selectors).length) {
+          return true;
+        }
+      }
+      if (Object.prototype.hasOwnProperty.call(project, 'gearListAndProjectRequirementsGenerated')) {
+        return true;
+      }
 
       return Boolean(
         project.projectInfo
@@ -3739,19 +3748,18 @@ function applySharedSetup(shared, options = {}) {
     currentProjectInfo = decoded.projectInfo || null;
     if (projectForm) populateProjectForm(currentProjectInfo || {});
     let gearDisplayed = false;
-    const combinedHtml = (decoded.projectHtml || '') + (decoded.gearList || '');
+    let combinedHtml = '';
+    if (decoded.projectHtml || decoded.gearList) {
+      combinedHtml = `${decoded.projectHtml || ''}${decoded.gearList || ''}`;
+    }
+    if (!combinedHtml && decoded.projectInfo && typeof generateGearListHtml === 'function') {
+      combinedHtml = generateGearListHtml(decoded.projectInfo || {});
+    }
+    if (!combinedHtml && typeof generateGearListHtml === 'function') {
+      combinedHtml = generateGearListHtml(currentProjectInfo || {});
+    }
     if (combinedHtml) {
       displayGearAndRequirements(combinedHtml);
-      ensureGearListActions();
-      bindGearListCageListener();
-      bindGearListEasyrigListener();
-      bindGearListSliderBowlListener();
-      bindGearListProGaffTapeListener();
-      bindGearListDirectorMonitorListener();
-      gearDisplayed = true;
-    } else if (decoded.projectInfo || decoded.gearSelectors) {
-      const html = generateGearListHtml(decoded.projectInfo || {});
-      displayGearAndRequirements(html);
       ensureGearListActions();
       bindGearListCageListener();
       bindGearListEasyrigListener();
@@ -3763,13 +3771,20 @@ function applySharedSetup(shared, options = {}) {
     if (decoded.gearSelectors && gearDisplayed) {
       applyGearListSelectors(decoded.gearSelectors);
     }
-    if (decoded.projectInfo || decoded.gearSelectors || decoded.gearList) {
+    if (
+      decoded.projectInfo
+      || decoded.gearSelectors
+      || decoded.gearList
+      || Object.prototype.hasOwnProperty.call(decoded, 'gearListAndProjectRequirementsGenerated')
+    ) {
       const currentGearList = getCurrentGearListHtml();
       const payload = {
-        gearList: currentGearList,
         projectInfo: decoded.projectInfo || null,
         gearListAndProjectRequirementsGenerated: Boolean(currentGearList)
       };
+      if (decoded.gearSelectors && Object.keys(decoded.gearSelectors).length) {
+        payload.gearSelectors = decoded.gearSelectors;
+      }
       if (typeof getDiagramManualPositions === 'function') {
         const diagramPositions = getDiagramManualPositions();
         if (diagramPositions && Object.keys(diagramPositions).length) {
@@ -3787,7 +3802,21 @@ function applySharedSetup(shared, options = {}) {
         ? setupNameInput.value.trim()
         : '';
       const storageKey = selectedName || typedName;
-      if (typeof storageKey === 'string') {
+      const hasSelectors = Object.prototype.hasOwnProperty.call(payload, 'gearSelectors');
+      const hasAutoRules = payload.autoGearRules && payload.autoGearRules.length;
+      if (
+        typeof storageKey === 'string'
+        && (
+          payload.projectInfo
+          || hasSelectors
+          || payload.gearListAndProjectRequirementsGenerated
+          || hasAutoRules
+          || payload.diagramPositions
+        )
+      ) {
+        if (!hasAutoRules) {
+          delete payload.autoGearRules;
+        }
         saveProject(storageKey, payload);
       }
     }

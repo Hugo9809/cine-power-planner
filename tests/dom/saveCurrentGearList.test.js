@@ -37,12 +37,11 @@ describe('saveCurrentGearList project info handling', () => {
 
     const {
       projectInfo,
-      gearList,
       diagramPositions,
       autoGearRules,
       gearListAndProjectRequirementsGenerated,
     } = lastCall[1];
-    expect(gearList).toBe('');
+    expect(lastCall[1].gearList).toBeUndefined();
     expect(gearListAndProjectRequirementsGenerated).toBe(false);
     expect(projectInfo).toEqual(utils.getCurrentProjectInfo());
     expect(projectInfo).toMatchObject({
@@ -109,6 +108,7 @@ describe('saveCurrentGearList project info handling', () => {
     expect(savedSetup.projectInfo).toMatchObject({
       projectName: 'Snapshot Project',
     });
+    expect(savedSetup.gearList).toBeUndefined();
     expect(savedSetup.gearListAndProjectRequirementsGenerated).toBe(false);
 
     savedSetup.projectInfo.projectName = 'Mutated via setups';

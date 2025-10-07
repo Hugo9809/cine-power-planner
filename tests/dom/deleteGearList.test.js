@@ -110,7 +110,8 @@ describe('delete gear list action', () => {
     const backupArg = backupCall[0];
     const backupKey = Object.keys(backupArg).find(key => key.startsWith('auto-backup-'));
     expect(backupKey).toBeTruthy();
-    expect(backupArg[backupKey].gearList).toContain('<table');
+    expect(backupArg[backupKey].gearList).toBeUndefined();
+    expect(backupArg[backupKey].gearListAndProjectRequirementsGenerated).toBe(true);
 
     const finalArg = saveSetupsMock.mock.calls[saveSetupsMock.mock.calls.length - 1][0];
     expect(finalArg['Project One'].gearList).toBeUndefined();

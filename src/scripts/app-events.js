@@ -889,11 +889,22 @@ addSafeEventListener(setupSelectTarget, "change", (event) => {
           updateBatteryOptions();
         }
       }
-      const html = setup.gearList || storedProject?.gearList || '';
+      const storedHtml = typeof setup.gearList === 'string' && setup.gearList
+        ? setup.gearList
+        : (typeof storedProject?.gearList === 'string' ? storedProject.gearList : '');
+      currentProjectInfo = setup.projectInfo || storedProject?.projectInfo || null;
+      const regenerateGearList = (info) => callEventsCoreFunction(
+        'generateGearListHtml',
+        [info || {}],
+        { defaultValue: '' },
+      ) || '';
+      let html = storedHtml;
+      if (!html) {
+        html = regenerateGearList(currentProjectInfo || {});
+      }
       if (html && typeof globalThis !== 'undefined') {
         globalThis.__cineLastGearListHtml = html;
       }
-      currentProjectInfo = setup.projectInfo || storedProject?.projectInfo || null;
       if (typeof setManualDiagramPositions === 'function') {
         let diagramPositions = {};
         if (typeof normalizeDiagramPositionsInput === 'function') {
@@ -930,7 +941,7 @@ addSafeEventListener(setupSelectTarget, "change", (event) => {
         if (typeof saveProject === 'function') {
           const payload = {
             projectInfo: currentProjectInfo,
-            gearList: html
+            gearListAndProjectRequirementsGenerated: Boolean(html)
           };
           const currentPowerSelection = typeof getPowerSelectionSnapshot === 'function'
             ? getPowerSelectionSnapshot()
@@ -948,6 +959,11 @@ addSafeEventListener(setupSelectTarget, "change", (event) => {
           if (activeRules && activeRules.length) {
             payload.autoGearRules = activeRules;
           }
+          if (setup.gearSelectors && Object.keys(setup.gearSelectors).length) {
+            payload.gearSelectors = setup.gearSelectors;
+          } else if (storedProject?.gearSelectors && Object.keys(storedProject.gearSelectors).length) {
+            payload.gearSelectors = storedProject.gearSelectors;
+          }
           saveProject(setupName, payload);
         }
       }
@@ -964,7 +980,13 @@ addSafeEventListener(setupSelectTarget, "change", (event) => {
       currentProjectInfo = storedProject?.projectInfo || null;
       if (projectForm) populateProjectForm(currentProjectInfo || {});
       if (gearListOutput) {
-        const html = storedProject?.gearList || '';
+        const regenerateGearList = (info) => callEventsCoreFunction(
+          'generateGearListHtml',
+          [info || {}],
+          { defaultValue: '' },
+        ) || '';
+        const storedHtml = typeof storedProject?.gearList === 'string' ? storedProject.gearList : '';
+        const html = storedHtml || regenerateGearList(currentProjectInfo || {});
         displayGearAndRequirements(html);
         if (html) {
           ensureGearListActions();
@@ -1248,36 +1270,12 @@ function autoBackup(options = {}) {
         resolvedPlan = { snapshotType: 'full', base: null, sequence: 0 };
       }
     }
-    let gearListHtml = getCurrentGearListHtml();
-    if (!gearListHtml) {
-      const activeName = (typeof setupSelectElement.value === 'string'
-        ? setupSelectElement.value.trim()
-        : '')
-        || (setupNameInput && typeof setupNameInput.value === 'string'
-          ? setupNameInput.value.trim()
-          : '');
-      if (activeName) {
-        const setups = typeof getSetups === 'function' ? getSetups() : null;
-        const storedSetup = setups && typeof setups === 'object' ? setups[activeName] : null;
-        if (storedSetup && typeof storedSetup.gearList === 'string' && storedSetup.gearList.trim()) {
-          gearListHtml = storedSetup.gearList;
-        } else if (typeof loadProject === 'function') {
-          try {
-            const storedProject = loadProject(activeName);
-            if (storedProject && typeof storedProject.gearList === 'string' && storedProject.gearList.trim()) {
-              gearListHtml = storedProject.gearList;
-            }
-          } catch (error) {
-            console.warn('Failed to read stored project while preparing auto backup', error);
-          }
-        }
-      }
-      if (!gearListHtml && typeof globalThis !== 'undefined' && typeof globalThis.__cineLastGearListHtml === 'string') {
-        gearListHtml = globalThis.__cineLastGearListHtml;
-      }
-    }
-    if (gearListHtml) {
-      currentSetup.gearList = gearListHtml;
+    const currentGearListHtml = getCurrentGearListHtml();
+    currentSetup.gearListAndProjectRequirementsGenerated = Boolean(currentGearListHtml);
+    const gearSelectorsRaw = callEventsCoreFunction('getGearListSelectors', [], { defaultValue: {} }) || {};
+    const gearSelectors = callEventsCoreFunction('cloneGearListSelectors', [gearSelectorsRaw], { defaultValue: {} }) || {};
+    if (gearSelectors && Object.keys(gearSelectors).length) {
+      currentSetup.gearSelectors = gearSelectors;
     }
     const timestamp = now.toISOString();
     const backupMetadata = {
@@ -1295,14 +1293,22 @@ function autoBackup(options = {}) {
     storeSetups(setups);
     if (typeof saveProject === 'function') {
       const payload = {
-        gearList: gearListHtml || '',
         projectInfo: currentSetup.projectInfo || null,
+        gearListAndProjectRequirementsGenerated: Boolean(currentGearListHtml)
       };
+      if (gearSelectors && Object.keys(gearSelectors).length) {
+        payload.gearSelectors = gearSelectors;
+      }
       const activeRules = getProjectScopedAutoGearRules();
       if (activeRules && activeRules.length) {
         payload.autoGearRules = activeRules;
       }
-      if (payload.gearList || payload.projectInfo || payload.autoGearRules) {
+      if (
+        payload.projectInfo
+        || payload.gearListAndProjectRequirementsGenerated
+        || (payload.gearSelectors && Object.keys(payload.gearSelectors).length)
+        || payload.autoGearRules
+      ) {
         attachAutoBackupMetadata(payload, backupMetadata);
         saveProject(backupName, payload);
       }

@@ -173,7 +173,8 @@ describe('full user journey regression', () => {
     expect(projectsAfterAlpha).toBeTruthy();
     expect(projectsAfterAlpha['Project Alpha']).toBeDefined();
     expect(projectsAfterAlpha['Project Alpha'].projectInfo.productionCompany).toBe('Alpha Films');
-    expect(projectsAfterAlpha['Project Alpha'].gearList).toContain('Gear List');
+    expect(projectsAfterAlpha['Project Alpha'].gearList).toBeUndefined();
+    expect(projectsAfterAlpha['Project Alpha'].gearListAndProjectRequirementsGenerated).toBe(true);
 
     setupNameInput.value = 'Project Beta';
     setupNameInput.dispatchEvent(new Event('input', { bubbles: true }));
@@ -205,7 +206,8 @@ describe('full user journey regression', () => {
     const restoredAlphaProject = storageApi.loadProject('Project Alpha');
     expect(restoredAlphaProject).toBeTruthy();
     expect(restoredAlphaProject.projectInfo.productionCompany).toBe('Alpha Films');
-    utils.displayGearAndRequirements(restoredAlphaProject.gearList);
+    const regeneratedAlpha = utils.generateGearListHtml(restoredAlphaProject.projectInfo || {});
+    utils.displayGearAndRequirements(regeneratedAlpha);
     utils.populateProjectForm(restoredAlphaProject.projectInfo);
 
     expect(productionCompanyInput.value).toBe('Alpha Films');
@@ -218,7 +220,8 @@ describe('full user journey regression', () => {
 
     const setupsData = storageApi.loadSetups();
     expect(setupsData[autoBackupName]).toBeDefined();
-    expect(setupsData[autoBackupName].gearList).toContain('Gear List');
+    expect(setupsData[autoBackupName].gearList).toBeUndefined();
+    expect(setupsData[autoBackupName].gearListAndProjectRequirementsGenerated).toBe(true);
 
     const projectsAfterAutoBackup = storageApi.loadProject();
     expect(projectsAfterAutoBackup[autoBackupName]).toBeDefined();
@@ -262,6 +265,8 @@ describe('full user journey regression', () => {
     const exported = global.exportAllData();
     expect(exported).toBeTruthy();
     expect(exported.project['Project Alpha'].projectInfo.productionCompany).toBe('Alpha Films');
+    expect(exported.project['Project Alpha'].gearList).toBeUndefined();
+    expect(exported.project['Project Alpha'].gearListAndProjectRequirementsGenerated).toBe(true);
     expect(exported.autoGearRules.some(rule => rule.label === 'Always add spare monitor')).toBe(true);
 
     localStorage.removeItem('cameraPowerPlanner_project');

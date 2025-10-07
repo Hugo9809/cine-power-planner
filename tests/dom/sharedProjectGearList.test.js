@@ -121,7 +121,7 @@ describe('shared project gear list handling', () => {
     }
   });
 
-  test('encodeSharedSetup includes gear list payload', () => {
+  test('encodeSharedSetup omits generated gear list payload', () => {
     const { utils } = env;
     const payload = {
       setupName: 'Test Project',
@@ -130,10 +130,10 @@ describe('shared project gear list handling', () => {
     };
 
     const encoded = utils.encodeSharedSetup(payload);
-    expect(encoded.l).toBe(payload.gearList);
+    expect(encoded.l).toBeUndefined();
 
     const decoded = utils.decodeSharedSetup(encoded);
-    expect(decoded.gearList).toBe(payload.gearList);
+    expect(decoded.gearList).toBeUndefined();
     expect(decoded.projectInfo).toEqual(payload.projectInfo);
   });
 
@@ -212,7 +212,7 @@ describe('shared project gear list handling', () => {
 
     const savedCalls = env.globals.saveProject.mock.calls.filter(([name]) => name === 'Imported Project');
     expect(savedCalls.length).toBeGreaterThan(0);
-    expect(savedCalls.some(([, data]) => data.gearList.includes('Imported'))).toBe(true);
+    expect(savedCalls.some(([, data]) => data.gearListAndProjectRequirementsGenerated === true)).toBe(true);
     expect(savedCalls.some(([, data]) => data.projectInfo?.projectName === 'Imported Project')).toBe(true);
   });
 
@@ -253,7 +253,7 @@ describe('shared project gear list handling', () => {
 
     const importedCalls = globals.saveProject.mock.calls.filter(([name]) => name === 'Imported Project');
     expect(importedCalls.length).toBeGreaterThan(0);
-    expect(importedCalls.some(([, data]) => data.gearList.includes('Imported'))).toBe(true);
+    expect(importedCalls.some(([, data]) => data.gearListAndProjectRequirementsGenerated === true)).toBe(true);
   });
 
   test('sanitizes potentially unsafe shared HTML before display', () => {
