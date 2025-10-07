@@ -2449,11 +2449,20 @@ function removeAutoGearItem(cell, item, remainingOverride) {
         }
     });
     segments.push({ nodes: current, separator: null });
+    const targetNotesKey = normalizeAutoGearNotesKey(item && item.notes);
     let modified = false;
     segments.forEach(segment => {
         if (!segment.nodes.length || remaining <= 0) return;
         const info = analyzeAutoGearSegment(segment.nodes);
         if (!info || !info.name || !matchesAutoGearItem(item.name, info.name)) return;
+        const segmentNotesKey = info.span ? getAutoGearSpanNotesKey(info.span) : '';
+        if (targetNotesKey) {
+            if (!segmentNotesKey || segmentNotesKey !== targetNotesKey) {
+                return;
+            }
+        } else if (segmentNotesKey) {
+            return;
+        }
         if (info.span) {
             const currentCount = info.count;
             if (currentCount > remaining) {
