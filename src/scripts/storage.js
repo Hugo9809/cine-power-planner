@@ -971,7 +971,7 @@ function expandAutoBackupEntries(container, options) {
         payloadInfo = restoreAutoBackupSnapshotPayload(snapshot, name);
       } catch (payloadError) {
         console.warn('Failed to restore automatic backup payload while expanding snapshot', name, payloadError);
-        throw payloadError;
+        payloadInfo = { payload: {}, compressed: false, error: payloadError };
       }
       const payload = isPlainObject(payloadInfo.payload) ? payloadInfo.payload : {};
       const changedKeys = Array.isArray(snapshot.changedKeys) && snapshot.changedKeys.length
