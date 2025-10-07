@@ -5003,7 +5003,8 @@ function saveCurrentGearList() {
     if (factoryResetInProgress) return;
     if (isProjectPersistenceSuspended()) return;
     const html = gearListGetCurrentHtmlImpl();
-    const gearListGenerated = Boolean(html);
+    const normalizedHtml = typeof html === 'string' ? html.trim() : '';
+    const gearListGenerated = Boolean(normalizedHtml);
     const info = projectForm ? collectProjectFormData() : {};
     info.sliderBowl = getSetupsCoreValue('getSliderBowlValue');
     info.easyrig = getSetupsCoreValue('getEasyrigValue');
@@ -5123,6 +5124,9 @@ function saveCurrentGearList() {
             projectInfo: projectInfoSnapshot,
             gearListAndProjectRequirementsGenerated: gearListGenerated
         };
+        if (normalizedHtml) {
+            payload.gearList = normalizedHtml;
+        }
         if (powerSelectionSnapshot) {
             payload.powerSelection = powerSelectionSnapshot;
         }
@@ -5155,7 +5159,13 @@ function saveCurrentGearList() {
     const setup = existing || {};
     let changed = false;
 
-    if (Object.prototype.hasOwnProperty.call(setup, 'gearList')) {
+    const existingGearList = typeof setup.gearList === 'string' ? setup.gearList : '';
+    if (normalizedHtml) {
+        if (existingGearList !== normalizedHtml) {
+            setup.gearList = normalizedHtml;
+            changed = true;
+        }
+    } else if (Object.prototype.hasOwnProperty.call(setup, 'gearList')) {
         delete setup.gearList;
         changed = true;
     }
