@@ -45,4 +45,21 @@ describe('exportAllData', () => {
 
     expect(exported.autoGearMonitorDefaults).toEqual(defaults);
   });
+
+  test('includes normalized full backup history in export payload', () => {
+    const {
+      recordFullBackupHistoryEntry,
+      exportAllData,
+    } = require('../../src/scripts/storage');
+
+    recordFullBackupHistoryEntry({ createdAt: '2024-07-04T10:11:12Z', fileName: 'Backup Alpha.json ' });
+    recordFullBackupHistoryEntry('2024-07-05T13:14:15Z');
+
+    const exported = exportAllData();
+
+    expect(exported.fullBackupHistory).toEqual([
+      { createdAt: '2024-07-04T10:11:12Z', fileName: 'Backup Alpha.json' },
+      { createdAt: '2024-07-05T13:14:15Z' },
+    ]);
+  });
 });
