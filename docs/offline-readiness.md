@@ -161,6 +161,28 @@ this triage list:
    dialog and legal pages and document the incident, including where backups and bundles are
    stored. File the log alongside your redundant archives.
 
+### Meaning of the cyclic auto-backup warning
+
+If the console reports `Detected cyclic auto-backup reference while expanding snapshot` for
+an entry such as `auto-backup-2025-10-06-23-38-Hallo 123`, it means a delta snapshot points
+back to itself or another snapshot that eventually loops around. The storage layer walks
+each snapshot’s `base` reference when reconstructing the full payload, so this guard stops
+infinite recursion, substitutes a temporary empty object and keeps the rest of the backups
+safe instead of locking up the browser.
+
+When you see the warning:
+
+1. Export a full planner backup immediately so you have a frozen copy of every project and
+   autosave before making changes.
+2. Promote the most recent healthy auto backup to a manual save (or duplicate the affected
+   project) so crews can keep working without touching the corrupted chain.
+3. Open **Settings → Backup & Restore → Compare versions** and diff the healthy manual save
+   against the suspicious snapshot to confirm whether any data diverged.
+4. Remove or rename the looping auto backup only after the comparison confirms it is safe
+   to do so. Deleting the entire project is never required—other snapshots remain intact.
+5. Capture an incident log with the timestamp of the warning, the snapshot names involved
+   and the exports you generated so future audits can trace the fix.
+
 Keeping this runbook nearby ensures crews can prove offline readiness, preserve user data
 and rehearse recovery workflows without relying on an internet connection.
 
