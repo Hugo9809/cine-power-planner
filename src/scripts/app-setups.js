@@ -2271,6 +2271,33 @@ function normalizeAutoGearName(name) {
     return stripAutoGearContext(name).toLowerCase();
 }
 
+function normalizeAutoGearNotesKey(value) {
+    const base = typeof normalizeAutoGearText === 'function'
+        ? normalizeAutoGearText(value, { collapseWhitespace: true })
+        : (value == null ? '' : String(value)).trim().replace(/\s+/g, ' ');
+    if (!base) {
+        return '';
+    }
+    return base.replace(/^[\s\-–—]+/u, '').trim().toLowerCase();
+}
+
+function getAutoGearSpanNotesKey(span) {
+    if (!span || !span.dataset) {
+        return '';
+    }
+    const datasetNotes = typeof span.dataset.autoGearNotes === 'string'
+        ? span.dataset.autoGearNotes
+        : '';
+    if (datasetNotes) {
+        return normalizeAutoGearNotesKey(datasetNotes);
+    }
+    const notesNode = span.querySelector('.auto-gear-notes');
+    if (!notesNode || typeof notesNode.textContent !== 'string') {
+        return '';
+    }
+    return normalizeAutoGearNotesKey(notesNode.textContent);
+}
+
 function matchesAutoGearItem(target, actual) {
     if (!target || !actual) return false;
     const normTarget = normalizeAutoGearName(target);
@@ -2867,6 +2894,13 @@ function configureAutoGearSpan(span, normalizedItem, quantity, rule) {
             span.appendChild(document.createTextNode(` - ${selectorLabel}`));
         }
     }
+    if (span.dataset) {
+        if (normalizedItem.notes) {
+            span.dataset.autoGearNotes = normalizedItem.notes;
+        } else if (Object.prototype.hasOwnProperty.call(span.dataset, 'autoGearNotes')) {
+            delete span.dataset.autoGearNotes;
+        }
+    }
     if (normalizedItem.notes) {
         const delimiter = normalizedItem.notes.trim().toLowerCase().startsWith('incl') ? ' ' : ' – ';
         const notesSpan = document.createElement('span');
@@ -2887,9 +2921,22 @@ function addAutoGearItem(cell, item, rule) {
     const name = normalizedItem.name ? normalizedItem.name.trim() : '';
     if (!name) return;
     const spans = Array.from(cell.querySelectorAll('.gear-item'));
+    const targetNotesKey = normalizeAutoGearNotesKey(normalizedItem.notes);
     for (const span of spans) {
         const spanName = span.getAttribute('data-gear-name') || (span.textContent || '').replace(/^(\d+)x\s+/, '').trim();
         if (matchesAutoGearItem(name, spanName)) {
+            const spanNotesKey = getAutoGearSpanNotesKey(span);
+            if (targetNotesKey) {
+                if (span.classList.contains('auto-gear-item')) {
+                    if (!spanNotesKey || spanNotesKey !== targetNotesKey) {
+                        continue;
+                    }
+                } else if (spanNotesKey && spanNotesKey !== targetNotesKey) {
+                    continue;
+                }
+            } else if (span.classList.contains('auto-gear-item') && spanNotesKey) {
+                continue;
+            }
             if (span.classList.contains('auto-gear-item')) {
                 const newCount = getSpanCount(span) + quantity;
                 updateSpanCountInPlace(span, newCount);
@@ -2897,6 +2944,13 @@ function addAutoGearItem(cell, item, rule) {
                     mergeAutoGearSpanContextNotes(span, normalizedItem.contextNotes, quantity);
                 } else {
                     renderAutoGearSpanContextNotes(span);
+                }
+                if (span.dataset) {
+                    if (normalizedItem.notes) {
+                        span.dataset.autoGearNotes = normalizedItem.notes;
+                    } else if (Object.prototype.hasOwnProperty.call(span.dataset, 'autoGearNotes')) {
+                        delete span.dataset.autoGearNotes;
+                    }
                 }
                 if (rule && typeof rule === 'object') {
                     appendAutoGearRuleSource(span, rule);
