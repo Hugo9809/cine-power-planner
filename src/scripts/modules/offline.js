@@ -944,6 +944,7 @@
 
     const { location } = win;
     const hasReplace = location && typeof location.replace === 'function';
+    const hasAssign = location && typeof location.assign === 'function';
     const hasReload = location && typeof location.reload === 'function';
     let navigationTriggered = false;
 
@@ -951,7 +952,8 @@
       try {
         const paramName = 'forceReload';
         const timestamp = Date.now().toString(36);
-        let href = location.href || '';
+        const originalHref = location.href || '';
+        let href = originalHref;
         let hash = '';
         const hashIndex = href.indexOf('#');
         if (hashIndex !== -1) {
@@ -967,8 +969,30 @@
         } else if (href) {
           href += `?${paramName}=${timestamp}`;
         }
-        location.replace(href + hash);
-        navigationTriggered = true;
+        const nextHref = href + hash;
+
+        const tryNavigate = (fn) => {
+          try {
+            fn(nextHref);
+            navigationTriggered = true;
+            return true;
+          } catch (error) {
+            safeWarn('Forced reload navigation helper failed', error);
+            return false;
+          }
+        };
+
+        tryNavigate((url) => location.replace(url));
+
+        if (hasAssign && !navigationTriggered) {
+          tryNavigate((url) => location.assign(url));
+        }
+
+        if (!navigationTriggered && nextHref && nextHref !== originalHref) {
+          tryNavigate((url) => {
+            location.href = url;
+          });
+        }
       } catch (replaceError) {
         safeWarn('Forced reload via location.replace failed', replaceError);
       }
@@ -980,6 +1004,23 @@
         navigationTriggered = true;
       } catch (reloadError) {
         safeWarn('Forced reload via location.reload failed', reloadError);
+      }
+    }
+
+    if (hasReload) {
+      try {
+        const schedule = typeof win.setTimeout === 'function' ? win.setTimeout : setTimeout;
+        if (typeof schedule === 'function') {
+          schedule(() => {
+            try {
+              location.reload();
+            } catch (delayedError) {
+              safeWarn('Final timed reload attempt failed', delayedError);
+            }
+          }, 300);
+        }
+      } catch (timerError) {
+        safeWarn('Failed to schedule timed reload fallback', timerError);
       }
     }
 
@@ -1053,6 +1094,7 @@
       serviceWorkersUnregistered,
       cachesCleared,
       reloadTriggered,
+      navigationTriggered: reloadTriggered,
     };
   }
 
