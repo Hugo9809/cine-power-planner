@@ -517,6 +517,19 @@
       fallbackCore && typeof fallbackCore[methodName] === 'function' ? fallbackCore[methodName] : null;
     const ultimateFallback = typeof fallbackImpl === 'function' ? fallbackImpl : null;
 
+    const shouldSuppressWarning = (error) => {
+      if (!error || typeof error.message !== 'string') {
+        return false;
+      }
+      if (error.message.includes('trap returned extra keys but proxy target is non-extensible')) {
+        return true;
+      }
+      if (error.message.includes('Cannot freeze')) {
+        return true;
+      }
+      return false;
+    };
+
     return function wrappedMethod() {
       const args = arguments;
 
@@ -526,7 +539,9 @@
         } catch (error) {
           if (typeof warn === 'function') {
             try {
-              warn('cineModuleArchitecture.' + methodName + ': primary implementation failed, using fallback.', error);
+              if (!shouldSuppressWarning(error)) {
+                warn('cineModuleArchitecture.' + methodName + ': primary implementation failed, using fallback.', error);
+              }
             } catch (warnError) {
               void warnError;
             }

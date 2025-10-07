@@ -103,6 +103,201 @@ var MOUNT_VOLTAGE_STORAGE_KEY_SYMBOL =
     ? Symbol.for('cinePowerPlanner.mountVoltageKey')
     : null;
 
+var STORAGE_CACHE_SYMBOL =
+  typeof Symbol === 'function'
+    ? Symbol.for('cinePowerPlanner.storageCache')
+    : '__cineStorageStateCache';
+
+var STORAGE_STATE_CACHE_WEAKMAP =
+  typeof WeakMap === 'function' && typeof Map === 'function'
+    ? new WeakMap()
+    : null;
+
+function getStorageStateCacheMap(storage, createIfMissing) {
+  if (!storage || (typeof storage !== 'object' && typeof storage !== 'function')) {
+    return null;
+  }
+
+  let existing = null;
+  if (STORAGE_CACHE_SYMBOL) {
+    try {
+      existing = storage[STORAGE_CACHE_SYMBOL];
+    } catch (readError) {
+      existing = null;
+      void readError;
+    }
+  }
+
+  if (!existing && STORAGE_STATE_CACHE_WEAKMAP) {
+    try {
+      existing = STORAGE_STATE_CACHE_WEAKMAP.get(storage) || null;
+    } catch (weakMapReadError) {
+      existing = null;
+      void weakMapReadError;
+    }
+  }
+
+  if (existing || !createIfMissing) {
+    return existing || null;
+  }
+
+  const map = new Map();
+  let assigned = false;
+
+  if (STORAGE_CACHE_SYMBOL) {
+    try {
+      Object.defineProperty(storage, STORAGE_CACHE_SYMBOL, {
+        configurable: true,
+        writable: true,
+        value: map,
+      });
+      assigned = true;
+    } catch (defineError) {
+      void defineError;
+      try {
+        storage[STORAGE_CACHE_SYMBOL] = map;
+        assigned = true;
+      } catch (assignError) {
+        assigned = false;
+        void assignError;
+      }
+    }
+  }
+
+  if (!assigned && STORAGE_STATE_CACHE_WEAKMAP) {
+    try {
+      STORAGE_STATE_CACHE_WEAKMAP.set(storage, map);
+      assigned = true;
+    } catch (weakMapStoreError) {
+      assigned = false;
+      void weakMapStoreError;
+    }
+  }
+
+  return assigned ? map : null;
+}
+
+function getCachedStorageEntry(storage, key) {
+  const map = getStorageStateCacheMap(storage, false);
+  if (!map || typeof key !== 'string' || !key) {
+    return null;
+  }
+  return map.get(key) || null;
+}
+
+function clearCachedStorageEntry(storage, key) {
+  const map = getStorageStateCacheMap(storage, false);
+  if (!map || typeof key !== 'string' || !key) {
+    return;
+  }
+
+  if (typeof map.delete === 'function') {
+    map.delete(key);
+  }
+
+  if (map.size === 0) {
+    if (STORAGE_CACHE_SYMBOL) {
+      try {
+        if (storage && (typeof storage === 'object' || typeof storage === 'function')) {
+          if (Object.prototype.hasOwnProperty.call(storage, STORAGE_CACHE_SYMBOL)) {
+            delete storage[STORAGE_CACHE_SYMBOL];
+          }
+        }
+      } catch (clearError) {
+        void clearError;
+      }
+    }
+    if (STORAGE_STATE_CACHE_WEAKMAP) {
+      try {
+        STORAGE_STATE_CACHE_WEAKMAP.delete(storage);
+      } catch (weakMapDeleteError) {
+        void weakMapDeleteError;
+      }
+    }
+  }
+}
+
+function cloneValueForCache(value) {
+  if (value === null || typeof value !== 'object') {
+    return value;
+  }
+
+  try {
+    return STORAGE_DEEP_CLONE(value);
+  } catch (cloneError) {
+    void cloneError;
+  }
+
+  return value;
+}
+
+function cloneCachedEntryValue(entry) {
+  if (!entry) {
+    return undefined;
+  }
+
+  const { value } = entry;
+  if (value === null || typeof value !== 'object') {
+    return value;
+  }
+
+  return cloneValueForCache(value);
+}
+
+function cacheStorageValue(storage, key, rawValue, normalizedValue, value) {
+  if (typeof key !== 'string' || !key) {
+    return;
+  }
+
+  if (!storage || (typeof storage !== 'object' && typeof storage !== 'function')) {
+    return;
+  }
+
+  const map = getStorageStateCacheMap(storage, true);
+  if (!map) {
+    return;
+  }
+
+  const cachedValue = cloneValueForCache(value);
+  const normalized = typeof normalizedValue === 'string' && normalizedValue
+    ? normalizedValue
+    : typeof rawValue === 'string' && rawValue
+      ? rawValue
+      : null;
+
+  const cacheEntry = {
+    raw: typeof rawValue === 'string' && rawValue ? rawValue : null,
+    normalizedRaw: normalized,
+    value: cachedValue,
+  };
+
+  map.set(key, cacheEntry);
+}
+
+function tryGetCachedStorageValue(storage, key, primaryRaw, rawStored) {
+  const entry = getCachedStorageEntry(storage, key);
+  if (!entry) {
+    return { hit: false };
+  }
+
+  if (typeof rawStored === 'string' && rawStored) {
+    if (entry.raw && entry.raw === rawStored) {
+      return { hit: true, value: cloneCachedEntryValue(entry) };
+    }
+  }
+
+  if (typeof primaryRaw === 'string' && primaryRaw) {
+    if (entry.normalizedRaw && entry.normalizedRaw === primaryRaw) {
+      return { hit: true, value: cloneCachedEntryValue(entry) };
+    }
+    if (entry.raw && entry.raw === primaryRaw) {
+      return { hit: true, value: cloneCachedEntryValue(entry) };
+    }
+  }
+
+  return { hit: false };
+}
+
 function readGlobalStringValue(scope, key) {
   if (!scope || typeof scope !== 'object') {
     return '';
@@ -397,6 +592,7 @@ var MAX_DELETION_BACKUPS = 20;
 var MAX_FULL_BACKUP_HISTORY_ENTRIES = 200;
 var AUTO_GEAR_BACKUP_RETENTION_DEFAULT_VALUE = 12;
 var AUTO_GEAR_BACKUP_RETENTION_MIN = 1;
+var AUTO_GEAR_BACKUP_RETENTION_MAX = 120;
 
 function ensureGlobalAutoGearBackupDefaults() {
   if (!GLOBAL_SCOPE || typeof GLOBAL_SCOPE !== 'object') {
@@ -1694,11 +1890,29 @@ function patchIndividualStorageGetItem(storage) {
       value: patchedGetItem,
     });
   } catch (defineError) {
-    console.warn('Unable to redefine storage.getItem descriptor for compression support', defineError);
+    const suppressDefineWarning =
+      defineError
+      && typeof defineError.message === 'string'
+      && defineError.message.includes('Cannot redefine property');
+    if (!suppressDefineWarning) {
+      console.warn('Unable to redefine storage.getItem descriptor for compression support', defineError);
+    }
     try {
       storage.getItem = patchedGetItem;
     } catch (assignError) {
-      console.warn('Unable to patch storage instance getItem for compression support', assignError);
+      const suppressAssignWarning =
+        assignError
+        && typeof assignError.message === 'string'
+        && assignError.message.includes('Cannot assign to read only property');
+      if (!suppressAssignWarning) {
+        console.warn('Unable to patch storage instance getItem for compression support', assignError);
+      }
+      if (suppressDefineWarning && suppressAssignWarning) {
+        return;
+      }
+      if (!suppressDefineWarning && !suppressAssignWarning) {
+        return;
+      }
       return;
     }
   }
@@ -3955,6 +4169,12 @@ function loadJSONFromStorage(
     : `${key}${STORAGE_BACKUP_SUFFIX}`;
   const useBackup = !disableBackup && fallbackKey && fallbackKey !== key;
 
+  const rawGetter = getRawStorageGetter(storage);
+  let rawStoredValue =
+    typeof rawGetter === 'function'
+      ? readRawStorageValue(storage, key, rawGetter)
+      : undefined;
+
   let shouldAlert = false;
 
   const parseRawValue = (raw, label) => {
@@ -3993,8 +4213,35 @@ function loadJSONFromStorage(
     shouldAlert = true;
   }
 
+  if (typeof rawStoredValue === 'undefined' && typeof rawGetter === 'function') {
+    rawStoredValue = readRawStorageValue(storage, key, rawGetter);
+  }
+
+  if (
+    (primaryRaw === null || primaryRaw === undefined)
+    && (rawStoredValue === null || rawStoredValue === undefined)
+  ) {
+    clearCachedStorageEntry(storage, key);
+  }
+
+  const cachedPrimary = tryGetCachedStorageValue(storage, key, primaryRaw, rawStoredValue);
+  if (cachedPrimary.hit) {
+    return cachedPrimary.value;
+  }
+
   const primary = parseRawValue(primaryRaw, '');
   if (primary.ok) {
+    const normalizedForCache = typeof primary.normalizedRaw === 'string' && primary.normalizedRaw
+      ? primary.normalizedRaw
+      : typeof primary.raw === 'string' && primary.raw
+        ? primary.raw
+        : null;
+    const rawForCache = typeof rawStoredValue === 'string' && rawStoredValue
+      ? rawStoredValue
+      : typeof primary.raw === 'string' && primary.raw
+        ? primary.raw
+        : null;
+    cacheStorageValue(storage, key, rawForCache, normalizedForCache, primary.value);
     return primary.value;
   }
 
@@ -4013,12 +4260,16 @@ function loadJSONFromStorage(
       shouldAlert = true;
     }
 
+    const backupRawStored = typeof rawGetter === 'function'
+      ? readRawStorageValue(storage, fallbackKey, rawGetter)
+      : undefined;
     const backup = parseRawValue(backupRaw, 'backup');
     if (backup.ok) {
       if (shouldAlert || missingPrimary) {
         console.warn(`Recovered ${key} from backup copy.`);
       }
       if (backup.raw !== null && backup.raw !== undefined) {
+        let restoredRawValue = null;
         try {
           if (typeof backup.raw === 'string') {
             const recompressSource = typeof backup.normalizedRaw === 'string'
@@ -4028,16 +4279,36 @@ function loadJSONFromStorage(
             const recompressed = createCompressedJsonStorageCandidate(recompressSource);
             if (recompressed && typeof recompressed.serialized === 'string') {
               storage.setItem(key, recompressed.serialized);
+              restoredRawValue = recompressed.serialized;
             } else if (recompressSource !== backup.raw) {
               storage.setItem(key, recompressSource);
+              restoredRawValue = recompressSource;
             } else {
               storage.setItem(key, backup.raw);
+              restoredRawValue = backup.raw;
             }
           } else {
             storage.setItem(key, backup.raw);
+            restoredRawValue = typeof backup.raw === 'string' ? backup.raw : null;
           }
         } catch (restoreError) {
           console.warn(`Unable to restore primary copy for ${key} from backup`, restoreError);
+          restoredRawValue = null;
+        }
+
+        const normalizedBackup = typeof backup.normalizedRaw === 'string' && backup.normalizedRaw
+          ? backup.normalizedRaw
+          : typeof backup.raw === 'string' && backup.raw
+            ? backup.raw
+            : null;
+        const fallbackRawForCache = typeof backupRawStored === 'string' && backupRawStored
+          ? backupRawStored
+          : typeof backup.raw === 'string' && backup.raw
+            ? backup.raw
+            : null;
+        cacheStorageValue(storage, fallbackKey, fallbackRawForCache, normalizedBackup, backup.value);
+        if (typeof restoredRawValue === 'string' && restoredRawValue) {
+          cacheStorageValue(storage, key, restoredRawValue, normalizedBackup, backup.value);
         }
       }
       return backup.value;
@@ -4048,6 +4319,7 @@ function loadJSONFromStorage(
     alertStorageError(alertOnFailure);
   }
 
+  clearCachedStorageEntry(storage, key);
   return defaultValue;
 }
 
@@ -4303,21 +4575,34 @@ function saveJSONToStorage(
       return;
     }
 
+    const normalizedSerialized = computeStandardSerialized();
+    const normalizedString = typeof normalizedSerialized === 'string' && normalizedSerialized
+      ? normalizedSerialized
+      : null;
+
     let skipPrimaryWrite = false;
     let existingBackupValue;
     let hasExistingBackup = false;
     let existingBackupRaw = null;
+    let observedPrimaryRawValue = null;
+    let observedBackupRawValue = null;
 
     if (typeof storage.getItem === 'function') {
       try {
         const existingValue = storage.getItem(key);
         if (existingValue === serialized) {
           skipPrimaryWrite = true;
+          observedPrimaryRawValue = serialized;
         } else if (useCompressedSerialization) {
           const existingRawValue = loadRawValue(key);
-          if (typeof existingRawValue === 'string' && existingRawValue === serialized) {
-            skipPrimaryWrite = true;
+          if (typeof existingRawValue === 'string') {
+            observedPrimaryRawValue = existingRawValue;
+            if (existingRawValue === serialized) {
+              skipPrimaryWrite = true;
+            }
           }
+        } else if (typeof existingValue === 'string') {
+          observedPrimaryRawValue = existingValue;
         }
       } catch (inspectError) {
         console.warn(`Unable to inspect existing value for ${key}`, inspectError);
@@ -4330,6 +4615,11 @@ function saveJSONToStorage(
         hasExistingBackup = typeof existingBackupValue === 'string';
         if (hasExistingBackup && useCompressedSerialization) {
           existingBackupRaw = loadRawValue(fallbackKey);
+          if (typeof existingBackupRaw === 'string') {
+            observedBackupRawValue = existingBackupRaw;
+          }
+        } else if (hasExistingBackup) {
+          observedBackupRawValue = existingBackupValue;
         }
       } catch (inspectError) {
         console.warn(`Unable to inspect existing backup for ${key}`, inspectError);
@@ -4382,6 +4672,24 @@ function saveJSONToStorage(
       );
 
     if (skipPrimaryWrite && (!useBackup || backupMatchesPreferred)) {
+      if (normalizedString) {
+        const rawForCacheUpdate = useCompressedSerialization
+          ? (typeof observedPrimaryRawValue === 'string' && observedPrimaryRawValue
+            ? observedPrimaryRawValue
+            : serialized)
+          : serialized;
+        cacheStorageValue(storage, key, rawForCacheUpdate, normalizedString, value);
+        if (useBackup && hasExistingBackup) {
+          const backupRawForCache = useCompressedSerialization
+            ? (typeof existingBackupRaw === 'string' && existingBackupRaw
+              ? existingBackupRaw
+              : observedBackupRawValue)
+            : observedBackupRawValue;
+          if (typeof backupRawForCache === 'string' && backupRawForCache) {
+            cacheStorageValue(storage, fallbackKey, backupRawForCache, normalizedString, value);
+          }
+        }
+      }
       return;
     }
 
@@ -4389,6 +4697,9 @@ function saveJSONToStorage(
       try {
         storage.setItem(key, serialized);
         logCompressionIfNeeded();
+        if (normalizedString) {
+          cacheStorageValue(storage, key, serialized, normalizedString, value);
+        }
       } catch (error) {
         if (attemptHandleQuota(error)) {
           resetSerializationState();
@@ -4421,6 +4732,16 @@ function saveJSONToStorage(
     }
 
     if (backupMatchesPreferred) {
+      if (normalizedString && hasExistingBackup) {
+        const backupRawForCache = useCompressedSerialization
+          ? (typeof existingBackupRaw === 'string' && existingBackupRaw
+            ? existingBackupRaw
+            : observedBackupRawValue)
+          : observedBackupRawValue;
+        if (typeof backupRawForCache === 'string' && backupRawForCache) {
+          cacheStorageValue(storage, fallbackKey, backupRawForCache, normalizedString, value);
+        }
+      }
       return;
     }
 
@@ -4452,6 +4773,12 @@ function saveJSONToStorage(
         lastCandidate = candidate;
 
         if (tryStoreCandidate(candidate)) {
+          if (normalizedString) {
+            const normalizedForBackup = candidate.compressed && normalizedString
+              ? normalizedString
+              : candidate.serialized;
+            cacheStorageValue(storage, fallbackKey, candidate.serialized, normalizedForBackup, value);
+          }
           return 'success';
         }
 
@@ -4462,10 +4789,17 @@ function saveJSONToStorage(
         if (!backupRemovedForRetry && hasExistingBackup) {
           try {
             storage.removeItem(fallbackKey);
+            clearCachedStorageEntry(storage, fallbackKey);
             backupRemovedForRetry = true;
             removedBackupDuringRetry = true;
             hasExistingBackup = false;
             if (tryStoreCandidate(candidate)) {
+              if (normalizedString) {
+                const normalizedForBackup = candidate.compressed && normalizedString
+                  ? normalizedString
+                  : candidate.serialized;
+                cacheStorageValue(storage, fallbackKey, candidate.serialized, normalizedForBackup, value);
+              }
               return 'success';
             }
           } catch (removeError) {
@@ -4501,6 +4835,9 @@ function saveJSONToStorage(
       if (backupRemovedForRetry && typeof existingBackupValue === 'string') {
         try {
           storage.setItem(fallbackKey, existingBackupValue);
+          if (normalizedString) {
+            cacheStorageValue(storage, fallbackKey, existingBackupValue, normalizedString, value);
+          }
           removedBackupDuringRetry = false;
         } catch (restoreError) {
           console.warn(`Unable to restore previous backup for ${key}`, restoreError);
@@ -4534,6 +4871,7 @@ function saveJSONToStorage(
   if (hasPreservedBackup && removedBackupDuringRetry && typeof preservedBackupValue === 'string') {
     try {
       storage.setItem(fallbackKey, preservedBackupValue);
+      clearCachedStorageEntry(storage, fallbackKey);
     } catch (restoreError) {
       console.warn(`Unable to restore preserved backup for ${key}`, restoreError);
     }
@@ -4552,6 +4890,11 @@ function deleteFromStorage(storage, key, errorMessage, options = {}) {
     ? backupKey
     : `${key}${STORAGE_BACKUP_SUFFIX}`;
   const useBackup = !disableBackup && fallbackKey && fallbackKey !== key;
+
+  clearCachedStorageEntry(storage, key);
+  if (useBackup) {
+    clearCachedStorageEntry(storage, fallbackKey);
+  }
 
   try {
     storage.removeItem(key);
@@ -6842,6 +7185,16 @@ function createProjectImporter() {
     const normalizedProject = normalizeProject(project);
     if (!normalizedProject) return;
 
+    const originalHasGenerationFlag =
+      project
+      && typeof project === "object"
+      && Object.prototype.hasOwnProperty.call(project, "gearListAndProjectRequirementsGenerated")
+      && typeof project.gearListAndProjectRequirementsGenerated === "boolean";
+
+    if (!originalHasGenerationFlag) {
+      normalizedProject.gearListAndProjectRequirementsGenerated = false;
+    }
+
     const candidates = [];
     if (typeof rawName === "string") {
       candidates.push(rawName.trim());
@@ -7531,6 +7884,27 @@ function saveAutoGearBackupVisibility(flag) {
   );
 }
 
+function getAutoGearBackupRetentionUpperBound() {
+  const candidate = typeof AUTO_GEAR_BACKUP_RETENTION_MAX === 'number'
+    ? AUTO_GEAR_BACKUP_RETENTION_MAX
+    : MAX_AUTO_BACKUPS;
+  const numeric = Number(candidate);
+  if (!Number.isFinite(numeric)) {
+    return MAX_AUTO_BACKUPS;
+  }
+  const rounded = Math.round(numeric);
+  if (!Number.isFinite(rounded)) {
+    return MAX_AUTO_BACKUPS;
+  }
+  if (rounded < AUTO_GEAR_BACKUP_RETENTION_MIN) {
+    return AUTO_GEAR_BACKUP_RETENTION_MIN;
+  }
+  if (rounded > MAX_AUTO_BACKUPS) {
+    return MAX_AUTO_BACKUPS;
+  }
+  return rounded;
+}
+
 function clampAutoGearBackupRetention(value) {
   const numeric = Number(value);
   if (!Number.isFinite(numeric)) {
@@ -7543,20 +7917,42 @@ function clampAutoGearBackupRetention(value) {
   if (rounded < AUTO_GEAR_BACKUP_RETENTION_MIN) {
     return AUTO_GEAR_BACKUP_RETENTION_MIN;
   }
-  if (rounded > MAX_AUTO_BACKUPS) {
-    return MAX_AUTO_BACKUPS;
+  const upperBound = getAutoGearBackupRetentionUpperBound();
+  if (rounded > upperBound) {
+    return upperBound;
   }
   return rounded;
 }
 
 function getAutoGearBackupRetentionDefault() {
+  const upperBound = getAutoGearBackupRetentionUpperBound();
   if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.AUTO_GEAR_BACKUP_RETENTION_DEFAULT === 'number') {
     const candidate = GLOBAL_SCOPE.AUTO_GEAR_BACKUP_RETENTION_DEFAULT;
     if (Number.isFinite(candidate) && candidate >= AUTO_GEAR_BACKUP_RETENTION_MIN) {
-      return Math.min(Math.max(Math.round(candidate), AUTO_GEAR_BACKUP_RETENTION_MIN), MAX_AUTO_BACKUPS);
+      const rounded = Math.round(candidate);
+      if (!Number.isFinite(rounded)) {
+        return upperBound;
+      }
+      if (rounded < AUTO_GEAR_BACKUP_RETENTION_MIN) {
+        return AUTO_GEAR_BACKUP_RETENTION_MIN;
+      }
+      if (rounded > upperBound) {
+        return upperBound;
+      }
+      return rounded;
     }
   }
-  return AUTO_GEAR_BACKUP_RETENTION_DEFAULT_VALUE;
+  const fallback = Math.round(AUTO_GEAR_BACKUP_RETENTION_DEFAULT_VALUE);
+  if (!Number.isFinite(fallback)) {
+    return AUTO_GEAR_BACKUP_RETENTION_MIN;
+  }
+  if (fallback > upperBound) {
+    return upperBound;
+  }
+  if (fallback < AUTO_GEAR_BACKUP_RETENTION_MIN) {
+    return AUTO_GEAR_BACKUP_RETENTION_MIN;
+  }
+  return fallback;
 }
 
 function normalizeAutoGearBackupRetentionValue(value, fallback = getAutoGearBackupRetentionDefault()) {
