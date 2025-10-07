@@ -5242,6 +5242,78 @@ function saveCurrentGearList() {
     }
 }
 
+let gearListStateSyncScheduled = false;
+let gearListStateSyncHandle = null;
+let gearListStateSyncIncludeSession = false;
+let gearListStateSyncIncludeSetupCheck = false;
+
+const queueGearListStateSync =
+    (typeof window !== 'undefined' && typeof window.requestAnimationFrame === 'function')
+        ? callback => window.requestAnimationFrame(callback)
+        : callback => setTimeout(callback, 16);
+
+const cancelQueuedGearListStateSync =
+    (typeof window !== 'undefined' && typeof window.cancelAnimationFrame === 'function')
+        ? handle => window.cancelAnimationFrame(handle)
+        : handle => clearTimeout(handle);
+
+function flushScheduledGearListStateSync() {
+    const includeSession = gearListStateSyncIncludeSession;
+    const includeSetupCheck = gearListStateSyncIncludeSetupCheck;
+    gearListStateSyncScheduled = false;
+    gearListStateSyncHandle = null;
+    gearListStateSyncIncludeSession = false;
+    gearListStateSyncIncludeSetupCheck = false;
+    saveCurrentGearList();
+    if (includeSession && typeof saveCurrentSession === 'function') {
+        saveCurrentSession();
+    }
+    if (includeSetupCheck && typeof checkSetupChanged === 'function') {
+        checkSetupChanged();
+    }
+}
+
+function scheduleGearListStateSync(options = {}) {
+    const includeSession = Boolean(options && options.includeSession);
+    const includeSetupCheck = Boolean(options && options.includeSetupCheck);
+    const immediate = Boolean(options && options.immediate);
+
+    gearListStateSyncIncludeSession = gearListStateSyncIncludeSession || includeSession;
+    gearListStateSyncIncludeSetupCheck = gearListStateSyncIncludeSetupCheck || includeSetupCheck;
+
+    if (immediate) {
+        if (gearListStateSyncHandle !== null) {
+            cancelQueuedGearListStateSync(gearListStateSyncHandle);
+            gearListStateSyncHandle = null;
+        }
+        flushScheduledGearListStateSync();
+        return;
+    }
+
+    if (gearListStateSyncScheduled) {
+        return;
+    }
+
+    gearListStateSyncScheduled = true;
+    gearListStateSyncHandle = queueGearListStateSync(() => {
+        gearListStateSyncHandle = null;
+        flushScheduledGearListStateSync();
+    });
+}
+
+const gearListStateSyncScope =
+    (typeof globalThis !== 'undefined' && globalThis)
+    || (typeof window !== 'undefined' && window)
+    || (typeof self !== 'undefined' && self)
+    || (typeof global !== 'undefined' && global)
+    || null;
+
+if (gearListStateSyncScope && typeof gearListStateSyncScope.flushGearListStateSync !== 'function') {
+    gearListStateSyncScope.flushGearListStateSync = () => {
+        scheduleGearListStateSync({ includeSession: true, includeSetupCheck: true, immediate: true });
+    };
+}
+
 function deleteCurrentGearList() {
     if (!confirm(texts[currentLang].confirmDeleteGearList)) return false;
     if (!confirm(texts[currentLang].confirmDeleteGearListAgain)) return false;
@@ -5852,9 +5924,7 @@ function ensureGearListActions() {
             }
 
             if (shouldSync) {
-                saveCurrentGearList();
-                saveCurrentSession();
-                checkSetupChanged();
+                scheduleGearListStateSync({ includeSession: true, includeSetupCheck: true });
             }
         });
         gearListOutput._filterListenerBound = true;
@@ -5866,9 +5936,7 @@ function ensureGearListActions() {
             if (!target) return;
             if (target.closest('#gearListActions')) return;
             if (target.matches('input, textarea')) {
-                saveCurrentGearList();
-                saveCurrentSession();
-                checkSetupChanged();
+                scheduleGearListStateSync({ includeSession: true, includeSetupCheck: true });
             }
         });
         gearListOutput._inputListenerBound = true;
@@ -5904,7 +5972,7 @@ function bindGearListCageListener() {
                 cageSelect.value = e.target.value;
                 cageSelect.dispatchEvent(new Event('change'));
             }
-            saveCurrentGearList();
+            scheduleGearListStateSync();
         });
     }
 }
@@ -5914,9 +5982,7 @@ function bindGearListEasyrigListener() {
     const sel = gearListOutput.querySelector('#gearListEasyrig');
     if (sel) {
         sel.addEventListener('change', () => {
-            saveCurrentGearList();
-            saveCurrentSession();
-            checkSetupChanged();
+            scheduleGearListStateSync({ includeSession: true, includeSetupCheck: true });
         });
     }
 }
@@ -5926,9 +5992,7 @@ function bindGearListSliderBowlListener() {
     const sel = gearListOutput.querySelector('#gearListSliderBowl');
     if (sel) {
         sel.addEventListener('change', () => {
-            saveCurrentGearList();
-            saveCurrentSession();
-            checkSetupChanged();
+            scheduleGearListStateSync({ includeSession: true, includeSetupCheck: true });
         });
     }
 }
@@ -5938,7 +6002,7 @@ function bindGearListEyeLeatherListener() {
     const sel = gearListOutput.querySelector('#gearListEyeLeatherColor');
     if (sel) {
         sel.addEventListener('change', () => {
-            saveCurrentGearList();
+            scheduleGearListStateSync();
         });
     }
 }
@@ -5951,7 +6015,7 @@ function bindGearListProGaffTapeListener() {
         [colorSel, widthSel].forEach(sel => {
             if (sel) {
                 sel.addEventListener('change', () => {
-                    saveCurrentGearList();
+                    scheduleGearListStateSync();
                 });
             }
         });
@@ -5970,9 +6034,7 @@ function bindGearListDirectorMonitorListener() {
                     span.textContent = `${monitorInfo.screenSizeInches}"`;
                 }
                 sel.dataset.autoGearManual = 'true';
-                saveCurrentGearList();
-                saveCurrentSession();
-                checkSetupChanged();
+                scheduleGearListStateSync({ includeSession: true, includeSetupCheck: true });
             });
         }
     });
@@ -5986,9 +6048,7 @@ function bindGearListDirectorMonitorListener() {
                     span.textContent = `${monitorInfo.screenSizeInches}"`;
                 }
                 sel.dataset.autoGearManual = 'true';
-                saveCurrentGearList();
-                saveCurrentSession();
-                checkSetupChanged();
+                scheduleGearListStateSync({ includeSession: true, includeSetupCheck: true });
             });
         }
     });

@@ -31,7 +31,7 @@
           recordFeatureSearchUsage, extractFeatureSearchFilter,
           helpResultsSummary, helpResultsAssist,
           isProjectPersistenceSuspended, suspendProjectPersistence,
-          resumeProjectPersistence */
+          resumeProjectPersistence, flushGearListStateSync */
 /* eslint-enable no-redeclare */
 /* global enqueueCoreBootTask */
 const FALLBACK_STRONG_SEARCH_MATCH_TYPES = new Set(['exactKey', 'keyPrefix', 'keySubset']);
@@ -4141,6 +4141,15 @@ if (setupNameInput) setupNameInput.addEventListener('change', autoSaveCurrentSet
 
 const flushProjectAutoSaveOnExit = () => {
   if (factoryResetInProgress) return;
+  if (typeof flushGearListStateSync === 'function') {
+    try {
+      flushGearListStateSync();
+    } catch (error) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('Failed to flush pending gear list state sync before exit', error);
+      }
+    }
+  }
   scheduleProjectAutoSave(true);
 };
 if (typeof document !== 'undefined') {
