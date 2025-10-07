@@ -4154,7 +4154,6 @@ function gearListGenerateHtmlImpl(info = {}) {
         return order.filter(type => rodSet.has(type));
     };
     const lensSupportItems = [];
-    const requiredRodTypes = new Set();
     const addedRodPairs = new Set();
     selectedLensNames.forEach(name => {
         const lens = devices.lenses && devices.lenses[name];
@@ -4168,18 +4167,8 @@ function gearListGenerateHtmlImpl(info = {}) {
             lensSupportItems.push(`${baseRodType} rods ${rodLength}cm`);
             addedRodPairs.add(rodKey);
         }
-        const typesForRequirement = normalizedRodTypes.length ? normalizedRodTypes : [baseRodType];
-        typesForRequirement.forEach(rt => requiredRodTypes.add(rt));
         if (lens.needsLensSupport) {
             lensSupportItems.push(`${baseRodType} lens support`);
-        }
-    });
-    const cageRod = devices.accessories?.cages?.[selectedNames.cage]?.rodStandard;
-    const cageRodTypes = parseRodTypes(cageRod);
-    const hasCageRodInfo = Array.isArray(cageRod) ? cageRod.length > 0 : Boolean(cageRod);
-    requiredRodTypes.forEach(rt => {
-        if (hasCageRodInfo && !cageRodTypes.includes(rt)) {
-            lensSupportItems.push(`${glyphText(ICON_GLYPHS.warning)}\u00A0cage incompatible with ${rt} rods`);
         }
     });
     addRow('Lens Support', formatItems(lensSupportItems));

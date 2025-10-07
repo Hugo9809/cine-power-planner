@@ -3874,7 +3874,6 @@ function generateGearListHtml() {
     });
   };
   var lensSupportItems = [];
-  var requiredRodTypes = new Set();
   var addedRodPairs = new Set();
   selectedLensNames.forEach(function (name) {
     var lens = devices.lenses && devices.lenses[name];
@@ -3888,20 +3887,8 @@ function generateGearListHtml() {
       lensSupportItems.push("".concat(baseRodType, " rods ").concat(rodLength, "cm"));
       addedRodPairs.add(rodKey);
     }
-    var typesForRequirement = normalizedRodTypes.length ? normalizedRodTypes : [baseRodType];
-    typesForRequirement.forEach(function (rt) {
-      return requiredRodTypes.add(rt);
-    });
     if (lens.needsLensSupport) {
       lensSupportItems.push("".concat(baseRodType, " lens support"));
-    }
-  });
-  var cageRod = (_devices$accessories3 = devices.accessories) === null || _devices$accessories3 === void 0 || (_devices$accessories3 = _devices$accessories3.cages) === null || _devices$accessories3 === void 0 || (_devices$accessories3 = _devices$accessories3[selectedNames.cage]) === null || _devices$accessories3 === void 0 ? void 0 : _devices$accessories3.rodStandard;
-  var cageRodTypes = parseRodTypes(cageRod);
-  var hasCageRodInfo = Array.isArray(cageRod) ? cageRod.length > 0 : Boolean(cageRod);
-  requiredRodTypes.forEach(function (rt) {
-    if (hasCageRodInfo && !cageRodTypes.includes(rt)) {
-      lensSupportItems.push("".concat(glyphText(ICON_GLYPHS.warning), "\xA0cage incompatible with ").concat(rt, " rods"));
     }
   });
   addRow('Lens Support', formatItems(lensSupportItems));
