@@ -272,6 +272,32 @@ describe('device data storage', () => {
     expect(getDecodedLocalStorageItem('cinePowerPlanner_devices')).toBeNull();
   });
 
+  test('loadDeviceData recovers missing primary from compressed backup without nesting compression', () => {
+    const serialized = JSON.stringify(validDeviceData);
+    const compressedPayload = global.LZString.compressToUTF16(serialized);
+    const backupWrapper = JSON.stringify({
+      __cineStorageCompressed: true,
+      version: 1,
+      algorithm: 'lz-string',
+      namespace: 'camera-power-planner:storage-compression',
+      data: compressedPayload,
+      originalLength: serialized.length,
+      compressedPayloadLength: compressedPayload.length,
+      compressionVariant: 'utf16',
+    });
+
+    localStorage.setItem(backupKeyFor(DEVICE_KEY), backupWrapper);
+    expect(localStorage.getItem(DEVICE_KEY)).toBeNull();
+
+    const recovered = loadDeviceData();
+
+    expect(recovered).toEqual(validDeviceData);
+    const restoredRaw = decodeStoredValue(localStorage.getItem(DEVICE_KEY));
+    expect(typeof restoredRaw).toBe('string');
+    expect(restoredRaw).not.toContain('__cineStorageCompressed');
+    expect(JSON.parse(restoredRaw)).toEqual(recovered);
+  });
+
   test('loadDeviceData replaces non-object categories with empty objects', () => {
     const corrupted = {
       cameras: null,
