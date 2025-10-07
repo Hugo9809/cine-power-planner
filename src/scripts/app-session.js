@@ -3293,6 +3293,24 @@ function scheduleProjectAutoSave(immediateOrOptions = false) {
     return;
   }
   projectAutoSavePendingWhileRestoring = null;
+
+  const noteAutoBackupChange = () => {
+    try {
+      const scope = typeof globalThis !== 'undefined'
+        ? globalThis
+        : (typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : null));
+      const notifier = scope && typeof scope.__cineNoteAutoBackupChange === 'function'
+        ? scope.__cineNoteAutoBackupChange
+        : null;
+      if (notifier) {
+        notifier({ immediate, overrides: overrides !== undefined });
+      }
+    } catch (changeError) {
+      console.warn('Failed to record auto backup change context', changeError);
+    }
+  };
+
+  noteAutoBackupChange();
   if (immediate) {
     if (projectAutoSaveTimer) {
       clearTimeout(projectAutoSaveTimer);
@@ -4144,6 +4162,41 @@ if (setupNameInput) setupNameInput.addEventListener('change', autoSaveCurrentSet
 
 const flushProjectAutoSaveOnExit = () => {
   if (factoryResetInProgress) return;
+  const scope = typeof globalThis !== 'undefined'
+    ? globalThis
+    : (typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : null));
+  let hideIndicator = null;
+  if (scope && typeof scope.__cineShowAutoBackupIndicator === 'function') {
+    try {
+      const langTexts = texts[currentLang] || {};
+      const fallbackTexts = texts.en || {};
+      const message = langTexts.autoBackupInProgressNotice
+        || fallbackTexts.autoBackupInProgressNotice
+        || 'Auto backup in progress. Performance may pause briefly.';
+      hideIndicator = scope.__cineShowAutoBackupIndicator(message);
+    } catch (indicatorError) {
+      console.warn('Failed to show auto backup indicator before exit', indicatorError);
+      hideIndicator = null;
+    }
+  }
+  try {
+    if (scope && typeof scope.__cineNoteAutoBackupChange === 'function') {
+      scope.__cineNoteAutoBackupChange({ immediate: true, reason: 'before-exit' });
+    }
+    if (scope && typeof scope.autoBackup === 'function') {
+      scope.autoBackup({ suppressSuccess: true, triggerAutoSaveNotification: true });
+    }
+  } catch (backupError) {
+    console.warn('Failed to auto backup before exit', backupError);
+  } finally {
+    if (hideIndicator) {
+      try {
+        hideIndicator();
+      } catch (hideError) {
+        console.warn('Failed to hide auto backup indicator after exit flush', hideError);
+      }
+    }
+  }
   scheduleProjectAutoSave(true);
 };
 if (typeof document !== 'undefined') {
@@ -5153,20 +5206,28 @@ const getNotificationTopOffset = () => {
   return `${Math.ceil(offset)}px`;
 };
 
-function showNotification(type, message) {
-  if (typeof document === 'undefined') return;
+const ensureNotificationContainer = () => {
+  if (typeof document === 'undefined') return null;
   const id = 'backupNotificationContainer';
   let container = document.getElementById(id);
   if (!container) {
     container = document.createElement('div');
     container.id = id;
     container.style.position = 'fixed';
-    container.style.top = getNotificationTopOffset();
     container.style.right = '1rem';
     container.style.zIndex = '10000';
     document.body.appendChild(container);
   }
   container.style.top = getNotificationTopOffset();
+  return container;
+};
+
+function showNotification(type, message) {
+  if (typeof document === 'undefined') return;
+  const container = ensureNotificationContainer();
+  if (!container) {
+    return;
+  }
   const note = document.createElement('div');
   note.textContent = message;
   note.style.padding = '0.75rem 1.25rem';
@@ -5185,6 +5246,97 @@ function showNotification(type, message) {
       container.remove();
     }
   }, 4000);
+}
+
+const AUTO_BACKUP_INDICATOR_ID = 'cineAutoBackupIndicator';
+const AUTO_BACKUP_INDICATOR_SPINNER_STYLE_ID = 'cineAutoBackupSpinnerStyles';
+let autoBackupIndicatorRefCount = 0;
+
+const ensureAutoBackupSpinnerStyles = () => {
+  if (typeof document === 'undefined') return;
+  if (document.getElementById(AUTO_BACKUP_INDICATOR_SPINNER_STYLE_ID)) {
+    return;
+  }
+  const style = document.createElement('style');
+  style.id = AUTO_BACKUP_INDICATOR_SPINNER_STYLE_ID;
+  style.textContent = `@keyframes cineAutoBackupSpinnerRotate {\n    0% { transform: rotate(0deg); }\n    100% { transform: rotate(360deg); }\n  }`;
+  document.head.appendChild(style);
+};
+
+const showAutoBackupActivityIndicator = (message) => {
+  if (typeof document === 'undefined') {
+    return () => {};
+  }
+  const container = ensureNotificationContainer();
+  if (!container) {
+    return () => {};
+  }
+  ensureAutoBackupSpinnerStyles();
+
+  let indicator = document.getElementById(AUTO_BACKUP_INDICATOR_ID);
+  if (!indicator) {
+    indicator = document.createElement('div');
+    indicator.id = AUTO_BACKUP_INDICATOR_ID;
+    indicator.style.display = 'flex';
+    indicator.style.alignItems = 'center';
+    indicator.style.gap = '0.75rem';
+    indicator.style.padding = '0.75rem 1.25rem';
+    indicator.style.marginTop = '0.5rem';
+    indicator.style.borderRadius = '0.75rem';
+    indicator.style.border = 'none';
+    indicator.style.boxShadow = '0 0.75rem 2.5rem rgba(0, 0, 0, 0.14)';
+    indicator.style.background = 'rgba(32, 40, 62, 0.92)';
+    indicator.style.color = '#ffffff';
+    indicator.setAttribute('role', 'status');
+    indicator.setAttribute('aria-live', 'polite');
+
+    const spinner = document.createElement('span');
+    spinner.style.display = 'inline-block';
+    spinner.style.width = '1.5rem';
+    spinner.style.height = '1.5rem';
+    spinner.style.borderRadius = '50%';
+    spinner.style.border = '0.2rem solid rgba(255, 255, 255, 0.3)';
+    spinner.style.borderTopColor = '#ffffff';
+    spinner.style.animation = 'cineAutoBackupSpinnerRotate 1s linear infinite';
+    spinner.setAttribute('aria-hidden', 'true');
+    indicator.appendChild(spinner);
+
+    const textNode = document.createElement('span');
+    textNode.className = 'auto-backup-indicator-text';
+    indicator.appendChild(textNode);
+
+    container.appendChild(indicator);
+  }
+
+  const textTarget = indicator.querySelector('.auto-backup-indicator-text');
+  if (textTarget) {
+    textTarget.textContent = message;
+  }
+
+  autoBackupIndicatorRefCount += 1;
+  indicator.dataset.count = String(autoBackupIndicatorRefCount);
+  indicator.style.display = 'flex';
+
+  return () => {
+    autoBackupIndicatorRefCount = Math.max(0, autoBackupIndicatorRefCount - 1);
+    if (autoBackupIndicatorRefCount === 0) {
+      indicator.remove();
+      if (!container.children.length) {
+        container.remove();
+      }
+    }
+  };
+};
+
+try {
+  const scope = typeof globalThis !== 'undefined'
+    ? globalThis
+    : (typeof window !== 'undefined' ? window : (typeof self !== 'undefined' ? self : null));
+  if (scope) {
+    scope.__cineShowAutoBackupIndicator = showAutoBackupActivityIndicator;
+  }
+} catch (indicatorExposeError) {
+  console.warn('Failed to expose auto backup indicator helper', indicatorExposeError);
 }
 
 

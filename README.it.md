@@ -160,7 +160,7 @@ Ripeti questa routine quando arriva un nuovo membro, allestisci una postazione o
 ## Gestione di salvataggi e progetti
 
 - **Salvataggi manuali per versioni esplicite.** Inserisci il nome e premi **Invio**/**Salva**. Ogni salvataggio conserva dispositivi, requisiti, liste, preferiti, diagrammi e osservazioni.
-- **Auto-save per il lavoro in corso.** Con un progetto aperto, l’app scrive i cambiamenti in background. Le voci `auto-backup-…` compaiono ogni dieci minuti.
+- **Auto-save per il lavoro in corso.** Con un progetto aperto, l’app scrive i cambiamenti in background. Le voci `auto-backup-…` compaiono ogni dieci minuti, quando cambi progetto, dopo importazioni o esportazioni, prima del ricaricamento e dopo lunghe sessioni di modifica.
 - **Salvaguardie rapide catturano backup completi all’istante.** Apri **Impostazioni → Dati e archiviazione → Quick safeguards** per scaricare subito un backup completo o aprire gli strumenti di ripristino senza lasciare la scheda; ogni esecuzione viene registrata nel pannello così da archiviare immediatamente il JSON.【F:index.html†L2548-L2570】
 - **Mostra gli auto-backup su richiesta.** Attiva **Impostazioni → Backup e ripristino → Mostra auto-backup** per vedere gli orari.
 - **Rinominare crea una copia.** Modifica il nome e premi **Invio** per duplicare il progetto, utile per confrontare varianti.
@@ -237,7 +237,7 @@ Ripeti questa routine quando arriva un nuovo membro, allestisci una postazione o
 
 - Un service worker mette in cache ogni risorsa per l’uso offline e applica gli aggiornamenti solo dopo **Forza ricarica**.
 - Progetti, feedback runtime, preferiti, dispositivi personalizzati, temi e liste vivono nello storage del browser. Quando possibile viene richiesta la persistenza per ridurre i rischi di cancellazione.
-- Le copie automatiche concatenano snapshot di progetto ogni dieci minuti, backup completi ogni ora e archivi delle regole automatiche in background. Attiva **Impostazioni → Backup e ripristino → Mostra auto-backup nell’elenco** per vedere la timeline, regolare la conservazione e ripristinare le istantanee senza connessione.
+- Le copie automatiche concatenano snapshot di progetto ogni dieci minuti, quando cambi progetto, dopo importazioni o esportazioni, prima del ricaricamento e dopo lunghe sessioni; i backup completi orari e gli archivi delle regole automatiche completano la protezione. Attiva **Impostazioni → Backup e ripristino → Mostra auto-backup nell’elenco** per vedere la timeline, regolare la conservazione e ripristinare le istantanee senza connessione.
 - Se il browser blocca i download, l’app apre una scheda **Download manuale** con il JSON da copiare in un file `.json` e salvare su supporti offline affidabili prima di chiuderla.
 - Usa **Impostazioni → Backup e ripristino → Confronta versioni** per confrontare due salvataggi, annotare il contesto nelle **Note sull’incidente** ed esportare un registro per il passaggio di consegne.
 - Avvia **Prova di ripristino** da **Impostazioni → Backup e ripristino** per caricare un backup in un’area temporanea, rivedere la tabella di confronto e confermare che sia integro prima di applicare **Ripristina** ai dati attivi.
@@ -265,7 +265,7 @@ Ripeti questa routine quando arriva un nuovo membro, allestisci una postazione o
 
 ## Backup e ripristino
 
-- **Snapshot salvati** – Il selettore conserva ogni salvataggio manuale e crea `auto-backup-…` ogni dieci minuti mentre l’app è aperta.
+- **Snapshot salvati** – Il selettore conserva ogni salvataggio manuale e crea `auto-backup-…` ogni dieci minuti, quando cambi progetto, dopo importazioni o esportazioni, prima del ricaricamento e dopo lunghe sessioni di modifica.
 - **Backup completi** – **Impostazioni → Backup e ripristino → Backup** scarica `planner-backup.json` con progetti, dispositivi, feedback, preferiti, regole automatiche e stato UI. I ripristini creano un backup di sicurezza e avvisano se il file proviene da un’altra versione.
 - **Blocco Quick safeguards** – In **Impostazioni → Dati e archiviazione** trovi un blocco dedicato **Quick safeguards** per avviare backup completi con un clic o aprire rapidamente gli strumenti di ripristino, così produci copie ridondanti senza cambiare scheda.【F:index.html†L2548-L2570】
 - **Registro storico** – Ogni backup completo aggiunge una voce consultabile in **Impostazioni → Dati e archiviazione** o esportabile insieme al file. Mantiene timestamp e nomi allineati alla documentazione anche offline.
