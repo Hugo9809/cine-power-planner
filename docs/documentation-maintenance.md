@@ -45,8 +45,8 @@ copy offline.【F:src/scripts/script.js†L92-L183】
    any new navigation tips—like the quick-link keyboard guidance surfaced through
    `helpResultsAssist`—so translations and hover help mirror the latest behaviour.【F:index.html†L2641-L2663】【F:src/scripts/app-session.js†L8427-L8486】【F:src/scripts/translations.js†L1327-L1340】
    Highlight that the global feature search now promotes matches whose labels appear on screen
-   before keyword-only hits so crews know the control they typed will surface first even when
-   synonyms exist.【F:src/scripts/app-core-new-2.js†L8205-L8260】【F:index.html†L3268-L3276】
+   before keyword-only hits and that exact phrases rise to the top, so crews know the full
+   control name they typed will surface first even when synonyms exist.【F:src/scripts/app-core-new-2.js†L9188-L9264】【F:index.html†L3268-L3276】
    Hover help now reads from linked selectors (`data-help-target`, `data-hover-help-target` and
    ARIA reference IDs), so double-check that contextual copy stays accurate for every
    referenced control when you update docs or UI labels.【F:src/scripts/app-session.js†L8896-L8996】

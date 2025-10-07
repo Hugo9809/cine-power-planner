@@ -9197,7 +9197,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return { filterType, queryText: remainder };
     };
     
-    function scoreFeatureSearchEntry(entry, queryKey, queryTokens) {
+    function scoreFeatureSearchEntry(entry, queryKey, queryTokens, rawQueryText) {
       if (!entry || !entry.key) return null;
       const display = entry.display;
       if (!display) return null;
@@ -9220,6 +9220,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       const queryTokenCount = validQueryTokens.length;
       const allTokensMatched =
         queryTokenCount > 0 && tokenDetails.matched >= queryTokenCount;
+      const phraseDetails = computePhraseMatchDetails(entry, validQueryTokens, rawQueryText);
     
       let bestType = 'none';
       let bestPriority = FEATURE_SEARCH_MATCH_PRIORITIES.none;
@@ -9270,6 +9271,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         tokenMatches: tokenDetails.matched,
         primaryTokenScore: primaryTokenDetails.score,
         primaryTokenMatches: primaryTokenDetails.matched,
+        phraseScore: phraseDetails.score,
+        phraseMatched: phraseDetails.matched,
         fuzzyDistance,
         keyDistance: queryKey
           ? Math.abs(entryKey.length - queryKey.length)
@@ -9287,6 +9290,14 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       if (b.priority !== a.priority) return b.priority - a.priority;
       if (Number(b.allTokensMatched) !== Number(a.allTokensMatched)) {
         return Number(b.allTokensMatched) - Number(a.allTokensMatched);
+      }
+      const aPhraseScore = typeof a.phraseScore === 'number' ? a.phraseScore : 0;
+      const bPhraseScore = typeof b.phraseScore === 'number' ? b.phraseScore : 0;
+      if (bPhraseScore !== aPhraseScore) {
+        return bPhraseScore - aPhraseScore;
+      }
+      if (Number(b.phraseMatched) !== Number(a.phraseMatched)) {
+        return Number(b.phraseMatched) - Number(a.phraseMatched);
       }
       const aPrimaryScore = typeof a.primaryTokenScore === 'number' ? a.primaryTokenScore : 0;
       const bPrimaryScore = typeof b.primaryTokenScore === 'number' ? b.primaryTokenScore : 0;
@@ -9332,7 +9343,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return;
       }
       const scored = filteredEntries
-        .map(entry => scoreFeatureSearchEntry(entry, '', []))
+        .map(entry => scoreFeatureSearchEntry(entry, '', [], ''))
         .filter(Boolean)
         .sort(compareFeatureSearchCandidates);
       const values = [];
@@ -9392,7 +9403,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
     
       const scored = entries
-        .map(entry => scoreFeatureSearchEntry(entry, queryKey, queryTokens))
+        .map(entry => scoreFeatureSearchEntry(entry, queryKey, queryTokens, trimmed))
         .filter(Boolean);
     
       if (scored.length === 0) {
@@ -9409,7 +9420,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             item =>
               item.priority > FEATURE_SEARCH_MATCH_PRIORITIES.none ||
               item.tokenScore > 0 ||
-              item.primaryTokenScore > 0
+              item.primaryTokenScore > 0 ||
+              item.phraseScore > 0
           )
         : [];
     
@@ -10273,6 +10285,84 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         return { score: 0, matched: 0 };
       }
       return { score: total, matched };
+    };
+
+    const escapeFeatureSearchRegExp = value =>
+      value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+    const collectFeatureSearchTexts = entry => {
+      const texts = [];
+      const push = text => {
+        if (typeof text !== 'string') return;
+        const normalized = text.trim().toLowerCase();
+        if (!normalized) return;
+        texts.push(normalized);
+      };
+      if (!entry || typeof entry !== 'object') {
+        return texts;
+      }
+      push(entry.optionLabel);
+      if (entry.display && entry.display !== entry.optionLabel) {
+        push(entry.display);
+      }
+      if (entry.detail) {
+        push(entry.detail);
+      }
+      const rawValue = entry.value;
+      if (rawValue && typeof rawValue === 'object') {
+        push(rawValue.baseLabel);
+        push(rawValue.displayLabel);
+        if (Array.isArray(rawValue.context) && rawValue.context.length) {
+          push(rawValue.context.join(' '));
+        }
+        if (Array.isArray(rawValue.helpTexts) && rawValue.helpTexts.length) {
+          push(rawValue.helpTexts.join(' '));
+        }
+      }
+      return texts;
+    };
+
+    const computePhraseMatchDetails = (entry, queryTokens = [], rawQuery = '') => {
+      const validTokens = Array.isArray(queryTokens)
+        ? queryTokens.map(token => token && token.replace(/[^a-z0-9]+/g, '')).filter(Boolean)
+        : [];
+      const normalizedQuery = typeof rawQuery === 'string' ? rawQuery.trim().toLowerCase() : '';
+      if (!validTokens.length && !normalizedQuery) {
+        return { score: 0, matched: false };
+      }
+      const texts = collectFeatureSearchTexts(entry);
+      if (!texts.length) {
+        return { score: 0, matched: false };
+      }
+
+      let score = 0;
+      let matched = false;
+
+      if (normalizedQuery) {
+        for (const text of texts) {
+          if (text.includes(normalizedQuery)) {
+            matched = true;
+            score = Math.max(score, Math.max(1, normalizedQuery.length));
+            break;
+          }
+        }
+      }
+
+      if (validTokens.length > 1) {
+        const pattern = validTokens.map(escapeFeatureSearchRegExp).join('[\\s\\-_/·›>]*');
+        if (pattern) {
+          const regex = new RegExp(`\\b${pattern}`, 'i');
+          for (const text of texts) {
+            if (regex.test(text)) {
+              matched = true;
+              score = Math.max(score, validTokens.length * 6);
+              break;
+            }
+          }
+        }
+      }
+
+      return { score, matched };
     };
     
     const computeLevenshteinDistance = (a, b) => {
