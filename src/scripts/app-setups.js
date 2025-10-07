@@ -4362,16 +4362,80 @@ function gearListGenerateHtmlImpl(info = {}) {
             .replace(/&amp;quot;/g, '&quot;');
         monitoringItems += (monitoringItems ? '<br>' : '') + gearHtml;
     }
-    let monitoringBatteryItems = [];
-    const bebob98 = Object.keys(devices.batteries || {}).find(n => /V98micro/i.test(n)) || 'Bebob V98micro';
-    handheldPrefs.forEach(p => {
-        for (let i = 0; i < 3; i++) monitoringBatteryItems.push(`${bebob98} (${p.role} handheld)`);
+    const monitorBatterySelections = (() => {
+        const source = info.monitorBatteries;
+        if (!source || typeof source !== 'object' || Array.isArray(source)) return {};
+        const entries = {};
+        Object.entries(source).forEach(([key, value]) => {
+            if (typeof key !== 'string') return;
+            if (typeof value !== 'string') return;
+            const trimmed = value.trim();
+            if (!trimmed) return;
+            entries[key] = trimmed;
+        });
+        return entries;
+    })();
+    const batteryDatabase = devices && devices.batteries ? devices.batteries : {};
+    const baseBatteryOptions = Object.keys(batteryDatabase)
+        .filter(name => name && name !== 'None')
+        .sort(localeSort);
+    const buildBatteryOptions = (selectedValue) => {
+        const normalizedSelected = typeof selectedValue === 'string' ? selectedValue.trim() : '';
+        const optionValues = baseBatteryOptions.slice();
+        if (normalizedSelected && !optionValues.some(value => value.toLowerCase() === normalizedSelected.toLowerCase())) {
+            optionValues.unshift(normalizedSelected);
+        }
+        const seen = new Set();
+        return optionValues
+            .filter(Boolean)
+            .filter(value => {
+                const key = value.toLowerCase();
+                if (seen.has(key)) return false;
+                seen.add(key);
+                return true;
+            })
+            .map(value => {
+                const isSelected = normalizedSelected && value.toLowerCase() === normalizedSelected.toLowerCase();
+                return `<option value="${escapeHtml(value)}"${isSelected ? ' selected' : ''}>${escapeHtml(addArriKNumber(value))}</option>`;
+            })
+            .join('');
+    };
+    const monitoringBatteryItems = [];
+    const bebob98 = Object.keys(batteryDatabase).find(n => /V98micro/i.test(n)) || 'Bebob V98micro';
+    handheldPrefs.forEach((p, index) => {
+        const roleNameRaw = typeof p.role === 'string' ? p.role : '';
+        const roleName = roleNameRaw.trim();
+        const contextLabel = `${roleName || 'Monitor'} handheld`;
+        const key = `handheld:${roleName}:${index}`;
+        const storedValue = monitorBatterySelections[key];
+        const selectedValue = (typeof storedValue === 'string' && storedValue.trim()) || bebob98;
+        if (!selectedValue) return;
+        const roleId = (roleName || 'Monitor').replace(/[^A-Za-z0-9]/g, '') || 'Monitor';
+        const selectId = `gearListMonitorBatteryHandheld${index}${roleId}`;
+        const optionsHtml = buildBatteryOptions(selectedValue);
+        const selectHtml = `<select id="${selectId}" data-monitor-battery-key="${escapeHtml(key)}" data-monitor-battery-type="handheld" data-monitor-battery-role="${escapeHtml(roleName)}">${optionsHtml}</select>`;
+        monitoringBatteryItems.push(
+            `<span class="gear-item" data-gear-name="${escapeHtml(`Monitoring Battery ${contextLabel}`)}">3x ${selectHtml} (${escapeHtml(contextLabel)})</span>`
+        );
     });
-    const bebob290 = Object.keys(devices.batteries || {}).find(n => /V290RM-Cine/i.test(n)) || 'Bebob V290RM-Cine';
-    largeMonitorPrefs.forEach(p => {
-        monitoringBatteryItems.push(`${bebob290} (${p.role} 15-21")`, `${bebob290} (${p.role} 15-21")`);
+    const bebob290 = Object.keys(batteryDatabase).find(n => /V290RM-Cine/i.test(n)) || 'Bebob V290RM-Cine';
+    largeMonitorPrefs.forEach((p, index) => {
+        const roleNameRaw = typeof p.role === 'string' ? p.role : '';
+        const roleName = roleNameRaw.trim();
+        const contextLabel = `${roleName || 'Monitor'} 15-21"`;
+        const key = `large:${roleName}:${index}`;
+        const storedValue = monitorBatterySelections[key];
+        const selectedValue = (typeof storedValue === 'string' && storedValue.trim()) || bebob290;
+        if (!selectedValue) return;
+        const roleId = (roleName || 'Monitor').replace(/[^A-Za-z0-9]/g, '') || 'Monitor';
+        const selectId = `gearListMonitorBatteryLarge${index}${roleId}`;
+        const optionsHtml = buildBatteryOptions(selectedValue);
+        const selectHtml = `<select id="${selectId}" data-monitor-battery-key="${escapeHtml(key)}" data-monitor-battery-type="large" data-monitor-battery-role="${escapeHtml(roleName)}">${optionsHtml}</select>`;
+        monitoringBatteryItems.push(
+            `<span class="gear-item" data-gear-name="${escapeHtml(`Monitoring Battery ${contextLabel}`)}">2x ${selectHtml} (${escapeHtml(contextLabel)})</span>`
+        );
     });
-    addRow('Monitoring Batteries', formatItems(monitoringBatteryItems));
+    addRow('Monitoring Batteries', monitoringBatteryItems.length ? monitoringBatteryItems.join('<br>') : '');
     addRow('Chargers', formatItems(chargersAcc));
     addRow('Monitoring', monitoringItems);
     ensureItems(monitoringSupportAcc, 'accessories.monitoringSupport');
@@ -4771,6 +4835,19 @@ function gearListGetCurrentHtmlImpl() {
                 }
             });
         }
+        const monitorBatterySelects = clone.querySelectorAll('select[data-monitor-battery-key]');
+        monitorBatterySelects.forEach(sel => {
+            if (!sel.id) return;
+            const originalSel = gearListOutput.querySelector(`#${sel.id}`);
+            const val = originalSel ? originalSel.value : sel.value;
+            Array.from(sel.options).forEach(opt => {
+                if (opt.value === val) {
+                    opt.setAttribute('selected', '');
+                } else {
+                    opt.removeAttribute('selected');
+                }
+            });
+        });
         const eyeSel = clone.querySelector('#gearListEyeLeatherColor');
         if (eyeSel) {
             const originalSel = gearListOutput.querySelector('#gearListEyeLeatherColor');
