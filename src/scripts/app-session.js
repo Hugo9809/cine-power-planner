@@ -3334,20 +3334,127 @@ function scheduleProjectAutoSave(immediateOrOptions = false) {
 }
 
 if (projectForm) {
-  projectForm.querySelectorAll('select[multiple]').forEach(sel => {
-    sel.addEventListener('mousedown', e => {
-      if (e.target.tagName !== 'OPTION') return;
-      e.preventDefault();
-      const option = e.target;
+  const resolveOptionFromEvent = (event, select) => {
+    const findClosestSelect = (node) => {
+      if (!node || typeof node !== 'object') {
+        return null;
+      }
+      if (typeof node.closest === 'function') {
+        return node.closest('select');
+      }
+      let parent = node.parentElement;
+      while (parent && parent.tagName !== 'SELECT') {
+        parent = parent.parentElement;
+      }
+      return parent && parent.tagName === 'SELECT' ? parent : null;
+    };
+
+    const isOption = node =>
+      node && typeof node === 'object' && node.tagName === 'OPTION' && findClosestSelect(node) === select;
+
+    if (isOption(event.target)) {
+      return event.target;
+    }
+
+    if (typeof event.composedPath === 'function') {
+      const optionFromPath = event.composedPath().find(isOption);
+      if (optionFromPath) {
+        return optionFromPath;
+      }
+    }
+
+    if (event.target && typeof event.target.closest === 'function') {
+      const optionFromTarget = event.target.closest('option');
+      if (isOption(optionFromTarget)) {
+        return optionFromTarget;
+      }
+    }
+
+    const point = (() => {
+      if (event.type && event.type.startsWith('touch') && event.touches && event.touches[0]) {
+        return { x: event.touches[0].clientX, y: event.touches[0].clientY };
+      }
+      if (typeof event.clientX === 'number' && typeof event.clientY === 'number') {
+        return { x: event.clientX, y: event.clientY };
+      }
+      return null;
+    })();
+
+    if (point && typeof document !== 'undefined' && typeof document.elementFromPoint === 'function') {
+      const element = document.elementFromPoint(point.x, point.y);
+      if (isOption(element)) {
+        return element;
+      }
+      if (element && typeof element.closest === 'function') {
+        const optionFromPoint = element.closest('option');
+        if (isOption(optionFromPoint)) {
+          return optionFromPoint;
+        }
+      }
+    }
+
+    return null;
+  };
+
+  const attachMultiSelectToggle = (sel) => {
+    if (!sel) {
+      return;
+    }
+
+    const toggleSelection = (event) => {
+      if (typeof event.button === 'number' && event.button !== 0) {
+        return;
+      }
+
+      const option = resolveOptionFromEvent(event, sel);
+      if (!option || option.disabled) {
+        return;
+      }
+
+      event.preventDefault();
+
       const scrollTop = sel.scrollTop;
-      option.selected = !option.selected;
-      sel.dispatchEvent(new Event('change'));
-      sel.focus();
+      const newSelected = !option.selected;
+      option.selected = newSelected;
+      if (newSelected) {
+        option.setAttribute('selected', '');
+      } else {
+        option.removeAttribute('selected');
+      }
+
+      const changeEvent = new Event('change', { bubbles: true });
+      sel.dispatchEvent(changeEvent);
+
+      if (typeof sel.focus === 'function') {
+        try {
+          sel.focus({ preventScroll: true });
+        } catch (focusError) {
+          sel.focus();
+          void focusError;
+        }
+      }
+
       sel.scrollTop = scrollTop;
+    };
+
+    const pointerSupported = typeof window !== 'undefined' && typeof window.PointerEvent === 'function';
+
+    if (pointerSupported) {
+      sel.addEventListener('pointerdown', toggleSelection);
+    } else {
+      sel.addEventListener('mousedown', toggleSelection);
+      sel.addEventListener('touchstart', (event) => {
+        toggleSelection(event);
+      }, { passive: false });
+    }
+
+    sel.addEventListener('dblclick', (event) => {
+      event.preventDefault();
     });
-    sel.addEventListener('dblclick', e => {
-      e.preventDefault();
-    });
+  };
+
+  projectForm.querySelectorAll('select[multiple]').forEach(sel => {
+    attachMultiSelectToggle(sel);
   });
 
   projectForm.querySelectorAll('select').forEach(sel => {
