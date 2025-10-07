@@ -28,6 +28,82 @@ function resolveCriticalGlobalScope() {
   return null;
 }
 
+function neutraliseDeprecatedStyleMedia(scope) {
+  var target = scope || resolveCriticalGlobalScope();
+  if (!target || (typeof target !== 'object' && typeof target !== 'function')) {
+    return;
+  }
+
+  if (typeof target.matchMedia !== 'function') {
+    return;
+  }
+
+  if (
+    typeof Object.defineProperty !== 'function' ||
+    typeof Object.getOwnPropertyDescriptor !== 'function'
+  ) {
+    return;
+  }
+
+  if (Object.prototype.hasOwnProperty.call(target, 'styleMedia')) {
+    return;
+  }
+
+  var prototype = target;
+  var descriptor = null;
+
+  while (prototype && !descriptor) {
+    try {
+      descriptor = Object.getOwnPropertyDescriptor(prototype, 'styleMedia');
+    } catch (error) {
+      void error;
+      descriptor = null;
+      break;
+    }
+
+    if (!descriptor) {
+      prototype = Object.getPrototypeOf(prototype);
+    }
+  }
+
+  if (!descriptor) {
+    return;
+  }
+
+  var safeStyleMedia = {
+    matchMedium: function matchMedium(query) {
+      if (typeof query !== 'string' || !query) {
+        return false;
+      }
+
+      var result = false;
+
+      try {
+        var response = target.matchMedia(query);
+        result = !!(response && response.matches);
+      } catch (error) {
+        void error;
+        result = false;
+      }
+
+      return result;
+    },
+  };
+
+  try {
+    Object.defineProperty(target, 'styleMedia', {
+      configurable: true,
+      enumerable: false,
+      value: safeStyleMedia,
+      writable: false,
+    });
+  } catch (defineError) {
+    void defineError;
+  }
+}
+
+neutraliseDeprecatedStyleMedia();
+
 function ensureCriticalGlobalVariable(name, fallback) {
   var scope = resolveCriticalGlobalScope();
   if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
