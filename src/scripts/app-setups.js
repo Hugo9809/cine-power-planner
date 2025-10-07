@@ -2443,7 +2443,12 @@ function cleanupAutoGearCell(cell) {
         container.removeChild(container.lastChild);
     }
     const textContent = container.textContent ? container.textContent.trim() : '';
-    if (!textContent && !container.querySelector('.gear-item')) {
+    const hasStandardItems = Boolean(textContent) || Boolean(container.querySelector('.gear-item'));
+    const customItems = cell && typeof cell.querySelector === 'function'
+        ? cell.querySelector('.gear-custom-section .gear-custom-item')
+        : null;
+    const hasCustomItems = Boolean(customItems);
+    if (!hasStandardItems && !hasCustomItems) {
         const row = cell.closest('tr');
         const section = row ? row.closest('tbody') : null;
         if (section && section.classList.contains('auto-gear-category')) {
