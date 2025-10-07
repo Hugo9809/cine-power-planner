@@ -720,7 +720,137 @@ function buildTripodPreferenceAutoGearRules(baseInfo = {}) {
   });
 }
 
-function buildDefaultVideoDistributionAutoGearRules(baseInfo = {}) {
+  const ARRI_VIEWFINDER_BRACKET_NAME = 'ARRI K2.74000.0 VEB-3 Viewfinder Extension Bracket';
+  const ARRI_VIEWFINDER_BRACKET_CATEGORY = 'Camera Support';
+
+  function createArriViewfinderBracketItem(contextNotes) {
+    if (typeof generateAutoGearId !== 'function') {
+      return null;
+    }
+    const normalizedNotes = Array.isArray(contextNotes)
+      ? contextNotes.filter(note => typeof note === 'string' && note.trim())
+      : [];
+    return {
+      id: generateAutoGearId('item'),
+      name: ARRI_VIEWFINDER_BRACKET_NAME,
+      category: ARRI_VIEWFINDER_BRACKET_CATEGORY,
+      quantity: 1,
+      screenSize: '',
+      selectorType: 'none',
+      selectorDefault: '',
+      selectorEnabled: false,
+      notes: '',
+      contextNotes: normalizedNotes.map(note => note.trim()),
+    };
+  }
+
+  function collectArriCameraNames() {
+    const arriNames = [];
+    const cameraDb = devices && typeof devices === 'object' ? devices.cameras : null;
+    if (!cameraDb || typeof cameraDb !== 'object') {
+      return arriNames;
+    }
+    Object.keys(cameraDb).forEach(name => {
+      if (!name) return;
+      const entry = cameraDb[name];
+      const brand = entry && typeof entry.brand === 'string' ? entry.brand : '';
+      if (/arri/i.test(brand || name)) {
+        arriNames.push(name);
+      }
+    });
+    return arriNames;
+  }
+
+  function createArriBracketRule(options) {
+    if (!options || typeof options !== 'object') {
+      return null;
+    }
+    const addition = createArriViewfinderBracketItem(options.contextNotes || []);
+    if (!addition) {
+      return null;
+    }
+    const cameraList = Array.isArray(options.camera)
+      ? options.camera.filter(Boolean)
+      : [];
+    return {
+      id: generateAutoGearId('rule'),
+      label: typeof options.label === 'string' && options.label.trim()
+        ? options.label.trim()
+        : 'ARRI viewfinder extension support',
+      scenarios: Array.isArray(options.scenarios) ? options.scenarios.filter(Boolean) : [],
+      mattebox: [],
+      cameraHandle: [],
+      viewfinderExtension: Array.isArray(options.viewfinderExtension)
+        ? options.viewfinderExtension.filter(Boolean)
+        : [],
+      deliveryResolution: [],
+      videoDistribution: [],
+      camera: cameraList,
+      monitor: [],
+      tripodHeadBrand: [],
+      tripodBowl: [],
+      tripodTypes: [],
+      tripodSpreader: [],
+      crewPresent: [],
+      crewAbsent: [],
+      wireless: [],
+      motors: [],
+      controllers: [],
+      distance: [],
+      shootingDays: null,
+      add: [addition],
+      remove: [],
+    };
+  }
+
+  function buildArriViewfinderBracketRules(baseInfo = {}) {
+    const arriCameras = collectArriCameraNames();
+    if (!arriCameras.length) {
+      return [];
+    }
+
+    const viewfinderSelection = baseInfo && typeof baseInfo.viewfinderExtension === 'string'
+      ? baseInfo.viewfinderExtension.trim()
+      : '';
+    const selectedScenarios = baseInfo && typeof baseInfo.requiredScenarios === 'string'
+      ? baseInfo.requiredScenarios
+          .split(',')
+          .map(value => (typeof value === 'string' ? value.trim() : ''))
+          .filter(Boolean)
+      : [];
+    const normalizedScenarios = selectedScenarios.map(value => normalizeAutoGearTriggerValue(value)).filter(Boolean);
+    const sliderActive = normalizedScenarios.includes(normalizeAutoGearTriggerValue('Slider'));
+
+    const rules = [];
+    if (viewfinderSelection) {
+      const contextLabel = getViewfinderFallbackLabel(viewfinderSelection);
+      const viewfinderRule = createArriBracketRule({
+        label: `${contextLabel || viewfinderSelection} – ARRI viewfinder support`,
+        viewfinderExtension: [viewfinderSelection],
+        camera: arriCameras.slice(),
+        contextNotes: ['ARRI viewfinder extension support'],
+      });
+      if (viewfinderRule) {
+        rules.push(viewfinderRule);
+      }
+    }
+
+    if (sliderActive && !viewfinderSelection) {
+      const sliderRule = createArriBracketRule({
+        label: 'Slider – ARRI viewfinder extension support',
+        scenarios: ['Slider'],
+        camera: arriCameras.slice(),
+        contextNotes: ['Slider scenario'],
+      });
+      if (sliderRule) {
+        rules.push(sliderRule);
+      }
+    }
+
+    return rules;
+  }
+
+  function buildDefaultVideoDistributionAutoGearRules(baseInfo = {}) {
   if (typeof generateGearListHtml !== 'function' || typeof parseGearTableForAutoRules !== 'function') {
     return [];
   }
@@ -1308,6 +1438,7 @@ function buildAutoGearRulesFromBaseInfo(baseInfo, scenarioValues) {
     appendUniqueRules(buildDefaultVideoDistributionAutoGearRules(baseInfo));
     appendUniqueRules(buildOnboardMonitorRiggingAutoGearRules());
     appendUniqueRules(buildTripodPreferenceAutoGearRules(baseInfo));
+    appendUniqueRules(buildArriViewfinderBracketRules(baseInfo));
   }
 
   const anyMotorRule = buildAutoGearAnyMotorRule();
@@ -1533,6 +1664,7 @@ function resetAutoGearRulesToFactoryAdditions() {
     buildAutoGearAnyMotorRule,
     buildAlwaysAutoGearRule,
     buildFiveDayConsumablesAutoGearRule,
+    buildArriViewfinderBracketRules,
     ensureDefaultMatteboxAutoGearRules,
     captureAutoGearSeedContext,
     buildAutoGearRulesFromBaseInfo,
@@ -1567,6 +1699,7 @@ function resetAutoGearRulesToFactoryAdditions() {
     ['ensureDefaultMatteboxAutoGearRules', ensureDefaultMatteboxAutoGearRules],
     ['captureAutoGearSeedContext', captureAutoGearSeedContext],
     ['buildAutoGearRulesFromBaseInfo', buildAutoGearRulesFromBaseInfo],
+    ['buildArriViewfinderBracketRules', buildArriViewfinderBracketRules],
     ['computeFactoryAutoGearRules', computeFactoryAutoGearRules],
     ['seedAutoGearRulesFromCurrentProject', seedAutoGearRulesFromCurrentProject],
     ['resetAutoGearRulesToFactoryAdditions', resetAutoGearRulesToFactoryAdditions],
