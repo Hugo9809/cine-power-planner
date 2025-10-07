@@ -945,7 +945,10 @@ function downloadSharedProject(shareFileName, includeAutoGear) {
     currentSetup.gearSelectors = gearSelectors;
   }
   const combinedHtml = gearListGetCurrentHtmlImpl();
-  currentSetup.gearListAndProjectRequirementsGenerated = Boolean(combinedHtml);
+  currentSetup.gearListAndProjectRequirementsGenerated = hasGeneratedProjectOutputs(
+    combinedHtml,
+    currentSetup.projectInfo,
+  );
   const deviceChanges = getDeviceChanges();
   if (Object.keys(deviceChanges).length) {
     currentSetup.changedDevices = deviceChanges;
@@ -4903,7 +4906,7 @@ function cloneProjectInfoForStorage(info) {
     return clone;
 }
 
-function hasMeaningfulProjectInfoValue(value) {
+function hasMeaningfulProjectInfoValue(value, seen = new Set()) {
     if (value === null || value === undefined) {
         return false;
     }
@@ -4917,12 +4920,57 @@ function hasMeaningfulProjectInfoValue(value) {
         return value;
     }
     if (Array.isArray(value)) {
-        return value.some(entry => hasMeaningfulProjectInfoValue(entry));
+        if (seen.has(value)) {
+            return false;
+        }
+        seen.add(value);
+        for (let index = 0; index < value.length; index += 1) {
+            if (hasMeaningfulProjectInfoValue(value[index], seen)) {
+                return true;
+            }
+        }
+        return false;
     }
     if (typeof value === 'object') {
-        return Object.values(value).some(entry => hasMeaningfulProjectInfoValue(entry));
+        if (seen.has(value)) {
+            return false;
+        }
+        seen.add(value);
+        try {
+            for (const key in value) {
+                if (!Object.prototype.hasOwnProperty.call(value, key)) {
+                    continue;
+                }
+                if (hasMeaningfulProjectInfoValue(value[key], seen)) {
+                    return true;
+                }
+            }
+        } catch (iterationError) {
+            return true;
+        }
+        if (typeof Object.getOwnPropertySymbols === 'function') {
+            try {
+                const symbols = Object.getOwnPropertySymbols(value);
+                for (let index = 0; index < symbols.length; index += 1) {
+                    const symbol = symbols[index];
+                    if (hasMeaningfulProjectInfoValue(value[symbol], seen)) {
+                        return true;
+                    }
+                }
+            } catch (symbolError) {
+                return true;
+            }
+        }
+        return false;
     }
     return false;
+}
+
+function hasGeneratedProjectOutputs(html, projectInfo) {
+    if (html) {
+        return true;
+    }
+    return hasMeaningfulProjectInfoValue(projectInfo);
 }
 
 function mergeProjectInfoSnapshots(base, updates) {
@@ -5003,7 +5051,6 @@ function saveCurrentGearList() {
     if (factoryResetInProgress) return;
     if (isProjectPersistenceSuspended()) return;
     const html = gearListGetCurrentHtmlImpl();
-    const gearListGenerated = Boolean(html);
     const info = projectForm ? collectProjectFormData() : {};
     info.sliderBowl = getSetupsCoreValue('getSliderBowlValue');
     info.easyrig = getSetupsCoreValue('getEasyrigValue');
@@ -5015,6 +5062,7 @@ function saveCurrentGearList() {
         && projectRequirementsOutput.querySelector('.requirement-box')
     );
     let pendingProjectInfo = deriveProjectInfo(info);
+    const gearListGenerated = hasGeneratedProjectOutputs(html, pendingProjectInfo);
     const powerSelectionSnapshot = getPowerSelectionSnapshot();
     const gearSelectorsRaw = getGearListSelectors();
     const gearSelectors = cloneGearListSelectors(gearSelectorsRaw);

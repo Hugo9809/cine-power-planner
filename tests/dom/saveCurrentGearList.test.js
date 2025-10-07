@@ -42,7 +42,7 @@ describe('saveCurrentGearList project info handling', () => {
       gearListAndProjectRequirementsGenerated,
     } = lastCall[1];
     expect(lastCall[1].gearList).toBeUndefined();
-    expect(gearListAndProjectRequirementsGenerated).toBe(false);
+    expect(gearListAndProjectRequirementsGenerated).toBe(true);
     expect(projectInfo).toEqual(utils.getCurrentProjectInfo());
     expect(projectInfo).toMatchObject({
       projectName: 'Empty Project',
@@ -109,7 +109,7 @@ describe('saveCurrentGearList project info handling', () => {
       projectName: 'Snapshot Project',
     });
     expect(savedSetup.gearList).toBeUndefined();
-    expect(savedSetup.gearListAndProjectRequirementsGenerated).toBe(false);
+    expect(savedSetup.gearListAndProjectRequirementsGenerated).toBe(true);
 
     savedSetup.projectInfo.projectName = 'Mutated via setups';
     const infoAfterMutation = utils.getCurrentProjectInfo();

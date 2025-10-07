@@ -39,6 +39,73 @@ if (typeof globalThis !== 'undefined' && typeof globalThis.STRONG_SEARCH_MATCH_T
   globalThis.STRONG_SEARCH_MATCH_TYPES = FALLBACK_STRONG_SEARCH_MATCH_TYPES;
 }
 
+function projectInfoHasMeaningfulValue(value, seen = new Set()) {
+  if (value === null || value === undefined) {
+    return false;
+  }
+  if (typeof value === 'string') {
+    return value.trim().length > 0;
+  }
+  if (typeof value === 'number') {
+    return !Number.isNaN(value);
+  }
+  if (typeof value === 'boolean') {
+    return value;
+  }
+  if (Array.isArray(value)) {
+    if (seen.has(value)) {
+      return false;
+    }
+    seen.add(value);
+    for (let index = 0; index < value.length; index += 1) {
+      if (projectInfoHasMeaningfulValue(value[index], seen)) {
+        return true;
+      }
+    }
+    return false;
+  }
+  if (typeof value === 'object') {
+    if (seen.has(value)) {
+      return false;
+    }
+    seen.add(value);
+    try {
+      for (const key in value) {
+        if (!Object.prototype.hasOwnProperty.call(value, key)) {
+          continue;
+        }
+        if (projectInfoHasMeaningfulValue(value[key], seen)) {
+          return true;
+        }
+      }
+    } catch (iterationError) {
+      return true;
+    }
+    if (typeof Object.getOwnPropertySymbols === 'function') {
+      try {
+        const symbols = Object.getOwnPropertySymbols(value);
+        for (let index = 0; index < symbols.length; index += 1) {
+          const symbol = symbols[index];
+          if (projectInfoHasMeaningfulValue(value[symbol], seen)) {
+            return true;
+          }
+        }
+      } catch (symbolError) {
+        return true;
+      }
+    }
+    return false;
+  }
+  return false;
+}
+
+function hasGeneratedProjectOutputs(html, projectInfo) {
+  if (html) {
+    return true;
+  }
+  return projectInfoHasMeaningfulValue(projectInfo);
+}
+
 const SESSION_DEEP_CLONE =
   CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE.__cineDeepClone === 'function'
     ? CORE_GLOBAL_SCOPE.__cineDeepClone
@@ -3780,7 +3847,10 @@ function applySharedSetup(shared, options = {}) {
       const currentGearList = getCurrentGearListHtml();
       const payload = {
         projectInfo: decoded.projectInfo || null,
-        gearListAndProjectRequirementsGenerated: Boolean(currentGearList)
+        gearListAndProjectRequirementsGenerated: hasGeneratedProjectOutputs(
+          currentGearList,
+          decoded.projectInfo,
+        )
       };
       if (decoded.gearSelectors && Object.keys(decoded.gearSelectors).length) {
         payload.gearSelectors = decoded.gearSelectors;

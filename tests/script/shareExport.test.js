@@ -315,7 +315,7 @@ describe('project sharing helpers', () => {
       projectName: 'Exported Project',
       notes: 'Stored notes',
     }));
-    expect(parsed.gearListAndProjectRequirementsGenerated).toBe(false);
+    expect(parsed.gearListAndProjectRequirementsGenerated).toBe(true);
     expect(loadProjectMock).toHaveBeenCalled();
     delete global.currentProjectInfo;
   });
@@ -374,7 +374,7 @@ describe('project sharing helpers', () => {
       contacts: 'Producer',
       schedule: 'Night shoot',
     }));
-    expect(parsed.gearListAndProjectRequirementsGenerated).toBe(false);
+    expect(parsed.gearListAndProjectRequirementsGenerated).toBe(true);
     expect(loadProjectMock).toHaveBeenCalled();
     delete global.currentProjectInfo;
   });
