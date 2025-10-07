@@ -171,6 +171,7 @@ Ripeti questa routine quando arriva un nuovo membro, allestisci una postazione o
 
 - **Bundle leggeri.** **Esporta progetto** scarica `project-name.json` con progetto attivo, preferiti e dispositivi personalizzati. Puoi rinominarlo `.cpproject`.
 - **Regole automatiche insieme al bundle.** Attiva **Includi regole automatiche** per inserirle; all’import il destinatario può applicarle solo al progetto o fonderle con le proprie.
+- **Gli import non sovrascrivono mai per errore.** Se un bundle in arrivo usa lo stesso nome di un progetto esistente, il planner salva la nuova copia come `nome-progetto-imported` così puoi confrontarle entrambe.
 - **Import offline validati.** Importando `auto-gear-rules-*.json`, il planner controlla tipo, versione semantica e metadati prima di modificare le tue regole. Se qualcosa non torna, avvisa e ripristina lo snapshot precedente.
 - **Ripristini a doppio buffer.** Prima dell’import viene richiesto un backup del contesto corrente. Dopo la validazione il progetto ripristinato appare in cima al selettore.
 - **Flussi cross-device senza rete.** Copia `index.html`, `script.js`, `devices/` e i tuoi file di backup/bundle su un supporto removibile, avvia dal disco e continua senza internet.

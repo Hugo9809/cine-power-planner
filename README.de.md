@@ -171,6 +171,7 @@ Dieser kurze Ablauf sollte bei neuen Teammitgliedern, frisch eingerichteten Work
 
 - **Projekt-Bundles bleiben leichtgewichtig.** **Projekt exportieren** speichert `project-name.json` mit Projekt, Favoriten und Custom-Geräten. Optional zu `.cpproject` umbenennen und über sichere Kanäle teilen.
 - **Automatische Gear-Regeln reisen mit.** Toggle **Automatische Gear-Regeln einschließen** entscheidet, ob Regeln im Bundle landen; beim Import können Teams sie getrennt übernehmen.
+- **Importe überschreiben nichts versehentlich.** Trifft ein Bundle auf ein bestehendes Projekt mit identischem Namen, speichert der Planner die neue Kopie als `projektname-imported`, sodass beide Varianten erhalten bleiben.
 - **Standalone-Regelimporte validieren offline.** Beim Import von `auto-gear-rules-*.json` prüft der Planner Dateityp, Semver und Zeitstempel, bevor Regeln überschrieben werden. Alte/neue Builds lösen Warnungen aus; bei Fehlern wird der vorherige Snapshot automatisch wiederhergestellt.
 - **Restores sind doppelt gepuffert.** Vor jedem Import wird ein Backup des aktuellen Zustands erzwungen. Danach wird das Bundle validiert und oben in der Liste platziert.
 - **Cross-Device bleibt offline.** Kopiere `index.html`, `script.js`, `devices/` sowie Backups/Bundles auf Wechseldatenträger, öffne von dort und arbeite ohne Netzwerk.

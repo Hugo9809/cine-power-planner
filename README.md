@@ -389,6 +389,9 @@ Use Cine Power Planner end-to-end with the following routine:
   gear rules** toggle during export to decide whether your automations ship with
   the bundle; teammates who import the file can ignore them, apply them only to
   the imported project or merge them into their global ruleset.
+- **Imports never overwrite by accident.** If an incoming bundle matches the
+  name of an existing project, the planner saves the new copy as
+  `project-name-imported` so both versions stay available until you review them.
 - **Standalone rule imports validate metadata offline.** When you import an
   `auto-gear-rules-*.json` file, the planner now checks the file type, semantic
   version and timestamp metadata before touching your saved rules—even without

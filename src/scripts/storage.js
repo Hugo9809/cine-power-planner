@@ -4758,6 +4758,42 @@ function generateUniqueName(base, usedNames, normalizedNames) {
   return name;
 }
 
+function ensureImportedProjectBaseName(rawName) {
+  const trimmed = typeof rawName === "string" ? rawName.trim() : "";
+  if (!trimmed) {
+    return "Project-imported";
+  }
+  if (trimmed.toLowerCase().endsWith("-imported")) {
+    return trimmed;
+  }
+  return `${trimmed}-imported`;
+}
+
+function generateImportedProjectName(baseName, usedNames, normalizedNames) {
+  const normalized = normalizedNames
+    || new Set(
+      [...usedNames]
+        .map((name) => (typeof name === "string" ? name.trim().toLowerCase() : ""))
+        .filter((name) => name),
+    );
+  const base = ensureImportedProjectBaseName(baseName);
+  let candidate = base.trim();
+  if (!candidate) {
+    candidate = "Project-imported";
+  }
+  let normalizedCandidate = candidate.toLowerCase();
+  let suffix = 2;
+  while (normalizedCandidate && normalized.has(normalizedCandidate)) {
+    candidate = `${base}-${suffix++}`;
+    normalizedCandidate = candidate.trim().toLowerCase();
+  }
+  usedNames.add(candidate);
+  if (normalizedCandidate) {
+    normalized.add(normalizedCandidate);
+  }
+  return candidate;
+}
+
 function ensureUpdatedProjectBaseName(rawName) {
   const trimmed = typeof rawName === "string" ? rawName.trim() : "";
   if (!trimmed) {
@@ -6821,7 +6857,10 @@ function createProjectImporter() {
     }
 
     const baseName = candidates.find((candidate) => candidate) || fallback;
-    const uniqueName = generateUniqueName(baseName, usedNames, normalizedNames);
+    const normalizedBase = typeof baseName === "string" ? baseName.trim().toLowerCase() : "";
+    const uniqueName = normalizedBase && normalizedNames.has(normalizedBase)
+      ? generateImportedProjectName(baseName, usedNames, normalizedNames)
+      : generateUniqueName(baseName, usedNames, normalizedNames);
     saveProject(uniqueName, normalizedProject);
   };
 }
