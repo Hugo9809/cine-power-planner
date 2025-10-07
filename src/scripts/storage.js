@@ -652,6 +652,8 @@ var STORAGE_AUTO_BACKUP_RENAMED_FLAG = '__cineAutoBackupRenamed';
 var AUTO_BACKUP_METADATA_PROPERTY = '__cineAutoBackupMetadata';
 var AUTO_BACKUP_SNAPSHOT_PROPERTY = '__cineAutoBackupSnapshot';
 var AUTO_BACKUP_SNAPSHOT_VERSION = 1;
+var AUTO_BACKUP_PAYLOAD_COMPRESSION_FLAG = '__cineAutoBackupCompressedPayload';
+var AUTO_BACKUP_PAYLOAD_COMPRESSION_MIN_LENGTH = 2048;
 
 function isAutoBackupStorageKey(name) {
   return typeof name === 'string'
@@ -811,6 +813,100 @@ function cloneAutoBackupValueWithLegacyNormalization(value, options) {
   return normalized !== cloned ? normalized : cloned;
 }
 
+function isCompressedAutoBackupSnapshotPayload(payload) {
+  if (!isPlainObject(payload)) {
+    return false;
+  }
+  if (payload[AUTO_BACKUP_PAYLOAD_COMPRESSION_FLAG] !== true) {
+    return false;
+  }
+  return typeof payload.data === 'string' && payload.data;
+}
+
+function prepareAutoBackupSnapshotPayloadForStorage(payload, contextName) {
+  if (!payload || typeof payload !== 'object') {
+    return { payload, compression: null, compressed: false };
+  }
+
+  let serialized;
+  try {
+    serialized = JSON.stringify(payload);
+  } catch (error) {
+    console.warn('Unable to serialize auto backup payload before compression', error);
+    return { payload, compression: null, compressed: false };
+  }
+
+  if (typeof serialized !== 'string' || serialized.length < AUTO_BACKUP_PAYLOAD_COMPRESSION_MIN_LENGTH) {
+    return { payload, compression: null, compressed: false };
+  }
+
+  const candidate = createCompressedJsonStorageCandidate(serialized);
+  if (!candidate || typeof candidate.serialized !== 'string') {
+    return { payload, compression: null, compressed: false };
+  }
+
+  const savings = candidate.originalLength - candidate.wrappedLength;
+  const compressedPayload = {
+    [AUTO_BACKUP_PAYLOAD_COMPRESSION_FLAG]: true,
+    data: candidate.serialized,
+    originalLength: candidate.originalLength,
+    compressedLength: candidate.wrappedLength,
+    compressionVariant: candidate.compressionVariant || null,
+  };
+
+  if (
+    typeof console !== 'undefined'
+    && typeof console.warn === 'function'
+    && savings > 0
+  ) {
+    const label = typeof contextName === 'string' && contextName
+      ? `"${contextName}"`
+      : 'an automatic backup';
+    const percent = candidate.originalLength > 0
+      ? Math.round((savings / candidate.originalLength) * 100)
+      : 0;
+    console.warn(
+      `Stored compressed payload for ${label} snapshot to reduce storage usage by ${savings} characters (${percent}%).`,
+    );
+  }
+
+  return {
+    payload: compressedPayload,
+    compression: {
+      originalLength: candidate.originalLength,
+      compressedLength: candidate.wrappedLength,
+      compressionVariant: candidate.compressionVariant || null,
+    },
+    compressed: true,
+  };
+}
+
+function restoreAutoBackupSnapshotPayload(snapshot, contextName) {
+  if (!snapshot || typeof snapshot !== 'object') {
+    return { payload: snapshot, compressed: false };
+  }
+
+  const rawPayload = snapshot.payload;
+  if (!isCompressedAutoBackupSnapshotPayload(rawPayload)) {
+    return { payload: rawPayload, compressed: false };
+  }
+
+  const decoded = decodeCompressedJsonStorageValue(rawPayload.data);
+  if (!decoded.success || typeof decoded.value !== 'string') {
+    const details = decoded && decoded.error ? decoded.error : null;
+    console.warn('Unable to decompress automatic backup payload.', contextName, details);
+    throw new Error('Failed to decompress automatic backup payload');
+  }
+
+  try {
+    const parsed = JSON.parse(decoded.value);
+    return { payload: parsed, compressed: true };
+  } catch (error) {
+    console.warn('Unable to parse decompressed automatic backup payload.', contextName, error);
+    throw error;
+  }
+}
+
 function deriveAutoBackupCreatedAt(name, fallbackDate) {
   const info = parseAutoBackupKey(name);
   if (info && Number.isFinite(info.timestamp) && info.timestamp > 0) {
@@ -870,7 +966,14 @@ function expandAutoBackupEntries(container, options) {
         ? snapshot.base
         : null;
       const baseValue = baseName ? cloneAutoBackupValue(resolve(baseName, stack)) : {};
-      const payload = isPlainObject(snapshot.payload) ? snapshot.payload : {};
+      let payloadInfo;
+      try {
+        payloadInfo = restoreAutoBackupSnapshotPayload(snapshot, name);
+      } catch (payloadError) {
+        console.warn('Failed to restore automatic backup payload while expanding snapshot', name, payloadError);
+        throw payloadError;
+      }
+      const payload = isPlainObject(payloadInfo.payload) ? payloadInfo.payload : {};
       const changedKeys = Array.isArray(snapshot.changedKeys) && snapshot.changedKeys.length
         ? snapshot.changedKeys
         : Object.keys(payload);
@@ -1012,7 +1115,7 @@ function serializeAutoBackupEntries(entries, options) {
 
     if (!metadata || metadata.snapshotType !== 'delta') {
       serialized[name] = {};
-      serialized[name][AUTO_BACKUP_SNAPSHOT_PROPERTY] = {
+      const snapshot = {
         version: AUTO_BACKUP_SNAPSHOT_VERSION,
         snapshotType: 'full',
         base: null,
@@ -1020,8 +1123,13 @@ function serializeAutoBackupEntries(entries, options) {
         createdAt,
         changedKeys: Object.keys(normalizedValue || {}),
         removedKeys: [],
-        payload: normalizedValue,
       };
+      const prepared = prepareAutoBackupSnapshotPayloadForStorage(normalizedValue, name);
+      snapshot.payload = prepared.payload;
+      if (prepared.compression) {
+        snapshot.payloadCompression = prepared.compression;
+      }
+      serialized[name][AUTO_BACKUP_SNAPSHOT_PROPERTY] = snapshot;
       return;
     }
 
@@ -1032,7 +1140,7 @@ function serializeAutoBackupEntries(entries, options) {
 
     if (!baseValue || !isPlainObject(baseValue)) {
       serialized[name] = {};
-      serialized[name][AUTO_BACKUP_SNAPSHOT_PROPERTY] = {
+      const snapshot = {
         version: AUTO_BACKUP_SNAPSHOT_VERSION,
         snapshotType: 'full',
         base: null,
@@ -1040,8 +1148,13 @@ function serializeAutoBackupEntries(entries, options) {
         createdAt,
         changedKeys: Object.keys(normalizedValue || {}),
         removedKeys: [],
-        payload: normalizedValue,
       };
+      const prepared = prepareAutoBackupSnapshotPayloadForStorage(normalizedValue, name);
+      snapshot.payload = prepared.payload;
+      if (prepared.compression) {
+        snapshot.payloadCompression = prepared.compression;
+      }
+      serialized[name][AUTO_BACKUP_SNAPSHOT_PROPERTY] = snapshot;
       return;
     }
 
@@ -1049,7 +1162,7 @@ function serializeAutoBackupEntries(entries, options) {
     const diff = computeAutoBackupDiff(normalizedValue, normalizedBase);
 
     serialized[name] = {};
-    serialized[name][AUTO_BACKUP_SNAPSHOT_PROPERTY] = {
+    const snapshot = {
       version: Number.isFinite(metadata.version) ? metadata.version : AUTO_BACKUP_SNAPSHOT_VERSION,
       snapshotType: 'delta',
       base: baseName,
@@ -1057,8 +1170,13 @@ function serializeAutoBackupEntries(entries, options) {
       createdAt,
       changedKeys: diff.changedKeys,
       removedKeys: diff.removedKeys,
-      payload: diff.payload,
     };
+    const prepared = prepareAutoBackupSnapshotPayloadForStorage(diff.payload, name);
+    snapshot.payload = prepared.payload;
+    if (prepared.compression) {
+      snapshot.payloadCompression = prepared.compression;
+    }
+    serialized[name][AUTO_BACKUP_SNAPSHOT_PROPERTY] = snapshot;
   });
 
   return serialized;
@@ -3766,7 +3884,25 @@ function getAutoBackupEntrySignature(container, entry) {
     ? container[entry.key]
     : undefined;
   try {
-    const normalizedValue = cloneAutoBackupValueWithLegacyNormalization(value, {
+    let preparedValue = value;
+    if (isPlainObject(value) && value[AUTO_BACKUP_SNAPSHOT_PROPERTY]) {
+      const cloneForSignature = cloneAutoBackupValue(value, { stripMetadata: true });
+      const snapshot = cloneForSignature[AUTO_BACKUP_SNAPSHOT_PROPERTY];
+      if (snapshot && typeof snapshot === 'object') {
+        try {
+          const restored = restoreAutoBackupSnapshotPayload(snapshot, entry.key);
+          snapshot.payload = restored.payload;
+          if (Object.prototype.hasOwnProperty.call(snapshot, 'payloadCompression')) {
+            delete snapshot.payloadCompression;
+          }
+        } catch (payloadError) {
+          console.warn('Failed to expand automatic backup payload for signature comparison', entry.key, payloadError);
+        }
+      }
+      preparedValue = cloneForSignature;
+    }
+
+    const normalizedValue = cloneAutoBackupValueWithLegacyNormalization(preparedValue, {
       stripMetadata: true,
     });
     return createStableValueSignature(normalizedValue);
