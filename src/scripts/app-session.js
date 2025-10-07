@@ -1832,6 +1832,9 @@ function summarizeProjectCollection(collection) {
       info = entry.project.projectInfo;
     }
     if (!info) return;
+    if (!result.hasProjectInfo) {
+      result.hasProjectInfo = true;
+    }
     const stats = summarizeProjectInfoStats(info);
     if (stats.hasDetails) {
       result.hasProjectInfo = true;
