@@ -1,4 +1,4 @@
-/* global currentLang, texts, devices, escapeHtml, generateConnectorSummary, cameraSelect, monitorSelect, videoSelect, distanceSelect, motorSelects, controllerSelects, batterySelect, hotswapSelect, overviewSectionIcons, breakdownListElem, totalPowerElem, totalCurrent144Elem, totalCurrent12Elem, batteryLifeElem, batteryCountElem, pinWarnElem, dtapWarnElem, getCurrentGearListHtml, currentProjectInfo, generateGearListHtml, getDiagramCss, openDialog, closeDialog, splitGearListHtml, iconMarkup, ICON_GLYPHS, deleteCurrentGearList */
+/* global currentLang, texts, devices, escapeHtml, generateConnectorSummary, cameraSelect, monitorSelect, videoSelect, distanceSelect, motorSelects, controllerSelects, batterySelect, hotswapSelect, lensSelect, overviewSectionIcons, breakdownListElem, totalPowerElem, totalCurrent144Elem, totalCurrent12Elem, batteryLifeElem, batteryCountElem, pinWarnElem, dtapWarnElem, getCurrentGearListHtml, currentProjectInfo, generateGearListHtml, getDiagramCss, openDialog, closeDialog, splitGearListHtml, iconMarkup, ICON_GLYPHS, deleteCurrentGearList */
 
 let createOverviewPrintWorkflowModule = null;
 let triggerOverviewPrintWorkflowModule = null;
@@ -413,7 +413,212 @@ function generatePrintableOverview(config = {}) {
         }
     };
 
+    const lensSelectElement = (typeof lensSelect !== 'undefined' && lensSelect && typeof lensSelect === 'object') ? lensSelect : null;
+    const resolveLensDataset = () => {
+        if (!devices || typeof devices !== 'object') {
+            return null;
+        }
+        if (devices.lenses && Object.keys(devices.lenses).length) {
+            return devices.lenses;
+        }
+        if (devices.accessories && devices.accessories.lenses) {
+            return devices.accessories.lenses;
+        }
+        return null;
+    };
+    const lensDataset = resolveLensDataset();
+    const numberFormatterCache = new Map();
+    const getNumberFormatter = (options) => {
+        const key = JSON.stringify(options || {});
+        if (numberFormatterCache.has(key)) {
+            return numberFormatterCache.get(key);
+        }
+        let formatter = null;
+        try {
+            formatter = typeof Intl === 'object' && Intl && typeof Intl.NumberFormat === 'function'
+                ? new Intl.NumberFormat(locale, options)
+                : null;
+        } catch (error) {
+            void error;
+            formatter = null;
+        }
+        numberFormatterCache.set(key, formatter);
+        return formatter;
+    };
+    const formatNumber = (value, options = {}) => {
+        const num = typeof value === 'string' ? Number(value) : value;
+        if (!Number.isFinite(num)) {
+            return '';
+        }
+        const formatter = getNumberFormatter(options);
+        if (formatter) {
+            return formatter.format(num);
+        }
+        const maximumFractionDigits = typeof options.maximumFractionDigits === 'number' ? options.maximumFractionDigits : 0;
+        return num.toFixed(maximumFractionDigits);
+    };
+    const formatLengthMm = (value) => {
+        const formatted = formatNumber(value, { maximumFractionDigits: 1, minimumFractionDigits: 0 });
+        return formatted ? `${formatted} mm` : '';
+    };
+    const formatRodLength = (value) => {
+        const formatted = formatNumber(value, { maximumFractionDigits: 1, minimumFractionDigits: 0 });
+        return formatted ? `${formatted} cm` : '';
+    };
+    const formatWeight = (value) => {
+        const formatted = formatNumber(value, { maximumFractionDigits: 0, minimumFractionDigits: 0 });
+        return formatted ? `${formatted} g` : '';
+    };
+    const resolveMinFocusMeters = (lensInfo) => {
+        if (!lensInfo || typeof lensInfo !== 'object') {
+            return null;
+        }
+        if (typeof lensInfo.minFocusMeters !== 'undefined') {
+            return lensInfo.minFocusMeters;
+        }
+        if (typeof lensInfo.minFocus !== 'undefined') {
+            return lensInfo.minFocus;
+        }
+        if (typeof lensInfo.minFocusCm !== 'undefined') {
+            const cmValue = Number(lensInfo.minFocusCm);
+            if (Number.isFinite(cmValue)) {
+                return cmValue / 100;
+            }
+        }
+        return null;
+    };
+    const formatDistanceMeters = (value) => {
+        const num = typeof value === 'string' ? Number(value) : value;
+        if (!Number.isFinite(num)) {
+            return '';
+        }
+        const digits = num < 1 ? 2 : 1;
+        const formatted = formatNumber(num, { maximumFractionDigits: digits, minimumFractionDigits: digits });
+        return formatted ? `${formatted} m` : '';
+    };
+    const formatTStop = (value) => {
+        const num = typeof value === 'string' ? Number(value) : value;
+        if (!Number.isFinite(num)) {
+            return '';
+        }
+        const formatted = formatNumber(num, { maximumFractionDigits: 1, minimumFractionDigits: 0 });
+        return formatted ? `T${formatted}` : '';
+    };
+    const normalizeStringValue = (rawValue) => {
+        if (Array.isArray(rawValue)) {
+            return rawValue.map(item => normalizeStringValue(item)).filter(Boolean).join(', ');
+        }
+        if (rawValue === null || typeof rawValue === 'undefined') {
+            return '';
+        }
+        const str = String(rawValue).trim();
+        return str;
+    };
+    const formatLensType = (value) => {
+        const str = normalizeStringValue(value);
+        if (!str) {
+            return '';
+        }
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    };
+    const formatClampOn = (value) => {
+        if (value === null || typeof value === 'undefined') {
+            return '';
+        }
+        const yesLabel = t.lensSpecYes || 'Yes';
+        const noLabel = t.lensSpecNo || 'No';
+        if (value === true || (typeof value === 'string' && value.toLowerCase() === 'true')) {
+            return yesLabel;
+        }
+        if (value === false || (typeof value === 'string' && value.toLowerCase() === 'false')) {
+            return noLabel;
+        }
+        return t.lensSpecUnknownValue || 'Unknown';
+    };
+    const formatSupport = (value) => {
+        if (value === null || typeof value === 'undefined') {
+            return '';
+        }
+        if (value === true || (typeof value === 'string' && value.toLowerCase() === 'true')) {
+            return t.lensSpecSupportRequired || 'Required';
+        }
+        if (value === false || (typeof value === 'string' && value.toLowerCase() === 'false')) {
+            return t.lensSpecSupportNotRequired || 'Not required';
+        }
+        return t.lensSpecUnknownValue || 'Unknown';
+    };
+    const formatRodStandard = (value) => normalizeStringValue(value);
+    const formatMount = (value) => normalizeStringValue(value);
+    const formatNotes = (value) => normalizeStringValue(value);
+    const createLensInfoHtml = (lensInfo) => {
+        if (!lensInfo || typeof lensInfo !== 'object') {
+            return '';
+        }
+        const infoBoxes = [];
+        const addLensBox = (labelKey, rawValue, formatter = null) => {
+            let formattedValue = rawValue;
+            if (formatter) {
+                formattedValue = formatter(rawValue, lensInfo);
+            }
+            if (formattedValue === null || typeof formattedValue === 'undefined') {
+                return;
+            }
+            if (typeof formattedValue === 'string') {
+                if (!formattedValue.trim()) {
+                    return;
+                }
+            }
+            const valueText = typeof formattedValue === 'string' ? formattedValue : String(formattedValue);
+            if (!valueText.trim()) {
+                return;
+            }
+            const label = t[labelKey] || labelKey;
+            infoBoxes.push(`<span class="info-box neutral-conn"><span class="info-box-label">${escapeHtmlSafe(label)}</span><span class="info-box-values">${escapeHtmlSafe(valueText)}</span></span>`);
+        };
+        addLensBox('lensSpecBrandLabel', lensInfo.brand, normalizeStringValue);
+        addLensBox('lensSpecTypeLabel', lensInfo.lensType, formatLensType);
+        addLensBox('lensSpecMountLabel', lensInfo.mount, formatMount);
+        addLensBox('lensSpecFrontDiameterLabel', lensInfo.frontDiameterMm, formatLengthMm);
+        addLensBox('lensSpecTStopLabel', lensInfo.tStop, formatTStop);
+        addLensBox('lensSpecImageCircleLabel', lensInfo.imageCircleMm, formatLengthMm);
+        addLensBox('lensSpecLengthLabel', lensInfo.lengthMm, formatLengthMm);
+        addLensBox('lensSpecMinFocusLabel', resolveMinFocusMeters(lensInfo), formatDistanceMeters);
+        addLensBox('lensSpecWeightLabel', lensInfo.weight_g, formatWeight);
+        addLensBox('lensSpecRodStandardLabel', lensInfo.rodStandard, formatRodStandard);
+        addLensBox('lensSpecRodLengthLabel', lensInfo.rodLengthCm, formatRodLength);
+        if (Object.prototype.hasOwnProperty.call(lensInfo, 'clampOn')) {
+            addLensBox('lensSpecClampOnLabel', lensInfo.clampOn, formatClampOn);
+        }
+        if (Object.prototype.hasOwnProperty.call(lensInfo, 'needsLensSupport')) {
+            addLensBox('lensSpecSupportLabel', lensInfo.needsLensSupport, formatSupport);
+        }
+        addLensBox('lensSpecNotesLabel', lensInfo.notes, formatNotes);
+        if (!infoBoxes.length) {
+            return '';
+        }
+        return `<div class="info-box-list">${infoBoxes.join('')}</div>`;
+    };
+    const processLensesForOverview = (selectElement, headingKey) => {
+        if (!selectElement) {
+            return;
+        }
+        const selectedOptions = Array.from(selectElement.selectedOptions || [])
+            .filter(opt => opt && typeof opt.value === 'string' && opt.value.trim() !== '' && opt.value !== 'None');
+        if (!selectedOptions.length) {
+            return;
+        }
+        selectedOptions.forEach(opt => {
+            const lensKey = opt.value;
+            const lensInfo = lensDataset && lensDataset[lensKey] ? lensDataset[lensKey] : null;
+            const displayName = lensKey || opt.text || '';
+            const safeName = escapeHtmlSafe(displayName);
+            const details = lensInfo ? createLensInfoHtml(lensInfo) : '';
+            addToSection(headingKey, `<div class="device-block"><strong>${safeName}</strong>${details}</div>`);
+        });
+    };
+
     processSelectForOverview(cameraSelect, 'category_cameras', 'cameras');
+    processLensesForOverview(lensSelectElement, 'category_lenses');
     processSelectForOverview(monitorSelect, 'category_monitors', 'monitors');
     processSelectForOverview(videoSelect, 'category_video', 'video'); // Original database uses 'video', not 'wirelessVideo'
     processSelectForOverview(distanceSelect, 'category_fiz_distance', 'fiz', 'distance');

@@ -291,6 +291,7 @@
     const DIAGRAM_MOTORS_ICON = safeIconGlyph('\uE8AF', ICON_FONT_KEYS.UICONS);
     const DIAGRAM_CONTROLLER_ICON = safeIconGlyph('\uE52A');
     const DIAGRAM_DISTANCE_ICON = safeIconGlyph('\uEFB9');
+    const DIAGRAM_LENS_ICON = safeIconGlyph('\uE0A3', ICON_FONT_KEYS.UICONS);
     const DIAGRAM_POWER_OUTPUT_ICON = safeIconGlyph('\uE212');
     const DIAGRAM_POWER_INPUT_ICON = safeIconGlyph('\uEE71');
     const DIAGRAM_TIMECODE_ICON = safeIconGlyph('\uE46F');
@@ -323,12 +324,14 @@
       controllers: DIAGRAM_CONTROLLER_ICON,
       handle: DIAGRAM_CONTROLLER_ICON,
       distance: DIAGRAM_DISTANCE_ICON,
+      lenses: DIAGRAM_LENS_ICON,
     };
 
     const overviewSectionIcons = {
       category_batteries: DIAGRAM_BATTERY_ICON,
       category_batteryHotswaps: DIAGRAM_BATTERY_ICON,
       category_cameras: DIAGRAM_CAMERA_ICON,
+      category_lenses: DIAGRAM_LENS_ICON,
       category_viewfinders: DIAGRAM_VIEWFINDER_ICON,
       category_monitors: DIAGRAM_MONITOR_ICON,
       category_video: DIAGRAM_WIRELESS_ICON,
