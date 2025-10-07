@@ -57,7 +57,9 @@ time:
    **Quick safeguards** if you need an extra offline copy. The sequential loader now
    predeclares the grid snap flag, the runtime guard stub and the icon glyph helpers on the
    global scope before it injects the core bundles, preventing older Safari builds from
-   throwing reference errors while you are offline.【F:src/scripts/loader.js†L193-L307】【F:src/scripts/loader.js†L310-L370】
+   throwing reference errors while you are offline. It now also replaces the deprecated
+   `styleMedia` fallback with a `matchMedia`-backed shim so Chrome no longer logs the console
+   warning and display-mode detection keeps working without touching network resources.【F:src/scripts/loader.js†L1-L128】【F:src/scripts/loader.js†L193-L307】【F:src/scripts/loader.js†L310-L370】
 4. **Check the runtime guard.** Open the browser console and inspect
    `window.__cineRuntimeIntegrity`. It should report `{ ok: true }` with an empty
    `missing` list. Run `window.cineRuntime.verifyCriticalFlows()` if you need a fresh
