@@ -711,6 +711,9 @@
   const logSubscribers = new Set();
   const configSubscribers = new Set();
   const attachedErrorTargets = typeof WeakSet === 'function' ? new WeakSet() : [];
+  let runtimeEntryCount = 0;
+  let totalEntriesDropped = 0;
+  let lastHistoryDrop = null;
 
   function normalizeLevel(value, fallbackLevel) {
     const fallback = typeof fallbackLevel === 'string' ? fallbackLevel : activeConfig.level;
@@ -1205,14 +1208,81 @@
     }
   }
 
-  function enforceHistoryLimit() {
-    const limit = Math.max(
+  function getEffectiveHistoryLimit() {
+    return Math.max(
       HISTORY_MIN_LIMIT,
       Math.min(HISTORY_MAX_LIMIT, Math.floor(activeConfig.historyLimit)),
     );
-    while (logHistory.length > limit) {
-      logHistory.shift();
+  }
+
+  function recordHistoryDrop(removedEntries, limit, options) {
+    if (!Array.isArray(removedEntries) || removedEntries.length === 0) {
+      return;
     }
+
+    totalEntriesDropped += removedEntries.length;
+
+    const source = options && typeof options.source === 'string' && options.source.trim()
+      ? options.source.trim()
+      : 'enforce';
+
+    const oldestEntry = removedEntries[0] || null;
+    const newestEntry = removedEntries[removedEntries.length - 1] || null;
+
+    const dropTimestamp = Date.now();
+    let dropIsoTimestamp = '';
+    try {
+      dropIsoTimestamp = new Date(dropTimestamp).toISOString();
+    } catch (error) {
+      void error;
+      dropIsoTimestamp = String(dropTimestamp);
+    }
+
+    lastHistoryDrop = freezeDeep({
+      count: removedEntries.length,
+      limit,
+      source,
+      timestamp: dropTimestamp,
+      isoTimestamp: dropIsoTimestamp,
+      oldestEntryId:
+        oldestEntry && typeof oldestEntry.id === 'string' ? oldestEntry.id : null,
+      oldestEntryTimestamp:
+        oldestEntry && typeof oldestEntry.timestamp === 'number'
+          ? oldestEntry.timestamp
+          : null,
+      oldestEntryIsoTimestamp:
+        oldestEntry && typeof oldestEntry.isoTimestamp === 'string'
+          ? oldestEntry.isoTimestamp
+          : null,
+      newestEntryId:
+        newestEntry && typeof newestEntry.id === 'string' ? newestEntry.id : null,
+      newestEntryTimestamp:
+        newestEntry && typeof newestEntry.timestamp === 'number'
+          ? newestEntry.timestamp
+          : null,
+      newestEntryIsoTimestamp:
+        newestEntry && typeof newestEntry.isoTimestamp === 'string'
+          ? newestEntry.isoTimestamp
+          : null,
+    });
+
+    safeWarn('cineLogging: history trimmed to enforce retention limit', {
+      limit,
+      removed: removedEntries.length,
+      source,
+    });
+  }
+
+  function enforceHistoryLimit(options) {
+    const limit = getEffectiveHistoryLimit();
+    if (logHistory.length <= limit) {
+      return 0;
+    }
+
+    const overflow = logHistory.length - limit;
+    const removedEntries = logHistory.splice(0, overflow);
+    recordHistoryDrop(removedEntries, limit, options);
+    return overflow;
   }
 
   function shouldRecord(level) {
@@ -1232,7 +1302,8 @@
 
   function appendEntry(entry) {
     logHistory.push(entry);
-    enforceHistoryLimit();
+    runtimeEntryCount += 1;
+    enforceHistoryLimit({ source: 'append' });
     persistHistorySafe();
     notifyLogSubscribers(entry);
   }
@@ -1391,6 +1462,55 @@
   function getHistory(options) {
     const limit = options && typeof options.limit !== 'undefined' ? options.limit : undefined;
     return getHistorySnapshot(limit);
+  }
+
+  function cloneLastDropSnapshot() {
+    if (!lastHistoryDrop) {
+      return null;
+    }
+
+    return freezeDeep({
+      count: typeof lastHistoryDrop.count === 'number' ? lastHistoryDrop.count : 0,
+      limit: typeof lastHistoryDrop.limit === 'number'
+        ? lastHistoryDrop.limit
+        : getEffectiveHistoryLimit(),
+      source: typeof lastHistoryDrop.source === 'string' ? lastHistoryDrop.source : 'enforce',
+      timestamp:
+        typeof lastHistoryDrop.timestamp === 'number'
+          ? lastHistoryDrop.timestamp
+          : null,
+      isoTimestamp: typeof lastHistoryDrop.isoTimestamp === 'string'
+        ? lastHistoryDrop.isoTimestamp
+        : null,
+      oldestEntryId: typeof lastHistoryDrop.oldestEntryId === 'string'
+        ? lastHistoryDrop.oldestEntryId
+        : null,
+      oldestEntryTimestamp: typeof lastHistoryDrop.oldestEntryTimestamp === 'number'
+        ? lastHistoryDrop.oldestEntryTimestamp
+        : null,
+      oldestEntryIsoTimestamp: typeof lastHistoryDrop.oldestEntryIsoTimestamp === 'string'
+        ? lastHistoryDrop.oldestEntryIsoTimestamp
+        : null,
+      newestEntryId: typeof lastHistoryDrop.newestEntryId === 'string'
+        ? lastHistoryDrop.newestEntryId
+        : null,
+      newestEntryTimestamp: typeof lastHistoryDrop.newestEntryTimestamp === 'number'
+        ? lastHistoryDrop.newestEntryTimestamp
+        : null,
+      newestEntryIsoTimestamp: typeof lastHistoryDrop.newestEntryIsoTimestamp === 'string'
+        ? lastHistoryDrop.newestEntryIsoTimestamp
+        : null,
+    });
+  }
+
+  function getStats() {
+    return freezeDeep({
+      runtimeEntries: runtimeEntryCount,
+      retainedEntries: logHistory.length,
+      droppedEntries: totalEntriesDropped,
+      historyLimit: getEffectiveHistoryLimit(),
+      lastDrop: cloneLastDropSnapshot(),
+    });
   }
 
   function clearHistory(options) {
@@ -1697,7 +1817,7 @@
     const result = applyConfig(overrides);
 
     if (result.limitChanged) {
-      enforceHistoryLimit();
+      enforceHistoryLimit({ source: 'config' });
     }
 
     if (result.changed && (!options || options.persist !== false)) {
@@ -1938,7 +2058,7 @@
           logHistory.push(entry);
         }
       }
-      enforceHistoryLimit();
+      enforceHistoryLimit({ source: 'restore' });
     } catch (error) {
       safeWarn('cineLogging: Unable to restore log history from storage', error);
     }
@@ -1963,7 +2083,11 @@
     attachGlobalErrorListeners();
   }
 
-  debug('cineLogging initialized', { config: getConfigSnapshot() }, { namespace: 'logging', meta: { lifecycle: 'init' } });
+  debug(
+    'cineLogging initialized',
+    { config: getConfigSnapshot(), stats: getStats() },
+    { namespace: 'logging', meta: { lifecycle: 'init' } },
+  );
 
   const loggingAPI = freezeDeep({
     log: logInternal,
@@ -1973,6 +2097,7 @@
     error,
     createLogger,
     getHistory,
+    getStats,
     clearHistory,
     getConfig: getConfigSnapshot,
     setConfig,
