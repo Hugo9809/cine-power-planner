@@ -13166,6 +13166,7 @@ const sharedKeyMap = {
   diagramPositions: "y"
 };
 const sharedKeyMapKeys = Object.keys(sharedKeyMap);
+const sharedHasOwn = Object.prototype.hasOwnProperty;
 
 var lastSharedSetupData = null;
 var lastSharedAutoGearRules = null;
@@ -13493,36 +13494,44 @@ function resolveSharedImportMode(sharedRules) {
 }
 
 function encodeSharedSetup(setup) {
+  if (!setup || typeof setup !== 'object') {
+    return {};
+  }
+
   const out = {};
-  sharedKeyMapKeys.forEach(key => {
+  for (let index = 0; index < sharedKeyMapKeys.length; index += 1) {
+    const key = sharedKeyMapKeys[index];
     if (key === 'gearList' || key === 'projectHtml') {
-      return;
+      continue;
     }
-    if (setup[key] != null) out[sharedKeyMap[key]] = setup[key];
-  });
+    const value = setup[key];
+    if (value != null) {
+      out[sharedKeyMap[key]] = value;
+    }
+  }
   return out;
 }
 
 function decodeSharedSetup(setup) {
-  if (!setup || typeof setup !== "object") return {};
+  if (!setup || typeof setup !== 'object') return {};
 
   let hasLongKeys = false;
   let hasShortKeys = false;
-  let needsMerge = false;
+  const pendingKeys = [];
 
   for (let index = 0; index < sharedKeyMapKeys.length; index += 1) {
     const key = sharedKeyMapKeys[index];
-    const hasLongKey = Object.prototype.hasOwnProperty.call(setup, key);
     const short = sharedKeyMap[key];
-    const hasShortKey = Object.prototype.hasOwnProperty.call(setup, short);
+    const longPresent = sharedHasOwn.call(setup, key);
+    const shortPresent = sharedHasOwn.call(setup, short);
 
-    if (hasLongKey) {
+    if (longPresent) {
       hasLongKeys = true;
     }
-    if (hasShortKey) {
+    if (shortPresent) {
       hasShortKeys = true;
-      if (!hasLongKey && setup[short] != null) {
-        needsMerge = true;
+      if (!longPresent && setup[short] != null) {
+        pendingKeys.push(key);
       }
     }
   }
@@ -13532,28 +13541,33 @@ function decodeSharedSetup(setup) {
   }
 
   if (!hasLongKeys) {
-    const out = {};
-    sharedKeyMapKeys.forEach(key => {
+    const expanded = {};
+    for (let index = 0; index < sharedKeyMapKeys.length; index += 1) {
+      const key = sharedKeyMapKeys[index];
       const short = sharedKeyMap[key];
-      if (setup[short] != null) out[key] = setup[short];
-    });
-    return out;
+      const value = setup[short];
+      if (value != null) {
+        expanded[key] = value;
+      }
+    }
+    return expanded;
   }
 
-  if (!needsMerge) {
+  if (!pendingKeys.length) {
     return setup;
   }
 
   const merged = { ...setup };
-  sharedKeyMapKeys.forEach(key => {
-    if (Object.prototype.hasOwnProperty.call(merged, key)) {
-      return;
+  for (let index = 0; index < pendingKeys.length; index += 1) {
+    const key = pendingKeys[index];
+    if (!sharedHasOwn.call(merged, key)) {
+      const short = sharedKeyMap[key];
+      const value = setup[short];
+      if (value != null) {
+        merged[key] = value;
+      }
     }
-    const short = sharedKeyMap[key];
-    if (setup[short] != null) {
-      merged[key] = setup[short];
-    }
-  });
+  }
   return merged;
 }
 var deviceManagerSection = document.getElementById("device-manager");
