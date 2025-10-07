@@ -1156,7 +1156,8 @@ const gear = {
             "ARRI cforce plus",
             "ARRI Master Grips",
             "ARRI OCU-1",
-            "ARRI RIA-1"
+            "ARRI RIA-1",
+            "ARRI NIA-1"
           ],
           "compatibleControllers": [
             "ARRI OCU-1",
@@ -1170,7 +1171,7 @@ const gear = {
           ],
           "notes": "Generic LBUS interconnect for chaining LBUS devices.",
           "useCase": [
-            "Daisy-chain ARRI LBUS devices (e.g., cforce motors, RIA-1, LCUBE, Master Grips)"
+            "Daisy-chain ARRI LBUS devices (e.g., cforce motors, RIA-1, NIA-1, LCUBE, Master Grips)"
           ],
           "provenance": [
             {
@@ -1199,7 +1200,9 @@ const gear = {
           "compatibleDevices": [
             "ARRI cforce mini",
             "ARRI Master Grips",
-            "ARRI OCU-1"
+            "ARRI OCU-1",
+            "ARRI RIA-1",
+            "ARRI NIA-1"
           ],
           "compatibleControllers": [
             "ARRI OCU-1",
@@ -1212,7 +1215,7 @@ const gear = {
           ],
           "notes": "Short jumper for closely mounted LBUS devices.",
           "useCase": [
-            "Daisy-chain ARRI LBUS devices (e.g., cforce motors, RIA-1, LCUBE, Master Grips)"
+            "Daisy-chain ARRI LBUS devices (e.g., cforce motors, RIA-1, NIA-1, LCUBE, Master Grips)"
           ],
           "provenance": [
             {
@@ -1235,7 +1238,9 @@ const gear = {
           "compatibleDevices": [
             "ARRI cforce mini",
             "ARRI Master Grips",
-            "ARRI OCU-1"
+            "ARRI OCU-1",
+            "ARRI RIA-1",
+            "ARRI NIA-1"
           ],
           "compatibleControllers": [
             "ARRI OCU-1",
@@ -1246,7 +1251,7 @@ const gear = {
             "ARRI ALEXA Mini LF"
           ],
           "useCase": [
-            "Daisy-chain ARRI LBUS devices (e.g., cforce motors, RIA-1, LCUBE, Master Grips)"
+            "Daisy-chain ARRI LBUS devices (e.g., cforce motors, RIA-1, NIA-1, LCUBE, Master Grips)"
           ],
           "provenance": [
             {
@@ -1268,7 +1273,9 @@ const gear = {
           "compatibleDevices": [
             "ARRI cforce mini",
             "ARRI Master Grips",
-            "ARRI OCU-1"
+            "ARRI OCU-1",
+            "ARRI RIA-1",
+            "ARRI NIA-1"
           ],
           "compatibleControllers": [
             "ARRI OCU-1",
@@ -1280,7 +1287,7 @@ const gear = {
           ],
           "notes": "ARRI lists 0.2/0.3/0.5/0.8/1.5 m as standard lengths; 0.4 m variant not found on manufacturer lists.",
           "useCase": [
-            "Daisy-chain ARRI LBUS devices (e.g., cforce motors, RIA-1, LCUBE, Master Grips)"
+            "Daisy-chain ARRI LBUS devices (e.g., cforce motors, RIA-1, NIA-1, LCUBE, Master Grips)"
           ],
           "provenance": [
             {
@@ -1303,7 +1310,9 @@ const gear = {
           "compatibleDevices": [
             "ARRI cforce mini",
             "ARRI Master Grips",
-            "ARRI OCU-1"
+            "ARRI OCU-1",
+            "ARRI RIA-1",
+            "ARRI NIA-1"
           ],
           "compatibleControllers": [
             "ARRI OCU-1",
@@ -1314,7 +1323,7 @@ const gear = {
             "ARRI ALEXA Mini LF"
           ],
           "useCase": [
-            "Daisy-chain ARRI LBUS devices (e.g., cforce motors, RIA-1, LCUBE, Master Grips)"
+            "Daisy-chain ARRI LBUS devices (e.g., cforce motors, RIA-1, NIA-1, LCUBE, Master Grips)"
           ],
           "provenance": [
             {
@@ -1337,7 +1346,9 @@ const gear = {
           "compatibleDevices": [
             "ARRI Master Grips",
             "ARRI cforce mini",
-            "ARRI OCU-1"
+            "ARRI OCU-1",
+            "ARRI RIA-1",
+            "ARRI NIA-1"
           ],
           "compatibleControllers": [
             "ARRI OCU-1",
@@ -1347,7 +1358,7 @@ const gear = {
             "ARRI ALEXA family (via LBUS accessories)"
           ],
           "useCase": [
-            "Daisy-chain ARRI LBUS devices (e.g., cforce motors, RIA-1, LCUBE, Master Grips)"
+            "Daisy-chain ARRI LBUS devices (e.g., cforce motors, RIA-1, NIA-1, LCUBE, Master Grips)"
           ],
           "provenance": [
             {
