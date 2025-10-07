@@ -2830,9 +2830,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         if (backup.raw !== null && backup.raw !== undefined) {
           try {
             if (typeof backup.raw === 'string') {
-              var recompressed = createCompressedJsonStorageCandidate(backup.raw);
+              var recompressSource = typeof backup.normalizedRaw === 'string'
+                  && backup.normalizedRaw
+                  ? backup.normalizedRaw
+                  : backup.raw;
+              var recompressed = createCompressedJsonStorageCandidate(recompressSource);
               if (recompressed && typeof recompressed.serialized === 'string') {
                 storage.setItem(key, recompressed.serialized);
+              } else if (recompressSource !== backup.raw) {
+                storage.setItem(key, recompressSource);
               } else {
                 storage.setItem(key, backup.raw);
               }
