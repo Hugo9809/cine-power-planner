@@ -314,9 +314,11 @@ access.
 6. **Archive with confidence.** Delete the rehearsal profile after confirming
    everything restored cleanly. Label and file the verified exports with your
    production’s archival checklist and add a short verification log (timestamp,
-   machine, operator and notes). The paper trail makes it easy to prove that
-   save, share, import, backup and restore workflows were validated end-to-end
-   before anyone relies on them in the field.
+   machine, operator and notes). Use the [verification log
+   template](docs/verification-log-template.md) to capture consistent evidence
+   across teams. The paper trail makes it easy to prove that save, share,
+   import, backup and restore workflows were validated end-to-end before anyone
+   relies on them in the field.
 7. **Log the runtime guard.** In the same profile, open the developer console
    and confirm `window.__cineRuntimeIntegrity.ok` is `true`. If you need a fresh
    report, run `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })`
