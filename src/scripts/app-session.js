@@ -8702,6 +8702,154 @@ function clearUiCacheEntriesFallback() {
   });
 }
 
+function readLocationHrefSafe(locationLike) {
+  if (!locationLike || typeof locationLike !== 'object') {
+    return '';
+  }
+
+  try {
+    const href = locationLike.href;
+    return typeof href === 'string' ? href : '';
+  } catch (error) {
+    void error;
+    return '';
+  }
+}
+
+function normaliseForceReloadHref(value, baseHref) {
+  if (typeof value !== 'string') {
+    return '';
+  }
+
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return '';
+  }
+
+  if (typeof URL === 'function') {
+    try {
+      return new URL(trimmed).toString();
+    } catch (primaryError) {
+      void primaryError;
+
+      if (typeof baseHref === 'string' && baseHref) {
+        try {
+          return new URL(trimmed, baseHref).toString();
+        } catch (secondaryError) {
+          void secondaryError;
+        }
+      }
+    }
+  }
+
+  return trimmed;
+}
+
+function buildForceReloadHref(locationLike, paramName) {
+  const param = typeof paramName === 'string' && paramName ? paramName : 'forceReload';
+  const timestamp = Date.now().toString(36);
+  const originalHref = readLocationHrefSafe(locationLike);
+
+  if (!originalHref) {
+    return {
+      originalHref,
+      nextHref: originalHref,
+      param,
+      timestamp,
+    };
+  }
+
+  if (typeof URL === 'function') {
+    try {
+      const url = new URL(originalHref);
+      url.searchParams.set(param, timestamp);
+      return {
+        originalHref,
+        nextHref: url.toString(),
+        param,
+        timestamp,
+      };
+    } catch (urlError) {
+      void urlError;
+
+      try {
+        const derived = new URL(originalHref, originalHref);
+        derived.searchParams.set(param, timestamp);
+        return {
+          originalHref,
+          nextHref: derived.toString(),
+          param,
+          timestamp,
+        };
+      } catch (fallbackError) {
+        void fallbackError;
+      }
+    }
+  }
+
+  let href = originalHref;
+  let hash = '';
+  const hashIndex = href.indexOf('#');
+  if (hashIndex !== -1) {
+    hash = href.slice(hashIndex);
+    href = href.slice(0, hashIndex);
+  }
+
+  const pattern = new RegExp(`([?&])${param}=[^&]*`);
+  const replacement = `$1${param}=${timestamp}`;
+
+  if (pattern.test(href)) {
+    href = href.replace(pattern, replacement);
+  } else if (href.indexOf('?') !== -1) {
+    href += `&${param}=${timestamp}`;
+  } else if (href) {
+    href += `?${param}=${timestamp}`;
+  }
+
+  return {
+    originalHref,
+    nextHref: href ? href + hash : originalHref,
+    param,
+    timestamp,
+  };
+}
+
+function attemptForceReloadNavigation(locationLike, nextHref, baseHref, applyFn, description) {
+  if (!locationLike || typeof applyFn !== 'function' || typeof nextHref !== 'string' || !nextHref) {
+    return false;
+  }
+
+  const beforeRaw = readLocationHrefSafe(locationLike);
+  const before = normaliseForceReloadHref(beforeRaw, baseHref);
+
+  try {
+    applyFn(nextHref);
+  } catch (error) {
+    console.warn('Forced reload navigation helper failed', { description, error });
+    return false;
+  }
+
+  const afterRaw = readLocationHrefSafe(locationLike);
+  const after = normaliseForceReloadHref(afterRaw, baseHref);
+  const expected = normaliseForceReloadHref(nextHref, baseHref);
+
+  if (
+    (expected && (after === expected || after === `${expected}#`))
+    || (before !== after && after && (!expected || after === expected))
+  ) {
+    return true;
+  }
+
+  console.warn('Forced reload navigation attempt did not update location', {
+    description,
+    before,
+    after,
+    expected,
+  });
+
+  return false;
+}
+
 async function clearCachesAndReload() {
   const offlineModule =
     (typeof globalThis !== 'undefined' && globalThis && globalThis.cineOffline)
@@ -8811,51 +8959,51 @@ async function clearCachesAndReload() {
         const hasReplace = location && typeof location.replace === 'function';
         const hasAssign = location && typeof location.assign === 'function';
         const hasReload = location && typeof location.reload === 'function';
-        const paramName = 'forceReload';
-        const timestamp = Date.now().toString(36);
-        const originalHref = location.href || '';
-        let href = originalHref;
-        let hash = '';
-        const hashIndex = href.indexOf('#');
-        if (hashIndex !== -1) {
-          hash = href.slice(hashIndex);
-          href = href.slice(0, hashIndex);
-        }
-        const pattern = new RegExp('([?&])' + paramName + '=[^&]*');
-        const replacement = '$1' + paramName + '=' + timestamp;
-        if (pattern.test(href)) {
-          href = href.replace(pattern, replacement);
-        } else if (href.indexOf('?') !== -1) {
-          href += '&' + paramName + '=' + timestamp;
-        } else if (href) {
-          href += '?' + paramName + '=' + timestamp;
-        }
-        const nextHref = href + hash;
-
-        const navigateWith = (fn) => {
-          try {
-            fn(nextHref);
-            return true;
-          } catch (error) {
-            console.warn('Forced reload navigation helper failed', error);
-            return false;
-          }
-        };
+        const forceReloadUrl = buildForceReloadHref(location, 'forceReload');
+        const nextHref = forceReloadUrl.nextHref;
+        const originalHref = forceReloadUrl.originalHref;
+        const baseHref = normaliseForceReloadHref(originalHref, originalHref) || originalHref;
 
         let navigationTriggered = false;
-        if (hasReplace) {
-          navigationTriggered = navigateWith(url => location.replace(url));
+        if (hasReplace && nextHref) {
+          navigationTriggered = attemptForceReloadNavigation(
+            location,
+            nextHref,
+            baseHref,
+            url => location.replace(url),
+            'location.replace',
+          );
         }
-        if (!navigationTriggered && hasAssign) {
-          navigationTriggered = navigateWith(url => location.assign(url));
+
+        if (!navigationTriggered && hasAssign && nextHref) {
+          navigationTriggered = attemptForceReloadNavigation(
+            location,
+            nextHref,
+            baseHref,
+            url => location.assign(url),
+            'location.assign',
+          );
         }
+
         if (!navigationTriggered && nextHref && nextHref !== originalHref) {
-          navigationTriggered = navigateWith(url => {
-            location.href = url;
-          });
+          navigationTriggered = attemptForceReloadNavigation(
+            location,
+            nextHref,
+            baseHref,
+            url => {
+              location.href = url;
+            },
+            'location.href assignment',
+          );
         }
+
         if (!navigationTriggered && hasReload) {
-          location.reload();
+          try {
+            location.reload();
+            navigationTriggered = true;
+          } catch (reloadError) {
+            console.warn('Forced reload via location.reload failed', reloadError);
+          }
         }
 
         if (hasReload) {
