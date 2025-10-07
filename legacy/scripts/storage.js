@@ -2094,53 +2094,79 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         label: ''
       };
     }
+
+    var parseWithPrefix = function parseWithPrefix(prefix, options) {
+      var remainder = name.slice(prefix.length);
+      var parts = remainder.split('-');
+      if (parts.length < 5) {
+        return null;
+      }
+
+      var year = Number.parseInt(parts[0], 10);
+      var month = Number.parseInt(parts[1], 10);
+      var day = Number.parseInt(parts[2], 10);
+      var hour = Number.parseInt(parts[3], 10);
+      var minute = Number.parseInt(parts[4], 10);
+
+      if ([year, month, day, hour, minute].some(function (value) {
+        return Number.isNaN(value);
+      })) {
+        return null;
+      }
+
+      var includeSeconds = false;
+      var seconds = 0;
+      var labelStartIndex = 5;
+
+      if (parts.length > labelStartIndex) {
+        var secondsCandidate = parts[labelStartIndex];
+        if (/^\d{1,2}$/u.test(secondsCandidate)) {
+          includeSeconds = true;
+          seconds = Number.parseInt(secondsCandidate, 10);
+          labelStartIndex += 1;
+        } else if (options && options.requireSeconds) {
+          return null;
+        }
+      } else if (options && options.requireSeconds) {
+        return null;
+      }
+
+      var label = parts.slice(labelStartIndex).join('-').trim();
+      var date = new Date(year, month - 1, day, hour, minute, includeSeconds ? seconds : 0, 0);
+      var timestamp = date.getTime();
+
+      if (Number.isNaN(timestamp)) {
+        return null;
+      }
+
+      return {
+        timestamp: timestamp,
+        label: label
+      };
+    };
+
     if (name.startsWith(STORAGE_AUTO_BACKUP_NAME_PREFIX)) {
-      var match = name.match(/^auto-backup-(\d{4})-(\d{2})-(\d{2})-(\d{2})-(\d{2})(?:-(.*))?$/);
-      if (!match) {
-        return {
-          timestamp: Number.NEGATIVE_INFINITY,
-          label: ''
-        };
+      var parsed = parseWithPrefix(STORAGE_AUTO_BACKUP_NAME_PREFIX, {});
+      if (parsed) {
+        return parsed;
       }
-      var _match = _slicedToArray(match, 7),
-        year = _match[1],
-        month = _match[2],
-        day = _match[3],
-        hour = _match[4],
-        minute = _match[5],
-        _match$ = _match[6],
-        rawLabel = _match$ === void 0 ? '' : _match$;
-      var date = new Date(Number.parseInt(year, 10), Number.parseInt(month, 10) - 1, Number.parseInt(day, 10), Number.parseInt(hour, 10), Number.parseInt(minute, 10), 0, 0);
-      var time = date.getTime();
       return {
-        timestamp: Number.isNaN(time) ? Number.NEGATIVE_INFINITY : time,
-        label: rawLabel.trim()
+        timestamp: Number.NEGATIVE_INFINITY,
+        label: ''
       };
     }
+
     if (name.startsWith(STORAGE_AUTO_BACKUP_DELETION_PREFIX)) {
-      var _match2 = name.match(/^auto-backup-before-delete-(\d{4})-(\d{2})-(\d{2})-(\d{2})-(\d{2})-(\d{2})(?:-(.*))?$/);
-      if (!_match2) {
-        return {
-          timestamp: Number.NEGATIVE_INFINITY,
-          label: ''
-        };
+      var parsedDeletion = parseWithPrefix(STORAGE_AUTO_BACKUP_DELETION_PREFIX, {});
+      if (parsedDeletion) {
+        return parsedDeletion;
       }
-      var _match3 = _slicedToArray(_match2, 8),
-        _year = _match3[1],
-        _month = _match3[2],
-        _day = _match3[3],
-        _hour = _match3[4],
-        _minute = _match3[5],
-        second = _match3[6],
-        _match3$ = _match3[7],
-        _rawLabel = _match3$ === void 0 ? '' : _match3$;
-      var _date = new Date(Number.parseInt(_year, 10), Number.parseInt(_month, 10) - 1, Number.parseInt(_day, 10), Number.parseInt(_hour, 10), Number.parseInt(_minute, 10), Number.parseInt(second, 10), 0);
-      var _time = _date.getTime();
       return {
-        timestamp: Number.isNaN(_time) ? Number.NEGATIVE_INFINITY : _time,
-        label: _rawLabel.trim()
+        timestamp: Number.NEGATIVE_INFINITY,
+        label: ''
       };
     }
+
     return {
       timestamp: Number.NEGATIVE_INFINITY,
       label: ''

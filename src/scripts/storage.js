@@ -3139,48 +3139,66 @@ function parseAutoBackupKey(name) {
     return { timestamp: Number.NEGATIVE_INFINITY, label: '' };
   }
 
-  if (name.startsWith(STORAGE_AUTO_BACKUP_NAME_PREFIX)) {
-    const match = name.match(/^auto-backup-(\d{4})-(\d{2})-(\d{2})-(\d{2})-(\d{2})(?:-(.*))?$/);
-    if (!match) {
-      return { timestamp: Number.NEGATIVE_INFINITY, label: '' };
+  const parseWithPrefix = (prefix, options = {}) => {
+    const remainder = name.slice(prefix.length);
+    const parts = remainder.split('-');
+    if (parts.length < 5) {
+      return null;
     }
-    const [, year, month, day, hour, minute, rawLabel = ''] = match;
-    const date = new Date(
-      Number.parseInt(year, 10),
-      Number.parseInt(month, 10) - 1,
-      Number.parseInt(day, 10),
-      Number.parseInt(hour, 10),
-      Number.parseInt(minute, 10),
-      0,
-      0,
-    );
-    const time = date.getTime();
-    return {
-      timestamp: Number.isNaN(time) ? Number.NEGATIVE_INFINITY : time,
-      label: rawLabel.trim(),
-    };
+
+    const [yearPart, monthPart, dayPart, hourPart, minutePart] = parts;
+    const year = Number.parseInt(yearPart, 10);
+    const month = Number.parseInt(monthPart, 10) - 1;
+    const day = Number.parseInt(dayPart, 10);
+    const hour = Number.parseInt(hourPart, 10);
+    const minute = Number.parseInt(minutePart, 10);
+
+    if ([year, month, day, hour, minute].some(value => Number.isNaN(value))) {
+      return null;
+    }
+
+    let includeSeconds = false;
+    let seconds = 0;
+    let labelStartIndex = 5;
+
+    if (parts.length > labelStartIndex) {
+      const secondsCandidate = parts[labelStartIndex];
+      if (/^\d{1,2}$/u.test(secondsCandidate)) {
+        includeSeconds = true;
+        seconds = Number.parseInt(secondsCandidate, 10);
+        labelStartIndex += 1;
+      } else if (options.requireSeconds) {
+        return null;
+      }
+    } else if (options.requireSeconds) {
+      return null;
+    }
+
+    const label = parts.slice(labelStartIndex).join('-').trim();
+    const date = new Date(year, month, day, hour, minute, includeSeconds ? seconds : 0, 0);
+    const timestamp = date.getTime();
+
+    if (Number.isNaN(timestamp)) {
+      return null;
+    }
+
+    return { timestamp, label };
+  };
+
+  if (name.startsWith(STORAGE_AUTO_BACKUP_NAME_PREFIX)) {
+    const parsed = parseWithPrefix(STORAGE_AUTO_BACKUP_NAME_PREFIX);
+    if (parsed) {
+      return parsed;
+    }
+    return { timestamp: Number.NEGATIVE_INFINITY, label: '' };
   }
 
   if (name.startsWith(STORAGE_AUTO_BACKUP_DELETION_PREFIX)) {
-    const match = name.match(/^auto-backup-before-delete-(\d{4})-(\d{2})-(\d{2})-(\d{2})-(\d{2})-(\d{2})(?:-(.*))?$/);
-    if (!match) {
-      return { timestamp: Number.NEGATIVE_INFINITY, label: '' };
+    const parsed = parseWithPrefix(STORAGE_AUTO_BACKUP_DELETION_PREFIX, { requireSeconds: false });
+    if (parsed) {
+      return parsed;
     }
-    const [, year, month, day, hour, minute, second, rawLabel = ''] = match;
-    const date = new Date(
-      Number.parseInt(year, 10),
-      Number.parseInt(month, 10) - 1,
-      Number.parseInt(day, 10),
-      Number.parseInt(hour, 10),
-      Number.parseInt(minute, 10),
-      Number.parseInt(second, 10),
-      0,
-    );
-    const time = date.getTime();
-    return {
-      timestamp: Number.isNaN(time) ? Number.NEGATIVE_INFINITY : time,
-      label: rawLabel.trim(),
-    };
+    return { timestamp: Number.NEGATIVE_INFINITY, label: '' };
   }
 
   return { timestamp: Number.NEGATIVE_INFINITY, label: '' };
