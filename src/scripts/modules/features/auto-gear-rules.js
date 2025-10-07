@@ -1126,6 +1126,7 @@ function buildAlwaysAutoGearRule() {
     ['BNC Cable 5 m', 'Monitoring support', 1],
     ['BNC Cable 10 m', 'Monitoring support', 1],
     ['BNC Drum 25 m', 'Monitoring support', 1],
+    ['BNC Connector', 'Monitoring support', 4],
     ['ULCS Bracket with 1/4" to 1/4"', 'Rigging', 2],
     ['ULCS Bracket with 3/8" to 1/4"', 'Rigging', 2],
     ['Noga Arm', 'Rigging', 2],
