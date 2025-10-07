@@ -2047,6 +2047,22 @@ function collectProjectFormData() {
 
     const getGearValue = (id) => (gearValues && gearValues.has(id) ? gearValues.get(id) : '');
 
+    const monitorBatterySelections = gearListOutput ? (() => {
+        const entries = {};
+        const selects = Array.from(gearListOutput.querySelectorAll('select[data-monitor-battery-key]'));
+        selects.forEach(select => {
+            const keyRaw = select?.dataset?.monitorBatteryKey;
+            if (typeof keyRaw !== 'string') return;
+            const key = keyRaw.trim();
+            if (!key) return;
+            const valueRaw = select?.value;
+            const value = typeof valueRaw === 'string' ? valueRaw.trim() : (valueRaw == null ? '' : String(valueRaw));
+            if (!value) return;
+            entries[key] = value;
+        });
+        return entries;
+    })() : null;
+
     const proGaffColor1 = getGearValue('gearListProGaffColor1');
     const proGaffWidth1 = getGearValue('gearListProGaffWidth1');
     const proGaffColor2 = getGearValue('gearListProGaffColor2');
@@ -2087,6 +2103,10 @@ function collectProjectFormData() {
         easyrig: getSetupsCoreValue('getEasyrigValue'),
         filter: filterStr
     };
+
+    if (monitorBatterySelections && Object.keys(monitorBatterySelections).length) {
+        info.monitorBatteries = monitorBatterySelections;
+    }
 
     const assignGearField = (prop, id) => {
         const value = getGearValue(id);
