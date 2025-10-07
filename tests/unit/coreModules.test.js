@@ -44,6 +44,7 @@ describe('core module registrations', () => {
       'handleAutoGearSavePreset',
       'handleAutoGearDeletePreset',
       'applyAutoGearBackupVisibility',
+      'setAutoGearBackupsVisible',
       'renderAutoGearBackupControls',
       'renderAutoGearBackupRetentionControls',
       'renderAutoGearDraftImpact',

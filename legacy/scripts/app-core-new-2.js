@@ -16721,6 +16721,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       handleAutoGearSavePreset: handleAutoGearSavePreset,
       handleAutoGearDeletePreset: handleAutoGearDeletePreset,
       applyAutoGearBackupVisibility: applyAutoGearBackupVisibility,
+      setAutoGearBackupsVisible: setAutoGearBackupsVisible,
       setAutoGearAutoPresetId: setAutoGearAutoPresetId,
       syncAutoGearAutoPreset: syncAutoGearAutoPreset,
       updateAutoGearCatalogOptions: updateAutoGearCatalogOptions,
