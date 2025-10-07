@@ -11,9 +11,9 @@ Every time you overwrite an existing project the planner now captures a timestam
 `auto-backup-…` snapshot of the previous state before committing the new data. These
 automatic backups follow the same retention rules described below, ensuring that even
 manual saves keep an additional recovery point without requiring operator action.
-The incremental chain now stretches across 30 changes before a new full snapshot is
+The incremental chain now stretches across 50 tracked changes before a new full snapshot is
 forced, so long shoots still surface plenty of restore points while preserving the
-original Long GOP metadata captured in earlier backups.【F:src/scripts/app-events.js†L1089-L1183】【F:src/scripts/storage.js†L2923-L2980】
+original Long GOP metadata captured in earlier backups.【F:src/scripts/app-events.js†L90-L209】【F:src/scripts/storage.js†L2923-L2980】
 
 ## 1. Naming conventions that survive handoffs
 

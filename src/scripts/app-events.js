@@ -61,6 +61,18 @@ function getGlobalScope() {
 }
 
 const AUTO_BACKUP_CHANGE_THRESHOLD = 50;
+const AUTO_BACKUP_INTERVAL_MS = 10 * 60 * 1000;
+const AUTO_BACKUP_ALLOWED_REASONS = [
+  'interval',
+  'project-switch',
+  'import',
+  'export',
+  'export-revert',
+  'before-reload',
+  'change-threshold',
+  'safeguard',
+];
+
 let autoBackupChangesSinceSnapshot = 0;
 let autoBackupThresholdInProgress = false;
 
@@ -84,6 +96,13 @@ function recordAutoBackupRun(result) {
   if (status && status !== 'error') {
     resetAutoBackupChangeCounter();
   }
+}
+
+function isAutoBackupReasonAllowed(reason) {
+  if (typeof reason !== 'string' || !reason) {
+    return false;
+  }
+  return AUTO_BACKUP_ALLOWED_REASONS.includes(reason);
 }
 
 function showAutoBackupIndicatorSafe() {
@@ -111,7 +130,11 @@ function triggerAutoBackupForChangeThreshold(details) {
   autoBackupThresholdInProgress = true;
   const run = () => {
     try {
-      autoBackup({ suppressSuccess: true, triggerAutoSaveNotification: true });
+      autoBackup({
+        suppressSuccess: true,
+        triggerAutoSaveNotification: true,
+        reason: 'change-threshold',
+      });
     } catch (error) {
       console.warn('Failed to run auto backup after change threshold', error);
       autoBackupThresholdInProgress = false;
@@ -939,6 +962,7 @@ addSafeEventListener(setupSelectTarget, "change", (event) => {
         suppressSuccess: true,
         projectNameOverride: normalizeProjectName(previousKey),
         triggerAutoSaveNotification: true,
+        reason: 'project-switch',
       });
     } catch (error) {
       console.warn('Failed to auto backup project before loading a different setup', error);
@@ -1425,8 +1449,8 @@ function determineNextAutoBackupPlan(setups) {
 }
 
 // Automatic backups run every 10 minutes, when switching projects, during
-// import or export operations, before reloads, and after sustained edit
-// activity. Saved backups appear in the setup selector but do not change the
+// import or export operations, before reloads, and after 50 tracked changes
+// to the planner. Saved backups appear in the setup selector but do not change the
 // currently selected setup. Intervals are unref'ed when possible so Node
 // environments can exit cleanly.
 function autoBackup(options = {}) {
@@ -1436,6 +1460,9 @@ function autoBackup(options = {}) {
   const suppressSuccess = Boolean(config.suppressSuccess);
   const suppressError = Boolean(config.suppressError);
   const force = config.force === true;
+  const reason = typeof config.reason === 'string' && config.reason
+    ? config.reason
+    : 'unspecified';
   const successMessage = typeof config.successMessage === 'string' && config.successMessage
     ? config.successMessage
     : 'Auto backup saved';
@@ -1466,10 +1493,25 @@ function autoBackup(options = {}) {
   const normalizedTypedName = normalizeProjectName(typedName);
   const isAutoBackupName = (name) => typeof name === 'string' && name.startsWith('auto-backup-');
 
+  if (!force && !isAutoBackupReasonAllowed(reason)) {
+    const skipped = {
+      status: 'skipped',
+      reason: 'disallowed',
+      context: reason || null,
+    };
+    if (typeof console !== 'undefined' && typeof console.debug === 'function') {
+      console.debug('Skipping auto backup run because the trigger is not permitted.', {
+        trigger: reason,
+      });
+    }
+    recordAutoBackupRun(skipped);
+    return skipped;
+  }
+
   let nameForBackup = '';
   if (overrideName !== null && overrideName !== undefined) {
     if (overrideName && isAutoBackupName(overrideName)) {
-      const skipped = { status: 'skipped', reason: 'auto-backup-selected' };
+      const skipped = { status: 'skipped', reason: 'auto-backup-selected', context: reason };
       recordAutoBackupRun(skipped);
       return skipped;
     }
@@ -1482,7 +1524,7 @@ function autoBackup(options = {}) {
     ) {
       nameForBackup = normalizedTypedName;
     } else {
-      const skipped = { status: 'skipped', reason: 'auto-backup-selected' };
+      const skipped = { status: 'skipped', reason: 'auto-backup-selected', context: reason };
       recordAutoBackupRun(skipped);
       return skipped;
     }
@@ -1532,6 +1574,7 @@ function autoBackup(options = {}) {
         reason: 'unchanged',
         name: lastAutoBackupName || null,
         createdAt: lastAutoBackupCreatedAtIso || null,
+        context: reason,
       };
       recordAutoBackupRun(skipped);
       return skipped;
@@ -1590,6 +1633,7 @@ function autoBackup(options = {}) {
       status: 'success',
       name: backupName,
       createdAt: timestamp,
+      context: reason,
     });
     return backupName;
   } catch (e) {
@@ -1597,7 +1641,7 @@ function autoBackup(options = {}) {
     if (!suppressError) {
       showNotification('error', errorMessage);
     }
-    recordAutoBackupRun({ status: 'error', reason: 'exception' });
+    recordAutoBackupRun({ status: 'error', reason: 'exception', context: reason });
     return null;
   } finally {
     if (typeof hideIndicator === 'function') {
@@ -1627,6 +1671,9 @@ function ensureAutoBackupBeforeDeletion(context, options = {}) {
     suppressError: true,
     ...(config.autoBackupOptions || {}),
   };
+  if (!Object.prototype.hasOwnProperty.call(autoBackupOptions, 'reason')) {
+    autoBackupOptions.reason = 'safeguard';
+  }
   if (!Object.prototype.hasOwnProperty.call(autoBackupOptions, 'force')) {
     autoBackupOptions.force = true;
   }
@@ -1681,7 +1728,9 @@ function ensureAutoBackupBeforeDeletion(context, options = {}) {
 
   return backupName;
 }
-const autoBackupInterval = setInterval(autoBackup, 10 * 60 * 1000);
+const autoBackupInterval = setInterval(() => {
+  autoBackup({ reason: 'interval' });
+}, AUTO_BACKUP_INTERVAL_MS);
 if (typeof autoBackupInterval.unref === 'function') {
   autoBackupInterval.unref();
 }
@@ -2586,7 +2635,11 @@ addSafeEventListener(cancelEditBtn, "click", () => {
 addSafeEventListener(exportBtn, "click", () => {
   if (typeof autoBackup === 'function') {
     try {
-      autoBackup({ suppressSuccess: true, triggerAutoSaveNotification: true });
+      autoBackup({
+        suppressSuccess: true,
+        triggerAutoSaveNotification: true,
+        reason: 'export',
+      });
     } catch (error) {
       console.warn('Failed to auto backup before export', error);
     }
@@ -2614,7 +2667,11 @@ if (exportAndRevertBtn) {
       // Reusing the export logic from the existing 'Export Database' button
       if (typeof autoBackup === 'function') {
         try {
-          autoBackup({ suppressSuccess: true, triggerAutoSaveNotification: true });
+          autoBackup({
+            suppressSuccess: true,
+            triggerAutoSaveNotification: true,
+            reason: 'export-revert',
+          });
         } catch (error) {
           console.warn('Failed to auto backup before export and revert', error);
         }
@@ -2671,7 +2728,11 @@ if (exportAndRevertBtn) {
 
       if (typeof autoBackup === 'function') {
         try {
-          autoBackup({ suppressSuccess: true, triggerAutoSaveNotification: true });
+          autoBackup({
+            suppressSuccess: true,
+            triggerAutoSaveNotification: true,
+            reason: 'import',
+          });
         } catch (error) {
           console.warn('Failed to auto backup before import', error);
         }
