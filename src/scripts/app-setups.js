@@ -2405,18 +2405,30 @@ function updateSpanCountInPlace(span, newCount) {
     }
 }
 
+function getGearStandardItemsContainer(cell) {
+    if (!cell || typeof cell.querySelector !== 'function') return cell;
+    const children = cell.children ? Array.from(cell.children) : [];
+    for (const child of children) {
+        if (child && child.classList && child.classList.contains('gear-standard-items')) {
+            return child;
+        }
+    }
+    return cell;
+}
+
 function cleanupAutoGearCell(cell) {
     if (!cell) return;
-    const nodes = Array.from(cell.childNodes);
+    const container = getGearStandardItemsContainer(cell);
+    const nodes = Array.from(container.childNodes);
     let previousWasBreak = true;
     nodes.forEach(node => {
         if (node.nodeType === Node.TEXT_NODE && !node.textContent.trim()) {
-            cell.removeChild(node);
+            container.removeChild(node);
             return;
         }
         if (node.nodeName === 'BR') {
             if (previousWasBreak || !node.nextSibling) {
-                cell.removeChild(node);
+                container.removeChild(node);
                 return;
             }
             previousWasBreak = true;
@@ -2424,14 +2436,14 @@ function cleanupAutoGearCell(cell) {
             previousWasBreak = false;
         }
     });
-    while (cell.firstChild && cell.firstChild.nodeName === 'BR') {
-        cell.removeChild(cell.firstChild);
+    while (container.firstChild && container.firstChild.nodeName === 'BR') {
+        container.removeChild(container.firstChild);
     }
-    while (cell.lastChild && cell.lastChild.nodeName === 'BR') {
-        cell.removeChild(cell.lastChild);
+    while (container.lastChild && container.lastChild.nodeName === 'BR') {
+        container.removeChild(container.lastChild);
     }
-    const textContent = cell.textContent ? cell.textContent.trim() : '';
-    if (!textContent && !cell.querySelector('.gear-item')) {
+    const textContent = container.textContent ? container.textContent.trim() : '';
+    if (!textContent && !container.querySelector('.gear-item')) {
         const row = cell.closest('tr');
         const section = row ? row.closest('tbody') : null;
         if (section && section.classList.contains('auto-gear-category')) {
@@ -2504,7 +2516,8 @@ function removeAutoGearItem(cell, item, remainingOverride) {
         ? remainingOverride
         : normalizeAutoGearQuantity(item.quantity);
     if (remaining <= 0) return remaining;
-    const nodes = Array.from(cell.childNodes);
+    const container = getGearStandardItemsContainer(cell);
+    const nodes = Array.from(container.childNodes);
     if (!nodes.length) return remaining;
     const segments = [];
     let current = [];
@@ -2529,7 +2542,11 @@ function removeAutoGearItem(cell, item, remainingOverride) {
                 remaining = 0;
             } else {
                 remaining -= currentCount;
-                segment.nodes.forEach(node => node.remove());
+                segment.nodes.forEach(node => {
+                    if (node.parentNode) {
+                        node.parentNode.removeChild(node);
+                    }
+                });
             }
             modified = true;
         } else {
@@ -2539,7 +2556,11 @@ function removeAutoGearItem(cell, item, remainingOverride) {
                 modified = true;
             } else {
                 remaining -= info.count;
-                segment.nodes.forEach(node => node.remove());
+                segment.nodes.forEach(node => {
+                    if (node.parentNode) {
+                        node.parentNode.removeChild(node);
+                    }
+                });
                 modified = true;
             }
         }
@@ -2988,7 +3009,8 @@ function addAutoGearItem(cell, item, rule) {
     if (quantity <= 0) return;
     const name = normalizedItem.name ? normalizedItem.name.trim() : '';
     if (!name) return;
-    const spans = Array.from(cell.querySelectorAll('.gear-item'));
+    const container = getGearStandardItemsContainer(cell);
+    const spans = Array.from(container.querySelectorAll('.gear-item'));
     const targetNotesKey = normalizeAutoGearNotesKey(normalizedItem.notes);
     for (const span of spans) {
         const spanName = span.getAttribute('data-gear-name') || (span.textContent || '').replace(/^(\d+)x\s+/, '').trim();
@@ -3039,12 +3061,12 @@ function addAutoGearItem(cell, item, rule) {
             return;
         }
     }
-    if (cell.childNodes.length) {
-        cell.appendChild(document.createElement('br'));
+    if (container.childNodes.length) {
+        container.appendChild(document.createElement('br'));
     }
     const span = document.createElement('span');
     configureAutoGearSpan(span, normalizedItem, quantity, rule);
-    cell.appendChild(span);
+    container.appendChild(span);
 }
 
 function ensureAutoGearCategory(table, category) {
