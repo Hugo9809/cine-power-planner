@@ -15335,691 +15335,96 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     motorSelects.forEach(sel => { if (sel.options.length) sel.value = "None"; });
     controllerSelects.forEach(sel => { if (sel.options.length) sel.value = "None"; });
     
-    // Calculation function to update results and warnings
-    function renderTemperatureNote(baseHours) {
-      const container = document.getElementById("temperatureNote");
-      if (!container) return;
-      const heading = texts[currentLang].temperatureNoteHeading;
-      let html = `<p>${heading}</p>`;
-      if (!baseHours || !isFinite(baseHours)) {
-        container.innerHTML = html;
-        return;
-      }
-      const temperatureHeader = getTemperatureColumnLabelForLang(currentLang, temperatureUnit);
-      html += `<table><tr><th>${temperatureHeader}</th><th>${texts[currentLang].runtimeLabel}</th><th>${texts[currentLang].batteryCountTempLabel}</th></tr>`;
-      TEMPERATURE_SCENARIOS.forEach(scenario => {
-        const runtime = baseHours * scenario.factor;
-        const runtimeCell = Number.isFinite(runtime) ? runtime.toFixed(2) : '0.00';
-        let batteries = '–';
-        if (Number.isFinite(runtime) && runtime > 0) {
-          batteries = Math.ceil(10 / runtime);
-        }
-        const temperatureCell = formatTemperatureForDisplay(scenario.celsius);
-        html += `<tr><td style="color:${scenario.color}">${temperatureCell}</td><td>${runtimeCell}</td><td>${batteries}</td></tr>`;
-      });
-      html += "</table>";
-      container.innerHTML = html;
-    }
-
-    assignCoreTemperatureNoteRenderer(renderTemperatureNote);
-    
-    function ensureFeedbackTemperatureOptions(select) {
-      if (!select) return;
-      const expectedOptions = FEEDBACK_TEMPERATURE_MAX - FEEDBACK_TEMPERATURE_MIN + 2;
-      if (select.options.length === expectedOptions) {
-        return;
-      }
-      const previousValue = select.value;
-      select.innerHTML = '';
-      const emptyOpt = document.createElement('option');
-      emptyOpt.value = '';
-      emptyOpt.textContent = '';
-      select.appendChild(emptyOpt);
-      for (let temp = FEEDBACK_TEMPERATURE_MIN; temp <= FEEDBACK_TEMPERATURE_MAX; temp += 1) {
-        const opt = document.createElement('option');
-        opt.value = String(temp);
-        select.appendChild(opt);
-      }
-      if (previousValue) {
-        select.value = previousValue;
-      }
-    }
-    
-    function updateFeedbackTemperatureOptions(lang = currentLang, unit = temperatureUnit) {
-      const tempSelect = document.getElementById('fbTemperature');
-      if (!tempSelect) return;
-      ensureFeedbackTemperatureOptions(tempSelect);
-      Array.from(tempSelect.options).forEach(option => {
-        if (!option) return;
-        if (option.value === '') {
-          option.textContent = '';
-          return;
-        }
-        const celsiusValue = Number(option.value);
-        if (!Number.isFinite(celsiusValue)) return;
-        option.textContent = formatTemperatureForDisplay(celsiusValue, {
-          lang,
-          unit,
-          includeSign: 'negative'
-        });
-      });
-    }
-    
-    function updateFeedbackTemperatureLabel(lang = currentLang, unit = temperatureUnit) {
-      const labelTextElem = document.getElementById('fbTemperatureLabelText');
-      const labelElem = document.getElementById('fbTemperatureLabel');
-      const label = `${getTemperatureColumnLabelForLang(lang, unit)}:`;
-      if (labelTextElem) {
-        labelTextElem.textContent = label;
-      } else if (labelElem) {
-        labelElem.textContent = label;
-      }
-    }
-
-    function refreshFeedbackTemperatureLabel(lang = currentLang, unit = temperatureUnit) {
-      let handled = false;
-      try {
-        if (typeof updateFeedbackTemperatureLabel === 'function') {
-          updateFeedbackTemperatureLabel(lang, unit);
-          handled = true;
-        }
-      } catch (error) {
-        console.warn('Fallback applied while updating feedback temperature label', error);
-      }
-
-      if (handled) {
-        return;
-      }
-
-      const labelTextElem = document.getElementById('fbTemperatureLabelText');
-      const labelElem = document.getElementById('fbTemperatureLabel');
-      if (!labelTextElem && !labelElem) {
-        return;
-      }
-      const label = `${getTemperatureColumnLabelForLang(lang, unit)}:`;
-      if (labelTextElem) {
-        labelTextElem.textContent = label;
-      } else if (labelElem) {
-        labelElem.textContent = label;
-      }
-    }
-
-    function applyTemperatureUnitPreference(unit, options = {}) {
-      const normalized = normalizeTemperatureUnit(unit);
-      const { persist = true, reRender = true, forceUpdate = false } = options || {};
-      if (!forceUpdate && temperatureUnit === normalized) {
-        return;
-      }
-      temperatureUnit = normalized;
-      if (persist && typeof localStorage !== 'undefined') {
-        try {
-          localStorage.setItem(TEMPERATURE_STORAGE_KEY, temperatureUnit);
-        } catch (error) {
-          console.warn('Could not save temperature unit preference', error);
-        }
-      }
-      if (typeof settingsTemperatureUnit !== 'undefined' && settingsTemperatureUnit) {
-        settingsTemperatureUnit.value = temperatureUnit;
-      }
-      if (reRender) {
-        refreshFeedbackTemperatureLabel();
-        updateFeedbackTemperatureOptions();
-        renderTemperatureNote(lastRuntimeHours);
-      }
-    }
-    
-    // Calculation function to update results and warnings
+        // Calculation function delegates to cineResults module for power and runtime processing
     function updateCalculations() {
-      // Gather selected values
-      const camera      = cameraSelect.value;
-      const monitor     = monitorSelect.value;
-      const video       = videoSelect.value;
-      const motors      = motorSelects.map(sel => sel.value);
-      const controllers = controllerSelects.map(sel => sel.value);
-      const distance    = distanceSelect.value;
-      let battery       = batterySelect.value;
-
-      const totalPowerTarget = typeof totalPowerElem !== 'undefined'
-        ? totalPowerElem
-        : (typeof document !== 'undefined' ? document.getElementById('totalPower') : null);
-      const breakdownListTarget = typeof breakdownListElem !== 'undefined'
-        ? breakdownListElem
-        : (typeof document !== 'undefined' ? document.getElementById('breakdownList') : null);
-      const totalCurrent144Target = typeof totalCurrent144Elem !== 'undefined'
-        ? totalCurrent144Elem
-        : (typeof document !== 'undefined' ? document.getElementById('totalCurrent144') : null);
-      const totalCurrent12Target = typeof totalCurrent12Elem !== 'undefined'
-        ? totalCurrent12Elem
-        : (typeof document !== 'undefined' ? document.getElementById('totalCurrent12') : null);
-      const batteryLifeTarget = typeof batteryLifeElem !== 'undefined'
-        ? batteryLifeElem
-        : (typeof document !== 'undefined' ? document.getElementById('batteryLife') : null);
-      const batteryCountTarget = typeof batteryCountElem !== 'undefined'
-        ? batteryCountElem
-        : (typeof document !== 'undefined' ? document.getElementById('batteryCount') : null);
-      const batteryLifeLabelTarget = typeof batteryLifeLabelElem !== 'undefined'
-        ? batteryLifeLabelElem
-        : (typeof document !== 'undefined' ? document.getElementById('batteryLifeLabel') : null);
-      const runtimeAverageNoteTarget = typeof runtimeAverageNoteElem !== 'undefined'
-        ? runtimeAverageNoteElem
-        : (typeof document !== 'undefined' ? document.getElementById('runtimeAverageNote') : null);
-      const pinWarnTarget = typeof pinWarnElem !== 'undefined'
-        ? pinWarnElem
-        : (typeof document !== 'undefined' ? document.getElementById('pinWarning') : null);
-      const dtapWarnTarget = typeof dtapWarnElem !== 'undefined'
-        ? dtapWarnElem
-        : (typeof document !== 'undefined' ? document.getElementById('dtapWarning') : null);
-      const hotswapWarnTarget = typeof hotswapWarnElem !== 'undefined'
-        ? hotswapWarnElem
-        : (typeof document !== 'undefined' ? document.getElementById('hotswapWarning') : null);
-
-      // Calculate total power consumption (W)
-      let cameraW = 0;
-      if (devices.cameras[camera] !== undefined) {
-        const camData = devices.cameras[camera];
-        cameraW = typeof camData === 'object' ? camData.powerDrawWatts || 0 : camData;
+      const cineResultsModule = typeof cineResults === 'object' ? cineResults : null;
+      const runModuleUpdate =
+        cineResultsModule && typeof cineResultsModule.updateCalculations === 'function'
+          ? cineResultsModule.updateCalculations
+          : null;
+      if (!runModuleUpdate) {
+        console.warn('cineResults.updateCalculations not available');
+        return;
       }
-      let monitorW = 0;
-      if (devices.monitors[monitor] !== undefined) {
-        const mData = devices.monitors[monitor];
-        monitorW = typeof mData === 'object' ? mData.powerDrawWatts || 0 : mData;
+      try {
+        runModuleUpdate({
+          document: typeof document !== 'undefined' ? document : null,
+          elements: {
+            cameraSelect,
+            monitorSelect,
+            videoSelect,
+            distanceSelect,
+            batterySelect,
+            hotswapSelect,
+            totalPowerElem: typeof totalPowerElem !== 'undefined' ? totalPowerElem : null,
+            breakdownListElem: typeof breakdownListElem !== 'undefined' ? breakdownListElem : null,
+            totalCurrent144Elem: typeof totalCurrent144Elem !== 'undefined' ? totalCurrent144Elem : null,
+            totalCurrent12Elem: typeof totalCurrent12Elem !== 'undefined' ? totalCurrent12Elem : null,
+            batteryLifeElem: typeof batteryLifeElem !== 'undefined' ? batteryLifeElem : null,
+            batteryCountElem: typeof batteryCountElem !== 'undefined' ? batteryCountElem : null,
+            batteryLifeLabelElem:
+              typeof batteryLifeLabelElem !== 'undefined' ? batteryLifeLabelElem : null,
+            runtimeAverageNoteElem:
+              typeof runtimeAverageNoteElem !== 'undefined' ? runtimeAverageNoteElem : null,
+            pinWarnElem: typeof pinWarnElem !== 'undefined' ? pinWarnElem : null,
+            dtapWarnElem: typeof dtapWarnElem !== 'undefined' ? dtapWarnElem : null,
+            hotswapWarnElem: typeof hotswapWarnElem !== 'undefined' ? hotswapWarnElem : null,
+            batteryComparisonSection:
+              typeof batteryComparisonSection !== 'undefined' ? batteryComparisonSection : null,
+            batteryTableElem: typeof batteryTableElem !== 'undefined' ? batteryTableElem : null,
+            setupDiagramContainer:
+              typeof setupDiagramContainer !== 'undefined' ? setupDiagramContainer : null,
+          },
+          motorSelects,
+          controllerSelects,
+          getDevices: () => devices,
+          getTexts: () => texts,
+          getCurrentLang: () => currentLang,
+          getCollator: () => (typeof collator !== 'undefined' ? collator : null),
+          getSelectedPlate: typeof getSelectedPlate === 'function' ? getSelectedPlate : null,
+          getMountVoltageConfig:
+            typeof getMountVoltageConfig === 'function' ? getMountVoltageConfig : null,
+          refreshTotalCurrentLabels:
+            typeof refreshTotalCurrentLabels === 'function' ? refreshTotalCurrentLabels : null,
+          updateBatteryOptions:
+            typeof updateBatteryOptions === 'function' ? updateBatteryOptions : null,
+          setStatusMessage: typeof setStatusMessage === 'function' ? setStatusMessage : null,
+          setStatusLevel: typeof setStatusLevel === 'function' ? setStatusLevel : null,
+          closePowerWarningDialog:
+            typeof closePowerWarningDialog === 'function' ? closePowerWarningDialog : null,
+          showPowerWarningDialog:
+            typeof showPowerWarningDialog === 'function' ? showPowerWarningDialog : null,
+          drawPowerDiagram: typeof drawPowerDiagram === 'function' ? drawPowerDiagram : null,
+          renderFeedbackTable: typeof renderFeedbackTable === 'function' ? renderFeedbackTable : null,
+          getCurrentSetupKey: typeof getCurrentSetupKey === 'function' ? getCurrentSetupKey : null,
+          renderTemperatureNote:
+            typeof renderTemperatureNote === 'function' ? renderTemperatureNote : null,
+          checkFizCompatibility:
+            typeof checkFizCompatibility === 'function' ? checkFizCompatibility : null,
+          checkFizController:
+            typeof checkFizController === 'function' ? checkFizController : null,
+          checkArriCompatibility:
+            typeof checkArriCompatibility === 'function' ? checkArriCompatibility : null,
+          renderSetupDiagram: typeof renderSetupDiagram === 'function' ? renderSetupDiagram : null,
+          refreshGearListIfVisible:
+            typeof refreshGearListIfVisible === 'function' ? refreshGearListIfVisible : null,
+          supportsBMountCamera:
+            typeof supportsBMountCamera === 'function' ? supportsBMountCamera : null,
+          supportsGoldMountCamera:
+            typeof supportsGoldMountCamera === 'function' ? supportsGoldMountCamera : null,
+          getCssVariableValue:
+            typeof getCssVariableValue === 'function' ? getCssVariableValue : null,
+          escapeHtml: typeof escapeHtml === 'function' ? escapeHtml : null,
+          getLastRuntimeHours: () => lastRuntimeHours,
+          setLastRuntimeHours: (value) => {
+            lastRuntimeHours = value;
+          },
+        });
+      } catch (error) {
+        console.warn('cineResults.updateCalculations failed', error);
       }
-      let videoW = 0;
-      if (devices.video[video] !== undefined) {
-        const vData = devices.video[video];
-        videoW = typeof vData === 'object' ? vData.powerDrawWatts || 0 : vData;
-      }
-      let motorsW = 0;
-      motors.forEach(m => {
-        if (devices.fiz.motors[m] !== undefined) {
-          const d = devices.fiz.motors[m];
-          motorsW += typeof d === 'object' ? d.powerDrawWatts || 0 : d;
-        }
-      });
-      let controllersW = 0;
-      controllers.forEach(c => {
-        if (devices.fiz.controllers[c] !== undefined) {
-          const d = devices.fiz.controllers[c];
-          controllersW += typeof d === 'object' ? d.powerDrawWatts || 0 : d;
-        }
-      });
-      let distanceW = 0;
-      if (devices.fiz.distance[distance] !== undefined) {
-        const d = devices.fiz.distance[distance];
-        distanceW = typeof d === 'object' ? d.powerDrawWatts || 0 : d;
-      }
-    
-      const totalWatt = cameraW + monitorW + videoW + motorsW + controllersW + distanceW;
-      if (totalPowerTarget) {
-        totalPowerTarget.textContent = totalWatt.toFixed(1);
-      }
-    
-      const segments = [
-        { power: cameraW, className: "camera", label: texts[currentLang].cameraLabel },
-        { power: monitorW, className: "monitor", label: texts[currentLang].monitorLabel },
-        { power: videoW, className: "video", label: texts[currentLang].videoLabel },
-        { power: motorsW, className: "motors", label: texts[currentLang].fizMotorsLabel },
-        { power: controllersW, className: "controllers", label: texts[currentLang].fizControllersLabel },
-        { power: distanceW, className: "distance", label: texts[currentLang].distanceLabel }
-      ].filter(s => s.power > 0);
-    
-      // Update breakdown by category
-      if (breakdownListTarget) {
-        breakdownListTarget.innerHTML = "";
-        if (cameraW > 0) {
-          const li = document.createElement("li");
-          li.innerHTML = `<strong>${texts[currentLang].cameraLabel}</strong> ${cameraW.toFixed(1)} W`;
-          breakdownListTarget.appendChild(li);
-        }
-        if (monitorW > 0) {
-          const li = document.createElement("li");
-          li.innerHTML = `<strong>${texts[currentLang].monitorLabel}</strong> ${monitorW.toFixed(1)} W`;
-          breakdownListTarget.appendChild(li);
-        }
-        if (videoW > 0) {
-          const li = document.createElement("li");
-          li.innerHTML = `<strong>${texts[currentLang].videoLabel}</strong> ${videoW.toFixed(1)} W`;
-          breakdownListTarget.appendChild(li);
-        }
-        if (motorsW > 0) {
-          const li = document.createElement("li");
-          li.innerHTML = `<strong>${texts[currentLang].fizMotorsLabel}</strong> ${motorsW.toFixed(1)} W`;
-          breakdownListTarget.appendChild(li);
-        }
-        if (controllersW > 0) {
-          const li = document.createElement("li");
-          li.innerHTML = `<strong>${texts[currentLang].fizControllersLabel}</strong> ${controllersW.toFixed(1)} W`;
-          breakdownListTarget.appendChild(li);
-        }
-        if (distanceW > 0) {
-          const li = document.createElement("li");
-          li.innerHTML = `<strong>${texts[currentLang].distanceLabel}</strong> ${distanceW.toFixed(1)} W`;
-          breakdownListTarget.appendChild(li);
-        }
-      }
-    
-      // Calculate currents depending on battery type
-      const selectedPlate = getSelectedPlate();
-      const mountVoltages = getMountVoltageConfig(selectedPlate);
-      const bMountCam = selectedPlate === 'B-Mount';
-      const highV = Number.isFinite(mountVoltages.high) ? mountVoltages.high : (bMountCam ? 33.6 : 14.4);
-      const lowV = Number.isFinite(mountVoltages.low) ? mountVoltages.low : (bMountCam ? 21.6 : 12.0);
-      let totalCurrentHigh = 0;
-      let totalCurrentLow = 0;
-      if (totalWatt > 0) {
-        totalCurrentHigh = totalWatt / highV;
-        totalCurrentLow = totalWatt / lowV;
-      }
-      refreshTotalCurrentLabels(currentLang, selectedPlate, mountVoltages);
-      if (totalCurrent144Target) {
-        totalCurrent144Target.textContent = totalCurrentHigh.toFixed(2);
-      }
-      if (totalCurrent12Target) {
-        totalCurrent12Target.textContent = totalCurrentLow.toFixed(2);
-      }
-    
-      // Update battery and hotswap options based on current draw
-      updateBatteryOptions();
-      battery = batterySelect.value;
-    
-    // Wenn kein Akku oder "None" ausgewählt ist: Laufzeit = nicht berechenbar, keine Warnungen
-    let hours = null;
-    if (!battery || battery === "None" || !devices.batteries[battery]) {
-      if (batteryLifeTarget) {
-        batteryLifeTarget.textContent = "–";
-      }
-      if (batteryCountTarget) {
-        batteryCountTarget.textContent = "–";
-      }
-      setStatusMessage(pinWarnTarget, '');
-      setStatusLevel(pinWarnTarget, null);
-      setStatusMessage(dtapWarnTarget, '');
-      setStatusLevel(dtapWarnTarget, null);
-      if (hotswapWarnTarget) {
-        setStatusMessage(hotswapWarnTarget, '');
-        setStatusLevel(hotswapWarnTarget, null);
-      }
-      closePowerWarningDialog();
-      lastRuntimeHours = null;
-      drawPowerDiagram(0, segments, 0);
-    } else {
-        const battData = devices.batteries[battery];
-        const hsName = hotswapSelect.value;
-        const hsData = devices.batteryHotswaps && devices.batteryHotswaps[hsName];
-        const capacityWh = battData.capacity + (hsData?.capacity || 0);
-        let maxPinA = battData.pinA;
-        const maxDtapA = battData.dtapA;
-        if (hsData && typeof hsData.pinA === 'number') {
-          if (hsData.pinA < maxPinA) {
-            setStatusMessage(
-              hotswapWarnTarget,
-              texts[currentLang].warnHotswapLower
-                .replace("{max}", hsData.pinA)
-                .replace("{batt}", battData.pinA)
-            );
-            setStatusLevel(hotswapWarnTarget, 'warning');
-            maxPinA = hsData.pinA;
-          } else {
-            setStatusMessage(hotswapWarnTarget, '');
-            setStatusLevel(hotswapWarnTarget, null);
-          }
-        } else {
-          if (hotswapWarnTarget) {
-            setStatusMessage(hotswapWarnTarget, '');
-            setStatusLevel(hotswapWarnTarget, null);
-          }
-        }
-        const availableWatt = maxPinA * lowV;
-        drawPowerDiagram(availableWatt, segments, maxPinA);
-        if (totalCurrent144Target) {
-          totalCurrent144Target.textContent = totalCurrentHigh.toFixed(2);
-        }
-        if (totalCurrent12Target) {
-          totalCurrent12Target.textContent = totalCurrentLow.toFixed(2);
-        }
-        if (totalWatt === 0) {
-          hours = Infinity;
-          if (batteryLifeTarget) {
-            batteryLifeTarget.textContent = "∞";
-          }
-        } else {
-          hours = capacityWh / totalWatt;
-          if (batteryLifeTarget) {
-            batteryLifeTarget.textContent = hours.toFixed(2);
-          }
-        }
-        lastRuntimeHours = hours;
-        // Round up total batteries to the next full number
-        let batteriesNeeded = 1;
-        if (Number.isFinite(hours) && hours > 0) {
-          batteriesNeeded = Math.max(1, Math.ceil(10 / hours));
-        }
-        if (batteryCountTarget) {
-          batteryCountTarget.textContent = batteriesNeeded.toString();
-        }
-        // Warnings about current draw vs battery limits
-        setStatusMessage(pinWarnTarget, '');
-        setStatusMessage(dtapWarnTarget, '');
-        let pinSeverity = "";
-        let dtapSeverity = "";
-        if (totalCurrentLow > maxPinA) {
-          setStatusMessage(
-            pinWarnTarget,
-            texts[currentLang].warnPinExceeded
-              .replace("{current}", totalCurrentLow.toFixed(2))
-              .replace("{max}", maxPinA)
-          );
-          pinSeverity = 'danger';
-        } else if (totalCurrentLow > maxPinA * 0.8) {
-          setStatusMessage(
-            pinWarnTarget,
-            texts[currentLang].warnPinNear
-              .replace("{current}", totalCurrentLow.toFixed(2))
-              .replace("{max}", maxPinA)
-          );
-          pinSeverity = 'note';
-        }
-        if (!bMountCam) {
-          if (totalCurrentLow > maxDtapA) {
-            setStatusMessage(
-              dtapWarnTarget,
-              texts[currentLang].warnDTapExceeded
-                .replace("{current}", totalCurrentLow.toFixed(2))
-                .replace("{max}", maxDtapA)
-            );
-            dtapSeverity = 'danger';
-          } else if (totalCurrentLow > maxDtapA * 0.8) {
-            setStatusMessage(
-              dtapWarnTarget,
-              texts[currentLang].warnDTapNear
-                .replace("{current}", totalCurrentLow.toFixed(2))
-                .replace("{max}", maxDtapA)
-            );
-            dtapSeverity = 'note';
-          }
-        }
-        const hasPinLimit = typeof maxPinA === 'number' && maxPinA > 0;
-        const pinsInsufficient = !hasPinLimit || totalCurrentLow > maxPinA;
-        const hasDtapRating = typeof maxDtapA === 'number' && maxDtapA > 0;
-        const dtapAllowed = !bMountCam && hasDtapRating;
-        const dtapInsufficient = !dtapAllowed || (hasDtapRating && totalCurrentLow > maxDtapA);
-        if (totalCurrentLow > 0 && pinsInsufficient && dtapInsufficient) {
-          const option = batterySelect && batterySelect.options
-            ? batterySelect.options[batterySelect.selectedIndex]
-            : null;
-          const labelText = option && typeof option.textContent === 'string'
-            ? option.textContent.trim()
-            : String(battery || '');
-          showPowerWarningDialog({
-            batteryName: labelText,
-            current: totalCurrentLow,
-            hasPinLimit,
-            pinLimit: hasPinLimit ? maxPinA : null,
-            hasDtapRating,
-            dtapLimit: hasDtapRating ? maxDtapA : null,
-            dtapAllowed,
-          });
-        } else {
-          closePowerWarningDialog();
-        }
-        // Show max current capability and status (OK/Warning) for Pin and D-Tap
-        if (pinWarnTarget && pinWarnTarget.textContent === "") {
-          setStatusMessage(
-            pinWarnTarget,
-            texts[currentLang].pinOk
-              .replace("{max}", maxPinA)
-          );
-          setStatusLevel(pinWarnTarget, 'success');
-        } else {
-          setStatusLevel(pinWarnTarget, pinSeverity || 'warning');
-        }
-        if (!bMountCam) {
-          if (dtapWarnTarget && dtapWarnTarget.textContent === "") {
-            setStatusMessage(
-              dtapWarnTarget,
-              texts[currentLang].dtapOk
-                .replace("{max}", maxDtapA)
-            );
-            setStatusLevel(dtapWarnTarget, 'success');
-          } else {
-            setStatusLevel(dtapWarnTarget, dtapSeverity || 'warning');
-          }
-        } else {
-          setStatusMessage(dtapWarnTarget, '');
-          setStatusLevel(dtapWarnTarget, null);
-        }
-      }
-    
-      // Battery comparison table update
-      if (totalWatt > 0) {
-        // Build lists of batteries that can supply this current (via Pin or D-Tap)
-        const selectedBatteryName = batterySelect.value;
-        const camName = cameraSelect.value;
-        const plateFilter = getSelectedPlate();
-        const supportsB = supportsBMountCamera(camName);
-        const supportsGold = supportsGoldMountCamera(camName);
-        let selectedCandidate = null;
-        if (selectedBatteryName && selectedBatteryName !== "None" && devices.batteries[selectedBatteryName]) {
-          const selData = devices.batteries[selectedBatteryName];
-          if (
-            (!plateFilter || selData.mount_type === plateFilter) &&
-            (supportsB || selData.mount_type !== 'B-Mount') &&
-            (supportsGold || selData.mount_type !== 'Gold-Mount')
-          ) {
-            const pinOK_sel = totalCurrentLow <= selData.pinA;
-            const dtapOK_sel = !bMountCam && totalCurrentLow <= selData.dtapA;
-            if (pinOK_sel || dtapOK_sel) {
-              const selHours = selData.capacity / totalWatt;
-              let selMethod;
-              if (pinOK_sel && dtapOK_sel) selMethod = "both pins and D-Tap";
-              else if (pinOK_sel) selMethod = "pins";
-              else selMethod = "dtap";
-              selectedCandidate = { name: selectedBatteryName, hours: selHours, method: selMethod };
-            }
-          }
-        }
-    
-        const pinsCandidates = [];
-        const dtapCandidates = [];
-        const nameCollator = (
-          typeof collator !== 'undefined' &&
-          collator &&
-          typeof collator.compare === 'function'
-        )
-          ? collator
-          : (typeof Intl !== 'undefined' && typeof Intl.Collator === 'function'
-              ? new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' })
-              : { compare: (a, b) => String(a).localeCompare(String(b)) });
-        for (let battName in devices.batteries) {
-          if (battName === "None") continue;
-          if (selectedCandidate && battName === selectedCandidate.name) continue;
-    
-          const battData = devices.batteries[battName];
-          if (plateFilter && battData.mount_type !== plateFilter) continue;
-          if (!plateFilter && !supportsB && battData.mount_type === 'B-Mount') continue;
-          if (!plateFilter && !supportsGold && battData.mount_type === 'Gold-Mount') continue;
-          const canPin = totalCurrentLow <= battData.pinA;
-          const canDTap = !bMountCam && totalCurrentLow <= battData.dtapA;
-    
-          if (canPin) {
-            const hours = battData.capacity / totalWatt;
-            const method = (canDTap ? "both pins and D-Tap" : "pins");
-            pinsCandidates.push({ name: battName, hours: hours, method: method });
-          } else if (canDTap) {
-            const hours = battData.capacity / totalWatt;
-            dtapCandidates.push({ name: battName, hours: hours, method: "dtap" });
-          }
-        }
-    
-        // Sort by runtime (hours) descending within each group
-        // Ensure stable ordering: sort by runtime descending, then by name
-        const sortByHoursThenName = (a, b) => {
-          const diff = b.hours - a.hours;
-          return diff !== 0 ? diff : nameCollator.compare(a.name, b.name);
-        };
-        pinsCandidates.sort(sortByHoursThenName);
-        dtapCandidates.sort(sortByHoursThenName);
-    
-        // Prepare table HTML
-        const batteryHeaderHelp = texts[currentLang].batteryTableBatteryHelp || '';
-        const runtimeHeaderHelp = texts[currentLang].batteryTableRuntimeHelp || '';
-        const graphHeaderHelp = texts[currentLang].batteryTableGraphHelp || '';
-        const graphHeaderLabel = texts[currentLang].batteryTableGraphLabel || '';
-
-        const batteryHelpAttr = batteryHeaderHelp
-          ? ` data-help="${escapeHtml(batteryHeaderHelp)}"`
-          : '';
-        const runtimeHelpAttr = runtimeHeaderHelp
-          ? ` data-help="${escapeHtml(runtimeHeaderHelp)}"`
-          : '';
-        const graphHelpAttr = graphHeaderHelp
-          ? ` data-help="${escapeHtml(graphHeaderHelp)}"`
-          : '';
-        const graphAriaAttr = graphHeaderLabel
-          ? ` aria-label="${escapeHtml(graphHeaderLabel)}"`
-          : '';
-        const graphHeaderContent = graphHeaderLabel
-          ? `<span class="visually-hidden">${escapeHtml(graphHeaderLabel)}</span>`
-          : '';
-
-        let tableHtml = `<tr>` +
-          `<th${batteryHelpAttr}>${escapeHtml(texts[currentLang].batteryTableLabel)}</th>` +
-          `<th${runtimeHelpAttr}>${escapeHtml(texts[currentLang].runtimeLabel)}</th>` +
-          `<th${graphHelpAttr}${graphAriaAttr}>${graphHeaderContent}</th>` +
-          `</tr>`;
-    
-        if ((selectedCandidate ? 1 : 0) + pinsCandidates.length + dtapCandidates.length === 0) {
-          // No battery can supply via either output
-          tableHtml += `<tr><td colspan="3">${texts[currentLang].noBatterySupports}</td></tr>`;
-        } else {
-          const allCandidatesForMax = (selectedCandidate ? [selectedCandidate] : []).concat(pinsCandidates, dtapCandidates);
-          const maxHours = Math.max(...allCandidatesForMax.map(c => c.hours)) || 1; // Ensure not dividing by zero
-    
-          // Helper function to get the correct bar class
-          const getBarClass = (method) => {
-              return method === "pins" ? "bar bar-pins-only" : "bar";
-          };
-          // Helper to display method label
-          const getMethodLabel = (method) => {
-                const colorMap = {
-                  pins: { var: '--warning-color', fallback: '#FF9800', text: texts[currentLang].methodPinsOnly },
-                  'both pins and D-Tap': { var: '--success-color', fallback: '#4CAF50', text: texts[currentLang].methodPinsAndDTap },
-                  infinite: { var: '--info-color', fallback: '#007bff', text: texts[currentLang].methodInfinite }
-                };
-                const entry = colorMap[method];
-                if (entry) {
-                  const color = getCssVariableValue(entry.var, entry.fallback);
-                  return `<span style="color:${color};">${entry.text}</span>`;
-                }
-                return method;
-            };
-    
-          // Add selected battery first, if it's a valid candidate
-          if (selectedCandidate) {
-            tableHtml += `<tr class="selectedBatteryRow">
-                            <td>${escapeHtml(selectedCandidate.name)}</td>
-                            <td>${selectedCandidate.hours.toFixed(2)}h (${getMethodLabel(selectedCandidate.method)})</td>
-                            <td>
-                              <div class="barContainer">
-                                <div class="${getBarClass(selectedCandidate.method)}" style="width: ${(selectedCandidate.hours / maxHours) * 100}%;"></div>
-                              </div>
-                            </td>
-                          </tr>`;
-          }
-          // Add other candidates
-          pinsCandidates.forEach(candidate => {
-            if (selectedCandidate && candidate.name === selectedCandidate.name) return; // Already added if selected
-            tableHtml += `<tr>
-                            <td>${escapeHtml(candidate.name)}</td>
-                            <td>${candidate.hours.toFixed(2)}h (${getMethodLabel(candidate.method)})</td>
-                            <td>
-                              <div class="barContainer">
-                                <div class="${getBarClass(candidate.method)}" style="width: ${(candidate.hours / maxHours) * 100}%;"></div>
-                              </div>
-                            </td>
-                          </tr>`;
-          });
-           dtapCandidates.forEach(candidate => {
-            if (selectedCandidate && candidate.name === selectedCandidate.name) return; // Already added if selected
-            // Only add if not already in pinsCandidates (to avoid duplicates if a battery can do both but was only listed under dtapCandidates)
-            const alreadyInPins = pinsCandidates.some(p => p.name === candidate.name);
-            if (!alreadyInPins) {
-                tableHtml += `<tr>
-                                <td>${escapeHtml(candidate.name)}</td>
-                                <td>${candidate.hours.toFixed(2)}h (${getMethodLabel(candidate.method)})</td>
-                                <td>
-                                  <div class="barContainer">
-                                    <div class="${getBarClass(candidate.method)}" style="width: ${(candidate.hours / maxHours) * 100}%;"></div>
-                                  </div>
-                                </td>
-                              </tr>`;
-            }
-          });
-        }
-        batteryTableElem.innerHTML = tableHtml;
-        const tableHelpText = texts[currentLang].batteryComparisonTableHelp || '';
-        if (tableHelpText) {
-          batteryTableElem.setAttribute('data-help', tableHelpText);
-        }
-        batteryComparisonSection.style.display = "block";
-      } else {
-        batteryComparisonSection.style.display = "none";
-      }
-      const feedback = renderFeedbackTable(getCurrentSetupKey());
-      if (feedback !== null) {
-        let combinedRuntime = feedback.runtime;
-        if (Number.isFinite(hours)) {
-          combinedRuntime =
-            (feedback.runtime * feedback.weight + hours) / (feedback.weight + 1);
-        }
-        if (batteryLifeTarget) {
-          batteryLifeTarget.textContent = combinedRuntime.toFixed(2);
-        }
-        lastRuntimeHours = combinedRuntime;
-        if (batteryLifeLabelTarget) {
-          let label = texts[currentLang].batteryLifeLabel;
-          const userNote = texts[currentLang].runtimeUserCountNote.replace('{count}', feedback.count);
-          const idx = label.indexOf(')');
-          if (idx !== -1) {
-            label = `${label.slice(0, idx)}, ${userNote}${label.slice(idx)}`;
-          }
-          batteryLifeLabelTarget.textContent = label;
-          batteryLifeLabelTarget.setAttribute(
-            "data-help",
-            texts[currentLang].batteryLifeHelp
-          );
-        }
-        if (runtimeAverageNoteTarget) {
-          runtimeAverageNoteTarget.textContent =
-            feedback.count > 4 ? texts[currentLang].runtimeAverageNote : '';
-        }
-        let batteriesNeeded = 1;
-        if (Number.isFinite(combinedRuntime) && combinedRuntime > 0) {
-          batteriesNeeded = Math.max(1, Math.ceil(10 / combinedRuntime));
-        }
-        if (batteryCountTarget) {
-          batteryCountTarget.textContent = batteriesNeeded.toString();
-        }
-      } else {
-        if (batteryLifeLabelTarget) {
-          batteryLifeLabelTarget.textContent = texts[currentLang].batteryLifeLabel;
-          batteryLifeLabelTarget.setAttribute(
-            "data-help",
-            texts[currentLang].batteryLifeHelp
-          );
-        }
-        if (runtimeAverageNoteTarget) {
-          runtimeAverageNoteTarget.textContent = '';
-        }
-      }
-      renderTemperatureNote(lastRuntimeHours);
-      checkFizCompatibility();
-      checkFizController();
-      checkArriCompatibility();
-      if (setupDiagramContainer) renderSetupDiagram();
-      refreshGearListIfVisible();
     }
-    
+
     function getCurrentSetupKey() {
       const safeSelectValue = (select) => (
         select && typeof select.value === 'string'

@@ -203,6 +203,224 @@ describe('cineResults module', () => {
     expect(table.attributes['data-help']).toBe('Detailed battery performance table.');
   });
 
+  test('updateCalculations delegates power and runtime processing', () => {
+    const cameraSelect = { value: 'CameraA' };
+    const monitorSelect = { value: 'MonitorA' };
+    const videoSelect = { value: 'VideoA' };
+    const distanceSelect = { value: 'DistanceA' };
+    const batterySelect = {
+      value: 'BatteryA',
+      options: [{ textContent: 'BatteryA' }],
+      selectedIndex: 0,
+    };
+    const hotswapSelect = { value: 'HotswapA' };
+    const motorSelects = [{ value: 'MotorA' }];
+    const controllerSelects = [{ value: 'ControllerA' }];
+
+    const totalPowerElem = createElement('');
+    const totalCurrent144Elem = createElement('');
+    const totalCurrent12Elem = createElement('');
+    const batteryLifeElem = createElement('');
+    const batteryCountElem = createElement('');
+    const batteryLifeLabelElem = createElement('');
+    const runtimeAverageNoteElem = createElement('');
+    const pinWarnElem = createElement('');
+    const dtapWarnElem = createElement('');
+    const hotswapWarnElem = createElement('');
+    const batteryComparisonSection = { style: { display: 'none' } };
+    const batteryTableElem = createElement('');
+    batteryTableElem.innerHTML = '';
+
+    const breakdownListElem = {
+      _html: '',
+      entries: [],
+      insertAdjacentHTML: jest.fn(function insertAdjacentHTML(_, html) {
+        this.entries.push(html);
+      }),
+      appendChild: jest.fn(),
+      set innerHTML(value) {
+        this._html = value;
+        this.entries = [];
+      },
+      get innerHTML() {
+        return this._html;
+      },
+    };
+
+    const setupDiagramContainer = {};
+    const doc = {
+      createElement: jest.fn(() => ({ innerHTML: '', appendChild: jest.fn() })),
+    };
+
+    const devices = {
+      cameras: { CameraA: { powerDrawWatts: 20 } },
+      monitors: { MonitorA: { powerDrawWatts: 10, brightnessNits: 1000 } },
+      video: { VideoA: { powerDrawWatts: 5 } },
+      fiz: {
+        motors: { MotorA: { powerDrawWatts: 2 } },
+        controllers: { ControllerA: { powerDrawWatts: 3 } },
+        distance: { DistanceA: { powerDrawWatts: 1 } },
+      },
+      batteries: {
+        BatteryA: { capacity: 150, pinA: 10, dtapA: 5, mount_type: 'B-Mount' },
+        BatteryB: { capacity: 100, pinA: 8, dtapA: 4, mount_type: 'B-Mount' },
+      },
+      batteryHotswaps: { HotswapA: { capacity: 30, pinA: 9 } },
+    };
+
+    const texts = {
+      en: {
+        cameraLabel: 'Camera',
+        monitorLabel: 'Monitor',
+        videoLabel: 'Video',
+        fizMotorsLabel: 'Motors',
+        fizControllersLabel: 'Controllers',
+        distanceLabel: 'Distance',
+        warnHotswapLower: 'Hotswap max {max} vs battery {batt}',
+        pinOk: 'Pin OK {max}',
+        dtapOk: 'DTAP OK {max}',
+        warnPinExceeded: 'Pin exceeded {current}/{max}',
+        warnPinNear: 'Pin near {current}/{max}',
+        warnDTapExceeded: 'DTAP exceeded {current}/{max}',
+        warnDTapNear: 'DTAP near {current}/{max}',
+        batteryTableBatteryHelp: 'Battery help',
+        batteryTableRuntimeHelp: 'Runtime help',
+        batteryTableGraphHelp: 'Graph help',
+        batteryTableGraphLabel: 'Graph',
+        batteryTableLabel: 'Battery',
+        runtimeLabel: 'Runtime',
+        noBatterySupports: 'No batteries',
+        methodPinsOnly: 'Pins only',
+        methodPinsAndDTap: 'Pins and DTAP',
+        methodInfinite: 'Infinite',
+        batteryComparisonTableHelp: 'Table help',
+        batteryLifeLabel: 'Battery life',
+        runtimeUserCountNote: 'Used by {count}',
+        batteryLifeHelp: 'Life help',
+        runtimeAverageNote: 'Average note',
+      },
+    };
+
+    let lastRuntimeHoursValue = 1.2;
+    const refreshTotalCurrentLabels = jest.fn();
+    const updateBatteryOptions = jest.fn();
+    const setStatusMessage = jest.fn((elem, message) => {
+      if (elem) elem.textContent = message;
+    });
+    const setStatusLevel = jest.fn((elem, level) => {
+      if (elem) elem.status = level;
+    });
+    const closePowerWarningDialog = jest.fn();
+    const showPowerWarningDialog = jest.fn();
+    const drawPowerDiagram = jest.fn();
+    const renderFeedbackTable = jest.fn(() => ({ runtime: 2, weight: 1, count: 5 }));
+    const getCurrentSetupKey = jest.fn(() => 'key-1');
+    const renderTemperatureNote = jest.fn();
+    const checkFizCompatibility = jest.fn();
+    const checkFizController = jest.fn();
+    const checkArriCompatibility = jest.fn();
+    const renderSetupDiagram = jest.fn();
+    const refreshGearListIfVisible = jest.fn();
+    const supportsBMountCamera = jest.fn(() => true);
+    const supportsGoldMountCamera = jest.fn(() => false);
+    const getCssVariableValue = jest.fn(() => '#123456');
+    const escapeHtml = (value) => String(value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+    const getLastRuntimeHours = jest.fn(() => lastRuntimeHoursValue);
+    const setLastRuntimeHours = jest.fn((value) => {
+      lastRuntimeHoursValue = value;
+    });
+
+    cineResults.updateCalculations({
+      document: doc,
+      elements: {
+        cameraSelect,
+        monitorSelect,
+        videoSelect,
+        distanceSelect,
+        batterySelect,
+        hotswapSelect,
+        totalPowerElem,
+        breakdownListElem,
+        totalCurrent144Elem,
+        totalCurrent12Elem,
+        batteryLifeElem,
+        batteryCountElem,
+        batteryLifeLabelElem,
+        runtimeAverageNoteElem,
+        pinWarnElem,
+        dtapWarnElem,
+        hotswapWarnElem,
+        batteryComparisonSection,
+        batteryTableElem,
+        setupDiagramContainer,
+      },
+      motorSelects,
+      controllerSelects,
+      getDevices: () => devices,
+      getTexts: () => texts,
+      getCurrentLang: () => 'en',
+      getCollator: () => null,
+      getSelectedPlate: () => 'B-Mount',
+      getMountVoltageConfig: () => ({ high: 33.6, low: 21.6 }),
+      refreshTotalCurrentLabels,
+      updateBatteryOptions,
+      setStatusMessage,
+      setStatusLevel,
+      closePowerWarningDialog,
+      showPowerWarningDialog,
+      drawPowerDiagram,
+      renderFeedbackTable,
+      getCurrentSetupKey,
+      renderTemperatureNote,
+      checkFizCompatibility,
+      checkFizController,
+      checkArriCompatibility,
+      renderSetupDiagram,
+      refreshGearListIfVisible,
+      supportsBMountCamera,
+      supportsGoldMountCamera,
+      getCssVariableValue,
+      escapeHtml,
+      getLastRuntimeHours,
+      setLastRuntimeHours,
+    });
+
+    expect(totalPowerElem.textContent).toBe('41.0');
+    expect(totalCurrent144Elem.textContent).toBe('1.22');
+    expect(totalCurrent12Elem.textContent).toBe('1.90');
+    expect(Number(batteryLifeElem.textContent)).toBeCloseTo(3.2, 2);
+    expect(batteryCountElem.textContent).toBe('4');
+    expect(batteryLifeLabelElem.textContent).toContain('Used by 5');
+    expect(batteryLifeLabelElem.attributes['data-help']).toBe('Life help');
+    expect(runtimeAverageNoteElem.textContent).toBe('Average note');
+    expect(pinWarnElem.textContent).toContain('Pin OK');
+    expect(setStatusMessage).toHaveBeenCalledWith(
+      hotswapWarnElem,
+      expect.stringContaining('9'),
+    );
+    expect(setStatusLevel).toHaveBeenCalledWith(hotswapWarnElem, 'warning');
+    expect(refreshTotalCurrentLabels).toHaveBeenCalledWith('en', 'B-Mount', { high: 33.6, low: 21.6 });
+    expect(updateBatteryOptions).toHaveBeenCalled();
+    expect(drawPowerDiagram).toHaveBeenCalled();
+    expect(renderFeedbackTable).toHaveBeenCalledWith('key-1');
+    expect(refreshGearListIfVisible).toHaveBeenCalled();
+    expect(checkFizCompatibility).toHaveBeenCalled();
+    expect(checkFizController).toHaveBeenCalled();
+    expect(checkArriCompatibility).toHaveBeenCalled();
+    expect(renderSetupDiagram).toHaveBeenCalled();
+    expect(batteryComparisonSection.style.display).toBe('block');
+    expect(batteryTableElem.innerHTML).toContain('BatteryB');
+    const lastRuntimeRecorded = setLastRuntimeHours.mock.calls[setLastRuntimeHours.mock.calls.length - 1][0];
+    expect(lastRuntimeRecorded).toBeCloseTo(3.195, 3);
+    const temperatureNoteValue = renderTemperatureNote.mock.calls[renderTemperatureNote.mock.calls.length - 1][0];
+    expect(temperatureNoteValue).toBeCloseTo(3.195, 3);
+  });
+
   test('setupRuntimeFeedback wires handlers and persists sanitized entries', () => {
     const fieldElements = new Map();
     FEEDBACK_FIELD_CONFIG.forEach(({ id }) => {
