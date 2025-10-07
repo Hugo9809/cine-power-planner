@@ -26,8 +26,8 @@ The logging serializers now retain detail from Maps, Sets, typed arrays, URL par
 
 | Workflow | Primary controls (UI/Keyboard) | What success looks like | Evidence to capture |
 | --- | --- | --- | --- |
-| Manual save | Project header → **Save** or `Enter` / `Ctrl+S` / `⌘S` | Project appears in selector with updated timestamp, `auto-backup-…` snapshot joins within 10 minutes | Screenshot or timestamp log of selector, note `window.__cineRuntimeIntegrity.ok === true` |
-| Autosave confirmation | Stay on project for 10 minutes, watch selector or **Settings → Backup & Restore** overlay | New `auto-backup-…` entry listed, overlay reports latest autosave time | Capture overlay text, promote entry to manual save if needed |
+| Manual save | Project header → **Save** or `Enter` / `Ctrl+S` / `⌘S` | Project appears in selector with updated timestamp, `auto-backup-…` snapshot joins within 10 minutes or immediately after a project switch/import/export | Screenshot or timestamp log of selector, note `window.__cineRuntimeIntegrity.ok === true` |
+| Autosave confirmation | Stay on project for 10 minutes or trigger a project switch/import/export, watch selector or **Settings → Backup & Restore** overlay | New `auto-backup-…` entry listed, overlay reports latest autosave time | Capture overlay text, promote entry to manual save if needed |
 | Quick safeguards backup | **Settings → Data & Storage → Quick safeguards → Download full backup** | `planner-backup.json` downloads immediately and the storage dashboard logs the action | Store the JSON on redundant media and record the dashboard entry ID |
 | Planner backup export | **Settings → Backup & Restore → Backup** | Browser downloads `planner-backup.json` (or opens Manual download tab if blocked) | File stored on redundant media, checksum recorded, runtime guard check logged |
 | Project bundle export | **Share → Export project bundle** (rename to `.cpproject` if required) | Download includes project data, favorites and custom devices | File stored twice, verification note referencing isolation import |

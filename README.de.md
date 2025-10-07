@@ -160,7 +160,7 @@ Dieser kurze Ablauf sollte bei neuen Teammitgliedern, frisch eingerichteten Work
 ## Speichern & Projektverwaltung
 
 - **Manuelle Saves halten Versionen bewusst.** Projektnamen eingeben und **Enter**/**Speichern** drücken. Jede Version bewahrt Geräte, Anforderungen, Listen, Favoriten, Diagramm-Layouts und Laufzeitbeobachtungen.
-- **Auto-Saves schützen Fortschritt.** Während ein Projekt aktiv ist, schreibt die App Änderungen im Hintergrund. `auto-backup-…`-Einträge erscheinen alle zehn Minuten.
+- **Auto-Saves schützen Fortschritt.** Während ein Projekt aktiv ist, schreibt die App Änderungen im Hintergrund. `auto-backup-…`-Einträge erscheinen alle zehn Minuten, beim Projektwechsel, nach Importen oder Exporten, vor dem Neuladen und nach längeren Bearbeitungsphasen.
 - **Quick safeguards sichern sofort.** Öffne **Einstellungen → Daten & Speicher → Quick safeguards**, um ohne Tab-Wechsel ein Vollbackup zu laden oder direkt zum Wiederherstellungsbereich zu springen; jeder Lauf erscheint im Dashboard, damit du die JSON sofort ablegen kannst.【F:index.html†L2548-L2570】
 - **Auto-Backups bei Bedarf einblenden.** Über **Einstellungen → Backup & Wiederherstellung → Auto-Backups anzeigen** lassen sich die Zeitstempel im Selector sichtbar machen.
 - **Umbenennen erzeugt Duplikate.** Namen ändern und **Enter** drücken erstellt eine Abzweigung – ideal für Vergleichsversionen.
@@ -236,7 +236,7 @@ Dieser kurze Ablauf sollte bei neuen Teammitgliedern, frisch eingerichteten Work
 
 - Service Worker cached alle Assets, Updates warten auf deine Freigabe via **Neu laden erzwingen**.
 - Projekte, Laufzeitdaten, Favoriten, Custom-Geräte, Themes und Listen liegen im Browser-Speicher. Unterstützte Browser erhalten Persistenz-Anfragen, um Löschrisiken zu mindern.
-- Automatische Sicherungen stapeln Projektsnapshots alle zehn Minuten, stündliche Voll-Backups und Hintergrundarchive der Auto-Gear-Regeln. Aktiviere **Einstellungen → Backup & Wiederherstellung → Auto-Backups in Projektliste anzeigen**, um die Timeline einzublenden, die Aufbewahrung zu steuern und Snapshots ohne Verbindung wiederherzustellen.
+- Automatische Sicherungen stapeln Projektsnapshots alle zehn Minuten, beim Projektwechsel, nach Importen oder Exporten, vor dem Neuladen und nach längeren Bearbeitungsphasen; stündliche Voll-Backups und Hintergrundarchive der Auto-Gear-Regeln ergänzen die Timeline. Aktiviere **Einstellungen → Backup & Wiederherstellung → Auto-Backups in Projektliste anzeigen**, um die Aufbewahrung zu steuern und Snapshots ohne Verbindung wiederherzustellen.
 - Blockiert der Browser Downloads, öffnet die App einen Tab **Manueller Download** mit dem JSON, damit du es in eine `.json`-Datei kopierst und auf vertrauenswürdigen Offline-Medien ablegst.
 - Nutze **Einstellungen → Backup & Wiederherstellung → Versionen vergleichen**, um zwei Stände zu vergleichen, Kontext in **Vorfallsnotizen** festzuhalten und ein Prüfprotokoll für Übergaben zu exportieren.
 - Starte **Wiederherstellungsprobe** in **Einstellungen → Backup & Wiederherstellung**, lade das Backup in eine Wegwerf-Sandbox, prüfe die Vergleichstabelle und bestätige die Integrität, bevor du **Wiederherstellen** auf die Live-Daten anwendest.

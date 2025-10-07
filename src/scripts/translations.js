@@ -748,6 +748,7 @@ const texts = {
       "Review the most recent saves and backups at a glance.",
     storageStatusLastProjectLabel: "Latest project save",
     storageStatusLastAutoBackupLabel: "Latest auto backup",
+    autoBackupInProgressNotice: "Auto backup in progress. Performance may pause briefly.",
     storageStatusLastFullBackupLabel: "Latest full app backup",
     loggingSectionHelp: "Review runtime diagnostics without leaving Settings.",
     loggingHeading: "Diagnostics log",
@@ -806,7 +807,8 @@ const texts = {
     storageProjectsCountOne: "%s project",
     storageProjectsCountOther: "%s projects",
     storageKeyAutoBackups: "Auto backups",
-    storageKeyAutoBackupsDesc: "Timestamped safety copies saved every 10 minutes.",
+    storageKeyAutoBackupsDesc:
+      "Timestamped safety copies saved every 10 minutes, when you switch projects, import or export data, before reloads, and after extended editing streaks.",
     storageAutoBackupsCountOne: "%s auto backup",
     storageAutoBackupsCountOther: "%s auto backups",
     storageKeyGearLists: "Gear list snapshots",
@@ -2718,6 +2720,8 @@ const texts = {
       "Controlla a colpo d’occhio gli ultimi salvataggi e backup.",
     storageStatusLastProjectLabel: "Ultimo salvataggio progetto",
     storageStatusLastAutoBackupLabel: "Ultimo backup automatico",
+    autoBackupInProgressNotice:
+      "Backup automatico in corso. Le prestazioni potrebbero fermarsi per un momento.",
     storageStatusLastFullBackupLabel: "Ultimo backup completo dell’app",
     loggingSectionHelp: "Controlla le diagnostiche in tempo reale senza lasciare Impostazioni.",
     loggingHeading: "Registro diagnostico",
@@ -2776,7 +2780,8 @@ const texts = {
     storageProjectsCountOne: "%s progetto",
     storageProjectsCountOther: "%s progetti",
     storageKeyAutoBackups: "Backup automatici",
-    storageKeyAutoBackupsDesc: "Copie di sicurezza con timestamp salvate ogni 10 minuti.",
+    storageKeyAutoBackupsDesc:
+      "Copie di sicurezza con timestamp ogni 10 minuti, quando cambi progetto, importi o esporti dati, prima dei ricaricamenti e dopo lunghe sessioni di modifica.",
     storageAutoBackupsCountOne: "%s backup automatico",
     storageAutoBackupsCountOther: "%s backup automatici",
     storageKeyGearLists: "Snapshot delle liste materiali",
@@ -4210,6 +4215,8 @@ const texts = {
       "Revisa de un vistazo los guardados y respaldos más recientes.",
     storageStatusLastProjectLabel: "Último guardado de proyecto",
     storageStatusLastAutoBackupLabel: "Último respaldo automático",
+    autoBackupInProgressNotice:
+      "Copia de seguridad automática en curso. El rendimiento puede detenerse brevemente.",
     storageStatusLastFullBackupLabel: "Último respaldo completo de la app",
     loggingSectionHelp: "Revise los diagnósticos en tiempo real sin salir de Ajustes.",
     loggingHeading: "Registro de diagnósticos",
@@ -4267,7 +4274,8 @@ const texts = {
     storageProjectsCountOne: "%s proyecto",
     storageProjectsCountOther: "%s proyectos",
     storageKeyAutoBackups: "Copias automáticas",
-    storageKeyAutoBackupsDesc: "Copias de seguridad con marca de tiempo cada 10 minutos.",
+    storageKeyAutoBackupsDesc:
+      "Copias de seguridad con marca de tiempo cada 10 minutos, al cambiar de proyecto, al importar o exportar datos, antes de recargar y después de rachas largas de edición.",
     storageAutoBackupsCountOne: "%s copia automática",
     storageAutoBackupsCountOther: "%s copias automáticas",
     storageKeyGearLists: "Capturas de listas de equipo",
@@ -5712,6 +5720,8 @@ const texts = {
       "Passez en revue en un coup d’œil les derniers enregistrements et sauvegardes.",
     storageStatusLastProjectLabel: "Dernier enregistrement de projet",
     storageStatusLastAutoBackupLabel: "Dernière sauvegarde automatique",
+    autoBackupInProgressNotice:
+      "Sauvegarde automatique en cours. Les performances peuvent se mettre en pause un instant.",
     storageStatusLastFullBackupLabel: "Dernière sauvegarde complète de l’application",
     loggingSectionHelp: "Consultez les diagnostics en direct sans quitter les paramètres.",
     loggingHeading: "Journal de diagnostics",
@@ -5770,7 +5780,8 @@ const texts = {
     storageProjectsCountOne: "%s projet",
     storageProjectsCountOther: "%s projets",
     storageKeyAutoBackups: "Sauvegardes automatiques",
-    storageKeyAutoBackupsDesc: "Copies horodatées enregistrées toutes les 10 minutes.",
+    storageKeyAutoBackupsDesc:
+      "Copies horodatées enregistrées toutes les 10 minutes, lors d'un changement de projet, d'une importation ou d'une exportation, avant un rechargement et après de longues séries de modifications.",
     storageAutoBackupsCountOne: "%s sauvegarde automatique",
     storageAutoBackupsCountOther: "%s sauvegardes automatiques",
     storageKeyGearLists: "Instantanés des listes de matériel",
@@ -7219,6 +7230,8 @@ const texts = {
       "Überblick über die letzten Speicherungen und Backups.",
     storageStatusLastProjectLabel: "Letztes Projekt-Speichern",
     storageStatusLastAutoBackupLabel: "Letztes Auto-Backup",
+    autoBackupInProgressNotice:
+      "Automatische Sicherung läuft. Die Leistung kann kurzzeitig pausieren.",
     storageStatusLastFullBackupLabel: "Letztes vollständiges App-Backup",
     loggingSectionHelp: "Prüfen Sie Laufzeitdiagnosen direkt in den Einstellungen.",
     loggingHeading: "Diagnoseprotokoll",
@@ -7277,7 +7290,8 @@ const texts = {
     storageProjectsCountOne: "%s Projekt",
     storageProjectsCountOther: "%s Projekte",
     storageKeyAutoBackups: "Automatische Sicherungen",
-    storageKeyAutoBackupsDesc: "Zeitgestempelte Sicherungskopien alle 10 Minuten.",
+    storageKeyAutoBackupsDesc:
+      "Zeitgestempelte Sicherungskopien alle 10 Minuten, beim Projektwechsel, beim Import oder Export, vor dem Neuladen und nach längeren Bearbeitungsphasen.",
     storageAutoBackupsCountOne: "%s Auto-Backup",
     storageAutoBackupsCountOther: "%s Auto-Backups",
     storageKeyGearLists: "Gear-Listen-Snapshots",

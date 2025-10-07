@@ -52,6 +52,108 @@ const APP_EVENTS_AUTO_BACKUP_RENAMED_FLAG =
     ? globalThis.__CINE_AUTO_BACKUP_RENAMED_FLAG
     : '__cineAutoBackupRenamed';
 
+function getGlobalScope() {
+  if (typeof globalThis !== 'undefined' && globalThis) return globalThis;
+  if (typeof window !== 'undefined' && window) return window;
+  if (typeof self !== 'undefined' && self) return self;
+  if (typeof global !== 'undefined' && global) return global;
+  return null;
+}
+
+const AUTO_BACKUP_CHANGE_THRESHOLD = 50;
+let autoBackupChangesSinceSnapshot = 0;
+let autoBackupThresholdInProgress = false;
+
+function resetAutoBackupChangeCounter() {
+  autoBackupChangesSinceSnapshot = 0;
+}
+
+function recordAutoBackupRun(result) {
+  autoBackupThresholdInProgress = false;
+  if (!result || typeof result !== 'object') {
+    return;
+  }
+  const status = typeof result.status === 'string' ? result.status : null;
+  const reason = typeof result.reason === 'string' ? result.reason : null;
+  if (status === 'skipped') {
+    if (reason === 'unchanged') {
+      resetAutoBackupChangeCounter();
+    }
+    return;
+  }
+  if (status && status !== 'error') {
+    resetAutoBackupChangeCounter();
+  }
+}
+
+function showAutoBackupIndicatorSafe() {
+  const scope = getGlobalScope();
+  const indicator = scope && typeof scope.__cineShowAutoBackupIndicator === 'function'
+    ? scope.__cineShowAutoBackupIndicator
+    : null;
+  if (!indicator) {
+    return () => {};
+  }
+  try {
+    const message = resolveAutoBackupIndicatorMessage();
+    const hide = indicator(message);
+    return typeof hide === 'function' ? hide : () => {};
+  } catch (indicatorError) {
+    console.warn('Failed to show auto backup indicator', indicatorError);
+    return () => {};
+  }
+}
+
+function triggerAutoBackupForChangeThreshold(details) {
+  if (autoBackupThresholdInProgress) {
+    return;
+  }
+  autoBackupThresholdInProgress = true;
+  const run = () => {
+    try {
+      autoBackup({ suppressSuccess: true, triggerAutoSaveNotification: true });
+    } catch (error) {
+      console.warn('Failed to run auto backup after change threshold', error);
+      autoBackupThresholdInProgress = false;
+    }
+  };
+  if (typeof queueMicrotask === 'function') {
+    try {
+      queueMicrotask(run);
+      return;
+    } catch (queueError) {
+      console.warn('Failed to queue auto backup microtask', queueError);
+    }
+  }
+  const timer = setTimeout(run, 0);
+  if (timer && typeof timer.unref === 'function') {
+    timer.unref();
+  }
+}
+
+function noteAutoBackupRelevantChange(details = {}) {
+  if (details && details.reset === true) {
+    resetAutoBackupChangeCounter();
+    return;
+  }
+  autoBackupChangesSinceSnapshot = Math.min(
+    AUTO_BACKUP_CHANGE_THRESHOLD,
+    autoBackupChangesSinceSnapshot + 1,
+  );
+  if (autoBackupChangesSinceSnapshot >= AUTO_BACKUP_CHANGE_THRESHOLD) {
+    triggerAutoBackupForChangeThreshold(details);
+  }
+}
+
+try {
+  const scope = getGlobalScope();
+  if (scope) {
+    scope.__cineNoteAutoBackupChange = noteAutoBackupRelevantChange;
+  }
+} catch (changeExposeError) {
+  console.warn('Failed to expose auto backup change tracker', changeExposeError);
+}
+
 function markAutoBackupDataAsRenamed(value) {
   if (!value || typeof value !== 'object') {
     return;
@@ -1322,9 +1424,11 @@ function determineNextAutoBackupPlan(setups) {
   };
 }
 
-// Auto-save backups every 10 minutes. Saved backups appear in the setup
-// selector but do not change the currently selected setup. Intervals are
-// unref'ed when possible so Node environments can exit cleanly.
+// Automatic backups run every 10 minutes, when switching projects, during
+// import or export operations, before reloads, and after sustained edit
+// activity. Saved backups appear in the setup selector but do not change the
+// currently selected setup. Intervals are unref'ed when possible so Node
+// environments can exit cleanly.
 function autoBackup(options = {}) {
   const setupSelectElement = getSetupSelectElement();
   if (!setupSelectElement) return null;
@@ -1365,7 +1469,9 @@ function autoBackup(options = {}) {
   let nameForBackup = '';
   if (overrideName !== null && overrideName !== undefined) {
     if (overrideName && isAutoBackupName(overrideName)) {
-      return { status: 'skipped', reason: 'auto-backup-selected' };
+      const skipped = { status: 'skipped', reason: 'auto-backup-selected' };
+      recordAutoBackupRun(skipped);
+      return skipped;
     }
     nameForBackup = overrideName;
   } else if (normalizedSelectedName && isAutoBackupName(normalizedSelectedName)) {
@@ -1376,12 +1482,22 @@ function autoBackup(options = {}) {
     ) {
       nameForBackup = normalizedTypedName;
     } else {
-      return { status: 'skipped', reason: 'auto-backup-selected' };
+      const skipped = { status: 'skipped', reason: 'auto-backup-selected' };
+      recordAutoBackupRun(skipped);
+      return skipped;
     }
   } else if (normalizedSelectedName) {
     nameForBackup = normalizedSelectedName;
   } else if (normalizedTypedName) {
     nameForBackup = normalizedTypedName;
+  }
+
+  let hideIndicator = null;
+  try {
+    hideIndicator = showAutoBackupIndicatorSafe();
+  } catch (indicatorError) {
+    console.warn('Failed to prepare auto backup indicator', indicatorError);
+    hideIndicator = null;
   }
 
   try {
@@ -1411,12 +1527,14 @@ function autoBackup(options = {}) {
     const gearListGenerated = Boolean(currentGearListHtml);
     const currentSignature = computeAutoBackupStateSignature(currentSetup, gearSelectors, gearListGenerated);
     if (!force && lastAutoBackupSignature && currentSignature === lastAutoBackupSignature) {
-      return {
+      const skipped = {
         status: 'skipped',
         reason: 'unchanged',
         name: lastAutoBackupName || null,
         createdAt: lastAutoBackupCreatedAtIso || null,
       };
+      recordAutoBackupRun(skipped);
+      return skipped;
     }
     const timestamp = now.toISOString();
     const backupMetadata = {
@@ -1468,13 +1586,27 @@ function autoBackup(options = {}) {
     lastAutoBackupSignature = currentSignature;
     lastAutoBackupName = backupName;
     lastAutoBackupCreatedAtIso = timestamp;
+    recordAutoBackupRun({
+      status: 'success',
+      name: backupName,
+      createdAt: timestamp,
+    });
     return backupName;
   } catch (e) {
     console.warn('Auto backup failed', e);
     if (!suppressError) {
       showNotification('error', errorMessage);
     }
+    recordAutoBackupRun({ status: 'error', reason: 'exception' });
     return null;
+  } finally {
+    if (typeof hideIndicator === 'function') {
+      try {
+        hideIndicator();
+      } catch (hideError) {
+        console.warn('Failed to hide auto backup indicator', hideError);
+      }
+    }
   }
 }
 
@@ -1635,6 +1767,15 @@ function getEventsLanguageTexts() {
     || {};
 
   return { langTexts, fallbackTexts };
+}
+
+function resolveAutoBackupIndicatorMessage() {
+  const { langTexts, fallbackTexts } = getEventsLanguageTexts();
+  return (
+    (langTexts && langTexts.autoBackupInProgressNotice)
+    || (fallbackTexts && fallbackTexts.autoBackupInProgressNotice)
+    || 'Auto backup in progress. Performance may pause briefly.'
+  );
 }
 
 function registerEventsCineUiInternal(cineUi) {
@@ -2443,6 +2584,13 @@ addSafeEventListener(cancelEditBtn, "click", () => {
 
 // Export device data
 addSafeEventListener(exportBtn, "click", () => {
+  if (typeof autoBackup === 'function') {
+    try {
+      autoBackup({ suppressSuccess: true, triggerAutoSaveNotification: true });
+    } catch (error) {
+      console.warn('Failed to auto backup before export', error);
+    }
+  }
   const dataStr = JSON.stringify(devices, null, 2);
   exportOutput.style.display = "block";
   exportOutput.value = dataStr;
@@ -2464,6 +2612,13 @@ if (exportAndRevertBtn) {
     // Step 1: Export the current database
     if (confirm(texts[currentLang].confirmExportAndRevert)) { // Confirmation for both actions
       // Reusing the export logic from the existing 'Export Database' button
+      if (typeof autoBackup === 'function') {
+        try {
+          autoBackup({ suppressSuccess: true, triggerAutoSaveNotification: true });
+        } catch (error) {
+          console.warn('Failed to auto backup before export and revert', error);
+        }
+      }
       const dataStr = JSON.stringify(devices, null, 2);
       // For simplicity, let's just trigger a download directly.
       const blob = new Blob([dataStr], { type: "application/json" });
@@ -2512,6 +2667,14 @@ if (exportAndRevertBtn) {
         console.error('Device import validation failed:', result.errors);
         alert(summary ? `${texts[currentLang].alertImportError}\n${summary}` : texts[currentLang].alertImportError);
         return;
+      }
+
+      if (typeof autoBackup === 'function') {
+        try {
+          autoBackup({ suppressSuccess: true, triggerAutoSaveNotification: true });
+        } catch (error) {
+          console.warn('Failed to auto backup before import', error);
+        }
       }
 
       devices = result.devices; // Overwrite current devices with imported data

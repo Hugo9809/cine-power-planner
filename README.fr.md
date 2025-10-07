@@ -160,7 +160,7 @@ Cette routine prouve que sauvegarde, partage, import, backup et restauration fon
 ## Sauvegarde et gestion de projet
 
 - **Sauvegardes manuelles pour des versions explicites.** Entrez le nom et appuyez sur **Entrée**/**Sauvegarder**. Chaque version conserve équipements, exigences, listes, favoris, schémas et observations.
-- **Autosaves pour le travail en cours.** Tant qu’un projet est ouvert, l’application écrit les changements en arrière-plan. Des entrées `auto-backup-…` apparaissent toutes les dix minutes.
+- **Autosaves pour le travail en cours.** Tant qu’un projet est ouvert, l’application écrit les changements en arrière-plan. Des entrées `auto-backup-…` apparaissent toutes les dix minutes, lors d’un changement de projet, après une importation ou une exportation, avant un rechargement et après de longues sessions d’édition.
 - **Sauvegardes rapides pour une copie complète immédiate.** Ouvrez **Paramètres → Données & stockage → Quick safeguards** pour déclencher une sauvegarde complète ou accéder instantanément aux outils de restauration sans quitter l’onglet ; chaque exécution est consignée dans le tableau de bord pour archiver le JSON sans attendre.【F:index.html†L2548-L2570】
 - **Afficher les auto-backups à la demande.** Activez **Paramètres → Backup & Restauration → Afficher les auto-backups** pour visualiser les horodatages.
 - **Renommer crée une branche.** Modifier le nom puis valider duplique le projet — pratique pour comparer des variantes.
@@ -238,7 +238,7 @@ Cette routine prouve que sauvegarde, partage, import, backup et restauration fon
 
 - Le service worker met en cache chaque ressource pour une utilisation hors ligne et n’applique les mises à jour qu’après **Forcer le rechargement**.
 - Projets, retours d’autonomie, favoris, équipements personnalisés, thèmes et listes résident dans le stockage du navigateur. Une demande de persistance est effectuée pour réduire le risque d’éviction.
-- Les sauvegardes automatiques enchaînent des instantanés de projet toutes les dix minutes, des archives complètes horaires et des copies des règles automatiques en arrière-plan. Activez **Paramètres → Sauvegarde & Restauration → Afficher les auto-sauvegardes dans la liste** pour afficher la chronologie, ajuster la rétention et restaurer des instantanés sans connexion.
+- Les sauvegardes automatiques enchaînent des instantanés de projet toutes les dix minutes, lors d’un changement de projet, après une importation ou une exportation, avant un rechargement et après de longues sessions; des archives complètes horaires et les copies des règles automatiques en arrière-plan complètent la protection. Activez **Paramètres → Sauvegarde & Restauration → Afficher les auto-sauvegardes dans la liste** pour afficher la rétention et restaurer des instantanés sans connexion.
 - Si le navigateur bloque les téléchargements, l’application ouvre un onglet **Téléchargement manuel** contenant le JSON afin de le copier dans un fichier `.json` et de le stocker sur un support hors ligne de confiance avant de fermer l’onglet.
 - Utilisez **Paramètres → Sauvegarde & Restauration → Comparer les versions** pour confronter deux sauvegardes, consigner le contexte dans **Notes d’incident** et exporter un journal pour vos transmissions.
 - Lancez **Répétition de restauration** depuis **Paramètres → Sauvegarde & Restauration** pour charger une sauvegarde dans un bac à sable jetable, revoir le tableau comparatif et confirmer son intégrité avant d’appliquer **Restaurer** aux données actives.
@@ -266,7 +266,7 @@ Cette routine prouve que sauvegarde, partage, import, backup et restauration fon
 
 ## Backup et restauration
 
-- **Instantanés enregistrés** – Le sélecteur conserve chaque sauvegarde manuelle et crée un `auto-backup-…` toutes les dix minutes.
+- **Instantanés enregistrés** – Le sélecteur conserve chaque sauvegarde manuelle et crée un `auto-backup-…` toutes les dix minutes, lors d’un changement de projet, après une importation ou une exportation, avant un rechargement et après de longues sessions d’édition.
 - **Backups complets** – **Paramètres → Backup & Restauration → Backup** télécharge `planner-backup.json` avec projets, équipements personnalisés, retours, favoris, règles automatiques et état UI. Les restaurations créent une copie de sécurité et avertissent si le fichier provient d’une autre version.
 - **Bloc Quick safeguards** – Dans **Paramètres → Données & stockage**, un encart **Quick safeguards** permet de lancer un backup complet ou d’ouvrir les outils de restauration en un clic afin de multiplier les copies sans quitter la vue actuelle.【F:index.html†L2548-L2570】
 - **Journal d’historique** – Chaque backup complet ajoute une entrée consultable via **Paramètres → Données & stockage** ou exportable avec l’archive. Horodatages et noms restent alignés avec votre documentation même hors ligne.
@@ -337,7 +337,7 @@ Via **Paramètres → Règles automatiques**, ajustez chaque liste sans éditer 
 - Orientez aussi les règles via le **Poids de la caméra** en comparant le boîtier sélectionné à un seuil en grammes (plus lourd, plus léger ou identique) avant que l’automatisation n’ajoute ou ne retire du matériel.
 - Sauvegarder une liste conserve l’ensemble de règles actif ; charger le projet ou importer un bundle restaure son périmètre.
 - Ces informations de couverture voyagent comme objet `coverage` dans les aperçus imprimables, backups, exports de projet et bundles partagés pour que les audits ultérieurs voient le même instantané.
-- Exporte/importez l’ensemble en JSON, revenez aux paramètres d’usine ou utilisez l’historique automatique (toutes les dix minutes) si une modification pose problème.
+- Exporte/importez l’ensemble en JSON, revenez aux paramètres d’usine ou utilisez l’historique automatique (toutes les dix minutes, lors des changements de projet, avant un rechargement ou après de longues sessions) si une modification pose problème.
 
 ## Intelligence d’autonomie
 

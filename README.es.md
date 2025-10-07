@@ -160,7 +160,7 @@ Repite esta rutina cuando se incorpore personal, se prepare una estación nueva 
 ## Gestión de proyectos y guardados
 
 - **Guardados manuales para versiones explícitas.** Introduce el nombre y pulsa **Enter**/**Guardar**. Cada guardado preserva dispositivos, requisitos, listas, favoritos, diagramas y observaciones.
-- **Auto-guardados para progreso en curso.** Mientras el proyecto está abierto, la app escribe cambios en segundo plano. Las entradas `auto-backup-…` aparecen cada diez minutos.
+- **Auto-guardados para progreso en curso.** Mientras el proyecto está abierto, la app escribe cambios en segundo plano. Las entradas `auto-backup-…` aparecen cada diez minutos, al cambiar de proyecto, tras importaciones o exportaciones, antes de recargar y después de largos periodos de edición.
 - **Resguardos rápidos capturan copias completas al instante.** Abre **Configuración → Datos y almacenamiento → Quick safeguards** para descargar una copia completa o abrir las herramientas de restauración sin abandonar la pestaña; cada ejecución queda registrada en el panel para archivar el JSON al momento.【F:index.html†L2548-L2570】
 - **Mostrar auto-backups bajo demanda.** Activa **Configuración → Copia de seguridad y restauración → Mostrar auto-backups** para ver los sellos temporales.
 - **Renombrar crea bifurcaciones.** Cambia el nombre y pulsa **Enter** para duplicar la versión. Útil para comparar variantes.
@@ -235,7 +235,7 @@ Repite esta rutina cuando se incorpore personal, se prepare una estación nueva 
 
 - Un service worker almacena todos los recursos, ejecuta la app sin conexión y aplica actualizaciones sólo tras **Forzar recarga**.
 - Proyectos, comentarios, favoritos, dispositivos, temas y listas viven en el almacenamiento del navegador. Se solicita persistencia cuando está disponible para reducir riesgos de expulsión.
-- Las copias automáticas encadenan instantáneas de proyectos cada diez minutos, descargas completas cada hora y archivos de reglas automáticas en segundo plano. Activa **Configuración → Copia de seguridad y restauración → Mostrar auto-backups en la lista** para ver la línea de tiempo, ajustar la retención y recuperar instantáneas sin conectividad.
+- Las copias automáticas encadenan instantáneas de proyectos cada diez minutos, al cambiar de proyecto, tras importaciones o exportaciones, antes de recargar y después de largas sesiones; las descargas completas por hora y los archivos de reglas automáticas en segundo plano completan la línea de tiempo. Activa **Configuración → Copia de seguridad y restauración → Mostrar auto-backups en la lista** para ver la retención y recuperar instantáneas sin conectividad.
 - Si el navegador bloquea descargas, la app abre una pestaña de **Descarga manual** con el JSON para que lo copies en un archivo `.json` y lo guardes en medios offline de confianza antes de cerrarla.
 - Usa **Configuración → Copia de seguridad y restauración → Comparar versiones** para diferenciar dos guardados, anotar contexto en **Notas del incidente** y exportar un registro para el traspaso.
 - Ejecuta **Ensayo de restauración** desde **Configuración → Copia de seguridad y restauración** para cargar un backup en un espacio desechable, revisar la tabla comparativa y confirmar que está íntegro antes de aplicar **Restaurar** sobre los datos activos.
@@ -263,7 +263,7 @@ Repite esta rutina cuando se incorpore personal, se prepare una estación nueva 
 
 ## Copias de seguridad y recuperación
 
-- **Instantáneas guardadas** – El selector conserva cada plan manual y crea `auto-backup-…` cada diez minutos mientras la app está abierta.
+- **Instantáneas guardadas** – El selector conserva cada plan manual y crea `auto-backup-…` cada diez minutos, al cambiar de proyecto, tras importaciones o exportaciones, antes de recargar y después de largos periodos de edición.
 - **Copias completas** – **Configuración → Copia de seguridad y restauración → Copia de seguridad** descarga `planner-backup.json` con proyectos, dispositivos, comentarios, reglas y estado de UI. Antes de restaurar se crea un respaldo de seguridad y se muestran avisos si el archivo proviene de otra versión.
 - **Panel de resguardos rápidos** – En **Configuración → Datos y almacenamiento** encontrarás un bloque dedicado de **Quick safeguards** para lanzar copias completas con un clic o abrir rápidamente las herramientas de restauración, de modo que captures duplicados sin cambiar de pestaña.【F:index.html†L2548-L2570】
 - **Libro de historial** – Cada copia completa añade una entrada que puedes auditar en **Configuración → Datos y almacenamiento** o exportar junto al archivo. Mantiene sellos horarios y nombres alineados con tu bitácora aunque trabajes sin conexión.
