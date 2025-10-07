@@ -298,6 +298,40 @@ describe('device data storage', () => {
     expect(JSON.parse(restoredRaw)).toEqual(recovered);
   });
 
+  test('saveDeviceData keeps backup uncompressed when primary storage uses compression', () => {
+    const largeNote = 'Important storage note '.repeat(1200);
+    const heavyDeviceData = JSON.parse(JSON.stringify(validDeviceData));
+    heavyDeviceData.notes = largeNote;
+
+    const expectedSerialized = JSON.stringify(heavyDeviceData);
+    const compressedPayload = global.LZString.compressToUTF16(expectedSerialized);
+    const legacyBackupWrapper = JSON.stringify({
+      __cineStorageCompressed: true,
+      version: 1,
+      algorithm: 'lz-string',
+      namespace: 'camera-power-planner:storage-compression',
+      data: compressedPayload,
+      originalLength: expectedSerialized.length,
+      compressedPayloadLength: compressedPayload.length,
+      compressionVariant: 'utf16',
+    });
+
+    localStorage.setItem(backupKeyFor(DEVICE_KEY), legacyBackupWrapper);
+
+    saveDeviceData(heavyDeviceData);
+
+    const primaryRaw = localStorage.getItem(DEVICE_KEY);
+    expect(primaryRaw).not.toBeNull();
+    const parsedPrimary = JSON.parse(primaryRaw);
+    expect(parsedPrimary.__cineStorageCompressed).toBe(true);
+
+    const backupRaw = localStorage.getItem(backupKeyFor(DEVICE_KEY));
+    expect(backupRaw).toBe(expectedSerialized);
+    expect(backupRaw).not.toContain('__cineStorageCompressed');
+    expect(JSON.parse(backupRaw)).toEqual(heavyDeviceData);
+    expect(backupRaw.length).toBeGreaterThan(primaryRaw.length);
+  });
+
   test('loadDeviceData replaces non-object categories with empty objects', () => {
     const corrupted = {
       cameras: null,
