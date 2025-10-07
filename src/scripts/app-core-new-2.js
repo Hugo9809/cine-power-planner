@@ -15768,6 +15768,42 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return null;
     }
     
+    // Normalize device data for comparison so that key ordering and undefined
+    // values do not cause false positives when determining whether a device
+    // differs from the default database.
+    function normalizeDeviceValueForComparison(value) {
+      if (Array.isArray(value)) {
+        return value.map(item => normalizeDeviceValueForComparison(item));
+      }
+      if (isPlainObjectValue(value)) {
+        const normalized = {};
+        Object.keys(value)
+          .filter(key => value[key] !== undefined)
+          .sort()
+          .forEach(key => {
+            normalized[key] = normalizeDeviceValueForComparison(value[key]);
+          });
+        return normalized;
+      }
+      if (value === undefined) {
+        return null;
+      }
+      return value;
+    }
+
+    function deviceEntriesEqual(a, b) {
+      if (a === b) return true;
+      if ((a === null || a === undefined) && (b === null || b === undefined)) {
+        return true;
+      }
+      if (a === null || a === undefined || b === null || b === undefined) {
+        return false;
+      }
+      const normalizedA = normalizeDeviceValueForComparison(a);
+      const normalizedB = normalizeDeviceValueForComparison(b);
+      return JSON.stringify(normalizedA) === JSON.stringify(normalizedB);
+    }
+
     // Determine differences between the default device database and the current
     // in-memory `devices` object. Only changed, added or removed entries are
     // returned so they can be shared in a generated link.
@@ -15788,7 +15824,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         Object.keys(curCat).forEach(name => {
           const cur = curCat[name];
           const def = defCat[name];
-          if (!def || JSON.stringify(cur) !== JSON.stringify(def)) {
+          if (!def || !deviceEntriesEqual(cur, def)) {
             record(cat, name, cur, sub);
           }
         });
