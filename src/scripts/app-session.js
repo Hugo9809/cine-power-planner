@@ -6843,9 +6843,91 @@ const storagePersistenceState = {
   requestAttempted: false,
   lastRequestDenied: false,
   lastError: null,
+  lastLoggedUsage: null,
+  lastLoggedQuota: null,
+  lastLoggedSupported: null,
+  lastLoggedPersisted: null,
+  lastLoggedSummary: null,
 };
 
 let storagePersistenceCheckToken = 0;
+
+function logStoragePersistenceEstimateUpdate(options = {}) {
+  const { fromRequest = false } = options || {};
+  const quota =
+    typeof storagePersistenceState.quota === 'number' && Number.isFinite(storagePersistenceState.quota)
+      ? storagePersistenceState.quota
+      : null;
+  if (quota === null) {
+    return;
+  }
+
+  const usage =
+    typeof storagePersistenceState.usage === 'number' && Number.isFinite(storagePersistenceState.usage)
+      ? storagePersistenceState.usage
+      : null;
+  const supported =
+    typeof storagePersistenceState.supported === 'boolean' ? storagePersistenceState.supported : null;
+  const persisted =
+    typeof storagePersistenceState.persisted === 'boolean' ? storagePersistenceState.persisted : null;
+
+  const { lang, langTexts, fallbackTexts } = getStoragePersistenceLangInfo();
+  const quotaText = formatStoragePersistenceBytes(quota, lang);
+  const usageText = usage !== null ? formatStoragePersistenceBytes(usage, lang) : '';
+
+  let summary = '';
+  if (usageText) {
+    const template =
+      (langTexts && langTexts.storagePersistenceUsage)
+      || (fallbackTexts && fallbackTexts.storagePersistenceUsage)
+      || '';
+    summary = template.replace('{used}', usageText).replace('{quota}', quotaText);
+  } else {
+    const quotaTemplate =
+      (langTexts && langTexts.loggingStorageQuotaOnly)
+      || (fallbackTexts && fallbackTexts.loggingStorageQuotaOnly)
+      || '';
+    summary = quotaTemplate.replace('{quota}', quotaText);
+  }
+
+  const message =
+    (langTexts && langTexts.loggingStorageEstimateUpdated)
+    || (fallbackTexts && fallbackTexts.loggingStorageEstimateUpdated)
+    || 'Storage estimate refreshed.';
+
+  const unchanged =
+    storagePersistenceState.lastLoggedUsage === usage
+    && storagePersistenceState.lastLoggedQuota === quota
+    && storagePersistenceState.lastLoggedSupported === supported
+    && storagePersistenceState.lastLoggedPersisted === persisted
+    && storagePersistenceState.lastLoggedSummary === summary;
+
+  if (unchanged && !fromRequest) {
+    return;
+  }
+
+  logSettingsEvent(
+    'info',
+    message,
+    {
+      summary: summary || null,
+      usageBytes: usage,
+      usageDisplay: usageText || null,
+      quotaBytes: quota,
+      quotaDisplay: quotaText || null,
+      supported,
+      persisted,
+      trigger: fromRequest ? 'user-request' : 'auto-refresh',
+    },
+    { source: 'storage-persistence' },
+  );
+
+  storagePersistenceState.lastLoggedUsage = usage;
+  storagePersistenceState.lastLoggedQuota = quota;
+  storagePersistenceState.lastLoggedSupported = supported;
+  storagePersistenceState.lastLoggedPersisted = persisted;
+  storagePersistenceState.lastLoggedSummary = summary;
+}
 
 const LOGGING_LEVEL_PRIORITY = {
   debug: 10,
@@ -7603,6 +7685,7 @@ async function refreshStoragePersistenceStatus(options = {}) {
   if (fromRequest) {
     storagePersistenceState.lastRequestDenied = !storagePersistenceState.persisted;
   }
+  logStoragePersistenceEstimateUpdate({ fromRequest });
   renderStoragePersistenceStatus();
 }
 

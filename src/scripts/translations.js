@@ -779,6 +779,8 @@ const texts = {
       "Store entries in session storage so diagnostics survive refreshes.",
     loggingStatusIdle: "Live log ready.",
     loggingStatusUpdating: "Updating log…",
+    loggingStorageEstimateUpdated: "Storage estimate refreshed.",
+    loggingStorageQuotaOnly: "Available storage: {quota}.",
     loggingStatusError:
       "Logging unavailable. Diagnostics remain in the browser console.",
     loggingEmptyState: "No log entries captured yet.",
@@ -2727,6 +2729,8 @@ const texts = {
       "Salva le voci nella sessione per conservarle dopo un refresh.",
     loggingStatusIdle: "Registro in tempo reale pronto.",
     loggingStatusUpdating: "Aggiornamento del registro…",
+    loggingStorageEstimateUpdated: "Stima dello spazio aggiornata.",
+    loggingStorageQuotaOnly: "Spazio disponibile: {quota}.",
     loggingStatusError:
       "Registrazione non disponibile. La console del browser resta come backup.",
     loggingEmptyState: "Ancora nessuna voce registrata.",
@@ -4206,6 +4210,8 @@ const texts = {
       "Guarda las entradas en sessionStorage para que sobrevivan a un refresco.",
     loggingStatusIdle: "Registro en vivo listo.",
     loggingStatusUpdating: "Actualizando registro…",
+    loggingStorageEstimateUpdated: "Estimación de almacenamiento actualizada.",
+    loggingStorageQuotaOnly: "Almacenamiento disponible: {quota}.",
     loggingStatusError:
       "La bitácora no está disponible. La consola sigue registrando como respaldo.",
     loggingEmptyState: "Todavía no se han capturado entradas.",
@@ -5697,6 +5703,8 @@ const texts = {
       "Stocke les entrées dans la session pour survivre aux rafraîchissements.",
     loggingStatusIdle: "Journal en direct prêt.",
     loggingStatusUpdating: "Mise à jour du journal…",
+    loggingStorageEstimateUpdated: "Estimation de stockage actualisée.",
+    loggingStorageQuotaOnly: "Stockage disponible : {quota}.",
     loggingStatusError:
       "Journal indisponible. La console du navigateur reste le secours.",
     loggingEmptyState: "Aucune entrée de journal pour le moment.",
@@ -7192,6 +7200,8 @@ const texts = {
       "Speichert Einträge in der Session, damit Diagnosen Reloads überstehen.",
     loggingStatusIdle: "Live-Protokoll bereit.",
     loggingStatusUpdating: "Protokoll wird aktualisiert…",
+    loggingStorageEstimateUpdated: "Speicherabschätzung aktualisiert.",
+    loggingStorageQuotaOnly: "Verfügbarer Speicher: {quota}.",
     loggingStatusError:
       "Protokollierung nicht verfügbar. Die Konsole protokolliert weiter als Fallback.",
     loggingEmptyState: "Noch keine Protokolleinträge erfasst.",
