@@ -214,7 +214,11 @@ describe('full user journey regression', () => {
     expect(projectRequirementsOutput.textContent).toContain('Alpha Films');
     expect(gearListOutput.textContent).toContain(cameraLabel);
 
-    const autoBackupName = utils.autoBackup({ suppressSuccess: true, suppressError: true });
+    const autoBackupName = utils.autoBackup({
+      suppressSuccess: true,
+      suppressError: true,
+      reason: 'interval',
+    });
     expect(typeof autoBackupName).toBe('string');
     expect(autoBackupName.startsWith('auto-backup-')).toBe(true);
 

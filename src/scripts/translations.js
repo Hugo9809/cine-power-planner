@@ -452,7 +452,7 @@ const texts = {
       "The import timestamp \"{value}\" could not be verified. Confirm the file has not been modified.",
     autoGearBackupsHeading: "Automatic backups",
     autoGearBackupsDescription:
-      "Backups save your rules every 10 minutes when changes occur and keep up to 30 incremental steps between full snapshots. Restore a snapshot if something goes wrong.",
+      "Backups save your rules every 10 minutes when changes occur and keep up to 50 tracked changes between full snapshots. Restore a snapshot if something goes wrong.",
     autoGearShowBackupsLabel: "Show automatic backups",
     autoGearShowBackupsHelp: "Reveal the snapshots captured in the background.",
     autoGearBackupsHidden: "Automatic backups stay hidden until you turn them on.",
@@ -748,7 +748,7 @@ const texts = {
       "Review the most recent saves and backups at a glance.",
     storageStatusLastProjectLabel: "Latest project save",
     storageStatusLastAutoBackupLabel: "Latest auto backup",
-    autoBackupInProgressNotice: "Auto backup in progress. Performance may pause briefly.",
+    autoBackupInProgressNotice: "Auto backup running. Performance may pause briefly.",
     storageStatusLastFullBackupLabel: "Latest full app backup",
     loggingSectionHelp: "Review runtime diagnostics without leaving Settings.",
     loggingHeading: "Diagnostics log",
@@ -808,7 +808,7 @@ const texts = {
     storageProjectsCountOther: "%s projects",
     storageKeyAutoBackups: "Auto backups",
     storageKeyAutoBackupsDesc:
-      "Timestamped safety copies saved every 10 minutes, when you switch projects, import or export data, before reloads, and after extended editing streaks.",
+      "Timestamped safety copies saved every 10 minutes, when you switch projects, import or export data, before reloads, and after 50 tracked changes.",
     storageAutoBackupsCountOne: "%s auto backup",
     storageAutoBackupsCountOther: "%s auto backups",
     storageKeyGearLists: "Gear list snapshots",
@@ -2445,7 +2445,7 @@ const texts = {
       "Il timestamp di importazione \"{value}\" non può essere verificato. Assicurati che il file non sia stato modificato.",
     autoGearBackupsHeading: "Backup automatici",
     autoGearBackupsDescription:
-      "Viene salvato un backup ogni 10 minuti quando ci sono modifiche e vengono conservati fino a 30 passaggi incrementali tra due snapshot completi. Ripristina una versione se qualcosa va storto.",
+      "Viene salvato un backup ogni 10 minuti quando ci sono modifiche e vengono conservate fino a 50 modifiche tracciate tra due snapshot completi. Ripristina una versione se qualcosa va storto.",
     autoGearShowBackupsLabel: "Mostra i backup automatici",
     autoGearShowBackupsHelp: "Mostra gli snapshot salvati in background.",
     autoGearBackupsHidden: "I backup automatici restano nascosti finché non li attivi.",
@@ -2743,7 +2743,7 @@ const texts = {
     storageStatusLastProjectLabel: "Ultimo salvataggio progetto",
     storageStatusLastAutoBackupLabel: "Ultimo backup automatico",
     autoBackupInProgressNotice:
-      "Backup automatico in corso. Le prestazioni potrebbero fermarsi per un momento.",
+      "Backup automatico in esecuzione. Le prestazioni potrebbero rallentare per un momento.",
     storageStatusLastFullBackupLabel: "Ultimo backup completo dell’app",
     loggingSectionHelp: "Controlla le diagnostiche in tempo reale senza lasciare Impostazioni.",
     loggingHeading: "Registro diagnostico",
@@ -2803,7 +2803,7 @@ const texts = {
     storageProjectsCountOther: "%s progetti",
     storageKeyAutoBackups: "Backup automatici",
     storageKeyAutoBackupsDesc:
-      "Copie di sicurezza con timestamp ogni 10 minuti, quando cambi progetto, importi o esporti dati, prima dei ricaricamenti e dopo lunghe sessioni di modifica.",
+      "Copie di sicurezza con timestamp ogni 10 minuti, quando cambi progetto, importi o esporti dati, prima dei ricaricamenti e dopo 50 modifiche tracciate.",
     storageAutoBackupsCountOne: "%s backup automatico",
     storageAutoBackupsCountOther: "%s backup automatici",
     storageKeyGearLists: "Snapshot delle liste materiali",
@@ -3951,7 +3951,7 @@ const texts = {
       "No se pudo verificar la marca de tiempo de importación \"{value}\". Asegúrate de que el archivo no haya sido modificado.",
     autoGearBackupsHeading: "Copias de seguridad automáticas",
     autoGearBackupsDescription:
-      "Guarda una copia cada 10 minutos cuando hay cambios y mantiene hasta 30 pasos incrementales entre instantáneas completas. Restaura una versión si algo sale mal.",
+      "Guarda una copia cada 10 minutos cuando hay cambios y conserva hasta 50 cambios registrados entre instantáneas completas. Restaura una versión si algo sale mal.",
     autoGearShowBackupsLabel: "Mostrar copias automáticas",
     autoGearShowBackupsHelp: "Muestra las instantáneas guardadas en segundo plano.",
     autoGearBackupsHidden: "Las copias automáticas permanecen ocultas hasta que las actives.",
@@ -4249,7 +4249,7 @@ const texts = {
     storageStatusLastProjectLabel: "Último guardado de proyecto",
     storageStatusLastAutoBackupLabel: "Último respaldo automático",
     autoBackupInProgressNotice:
-      "Copia de seguridad automática en curso. El rendimiento puede detenerse brevemente.",
+      "Copia de seguridad automática en ejecución. El rendimiento puede pausarse brevemente.",
     storageStatusLastFullBackupLabel: "Último respaldo completo de la app",
     loggingSectionHelp: "Revise los diagnósticos en tiempo real sin salir de Ajustes.",
     loggingHeading: "Registro de diagnósticos",
@@ -4308,7 +4308,7 @@ const texts = {
     storageProjectsCountOther: "%s proyectos",
     storageKeyAutoBackups: "Copias automáticas",
     storageKeyAutoBackupsDesc:
-      "Copias de seguridad con marca de tiempo cada 10 minutos, al cambiar de proyecto, al importar o exportar datos, antes de recargar y después de rachas largas de edición.",
+      "Copias de seguridad con marca de tiempo cada 10 minutos, al cambiar de proyecto, al importar o exportar datos, antes de recargar y después de 50 cambios registrados.",
     storageAutoBackupsCountOne: "%s copia automática",
     storageAutoBackupsCountOther: "%s copias automáticas",
     storageKeyGearLists: "Capturas de listas de equipo",
@@ -5459,7 +5459,7 @@ const texts = {
       "L’horodatage d’import \"{value}\" n’a pas pu être vérifié. Assurez-vous que le fichier n’a pas été modifié.",
     autoGearBackupsHeading: "Sauvegardes automatiques",
     autoGearBackupsDescription:
-      "Une sauvegarde est créée toutes les 10 minutes en cas de changement et conserve jusqu’à 30 étapes incrémentales entre deux instantanés complets. Restaurez une version si nécessaire.",
+      "Une sauvegarde est créée toutes les 10 minutes en cas de changement et conserve jusqu’à 50 modifications suivies entre deux instantanés complets. Restaurez une version si nécessaire.",
     autoGearShowBackupsLabel: "Afficher les sauvegardes automatiques",
     autoGearShowBackupsHelp: "Affiche les instantanés capturés en arrière-plan.",
     versionCompareButton: "Comparer les versions",
@@ -5765,7 +5765,7 @@ const texts = {
     storageStatusLastProjectLabel: "Dernier enregistrement de projet",
     storageStatusLastAutoBackupLabel: "Dernière sauvegarde automatique",
     autoBackupInProgressNotice:
-      "Sauvegarde automatique en cours. Les performances peuvent se mettre en pause un instant.",
+      "Sauvegarde automatique en cours d’exécution. Les performances peuvent se mettre en pause un instant.",
     storageStatusLastFullBackupLabel: "Dernière sauvegarde complète de l’application",
     loggingSectionHelp: "Consultez les diagnostics en direct sans quitter les paramètres.",
     loggingHeading: "Journal de diagnostics",
@@ -5825,7 +5825,7 @@ const texts = {
     storageProjectsCountOther: "%s projets",
     storageKeyAutoBackups: "Sauvegardes automatiques",
     storageKeyAutoBackupsDesc:
-      "Copies horodatées enregistrées toutes les 10 minutes, lors d'un changement de projet, d'une importation ou d'une exportation, avant un rechargement et après de longues séries de modifications.",
+      "Copies horodatées enregistrées toutes les 10 minutes, lors d'un changement de projet, d'une importation ou d'une exportation, avant un rechargement et après 50 modifications suivies.",
     storageAutoBackupsCountOne: "%s sauvegarde automatique",
     storageAutoBackupsCountOther: "%s sauvegardes automatiques",
     storageKeyGearLists: "Instantanés des listes de matériel",
@@ -6979,7 +6979,7 @@ const texts = {
       "Der Import-Zeitstempel \"{value}\" konnte nicht verifiziert werden. Stelle sicher, dass die Datei nicht verändert wurde.",
     autoGearBackupsHeading: "Automatische Sicherungen",
     autoGearBackupsDescription:
-      "Alle 10 Minuten wird bei Änderungen eine Sicherung erstellt und bis zu 30 inkrementelle Schritte zwischen vollständigen Snapshots behalten. Stelle eine Version wieder her, falls etwas schiefgeht.",
+      "Alle 10 Minuten wird bei Änderungen eine Sicherung erstellt und bis zu 50 protokollierte Änderungen zwischen vollständigen Snapshots behalten. Stelle eine Version wieder her, falls etwas schiefgeht.",
     autoGearShowBackupsLabel: "Automatische Sicherungen anzeigen",
     autoGearShowBackupsHelp: "Blendet die im Hintergrund erstellten Snapshots ein.",
     versionCompareButton: "Versionen vergleichen",
@@ -7286,7 +7286,7 @@ const texts = {
     storageStatusLastProjectLabel: "Letztes Projekt-Speichern",
     storageStatusLastAutoBackupLabel: "Letztes Auto-Backup",
     autoBackupInProgressNotice:
-      "Automatische Sicherung läuft. Die Leistung kann kurzzeitig pausieren.",
+      "Automatische Sicherung läuft gerade. Die Leistung kann kurzzeitig beeinträchtigt sein.",
     storageStatusLastFullBackupLabel: "Letztes vollständiges App-Backup",
     loggingSectionHelp: "Prüfen Sie Laufzeitdiagnosen direkt in den Einstellungen.",
     loggingHeading: "Diagnoseprotokoll",
@@ -7346,7 +7346,7 @@ const texts = {
     storageProjectsCountOther: "%s Projekte",
     storageKeyAutoBackups: "Automatische Sicherungen",
     storageKeyAutoBackupsDesc:
-      "Zeitgestempelte Sicherungskopien alle 10 Minuten, beim Projektwechsel, beim Import oder Export, vor dem Neuladen und nach längeren Bearbeitungsphasen.",
+      "Zeitgestempelte Sicherungskopien alle 10 Minuten, beim Projektwechsel, beim Import oder Export, vor dem Neuladen und nach 50 protokollierten Änderungen.",
     storageAutoBackupsCountOne: "%s Auto-Backup",
     storageAutoBackupsCountOther: "%s Auto-Backups",
     storageKeyGearLists: "Gear-Listen-Snapshots",

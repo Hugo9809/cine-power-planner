@@ -4294,7 +4294,11 @@ const flushProjectAutoSaveOnExit = () => {
       scope.__cineNoteAutoBackupChange({ immediate: true, reason: 'before-exit' });
     }
     if (scope && typeof scope.autoBackup === 'function') {
-      scope.autoBackup({ suppressSuccess: true, triggerAutoSaveNotification: true });
+      scope.autoBackup({
+        suppressSuccess: true,
+        triggerAutoSaveNotification: true,
+        reason: 'before-reload',
+      });
     }
   } catch (backupError) {
     console.warn('Failed to auto backup before exit', backupError);
