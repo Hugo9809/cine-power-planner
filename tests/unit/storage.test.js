@@ -1066,7 +1066,7 @@ describe('project storage', () => {
         gearList: { projectHtml: '<section>project</section>', gearHtml: '<div>gear</div>' },
         projectInfo: null,
       },
-      'LegacyString-updated': { gearList: '<p>standalone</p>', projectInfo: null },
+      'LegacyString-updated': withGenerationFlag({ gearList: '<p>standalone</p>', projectInfo: null }),
     });
   });
 
@@ -1136,7 +1136,7 @@ describe('project storage', () => {
     const stored = parseLocalStorageJSON(PROJECT_KEY);
 
     expect(projects).toEqual({
-      'Project-updated': { gearList: '<p>Legacy</p>', projectInfo: null },
+      'Project-updated': withGenerationFlag({ gearList: '<p>Legacy</p>', projectInfo: null }),
     });
     expect(stored).toEqual(projects);
     expect(getDecodedLocalStorageItem('cinePowerPlanner_project')).toBeNull();
@@ -1173,7 +1173,7 @@ describe('project storage', () => {
 
     const projects = loadProject();
     expect(projects).toEqual({
-      'Project-updated': { gearList: '<p>Legacy project</p>', projectInfo: null },
+      'Project-updated': withGenerationFlag({ gearList: '<p>Legacy project</p>', projectInfo: null }),
     });
 
     const storedBackup = getDecodedLocalStorageItem(migrationBackupKeyFor(PROJECT_KEY));
