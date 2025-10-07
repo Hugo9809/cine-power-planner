@@ -4089,6 +4089,9 @@ if (cameraSelect) {
     }
     populateRecordingResolutionDropdown(currentProjectInfo && currentProjectInfo.recordingResolution);
     populateSensorModeDropdown(currentProjectInfo && currentProjectInfo.sensorMode);
+    if (typeof updateStorageRequirementTypeOptions === 'function') {
+      updateStorageRequirementTypeOptions();
+    }
   });
 }
 if (monitoringConfigurationSelect) {
