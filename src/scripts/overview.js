@@ -739,6 +739,19 @@ function generatePrintableOverview(config = {}) {
 
     const overviewDialog = document.getElementById('overviewDialog');
     overviewDialog.innerHTML = overviewHtml;
+
+    if (overviewDialog && !overviewDialog.hasAttribute('data-overview-outside-close')) {
+        overviewDialog.addEventListener('click', event => {
+            if (event.target === overviewDialog) {
+                closeDialog(overviewDialog);
+            }
+        });
+        overviewDialog.addEventListener('cancel', event => {
+            event.preventDefault();
+            closeDialog(overviewDialog);
+        });
+        overviewDialog.setAttribute('data-overview-outside-close', '');
+    }
     const content = overviewDialog.querySelector('#overviewDialogContent');
 
     const applyThemeClasses = (target) => {
