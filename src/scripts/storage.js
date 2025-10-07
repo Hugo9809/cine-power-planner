@@ -4065,11 +4065,13 @@ function saveJSONToStorage(
     backupKey,
     onQuotaExceeded,
     enableCompressionSweep = true,
+    disableCompression = false,
   } = options || {};
   const fallbackKey = typeof backupKey === 'string' && backupKey
     ? backupKey
     : `${key}${STORAGE_BACKUP_SUFFIX}`;
   const useBackup = !disableBackup && fallbackKey && fallbackKey !== key;
+  const compressionBlocked = Boolean(disableCompression);
 
   const rawGetter = getRawStorageGetter(storage);
   const loadRawValue = (targetKey) => readRawStorageValue(storage, targetKey, rawGetter);
@@ -4145,6 +4147,10 @@ function saveJSONToStorage(
   };
 
   const tryEnableCompression = () => {
+    if (compressionBlocked) {
+      compressionAttempted = true;
+      return false;
+    }
     if (useCompressedSerialization || compressionAttempted) {
       return false;
     }
@@ -4188,6 +4194,10 @@ function saveJSONToStorage(
   };
 
   const maybeEnableProactiveCompression = () => {
+    if (compressionBlocked) {
+      compressionAttempted = true;
+      return;
+    }
     if (useCompressedSerialization || compressionAttempted) {
       return;
     }
@@ -6523,6 +6533,7 @@ function persistAllProjects(projects) {
     serializedProjects,
     "Error saving project to localStorage:",
     {
+      disableCompression: true,
       onQuotaExceeded: () => {
         const removedKey = removeOldestAutoBackupEntry(serializedProjects);
         if (!removedKey) {
