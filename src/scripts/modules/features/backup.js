@@ -1220,16 +1220,14 @@
         return {
           prefixLength: SESSION_AUTO_BACKUP_DELETION_PREFIX.length,
           type: 'auto-backup-before-delete',
-          includeSeconds: true,
-          minParts: 6,
+          secondsOptional: true,
         };
       }
       if (name.startsWith(SESSION_AUTO_BACKUP_NAME_PREFIX)) {
         return {
           prefixLength: SESSION_AUTO_BACKUP_NAME_PREFIX.length,
           type: 'auto-backup',
-          includeSeconds: false,
-          minParts: 5,
+          secondsOptional: true,
         };
       }
       return null;
@@ -1241,33 +1239,42 @@
 
     const remainder = name.slice(config.prefixLength);
     const parts = remainder.split('-');
-    if (parts.length < config.minParts) {
+    if (parts.length < 5) {
       return null;
     }
 
-    const year = Number(parts[0]);
-    const month = Number(parts[1]) - 1;
-    const day = Number(parts[2]);
-    const hour = Number(parts[3]);
-    const minute = Number(parts[4]);
-
-    const dateParts = [year, month, day, hour, minute];
-
-    let labelParts = parts.slice(5);
-    if (config.includeSeconds) {
-      const secondsPart = labelParts.length ? labelParts[0] : '0';
-      dateParts.push(Number(secondsPart));
-      labelParts = labelParts.slice(1);
+    const baseParts = parts.slice(0, 5).map(part => Number(part));
+    if (baseParts.some(value => Number.isNaN(value))) {
+      return null;
     }
 
-    const label = labelParts.join('-').trim();
-    const date = new Date(...dateParts);
+    const [year, month, day, hour, minute] = baseParts;
+
+    let includeSeconds = false;
+    let seconds = 0;
+    let labelStartIndex = 5;
+
+    if (parts.length > labelStartIndex) {
+      const secondsCandidate = parts[labelStartIndex];
+      if (/^\d{1,2}$/u.test(secondsCandidate)) {
+        includeSeconds = true;
+        seconds = Number(secondsCandidate);
+        labelStartIndex += 1;
+      } else if (!config.secondsOptional) {
+        return null;
+      }
+    } else if (!config.secondsOptional) {
+      return null;
+    }
+
+    const label = parts.slice(labelStartIndex).join('-').trim();
+    const date = new Date(year, month - 1, day, hour, minute, includeSeconds ? seconds : 0, 0);
 
     return {
       type: config.type,
       date: Number.isNaN(date.valueOf()) ? null : date,
       label,
-      includeSeconds: config.includeSeconds,
+      includeSeconds,
     };
   }
 

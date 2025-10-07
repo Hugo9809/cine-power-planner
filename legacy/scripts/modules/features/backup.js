@@ -1020,16 +1020,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         return {
           prefixLength: SESSION_AUTO_BACKUP_DELETION_PREFIX.length,
           type: 'auto-backup-before-delete',
-          includeSeconds: true,
-          minParts: 6
+          secondsOptional: true
         };
       }
       if (name.startsWith(SESSION_AUTO_BACKUP_NAME_PREFIX)) {
         return {
           prefixLength: SESSION_AUTO_BACKUP_NAME_PREFIX.length,
           type: 'auto-backup',
-          includeSeconds: false,
-          minParts: 5
+          secondsOptional: true
         };
       }
       return null;
@@ -1039,28 +1037,46 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     var remainder = name.slice(config.prefixLength);
     var parts = remainder.split('-');
-    if (parts.length < config.minParts) {
+    if (parts.length < 5) {
       return null;
     }
-    var year = Number(parts[0]);
-    var month = Number(parts[1]) - 1;
-    var day = Number(parts[2]);
-    var hour = Number(parts[3]);
-    var minute = Number(parts[4]);
-    var dateParts = [year, month, day, hour, minute];
-    var labelParts = parts.slice(5);
-    if (config.includeSeconds) {
-      var secondsPart = labelParts.length ? labelParts[0] : '0';
-      dateParts.push(Number(secondsPart));
-      labelParts = labelParts.slice(1);
+    var baseParts = [];
+    for (var index = 0; index < 5; index += 1) {
+      baseParts.push(Number(parts[index]));
     }
+    for (var i = 0; i < baseParts.length; i += 1) {
+      if (Number.isNaN(baseParts[i])) {
+        return null;
+      }
+    }
+    var year = baseParts[0];
+    var month = baseParts[1];
+    var day = baseParts[2];
+    var hour = baseParts[3];
+    var minute = baseParts[4];
+    var includeSeconds = false;
+    var seconds = 0;
+    var labelStartIndex = 5;
+    if (parts.length > labelStartIndex) {
+      var secondsCandidate = parts[labelStartIndex];
+      if (/^\d{1,2}$/u.test(secondsCandidate)) {
+        includeSeconds = true;
+        seconds = Number(secondsCandidate);
+        labelStartIndex += 1;
+      } else if (!config.secondsOptional) {
+        return null;
+      }
+    } else if (!config.secondsOptional) {
+      return null;
+    }
+    var labelParts = parts.slice(labelStartIndex);
     var label = labelParts.join('-').trim();
-    var date = _construct(Date, dateParts);
+    var date = _construct(Date, [year, month - 1, day, hour, minute, includeSeconds ? seconds : 0, 0]);
     return {
       type: config.type,
       date: Number.isNaN(date.valueOf()) ? null : date,
       label: label,
-      includeSeconds: config.includeSeconds
+      includeSeconds: includeSeconds
     };
   }
   var backupAPI = freezeDeep({

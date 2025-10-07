@@ -116,18 +116,27 @@ describe('cineFeatureBackup module', () => {
   test('parses automatic backup names for primary and deletion snapshots', () => {
     const { backupModule } = evaluateBackupModule();
 
-    const primary = backupModule.parseAutoBackupName('auto-backup-2024-07-11-08-05-Favorite-Project');
-    expect(primary).toMatchObject({
+    const primaryLegacy = backupModule.parseAutoBackupName('auto-backup-2024-07-11-08-05-Favorite-Project');
+    expect(primaryLegacy).toMatchObject({
       type: 'auto-backup',
       includeSeconds: false,
       label: 'Favorite-Project',
     });
-    expect(primary.date instanceof Date).toBe(true);
-    expect(primary.date.getFullYear()).toBe(2024);
-    expect(primary.date.getMonth()).toBe(6);
-    expect(primary.date.getDate()).toBe(11);
-    expect(primary.date.getHours()).toBe(8);
-    expect(primary.date.getMinutes()).toBe(5);
+    expect(primaryLegacy.date instanceof Date).toBe(true);
+    expect(primaryLegacy.date.getFullYear()).toBe(2024);
+    expect(primaryLegacy.date.getMonth()).toBe(6);
+    expect(primaryLegacy.date.getDate()).toBe(11);
+    expect(primaryLegacy.date.getHours()).toBe(8);
+    expect(primaryLegacy.date.getMinutes()).toBe(5);
+
+    const primaryPrecise = backupModule.parseAutoBackupName('auto-backup-2024-07-11-08-05-30-Favorite-Project');
+    expect(primaryPrecise).toMatchObject({
+      type: 'auto-backup',
+      includeSeconds: true,
+      label: 'Favorite-Project',
+    });
+    expect(primaryPrecise.date instanceof Date).toBe(true);
+    expect(primaryPrecise.date.getSeconds()).toBe(30);
 
     const deletion = backupModule.parseAutoBackupName('auto-backup-before-delete-2024-07-11-08-05-59-Urgent-Restore');
     expect(deletion).toMatchObject({
