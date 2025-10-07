@@ -1053,19 +1053,24 @@
       }
     }
 
-    let serviceWorkersUnregistered = false;
-    try {
-      serviceWorkersUnregistered = await unregisterServiceWorkers(options.navigator);
-    } catch (error) {
-      safeWarn('Service worker cleanup failed', error);
-    }
-
-    let cachesCleared = false;
-    try {
-      cachesCleared = await clearCacheStorage(options.caches);
-    } catch (error) {
-      safeWarn('Cache clear failed', error);
-    }
+    const [serviceWorkersUnregistered, cachesCleared] = await Promise.all([
+      (async () => {
+        try {
+          return await unregisterServiceWorkers(options.navigator);
+        } catch (error) {
+          safeWarn('Service worker cleanup failed', error);
+          return false;
+        }
+      })(),
+      (async () => {
+        try {
+          return await clearCacheStorage(options.caches);
+        } catch (error) {
+          safeWarn('Cache clear failed', error);
+          return false;
+        }
+      })(),
+    ]);
 
     let reloadTriggered = false;
     const reloadFn = typeof options.reloadWindow === 'function' ? options.reloadWindow : triggerReload;
