@@ -58,12 +58,18 @@ copy offline.【F:src/scripts/script.js†L92-L183】
    synchronized with UI labels, keyboard shortcuts and verification logging guidance so crews
    rehearse the exact workflows the code exposes through `cinePersistence`, `cineUi` and the
    runtime guard.
-4. **Operations manuals.** Confirm `docs/offline-readiness.md`,
+4. **Verification log template.** Update `docs/verification-log-template.md` whenever
+   diagnostic commands change or new persistence safeguards ship. The template calls for
+   console outputs from `window.__cineRuntimeIntegrity`,
+   `window.cineRuntime.verifyCriticalFlows({ warnOnFailure: true })` and the
+   `cinePersistence` inspection helpers, so keep the references aligned with runtime and
+   persistence modules when they evolve.【F:src/scripts/script.js†L315-L357】【F:src/scripts/modules/runtime.js†L1663-L1782】【F:src/scripts/modules/persistence.js†L775-L880】
+5. **Operations manuals.** Confirm `docs/offline-readiness.md`,
    `docs/operations-checklist.md`, `docs/backup-rotation-guide.md` and `docs/testing-plan.md`
    include the new logic. These printable guides travel with field kits, so add or update
    drills that prove autosave, backup rotation and restore rehearsals still behave exactly
    as the latest build.
-5. **In-app legal and static pages.** If the change surfaces on legal disclosures or other
+6. **In-app legal and static pages.** If the change surfaces on legal disclosures or other
    static pages in `legal/`, mirror the update in every localized HTML file so offline
    references stay consistent.
 

@@ -62,6 +62,8 @@ update the repository or hand off a project at the end of the day.
    and files inspected) to your archival log or create one beside the exports
    if it does not exist yet. Pair the note with checksum manifests so every
    crew member can prove when the save → share → import rehearsal succeeded.
+   Use the [verification log template](verification-log-template.md) so every
+   team records the same evidence and diagnostic outputs.
 
 ## 3. Offline confidence checks
 
