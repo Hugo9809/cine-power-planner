@@ -1985,6 +1985,70 @@ function matchesAutoGearItem(target, actual) {
   if (normTarget === normActual) return true;
   return normTarget === normalizeAutoGearName(actual.replace(/^\d+x\s+/, ''));
 }
+function isOnboardMonitorRiggingItemName(name) {
+  if (typeof name !== 'string') return false;
+  var normalizedTarget = normalizeAutoGearName(ONBOARD_MONITOR_RIGGING_ITEM_NAME);
+  if (!normalizedTarget) return false;
+  return normalizeAutoGearName(name) === normalizedTarget;
+}
+function isOnboardMonitorRiggingItemEntry(entry) {
+  if (!entry || typeof entry !== 'object') return false;
+  return isOnboardMonitorRiggingItemName(entry.name);
+}
+function getOnboardMonitorRiggingRuleLabel() {
+  if (typeof texts === 'object' && texts) {
+    var localized = texts[currentLang] && texts[currentLang].autoGearMonitorLabel;
+    if (typeof localized === 'string' && localized.trim()) {
+      return localized.trim();
+    }
+    var fallback = texts.en && texts.en.autoGearMonitorLabel;
+    if (typeof fallback === 'string' && fallback.trim()) {
+      return fallback.trim();
+    }
+  }
+  return 'Onboard monitors';
+}
+function ensureOnboardMonitorRiggingAutoGearHighlight(table) {
+  if (!table || typeof table.querySelectorAll !== 'function') {
+    return;
+  }
+  var target = normalizeAutoGearName(ONBOARD_MONITOR_RIGGING_ITEM_NAME);
+  if (!target) return;
+  var label = getOnboardMonitorRiggingRuleLabel();
+  var fallbackRule = { id: ONBOARD_MONITOR_RIGGING_RULE_ID, label: label };
+  var spans = Array.from(table.querySelectorAll('.gear-item')).filter(function (span) {
+    if (!span) return false;
+    var dataName = typeof span.getAttribute === 'function' ? span.getAttribute('data-gear-name') : '';
+    var textSource = dataName || span.textContent || '';
+    return normalizeAutoGearName(textSource) === target;
+  });
+  if (!spans.length) {
+    return;
+  }
+  spans.forEach(function (span) {
+    var quantity = Math.max(1, getSpanCount(span));
+    if (!span.classList.contains('auto-gear-item')) {
+      var normalizedItem = normalizeAutoGearItem({
+        id: ONBOARD_MONITOR_RIGGING_ITEM_ID,
+        name: ONBOARD_MONITOR_RIGGING_ITEM_NAME,
+        category: 'Rigging',
+        quantity: quantity,
+        contextNotes: [label]
+      });
+      configureAutoGearSpan(span, normalizedItem, quantity, fallbackRule);
+      return;
+    }
+    appendAutoGearRuleSource(span, fallbackRule);
+    applyAutoGearRuleColors(span, fallbackRule);
+    var contextMap = getAutoGearSpanContextMap(span);
+    if (!contextMap.has(label)) {
+      mergeAutoGearSpanContextNotes(span, [label], quantity);
+    } else {
+      renderAutoGearSpanContextNotes(span);
+    }
+    refreshAutoGearRuleBadge(span);
+  });
+}
 function getSpanCount(span) {
   if (!span) return 1;
   var text = span.textContent || '';
@@ -3156,6 +3220,7 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
   container.innerHTML = tableHtml;
   var table = container.querySelector('.gear-table');
   if (!table) return tableHtml;
+  var monitorRiggingTriggered = false;
   triggeredEntries.forEach(function (_ref13) {
     var rule = _ref13.rule,
       multiplier = _ref13.multiplier;
@@ -3184,8 +3249,14 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
       });
       var cell = ensureAutoGearCategory(table, item.category);
       if (cell) addAutoGearItem(cell, scaledItem, rule);
+      if (!monitorRiggingTriggered && isOnboardMonitorRiggingItemEntry(item)) {
+        monitorRiggingTriggered = true;
+      }
     });
   });
+  if (monitorRiggingTriggered) {
+    ensureOnboardMonitorRiggingAutoGearHighlight(table);
+  }
   return container.innerHTML;
 }
 function formatPhoneHref(phone) {
@@ -5051,6 +5122,9 @@ function deleteCurrentGearList() {
 }
 var AUTO_GEAR_HIGHLIGHT_CLASS = 'show-auto-gear-highlight';
 var AUTO_GEAR_HIGHLIGHT_CONTEXT_CLASS = 'auto-gear-highlight-context';
+var ONBOARD_MONITOR_RIGGING_ITEM_NAME = 'ULCS Arm mit 3/8" und 1/4" double';
+var ONBOARD_MONITOR_RIGGING_ITEM_ID = 'autoGearMonitorRiggingItem';
+var ONBOARD_MONITOR_RIGGING_RULE_ID = 'autoGearMonitorRiggingHighlight';
 var AUTO_GEAR_HIGHLIGHT_ICON = "\uE8AF";
 var AUTO_GEAR_HIGHLIGHT_LABEL_FALLBACK = 'Highlight automatic gear';
 var AUTO_GEAR_HIGHLIGHT_HELP_FALLBACK = 'Toggle a temporary color overlay for gear added by automatic rules. Useful while debugging gear rule behavior.';

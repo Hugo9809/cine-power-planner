@@ -2279,6 +2279,74 @@ function matchesAutoGearItem(target, actual) {
     return normTarget === normalizeAutoGearName(actual.replace(/^\d+x\s+/, ''));
 }
 
+function isOnboardMonitorRiggingItemName(name) {
+    if (typeof name !== 'string') return false;
+    const normalizedTarget = normalizeAutoGearName(ONBOARD_MONITOR_RIGGING_ITEM_NAME);
+    if (!normalizedTarget) return false;
+    return normalizeAutoGearName(name) === normalizedTarget;
+}
+
+function isOnboardMonitorRiggingItemEntry(entry) {
+    if (!entry || typeof entry !== 'object') return false;
+    return isOnboardMonitorRiggingItemName(entry.name);
+}
+
+function getOnboardMonitorRiggingRuleLabel() {
+    if (typeof texts === 'object' && texts) {
+        const localized = texts[currentLang]?.autoGearMonitorLabel;
+        if (typeof localized === 'string' && localized.trim()) {
+            return localized.trim();
+        }
+        const fallback = texts.en?.autoGearMonitorLabel;
+        if (typeof fallback === 'string' && fallback.trim()) {
+            return fallback.trim();
+        }
+    }
+    return 'Onboard monitors';
+}
+
+function ensureOnboardMonitorRiggingAutoGearHighlight(table) {
+    if (!table || typeof table.querySelectorAll !== 'function') {
+        return;
+    }
+    const target = normalizeAutoGearName(ONBOARD_MONITOR_RIGGING_ITEM_NAME);
+    if (!target) return;
+    const label = getOnboardMonitorRiggingRuleLabel();
+    const fallbackRule = { id: ONBOARD_MONITOR_RIGGING_RULE_ID, label };
+    const spans = Array.from(table.querySelectorAll('.gear-item')).filter(span => {
+        if (!span) return false;
+        const dataName = typeof span.getAttribute === 'function' ? span.getAttribute('data-gear-name') : '';
+        const textSource = dataName || span.textContent || '';
+        return normalizeAutoGearName(textSource) === target;
+    });
+    if (!spans.length) {
+        return;
+    }
+    spans.forEach(span => {
+        const quantity = Math.max(1, getSpanCount(span));
+        if (!span.classList.contains('auto-gear-item')) {
+            const normalizedItem = normalizeAutoGearItem({
+                id: ONBOARD_MONITOR_RIGGING_ITEM_ID,
+                name: ONBOARD_MONITOR_RIGGING_ITEM_NAME,
+                category: 'Rigging',
+                quantity: quantity,
+                contextNotes: [label]
+            });
+            configureAutoGearSpan(span, normalizedItem, quantity, fallbackRule);
+            return;
+        }
+        appendAutoGearRuleSource(span, fallbackRule);
+        applyAutoGearRuleColors(span, fallbackRule);
+        const contextMap = getAutoGearSpanContextMap(span);
+        if (!contextMap.has(label)) {
+            mergeAutoGearSpanContextNotes(span, [label], quantity);
+        } else {
+            renderAutoGearSpanContextNotes(span);
+        }
+        refreshAutoGearRuleBadge(span);
+    });
+}
+
 function getSpanCount(span) {
     if (!span) return 1;
     const text = span.textContent || '';
@@ -3462,6 +3530,7 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
     container.innerHTML = tableHtml;
     const table = container.querySelector('.gear-table');
     if (!table) return tableHtml;
+    let monitorRiggingTriggered = false;
     triggeredEntries.forEach(({ rule, multiplier }) => {
         const effectiveMultiplier = Math.max(1, Math.round(Number.isFinite(multiplier) ? multiplier : 1));
         rule.remove.forEach(item => {
@@ -3487,8 +3556,14 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
                 : { ...item, quantity };
             const cell = ensureAutoGearCategory(table, item.category);
             if (cell) addAutoGearItem(cell, scaledItem, rule);
+            if (!monitorRiggingTriggered && isOnboardMonitorRiggingItemEntry(item)) {
+                monitorRiggingTriggered = true;
+            }
         });
     });
+    if (monitorRiggingTriggered) {
+        ensureOnboardMonitorRiggingAutoGearHighlight(table);
+    }
     return container.innerHTML;
 }
 
@@ -5443,6 +5518,9 @@ function deleteCurrentGearList() {
 
 const AUTO_GEAR_HIGHLIGHT_CLASS = 'show-auto-gear-highlight';
 const AUTO_GEAR_HIGHLIGHT_CONTEXT_CLASS = 'auto-gear-highlight-context';
+const ONBOARD_MONITOR_RIGGING_ITEM_NAME = 'ULCS Arm mit 3/8" und 1/4" double';
+const ONBOARD_MONITOR_RIGGING_ITEM_ID = 'autoGearMonitorRiggingItem';
+const ONBOARD_MONITOR_RIGGING_RULE_ID = 'autoGearMonitorRiggingHighlight';
 const AUTO_GEAR_HIGHLIGHT_ICON = '\uE8AF';
 const AUTO_GEAR_HIGHLIGHT_LABEL_FALLBACK = 'Highlight automatic gear';
 const AUTO_GEAR_HIGHLIGHT_HELP_FALLBACK =
