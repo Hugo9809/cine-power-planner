@@ -1555,8 +1555,10 @@ function attemptStorageCompressionSweep(storage, options) {
     }
   }
 
+  const minSavingsThreshold = typeof minSavings === 'number' && minSavings > 0 ? minSavings : 0;
   const total = storage.length;
-  const keys = [];
+  const candidates = [];
+
   for (let index = 0; index < total; index += 1) {
     let key;
     try {
@@ -1565,18 +1567,8 @@ function attemptStorageCompressionSweep(storage, options) {
       void keyError;
       key = null;
     }
-    if (typeof key === 'string' && key && !skipSet.has(key)) {
-      keys.push(key);
-    }
-  }
 
-  let compressedCount = 0;
-  let freedCharacters = 0;
-  const upperLimit = typeof limit === 'number' && limit > 0 ? Math.min(limit, keys.length) : keys.length;
-
-  for (let index = 0; index < keys.length && compressedCount < upperLimit; index += 1) {
-    const key = keys[index];
-    if (skipSet.has(key)) {
+    if (typeof key !== 'string' || !key || skipSet.has(key)) {
       continue;
     }
 
@@ -1604,20 +1596,54 @@ function attemptStorageCompressionSweep(storage, options) {
     const savings = typeof candidate.originalLength === 'number' && typeof candidate.wrappedLength === 'number'
       ? candidate.originalLength - candidate.wrappedLength
       : 0;
-    if (savings < (typeof minSavings === 'number' && minSavings > 0 ? minSavings : 0)) {
+    if (savings < minSavingsThreshold) {
+      continue;
+    }
+
+    candidates.push({
+      key,
+      serialized: candidate.serialized,
+      savings: savings > 0 ? savings : 0,
+      originalLength: typeof candidate.originalLength === 'number' ? candidate.originalLength : 0,
+    });
+  }
+
+  if (!candidates.length) {
+    return { success: false, compressed: 0, freed: 0 };
+  }
+
+  candidates.sort((a, b) => {
+    if (b.savings !== a.savings) {
+      return b.savings - a.savings;
+    }
+    return b.originalLength - a.originalLength;
+  });
+
+  const upperLimit = typeof limit === 'number' && limit > 0 ? Math.min(limit, candidates.length) : candidates.length;
+
+  let compressedCount = 0;
+  let freedCharacters = 0;
+
+  for (let index = 0; index < candidates.length && compressedCount < upperLimit; index += 1) {
+    const entry = candidates[index];
+    if (!entry || typeof entry.serialized !== 'string' || !entry.serialized) {
       continue;
     }
 
     try {
-      storage.setItem(key, candidate.serialized);
+      storage.setItem(entry.key, entry.serialized);
       compressedCount += 1;
-      freedCharacters += savings > 0 ? savings : 0;
+      freedCharacters += entry.savings;
     } catch (writeError) {
       void writeError;
     }
   }
 
-  if (compressedCount > 0 && typeof console !== 'undefined' && typeof console.warn === 'function') {
+  if (compressedCount === 0) {
+    return { success: false, compressed: 0, freed: 0 };
+  }
+
+  if (typeof console !== 'undefined' && typeof console.warn === 'function') {
     if (freedCharacters > 0) {
       console.warn(
         `Compressed ${compressedCount} stored entr${compressedCount === 1 ? 'y' : 'ies'} during quota recovery, freeing approximately ${freedCharacters} characters.`,
@@ -1627,7 +1653,7 @@ function attemptStorageCompressionSweep(storage, options) {
     }
   }
 
-  return { success: compressedCount > 0, compressed: compressedCount, freed: freedCharacters };
+  return { success: true, compressed: compressedCount, freed: freedCharacters };
 }
 
 function decodeStoredValue(raw) {

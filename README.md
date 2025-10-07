@@ -621,7 +621,8 @@ Use Cine Power Planner end-to-end with the following routine:
   payload wrapper before new saves run. Compression now auto-selects the
   tightest safe encoding
   so migration backups keep fitting within the browser quota even as datasets
-  grow.
+  grow. Quota recovery sweeps compress the heaviest stored entries first so
+  space is reclaimed faster without touching active backups.【F:src/scripts/storage.js†L1541-L1652】
 - **Automatic gear snapshots** – rule changes trigger timestamped safety copies
   every 10 minutes in **Settings → Automatic Gear Rules**, and you can restore or
   export them if a customization misfires.
