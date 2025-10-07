@@ -117,6 +117,44 @@
     return null;
   })();
 
+  function isNodeModuleConstructor(ctor) {
+    if (typeof ctor !== 'function') {
+      return false;
+    }
+
+    const ctorName = ctor.name;
+    if (ctorName === 'Module' || ctorName === 'NativeModule') {
+      return true;
+    }
+
+    if (typeof require === 'function') {
+      try {
+        const nodeModule = require('module');
+        if (nodeModule && typeof nodeModule.Module === 'function') {
+          if (ctor === nodeModule.Module) {
+            return true;
+          }
+
+          try {
+            if (
+              nodeModule.Module.prototype &&
+              ctor.prototype &&
+              ctor.prototype instanceof nodeModule.Module
+            ) {
+              return true;
+            }
+          } catch (inheritanceCheckError) {
+            void inheritanceCheckError;
+          }
+        }
+      } catch (moduleRequireError) {
+        void moduleRequireError;
+      }
+    }
+
+    return false;
+  }
+
   function shouldBypassDeepFreeze(value) {
     if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
       return false;
@@ -126,7 +164,7 @@
       if (
         typeof module !== 'undefined' &&
         module &&
-        typeof module.constructor === 'function' &&
+        isNodeModuleConstructor(module.constructor) &&
         value instanceof module.constructor
       ) {
         return true;
