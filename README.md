@@ -790,8 +790,10 @@ data.
 - Coverage annotations from the automatic gear dashboard appear in print views,
   exports and shareable bundles so offline reviews match the in-app summary.
 - Lens rows include front diameter, weight, minimum focus, rod requirements and
-  matte box components. Battery rows account for calculator counts and required
-  hot-swap hardware.
+  matte box components. The printable overview mirrors these selections with
+  brand, mount, diameter, focus, weight, rod support and notes so checkout
+  packets carry the same lens specs offline. Battery rows account for
+  calculator counts and required hot-swap hardware.
 - Crew details, monitoring configurations, video distribution preferences and
   custom notes appear in exports so departments stay aligned.
 - Gear lists save with the project, appear in printable overviews, live inside
