@@ -632,6 +632,7 @@ function downloadSharedProject(shareFileName, includeAutoGear) {
     currentSetup.gearSelectors = gearSelectors;
   }
   var combinedHtml = getCurrentGearListHtml();
+  currentSetup.gearListAndProjectRequirementsGenerated = Boolean(combinedHtml);
   if (combinedHtml) {
     var _getSafeGearListHtmlS = getSafeGearListHtmlSections(combinedHtml),
       projectHtml = _getSafeGearListHtmlS.projectHtml,
@@ -4734,6 +4735,7 @@ function collectProjectInfoFromRequirementsGrid() {
 function saveCurrentGearList() {
   if (factoryResetInProgress) return;
   var html = getCurrentGearListHtml();
+  var gearListGenerated = Boolean(html);
   var info = projectForm ? collectProjectFormData() : {};
   info.sliderBowl = getSetupsCoreValue('getSliderBowlValue');
   info.easyrig = getSetupsCoreValue('getEasyrigValue');
@@ -4814,7 +4816,8 @@ function saveCurrentGearList() {
   if (typeof saveProject === 'function' && typeof effectiveStorageKey === 'string') {
     var payload = {
       projectInfo: projectInfoSnapshot,
-      gearList: html
+      gearList: html,
+      gearListAndProjectRequirementsGenerated: gearListGenerated
     };
     if (powerSelectionSnapshot) {
       payload.powerSelection = powerSelectionSnapshot;
@@ -4845,6 +4848,11 @@ function saveCurrentGearList() {
     }
   } else if (setup.gearList !== '') {
     setup.gearList = '';
+    changed = true;
+  }
+
+  if (setup.gearListAndProjectRequirementsGenerated !== gearListGenerated) {
+    setup.gearListAndProjectRequirementsGenerated = gearListGenerated;
     changed = true;
   }
   if (projectInfoSignature) {

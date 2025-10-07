@@ -4359,11 +4359,27 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         if (typeof data.projectHtml === 'string') {
           htmlSources.push(data.projectHtml);
         }
-        if (isPlainObject(data.project) && typeof data.project.projectHtml === 'string') {
-          htmlSources.push(data.project.projectHtml);
+        if (typeof data.gearHtml === 'string') {
+          htmlSources.push(data.gearHtml);
         }
-        if (isPlainObject(normalizedGearList) && typeof normalizedGearList.projectHtml === 'string') {
-          htmlSources.push(normalizedGearList.projectHtml);
+        if (isPlainObject(data.project)) {
+          if (typeof data.project.projectHtml === 'string') {
+            htmlSources.push(data.project.projectHtml);
+          }
+          if (typeof data.project.gearHtml === 'string') {
+            htmlSources.push(data.project.gearHtml);
+          }
+        }
+        if (isPlainObject(data.gearList) && typeof data.gearList.gearHtml === 'string') {
+          htmlSources.push(data.gearList.gearHtml);
+        }
+        if (isPlainObject(normalizedGearList)) {
+          if (typeof normalizedGearList.projectHtml === 'string') {
+            htmlSources.push(normalizedGearList.projectHtml);
+          }
+          if (typeof normalizedGearList.gearHtml === 'string') {
+            htmlSources.push(normalizedGearList.gearHtml);
+          }
         } else if (typeof normalizedGearList === 'string') {
           htmlSources.push(normalizedGearList);
         }
@@ -4395,6 +4411,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             }
           }
         }
+        _normalized2.gearListAndProjectRequirementsGenerated = typeof data.gearListAndProjectRequirementsGenerated === 'boolean' ? data.gearListAndProjectRequirementsGenerated : htmlSources.some(function (value) {
+          return typeof value === 'string' && value.trim();
+        });
         if (normalizedAutoGearRules && normalizedAutoGearRules.length) {
           _normalized2.autoGearRules = cloneAutoGearRules(normalizedAutoGearRules);
         }
@@ -4432,8 +4451,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return null;
   }
-  var LEGACY_PROJECT_ROOT_KEYS = new Set(["gearList", "projectInfo", "projectHtml", "gearHtml", "autoGearRules", "powerSelection"]);
-  var NORMALIZED_PROJECT_KEYS = new Set(["gearList", "projectInfo", "autoGearRules", "diagramPositions", "gearSelectors", "powerSelection"]);
+  var LEGACY_PROJECT_ROOT_KEYS = new Set(["gearList", "projectInfo", "projectHtml", "gearHtml", "autoGearRules", "powerSelection", "gearListAndProjectRequirementsGenerated"]);
+  var NORMALIZED_PROJECT_KEYS = new Set(["gearList", "projectInfo", "autoGearRules", "diagramPositions", "gearSelectors", "powerSelection", "gearListAndProjectRequirementsGenerated"]);
   function isNormalizedProjectEntry(entry) {
     if (!isPlainObject(entry)) {
       return false;
@@ -4470,6 +4489,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (!isPlainObject(powerSelection)) {
         return false;
       }
+    }
+    if (Object.prototype.hasOwnProperty.call(entry, "gearListAndProjectRequirementsGenerated") && typeof entry.gearListAndProjectRequirementsGenerated !== "boolean") {
+      return false;
     }
     return true;
   }

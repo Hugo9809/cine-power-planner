@@ -315,6 +315,7 @@ describe('project sharing helpers', () => {
       projectName: 'Exported Project',
       notes: 'Stored notes',
     }));
+    expect(parsed.gearListAndProjectRequirementsGenerated).toBe(false);
     expect(loadProjectMock).toHaveBeenCalled();
     delete global.currentProjectInfo;
   });
@@ -373,6 +374,7 @@ describe('project sharing helpers', () => {
       contacts: 'Producer',
       schedule: 'Night shoot',
     }));
+    expect(parsed.gearListAndProjectRequirementsGenerated).toBe(false);
     expect(loadProjectMock).toHaveBeenCalled();
     delete global.currentProjectInfo;
   });
@@ -492,6 +494,7 @@ describe('project sharing helpers', () => {
     expect(capturedPayloads[0].payload.batteryPlate).toBe('');
     expect(capturedPayloads[0].payload.batteryHotswap).toBe('');
     expect(capturedPayloads[0].payload).not.toHaveProperty('powerSelection');
+    expect(capturedPayloads[0].payload.gearListAndProjectRequirementsGenerated).toBe(false);
 
     clickSpy.mockRestore();
     createSpy.mockRestore();

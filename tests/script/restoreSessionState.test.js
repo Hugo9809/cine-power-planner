@@ -127,6 +127,44 @@ describe('restoreSessionState', () => {
     env.cleanup();
   });
 
+  test('does not regenerate gear list when imported project explicitly omits it', () => {
+    const previousProjectInfo = { projectName: 'Old Project', codec: 'ProRes' };
+    const storedPayload = {
+      gearList: '',
+      projectInfo: null,
+      powerSelection: null
+    };
+
+    const loadProjectMock = jest.fn(() => storedPayload);
+    const saveProjectMock = jest.fn();
+
+    const env = setupScriptEnvironment({
+      readyState: 'complete',
+      globals: {
+        currentProjectInfo: previousProjectInfo,
+        loadSessionState: jest.fn(() => null),
+        loadProject: loadProjectMock,
+        saveProject: saveProjectMock,
+        deleteProject: jest.fn()
+      }
+    });
+
+    const gearListOutput = document.getElementById('gearListOutput');
+    const generateSpy = typeof window.generateGearListHtml === 'function'
+      ? jest.spyOn(window, 'generateGearListHtml')
+      : null;
+
+    expect(loadProjectMock).toHaveBeenCalled();
+    expect(gearListOutput.classList.contains('hidden')).toBe(true);
+    expect(gearListOutput.innerHTML.trim()).toBe('');
+    expect(window.currentProjectInfo).toBeNull();
+    if (generateSpy) {
+      expect(generateSpy).not.toHaveBeenCalled();
+      generateSpy.mockRestore();
+    }
+    env.cleanup();
+  });
+
   test('restores automatic gear highlight preference from session state', () => {
     const highlightGearHtml = `
       <h2>Highlight Project</h2>

@@ -2438,7 +2438,15 @@ function restoreSessionState() {
       return typeof loadProject === 'function' && typeof name === 'string' ? loadProject(name) : null;
     };
     var hasProjectPayload = function hasProjectPayload(project) {
-      return project && (project.gearList || project.projectInfo || project.powerSelection);
+      if (!project || _typeof(project) !== 'object') {
+        return false;
+      }
+
+      if (Object.prototype.hasOwnProperty.call(project, 'gearList')) {
+        return true;
+      }
+
+      return Boolean(project.projectInfo || project.powerSelection || project.autoGearRules && project.autoGearRules.length || project.diagramPositions && Object.keys(project.diagramPositions).length);
     };
     var candidateNames = [];
     if (typedName) {
@@ -2473,9 +2481,24 @@ function restoreSessionState() {
           updateBatteryOptions();
         }
       }
-      var mergedInfo = _objectSpread(_objectSpread({}, storedProject.projectInfo || {}), currentProjectInfo || {});
-      currentProjectInfo = mergedInfo;
-      if (projectForm) populateProjectForm(currentProjectInfo);
+      var storedHasProjectInfo = Object.prototype.hasOwnProperty.call(storedProject, 'projectInfo');
+      var storedProjectInfo = storedHasProjectInfo && storedProject.projectInfo && _typeof(storedProject.projectInfo) === 'object' ? storedProject.projectInfo : null;
+      var sessionProjectInfo = currentProjectInfo && _typeof(currentProjectInfo) === 'object' ? currentProjectInfo : null;
+      var nextProjectInfo = null;
+      if (storedHasProjectInfo) {
+        if (storedProjectInfo && sessionProjectInfo) {
+          nextProjectInfo = _objectSpread(_objectSpread({}, storedProjectInfo), sessionProjectInfo);
+        } else if (storedProjectInfo) {
+          nextProjectInfo = _objectSpread({}, storedProjectInfo);
+        } else {
+          nextProjectInfo = null;
+        }
+      } else if (sessionProjectInfo) {
+        nextProjectInfo = _objectSpread({}, sessionProjectInfo);
+      }
+
+      currentProjectInfo = nextProjectInfo;
+      if (projectForm) populateProjectForm(currentProjectInfo || {});
       if (typeof normalizeDiagramPositionsInput === 'function' && typeof setManualDiagramPositions === 'function') {
         var storedDiagramPositions = normalizeDiagramPositionsInput(storedProject.diagramPositions);
         var combinedDiagramPositions = Object.keys(storedDiagramPositions).length ? _objectSpread(_objectSpread({}, storedDiagramPositions), sessionDiagramPositions) : sessionDiagramPositions;
@@ -2705,9 +2728,11 @@ function applySharedSetup(shared) {
       applyGearListSelectors(decoded.gearSelectors);
     }
     if (decoded.projectInfo || decoded.gearSelectors || decoded.gearList) {
+      var currentGearList = getCurrentGearListHtml();
       var payload = {
-        gearList: getCurrentGearListHtml(),
-        projectInfo: decoded.projectInfo || null
+        gearList: currentGearList,
+        projectInfo: decoded.projectInfo || null,
+        gearListAndProjectRequirementsGenerated: Boolean(currentGearList)
       };
       if (typeof getDiagramManualPositions === 'function') {
         var diagramPositions = getDiagramManualPositions();
