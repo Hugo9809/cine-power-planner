@@ -1847,11 +1847,7 @@ describe('export/import all data', () => {
       session: { camera: 'CamA' },
       feedback: { note: 'hi' },
       project: {
-        Proj: {
-          gearList: '<ul></ul>',
-          projectInfo: null,
-          gearListAndProjectRequirementsGenerated: true,
-        },
+        Proj: withGenerationFlag({ gearList: '<ul></ul>', projectInfo: null }),
       },
       favorites: { cat: ['A'] },
       autoGearRules: rules,
@@ -1991,11 +1987,12 @@ describe('export/import all data', () => {
         ],
       };
       importAllData(data);
-      expect(loadDeviceData()).toEqual(validDeviceData);
-      expect(loadSetups()).toEqual({ A: { foo: 1 } });
-      expect(loadSessionState()).toEqual({ camera: 'CamA' });
+    expect(loadDeviceData()).toEqual(validDeviceData);
+    expect(loadSetups()).toEqual({ A: { foo: 1 } });
+    expect(loadSessionState()).toEqual({ camera: 'CamA' });
     expect(loadFeedback()).toEqual({ note: 'hi' });
     expect(loadProject('Proj')).toEqual(withGenerationFlag({ gearList: '<ol></ol>', projectInfo: null }));
+    expect(exportAllData().project.Proj.gearListAndProjectRequirementsGenerated).toBe(true);
     expect(loadFavorites()).toEqual({ cat: ['B'] });
     expect(loadAutoGearRules()).toEqual(data.autoGearRules);
     expect(loadAutoGearBackups()).toEqual(data.autoGearBackups);
