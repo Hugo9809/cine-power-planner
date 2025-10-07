@@ -13147,6 +13147,9 @@ function resolveSharedImportMode(sharedRules) {
 function encodeSharedSetup(setup) {
   const out = {};
   sharedKeyMapKeys.forEach(key => {
+    if (key === 'gearList' || key === 'projectHtml') {
+      return;
+    }
     if (setup[key] != null) out[sharedKeyMap[key]] = setup[key];
   });
   return out;

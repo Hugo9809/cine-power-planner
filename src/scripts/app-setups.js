@@ -946,15 +946,6 @@ function downloadSharedProject(shareFileName, includeAutoGear) {
   }
   const combinedHtml = gearListGetCurrentHtmlImpl();
   currentSetup.gearListAndProjectRequirementsGenerated = Boolean(combinedHtml);
-  if (combinedHtml) {
-    const { projectHtml, gearHtml } = gearListGetSafeHtmlSectionsImpl(combinedHtml);
-    if (projectHtml) currentSetup.projectHtml = projectHtml;
-    if (gearHtml) {
-      currentSetup.gearList = projectHtml
-        ? gearHtml.replace(/<h2[^>]*>.*?<\/h2>/, '')
-        : gearHtml;
-    }
-  }
   const deviceChanges = getDeviceChanges();
   if (Object.keys(deviceChanges).length) {
     currentSetup.changedDevices = deviceChanges;
@@ -5128,9 +5119,8 @@ function saveCurrentGearList() {
         }
     }
     if (typeof saveProject === 'function' && typeof effectiveStorageKey === 'string') {
-        const payload = {
+    const payload = {
             projectInfo: projectInfoSnapshot,
-            gearList: html,
             gearListAndProjectRequirementsGenerated: gearListGenerated
         };
         if (powerSelectionSnapshot) {
@@ -5165,13 +5155,8 @@ function saveCurrentGearList() {
     const setup = existing || {};
     let changed = false;
 
-    if (html) {
-        if (setup.gearList !== html) {
-            setup.gearList = html;
-            changed = true;
-        }
-    } else if (setup.gearList !== '') {
-        setup.gearList = '';
+    if (Object.prototype.hasOwnProperty.call(setup, 'gearList')) {
+        delete setup.gearList;
         changed = true;
     }
 
@@ -5266,7 +5251,10 @@ function deleteCurrentGearList() {
     if (typeof deleteProject === 'function') {
         deleteProject(storageKey);
     } else if (typeof saveProject === 'function') {
-        saveProject(storageKey, { projectInfo: null, gearList: '' });
+        saveProject(storageKey, {
+            projectInfo: null,
+            gearListAndProjectRequirementsGenerated: false
+        });
     }
     const setups = getSetups();
     if (setups && typeof setups === 'object') {
@@ -5277,22 +5265,13 @@ function deleteCurrentGearList() {
                 delete existingSetup.gearList;
                 changed = true;
             }
-            if (Object.prototype.hasOwnProperty.call(existingSetup, 'projectInfo')) {
-                delete existingSetup.projectInfo;
-                changed = true;
-            }
-            if (Object.prototype.hasOwnProperty.call(existingSetup, 'autoGearRules')) {
-                delete existingSetup.autoGearRules;
-                changed = true;
-            }
-            if (Object.prototype.hasOwnProperty.call(existingSetup, 'diagramPositions')) {
-                delete existingSetup.diagramPositions;
-                changed = true;
-            }
-            if (Object.prototype.hasOwnProperty.call(existingSetup, 'powerSelection')) {
-                delete existingSetup.powerSelection;
-                changed = true;
-            }
+            ['projectInfo', 'autoGearRules', 'diagramPositions', 'powerSelection', 'gearSelectors', 'gearListAndProjectRequirementsGenerated']
+                .forEach((prop) => {
+                    if (Object.prototype.hasOwnProperty.call(existingSetup, prop)) {
+                        delete existingSetup[prop];
+                        changed = true;
+                    }
+                });
             if (changed) {
                 storeSetups(setups);
             }
@@ -5343,10 +5322,13 @@ function deleteCurrentGearList() {
                     delete savedSetup.gearList;
                     resaved = true;
                 }
-                if (Object.prototype.hasOwnProperty.call(savedSetup, 'projectInfo')) {
-                    delete savedSetup.projectInfo;
-                    resaved = true;
-                }
+                ['projectInfo', 'gearListAndProjectRequirementsGenerated', 'gearSelectors']
+                    .forEach((prop) => {
+                        if (Object.prototype.hasOwnProperty.call(savedSetup, prop)) {
+                            delete savedSetup[prop];
+                            resaved = true;
+                        }
+                    });
                 if (resaved) {
                     storeSetups(setupsAfterSave);
                 }

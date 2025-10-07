@@ -236,12 +236,14 @@ describe('project autosave', () => {
       : null;
     expect(blankProject).toBeDefined();
     expect(blankProject.projectInfo).toBeNull();
-    expect(blankProject.gearList).toBe('');
+    expect(blankProject.gearList).toBeUndefined();
+    expect(blankProject.gearListAndProjectRequirementsGenerated).toBe(false);
 
     const blankSetup = setupsState['Project Empty'];
     expect(blankSetup).toBeDefined();
     expect(blankSetup.projectInfo).toBeNull();
-    expect(blankSetup.gearList).toBe('');
+    expect(blankSetup.gearList).toBeUndefined();
+    expect(blankSetup.gearListAndProjectRequirementsGenerated).toBe(false);
 
     env.cleanup();
   });
