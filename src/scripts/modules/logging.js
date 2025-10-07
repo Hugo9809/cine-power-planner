@@ -679,6 +679,7 @@
   const LOG_LEVELS = freezeDeep(LOG_LEVEL_MAP);
 
   const HISTORY_MIN_LIMIT = 50;
+  const HISTORY_ABSOLUTE_MIN_LIMIT = 1;
   const HISTORY_MAX_LIMIT = 2000;
   const HISTORY_STORAGE_KEY = '__cineLoggingHistory';
   const CONFIG_STORAGE_KEY = '__cineLoggingConfig';
@@ -778,19 +779,23 @@
     return typeof fallback === 'boolean' ? fallback : false;
   }
 
-  function clampHistoryLimit(value) {
+  function clampHistoryLimit(value, options) {
+    const allowReducedMinimum =
+      options && options.allowReducedMin === true ? true : false;
+    const effectiveMinimum = allowReducedMinimum ? HISTORY_ABSOLUTE_MIN_LIMIT : HISTORY_MIN_LIMIT;
+
     if (typeof value === 'number' && Number.isFinite(value)) {
       const absolute = Math.abs(Math.floor(value));
       if (!absolute) {
         return activeConfig.historyLimit;
       }
-      return Math.max(HISTORY_MIN_LIMIT, Math.min(HISTORY_MAX_LIMIT, absolute));
+      return Math.max(effectiveMinimum, Math.min(HISTORY_MAX_LIMIT, absolute));
     }
 
     if (typeof value === 'string' && value) {
       const parsed = Number(value);
       if (Number.isFinite(parsed)) {
-        return clampHistoryLimit(parsed);
+        return clampHistoryLimit(parsed, options);
       }
     }
 
@@ -1209,8 +1214,12 @@
   }
 
   function getEffectiveHistoryLimit() {
+    const effectiveMinimum = activeConfig.persistSession === false
+      ? HISTORY_ABSOLUTE_MIN_LIMIT
+      : HISTORY_MIN_LIMIT;
+
     return Math.max(
-      HISTORY_MIN_LIMIT,
+      effectiveMinimum,
       Math.min(HISTORY_MAX_LIMIT, Math.floor(activeConfig.historyLimit)),
     );
   }
@@ -1759,6 +1768,10 @@
     let captureChanged = false;
     let limitChanged = false;
 
+    const nextPersistSession = Object.prototype.hasOwnProperty.call(overrides, 'persistSession')
+      ? booleanFromValue(overrides.persistSession, activeConfig.persistSession)
+      : activeConfig.persistSession;
+
     if (Object.prototype.hasOwnProperty.call(overrides, 'level')) {
       const nextLevel = normalizeLevel(overrides.level, activeConfig.level);
       if (nextLevel !== activeConfig.level) {
@@ -1776,7 +1789,9 @@
     }
 
     if (Object.prototype.hasOwnProperty.call(overrides, 'historyLimit')) {
-      const nextLimit = clampHistoryLimit(overrides.historyLimit);
+      const nextLimit = clampHistoryLimit(overrides.historyLimit, {
+        allowReducedMin: nextPersistSession === false,
+      });
       if (nextLimit !== activeConfig.historyLimit) {
         activeConfig.historyLimit = nextLimit;
         changed = true;
@@ -1793,11 +1808,16 @@
     }
 
     if (Object.prototype.hasOwnProperty.call(overrides, 'persistSession')) {
-      const nextPersist = booleanFromValue(overrides.persistSession, activeConfig.persistSession);
-      if (nextPersist !== activeConfig.persistSession) {
-        activeConfig.persistSession = nextPersist;
+      if (nextPersistSession !== activeConfig.persistSession) {
+        activeConfig.persistSession = nextPersistSession;
         changed = true;
       }
+    }
+
+    if (activeConfig.persistSession && activeConfig.historyLimit < HISTORY_MIN_LIMIT) {
+      activeConfig.historyLimit = HISTORY_MIN_LIMIT;
+      changed = true;
+      limitChanged = true;
     }
 
     if (Object.prototype.hasOwnProperty.call(overrides, 'captureGlobalErrors')) {
