@@ -27,6 +27,17 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return {};
   }
   var GLOBAL_SCOPE = detectGlobalScope();
+  var MODULE_DEEP_CLONE = GLOBAL_SCOPE && typeof GLOBAL_SCOPE.__cineDeepClone === 'function' ? GLOBAL_SCOPE.__cineDeepClone : function moduleFallbackDeepClone(value) {
+    if (value === null || _typeof(value) !== 'object') {
+      return value;
+    }
+    try {
+      return JSON.parse(JSON.stringify(value));
+    } catch (cloneError) {
+      void cloneError;
+    }
+    return value;
+  };
   function resolveModuleBase(scope) {
     if ((typeof cineModuleBase === "undefined" ? "undefined" : _typeof(cineModuleBase)) === 'object' && cineModuleBase) {
       return cineModuleBase;
@@ -100,6 +111,143 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   };
   var factoryAutoGearRulesSnapshot = null;
   var factoryAutoGearSeedContext = null;
+  function fallbackCollectCandidateScopes(primary) {
+    var scopes = [];
+    function push(scope) {
+      if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+        return;
+      }
+      if (scopes.indexOf(scope) === -1) {
+        scopes.push(scope);
+      }
+    }
+    push(primary);
+    if (typeof globalThis !== 'undefined') push(globalThis);
+    if (typeof window !== 'undefined') push(window);
+    if (typeof self !== 'undefined') push(self);
+    if (typeof global !== 'undefined') push(global);
+    return scopes;
+  }
+  var candidateScopes = function resolveCandidateScopes() {
+    if (MODULE_BASE && typeof MODULE_BASE.collectCandidateScopes === 'function') {
+      try {
+        var collected = MODULE_BASE.collectCandidateScopes(GLOBAL_SCOPE);
+        if (Array.isArray(collected) && collected.length) {
+          return collected;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+    return fallbackCollectCandidateScopes(GLOBAL_SCOPE);
+  }();
+  var structuredCloneCandidates = function collectStructuredCloneCandidates() {
+    var candidates = [];
+    function addCandidate(fn, scope) {
+      if (typeof fn !== 'function') {
+        return;
+      }
+      var exists = candidates.some(function (candidate) {
+        return candidate && candidate.fn === fn;
+      });
+      if (!exists) {
+        candidates.push({
+          fn: fn,
+          scope: scope || null
+        });
+      }
+    }
+    if (MODULE_BASE) {
+      if (typeof MODULE_BASE.structuredClone === 'function') {
+        addCandidate(MODULE_BASE.structuredClone, MODULE_BASE);
+      }
+      if (typeof MODULE_BASE.getStructuredClone === 'function') {
+        try {
+          var resolved = MODULE_BASE.getStructuredClone();
+          addCandidate(resolved, MODULE_BASE);
+        } catch (error) {
+          void error;
+        }
+      }
+    }
+    for (var index = 0; index < candidateScopes.length; index += 1) {
+      var scope = candidateScopes[index];
+      if (!scope || _typeof(scope) !== 'object' && typeof scope !== 'function') {
+        continue;
+      }
+      var candidate = scope.structuredClone;
+      if (typeof candidate === 'function') {
+        addCandidate(candidate, scope);
+      }
+    }
+    return candidates;
+  }();
+  var cachedStructuredCloneCandidate = null;
+  function tryStructuredCloneValue(value) {
+    if (cachedStructuredCloneCandidate) {
+      try {
+        var candidate = cachedStructuredCloneCandidate;
+        return {
+          success: true,
+          value: candidate.scope ? candidate.fn.call(candidate.scope, value) : candidate.fn(value)
+        };
+      } catch (error) {
+        void error;
+        cachedStructuredCloneCandidate = null;
+      }
+    }
+    for (var index = 0; index < structuredCloneCandidates.length; index += 1) {
+      var _candidate = structuredCloneCandidates[index];
+      if (!_candidate || typeof _candidate.fn !== 'function') {
+        continue;
+      }
+      try {
+        var cloned = _candidate.scope ? _candidate.fn.call(_candidate.scope, value) : _candidate.fn(value);
+        cachedStructuredCloneCandidate = _candidate;
+        return {
+          success: true,
+          value: cloned
+        };
+      } catch (error) {
+        void error;
+      }
+    }
+    return {
+      success: false,
+      value: null
+    };
+  }
+  function cloneWithStructuredCloneFallback(value) {
+    if (value === null || typeof value === 'undefined') {
+      return value;
+    }
+    var attempt = tryStructuredCloneValue(value);
+    if (attempt.success) {
+      return attempt.value;
+    }
+    if (MODULE_DEEP_CLONE) {
+      try {
+        var cloned = MODULE_DEEP_CLONE(value);
+        if (cloned !== value || value === null || _typeof(value) !== 'object') {
+          return cloned;
+        }
+      } catch (cloneError) {
+        void cloneError;
+      }
+    }
+    try {
+      return JSON.parse(JSON.stringify(value));
+    } catch (error) {
+      void error;
+    }
+    if (Array.isArray(value)) {
+      return value.slice();
+    }
+    if (_typeof(value) === 'object') {
+      return _objectSpread({}, value);
+    }
+    return value;
+  }
   function cloneAutoGearItems(items) {
     return items.map(function (item) {
       var normalized = normalizeAutoGearItem(item);
@@ -905,11 +1053,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (factoryAutoGearSeedContext) return;
     if (typeof collectProjectFormData !== 'function') return;
     var baseInfo = collectProjectFormData() || {};
-    var projectDataClone;
-    try {
-      projectDataClone = JSON.parse(JSON.stringify(baseInfo));
-    } catch (cloneError) {
-      void cloneError;
+    var projectDataClone = cloneWithStructuredCloneFallback(baseInfo);
+    if (!projectDataClone || _typeof(projectDataClone) !== 'object') {
       projectDataClone = _objectSpread({}, baseInfo);
     }
     var scenarioValues = requiredScenariosSelect ? Array.from(requiredScenariosSelect.options || []).map(function (opt) {
@@ -1095,11 +1240,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       autoGearRulesDirtySinceBackup = savedDirtyFlag;
       applySetupSelectValues(context.setupValues);
       var baseInfoSource = context.projectFormData || {};
-      var baseInfo;
-      try {
-        baseInfo = JSON.parse(JSON.stringify(baseInfoSource));
-      } catch (cloneErr) {
-        void cloneErr;
+      var baseInfo = cloneWithStructuredCloneFallback(baseInfoSource);
+      if (!baseInfo || _typeof(baseInfo) !== 'object') {
         baseInfo = _objectSpread({}, baseInfoSource);
       }
       var rules = buildAutoGearRulesFromBaseInfo(baseInfo, context.scenarioValues || []);
@@ -1220,12 +1362,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (!factoryAutoGearSeedContext) {
         return null;
       }
-      try {
-        return JSON.parse(JSON.stringify(factoryAutoGearSeedContext));
-      } catch (error) {
-        void error;
-        return _objectSpread({}, factoryAutoGearSeedContext);
+      var clonedContext = cloneWithStructuredCloneFallback(factoryAutoGearSeedContext);
+      if (clonedContext && _typeof(clonedContext) === 'object') {
+        return clonedContext;
       }
+      return _objectSpread({}, factoryAutoGearSeedContext);
     },
     setFactoryAutoGearRulesSnapshot: setFactoryAutoGearRulesSnapshot,
     cloneAutoGearItems: cloneAutoGearItems,

@@ -561,7 +561,12 @@ Use Cine Power Planner end-to-end with the following routine:
   reloads when you enable session storage. Each entry now records an ISO
   timestamp, millisecond marker, event ID and channel indicator so teams can
   align console fallbacks with stored diagnostics even when the structured
-  logger is unavailable.
+  logger is unavailable. Overview print and export attempts stream their
+  warnings and fallback usage into this log so share rehearsals capture when
+  the dialog needed the backup window. Structured timers exposed through
+  `cineLogging.createTimer` and `cineLogging.runWithTimer` record start,
+  checkpoint and completion entries with automatic duration metrics so you can
+  audit long operations even when only offline diagnostics are available.
 - Full-app backups report their running total and feed the backup history ledger
   so you can confirm hourly safety copies are captured before archiving them
   offline.

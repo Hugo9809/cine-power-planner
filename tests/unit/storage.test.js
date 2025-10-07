@@ -951,7 +951,7 @@ describe('project storage', () => {
       const key = `auto-backup-2024-01-01-${hour}-${minute}-Project Alpha`;
       projects[key] = { gearList: `<ul>${index}</ul>`, projectInfo: null };
     }
-    const duplicateValue = { gearList: '<ul>duplicate</ul>', projectInfo: null };
+    const duplicateValue = withGenerationFlag({ gearList: '<ul>duplicate</ul>', projectInfo: null });
     const oldDuplicateKey = 'auto-backup-2023-12-31-23-59-Project Alpha';
     const newDuplicateKey = 'auto-backup-2024-01-02-00-00-Project Alpha';
     projects[oldDuplicateKey] = duplicateValue;
@@ -1007,7 +1007,7 @@ describe('project storage', () => {
     expect(backupKeys[0]).toBe('auto-backup-2024-05-01-10-21-30-Overwrite Demo');
     expectAutoBackupSnapshot(
       stored[backupKeys[0]],
-      { gearList: '<ul>Initial</ul>', projectInfo: { notes: 'original' } },
+      withGenerationFlag({ gearList: '<ul>Initial</ul>', projectInfo: { notes: 'original' } }),
     );
     expect(stored['Overwrite Demo']).toEqual(withGenerationFlag({ gearList: '<ul>Updated</ul>', projectInfo: { notes: 'updated' } }));
 
@@ -1043,7 +1043,7 @@ describe('project storage', () => {
     const autoBackupKeys = Object.keys(stored).filter(key => key.startsWith('auto-backup-'));
     expect(autoBackupKeys).toHaveLength(1);
     expect(autoBackupKeys[0]).toBe(autoKey);
-    expectAutoBackupSnapshot(stored[autoKey], { gearList: '<ul>Updated</ul>', projectInfo: null });
+    expectAutoBackupSnapshot(stored[autoKey], withGenerationFlag({ gearList: '<ul>Updated</ul>', projectInfo: null }));
 
     jest.useRealTimers();
   });
@@ -1058,7 +1058,7 @@ describe('project storage', () => {
     localStorage.setItem(PROJECT_KEY, JSON.stringify(stored));
     const result = loadProject();
     expect(result).toEqual({
-      NewFormat: { gearList: '<ul>New</ul>', projectInfo: { notes: 'ok' } },
+      NewFormat: withGenerationFlag({ gearList: '<ul>New</ul>', projectInfo: { notes: 'ok' } }),
       'LegacyHtml-updated': {
         gearList: { projectHtml: '<section>project</section>', gearHtml: '<div>gear</div>' },
         projectInfo: null,
@@ -1170,8 +1170,9 @@ describe('project storage', () => {
 
     const projects = loadProject();
     expect(projects).toEqual({
-      'Project-updated': withGenerationFlag({ gearList: '<p>Legacy project</p>', projectInfo: null }),
+      'Project-updated': { gearList: '<p>Legacy project</p>', projectInfo: null },
     });
+    expect(projects['Project-updated'].gearListAndProjectRequirementsGenerated).toBeUndefined();
 
     const storedBackup = getDecodedLocalStorageItem(migrationBackupKeyFor(PROJECT_KEY));
     expect(storedBackup).toBe(JSON.stringify(existingBackup));
@@ -1199,7 +1200,7 @@ describe('project storage', () => {
     expect(backupKeys.every((name) => name.startsWith('auto-backup-'))).toBe(true);
     const keepBackupKey = backupKeys.find((name) => name.includes('Keep'));
     expect(keepBackupKey).toBeDefined();
-    expectAutoBackupSnapshot(storedProjects[keepBackupKey], { gearList: '<ul>Keep</ul>', projectInfo: null });
+    expectAutoBackupSnapshot(storedProjects[keepBackupKey], withGenerationFlag({ gearList: '<ul>Keep</ul>', projectInfo: null }));
   });
 
   test('deleteProject without a name clears all stored projects', () => {
@@ -1840,7 +1841,7 @@ describe('export/import all data', () => {
       setups: { A: { foo: 1 } },
       session: { camera: 'CamA' },
       feedback: { note: 'hi' },
-      project: { Proj: { gearList: '<ul></ul>', projectInfo: null } },
+      project: { Proj: withGenerationFlag({ gearList: '<ul></ul>', projectInfo: null }) },
       favorites: { cat: ['A'] },
       autoGearRules: rules,
       autoGearBackups: backups,
@@ -2164,7 +2165,7 @@ describe('export/import all data', () => {
       ]
     };
     importAllData(data);
-    expect(loadProject('OldProj')).toEqual(withGenerationFlag({ gearList: '<ul></ul>', projectInfo: null }, false));
+    expect(loadProject('OldProj')).toEqual(withGenerationFlag({ gearList: '<ul></ul>', projectInfo: null }));
   });
 
   test('importAllData merges project map without overwriting existing entries', () => {
@@ -2274,13 +2275,13 @@ describe('export/import all data', () => {
     }));
 
     const stored = parseLocalStorageJSON(PROJECT_KEY);
-    expect(stored['Project-updated']).toEqual({
+    expect(stored['Project-updated']).toEqual(withGenerationFlag({
       gearList: '<section>Legacy</section>',
       projectInfo: { projectName: 'Legacy Stored' },
       autoGearRules: [
         { id: 'stored-json', label: 'Stored JSON', scenarios: [], add: [], remove: [] },
       ],
-    });
+    }));
   });
 
   test('loadProject normalizes project map entries saved as JSON strings', () => {
@@ -2300,10 +2301,10 @@ describe('export/import all data', () => {
     }));
 
     const updated = parseLocalStorageJSON(PROJECT_KEY);
-    expect(updated['Legacy-updated']).toEqual({
+    expect(updated['Legacy-updated']).toEqual(withGenerationFlag({
       gearList: '<article>Legacy Map</article>',
       projectInfo: { projectName: 'Legacy Map' },
-    });
+    }));
   });
 
   test('importAllData normalizes automatic gear booleans from strings', () => {

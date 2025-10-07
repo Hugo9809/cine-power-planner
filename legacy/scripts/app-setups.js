@@ -16,6 +16,19 @@ function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" 
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 var AUTO_GEAR_ANY_MOTOR_TOKEN_FALLBACK = typeof globalThis !== 'undefined' && globalThis.AUTO_GEAR_ANY_MOTOR_TOKEN ? globalThis.AUTO_GEAR_ANY_MOTOR_TOKEN : '__any__';
+var projectPersistenceSuspendedCount = 0;
+function suspendProjectPersistence() {
+  projectPersistenceSuspendedCount += 1;
+}
+function resumeProjectPersistence() {
+  if (projectPersistenceSuspendedCount > 0) {
+    projectPersistenceSuspendedCount -= 1;
+  }
+  return projectPersistenceSuspendedCount;
+}
+function isProjectPersistenceSuspended() {
+  return projectPersistenceSuspendedCount > 0;
+}
 var localGetLocalizedText = function () {
   function fallbackGetLocalizedText(key) {
     if (!key) return '';
@@ -84,7 +97,24 @@ function assignSelectValue(select, value) {
 function getGlobalScope() {
   return typeof globalThis !== 'undefined' && globalThis || typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || typeof global !== 'undefined' && global || null;
 }
-function getSafeGearListHtmlSections(html) {
+var SETUPS_DEEP_CLONE = function () {
+  var scope = getGlobalScope();
+  if (scope && typeof scope.__cineDeepClone === 'function') {
+    return scope.__cineDeepClone;
+  }
+  return function setupsFallbackDeepClone(value) {
+    if (value === null || _typeof(value) !== 'object') {
+      return value;
+    }
+    try {
+      return JSON.parse(JSON.stringify(value));
+    } catch (cloneError) {
+      void cloneError;
+    }
+    return value;
+  };
+}();
+function gearListGetSafeHtmlSectionsImpl(html) {
   var normalizedHtml = typeof html === 'string' ? html : '';
   var fallbackResult = {
     projectHtml: '',
@@ -132,6 +162,76 @@ function resolveElementById(id, globalName) {
   }
   return null;
 }
+function resolveGearListModule() {
+  var scope = getGlobalScope();
+  var candidates = [];
+  if ((typeof cineGearList === "undefined" ? "undefined" : _typeof(cineGearList)) === 'object' && cineGearList) {
+    candidates.push(cineGearList);
+  }
+  if (scope && _typeof(scope.cineGearList) === 'object' && scope.cineGearList) {
+    if (!candidates.includes(scope.cineGearList)) {
+      candidates.push(scope.cineGearList);
+    }
+  }
+  if (typeof require === 'function') {
+    try {
+      var required = require('./modules/gear-list.js');
+      if (required && _typeof(required) === 'object' && !candidates.includes(required)) {
+        candidates.push(required);
+      }
+    } catch (error) {
+      void error;
+    }
+  }
+  for (var index = 0; index < candidates.length; index += 1) {
+    var candidate = candidates[index];
+    if (!candidate || typeof candidate.setImplementation !== 'function') {
+      continue;
+    }
+    return candidate;
+  }
+  return null;
+}
+function registerGearListModuleImplementation() {
+  var module = resolveGearListModule();
+  var implementation = {
+    getSafeGearListHtmlSections: gearListGetSafeHtmlSectionsImpl,
+    generateGearListHtml: gearListGenerateHtmlImpl,
+    getCurrentGearListHtml: gearListGetCurrentHtmlImpl
+  };
+  if (module && typeof module.setImplementation === 'function') {
+    try {
+      module.setImplementation(implementation, {
+        source: 'app-setups'
+      });
+      return true;
+    } catch (error) {
+      if (typeof console !== 'undefined' && console && typeof console.warn === 'function') {
+        console.warn('Unable to register gear list implementation with cineGearList.', error);
+      }
+    }
+  }
+  var scope = getGlobalScope();
+  if (scope && _typeof(scope) === 'object') {
+    try {
+      scope.getSafeGearListHtmlSections = gearListGetSafeHtmlSectionsImpl;
+    } catch (error) {
+      void error;
+    }
+    try {
+      scope.generateGearListHtml = gearListGenerateHtmlImpl;
+    } catch (error) {
+      void error;
+    }
+    try {
+      scope.getCurrentGearListHtml = gearListGetCurrentHtmlImpl;
+    } catch (error) {
+      void error;
+    }
+  }
+  return false;
+}
+registerGearListModuleImplementation();
 function buildShareUiContext() {
   return {
     dialog: resolveElementById('shareDialog', 'shareDialog'),
@@ -561,7 +661,7 @@ if (projectForm) {
     var info = collectProjectFormData();
     currentProjectInfo = info;
     ensureZoomRemoteSetup(info);
-    var html = generateGearListHtml(info);
+    var html = gearListGenerateHtmlImpl(info);
     displayGearAndRequirements(html);
     ensureGearListActions();
     bindGearListCageListener();
@@ -619,29 +719,69 @@ function downloadSharedProject(shareFileName, includeAutoGear) {
       currentSetup.diagramPositions = diagramPositions;
     }
   }
+  var projectInfoCandidates = [];
   if (currentProjectInfo) {
-    currentSetup.projectInfo = currentProjectInfo;
-  } else {
-    var project = typeof loadProject === 'function' ? loadProject(setupName) : null;
-    if (project && project.projectInfo) {
-      currentSetup.projectInfo = project.projectInfo;
+    projectInfoCandidates.push(currentProjectInfo);
+  }
+  if (typeof loadProject === 'function') {
+    var storageKeys = new Set();
+    if (typeof setupName === 'string' && setupName) {
+      storageKeys.add(setupName);
+    }
+    if (typeof getCurrentProjectStorageKey === 'function') {
+      var storageKey = getCurrentProjectStorageKey({
+        allowTyped: true
+      });
+      if (typeof storageKey === 'string' && storageKey) {
+        storageKeys.add(storageKey);
+      }
+    }
+    if (typeof getSetupNameState === 'function') {
+      var nameState = getSetupNameState();
+      if (nameState && _typeof(nameState) === 'object') {
+        ['storageKey', 'selectedName', 'typedName'].forEach(function (prop) {
+          var value = typeof nameState[prop] === 'string' ? nameState[prop].trim() : '';
+          if (value) {
+            storageKeys.add(value);
+          }
+        });
+      }
+    }
+    storageKeys.forEach(function (key) {
+      try {
+        var storedProject = loadProject(key);
+        if (storedProject && storedProject.projectInfo) {
+          projectInfoCandidates.push(storedProject.projectInfo);
+        }
+      } catch (error) {
+        console.warn('Unable to read project info for export from storage key', key, error);
+      }
+    });
+  }
+  var mergedProjectInfo = null;
+  projectInfoCandidates.forEach(function (candidate) {
+    if (!candidate) return;
+    if (!mergedProjectInfo) {
+      mergedProjectInfo = cloneProjectInfoForStorage(candidate);
+    } else {
+      mergedProjectInfo = mergeProjectInfoSnapshots(mergedProjectInfo, candidate);
+    }
+  });
+  if (mergedProjectInfo) {
+    var snapshotForExport = typeof createProjectInfoSnapshotForStorage === 'function' ? createProjectInfoSnapshotForStorage(mergedProjectInfo, {
+      projectNameOverride: setupName
+    }) : mergedProjectInfo;
+    var clonedSnapshot = cloneProjectInfoForStorage(snapshotForExport);
+    if (clonedSnapshot && _typeof(clonedSnapshot) === 'object') {
+      currentSetup.projectInfo = clonedSnapshot;
     }
   }
   var gearSelectors = cloneGearListSelectors(getGearListSelectors());
   if (Object.keys(gearSelectors).length) {
     currentSetup.gearSelectors = gearSelectors;
   }
-  var combinedHtml = getCurrentGearListHtml();
+  var combinedHtml = gearListGetCurrentHtmlImpl();
   currentSetup.gearListAndProjectRequirementsGenerated = Boolean(combinedHtml);
-  if (combinedHtml) {
-    var _getSafeGearListHtmlS = getSafeGearListHtmlSections(combinedHtml),
-      projectHtml = _getSafeGearListHtmlS.projectHtml,
-      gearHtml = _getSafeGearListHtmlS.gearHtml;
-    if (projectHtml) currentSetup.projectHtml = projectHtml;
-    if (gearHtml) {
-      currentSetup.gearList = projectHtml ? gearHtml.replace(/<h2[^>]*>.*?<\/h2>/, '') : gearHtml;
-    }
-  }
   var deviceChanges = getDeviceChanges();
   if (Object.keys(deviceChanges).length) {
     currentSetup.changedDevices = deviceChanges;
@@ -979,7 +1119,7 @@ function registerSetupsCineUiInternal(cineUi) {
       var _getSafeLanguageTexts = getSafeLanguageTexts(),
         langTexts = _getSafeLanguageTexts.langTexts,
         fallbackTexts = _getSafeLanguageTexts.fallbackTexts;
-      return langTexts.shareSetupHelp || fallbackTexts.shareSetupHelp || 'Download a JSON file of the current project to share with others.';
+      return langTexts.shareSetupHelp || fallbackTexts.shareSetupHelp || 'Download a JSON backup of the current project so you can share or restore it later. Store the file with your crew backups before closing the planner.';
     }
   }, {
     name: 'sharedImport',
@@ -987,7 +1127,7 @@ function registerSetupsCineUiInternal(cineUi) {
       var _getSafeLanguageTexts2 = getSafeLanguageTexts(),
         langTexts = _getSafeLanguageTexts2.langTexts,
         fallbackTexts = _getSafeLanguageTexts2.fallbackTexts;
-      return langTexts.applySharedLinkHelp || fallbackTexts.applySharedLinkHelp || 'Load the configuration from the selected project file.';
+      return langTexts.applySharedLinkHelp || fallbackTexts.applySharedLinkHelp || 'Load the configuration from a JSON backup exported via Save & Share. Review the preview before applying so nothing overwrites the wrong project.';
     }
   }], 'cineUi help registration (setups) failed');
   setupsCineUiRegistered = areSetupsEntriesRegistered(cineUi);
@@ -3222,7 +3362,7 @@ function formatRequirementValue(rawValue) {
   var value = typeof rawValue === 'string' ? rawValue : rawValue == null ? '' : String(rawValue);
   return escapeHtml(value).replace(/\n/g, '<br>');
 }
-function generateGearListHtml() {
+function gearListGenerateHtmlImpl() {
   var _devices$accessories2, _texts$currentLang2, _texts$en5, _texts$currentLang3, _texts$en6, _texts$currentLang4, _texts$en7, _devices$accessories3;
   var info = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   var getText = function getText(sel) {
@@ -4467,7 +4607,7 @@ function generateGearListHtml() {
   body += '<h3>Gear List</h3>' + adjustedTable;
   return body;
 }
-function getCurrentGearListHtml() {
+function gearListGetCurrentHtmlImpl() {
   if (!gearListOutput && !projectRequirementsOutput) return '';
   var projHtml = '';
   if (projectRequirementsOutput) {
@@ -4666,17 +4806,12 @@ function cloneProjectInfoForStorage(info) {
   if (_typeof(info) !== 'object') {
     return info;
   }
-  if (typeof structuredClone === 'function') {
+  if (typeof SETUPS_DEEP_CLONE === 'function') {
     try {
-      return structuredClone(info);
+      return SETUPS_DEEP_CLONE(info);
     } catch (error) {
-      console.warn('Failed to structured clone project info for storage', error);
+      console.warn('Failed to clone project info for storage', error);
     }
-  }
-  try {
-    return JSON.parse(JSON.stringify(info));
-  } catch (error) {
-    console.warn('Failed to serialize project info for storage', error);
   }
   if (Array.isArray(info)) {
     return info.map(function (item) {
@@ -4688,6 +4823,52 @@ function cloneProjectInfoForStorage(info) {
     clone[key] = cloneProjectInfoForStorage(info[key]);
   });
   return clone;
+}
+function hasMeaningfulProjectInfoValue(value) {
+  if (value === null || value === undefined) {
+    return false;
+  }
+  if (typeof value === 'string') {
+    return value.trim().length > 0;
+  }
+  if (typeof value === 'number') {
+    return !Number.isNaN(value);
+  }
+  if (typeof value === 'boolean') {
+    return value;
+  }
+  if (Array.isArray(value)) {
+    return value.some(function (entry) {
+      return hasMeaningfulProjectInfoValue(entry);
+    });
+  }
+  if (_typeof(value) === 'object') {
+    return Object.values(value).some(function (entry) {
+      return hasMeaningfulProjectInfoValue(entry);
+    });
+  }
+  return false;
+}
+function mergeProjectInfoSnapshots(base, updates) {
+  var baseHasData = hasMeaningfulProjectInfoValue(base);
+  var updateHasData = hasMeaningfulProjectInfoValue(updates);
+  if (!updateHasData) {
+    return baseHasData ? cloneProjectInfoForStorage(base) : cloneProjectInfoForStorage(updates);
+  }
+  if (!baseHasData) {
+    return cloneProjectInfoForStorage(updates);
+  }
+  if (Array.isArray(base) && Array.isArray(updates)) {
+    return cloneProjectInfoForStorage(updates.length ? updates : base);
+  }
+  if (_typeof(base) === 'object' && _typeof(updates) === 'object') {
+    var merged = cloneProjectInfoForStorage(base);
+    Object.keys(updates).forEach(function (key) {
+      merged[key] = mergeProjectInfoSnapshots(merged[key], updates[key]);
+    });
+    return merged;
+  }
+  return cloneProjectInfoForStorage(updates);
 }
 function normalizeRequirementNodeValue(node) {
   if (!node) return '';
@@ -4734,8 +4915,10 @@ function collectProjectInfoFromRequirementsGrid() {
 }
 function saveCurrentGearList() {
   if (factoryResetInProgress) return;
-  var html = getCurrentGearListHtml();
-  var gearListGenerated = Boolean(html);
+  if (isProjectPersistenceSuspended()) return;
+  var html = gearListGetCurrentHtmlImpl();
+  var normalizedHtml = typeof html === 'string' ? html.trim() : '';
+  var gearListGenerated = Boolean(normalizedHtml);
   var info = projectForm ? collectProjectFormData() : {};
   info.sliderBowl = getSetupsCoreValue('getSliderBowlValue');
   info.easyrig = getSetupsCoreValue('getEasyrigValue');
@@ -4816,9 +4999,11 @@ function saveCurrentGearList() {
   if (typeof saveProject === 'function' && typeof effectiveStorageKey === 'string') {
     var payload = {
       projectInfo: projectInfoSnapshot,
-      gearList: html,
       gearListAndProjectRequirementsGenerated: gearListGenerated
     };
+    if (normalizedHtml) {
+      payload.gearList = normalizedHtml;
+    }
     if (powerSelectionSnapshot) {
       payload.powerSelection = powerSelectionSnapshot;
     }
@@ -4841,16 +5026,16 @@ function saveCurrentGearList() {
   }
   var setup = existing || {};
   var changed = false;
-  if (html) {
-    if (setup.gearList !== html) {
-      setup.gearList = html;
+  var existingGearList = typeof setup.gearList === 'string' ? setup.gearList : '';
+  if (normalizedHtml) {
+    if (existingGearList !== normalizedHtml) {
+      setup.gearList = normalizedHtml;
       changed = true;
     }
-  } else if (setup.gearList !== '') {
-    setup.gearList = '';
+  } else if (Object.prototype.hasOwnProperty.call(setup, 'gearList')) {
+    delete setup.gearList;
     changed = true;
   }
-
   if (setup.gearListAndProjectRequirementsGenerated !== gearListGenerated) {
     setup.gearListAndProjectRequirementsGenerated = gearListGenerated;
     changed = true;
@@ -4936,7 +5121,7 @@ function deleteCurrentGearList() {
   } else if (typeof saveProject === 'function') {
     saveProject(storageKey, {
       projectInfo: null,
-      gearList: ''
+      gearListAndProjectRequirementsGenerated: false
     });
   }
   var setups = getSetups();
@@ -4948,22 +5133,12 @@ function deleteCurrentGearList() {
         delete existingSetup.gearList;
         changed = true;
       }
-      if (Object.prototype.hasOwnProperty.call(existingSetup, 'projectInfo')) {
-        delete existingSetup.projectInfo;
-        changed = true;
-      }
-      if (Object.prototype.hasOwnProperty.call(existingSetup, 'autoGearRules')) {
-        delete existingSetup.autoGearRules;
-        changed = true;
-      }
-      if (Object.prototype.hasOwnProperty.call(existingSetup, 'diagramPositions')) {
-        delete existingSetup.diagramPositions;
-        changed = true;
-      }
-      if (Object.prototype.hasOwnProperty.call(existingSetup, 'powerSelection')) {
-        delete existingSetup.powerSelection;
-        changed = true;
-      }
+      ['projectInfo', 'autoGearRules', 'diagramPositions', 'powerSelection', 'gearSelectors', 'gearListAndProjectRequirementsGenerated'].forEach(function (prop) {
+        if (Object.prototype.hasOwnProperty.call(existingSetup, prop)) {
+          delete existingSetup[prop];
+          changed = true;
+        }
+      });
       if (changed) {
         storeSetups(setups);
       }
@@ -5015,10 +5190,12 @@ function deleteCurrentGearList() {
           delete savedSetup.gearList;
           resaved = true;
         }
-        if (Object.prototype.hasOwnProperty.call(savedSetup, 'projectInfo')) {
-          delete savedSetup.projectInfo;
-          resaved = true;
-        }
+        ['projectInfo', 'gearListAndProjectRequirementsGenerated', 'gearSelectors'].forEach(function (prop) {
+          if (Object.prototype.hasOwnProperty.call(savedSetup, prop)) {
+            delete savedSetup[prop];
+            resaved = true;
+          }
+        });
         if (resaved) {
           storeSetups(setupsAfterSave);
         }
@@ -5687,12 +5864,12 @@ function refreshGearListIfVisible() {
     };
     currentProjectInfo = deriveProjectInfo(_info);
   }
-  var html = generateGearListHtml(currentProjectInfo || {});
+  var html = gearListGenerateHtmlImpl(currentProjectInfo || {});
   if (currentProjectInfo) {
     displayGearAndRequirements(html);
   } else {
-    var _getSafeGearListHtmlS2 = getSafeGearListHtmlSections(html),
-      gearHtml = _getSafeGearListHtmlS2.gearHtml;
+    var _gearListGetSafeHtmlS = gearListGetSafeHtmlSectionsImpl(html),
+      gearHtml = _gearListGetSafeHtmlS.gearHtml;
     gearListOutput.innerHTML = gearHtml;
   }
   ensureGearListActions();

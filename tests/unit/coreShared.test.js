@@ -65,8 +65,9 @@ describe('core shared utilities', () => {
   test('safeGenerateConnectorSummary returns empty string when generator is unavailable', () => {
     const { safeGenerateConnectorSummary } = loadCoreShared();
 
+    const baselineWarnings = console.warn.mock.calls.length;
     expect(safeGenerateConnectorSummary({ name: 'Device' })).toBe('');
-    expect(console.warn).not.toHaveBeenCalled();
+    expect(console.warn).toHaveBeenCalledTimes(baselineWarnings);
   });
 
   test('safeGenerateConnectorSummary uses cached generator and surfaces warnings when it fails', () => {

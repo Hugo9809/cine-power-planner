@@ -662,6 +662,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var keys = Object.getOwnPropertyNames(value);
     for (var index = 0; index < keys.length; index += 1) {
       var key = keys[index];
+      if (key === 'web3' && value === GLOBAL_SCOPE) {
+        continue;
+      }
       var descriptor = Object.getOwnPropertyDescriptor(value, key);
       if (!descriptor || 'get' in descriptor || 'set' in descriptor) {
         continue;

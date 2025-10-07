@@ -89,6 +89,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var runtimeFeedbackState = {
     elements: {},
     handlers: {},
+    feedbackFieldCache: [],
+    feedbackFieldCacheDoc: null,
     dependencies: {
       mailTarget: 'info@lucazanner.de',
       document: null,
@@ -111,6 +113,58 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       iconGlyphs: null
     }
   };
+  function refreshFeedbackFieldCache(doc) {
+    if (!doc) {
+      runtimeFeedbackState.feedbackFieldCache = [];
+      runtimeFeedbackState.feedbackFieldCacheDoc = null;
+      return runtimeFeedbackState.feedbackFieldCache;
+    }
+    var cache = [];
+    for (var index = 0; index < FEEDBACK_FIELD_MAP.length; index += 1) {
+      var map = FEEDBACK_FIELD_MAP[index];
+      var element = null;
+      try {
+        element = doc.getElementById(map.id);
+      } catch (error) {
+        void error;
+        element = null;
+      }
+      cache.push({
+        map: map,
+        element: element
+      });
+    }
+    runtimeFeedbackState.feedbackFieldCache = cache;
+    runtimeFeedbackState.feedbackFieldCacheDoc = doc;
+    return cache;
+  }
+  function getFeedbackFieldEntries(doc) {
+    if (!doc) {
+      return [];
+    }
+    if (runtimeFeedbackState.feedbackFieldCacheDoc !== doc || !runtimeFeedbackState.feedbackFieldCache || runtimeFeedbackState.feedbackFieldCache.length !== FEEDBACK_FIELD_MAP.length) {
+      return refreshFeedbackFieldCache(doc);
+    }
+    var cache = runtimeFeedbackState.feedbackFieldCache;
+    for (var index = 0; index < cache.length; index += 1) {
+      var entry = cache[index];
+      if (!entry || !entry.map) {
+        return refreshFeedbackFieldCache(doc);
+      }
+      var element = entry.element;
+      if (!element || typeof element.isConnected === 'boolean' && !element.isConnected) {
+        var updatedElement = null;
+        try {
+          updatedElement = doc.getElementById(entry.map.id);
+        } catch (error) {
+          void error;
+          updatedElement = null;
+        }
+        entry.element = updatedElement;
+      }
+    }
+    return cache;
+  }
   var FEEDBACK_FIELD_MAP = [{
     id: 'fbUsername',
     key: 'username',
@@ -776,14 +830,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           return;
         }
         var entry = {};
-        for (var index = 0; index < FEEDBACK_FIELD_MAP.length; index += 1) {
-          var field = FEEDBACK_FIELD_MAP[index];
-          var input = null;
-          try {
-            input = doc.getElementById(field.id);
-          } catch (error) {
-            void error;
-            input = null;
+        var fieldEntries = getFeedbackFieldEntries(doc);
+        for (var index = 0; index < fieldEntries.length; index += 1) {
+          var fieldEntry = fieldEntries[index];
+          var field = fieldEntry.map;
+          var input = fieldEntry.element;
+          if (!field || !field.key) {
+            continue;
           }
           var value = '';
           if (input && typeof input.value !== 'undefined') {
@@ -823,9 +876,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           safeWarn('cineResults could not save runtime feedback entry.', error);
         }
         var lines = [];
-        for (var entryIndex = 0; entryIndex < FEEDBACK_FIELD_MAP.length; entryIndex += 1) {
-          var map = FEEDBACK_FIELD_MAP[entryIndex];
-          lines.push(map.key + ': ' + (entry[map.key] || ''));
+        for (var entryIndex = 0; entryIndex < fieldEntries.length; entryIndex += 1) {
+          var entryMap = fieldEntries[entryIndex].map;
+          if (!entryMap || !entryMap.key) {
+            continue;
+          }
+          lines.push(entryMap.key + ': ' + (entry[entryMap.key] || ''));
         }
         var subject = encodeURIComponent('Cine Power Planner Runtime Feedback');
         var body = encodeURIComponent(lines.join('\n'));

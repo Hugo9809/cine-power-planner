@@ -1,3 +1,9 @@
+function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t.return && (u = t.return(), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
+function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 function _regenerator() { var e, t, r = "function" == typeof Symbol ? Symbol : {}, n = r.iterator || "@@iterator", o = r.toStringTag || "@@toStringTag"; function i(r, n, o, i) { var c = n && n.prototype instanceof Generator ? n : Generator, u = Object.create(c.prototype); return _regeneratorDefine2(u, "_invoke", function (r, n, o) { var i, c, u, f = 0, p = o || [], y = !1, G = { p: 0, n: 0, v: e, a: d, f: d.bind(e, 4), d: function d(t, r) { return i = t, c = 0, u = e, G.n = r, a; } }; function d(r, n) { for (c = r, u = n, t = 0; !y && f && !o && t < p.length; t++) { var o, i = p[t], d = G.p, l = i[2]; r > 3 ? (o = l === n) && (u = i[(c = i[4]) ? 5 : (c = 3, 3)], i[4] = i[5] = e) : i[0] <= d && ((o = r < 2 && d < i[1]) ? (c = 0, G.v = n, G.n = i[1]) : d < l && (o = r < 3 || i[0] > n || n > l) && (i[4] = r, i[5] = n, G.n = l, c = 0)); } if (o || r > 1) return a; throw y = !0, n; } return function (o, p, l) { if (f > 1) throw TypeError("Generator is already running"); for (y && 1 === p && d(p, l), c = p, u = l; (t = c < 2 ? e : u) || !y;) { i || (c ? c < 3 ? (c > 1 && (G.n = -1), d(c, u)) : G.n = u : G.v = u); try { if (f = 2, i) { if (c || (o = "next"), t = i[o]) { if (!(t = t.call(i, u))) throw TypeError("iterator result is not an object"); if (!t.done) return t; u = t.value, c < 2 && (c = 0); } else 1 === c && (t = i.return) && t.call(i), c < 2 && (u = TypeError("The iterator does not provide a '" + o + "' method"), c = 1); i = e; } else if ((t = (y = G.n < 0) ? u : r.call(n, G)) !== a) break; } catch (t) { i = e, c = 1, u = t; } finally { f = 1; } } return { value: t, done: y }; }; }(r, o, i), !0), u; } var a = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} t = Object.getPrototypeOf; var c = [][n] ? t(t([][n]())) : (_regeneratorDefine2(t = {}, n, function () { return this; }), t), u = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(c); function f(e) { return Object.setPrototypeOf ? Object.setPrototypeOf(e, GeneratorFunctionPrototype) : (e.__proto__ = GeneratorFunctionPrototype, _regeneratorDefine2(e, o, "GeneratorFunction")), e.prototype = Object.create(u), e; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, _regeneratorDefine2(u, "constructor", GeneratorFunctionPrototype), _regeneratorDefine2(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = "GeneratorFunction", _regeneratorDefine2(GeneratorFunctionPrototype, o, "GeneratorFunction"), _regeneratorDefine2(u), _regeneratorDefine2(u, o, "Generator"), _regeneratorDefine2(u, n, function () { return this; }), _regeneratorDefine2(u, "toString", function () { return "[object Generator]"; }), (_regenerator = function _regenerator() { return { w: i, m: f }; })(); }
 function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { i({}, "", {}); } catch (e) { i = 0; } _regeneratorDefine2 = function _regeneratorDefine(e, r, n, t) { if (r) i ? i(e, r, { value: n, enumerable: !t, configurable: !t, writable: !t }) : e[r] = n;else { function o(r, n) { _regeneratorDefine2(e, r, function (e) { return this._invoke(r, n, e); }); } o("next", 0), o("throw", 1), o("return", 2); } }, _regeneratorDefine2(e, r, n, t); }
 function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
@@ -876,6 +882,132 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }));
     return _clearCacheStorage.apply(this, arguments);
   }
+  function readLocationHrefSafe(locationLike) {
+    if (!locationLike || _typeof(locationLike) !== 'object') {
+      return '';
+    }
+    try {
+      var href = locationLike.href;
+      return typeof href === 'string' ? href : '';
+    } catch (error) {
+      void error;
+      return '';
+    }
+  }
+  function normaliseHrefForComparison(value, baseHref) {
+    if (typeof value !== 'string') {
+      return '';
+    }
+    var trimmed = value.trim();
+    if (!trimmed) {
+      return '';
+    }
+    if (typeof URL === 'function') {
+      try {
+        return new URL(trimmed).toString();
+      } catch (primaryError) {
+        void primaryError;
+        if (typeof baseHref === 'string' && baseHref) {
+          try {
+            return new URL(trimmed, baseHref).toString();
+          } catch (secondaryError) {
+            void secondaryError;
+          }
+        }
+      }
+    }
+    return trimmed;
+  }
+  function buildForceReloadUrl(locationLike, paramName) {
+    var param = typeof paramName === 'string' && paramName ? paramName : 'forceReload';
+    var timestamp = Date.now().toString(36);
+    var originalHref = readLocationHrefSafe(locationLike);
+    if (!originalHref) {
+      return {
+        originalHref: originalHref,
+        nextHref: originalHref,
+        param: param,
+        timestamp: timestamp
+      };
+    }
+    if (typeof URL === 'function') {
+      try {
+        var url = new URL(originalHref);
+        url.searchParams.set(param, timestamp);
+        return {
+          originalHref: originalHref,
+          nextHref: url.toString(),
+          param: param,
+          timestamp: timestamp
+        };
+      } catch (urlError) {
+        void urlError;
+        try {
+          var derived = new URL(originalHref, originalHref);
+          derived.searchParams.set(param, timestamp);
+          return {
+            originalHref: originalHref,
+            nextHref: derived.toString(),
+            param: param,
+            timestamp: timestamp
+          };
+        } catch (fallbackError) {
+          void fallbackError;
+        }
+      }
+    }
+    var href = originalHref;
+    var hash = '';
+    var hashIndex = href.indexOf('#');
+    if (hashIndex !== -1) {
+      hash = href.slice(hashIndex);
+      href = href.slice(0, hashIndex);
+    }
+    var pattern = new RegExp("([?&])".concat(param, "=[^&]*"));
+    var replacement = "$1".concat(param, "=").concat(timestamp);
+    if (pattern.test(href)) {
+      href = href.replace(pattern, replacement);
+    } else if (href.indexOf('?') !== -1) {
+      href += "&".concat(param, "=").concat(timestamp);
+    } else if (href) {
+      href += "?".concat(param, "=").concat(timestamp);
+    }
+    return {
+      originalHref: originalHref,
+      nextHref: href ? href + hash : originalHref,
+      param: param,
+      timestamp: timestamp
+    };
+  }
+  function attemptForceReloadNavigation(locationLike, nextHref, baseHref, applyFn, description) {
+    if (!locationLike || typeof applyFn !== 'function' || typeof nextHref !== 'string' || !nextHref) {
+      return false;
+    }
+    var beforeRaw = readLocationHrefSafe(locationLike);
+    var before = normaliseHrefForComparison(beforeRaw, baseHref);
+    try {
+      applyFn(nextHref);
+    } catch (error) {
+      safeWarn('Forced reload navigation helper failed', {
+        description: description,
+        error: error
+      });
+      return false;
+    }
+    var afterRaw = readLocationHrefSafe(locationLike);
+    var after = normaliseHrefForComparison(afterRaw, baseHref);
+    var expected = normaliseHrefForComparison(nextHref, baseHref);
+    if (expected && (after === expected || after === "".concat(expected, "#")) || before !== after && after && (!expected || after === expected)) {
+      return true;
+    }
+    safeWarn('Forced reload navigation attempt did not update location', {
+      description: description,
+      before: before,
+      after: after,
+      expected: expected
+    });
+    return false;
+  }
   function triggerReload(windowOverride) {
     var win = resolveWindow(windowOverride);
     if (!win || !win.location) {
@@ -883,33 +1015,27 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     var location = win.location;
     var hasReplace = location && typeof location.replace === 'function';
+    var hasAssign = location && typeof location.assign === 'function';
     var hasReload = location && typeof location.reload === 'function';
     var navigationTriggered = false;
-    if (hasReplace) {
-      try {
-        var paramName = 'forceReload';
-        var timestamp = Date.now().toString(36);
-        var href = location.href || '';
-        var hash = '';
-        var hashIndex = href.indexOf('#');
-        if (hashIndex !== -1) {
-          hash = href.slice(hashIndex);
-          href = href.slice(0, hashIndex);
-        }
-        var pattern = new RegExp("([?&])".concat(paramName, "=[^&]*"));
-        var replacement = "$1".concat(paramName, "=").concat(timestamp);
-        if (pattern.test(href)) {
-          href = href.replace(pattern, replacement);
-        } else if (href.indexOf('?') !== -1) {
-          href += "&".concat(paramName, "=").concat(timestamp);
-        } else if (href) {
-          href += "?".concat(paramName, "=").concat(timestamp);
-        }
-        location.replace(href + hash);
-        navigationTriggered = true;
-      } catch (replaceError) {
-        safeWarn('Forced reload via location.replace failed', replaceError);
-      }
+    var forceReloadUrl = buildForceReloadUrl(location, 'forceReload');
+    var nextHref = forceReloadUrl.nextHref;
+    var originalHref = forceReloadUrl.originalHref;
+    var baseHref = normaliseHrefForComparison(originalHref, originalHref) || originalHref;
+    if (hasReplace && nextHref) {
+      navigationTriggered = attemptForceReloadNavigation(location, nextHref, baseHref, function (url) {
+        location.replace(url);
+      }, 'location.replace');
+    }
+    if (hasAssign && !navigationTriggered && nextHref) {
+      navigationTriggered = attemptForceReloadNavigation(location, nextHref, baseHref, function (url) {
+        location.assign(url);
+      }, 'location.assign');
+    }
+    if (!navigationTriggered && nextHref && nextHref !== originalHref) {
+      navigationTriggered = attemptForceReloadNavigation(location, nextHref, baseHref, function (url) {
+        location.href = url;
+      }, 'location.href assignment');
     }
     if (!navigationTriggered && hasReload) {
       try {
@@ -919,28 +1045,44 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         safeWarn('Forced reload via location.reload failed', reloadError);
       }
     }
+    if (hasReload) {
+      try {
+        var schedule = typeof win.setTimeout === 'function' ? win.setTimeout : setTimeout;
+        if (typeof schedule === 'function') {
+          schedule(function () {
+            try {
+              location.reload();
+            } catch (delayedError) {
+              safeWarn('Final timed reload attempt failed', delayedError);
+            }
+          }, 300);
+        }
+      } catch (timerError) {
+        safeWarn('Failed to schedule timed reload fallback', timerError);
+      }
+    }
     return navigationTriggered;
   }
   function reloadApp() {
     return _reloadApp.apply(this, arguments);
   }
   function _reloadApp() {
-    _reloadApp = _asyncToGenerator(_regenerator().m(function _callee3() {
+    _reloadApp = _asyncToGenerator(_regenerator().m(function _callee5() {
       var options,
         uiCacheCleared,
         clearUiCacheStorageEntriesFn,
+        _yield$Promise$all,
+        _yield$Promise$all2,
         serviceWorkersUnregistered,
         cachesCleared,
         reloadTriggered,
         reloadFn,
         win,
-        _args3 = arguments,
-        _t4,
-        _t5;
-      return _regenerator().w(function (_context3) {
-        while (1) switch (_context3.p = _context3.n) {
+        _args5 = arguments;
+      return _regenerator().w(function (_context5) {
+        while (1) switch (_context5.n) {
           case 0:
-            options = _args3.length > 0 && _args3[0] !== undefined ? _args3[0] : {};
+            options = _args5.length > 0 && _args5[0] !== undefined ? _args5[0] : {};
             uiCacheCleared = false;
             clearUiCacheStorageEntriesFn = typeof options.clearUiCacheStorageEntries === 'function' ? options.clearUiCacheStorageEntries : typeof resolveGlobal('clearUiCacheStorageEntries') === 'function' ? resolveGlobal('clearUiCacheStorageEntries') : null;
             if (clearUiCacheStorageEntriesFn) {
@@ -958,32 +1100,47 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
                 safeWarn('Fallback UI cache clear failed', fallbackError);
               }
             }
-            serviceWorkersUnregistered = false;
-            _context3.p = 1;
-            _context3.n = 2;
-            return unregisterServiceWorkers(options.navigator);
-          case 2:
-            serviceWorkersUnregistered = _context3.v;
-            _context3.n = 4;
-            break;
-          case 3:
-            _context3.p = 3;
-            _t4 = _context3.v;
-            safeWarn('Service worker cleanup failed', _t4);
-          case 4:
-            cachesCleared = false;
-            _context3.p = 5;
-            _context3.n = 6;
-            return clearCacheStorage(options.caches);
-          case 6:
-            cachesCleared = _context3.v;
-            _context3.n = 8;
-            break;
-          case 7:
-            _context3.p = 7;
-            _t5 = _context3.v;
-            safeWarn('Cache clear failed', _t5);
-          case 8:
+            _context5.n = 1;
+            return Promise.all([_asyncToGenerator(_regenerator().m(function _callee3() {
+              var _t4;
+              return _regenerator().w(function (_context3) {
+                while (1) switch (_context3.p = _context3.n) {
+                  case 0:
+                    _context3.p = 0;
+                    _context3.n = 1;
+                    return unregisterServiceWorkers(options.navigator);
+                  case 1:
+                    return _context3.a(2, _context3.v);
+                  case 2:
+                    _context3.p = 2;
+                    _t4 = _context3.v;
+                    safeWarn('Service worker cleanup failed', _t4);
+                    return _context3.a(2, false);
+                }
+              }, _callee3, null, [[0, 2]]);
+            }))(), _asyncToGenerator(_regenerator().m(function _callee4() {
+              var _t5;
+              return _regenerator().w(function (_context4) {
+                while (1) switch (_context4.p = _context4.n) {
+                  case 0:
+                    _context4.p = 0;
+                    _context4.n = 1;
+                    return clearCacheStorage(options.caches);
+                  case 1:
+                    return _context4.a(2, _context4.v);
+                  case 2:
+                    _context4.p = 2;
+                    _t5 = _context4.v;
+                    safeWarn('Cache clear failed', _t5);
+                    return _context4.a(2, false);
+                }
+              }, _callee4, null, [[0, 2]]);
+            }))()]);
+          case 1:
+            _yield$Promise$all = _context5.v;
+            _yield$Promise$all2 = _slicedToArray(_yield$Promise$all, 2);
+            serviceWorkersUnregistered = _yield$Promise$all2[0];
+            cachesCleared = _yield$Promise$all2[1];
             reloadTriggered = false;
             reloadFn = typeof options.reloadWindow === 'function' ? options.reloadWindow : triggerReload;
             try {
@@ -1003,14 +1160,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
                 }
               }
             }
-            return _context3.a(2, {
+            return _context5.a(2, {
               uiCacheCleared: uiCacheCleared,
               serviceWorkersUnregistered: serviceWorkersUnregistered,
               cachesCleared: cachesCleared,
-              reloadTriggered: reloadTriggered
+              reloadTriggered: reloadTriggered,
+              navigationTriggered: reloadTriggered
             });
         }
-      }, _callee3, null, [[5, 7], [1, 3]]);
+      }, _callee5);
     }));
     return _reloadApp.apply(this, arguments);
   }

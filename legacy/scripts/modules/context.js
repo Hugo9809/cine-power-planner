@@ -218,6 +218,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return null;
   }
+  var ARCHITECTURE_HELPERS = resolveArchitectureHelpers(LOCAL_SCOPE);
   var pendingQueueKey = ARCHITECTURE_HELPERS && typeof ARCHITECTURE_HELPERS.pendingQueueKey === 'string' ? ARCHITECTURE_HELPERS.pendingQueueKey : DEFAULT_PENDING_QUEUE_KEY;
   function updatePendingQueueKey(source) {
     if (!source || _typeof(source) !== 'object' && typeof source !== 'function') {
@@ -238,7 +239,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       pendingQueueKey = source.PENDING_QUEUE_KEY;
     }
   }
-  var ARCHITECTURE_HELPERS = resolveArchitectureHelpers(LOCAL_SCOPE);
   var MODULE_SYSTEM = resolveModuleSystem(LOCAL_SCOPE);
   if (MODULE_SYSTEM) {
     updatePendingQueueKey(MODULE_SYSTEM);

@@ -678,7 +678,7 @@
 
   const LOG_LEVELS = freezeDeep(LOG_LEVEL_MAP);
 
-  const HISTORY_MIN_LIMIT = 50;
+  const HISTORY_MIN_LIMIT = 2;
   const HISTORY_MAX_LIMIT = 2000;
   const HISTORY_STORAGE_KEY = '__cineLoggingHistory';
   const CONFIG_STORAGE_KEY = '__cineLoggingConfig';
@@ -1127,6 +1127,88 @@
     return null;
   }
 
+  function safeIsoStringFromTimestamp(timestamp) {
+    if (typeof timestamp !== 'number' || !Number.isFinite(timestamp)) {
+      return '';
+    }
+
+    try {
+      return new Date(timestamp).toISOString();
+    } catch (error) {
+      void error;
+    }
+
+    return String(timestamp);
+  }
+
+  function getHighResolutionTimestamp() {
+    if (typeof performance === 'undefined' || !performance || typeof performance.now !== 'function') {
+      return null;
+    }
+
+    try {
+      return performance.now();
+    } catch (error) {
+      void error;
+    }
+
+    return null;
+  }
+
+  const TIMER_STATUS = freezeDeep({
+    running: 'running',
+    progress: 'progress',
+    success: 'success',
+    failure: 'failure',
+    aborted: 'aborted',
+    warning: 'warning',
+    skipped: 'skipped',
+  });
+
+  const TIMER_STATUS_ALIASES = freezeDeep({
+    cancelled: 'aborted',
+    canceled: 'aborted',
+    cancel: 'aborted',
+  });
+
+  function normalizeTimerStatus(value, fallbackStatus) {
+    const fallback =
+      typeof fallbackStatus === 'string' && fallbackStatus
+        ? fallbackStatus
+        : TIMER_STATUS.running;
+
+    if (typeof value !== 'string') {
+      return fallback;
+    }
+
+    const trimmed = value.trim();
+    if (!trimmed) {
+      return fallback;
+    }
+
+    const lowered = trimmed.toLowerCase();
+    if (Object.prototype.hasOwnProperty.call(TIMER_STATUS, lowered)) {
+      return lowered;
+    }
+
+    if (Object.prototype.hasOwnProperty.call(TIMER_STATUS_ALIASES, lowered)) {
+      return TIMER_STATUS_ALIASES[lowered];
+    }
+
+    return fallback;
+  }
+
+  function normalizeTimerPhase(value, fallbackPhase) {
+    if (typeof value === 'string') {
+      const trimmed = value.trim();
+      if (trimmed) {
+        return trimmed;
+      }
+    }
+
+    return typeof fallbackPhase === 'string' && fallbackPhase ? fallbackPhase : 'progress';
+  }
+
   function getSessionStorage() {
     const scopes = fallbackCollectCandidateScopes(GLOBAL_SCOPE);
     for (let index = 0; index < scopes.length; index += 1) {
@@ -1298,6 +1380,10 @@
 
   function createEntryId(timestamp) {
     return `log-${timestamp}-${Math.random().toString(36).slice(2, 10)}`;
+  }
+
+  function createTimerId(timestamp) {
+    return `timer-${timestamp}-${Math.random().toString(36).slice(2, 10)}`;
   }
 
   function appendEntry(entry) {
@@ -1613,6 +1699,504 @@
         return logWithNamespace('error', message, detail, meta);
       },
       getConfig: getConfigSnapshot,
+    });
+  }
+
+  function createTimer(label, options) {
+    const normalizedLabel = typeof label === 'string' && label.trim()
+      ? label.trim()
+      : 'operation';
+
+    const timerOptions = options && typeof options === 'object' ? options : null;
+
+    const normalizedNamespace = timerOptions && typeof timerOptions.namespace === 'string' && timerOptions.namespace.trim()
+      ? timerOptions.namespace.trim()
+      : null;
+
+    const baseMeta = timerOptions && Object.prototype.hasOwnProperty.call(timerOptions, 'meta')
+      ? sanitizeForLog(timerOptions.meta)
+      : null;
+
+    const startLevel = normalizeLevel(timerOptions && timerOptions.startLevel, 'debug');
+    const successLevel = normalizeLevel(timerOptions && timerOptions.successLevel, 'info');
+    const failureLevel = normalizeLevel(timerOptions && timerOptions.failureLevel, 'error');
+    const abortLevel = normalizeLevel(timerOptions && timerOptions.abortLevel, 'warn');
+    const checkpointLevel = normalizeLevel(timerOptions && timerOptions.checkpointLevel, 'info');
+
+    const announceStart = timerOptions && Object.prototype.hasOwnProperty.call(timerOptions, 'announceStart')
+      ? booleanFromValue(timerOptions.announceStart, true)
+      : true;
+
+    const startMessage = timerOptions && typeof timerOptions.startMessage === 'string' && timerOptions.startMessage.trim()
+      ? timerOptions.startMessage.trim()
+      : `${normalizedLabel} ▶`;
+    const successMessage = timerOptions && typeof timerOptions.successMessage === 'string' && timerOptions.successMessage.trim()
+      ? timerOptions.successMessage.trim()
+      : `${normalizedLabel} ✔`;
+    const failureMessage = timerOptions && typeof timerOptions.failureMessage === 'string' && timerOptions.failureMessage.trim()
+      ? timerOptions.failureMessage.trim()
+      : `${normalizedLabel} ✖`;
+    const abortMessage = timerOptions && typeof timerOptions.abortMessage === 'string' && timerOptions.abortMessage.trim()
+      ? timerOptions.abortMessage.trim()
+      : `${normalizedLabel} ⚠`;
+    const defaultCheckpointMessage = timerOptions && typeof timerOptions.checkpointMessage === 'string'
+      && timerOptions.checkpointMessage.trim()
+        ? timerOptions.checkpointMessage.trim()
+        : `${normalizedLabel} ⏩`;
+
+    const startDetail = timerOptions && Object.prototype.hasOwnProperty.call(timerOptions, 'startDetail')
+      ? timerOptions.startDetail
+      : undefined;
+    const startMeta = timerOptions && Object.prototype.hasOwnProperty.call(timerOptions, 'startMeta')
+      ? timerOptions.startMeta
+      : undefined;
+    const successDetail = timerOptions && Object.prototype.hasOwnProperty.call(timerOptions, 'successDetail')
+      ? timerOptions.successDetail
+      : undefined;
+    const successMeta = timerOptions && Object.prototype.hasOwnProperty.call(timerOptions, 'successMeta')
+      ? timerOptions.successMeta
+      : undefined;
+    const failureDetail = timerOptions && Object.prototype.hasOwnProperty.call(timerOptions, 'failureDetail')
+      ? timerOptions.failureDetail
+      : undefined;
+    const failureMeta = timerOptions && Object.prototype.hasOwnProperty.call(timerOptions, 'failureMeta')
+      ? timerOptions.failureMeta
+      : undefined;
+    const abortDetail = timerOptions && Object.prototype.hasOwnProperty.call(timerOptions, 'abortDetail')
+      ? timerOptions.abortDetail
+      : undefined;
+    const abortMeta = timerOptions && Object.prototype.hasOwnProperty.call(timerOptions, 'abortMeta')
+      ? timerOptions.abortMeta
+      : undefined;
+    const defaultCheckpointMeta = timerOptions && Object.prototype.hasOwnProperty.call(timerOptions, 'checkpointMeta')
+      ? timerOptions.checkpointMeta
+      : undefined;
+    const defaultCheckpointDetail = timerOptions && Object.prototype.hasOwnProperty.call(timerOptions, 'checkpointDetail')
+      ? timerOptions.checkpointDetail
+      : undefined;
+
+    const startStatus = timerOptions && Object.prototype.hasOwnProperty.call(timerOptions, 'startStatus')
+      ? normalizeTimerStatus(timerOptions.startStatus, TIMER_STATUS.running)
+      : TIMER_STATUS.running;
+    const startPhase = timerOptions && Object.prototype.hasOwnProperty.call(timerOptions, 'startPhase')
+      ? normalizeTimerPhase(timerOptions.startPhase, 'start')
+      : 'start';
+    const defaultCheckpointStatus = timerOptions && Object.prototype.hasOwnProperty.call(timerOptions, 'checkpointStatus')
+      ? normalizeTimerStatus(timerOptions.checkpointStatus, TIMER_STATUS.running)
+      : TIMER_STATUS.running;
+    const defaultCheckpointPhase = timerOptions && Object.prototype.hasOwnProperty.call(timerOptions, 'checkpointPhase')
+      ? normalizeTimerPhase(timerOptions.checkpointPhase, 'checkpoint')
+      : 'checkpoint';
+
+    const startTimestamp = Date.now();
+    let startIsoTimestamp = safeIsoStringFromTimestamp(startTimestamp);
+    if (!startIsoTimestamp) {
+      startIsoTimestamp = String(startTimestamp);
+    }
+    const highResStart = getHighResolutionTimestamp();
+    const timerId = createTimerId(startTimestamp);
+    let checkpointCount = 0;
+    let finished = false;
+    let finalStatus = TIMER_STATUS.running;
+    let completionDetails = null;
+
+    function buildTimerMeta(status, phase, metaOverride, completion) {
+      const normalizedStatus = normalizeTimerStatus(status, finished ? finalStatus : TIMER_STATUS.running);
+      const normalizedPhase = normalizeTimerPhase(phase, finished ? 'finish' : 'progress');
+
+      const timerMeta = {
+        id: timerId,
+        label: normalizedLabel,
+        status: normalizedStatus,
+        phase: normalizedPhase,
+        startedAt: startIsoTimestamp || null,
+        startTimestamp,
+        finished,
+        checkpoints: checkpointCount,
+      };
+
+      if (finished) {
+        timerMeta.finalStatus = finalStatus;
+      }
+
+      if (completion && typeof completion === 'object') {
+        if (typeof completion.timestamp === 'number' && Number.isFinite(completion.timestamp)) {
+          timerMeta.endTimestamp = completion.timestamp;
+        }
+        if (typeof completion.isoTimestamp === 'string' && completion.isoTimestamp) {
+          timerMeta.completedAt = completion.isoTimestamp;
+        }
+        if (typeof completion.durationMs === 'number' && Number.isFinite(completion.durationMs)) {
+          timerMeta.durationMs = completion.durationMs;
+        }
+        if (typeof completion.highResDurationMs === 'number' && Number.isFinite(completion.highResDurationMs)) {
+          timerMeta.durationHighResMs = completion.highResDurationMs;
+        }
+      } else {
+        const currentTimestamp = Date.now();
+        timerMeta.elapsedMs = Math.max(0, currentTimestamp - startTimestamp);
+        if (highResStart !== null) {
+          const currentHighRes = getHighResolutionTimestamp();
+          if (typeof currentHighRes === 'number' && Number.isFinite(currentHighRes)) {
+            timerMeta.elapsedHighResMs = Math.max(0, currentHighRes - highResStart);
+          }
+        }
+      }
+
+      const metaWithTimer = mergeMeta(baseMeta, { timer: timerMeta });
+      if (typeof metaOverride === 'undefined') {
+        return metaWithTimer;
+      }
+      return mergeMeta(metaWithTimer, metaOverride);
+    }
+
+    function logTimerEntry(level, message, detail, status, phase, metaOverride, completion) {
+      const resolvedLevel = normalizeLevel(level, 'info');
+      const resolvedMessage = typeof message === 'string' && message.trim()
+        ? message.trim()
+        : normalizedLabel;
+      return logInternal(resolvedLevel, resolvedMessage, detail, {
+        namespace: normalizedNamespace,
+        meta: buildTimerMeta(status, phase, metaOverride, completion),
+      });
+    }
+
+    let startEntry = null;
+    if (announceStart) {
+      startEntry = logTimerEntry(
+        startLevel,
+        startMessage,
+        startDetail,
+        startStatus,
+        startPhase,
+        startMeta,
+      );
+    }
+
+    function finalize(status, level, message, detail, metaOverride, phase) {
+      if (finished) {
+        return null;
+      }
+
+      const normalizedStatus = normalizeTimerStatus(status, TIMER_STATUS.success);
+      const resolvedLevel = normalizeLevel(level, successLevel);
+      const resolvedMessage = typeof message === 'string' && message.trim()
+        ? message.trim()
+        : successMessage;
+
+      finished = true;
+      finalStatus = normalizedStatus;
+
+      const endTimestamp = Date.now();
+      let endIsoTimestamp = safeIsoStringFromTimestamp(endTimestamp);
+      if (!endIsoTimestamp) {
+        endIsoTimestamp = String(endTimestamp);
+      }
+
+      let highResDuration = null;
+      if (highResStart !== null) {
+        const endHighRes = getHighResolutionTimestamp();
+        if (typeof endHighRes === 'number' && Number.isFinite(endHighRes)) {
+          const durationValue = endHighRes - highResStart;
+          highResDuration = durationValue >= 0 ? durationValue : 0;
+        }
+      }
+
+      const durationMs = Math.max(0, endTimestamp - startTimestamp);
+      completionDetails = freezeDeep({
+        timestamp: endTimestamp,
+        isoTimestamp: endIsoTimestamp,
+        durationMs,
+        highResDurationMs:
+          typeof highResDuration === 'number' && Number.isFinite(highResDuration)
+            ? highResDuration
+            : null,
+      });
+
+      const normalizedPhase = normalizeTimerPhase(phase, 'finish');
+
+      return logTimerEntry(
+        resolvedLevel,
+        resolvedMessage,
+        detail,
+        normalizedStatus,
+        normalizedPhase,
+        metaOverride,
+        completionDetails,
+      );
+    }
+
+    function finish(detail, meta) {
+      const detailValue = typeof detail === 'undefined' ? successDetail : detail;
+      const metaValue = typeof meta === 'undefined' ? successMeta : meta;
+      return finalize(TIMER_STATUS.success, successLevel, successMessage, detailValue, metaValue);
+    }
+
+    function fail(detail, meta) {
+      const detailValue = typeof detail === 'undefined' ? failureDetail : detail;
+      const metaValue = typeof meta === 'undefined' ? failureMeta : meta;
+      return finalize(TIMER_STATUS.failure, failureLevel, failureMessage, detailValue, metaValue);
+    }
+
+    function abort(detail, meta) {
+      const detailValue = typeof detail === 'undefined' ? abortDetail : detail;
+      const metaValue = typeof meta === 'undefined' ? abortMeta : meta;
+      return finalize(TIMER_STATUS.aborted, abortLevel, abortMessage, detailValue, metaValue);
+    }
+
+    function complete(overrides) {
+      const options = overrides && typeof overrides === 'object' ? overrides : {};
+      const baseStatus = Object.prototype.hasOwnProperty.call(options, 'status')
+        ? options.status
+        : TIMER_STATUS.success;
+      const normalizedStatus = normalizeTimerStatus(baseStatus, TIMER_STATUS.success);
+      const defaultLevel = normalizedStatus === TIMER_STATUS.failure
+        ? failureLevel
+        : normalizedStatus === TIMER_STATUS.aborted
+          ? abortLevel
+          : successLevel;
+      const resolvedLevel = Object.prototype.hasOwnProperty.call(options, 'level')
+        ? normalizeLevel(options.level, defaultLevel)
+        : defaultLevel;
+      const fallbackMessage = normalizedStatus === TIMER_STATUS.failure
+        ? failureMessage
+        : normalizedStatus === TIMER_STATUS.aborted
+          ? abortMessage
+          : successMessage;
+      const resolvedMessage = Object.prototype.hasOwnProperty.call(options, 'message')
+        && typeof options.message === 'string'
+        && options.message.trim()
+          ? options.message.trim()
+          : fallbackMessage;
+      let detailValue;
+      if (Object.prototype.hasOwnProperty.call(options, 'detail')) {
+        detailValue = options.detail;
+      } else if (normalizedStatus === TIMER_STATUS.failure) {
+        detailValue = failureDetail;
+      } else if (normalizedStatus === TIMER_STATUS.aborted) {
+        detailValue = abortDetail;
+      } else {
+        detailValue = successDetail;
+      }
+      let metaValue;
+      if (Object.prototype.hasOwnProperty.call(options, 'meta')) {
+        metaValue = options.meta;
+      } else if (normalizedStatus === TIMER_STATUS.failure) {
+        metaValue = failureMeta;
+      } else if (normalizedStatus === TIMER_STATUS.aborted) {
+        metaValue = abortMeta;
+      } else {
+        metaValue = successMeta;
+      }
+      const phase = Object.prototype.hasOwnProperty.call(options, 'phase')
+        ? options.phase
+        : 'finish';
+      return finalize(normalizedStatus, resolvedLevel, resolvedMessage, detailValue, metaValue, phase);
+    }
+
+    function checkpoint(message, detail, optionsParam) {
+      if (finished) {
+        return null;
+      }
+
+      checkpointCount += 1;
+
+      const options = optionsParam && typeof optionsParam === 'object' ? optionsParam : {};
+      const resolvedLevel = Object.prototype.hasOwnProperty.call(options, 'level')
+        ? normalizeLevel(options.level, checkpointLevel)
+        : checkpointLevel;
+      const resolvedStatus = normalizeTimerStatus(
+        Object.prototype.hasOwnProperty.call(options, 'status') ? options.status : defaultCheckpointStatus,
+        defaultCheckpointStatus,
+      );
+      const resolvedPhase = normalizeTimerPhase(
+        Object.prototype.hasOwnProperty.call(options, 'phase') ? options.phase : defaultCheckpointPhase,
+        defaultCheckpointPhase,
+      );
+      const metaValue = Object.prototype.hasOwnProperty.call(options, 'meta')
+        ? options.meta
+        : defaultCheckpointMeta;
+
+      let detailValue;
+      if (typeof detail === 'undefined') {
+        detailValue = Object.prototype.hasOwnProperty.call(options, 'detail')
+          ? options.detail
+          : defaultCheckpointDetail;
+      } else {
+        detailValue = detail;
+      }
+
+      const resolvedMessage = typeof message === 'string' && message.trim()
+        ? message.trim()
+        : defaultCheckpointMessage;
+
+      return logTimerEntry(
+        resolvedLevel,
+        resolvedMessage,
+        detailValue,
+        resolvedStatus,
+        resolvedPhase,
+        metaValue,
+      );
+    }
+
+    function logWithTimer(level, message, detail, optionsParam) {
+      const options = optionsParam && typeof optionsParam === 'object' ? optionsParam : {};
+      const defaultStatus = finished ? finalStatus : TIMER_STATUS.progress;
+      const resolvedLevel = normalizeLevel(level, successLevel);
+      const resolvedStatus = normalizeTimerStatus(
+        Object.prototype.hasOwnProperty.call(options, 'status') ? options.status : defaultStatus,
+        defaultStatus,
+      );
+      const defaultPhase = finished ? 'finish' : 'progress';
+      const resolvedPhase = normalizeTimerPhase(
+        Object.prototype.hasOwnProperty.call(options, 'phase') ? options.phase : defaultPhase,
+        defaultPhase,
+      );
+      const metaValue = Object.prototype.hasOwnProperty.call(options, 'meta')
+        ? options.meta
+        : undefined;
+      const detailValue = typeof detail === 'undefined' && Object.prototype.hasOwnProperty.call(options, 'detail')
+        ? options.detail
+        : detail;
+      const resolvedMessage = typeof message === 'string' && message.trim()
+        ? message.trim()
+        : normalizedLabel;
+      const includeCompletion = booleanFromValue(options.includeCompletion, finished);
+      const completion = includeCompletion && completionDetails ? completionDetails : null;
+
+      return logTimerEntry(
+        resolvedLevel,
+        resolvedMessage,
+        detailValue,
+        resolvedStatus,
+        resolvedPhase,
+        metaValue,
+        completion,
+      );
+    }
+
+    function composeMeta(status, optionsParam) {
+      const options = optionsParam && typeof optionsParam === 'object' ? optionsParam : {};
+      const defaultStatus = finished ? finalStatus : TIMER_STATUS.running;
+      const baseStatus = typeof status === 'undefined' ? defaultStatus : status;
+      const resolvedStatus = normalizeTimerStatus(baseStatus, defaultStatus);
+      const defaultPhase = finished ? 'finish' : 'progress';
+      const resolvedPhase = normalizeTimerPhase(
+        Object.prototype.hasOwnProperty.call(options, 'phase') ? options.phase : defaultPhase,
+        defaultPhase,
+      );
+      const metaValue = Object.prototype.hasOwnProperty.call(options, 'meta')
+        ? options.meta
+        : undefined;
+      const includeCompletion = booleanFromValue(options.includeCompletion, finished);
+      const completion = includeCompletion && completionDetails ? completionDetails : null;
+      return freezeDeep(buildTimerMeta(resolvedStatus, resolvedPhase, metaValue, completion));
+    }
+
+    let timerControllerRef = null;
+
+    function run(executor) {
+      if (typeof executor !== 'function') {
+        return executor;
+      }
+
+      try {
+        const result = executor(timerControllerRef);
+        if (result && typeof result.then === 'function') {
+          return result.then(
+            value => {
+              if (!finished) {
+                finish();
+              }
+              return value;
+            },
+            error => {
+              if (!finished) {
+                fail(error);
+              }
+              throw error;
+            },
+          );
+        }
+
+        if (!finished) {
+          finish();
+        }
+
+        return result;
+      } catch (error) {
+        if (!finished) {
+          fail(error);
+        }
+        throw error;
+      }
+    }
+
+    const controller = {
+      id: timerId,
+      label: normalizedLabel,
+      namespace: normalizedNamespace,
+      startTimestamp,
+      startIsoTimestamp,
+      startEntry,
+      get finished() {
+        return finished;
+      },
+      get status() {
+        return finished ? finalStatus : TIMER_STATUS.running;
+      },
+      get checkpoints() {
+        return checkpointCount;
+      },
+      get durationMs() {
+        if (completionDetails && typeof completionDetails.durationMs === 'number') {
+          return completionDetails.durationMs;
+        }
+        return Math.max(0, Date.now() - startTimestamp);
+      },
+      get durationHighResMs() {
+        if (completionDetails && typeof completionDetails.highResDurationMs === 'number') {
+          return completionDetails.highResDurationMs;
+        }
+        if (highResStart === null) {
+          return null;
+        }
+        const current = getHighResolutionTimestamp();
+        if (typeof current === 'number' && Number.isFinite(current)) {
+          return Math.max(0, current - highResStart);
+        }
+        return null;
+      },
+      finish,
+      fail,
+      abort,
+      complete,
+      checkpoint,
+      log: logWithTimer,
+      run,
+      composeMeta,
+    };
+
+    timerControllerRef = controller;
+    const frozenController = freezeDeep(controller);
+    timerControllerRef = frozenController;
+
+    return frozenController;
+  }
+
+  function runWithTimer(label, executor, options) {
+    const timer = createTimer(label, options);
+    let result;
+    if (typeof executor === 'function') {
+      result = timer.run(executor);
+    } else {
+      result = undefined;
+    }
+
+    return Object.freeze({
+      timer,
+      result,
     });
   }
 
@@ -2096,6 +2680,8 @@
     warn,
     error,
     createLogger,
+    createTimer,
+    runWithTimer,
     getHistory,
     getStats,
     clearHistory,
@@ -2106,6 +2692,7 @@
     constants: freezeDeep({
       LOG_LEVELS,
       DEFAULT_CONFIG,
+      TIMER_STATUS,
     }),
   });
 

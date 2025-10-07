@@ -573,7 +573,10 @@ Use Cine Power Planner end-to-end with the following routine:
   with stored diagnostics even if the structured logger is unavailable. Overview
   print and export attempts now stream their warnings and fallback usage into
   this log so share rehearsals capture exactly when the dialog had to open the
-  backup window.
+  backup window. Structured timers available through `cineLogging.createTimer`
+  and `cineLogging.runWithTimer` now record start, checkpoint and completion
+  entries with automatic duration metrics so you can audit long operations even
+  when only offline diagnostics are available.
 - Full-app backups report their running total and feed the backup history ledger
   so you can confirm hourly safety copies are captured before archiving them
   offline.

@@ -1,6 +1,3 @@
-function _construct(t, e, r) { if (_isNativeReflectConstruct()) return Reflect.construct.apply(null, arguments); var o = [null]; o.push.apply(o, e); var p = new (t.bind.apply(t, o))(); return r && _setPrototypeOf(p, r.prototype), p; }
-function _setPrototypeOf(t, e) { return _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function (t, e) { return t.__proto__ = e, t; }, _setPrototypeOf(t, e); }
-function _isNativeReflectConstruct() { try { var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); } catch (t) {} return (_isNativeReflectConstruct = function _isNativeReflectConstruct() { return !!t; })(); }
 function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
 function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
@@ -378,6 +375,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         parsed = JSON.parse(source);
       } catch (error) {
         parsed = null;
+        void error;
       }
       if (parsed && (Array.isArray(parsed) || isPlainObject(parsed))) {
         source = parsed;
@@ -618,6 +616,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     });
     return target;
   }
+  var CONTROL_CHARACTER_REGEX = new RegExp("[".concat(String.fromCharCode(0), "-").concat(String.fromCharCode(31)).concat(String.fromCharCode(127), "]"), 'g');
   function sanitizeBackupPayload(raw) {
     if (raw === null || raw === undefined) {
       return '';
@@ -719,7 +718,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return text;
     }
     try {
-      return text.replace(/[\u0000-\u001f\u007f]/g, '');
+      return text.replace(CONTROL_CHARACTER_REGEX, '');
     } catch (error) {
       console.warn('Failed to strip control characters from backup payload', error);
       return text;
@@ -1040,26 +1039,26 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (parts.length < 5) {
       return null;
     }
-    var baseParts = [];
-    for (var index = 0; index < 5; index += 1) {
-      baseParts.push(Number(parts[index]));
+    var baseParts = parts.slice(0, 5).map(function (part) {
+      return Number(part);
+    });
+    if (baseParts.some(function (value) {
+      return Number.isNaN(value);
+    })) {
+      return null;
     }
-    for (var i = 0; i < baseParts.length; i += 1) {
-      if (Number.isNaN(baseParts[i])) {
-        return null;
-      }
-    }
-    var year = baseParts[0];
-    var month = baseParts[1];
-    var day = baseParts[2];
-    var hour = baseParts[3];
-    var minute = baseParts[4];
+    var _baseParts = _slicedToArray(baseParts, 5),
+      year = _baseParts[0],
+      month = _baseParts[1],
+      day = _baseParts[2],
+      hour = _baseParts[3],
+      minute = _baseParts[4];
     var includeSeconds = false;
     var seconds = 0;
     var labelStartIndex = 5;
     if (parts.length > labelStartIndex) {
       var secondsCandidate = parts[labelStartIndex];
-      if (/^\d{1,2}$/u.test(secondsCandidate)) {
+      if (/^[0-9]{1,2}$/.test(secondsCandidate)) {
         includeSeconds = true;
         seconds = Number(secondsCandidate);
         labelStartIndex += 1;
@@ -1069,9 +1068,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     } else if (!config.secondsOptional) {
       return null;
     }
-    var labelParts = parts.slice(labelStartIndex);
-    var label = labelParts.join('-').trim();
-    var date = _construct(Date, [year, month - 1, day, hour, minute, includeSeconds ? seconds : 0, 0]);
+    var label = parts.slice(labelStartIndex).join('-').trim();
+    var date = new Date(year, month - 1, day, hour, minute, includeSeconds ? seconds : 0, 0);
     return {
       type: config.type,
       date: Number.isNaN(date.valueOf()) ? null : date,
