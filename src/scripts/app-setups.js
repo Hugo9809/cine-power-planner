@@ -3171,6 +3171,111 @@ function computeAutoGearScenarioOutcome(rule, scenarioSet) {
     return { active: allPresent, multiplier: allPresent ? 1 : 0 };
 }
 
+function normalizeClampOnDiameterKey(value) {
+    if (!Number.isFinite(value)) return '';
+    return Number(value).toFixed(3);
+}
+
+function formatClampOnDiameterLabel(value) {
+    if (!Number.isFinite(value)) return '';
+    const rounded = Number(Number(value).toFixed(2));
+    if (!Number.isFinite(rounded)) return '';
+    return String(rounded);
+}
+
+function shouldAugmentClampOnRule(rule) {
+    if (!rule || typeof rule !== 'object') return false;
+    const matteboxList = Array.isArray(rule.mattebox) ? rule.mattebox.filter(Boolean) : [];
+    if (!matteboxList.length) return false;
+    const normalized = matteboxList
+        .map(value => normalizeAutoGearTriggerValue(value).replace(/-/g, ' '))
+        .filter(Boolean);
+    if (!normalized.length) return false;
+    return normalized.includes('clamp on');
+}
+
+function buildClampOnBackingAdditionsFromInfo(info) {
+    const lensValue = info ? info.lenses : '';
+    let lensNames = [];
+    if (Array.isArray(lensValue)) {
+        lensNames = lensValue.filter(name => typeof name === 'string' && name.trim());
+    } else if (typeof lensValue === 'string') {
+        lensNames = lensValue
+            .split(',')
+            .map(name => name.trim())
+            .filter(Boolean);
+    }
+    if (!lensNames.length) return [];
+    const lensDb = devices && devices.lenses ? devices.lenses : null;
+    if (!lensDb || typeof lensDb !== 'object') return [];
+    const normalizedLookup = new Map();
+    Object.keys(lensDb).forEach(name => {
+        if (typeof name !== 'string' || !name) return;
+        const normalized = name.trim().toLowerCase();
+        if (normalized && !normalizedLookup.has(normalized)) {
+            normalizedLookup.set(normalized, lensDb[name]);
+        }
+    });
+    const diameterMap = new Map();
+    lensNames.forEach(selectionName => {
+        if (typeof selectionName !== 'string') return;
+        const trimmed = selectionName.trim();
+        if (!trimmed) return;
+        const normalized = trimmed.toLowerCase();
+        let lens = Object.prototype.hasOwnProperty.call(lensDb, trimmed) ? lensDb[trimmed] : null;
+        if (!lens && normalizedLookup.has(normalized)) {
+            lens = normalizedLookup.get(normalized);
+        }
+        if (!lens || typeof lens !== 'object') return;
+        const diameter = Number(lens.frontDiameterMm);
+        if (!Number.isFinite(diameter) || diameter <= 0) return;
+        const key = normalizeClampOnDiameterKey(diameter);
+        if (!key) return;
+        if (!diameterMap.has(key)) {
+            diameterMap.set(key, { diameter, lenses: [] });
+        }
+        const entry = diameterMap.get(key);
+        if (entry.lenses.indexOf(trimmed) === -1) {
+            entry.lenses.push(trimmed);
+        }
+    });
+    if (!diameterMap.size) return [];
+    const sorted = Array.from(diameterMap.values()).sort((a, b) => {
+        if (a.diameter === b.diameter) return 0;
+        return a.diameter < b.diameter ? -1 : 1;
+    });
+    return sorted.map(({ diameter, lenses }) => {
+        const sizeLabel = formatClampOnDiameterLabel(diameter) || String(Number(diameter));
+        const item = {
+            name: `Mattebox Clamp-On Backing ${sizeLabel}mm`,
+            category: 'Matte box + filter',
+            quantity: 1,
+        };
+        if (Array.isArray(lenses) && lenses.length) {
+            item.contextNotes = [`Lenses: ${lenses.join(', ')}`];
+        }
+        return item;
+    });
+}
+
+function mergeAutoGearAdditions(baseAdditions, extraAdditions) {
+    const result = [];
+    const seen = new Set();
+    const pushUnique = (item) => {
+        if (!item || typeof item !== 'object') return;
+        const name = typeof item.name === 'string' ? item.name.trim() : '';
+        if (!name) return;
+        const category = typeof item.category === 'string' ? item.category.trim() : '';
+        const key = `${name.toLowerCase()}|${category.toLowerCase()}`;
+        if (seen.has(key)) return;
+        seen.add(key);
+        result.push(item);
+    };
+    baseAdditions.forEach(pushUnique);
+    extraAdditions.forEach(pushUnique);
+    return result;
+}
+
 function applyAutoGearRulesToTableHtml(tableHtml, info) {
     if (!tableHtml || !autoGearRules.length || typeof document === 'undefined') return tableHtml;
   const scenarios = info && info.requiredScenarios
@@ -3603,7 +3708,15 @@ function applyAutoGearRulesToTableHtml(tableHtml, info) {
                 }
             }
         });
-        rule.add.forEach(item => {
+        const baseAdditions = Array.isArray(rule.add) ? rule.add.slice() : [];
+        let additions = baseAdditions;
+        if (shouldAugmentClampOnRule(rule)) {
+            const clampBackings = buildClampOnBackingAdditionsFromInfo(info);
+            if (clampBackings.length) {
+                additions = mergeAutoGearAdditions(baseAdditions, clampBackings);
+            }
+        }
+        additions.forEach(item => {
             const quantity = normalizeAutoGearQuantity(item.quantity) * effectiveMultiplier;
             const scaledItem = quantity === normalizeAutoGearQuantity(item.quantity)
                 ? item

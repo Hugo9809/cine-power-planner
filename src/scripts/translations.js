@@ -320,7 +320,7 @@ const texts = {
     autoGearShootingDaysValueLabel: "Shooting days value",
     autoGearMatteboxLabel: "Mattebox options",
     autoGearMatteboxHelp:
-      "Apply this rule when these mattebox choices are selected.",
+      "Apply this rule when these mattebox choices are selected. Clamp-on rules automatically add the matching backing sizes for the selected lens fronts.",
     autoGearMatteboxPlaceholder: "Select mattebox options",
     autoGearCameraHandleLabel: "Camera handles",
     autoGearCameraHandleHelp:
@@ -2267,7 +2267,7 @@ const texts = {
     autoGearShootingDaysValueLabel: "Valore giorni di ripresa",
     autoGearMatteboxLabel: "Opzioni matte box",
     autoGearMatteboxHelp:
-      "Applica la regola quando sono selezionate queste opzioni di matte box.",
+      "Applica la regola quando sono selezionate queste opzioni di matte box. Le regole clamp-on aggiungono automaticamente i back clamp della misura corretta per i diametri frontali delle ottiche selezionate.",
     autoGearMatteboxPlaceholder: "Seleziona opzioni matte box",
     autoGearCameraHandleLabel: "Maniglie camera",
     autoGearCameraHandleHelp:
@@ -3749,7 +3749,7 @@ const texts = {
     autoGearShootingDaysValueLabel: "Valor de días de rodaje",
     autoGearMatteboxLabel: "Opciones de matte box",
     autoGearMatteboxHelp:
-      "Aplica la regla cuando se eligen estas opciones de matte box.",
+      "Aplica la regla cuando se eligen estas opciones de matte box. Las reglas clamp-on añaden automáticamente los respaldos del tamaño correcto para los frentes de óptica seleccionados.",
     autoGearMatteboxPlaceholder: "Selecciona opciones de matte box",
     autoGearCameraHandleLabel: "Empuñaduras de cámara",
     autoGearCameraHandleHelp:
@@ -5233,7 +5233,7 @@ const texts = {
     autoGearShootingDaysValueLabel: "Valeur de jours de tournage",
     autoGearMatteboxLabel: "Options de matte box",
     autoGearMatteboxHelp:
-      "Appliquer la règle lorsque ces options de matte box sont sélectionnées.",
+      "Appliquer la règle lorsque ces options de matte box sont sélectionnées. Les règles clamp-on ajoutent automatiquement les adaptateurs arrière correspondants aux diamètres frontaux des optiques sélectionnées.",
     autoGearMatteboxPlaceholder: "Sélectionnez des options de matte box",
     autoGearCameraHandleLabel: "Poignées caméra",
     autoGearCameraHandleHelp:
@@ -6728,7 +6728,7 @@ const texts = {
     autoGearShootingDaysValueLabel: "Drehtage-Wert",
     autoGearMatteboxLabel: "Mattebox-Optionen",
     autoGearMatteboxHelp:
-      "Regel anwenden, wenn diese Mattebox-Optionen gewählt sind.",
+      "Regel anwenden, wenn diese Mattebox-Optionen gewählt sind. Clamp-On-Regeln fügen automatisch die passenden Backings für die Frontdurchmesser der ausgewählten Objektive hinzu.",
     autoGearMatteboxPlaceholder: "Mattebox-Optionen auswählen",
     autoGearCameraHandleLabel: "Kamera-Handgriffe",
     autoGearCameraHandleHelp:
