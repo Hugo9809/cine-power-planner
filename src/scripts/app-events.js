@@ -73,6 +73,7 @@ const AUTO_BACKUP_ALLOWED_REASONS = [
   'safeguard',
 ];
 const AUTO_BACKUP_RATE_LIMITED_REASONS = new Set(['import']);
+const AUTO_BACKUP_CADENCE_EXEMPT_REASONS = new Set(['import', 'export', 'export-revert', 'safeguard']);
 
 const AUTO_BACKUP_REASON_DEDUP_INTERVAL_MS = 2 * 60 * 1000;
 const lastAutoBackupReasonState = new Map();
@@ -1551,6 +1552,28 @@ function autoBackup(options = {}) {
   const normalizedSelectedName = normalizeProjectName(selectedName);
   const normalizedTypedName = normalizeProjectName(typedName);
   const isAutoBackupName = (name) => typeof name === 'string' && name.startsWith('auto-backup-');
+
+  const nowMs = Date.now();
+  const lastCompletedMs = lastAutoBackupCompletedAtMs || 0;
+  const elapsedSinceLastAutoBackupMs = nowMs - lastCompletedMs;
+  const enoughTimeElapsedSinceLastBackup = elapsedSinceLastAutoBackupMs >= AUTO_BACKUP_INTERVAL_MS;
+  const enoughChangesAccumulated = autoBackupChangesSinceSnapshot >= AUTO_BACKUP_CHANGE_THRESHOLD;
+
+  const enforceCadence = !force && !AUTO_BACKUP_CADENCE_EXEMPT_REASONS.has(reason);
+  if (enforceCadence && !enoughTimeElapsedSinceLastBackup && !enoughChangesAccumulated) {
+    const skipped = {
+      status: 'skipped',
+      reason: 'cadence',
+      context: reason,
+      elapsedSinceLastAutoBackupMs,
+      changesSinceSnapshot: autoBackupChangesSinceSnapshot,
+    };
+    if (typeof console !== 'undefined' && typeof console.debug === 'function') {
+      console.debug('Skipping auto backup because cadence requirements are not met.', skipped);
+    }
+    recordAutoBackupRun(skipped);
+    return skipped;
+  }
 
   if (!force && !isAutoBackupReasonAllowed(reason)) {
     const skipped = {
