@@ -15109,6 +15109,7 @@ const schemaFieldConfigs = {
   },
   cameras: {
     recordingCodecs: { type: 'list', placeholder: 'ProRes 422 HQ' },
+    frameRates: { type: 'list', placeholder: '4K 120 fps' },
     resolutions: { type: 'list', placeholder: '4.5K Open Gate' },
     sensorModes: { type: 'list', placeholder: 'LF Open Gate' },
     viewfinder: { type: 'json', rows: 4 },

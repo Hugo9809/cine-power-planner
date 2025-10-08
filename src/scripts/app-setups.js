@@ -1613,6 +1613,10 @@ function generateConnectorSummary(device) {
   if (Array.isArray(device.resolutions)) {
     recordingHtml = appendListBox(recordingHtml, device.resolutions, 'Resolutions', 'video-conn', ICON_GLYPHS.screen);
   }
+  if (Array.isArray(device.frameRates)) {
+    const frameRateIcon = diagramConnectorIcons?.timecode || ICON_GLYPHS.camera;
+    recordingHtml = appendListBox(recordingHtml, device.frameRates, 'Frame Rates', 'video-conn', frameRateIcon);
+  }
   if (Array.isArray(device.recordingCodecs)) {
     recordingHtml = appendListBox(recordingHtml, device.recordingCodecs, 'Codecs', 'video-conn', ICON_GLYPHS.camera);
   }

@@ -155,6 +155,13 @@ const cameraData = {
       "2880×1620",
       "2048×1152",
       "1920×1080"
+    ],
+    "frameRates": [
+      "4.5K LF Open Gate: 0.75–40 fps",
+      "4.5K LF 16:9: up to 60 fps",
+      "4.5K LF 2.39:1: up to 90 fps",
+      "S35 3.2K/16:9: up to 90 fps",
+      "S35 HD: up to 200 fps"
     ]
   },
   "Arri Alexa Mini": {
@@ -262,46 +269,52 @@ const cameraData = {
         "notes": "No ARRI LDS or Cooke /i lens data"
       }
     ],
-      "timecode": [
-        {
-          "type": "LEMO 5-pin",
-          "notes": "LTC Timecode In/Out"
-        },
-        {
-          "type": "SYNC",
-          "notes": "Black burst/tri-level sync"
-        },
-        {
-          "type": "EXT LEMO 7-pin",
-          "notes": "For multi-camera sync with ARRI EDB-2 EXT Distribution Box"
-        }
-      ],
-      "weight_g": 2300,
-      "recordingCodecs": [
-        "ARRIRAW",
-        "ProRes 4444 XQ",
-        "ProRes 4444",
-        "ProRes 422 HQ",
-        "ProRes 422",
-        "ProRes 422 LT"
-      ],
-      "sensorModes": [
-        "S16 HD 1600×900",
-        "HD 2880×1620",
-        "2K 2868×1612",
-        "3.2K 3200×1800",
-        "UHD 3840×2160 (upsampled from 3.2K)",
-        "4:3 2.8K 2880×2160",
-        "ARRIRAW 16:9 2.8K 2880×1620",
-        "ARRIRAW Open Gate 3.4K 3424×2202"
-      ],
-      "resolutions": [
-        "HD 1920×1080",
-        "2K 2048×1152",
-        "3.2K 3200×1800",
-        "UHD 3840×2160"
-      ]
-    },
+    "timecode": [
+      {
+        "type": "LEMO 5-pin",
+        "notes": "LTC Timecode In/Out"
+      },
+      {
+        "type": "SYNC",
+        "notes": "Black burst/tri-level sync"
+      },
+      {
+        "type": "EXT LEMO 7-pin",
+        "notes": "For multi-camera sync with ARRI EDB-2 EXT Distribution Box"
+      }
+    ],
+    "weight_g": 2300,
+    "recordingCodecs": [
+      "ARRIRAW",
+      "ProRes 4444 XQ",
+      "ProRes 4444",
+      "ProRes 422 HQ",
+      "ProRes 422",
+      "ProRes 422 LT"
+    ],
+    "sensorModes": [
+      "S16 HD 1600×900",
+      "HD 2880×1620",
+      "2K 2868×1612",
+      "3.2K 3200×1800",
+      "UHD 3840×2160 (upsampled from 3.2K)",
+      "4:3 2.8K 2880×2160",
+      "ARRIRAW 16:9 2.8K 2880×1620",
+      "ARRIRAW Open Gate 3.4K 3424×2202"
+    ],
+    "resolutions": [
+      "HD 1920×1080",
+      "2K 2048×1152",
+      "3.2K 3200×1800",
+      "UHD 3840×2160"
+    ],
+    "frameRates": [
+      "ARRIRAW 3.4K: up to 30 fps",
+      "ProRes 3.2K: up to 60 fps",
+      "ARRIRAW 2.8K: up to 200 fps",
+      "ProRes 2K/HD: up to 200 fps"
+    ]
+  },
   "Arri Alexa 35": {
     "powerDrawWatts": 110,
     "power": {
@@ -448,6 +461,13 @@ const cameraData = {
       "3072x3072",
       "2743x3086",
       "2048x1152"
+    ],
+    "frameRates": [
+      "4.6K Open Gate 3:2: up to 75 fps",
+      "4.6K 16:9: up to 120 fps",
+      "4K 2.39:1: up to 160 fps",
+      "3K crop modes: up to 200 fps",
+      "HD/S35 high speed: up to 240 fps"
     ]
   },
   "Arri Alexa 35 Xtreme": {
@@ -611,6 +631,13 @@ const cameraData = {
       "2743x3086",
       "2048x1152",
       "1920x1080"
+    ],
+    "frameRates": [
+      "4.6K Open Gate 3:2: up to 75 fps",
+      "4.6K 16:9: up to 120 fps",
+      "4K 2.39:1: up to 160 fps",
+      "3K crop modes: up to 200 fps",
+      "HD/S35 high speed: up to 240 fps"
     ]
   },
   "Arri Amira": {
@@ -741,6 +768,11 @@ const cameraData = {
       "2K 2048×1152",
       "3.2K 3200×1800",
       "UHD 3840×2160 (with UHD option)"
+    ],
+    "frameRates": [
+      "4K UHD: up to 60 fps",
+      "2K/HD ProRes: up to 200 fps",
+      "Sensor slow motion license: 0.75–200 fps"
     ]
   },
   "Sony Venice 2": {
@@ -903,6 +935,12 @@ const cameraData = {
       "4096×2160 (DCI 4K)",
       "3840×2160 (UHD)",
       "1920×1080 (HD)"
+    ],
+    "frameRates": [
+      "8.6K full-frame: up to 60 fps",
+      "5.8K Super 35: up to 90 fps",
+      "4K 17:9: up to 120 fps",
+      "2K 17:9: up to 120 fps"
     ]
   },
   "Sony Venice": {
@@ -1066,6 +1104,12 @@ const cameraData = {
       "4096×2160 (DCI 4K)",
       "3840×2160 (UHD)",
       "1920×1080 (HD)"
+    ],
+    "frameRates": [
+      "6K full-frame: up to 60 fps",
+      "6K 2.39: up to 90 fps",
+      "4K 17:9: up to 120 fps",
+      "2K 17:9: up to 120 fps"
     ]
   },
   "Sony Burano": {
@@ -1188,6 +1232,12 @@ const cameraData = {
       "4096x2160",
       "3840x2160",
       "1920x1080"
+    ],
+    "frameRates": [
+      "8.6K full-frame: up to 60 fps",
+      "6K 17:9: up to 60 fps",
+      "6K 2.39: up to 100 fps",
+      "4K 17:9: up to 120 fps"
     ]
   },
   "Sony FX3": {
@@ -1281,6 +1331,10 @@ const cameraData = {
     "resolutions": [
       "UHD 3840×2160 (up to 120p)",
       "HD 1920×1080 (up to 240p)"
+    ],
+    "frameRates": [
+      "UHD 4K: 23.98–120 fps",
+      "Full HD: up to 240 fps"
     ]
   },
   "Sony FX6": {
@@ -1419,6 +1473,10 @@ const cameraData = {
       "4096×2160",
       "3840×2160",
       "1920×1080"
+    ],
+    "frameRates": [
+      "UHD 4K: 23.98–120 fps",
+      "Full HD: up to 240 fps"
     ]
   },
   "Sony FX9": {
@@ -1525,30 +1583,35 @@ const cameraData = {
         "notes": "No ARRI LDS or Cooke /i lens data"
       }
     ],
-      "timecode": [
-        {
-          "type": "BNC",
-          "notes": "Timecode In/Out"
-        }
-      ],
-      "weight_g": 2000,
-      "recordingCodecs": [
-        "XAVC-I 4:2:2 10-bit",
-        "XAVC-L 4:2:2 10-bit",
-        "MPEG HD 422"
-      ],
-      "sensorModes": [
-        "FF 6K oversample→4K",
-        "S35 4K (DCI)",
-        "FF HD",
-        "S35 UHD"
-      ],
-      "resolutions": [
-        "DCI 4K 4096×2160 (S35)",
-        "UHD 3840×2160",
-        "HD 1920×1080"
-      ]
-    },
+    "timecode": [
+      {
+        "type": "BNC",
+        "notes": "Timecode In/Out"
+      }
+    ],
+    "weight_g": 2000,
+    "recordingCodecs": [
+      "XAVC-I 4:2:2 10-bit",
+      "XAVC-L 4:2:2 10-bit",
+      "MPEG HD 422"
+    ],
+    "sensorModes": [
+      "FF 6K oversample→4K",
+      "S35 4K (DCI)",
+      "FF HD",
+      "S35 UHD"
+    ],
+    "resolutions": [
+      "DCI 4K 4096×2160 (S35)",
+      "UHD 3840×2160",
+      "HD 1920×1080"
+    ],
+    "frameRates": [
+      "6K oversampled 4K: up to 60 fps",
+      "4K S&Q mode: up to 120 fps",
+      "Full HD: up to 180 fps"
+    ]
+  },
   "Sony FS7 II": {
     "powerDrawWatts": 19,
     "power": {
@@ -1557,9 +1620,21 @@ const cameraData = {
         "type": "XLR 4-pin"
       },
       "batteryPlateSupport": [
-        { "type": "BP-U", "mount": "native", "notes": "" },
-        { "type": "V-Mount", "mount": "adapted", "notes": "" },
-        { "type": "Gold-Mount", "mount": "adapted", "notes": "" }
+        {
+          "type": "BP-U",
+          "mount": "native",
+          "notes": ""
+        },
+        {
+          "type": "V-Mount",
+          "mount": "adapted",
+          "notes": ""
+        },
+        {
+          "type": "Gold-Mount",
+          "mount": "adapted",
+          "notes": ""
+        }
       ],
       "powerDistributionOutputs": [
         {
@@ -1577,26 +1652,57 @@ const cameraData = {
       ]
     },
     "videoOutputs": [
-      { "type": "3G-SDI" },
-      { "type": "HDMI" }
+      {
+        "type": "3G-SDI"
+      },
+      {
+        "type": "HDMI"
+      }
     ],
     "fizConnectors": [
-      { "type": "LANC", "notes": "Remote control" }
+      {
+        "type": "LANC",
+        "notes": "Remote control"
+      }
     ],
     "recordingMedia": [
-      { "type": "XQD Card", "notes": "" },
-      { "type": "SD Card", "notes": "for proxy/backup" }
+      {
+        "type": "XQD Card",
+        "notes": ""
+      },
+      {
+        "type": "SD Card",
+        "notes": "for proxy/backup"
+      }
     ],
     "viewfinder": [
-      { "type": "Sony FS7 EVF Port (Proprietary)", "notes": "For Sony viewfinder" },
-      { "type": "Integrated LCD monitor", "size": "3.5-inch", "resolution": "1280x720" }
+      {
+        "type": "Sony FS7 EVF Port (Proprietary)",
+        "notes": "For Sony viewfinder"
+      },
+      {
+        "type": "Integrated LCD monitor",
+        "size": "3.5-inch",
+        "resolution": "1280x720"
+      }
     ],
     "lensMount": [
-      { "type": "E-mount", "mount": "native", "notes": "Supports Sony E-mount electronic lens data" },
-      { "type": "PL", "mount": "adapted", "notes": "No ARRI LDS or Cooke /i lens data" }
+      {
+        "type": "E-mount",
+        "mount": "native",
+        "notes": "Supports Sony E-mount electronic lens data"
+      },
+      {
+        "type": "PL",
+        "mount": "adapted",
+        "notes": "No ARRI LDS or Cooke /i lens data"
+      }
     ],
     "timecode": [
-      { "type": "BNC", "notes": "Timecode In/Out via XDCA-FS7" }
+      {
+        "type": "BNC",
+        "notes": "Timecode In/Out via XDCA-FS7"
+      }
     ],
     "weight_g": 2070,
     "recordingCodecs": [
@@ -1613,6 +1719,10 @@ const cameraData = {
       "DCI 4K 4096×2160",
       "UHD 3840×2160",
       "HD 1920×1080"
+    ],
+    "frameRates": [
+      "DCI/UHD 4K: up to 60 fps",
+      "Full HD: up to 180 fps"
     ]
   },
   "Canon C70": {
@@ -1699,6 +1809,10 @@ const cameraData = {
       "3840×2160",
       "2048×1080",
       "1920×1080"
+    ],
+    "frameRates": [
+      "4K DCI/UHD: up to 120 fps",
+      "2K/HD crop: up to 180 fps"
     ]
   },
   "Canon C80": {
@@ -1847,6 +1961,10 @@ const cameraData = {
       "3840x2160 (UHD 4K)",
       "2048x1080 (DCI 2K)",
       "1920x1080 (FHD)"
+    ],
+    "frameRates": [
+      "4K DCI/UHD: up to 120 fps",
+      "2K/HD crop: up to 180 fps"
     ]
   },
   "Canon C300 Mk III": {
@@ -1964,6 +2082,10 @@ const cameraData = {
       "UHD 3840×2160",
       "2K 2048×1080",
       "HD 1920×1080"
+    ],
+    "frameRates": [
+      "4K DCI/UHD: up to 120 fps",
+      "2K/HD crop: up to 180 fps"
     ]
   },
   "Canon C400": {
@@ -2094,6 +2216,11 @@ const cameraData = {
       "4K DCI",
       "4K UHD",
       "2K/HD"
+    ],
+    "frameRates": [
+      "6K full-frame: up to 60 fps",
+      "4K oversampled: up to 120 fps",
+      "2K/HD crop: up to 180 fps"
     ]
   },
   "Canon C500 Mk II": {
@@ -2210,6 +2337,11 @@ const cameraData = {
       "UHD 3840×2160",
       "2K 2048×1080",
       "HD 1920×1080"
+    ],
+    "frameRates": [
+      "5.9K full-frame: up to 60 fps",
+      "4K DCI: up to 60 fps",
+      "2K/HD crop: up to 120 fps"
     ]
   },
   "Canon EOS C700 FF": {
@@ -2274,6 +2406,11 @@ const cameraData = {
       "3840×2160",
       "2048×1080",
       "1920×1080"
+    ],
+    "frameRates": [
+      "5.9K full-frame: up to 60 fps",
+      "4K ProRes: up to 72 fps",
+      "2K crop: up to 168 fps"
     ]
   },
   "Blackmagic BMPCC 4K": {
@@ -2366,6 +2503,10 @@ const cameraData = {
       "DCI 4K 4096×2160",
       "UHD 3840×2160",
       "HD 1920×1080"
+    ],
+    "frameRates": [
+      "DCI 4K: up to 60 fps",
+      "Full HD (windowed): up to 120 fps"
     ]
   },
   "Blackmagic BMPCC 6K G2": {
@@ -2464,6 +2605,11 @@ const cameraData = {
       "4096x2160 (DCI 4K)",
       "3840x2160 (UHD 4K)",
       "1920x1080 (HD)"
+    ],
+    "frameRates": [
+      "6K 17:9: up to 50 fps",
+      "6K 2.4:1: up to 60 fps",
+      "2.8K anamorphic: up to 120 fps"
     ]
   },
   "Blackmagic BMPCC 6K": {
@@ -2564,6 +2710,11 @@ const cameraData = {
       "3728x3104",
       "2868x1512",
       "1920x1080"
+    ],
+    "frameRates": [
+      "6K 17:9: up to 50 fps",
+      "6K 2.4:1: up to 60 fps",
+      "2.8K anamorphic: up to 120 fps"
     ]
   },
   "Blackmagic Pocket Cinema Camera 6K Pro": {
@@ -2669,6 +2820,11 @@ const cameraData = {
       "6144×2560 (6K 2.4:1)",
       "2868×1512 (2.8K 17:9)",
       "1920×1080 (HD)"
+    ],
+    "frameRates": [
+      "6K 17:9: up to 50 fps",
+      "6K 2.4:1: up to 60 fps",
+      "2.8K anamorphic: up to 120 fps"
     ]
   },
   "Blackmagic URSA 12K": {
@@ -2791,6 +2947,11 @@ const cameraData = {
       "6144x3240",
       "4096x2160",
       "2048x1080"
+    ],
+    "frameRates": [
+      "12K 17:9: up to 60 fps",
+      "8K 16:9: up to 120 fps",
+      "4K Super 16: up to 240 fps"
     ]
   },
   "Blackmagic URSA Cine": {
@@ -2944,6 +3105,11 @@ const cameraData = {
       "4096x2160 (DCI 4K)",
       "3840x2160 (UHD 4K)",
       "2048x1080 (DCI 2K)"
+    ],
+    "frameRates": [
+      "12K 17:9: up to 60 fps",
+      "8K 16:9: up to 120 fps",
+      "4K Super 16: up to 240 fps"
     ]
   },
   "Blackmagic URSA Cine 17K 65": {
@@ -3100,6 +3266,9 @@ const cameraData = {
       "8192x5461 (8K 3:2)",
       "8192x4320 (8K 16:9)",
       "8192x4320 (8K 17:9)"
+    ],
+    "frameRates": [
+      "Frame-rate specifications pending final release"
     ]
   },
   "Blackmagic PYXIS 6K": {
@@ -3189,6 +3358,11 @@ const cameraData = {
       "4096x2160 (DCI 4K)",
       "3840x2160 (UHD 4K)",
       "1920x1080 (HD)"
+    ],
+    "frameRates": [
+      "6K 17:9: up to 60 fps",
+      "4K DCI: up to 120 fps",
+      "2K crop: up to 240 fps"
     ]
   },
   "Blackmagic PYXIS 12K": {
@@ -3277,6 +3451,11 @@ const cameraData = {
       "8192x4320 (8K)",
       "4096x2160 (DCI 4K)",
       "3840x2160 (UHD 4K)"
+    ],
+    "frameRates": [
+      "12K 17:9: up to 60 fps",
+      "8K 16:9: up to 120 fps",
+      "4K Super 16: up to 240 fps"
     ]
   },
   "RED Komodo 6k": {
@@ -3396,6 +3575,12 @@ const cameraData = {
       "5K 5120×2700",
       "4K 4096×2160",
       "2K 2048×1080"
+    ],
+    "frameRates": [
+      "6K 17:9: up to 40 fps",
+      "6K 2.4:1: up to 50 fps",
+      "4K 17:9: up to 60 fps",
+      "2K 17:9: up to 120 fps"
     ]
   },
   "RED Komodo X": {
@@ -3491,6 +3676,12 @@ const cameraData = {
       "5120×2700",
       "4096×2160",
       "2048×1080"
+    ],
+    "frameRates": [
+      "6K 17:9: up to 80 fps",
+      "6K 2.4:1: up to 100 fps",
+      "4K 17:9: up to 120 fps",
+      "2K 17:9: up to 240 fps"
     ]
   },
   "Red V-Raptor XL 8K VV": {
@@ -3615,6 +3806,12 @@ const cameraData = {
       "5120x2700 (5K)",
       "4096x2160 (4K)",
       "2048x1080 (2K)"
+    ],
+    "frameRates": [
+      "8K 17:9: up to 120 fps",
+      "8K 2.4:1: up to 150 fps",
+      "6K 17:9: up to 160 fps",
+      "4K 17:9: up to 240 fps"
     ]
   },
   "Red V-RAPTOR® X XL 8K VV": {
@@ -3738,6 +3935,12 @@ const cameraData = {
       "6144x3240 (6K)",
       "4096x2160 (4K)",
       "2048x1080 (2K)"
+    ],
+    "frameRates": [
+      "8K 17:9: up to 120 fps",
+      "8K 2.4:1: up to 150 fps",
+      "6K 17:9: up to 160 fps",
+      "4K 17:9: up to 240 fps"
     ]
   },
   "Red V-RAPTOR® XL 8K S35": {
@@ -3860,6 +4063,11 @@ const cameraData = {
       "6144x3240 (6K)",
       "4096x2160 (4K)",
       "2048x1080 (2K)"
+    ],
+    "frameRates": [
+      "6K 17:9: up to 160 fps",
+      "6K 2.4:1: up to 200 fps",
+      "4K 17:9: up to 240 fps"
     ]
   },
   "Red V-RAPTOR® X XL 8K S35": {
@@ -3982,6 +4190,11 @@ const cameraData = {
       "6144x3240 (6K)",
       "4096x2160 (4K)",
       "2048x1080 (2K)"
+    ],
+    "frameRates": [
+      "6K 17:9: up to 160 fps",
+      "6K 2.4:1: up to 200 fps",
+      "4K 17:9: up to 240 fps"
     ]
   },
   "Red V-Raptor 8k S35": {
@@ -4071,6 +4284,11 @@ const cameraData = {
       "8192x4320",
       "4096x2160",
       "2048x1080"
+    ],
+    "frameRates": [
+      "6K 17:9: up to 160 fps",
+      "6K 2.4:1: up to 200 fps",
+      "4K 17:9: up to 240 fps"
     ]
   },
   "Red V-Raptor X 8k S35": {
@@ -4160,6 +4378,11 @@ const cameraData = {
       "6144x3240 (6K)",
       "4096x2160 (4K)",
       "2048x1080 (2K)"
+    ],
+    "frameRates": [
+      "6K 17:9: up to 160 fps",
+      "6K 2.4:1: up to 200 fps",
+      "4K 17:9: up to 240 fps"
     ]
   },
   "Red V-Raptor 8k VV": {
@@ -4254,6 +4477,12 @@ const cameraData = {
       "6144x3240 (6K)",
       "4096x2160 (4K)",
       "2048x1080 (2K)"
+    ],
+    "frameRates": [
+      "8K 17:9: up to 120 fps",
+      "8K 2.4:1: up to 150 fps",
+      "6K 17:9: up to 160 fps",
+      "4K 17:9: up to 240 fps"
     ]
   },
   "Red V-Raptor X 8k VV": {
@@ -4345,6 +4574,12 @@ const cameraData = {
       "6144x3240 (6K)",
       "4096x2160 (4K)",
       "2048x1080 (2K)"
+    ],
+    "frameRates": [
+      "8K 17:9: up to 120 fps",
+      "8K 2.4:1: up to 150 fps",
+      "6K 17:9: up to 160 fps",
+      "4K 17:9: up to 240 fps"
     ]
   },
   "RED Scarlet-W (Dragon Sensor)": {
@@ -4434,6 +4669,11 @@ const cameraData = {
       "4096x2160 (4K)",
       "3072x1620 (3K)",
       "2048x1080 (2K)"
+    ],
+    "frameRates": [
+      "5K 2.4:1: up to 60 fps",
+      "4K 17:9: up to 150 fps",
+      "2K 17:9: up to 300 fps"
     ]
   },
   "RED Epic-W (Helium 8K S35)": {
@@ -4523,6 +4763,12 @@ const cameraData = {
       "6144x3240 (6K)",
       "5120x2700 (5K)",
       "4096x2160 (4K)"
+    ],
+    "frameRates": [
+      "8K 17:9: up to 60 fps",
+      "8K 2.4:1: up to 75 fps",
+      "4K 17:9: up to 150 fps",
+      "2K 17:9: up to 300 fps"
     ]
   },
   "RED Weapon (Helium 8K S35/VV)": {
@@ -4608,6 +4854,12 @@ const cameraData = {
       "8192x4320 (8K)",
       "6144x3240 (6K)",
       "4096x2160 (4K)"
+    ],
+    "frameRates": [
+      "8K S35 17:9: up to 60 fps",
+      "8K VV 2.4:1: up to 75 fps",
+      "4K 17:9: up to 150 fps",
+      "2K 17:9: up to 300 fps"
     ]
   },
   "RED Epic Dragon (6K)": {
@@ -4694,6 +4946,12 @@ const cameraData = {
       "4096x2160 (4K)",
       "3072x1620 (3K)",
       "2048x1080 (2K)"
+    ],
+    "frameRates": [
+      "6K 17:9: up to 75 fps",
+      "6K 2.4:1: up to 100 fps",
+      "4K 17:9: up to 150 fps",
+      "2K 17:9: up to 200 fps"
     ]
   },
   "RED Scarlet Dragon (5K)": {
@@ -4778,6 +5036,11 @@ const cameraData = {
       "5120x2700",
       "4096x2160",
       "2048x1080"
+    ],
+    "frameRates": [
+      "5K 2.4:1: up to 60 fps",
+      "4K 17:9: up to 150 fps",
+      "2K 17:9: up to 200 fps"
     ]
   },
   "RED Epic (Mysterium-X Sensor)": {
@@ -4863,6 +5126,12 @@ const cameraData = {
       "4096x2160 (4K)",
       "3072x1620 (3K)",
       "2048x1080 (2K)"
+    ],
+    "frameRates": [
+      "5K 2.4:1: up to 60 fps",
+      "4K 17:9: up to 120 fps",
+      "3K 17:9: up to 150 fps",
+      "2K 17:9: up to 300 fps"
     ]
   },
   "RED Scarlet (Mysterium-X Sensor)": {
@@ -4946,6 +5215,12 @@ const cameraData = {
       "5120x2700",
       "4096x2160",
       "2048x1080"
+    ],
+    "frameRates": [
+      "4K 16:9: up to 30 fps",
+      "3K 16:9: up to 48 fps",
+      "2K 16:9: up to 60 fps",
+      "1K 16:9: up to 120 fps"
     ]
   },
   "Panasonic Lumix S5 II": {
@@ -5035,6 +5310,12 @@ const cameraData = {
       "4096x2160",
       "3840x2160",
       "1920x1080"
+    ],
+    "frameRates": [
+      "6K 3:2: up to 30 fps",
+      "5.9K 16:9: up to 60 fps",
+      "4K 10-bit: up to 60 fps",
+      "FHD VFR: up to 180 fps"
     ]
   },
   "Panasonic Lumix GH6": {
@@ -5130,6 +5411,11 @@ const cameraData = {
       "4096x2160",
       "3840x2160",
       "1920x1080"
+    ],
+    "frameRates": [
+      "5.7K ProRes: up to 60 fps",
+      "4K DCI: up to 120 fps",
+      "FHD VFR: up to 240 fps"
     ]
   },
   "Sony A7S III": {
@@ -5222,6 +5508,10 @@ const cameraData = {
     "resolutions": [
       "3840×2160",
       "1920×1080"
+    ],
+    "frameRates": [
+      "UHD 4K XAVC S-I: up to 120 fps",
+      "Full HD S&Q: up to 240 fps"
     ]
   },
   "Fujifilm X-H2S": {
@@ -5313,6 +5603,11 @@ const cameraData = {
       "4096x2160 (DCI 4K)",
       "3840x2160 (UHD 4K)",
       "1920x1080 (FHD)"
+    ],
+    "frameRates": [
+      "6.2K 3:2: up to 30 fps",
+      "4K DCI: up to 120 fps",
+      "Full HD high speed: up to 240 fps"
     ]
   },
   "DJI Ronin 4D 6K": {
@@ -5455,6 +5750,10 @@ const cameraData = {
       "4096×2160 (C4K)",
       "2048×1080 (2K)",
       "6K up to 60p"
+    ],
+    "frameRates": [
+      "6K: up to 60 fps",
+      "4K: up to 120 fps"
     ]
   },
   "Sony FX30": {
@@ -5552,6 +5851,10 @@ const cameraData = {
     "resolutions": [
       "3840×2160 (UHD)",
       "1920×1080 (HD)"
+    ],
+    "frameRates": [
+      "Super35 4K: up to 120 fps",
+      "Full HD: up to 240 fps"
     ]
   },
   "Panasonic Lumix BS1H": {
@@ -5645,6 +5948,12 @@ const cameraData = {
       "4096x2160 (DCI 4K)",
       "3840x2160 (UHD 4K)",
       "1920x1080 (FHD)"
+    ],
+    "frameRates": [
+      "6K 3:2: up to 24 fps",
+      "5.9K 16:9: up to 30 fps",
+      "4K 17:9: up to 60 fps",
+      "Full HD VFR: up to 180 fps"
     ]
   },
   "Sony ZV-E1": {
@@ -5720,6 +6029,10 @@ const cameraData = {
     "resolutions": [
       "3840x2160",
       "1920x1080"
+    ],
+    "frameRates": [
+      "UHD 4K: up to 120 fps",
+      "Full HD: up to 240 fps"
     ]
   },
   "Fujifilm X-M5": {
@@ -5808,6 +6121,11 @@ const cameraData = {
       "4096x2160 (DCI 4K)",
       "3840x2160 (UHD 4K)",
       "1920x1080 (FHD)"
+    ],
+    "frameRates": [
+      "6.2K open gate: up to 30 fps",
+      "4K HQ: up to 60 fps",
+      "Full HD high speed: up to 240 fps"
     ]
   },
   "Canon EOS R5 Mark II": {
@@ -5904,6 +6222,11 @@ const cameraData = {
       "4096x2160 (DCI 4K)",
       "3840x2160 (UHD 4K)",
       "1920x1080 (FHD)"
+    ],
+    "frameRates": [
+      "8K RAW: up to 60 fps",
+      "4K oversampled: up to 120 fps",
+      "Full HD S&Q: up to 240 fps"
     ]
   },
   "Canon EOS R1": {
@@ -5994,6 +6317,9 @@ const cameraData = {
       "3840x2160 (UHD 4K)",
       "2048x1080 (DCI 2K)",
       "1920x1080 (FHD)"
+    ],
+    "frameRates": [
+      "Official video frame rates pending"
     ]
   },
   "Sony PXW-FS7": {
@@ -6051,6 +6377,10 @@ const cameraData = {
       "3840×2160",
       "1920×1080",
       "1280×720"
+    ],
+    "frameRates": [
+      "DCI/UHD 4K: up to 60 fps",
+      "Full HD: up to 180 fps"
     ]
   },
   "Canon C200": {
@@ -6108,6 +6438,10 @@ const cameraData = {
       "3840×2160",
       "2048×1080",
       "1920×1080"
+    ],
+    "frameRates": [
+      "4K DCI: up to 60 fps",
+      "2K/HD crop: up to 120 fps"
     ]
   },
   "Panasonic AU-EVA1": {
@@ -6170,6 +6504,11 @@ const cameraData = {
       "3840×2160",
       "2048×1080",
       "1920×1080"
+    ],
+    "frameRates": [
+      "5.7K RAW: up to 60 fps",
+      "4K 10-bit: up to 60 fps",
+      "2K/HD VFR: up to 240 fps"
     ]
   },
   "Panasonic VariCam LT": {
@@ -6248,6 +6587,10 @@ const cameraData = {
       "3840×2160",
       "2048×1080",
       "1920×1080"
+    ],
+    "frameRates": [
+      "4K 17:9: up to 60 fps",
+      "2K/HD: up to 240 fps"
     ]
   },
   "RED V-RAPTOR 8K VV": {
@@ -6326,6 +6669,12 @@ const cameraData = {
       "6144×3240",
       "4096×2160",
       "2048×1080"
+    ],
+    "frameRates": [
+      "8K 17:9: up to 120 fps",
+      "8K 2.4:1: up to 150 fps",
+      "6K 17:9: up to 160 fps",
+      "4K 17:9: up to 240 fps"
     ]
   },
   "RED V-RAPTOR [X] 8K VV": {
@@ -6404,6 +6753,12 @@ const cameraData = {
       "6144×3240",
       "4096×2160",
       "2048×1080"
+    ],
+    "frameRates": [
+      "8K 17:9: up to 120 fps",
+      "8K 2.4:1: up to 150 fps",
+      "6K 17:9: up to 160 fps",
+      "4K 17:9: up to 240 fps"
     ]
   },
   "RED V-RAPTOR 8K S35": {
@@ -6495,6 +6850,11 @@ const cameraData = {
       "3072×1296",
       "2048×1080",
       "2048×864"
+    ],
+    "frameRates": [
+      "6K 17:9: up to 160 fps",
+      "6K 2.4:1: up to 200 fps",
+      "4K 17:9: up to 240 fps"
     ]
   },
   "Blackmagic Cinema Camera 6K": {
@@ -6558,6 +6918,12 @@ const cameraData = {
       "4096×2160",
       "2112×1184",
       "1920×1080"
+    ],
+    "frameRates": [
+      "6K open gate: up to 36 fps",
+      "6K 2.4:1: up to 60 fps",
+      "4K DCI: up to 60 fps",
+      "1080p: up to 120 fps"
     ]
   },
   "Leica SL3-S": {
@@ -6645,6 +7011,11 @@ const cameraData = {
       "6K",
       "4K",
       "1920x1080"
+    ],
+    "frameRates": [
+      "8K 10-bit: up to 30 fps",
+      "4K 10-bit: up to 60 fps",
+      "Full HD slow motion: up to 180 fps"
     ]
   },
   "Canon EOS R5 C": {
@@ -6698,6 +7069,11 @@ const cameraData = {
       "4096×2160 (DCI 4K)",
       "3840×2160 (UHD)",
       "1920×1080 (HD)"
+    ],
+    "frameRates": [
+      "8K Cinema RAW Light: up to 60 fps",
+      "4K DCI/UHD: up to 120 fps",
+      "2K/HD: up to 180 fps"
     ]
   },
   "Blackmagic URSA Broadcast G2": {
@@ -6767,6 +7143,11 @@ const cameraData = {
     "resolutions": [
       "3840×2160 (UHD)",
       "1920×1080 (HD)"
+    ],
+    "frameRates": [
+      "6K BRAW: up to 50 fps",
+      "UHD ProRes: up to 60 fps",
+      "HD windowed: up to 120 fps"
     ]
   },
   "Kinefinity MAVO Edge 6K": {
@@ -6834,6 +7215,12 @@ const cameraData = {
       "5760×3700 (5.7K 3:2)",
       "5120×2700 (5K DCI)",
       "3840×2160 (UHD)"
+    ],
+    "frameRates": [
+      "6K 3:2: up to 75 fps",
+      "6K 17:9: up to 60 fps",
+      "4K 17:9: up to 150 fps",
+      "2K 17:9: up to 290 fps"
     ]
   },
   "Z CAM E2-F6": {
@@ -6946,6 +7333,11 @@ const cameraData = {
       "3840×2160 (UHD)",
       "2112×1188 (S16 16:9)",
       "1920×1080 (FHD)"
+    ],
+    "frameRates": [
+      "6K 17:9: up to 60 fps",
+      "4K 17:9: up to 120 fps",
+      "2K 17:9: up to 240 fps"
     ]
   },
   "Z CAM E2-F6 Pro / Mark II": {
@@ -7049,6 +7441,11 @@ const cameraData = {
       "3840×2160 (UHD)",
       "2112×1188 (S16 16:9)",
       "1920×1080 (FHD)"
+    ],
+    "frameRates": [
+      "6K 17:9: up to 60 fps",
+      "4K 17:9: up to 120 fps",
+      "2K 17:9: up to 240 fps"
     ]
   },
   "RED DSMC2 MONSTRO 8K VV": {
@@ -7110,6 +7507,12 @@ const cameraData = {
       "8192×3456 (8K 2.4:1)",
       "4096×2160 (4K)",
       "2048×1080 (2K)"
+    ],
+    "frameRates": [
+      "8K 17:9: up to 60 fps",
+      "8K 2.4:1: up to 75 fps",
+      "6K 17:9: up to 100 fps",
+      "4K 17:9: up to 120 fps"
     ]
   },
   "RED DSMC2 HELIUM 8K S35": {
@@ -7171,6 +7574,12 @@ const cameraData = {
       "8192×3456 (8K 2.4:1)",
       "4096×2160 (4K)",
       "2048×1080 (2K)"
+    ],
+    "frameRates": [
+      "8K 17:9: up to 75 fps",
+      "6K 17:9: up to 100 fps",
+      "4K 17:9: up to 150 fps",
+      "2K 17:9: up to 300 fps"
     ]
   },
   "RED DSMC2 GEMINI 5K S35": {
@@ -7231,6 +7640,11 @@ const cameraData = {
       "5120×3000 (5K 17:9)",
       "4096×2160 (4K)",
       "2048×1080 (2K)"
+    ],
+    "frameRates": [
+      "5K 17:9: up to 96 fps",
+      "4K 17:9: up to 120 fps",
+      "2K 17:9: up to 240 fps"
     ]
   },
   "None": {
@@ -7249,7 +7663,8 @@ const cameraData = {
     "recordingMedia": [],
     "viewfinder": [],
     "lensMount": [],
-    "timecode": []
+    "timecode": [],
+    "frameRates": []
   }
 };
 
