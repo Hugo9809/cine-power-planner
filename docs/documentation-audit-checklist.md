@@ -64,7 +64,8 @@ live runtime and cannot lose user data.
 1. In **Settings → General**, toggle through each language and confirm the labels, help
    copy and settings headings render correctly without network access. Pay special
    attention to the language selector and the accessibility notes so every locale clearly
-   describes saving, backup and restore safeguards.【F:src/scripts/translations.js†L140-L186】
+   describes saving, backup and restore safeguards defined in
+   `src/scripts/translations.js`.【F:src/scripts/translations.js†L140-L186】
 2. Repeat the help dialog spot checks in at least one non-English locale to confirm
    translated strings reference the same buttons and workflow order as the English
    source. If any locale diverges, log the gaps in your verification notes and copy the
