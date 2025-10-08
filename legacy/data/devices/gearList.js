@@ -2783,6 +2783,20 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "needsLensSupport": false,
           "lensType": "spherical"
         },
+        "ARRI/ZEISS Ultra Prime 28mm T1.9": {
+          "brand": "ARRI/ZEISS",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 1.9,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "minFocusMeters": 0.28,
+          "weight_g": 1000,
+          "lengthMm": 91
+        },
         "ARRI/ZEISS Ultra Prime 32mm T1.9": {
           "brand": "ARRI/ZEISS",
           "frontDiameterMm": 95,
@@ -3426,6 +3440,22 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "weight_g": 1500,
           "notes": "Front Ø95 mm"
         },
+        "Leitz Summicron-C 29mm T2.0": {
+          "brand": "Leitz",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 2,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "imageCircleMm": 36,
+          "lengthMm": 101,
+          "minFocusMeters": 0.3,
+          "weight_g": 1300,
+          "notes": "Leitz table: 0.3 m MOD, 101 mm length, 1.3 kg weight."
+        },
         "Leitz Summicron-C 35mm T2.0": {
           "brand": "Leitz",
           "frontDiameterMm": 95,
@@ -3436,6 +3466,22 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical"
+        },
+        "Leitz Summicron-C 40mm T2.0": {
+          "brand": "Leitz",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 2,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "imageCircleMm": 36,
+          "lengthMm": 101,
+          "minFocusMeters": 0.45,
+          "weight_g": 1300,
+          "notes": "Leitz table: 0.45 m MOD, 101 mm length, 1.3 kg weight."
         },
         "Leitz Summicron-C 50mm T2.0": {
           "brand": "Leitz",
@@ -3469,6 +3515,22 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical"
+        },
+        "Leitz Summicron-C 135mm T2.0": {
+          "brand": "Leitz",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 2,
+          "mount": "PL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "imageCircleMm": 36,
+          "lengthMm": 118,
+          "minFocusMeters": 1.35,
+          "weight_g": 1800,
+          "notes": "Leitz table: 1.35 m MOD, 118 mm length, 1.8 kg weight."
         },
         "Leitz Elsie 15mm T2.1": {
           "brand": "Leitz",
@@ -3582,6 +3644,22 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "lengthMm": 160,
           "notes": "ELSIE 40mm T2.1. Front filter M92×1."
         },
+        "Leitz Elsie 50mm T2.1": {
+          "brand": "Leitz",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 2.1,
+          "mount": "LPL (Cooke /i, LDS-2)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 15,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "minFocusMeters": 0.508,
+          "weight_g": 1996,
+          "imageCircleMm": 46.5,
+          "lengthMm": 160,
+          "notes": "ELSIE 50mm T2.1. BandPro lists 20\" (0.508 m) MOD, 160 mm length, ~4.4 lb (1996 g)."
+        },
         "Leitz Elsie 65mm T2.1": {
           "brand": "Leitz",
           "frontDiameterMm": 95,
@@ -3630,6 +3708,22 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "lengthMm": 160,
           "notes": "ELSIE 100mm T2.1. Front filter M92×1."
         },
+        "Leitz Elsie 125mm T2.1": {
+          "brand": "Leitz",
+          "frontDiameterMm": 114,
+          "clampOn": true,
+          "tStop": 2.1,
+          "mount": "LPL (Cooke /i, LDS-2)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 15,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "minFocusMeters": 1.27,
+          "weight_g": 2404,
+          "imageCircleMm": 46.5,
+          "lengthMm": 160,
+          "notes": "ELSIE 125mm T2.1. BandPro lists 50\" (1.27 m) MOD, 160 mm length, ~5.3 lb (2404 g)."
+        },
         "Leitz Elsie 150mm T2.1": {
           "brand": "Leitz",
           "frontDiameterMm": 114,
@@ -3660,6 +3754,22 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "minFocusMeters": 0.36,
           "weight_g": 3300,
           "imageCircleMm": 46.31
+        },
+        "Cooke S7/i FF 27mm T2.0": {
+          "brand": "Cooke",
+          "frontDiameterMm": 110,
+          "clampOn": true,
+          "tStop": 2,
+          "mount": "PL or LPL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "minFocusMeters": 0.35,
+          "weight_g": 3300,
+          "imageCircleMm": 46.3,
+          "lengthMm": 182,
+          "notes": "Cooke spec: 0.35 m MOD, 182 mm length, Ø110 mm front, PL or LPL mounts."
         },
         "Cooke S7/i FF 32mm T2.0": {
           "brand": "Cooke",
@@ -3745,6 +3855,38 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "needsLensSupport": false,
           "lensType": "spherical"
         },
+        "Cooke S7/i FF 300mm T3.3": {
+          "brand": "Cooke",
+          "frontDiameterMm": 110,
+          "clampOn": true,
+          "tStop": 3.3,
+          "mount": "PL or LPL",
+          "rodStandard": "19mm",
+          "rodLengthCm": 45,
+          "needsLensSupport": true,
+          "lensType": "spherical",
+          "minFocusMeters": 2.1,
+          "weight_g": 4400,
+          "imageCircleMm": 46.3,
+          "lengthMm": 256,
+          "notes": "Cooke spec: 2.1 m MOD, 256 mm length, ~4.4 kg weight, Ø110 mm front, includes support bracket."
+        },
+        "Cooke S8/i FF 18mm T1.4": {
+          "brand": "Cooke",
+          "frontDiameterMm": 136,
+          "clampOn": true,
+          "tStop": 1.4,
+          "mount": "PL or LPL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": true,
+          "lensType": "spherical",
+          "minFocusMeters": 0.6,
+          "weight_g": 3400,
+          "imageCircleMm": 43.3,
+          "lengthMm": 200,
+          "notes": "Cooke S8/i FF 18mm T1.4 ships with support bracket; Ø136 mm clamp-on may vignette."
+        },
         "Cooke S8/i FF 25mm T1.4": {
           "brand": "Cooke",
           "frontDiameterMm": 104,
@@ -3755,6 +3897,22 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical"
+        },
+        "Cooke S8/i FF 27mm T1.4": {
+          "brand": "Cooke",
+          "frontDiameterMm": 104,
+          "clampOn": true,
+          "tStop": 1.4,
+          "mount": "PL or LPL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "minFocusMeters": 0.6,
+          "weight_g": 2600,
+          "imageCircleMm": 46.3,
+          "lengthMm": 162,
+          "notes": "Cooke S8/i FF 27mm T1.4 supports PL or LPL mounts and M99×0.75 filter thread."
         },
         "Cooke S8/i FF 32mm T1.4": {
           "brand": "Cooke",
@@ -3788,6 +3946,22 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 30,
           "needsLensSupport": false,
           "lensType": "spherical"
+        },
+        "Cooke S8/i FF 65mm T1.4": {
+          "brand": "Cooke",
+          "frontDiameterMm": 104,
+          "clampOn": true,
+          "tStop": 1.4,
+          "mount": "PL or LPL",
+          "rodStandard": "15mm",
+          "rodLengthCm": 30,
+          "needsLensSupport": false,
+          "lensType": "spherical",
+          "minFocusMeters": 0.75,
+          "weight_g": 2600,
+          "imageCircleMm": 46.3,
+          "lengthMm": 157,
+          "notes": "Cooke S8/i FF 65mm T1.4 supports PL or LPL mounts and M99×0.75 filter thread."
         },
         "Cooke S8/i FF 75mm T1.4": {
           "brand": "Cooke",
@@ -4486,6 +4660,38 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "rodLengthCm": 30,
           "needsLensSupport": true,
           "lensType": "spherical"
+        },
+        "DZOFILM Pictor 12-25mm T2.8": {
+          "brand": "DZOFILM",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 2.8,
+          "mount": "PL / EF (interchangeable)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 15,
+          "needsLensSupport": true,
+          "lensType": "spherical",
+          "minFocusMeters": 0.4,
+          "weight_g": 1600,
+          "imageCircleMm": 31.5,
+          "lengthMm": 150,
+          "notes": "Pictor 12–25mm T2.8 (S35) parfocal; DZO lists PL/EF mounts, Ø95 mm front, 0.4 m MOD."
+        },
+        "DZOFILM Pictor 14-30mm T2.8": {
+          "brand": "DZOFILM",
+          "frontDiameterMm": 95,
+          "clampOn": true,
+          "tStop": 2.8,
+          "mount": "PL / EF (interchangeable)",
+          "rodStandard": "15mm",
+          "rodLengthCm": 15,
+          "needsLensSupport": true,
+          "lensType": "spherical",
+          "minFocusMeters": 0.6,
+          "weight_g": 1880,
+          "imageCircleMm": 31.5,
+          "lengthMm": 173,
+          "notes": "Pictor 14–30mm T2.8 (S35) parfocal; DZO lists PL/EF mounts, Ø95 mm front, 0.6 m MOD."
         },
         "DZOFILM Pictor 20-55mm T2.8": {
           "brand": "DZOFILM",
