@@ -13,6 +13,19 @@ const AUTO_GEAR_ANY_MOTOR_TOKEN_FALLBACK =
 
 let projectPersistenceSuspendedCount = 0;
 
+const PROJECT_FORM_FREEZE =
+    typeof Object.freeze === 'function'
+        ? Object.freeze
+        : (value) => value;
+
+let projectFormDataCache = null;
+let projectFormDataCacheDirty = true;
+
+function markProjectFormDataDirty() {
+    projectFormDataCacheDirty = true;
+    projectFormDataCache = null;
+}
+
 function suspendProjectPersistence() {
     projectPersistenceSuspendedCount += 1;
 }
@@ -1971,8 +1984,55 @@ function collectAccessories({ hasMotor = false, videoDistPrefs = [] } = {}) {
     };
 }
 
+function cloneProjectFormDataSnapshot(snapshot) {
+    if (!snapshot || typeof snapshot !== 'object') {
+        return {};
+    }
+
+    const clone = { ...snapshot };
+    if (Array.isArray(snapshot.people)) {
+        clone.people = snapshot.people.map(person => ({ ...person }));
+    }
+    if (Array.isArray(snapshot.prepDays)) {
+        clone.prepDays = [...snapshot.prepDays];
+    }
+    if (Array.isArray(snapshot.shootingDays)) {
+        clone.shootingDays = [...snapshot.shootingDays];
+    }
+    if (Array.isArray(snapshot.storageRequirements)) {
+        clone.storageRequirements = snapshot.storageRequirements.map(entry => ({ ...entry }));
+    }
+
+    return clone;
+}
+
+function freezeProjectFormDataSnapshot(info) {
+    const snapshot = { ...info };
+
+    if (Array.isArray(info.people)) {
+        snapshot.people = PROJECT_FORM_FREEZE(info.people.map(person => PROJECT_FORM_FREEZE({ ...person })));
+    }
+    if (Array.isArray(info.prepDays)) {
+        snapshot.prepDays = PROJECT_FORM_FREEZE([...info.prepDays]);
+    }
+    if (Array.isArray(info.shootingDays)) {
+        snapshot.shootingDays = PROJECT_FORM_FREEZE([...info.shootingDays]);
+    }
+    if (Array.isArray(info.storageRequirements)) {
+        snapshot.storageRequirements = PROJECT_FORM_FREEZE(
+            info.storageRequirements.map(entry => PROJECT_FORM_FREEZE({ ...entry }))
+        );
+    }
+
+    return PROJECT_FORM_FREEZE(snapshot);
+}
+
 function collectProjectFormData() {
     if (!projectForm) return {};
+
+    if (!projectFormDataCacheDirty && projectFormDataCache) {
+        return cloneProjectFormDataSnapshot(projectFormDataCache);
+    }
 
     const formData = new FormData(projectForm);
     const getValue = (name) => {
@@ -2162,7 +2222,11 @@ function collectProjectFormData() {
         info.projectName = currentProjectName;
     }
 
-    return info;
+    const snapshot = freezeProjectFormDataSnapshot(info);
+    projectFormDataCache = snapshot;
+    projectFormDataCacheDirty = false;
+
+    return cloneProjectFormDataSnapshot(snapshot);
 }
 
 function populateProjectForm(info = {}) {
@@ -2262,6 +2326,8 @@ function populateProjectForm(info = {}) {
             });
         }
     });
+
+    markProjectFormDataDirty();
 }
 
 function ensureZoomRemoteSetup(info) {
