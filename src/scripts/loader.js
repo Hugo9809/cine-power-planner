@@ -209,6 +209,153 @@ function normaliseCriticalGlobalVariable(name, validator, fallback) {
   return nextValue;
 }
 
+var loaderBaseUrlCache = null;
+var documentBaseUrlCache = null;
+
+function stripUrlSearchAndHash(url) {
+  if (typeof url !== 'string') {
+    return '';
+  }
+
+  var clean = url;
+  var hashIndex = clean.indexOf('#');
+  if (hashIndex !== -1) {
+    clean = clean.slice(0, hashIndex);
+  }
+
+  var queryIndex = clean.indexOf('?');
+  if (queryIndex !== -1) {
+    clean = clean.slice(0, queryIndex);
+  }
+
+  return clean;
+}
+
+function normaliseDirectoryUrl(url) {
+  var clean = stripUrlSearchAndHash(url);
+  if (!clean) {
+    return '';
+  }
+
+  var lastSlash = clean.lastIndexOf('/');
+  if (lastSlash === -1) {
+    return '';
+  }
+
+  return clean.slice(0, lastSlash + 1);
+}
+
+function resolveDocumentBaseUrl() {
+  if (documentBaseUrlCache !== null) {
+    return documentBaseUrlCache;
+  }
+
+  var base = '';
+
+  if (typeof document !== 'undefined' && document) {
+    if (typeof document.baseURI === 'string') {
+      base = document.baseURI;
+    }
+
+    if (!base) {
+      try {
+        if (document.location && document.location.href) {
+          base = document.location.href;
+        }
+      } catch (documentLocationError) {
+        void documentLocationError;
+        base = '';
+      }
+    }
+  }
+
+  if (!base && typeof location !== 'undefined' && location && location.href) {
+    base = location.href;
+  }
+
+  documentBaseUrlCache = normaliseDirectoryUrl(base);
+  return documentBaseUrlCache;
+}
+
+function resolveLoaderBaseUrl() {
+  if (loaderBaseUrlCache !== null) {
+    return loaderBaseUrlCache;
+  }
+
+  var base = '';
+
+  if (typeof document !== 'undefined' && document) {
+    try {
+      if (document.currentScript && document.currentScript.src) {
+        base = document.currentScript.src;
+      }
+    } catch (currentScriptError) {
+      void currentScriptError;
+      base = '';
+    }
+
+    if (!base) {
+      try {
+        var scripts = document.getElementsByTagName('script');
+        for (var i = scripts.length - 1; i >= 0; i -= 1) {
+          var candidate = scripts[i];
+          if (candidate && candidate.src) {
+            base = candidate.src;
+            break;
+          }
+        }
+      } catch (scriptSearchError) {
+        void scriptSearchError;
+        base = '';
+      }
+    }
+
+    if (!base && typeof document.baseURI === 'string') {
+      base = document.baseURI;
+    }
+  }
+
+  if (!base && typeof location !== 'undefined' && location && location.href) {
+    base = location.href;
+  }
+
+  loaderBaseUrlCache = normaliseDirectoryUrl(base);
+  return loaderBaseUrlCache;
+}
+
+function resolveAssetUrl(url) {
+  if (typeof url !== 'string' || url.length === 0) {
+    return url;
+  }
+
+  var leading = url.slice(0, 2);
+  if (leading === '//' || url.indexOf('://') !== -1) {
+    return url;
+  }
+
+  var baseUrl = resolveDocumentBaseUrl();
+  if (!baseUrl) {
+    baseUrl = resolveLoaderBaseUrl();
+  }
+
+  if (!baseUrl) {
+    return url;
+  }
+
+  try {
+    var resolved = new URL(url, baseUrl);
+    return resolved.href;
+  } catch (resolutionError) {
+    void resolutionError;
+
+    if (url.charAt(0) === '/') {
+      return url;
+    }
+
+    return baseUrl + url;
+  }
+}
+
 var CRITICAL_GLOBAL_DEFINITIONS = [
   {
     name: 'autoGearAutoPresetId',
@@ -1371,8 +1518,9 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
 
       var currentIndex = index;
       var currentUrl = urls[currentIndex];
+      var resolvedUrl = resolveAssetUrl(currentUrl);
       var script = document.createElement('script');
-      script.src = currentUrl;
+      script.src = resolvedUrl;
       script.async = false;
       script.defer = false;
       script.onload = function () {
@@ -1383,7 +1531,13 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
         next();
       };
       script.onerror = function (event) {
-        console.error('Failed to load script:', currentUrl, event && event.error);
+        console.error(
+          'Failed to load script:',
+          currentUrl,
+          '→',
+          resolvedUrl,
+          event && event.error,
+        );
 
         var shouldAbort = false;
         if (typeof settings.onError === 'function') {
