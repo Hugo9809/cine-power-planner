@@ -123,6 +123,9 @@ describe('project requirements persistence to project storage', () => {
     const baseFrameRateSelect = projectForm.querySelector('#baseFrameRate');
     setSelectValue(baseFrameRateSelect, '24');
 
+    const recordingFrameRateSelect = projectForm.querySelector('#recordingFrameRate');
+    setSelectValue(recordingFrameRateSelect, '120 fps');
+
     const requiredScenariosSelect = projectForm.querySelector('#requiredScenarios');
     setMultiSelectValues(requiredScenariosSelect, ['Outdoor', 'Slider']);
 
@@ -190,6 +193,7 @@ describe('project requirements persistence to project storage', () => {
       deliveryResolution: '4K',
       aspectRatio: '16:9, 2.39:1',
       baseFrameRate: '24',
+      recordingFrameRate: '120 fps',
       requiredScenarios: 'Outdoor, Slider',
       cameraHandle: 'Hand Grips',
       viewfinderExtension: 'ARRI VEB-3 Viewfinder Extension Bracket',

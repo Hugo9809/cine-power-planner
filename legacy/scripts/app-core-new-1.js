@@ -9330,6 +9330,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       setLabelText(aspectRatioLabel, 'aspectRatio');
       setLabelText(codecLabel, 'codec');
       setLabelText(baseFrameRateLabel, 'baseFrameRate');
+      setLabelText(recordingFrameRateLabel, 'recordingFrameRate');
       setLabelText(lensesHeadingElem, 'lensesHeading');
       setLabelText(lensesLabelElem, 'lensesLabel');
       setLabelText(riggingHeadingElem, 'riggingHeading');
@@ -9497,6 +9498,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   var deliveryResolutionLabel = document.getElementById("deliveryResolutionLabel");
   var deliveryResolutionSelect = document.getElementById("deliveryResolution");
   var recordingResolutionLabel = document.getElementById("recordingResolutionLabel");
+  var recordingFrameRateLabel = document.getElementById("recordingFrameRateLabel");
   var sensorModeLabel = document.getElementById("sensorModeLabel");
   var aspectRatioLabel = document.getElementById("aspectRatioLabel");
   var codecLabel = document.getElementById("codecLabel");
@@ -11117,6 +11119,7 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     shootingDays: iconGlyph("\uE311", ICON_FONT_KEYS.UICONS),
     deliveryResolution: iconGlyph("\uEF69", ICON_FONT_KEYS.UICONS),
     recordingResolution: ICON_GLYPHS.camera,
+    recordingFrameRate: iconGlyph("\uE46F", ICON_FONT_KEYS.UICONS),
     aspectRatio: ASPECT_RATIO_ICON,
     codec: ICON_GLYPHS.codec,
     baseFrameRate: iconGlyph("\uE46F", ICON_FONT_KEYS.UICONS),

@@ -10783,6 +10783,7 @@ function setLanguage(lang) {
     setLabelText(aspectRatioLabel, 'aspectRatio');
     setLabelText(codecLabel, 'codec');
     setLabelText(baseFrameRateLabel, 'baseFrameRate');
+    setLabelText(recordingFrameRateLabel, 'recordingFrameRate');
     setLabelText(lensesHeadingElem, 'lensesHeading');
     setLabelText(lensesLabelElem, 'lensesLabel');
     setLabelText(riggingHeadingElem, 'riggingHeading');
@@ -10982,6 +10983,7 @@ const returnLabelElem = document.getElementById("returnLabel");
 const deliveryResolutionLabel = document.getElementById("deliveryResolutionLabel");
 const deliveryResolutionSelect = document.getElementById("deliveryResolution");
 const recordingResolutionLabel = document.getElementById("recordingResolutionLabel");
+const recordingFrameRateLabel = document.getElementById("recordingFrameRateLabel");
 const sensorModeLabel = document.getElementById("sensorModeLabel");
 const aspectRatioLabel = document.getElementById("aspectRatioLabel");
 const codecLabel = document.getElementById("codecLabel");
@@ -12883,6 +12885,7 @@ var projectFieldIcons = {
   shootingDays: iconGlyph('\uE311', ICON_FONT_KEYS.UICONS),
   deliveryResolution: iconGlyph('\uEF69', ICON_FONT_KEYS.UICONS),
   recordingResolution: ICON_GLYPHS.camera,
+  recordingFrameRate: iconGlyph('\uE46F', ICON_FONT_KEYS.UICONS),
   aspectRatio: ASPECT_RATIO_ICON,
   codec: ICON_GLYPHS.codec,
   baseFrameRate: iconGlyph('\uE46F', ICON_FONT_KEYS.UICONS),
