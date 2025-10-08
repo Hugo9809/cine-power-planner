@@ -1854,23 +1854,93 @@ function autoBackup(options = {}) {
     setups[backupName] = currentSetup;
     storeSetups(setups);
     if (typeof saveProject === 'function') {
+      const gearListText = typeof currentGearListHtml === 'string'
+        ? currentGearListHtml
+        : '';
+
+      let projectInfoSnapshot = currentSetup.projectInfo || null;
+      if (projectInfoSnapshot && typeof createProjectInfoSnapshotForStorage === 'function') {
+        try {
+          projectInfoSnapshot = createProjectInfoSnapshotForStorage(projectInfoSnapshot) || projectInfoSnapshot;
+        } catch (projectInfoSnapshotError) {
+          console.warn('Failed to normalize project info for auto backup payload', projectInfoSnapshotError);
+        }
+      }
+
+      if (projectInfoSnapshot && typeof callEventsCoreFunction === 'function') {
+        try {
+          const clonedInfo = callEventsCoreFunction(
+            'cloneProjectInfoForStorage',
+            [projectInfoSnapshot],
+            { defaultValue: projectInfoSnapshot },
+          );
+          if (clonedInfo) {
+            projectInfoSnapshot = clonedInfo;
+          }
+        } catch (projectInfoCloneError) {
+          console.warn('Failed to clone project info for auto backup payload', projectInfoCloneError);
+        }
+      }
+
       const payload = {
-        projectInfo: currentSetup.projectInfo || null,
-        gearListAndProjectRequirementsGenerated: Boolean(currentGearListHtml)
+        projectInfo: projectInfoSnapshot,
+        gearListAndProjectRequirementsGenerated: Boolean(gearListText)
       };
+
+      if (gearListText) {
+        payload.gearList = gearListText;
+      }
+
+      const currentPowerSelection = typeof getPowerSelectionSnapshot === 'function'
+        ? getPowerSelectionSnapshot()
+        : null;
+      if (currentPowerSelection && typeof currentPowerSelection === 'object' && Object.keys(currentPowerSelection).length) {
+        payload.powerSelection = currentPowerSelection;
+      }
+
       if (gearSelectors && Object.keys(gearSelectors).length) {
         payload.gearSelectors = gearSelectors;
       }
+
+      if (typeof getDiagramManualPositions === 'function') {
+        try {
+          const diagramPositions = getDiagramManualPositions();
+          if (diagramPositions && typeof diagramPositions === 'object' && Object.keys(diagramPositions).length) {
+            payload.diagramPositions = diagramPositions;
+          }
+        } catch (diagramError) {
+          console.warn('Failed to capture diagram positions for auto backup payload', diagramError);
+        }
+      }
+
       const activeRules = getProjectScopedAutoGearRules();
       if (activeRules && activeRules.length) {
-        payload.autoGearRules = activeRules;
+        let clonedRules = activeRules;
+        if (typeof callEventsCoreFunction === 'function') {
+          try {
+            clonedRules = callEventsCoreFunction(
+              'cloneProjectInfoForStorage',
+              [activeRules],
+              { defaultValue: activeRules },
+            ) || activeRules;
+          } catch (ruleCloneError) {
+            console.warn('Failed to clone auto gear rules for auto backup payload', ruleCloneError);
+          }
+        }
+        payload.autoGearRules = clonedRules;
       }
-      if (
-        payload.projectInfo
+
+      const hasPayloadContent = Boolean(
+        (payload.projectInfo && typeof payload.projectInfo === 'object' && Object.keys(payload.projectInfo).length)
+        || payload.gearList
         || payload.gearListAndProjectRequirementsGenerated
+        || (payload.powerSelection && Object.keys(payload.powerSelection).length)
         || (payload.gearSelectors && Object.keys(payload.gearSelectors).length)
-        || payload.autoGearRules
-      ) {
+        || (payload.diagramPositions && Object.keys(payload.diagramPositions).length)
+        || (payload.autoGearRules && payload.autoGearRules.length)
+      );
+
+      if (hasPayloadContent) {
         attachAutoBackupMetadata(payload, backupMetadata);
         saveProject(backupName, payload);
       }
