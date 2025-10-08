@@ -1682,6 +1682,51 @@ function autoBackup(options = {}) {
       currentSetup.gearSelectors = gearSelectors;
     }
     const currentSignature = computeAutoBackupStateSignature(currentSetup, gearSelectors, gearListGenerated);
+    const { name: latestStoredName, entry: latestStoredEntry } = resolveLatestAutoBackupEntry(setupsSnapshot);
+    if (
+      !force
+      && latestStoredName
+      && latestStoredEntry
+    ) {
+      try {
+        const latestStoredSignature = computeStoredAutoBackupSignature(
+          latestStoredName,
+          latestStoredEntry,
+        );
+        if (latestStoredSignature === currentSignature) {
+          const latestMetadata = readAutoBackupMetadata(latestStoredEntry);
+          const latestCreatedAt = latestMetadata && typeof latestMetadata.createdAt === 'string'
+            ? latestMetadata.createdAt
+            : null;
+          lastAutoBackupSignature = currentSignature;
+          lastAutoBackupName = latestStoredName;
+          lastAutoBackupCreatedAtIso = latestCreatedAt;
+          recordAutoBackupRun({
+            status: 'skipped',
+            reason: 'unchanged',
+            name: latestStoredName,
+            createdAt: latestCreatedAt,
+            context: reason,
+          });
+          lastAutoBackupReasonState.set(reason, {
+            timestamp: now.valueOf(),
+            signature: currentSignature,
+          });
+          return {
+            status: 'skipped',
+            reason: 'unchanged',
+            name: latestStoredName,
+            createdAt: latestCreatedAt,
+            context: reason,
+          };
+        }
+      } catch (signatureCompareError) {
+        console.warn(
+          'Failed to compare current auto backup against latest snapshot before saving',
+          signatureCompareError,
+        );
+      }
+    }
     if (!force) {
       const lastReasonState = lastAutoBackupReasonState.get(reason);
       if (lastReasonState) {
