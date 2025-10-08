@@ -7,6 +7,11 @@ internet connection. Use this guide whenever you add, remove or adjust functiona
 condensed run-through before code review, follow the [Documentation Update Checklist](documentation-update-checklist.md)
 alongside this guide so no surface or translation is missed.
 
+Run the recurring [Documentation Audit Checklist](documentation-audit-checklist.md) between feature
+cycles to spot-check localized READMEs, printable manuals, help topics and Quick safeguards logs
+against the runtime safeguards described below. The audit keeps long-lived releases aligned with
+the current code even when no new features ship for several weeks.
+
 All persistence-facing documentation should now reference the consolidated
 `cinePersistence` module so that future refactors maintain a single, lossless contract for
 saving, sharing, backups and restores.【F:src/scripts/modules/persistence.js†L1-L125】
