@@ -121,6 +121,7 @@ const patchConsoleInstance = (consoleInstance) => {
         value: patched,
       });
     } catch (error) {
+      void error;
       consoleInstance[methodName] = patched;
     }
   };

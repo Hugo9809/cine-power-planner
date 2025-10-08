@@ -1306,6 +1306,53 @@ function computeAutoBackupStateSignature(setupState, gearSelectors, gearListGene
   });
 }
 
+function hasMeaningfulAutoBackupContent(setupState, gearSelectors, gearListGenerated) {
+  const hasDeviceSelection = hasAnyDeviceSelectionSafe(setupState);
+
+  const hasProjectInfo = Boolean(
+    setupState
+    && typeof setupState === 'object'
+    && setupState.projectInfo,
+  );
+
+  const hasAutoGearRules = Array.isArray(
+    setupState
+    && setupState.autoGearRules,
+  ) && setupState.autoGearRules.length > 0;
+
+  const hasDiagramPositions = Boolean(
+    setupState
+    && setupState.diagramPositions
+    && typeof setupState.diagramPositions === 'object'
+    && Object.keys(setupState.diagramPositions).length > 0,
+  );
+
+  const hasGearSelectors = Boolean(
+    gearSelectors
+    && typeof gearSelectors === 'object'
+    && Object.keys(gearSelectors).length > 0,
+  );
+
+  const hasPowerSelection = Boolean(
+    setupState
+    && setupState.powerSelection
+    && typeof setupState.powerSelection === 'object'
+    && Object.keys(setupState.powerSelection).length > 0,
+  );
+
+  const hasGeneratedGear = Boolean(gearListGenerated);
+
+  return (
+    hasDeviceSelection
+    || hasProjectInfo
+    || hasAutoGearRules
+    || hasDiagramPositions
+    || hasGearSelectors
+    || hasPowerSelection
+    || hasGeneratedGear
+  );
+}
+
 function getSortedAutoBackupNames(setups) {
   if (!setups || typeof setups !== 'object') {
     return [];
@@ -1589,13 +1636,22 @@ function autoBackup(options = {}) {
       }
     }
     const currentGearListHtml = getCurrentGearListHtml();
-    currentSetup.gearListAndProjectRequirementsGenerated = Boolean(currentGearListHtml);
+    const gearListGenerated = Boolean(currentGearListHtml);
+    currentSetup.gearListAndProjectRequirementsGenerated = gearListGenerated;
     const gearSelectorsRaw = callEventsCoreFunction('getGearListSelectors', [], { defaultValue: {} }) || {};
     const gearSelectors = callEventsCoreFunction('cloneGearListSelectors', [gearSelectorsRaw], { defaultValue: {} }) || {};
+    if (!hasMeaningfulAutoBackupContent(currentSetup, gearSelectors, gearListGenerated)) {
+      const skipped = {
+        status: 'skipped',
+        reason: 'empty',
+        context: reason,
+      };
+      recordAutoBackupRun(skipped);
+      return skipped;
+    }
     if (gearSelectors && Object.keys(gearSelectors).length) {
       currentSetup.gearSelectors = gearSelectors;
     }
-    const gearListGenerated = Boolean(currentGearListHtml);
     const currentSignature = computeAutoBackupStateSignature(currentSetup, gearSelectors, gearListGenerated);
     if (!force) {
       const lastReasonState = lastAutoBackupReasonState.get(reason);
