@@ -1434,6 +1434,154 @@ if (!LZString) {
   };
 }
 
+let pinkModeLottieRuntime = null;
+let pinkModeLottiePromise = null;
+
+function disablePinkModeLottieWebWorkers(instance) {
+  if (!instance || typeof instance.useWebWorker !== 'function') {
+    return;
+  }
+
+  try {
+    instance.useWebWorker(false);
+  } catch (error) {
+    console.warn('Unable to disable Lottie web workers', error);
+  }
+}
+
+function resolvePinkModeLottieRuntime() {
+  if (
+    pinkModeLottieRuntime &&
+    typeof pinkModeLottieRuntime.loadAnimation === 'function'
+  ) {
+    return pinkModeLottieRuntime;
+  }
+
+  if (
+    typeof window !== 'undefined' &&
+    window &&
+    window.lottie &&
+    typeof window.lottie.loadAnimation === 'function'
+  ) {
+    pinkModeLottieRuntime = window.lottie;
+    disablePinkModeLottieWebWorkers(pinkModeLottieRuntime);
+    return pinkModeLottieRuntime;
+  }
+
+  return null;
+}
+
+function ensurePinkModeLottieRuntime() {
+  const existing = resolvePinkModeLottieRuntime();
+  if (existing) {
+    return Promise.resolve(existing);
+  }
+
+  if (typeof document === 'undefined') {
+    return Promise.resolve(null);
+  }
+
+  if (pinkModeLottiePromise) {
+    return pinkModeLottiePromise;
+  }
+
+  const loaderPromise = new Promise((resolve, reject) => {
+    const head =
+      document.head ||
+      document.getElementsByTagName('head')[0] ||
+      document.documentElement;
+
+    if (!head) {
+      reject(new Error('Unable to resolve document head for pink mode animations.'));
+      return;
+    }
+
+    const existingScript = document.querySelector(
+      'script[data-loader="pink-mode-lottie"]'
+    );
+
+    if (existingScript) {
+      const markLoaded = () => {
+        existingScript.removeEventListener('load', markLoaded);
+        existingScript.removeEventListener('error', markFailed);
+        existingScript.setAttribute('data-loaded', 'true');
+        resolve(resolvePinkModeLottieRuntime());
+      };
+
+      const markFailed = event => {
+        existingScript.removeEventListener('load', markLoaded);
+        existingScript.removeEventListener('error', markFailed);
+        const error = new Error('Failed to load pink mode animation runtime.');
+        error.event = event;
+        reject(error);
+      };
+
+      if (
+        existingScript.getAttribute('data-loaded') === 'true' ||
+        existingScript.readyState === 'complete'
+      ) {
+        resolve(resolvePinkModeLottieRuntime());
+        return;
+      }
+
+      existingScript.addEventListener('load', markLoaded, { once: true });
+      existingScript.addEventListener('error', markFailed, { once: true });
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = 'src/vendor/lottie-light.min.js';
+    script.async = true;
+    script.setAttribute('data-loader', 'pink-mode-lottie');
+
+    const handleLoad = () => {
+      script.removeEventListener('load', handleLoad);
+      script.removeEventListener('error', handleError);
+      script.setAttribute('data-loaded', 'true');
+      resolve(resolvePinkModeLottieRuntime());
+    };
+
+    const handleError = event => {
+      script.removeEventListener('load', handleLoad);
+      script.removeEventListener('error', handleError);
+      const error = new Error('Failed to load pink mode animation runtime.');
+      error.event = event;
+      reject(error);
+    };
+
+    script.addEventListener('load', handleLoad, { once: true });
+    script.addEventListener('error', handleError, { once: true });
+
+    head.appendChild(script);
+  });
+
+  pinkModeLottiePromise = loaderPromise
+    .then(instance => {
+      if (instance && typeof instance.loadAnimation === 'function') {
+        return instance;
+      }
+      return resolvePinkModeLottieRuntime();
+    })
+    .catch(error => {
+      console.warn('Unable to load pink mode animations', error);
+      return null;
+    })
+    .then(runtime => {
+      if (!runtime || typeof runtime.loadAnimation !== 'function') {
+        pinkModeLottiePromise = null;
+        pinkModeLottieRuntime = null;
+        return null;
+      }
+
+      pinkModeLottieRuntime = runtime;
+      disablePinkModeLottieWebWorkers(runtime);
+      pinkModeLottiePromise = Promise.resolve(runtime);
+      return runtime;
+    });
+
+  return pinkModeLottiePromise;
+}
+
 var generatePrintableOverview;
 try {
   ({ generatePrintableOverview } = require('./overview.js'));
@@ -1443,16 +1591,7 @@ try {
 
 var APP_VERSION = typeof CORE_SHARED.APP_VERSION === 'string' ? CORE_SHARED.APP_VERSION : '1.0.20';
 
-if (typeof window !== 'undefined') {
-  const lottie = window.lottie;
-  if (lottie && typeof lottie.useWebWorker === 'function') {
-    try {
-      lottie.useWebWorker(false);
-    } catch (error) {
-      console.warn('Unable to disable Lottie web workers', error);
-    }
-  }
-}
+resolvePinkModeLottieRuntime();
 var IOS_PWA_HELP_STORAGE_KEY = 'iosPwaHelpShown';
 const INSTALL_BANNER_DISMISSED_KEY = 'installPromptDismissed';
 
@@ -12060,29 +12199,53 @@ function triggerPinkModeIconRain() {
   }
   pinkModeIconRainLastTriggeredAt = now;
 
-  loadPinkModeAnimatedIconTemplates()
-    .then(templates => {
-      if (!Array.isArray(templates) || !templates.length) {
-        return templates;
-      }
+  const proceedWithTemplates = () => {
+    if (!document || !document.body || !document.body.classList.contains('pink-mode')) {
+      return;
+    }
 
-      const maxAdditional = Math.max(
-        0,
-        PINK_MODE_ICON_RAIN_MAX_COUNT - PINK_MODE_ICON_RAIN_MIN_COUNT
-      );
-      const dropCount =
-        PINK_MODE_ICON_RAIN_MIN_COUNT + Math.round(Math.random() * maxAdditional);
+    loadPinkModeAnimatedIconTemplates()
+      .then(templates => {
+        if (!Array.isArray(templates) || !templates.length) {
+          return templates;
+        }
 
-      for (let i = 0; i < dropCount; i += 1) {
-        const delay = Math.round(
-          Math.random() * PINK_MODE_ICON_RAIN_DELAY_SPREAD_MS + i * 60
+        const maxAdditional = Math.max(
+          0,
+          PINK_MODE_ICON_RAIN_MAX_COUNT - PINK_MODE_ICON_RAIN_MIN_COUNT
         );
-        window.setTimeout(() => {
-          spawnPinkModeIconRainInstance(templates);
-        }, delay);
-      }
+        const dropCount =
+          PINK_MODE_ICON_RAIN_MIN_COUNT + Math.round(Math.random() * maxAdditional);
 
-      return templates;
+        for (let i = 0; i < dropCount; i += 1) {
+          const delay = Math.round(
+            Math.random() * PINK_MODE_ICON_RAIN_DELAY_SPREAD_MS + i * 60
+          );
+          window.setTimeout(() => {
+            spawnPinkModeIconRainInstance(templates);
+          }, delay);
+        }
+
+        return templates;
+      })
+      .catch(error => {
+        console.warn('Could not trigger pink mode icon rain', error);
+      });
+  };
+
+  const runtime = resolvePinkModeLottieRuntime();
+  if (runtime && typeof runtime.loadAnimation === 'function') {
+    proceedWithTemplates();
+    return;
+  }
+
+  ensurePinkModeLottieRuntime()
+    .then(lottie => {
+      if (!lottie || typeof lottie.loadAnimation !== 'function') {
+        return null;
+      }
+      proceedWithTemplates();
+      return lottie;
     })
     .catch(error => {
       console.warn('Could not trigger pink mode icon rain', error);
@@ -12392,23 +12555,16 @@ function scheduleNextPinkModeAnimatedIcon(templates) {
   }
 }
 
-function startPinkModeAnimatedIcons() {
-  if (pinkModeAnimatedIconsActive) {
-    return;
-  }
-  if (!document || !document.body) {
-    return;
-  }
-  if (pinkModeReduceMotionQuery && pinkModeReduceMotionQuery.matches) {
-    return;
-  }
+function activatePinkModeAnimatedIcons() {
   if (
-    typeof window === 'undefined' ||
-    !window.lottie ||
-    typeof window.lottie.loadAnimation !== 'function'
+    pinkModeAnimatedIconsActive ||
+    !document ||
+    !document.body ||
+    !document.body.classList.contains('pink-mode')
   ) {
     return;
   }
+
   pinkModeAnimatedIconsActive = true;
   loadPinkModeAnimatedIconTemplates()
     .then(templates => {
@@ -12422,6 +12578,49 @@ function startPinkModeAnimatedIcons() {
       spawnPinkModeAnimatedIconInstance(templates);
       scheduleNextPinkModeAnimatedIcon(templates);
       return templates;
+    })
+    .catch(error => {
+      console.warn('Could not prepare pink mode animated icons', error);
+      stopPinkModeAnimatedIcons();
+    });
+}
+
+function startPinkModeAnimatedIcons() {
+  if (pinkModeAnimatedIconsActive) {
+    return;
+  }
+  if (!document || !document.body) {
+    return;
+  }
+  if (pinkModeReduceMotionQuery && pinkModeReduceMotionQuery.matches) {
+    return;
+  }
+  if (!document.body.classList.contains('pink-mode')) {
+    return;
+  }
+
+  const runtime = resolvePinkModeLottieRuntime();
+  if (runtime && typeof runtime.loadAnimation === 'function') {
+    activatePinkModeAnimatedIcons();
+    return;
+  }
+
+  ensurePinkModeLottieRuntime()
+    .then(lottie => {
+      if (!lottie || typeof lottie.loadAnimation !== 'function') {
+        return null;
+      }
+      if (
+        !document ||
+        !document.body ||
+        !document.body.classList.contains('pink-mode') ||
+        (pinkModeReduceMotionQuery && pinkModeReduceMotionQuery.matches)
+      ) {
+        return null;
+      }
+
+      activatePinkModeAnimatedIcons();
+      return lottie;
     })
     .catch(error => {
       console.warn('Could not prepare pink mode animated icons', error);
