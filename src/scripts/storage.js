@@ -7217,13 +7217,14 @@ function saveSetups(setups) {
     isAutoBackupKey: (name) => typeof name === 'string'
       && name.startsWith(STORAGE_AUTO_BACKUP_NAME_PREFIX),
   });
-  applyProjectEntryCompression(serializedSetups, { skipProjectActivityPrune: true });
+  const compressedSerializedSetups = cloneAutoBackupValue(serializedSetups);
+  applyProjectEntryCompression(compressedSerializedSetups, { skipProjectActivityPrune: true });
   const safeStorage = getSafeLocalStorage();
   ensurePreWriteMigrationBackup(safeStorage, SETUP_STORAGE_KEY);
   saveJSONToStorage(
     safeStorage,
     SETUP_STORAGE_KEY,
-    serializedSetups,
+    compressedSerializedSetups,
     "Error saving setups to localStorage:",
     {
       disableCompression: shouldDisableProjectCompressionDuringPersist(),
@@ -7232,6 +7233,7 @@ function saveSetups(setups) {
         if (!removedKey) {
           return false;
         }
+        delete compressedSerializedSetups[removedKey];
         console.warn(
           `Removed automatic backup "${removedKey}" to free up storage space before saving setups.`,
         );

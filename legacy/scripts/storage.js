@@ -6142,18 +6142,20 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         return typeof name === 'string' && name.startsWith(STORAGE_AUTO_BACKUP_NAME_PREFIX);
       }
     });
-    applyProjectEntryCompression(serializedSetups, {
+    var compressedSerializedSetups = cloneAutoBackupValue(serializedSetups);
+    applyProjectEntryCompression(compressedSerializedSetups, {
       skipProjectActivityPrune: true
     });
     var safeStorage = getSafeLocalStorage();
     ensurePreWriteMigrationBackup(safeStorage, SETUP_STORAGE_KEY);
-    saveJSONToStorage(safeStorage, SETUP_STORAGE_KEY, serializedSetups, "Error saving setups to localStorage:", {
+    saveJSONToStorage(safeStorage, SETUP_STORAGE_KEY, compressedSerializedSetups, "Error saving setups to localStorage:", {
       disableCompression: shouldDisableProjectCompressionDuringPersist(),
       onQuotaExceeded: function onQuotaExceeded() {
         var removedKey = removeOldestAutoBackupEntry(serializedSetups);
         if (!removedKey) {
           return false;
         }
+        delete compressedSerializedSetups[removedKey];
         console.warn("Removed automatic backup \"".concat(removedKey, "\" to free up storage space before saving setups."));
         return true;
       }
