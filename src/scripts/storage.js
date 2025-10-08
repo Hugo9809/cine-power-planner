@@ -2890,7 +2890,7 @@ function ensureProjectEntryCompressed(value, contextName) {
   return value;
 }
 
-function applyProjectEntryCompression(container) {
+function applyProjectEntryCompression(container, options = {}) {
   if (!isPlainObject(container)) {
     return container;
   }
@@ -2902,8 +2902,13 @@ function applyProjectEntryCompression(container) {
   const activeCompressionHoldKey = ACTIVE_PROJECT_COMPRESSION_HOLD_ENABLED
     ? ACTIVE_PROJECT_COMPRESSION_HOLD_KEY
     : '';
+  const {
+    skipProjectActivityPrune = false,
+  } = options;
 
-  pruneProjectActivityCache(validKeys);
+  if (!skipProjectActivityPrune) {
+    pruneProjectActivityCache(validKeys);
+  }
 
   keys.forEach((key) => {
     const normalizedKey = normalizeProjectStorageKey(key);
@@ -7212,7 +7217,7 @@ function saveSetups(setups) {
     isAutoBackupKey: (name) => typeof name === 'string'
       && name.startsWith(STORAGE_AUTO_BACKUP_NAME_PREFIX),
   });
-  applyProjectEntryCompression(serializedSetups);
+  applyProjectEntryCompression(serializedSetups, { skipProjectActivityPrune: true });
   const safeStorage = getSafeLocalStorage();
   ensurePreWriteMigrationBackup(safeStorage, SETUP_STORAGE_KEY);
   saveJSONToStorage(
