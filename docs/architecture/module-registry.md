@@ -73,6 +73,19 @@ worker used during offline rehearsals) without mutating the main global scope.
   immutability and warning semantics stay in lockstep whenever a feature spins
   up a scoped architecture.
 
+## Scope coordination helper
+
+`src/scripts/modules/helpers/scope-utils.js` centralises global-scope
+detection, defensive `require()` access, and candidate scope collection so the
+architecture layers stop repeating expensive lookups. The helper caches the
+first valid global candidate, mirrors structured-clone fallbacks, and hides the
+result behind frozen helpers exposed as `globalThis.cineScopeUtils`. Both the
+browser bundle and the Jest environment now reuse the same logic, reducing the
+chance of mismatched queue keys or registry lookups when autosave or backup
+flows are active offline. Because the helper lives in the offline asset list it
+is available without network access and requires no additional icons or
+external scripts.
+
 ## Blueprint helper
 
 `cineModules.createBlueprint(options)` packages the registration contract into a

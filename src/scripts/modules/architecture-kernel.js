@@ -19,6 +19,80 @@
 
   const LOCAL_SCOPE = fallbackDetectGlobalScope();
 
+  function resolveScopeUtils(scope) {
+    const primaryScope = scope || LOCAL_SCOPE;
+
+    if (typeof require === 'function') {
+      try {
+        const required = require('./helpers/scope-utils.js');
+        if (required && typeof required === 'object') {
+          return required;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    const candidates = [];
+
+    function pushCandidate(candidate) {
+      if (!candidate || (typeof candidate !== 'object' && typeof candidate !== 'function')) {
+        return;
+      }
+      if (candidates.indexOf(candidate) === -1) {
+        candidates.push(candidate);
+      }
+    }
+
+    pushCandidate(primaryScope);
+    if (typeof globalThis !== 'undefined') pushCandidate(globalThis);
+    if (typeof window !== 'undefined') pushCandidate(window);
+    if (typeof self !== 'undefined') pushCandidate(self);
+    if (typeof global !== 'undefined') pushCandidate(global);
+
+    for (let index = 0; index < candidates.length; index += 1) {
+      const candidate = candidates[index];
+      try {
+        const utils = candidate && candidate.cineScopeUtils;
+        if (utils && typeof utils === 'object') {
+          return utils;
+        }
+      } catch (scopeError) {
+        void scopeError;
+      }
+    }
+
+    return null;
+  }
+
+  const SCOPE_UTILS = resolveScopeUtils(LOCAL_SCOPE);
+
+  const detectGlobalScopeHelper =
+    SCOPE_UTILS && typeof SCOPE_UTILS.detectGlobalScope === 'function'
+      ? function detectWithUtils() {
+          try {
+            return SCOPE_UTILS.detectGlobalScope();
+          } catch (error) {
+            void error;
+          }
+          return fallbackDetectGlobalScope();
+        }
+      : fallbackDetectGlobalScope;
+
+  const tryRequireHelper =
+    SCOPE_UTILS && typeof SCOPE_UTILS.tryRequire === 'function'
+      ? SCOPE_UTILS.tryRequire
+      : fallbackTryRequire;
+
+  const collectCandidateScopesHelper =
+    SCOPE_UTILS && typeof SCOPE_UTILS.collectCandidateScopes === 'function'
+      ? function collectCandidateScopesWithUtils(primary, extras, detect) {
+          const detectFn = typeof detect === 'function' ? detect : detectGlobalScopeHelper;
+          return SCOPE_UTILS.collectCandidateScopes(primary, extras, detectFn);
+        }
+      : fallbackCollectCandidateScopes;
+
+
   function fallbackTryRequire(modulePath) {
     if (typeof require !== 'function') {
       return null;
@@ -33,26 +107,12 @@
   }
 
   function resolveArchitectureCore(scope) {
-    if (typeof require === 'function') {
-      try {
-        const required = require('./architecture-core.js');
-        if (required && typeof required === 'object') {
-          return required;
-        }
-      } catch (error) {
-        void error;
-      }
+    const required = tryRequireHelper('./architecture-core.js');
+    if (required && typeof required === 'object') {
+      return required;
     }
 
-    const candidates = [];
-    const primary = scope || LOCAL_SCOPE;
-    if (primary && typeof primary === 'object') {
-      candidates.push(primary);
-    }
-    if (typeof globalThis !== 'undefined' && candidates.indexOf(globalThis) === -1) candidates.push(globalThis);
-    if (typeof window !== 'undefined' && candidates.indexOf(window) === -1) candidates.push(window);
-    if (typeof self !== 'undefined' && candidates.indexOf(self) === -1) candidates.push(self);
-    if (typeof global !== 'undefined' && candidates.indexOf(global) === -1) candidates.push(global);
+    const candidates = collectCandidateScopesHelper(scope || LOCAL_SCOPE, null, detectGlobalScopeHelper);
 
     for (let index = 0; index < candidates.length; index += 1) {
       const candidate = candidates[index];
@@ -67,7 +127,7 @@
   function resolveArchitecture(scope) {
     const targetScope = scope || LOCAL_SCOPE;
 
-    const required = fallbackTryRequire('./architecture.js');
+    const required = tryRequireHelper('./architecture.js');
     if (required && typeof required === 'object') {
       return required;
     }
@@ -82,7 +142,7 @@
   function resolveArchitectureHelpers(scope) {
     const targetScope = scope || LOCAL_SCOPE;
 
-    const required = fallbackTryRequire('./architecture-helpers.js');
+    const required = tryRequireHelper('./architecture-helpers.js');
     if (required && typeof required === 'object') {
       return required;
     }
@@ -421,12 +481,12 @@
   function fallbackResolveModuleRegistry(scope) {
     const targetScope = scope || LOCAL_SCOPE;
 
-    const required = fallbackTryRequire('./registry.js');
+    const required = tryRequireHelper('./registry.js');
     if (required && typeof required === 'object') {
       return required;
     }
 
-    const scopes = fallbackCollectCandidateScopes(targetScope);
+    const scopes = collectCandidateScopesHelper(targetScope);
     for (let index = 0; index < scopes.length; index += 1) {
       const candidate = scopes[index];
       if (candidate && typeof candidate.cineModules === 'object') {
@@ -472,7 +532,7 @@
     const predicate = typeof settings.predicate === 'function' ? settings.predicate : null;
     const scopes = Array.isArray(settings.scopes)
       ? settings.scopes.slice()
-      : fallbackCollectCandidateScopes(settings.primaryScope || LOCAL_SCOPE);
+      : collectCandidateScopes(settings.primaryScope || LOCAL_SCOPE);
 
     for (let index = 0; index < scopes.length; index += 1) {
       const scope = scopes[index];
