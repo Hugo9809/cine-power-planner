@@ -5616,7 +5616,11 @@ function ensureGearListActions() {
 }
 if (typeof document !== 'undefined' && typeof document.addEventListener === 'function') {
   var handlerKey = '__cameraPowerPlannerGearDeleteHandler';
-  if (!document[handlerKey]) {
+  var handlerStore = document;
+  if (typeof Object.isExtensible === 'function' && !Object.isExtensible(document)) {
+    handlerStore = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : document;
+  }
+  if (handlerStore && !handlerStore[handlerKey]) {
     var handleGearDeleteRequest = function handleGearDeleteRequest() {
       try {
         deleteCurrentGearList();
@@ -5625,12 +5629,16 @@ if (typeof document !== 'undefined' && typeof document.addEventListener === 'fun
       }
     };
     document.addEventListener('gearlist:delete-requested', handleGearDeleteRequest);
-    Object.defineProperty(document, handlerKey, {
-      value: handleGearDeleteRequest,
-      configurable: true,
-      writable: false,
-      enumerable: false
-    });
+    try {
+      Object.defineProperty(handlerStore, handlerKey, {
+        value: handleGearDeleteRequest,
+        configurable: true,
+        writable: false,
+        enumerable: false
+      });
+    } catch (error) {
+      handlerStore[handlerKey] = handleGearDeleteRequest;
+    }
   }
 }
 function bindGearListCageListener() {
