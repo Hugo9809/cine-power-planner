@@ -10643,6 +10643,78 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return entry;
     };
     
+    const FEATURE_SEARCH_FUZZY_MAX_DISTANCE = 2;
+    const featureSearchFuzzyCache = new Map();
+
+    const getFuzzyDistance = (source, target) => {
+      if (!source || !target) {
+        return Number.POSITIVE_INFINITY;
+      }
+      const shorter = source.length <= target.length ? source : target;
+      const longer = source.length > target.length ? source : target;
+      const cacheKey = `${shorter}\u0000${longer}`;
+      if (featureSearchFuzzyCache.has(cacheKey)) {
+        return featureSearchFuzzyCache.get(cacheKey);
+      }
+      const sourceLength = source.length;
+      const targetLength = target.length;
+      if (Math.abs(sourceLength - targetLength) > FEATURE_SEARCH_FUZZY_MAX_DISTANCE) {
+        featureSearchFuzzyCache.set(cacheKey, Number.POSITIVE_INFINITY);
+        return Number.POSITIVE_INFINITY;
+      }
+      const previous = new Array(targetLength + 1);
+      const current = new Array(targetLength + 1);
+      for (let i = 0; i <= targetLength; i += 1) {
+        previous[i] = i;
+      }
+      for (let i = 1; i <= sourceLength; i += 1) {
+        current[0] = i;
+        let bestInRow = current[0];
+        const sourceChar = source.charAt(i - 1);
+        for (let j = 1; j <= targetLength; j += 1) {
+          const cost = sourceChar === target.charAt(j - 1) ? 0 : 1;
+          current[j] = Math.min(
+            previous[j] + 1,
+            current[j - 1] + 1,
+            previous[j - 1] + cost
+          );
+          if (current[j] < bestInRow) {
+            bestInRow = current[j];
+          }
+        }
+        if (bestInRow > FEATURE_SEARCH_FUZZY_MAX_DISTANCE) {
+          featureSearchFuzzyCache.set(cacheKey, Number.POSITIVE_INFINITY);
+          return Number.POSITIVE_INFINITY;
+        }
+        for (let j = 0; j <= targetLength; j += 1) {
+          previous[j] = current[j];
+        }
+      }
+      const result = previous[targetLength];
+      featureSearchFuzzyCache.set(cacheKey, result);
+      return result;
+    };
+
+    const computeFuzzyTokenScore = (token, entryToken) => {
+      if (!token || !entryToken) {
+        return 0;
+      }
+      if (token.length <= 2 || entryToken.length <= 2) {
+        return 0;
+      }
+      const distance = getFuzzyDistance(token, entryToken);
+      if (!Number.isFinite(distance) || distance > FEATURE_SEARCH_FUZZY_MAX_DISTANCE) {
+        return 0;
+      }
+      if (distance === 0) {
+        return 3;
+      }
+      if (distance === 1) {
+        return 2;
+      }
+      return 1;
+    };
+
     const computeTokenMatchDetails = (entryTokens = [], queryTokens = []) => {
       if (!Array.isArray(entryTokens) || entryTokens.length === 0) {
         return { score: 0, matched: 0 };
@@ -10667,6 +10739,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
             best = Math.max(best, 2);
           } else if (entryToken.includes(token) || token.includes(entryToken)) {
             best = Math.max(best, 1);
+          } else {
+            const fuzzyScore = computeFuzzyTokenScore(token, entryToken);
+            if (fuzzyScore > 0) {
+              best = Math.max(best, fuzzyScore);
+            }
           }
         }
         if (best > 0) {
