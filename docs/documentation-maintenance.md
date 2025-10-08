@@ -140,8 +140,8 @@ instructions even years later when internet access is unavailable.
 
 1. **Collect updated manuals.** Export or print the primary README, localized READMEs,
    printable runbooks and legal pages that changed. Confirm each PDF references the same
-   version string surfaced through `cinePersistence` and `cineOffline` so operators know which
-   build the instructions cover.【F:src/scripts/modules/persistence.js†L1-L125】【F:src/scripts/modules/offline.js†L1-L188】
+   version string surfaced through the `cineCoreShared` module and displayed in the About
+   dialog so operators know which build the instructions cover.【F:src/scripts/modules/core-shared.js†L1056-L1104】【F:src/scripts/app-core-new-1.js†L10284-L10302】
 2. **Attach verification evidence.** Include the latest planner backup, project bundle and
    automatic gear rules export used during rehearsal. These files prove that save, share,
    import, backup and restore remained stable when the documentation was signed off. Pair them
