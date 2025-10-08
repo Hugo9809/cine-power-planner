@@ -33,7 +33,7 @@
   --page-padding: var(--spacing-xxl);
   --main-top-padding-multiplier: 1.5;
   --gap-size: var(--spacing-lg);
-  --button-size: 27px;
+  --button-size: 30px;
   --select-height: var(--button-size);
   --button-icon-size: var(--icon-size-md);
   --button-line-height: 1.25;
@@ -210,7 +210,7 @@ body.relaxed-spacing {
   --gap-size: 14px;
   --form-label-width: 170px;
   --form-label-min-width: 140px;
-  --button-size: 33px;
+  --button-size: 36px;
   --button-line-height: 1.45;
   --button-icon-gap: 0.5em;
   --form-row-margin-block: 8px;
