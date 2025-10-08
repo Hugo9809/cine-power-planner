@@ -167,21 +167,21 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       void error;
       keys = [];
     }
-      for (var index = 0; index < keys.length; index += 1) {
-        var key = keys[index];
-        var descriptor;
-        try {
-          descriptor = Object.getOwnPropertyDescriptor(value, key);
-        } catch (descriptorError) {
-          void descriptorError;
-          descriptor = null;
-        }
-        if (descriptor && (typeof descriptor.get === 'function' || typeof descriptor.set === 'function')) {
-          continue;
-        }
-        if (key === 'web3' && value === PRIMARY_SCOPE) {
-          continue;
-        }
+    for (var index = 0; index < keys.length; index += 1) {
+      var key = keys[index];
+      var descriptor;
+      try {
+        descriptor = Object.getOwnPropertyDescriptor(value, key);
+      } catch (descriptorError) {
+        void descriptorError;
+        descriptor = null;
+      }
+      if (descriptor && (typeof descriptor.get === 'function' || typeof descriptor.set === 'function')) {
+        continue;
+      }
+      if (key === 'web3' && value === PRIMARY_SCOPE) {
+        continue;
+      }
       var child;
       try {
         child = value[key];
@@ -522,7 +522,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return fallback.registerOrQueueModule(name, api, options, onError);
   }
   function freezeDeep(value, seen) {
-    var environment = getEnvironment();
     return fallbackFreezeDeep(value, seen);
   }
   function safeWarn(message, detail) {
