@@ -571,14 +571,47 @@ function loaderManualDeepCloneValue(value, memo) {
   }
   return value;
 }
+function loaderResolveStructuredClone(scope) {
+  if (typeof structuredClone === 'function') {
+    return structuredClone;
+  }
+  if (scope && typeof scope.structuredClone === 'function') {
+    try {
+      return scope.structuredClone.bind(scope);
+    } catch (bindError) {
+      void bindError;
+    }
+  }
+  if (typeof require === 'function') {
+    try {
+      var nodeUtil = require('node:util');
+      if (nodeUtil && typeof nodeUtil.structuredClone === 'function') {
+        return nodeUtil.structuredClone.bind(nodeUtil);
+      }
+    } catch (nodeUtilError) {
+      void nodeUtilError;
+    }
+    try {
+      var legacyUtil = require('util');
+      if (legacyUtil && typeof legacyUtil.structuredClone === 'function') {
+        return legacyUtil.structuredClone.bind(legacyUtil);
+      }
+    } catch (legacyUtilError) {
+      void legacyUtilError;
+    }
+  }
+  return null;
+}
 function loaderCreateDeepCloneUtility() {
+  var globalScope = typeof globalThis !== 'undefined' && globalThis || typeof window !== 'undefined' && window || typeof self !== 'undefined' && self || typeof global !== 'undefined' && global || null;
+  var structuredCloneImpl = loaderResolveStructuredClone(globalScope);
   return function loaderDeepClone(value) {
     if (value === null || _typeof(value) !== 'object') {
       return value;
     }
-    if (typeof structuredClone === 'function') {
+    if (structuredCloneImpl) {
       try {
-        return structuredClone(value);
+        return structuredCloneImpl(value);
       } catch (structuredCloneError) {
         void structuredCloneError;
       }

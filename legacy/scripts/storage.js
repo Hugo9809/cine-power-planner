@@ -54,17 +54,66 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       void storageInitFlagError;
     }
   }
-  var STORAGE_DEEP_CLONE = GLOBAL_SCOPE && typeof GLOBAL_SCOPE.__cineDeepClone === 'function' ? GLOBAL_SCOPE.__cineDeepClone : function storageFallbackDeepClone(value) {
+  function storageJsonDeepClone(value) {
     if (value === null || _typeof(value) !== 'object') {
       return value;
     }
     try {
       return JSON.parse(JSON.stringify(value));
-    } catch (cloneError) {
-      void cloneError;
+    } catch (jsonCloneError) {
+      void jsonCloneError;
     }
     return value;
-  };
+  }
+  function storageResolveStructuredClone(scope) {
+    if (typeof structuredClone === 'function') {
+      return structuredClone;
+    }
+    if (scope && typeof scope.structuredClone === 'function') {
+      try {
+        return scope.structuredClone.bind(scope);
+      } catch (bindError) {
+        void bindError;
+      }
+    }
+    if (typeof require === 'function') {
+      try {
+        var nodeUtil = require('node:util');
+        if (nodeUtil && typeof nodeUtil.structuredClone === 'function') {
+          return nodeUtil.structuredClone.bind(nodeUtil);
+        }
+      } catch (nodeUtilError) {
+        void nodeUtilError;
+      }
+      try {
+        var legacyUtil = require('util');
+        if (legacyUtil && typeof legacyUtil.structuredClone === 'function') {
+          return legacyUtil.structuredClone.bind(legacyUtil);
+        }
+      } catch (legacyUtilError) {
+        void legacyUtilError;
+      }
+    }
+    return null;
+  }
+  function storageCreateResilientDeepClone(scope) {
+    var structuredCloneImpl = storageResolveStructuredClone(scope);
+    if (!structuredCloneImpl) {
+      return storageJsonDeepClone;
+    }
+    return function storageResilientDeepClone(value) {
+      if (value === null || _typeof(value) !== 'object') {
+        return value;
+      }
+      try {
+        return structuredCloneImpl(value);
+      } catch (structuredCloneError) {
+        void structuredCloneError;
+      }
+      return storageJsonDeepClone(value);
+    };
+  }
+  var STORAGE_DEEP_CLONE = GLOBAL_SCOPE && typeof GLOBAL_SCOPE.__cineDeepClone === 'function' ? GLOBAL_SCOPE.__cineDeepClone : storageCreateResilientDeepClone(GLOBAL_SCOPE);
   if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.__cineDeepClone !== 'function') {
     try {
       GLOBAL_SCOPE.__cineDeepClone = STORAGE_DEEP_CLONE;

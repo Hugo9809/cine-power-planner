@@ -32,21 +32,67 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (typeof global !== 'undefined') pushScope(global);
     return scopes;
   }
+  function loggingResolveStructuredClone(scope) {
+    if (typeof structuredClone === 'function') {
+      return structuredClone;
+    }
+    if (scope && typeof scope.structuredClone === 'function') {
+      try {
+        return scope.structuredClone.bind(scope);
+      } catch (bindError) {
+        void bindError;
+      }
+    }
+    if (typeof require === 'function') {
+      try {
+        var nodeUtil = require('node:util');
+        if (nodeUtil && typeof nodeUtil.structuredClone === 'function') {
+          return nodeUtil.structuredClone.bind(nodeUtil);
+        }
+      } catch (nodeUtilError) {
+        void nodeUtilError;
+      }
+      try {
+        var legacyUtil = require('util');
+        if (legacyUtil && typeof legacyUtil.structuredClone === 'function') {
+          return legacyUtil.structuredClone.bind(legacyUtil);
+        }
+      } catch (legacyUtilError) {
+        void legacyUtilError;
+      }
+    }
+    return null;
+  }
+  function loggingJsonDeepClone(value) {
+    if (value === null || _typeof(value) !== 'object') {
+      return value;
+    }
+    try {
+      return JSON.parse(JSON.stringify(value));
+    } catch (jsonCloneError) {
+      void jsonCloneError;
+    }
+    return value;
+  }
   var LOGGING_DEEP_CLONE = function resolveLoggingDeepClone() {
     var scope = fallbackDetectGlobalScope();
     if (scope && typeof scope.__cineDeepClone === 'function') {
       return scope.__cineDeepClone;
     }
-    return function loggingFallbackDeepClone(value) {
+    var structuredCloneImpl = loggingResolveStructuredClone(scope);
+    if (!structuredCloneImpl) {
+      return loggingJsonDeepClone;
+    }
+    return function loggingResilientDeepClone(value) {
       if (value === null || _typeof(value) !== 'object') {
         return value;
       }
       try {
-        return JSON.parse(JSON.stringify(value));
-      } catch (cloneError) {
-        void cloneError;
+        return structuredCloneImpl(value);
+      } catch (structuredCloneError) {
+        void structuredCloneError;
       }
-      return value;
+      return loggingJsonDeepClone(value);
     };
   }();
   function fallbackLoadModuleEnvironment(scope) {

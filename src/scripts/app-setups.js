@@ -157,25 +157,85 @@ function getGlobalScope() {
     );
 }
 
+function resolveSetupsStructuredClone(scope) {
+    if (typeof structuredClone === 'function') {
+        return structuredClone;
+    }
+
+    if (scope && typeof scope.structuredClone === 'function') {
+        try {
+            return scope.structuredClone.bind(scope);
+        } catch (bindError) {
+            void bindError;
+        }
+    }
+
+    if (typeof require === 'function') {
+        try {
+            const nodeUtil = require('node:util');
+            if (nodeUtil && typeof nodeUtil.structuredClone === 'function') {
+                return nodeUtil.structuredClone.bind(nodeUtil);
+            }
+        } catch (nodeUtilError) {
+            void nodeUtilError;
+        }
+
+        try {
+            const legacyUtil = require('util');
+            if (legacyUtil && typeof legacyUtil.structuredClone === 'function') {
+                return legacyUtil.structuredClone.bind(legacyUtil);
+            }
+        } catch (legacyUtilError) {
+            void legacyUtilError;
+        }
+    }
+
+    return null;
+}
+
+function setupsJsonDeepClone(value) {
+    if (value === null || typeof value !== 'object') {
+        return value;
+    }
+
+    try {
+        return JSON.parse(JSON.stringify(value));
+    } catch (jsonCloneError) {
+        void jsonCloneError;
+    }
+
+    return value;
+}
+
+function createSetupsDeepClone(scope) {
+    const structuredCloneImpl = resolveSetupsStructuredClone(scope);
+
+    if (!structuredCloneImpl) {
+        return setupsJsonDeepClone;
+    }
+
+    return function setupsResilientDeepClone(value) {
+        if (value === null || typeof value !== 'object') {
+            return value;
+        }
+
+        try {
+            return structuredCloneImpl(value);
+        } catch (structuredCloneError) {
+            void structuredCloneError;
+        }
+
+        return setupsJsonDeepClone(value);
+    };
+}
+
 const SETUPS_DEEP_CLONE = (() => {
     const scope = getGlobalScope();
     if (scope && typeof scope.__cineDeepClone === 'function') {
         return scope.__cineDeepClone;
     }
 
-    return function setupsFallbackDeepClone(value) {
-        if (value === null || typeof value !== 'object') {
-            return value;
-        }
-
-        try {
-            return JSON.parse(JSON.stringify(value));
-        } catch (cloneError) {
-            void cloneError;
-        }
-
-        return value;
-    };
+    return createSetupsDeepClone(scope);
 })();
 
 function gearListGetSafeHtmlSectionsImpl(html) {

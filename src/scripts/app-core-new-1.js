@@ -110,22 +110,82 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
 
 const CORE_GLOBAL_SCOPE = CORE_PART1_RUNTIME_SCOPE;
+function coreJsonDeepClone(value) {
+  if (value === null || typeof value !== 'object') {
+    return value;
+  }
+
+  try {
+    return JSON.parse(JSON.stringify(value));
+  } catch (jsonCloneError) {
+    void jsonCloneError;
+  }
+
+  return value;
+}
+
+function coreResolveStructuredClone(scope) {
+  if (typeof structuredClone === 'function') {
+    return structuredClone;
+  }
+
+  if (scope && typeof scope.structuredClone === 'function') {
+    try {
+      return scope.structuredClone.bind(scope);
+    } catch (bindError) {
+      void bindError;
+    }
+  }
+
+  if (typeof require === 'function') {
+    try {
+      const nodeUtil = require('node:util');
+      if (nodeUtil && typeof nodeUtil.structuredClone === 'function') {
+        return nodeUtil.structuredClone.bind(nodeUtil);
+      }
+    } catch (nodeUtilError) {
+      void nodeUtilError;
+    }
+
+    try {
+      const legacyUtil = require('util');
+      if (legacyUtil && typeof legacyUtil.structuredClone === 'function') {
+        return legacyUtil.structuredClone.bind(legacyUtil);
+      }
+    } catch (legacyUtilError) {
+      void legacyUtilError;
+    }
+  }
+
+  return null;
+}
+
+function coreCreateResilientDeepClone(scope) {
+  const structuredCloneImpl = coreResolveStructuredClone(scope);
+
+  if (!structuredCloneImpl) {
+    return coreJsonDeepClone;
+  }
+
+  return function coreResilientDeepClone(value) {
+    if (value === null || typeof value !== 'object') {
+      return value;
+    }
+
+    try {
+      return structuredCloneImpl(value);
+    } catch (structuredCloneError) {
+      void structuredCloneError;
+    }
+
+    return coreJsonDeepClone(value);
+  };
+}
+
 const CORE_DEEP_CLONE =
   CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE.__cineDeepClone === 'function'
     ? CORE_GLOBAL_SCOPE.__cineDeepClone
-    : function coreFallbackDeepClone(value) {
-        if (value === null || typeof value !== 'object') {
-          return value;
-        }
-
-        try {
-          return JSON.parse(JSON.stringify(value));
-        } catch (cloneError) {
-          void cloneError;
-        }
-
-        return value;
-      };
+    : coreCreateResilientDeepClone(getCoreGlobalObject());
 
 if (CORE_GLOBAL_SCOPE && typeof CORE_GLOBAL_SCOPE.__cineDeepClone !== 'function') {
   try {
