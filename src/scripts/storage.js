@@ -3276,6 +3276,26 @@ function applyProjectEntryCompression(container) {
   return container;
 }
 
+function registerActiveSetupStorageSkipKeys(skipSet) {
+  if (!skipSet || typeof skipSet.add !== 'function') {
+    return;
+  }
+
+  const keysToSkip = [
+    PROJECT_STORAGE_KEY,
+    `${PROJECT_STORAGE_KEY}${STORAGE_BACKUP_SUFFIX}`,
+    SETUP_STORAGE_KEY,
+    `${SETUP_STORAGE_KEY}${STORAGE_BACKUP_SUFFIX}`,
+  ];
+
+  for (let i = 0; i < keysToSkip.length; i += 1) {
+    const key = keysToSkip[i];
+    if (typeof key === 'string' && key) {
+      skipSet.add(key);
+    }
+  }
+}
+
 function maybeDecompressStoredString(raw, options) {
   if (typeof raw !== 'string') {
     return raw;
@@ -3307,6 +3327,9 @@ function attemptStorageCompressionSweep(storage, options) {
   const skipSet = new Set();
   if (ACTIVE_PROJECT_COMPRESSION_HOLD_ENABLED && ACTIVE_PROJECT_COMPRESSION_HOLD_KEY) {
     skipSet.add(ACTIVE_PROJECT_COMPRESSION_HOLD_KEY);
+  }
+  if (ACTIVE_PROJECT_COMPRESSION_HOLD_ENABLED) {
+    registerActiveSetupStorageSkipKeys(skipSet);
   }
   if (Array.isArray(skipKeys)) {
     for (let i = 0; i < skipKeys.length; i += 1) {
