@@ -53,7 +53,8 @@ time:
    if anomalies appear (the viewer now notes when filters suppress every entry so you know
    the silence is intentional). Confirm the **Backup guardian** row reports an active or mirrored
    state so every critical key already has a redundant copy before rehearsals continue,
-   check the **Latest activity** board for the new save entries and capture a backup through
+   check the **Latest activity** board for the new save entries, confirm the safety reminders
+   either call out stale data or show the green all-clear message, and capture a backup through
    **Quick safeguards** if you need an extra offline copy. The sequential loader now
    predeclares the grid snap flag, the runtime guard stub and the icon glyph helpers on the
    global scope before it injects the core bundles, preventing older Safari builds from

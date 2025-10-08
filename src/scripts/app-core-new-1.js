@@ -9890,6 +9890,12 @@ function setLanguage(lang) {
   if (storageStatusLastFullBackupValue) {
     storageStatusLastFullBackupValue.textContent = statusDefaultText;
   }
+  if (storageStatusReminder) {
+    storageStatusReminder.textContent = '';
+    storageStatusReminder.setAttribute('hidden', '');
+    storageStatusReminder.classList.remove('storage-status-reminder--warning', 'storage-status-reminder--ok');
+    storageStatusReminder.removeAttribute('data-help');
+  }
   if (loggingSection) {
     const sectionHelp = texts[lang].loggingSectionHelp
       || texts[lang].loggingHeadingHelp
@@ -17197,6 +17203,7 @@ var storageStatusLastAutoBackupLabel = document.getElementById('storageStatusLas
 var storageStatusLastAutoBackupValue = document.getElementById('storageStatusLastAutoBackupValue');
 var storageStatusLastFullBackupLabel = document.getElementById('storageStatusLastFullBackupLabel');
 var storageStatusLastFullBackupValue = document.getElementById('storageStatusLastFullBackupValue');
+var storageStatusReminder = document.getElementById('storageStatusReminder');
 const loggingSection = document.getElementById('loggingSection');
 const loggingHeading = document.getElementById('loggingHeading');
 const loggingIntro = document.getElementById('loggingIntro');

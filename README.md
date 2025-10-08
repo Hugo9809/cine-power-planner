@@ -616,6 +616,10 @@ Use Cine Power Planner end-to-end with the following routine:
   print and export attempts now stream their warnings and fallback usage into
   this log so share rehearsals capture exactly when the dialog had to open the
   backup window.
+- The **Latest activity** timeline now posts **safety reminders** below the
+  three timestamps. They highlight when manual saves, automatic snapshots or
+  full-app archives grow stale and include the captured time so you know exactly
+  which safeguard to refresh before trusting an offline session.
 - Full-app backups report their running total and feed the backup history ledger
   so you can confirm hourly safety copies are captured before archiving them
   offline.

@@ -2600,6 +2600,13 @@
               <dd id="storageStatusLastFullBackupValue">Not captured yet.</dd>
             </div>
           </dl>
+          <div
+            id="storageStatusReminder"
+            class="storage-status-reminder"
+            role="status"
+            aria-live="polite"
+            hidden
+          ></div>
         </section>
         <section
           id="loggingSection"
@@ -3919,6 +3926,11 @@
                 >Settings → Data &amp; Storage</a>
                 . Use the <em>Quick safeguards</em> buttons there to trigger a full backup without switching tabs, then export the
                 ledger alongside your archives so audit trails show the same timestamps even when you rotate media offline.
+              </li>
+              <li>
+                <strong>Safety reminders</strong> sit beneath the <em>Latest activity</em> timeline. They flag when manual saves,
+                automatic snapshots or full-app archives grow stale and include the captured timestamps so you know exactly what to
+                refresh before relying on offline copies.
               </li>
               <li>
                 <strong>Restore safeguards</strong> always create a brand-new safety backup before applying the file you choose,
