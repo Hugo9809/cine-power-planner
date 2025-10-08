@@ -1607,17 +1607,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           dtapSeverity = 'note';
         }
       }
-      var hasPinLimit = typeof maxPinA === 'number' && maxPinA > 0;
-      var pinsInsufficient = !hasPinLimit || totalCurrentLow > maxPinA;
-      var hasDtapRating = typeof maxDtapA === 'number' && maxDtapA > 0;
-      var dtapAllowed = !bMountCam && hasDtapRating;
-      var dtapInsufficient = !dtapAllowed || hasDtapRating && totalCurrentLow > maxDtapA;
-      if (totalCurrentLow > 0 && pinsInsufficient && dtapInsufficient) {
-        var option = batterySelect && batterySelect.options ? batterySelect.options[batterySelect.selectedIndex] : null;
-        var labelText = option && typeof option.textContent === 'string' ? option.textContent.trim() : battery || '';
-        if (showPowerWarningDialogFn) {
-          try {
-            showPowerWarningDialogFn({
+        var hasPinLimit = typeof maxPinA === 'number' && maxPinA > 0;
+        var pinsInsufficient = !hasPinLimit || totalCurrentLow > maxPinA;
+        var hasDtapRating = typeof maxDtapA === 'number' && maxDtapA > 0;
+        var dtapAllowed = !bMountCam && hasDtapRating;
+        var dtapInsufficient = !dtapAllowed || hasDtapRating && totalCurrentLow > maxDtapA;
+        var batteryValue = typeof battery === 'string' ? battery.trim() : '';
+        var hasBatterySelection = batteryValue !== '' && batteryValue.toLowerCase() !== 'none';
+        if (totalCurrentLow > 0 && pinsInsufficient && dtapInsufficient && hasBatterySelection) {
+          var option = batterySelect && batterySelect.options ? batterySelect.options[batterySelect.selectedIndex] : null;
+          var labelText = option && typeof option.textContent === 'string' ? option.textContent.trim() : battery || '';
+          if (showPowerWarningDialogFn) {
+            try {
+              showPowerWarningDialogFn({
               batteryName: labelText,
               current: totalCurrentLow,
               hasPinLimit: hasPinLimit,

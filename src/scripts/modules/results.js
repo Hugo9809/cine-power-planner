@@ -1714,7 +1714,10 @@
       var hasDtapRating = typeof maxDtapA === 'number' && maxDtapA > 0;
       var dtapAllowed = !bMountCam && hasDtapRating;
       var dtapInsufficient = !dtapAllowed || (hasDtapRating && totalCurrentLow > maxDtapA);
-      if (totalCurrentLow > 0 && pinsInsufficient && dtapInsufficient) {
+      var batteryValue = typeof battery === 'string' ? battery.trim() : '';
+      var hasBatterySelection =
+        batteryValue !== '' && batteryValue.toLowerCase() !== 'none';
+      if (totalCurrentLow > 0 && pinsInsufficient && dtapInsufficient && hasBatterySelection) {
         var option = batterySelect && batterySelect.options ? batterySelect.options[batterySelect.selectedIndex] : null;
         var labelText = option && typeof option.textContent === 'string' ? option.textContent.trim() : (battery || '');
         if (showPowerWarningDialogFn) {
