@@ -6252,28 +6252,31 @@ body.light-mode #topBar select:focus-visible {
   border-radius: var(--border-radius);
   box-shadow: var(--panel-shadow);
   z-index: 10;
-  max-width: 320px;
+  max-width: min(320px, calc(100vw - 24px));
   max-height: min(92vh, calc(100vh - 24px));
   overflow: auto;
 }
 
 .diagram-popup--camera {
-  width: min(520px, calc(100vw - 24px));
-  max-width: min(520px, calc(100vw - 24px));
+  max-width: min(720px, calc(100vw - 24px));
 }
 
-.diagram-popup--camera .connector-summary,
-.diagram-popup--camera .scenario-summary,
-.diagram-popup--camera .icon-box-summary {
+.diagram-popup .connector-summary,
+.diagram-popup .scenario-summary,
+.diagram-popup .icon-box-summary {
+  margin-top: 4px;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  /* Limit hover popup grids to between one and four columns to avoid clipping */
+  grid-template-columns: repeat(auto-fit, minmax(180px, 25%));
   column-gap: 6px;
   row-gap: 4px;
+  align-items: start;
+  width: 100%;
 }
 
-.diagram-popup--camera .connector-summary > *,
-.diagram-popup--camera .scenario-summary > *,
-.diagram-popup--camera .icon-box-summary > * {
+.diagram-popup .connector-summary > *,
+.diagram-popup .scenario-summary > *,
+.diagram-popup .icon-box-summary > * {
   min-width: 0;
 }
 
@@ -6301,10 +6304,10 @@ body.light-mode #topBar select:focus-visible {
 
 .scenario-summary,
 .icon-box-summary {
-    margin-top: 4px;
-    display: flex;
-    flex-wrap: wrap;
-    width: 100%;
+  margin-top: 4px;
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
 }
 
 .connector-block,
