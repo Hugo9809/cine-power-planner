@@ -7350,11 +7350,37 @@ body.dark-mode .requirement-box,
   transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
 }
 
+html.dark-mode #gearListOutput .gear-custom-add-btn,
+body.dark-mode #gearListOutput .gear-custom-add-btn,
+.dark-mode #gearListOutput .gear-custom-add-btn {
+  background: color-mix(in srgb, var(--accent-color) 18%, var(--control-bg));
+  border-color: color-mix(in srgb, var(--accent-color) 55%, var(--control-border));
+  color: color-mix(in srgb, var(--inverse-text-color) 94%, transparent);
+}
+
+html.dark-mode #gearListOutput .gear-custom-add-btn .btn-icon,
+body.dark-mode #gearListOutput .gear-custom-add-btn .btn-icon,
+.dark-mode #gearListOutput .gear-custom-add-btn .btn-icon {
+  color: inherit;
+}
+
 #gearListOutput .gear-custom-add-btn:hover,
 #gearListOutput .gear-custom-add-btn:focus-visible {
   color: var(--accent-color);
   border-color: var(--accent-color);
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-color) 22%, transparent);
+}
+
+html.dark-mode #gearListOutput .gear-custom-add-btn:hover,
+html.dark-mode #gearListOutput .gear-custom-add-btn:focus-visible,
+body.dark-mode #gearListOutput .gear-custom-add-btn:hover,
+body.dark-mode #gearListOutput .gear-custom-add-btn:focus-visible,
+.dark-mode #gearListOutput .gear-custom-add-btn:hover,
+.dark-mode #gearListOutput .gear-custom-add-btn:focus-visible {
+  background: color-mix(in srgb, var(--accent-color) 32%, var(--control-bg));
+  border-color: color-mix(in srgb, var(--accent-color) 70%, var(--control-border));
+  color: var(--inverse-text-color);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-color) 30%, transparent);
 }
 
 #gearListOutput .gear-custom-add-btn:focus-visible {
