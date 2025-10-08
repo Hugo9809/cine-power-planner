@@ -103,6 +103,8 @@ var MOUNT_VOLTAGE_STORAGE_KEY_SYMBOL =
     ? Symbol.for('cinePowerPlanner.mountVoltageKey')
     : null;
 
+var PROJECT_STORAGE_READ_CACHE = null;
+
 var STORAGE_CACHE_SYMBOL =
   typeof Symbol === 'function'
     ? Symbol.for('cinePowerPlanner.storageCache')
@@ -332,6 +334,140 @@ function cloneCachedEntryValue(entry) {
   }
 
   return cloneValueForCache(value);
+}
+
+function cloneLookupMap(source, options) {
+  const map = new Map();
+  if (!source || typeof source.forEach !== 'function') {
+    return map;
+  }
+
+  const { freezeArray = false } = options || {};
+
+  source.forEach((value, key) => {
+    if (Array.isArray(value)) {
+      const copy = value.slice();
+      if (freezeArray) {
+        try {
+          Object.freeze(copy);
+        } catch (freezeError) {
+          void freezeError;
+        }
+      }
+      map.set(key, copy);
+    } else {
+      map.set(key, value);
+    }
+  });
+
+  return map;
+}
+
+function cloneProjectLookupSnapshotForReturn(lookup) {
+  if (!lookup || typeof lookup !== 'object') {
+    return { raw: new Map(), normalized: new Map() };
+  }
+
+  return {
+    raw: cloneLookupMap(lookup.raw),
+    normalized: cloneLookupMap(lookup.normalized),
+  };
+}
+
+function captureProjectLookupSnapshotForCache(lookup) {
+  if (!lookup || typeof lookup !== 'object') {
+    return { raw: new Map(), normalized: new Map() };
+  }
+
+  return {
+    raw: cloneLookupMap(lookup.raw),
+    normalized: cloneLookupMap(lookup.normalized, { freezeArray: true }),
+  };
+}
+
+function freezeProjectSnapshotProjects(projects) {
+  if (!isPlainObject(projects)) {
+    return {};
+  }
+
+  const frozen = {};
+  const keys = Object.keys(projects);
+  for (let index = 0; index < keys.length; index += 1) {
+    const key = keys[index];
+    const entry = projects[key];
+    if (entry && typeof entry === 'object') {
+      try {
+        Object.freeze(entry);
+      } catch (freezeError) {
+        void freezeError;
+      }
+    }
+    frozen[key] = entry;
+  }
+
+  try {
+    Object.freeze(frozen);
+  } catch (freezeRootError) {
+    void freezeRootError;
+  }
+
+  return frozen;
+}
+
+function setProjectReadCacheSnapshot(snapshot) {
+  if (!snapshot || typeof snapshot !== 'object') {
+    PROJECT_STORAGE_READ_CACHE = null;
+    return;
+  }
+
+  PROJECT_STORAGE_READ_CACHE = {
+    projects: freezeProjectSnapshotProjects(snapshot.projects),
+    changed: Boolean(snapshot.changed),
+    originalValue: snapshot.originalValue,
+    lookup: captureProjectLookupSnapshotForCache(snapshot.lookup),
+    rawValue: snapshot.rawValue === undefined ? undefined : snapshot.rawValue,
+  };
+}
+
+function getProjectReadCacheClone(options) {
+  if (!PROJECT_STORAGE_READ_CACHE) {
+    return null;
+  }
+
+  const safeStorage = getSafeLocalStorage();
+  let currentRaw = null;
+  if (safeStorage && typeof safeStorage.getItem === 'function') {
+    try {
+      currentRaw = safeStorage.getItem(PROJECT_STORAGE_KEY);
+    } catch (storageReadError) {
+      currentRaw = null;
+      void storageReadError;
+    }
+  }
+
+  if (
+    PROJECT_STORAGE_READ_CACHE.rawValue !== undefined
+    && PROJECT_STORAGE_READ_CACHE.rawValue !== currentRaw
+  ) {
+    PROJECT_STORAGE_READ_CACHE = null;
+    return null;
+  }
+
+  const { forMutation = false } = options || {};
+  const projects = forMutation
+    ? STORAGE_DEEP_CLONE(PROJECT_STORAGE_READ_CACHE.projects)
+    : PROJECT_STORAGE_READ_CACHE.projects;
+
+  return {
+    projects,
+    changed: PROJECT_STORAGE_READ_CACHE.changed,
+    originalValue: PROJECT_STORAGE_READ_CACHE.originalValue,
+    lookup: cloneProjectLookupSnapshotForReturn(PROJECT_STORAGE_READ_CACHE.lookup),
+  };
+}
+
+function invalidateProjectReadCache() {
+  PROJECT_STORAGE_READ_CACHE = null;
 }
 
 function cacheStorageValue(storage, key, rawValue, normalizedValue, value) {
@@ -5431,6 +5567,10 @@ function deleteFromStorage(storage, key, errorMessage, options = {}) {
     clearCachedStorageEntry(storage, fallbackKey);
   }
 
+  if (key === PROJECT_STORAGE_KEY) {
+    invalidateProjectReadCache();
+  }
+
   try {
     storage.removeItem(key);
   } catch (e) {
@@ -7300,9 +7440,28 @@ function resolveProjectKey(projects, lookup, name, options = {}) {
   return null;
 }
 
-function readAllProjectsFromStorage() {
+function readAllProjectsFromStorage(options = {}) {
+  const { forceRefresh = false, forMutation = false } = options || {};
   applyLegacyStorageMigrations();
+
+  if (!forceRefresh) {
+    const cached = getProjectReadCacheClone({ forMutation });
+    if (cached) {
+      return cached;
+    }
+  }
+
   const safeStorage = getSafeLocalStorage();
+  let storageRaw = null;
+  if (safeStorage && typeof safeStorage.getItem === 'function') {
+    try {
+      storageRaw = safeStorage.getItem(PROJECT_STORAGE_KEY);
+    } catch (storageReadError) {
+      storageRaw = null;
+      void storageReadError;
+    }
+  }
+
   const parsed = loadJSONFromStorage(
     safeStorage,
     PROJECT_STORAGE_KEY,
@@ -7349,13 +7508,41 @@ function readAllProjectsFromStorage() {
     }
     normalizedKeyLookup.get(normalized).push(effectiveKey);
   };
+
   const createLookupSnapshot = () => ({
-    raw: rawKeyLookup,
-    normalized: normalizedKeyLookup,
+    raw: cloneLookupMap(rawKeyLookup),
+    normalized: cloneLookupMap(normalizedKeyLookup),
   });
 
+  const finalize = () => {
+    const snapshot = {
+      projects,
+      changed,
+      originalValue,
+      lookup: createLookupSnapshot(),
+      rawValue: storageRaw,
+    };
+
+    if (changed) {
+      setProjectReadCacheSnapshot(null);
+      if (forMutation) {
+        return {
+          projects: STORAGE_DEEP_CLONE(snapshot.projects),
+          changed: snapshot.changed,
+          originalValue: snapshot.originalValue,
+          lookup: cloneProjectLookupSnapshotForReturn(snapshot.lookup),
+        };
+      }
+      return snapshot;
+    }
+
+    setProjectReadCacheSnapshot(snapshot);
+    const cached = getProjectReadCacheClone({ forMutation });
+    return cached || snapshot;
+  };
+
   if (expandedParsed === null || expandedParsed === undefined) {
-    return { projects, changed: false, originalValue, lookup: createLookupSnapshot() };
+    return finalize();
   }
 
   if (typeof expandedParsed === "string") {
@@ -7366,7 +7553,8 @@ function readAllProjectsFromStorage() {
       registerLookupKey("", updatedName);
       markProjectNameUsed(updatedName);
     }
-    return { projects, changed: true, originalValue, lookup: createLookupSnapshot() };
+    changed = true;
+    return finalize();
   }
 
   if (Array.isArray(expandedParsed)) {
@@ -7388,11 +7576,13 @@ function readAllProjectsFromStorage() {
       registerLookupKey(candidate, unique);
       markProjectNameUsed(unique);
     });
-    return { projects, changed: true, originalValue, lookup: createLookupSnapshot() };
+    changed = true;
+    return finalize();
   }
 
   if (!isPlainObject(expandedParsed)) {
-    return { projects, changed: true, originalValue, lookup: createLookupSnapshot() };
+    changed = true;
+    return finalize();
   }
 
   const keys = Object.keys(expandedParsed);
@@ -7407,7 +7597,8 @@ function readAllProjectsFromStorage() {
       registerLookupKey("", updatedName);
       markProjectNameUsed(updatedName);
     }
-    return { projects, changed: true, originalValue, lookup: createLookupSnapshot() };
+    changed = true;
+    return finalize();
   }
 
   keys.forEach((key) => {
@@ -7463,7 +7654,7 @@ function readAllProjectsFromStorage() {
     }
   });
 
-  return { projects, changed, originalValue, lookup: createLookupSnapshot() };
+  return finalize();
 }
 
 function persistAllProjects(projects) {
@@ -7472,6 +7663,7 @@ function persistAllProjects(projects) {
   const serializedProjects = serializeAutoBackupEntries(projects, {
     isAutoBackupKey: isAutoBackupStorageKey,
   });
+  invalidateProjectReadCache();
   ensurePreWriteMigrationBackup(safeStorage, PROJECT_STORAGE_KEY);
   saveJSONToStorage(
     safeStorage,
@@ -7495,13 +7687,15 @@ function persistAllProjects(projects) {
 }
 
 function loadProject(name) {
-  const { projects, changed, originalValue, lookup } = readAllProjectsFromStorage();
+  let { projects, changed, originalValue, lookup } = readAllProjectsFromStorage();
   if (changed) {
     const safeStorage = getSafeLocalStorage();
     if (safeStorage) {
       createStorageMigrationBackup(safeStorage, PROJECT_STORAGE_KEY, originalValue);
     }
-    persistAllProjects(projects);
+    const mutableProjects = STORAGE_DEEP_CLONE(projects);
+    persistAllProjects(mutableProjects);
+    projects = mutableProjects;
   }
   if (name === undefined) {
     return projects;
@@ -7663,7 +7857,7 @@ function saveProject(name, project) {
     }
     return;
   }
-  const { projects, changed, originalValue, lookup } = readAllProjectsFromStorage();
+  const { projects, changed, originalValue, lookup } = readAllProjectsFromStorage({ forMutation: true });
   if (changed) {
     const safeStorage = getSafeLocalStorage();
     if (safeStorage) {
@@ -7737,7 +7931,7 @@ function deleteProject(name) {
     return;
   }
 
-  const { projects, changed, originalValue, lookup } = readAllProjectsFromStorage();
+  const { projects, changed, originalValue, lookup } = readAllProjectsFromStorage({ forMutation: true });
   if (changed) {
     const safeStorage = getSafeLocalStorage();
     if (safeStorage) {
@@ -7771,7 +7965,7 @@ function deleteProject(name) {
 }
 
 function createProjectImporter() {
-  const { projects, changed, originalValue } = readAllProjectsFromStorage();
+  const { projects, changed, originalValue } = readAllProjectsFromStorage({ forMutation: true });
   if (changed) {
     const safeStorage = getSafeLocalStorage();
     if (safeStorage) {
