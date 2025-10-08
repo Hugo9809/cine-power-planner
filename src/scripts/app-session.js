@@ -9667,6 +9667,54 @@ function clearUiCacheEntriesFallback() {
   });
 }
 
+const CACHE_KEY_TOKENS_FOR_RELOAD = ['cine-power-planner', 'cinepowerplanner'];
+
+function resolveCineCacheNameForReload() {
+  const scopes = [
+    typeof globalThis !== 'undefined' ? globalThis : null,
+    typeof window !== 'undefined' ? window : null,
+    typeof self !== 'undefined' ? self : null,
+    typeof global !== 'undefined' ? global : null,
+  ];
+
+  for (let index = 0; index < scopes.length; index += 1) {
+    const scope = scopes[index];
+    if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+      continue;
+    }
+
+    try {
+      const name = scope.CINE_CACHE_NAME;
+      if (typeof name === 'string' && name) {
+        return name;
+      }
+    } catch (error) {
+      void error;
+    }
+  }
+
+  return '';
+}
+
+function isRelevantCacheKeyForReload(key, explicitName, lowerExplicit) {
+  if (typeof key !== 'string' || !key) {
+    return false;
+  }
+
+  if (explicitName && (key === explicitName || key.toLowerCase() === lowerExplicit)) {
+    return true;
+  }
+
+  const lowerKey = key.toLowerCase();
+  for (let index = 0; index < CACHE_KEY_TOKENS_FOR_RELOAD.length; index += 1) {
+    if (lowerKey.includes(CACHE_KEY_TOKENS_FOR_RELOAD[index])) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 function readLocationHrefSafe(locationLike) {
   if (!locationLike || typeof locationLike !== 'object') {
     return '';
@@ -10578,77 +10626,136 @@ async function clearCachesAndReload() {
     }
   }
 
-  try {
-    if (typeof navigator !== 'undefined' && navigator.serviceWorker) {
-      const registrations = [];
-      const { serviceWorker } = navigator;
-      try {
-        if (typeof serviceWorker.getRegistrations === 'function') {
-          const regs = await serviceWorker.getRegistrations();
-          if (Array.isArray(regs)) {
-            regs.forEach(reg => registrations.push(reg));
-          }
-        } else if (typeof serviceWorker.getRegistration === 'function') {
-          const reg = await serviceWorker.getRegistration();
-          if (reg) {
-            registrations.push(reg);
-          }
-        } else if (serviceWorker.ready && typeof serviceWorker.ready.then === 'function') {
-          try {
-            const readyReg = await serviceWorker.ready;
-            if (readyReg) {
-              registrations.push(readyReg);
-            }
-          } catch (readyError) {
-            console.warn('Failed to await active service worker', readyError);
-          }
-        }
-      } catch (queryError) {
-        console.warn('Failed to query service worker registrations', queryError);
-      }
+  let serviceWorkerCleanupPromise = Promise.resolve(false);
+  let cacheCleanupPromise = Promise.resolve(false);
 
-      if (registrations.length) {
+  if (typeof navigator !== 'undefined' && navigator.serviceWorker) {
+    const { serviceWorker } = navigator;
+    serviceWorkerCleanupPromise = (async () => {
+      try {
+        const registrations = [];
+
+        try {
+          if (typeof serviceWorker.getRegistrations === 'function') {
+            const regs = await serviceWorker.getRegistrations();
+            if (Array.isArray(regs)) {
+              regs.forEach(reg => {
+                if (reg) {
+                  registrations.push(reg);
+                }
+              });
+            }
+          } else if (typeof serviceWorker.getRegistration === 'function') {
+            const reg = await serviceWorker.getRegistration();
+            if (reg) {
+              registrations.push(reg);
+            }
+          } else if (serviceWorker.ready && typeof serviceWorker.ready.then === 'function') {
+            try {
+              const readyReg = await serviceWorker.ready;
+              if (readyReg) {
+                registrations.push(readyReg);
+              }
+            } catch (readyError) {
+              console.warn('Failed to await active service worker', readyError);
+            }
+          }
+        } catch (queryError) {
+          console.warn('Failed to query service worker registrations', queryError);
+        }
+
+        if (!registrations.length) {
+          return false;
+        }
+
         await Promise.all(registrations.map(reg => {
           if (!reg || typeof reg.unregister !== 'function') {
-            return Promise.resolve();
+            return Promise.resolve(false);
           }
           return reg.unregister().catch(unregisterError => {
             console.warn('Service worker unregister failed', unregisterError);
+            return false;
           });
         }));
-      }
-    }
 
-    if (typeof caches !== 'undefined' && caches && typeof caches.keys === 'function') {
-      const keys = await caches.keys();
-      await Promise.all(keys.map(key => {
-        if (!key || typeof caches.delete !== 'function') {
-          return Promise.resolve(false);
-        }
-        return caches.delete(key).catch(cacheError => {
-          console.warn('Failed to delete cache', key, cacheError);
+        return true;
+      } catch (cleanupError) {
+        console.warn('Service worker cleanup failed', cleanupError);
+        return false;
+      }
+    })();
+  }
+
+  if (typeof caches !== 'undefined' && caches && typeof caches.keys === 'function') {
+    cacheCleanupPromise = (async () => {
+      try {
+        const keys = await caches.keys();
+        if (!Array.isArray(keys) || !keys.length) {
           return false;
-        });
-      }));
-    }
-  } catch (error) {
-    console.warn('Cache clear failed', error);
-  } finally {
-    try {
-      if (reloadFallback && typeof reloadFallback.triggerNow === 'function') {
-        reloadFallback.triggerNow();
-      } else {
-        const win = typeof window !== 'undefined' ? window : null;
-        if (!tryForceReload(win) && win && win.location && typeof win.location.reload === 'function') {
-          win.location.reload();
         }
+
+        const explicitName = resolveCineCacheNameForReload();
+        const lowerExplicit = explicitName ? explicitName.toLowerCase() : null;
+        const relevantKeys = keys.filter(key =>
+          isRelevantCacheKeyForReload(key, explicitName, lowerExplicit)
+        );
+
+        if (!relevantKeys.length) {
+          return false;
+        }
+
+        let removedAny = false;
+
+        await Promise.all(relevantKeys.map(key => {
+          if (!key || typeof caches.delete !== 'function') {
+            return Promise.resolve(false);
+          }
+
+          return caches.delete(key)
+            .then(result => {
+              removedAny = removedAny || !!result;
+              return result;
+            })
+            .catch(cacheError => {
+              console.warn('Failed to delete cache', key, cacheError);
+              return false;
+            });
+        }));
+
+        return removedAny;
+      } catch (cacheError) {
+        console.warn('Cache clear failed', cacheError);
+        return false;
       }
-    } catch (reloadError) {
-      console.warn('Forced reload failed', reloadError);
-      if (typeof window !== 'undefined' && window.location && typeof window.location.reload === 'function') {
-        window.location.reload();
+    })();
+  }
+
+  try {
+    await serviceWorkerCleanupPromise;
+  } catch (cleanupError) {
+    console.warn('Service worker cleanup failed', cleanupError);
+  }
+
+  try {
+    if (reloadFallback && typeof reloadFallback.triggerNow === 'function') {
+      reloadFallback.triggerNow();
+    } else {
+      const win = typeof window !== 'undefined' ? window : null;
+      if (!tryForceReload(win) && win && win.location && typeof win.location.reload === 'function') {
+        win.location.reload();
       }
     }
+  } catch (reloadError) {
+    console.warn('Forced reload failed', reloadError);
+    if (typeof window !== 'undefined' && window.location && typeof window.location.reload === 'function') {
+      window.location.reload();
+    }
+  }
+
+  try {
+    await cacheCleanupPromise;
+  } catch (cacheError) {
+    console.warn('Cache clear failed', cacheError);
   }
 }
 
