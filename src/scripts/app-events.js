@@ -6,6 +6,7 @@
           applyDynamicFieldValues, applyBatteryPlateSelectionFromBattery,
           getPowerSelectionSnapshot, applyStoredPowerSelection,
           callCoreFunctionIfAvailable, suspendProjectPersistence,
+          createProjectDeletionBackup,
           resumeProjectPersistence */
 
 const eventsLogger = (function resolveEventsLogger() {
@@ -70,10 +71,15 @@ const AUTO_BACKUP_ALLOWED_REASONS = [
   'export-revert',
   'before-reload',
   'change-threshold',
-  'safeguard',
 ];
 const AUTO_BACKUP_RATE_LIMITED_REASONS = new Set(['import']);
-const AUTO_BACKUP_CADENCE_EXEMPT_REASONS = new Set(['import', 'export', 'export-revert', 'safeguard']);
+const AUTO_BACKUP_CADENCE_EXEMPT_REASONS = new Set([
+  'import',
+  'export',
+  'export-revert',
+  'before-reload',
+  'project-switch',
+]);
 
 const AUTO_BACKUP_REASON_DEDUP_INTERVAL_MS = 2 * 60 * 1000;
 const lastAutoBackupReasonState = new Map();
@@ -1849,67 +1855,71 @@ function ensureAutoBackupBeforeDeletion(context, options = {}) {
     || langTexts.preDeleteBackupFailed
     || fallbackTexts.preDeleteBackupFailed
     || 'Automatic backup failed. The action was cancelled.';
-  const autoBackupOptions = {
-    suppressSuccess: true,
-    suppressError: true,
-    ...(config.autoBackupOptions || {}),
-  };
-  if (!Object.prototype.hasOwnProperty.call(autoBackupOptions, 'reason')) {
-    autoBackupOptions.reason = 'safeguard';
-  }
-  if (!Object.prototype.hasOwnProperty.call(autoBackupOptions, 'force')) {
-    autoBackupOptions.force = true;
-  }
 
-  let backupResult = null;
-  if (typeof autoBackup === 'function') {
-    try {
-      backupResult = autoBackup(autoBackupOptions);
-    } catch (error) {
-      console.error(`Automatic backup before ${context || 'deletion'} failed`, error);
-      backupResult = null;
-    }
-  }
+  const setupSelectElement = getSetupSelectElement();
+  const normalizeProjectName = (value) =>
+    typeof value === 'string' ? value.replace(/\s+/g, ' ').trim() : '';
+  const selectedName = setupSelectElement && typeof setupSelectElement.value === 'string'
+    ? normalizeProjectName(setupSelectElement.value)
+    : '';
+  const typedName = setupNameInput && typeof setupNameInput.value === 'string'
+    ? normalizeProjectName(setupNameInput.value)
+    : '';
+  const rememberedName = normalizeProjectName(
+    typeof lastSetupName === 'string' ? lastSetupName : '',
+  );
+  const isAutoBackupName = (name) => typeof name === 'string' && name.startsWith('auto-backup-');
+  const candidateNames = [selectedName, typedName, rememberedName];
+  const activeProjectName = candidateNames.find((name) => name && !isAutoBackupName(name)) || '';
 
-  let backupName = null;
-  let backupSkipped = null;
-  if (typeof backupResult === 'string') {
-    backupName = backupResult;
-  } else if (backupResult && typeof backupResult === 'object') {
-    if (backupResult.status === 'skipped') {
-      backupSkipped = backupResult;
+  if (!activeProjectName) {
+    if (config.notifyFailure !== false) {
+      showNotification('error', failureMessage);
     }
-    if (typeof backupResult.name === 'string' && backupResult.name) {
-      backupName = backupResult.name;
-    }
-  }
-
-  if (!backupName) {
-    if (backupSkipped) {
-      const reason = typeof backupSkipped.reason === 'string' && backupSkipped.reason
-        ? backupSkipped.reason
-        : 'unspecified';
-      if (reason === 'unchanged' && typeof backupSkipped.name === 'string' && backupSkipped.name) {
-        if (config.notifySuccess !== false) {
-          showNotification('success', successMessage);
-        }
-        return backupSkipped.name;
-      }
-      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-        console.warn(
-          `Automatic backup before ${context || 'deletion'} was skipped (${reason}). The action was cancelled to protect user data.`,
-        );
-      }
-    }
-    showNotification('error', failureMessage);
     return null;
   }
 
-  if (config.notifySuccess !== false) {
-    showNotification('success', successMessage);
+  if (typeof scheduleProjectAutoSave === 'function') {
+    try {
+      scheduleProjectAutoSave(true);
+    } catch (autoSaveError) {
+      console.warn('Failed to flush project autosave before deletion backup', autoSaveError);
+    }
   }
 
-  return backupName;
+  let backupOutcome = { status: 'unsupported' };
+  if (typeof createProjectDeletionBackup === 'function') {
+    try {
+      backupOutcome = createProjectDeletionBackup(activeProjectName);
+    } catch (error) {
+      console.error(`Automatic backup before ${context || 'deletion'} failed`, error);
+      backupOutcome = { status: 'failed' };
+    }
+  }
+
+  if (backupOutcome.status === 'created' || backupOutcome.status === 'skipped') {
+    if (backupOutcome.status === 'created') {
+      noteAutoBackupRelevantChange({ reset: true });
+    }
+    if (config.notifySuccess !== false) {
+      showNotification('success', successMessage);
+    }
+    return typeof backupOutcome.backupName === 'string'
+      && backupOutcome.backupName
+      ? backupOutcome.backupName
+      : activeProjectName;
+  }
+
+  if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+    console.warn(
+      `Automatic backup before ${context || 'deletion'} failed.`,
+      backupOutcome,
+    );
+  }
+  if (config.notifyFailure !== false) {
+    showNotification('error', failureMessage);
+  }
+  return null;
 }
 const autoBackupInterval = setInterval(() => {
   autoBackup({ reason: 'interval' });
