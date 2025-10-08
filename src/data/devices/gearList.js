@@ -6296,6 +6296,26 @@ const gear = {
         "brand": "Manfrotto",
         "bowlSizeMm": 75,
         "material": "Aluminum"
+      },
+      "Cartoni Maxima 40 Head": {
+        "brand": "Cartoni",
+        "bowlSizeMm": 150,
+        "material": "Magnesium"
+      },
+      "Miller CX18 Fluid Head": {
+        "brand": "Miller",
+        "bowlSizeMm": 75,
+        "material": "Magnesium"
+      },
+      "Libec RH45D Head": {
+        "brand": "Libec",
+        "bowlSizeMm": 100,
+        "material": "Aluminum"
+      },
+      "Vinten Vision 10AS Head": {
+        "brand": "Vinten",
+        "bowlSizeMm": 100,
+        "material": "Aluminum"
       }
     },
     "tripods": {
