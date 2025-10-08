@@ -6470,21 +6470,40 @@ body.light-mode #topBar select:focus-visible {
   border-radius: var(--border-radius);
   box-shadow: var(--panel-shadow);
   z-index: 10;
-  max-width: 320px;
+  --diagram-popup-columns: 1;
+  --diagram-popup-min-column-width: 180px;
+  max-width: min(var(--diagram-popup-dynamic-width, 320px), calc(100vw - 24px));
   max-height: min(92vh, calc(100vh - 24px));
   overflow: auto;
 }
 
+.diagram-popup[data-columns="1"] {
+  --diagram-popup-columns: 1;
+}
+
+.diagram-popup[data-columns="2"] {
+  --diagram-popup-columns: 2;
+}
+
+.diagram-popup[data-columns="3"] {
+  --diagram-popup-columns: 3;
+}
+
+.diagram-popup[data-columns="4"] {
+  --diagram-popup-columns: 4;
+}
+
 .diagram-popup--camera {
-  width: min(520px, calc(100vw - 24px));
-  max-width: min(520px, calc(100vw - 24px));
+  --diagram-popup-dynamic-width: 520px;
+  width: min(var(--diagram-popup-dynamic-width, 520px), calc(100vw - 24px));
+  max-width: min(var(--diagram-popup-dynamic-width, 520px), calc(100vw - 24px));
 }
 
 .diagram-popup--camera .connector-summary,
 .diagram-popup--camera .scenario-summary,
 .diagram-popup--camera .icon-box-summary {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(var(--diagram-popup-columns, 1), minmax(var(--diagram-popup-min-column-width, 180px), 1fr));
   column-gap: 6px;
   row-gap: 4px;
 }
