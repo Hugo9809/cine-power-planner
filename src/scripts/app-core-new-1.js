@@ -10479,6 +10479,11 @@ function setLanguage(lang) {
       const fallback = quickStartHeading.textContent || "Quick start checklist";
       applyTextContent(quickStartHeading, "helpQuickStartChecklistTitle", fallback);
     }
+    const onboardingCopyElement = doc ? doc.getElementById("helpOnboardingTutorialCopy") : null;
+    if (onboardingCopyElement) {
+      const fallbackCopy = onboardingCopyElement.textContent || "to walk through every workflow before configuring your first project.";
+      applyTextContent(onboardingCopyElement, "helpOnboardingTutorialCopy", fallbackCopy);
+    }
     const dataSafetyHeading =
       doc && doc.querySelector ? doc.querySelector("#helpDataSafety h4") : null;
     if (dataSafetyHeading) {

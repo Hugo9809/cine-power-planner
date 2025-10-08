@@ -29,6 +29,7 @@ if (typeof require === 'function' && typeof module !== 'undefined' && module && 
     'modules/features/auto-gear-rules.js',
     'modules/features/connection-diagram.js',
     'modules/features/backup.js',
+    'modules/features/onboarding-tour.js',
     'modules/help.js',
     'modules/ui.js',
     'modules/gear-list.js',

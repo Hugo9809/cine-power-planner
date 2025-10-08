@@ -9149,11 +9149,16 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       if (helpNoResultsSuggestionsIntro) {
         applyTextContent(helpNoResultsSuggestionsIntro, "helpNoResultsSuggestionsIntro", "Try these steps to get back on track while keeping your data safe:");
       }
-      var quickStartHeading = doc && doc.querySelector ? doc.querySelector("#helpQuickStartGuide h4") : null;
-      if (quickStartHeading) {
-        var fallback = quickStartHeading.textContent || "Quick start checklist";
-        applyTextContent(quickStartHeading, "helpQuickStartChecklistTitle", fallback);
-      }
+    var quickStartHeading = doc && doc.querySelector ? doc.querySelector("#helpQuickStartGuide h4") : null;
+    if (quickStartHeading) {
+      var fallback = quickStartHeading.textContent || "Quick start checklist";
+      applyTextContent(quickStartHeading, "helpQuickStartChecklistTitle", fallback);
+    }
+    var onboardingCopyElement = doc ? doc.getElementById("helpOnboardingTutorialCopy") : null;
+    if (onboardingCopyElement) {
+      var fallbackCopy = onboardingCopyElement.textContent || "to walk through every workflow before configuring your first project.";
+      applyTextContent(onboardingCopyElement, "helpOnboardingTutorialCopy", fallbackCopy);
+    }
       var dataSafetyHeading = doc && doc.querySelector ? doc.querySelector("#helpDataSafety h4") : null;
       if (dataSafetyHeading) {
         var _fallback = dataSafetyHeading.textContent || "Protect your work";

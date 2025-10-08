@@ -1448,6 +1448,74 @@ const texts = {
       "Jump to the %s for a guided refresher on saving, sharing, and backups.",
     helpNoResultsSuggestionBackup:
       "Open %1$s and start a %2$s to confirm your offline exports before making changes.",
+    helpOnboardingTutorialCopy:
+      "to walk through every workflow before configuring your first project.",
+    onboardingTour: {
+      startLabel: "Start guided tutorial",
+      restartLabel: "Replay guided tutorial",
+      skipLabel: "Skip tutorial",
+      backLabel: "Back",
+      nextLabel: "Next",
+      doneLabel: "Finish tutorial",
+      stepIndicator: "Step {current} of {total}",
+      completionIndicator: "You're ready to build projects",
+      skipConfirmationTitle: "Skip the guided tutorial?",
+      skipConfirmationBody: "You can reopen the tutorial from Help at any time.",
+      skipConfirmationAccept: "Skip tutorial",
+      skipConfirmationCancel: "Continue tutorial",
+      steps: {
+        intro: {
+          title: "Welcome to Cine Power Planner",
+          body:
+            "This walkthrough highlights every workflow needed to protect data, generate gear lists and rehearse backups. Press Next to continue or Skip if you prefer to explore on your own.",
+        },
+        projectOverview: {
+          title: "Create and save your project",
+          body:
+            "Start in Project Overview: enter a Project Name, pick -- New Project -- when you need a clean slate and press Save (or use Ctrl+S/⌘S) to capture snapshots as you experiment.",
+        },
+        deviceSelection: {
+          title: "Select cameras and devices",
+          body:
+            "Open Configure Devices to choose cameras, monitors, power accessories and filters. Search boxes inside every dropdown help you find the right model quickly while offline.",
+        },
+        gearGeneration: {
+          title: "Generate requirements and gear lists",
+          body:
+            "When the build looks right, select Generate Gear List and Project Requirements to capture crew roles, scenarios and automatically suggested items for the printable outputs.",
+        },
+        gearCustomization: {
+          title: "Customise the gear list",
+          body:
+            "Use the Gear List section after generation to fine-tune quantities, swap accessories, apply filters or add custom line items. Changes save immediately with the project.",
+        },
+        autoGear: {
+          title: "Refine automatic gear rules",
+          body:
+            "Open Settings → Automatic Gear Rules to set default monitors, create scenario-based additions and manage backups for the automation engine. Every change stays offline in your browser.",
+        },
+        overviewPrint: {
+          title: "Generate overview & print",
+          body:
+            "Use Generate Overview to build the print-ready summary. From there you can review totals, print directly, or export a PDF for on-set binders and distribution.",
+        },
+        exportImport: {
+          title: "Export and import safely",
+          body:
+            "Export Project downloads a JSON safety bundle for sharing or archiving. Use the Import Project field beside it to restore shared configurations without leaving the planner offline.",
+        },
+        backupRestore: {
+          title: "Back up and rehearse restores",
+          body:
+            "In Settings → Backup & Restore, capture full-app backups, compare auto-backups, rehearse restores and trigger factory resets after saving a safety copy.",
+        },
+        completion: {
+          title: "You're ready to plan",
+          body:
+            "Keep Help open whenever you need deeper guidance. Remember to save often, capture backups before major changes and store exports in multiple offline locations.",
+        },
+      },
+    },
     helpQuickStartChecklistTitle: "Quick start checklist",
     helpDataSafetyTitle: "Protect your work",
     helpRestoreDrillTitle: "Restore rehearsal drill",
@@ -2988,6 +3056,74 @@ const texts = {
       "Apri la %s per un ripasso guidato su salvataggi, condivisioni e backup.",
     helpNoResultsSuggestionBackup:
       "Apri %1$s e avvia una %2$s per confermare le esportazioni offline prima di modificare qualcosa.",
+    helpOnboardingTutorialCopy:
+      "per seguire ogni flusso di lavoro prima di configurare il tuo primo progetto.",
+    onboardingTour: {
+      startLabel: "Avvia tutorial guidato",
+      restartLabel: "Rivedi il tutorial guidato",
+      skipLabel: "Salta tutorial",
+      backLabel: "Indietro",
+      nextLabel: "Avanti",
+      doneLabel: "Termina tutorial",
+      stepIndicator: "Passo {current} di {total}",
+      completionIndicator: "Ora puoi creare progetti",
+      skipConfirmationTitle: "Vuoi saltare il tutorial guidato?",
+      skipConfirmationBody: "Puoi riaprire il tutorial dalla Guida in qualsiasi momento.",
+      skipConfirmationAccept: "Salta tutorial",
+      skipConfirmationCancel: "Continua tutorial",
+      steps: {
+        intro: {
+          title: "Benvenuto in Cine Power Planner",
+          body:
+            "Questo percorso mostra tutti i flussi necessari per proteggere i dati, generare le liste e provare i backup. Premi Avanti per continuare oppure Salta se preferisci esplorare autonomamente.",
+        },
+        projectOverview: {
+          title: "Crea e salva il progetto",
+          body:
+            "Inizia da Panoramica progetto: inserisci un nome, scegli -- Nuovo progetto -- quando serve un foglio bianco e premi Salva (o usa Ctrl+S/⌘S) per catturare gli stati mentre sperimenti.",
+        },
+        deviceSelection: {
+          title: "Seleziona camere e dispositivi",
+          body:
+            "Apri Configura dispositivi per scegliere camere, monitor, accessori di alimentazione e filtri. I campi di ricerca in ogni menu aiutano a trovare rapidamente il modello giusto anche offline.",
+        },
+        gearGeneration: {
+          title: "Genera requisiti e gear list",
+          body:
+            "Quando la configurazione è pronta, seleziona Genera elenco attrezzatura e requisiti del progetto per raccogliere ruoli, scenari e suggerimenti automatici nei report stampabili.",
+        },
+        gearCustomization: {
+          title: "Personalizza la gear list",
+          body:
+            "Usa la sezione Gear List dopo la generazione per regolare quantità, sostituire accessori, applicare filtri o aggiungere voci personalizzate. Le modifiche vengono salvate subito nel progetto.",
+        },
+        autoGear: {
+          title: "Affina le regole automatiche",
+          body:
+            "Apri Impostazioni → Regole automatiche per definire i monitor predefiniti, creare aggiunte basate sugli scenari e gestire i backup del motore automatico. Tutto resta archiviato offline nel browser.",
+        },
+        overviewPrint: {
+          title: "Genera panoramica e stampa",
+          body:
+            "Usa Genera panoramica per costruire il riepilogo pronto per la stampa. Da qui puoi rivedere i totali, stampare subito oppure esportare un PDF per i raccoglitori di set.",
+        },
+        exportImport: {
+          title: "Esporta e importa in sicurezza",
+          body:
+            "Esporta progetto scarica un pacchetto JSON da archiviare o condividere. Il campo Importa progetto accanto permette di ripristinare configurazioni condivise senza lasciare il planner offline.",
+        },
+        backupRestore: {
+          title: "Esegui backup e prove di ripristino",
+          body:
+            "In Impostazioni → Backup & Restore acquisisci backup completi dell'app, confronta gli auto-backup, prova i ripristini e avvia il ripristino di fabbrica dopo aver salvato una copia di sicurezza.",
+        },
+        completion: {
+          title: "Tutto pronto per pianificare",
+          body:
+            "Lascia aperta la Guida quando serve supporto aggiuntivo. Ricorda di salvare spesso, creare backup prima delle modifiche importanti e conservare le esportazioni in più posizioni offline.",
+        },
+      },
+    },
     helpQuickStartChecklistTitle: "Checklist di avvio rapido",
     helpDataSafetyTitle: "Proteggi il tuo lavoro",
     helpRestoreDrillTitle: "Esercitazione di ripristino di prova",
@@ -4538,6 +4674,74 @@ const texts = {
       "Ve a la %s para repasar cómo guardar, compartir y hacer copias de seguridad.",
     helpNoResultsSuggestionBackup:
       "Abre %1$s y comienza un %2$s para confirmar tus exportaciones sin conexión antes de cambiar algo.",
+    helpOnboardingTutorialCopy:
+      "para recorrer cada flujo de trabajo antes de configurar tu primer proyecto.",
+    onboardingTour: {
+      startLabel: "Iniciar tutorial guiado",
+      restartLabel: "Repetir tutorial guiado",
+      skipLabel: "Omitir tutorial",
+      backLabel: "Atrás",
+      nextLabel: "Siguiente",
+      doneLabel: "Finalizar tutorial",
+      stepIndicator: "Paso {current} de {total}",
+      completionIndicator: "Listo para crear proyectos",
+      skipConfirmationTitle: "¿Quieres omitir el tutorial guiado?",
+      skipConfirmationBody: "Puedes volver a abrir el tutorial desde Ayuda cuando lo necesites.",
+      skipConfirmationAccept: "Omitir tutorial",
+      skipConfirmationCancel: "Continuar tutorial",
+      steps: {
+        intro: {
+          title: "Bienvenido a Cine Power Planner",
+          body:
+            "Este recorrido muestra cada flujo para proteger datos, generar listas y ensayar copias de seguridad. Pulsa Siguiente para continuar u Omitir si prefieres explorarlo por tu cuenta.",
+        },
+        projectOverview: {
+          title: "Crea y guarda tu proyecto",
+          body:
+            "Empieza en Panorama del proyecto: escribe un nombre, elige -- Nuevo proyecto -- cuando necesites un lienzo en blanco y pulsa Guardar (o usa Ctrl+S/⌘S) para capturar instantáneas mientras pruebas.",
+        },
+        deviceSelection: {
+          title: "Selecciona cámaras y dispositivos",
+          body:
+            "Abre Configurar dispositivos para elegir cámaras, monitores, accesorios de alimentación y filtros. Los cuadros de búsqueda en cada menú te ayudan a encontrar el modelo adecuado sin conexión.",
+        },
+        gearGeneration: {
+          title: "Genera requisitos y lista de equipo",
+          body:
+            "Cuando la configuración esté lista, selecciona Generar lista de equipo y requisitos del proyecto para reunir roles, escenarios y sugerencias automáticas en los informes imprimibles.",
+        },
+        gearCustomization: {
+          title: "Personaliza la lista de equipo",
+          body:
+            "Usa la sección Lista de equipo después de generarla para ajustar cantidades, cambiar accesorios, aplicar filtros o añadir elementos personalizados. Los cambios se guardan al instante con el proyecto.",
+        },
+        autoGear: {
+          title: "Perfecciona las reglas automáticas",
+          body:
+            "Abre Configuración → Reglas automáticas para definir monitores predeterminados, crear añadidos por escenario y gestionar las copias de seguridad del motor automático. Todo queda almacenado sin conexión en tu navegador.",
+        },
+        overviewPrint: {
+          title: "Genera resumen y listo para imprimir",
+          body:
+            "Usa Generar resumen para construir el informe listo para impresión. Desde ahí puedes revisar totales, imprimir directamente o exportar un PDF para carpetas y equipos.",
+        },
+        exportImport: {
+          title: "Exporta e importa con seguridad",
+          body:
+            "Exportar proyecto descarga un paquete JSON para archivar o compartir. El campo Importar proyecto junto a él restaura configuraciones compartidas sin salir del planner sin conexión.",
+        },
+        backupRestore: {
+          title: "Realiza copias y ensayos de restauración",
+          body:
+            "En Configuración → Copia de seguridad y restaurar puedes capturar copias completas, comparar copias automáticas, ensayar restauraciones y ejecutar el restablecimiento de fábrica tras guardar una copia de seguridad.",
+        },
+        completion: {
+          title: "Todo listo para planificar",
+          body:
+            "Mantén Ayuda abierta cuando necesites más contexto. Recuerda guardar con frecuencia, crear copias antes de cambios importantes y almacenar las exportaciones en varias ubicaciones sin conexión.",
+        },
+      },
+    },
     helpQuickStartChecklistTitle: "Lista de comprobación de inicio rápido",
     helpDataSafetyTitle: "Protege tu trabajo",
    helpRestoreDrillTitle: "Ensayo de restauración",
@@ -6100,6 +6304,74 @@ const texts = {
       "Ouvrez la %s pour revoir comment enregistrer, partager et sauvegarder vos projets.",
     helpNoResultsSuggestionBackup:
       "Ouvrez %1$s et lancez un %2$s afin de confirmer vos exports hors ligne avant de modifier quoi que ce soit.",
+    helpOnboardingTutorialCopy:
+      "pour découvrir chaque flux de travail avant de configurer votre premier projet.",
+    onboardingTour: {
+      startLabel: "Lancer le tutoriel guidé",
+      restartLabel: "Rejouer le tutoriel guidé",
+      skipLabel: "Ignorer le tutoriel",
+      backLabel: "Retour",
+      nextLabel: "Suivant",
+      doneLabel: "Terminer le tutoriel",
+      stepIndicator: "Étape {current} sur {total}",
+      completionIndicator: "Prêt à créer des projets",
+      skipConfirmationTitle: "Ignorer le tutoriel guidé ?",
+      skipConfirmationBody: "Vous pourrez rouvrir le tutoriel depuis Aide à tout moment.",
+      skipConfirmationAccept: "Ignorer le tutoriel",
+      skipConfirmationCancel: "Continuer le tutoriel",
+      steps: {
+        intro: {
+          title: "Bienvenue dans Cine Power Planner",
+          body:
+            "Ce parcours couvre chaque étape pour protéger vos données, générer les listes et répéter les sauvegardes. Appuyez sur Suivant pour continuer ou sur Ignorer si vous préférez explorer librement.",
+        },
+        projectOverview: {
+          title: "Créez et enregistrez votre projet",
+          body:
+            "Commencez par Vue d’ensemble du projet : saisissez un nom, choisissez -- Nouveau projet -- pour repartir de zéro et cliquez sur Enregistrer (ou utilisez Ctrl+S/⌘S) afin de capturer des instantanés pendant vos essais.",
+        },
+        deviceSelection: {
+          title: "Sélectionnez caméras et équipements",
+          body:
+            "Ouvrez Configurer les appareils pour choisir caméras, moniteurs, accessoires d’alimentation et filtres. Les zones de recherche intégrées à chaque menu vous aident à trouver rapidement le bon modèle hors connexion.",
+        },
+        gearGeneration: {
+          title: "Générez exigences et liste de matériel",
+          body:
+            "Lorsque la configuration vous convient, sélectionnez Générer la liste du matériel et les exigences du projet pour rassembler rôles, scénarios et suggestions automatiques dans les exports imprimables.",
+        },
+        gearCustomization: {
+          title: "Personnalisez la liste de matériel",
+          body:
+            "Dans la section Liste du matériel, ajustez les quantités, remplacez des accessoires, appliquez des filtres ou ajoutez vos propres lignes. Chaque modification est enregistrée immédiatement dans le projet.",
+        },
+        autoGear: {
+          title: "Affinez les règles automatiques",
+          body:
+            "Ouvrez Paramètres → Règles de matériel automatique pour définir les moniteurs par défaut, créer des ajouts dépendant des scénarios et gérer les sauvegardes du moteur automatique. Tout reste stocké hors ligne dans votre navigateur.",
+        },
+        overviewPrint: {
+          title: "Générez le résumé à imprimer",
+          body:
+            "Utilisez Générer le résumé pour obtenir la synthèse prête à être imprimée. Vous pouvez y vérifier les totaux, lancer l'impression ou exporter un PDF pour vos dossiers de tournage.",
+        },
+        exportImport: {
+          title: "Exportez et importez en toute sécurité",
+          body:
+            "Exporter le projet télécharge un paquet JSON à archiver ou à partager. Le champ Importer un projet juste à côté restaure une configuration partagée sans quitter l’application hors ligne.",
+        },
+        backupRestore: {
+          title: "Sauvegardez et répétez les restaurations",
+          body:
+            "Dans Paramètres → Sauvegarde et restauration, capturez des sauvegardes complètes, comparez les copies automatiques, répétez des restaurations et lancez la réinitialisation d'usine après avoir enregistré une copie de sécurité.",
+        },
+        completion: {
+          title: "Vous êtes prêt à planifier",
+          body:
+            "Gardez l’Aide ouverte pour approfondir au besoin. Pensez à enregistrer souvent, à créer une sauvegarde avant toute modification majeure et à conserver vos exports dans plusieurs emplacements hors ligne.",
+        },
+      },
+    },
     helpQuickStartChecklistTitle: "Liste de démarrage rapide",
     helpDataSafetyTitle: "Protégez votre travail",
     helpRestoreDrillTitle: "Exercice de répétition de restauration",
@@ -7666,6 +7938,74 @@ const texts = {
       "Spring zur %s für eine geführte Auffrischung zu Speichern, Teilen und Backups.",
     helpNoResultsSuggestionBackup:
       "Öffne %1$s und starte eine %2$s, um deine Offline-Exporte zu bestätigen, bevor du etwas änderst.",
+    helpOnboardingTutorialCopy:
+      "um jeden Arbeitsablauf kennenzulernen, bevor du dein erstes Projekt anlegst.",
+    onboardingTour: {
+      startLabel: "Geführtes Tutorial starten",
+      restartLabel: "Geführtes Tutorial erneut starten",
+      skipLabel: "Tutorial überspringen",
+      backLabel: "Zurück",
+      nextLabel: "Weiter",
+      doneLabel: "Tutorial abschließen",
+      stepIndicator: "Schritt {current} von {total}",
+      completionIndicator: "Bereit für neue Projekte",
+      skipConfirmationTitle: "Geführtes Tutorial überspringen?",
+      skipConfirmationBody: "Du kannst das Tutorial jederzeit über Hilfe wieder öffnen.",
+      skipConfirmationAccept: "Tutorial überspringen",
+      skipConfirmationCancel: "Tutorial fortsetzen",
+      steps: {
+        intro: {
+          title: "Willkommen bei Cine Power Planner",
+          body:
+            "Dieses Tutorial zeigt alle Schritte zum Datensichern, zum Erstellen von Listen und zum Üben von Backups. Drücke Weiter, um fortzufahren, oder Überspringen, wenn du lieber selbst entdeckst.",
+        },
+        projectOverview: {
+          title: "Projekt anlegen und speichern",
+          body:
+            "Beginne im Projektüberblick: Vergib einen Namen, wähle -- Neues Projekt -- für einen leeren Start und klicke auf Speichern (oder nutze Strg+S/⌘S), um deinen Fortschritt festzuhalten.",
+        },
+        deviceSelection: {
+          title: "Geräte auswählen",
+          body:
+            "Öffne Geräte konfigurieren, um Kameras, Monitore, Stromzubehör und Filter auszuwählen. Suchfelder in jedem Dropdown helfen, offline schnell das passende Modell zu finden.",
+        },
+        gearGeneration: {
+          title: "Anforderungen und Liste erzeugen",
+          body:
+            "Wenn der Aufbau passt, wähle Gear-Liste und Projektanforderungen erstellen, um Crew-Rollen, Szenarien und automatische Vorschläge für die Ausdrucke zu sammeln.",
+        },
+        gearCustomization: {
+          title: "Gear-Liste anpassen",
+          body:
+            "In der Gear-Liste kannst du Mengen anpassen, Zubehör tauschen, Filter anwenden oder eigene Positionen hinzufügen. Änderungen werden sofort mit dem Projekt gespeichert.",
+        },
+        autoGear: {
+          title: "Automatische Regeln verfeinern",
+          body:
+            "Unter Einstellungen → Automatische Gear-Regeln legst du Standardmonitore fest, erstellst Szenario-Zusätze und verwaltest die Sicherungen der Automatik. Alles bleibt lokal im Browser gespeichert.",
+        },
+        overviewPrint: {
+          title: "Übersicht erzeugen und drucken",
+          body:
+            "Mit Übersicht generieren erhältst du den druckfertigen Bericht. Prüfe dort die Summen, drucke direkt oder exportiere ein PDF für den Set-Ordner.",
+        },
+        exportImport: {
+          title: "Sicher exportieren und importieren",
+          body:
+            "Projekt exportieren lädt ein JSON-Sicherungsbundle zum Archivieren oder Teilen. Das Feld Projekt importieren daneben stellt geteilte Konfigurationen offline wieder her.",
+        },
+        backupRestore: {
+          title: "Backups und Wiederherstellungen",
+          body:
+            "In Einstellungen → Backup & Restore erstellst du Vollbackups, vergleichst Auto-Sicherungen, probst Wiederherstellungen und setzt bei Bedarf nach einer Sicherung alles zurück.",
+        },
+        completion: {
+          title: "Alles bereit zum Planen",
+          body:
+            "Lass die Hilfe offen, wenn du detailliertere Hinweise brauchst. Speichere regelmäßig, erstelle vor größeren Änderungen ein Backup und bewahre Exporte an mehreren Offline-Orten auf.",
+        },
+      },
+    },
     helpQuickStartChecklistTitle: "Checkliste für den Schnellstart",
     helpDataSafetyTitle: "Schütze deine Arbeit",
     helpRestoreDrillTitle: "Probe für die Wiederherstellung",

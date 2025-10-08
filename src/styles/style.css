@@ -5111,6 +5111,154 @@ textarea:disabled {
   color: var(--inverse-text-color);
 }
 
+.onboarding-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: none;
+  pointer-events: none;
+}
+
+.onboarding-overlay.active {
+  display: block;
+}
+
+.onboarding-backdrop {
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, rgba(12, 18, 28, 0.75) 75%, var(--background-color) 25%);
+  backdrop-filter: blur(2px);
+  pointer-events: auto;
+}
+
+body.dark-mode .onboarding-backdrop {
+  background: rgba(8, 10, 14, 0.82);
+}
+
+body.pink-mode:not(.dark-mode) .onboarding-backdrop {
+  background: color-mix(in srgb, rgba(35, 7, 22, 0.75) 75%, var(--background-color) 25%);
+}
+
+.onboarding-highlight {
+  position: absolute;
+  border-radius: 18px;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.55), 0 0 0 2px var(--accent-color);
+  transition: transform 0.2s ease, width 0.2s ease, height 0.2s ease, opacity 0.2s ease;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.onboarding-card {
+  position: absolute;
+  max-width: min(34rem, calc(100vw - 3rem));
+  padding: clamp(1.25rem, 1vw + 1rem, 1.75rem);
+  border-radius: 18px;
+  background: var(--surface-color);
+  color: var(--text-color);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  border: 1px solid color-mix(in srgb, var(--accent-color) 35%, transparent);
+}
+
+body.dark-mode .onboarding-card {
+  background: rgba(18, 22, 28, 0.95);
+  color: var(--inverse-text-color);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.55);
+}
+
+.onboarding-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--spacing-lg);
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-sm));
+}
+
+.onboarding-progress {
+  margin: 0;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0.01em;
+}
+
+.onboarding-card h2 {
+  margin: 0;
+  color: inherit;
+  border: none;
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-xl));
+}
+
+.onboarding-card p {
+  margin: 0;
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-sm));
+  line-height: var(--line-height-relaxed);
+}
+
+.onboarding-card-actions {
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.onboarding-card-actions button {
+  margin: 0;
+  min-width: 130px;
+}
+
+.onboarding-back-button {
+  background: color-mix(in srgb, var(--control-bg) 85%, rgba(0, 0, 0, 0.05) 15%);
+}
+
+body.dark-mode .onboarding-back-button {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--inverse-text-color);
+}
+
+.onboarding-next-button {
+  background: var(--accent-color);
+  color: var(--inverse-text-color);
+}
+
+.onboarding-next-button:hover,
+.onboarding-next-button:focus-visible {
+  background: color-mix(in srgb, var(--accent-color) 85%, #ffffff 15%);
+  color: var(--inverse-text-color);
+}
+
+body.dark-mode .onboarding-next-button:hover,
+body.dark-mode .onboarding-next-button:focus-visible {
+  background: color-mix(in srgb, var(--accent-color) 90%, rgba(255, 255, 255, 0.1) 10%);
+}
+
+.onboarding-skip {
+  padding-inline: var(--spacing-md);
+  white-space: nowrap;
+}
+
+.onboarding-overlay .onboarding-skip,
+.onboarding-overlay .onboarding-skip:visited {
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-sm));
+}
+
+@media (max-width: 640px) {
+  .onboarding-card {
+    max-width: calc(100vw - 1.5rem);
+    padding: clamp(1rem, 2vw + 0.5rem, 1.5rem);
+  }
+
+  .onboarding-card-actions {
+    justify-content: stretch;
+  }
+
+  .onboarding-card-actions button {
+    flex: 1;
+    min-width: unset;
+  }
+}
+
 #setup-config .form-row:first-of-type {
   clear: both;
 }

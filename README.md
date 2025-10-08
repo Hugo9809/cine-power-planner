@@ -227,26 +227,32 @@ same online or offline.
    should flash briefly while cached files load. Confirm the interface mirrors
    the last session exactly, including any locally stored Uicons or helper
    assets.
-5. Create your first project, press **Enter** (or **Ctrl+S**/`⌘S`) to capture a
+5. Open **Help → Quick start checklist** and press **Start guided tutorial** to
+   follow the step-by-step walkthrough of creating a project, selecting
+   devices, generating gear lists, customising automatic gear rules, exporting,
+   importing and backing up data. Completing or skipping the tour records the
+   preference offline so you can replay it from Help whenever you need a
+   refresher.
+6. Create your first project, press **Enter** (or **Ctrl+S**/`⌘S`) to capture a
    manual save and review the project selector to see the timestamped
    auto-backup that appears after roughly 50 tracked changes or 10 minutes.
-6. Export **Settings → Backup & Restore → Backup** and import the resulting
+7. Export **Settings → Backup & Restore → Backup** and import the resulting
    `planner-backup.json` file into a private browser profile. Verifying the
    restore path early proves that no saves are stranded on a single machine and
    demonstrates the forced pre-restore backup safeguard.
-7. Practice exporting a project bundle (the download defaults to
+8. Practice exporting a project bundle (the download defaults to
    `project-name.json`) and re-importing it on a secondary machine or profile.
    Rehearsing the full save → share → import loop keeps crews confident that
    offline workflows are airtight and that locally stored Uicons, fonts and
    helper scripts follow the project.
-8. Archive the verified backup and project bundle alongside the repository copy
+9. Archive the verified backup and project bundle alongside the repository copy
    you opened. Log the verification date, machine name and operator in the same
    folder (mirroring the recommendations in `docs/backup-rotation-guide.md`) so
    every crew can prove when the drill succeeded. This keeps save, share,
    import, backup and restore workflows provably in sync from the first session
    and gives you redundant recovery media for travel days.
-9. Capture a console screenshot of `window.__cineRuntimeIntegrity` (or rerun
-   `window.cineRuntime.verifyCriticalFlows()` and store the report) to document
+10. Capture a console screenshot of `window.__cineRuntimeIntegrity` (or rerun
+    `window.cineRuntime.verifyCriticalFlows()` and store the report) to document
    that the runtime guard validated every save/share/restore gateway and the
    runtime feedback storage bindings while you rehearsed offline.
 10. Still offline, open the in-app help center and at least one localized
