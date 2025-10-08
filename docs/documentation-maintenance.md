@@ -50,7 +50,8 @@ copy offline.【F:src/scripts/script.js†L92-L183】
    safe backup workflows—document each of its steps when you adjust help topics so every
    translation and offline manual explains how to recover quickly.【F:index.html†L2784-L2804】【F:src/scripts/app-core-new-1.js†L10095-L10142】【F:src/scripts/app-session.js†L10404-L10436】
    Highlight that the global feature search now promotes matches whose labels appear on screen
-   and anything crews used recently before keyword-only hits, that wrapping a phrase in double
+   and anything crews used recently before keyword-only hits, that starting with `recent` or
+   `history` searches just the usage history before expanding to the full catalog, that wrapping a phrase in double
    quotes forces an exact match, and that quoted phrases rise to the top so crews know the full
    control name they typed will surface first even when synonyms exist.【F:src/scripts/app-core-new-2.js†L9188-L9264】【F:index.html†L3268-L3276】
    Hover help now reads from linked selectors (`data-help-target`, `data-hover-help-target` and

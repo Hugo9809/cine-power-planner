@@ -195,7 +195,9 @@ localization steps.
   topic so you always know what will open before pressing **Enter**. Exact
   phrases float to the top, so typing a full control name brings that match up
   before broader keywords. Clearing the field bubbles your most recent matches
-  to the top so repeating frequent crew workflows stays lightning fast.
+  to the top so repeating frequent crew workflows stays lightning fast. Start
+  a query with `recent` or `history` to narrow suggestions to the items you've
+  used lately before scanning the full catalog.
 - **Force reload button** – refresh cached service worker assets without
   deleting projects or devices.
 - **Pinned favorites** – star dropdown entries to keep go-to cameras, batteries

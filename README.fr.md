@@ -195,7 +195,8 @@ Cette routine prouve que sauvegarde, partage, import, backup et restauration fon
   d’aide pour que les parcours clavier atteignent d’abord les commandes essentielles. Les expressions exactes passent désormais en
   tête : saisir le libellé complet d’un contrôle comme « battery health » met cette fonctionnalité en avant avant des correspondances
   plus larges. Lorsque le champ est vidé, les correspondances récemment utilisées remontent en tête afin de répéter les routines
-  d’équipe en un clin d’œil.
+  d’équipe en un clin d’œil. Commencez une requête par `recent` ou `history` pour filtrer d’abord les raccourcis utilisés récemment
+  avant de parcourir tout le catalogue.
 - **Centre d’aide** (`?`, `H`, `F1`, `Ctrl+/`) proposant guides, raccourcis, FAQ et mode aide au survol. La liste «Commencer ici»
   explique désormais comment préparer l’indicateur hors ligne, sécuriser des exports redondants et suivre un exercice de
   restauration afin que l’équipe valide les sauvegardes avant le tournage. Un

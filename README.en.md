@@ -188,7 +188,9 @@ localization steps.
 - **Global search shortcuts** – press `/` or `Ctrl+K` (`⌘K` on macOS) to focus
   the feature search instantly, even when the mobile navigation is collapsed.
   Clearing the field bubbles your most recent matches to the top so repeating
-  frequent crew workflows stays lightning fast.
+  frequent crew workflows stays lightning fast. Start a query with `recent` or
+  `history` to narrow suggestions to the shortcuts you've used lately before
+  browsing the full catalog.
 - **Force reload button** – refresh cached service worker assets without
   deleting projects or devices.
 - **Pinned favorites** – star dropdown entries to keep go-to cameras, batteries
