@@ -7092,6 +7092,9 @@ const loggingHistoryLimitHelpEl = typeof document !== 'undefined'
 const loggingConsoleOutputInput = typeof document !== 'undefined'
   ? document.getElementById('loggingConsoleOutput')
   : null;
+const loggingCaptureConsoleInput = typeof document !== 'undefined'
+  ? document.getElementById('loggingCaptureConsole')
+  : null;
 const loggingCaptureErrorsInput = typeof document !== 'undefined'
   ? document.getElementById('loggingCaptureErrors')
   : null;
@@ -7301,6 +7304,7 @@ function setLoggingControlsDisabled(disabled) {
     loggingNamespaceFilterEl,
     loggingHistoryLimitInput,
     loggingConsoleOutputInput,
+    loggingCaptureConsoleInput,
     loggingCaptureErrorsInput,
     loggingPersistSessionInput,
   ];
@@ -7593,6 +7597,7 @@ function applyLoggingConfig(config) {
     input.setAttribute('aria-checked', checked ? 'true' : 'false');
   };
   setToggleState(loggingConsoleOutputInput, config.consoleOutput !== false);
+  setToggleState(loggingCaptureConsoleInput, config.captureConsole === true);
   setToggleState(loggingCaptureErrorsInput, config.captureGlobalErrors !== false);
   setToggleState(loggingPersistSessionInput, config.persistSession !== false);
 }
@@ -7730,6 +7735,7 @@ function initializeLoggingPanel() {
   };
 
   registerToggleHandler(loggingConsoleOutputInput, 'consoleOutput');
+  registerToggleHandler(loggingCaptureConsoleInput, 'captureConsole');
   registerToggleHandler(loggingCaptureErrorsInput, 'captureGlobalErrors');
   registerToggleHandler(loggingPersistSessionInput, 'persistSession');
 
