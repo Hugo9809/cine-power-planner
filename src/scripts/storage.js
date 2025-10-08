@@ -7890,6 +7890,319 @@ function cloneDiagramPositionsForStorage(positions) {
   }
 }
 
+var PROJECT_FILTER_DEFAULT_SIZE = '4x5.65';
+
+function normalizeImportedFilterValues(raw) {
+  if (raw === null || raw === undefined) {
+    return [];
+  }
+
+  if (Array.isArray(raw)) {
+    const values = [];
+    raw.forEach((item) => {
+      if (item === null || item === undefined) {
+        return;
+      }
+      if (Array.isArray(item)) {
+        values.push(...normalizeImportedFilterValues(item));
+        return;
+      }
+      if (isMapLike(item)) {
+        const converted = convertMapLikeToObject(item);
+        if (converted) {
+          values.push(...normalizeImportedFilterValues(converted));
+          return;
+        }
+      }
+      if (typeof item === 'object') {
+        values.push(...normalizeImportedFilterValues(Object.values(item)));
+        return;
+      }
+      const normalized = String(item).trim();
+      if (normalized) {
+        values.push(normalized);
+      }
+    });
+    return values;
+  }
+
+  if (isMapLike(raw)) {
+    const converted = convertMapLikeToObject(raw);
+    if (converted) {
+      return normalizeImportedFilterValues(converted);
+    }
+  }
+
+  if (typeof raw === 'object') {
+    if (Object.prototype.hasOwnProperty.call(raw, 'values')) {
+      return normalizeImportedFilterValues(raw.values);
+    }
+    if (Object.prototype.hasOwnProperty.call(raw, 'selected')) {
+      return normalizeImportedFilterValues(raw.selected);
+    }
+    return normalizeImportedFilterValues(Object.values(raw));
+  }
+
+  if (typeof raw === 'string') {
+    const trimmed = raw.trim();
+    if (!trimmed || trimmed === '!') {
+      return [];
+    }
+    const parsed = tryParseJSONLike(trimmed);
+    if (parsed.success) {
+      return normalizeImportedFilterValues(parsed.parsed);
+    }
+    return trimmed
+      .split(/[|,]/)
+      .map((value) => value.trim())
+      .filter((value) => value);
+  }
+
+  const normalized = String(raw).trim();
+  return normalized ? [normalized] : [];
+}
+
+function normalizeImportedFilterEntry(entry, fallbackType = '') {
+  if (entry === null || entry === undefined) {
+    return null;
+  }
+
+  if (typeof entry === 'string') {
+    const trimmed = entry.trim();
+    if (!trimmed) {
+      return null;
+    }
+    const parsed = tryParseJSONLike(trimmed);
+    if (parsed.success) {
+      return normalizeImportedFilterEntry(parsed.parsed, fallbackType);
+    }
+    const parts = trimmed.split(':');
+    const typePart = parts.shift();
+    const type = typePart ? typePart.trim() : '';
+    if (!type) {
+      return null;
+    }
+    const sizePart = parts.shift();
+    const size = sizePart && sizePart.trim() ? sizePart.trim() : PROJECT_FILTER_DEFAULT_SIZE;
+    if (!parts.length) {
+      return { type, size, values: [], hasExplicitValues: false };
+    }
+    const rawValues = parts.join(':');
+    if (rawValues === '!') {
+      return { type, size, values: [], hasExplicitValues: true };
+    }
+    const values = normalizeImportedFilterValues(rawValues);
+    return {
+      type,
+      size,
+      values,
+      hasExplicitValues: true,
+    };
+  }
+
+  if (Array.isArray(entry)) {
+    if (!entry.length) {
+      return null;
+    }
+    if (entry.length === 1) {
+      return normalizeImportedFilterEntry(entry[0], fallbackType);
+    }
+    const [typeCandidate, sizeCandidate, valuesCandidate] = entry;
+    let type = typeof typeCandidate === 'string' ? typeCandidate.trim() : '';
+    if (!type && typeof fallbackType === 'string') {
+      type = fallbackType.trim();
+    }
+    if (!type) {
+      return null;
+    }
+    const size = typeof sizeCandidate === 'string' && sizeCandidate.trim()
+      ? sizeCandidate.trim()
+      : PROJECT_FILTER_DEFAULT_SIZE;
+    const hasExplicitValues = entry.length > 2;
+    const values = hasExplicitValues ? normalizeImportedFilterValues(valuesCandidate) : [];
+    return { type, size, values, hasExplicitValues };
+  }
+
+  if (isMapLike(entry)) {
+    const converted = convertMapLikeToObject(entry);
+    if (converted) {
+      return normalizeImportedFilterEntry(converted, fallbackType);
+    }
+  }
+
+  if (typeof entry === 'object') {
+    let type = '';
+    const typeKeys = ['type', 'filter', 'name', 'label'];
+    for (let i = 0; i < typeKeys.length; i += 1) {
+      const key = typeKeys[i];
+      if (typeof entry[key] === 'string') {
+        const candidate = entry[key].trim();
+        if (candidate) {
+          type = candidate;
+          break;
+        }
+      }
+    }
+    if (!type && typeof fallbackType === 'string' && fallbackType.trim()) {
+      type = fallbackType.trim();
+    }
+    if (!type) {
+      return null;
+    }
+
+    const sizeKeys = ['size', 'filterSize', 'format', 'dimension', 'dimensions', 'diameter'];
+    let size = '';
+    for (let i = 0; i < sizeKeys.length; i += 1) {
+      const key = sizeKeys[i];
+      if (typeof entry[key] === 'string') {
+        const candidate = entry[key].trim();
+        if (candidate) {
+          size = candidate;
+          break;
+        }
+      }
+    }
+    if (!size) {
+      size = PROJECT_FILTER_DEFAULT_SIZE;
+    }
+
+    const valueKeys = [
+      'values',
+      'value',
+      'strengths',
+      'strength',
+      'options',
+      'selected',
+      'selections',
+      'choices',
+    ];
+    let hasExplicitValues = false;
+    let values = [];
+    for (let i = 0; i < valueKeys.length; i += 1) {
+      const key = valueKeys[i];
+      if (Object.prototype.hasOwnProperty.call(entry, key)) {
+        hasExplicitValues = true;
+        values = normalizeImportedFilterValues(entry[key]);
+        break;
+      }
+    }
+
+    return { type, size, values, hasExplicitValues };
+  }
+
+  return null;
+}
+
+function serializeNormalizedFilterEntry(entry) {
+  if (!entry || !entry.type) {
+    return null;
+  }
+  const type = entry.type;
+  const size = entry.size && entry.size.trim() ? entry.size.trim() : PROJECT_FILTER_DEFAULT_SIZE;
+  let token = `${type}:${size}`;
+  const values = Array.isArray(entry.values)
+    ? Array.from(
+        new Set(
+          entry.values
+            .map((value) => (typeof value === 'string' ? value.trim() : String(value ?? '').trim()))
+            .filter((value) => value),
+        ),
+      )
+    : [];
+  if (entry.hasExplicitValues || values.length) {
+    token += values.length ? `:${values.join('|')}` : ':!';
+  }
+  return token;
+}
+
+function normalizeImportedFilterValue(value) {
+  if (value === undefined) {
+    return null;
+  }
+  if (value === null) {
+    return '';
+  }
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    if (!trimmed) {
+      return '';
+    }
+    const parsed = tryParseJSONLike(trimmed);
+    if (parsed.success) {
+      return normalizeImportedFilterValue(parsed.parsed);
+    }
+    return trimmed;
+  }
+  if (Array.isArray(value)) {
+    const entries = value
+      .map((entry) => normalizeImportedFilterEntry(entry))
+      .filter(Boolean);
+    if (!entries.length) {
+      return '';
+    }
+    return entries
+      .map((entry) => serializeNormalizedFilterEntry(entry))
+      .filter(Boolean)
+      .join(',');
+  }
+  if (isMapLike(value)) {
+    const converted = convertMapLikeToObject(value);
+    if (converted) {
+      return normalizeImportedFilterValue(converted);
+    }
+  }
+  if (typeof value === 'object') {
+    const singleEntry = normalizeImportedFilterEntry(value);
+    if (singleEntry) {
+      const serialized = serializeNormalizedFilterEntry(singleEntry);
+      return serialized || '';
+    }
+    const entries = [];
+    Object.entries(value).forEach(([key, candidate]) => {
+      const normalized = normalizeImportedFilterEntry(candidate, key);
+      if (normalized) {
+        entries.push(normalized);
+      }
+    });
+    if (!entries.length) {
+      return '';
+    }
+    return entries
+      .map((entry) => serializeNormalizedFilterEntry(entry))
+      .filter(Boolean)
+      .join(',');
+  }
+  return String(value).trim();
+}
+
+function normalizeImportedProjectFilters(info) {
+  if (!isPlainObject(info)) {
+    return;
+  }
+
+  const normalizedFilter = normalizeImportedFilterValue(info.filter);
+  if (normalizedFilter !== null) {
+    if (normalizedFilter) {
+      info.filter = normalizedFilter;
+    } else {
+      delete info.filter;
+    }
+  } else {
+    const fallback = normalizeImportedFilterValue(info.filters);
+    if (fallback !== null) {
+      if (fallback) {
+        info.filter = fallback;
+      } else {
+        delete info.filter;
+      }
+    }
+  }
+
+  if (Object.prototype.hasOwnProperty.call(info, 'filters')) {
+    delete info.filters;
+  }
+}
+
 function cloneProjectGearSelectors(selectors) {
   if (!isPlainObject(selectors)) {
     return null;
@@ -8133,7 +8446,13 @@ function normalizeProject(data) {
       }
 
       if (normalizedProjectInfo) {
+        normalizeImportedProjectFilters(normalizedProjectInfo);
+      }
+      if (normalizedProjectInfo) {
         normalizedProjectInfo = sanitizeImportedProjectInfo(normalizedProjectInfo) || null;
+      }
+      if (normalizedProjectInfo) {
+        normalizeImportedProjectFilters(normalizedProjectInfo);
       }
 
       const normalized = {
@@ -8238,6 +8557,9 @@ function normalizeProject(data) {
         normalized.powerSelection = cloneProjectPowerSelection(normalizedPowerSelection);
       }
       copyAutoBackupMetadata(data, normalized);
+      if (normalized.projectInfo) {
+        normalizeImportedProjectFilters(normalized.projectInfo);
+      }
       if (normalized.projectInfo) {
         const normalizedInfo = normalizeLegacyLongGopStructure(normalized.projectInfo);
         if (normalizedInfo !== normalized.projectInfo) {
