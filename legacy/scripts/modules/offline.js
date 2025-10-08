@@ -1171,6 +1171,78 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     scheduleForceReloadNavigationWarning(locationLike, baseHref, description, before, expected, after);
     return false;
   }
+
+  function attemptForceReloadHistoryFallback(win, locationLike, nextHref, baseHref) {
+    if (!win || !locationLike || typeof nextHref !== 'string' || !nextHref) {
+      return false;
+    }
+
+    var historyLike = null;
+    try {
+      historyLike = win.history || null;
+    } catch (error) {
+      safeWarn('Forced reload history access failed', error);
+      historyLike = null;
+    }
+
+    if (!historyLike || typeof historyLike.replaceState !== 'function') {
+      return false;
+    }
+
+    var beforeRaw = readLocationHrefSafe(locationLike);
+    var before = normaliseHrefForComparison(beforeRaw, baseHref);
+    var expected = normaliseHrefForComparison(nextHref, baseHref);
+
+    var replaceUrl = nextHref;
+    try {
+      var reference = beforeRaw || baseHref || undefined;
+      var parsed = typeof URL === 'function' ? new URL(nextHref, reference) : null;
+      if (parsed) {
+        replaceUrl = "".concat(parsed.pathname || '', parsed.search || '', parsed.hash || '') || parsed.toString();
+      }
+    } catch (error) {
+      safeWarn('Forced reload history fallback URL parse failed', error);
+      replaceUrl = nextHref;
+    }
+
+    var stateSnapshot = null;
+    var hasStateSnapshot = false;
+
+    try {
+      stateSnapshot = historyLike.state;
+      hasStateSnapshot = true;
+    } catch (stateError) {
+      safeWarn('Forced reload history state snapshot failed', stateError);
+    }
+
+    try {
+      historyLike.replaceState(hasStateSnapshot ? stateSnapshot : null, '', replaceUrl);
+    } catch (replaceError) {
+      safeWarn('Forced reload history replaceState failed', replaceError);
+      return false;
+    }
+
+    var afterRaw = readLocationHrefSafe(locationLike);
+    var after = normaliseHrefForComparison(afterRaw, baseHref);
+
+    var updated = expected && (after === expected || after === "".concat(expected, "#")) || before !== after && after && (!expected || after === expected);
+
+    if (!updated) {
+      scheduleForceReloadNavigationWarning(locationLike, baseHref, 'history.replaceState', before, expected, after);
+      return false;
+    }
+
+    if (typeof locationLike.reload === 'function') {
+      try {
+        locationLike.reload();
+        return true;
+      } catch (reloadError) {
+        safeWarn('Forced reload via history replaceState reload failed', reloadError);
+      }
+    }
+
+    return true;
+  }
   function scheduleForceReloadFallbacks(win, locationLike) {
     var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     if (!win || !locationLike) {
@@ -1299,6 +1371,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       navigationTriggered = attemptForceReloadNavigation(location, nextHref, baseHref, function (url) {
         location.href = url;
       }, 'location.href assignment');
+    }
+    if (!navigationTriggered && win && nextHref) {
+      navigationTriggered = attemptForceReloadHistoryFallback(win, location, nextHref, baseHref);
     }
     var canOnlyReload = !nextHref || nextHref === originalHref;
     if (!navigationTriggered && canOnlyReload && hasReload) {
