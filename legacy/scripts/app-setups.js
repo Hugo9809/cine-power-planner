@@ -5757,6 +5757,10 @@ function convertCustomItemsForStaticOutput(root) {
   if (!root) return;
   var doc = root.ownerDocument || (typeof document !== 'undefined' ? document : null);
   if (!doc) return;
+  var isLiveDom = typeof root.isConnected === 'boolean' ? root.isConnected : typeof doc.contains === 'function' && doc.contains(root);
+  if (isLiveDom) {
+    return;
+  }
   var sections = root.querySelectorAll('.gear-custom-section');
   sections.forEach(function (section) {
     var itemsContainer = section.querySelector('.gear-custom-items');

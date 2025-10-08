@@ -6011,6 +6011,13 @@ function convertCustomItemsForStaticOutput(root) {
     const doc = root.ownerDocument || (typeof document !== 'undefined' ? document : null);
     if (!doc) return;
 
+    const isLiveDom = typeof root.isConnected === 'boolean'
+        ? root.isConnected
+        : (typeof doc.contains === 'function' && doc.contains(root));
+    if (isLiveDom) {
+        return;
+    }
+
     const sections = root.querySelectorAll('.gear-custom-section');
     sections.forEach(section => {
         const itemsContainer = section.querySelector('.gear-custom-items');
