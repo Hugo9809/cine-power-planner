@@ -86,6 +86,7 @@ const lastAutoBackupReasonState = new Map();
 
 let autoBackupChangesSinceSnapshot = 0;
 let autoBackupThresholdInProgress = false;
+let autoBackupChangePendingCommit = false;
 let lastAutoBackupCompletedAtMs = 0;
 
 function resetAutoBackupChangeCounter() {
@@ -172,8 +173,33 @@ function triggerAutoBackupForChangeThreshold(details) {
 function noteAutoBackupRelevantChange(details = {}) {
   if (details && details.reset === true) {
     resetAutoBackupChangeCounter();
+    autoBackupChangePendingCommit = false;
     return;
   }
+  const pendingNotification = Boolean(details && details.pending === true);
+  const commitRequested = Boolean(details && details.commit === true);
+
+  if (pendingNotification) {
+    autoBackupChangePendingCommit = true;
+    return;
+  }
+
+  if (commitRequested && !autoBackupChangePendingCommit && details.force !== true) {
+    return;
+  }
+
+  if (commitRequested || autoBackupChangePendingCommit) {
+    autoBackupChangePendingCommit = false;
+    autoBackupChangesSinceSnapshot = Math.min(
+      AUTO_BACKUP_CHANGE_THRESHOLD,
+      autoBackupChangesSinceSnapshot + 1,
+    );
+    if (autoBackupChangesSinceSnapshot >= AUTO_BACKUP_CHANGE_THRESHOLD) {
+      triggerAutoBackupForChangeThreshold(details);
+    }
+    return;
+  }
+
   autoBackupChangesSinceSnapshot = Math.min(
     AUTO_BACKUP_CHANGE_THRESHOLD,
     autoBackupChangesSinceSnapshot + 1,
