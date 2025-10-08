@@ -3184,6 +3184,9 @@ function setSelectValue(select, value) {
       }
     });
   }
+  if (select === cameraSelect && typeof callCoreFunctionIfAvailable === 'function') {
+    callCoreFunctionIfAvailable('updateRecordingMediaOptions');
+  }
   if (typeof adjustGearListSelectWidth === 'function') {
     adjustGearListSelectWidth(select);
   } else if (typeof enqueueCoreBootTask === 'function') {

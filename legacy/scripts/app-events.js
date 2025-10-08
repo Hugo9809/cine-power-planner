@@ -625,6 +625,7 @@ function resetSetupStateToDefaults() {
     }
     var resetSelectToDefault = function resetSelectToDefault(select) {
       if (!select || _typeof(select) !== 'object') return;
+      var isCameraSelect = select === cameraSelect;
       var noneOption = Array.from(select.options || []).find(function (opt) {
         return opt.value === "None";
       });
@@ -634,6 +635,9 @@ function resetSetupStateToDefaults() {
         select.selectedIndex = 0;
       } else {
         select.value = "";
+      }
+      if (isCameraSelect) {
+        callEventsCoreFunction('updateRecordingMediaOptions');
       }
     };
     [cameraSelect, monitorSelect, videoSelect, cageSelect, distanceSelect, batterySelect, hotswapSelect].forEach(resetSelectToDefault);
@@ -872,6 +876,7 @@ addSafeEventListener(setupSelectTarget, "change", function (event) {
     if (setup) {
       setupNameInput.value = setupName;
       cameraSelect.value = setup.camera;
+      callEventsCoreFunction('updateRecordingMediaOptions');
       updateBatteryPlateVisibility();
       batteryPlateSelect.value = setup.batteryPlate || batteryPlateSelect.value;
       applyBatteryPlateSelectionFromBattery(setup.battery, batteryPlateSelect.value);

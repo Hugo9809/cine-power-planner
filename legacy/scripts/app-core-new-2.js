@@ -13335,14 +13335,38 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       setFizConnectors([]);
     }
     function getAllRecordingMedia() {
+      var selectedCameraName =
+        cameraSelect && typeof cameraSelect.value === 'string'
+          ? cameraSelect.value.trim()
+          : '';
+      var normalizedCameraName = selectedCameraName === 'None' ? '' : selectedCameraName;
+      var selectedCamera =
+        normalizedCameraName && devices && devices.cameras
+          ? devices.cameras[normalizedCameraName]
+          : null;
+
+      var hasSpecificMedia = Array.isArray(selectedCamera && selectedCamera.recordingMedia)
+        && selectedCamera.recordingMedia.length > 0;
+
+      var sourceCameras = hasSpecificMedia
+        ? [selectedCamera]
+        : Object.values(devices && devices.cameras || {});
+
       var media = new Set();
-      Object.values(devices.cameras).forEach(function (cam) {
-        if (Array.isArray(cam.recordingMedia)) {
-          cam.recordingMedia.forEach(function (m) {
-            if (m && m.type) media.add(m.type);
-          });
+
+      sourceCameras.forEach(function (cam) {
+        if (!cam || !Array.isArray(cam.recordingMedia)) {
+          return;
         }
+        cam.recordingMedia.forEach(function (m) {
+          if (!m) return;
+          var type = typeof m === 'string' ? m : m.type;
+          if (type) {
+            media.add(type);
+          }
+        });
       });
+
       return Array.from(media).sort(localeSort);
     }
     var recordingMediaOptions = getAllRecordingMedia();
@@ -13477,6 +13501,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       });
     }
     writeCoreScopeValue('getRecordingMedia', getRecordingMedia);
+    writeCoreScopeValue('updateRecordingMediaOptions', updateRecordingMediaOptions);
     function clearRecordingMedia() {
       setRecordingMediaLocal([]);
     }
@@ -14813,6 +14838,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     controllerSelects.forEach(function (sel) {
       return attachSelectSearch(sel);
     });
+    if (cameraSelect) {
+      cameraSelect.addEventListener('change', function () {
+        updateRecordingMediaOptions();
+      });
+    }
     applyFilters();
     setVideoOutputs([]);
     setMonitorVideoInputs([]);
@@ -15782,6 +15812,8 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       return downloadSharedProject;
     }], ['clearBatteryPlates', function () {
       return clearBatteryPlates;
+    }], ['updateRecordingMediaOptions', function () {
+      return updateRecordingMediaOptions;
     }], ['clearRecordingMedia', function () {
       return clearRecordingMedia;
     }], ['clearLensMounts', function () {
