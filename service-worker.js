@@ -275,6 +275,14 @@ function scheduleCachePut(event, request, response, errorMessage, cachePromiseOv
     return;
   }
 
+  let cacheableResponse;
+  try {
+    cacheableResponse = response.clone();
+  } catch (cloneError) {
+    serviceWorkerLog.warn('Unable to clone response for cache update.', cloneError);
+    return;
+  }
+
   const performCachePut = async () => {
     try {
       const cachePromise =
@@ -282,7 +290,7 @@ function scheduleCachePut(event, request, response, errorMessage, cachePromiseOv
           ? cachePromiseOverride
           : caches.open(CACHE_NAME);
       const cache = await cachePromise;
-      await cache.put(request, response.clone());
+      await cache.put(request, cacheableResponse);
     } catch (cacheError) {
       if (errorMessage) {
         serviceWorkerLog.warn(errorMessage, cacheError);
