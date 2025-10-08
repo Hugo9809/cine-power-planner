@@ -1083,13 +1083,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     scheduleForceReloadNavigationWarning(locationLike, baseHref, description, before, expected, after);
     return false;
   }
-  function scheduleForceReloadFallbacks(win, locationLike, options) {
+  function scheduleForceReloadFallbacks(win, locationLike) {
+    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     if (!win || !locationLike) {
       return;
     }
-
-    options = options || {};
-
     var schedule = null;
     try {
       if (typeof win.setTimeout === 'function') {
@@ -1098,7 +1096,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     } catch (error) {
       void error;
     }
-
     if (!schedule) {
       if (typeof setTimeout === 'function') {
         schedule = setTimeout;
@@ -1106,16 +1103,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         return;
       }
     }
-
     var hasReload = options.hasReload === true && typeof locationLike.reload === 'function';
     var baseHref = typeof options.baseHref === 'string' ? options.baseHref : '';
     var nextHref = typeof options.nextHref === 'string' ? options.nextHref : '';
     var originalHref = typeof options.originalHref === 'string' ? options.originalHref : '';
     var fallbackHref = nextHref || baseHref || originalHref || '';
     var hashBase = fallbackHref ? fallbackHref.split('#')[0] : baseHref || originalHref || '';
-    var hashFallback = hashBase ? hashBase + '#forceReload-' + Date.now().toString(36) : '';
+    var hashFallback = hashBase ? "".concat(hashBase, "#forceReload-").concat(Date.now().toString(36)) : '';
     var steps = [];
-
     if (hasReload) {
       steps.push({
         delay: 350,
@@ -1128,7 +1123,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
       });
     }
-
     if (fallbackHref) {
       if (typeof locationLike.assign === 'function') {
         steps.push({
@@ -1142,7 +1136,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           }
         });
       }
-
       if (typeof locationLike.replace === 'function') {
         steps.push({
           delay: hasReload ? 1150 : 650,
@@ -1155,7 +1148,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           }
         });
       }
-
       steps.push({
         delay: hasReload ? 1450 : 950,
         run: function run() {
@@ -1167,7 +1159,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
       });
     }
-
     if (hashFallback && hashFallback !== fallbackHref) {
       steps.push({
         delay: hasReload ? 1750 : 1250,
@@ -1180,11 +1171,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
       });
     }
-
     if (!steps.length) {
       return;
     }
-
     steps.forEach(function (step) {
       try {
         schedule(step.run, step.delay);
@@ -1193,7 +1182,6 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     });
   }
-
   function triggerReload(windowOverride) {
     var win = resolveWindow(windowOverride);
     if (!win || !win.location) {

@@ -5660,6 +5660,9 @@ function saveCurrentGearList() {
     }
   }
   if (typeof saveProject === 'function' && typeof effectiveStorageKey === 'string') {
+    if (typeof setActiveProjectCompressionHold === 'function') {
+      setActiveProjectCompressionHold(effectiveStorageKey);
+    }
     var payload = {
       projectInfo: projectInfoSnapshot,
       gearListAndProjectRequirementsGenerated: gearListGenerated

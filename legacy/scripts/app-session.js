@@ -3169,6 +3169,22 @@ function restoreSessionState() {
     });
   }
   lastSetupName = setupSelect ? setupSelect.value : '';
+  if (typeof setActiveProjectCompressionHold === 'function') {
+    var compressionHoldKey = '';
+    if (typeof getCurrentProjectStorageKey === 'function') {
+      try {
+        compressionHoldKey = getCurrentProjectStorageKey({
+          allowTyped: true
+        }) || '';
+      } catch (holdError) {
+        console.warn('Unable to determine active project key for compression hold after session restore', holdError);
+        compressionHoldKey = setupSelect && typeof setupSelect.value === 'string' ? setupSelect.value : '';
+      }
+    } else if (setupSelect && typeof setupSelect.value === 'string') {
+      compressionHoldKey = setupSelect.value;
+    }
+    setActiveProjectCompressionHold(compressionHoldKey);
+  }
   restoringSession = false;
   saveCurrentSession();
   var pendingAutoSaveState = projectAutoSavePendingWhileRestoring;
@@ -4556,15 +4572,13 @@ if (settingsButton && settingsDialog) {
         }
         invokeSessionOpenAutoGearEditor(ruleId, options);
       } else if (button.classList.contains('auto-gear-duplicate')) {
-        duplicateAutoGearRule(button.dataset.ruleId || '', button.dataset.ruleIndex);
+        var _ruleId = button.dataset.ruleId || '';
+        duplicateAutoGearRule(_ruleId, button.dataset.ruleIndex);
       } else if (button.classList.contains('auto-gear-delete')) {
-        var deleteRuleId = button.dataset.ruleId || '';
-        var deleteRuleIndex = button.dataset.ruleIndex;
-        if (deleteRuleIndex !== undefined) {
-          deleteAutoGearRule(deleteRuleId, deleteRuleIndex);
-        } else {
-          deleteAutoGearRule(deleteRuleId);
-        }
+        var _ruleId2 = button.dataset.ruleId || '';
+        var _ruleIndex = button.dataset.ruleIndex;
+        var args = _ruleIndex !== undefined ? [_ruleId2, _ruleIndex] : [_ruleId2];
+        callSessionCoreFunction('deleteAutoGearRule', args);
       }
     });
   }
@@ -7060,8 +7074,8 @@ function refreshStoragePersistenceStatus() {
 function _refreshStoragePersistenceStatus() {
   _refreshStoragePersistenceStatus = _asyncToGenerator(_regenerator().m(function _callee() {
     var options,
-      _ref27,
-      _ref27$fromRequest,
+      _ref26,
+      _ref26$fromRequest,
       fromRequest,
       checkToken,
       storageManager,
@@ -7082,7 +7096,7 @@ function _refreshStoragePersistenceStatus() {
           }
           return _context.a(2);
         case 1:
-          _ref27 = options || {}, _ref27$fromRequest = _ref27.fromRequest, fromRequest = _ref27$fromRequest === void 0 ? false : _ref27$fromRequest;
+          _ref26 = options || {}, _ref26$fromRequest = _ref26.fromRequest, fromRequest = _ref26$fromRequest === void 0 ? false : _ref26$fromRequest;
           checkToken = ++storagePersistenceCheckToken;
           storagePersistenceState.checking = true;
           if (!fromRequest) {
@@ -8458,14 +8472,11 @@ function attemptForceReloadNavigation(locationLike, nextHref, baseHref, applyFn,
   scheduleForceReloadNavigationWarning(locationLike, baseHref, description, before, expected, after);
   return false;
 }
-
-function scheduleForceReloadFallbacks(win, locationLike, options) {
+function scheduleForceReloadFallbacks(win, locationLike) {
+  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
   if (!win || !locationLike) {
     return;
   }
-
-  options = options || {};
-
   var schedule = null;
   try {
     if (typeof win.setTimeout === 'function') {
@@ -8474,7 +8485,6 @@ function scheduleForceReloadFallbacks(win, locationLike, options) {
   } catch (error) {
     void error;
   }
-
   if (!schedule) {
     if (typeof setTimeout === 'function') {
       schedule = setTimeout;
@@ -8482,16 +8492,14 @@ function scheduleForceReloadFallbacks(win, locationLike, options) {
       return;
     }
   }
-
   var hasReload = options.hasReload === true && typeof locationLike.reload === 'function';
   var baseHref = typeof options.baseHref === 'string' ? options.baseHref : '';
   var nextHref = typeof options.nextHref === 'string' ? options.nextHref : '';
   var originalHref = typeof options.originalHref === 'string' ? options.originalHref : '';
   var fallbackHref = nextHref || baseHref || originalHref || '';
   var hashBase = fallbackHref ? fallbackHref.split('#')[0] : baseHref || originalHref || '';
-  var hashFallback = hashBase ? hashBase + '#forceReload-' + Date.now().toString(36) : '';
+  var hashFallback = hashBase ? "".concat(hashBase, "#forceReload-").concat(Date.now().toString(36)) : '';
   var steps = [];
-
   if (hasReload) {
     steps.push({
       delay: 350,
@@ -8504,7 +8512,6 @@ function scheduleForceReloadFallbacks(win, locationLike, options) {
       }
     });
   }
-
   if (fallbackHref) {
     if (typeof locationLike.assign === 'function') {
       steps.push({
@@ -8518,7 +8525,6 @@ function scheduleForceReloadFallbacks(win, locationLike, options) {
         }
       });
     }
-
     if (typeof locationLike.replace === 'function') {
       steps.push({
         delay: hasReload ? 1150 : 650,
@@ -8531,7 +8537,6 @@ function scheduleForceReloadFallbacks(win, locationLike, options) {
         }
       });
     }
-
     steps.push({
       delay: hasReload ? 1450 : 950,
       run: function run() {
@@ -8543,7 +8548,6 @@ function scheduleForceReloadFallbacks(win, locationLike, options) {
       }
     });
   }
-
   if (hashFallback && hashFallback !== fallbackHref) {
     steps.push({
       delay: hasReload ? 1750 : 1250,
@@ -8556,11 +8560,9 @@ function scheduleForceReloadFallbacks(win, locationLike, options) {
       }
     });
   }
-
   if (!steps.length) {
     return;
   }
-
   steps.forEach(function (step) {
     try {
       schedule(step.run, step.delay);
@@ -8569,7 +8571,6 @@ function scheduleForceReloadFallbacks(win, locationLike, options) {
     }
   });
 }
-
 function prepareForceReloadContext(win) {
   if (!win || !win.location) {
     return null;
@@ -8593,7 +8594,6 @@ function prepareForceReloadContext(win) {
     baseHref: baseHref
   };
 }
-
 function executeForceReloadContext(context) {
   if (!context || !context.location) {
     return false;
@@ -8640,7 +8640,6 @@ function executeForceReloadContext(context) {
   }
   return navigationTriggered;
 }
-
 function tryForceReload(win) {
   var context = prepareForceReloadContext(win);
   if (!context) {
@@ -8648,7 +8647,6 @@ function tryForceReload(win) {
   }
   return executeForceReloadContext(context);
 }
-
 function createReloadFallback(win) {
   var delayMs = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 4500;
   if (!win) {
@@ -8729,7 +8727,6 @@ function createReloadFallback(win) {
     }
   };
 }
-
 function clearCachesAndReload() {
   return _clearCachesAndReload.apply(this, arguments);
 }
@@ -11140,6 +11137,7 @@ function initApp() {
   if (sharedLinkRow) {
     sharedLinkRow.classList.remove('hidden');
   }
+  setLanguage(currentLang);
   populateEnvironmentDropdowns();
   populateLensDropdown();
   populateFilterDropdown();
@@ -11153,24 +11151,34 @@ function initApp() {
     renderFilterDetails();
   }
   populateUserButtonDropdowns();
-  document.querySelectorAll('#projectForm select').forEach(function (sel) {
-    attachSelectSearch(sel);
-    callSessionCoreFunction('initFavoritableSelect', [sel], {
-      defer: true
+  schedulePostRenderTask(function () {
+    document.querySelectorAll('#projectForm select').forEach(function (sel) {
+      attachSelectSearch(sel);
+      callSessionCoreFunction('initFavoritableSelect', [sel], {
+        defer: true
+      });
     });
   });
-  if (typeof globalThis !== 'undefined' && typeof globalThis.setupInstallBanner === 'function') {
-    globalThis.setupInstallBanner();
-  }
-  setLanguage(currentLang);
-  if (typeof populateUserButtonDropdowns === 'function') {
-    try {
-      populateUserButtonDropdowns();
-    } catch (userButtonError) {
-      console.warn('Failed to refresh user button selectors after applying current language', userButtonError);
+  schedulePostRenderTask(function () {
+    if (typeof globalThis !== 'undefined' && typeof globalThis.setupInstallBanner === 'function') {
+      try {
+        globalThis.setupInstallBanner();
+      } catch (installError) {
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn('Failed to set up install banner', installError);
+        }
+      }
     }
-  }
-  maybeShowIosPwaHelp();
+    if (typeof maybeShowIosPwaHelp === 'function') {
+      try {
+        maybeShowIosPwaHelp();
+      } catch (iosHelpError) {
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn('Failed to display iOS PWA help prompt', iosHelpError);
+        }
+      }
+    }
+  });
   resetDeviceForm();
   ensureDefaultProjectInfoSnapshot();
   restoreSessionState();
@@ -11240,6 +11248,37 @@ function updateFeedbackTemperatureOptionsSafe() {
     option.textContent = "".concat(option.value, "\xB0C");
   });
 }
+var POST_RENDER_TIMEOUT_MS = 120;
+function schedulePostRenderTask(task) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  if (typeof task !== 'function') {
+    return;
+  }
+  var timeout = typeof options.timeout === 'number' && options.timeout >= 0 ? options.timeout : POST_RENDER_TIMEOUT_MS;
+  var runTaskSafely = function runTaskSafely(deadline) {
+    try {
+      task(deadline);
+    } catch (taskError) {
+      if (typeof console !== 'undefined' && typeof console.error === 'function') {
+        console.error('Deferred task failed during post-render scheduling', taskError);
+      }
+    }
+  };
+  var scheduleIdle = function scheduleIdle() {
+    if (typeof requestIdleCallback === 'function') {
+      requestIdleCallback(runTaskSafely, {
+        timeout: timeout
+      });
+      return;
+    }
+    setTimeout(runTaskSafely, timeout);
+  };
+  if (typeof requestAnimationFrame === 'function') {
+    requestAnimationFrame(scheduleIdle);
+  } else {
+    scheduleIdle();
+  }
+}
 function populateEnvironmentDropdowns() {
   var tempSelect = document.getElementById('fbTemperature');
   if (tempSelect) {
@@ -11256,14 +11295,18 @@ function populateLensDropdown() {
   var previousSelection = new Set(Array.from(lensSelect.selectedOptions || []).map(function (opt) {
     return opt.value;
   }));
-  lensSelect.innerHTML = '';
+  var fragment = document.createDocumentFragment();
   if (!lensSelect.multiple) {
     var emptyOpt = document.createElement('option');
     emptyOpt.value = '';
-    lensSelect.appendChild(emptyOpt);
+    fragment.appendChild(emptyOpt);
   }
-  Object.keys(lensData).sort(localeSort).forEach(function (name) {
+  var lensNames = Object.keys(lensData);
+  var sortFn = typeof localeSort === 'function' ? localeSort : undefined;
+  lensNames.sort(sortFn);
+  for (var _index0 = 0; _index0 < lensNames.length; _index0 += 1) {
     var _ref23, _lens$minFocusMeters;
+    var name = lensNames[_index0];
     var opt = document.createElement('option');
     opt.value = name;
     var lens = lensData[name] || {};
@@ -11280,8 +11323,10 @@ function populateLensDropdown() {
     if (previousSelection.has(name)) {
       opt.selected = true;
     }
-    lensSelect.appendChild(opt);
-  });
+    fragment.appendChild(opt);
+  }
+  lensSelect.innerHTML = '';
+  lensSelect.appendChild(fragment);
 }
 function populateCameraPropertyDropdown(selectId, property) {
   var selected = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
@@ -11318,17 +11363,21 @@ function populateCodecDropdown() {
 function populateFilterDropdown() {
   var select = resolveFilterSelectElement();
   if (select && devices && Array.isArray(devices.filterOptions)) {
+    var fragment = document.createDocumentFragment();
     if (!select.multiple) {
       var emptyOpt = document.createElement('option');
       emptyOpt.value = '';
-      select.appendChild(emptyOpt);
+      fragment.appendChild(emptyOpt);
     }
-    devices.filterOptions.forEach(function (f) {
+    for (var _index1 = 0; _index1 < devices.filterOptions.length; _index1 += 1) {
+      var value = devices.filterOptions[_index1];
       var opt = document.createElement('option');
-      opt.value = f;
-      opt.textContent = f;
-      select.appendChild(opt);
-    });
+      opt.value = value;
+      opt.textContent = value;
+      fragment.appendChild(opt);
+    }
+    select.innerHTML = '';
+    select.appendChild(fragment);
   }
 }
 var filterId = function filterId(t) {
@@ -11414,45 +11463,59 @@ function createFilterValueSelect(type, selected) {
       checkbox.removeAttribute('checked');
     }
   };
-  opts.forEach(function (o) {
+  var optionsByValue = new Map();
+  var optionFragment = document.createDocumentFragment();
+  for (var _index10 = 0; _index10 < opts.length; _index10 += 1) {
+    var value = opts[_index10];
     var opt = document.createElement('option');
-    opt.value = o;
-    opt.textContent = o;
-    syncOption(opt, selectedVals.includes(o));
-    sel.appendChild(opt);
-  });
+    opt.value = value;
+    opt.textContent = value;
+    syncOption(opt, selectedVals.includes(value));
+    optionsByValue.set(value, opt);
+    optionFragment.appendChild(opt);
+  }
+  sel.appendChild(optionFragment);
   sel.size = opts.length;
   sel.style.display = 'none';
   var container = document.createElement('span');
   container.className = 'filter-values-container';
   var checkboxName = "filterValues-".concat(filterId(type));
-  opts.forEach(function (o) {
+  var checkboxFragment = document.createDocumentFragment();
+  var checkboxesByValue = new Map();
+  var _loop = function _loop() {
+    var value = opts[_index11];
     var lbl = document.createElement('label');
     lbl.className = 'filter-value-option';
     var cb = document.createElement('input');
     cb.type = 'checkbox';
     cb.name = checkboxName;
-    cb.value = o;
-    syncCheckbox(cb, selectedVals.includes(o));
+    cb.value = value;
+    syncCheckbox(cb, selectedVals.includes(value));
     cb.addEventListener('change', function () {
-      var opt = Array.from(sel.options).find(function (opt) {
-        return opt.value === o;
-      });
-      if (opt) syncOption(opt, cb.checked);
+      var opt = optionsByValue.get(value);
+      if (opt) {
+        syncOption(opt, cb.checked);
+      }
       syncCheckbox(cb, cb.checked);
       sel.dispatchEvent(new Event('change'));
     });
     lbl.appendChild(cb);
-    lbl.appendChild(document.createTextNode(o));
-    container.appendChild(lbl);
-  });
+    lbl.appendChild(document.createTextNode(value));
+    checkboxesByValue.set(value, cb);
+    checkboxFragment.appendChild(lbl);
+  };
+  for (var _index11 = 0; _index11 < opts.length; _index11 += 1) {
+    _loop();
+  }
+  container.appendChild(checkboxFragment);
   sel.addEventListener('change', function () {
-    Array.from(container.querySelectorAll('input[type="checkbox"]')).forEach(function (cb) {
-      var opt = Array.from(sel.options).find(function (opt) {
-        return opt.value === cb.value;
-      });
-      if (opt) syncOption(opt, opt.selected);
-      syncCheckbox(cb, !!opt && opt.selected);
+    optionsByValue.forEach(function (opt, value) {
+      var selected = !!opt && opt.selected;
+      syncOption(opt, selected);
+      var checkbox = checkboxesByValue.get(value);
+      if (checkbox) {
+        syncCheckbox(checkbox, selected);
+      }
     });
   });
   container.appendChild(sel);
@@ -12124,12 +12187,13 @@ function populateUserButtonDropdowns() {
     var previouslySelected = new Set(Array.from(sel.selectedOptions || []).map(function (opt) {
       return opt.value;
     }));
-    sel.innerHTML = '';
-    items.forEach(function (_ref26) {
-      var value = _ref26.value,
-        label = _ref26.label;
+    var fragment = document.createDocumentFragment();
+    for (var _index12 = 0; _index12 < items.length; _index12 += 1) {
+      var _items$_index = items[_index12],
+        value = _items$_index.value,
+        label = _items$_index.label;
       if (!value) {
-        return;
+        continue;
       }
       var opt = document.createElement('option');
       opt.value = value;
@@ -12137,8 +12201,8 @@ function populateUserButtonDropdowns() {
       if (previouslySelected.has(value)) {
         opt.selected = true;
       }
-      sel.appendChild(opt);
-    });
+      fragment.appendChild(opt);
+    }
     previouslySelected.forEach(function (value) {
       if (knownValues.has(value)) {
         return;
@@ -12147,9 +12211,11 @@ function populateUserButtonDropdowns() {
       opt.value = value;
       opt.textContent = value;
       opt.selected = true;
-      sel.appendChild(opt);
+      fragment.appendChild(opt);
     });
-    var optionCount = sel.options.length;
+    sel.innerHTML = '';
+    sel.appendChild(fragment);
+    var optionCount = sel.options ? sel.options.length : 0;
     sel.size = optionCount > 0 ? optionCount : USER_BUTTON_FUNCTION_ITEMS.length;
   });
 }
