@@ -86,9 +86,13 @@ module.exports = [
     },
   },
   {
-    files: ['src/scripts/modern-support-check.js'],
+    files: ['**/modern-support-check.{js,mjs}'],
     languageOptions: {
+      ecmaVersion: 2021,
       sourceType: 'module',
+      globals: {
+        ...baseGlobals,
+      },
     },
   },
   ...appScriptConfigs,
