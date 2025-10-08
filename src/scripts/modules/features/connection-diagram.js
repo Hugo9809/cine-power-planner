@@ -162,6 +162,18 @@
         ? GLOBAL_SCOPE.formatSvgCoordinate(value)
         : (Number.isFinite(value) ? String(value) : '0'))
     );
+    const getSafeGenerateConnectorSummary = fallbackGetter(
+      context.getSafeGenerateConnectorSummary,
+      () => {
+        if (MODULE_BASE && typeof MODULE_BASE.safeGenerateConnectorSummary === 'function') {
+          return MODULE_BASE.safeGenerateConnectorSummary.bind(MODULE_BASE);
+        }
+        if (GLOBAL_SCOPE && typeof GLOBAL_SCOPE.safeGenerateConnectorSummary === 'function') {
+          return GLOBAL_SCOPE.safeGenerateConnectorSummary;
+        }
+        return null;
+      }
+    );
 
     const ensureArray = value => {
       if (!value) return [];
@@ -173,6 +185,7 @@
     let manualPositions = {};
     let lastDiagramPositions = {};
     let cleanupDiagramInteractions = null;
+    let lastPopupEntries = {};
 
     const resolveSetupContainer = () => getSetupDiagramContainer();
     const resolveDiagramLegend = () => getDiagramLegend();
@@ -201,6 +214,42 @@
     const resolveBatterySelect = () => getBatterySelect();
     const resolveMotorSelects = () => ensureArray(getMotorSelects());
     const resolveControllerSelects = () => ensureArray(getControllerSelects());
+    const escapeHtml = value => {
+      if (value === null || value === undefined) return '';
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    };
+
+    const resolveDeviceInfo = (devicesObj, categoryPath, name) => {
+      if (!devicesObj || !categoryPath || !name) return null;
+      const segments = String(categoryPath).split('.').filter(Boolean);
+      let cursor = devicesObj;
+      for (let i = 0; i < segments.length; i += 1) {
+        const key = segments[i];
+        if (!cursor || typeof cursor !== 'object') {
+          cursor = null;
+          break;
+        }
+        cursor = cursor[key];
+      }
+      if (!cursor || typeof cursor !== 'object') return null;
+      try {
+        return cursor[name] || null;
+      } catch (error) {
+        void error;
+        return null;
+      }
+    };
+
+    const popupClassForCategory = category => {
+      if (!category) return '';
+      if (category === 'cameras') return 'diagram-popup--camera';
+      return '';
+    };
 
     function normalizeDiagramPositionsInput(positions) {
       if (!positions || typeof positions !== 'object') {
@@ -922,6 +971,38 @@
       if (popup) setupDiagramContainer.appendChild(popup);
       setupDiagramContainer.insertAdjacentHTML('beforeend', svg);
 
+      const popupEntries = {};
+      const safeSummaryFn = getSafeGenerateConnectorSummary();
+      Object.entries(nodeMap).forEach(([nodeId, meta]) => {
+        const label = pos[nodeId]?.label || meta?.name || nodeId;
+        const safeLabel = escapeHtml(label);
+        const className = popupClassForCategory(meta?.category);
+        let summaryHtml = '';
+        if (typeof safeSummaryFn === 'function') {
+          const deviceInfo = resolveDeviceInfo(devices, meta?.category, meta?.name);
+          if (deviceInfo) {
+            try {
+              summaryHtml = safeSummaryFn(deviceInfo) || '';
+            } catch (summaryError) {
+              void summaryError;
+            }
+          }
+        }
+        let content = `<div class="diagram-popup-heading"><strong>${safeLabel}</strong></div>`;
+        if (summaryHtml) {
+          content += summaryHtml;
+        } else {
+          content += `<p>${safeLabel}</p>`;
+        }
+        popupEntries[nodeId] = {
+          className,
+          content,
+          label: safeLabel,
+        };
+      });
+
+      lastPopupEntries = popupEntries;
+
       const svgEl = setupDiagramContainer.querySelector('svg');
       if (!svgEl) return;
 
@@ -938,6 +1019,8 @@
       }
 
       lastDiagramPositions = Object.fromEntries(Object.entries(pos));
+
+      enableDiagramInteractions();
     }
 
     function enableDiagramInteractions() {
@@ -945,6 +1028,15 @@
       if (!setupDiagramContainer) return;
       const svg = setupDiagramContainer.querySelector('svg');
       if (!svg) return;
+
+      const popup = setupDiagramContainer.querySelector('#diagramPopup');
+      const hidePopup = () => {
+        if (!popup) return;
+        popup.style.display = 'none';
+        popup.setAttribute('hidden', '');
+        popup.innerHTML = '';
+      };
+      hidePopup();
 
       if (cleanupDiagramInteractions) cleanupDiagramInteractions();
 
@@ -1060,6 +1152,7 @@
         panPointerStart = pos;
         panStart = { ...pan };
         if (e.touches) e.preventDefault();
+        hidePopup();
       };
       const onPanMove = e => {
         if (!panning || !panPointerStart) return;
@@ -1086,6 +1179,7 @@
         dragPointerStart = getPos(e);
         if (e.touches) e.preventDefault();
         e.stopPropagation();
+        hidePopup();
       };
       const onDragMove = e => {
         if (!dragId || !dragPointerStart) return;
@@ -1132,6 +1226,81 @@
         if (e.touches) e.preventDefault();
       };
 
+      let activePopupNode = null;
+      const positionPopup = (nodeEl) => {
+        if (!popup || !nodeEl) return;
+        const rect = typeof nodeEl.getBoundingClientRect === 'function' ? nodeEl.getBoundingClientRect() : null;
+        if (!rect) return;
+        const viewportWidth = windowObj && Number.isFinite(windowObj.innerWidth)
+          ? windowObj.innerWidth
+          : (document?.documentElement?.clientWidth || 0);
+        const viewportHeight = windowObj && Number.isFinite(windowObj.innerHeight)
+          ? windowObj.innerHeight
+          : (document?.documentElement?.clientHeight || 0);
+        const margin = 12;
+        popup.style.visibility = 'hidden';
+        popup.style.display = 'block';
+        popup.removeAttribute('hidden');
+        const popupRect = typeof popup.getBoundingClientRect === 'function' ? popup.getBoundingClientRect() : null;
+        let left = rect.right + margin;
+        let top = rect.top;
+        if (popupRect) {
+          if (viewportWidth && left + popupRect.width > viewportWidth - margin) {
+            left = Math.max(margin, rect.left - popupRect.width - margin);
+          }
+          if (viewportHeight && top + popupRect.height > viewportHeight - margin) {
+            top = Math.max(margin, viewportHeight - popupRect.height - margin);
+          }
+        }
+        popup.style.left = `${Math.round(left)}px`;
+        popup.style.top = `${Math.round(top)}px`;
+        popup.style.visibility = 'visible';
+      };
+
+      const showPopupForNode = (nodeEl) => {
+        if (!popup || !nodeEl) return;
+        const nodeId = nodeEl.getAttribute('data-node');
+        if (!nodeId) {
+          hidePopup();
+          return;
+        }
+        const entry = lastPopupEntries[nodeId];
+        if (!entry) {
+          hidePopup();
+          return;
+        }
+        popup.className = entry.className ? `diagram-popup ${entry.className}` : 'diagram-popup';
+        popup.innerHTML = entry.content || '';
+        if (entry.label) {
+          popup.setAttribute('aria-label', entry.label);
+        } else {
+          popup.removeAttribute('aria-label');
+        }
+        activePopupNode = nodeEl;
+        positionPopup(nodeEl);
+      };
+
+      const onNodeOver = e => {
+        const node = e.target.closest('.diagram-node');
+        if (!node || node === activePopupNode) return;
+        showPopupForNode(node);
+      };
+
+      const onNodeOut = e => {
+        if (!activePopupNode) return;
+        const related = e.relatedTarget;
+        if (related && activePopupNode.contains(related)) return;
+        if (related && related.closest && related.closest('.diagram-node') === activePopupNode) return;
+        hidePopup();
+        activePopupNode = null;
+      };
+
+      const onSvgLeave = e => {
+        if (svg.contains(e.relatedTarget)) return;
+        activePopupNode = null;
+        hidePopup();
+      };
+
       svg.addEventListener('mousedown', onSvgMouseDown);
       svg.addEventListener('touchstart', onSvgMouseDown, { passive: false });
       if (windowObj) {
@@ -1146,6 +1315,9 @@
       }
       svg.addEventListener('mousedown', onDragStart);
       svg.addEventListener('touchstart', onDragStart, { passive: false });
+      svg.addEventListener('mouseover', onNodeOver);
+      svg.addEventListener('mouseout', onNodeOut);
+      svg.addEventListener('mouseleave', onSvgLeave);
 
       cleanupDiagramInteractions = () => {
         svg.removeEventListener('mousedown', onSvgMouseDown);
@@ -1162,6 +1334,9 @@
         }
         svg.removeEventListener('mousedown', onDragStart);
         svg.removeEventListener('touchstart', onDragStart);
+        svg.removeEventListener('mouseover', onNodeOver);
+        svg.removeEventListener('mouseout', onNodeOut);
+        svg.removeEventListener('mouseleave', onSvgLeave);
       };
 
       apply();
