@@ -264,6 +264,48 @@ if (!Array.isArray(ASSETS) || ASSETS.length === 0) {
   ASSETS = ['./'];
 }
 
+function scheduleCachePut(event, request, response, errorMessage, cachePromiseOverride) {
+  if (
+    !response ||
+    !response.ok ||
+    typeof caches === 'undefined' ||
+    !caches ||
+    typeof caches.open !== 'function'
+  ) {
+    return;
+  }
+
+  const performCachePut = async () => {
+    try {
+      const cachePromise =
+        cachePromiseOverride && typeof cachePromiseOverride.then === 'function'
+          ? cachePromiseOverride
+          : caches.open(CACHE_NAME);
+      const cache = await cachePromise;
+      await cache.put(request, response.clone());
+    } catch (cacheError) {
+      if (errorMessage) {
+        serviceWorkerLog.warn(errorMessage, cacheError);
+      } else {
+        serviceWorkerLog.warn('Unable to update cached response.', cacheError);
+      }
+    }
+  };
+
+  const cachePutTask = performCachePut();
+
+  if (event && typeof event.waitUntil === 'function') {
+    try {
+      event.waitUntil(cachePutTask);
+      return;
+    } catch (waitUntilError) {
+      serviceWorkerLog.warn('Unable to extend service worker lifetime for cache update.', waitUntilError);
+    }
+  }
+
+  cachePutTask.catch(() => {});
+}
+
 function shouldBypassCache(request, requestUrl) {
   if (!request) {
     return false;
@@ -409,15 +451,14 @@ if (typeof self !== 'undefined') {
       isNavigationRequest && (!requestUrl.searchParams || !requestUrl.searchParams.has('forceReload'));
     if (isAppIconRequest) {
       event.respondWith((async () => {
-        const cache = await caches.open(CACHE_NAME);
+        const cachePromise = caches.open(CACHE_NAME);
 
         try {
           const response = await fetch(event.request, { cache: 'no-store' });
-          if (response && response.ok) {
-            await cache.put(event.request, response.clone());
-          }
+          scheduleCachePut(event, event.request, response, 'Unable to update cached app icon response.', cachePromise);
           return response;
         } catch (error) {
+          const cache = await cachePromise;
           const cachedResponse = await cache.match(event.request);
           if (cachedResponse) {
             return cachedResponse;
@@ -435,12 +476,7 @@ if (typeof self !== 'undefined') {
         try {
           const freshResponse = await fetch(event.request, { cache: 'no-store' });
           if (freshResponse && freshResponse.ok && isSameOrigin) {
-            try {
-              const cache = await caches.open(CACHE_NAME);
-              await cache.put(event.request, freshResponse.clone());
-            } catch (cacheError) {
-              serviceWorkerLog.warn('Unable to store fresh response in cache', cacheError);
-            }
+            scheduleCachePut(event, event.request, freshResponse, 'Unable to store fresh response in cache');
           }
           if (freshResponse) {
             return freshResponse;
