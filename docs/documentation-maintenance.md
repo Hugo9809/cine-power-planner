@@ -106,7 +106,7 @@ copy offline.【F:src/scripts/script.js†L92-L183】
 
 ## 2. Update translations in lockstep
 
-1. **Add UI strings.** Extend `translations.js` with any new labels. Copy the English source
+1. **Add UI strings.** Extend `src/scripts/translations.js` with any new labels. Copy the English source
    to all supported locales if you do not have an immediate translation so the UI keeps
    rendering legibly offline.
 2. **Localize documentation.** Translate adjustments made to each localized README and any

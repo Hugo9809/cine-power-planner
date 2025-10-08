@@ -18,7 +18,7 @@ Create a localized README so newcomers can discover the project in their languag
 
 ## Step 2: Provide UI strings
 
-All interface labels live in [`translations.js`](../translations.js). Each top-level key inside `texts` corresponds to a language code and the planner automatically treats every listed language as supported. Duplicate the English block, paste it under a new key (for example `pt` for Portuguese) and translate every string.
+All interface labels live in [`src/scripts/translations.js`](../src/scripts/translations.js). Each top-level key inside `texts` corresponds to a language code and the planner automatically treats every listed language as supported. Duplicate the English block, paste it under a new key (for example `pt` for Portuguese) and translate every string.
 
 - Preserve placeholders such as `%s` and keep array structures (`installHelpStepsIos`, `installHelpStepsAndroid`, etc.) intact.
 - The comment `// NEW TEXTS FOR SETUP MANAGEMENT END HERE` marks the current end of the translation set. New interface features append to this object, so review recent additions when updating an existing language.
@@ -50,14 +50,15 @@ npm run test:unit
 
 - Automatic Gear Rules now include an automatic backup timeline and a **Backup retention**
   control with live warnings inside the help dialog. Translate the related labels in
-  `index.html` and the retention status strings in `translations.js` so crews understand how
-  many snapshots stay on each device.
+  `index.html` and the retention status strings in `src/scripts/translations.js` so crews
+  understand how many snapshots stay on each device.
 - The rule coverage dashboard adds `autoGearSummary*`, including the new
   `autoGearSummaryCoverage*` and `autoGearSummaryOverlaps*` families, plus
   `autoGearSummaryRuleReference*` and `autoGearNoFocusMatches` strings alongside
-  documentation callouts in every README. Localize the new keys, keep
-  placeholders such as `{adds}` or `{visible}` intact and update the language
-  guides so offline reviewers see the same coverage insights.
+  documentation callouts in every README. Localize the new keys in
+  `src/scripts/translations.js`, keep placeholders such as `{adds}` or
+  `{visible}` intact and update the language guides so offline reviewers see the
+  same coverage insights.
 
 ## Step 5: Open a pull request
 
