@@ -660,8 +660,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return typeof payload.data === 'string' && payload.data;
   }
-  function prepareAutoBackupSnapshotPayloadForStorage(payload, contextName) {
+  function prepareAutoBackupSnapshotPayloadForStorage(payload, contextName, options) {
     if (!payload || _typeof(payload) !== 'object') {
+      return {
+        payload: payload,
+        compression: null,
+        compressed: false
+      };
+    }
+    var opts = options || {};
+    if (opts.disableCompression) {
       return {
         payload: payload,
         compression: null,
@@ -895,6 +903,46 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var isAutoBackupKey = typeof opts.isAutoBackupKey === 'function' ? opts.isAutoBackupKey : isAutoBackupStorageKey;
     var serialized = {};
     var entryNames = Object.keys(entries);
+    var latestAutoBackupNames = function () {
+      var groups = new Map();
+      entryNames.forEach(function (name) {
+        if (!isAutoBackupKey(name)) {
+          return;
+        }
+        var value = entries[name];
+        var metadata = getAutoBackupMetadata(value);
+        var timestamp = Number.NEGATIVE_INFINITY;
+        if (metadata && typeof metadata.createdAt === 'string') {
+          var parsed = Date.parse(metadata.createdAt);
+          if (!Number.isNaN(parsed)) {
+            timestamp = parsed;
+          }
+        }
+        if (!Number.isFinite(timestamp)) {
+          var parsedKey = parseAutoBackupKey(name);
+          if (parsedKey && Number.isFinite(parsedKey.timestamp)) {
+            timestamp = parsedKey.timestamp;
+          }
+        }
+        var groupKey = name.indexOf(STORAGE_AUTO_BACKUP_DELETION_PREFIX) === 0
+          ? STORAGE_AUTO_BACKUP_DELETION_PREFIX
+          : STORAGE_AUTO_BACKUP_NAME_PREFIX;
+        var current = groups.get(groupKey);
+        if (!current || timestamp > current.timestamp || timestamp === current.timestamp && name.localeCompare(current.name) > 0) {
+          groups.set(groupKey, {
+            name: name,
+            timestamp: timestamp
+          });
+        }
+      });
+      var result = new Set();
+      groups.forEach(function (info) {
+        if (info && typeof info.name === 'string' && info.name) {
+          result.add(info.name);
+        }
+      });
+      return result;
+    }();
     entryNames.forEach(function (name) {
       var value = entries[name];
       var normalizedValue = cloneAutoBackupValueWithLegacyNormalization(value, {
@@ -904,6 +952,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         serialized[name] = normalizedValue;
         return;
       }
+      var disableCompressionForName = latestAutoBackupNames.has(name);
       var metadata = getAutoBackupMetadata(value);
       var createdAt = metadata && typeof metadata.createdAt === 'string' ? metadata.createdAt : deriveAutoBackupCreatedAt(name);
       if (!metadata || metadata.snapshotType !== 'delta') {
@@ -917,7 +966,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           changedKeys: Object.keys(normalizedValue || {}),
           removedKeys: []
         };
-        var _prepared = prepareAutoBackupSnapshotPayloadForStorage(normalizedValue, name);
+        var _prepared = prepareAutoBackupSnapshotPayloadForStorage(normalizedValue, name, {
+          disableCompression: disableCompressionForName
+        });
         _snapshot.payload = _prepared.payload;
         if (_prepared.compression) {
           _snapshot.payloadCompression = _prepared.compression;
@@ -938,7 +989,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           changedKeys: Object.keys(normalizedValue || {}),
           removedKeys: []
         };
-        var _prepared2 = prepareAutoBackupSnapshotPayloadForStorage(normalizedValue, name);
+        var _prepared2 = prepareAutoBackupSnapshotPayloadForStorage(normalizedValue, name, {
+          disableCompression: disableCompressionForName
+        });
         _snapshot2.payload = _prepared2.payload;
         if (_prepared2.compression) {
           _snapshot2.payloadCompression = _prepared2.compression;
@@ -960,7 +1013,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         changedKeys: diff.changedKeys,
         removedKeys: diff.removedKeys
       };
-      var prepared = prepareAutoBackupSnapshotPayloadForStorage(diff.payload, name);
+      var prepared = prepareAutoBackupSnapshotPayloadForStorage(diff.payload, name, {
+        disableCompression: disableCompressionForName
+      });
       snapshot.payload = prepared.payload;
       if (prepared.compression) {
         snapshot.payloadCompression = prepared.compression;

@@ -123,7 +123,7 @@ Führe diese Checkliste beim ersten Setup oder nach Updates aus. Sie beweist, da
    ```
    So installiert sich der Service Worker und wartet auf deine Freigabe, bevor Updates aktiv werden.
 4. Planner einmal laden, Tab schließen, Netzwerk trennen (oder Flugmodus aktivieren) und `index.html` erneut öffnen. Das Offline-Badge sollte kurz aufleuchten, während gecachte Assets – inklusive lokal gespeicherter Uicons – geladen werden.
-5. Erstes Projekt anlegen, **Enter** (oder **Strg+S**/`⌘S`) drücken und im Projektmenü das zeitgestempelte Auto-Backup prüfen, das nach wenigen Minuten erscheint.
+5. Erstes Projekt anlegen, **Enter** (oder **Strg+S**/`⌘S`) drücken und im Projektmenü das zeitgestempelte Auto-Backup prüfen, das nach rund 50 protokollierten Änderungen oder spätestens nach zehn Minuten erscheint.
 6. **Einstellungen → Backup & Wiederherstellung → Backup** exportieren und die `planner-backup.json` in einem privaten Profil importieren. So stellst du sicher, dass keine Sicherung auf einem Gerät festsitzt und der erzwungene Pre-Restore-Export funktioniert.
 7. Projekt-Bundle exportieren (`project-name.json`) und auf einem zweiten Gerät/Profil importieren. Das trainiert die komplette Kette Speichern → Teilen → Importieren und stellt sicher, dass Uicons, Fonts und Scripts offline mitreisen.
 8. Verifiziertes Backup und Projekt-Bundle zusammen mit der Repository-Kopie archivieren. Datum, Rechner und Operator protokollieren, damit nachvollziehbar bleibt, wann der Drill erfolgreich war und alle Workflows synchron blieben.

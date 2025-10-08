@@ -1167,8 +1167,13 @@ function isCompressedAutoBackupSnapshotPayload(payload) {
   return typeof payload.data === 'string' && payload.data;
 }
 
-function prepareAutoBackupSnapshotPayloadForStorage(payload, contextName) {
+function prepareAutoBackupSnapshotPayloadForStorage(payload, contextName, options) {
   if (!payload || typeof payload !== 'object') {
+    return { payload, compression: null, compressed: false };
+  }
+
+  const opts = options || {};
+  if (opts.disableCompression) {
     return { payload, compression: null, compressed: false };
   }
 
@@ -1444,6 +1449,48 @@ function serializeAutoBackupEntries(entries, options) {
   const serialized = {};
   const entryNames = Object.keys(entries);
 
+  const latestAutoBackupNames = (() => {
+    const groups = new Map();
+    entryNames.forEach((name) => {
+      if (!isAutoBackupKey(name)) {
+        return;
+      }
+      const value = entries[name];
+      const metadata = getAutoBackupMetadata(value);
+      let timestamp = Number.NEGATIVE_INFINITY;
+      if (metadata && typeof metadata.createdAt === 'string') {
+        const parsed = Date.parse(metadata.createdAt);
+        if (!Number.isNaN(parsed)) {
+          timestamp = parsed;
+        }
+      }
+      if (!Number.isFinite(timestamp)) {
+        const parsedKey = parseAutoBackupKey(name);
+        if (parsedKey && Number.isFinite(parsedKey.timestamp)) {
+          timestamp = parsedKey.timestamp;
+        }
+      }
+      const groupKey = name.startsWith(STORAGE_AUTO_BACKUP_DELETION_PREFIX)
+        ? STORAGE_AUTO_BACKUP_DELETION_PREFIX
+        : STORAGE_AUTO_BACKUP_NAME_PREFIX;
+      const current = groups.get(groupKey);
+      if (
+        !current
+        || timestamp > current.timestamp
+        || (timestamp === current.timestamp && name.localeCompare(current.name) > 0)
+      ) {
+        groups.set(groupKey, { name, timestamp });
+      }
+    });
+    const result = new Set();
+    groups.forEach(({ name }) => {
+      if (typeof name === 'string' && name) {
+        result.add(name);
+      }
+    });
+    return result;
+  })();
+
   entryNames.forEach((name) => {
     const value = entries[name];
     const normalizedValue = cloneAutoBackupValueWithLegacyNormalization(value, { stripMetadata: true });
@@ -1453,6 +1500,7 @@ function serializeAutoBackupEntries(entries, options) {
       return;
     }
 
+    const disableCompressionForName = latestAutoBackupNames.has(name);
     const metadata = getAutoBackupMetadata(value);
     const createdAt = metadata && typeof metadata.createdAt === 'string'
       ? metadata.createdAt
@@ -1469,7 +1517,9 @@ function serializeAutoBackupEntries(entries, options) {
         changedKeys: Object.keys(normalizedValue || {}),
         removedKeys: [],
       };
-      const prepared = prepareAutoBackupSnapshotPayloadForStorage(normalizedValue, name);
+      const prepared = prepareAutoBackupSnapshotPayloadForStorage(normalizedValue, name, {
+        disableCompression: disableCompressionForName,
+      });
       snapshot.payload = prepared.payload;
       if (prepared.compression) {
         snapshot.payloadCompression = prepared.compression;
@@ -1494,7 +1544,9 @@ function serializeAutoBackupEntries(entries, options) {
         changedKeys: Object.keys(normalizedValue || {}),
         removedKeys: [],
       };
-      const prepared = prepareAutoBackupSnapshotPayloadForStorage(normalizedValue, name);
+      const prepared = prepareAutoBackupSnapshotPayloadForStorage(normalizedValue, name, {
+        disableCompression: disableCompressionForName,
+      });
       snapshot.payload = prepared.payload;
       if (prepared.compression) {
         snapshot.payloadCompression = prepared.compression;
@@ -1516,7 +1568,9 @@ function serializeAutoBackupEntries(entries, options) {
       changedKeys: diff.changedKeys,
       removedKeys: diff.removedKeys,
     };
-    const prepared = prepareAutoBackupSnapshotPayloadForStorage(diff.payload, name);
+    const prepared = prepareAutoBackupSnapshotPayloadForStorage(diff.payload, name, {
+      disableCompression: disableCompressionForName,
+    });
     snapshot.payload = prepared.payload;
     if (prepared.compression) {
       snapshot.payloadCompression = prepared.compression;

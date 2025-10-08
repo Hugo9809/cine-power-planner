@@ -222,7 +222,7 @@ same online or offline.
    assets.
 5. Create your first project, press **Enter** (or **Ctrl+S**/`⌘S`) to capture a
    manual save and review the project selector to see the timestamped
-   auto-backup that appears after a few minutes.
+   auto-backup that appears after roughly 50 tracked changes or 10 minutes.
 6. Export **Settings → Backup & Restore → Backup** and import the resulting
    `planner-backup.json` file into a private browser profile. Verifying the
    restore path early proves that no saves are stranded on a single machine and
@@ -250,7 +250,7 @@ the safety nets that protect user data even when you stay offline.
 | Workflow | How to trigger | Data captured | Offline behavior | Built-in safeguards |
 | --- | --- | --- | --- | --- |
 | Manual save | Press **Enter**, click **Save** or use `Ctrl+S`/`⌘S` while a project is open. | Active project state including devices, requirements, diagrams, favorites and runtime feedback. | Writes directly to local storage—no connectivity required. | Creates a named entry in the selector so you can branch, rename or export it at any time. |
-| Background auto-save & auto-backup | Runs every few minutes while you edit. | Incremental project snapshots promoted to timestamped `auto-backup-…` entries. | Continues in airplane mode and resumes instantly after reload. | Auto backups stay hidden until needed and can be restored or exported without overwriting manual saves. |
+| Background auto-save & auto-backup | Runs after roughly 50 tracked changes or every 10 minutes while you edit. | Incremental project snapshots promoted to timestamped `auto-backup-…` entries. | Continues in airplane mode and resumes instantly after reload. | Auto backups stay hidden until needed and can be restored or exported without overwriting manual saves. |
 | Planner backup | **Settings → Backup & Restore → Backup**. | Every project, auto-backup, automatic gear rule, custom device, favorite, runtime note and UI preference. | Downloads a human-readable `planner-backup.json` file locally. | Forced pre-restore backups plus hidden migration snapshots prevent data loss during restores. |
 | Project bundle export | **Export Project** while the desired project is active. | One project plus referenced custom devices, favorites and (optionally) automatic gear rules. | Generates a portable JSON bundle that never leaves your machine unless you share it. | Import validation checks file metadata, schema version and timestamps before merging. |
 | Restore or import | Choose **Import Backup**, **Import Project** or restore from the selector. | Applies planner backups, project bundles or auto-backups into the live environment. | Runs entirely in the browser with the same offline guarantees as saving. | Captures a safety backup before applying changes and isolates sandbox rehearsals so production data stays intact. |
