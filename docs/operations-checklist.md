@@ -56,10 +56,12 @@ update the repository or hand off a project at the end of the day.
    silent.【F:src/scripts/loader.js†L1-L128】
 7. **Review data & storage dashboard.** Open **Settings → Data & Storage** to
    ensure counts for projects, backups and custom devices match expectations,
-   confirm the **Latest activity** board lists recent saves and backups, review
-   the **Diagnostics log** filters and toggles for unexpected noise (the panel now highlights
-   when filters hide everything so crews know the silence is intentional), and use
-   **Quick safeguards** to capture a fresh full backup if anything looks stale.
+   confirm the **Latest activity** board lists recent saves and backups, verify
+   the new safety reminders either demand a fresh save/backup or show the
+   all-clear state, review the **Diagnostics log** filters and toggles for
+   unexpected noise (the panel now highlights when filters hide everything so
+   crews know the silence is intentional), and use **Quick safeguards** to
+   capture a fresh full backup if anything looks stale.
 8. **Check draft impact preview.** Open the automatic gear rule editor, review
    the draft impact preview for quantity deltas and warnings, then cancel to
    confirm the live generator stays unchanged. Adjust the shooting-day counter

@@ -83,8 +83,9 @@ live runtime and cannot lose user data.
    artifacts.【F:src/scripts/modules/persistence.js†L768-L858】
 3. While still offline, use the **Quick safeguards → Download full backup** control to
    capture a fresh planner backup and verify the **Latest activity** board reflects the
-   new timestamp. Store the JSON alongside a checksum in your verification log entry so
-   the audit produces tangible recovery artifacts.【F:index.html†L2540-L2600】【F:docs/verification-log-template.md†L26-L41】
+   new timestamp while the safety reminders switch to an all-clear message. Store the
+   JSON alongside a checksum in your verification log entry so the audit produces tangible
+   recovery artifacts.【F:index.html†L2540-L2600】【F:docs/verification-log-template.md†L26-L41】
 
 ## Step 5 – Archive the results
 

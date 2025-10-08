@@ -820,6 +820,20 @@ const texts = {
     storageStatusTimestamp: "Captured {relative} ({absolute}).",
     storageStatusTimestampAbsolute: "Captured {absolute}.",
     storageStatusWithName: "{name} — {time}",
+    storageStatusReminderUpToDate:
+      "Backups look fresh. Keep autosave running and capture a full backup after major changes.",
+    storageStatusReminderSaveProject:
+      "Save a named project so your latest work stays protected offline.",
+    storageStatusReminderRefreshProject:
+      "Save your project again soon (last save {time}).",
+    storageStatusReminderAutoBackupFirst:
+      "Keep Cine Power Planner open until it captures an automatic backup.",
+    storageStatusReminderAutoBackup:
+      "Let an automatic backup run again soon (last snapshot {time}).",
+    storageStatusReminderFullBackupFirst:
+      "Download a full backup to archive every dataset before going offline.",
+    storageStatusReminderFullBackup:
+      "Download another full backup when possible (last archive {time}).",
     storageKeyProjects: "Saved projects",
     storageKeyProjectsDesc: "Configurations saved from Manage Project.",
     storageProjectsCountOne: "%s project",
@@ -2936,6 +2950,20 @@ const texts = {
     storageStatusTimestamp: "Registrato {relative} ({absolute}).",
     storageStatusTimestampAbsolute: "Registrato {absolute}.",
     storageStatusWithName: "{name} — {time}",
+    storageStatusReminderUpToDate:
+      "I backup sono aggiornati. Mantieni attivo l’autosalvataggio e crea un backup completo dopo ogni modifica importante.",
+    storageStatusReminderSaveProject:
+      "Salva un progetto con nome per proteggere offline il tuo lavoro più recente.",
+    storageStatusReminderRefreshProject:
+      "Salva di nuovo il progetto a breve (ultimo salvataggio {time}).",
+    storageStatusReminderAutoBackupFirst:
+      "Lascia aperto Cine Power Planner finché non cattura un backup automatico.",
+    storageStatusReminderAutoBackup:
+      "Lascia eseguire presto un nuovo backup automatico (ultima istantanea {time}).",
+    storageStatusReminderFullBackupFirst:
+      "Scarica un backup completo per archiviare tutti i dati prima di lavorare offline.",
+    storageStatusReminderFullBackup:
+      "Scarica un altro backup completo appena possibile (ultima archiviazione {time}).",
     storageKeyProjects: "Progetti salvati",
     storageKeyProjectsDesc: "Configurazioni salvate da Gestione progetto.",
     storageProjectsCountOne: "%s progetto",
@@ -4562,6 +4590,20 @@ const texts = {
     storageStatusTimestamp: "Registrado {relative} ({absolute}).",
     storageStatusTimestampAbsolute: "Registrado {absolute}.",
     storageStatusWithName: "{name} — {time}",
+    storageStatusReminderUpToDate:
+      "Los respaldos están al día. Mantén el guardado automático activo y captura un respaldo completo tras cada cambio importante.",
+    storageStatusReminderSaveProject:
+      "Guarda un proyecto con nombre para proteger sin conexión tu trabajo más reciente.",
+    storageStatusReminderRefreshProject:
+      "Vuelve a guardar el proyecto pronto (último guardado {time}).",
+    storageStatusReminderAutoBackupFirst:
+      "Deja Cine Power Planner abierto hasta que capture un respaldo automático.",
+    storageStatusReminderAutoBackup:
+      "Permite que se ejecute otro respaldo automático pronto (última copia {time}).",
+    storageStatusReminderFullBackupFirst:
+      "Descarga un respaldo completo para archivar todos los datos antes de trabajar sin conexión.",
+    storageStatusReminderFullBackup:
+      "Descarga otro respaldo completo en cuanto puedas (último archivo {time}).",
     storageKeyProjects: "Proyectos guardados",
     storageKeyProjectsDesc: "Configuraciones guardadas desde Gestionar proyecto.",
     storageProjectsCountOne: "%s proyecto",
@@ -6200,6 +6242,20 @@ const texts = {
     storageStatusTimestamp: "Enregistré {relative} ({absolute}).",
     storageStatusTimestampAbsolute: "Enregistré {absolute}.",
     storageStatusWithName: "{name} — {time}",
+    storageStatusReminderUpToDate:
+      "Les sauvegardes sont à jour. Laisse l’enregistrement automatique actif et capture une sauvegarde complète après chaque changement majeur.",
+    storageStatusReminderSaveProject:
+      "Enregistre un projet nommé pour protéger hors ligne ton travail le plus récent.",
+    storageStatusReminderRefreshProject:
+      "Enregistre de nouveau le projet bientôt (dernier enregistrement {time}).",
+    storageStatusReminderAutoBackupFirst:
+      "Laisse Cine Power Planner ouvert jusqu’à ce qu’il capture une sauvegarde automatique.",
+    storageStatusReminderAutoBackup:
+      "Laisse une nouvelle sauvegarde automatique s’exécuter bientôt (dernière capture {time}).",
+    storageStatusReminderFullBackupFirst:
+      "Télécharge une sauvegarde complète pour archiver toutes les données avant de travailler hors ligne.",
+    storageStatusReminderFullBackup:
+      "Télécharge une autre sauvegarde complète dès que possible (dernière archive {time}).",
     storageKeyProjects: "Projets enregistrés",
     storageKeyProjectsDesc: "Configurations enregistrées depuis Gestion du projet.",
     storageProjectsCountOne: "%s projet",
@@ -7842,6 +7898,20 @@ const texts = {
     storageStatusTimestamp: "Erfasst {relative} ({absolute}).",
     storageStatusTimestampAbsolute: "Erfasst {absolute}.",
     storageStatusWithName: "{name} — {time}",
+    storageStatusReminderUpToDate:
+      "Backups sind aktuell. Lass die Autospeicherung aktiv und erstelle nach größeren Änderungen ein vollständiges Backup.",
+    storageStatusReminderSaveProject:
+      "Speichere ein benanntes Projekt, damit deine neuesten Arbeiten offline geschützt bleiben.",
+    storageStatusReminderRefreshProject:
+      "Speichere das Projekt bald erneut (letzte Sicherung {time}).",
+    storageStatusReminderAutoBackupFirst:
+      "Lass Cine Power Planner geöffnet, bis eine automatische Sicherung erstellt wurde.",
+    storageStatusReminderAutoBackup:
+      "Ermögliche bald eine weitere automatische Sicherung (letzte Momentaufnahme {time}).",
+    storageStatusReminderFullBackupFirst:
+      "Lade ein vollständiges Backup herunter, um alle Daten zu archivieren, bevor du offline arbeitest.",
+    storageStatusReminderFullBackup:
+      "Lade so bald wie möglich ein weiteres vollständiges Backup herunter (letzte Archivierung {time}).",
     storageKeyProjects: "Gespeicherte Projekte",
     storageKeyProjectsDesc: "Konfigurationen aus Projekt verwalten.",
     storageProjectsCountOne: "%s Projekt",

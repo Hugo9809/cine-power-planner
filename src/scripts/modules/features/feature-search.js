@@ -60,6 +60,7 @@
         }
       };
 
+  /* eslint-disable no-control-regex, no-misleading-character-class */
   const ZERO_WIDTH_SPACES_PATTERN = /[\u200B\u200C\u200D\u2060]/g;
   const SPACE_VARIANTS_PATTERN = /[\u0009-\u000D\u00A0\u1680\u180E\u2000-\u200A\u2028\u2029\u202F\u205F\u3000]/g;
   const COMBINING_MARKS_PATTERN = /[\u0300-\u036F]/g;
@@ -72,6 +73,7 @@
   const ELLIPSIS_PATTERN = /[\u2026]/g;
   const TRADEMARK_PATTERN = /[\u00AE\u2122]/g;
   const GENERAL_PUNCTUATION_PATTERN = /[!#$%()*,:;<=>?@[\]^{|}~._]/g;
+  /* eslint-enable no-control-regex, no-misleading-character-class */
 
   const LIGATURE_REPLACEMENTS = {
     ß: 'ss',

@@ -3792,6 +3792,58 @@ body.auto-gear-highlight-context.dark-mode .auto-gear-impact-item.auto-gear-impa
   gap: 8px;
 }
 
+.storage-status-reminder {
+  margin: 4px 0 0;
+  padding: 12px 16px;
+  border-radius: calc(var(--border-radius) * 1.1);
+  border: 1px solid var(--panel-border);
+  background: var(--panel-bg);
+  display: grid;
+  gap: 8px;
+}
+
+.storage-status-reminder[hidden] {
+  display: none;
+}
+
+.storage-status-reminder-list {
+  margin: 0;
+  padding-left: 1.25em;
+  display: grid;
+  gap: 4px;
+}
+
+.storage-status-reminder-text {
+  margin: 0;
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-xs));
+}
+
+.storage-status-reminder--warning {
+  box-shadow: inset 4px 0 0 0 var(--warning-color, #ff9f1c);
+  border-color: color-mix(in srgb, var(--warning-color, #ff9f1c) 45%, transparent);
+}
+
+@supports not (color: color-mix(in srgb, red 50%, white)) {
+  .storage-status-reminder--warning {
+    border-color: rgba(255, 159, 28, 0.35);
+  }
+}
+
+.storage-status-reminder--ok {
+  box-shadow: inset 4px 0 0 0 var(--success-color, #4caf50);
+  border-color: color-mix(in srgb, var(--success-color, #4caf50) 45%, transparent);
+}
+
+@supports not (color: color-mix(in srgb, red 50%, white)) {
+  .storage-status-reminder--ok {
+    border-color: rgba(76, 175, 80, 0.35);
+  }
+}
+
+body.dark-mode .storage-status-reminder {
+  background: rgba(255, 255, 255, 0.05);
+}
+
 .storage-status-item {
   display: grid;
   gap: 2px;

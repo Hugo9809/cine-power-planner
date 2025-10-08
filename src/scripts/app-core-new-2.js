@@ -8343,7 +8343,132 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       }
       element.removeAttribute('title');
     }
-    
+
+    const STORAGE_STATUS_STALE_PROJECT_MS = 1000 * 60 * 60 * 48;
+    const STORAGE_STATUS_STALE_AUTO_MS = 1000 * 60 * 60 * 12;
+    const STORAGE_STATUS_STALE_FULL_MS = 1000 * 60 * 60 * 24 * 7;
+    const storageStatusReminderElement =
+      typeof storageStatusReminder !== 'undefined'
+        ? storageStatusReminder
+        : typeof document !== 'undefined'
+          ? document.getElementById('storageStatusReminder')
+          : null;
+
+    function resolveStatusText(langTexts, key, fallback = '') {
+      if (langTexts && typeof langTexts[key] === 'string' && langTexts[key].trim()) {
+        return langTexts[key];
+      }
+      if (texts.en && typeof texts.en[key] === 'string' && texts.en[key].trim()) {
+        return texts.en[key];
+      }
+      return fallback;
+    }
+
+    function isValidTimestamp(date) {
+      return date instanceof Date && !Number.isNaN(date.getTime());
+    }
+
+    function updateStorageStatusReminder(manualInfo, autoInfo, fullBackupInfo, lang, langTexts) {
+      if (!storageStatusReminderElement) {
+        return;
+      }
+
+      while (storageStatusReminderElement.firstChild) {
+        storageStatusReminderElement.removeChild(storageStatusReminderElement.firstChild);
+      }
+      storageStatusReminderElement.classList.remove('storage-status-reminder--warning', 'storage-status-reminder--ok');
+
+      const reminders = [];
+      const now = Date.now();
+
+      const manualDate = manualInfo && isValidTimestamp(manualInfo.date) ? manualInfo.date : null;
+      const autoDate = autoInfo && isValidTimestamp(autoInfo.date) ? autoInfo.date : null;
+      const fullBackupDate = fullBackupInfo && isValidTimestamp(fullBackupInfo.date)
+        ? fullBackupInfo.date
+        : null;
+
+      const manualTimeText = manualDate
+        ? (formatStatusTimestamp(manualDate, lang, langTexts) || formatAbsoluteTimestamp(manualDate, lang))
+        : '';
+      const autoTimeText = autoDate
+        ? (formatStatusTimestamp(autoDate, lang, langTexts) || formatAbsoluteTimestamp(autoDate, lang))
+        : '';
+      const fullTimeText = fullBackupDate
+        ? (formatStatusTimestamp(fullBackupDate, lang, langTexts) || formatAbsoluteTimestamp(fullBackupDate, lang))
+        : '';
+
+      if (!manualInfo || manualInfo.hasAny !== true) {
+        const text = resolveStatusText(langTexts, 'storageStatusReminderSaveProject');
+        if (text) {
+          reminders.push(text);
+        }
+      } else if (manualDate && now - manualDate.getTime() > STORAGE_STATUS_STALE_PROJECT_MS) {
+        const template = resolveStatusText(langTexts, 'storageStatusReminderRefreshProject');
+        if (template) {
+          reminders.push(template.replace('{time}', manualTimeText));
+        }
+      }
+
+      if (!autoInfo || autoInfo.hasAny !== true) {
+        const text = resolveStatusText(langTexts, 'storageStatusReminderAutoBackupFirst');
+        if (text) {
+          reminders.push(text);
+        }
+      } else if (autoDate && now - autoDate.getTime() > STORAGE_STATUS_STALE_AUTO_MS) {
+        const template = resolveStatusText(langTexts, 'storageStatusReminderAutoBackup');
+        if (template) {
+          reminders.push(template.replace('{time}', autoTimeText));
+        }
+      }
+
+      if (!fullBackupInfo || fullBackupInfo.hasAny !== true) {
+        const text = resolveStatusText(langTexts, 'storageStatusReminderFullBackupFirst');
+        if (text) {
+          reminders.push(text);
+        }
+      } else if (fullBackupDate && now - fullBackupDate.getTime() > STORAGE_STATUS_STALE_FULL_MS) {
+        const template = resolveStatusText(langTexts, 'storageStatusReminderFullBackup');
+        if (template) {
+          reminders.push(template.replace('{time}', fullTimeText));
+        }
+      }
+
+      if (reminders.length > 0) {
+        const list = document.createElement('ul');
+        list.className = 'storage-status-reminder-list';
+        reminders.forEach((text) => {
+          if (!text) {
+            return;
+          }
+          const item = document.createElement('li');
+          item.textContent = text;
+          list.appendChild(item);
+        });
+        if (list.childElementCount > 0) {
+          storageStatusReminderElement.appendChild(list);
+          storageStatusReminderElement.classList.add('storage-status-reminder--warning');
+          storageStatusReminderElement.removeAttribute('hidden');
+          storageStatusReminderElement.setAttribute('data-help', list.textContent || reminders.join(' '));
+          return;
+        }
+      }
+
+      const okText = resolveStatusText(langTexts, 'storageStatusReminderUpToDate');
+      if (okText) {
+        const note = document.createElement('p');
+        note.className = 'storage-status-reminder-text';
+        note.textContent = okText;
+        storageStatusReminderElement.appendChild(note);
+        storageStatusReminderElement.classList.add('storage-status-reminder--ok');
+        storageStatusReminderElement.removeAttribute('hidden');
+        storageStatusReminderElement.setAttribute('data-help', okText);
+        return;
+      }
+
+      storageStatusReminderElement.setAttribute('hidden', '');
+      storageStatusReminderElement.removeAttribute('data-help');
+    }
+
     function createSummaryItemElement(item) {
       const li = document.createElement('li');
       li.className = 'storage-summary-item';
@@ -8594,7 +8719,15 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         langTexts,
         fullBackupCount > 0,
       );
-    
+
+      updateStorageStatusReminder(
+        manualInfo,
+        autoInfo,
+        fullBackupInfo,
+        lang,
+        langTexts,
+      );
+
       if (storageSummaryEmpty) {
         const hasData = Boolean(
           totalProjects
@@ -8884,6 +9017,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     };
     
     const createDefaultSearchNormalizer = () => {
+      /* eslint-disable no-control-regex, no-misleading-character-class */
       const ZERO_WIDTH_SPACES_PATTERN = /[\u200B\u200C\u200D\u2060]/g;
       const SPACE_VARIANTS_PATTERN = /[\u0009-\u000D\u00A0\u1680\u180E\u2000-\u200A\u2028\u2029\u202F\u205F\u3000]/g;
       const COMBINING_MARKS_PATTERN = /[\u0300-\u036F]/g;
@@ -8896,6 +9030,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       const ELLIPSIS_PATTERN = /[\u2026]/g;
       const TRADEMARK_PATTERN = /[\u00AE\u2122]/g;
       const GENERAL_PUNCTUATION_PATTERN = /[!#$%()*,:;<=>?@[\]^{|}~._]/g;
+      /* eslint-enable no-control-regex, no-misleading-character-class */
       const ligatureEntries = [
         ['ß', 'ss'],
         ['æ', 'ae'],

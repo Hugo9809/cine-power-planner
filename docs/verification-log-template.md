@@ -20,8 +20,9 @@ evidence, commands and media artifacts.
 3. Capture `Quick safeguards → Download full backup` and `Quick safeguards → Open
    Backup & Restore` actions from **Settings → Data & Storage** so the log proves
    the in-app backups succeeded and the activity feed recorded the action.
-   Note the `Latest activity` timestamps and grab a snapshot of the Diagnostics
-   log filter state while you are there.【F:index.html†L2530-L2649】
+   Note the `Latest activity` timestamps, record which safety reminders appeared
+   (or that the all-clear message displayed) and grab a snapshot of the
+   Diagnostics log filter state while you are there.【F:index.html†L2530-L2649】
 4. Record a copy of `window.cinePersistence.__internal.inspectAllBindings()`
    and `window.cinePersistence.storage.exportAllData()` whenever you introduce
    new storage bindings or migrate persistence logic. These snapshots prove
@@ -43,7 +44,7 @@ evidence, commands and media artifacts.
 | Projects & backups checked | Project names, manual saves, `auto-backup-…` snapshots and planner backups reviewed. |
 | Commands & console output | Paste outputs for `window.__cineRuntimeIntegrity`, `window.cineRuntime.verifyCriticalFlows()`, `window.cinePersistence.__internal.inspectAllBindings()` and any other diagnostic calls you ran. |
 | Exports generated | Filenames, sizes and checksum values for planner backups, project bundles, automatic gear rule exports and diff logs. |
-| Quick safeguards evidence | Screenshot or log entry ID showing the **Quick safeguards** backup action plus the `Latest activity` timestamps you verified. |
+| Quick safeguards evidence | Screenshot or log entry ID showing the **Quick safeguards** backup action, the `Latest activity` timestamps you verified and the safety reminder state. |
 | Diagnostics log filters | Which filters were active, whether the “no entries” banner appeared and any noteworthy warnings captured. |
 | Diff review notes | Summary of the **Compare versions** results, including any unexpected additions or removals and a link to the exported JSON diff. |
 | Follow-up actions | Tickets filed, translation updates required, documentation touch points and the storage locations for redundant media. |
