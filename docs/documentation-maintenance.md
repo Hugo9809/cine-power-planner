@@ -3,7 +3,9 @@
 Cine Power Planner treats documentation as a core feature of the product. Help content,
 offline manuals and translations must reflect the current behavior of the app so crews can
 trust every save, share, import, backup and restore workflow even when they are far from an
-internet connection. Use this guide whenever you add, remove or adjust functionality.
+internet connection. Use this guide whenever you add, remove or adjust functionality. For a
+condensed run-through before code review, follow the [Documentation Update Checklist](documentation-update-checklist.md)
+alongside this guide so no surface or translation is missed.
 
 All persistence-facing documentation should now reference the consolidated
 `cinePersistence` module so that future refactors maintain a single, lossless contract for
