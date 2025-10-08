@@ -2399,6 +2399,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return value;
   }
   function applyProjectEntryCompression(container) {
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     if (!isPlainObject(container)) {
       return container;
     }
@@ -2406,7 +2407,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var now = Date.now();
     var threshold = now - PROJECT_ACTIVITY_WINDOW_MS;
     var validKeys = new Set(keys);
-    pruneProjectActivityCache(validKeys);
+    var skipProjectActivityPrune = Boolean(options && options.skipProjectActivityPrune);
+    if (!skipProjectActivityPrune) {
+      pruneProjectActivityCache(validKeys);
+    }
     keys.forEach(function (key) {
       var timestamp = projectActivityTimestamps.has(key) ? projectActivityTimestamps.get(key) : null;
       var keepUncompressed = Number.isFinite(timestamp) && timestamp >= threshold;
@@ -6138,7 +6142,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         return typeof name === 'string' && name.startsWith(STORAGE_AUTO_BACKUP_NAME_PREFIX);
       }
     });
-    applyProjectEntryCompression(serializedSetups);
+    applyProjectEntryCompression(serializedSetups, {
+      skipProjectActivityPrune: true
+    });
     var safeStorage = getSafeLocalStorage();
     ensurePreWriteMigrationBackup(safeStorage, SETUP_STORAGE_KEY);
     saveJSONToStorage(safeStorage, SETUP_STORAGE_KEY, serializedSetups, "Error saving setups to localStorage:", {
