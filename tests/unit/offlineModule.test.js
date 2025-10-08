@@ -12,6 +12,7 @@ describe('cineOffline module', () => {
   beforeEach(() => {
     harness = setupModuleHarness();
     delete global.cineOffline;
+    delete global.CINE_CACHE_NAME;
     originalConsole = console;
     consoleWarnSpy = jest.fn();
     const consoleClone = Object.create(console);
@@ -23,6 +24,7 @@ describe('cineOffline module', () => {
 
   afterEach(() => {
     delete global.cineOffline;
+    delete global.CINE_CACHE_NAME;
     if (originalConsole) {
       global.console = originalConsole;
       originalConsole = null;
@@ -403,18 +405,47 @@ describe('cineOffline module', () => {
       expect(result).toBe(true);
     });
 
-    test('clearCacheStorage deletes every reported cache key', async () => {
+    test('clearCacheStorage deletes Cine Power Planner caches and skips unrelated entries', async () => {
       const deleteCache = jest.fn(() => Promise.resolve(true));
       const cachesMock = {
-        keys: jest.fn(() => Promise.resolve(['primary-cache', 'secondary-cache'])),
+        keys: jest.fn(() => Promise.resolve([
+          'cine-power-planner-v1',
+          'primary-cache',
+          'cinePowerPlannerLegacy',
+        ])),
         delete: deleteCache,
       };
 
       const result = await internal.clearCacheStorage(cachesMock);
 
       expect(cachesMock.keys).toHaveBeenCalledTimes(1);
-      expect(deleteCache).toHaveBeenCalledWith('primary-cache');
-      expect(deleteCache).toHaveBeenCalledWith('secondary-cache');
+      expect(deleteCache).toHaveBeenCalledWith('cine-power-planner-v1');
+      expect(deleteCache).toHaveBeenCalledWith('cinePowerPlannerLegacy');
+      expect(deleteCache).not.toHaveBeenCalledWith('primary-cache');
+      expect(deleteCache).toHaveBeenCalledTimes(2);
+      expect(result).toBe(true);
+    });
+
+    test('clearCacheStorage uses the exposed cache name when filtering keys', async () => {
+      global.CINE_CACHE_NAME = 'cine-power-planner-special';
+
+      const deleteCache = jest.fn(() => Promise.resolve(true));
+      const cachesMock = {
+        keys: jest.fn(() => Promise.resolve([
+          'cine-power-planner-special',
+          'cine-power-planner-v1',
+          'unrelated-cache',
+        ])),
+        delete: deleteCache,
+      };
+
+      const result = await internal.clearCacheStorage(cachesMock);
+
+      expect(cachesMock.keys).toHaveBeenCalledTimes(1);
+      expect(deleteCache).toHaveBeenCalledWith('cine-power-planner-special');
+      expect(deleteCache).toHaveBeenCalledWith('cine-power-planner-v1');
+      expect(deleteCache).not.toHaveBeenCalledWith('unrelated-cache');
+      expect(deleteCache).toHaveBeenCalledTimes(2);
       expect(result).toBe(true);
     });
   });

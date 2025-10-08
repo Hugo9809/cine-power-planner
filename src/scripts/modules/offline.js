@@ -986,11 +986,43 @@
     return true;
   }
 
+  const APP_CACHE_IDENTIFIERS = ['cine-power-planner', 'cinepowerplanner'];
+
+  function resolveExposedCacheName() {
+    const exposedName = resolveGlobal('CINE_CACHE_NAME');
+    if (typeof exposedName === 'string' && exposedName) {
+      return exposedName;
+    }
+    return null;
+  }
+
+  function isRelevantCacheKey(key, explicitName, lowerExplicit) {
+    if (typeof key !== 'string' || !key) {
+      return false;
+    }
+
+    if (explicitName && (key === explicitName || key.toLowerCase() === lowerExplicit)) {
+      return true;
+    }
+
+    const lowerKey = key.toLowerCase();
+    for (let index = 0; index < APP_CACHE_IDENTIFIERS.length; index += 1) {
+      if (lowerKey.includes(APP_CACHE_IDENTIFIERS[index])) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   async function clearCacheStorage(cachesOverride) {
     const cachesInstance = resolveCaches(cachesOverride);
     if (!cachesInstance || typeof cachesInstance.keys !== 'function') {
       return false;
     }
+
+    const exposedName = resolveExposedCacheName();
+    const lowerExplicit = exposedName ? exposedName.toLowerCase() : null;
 
     try {
       const keys = await cachesInstance.keys();
@@ -998,20 +1030,36 @@
         return false;
       }
 
+      const relevantKeys = keys.filter((key) =>
+        isRelevantCacheKey(key, exposedName, lowerExplicit)
+      );
+
+      if (!relevantKeys.length) {
+        return false;
+      }
+
+      let removedAny = false;
+
       await Promise.all(
-        keys.map((key) => {
+        relevantKeys.map((key) => {
           if (!key || typeof cachesInstance.delete !== 'function') {
             return Promise.resolve(false);
           }
 
-          return cachesInstance.delete(key).catch((error) => {
-            safeWarn('Failed to delete cache', { key, error });
-            return false;
-          });
+          return cachesInstance
+            .delete(key)
+            .then((result) => {
+              removedAny = removedAny || !!result;
+              return result;
+            })
+            .catch((error) => {
+              safeWarn('Failed to delete cache', { key, error });
+              return false;
+            });
         })
       );
 
-      return true;
+      return removedAny;
     } catch (error) {
       safeWarn('Cache clear failed', error);
       return false;
@@ -1656,24 +1704,32 @@
       }
     }
 
-    const [serviceWorkersUnregistered, cachesCleared] = await Promise.all([
-      (async () => {
-        try {
-          return await unregisterServiceWorkers(options.navigator);
-        } catch (error) {
-          safeWarn('Service worker cleanup failed', error);
-          return false;
-        }
-      })(),
-      (async () => {
-        try {
-          return await clearCacheStorage(options.caches);
-        } catch (error) {
-          safeWarn('Cache clear failed', error);
-          return false;
-        }
-      })(),
-    ]);
+    const serviceWorkerCleanupPromise = (async () => {
+      try {
+        return await unregisterServiceWorkers(options.navigator);
+      } catch (error) {
+        safeWarn('Service worker cleanup failed', error);
+        return false;
+      }
+    })();
+
+    const cacheCleanupPromise = (async () => {
+      try {
+        return await clearCacheStorage(options.caches);
+      } catch (error) {
+        safeWarn('Cache clear failed', error);
+        return false;
+      }
+    })();
+
+    let serviceWorkersUnregistered = false;
+
+    try {
+      serviceWorkersUnregistered = await serviceWorkerCleanupPromise;
+    } catch (error) {
+      safeWarn('Service worker cleanup promise rejected', error);
+      serviceWorkersUnregistered = false;
+    }
 
     let reloadTriggered = false;
     const reloadFn = typeof options.reloadWindow === 'function' ? options.reloadWindow : triggerReload;
@@ -1695,6 +1751,15 @@
           safeWarn('Final reload attempt failed', finalError);
         }
       }
+    }
+
+    let cachesCleared = false;
+
+    try {
+      cachesCleared = await cacheCleanupPromise;
+    } catch (error) {
+      safeWarn('Cache cleanup promise rejected', error);
+      cachesCleared = false;
     }
 
     return {
