@@ -1521,7 +1521,7 @@ const texts = {
     helpRestoreDrillTitle: "Restore rehearsal drill",
     helpDataAuditTitle: "Monthly data health check",
     helpDataAuditStep1:
-      "Open %1$s, switch to %2$s, and run %3$s to capture a fresh snapshot before auditing downloads.",
+      "Open %1$s, switch to %2$s, then use %3$s under %4$s to capture a fresh full-app snapshot before auditing downloads.",
     helpDataAuditStep2:
       "Export each active project with %1$s and confirm the files are stored in two separate locations.",
     helpDataAuditStep3:
@@ -3129,7 +3129,7 @@ const texts = {
     helpRestoreDrillTitle: "Esercitazione di ripristino di prova",
     helpDataAuditTitle: "Controllo mensile dell'integrità dei dati",
     helpDataAuditStep1:
-      "Apri %1$s, passa a %2$s ed esegui %3$s per acquisire un nuovo snapshot prima di verificare i download.",
+      "Apri %1$s, passa a %2$s e attiva %3$s in %4$s per acquisire un nuovo snapshot completo prima di verificare i download.",
     helpDataAuditStep2:
       "Esporta ogni progetto attivo con %1$s e conferma che i file sono archiviati in due posizioni separate.",
     helpDataAuditStep3:
@@ -4747,7 +4747,7 @@ const texts = {
    helpRestoreDrillTitle: "Ensayo de restauración",
     helpDataAuditTitle: "Revisión mensual de salud de datos",
     helpDataAuditStep1:
-      "Abre %1$s, cambia a %2$s y ejecuta %3$s para capturar una instantánea nueva antes de auditar las descargas.",
+      "Abre %1$s, cambia a %2$s y usa %3$s en %4$s para capturar una instantánea completa nueva antes de auditar las descargas.",
     helpDataAuditStep2:
       "Exporta cada proyecto activo con %1$s y confirma que los archivos se guardan en dos ubicaciones independientes.",
     helpDataAuditStep3:
@@ -6377,7 +6377,7 @@ const texts = {
     helpRestoreDrillTitle: "Exercice de répétition de restauration",
     helpDataAuditTitle: "Vérification mensuelle de l'intégrité des données",
     helpDataAuditStep1:
-      "Ouvrez %1$s, passez à %2$s et lancez %3$s afin de créer une nouvelle sauvegarde avant d'auditer les téléchargements.",
+      "Ouvrez %1$s, passez à %2$s, puis utilisez %3$s dans %4$s pour capturer une nouvelle sauvegarde complète avant d'auditer les téléchargements.",
     helpDataAuditStep2:
       "Exportez chaque projet actif avec %1$s et confirmez que les fichiers sont conservés sur deux emplacements distincts.",
     helpDataAuditStep3:
@@ -8011,7 +8011,7 @@ const texts = {
     helpRestoreDrillTitle: "Probe für die Wiederherstellung",
     helpDataAuditTitle: "Monatlicher Daten-Gesundheitscheck",
     helpDataAuditStep1:
-      "Öffne %1$s, wechsle zu %2$s und führe %3$s aus, um vor der Download-Prüfung einen frischen Schnappschuss zu erstellen.",
+      "Öffne %1$s, wechsle zu %2$s und nutze %3$s in %4$s, um vor der Download-Prüfung einen frischen Komplett-Schnappschuss zu erstellen.",
     helpDataAuditStep2:
       "Exportiere jedes aktive Projekt mit %1$s und bestätige, dass die Dateien an zwei getrennten Orten gesichert sind.",
     helpDataAuditStep3:

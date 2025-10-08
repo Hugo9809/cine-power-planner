@@ -10513,20 +10513,30 @@ function setLanguage(lang) {
           ),
         () =>
           createHelpLink(
-            "#backupHeading",
-            resolveLocaleString("backupHeading") || "Backup & Restore",
+            "#dataHeading",
+            resolveLocaleString("dataHeading") || "Data & Storage",
             {
-              target: "#backupHeading",
+              target: "#dataHeading",
               highlight: "#settingsDialog",
             },
           ),
         () =>
           createHelpLink(
-            "#backupSettings",
-            resolveLocaleString("backupSettings") || "Backup",
+            "#storageBackupNow",
+            resolveLocaleString("storageBackupNow") || "Download full backup",
             {
-              target: "#backupSettings",
-              highlight: "#settingsDialog",
+              target: "#storageBackupNow",
+              highlight: "#storageActions",
+            },
+          ),
+        () =>
+          createHelpLink(
+            "#storageActionsHeading",
+            resolveLocaleString("storageActionsHeading") || "Quick safeguards",
+            {
+              target: "#storageActionsHeading",
+              highlight: "#storageActions",
+              isButton: false,
             },
           ),
       ],
