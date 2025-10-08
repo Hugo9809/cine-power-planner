@@ -9797,6 +9797,17 @@ function saveAutoGearBackupRetention(retention) {
 // --- Clear All Stored Data ---
 function clearAllData() {
   const msg = "Error clearing storage:";
+  // Use the shared project deletion helper so all in-memory project caches and
+  // activity trackers, including auto backup metadata, are cleared alongside
+  // the stored data. Without this the factory reset could leave auto backup
+  // entries available until the next reload because the cache still referenced
+  // them.
+  try {
+    deleteProject();
+  } catch (error) {
+    console.warn('Unable to clear stored projects during factory reset', error);
+  }
+
   const safeStorage = getSafeLocalStorage();
   deleteFromStorage(safeStorage, DEVICE_STORAGE_KEY, msg);
   deleteFromStorage(safeStorage, SETUP_STORAGE_KEY, msg);
@@ -9804,7 +9815,6 @@ function clearAllData() {
   // Favorites were added later and can be forgotten if not explicitly cleared.
   // Ensure they are removed alongside other stored planner data.
   deleteFromStorage(safeStorage, FAVORITES_STORAGE_KEY, msg);
-  deleteFromStorage(safeStorage, PROJECT_STORAGE_KEY, msg);
   deleteFromStorage(safeStorage, AUTO_GEAR_RULES_STORAGE_KEY, msg);
   deleteFromStorage(safeStorage, AUTO_GEAR_BACKUPS_STORAGE_KEY, msg);
   deleteFromStorage(safeStorage, AUTO_GEAR_SEEDED_STORAGE_KEY, msg);
