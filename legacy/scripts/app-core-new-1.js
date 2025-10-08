@@ -9876,6 +9876,92 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   var pinkModeAnimatedIconPlacementHistory = [];
   var pinkModeIconRainInstances = new Set();
   var pinkModeIconRainLastTriggeredAt = 0;
+  var pinkModeBodyReadyQueue = [];
+  var pinkModeBodyReadyScheduled = false;
+  var pinkModeBodyReadyTimerId = null;
+
+  function flushPinkModeBodyReadyQueue() {
+    if (!pinkModeBodyReadyQueue.length) {
+      return;
+    }
+
+    var callbacks = pinkModeBodyReadyQueue.splice(0, pinkModeBodyReadyQueue.length);
+    for (var index = 0; index < callbacks.length; index += 1) {
+      var callback = callbacks[index];
+      if (typeof callback !== 'function') {
+        continue;
+      }
+      try {
+        callback();
+      } catch (error) {
+        console.warn('Could not run deferred pink mode callback', error);
+      }
+    }
+  }
+
+  function schedulePinkModeBodyReadyCheck() {
+    if (pinkModeBodyReadyTimerId) {
+      return;
+    }
+
+    pinkModeBodyReadyTimerId = setTimeout(function () {
+      pinkModeBodyReadyTimerId = null;
+
+      if (typeof document === 'undefined' || !document) {
+        pinkModeBodyReadyScheduled = false;
+        pinkModeBodyReadyQueue.length = 0;
+        return;
+      }
+
+      if (document.body) {
+        pinkModeBodyReadyScheduled = false;
+        flushPinkModeBodyReadyQueue();
+        return;
+      }
+
+      if (document.readyState === 'loading') {
+        var resume = function resume() {
+          document.removeEventListener('DOMContentLoaded', resume);
+          schedulePinkModeBodyReadyCheck();
+        };
+
+        try {
+          document.addEventListener('DOMContentLoaded', resume, { once: true });
+        } catch (listenerError) {
+          void listenerError;
+          document.addEventListener('DOMContentLoaded', resume);
+        }
+        return;
+      }
+
+      schedulePinkModeBodyReadyCheck();
+    }, 16);
+  }
+
+  function whenPinkModeBodyReady(callback) {
+    if (typeof callback !== 'function' || typeof document === 'undefined') {
+      return false;
+    }
+
+    if (document.body) {
+      callback();
+      return true;
+    }
+
+    if (pinkModeBodyReadyQueue.indexOf(callback) === -1) {
+      pinkModeBodyReadyQueue.push(callback);
+    }
+
+    if (!pinkModeBodyReadyScheduled) {
+      pinkModeBodyReadyScheduled = true;
+      schedulePinkModeBodyReadyCheck();
+    } else if (!pinkModeBodyReadyTimerId) {
+      schedulePinkModeBodyReadyCheck();
+    }
+
+    return true;
+  }
+
   var pinkModeAnimatedIconPressListenerCleanup = null;
   var pinkModeAnimatedIconLastTouchTime = 0;
   var pinkModeReduceMotionQuery = typeof window !== 'undefined' && typeof window.matchMedia === 'function' ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
@@ -10660,7 +10746,14 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     return true;
   }
   function triggerPinkModeIconRain() {
-    if (typeof window === 'undefined' || typeof document === 'undefined' || !document.body || pinkModeReduceMotionQuery && pinkModeReduceMotionQuery.matches) {
+    if (typeof window === 'undefined' || typeof document === 'undefined') {
+      return;
+    }
+    if (!document.body) {
+      whenPinkModeBodyReady(triggerPinkModeIconRain);
+      return;
+    }
+    if (pinkModeReduceMotionQuery && pinkModeReduceMotionQuery.matches) {
       return;
     }
     var now = Date.now();
@@ -10945,7 +11038,11 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
     if (pinkModeAnimatedIconsActive) {
       return;
     }
-    if (!document || !document.body) {
+    if (typeof document === 'undefined' || !document) {
+      return;
+    }
+    if (!document.body) {
+      whenPinkModeBodyReady(startPinkModeAnimatedIcons);
       return;
     }
     if (pinkModeReduceMotionQuery && pinkModeReduceMotionQuery.matches) {
