@@ -1164,7 +1164,43 @@ function isCompressedAutoBackupSnapshotPayload(payload) {
   return typeof payload.data === 'string' && payload.data;
 }
 
-function prepareAutoBackupSnapshotPayloadForStorage(payload, contextName) {
+function cloneCompressionMetadata(metadata) {
+  if (!metadata || typeof metadata !== 'object') {
+    return null;
+  }
+
+  const originalLength = Number(metadata.originalLength);
+  const compressedLength = Number(metadata.compressedLength);
+  if (!Number.isFinite(originalLength) || !Number.isFinite(compressedLength)) {
+    return null;
+  }
+
+  const compressionVariant = typeof metadata.compressionVariant === 'string'
+    && metadata.compressionVariant
+    ? metadata.compressionVariant
+    : null;
+
+  return {
+    originalLength,
+    compressedLength,
+    compressionVariant,
+  };
+}
+
+function isSameCompressionMetadata(a, b) {
+  if (!a || !b) {
+    return false;
+  }
+
+  return (
+    a.originalLength === b.originalLength
+    && a.compressedLength === b.compressedLength
+    && (a.compressionVariant || null) === (b.compressionVariant || null)
+  );
+}
+
+function prepareAutoBackupSnapshotPayloadForStorage(payload, contextName, options) {
+  const opts = options || {};
   if (!payload || typeof payload !== 'object') {
     return { payload, compression: null, compressed: false };
   }
@@ -1195,10 +1231,19 @@ function prepareAutoBackupSnapshotPayloadForStorage(payload, contextName) {
     compressionVariant: candidate.compressionVariant || null,
   };
 
+  const compressionMetadata = {
+    originalLength: candidate.originalLength,
+    compressedLength: candidate.wrappedLength,
+    compressionVariant: candidate.compressionVariant || null,
+  };
+
+  const previousCompression = cloneCompressionMetadata(opts.previousCompression);
+
   if (
     typeof console !== 'undefined'
     && typeof console.warn === 'function'
     && savings > 0
+    && !isSameCompressionMetadata(previousCompression, compressionMetadata)
   ) {
     const label = typeof contextName === 'string' && contextName
       ? `"${contextName}"`
@@ -1212,11 +1257,7 @@ function prepareAutoBackupSnapshotPayloadForStorage(payload, contextName) {
 
   return {
     payload: compressedPayload,
-    compression: {
-      originalLength: candidate.originalLength,
-      compressedLength: candidate.wrappedLength,
-      compressionVariant: candidate.compressionVariant || null,
-    },
+    compression: compressionMetadata,
     compressed: true,
   };
 }
@@ -1349,6 +1390,11 @@ function expandAutoBackupEntries(container, options) {
         removedKeys: removedKeys.slice(),
       };
 
+      const payloadCompression = cloneCompressionMetadata(snapshot.payloadCompression);
+      if (payloadCompression) {
+        metadata.payloadCompression = payloadCompression;
+      }
+
       defineAutoBackupMetadata(expanded, metadata);
       cache.set(name, expanded);
       stack.delete(name);
@@ -1428,6 +1474,34 @@ function computeAutoBackupDiff(currentValue, baseValue) {
   return { payload, changedKeys, removedKeys };
 }
 
+function applyPreparedAutoBackupSnapshotPayload(snapshot, prepared, metadata) {
+  if (!snapshot || !prepared) {
+    return;
+  }
+
+  snapshot.payload = prepared.payload;
+
+  if (prepared.compression) {
+    snapshot.payloadCompression = prepared.compression;
+    if (metadata && typeof metadata === 'object') {
+      metadata.payloadCompression = prepared.compression;
+    }
+    return;
+  }
+
+  if (Object.prototype.hasOwnProperty.call(snapshot, 'payloadCompression')) {
+    delete snapshot.payloadCompression;
+  }
+
+  if (
+    metadata
+    && typeof metadata === 'object'
+    && Object.prototype.hasOwnProperty.call(metadata, 'payloadCompression')
+  ) {
+    delete metadata.payloadCompression;
+  }
+}
+
 function serializeAutoBackupEntries(entries, options) {
   if (!isPlainObject(entries)) {
     return entries;
@@ -1466,11 +1540,10 @@ function serializeAutoBackupEntries(entries, options) {
         changedKeys: Object.keys(normalizedValue || {}),
         removedKeys: [],
       };
-      const prepared = prepareAutoBackupSnapshotPayloadForStorage(normalizedValue, name);
-      snapshot.payload = prepared.payload;
-      if (prepared.compression) {
-        snapshot.payloadCompression = prepared.compression;
-      }
+      const prepared = prepareAutoBackupSnapshotPayloadForStorage(normalizedValue, name, {
+        previousCompression: metadata && metadata.payloadCompression,
+      });
+      applyPreparedAutoBackupSnapshotPayload(snapshot, prepared, metadata);
       serialized[name][AUTO_BACKUP_SNAPSHOT_PROPERTY] = snapshot;
       return;
     }
@@ -1491,11 +1564,10 @@ function serializeAutoBackupEntries(entries, options) {
         changedKeys: Object.keys(normalizedValue || {}),
         removedKeys: [],
       };
-      const prepared = prepareAutoBackupSnapshotPayloadForStorage(normalizedValue, name);
-      snapshot.payload = prepared.payload;
-      if (prepared.compression) {
-        snapshot.payloadCompression = prepared.compression;
-      }
+      const prepared = prepareAutoBackupSnapshotPayloadForStorage(normalizedValue, name, {
+        previousCompression: metadata && metadata.payloadCompression,
+      });
+      applyPreparedAutoBackupSnapshotPayload(snapshot, prepared, metadata);
       serialized[name][AUTO_BACKUP_SNAPSHOT_PROPERTY] = snapshot;
       return;
     }
@@ -1513,11 +1585,10 @@ function serializeAutoBackupEntries(entries, options) {
       changedKeys: diff.changedKeys,
       removedKeys: diff.removedKeys,
     };
-    const prepared = prepareAutoBackupSnapshotPayloadForStorage(diff.payload, name);
-    snapshot.payload = prepared.payload;
-    if (prepared.compression) {
-      snapshot.payloadCompression = prepared.compression;
-    }
+    const prepared = prepareAutoBackupSnapshotPayloadForStorage(diff.payload, name, {
+      previousCompression: metadata && metadata.payloadCompression,
+    });
+    applyPreparedAutoBackupSnapshotPayload(snapshot, prepared, metadata);
     serialized[name][AUTO_BACKUP_SNAPSHOT_PROPERTY] = snapshot;
   });
 
@@ -2378,6 +2449,7 @@ function ensureProjectEntryCompressed(value, contextName) {
     try {
       JSON.parse(value);
     } catch (nonJsonStringError) {
+      void nonJsonStringError;
       return value;
     }
 
