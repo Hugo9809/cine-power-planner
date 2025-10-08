@@ -88,6 +88,39 @@
     }
   }
 
+  function isFactoryResetActive() {
+    const readFlag = (scope) => {
+      if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+        return false;
+      }
+      try {
+        return scope.__cameraPowerPlannerFactoryResetting === true;
+      } catch (error) {
+        void error;
+        return false;
+      }
+    };
+
+    if (readFlag(GLOBAL_SCOPE)) {
+      return true;
+    }
+
+    const fallbackScopes = [
+      typeof window !== 'undefined' ? window : null,
+      typeof self !== 'undefined' ? self : null,
+      typeof global !== 'undefined' ? global : null,
+    ];
+
+    for (let index = 0; index < fallbackScopes.length; index += 1) {
+      const scope = fallbackScopes[index];
+      if (scope && scope !== GLOBAL_SCOPE && readFlag(scope)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
 var DEVICE_STORAGE_KEY = 'cameraPowerPlanner_devices';
 var SETUP_STORAGE_KEY = 'cameraPowerPlanner_setups';
 var SESSION_STATE_KEY = 'cameraPowerPlanner_session';
@@ -1525,9 +1558,59 @@ function expandAutoBackupEntries(container, options) {
     if (snapshot && typeof snapshot === 'object') {
       if (stack.has(name)) {
         console.warn('Detected cyclic auto-backup reference while expanding snapshot', name);
-        const fallback = {};
-        cache.set(name, fallback);
-        return fallback;
+        let fallbackPayload = {};
+        let payloadKeys = [];
+        let payloadSignature = null;
+
+        try {
+          const payloadInfo = restoreAutoBackupSnapshotPayload(snapshot, name);
+          if (payloadInfo && isPlainObject(payloadInfo.payload)) {
+            fallbackPayload = cloneAutoBackupValue(payloadInfo.payload);
+            payloadKeys = Object.keys(payloadInfo.payload);
+            try {
+              payloadSignature = createStableValueSignature(payloadInfo.payload);
+            } catch (cycleSignatureError) {
+              payloadSignature = null;
+              console.warn(
+                'Unable to compute stable signature for automatic backup payload after detecting a cycle',
+                cycleSignatureError,
+              );
+            }
+          }
+        } catch (cyclePayloadError) {
+          console.warn(
+            'Failed to restore automatic backup payload after detecting a cyclic reference',
+            name,
+            cyclePayloadError,
+          );
+        }
+
+        const metadata = {
+          version: Number.isFinite(snapshot.version) ? snapshot.version : AUTO_BACKUP_SNAPSHOT_VERSION,
+          snapshotType: 'full',
+          base: null,
+          sequence: Number.isFinite(snapshot.sequence) ? snapshot.sequence : 0,
+          createdAt: typeof snapshot.createdAt === 'string'
+            ? snapshot.createdAt
+            : deriveAutoBackupCreatedAt(name),
+          changedKeys: payloadKeys.slice(),
+          removedKeys: [],
+          payloadSignature,
+        };
+
+        if (isCompressedAutoBackupSnapshotPayload(snapshot.payload)) {
+          metadata.compressedPayload = cloneAutoBackupValue(snapshot.payload, { stripMetadata: true });
+          metadata.payloadCompression = isPlainObject(snapshot.payloadCompression)
+            ? { ...snapshot.payloadCompression }
+            : null;
+        } else {
+          metadata.compressedPayload = null;
+          metadata.payloadCompression = null;
+        }
+
+        defineAutoBackupMetadata(fallbackPayload, metadata);
+        cache.set(name, fallbackPayload);
+        return fallbackPayload;
       }
 
       stack.add(name);
@@ -5513,6 +5596,9 @@ function loadJSONFromStorage(
     ? backupKey
     : `${key}${STORAGE_BACKUP_SUFFIX}`;
   const useBackup = !disableBackup && fallbackKey && fallbackKey !== key;
+  const skipBackupRecovery = isFactoryResetActive();
+  const allowBackupRecovery = useBackup && !skipBackupRecovery;
+  const allowMigrationBackupRecovery = !skipBackupRecovery;
 
   const migrationBackupCandidates = (() => {
     const seen = new Set();
@@ -5747,7 +5833,7 @@ function loadJSONFromStorage(
   };
 
   const shouldAttemptBackup =
-    useBackup && (shouldAlert || restoreIfMissing || missingPrimary);
+    allowBackupRecovery && (shouldAlert || restoreIfMissing || missingPrimary);
 
   if (shouldAttemptBackup) {
     let backupRaw = null;
@@ -5815,7 +5901,8 @@ function loadJSONFromStorage(
   }
 
   const shouldAttemptMigrationBackup =
-    migrationBackupCandidates.length > 0
+    allowMigrationBackupRecovery
+    && migrationBackupCandidates.length > 0
     && (missingPrimary || restoreIfMissing || shouldAlert);
 
   if (shouldAttemptMigrationBackup) {
