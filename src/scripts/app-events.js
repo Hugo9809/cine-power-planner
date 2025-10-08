@@ -1862,7 +1862,7 @@ function registerEventsCineUiInternal(cineUi) {
         return (
           langTexts.saveSetupHelp
           || fallbackTexts.saveSetupHelp
-          || 'Store the current project so it is never lost. Press Enter or Ctrl+S to save instantly.'
+          || 'Capture the current project—including devices, requirements and notes—so it can be restored instantly. The autosave status dot beside Project Name glows while changes are secured. Press Enter or Ctrl+S to save quickly; the Save button stays disabled until a name is entered.'
         );
       });
 
@@ -1871,7 +1871,7 @@ function registerEventsCineUiInternal(cineUi) {
         return (
           langTexts.preDeleteBackupSuccess
           || fallbackTexts.preDeleteBackupSuccess
-          || 'Automatic backup saved. Restore it anytime from Saved Projects.'
+          || 'Automatic safety copy stored before deletion. Find the matching auto-backup entry under Saved Projects and rename it if you plan to keep it permanently.'
         );
       });
     }

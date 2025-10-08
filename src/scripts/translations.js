@@ -606,10 +606,10 @@ const texts = {
     versionCompareSummaryChanged: "Updated: %s",
     backupSettings: "Backup",
     backupSettingsHelp:
-      "Download a JSON snapshot of settings, projects, custom devices, favorites and runtime data.",
+      "Download a full JSON backup containing every project, device edit, preference, auto-gear rule and runtime log stored on this device. Keep multiple copies in your offline archive.",
     restoreSettings: "Restore",
     restoreSettingsHelp:
-      "Load a previously exported JSON snapshot to restore your planner data.",
+      "Restore a full JSON backup. The planner captures a fresh safety copy first, then applies the selected file so you can roll back immediately if anything looks wrong.",
     restoreRehearsalButton: "Restore rehearsal",
     restoreRehearsalButtonHelp:
       "Test a backup or project bundle in a disposable sandbox before you restore your live data.",
@@ -695,7 +695,7 @@ const texts = {
       "Backup downloaded. All planner data cleared. Reloading…",
     factoryResetError: "Factory reset failed. Please try again.",
     preDeleteBackupSuccess:
-      "Automatic backup saved. Restore it anytime from Saved Projects.",
+      "Automatic safety copy stored before deletion. Find the matching auto-backup entry under Saved Projects and rename it if you plan to keep it permanently.",
     preDeleteBackupFailed: "Automatic backup failed. The action was cancelled.",
     restoreBackupFailed: "Backup failed. Restore cancelled.",
     manualDownloadFallback:
@@ -1495,15 +1495,15 @@ const texts = {
     deleteSetupHelp:
       "Remove the highlighted saved project permanently from your browser.",
     saveSetupHelp:
-      "Store the devices and battery you have selected so the project can be recalled later. Press Enter or Ctrl+S (Cmd+S on Mac) to save quickly; the Save button stays disabled until a name is entered.",
+      "Capture the current project—including devices, requirements and notes—so it can be restored instantly. The autosave status dot beside Project Name glows while changes are secured. Press Enter or Ctrl+S (Cmd+S on Mac) to save quickly; the Save button stays disabled until a name is entered.",
     generateOverviewHelp:
       "Rebuilds the print-ready summary for the selected saved project and opens the overview dialog so you can review power and connection details before printing when ready. Lens selections render with brand, mount, diameter, focus, weight, rod support and notes so exports cover spec-sensitive checkouts.",
     generateGearListHelp:
       "Build a categorized table that combines selected gear with project requirements. The list refreshes on every change, merges duplicate items with counts and auto-adds required cables, rigging, lens supports, matte box parts, battery counts with hotswap hardware, default monitors for each role and scenario-specific accessories. Entries are sorted alphabetically and include hover descriptions.",
     shareSetupHelp:
-      "Download a JSON backup of the current project so you can share or restore it later. Store the file with your crew backups before closing the planner.",
+      "Download a JSON safety bundle of the current project so you can archive or share it offline. Store the file with your crew backups before closing the planner.",
     applySharedLinkHelp:
-      "Load the configuration from a JSON backup exported via Save & Share. Review the preview before applying so nothing overwrites the wrong project.",
+      "Load the configuration from a JSON backup exported via Save & Share or Backup & Restore. Review the preview before applying—nothing overwrites your current project until you confirm Save.",
     sharedLinkHelp:
       "Choose a project JSON exported from Save & Share or Backup & Restore. Keep the original file in your backups after import.",
     cameraSelectHelp: "Choose the camera body that anchors your rig.",
@@ -2627,10 +2627,10 @@ const texts = {
     versionCompareSummaryChanged: "Aggiornati: %s",
     backupSettings: "Backup",
     backupSettingsHelp:
-      "Scarica uno snapshot JSON con impostazioni, progetti, dispositivi personalizzati, preferiti e dati runtime.",
+      "Scarica un backup JSON completo con tutti i progetti, le modifiche ai dispositivi, le preferenze, le regole automatiche e i log runtime presenti su questo dispositivo. Conservane copie multiple nel tuo archivio offline.",
     restoreSettings: "Ripristina",
     restoreSettingsHelp:
-      "Carica uno snapshot JSON esportato in precedenza per ripristinare dati e impostazioni.",
+      "Ripristina un backup JSON completo. Il planner cattura prima una nuova copia di sicurezza, quindi applica il file selezionato così puoi tornare indietro subito se qualcosa non va.",
     restoreRehearsalButton: "Prova di ripristino",
     restoreRehearsalButtonHelp:
       "Metti alla prova un backup o un pacchetto progetto in una sandbox temporanea prima di ripristinare i dati attivi.",
@@ -2716,7 +2716,7 @@ const texts = {
       "Backup scaricato. Tutti i dati dell’app sono stati cancellati. Ricaricamento in corso…",
     factoryResetError: "Ripristino di fabbrica non riuscito. Riprova.",
     preDeleteBackupSuccess:
-      "Backup automatico salvato. Puoi ripristinarlo da Progetti salvati.",
+      "Copia di sicurezza automatica salvata prima dell'eliminazione. Cerca la voce auto-backup corrispondente in Progetti salvati e rinominala se desideri conservarla in modo permanente.",
     preDeleteBackupFailed: "Backup automatico non riuscito. L'operazione è stata annullata.",
     restoreBackupFailed: "Backup non riuscito. Ripristino annullato.",
     manualDownloadFallback:
@@ -3018,15 +3018,16 @@ const texts = {
       "Scegli una configurazione salvata da caricare o inizia una nuova.",
     setupNameHelp: "Inserisci un nome per la configurazione corrente.",
     deleteSetupHelp: "Elimina la configurazione salvata selezionata.",
-    saveSetupHelp: "Salva la configurazione corrente. Premi Invio o Ctrl+S (Cmd+S su Mac) per salvare rapidamente; il pulsante Salva rimane disabilitato finché non viene inserito un nome.",
+    saveSetupHelp:
+      "Acquisisci il progetto corrente — dispositivi, requisiti e note — in modo da richiamarlo all'istante. Il punto di stato accanto a Nome progetto si illumina mentre il salvataggio automatico protegge le modifiche. Premi Invio o Ctrl+S (Cmd+S su Mac) per salvare rapidamente; il pulsante Salva resta disattivato finché non inserisci un nome.",
     generateOverviewHelp:
       "Ricostruisce il riepilogo pronto per la stampa del progetto salvato selezionato e apre la finestra panoramica così puoi rivedere i dettagli di alimentazione e connessione prima di stampare quando preferisci. La sezione obiettivi mostra marca, attacco, diametro, fuoco, peso, supporto aste e note così gli export coprono le verifiche sensibili alle specifiche.",
     generateGearListHelp:
       "Genera una tabella categorizzata che combina l'attrezzatura selezionata con i requisiti del progetto. L'elenco si aggiorna a ogni modifica, unisce i duplicati con un conteggio e aggiunge automaticamente cavi, rigging, supporti lente, componenti matte box, conteggi batteria con hotswap, monitor predefiniti per ogni ruolo e accessori specifici per gli scenari. Gli elementi sono ordinati alfabeticamente e includono descrizioni al passaggio del mouse.",
     shareSetupHelp:
-      "Scarica un backup JSON del progetto corrente così puoi condividerlo o ripristinarlo in seguito. Salva il file insieme ai backup della troupe prima di chiudere il planner.",
+      "Scarica un pacchetto JSON di sicurezza del progetto corrente per archiviarlo o condividerlo offline. Conserva il file insieme ai backup della troupe prima di chiudere il planner.",
     applySharedLinkHelp:
-      "Carica la configurazione da un backup JSON esportato tramite Salva e condividi. Controlla l’anteprima prima di applicarlo per evitare di sovrascrivere il progetto sbagliato.",
+      "Carica la configurazione da un backup JSON esportato tramite Salva e condividi o Backup e ripristino. Controlla l’anteprima prima di applicarla: nulla sovrascrive il progetto corrente finché non confermi Salva.",
     sharedLinkHelp:
       "Scegli un JSON del progetto esportato da Salva e condividi o da Backup e ripristino. Conserva il file originale nei tuoi backup dopo l’importazione.",
     cameraSelectHelp: "Seleziona la fotocamera per la tua configurazione.",
@@ -4161,10 +4162,10 @@ const texts = {
     versionCompareSummaryChanged: "Actualizaciones: %s",
     backupSettings: "Copia de seguridad",
     backupSettingsHelp:
-      "Descarga una instantánea JSON con ajustes, proyectos, dispositivos personalizados, favoritos y datos de autonomía.",
+      "Descarga una copia de seguridad JSON completa con todos los proyectos, ediciones de dispositivos, preferencias, reglas automáticas y registros de ejecución almacenados en este dispositivo. Conserva varias copias en tu archivo sin conexión.",
     restoreSettings: "Restaurar",
     restoreSettingsHelp:
-      "Carga una instantánea JSON exportada previamente para restaurar datos y ajustes.",
+      "Restaura una copia de seguridad JSON completa. El planificador captura primero una nueva copia de seguridad y después aplica el archivo seleccionado para que puedas revertirlo de inmediato si algo parece incorrecto.",
     restoreRehearsalButton: "Ensayo de restauración",
     restoreRehearsalButtonHelp:
       "Prueba una copia de seguridad o un paquete de proyecto en una sandbox desechable antes de restaurar tus datos activos.",
@@ -4250,7 +4251,7 @@ const texts = {
       "Copia de seguridad descargada. Todos los datos del planificador se borraron. Recargando…",
     factoryResetError: "El restablecimiento de fábrica falló. Inténtalo de nuevo.",
     preDeleteBackupSuccess:
-      "Copia de seguridad automática guardada. Puedes restaurarla desde Proyectos guardados.",
+      "Copia de seguridad automática guardada antes de borrar. Busca la entrada auto-backup equivalente en Proyectos guardados y cámbiale el nombre si quieres conservarla de forma permanente.",
     preDeleteBackupFailed: "La copia de seguridad automática falló. La acción se canceló.",
     restoreBackupFailed: "La copia de seguridad falló. Restauración cancelada.",
     manualDownloadFallback:
@@ -4551,15 +4552,16 @@ const texts = {
       "Elige una configuración guardada para cargarla o comienza una nueva.",
     setupNameHelp: "Introduce un nombre para la configuración actual.",
     deleteSetupHelp: "Elimina la configuración guardada seleccionada.",
-    saveSetupHelp: "Guarda la configuración actual. Pulsa Intro o Ctrl+S (Cmd+S en Mac) para guardar rápidamente; el botón Guardar permanece desactivado hasta que se introduce un nombre.",
+    saveSetupHelp:
+      "Captura el proyecto actual —dispositivos, requisitos y notas— para recuperarlo al instante. El punto de estado junto a Nombre del proyecto se ilumina mientras el guardado automático protege los cambios. Pulsa Intro o Ctrl+S (Cmd+S en Mac) para guardar rápido; el botón Guardar permanece desactivado hasta que escribas un nombre.",
     generateOverviewHelp:
       "Reconstruye el resumen listo para imprimir del proyecto guardado seleccionado y abre la ventana de overview para que revises los detalles de alimentación y conexión antes de imprimir cuando quieras. Las ópticas seleccionadas se muestran con marca, montura, diámetro, enfoque, peso, soporte de varillas y notas para que los exports cubran chequeos sensibles a especificaciones.",
     generateGearListHelp:
       "Genera una tabla categorizada que combina el equipo seleccionado con los requisitos del proyecto. La lista se actualiza con cada cambio, fusiona duplicados con sus cantidades y añade automáticamente cables, rigging, soportes de lente, piezas de matte box, recuentos de baterías con hotswap, monitores predeterminados para cada rol y accesorios específicos de los escenarios. Los elementos se ordenan alfabéticamente e incluyen descripciones al pasar el cursor.",
     shareSetupHelp:
-      "Descarga una copia de seguridad JSON del proyecto actual para compartirla o restaurarla más tarde. Guarda el archivo junto con los respaldos del equipo antes de cerrar el planificador.",
+      "Descarga un paquete JSON de seguridad del proyecto actual para archivarlo o compartirlo sin conexión. Guarda el archivo junto a las copias de seguridad del equipo antes de cerrar el planificador.",
     applySharedLinkHelp:
-      "Carga la configuración desde un respaldo JSON exportado con Guardar y compartir. Revisa la vista previa antes de aplicarlo para no sobrescribir el proyecto equivocado.",
+      "Carga la configuración desde un backup JSON exportado mediante Guardar y compartir o Copia de seguridad y restaurar. Revisa la vista previa antes de aplicarla: nada sobrescribe tu proyecto actual hasta que confirmas Guardar.",
     sharedLinkHelp:
       "Elige un JSON del proyecto exportado desde Guardar y compartir o Copia de seguridad y restaurar. Conserva el archivo original en tus respaldos después de importarlo.",
     cameraSelectHelp: "Selecciona la cámara para tu configuración.",
@@ -5705,10 +5707,10 @@ const texts = {
       "Affiche temporairement les instantanés de sauvegarde automatiques dans Projets enregistrés afin de pouvoir les restaurer manuellement.",
     backupSettings: "Sauvegarder",
     backupSettingsHelp:
-      "Téléchargez une sauvegarde JSON comprenant réglages, projets, appareils personnalisés, favoris et données d’autonomie.",
+      "Téléchargez une sauvegarde JSON complète contenant tous les projets, modifications d’appareils, préférences, règles automatiques et journaux d’exécution stockés sur cet appareil. Conservez plusieurs copies dans votre archive hors ligne.",
     restoreSettings: "Restaurer",
     restoreSettingsHelp:
-      "Chargez une sauvegarde JSON exportée auparavant pour restaurer données et réglages.",
+      "Restaurez une sauvegarde JSON complète. Le planner capture d’abord une nouvelle copie de sécurité puis applique le fichier sélectionné, ce qui vous permet de revenir immédiatement en arrière si quelque chose semble incorrect.",
     restoreRehearsalButton: "Simulation de restauration",
     restoreRehearsalButtonHelp:
       "Testez une sauvegarde ou un lot de projet dans un espace temporaire avant de restaurer vos données actives.",
@@ -5794,7 +5796,7 @@ const texts = {
       "Sauvegarde téléchargée. Toutes les données du planificateur ont été effacées. Rechargement…",
     factoryResetError: "Échec de la réinitialisation d’usine. Veuillez réessayer.",
     preDeleteBackupSuccess:
-      "Sauvegarde automatique enregistrée. Vous pouvez la restaurer depuis Projets enregistrés.",
+      "Copie de sécurité automatique créée avant la suppression. Recherchez l’entrée auto-backup correspondante dans Projets enregistrés et renommez-la si vous souhaitez la conserver définitivement.",
     preDeleteBackupFailed: "La sauvegarde automatique a échoué. L’action a été annulée.",
     restoreBackupFailed: "Échec de la sauvegarde. Restauration annulée.",
     manualDownloadFallback:
@@ -6096,15 +6098,16 @@ const texts = {
       "Choisissez une configuration enregistrée à charger ou commencez-en une nouvelle.",
     setupNameHelp: "Saisissez un nom pour la configuration actuelle.",
     deleteSetupHelp: "Supprime la configuration enregistrée sélectionnée.",
-    saveSetupHelp: "Enregistre la configuration actuelle. Appuyez sur Entrée ou Ctrl+S (Cmd+S sur Mac) pour enregistrer rapidement ; le bouton Enregistrer reste désactivé tant qu'aucun nom n'est saisi.",
+    saveSetupHelp:
+      "Capturez le projet en cours — appareils, exigences et notes — afin de le rappeler instantanément. Le point d’état à côté de Nom du projet s’allume pendant que l’enregistrement automatique sécurise les modifications. Appuyez sur Entrée ou Ctrl+S (Cmd+S sur Mac) pour enregistrer rapidement ; le bouton Enregistrer reste désactivé tant qu’aucun nom n’est saisi.",
     generateOverviewHelp:
       "Reconstruit le résumé prêt à l'impression du projet enregistré sélectionné et ouvre la fenêtre d'aperçu pour examiner les détails d'alimentation et de connexion avant d'imprimer quand vous êtes prêt. La section optiques affiche marque, monture, diamètre, focus, poids, support de rods et notes afin que les exports couvrent les contrôles sensibles aux spécifications.",
     generateGearListHelp:
       "Génère un tableau catégorisé combinant le matériel sélectionné et les exigences du projet. La liste se met à jour à chaque changement, fusionne les doublons avec leur quantité et ajoute automatiquement câbles, rigging, supports d'objectif, éléments de matte box, nombre de batteries avec matériel de hotswap, moniteurs par rôle et accessoires spécifiques aux scénarios. Chaque entrée est triée alphabétiquement et offre une description au survol.",
     shareSetupHelp:
-      "Téléchargez une sauvegarde JSON du projet en cours afin de pouvoir le partager ou le restaurer plus tard. Rangez le fichier avec les sauvegardes de l’équipe avant de fermer le planner.",
+      "Téléchargez un paquet JSON de sécurité du projet actuel pour l’archiver ou le partager hors ligne. Rangez le fichier avec les sauvegardes de l’équipe avant de fermer le planner.",
     applySharedLinkHelp:
-      "Chargez la configuration depuis une sauvegarde JSON exportée via Enregistrer et partager. Vérifiez l’aperçu avant d’appliquer pour éviter d’écraser le mauvais projet.",
+      "Chargez la configuration depuis une sauvegarde JSON exportée via Enregistrer & Partager ou Sauvegarde & Restauration. Vérifiez l’aperçu avant d’appliquer : rien n’écrase votre projet actuel tant que vous ne confirmez pas Enregistrer.",
     sharedLinkHelp:
       "Choisissez un fichier JSON de projet exporté depuis Enregistrer et partager ou Sauvegarde et restauration. Conservez l’original dans vos sauvegardes après l’import.",
     cameraSelectHelp: "Sélectionnez la caméra pour votre configuration.",
@@ -7254,10 +7257,10 @@ const texts = {
       "Blendet automatische Sicherungs-Snapshots vorübergehend in den gespeicherten Projekten ein, damit du sie manuell wiederherstellen kannst.",
     backupSettings: "Sichern",
     backupSettingsHelp:
-      "Lade eine JSON-Sicherung mit Einstellungen, Projekten, eigenen Geräten, Favoriten und Laufzeitdaten herunter.",
+      "Lade ein vollständiges JSON-Backup mit allen Projekten, Geräteanpassungen, Einstellungen, automatischen Regeln und Laufzeitprotokollen dieses Geräts herunter. Bewahre mehrere Kopien in deinem Offline-Archiv auf.",
     restoreSettings: "Wiederherstellen",
     restoreSettingsHelp:
-      "Importiere eine zuvor exportierte JSON-Sicherung, um Daten und Einstellungen wiederherzustellen.",
+      "Stelle ein vollständiges JSON-Backup wieder her. Der Planner erstellt zuerst eine neue Sicherheitskopie und wendet dann die ausgewählte Datei an, sodass du sofort zurückrollen kannst, falls etwas nicht stimmt.",
     restoreRehearsalButton: "Wiederherstellungsprobe",
     restoreRehearsalButtonHelp:
       "Teste eine Sicherung oder ein Projektpaket in einer Wegwerf-Sandbox, bevor du deine Live-Daten zurückspielst.",
@@ -7343,7 +7346,7 @@ const texts = {
       "Backup heruntergeladen. Alle Planer-Daten wurden gelöscht. Seite wird neu geladen…",
     factoryResetError: "Zurücksetzen auf Werkseinstellungen fehlgeschlagen. Bitte erneut versuchen.",
     preDeleteBackupSuccess:
-      "Automatische Sicherung gespeichert. Du kannst sie in Gespeicherte Projekte wiederherstellen.",
+      "Automatische Sicherheitskopie vor dem Löschen gespeichert. Suche den passenden auto-backup-Eintrag unter Gespeicherte Projekte und benenne ihn um, wenn du ihn dauerhaft behalten möchtest.",
     preDeleteBackupFailed: "Automatische Sicherung fehlgeschlagen. Die Aktion wurde abgebrochen.",
     restoreBackupFailed: "Backup fehlgeschlagen. Wiederherstellung abgebrochen.",
     manualDownloadFallback:
@@ -7645,15 +7648,16 @@ const texts = {
       "Wähle ein gespeichertes Projekt zum Laden oder starte ein neues.",
     setupNameHelp: "Gib einen Namen für das aktuelle Projekt ein.",
     deleteSetupHelp: "Löscht das ausgewählte gespeicherte Projekt.",
-    saveSetupHelp: "Speichert das aktuelle Projekt. Drücke Eingabe oder Strg+S (Cmd+S auf dem Mac), um schnell zu speichern; der Speichern-Button bleibt deaktiviert, bis ein Name eingegeben ist.",
+    saveSetupHelp:
+      "Erfasse das aktuelle Projekt – Geräte, Anforderungen und Notizen – damit es sofort wiederhergestellt werden kann. Der Statuspunkt neben Projektname leuchtet, während die Autospeicherung deine Änderungen absichert. Drücke Eingabe oder Strg+S (Cmd+S auf dem Mac), um schnell zu speichern; der Speichern-Button bleibt deaktiviert, bis ein Name eingetragen ist.",
     generateOverviewHelp:
       "Erstellt die druckfertige Übersicht für das ausgewählte gespeicherte Projekt neu und öffnet das Übersichtsfenster, damit du Strom- und Verbindungsdetails prüfen kannst, bevor du bei Bedarf druckst. Die Objektivsektion zeigt Marke, Mount, Durchmesser, Fokus, Gewicht, Rod-Support und Notizen, damit Exporte spezifikationskritische Checks abdecken.",
     generateGearListHelp:
       "Erstellt eine kategorisierte Tabelle aus ausgewähltem Equipment und Projektanforderungen. Die Liste aktualisiert sich bei jeder Änderung, fasst doppelte Einträge mit Anzahl zusammen und ergänzt automatisch benötigte Kabel, Rigging, Linsensupports, Matte-Box-Bauteile, Batteriezahlen mit Hotswap-Hardware, Standardmonitore pro Rolle sowie szenariospezifisches Zubehör. Alle Posten sind alphabetisch sortiert und zeigen beim Überfahren eine Beschreibung.",
     shareSetupHelp:
-      "Lade eine JSON-Sicherung des aktuellen Projekts herunter, damit du sie später teilen oder wiederherstellen kannst. Lege die Datei vor dem Schließen des Planners zu den Team-Backups.",
+      "Lade ein JSON-Sicherheitspaket des aktuellen Projekts herunter, um es offline zu archivieren oder zu teilen. Lege die Datei vor dem Schließen des Planners zu deinen Team-Backups.",
     applySharedLinkHelp:
-      "Lade die Konfiguration aus einer JSON-Sicherung, die über Speichern & Teilen exportiert wurde. Prüfe die Vorschau, bevor du anwendest, damit kein falsches Projekt überschrieben wird.",
+      "Lade die Konfiguration aus einem JSON-Backup, das über Speichern & Teilen oder Sicherung & Wiederherstellung exportiert wurde. Prüfe die Vorschau vor dem Anwenden – nichts überschreibt dein aktuelles Projekt, bevor du Speichern bestätigst.",
     sharedLinkHelp:
       "Wähle eine Projekt-JSON, die über Speichern & Teilen oder Sicherung & Wiederherstellung exportiert wurde. Bewahre die Originaldatei nach dem Import in deinen Backups auf.",
     cameraSelectHelp: "Wähle die Kamera für dein Setup.",
