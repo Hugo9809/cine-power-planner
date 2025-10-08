@@ -149,7 +149,7 @@
   "./src/scripts/globalthis-polyfill.js",
   "./src/scripts/legal-topbar.js",
   "./src/scripts/loader.js",
-  "./src/scripts/modern-support-check.mjs",
+  "./src/scripts/modern-support-check.js",
   "./src/scripts/modules/architecture-core.js",
   "./src/scripts/modules/architecture-helpers.js",
   "./src/scripts/modules/architecture-kernel.js",

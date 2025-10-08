@@ -14,7 +14,7 @@ describe('service worker configuration', () => {
       expect.arrayContaining([
         './src/scripts/globalthis-polyfill.js',
         './src/scripts/globals-bootstrap.js',
-        './src/scripts/modern-support-check.mjs',
+        './src/scripts/modern-support-check.js',
         './src/scripts/modules/registry.js',
         './src/scripts/modules/offline.js',
         './src/scripts/modules/ui.js',

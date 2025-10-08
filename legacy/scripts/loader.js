@@ -871,7 +871,7 @@ CRITICAL_GLOBAL_DEFINITIONS.push({
       cb(result);
     }
     optionalCheckScript.type = 'module';
-    optionalCheckScript.src = 'src/scripts/modern-support-check.mjs';
+    optionalCheckScript.src = 'src/scripts/modern-support-check.js';
     optionalCheckScript.onload = function () {
       var supported = !!(globalScope && globalScope[OPTIONAL_CHAINING_FLAG]);
       if (!supported) {
