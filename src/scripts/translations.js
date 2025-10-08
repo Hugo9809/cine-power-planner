@@ -754,7 +754,7 @@ const texts = {
     loggingHeading: "Diagnostics log",
     loggingHeadingHelp: "Review runtime diagnostics without leaving Settings.",
     loggingIntro:
-      "The log updates live while Settings stay open. Nothing leaves this device.",
+      "The log updates live while Settings stay open. Enable console capture below when you need deeper debugging. Nothing leaves this device.",
     loggingLevelFilterLabel: "Show entries from",
     loggingLevelFilterHelp: "Choose the minimum level to display.",
     loggingLevelFilterAll: "All levels",
@@ -772,6 +772,9 @@ const texts = {
     loggingConsoleOutputLabel: "Mirror to console",
     loggingConsoleOutputHelp:
       "Keep the browser console in sync with these entries.",
+    loggingCaptureConsoleLabel: "Capture console output",
+    loggingCaptureConsoleHelp:
+      "Record console messages for diagnostics. Turning this on may affect performance.",
     loggingCaptureErrorsLabel: "Capture global errors",
     loggingCaptureErrorsHelp:
       "Record uncaught errors and unhandled promise rejections.",
@@ -2749,7 +2752,7 @@ const texts = {
     loggingHeading: "Registro diagnostico",
     loggingHeadingHelp: "Controlla le diagnostiche in tempo reale senza lasciare Impostazioni.",
     loggingIntro:
-      "Il registro si aggiorna in tempo reale finché Impostazioni resta aperto. I dati non lasciano questo dispositivo.",
+      "Il registro si aggiorna in tempo reale finché Impostazioni resta aperto. Attiva la cattura della console qui sotto quando ti serve un debug più approfondito. I dati non lasciano questo dispositivo.",
     loggingLevelFilterLabel: "Mostra le voci da",
     loggingLevelFilterHelp: "Scegli il livello minimo da visualizzare.",
     loggingLevelFilterAll: "Tutti i livelli",
@@ -2767,6 +2770,9 @@ const texts = {
     loggingConsoleOutputLabel: "Specchia nella console",
     loggingConsoleOutputHelp:
       "Mantiene sincronizzata la console del browser con questo registro.",
+    loggingCaptureConsoleLabel: "Acquisisci output della console",
+    loggingCaptureConsoleHelp:
+      "Registra i messaggi della console per la diagnostica. L’attivazione può influire sulle prestazioni.",
     loggingCaptureErrorsLabel: "Acquisisci errori globali",
     loggingCaptureErrorsHelp:
       "Registra errori non gestiti e promesse respinte.",
@@ -4255,7 +4261,7 @@ const texts = {
     loggingHeading: "Registro de diagnósticos",
     loggingHeadingHelp: "Revise los diagnósticos en tiempo real sin salir de Ajustes.",
     loggingIntro:
-      "El registro se actualiza en vivo mientras Ajustes permanece abierto. Nada sale de este dispositivo.",
+      "El registro se actualiza en vivo mientras Ajustes permanece abierto. Activa la captura de la consola abajo cuando necesites una depuración más detallada. Nada sale de este dispositivo.",
     loggingLevelFilterLabel: "Mostrar entradas desde",
     loggingLevelFilterHelp: "Elija el nivel mínimo que desea ver.",
     loggingLevelFilterAll: "Todos los niveles",
@@ -4272,6 +4278,9 @@ const texts = {
     loggingHistoryLimitAria: "Definir cuántas entradas del registro quedan disponibles sin conexión",
     loggingConsoleOutputLabel: "Reflejar en la consola",
     loggingConsoleOutputHelp: "Mantiene sincronizada la consola del navegador.",
+    loggingCaptureConsoleLabel: "Capturar salida de la consola",
+    loggingCaptureConsoleHelp:
+      "Registra los mensajes de la consola para diagnósticos. Activarlo puede afectar al rendimiento.",
     loggingCaptureErrorsLabel: "Capturar errores globales",
     loggingCaptureErrorsHelp:
       "Registra errores no capturados y rechazos de promesas.",
@@ -5771,7 +5780,7 @@ const texts = {
     loggingHeading: "Journal de diagnostics",
     loggingHeadingHelp: "Consultez les diagnostics en direct sans quitter les paramètres.",
     loggingIntro:
-      "Le journal se met à jour en direct tant que la fenêtre Paramètres reste ouverte. Rien ne quitte cet appareil.",
+      "Le journal se met à jour en direct tant que la fenêtre Paramètres reste ouverte. Activez la capture de la console ci-dessous lorsque vous avez besoin d’un débogage plus poussé. Rien ne quitte cet appareil.",
     loggingLevelFilterLabel: "Afficher les entrées à partir de",
     loggingLevelFilterHelp: "Choisissez le niveau minimal à afficher.",
     loggingLevelFilterAll: "Tous les niveaux",
@@ -5789,6 +5798,9 @@ const texts = {
     loggingConsoleOutputLabel: "Dupliquer dans la console",
     loggingConsoleOutputHelp:
       "Maintient la console du navigateur synchronisée avec ce journal.",
+    loggingCaptureConsoleLabel: "Capturer la sortie de la console",
+    loggingCaptureConsoleHelp:
+      "Enregistre les messages de console pour le diagnostic. L’activation peut affecter les performances.",
     loggingCaptureErrorsLabel: "Capturer les erreurs globales",
     loggingCaptureErrorsHelp:
       "Enregistre les erreurs non interceptées et les promesses rejetées.",
@@ -7292,7 +7304,7 @@ const texts = {
     loggingHeading: "Diagnoseprotokoll",
     loggingHeadingHelp: "Prüfen Sie Laufzeitdiagnosen direkt in den Einstellungen.",
     loggingIntro:
-      "Das Protokoll aktualisiert sich live, solange die Einstellungen geöffnet bleiben. Es verlässt nie dieses Gerät.",
+      "Das Protokoll aktualisiert sich live, solange die Einstellungen geöffnet bleiben. Aktivieren Sie unten die Konsolenerfassung, wenn Sie eine detailliertere Fehlersuche benötigen. Es verlässt nie dieses Gerät.",
     loggingLevelFilterLabel: "Einträge anzeigen ab",
     loggingLevelFilterHelp: "Wählen Sie die minimale Stufe.",
     loggingLevelFilterAll: "Alle Stufen",
@@ -7310,6 +7322,9 @@ const texts = {
     loggingConsoleOutputLabel: "Auch in Konsole spiegeln",
     loggingConsoleOutputHelp:
       "Hält die Browserkonsole mit diesen Einträgen synchron.",
+    loggingCaptureConsoleLabel: "Konsolenausgabe erfassen",
+    loggingCaptureConsoleHelp:
+      "Protokolliert Konsolennachrichten für die Diagnose. Das Aktivieren kann die Leistung beeinflussen.",
     loggingCaptureErrorsLabel: "Globale Fehler erfassen",
     loggingCaptureErrorsHelp:
       "Erfasst unbehandelte Fehler und Promise-Ablehnungen.",

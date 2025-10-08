@@ -9716,6 +9716,18 @@ function setLanguage(lang) {
       || loggingConsoleOutputHelp.textContent;
     loggingConsoleOutputHelp.textContent = consoleHelp;
   }
+  if (loggingCaptureConsoleLabel) {
+    const consoleCaptureLabel = texts[lang].loggingCaptureConsoleLabel
+      || texts.en?.loggingCaptureConsoleLabel
+      || loggingCaptureConsoleLabel.textContent;
+    loggingCaptureConsoleLabel.textContent = consoleCaptureLabel;
+  }
+  if (loggingCaptureConsoleHelp) {
+    const consoleCaptureHelp = texts[lang].loggingCaptureConsoleHelp
+      || texts.en?.loggingCaptureConsoleHelp
+      || loggingCaptureConsoleHelp.textContent;
+    loggingCaptureConsoleHelp.textContent = consoleCaptureHelp;
+  }
   if (loggingCaptureErrorsLabel) {
     const captureLabel = texts[lang].loggingCaptureErrorsLabel
       || texts.en?.loggingCaptureErrorsLabel
@@ -16560,6 +16572,8 @@ const loggingHistoryLimit = document.getElementById('loggingHistoryLimit');
 const loggingHistoryLimitHelp = document.getElementById('loggingHistoryLimitHelp');
 const loggingConsoleOutputLabel = document.getElementById('loggingConsoleOutputLabel');
 const loggingConsoleOutputHelp = document.getElementById('loggingConsoleOutputHelp');
+const loggingCaptureConsoleLabel = document.getElementById('loggingCaptureConsoleLabel');
+const loggingCaptureConsoleHelp = document.getElementById('loggingCaptureConsoleHelp');
 const loggingCaptureErrorsLabel = document.getElementById('loggingCaptureErrorsLabel');
 const loggingCaptureErrorsHelp = document.getElementById('loggingCaptureErrorsHelp');
 const loggingPersistSessionLabel = document.getElementById('loggingPersistSessionLabel');

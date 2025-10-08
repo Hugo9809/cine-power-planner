@@ -2593,7 +2593,8 @@
         >
           <h4 id="loggingHeading">Diagnostics log</h4>
           <p id="loggingIntro" class="storage-summary-note">
-            Monitor runtime diagnostics captured on this device. Updates live while Settings stay open.
+            Monitor runtime diagnostics captured on this device. Enable console capture below when you need deeper debugging.
+            Updates live while Settings stay open.
           </p>
           <div class="logging-controls">
             <div class="logging-filter">
@@ -2629,6 +2630,13 @@
               <label for="loggingConsoleOutput" id="loggingConsoleOutputLabel">Mirror to console</label>
               <input type="checkbox" id="loggingConsoleOutput" />
               <p id="loggingConsoleOutputHelp" class="settings-hint">Keep the browser console in sync with this log.</p>
+            </div>
+            <div class="settings-field settings-field-toggle">
+              <label for="loggingCaptureConsole" id="loggingCaptureConsoleLabel">Capture console output</label>
+              <input type="checkbox" id="loggingCaptureConsole" />
+              <p id="loggingCaptureConsoleHelp" class="settings-hint">
+                Record console messages for diagnostics. Turning this on may affect performance.
+              </p>
             </div>
             <div class="settings-field settings-field-toggle">
               <label for="loggingCaptureErrors" id="loggingCaptureErrorsLabel">Capture global errors</label>
