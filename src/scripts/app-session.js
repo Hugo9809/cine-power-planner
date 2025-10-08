@@ -3275,7 +3275,12 @@ function saveCurrentSession(options = {}) {
   }
 }
 
-function autoSaveCurrentSetup() {
+function autoSaveCurrentSetup(options = {}) {
+  const suppressCommitNotification = Boolean(
+    options
+    && typeof options === 'object'
+    && options.suppressAutoBackupCommitNotification,
+  );
   if (factoryResetInProgress) return;
   if (!setupNameInput) return;
   const name = setupNameInput.value.trim();
@@ -3314,7 +3319,11 @@ function autoSaveCurrentSetup() {
   storeLoadedSetupState(getCurrentSetupState());
   checkSetupChanged();
   const updatedSignature = stableStringify(currentSetup);
-  return existingSetupSignature !== updatedSignature;
+  const mutated = existingSetupSignature !== updatedSignature;
+  if (mutated && !suppressCommitNotification) {
+    notifyAutoBackupChange({ commit: true });
+  }
+  return mutated;
 }
 
 const PROJECT_AUTOSAVE_BASE_DELAY_MS = 300;
@@ -3445,7 +3454,7 @@ function runProjectAutoSave() {
   }
 
   const setupSaveResult = guard(
-    autoSaveCurrentSetup,
+    () => autoSaveCurrentSetup({ suppressAutoBackupCommitNotification: true }),
     'saving the current setup',
     (result) => {
       if (result === true) {
@@ -3461,7 +3470,7 @@ function runProjectAutoSave() {
   }
 
   guard(
-    saveCurrentGearList,
+    () => saveCurrentGearList({ suppressAutoBackupCommitNotification: true }),
     'saving the gear list',
     (result) => {
       if (result === true) {

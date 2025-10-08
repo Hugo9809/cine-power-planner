@@ -5761,7 +5761,12 @@ function collectProjectInfoFromRequirementsGrid() {
     return Object.keys(info).length ? info : null;
 }
 
-function saveCurrentGearList() {
+function saveCurrentGearList(options = {}) {
+    const suppressCommitNotification = Boolean(
+        options
+        && typeof options === 'object'
+        && options.suppressAutoBackupCommitNotification,
+    );
     if (factoryResetInProgress) return;
     if (isProjectPersistenceSuspended()) return;
     const html = gearListGetCurrentHtmlImpl();
@@ -6014,6 +6019,22 @@ function saveCurrentGearList() {
     } else if (changed) {
         setups[selectedStorageKey] = setup;
         storeSetups(setups);
+    }
+    if (changed && !suppressCommitNotification) {
+        try {
+            if (typeof notifyAutoBackupChange === 'function') {
+                notifyAutoBackupChange({ commit: true });
+            } else if (
+                typeof globalThis !== 'undefined'
+                && typeof globalThis.__cineNoteAutoBackupChange === 'function'
+            ) {
+                globalThis.__cineNoteAutoBackupChange({ commit: true });
+            }
+        } catch (changeError) {
+            if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+                console.warn('Failed to record auto backup change context', changeError);
+            }
+        }
     }
     return changed;
 }
