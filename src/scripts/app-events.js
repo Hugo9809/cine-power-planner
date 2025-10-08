@@ -853,6 +853,9 @@ function finalizeSetupSelection(nextSetupName) {
     }
   }
 
+  if (typeof setActiveProjectCompressionHold === 'function') {
+    setActiveProjectCompressionHold(nextSetupName);
+  }
   lastSetupName = nextSetupName;
 }
 
@@ -868,6 +871,9 @@ addSafeEventListener(setupSelectTarget, "change", (event) => {
     (lastSetupName && typeof lastSetupName === 'string' ? lastSetupName : '')
     || typedName
     || '';
+  if (typeof setActiveProjectCompressionHold === 'function') {
+    setActiveProjectCompressionHold(previousKey);
+  }
   const normalizeProjectName = (value) =>
     typeof value === 'string' ? value.replace(/\s+/g, ' ').trim() : '';
   const normalizedLastSelection = normalizeProjectName(lastSetupName);

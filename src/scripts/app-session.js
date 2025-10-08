@@ -3762,6 +3762,20 @@ function restoreSessionState() {
     callSessionCoreFunction('updateAutoGearHighlightToggleButton', [], { defer: true });
   }
   lastSetupName = setupSelect ? setupSelect.value : '';
+  if (typeof setActiveProjectCompressionHold === 'function') {
+    let compressionHoldKey = '';
+    if (typeof getCurrentProjectStorageKey === 'function') {
+      try {
+        compressionHoldKey = getCurrentProjectStorageKey({ allowTyped: true }) || '';
+      } catch (holdError) {
+        console.warn('Unable to determine active project key for compression hold after session restore', holdError);
+        compressionHoldKey = setupSelect && typeof setupSelect.value === 'string' ? setupSelect.value : '';
+      }
+    } else if (setupSelect && typeof setupSelect.value === 'string') {
+      compressionHoldKey = setupSelect.value;
+    }
+    setActiveProjectCompressionHold(compressionHoldKey);
+  }
   restoringSession = false;
   saveCurrentSession();
   const pendingAutoSaveState = projectAutoSavePendingWhileRestoring;
