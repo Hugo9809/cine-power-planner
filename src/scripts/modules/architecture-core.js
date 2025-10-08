@@ -17,36 +17,112 @@
     return {};
   }
 
-  function createUniqueList() {
-    const values = [];
-    return {
-      push(candidate) {
-        if (values.indexOf(candidate) === -1) {
-          values.push(candidate);
+  function resolveScopeCollector() {
+    if (typeof require === 'function') {
+      try {
+        const required = require('./helpers/scope-collector.js');
+        if (required && typeof required.createCollector === 'function') {
+          return required;
         }
-      },
-      toArray() {
-        return values.slice();
-      },
-    };
+      } catch (error) {
+        void error;
+      }
+    }
+
+    const candidates = [];
+
+    function pushCandidate(scope) {
+      if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
+        return;
+      }
+      if (candidates.indexOf(scope) === -1) {
+        candidates.push(scope);
+      }
+    }
+
+    pushCandidate(baseDetectGlobalScope());
+    if (typeof globalThis !== 'undefined') pushCandidate(globalThis);
+    if (typeof window !== 'undefined') pushCandidate(window);
+    if (typeof self !== 'undefined') pushCandidate(self);
+    if (typeof global !== 'undefined') pushCandidate(global);
+
+    for (let index = 0; index < candidates.length; index += 1) {
+      const scope = candidates[index];
+      try {
+        const collector = scope && scope.__cineScopeCollector;
+        if (collector && typeof collector.createCollector === 'function') {
+          return collector;
+        }
+      } catch (error) {
+        void error;
+      }
+    }
+
+    return null;
+  }
+
+  const SCOPE_COLLECTOR = resolveScopeCollector();
+  const createScopeCollector =
+    SCOPE_COLLECTOR && typeof SCOPE_COLLECTOR.createCollector === 'function'
+      ? SCOPE_COLLECTOR.createCollector
+      : null;
+  const DEFAULT_EXTRAS_KEY = { key: 'defaultExtras' };
+  const HELPER_COLLECTOR_CACHE = [];
+
+  function resolveHelperCollector(detectFn, extras) {
+    const extrasKey = Array.isArray(extras) ? extras : DEFAULT_EXTRAS_KEY;
+
+    for (let index = 0; index < HELPER_COLLECTOR_CACHE.length; index += 1) {
+      const entry = HELPER_COLLECTOR_CACHE[index];
+      if (entry.detect === detectFn && entry.extras === extrasKey) {
+        return entry.collector;
+      }
+    }
+
+    const collector = createScopeCollector
+      ? createScopeCollector({
+          detectGlobalScope: detectFn,
+          additionalScopes: Array.isArray(extras) ? extras : undefined,
+        })
+      : null;
+
+    if (collector) {
+      HELPER_COLLECTOR_CACHE.push({ detect: detectFn, extras: extrasKey, collector });
+      return collector;
+    }
+
+    return null;
   }
 
   function collectCandidateScopesImpl(primary, detect, extras) {
-    const list = createUniqueList();
+    const detectFn = typeof detect === 'function' ? detect : baseDetectGlobalScope;
+
+    if (createScopeCollector) {
+      const collector = resolveHelperCollector(detectFn, extras);
+      if (collector) {
+        return collector(primary);
+      }
+    }
+
+    const scopes = [];
 
     function pushScope(scope) {
       if (!scope || (typeof scope !== 'object' && typeof scope !== 'function')) {
         return;
       }
-      list.push(scope);
+      if (scopes.indexOf(scope) === -1) {
+        scopes.push(scope);
+      }
     }
 
-    if (primary) {
-      pushScope(primary);
-    }
+    pushScope(primary);
 
-    const detected = detect();
-    pushScope(detected);
+    try {
+      const detected = detectFn();
+      pushScope(detected);
+    } catch (error) {
+      void error;
+    }
 
     if (typeof globalThis !== 'undefined') pushScope(globalThis);
     if (typeof window !== 'undefined') pushScope(window);
@@ -59,7 +135,7 @@
       }
     }
 
-    return list.toArray();
+    return scopes.slice();
   }
 
   function tryRequireImpl(modulePath) {
