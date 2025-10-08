@@ -1909,6 +1909,224 @@ html.install-banner-visible .app-modal[open] {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
+.print-options-dialog {
+  border: none;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  width: 100vw;
+  max-width: none;
+  height: 100vh;
+  margin: 0;
+}
+
+.print-options-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.print-options-dialog[open] {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(16px, 4vw, 32px);
+  z-index: 205;
+  overflow: hidden;
+  overscroll-behavior: contain;
+}
+
+.print-options-surface {
+  width: min(520px, calc(100vw - 2 * clamp(16px, 4vw, 32px)));
+  max-width: 520px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: clamp(20px, 4vw, 28px);
+  border-color: var(--panel-border);
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.25);
+  background: color-mix(in srgb, var(--surface-color) 92%, var(--panel-bg) 8%);
+}
+
+.dark-mode .print-options-surface,
+.print-options-dialog.dark-mode .print-options-surface {
+  background: color-mix(in srgb, var(--control-bg) 72%, var(--surface-color) 28%);
+  border-color: color-mix(in srgb, var(--accent-color) 40%, var(--panel-border));
+  color: var(--inverse-text-color);
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.45);
+}
+
+.print-options-surface h2 {
+  margin: 0;
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-xl));
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-semibold, var(--font-weight-medium));
+  color: var(--text-color);
+}
+
+.dark-mode .print-options-surface h2,
+.print-options-dialog.dark-mode .print-options-surface h2 {
+  color: var(--inverse-text-color);
+}
+
+.print-options-surface p {
+  margin: 0;
+  color: var(--muted-text-color);
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-sm));
+  line-height: 1.5;
+}
+
+.dark-mode .print-options-surface p,
+.print-options-dialog.dark-mode .print-options-surface p {
+  color: color-mix(in srgb, var(--inverse-text-color) 70%, transparent);
+}
+
+.print-options-sections {
+  margin: 0;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid var(--panel-border);
+  border-radius: calc(var(--border-radius) * 0.9);
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  background: color-mix(in srgb, var(--panel-bg) 88%, transparent);
+}
+
+.print-options-sections legend {
+  margin: 0 0 0.35rem;
+  padding: 0;
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-xs));
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted-text-color);
+}
+
+.dark-mode .print-options-sections,
+.print-options-dialog.dark-mode .print-options-sections {
+  border-color: color-mix(in srgb, var(--accent-color) 35%, var(--control-border));
+  background: color-mix(in srgb, var(--control-bg) 78%, transparent);
+}
+
+.dark-mode .print-options-sections legend,
+.print-options-dialog.dark-mode .print-options-sections legend {
+  color: color-mix(in srgb, var(--inverse-text-color) 65%, transparent);
+}
+
+.print-options-section {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.4rem 0.55rem;
+  border-radius: calc(var(--border-radius) * 0.75);
+  border: 1px solid transparent;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+  cursor: pointer;
+}
+
+.print-options-section:hover,
+.print-options-section:focus-within {
+  background: color-mix(in srgb, var(--accent-color) 12%, transparent);
+  border-color: color-mix(in srgb, var(--accent-color) 28%, transparent);
+}
+
+.print-options-section input {
+  width: 1.1rem;
+  height: 1.1rem;
+  flex: 0 0 auto;
+  accent-color: var(--accent-color);
+}
+
+.print-options-section span {
+  flex: 1 1 auto;
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-sm));
+  font-weight: var(--font-weight-medium);
+  color: var(--text-color);
+}
+
+.dark-mode .print-options-section span,
+.print-options-dialog.dark-mode .print-options-section span {
+  color: var(--inverse-text-color);
+}
+
+.dark-mode .print-options-section:hover,
+.dark-mode .print-options-section:focus-within,
+.print-options-dialog.dark-mode .print-options-section:hover,
+.print-options-dialog.dark-mode .print-options-section:focus-within {
+  background: color-mix(in srgb, var(--accent-color) 28%, transparent);
+  border-color: color-mix(in srgb, var(--accent-color) 45%, transparent);
+}
+
+.print-options-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.print-options-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+#rentalPrintSelectAllBtn {
+  border: none;
+  background: none;
+  color: var(--accent-color);
+  padding: 0.25rem 0.35rem;
+  font-size: calc(var(--font-size-relative-base) * var(--font-scale-sm));
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.18em;
+}
+
+#rentalPrintSelectAllBtn:hover,
+#rentalPrintSelectAllBtn:focus-visible {
+  color: color-mix(in srgb, var(--accent-color) 80%, var(--text-color));
+  outline: none;
+}
+
+.dark-mode #rentalPrintSelectAllBtn,
+.print-options-dialog.dark-mode #rentalPrintSelectAllBtn {
+  color: color-mix(in srgb, var(--accent-color) 70%, var(--inverse-text-color));
+}
+
+.dark-mode #rentalPrintSelectAllBtn:hover,
+.dark-mode #rentalPrintSelectAllBtn:focus-visible,
+.print-options-dialog.dark-mode #rentalPrintSelectAllBtn:hover,
+.print-options-dialog.dark-mode #rentalPrintSelectAllBtn:focus-visible {
+  color: var(--inverse-text-color);
+}
+
+.print-options-actions button {
+  min-width: 6.25rem;
+}
+
+@media (max-width: 540px) {
+  .print-options-surface {
+    width: min(100%, calc(100vw - 1.5rem));
+    padding: clamp(18px, 6vw, 24px);
+  }
+
+  .print-options-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .print-options-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .print-options-actions button {
+    flex: 1 1 auto;
+  }
+}
+
 
 .power-warning-dialog {
   max-width: min(420px, 90vw);
@@ -7784,6 +8002,138 @@ body.dark-mode #gearListOutput .gear-custom-add-btn:focus-visible,
   background: color-mix(in srgb, var(--panel-bg) 92%, transparent);
 }
 
+#gearListOutput .gear-rental-toggle {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.65rem;
+  border-radius: calc(var(--border-radius) * 0.75);
+  border: 1px solid color-mix(in srgb, var(--accent-color) 32%, transparent);
+  background: color-mix(in srgb, var(--panel-bg) 92%, var(--accent-color) 8%);
+  color: var(--text-color);
+  font-size: 0.8rem;
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+#gearListOutput .gear-rental-toggle:hover,
+#gearListOutput .gear-rental-toggle:focus-visible {
+  color: var(--accent-color);
+  border-color: color-mix(in srgb, var(--accent-color) 55%, transparent);
+  background: color-mix(in srgb, var(--accent-color) 18%, var(--panel-bg));
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-color) 18%, transparent);
+}
+
+#gearListOutput .gear-rental-toggle:focus-visible {
+  outline: none;
+}
+
+#gearListOutput .gear-rental-toggle[aria-pressed="true"] {
+  background: color-mix(in srgb, var(--accent-color) 26%, var(--panel-bg));
+  border-color: color-mix(in srgb, var(--accent-color) 62%, transparent);
+  color: color-mix(in srgb, var(--accent-color) 65%, var(--inverse-text-color, #fff));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent-color) 42%, transparent);
+}
+
+.dark-mode #gearListOutput .gear-rental-toggle,
+body.dark-mode #gearListOutput .gear-rental-toggle,
+.dark-mode #gearListOutput .gear-rental-toggle:hover,
+body.dark-mode #gearListOutput .gear-rental-toggle:hover,
+.dark-mode #gearListOutput .gear-rental-toggle:focus-visible,
+body.dark-mode #gearListOutput .gear-rental-toggle:focus-visible {
+  color: var(--inverse-text-color);
+}
+
+.dark-mode #gearListOutput .gear-rental-toggle,
+body.dark-mode #gearListOutput .gear-rental-toggle {
+  background: color-mix(in srgb, var(--control-bg) 78%, var(--accent-color) 22%);
+  border-color: color-mix(in srgb, var(--accent-color) 48%, var(--control-border));
+}
+
+.dark-mode #gearListOutput .gear-rental-toggle[aria-pressed="true"],
+body.dark-mode #gearListOutput .gear-rental-toggle[aria-pressed="true"] {
+  background: color-mix(in srgb, var(--accent-color) 58%, var(--control-bg));
+  border-color: color-mix(in srgb, var(--accent-color) 70%, var(--control-border));
+}
+
+#gearListOutput .gear-custom-item .gear-rental-toggle {
+  order: 1;
+  margin-bottom: 0.25rem;
+}
+
+#gearListOutput .gear-item-rental-excluded {
+  color: color-mix(in srgb, var(--text-color) 68%, var(--muted-text-color, #666) 32%);
+}
+
+#gearListOutput .gear-custom-item.gear-item-rental-excluded {
+  border-style: solid;
+  border-color: color-mix(in srgb, var(--accent-color) 42%, transparent);
+  background: color-mix(in srgb, var(--panel-bg) 82%, var(--accent-color) 18%);
+}
+
+.dark-mode #gearListOutput .gear-custom-item.gear-item-rental-excluded,
+body.dark-mode #gearListOutput .gear-custom-item.gear-item-rental-excluded {
+  border-color: color-mix(in srgb, var(--accent-color) 58%, var(--control-border));
+  background: color-mix(in srgb, var(--control-bg) 68%, var(--accent-color) 32%);
+}
+
+#gearListOutput .gear-custom-item.gear-item-rental-excluded .gear-custom-field input {
+  background: color-mix(in srgb, var(--panel-bg) 85%, transparent);
+}
+
+.dark-mode #gearListOutput .gear-custom-item.gear-item-rental-excluded .gear-custom-field input,
+body.dark-mode #gearListOutput .gear-custom-item.gear-item-rental-excluded .gear-custom-field input {
+  background: color-mix(in srgb, var(--control-bg) 78%, transparent);
+  color: var(--inverse-text-color);
+}
+
+#overviewDialogContent .gear-item[data-rental-note]::after {
+  display: none;
+  content: attr(data-rental-note);
+  margin-inline-start: 0.35rem;
+  padding: 0.1rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  background: color-mix(in srgb, var(--accent-color) 18%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent-color) 38%, transparent);
+  color: color-mix(in srgb, var(--accent-color) 68%, var(--text-color));
+  white-space: nowrap;
+}
+
+#overviewDialogContent.dark-mode .gear-item[data-rental-note]::after {
+  background: color-mix(in srgb, var(--accent-color) 32%, transparent);
+  border-color: color-mix(in srgb, var(--accent-color) 52%, transparent);
+  color: var(--inverse-text-color);
+}
+
+#overviewDialogContent .gear-item-rental-excluded {
+  color: color-mix(in srgb, var(--text-color) 62%, var(--muted-text-color, #666) 38%);
+}
+
+#overviewDialogContent .gear-item-rental-excluded::after {
+  display: inline-flex;
+  align-items: center;
+}
+
+#overviewDialogContent.rental-print-mode .gear-item-rental-excluded,
+#overviewDialogContent.rental-print-mode .gear-item-rental-excluded::after {
+  display: none !important;
+}
+
+#overviewDialogContent.rental-print-mode .gear-item-rental-excluded + br {
+  display: none !important;
+}
+
+#overviewDialogContent.rental-print-mode .print-section-hidden {
+  display: none !important;
+}
+
 #gearListOutput .gear-custom-item-preview {
   display: none;
   width: 100%;
@@ -7870,7 +8220,8 @@ body.dark-mode #gearListOutput .gear-custom-add-btn:focus-visible,
 
 @media print {
   #gearListOutput .gear-custom-add-btn,
-  #gearListOutput .gear-custom-remove-btn {
+  #gearListOutput .gear-custom-remove-btn,
+  #gearListOutput .gear-rental-toggle {
     display: none !important;
   }
 
