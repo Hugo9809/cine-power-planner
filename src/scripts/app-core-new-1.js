@@ -7262,6 +7262,90 @@ function setLanguage(lang) {
   document.getElementById("tagline").textContent = texts[lang].tagline;
   const doc = typeof document !== "undefined" ? document : null;
   const runtimeScope = getCoreGlobalObject();
+  const fallbackLocale = texts[DEFAULT_LANGUAGE] || {};
+  const resolveLocaleString = key => {
+    if (!key) return "";
+    const bundle = texts[lang];
+    const value = bundle && typeof bundle[key] === "string" ? bundle[key] : null;
+    if (value && value.trim()) {
+      return value;
+    }
+    const fallbackValue =
+      typeof fallbackLocale[key] === "string" ? fallbackLocale[key] : "";
+    return fallbackValue;
+  };
+  const applyTextContent = (element, key, fallbackValue = "") => {
+    if (!element) return;
+    const text = resolveLocaleString(key) || fallbackValue;
+    element.textContent = text;
+  };
+  const createHelpLink = (
+    href,
+    text,
+    { target, highlight, isButton = true } = {}
+  ) => {
+    if (!doc) {
+      return null;
+    }
+    const link = doc.createElement("a");
+    link.className = isButton ? "help-link button-link" : "help-link";
+    link.href = href;
+    if (target) {
+      link.setAttribute("data-help-target", target);
+    }
+    if (highlight) {
+      link.setAttribute("data-help-highlight", highlight);
+    }
+    link.textContent = text;
+    return link;
+  };
+  const applySuggestionTemplate = (element, key, builders = []) => {
+    if (!element || !doc) return;
+    const template = resolveLocaleString(key);
+    element.innerHTML = "";
+    if (!template) {
+      element.setAttribute("hidden", "");
+      return;
+    }
+    element.removeAttribute("hidden");
+    const fragment = doc.createDocumentFragment();
+    const regex = /%(?:(\d+)\$)?s/g;
+    let lastIndex = 0;
+    let autoIndex = 0;
+    let match;
+    while ((match = regex.exec(template)) !== null) {
+      const start = match.index;
+      if (start > lastIndex) {
+        fragment.appendChild(doc.createTextNode(template.slice(lastIndex, start)));
+      }
+      const index =
+        typeof match[1] === "string"
+          ? Math.max(parseInt(match[1], 10) - 1, 0)
+          : autoIndex++;
+      const builder = builders[index];
+      if (typeof builder === "function") {
+        const node = builder();
+        if (node) {
+          fragment.appendChild(node);
+        }
+      }
+      lastIndex = regex.lastIndex;
+    }
+    if (lastIndex < template.length) {
+      fragment.appendChild(doc.createTextNode(template.slice(lastIndex)));
+    }
+    element.appendChild(fragment);
+  };
+  const applySuggestionText = (element, key) => {
+    if (!element) return;
+    const text = resolveLocaleString(key);
+    element.textContent = text;
+    if (!text) {
+      element.setAttribute("hidden", "");
+    } else {
+      element.removeAttribute("hidden");
+    }
+  };
   const resolveRuntimeValue = (name) => {
     if (!name) return undefined;
     if (runtimeScope && typeof runtimeScope === "object") {
@@ -10150,7 +10234,195 @@ function setLanguage(lang) {
     if (document.getElementById("helpTitle")) {
       document.getElementById("helpTitle").textContent = texts[lang].helpTitle;
     }
-    if (helpNoResults) helpNoResults.textContent = texts[lang].helpNoResults;
+    if (helpNoResults) {
+      applyTextContent(
+        helpNoResults,
+        "helpNoResults",
+        "No help topics match your search. Try shorter keywords, synonyms or clear the field to browse everything."
+      );
+    }
+    if (helpNoResultsSuggestionsHeading) {
+      applyTextContent(
+        helpNoResultsSuggestionsHeading,
+        "helpNoResultsSuggestionsHeading",
+        "Need a different result?"
+      );
+    }
+    if (helpNoResultsSuggestionsIntro) {
+      applyTextContent(
+        helpNoResultsSuggestionsIntro,
+        "helpNoResultsSuggestionsIntro",
+        "Try these steps to get back on track while keeping your data safe:"
+      );
+    }
+    const quickStartHeading =
+      doc && doc.querySelector ? doc.querySelector("#helpQuickStartGuide h4") : null;
+    if (quickStartHeading) {
+      const fallback = quickStartHeading.textContent || "Quick start checklist";
+      applyTextContent(quickStartHeading, "helpQuickStartChecklistTitle", fallback);
+    }
+    const dataSafetyHeading =
+      doc && doc.querySelector ? doc.querySelector("#helpDataSafety h4") : null;
+    if (dataSafetyHeading) {
+      const fallback = dataSafetyHeading.textContent || "Protect your work";
+      applyTextContent(dataSafetyHeading, "helpDataSafetyTitle", fallback);
+    }
+    const restoreDrillHeading = doc ? doc.getElementById("helpRestoreDrillHeading") : null;
+    if (restoreDrillHeading) {
+      const fallback = restoreDrillHeading.textContent || "Restore rehearsal drill";
+      applyTextContent(restoreDrillHeading, "helpRestoreDrillTitle", fallback);
+    }
+    if (helpDataAuditHeading) {
+      const fallback = helpDataAuditHeading.textContent || "Monthly data health check";
+      applyTextContent(helpDataAuditHeading, "helpDataAuditTitle", fallback);
+    }
+    applySuggestionTemplate(
+      helpDataAuditStep1,
+      "helpDataAuditStep1",
+      [
+        () =>
+          createHelpLink(
+            "#settingsButton",
+            resolveLocaleString("settingsButton") || "Settings",
+            {
+              target: "#settingsButton",
+            },
+          ),
+        () =>
+          createHelpLink(
+            "#backupHeading",
+            resolveLocaleString("backupHeading") || "Backup & Restore",
+            {
+              target: "#backupHeading",
+              highlight: "#settingsDialog",
+            },
+          ),
+        () =>
+          createHelpLink(
+            "#backupSettings",
+            resolveLocaleString("backupSettings") || "Backup",
+            {
+              target: "#backupSettings",
+              highlight: "#settingsDialog",
+            },
+          ),
+      ],
+    );
+    applySuggestionTemplate(
+      helpDataAuditStep2,
+      "helpDataAuditStep2",
+      [
+        () =>
+          createHelpLink(
+            "#shareSetupBtn",
+            resolveLocaleString("shareSetupBtn") || "Export Project",
+            {
+              target: "#shareSetupBtn",
+              highlight: "#setup-manager",
+            },
+          ),
+      ],
+    );
+    applySuggestionTemplate(
+      helpDataAuditStep3,
+      "helpDataAuditStep3",
+      [
+        () =>
+          createHelpLink(
+            "#reloadButton",
+            resolveLocaleString("reloadAppLabel") || "Force reload",
+            {
+              target: "#reloadButton",
+            },
+          ),
+        () =>
+          createHelpLink(
+            "#offlineIndicator",
+            resolveLocaleString("offlineIndicator") || "Offline",
+            {
+              target: "#offlineIndicator",
+            },
+          ),
+      ],
+    );
+    applySuggestionTemplate(
+      helpDataAuditStep4,
+      "helpDataAuditStep4",
+      [
+        () =>
+          createHelpLink(
+            "#restoreRehearsalButton",
+            resolveLocaleString("restoreRehearsalButton") || "Restore rehearsal",
+            {
+              target: "#restoreRehearsalButton",
+              highlight: "#restoreRehearsalSection",
+            },
+          ),
+      ],
+    );
+    if (helpDataAuditNote) {
+      const fallback =
+        helpDataAuditNote.textContent
+        || "Log the results in your backup rotation checklist so you always know which copies were verified offline.";
+      applyTextContent(helpDataAuditNote, "helpDataAuditNote", fallback);
+    }
+    applySuggestionTemplate(
+      helpNoResultsSuggestionClear,
+      "helpNoResultsSuggestionClear",
+      [
+        () =>
+          createHelpLink(
+            "#helpSearchClear",
+            resolveLocaleString("helpSearchClear") || "Clear search",
+            {
+              target: "#helpSearchClear",
+              highlight: "#helpSearchContainer",
+            }
+          ),
+      ]
+    );
+    applySuggestionText(helpNoResultsSuggestionSynonyms, "helpNoResultsSuggestionSynonyms");
+    applySuggestionTemplate(
+      helpNoResultsSuggestionQuickStart,
+      "helpNoResultsSuggestionQuickStart",
+      [
+        () =>
+          createHelpLink(
+            "#helpQuickStartGuide",
+            resolveLocaleString("helpQuickStartChecklistTitle")
+              || "Quick start checklist",
+            {
+              target: "#helpQuickStartGuide",
+              highlight: "#helpQuickStartGuide",
+            }
+          ),
+      ]
+    );
+    applySuggestionTemplate(
+      helpNoResultsSuggestionBackup,
+      "helpNoResultsSuggestionBackup",
+      [
+        () =>
+          createHelpLink(
+            "#helpDataSafety",
+            resolveLocaleString("helpDataSafetyTitle") || "Protect your work",
+            {
+              target: "#helpDataSafety",
+              highlight: "#helpDataSafety",
+            }
+          ),
+        () =>
+          createHelpLink(
+            "#helpRestoreDrillHeading",
+            resolveLocaleString("helpRestoreDrillTitle") || "Restore rehearsal drill",
+            {
+              target: "#helpRestoreDrillHeading",
+              highlight: "#helpDataSafety",
+              isButton: false,
+            }
+          ),
+      ]
+    );
     if (typeof updateHelpResultsSummaryText === 'function') {
       updateHelpResultsSummaryText();
     }
@@ -14756,6 +15028,19 @@ var helpDialog      = document.getElementById("helpDialog");
 var closeHelpBtn    = document.getElementById("closeHelp");
 var helpSearch      = document.getElementById("helpSearch");
 var helpNoResults   = document.getElementById("helpNoResults");
+var helpNoResultsSuggestions = document.getElementById("helpNoResultsSuggestions");
+var helpNoResultsSuggestionsHeading = document.getElementById("helpNoResultsSuggestionsHeading");
+var helpNoResultsSuggestionsIntro = document.getElementById("helpNoResultsSuggestionsIntro");
+var helpNoResultsSuggestionClear = document.getElementById("helpNoResultsSuggestionClear");
+var helpNoResultsSuggestionSynonyms = document.getElementById("helpNoResultsSuggestionSynonyms");
+var helpNoResultsSuggestionQuickStart = document.getElementById("helpNoResultsSuggestionQuickStart");
+var helpNoResultsSuggestionBackup = document.getElementById("helpNoResultsSuggestionBackup");
+var helpDataAuditHeading = document.getElementById("helpDataAuditHeading");
+var helpDataAuditStep1 = document.getElementById("helpDataAuditStep1");
+var helpDataAuditStep2 = document.getElementById("helpDataAuditStep2");
+var helpDataAuditStep3 = document.getElementById("helpDataAuditStep3");
+var helpDataAuditStep4 = document.getElementById("helpDataAuditStep4");
+var helpDataAuditNote = document.getElementById("helpDataAuditNote");
 var helpResultsSummary = document.getElementById("helpResultsSummary");
 var helpResultsAssist = document.getElementById("helpResultsAssist");
 var helpSearchClear = document.getElementById("helpSearchClear");

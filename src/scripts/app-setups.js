@@ -3,7 +3,8 @@
           normalizeAutoGearText, getAutoGearMonitorDefault, getSetupNameState,
           createProjectInfoSnapshotForStorage, getProjectAutoSaveOverrides, getAutoGearRuleCoverageSummary,
           normalizeBatteryPlateValue, setSelectValue, applyBatteryPlateSelectionFromBattery, enqueueCoreBootTask,
-          callCoreFunctionIfAvailable, cineGearList */
+          callCoreFunctionIfAvailable, cineGearList, updateStorageRequirementTypeOptions,
+          storageNeedsContainer, createStorageRequirementRow */
 
 const AUTO_GEAR_ANY_MOTOR_TOKEN_FALLBACK =
     (typeof globalThis !== 'undefined' && globalThis.AUTO_GEAR_ANY_MOTOR_TOKEN)
@@ -4558,11 +4559,13 @@ function gearListGenerateHtmlImpl(info = {}) {
             })
             .filter(Boolean)
         : [];
+    const cam = devices && devices.cameras && selectedNames.camera
+        ? devices.cameras[selectedNames.camera]
+        : null;
     let mediaItems = '';
     if (storageGearListItems.length) {
         mediaItems = formatItems(storageGearListItems);
     } else {
-        const cam = devices && devices.cameras && selectedNames.camera ? devices.cameras[selectedNames.camera] : null;
         if (cam && Array.isArray(cam.recordingMedia) && cam.recordingMedia.length) {
             const sizeMap = {
                 'CFexpress Type A': '320GB',

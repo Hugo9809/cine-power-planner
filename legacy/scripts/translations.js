@@ -1160,7 +1160,32 @@ var texts = {
     helpResultsSummaryAll: "All %s help topics are shown.",
     helpResultsSummaryFiltered: "Showing %1$s of %2$s help topics for “%3$s”.",
     helpResultsAssist: "Tip: Press Tab to move into the quick links, or press Enter to open the top visible topic.",
-    helpNoResults: "No results found. Try shorter keywords or clear the search to browse all topics.",
+    helpNoResults:
+      "No help topics match your search. Try shorter keywords, synonyms, or clear the field to browse everything.",
+    helpNoResultsSuggestionsHeading: "Need a different result?",
+    helpNoResultsSuggestionsIntro:
+      "Try these steps to get back on track while keeping your data safe:",
+    helpNoResultsSuggestionClear: "Use %s to browse every article again.",
+    helpNoResultsSuggestionSynonyms:
+      "Search for equipment nicknames, battery part numbers, or shorter keywords.",
+    helpNoResultsSuggestionQuickStart:
+      "Jump to the %s for a guided refresher on saving, sharing, and backups.",
+    helpNoResultsSuggestionBackup:
+      "Open %1$s and start a %2$s to confirm your offline exports before making changes.",
+    helpQuickStartChecklistTitle: "Quick start checklist",
+    helpDataSafetyTitle: "Protect your work",
+    helpRestoreDrillTitle: "Restore rehearsal drill",
+    helpDataAuditTitle: "Monthly data health check",
+    helpDataAuditStep1:
+      "Open %1$s, switch to %2$s, and run %3$s to capture a fresh snapshot before auditing downloads.",
+    helpDataAuditStep2:
+      "Export each active project with %1$s and confirm the files are stored in two separate locations.",
+    helpDataAuditStep3:
+      "While offline, reload using %1$s and confirm the %2$s stays visible while projects and help articles load from local storage.",
+    helpDataAuditStep4:
+      "Run %1$s with your latest backup and verify every project, device, and rule before closing the rehearsal without publishing changes.",
+    helpDataAuditNote:
+      "Log the results in your backup rotation checklist so you always know which copies were verified offline.",
     helpSearchClear: "Clear search",
     helpSearchHelp: "Type keywords or alternate spellings to instantly filter help topics. Quick links update as you type. Press '/' or Ctrl+F (Cmd+F on Mac) to focus the search box quickly.",
     helpSearchClearHelp: "Clear the search box and show all help topics again.",
@@ -2379,7 +2404,32 @@ var texts = {
     helpResultsSummaryAll: "Sono visualizzati tutti i %s argomenti dell'aiuto.",
     helpResultsSummaryFiltered: "Visualizzati %1$s argomenti dell'aiuto su %2$s per “%3$s”.",
     helpResultsAssist: "Suggerimento: premi Tab per passare ai collegamenti rapidi oppure premi Invio per aprire il primo argomento visibile.",
-    helpNoResults: "Nessun risultato trovato. Prova con parole chiave più brevi oppure cancella la ricerca per vedere tutti gli argomenti.",
+    helpNoResults:
+      "Nessun argomento di aiuto corrisponde alla ricerca. Prova con parole chiave più brevi, sinonimi oppure cancella il campo per vedere tutti gli argomenti.",
+    helpNoResultsSuggestionsHeading: "Serve un risultato diverso?",
+    helpNoResultsSuggestionsIntro:
+      "Segui questi passaggi per rimetterti in carreggiata proteggendo i dati:",
+    helpNoResultsSuggestionClear: "Usa %s per mostrare di nuovo tutti gli articoli.",
+    helpNoResultsSuggestionSynonyms:
+      "Cerca soprannomi dell'attrezzatura, codici batteria o parole chiave più brevi.",
+    helpNoResultsSuggestionQuickStart:
+      "Apri la %s per un ripasso guidato su salvataggi, condivisioni e backup.",
+    helpNoResultsSuggestionBackup:
+      "Apri %1$s e avvia una %2$s per confermare le esportazioni offline prima di modificare qualcosa.",
+    helpQuickStartChecklistTitle: "Checklist di avvio rapido",
+    helpDataSafetyTitle: "Proteggi il tuo lavoro",
+    helpRestoreDrillTitle: "Esercitazione di ripristino di prova",
+    helpDataAuditTitle: "Controllo mensile dell'integrità dei dati",
+    helpDataAuditStep1:
+      "Apri %1$s, passa a %2$s ed esegui %3$s per acquisire un nuovo snapshot prima di verificare i download.",
+    helpDataAuditStep2:
+      "Esporta ogni progetto attivo con %1$s e conferma che i file sono archiviati in due posizioni separate.",
+    helpDataAuditStep3:
+      "Offline, ricarica usando %1$s e controlla che %2$s resti visibile mentre progetti e articoli di aiuto si caricano dalla memoria locale.",
+    helpDataAuditStep4:
+      "Esegui %1$s con il backup più recente e verifica ogni progetto, dispositivo e regola prima di chiudere la prova senza pubblicare modifiche.",
+    helpDataAuditNote:
+      "Registra i risultati nel registro di rotazione dei backup così saprai sempre quali copie sono state verificate offline.",
     helpSearchClear: "Cancella ricerca",
     helpSearchHelp: "Digita parole chiave o grafie alternative per filtrare all'istante gli argomenti della guida. I collegamenti rapidi si aggiornano durante la digitazione. Premi '/' o Ctrl+F (Cmd+F su Mac) per spostare subito il focus sulla casella di ricerca.",
     helpSearchClearHelp: "Svuota il campo di ricerca e mostra di nuovo tutti gli argomenti.",
@@ -3598,7 +3648,32 @@ var texts = {
     helpResultsSummaryAll: "Se muestran los %s temas de ayuda.",
     helpResultsSummaryFiltered: "Mostrando %1$s de %2$s temas de ayuda para “%3$s”.",
     helpResultsAssist: "Consejo: pulsa Tab para moverte a los accesos directos o pulsa Intro para abrir el primer tema visible.",
-    helpNoResults: "No se encontraron resultados. Prueba con palabras clave más cortas o borra la búsqueda para ver todos los temas.",
+    helpNoResults:
+      "No hay temas de ayuda que coincidan con la búsqueda. Prueba con palabras clave más cortas, sinónimos o borra el campo para ver todo.",
+    helpNoResultsSuggestionsHeading: "¿Necesitas otro resultado?",
+    helpNoResultsSuggestionsIntro:
+      "Prueba estos pasos para continuar sin poner en riesgo tus datos:",
+    helpNoResultsSuggestionClear: "Usa %s para volver a mostrar todos los artículos.",
+    helpNoResultsSuggestionSynonyms:
+      "Busca apodos del equipo, números de parte de baterías o palabras clave más cortas.",
+    helpNoResultsSuggestionQuickStart:
+      "Ve a la %s para repasar cómo guardar, compartir y hacer copias de seguridad.",
+    helpNoResultsSuggestionBackup:
+      "Abre %1$s y comienza un %2$s para confirmar tus exportaciones sin conexión antes de cambiar algo.",
+    helpQuickStartChecklistTitle: "Lista de inicio rápido",
+    helpDataSafetyTitle: "Protege tu trabajo",
+    helpRestoreDrillTitle: "Ensayo de restauración",
+    helpDataAuditTitle: "Revisión mensual de salud de datos",
+    helpDataAuditStep1:
+      "Abre %1$s, cambia a %2$s y ejecuta %3$s para capturar una instantánea nueva antes de auditar las descargas.",
+    helpDataAuditStep2:
+      "Exporta cada proyecto activo con %1$s y confirma que los archivos se guardan en dos ubicaciones independientes.",
+    helpDataAuditStep3:
+      "Sin conexión, recarga con %1$s y comprueba que el %2$s permanezca visible mientras los proyectos y artículos de ayuda se cargan desde el almacenamiento local.",
+    helpDataAuditStep4:
+      "Ejecuta %1$s con tu copia de seguridad más reciente y verifica cada proyecto, dispositivo y regla antes de cerrar el ensayo sin aplicar cambios.",
+    helpDataAuditNote:
+      "Anota los resultados en tu registro de rotación de copias de seguridad para saber siempre qué copias se verificaron sin conexión.",
     helpSearchClear: "Borrar búsqueda",
     helpSearchHelp: "Escribe palabras clave o variantes ortográficas para filtrar al instante los temas de ayuda. Los accesos directos se actualizan a medida que escribes. Pulsa '/' o Ctrl+F (Cmd+F en Mac) para llevar de inmediato el foco al campo de búsqueda.",
     helpSearchClearHelp: "Vacía el campo de búsqueda y vuelve a mostrar todos los temas.",
@@ -4817,7 +4892,32 @@ var texts = {
     helpResultsSummaryAll: "Tous les %s sujets d’aide sont affichés.",
     helpResultsSummaryFiltered: "Affichage de %1$s sujet(s) d’aide sur %2$s pour « %3$s ».",
     helpResultsAssist: "Astuce : appuyez sur Tab pour rejoindre les raccourcis ou sur Entrée pour ouvrir le premier sujet visible.",
-    helpNoResults: "Aucun résultat trouvé. Essayez avec des mots-clés plus courts ou effacez la recherche pour afficher tous les sujets.",
+    helpNoResults:
+      "Aucun sujet d'aide ne correspond à votre recherche. Essayez avec des mots-clés plus courts, des synonymes ou effacez le champ pour tout parcourir.",
+    helpNoResultsSuggestionsHeading: "Besoin d'un autre résultat ?",
+    helpNoResultsSuggestionsIntro:
+      "Suivez ces étapes pour avancer tout en protégeant vos données :",
+    helpNoResultsSuggestionClear: "Utilisez %s pour afficher de nouveau tous les articles.",
+    helpNoResultsSuggestionSynonyms:
+      "Recherchez des surnoms de matériel, des références de batteries ou des mots-clés plus courts.",
+    helpNoResultsSuggestionQuickStart:
+      "Ouvrez la %s pour revoir comment enregistrer, partager et sauvegarder vos projets.",
+    helpNoResultsSuggestionBackup:
+      "Ouvrez %1$s et lancez un %2$s afin de confirmer vos exports hors ligne avant de modifier quoi que ce soit.",
+    helpQuickStartChecklistTitle: "Liste de démarrage rapide",
+    helpDataSafetyTitle: "Protégez votre travail",
+    helpRestoreDrillTitle: "Exercice de répétition de restauration",
+    helpDataAuditTitle: "Vérification mensuelle de l'intégrité des données",
+    helpDataAuditStep1:
+      "Ouvrez %1$s, passez à %2$s et lancez %3$s afin de créer une nouvelle sauvegarde avant d'auditer les téléchargements.",
+    helpDataAuditStep2:
+      "Exportez chaque projet actif avec %1$s et confirmez que les fichiers sont conservés sur deux emplacements distincts.",
+    helpDataAuditStep3:
+      "Hors connexion, rechargez avec %1$s et vérifiez que l'indicateur %2$s reste visible pendant le chargement local des projets et des articles d'aide.",
+    helpDataAuditStep4:
+      "Exécutez %1$s avec votre dernière sauvegarde et vérifiez chaque projet, appareil et règle avant de fermer la répétition sans publier les modifications.",
+    helpDataAuditNote:
+      "Consignez les résultats dans votre journal de rotation des sauvegardes pour toujours savoir quelles copies ont été vérifiées hors ligne.",
     helpSearchClear: "Effacer la recherche",
     helpSearchHelp: "Saisissez des mots-clés ou des variantes orthographiques pour filtrer instantanément les sujets d'aide. Les liens rapides se mettent à jour pendant la saisie. Appuyez sur '/' ou Ctrl+F (Cmd+F sur Mac) pour placer immédiatement le focus dans le champ de recherche.",
     helpSearchClearHelp: "Effacez le champ de recherche et affichez de nouveau tous les sujets.",
@@ -6036,7 +6136,32 @@ var texts = {
     helpResultsSummaryAll: "Alle %s Hilfethemen werden angezeigt.",
     helpResultsSummaryFiltered: "Es werden %1$s von %2$s Hilfethemen für „%3$s“ angezeigt.",
     helpResultsAssist: "Tipp: Drücke Tab, um zu den Schnelllinks zu wechseln, oder drücke Eingabe, um das erste sichtbare Thema zu öffnen.",
-    helpNoResults: "Keine Ergebnisse gefunden. Verwende kürzere Suchbegriffe oder lösche die Suche, um alle Themen anzuzeigen.",
+    helpNoResults:
+      "Es wurden keine Hilfethemen gefunden. Verwende kürzere Suchbegriffe, Synonyme oder lösche das Feld, um alle Themen zu sehen.",
+    helpNoResultsSuggestionsHeading: "Du brauchst ein anderes Ergebnis?",
+    helpNoResultsSuggestionsIntro:
+      "Probier diese Schritte, um weiterzukommen und deine Daten zu schützen:",
+    helpNoResultsSuggestionClear: "Nutze %s, um wieder alle Artikel anzuzeigen.",
+    helpNoResultsSuggestionSynonyms:
+      "Suche nach Spitznamen der Geräte, Batterieteilenummern oder kürzeren Stichwörtern.",
+    helpNoResultsSuggestionQuickStart:
+      "Spring zur %s für eine geführte Auffrischung zu Speichern, Teilen und Backups.",
+    helpNoResultsSuggestionBackup:
+      "Öffne %1$s und starte eine %2$s, um deine Offline-Exporte zu bestätigen, bevor du etwas änderst.",
+    helpQuickStartChecklistTitle: "Checkliste für den Schnellstart",
+    helpDataSafetyTitle: "Schütze deine Arbeit",
+    helpRestoreDrillTitle: "Probe für die Wiederherstellung",
+    helpDataAuditTitle: "Monatlicher Daten-Gesundheitscheck",
+    helpDataAuditStep1:
+      "Öffne %1$s, wechsle zu %2$s und führe %3$s aus, um vor der Download-Prüfung einen frischen Schnappschuss zu erstellen.",
+    helpDataAuditStep2:
+      "Exportiere jedes aktive Projekt mit %1$s und bestätige, dass die Dateien an zwei getrennten Orten gesichert sind.",
+    helpDataAuditStep3:
+      "Im Offline-Betrieb lade mit %1$s neu und prüfe, ob der %2$s sichtbar bleibt, während Projekte und Hilfetexte aus dem lokalen Speicher geladen werden.",
+    helpDataAuditStep4:
+      "Starte %1$s mit deinem neuesten Backup und kontrolliere jedes Projekt, Gerät und jede Regel, bevor du die Probe ohne Änderungen schließt.",
+    helpDataAuditNote:
+      "Dokumentiere die Ergebnisse in deinem Backup-Rotationsprotokoll, damit du immer weißt, welche Kopien offline geprüft wurden.",
     helpSearchClear: "Suche löschen",
     helpSearchHelp: "Gib Stichwörter oder alternative Schreibweisen ein, um die Hilfethemen sofort zu filtern. Die Schnelllinks aktualisieren sich während der Eingabe. Drücke '/' oder Strg+F (Cmd+F auf dem Mac), um das Suchfeld sofort zu fokussieren.",
     helpSearchClearHelp: "Setzt das Suchfeld zurück und zeigt wieder alle Themen an.",
