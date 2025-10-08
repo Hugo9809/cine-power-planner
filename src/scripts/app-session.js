@@ -7329,6 +7329,16 @@ const backupFallbackLoaders = [
     loader: () => (typeof loadAutoGearPresets === 'function' ? loadAutoGearPresets() : undefined),
   },
   {
+    key: 'autoGearMonitorDefaults',
+    loaderName: 'loadAutoGearMonitorDefaults',
+    isValid: value => isPlainObject(value),
+    loader: () => (
+      typeof loadAutoGearMonitorDefaults === 'function'
+        ? loadAutoGearMonitorDefaults()
+        : undefined
+    ),
+  },
+  {
     key: 'autoGearSeeded',
     loaderName: 'loadAutoGearSeedFlag',
     isValid: value => typeof value === 'boolean',
