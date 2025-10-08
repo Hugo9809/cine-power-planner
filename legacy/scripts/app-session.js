@@ -8505,15 +8505,177 @@ function scheduleForceReloadFallbacks(win, locationLike, options) {
     }
   });
 }
+
+function prepareForceReloadContext(win) {
+  if (!win || !win.location) {
+    return null;
+  }
+  var location = win.location;
+  var hasReplace = typeof location.replace === 'function';
+  var hasAssign = typeof location.assign === 'function';
+  var hasReload = typeof location.reload === 'function';
+  var forceReloadUrl = buildForceReloadHref(location, 'forceReload');
+  var originalHref = forceReloadUrl.originalHref;
+  var nextHref = forceReloadUrl.nextHref;
+  var baseHref = normaliseForceReloadHref(originalHref, originalHref) || originalHref;
+  return {
+    win: win,
+    location: location,
+    hasReplace: hasReplace,
+    hasAssign: hasAssign,
+    hasReload: hasReload,
+    originalHref: originalHref,
+    nextHref: nextHref,
+    baseHref: baseHref
+  };
+}
+
+function executeForceReloadContext(context) {
+  if (!context || !context.location) {
+    return false;
+  }
+  var win = context.win,
+    location = context.location,
+    hasReplace = context.hasReplace,
+    hasAssign = context.hasAssign,
+    hasReload = context.hasReload,
+    originalHref = context.originalHref,
+    nextHref = context.nextHref,
+    baseHref = context.baseHref;
+  var navigationTriggered = false;
+  if (hasReplace && nextHref) {
+    navigationTriggered = attemptForceReloadNavigation(location, nextHref, baseHref, function (url) {
+      return location.replace(url);
+    }, 'location.replace');
+  }
+  if (!navigationTriggered && hasAssign && nextHref) {
+    navigationTriggered = attemptForceReloadNavigation(location, nextHref, baseHref, function (url) {
+      return location.assign(url);
+    }, 'location.assign');
+  }
+  if (!navigationTriggered && nextHref && nextHref !== originalHref) {
+    navigationTriggered = attemptForceReloadNavigation(location, nextHref, baseHref, function (url) {
+      location.href = url;
+    }, 'location.href assignment');
+  }
+  if (!navigationTriggered && hasReload) {
+    try {
+      location.reload();
+      navigationTriggered = true;
+    } catch (reloadError) {
+      console.warn('Forced reload via location.reload failed', reloadError);
+    }
+  }
+  if (!navigationTriggered) {
+    scheduleForceReloadFallbacks(win, location, {
+      originalHref: originalHref,
+      baseHref: baseHref,
+      nextHref: nextHref,
+      hasReload: hasReload
+    });
+  }
+  return navigationTriggered;
+}
+
+function tryForceReload(win) {
+  var context = prepareForceReloadContext(win);
+  if (!context) {
+    return false;
+  }
+  return executeForceReloadContext(context);
+}
+
+function createReloadFallback(win) {
+  var delayMs = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 4500;
+  if (!win) {
+    return null;
+  }
+  var schedule = null;
+  var cancel = null;
+  try {
+    if (typeof win.setTimeout === 'function') {
+      schedule = win.setTimeout.bind(win);
+    }
+  } catch (scheduleError) {
+    void scheduleError;
+  }
+  try {
+    if (typeof win.clearTimeout === 'function') {
+      cancel = win.clearTimeout.bind(win);
+    }
+  } catch (cancelError) {
+    void cancelError;
+  }
+  if (!schedule) {
+    if (typeof setTimeout === 'function') {
+      schedule = setTimeout;
+    } else {
+      return {
+        triggerNow: function triggerNow() {
+          tryForceReload(win);
+        }
+      };
+    }
+  }
+  if (!cancel) {
+    cancel = typeof clearTimeout === 'function' ? clearTimeout : null;
+  }
+  var executed = false;
+  var timerId = null;
+  var run = function run() {
+    if (executed) {
+      return;
+    }
+    executed = true;
+    timerId = null;
+    try {
+      if (!tryForceReload(win) && win && win.location && typeof win.location.reload === 'function') {
+        win.location.reload();
+      }
+    } catch (error) {
+      console.warn('Force reload fallback execution failed', error);
+      try {
+        if (win && win.location && typeof win.location.reload === 'function') {
+          win.location.reload();
+        }
+      } catch (reloadError) {
+        console.warn('Ultimate force reload fallback failed', reloadError);
+      }
+    }
+  };
+  try {
+    timerId = schedule(run, delayMs);
+  } catch (scheduleError) {
+    console.warn('Unable to schedule reload fallback timer', scheduleError);
+    run();
+  }
+  return {
+    triggerNow: function triggerNow() {
+      if (executed) {
+        return;
+      }
+      if (timerId != null && typeof cancel === 'function') {
+        try {
+          cancel(timerId);
+        } catch (cancelError) {
+          void cancelError;
+        }
+      }
+      run();
+    }
+  };
+}
+
 function clearCachesAndReload() {
   return _clearCachesAndReload.apply(this, arguments);
 }
 function _clearCachesAndReload() {
   _clearCachesAndReload = _asyncToGenerator(_regenerator().m(function _callee3() {
-    var offlineModule, beforeReloadHref, result, reloadHandled, navigationObserved, uiCacheCleared, registrations, _navigator, serviceWorker, regs, reg, readyReg, keys, _window2, location, hasReplace, hasAssign, hasReload, forceReloadUrl, nextHref, originalHref, baseHref, navigationTriggered, schedule, _t4, _t5, _t6, _t7;
+    var reloadFallback, offlineModule, beforeReloadHref, result, reloadHandled, navigationObserved, uiCacheCleared, registrations, _navigator, serviceWorker, regs, reg, readyReg, keys, win, _t4, _t5, _t6, _t7;
     return _regenerator().w(function (_context3) {
       while (1) switch (_context3.p = _context3.n) {
         case 0:
+          reloadFallback = typeof window !== 'undefined' && window ? createReloadFallback(window) : null;
           offlineModule = typeof globalThis !== 'undefined' && globalThis && globalThis.cineOffline || typeof window !== 'undefined' && window && window.cineOffline || null;
           beforeReloadHref = typeof window !== 'undefined' && window && window.location ? readLocationHrefSafe(window.location) : '';
           if (!(offlineModule && typeof offlineModule.reloadApp === 'function')) {
@@ -8676,46 +8838,12 @@ function _clearCachesAndReload() {
         case 23:
           _context3.p = 23;
           try {
-            if (typeof window !== 'undefined' && window.location) {
-              _window2 = window, location = _window2.location;
-              hasReplace = location && typeof location.replace === 'function';
-              hasAssign = location && typeof location.assign === 'function';
-              hasReload = location && typeof location.reload === 'function';
-              forceReloadUrl = buildForceReloadHref(location, 'forceReload');
-              nextHref = forceReloadUrl.nextHref;
-              originalHref = forceReloadUrl.originalHref;
-              baseHref = normaliseForceReloadHref(originalHref, originalHref) || originalHref;
-              navigationTriggered = false;
-              if (hasReplace && nextHref) {
-                navigationTriggered = attemptForceReloadNavigation(location, nextHref, baseHref, function (url) {
-                  return location.replace(url);
-                }, 'location.replace');
-              }
-              if (!navigationTriggered && hasAssign && nextHref) {
-                navigationTriggered = attemptForceReloadNavigation(location, nextHref, baseHref, function (url) {
-                  return location.assign(url);
-                }, 'location.assign');
-              }
-              if (!navigationTriggered && nextHref && nextHref !== originalHref) {
-                navigationTriggered = attemptForceReloadNavigation(location, nextHref, baseHref, function (url) {
-                  location.href = url;
-                }, 'location.href assignment');
-              }
-              if (!navigationTriggered && hasReload) {
-                try {
-                  location.reload();
-                  navigationTriggered = true;
-                } catch (reloadError) {
-                  console.warn('Forced reload via location.reload failed', reloadError);
-                }
-              }
-              if (!navigationTriggered) {
-                scheduleForceReloadFallbacks(window, location, {
-                  originalHref: originalHref,
-                  baseHref: baseHref,
-                  nextHref: nextHref,
-                  hasReload: hasReload
-                });
+            if (reloadFallback && typeof reloadFallback.triggerNow === 'function') {
+              reloadFallback.triggerNow();
+            } else {
+              win = typeof window !== 'undefined' ? window : null;
+              if (!tryForceReload(win) && win && win.location && typeof win.location.reload === 'function') {
+                win.location.reload();
               }
             }
           } catch (reloadError) {
