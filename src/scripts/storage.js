@@ -121,6 +121,12 @@ var COMPRESSION_STRATEGY_CACHE =
     : null;
 var COMPRESSION_STRATEGY_CACHE_KEYS = [];
 var COMPRESSION_STRATEGY_CACHE_LIMIT = 6;
+var COMPRESSION_CANDIDATE_CACHE_MISS =
+  typeof Object.freeze === 'function'
+    ? Object.freeze({ __cineCompressionMiss: true })
+    : { __cineCompressionMiss: true };
+var STORAGE_COMPRESSION_CANDIDATE_CACHE = createCompressionCandidateCache(8);
+var MIGRATION_BACKUP_COMPRESSION_CANDIDATE_CACHE = createCompressionCandidateCache(6);
 
 var COMPRESSION_WARNING_LIMIT = 12;
 var COMPRESSION_WARNING_BATCH_SIZE = 8;
@@ -408,6 +414,125 @@ function writeCompressionStrategyCache(cacheKey, lzReference, strategies) {
     pruneCompressionStrategyCache(cacheKey);
   } catch (cacheStoreError) {
     void cacheStoreError;
+  }
+}
+
+function createCompressionCandidateCache(limit) {
+  if (typeof Map !== 'function') {
+    return null;
+  }
+
+  var numericLimit = Number(limit);
+  if (!(numericLimit > 0)) {
+    return null;
+  }
+
+  return {
+    map: new Map(),
+    keys: [],
+    limit: Math.floor(numericLimit),
+  };
+}
+
+function cloneCompressionCandidate(candidate) {
+  if (!candidate || typeof candidate !== 'object') {
+    return null;
+  }
+
+  var clone = {};
+  var keys = Object.keys(candidate);
+  for (var i = 0; i < keys.length; i += 1) {
+    clone[keys[i]] = candidate[keys[i]];
+  }
+
+  return clone;
+}
+
+function touchCompressionCandidateCacheKey(cache, key) {
+  if (!cache || !Array.isArray(cache.keys)) {
+    return;
+  }
+
+  var existingIndex = cache.keys.indexOf(key);
+  if (existingIndex !== -1) {
+    cache.keys.splice(existingIndex, 1);
+  }
+
+  cache.keys.push(key);
+}
+
+function readCompressionCandidateCacheEntry(cache, key) {
+  if (!cache || !cache.map || typeof cache.map.get !== 'function') {
+    return { hit: false };
+  }
+
+  if (typeof key !== 'string' || !key) {
+    return { hit: false };
+  }
+
+  var entry;
+  try {
+    entry = cache.map.get(key);
+  } catch (cacheReadError) {
+    void cacheReadError;
+    return { hit: false };
+  }
+
+  if (entry === undefined) {
+    return { hit: false };
+  }
+
+  touchCompressionCandidateCacheKey(cache, key);
+
+  if (entry === COMPRESSION_CANDIDATE_CACHE_MISS) {
+    return { hit: true, candidate: null };
+  }
+
+  var cloned = cloneCompressionCandidate(entry);
+  if (!cloned) {
+    return { hit: true, candidate: null };
+  }
+
+  return { hit: true, candidate: cloned };
+}
+
+function writeCompressionCandidateCacheEntry(cache, key, candidate) {
+  if (!cache || !cache.map || typeof cache.map.set !== 'function') {
+    return;
+  }
+
+  if (typeof key !== 'string' || !key) {
+    return;
+  }
+
+  if (!cache.limit || cache.limit <= 0) {
+    return;
+  }
+
+  var entry = candidate && typeof candidate === 'object'
+    ? cloneCompressionCandidate(candidate)
+    : COMPRESSION_CANDIDATE_CACHE_MISS;
+
+  try {
+    cache.map.set(key, entry);
+  } catch (cacheStoreError) {
+    void cacheStoreError;
+    return;
+  }
+
+  touchCompressionCandidateCacheKey(cache, key);
+
+  while (cache.keys.length > cache.limit) {
+    var oldestKey = cache.keys.shift();
+    if (typeof oldestKey !== 'string' || oldestKey === key) {
+      continue;
+    }
+
+    try {
+      cache.map.delete(oldestKey);
+    } catch (cacheDeleteError) {
+      void cacheDeleteError;
+    }
   }
 }
 
@@ -2077,8 +2202,20 @@ function tryCreateCompressedMigrationBackupCandidate(serializedPayload, createdA
     return null;
   }
 
+  var cached = readCompressionCandidateCacheEntry(
+    MIGRATION_BACKUP_COMPRESSION_CANDIDATE_CACHE,
+    serializedPayload,
+  );
+  if (cached.hit) {
+    return cached.candidate;
+  }
+
   var bestCandidate = null;
   var strategies = getAvailableLZStringCompressionStrategies(MIGRATION_BACKUP_COMPRESSION_VARIANTS);
+
+  if (!strategies.length) {
+    return null;
+  }
 
   for (var i = 0; i < strategies.length; i += 1) {
     var strategy = strategies[i];
@@ -2131,6 +2268,12 @@ function tryCreateCompressedMigrationBackupCandidate(serializedPayload, createdA
       };
     }
   }
+
+  writeCompressionCandidateCacheEntry(
+    MIGRATION_BACKUP_COMPRESSION_CANDIDATE_CACHE,
+    serializedPayload,
+    bestCandidate,
+  );
 
   return bestCandidate;
 }
@@ -2201,6 +2344,11 @@ function createCompressedJsonStorageCandidate(serialized) {
     return null;
   }
 
+  var cached = readCompressionCandidateCacheEntry(STORAGE_COMPRESSION_CANDIDATE_CACHE, serialized);
+  if (cached.hit) {
+    return cached.candidate;
+  }
+
   var strategies = getAvailableLZStringCompressionStrategies(STORAGE_COMPRESSION_VARIANTS);
   if (!strategies.length) {
     return null;
@@ -2259,6 +2407,8 @@ function createCompressedJsonStorageCandidate(serialized) {
       };
     }
   }
+
+  writeCompressionCandidateCacheEntry(STORAGE_COMPRESSION_CANDIDATE_CACHE, serialized, best);
 
   return best;
 }
@@ -2435,6 +2585,7 @@ function ensureProjectEntryCompressed(value, contextName) {
     try {
       JSON.parse(value);
     } catch (nonJsonStringError) {
+      void nonJsonStringError;
       return value;
     }
 
