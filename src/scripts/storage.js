@@ -1574,6 +1574,77 @@ function deriveAutoBackupCreatedAt(name, fallbackDate) {
   }
 }
 
+function detectCyclicAutoBackupReference(entries, name, metadata) {
+  if (!isPlainObject(entries) || !metadata || metadata.snapshotType !== 'delta') {
+    return { cycle: false, path: [] };
+  }
+
+  const visited = new Set();
+  const path = [];
+  const maxSteps = Math.max(10, Object.keys(entries).length + 5);
+  let steps = 0;
+  let currentName = name;
+  let currentMetadata = metadata;
+
+  while (currentMetadata && currentMetadata.snapshotType === 'delta') {
+    if (steps > maxSteps) {
+      return { cycle: true, path };
+    }
+
+    const baseName = typeof currentMetadata.base === 'string' ? currentMetadata.base : null;
+    if (!baseName) {
+      return { cycle: false, path };
+    }
+
+    if (!isAutoBackupStorageKey(baseName)) {
+      return { cycle: false, path };
+    }
+
+    if (visited.has(baseName)) {
+      path.push(baseName);
+      return { cycle: true, path };
+    }
+
+    visited.add(currentName);
+    path.push(currentName);
+
+    const baseEntry = Object.prototype.hasOwnProperty.call(entries, baseName)
+      ? entries[baseName]
+      : null;
+    if (!isPlainObject(baseEntry)) {
+      return { cycle: false, path };
+    }
+
+    currentName = baseName;
+    currentMetadata = getAutoBackupMetadata(baseEntry);
+    if (!currentMetadata) {
+      return { cycle: false, path };
+    }
+
+    steps += 1;
+  }
+
+  return { cycle: false, path };
+}
+
+function promoteAutoBackupMetadataToFull(metadata, name, value) {
+  if (!metadata || typeof metadata !== 'object') {
+    return;
+  }
+
+  metadata.snapshotType = 'full';
+  metadata.base = null;
+  metadata.sequence = 0;
+  metadata.removedKeys = [];
+
+  const keys = isPlainObject(value) ? Object.keys(value) : [];
+  metadata.changedKeys = keys.slice();
+
+  if (typeof metadata.createdAt !== 'string' || !metadata.createdAt) {
+    metadata.createdAt = deriveAutoBackupCreatedAt(name);
+  }
+}
+
 function expandAutoBackupEntries(container, options) {
   if (!isPlainObject(container)) {
     return container;
@@ -1889,6 +1960,18 @@ function serializeAutoBackupEntries(entries, options) {
 
     const disableCompressionForName = latestAutoBackupNames.has(name);
     const metadata = getAutoBackupMetadata(value);
+    if (metadata && metadata.snapshotType === 'delta') {
+      const cycleInfo = detectCyclicAutoBackupReference(entries, name, metadata);
+      if (cycleInfo.cycle) {
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn(
+            'Detected cyclic automatic backup chain during serialization. Promoting to full snapshot.',
+            name,
+          );
+        }
+        promoteAutoBackupMetadataToFull(metadata, name, normalizedValue);
+      }
+    }
     const createdAt = metadata && typeof metadata.createdAt === 'string'
       ? metadata.createdAt
       : deriveAutoBackupCreatedAt(name);
