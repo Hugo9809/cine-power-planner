@@ -12,6 +12,7 @@ This checklist condenses the workflow from the [Documentation, Help & Translatio
 
 - [ ] Edit `README.md` and every localized README to reflect the new workflows, especially the **Key Workflow Reference**, **Save, Share & Import Drill**, **Backup & Recovery** and **Emergency Recovery Playbook** sections.
 - [ ] Revise contextual help topics, hover help strings and FAQ answers in `src/scripts/help/` and `index.html` so offline crews see accurate instructions.
+- [ ] Keep the fallback HTML inside `index.html` help callouts aligned with the rendered topics so crews retain guidance even if scripts fail to load offline.
 - [ ] Synchronize printable manuals and runbooks in `docs/` (save/share reference, offline readiness, operations checklist, backup rotation guide, testing plan) with the change.
 - [ ] Update legal pages in `legal/` if any disclosures or policy links reference the updated feature.
 
