@@ -1053,7 +1053,7 @@
 
   const LZString = resolveLzString();
 
-  const APP_VERSION = '1.0.19';
+  const APP_VERSION = '1.0.20';
 
   const shared = freezeDeep({
     APP_VERSION,
