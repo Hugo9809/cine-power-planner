@@ -9800,12 +9800,12 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   }
   var PINK_MODE_ICON_FALLBACK_MARKUP = Object.freeze(PINK_MODE_ICON_FILES.map(createPinkModeIconImageMarkup).filter(Boolean));
   var PINK_MODE_ANIMATED_ICON_FILES = Object.freeze(['src/animations/cat.json', 'src/animations/cup.json', 'src/animations/cupcake.json', 'src/animations/flamingo.json', 'src/animations/float.json', 'src/animations/float-2.json', 'src/animations/fox.json', 'src/animations/heart.json', 'src/animations/horn.json', 'src/animations/invitation.json', 'src/animations/mask.json', 'src/animations/rainbow.json', 'src/animations/rocking-horse.json', 'src/animations/slippers.json', 'src/animations/sunglasses.json', 'src/animations/unicorn.json', 'animated icons 3/camera.json', 'animated icons 3/director-chair.json', 'animated icons 3/dog.json', 'animated icons 3/fox.json', 'animated icons 3/fox-2.json', 'animated icons 3/fox-3.json', 'animated icons 3/horse.json', 'animated icons 3/mountains.json', 'animated icons 3/movie-camera.json', 'animated icons 3/pinata.json', 'animated icons 3/script.json', 'animated icons 3/video-camera.json']);
-  var PINK_MODE_ICON_RAIN_MIN_COUNT = 12;
-  var PINK_MODE_ICON_RAIN_MAX_COUNT = 20;
-  var PINK_MODE_ICON_RAIN_MIN_DURATION_MS = 3600;
-  var PINK_MODE_ICON_RAIN_MAX_DURATION_MS = 5600;
-  var PINK_MODE_ICON_RAIN_MIN_SIZE_PX = 52;
-  var PINK_MODE_ICON_RAIN_MAX_SIZE_PX = 88;
+  var PINK_MODE_ICON_RAIN_MIN_COUNT = 18;
+  var PINK_MODE_ICON_RAIN_MAX_COUNT = 30;
+  var PINK_MODE_ICON_RAIN_MIN_DURATION_MS = 4200;
+  var PINK_MODE_ICON_RAIN_MAX_DURATION_MS = 6400;
+  var PINK_MODE_ICON_RAIN_MIN_SIZE_PX = 56;
+  var PINK_MODE_ICON_RAIN_MAX_SIZE_PX = 96;
   var PINK_MODE_ICON_RAIN_VERTICAL_START_VH_MIN = 12;
   var PINK_MODE_ICON_RAIN_VERTICAL_START_VH_MAX = 26;
   var PINK_MODE_ICON_RAIN_HORIZONTAL_MARGIN_PERCENT = 0;
@@ -9813,9 +9813,9 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
   var PINK_MODE_ICON_RAIN_HORIZONTAL_DRIFT_VW_MAX = 12;
   var PINK_MODE_ICON_RAIN_MIN_SCALE = 0.78;
   var PINK_MODE_ICON_RAIN_MAX_SCALE = 1.12;
-  var PINK_MODE_ICON_RAIN_MAX_ACTIVE = 48;
-  var PINK_MODE_ICON_RAIN_COOLDOWN_MS = 12000;
-  var PINK_MODE_ICON_RAIN_DELAY_SPREAD_MS = 960;
+  var PINK_MODE_ICON_RAIN_MAX_ACTIVE = 64;
+  var PINK_MODE_ICON_RAIN_COOLDOWN_MS = 8000;
+  var PINK_MODE_ICON_RAIN_DELAY_SPREAD_MS = 720;
   var pinkModeIcons = {
     off: Object.freeze({
       className: 'icon-svg pink-mode-icon',
