@@ -85,6 +85,135 @@ function getSessionRuntimeScopes() {
   addScope(typeof global !== 'undefined' ? global : null);
   return scopes;
 }
+
+function normalizeVersionValue(value) {
+  if (typeof value !== 'string') {
+    return null;
+  }
+  var trimmed = value.trim();
+  return trimmed ? trimmed : null;
+}
+
+function resolveKnownAppVersion(explicitVersion) {
+  var normalizedExplicit = normalizeVersionValue(explicitVersion);
+  if (normalizedExplicit) {
+    return normalizedExplicit;
+  }
+
+  try {
+    if (typeof APP_VERSION === 'string') {
+      var normalized = normalizeVersionValue(APP_VERSION);
+      if (normalized) {
+        return normalized;
+      }
+    }
+  } catch (appVersionError) {
+    void appVersionError;
+  }
+
+  var seen = new Set();
+  var queue = [];
+
+  var enqueueCandidate = function enqueueCandidate(value) {
+    if (!value) {
+      return;
+    }
+    var type = _typeof(value);
+    if (type !== 'object' && type !== 'function') {
+      return;
+    }
+    if (seen.has(value)) {
+      return;
+    }
+    seen.add(value);
+    queue.push(value);
+  };
+
+  var scopes = getSessionRuntimeScopes();
+  for (var index = 0; index < scopes.length; index += 1) {
+    enqueueCandidate(scopes[index]);
+  }
+
+  try {
+    if (typeof CORE_SHARED !== 'undefined' && CORE_SHARED) {
+      enqueueCandidate(CORE_SHARED);
+    }
+  } catch (coreSharedError) {
+    void coreSharedError;
+  }
+
+  try {
+    if (typeof CORE_GLOBAL_SCOPE !== 'undefined' && CORE_GLOBAL_SCOPE) {
+      enqueueCandidate(CORE_GLOBAL_SCOPE);
+    }
+  } catch (coreGlobalError) {
+    void coreGlobalError;
+  }
+
+  var versionKeys = ['APP_VERSION', 'appVersion', 'applicationVersion', 'version'];
+  var nestedKeys = ['CORE_SHARED', 'CORE_GLOBAL_SCOPE', 'CORE_AGGREGATED_EXPORTS', 'CORE_RUNTIME_SCOPE', 'CORE_PART2_RUNTIME_SCOPE', 'CORE_SCOPE', 'CORE_SHARED_SCOPE_PART2', 'cineCoreShared', 'cineModules', 'cineModuleGlobals', 'cineModuleBase', 'cineModuleContext', 'cineRuntime', 'cinePersistence', 'cineOffline', 'cineUi', 'cineGlobals', 'cine', 'APP', 'app', 'globalScope', 'scope', 'exports', 'module', 'modules', 'environment', 'context', 'runtime', 'shared', 'globals', '__cineGlobal', '__cineScope', '__cineModules', '__cineExports', '__cineRuntime', 'details', 'meta', 'metadata', 'build', 'buildInfo'];
+
+  while (queue.length) {
+    var candidate = queue.shift();
+    if (!candidate) {
+      continue;
+    }
+
+    for (var keyIndex = 0; keyIndex < versionKeys.length; keyIndex += 1) {
+      var key = versionKeys[keyIndex];
+      var value;
+      try {
+        value = candidate[key];
+      } catch (readError) {
+        value = undefined;
+        void readError;
+      }
+      var normalizedValue = normalizeVersionValue(value);
+      if (normalizedValue) {
+        return normalizedValue;
+      }
+    }
+
+    for (var nestedIndex = 0; nestedIndex < nestedKeys.length; nestedIndex += 1) {
+      var nestedKey = nestedKeys[nestedIndex];
+      var nestedValue;
+      try {
+        nestedValue = candidate[nestedKey];
+      } catch (nestedError) {
+        nestedValue = null;
+        void nestedError;
+      }
+      enqueueCandidate(nestedValue);
+    }
+
+    var keys = [];
+    try {
+      keys = Object.keys(candidate);
+    } catch (keysError) {
+      keys = [];
+      void keysError;
+    }
+    var limit = keys.length > 50 ? 50 : keys.length;
+    for (var dynamicIndex = 0; dynamicIndex < limit; dynamicIndex += 1) {
+      var dynamicKey = keys[dynamicIndex];
+      if (!/(version|core|cine|shared|global|app)/i.test(dynamicKey)) {
+        continue;
+      }
+      var nested;
+      try {
+        nested = candidate[dynamicKey];
+      } catch (valueError) {
+        nested = null;
+        void valueError;
+      }
+      enqueueCandidate(nested);
+    }
+  }
+
+  return null;
+}
+
+var ACTIVE_APP_VERSION = resolveKnownAppVersion(typeof APP_VERSION === 'string' ? APP_VERSION : null);
 function getSessionRuntimeFunction(name) {
   if (typeof name !== 'string' || !name) {
     return null;
@@ -470,7 +599,9 @@ function buildRestoreCompatibilityReport() {
   }
   var unknownVersion = getText('restoreVersionUnknownVersion', 'unknown version');
   var headingTemplate = getText('restoreVersionSummaryHeading', 'This backup was created with {oldVersion} and you are running {newVersion}.');
-  var heading = headingTemplate.replace('{oldVersion}', fileVersion || unknownVersion).replace('{newVersion}', targetVersion || unknownVersion);
+  var normalizedFileVersion = normalizeVersionValue(fileVersion);
+  var normalizedTargetVersion = resolveKnownAppVersion(targetVersion) || ACTIVE_APP_VERSION || normalizeVersionValue(targetVersion);
+  var heading = headingTemplate.replace('{oldVersion}', normalizedFileVersion || unknownVersion).replace('{newVersion}', normalizedTargetVersion || unknownVersion);
   messageParts.push(heading);
   var warning = getText('restoreVersionWarning');
   if (warning) {
@@ -5820,7 +5951,7 @@ function handleBackupDiffExport() {
     type: 'cine-power-planner-version-log',
     version: 1,
     createdAt: new Date().toISOString(),
-    appVersion: typeof APP_VERSION === 'string' ? APP_VERSION : null,
+    appVersion: typeof ACTIVE_APP_VERSION === 'string' ? ACTIVE_APP_VERSION : normalizeVersionValue(typeof APP_VERSION === 'string' ? APP_VERSION : null),
     baseline: {
       id: baselineEntry.value,
       label: baselineEntry.label,
@@ -6362,8 +6493,9 @@ function createSettingsBackup() {
     var _collectFullBackupDat = collectFullBackupData(),
       backupData = _collectFullBackupDat.data,
       diagnostics = _collectFullBackupDat.diagnostics;
+    var backupVersion = ACTIVE_APP_VERSION || normalizeVersionValue(typeof APP_VERSION === 'string' ? APP_VERSION : null);
     var backup = {
-      version: APP_VERSION,
+      version: backupVersion || undefined,
       generatedAt: iso,
       settings: settings,
       sessionStorage: Object.keys(sessionEntries).length ? sessionEntries : undefined,
@@ -7448,12 +7580,14 @@ function handleRestoreSettingsInputChange() {
       if (!hasSettings && !hasSessionEntries && !hasDataEntries) {
         throw new Error('Backup missing recognized sections');
       }
-      if (fileVersion !== APP_VERSION) {
+      var normalizedFileVersion = normalizeVersionValue(fileVersion);
+      var normalizedAppVersion = ACTIVE_APP_VERSION || normalizeVersionValue(typeof APP_VERSION === 'string' ? APP_VERSION : null);
+      if (normalizedFileVersion !== normalizedAppVersion) {
         var compatibilityMessage = buildRestoreVersionCompatibilityMessage({
           langTexts: langTexts,
           fallbackTexts: fallbackTexts,
-          fileVersion: fileVersion,
-          targetVersion: APP_VERSION,
+          fileVersion: normalizedFileVersion,
+          targetVersion: normalizedAppVersion,
           data: data,
           settingsSnapshot: restoredSettings,
           sessionSnapshot: restoredSession,
@@ -12226,7 +12360,7 @@ if (document.readyState === "loading") {
 }
 if (typeof module !== "undefined" && module.exports) {
   module.exports = {
-    APP_VERSION: APP_VERSION,
+    APP_VERSION: typeof ACTIVE_APP_VERSION === 'string' ? ACTIVE_APP_VERSION : APP_VERSION,
     closeSideMenu: closeSideMenu,
     openSideMenu: openSideMenu,
     setupSideMenu: setupSideMenu,
