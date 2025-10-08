@@ -186,6 +186,7 @@
     let lastDiagramPositions = {};
     let cleanupDiagramInteractions = null;
     let lastPopupEntries = {};
+    let lastPointerPosition = null;
 
     const resolveSetupContainer = () => getSetupDiagramContainer();
     const resolveDiagramLegend = () => getDiagramLegend();
@@ -1269,8 +1270,30 @@
         let left = rect.right + margin;
         let top = rect.top;
         if (popupRect) {
-          if (viewportWidth && left + popupRect.width > viewportWidth - margin) {
+          const pointer = lastPointerPosition;
+          const pointerOnRightSide = pointer
+            && viewportWidth
+            && Number.isFinite(pointer.x)
+            && pointer.x >= viewportWidth * 0.55;
+          if (pointerOnRightSide) {
+            const preferredLeft = rect.left - popupRect.width - margin;
+            if (preferredLeft >= margin) {
+              left = preferredLeft;
+            } else if (viewportWidth) {
+              left = Math.min(rect.right + margin, Math.max(margin, viewportWidth - popupRect.width - margin));
+            } else {
+              left = Math.max(margin, preferredLeft);
+            }
+          } else if (viewportWidth && left + popupRect.width > viewportWidth - margin) {
             left = Math.max(margin, rect.left - popupRect.width - margin);
+          }
+          if (viewportWidth) {
+            if (left + popupRect.width > viewportWidth - margin) {
+              left = Math.max(margin, viewportWidth - popupRect.width - margin);
+            }
+            if (left < margin) {
+              left = margin;
+            }
           }
           if (viewportHeight && top + popupRect.height > viewportHeight - margin) {
             top = Math.max(margin, viewportHeight - popupRect.height - margin);
@@ -1279,6 +1302,23 @@
         popup.style.left = `${Math.round(left)}px`;
         popup.style.top = `${Math.round(top)}px`;
         popup.style.visibility = 'visible';
+      };
+
+      const updatePointerPosition = event => {
+        if (!event) return;
+        let clientX;
+        let clientY;
+        if (event.touches && event.touches.length) {
+          const touch = event.touches[0];
+          clientX = touch?.clientX;
+          clientY = touch?.clientY;
+        } else if (typeof event.clientX === 'number' && typeof event.clientY === 'number') {
+          clientX = event.clientX;
+          clientY = event.clientY;
+        }
+        if (Number.isFinite(clientX) && Number.isFinite(clientY)) {
+          lastPointerPosition = { x: clientX, y: clientY };
+        }
       };
 
       const showPopupForNode = (nodeEl) => {
@@ -1305,6 +1345,7 @@
       };
 
       const onNodeOver = e => {
+        updatePointerPosition(e);
         const node = e.target.closest('.diagram-node');
         if (!node || node === activePopupNode) return;
         showPopupForNode(node);
@@ -1336,12 +1377,16 @@
         windowObj.addEventListener('touchmove', onDragMove, { passive: false });
         windowObj.addEventListener('mouseup', onDragEnd);
         windowObj.addEventListener('touchend', onDragEnd);
+        windowObj.addEventListener('mousemove', updatePointerPosition);
+        windowObj.addEventListener('touchmove', updatePointerPosition, { passive: true });
       }
       svg.addEventListener('mousedown', onDragStart);
       svg.addEventListener('touchstart', onDragStart, { passive: false });
       svg.addEventListener('mouseover', onNodeOver);
       svg.addEventListener('mouseout', onNodeOut);
       svg.addEventListener('mouseleave', onSvgLeave);
+      svg.addEventListener('mousemove', updatePointerPosition);
+      svg.addEventListener('touchstart', updatePointerPosition, { passive: true });
 
       cleanupDiagramInteractions = () => {
         svg.removeEventListener('mousedown', onSvgMouseDown);
@@ -1355,12 +1400,16 @@
           windowObj.removeEventListener('touchmove', onDragMove);
           windowObj.removeEventListener('mouseup', onDragEnd);
           windowObj.removeEventListener('touchend', onDragEnd);
+          windowObj.removeEventListener('mousemove', updatePointerPosition);
+          windowObj.removeEventListener('touchmove', updatePointerPosition);
         }
         svg.removeEventListener('mousedown', onDragStart);
         svg.removeEventListener('touchstart', onDragStart);
         svg.removeEventListener('mouseover', onNodeOver);
         svg.removeEventListener('mouseout', onNodeOut);
         svg.removeEventListener('mouseleave', onSvgLeave);
+        svg.removeEventListener('mousemove', updatePointerPosition);
+        svg.removeEventListener('touchstart', updatePointerPosition);
       };
 
       apply();
