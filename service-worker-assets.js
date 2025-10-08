@@ -45,7 +45,6 @@
   "./legacy/scripts/legal-topbar.js",
   "./legacy/scripts/loader.js",
   "./legacy/scripts/modern-support-check.js",
-  "./legacy/scripts/modern-support-check.mjs",
   "./legacy/scripts/modules/architecture-core.js",
   "./legacy/scripts/modules/architecture-helpers.js",
   "./legacy/scripts/modules/architecture-kernel.js",

@@ -36,7 +36,6 @@ describe('service worker configuration', () => {
         './legacy/scripts/autosave-overlay.js',
         './legacy/scripts/modules/registry.js',
         './legacy/scripts/modern-support-check.js',
-        './legacy/scripts/modern-support-check.mjs',
         './legacy/scripts/globals-bootstrap.js',
       ]),
     );
