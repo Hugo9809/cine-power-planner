@@ -95,6 +95,9 @@ const TEST_AUTO_BACKUP_RENAMED_FLAG =
     ? globalThis.__CINE_AUTO_BACKUP_RENAMED_FLAG
     : '__cineAutoBackupRenamed';
 
+const AUTO_BACKUP_METADATA_KEY = '__cineAutoBackupMetadata';
+const AUTO_BACKUP_SNAPSHOT_KEY = '__cineAutoBackupSnapshot';
+
 const parseLocalStorageJSON = (key) => {
   const raw = localStorage.getItem(key);
   if (raw === null || raw === undefined) {
@@ -675,6 +678,132 @@ describe('setup storage', () => {
     const stored = parseLocalStorageJSON(SETUP_KEY);
     expect(stored[renamedKey]).toBeDefined();
     expect(stored[newKey]).toBeDefined();
+  });
+
+  test('saveSetups rewrites cyclic auto backup deltas as full snapshots', () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const nameA = 'auto-backup-2025-10-08-16-23';
+    const nameB = 'auto-backup-2025-10-08-16-24';
+    const createdAtA = '2025-10-08T16:23:00.000Z';
+    const createdAtB = '2025-10-08T16:24:00.000Z';
+    const entryA = { camera: 'Alpha', notes: ['Cycle A'], shared: 'from-a' };
+    Object.defineProperty(entryA, AUTO_BACKUP_METADATA_KEY, {
+      configurable: true,
+      enumerable: false,
+      writable: true,
+      value: {
+        version: 2,
+        snapshotType: 'delta',
+        base: nameB,
+        sequence: 2,
+        createdAt: createdAtA,
+        changedKeys: ['camera', 'notes', 'shared'],
+        removedKeys: [],
+        payloadSignature: null,
+        payloadCompression: null,
+        compressedPayload: null,
+      },
+    });
+    const entryB = { camera: 'Beta', notes: ['Cycle B'], shared: 'from-b' };
+    Object.defineProperty(entryB, AUTO_BACKUP_METADATA_KEY, {
+      configurable: true,
+      enumerable: false,
+      writable: true,
+      value: {
+        version: 2,
+        snapshotType: 'delta',
+        base: nameA,
+        sequence: 3,
+        createdAt: createdAtB,
+        changedKeys: ['camera', 'notes', 'shared'],
+        removedKeys: [],
+        payloadSignature: null,
+        payloadCompression: null,
+        compressedPayload: null,
+      },
+    });
+
+    try {
+      saveSetups({ [nameA]: entryA, [nameB]: entryB });
+
+      const stored = parseLocalStorageJSON(SETUP_KEY);
+      expectAutoBackupSnapshot(
+        stored[nameA],
+        { camera: 'Alpha', notes: ['Cycle A'], shared: 'from-a' },
+        { snapshotType: 'full', base: null },
+      );
+      expectAutoBackupSnapshot(
+        stored[nameB],
+        { camera: 'Beta', notes: ['Cycle B'], shared: 'from-b' },
+        { snapshotType: 'full', base: null },
+      );
+
+      const loaded = loadSetups();
+      expect(loaded[nameA]).toMatchObject({ camera: 'Alpha', shared: 'from-a' });
+      expect(Array.isArray(loaded[nameA].notes)).toBe(true);
+      expect(loaded[nameB]).toMatchObject({ camera: 'Beta', shared: 'from-b' });
+      expect(Array.isArray(loaded[nameB].notes)).toBe(true);
+      expect(loaded[nameA][AUTO_BACKUP_METADATA_KEY].base).toBeNull();
+      expect(loaded[nameB][AUTO_BACKUP_METADATA_KEY].base).toBeNull();
+
+      const sawCycleWarning = warnSpy.mock.calls.some((call) => (
+        typeof call[0] === 'string'
+          && call[0].includes('Detected cyclic auto-backup reference while preparing snapshot for storage')
+      ));
+      expect(sawCycleWarning).toBe(true);
+    } finally {
+      warnSpy.mockRestore();
+    }
+  });
+
+  test('loadSetups recovers cyclic auto backup snapshots without losing payload data', () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const nameA = 'auto-backup-2025-10-08-16-23';
+    const nameB = 'auto-backup-2025-10-08-16-24';
+    const stored = {
+      [nameA]: {
+        [AUTO_BACKUP_SNAPSHOT_KEY]: {
+          version: 2,
+          snapshotType: 'delta',
+          base: nameB,
+          sequence: 4,
+          createdAt: '2025-10-08T16:23:00.000Z',
+          changedKeys: ['foo', 'shared'],
+          removedKeys: [],
+          payload: { foo: 'alpha', shared: 'from-a' },
+        },
+      },
+      [nameB]: {
+        [AUTO_BACKUP_SNAPSHOT_KEY]: {
+          version: 2,
+          snapshotType: 'delta',
+          base: nameA,
+          sequence: 5,
+          createdAt: '2025-10-08T16:24:00.000Z',
+          changedKeys: ['bar', 'shared'],
+          removedKeys: [],
+          payload: { bar: 'beta', shared: 'from-b' },
+        },
+      },
+    };
+
+    try {
+      localStorage.setItem(SETUP_KEY, JSON.stringify(stored));
+
+      const loaded = loadSetups();
+      expect(loaded[nameA]).toMatchObject({ foo: 'alpha', bar: 'beta', shared: 'from-a' });
+      expect(loaded[nameB]).toMatchObject({ foo: 'alpha', bar: 'beta', shared: 'from-b' });
+      expect(loaded[nameA][AUTO_BACKUP_METADATA_KEY].base).toBeNull();
+      expect(loaded[nameB][AUTO_BACKUP_METADATA_KEY].base).toBeNull();
+
+      const sawExpansionWarning = warnSpy.mock.calls.some((call) => (
+        typeof call[0] === 'string'
+          && call[0].includes('Detected cyclic auto-backup reference while expanding snapshot')
+      ));
+      expect(sawExpansionWarning).toBe(true);
+    } finally {
+      warnSpy.mockRestore();
+    }
   });
 
   test('saveSetup adds and persists single setup', () => {

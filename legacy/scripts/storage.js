@@ -1228,6 +1228,136 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return new Date().toISOString();
     }
   }
+  function isSerializedAutoBackupBaseChainCyclic(container, startName, baseName) {
+    if (!isPlainObject(container) || typeof startName !== 'string' || !startName) {
+      return false;
+    }
+    var currentName = typeof baseName === 'string' ? baseName : null;
+    if (!currentName) {
+      return false;
+    }
+    var visited = new Set([startName]);
+    var steps = 0;
+    var MAX_DEPTH = 1000;
+    while (typeof currentName === 'string' && currentName) {
+      if (visited.has(currentName)) {
+        return true;
+      }
+      visited.add(currentName);
+      var entry = Object.prototype.hasOwnProperty.call(container, currentName) ? container[currentName] : null;
+      if (!isPlainObject(entry)) {
+        return false;
+      }
+      var snapshot = entry && entry[AUTO_BACKUP_SNAPSHOT_PROPERTY];
+      if (!snapshot || _typeof(snapshot) !== 'object') {
+        return false;
+      }
+      if (snapshot.snapshotType !== 'delta') {
+        return false;
+      }
+      currentName = typeof snapshot.base === 'string' ? snapshot.base : null;
+      steps += 1;
+      if (steps > MAX_DEPTH) {
+        return true;
+      }
+    }
+    return false;
+  }
+  function collectAutoBackupCycleSnapshots(container, startName, initialSnapshot) {
+    if (!isPlainObject(container) || !initialSnapshot || _typeof(initialSnapshot) !== 'object') {
+      return [];
+    }
+    var snapshots = [];
+    var visited = new Set();
+    var currentName = startName;
+    var currentSnapshot = initialSnapshot;
+    while (typeof currentName === 'string' && currentName && currentSnapshot && _typeof(currentSnapshot) === 'object') {
+      if (visited.has(currentName)) {
+        break;
+      }
+      visited.add(currentName);
+      snapshots.push({
+        name: currentName,
+        snapshot: currentSnapshot
+      });
+      if (currentSnapshot.snapshotType !== 'delta') {
+        break;
+      }
+      var nextName = typeof currentSnapshot.base === 'string' ? currentSnapshot.base : null;
+      if (!nextName) {
+        break;
+      }
+      if (!Object.prototype.hasOwnProperty.call(container, nextName)) {
+        break;
+      }
+      var nextEntry = container[nextName];
+      if (!isPlainObject(nextEntry)) {
+        break;
+      }
+      var nextSnapshot = nextEntry[AUTO_BACKUP_SNAPSHOT_PROPERTY];
+      if (!nextSnapshot || _typeof(nextSnapshot) !== 'object') {
+        break;
+      }
+      currentName = nextName;
+      currentSnapshot = nextSnapshot;
+    }
+    return snapshots;
+  }
+  function createAutoBackupCycleFallback(container, name, snapshot) {
+    var snapshots = collectAutoBackupCycleSnapshots(container, name, snapshot);
+    var aggregate = {};
+    var changedKeys = new Set();
+    var resolvedVersion = AUTO_BACKUP_SNAPSHOT_VERSION;
+    var resolvedSequence = null;
+    var resolvedCreatedAt = null;
+    snapshots.forEach(function (_ref3) {
+      var entryName = _ref3.name,
+        entrySnapshot = _ref3.snapshot;
+      if (Number.isFinite(entrySnapshot && entrySnapshot.version)) {
+        resolvedVersion = entrySnapshot.version;
+      }
+      if (Number.isFinite(entrySnapshot && entrySnapshot.sequence)) {
+        resolvedSequence = resolvedSequence === null ? entrySnapshot.sequence : Math.max(resolvedSequence, entrySnapshot.sequence);
+      }
+      if (typeof resolvedCreatedAt !== 'string' && entrySnapshot && typeof entrySnapshot.createdAt === 'string') {
+        resolvedCreatedAt = entrySnapshot.createdAt;
+      }
+      var payloadInfo;
+      try {
+        payloadInfo = restoreAutoBackupSnapshotPayload(entrySnapshot, entryName);
+      } catch (payloadError) {
+        console.warn('Failed to restore automatic backup payload while recovering from cyclic reference', entryName, payloadError);
+        return;
+      }
+      var payload = isPlainObject(payloadInfo.payload) ? payloadInfo.payload : {};
+      Object.keys(payload).forEach(function (key) {
+        changedKeys.add(key);
+        if (!Object.prototype.hasOwnProperty.call(aggregate, key)) {
+          aggregate[key] = cloneAutoBackupValue(payload[key]);
+        }
+      });
+    });
+    var expanded = cloneAutoBackupValue(aggregate);
+    var metadata = {
+      version: resolvedVersion,
+      snapshotType: 'full',
+      base: null,
+      sequence: Number.isFinite(resolvedSequence) ? resolvedSequence : snapshot && snapshot.snapshotType === 'delta' ? 1 : 0,
+      createdAt: typeof resolvedCreatedAt === 'string' ? resolvedCreatedAt : deriveAutoBackupCreatedAt(name),
+      changedKeys: Array.from(changedKeys),
+      removedKeys: []
+    };
+    try {
+      metadata.payloadSignature = createStableValueSignature(aggregate);
+    } catch (payloadSignatureError) {
+      metadata.payloadSignature = null;
+      console.warn('Unable to compute stable signature while recovering automatic backup from cyclic reference', payloadSignatureError);
+    }
+    metadata.payloadCompression = null;
+    metadata.compressedPayload = null;
+    defineAutoBackupMetadata(expanded, metadata);
+    return expanded;
+  }
   function expandAutoBackupEntries(container, options) {
     if (!isPlainObject(container)) {
       return container;
@@ -1250,14 +1380,21 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       var snapshot = value[AUTO_BACKUP_SNAPSHOT_PROPERTY];
       if (snapshot && _typeof(snapshot) === 'object') {
+        var snapshotType = snapshot.snapshotType === 'delta' ? 'delta' : 'full';
+        var baseNameCandidate = snapshotType === 'delta' && typeof snapshot.base === 'string' ? snapshot.base : null;
+        if (snapshotType === 'delta' && isSerializedAutoBackupBaseChainCyclic(container, name, baseNameCandidate)) {
+          console.warn('Detected cyclic auto-backup reference while expanding snapshot', name);
+          var recovered = createAutoBackupCycleFallback(container, name, snapshot);
+          cache.set(name, recovered);
+          return recovered;
+        }
         if (stack.has(name)) {
           console.warn('Detected cyclic auto-backup reference while expanding snapshot', name);
-          var fallback = {};
-          cache.set(name, fallback);
-          return fallback;
+          var recoveredFallback = createAutoBackupCycleFallback(container, name, snapshot);
+          cache.set(name, recoveredFallback);
+          return recoveredFallback;
         }
         stack.add(name);
-        var snapshotType = snapshot.snapshotType === 'delta' ? 'delta' : 'full';
         var baseName = snapshotType === 'delta' && typeof snapshot.base === 'string' ? snapshot.base : null;
         var baseValue = baseName ? cloneAutoBackupValue(_resolve(baseName, stack)) : {};
         var payloadInfo;
@@ -1358,6 +1495,63 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       removedKeys: removedKeys
     };
   }
+  function isAutoBackupMetadataChainCyclic(entries, startName, baseName) {
+    if (!isPlainObject(entries) || typeof startName !== 'string' || !startName) {
+      return false;
+    }
+    var currentName = typeof baseName === 'string' ? baseName : null;
+    if (!currentName) {
+      return false;
+    }
+    var visited = new Set([startName]);
+    var steps = 0;
+    var MAX_DEPTH = 1000;
+    while (typeof currentName === 'string' && currentName) {
+      if (visited.has(currentName)) {
+        return true;
+      }
+      visited.add(currentName);
+      var entry = Object.prototype.hasOwnProperty.call(entries, currentName) ? entries[currentName] : null;
+      if (!isPlainObject(entry)) {
+        return false;
+      }
+      var metadata = getAutoBackupMetadata(entry);
+      if (!metadata || metadata.snapshotType !== 'delta') {
+        return false;
+      }
+      currentName = typeof metadata.base === 'string' ? metadata.base : null;
+      steps += 1;
+      if (steps > MAX_DEPTH) {
+        return true;
+      }
+    }
+    return false;
+  }
+  function collectAutoBackupMetadataCycle(entries, startName) {
+    if (!isPlainObject(entries) || typeof startName !== 'string' || !startName) {
+      return [];
+    }
+    var members = [];
+    var visited = new Set();
+    var currentName = startName;
+    while (typeof currentName === 'string' && currentName) {
+      if (visited.has(currentName)) {
+        break;
+      }
+      visited.add(currentName);
+      members.push(currentName);
+      var entry = Object.prototype.hasOwnProperty.call(entries, currentName) ? entries[currentName] : null;
+      if (!isPlainObject(entry)) {
+        break;
+      }
+      var metadata = getAutoBackupMetadata(entry);
+      if (!metadata || metadata.snapshotType !== 'delta') {
+        break;
+      }
+      currentName = typeof metadata.base === 'string' ? metadata.base : null;
+    }
+    return members;
+  }
   function serializeAutoBackupEntries(entries, options) {
     if (!isPlainObject(entries)) {
       return entries;
@@ -1366,6 +1560,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var isAutoBackupKey = typeof opts.isAutoBackupKey === 'function' ? opts.isAutoBackupKey : isAutoBackupStorageKey;
     var serialized = {};
     var entryNames = Object.keys(entries);
+    var cyclicMetadataNames = new Set();
     var latestAutoBackupNames = function () {
       var groups = new Map();
       entryNames.forEach(function (name) {
@@ -1417,7 +1612,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var disableCompressionForName = latestAutoBackupNames.has(name);
       var metadata = getAutoBackupMetadata(value);
       var createdAt = metadata && typeof metadata.createdAt === 'string' ? metadata.createdAt : deriveAutoBackupCreatedAt(name);
-      if (!metadata || metadata.snapshotType !== 'delta') {
+      var forceFullSnapshot = cyclicMetadataNames.has(name);
+      if (forceFullSnapshot || !metadata || metadata.snapshotType !== 'delta') {
         serialized[name] = {};
         var _snapshot = {
           version: AUTO_BACKUP_SNAPSHOT_VERSION,
@@ -1435,12 +1631,29 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         if (_prepared.compression) {
           _snapshot.payloadCompression = _prepared.compression;
         }
+        if (metadata) {
+          metadata.version = _snapshot.version;
+          metadata.snapshotType = 'full';
+          metadata.base = null;
+          metadata.sequence = _snapshot.sequence;
+          metadata.changedKeys = _snapshot.changedKeys.slice();
+          metadata.removedKeys = [];
+        }
         serialized[name][AUTO_BACKUP_SNAPSHOT_PROPERTY] = _snapshot;
         return;
       }
       var baseName = typeof metadata.base === 'string' ? metadata.base : null;
       var baseValue = baseName && Object.prototype.hasOwnProperty.call(entries, baseName) ? entries[baseName] : null;
-      if (!baseValue || !isPlainObject(baseValue)) {
+      var hasCycle = metadata.snapshotType === 'delta' && isAutoBackupMetadataChainCyclic(entries, name, baseName);
+      if (!baseValue || !isPlainObject(baseValue) || hasCycle) {
+        if (hasCycle) {
+          console.warn('Detected cyclic auto-backup reference while preparing snapshot for storage', name);
+          collectAutoBackupMetadataCycle(entries, name).forEach(function (memberName) {
+            if (typeof memberName === 'string' && memberName) {
+              cyclicMetadataNames.add(memberName);
+            }
+          });
+        }
         serialized[name] = {};
         var _snapshot2 = {
           version: AUTO_BACKUP_SNAPSHOT_VERSION,
@@ -1458,6 +1671,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         if (_prepared2.compression) {
           _snapshot2.payloadCompression = _prepared2.compression;
         }
+        metadata.version = _snapshot2.version;
+        metadata.snapshotType = 'full';
+        metadata.base = null;
+        metadata.sequence = _snapshot2.sequence;
+        metadata.changedKeys = _snapshot2.changedKeys.slice();
+        metadata.removedKeys = [];
         serialized[name][AUTO_BACKUP_SNAPSHOT_PROPERTY] = _snapshot2;
         return;
       }
