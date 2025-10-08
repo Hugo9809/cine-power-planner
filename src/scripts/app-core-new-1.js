@@ -10776,6 +10776,7 @@ function setLanguage(lang) {
     }
     setLabelText(prepLabelElem, 'prepLabel');
     setLabelText(shootLabelElem, 'shootLabel');
+    setLabelText(returnLabelElem, 'returnLabel');
     setLabelText(deliveryResolutionLabel, 'deliveryResolution');
     setLabelText(recordingResolutionLabel, 'recordingResolution');
     setLabelText(sensorModeLabel, 'sensorMode');
@@ -10888,6 +10889,13 @@ function setLanguage(lang) {
       addShootBtn.setAttribute('aria-label', label);
       addShootBtn.setAttribute('data-help', label);
     }
+    if (addReturnBtn) {
+      const returnLabel = stripTrailingPunctuation(projectFormTexts.returnLabel || fallbackProjectForm.returnLabel || 'Return Day');
+      const label = `${addEntryLabel} ${returnLabel}`.trim();
+      setButtonLabelWithIcon(addReturnBtn, label, ICON_GLYPHS.add);
+      addReturnBtn.setAttribute('aria-label', label);
+      addReturnBtn.setAttribute('data-help', label);
+    }
     if (addStorageNeedBtn) {
       const storageLabelText = stripTrailingPunctuation(
         projectFormTexts.storageNeedsLabel || fallbackProjectForm.storageNeedsLabel || 'Recording media needs'
@@ -10970,6 +10978,7 @@ const crewHeadingElem = document.getElementById("crewHeading");
 const crewLabelElem = document.getElementById("crewLabel");
 const prepLabelElem = document.getElementById("prepLabel");
 const shootLabelElem = document.getElementById("shootLabel");
+const returnLabelElem = document.getElementById("returnLabel");
 const deliveryResolutionLabel = document.getElementById("deliveryResolutionLabel");
 const deliveryResolutionSelect = document.getElementById("deliveryResolution");
 const recordingResolutionLabel = document.getElementById("recordingResolutionLabel");
@@ -11009,6 +11018,8 @@ var prepContainer = document.getElementById("prepContainer");
 const addPrepBtn = document.getElementById("addPrepBtn");
 var shootContainer = document.getElementById("shootContainer");
 const addShootBtn = document.getElementById("addShootBtn");
+var returnContainer = document.getElementById("returnContainer");
+const addReturnBtn = document.getElementById("addReturnBtn");
 var storageNeedsContainer = document.getElementById("storageNeedsContainer");
 const addStorageNeedBtn = document.getElementById("addStorageNeedBtn");
 
@@ -12868,6 +12879,7 @@ var projectFieldIcons = {
   rentalHouse: RENTAL_HOUSE_ICON,
   crew: iconGlyph('\uF404', ICON_FONT_KEYS.UICONS),
   prepDays: iconGlyph('\uE312', ICON_FONT_KEYS.UICONS),
+  returnDays: iconGlyph('\uE312', ICON_FONT_KEYS.UICONS),
   shootingDays: iconGlyph('\uE311', ICON_FONT_KEYS.UICONS),
   deliveryResolution: iconGlyph('\uEF69', ICON_FONT_KEYS.UICONS),
   recordingResolution: ICON_GLYPHS.camera,
@@ -13187,6 +13199,51 @@ function createShootRow(data = {}) {
   });
   row.append(start, span, end, removeBtn);
   shootContainer.appendChild(row);
+  if (typeof markProjectFormDataDirty === 'function') {
+    markProjectFormDataDirty();
+  }
+}
+
+function createReturnRow(data = {}) {
+  if (!returnContainer) return;
+  const row = document.createElement('div');
+  row.className = 'period-row';
+  const start = document.createElement('input');
+  start.type = 'date';
+  start.name = 'returnStart';
+  start.className = 'return-start';
+  start.value = data.start || '';
+  start.setAttribute('aria-labelledby', 'returnLabel');
+  const span = document.createElement('span');
+  span.textContent = 'to';
+  const end = document.createElement('input');
+  end.type = 'date';
+  end.name = 'returnEnd';
+  end.className = 'return-end';
+  end.value = data.end || '';
+  end.setAttribute('aria-labelledby', 'returnLabel');
+  const removeBtn = document.createElement('button');
+  removeBtn.type = 'button';
+  const removeBase = texts[currentLang]?.projectForm?.removeEntry
+    || texts.en?.projectForm?.removeEntry
+    || 'Remove';
+  const returnLabelText = texts[currentLang]?.projectForm?.returnLabel
+    || texts.en?.projectForm?.returnLabel
+    || 'Return Day';
+  const removeReturnLabel = `${removeBase} ${returnLabelText}`.trim();
+  removeBtn.innerHTML = iconMarkup(ICON_GLYPHS.minus, 'btn-icon');
+  removeBtn.setAttribute('aria-label', removeReturnLabel);
+  removeBtn.setAttribute('title', removeReturnLabel);
+  removeBtn.setAttribute('data-help', removeReturnLabel);
+  removeBtn.addEventListener('click', () => {
+    row.remove();
+    if (typeof markProjectFormDataDirty === 'function') {
+      markProjectFormDataDirty();
+    }
+    scheduleProjectAutoSave(true);
+  });
+  row.append(start, span, end, removeBtn);
+  returnContainer.appendChild(row);
   if (typeof markProjectFormDataDirty === 'function') {
     markProjectFormDataDirty();
   }
@@ -13555,6 +13612,9 @@ if (addPrepBtn) {
 }
 if (addShootBtn) {
   addShootBtn.addEventListener('click', () => createShootRow());
+}
+if (addReturnBtn) {
+  addReturnBtn.addEventListener('click', () => createReturnRow());
 }
 if (addStorageNeedBtn) {
   addStorageNeedBtn.addEventListener('click', () => {
