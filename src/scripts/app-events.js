@@ -632,7 +632,7 @@ function handleSaveSetupClick() {
       if (renamingAutoBackup && finalIsAutoBackup) {
         markAutoBackupDataAsRenamed(storedProjectSnapshot);
       }
-      saveProject(finalName, storedProjectSnapshot);
+      saveProject(finalName, storedProjectSnapshot, { skipOverwriteBackup: true });
     } catch (error) {
       console.warn('Failed to preserve project data during setup rename', error);
     }
@@ -660,7 +660,7 @@ function handleSaveSetupClick() {
       }
     } else if (typeof saveProject === 'function') {
       try {
-        saveProject(selectedName, { projectInfo: null, gearList: '' });
+        saveProject(selectedName, { projectInfo: null, gearList: '' }, { skipOverwriteBackup: true });
       } catch (error) {
         console.warn('Failed to clear legacy project entry during setup rename', error);
       }
@@ -1045,7 +1045,7 @@ addSafeEventListener(setupSelectTarget, "change", (event) => {
     if (previousRules && previousRules.length) {
       previousPayload.autoGearRules = previousRules;
     }
-    saveProject(previousKey, previousPayload);
+    saveProject(previousKey, previousPayload, { skipOverwriteBackup: true });
   }
 
   if (
@@ -1186,7 +1186,7 @@ addSafeEventListener(setupSelectTarget, "change", (event) => {
           } else if (storedProject?.gearSelectors && Object.keys(storedProject.gearSelectors).length) {
             payload.gearSelectors = storedProject.gearSelectors;
           }
-          saveProject(setupName, payload);
+          saveProject(setupName, payload, { skipOverwriteBackup: true });
         }
       }
     } else {

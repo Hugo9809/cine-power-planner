@@ -9539,7 +9539,7 @@ function maybeCreateProjectOverwriteBackup(projects, key) {
   return { status: 'created', backupName };
 }
 
-function saveProject(name, project) {
+function saveProject(name, project, options = {}) {
   if (!isPlainObject(project)) return;
   const normalized = normalizeProject(project);
   if (!normalized) {
@@ -9550,6 +9550,7 @@ function saveProject(name, project) {
     }
     return;
   }
+  const skipOverwriteBackup = Boolean(options && options.skipOverwriteBackup);
   const { projects, changed, originalValue, lookup } = readAllProjectsFromStorage({ forMutation: true });
   if (changed) {
     const safeStorage = getSafeLocalStorage();
@@ -9589,7 +9590,7 @@ function saveProject(name, project) {
     && existingKey !== undefined
     && Object.prototype.hasOwnProperty.call(projects, existingKey);
 
-  if (hasExistingEntry) {
+  if (hasExistingEntry && !skipOverwriteBackup) {
     const existingSignature = createStableValueSignature(projects[existingKey]);
     const nextSignature = createStableValueSignature(normalized);
     if (existingSignature !== nextSignature) {

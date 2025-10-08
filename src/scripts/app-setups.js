@@ -6191,7 +6191,7 @@ function saveCurrentGearList() {
         if (projectRulesSnapshot && projectRulesSnapshot.length) {
             payload.autoGearRules = projectRulesSnapshot;
         }
-        saveProject(effectiveStorageKey, payload);
+        saveProject(effectiveStorageKey, payload, { skipOverwriteBackup: true });
     }
 
     if (!selectedStorageKey) return;
@@ -6317,7 +6317,7 @@ function deleteCurrentGearList() {
         saveProject(storageKey, {
             projectInfo: null,
             gearListAndProjectRequirementsGenerated: false
-        });
+        }, { skipOverwriteBackup: true });
     }
     const setups = getSetups();
     if (setups && typeof setups === 'object') {
