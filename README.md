@@ -246,9 +246,15 @@ same online or offline.
    import, backup and restore workflows provably in sync from the first session
    and gives you redundant recovery media for travel days.
 9. Capture a console screenshot of `window.__cineRuntimeIntegrity` (or rerun
-  `window.cineRuntime.verifyCriticalFlows()` and store the report) to document
-  that the runtime guard validated every save/share/restore gateway and the
-  runtime feedback storage bindings while you rehearsed offline.
+   `window.cineRuntime.verifyCriticalFlows()` and store the report) to document
+   that the runtime guard validated every save/share/restore gateway and the
+   runtime feedback storage bindings while you rehearsed offline.
+10. Still offline, open the in-app help center and at least one localized
+    README from the repository. Confirm the topics mirror the live interface,
+    translations render without fetching remote assets and the documentation
+    reiterates the save → share → import → backup → restore drills you just ran.
+    This step keeps Help, Documentation and Translation resources verified
+    alongside the core workflows.
 
 ## Key Workflow Reference
 
@@ -969,6 +975,9 @@ coverage and recovery instructions. Each update should:
 - Use the checklist to log which UI surfaces changed, which modules they depend on and which
   translations need attention so verification logs always prove that the documentation and
   offline behavior match.
+- Re-run the offline help center and localized README spot-checks described in the Quick Start
+  after every documentation update so the bundled guidance is proven to load without
+  connectivity and still teaches the current save, share, import, backup and restore routines.
 - Keep the **Key Workflow Reference** table and **Repository Layout & Offline Assets** notes synchronized across each
   localized README so every crew references the same offline-first procedures and directory expectations.
 - Update translation keys and selectors so language options stay synchronized with the UI
