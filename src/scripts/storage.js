@@ -510,6 +510,41 @@ function writeCompressionStrategyCache(cacheKey, lzReference, strategies) {
   }
 }
 
+function computeStorageCompressionWrapperBaseLength() {
+  if (typeof JSON === 'undefined' || !JSON || typeof JSON.stringify !== 'function') {
+    return 0;
+  }
+
+  try {
+    var skeleton = {
+      [STORAGE_COMPRESSION_FLAG_KEY]: true,
+      version: STORAGE_COMPRESSION_VERSION,
+      algorithm: STORAGE_COMPRESSION_ALGORITHM,
+      namespace: STORAGE_COMPRESSION_NAMESPACE,
+      data: '',
+      originalLength: 0,
+      compressedPayloadLength: 0,
+      compressionVariant: '',
+    };
+
+    var serialized = JSON.stringify(skeleton);
+    if (typeof serialized !== 'string' || !serialized) {
+      return 0;
+    }
+
+    var emptyLiteralLength = JSON.stringify('').length;
+    if (!(emptyLiteralLength > 0)) {
+      return 0;
+    }
+
+    return serialized.length - emptyLiteralLength * 2 - String(0).length * 2;
+  } catch (wrapperLengthError) {
+    void wrapperLengthError;
+  }
+
+  return 0;
+}
+
 function createCompressionCandidateCache(limit) {
   if (typeof Map !== 'function') {
     return null;
@@ -2511,6 +2546,15 @@ var STORAGE_COMPRESSION_ALGORITHM = 'lz-string';
 var LEGACY_STORAGE_COMPRESSION_ALGORITHM = 'lz-string-utf16';
 var STORAGE_COMPRESSION_VARIANTS = MIGRATION_BACKUP_COMPRESSION_VARIANTS;
 var STORAGE_COMPRESSION_NAMESPACE = 'camera-power-planner:storage-compression';
+var STORAGE_COMPRESSION_ALGORITHM_LITERAL =
+  typeof JSON !== 'undefined' && JSON && typeof JSON.stringify === 'function'
+    ? JSON.stringify(STORAGE_COMPRESSION_ALGORITHM)
+    : '"'.concat(String(STORAGE_COMPRESSION_ALGORITHM || ''), '"');
+var STORAGE_COMPRESSION_NAMESPACE_LITERAL =
+  typeof JSON !== 'undefined' && JSON && typeof JSON.stringify === 'function'
+    ? JSON.stringify(STORAGE_COMPRESSION_NAMESPACE)
+    : '"'.concat(String(STORAGE_COMPRESSION_NAMESPACE || ''), '"');
+var STORAGE_COMPRESSION_WRAPPER_BASE_LENGTH = computeStorageCompressionWrapperBaseLength();
 var storageCompressionPatchedStorages = typeof WeakSet === 'function' ? new WeakSet() : null;
 var STORAGE_COMPRESSION_SWEEP_LIMIT = 40;
 var STORAGE_COMPRESSION_SWEEP_MIN_SAVINGS = 128;
@@ -2548,12 +2592,31 @@ function getAvailableLZStringCompressionStrategies(variants) {
     var decompressFn = typeof lzReference[variant.decompress] === 'function'
       ? lzReference[variant.decompress]
       : null;
+    var variantLiteral = null;
+    var variantLiteralLength = 0;
+    if (typeof JSON !== 'undefined' && JSON && typeof JSON.stringify === 'function') {
+      try {
+        variantLiteral = JSON.stringify(String(variant.variant || ''));
+        if (typeof variantLiteral === 'string' && variantLiteral) {
+          variantLiteralLength = variantLiteral.length;
+        } else {
+          variantLiteral = null;
+          variantLiteralLength = 0;
+        }
+      } catch (variantLiteralError) {
+        variantLiteral = null;
+        variantLiteralLength = 0;
+        void variantLiteralError;
+      }
+    }
 
     if (compressFn && decompressFn) {
       available.push({
         variant: variant.variant,
         compress: compressFn,
         decompress: decompressFn,
+        variantLiteral: variantLiteralLength > 0 ? variantLiteral : null,
+        variantLiteralLength,
       });
     }
   }
@@ -2786,7 +2849,15 @@ function createCompressedJsonStorageCandidate(serialized) {
     return null;
   }
 
+  var baseWrapperLength =
+    typeof STORAGE_COMPRESSION_WRAPPER_BASE_LENGTH === 'number'
+      ? STORAGE_COMPRESSION_WRAPPER_BASE_LENGTH
+      : 0;
   var best = null;
+  var bestSerialized = null;
+  var bestCompressedLiteral = null;
+  var bestVariantLiteral = null;
+  var originalLengthDigits = String(serialized.length).length;
   for (var i = 0; i < strategies.length; i += 1) {
     var strategy = strategies[i];
     var compressed = null;
@@ -2802,42 +2873,142 @@ function createCompressedJsonStorageCandidate(serialized) {
       continue;
     }
 
-    var wrapper = {
-      [STORAGE_COMPRESSION_FLAG_KEY]: true,
-      version: STORAGE_COMPRESSION_VERSION,
-      algorithm: STORAGE_COMPRESSION_ALGORITHM,
-      namespace: STORAGE_COMPRESSION_NAMESPACE,
-      data: compressed,
-      originalLength: serialized.length,
-      compressedPayloadLength: compressed.length,
-      compressionVariant: strategy.variant,
-    };
-
-    var wrappedSerialized;
+    var compressedLiteral;
     try {
-      wrappedSerialized = JSON.stringify(wrapper);
-    } catch (serializationError) {
-      console.warn('Unable to serialize compressed storage payload wrapper', serializationError);
+      compressedLiteral = JSON.stringify(compressed);
+    } catch (compressedLiteralError) {
+      console.warn(
+        'Unable to serialize compressed storage payload candidate',
+        compressedLiteralError,
+      );
       continue;
     }
 
-    if (typeof wrappedSerialized !== 'string' || !wrappedSerialized) {
+    if (typeof compressedLiteral !== 'string' || !compressedLiteral) {
       continue;
     }
 
-    if (wrappedSerialized.length >= serialized.length) {
-      continue;
+    var variantLiteral =
+      typeof strategy.variantLiteral === 'string' && strategy.variantLiteral
+        ? strategy.variantLiteral
+        : null;
+    var variantLiteralLength =
+      typeof strategy.variantLiteralLength === 'number' && strategy.variantLiteralLength > 0
+        ? strategy.variantLiteralLength
+        : 0;
+    if (!variantLiteral) {
+      if (typeof JSON !== 'undefined' && JSON && typeof JSON.stringify === 'function') {
+        try {
+          variantLiteral = JSON.stringify(String(strategy.variant || ''));
+          variantLiteralLength =
+            typeof variantLiteral === 'string' && variantLiteral ? variantLiteral.length : 0;
+        } catch (variantLiteralError) {
+          variantLiteral = null;
+          variantLiteralLength = 0;
+          void variantLiteralError;
+        }
+      }
     }
 
-    if (!best || wrappedSerialized.length < best.wrappedLength) {
-      best = {
-        serialized: wrappedSerialized,
+    var candidateSerialized = null;
+    var candidateLength = Number.POSITIVE_INFINITY;
+
+    if (baseWrapperLength > 0 && variantLiteralLength > 0) {
+      var compressedLengthDigits = String(compressed.length).length;
+      candidateLength =
+        baseWrapperLength
+        + compressedLiteral.length
+        + originalLengthDigits
+        + compressedLengthDigits
+        + variantLiteralLength;
+    } else {
+      var legacyWrapper = {
+        [STORAGE_COMPRESSION_FLAG_KEY]: true,
+        version: STORAGE_COMPRESSION_VERSION,
+        algorithm: STORAGE_COMPRESSION_ALGORITHM,
+        namespace: STORAGE_COMPRESSION_NAMESPACE,
+        data: compressed,
         originalLength: serialized.length,
-        wrappedLength: wrappedSerialized.length,
         compressedPayloadLength: compressed.length,
         compressionVariant: strategy.variant,
       };
+
+      try {
+        candidateSerialized = JSON.stringify(legacyWrapper);
+      } catch (serializationError) {
+        console.warn('Unable to serialize compressed storage payload wrapper', serializationError);
+        continue;
+      }
+
+      if (typeof candidateSerialized !== 'string' || !candidateSerialized) {
+        continue;
+      }
+
+      candidateLength = candidateSerialized.length;
     }
+
+    if (!(candidateLength < serialized.length)) {
+      continue;
+    }
+
+    if (!best || candidateLength < best.wrappedLength) {
+      best = {
+        originalLength: serialized.length,
+        wrappedLength: candidateLength,
+        compressedPayloadLength: compressed.length,
+        compressionVariant: strategy.variant,
+      };
+      bestSerialized = candidateSerialized;
+      bestCompressedLiteral = compressedLiteral;
+      bestVariantLiteral = variantLiteral;
+    }
+  }
+
+  if (best && (!bestSerialized || typeof bestSerialized !== 'string')) {
+    if (typeof bestCompressedLiteral !== 'string' || !bestCompressedLiteral) {
+      best = null;
+    } else {
+      var finalVariantLiteral;
+      if (typeof bestVariantLiteral === 'string' && bestVariantLiteral) {
+        finalVariantLiteral = bestVariantLiteral;
+      } else if (typeof JSON !== 'undefined' && JSON && typeof JSON.stringify === 'function') {
+        try {
+          finalVariantLiteral = JSON.stringify(String(best.compressionVariant || ''));
+        } catch (variantLiteralError) {
+          finalVariantLiteral = null;
+          void variantLiteralError;
+        }
+      }
+
+      if (typeof finalVariantLiteral !== 'string' || !finalVariantLiteral) {
+        best = null;
+      } else {
+        var serializedWrapper =
+          '{"'
+          .concat(STORAGE_COMPRESSION_FLAG_KEY, '":true,"version":')
+          .concat(String(STORAGE_COMPRESSION_VERSION), ',"algorithm":')
+          .concat(STORAGE_COMPRESSION_ALGORITHM_LITERAL, ',"namespace":')
+          .concat(STORAGE_COMPRESSION_NAMESPACE_LITERAL, ',"data":')
+          .concat(bestCompressedLiteral, ',"originalLength":')
+          .concat(String(best.originalLength), ',"compressedPayloadLength":')
+          .concat(String(best.compressedPayloadLength), ',"compressionVariant":')
+          .concat(finalVariantLiteral, '}');
+
+        bestSerialized = serializedWrapper;
+      }
+    }
+  }
+
+  if (
+    best
+    && bestSerialized
+    && typeof bestSerialized === 'string'
+    && bestSerialized.length < best.originalLength
+  ) {
+    best.serialized = bestSerialized;
+    best.wrappedLength = bestSerialized.length;
+  } else {
+    best = null;
   }
 
   writeCompressionCandidateCacheEntry(STORAGE_COMPRESSION_CANDIDATE_CACHE, serialized, best);
