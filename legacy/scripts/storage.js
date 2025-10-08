@@ -8318,7 +8318,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var storageCandidates = collectUniqueStorages([safeStorage, typeof SAFE_LOCAL_STORAGE !== 'undefined' ? SAFE_LOCAL_STORAGE : null, getWindowStorage('localStorage'), typeof localStorage !== 'undefined' ? localStorage : null]);
     var sessionCandidates = collectUniqueStorages([typeof sessionStorage !== 'undefined' ? sessionStorage : null, getWindowStorage('sessionStorage')]);
     var prefixedKeys = ['cameraPowerPlanner_', 'cinePowerPlanner_'];
-    var collectKeysWithPrefixes = function collectKeysWithPrefixes(storage) {
+    var collectStorageKeys = function collectStorageKeys(storage, predicate) {
+      if (predicate === void 0) {
+        predicate = function predicate() {
+          return true;
+        };
+      }
       if (!storage) {
         return [];
       }
@@ -8331,9 +8336,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           } catch (error) {
             console.warn('Unable to inspect storage key during factory reset', error);
           }
-          if (typeof candidateKey === 'string' && prefixedKeys.some(function (prefix) {
-            return candidateKey.startsWith(prefix);
-          })) {
+          if (typeof candidateKey === 'string' && predicate(candidateKey)) {
             keys.push(candidateKey);
           }
         };
@@ -8347,9 +8350,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           var candidateKeys = storage.keys();
           if (Array.isArray(candidateKeys)) {
             candidateKeys.forEach(function (candidateKey) {
-              if (typeof candidateKey === 'string' && prefixedKeys.some(function (prefix) {
-                return candidateKey.startsWith(prefix);
-              })) {
+              if (typeof candidateKey === 'string' && predicate(candidateKey)) {
                 keys.push(candidateKey);
               }
             });
@@ -8362,9 +8363,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (typeof storage.forEach === 'function') {
         try {
           storage.forEach(function (value, candidateKey) {
-            if (typeof candidateKey === 'string' && prefixedKeys.some(function (prefix) {
-              return candidateKey.startsWith(prefix);
-            })) {
+            if (typeof candidateKey === 'string' && predicate(candidateKey)) {
               keys.push(candidateKey);
             }
           });
@@ -8377,7 +8376,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     };
     var deletePrefixedKeys = function deletePrefixedKeys(storages) {
       storages.forEach(function (storage) {
-        var keysToRemove = collectKeysWithPrefixes(storage);
+        var keysToRemove = collectStorageKeys(storage, function (candidateKey) {
+          return prefixedKeys.some(function (prefix) {
+            return candidateKey.startsWith(prefix);
+          });
+        });
         if (!keysToRemove.length) {
           return;
         }
@@ -8392,6 +8395,38 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     };
     deletePrefixedKeys(storageCandidates);
     deletePrefixedKeys(sessionCandidates);
+    var clearStorages = function clearStorages(storages) {
+      storages.forEach(function (storage) {
+        if (!storage) {
+          return;
+        }
+        var cleared = false;
+        if (typeof storage.clear === 'function') {
+          try {
+            storage.clear();
+            cleared = true;
+          } catch (error) {
+            console.warn('Unable to clear storage during factory reset', error);
+          }
+        }
+        if (cleared) {
+          return;
+        }
+        var keysToRemove = collectStorageKeys(storage);
+        if (!keysToRemove.length) {
+          return;
+        }
+        keysToRemove.forEach(function (key) {
+          try {
+            deleteFromStorage(storage, key, msg);
+          } catch (error) {
+            console.warn('Unable to remove storage key during factory reset', key, error);
+          }
+        });
+      });
+    };
+    clearStorages(storageCandidates);
+    clearStorages(sessionCandidates);
   }
   function readLocalStorageValue(key) {
     var storage = getSafeLocalStorage();

@@ -48,7 +48,7 @@ Version comparisons create a documented paper trail before archives rotate. Laun
 
 Factory reset is the only workflow that clears auto backups, manual saves and preferences in one sweep, so the planner refuses to erase anything until it has captured a fresh full backup. When you confirm the reset, the runtime invokes the same `createSettingsBackup()` routine used by the **Download full backup** button. If the export is blocked or the download fails, the wipe is cancelled and your data stays put, guaranteeing a restorable copy exists before anything is deleted.【F:src/scripts/app-session.js†L6999-L7056】【F:src/scripts/app-session.js†L8765-L8797】
 
-Once the backup lands successfully, the reset proceeds to run `clearAllData()`, which enumerates every planner storage namespace—including project slots, hourly auto backups, rehearsal snapshots and mirrored preferences—and removes each key from local storage and session storage. Because the pre-reset export contains those entries, you can immediately reopen the planner and restore the downloaded file to recover auto backups or manual saves that were cleared from the browser profile.【F:src/scripts/storage.js†L8690-L8780】
+Once the backup lands successfully, the reset proceeds to run `clearAllData()`, which now wipes every key from local storage and session storage—covering planner data, preferences, diagnostics history and any lingering session flags. Because the pre-reset export contains those entries, you can immediately reopen the planner and restore the downloaded file to recover auto backups or manual saves that were cleared from the browser profile.【F:src/scripts/storage.js†L9798-L9887】
 
 ## Console & script checks
 
