@@ -72,9 +72,11 @@ const AUTO_BACKUP_ALLOWED_REASONS = [
   'change-threshold',
   'safeguard',
 ];
+const AUTO_BACKUP_RATE_LIMITED_REASONS = new Set();
 
 let autoBackupChangesSinceSnapshot = 0;
 let autoBackupThresholdInProgress = false;
+let lastAutoBackupCompletedAtMs = 0;
 
 function resetAutoBackupChangeCounter() {
   autoBackupChangesSinceSnapshot = 0;
@@ -95,6 +97,9 @@ function recordAutoBackupRun(result) {
   }
   if (status && status !== 'error') {
     resetAutoBackupChangeCounter();
+    if (status === 'success') {
+      lastAutoBackupCompletedAtMs = Date.now();
+    }
   }
 }
 
@@ -1361,6 +1366,10 @@ function ensureLastAutoBackupSignatureInitialized(setups) {
     const metadata = readAutoBackupMetadata(entry);
     if (metadata && typeof metadata.createdAt === 'string') {
       lastAutoBackupCreatedAtIso = metadata.createdAt;
+      const parsed = Date.parse(metadata.createdAt);
+      if (!Number.isNaN(parsed)) {
+        lastAutoBackupCompletedAtMs = parsed;
+      }
     }
   } catch (error) {
     lastAutoBackupSignature = null;
@@ -1448,11 +1457,11 @@ function determineNextAutoBackupPlan(setups) {
   };
 }
 
-// Automatic backups run every 10 minutes, when switching projects, during
-// import or export operations, before reloads, and after 50 tracked changes
-// to the planner. Saved backups appear in the setup selector but do not change the
-// currently selected setup. Intervals are unref'ed when possible so Node
-// environments can exit cleanly.
+// Automatic backups run every 10 minutes or after 50 tracked changes to the
+// planner. Other operations reuse the most recent snapshot unless this cadence
+// has elapsed so editors are not flooded with redundant copies. Saved backups
+// appear in the setup selector but do not change the currently selected setup.
+// Intervals are unref'ed when possible so Node environments can exit cleanly.
 function autoBackup(options = {}) {
   const setupSelectElement = getSetupSelectElement();
   if (!setupSelectElement) return null;
@@ -1506,6 +1515,23 @@ function autoBackup(options = {}) {
     }
     recordAutoBackupRun(skipped);
     return skipped;
+  }
+
+  if (!force && AUTO_BACKUP_RATE_LIMITED_REASONS.has(reason)) {
+    const nowMs = Date.now();
+    const lastCompletedMs = lastAutoBackupCompletedAtMs || 0;
+    const elapsedMs = nowMs - lastCompletedMs;
+    const enoughTimeElapsed = elapsedMs >= AUTO_BACKUP_INTERVAL_MS;
+    const enoughChangesAccumulated = autoBackupChangesSinceSnapshot >= AUTO_BACKUP_CHANGE_THRESHOLD;
+    if (!enoughTimeElapsed && !enoughChangesAccumulated) {
+      const skipped = {
+        status: 'skipped',
+        reason: 'rate-limited',
+        context: reason,
+      };
+      recordAutoBackupRun(skipped);
+      return skipped;
+    }
   }
 
   let nameForBackup = '';
