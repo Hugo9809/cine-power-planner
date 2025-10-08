@@ -5562,6 +5562,7 @@ function gearListGetCurrentHtmlImpl() {
                 input.setAttribute('value', input.value);
             }
         });
+        convertCustomItemsForStaticOutput(clone);
         const table = clone.querySelector('.gear-table');
         gearHtml = table ? '<h3>Gear List</h3>' + table.outerHTML : '';
     }
@@ -5639,6 +5640,56 @@ function applyGearListSelectors(selectors) {
         }
     });
     applyCustomItemsState(selectors.__customItems || {});
+}
+
+function convertCustomItemsForStaticOutput(root) {
+    if (!root) return;
+    const doc = root.ownerDocument || (typeof document !== 'undefined' ? document : null);
+    if (!doc) return;
+
+    const sections = root.querySelectorAll('.gear-custom-section');
+    sections.forEach(section => {
+        const itemsContainer = section.querySelector('.gear-custom-items');
+        const parent = section.parentElement;
+        if (!itemsContainer || !parent) {
+            section.remove();
+            return;
+        }
+
+        const previews = Array.from(itemsContainer.querySelectorAll('.gear-custom-item-preview'));
+        const values = previews
+            .map(preview => (preview.textContent || '').replace(/\s+/g, ' ').trim())
+            .filter(Boolean);
+
+        let standardContainer = section.previousElementSibling;
+        if (!standardContainer || !standardContainer.classList.contains('gear-standard-items')) {
+            standardContainer = doc.createElement('div');
+            standardContainer.className = 'gear-standard-items';
+            parent.insertBefore(standardContainer, section);
+        }
+
+        if (values.length) {
+            values.forEach(value => {
+                if (standardContainer.childNodes.length) {
+                    const last = standardContainer.lastChild;
+                    const isBreak = last && last.nodeType === 1 && last.tagName === 'BR';
+                    if (!isBreak) {
+                        standardContainer.appendChild(doc.createElement('br'));
+                    }
+                }
+                const span = doc.createElement('span');
+                span.className = 'gear-item';
+                span.textContent = value;
+                span.setAttribute('data-gear-name', value);
+                span.setAttribute('data-gear-custom-output', 'true');
+                standardContainer.appendChild(span);
+            });
+        }
+
+        section.remove();
+    });
+
+    root.querySelectorAll('.gear-custom-add-btn').forEach(btn => btn.remove());
 }
 
 function cloneProjectInfoForStorage(info) {
