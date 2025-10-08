@@ -4867,12 +4867,14 @@ function saveJSONToStorage(
     onQuotaExceeded,
     enableCompressionSweep = true,
     disableCompression = false,
+    forceCompressionOnQuota = false,
   } = options || {};
   const fallbackKey = typeof backupKey === 'string' && backupKey
     ? backupKey
     : `${key}${STORAGE_BACKUP_SUFFIX}`;
   const useBackup = !disableBackup && fallbackKey && fallbackKey !== key;
   const compressionBlocked = Boolean(disableCompression);
+  const allowQuotaCompression = forceCompressionOnQuota === true;
 
   const rawGetter = getRawStorageGetter(storage);
   const loadRawValue = (targetKey) => readRawStorageValue(storage, targetKey, rawGetter);
@@ -4947,12 +4949,16 @@ function saveJSONToStorage(
     return null;
   };
 
-  const tryEnableCompression = () => {
-    if (compressionBlocked) {
+  const tryEnableCompression = ({ force = false } = {}) => {
+    const forcing = force && allowQuotaCompression;
+    if (compressionBlocked && !forcing) {
       compressionAttempted = true;
       return false;
     }
-    if (useCompressedSerialization || compressionAttempted) {
+    if (useCompressedSerialization) {
+      return false;
+    }
+    if (compressionAttempted && !forcing) {
       return false;
     }
     compressionAttempted = true;
@@ -5240,7 +5246,7 @@ function saveJSONToStorage(
           }
           continue;
         }
-        if (!quotaRecoveryFailed && tryEnableCompression()) {
+        if (!quotaRecoveryFailed && tryEnableCompression({ force: allowQuotaCompression })) {
           if (!registerQuotaRecoveryStep()) {
             break;
           }
@@ -5352,7 +5358,7 @@ function saveJSONToStorage(
           return 'retry';
         }
 
-        if (!quotaRecoveryFailed && tryEnableCompression()) {
+        if (!quotaRecoveryFailed && tryEnableCompression({ force: allowQuotaCompression })) {
           resetSerializationState();
           if (!registerQuotaRecoveryStep()) {
             return 'failure';
@@ -7473,7 +7479,7 @@ function persistAllProjects(projects) {
     serializedProjects,
     "Error saving project to localStorage:",
     {
-      disableCompression: true,
+      forceCompressionOnQuota: true,
       onQuotaExceeded: () => {
         const removedKey = removeOldestAutoBackupEntry(serializedProjects);
         if (!removedKey) {
