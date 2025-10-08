@@ -122,6 +122,15 @@ var COMPRESSION_STRATEGY_CACHE =
 var COMPRESSION_STRATEGY_CACHE_KEYS = [];
 var COMPRESSION_STRATEGY_CACHE_LIMIT = 6;
 
+var JSON_COMPRESSION_CACHE_LIMIT = 48;
+var JSON_COMPRESSION_CACHE = typeof Map === 'function' ? new Map() : null;
+var JSON_COMPRESSION_CACHE_KEYS = [];
+var AUTO_BACKUP_COMPRESSION_NAMESPACE = 'auto-backup';
+var PROJECT_ENTRY_COMPRESSION_NAMESPACE = 'project-entry';
+
+var PROJECT_ACTIVITY_WINDOW_MS = 10 * 60 * 1000;
+var PROJECT_ACTIVITY_REGISTRY = typeof Map === 'function' ? new Map() : null;
+
 var COMPRESSION_WARNING_LIMIT = 12;
 var COMPRESSION_WARNING_BATCH_SIZE = 8;
 var COMPRESSION_LOG_SUMMARY_WINDOW_MS = 60 * 1000;
@@ -269,7 +278,7 @@ function logCompressionSavingsEvent(kind, identifier, message, savings, percent)
     now - entry.lastSummaryAt >= COMPRESSION_LOG_SUMMARY_WINDOW_MS
   ) {
     shouldSummarize = true;
-  } else if (now === null && entry.suppressedSinceSummary >= COMPRESSION_WARNING_BATCH_SIZE) {
+  } else if (now === null && entry.suppressedSinceSummary > 0) {
     shouldSummarize = true;
   }
 
@@ -408,6 +417,135 @@ function writeCompressionStrategyCache(cacheKey, lzReference, strategies) {
   } catch (cacheStoreError) {
     void cacheStoreError;
   }
+}
+
+function getJsonCompressionCacheKey(namespace, signature) {
+  if (typeof namespace !== 'string' || !namespace) {
+    return null;
+  }
+  if (typeof signature !== 'string' || !signature) {
+    return null;
+  }
+  return "".concat(namespace, "|").concat(signature);
+}
+
+function readJsonCompressionCache(namespace, signature) {
+  if (!JSON_COMPRESSION_CACHE) {
+    return null;
+  }
+
+  var cacheKey = getJsonCompressionCacheKey(namespace, signature);
+  if (!cacheKey) {
+    return null;
+  }
+
+  var cached;
+  try {
+    cached = JSON_COMPRESSION_CACHE.get(cacheKey);
+  } catch (cacheReadError) {
+    cached = null;
+    void cacheReadError;
+  }
+
+  if (!cached || typeof cached.serialized !== 'string' || !cached.serialized) {
+    return null;
+  }
+
+  return {
+    serialized: cached.serialized,
+    originalLength:
+      typeof cached.originalLength === 'number' && Number.isFinite(cached.originalLength)
+        ? cached.originalLength
+        : null,
+    wrappedLength:
+      typeof cached.wrappedLength === 'number' && Number.isFinite(cached.wrappedLength)
+        ? cached.wrappedLength
+        : cached.serialized.length,
+    compressionVariant:
+      typeof cached.compressionVariant === 'string' && cached.compressionVariant
+        ? cached.compressionVariant
+        : null,
+    cached: true,
+  };
+}
+
+function writeJsonCompressionCache(namespace, signature, candidate) {
+  if (!JSON_COMPRESSION_CACHE) {
+    return;
+  }
+
+  if (!candidate || typeof candidate.serialized !== 'string' || !candidate.serialized) {
+    return;
+  }
+
+  var cacheKey = getJsonCompressionCacheKey(namespace, signature);
+  if (!cacheKey) {
+    return;
+  }
+
+  var payload = {
+    serialized: candidate.serialized,
+    originalLength:
+      typeof candidate.originalLength === 'number' && Number.isFinite(candidate.originalLength)
+        ? candidate.originalLength
+        : null,
+    wrappedLength:
+      typeof candidate.wrappedLength === 'number' && Number.isFinite(candidate.wrappedLength)
+        ? candidate.wrappedLength
+        : candidate.serialized.length,
+    compressionVariant:
+      typeof candidate.compressionVariant === 'string' && candidate.compressionVariant
+        ? candidate.compressionVariant
+        : null,
+  };
+
+  try {
+    JSON_COMPRESSION_CACHE.set(cacheKey, payload);
+  } catch (cacheStoreError) {
+    void cacheStoreError;
+    return;
+  }
+
+  var existingIndex = JSON_COMPRESSION_CACHE_KEYS.indexOf(cacheKey);
+  if (existingIndex !== -1) {
+    JSON_COMPRESSION_CACHE_KEYS.splice(existingIndex, 1);
+  }
+
+  JSON_COMPRESSION_CACHE_KEYS.push(cacheKey);
+
+  while (JSON_COMPRESSION_CACHE_KEYS.length > JSON_COMPRESSION_CACHE_LIMIT) {
+    var oldestKey = JSON_COMPRESSION_CACHE_KEYS.shift();
+    try {
+      JSON_COMPRESSION_CACHE.delete(oldestKey);
+    } catch (cacheDeleteError) {
+      void cacheDeleteError;
+    }
+  }
+}
+
+function rememberJsonCompressionFromMetadata(namespace, signature, serialized, metadata) {
+  if (typeof serialized !== 'string' || !serialized) {
+    return;
+  }
+
+  if (typeof signature !== 'string' || !signature) {
+    return;
+  }
+
+  var candidate = {
+    serialized: serialized,
+    originalLength:
+      metadata && typeof metadata.originalLength === 'number' && Number.isFinite(metadata.originalLength)
+        ? metadata.originalLength
+        : null,
+    wrappedLength: serialized.length,
+    compressionVariant:
+      metadata && typeof metadata.compressionVariant === 'string' && metadata.compressionVariant
+        ? metadata.compressionVariant
+        : null,
+  };
+
+  writeJsonCompressionCache(namespace, signature, candidate);
 }
 
 function getStorageStateCacheMap(storage, createIfMissing) {
@@ -673,6 +811,132 @@ function getProjectReadCacheClone(options) {
 
 function invalidateProjectReadCache() {
   PROJECT_STORAGE_READ_CACHE = null;
+}
+
+function getProjectActivityTimestamp() {
+  var timestamp = getCompressionLogTimestamp();
+  if (typeof timestamp === 'number' && Number.isFinite(timestamp)) {
+    return timestamp;
+  }
+
+  if (typeof Date !== 'undefined') {
+    if (typeof Date.now === 'function') {
+      return Date.now();
+    }
+
+    try {
+      return new Date().getTime();
+    } catch (timestampError) {
+      void timestampError;
+    }
+  }
+
+  return null;
+}
+
+function cleanupProjectActivity(now) {
+  if (!PROJECT_ACTIVITY_REGISTRY || typeof PROJECT_ACTIVITY_REGISTRY.forEach !== 'function') {
+    return;
+  }
+
+  var current = typeof now === 'number' && Number.isFinite(now) ? now : getProjectActivityTimestamp();
+  if (typeof current !== 'number' || !Number.isFinite(current)) {
+    return;
+  }
+
+  var expiredKeys = [];
+  PROJECT_ACTIVITY_REGISTRY.forEach(function markExpired(timestamp, key) {
+    if (typeof timestamp !== 'number' || !Number.isFinite(timestamp)) {
+      expiredKeys.push(key);
+      return;
+    }
+    if (current - timestamp > PROJECT_ACTIVITY_WINDOW_MS) {
+      expiredKeys.push(key);
+    }
+  });
+
+  for (var index = 0; index < expiredKeys.length; index += 1) {
+    var key = expiredKeys[index];
+    try {
+      PROJECT_ACTIVITY_REGISTRY.delete(key);
+    } catch (deleteError) {
+      void deleteError;
+    }
+  }
+}
+
+function markProjectActive(name, timestamp) {
+  if (!PROJECT_ACTIVITY_REGISTRY || typeof PROJECT_ACTIVITY_REGISTRY.set !== 'function') {
+    return;
+  }
+
+  if (typeof name !== 'string') {
+    return;
+  }
+
+  var effectiveTimestamp = typeof timestamp === 'number' && Number.isFinite(timestamp)
+    ? timestamp
+    : getProjectActivityTimestamp();
+  if (typeof effectiveTimestamp !== 'number' || !Number.isFinite(effectiveTimestamp)) {
+    return;
+  }
+
+  try {
+    PROJECT_ACTIVITY_REGISTRY.set(name, effectiveTimestamp);
+  } catch (setError) {
+    void setError;
+  }
+}
+
+function clearProjectActivity(name) {
+  if (!PROJECT_ACTIVITY_REGISTRY || typeof PROJECT_ACTIVITY_REGISTRY.delete !== 'function') {
+    return;
+  }
+
+  if (typeof name !== 'string') {
+    return;
+  }
+
+  try {
+    PROJECT_ACTIVITY_REGISTRY.delete(name);
+  } catch (deleteError) {
+    void deleteError;
+  }
+}
+
+function isProjectRecentlyActive(name, now) {
+  if (!PROJECT_ACTIVITY_REGISTRY || typeof PROJECT_ACTIVITY_REGISTRY.get !== 'function') {
+    return false;
+  }
+
+  if (typeof name !== 'string') {
+    return false;
+  }
+
+  var timestamp;
+  try {
+    timestamp = PROJECT_ACTIVITY_REGISTRY.get(name);
+  } catch (readError) {
+    timestamp = null;
+    void readError;
+  }
+
+  if (typeof timestamp !== 'number' || !Number.isFinite(timestamp)) {
+    clearProjectActivity(name);
+    return false;
+  }
+
+  var current = typeof now === 'number' && Number.isFinite(now) ? now : getProjectActivityTimestamp();
+  if (typeof current !== 'number' || !Number.isFinite(current)) {
+    return false;
+  }
+
+  if (current - timestamp <= PROJECT_ACTIVITY_WINDOW_MS) {
+    return true;
+  }
+
+  clearProjectActivity(name);
+  return false;
 }
 
 function cacheStorageValue(storage, key, rawValue, normalizedValue, value) {
@@ -1181,17 +1445,47 @@ function prepareAutoBackupSnapshotPayloadForStorage(payload, contextName) {
     return { payload, compression: null, compressed: false };
   }
 
-  const candidate = createCompressedJsonStorageCandidate(serialized);
-  if (!candidate || typeof candidate.serialized !== 'string') {
-    return { payload, compression: null, compressed: false };
+  let signature = null;
+  try {
+    signature = createStableValueSignature(payload);
+  } catch (signatureError) {
+    signature = null;
+    void signatureError;
   }
 
-  const savings = candidate.originalLength - candidate.wrappedLength;
+  let candidate = null;
+  let reusedCandidate = false;
+  if (signature) {
+    const cachedCandidate = readJsonCompressionCache(AUTO_BACKUP_COMPRESSION_NAMESPACE, signature);
+    if (cachedCandidate && typeof cachedCandidate.serialized === 'string' && cachedCandidate.serialized) {
+      candidate = cachedCandidate;
+      reusedCandidate = cachedCandidate.cached === true;
+    }
+  }
+
+  if (!candidate) {
+    candidate = createCompressedJsonStorageCandidate(serialized);
+    if (!candidate || typeof candidate.serialized !== 'string') {
+      return { payload, compression: null, compressed: false };
+    }
+    reusedCandidate = false;
+    if (signature) {
+      writeJsonCompressionCache(AUTO_BACKUP_COMPRESSION_NAMESPACE, signature, candidate);
+    }
+  }
+
+  const wrappedLength = typeof candidate.wrappedLength === 'number' && Number.isFinite(candidate.wrappedLength)
+    ? candidate.wrappedLength
+    : candidate.serialized.length;
+  const originalLength = typeof candidate.originalLength === 'number' && Number.isFinite(candidate.originalLength)
+    ? candidate.originalLength
+    : serialized.length;
+  const savings = originalLength - wrappedLength;
   const compressedPayload = {
     [AUTO_BACKUP_PAYLOAD_COMPRESSION_FLAG]: true,
     data: candidate.serialized,
-    originalLength: candidate.originalLength,
-    compressedLength: candidate.wrappedLength,
+    originalLength,
+    compressedLength: wrappedLength,
     compressionVariant: candidate.compressionVariant || null,
   };
 
@@ -1199,12 +1493,13 @@ function prepareAutoBackupSnapshotPayloadForStorage(payload, contextName) {
     typeof console !== 'undefined'
     && typeof console.warn === 'function'
     && savings > 0
+    && !reusedCandidate
   ) {
     const label = typeof contextName === 'string' && contextName
       ? `"${contextName}"`
       : 'an automatic backup';
-    const percent = candidate.originalLength > 0
-      ? Math.round((savings / candidate.originalLength) * 100)
+    const percent = originalLength > 0
+      ? Math.round((savings / originalLength) * 100)
       : 0;
     const message = `Stored compressed payload for ${label} snapshot to reduce storage usage by ${savings} characters (${percent}%).`;
     logCompressionSavingsEvent('auto-backup', contextName || label, message, savings, percent);
@@ -1213,8 +1508,8 @@ function prepareAutoBackupSnapshotPayloadForStorage(payload, contextName) {
   return {
     payload: compressedPayload,
     compression: {
-      originalLength: candidate.originalLength,
-      compressedLength: candidate.wrappedLength,
+      originalLength,
+      compressedLength: wrappedLength,
       compressionVariant: candidate.compressionVariant || null,
     },
     compressed: true,
@@ -1240,11 +1535,127 @@ function restoreAutoBackupSnapshotPayload(snapshot, contextName) {
 
   try {
     const parsed = JSON.parse(decoded.value);
+    try {
+      const signature = createStableValueSignature(parsed);
+      if (signature) {
+        rememberJsonCompressionFromMetadata(
+          AUTO_BACKUP_COMPRESSION_NAMESPACE,
+          signature,
+          rawPayload.data,
+          decoded.metadata || {},
+        );
+      }
+    } catch (signatureError) {
+      void signatureError;
+    }
     return { payload: parsed, compressed: true };
   } catch (error) {
     console.warn('Unable to parse decompressed automatic backup payload.', contextName, error);
     throw error;
   }
+}
+
+function restoreStoredProjectEntry(rawValue, contextName) {
+  if (typeof rawValue === 'string' && rawValue) {
+    var decoded = decodeCompressedJsonStorageValue(rawValue);
+    if (decoded.success && typeof decoded.value === 'string') {
+      try {
+        var parsed = JSON.parse(decoded.value);
+        var signature = createStableValueSignature(parsed);
+        if (signature) {
+          rememberJsonCompressionFromMetadata(
+            PROJECT_ENTRY_COMPRESSION_NAMESPACE,
+            signature,
+            rawValue,
+            decoded.metadata || {},
+          );
+        }
+        return { value: cloneAutoBackupValue(parsed), compressed: true, signature: signature };
+      } catch (error) {
+        console.warn('Unable to parse decompressed project entry.', contextName, error);
+      }
+    }
+  }
+
+  return { value: cloneAutoBackupValue(rawValue), compressed: false, signature: null };
+}
+
+function prepareProjectEntryForStorage(name, value, options) {
+  var opts = options || {};
+  var now = typeof opts.now === 'number' && Number.isFinite(opts.now) ? opts.now : null;
+
+  if (isProjectRecentlyActive(name, now)) {
+    return { storedValue: value, compressed: false };
+  }
+
+  var serialized;
+  try {
+    serialized = JSON.stringify(value);
+  } catch (serializationError) {
+    console.warn('Unable to serialize project entry before compression', name, serializationError);
+    return { storedValue: value, compressed: false };
+  }
+
+  if (typeof serialized !== 'string' || !serialized) {
+    return { storedValue: value, compressed: false };
+  }
+
+  var signature = null;
+  try {
+    signature = createStableValueSignature(value);
+  } catch (signatureError) {
+    signature = null;
+    void signatureError;
+  }
+
+  var candidate = null;
+  var reusedCandidate = false;
+  if (signature) {
+    var cachedCandidate = readJsonCompressionCache(PROJECT_ENTRY_COMPRESSION_NAMESPACE, signature);
+    if (cachedCandidate && typeof cachedCandidate.serialized === 'string' && cachedCandidate.serialized) {
+      candidate = cachedCandidate;
+      reusedCandidate = cachedCandidate.cached === true;
+    }
+  }
+
+  if (!candidate) {
+    candidate = createCompressedJsonStorageCandidate(serialized);
+    if (!candidate || typeof candidate.serialized !== 'string' || !candidate.serialized) {
+      return { storedValue: value, compressed: false };
+    }
+    reusedCandidate = false;
+    if (signature) {
+      writeJsonCompressionCache(PROJECT_ENTRY_COMPRESSION_NAMESPACE, signature, candidate);
+    }
+  }
+
+  var wrappedLength = typeof candidate.wrappedLength === 'number' && Number.isFinite(candidate.wrappedLength)
+    ? candidate.wrappedLength
+    : candidate.serialized.length;
+  var originalLength = typeof candidate.originalLength === 'number' && Number.isFinite(candidate.originalLength)
+    ? candidate.originalLength
+    : serialized.length;
+
+  if (!reusedCandidate && originalLength > wrappedLength) {
+    var savings = originalLength - wrappedLength;
+    var percent = originalLength > 0 ? Math.round((savings / originalLength) * 100) : 0;
+    var label = typeof name === 'string' && name ? "\"".concat(name, "\"") : 'a project entry';
+    var message = "Stored compressed payload for ".concat(label, " to reduce storage usage by ")
+      .concat(savings, " characters (")
+      .concat(percent, "%).");
+    logCompressionSavingsEvent('project-entry', name || label, message, savings, percent);
+  }
+
+  return {
+    storedValue: candidate.serialized,
+    compressed: true,
+    signature: signature,
+    compression: {
+      originalLength: originalLength,
+      wrappedLength: wrappedLength,
+      compressionVariant: candidate.compressionVariant || null,
+    },
+  };
 }
 
 function deriveAutoBackupCreatedAt(name, fallbackDate) {
@@ -1373,9 +1784,14 @@ function expandAutoBackupEntries(container, options) {
   Object.keys(container).forEach((name) => {
     if (!isAutoBackupKey(name)) {
       const value = container[name];
-      result[name] = isPlainObject(value)
-        ? cloneAutoBackupValue(value)
-        : value;
+      const restored = restoreStoredProjectEntry(value, name);
+      if (restored && Object.prototype.hasOwnProperty.call(restored, 'value')) {
+        result[name] = restored.value;
+      } else {
+        result[name] = isPlainObject(value)
+          ? cloneAutoBackupValue(value)
+          : value;
+      }
       return;
     }
 
@@ -1438,13 +1854,24 @@ function serializeAutoBackupEntries(entries, options) {
 
   const serialized = {};
   const entryNames = Object.keys(entries);
+  const timestamp = getProjectActivityTimestamp();
+  cleanupProjectActivity(timestamp);
 
   entryNames.forEach((name) => {
     const value = entries[name];
     const normalizedValue = cloneAutoBackupValueWithLegacyNormalization(value, { stripMetadata: true });
 
-    if (!isAutoBackupKey(name) || !isPlainObject(normalizedValue)) {
-      serialized[name] = normalizedValue;
+    if (!isAutoBackupKey(name)) {
+      if (isPlainObject(normalizedValue)) {
+        const preparedProject = prepareProjectEntryForStorage(name, normalizedValue, { now: timestamp });
+        if (preparedProject && preparedProject.compressed) {
+          serialized[name] = preparedProject.storedValue;
+        } else {
+          serialized[name] = normalizedValue;
+        }
+      } else {
+        serialized[name] = normalizedValue;
+      }
       return;
     }
 
@@ -7903,6 +8330,7 @@ function loadProject(name) {
     && resolvedKey !== undefined
     && Object.prototype.hasOwnProperty.call(projects, resolvedKey)
   ) {
+    markProjectActive(resolvedKey);
     return projects[resolvedKey];
   }
   return null;
@@ -8115,11 +8543,26 @@ function saveProject(name, project) {
   }
 
   projects[storageKey || ''] = normalized;
+  if (
+    renamedFromKey !== null
+    && renamedFromKey !== undefined
+    && renamedFromKey !== storageKey
+  ) {
+    clearProjectActivity(renamedFromKey);
+  }
+  markProjectActive(storageKey || '');
   persistAllProjects(projects);
 }
 
 function deleteProject(name) {
   if (name === undefined) {
+    if (PROJECT_ACTIVITY_REGISTRY && typeof PROJECT_ACTIVITY_REGISTRY.clear === 'function') {
+      try {
+        PROJECT_ACTIVITY_REGISTRY.clear();
+      } catch (clearError) {
+        void clearError;
+      }
+    }
     deleteFromStorage(
       getSafeLocalStorage(),
       PROJECT_STORAGE_KEY,
@@ -8149,6 +8592,7 @@ function deleteProject(name) {
     alertStorageError();
     return;
   }
+  clearProjectActivity(key);
   delete projects[key];
   if (Object.keys(projects).length === 0) {
     deleteFromStorage(
