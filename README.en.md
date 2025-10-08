@@ -332,9 +332,13 @@ Use Cine Power Planner end-to-end with the following routine:
    frame rate and other factors influence field data.
 4. **Capture project requirements.** Fill out crew details, scenarios, handles,
    matte box preferences and monitoring layouts so generated lists reflect the
-   full production context. Fork buttons duplicate entries for faster data
-   entry. When specific scenarios demand bespoke kits, open **Settings →
-   Automatic Gear Rules** to layer custom additions or removals before
+   full production context. The Storage & Media grid now surfaces CFexpress,
+   CFast, SD and microSD families directly from the offline gear catalog—even
+   when the selected camera uses different slots—so you can log card counts and
+   notes without leaving gaps in the saved bundle. Fork buttons duplicate
+   entries for faster data entry. When specific scenarios demand bespoke kits,
+   open **Settings → Automatic Gear Rules** to layer custom additions or
+   removals before
    generating exports.
 5. **Export or archive the plan.** Generate the gear list, export a planner
    backup or download an exportable project bundle before heading to set.

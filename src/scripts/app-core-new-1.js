@@ -13127,25 +13127,59 @@ function gatherMediaEntriesForType(type) {
 
 function getAvailableStorageMediaTypes() {
   const cameraDb = devices?.cameras || {};
-  const types = new Set();
-  const selectedName = typeof cameraSelect?.value === 'string' ? cameraSelect.value : '';
-  if (selectedName && cameraDb[selectedName]) {
-    (cameraDb[selectedName].recordingMedia || []).forEach(media => {
+  const mediaDb = devices?.gearList?.media || {};
+  const typeOrder = [];
+  const normalizedTypes = new Set();
+
+  const addType = value => {
+    if (!value || typeof value !== 'string') return;
+    const trimmed = value.trim();
+    if (!trimmed) return;
+    const normalized = trimmed.toLowerCase();
+    if (normalizedTypes.has(normalized)) return;
+    normalizedTypes.add(normalized);
+    typeOrder.push(trimmed);
+  };
+
+  const addCameraTypes = cam => {
+    if (!cam) return;
+    (cam.recordingMedia || []).forEach(media => {
       if (media && media.type) {
-        types.add(media.type);
+        addType(media.type);
       }
     });
+  };
+
+  const selectedName = typeof cameraSelect?.value === 'string' ? cameraSelect.value : '';
+  if (selectedName && cameraDb[selectedName]) {
+    addCameraTypes(cameraDb[selectedName]);
   }
-  if (!types.size) {
-    Object.values(cameraDb).forEach(cam => {
-      (cam?.recordingMedia || []).forEach(media => {
-        if (media && media.type) {
-          types.add(media.type);
-        }
-      });
-    });
-  }
-  return Array.from(types).sort(localeSort);
+
+  Object.entries(cameraDb).forEach(([name, cam]) => {
+    if (name === selectedName) return;
+    addCameraTypes(cam);
+  });
+
+  Object.values(mediaDb).forEach(info => {
+    const interfaceStr = typeof info?.interface === 'string' ? info.interface.trim() : '';
+    if (interfaceStr) {
+      addType(interfaceStr);
+      const canonical = interfaceStr
+        .replace(/\s*\([^)]*\)/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+      if (canonical && canonical !== interfaceStr) {
+        addType(canonical);
+      }
+    }
+    const variantHint = typeof info?.model === 'string' ? info.model : '';
+    const match = variantHint.match(/(CFexpress Type [AB](?: \(v\d(?:\.\d)?\))?|CFast 2\.0|microSDXC UHS-I|SDXC UHS-II|SDXC UHS-I|XQD|RED MINI-MAG|Codex Compact Drive)/i);
+    if (match) {
+      addType(match[0].replace(/\s+/g, ' ').trim());
+    }
+  });
+
+  return typeOrder.sort(localeSort);
 }
 
 function getStorageVariantOptions(type) {
