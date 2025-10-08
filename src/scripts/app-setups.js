@@ -4,7 +4,8 @@
           createProjectInfoSnapshotForStorage, getProjectAutoSaveOverrides, getAutoGearRuleCoverageSummary,
           normalizeBatteryPlateValue, setSelectValue, applyBatteryPlateSelectionFromBattery, enqueueCoreBootTask,
           callCoreFunctionIfAvailable, cineGearList, updateStorageRequirementTypeOptions,
-          storageNeedsContainer, createStorageRequirementRow, returnContainer, createReturnRow */
+          storageNeedsContainer, createStorageRequirementRow, returnContainer, createReturnRow,
+          populateFrameRateDropdown */
 
 const AUTO_GEAR_ANY_MOTOR_TOKEN_FALLBACK =
     (typeof globalThis !== 'undefined' && globalThis.AUTO_GEAR_ANY_MOTOR_TOKEN)

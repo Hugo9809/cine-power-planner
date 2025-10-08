@@ -33,7 +33,8 @@
           helpResultsSummary, helpResultsAssist, helpNoResultsSuggestions,
           isProjectPersistenceSuspended, suspendProjectPersistence,
           resumeProjectPersistence, stableStringify, CORE_SHARED,
-          markProjectFormDataDirty */
+          markProjectFormDataDirty, setRentalExclusionState,
+          getGearListRentalToggleTexts */
 /* eslint-enable no-redeclare */
 /* global enqueueCoreBootTask */
 const FALLBACK_STRONG_SEARCH_MATCH_TYPES = new Set(['exactKey', 'keyPrefix', 'keySubset']);
@@ -13739,20 +13740,38 @@ function buildFilterGearEntries(filters = []) {
 function updateGearListFilterEntries(entries = []) {
   if (!gearListOutput) return;
   const entryMap = new Map(entries.map(entry => [entry.id, entry]));
+  const rentalToggleTexts = resolveGearListRentalToggleTextsSafe();
   gearListOutput.querySelectorAll('[data-filter-entry]').forEach(span => {
     const entryId = span.getAttribute('data-filter-entry');
     if (!entryId) return;
     const entry = entryMap.get(entryId);
     if (!entry) return;
     const labelText = typeof entry?.label === 'string' ? entry.label : '';
-    span.textContent = labelText ? `1x ${labelText}` : '';
-    span.setAttribute('data-gear-name', entry.gearName);
-    span.setAttribute('data-filter-label', entry.label);
+    let labelSpan = span.querySelector('.gear-item-label');
+    if (!labelSpan) {
+      labelSpan = document.createElement('span');
+      labelSpan.className = 'gear-item-label';
+      span.textContent = '';
+      span.appendChild(labelSpan);
+    }
+    labelSpan.textContent = labelText ? `1x ${labelText}` : '';
+    if (entry.gearName) {
+      span.setAttribute('data-gear-name', entry.gearName);
+    } else {
+      span.removeAttribute('data-gear-name');
+    }
+    if (entry.label) {
+      span.setAttribute('data-filter-label', entry.label);
+    } else {
+      span.removeAttribute('data-filter-label');
+    }
     if (entry.type) {
       span.setAttribute('data-filter-type', entry.type);
     } else {
       span.removeAttribute('data-filter-type');
     }
+    const rentalToggleName = entry.gearName || labelText || entryId || entry.type || '';
+    ensureGearItemRentalToggle(span, rentalToggleName, rentalToggleTexts);
   });
 }
 
@@ -13815,15 +13834,186 @@ function renderFilterDetailsStorage(details) {
   });
 }
 
+function resolveGearListRentalToggleTextsSafe() {
+  if (typeof getGearListRentalToggleTexts === 'function') {
+    try {
+      const resolved = getGearListRentalToggleTexts();
+      if (resolved && typeof resolved === 'object') {
+        return resolved;
+      }
+    } catch (toggleTextError) {
+      void toggleTextError;
+    }
+  }
+  const lang = (typeof currentLang === 'string' && texts?.[currentLang]) ? currentLang : 'en';
+  const langTexts = texts?.[lang] || {};
+  const fallbackTexts = texts?.en || {};
+  const resolveEntry = (key, fallback) => {
+    const langValue = typeof langTexts?.[key] === 'string' ? langTexts[key].trim() : '';
+    if (langValue) return langValue;
+    const fallbackValue = typeof fallbackTexts?.[key] === 'string' ? fallbackTexts[key].trim() : '';
+    return fallbackValue || fallback;
+  };
+  return {
+    excludeLabel: resolveEntry('gearListExcludeRentalToggle', 'Exclude for rental house'),
+    includeLabel: resolveEntry('gearListIncludeRentalToggle', 'Include for rental house'),
+    noteLabel: resolveEntry('gearListRentalNote', 'Rental house handles this item')
+  };
+}
+
+function ensureGearItemRentalToggle(element, dataName, labels) {
+  if (!element || typeof element !== 'object') return null;
+  const texts = labels && typeof labels === 'object' ? labels : resolveGearListRentalToggleTextsSafe();
+  const offLabel = typeof texts.excludeLabel === 'string' && texts.excludeLabel.trim()
+    ? texts.excludeLabel.trim()
+    : 'Exclude for rental house';
+  const onLabel = typeof texts.includeLabel === 'string' && texts.includeLabel.trim()
+    ? texts.includeLabel.trim()
+    : 'Include for rental house';
+  let toggle = element.querySelector('.gear-rental-toggle');
+  if (!toggle) {
+    toggle = document.createElement('button');
+    toggle.type = 'button';
+    toggle.className = 'gear-rental-toggle';
+    toggle.setAttribute('aria-pressed', 'false');
+    element.appendChild(document.createTextNode(' '));
+    element.appendChild(toggle);
+  }
+  const safeName = typeof dataName === 'string' ? dataName : '';
+  toggle.setAttribute('data-gear-rental-toggle', safeName);
+  toggle.setAttribute('data-label-off', offLabel);
+  toggle.setAttribute('data-label-on', onLabel);
+  const isPressed = toggle.getAttribute('aria-pressed') === 'true';
+  toggle.textContent = isPressed ? (onLabel || offLabel) : offLabel;
+  if (texts.noteLabel && typeof texts.noteLabel === 'string' && texts.noteLabel.trim()) {
+    element.setAttribute('data-rental-note', texts.noteLabel);
+  } else {
+    element.removeAttribute('data-rental-note');
+  }
+  return toggle;
+}
+
+function captureRentalExclusionSnapshot(root) {
+  const snapshot = new Map();
+  if (!root || typeof root !== 'object') {
+    return snapshot;
+  }
+  root.querySelectorAll?.('.gear-item[data-gear-name]').forEach(item => {
+    const name = item.getAttribute?.('data-gear-name');
+    if (!name) return;
+    if (item.getAttribute?.('data-rental-excluded') === 'true') {
+      snapshot.set(name, true);
+    }
+  });
+  return snapshot;
+}
+
+function applyRentalExclusionSnapshotToItem(element, snapshot, dataName) {
+  if (!element || !snapshot) return;
+  const name = typeof dataName === 'string' && dataName
+    ? dataName
+    : element.getAttribute?.('data-gear-name')
+      || '';
+  if (!name) return;
+  const wantsExcluded = snapshot.get(name) === true;
+  if (typeof setRentalExclusionState === 'function') {
+    setRentalExclusionState(element, wantsExcluded);
+    return;
+  }
+  if (wantsExcluded) {
+    element.classList?.add('gear-item-rental-excluded');
+    element.setAttribute?.('data-rental-excluded', 'true');
+  } else {
+    element.classList?.remove('gear-item-rental-excluded');
+    element.removeAttribute?.('data-rental-excluded');
+  }
+  const toggle = element.querySelector?.('.gear-rental-toggle');
+  if (toggle) {
+    const offLabel = toggle.getAttribute('data-label-off') || '';
+    const onLabel = toggle.getAttribute('data-label-on') || offLabel;
+    toggle.setAttribute('aria-pressed', wantsExcluded ? 'true' : 'false');
+    toggle.textContent = wantsExcluded ? (onLabel || offLabel) : offLabel;
+  }
+}
+
+function getMatteboxSelectionForGearList() {
+  const select = typeof matteboxSelect !== 'undefined'
+    ? matteboxSelect
+    : (typeof document !== 'undefined' ? document.getElementById('mattebox') : null);
+  let rawValue = '';
+  let displayValue = '';
+  if (select && typeof select === 'object') {
+    const selectedOption = select.selectedOptions && select.selectedOptions.length
+      ? select.selectedOptions[0]
+      : (select.options && select.selectedIndex >= 0 ? select.options[select.selectedIndex] : null);
+    if (selectedOption) {
+      const optValue = typeof selectedOption.value === 'string' ? selectedOption.value.trim() : '';
+      const optLabel = typeof selectedOption.textContent === 'string' ? selectedOption.textContent.trim() : '';
+      if (optValue) {
+        rawValue = optValue;
+        displayValue = optLabel || optValue;
+      }
+    }
+  }
+  if (!rawValue && currentProjectInfo && typeof currentProjectInfo.mattebox === 'string') {
+    const stored = currentProjectInfo.mattebox.trim();
+    if (stored) {
+      rawValue = stored;
+      displayValue = stored;
+    }
+  }
+  if (!rawValue || /^none$/i.test(rawValue)) {
+    return null;
+  }
+  const projectTexts = (() => {
+    const langKey = typeof currentLang === 'string' ? currentLang : '';
+    const langProject = texts?.[langKey]?.projectForm;
+    const fallbackProject = texts?.en?.projectForm;
+    return langProject || fallbackProject || {};
+  })();
+  const prefixRaw = typeof projectTexts.mattebox === 'string' && projectTexts.mattebox.trim()
+    ? projectTexts.mattebox.trim()
+    : 'Mattebox:';
+  const prefix = prefixRaw.endsWith(':') ? prefixRaw : `${prefixRaw}:`;
+  const displayLabel = `${prefix} ${displayValue || rawValue}`;
+  return {
+    displayLabel,
+    gearName: displayLabel
+  };
+}
+
 function renderGearListFilterDetails(details) {
   const container = getGearListFilterDetailsContainer();
   if (!container) return;
+  const previousRentalState = captureRentalExclusionSnapshot(container);
   container.innerHTML = '';
-  if (!details.length) {
+  const matteboxEntry = getMatteboxSelectionForGearList();
+  const hasDetails = Array.isArray(details) && details.length > 0;
+  const hasMattebox = Boolean(matteboxEntry);
+  if (!hasDetails && !hasMattebox) {
     container.classList.add('hidden');
     return;
   }
   container.classList.remove('hidden');
+  const rentalToggleTexts = resolveGearListRentalToggleTextsSafe();
+  if (hasMattebox && matteboxEntry) {
+    const matteboxRow = document.createElement('div');
+    matteboxRow.className = 'filter-detail filter-detail--mattebox';
+    matteboxRow.setAttribute('data-mattebox-entry', 'true');
+    matteboxRow.setAttribute('data-gear-name', matteboxEntry.gearName);
+    const matteboxHeading = document.createElement('div');
+    matteboxHeading.className = 'filter-detail-label gear-item';
+    matteboxHeading.setAttribute('data-mattebox-entry', 'true');
+    matteboxHeading.setAttribute('data-gear-name', matteboxEntry.gearName);
+    const matteboxHeadingLabel = document.createElement('span');
+    matteboxHeadingLabel.className = 'gear-item-label';
+    matteboxHeadingLabel.textContent = `1x ${matteboxEntry.displayLabel}`;
+    matteboxHeading.appendChild(matteboxHeadingLabel);
+    ensureGearItemRentalToggle(matteboxHeading, matteboxEntry.gearName, rentalToggleTexts);
+    applyRentalExclusionSnapshotToItem(matteboxHeading, previousRentalState, matteboxEntry.gearName);
+    matteboxRow.appendChild(matteboxHeading);
+    container.appendChild(matteboxRow);
+  }
   details.forEach(detail => {
     const {
       type,
@@ -13855,7 +14045,13 @@ function renderGearListFilterDetails(details) {
     } else {
       heading.removeAttribute('data-filter-hide-size');
     }
-    heading.textContent = label ? `1x ${label}` : '';
+    const headingLabel = document.createElement('span');
+    headingLabel.className = 'gear-item-label';
+    headingLabel.textContent = label ? `1x ${label}` : '';
+    heading.appendChild(headingLabel);
+    const rentalToggleName = gearName || label || entryId || type || '';
+    ensureGearItemRentalToggle(heading, rentalToggleName, rentalToggleTexts);
+    applyRentalExclusionSnapshotToItem(heading, previousRentalState, rentalToggleName);
     row.appendChild(heading);
     const controls = document.createElement('div');
     controls.className = 'filter-detail-controls';
