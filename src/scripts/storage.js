@@ -7212,6 +7212,7 @@ function saveSetups(setups) {
     isAutoBackupKey: (name) => typeof name === 'string'
       && name.startsWith(STORAGE_AUTO_BACKUP_NAME_PREFIX),
   });
+  applyProjectEntryCompression(serializedSetups);
   const safeStorage = getSafeLocalStorage();
   ensurePreWriteMigrationBackup(safeStorage, SETUP_STORAGE_KEY);
   saveJSONToStorage(
@@ -7220,6 +7221,7 @@ function saveSetups(setups) {
     serializedSetups,
     "Error saving setups to localStorage:",
     {
+      disableCompression: shouldDisableProjectCompressionDuringPersist(),
       onQuotaExceeded: () => {
         const removedKey = removeOldestAutoBackupEntry(serializedSetups);
         if (!removedKey) {
