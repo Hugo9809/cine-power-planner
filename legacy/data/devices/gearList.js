@@ -1911,6 +1911,15 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
         }
       },
       "cardReaders": {
+        "Angelbird CFexpress Type A Reader": {
+          "brand": "Angelbird",
+          "model": "CFexpress Type A Reader",
+          "supportedMedia": ["CFexpress Type A"],
+          "interface": "USB 3.2 Gen 2 (USB-C, 10 Gb/s)",
+          "slots": 1,
+          "busPowered": true,
+          "notes": "Thermal conductive aluminium housing with protective rubber pads; ships with USB-C to USB-C and USB-C to USB-A cables."
+        },
         "Angelbird CFexpress Type B & CFast 2.0 Reader": {
           "brand": "Angelbird",
           "model": "CFexpress Type B & CFast Reader",
@@ -1929,6 +1938,15 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "slots": 1,
           "busPowered": true,
           "notes": "Designed for Codex Compact Drive media; includes USB-C to USB-C cable."
+        },
+        "Lexar Professional CFexpress Type A / SD USB 3.2 Reader": {
+          "brand": "Lexar",
+          "model": "Professional CFexpress Type A / SD Reader",
+          "supportedMedia": ["CFexpress Type A", "SD UHS-II", "SD UHS-I"],
+          "interface": "USB 3.2 Gen 2 (USB-C, 10 Gb/s)",
+          "slots": 2,
+          "busPowered": true,
+          "notes": "Dual-slot reader with angled base for desk use; includes USB-C to USB-C and USB-C to USB-A cables."
         },
         "Lexar Professional XQD 2.0 USB 3.0 Reader": {
           "brand": "Lexar",
@@ -2057,6 +2075,15 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "busPowered": true,
           "notes": "Dual-slot Thunderbolt reader that supports mixed CFexpress Type B and XQD workflows."
         },
+        "SanDisk Professional PRO-READER CFexpress Type B": {
+          "brand": "SanDisk Professional",
+          "model": "PRO-READER CFexpress Type B",
+          "supportedMedia": ["CFexpress Type B"],
+          "interface": "USB 3.2 Gen 2 (USB-C, 10 Gb/s)",
+          "slots": 1,
+          "busPowered": true,
+          "notes": "Aluminium heat-sink shell designed for sustained transfers; includes 0.5 m USB-C cable and mates with PRO-DOCK 4."
+        },
         "Wise Advanced CFexpress Type B & SD Dual Reader": {
           "brand": "Wise Advanced",
           "model": "CFexpress Type B & SD Dual Reader",
@@ -2065,6 +2092,42 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
           "slots": 2,
           "busPowered": true,
           "notes": "Magnetic metal enclosure with included USB-C to USB-C and USB-C to USB-A cables."
+        },
+        "Delkin Devices CFexpress Type B & SD UHS-II Reader": {
+          "brand": "Delkin Devices",
+          "model": "DDREADER-54",
+          "supportedMedia": ["CFexpress Type B", "SD UHS-II", "SD UHS-I"],
+          "interface": "USB 3.2 Gen 2 (USB-C, 10 Gb/s)",
+          "slots": 2,
+          "busPowered": true,
+          "notes": "Rugged metal housing with non-slip rubber foot; ships with reversible USB-C to USB-C and USB-C to USB-A cables."
+        },
+        "Atomos USB-C 3.1 Docking Station": {
+          "brand": "Atomos",
+          "model": "Docking Station USB-C 3.1",
+          "supportedMedia": ["AtomX SSDmini", "Master Caddy II"],
+          "interface": "USB 3.1 Gen 2 (USB-C, 10 Gb/s)",
+          "slots": 1,
+          "busPowered": true,
+          "notes": "Tool-free dock for AtomX SSDmini and Master Caddy media; includes 80 cm USB-C to USB-C cable."
+        },
+        "Blackjet UX-1 Cinema Dock": {
+          "brand": "Blackjet",
+          "model": "UX-1 Cinema Dock",
+          "supportedMedia": ["CFast 2.0", "XQD", "SxS", "Red MINI-MAG", "SD UHS-II", "microSD UHS-I"],
+          "interface": "Thunderbolt 3 (40 Gb/s)",
+          "slots": 6,
+          "busPowered": false,
+          "notes": "Modular desktop dock with swappable media modules; dual Thunderbolt 3 ports support daisy-chaining."
+        },
+        "OWC Atlas FXR CFexpress Type B Reader": {
+          "brand": "OWC",
+          "model": "Atlas FXR",
+          "supportedMedia": ["CFexpress Type B"],
+          "interface": "USB 3.2 Gen 2 (USB-C, 10 Gb/s)",
+          "slots": 1,
+          "busPowered": true,
+          "notes": "Pocket-sized aluminium reader with integrated heat sink; includes USB-C to USB-C and USB-C to USB-A cables."
         }
       },
       "lenses": {
