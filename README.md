@@ -1003,6 +1003,9 @@ coverage and recovery instructions. Each update should:
   offline locations. Attach the packet location to your verification notes so future crews know where
   to retrieve the canonical documentation bundle when rehearsing saves, shares, imports, backups and
   restores.
+- Schedule recurring [documentation audits](docs/documentation-audit-checklist.md) so the README family,
+  help center, translations and printable manuals are regularly spot-checked against the runtime
+  safeguards, Quick safeguards exports and verification evidence captured in the planner.
 
 ## Development
 
