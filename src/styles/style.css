@@ -776,6 +776,7 @@ main.legal-content {
   justify-content: center;
   min-height: var(--button-size);
   height: auto;
+  line-height: var(--button-line-height);
   padding: var(--button-link-padding-block) var(--button-link-padding-inline);
   border-radius: var(--border-radius);
   background-color: var(--control-bg);
