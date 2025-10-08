@@ -2463,8 +2463,162 @@ const gear = {
       }
     },
     "media": {
+      "Angelbird AV PRO CFexpress A 1TB": {
+        "brand": "Angelbird",
+        "model": "AV PRO CFexpress A",
+        "capacityGb": 1024,
+        "capacityTb": 1,
+        "interface": "CFexpress Type A (v4)"
+      },
+      "Angelbird AV PRO SE CFexpress A 160GB": {
+        "brand": "Angelbird",
+        "model": "AV PRO SE CFexpress A",
+        "capacityGb": 160,
+        "capacityTb": 0.16,
+        "interface": "CFexpress Type A (2.0)"
+      },
+      "Angelbird AV PRO SE CFexpress A 330GB": {
+        "brand": "Angelbird",
+        "model": "AV PRO SE CFexpress A",
+        "capacityGb": 330,
+        "capacityTb": 0.33,
+        "interface": "CFexpress Type A (2.0)"
+      },
+      "Angelbird AV PRO SE CFexpress B Mk2 512GB": {
+        "brand": "Angelbird",
+        "model": "AV PRO SE CFexpress B v4 (Mk2)",
+        "capacityGb": 512,
+        "capacityTb": 0.5,
+        "interface": "CFexpress Type B (v4)"
+      },
+      "Angelbird AV PRO SE CFexpress B Mk2 1TB": {
+        "brand": "Angelbird",
+        "model": "AV PRO SE CFexpress B v4 (Mk2)",
+        "capacityGb": 1024,
+        "capacityTb": 1,
+        "interface": "CFexpress Type B (v4)"
+      },
+      "Angelbird AV PRO SE CFexpress B Mk2 2TB": {
+        "brand": "Angelbird",
+        "model": "AV PRO SE CFexpress B v4 (Mk2)",
+        "capacityGb": 2048,
+        "capacityTb": 2,
+        "interface": "CFexpress Type B (v4)"
+      },
+      "Angelbird AV PRO SE CFexpress B Mk2 4TB": {
+        "brand": "Angelbird",
+        "model": "AV PRO SE CFexpress B v4 (Mk2)",
+        "capacityGb": 4096,
+        "capacityTb": 4,
+        "interface": "CFexpress Type B (v4)"
+      },
+      "Angelbird AV PRO CF CFast 512GB": {
+        "brand": "Angelbird",
+        "model": "AV PRO CF",
+        "capacityGb": 512,
+        "capacityTb": 0.5,
+        "interface": "CFast 2.0"
+      },
+      "Angelbird AV PRO CF CFast 1TB": {
+        "brand": "Angelbird",
+        "model": "AV PRO CF",
+        "capacityGb": 1024,
+        "capacityTb": 1,
+        "interface": "CFast 2.0"
+      },
+      "Angelbird AV PRO SE CF 256GB": {
+        "brand": "Angelbird",
+        "model": "AV PRO SE CF",
+        "capacityGb": 256,
+        "capacityTb": 0.256,
+        "interface": "CFast 2.0"
+      },
+      "Angelbird AV PRO SD V90 64GB": {
+        "brand": "Angelbird",
+        "model": "AV PRO SD V90",
+        "capacityGb": 64,
+        "capacityTb": 0.064,
+        "interface": "SDXC UHS-II (V90)"
+      },
+      "Angelbird AV PRO SD V90 128GB": {
+        "brand": "Angelbird",
+        "model": "AV PRO SD V90",
+        "capacityGb": 128,
+        "capacityTb": 0.128,
+        "interface": "SDXC UHS-II (V90)"
+      },
+      "Angelbird AV PRO SD V90 256GB": {
+        "brand": "Angelbird",
+        "model": "AV PRO SD V90",
+        "capacityGb": 256,
+        "capacityTb": 0.256,
+        "interface": "SDXC UHS-II (V90)"
+      },
+      "Angelbird AV PRO SD V90 512GB": {
+        "brand": "Angelbird",
+        "model": "AV PRO SD V90",
+        "capacityGb": 512,
+        "capacityTb": 0.5,
+        "interface": "SDXC UHS-II (V90)"
+      },
+      "Angelbird AV PRO SD V60 64GB": {
+        "brand": "Angelbird",
+        "model": "AV PRO SD V60 (MK2)",
+        "capacityGb": 64,
+        "capacityTb": 0.064,
+        "interface": "SDXC UHS-II (V60)"
+      },
+      "Angelbird AV PRO SD V60 128GB": {
+        "brand": "Angelbird",
+        "model": "AV PRO SD V60 (MK2)",
+        "capacityGb": 128,
+        "capacityTb": 0.128,
+        "interface": "SDXC UHS-II (V60)"
+      },
+      "Angelbird AV PRO SD V60 256GB": {
+        "brand": "Angelbird",
+        "model": "AV PRO SD V60 (MK2)",
+        "capacityGb": 256,
+        "capacityTb": 0.256,
+        "interface": "SDXC UHS-II (V60)"
+      },
+      "Angelbird AV PRO SD V60 512GB": {
+        "brand": "Angelbird",
+        "model": "AV PRO SD V60 (MK2)",
+        "capacityGb": 512,
+        "capacityTb": 0.5,
+        "interface": "SDXC UHS-II (V60)"
+      },
+      "Angelbird AV PRO SD V60 1TB": {
+        "brand": "Angelbird",
+        "model": "AV PRO SD V60 (MK2)",
+        "capacityGb": 1024,
+        "capacityTb": 1,
+        "interface": "SDXC UHS-II (V60)"
+      },
+      "Angelbird AV PRO microSD V30 128GB": {
+        "brand": "Angelbird",
+        "model": "AV PRO microSD V30",
+        "capacityGb": 128,
+        "capacityTb": 0.128,
+        "interface": "microSDXC UHS-I (V30, A2)"
+      },
+      "Angelbird AV PRO microSD V30 256GB": {
+        "brand": "Angelbird",
+        "model": "AV PRO microSD V30",
+        "capacityGb": 256,
+        "capacityTb": 0.256,
+        "interface": "microSDXC UHS-I (V30, A2)"
+      },
+      "Angelbird AV PRO microSD V30 512GB": {
+        "brand": "Angelbird",
+        "model": "AV PRO microSD V30",
+        "capacityGb": 512,
+        "capacityTb": 0.5,
+        "interface": "microSDXC UHS-I (V30, A2)"
+      },
       "ARRI Codex Compact Drive 1TB": {
-        "brand": "ARRI",
+        "brand": "ARRI / CODEX",
         "model": "Codex Compact Drive 1TB",
         "kNumber": "K2.0044880",
         "capacityGb": 960,
@@ -2472,7 +2626,7 @@ const gear = {
         "interface": "PCIe, sustained ~8 Gb/s write"
       },
       "ARRI Codex Compact Drive 2TB": {
-        "brand": "ARRI",
+        "brand": "ARRI / CODEX",
         "model": "Codex Compact Drive 2TB",
         "kNumber": "K2.0044881",
         "capacityGb": 1920,
@@ -2480,12 +2634,201 @@ const gear = {
         "interface": "PCIe NVMe, up to 16 Gb/s write"
       },
       "ARRI Codex Compact Drive Express 1TB": {
-        "brand": "ARRI",
+        "brand": "ARRI / CODEX",
         "model": "Codex Compact Drive Express 1TB",
         "kNumber": "K2.0046663",
         "capacityGb": 960,
         "capacityTb": 1,
         "interface": "PCIe (ProRes-only)"
+      },
+      "Lexar Professional CFexpress 4.0 Type B GOLD 512GB": {
+        "brand": "Lexar",
+        "model": "Professional CFexpress 4.0 Type B GOLD",
+        "capacityGb": 512,
+        "capacityTb": 0.5,
+        "interface": "CFexpress Type B (v4.0)"
+      },
+      "Lexar Professional CFexpress 4.0 Type B GOLD 1TB": {
+        "brand": "Lexar",
+        "model": "Professional CFexpress 4.0 Type B GOLD",
+        "capacityGb": 1024,
+        "capacityTb": 1,
+        "interface": "CFexpress Type B (v4.0)"
+      },
+      "Lexar Professional CFexpress 4.0 Type B GOLD 2TB": {
+        "brand": "Lexar",
+        "model": "Professional CFexpress 4.0 Type B GOLD",
+        "capacityGb": 2048,
+        "capacityTb": 2,
+        "interface": "CFexpress Type B (v4.0)"
+      },
+      "Lexar Professional CFexpress 4.0 Type B GOLD 4TB": {
+        "brand": "Lexar",
+        "model": "Professional CFexpress 4.0 Type B GOLD",
+        "capacityGb": 4096,
+        "capacityTb": 4,
+        "interface": "CFexpress Type B (v4.0)"
+      },
+      "Lexar Professional CFexpress Type B GOLD 128GB": {
+        "brand": "Lexar",
+        "model": "Professional CFexpress Type B GOLD (PCIe 3.0)",
+        "capacityGb": 128,
+        "capacityTb": 0.128,
+        "interface": "CFexpress Type B (2.0)"
+      },
+      "Lexar Professional CFexpress Type B GOLD 256GB": {
+        "brand": "Lexar",
+        "model": "Professional CFexpress Type B GOLD (PCIe 3.0)",
+        "capacityGb": 256,
+        "capacityTb": 0.256,
+        "interface": "CFexpress Type B (2.0)"
+      },
+      "Lexar Professional CFexpress Type A GOLD 80GB": {
+        "brand": "Lexar",
+        "model": "Professional CFexpress Type A GOLD",
+        "capacityGb": 80,
+        "capacityTb": 0.08,
+        "interface": "CFexpress Type A"
+      },
+      "Lexar Professional CFexpress Type A GOLD 160GB": {
+        "brand": "Lexar",
+        "model": "Professional CFexpress Type A GOLD",
+        "capacityGb": 160,
+        "capacityTb": 0.16,
+        "interface": "CFexpress Type A"
+      },
+      "Lexar Professional CFexpress Type A GOLD 320GB": {
+        "brand": "Lexar",
+        "model": "Professional CFexpress Type A GOLD",
+        "capacityGb": 320,
+        "capacityTb": 0.32,
+        "interface": "CFexpress Type A"
+      },
+      "Lexar Professional 3500x CFast 2.0 64GB": {
+        "brand": "Lexar",
+        "model": "Professional 3500x CFast 2.0",
+        "capacityGb": 64,
+        "capacityTb": 0.064,
+        "interface": "CFast 2.0"
+      },
+      "Lexar Professional 3500x CFast 2.0 128GB": {
+        "brand": "Lexar",
+        "model": "Professional 3500x CFast 2.0",
+        "capacityGb": 128,
+        "capacityTb": 0.128,
+        "interface": "CFast 2.0"
+      },
+      "Lexar Professional 3500x CFast 2.0 256GB": {
+        "brand": "Lexar",
+        "model": "Professional 3500x CFast 2.0",
+        "capacityGb": 256,
+        "capacityTb": 0.256,
+        "interface": "CFast 2.0"
+      },
+      "Lexar Professional 3500x CFast 2.0 512GB": {
+        "brand": "Lexar",
+        "model": "Professional 3500x CFast 2.0",
+        "capacityGb": 512,
+        "capacityTb": 0.5,
+        "interface": "CFast 2.0"
+      },
+      "Lexar Professional 2000x SD V90 64GB": {
+        "brand": "Lexar",
+        "model": "Professional 2000x SD (GOLD)",
+        "capacityGb": 64,
+        "capacityTb": 0.064,
+        "interface": "SDHC/SDXC UHS-II (V90)"
+      },
+      "Lexar Professional 2000x SD V90 128GB": {
+        "brand": "Lexar",
+        "model": "Professional 2000x SD (GOLD)",
+        "capacityGb": 128,
+        "capacityTb": 0.128,
+        "interface": "SDHC/SDXC UHS-II (V90)"
+      },
+      "Lexar Professional 2000x SD V90 256GB": {
+        "brand": "Lexar",
+        "model": "Professional 2000x SD (GOLD)",
+        "capacityGb": 256,
+        "capacityTb": 0.256,
+        "interface": "SDHC/SDXC UHS-II (V90)"
+      },
+      "Lexar Professional 2000x SD V90 512GB": {
+        "brand": "Lexar",
+        "model": "Professional 2000x SD (GOLD)",
+        "capacityGb": 512,
+        "capacityTb": 0.5,
+        "interface": "SDHC/SDXC UHS-II (V90)"
+      },
+      "Lexar Professional 1066x microSD 64GB": {
+        "brand": "Lexar",
+        "model": "Professional 1066x microSD (SILVER)",
+        "capacityGb": 64,
+        "capacityTb": 0.064,
+        "interface": "microSDXC UHS-I"
+      },
+      "Lexar Professional 1066x microSD 128GB": {
+        "brand": "Lexar",
+        "model": "Professional 1066x microSD (SILVER)",
+        "capacityGb": 128,
+        "capacityTb": 0.128,
+        "interface": "microSDXC UHS-I"
+      },
+      "Lexar Professional 1066x microSD 256GB": {
+        "brand": "Lexar",
+        "model": "Professional 1066x microSD (SILVER)",
+        "capacityGb": 256,
+        "capacityTb": 0.256,
+        "interface": "microSDXC UHS-I"
+      },
+      "Lexar Professional 1066x microSD 512GB": {
+        "brand": "Lexar",
+        "model": "Professional 1066x microSD (SILVER)",
+        "capacityGb": 512,
+        "capacityTb": 0.5,
+        "interface": "microSDXC UHS-I"
+      },
+      "Lexar Professional 1066x microSD 1TB": {
+        "brand": "Lexar",
+        "model": "Professional 1066x microSD (SILVER)",
+        "capacityGb": 1024,
+        "capacityTb": 1,
+        "interface": "microSDXC UHS-I"
+      },
+      "Lexar Professional 1066x SD V30 64GB": {
+        "brand": "Lexar",
+        "model": "Professional 1066x SD (SILVER)",
+        "capacityGb": 64,
+        "capacityTb": 0.064,
+        "interface": "SDXC UHS-I (V30)"
+      },
+      "Lexar Professional 1066x SD V30 128GB": {
+        "brand": "Lexar",
+        "model": "Professional 1066x SD (SILVER)",
+        "capacityGb": 128,
+        "capacityTb": 0.128,
+        "interface": "SDXC UHS-I (V30)"
+      },
+      "Lexar Professional 1066x SD V30 256GB": {
+        "brand": "Lexar",
+        "model": "Professional 1066x SD (SILVER)",
+        "capacityGb": 256,
+        "capacityTb": 0.256,
+        "interface": "SDXC UHS-I (V30)"
+      },
+      "Lexar Professional 1066x SD V30 512GB": {
+        "brand": "Lexar",
+        "model": "Professional 1066x SD (SILVER)",
+        "capacityGb": 512,
+        "capacityTb": 0.5,
+        "interface": "SDXC UHS-I (V30)"
+      },
+      "Lexar Professional 1066x SD V30 1TB": {
+        "brand": "Lexar",
+        "model": "Professional 1066x SD (SILVER)",
+        "capacityGb": 1024,
+        "capacityTb": 1,
+        "interface": "SDXC UHS-I (V30)"
       },
       "OWC Atlas Ultra CFexpress Type B 1TB": {
         "brand": "OWC",
@@ -2503,6 +2846,20 @@ const gear = {
         "capacityTb": 1,
         "interface": "CFexpress Type B (NVMe / PCIe)"
       },
+      "RED MINI-MAG 120GB": {
+        "brand": "RED",
+        "model": "RED MINI-MAG",
+        "capacityGb": 120,
+        "capacityTb": 0.12,
+        "interface": "Proprietary SSD (REDCINE)"
+      },
+      "RED MINI-MAG 240GB": {
+        "brand": "RED",
+        "model": "RED MINI-MAG",
+        "capacityGb": 240,
+        "capacityTb": 0.24,
+        "interface": "Proprietary SSD (REDCINE)"
+      },
       "RED MINI-MAG 480GB": {
         "brand": "RED",
         "model": "MINI-MAG 480GB",
@@ -2510,6 +2867,273 @@ const gear = {
         "capacityGb": 480,
         "capacityTb": 0.48,
         "interface": "RED MINI-MAG proprietary module (300 MB/s write)"
+      },
+      "RED MINI-MAG 960GB": {
+        "brand": "RED",
+        "model": "RED MINI-MAG",
+        "capacityGb": 960,
+        "capacityTb": 0.96,
+        "interface": "Proprietary SSD (REDCINE)"
+      },
+      "RED MINI-MAG 1TB": {
+        "brand": "RED",
+        "model": "RED MINI-MAG",
+        "capacityGb": 1024,
+        "capacityTb": 1,
+        "interface": "Proprietary SSD (REDCINE)"
+      },
+      "SanDisk Extreme PRO CFexpress Type B 64GB": {
+        "brand": "SanDisk",
+        "model": "Extreme PRO CFexpress Type B",
+        "capacityGb": 64,
+        "capacityTb": 0.064,
+        "interface": "CFexpress Type B"
+      },
+      "SanDisk Extreme PRO CFexpress Type B 128GB": {
+        "brand": "SanDisk",
+        "model": "Extreme PRO CFexpress Type B",
+        "capacityGb": 128,
+        "capacityTb": 0.128,
+        "interface": "CFexpress Type B"
+      },
+      "SanDisk Extreme PRO CFexpress Type B 256GB": {
+        "brand": "SanDisk",
+        "model": "Extreme PRO CFexpress Type B",
+        "capacityGb": 256,
+        "capacityTb": 0.256,
+        "interface": "CFexpress Type B"
+      },
+      "SanDisk Extreme PRO CFexpress Type B 512GB": {
+        "brand": "SanDisk",
+        "model": "Extreme PRO CFexpress Type B",
+        "capacityGb": 512,
+        "capacityTb": 0.5,
+        "interface": "CFexpress Type B"
+      },
+      "SanDisk Extreme PRO CFast 2.0 64GB": {
+        "brand": "SanDisk",
+        "model": "Extreme PRO CFast 2.0",
+        "capacityGb": 64,
+        "capacityTb": 0.064,
+        "interface": "CFast 2.0"
+      },
+      "SanDisk Extreme PRO CFast 2.0 128GB": {
+        "brand": "SanDisk",
+        "model": "Extreme PRO CFast 2.0",
+        "capacityGb": 128,
+        "capacityTb": 0.128,
+        "interface": "CFast 2.0"
+      },
+      "SanDisk Extreme PRO CFast 2.0 256GB": {
+        "brand": "SanDisk",
+        "model": "Extreme PRO CFast 2.0",
+        "capacityGb": 256,
+        "capacityTb": 0.256,
+        "interface": "CFast 2.0"
+      },
+      "SanDisk Extreme PRO CFast 2.0 512GB": {
+        "brand": "SanDisk",
+        "model": "Extreme PRO CFast 2.0",
+        "capacityGb": 512,
+        "capacityTb": 0.5,
+        "interface": "CFast 2.0"
+      },
+      "SanDisk Extreme PRO SD UHS-I 32GB": {
+        "brand": "SanDisk",
+        "model": "Extreme PRO SD UHS-I (200MB/s)",
+        "capacityGb": 32,
+        "capacityTb": 0.032,
+        "interface": "SDHC/SDXC UHS-I"
+      },
+      "SanDisk Extreme PRO SD UHS-I 64GB": {
+        "brand": "SanDisk",
+        "model": "Extreme PRO SD UHS-I (200MB/s)",
+        "capacityGb": 64,
+        "capacityTb": 0.064,
+        "interface": "SDHC/SDXC UHS-I"
+      },
+      "SanDisk Extreme PRO SD UHS-I 128GB": {
+        "brand": "SanDisk",
+        "model": "Extreme PRO SD UHS-I (200MB/s)",
+        "capacityGb": 128,
+        "capacityTb": 0.128,
+        "interface": "SDHC/SDXC UHS-I"
+      },
+      "SanDisk Extreme PRO SD UHS-I 256GB": {
+        "brand": "SanDisk",
+        "model": "Extreme PRO SD UHS-I (200MB/s)",
+        "capacityGb": 256,
+        "capacityTb": 0.256,
+        "interface": "SDHC/SDXC UHS-I"
+      },
+      "SanDisk Extreme PRO SD UHS-I 512GB": {
+        "brand": "SanDisk",
+        "model": "Extreme PRO SD UHS-I (200MB/s)",
+        "capacityGb": 512,
+        "capacityTb": 0.5,
+        "interface": "SDHC/SDXC UHS-I"
+      },
+      "SanDisk Extreme PRO SD UHS-I 1TB": {
+        "brand": "SanDisk",
+        "model": "Extreme PRO SD UHS-I (200MB/s)",
+        "capacityGb": 1024,
+        "capacityTb": 1,
+        "interface": "SDHC/SDXC UHS-I"
+      },
+      "SanDisk Extreme microSD UHS-I 64GB": {
+        "brand": "SanDisk",
+        "model": "Extreme microSD UHS-I",
+        "capacityGb": 64,
+        "capacityTb": 0.064,
+        "interface": "microSDXC UHS-I (V30, A2)"
+      },
+      "SanDisk Extreme microSD UHS-I 128GB": {
+        "brand": "SanDisk",
+        "model": "Extreme microSD UHS-I",
+        "capacityGb": 128,
+        "capacityTb": 0.128,
+        "interface": "microSDXC UHS-I (V30, A2)"
+      },
+      "SanDisk Extreme microSD UHS-I 256GB": {
+        "brand": "SanDisk",
+        "model": "Extreme microSD UHS-I",
+        "capacityGb": 256,
+        "capacityTb": 0.256,
+        "interface": "microSDXC UHS-I (V30, A2)"
+      },
+      "SanDisk Extreme microSD UHS-I 512GB": {
+        "brand": "SanDisk",
+        "model": "Extreme microSD UHS-I",
+        "capacityGb": 512,
+        "capacityTb": 0.5,
+        "interface": "microSDXC UHS-I (V30, A2)"
+      },
+      "SanDisk Extreme microSD UHS-I 1TB": {
+        "brand": "SanDisk",
+        "model": "Extreme microSD UHS-I",
+        "capacityGb": 1024,
+        "capacityTb": 1,
+        "interface": "microSDXC UHS-I (V30, A2)"
+      },
+      "SanDisk Extreme microSD UHS-I 2TB": {
+        "brand": "SanDisk",
+        "model": "Extreme microSD UHS-I",
+        "capacityGb": 2048,
+        "capacityTb": 2,
+        "interface": "microSDXC UHS-I (V30, A2)"
+      },
+      "SanDisk Extreme PRO microSD UHS-I 64GB": {
+        "brand": "SanDisk",
+        "model": "Extreme PRO microSD UHS-I",
+        "capacityGb": 64,
+        "capacityTb": 0.064,
+        "interface": "microSDXC UHS-I (V30, A2)"
+      },
+      "SanDisk Extreme PRO microSD UHS-I 128GB": {
+        "brand": "SanDisk",
+        "model": "Extreme PRO microSD UHS-I",
+        "capacityGb": 128,
+        "capacityTb": 0.128,
+        "interface": "microSDXC UHS-I (V30, A2)"
+      },
+      "SanDisk Extreme PRO microSD UHS-I 256GB": {
+        "brand": "SanDisk",
+        "model": "Extreme PRO microSD UHS-I",
+        "capacityGb": 256,
+        "capacityTb": 0.256,
+        "interface": "microSDXC UHS-I (V30, A2)"
+      },
+      "SanDisk Extreme PRO microSD UHS-I 400GB": {
+        "brand": "SanDisk",
+        "model": "Extreme PRO microSD UHS-I",
+        "capacityGb": 400,
+        "capacityTb": 0.4,
+        "interface": "microSDXC UHS-I (V30, A2)"
+      },
+      "SanDisk Extreme PRO microSD UHS-I 512GB": {
+        "brand": "SanDisk",
+        "model": "Extreme PRO microSD UHS-I",
+        "capacityGb": 512,
+        "capacityTb": 0.5,
+        "interface": "microSDXC UHS-I (V30, A2)"
+      },
+      "SanDisk Extreme PRO microSD UHS-I 1TB": {
+        "brand": "SanDisk",
+        "model": "Extreme PRO microSD UHS-I",
+        "capacityGb": 1024,
+        "capacityTb": 1,
+        "interface": "microSDXC UHS-I (V30, A2)"
+      },
+      "SanDisk Extreme PRO microSD UHS-I 2TB": {
+        "brand": "SanDisk",
+        "model": "Extreme PRO microSD UHS-I",
+        "capacityGb": 2048,
+        "capacityTb": 2,
+        "interface": "microSDXC UHS-I (V30, A2)"
+      },
+      "SanDisk Extreme PRO SD UHS-II V90 512GB": {
+        "brand": "SanDisk",
+        "model": "Extreme PRO SD UHS-II (V90)",
+        "capacityGb": 512,
+        "capacityTb": 0.5,
+        "interface": "SDXC UHS-II (V90)",
+        "notes": "Capacities up to 512GB"
+      },
+      "Samsung PRO Plus microSD 128GB": {
+        "brand": "Samsung",
+        "model": "PRO Plus microSD",
+        "capacityGb": 128,
+        "capacityTb": 0.128,
+        "interface": "microSDXC UHS-I"
+      },
+      "Samsung PRO Plus microSD 256GB": {
+        "brand": "Samsung",
+        "model": "PRO Plus microSD",
+        "capacityGb": 256,
+        "capacityTb": 0.256,
+        "interface": "microSDXC UHS-I"
+      },
+      "Samsung PRO Plus microSD 512GB": {
+        "brand": "Samsung",
+        "model": "PRO Plus microSD",
+        "capacityGb": 512,
+        "capacityTb": 0.5,
+        "interface": "microSDXC UHS-I"
+      },
+      "Samsung PRO Plus microSD 1TB": {
+        "brand": "Samsung",
+        "model": "PRO Plus microSD",
+        "capacityGb": 1024,
+        "capacityTb": 1,
+        "interface": "microSDXC UHS-I"
+      },
+      "Samsung PRO Plus SD 64GB": {
+        "brand": "Samsung",
+        "model": "PRO Plus SD",
+        "capacityGb": 64,
+        "capacityTb": 0.064,
+        "interface": "SDXC UHS-I"
+      },
+      "Samsung PRO Plus SD 128GB": {
+        "brand": "Samsung",
+        "model": "PRO Plus SD",
+        "capacityGb": 128,
+        "capacityTb": 0.128,
+        "interface": "SDXC UHS-I"
+      },
+      "Samsung PRO Plus SD 256GB": {
+        "brand": "Samsung",
+        "model": "PRO Plus SD",
+        "capacityGb": 256,
+        "capacityTb": 0.256,
+        "interface": "SDXC UHS-I"
+      },
+      "Samsung PRO Plus SD 512GB": {
+        "brand": "Samsung",
+        "model": "PRO Plus SD",
+        "capacityGb": 512,
+        "capacityTb": 0.5,
+        "interface": "SDXC UHS-I"
       },
       "Sony AXS Memory Card 1TB (S24)": {
         "brand": "Sony",
@@ -2534,6 +3158,167 @@ const gear = {
         "capacityGb": 64,
         "capacityTb": 0.064,
         "interface": "SxS PRO+ (ExpressCard/34, PCI Express)"
+      },
+      "Sony CEA-G Series CFexpress A 80GB": {
+        "brand": "Sony",
+        "model": "CEA-G Series",
+        "capacityGb": 80,
+        "capacityTb": 0.08,
+        "interface": "CFexpress Type A"
+      },
+      "Sony CEA-G Series CFexpress A 160GB": {
+        "brand": "Sony",
+        "model": "CEA-G Series",
+        "capacityGb": 160,
+        "capacityTb": 0.16,
+        "interface": "CFexpress Type A"
+      },
+      "Sony CEA-G Series CFexpress A 320GB": {
+        "brand": "Sony",
+        "model": "CEA-G Series",
+        "capacityGb": 320,
+        "capacityTb": 0.32,
+        "interface": "CFexpress Type A"
+      },
+      "Sony CEA-G Series CFexpress A 480GB": {
+        "brand": "Sony",
+        "model": "CEA-G Series",
+        "capacityGb": 480,
+        "capacityTb": 0.48,
+        "interface": "CFexpress Type A"
+      },
+      "Sony CEA-G Series CFexpress A 640GB": {
+        "brand": "Sony",
+        "model": "CEA-G Series",
+        "capacityGb": 640,
+        "capacityTb": 0.64,
+        "interface": "CFexpress Type A"
+      },
+      "Sony CEA-G Series CFexpress A 960GB": {
+        "brand": "Sony",
+        "model": "CEA-G Series",
+        "capacityGb": 960,
+        "capacityTb": 0.96,
+        "interface": "CFexpress Type A"
+      },
+      "Sony CEA-G Series CFexpress A 1.92TB": {
+        "brand": "Sony",
+        "model": "CEA-G Series",
+        "capacityGb": 1920,
+        "capacityTb": 1.92,
+        "interface": "CFexpress Type A"
+      },
+      "Sony CEA-M Series CFexpress A 960GB": {
+        "brand": "Sony",
+        "model": "CEA-M Series",
+        "capacityGb": 960,
+        "capacityTb": 0.96,
+        "interface": "CFexpress Type A"
+      },
+      "Sony CEA-M Series CFexpress A 1.92TB": {
+        "brand": "Sony",
+        "model": "CEA-M Series",
+        "capacityGb": 1920,
+        "capacityTb": 1.92,
+        "interface": "CFexpress Type A"
+      },
+      "Sony CEB-G Series CFexpress B 128GB": {
+        "brand": "Sony",
+        "model": "CEB-G Series",
+        "capacityGb": 128,
+        "capacityTb": 0.128,
+        "interface": "CFexpress Type B"
+      },
+      "Sony CEB-G Series CFexpress B 240GB": {
+        "brand": "Sony",
+        "model": "CEB-G Series",
+        "capacityGb": 240,
+        "capacityTb": 0.24,
+        "interface": "CFexpress Type B"
+      },
+      "Sony CEB-G Series CFexpress B 256GB": {
+        "brand": "Sony",
+        "model": "CEB-G Series",
+        "capacityGb": 256,
+        "capacityTb": 0.256,
+        "interface": "CFexpress Type B"
+      },
+      "Sony CEB-G Series CFexpress B 480GB": {
+        "brand": "Sony",
+        "model": "CEB-G Series",
+        "capacityGb": 480,
+        "capacityTb": 0.48,
+        "interface": "CFexpress Type B"
+      },
+      "Sony CEB-G Series CFexpress B 512GB": {
+        "brand": "Sony",
+        "model": "CEB-G Series",
+        "capacityGb": 512,
+        "capacityTb": 0.5,
+        "interface": "CFexpress Type B"
+      },
+      "Sony SF-G TOUGH SD V90 32GB": {
+        "brand": "Sony",
+        "model": "SF-G TOUGH",
+        "capacityGb": 32,
+        "capacityTb": 0.032,
+        "interface": "SDXC UHS-II (V90)"
+      },
+      "Sony SF-G TOUGH SD V90 64GB": {
+        "brand": "Sony",
+        "model": "SF-G TOUGH",
+        "capacityGb": 64,
+        "capacityTb": 0.064,
+        "interface": "SDXC UHS-II (V90)"
+      },
+      "Sony SF-G TOUGH SD V90 128GB": {
+        "brand": "Sony",
+        "model": "SF-G TOUGH",
+        "capacityGb": 128,
+        "capacityTb": 0.128,
+        "interface": "SDXC UHS-II (V90)"
+      },
+      "Sony XQD G Series 32GB": {
+        "brand": "Sony",
+        "model": "XQD G Series",
+        "capacityGb": 32,
+        "capacityTb": 0.032,
+        "interface": "XQD"
+      },
+      "Sony XQD G Series 64GB": {
+        "brand": "Sony",
+        "model": "XQD G Series",
+        "capacityGb": 64,
+        "capacityTb": 0.064,
+        "interface": "XQD"
+      },
+      "Sony XQD G Series 120GB": {
+        "brand": "Sony",
+        "model": "XQD G Series",
+        "capacityGb": 120,
+        "capacityTb": 0.12,
+        "interface": "XQD"
+      },
+      "Sony XQD G Series 128GB": {
+        "brand": "Sony",
+        "model": "XQD G Series",
+        "capacityGb": 128,
+        "capacityTb": 0.128,
+        "interface": "XQD"
+      },
+      "Sony XQD G Series 240GB": {
+        "brand": "Sony",
+        "model": "XQD G Series",
+        "capacityGb": 240,
+        "capacityTb": 0.24,
+        "interface": "XQD"
+      },
+      "Sony XQD G Series 256GB": {
+        "brand": "Sony",
+        "model": "XQD G Series",
+        "capacityGb": 256,
+        "capacityTb": 0.256,
+        "interface": "XQD"
       }
     },
     "cardReaders": {
