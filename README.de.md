@@ -194,7 +194,8 @@ Dieser kurze Ablauf sollte bei neuen Teammitgliedern, frisch eingerichteten Work
   Vorschläge zeigen direkte Treffer für Funktionen und Geräte vor Hilfethemen, damit Tastaturabläufe zuerst bei Bedienelementen
   landen. Exakte Phrasen landen jetzt zuerst, daher bringt das Tippen einer vollständigen Bezeichnung wie „battery health“ die
   passende Funktion vor allgemeinere Treffer. Leer das Feld, erscheinen zuletzt genutzte Treffer oben und Crew-Routinen lassen
-  sich ohne Umwege wiederholen.
+  sich ohne Umwege wiederholen. Beginne eine Suche mit `recent` oder `history`, um zuerst deine zuletzt genutzten Treffer zu
+  sehen, bevor der gesamte Katalog geprüft wird.
 - **Help-Center** (`?`, `H`, `F1`, `Strg+/`) liefert Guides, Shortcuts, FAQs und Hover-Hilfe. Die Start-hier-Checkliste beschreibt
   jetzt, wie du den Offline-Indikator vorbereitest, doppelte Exporte sicherst und eine Wiederherstellungsprobe durchläufst,
   damit Teams Backups vor dem Einsatz prüfen. Ein Konsolen-Schnellcheck listet

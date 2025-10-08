@@ -8849,17 +8849,11 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     };
     
     const resolveRecentFeatureSearchOptions = () => {
-      loadFeatureSearchHistory();
-      if (!featureSearchHistory.size) return [];
-      const entries = Array.from(featureSearchHistory.values())
-        .slice()
-        .sort((a, b) => b.lastUsed - a.lastUsed);
+      const recentEntries = resolveRecentFeatureSearchEntries();
+      if (!recentEntries.length) return [];
       const options = [];
       const seen = new Set();
-      for (const item of entries) {
-        if (!item || !item.key) continue;
-        const entry = featureSearchEntryIndex.get(item.key);
-        if (!entry) continue;
+      for (const entry of recentEntries) {
         const option = buildFeatureSearchOptionData(entry);
         if (!option || !option.value || seen.has(option.value)) continue;
         seen.add(option.value);
@@ -8867,6 +8861,26 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         if (options.length >= MAX_FEATURE_SEARCH_RECENTS) break;
       }
       return options;
+    };
+
+    const resolveRecentFeatureSearchEntries = () => {
+      loadFeatureSearchHistory();
+      if (!featureSearchHistory.size) return [];
+      const entries = Array.from(featureSearchHistory.values())
+        .slice()
+        .sort((a, b) => b.lastUsed - a.lastUsed);
+      const results = [];
+      const seen = new Set();
+      for (const item of entries) {
+        if (!item || !item.key) continue;
+        if (seen.has(item.key)) continue;
+        seen.add(item.key);
+        const entry = featureSearchEntryIndex.get(item.key);
+        if (!entry) continue;
+        results.push(entry);
+        if (results.length >= MAX_FEATURE_SEARCH_HISTORY) break;
+      }
+      return results;
     };
     
     const normalizeSearchValue = value => {
@@ -9224,7 +9238,14 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
       ['docs', 'help'],
       ['guide', 'help'],
       ['guides', 'help'],
-      ['support', 'help']
+      ['support', 'help'],
+      ['recent', 'recent'],
+      ['recents', 'recent'],
+      ['recently', 'recent'],
+      ['history', 'recent'],
+      ['histories', 'recent'],
+      ['frequent', 'recent'],
+      ['frequently', 'recent']
     ]);
 
     const FEATURE_SEARCH_FILTER_STRIP_PATTERN = /^[\s:> /=\-?,.]+/;
@@ -9460,6 +9481,25 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         restoreFeatureSearchDefaults();
         return;
       }
+      if (filterType === 'recent') {
+        const recentEntries = resolveRecentFeatureSearchEntries();
+        if (!recentEntries.length) {
+          renderFeatureListOptions([]);
+          return;
+        }
+        const values = [];
+        const seen = new Set();
+        for (const entry of recentEntries) {
+          if (values.length >= FEATURE_SEARCH_MAX_RESULTS) break;
+          const optionData = buildFeatureSearchOptionData(entry);
+          if (!optionData || !optionData.value || seen.has(optionData.value)) continue;
+          seen.add(optionData.value);
+          values.push(optionData);
+        }
+        renderFeatureListOptions(values);
+        return;
+      }
+
       const filteredEntries = featureSearchEntries.filter(
         entry => (entry?.type || 'feature') === filterType
       );
@@ -9520,9 +9560,17 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
         ...quotedPhrases.map(phrase => phrase && phrase.toLowerCase()).filter(Boolean)
       ];
       updateFeatureSearchHighlightTokens(highlightTokens);
-      const entries = filterType
-        ? featureSearchEntries.filter(entry => (entry?.type || 'feature') === filterType)
-        : featureSearchEntries;
+      const isRecentFilter = filterType === 'recent';
+      if (!trimmed && isRecentFilter) {
+        renderFeatureSearchFilteredDefaults(filterType);
+        return;
+      }
+
+      const entries = isRecentFilter
+        ? resolveRecentFeatureSearchEntries()
+        : filterType
+          ? featureSearchEntries.filter(entry => (entry?.type || 'feature') === filterType)
+          : featureSearchEntries;
 
       if (entries.length === 0) {
         renderFeatureListOptions([]);
