@@ -123,6 +123,7 @@ manual `registry.register` calls.
 | `cineCoreProject` | `domain`          | Project intelligence helpers that expose derived metadata, filter selections, and comparison utilities to the wider runtime. |
 | `cineCoreGuard`   | `safety`          | Persistence guards that stabilise autosaves, preset editors, logo previews, and feedback storage without risking data loss. |
 | `cineCoreExperience` | `experience`   | Experience helpers that coordinate feature search, accent colours, and printable views so the UI stays human-friendly offline. |
+| `cine.features.featureSearchEngine` | `feature` | Normalises search keys, resolves synonym tokens and ranks feature entries so quick searches stay accurate without risking offline regressions. |
 | `cineRuntime`      | `runtime`         | Aggregates modules, exposes integrity checks and ensures every safeguard stays frozen. |
 
 The registry is extensible: additional modules may be registered to expose
