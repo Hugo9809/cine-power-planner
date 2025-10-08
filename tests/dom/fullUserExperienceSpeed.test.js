@@ -227,7 +227,7 @@ describe('full user experience speed test', () => {
       const backupName = utils.autoBackup({
         suppressSuccess: true,
         suppressError: true,
-        reason: 'speed-test',
+        reason: 'interval',
       });
       expect(typeof backupName).toBe('string');
       expect(backupName).toMatch(/^auto-backup-/);
