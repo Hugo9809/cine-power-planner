@@ -269,6 +269,7 @@
       "lensMount",
       "power",
       "powerDrawWatts",
+      "frameRates",
       "recordingCodecs",
       "recordingMedia",
       "resolutions",
