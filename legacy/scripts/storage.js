@@ -117,6 +117,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   var ACTIVE_PROJECT_COMPRESSION_HOLD_KEY = '';
   var ACTIVE_PROJECT_COMPRESSION_HOLD_ENABLED = false;
+  var ACTIVE_PROJECT_COMPRESSION_HOLD_PENDING_CLEAR = false;
+  var ACTIVE_PROJECT_COMPRESSION_HOLD_PENDING_KEY = '';
   if (!ensureConsoleMethodsWritable && GLOBAL_SCOPE && typeof GLOBAL_SCOPE.__cineEnsureConsoleMethodsWritable === 'function') {
     ensureConsoleMethodsWritable = GLOBAL_SCOPE.__cineEnsureConsoleMethodsWritable;
   }
@@ -6916,6 +6918,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return name.trim();
   }
   function setActiveProjectCompressionHold(name) {
+    ACTIVE_PROJECT_COMPRESSION_HOLD_PENDING_CLEAR = false;
+    ACTIVE_PROJECT_COMPRESSION_HOLD_PENDING_KEY = '';
     if (name === null || name === undefined) {
       ACTIVE_PROJECT_COMPRESSION_HOLD_KEY = '';
       ACTIVE_PROJECT_COMPRESSION_HOLD_ENABLED = false;
@@ -6927,6 +6931,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return normalized;
   }
   function clearActiveProjectCompressionHold(name) {
+    ACTIVE_PROJECT_COMPRESSION_HOLD_PENDING_CLEAR = false;
+    ACTIVE_PROJECT_COMPRESSION_HOLD_PENDING_KEY = '';
     if (!ACTIVE_PROJECT_COMPRESSION_HOLD_ENABLED) {
       return false;
     }
@@ -6941,7 +6947,29 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return true;
   }
   function shouldDisableProjectCompressionDuringPersist() {
-    return ACTIVE_PROJECT_COMPRESSION_HOLD_ENABLED;
+    if (!ACTIVE_PROJECT_COMPRESSION_HOLD_ENABLED) {
+      ACTIVE_PROJECT_COMPRESSION_HOLD_PENDING_CLEAR = false;
+      ACTIVE_PROJECT_COMPRESSION_HOLD_PENDING_KEY = '';
+      return false;
+    }
+    ACTIVE_PROJECT_COMPRESSION_HOLD_PENDING_CLEAR = true;
+    ACTIVE_PROJECT_COMPRESSION_HOLD_PENDING_KEY = ACTIVE_PROJECT_COMPRESSION_HOLD_KEY;
+    return true;
+  }
+  function releaseActiveProjectCompressionHoldAfterPersist() {
+    if (!ACTIVE_PROJECT_COMPRESSION_HOLD_PENDING_CLEAR) {
+      return;
+    }
+    ACTIVE_PROJECT_COMPRESSION_HOLD_PENDING_CLEAR = false;
+    var pendingKey = ACTIVE_PROJECT_COMPRESSION_HOLD_PENDING_KEY;
+    ACTIVE_PROJECT_COMPRESSION_HOLD_PENDING_KEY = '';
+    if (!ACTIVE_PROJECT_COMPRESSION_HOLD_ENABLED) {
+      return;
+    }
+    if (pendingKey && ACTIVE_PROJECT_COMPRESSION_HOLD_KEY !== pendingKey) {
+      return;
+    }
+    clearActiveProjectCompressionHold(pendingKey || undefined);
   }
   function resolveProjectKey(projects, lookup, name) {
     var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
@@ -7193,18 +7221,23 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     applyProjectEntryCompression(serializedProjects);
     invalidateProjectReadCache();
     ensurePreWriteMigrationBackup(safeStorage, PROJECT_STORAGE_KEY);
-    saveJSONToStorage(safeStorage, PROJECT_STORAGE_KEY, serializedProjects, "Error saving project to localStorage:", {
-      forceCompressionOnQuota: true,
-      disableCompression: shouldDisableProjectCompressionDuringPersist(),
-      onQuotaExceeded: function onQuotaExceeded() {
-        var removedKey = removeOldestAutoBackupEntry(serializedProjects);
-        if (!removedKey) {
-          return false;
+    var disableCompressionForPersist = shouldDisableProjectCompressionDuringPersist();
+    try {
+      saveJSONToStorage(safeStorage, PROJECT_STORAGE_KEY, serializedProjects, "Error saving project to localStorage:", {
+        forceCompressionOnQuota: true,
+        disableCompression: disableCompressionForPersist,
+        onQuotaExceeded: function onQuotaExceeded() {
+          var removedKey = removeOldestAutoBackupEntry(serializedProjects);
+          if (!removedKey) {
+            return false;
+          }
+          console.warn("Removed automatic project backup \"".concat(removedKey, "\" to free up storage space before saving projects."));
+          return true;
         }
-        console.warn("Removed automatic project backup \"".concat(removedKey, "\" to free up storage space before saving projects."));
-        return true;
-      }
-    });
+      });
+    } finally {
+      releaseActiveProjectCompressionHoldAfterPersist();
+    }
   }
   function loadProject(name) {
     var _readAllProjectsFromS = readAllProjectsFromStorage(),
