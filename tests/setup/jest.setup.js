@@ -4,63 +4,6 @@ const { ensureConsoleFacade } = require('./consoleFacade');
 
 const activeConsole = ensureConsoleFacade() || console;
 
-const makePropertyWritable = (target, property) => {
-  if (!target) {
-    return;
-  }
-
-  const descriptor = Object.getOwnPropertyDescriptor(target, property);
-  if (!descriptor) {
-    return;
-  }
-
-  if ('value' in descriptor) {
-    if (descriptor.writable === true && descriptor.configurable === true) {
-      return;
-    }
-
-    try {
-      Object.defineProperty(target, property, {
-        configurable: true,
-        enumerable: descriptor.enumerable ?? true,
-        writable: true,
-        value: descriptor.value,
-      });
-    } catch (error) {
-      void error;
-    }
-    return;
-  }
-
-  if (descriptor.configurable !== true) {
-    return;
-  }
-
-  try {
-    Object.defineProperty(target, property, {
-      configurable: true,
-      enumerable: descriptor.enumerable ?? true,
-      get: descriptor.get,
-      set: descriptor.set,
-    });
-  } catch (error) {
-    void error;
-  }
-};
-
-const originalSpyOn = jest.spyOn.bind(jest);
-jest.spyOn = (target, property, accessType) => {
-  try {
-    return originalSpyOn(target, property, accessType);
-  } catch (error) {
-    if (error instanceof TypeError && /Cannot assign to read only property/.test(String(error?.message ?? error))) {
-      makePropertyWritable(target, property);
-      return originalSpyOn(target, property, accessType);
-    }
-    throw error;
-  }
-};
-
 const originalDateNow = Date.now;
 
 try {
