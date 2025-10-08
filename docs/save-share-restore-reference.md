@@ -50,6 +50,8 @@ Factory reset is the only workflow that clears auto backups, manual saves and pr
 
 Once the backup lands successfully, the reset proceeds to run `clearAllData()`, which now wipes every key from local storage and session storage—covering planner data, preferences, diagnostics history and any lingering session flags. Because the pre-reset export contains those entries, you can immediately reopen the planner and restore the downloaded file to recover auto backups or manual saves that were cleared from the browser profile.【F:src/scripts/storage.js†L9798-L9887】
 
+Immediately after the storage wipe the runtime fires a dedicated factory-reset event, allowing the onboarding tutorial module to repopulate its default state so the guided walkthrough restarts automatically once the planner reloads and the help button label updates to the “Start guided tutorial” copy during the same session.【F:src/scripts/app-session.js†L9373-L9393】【F:src/scripts/modules/features/onboarding-tour.js†L1141-L1151】
+
 ## Console & script checks
 
 Run these quick inspections while documenting or rehearsing the workflows above:

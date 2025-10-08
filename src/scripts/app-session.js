@@ -9393,6 +9393,23 @@ if (factoryResetButton) {
       }
       clearAllData();
       try {
+        if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
+          const eventName = 'cameraPowerPlannerFactoryReset';
+          let eventInstance = null;
+          if (typeof window.CustomEvent === 'function') {
+            eventInstance = new window.CustomEvent(eventName);
+          } else if (typeof document !== 'undefined' && typeof document.createEvent === 'function') {
+            eventInstance = document.createEvent('Event');
+            eventInstance.initEvent(eventName, false, false);
+          }
+          if (eventInstance) {
+            window.dispatchEvent(eventInstance);
+          }
+        }
+      } catch (factoryResetEventError) {
+        console.warn('Failed to dispatch factory reset event', factoryResetEventError);
+      }
+      try {
         resetPlannerStateAfterFactoryReset();
       } catch (resetError) {
         console.warn('Failed to reset planner state after factory reset', resetError);
