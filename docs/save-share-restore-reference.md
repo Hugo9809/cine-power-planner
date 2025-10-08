@@ -44,6 +44,12 @@ Applying a shared setup removes only the `shared` query flag from the URL, prese
 
 Version comparisons create a documented paper trail before archives rotate. Launch **Settings → Backup & Restore → Compare versions**, pick a baseline manual save plus the latest auto backup, confirm the summary mirrors your expectations, review each list entry for unexpected additions or removals, then record context in **Incident notes** before exporting the log. Store the JSON alongside your backups and reference the filename in your verification ledger so future audits can replay the diff offline.【F:index.html†L3684-L3754】【F:src/scripts/translations.js†L620-L657】
 
+### Factory reset safeguards
+
+Factory reset is the only workflow that clears auto backups, manual saves and preferences in one sweep, so the planner refuses to erase anything until it has captured a fresh full backup. When you confirm the reset, the runtime invokes the same `createSettingsBackup()` routine used by the **Download full backup** button. If the export is blocked or the download fails, the wipe is cancelled and your data stays put, guaranteeing a restorable copy exists before anything is deleted.【F:src/scripts/app-session.js†L6999-L7056】【F:src/scripts/app-session.js†L8765-L8797】
+
+Once the backup lands successfully, the reset proceeds to run `clearAllData()`, which enumerates every planner storage namespace—including project slots, hourly auto backups, rehearsal snapshots and mirrored preferences—and removes each key from local storage and session storage. Because the pre-reset export contains those entries, you can immediately reopen the planner and restore the downloaded file to recover auto backups or manual saves that were cleared from the browser profile.【F:src/scripts/storage.js†L8690-L8780】
+
 ## Console & script checks
 
 Run these quick inspections while documenting or rehearsing the workflows above:
