@@ -83,11 +83,13 @@ const AUTO_BACKUP_CADENCE_EXEMPT_REASONS = new Set([
 
 const AUTO_BACKUP_REASON_DEDUP_INTERVAL_MS = 2 * 60 * 1000;
 const lastAutoBackupReasonState = new Map();
+const AUTO_BACKUP_IMMEDIATE_COMMIT_DEBOUNCE_MS = 800;
 
 let autoBackupChangesSinceSnapshot = 0;
 let autoBackupThresholdInProgress = false;
 let autoBackupChangePendingCommit = false;
 let lastAutoBackupCompletedAtMs = 0;
+let lastImmediateAutoBackupCommitAtMs = 0;
 
 function resetAutoBackupChangeCounter() {
   autoBackupChangesSinceSnapshot = 0;
@@ -174,10 +176,14 @@ function noteAutoBackupRelevantChange(details = {}) {
   if (details && details.reset === true) {
     resetAutoBackupChangeCounter();
     autoBackupChangePendingCommit = false;
+    lastImmediateAutoBackupCommitAtMs = 0;
     return;
   }
   const pendingNotification = Boolean(details && details.pending === true);
   const commitRequested = Boolean(details && details.commit === true);
+  const commitContext = details && typeof details.context === 'object' && details.context !== null
+    ? details.context
+    : null;
 
   if (pendingNotification) {
     autoBackupChangePendingCommit = true;
@@ -190,6 +196,43 @@ function noteAutoBackupRelevantChange(details = {}) {
 
   if (commitRequested || autoBackupChangePendingCommit) {
     autoBackupChangePendingCommit = false;
+
+    const immediateCommit = Boolean(commitContext && commitContext.immediate === true);
+    if (immediateCommit) {
+      let commitTimestamp = null;
+      if (
+        commitContext
+        && typeof commitContext.completedAt === 'number'
+        && Number.isFinite(commitContext.completedAt)
+      ) {
+        commitTimestamp = commitContext.completedAt;
+      } else if (
+        commitContext
+        && typeof commitContext.requestedAt === 'number'
+        && Number.isFinite(commitContext.requestedAt)
+      ) {
+        commitTimestamp = commitContext.requestedAt;
+      }
+      if (!Number.isFinite(commitTimestamp)) {
+        commitTimestamp = Date.now();
+      }
+      if (
+        details.force !== true
+        && lastImmediateAutoBackupCommitAtMs > 0
+        && commitTimestamp >= lastImmediateAutoBackupCommitAtMs
+        && commitTimestamp - lastImmediateAutoBackupCommitAtMs < AUTO_BACKUP_IMMEDIATE_COMMIT_DEBOUNCE_MS
+      ) {
+        lastImmediateAutoBackupCommitAtMs = commitTimestamp;
+        return;
+      }
+      if (
+        commitTimestamp >= lastImmediateAutoBackupCommitAtMs
+        || lastImmediateAutoBackupCommitAtMs <= 0
+      ) {
+        lastImmediateAutoBackupCommitAtMs = commitTimestamp;
+      }
+    }
+
     autoBackupChangesSinceSnapshot = Math.min(
       AUTO_BACKUP_CHANGE_THRESHOLD,
       autoBackupChangesSinceSnapshot + 1,

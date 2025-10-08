@@ -3327,6 +3327,7 @@ let projectAutoSaveFailureCount = 0;
 let projectAutoSavePendingWhileRestoring = null;
 let factoryResetInProgress = false;
 let projectAutoSaveOverrides = null;
+let projectAutoSaveLastRequestContext = null;
 
 function notifyAutoBackupChange(details) {
   try {
@@ -3408,6 +3409,9 @@ function runProjectAutoSave() {
   projectAutoSaveTimer = null;
   projectAutoSavePendingWhileRestoring = null;
 
+  const pendingRequestContext = projectAutoSaveLastRequestContext;
+  projectAutoSaveLastRequestContext = null;
+
   let encounteredError = false;
 
   const guard = (fn, context, onSuccess) => {
@@ -3485,7 +3489,20 @@ function runProjectAutoSave() {
   clearProjectAutoSaveOverrides();
 
   if (!encounteredError && (setupMutationDetected || gearListMutationDetected)) {
-    notifyAutoBackupChange({ commit: true });
+    const contextNow = Date.now();
+    const requestTimestamp = pendingRequestContext && typeof pendingRequestContext.requestedAt === 'number'
+      && Number.isFinite(pendingRequestContext.requestedAt)
+        ? pendingRequestContext.requestedAt
+        : contextNow;
+    notifyAutoBackupChange({
+      commit: true,
+      context: {
+        immediate: Boolean(pendingRequestContext && pendingRequestContext.immediate),
+        overrides: Boolean(pendingRequestContext && pendingRequestContext.overrides),
+        requestedAt: requestTimestamp,
+        completedAt: contextNow,
+      },
+    });
   }
 }
 
@@ -3500,7 +3517,9 @@ function scheduleProjectAutoSave(immediateOrOptions = false) {
     overrides = undefined;
   }
 
-  if (overrides !== undefined) {
+  const overridesProvided = overrides !== undefined;
+
+  if (overridesProvided) {
     setProjectAutoSaveOverrides(overrides);
   }
 
@@ -3525,7 +3544,14 @@ function scheduleProjectAutoSave(immediateOrOptions = false) {
   }
   projectAutoSavePendingWhileRestoring = null;
 
-  notifyAutoBackupChange({ immediate, overrides: overrides !== undefined, pending: true });
+  const requestTimestamp = Date.now();
+  projectAutoSaveLastRequestContext = {
+    immediate,
+    overrides: overridesProvided,
+    requestedAt: requestTimestamp,
+  };
+
+  notifyAutoBackupChange({ immediate, overrides: overridesProvided, pending: true });
   if (immediate) {
     if (projectAutoSaveTimer) {
       clearTimeout(projectAutoSaveTimer);
