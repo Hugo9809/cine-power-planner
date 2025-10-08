@@ -8195,6 +8195,79 @@ function readLocationHrefSafe(locationLike) {
     return '';
   }
 }
+function readLocationPathnameSafe(locationLike) {
+  if (!locationLike || _typeof(locationLike) !== 'object') {
+    return '';
+  }
+  try {
+    var pathname = locationLike.pathname;
+    return typeof pathname === 'string' ? pathname : '';
+  } catch (error) {
+    void error;
+    return '';
+  }
+}
+function readLocationOriginSafe(locationLike) {
+  if (!locationLike || _typeof(locationLike) !== 'object') {
+    return '';
+  }
+  try {
+    var origin = locationLike.origin;
+    if (typeof origin === 'string' && origin) {
+      return origin;
+    }
+  } catch (error) {
+    void error;
+  }
+  var href = readLocationHrefSafe(locationLike);
+  if (!href) {
+    return '';
+  }
+  if (typeof URL === 'function') {
+    try {
+      return new URL(href).origin;
+    } catch (originError) {
+      void originError;
+    }
+  }
+  var originMatch = href.match(/^([a-zA-Z][a-zA-Z\d+.-]*:\/\/[^/]+)/);
+  return originMatch && originMatch[1] ? originMatch[1] : '';
+}
+function getForceReloadBaseCandidates(locationLike, originalHref) {
+  var candidates = [];
+  var addCandidate = function addCandidate(value) {
+    if (typeof value !== 'string') {
+      return;
+    }
+    var trimmed = value.trim();
+    if (!trimmed || candidates.indexOf(trimmed) !== -1) {
+      return;
+    }
+    candidates.push(trimmed);
+  };
+  var safeHref = readLocationHrefSafe(locationLike);
+  if (safeHref) {
+    addCandidate(safeHref);
+  }
+  if (typeof originalHref === 'string' && originalHref) {
+    addCandidate(originalHref);
+  }
+  var origin = readLocationOriginSafe(locationLike);
+  var pathname = readLocationPathnameSafe(locationLike);
+  if (origin) {
+    if (pathname) {
+      addCandidate("".concat(origin).concat(pathname));
+    }
+    addCandidate("".concat(origin, "/"));
+  }
+  if (typeof window !== 'undefined' && window && window.location) {
+    var windowHref = readLocationHrefSafe(window.location);
+    if (windowHref) {
+      addCandidate(windowHref);
+    }
+  }
+  return candidates;
+}
 function normaliseForceReloadHref(value, baseHref) {
   if (typeof value !== 'string') {
     return '';
@@ -8223,6 +8296,7 @@ function buildForceReloadHref(locationLike, paramName) {
   var param = typeof paramName === 'string' && paramName ? paramName : 'forceReload';
   var timestamp = Date.now().toString(36);
   var originalHref = readLocationHrefSafe(locationLike);
+  var baseCandidates = getForceReloadBaseCandidates(locationLike, originalHref);
   if (!originalHref) {
     return {
       originalHref: originalHref,
@@ -8232,28 +8306,20 @@ function buildForceReloadHref(locationLike, paramName) {
     };
   }
   if (typeof URL === 'function') {
-    try {
-      var url = new URL(originalHref);
-      url.searchParams.set(param, timestamp);
-      return {
-        originalHref: originalHref,
-        nextHref: url.toString(),
-        param: param,
-        timestamp: timestamp
-      };
-    } catch (urlError) {
-      void urlError;
+    var urlCandidates = [originalHref].concat(baseCandidates);
+    for (var index = 0; index < urlCandidates.length; index += 1) {
+      var candidate = urlCandidates[index];
       try {
-        var derived = new URL(originalHref, originalHref);
-        derived.searchParams.set(param, timestamp);
+        var url = index === 0 ? new URL(candidate) : new URL(originalHref, candidate);
+        url.searchParams.set(param, timestamp);
         return {
           originalHref: originalHref,
-          nextHref: derived.toString(),
+          nextHref: url.toString(),
           param: param,
           timestamp: timestamp
         };
-      } catch (fallbackError) {
-        void fallbackError;
+      } catch (candidateError) {
+        void candidateError;
       }
     }
   }
@@ -8272,6 +8338,22 @@ function buildForceReloadHref(locationLike, paramName) {
     href += "&".concat(param, "=").concat(timestamp);
   } else if (href) {
     href += "?".concat(param, "=").concat(timestamp);
+  }
+  if (typeof URL === 'function') {
+    for (var absoluteIndex = 0; absoluteIndex < baseCandidates.length; absoluteIndex += 1) {
+      var baseCandidate = baseCandidates[absoluteIndex];
+      try {
+        var absolute = new URL(href + hash, baseCandidate).toString();
+        return {
+          originalHref: originalHref,
+          nextHref: absolute,
+          param: param,
+          timestamp: timestamp
+        };
+      } catch (absoluteError) {
+        void absoluteError;
+      }
+    }
   }
   return {
     originalHref: originalHref,
