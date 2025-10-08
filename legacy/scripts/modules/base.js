@@ -120,11 +120,66 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return null;
   }();
+  function isEthereumProviderCandidate(value) {
+    if (!value || _typeof(value) !== 'object' && typeof value !== 'function') {
+      return false;
+    }
+    if (typeof PRIMARY_SCOPE !== 'undefined' && PRIMARY_SCOPE && _typeof(PRIMARY_SCOPE) === 'object') {
+      try {
+        if (value === PRIMARY_SCOPE.ethereum) {
+          return true;
+        }
+      } catch (error) {
+        void error;
+        return true;
+      }
+    }
+    try {
+      if (value.isMetaMask === true) {
+        return true;
+      }
+    } catch (inspectionError) {
+      if (inspectionError && typeof inspectionError.message === 'string' && /metamask/i.test(inspectionError.message)) {
+        return true;
+      }
+    }
+    try {
+      if (typeof value.request === 'function' && typeof value.on === 'function') {
+        if (typeof value.removeListener === 'function' || typeof value.removeEventListener === 'function') {
+          return true;
+        }
+        var ctorName = value.constructor && value.constructor.name;
+        if (ctorName && /Ethereum|MetaMask|Provider/i.test(ctorName)) {
+          return true;
+        }
+      }
+    } catch (accessError) {
+      void accessError;
+      return true;
+    }
+    return false;
+  }
   function shouldBypassDeepFreeze(value) {
     if (!value || _typeof(value) !== 'object' && typeof value !== 'function') {
       return false;
     }
     try {
+      if (isEthereumProviderCandidate(value)) {
+        return true;
+      }
+      if (typeof console !== 'undefined') {
+        try {
+          if (value === console) {
+            return true;
+          }
+        } catch (consoleError) {
+          void consoleError;
+          return true;
+        }
+      }
+      if (typeof PRIMARY_SCOPE !== 'undefined' && value === PRIMARY_SCOPE) {
+        return true;
+      }
       if (BUILTIN_IMMUTABILITY && typeof BUILTIN_IMMUTABILITY.isImmutableBuiltin === 'function' && BUILTIN_IMMUTABILITY.isImmutableBuiltin(value)) {
         return true;
       }
@@ -151,34 +206,75 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return false;
   }
-  function fallbackFreezeDeep(value) {
-    var seen = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new WeakSet();
+  function fallbackFreezeDeep(value, seen) {
+    var localSeen = seen;
+    if (!localSeen) {
+      if (typeof WeakSet === 'function') {
+        localSeen = new WeakSet();
+      } else {
+        var seenValues = [];
+        localSeen = {
+          add: function add(item) {
+            seenValues.push(item);
+          },
+          has: function has(item) {
+            return seenValues.indexOf(item) !== -1;
+          }
+        };
+      }
+    }
     if (!value || _typeof(value) !== 'object' && typeof value !== 'function') {
       return value;
     }
     if (shouldBypassDeepFreeze(value)) {
       return value;
     }
-    if (seen.has(value)) {
+    if (isEthereumProviderCandidate(value)) {
       return value;
     }
-    seen.add(value);
+    if (typeof localSeen.has === 'function' && localSeen.has(value)) {
+      return value;
+    }
+    if (typeof localSeen.add === 'function') {
+      localSeen.add(value);
+    }
     var keys;
     try {
       keys = Object.getOwnPropertyNames(value);
     } catch (error) {
       void error;
-      return value;
+      keys = [];
     }
     for (var index = 0; index < keys.length; index += 1) {
       var key = keys[index];
-      var descriptor = Object.getOwnPropertyDescriptor(value, key);
+      if (typeof PRIMARY_SCOPE !== 'undefined' && key === 'web3' && value === PRIMARY_SCOPE) {
+        continue;
+      }
+      var descriptor;
+      try {
+        descriptor = Object.getOwnPropertyDescriptor(value, key);
+      } catch (descriptorError) {
+        void descriptorError;
+        descriptor = null;
+      }
       if (!descriptor || 'get' in descriptor || 'set' in descriptor) {
         continue;
       }
-      fallbackFreezeDeep(descriptor.value, seen);
+      var child = descriptor.value;
+      if (!child || _typeof(child) !== 'object' && typeof child !== 'function') {
+        continue;
+      }
+      fallbackFreezeDeep(child, localSeen);
     }
-    return Object.freeze(value);
+    if (typeof PRIMARY_SCOPE !== 'undefined' && value === PRIMARY_SCOPE) {
+      return value;
+    }
+    try {
+      return Object.freeze(value);
+    } catch (freezeError) {
+      void freezeError;
+      return value;
+    }
   }
   function fallbackSafeWarn(message, detail) {
     if (typeof console === 'undefined' || typeof console.warn !== 'function') {

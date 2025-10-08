@@ -86,6 +86,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (isImmutableBuiltin(value)) {
         return value;
       }
+      if (value) {
+        var globalCandidates = [];
+        if (typeof globalThis !== 'undefined') globalCandidates.push(globalThis);
+        if (typeof global !== 'undefined') globalCandidates.push(global);
+        if (typeof self !== 'undefined') globalCandidates.push(self);
+        if (typeof window !== 'undefined') globalCandidates.push(window);
+        if (globalCandidates.indexOf(value) !== -1) {
+          return value;
+        }
+        if (typeof console !== 'undefined' && value === console) {
+          return value;
+        }
+      }
       for (var _len = arguments.length, rest = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
         rest[_key - 1] = arguments[_key];
       }

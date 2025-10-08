@@ -77,6 +77,21 @@
       return true;
     }
 
+    if (value === PRIMARY_SCOPE) {
+      return true;
+    }
+
+    if (typeof console !== 'undefined') {
+      try {
+        if (value === console) {
+          return true;
+        }
+      } catch (consoleError) {
+        void consoleError;
+        return true;
+      }
+    }
+
     try {
       if (typeof value.pipe === 'function' && typeof value.unpipe === 'function') {
         return true;
@@ -206,19 +221,33 @@
         continue;
       }
 
-      var child;
+      var descriptor;
       try {
-        child = value[key];
-      } catch (accessError) {
-        void accessError;
-        child = undefined;
+        descriptor = Object.getOwnPropertyDescriptor(value, key);
+      } catch (descriptorError) {
+        void descriptorError;
+        descriptor = null;
       }
+
+      if (!descriptor) {
+        continue;
+      }
+
+      if (descriptor.get || descriptor.set) {
+        continue;
+      }
+
+      var child = descriptor.value;
 
       if (!child || (typeof child !== 'object' && typeof child !== 'function')) {
         continue;
       }
 
       fallbackFreezeDeep(child, localSeen);
+    }
+
+    if (value === PRIMARY_SCOPE) {
+      return value;
     }
 
     try {

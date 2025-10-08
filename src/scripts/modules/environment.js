@@ -331,9 +331,73 @@
     return false;
   }
 
+  function isEthereumProviderCandidate(value) {
+    if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
+      return false;
+    }
+
+    if (PRIMARY_SCOPE && typeof PRIMARY_SCOPE === 'object') {
+      try {
+        if (value === PRIMARY_SCOPE.ethereum) {
+          return true;
+        }
+      } catch (error) {
+        void error;
+        return true;
+      }
+    }
+
+    try {
+      if (value.isMetaMask === true) {
+        return true;
+      }
+    } catch (inspectionError) {
+      if (inspectionError && typeof inspectionError.message === 'string' && /metamask/i.test(inspectionError.message)) {
+        return true;
+      }
+    }
+
+    try {
+      if (typeof value.request === 'function' && typeof value.on === 'function') {
+        if (typeof value.removeListener === 'function' || typeof value.removeEventListener === 'function') {
+          return true;
+        }
+
+        const ctorName = value.constructor && value.constructor.name;
+        if (ctorName && /Ethereum|MetaMask|Provider/i.test(ctorName)) {
+          return true;
+        }
+      }
+    } catch (accessError) {
+      void accessError;
+      return true;
+    }
+
+    return false;
+  }
+
   function shouldBypassDeepFreeze(value) {
     if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
       return false;
+    }
+
+    if (isEthereumProviderCandidate(value)) {
+      return true;
+    }
+
+    if (value === PRIMARY_SCOPE) {
+      return true;
+    }
+
+    if (typeof console !== 'undefined') {
+      try {
+        if (value === console) {
+          return true;
+        }
+      } catch (consoleError) {
+        void consoleError;
+        return true;
+      }
     }
 
     try {
@@ -365,7 +429,24 @@
     return false;
   }
 
-  function fallbackFreezeDeep(value, seen = new WeakSet()) {
+  function fallbackFreezeDeep(value, seen) {
+    let localSeen = seen;
+    if (!localSeen) {
+      if (typeof WeakSet === 'function') {
+        localSeen = new WeakSet();
+      } else {
+        const seenValues = [];
+        localSeen = {
+          add(item) {
+            seenValues.push(item);
+          },
+          has(item) {
+            return seenValues.indexOf(item) !== -1;
+          },
+        };
+      }
+    }
+
     if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
       return value;
     }
@@ -374,26 +455,56 @@
       return value;
     }
 
-    if (seen.has(value)) {
+    if (isEthereumProviderCandidate(value)) {
       return value;
     }
 
-    seen.add(value);
+    if (typeof localSeen.has === 'function' && localSeen.has(value)) {
+      return value;
+    }
 
-    const keys = Object.getOwnPropertyNames(value);
+    if (typeof localSeen.add === 'function') {
+      localSeen.add(value);
+    }
+
+    let keys;
+    try {
+      keys = Object.getOwnPropertyNames(value);
+    } catch (error) {
+      void error;
+      keys = [];
+    }
+
     for (let index = 0; index < keys.length; index += 1) {
       const key = keys[index];
-      let child;
-      try {
-        child = value[key];
-      } catch (accessError) {
-        void accessError;
-        child = undefined;
+
+      if (key === 'web3' && value === PRIMARY_SCOPE) {
+        continue;
       }
+
+      let descriptor;
+      try {
+        descriptor = Object.getOwnPropertyDescriptor(value, key);
+      } catch (descriptorError) {
+        void descriptorError;
+        descriptor = null;
+      }
+
+      if (!descriptor || descriptor.get || descriptor.set) {
+        continue;
+      }
+
+      const child = descriptor.value;
+
       if (!child || (typeof child !== 'object' && typeof child !== 'function')) {
         continue;
       }
-      fallbackFreezeDeep(child, seen);
+
+      fallbackFreezeDeep(child, localSeen);
+    }
+
+    if (value === PRIMARY_SCOPE) {
+      return value;
     }
 
     try {

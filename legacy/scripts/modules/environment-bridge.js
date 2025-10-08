@@ -65,6 +65,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (isEthereumProviderCandidate(value)) {
       return true;
     }
+    if (value === PRIMARY_SCOPE) {
+      return true;
+    }
+    if (typeof console !== 'undefined') {
+      try {
+        if (value === console) {
+          return true;
+        }
+      } catch (consoleError) {
+        void consoleError;
+        return true;
+      }
+    }
     try {
       if (typeof value.pipe === 'function' && typeof value.unpipe === 'function') {
         return true;
@@ -169,6 +182,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     for (var index = 0; index < keys.length; index += 1) {
       var key = keys[index];
+
+      if (key === 'web3' && value === PRIMARY_SCOPE) {
+        continue;
+      }
+
       var descriptor;
       try {
         descriptor = Object.getOwnPropertyDescriptor(value, key);
@@ -179,7 +197,17 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (!descriptor || descriptor.get || descriptor.set) {
         continue;
       }
-      fallbackFreezeDeep(descriptor.value, localSeen);
+
+      var child = descriptor.value;
+
+      if (!child || _typeof(child) !== 'object' && typeof child !== 'function') {
+        continue;
+      }
+
+      fallbackFreezeDeep(child, localSeen);
+    }
+    if (value === PRIMARY_SCOPE) {
+      return value;
     }
     try {
       return Object.freeze(value);

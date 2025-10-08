@@ -151,6 +151,23 @@
       if (isImmutableBuiltin(value)) {
         return value;
       }
+
+      if (value) {
+        const globalCandidates = [];
+        if (typeof globalThis !== 'undefined') globalCandidates.push(globalThis);
+        if (typeof global !== 'undefined') globalCandidates.push(global);
+        if (typeof self !== 'undefined') globalCandidates.push(self);
+        if (typeof window !== 'undefined') globalCandidates.push(window);
+
+        if (globalCandidates.indexOf(value) !== -1) {
+          return value;
+        }
+
+        if (typeof console !== 'undefined' && value === console) {
+          return value;
+        }
+      }
+
       return originalFreeze.call(Object, value, ...rest);
     }
 

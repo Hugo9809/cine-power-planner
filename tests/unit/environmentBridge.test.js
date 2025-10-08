@@ -36,4 +36,22 @@ describe('environment-bridge', () => {
       }
     }
   });
+
+  test('freezeDeep skips accessor properties without invoking getters', () => {
+    const bridge = require('../../src/scripts/modules/environment-bridge.js');
+    const target = {};
+    const getter = jest.fn(() => ({ nested: {} }));
+
+    Object.defineProperty(target, 'expensive', {
+      configurable: true,
+      enumerable: false,
+      get: getter,
+    });
+
+    const frozen = bridge.freezeDeep(target);
+
+    expect(frozen).toBe(target);
+    expect(Object.isFrozen(target)).toBe(true);
+    expect(getter).not.toHaveBeenCalled();
+  });
 });

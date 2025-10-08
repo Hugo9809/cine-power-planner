@@ -244,12 +244,96 @@
   }
 
   function createFallbackImmutability(builtin) {
+    var globalCandidates = [];
+    if (typeof globalThis !== 'undefined' && globalCandidates.indexOf(globalThis) === -1) {
+      globalCandidates.push(globalThis);
+    }
+    if (typeof global !== 'undefined' && globalCandidates.indexOf(global) === -1) {
+      globalCandidates.push(global);
+    }
+    if (typeof self !== 'undefined' && globalCandidates.indexOf(self) === -1) {
+      globalCandidates.push(self);
+    }
+    if (typeof window !== 'undefined' && globalCandidates.indexOf(window) === -1) {
+      globalCandidates.push(window);
+    }
+
+    function isGlobalCandidate(value) {
+      return globalCandidates.indexOf(value) !== -1;
+    }
+
+    function isConsoleCandidate(value) {
+      return typeof console !== 'undefined' && value === console;
+    }
+
+    function isEthereumProviderCandidate(value) {
+      if (!value || _typeof(value) !== 'object' && typeof value !== 'function') {
+        return false;
+      }
+
+      for (var index = 0; index < globalCandidates.length; index += 1) {
+        var candidate = globalCandidates[index];
+        if (!candidate || _typeof(candidate) !== 'object' && typeof candidate !== 'function') {
+          continue;
+        }
+
+        try {
+          if (value === candidate.ethereum) {
+            return true;
+          }
+        } catch (error) {
+          void error;
+          return true;
+        }
+      }
+
+      try {
+        if (value.isMetaMask === true) {
+          return true;
+        }
+      } catch (inspectionError) {
+        if (inspectionError && typeof inspectionError.message === 'string' && /metamask/i.test(inspectionError.message)) {
+          return true;
+        }
+      }
+
+      try {
+        if (typeof value.request === 'function' && typeof value.on === 'function') {
+          if (typeof value.removeListener === 'function' || typeof value.removeEventListener === 'function') {
+            return true;
+          }
+
+          var ctorName = value.constructor && value.constructor.name;
+          if (ctorName && /Ethereum|MetaMask|Provider/i.test(ctorName)) {
+            return true;
+          }
+        }
+      } catch (accessError) {
+        void accessError;
+        return true;
+      }
+
+      return false;
+    }
+
     function shouldBypass(value) {
       if (!value || typeof value !== 'object' && typeof value !== 'function') {
         return false;
       }
 
       try {
+        if (isGlobalCandidate(value)) {
+          return true;
+        }
+
+        if (isConsoleCandidate(value)) {
+          return true;
+        }
+
+        if (isEthereumProviderCandidate(value)) {
+          return true;
+        }
+
         if (builtin && typeof builtin.isImmutableBuiltin === 'function' && builtin.isImmutableBuiltin(value)) {
           return true;
         }
@@ -302,12 +386,19 @@
       var keys = Object.getOwnPropertyNames(value);
       for (var index = 0; index < keys.length; index += 1) {
         var key = keys[index];
+        if (isGlobalCandidate(value) && key === 'web3') {
+          continue;
+        }
         var descriptor = Object.getOwnPropertyDescriptor(value, key);
         if (!descriptor || 'get' in descriptor || 'set' in descriptor) {
           continue;
         }
 
         freeze(descriptor.value, tracker);
+      }
+
+      if (isGlobalCandidate(value) || isConsoleCandidate(value) || isEthereumProviderCandidate(value)) {
+        return value;
       }
 
       return Object.freeze(value);
