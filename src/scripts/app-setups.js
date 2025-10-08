@@ -3931,6 +3931,181 @@ function getCustomItemsContainer(key) {
   return gearListOutput.querySelector(`.gear-custom-items[data-gear-custom-list="${key}"]`);
 }
 
+const CUSTOM_CATEGORY_SUGGESTION_SOURCES = {
+  camera: ['cameras'],
+  'camera-support': ['accessories.cameraSupport'],
+  media: ['media', 'accessories.media'],
+  lens: ['lenses'],
+  'lens-support': ['accessories.cameraSupport', 'accessories.rigging'],
+  'matte-box-filter': ['accessories.matteboxes', 'accessories.filters'],
+  'lds-fiz': ['fiz', 'accessories.cables.fiz'],
+  'camera-batteries': ['batteries', 'accessories.batteries'],
+  'monitoring-batteries': ['batteries', 'accessories.batteries'],
+  chargers: ['accessories.chargers'],
+  monitoring: ['monitors', 'directorMonitors', 'video', 'videoAssist', 'iosVideo'],
+  'monitoring-support': ['accessories.rigging', 'accessories.grip', 'accessories.carts'],
+  rigging: ['accessories.rigging', 'accessories.grip'],
+  power: ['accessories.power', 'accessories.powerPlates'],
+  grip: ['accessories.grip'],
+  'carts-and-transportation': ['accessories.carts'],
+  miscellaneous: ['accessories.matteboxes', 'accessories.filters', 'accessories.cables'],
+  consumables: []
+};
+
+function isSuggestionDeviceEntry(entry) {
+  if (!entry || typeof entry !== 'object' || Array.isArray(entry)) return false;
+  return Object.values(entry).some(val => {
+    if (val === null) return true;
+    const valueType = typeof val;
+    if (valueType === 'string' || valueType === 'number' || valueType === 'boolean') {
+      return true;
+    }
+    if (Array.isArray(val)) {
+      return true;
+    }
+    return false;
+  });
+}
+
+function collectDeviceSuggestionNames(source) {
+  if (!source || typeof source !== 'object') return [];
+  const names = [];
+  Object.entries(source).forEach(([name, value]) => {
+    if (!value || typeof value !== 'object') {
+      return;
+    }
+    if (isSuggestionDeviceEntry(value)) {
+      names.push(name);
+      return;
+    }
+    names.push(...collectDeviceSuggestionNames(value));
+  });
+  return names;
+}
+
+function getDeviceSuggestionNamesForPath(path) {
+  if (!path || typeof path !== 'string') return [];
+  const parts = path.split('.');
+  let scope = devices;
+  for (let i = 0; i < parts.length; i += 1) {
+    const part = parts[i];
+    if (!scope || typeof scope !== 'object') {
+      return [];
+    }
+    scope = scope[part];
+  }
+  if (!scope || typeof scope !== 'object') {
+    return [];
+  }
+  return collectDeviceSuggestionNames(scope);
+}
+
+function collectStandardItemSuggestions(categoryKey) {
+  if (!gearListOutput || typeof categoryKey !== 'string') return [];
+  const group = gearListOutput.querySelector(`.category-group[data-gear-custom-key="${categoryKey}"]`);
+  if (!group) return [];
+  const names = new Set();
+  const addName = raw => {
+    if (typeof raw !== 'string') return;
+    const trimmed = raw.trim();
+    if (!trimmed) return;
+    const match = trimmed.match(/^(?:\d+\s*x\s+)?(.+)$/i);
+    const normalized = match ? match[1].trim() : trimmed;
+    if (!normalized || /^none$/i.test(normalized)) return;
+    names.add(normalized);
+  };
+  group.querySelectorAll('.gear-standard-items .gear-item').forEach(item => {
+    const dataName = item.getAttribute('data-gear-name');
+    if (dataName) {
+      addName(dataName);
+    } else {
+      addName(item.textContent || '');
+    }
+  });
+  group.querySelectorAll('select option').forEach(option => {
+    if (!option || typeof option.value !== 'string') return;
+    const value = option.value.trim();
+    if (!value) return;
+    addName(value);
+  });
+  return Array.from(names);
+}
+
+function getCustomCategorySuggestions(categoryKey, categoryLabel) {
+  const key = categoryKey || createCustomCategoryKey(categoryLabel || '');
+  const seen = new Set();
+  const results = [];
+  const paths = CUSTOM_CATEGORY_SUGGESTION_SOURCES[key] || [];
+  paths.forEach(path => {
+    getDeviceSuggestionNamesForPath(path).forEach(name => {
+      if (typeof name !== 'string') return;
+      const trimmed = name.trim();
+      if (!trimmed || /^none$/i.test(trimmed)) return;
+      const normalized = trimmed.toLowerCase();
+      if (seen.has(normalized)) return;
+      seen.add(normalized);
+      results.push(trimmed);
+    });
+  });
+  collectStandardItemSuggestions(key).forEach(name => {
+    const trimmed = name.trim();
+    if (!trimmed || /^none$/i.test(trimmed)) return;
+    const normalized = trimmed.toLowerCase();
+    if (seen.has(normalized)) return;
+    seen.add(normalized);
+    results.push(trimmed);
+  });
+  const sorter = typeof localeSort === 'function'
+    ? localeSort
+    : (a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' });
+  return results.sort(sorter);
+}
+
+function ensureCustomCategorySuggestionList(categoryKey, categoryLabel) {
+  const container = getCustomItemsContainer(categoryKey);
+  if (!container) return null;
+  const doc = container.ownerDocument || (typeof document !== 'undefined' ? document : null);
+  if (!doc) return null;
+  const suggestions = getCustomCategorySuggestions(categoryKey, categoryLabel);
+  const existing = container.querySelector(`datalist[data-gear-custom-suggestions="${categoryKey}"]`);
+  if (!suggestions.length) {
+    if (existing) {
+      existing.remove();
+    }
+    return null;
+  }
+  const datalistId = `gear-custom-suggestions-${categoryKey}`;
+  const optionsHtml = suggestions
+    .map(value => `<option value="${escapeHtml(value)}"></option>`)
+    .join('');
+  let datalist = existing;
+  if (!datalist) {
+    datalist = doc.createElement('datalist');
+    datalist.id = datalistId;
+    datalist.setAttribute('data-gear-custom-suggestions', categoryKey);
+    container.appendChild(datalist);
+  } else if (datalist.id !== datalistId) {
+    datalist.id = datalistId;
+  }
+  if (datalist._lastRenderedOptions !== optionsHtml) {
+    datalist.innerHTML = optionsHtml;
+    datalist._lastRenderedOptions = optionsHtml;
+  }
+  return datalistId;
+}
+
+function attachCustomItemSuggestions(entry, categoryKey, categoryLabel) {
+  if (!entry) return;
+  const nameInput = entry.querySelector('[data-gear-custom-input="name"]');
+  if (!nameInput) return;
+  const datalistId = ensureCustomCategorySuggestionList(categoryKey, categoryLabel);
+  if (datalistId) {
+    nameInput.setAttribute('list', datalistId);
+  } else {
+    nameInput.removeAttribute('list');
+  }
+}
+
 function updateCustomItemPreview(entry) {
   if (!entry) return;
   const preview = entry.querySelector('.gear-custom-item-preview');
@@ -4033,6 +4208,7 @@ function addCustomItemEntry(categoryKey, categoryLabel, data = {}, options = {})
   const entry = buildCustomItemEntryElement(categoryKey, categoryLabel, data);
   if (!entry) return null;
   container.appendChild(entry);
+  attachCustomItemSuggestions(entry, categoryKey, categoryLabel);
   updateCustomItemPreview(entry);
   if (!options.skipFocus) {
     const nameInput = entry.querySelector('[data-gear-custom-input="name"]');
