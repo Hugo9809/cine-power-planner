@@ -461,7 +461,7 @@ const fizData = {
       "notes": "3-axis wireless compact unit with integrated lens mapping."
     },
     "Tilta Nucleus-M II FIZ Hand Unit": {
-      "powerDrawWatts": null,
+      "powerDrawWatts": 3,
       "fizConnectors": [
         {
           "type": "USB-C",
@@ -472,7 +472,7 @@ const fizData = {
       "powerSource": "Internal Battery (Sony NP-F550) or External USB-C",
       "batteryType": "Sony NP-F550",
       "connectivity": "Wireless (compatible with Nucleus-series controllers and motors) or Wired (USB-C for updates)",
-      "notes": "Updated hand unit with adjustable hand wheel damping, electronic focus marking disc, built-in lens mapping and expanded camera control options."
+      "notes": "Updated hand unit with adjustable hand wheel damping, electronic focus marking disc, built-in lens mapping and expanded camera control options. Estimated draw based on NP-F550 runtime benchmarks."
     },
     "Preston Hand Unit 4 (HU4)": {
       "powerDrawWatts": 5,
