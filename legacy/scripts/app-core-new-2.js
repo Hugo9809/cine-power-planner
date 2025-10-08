@@ -6437,7 +6437,7 @@ if (CORE_PART2_RUNTIME_SCOPE && CORE_PART2_RUNTIME_SCOPE.__cineCorePart2Initiali
     };
     var REQUIRED_DEVICE_CATEGORIES = ['cameras', 'monitors', 'video', 'viewfinders', 'directorMonitors', 'iosVideo', 'videoAssist', 'media', 'lenses', 'fiz', 'batteries', 'batteryHotswaps', 'wirelessReceivers', 'accessories'];
     var DEFAULT_FIZ_COLLECTIONS = ['motors', 'handUnits', 'controllers', 'distance'];
-    var DEFAULT_ACCESSORY_COLLECTIONS = ['chargers', 'cages', 'powerPlates', 'cameraSupport', 'matteboxes', 'filters', 'rigging', 'batteries', 'cables', 'videoAssist', 'media', 'tripodHeads', 'tripods', 'sliders', 'cameraStabiliser', 'grip', 'carts'];
+    var DEFAULT_ACCESSORY_COLLECTIONS = ['chargers', 'cages', 'powerPlates', 'cameraSupport', 'matteboxes', 'filters', 'rigging', 'batteries', 'cables', 'videoAssist', 'media', 'cardReaders', 'tripodHeads', 'tripods', 'sliders', 'cameraStabiliser', 'grip', 'carts'];
     var MAX_DEVICE_IMPORT_ERRORS = 5;
     function isDeviceEntryObject(value) {
       if (!isPlainObjectValue(value)) {

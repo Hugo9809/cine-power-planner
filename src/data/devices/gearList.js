@@ -2487,11 +2487,6 @@ const gear = {
         "capacityTb": 1,
         "interface": "PCIe (ProRes-only)"
       },
-      "ARRI Codex Compact Drive Reader (USB-C)": {
-        "brand": "ARRI",
-        "kNumber": "K2.0024130",
-        "interface": "USB 3.1 Gen 2 (USB-C, ~8 Gb/s), bus-powered"
-      },
       "OWC Atlas Ultra CFexpress Type B 1TB": {
         "brand": "OWC",
         "model": "Atlas Ultra 1TB",
@@ -2532,12 +2527,6 @@ const gear = {
         "capacityTb": 0.5,
         "interface": "AXS (S48, up to 4.8 Gb/s write)"
       },
-      "Sony AXS-AR1 Card Reader": {
-        "brand": "Sony",
-        "model": "AXS-AR1 Card Reader",
-        "kNumber": "AXS-AR1",
-        "interface": "USB 3.0"
-      },
       "Sony SxS PRO+ 64GB card (E-Series)": {
         "brand": "Sony",
         "model": "SBP64E",
@@ -2545,6 +2534,163 @@ const gear = {
         "capacityGb": 64,
         "capacityTb": 0.064,
         "interface": "SxS PRO+ (ExpressCard/34, PCI Express)"
+      }
+    },
+    "cardReaders": {
+      "Angelbird CFexpress Type B & CFast 2.0 Reader": {
+        "brand": "Angelbird",
+        "model": "CFexpress Type B & CFast Reader",
+        "supportedMedia": ["CFexpress Type B", "CFast 2.0"],
+        "interface": "USB 3.2 Gen 2 (USB-C, 10 Gb/s)",
+        "slots": 2,
+        "busPowered": true,
+        "notes": "Dual-slot reader with USB-C and USB-A cables included; supports simultaneous card access."
+      },
+      "ARRI Codex Compact Drive Reader (USB-C)": {
+        "brand": "ARRI",
+        "model": "Codex Compact Drive Reader",
+        "kNumber": "K2.0024130",
+        "supportedMedia": ["Codex Compact Drive"],
+        "interface": "USB 3.1 Gen 2 (USB-C, ~8 Gb/s)",
+        "slots": 1,
+        "busPowered": true,
+        "notes": "Designed for Codex Compact Drive media; includes USB-C to USB-C cable."
+      },
+      "Lexar Professional XQD 2.0 USB 3.0 Reader": {
+        "brand": "Lexar",
+        "model": "Professional XQD 2.0",
+        "supportedMedia": ["XQD"],
+        "interface": "USB 3.0 (USB 3.1 Gen 1 Micro-B)",
+        "slots": 1,
+        "busPowered": true,
+        "notes": "Compact reader for XQD 2.0 cards; ships with USB Type-C and USB Type-A cables."
+      },
+      "Panasonic AU-XPD3 ExpressP2 / microP2 Reader": {
+        "brand": "Panasonic",
+        "model": "AU-XPD3",
+        "supportedMedia": ["ExpressP2", "microP2"],
+        "interface": "Thunderbolt 3 (40 Gb/s)",
+        "slots": 2,
+        "busPowered": false,
+        "notes": "Dual-slot Thunderbolt reader with metal chassis; supports daisy-chaining and optional PCIe adapter."
+      },
+      "RED Station CFexpress Type B (USB-C)": {
+        "brand": "RED",
+        "model": "RED Station CFexpress Type B",
+        "supportedMedia": ["RED CFexpress", "CFexpress Type B"],
+        "interface": "USB 3.2 Gen 2 (USB-C, 10 Gb/s)",
+        "slots": 1,
+        "busPowered": true,
+        "notes": "Bus-powered aluminium reader tailored for KOMODO-X and V-RAPTOR CFexpress media."
+      },
+      "RED Station RED MINI-MAG (USB-C)": {
+        "brand": "RED",
+        "model": "RED Station RED MINI-MAG",
+        "supportedMedia": ["RED MINI-MAG"],
+        "interface": "USB 3.1 Gen 2 (USB-C, 10 Gb/s)",
+        "slots": 1,
+        "busPowered": true,
+        "notes": "Tool-free reader compatible with RED MINI-MAG media; includes USB-C to USB-C cable."
+      },
+      "Sony AXS-AR1 Card Reader": {
+        "brand": "Sony",
+        "model": "AXS-AR1",
+        "kNumber": "AXS-AR1",
+        "supportedMedia": ["Sony AXS"],
+        "interface": "USB 3.0 (USB 3.1 Gen 1 Type-B)",
+        "slots": 1,
+        "busPowered": true,
+        "notes": "Single-slot reader for AXS A series media; backward compatible with AXS-R series."
+      },
+      "Sony SBAC-US30 SxS Reader": {
+        "brand": "Sony",
+        "model": "SBAC-US30",
+        "supportedMedia": ["SxS PRO+", "SxS PRO X", "SxS-1"],
+        "interface": "USB 3.0 (USB 3.1 Gen 1 Micro-B)",
+        "slots": 1,
+        "busPowered": true,
+        "notes": "Durable single-slot SxS reader with locking USB cable; backward compatible with legacy SxS media."
+      },
+      "Sony MRW-G2 CFexpress Type A / SD Reader": {
+        "brand": "Sony",
+        "model": "MRW-G2",
+        "supportedMedia": ["CFexpress Type A", "SD UHS-II", "SD UHS-I"],
+        "interface": "USB 3.2 Gen 2 (USB-C)",
+        "slots": 2,
+        "busPowered": true,
+        "notes": "Dual-slot reader supporting CFexpress Type A and SD cards; ships with USB-C and USB-A cables."
+      },
+      "ProGrade Digital CFexpress Type B & SD Reader (Thunderbolt 4)": {
+        "brand": "ProGrade",
+        "model": "PG04",
+        "supportedMedia": ["CFexpress Type B", "SD UHS-II", "SD UHS-I"],
+        "interface": "Thunderbolt 4 (40 Gb/s)",
+        "slots": 2,
+        "busPowered": true,
+        "notes": "Aluminium enclosure with detachable 0.5m cable; supports simultaneous card access."
+      },
+      "SanDisk Professional PRO-READER SD & microSD": {
+        "brand": "SanDisk Professional",
+        "model": "PRO-READER SD and microSD",
+        "supportedMedia": ["SD UHS-II", "SD UHS-I", "microSD UHS-I", "microSD UHS-II"],
+        "interface": "USB 3.2 Gen 2 (USB-C, 10 Gb/s)",
+        "slots": 2,
+        "busPowered": true,
+        "notes": "Aluminium reader with heat-dissipating design; supports the PRO-DOCK 4 modular workflow."
+      },
+      "Blackmagic Design USB-C CFast 2.0 Reader": {
+        "brand": "Blackmagic Design",
+        "model": "CFast 2.0 Reader",
+        "supportedMedia": ["CFast 2.0"],
+        "interface": "USB 3.1 Gen 2 (USB-C, 10 Gb/s)",
+        "slots": 1,
+        "busPowered": true,
+        "notes": "Compact aluminium housing; designed for CFast-based URSA Mini workflows."
+      },
+      "DJI CINESSD Station (Thunderbolt 3)": {
+        "brand": "DJI",
+        "model": "CINESSD Station Thunderbolt 3",
+        "supportedMedia": ["DJI CINESSD"],
+        "interface": "Thunderbolt 3 (40 Gb/s)",
+        "slots": 1,
+        "busPowered": true,
+        "notes": "Tool-free slot for Inspire 2 CINESSD media; draws power directly over Thunderbolt."
+      },
+      "Panasonic AJ-PCD30 Triple P2 Reader": {
+        "brand": "Panasonic",
+        "model": "AJ-PCD30",
+        "supportedMedia": ["P2"],
+        "interface": "USB 3.0 (USB 3.1 Gen 1, 5 Gb/s)",
+        "slots": 3,
+        "busPowered": false,
+        "notes": "Triple-slot desktop reader for legacy P2 media; includes locking DC power supply for studio racks."
+      },
+      "Sony SBAC-T40 Dual SxS Reader": {
+        "brand": "Sony",
+        "model": "SBAC-T40",
+        "supportedMedia": ["SxS PRO+", "SxS PRO X", "SxS-1"],
+        "interface": "Thunderbolt 3 (40 Gb/s)",
+        "slots": 2,
+        "busPowered": false,
+        "notes": "Dual-slot desktop reader with Thunderbolt daisy-chain support; includes integrated AC power."
+      },
+      "Sonnet SF3 Series – CFexpress/XQD Pro Card Reader": {
+        "brand": "Sonnet",
+        "model": "SF3 Series CFexpress/XQD Pro Card Reader",
+        "supportedMedia": ["CFexpress Type B", "XQD"],
+        "interface": "Thunderbolt 3 (40 Gb/s)",
+        "slots": 2,
+        "busPowered": true,
+        "notes": "Dual-slot Thunderbolt reader that supports mixed CFexpress Type B and XQD workflows."
+      },
+      "Wise Advanced CFexpress Type B & SD Dual Reader": {
+        "brand": "Wise Advanced",
+        "model": "CFexpress Type B & SD Dual Reader",
+        "supportedMedia": ["CFexpress Type B", "SD UHS-II", "SD UHS-I"],
+        "interface": "USB 3.2 Gen 2 (USB-C, 10 Gb/s)",
+        "slots": 2,
+        "busPowered": true,
+        "notes": "Magnetic metal enclosure with included USB-C to USB-C and USB-C to USB-A cables."
       }
     },
     "lenses": {

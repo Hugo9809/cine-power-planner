@@ -12428,14 +12428,15 @@ if (CORE_PART1_RUNTIME_SCOPE && CORE_PART1_RUNTIME_SCOPE.__cineCorePart1Initiali
       }
     });
   }
-  var deviceManagerPreferredOrder = ["cameras", "viewfinders", "monitors", "video", "wirelessReceivers", "directorMonitors", "iosVideo", "lenses", "fiz.motors", "fiz.controllers", "fiz.handUnits", "fiz.distance", "batteries", "batteryHotswaps", "accessories.batteries", "accessories.powerPlates", "accessories.cables", "accessories.cages", "accessories.cameraSupport", "accessories.cameraStabiliser", "accessories.chargers", "accessories.videoAssist", "accessories.media", "accessories.filters", "accessories.matteboxes", "accessories.rigging", "accessories.grip", "accessories.sliders", "accessories.tripodHeads", "accessories.tripods", "accessories.carts"];
+  var deviceManagerPreferredOrder = ["cameras", "viewfinders", "monitors", "video", "wirelessReceivers", "directorMonitors", "iosVideo", "lenses", "fiz.motors", "fiz.controllers", "fiz.handUnits", "fiz.distance", "batteries", "batteryHotswaps", "accessories.batteries", "accessories.powerPlates", "accessories.cables", "accessories.cages", "accessories.cameraSupport", "accessories.cameraStabiliser", "accessories.chargers", "accessories.videoAssist", "accessories.media", "accessories.cardReaders", "accessories.filters", "accessories.matteboxes", "accessories.rigging", "accessories.grip", "accessories.sliders", "accessories.tripodHeads", "accessories.tripods", "accessories.carts"];
   function normalizeCategoryKey(key) {
-    var _devices8, _devices9;
+    var _devices8, _devices9, _devices10;
     if (!key) return null;
     if (key === "accessories" || key === "fiz" || key === "filterOptions") return null;
     if (key.startsWith("accessories.cables.")) return "accessories.cables";
     if (key === "videoAssist" && (_devices8 = devices) !== null && _devices8 !== void 0 && (_devices8 = _devices8.accessories) !== null && _devices8 !== void 0 && _devices8.videoAssist) return "accessories.videoAssist";
     if (key === "media" && (_devices9 = devices) !== null && _devices9 !== void 0 && (_devices9 = _devices9.accessories) !== null && _devices9 !== void 0 && _devices9.media) return "accessories.media";
+    if (key === "cardReaders" && (_devices10 = devices) !== null && _devices10 !== void 0 && (_devices10 = _devices10.accessories) !== null && _devices10 !== void 0 && _devices10.cardReaders) return "accessories.cardReaders";
     return key;
   }
   function getCategoryLabel(categoryKey) {
