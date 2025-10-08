@@ -1034,7 +1034,14 @@
         if (!popup) return;
         popup.style.display = 'none';
         popup.setAttribute('hidden', '');
+        popup.classList.remove('diagram-popup--multi-column');
         popup.innerHTML = '';
+      };
+      const hasPopupVerticalOverflow = () => {
+        if (!popup) return false;
+        const clientHeight = popup.clientHeight || 0;
+        const scrollHeight = popup.scrollHeight || 0;
+        return clientHeight > 0 && scrollHeight - clientHeight > 1;
       };
       hidePopup();
 
@@ -1257,6 +1264,19 @@
         popup.style.visibility = 'visible';
       };
 
+      const adjustPopupColumnLayout = (nodeEl) => {
+        if (!popup || !nodeEl) return;
+        const overflowed = hasPopupVerticalOverflow();
+        const hasMulti = popup.classList.contains('diagram-popup--multi-column');
+        if (overflowed && !hasMulti) {
+          popup.classList.add('diagram-popup--multi-column');
+          positionPopup(nodeEl);
+        } else if (!overflowed && hasMulti) {
+          popup.classList.remove('diagram-popup--multi-column');
+          positionPopup(nodeEl);
+        }
+      };
+
       const showPopupForNode = (nodeEl) => {
         if (!popup || !nodeEl) return;
         const nodeId = nodeEl.getAttribute('data-node');
@@ -1270,6 +1290,7 @@
           return;
         }
         popup.className = entry.className ? `diagram-popup ${entry.className}` : 'diagram-popup';
+        popup.classList.remove('diagram-popup--multi-column');
         popup.innerHTML = entry.content || '';
         if (entry.label) {
           popup.setAttribute('aria-label', entry.label);
@@ -1278,6 +1299,7 @@
         }
         activePopupNode = nodeEl;
         positionPopup(nodeEl);
+        adjustPopupColumnLayout(nodeEl);
       };
 
       const onNodeOver = e => {
@@ -1303,6 +1325,13 @@
 
       svg.addEventListener('mousedown', onSvgMouseDown);
       svg.addEventListener('touchstart', onSvgMouseDown, { passive: false });
+      const onWindowResize = () => {
+        if (!activePopupNode) return;
+        popup.classList.remove('diagram-popup--multi-column');
+        positionPopup(activePopupNode);
+        adjustPopupColumnLayout(activePopupNode);
+      };
+
       if (windowObj) {
         windowObj.addEventListener('mousemove', onPanMove);
         windowObj.addEventListener('touchmove', onPanMove, { passive: false });
@@ -1312,6 +1341,7 @@
         windowObj.addEventListener('touchmove', onDragMove, { passive: false });
         windowObj.addEventListener('mouseup', onDragEnd);
         windowObj.addEventListener('touchend', onDragEnd);
+        windowObj.addEventListener('resize', onWindowResize);
       }
       svg.addEventListener('mousedown', onDragStart);
       svg.addEventListener('touchstart', onDragStart, { passive: false });
@@ -1331,6 +1361,7 @@
           windowObj.removeEventListener('touchmove', onDragMove);
           windowObj.removeEventListener('mouseup', onDragEnd);
           windowObj.removeEventListener('touchend', onDragEnd);
+          windowObj.removeEventListener('resize', onWindowResize);
         }
         svg.removeEventListener('mousedown', onDragStart);
         svg.removeEventListener('touchstart', onDragStart);

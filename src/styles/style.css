@@ -6261,17 +6261,27 @@ body.light-mode #topBar select:focus-visible {
   max-width: min(720px, calc(100vw - 24px));
 }
 
+.diagram-popup--multi-column {
+  max-width: min(720px, calc(100vw - 24px));
+}
+
 .diagram-popup .connector-summary,
 .diagram-popup .scenario-summary,
 .diagram-popup .icon-box-summary {
   margin-top: 4px;
   display: grid;
-  /* Limit hover popup grids to between one and four columns to avoid clipping */
-  grid-template-columns: repeat(auto-fit, minmax(180px, 25%));
+  grid-template-columns: minmax(0, 1fr);
   column-gap: 6px;
   row-gap: 4px;
   align-items: start;
   width: 100%;
+}
+
+.diagram-popup--multi-column .connector-summary,
+.diagram-popup--multi-column .scenario-summary,
+.diagram-popup--multi-column .icon-box-summary {
+  /* Limit hover popup grids to between one and four columns when height forces it */
+  grid-template-columns: repeat(auto-fit, minmax(180px, calc(100% / 4)));
 }
 
 .diagram-popup .connector-summary > *,
