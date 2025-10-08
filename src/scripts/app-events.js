@@ -72,7 +72,7 @@ const AUTO_BACKUP_ALLOWED_REASONS = [
   'change-threshold',
   'safeguard',
 ];
-const AUTO_BACKUP_RATE_LIMITED_REASONS = new Set(['import']);
+const AUTO_BACKUP_RATE_LIMITED_REASONS = new Set();
 
 const AUTO_BACKUP_REASON_DEDUP_INTERVAL_MS = 2 * 60 * 1000;
 const lastAutoBackupReasonState = new Map();
