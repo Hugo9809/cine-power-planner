@@ -8517,7 +8517,7 @@ const gear = {
         },
         "NiSi Athena Prime 18mm T2.2": {
           "brand": "NiSi",
-          "frontDiameterMm": 77,
+          "frontDiameterMm": 80,
           "clampOn": true,
           "tStop": 2.2,
           "mount": "PL / E / L / RF (swappable)",
@@ -8531,7 +8531,7 @@ const gear = {
         },
         "NiSi Athena Prime 25mm T1.9": {
           "brand": "NiSi",
-          "frontDiameterMm": 77,
+          "frontDiameterMm": 80,
           "clampOn": true,
           "tStop": 1.9,
           "mount": "PL / E / L / RF (swappable)",
@@ -8541,11 +8541,11 @@ const gear = {
           "lensType": "spherical",
           "minFocusMeters": 0.25,
           "imageCircleMm": 46,
-          "notes": "Full-frame Athena prime with matched gear spacing, 77 mm front threads, and rear drop-in filter slot."
+          "notes": "Full-frame Athena prime with matched gear spacing, 80 mm front housing, and rear drop-in filter slot."
         },
         "NiSi Athena Prime 35mm T1.9": {
           "brand": "NiSi",
-          "frontDiameterMm": 77,
+          "frontDiameterMm": 80,
           "clampOn": true,
           "tStop": 1.9,
           "mount": "PL / E / L / RF (swappable)",
@@ -8555,11 +8555,11 @@ const gear = {
           "lensType": "spherical",
           "minFocusMeters": 0.35,
           "imageCircleMm": 46,
-          "notes": "Mid-wide Athena focal covering full frame with identical 77 mm front diameter and dual-scale markings."
+          "notes": "Mid-wide Athena focal covering full frame with matching 80 mm front diameter and dual-scale markings."
         },
         "NiSi Athena Prime 40mm T1.9": {
           "brand": "NiSi",
-          "frontDiameterMm": 77,
+          "frontDiameterMm": 80,
           "clampOn": true,
           "tStop": 1.9,
           "mount": "PL / E / L / RF (swappable)",
@@ -8573,7 +8573,7 @@ const gear = {
         },
         "NiSi Athena Prime 50mm T1.9": {
           "brand": "NiSi",
-          "frontDiameterMm": 77,
+          "frontDiameterMm": 80,
           "clampOn": true,
           "tStop": 1.9,
           "mount": "PL / E / L / RF (swappable)",
@@ -8587,7 +8587,7 @@ const gear = {
         },
         "NiSi Athena Prime 65mm T1.9": {
           "brand": "NiSi",
-          "frontDiameterMm": 77,
+          "frontDiameterMm": 80,
           "clampOn": true,
           "tStop": 1.9,
           "mount": "PL / E / L / RF (swappable)",
@@ -8597,11 +8597,11 @@ const gear = {
           "lensType": "spherical",
           "minFocusMeters": 0.55,
           "imageCircleMm": 46,
-          "notes": "Short tele Athena prime that keeps the lightweight 77 mm front housing and synchronized 0.8 mod gears."
+          "notes": "Short tele Athena prime that keeps the lightweight 80 mm front housing and synchronized 0.8 mod gears."
         },
         "NiSi Athena Prime 85mm T1.9": {
           "brand": "NiSi",
-          "frontDiameterMm": 77,
+          "frontDiameterMm": 80,
           "clampOn": true,
           "tStop": 1.9,
           "mount": "PL / E / L / RF (swappable)",
@@ -8611,11 +8611,11 @@ const gear = {
           "lensType": "spherical",
           "minFocusMeters": 0.8,
           "imageCircleMm": 46,
-          "notes": "Telephoto Athena prime maintaining lightweight build, rear filter holder, and unified 77 mm fronts across the lineup."
+          "notes": "Telephoto Athena prime maintaining lightweight build, rear filter holder, and unified 80 mm fronts across the lineup."
         },
         "NiSi Athena Prime 135mm T2.2": {
           "brand": "NiSi",
-          "frontDiameterMm": 77,
+          "frontDiameterMm": 80,
           "clampOn": true,
           "tStop": 2.2,
           "mount": "PL / E / L / RF (swappable)",
