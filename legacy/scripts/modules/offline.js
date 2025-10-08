@@ -1193,62 +1193,59 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var hashBase = fallbackHref ? fallbackHref.split('#')[0] : baseHref || originalHref || '';
     var hashFallback = hashBase ? "".concat(hashBase, "#forceReload-").concat(Date.now().toString(36)) : '';
     var steps = [];
-    if (hasReload) {
+    var nextDelay = 350;
+    var queueStep = function queueStep(run) {
       steps.push({
-        delay: 350,
+        delay: nextDelay,
+        run: run
+      });
+      nextDelay += 300;
+    };
+    if (fallbackHref) {
+      if (typeof locationLike.assign === 'function') {
+        queueStep(function () {
+          try {
+            locationLike.assign(fallbackHref);
+          } catch (error) {
+            safeWarn('Forced reload fallback via location.assign failed', error);
+          }
+        });
+      }
+      if (typeof locationLike.replace === 'function') {
+        queueStep(function () {
+          try {
+            locationLike.replace(fallbackHref);
+          } catch (error) {
+            safeWarn('Forced reload fallback via location.replace failed', error);
+          }
+        });
+      }
+      queueStep(function () {
+        try {
+          locationLike.href = fallbackHref;
+        } catch (error) {
+          safeWarn('Forced reload fallback via href assignment failed', error);
+        }
+      });
+    }
+    if (hashFallback && hashFallback !== fallbackHref) {
+      queueStep(function () {
+        try {
+          locationLike.href = hashFallback;
+        } catch (error) {
+          safeWarn('Forced reload fallback via hash injection failed', error);
+        }
+      });
+    }
+    if (hasReload) {
+      var reloadDelay = steps.length ? nextDelay : 350;
+      steps.push({
+        delay: reloadDelay,
         run: function run() {
           try {
             locationLike.reload();
           } catch (error) {
             safeWarn('Timed force reload fallback failed', error);
-          }
-        }
-      });
-    }
-    if (fallbackHref) {
-      if (typeof locationLike.assign === 'function') {
-        steps.push({
-          delay: hasReload ? 850 : 350,
-          run: function run() {
-            try {
-              locationLike.assign(fallbackHref);
-            } catch (error) {
-              safeWarn('Forced reload fallback via location.assign failed', error);
-            }
-          }
-        });
-      }
-      if (typeof locationLike.replace === 'function') {
-        steps.push({
-          delay: hasReload ? 1150 : 650,
-          run: function run() {
-            try {
-              locationLike.replace(fallbackHref);
-            } catch (error) {
-              safeWarn('Forced reload fallback via location.replace failed', error);
-            }
-          }
-        });
-      }
-      steps.push({
-        delay: hasReload ? 1450 : 950,
-        run: function run() {
-          try {
-            locationLike.href = fallbackHref;
-          } catch (error) {
-            safeWarn('Forced reload fallback via href assignment failed', error);
-          }
-        }
-      });
-    }
-    if (hashFallback && hashFallback !== fallbackHref) {
-      steps.push({
-        delay: hasReload ? 1750 : 1250,
-        run: function run() {
-          try {
-            locationLike.href = hashFallback;
-          } catch (error) {
-            safeWarn('Forced reload fallback via hash injection failed', error);
           }
         }
       });
@@ -1293,7 +1290,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         location.href = url;
       }, 'location.href assignment');
     }
-    if (!navigationTriggered && hasReload) {
+    var canOnlyReload = !nextHref || nextHref === originalHref;
+    if (!navigationTriggered && canOnlyReload && hasReload) {
       try {
         location.reload();
         navigationTriggered = true;
