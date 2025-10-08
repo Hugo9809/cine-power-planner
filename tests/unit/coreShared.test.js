@@ -4,6 +4,8 @@ const { setupModuleHarness } = require('../helpers/moduleHarness');
 
 describe('core shared utilities', () => {
   let harness;
+  let originalConsole;
+  let consoleWarnSpy;
 
   function cleanupGlobals() {
     delete global.generateConnectorSummary;
@@ -16,12 +18,17 @@ describe('core shared utilities', () => {
   beforeEach(() => {
     harness = setupModuleHarness();
     cleanupGlobals();
-    jest.spyOn(console, 'warn').mockImplementation(() => {});
+    originalConsole = console;
+    consoleWarnSpy = jest.fn();
+    const consoleClone = Object.create(console);
+    consoleClone.warn = consoleWarnSpy;
+    global.console = consoleClone;
   });
 
   afterEach(() => {
-    if (console.warn && typeof console.warn.mockRestore === 'function') {
-      console.warn.mockRestore();
+    if (originalConsole) {
+      global.console = originalConsole;
+      originalConsole = null;
     }
     cleanupGlobals();
     if (harness) {
