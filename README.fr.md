@@ -404,6 +404,8 @@ npm run test:data
 
 Ajoutez `--help` à n’importe quelle commande pour obtenir de l’aide et consultez les diffs générés avant d’ouvrir une pull request. `npm run help` récapitule les scripts disponibles.
 
+> **Mise à jour du catalogue.** Le catalogue des poignées FIZ inclut désormais le contrôleur Nucleus-M II de Tilta ainsi que de nouveaux profils pour la HU4 de Preston, la poignée cPRO de cmotion, la CTRL.3 de Teradek et la poignée Focus Pro de DJI afin de comparer davantage d’écosystèmes hors ligne sans quitter l’application.
+
 ## Développement
 
 Installez Node.js 18 ou supérieur. Après clonage :

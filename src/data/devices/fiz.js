@@ -459,6 +459,88 @@ const fizData = {
       "batteryType": "ARRI LBP-3500",
       "connectivity": "Wireless (swappable ARRI radio modules) or Wired (LCS)",
       "notes": "3-axis wireless compact unit with integrated lens mapping."
+    },
+    "Tilta Nucleus-M II FIZ Hand Unit": {
+      "powerDrawWatts": null,
+      "fizConnectors": [
+        {
+          "type": "USB-C",
+          "notes": "Charging and configuration"
+        }
+      ],
+      "internalController": false,
+      "powerSource": "Internal Battery (Sony NP-F550) or External USB-C",
+      "batteryType": "Sony NP-F550",
+      "connectivity": "Wireless (compatible with Nucleus-series controllers and motors) or Wired (USB-C for updates)",
+      "notes": "Updated hand unit with adjustable hand wheel damping, electronic focus marking disc, built-in lens mapping and expanded camera control options."
+    },
+    "Preston Hand Unit 4 (HU4)": {
+      "powerDrawWatts": 5,
+      "fizConnectors": [
+        {
+          "type": "USB-C",
+          "notes": "Charging and configuration"
+        },
+        {
+          "type": "LEMO 7-pin",
+          "notes": "Optional hardline to MDR for power and data"
+        }
+      ],
+      "internalController": false,
+      "powerSource": "Internal Battery (Canon LP-E6N) or External (wired to MDR/RS)",
+      "batteryType": "Canon LP-E6N",
+      "connectivity": "Wireless (Preston G4 2.4 GHz FHSS) or Wired (serial tether to MDR)",
+      "notes": "Fourth-generation Preston hand unit with high-brightness display, force-adjustable focus knob, assignable user keys, and native Light Ranger 2 overlays."
+    },
+    "cmotion cPRO hand unit": {
+      "powerDrawWatts": 6,
+      "fizConnectors": [
+        {
+          "type": "LBUS (LEMO 4-pin)",
+          "notes": "Hardline or daisy-chain connection"
+        },
+        {
+          "type": "USB-C",
+          "notes": "Charging and configuration"
+        }
+      ],
+      "internalController": false,
+      "powerSource": "Internal Battery (Sony NP-FM50/NP-F570) or External LBUS",
+      "batteryType": "Sony NP-FM50/NP-F570",
+      "connectivity": "Wireless (cPRO 2.4 GHz FHSS) or Wired (LBUS)",
+      "notes": "Ergonomic 3-axis controller with lens data, customizable force feedback, focus tracking tools, and compatibility with cPRO and cvolution receivers."
+    },
+    "Teradek RT CTRL.3": {
+      "powerDrawWatts": 5,
+      "fizConnectors": [
+        {
+          "type": "LEMO 4-pin",
+          "notes": "Hardwired link to MDR.X/MDR.S"
+        },
+        {
+          "type": "USB-C",
+          "notes": "Charging, configuration, camera control"
+        }
+      ],
+      "internalController": false,
+      "powerSource": "Internal Battery (Canon LP-E6/LP-E6N) or External USB-C",
+      "batteryType": "Canon LP-E6/LP-E6N",
+      "connectivity": "Wireless (Teradek RT FHSS up to ~1500 m) or Wired (LEMO 4-pin to MDR)",
+      "notes": "3-axis wireless hand unit with adjustable focus knob damping, swappable iris slider and zoom rocker, integrated OLED lens data display, and full lens mapping support."
+    },
+    "DJI Focus Pro Hand Unit": {
+      "powerDrawWatts": 4,
+      "fizConnectors": [
+        {
+          "type": "USB-C",
+          "notes": "Charging and firmware"
+        }
+      ],
+      "internalController": false,
+      "powerSource": "Internal Battery (built-in Li-ion) or External USB-C",
+      "batteryType": "Integrated Li-ion (2600 mAh)",
+      "connectivity": "Wireless (DJI 2.4/5.8 GHz link with Focus Pro ecosystem) or Wired (USB-C for updates)",
+      "notes": "Compact controller for the Focus Pro ecosystem with customizable focus wheel tension, vibration feedback for range alerts, and direct pairing to the LiDAR Range Finder."
     }
   },
   "controllers": {
